@@ -138,40 +138,27 @@ theorem Path.homotopic_of_loops_nullhomotopic_in_neighborhood {x y : X} (U : Set
     (h_loops : ∀ {z : X} (γ : Path z z), z ∈ U → Set.range γ ⊆ U → Path.Homotopic γ (Path.refl z))
     {p q : Path x y} (hp : Set.range p ⊆ U) (hq : Set.range q ⊆ U) :
     Path.Homotopic p q := by
-  -- Need to show: p ≃ q where p, q : x → y
-  -- We'll need x ∈ U and y ∈ U from the ranges
   have hx : x ∈ U := by simpa using hp (Set.mem_range_self (0 : unitInterval))
-  have hy : y ∈ U := by simpa using hq (Set.mem_range_self (1 : unitInterval))
-  -- Form the loop p · q.symm : x → x
-  let loop := p.trans q.symm
-  have h_loop_range : Set.range loop ⊆ U := by
+  -- The loop p · q⁻¹ is nullhomotopic
+  have h_loop : Path.Homotopic (p.trans q.symm) (Path.refl x) := by
+    apply h_loops (p.trans q.symm) hx
     intro z hz
     obtain ⟨t, rfl⟩ := hz
-    simp only [loop, Path.trans_apply]
+    simp only [Path.trans_apply]
     split_ifs <;> [exact hp (Set.mem_range_self _); exact hq (Set.mem_range_self _)]
-  -- This loop is nullhomotopic
-  have h_null : Path.Homotopic loop (Path.refl x) := h_loops loop hx h_loop_range
-  -- Now: loop ≃ refl x means p · q.symm ≃ refl x
-  -- Composing with q on the right: (p · q.symm) · q ≃ (refl x) · q
-  have : Path.Homotopic ((p.trans q.symm).trans q) ((Path.refl x).trans q) :=
-    Path.Homotopic.hcomp h_null (Path.Homotopic.refl q)
-  -- Simplify using associativity and identity laws
-  have h1 : Path.Homotopic (p.trans (q.symm.trans q)) ((p.trans q.symm).trans q) :=
-    ⟨(Path.Homotopy.transAssoc p q.symm q).symm⟩
-  have h2 : Path.Homotopic (q.symm.trans q) (Path.refl y) :=
-    ⟨(Path.Homotopy.reflSymmTrans q).symm⟩
-  have h3 : Path.Homotopic (p.trans (Path.refl y)) p :=
-    ⟨Path.Homotopy.transRefl p⟩
-  have h4 : Path.Homotopic ((Path.refl x).trans q) q :=
-    ⟨Path.Homotopy.reflTrans q⟩
-  -- p ≃ q via a chain of homotopies
-  have step1 : Path.Homotopic p (p.trans (Path.refl y)) := h3.symm
-  have step2 : Path.Homotopic (p.trans (Path.refl y)) (p.trans (q.symm.trans q)) :=
-    Path.Homotopic.hcomp (Path.Homotopic.refl p) h2.symm
-  have step3 : Path.Homotopic (p.trans (q.symm.trans q)) ((p.trans q.symm).trans q) := h1
-  have step4 : Path.Homotopic ((p.trans q.symm).trans q) ((Path.refl x).trans q) := this
-  have step5 : Path.Homotopic ((Path.refl x).trans q) q := h4
-  exact step1.trans (step2.trans (step3.trans (step4.trans step5)))
+  -- Pass to quotient: use that p · (q⁻¹ · q) = (p · q⁻¹) · q and simplify
+  apply Path.Homotopic.Quotient.exact
+  show Path.Homotopic.Quotient.mk p = Path.Homotopic.Quotient.mk q
+  calc Path.Homotopic.Quotient.mk p
+      = (Path.Homotopic.Quotient.mk p).trans
+          ((Path.Homotopic.Quotient.mk q).symm.trans (Path.Homotopic.Quotient.mk q)) := by simp
+    _ = ((Path.Homotopic.Quotient.mk p).trans (Path.Homotopic.Quotient.mk q).symm).trans
+          (Path.Homotopic.Quotient.mk q) := by simp
+    _ = (Path.Homotopic.Quotient.mk (p.trans q.symm)).trans (Path.Homotopic.Quotient.mk q) := by
+          simp [← Path.Homotopic.Quotient.mk_trans, ← Path.Homotopic.Quotient.mk_symm]
+    _ = (Path.Homotopic.Quotient.mk (Path.refl x)).trans (Path.Homotopic.Quotient.mk q) := by
+          rw [Path.Homotopic.Quotient.eq.mpr h_loop]
+    _ = Path.Homotopic.Quotient.mk q := by simp
 
 /-- In an SLSC space, every point has an open neighborhood U such that for any two points
 in U, there is a unique (up to homotopy) path between them.
