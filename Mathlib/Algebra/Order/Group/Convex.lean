@@ -21,6 +21,8 @@ import Mathlib.Order.Birkhoff
 
 variable {α β : Type*} [CommGroup α] [LinearOrder α] [CommGroup β] [LinearOrder β]
 
+/-- A subgroup `H` of a linearly ordered abelian group is convex, if for any `a, b` such that
+`a ≤ b ≤ 1`, `a ∈ H` implies `b ∈ H`. -/
 @[to_additive] def IsConvexSubgroup (H : Subgroup α) : Prop :=
   ∀ ⦃a b : α⦄, a ≤ b → b ≤ 1 → a ∈ H → b ∈ H
 
@@ -54,6 +56,7 @@ variable [IsOrderedMonoid α]
 
 end
 
+/-- The kernel of a morphism of totally ordered abelian groups is convex. -/
 @[to_additive] lemma isConvexSubgroup_ker (f : α →*o β) : IsConvexSubgroup f.ker :=
   fun a b aleb ble1 fa1 ↦ le_antisymm (by simpa using f.monotone' ble1) <| by
     rw [← fa1]; exact f.monotone' aleb
@@ -71,6 +74,7 @@ section
 
 variable [IsOrderedMonoid α]
 
+/-- Convex subgroups are linearly ordered by inclusion. -/
 @[to_additive] noncomputable instance : LinearOrder (ConvexSubgroup α) where
   le_total G H := by
     by_contra!
@@ -94,6 +98,7 @@ variable (G : ConvexSubgroup α)
 
 @[to_additive] instance : CommGroup (α ⧸ G) := inferInstanceAs <| CommGroup (α ⧸ G.toSubgroup)
 
+/-- The linear order on the quotient of a linearly ordered abelian group by a convex subgroup. -/
 @[to_additive] noncomputable instance : LinearOrder (α ⧸ G) where
   le x y := ∀ a : α, ⟦a⟧ = x → ∃ b : α, ⟦b⟧ = y ∧ a ≤ b
   le_refl x a ha := ⟨a, ha, le_rfl⟩
@@ -224,6 +229,7 @@ lemma mulArchimedean_iff_subsingleton_finiteMulArchimedeanClass :
 namespace LinearOrderedCommGroup
 
 variable (α) in
+/-- The height of a totally ordered abelian group is the number of non-trivial convex subgroups. -/
 @[to_additive] noncomputable def height : ℕ∞ := .card (ConvexSubgroup α) - 1
 
 @[to_additive] theorem height_eq_card_subtype :
@@ -231,7 +237,14 @@ variable (α) in
   sorry
 
 theorem height_eq_zero_iff : LinearOrderedCommGroup.height α = 0 ↔ Subsingleton α := by
-  sorry
+    constructor <;> rw [height_eq_card_subtype]
+    · simp only [ne_eq, ENat.card_eq_zero_iff_empty]
+      sorry
+    · intro _
+      rw [ENat.card_eq_zero_iff_empty, isEmpty_iff]
+      simp only [ne_eq, Subtype.forall, imp_false, Decidable.not_not]
+      intro G
+      exact Subgroup.eq_bot_of_subsingleton G.toSubgroup
 
 end LinearOrderedCommGroup
 
@@ -266,12 +279,24 @@ lemma mulArchimedean_iff_exists_orderMonoidHom : MulArchimedean α ↔
     ⟨⟨⟨⟨f, f.map_zero⟩, f.map_add⟩, f.monotone'⟩, hf⟩
   mpr := fun ⟨f, hf⟩ ↦ .comap f.toMonoidHom (f.monotone'.strictMono_of_injective hf)
 
-lemma MulArchimedean.tfae : List.TFAE
+-- should replace this with the Bourbaki version below.
+lemma MulArchimedean.tfae' : List.TFAE
   [ MulArchimedean α,
     LinearOrderedCommGroup.height α ≤ 1,
     ∃ f : α →*o Multiplicative ℝ, Function.Injective f] := by
   tfae_have 1 ↔ 2 := mulArchimedean_iff_height_le_one
   tfae_have 1 ↔ 3 := mulArchimedean_iff_exists_orderMonoidHom
   tfae_finish
+
+/-- Equivalent characterisations for height 1. (Bourbaki, Eléments de mathématique. Fasc. XXX.
+Algèbre commutative. Chapitre 6: Valuations. §4 No5 proposition 8) -/
+lemma MulArchimedean.tfae (h : Nontrivial α) : List.TFAE
+  [ MulArchimedean α,
+    LinearOrderedCommGroup.height α = 1,
+    ∃ f : α →*o Multiplicative ℝ, Function.Injective f] := by
+  tfae_have 1 ↔ 2 := by sorry--mulArchimedean_iff_height_le_one
+  tfae_have 1 ↔ 3 := by sorry--mulArchimedean_iff_exists_orderMonoidHom
+  tfae_finish
+
 
 end
