@@ -468,11 +468,8 @@ theorem isCompact_iUnion {ι : Sort*} {f : ι → Set X} [Finite ι] (h : ∀ i,
 @[simp] theorem Set.Finite.isCompact (hs : s.Finite) : IsCompact s :=
   biUnion_of_singleton s ▸ hs.isCompact_biUnion fun _ _ => isCompact_singleton
 
-lemma isCompact_covers : ⋃₀ {(s : Set X) | IsCompact s} = univ := by
-  apply Set.eq_univ_of_forall
-  intro x
-  use {x}
-  simp
+@[simp] theorem Set.sUnion_isCompact_eq_univ : ⋃₀ {(s : Set X) | IsCompact s} = univ :=
+  eq_univ_of_forall <| fun x ↦ ⟨{x}, by simp⟩
 
 theorem IsCompact.finite_of_discrete [DiscreteTopology X] (hs : IsCompact s) : s.Finite := by
   have : ∀ x : X, ({x} : Set X) ∈ 𝓝 x := by simp [nhds_discrete]
