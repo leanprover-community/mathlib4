@@ -340,3 +340,11 @@ example (h : b ≈ a) : f a ≤ f b := by
   grw [h]
 
 end AntiSymmRelTest
+
+-- Test that `grw` works even in the presence of metadata.
+example (a b : Nat) (h : Nat → no_index (a ≤ b)) : a ≤ b := by
+  grw [h]
+  exact 0
+
+example (a b : Nat) (h : Nat → no_index (a ≤ b)) : a ≤ b := by
+  grw [h 0]
