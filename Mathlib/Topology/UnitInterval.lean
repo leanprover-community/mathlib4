@@ -320,6 +320,22 @@ theorem convexCombo_symm {a b : ℝ} (x y : Icc a b) (t : unitInterval) :
   simp [convexCombo]
   abel
 
+@[grind .]
+theorem le_convexCombo {a b : ℝ} {x y : Icc a b} (h : x ≤ y) (t : unitInterval) :
+    x ≤ convexCombo x y t := by
+  change (x : ℝ) ≤ _
+  change (x : ℝ) ≤ _ at h
+  simp [convexCombo]
+  nlinarith [t.2.1, t.2.2]
+
+@[grind .]
+theorem convexCombo_le {a b : ℝ} {x y : Icc a b} (h : x ≤ y) (t : unitInterval) :
+    convexCombo x y t ≤ y := by
+  change _ ≤ (y : ℝ)
+  change (x : ℝ) ≤ _ at h
+  simp [convexCombo]
+  nlinarith [t.2.1, t.2.2]
+
 /--
 Helper definition for `convexCombo_assoc`, giving one of the coefficients appearing
 when we reassociate a convex combination.
@@ -334,6 +350,7 @@ abbrev convexCombo_assoc_coeff₁ (s t : unitInterval) : unitInterval :=
       apply div_le_one_of_le₀
       · nlinarith [s.2.2]
       · nlinarith [s.2.2, t.2.2, t.2.1]⟩
+
 /--
 Helper definition for `convexCombo_assoc`, giving one of the coefficients appearing
 when we reassociate a convex combination.
@@ -360,6 +377,39 @@ theorem convexCombo_assoc {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
         grind
       field_simp
       ring_nf
+
+private theorem eq_convexCombo.zero_le {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y ≤ z) :
+    0 ≤ ((y - x) / (z - x) : ℝ) := by
+  by_cases h : (z - x : ℝ) = 0
+  · simp_all
+  · replace hxy : (x : ℝ) ≤ (y : ℝ) := hxy
+    replace hyz : (y : ℝ) ≤ (z : ℝ) := hyz
+    apply div_nonneg <;> grind
+
+private theorem eq_convexCombo.le_one {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y ≤ z) :
+    ((y - x) / (z - x) : ℝ) ≤ 1 := by
+  by_cases h : (z - x : ℝ) = 0
+  · simp_all
+  · replace hxy : (x : ℝ) ≤ (y : ℝ) := hxy
+    replace hyz : (y : ℝ) ≤ (z : ℝ) := hyz
+    apply div_le_one_of_le₀ <;> grind
+
+/--
+A point between two points in a closed interval
+can be expressed as a convex combination of them.
+-/
+theorem eq_convexCombo {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y ≤ z) :
+    y = convexCombo x z ⟨((y - x) / (z - x)),
+          eq_convexCombo.zero_le hxy hyz, eq_convexCombo.le_one hxy hyz⟩ := by
+  ext
+  simp only [coe_convexCombo]
+  by_cases h : (z - x : ℝ) = 0
+  · simp_all only [div_zero, sub_zero, one_mul, zero_mul, add_zero]
+    replace hxy : (x : ℝ) ≤ (y : ℝ) := hxy
+    replace hyz : (y : ℝ) ≤ (z : ℝ) := hyz
+    linarith
+  · field_simp
+    ring_nf
 
 end Set.Icc
 
