@@ -29,7 +29,7 @@ variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] 
 
 lemma MeromorphicAt.slope {f : 𝕜 → E} {a c : 𝕜}
     (hf : MeromorphicAt f c) : MeromorphicAt (slope f a) c :=
-  ((id c).sub (const a c)).inv.smul (hf.sub (const (f a) c)) 
+  ((id c).sub (const a c)).inv.smul (hf.sub (const (f a) c))
 
 lemma MeromorphicAt.dslope {f : 𝕜 → E} {a c : 𝕜}
     (hf : MeromorphicAt f c) : MeromorphicAt (dslope f a) c := by
