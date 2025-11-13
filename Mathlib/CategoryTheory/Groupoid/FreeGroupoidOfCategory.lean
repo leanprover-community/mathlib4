@@ -261,56 +261,56 @@ def freeForgetAdjunction : free ⊣ Grpd.forgetToCat :=
       homEquiv_naturality_left_symm _ _ := (FreeGroupoid.map_comp_lift _ _).symm
       homEquiv_naturality_right _ _ := rfl }
 
-variable {C : Type u} [Category.{u} C] {D : Type u} [Groupoid.{u} D]
+variable {C : Cat.{u, u}} {D : Grpd.{u, u}}
 
 lemma freeForgetAdjunction_homEquiv_apply (F : FreeGroupoid C ⥤ D) :
-    freeForgetAdjunction.homEquiv (Cat.of C) (Grpd.of D) F = FreeGroupoid.of C ⋙ F :=
+    freeForgetAdjunction.homEquiv C D F = FreeGroupoid.of C ⋙ F :=
   rfl
 
 @[simp]
 lemma freeForgetAdjunction_homEquiv_apply_obj (F : FreeGroupoid C ⥤ D) (X : C) :
-    (freeForgetAdjunction.homEquiv (Cat.of C) (Grpd.of D) F).obj X = F.obj (mk X) :=
+    (freeForgetAdjunction.homEquiv C D F).obj X = F.obj (mk X) :=
   rfl
 
 @[simp]
 lemma freeForgetAdjunction_homEquiv_apply_map (F : FreeGroupoid C ⥤ D) {X Y : C} (f : X ⟶ Y) :
-    (freeForgetAdjunction.homEquiv (Cat.of C) (Grpd.of D) F).map f = F.map (homMk f) :=
+    (freeForgetAdjunction.homEquiv C D F).map f = F.map (homMk f) :=
   rfl
 
 lemma freeForgetAdjunction_homEquiv_symm_apply (F : C ⥤ D) :
-    (freeForgetAdjunction.homEquiv (Cat.of C) (Grpd.of D)).symm F = FreeGroupoid.lift F := by
+    (freeForgetAdjunction.homEquiv C D).symm F = FreeGroupoid.lift F := by
   simp [freeForgetAdjunction, functorEquiv]
 
 @[simp]
 lemma freeForgetAdjunction_homEquiv_symm_apply_obj (F : C ⥤ D) (X : C) :
-    ((freeForgetAdjunction.homEquiv (Cat.of C) (Grpd.of D)).symm F).obj (mk X) =
+    ((freeForgetAdjunction.homEquiv C D).symm F).obj (mk X) =
     F.obj X :=
   rfl
 
 @[simp]
 lemma freeForgetAdjunction_homEquiv_symm_apply_map (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) :
-    ((freeForgetAdjunction.homEquiv (Cat.of C) (Grpd.of D)).symm F).map (homMk f) =
+    ((freeForgetAdjunction.homEquiv C D).symm F).map (homMk f) =
     F.map f := by
   simpa using Functor.congr_hom (freeForgetAdjunction_homEquiv_symm_apply F) (homMk f)
 
 @[simp]
 lemma freeForgetAdjunction_unit_app_obj (X : C) :
-    (freeForgetAdjunction.unit.app (Cat.of C)).obj X = mk X :=
+    (freeForgetAdjunction.unit.app C).obj X = mk X :=
   rfl
 
 @[simp]
 lemma freeForgetAdjunction_unit_app_map {X Y : C} (f : X ⟶ Y) :
-    (freeForgetAdjunction.unit.app (Cat.of C)).map f = homMk f :=
+    (freeForgetAdjunction.unit.app C).map f = homMk f :=
   rfl
 
 @[simp]
 lemma freeForgetAdjunction_counit_app_obj_mk (X : D) :
-    (freeForgetAdjunction.counit.app (Grpd.of D)).obj (.mk X) = X :=
+    (freeForgetAdjunction.counit.app D).obj (.mk X) = X :=
   rfl
 
 @[simp]
 lemma freeForgetAdjunction_counit_app_map_homMk {X Y : D} (f : X ⟶ Y) :
-    (freeForgetAdjunction.counit.app (Grpd.of D)).map (homMk f) = f := by
+    (freeForgetAdjunction.counit.app D).map (homMk f) = f := by
   simp [freeForgetAdjunction, functorEquiv]
 
 instance : Reflective Grpd.forgetToCat where
