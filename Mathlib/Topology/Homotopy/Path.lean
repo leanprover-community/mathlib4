@@ -288,6 +288,14 @@ theorem exact {p q : Path x₀ x₁} (h : Quotient.mk p = Quotient.mk q) :
 theorem eq {p q : Path x₀ x₁} : mk p = mk q ↔ Homotopic p q :=
   _root_.Quotient.eq
 
+/--
+A reasoning principle for quotients that allows proofs about quotients to assume that all values are
+constructed with `Quotient.mk`.
+-/
+protected theorem ind {x y : X} {motive : Homotopic.Quotient x y → Prop} :
+    (mk : (a : Path x y) → motive (Quotient.mk a)) → (q : Homotopic.Quotient x y) → motive q :=
+  Quot.ind
+
 /-- The composition of path homotopy classes. This is `Path.trans` descended to the quotient. -/
 def trans (P₀ : Path.Homotopic.Quotient x₀ x₁) (P₁ : Path.Homotopic.Quotient x₁ x₂) :
     Path.Homotopic.Quotient x₀ x₂ :=
@@ -296,6 +304,7 @@ def trans (P₀ : Path.Homotopic.Quotient x₀ x₁) (P₁ : Path.Homotopic.Quot
 @[deprecated (since := "2025-11-13")]
 noncomputable alias _root_.Path.Homotopic.comp := Quotient.trans
 
+@[simp, grind =]
 theorem mk_trans (P₀ : Path x₀ x₁) (P₁ : Path x₁ x₂) :
     mk (P₀.trans P₁) = Quotient.trans (mk P₀) (mk P₁) :=
   rfl

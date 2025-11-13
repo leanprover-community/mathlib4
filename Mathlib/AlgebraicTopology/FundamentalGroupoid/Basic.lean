@@ -196,6 +196,30 @@ end Assoc
 
 end Homotopy
 
+namespace Homotopic
+
+theorem trans_assoc {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : Path x₁ x₂) (r : Path x₂ x₃) :
+    ((p.trans q).trans r).Homotopic (p.trans (q.trans r)) :=
+  ⟨Homotopy.transAssoc p q r⟩
+
+namespace Quotient
+
+@[simp, grind _=_]
+theorem trans_assoc {x₀ x₁ x₂ x₃ : X}
+    (γ₀ : Homotopic.Quotient x₀ x₁)
+    (γ₁ : Homotopic.Quotient x₁ x₂)
+    (γ₂ : Homotopic.Quotient x₂ x₃) :
+    trans (trans γ₀ γ₁) γ₂ = trans γ₀ (trans γ₁ γ₂) := by
+  induction γ₀ using Quotient.ind with | mk γ₀ =>
+  induction γ₁ using Quotient.ind with | mk γ₁ =>
+  induction γ₂ using Quotient.ind with | mk γ₂ =>
+  simp only [← mk_trans, eq]
+  exact Homotopic.trans_assoc γ₀ γ₁ γ₂
+
+end Quotient
+
+end Homotopic
+
 end Path
 
 /-- The fundamental groupoid of a space `X` is defined to be a wrapper around `X`, and we
