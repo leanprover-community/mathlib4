@@ -357,6 +357,17 @@ instance : IsIso φ.hom₃ := (inferInstance : IsIso (π₃.map φ))
 
 end
 
+/-- Constructor for functors to the category of triangles. -/
+@[simps]
+def functorMk {J : Type*} [Category J] {obj₁ obj₂ obj₃ : J ⥤ C}
+    (mor₁ : obj₁ ⟶ obj₂) (mor₂ : obj₂ ⟶ obj₃) (mor₃ : obj₃ ⟶ obj₁ ⋙ shiftFunctor C (1 : ℤ)) :
+    J ⥤ Triangle C where
+  obj j := mk (mor₁.app j) (mor₂.app j) (mor₃.app j)
+  map φ :=
+    { hom₁ := obj₁.map φ
+      hom₂ := obj₂.map φ
+      hom₃ := obj₃.map φ }
+
 end Triangle
 
 end CategoryTheory.Pretriangulated
