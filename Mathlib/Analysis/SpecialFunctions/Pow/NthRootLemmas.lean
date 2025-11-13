@@ -135,7 +135,7 @@ private theorem nthRoot.always_exists (n a : ℕ) :
     calc
       c ^ (n + 1) = (c - 1 + 1) ^ (n + 1) := by
                   congr
-                  simp
+                  exact (Nat.sub_eq_iff_eq_add hpos).mp rfl
                 _ ≤ a := by
                   rw [← Nat.not_gt_eq _ _]
                   apply Nat.find_min H
