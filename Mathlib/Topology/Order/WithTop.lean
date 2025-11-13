@@ -120,13 +120,11 @@ instance [ts : TopologicalSpace ι] [ht : OrderTopology ι] [SecondCountableTopo
             · exact f_fin
             · intro i hi
               apply isOpen_generateFrom_of_mem
-              simp [d]
               grind
           · apply @Finite.isOpen_biInter _ _ (generateFrom {s | ∃ a ∈ d, s = Ioi a ∨ s = Iio a})
             · exact g_fin
             · intro i hi
               apply isOpen_generateFrom_of_mem
-              simp [d]
               grind
   -- Consider an interval of the form `Iio a`. We should cover it by finite intersections of
   -- our sets.
@@ -165,13 +163,11 @@ instance [ts : TopologicalSpace ι] [ht : OrderTopology ι] [SecondCountableTopo
             · exact f_fin
             · intro i hi
               apply isOpen_generateFrom_of_mem
-              simp [d]
               grind
           · apply @Finite.isOpen_biInter _ _ (generateFrom {s | ∃ a ∈ d, s = Ioi a ∨ s = Iio a})
             · exact g_fin
             · intro i hi
               apply isOpen_generateFrom_of_mem
-              simp [d]
               grind
 
 end TopologicalSpace
