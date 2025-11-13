@@ -4,13 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas R. Murrills
 -/
 import Mathlib.Init
-import Mathlib.Data.String.Defs
 import Mathlib.Tactic.Lemma
 import Batteries
 import Qq
 
 /-!
-# Unused `Decidable*` hypotheses linter
+# Unused Instance Hypotheses Linters
+
+This file
 
 This linter a declaration's type for `Decidable*` instance hypotheses which are not used in the
 statement's type, and could therefore be replaced by `classical` in the proof.
@@ -142,16 +143,20 @@ def _root_.Lean.Syntax.hasRange (stx : Syntax) (range : String.Range) (canonical
   stx.getRange? canonicalOnly |>.map (· == range) |>.getD false
 
 
+#print Parser.Command.namedPrio
 
-
-private def Lean.Elab.InfoTree.withDeclSigRef {m : Type → Type} [Monad m] [MonadRef m] {α} (cmd : Syntax)
-    (t : InfoTree) (decl : Name) (x : m α) : m α := withRef cmd do
+private def Lean.Elab.InfoTree.withDeclSigRef {m : Type → Type} [Monad m] [MonadRef m] {α}
+    (cmd : Syntax) (t : InfoTree) (decl : Name) (x : m α) : m α := withRef cmd do
   let some idRef := t.getConstRef? decl | x
   let sigRef? := cmd.findSome? fun
     | `(Parser.Command.theorem| theorem $id$[.{$_,*}]? $sig:declSig $_:declVal)
     | `(«lemma»| lemma $id$[.{$_,*}]? $sig:declSig $_:declVal)
-    | `(Parser.Command.instance| $_:attrKind instance $_:optNamedPrio $id$[.{$_,*}]? >> ppIndent declSig >> declVal )=>
+    | `(Parser.Command.instance| $_:attrKind instance $[$_:namedPrio]?
+        $id$[.{$_,*}]? $sig:declSig $_:declVal) =>
       if id.raw.rangeEq idRef then sig else none
+    -- When no `declId` is present, Lean uses the position information for the `instance` token.
+    | `(Parser.Command.instance| $_:attrKind instance%$tk $[$_:namedPrio]?
+        $sig:declSig $_:declVal) => if tk.rangeEq idRef then sig else none
     -- TODO: handle `let rec` decls (after `where`), handle defs etc.
     | _ => none
   -- Fall back to `idRef` if `sigRef` is not found or has no position info.
@@ -184,16 +189,6 @@ def isDecidableVariant (type : Expr) : Bool :=
     n == ``DecidableRel  ||
     n == ``DecidablePred ||
     n == ``Decidable
-
-class Foo : Prop where
-  x : 0 = 0
-
-instance : Foo := ⟨rfl⟩
-
-run_cmd do
-  let some info := (← getEnv).findAsync? ``instFoo | throwError "aa"
-  logInfo m!"{info.kind matches .thm}"
-
 
 
 /--
