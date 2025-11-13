@@ -64,7 +64,7 @@ section General
 
 /-! ### 𝔖-Topologies -/
 
-variable {𝕜 𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] (σ : 𝕜₁ →+* 𝕜₂) {E F : Type*}
+variable {𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] (σ : 𝕜₁ →+* 𝕜₂) {E F : Type*}
   [AddCommGroup E] [Module 𝕜₁ E] [TopologicalSpace E]
   [AddCommGroup F] [Module 𝕜₂ F]
 variable (F)
