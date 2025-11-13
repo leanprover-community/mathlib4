@@ -156,16 +156,13 @@ variable [CompleteSpace E] [CompleteSpace F]
 Version where the multiplication is replaced by a general bilinear form `M`. -/
 theorem integral_bilin_fourierIntegral_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L[ℂ] F →L[ℂ] G) :
     ∫ ξ, M (𝓕 f ξ) (g ξ) = ∫ x, M (f x) (𝓕 g x) := by
-  have := VectorFourier.integral_bilin_fourierIntegral_eq_flip M (μ := volume) (ν := volume)
-    (L := (innerₗ V)) continuous_fourierChar continuous_inner f.integrable g.integrable
-  rwa [flip_innerₗ] at this
+  simpa using VectorFourier.integral_bilin_fourierIntegral_eq_flip M (L := (innerₗ V))
+    continuous_fourierChar continuous_inner f.integrable g.integrable
 
 theorem integral_sesq_fourierIntegral_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L⋆[ℂ] F →L[ℂ] G) :
     ∫ ξ, M (𝓕 f ξ) (g ξ) = ∫ x, M (f x) (𝓕⁻ g x) := by
-  have := VectorFourier.integral_sesq_fourierIntegral_eq_neg_flip M (μ := volume) (ν := volume)
+  simpa [fourierInv_coe] using VectorFourier.integral_sesq_fourierIntegral_eq_neg_flip M
     (L := (innerₗ V)) continuous_fourierChar continuous_inner f.integrable g.integrable
-  rw [flip_innerₗ] at this
-  simpa [fourierInv_coe]
 
 /-- Plancherel's theorem for Schwartz functions.
 
@@ -188,9 +185,8 @@ theorem integral_inner_fourier_fourier (f g : 𝓢(V, H)) :
 theorem integral_norm_sq_fourier (f : 𝓢(V, H)) :
     ∫ ξ, ‖𝓕 f ξ‖^2 = ∫ x, ‖f x‖^2 := by
   apply Complex.ofRealLI.injective
-  simp only [← LinearIsometry.integral_comp_comm]
-  convert integral_inner_fourier_fourier f f <;>
-  simp [inner_self_eq_norm_sq_to_K]
+  simpa [← LinearIsometry.integral_comp_comm, inner_self_eq_norm_sq_to_K] using
+    integral_inner_fourier_fourier f f
 
 theorem inner_fourier_toL2_eq (f : 𝓢(V, H)) :
     ⟪(𝓕 f).toLp 2, (𝓕 f).toLp 2⟫ =
