@@ -759,10 +759,7 @@ theorem stoppedProcess_eq_of_ge {i : ι} {ω : Ω} (h : τ ω ≤ i) :
 lemma stoppedProcess_indicator_comm [Zero β] {s : Set Ω} (i : ι) :
     stoppedProcess (fun i ↦ s.indicator (u i)) τ i = s.indicator (stoppedProcess u τ i) := by
   ext ω
-  rw [Set.indicator]
-  split_ifs with hω
-  · rw [stoppedProcess, Set.indicator_of_mem hω, stoppedProcess]
-  · rw [stoppedProcess, Set.indicator_of_notMem hω]
+  by_cases hω : ω ∈ s <;> simp [stoppedProcess, hω]
 
 lemma stoppedProcess_indicator_comm' [Zero β] {s : Set Ω} :
     stoppedProcess (fun i ↦ s.indicator (u i)) τ = fun i ↦ s.indicator (stoppedProcess u τ i) := by
@@ -777,35 +774,33 @@ theorem stoppedValue_stoppedProcess_apply {ω : Ω} (hω : σ ω ≠ ⊤) :
 theorem stoppedProcess_stoppedProcess :
     stoppedProcess (stoppedProcess u τ) σ = stoppedProcess u (σ ⊓ τ) := by
   ext i ω
-  rw [stoppedProcess, stoppedProcess, stoppedProcess]
+  simp_rw [stoppedProcess]
   by_cases hτ : τ ω = ⊤
-  · simp only [hτ, le_top, inf_of_le_left, WithTop.untopD_coe, Pi.inf_apply]
+  · simp [hτ]
   by_cases hσ : σ ω = ⊤
-  · simp only [hσ, le_top, inf_of_le_left, WithTop.untopD_coe, Pi.inf_apply, inf_of_le_right]
+  · simp [hσ]
   by_cases hστ : σ ω ≤ τ ω
   · rw [min_eq_left, WithTop.untopA_eq_untop (lt_of_le_of_lt ((min_le_right _ _).trans hστ) <|
         WithTop.lt_top_iff_ne_top.2 hτ).ne, WithTop.coe_untop]
-    · simp only [Pi.inf_apply, hστ, inf_of_le_left]
+    · simp [hστ]
     · refine le_trans ?_ hστ
       rw [WithTop.untopA_eq_untop (lt_of_le_of_lt ((min_le_right _ _).trans hστ) <|
         WithTop.lt_top_iff_ne_top.2 hτ).ne, WithTop.coe_untop]
       exact min_le_right _ _
-  · nth_rewrite 2 [WithTop.untopA_eq_untop ]
+  · nth_rewrite 2 [WithTop.untopA_eq_untop]
     · rw [WithTop.coe_untop, min_assoc]
       rfl
     · exact (lt_of_le_of_lt (min_le_right _ _) <| WithTop.lt_top_iff_ne_top.2 hσ).ne
 
 theorem stoppedProcess_stoppedProcess' :
     stoppedProcess (stoppedProcess u τ) σ = stoppedProcess u (fun ω ↦ min (σ ω) (τ ω)) := by
-  simp; rfl
+  rw [stoppedProcess_stoppedProcess]; rfl
 
 theorem stoppedProcess_stoppedProcess_of_le_right (h : σ ≤ τ) :
-    stoppedProcess (stoppedProcess u τ) σ = stoppedProcess u σ := by
-  rw [stoppedProcess_stoppedProcess, inf_of_le_left h]
+    stoppedProcess (stoppedProcess u τ) σ = stoppedProcess u σ := by simp [h]
 
 theorem stoppedProcess_stoppedProcess_of_le_left (h : τ ≤ σ) :
-    stoppedProcess (stoppedProcess u τ) σ = stoppedProcess u τ := by
-  rw [stoppedProcess_stoppedProcess, inf_of_le_right h]
+    stoppedProcess (stoppedProcess u τ) σ = stoppedProcess u τ := by simp [h]
 
 section ProgMeasurable
 
