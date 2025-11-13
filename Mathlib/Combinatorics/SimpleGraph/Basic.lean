@@ -602,6 +602,8 @@ theorem fromEdgeSet_empty : fromEdgeSet (∅ : Set (Sym2 V)) = ⊥ := by
   ext v w
   simp only [fromEdgeSet_adj, Set.mem_empty_iff_false, false_and, bot_adj]
 
+@[simp] lemma fromEdgeSet_not_isDiag : fromEdgeSet {e : Sym2 V | ¬ e.IsDiag} = ⊤ := by ext; simp
+
 @[simp]
 theorem fromEdgeSet_univ : fromEdgeSet (Set.univ : Set (Sym2 V)) = ⊤ := by
   ext v w
