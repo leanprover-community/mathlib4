@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Triangulated.Functor
 # Spectral objects in triangulated categories
 
 In this file, we introduce the category `SpectralObject C ι` of spectral
-objects in the pretriangulated category `C` indexed by the category `ι`.
+objects in a pretriangulated category `C` indexed by the category `ι`.
 
 ## TODO (@joelriou)
 * construct the spectral object indexed by `WithTop (WithBot ℤ)` consisting
