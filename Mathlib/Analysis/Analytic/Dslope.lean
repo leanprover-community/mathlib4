@@ -8,7 +8,7 @@ import Mathlib.Analysis.Meromorphic.Basic
 import Mathlib.Analysis.Meromorphic.Order
 
 /-!
-# Analyticity of dslope 
+# Analyticity of dslope
 
 ``dslope`` is defined in ``Mathlib.Analysis.Calculus.DSlope``
 
@@ -18,15 +18,15 @@ where
 
 	``slope f a b = (b - a)⁻¹ • (f b -ᵥ f a)``
 
-We show in ``AnalyticOnNhd.dslope`` that if ``f`` is analytic on a set 
-then for any ``a`` the function ``dslope f a`` is analytic on the same 
-set. 
+We show in ``AnalyticOnNhd.dslope`` that if ``f`` is analytic on a set
+then for any ``a`` the function ``dslope f a`` is analytic on the same
+set.
 
 -/
 
 
 universe u_1 u_2
-variable {𝕜 : Type u_1} {E : Type u_2} [NontriviallyNormedField 𝕜] 
+variable {𝕜 : Type u_1} {E : Type u_2} [NontriviallyNormedField 𝕜]
 variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 
 lemma MeromorphicAt.slope {f : 𝕜 → E} {a c : 𝕜}
