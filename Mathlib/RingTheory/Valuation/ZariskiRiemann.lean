@@ -15,9 +15,10 @@ import Mathlib.RingTheory.Valuation.ValuationSubring
 
 We show that the Zariski–Riemann space of a finitely generated extension K of
 transcendence degree 1 over k (a function field of 1 variable) is proper scheme over k.
+This can be considered "resolution of singularities for curves".
 -/
 
-variable (R k K : Type*) [CommSemiring R] [Field k] [Field K] [Algebra R K] [Algebra k K]
+variable (R k K : Type*) [CommRing R] [Field k] [Field K] [Algebra R K] [Algebra k K]
 
 open IntermediateField AlgebraicGeometry TopologicalSpace
 
@@ -43,6 +44,9 @@ instance : SMulMemClass (Place R K) R K where
 
 instance : SubringClass (Place R K) K := sorry
 
+instance (v : Place R K) : HasMemOrInvMem v where
+  mem_or_inv_mem := v.mem_or_inv_mem'
+
 variable {k K} in
 theorem Place.integralClosure_le (v : Place k K) : integralClosure k K ≤ v.toSubalgebra := by
   intro z hz
@@ -56,41 +60,148 @@ instance : TopologicalSpace (Place R K) :=
 /- Later refactoring: consider define topology on `ValuationSubring K`
 and take induced topology from there. -/
 
-theorem closure_genericPoint : closure {genericPoint k K} = .univ := by
-  sorry
-
 variable {K} in
 /- This is analogous to `D(f)` in Zariski topology because `f ∈ v ↔ f⁻¹ ∉ 𝔪ᵥ`.
 But we no longer have `D(f * g) = D(f) ∩ D(g)`, so these form a subbasis, not a basis. -/
-def basicOpen (f : K) : Opens (Place R K) where
-  carrier := {v | f ∈ v}
+def basicOpen (s : Finset K) : Opens (Place R K) where
+  carrier := {v | (s : Set K) ⊆ v}
   is_open' := by sorry
 
-theorem basicOpen_eq_top_iff {f : K} : basicOpen k f = ⊤ ↔ IsAlgebraic k f := by
+theorem basicOpen_eq_top_iff {s : Finset K} :
+    basicOpen R s = ⊤ ↔ (s : Set K) ⊆ integralClosure R K := by
   sorry
 
-/- should be true but not part of this project
+theorem basicOpen_union [DecidableEq K] {s t : Finset K} :
+    basicOpen R (s ∪ t) = basicOpen R s ⊓ basicOpen R t := by
+  sorry
+
+theorem isTopologicalBasis :
+    IsTopologicalBasis (α := Place R K) {basicOpen R s | s : Finset K} := by
+  sorry
+
+section Compact
+
+/-! We shall prove that the Zariski–Riemann space `Place R K` is a (quasi-)compact space,
+following the proof of GTM 29, Commutative Algebra II by Zariski and Samuel, Theorem 40 on p. 113.
+
+I find that it is better to use Bool instead of SignType {-,0,+} for this proof, as
+`ofPlace` is not injective with {-,0,+} (though we only need surjectivity to deduce compactness). -/
+
+/-- The subset in 2^K corresponding to valuation rings in K containing R. -/
+def placeSet : Set (K → Bool) :=
+  (⋂ xy : K × K, (· xy.1) ⁻¹' {false} ∪ (· xy.2) ⁻¹' {false} ∪
+    (· (xy.1 + xy.2)) ⁻¹' {true} ∩ (· (xy.1 * xy.2)) ⁻¹' {true}) ∩
+  (⋂ x : K, (· x) ⁻¹' {false} ∪ (· (- x)) ⁻¹' {true}) ∩
+  (⋂ x : R, (· (algebraMap R K x)) ⁻¹' {true}) ∩
+  (⋂ x ≠ (0 : K), (· x) ⁻¹' {true} ∪ (· x⁻¹) ⁻¹' {true})
+
+variable (s : Set K)
+
+variable {K} in
+/-- The subset in `placeSet R K` corresponding to valuation rings in K containing R and s. -/
+def placeSet' : Set (placeSet R K) := Subtype.val ⁻¹' (⋂ x ∈ s, (· x) ⁻¹' {true})
+
+theorem isClosed_placeSet : IsClosed (placeSet R K) := by
+  refine (((isClosed_iInter fun xy ↦ .union (.union ?_ ?_) (.inter ?_ ?_)).inter
+    (isClosed_iInter fun x ↦ .union ?_ ?_)).inter <| isClosed_iInter fun x ↦ ?_).inter
+    (isClosed_biInter fun x hx ↦ .union ?_ ?_)
+  all_goals exact (isClosed_discrete _).preimage (continuous_apply _)
+
+theorem isClosed_placeSet' : IsClosed (placeSet' R s) := by
+  sorry
+
+variable {R K}
+
+theorem mem_placeSet_iff {v} : v ∈ placeSet R K ↔
+    (∀ ⦃x y⦄, v x = true → v y = true → v (x + y) = true ∧ v (x * y) = true) ∧
+    (∀ ⦃x⦄, v x = true → v (- x) = true) ∧
+    (∀ x, v (algebraMap R K x) = true) ∧
+    (∀ ⦃x⦄, x ≠ 0 → v x = true ∨ v x⁻¹ = true) := by
+  simp_rw [placeSet, Set.mem_inter_iff, Set.mem_iInter, and_assoc]; congr! <;>
+    simp [or_iff_not_imp_left]
+
+variable (R K)
+
+namespace Place
+
+def ofPlaceSet (v : placeSet R K) : Place R K where
+  carrier := {f | v.1 f = true}
+  mul_mem' hf hg := ((mem_placeSet_iff.mp v.2).1 hf hg).2
+  add_mem' hf hg := ((mem_placeSet_iff.mp v.2).1 hf hg).1
+  algebraMap_mem' := (mem_placeSet_iff.mp v.2).2.2.1
+  neg_mem' h := (mem_placeSet_iff.mp v.2).2.1 h
+  mem_or_inv_mem' x := by
+    obtain rfl | ne := eq_or_ne x 0
+    · rw [← map_zero (algebraMap R K)]; exact .inl ((mem_placeSet_iff.mp v.2).2.2.1 _)
+    · exact (mem_placeSet_iff.mp v.2).2.2.2 ne
+
+@[simp] theorem mem_ofPlaceSet_iff {v : placeSet R K} {f : K} :
+    f ∈ ofPlaceSet R K v ↔ v.1 f = true := .rfl
+
+theorem continuous_ofPlaceSet : Continuous (ofPlaceSet R K) :=
+  continuous_generateFrom_iff.mpr <| by
+    rintro _ ⟨f, rfl⟩
+    exact isOpen_induced ((isOpen_discrete {true}).preimage (continuous_apply (A := fun _ ↦ _) f))
+
+variable {R K} in
+noncomputable def toPlaceSet (v : Place R K) : placeSet R K where
+  val f := by classical exact Decidable.decide (f ∈ v)
+  property := mem_placeSet_iff.mpr <| by simp+contextual [add_mem, mul_mem, mem_or_inv_mem]
+
+theorem ofPlaceSet_bijective : (ofPlaceSet R K).Bijective :=
+  ⟨fun v₁ v₂ eq ↦ Subtype.ext (funext <| by simpa using SetLike.ext_iff.mp eq),
+    fun v ↦ ⟨v.toPlaceSet, SetLike.ext <| by simp [toPlaceSet]⟩⟩
+
+theorem preimage_ofPlaceSet_basicOpen (s : Finset K) :
+    ofPlaceSet R K ⁻¹' basicOpen R s = placeSet' R s := by
+  sorry
+
+theorem image_placeSet' (s : Finset K) : ofPlaceSet R K '' placeSet' R s = basicOpen R s := by
+  rw [← preimage_ofPlaceSet_basicOpen,
+    Set.image_preimage_eq _ (ofPlaceSet_bijective R K).surjective]
+
+end Place
+
+end Compact
+
+instance : CompactSpace (Place R K) := by
+  rw [← isCompact_univ_iff, ← (Place.ofPlaceSet_bijective ..).2.range_eq]
+  have := isCompact_iff_compactSpace.mp (isClosed_placeSet R K).isCompact
+  exact isCompact_range (Place.continuous_ofPlaceSet R K)
+
+instance : QuasiSeparatedSpace (Place R K) := by
+  refine .of_isTopologicalBasis (isTopologicalBasis R K) fun s t ↦ ?_
+  sorry -- use `basicOpen_union`, reduce to showing `basicOpen R (s ∪ t)` is compact
+
+/- not part of this project, see p.2 of
+https://scispace.com/pdf/some-closure-operations-in-zariski-riemann-spaces-of-7bx8on35dg.pdf
+See https://arxiv.org/pdf/1309.5190 Corollary 3.3 for a proof based on ultrafilters. -/
 instance : SpectralSpace (Place R K) := by
+  sorry
+
+-- Every nonempty open set contains the generic point.
+theorem closure_genericPoint : closure {genericPoint k K} = .univ := by
   sorry
 
 instance : IrreducibleSpace (Place R K) := by
   sorry
 
--- show all sections are domains (easy)
--- mathlib doesn't have definition of integral scheme?
--/
-
 def Place.locallyRingedSpace : LocallyRingedSpace where
   carrier := .of (Place R K)
   presheaf :=
   { -- sections over an open set is the intersection of all places in the set
-    obj U := .of ↥(⨅ v : U.1, v.1.toValuationSubring.toSubring)
+    obj U := .of ↥(⨅ v : U.1, v.1.toSubalgebra)
     map := sorry
     map_id := sorry, map_comp := sorry /- may be automatic -/ }
   IsSheaf := sorry
   isLocalRing := sorry
+  /- Show the stalk at a place is isomorphic to the valuation subring.
+    In general, a direct limit of inclusions is the union.
+    If an element `f` is in a valuation subring, it is also in each valuation subring
+    in the neighborhood `basicOpen R f`. -/
 
--- show every section has k-algebra structure
+-- show all sections are domains with k-algebra structure (easy)
+-- mathlib doesn't have definition of integral scheme?
 -- compute global sections = integral (algebraic) closure of k in K
 
 end Algebra
@@ -119,9 +230,21 @@ def scheme : Scheme where
   local_affine := sorry
   /- Sketch: show `basicOpen k f` for transcendental `f` is isomorphic to Spec B,
     where B is the integral closure of k[f] in K, c.f. [Hartshorne, Lemma I.6.5].
-    The map to Spec B can be constructed using Gamma-Spec adjunction. -/
+    The map to Spec B can be constructed using Gamma-Spec adjunction.
 
-section Scheme
+    B is a Dedekind domain by [Hartshorne, Theorem I.6.3A] (a corollary of Krull–Akizuki,
+    https://stacks.math.columbia.edu/tag/00PG).
+    IsIntegralClosure.isDedekindDomain is a version with extra separability assumption.
+    finiteness + integrally closed implies Dedekind in this case.
+    Dedekind connects to regularity, smoothness → resolution of singularity. -/
+
+instance : CompactSpace (scheme k K) := inferInstanceAs <| CompactSpace <| Place k K
+
+instance : QuasiSeparatedSpace (scheme k K) := inferInstanceAs <| QuasiSeparatedSpace <| Place k K
+
+-- In fact the complement of every basic open is finite, see [Hartshorne, Lemma I.6.5].
+
+section SameUniverse
 
 universe u
 
@@ -131,19 +254,24 @@ def structureMorphism : scheme k K ⟶ Spec (.of k) := sorry
 -- use Gamma-Spec adjunction
 -- the locallyRingedSpace version should also satisfy the valuative criterion
 
-instance : QuasiCompact (structureMorphism k K) := by
-  sorry
+instance : QuasiCompact (structureMorphism k K) :=
+  (quasiCompact_iff_compactSpace _).mpr inferInstance
 
-instance : QuasiSeparated (structureMorphism k K) := by
-  sorry
+instance : QuasiSeparated (structureMorphism k K) :=
+  (quasiSeparated_iff_quasiSeparatedSpace _).mpr inferInstance
 
 instance : LocallyOfFiniteType (structureMorphism k K) := by
-  sorry -- requires Krull–Akizuki, which we may assume.
-  -- IsIntegralClosure.finite is a version with extra separability assumption
+  sorry -- requires [Hartshorne, Theorem I.3.9A] (finiteness of integral closure)
+  -- It's better to prove the more general result https://stacks.math.columbia.edu/tag/032O
 
 instance : IsProper (structureMorphism k K) := .of_valuativeCriterion _ <| by
   sorry
 
-end Scheme
+/- Following [Hartshorne, Theorem I.6.9] it is possible to show `Place.scheme k K`
+is in fact projective over `k`. -/
+
+end SameUniverse
+
+end Place
 
 end Algebra

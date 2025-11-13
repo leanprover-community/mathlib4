@@ -230,7 +230,7 @@ instance : Algebra.IsAlgebraic E K(X) := by
 def IntermediateField.minpolyX : E[X] :=
   minpoly E (X : K[X]).toRatFunc
 
--- TODO: fill in more details here
+-- TODO: fill in more details here from [Cohn] and [Jacobson]
 
 theorem luroth : ∃ f : K(X), Transcendental K f ∧ E = K⟮f⟯ := by
   sorry

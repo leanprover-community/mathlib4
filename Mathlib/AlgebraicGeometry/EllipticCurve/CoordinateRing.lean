@@ -24,6 +24,8 @@ abbrev Polynomial.toRatFunc {R} [CommRing R] : R[X] →+* FractionRing R[X] :=
   algebraMap ..
 
 namespace WeierstrassCurve.Affine
+/- A type synonym of WeierstrassCurve to give access to affine versions of the Weierstrass
+polynomial and coordinate ring, etc. -/
 
 variable {K : Type*} [Field K] (E : WeierstrassCurve.Affine K)
 
