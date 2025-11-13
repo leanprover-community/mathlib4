@@ -97,21 +97,23 @@ section
 
 open Polynomial
 
-variable (n : Type*) [Fintype n] (R : Type*) [CommRing R] [IsDomain R]
+variable (n : Type*) [Finite n] (R : Type*) [CommRing R] [IsDomain R]
 
 /-- The quadratic polynomial $$\sum_{i=1}^n X_i Y_i$$. -/
 noncomputable def sum_X_mul_Y : MvPolynomial (n ⊕ n) R :=
-  ∑ i : n, MvPolynomial.X (Sum.inl i) * MvPolynomial.X (Sum.inr i)
+  ∑ᶠ i, MvPolynomial.X (Sum.inl i) * MvPolynomial.X (Sum.inr i)
 
-theorem irreducible_sum_X_mul_Y (h : Nontrivial n) :
+theorem irreducible_sum_X_mul_Y [Nontrivial n] :
     Irreducible (sum_X_mul_Y n R) := by
-  classical
+  have : DecidableEq n := Classical.typeDecidableEq n
+  have : Fintype n := Fintype.ofFinite n
   let p := ∑ x : n,
     MvPolynomial.X (R := MvPolynomial n R) x * MvPolynomial.C ( (MvPolynomial.X (R := R) x))
   let e := sumRingEquiv R n n
-  have : e (sum_X_mul_Y n R) = p := by simp [e, p, sum_X_mul_Y, sumRingEquiv]
+  have : e (sum_X_mul_Y n R) = p := by
+    simp [finsum_eq_sum_of_fintype, e, p, sum_X_mul_Y, sumRingEquiv]
   rw [← MulEquiv.irreducible_iff e, this]
-  obtain ⟨i, j, hij⟩ := h
+  obtain ⟨i, j, hij⟩ := exists_pair_ne n
   set S := MvPolynomial { x // x ≠ i } (MvPolynomial n R)
   set f : MvPolynomial n (MvPolynomial n R) ≃ₐ[R] S[X] :=
     ((renameEquiv (MvPolynomial n R) (Equiv.optionSubtypeNe i).symm).trans
