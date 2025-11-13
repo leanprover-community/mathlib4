@@ -114,7 +114,7 @@ lemma Hom.ext (f g : a ⟶ b) (hfg₁ : f.base = g.base)
     (hfg₂ : eqToHom (hfg₁ ▸ rfl) ≫ f.fiber = g.fiber) : f = g := by
   cases f; cases g
   dsimp at hfg₁ hfg₂
-  aesop_cat
+  cat_disch
 
 lemma Hom.ext_iff (f g : a ⟶ b) :
     f = g ↔ ∃ (hfg : f.base = g.base), eqToHom (hfg ▸ rfl) ≫ f.fiber = g.fiber where
