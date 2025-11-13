@@ -341,6 +341,33 @@ instance : IsOrderedAddMonoid (locallyFinsuppWithin U Y) where
   add_le_add_left := fun _ _ _ _ ↦ by simpa [le_def]
 
 /--
+The positive part of a sum is less than or equal to the sum of the positive parts.
+-/
+theorem posPart_add (f₁ f₂ : Function.locallyFinsuppWithin U Y) :
+    (f₁ + f₂)⁺ ≤ f₁⁺ + f₂⁺ := by
+  repeat rw [posPart_def]
+  intro x
+  simp only [Function.locallyFinsuppWithin.max_apply, Function.locallyFinsuppWithin.coe_add,
+    Pi.add_apply, Function.locallyFinsuppWithin.coe_zero, Pi.zero_apply, sup_le_iff]
+  constructor
+  · simp [add_le_add]
+  · simp [add_nonneg]
+
+/--
+The negative part of a sum is less than or equal to the sum of the negative parts.
+-/
+theorem negPart_add (f₁ f₂ : Function.locallyFinsuppWithin U Y) :
+    (f₁ + f₂)⁻ ≤ f₁⁻ + f₂⁻ := by
+  repeat rw [negPart_def]
+  intro x
+  simp only [neg_add_rev, Function.locallyFinsuppWithin.max_apply,
+    Function.locallyFinsuppWithin.coe_add, Function.locallyFinsuppWithin.coe_neg, Pi.add_apply,
+    Pi.neg_apply, Function.locallyFinsuppWithin.coe_zero, Pi.zero_apply, sup_le_iff]
+  constructor
+  · simp [add_comm, add_le_add]
+  · simp [add_nonneg]
+
+/--
 Taking the positive part of a function with locally finite support commutes with
 scalar multiplication by a natural number.
 -/
