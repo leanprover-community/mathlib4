@@ -51,10 +51,6 @@ the topology of compact convergence on continuous linear maps.
 
 * [N. Bourbaki, *Topological Vector Spaces*][bourbaki1987]
 
-## TODO
-
-* Add convergence on compact subsets
-
 ## Tags
 
 uniform convergence, bounded convergence
