@@ -688,16 +688,10 @@ end ContinuousLinearEquiv
 
 section CompactSets
 
-/-! ### Topology of compact convergence  -/
+/-! ### Topology of compact convergence for continuous linear maps -/
 
-variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*}
-
-variable [NormedField 𝕜₁] [NormedField 𝕜₂] [NormedField 𝕜₃]
-  {σ : 𝕜₁ →+* 𝕜₂} {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ]
-variable {E F G : Type*}
-  [AddCommGroup E] [Module 𝕜₁ E]
-  [AddCommGroup F] [Module 𝕜₂ F]
-  [AddCommGroup G] [Module 𝕜₃ G]
+variable {𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] {σ : 𝕜₁ →+* 𝕜₂}
+  {E F : Type*} [AddCommGroup E] [Module 𝕜₁ E] [AddCommGroup F] [Module 𝕜₂ F]
 
 variable (E F σ) in
 /-- The topology of compact convergence on `E →L[𝕜] F`. -/
@@ -719,11 +713,11 @@ instance continuousSMul [RingHomSurjective σ] [RingHomIsometric σ]
 
 instance instContinuousEvalConst [TopologicalSpace E] [TopologicalSpace F]
     [IsTopologicalAddGroup F] : ContinuousEvalConst (E →SL_c[σ] F) E F :=
-  UniformConvergenceCLM.continuousEvalConst σ F _ isCompact_covers
+  UniformConvergenceCLM.continuousEvalConst σ F _ sUnion_isCompact_eq_univ
 
 instance instT2Space [TopologicalSpace E] [TopologicalSpace F] [IsTopologicalAddGroup F]
     [T2Space F] : T2Space (E →SL_c[σ] F) :=
-  UniformConvergenceCLM.t2Space σ F _ isCompact_covers
+  UniformConvergenceCLM.t2Space σ F _ sUnion_isCompact_eq_univ
 
 protected theorem hasBasis_nhds_zero_of_basis [TopologicalSpace E] [TopologicalSpace F]
     [IsTopologicalAddGroup F]
