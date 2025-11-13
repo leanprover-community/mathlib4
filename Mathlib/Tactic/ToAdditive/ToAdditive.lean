@@ -6,6 +6,13 @@ Jovan Gerbscheid
 -/
 import Mathlib.Tactic.ToAdditive.Frontend
 
+/-!
+# The `@[to_additive]` attribute.
+
+The `@[to_additive]` attribute is used to translate multiplicative declarations to their
+additive equivalent. See the docstrings of `to_additive` for more information.
+-/
+
 namespace Mathlib.Tactic.ToAdditive
 open Lean Elab Translate
 
@@ -408,3 +415,4 @@ elab "insert_to_additive_translation" src:ident tgt:ident : command => do
   Command.liftCoreM <| insertTranslation data src.getId tgt.getId
 
 end Mathlib.Tactic.ToAdditive
+#lint

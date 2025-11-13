@@ -8,8 +8,8 @@ import Mathlib.Tactic.ToAdditive.Frontend
 /-!
 # The `@[to_dual]` attribute.
 
-The implementation of the `to_dual` attribute is in `Tactic.ToAdditive.Frontend`.
-See the docstring of `ToDual.to_dual` for more information.
+The `@[to_dual]` attribute is used to translate declarations to their dual equivalent.
+See the docstrings of `to_dual` and `to_additive` for more information.
 
 Known limitations:
 - Reordering arguments of arguments is not yet supported.
@@ -19,7 +19,6 @@ Known limitations:
   `le_mul`, `le_add` and `add_le`, and in particular should realize that `le_add` and `add_le`
   are dual to eachother. Currently, this requires writing
   `attribute [to_dual existing le_add] add_le`.
-
 -/
 
 namespace Mathlib.Tactic.ToDual
