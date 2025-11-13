@@ -314,6 +314,12 @@ theorem domCongr_refl : domCongr k A (.refl G) = .refl :=
 @[to_additive (attr := simp)]
 theorem domCongr_symm (e : G ≃* H) : (domCongr k A e).symm = domCongr k A e.symm := rfl
 
+@[to_additive (attr := simp)]
+theorem trans_domCongr_domCongr {I : Type*} [Monoid I] (e : G ≃* H) (f : H ≃* I) :
+    (domCongr k A e).trans (domCongr k A f) = domCongr k A (e.trans f) := by
+  ext
+  simp
+
 end lift
 
 section mapRange
@@ -347,10 +353,30 @@ lemma toRingHom_mapRangeAlgHom (f : A →ₐ[R] B) :
 lemma mapRangeAlgHom_apply (f : A →ₐ[R] B) (x : MonoidAlgebra A M) (m : M) :
     mapRangeAlgHom M f x m = f (x m) := mapRangeRingHom_apply f.toRingHom x m
 
+@[to_additive]
+lemma coe_mapRangeAlgHom {k R S G} [CommSemiring k] [Semiring R] [Algebra k R] [Semiring S]
+    [Algebra k S] [Monoid G] (f : R →ₐ[k] S) :
+      ⇑(mapRangeAlgHom G f) = Finsupp.mapRange f (map_zero _) := by
+  ext x
+  induction x using Finsupp.induction with
+  | zero => simp
+  | single_add a b f _ _ ih => simp [ih]
+
 @[to_additive (attr := simp)]
 lemma mapRangeAlgHom_single (f : A →ₐ[R] B) (m : M) (a : A) :
     mapRangeAlgHom M f (single m a) = single m (f a) := by
   classical ext; simp [single_apply, apply_ite f]
+
+@[to_additive (attr := simp)]
+lemma mapRangeAlgHom_id {k R G} [CommSemiring k] [Semiring R] [Algebra k R] [Monoid G] :
+    mapRangeAlgHom G (AlgHom.id k R) = AlgHom.id k (MonoidAlgebra R G) := by
+  ext; simp
+
+@[to_additive (attr := simp)]
+lemma mapRangeAlgHom_comp {k R S T G} [CommSemiring k] [Semiring R] [Algebra k R] [Semiring S]
+    [Algebra k S] [Semiring T] [Algebra k T] [Monoid G] (f : R →ₐ[k] S) (g : S →ₐ[k] T) :
+    mapRangeAlgHom G (g.comp f) = (mapRangeAlgHom G g).comp (mapRangeAlgHom G f) := by
+  ext; simp
 
 variable (M) in
 /-- The algebra isomorphism of monoid algebras induced by an isomorphism of the base algebras. -/
