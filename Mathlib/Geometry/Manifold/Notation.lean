@@ -877,10 +877,11 @@ topological space, using information from the local context and a few hard-coded
 -- FIXME: do we need to handle baseInfo again? perhaps not, let's try without!
 def findModelForFunpropInner (field model top : Expr) :
     TermElabM <| Option (Expr × NormedSpaceInfo) := do
+  let traceName := `Elab.DiffGeo.FunPropM
   trace[Elab.DiffGeo.FunPropM] "Trying to solve a goal `ModelWithCorners {field} {model} {top}`"
-  if let some m ← tryStrategy m!"Assumption"    fromAssumption'  `Elab.DiffGeo.FunPropM then
+  if let some m ← tryStrategy m!"Assumption"    fromAssumption'  traceName then
     return some (m, none)
-  if let some m ← tryStrategy m!"Normed space"  fromNormedSpace' `Elab.DiffGeo.FunPropM then
+  if let some m ← tryStrategy m!"Normed space"  fromNormedSpace' traceName then
     return some (m, none)
   -- TODO: implement the remaining strategies, and then the inner to outer part!
   return none
@@ -905,7 +906,7 @@ where
           else return none
         | _ => return none
       | throwError "Couldn't find a `NormedSpace` structure on `{model}` among local instances."
-    trace[Elab.DiffGeo.FunPropM] "`{model}` is a normed space over the field `{K}`"
+    trace[traceName] "`{model}` is a normed space over the field `{K}`"
     if ← withReducible (pureIsDefEq model top) then
       mkAppOptM ``modelWithCornersSelf #[K, none, model, none, inst] -- omit (K, model)) for now
     else

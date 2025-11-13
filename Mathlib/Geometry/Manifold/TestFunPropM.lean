@@ -34,8 +34,7 @@ set_option trace.Elab.DiffGeo true in
 trace: [Elab.DiffGeo.FunPropM] metavariable has type ModelWithCorners 𝕜 E H
 [Elab.DiffGeo.FunPropM] Searching for some `ModelWithCorners 𝕜 E H`
 [Elab.DiffGeo.FunPropM] Trying to solve a goal `ModelWithCorners 𝕜 E H`
-[Elab.DiffGeo.MDiff] ✅️ Assumption
-  [Elab.DiffGeo.MDiff] Found model: `I`
+[Elab.DiffGeo.FunPropM] ✅️ Assumption
 -/
 #guard_msgs in
 #find_model ModelWithCorners 𝕜 E H
@@ -57,13 +56,8 @@ error: ⏎
 trace: [Elab.DiffGeo.FunPropM] metavariable has type ModelWithCorners 𝕜 E H'
 [Elab.DiffGeo.FunPropM] Searching for some `ModelWithCorners 𝕜 E H'`
 [Elab.DiffGeo.FunPropM] Trying to solve a goal `ModelWithCorners 𝕜 E H'`
-[Elab.DiffGeo.MDiff] ❌️ Assumption
-  [Elab.DiffGeo.MDiff] Failed with error:
-      Couldn't find a `ModelWithCorners 𝕜 E H'` in the local context.
-[Elab.DiffGeo.MDiff] ❌️ Normed space
-  [Elab.DiffGeo.FunPropM] `E` is a normed space over the field `𝕜`
-  [Elab.DiffGeo.MDiff] Failed with error:
-      E is a normed space, but H' is not defeq to it
+[Elab.DiffGeo.FunPropM] ❌️ Assumption
+[Elab.DiffGeo.FunPropM] ❌️ Normed space
 -/
 #guard_msgs in
 #find_model ModelWithCorners 𝕜 E H'
