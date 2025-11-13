@@ -286,7 +286,7 @@ theorem isEmpty_algebraRat_iff_mixedCharZero [CharZero R] :
   apply EqualCharZero.nonempty_algebraRat_iff
 
 /-!
-# Splitting statements into different characteristic
+### Splitting statements into different characteristic
 
 Statements to split a proof by characteristic. There are 3 theorems here that are very
 similar. They only differ in the assumptions we can make on the positive characteristic

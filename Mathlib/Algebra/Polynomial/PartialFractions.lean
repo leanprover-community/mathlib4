@@ -18,7 +18,7 @@ These results were formalised by the Xena Project, at the suggestion
 of Patrick Massot.
 
 
-# The main theorem
+## The main theorem
 
 * `div_eq_quo_add_sum_rem_div`: General partial fraction decomposition theorem for polynomials over
   an integral domain R :

@@ -24,7 +24,7 @@ namespace AddMonoidAlgebra
 
 /-!
 
-# sup-degree and inf-degree of an `AddMonoidAlgebra`
+## sup-degree and inf-degree of an `AddMonoidAlgebra`
 
 Let `R` be a semiring and let `A` be a `SemilatticeSup`.
 For an element `f : R[A]`, this file defines
@@ -48,7 +48,7 @@ The main results are
 * `AddMonoidAlgebra.le_infDegree_add`:
   the inf-degree of a sum is at least the inf of the inf-degrees.
 
-## Implementation notes
+### Implementation notes
 
 The current plan is to state and prove lemmas about `Finset.sup (Finsupp.support f) D` with a
 "generic" degree/weight function `D` from the grading Type `A` to a somewhat ordered Type `B`.
