@@ -384,15 +384,9 @@ def equivToOverUnit : Over (𝟙_ C) ≌ C where
   unitIso := NatIso.ofComponents fun X => Over.isoMk (Iso.refl _)
   counitIso := NatIso.ofComponents fun X => Iso.refl _
 
-
-
-  -- CategoryTheory.Equivalence.mk (Over.forget _) (toOverUnit C)
-  --   (NatIso.ofComponents fun X => Over.isoMk (Iso.refl _))
-  --   (NatIso.ofComponents fun X => Iso.refl _)
+variable {C}
 
 attribute [local instance] ChosenPullbacksAlong.cartesianMonoidalCategoryToUnit
-
-variable {C}
 
 /-- The isomorphism of functors `toOverUnit C ⋙ ChosenPullbacksAlong.pullback (toUnit X)` and
 `toOver X`. -/
