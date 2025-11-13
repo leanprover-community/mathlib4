@@ -907,7 +907,7 @@ where
     if ← withReducible (pureIsDefEq model top) then
       mkAppOptM ``modelWithCornersSelf #[K, none, model, none, inst] -- omit (K, model)) for now
     else
-      throwError "{model} is a normed space, but {top} is not defeq to it"
+      throwError "`{model}` is a normed space, but `{top}` is not defeq to it"
 
 def findModelForFunprop (field model top : Expr) : TermElabM <| Option Expr := do
   trace[Elab.DiffGeo.FunPropM] "Searching for some `ModelWithCorners {field} {model} {top}`"

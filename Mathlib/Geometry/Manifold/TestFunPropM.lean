@@ -29,6 +29,14 @@ set_option linter.hashCommand false
 #find_model (ModelWithCorners 𝕜)
 
 -- Local hypotheses (no matter if these are standard or make sense).
+set_option trace.Elab.DiffGeo true in
+/--
+trace: [Elab.DiffGeo.FunPropM] metavariable has type ModelWithCorners 𝕜 E H
+[Elab.DiffGeo.FunPropM] Searching for some `ModelWithCorners 𝕜 E H`
+[Elab.DiffGeo.FunPropM] Trying to solve a goal `ModelWithCorners 𝕜 E H`
+[Elab.DiffGeo.MDiff] ✅️ Assumption
+  [Elab.DiffGeo.MDiff] Found model: `I`
+-/
 #guard_msgs in
 #find_model ModelWithCorners 𝕜 E H
 
@@ -42,19 +50,23 @@ variable (I := I.prod I) in
 
 -- TODO: why are the error messages being swallowed?
 
-set_option trace.Elab.DiffGeo.FunPropM true in
+set_option trace.Elab.DiffGeo true in
 /--
 error: ⏎
 ---
 trace: [Elab.DiffGeo.FunPropM] metavariable has type ModelWithCorners 𝕜 E H'
 [Elab.DiffGeo.FunPropM] Searching for some `ModelWithCorners 𝕜 E H'`
 [Elab.DiffGeo.FunPropM] Trying to solve a goal `ModelWithCorners 𝕜 E H'`
-[Elab.DiffGeo.FunPropM] `E` is a normed space over the field `𝕜`
+[Elab.DiffGeo.MDiff] ❌️ Assumption
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find a `ModelWithCorners 𝕜 E H'` in the local context.
+[Elab.DiffGeo.MDiff] ❌️ Normed space
+  [Elab.DiffGeo.FunPropM] `E` is a normed space over the field `𝕜`
+  [Elab.DiffGeo.MDiff] Failed with error:
+      E is a normed space, but H' is not defeq to it
 -/
 #guard_msgs in
 #find_model ModelWithCorners 𝕜 E H'
-
-#exit
 
 -- Normed fields: TODO implement this!
 /-- error: -/
