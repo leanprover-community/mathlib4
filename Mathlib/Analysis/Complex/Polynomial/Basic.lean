@@ -57,7 +57,7 @@ namespace Polynomial.Gal
 
 section Rationals
 
-theorem splits_ℚ_ℂ {p : ℚ[X]} : Fact (p.Splits (algebraMap ℚ ℂ)) :=
+theorem splits_ℚ_ℂ {p : ℚ[X]} : Fact ((Polynomial.map (algebraMap ℚ ℂ) p).Splits) :=
   ⟨IsAlgClosed.splits_codomain p⟩
 
 attribute [local instance] splits_ℚ_ℂ

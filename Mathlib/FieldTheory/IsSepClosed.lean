@@ -68,7 +68,7 @@ instance IsSepClosed.of_isAlgClosed [IsAlgClosed k] : IsSepClosed k :=
 variable {k} {K}
 
 theorem IsSepClosed.splits_of_separable [IsSepClosed k] (p : k[X]) (hp : p.Separable) :
-    p.Splits (RingHom.id k) :=
+    (Polynomial.map (RingHom.id k) p).Splits :=
   (factors_of_separable p hp).map (RingHom.id k)
 
 /-- Every separable polynomial splits in the field extension `f : k →+* K` if `K` is
@@ -77,7 +77,7 @@ separably closed.
 See also `IsSepClosed.splits_domain` for the case where `k` is separably closed.
 -/
 theorem IsSepClosed.splits_codomain [IsSepClosed K] {f : k →+* K}
-    (p : k[X]) (h : p.Separable) : p.Splits f := by
+    (p : k[X]) (h : p.Separable) : (Polynomial.map f p).Splits := by
   convert IsSepClosed.splits_of_separable (p.map f) (Separable.map h); simp [splits_map_iff]
 
 /-- Every separable polynomial splits in the field extension `f : k →+* K` if `k` is
@@ -86,7 +86,7 @@ separably closed.
 See also `IsSepClosed.splits_codomain` for the case where `k` is separably closed.
 -/
 theorem IsSepClosed.splits_domain [IsSepClosed k] {f : k →+* K}
-    (p : k[X]) (h : p.Separable) : p.Splits f :=
+    (p : k[X]) (h : p.Separable) : (Polynomial.map f p).Splits :=
   Polynomial.splits_of_splits_id _ <| IsSepClosed.splits_of_separable _ h
 
 namespace IsSepClosed
