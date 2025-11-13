@@ -9,6 +9,15 @@ import Mathlib.Analysis.LocallyConvex.StrongTopology
 
 /-!
 # The topology of pointwise convergence is locally convex
+
+We prove that the topology of pointwise convergence is induced by a family of seminorms and
+that it is locally convex in the topological sense
+
+* `PointwiseConvergenceCLM.seminorm`: the seminorms on `E →SLₚₜ[σ] F` given by `A ↦ ‖A x‖` for fixed
+`x : E`.
+* `PointwiseConvergenceCLM.withSeminorm`: the topology is induced by the seminorms.
+* `PointwiseConvergenceCLM.instLocallyConvexSpace`: `E →SLₚₜ[σ] F` is locally convex.
+
 -/
 
 variable {R 𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂]
@@ -30,7 +39,7 @@ protected def seminorm (x : E) : Seminorm 𝕜₂ (E →SLₚₜ[σ] F) where
 variable (σ E F) in
 /-- The family of seminorms that induce the topology of pointwise convergence, namely `‖A x‖` for
 all `x : E`. -/
-protected def seminormFamily : SeminormFamily 𝕜₂ (E →SLₚₜ[σ] F) E :=
+protected abbrev seminormFamily : SeminormFamily 𝕜₂ (E →SLₚₜ[σ] F) E :=
   PointwiseConvergenceCLM.seminorm
 
 variable (σ E F) in
