@@ -265,12 +265,10 @@ lemma div_lcm_eq_div_gcd (hkm : m ∣ k) (hkn : n ∣ k) : (k / m).lcm (k / n) =
   simpa [Nat.div_dvd_iff_dvd_mul (Nat.dvd_trans (Nat.gcd_dvd_left m n) hkm)
     (gcd_pos_of_pos_left n hm), Nat.gcd_mul_right m c n] using (Nat.dvd_gcd hmc hnc)
 
-lemma sub_eq_gcd_of_sub_dvd {p q : ℕ} (sub_dvd_q : p - q ∣ q) : (p - q) = p.gcd q := by
+lemma sub_eq_gcd_of_sub_dvd {p q : ℕ} (h : p - q ∣ q) : p.gcd q = p - q := by
   by_cases sub_pos : p - q = 0
   · simp_all
   have : p - q + q = p := by cutsat
-  have := (this ▸ (Nat.dvd_add_right (dvd_refl (p - q))).mpr sub_dvd_q)
-  exact Nat.dvd_antisymm (Nat.dvd_gcd this sub_dvd_q)
-   (Nat.dvd_sub (p.gcd_dvd_left q) (p.gcd_dvd_right q))
-
+  have := (this ▸ (Nat.dvd_add_right (dvd_refl (p - q))).mpr h)
+  exact Nat.dvd_antisymm (Nat.dvd_sub (p.gcd_dvd_left q) (p.gcd_dvd_right q)) (Nat.dvd_gcd this h)
 end Nat
