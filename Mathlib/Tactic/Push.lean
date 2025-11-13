@@ -217,7 +217,7 @@ elab (name := push) "push" disch?:(discharger)? head:(ppSpace colGt term) loc:(l
   let disch? ← disch?.mapM elabDischarger
   let head ← elabHead head
   let loc := (loc.map expandLocation).getD (.targets #[] true)
-  transformAtLocation (pushCore head · disch?) "push" loc (failIfUnchanged := true) false
+  transformAtLocation (pushCore head · disch?) "push" loc (failIfUnchanged := .error) false
 
 /--
 Push negations into the conclusion or a hypothesis.
@@ -269,7 +269,7 @@ elab (name := pull) "pull" disch?:(discharger)? head:(ppSpace colGt term) loc:(l
   let disch? ← disch?.mapM elabDischarger
   let head ← elabHead head
   let loc := (loc.map expandLocation).getD (.targets #[] true)
-  transformAtLocation (pullCore head · disch?) "pull" loc (failIfUnchanged := true) false
+  transformAtLocation (pullCore head · disch?) "pull" loc (failIfUnchanged := .error) false
 
 /-- A simproc variant of `push fun _ ↦ _`, to be used as `simp [↓pushFun]`. -/
 simproc_decl _root_.pushFun (fun _ ↦ ?_) := pushStep .lambda

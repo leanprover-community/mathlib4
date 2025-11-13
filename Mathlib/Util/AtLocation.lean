@@ -42,16 +42,27 @@ def Lean.Elab.Tactic.withNondepPropLocation (loc : Location) (atLocal : FVarId �
 namespace Mathlib.Tactic
 open Lean Meta Elab.Tactic
 
+/-- Different settings of communicating about a tactic which made no progress: do nothing,
+print a warning or throw an error. -/
+inductive LogIfUnchanged where
+  | silent
+  | warning
+  | error
+
 /-- Use the procedure `m` to rewrite the provided goal. -/
 def transformAtTarget (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (proc : String)
-    (failIfUnchanged : Bool) (goal : MVarId) :
+    (failIfUnchanged : LogIfUnchanged) (goal : MVarId) :
     ReaderT Simp.Context MetaM (Option MVarId) := do
   let tgt ← instantiateMVars (← goal.getType)
   let r ← m tgt
   -- we use expression equality here (rather than defeq) to be consistent with, e.g.,
   -- `applySimpResultToTarget`
   let unchanged := tgt.cleanupAnnotations == r.expr.cleanupAnnotations
-  if failIfUnchanged && unchanged then throwError "{proc} made no progress on goal"
+  if unchanged then
+    match failIfUnchanged with
+    | .warning => logWarning m!"{proc} made no progress on the goal"
+    | .error => throwError "{proc} made no progress on the goal"
+    | .silent => pure ()
   if r.expr.isTrue then
     goal.assign (← mkOfEqTrue (← r.getProof))
     pure none
@@ -67,7 +78,7 @@ The `simpTheorems` of the simp-context carried with `m` will be modified to remo
 this ensures that if the procedure `m` involves rewriting by this `SimpTheoremsArray`, then, e.g.,
 `h : x = y` is not transformed (by rewriting `h`) to `True`. -/
 def transformAtLocalDecl (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (proc : String)
-    (failIfUnchanged : Bool) (mayCloseGoal : Bool) (fvarId : FVarId) (goal : MVarId) :
+    (failIfUnchanged : LogIfUnchanged) (mayCloseGoal : Bool) (fvarId : FVarId) (goal : MVarId) :
     ReaderT Simp.Context MetaM (Option MVarId) := do
   let ldecl ← fvarId.getDecl
   if ldecl.isImplementationDetail then
@@ -78,13 +89,17 @@ def transformAtLocalDecl (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (
   let r ← withReader eraseFVarId <| m tgt
   -- we use expression equality here (rather than defeq) to be consistent with, e.g.,
   -- `applySimpResultToLocalDeclCore`
-  if failIfUnchanged && tgt.cleanupAnnotations == r.expr.cleanupAnnotations then
-    throwError "{proc} made no progress at {ldecl.userName}"
+  if tgt.cleanupAnnotations == r.expr.cleanupAnnotations then
+    match failIfUnchanged with
+    | .warning => logWarning m!"{proc} made no progress at {ldecl.userName}"
+    | .error => throwError "{proc} made no progress at {ldecl.userName}"
+    | .silent => pure ()
   return (← applySimpResultToLocalDecl goal fvarId r mayCloseGoal).map Prod.snd
 
 /-- Use the procedure `m` to transform at specified locations (hypotheses and/or goal). -/
 def transformAtLocation (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (proc : String)
-    (loc : Location) (failIfUnchanged : Bool := true) (mayCloseGoalFromHyp : Bool := false)
+    (loc : Location) (failIfUnchanged : LogIfUnchanged := .error)
+    (mayCloseGoalFromHyp : Bool := false)
     -- streamline the most common use case, in which the procedure `m`'s implementation is not
     -- simp-based and its `Simp.Context` is ignored
     (ctx : Simp.Context := default) :
@@ -98,7 +113,7 @@ def transformAtLocation (m : Expr → ReaderT Simp.Context MetaM Simp.Result) (p
 
 In the wildcard case (`*`), filter out all dependent and/or non-Prop hypotheses. -/
 def transformAtNondepPropLocation (m : Expr → ReaderT Simp.Context MetaM Simp.Result)
-    (proc : String) (loc : Location) (failIfUnchanged : Bool := true)
+    (proc : String) (loc : Location) (failIfUnchanged : LogIfUnchanged := .error)
     (mayCloseGoalFromHyp : Bool := false)
     -- streamline the most common use case, in which the procedure `m`'s implementation is not
     -- simp-based and its `Simp.Context` is ignored
