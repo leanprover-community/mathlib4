@@ -125,7 +125,7 @@ def recurse (s : IO.Ref State) (cfg : Recurse.Config)
 
 end Mathlib.Tactic.AtomM
 
-namespace Mathlib.Tacitc.CacheAtomM
+namespace Mathlib.Tactic.CacheAtomM
 
 open Lean Meta Mathlib.Tactic Mathlib.Tactic.AtomM
 
@@ -199,4 +199,4 @@ def recurse {σ : Type} (cs : IO.Ref σ) (s : IO.Ref AtomM.State) (cfg : Recurse
     MetaM Simp.Result := do
   RecurseT.runCached cs s cfg eval simp <| onSubexpressions eval tgt
 
-end Mathlib.Tacitc.CacheAtomM
+end Mathlib.Tactic.CacheAtomM

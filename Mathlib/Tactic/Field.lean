@@ -54,8 +54,9 @@ elab (name := field) "field" d:(ppSpace discharger)? args:(ppSpace simpArgs)? : 
   let disch ← parseDischarger d args
   let s0 ← saveState
   -- run `field_simp` (only at the top level, not recursively)
-  liftMetaTactic1 (transformAtTarget ((AtomM.run .reducible ∘ reduceProp disch) ·) "field"
-    (failIfUnchanged := False) · default)
+  liftMetaTactic1 (transformAtTarget
+    ((AtomM.run .reducible ∘ (fun e ↦ (reduceProp e).run disch)) ·)
+    "field" (failIfUnchanged := False) · default)
   let s1 ← saveState
   try
     -- run `ring1`

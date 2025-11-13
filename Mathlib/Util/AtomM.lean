@@ -85,7 +85,7 @@ def AtomM.addAtomQ {u : Level} {α : Q(Type u)} (e : Q($α)) :
 
 abbrev CacheAtomM (σ : Type) := StateRefT σ AtomM
 
-def CacheAtomM.get (σ : Type) : CacheAtomM σ σ := StateRefT'.get
+def CacheAtomM.get {σ : Type} : CacheAtomM σ σ := StateRefT'.get
 
 def CacheAtomM.set {σ : Type} (s : σ) : CacheAtomM σ Unit := StateRefT'.set s
 

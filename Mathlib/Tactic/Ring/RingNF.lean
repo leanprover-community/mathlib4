@@ -169,7 +169,7 @@ elab (name := ring1NF) "ring1_nf" tk:"!"? cfg:optConfig : tactic => do
   let mut cfg ← elabConfig cfg
   if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let s ← IO.mkRef {}
-  liftMetaMAtMain fun g ↦ AtomM.RecurseM.run s cfg.toConfig evalExpr (cleanup cfg) <| proveEq g
+  liftMetaMAtMain fun g ↦ AtomM.RecurseT.run s cfg.toConfig evalExpr (cleanup cfg) <| proveEq g
 
 @[inherit_doc ring1NF] macro "ring1_nf!" cfg:optConfig : tactic =>
   `(tactic| ring1_nf ! $cfg:optConfig)
