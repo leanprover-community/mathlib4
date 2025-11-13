@@ -113,10 +113,6 @@ theorem eq_self_sdiff_zero :
     IsCyclotomicExtension S A B = IsCyclotomicExtension (S \ {0}) A B := by
   simp [isCyclotomicExtension_iff, and_assoc]
 
-theorem isCyclotomicExtension_zero_iff :
-    IsCyclotomicExtension {0} A B ↔ IsCyclotomicExtension ∅ A B := by
-  rw [eq_self_sdiff_zero, sdiff_self, Set.bot_eq_empty]
-
 /-- If `IsCyclotomicExtension {1} A B`, then the image of `A` in `B` equals `B`. -/
 theorem singleton_one [h : IsCyclotomicExtension {1} A B] : (⊥ : Subalgebra A B) = ⊤ :=
   Algebra.eq_top_iff.2 fun x => by
@@ -128,6 +124,13 @@ variable {A B}
 theorem singleton_zero_of_bot_eq_top (h : (⊥ : Subalgebra A B) = ⊤) :
     IsCyclotomicExtension {0} A B :=
   (iff_adjoin_eq_top _ _ _).2  <| by simpa
+
+theorem isCyclotomicExtension_zero_iff :
+    IsCyclotomicExtension {0} A B ↔ Function.Surjective (algebraMap A B) := by
+  rw [surjective_algebraMap_iff, eq_comm]
+  refine ⟨?_, fun h ↦ singleton_zero_of_bot_eq_top h⟩
+  rw [eq_self_sdiff_zero, sdiff_self, Set.bot_eq_empty, subsingleton_iff_bot_eq_top]
+  exact fun _ ↦ instSubsingleton A B
 
 variable (A B)
 
