@@ -140,8 +140,7 @@ theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s
     obtain ⟨l, rfl⟩ := s.exists_eq_ofList
     match l with
     | [] => simp at h
-    | c::cs => simp [head, String.Legacy.mkIterator, Legacy.Iterator.curr, Pos.Raw.get,
-        Pos.Raw.utf8GetAux]
+    | c::cs => simp [head, front, Pos.Raw.get, Pos.Raw.utf8GetAux]
 
 @[simp]
 theorem head_empty : "".toList.head! = default :=
