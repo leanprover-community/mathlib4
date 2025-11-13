@@ -30,6 +30,7 @@ open Lean Meta Elab Command Std
 
 namespace Mathlib.Tactic.Translate
 
+
 /-- `(attr := ...)` applies the given attributes to both the original and the
 translated declaration. -/
 syntax toAdditiveAttrOption := &"attr" " := " Parser.Term.attrInstance,*
