@@ -856,7 +856,7 @@ scoped elab:max "HasMFDerivAt%" ppSpace
 
 end Manifold
 
-open Manifold.Elab
+open Manifold
 
 /-!
 ### Supporting fun_prop for manifolds
@@ -876,15 +876,15 @@ Can these be kept in sync? Well, that's hopefully not too necessary.
 topological space, using information from the local context and a few hard-coded rules. -/
 -- FIXME: do we need to handle baseInfo again? perhaps not, let's try without!
 def findModelForFunpropInner (field model top : Expr) :
-    TermElabM <| Option (Expr × NormedSpaceInfo) := do
+    TermElabM <| Option (Expr × Elab.NormedSpaceInfo) := do
   trace[Elab.DiffGeo.FunPropM] "Trying to solve a goal `ModelWithCorners {field} {model} {top}`"
-  if let some m ← tryStrategy m!"Assumption"       fromAssumption'     then return some (m, none)
-  if let some m ← tryStrategy m!"Normed space"     fromNormedSpace'    then return some (m, none)
+  if let some m ← Elab.tryStrategy m!"Assumption"      fromAssumption    then return some (m, none)
+  if let some m ← Elab.tryStrategy m!"Normed space"    fromNormedSpace   then return some (m, none)
   -- TODO: implement the remaining strategies, and then the inner to outer part!
   return none
 where
-  fromAssumption' : TermElabM Expr := do
-    let some m ← findSomeLocalHyp? fun fvar type ↦ do
+  fromAssumption : TermElabM Expr := do
+    let some m ← Elab.findSomeLocalHyp? fun fvar type ↦ do
         match_expr type with
         | ModelWithCorners k _ E _ _ H _ => do
           if (← withReducible (pureIsDefEq k field)) && (← withReducible (pureIsDefEq E model)) &&
@@ -894,8 +894,8 @@ where
         | _ => return none
       | throwError "Couldn't find a `ModelWithCorners {field} {model} {top}` in the local context."
     return m
-  fromNormedSpace' : TermElabM Expr := do
-    let some (inst, K) ← findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
+  fromNormedSpace : TermElabM Expr := do
+    let some (inst, K) ← Elab.findSomeLocalInstanceOf? ``NormedSpace fun inst type ↦ do
         match_expr type with
         | NormedSpace K E _ _ =>
           if (← withReducible (pureIsDefEq K field)) && (← withReducible (pureIsDefEq E model)) then
@@ -917,7 +917,7 @@ def findModelForFunprop (field model top : Expr) : TermElabM <| Option Expr := d
     trace[Elab.DiffGeo.FunPropM] "Could not find a `ModelWithCorners {field} {model} {top}`"
     return none
 where
-  go (field model top : Expr) : TermElabM <| Option (Expr × NormedSpaceInfo) := do
+  go (field model top : Expr) : TermElabM <| Option (Expr × Elab.NormedSpaceInfo) := do
     -- At first, try finding a model on the space itself.
     if let some (m, r) ← findModelForFunpropInner field model top then return some (m, r)
     throwError ""
