@@ -62,7 +62,7 @@ theorem dvd_C_iff_exists
 
 theorem dvd_X_iff_exists [Nontrivial R]
     {σ : Type*} {i : σ} {p : MvPolynomial σ R} :
-    p ∣ X i ↔ ∃ r, IsUnit r ∧ (p = C r ∨ p = r • (X i)) := by
+    p ∣ X i ↔ ∃ r, IsUnit r ∧ (p = C r ∨ p = r • X i) := by
   constructor
   · rintro ⟨q, hq⟩
     have : totalDegree p + totalDegree q = 1 := by
