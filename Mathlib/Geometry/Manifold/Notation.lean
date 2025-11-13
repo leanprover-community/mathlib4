@@ -221,9 +221,9 @@ private def tryStrategy' (α) (strategyDescr : MessageData) (x : TermElabM (Expr
         /- Catch the exception so that we can trace it, then throw it again to inform
         `withTraceNode` of the result. -/
         catch ex =>
-          trace[Elab.DiffGeo.MDiff] "Failed with error:\n{ex.toMessageData}"
+          trace[traceName] "Failed with error:\n{ex.toMessageData}"
           throw ex
-      trace[Elab.DiffGeo.MDiff] "Found model: `{e.1}`"
+      trace[traceName] "Found model: `{e.1}`"
       return e
   catch _ =>
     -- Restore infotrees to prevent any stale hovers, code actions, etc.
@@ -253,9 +253,9 @@ private def tryStrategy (strategyDescr : MessageData) (x : TermElabM Expr)
         /- Catch the exception so that we can trace it, then throw it again to inform
         `withTraceNode` of the result. -/
         catch ex =>
-          trace[Elab.DiffGeo.MDiff] "Failed with error:\n{ex.toMessageData}"
+          trace[traceName] "Failed with error:\n{ex.toMessageData}"
           throw ex
-      trace[Elab.DiffGeo.MDiff] "Found model: `{e}`"
+      trace[traceName] "Found model: `{e}`"
       return e
   catch _ =>
     -- Restore infotrees to prevent any stale hovers, code actions, etc.
