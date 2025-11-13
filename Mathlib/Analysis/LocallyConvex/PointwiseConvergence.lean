@@ -21,11 +21,14 @@ that it is locally convex in the topological sense
 -/
 
 variable {R 𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂]
-variable {σ : 𝕜₁ →+* 𝕜₂}
-variable {E F : Type*} [AddCommGroup E] [TopologicalSpace E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜₂ F] [Module 𝕜₁ E]
+  {σ : 𝕜₁ →+* 𝕜₂} {E F : Type*}
+  [AddCommGroup E] [TopologicalSpace E] [Module 𝕜₁ E]
 
 namespace PointwiseConvergenceCLM
+
+section NormedSpace
+
+variable [NormedAddCommGroup F] [NormedSpace 𝕜₂ F]
 
 /-- The family of seminorms that induce the topology of pointwise convergence, namely `‖A x‖` for
 all `x : E`. -/
@@ -43,6 +46,9 @@ protected abbrev seminormFamily : SeminormFamily 𝕜₂ (E →SLₚₜ[σ] F) E
   PointwiseConvergenceCLM.seminorm
 
 variable (σ E F) in
+/-- The coercion `E →SLₚₜ[σ] F` to `E → F` as a linear map.
+
+The topology on `E →SLₚₜ[σ] F` is induced by this map. -/
 def inducingFn : (E →SLₚₜ[σ] F) →ₗ[𝕜₂] (E → F) where
   toFun f := f
   map_add' _ _ := rfl
@@ -57,11 +63,18 @@ lemma withSeminorms : WithSeminorms (PointwiseConvergenceCLM.seminormFamily σ E
   (inducingFn_isInducing σ E F).withSeminorms <| withSeminorms_pi (fun _ ↦ norm_withSeminorms 𝕜₂ F)
     |>.congr_equiv e
 
-variable [Semiring R] [PartialOrder R]
-variable [Module R F] [ContinuousConstSMul R F] [LocallyConvexSpace R F] [SMulCommClass 𝕜₂ R F]
+end NormedSpace
 
-instance instLocallyConvexSpace : LocallyConvexSpace R (E →SLₚₜ[σ] F) :=
+section IsTopologicalAddGroup
+
+variable [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F] [Module 𝕜₂ F]
+  [Semiring R] [PartialOrder R]
+  [Module R F] [ContinuousConstSMul R F] [LocallyConvexSpace R F] [SMulCommClass 𝕜₂ R F]
+
+instance : LocallyConvexSpace R (E →SLₚₜ[σ] F) :=
   UniformConvergenceCLM.locallyConvexSpace R {(s : Set E) | Set.Finite s} ⟨∅, Set.finite_empty⟩
     (directedOn_of_sup_mem fun _ _ => Set.Finite.union)
+
+end IsTopologicalAddGroup
 
 end PointwiseConvergenceCLM
