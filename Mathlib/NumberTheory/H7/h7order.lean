@@ -359,7 +359,7 @@ lemma change_deriv (R : ℂ → ℂ) :  deriv^[k] (deriv R) z = deriv (deriv^[k]
 -- one of R1 is R'
 --R2 is junk
 lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
-  (hf : AnalyticAt ℂ R z) (hf1 : ∀ z : ℂ, AnalyticAt ℂ R₁ z)
+  (hf : ∀ z : ℂ, AnalyticAt ℂ R z) (hf1 : ∀ z : ℂ, AnalyticAt ℂ R₁ z)
   (hR₁ : ∀ z, R z  = (z - z₀)^r * R₁ z) :
   ∀ k ≤ r, ∃ R₂ : ℂ → ℂ, (∀ z : ℂ, AnalyticAt ℂ R₂ z) ∧  deriv^[k] R z =
    (z - z₀)^(r-k) * (r.factorial/(r-k).factorial * R₁ z + (z-z₀)* R₂ z) := by { stop
@@ -370,11 +370,24 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
           Pi.zero_apply, mul_zero, add_zero]
         rw [hR₁ z]
         simp only [mul_eq_mul_left_iff, pow_eq_zero_iff', ne_eq]
-        sorry
+        constructor
+        · intros z
+          refine Differentiable.analyticAt ?_ z
+          exact differentiable_zero
+        · left
+          rw [div_self]
+          simp only [one_mul]
+          simp only [ne_eq, Nat.cast_eq_zero]
+          exact Nat.factorial_ne_zero r
       · simp only [Function.iterate_succ, Function.comp_apply]
         obtain ⟨R₂, hR₂⟩ := IH (Nat.le_of_succ_le hkr)
         rw [change_deriv R]
-        use (0)
+        use (deriv R)
+        constructor
+        · intros z
+          refine AnalyticAt.deriv ?_
+          exact hf z
+
         have : deriv (fun z => (z - z₀)^(r - k) *
             (r.factorial / (r - k).factorial * R₁ z + (z - z₀) * R₂ z)) z =
              (z - z₀) ^ (r - (k + 1)) *
@@ -411,6 +424,7 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
         simp only [differentiableAt_fun_id, differentiableAt_const, DifferentiableAt.fun_sub,
           deriv_fun_pow'', deriv_fun_sub, deriv_id'', deriv_const', sub_zero, mul_one,
           deriv_div_const, zero_div, zero_mul, zero_add, one_mul]
+        sorry
         sorry
 
 
