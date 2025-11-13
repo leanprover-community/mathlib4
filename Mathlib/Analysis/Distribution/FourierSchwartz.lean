@@ -165,16 +165,14 @@ theorem integral_sesq_fourierIntegral_eq (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : 
   have := VectorFourier.integral_sesq_fourierIntegral_eq_neg_flip M (μ := volume) (ν := volume)
     (L := (innerₗ V)) continuous_fourierChar continuous_inner f.integrable g.integrable
   rw [flip_innerₗ] at this
-  convert this
-  apply fourierInv_coe
+  simpa [fourierInv_coe]
 
 /-- Plancherel's theorem for Schwartz functions.
 
 Version where the multiplication is replaced by a general bilinear form `M`. -/
 theorem integral_sesq_fourier_fourier (f : 𝓢(V, E)) (g : 𝓢(V, F)) (M : E →L⋆[ℂ] F →L[ℂ] G) :
     ∫ ξ, M (𝓕 f ξ) (𝓕 g ξ) = ∫ x, M (f x) (g x) := by
-  have := integral_sesq_fourierIntegral_eq f (𝓕 g) M
-  simpa using this
+  simpa using integral_sesq_fourierIntegral_eq f (𝓕 g) M
 
 end fubini
 
