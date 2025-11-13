@@ -394,7 +394,7 @@ private theorem mapL_add_smul_aux {ι : Type uι}
     [DecidableEq ι] (i : ι) (u : E i →L[𝕜] E' i) :
     (fun j ↦ (update f i u j).toLinearMap) =
       update (fun j ↦ (f j).toLinearMap) i u.toLinearMap := by
-  grind [Function.update_apply]
+  grind
 
 open Function in
 protected theorem mapL_add [DecidableEq ι] (i : ι) (u v : E i →L[𝕜] E' i) :
