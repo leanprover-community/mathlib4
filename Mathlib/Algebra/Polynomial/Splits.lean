@@ -40,7 +40,7 @@ variable (i : K →+* L)
 /-- A polynomial `Splits` iff it `Factors` after mapping under a ring homomorphism.
 This will eventually be replaced by `Polynomial.Factors`. -/
 def Splits (f : K[X]) : Prop :=
-  Factors (f.map i)
+  Factors f
 
 @[simp]
 theorem splits_zero : Splits i (0 : K[X]) := by
