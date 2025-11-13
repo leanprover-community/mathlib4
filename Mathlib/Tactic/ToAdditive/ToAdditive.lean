@@ -395,6 +395,9 @@ initialize registerBuiltinAttribute {
     applicationTime := .afterCompilation
   }
 
+/-- `insert_to_additive_translation mulName addName` inserts the translation `mulName ↦ addName`
+into the `to_additive` dictionary. This is useful for translating namespaces that don't (yet)
+have a corresponding translated declaration. -/
 elab "insert_to_additive_translation" src:ident tgt:ident : command => do
   Command.liftCoreM <| insertTranslation data src.getId tgt.getId
 
