@@ -147,6 +147,7 @@ example (p q : Prop) (h : ¬q → ¬p) : MyImp p q := by
   fail_if_success contrapose
   unfold MyImp
   contrapose
+  exact h
 
 example (p q : Prop) (h : q → ¬p) : p → MyNot q := by
   fail_if_success (contrapose; exact h)
