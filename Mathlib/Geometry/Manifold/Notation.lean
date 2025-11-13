@@ -900,10 +900,9 @@ where
   fromNormedSpace : TermElabM Expr := do
     if !(← withReducible (pureIsDefEq model top)) then
       throwError "`{model}` is a normed space, but `{top}` is not defeq to it"
-    -- Check for a space of continuous linear maps.
-    -- We omit a check if E or F are normed spaces over k: the only model with corners,
-    -- if existing, is this one.
-    -- Actually, that's probably bad... hm! Do this recursively instead?????????
+    -- Check for a space of continuous linear maps. We omit a check if E is a normed space over 𝕜:
+    -- for `E →L[𝕜] F` to type-check in the first place, both `E` and `F` must have been normed
+    -- spaces over `𝕜`.
     if (← isCLMReduciblyDefeqCoefficients model).isSome then
       let eK : Term ← Term.exprToSyntax field
       let eT : Term ← Term.exprToSyntax model

@@ -48,6 +48,8 @@ variable (I : ModelWithCorners 𝕜 (E × E) (H × E)) in
 variable (I := I.prod I) in
 #find_model ModelWithCorners 𝕜 (E × E) (ModelProd H H)
 
+#find_model ModelWithCorners 𝕜 (E →L[𝕜] E) (E →L[𝕜] E)
+
 -- TODO: why are the error messages being swallowed?
 
 set_option trace.Elab.DiffGeo true in
