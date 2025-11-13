@@ -30,7 +30,6 @@ open Lean Meta Elab Command Std
 
 namespace Mathlib.Tactic.Translate
 
-
 /-- `(attr := ...)` applies the given attributes to both the original and the
 translated declaration. -/
 syntax toAdditiveAttrOption := &"attr" " := " Parser.Term.attrInstance,*
@@ -168,11 +167,10 @@ structure TranslateData : Type where
   changeNumeral : Bool
   /-- When `isDual := true`, every translation `A → B` will also give a translation `B → A`. -/
   isDual : Bool
-  /-- `guessName` tries to guess how a lemma name should be translated. -/
-  guessName : String → String
--- attribute [inherit_doc to_additive_ignore_args] TranslateData.ignoreArgsAttr
+  guessNameData : GuessName.GuessNameData
+
 attribute [inherit_doc toAdditiveRelevantOption] TranslateData.relevantArgAttr
--- attribute [inherit_doc to_additive_dont_translate] TranslateData.dontTranslateAttr
+attribute [inherit_doc GuessName.GuessNameData] TranslateData.guessNameData
 
 /-- Get the multiplicative → additive translation for the given name. -/
 def findTranslation? (env : Environment) (t : TranslateData) : Name → Option Name :=
@@ -465,7 +463,7 @@ where /-- Implementation of `applyReplacementFun`. -/
 /-- Rename binder names in pi type. -/
 def renameBinderNames (t : TranslateData) (src : Expr) : Expr :=
   src.mapForallBinderNames fun
-    | .str p s => .str p (t.guessName s)
+    | .str p s => .str p (GuessName.guessName t.guessNameData s)
     | n => n
 
 /-- Reorder pi-binders. See doc of `reorderAttr` for the interpretation of the argument -/
@@ -802,8 +800,8 @@ def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := d
       logWarning m!"`{t.attrName} self` ignores the provided name {cfg.tgt}"
     return src
   let .str pre s := src | throwError "{t.attrName}: can't transport {src}"
-  trace[to_additive_detail] "The name {s} splits as {s.splitCase}"
-  let tgt_auto := t.guessName s
+  trace[to_additive_detail] "The name {s} splits as {open GuessName in s.splitCase}"
+  let tgt_auto := GuessName.guessName t.guessNameData s
   let depth := cfg.tgt.getNumParts
   let pre := findPrefixTranslation (← getEnv) pre t
   let (pre1, pre2) := pre.splitAt (depth - 1)

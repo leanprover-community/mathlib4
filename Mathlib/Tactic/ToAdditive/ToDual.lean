@@ -125,64 +125,56 @@ initialize dontTranslateAttr : NameMapExtension Unit ←
 /-- Maps names to their dual counterparts. -/
 initialize translations : NameMapExtension Name ← registerNameMapExtension _
 
-/--
-Dictionary used by `guessToDualName` to autogenerate names.
+@[inherit_doc GuessName.GuessNameData.nameDict]
+def nameDict : Std.HashMap String (List String) := .ofList [
+  ("top", ["bot"]),
+  ("bot", ["top"]),
+  ("inf", ["sup"]),
+  ("sup", ["inf"]),
+  ("min", ["max"]),
+  ("max", ["min"]),
+  ("untop", ["unbot"]),
+  ("unbot", ["untop"]),
 
-Note: `guessName` capitalizes first element of the output according to
-capitalization of the input. Input and first element should therefore be lower-case,
-2nd element should be capitalized properly.
--/
-def nameDict : String → List String
-  | "top"         => ["bot"]
-  | "bot"         => ["top"]
-  | "inf"         => ["sup"]
-  | "sup"         => ["inf"]
-  | "min"         => ["max"]
-  | "max"         => ["min"]
-  | "untop"       => ["unbot"]
-  | "unbot"       => ["untop"]
+  ("epi", ["mono"]),
+  ("mono", ["epi"]),
+  ("terminal", ["initial"]),
+  ("initial", ["terminal"]),
+  ("precompose", ["postcompose"]),
+  ("postcompose", ["precompose"]),
+  ("cone", ["cocone"]),
+  ("cocone", ["cone"]),
+  ("cones", ["cocones"]),
+  ("cocones", ["cones"]),
+  ("fan", ["cofan"]),
+  ("cofan", ["fan"]),
+  ("limit", ["colimit"]),
+  ("colimit", ["limit"]),
+  ("limits", ["colimits"]),
+  ("colimits", ["limits"]),
+  ("product", ["coproduct"]),
+  ("coproduct", ["product"]),
+  ("products", ["coproducts"]),
+  ("coproducts", ["products"]),
+  ("pushout", ["pullback"]),
+  ("pullback", ["pushout"]),
+  ("pushouts", ["pullbacks"]),
+  ("pullbacks", ["pushouts"]),
+  ("span", ["cospan"]),
+  ("cospan", ["span"]),
+  ("kernel", ["cokernel"]),
+  ("cokernel", ["kernel"]),
+  ("kernels", ["cokernel"]),
+  ("cokernels", ["kernel"]),
+  ("unit", ["counit"]),
+  ("counit", ["unit"]),
+  ("monad", ["comonad"]),
+  ("comonad", ["monad"]),
+  ("monadic", ["comonadic"]),
+  ("comonadic", ["monadic"])]
 
-  | "epi"         => ["mono"]
-  | "mono"        => ["epi"]
-  | "terminal"    => ["initial"]
-  | "initial"     => ["terminal"]
-  | "precompose"  => ["postcompose"]
-  | "postcompose" => ["precompose"]
-  | "cone"        => ["cocone"]
-  | "cocone"      => ["cone"]
-  | "cones"       => ["cocones"]
-  | "cocones"     => ["cones"]
-  | "fan"         => ["cofan"]
-  | "cofan"       => ["fan"]
-  | "limit"       => ["colimit"]
-  | "colimit"     => ["limit"]
-  | "limits"      => ["colimits"]
-  | "colimits"    => ["limits"]
-  | "product"     => ["coproduct"]
-  | "coproduct"   => ["product"]
-  | "products"    => ["coproducts"]
-  | "coproducts"  => ["products"]
-  | "pushout"     => ["pullback"]
-  | "pullback"    => ["pushout"]
-  | "pushouts"    => ["pullbacks"]
-  | "pullbacks"   => ["pushouts"]
-  | "span"        => ["cospan"]
-  | "cospan"      => ["span"]
-  | "kernel"      => ["cokernel"]
-  | "cokernel"    => ["kernel"]
-  | "kernels"     => ["cokernel"]
-  | "cokernels"   => ["kernel"]
-  | "unit"        => ["counit"]
-  | "counit"      => ["unit"]
-  | "monad"       => ["comonad"]
-  | "comonad"     => ["monad"]
-  | "monadic"     => ["comonadic"]
-  | "comonadic"   => ["monadic"]
-
-  | x             => [x]
-
-/-- Automatically generate the dual version of a name. -/
-def guessToDualName : String → String := guessName nameDict id
+@[inherit_doc GuessName.GuessNameData.abbreviationDict]
+def abbreviationDict : Std.HashMap String String := .ofList []
 
 /-- The bundle of environment extensions for `to_dual` -/
 def toDualBundle : TranslateData where
@@ -194,7 +186,7 @@ def toDualBundle : TranslateData where
   attrName := `to_dual
   changeNumeral := false
   isDual := true
-  guessName := guessToDualName
+  guessNameData := { nameDict, abbreviationDict }
 
 initialize registerBuiltinAttribute {
     name := `to_dual

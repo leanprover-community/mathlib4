@@ -277,6 +277,99 @@ initialize dontTranslateAttr : NameMapExtension Unit ←
 /-- Maps multiplicative names to their additive counterparts. -/
 initialize translations : NameMapExtension Name ← registerNameMapExtension _
 
+@[inherit_doc GuessName.GuessNameData.nameDict]
+def nameDict : Std.HashMap String (List String) := .ofList [
+  ("one", ["Zero"]),
+  ("mul", ["Add"]),
+  ("smul", ["VAdd"]),
+  ("inv", ["Neg"]),
+  ("div", ["Sub"]),
+  ("prod", ["Sum"]),
+  ("hmul", ["HAdd"]),
+  ("hsmul", ["HVAdd"]),
+  ("hdiv", ["HSub"]),
+  ("hpow", ["HSMul"]),
+  ("finprod", ["Finsum"]),
+  ("tprod", ["TSum"]),
+  ("pow", ["NSMul"]),
+  ("npow", ["NSMul"]),
+  ("zpow", ["ZSMul"]),
+  ("mabs", ["Abs"]),
+  ("monoid", ["Add", "Monoid"]),
+  ("submonoid", ["Add", "Submonoid"]),
+  ("group", ["Add", "Group"]),
+  ("subgroup", ["Add", "Subgroup"]),
+  ("semigroup", ["Add", "Semigroup"]),
+  ("magma", ["Add", "Magma"]),
+  ("haar", ["Add", "Haar"]),
+  ("prehaar", ["Add", "Prehaar"]),
+  ("unit", ["Add", "Unit"]),
+  ("units", ["Add", "Units"]),
+  ("cyclic", ["Add", "Cyclic"]),
+  ("semigrp", ["Add", "Semigrp"]),
+  ("grp", ["Add", "Grp"]),
+  ("commute", ["Add", "Commute"]),
+  ("semiconj", ["Add", "Semiconj"]),
+  ("rootable", ["Divisible"]),
+  ("zpowers", ["ZMultiples"]),
+  ("powers", ["Multiples"]),
+  ("multipliable", ["Summable"]),
+  ("gpfree", ["APFree"]),
+  ("quantale", ["Add", "Quantale"]),
+  ("square", ["Even"]),
+  ("mconv", ["Conv"]),
+  ("irreducible", ["Add", "Irreducible"]),
+  ("mlconvolution", ["LConvolution"])]
+
+@[inherit_doc GuessName.GuessNameData.abbreviationDict]
+def abbreviationDict : Std.HashMap String String := .ofList [
+  ("isCancelAdd", "IsCancelAdd"),
+  ("isLeftCancelAdd", "IsLeftCancelAdd"),
+  ("isRightCancelAdd", "IsRightCancelAdd"),
+  ("cancelAdd", "AddCancel"),
+  ("leftCancelAdd", "AddLeftCancel"),
+  ("rightCancelAdd", "AddRightCancel"),
+  ("cancelCommAdd", "AddCancelComm"),
+  ("commAdd", "AddComm"),
+  ("zero_le", "Nonneg"),
+  ("zeroLE", "Nonneg"),
+  ("zero_lt", "Pos"),
+  ("zeroLT", "Pos"),
+  ("lezero", "Nonpos"),
+  ("le_zero", "Nonpos"),
+  ("ltzero", "Neg"),
+  ("lt_zero", "Neg"),
+  ("addSingle", "Single"),
+  ("add_single", "Single"),
+  ("addSupport", "Support"),
+  ("add_support", "Support"),
+  ("addTSupport", "TSupport"),
+  ("add_tsupport", "TSupport"),
+  ("addIndicator", "Indicator"),
+  ("add_indicator", "Indicator"),
+  ("isEven", "Even"),
+  -- "Regular" is well-used in mathlib with various meanings (e.g. in
+  -- measure theory) and a direct translation
+  -- "regular" --> "addRegular" in `nameDict` above seems error-prone.
+  ("isRegular", "IsAddRegular"),
+  ("isLeftRegular", "IsAddLeftRegular"),
+  ("isRightRegular", "IsAddRightRegular"),
+  ("hasFundamentalDomain", "HasAddFundamentalDomain"),
+  ("quotientMeasure", "AddQuotientMeasure"),
+  ("negFun", "InvFun"),
+  ("uniqueProds", "UniqueSums"),
+  ("orderOf", "AddOrderOf"),
+  ("zeroLePart", "PosPart"),
+  ("leZeroPart", "NegPart"),
+  ("isScalarTower", "VAddAssocClass"),
+  ("isOfFinOrder", "IsOfFinAddOrder"),
+  ("isCentralScalar", "IsCentralVAdd"),
+  ("function_addSemiconj", "Function_semiconj"),
+  ("function_addCommute", "Function_commute"),
+  ("divisionAddMonoid", "SubtractionMonoid"),
+  ("subNegZeroAddMonoid", "SubNegZeroMonoid"),
+  ("modularCharacter", "AddModularCharacter")]
+
 /-- The bundle of environment extensions for `to_additive` -/
 def toAdditiveBundle : TranslateData where
   ignoreArgsAttr := ignoreArgsAttr
@@ -287,7 +380,7 @@ def toAdditiveBundle : TranslateData where
   attrName := `to_additive
   changeNumeral := true
   isDual := false
-  guessName := guessToAdditiveName
+  guessNameData := { nameDict, abbreviationDict }
 
 initialize registerBuiltinAttribute {
     name := `to_additive
