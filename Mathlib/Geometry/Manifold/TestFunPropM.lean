@@ -29,12 +29,6 @@ set_option linter.hashCommand false
 #find_model (ModelWithCorners 𝕜)
 
 -- Local hypotheses (no matter if these are standard or make sense).
-set_option trace.Elab.DiffGeo.FunPropM true in
-/--
-trace: [Elab.DiffGeo.FunPropM] metavariable has type ModelWithCorners 𝕜 E H
-[Elab.DiffGeo.FunPropM] Searching for some `ModelWithCorners 𝕜 E H`
-[Elab.DiffGeo.FunPropM] Trying to solve a goal `ModelWithCorners 𝕜 E H`
--/
 #guard_msgs in
 #find_model ModelWithCorners 𝕜 E H
 
@@ -59,6 +53,8 @@ trace: [Elab.DiffGeo.FunPropM] metavariable has type ModelWithCorners 𝕜 E H'
 -/
 #guard_msgs in
 #find_model ModelWithCorners 𝕜 E H'
+
+#exit
 
 -- Normed fields: TODO implement this!
 /-- error: -/
