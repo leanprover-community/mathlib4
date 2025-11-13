@@ -362,7 +362,7 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
   (hf : ∀ z : ℂ, AnalyticAt ℂ R z) (hf1 : ∀ z : ℂ, AnalyticAt ℂ R₁ z)
   (hR₁ : ∀ z, R z  = (z - z₀)^r * R₁ z) :
   ∀ k ≤ r, ∃ R₂ : ℂ → ℂ, (∀ z : ℂ, AnalyticAt ℂ R₂ z) ∧  deriv^[k] R z =
-   (z - z₀)^(r-k) * (r.factorial/(r-k).factorial * R₁ z + (z-z₀)* R₂ z) := by { stop
+   (z - z₀)^(r-k) * (r.factorial/(r-k).factorial * R₁ z + (z-z₀)* R₂ z) := by {
       intros k hkr
       induction' k with k IH
       · use 0
@@ -388,13 +388,14 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
           refine AnalyticAt.deriv ?_
           exact hf z
 
-        have : deriv (fun z => (z - z₀)^(r - k) *
+        ·
+          have : deriv (fun z => (z - z₀)^(r - k) *
             (r.factorial / (r - k).factorial * R₁ z + (z - z₀) * R₂ z)) z =
              (z - z₀) ^ (r - (k + 1)) *
               (↑r.factorial / ↑(r - (k + 1)).factorial * R₁ z + (z - z₀) * R₂ z)
               := sorry
-        have :  deriv (deriv^[k] R) z =
-          deriv (fun z => (z - z₀)^(r - k) *
+          have :  deriv (deriv^[k] R) z =
+            deriv (fun z => (z - z₀)^(r - k) *
             (r.factorial / (r - k).factorial * R₁ z + (z - z₀) * R₂ z)) z := by {
               rw [← iteratedDeriv_eq_iterate]
               rw [← iteratedDeriv_eq_iterate] at hR₂
@@ -403,7 +404,8 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
               rw [deriv_fun_add]
               rw [deriv_fun_mul]
               rw [deriv_fun_mul]
-              simp only [differentiableAt_fun_id, differentiableAt_const, DifferentiableAt.fun_sub,
+              simp only [differentiableAt_fun_id,
+                differentiableAt_const, DifferentiableAt.fun_sub,
                 deriv_fun_pow'', deriv_fun_sub, deriv_id'', deriv_const', sub_zero, mul_one,
                 deriv_div_const, zero_div, zero_mul, zero_add, one_mul]
               sorry
@@ -416,16 +418,25 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
               sorry
               sorry
             }
-        rw [this];clear this
-        rw [deriv_fun_mul]
-        rw [deriv_fun_add]
-        rw [deriv_fun_mul]
-        rw [deriv_fun_mul]
-        simp only [differentiableAt_fun_id, differentiableAt_const, DifferentiableAt.fun_sub,
-          deriv_fun_pow'', deriv_fun_sub, deriv_id'', deriv_const', sub_zero, mul_one,
-          deriv_div_const, zero_div, zero_mul, zero_add, one_mul]
-        sorry
-        sorry
+          rw [this];clear this
+          rw [deriv_fun_mul]
+          rw [deriv_fun_add]
+          rw [deriv_fun_mul]
+          rw [deriv_fun_mul]
+          simp only [differentiableAt_fun_id,
+            differentiableAt_const, DifferentiableAt.fun_sub,
+            deriv_fun_pow'', deriv_fun_sub, deriv_id'', deriv_const', sub_zero, mul_one,
+            deriv_div_const, zero_div, zero_mul, zero_add, one_mul]
+          clear this
+          sorry
+          sorry
+          sorry
+          sorry
+          sorry
+          sorry
+          sorry
+          sorry
+          sorry
 
 
 
@@ -471,6 +482,7 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
         --   }
 
         }
+
 
 
 lemma iterated_deriv_eq_zero_iff_order_eq_n :
@@ -698,11 +710,51 @@ lemma AnalyticOnEq (f g : ℂ → ℂ) (U : Set ℂ) :
       rw [Hinsert] at this ⊢
       intros y Hxy
       have := this Hxy
-      rwa [← Heq _ Hxy]}
+      rwa [← Heq _ Hxy]
+
+      }
 
 lemma AnalyticAtEq (f g : ℂ → ℂ) (U : Set ℂ) (z : ℂ) :
   (hU : U ∈ nhds z)  → z ∈ U →
-  (∀ z ∈ U, f z = g z) → AnalyticAt ℂ f z → AnalyticAt ℂ g z := sorry
+  (∀ z ∈ U, f z = g z) → AnalyticAt ℂ f z → AnalyticAt ℂ g z := by {
+    intros hU hz hfg Hf
+    have := hfg z hz
+    refine AnalyticOnAt g z U hU ?_
+    apply AnalyticOnEq f g U hfg
+    unfold AnalyticAt at Hf
+    unfold AnalyticOn
+    unfold AnalyticWithinAt
+    unfold HasFPowerSeriesAt at Hf
+    unfold HasFPowerSeriesWithinAt at *
+    intros x hx
+    obtain ⟨p,hp⟩ := Hf
+    use p
+    obtain ⟨r, hr, r_pos, Hsum⟩ := hp
+    use r
+    constructor
+    · exact hr
+    · exact r_pos
+    · intros y
+      have : ∀ {y : ℂ}, x + y ∈ insert x U →
+      y ∈ EMetric.ball 0 r → HasSum (fun n ↦ (p n) fun x ↦ y) (f (x + y))
+      := by {
+        sorry
+      }
+      unfold HasSum at this ⊢
+      have Hinsert : insert x U = U := by simp_all [Set.insert_eq_of_mem]
+      rw [Hinsert] at this ⊢
+      intros y Hxy
+      have := this Hxy
+      rwa [← Heq _ Hxy]
+
+
+
+    -- refine (HasFPowerSeriesWithout f p U x ?_).mpr ?_
+    -- ·
+
+    -- sorry
+
+  }
 
 lemma AnalyticOnEquiv (f g : ℂ → ℂ) (U : Set ℂ) :
   (∀ z ∈ U, f z = g z) → (AnalyticOn ℂ f U ↔ AnalyticOn ℂ g U) := by {
