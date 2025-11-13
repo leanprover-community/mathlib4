@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2025 Judith Ludwig and Junyan Xu. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Judith Ludwig, Junyan Xu
+-/
 import Mathlib.Algebra.Group.Subgroup.Defs
 import Mathlib.Algebra.Order.Group.Unbundled.Basic
 import Mathlib.Algebra.Order.Monoid.Defs
@@ -11,6 +16,8 @@ import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.Algebra.Order.Archimedean.Class
 import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Birkhoff
+
+/-! # Convex subgroups of a linearly ordered abelian group -/
 
 variable {α β : Type*} [CommGroup α] [LinearOrder α] [CommGroup β] [LinearOrder β]
 

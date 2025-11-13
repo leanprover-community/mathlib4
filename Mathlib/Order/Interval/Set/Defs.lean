@@ -5,7 +5,6 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Set.Defs
 import Mathlib.Order.Defs.PartialOrder
-import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Intervals
