@@ -1,13 +1,19 @@
 /-
-Copyright (c) 2024 Joël Riou. All rights reserved.
+Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Triangulated.Triangulated
-import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
+import Mathlib.CategoryTheory.ComposableArrows.One
+import Mathlib.CategoryTheory.ComposableArrows.Two
+import Mathlib.CategoryTheory.Triangulated.Functor
 
 /-!
 # Spectral objects in triangulated categories
+
+
+
+## References
+* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
 -/
 
@@ -15,11 +21,10 @@ namespace CategoryTheory
 
 open Category Limits Pretriangulated ComposableArrows
 
-variable (C ι : Type _) [Category C] [Category ι] [HasZeroObject C]
+variable (C ι : Type*) [Category C] [Category ι] [HasZeroObject C]
   [HasShift C ℤ] [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
   {D : Type _} [Category D] [HasZeroObject D] [HasShift D ℤ] [Preadditive D]
   [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D]
-  {A : Type _} [Category A] [Abelian A]
 
 namespace Triangulated
 
@@ -34,6 +39,9 @@ namespace SpectralObject
 
 variable {C ι}
 variable (X : SpectralObject C ι)
+
+def ω₂ : ComposableArrows ι 2 ⥤ Triangle C := by
+  sorry
 
 section
 
@@ -53,8 +61,6 @@ lemma δ_naturality {i' j' k' : ι} (f' : i' ⟶ j') (g' : j' ⟶ k')
   simp only [φ, hαβ] at h
   convert h <;> aesop_cat
 
-section
-
 @[simps!]
 def triangle : Triangle C :=
   Triangle.mk (X.ω₁.map (twoδ₂Toδ₁ f g _ rfl))
@@ -63,12 +69,9 @@ def triangle : Triangle C :=
 lemma triangle_distinguished : X.triangle f g ∈ distTriang C :=
   X.distinguished' (mk₂ f g)
 
-section
-
-variable {f g}
-variable {i' j' k' : ι} {f' : i' ⟶ j'} {g' : j' ⟶ k'}
-
-noncomputable def mapTriangle (φ : mk₂ f g ⟶ mk₂ f' g') :
+variable {f g} in
+noncomputable def mapTriangle
+    {i' j' k' : ι} {f' : i' ⟶ j'} {g' : j' ⟶ k'} (φ : mk₂ f g ⟶ mk₂ f' g') :
     X.triangle f g ⟶ X.triangle f' g' where
   hom₁ := X.ω₁.map ((functorArrows ι 0 1 2).map φ)
   hom₂ := X.ω₁.map ((functorArrows ι 0 2 2).map φ)
@@ -78,8 +81,7 @@ noncomputable def mapTriangle (φ : mk₂ f g ⟶ mk₂ f' g') :
     simp only [← X.ω₁.map_comp]
     congr 1
     ext
-    · dsimp
-      erw [id_comp, comp_id]
+    · simp
     · exact naturality' φ 1 2
   comm₂ := by
     dsimp
@@ -87,25 +89,17 @@ noncomputable def mapTriangle (φ : mk₂ f g ⟶ mk₂ f' g') :
     congr 1
     ext
     · exact naturality' φ 0 1
-    · dsimp
-      erw [id_comp, comp_id]
-  comm₃ := by
-    symm
-    apply X.δ_naturality
-    rfl
-
-end
-
-end
+    · simp
+  comm₃ := (X.δ_naturality _ _ _ _ _ _ (by simp)).symm
 
 end
 
 noncomputable def mapTriangulatedFunctor (F : C ⥤ D) [F.CommShift ℤ] [F.IsTriangulated] :
     SpectralObject D ι where
   ω₁ := X.ω₁ ⋙ F
-  δ' := whiskerRight X.δ' F ≫
-      whiskerLeft (functorArrows ι 0 1 2 ⋙ X.ω₁) (F.commShiftIso (1 : ℤ)).hom
-  distinguished' D := F.map_distinguished _ (X.distinguished' D)
+  δ' := Functor.whiskerRight X.δ' F ≫
+      Functor.whiskerLeft (functorArrows ι 0 1 2 ⋙ X.ω₁) (F.commShiftIso (1 : ℤ)).hom
+  distinguished' D := sorry--F.map_distinguished _ (X.distinguished' D)
 
 end SpectralObject
 
