@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
+import Mathlib.Topology.UnitInterval
 
 /-!
 # Classes for probability measures
@@ -91,6 +92,11 @@ instance isProbabilityMeasure_dite {p : Prop} [Decidable p] {μ : p → Measure 
 instance isProbabilityMeasure_ite {p : Prop} [Decidable p] {μ ν : Measure α}
     [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
     IsProbabilityMeasure (ite p μ ν) := by split <;> infer_instance
+
+open unitInterval in
+instance {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {p : I} :
+    IsProbabilityMeasure (toNNReal p • μ + toNNReal (σ p) • ν) where
+  measure_univ := by simp [← add_smul]
 
 variable [IsProbabilityMeasure μ] {p : α → Prop} {f : β → α}
 
