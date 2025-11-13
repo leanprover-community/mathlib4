@@ -1272,22 +1272,18 @@ theorem Path.tube_subset_homotopy_class {x y : X} {n : ℕ}
       (fun p q hp_a hp_d hp_range hq_range => T.h_U_slsc i_last hp_a hp_d p q hp_range hq_range)
       h_αₙ_range
 
-/-- In an SLSC locally path-connected space, every path p has an open tubular neighborhood
+/--
+In an SLSC locally path-connected space, every path p has an open tubular neighborhood
 contained in its homotopy class.
 
-**Proof outline:**
-1. Apply `exists_partition_in_slsc_neighborhoods` to get partition t and SLSC neighborhoods U
-2. Define the tube T := {p' | ∀ i s, p'([tᵢ, tᵢ₊₁]) ⊆ Uᵢ}
-3. Show T is open by `tube_isOpen` (uses compact-open topology)
-4. Show p ∈ T (by construction, p respects the partition)
-5. Show T ⊆ {p' | Homotopic p' p} by `tube_subset_homotopy_class` (uses ladder homotopy)
-
 This shows that the SLSC property gives us not just any open set around p, but specifically
-an open set where ALL paths are homotopic to p. This is what makes homotopy classes open. -/
+an open set where ALL paths are homotopic to p. This is what makes homotopy classes open.
+-/
 theorem Path.exists_open_tubular_neighborhood_in_homotopy_class
     (hX : SemilocallySimplyConnected X) [LocPathConnectedSpace X]
     {x y : X} (p : Path x y) :
     ∃ (T : Set (Path x y)), IsOpen T ∧ p ∈ T ∧ T ⊆ {p' | Path.Homotopic p' p} := by
+
   -- Step 1: Get partition and SLSC neighborhoods
   obtain ⟨n, part, T_data, hp_in_tube⟩ :=
     Path.exists_partition_in_slsc_neighborhoods hX p
@@ -1335,16 +1331,18 @@ theorem Path.isOpen_setOf_homotopic (hX : SemilocallySimplyConnected X)
   have hp'q : Path.Homotopic p' q := hT_subset hp'
   exact hp'q.trans hq
 
-/-- In a semilocally simply connected, locally path-connected space, the quotient of paths by
+/--
+In a semilocally simply connected, locally path-connected space, the quotient of paths by
 homotopy has discrete topology.
-
-**Proof:** By `isOpen_setOf_homotopic`, every homotopy class H(p) = {p' | Homotopic p' p} is
-open in Path x y. Under the quotient map π : Path x y → Path.Homotopic.Quotient x y, the
-preimage π⁻¹({⟦p⟧}) = H(p) is open. Since preimages of singletons are open, every singleton
-in the quotient is open, giving the discrete topology. -/
+-/
 theorem Path.Homotopic.Quotient.discreteTopology
     (hX : SemilocallySimplyConnected X) [LocPathConnectedSpace X] (x y : X) :
     DiscreteTopology (Path.Homotopic.Quotient x y) := by
+  -- By `isOpen_setOf_homotopic`, every homotopy class H(p) = {p' | Homotopic p' p} is
+  -- open in Path x y. Under the quotient map π : Path x y → Path.Homotopic.Quotient x y, the
+  -- preimage π⁻¹({⟦p⟧}) = H(p) is open. Since preimages of singletons are open, every singleton
+  -- in the quotient is open, giving the discrete topology.
+
   -- Show every singleton is open in the quotient
   rw [discreteTopology_iff_isOpen_singleton]
   intro a
