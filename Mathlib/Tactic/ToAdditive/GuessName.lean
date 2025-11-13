@@ -13,7 +13,7 @@ import Mathlib.Data.String.Defs
 
 open Std
 
-namespace ToAdditive
+namespace Mathlib.Tactic.Translate
 
 /-- A set of strings of names that end in a capital letter.
 * If the string contains a lowercase letter, the string should be split between the first occurrence
@@ -261,4 +261,4 @@ def fixAbbreviation : List String → List String
 def guessToAdditiveName : String → String :=
   guessName nameDict fixAbbreviation
 
-end ToAdditive
+end Mathlib.Tactic.Translate

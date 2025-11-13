@@ -22,17 +22,16 @@ Known limitations:
 
 -/
 
-open Lean Meta Elab Command Std ToAdditive
+namespace Mathlib.Tactic.ToDual
+open Lean Meta Elab Command Std Translate
 
-namespace ToDual
-
-@[inherit_doc to_additive_ignore_args]
+@[inherit_doc TranslateData.ignoreArgsAttr]
 syntax (name := to_dual_ignore_args) "to_dual_ignore_args" (ppSpace num)* : attr
 
-@[inherit_doc to_additive_relevant_arg]
+@[inherit_doc toAdditiveRelevantOption]
 syntax (name := to_dual_relevant_arg) "to_dual_relevant_arg " num : attr
 
-@[inherit_doc to_additive_dont_translate]
+@[inherit_doc TranslateData.dontTranslateAttr]
 syntax (name := to_dual_dont_translate) "to_dual_dont_translate" : attr
 
 /-- The attribute `to_dual` can be used to automatically transport theorems
@@ -186,7 +185,7 @@ def nameDict : String → List String
 def guessToDualName : String → String := guessName nameDict id
 
 /-- The bundle of environment extensions for `to_dual` -/
-def toDualBundle : BundledExts where
+def toDualBundle : TranslateData where
   ignoreArgsAttr := ignoreArgsAttr
   reorderAttr := reorderAttr
   relevantArgAttr := relevantArgAttr
@@ -205,4 +204,4 @@ initialize registerBuiltinAttribute {
     applicationTime := .afterCompilation
   }
 
-end ToDual
+end Mathlib.Tactic.ToDual
