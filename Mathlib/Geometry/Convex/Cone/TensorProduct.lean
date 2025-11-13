@@ -12,13 +12,12 @@ import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 Given ordered modules `M` and `N`, there are in general several distinct possible
 orderings of the tensor product module `M ⊗ N`. Since the ordering of an ordered module
-can be represented by its cone of nonnegative elements, there are consequently several
-distinct ways to construct a cone in `M ⊗ N` from cones in `M` and `N`. Such constructions
+can be represented by its cone of nonnegative elements, there are likewise multiple
+ways to construct a cone in `M ⊗ N` from cones in `M` and `N`. Such constructions
 are referred to as tensor products of cones.
 
 "Sufficiently nice" candidates for tensor products of cones are bounded by the minimal
-and maximal tensor products. These products coincide in special cases but are generally
-distinct.
+and maximal tensor products. These products are generally distinct but coincide in special cases.
 
 We define the minimal and maximal tensor products of pointed cones:
 
