@@ -855,10 +855,6 @@ scoped elab:max "HasMFDerivAt%" ppSpace
   let (srcI, tgtI) ← findModels ef none
   mkAppM ``HasMFDerivAt #[srcI, tgtI, ef, ex, ef']
 
-end Manifold
-
-open Manifold Elab
-
 /-!
 ### Supporting fun_prop for manifolds
 
@@ -971,6 +967,8 @@ def findModelCmd (goal : TSyntax `term) : CommandElabM Unit := do
 -- I'd like a #find_model command which tries to synthesise such a goal, and fails otherwise
 -- XXX: inline `findModelCmd` later, once everything is cleaned up?
 elab (name := findModelCommand) "#find_model " goal:term : command => do findModelCmd goal
+
+end Manifold
 
 section trace
 

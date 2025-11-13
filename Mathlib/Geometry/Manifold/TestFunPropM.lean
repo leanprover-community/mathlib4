@@ -47,6 +47,21 @@ variable (I : ModelWithCorners 𝕜 (E × E) (H × E)) in
 variable (I := I.prod I) in
 #find_model ModelWithCorners 𝕜 (E × E) (ModelProd H H)
 
+set_option trace.Elab.DiffGeo true in
+/--
+error: ⏎
+---
+trace: [Elab.DiffGeo.FunPropM] Searching for some `ModelWithCorners 𝕜 E →L[𝕜] E E →L[𝕜] E`
+[Elab.DiffGeo.FunPropM] Trying to solve a goal `ModelWithCorners 𝕜 E →L[𝕜] E E →L[𝕜] E`
+[Elab.DiffGeo.MDiff] ❌️ Assumption
+  [Elab.DiffGeo.MDiff] Failed with error:
+      Couldn't find a `ModelWithCorners 𝕜 E →L[𝕜] E E →L[𝕜] E` in the local context.
+[Elab.DiffGeo.MDiff] ❌️ Normed space
+  [Elab.DiffGeo.MDiff] Failed with error:
+      elaboration function for `Manifold.«term𝓘(_,_)»` has not been implemented
+        𝓘(?m✝, ?m✝¹)
+-/
+#guard_msgs in
 #find_model ModelWithCorners 𝕜 (E →L[𝕜] E) (E →L[𝕜] E)
 
 -- TODO: why are the error messages being swallowed?
