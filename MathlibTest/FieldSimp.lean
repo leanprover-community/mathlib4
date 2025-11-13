@@ -536,6 +536,14 @@ example {x y : ℚ} (hx : 0 < x) :
   guard_target = (x ^ 2 - y ^ 2) ^ 2 + x ^ 2 * y ^ 2 * 2 ^ 2 < (x ^ 2 + y ^ 2) ^ 2
   exact test_sorry
 
+example {x y : ℚ} :
+    ((x ^ 2 - y ^ 2) / (x ^ 2 + y ^ 2)) ^ 2 + (2 * x * y / (x ^ 2 + y ^ 2)) ^ 2 < 1 := by
+  field_simp !
+  · guard_target = (x ^ 2 - y ^ 2) ^ 2 + x ^ 2 * y ^ 2 * 2 ^ 2 < (x ^ 2 + y ^ 2) ^ 2
+    exact test_sorry
+  · guard_target = 0 < x^2 + y^2
+    exact test_sorry
+
 example {x y : ℚ} (hx : 0 < x) :
     ((x ^ 2 - y ^ 2) / (x ^ 2 + y ^ 2)) ^ 2 + (2 * x * y / (x ^ 2 + y ^ 2)) ^ 2 < 1 := by
   simp only [field]
@@ -550,6 +558,15 @@ example {K : Type*} [Field K] {x : K} (hx : x ^ 5 = 1) (hx0 : x ≠ 0) (hx1 : x 
   calc
     (x ^ 2 + 1) * (x ^ 2 + 1 + x) = (x ^ 5 - 1) / (x - 1) + x ^ 2 := by field
     _ = x ^ 2 := by simp [hx]
+
+example {K : Type*} [Field K] {x : K} (hx : x ^ 5 = 1) (hx0 : x ≠ 0) (hx1 : x - 1 ≠ 0) :
+    (x + 1 / x) ^ 2 + (x + 1 / x) = 1 := by
+  field_simp ! (discharger := skip)
+  · guard_target = (x ^ 2 + 1) * (x ^ 2 + 1 + x) = x ^ 2
+    calc
+      (x ^ 2 + 1) * (x ^ 2 + 1 + x) = (x ^ 5 - 1) / (x - 1) + x ^ 2 := by field
+      _ = x ^ 2 := by simp [hx]
+  · exact hx0
 
 -- used in `field` simproc-set docstring
 example {K : Type*} [Field K] {x : K} (hx : x ^ 5 = 1) (hx0 : x ≠ 0) (hx1 : x - 1 ≠ 0) :
@@ -726,6 +743,17 @@ example {x y : ℚ} (hx : y ≠ 0) {f : ℚ → ℚ} (hf : ∀ t, f t ≠ 0) :
     f (x * y / y) / f (x / y * y) = 1 := by
   field_simp [hf]
 
+-- test for non-duplication of side conditions in subexpressions
+example {x y : ℚ} {f : ℚ → ℚ} (hf : ∀ t, f t ≠ 0) :
+    f (x / x * y / y) / f (y / y) = 1 := by
+  field_simp ! [hf]
+  · guard_target = x ≠ 0
+    exact test_sorry
+  · guard_target = y ≠ 0
+    exact test_sorry
+
+
+
 -- test for consistent atom ordering across subterms
 example {x y : ℚ} (hx : y ≠ 0) {f : ℚ → ℚ} (hf : ∀ t, f t ≠ 0) :
     f (y * x * y / y) / f (x * y / y * y) = 1 := by
@@ -760,6 +788,24 @@ example {V : Type*} [AddCommGroup V] (F : V → ℚ)
   field_simp
   exact test_sorry
 
+example {V : Type*} [AddCommGroup V] (F : V → ℚ) {x y : V} :
+    (F x * F x - (F x * F x + F y * F y - F (x - y) * F (x - y)) / 2) / (F x * F (x - y))
+      * ((F y * F y - (F x * F x + F y * F y - F (x - y) * F (x - y)) / 2) / (F y * F (x - y)))
+      * F x * F y * F (x - y) * F (x - y)
+    - (F x * F x * (F y * F y)
+      - (F x * F x + F y * F y - F (x - y) * F (x - y)) / 2
+        * ((F x * F x + F y * F y - F (x - y) * F (x - y)) / 2))
+    = -((F x * F x + F y * F y - F (x - y) * F (x - y)) / 2 / (F x * F y))
+        * F x * F y * F (x - y) * F (x - y) := by
+  field_simp !
+  · exact test_sorry
+  · guard_target = F (x - y) ≠ 0
+    exact test_sorry
+  · guard_target = F x ≠ 0
+    exact test_sorry
+  · guard_target = F y ≠ 0
+    exact test_sorry
+
 /-! ## Discharger -/
 
 /--
@@ -775,6 +821,14 @@ example (x : ℚ) (h₀ : x ≠ 0) :
     (4 / x)⁻¹ * ((3 * x ^ 3) / x) ^ 2 * ((1 / (2 * x))⁻¹) ^ 3 = 18 * x ^ 8 := by
   field_simp (discharger := simp; assumption)
   ring
+
+/-- Test side conditions with a custom discharger -/
+example (x : ℚ) (h₀ : x ≠ 0) :
+    (4 / x)⁻¹ * ((3 * x ^ 3) / x) ^ 2 * ((1 / (2 * x))⁻¹) ^ 3 = 18 * x ^ 8 := by
+  field_simp ! (discharger := norm_num)
+  · ring
+  · guard_target = x ≠ 0
+    exact h₀
 
 /-- warning: Custom `field_simp` dischargers do not make use of the `field_simp` arguments list -/
 #guard_msgs in

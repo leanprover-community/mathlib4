@@ -725,16 +725,34 @@ cannot discharge the corresponding side conditions. The discharger will try, amo
 denominators of the resulting expression and provide proofs that they are nonzero/positive to enable
 further progress.
 -/
-elab (name := fieldSimp) "field_simp" d:(discharger)? args:(simpArgs)? loc:(location)? :
+elab (name := fieldSimp) "field_simp"tk:"!"?  d:(discharger)? args:(simpArgs)? loc:(location)? :
     tactic => withMainContext do
   let disch ← parseDischarger d args
+  let disch {u : Level} (type : Q(Sort u)) : MetaM Q($type) :=
+    if tk.isSome then do
+      try disch type
+      catch | _ => return ← mkFreshExprMVarQ type
+    else disch type
   let cs ← IO.mkRef {}
   let s ← IO.mkRef {}
   let cleanup r := do r.mkEqTrans (← simpOnlyNames [] r.expr) -- convert e.g. `x = x` to `True`
   let m := CacheAtomM.recurse cs s {}
     ((fun e ↦ (reduceProp e <|> reduceExpr e) ⟨disch⟩)) cleanup
+  let numGoals := (← getGoals).length
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   transformAtLocation (m ·) "field_simp" (failIfUnchanged := true) (mayCloseGoalFromHyp := true) loc
+  if tk.isSome then
+    let mut goals : List MVarId := []
+    for ⟨⟨i, kind⟩, pf⟩ in ← cs.get do
+      let some pf := pf | unreachable!
+      if pf.isMVar then
+        goals := pf.mvarId! :: goals
+    let currGoals ← getGoals
+    if currGoals.length < numGoals then
+      setGoals (goals ++ currGoals)
+    else
+      let g :: l := currGoals | unreachable!
+      setGoals (g :: goals ++ l)
 
 /--
 The goal of the `field_simp` conv tactic is to bring an expression in a (semi-)field over a common
