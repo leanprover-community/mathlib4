@@ -4,13 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, Anatole Dedecker
 -/
 
-import Mathlib.Analysis.Convex.Topology
-import Mathlib.Order.Filter.Basic
-import Mathlib.Topology.ClusterPt
 import Mathlib.Analysis.Convex.Quasiconvex
+import Mathlib.Analysis.Convex.SaddlePoint
 import Mathlib.Topology.Instances.EReal.Lemmas
 import Mathlib.Topology.Sublevel
-import Mathlib.Analysis.Convex.SaddlePoint
 
 /-! # Formalization of the von Neumann Sion theorem
 
