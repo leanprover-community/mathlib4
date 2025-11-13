@@ -320,7 +320,7 @@ lemma isLocalMin.of_subsingleton {V : Type*} [TopologicalSpace V]
     [Subsingleton V] {f : V → ℝ} {x₀ : V} : IsLocalMin f x₀ := by
   simp [IsLocalMin, IsMinFilter]
 
-/-- Second partial derivative test. -/
+/-- The second partial derivative test. -/
 theorem second_derivative_test {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
     [FiniteDimensional ℝ V] {f : V → ℝ} {x₀ : V} {p : FormalMultilinearSeries ℝ V ℝ}
     (h₀ : gradient f x₀ = 0) {r : NNReal} (hr : 0 < r) (h₁ : HasFPowerSeriesOnBall f p x₀ r)
