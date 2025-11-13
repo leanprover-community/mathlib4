@@ -386,20 +386,15 @@ theorem eq_bot_of_liesOver_bot [Nontrivial A] [IsDomain B] [h : P.LiesOver (⊥ 
   eq_bot_of_comap_eq_bot <| ((liesOver_iff _ _).mp h).symm
 
 variable (A) {P} in
-theorem under_ne_bot [Nontrivial A] [IsDomain B] (hP : P ≠ ⊥) : under A P ≠ ⊥ := by
-  contrapose! hP
-  rw [eq_comm, ← liesOver_iff] at hP
-  exact eq_bot_of_liesOver_bot A P
+theorem under_ne_bot [Nontrivial A] [IsDomain B] (hP : P ≠ ⊥) : under A P ≠ ⊥ :=
+  fun h ↦ hP <| eq_bot_of_comap_eq_bot h
 
 /-- `B ⧸ P` is an integral `A ⧸ p`-algebra if `B` is a integral `A`-algebra. -/
 instance Quotient.algebra_isIntegral_of_liesOver : Algebra.IsIntegral (A ⧸ p) (B ⧸ P) :=
   Algebra.IsIntegral.tower_top A
 
-theorem exists_ideal_liesOver_maximal_of_isIntegral [p.IsMaximal] (B : Type*) [CommRing B]
-    [Nontrivial B] [Algebra A B] [NoZeroSMulDivisors A B] [Algebra.IsIntegral A B] :
-    ∃ P : Ideal B, P.IsMaximal ∧ P.LiesOver p := by
-  obtain ⟨P, hm, hP⟩ := exists_ideal_over_maximal_of_isIntegral (S := B) p <| by simp
-  exact ⟨P, hm, ⟨hP.symm⟩⟩
+@[deprecated (since := "2025-11-06")] alias exists_ideal_liesOver_maximal_of_isIntegral :=
+  exists_maximal_ideal_liesOver_of_isIntegral
 
 end IsIntegral
 

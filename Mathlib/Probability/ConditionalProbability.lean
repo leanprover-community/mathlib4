@@ -184,6 +184,9 @@ lemma absolutelyContinuous_cond_univ [IsFiniteMeasure μ] : μ ≪ μ[|univ] := 
   refine absolutelyContinuous_smul ?_
   simp [measure_ne_top]
 
+lemma ae_cond_of_forall_mem (hs : MeasurableSet s) {p : Ω → Prop} (h : ∀ x ∈ s, p x) :
+    ∀ᵐ x ∂μ[|s], p x := ae_smul_measure (ae_restrict_of_forall_mem hs h) _
+
 lemma ae_cond_mem₀ (hs : NullMeasurableSet s μ) : ∀ᵐ x ∂μ[|s], x ∈ s :=
   ae_smul_measure (ae_restrict_mem₀ hs) _
 

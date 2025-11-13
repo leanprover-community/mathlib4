@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
 -/
 import Batteries.Tactic.Trans
+import Lean.Compiler.NoncomputableAttr
 import Lean.Elab.Tactic.Ext
 import Lean.Meta.Tactic.Rfl
 import Lean.Meta.Tactic.Symm
@@ -27,6 +28,7 @@ See the docstring of `ToAdditive.to_additive` for more information
 open Lean Meta Elab Command Std
 
 namespace ToAdditive
+open ToAdditive -- currently needed to enable projection notation
 
 /-- An attribute that tells `@[to_additive]` that certain arguments of this definition are not
 involved when using `@[to_additive]`.
@@ -309,13 +311,13 @@ In this case `to_additive` adds all structure fields to its mapping.
   part of the name (i.e., after the last dot), and replaces common
   name parts (“mul”, “one”, “inv”, “prod”) with their additive versions.
 
-* [todo] Namespaces can be transformed using `map_namespace`. For example:
+* You can add a namespace translation using the following command:
   ```
-  run_cmd to_additive.map_namespace `QuotientGroup `QuotientAddGroup
+  run_meta ToAdditive.insertTranslation `QuotientGroup `QuotientAddGroup
   ```
-
-  Later uses of `to_additive` on declarations in the `QuotientGroup`
-  namespace will be created in the `QuotientAddGroup` namespaces.
+  Later uses of `@[to_additive]` on declarations in the `QuotientGroup`
+  namespace will be created in the `QuotientAddGroup` namespace.
+  This is not necessary if there is already a declaration with name `QuotientGroup`.
 
 * If `@[to_additive]` is called with a `name` argument `new_name`
   /without a dot/, then `to_additive` updates the prefix as described
@@ -1187,7 +1189,7 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
         calling @[{thisAttr}].\nThe preferred method is to use something like \
         `@[{thisAttr} (attr := {appliedAttrs})]`\nto apply the attribute to both \
         {src} and the target declaration {tgt}."
-    warnAttr stx Lean.Elab.Tactic.Ext.extExtension
+    warnAttr stx Lean.Meta.Ext.extExtension
       (fun b n => (b.tree.values.any fun t => t.declName = n)) thisAttr `ext src tgt
     warnAttr stx Lean.Meta.Rfl.reflExt (·.values.contains ·) thisAttr `refl src tgt
     warnAttr stx Lean.Meta.Symm.symmExt (·.values.contains ·) thisAttr `symm src tgt

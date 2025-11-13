@@ -94,6 +94,10 @@ theorem IsPath.mk' {u v : V} {p : G.Walk u v} (h : p.support.Nodup) : p.IsPath :
 theorem isPath_def {u v : V} (p : G.Walk u v) : p.IsPath ↔ p.support.Nodup :=
   ⟨IsPath.support_nodup, IsPath.mk'⟩
 
+theorem isPath_iff_injective_get_support {u v : V} (p : G.Walk u v) :
+    p.IsPath ↔ (p.support.get ·).Injective :=
+  p.isPath_def.trans List.nodup_iff_injective_get
+
 @[simp]
 theorem isPath_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
     (p.copy hu hv).IsPath ↔ p.IsPath := by
@@ -233,14 +237,21 @@ theorem IsPath.concat {p : G.Walk u v} (hp : p.IsPath) (hw : w ∉ p.support)
     (h : G.Adj v w) : (p.concat h).IsPath :=
   (concat_isPath_iff h).mpr ⟨hp, hw⟩
 
-lemma IsPath.disjoint_support_of_append {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
+lemma IsPath.mem_support_iff_exists_append {p : G.Walk u v} (hp : p.IsPath) :
+    w ∈ p.support ↔ ∃ (q : G.Walk u w) (r : G.Walk w v), q.IsPath ∧ r.IsPath ∧ p = q.append r := by
+  refine ⟨fun hw ↦ ?_, fun ⟨q, r, hq, hr, hqr⟩ ↦ p.mem_support_iff_exists_append.mpr ⟨q, r, hqr⟩⟩
+  obtain ⟨q, r, hqr⟩ := p.mem_support_iff_exists_append.mp hw
+  have : (q.append r).IsPath := hqr ▸ hp
+  exact ⟨q, r, this.of_append_left, this.of_append_right, hqr⟩
+
+lemma IsPath.disjoint_support_of_append {p : G.Walk u v} {q : G.Walk v w}
     (hpq : (p.append q).IsPath) (hq : ¬q.Nil) : p.support.Disjoint q.tail.support := by
   have hpq' := hpq.support_nodup
   rw [support_append] at hpq'
   rw [support_tail_of_not_nil q hq]
   exact List.disjoint_of_nodup_append hpq'
 
-lemma IsPath.ne_of_mem_support_of_append {u v w : V} {p : G.Walk u v} {q : G.Walk v w}
+lemma IsPath.ne_of_mem_support_of_append {p : G.Walk u v} {q : G.Walk v w}
     (hpq : (p.append q).IsPath) {x y : V} (hyv : y ≠ v) (hx : x ∈ p.support) (hy : y ∈ q.support) :
     x ≠ y := by
   rintro rfl

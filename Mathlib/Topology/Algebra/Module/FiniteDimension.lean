@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel, Anatole Dedecker
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.Topology.Algebra.Module.Determinant
 import Mathlib.Topology.Algebra.Module.ModuleTopology
@@ -52,18 +51,29 @@ universe u v w x
 
 noncomputable section
 
-section Field
+section FiniteDimensional
 
-variable {𝕜 E F : Type*} [Field 𝕜] [TopologicalSpace 𝕜] [AddCommGroup E] [Module 𝕜 E]
-  [TopologicalSpace E] [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]
-  [ContinuousSMul 𝕜 F]
+variable {𝕜 E F : Type*}
+  [AddCommGroup E] [TopologicalSpace E]
+  [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F]
 
 /-- The space of continuous linear maps between finite-dimensional spaces is finite-dimensional. -/
-instance [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] : FiniteDimensional 𝕜 (E →L[𝕜] F) :=
-  FiniteDimensional.of_injective (ContinuousLinearMap.coeLM 𝕜 : (E →L[𝕜] F) →ₗ[𝕜] E →ₗ[𝕜] F)
+instance ContinuousLinearMap.instModuleFinite [CommRing 𝕜] [Module 𝕜 E] [Module.Finite 𝕜 E]
+    [Module 𝕜 F] [IsNoetherian 𝕜 F] [ContinuousConstSMul 𝕜 F] :
+    Module.Finite 𝕜 (E →L[𝕜] F) :=
+  .of_injective (ContinuousLinearMap.coeLM 𝕜 : (E →L[𝕜] F) →ₗ[𝕜] E →ₗ[𝕜] F)
     ContinuousLinearMap.coe_injective
 
-end Field
+/-- The space of continuous linear maps between finite-dimensional spaces is finite-dimensional.
+
+This theorem is here to match searches looking for `FiniteDimensional` instead of `Module.Finite`.
+We use a strictly more general `ContinuousLinearMap.instModuleFinite` as an instance. -/
+protected theorem ContinuousLinearMap.finiteDimensional [Field 𝕜] [Module 𝕜 E]
+    [FiniteDimensional 𝕜 E] [Module 𝕜 F] [FiniteDimensional 𝕜 F] [ContinuousConstSMul 𝕜 F] :
+    FiniteDimensional 𝕜 (E →L[𝕜] F) :=
+  inferInstance
+
+end FiniteDimensional
 
 section NormedField
 
@@ -193,7 +203,7 @@ variable [CompleteSpace 𝕜]
 `continuous_equivFun_basis` which gives the same result without universe restrictions. -/
 private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Fintype ι]
     (ξ : Basis ι 𝕜 E) : Continuous ξ.equivFun := by
-  letI : UniformSpace E := IsTopologicalAddGroup.toUniformSpace E
+  letI : UniformSpace E := IsTopologicalAddGroup.rightUniformSpace E
   letI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   suffices ∀ n, Fintype.card ι = n → Continuous ξ.equivFun by exact this _ rfl
   intro n hn
@@ -518,7 +528,7 @@ variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
 theorem Submodule.closed_of_finiteDimensional
     [T2Space E] (s : Submodule 𝕜 E) [FiniteDimensional 𝕜 s] :
     IsClosed (s : Set E) :=
-  letI := IsTopologicalAddGroup.toUniformSpace E
+  letI := IsTopologicalAddGroup.rightUniformSpace E
   haveI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   s.complete_of_finiteDimensional.isClosed
 

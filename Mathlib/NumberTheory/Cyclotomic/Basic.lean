@@ -6,6 +6,7 @@ Authors: Riccardo Brasca
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 import Mathlib.NumberTheory.NumberField.Basic
 import Mathlib.FieldTheory.SeparableClosure
+import Mathlib.FieldTheory.Galois.Abelian
 
 /-!
 # Cyclotomic extensions
@@ -105,9 +106,8 @@ theorem iff_singleton :
       (∃ r : B, IsPrimitiveRoot r n) ∧ ∀ x, x ∈ adjoin A {b : B | b ^ n = 1} := by
   simp [isCyclotomicExtension_iff, NeZero.ne]
 
-/-- If `IsCyclotomicExtension ∅ A B`, then the image of `A` in `B` equals `B`. -/
-theorem empty [h : IsCyclotomicExtension ∅ A B] : (⊥ : Subalgebra A B) = ⊤ := by
-  simpa [Algebra.eq_top_iff, isCyclotomicExtension_iff] using h
+instance instSubsingleton [h : IsCyclotomicExtension ∅ A B] : Subsingleton (Subalgebra A B) :=
+  subsingleton_of_bot_eq_top <| by simpa [Algebra.eq_top_iff, isCyclotomicExtension_iff] using h
 
 theorem eq_self_sdiff_zero :
     IsCyclotomicExtension S A B = IsCyclotomicExtension (S \ {0}) A B := by
@@ -124,13 +124,10 @@ theorem singleton_one [h : IsCyclotomicExtension {1} A B] : (⊥ : Subalgebra A 
 
 variable {A B}
 
-/-- If `(⊥ : SubAlgebra A B) = ⊤`, then `IsCyclotomicExtension ∅ A B`. -/
+/-- If `(⊥ : SubAlgebra A B) = ⊤`, then `IsCyclotomicExtension {0} A B`. -/
 theorem singleton_zero_of_bot_eq_top (h : (⊥ : Subalgebra A B) = ⊤) :
-    IsCyclotomicExtension ∅ A B := by
-  refine (iff_adjoin_eq_top _ _ _).2
-    ⟨fun s hs => by simp at hs, _root_.eq_top_iff.2 fun x hx => ?_⟩
-  rw [← h] at hx
-  simpa using hx
+    IsCyclotomicExtension {0} A B :=
+  (iff_adjoin_eq_top _ _ _).2  <| by simpa
 
 variable (A B)
 
@@ -251,7 +248,7 @@ theorem iff_union_singleton_one :
       show S \ {0} = ∅ by aesop, empty_union, show {1} \ {0} = {1} by simp]
     refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩
     · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs _ ↦ ⟨1, by simp [mem_singleton_iff.1 hs]⟩, ?_⟩
-      simp [adjoin_singleton_one, empty]
+      simpa [adjoin_singleton_one] using subsingleton_iff_bot_eq_top.mpr inferInstance
     · refine (iff_adjoin_eq_top _ A _).2 ⟨fun s hs ↦ (notMem_empty s hs).elim, ?_⟩
       simp [singleton_one]
 
@@ -260,7 +257,8 @@ variable {A B}
 /-- If `(⊥ : SubAlgebra A B) = ⊤`, then `IsCyclotomicExtension {1} A B`. -/
 theorem singleton_one_of_bot_eq_top (h : (⊥ : Subalgebra A B) = ⊤) :
     IsCyclotomicExtension {1} A B := by
-  convert (iff_union_singleton_one _ A _).1 (singleton_zero_of_bot_eq_top h)
+  convert eq_self_sdiff_zero _ A B ▸
+    (iff_union_singleton_one _ A _).1 (singleton_zero_of_bot_eq_top h)
   simp
 
 /-- If `Function.Surjective (algebraMap A B)`, then `IsCyclotomicExtension {1} A B`. -/
@@ -373,7 +371,8 @@ protected theorem finite [IsDomain B] [h₁ : Finite S] [h₂ : IsCyclotomicExte
   induction S, h₁ using Set.Finite.induction_on generalizing h₂ A B with
   | empty =>
     refine Module.finite_def.2 ⟨({1} : Finset B), ?_⟩
-    simp [← top_toSubmodule, ← empty, toSubmodule_bot, Submodule.one_eq_span]
+    simp [← top_toSubmodule, ← subsingleton_iff_bot_eq_top.mpr inferInstance,
+      toSubmodule_bot, Submodule.one_eq_span]
   | @insert n S _ _ H =>
     by_cases hn : n = 0
     · have : insert n S \ {0} = S \ {0} := by simp_all
@@ -597,6 +596,12 @@ theorem isGalois [IsCyclotomicExtension S K L] : IsGalois K L := by
   | inv x hx ihx =>
     rw [map_inv₀]
     exact inv_mem ihx
+
+/-- Cyclotomic extensions are abelian. -/
+theorem isAbelianGalois [IsCyclotomicExtension S K L] :
+    IsAbelianGalois K L where
+  __ := isGalois S K L
+  __ := isMulCommutative S K L
 
 /-- Any two `S`-cyclotomic extensions are isomorphic. -/
 noncomputable def algEquiv [IsCyclotomicExtension S K L]
@@ -857,11 +862,6 @@ end CyclotomicRing
 
 end IsDomain
 
--- TODO: move to suitable place
-theorem Polynomial.separable_cyclotomic (n : ℕ) (K : Type*) [Field K] [NeZero (n : K)] :
-    (cyclotomic n K).Separable :=
-  .of_dvd (separable_X_pow_sub_C 1 NeZero.out one_ne_zero) (cyclotomic.dvd_X_pow_sub_one n K)
-
 section IsSepClosed
 
 variable [IsSepClosed K]
@@ -890,11 +890,6 @@ alias IsAlgClosedOfCharZero.isCyclotomicExtension := IsSepClosedOfCharZero.isCyc
 end IsSepClosed
 
 section Subalgebra
-
-theorem IsCyclotomicExtension.empty_eq (C : Subalgebra A B) [hC : IsCyclotomicExtension ∅ A C] :
-    C = ⊥ := by
-  simpa [Subalgebra.range_val] using
-    congr_arg (Subalgebra.map C.val) (IsCyclotomicExtension.empty A C).symm
 
 variable {A B} [IsDomain B]
 
@@ -945,10 +940,10 @@ variable (n₁ n₂ : ℕ) (C₁ C₂ : Subalgebra A B) [h₁ : IsCyclotomicExte
   [h₂ : IsCyclotomicExtension {n₂} A C₂]
 
 theorem IsCyclotomicExtension.le_of_dvd [NeZero n₂] (h : n₁ ∣ n₂) : C₁ ≤ C₂ := by
-  by_cases hn₁ : n₁ = 0
-  · rw [hn₁, zero_dvd_iff] at h
-    exact False.elim <| NeZero.ne n₂ h
-  have : NeZero n₁ := ⟨hn₁⟩
+  have : NeZero n₁ := by
+    constructor
+    rintro rfl
+    exact NeZero.ne n₂ <| eq_zero_of_zero_dvd h
   obtain ⟨ζ₂, hζ₂⟩ := h₂.1 rfl (NeZero.ne n₂)
   replace hζ₂ := hζ₂.map_of_injective (FaithfulSMul.algebraMap_injective C₂ B)
   obtain ⟨d, hd⟩ := h
