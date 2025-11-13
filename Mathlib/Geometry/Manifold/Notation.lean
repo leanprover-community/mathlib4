@@ -935,7 +935,10 @@ def findModelForFunprop22 (g : MVarId) : MetaM <| Option MVarId := do
   match_expr (← withReducible g.getType') with
   | ModelWithCorners k _ E _ _ H _ =>
     match ← findModelForFunprop k E H with
-    | some _e => throwError "TODO: need to turn an expression into an mvarId"
+    | some e =>
+      -- TODO: is this the way? how to do this correctly?
+      g.assign e
+      return g
     | none => throwError "Could not find a `ModelWithCorners {k} {E} {H}`"
   | _ => throwError "Goal is not of the form `ModelWithCorners 𝕜 E H"
 
@@ -951,9 +954,9 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} {E :
 
 example : True := by
   have : ModelWithCorners 𝕜 E H := by
-    sorry -- find_model
+    find_model
   have : True := by
-    sorry -- find_model
+    find_model
   trivial
 
 section trace
