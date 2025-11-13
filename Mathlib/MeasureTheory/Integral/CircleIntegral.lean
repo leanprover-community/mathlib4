@@ -310,7 +310,7 @@ theorem circleIntegrable_sub_zpow_iff {c w : ℂ} {R : ℝ} {n : ℤ} :
     refine (zpow_right_strictAnti₀ this.1 this.2).le_iff_ge.2 (Int.lt_add_one_iff.1 ?_); exact hn
   · rintro (rfl | H)
     exacts [circleIntegrable_zero_radius,
-      ((continuousOn_id.sub continuousOn_const).zpow₀ _ fun z hz =>
+      ((continuousOn_id.sub .const).zpow₀ _ fun z hz =>
         H.symm.imp_left fun (hw : w ∉ sphere c |R|) =>
           sub_ne_zero.2 <| ne_of_mem_of_not_mem hz hw).circleIntegrable']
 
@@ -417,8 +417,8 @@ theorem norm_integral_lt_of_norm_le_const_of_lt {f : ℂ → E} {c : ℂ} {R C :
       simp only [deriv_circleMap, norm_smul, norm_mul, norm_circleMap_zero, abs_of_pos hR, norm_I,
         mul_one]
       refine intervalIntegral.integral_lt_integral_of_continuousOn_of_le_of_exists_lt
-          Real.two_pi_pos ?_ continuousOn_const (fun θ _ => ?_) ⟨θ₀, Ioc_subset_Icc_self hmem, ?_⟩
-      · exact continuousOn_const.mul (hc.comp (continuous_circleMap _ _).continuousOn fun θ _ =>
+          Real.two_pi_pos ?_ .const (fun θ _ => ?_) ⟨θ₀, Ioc_subset_Icc_self hmem, ?_⟩
+      · exact .const.mul (hc.comp (continuous_circleMap _ _).continuousOn fun θ _ =>
           circleMap_mem_sphere _ hR.le _).norm
       · exact mul_le_mul_of_nonneg_left (hf _ <| circleMap_mem_sphere _ hR.le _) hR.le
       · gcongr
@@ -567,7 +567,7 @@ theorem hasSum_two_pi_I_cauchyPowerSeries_integral {f : ℂ → E} {c : ℂ} {R 
   · simp [norm_smul, abs_of_pos hR, mul_left_comm R, inv_mul_cancel_left₀ hR.ne', mul_comm ‖_‖]
   · exact Eventually.of_forall fun _ _ => (summable_geometric_of_lt_one hwR.1 hwR.2).mul_left _
   · simpa only [tsum_mul_left, tsum_geometric_of_lt_one hwR.1 hwR.2] using
-      hf.norm.mul_continuousOn continuousOn_const
+      hf.norm.mul_continuousOn .const
   · refine Eventually.of_forall fun θ _ => HasSum.const_smul _ ?_
     simp only [smul_smul]
     refine HasSum.smul_const ?_ _
@@ -612,7 +612,7 @@ theorem integral_sub_inv_of_mem_ball {c w : ℂ} {R : ℝ} (hw : w ∈ ball c R)
   have hR : 0 < R := dist_nonneg.trans_lt hw
   suffices H : HasSum (fun n : ℕ => ∮ z in C(c, R), ((w - c) / (z - c)) ^ n * (z - c)⁻¹)
       (2 * π * I) by
-    have A : CircleIntegrable (fun _ => (1 : ℂ)) c R := continuousOn_const.circleIntegrable'
+    have A : CircleIntegrable (fun _ => (1 : ℂ)) c R := ContinuousOn.const.circleIntegrable'
     refine (H.unique ?_).symm
     simpa only [smul_eq_mul, mul_one, add_sub_cancel] using
       hasSum_two_pi_I_cauchyPowerSeries_integral A hw

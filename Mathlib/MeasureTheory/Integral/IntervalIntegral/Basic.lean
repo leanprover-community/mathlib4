@@ -339,12 +339,12 @@ theorem continuousOn_mul {f g : ℝ → A} (hf : IntervalIntegrable f μ a b)
 @[simp]
 theorem const_mul {f : ℝ → A} (hf : IntervalIntegrable f μ a b) (c : A) :
     IntervalIntegrable (fun x => c * f x) μ a b :=
-  hf.continuousOn_mul continuousOn_const
+  hf.continuousOn_mul .const
 
 @[simp]
 theorem mul_const {f : ℝ → A} (hf : IntervalIntegrable f μ a b) (c : A) :
     IntervalIntegrable (fun x => f x * c) μ a b :=
-  hf.mul_continuousOn continuousOn_const
+  hf.mul_continuousOn .const
 
 end Mul
 
@@ -1250,7 +1250,7 @@ lemma integral_pos (hab : a < b)
     (hfc : ContinuousOn f (Icc a b)) (hle : ∀ x ∈ Ioc a b, 0 ≤ f x) (hlt : ∃ c ∈ Icc a b, 0 < f c) :
     0 < ∫ x in a..b, f x :=
   (integral_lt_integral_of_continuousOn_of_le_of_exists_lt hab
-    continuousOn_const hfc hle hlt).trans_eq' (by simp)
+    .const hfc hle hlt).trans_eq' (by simp)
 
 section Mono
 

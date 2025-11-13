@@ -109,7 +109,7 @@ lemma inj_L : Injective (L ι) :=
       (Filter.mem_of_superset (Metric.ball_mem_nhds 0 zero_lt_one) ?_) trivial
     rw [← ae_restrict_iff'₀ measurableSet_ball.nullMeasurableSet] at H
     apply Measure.eqOn_of_ae_eq H
-      (p.continuous_eval.comp (continuous_ofLp 2 _)).continuousOn continuousOn_const
+      (p.continuous_eval.comp (continuous_ofLp 2 _)).continuousOn .const
     rw [isOpen_ball.interior_eq]
     apply subset_closure
 
