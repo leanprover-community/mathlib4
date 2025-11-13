@@ -29,6 +29,8 @@ such that loops in that neighborhood are nullhomotopic in the whole space.
   being nullhomotopic.
 * `SemilocallySimplyConnected.of_simplyConnected` - Simply connected spaces are semilocally
   simply connected.
+* `Path.Homotopic.Quotient.discreteTopology` - In a semilocally simply connected,
+  locally path-connected space, the quotient of paths by homotopy has the discrete topology.
 -/
 
 noncomputable section
@@ -193,24 +195,6 @@ theorem exists_uniquePath_neighborhood (hX : SemilocallySimplyConnected X) (x : 
     exact @hU_loops ⟨z, hz⟩ γ hγ_range
   · exact hp_range
   · exact hq_range
-
-/-- The preimage of a singleton homotopy class under the quotient map is the set of all paths
-homotopic to a representative. -/
-theorem Path.Homotopic.fiber_eq (x y : X) (p : Path x y) :
-    letI : Setoid (Path x y) := Path.Homotopic.setoid x y
-    (Quotient.mk' : Path x y → Path.Homotopic.Quotient x y) ⁻¹' {⟦p⟧} =
-      {p' : Path x y | Path.Homotopic p' p} := by
-  ext p'
-  simp [Set.mem_preimage, Set.mem_singleton_iff]
-  exact Quotient.eq
-
-/-- A singleton in the quotient topology is open if and only if its preimage is open. -/
-theorem Path.Homotopic.singleton_isOpen_iff (x y : X) (p : Path x y) :
-    letI : Setoid (Path x y) := Path.Homotopic.setoid x y
-    IsOpen ({⟦p⟧} : Set (Path.Homotopic.Quotient x y)) ↔
-      IsOpen ((Quotient.mk' : Path x y → Path.Homotopic.Quotient x y) ⁻¹' {⟦p⟧}) := by
-  -- The quotient topology is coinduced, so a set is open iff its preimage is open
-  rfl
 
 /-- An SLSC neighborhood can be chosen to be path-connected. In a locally path-connected space,
 we can use the path component of x in an SLSC neighborhood V to get a neighborhood that is both
@@ -457,50 +441,6 @@ theorem TubeData.isOpen {x y : X} {n : ℕ}
     change Continuous fun γ' : Path x y => (γ' : C(unitInterval, X)) (part.t j)
     exact (continuous_eval_const (part.t j)).comp continuous_induced_dom
 
-/-- In a path-connected set U, for any two points a and b in U, there exists a path from a to b
-whose range is contained in U. -/
-theorem exists_path_in_pathConnected_set {a b : X} (U : Set X) (hU : IsPathConnected U)
-    (ha : a ∈ U) (hb : b ∈ U) :
-    ∃ p : Path a b, Set.range p ⊆ U := by
-  obtain ⟨x₀, hx₀, h_joined⟩ := hU
-  have hab : JoinedIn U a b := (h_joined ha).symm.trans (h_joined hb)
-  refine ⟨hab.somePath, ?_⟩
-  intro y hy
-  obtain ⟨t, rfl⟩ := hy
-  exact hab.somePath_mem t
-
-/-- For paths in the same SLSC neighborhood with the same endpoints, we can show they are
-homotopic using the SLSC property applied to paths with same endpoints in U. -/
-theorem Path.homotopic_in_slsc_neighborhood {a b : X} (U : Set X)
-    (h_slsc : ∀ {x y : X} (p q : Path x y), x ∈ U → y ∈ U →
-      Set.range p ⊆ U → Set.range q ⊆ U → Path.Homotopic p q)
-    (γ γ' : Path a b)
-    (hγ : Set.range γ ⊆ U) (hγ' : Set.range γ' ⊆ U)
-    (ha : a ∈ U) (hb : b ∈ U) :
-    Path.Homotopic γ γ' :=
-  h_slsc γ γ' ha hb hγ hγ'
-
-/-- Composing a path with a connecting path and then another path, all in an SLSC neighborhood,
-gives a homotopy relationship useful for pasting segments together. This captures the idea that
-γ · α ≃ α' · γ' when all paths lie in the same SLSC neighborhood. -/
-theorem Path.trans_homotopy_in_slsc {a b c : X} (U : Set X)
-    (h_slsc : ∀ {x y : X} (p q : Path x y), x ∈ U → y ∈ U →
-      Set.range p ⊆ U → Set.range q ⊆ U → Path.Homotopic p q)
-    (h_pathConn : IsPathConnected U)
-    (γ : Path a b) (γ' : Path a c)
-    (hγ : Set.range γ ⊆ U) (hγ' : Set.range γ' ⊆ U)
-    (ha : a ∈ U) (hb : b ∈ U) (hc : c ∈ U) :
-    ∃ (α : Path b c), Set.range α ⊆ U ∧ Path.Homotopic (γ.trans α) γ' := by
-  obtain ⟨α, hα_range⟩ := exists_path_in_pathConnected_set U h_pathConn hb hc
-  refine ⟨α, hα_range, ?_⟩
-  apply h_slsc
-  · exact ha
-  · exact hc
-  · exact Set.range_subset_iff.mpr fun t => by
-      simp only [Path.trans_apply]
-      split_ifs <;> [exact hγ (Set.mem_range_self _); exact hα_range (Set.mem_range_self _)]
-  · exact hγ'
-
 /-! ### Proof strategy for discrete topology on Path.Homotopic.Quotient
 
 The main theorem `Path.Homotopic.Quotient.discreteTopology` states that in a semilocally
@@ -610,8 +550,7 @@ theorem Path.exists_rung_paths {x y : X} {n : ℕ} (γ γ' : Path x y)
     intro j
     have hγ_in_V : γ (part.t j) ∈ T.V j := hγ.passes_through_V j
     have hγ'_in_V : γ' (part.t j) ∈ T.V j := hγ'.passes_through_V j
-    obtain ⟨α_j, hα_range⟩ := exists_path_in_pathConnected_set
-      (T.V j) (T.h_V_pathConn j) hγ_in_V hγ'_in_V
+    obtain ⟨α_j, hα_range⟩ := IsPathConnected.exists_path (T.h_V_pathConn j) hγ_in_V hγ'_in_V
     exact ⟨α_j, hα_range⟩
   choose α hα_range using rung_exists
   -- Prove the range conditions using the subset properties
@@ -621,69 +560,6 @@ theorem Path.exists_rung_paths {x y : X} {n : ℕ} (γ γ' : Path x y)
       _ ⊆ T.U i := T.h_V_left_subset i
   · calc Set.range (α i.succ) ⊆ T.V i.succ := hα_range i.succ
       _ ⊆ T.U i := T.h_V_right_subset i
-
-/-! ### Homotopy algebra: composition rules needed for pasting -/
-
-/-- Congruence for path composition: if p₁ ≃ p₂ and q₁ ≃ q₂, then p₁·q₁ ≃ p₂·q₂. -/
-theorem Path.Homotopic.comp_congr {x y z : X} {p₁ p₂ : Path x y} {q₁ q₂ : Path y z}
-    (hp : Path.Homotopic p₁ p₂) (hq : Path.Homotopic q₁ q₂) :
-    Path.Homotopic (p₁.trans q₁) (p₂.trans q₂) :=
-  Path.Homotopic.hcomp hp hq
-
-/-- Homotopy respects path reversal: if p ≃ q then p.symm ≃ q.symm. -/
-theorem Path.Homotopic.symm_congr {x y : X} {p q : Path x y}
-    (h : Path.Homotopic p q) :
-    Path.Homotopic p.symm q.symm :=
-  Nonempty.map Path.Homotopy.symm₂ h
-
-/-- A path composed with its reverse is homotopic to the constant path. -/
-theorem Path.Homotopic.trans_symm_self {x y : X} (p : Path x y) :
-    Path.Homotopic (p.trans p.symm) (Path.refl x) :=
-  ⟨(Path.Homotopy.reflTransSymm p).symm⟩
-
-/-- The reverse of a path composed with the path is homotopic to the constant path. -/
-theorem Path.Homotopic.symm_trans_self {x y : X} (p : Path x y) :
-    Path.Homotopic (p.symm.trans p) (Path.refl y) :=
-  ⟨(Path.Homotopy.reflSymmTrans p).symm⟩
-
-/-- Path composition is associative up to homotopy. -/
-theorem Path.Homotopic.trans_assoc {w x y z : X} (p : Path w x) (q : Path x y) (r : Path y z) :
-    Path.Homotopic ((p.trans q).trans r) (p.trans (q.trans r)) :=
-  ⟨Path.Homotopy.transAssoc p q r⟩
-
-/-- The constant path is a left identity for composition up to homotopy. -/
-theorem Path.Homotopic.refl_trans {x y : X} (p : Path x y) :
-    Path.Homotopic ((Path.refl x).trans p) p :=
-  ⟨Path.Homotopy.reflTrans p⟩
-
-/-- The constant path is a right identity for composition up to homotopy. -/
-theorem Path.Homotopic.trans_refl {x y : X} (p : Path x y) :
-    Path.Homotopic (p.trans (Path.refl y)) p :=
-  ⟨Path.Homotopy.transRefl p⟩
-
-/-- If p ≃ p' and q ≃ q', then p.trans q ≃ p'.trans q'. -/
-theorem Path.Homotopic.trans_congr {x y z : X} {p p' : Path x y} {q q' : Path y z}
-    (hp : Path.Homotopic p p') (hq : Path.Homotopic q q') :
-    Path.Homotopic (p.trans q) (p'.trans q') := by
-  obtain ⟨F⟩ := hp
-  obtain ⟨G⟩ := hq
-  exact ⟨Path.Homotopy.hcomp F G⟩
-
-/-- Variant of `trans_congr` where the midpoints are merely equal. -/
-theorem Path.Homotopic.trans_congr' {x y y' z : X}
-    {p : Path x y} {q : Path y z} {p' : Path x y'} {q' : Path y' z}
-    (h : y = y')
-    (hp : Path.Homotopic p (p'.cast rfl h)) (hq : Path.Homotopic q (q'.cast h rfl)) :
-    Path.Homotopic (p.trans q) (p'.trans q') := by
-  obtain ⟨F⟩ := hp
-  obtain ⟨G⟩ := hq
-  exact ⟨Path.Homotopy.hcomp F G⟩
-
--- rename
-theorem Path.Homotopic.of_eq {x y : X} {p q : Path x y} (h : p = q) :
-    Path.Homotopic p q := by
-  subst_vars
-  exact Path.Homotopic.refl _
 
 /-! ### Single segment homotopy: the key step in the ladder construction -/
 
@@ -818,45 +694,15 @@ theorem Path.paste_segment_homotopies {x y : X} {n : ℕ} (γ γ' : Path x y)
   -- Chain all homotopies together
   -- γ · α_n ≃ γ_aux n ≃ γ_aux (n-1) ≃ ... ≃ γ_aux 0 ≃ α_0 · γ'
 
-  -- First, build a chain from γ_aux (Fin.last n) down to γ_aux 0 using h_step
-  -- Helper: chain from γ_aux k down to γ_aux 0
-  have h_chain : ∀ (k : ℕ) (hk : k < n + 1), Path.Homotopic (γ_aux ⟨k, hk⟩) (γ_aux 0) := by
-    intro k
-    induction k with
-    | zero =>
-      intro hk
-      exact Path.Homotopic.refl _
-    | succ k ih =>
-      intro hk
-      -- γ_aux ⟨k+1, hk⟩ ≃ γ_aux ⟨k, _⟩ ≃ γ_aux 0
-      -- First step: use h_step to go from k+1 to k
-      have hk' : k < n + 1 := Nat.lt_of_succ_lt hk
-      have step_down : Path.Homotopic (γ_aux ⟨k + 1, hk⟩) (γ_aux ⟨k, hk'⟩) := by
-        -- h_step gives us: ∀ i : Fin n, γ_aux i.succ ≃ γ_aux i.castSucc
-        -- We need to show ⟨k+1, hk⟩ = i.succ and ⟨k, hk'⟩ = i.castSucc for some i : Fin n
-        have hk_n : k < n := Nat.lt_of_succ_lt_succ hk
-        let i : Fin n := ⟨k, hk_n⟩
-        have h_succ : i.succ = ⟨k + 1, hk⟩ := by
-          ext
-          rfl
-        have h_cast : i.castSucc = ⟨k, hk'⟩ := by
-          ext
-          rfl
-        rw [← h_succ, ← h_cast]
-        exact h_step i
-      -- Second step: use induction hypothesis to go from k to 0
-      exact step_down.trans (ih hk')
-
-  -- Apply the chain to go from Fin.last n to 0
-  have h_last_to_zero : Path.Homotopic (γ_aux (Fin.last n)) (γ_aux 0) := by
-    have : (Fin.last n : Fin (n+1)) = ⟨n, Nat.lt_succ_self n⟩ := by
-      ext
-      rfl
-    rw [this]
-    exact h_chain n (Nat.lt_succ_self n)
+  -- Build a chain from any γ_aux i down to γ_aux 0 using h_step
+  have h_chain : ∀ i : Fin (n + 1), Path.Homotopic (γ_aux i) (γ_aux 0) := by
+    intro i
+    induction i using Fin.induction with
+    | zero => exact Path.Homotopic.refl _
+    | succ i ih => exact (h_step i).trans ih
 
   -- Now combine everything: γ · α_n ≃ γ_aux n ≃ γ_aux 0 ≃ α_0 · γ'
-  exact h_final.symm.trans (h_last_to_zero.trans h_base)
+  exact h_final.symm.trans ((h_chain (Fin.last n)).trans h_base)
 
 /-- Stronger version of paste_segment_homotopies that directly gives γ ≃ γ' when the endpoint
 loops live in SLSC neighborhoods.
@@ -951,7 +797,7 @@ theorem Path.paste_segment_homotopies_slsc {x y : X} {n : ℕ} (γ γ' : Path x 
   -- Left side: γ · αₙ ≃ γ · refl y ≃ γ
   have lhs : Path.Homotopic (γ.trans αₙ) γ := by
     have step1 : Path.Homotopic (γ.trans αₙ) (γ.trans (Path.refl y)) :=
-      Path.Homotopic.trans_congr (Path.Homotopic.refl γ) h_αₙ_null
+      Path.Homotopic.hcomp (Path.Homotopic.refl γ) h_αₙ_null
     have step2 : Path.Homotopic (γ.trans (Path.refl y)) γ :=
       Path.Homotopic.trans_refl γ
     exact Path.Homotopic.trans step1 step2
@@ -959,7 +805,7 @@ theorem Path.paste_segment_homotopies_slsc {x y : X} {n : ℕ} (γ γ' : Path x 
   -- Right side: α₀ · γ' ≃ refl x · γ' ≃ γ'
   have rhs : Path.Homotopic (α₀.trans γ') γ' := by
     have step1 : Path.Homotopic (α₀.trans γ') ((Path.refl x).trans γ') :=
-      Path.Homotopic.trans_congr h_α₀_null (Path.Homotopic.refl γ')
+      Path.Homotopic.hcomp h_α₀_null (Path.Homotopic.refl γ')
     have step2 : Path.Homotopic ((Path.refl x).trans γ') γ' :=
       Path.Homotopic.refl_trans γ'
     exact Path.Homotopic.trans step1 step2
@@ -1008,20 +854,8 @@ theorem Path.tube_subset_homotopy_class {x y : X} {n : ℕ}
   -- First, handle the case where n = 0 separately
   cases n with
   | zero =>
-    -- When n = 0, there are no segments (Fin 0 is empty), so the tube structure is degenerate
-    -- In this case, we need a different argument. Since PathInTube requires staying in U segments,
-    -- and there are no segments, this case may be vacuous or require γ = γ'.
-    -- For now, we note that the partition has only one point (0 = 1), which is contradictory.
-    -- This suggests n = 0 shouldn't occur in practice, or needs special handling.
-    exfalso
-    -- The partition has points t : Fin 1 → I with t 0 = 0 and t 0 = 1
-    have h0 : part.t 0 = 0 := part.h_start
-    have h1 : part.t (Fin.last 0) = 1 := part.h_end
-    have : Fin.last 0 = 0 := rfl
-    rw [this] at h1
-    rw [h0] at h1
-    -- Now h1 : 0 = 1 in unitInterval, which is false
-    exact zero_ne_one h1
+    -- When n = 0, the partition is impossible (requires 0 = 1)
+    exfalso; exact IntervalPartition.not_zero part
   | succ n' =>
     -- Now n = n' + 1, so we have at least one segment
     -- α 0 has range in V 0, and V 0 ⊆ U 0 (left endpoint of segment 0)
