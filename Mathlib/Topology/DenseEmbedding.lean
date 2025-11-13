@@ -124,6 +124,10 @@ theorem comap_nhds_neBot (di : IsDenseInducing i) (b : β) : NeBot (comap i (�
     rcases mem_closure_iff_nhds.1 (di.dense b) s hs with ⟨_, ⟨ha, a, rfl⟩⟩
     exact ⟨a, ha⟩
 
+theorem _root_.Dense.comap_val_nhds_neBot {s : Set α} (hs : Dense s) (a : α) :
+    ((𝓝 a).comap ((↑) : s → α)).NeBot :=
+  hs.isDenseInducing_val.comap_nhds_neBot _
+
 variable [TopologicalSpace γ]
 
 /-- If `i : α → β` is a dense inducing, then any function `f : α → γ` "extends" to a function `g =
