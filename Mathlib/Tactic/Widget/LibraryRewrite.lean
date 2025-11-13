@@ -146,8 +146,8 @@ def addRewriteEntry (name : Name) (cinfo : ConstantInfo) :
 def addLocalRewriteEntry (decl : LocalDecl) :
     MetaM (List ((FVarId × Bool) × List (Key × LazyEntry))) :=
   withReducible do
-  let (_, _, eqn) ← forallMetaTelescope decl.type
-  let some (lhs, rhs) := eqOrIff? eqn | return []
+  let (_, _, eqn) ← forallMetaTelescopeReducing decl.type
+  let some (lhs, rhs) := eqOrIff? (← whnf eqn) | return []
   let result := ((decl.fvarId, false), ← initializeLazyEntryWithEta lhs)
   return [result, ((decl.fvarId, true), ← initializeLazyEntryWithEta rhs)]
 
@@ -209,8 +209,8 @@ structure Rewrite where
 def checkRewrite (thm e : Expr) (symm : Bool) : MetaM (Option Rewrite) := do
   withTraceNodeBefore `rw?? (return m!
     "rewriting {e} by {if symm then "← " else ""}{thm}") do
-  let (mvars, binderInfos, eqn) ← forallMetaTelescope (← inferType thm)
-  let some (lhs, rhs) := eqOrIff? eqn | return none
+  let (mvars, binderInfos, eqn) ← forallMetaTelescopeReducing (← inferType thm)
+  let some (lhs, rhs) := eqOrIff? (← whnf eqn) | return none
   let (lhs, rhs) := if symm then (rhs, lhs) else (lhs, rhs)
   let unifies ← withTraceNodeBefore `rw?? (return m! "unifying {e} =?= {lhs}")
     (withReducible (isDefEq lhs e))
@@ -425,8 +425,8 @@ def getRewriteInterfaces (e : Expr) (occ : Option Nat) (loc : Option Name) (exce
 /-- Render the matching side of the rewrite lemma.
 This is shown at the header of each section of rewrite results. -/
 def pattern {α} (type : Expr) (symm : Bool) (k : Expr → MetaM α) : MetaM α := do
-  forallTelescope type fun _ e => do
-    let some (lhs, rhs) := eqOrIff? e | throwError "Expected equation, not {indentExpr e}"
+  forallTelescopeReducing type fun _ e => do
+    let some (lhs, rhs) := eqOrIff? (← whnf e) | throwError "Expected equation, not {indentExpr e}"
     k (if symm then rhs else lhs)
 
 /-- Render the given rewrite results. -/
