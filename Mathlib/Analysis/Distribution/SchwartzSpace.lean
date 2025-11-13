@@ -3,7 +3,6 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 import Mathlib.Analysis.Calculus.LineDeriv.Basic
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
@@ -507,9 +506,6 @@ instance instUniformSpace : UniformSpace 𝓢(E, F) :=
 instance instIsUniformAddGroup : IsUniformAddGroup 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.isUniformAddGroup
 
-@[deprecated (since := "2025-03-31")] alias instUniformAddGroup :=
-  SchwartzMap.instIsUniformAddGroup
-
 instance instLocallyConvexSpace : LocallyConvexSpace ℝ 𝓢(E, F) :=
   (schwartz_withSeminorms ℝ E F).toLocallyConvexSpace
 
@@ -535,7 +531,7 @@ def _root_.HasCompactSupport.toSchwartzMap {f : E → F} (h₁ : HasCompactSuppo
     set g := fun x ↦ ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖
     have hg₁ : Continuous g := by
       apply Continuous.mul (by fun_prop)
-      exact (h₂.of_le (right_eq_inf.mp rfl)).continuous_iteratedFDeriv'.norm
+      exact (h₂.of_le (mod_cast le_top)).continuous_iteratedFDeriv'.norm
     have hg₂ : HasCompactSupport g := (h₁.iteratedFDeriv _).norm.mul_left
     obtain ⟨x₀, hx₀⟩ := hg₁.exists_forall_ge_of_hasCompactSupport hg₂
     exact ⟨g x₀, hx₀⟩
@@ -651,7 +647,7 @@ def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemp
     (fun f => (B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp
       ((f.smooth ⊤).prodMk hg.1)) ?_
   rintro ⟨k, n⟩
-  rcases hg.norm_iteratedFDeriv_le_uniform_aux n with ⟨l, C, hC, hgrowth⟩
+  rcases hg.norm_iteratedFDeriv_le_uniform n with ⟨l, C, hC, hgrowth⟩
   use
     Finset.Iic (l + k, n), ‖B‖ * ((n : ℝ) + (1 : ℝ)) * n.choose (n / 2) * (C * 2 ^ (l + k)),
     by positivity
@@ -709,7 +705,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
   refine mkCLM (fun f => f ∘ g) (fun _ _ _ => by simp) (fun _ _ _ => rfl)
     (fun f => (f.smooth ⊤).comp hg.1) ?_
   rintro ⟨k, n⟩
-  rcases hg.norm_iteratedFDeriv_le_uniform_aux n with ⟨l, C, hC, hgrowth⟩
+  rcases hg.norm_iteratedFDeriv_le_uniform n with ⟨l, C, hC, hgrowth⟩
   rcases hg_upper with ⟨kg, Cg, hg_upper'⟩
   have hCg : 1 ≤ 1 + Cg := by
     refine le_add_of_nonneg_right ?_

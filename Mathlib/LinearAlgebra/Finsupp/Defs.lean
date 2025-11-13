@@ -147,6 +147,9 @@ theorem lmapDomain_apply (f : α → α') (l : α →₀ M) :
     (lmapDomain M R f : (α →₀ M) →ₗ[R] α' →₀ M) l = mapDomain f l :=
   rfl
 
+lemma coe_lmapDomain (f : α → α') : ⇑(lmapDomain M R f) = Finsupp.mapDomain f :=
+  rfl
+
 @[simp]
 theorem lmapDomain_id : (lmapDomain M R _root_.id : (α →₀ M) →ₗ[R] α →₀ M) = LinearMap.id :=
   LinearMap.ext fun _ => mapDomain_id
