@@ -100,9 +100,28 @@ noncomputable def iteratedFDerivQuadraticMap {V : Type*} [NormedAddCommGroup V]
 
 
 /-- A continuous multilinear map is bilinear. -/
-noncomputable def continuousBilinearMap_of_continuousMultilinearMap {V : Type*}
-    [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V]
-    (g : ContinuousMultilinearMap ℝ (fun _ : Fin 2 => V) ℝ) : V →L[ℝ] V →L[ℝ] ℝ := {
+noncomputable def continuousBilinearMap_of_continuousMultilinearMap
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+    {V : Type*}
+    [NormedAddCommGroup V] [NormedSpace 𝕜 V] [FiniteDimensional 𝕜 V]
+    (g : ContinuousMultilinearMap 𝕜 (fun _ : Fin 2 => V) 𝕜) : V →L[𝕜] V →L[𝕜] 𝕜 := {
+  toFun := fun x => {
+    toFun := fun y => g.toFun ![x,y]
+    map_add' := fun a b => by simpa [update₁] using g.map_update_add ![x,b] 1 a b
+    map_smul' := fun m a => by simpa [update₁] using g.map_update_smul ![x,a] 1 m a
+    cont := g.cont.comp' <| continuous_const.matrixVecCons
+            <| continuous_id'.matrixVecCons continuous_const}
+  map_add' := fun a b => by ext c; simpa [update₀] using g.map_update_add ![a,c] 0 a b
+  map_smul' := fun c x => by ext y; simpa [update₀] using g.map_update_smul ![x,y] 0 c x
+  cont := continuous_clm_apply.mpr fun x => g.cont.comp'
+    <| continuous_id'.matrixVecCons continuous_const}
+
+/-- A continuous multilinear map is bilinear. -/
+noncomputable def continuousBilinearMap_of_continuousMultilinearMapGENERAL
+    {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+    {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] [FiniteDimensional 𝕜 V]
+    {W : Type*} [NormedAddCommGroup W] [NormedSpace 𝕜 W] [FiniteDimensional 𝕜 W]
+    (g : ContinuousMultilinearMap 𝕜 (fun _ : Fin 2 => V) 𝕜) : V →L[𝕜] V →L[𝕜] 𝕜 := {
   toFun := fun x => {
     toFun := fun y => g.toFun ![x,y]
     map_add' := fun a b => by simpa [update₁] using g.map_update_add ![x,b] 1 a b
@@ -155,19 +174,16 @@ lemma coercive_of_posdef {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     IsCoercive (continuousBilinearMap_of_continuousMultilinearMap
         (iteratedFDeriv ℝ 2 f x₀)) := by
   nontriviality V
-  have h₀₀ := IsCompact.exists_isMinOn (f := (fun y => (iteratedFDeriv ℝ 2 f x₀) ![y, y]))
-    (isCompact_sphere (0:V) 1) (NormedSpace.sphere_nonempty.mpr (by simp))
-    (by
-      have := @continuous_hessian V _ _ f x₀
-      exact Continuous.continuousOn this)
-  have h₀ : ∃ x : ↑(Metric.sphere 0 1),
-  ∀ (y : ↑(Metric.sphere 0 1)),
+  have h₀ : ∃ x : ↑(Metric.sphere 0 1), ∀ (y : ↑(Metric.sphere 0 1)),
     (fun y ↦ (iteratedFDeriv ℝ 2 f x₀) ![y, y]) x.1 ≤ (fun y ↦ (iteratedFDeriv ℝ 2 f x₀) ![y, y])
       y.1 := by
-    obtain ⟨x,hx⟩ := h₀₀
+    obtain ⟨x,hx⟩ := IsCompact.exists_isMinOn (f := (fun y => (iteratedFDeriv ℝ 2 f x₀) ![y, y]))
+      (isCompact_sphere (0:V) 1) (NormedSpace.sphere_nonempty.mpr (by simp))
+      (Continuous.continuousOn <| @continuous_hessian V _ _ f x₀)
     use ⟨x,hx.1⟩
     intro y
-    simp [IsMinOn,IsMinFilter] at hx
+    simp only [mem_sphere_iff_norm, sub_zero, IsMinOn, IsMinFilter,
+      Filter.eventually_principal] at hx
     apply hx.2
     simp
   simp only [Subtype.forall, mem_sphere_iff_norm, sub_zero, Subtype.exists, exists_prop] at h₀
