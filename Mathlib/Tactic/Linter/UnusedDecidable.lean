@@ -9,14 +9,6 @@ import Mathlib.Tactic.Lemma
 import Batteries
 import Qq
 
-/-! efeg -/
-
-open Qq Lean Meta
-
-run_meta do
-  let e := q(∀ (x : Nat), let i := String; ∀ (y : i), y.length = x)
-  forallBoundedTelescope e (some 2) fun fvars body => logInfo m!"{fvars}\n{body}"
-
 /-!
 # Unused `Decidable*` hypotheses linter
 
@@ -24,38 +16,6 @@ This linter a declaration's type for `Decidable*` instance hypotheses which are 
 statement's type, and could therefore be replaced by `classical` in the proof.
 
 Note that this linter is off by default for now.
-
-## TODO
-
-- It is awkward to associate binders used in the final expression with their originating syntax.
-  But not impossible! We would want to:
-  - look at the local context of the (single) `TermInfo` child of the `CustomInfo` node whose value
-    is of type `Lean.Elab.Term.BodyInfo` and whose `parentDecl?` is the declaration in question.
-  - Then, process these in the same way `elabMutualDef` does (i.e. with `withHeaderSecVars`, an
-    unfortunately `private` definition).
-  - Get the used fvars, search for them as expressions in the infotree, and *hope* that them
-    appearing immediately subsequent to the `TermInfo` for their type is a real invariant and not
-    something that just usually happens. (Why do we need this? Because a binder like
-    `[DecidableEq α]` creates an fvar `inst†` which is not recorded along with any position info in
-    the infotree--only the type has source info. TODO: see how macro expansions in the type affect
-    this. Also see what `include` does to the infotrees, if anything.)
-  - Match the syntax of the type (and its position info) to the command syntax so as to extract the
-    full binder syntax (e.g. to get the syntax `[DecidableEq α]` from the syntax `Decidable Eq`)
-
-  Whew! Ideally, Lean core eventually simply gives us more information to link the used binders
-  with their source syntax, and all this becomes unnecessary.
-
-  Or...we could restrict to `theorem`s in the first place. `theorem`s have the variables unused in the type excluded from the context of the `BodyInfo`.
-
-- It would be nice to try to insert `classical` ourselves. It might be worth creating API for
-  matching against all the necessary syntax here--or, maybe getting to `mkDefView` is sufficient.
-
-- It would also be nice to re-elaborate to check that our suggestion actually works before
-  suggesting it to the user. We might have to be careful here; we're halfway to `elabMutualDef` or
-  similar, so maybe we could just try that. But we'd want to be careful to do it correctly, and
-  avoid any issues arising from the fact that the declaration has already been elaborated.
-
-- Technical: be sure to exclude implementation details when access fvarIds. Also
 -/
 
 open Lean Meta Elab Command Linter
@@ -183,28 +143,19 @@ def _root_.Lean.Syntax.hasRange (stx : Syntax) (range : String.Range) (canonical
 
 
 
+
 private def Lean.Elab.InfoTree.withDeclSigRef {m : Type → Type} [Monad m] [MonadRef m] {α} (cmd : Syntax)
     (t : InfoTree) (decl : Name) (x : m α) : m α := withRef cmd do
   let some idRef := t.getConstRef? decl | x
   let sigRef? := cmd.findSome? fun
     | `(Parser.Command.theorem| theorem $id$[.{$_,*}]? $sig:declSig $_:declVal)
-    | `(«lemma»| lemma $id$[.{$_,*}]? $sig:declSig $_:declVal) =>
+    | `(«lemma»| lemma $id$[.{$_,*}]? $sig:declSig $_:declVal)
+    | `(Parser.Command.instance| $_:attrKind instance $_:optNamedPrio $id$[.{$_,*}]? >> ppIndent declSig >> declVal )=>
       if id.raw.rangeEq idRef then sig else none
     -- TODO: handle `let rec` decls (after `where`), handle defs etc.
     | _ => none
   -- Fall back to `idRef` if `sigRef` is not found or has no position info.
   withRef idRef <| withRef? sigRef? x
-
-/-
-# Next up:
-
-- extract the fvarids from the local context of the node
-- head back up the tree and get the instance type syntax via cursed infotree traversal
-- compare ranges in the `TheoremViewSyntax` to find syntax and/or realize that it's to the right of the `:`, or elsewhere entirely
-- adjust body as appropriate, matching on `by` or not, and checking for `classical`/`open scoped Calssical in` before inserting it
-
--/
-
 
 namespace Mathlib.Linter.UnusedDecidable
 
