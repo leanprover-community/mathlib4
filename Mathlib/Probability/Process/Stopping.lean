@@ -747,7 +747,7 @@ theorem stoppedValue_stoppedProcess :
 
 theorem stoppedValue_stoppedProcess_apply {ω : Ω} (hω : σ ω ≠ ⊤) :
     stoppedValue (stoppedProcess u τ) σ ω = stoppedValue u (fun ω ↦ min (σ ω) (τ ω)) ω := by
-  simp only [stoppedValue_stoppedProcess, ne_eq, hω, not_false_eq_true, reduceIte]
+  simp [stoppedValue_stoppedProcess, hω]
 
 theorem stoppedValue_stoppedProcess_ae_eq {μ : Measure Ω}
     (hσ : ∀ᵐ ω ∂μ, σ ω ≠ ⊤) :
