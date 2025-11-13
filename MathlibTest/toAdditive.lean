@@ -435,7 +435,7 @@ end guessName
 
 end Test
 
-run_meta insertTranslation toAdditiveBundle `localize `add_localize
+insert_to_additive_translation localize add_localize
 
 @[to_additive] def localize.r := Nat
 @[to_additive add_localize] def localize := Nat

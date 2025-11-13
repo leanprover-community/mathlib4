@@ -211,8 +211,7 @@ In this case `to_additive` adds all structure fields to its mapping.
 
 * You can add a namespace translation using the following command:
   ```
-  open ToAdditive in
-  run_meta insertTranslation toAdditiveBundle `QuotientGroup `QuotientAddGroup
+  insert_to_additive_translation QuotientGroup QuotientAddGroup
   ```
   Later uses of `@[to_additive]` on declarations in the `QuotientGroup`
   namespace will be created in the `QuotientAddGroup` namespace.
@@ -395,5 +394,8 @@ initialize registerBuiltinAttribute {
     -- we (presumably) need to run after compilation to properly add the `simp` attribute
     applicationTime := .afterCompilation
   }
+
+elab "insert_to_additive_translation" src:ident tgt:ident : command => do
+  Command.liftCoreM <| insertTranslation toAdditiveBundle src.getId tgt.getId
 
 end Mathlib.Tactic.ToAdditive
