@@ -96,6 +96,7 @@ initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
     ``Lean.Parser.Command.mixfix,
     ``Lean.Parser.Tactic.discharger,
     ``Lean.Parser.Tactic.Conv.conv,
+    ``Lean.Parser.Command.registerTryTactic,
     `Batteries.Tactic.seq_focus,
     `Mathlib.Tactic.Hint.registerHintStx,
     `Mathlib.Tactic.LinearCombination.linearCombination,
