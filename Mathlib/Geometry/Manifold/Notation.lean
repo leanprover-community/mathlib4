@@ -869,6 +869,36 @@ This is similar to the code above, but in fact different as this problem is simp
 Can these be kept in sync? Well, that's hopefully not too necessary.
 -/
 
+-- Try to find a model with
+def findModelSelfInner (_field space : Expr) : TermElabM <| Option <| Expr × Bool := do
+  throwError ""
+
+def fromNormedSpace (field model : Expr) : TermElabM <| Option Expr := do
+  throwError "" -- call the inner method
+
+/-- Try to find a model with corners with given parameters, by returning a `ModelWithCornersSelf`.
+Assume things typecheck, in particular `field` is field and `model` is actually a normed space over
+`field`. Warn for the product of normed spaces instead.
+-/
+def fromSelf (field model top : Expr) : TermElabM Expr := do
+  if !(← withReducible (pureIsDefEq model top)) then
+    throwError "`{model}` is a normed space, but `{top}` is not defeq to it"
+  else if ← withReducible (pureIsDefEq field model) then
+    -- We have a normed space over itself.
+    trace[Elab.DiffGeo.FunProp] "Finding the trivial `{model}` on a normed field"
+    let eK : Term ← Term.exprToSyntax field
+    Term.elabTerm (← ``(𝓘($eK, $eK))) none
+  else
+  -- Otherwise, we'd like to apply a `modelWithCornersSelf` over a normed space.
+  -- We need to check, though, for a bare product of normed spaces.
+
+  -- check: is model a product? if so, recurse into both factors
+  -- determine if they are a product --- both yes, then warn
+  -- crib the logic from the case above
+  throwError ""
+
+  -- test: model on EuclideanSpace also works? (is that the right result?)
+
 /-- Try to find a `ModelWithCorners` for a given base field, model normed space and model
 topological space, using information from the local context and a few hard-coded rules. -/
 -- FIXME: do we need to handle baseInfo again? perhaps not, let's try without!
@@ -895,6 +925,7 @@ where
         | _ => return none
       | throwError "Couldn't find a `ModelWithCorners {field} {model} {top}` in the local context."
     return m
+  -- TODO: replace this with `fromSelf` above!
   fromNormedSpace : TermElabM Expr := do
     if !(← withReducible (pureIsDefEq model top)) then
       throwError "`{model}` is a normed space, but `{top}` is not defeq to it"
