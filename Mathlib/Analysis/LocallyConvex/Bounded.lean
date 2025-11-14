@@ -276,6 +276,11 @@ theorem isVonNBounded_insert (x : E) {s : Set E} :
 
 protected alias ⟨_, IsVonNBounded.insert⟩ := isVonNBounded_insert
 
+/-- Finite sets are bounded. -/
+theorem _root_.Set.Finite.isVonNBounded {s : Set E} (hs : s.Finite) :
+    IsVonNBounded 𝕜 s := fun _ hV ↦
+  (absorbent_nhds_zero hV).absorbs_finite hs
+
 section ContinuousAdd
 
 variable [ContinuousAdd E] {s t : Set E}
@@ -398,7 +403,7 @@ variable (𝕜) in
 theorem Filter.Tendsto.isVonNBounded_range [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
     [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
     {f : ℕ → E} {x : E} (hf : Tendsto f atTop (𝓝 x)) : Bornology.IsVonNBounded 𝕜 (range f) :=
-  letI := IsTopologicalAddGroup.toUniformSpace E
+  letI := IsTopologicalAddGroup.rightUniformSpace E
   haveI := isUniformAddGroup_of_addCommGroup (G := E)
   hf.cauchySeq.totallyBounded_range.isVonNBounded 𝕜
 

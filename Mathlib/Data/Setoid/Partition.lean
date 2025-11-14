@@ -242,7 +242,6 @@ instance Partition.le : LE (Subtype (@IsPartition α)) :=
 /-- Defining a partial order on partitions as the partial order on their induced
 equivalence relations. -/
 instance Partition.partialOrder : PartialOrder (Subtype (@IsPartition α)) where
-  le := (· ≤ ·)
   lt x y := x ≤ y ∧ ¬y ≤ x
   le_refl _ := @le_refl (Setoid α) _ _
   le_trans _ _ _ := @le_trans (Setoid α) _ _ _ _
@@ -477,7 +476,7 @@ theorem piecewise_bij {β : Type*} {f : ι → α → β}
     simp only [fun i ↦ BijOn.image_eq (hf i)]
     rintro i - j - hij
     exact ht.disjoint hij
-  rw [bijective_iff_bijOn_univ, ← hs.iUnion, ← ht.iUnion]
+  rw [← bijOn_univ, ← hs.iUnion, ← ht.iUnion]
   exact bijOn_iUnion hg_bij hg_inj
 
 end IndexedPartition

@@ -34,8 +34,8 @@ namespace CommGrp
 variable {C}
 
 /-- A commutative group object is a group object. -/
-@[simps X]
-def toGrp (A : CommGrp C) : Grp C := ⟨A.X⟩
+@[simps -isSimp X]
+abbrev toGrp (A : CommGrp C) : Grp C := ⟨A.X⟩
 
 @[deprecated (since := "2025-10-13")] alias toGrp_ := toGrp
 

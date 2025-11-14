@@ -893,8 +893,8 @@ protected theorem lipschitz : LipschitzWith 1 e :=
 protected theorem antilipschitz : AntilipschitzWith 1 e :=
   e.isometry.antilipschitz
 
-theorem image_eq_preimage (s : Set E) : e '' s = e.symm ⁻¹' s :=
-  e.toLinearEquiv.image_eq_preimage s
+theorem image_eq_preimage_symm (s : Set E) : e '' s = e.symm ⁻¹' s :=
+  e.toLinearEquiv.image_eq_preimage_symm s
 
 @[simp]
 theorem ediam_image (s : Set E) : EMetric.diam (e '' s) = EMetric.diam s :=
@@ -986,7 +986,18 @@ theorem coe_neg : (neg R : E → E) = fun x => -x :=
 theorem symm_neg : (neg R : E ≃ₗᵢ[R] E).symm = neg R :=
   rfl
 
-variable (R E E₂ E₃)
+variable (R E E₂)
+
+/-- The natural equivalence `E × E₂ ≃ E₂ × E` is a linear isometry. -/
+@[simps!]
+def prodComm [Module R E₂] : E × E₂ ≃ₗᵢ[R] E₂ × E :=
+  ⟨LinearEquiv.prodComm R E E₂, by intro; simp [norm, sup_comm]⟩
+
+@[simp]
+theorem symm_prodComm [Module R E₂] : (prodComm R E E₂).symm = prodComm R E₂ E :=
+  rfl
+
+variable (E₃)
 
 /-- The natural equivalence `(E × E₂) × E₃ ≃ E × (E₂ × E₃)` is a linear isometry. -/
 def prodAssoc [Module R E₂] [Module R E₃] : (E × E₂) × E₃ ≃ₗᵢ[R] E × E₂ × E₃ :=

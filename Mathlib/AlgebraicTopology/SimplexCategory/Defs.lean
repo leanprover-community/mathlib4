@@ -161,11 +161,8 @@ def homEquivFunctor {a b : SimplexCategory} :
   SimplexCategory.homEquivOrderHom.trans OrderHom.equivFunctor
 
 /-- The truncated simplex category. -/
-def Truncated (n : ℕ) :=
+abbrev Truncated (n : ℕ) :=
   ObjectProperty.FullSubcategory fun a : SimplexCategory => a.len ≤ n
-
-instance (n : ℕ) : SmallCategory.{0} (Truncated n) :=
-  ObjectProperty.FullSubcategory.category _
 
 namespace Truncated
 
@@ -214,6 +211,11 @@ abbrev Hom.tr {n : ℕ} {a b : SimplexCategory} (f : a ⟶ b)
     (⟨a, ha⟩ : Truncated n) ⟶ ⟨b, hb⟩ :=
   f
 
+@[simp]
+lemma Hom.tr_id {n : ℕ} (a : SimplexCategory) (ha : a.len ≤ n := by trunc) :
+    Hom.tr (𝟙 a) ha = 𝟙 _ := rfl
+
+@[reassoc]
 lemma Hom.tr_comp {n : ℕ} {a b c : SimplexCategory} (f : a ⟶ b) (g : b ⟶ c)
     (ha : a.len ≤ n := by trunc) (hb : b.len ≤ n := by trunc)
     (hc : c.len ≤ n := by trunc) :

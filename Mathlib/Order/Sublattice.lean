@@ -246,7 +246,7 @@ lemma apply_mem_map_iff (hf : Injective f) : f a ∈ L.map f ↔ a ∈ L := hf.m
 
 lemma map_equiv_eq_comap_symm (f : α ≃o β) (L : Sublattice α) :
     L.map f = L.comap (f.symm : LatticeHom β α) :=
-  SetLike.coe_injective <| f.toEquiv.image_eq_preimage L
+  SetLike.coe_injective <| f.toEquiv.image_eq_preimage_symm L
 
 lemma comap_equiv_eq_map_symm (f : β ≃o α) (L : Sublattice α) :
     L.comap f = L.map (f.symm : LatticeHom α β) := (map_equiv_eq_comap_symm f.symm L).symm

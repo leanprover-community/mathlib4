@@ -15,7 +15,7 @@ Then we show that the quotient type `Associates` is a monoid
 and prove basic properties of this quotient.
 -/
 
-assert_not_exists OrderedCommMonoid Multiset Ring
+assert_not_exists IsOrderedMonoid Multiset Ring
 
 variable {M : Type*}
 
@@ -739,7 +739,7 @@ section CancelCommMonoidWithZero
 theorem isUnit_of_associated_mul [CancelCommMonoidWithZero M] {p b : M} (h : Associated (p * b) p)
     (hp : p ≠ 0) : IsUnit b := by
   obtain ⟨a, ha⟩ := h
-  refine isUnit_of_mul_eq_one b a ((mul_right_inj' hp).mp ?_)
+  refine .of_mul_eq_one a ((mul_right_inj' hp).mp ?_)
   rwa [← mul_assoc, mul_one]
 
 theorem DvdNotUnit.not_associated [CancelCommMonoidWithZero M] {p q : M} (h : DvdNotUnit p q) :

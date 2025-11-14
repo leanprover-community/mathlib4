@@ -22,7 +22,7 @@ protected theorem IsLocalHom.isField [FunLike F A B] [MonoidWithZeroHomClass F A
   mul_inv_cancel h :=
     have ⟨a', he⟩ := hB.mul_inv_cancel ((inj.ne h).trans_eq <| map_zero f)
     let _ := hB.toSemifield
-    ((isUnit_of_mul_eq_one _ _ he).of_map).exists_right_inv
+    (IsUnit.of_mul_eq_one _ he).of_map.exists_right_inv
 
 protected theorem MulEquiv.isField (hB : IsField B) (e : A ≃* B) : IsField A :=
   IsLocalHom.isField e.injective hB

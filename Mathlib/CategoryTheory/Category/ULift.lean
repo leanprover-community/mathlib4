@@ -19,7 +19,7 @@ instance on `ULift C` where `C` is a type with a category instance.
 3. `CategoryTheory.ULift.equivalence` is the categorical equivalence between
   `C` and `ULift C`.
 
-# ULiftHom
+## ULiftHom
 
 Given a type `C : Type u`, `ULiftHom.{w} C` is just an alias for `C`.
 If we have `category.{v} C`, then `ULiftHom.{w} C` is endowed with a category instance
@@ -28,7 +28,7 @@ whose morphisms are obtained by applying `ULift.{w}` to the morphisms from `C`.
 This is a category equivalent to `C`. The forward direction of the equivalence is `ULiftHom.up`,
 the backward direction is `ULiftHom.down` and the equivalence is `ULiftHom.equiv`.
 
-# AsSmall
+## AsSmall
 
 This file also contains a construction which takes a type `C : Type u` with a
 category instance `Category.{v} C` and makes a small category

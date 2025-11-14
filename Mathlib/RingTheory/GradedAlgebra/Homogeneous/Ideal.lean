@@ -562,11 +562,6 @@ open GradedRing SetLike.GradedMonoid DirectSum
 refers to `⨁_{i>0} 𝒜ᵢ`, or equivalently `{a | a₀ = 0}`. This definition is used in `Proj`
 construction where `ι` is always `ℕ` so the irrelevant ideal is simply elements with `0` as
 0-th coordinate.
-
-# Future work
-Here in the definition, `ι` is assumed to be `CanonicallyOrderedAddCommMonoid`. However, the notion
-of irrelevant ideal makes sense in a more general setting by defining it as the ideal of elements
-with `0` as i-th coordinate for all `i ≤ 0`, i.e. `{a | ∀ (i : ι), i ≤ 0 → aᵢ = 0}`.
 -/
 def HomogeneousIdeal.irrelevant : HomogeneousIdeal 𝒜 :=
   ⟨RingHom.ker (GradedRing.projZeroRingHom 𝒜), fun i r (hr : (decompose 𝒜 r 0 : A) = 0) => by

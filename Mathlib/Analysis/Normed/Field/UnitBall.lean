@@ -51,9 +51,6 @@ protected theorem Metric.unitBall.coe_mul [NonUnitalSeminormedRing 𝕜] (x y : 
     ↑(x * y) = (x * y : 𝕜) :=
   rfl
 
-@[deprecated (since := "2025-04-18")]
-alias coe_mul_unitBall := Metric.unitBall.coe_mul
-
 instance Metric.unitBall.instZero [Zero 𝕜] [PseudoMetricSpace 𝕜] : Zero (ball (0 : 𝕜) 1) :=
   ⟨⟨0, by simp⟩⟩
 
@@ -111,9 +108,6 @@ protected theorem Metric.unitClosedBall.coe_mul [NonUnitalSeminormedRing 𝕜]
     (x y : closedBall (0 : 𝕜) 1) : ↑(x * y) = (x * y : 𝕜) :=
   rfl
 
-@[deprecated (since := "2025-04-18")]
-alias coe_mul_unitClosedBall := Metric.unitClosedBall.coe_mul
-
 instance Metric.unitClosedBall.instZero [Zero 𝕜] [PseudoMetricSpace 𝕜] :
     Zero (closedBall (0 : 𝕜) 1) where
   zero := ⟨0, by simp⟩
@@ -152,9 +146,6 @@ protected theorem Metric.unitClosedBall.coe_one [SeminormedRing 𝕜] [NormOneCl
     ((1 : closedBall (0 : 𝕜) 1) : 𝕜) = 1 :=
   rfl
 
-@[deprecated (since := "2025-04-18")]
-alias coe_one_unitClosedBall := Metric.unitClosedBall.coe_one
-
 @[simp, norm_cast]
 protected theorem Metric.unitClosedBall.coe_eq_one [SeminormedRing 𝕜] [NormOneClass 𝕜]
     {a : closedBall (0 : 𝕜) 1} : (a : 𝕜) = 1 ↔ a = 1 :=
@@ -164,9 +155,6 @@ protected theorem Metric.unitClosedBall.coe_eq_one [SeminormedRing 𝕜] [NormOn
 protected theorem Metric.unitClosedBall.coe_pow [SeminormedRing 𝕜] [NormOneClass 𝕜]
     (x : closedBall (0 : 𝕜) 1) (n : ℕ) : ↑(x ^ n) = (x : 𝕜) ^ n :=
   rfl
-
-@[deprecated (since := "2025-04-18")]
-alias coe_pow_unitClosedBall := Metric.unitClosedBall.coe_pow
 
 instance Metric.unitClosedBall.instMonoidWithZero [SeminormedRing 𝕜] [NormOneClass 𝕜] :
     MonoidWithZero (closedBall (0 : 𝕜) 1) where
@@ -199,9 +187,6 @@ theorem Metric.unitSphere.coe_inv [NormedDivisionRing 𝕜] (x : sphere (0 : �
     ↑x⁻¹ = (x⁻¹ : 𝕜) :=
   rfl
 
-@[deprecated (since := "2025-04-18")]
-alias coe_inv_unitSphere := Metric.unitSphere.coe_inv
-
 instance Metric.unitSphere.instDiv [NormedDivisionRing 𝕜] : Div (sphere (0 : 𝕜) 1) where
   div x y := .mk (x / y) <| mem_sphere_zero_iff_norm.2 <| by
     rw [norm_div, mem_sphere_zero_iff_norm.1 x.2, mem_sphere_zero_iff_norm.1 y.coe_prop, div_one]
@@ -211,9 +196,6 @@ protected theorem Metric.unitSphere.coe_div [NormedDivisionRing 𝕜] (x y : sph
     ↑(x / y) = (x / y : 𝕜) :=
   rfl
 
-@[deprecated (since := "2025-04-18")]
-alias coe_div_unitSphere := Metric.unitSphere.coe_div
-
 instance Metric.unitSphere.instZPow [NormedDivisionRing 𝕜] : Pow (sphere (0 : 𝕜) 1) ℤ where
   pow x n := .mk ((x : 𝕜) ^ n) <| by
     rw [mem_sphere_zero_iff_norm, norm_zpow, mem_sphere_zero_iff_norm.1 x.coe_prop, one_zpow]
@@ -222,9 +204,6 @@ instance Metric.unitSphere.instZPow [NormedDivisionRing 𝕜] : Pow (sphere (0 :
 theorem Metric.unitSphere.coe_zpow [NormedDivisionRing 𝕜] (x : sphere (0 : 𝕜) 1) (n : ℤ) :
     ↑(x ^ n) = (x : 𝕜) ^ n :=
   rfl
-
-@[deprecated (since := "2025-04-18")]
-alias coe_zpow_unitSphere := Metric.unitSphere.coe_zpow
 
 instance Metric.unitSphere.instMonoid [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
     Monoid (sphere (0 : 𝕜) 1) :=
@@ -239,24 +218,15 @@ protected theorem Metric.unitSphere.coe_one [SeminormedRing 𝕜] [NormMulClass 
     ((1 : sphere (0 : 𝕜) 1) : 𝕜) = 1 :=
   rfl
 
-@[deprecated (since := "2025-04-18")]
-alias coe_one_unitSphere := Metric.unitSphere.coe_one
-
 @[simp, norm_cast]
 theorem Metric.unitSphere.coe_mul [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜]
     (x y : sphere (0 : 𝕜) 1) : ↑(x * y) = (x * y : 𝕜) :=
   rfl
 
-@[deprecated (since := "2025-04-18")]
-alias coe_mul_unitSphere := Metric.unitSphere.coe_mul
-
 @[simp, norm_cast]
 theorem Metric.unitSphere.coe_pow [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜]
     (x : sphere (0 : 𝕜) 1) (n : ℕ) : ↑(x ^ n) = (x : 𝕜) ^ n :=
   rfl
-
-@[deprecated (since := "2025-04-18")]
-alias coe_pow_unitSphere := Metric.unitSphere.coe_pow
 
 /-- Monoid homomorphism from the unit sphere in a normed division ring to the group of units. -/
 def unitSphereToUnits (𝕜 : Type*) [NormedDivisionRing 𝕜] : sphere (0 : 𝕜) 1 →* Units 𝕜 :=

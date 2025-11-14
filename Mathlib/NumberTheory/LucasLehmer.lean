@@ -449,7 +449,7 @@ lemma pow_ω [Fact q.Prime] (odd : Odd q)
   have coe : (2 : X q) = (2 : ZMod q) := by rw [map_ofNat]
   rw [coe, ← RingHom.map_pow, pow2, ← coe,
     (by ring : (-2 : X q) = 2 * -1)] at this
-  refine (isUnit_of_mul_eq_one (2 : X q) ((q + 1) / 2 : ℕ) ?_).mul_left_cancel this
+  refine (IsUnit.of_mul_eq_one (M := X q) ↑((q + 1) / 2) ?_).mul_left_cancel this
   norm_cast
   simp [Nat.mul_div_cancel' odd.add_one.two_dvd]
 

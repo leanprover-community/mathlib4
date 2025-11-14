@@ -161,7 +161,7 @@ theorem iff_of_openCover (𝒰 : Y.OpenCover) :
   ⟨fun H _ ↦ of_isPullback (.of_hasPullback _ _) H, of_openCover _⟩
 
 lemma of_range_subset_iSup [P.RespectsRight @IsOpenImmersion] {ι : Type*} (U : ι → Y.Opens)
-    (H : Set.range f.base ⊆ (⨆ i, U i : Y.Opens)) (hf : ∀ i, P (f ∣_ U i)) : P f := by
+    (H : Set.range f ⊆ (⨆ i, U i : Y.Opens)) (hf : ∀ i, P (f ∣_ U i)) : P f := by
   let g : X ⟶ (⨆ i, U i : Y.Opens) := IsOpenImmersion.lift (Scheme.Opens.ι _) f (by simpa using H)
   rw [← IsOpenImmersion.lift_fac (⨆ i, U i).ι f (by simpa using H)]
   apply MorphismProperty.RespectsRight.postcomp (Q := @IsOpenImmersion) _ inferInstance

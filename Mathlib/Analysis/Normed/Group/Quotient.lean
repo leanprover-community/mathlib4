@@ -84,7 +84,7 @@ includes a uniform space structure which includes a topological space structure,
 with propositional fields asserting compatibility conditions.
 The usual way to define a `SeminormedAddCommGroup` is to let Lean build a uniform space structure
 using the provided norm, and then trivially build a proof that the norm and uniform structure are
-compatible. Here the uniform structure is provided using `IsTopologicalAddGroup.toUniformSpace`
+compatible. Here the uniform structure is provided using `IsTopologicalAddGroup.rightUniformSpace`
 which uses the topological structure and the group structure to build the uniform structure. This
 uniform structure induces the correct topological structure by construction, but the fact that it
 is compatible with the norm is not obvious; this is where the mathematical content explained in
@@ -203,7 +203,7 @@ variable (S) in
 /-- The seminormed group structure on the quotient by a subgroup. -/
 @[to_additive /-- The seminormed group structure on the quotient by an additive subgroup. -/]
 noncomputable instance instSeminormedCommGroup : SeminormedCommGroup (M ⧸ S) where
-  toUniformSpace := IsTopologicalGroup.toUniformSpace (M ⧸ S)
+  toUniformSpace := IsTopologicalGroup.rightUniformSpace (M ⧸ S)
   __ := groupSeminorm.toSeminormedCommGroup
   uniformity_dist := by
     rw [uniformity_eq_comap_nhds_one', (nhds_one_hasBasis.comap _).eq_biInf]

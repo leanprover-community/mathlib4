@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Etienne Marion
 -/
 import Mathlib.Analysis.InnerProductSpace.Positive
+import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 import Mathlib.MeasureTheory.SpecificCodomains.WithLp
+import Mathlib.Probability.Moments.Basic
 import Mathlib.Probability.Moments.CovarianceBilinDual
 
 /-!
@@ -102,6 +104,17 @@ lemma isPosSemidef_covarianceBilin [IsFiniteMeasure μ] :
   eq := covarianceBilin_comm
   nonneg := covarianceBilin_self_nonneg
 
+lemma covarianceBilin_map {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+    [MeasurableSpace F] [BorelSpace F] [SecondCountableTopology F] [CompleteSpace F]
+    [CompleteSpace E] [IsFiniteMeasure μ] (h : MemLp id 2 μ) (L : E →L[ℝ] F) (u v : F) :
+    covarianceBilin (μ.map L) u v = covarianceBilin μ (L.adjoint u) (L.adjoint v) := by
+  rw [covarianceBilin_apply, covarianceBilin_apply h]
+  · simp_rw [id, L.integral_id_map (h.integrable (by simp))]
+    rw [integral_map]
+    · simp_rw [← map_sub, ← L.adjoint_inner_left]
+    all_goals fun_prop
+  · exact memLp_map_measure_iff (by fun_prop) (by fun_prop) |>.2 (L.comp_memLp' h)
+
 lemma covarianceBilin_map_const_add [CompleteSpace E] [IsProbabilityMeasure μ] (c : E) :
     covarianceBilin (μ.map (fun x ↦ c + x)) = covarianceBilin μ := by
   by_cases h : MemLp id 2 μ
@@ -151,7 +164,7 @@ lemma covarianceBilin_apply_pi {ι Ω : Type*} [Fintype ι] {mΩ : MeasurableSpa
   have (i : ι) := (hX i).aemeasurable
   nth_rw 1 [covarianceBilin_apply_eq_cov, covariance_map_fun, ← (basisFun ι ℝ).sum_repr' x,
     ← (basisFun ι ℝ).sum_repr' y]
-  · simp_rw [sum_inner, real_inner_smul_left, basisFun_inner, PiLp.toLp_apply]
+  · simp_rw [sum_inner, real_inner_smul_left, basisFun_inner]
     rw [covariance_fun_sum_fun_sum]
     · refine Finset.sum_congr rfl fun i _ ↦ Finset.sum_congr rfl fun j _ ↦ ?_
       rw [covariance_mul_left, covariance_mul_right]

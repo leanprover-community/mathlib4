@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
 import Mathlib.Algebra.Order.Floor.Semifield
+import Mathlib.Analysis.Normed.Group.FunctionSeries
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Tactic.Rify
 
@@ -27,7 +28,7 @@ representations of reals as sequences of digits in positional system.
 namespace Real
 
 /-- `ofDigits` takes a sequence of digits `(d₀, d₁, ...)` in base `b` and returns the
-  real numnber `0.d₀d₁d₂... = ∑ᵢ(dᵢ/bⁱ)`. This auxiliary definition `ofDigitsTerm` sends the
+  real number `0.d₀d₁d₂... = ∑ᵢ(dᵢ/bⁱ)`. This auxiliary definition `ofDigitsTerm` sends the
   sequence to the function sending `i` to `dᵢ/bⁱ`. -/
 noncomputable def ofDigitsTerm {b : ℕ} (digits : ℕ → Fin b) : ℕ → ℝ :=
   fun i ↦ (digits i) * ((b : ℝ) ^ (i + 1))⁻¹
@@ -73,7 +74,7 @@ theorem ofDigits_le_one {b : ℕ} (digits : ℕ → Fin b) : ofDigits digits ≤
   · simp_rw [pow_succ', mul_inv, ← inv_pow, ← mul_assoc]
     rw [tsum_mul_left, tsum_geometric_of_lt_one (by positivity) (by simp [inv_lt_one_iff₀, hb])]
     have := sub_pos.mpr hb
-    field_simp
+    field
   · simp_rw [pow_succ', mul_inv, ← inv_pow, ← mul_assoc]
     refine Summable.mul_left _ (summable_geometric_of_lt_one (by positivity) ?_)
     simp [inv_lt_one_iff₀, hb]
@@ -153,5 +154,26 @@ theorem ofDigits_digits {b : ℕ} [NeZero b] {x : ℝ} (hb : 1 < b) (hx : x ∈ 
   rw [← Summable.hasSum_iff]
   · exact hasSum_ofDigitsTerm_digits x hb hx
   · exact summable_ofDigitsTerm
+
+theorem continuous_ofDigits {b : ℕ} : Continuous (@ofDigits b) := by
+  match b with
+  | 0 => fun_prop
+  | 1 => fun_prop
+  | n + 2 =>
+    obtain ⟨hb0, hb⟩ : 0 < n + 2 ∧ 1 < n + 2 := by grind
+    generalize n + 2 = b at hb
+    rify at hb0 hb
+    refine continuous_tsum (u := fun i ↦ (b : ℝ)⁻¹ ^ i) ?_ ?_ fun n x ↦ ?_
+    · simp only [ofDigitsTerm]
+      fun_prop
+    · exact summable_geometric_of_lt_one (by positivity) ((inv_lt_one_of_one_lt₀ hb))
+    · simp only [norm_eq_abs, abs_of_nonneg ofDigitsTerm_nonneg, inv_pow]
+      apply ofDigitsTerm_le.trans
+      calc
+        _ ≤ b * ((b : ℝ) ^ (n + 1))⁻¹ := by
+          gcongr
+          linarith
+        _ = _ := by
+          grind
 
 end Real

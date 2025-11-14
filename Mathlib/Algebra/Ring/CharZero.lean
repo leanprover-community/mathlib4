@@ -73,6 +73,12 @@ variable [Semiring R] [CharZero R]
 @[simp] lemma Nat.cast_pow_eq_one {a : ℕ} (hn : n ≠ 0) : (a : R) ^ n = 1 ↔ a = 1 := by
   simp [← cast_pow, cast_eq_one, hn]
 
+variable [IsCancelMulZero R]
+
+/-- A characteristic zero domain is torsion-free. -/
+instance (priority := 100) IsAddTorsionFree.of_isCancelMulZero_charZero : IsAddTorsionFree R where
+  nsmul_right_injective n hn a b hab := by let : CancelMonoidWithZero R := {}; simpa [hn] using hab
+
 end Semiring
 
 section NonAssocRing

@@ -17,11 +17,17 @@ We develop further preliminaries required for the theorem, up to the sum transfo
 ## Main definitions and results
 
 * `AkraBazziRecurrence T g a b r`: the predicate stating that `T : ℕ → ℝ` satisfies an Akra-Bazzi
-  recurrence with parameters `g`, `a`, `b` and `r` as above.
-* `sumTransform`: The transformation which turns a function `g` into
-  `n^p * ∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)`.
-* `asympBound`: The asymptotic bound satisfied by an Akra-Bazzi recurrence, namely
-  `n^p (1 + ∑ g(u) / u^(p+1))`
+  recurrence with parameters `g`, `a`, `b` and `r` as above, together with basic bounds on `r i n`
+  and positivity of `T`.
+* `AkraBazziRecurrence.smoothingFn`: the smoothing function $\varepsilon(x) = 1 / \log x$ used in
+  the inductive estimates, along with monotonicity, differentiability, and asymptotic properties.
+* `AkraBazziRecurrence.p`: the unique Akra–Bazzi exponent characterized by $\sum_i a_i\,(b_i)^p = 1`
+  and supporting analytical lemmas such as continuity and injectivity of the defining sum.
+* `AkraBazziRecurrence.sumTransform`: the transformation that turns a function `g` into
+  `n^p * ∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)` and its eventual comparison with multiples of `g n`.
+* `AkraBazziRecurrence.asympBound`: the asymptotic bound satisfied by an Akra-Bazzi recurrence,
+  namely `n^p (1 + ∑ g(u) / u^(p+1))`, together with positivity statements along the branches
+  `r i n`.
 
 
 ## References
@@ -532,9 +538,9 @@ lemma sumCoeffsExp_p_eq_one : ∑ i, a i * (b i) ^ p a b = 1 := by
 ### The sum transform
 
 This section defines the "sum transform" of a function `g` as
-`∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)`, and uses it to define `asympBound` as the bound satisfied
-by an Akra-Bazzi recurrence, namely `n^p (1 + ∑_{u < n} g(u) / u^(p+1))`. Here, the exponent `p`
-refers to the one established in the previous section.
+`∑ u ∈ Finset.Ico n₀ n, g u / u ^ (p + 1)`, and uses it to define `asympBound` as the bound
+satisfied by an Akra-Bazzi recurrence, namely `n^p (1 + ∑_{u < n} g(u) / u^(p+1))`. Here, the
+exponent `p` refers to the one established in the previous section.
 
 Several properties of the sum transform are then proven.
 -/

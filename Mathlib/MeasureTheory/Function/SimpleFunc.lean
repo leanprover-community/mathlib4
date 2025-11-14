@@ -439,13 +439,8 @@ theorem range_one [Nonempty α] [One β] : (1 : α →ₛ β).range = {1} :=
 
 @[simp]
 theorem range_eq_empty_of_isEmpty {β} [hα : IsEmpty α] (f : α →ₛ β) : f.range = ∅ := by
-  rw [← Finset.not_nonempty_iff_eq_empty]
-  by_contra h
-  obtain ⟨y, hy_mem⟩ := h
-  rw [SimpleFunc.mem_range, Set.mem_range] at hy_mem
-  obtain ⟨x, hxy⟩ := hy_mem
-  rw [isEmpty_iff] at hα
-  exact hα x
+  ext
+  simp
 
 theorem eq_zero_of_mem_range_zero [Zero β] : ∀ {y : β}, y ∈ (0 : α →ₛ β).range → y = 0 :=
   @(forall_mem_range.2 fun _ => rfl)

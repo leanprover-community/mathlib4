@@ -668,6 +668,29 @@ lemma isBigO_deriv_rpow_const_atTop (p : ℝ) :
   case inr =>
     exact (isTheta_deriv_rpow_const_atTop hp).1
 
+variable {a : ℝ}
+
+theorem HasDerivWithinAt.const_rpow (ha : 0 < a) (hf : HasDerivWithinAt f f' s x) :
+    HasDerivWithinAt (a ^ f ·) (Real.log a * f' * a ^ f x) s x := by
+  convert (hasDerivWithinAt_const x s a).rpow hf ha using 1
+  ring
+
+theorem HasDerivAt.const_rpow (ha : 0 < a) (hf : HasDerivAt f f' x) :
+    HasDerivAt (a ^ f ·) (Real.log a * f' * a ^ f x) x := by
+  rw [← hasDerivWithinAt_univ] at *
+  exact hf.const_rpow ha
+
+theorem derivWithin_const_rpow (ha : 0 < a) (hf : DifferentiableWithinAt ℝ f s x)
+    (hxs : UniqueDiffWithinAt ℝ s x) :
+    derivWithin (a ^ f ·) s x = Real.log a * derivWithin f s x * a ^ f x :=
+  (hf.hasDerivWithinAt.const_rpow ha).derivWithin hxs
+
+@[simp]
+theorem deriv_const_rpow (ha : 0 < a) (hf : DifferentiableAt ℝ f x) :
+    deriv (a ^ f ·) x = Real.log a * deriv f x * a ^ f x :=
+  (hf.hasDerivAt.const_rpow ha).deriv
+
+
 end deriv
 
 end Differentiability

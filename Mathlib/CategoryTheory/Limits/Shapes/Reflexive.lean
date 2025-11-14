@@ -39,7 +39,7 @@ reflexive.
 * `hasReflexiveCoequalizers_iff`: A category has coequalizers of reflexive pairs if and only iff it
   has all colimits of shape `WalkingReflexivePair`.
 
-# TODO
+## TODO
 * If `C` has binary coproducts and reflexive coequalizers, then it has all coequalizers.
 * If `T` is a monad on cocomplete category `C`, then `Algebra T` is cocomplete iff it has reflexive
   coequalizers.

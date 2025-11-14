@@ -163,6 +163,10 @@ theorem comap_maximalIdeal (h : IsLocalRing S := isLocalRing S I) :
     (IsLocalRing.maximalIdeal S).comap (algebraMap R S) = I :=
   Ideal.ext fun x => by simpa only [Ideal.mem_comap] using to_map_mem_maximal_iff _ I x
 
+theorem liesOver_maximalIdeal (h : IsLocalRing S := isLocalRing S I) :
+    (IsLocalRing.maximalIdeal S).LiesOver I :=
+  (Ideal.liesOver_iff _ _).mpr (comap_maximalIdeal _ _).symm
+
 theorem isUnit_mk'_iff (x : R) (y : I.primeCompl) : IsUnit (mk' S x y) ↔ x ∈ I.primeCompl :=
   ⟨fun h hx => mk'_mem_iff.mpr ((to_map_mem_maximal_iff S I x).mpr hx) h, fun h =>
     isUnit_iff_exists_inv.mpr ⟨mk' S ↑y ⟨x, h⟩, mk'_mul_mk'_eq_one ⟨x, h⟩ y⟩⟩
@@ -305,6 +309,8 @@ end AtPrime
 
 end Localization
 
+section
+
 variable (q : Ideal R) [q.IsPrime] (M : Submonoid R) {S : Type*} [CommSemiring S] [Algebra R S]
   [IsLocalization.AtPrime S q]
 
@@ -329,3 +335,27 @@ lemma IsLocalization.subsingleton_primeSpectrum_of_mem_minimalPrimes
     fun ⦃x⦄ a ↦ a⟩, fun i ↦ Subtype.ext <| PrimeSpectrum.ext <|
     (minimalPrimes_eq_minimals (R := R) ▸ hp).eq_of_le i.1.2 i.2⟩
   (IsLocalization.AtPrime.primeSpectrumOrderIso S p).subsingleton
+
+end
+
+namespace IsLocalization.AtPrime
+
+open Algebra IsLocalRing Ideal IsLocalization IsLocalization.AtPrime
+
+variable (p : Ideal R) [p.IsPrime] (Rₚ : Type*) [CommSemiring Rₚ] [Algebra R Rₚ]
+  [IsLocalization.AtPrime Rₚ p] [IsLocalRing Rₚ] (Sₚ : Type*) [CommSemiring Sₚ] [Algebra S Sₚ]
+  [IsLocalization (Algebra.algebraMapSubmonoid S p.primeCompl) Sₚ] [Algebra Rₚ Sₚ]
+  (P : Ideal S)
+
+theorem isPrime_map_of_liesOver [P.IsPrime] [P.LiesOver p] : (P.map (algebraMap S Sₚ)).IsPrime :=
+  isPrime_of_isPrime_disjoint _ _ _ inferInstance (Ideal.disjoint_primeCompl_of_liesOver P p)
+
+theorem map_eq_maximalIdeal : p.map (algebraMap R Rₚ) = maximalIdeal Rₚ := by
+  convert congr_arg (Ideal.map (algebraMap R Rₚ)) (comap_maximalIdeal Rₚ p).symm
+  rw [map_comap p.primeCompl]
+
+theorem comap_map_of_isMaximal [P.IsMaximal] [P.LiesOver p] :
+    Ideal.comap (algebraMap S Sₚ) (Ideal.map (algebraMap S Sₚ) P) = P :=
+  comap_map_eq_self_of_isMaximal _ (isPrime_map_of_liesOver S p Sₚ P).ne_top
+
+end IsLocalization.AtPrime

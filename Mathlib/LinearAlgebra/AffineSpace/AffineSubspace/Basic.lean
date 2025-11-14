@@ -594,9 +594,39 @@ theorem span_eq_top_of_surjective {s : Set P₁} (hf : Function.Surjective f)
     (h : affineSpan k s = ⊤) : affineSpan k (f '' s) = ⊤ := by
   rw [← AffineSubspace.map_span, h, map_top_of_surjective f hf]
 
+/-- If two affine maps agree on a set, their linear parts agree on the vector span of that set. -/
+theorem linear_eqOn_vectorSpan {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
+    {s : Set P₁} {f g : P₁ →ᵃ[k] P₂}
+    (h_agree : s.EqOn f g) : Set.EqOn f.linear g.linear (vectorSpan k s) := by
+  simp only [vectorSpan_def]
+  apply LinearMap.eqOn_span
+  rintro - ⟨x, hx, y, hy, rfl⟩
+  simp [h_agree hx, h_agree hy]
+
+/-- Two affine maps which agree on a set, agree on its affine span. -/
+theorem eqOn_affineSpan {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
+    {s : Set P₁} {f g : P₁ →ᵃ[k] P₂}
+    (h_agree : s.EqOn f g) : Set.EqOn f g (affineSpan k s) := by
+  rcases s.eq_empty_or_nonempty with rfl | ⟨q, hq⟩; · simp
+  rintro - ⟨x, hx, y, hy, rfl⟩
+  simp [h_agree hx, linear_eqOn_vectorSpan h_agree hy]
+
+/-- If two affine maps agree on a set that spans the entire space, then they are equal. -/
+theorem ext_on {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
+    {s : Set P₁} {f g : P₁ →ᵃ[k] P₂}
+    (h_span : affineSpan k s = ⊤)
+    (h_agree : s.EqOn f g) : f = g := by
+  simpa [h_span]  using eqOn_affineSpan h_agree
+
 end AffineMap
 
 namespace AffineEquiv
+
+/-- If two affine equivalences agree on a set that spans the entire space, then they are equal. -/
+theorem ext_on {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
+    {s : Set P₁} (h_span : affineSpan k s = ⊤)
+    (T₁ T₂ : P₁ ≃ᵃ[k] P₂) (h_agree : s.EqOn T₁ T₂) : T₁ = T₂ :=
+  (AffineEquiv.toAffineMap_inj).mp <| AffineMap.ext_on h_span h_agree
 
 section ofEq
 variable (S₁ S₂ : AffineSubspace k P₁) [Nonempty S₁] [Nonempty S₂]
@@ -808,3 +838,43 @@ theorem affineSpan_pair_parallel_iff_vectorSpan_eq {p₁ p₂ p₃ p₄ : P} :
     not_nonempty_iff_eq_empty]
 
 end AffineSubspace
+
+section DivisionRing
+
+variable {k V P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+
+/-- The span of two different points that lie in a line through two points equals that line. -/
+lemma affineSpan_pair_eq_of_mem_of_mem_of_ne {p₁ p₂ p₃ p₄ : P} (hp₁ : p₁ ∈ line[k, p₃, p₄])
+    (hp₂ : p₂ ∈ line[k, p₃, p₄]) (hp₁₂ : p₁ ≠ p₂) : line[k, p₁, p₂] = line[k, p₃, p₄] := by
+  refine le_antisymm (affineSpan_pair_le_of_mem_of_mem hp₁ hp₂) ?_
+  rw [← vsub_vadd p₁ p₃, vadd_left_mem_affineSpan_pair] at hp₁
+  rcases hp₁ with ⟨r₁, hp₁⟩
+  rw [← vsub_vadd p₂ p₃, vadd_left_mem_affineSpan_pair] at hp₂
+  rcases hp₂ with ⟨r₂, hp₂⟩
+  have hr₀ : r₂ - r₁ ≠ 0 := by
+    rw [sub_ne_zero]
+    rintro rfl
+    simp_all
+  have hr : (r₂ - r₁) • (p₄ -ᵥ p₃) = p₂ -ᵥ p₁ := by
+    simp [sub_smul, hp₁, hp₂]
+  rw [← eq_inv_smul_iff₀ hr₀] at hr
+  refine affineSpan_pair_le_of_mem_of_mem ?_ ?_
+  · convert smul_vsub_vadd_mem_affineSpan_pair (-r₁ * (r₂ - r₁)⁻¹) p₁ p₂
+    simp [mul_smul, ← hr, hp₁]
+  · convert smul_vsub_vadd_mem_affineSpan_pair ((1 - r₁) * (r₂ - r₁)⁻¹) p₁ p₂
+    simp [mul_smul, ← hr, sub_smul, hp₁]
+
+/-- One line equals another differing in the first point if the first point of the first line is
+contained in the second line and does not equal the second point. -/
+lemma affineSpan_pair_eq_of_left_mem_of_ne {p₁ p₂ p₃ : P} (h : p₁ ∈ line[k, p₂, p₃])
+    (hne : p₁ ≠ p₃) : line[k, p₁, p₃] = line[k, p₂, p₃] :=
+  affineSpan_pair_eq_of_mem_of_mem_of_ne h (right_mem_affineSpan_pair _ _ _) hne
+
+/-- One line equals another differing in the second point if the second point of the first line is
+contained in the second line and does not equal the first point. -/
+lemma affineSpan_pair_eq_of_right_mem_of_ne {p₁ p₂ p₃ : P} (h : p₁ ∈ line[k, p₂, p₃])
+    (hne : p₁ ≠ p₂) :
+    line[k, p₂, p₁] = line[k, p₂, p₃] :=
+  affineSpan_pair_eq_of_mem_of_mem_of_ne (left_mem_affineSpan_pair _ _ _) h hne.symm
+
+end DivisionRing

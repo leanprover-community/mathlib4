@@ -330,7 +330,7 @@ theorem IsClosed.mem_of_ge_of_forall_exists_lt {a b : α} {s : Set α} (hs : IsC
   have : IsClosed (OrderDual.ofDual ⁻¹' (s ∩ Icc a b)) := hs
   rw [preimage_inter, ← Icc_toDual] at this
   apply this.mem_of_ge_of_forall_exists_gt (by aesop) (by aesop) (fun x hx ↦ ?_)
-  rw [Ico_toDual, ← preimage_inter, preimage_equiv_eq_image_symm, mem_image] at hx
+  rw [Ico_toDual, ← preimage_inter, ← Equiv.image_symm_eq_preimage, mem_image] at hx
   aesop
 
 /-- A "continuous induction principle" for a closed interval: if a set `s` meets `[a, b]`
@@ -657,16 +657,15 @@ theorem Continuous.strictMono_of_inj_boundedOrder [BoundedOrder α] {f : α → 
   intro a b hab
   by_contra! h
   have H : f b < f a := lt_of_le_of_ne h <| hf_i.ne hab.ne'
-  by_cases ha : f a ≤ f ⊥
+  by_cases! ha : f a ≤ f ⊥
   · obtain ⟨u, hu⟩ := intermediate_value_Ioc le_top hf_c.continuousOn ⟨H.trans_le ha, hf⟩
     have : u = ⊥ := hf_i hu.2
     simp_all
-  · by_cases hb : f ⊥ < f b
+  · by_cases! hb : f ⊥ < f b
     · obtain ⟨u, hu⟩ := intermediate_value_Ioo bot_le hf_c.continuousOn ⟨hb, H⟩
       rw [hf_i hu.2] at hu
       exact (hab.trans hu.1.2).false
-    · push_neg at ha hb
-      replace hb : f b < f ⊥ := lt_of_le_of_ne hb <| hf_i.ne (lt_of_lt_of_le' hab bot_le).ne'
+    · replace hb : f b < f ⊥ := lt_of_le_of_ne hb <| hf_i.ne (lt_of_lt_of_le' hab bot_le).ne'
       obtain ⟨u, hu⟩ := intermediate_value_Ioo' hab.le hf_c.continuousOn ⟨hb, ha⟩
       have : u = ⊥ := hf_i hu.2
       simp_all

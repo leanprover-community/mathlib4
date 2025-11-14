@@ -204,14 +204,14 @@ theorem isBoundedUnder (hp : p 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, 
     exact rpow_le_rpow (apply_nonneg _ _) (map_pow_le_pow' hp x _)
       (one_div_nonneg.mpr (cast_nonneg _))
   apply isBoundedUnder_of
-  by_cases hfx : p x ≤ 1
+  by_cases! hfx : p x ≤ 1
   · use 1, fun m => le_trans (h_le m)
       (rpow_le_one (apply_nonneg _ _) hfx (div_nonneg (cast_nonneg _) (cast_nonneg _)))
   · use p x
     intro m
     apply le_trans (h_le m)
     conv_rhs => rw [← rpow_one (p x)]
-    exact rpow_le_rpow_of_exponent_le (le_of_lt (not_le.mp hfx))
+    exact rpow_le_rpow_of_exponent_le hfx.le
       (div_le_one_of_le₀ (cast_le.mpr (hs_le _)) (cast_nonneg _))
 
 end RingSeminorm

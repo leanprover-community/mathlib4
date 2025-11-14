@@ -398,7 +398,7 @@ def evalIntCast : PositivityExt where eval {u α} _zα _pα e := do
     let _oα ← synthInstanceQ q(IsOrderedRing $α)
     let _nt ← synthInstanceQ q(Nontrivial $α)
     assumeInstancesCommute
-    pure (.nonnegative q(Int.cast_nonneg.mpr $pa))
+    pure (.nonnegative q(Int.cast_nonneg $pa))
   | .nonzero pa =>
     let _oα ← synthInstanceQ q(AddGroupWithOne $α)
     let _nt ← synthInstanceQ q(CharZero $α)

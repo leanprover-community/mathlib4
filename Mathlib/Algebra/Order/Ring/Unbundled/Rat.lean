@@ -22,7 +22,7 @@ For the bundled `LinearOrderedCommRing` instance on `ℚ`, see `Algebra.Order.Ri
 rat, rationals, field, ℚ, numerator, denominator, num, denom, order, ordering
 -/
 
-assert_not_exists OrderedCommMonoid Field Finset Set.Icc GaloisConnection
+assert_not_exists IsOrderedMonoid Field Finset Set.Icc GaloisConnection
 
 namespace Rat
 
@@ -41,6 +41,11 @@ theorem ofScientific_nonneg (m : ℕ) (s : Bool) (e : ℕ) : 0 ≤ Rat.ofScienti
 instance _root_.NNRatCast.toOfScientific {K} [NNRatCast K] : OfScientific K where
   ofScientific (m : ℕ) (b : Bool) (d : ℕ) :=
     NNRat.cast ⟨Rat.ofScientific m b d, ofScientific_nonneg m b d⟩
+
+theorem _root_.NNRatCast.toOfScientific_def {K} [NNRatCast K] (m : ℕ) (b : Bool) (d : ℕ) :
+    (OfScientific.ofScientific m b d : K) =
+      NNRat.cast ⟨(OfScientific.ofScientific m b d : ℚ), ofScientific_nonneg m b d⟩ :=
+  rfl
 
 /-- Casting a scientific literal via `ℚ≥0` is the same as casting directly. -/
 @[simp, norm_cast]
