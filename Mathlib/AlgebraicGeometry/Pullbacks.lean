@@ -31,7 +31,7 @@ universe u v w
 
 noncomputable section
 
-open CategoryTheory Functor CartesianMonoidalCategory CategoryTheory.Limits AlgebraicGeometry
+open CategoryTheory Functor CartesianMonoidalCategory Limits AlgebraicGeometry
 
 namespace AlgebraicGeometry.Scheme
 
