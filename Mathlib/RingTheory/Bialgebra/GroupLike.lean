@@ -21,8 +21,8 @@ variable [CommSemiring R] [Semiring A] [Bialgebra R A] {a b : A}
 
 /-- In a bialgebra, `1` is a group-like element. -/
 lemma IsGroupLikeElem.one : IsGroupLikeElem R (1 : A) where
-  counit_eq_one := by simp
-  comul_eq_tmul_self := by simp [Algebra.TensorProduct.one_def]
+  counit_eq_one := counit_one
+  comul_eq_tmul_self := comul_one
 
 /-- Group-like elements in a bialgebra are stable under multiplication. -/
 lemma IsGroupLikeElem.mul (ha : IsGroupLikeElem R a) (hb : IsGroupLikeElem R b) :
