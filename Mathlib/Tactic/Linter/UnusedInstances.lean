@@ -161,21 +161,16 @@ def onFirstNode? {α} (t : InfoTree) (f : ContextInfo → Info → PersistentArr
     (ctx? : Option ContextInfo := none) : Option α :=
   t.findSome? (ctx? := ctx?) fun ctx i ch => some (f ctx i ch)
 
-/--
-Get the `parentDecl`s of every elaborated body. This includes `let rec`/`where`
-definitions. Assumes that every declaration body elaboration proceeds through a `CustomInfo` of
-`Lean.Elab.Term.BodyInfo`.
--/
-def getBodyDecls (t : InfoTree) : List Name :=
-  t.collectNodesBottomUp fun ctx i _ decls =>
-    match i with
-    | .ofCustomInfo i =>
-      if i.value.typeName == ``Lean.Elab.Term.BodyInfo then
-        if let some decl := ctx.parentDecl? then
-          decl :: decls
-        else decls
-      else decls
-    | _ => decls
+/-- Collects all `parentDecl`s that appear at any point throughout the infotree. -/
+partial def getDecls (t : InfoTree) : NameSet :=
+  go {} t
+where
+  /-- Visits all subinfotrees and collects `PartialContextInfo.parentDeclCtx`s directly. -/
+  go acc : InfoTree → NameSet
+  | .context (.parentDeclCtx decl) i => go (acc.insert decl) i
+  | .context _ i => go acc i
+  | node _ ch => ch.foldl (init := acc) go
+  | .hole _ => acc
 
 /--
 Get the declarations elaborated in the infotree `t` which are theorems according to the
@@ -183,7 +178,7 @@ environment. This includes e.g. `instance`s of `Prop` classes in addition to dec
 using the keyword `theorem` directly.
 -/
 def getTheorems (t : InfoTree) (env : Environment) : List ConstantVal :=
-  t.getBodyDecls.filterMap env.findTheoremConstantVal?
+  t.getDecls.toList.filterMap env.findTheoremConstantVal?
 
 /--
 Given a constant name, find the first `TermInfo` whose expression is exactly that constant. Expects
@@ -305,7 +300,10 @@ private def _root_.Lean.ConstantVal.onUnusedInstancesWhere (decl : ConstantVal)
             }
         logOnUnused unusedInstances
 
-/-- Finds theorems whose bodies were elaborated in the current infotrees and whose (full)
+-- TODO: check if type has `sorry` or we have errors
+-- TODO: change docs if using `parentDeclCtx` strategy
+/--
+Finds theorems whose bodies were elaborated in the current infotrees and whose (full)
 declaration names satisfy `nameFilter`. Checks their type to see if it contains instance hypotheses
 that (1) are unused in the remainder of the type (2) have types which satisfy `instanceTypeFilter`.
 (Note: `instanceTypeFilter` is non-monadic, and may encounter bound variables in its argument. This
