@@ -31,6 +31,8 @@ universe u v
 
 /-- The category of types with an omega complete partial order. -/
 structure ωCPO : Type (u + 1) where
+  /-- Construct a bundled ωCPO from the underlying type and typeclass. -/
+  of ::
   /-- The underlying type. -/
   carrier : Type u
   [str : OmegaCompletePartialOrder carrier]
@@ -43,10 +45,6 @@ open OmegaCompletePartialOrder
 
 instance : CoeSort ωCPO Type* :=
   ⟨carrier⟩
-
-/-- Construct a bundled ωCPO from the underlying type and typeclass. -/
-abbrev of (α : Type*) [OmegaCompletePartialOrder α] : ωCPO where
-  carrier := α
 
 theorem coe_of (α : Type*) [OmegaCompletePartialOrder α] : ↥(of α) = α :=
   rfl
