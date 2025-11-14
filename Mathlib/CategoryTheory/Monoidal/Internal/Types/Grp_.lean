@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Monoidal.Grp_
 import Mathlib.Algebra.Category.Grp.Basic
 
 /-!
-# `Grp_ (Type u) ≌ GrpCat.{u}`
+# `Grp (Type u) ≌ GrpCat.{u}`
 
 The category of internal group objects in `Type`
 is equivalent to the category of "native" bundled groups.
@@ -30,12 +30,12 @@ instance grpGroup (A : Type u) [GrpObj A] : Group A :=
     inv_mul_cancel a := congr_fun (GrpObj.left_inv A) a }
 
 /-- Converting a group object in `Type u` into a group. -/
-noncomputable def functor : Grp_ (Type u) ⥤ GrpCat.{u} where
+noncomputable def functor : Grp (Type u) ⥤ GrpCat.{u} where
   obj A := GrpCat.of A.X
   map f := GrpCat.ofHom (MonTypeEquivalenceMon.functor.map f).hom
 
 /-- Converting a group into a group object in `Type u`. -/
-noncomputable def inverse : GrpCat.{u} ⥤ Grp_ (Type u) where
+noncomputable def inverse : GrpCat.{u} ⥤ Grp (Type u) where
   obj A :=
     { MonTypeEquivalenceMon.inverse.obj ((forget₂ GrpCat MonCat).obj A) with
       grp :=
@@ -51,7 +51,7 @@ noncomputable def inverse : GrpCat.{u} ⥤ Grp_ (Type u) where
 end GrpTypeEquivalenceGrp
 
 /-- The category of group objects in `Type u` is equivalent to the category of groups. -/
-noncomputable def grpTypeEquivalenceGrp : Grp_ (Type u) ≌ GrpCat.{u} where
+noncomputable def grpTypeEquivalenceGrp : Grp (Type u) ≌ GrpCat.{u} where
   functor := GrpTypeEquivalenceGrp.functor
   inverse := GrpTypeEquivalenceGrp.inverse
   unitIso := Iso.refl _
@@ -59,10 +59,10 @@ noncomputable def grpTypeEquivalenceGrp : Grp_ (Type u) ≌ GrpCat.{u} where
     (fun A => MulEquiv.toGrpIso { Equiv.refl _ with map_mul' := fun _ _ => rfl })
     (by cat_disch)
 
-/-- The equivalences `Mon (Type u) ≌ MonCat.{u}` and `Grp_ (Type u) ≌ GrpCat.{u}`
+/-- The equivalences `Mon (Type u) ≌ MonCat.{u}` and `Grp (Type u) ≌ GrpCat.{u}`
 are naturally compatible with the forgetful functors to `MonCat` and `Mon (Type u)`.
 -/
 noncomputable def grpTypeEquivalenceGrpForget :
     GrpTypeEquivalenceGrp.functor ⋙ forget₂ GrpCat MonCat ≅
-      Grp_.forget₂Mon (Type u) ⋙ MonTypeEquivalenceMon.functor :=
+      Grp.forget₂Mon (Type u) ⋙ MonTypeEquivalenceMon.functor :=
   Iso.refl _

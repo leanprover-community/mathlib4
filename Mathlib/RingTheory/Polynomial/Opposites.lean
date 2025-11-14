@@ -6,7 +6,7 @@ Authors: Damiano Testa
 import Mathlib.Algebra.Polynomial.Degree.Support
 import Mathlib.Tactic.NoncommRing
 
-/-!  #  Interactions between `R[X]` and `Rᵐᵒᵖ[X]`
+/-! # Interactions between `R[X]` and `Rᵐᵒᵖ[X]`
 
 This file contains the basic API for "pushing through" the isomorphism
 `opRingEquiv : R[X]ᵐᵒᵖ ≃+* Rᵐᵒᵖ[X]`.  It allows going back and forth between a polynomial ring
@@ -81,7 +81,7 @@ theorem coeff_opRingEquiv (p : R[X]ᵐᵒᵖ) (n : ℕ) :
 
 @[simp]
 theorem support_opRingEquiv (p : R[X]ᵐᵒᵖ) : (opRingEquiv R p).support = (unop p).support :=
-  Finsupp.support_mapRange_of_injective (map_zero _) _ op_injective
+  Finsupp.support_mapRange_of_injective (by simp) _ op_injective
 
 @[simp]
 theorem natDegree_opRingEquiv (p : R[X]ᵐᵒᵖ) : (opRingEquiv R p).natDegree = (unop p).natDegree := by

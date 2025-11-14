@@ -166,16 +166,18 @@ lemma pow_mul_eq_zero_of_le {a b : M₀} {m n : ℕ} (hmn : m ≤ n)
 
 variable [NoZeroDivisors M₀]
 
-lemma pow_eq_zero : ∀ {n}, a ^ n = 0 → a = 0
+lemma eq_zero_of_pow_eq_zero : ∀ {n}, a ^ n = 0 → a = 0
   | 0, ha => by simpa using congr_arg (a * ·) ha
-  | n + 1, ha => by rw [pow_succ, mul_eq_zero] at ha; exact ha.elim pow_eq_zero id
+  | n + 1, ha => by rw [pow_succ, mul_eq_zero] at ha; exact ha.elim eq_zero_of_pow_eq_zero id
+
+@[deprecated (since := "2025-10-14")] alias pow_eq_zero := eq_zero_of_pow_eq_zero
 
 @[simp] lemma pow_eq_zero_iff (hn : n ≠ 0) : a ^ n = 0 ↔ a = 0 :=
-  ⟨pow_eq_zero, by rintro rfl; exact zero_pow hn⟩
+  ⟨eq_zero_of_pow_eq_zero, by rintro rfl; exact zero_pow hn⟩
 
 lemma pow_ne_zero_iff (hn : n ≠ 0) : a ^ n ≠ 0 ↔ a ≠ 0 := (pow_eq_zero_iff hn).not
 
-lemma pow_ne_zero (n : ℕ) (h : a ≠ 0) : a ^ n ≠ 0 := mt pow_eq_zero h
+lemma pow_ne_zero (n : ℕ) (h : a ≠ 0) : a ^ n ≠ 0 := mt eq_zero_of_pow_eq_zero h
 
 instance NeZero.pow [NeZero a] : NeZero (a ^ n) := ⟨pow_ne_zero n NeZero.out⟩
 

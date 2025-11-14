@@ -161,6 +161,12 @@ theorem integral_indicator (hs : MeasurableSet s) :
         (integral_congr_ae (indicator_ae_eq_restrict_compl hs)))
     _ = ∫ x in s, f x ∂μ := by simp
 
+theorem integral_indicator₀ (hs : NullMeasurableSet s μ) :
+    ∫ x, indicator s f x ∂μ = ∫ x in s, f x ∂μ := by
+  rw [← integral_congr_ae (indicator_ae_eq_of_ae_eq_set hs.toMeasurable_ae_eq),
+    integral_indicator (measurableSet_toMeasurable _ _),
+    Measure.restrict_congr_set hs.toMeasurable_ae_eq]
+
 lemma integral_integral_indicator {mY : MeasurableSpace Y} {ν : Measure Y} (f : X → Y → E)
     {s : Set X} (hs : MeasurableSet s) :
     ∫ x, ∫ y, s.indicator (f · y) x ∂ν ∂μ = ∫ x in s, ∫ y, f x y ∂ν ∂μ := by
@@ -561,15 +567,9 @@ theorem norm_setIntegral_le_of_norm_le_const_ae' {C : ℝ} (hs : μ s < ∞)
     simp only [norm_zero, ge_iff_le]
     positivity
 
-@[deprecated (since := "2025-04-17")]
-alias norm_setIntegral_le_of_norm_le_const_ae'' := norm_setIntegral_le_of_norm_le_const_ae'
-
 theorem norm_setIntegral_le_of_norm_le_const {C : ℝ} (hs : μ s < ∞) (hC : ∀ x ∈ s, ‖f x‖ ≤ C) :
     ‖∫ x in s, f x ∂μ‖ ≤ C * μ.real s :=
   norm_setIntegral_le_of_norm_le_const_ae' hs (Eventually.of_forall hC)
-
-@[deprecated (since := "2025-04-17")]
-alias norm_setIntegral_le_of_norm_le_const' := norm_setIntegral_le_of_norm_le_const
 
 theorem norm_integral_sub_setIntegral_le [IsFiniteMeasure μ] {C : ℝ}
     (hf : ∀ᵐ (x : X) ∂μ, ‖f x‖ ≤ C) {s : Set X} (hs : MeasurableSet s) (hf1 : Integrable f μ) :

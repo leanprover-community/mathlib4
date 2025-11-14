@@ -212,7 +212,8 @@ theorem injectiveSeminorm_le_projectiveSeminorm :
     existsi PUnit, inferInstance, inferInstance
     ext x
     simp only [Seminorm.zero_apply, Seminorm.comp_apply, coe_normSeminorm]
-    rw [Subsingleton.elim (toDualContinuousMultilinearMap PUnit x) 0, norm_zero]
+    rw [Subsingleton.elim (toDualContinuousMultilinearMap PUnit.{(max (max uE uι) u𝕜) + 1} x) 0,
+      norm_zero]
   · intro p hp
     simp only [Set.mem_setOf_eq] at hp
     obtain ⟨G, _, _, h⟩ := hp
@@ -393,9 +394,7 @@ private theorem mapL_add_smul_aux {ι : Type uι}
     [DecidableEq ι] (i : ι) (u : E i →L[𝕜] E' i) :
     (fun j ↦ (update f i u j).toLinearMap) =
       update (fun j ↦ (f j).toLinearMap) i u.toLinearMap := by
-  symm
-  rw [update_eq_iff]
-  grind [Function.update_of_ne, Function.update_self]
+  grind
 
 open Function in
 protected theorem mapL_add [DecidableEq ι] (i : ι) (u v : E i →L[𝕜] E' i) :
