@@ -32,7 +32,7 @@ variable {X Y : SSet.{u}} {x₀ x₁ x₂ : X _⦋0⦌}
 variable (x₀ x₁) in
 /-- In a simplicial set, an edge from a vertex `x₀` to `x₁` is
 a `1`-simplex with prescribed `0`-dimensional faces. -/
-def Edge := Truncated.Edge (X := (truncation 2).obj X) x₀ x₁
+def Edge := ((truncation 2).obj X).Edge x₀ x₁
 
 namespace Edge
 
