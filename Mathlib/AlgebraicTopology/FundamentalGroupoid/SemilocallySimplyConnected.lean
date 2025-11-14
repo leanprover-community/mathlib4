@@ -194,7 +194,6 @@ attribute [simp, grind =] h_start h_end
 
 /-- IntervalPartition 0 is impossible because it requires a single point
 to be both 0 and 1. -/
-@[simp]
 lemma not_zero (part : IntervalPartition 0) : False := by
   have h0 : part.t 0 = 0 := part.h_start
   have h1 : part.t (Fin.last 0) = 1 := part.h_end
