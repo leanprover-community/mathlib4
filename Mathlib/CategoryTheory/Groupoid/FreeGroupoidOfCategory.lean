@@ -247,12 +247,19 @@ namespace Grpd
 open FreeGroupoid
 
 /-- The free groupoid construction on a category as a functor. -/
-@[simps]
 def free : Cat.{u, u} ⥤ Grpd.{u, u} where
   obj C := Grpd.of <| FreeGroupoid C
   map {C D} F := map F
-  map_id C := by simp [Grpd.id_eq_id, ← map_id]; rfl
-  map_comp F G := by simp [Grpd.comp_eq_comp, ← map_comp]; rfl
+  map_id C := by simp [Grpd.id_eq_id, map_id, Cat.id_eq_id]
+  map_comp F G := by simp [Grpd.comp_eq_comp, map_comp, Cat.comp_eq_comp]
+
+@[simp]
+lemma free_obj (C : Cat.{u, u}) : free.obj C = FreeGroupoid C :=
+  rfl
+
+@[simp]
+lemma free_map {C D : Cat.{u, u}} (F : C ⟶ D) : free.map F = map F :=
+  rfl
 
 /-- The free-forgetful adjunction between `Grpd` and `Cat`. -/
 def freeForgetAdjunction : free ⊣ Grpd.forgetToCat :=
@@ -264,27 +271,26 @@ def freeForgetAdjunction : free ⊣ Grpd.forgetToCat :=
 variable {C : Cat.{u, u}} {D : Grpd.{u, u}}
 
 lemma freeForgetAdjunction_homEquiv_apply (F : FreeGroupoid C ⥤ D) :
-    freeForgetAdjunction.homEquiv C D F = FreeGroupoid.of C ⋙ F :=
+    freeForgetAdjunction.homEquiv C (Grpd.of D) F = FreeGroupoid.of C ⋙ F :=
   rfl
 
 @[simp]
 lemma freeForgetAdjunction_homEquiv_apply_obj (F : FreeGroupoid C ⥤ D) (X : C) :
-    (freeForgetAdjunction.homEquiv C D F).obj X = F.obj (mk X) :=
+    (freeForgetAdjunction.homEquiv C (Grpd.of D) F).obj X = F.obj (mk X) :=
   rfl
 
 @[simp]
 lemma freeForgetAdjunction_homEquiv_apply_map (F : FreeGroupoid C ⥤ D) {X Y : C} (f : X ⟶ Y) :
-    (freeForgetAdjunction.homEquiv C D F).map f = F.map (homMk f) :=
+    (freeForgetAdjunction.homEquiv C (Grpd.of D) F).map f = F.map (homMk f) :=
   rfl
 
-lemma freeForgetAdjunction_homEquiv_symm_apply (F : C ⥤ D) :
-    (freeForgetAdjunction.homEquiv C D).symm F = FreeGroupoid.lift F := by
+lemma freeForgetAdjunction_homEquiv_symm_apply (F : C ⥤ forgetToCat.obj D) :
+    (freeForgetAdjunction.homEquiv (Cat.of C) D).symm F = FreeGroupoid.lift F := by
   simp [freeForgetAdjunction, functorEquiv]
 
 @[simp]
 lemma freeForgetAdjunction_homEquiv_symm_apply_obj (F : C ⥤ D) (X : C) :
-    ((freeForgetAdjunction.homEquiv C D).symm F).obj (mk X) =
-    F.obj X :=
+    ((freeForgetAdjunction.homEquiv C D).symm F).obj (mk X) = F.obj X :=
   rfl
 
 @[simp]
