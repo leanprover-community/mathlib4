@@ -79,8 +79,12 @@ associated with a basis. -/
 noncomputable def toLin'
     {V : Type*} [AddCommGroup V] [Module R V] (b : Module.Basis n R V) :
     GL n R ≃* LinearMap.GeneralLinearGroup R V :=
-  toLin.trans (LinearMap.GeneralLinearGroup.congrLinearEquiv
-    (b.repr.trans (Finsupp.linearEquivFunOnFinite R R n)).symm)
+  toLin.trans <| LinearMap.GeneralLinearGroup.congrLinearEquiv b.equivFun.symm
+
+lemma toLin'_apply {V : Type*} [AddCommGroup V] [Module R V]
+    (b : Module.Basis n R V) (M : GL n R) (v : V) :
+    (toLin' b M).toLinearEquiv v = Fintype.linearCombination R ⇑b (↑M *ᵥ (b.repr v)) := by
+  simp [toLin', toLin, Fintype.linearCombination_apply, MulEquiv.trans_apply]
 
 /-- Given a matrix with invertible determinant, we get an element of `GL n R`. -/
 @[simps! val]
