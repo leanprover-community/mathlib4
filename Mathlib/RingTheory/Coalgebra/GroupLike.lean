@@ -66,11 +66,11 @@ structure GroupLike where
 
 namespace GroupLike
 
+attribute [simp] isGroupLikeElem_val
+
 attribute [coe] val
 
 instance instCoeOut : CoeOut (GroupLike R A) A where coe := val
-
-attribute [simp] isGroupLikeElem_val
 
 lemma val_injective : Injective (val : GroupLike R A → A) := by rintro ⟨a, ha⟩; congr!
 
