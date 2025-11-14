@@ -69,18 +69,35 @@ end
   coe G := G.toSubgroup
   coe_injective' _ := by aesop
 
+@[to_additive (attr := simp)] theorem ConvexSubgroup.carrier_eq_coe (G : ConvexSubgroup α) :
+    G.carrier = G := rfl
+
 @[to_additive] instance : SubgroupClass (ConvexSubgroup α) α where
   mul_mem {s} := s.mul_mem
   one_mem {s} := s.one_mem
   inv_mem {s} := s.inv_mem
 
-section
+@[to_additive] instance : Top (ConvexSubgroup α) where
+  top := .mk ⊤ fun _ _ _ _ _ ↦ ⟨⟩
 
-variable [IsOrderedMonoid α]
+@[to_additive] instance : Bot (ConvexSubgroup α) where
+  bot := .mk ⊥ fun _a _b hab hb1 ha ↦ hb1.antisymm (ha.ge.trans hab)
+
+@[to_additive] instance [Subsingleton α] : Subsingleton (ConvexSubgroup α) where
+  allEq _ _ := by ext a; simp [Subsingleton.elim a 1]
+
+@[to_additive] instance : Nonempty (ConvexSubgroup α) := ⟨⊤⟩
+
+@[to_additive] instance [Nontrivial α] : Nontrivial (ConvexSubgroup α) where
+  exists_pair_ne := ⟨⊤, ⊥, have ⟨_, ne⟩ := exists_ne (1 : α); ne_of_mem_of_not_mem' trivial ne⟩
+
+namespace ConvexSubgroup
+
+variable [IsOrderedMonoid α] (G H : ConvexSubgroup α)
 
 /-- Convex subgroups are linearly ordered by inclusion. -/
-@[to_additive] noncomputable instance : LinearOrder (ConvexSubgroup α) where
-  le_total G H := by
+@[to_additive] noncomputable instance : LinearOrder (ConvexSubgroup α) :=
+  have total (G H : ConvexSubgroup α) : G ≤ H ∨ H ≤ G := by
     by_contra!
     simp_rw [SetLike.not_le_iff_exists] at this
     have ⟨⟨a, aG, aH⟩, ⟨b, bH, bG⟩⟩ := this
@@ -90,64 +107,64 @@ variable [IsOrderedMonoid α]
     · exact this b⁻¹ (by simp [bH]) (by simp [bG]) (Left.inv_le_one_iff.mpr (le_of_not_ge hb))
     obtain le | le := le_total a b
     exacts [bG (G.convex le hb aG), aH (H.convex le ha bH)]
-  toDecidableLE := Classical.decRel _
-
--- TODO: Max and Min needs to go into LinearOrder
-@[to_additive] instance : Max (ConvexSubgroup α) where
-  max G H :=
-    have : (G : Set α) ∪ H = if G ≤ H then H else G := by
-      split_ifs with h
-      · simpa
-      · simpa using le_of_not_ge h
+  have union_eq (G H : ConvexSubgroup α) : let _ := Classical.dec
+      (G : Set α) ∪ H = (if G ≤ H then H else G) :=
+    (em (G ≤ H)).elim (by simp [·]) fun h ↦ by simpa [h] using (total G H).resolve_left h
+  { le_total := total
+    toDecidableLE := Classical.decRel _
+    max G H :=
     { carrier := G ∪ H
-      mul_mem' := by simp+contextual [this, mul_mem]
+      mul_mem' := by rw [union_eq]; exact mul_mem
       one_mem' := by simp
       inv_mem' := by simp
-      convex := by simpa [IsConvexSubgroup, this] using ConvexSubgroup.convex _ }
+      convex := by simp_rw [union_eq]; exact ConvexSubgroup.convex _ }
+    max_def G H := SetLike.ext' (union_eq G H)
+    min G H := .mk (G.toSubgroup ⊓ H.toSubgroup)
+      fun _a _b hab hb1 ha ↦ ⟨G.convex hab hb1 ha.1, H.convex hab hb1 ha.2⟩
+    min_def G H := toSubgroup_injective <| (em (G ≤ H)).elim
+      (by simpa [·]) fun h ↦ by simpa [h] using (total G H).resolve_left h }
 
-@[to_additive] instance : Min (ConvexSubgroup α) where
-  min G H := .mk (G.toSubgroup ⊓ H.toSubgroup)
-    fun _a _b hab hb1 ha ↦ ⟨G.convex hab hb1 ha.1, H.convex hab hb1 ha.2⟩
+theorem coe_max : max G H = (G : Set α) ∪ H := rfl
+theorem coe_min : min G H = (G : Set α) ∩ H := rfl
 
 @[to_additive] instance : SupSet (ConvexSubgroup α) where
   sSup s :=
-  { carrier := {1} ∪ ⋃ G ∈ s, G
+  { carrier := {1} ∪ ⋃ G : s, G
     mul_mem' ha hb := by
-      rw [Set.mem_union, Set.mem_iUnion₂] at ha hb ⊢
-      obtain rfl | ⟨G, hG, haG⟩ := ha; · simpa using hb
-      obtain rfl | ⟨H, hH, hbH⟩ := hb; · simpa using .inr ⟨G, hG, haG⟩
+      rw [Set.mem_union, Set.mem_iUnion] at ha hb ⊢
+      obtain rfl | ⟨G, haG⟩ := ha; · simpa using hb
+      obtain rfl | ⟨H, hbH⟩ := hb; · simpa using .inr ⟨G, G.2, haG⟩
       right
       obtain le | le := le_total G H
-      exacts [⟨H, hH, mul_mem (le haG) hbH⟩, ⟨G, hG, mul_mem haG (le hbH)⟩]
+      exacts [⟨H, mul_mem (le haG) hbH⟩, ⟨G, mul_mem haG (le hbH)⟩]
     inv_mem' := by simp
     one_mem' := by simp
     convex a b hab hb1 := by
       rintro (rfl | ex)
       · exact .inl (hb1.antisymm hab)
-      obtain ⟨G, hG, haG⟩ := Set.mem_iUnion₂.mp ex
-      exact .inr <| Set.mem_iUnion₂.mpr ⟨G, hG, G.convex hab hb1 haG⟩ }
+      obtain ⟨G, haG⟩ := Set.mem_iUnion.mp ex
+      exact .inr <| Set.mem_iUnion.mpr ⟨G, G.1.convex hab hb1 haG⟩ }
 
 @[to_additive] instance : InfSet (ConvexSubgroup α) where
   sInf s := .mk (⨅ G : s, G.1.toSubgroup) fun a b hab hb1 ha ↦ by
     rw [Subgroup.mem_iInf] at ha ⊢
     exact fun G ↦ G.1.convex hab hb1 (ha G)
 
-@[to_additive] instance : Top (ConvexSubgroup α) where
-  top := .mk ⊤ fun _ _ _ _ _ ↦ ⟨⟩
-
-@[to_additive] instance : Bot (ConvexSubgroup α) where
-  bot := .mk ⊥ fun _a _b hab hb1 ha ↦ hb1.antisymm (ha.ge.trans hab)
-
--- TODO: CompleteLinearOrder
-@[to_additive] instance : CompleteLattice (ConvexSubgroup α) := by
+@[to_additive] noncomputable instance : CompleteLattice (ConvexSubgroup α) := by
   refine ConvexSubgroup.toSubgroup_injective.completeLattice _
-    (fun G H ↦ le_antisymm ?_ ?_) (fun _ _ ↦ rfl) (fun _ ↦ ?_) (fun _ ↦ ?_) rfl rfl
+    (fun G H ↦ le_antisymm ?_ ?_) (fun _ _ ↦ rfl)
+    (fun s ↦ le_antisymm (fun a ha ↦ ?_) ?_) (fun _ ↦ iInf_subtype) rfl rfl
   · rintro a (ha | ha); exacts [G.mem_sup_left ha, G.mem_sup_right ha]
-  · sorry -- refine sup_le (le_sup_left (a := G) (b := H)) (le_sup_right (a := G) (b := H))
-  · sorry
-  · sorry
+  · exact sup_le (le_max_left (a := G) (b := H)) (le_max_right (a := G) (b := H))
+  · obtain rfl | ha := ha; · exact one_mem _
+    have ⟨G, haG⟩ := Set.mem_iUnion.mp ha
+    exact Subgroup.mem_iSup_of_mem G.1 (Subgroup.mem_iSup_of_mem G.2 haG)
+  · exact iSup₂_le fun G hG a haG ↦ .inr (Set.mem_iUnion_of_mem ⟨G, hG⟩ haG)
 
-variable (G : ConvexSubgroup α)
+@[to_additive] noncomputable instance : CompleteLinearOrder (ConvexSubgroup α) where
+  __ : LinearOrder _ := inferInstance
+  __ := LinearOrder.toBiheytingAlgebra _
+  __ : CompleteLattice _ := inferInstance
 
 @[to_additive] instance : HasQuotient α (ConvexSubgroup α) where
   quotient' G := α ⧸ G.toSubgroup
@@ -193,7 +210,11 @@ variable (G : ConvexSubgroup α)
 @[to_additive] lemma QuotientGroup.monotone_mk : Monotone (β :=  α ⧸ G) (⟦·⟧) :=
   (QuotientGroup.mkOrderedMonoidHom _).monotone'
 
+end ConvexSubgroup
+
 section ToBeMoved
+
+variable [IsOrderedMonoid α]
 
 @[to_additive] theorem FiniteMulArchimedeanClass.min_le_mk_mul (a b : α) (ha : a ≠ 1) (hb : b ≠ 1)
     (hab : a * b ≠ 1) : min (mk a ha) (mk b hb) ≤ mk (a * b) hab :=
@@ -218,6 +239,8 @@ noncomputable def UpperSet.orderIsoWithTopOfFinite {α} [LinearOrder α] [Finite
     (.setCongr {⊤}ᶜ (setOf InfIrred) <| by ext; simp) <| .symm .infIrredUpperSet
 
 end ToBeMoved
+
+variable [IsOrderedMonoid α]
 
 /-- The (convex) subgroup of a linearly ordered group consisting of all elements lying
 in an upper set of `FiniteMulArchimedeanClass`es. -/
@@ -283,19 +306,26 @@ variable (α) in
 /-- The height of a totally ordered abelian group is the number of non-trivial convex subgroups. -/
 @[to_additive] noncomputable def height : ℕ∞ := .card (ConvexSubgroup α) - 1
 
+omit [IsOrderedMonoid α] in
 @[to_additive] theorem height_eq_card_subtype :
-    height α = .card {G : ConvexSubgroup α // G.toSubgroup ≠ ⊥} := by
-  sorry
+    height α = .card {G : ConvexSubgroup α // G ≠ ⊥} := by
+  apply ENat.add_right_injective_of_ne_top ENat.one_ne_top
+  dsimp only
+  convert (congr_arg Cardinal.toENat (Cardinal.mk_sum_compl {(⊥ : ConvexSubgroup α)})).symm
+  · rw [height, ENat.card, add_tsub_cancel_of_le]
+    apply (ENat.one_le_card_iff_nonempty _).mpr inferInstance
+  · simp; rfl
 
-theorem height_eq_zero_iff : LinearOrderedCommGroup.height α = 0 ↔ Subsingleton α := by
-    constructor <;> rw [height_eq_card_subtype]
-    · simp only [ne_eq, ENat.card_eq_zero_iff_empty]
-      sorry
-    · intro _
-      rw [ENat.card_eq_zero_iff_empty, isEmpty_iff]
-      simp only [ne_eq, Subtype.forall, imp_false, Decidable.not_not]
-      intro G
-      exact Subgroup.eq_bot_of_subsingleton G.toSubgroup
+theorem height_eq_zero_iff : height α = 0 ↔ Subsingleton α := by
+  constructor <;> rw [height_eq_card_subtype]
+  · simp only [ne_eq, ENat.card_eq_zero_iff_empty]
+    contrapose!; intro
+    simpa using exists_ne _
+  · intro _
+    rw [ENat.card_eq_zero_iff_empty, isEmpty_iff]
+    simp only [ne_eq, Subtype.forall, imp_false, Decidable.not_not]
+    intro G
+    apply Subsingleton.elim
 
 end LinearOrderedCommGroup
 
@@ -330,8 +360,7 @@ lemma mulArchimedean_iff_exists_orderMonoidHom : MulArchimedean α ↔
     ⟨⟨⟨⟨f, f.map_zero⟩, f.map_add⟩, f.monotone'⟩, hf⟩
   mpr := fun ⟨f, hf⟩ ↦ .comap f.toMonoidHom (f.monotone'.strictMono_of_injective hf)
 
--- should replace this with the Bourbaki version below.
-lemma MulArchimedean.tfae' : List.TFAE
+lemma MulArchimedean.tfae : List.TFAE
   [ MulArchimedean α,
     LinearOrderedCommGroup.height α ≤ 1,
     ∃ f : α →*o Multiplicative ℝ, Function.Injective f] := by
@@ -341,12 +370,11 @@ lemma MulArchimedean.tfae' : List.TFAE
 
 /-- Equivalent characterisations for height 1. (Bourbaki, Eléments de mathématique. Fasc. XXX.
 Algèbre commutative. Chapitre 6: Valuations. §4 No5 proposition 8) -/
-lemma MulArchimedean.tfae (h : Nontrivial α) : List.TFAE
+lemma MulArchimedean.tfae_of_nontrivial [Nontrivial α] : List.TFAE
   [ MulArchimedean α,
     LinearOrderedCommGroup.height α = 1,
     ∃ f : α →*o Multiplicative ℝ, Function.Injective f] := by
-  tfae_have 1 ↔ 2 := by sorry--mulArchimedean_iff_height_le_one
-  tfae_have 1 ↔ 3 := by sorry--mulArchimedean_iff_exists_orderMonoidHom
-  tfae_finish
-
-end
+  convert MulArchimedean.tfae (α := α) using 3
+  rw [le_iff_eq_or_lt, or_iff_left]
+  rw [ENat.lt_one_iff_eq_zero, LinearOrderedCommGroup.height_eq_zero_iff]
+  exact not_subsingleton α
