@@ -47,7 +47,7 @@ larger space of test functions.
   `ContDiffMapSupportedIn.instLocallyConvexSpace`: `𝓓^{n}_{K}(E, F)` is a locally convex
   topological vector space.
 
-## Notation ₗ
+## Notation
 
 - `𝓓^{n}_{K}(E, F)`:  the space of `n`-times continuously differentiable functions `E → F`
   which vanish outside of `K`.
