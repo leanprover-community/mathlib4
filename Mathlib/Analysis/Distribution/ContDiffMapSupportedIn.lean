@@ -464,7 +464,7 @@ is continuous if and only if its composition with each structure map
 `structureMapCLM ℝ n i : 𝓓^{n}_{K}(E, F) → (E →ᵇ (E [×i]→L[ℝ] F))` is continuous.
 
 Since `structureMapCLM ℝ n i` is zero whenever `i > n`, it suffices to check it for `i ≤ n`,
-as proven by `continuous_iff_comp_with_order`. -/
+as proven by `continuous_iff_comp_withOrder`. -/
 -- Note: if needed, we could allow an extra parameter `𝕜` in case the user wants to use
 -- `structureMapCLM 𝕜 n i`.
 theorem continuous_iff_comp {X} [TopologicalSpace X] (φ : X → 𝓓^{n}_{K}(E, F)) :
@@ -473,9 +473,8 @@ theorem continuous_iff_comp {X} [TopologicalSpace X] (φ : X → 𝓓^{n}_{K}(E,
 
 /-- The **universal property** of the topology on `𝓓^{n}_{K}(E, F)`: a map to `𝓓^{n}_{K}(E, F)`
 is continuous if and only if its composition with the structure map
-`structureMapCLM ℝ n i : 𝓓^{n}_{K}(E, F) → (E →ᵇ (E [×i]→L[ℝ] F))` is continuous for each `i ≤ n`.
-Since `structureMapCLM ℝ n i` is zero whenever `i > n`, it suffices to check it for `i ≤ n`,
-as proven by `continuous_iff_comp_of_le`. -/
+`structureMapCLM ℝ n i : 𝓓^{n}_{K}(E, F) → (E →ᵇ (E [×i]→L[ℝ] F))` is continuous for each
+`i ≤ n`. -/
 -- Note: if needed, we could allow an extra parameter `𝕜` in case the user wants to use
 -- `structureMapCLM 𝕜 n i`.
 theorem continuous_iff_comp_withOrder {X : Type*} [TopologicalSpace X] (φ : X → 𝓓^{n}_{K}(E, F)) :
