@@ -25,7 +25,7 @@ universe u
 /-- The category of topological spaces. -/
 structure TopCat where
   /-- The object in `TopCat` associated to a type equipped with the appropriate
-  typeclasses. This is the preferred way to construct a term of `TopCat`. -/
+  typeclasses. -/
   of ::
   /-- The underlying type. -/
   carrier : Type u
