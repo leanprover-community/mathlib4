@@ -56,7 +56,7 @@ lemma covarianceBilin_eq_covarianceBilinDual (x y : E) :
     covarianceBilin μ x y = covarianceBilinDual μ (toDualMap ℝ E x) (toDualMap ℝ E y) := rfl
 
 @[simp]
-lemma covarianceBilin_of_not_memLp [IsFiniteMeasure μ] (h : ¬MemLp id 2 μ) :
+lemma covarianceBilin_of_not_memLp (h : ¬MemLp id 2 μ) :
     covarianceBilin μ = 0 := by
   ext
   simp [covarianceBilin_eq_covarianceBilinDual, h]
@@ -66,7 +66,7 @@ lemma covarianceBilin_apply [CompleteSpace E] [IsFiniteMeasure μ] (h : MemLp id
   simp_rw [covarianceBilin, ContinuousLinearMap.bilinearComp_apply, covarianceBilinDual_apply' h]
   simp only [LinearIsometry.coe_toContinuousLinearMap, id_eq, toDualMap_apply]
 
-lemma covarianceBilin_comm [IsFiniteMeasure μ] (x y : E) :
+lemma covarianceBilin_comm (x y : E) :
     covarianceBilin μ x y = covarianceBilin μ y x := by
   rw [covarianceBilin_eq_covarianceBilinDual, covarianceBilinDual_comm,
     covarianceBilin_eq_covarianceBilinDual]
@@ -95,11 +95,11 @@ lemma covarianceBilin_real_self {μ : Measure ℝ} [IsFiniteMeasure μ] (x : ℝ
   rw [covarianceBilin_real, pow_two]
 
 @[simp]
-lemma covarianceBilin_self_nonneg [IsFiniteMeasure μ] (x : E) :
+lemma covarianceBilin_self_nonneg (x : E) :
     0 ≤ covarianceBilin μ x x := by
   simp [covarianceBilin]
 
-lemma isPosSemidef_covarianceBilin [IsFiniteMeasure μ] :
+lemma isPosSemidef_covarianceBilin :
     (covarianceBilin μ).toBilinForm.IsPosSemidef where
   eq := covarianceBilin_comm
   nonneg := covarianceBilin_self_nonneg
