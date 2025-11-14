@@ -11,6 +11,18 @@ import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
 /-!
 # The model category structure on Over categories
 
+Let `C` be a model category. For any `S : C`, we define
+a model category structure on the category `Over S`:
+a morphism `X ⟶ Y` in `Over S` is a cofibration
+(resp. a fibration, a weak equivalence) if the
+underlying morphism `f.left : X.left ⟶ Y.left` is.
+(Apart from the existence of (finite) limits
+from `Limits.Constructions.Over.Basic`, the verification
+of the axioms is straightforward.)
+
+## TODO
+* Proceed to the dual construction for `Under S`.
+
 -/
 
 universe v u
