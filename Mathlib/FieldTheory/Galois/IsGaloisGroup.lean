@@ -151,6 +151,8 @@ instance of_isGalois [FiniteDimensional K L] [IsGalois K L] : IsGaloisGroup Gal(
   commutes := inferInstance
   isInvariant := ⟨fun x ↦ (IsGalois.mem_bot_iff_fixed x).mpr⟩
 
+variable {G}
+
 /--
 For `G` be a Galois group for `L/K` and `S ⊆ G` be a subgroup, the `IntermediateField` of the
 points in `L` fixed by elements of `S`.
@@ -159,11 +161,11 @@ def fixedField [IsGaloisGroup G K L] (S : Subgroup G) : IntermediateField K L :=
   FixedPoints.intermediateField S
 
 theorem mem_fixedField_iff [IsGaloisGroup G K L] (S : Subgroup G) (x : L) :
-    x ∈ IsGaloisGroup.fixedField G K L S ↔ ∀ σ ∈ S, σ • x = x := by
+    x ∈ IsGaloisGroup.fixedField K L S ↔ ∀ σ ∈ S, σ • x = x := by
   simp [fixedField]
 
 theorem of_subgroup [IsGaloisGroup G K L] (S : Subgroup G) :
-    IsGaloisGroup S (IsGaloisGroup.fixedField G K L S) L where
+    IsGaloisGroup S (IsGaloisGroup.fixedField K L S) L where
   faithful :=
     have : FaithfulSMul G L := IsGaloisGroup.faithful K
     inferInstance
@@ -176,6 +178,8 @@ theorem of_subgroup [IsGaloisGroup G K L] (S : Subgroup G) :
     refine ⟨⟨x, ?_⟩, by rw [IntermediateField.algebraMap_apply]⟩
     · rw [IsGaloisGroup.mem_fixedField_iff]
       exact fun σ hσ ↦ hx ⟨σ, hσ⟩⟩
+
+variable (G)
 
 theorem card_eq_finrank [IsGaloisGroup G K L] : Nat.card G = Module.finrank K L := by
   rcases fintypeOrInfinite G with _ | hG
