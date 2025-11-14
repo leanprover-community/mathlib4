@@ -60,20 +60,17 @@ lemma isGaussian_iff_gaussian_charFunDual [IsFiniteMeasure μ] :
     ∃ (m : E) (f : StrongDual ℝ E →L[ℝ] StrongDual ℝ E →L[ℝ] ℝ),
       f.toBilinForm.IsPosSemidef ∧ ∀ L, charFunDual μ L = exp (L m * I - f L L / 2) := by
   refine ⟨fun h ↦ ⟨μ[id], covarianceBilinDual μ, isPosSemidef_covarianceBilinDual,
-    h.charFunDual_eq'⟩, fun ⟨m, f, hf, h⟩ ↦ ⟨fun L ↦ ?_⟩⟩
-  have : μ.map L = gaussianReal (L m) (f L L).toNNReal := by
-    apply Measure.ext_of_charFun
-    ext t
-    simp_rw [charFun_map_eq_charFunDual_smul, h, charFun_gaussianReal,
-      smul_apply, map_smul, smul_apply, smul_eq_mul]
-    norm_cast
-    congrm exp (_ - ofReal ?_)
-    rw [Real.coe_toNNReal]
-    · ring
-    exact hf.nonneg L
-  rw [eq_gaussianReal_integral_variance this, integral_map (by fun_prop) (by fun_prop),
-    variance_map aemeasurable_id (by fun_prop)]
-  simp
+    h.charFunDual_eq'⟩,
+    fun ⟨m, f, hf, h⟩ ↦ isGaussian_of_map_eq_gaussianReal fun L ↦ ⟨L m, (f L L).toNNReal, ?_⟩⟩
+  apply Measure.ext_of_charFun
+  ext t
+  simp_rw [charFun_map_eq_charFunDual_smul, h, charFun_gaussianReal,
+    smul_apply, map_smul, smul_apply, smul_eq_mul]
+  norm_cast
+  congrm exp (_ - ofReal ?_)
+  rw [Real.coe_toNNReal]
+  · ring
+  exact hf.nonneg L
 
 lemma gaussian_charFunDual_congr [IsFiniteMeasure μ] {m : E}
     {f : StrongDual ℝ E →L[ℝ] StrongDual ℝ E →L[ℝ] ℝ}
