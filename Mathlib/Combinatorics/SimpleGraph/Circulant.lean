@@ -44,11 +44,9 @@ theorem circulantGraph_eq_erase_zero : circulantGraph s = circulantGraph (s \ {0
       | inr h1 => exact Or.inr h1.left
 
 theorem circulantGraph_eq_symm : circulantGraph s = circulantGraph (s ∪ (-s)) := by
-  ext (u v : G)
-  simp only [circulantGraph, fromRel_adj, Set.mem_union, Set.mem_neg, neg_sub, and_congr_right_iff,
-    iff_self_or]
-  intro _ h
-  exact Or.symm h
+  ext
+  simp only [circulantGraph_adj, Set.mem_union, Set.mem_neg, neg_sub]
+  grind
 
 instance [DecidableEq G] [DecidablePred (· ∈ s)] : DecidableRel (circulantGraph s).Adj :=
   fun _ _ => inferInstanceAs (Decidable (_ ∧ _))
