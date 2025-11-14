@@ -798,7 +798,8 @@ instance : NoncompactSpace ℤ :=
 theorem finite_of_compact_of_discrete [CompactSpace X] [DiscreteTopology X] : Finite X :=
   Finite.of_finite_univ <| isCompact_univ.finite_of_discrete
 
-instance DiscreteTopology.instLocallyCompactSpace [DiscreteTopology X] : LocallyCompactSpace X where
+instance (priority := 100) DiscreteTopology.instLocallyCompactSpace [DiscreteTopology X] :
+    LocallyCompactSpace X where
   local_compact_nhds x s hs := ⟨{x}, by simpa using hs⟩
 
 lemma Set.Infinite.exists_accPt_cofinite_inf_principal_of_subset_isCompact
