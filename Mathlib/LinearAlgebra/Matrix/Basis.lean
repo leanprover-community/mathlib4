@@ -83,9 +83,8 @@ theorem toMatrix_update [DecidableEq ι'] (x : M) :
 theorem toMatrix_unitsSMul [DecidableEq ι] (e : Basis ι R₂ M₂) (w : ι → R₂ˣ) :
     e.toMatrix (e.unitsSMul w) = diagonal ((↑) ∘ w) := by
   ext i j
-  by_cases h : i = j
-  · simp [h, toMatrix_apply, unitsSMul_apply, Units.smul_def]
-  · simp [h, toMatrix_apply, unitsSMul_apply, Units.smul_def, Ne.symm h]
+  by_cases h : i = j <;>
+    simp [h, toMatrix_apply, unitsSMul_apply, Units.smul_def]
 
 /-- The basis constructed by `isUnitSMul` has vectors given by a diagonal matrix. -/
 @[simp]

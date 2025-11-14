@@ -58,8 +58,6 @@ class HasExtension : Prop where
   /-- The valuation `vR` on `R` is equivalent to the comap of the valuation `vA` on `A` -/
   val_isEquiv_comap : vR.IsEquiv <| vA.comap (algebraMap R A)
 
-@[deprecated (since := "2025-04-02")] alias _root_.IsValExtension := HasExtension
-
 namespace HasExtension
 
 section algebraMap
@@ -139,11 +137,8 @@ instance instNoZeroSMulDivisorsInteger [NoZeroSMulDivisors R A] :
   simpa only [Subtype.ext_iff, smul_eq_zero] using this
 
 theorem algebraMap_injective [vK.HasExtension vA] [Nontrivial A] :
-    Function.Injective (algebraMap vK.integer vA.integer) := by
-  intro x y h
-  simp only [Subtype.ext_iff, val_algebraMap] at h
-  ext
-  apply RingHom.injective (algebraMap K A) h
+    Function.Injective (algebraMap vK.integer vA.integer) :=
+  FaithfulSMul.algebraMap_injective _ _
 
 @[instance]
 theorem instIsLocalHomValuationInteger {S ΓS : Type*} [CommRing S]

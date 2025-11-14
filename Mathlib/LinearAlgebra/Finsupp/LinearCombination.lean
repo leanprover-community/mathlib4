@@ -445,11 +445,15 @@ lemma Submodule.mem_span_finset {s : Finset M} {x : M} :
     simp +contextual [Function.support_subset_iff'.1 hf]
   mpr := by rintro ⟨f, -, rfl⟩; exact sum_mem fun x hx ↦ smul_mem _ _ <| subset_span <| hx
 
+lemma Submodule.mem_span_iff_of_fintype {s : Set M} [Fintype s] {x : M} :
+    x ∈ span R s ↔ ∃ f : s → R, ∑ a : s, f a • a.1 = x := by
+  conv_lhs => rw [← Subtype.range_val (s := s)]
+  exact mem_span_range_iff_exists_fun _
+
 /-- A variant of `Submodule.mem_span_finset` using `s` as the index type. -/
 lemma Submodule.mem_span_finset' {s : Finset M} {x : M} :
-    x ∈ span R s ↔ ∃ f : s → R, ∑ a : s, f a • a.1 = x := by
-  rw [← Subtype.range_val (s := s.toSet), ← Fintype.range_linearCombination]
-  simp [Fintype.linearCombination]
+    x ∈ span R s ↔ ∃ f : s → R, ∑ a : s, f a • a.1 = x :=
+  mem_span_iff_of_fintype
 
 /-- An element `m ∈ M` is contained in the `R`-submodule spanned by a set `s ⊆ M`, if and only if
 `m` can be written as a finite `R`-linear combination of elements of `s`.
@@ -500,9 +504,9 @@ def Finsupp.addSingleEquiv : (ι →₀ R) ≃ₗ[R] (ι →₀ R) := by
     (linearCombination _ fun j ↦ single j 1 - single i (c j)) ?_ ?_ <;>
   ext j k <;> obtain rfl | hk := eq_or_ne i k
   · simp [h₀]
-  · simp [single_eq_of_ne hk]
+  · simp [hk]
   · simp [h₀]
-  · simp [single_eq_of_ne hk]
+  · simp [hk]
 
 theorem Finsupp.linearCombination_comp_addSingleEquiv (v : ι → M) :
     linearCombination R v ∘ₗ addSingleEquiv i c h₀ = linearCombination R (v + (c · • v i)) := by

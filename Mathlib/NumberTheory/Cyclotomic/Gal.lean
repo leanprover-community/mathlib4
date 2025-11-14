@@ -86,7 +86,7 @@ variable {K} (L)
 /-- The `MulEquiv` that takes an automorphism `f` to the element `k : (ZMod n)ˣ` such that
   `f μ = μ ^ k` for any root of unity `μ`. A strengthening of `IsPrimitiveRoot.autToPow`. -/
 @[simps]
-noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : (L ≃ₐ[K] L) ≃* (ZMod n)ˣ :=
+noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : Gal(L/K) ≃* (ZMod n)ˣ :=
   let hζ := zeta_spec n K L
   let hμ t := hζ.pow_of_coprime _ (ZMod.val_coe_unit_coprime t)
   { (zeta_spec n K L).autToPow K with
@@ -113,13 +113,7 @@ noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : (L ≃ₐ[K] 
       have := (hζ.powerBasis K).equivOfMinpoly_gen ((hμ x).powerBasis K) h
       rw [hζ.powerBasis_gen K] at this
       rw [this, IsPrimitiveRoot.powerBasis_gen] at key
-      -- Porting note: was
-      -- `rw ← hζ.coe_to_roots_of_unity_coe at key {occs := occurrences.pos [1, 5]}`.
-      conv at key =>
-        congr; congr
-        rw [← hζ.val_toRootsOfUnity_coe]
-        rfl; rfl
-        rw [← hζ.val_toRootsOfUnity_coe]
+      nth_rw 1 5 [← hζ.val_toRootsOfUnity_coe] at key
       simp only [← rootsOfUnity.coe_pow] at key
       replace key := rootsOfUnity.coe_injective key
       rw [pow_eq_pow_iff_modEq, ← Subgroup.orderOf_coe, ← orderOf_units, hζ.val_toRootsOfUnity_coe,
@@ -130,7 +124,7 @@ noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : (L ≃ₐ[K] 
 variable (h : Irreducible (cyclotomic n K)) {L}
 
 /-- Maps `μ` to the `AlgEquiv` that sends `IsCyclotomicExtension.zeta` to `μ`. -/
-noncomputable def fromZetaAut : L ≃ₐ[K] L :=
+noncomputable def fromZetaAut : Gal(L/K) :=
   let hζ := (zeta_spec n K L).eq_pow_of_pow_eq_one hμ.pow_eq_one
   (autEquivPow L h).symm <|
     ZMod.unitOfCoprime hζ.choose <|

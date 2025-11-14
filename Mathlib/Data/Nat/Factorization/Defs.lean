@@ -118,15 +118,15 @@ theorem factorization_eq_zero_iff (n p : ℕ) :
   simp_rw [← notMem_support_iff, support_factorization, mem_primeFactors, not_and_or, not_ne_iff]
 
 @[simp]
-theorem factorization_eq_zero_of_non_prime (n : ℕ) {p : ℕ} (hp : ¬p.Prime) :
+theorem factorization_eq_zero_of_not_prime (n : ℕ) {p : ℕ} (hp : ¬p.Prime) :
     n.factorization p = 0 := by simp [factorization_eq_zero_iff, hp]
 
--- TODO: Replace
-alias factorization_eq_zero_of_not_prime := factorization_eq_zero_of_non_prime
+@[deprecated (since := "2025-10-24")]
+alias factorization_eq_zero_of_non_prime := factorization_eq_zero_of_not_prime
 
 @[simp]
 theorem factorization_zero_right (n : ℕ) : n.factorization 0 = 0 :=
-  factorization_eq_zero_of_non_prime _ not_prime_zero
+  factorization_eq_zero_of_not_prime _ not_prime_zero
 
 @[simp]
 theorem factorization_one_right (n : ℕ) : n.factorization 1 = 0 :=
@@ -178,11 +178,13 @@ theorem factorization_prod {α : Type*} {S : Finset α} {g : α → ℕ} (hS : �
 /-- For any `p`, the power of `p` in `n^k` is `k` times the power in `n` -/
 @[simp]
 theorem factorization_pow (n k : ℕ) : factorization (n ^ k) = k • n.factorization := by
-  induction' k with k ih; · simp
-  rcases eq_or_ne n 0 with (rfl | hn)
-  · simp
-  rw [Nat.pow_succ, mul_comm, factorization_mul hn (pow_ne_zero _ hn), ih,
-    add_smul, one_smul, add_comm]
+  induction k with
+  | zero => simp
+  | succ k ih =>
+    rcases eq_or_ne n 0 with (rfl | hn)
+    · simp
+    rw [Nat.pow_succ, mul_comm, factorization_mul hn (pow_ne_zero _ hn), ih,
+      add_smul, one_smul, add_comm]
 
 /-! ## Lemmas about factorizations of primes and prime powers -/
 
@@ -208,7 +210,7 @@ lemma factorization_minFac_ne_zero {n : ℕ} (hn : 1 < n) :
     n.factorization n.minFac ≠ 0 := by
   refine mt (factorization_eq_zero_iff _ _).mp ?_
   push_neg
-  exact ⟨minFac_prime (by omega), minFac_dvd n, Nat.ne_zero_of_lt hn⟩
+  exact ⟨minFac_prime (by cutsat), minFac_dvd n, Nat.ne_zero_of_lt hn⟩
 
 /-! ### Equivalence between `ℕ+` and `ℕ →₀ ℕ` with support in the primes. -/
 

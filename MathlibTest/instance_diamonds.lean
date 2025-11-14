@@ -9,8 +9,8 @@ import Mathlib.Algebra.GroupWithZero.Action.Prod
 import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.Data.Complex.Module
 import Mathlib.Data.ZMod.Basic
+import Mathlib.LinearAlgebra.Complex.Module
 import Mathlib.RingTheory.Algebraic.Pi
 import Mathlib.RingTheory.TensorProduct.Basic
 
@@ -56,7 +56,7 @@ open scoped TensorProduct
 
 open Complex
 
-/- `TensorProduct.Algebra.module` forms a diamond with `Mul.toSMul` and
+/- `TensorProduct.Algebra.module` forms a diamond with `instSMulOfMul` and
 `algebra.tensor_product.tensor_product.semiring`. Given a commutative semiring `A` over a
 commutative semiring `R`, we get two mathematically different scalar actions of `A ⊗[R] A` on
 itself. -/
@@ -70,12 +70,12 @@ noncomputable def f : ℂ ⊗[ℝ] ℂ →ₗ[ℝ] ℝ :=
 theorem f_apply (z w : ℂ) : f (z ⊗ₜ[ℝ] w) = z.re * w.re := by simp [f]
 
 unseal Algebra.TensorProduct.mul in
-/- `TensorProduct.Algebra.module` forms a diamond with `Mul.toSMul` and
+/- `TensorProduct.Algebra.module` forms a diamond with `instSMulOfMul` and
 `algebra.tensor_product.tensor_product.semiring`. Given a commutative semiring `A` over a
 commutative semiring `R`, we get two mathematically different scalar actions of `A ⊗[R] A` on
 itself. -/
 example :
-    Mul.toSMul (ℂ ⊗[ℝ] ℂ) ≠
+    instSMulOfMul (α := ℂ ⊗[ℝ] ℂ) ≠
       (@TensorProduct.Algebra.module ℝ ℂ ℂ (ℂ ⊗[ℝ] ℂ) _ _ _ _ _ _ _ _ _ _ _ _).toSMul := by
   have contra : I ⊗ₜ[ℝ] I ≠ (-1) ⊗ₜ[ℝ] 1 := fun c => by simpa using congr_arg f c
   contrapose! contra
@@ -141,7 +141,7 @@ example {k : Type _} [Semiring k] [Nontrivial k] :
   replace h := h u (Finsupp.single 1 1) u
   classical
   rw [comapSMul_single, smul_apply, smul_eq_mul, mul_one, single_eq_same, smul_eq_mul,
-    single_eq_of_ne hu.symm, MulZeroClass.mul_zero] at h
+    single_eq_of_ne hu, MulZeroClass.mul_zero] at h
   exact one_ne_zero h
 
 /-- `Finsupp.comapSMul` can form a non-equal diamond with `Finsupp.smulZeroClass` even when
@@ -155,7 +155,7 @@ example {k : Type _} [Semiring k] [Nontrivial kˣ] :
   replace h := h u (Finsupp.single 1 1) u
   classical
   rw [comapSMul_single, smul_apply, Units.smul_def, smul_eq_mul, mul_one, single_eq_same,
-    smul_eq_mul, single_eq_of_ne hu.symm, MulZeroClass.mul_zero] at h
+    smul_eq_mul, single_eq_of_ne hu, MulZeroClass.mul_zero] at h
   exact one_ne_zero h
 
 end Finsupp

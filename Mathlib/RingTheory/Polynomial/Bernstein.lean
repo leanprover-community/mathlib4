@@ -117,10 +117,8 @@ theorem derivative_succ_aux (n ν : ℕ) :
     norm_cast
     congr 1
     convert (Nat.choose_mul_succ_eq n (ν + 1)).symm using 1
-    · -- Porting note: was
-      -- convert mul_comm _ _ using 2
-      -- simp
-      rw [mul_comm, Nat.succ_sub_succ_eq_sub]
+    · convert mul_comm _ _ using 2
+      simp
     · apply mul_comm
 
 theorem derivative_succ (n ν : ℕ) : Polynomial.derivative (bernsteinPolynomial R n (ν + 1)) =
@@ -138,9 +136,10 @@ theorem iterate_derivative_at_0_eq_zero_of_lt (n : ℕ) {ν k : ℕ} :
   rcases ν with - | ν
   · rintro ⟨⟩
   · rw [Nat.lt_succ_iff]
-    induction' k with k ih generalizing n ν
-    · simp [eval_at_0]
-    · simp only [derivative_succ, Function.comp_apply,
+    induction k generalizing n ν with
+    | zero => simp [eval_at_0]
+    | succ k ih =>
+      simp only [derivative_succ, Function.comp_apply,
         Function.iterate_succ, Polynomial.iterate_derivative_sub,
         Polynomial.iterate_derivative_natCast_mul, Polynomial.eval_mul, Polynomial.eval_natCast,
         Polynomial.eval_sub]
@@ -161,10 +160,11 @@ open Polynomial
 theorem iterate_derivative_at_0 (n ν : ℕ) :
     (Polynomial.derivative^[ν] (bernsteinPolynomial R n ν)).eval 0 =
       (ascPochhammer R ν).eval ((n - (ν - 1) : ℕ) : R) := by
-  by_cases h : ν ≤ n
-  · induction' ν with ν ih generalizing n
-    · simp [eval_at_0]
-    · have h' : ν ≤ n - 1 := le_tsub_of_add_le_right h
+  by_cases! h : ν ≤ n
+  · induction ν generalizing n with
+    | zero => simp [eval_at_0]
+    | succ ν ih =>
+      have h' : ν ≤ n - 1 := le_tsub_of_add_le_right h
       simp only [derivative_succ, ih (n - 1) h', iterate_derivative_succ_at_0_eq_zero,
         Nat.succ_sub_succ_eq_sub, tsub_zero, sub_zero, iterate_derivative_sub,
         iterate_derivative_natCast_mul, eval_one, eval_mul, eval_add, eval_sub, eval_X, eval_comp,
@@ -174,8 +174,7 @@ theorem iterate_derivative_at_0 (n ν : ℕ) :
       · have : n - 1 - (ν - 1) = n - ν := by omega
         rw [this, ascPochhammer_eval_succ]
         rw_mod_cast [tsub_add_cancel_of_le (h'.trans n.pred_le)]
-  · simp only [not_le] at h
-    rw [tsub_eq_zero_iff_le.mpr (Nat.le_sub_one_of_lt h), eq_zero_of_lt R h]
+  · rw [tsub_eq_zero_iff_le.mpr (Nat.le_sub_one_of_lt h), eq_zero_of_lt R h]
     simp [pos_iff_ne_zero.mp (pos_of_gt h)]
 
 theorem iterate_derivative_at_0_ne_zero [CharZero R] (n ν : ℕ) (h : ν ≤ n) :
@@ -206,12 +205,13 @@ theorem iterate_derivative_at_1 (n ν : ℕ) (h : ν ≤ n) :
     (Polynomial.derivative^[n - ν] (bernsteinPolynomial R n ν)).eval 1 =
       (-1) ^ (n - ν) * (ascPochhammer R (n - ν)).eval (ν + 1 : R) := by
   rw [flip' _ _ _ h]
-  simp [Polynomial.eval_comp]
+  simp only [iterate_derivative_comp_one_sub_X, eval_mul, eval_pow, eval_neg, eval_one, eval_comp,
+    eval_sub, eval_X, sub_self, iterate_derivative_at_0]
   obtain rfl | h' := h.eq_or_lt
   · simp
   · norm_cast
     congr
-    omega
+    cutsat
 
 theorem iterate_derivative_at_1_ne_zero [CharZero R] (n ν : ℕ) (h : ν ≤ n) :
     (Polynomial.derivative^[n - ν] (bernsteinPolynomial R n ν)).eval 1 ≠ 0 := by
@@ -223,9 +223,10 @@ open Submodule
 
 theorem linearIndependent_aux (n k : ℕ) (h : k ≤ n + 1) :
     LinearIndependent ℚ fun ν : Fin k => bernsteinPolynomial ℚ n ν := by
-  induction' k with k ih
-  · apply linearIndependent_empty_type
-  · apply linearIndependent_fin_succ'.mpr
+  induction k with
+  | zero => apply linearIndependent_empty_type
+  | succ k ih =>
+    apply linearIndependent_fin_succ'.mpr
     fconstructor
     · exact ih (le_of_lt h)
     · -- The actual work!

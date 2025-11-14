@@ -3,7 +3,7 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johannes Hölzl, Reid Barton, Sean Leather, Yury Kudryashov
 -/
-import Mathlib.CategoryTheory.Types
+import Mathlib.CategoryTheory.Types.Basic
 
 /-!
 # Concrete categories
@@ -84,7 +84,7 @@ abbrev forget (C : Type u) [Category.{v} C] [HasForget.{w} C] : C ⥤ Type w :=
   HasForget.forget
 
 -- this is reducible because we want `forget (Type u)` to unfold to `𝟭 _`
-@[instance] abbrev HasForget.types : HasForget.{u, u, u+1} (Type u) where
+@[instance] abbrev HasForget.types : HasForget.{u, u, u + 1} (Type u) where
   forget := 𝟭 _
 
 /-- Provide a coercion to `Type u` for a concrete category. This is not marked as an instance

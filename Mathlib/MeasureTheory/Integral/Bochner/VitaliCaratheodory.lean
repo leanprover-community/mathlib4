@@ -133,7 +133,7 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
           lintegral_const, MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter, const_zero,
           coe_piecewise, coe_const, coe_zero, Set.piecewise_eq_indicator, Function.const_apply, hs]
       calc
-        (c : ℝ≥0∞) * μ u ≤ c * (μ s + ε / c) := mul_le_mul_left' μu.le _
+        (c : ℝ≥0∞) * μ u ≤ c * (μ s + ε / c) := by grw [μu]
         _ = c * μ s + ε := by
           simp_rw [mul_add]
           rw [ENNReal.mul_div_cancel _ ENNReal.coe_ne_top]
@@ -211,7 +211,7 @@ theorem exists_lt_lowerSemicontinuous_lintegral_ge [SigmaFinite μ] (f : α → 
       (∫⁻ x : α, g x ∂μ) ≤ (∫⁻ x : α, f x + w x ∂μ) + ε / 2 := gint
       _ = ((∫⁻ x : α, f x ∂μ) + ∫⁻ x : α, w x ∂μ) + ε / 2 := by
         rw [lintegral_add_right _ wmeas.coe_nnreal_ennreal]
-      _ ≤ (∫⁻ x : α, f x ∂μ) + ε / 2 + ε / 2 := add_le_add_right (add_le_add_left wint.le _) _
+      _ ≤ (∫⁻ x : α, f x ∂μ) + ε / 2 + ε / 2 := by grw [wint]
       _ = (∫⁻ x : α, f x ∂μ) + ε := by rw [add_assoc, ENNReal.add_halves]
 
 /-- Given an almost everywhere measurable function `f` with values in `ℝ≥0` in a sigma-finite space,
@@ -291,7 +291,7 @@ theorem exists_lt_lowerSemicontinuous_integral_gt_nnreal [SigmaFinite μ] (f : �
           simpa using int_f_ne_top
         _ = ENNReal.toReal (∫⁻ a : α, f a ∂μ) + δ := by
           rw [ENNReal.toReal_add int_f_ne_top ENNReal.coe_ne_top, ENNReal.coe_toReal]
-        _ < ENNReal.toReal (∫⁻ a : α, f a ∂μ) + ε := add_lt_add_left hδε _
+        _ < ENNReal.toReal (∫⁻ a : α, f a ∂μ) + ε := by gcongr
         _ = (∫⁻ a : α, ENNReal.ofReal ↑(f a) ∂μ).toReal + ε := by simp
     · apply Filter.Eventually.of_forall fun x => _; simp
     · exact fmeas.coe_nnreal_real.aestronglyMeasurable
@@ -345,7 +345,7 @@ theorem SimpleFunc.exists_upperSemicontinuous_le_lintegral_le (f : α →ₛ ℝ
           SimpleFunc.const_zero, lintegral_indicator, SimpleFunc.coe_zero,
           Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise, Measure.restrict_apply]
       calc
-        (c : ℝ≥0∞) * μ s ≤ c * (μ F + ε / c) := mul_le_mul_left' μF.le _
+        (c : ℝ≥0∞) * μ s ≤ c * (μ F + ε / c) := by grw [μF]
         _ = c * μ F + ε := by
           simp_rw [mul_add]
           rw [ENNReal.mul_div_cancel _ ENNReal.coe_ne_top]
@@ -479,7 +479,7 @@ theorem exists_lt_lowerSemicontinuous_integral_lt [SigmaFinite μ] (f : α → �
         _ ≤ (∫ x : α, ↑(fp x) ∂μ) + ↑δ - ((∫ x : α, ↑(fm x) ∂μ) - δ) := sub_le_sub_left gmint _
         _ = (∫ x : α, f x ∂μ) + 2 * δ := by
           simp_rw [integral_eq_integral_pos_part_sub_integral_neg_part hf]; ring
-        _ = (∫ x : α, f x ∂μ) + ε := by congr 1; field_simp [δ, mul_comm]
+        _ = (∫ x : α, f x ∂μ) + ε := by congr 1; simp [field, δ]
   case aelt =>
     show ∀ᵐ x : α ∂μ, g x < ⊤
     filter_upwards [gp_lt_top] with ?_ hx

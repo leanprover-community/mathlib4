@@ -18,23 +18,23 @@ A Noetherian space is a topological space that satisfies any of the following eq
 The first is chosen as the definition, and the equivalence is shown in
 `TopologicalSpace.noetherianSpace_TFAE`.
 
-Many examples of noetherian spaces come from algebraic topology. For example, the underlying space
-of a noetherian scheme (e.g., the spectrum of a noetherian ring) is noetherian.
+Many examples of Noetherian spaces come from algebraic topology. For example, the underlying space
+of a Noetherian scheme (e.g., the spectrum of a Noetherian ring) is Noetherian.
 
 ## Main Results
 
-- `TopologicalSpace.NoetherianSpace.set`: Every subspace of a noetherian space is noetherian.
-- `TopologicalSpace.NoetherianSpace.isCompact`: Every set in a noetherian space is a compact set.
-- `TopologicalSpace.noetherianSpace_TFAE`: Describes the equivalent definitions of noetherian
+- `TopologicalSpace.NoetherianSpace.set`: Every subspace of a Noetherian space is Noetherian.
+- `TopologicalSpace.NoetherianSpace.isCompact`: Every set in a Noetherian space is a compact set.
+- `TopologicalSpace.noetherianSpace_TFAE`: Describes the equivalent definitions of Noetherian
   spaces.
-- `TopologicalSpace.NoetherianSpace.range`: The image of a noetherian space under a continuous map
-  is noetherian.
-- `TopologicalSpace.NoetherianSpace.iUnion`: The finite union of noetherian spaces is noetherian.
-- `TopologicalSpace.NoetherianSpace.discrete`: A noetherian and Hausdorff space is discrete.
-- `TopologicalSpace.NoetherianSpace.exists_finset_irreducible`: Every closed subset of a noetherian
+- `TopologicalSpace.NoetherianSpace.range`: The image of a Noetherian space under a continuous map
+  is Noetherian.
+- `TopologicalSpace.NoetherianSpace.iUnion`: The finite union of Noetherian spaces is Noetherian.
+- `TopologicalSpace.NoetherianSpace.discrete`: A Noetherian and Hausdorff space is discrete.
+- `TopologicalSpace.NoetherianSpace.exists_finset_irreducible`: Every closed subset of a Noetherian
   space is a finite union of irreducible closed subsets.
 - `TopologicalSpace.NoetherianSpace.finite_irreducibleComponents`: The number of irreducible
-  components of a noetherian space is finite.
+  components of a Noetherian space is finite.
 
 -/
 
@@ -44,7 +44,7 @@ variable (α β : Type*) [TopologicalSpace α] [TopologicalSpace β]
 
 namespace TopologicalSpace
 
-/-- Type class for noetherian spaces. It is defined to be spaces whose open sets satisfies ACC. -/
+/-- Type class for Noetherian spaces. It is defined to be spaces whose open sets satisfies ACC. -/
 abbrev NoetherianSpace : Prop := WellFoundedGT (Opens α)
 
 theorem noetherianSpace_iff_opens : NoetherianSpace α ↔ ∀ s : Opens α, IsCompact (s : Set α) := by
@@ -114,7 +114,7 @@ theorem noetherianSpace_iff_of_homeomorph (f : α ≃ₜ β) : NoetherianSpace �
 theorem NoetherianSpace.range [NoetherianSpace α] (f : α → β) (hf : Continuous f) :
     NoetherianSpace (Set.range f) :=
   noetherianSpace_of_surjective (Set.rangeFactorization f) (hf.subtype_mk _)
-    Set.surjective_onto_range
+    Set.rangeFactorization_surjective
 
 theorem noetherianSpace_set_iff (s : Set α) :
     NoetherianSpace s ↔ ∀ t, t ⊆ s → IsCompact t := by
@@ -213,7 +213,7 @@ theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [Noetherian
     exact hZ'.1.2 <| le_antisymm (H.2 hZ'.1.1.1 hZ'.2) hZ'.2
   have hU1 : U = (⋃ (x : ι), x.1) ᶜ := by
     rw [Set.compl_eq_univ_diff]
-    refine le_antisymm (Set.diff_subset_diff le_top <| subset_refl _) ?_
+    refine le_antisymm (Set.diff_subset_diff le_top subset_rfl) ?_
     rw [← Set.compl_eq_univ_diff]
     refine Set.compl_subset_iff_union.mpr (le_antisymm le_top ?_)
     rw [Set.union_comm, ← Set.sUnion_eq_iUnion, ← Set.sUnion_insert]

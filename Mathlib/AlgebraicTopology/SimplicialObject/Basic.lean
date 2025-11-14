@@ -92,9 +92,13 @@ variable (X : SimplicialObject C)
 def δ {n} (i : Fin (n + 2)) : X _⦋n + 1⦌ ⟶ X _⦋n⦌ :=
   X.map (SimplexCategory.δ i).op
 
+lemma δ_def {n} (i : Fin (n + 2)) : X.δ i = X.map (SimplexCategory.δ i).op := rfl
+
 /-- Degeneracy maps for a simplicial object. -/
 def σ {n} (i : Fin (n + 1)) : X _⦋n⦌ ⟶ X _⦋n + 1⦌ :=
   X.map (SimplexCategory.σ i).op
+
+lemma σ_def {n} (i : Fin (n + 1)) : X.σ i = X.map (SimplexCategory.σ i).op := rfl
 
 /-- The diagonal of a simplex is the long edge of the simplex. -/
 def diagonal {n : ℕ} : X _⦋n⦌ ⟶ X _⦋1⦌ := X.map ((SimplexCategory.diag n).op)
@@ -105,7 +109,6 @@ def eqToIso {n m : ℕ} (h : n = m) : X _⦋n⦌ ≅ X _⦋m⦌ :=
 
 @[simp]
 theorem eqToIso_refl {n : ℕ} (h : n = n) : X.eqToIso h = Iso.refl _ := by
-  ext
   simp [eqToIso]
 
 /-- The generic case of the first simplicial identity -/
@@ -569,7 +572,6 @@ def eqToIso {n m : ℕ} (h : n = m) : X ^⦋n⦌ ≅ X ^⦋m⦌ :=
 
 @[simp]
 theorem eqToIso_refl {n : ℕ} (h : n = n) : X.eqToIso h = Iso.refl _ := by
-  ext
   simp [eqToIso]
 
 /-- The generic case of the first cosimplicial identity -/

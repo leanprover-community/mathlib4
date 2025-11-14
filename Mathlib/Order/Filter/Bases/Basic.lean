@@ -174,6 +174,9 @@ protected theorem generate (B : FilterBasis α) : generate B.sets = B.filter := 
   · rw [le_generate_iff]
     apply mem_filter_of_mem
 
+lemma ker_filter (F : FilterBasis α) : F.filter.ker = ⋂₀ F.sets := by
+  aesop (add simp [ker, FilterBasis.filter])
+
 end FilterBasis
 
 namespace Filter
@@ -539,7 +542,7 @@ theorem disjoint_principal_right {f : Filter α} {s : Set α} : Disjoint f (𝓟
 theorem disjoint_principal_left {f : Filter α} {s : Set α} : Disjoint (𝓟 s) f ↔ sᶜ ∈ f := by
   rw [disjoint_comm, disjoint_principal_right]
 
-@[simp 1100] -- Porting note: higher priority for linter
+@[simp high] -- This should fire before `disjoint_principal_left` and `disjoint_principal_right`.
 theorem disjoint_principal_principal {s t : Set α} : Disjoint (𝓟 s) (𝓟 t) ↔ Disjoint s t := by
   rw [← subset_compl_iff_disjoint_left, disjoint_principal_left, mem_principal]
 

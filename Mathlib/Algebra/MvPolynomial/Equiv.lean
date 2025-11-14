@@ -154,7 +154,7 @@ section Eval
 variable {R S : Type*} [CommSemiring R] [CommSemiring S]
 
 theorem eval₂_pUnitAlgEquiv_symm {f : Polynomial R} {φ : R →+* S} {a : Unit → S} :
-    ((MvPolynomial.pUnitAlgEquiv R).symm f : MvPolynomial Unit R).eval₂ φ a  =
+    ((MvPolynomial.pUnitAlgEquiv R).symm f : MvPolynomial Unit R).eval₂ φ a =
       f.eval₂ φ (a ()) := by
   simp only [MvPolynomial.pUnitAlgEquiv_symm_apply]
   induction f using Polynomial.induction_on' with
@@ -162,7 +162,7 @@ theorem eval₂_pUnitAlgEquiv_symm {f : Polynomial R} {φ : R →+* S} {a : Unit
   | monomial n r => simp
 
 theorem eval₂_const_pUnitAlgEquiv_symm {f : Polynomial R} {φ : R →+* S} {a : S} :
-    ((MvPolynomial.pUnitAlgEquiv R).symm f : MvPolynomial Unit R).eval₂ φ (fun _ ↦ a)  =
+    ((MvPolynomial.pUnitAlgEquiv R).symm f : MvPolynomial Unit R).eval₂ φ (fun _ ↦ a) =
       f.eval₂ φ a := by
   rw [eval₂_pUnitAlgEquiv_symm]
 
@@ -366,7 +366,6 @@ theorem optionEquivLeft_monomial (m : Option S₁ →₀ ℕ) (r : R) :
   · rw [MvPolynomial.monomial_eq, ← Polynomial.C_mul_X_pow_eq_monomial]
     simp only [Polynomial.algebraMap_apply, algebraMap_eq, Option.elim_none, Option.elim_some,
       map_mul, mul_assoc]
-    apply congr_arg₂ _ rfl
     simp only [mul_comm, map_finsuppProd, map_pow]
   · simp
   · intros; rw [pow_add]
@@ -374,12 +373,10 @@ theorem optionEquivLeft_monomial (m : Option S₁ →₀ ℕ) (r : R) :
 /-- The coefficient of `n.some` in the `n none`-th coefficient of `optionEquivLeft R S₁ f`
 equals the coefficient of `n` in `f` -/
 theorem optionEquivLeft_coeff_coeff (n : Option S₁ →₀ ℕ) (f : MvPolynomial (Option S₁) R) :
-    coeff n.some (Polynomial.coeff (optionEquivLeft R S₁ f) (n none)) =
-      coeff n f := by
-  induction' f using MvPolynomial.induction_on' with j r p q hp hq generalizing n
-  swap
-  · simp only [map_add, Polynomial.coeff_add, coeff_add, hp, hq]
-  · rw [optionEquivLeft_monomial]
+    coeff n.some (Polynomial.coeff (optionEquivLeft R S₁ f) (n none)) = coeff n f := by
+  induction f using MvPolynomial.induction_on' generalizing n with
+  | monomial j r =>
+    rw [optionEquivLeft_monomial]
     classical
     simp only [Polynomial.coeff_monomial, MvPolynomial.coeff_monomial, apply_ite]
     simp only [coeff_zero]
@@ -391,6 +388,7 @@ theorem optionEquivLeft_coeff_coeff (n : Option S₁ →₀ ℕ) (f : MvPolynomi
       apply False.elim (hj _)
       simp only [Finsupp.ext_iff, Option.forall, hj_none, true_and]
       simpa only [Finsupp.ext_iff] using hj_some
+  | add p q hp hq => simp only [map_add, Polynomial.coeff_add, coeff_add, hp, hq]
 
 theorem optionEquivLeft_elim_eval (s : S₁ → R) (y : R) (f : MvPolynomial (Option S₁) R) :
     eval (fun x ↦ Option.elim x y s) f =
@@ -695,7 +693,7 @@ lemma finSuccEquiv_rename_finSuccEquiv (e : σ ≃ Fin n) (φ : MvPolynomial (Op
     exact DFunLike.congr_fun this φ
   apply ringHom_ext
   · simp [Polynomial.algebraMap_apply, algebraMap_eq, finSuccEquiv_apply, optionEquivLeft_apply]
-  · rintro (i|i) <;> simp [finSuccEquiv_apply, optionEquivLeft_apply]
+  · rintro (i | i) <;> simp [finSuccEquiv_apply, optionEquivLeft_apply]
 
 end
 

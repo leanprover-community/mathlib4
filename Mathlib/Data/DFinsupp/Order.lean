@@ -250,6 +250,7 @@ instance [∀ i, AddLeftMono (α i)] : CanonicallyOrderedAdd (Π₀ i, α i) whe
     exists g - f
     ext i
     exact (add_tsub_cancel_of_le <| h i).symm
+  le_add_self := fun _ _ _ ↦ le_add_self
   le_self_add := fun _ _ _ ↦ le_self_add
 
 variable {α} [DecidableEq ι]
@@ -257,7 +258,7 @@ variable {α} [DecidableEq ι]
 @[simp]
 theorem single_tsub : single i (a - b) = single i a - single i b := by
   ext j
-  obtain rfl | h := eq_or_ne i j
+  obtain rfl | h := eq_or_ne j i
   · rw [tsub_apply, single_eq_same, single_eq_same, single_eq_same]
   · rw [tsub_apply, single_eq_of_ne h, single_eq_of_ne h, single_eq_of_ne h, tsub_self]
 

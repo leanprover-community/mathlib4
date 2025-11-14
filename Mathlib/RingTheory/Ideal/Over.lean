@@ -176,15 +176,41 @@ theorem LiesOver.trans [𝔓.LiesOver P] [P.LiesOver p] : 𝔓.LiesOver p where
 theorem LiesOver.tower_bot [hp : 𝔓.LiesOver p] [hP : 𝔓.LiesOver P] : P.LiesOver p where
   over := by rw [𝔓.over_def p, 𝔓.over_def P, under_under]
 
-theorem under_map {C D : Type*} [CommSemiring C] [Semiring D] [Algebra A C] [Algebra C D]
-    [Algebra A D] [Algebra B D] [IsScalarTower A C D] [IsScalarTower A B D] (h₀ : p = under A P)
-    (h₁ : (map (algebraMap A C) p).IsMaximal) (h₂ : map (algebraMap B D) P ≠ ⊤) :
-    under C (map (algebraMap B D) P) = map (algebraMap A C) p := by
-  rw [← IsCoatom.le_iff_eq (isMaximal_def.mp h₁) (comap_ne_top (algebraMap C D) h₂), h₀]
+/--
+Consider the following commutative diagram of ring maps
+```
+A → B
+↓   ↓
+C → D
+```
+and let `P` be an ideal of `B`. The image in `C` of the ideal of `A` under `P` is included
+in the ideal of `C` under the image of `P` in `D`.
+-/
+theorem map_under_le_under_map {C D : Type*} [CommSemiring C] [Semiring D] [Algebra A C]
+    [Algebra C D] [Algebra A D] [Algebra B D] [IsScalarTower A C D] [IsScalarTower A B D] :
+    map (algebraMap A C) (under A P) ≤ under C (map (algebraMap B D) P) := by
   apply le_comap_of_map_le
   rw [map_map, ← IsScalarTower.algebraMap_eq, map_le_iff_le_comap,
     IsScalarTower.algebraMap_eq A B D, ← comap_comap]
   exact comap_mono <| le_comap_map
+
+/--
+Consider the following commutative diagram of ring maps
+```
+A → B
+↓   ↓
+C → D
+```
+and let `P` be an ideal of `B`. Assume that the image in `C` of the ideal of `A` under `P`
+is maximal and that the image of `P` in `D` is not equal to `D`, then the image in `C` of the
+ideal of `A` under `P` is equal to the ideal of `C` under the image of `P` in `D`.
+-/
+theorem under_map_eq_map_under {C D : Type*} [CommSemiring C] [Semiring D] [Algebra A C]
+    [Algebra C D] [Algebra A D] [Algebra B D] [IsScalarTower A C D] [IsScalarTower A B D]
+    (h₁ : (map (algebraMap A C) (under A P)).IsMaximal) (h₂ : map (algebraMap B D) P ≠ ⊤) :
+    under C (map (algebraMap B D) P) = map (algebraMap A C) (under A P) :=
+  (IsCoatom.le_iff_eq (isMaximal_def.mp h₁) (comap_ne_top (algebraMap C D) h₂)).mp <|
+    map_under_le_under_map P
 
 theorem disjoint_primeCompl_of_liesOver [p.IsPrime] [hPp : 𝔓.LiesOver p] :
   Disjoint ((Algebra.algebraMapSubmonoid C p.primeCompl) : Set C) (𝔓 : Set C) := by
@@ -292,6 +318,16 @@ def stabilizerHom : MulAction.stabilizer G P →* ((B ⧸ P) ≃ₐ[A ⧸ p] (B 
 @[simp] theorem stabilizerHom_apply (g : MulAction.stabilizer G P) (b : B) :
     stabilizerHom P p G g b = ↑(g • b) :=
   rfl
+
+lemma ker_stabilizerHom :
+    (stabilizerHom P p G).ker = (P.toAddSubgroup.inertia G).subgroupOf _ := by
+  ext σ
+  simp [DFunLike.ext_iff, mk_surjective.forall, Quotient.eq,
+    Subgroup.mem_subgroupOf, Subgroup.smul_def]
+
+theorem map_ker_stabilizer_subtype :
+    (stabilizerHom P p G).ker.map (Subgroup.subtype _) = P.toAddSubgroup.inertia G := by
+  simp [ker_stabilizerHom, Ideal.inertia_le_stabilizer]
 
 end Quotient
 

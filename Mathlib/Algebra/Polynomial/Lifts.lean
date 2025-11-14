@@ -79,7 +79,7 @@ theorem lifts_iff_coeffs_subset_range (p : S[X]) :
   · intro h n
     by_cases hn : p.coeff n = 0
     · exact ⟨0, by simp [hn]⟩
-    · exact h <| coeff_mem_coeffs _ _ hn
+    · exact h <| coeff_mem_coeffs hn
 
 /-- If `(r : R)`, then `C (f r)` lifts. -/
 theorem C_mem_lifts (f : R →+* S) (r : R) : C (f r) ∈ lifts f :=

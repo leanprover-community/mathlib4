@@ -20,7 +20,7 @@ by allowing the "sum equals 1" constraint to be in terms of `Finset.sum` instead
 `normalize` constructs a `PMF α` by normalizing a function `f : α → ℝ≥0∞` by its sum,
 and `filter` uses this to filter the support of a `PMF` and re-normalize the new distribution.
 
-`bernoulli` represents the bernoulli distribution on `Bool`.
+`bernoulli` represents the Bernoulli distribution on `Bool`.
 
 -/
 
@@ -313,7 +313,7 @@ theorem support_bernoulli : (bernoulli p h).support = { b | cond b (p ≠ 0) (p 
       ENNReal.coe_one, Bool.cond_prop, Set.mem_setOf_eq, Bool.false_eq_true, ite_false, not_iff_not]
     constructor
     · intro h'
-      simp [tsub_eq_zero_iff_le] at h'
+      simp only [tsub_eq_zero_iff_le, one_le_coe_iff] at h'
       exact eq_of_le_of_ge h h'
     · intro h'
       simp only [h', ENNReal.coe_one, tsub_self]

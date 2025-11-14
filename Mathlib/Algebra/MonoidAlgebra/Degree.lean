@@ -97,14 +97,15 @@ section AddOnly
 variable [Add A] [Add B] [Add T] [AddLeftMono B] [AddRightMono B]
   [AddLeftMono T] [AddRightMono T]
 
-theorem sup_support_mul_le {degb : A → B} (degbm : ∀ {a b}, degb (a + b) ≤ degb a + degb b)
+theorem sup_support_mul_le {degb : A → B} (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b)
     (f g : R[A]) :
     (f * g).support.sup degb ≤ f.support.sup degb + g.support.sup degb := by
   classical
-  exact (Finset.sup_mono <| support_mul _ _).trans <| Finset.sup_add_le.2 fun _fd fds _gd gds ↦
-    degbm.trans <| add_le_add (Finset.le_sup fds) (Finset.le_sup gds)
+  grw [support_mul, Finset.sup_add_le]
+  rintro _fd fds _gd gds
+  grw [degbm, ← Finset.le_sup fds, ← Finset.le_sup gds]
 
-theorem le_inf_support_mul {degt : A → T} (degtm : ∀ {a b}, degt a + degt b ≤ degt (a + b))
+theorem le_inf_support_mul {degt : A → T} (degtm : ∀ a b, degt a + degt b ≤ degt (a + b))
     (f g : R[A]) :
     f.support.inf degt + g.support.inf degt ≤ (f * g).support.inf degt :=
   sup_support_mul_le (B := Tᵒᵈ) degtm f g
@@ -126,8 +127,7 @@ theorem sup_support_list_prod_le (degb0 : degb 0 ≤ 0)
     exact fun a ha => by rwa [Finset.mem_singleton.mp (Finsupp.support_single_subset ha)]
   | f::fs => by
     rw [List.prod_cons, List.map_cons, List.sum_cons]
-    exact (sup_support_mul_le (@fun a b => degbm a b) _ _).trans
-        (add_le_add_left (sup_support_list_prod_le degb0 degbm fs) _)
+    grw [sup_support_mul_le degbm, sup_support_list_prod_le degb0 degbm]
 
 theorem le_inf_support_list_prod (degt0 : 0 ≤ degt 0)
     (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (l : List R[A]) :
@@ -443,10 +443,10 @@ lemma sum_ne_zero_of_injOn_supDegree' (hs : ∃ i ∈ s, f i ≠ 0)
     ∑ i ∈ s, f i ≠ 0 := by
   obtain ⟨j, hj, hne⟩ := hs
   obtain ⟨i, hi, he⟩ := exists_mem_eq_sup _ ⟨j, hj⟩ (supDegree D ∘ f)
-  by_cases h : ∀ k ∈ s, k = i
+  by_cases! h : ∀ k ∈ s, k = i
   · refine (sum_eq_single_of_mem j hj (fun k hk hne => ?_)).trans_ne hne
     rw [h k hk, h j hj] at hne; exact hne.irrefl.elim
-  push_neg at h; obtain ⟨j, hj, hne⟩ := h
+  obtain ⟨j, hj, hne⟩ := h
   apply ne_zero_of_supDegree_ne_bot (D := D)
   have (k) (hk : k ∈ s) (hne : k ≠ i) : supDegree D (f k) < supDegree D (f i) :=
     ((le_sup hk).trans_eq he).lt_of_ne (hd.ne hk hi hne)
@@ -478,10 +478,10 @@ lemma supDegree_mul
     (hpq : leadingCoeff D p * leadingCoeff D q ≠ 0)
     (hp : p ≠ 0) (hq : q ≠ 0) :
     (p * q).supDegree D = p.supDegree D + q.supDegree D := by
-  cases subsingleton_or_nontrivial R; · exact (hp (Subsingleton.elim _ _)).elim
   apply supDegree_eq_of_max
   · rw [← AddSubsemigroup.coe_set_mk (Set.range D), ← AddHom.srange_mk _ hadd, SetLike.mem_coe]
-    exact add_mem (supDegree_mem_range D hp) (supDegree_mem_range D hq)
+    · exact add_mem (supDegree_mem_range D hp) (supDegree_mem_range D hq)
+    · exact (AddHom.srange ⟨D, hadd⟩).add_mem
   · simp_rw [Finsupp.mem_support_iff, apply_supDegree_add_supDegree hD hadd]
     exact hpq
   · have := addLeftMono_of_addLeftStrictMono B

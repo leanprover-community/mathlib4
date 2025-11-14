@@ -31,9 +31,9 @@ the latter has `(2 : ℕ) • {1, 2} = {2, 3, 4}`. See note [pointwise nat actio
 
 ## Implementation notes
 
-We put all instances in the locale `Pointwise`, so that these instances are not available by
+We put all instances in the scope `Pointwise`, so that these instances are not available by
 default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
-since we expect the locale to be open whenever the instances are actually used (and making the
+since we expect the scope to be open whenever the instances are actually used (and making the
 instances reducible changes the behavior of `simp`.
 
 ## Tags
@@ -42,7 +42,7 @@ finset multiplication, finset addition, pointwise addition, pointwise multiplica
 pointwise subtraction
 -/
 
-assert_not_exists Cardinal Finset.dens MonoidWithZero MulAction OrderedCommMonoid
+assert_not_exists Cardinal Finset.dens MonoidWithZero MulAction IsOrderedMonoid
 
 open Function MulOpposite
 

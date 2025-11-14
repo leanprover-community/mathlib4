@@ -318,7 +318,7 @@ theorem lintegral_Lp_mul_le_Lq_mul_Lr {α} [MeasurableSpace α] {p q r : ℝ} (h
         rw [mul_comm, ← div_eq_iff hp0_ne]
       have hpq2 : p * q2 = r := by
         rw [← inv_inv r, ← one_div, ← one_div, h_one_div_r]
-        field_simp [p2, q2, Real.conjExponent, hp0_ne, hq0_ne]
+        simp [field, p2, q2, Real.conjExponent]
       simp_rw [div_mul_div_comm, mul_one, mul_comm p2, mul_comm q2, hpp2, hpq2]
 
 theorem lintegral_mul_rpow_le_lintegral_rpow_mul_lintegral_rpow {p q : ℝ}
@@ -381,7 +381,6 @@ private theorem lintegral_Lp_add_le_aux {p q : ℝ} (hpq : p.HolderConjugate q) 
     (h_add_top : (∫⁻ a, (f + g) a ^ p ∂μ) ≠ ⊤) :
     (∫⁻ a, (f + g) a ^ p ∂μ) ^ (1 / p) ≤
       (∫⁻ a, f a ^ p ∂μ) ^ (1 / p) + (∫⁻ a, g a ^ p ∂μ) ^ (1 / p) := by
-  have hp_not_nonpos : ¬p ≤ 0 := by simp [hpq.pos]
   have h0_rpow : (∫⁻ a, (f + g) a ^ p ∂μ) ^ (1 / p) ≠ 0 := by
     simp [h_add_zero, h_add_top, -Pi.add_apply]
   suffices h :

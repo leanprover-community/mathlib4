@@ -171,7 +171,7 @@ instance [∀ n, IsZeroOrProbabilityMeasure (μ n)] (I : Finset ℕ) :
 instance [∀ n, IsProbabilityMeasure (μ n)] (I : Finset ℕ) :
     IsProbabilityMeasure (inducedFamily μ I) := by
   rw [inducedFamily]
-  exact isProbabilityMeasure_map (measurable_restrict₂ _).aemeasurable
+  exact Measure.isProbabilityMeasure_map (measurable_restrict₂ _).aemeasurable
 
 /-- Given a family of measures `μ : (n : ℕ) → Measure (Π i : Iic n, X i)`, the induced family
 equals `μ` over the intervals `Iic n`. -/
@@ -191,7 +191,7 @@ theorem isProjectiveMeasureFamily_inducedFamily
   simp only [inducedFamily]
   rw [Measure.map_map, restrict₂_comp_restrict₂,
     ← restrict₂_comp_restrict₂ J.subset_Iic_sup_id (Iic_subset_Iic.2 sls), ← Measure.map_map,
-    ← frestrictLe₂, h (J.sup id) (I.sup id) sls]
+    ← frestrictLe₂.eq_def sls, h (J.sup id) (I.sup id) sls]
   all_goals fun_prop
 
 end MeasureTheory
@@ -285,7 +285,7 @@ theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a
     · rw [← h, lmarginalPartialTraj_le _ le_rfl (mf n)]
     · rw [lmarginalPartialTraj_le _ _ (mf n), (hcte n).lmarginalPartialTraj_of_le _ (mf n),
         (hcte n).lmarginalPartialTraj_of_le _ (mf n)]
-      all_goals omega
+      all_goals cutsat
   -- `F` is also a bounded sequence.
   have F_le n x : F n x ≤ bound := by
     simpa [F, lmarginalPartialTraj] using lintegral_le_const (ae_of_all _ fun z ↦ le_bound _ _)
@@ -323,7 +323,7 @@ theorem le_lmarginalPartialTraj_succ {f : ℕ → (Π n, X n) → ℝ≥0∞} {a
   simp only [update, updateFinset, mem_Iic]
   split_ifs with h1 h2 <;> try rfl
   rw [mem_coe, mem_Iic] at hi
-  omega
+  cutsat
 
 /-- This is the key theorem to prove the existence of the `traj`:
 the `trajContent` of a decreasing sequence of cylinders with empty intersection
@@ -419,10 +419,9 @@ theorem trajContent_tendsto_zero {A : ℕ → Set (Π n, X n)}
       ext i
       simp only [updateFinset, mem_Iic, frestrictLe_apply, dite_eq_ite, update, z]
       split_ifs with h1 h2 h3 h4 h5
-      any_goals omega
-      any_goals rfl
+      any_goals cutsat
       cases h2
-      rw [iterateInduction, dif_neg (by omega)]
+      rw [iterateInduction, dif_neg (by cutsat)]
   -- We now want to prove that the integral of `χₙ`, which is equal to the `trajContent`
   -- of `Aₙ`, converges to `0`.
   have aux x n :
@@ -591,6 +590,19 @@ end basic
 section integral
 
 /-! ### Integrals and `traj` -/
+
+theorem lintegral_traj₀ {a : ℕ} (x₀ : Π i : Iic a, X i) {f : (Π n, X n) → ℝ≥0∞}
+    (mf : AEMeasurable f (traj κ a x₀)) :
+    ∫⁻ x, f x ∂traj κ a x₀ = ∫⁻ x, f (updateFinset x (Iic a) x₀) ∂traj κ a x₀ := by
+  nth_rw 1 [← traj_map_updateFinset, MeasureTheory.lintegral_map']
+  · convert mf
+    exact traj_map_updateFinset x₀
+  · exact measurable_updateFinset_left.aemeasurable
+
+theorem lintegral_traj {a : ℕ} (x₀ : Π i : Iic a, X i) {f : (Π n, X n) → ℝ≥0∞}
+    (mf : Measurable f) :
+    ∫⁻ x, f x ∂traj κ a x₀ = ∫⁻ x, f (updateFinset x (Iic a) x₀) ∂traj κ a x₀ :=
+  lintegral_traj₀ x₀ mf.aemeasurable
 
 variable {E : Type*} [NormedAddCommGroup E]
 

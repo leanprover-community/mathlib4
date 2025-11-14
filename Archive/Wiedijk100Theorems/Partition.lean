@@ -32,7 +32,7 @@ equal:
 
 $$\prod_{i=0}^\infty \frac {1}{1-X^{2i+1}} = \prod_{i=0}^\infty (1+X^{i+1})$$
 
-In fact, we do not take a limit: it turns out that comparing the `n`'th coefficients of the partial
+In fact, we do not take a limit: it turns out that comparing the `n`-th coefficients of the partial
 products up to `m := n + 1` is sufficient.
 
 In particular, we
@@ -213,7 +213,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
     simp only [mem_finsuppAntidiag] at hf'
     refine ⟨⟨∑ i ∈ s, Multiset.replicate (f i / i) i, ?_, ?_⟩, ?_, ?_, ?_⟩
     · intro i hi
-      simp only [mem_sum] at hi
+      simp only [Multiset.mem_sum] at hi
       rcases hi with ⟨t, ht, z⟩
       apply hs
       rwa [Multiset.eq_of_mem_replicate z]
@@ -230,7 +230,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
         rwa [← hw₂, Nat.mul_div_cancel _ (hs i h)]
       · exact hc _ h
     · intro i hi
-      rw [mem_sum] at hi
+      rw [Multiset.mem_sum] at hi
       rcases hi with ⟨j, hj₁, hj₂⟩
       rwa [Multiset.eq_of_mem_replicate hj₂]
     · ext i

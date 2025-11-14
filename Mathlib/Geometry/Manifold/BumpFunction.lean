@@ -47,7 +47,7 @@ In this section we define a structure for a bundled smooth bump function and pro
 -/
 
 variable (I) in
-/-- Given a smooth manifold modelled on a finite dimensional space `E`,
+/-- Given a smooth manifold modelled on a finite-dimensional space `E`,
 `f : SmoothBumpFunction I M` is a smooth function on `M` such that in the extended chart `e` at
 `f.c`:
 
@@ -231,7 +231,6 @@ theorem support_updateRIn {r : ℝ} (hr : r ∈ Ioo 0 f.rOut) :
     support (f.updateRIn r hr) = support f := by
   simp only [support_eq_inter_preimage, updateRIn_rOut]
 
--- Porting note: was an `Inhabited` instance
 instance : Nonempty (SmoothBumpFunction I c) := nhdsWithin_range_basis.nonempty
 
 variable [T2Space M]
@@ -305,12 +304,12 @@ theorem contMDiff_smul {G} [NormedAddCommGroup G] [NormedSpace ℝ G] {g : M →
     (hg : ContMDiffOn I 𝓘(ℝ, G) ∞ g (chartAt H c).source) :
     ContMDiff I 𝓘(ℝ, G) ∞ fun x => f x • g x := by
   refine contMDiff_of_tsupport fun x hx => ?_
-  have : x ∈ (chartAt H c).source :=
   -- Porting note: was a more readable `calc`
   -- calc
   --   x ∈ tsupport fun x => f x • g x := hx
   --   _ ⊆ tsupport f := tsupport_smul_subset_left _ _
   --   _ ⊆ (chart_at _ c).source := f.tsupport_subset_chartAt_source
+  have : x ∈ (chartAt H c).source :=
     f.tsupport_subset_chartAt_source <| tsupport_smul_subset_left _ _ hx
   exact f.contMDiffAt.smul ((hg _ this).contMDiffAt <| (chartAt _ _).open_source.mem_nhds this)
 

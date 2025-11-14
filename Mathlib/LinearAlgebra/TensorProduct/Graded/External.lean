@@ -74,13 +74,13 @@ This operates on direct sums of tensors instead of tensors of direct sums. -/
 def gradedCommAux : DirectSum _ 𝒜ℬ →ₗ[R] DirectSum _ ℬ𝒜 := by
   refine DirectSum.toModule R _ _ fun i => ?_
   have o := DirectSum.lof R _ ℬ𝒜 i.swap
-  have s : ℤˣ := ((-1 : ℤˣ)^(i.1* i.2 : ι) : ℤˣ)
+  have s : ℤˣ := ((-1 : ℤˣ) ^ (i.1 * i.2 : ι) : ℤˣ)
   exact (s • o) ∘ₗ (TensorProduct.comm R _ _).toLinearMap
 
 @[simp]
 theorem gradedCommAux_lof_tmul (i j : ι) (a : 𝒜 i) (b : ℬ j) :
     gradedCommAux R 𝒜 ℬ (lof R _ 𝒜ℬ (i, j) (a ⊗ₜ b)) =
-      (-1 : ℤˣ)^(j * i) • lof R _ ℬ𝒜 (j, i) (b ⊗ₜ a) := by
+      (-1 : ℤˣ) ^ (j * i) • lof R _ ℬ𝒜 (j, i) (b ⊗ₜ a) := by
   rw [gradedCommAux]
   simp [mul_comm i j]
 
@@ -104,13 +104,11 @@ def gradedComm :
 /-- The braiding is symmetric. -/
 @[simp]
 theorem gradedComm_symm : (gradedComm R 𝒜 ℬ).symm = gradedComm R ℬ 𝒜 := by
-  rw [gradedComm, gradedComm, LinearEquiv.trans_symm, LinearEquiv.symm_symm]
-  ext
   rfl
 
 theorem gradedComm_of_tmul_of (i j : ι) (a : 𝒜 i) (b : ℬ j) :
     gradedComm R 𝒜 ℬ (lof R _ 𝒜 i a ⊗ₜ lof R _ ℬ j b) =
-      (-1 : ℤˣ)^(j * i) • (lof R _ ℬ _ b ⊗ₜ lof R _ 𝒜 _ a) := by
+      (-1 : ℤˣ) ^ (j * i) • (lof R _ ℬ _ b ⊗ₜ lof R _ 𝒜 _ a) := by
   rw [gradedComm]
   dsimp only [LinearEquiv.trans_apply, LinearEquiv.ofLinear_apply]
   rw [TensorProduct.directSum_lof_tmul_lof, gradedCommAux_lof_tmul, Units.smul_def,
@@ -186,7 +184,7 @@ noncomputable irreducible_def gradedMul :
 theorem tmul_of_gradedMul_of_tmul (j₁ i₂ : ι)
     (a₁ : ⨁ i, 𝒜 i) (b₁ : ℬ j₁) (a₂ : 𝒜 i₂) (b₂ : ⨁ i, ℬ i) :
     gradedMul R 𝒜 ℬ (a₁ ⊗ₜ lof R _ ℬ j₁ b₁) (lof R _ 𝒜 i₂ a₂ ⊗ₜ b₂) =
-      (-1 : ℤˣ)^(j₁ * i₂) • ((a₁ * lof R _ 𝒜 _ a₂) ⊗ₜ (lof R _ ℬ _ b₁ * b₂)) := by
+      (-1 : ℤˣ) ^ (j₁ * i₂) • ((a₁ * lof R _ 𝒜 _ a₂) ⊗ₜ (lof R _ ℬ _ b₁ * b₂)) := by
   rw [gradedMul]
   dsimp only [curry_apply, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, assoc_tmul,
     map_tmul, LinearMap.id_coe, id_eq, assoc_symm_tmul, LinearMap.rTensor_tmul,

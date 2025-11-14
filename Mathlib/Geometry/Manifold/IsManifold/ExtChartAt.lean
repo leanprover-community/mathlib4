@@ -11,15 +11,15 @@ import Mathlib.Geometry.Manifold.IsManifold.Basic
 
 In a `C^n` manifold with corners with the model `I` on `(E, H)`, the charts take values in the
 model space `H`. However, we also need to use extended charts taking values in the model vector
-space `E`. These extended charts are not `PartialHomeomorph` as the target is not open in `E`
+space `E`. These extended charts are not `OpenPartialHomeomorph` as the target is not open in `E`
 in general, but we can still register them as `PartialEquiv`.
 
 ## Main definitions
 
-* `PartialHomeomorph.extend`: compose a partial homeomorphism into `H` with the model `I`,
+* `OpenPartialHomeomorph.extend`: compose an open partial homeomorphism into `H` with the model `I`,
   to obtain a `PartialEquiv` into `E`. Extended charts are an example of this.
 * `extChartAt I x`: the extended chart at `x`, obtained by composing the `chartAt H x` with `I`.
-  Since the target is in general not open, this is not a partial homeomorphism in general, but
+  Since the target is in general not open, this is not an open partial homeomorphism in general, but
   we register them as `PartialEquiv`s.
 
 ## Main results
@@ -46,13 +46,13 @@ open scoped Manifold Topology
 
 variable {𝕜 E M H E' M' H' : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] [TopologicalSpace H] [TopologicalSpace M] {n : WithTop ℕ∞}
-  (f f' : PartialHomeomorph M H)
+  (f f' : OpenPartialHomeomorph M H)
   {I : ModelWithCorners 𝕜 E H} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] [TopologicalSpace H']
   [TopologicalSpace M'] {I' : ModelWithCorners 𝕜 E' H'} {s t : Set M}
 
 section ExtendedCharts
 
-namespace PartialHomeomorph
+namespace OpenPartialHomeomorph
 
 variable (I) in
 /-- Given a chart `f` on a manifold with corners, `f.extend I` is the extended chart to the model
@@ -86,7 +86,7 @@ lemma isOpen_extend_target [I.Boundaryless] : IsOpen (f.extend I).target := by
 
 theorem mapsTo_extend (hs : s ⊆ f.source) :
     MapsTo (f.extend I) s ((f.extend I).symm ⁻¹' s ∩ range I) := by
-  rw [mapsTo', extend_coe, extend_coe_symm, preimage_comp, ← I.image_eq, image_comp,
+  rw [mapsTo_iff_image_subset, extend_coe, extend_coe_symm, preimage_comp, ← I.image_eq, image_comp,
     f.image_eq_target_inter_inv_preimage hs]
   exact image_mono inter_subset_right
 
@@ -245,8 +245,8 @@ theorem tendsto_extend_comp_iff {α : Type*} {l : Filter α} {g : α → M}
   simpa only [(· ∘ ·), extend_left_inv _ hz, mem_preimage] using hzu
 
 -- there is no definition `writtenInExtend` but we already use some made-up names in this file
-theorem continuousWithinAt_writtenInExtend_iff {f' : PartialHomeomorph M' H'} {g : M → M'} {y : M}
-    (hy : y ∈ f.source) (hgy : g y ∈ f'.source) (hmaps : MapsTo g s f'.source) :
+theorem continuousWithinAt_writtenInExtend_iff {f' : OpenPartialHomeomorph M' H'} {g : M → M'}
+    {y : M} (hy : y ∈ f.source) (hgy : g y ∈ f'.source) (hmaps : MapsTo g s f'.source) :
     ContinuousWithinAt (f'.extend I' ∘ g ∘ (f.extend I).symm)
       ((f.extend I).symm ⁻¹' s ∩ range I) (f.extend I y) ↔ ContinuousWithinAt g s y := by
   unfold ContinuousWithinAt
@@ -262,7 +262,7 @@ theorem continuousWithinAt_writtenInExtend_iff {f' : PartialHomeomorph M' H'} {g
 
 /-- If `s ⊆ f.source` and `g x ∈ f'.source` whenever `x ∈ s`, then `g` is continuous on `s` if and
 only if `g` written in charts `f.extend I` and `f'.extend I'` is continuous on `f.extend I '' s`. -/
-theorem continuousOn_writtenInExtend_iff {f' : PartialHomeomorph M' H'} {g : M → M'}
+theorem continuousOn_writtenInExtend_iff {f' : OpenPartialHomeomorph M' H'} {g : M → M'}
     (hs : s ⊆ f.source) (hmaps : MapsTo g s f'.source) :
     ContinuousOn (f'.extend I' ∘ g ∘ (f.extend I).symm) (f.extend I '' s) ↔ ContinuousOn g s := by
   refine forall_mem_image.trans <| forall₂_congr fun x hx ↦ ?_
@@ -296,7 +296,7 @@ theorem extend_preimage_inter_eq :
       (f.extend I).symm ⁻¹' s ∩ range I ∩ (f.extend I).symm ⁻¹' t := by
   mfld_set_tac
 
--- Porting note: an `aux` lemma that is no longer needed. Delete?
+@[deprecated "Removed without replacement" (since := "2025-08-27")]
 theorem extend_symm_preimage_inter_range_eventuallyEq_aux {s : Set M} {x : M} (hx : x ∈ f.source) :
     ((f.extend I).symm ⁻¹' s ∩ range I : Set _) =ᶠ[𝓝 (f.extend I x)]
       ((f.extend I).target ∩ (f.extend I).symm ⁻¹' s : Set _) := by
@@ -334,7 +334,7 @@ theorem extend_coord_change_source_mem_nhdsWithin {x : E}
   rw [f.extend_coord_change_source] at hx ⊢
   obtain ⟨x, hx, rfl⟩ := hx
   refine I.image_mem_nhdsWithin ?_
-  exact (PartialHomeomorph.open_source _).mem_nhds hx
+  exact (OpenPartialHomeomorph.open_source _).mem_nhds hx
 
 theorem extend_coord_change_source_mem_nhdsWithin' {x : M} (hxf : x ∈ f.source)
     (hxf' : x ∈ f'.source) :
@@ -359,7 +359,7 @@ theorem contDiffWithinAt_extend_coord_change [ChartedSpace H M] (hf : f ∈ maxi
   apply (contDiffOn_extend_coord_change hf hf' x hx).mono_of_mem_nhdsWithin
   rw [extend_coord_change_source] at hx ⊢
   obtain ⟨z, hz, rfl⟩ := hx
-  exact I.image_mem_nhdsWithin ((PartialHomeomorph.open_source _).mem_nhds hz)
+  exact I.image_mem_nhdsWithin ((OpenPartialHomeomorph.open_source _).mem_nhds hz)
 
 theorem contDiffWithinAt_extend_coord_change' [ChartedSpace H M] (hf : f ∈ maximalAtlas I n M)
     (hf' : f' ∈ maximalAtlas I n M) {x : M} (hxf : x ∈ f.source) (hxf' : x ∈ f'.source) :
@@ -368,9 +368,9 @@ theorem contDiffWithinAt_extend_coord_change' [ChartedSpace H M] (hf : f ∈ max
   rw [← extend_image_source_inter]
   exact mem_image_of_mem _ ⟨hxf', hxf⟩
 
-end PartialHomeomorph
+end OpenPartialHomeomorph
 
-open PartialHomeomorph
+open OpenPartialHomeomorph
 
 variable [ChartedSpace H M] [ChartedSpace H' M']
 
@@ -499,7 +499,7 @@ theorem extChartAt_target_union_compl_range_mem_nhds_of_mem {y : E} {x : M}
 /-- If we're boundaryless, `extChartAt` has open target -/
 theorem isOpen_extChartAt_target [I.Boundaryless] (x : M) : IsOpen (extChartAt I x).target := by
   simp_rw [extChartAt_target, I.range_eq_univ, inter_univ]
-  exact (PartialHomeomorph.open_target _).preimage I.continuous_symm
+  exact (OpenPartialHomeomorph.open_target _).preimage I.continuous_symm
 
 /-- If we're boundaryless, `(extChartAt I x).target` is a neighborhood of the key point -/
 theorem extChartAt_target_mem_nhds [I.Boundaryless] (x : M) :
@@ -751,6 +751,22 @@ theorem writtenInExtChartAt_extChartAt_symm {x : M} {y : E} (h : y ∈ (extChart
     writtenInExtChartAt 𝓘(𝕜, E) I (extChartAt I x x) (extChartAt I x).symm y = y := by
   simp_all only [mfld_simps]
 
+section
+
+variable {G G' F F' N N' : Type*}
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+  [TopologicalSpace G] [TopologicalSpace N] [TopologicalSpace G'] [TopologicalSpace N']
+  {J : ModelWithCorners 𝕜 F G} {J' : ModelWithCorners 𝕜 F' G'}
+  [ChartedSpace G N] [ChartedSpace G' N']
+
+lemma writtenInExtChart_prod {f : M → N} {g : M' → N'} {x : M} {x' : M'} :
+    (writtenInExtChartAt (I.prod I') (J.prod J') (x, x') (Prod.map f g)) =
+      Prod.map (writtenInExtChartAt I J x f) (writtenInExtChartAt I' J' x' g) := by
+  ext p <;>
+  simp [writtenInExtChartAt, I.toPartialEquiv.prod_symm, (chartAt H x).toPartialEquiv.prod_symm]
+
+end
+
 variable (𝕜)
 
 theorem extChartAt_self_eq {x : H} : ⇑(extChartAt I x) = I :=
@@ -772,8 +788,6 @@ variable {𝕜}
 theorem extChartAt_prod (x : M × M') :
     extChartAt (I.prod I') x = (extChartAt I x.1).prod (extChartAt I' x.2) := by
   simp only [mfld_simps]
-  -- Porting note: `simp` can't use `PartialEquiv.prod_trans` here because of a type
-  -- synonym
   rw [PartialEquiv.prod_trans]
 
 theorem extChartAt_comp [ChartedSpace H H'] (x : M') :

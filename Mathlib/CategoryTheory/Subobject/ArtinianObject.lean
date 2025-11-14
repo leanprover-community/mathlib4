@@ -136,7 +136,7 @@ variable [HasZeroMorphisms C] [HasZeroObject C]
 
 theorem exists_simple_subobject {X : C} [IsArtinianObject X] (h : ¬IsZero X) :
     ∃ Y : Subobject X, Simple (Y : C) := by
-  haveI : Nontrivial (Subobject X) := nontrivial_of_not_isZero h
+  have : Nontrivial (Subobject X) := nontrivial_of_not_isZero h
   obtain ⟨Y, s⟩ := (IsAtomic.eq_bot_or_exists_atom_le (⊤ : Subobject X)).resolve_left top_ne_bot
   exact ⟨Y, (subobject_simple_iff_isAtom _).mpr s.1⟩
 
@@ -144,7 +144,7 @@ theorem exists_simple_subobject {X : C} [IsArtinianObject X] (h : ¬IsZero X) :
 noncomputable def simpleSubobject {X : C} [IsArtinianObject X] (h : ¬IsZero X) : C :=
   (exists_simple_subobject h).choose
 
-/-- The monomorphism from the arbitrary simple subobject of a non-zero artinian object. -/
+/-- The monomorphism from the arbitrary simple subobject of a non-zero Artinian object. -/
 noncomputable def simpleSubobjectArrow {X : C} [IsArtinianObject X] (h : ¬IsZero X) :
     simpleSubobject h ⟶ X :=
   (exists_simple_subobject h).choose.arrow

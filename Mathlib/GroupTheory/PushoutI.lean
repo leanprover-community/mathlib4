@@ -350,7 +350,7 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
     · intro h
       apply_fun (d.compl i).equiv at h
       simp only [Prod.ext_iff, equiv_one (d.compl i) (one_mem _) (d.one_mem _),
-        equiv_mul_left_of_mem (d.compl i) ⟨_, rfl⟩ , hhead, Subtype.ext_iff,
+        equiv_mul_left_of_mem (d.compl i) ⟨_, rfl⟩, hhead, Subtype.ext_iff,
         Prod.ext_iff] at h
       rcases h with ⟨h₁, h₂⟩
       rw [h₂, equiv_one (d.compl i) (one_mem _) (d.one_mem _)] at h₁
@@ -466,18 +466,12 @@ noncomputable instance mulAction : MulAction (PushoutI φ) (NormalWord d) :=
       smul_inv_smul, base_smul_def', MonoidHom.apply_ofInjective_symm]
 
 theorem base_smul_def (h : H) (w : NormalWord d) :
-    base φ h • w = { w with head := h * w.head } := by
-  dsimp [NormalWord.mulAction, instHSMul, SMul.smul]
-  rw [lift_base]
-  rfl
+    base φ h • w = { w with head := h * w.head } := rfl
 
 theorem summand_smul_def {i : ι} (g : G i) (w : NormalWord d) :
     of (φ := φ) i g • w = (equivPair i).symm
       { equivPair i w with
-        head := g * (equivPair i w).head } := by
-  dsimp [NormalWord.mulAction, instHSMul, SMul.smul]
-  rw [lift_of]
-  rfl
+        head := g * (equivPair i w).head } := rfl
 
 theorem of_smul_eq_smul {i : ι} (g : G i) (w : NormalWord d) :
     of (φ := φ) i g • w = g • w := by
@@ -506,8 +500,7 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
       convert cons i g ⟨w, 1, fun _ _ h => h3 _ _ (List.mem_cons_of_mem _ h)⟩
         h1 (h3 _ _ List.mem_cons_self) ?_ rfl
         (ih ?_)
-      · ext
-        simp only [Word.cons, NormalWord.cons, map_one, mul_one,
+      · simp only [Word.cons, NormalWord.cons, map_one, mul_one,
           (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
           (h3 _ _ List.mem_cons_self)]
       · apply d.injective i
@@ -522,7 +515,7 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
 
 theorem cons_eq_smul {i : ι} (g : G i)
     (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
-    (hgr : g ∉ (φ i).range) : cons g w hmw hgr = of (φ := φ) i g  • w := by
+    (hgr : g ∉ (φ i).range) : cons g w hmw hgr = of (φ := φ) i g • w := by
   apply ext_smul i
   simp only [cons, Word.cons_eq_smul, MonoidHom.apply_ofInjective_symm,
     equiv_fst_eq_mul_inv, mul_assoc, map_mul, map_inv, mul_smul, inv_smul_smul, summand_smul_def,

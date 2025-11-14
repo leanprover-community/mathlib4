@@ -85,7 +85,7 @@ def ineq? (e : Expr) : MetaM (Ineq × Expr × Expr × Expr) := do
 
 /-- Given an expression `e`, parse it as a `=`, `≤` or `<`, or the negation of such, and return this
 relation (as a `Linarith.Ineq`) together with the type in which the (in)equality occurs, the two
-sides of the (in)equality, and a boolean flag indicating the presence or absence of the `¬`.
+sides of the (in)equality, and a Boolean flag indicating the presence or absence of the `¬`.
 
 This function is more naturally in the `Option` monad, but it is convenient to put in `MetaM`
 for compositionality.

@@ -10,7 +10,7 @@ import Mathlib.GroupTheory.Perm.Sign
 /-!
 # Nonsingular inverses over semirings
 
-This files proves `A * B = 1 ↔ B * A = 1` for square matrices over a commutative semiring.
+This file proves `A * B = 1 ↔ B * A = 1` for square matrices over a commutative semiring.
 
 -/
 
@@ -89,13 +89,13 @@ theorem detp_mul :
     split_ifs with h h <;> simp only [hσ, h]
   rw [← mul_neg_one, hf (mem_ofSign.mpr (sign_swap hij)), sum_map]
   simp_rw [prod_mul_distrib, mulRightEmbedding_apply, Perm.mul_apply]
-  refine sum_congr rfl fun τ hτ ↦ congr_arg (_ *  ·) ?_
+  refine sum_congr rfl fun τ hτ ↦ congr_arg (_ * ·) ?_
   rw [← Equiv.prod_comp (swap i j)]
   simp only [hσ]
 
 theorem mul_adjp_apply_eq : (A * adjp s A) i i = detp s A := by
   have key := sum_fiberwise_eq_sum_filter (ofSign s) univ (· i) fun σ ↦ ∏ k, A k (σ k)
-  simp_rw [mem_univ, filter_True] at key
+  simp_rw [mem_univ, filter_true] at key
   simp_rw [mul_apply, adjp_apply, mul_sum, detp, ← key]
   refine sum_congr rfl fun x hx ↦ sum_congr rfl fun σ hσ ↦ ?_
   rw [← prod_mul_prod_compl ({i} : Finset n), prod_singleton, (mem_filter.mp hσ).2]

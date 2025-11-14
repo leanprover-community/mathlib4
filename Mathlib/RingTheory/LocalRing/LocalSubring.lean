@@ -96,14 +96,16 @@ instance : Algebra A (ofPrime A P).toSubring := (Subring.inclusion (le_ofPrime A
 
 instance : IsScalarTower A (ofPrime A P).toSubring K := .of_algebraMap_eq (fun _ ↦ rfl)
 
+-- see https://github.com/leanprover-community/mathlib4/issues/29041
+set_option linter.unusedSimpArgs false in
 /-- The localization of a subring at a prime is indeed isomorphic to its abstract localization. -/
 noncomputable
 def ofPrimeEquiv : Localization.AtPrime P ≃ₐ[A] (ofPrime A P).toSubring := by
   refine AlgEquiv.ofInjective (IsLocalization.liftAlgHom (M := P.primeCompl)
     (S := Localization.AtPrime P) (f := Algebra.ofId A K) _) ?_
   intro x y e
-  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective P.primeCompl x
-  obtain ⟨y, t, rfl⟩ := IsLocalization.mk'_surjective P.primeCompl y
+  obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq P.primeCompl x
+  obtain ⟨y, t, rfl⟩ := IsLocalization.exists_mk'_eq P.primeCompl y
   have H (x : P.primeCompl) : x.1 ≠ 0 := by aesop
   have : x.1 = y.1 * t.1.1⁻¹ * s.1.1 := by
     simpa [IsLocalization.lift_mk', Algebra.ofId_apply, H,
@@ -111,7 +113,7 @@ def ofPrimeEquiv : Localization.AtPrime P ≃ₐ[A] (ofPrime A P).toSubring := b
   rw [IsLocalization.mk'_eq_iff_eq]
   congr 1
   ext
-  field_simp [H t, this, mul_comm]
+  simp [field, H t, this, mul_comm]
 
 instance : IsLocalization.AtPrime (ofPrime A P).toSubring P :=
   IsLocalization.isLocalization_of_algEquiv _ (ofPrimeEquiv A P)

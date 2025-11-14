@@ -355,7 +355,7 @@ def id : NormedAddGroupHom V V :=
 
 /-- The norm of the identity is at most `1`. It is in fact `1`, except when the norm of every
 element vanishes, where it is `0`. (Since we are working with seminorms this can happen even if the
-space is non-trivial.) It means that one can not do better than an inequality in general. -/
+space is non-trivial.) It means that one cannot do better than an inequality in general. -/
 theorem norm_id_le : ‖(id V : NormedAddGroupHom V V)‖ ≤ 1 :=
   opNorm_le_bound _ zero_le_one fun x => by simp
 

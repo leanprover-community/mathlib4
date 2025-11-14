@@ -57,16 +57,6 @@ namespace Finset
 -- TODO: these should be global attributes, but this will require fixing other files
 attribute [local trans] Subset.trans Superset.trans
 
-set_option linter.deprecated false in
-@[deprecated "Deprecated without replacement." (since := "2025-02-07")]
-theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {s : Finset α} (hx : x ∈ s) :
-    SizeOf.sizeOf x < SizeOf.sizeOf s := by
-  cases s
-  dsimp [SizeOf.sizeOf, SizeOf.sizeOf, Multiset.sizeOf]
-  rw [Nat.add_comm]
-  refine lt_trans ?_ (Nat.lt_succ_self _)
-  exact Multiset.sizeOf_lt_sizeOf_of_mem hx
-
 /-! ### Lattice structure -/
 
 section Lattice
@@ -592,7 +582,7 @@ def piFinsetUnion {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι} (h
   sumPiEquivProdPi (fun b ↦ α (e b)) |>.symm.trans (.piCongrLeft (fun i : ↥(s ∪ t) ↦ α i) e)
 
 /-- A finset is equivalent to its coercion as a set. -/
-def _root_.Finset.equivToSet (s : Finset α) : s ≃ s.toSet where
+def _root_.Finset.equivToSet (s : Finset α) : s ≃ (s : Set α) where
   toFun a := ⟨a.1, mem_coe.2 a.2⟩
   invFun a := ⟨a.1, mem_coe.1 a.2⟩
 
@@ -613,11 +603,25 @@ end Multiset
 
 namespace Finset
 
-theorem mem_union_of_disjoint {α : Type*} [DecidableEq α]
+variable {α : Type*}
+
+theorem mem_union_of_disjoint [DecidableEq α]
     {s t : Finset α} (h : Disjoint s t) {x : α} :
     x ∈ s ∪ t ↔ Xor' (x ∈ s) (x ∈ t) := by
   rw [Finset.mem_union, Xor']
   have := disjoint_left.1 h
   tauto
+
+@[simp]
+theorem univ_finset_of_isEmpty [h : IsEmpty α] : (Set.univ : Set (Finset α)) = {∅} :=
+  subset_antisymm (fun S hS ↦ by simp [Finset.eq_empty_of_isEmpty S]) (by simp)
+
+theorem isEmpty_of_forall_eq_empty (H : ∀ s : Finset α, s = ∅) : IsEmpty α :=
+  isEmpty_iff.mpr fun a ↦ by specialize H {a}; aesop
+
+@[simp]
+theorem univ_finset_eq_singleton_empty_iff : @Set.univ (Finset α) = {∅} ↔ IsEmpty α :=
+  ⟨fun h ↦ isEmpty_of_forall_eq_empty fun s ↦ Set.mem_singleton_iff.mp
+    (Set.ext_iff.mp h s |>.mp (Set.mem_univ s)), fun _ ↦ by simp⟩
 
 end Finset

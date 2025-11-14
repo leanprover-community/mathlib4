@@ -12,7 +12,7 @@ import Mathlib.RingTheory.SimpleRing.Congr
 
 ## Main results
 
-* `IsSimpleRing.tfae`: a simple ring is semisimple iff it is artinian,
+* `IsSimpleRing.tfae`: a simple ring is semisimple iff it is Artinian,
   iff it has a minimal left ideal.
 
 * `isSimpleRing_isArtinianRing_iff`: a ring is simple Artinian iff it is semisimple, isotypic,
@@ -40,7 +40,7 @@ import Mathlib.RingTheory.SimpleRing.Congr
 universe u
 variable (R₀ : Type*) {R : Type u} [CommSemiring R₀] [Ring R] [Algebra R₀ R]
 
-/-- A simple ring is semisimple iff it is artinian, iff it has a minimal left ideal. -/
+/-- A simple ring is semisimple iff it is Artinian, iff it has a minimal left ideal. -/
 theorem IsSimpleRing.tfae [IsSimpleRing R] : List.TFAE
     [IsSemisimpleRing R, IsArtinianRing R, ∃ I : Ideal R, IsAtom I] := by
   tfae_have 1 → 2 := fun _ ↦ inferInstance

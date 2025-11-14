@@ -111,7 +111,7 @@ theorem Countable.mono {s₁ s₂ : Set α} (h : s₁ ⊆ s₂) (hs : s₂.Count
   have := hs.to_subtype; (inclusion_injective h).countable
 
 theorem countable_range [Countable ι] (f : ι → β) : (range f).Countable :=
-  surjective_onto_range.countable.to_set
+  rangeFactorization_surjective.countable.to_set
 
 theorem countable_iff_exists_subset_range [Nonempty α] {s : Set α} :
     s.Countable ↔ ∃ f : ℕ → α, s ⊆ range f :=

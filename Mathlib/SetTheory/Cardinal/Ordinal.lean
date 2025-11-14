@@ -67,7 +67,7 @@ theorem card_iSup_Iio_le_sum_card {o : Ordinal.{u}} (f : Iio o → Ordinal.{max 
 theorem card_iSup_Iio_le_card_mul_iSup {o : Ordinal.{u}} (f : Iio o → Ordinal.{max u v}) :
     (⨆ a : Iio o, f a).card ≤ Cardinal.lift.{v} o.card * ⨆ a : Iio o, (f a).card := by
   apply (card_iSup_Iio_le_sum_card f).trans
-  convert ← sum_le_iSup_lift _
+  convert ← sum_le_lift_mk_mul_iSup _
   · exact mk_toType o
   · exact (enumIsoToType o).symm.iSup_comp (g := fun x ↦ (f x).card)
 
@@ -77,9 +77,9 @@ theorem card_opow_le_of_omega0_le_left {a : Ordinal} (ha : ω ≤ a) (b : Ordina
   · simpa using one_lt_omega0.le.trans ha
   · intro b IH
     rw [opow_succ, card_mul, card_succ, Cardinal.mul_eq_max_of_aleph0_le_right, max_comm]
-    · apply (max_le_max_left _ IH).trans
+    · grw [IH]
       rw [← max_assoc, max_self]
-      exact max_le_max_left _ le_self_add
+      grw [← le_self_add]
     · rw [ne_eq, card_eq_zero, opow_eq_zero]
       rintro ⟨rfl, -⟩
       cases omega0_pos.not_ge ha
@@ -90,8 +90,8 @@ theorem card_opow_le_of_omega0_le_left {a : Ordinal} (ha : ω ≤ a) (b : Ordina
     rw [Cardinal.lift_id, Cardinal.mul_eq_max_of_aleph0_le_right, max_comm]
     · apply max_le _ (le_max_right _ _)
       apply ciSup_le'
-      intro c
-      exact (IH c.1 c.2).trans (max_le_max_left _ (card_le_card c.2.le))
+      rintro ⟨c, (hcb : c < b)⟩
+      grw [IH c hcb, hcb]
     · simpa using hb.ne_bot
     · refine le_ciSup_of_le ?_ ⟨1, one_lt_omega0.trans_le <| omega0_le_of_isSuccLimit hb⟩ ?_
       · exact Cardinal.bddAbove_of_small _

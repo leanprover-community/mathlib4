@@ -20,7 +20,7 @@ This file mainly proves the relation between `Ass(S⁻¹M)` and `Ass(M)`
   `p ∈ Ass (S⁻¹M)`.
 
 TODO: prove the reverse when `p` is finitely generated and
-      get `Ass (S⁻¹M) = Ass(M) ∩ Spec(S⁻¹R)` when `R` noetherian.
+      get `Ass (S⁻¹M) = Ass(M) ∩ Spec(S⁻¹R)` when `R` Noetherian.
 
 TODO: deduce from the above that every minimal element in support is in `Ass(M)`.
 
@@ -49,7 +49,7 @@ lemma mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule
     assumption
   · use f x
     ext t
-    rcases IsLocalization.mk'_surjective S t with ⟨r, s, hrs⟩
+    rcases IsLocalization.exists_mk'_eq S t with ⟨r, s, hrs⟩
     rw [← IsLocalizedModule.mk'_one S, ← hrs, mem_ker, toSpanSingleton_apply,
       IsLocalizedModule.mk'_smul_mk', mul_one, IsLocalizedModule.mk'_eq_zero']
     refine ⟨fun h ↦ ?_, fun ⟨t, ht⟩ ↦ ?_⟩

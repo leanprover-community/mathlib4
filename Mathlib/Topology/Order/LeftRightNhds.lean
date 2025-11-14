@@ -107,7 +107,7 @@ space is second-countable. -/
 theorem countable_setOf_isolated_right_within [SecondCountableTopology α] {s : Set α} :
     { x ∈ s | 𝓝[s ∩ Ioi x] x = ⊥ }.Countable := by
   /- This does not follow from `countable_setOf_isolated_right`, which gives the result when `s`
-  is the whole space, as one can not use it inside the subspace since it doesn't have the order
+  is the whole space, as one cannot use it inside the subspace since it doesn't have the order
   topology. Instead, we follow the main steps of its proof. -/
   let t := { x ∈ s | 𝓝[s ∩ Ioi x] x = ⊥ ∧ ¬ IsTop x}
   suffices H : t.Countable by
@@ -226,7 +226,7 @@ theorem TFAE_mem_nhdsGE {a b : α} (hab : a < b) (s : Set α) :
       s ∈ 𝓝[Icc a b] a,
       s ∈ 𝓝[Ico a b] a,
       ∃ u ∈ Ioc a b, Ico a u ⊆ s,
-      ∃ u ∈ Ioi a , Ico a u ⊆ s] := by
+      ∃ u ∈ Ioi a, Ico a u ⊆ s] := by
   tfae_have 1 ↔ 2 := by
     rw [nhdsWithin_Icc_eq_nhdsGE hab]
   tfae_have 1 ↔ 3 := by
@@ -418,9 +418,6 @@ variable (α) in
 theorem nhds_basis_one_mabs_lt [NoMaxOrder α] :
     (𝓝 (1 : α)).HasBasis (fun ε : α => (1 : α) < ε) fun ε => { b | |b|ₘ < ε } := by
   simpa using nhds_basis_mabs_div_lt (1 : α)
-
-@[deprecated (since := "2025-03-18")]
-alias nhds_basis_zero_abs_sub_lt := nhds_basis_zero_abs_lt
 
 /-- If `a > 1`, then open intervals `(a / ε, aε)`, `1 < ε ≤ a`,
 form a basis of neighborhoods of `a`.

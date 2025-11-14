@@ -5,6 +5,7 @@ Authors: David Loeffler
 -/
 import Mathlib.Algebra.Group.AddChar
 import Mathlib.Analysis.Complex.Circle
+import Mathlib.Analysis.Fourier.Notation
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.MeasureTheory.Integral.Bochner.Set
@@ -39,7 +40,7 @@ multiplication map (but still allowing `𝕜` to be an arbitrary ring equipped w
 
 The most familiar case of all is when `V = W = 𝕜 = ℝ`, `L` is multiplication, `μ` is volume, and
 `e` is `Real.fourierChar`, i.e. the character `fun x ↦ exp ((2 * π * x) * I)` (for which we
-introduced the notation `𝐞` in the locale `FourierTransform`).
+introduced the notation `𝐞` in the scope `FourierTransform`).
 
 Another familiar case (which generalizes the previous one) is when `V = W` is an inner product space
 over `ℝ` and `L` is the scalar product. We introduce two notations `𝓕` for the Fourier transform in
@@ -167,9 +168,39 @@ variable [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜] [TopologicalSpace V] [
   {e : AddChar 𝕜 𝕊} {μ : Measure V} {L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜}
   {ν : Measure W} [SigmaFinite μ] [SigmaFinite ν] [SecondCountableTopology V]
 
-variable [CompleteSpace E] [CompleteSpace F]
+variable {σ : ℂ →+* ℂ} [RingHomIsometric σ]
 
+/-- Fubini's theorem for the Fourier integral.
+
+This is the main technical step in proving both Parseval's identity and self-adjointness of the
+Fourier transform. -/
+theorem integral_fourierIntegral_swap
+    {f : V → E} {g : W → F} (M : F →L[ℂ] E →SL[σ] G) (he : Continuous e)
+    (hL : Continuous fun p : V × W ↦ L p.1 p.2) (hf : Integrable f μ) (hg : Integrable g ν) :
+    ∫ ξ, (∫ x, M (g ξ) (e (-L x ξ) • f x) ∂μ) ∂ν =
+    ∫ x, (∫ ξ, M (g ξ) (e (-L x ξ) • f x) ∂ν) ∂μ := by
+  rw [integral_integral_swap]
+  have : Integrable (fun (p : W × V) ↦ ‖M‖ * (‖g p.1‖ * ‖f p.2‖)) (ν.prod μ) :=
+    (hg.norm.mul_prod hf.norm).const_mul _
+  apply this.mono
+  · change AEStronglyMeasurable (fun p : W × V ↦ (M (g p.1) (e (-(L p.2) p.1) • f p.2) )) _
+    have A : AEStronglyMeasurable (fun (p : W × V) ↦ e (-L p.2 p.1) • f p.2) (ν.prod μ) := by
+      refine (Continuous.aestronglyMeasurable ?_).smul hf.1.comp_snd
+      exact he.comp (hL.comp continuous_swap).neg
+    have A' : AEStronglyMeasurable (fun p ↦ (g p.1, e (-(L p.2) p.1) • f p.2) : W × V → F × E)
+      (Measure.prod ν μ) := hg.1.comp_fst.prodMk A
+    have hM : Continuous (fun q ↦ M q.1 q.2 : F × E → G) :=
+      -- There is no `Continuous.clm_apply` for semilinear continuous maps
+      (M.flip.cont.comp continuous_snd).clm_apply continuous_fst
+    apply hM.comp_aestronglyMeasurable A' -- `exact` works, but `apply` is 10x faster!
+  · filter_upwards with ⟨ξ, x⟩
+    simp only [Function.uncurry_apply_pair, norm_mul, norm_norm, ge_iff_le, ← mul_assoc]
+    convert M.le_opNorm₂ (g ξ) (e (-L x ξ) • f x) using 2
+    simp
+
+variable [CompleteSpace E] [CompleteSpace F]
 /-- The Fourier transform satisfies `∫ 𝓕 f * g = ∫ f * 𝓕 g`, i.e., it is self-adjoint.
+
 Version where the multiplication is replaced by a general bilinear form `M`. -/
 theorem integral_bilin_fourierIntegral_eq_flip
     {f : V → E} {g : W → F} (M : E →L[ℂ] F →L[ℂ] G) (he : Continuous e)
@@ -178,33 +209,15 @@ theorem integral_bilin_fourierIntegral_eq_flip
       ∫ x, M (f x) (fourierIntegral e ν L.flip g x) ∂μ := by
   by_cases hG : CompleteSpace G; swap; · simp [integral, hG]
   calc
-  _ = ∫ ξ, M.flip (g ξ) (∫ x, e (-L x ξ) • f x ∂μ) ∂ν := rfl
-  _ = ∫ ξ, (∫ x, M.flip (g ξ) (e (-L x ξ) • f x) ∂μ) ∂ν := by
+  ∫ ξ, M.flip (g ξ) (∫ x, e (-L x ξ) • f x ∂μ) ∂ν
+    = ∫ ξ, (∫ x, M.flip (g ξ) (e (-L x ξ) • f x) ∂μ) ∂ν := by
     congr with ξ
     apply (ContinuousLinearMap.integral_comp_comm _ _).symm
     exact (fourierIntegral_convergent_iff he hL _).2 hf
-  _ = ∫ x, (∫ ξ, M.flip (g ξ) (e (-L x ξ) • f x) ∂ν) ∂μ := by
-    rw [integral_integral_swap]
-    have : Integrable (fun (p : W × V) ↦ ‖M‖ * (‖g p.1‖ * ‖f p.2‖)) (ν.prod μ) :=
-      (hg.norm.mul_prod hf.norm).const_mul _
-    apply this.mono
-    · -- This proof can be golfed but becomes very slow; breaking it up into steps
-      -- speeds up compilation.
-      change AEStronglyMeasurable (fun p : W × V ↦ (M (e (-(L p.2) p.1) • f p.2) (g p.1))) _
-      have A : AEStronglyMeasurable (fun (p : W × V) ↦ e (-L p.2 p.1) • f p.2) (ν.prod μ) := by
-        refine (Continuous.aestronglyMeasurable ?_).smul hf.1.comp_snd
-        exact he.comp (hL.comp continuous_swap).neg
-      have A' : AEStronglyMeasurable (fun p ↦ (g p.1, e (-(L p.2) p.1) • f p.2) : W × V → F × E)
-        (Measure.prod ν μ) := hg.1.comp_fst.prodMk A
-      have B : Continuous (fun q ↦ M q.2 q.1 : F × E → G) := M.flip.continuous₂
-      apply B.comp_aestronglyMeasurable A' -- `exact` works, but `apply` is 10x faster!
-    · filter_upwards with ⟨ξ, x⟩
-      rw [Function.uncurry_apply_pair, Submonoid.smul_def, (M.flip (g ξ)).map_smul,
-        ← Submonoid.smul_def, Circle.norm_smul, ContinuousLinearMap.flip_apply,
-        norm_mul, norm_norm M, norm_mul, norm_norm, norm_norm, mul_comm (‖g _‖), ← mul_assoc]
-      exact M.le_opNorm₂ (f x) (g ξ)
+  _ = ∫ x, (∫ ξ, M.flip (g ξ) (e (-L x ξ) • f x) ∂ν) ∂μ :=
+    integral_fourierIntegral_swap M.flip he hL hf hg
   _ = ∫ x, (∫ ξ, M (f x) (e (-L.flip ξ x) • g ξ) ∂ν) ∂μ := by
-      simp only [ContinuousLinearMap.flip_apply, ContinuousLinearMap.map_smul_of_tower,
+    simp only [ContinuousLinearMap.flip_apply, ContinuousLinearMap.map_smul_of_tower,
       ContinuousLinearMap.coe_smul', Pi.smul_apply, LinearMap.flip_apply]
   _ = ∫ x, M (f x) (∫ ξ, e (-L.flip ξ x) • g ξ ∂ν) ∂μ := by
     congr with x
@@ -219,6 +232,42 @@ theorem integral_fourierIntegral_smul_eq_flip
     ∫ ξ, (fourierIntegral e μ L f ξ) • (g ξ) ∂ν =
       ∫ x, (f x) • (fourierIntegral e ν L.flip g x) ∂μ :=
   integral_bilin_fourierIntegral_eq_flip (ContinuousLinearMap.lsmul ℂ ℂ) he hL hf hg
+
+/-- The Fourier transform satisfies `∫ 𝓕 f * conj g = ∫ f * conj (𝓕⁻¹ g)`, which together
+with the Fourier inversion theorem yields Plancherel's theorem. The stated version is more
+convenient since it does only require integrability of `f` and `g`.
+
+Version where the multiplication is replaced by a general bilinear form `M`. -/
+theorem integral_sesq_fourierIntegral_eq_neg_flip
+    {f : V → E} {g : W → F} (M : E →L⋆[ℂ] F →L[ℂ] G) (he : Continuous e)
+    (hL : Continuous fun p : V × W ↦ L p.1 p.2) (hf : Integrable f μ) (hg : Integrable g ν) :
+    ∫ ξ, M (fourierIntegral e μ L f ξ) (g ξ) ∂ν =
+      ∫ x, M (f x) (fourierIntegral e ν (-L.flip) g x) ∂μ := by
+  by_cases hG : CompleteSpace G; swap; · simp [integral, hG]
+  calc
+  ∫ ξ, M.flip (g ξ) (∫ x, e (-L x ξ) • f x ∂μ) ∂ν
+    = ∫ ξ, (∫ x, M.flip (g ξ) (e (-L x ξ) • f x) ∂μ) ∂ν := by
+    congr with ξ
+    apply (ContinuousLinearMap.integral_comp_commSL RCLike.conj_smul _ _).symm
+    exact (fourierIntegral_convergent_iff he hL _).2 hf
+  _ = ∫ x, (∫ ξ, M.flip (g ξ) (e (-L x ξ) • f x) ∂ν) ∂μ :=
+    integral_fourierIntegral_swap M.flip he hL hf hg
+  _ = ∫ x, (∫ ξ, M (f x) (e (L.flip ξ x) • g ξ) ∂ν) ∂μ := by
+    congr with x
+    congr with ξ
+    rw [← smul_one_smul ℂ _ (f x), ← smul_one_smul ℂ _ (g ξ)]
+    simp only [map_smulₛₗ, ContinuousLinearMap.flip_apply, LinearMap.flip_apply, RingHom.id_apply,
+      Circle.smul_def, smul_eq_mul, mul_one, ← Circle.coe_inv_eq_conj, AddChar.map_neg_eq_inv,
+      inv_inv]
+  _ = ∫ x, (∫ ξ, M (f x) (e (-(-L.flip ξ) x) • g ξ) ∂ν) ∂μ := by
+    simp only [LinearMap.flip_apply, ContinuousLinearMap.map_smul_of_tower, LinearMap.neg_apply,
+      neg_neg]
+  _ = ∫ x, M (f x) (∫ ξ, e (-(-L.flip ξ) x) • g ξ ∂ν) ∂μ := by
+    congr with x
+    apply ContinuousLinearMap.integral_comp_comm
+    have hLflip : Continuous fun (p : W × V) => (-L.flip p.1) p.2 :=
+      (continuous_neg.comp hL).comp continuous_swap
+    exact (fourierIntegral_convergent_iff (L := -L.flip) he hLflip x).2 hg
 
 end Fubini
 
@@ -365,20 +414,17 @@ open scoped RealInnerProductSpace
 
 variable [FiniteDimensional ℝ V]
 
-/-- The Fourier transform of a function on an inner product space, with respect to the standard
-additive character `ω ↦ exp (2 i π ω)`.
-Denoted as `𝓕` within the `Real.FourierTransform` namespace. -/
-def fourierIntegral (f : V → E) (w : V) : E :=
-  VectorFourier.fourierIntegral 𝐞 volume (innerₗ V) f w
+instance FourierTransform : FourierTransform (V → E) (V → E) where
+  fourierTransform f := VectorFourier.fourierIntegral 𝐞 volume (innerₗ V) f
 
-/-- The inverse Fourier transform of a function on an inner product space, defined as the Fourier
-transform but with opposite sign in the exponential.
-Denoted as `𝓕⁻¹` within the `Real.FourierTransform` namespace. -/
-def fourierIntegralInv (f : V → E) (w : V) : E :=
-  VectorFourier.fourierIntegral 𝐞 volume (-innerₗ V) f w
+instance FourierTransformInv : FourierTransformInv (V → E) (V → E) where
+  fourierTransformInv f w := VectorFourier.fourierIntegral 𝐞 volume (-innerₗ V) f w
 
-@[inherit_doc] scoped[FourierTransform] notation "𝓕" => Real.fourierIntegral
-@[inherit_doc] scoped[FourierTransform] notation "𝓕⁻" => Real.fourierIntegralInv
+@[deprecated (since := "2025-11-12")]
+alias fourierIntegral := FourierTransform.fourierTransform
+
+@[deprecated (since := "2025-11-12")]
+alias fourierIntegralInv := FourierTransform.fourierTransformInv
 
 lemma fourierIntegral_eq (f : V → E) (w : V) :
     𝓕 f w = ∫ v, 𝐞 (-⟪v, w⟫) • f v := rfl
@@ -389,7 +435,7 @@ lemma fourierIntegral_eq' (f : V → E) (w : V) :
 
 lemma fourierIntegralInv_eq (f : V → E) (w : V) :
     𝓕⁻ f w = ∫ v, 𝐞 ⟪v, w⟫ • f v := by
-  simp [fourierIntegralInv, VectorFourier.fourierIntegral]
+  simp [FourierTransformInv.fourierTransformInv, VectorFourier.fourierIntegral]
 
 lemma fourierIntegralInv_eq' (f : V → E) (w : V) :
     𝓕⁻ f w = ∫ v, Complex.exp ((↑(2 * π * ⟪v, w⟫) * Complex.I)) • f v := by
@@ -421,7 +467,7 @@ lemma fourierIntegralInv_comp_linearIsometry (A : W ≃ₗᵢ[ℝ] V) (f : V →
   simp [fourierIntegralInv_eq_fourierIntegral_neg, fourierIntegral_comp_linearIsometry]
 
 theorem fourierIntegral_real_eq (f : ℝ → E) (w : ℝ) :
-    fourierIntegral f w = ∫ v : ℝ, 𝐞 (-(v * w)) • f v := by
+    𝓕 f w = ∫ v : ℝ, 𝐞 (-(v * w)) • f v := by
   simp_rw [mul_comm _ w]
   rfl
 

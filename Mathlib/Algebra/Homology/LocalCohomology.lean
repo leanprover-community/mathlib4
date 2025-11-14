@@ -196,7 +196,7 @@ def idealPowersToSelfLERadical (J : Ideal R) : ℕᵒᵖ ⥤ SelfLERadical J :=
 variable {I J K : Ideal R}
 
 /-- The diagram of powers of `J` is initial in the diagram of all ideals with
-radical containing `J`. This uses noetherianness. -/
+radical containing `J`. This uses Noetherianness. -/
 instance ideal_powers_initial [hR : IsNoetherian R R] :
     Functor.Initial (idealPowersToSelfLERadical J) where
   out J' := by
