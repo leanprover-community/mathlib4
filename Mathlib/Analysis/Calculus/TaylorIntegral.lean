@@ -6,6 +6,7 @@ Authors: Moritz Doll
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.Calculus.Deriv.Pow
+import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 
 /-!
 # Taylor's formula with an integral remainder
@@ -128,3 +129,28 @@ theorem add_eq_sum_add_integral_iteratedFDeriv (hf : ∀ (t : ℝ) (_ht : t ∈ 
     simpa [← eq_neg_add_iff_add_eq, ← intervalIntegral.integral_smul, smul_smul, u, v] using
       intervalIntegral.integral_smul_deriv_eq_deriv_smul (fun t _ ↦ hu t) hv
       (hu'.neg.intervalIntegrable _ _) hv'.intervalIntegrable
+
+/-- *Taylor's theorem with remainder in integral form*.
+
+Version for the 1-dimensional derivative. -/
+theorem add_eq_sum_add_integral_iteratedDeriv {f : ℝ → F} {x y : ℝ}
+    (hf : ∀ (t : ℝ) (_ht : t ∈ Set.uIcc x (x + y)), ContDiffAt ℝ (n + 1) f t) :
+    f (x + y) = ∑ k ∈ Finset.range (n + 1), (k ! : ℝ)⁻¹ • y ^ k • iteratedDeriv k f x +
+    (n ! : ℝ)⁻¹ • ∫ t in 0..1, (1 - t)^n • y ^ (n + 1) • iteratedDeriv (n + 1) f (x + t * y) := by
+  have hf' : ∀ (t : ℝ) (_ht : t ∈ Set.Icc 0 1), ContDiffAt ℝ (n + 1) f (x + t * y) := by
+    intro t ⟨ht₁, ht₂⟩
+    apply hf (x + t * y)
+    by_cases h : 0 ≤ y
+    · refine Set.mem_uIcc_of_le ?_ ?_
+      · simp only [le_add_iff_nonneg_right]
+        positivity
+      simp only [add_le_add_iff_left]
+      exact mul_le_of_le_one_left h ht₂
+    · simp only [not_le] at h
+      refine Set.mem_uIcc_of_ge ?_ ?_
+      · simp only [add_le_add_iff_left]
+        exact le_mul_of_le_one_left h.le ht₂
+      simp only [add_le_iff_nonpos_right]
+      exact mul_nonpos_of_nonneg_of_nonpos ht₁ h.le
+  simpa [iteratedFDeriv_apply_eq_iteratedDeriv_mul_prod] using
+    add_eq_sum_add_integral_iteratedFDeriv hf'
