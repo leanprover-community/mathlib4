@@ -88,7 +88,7 @@ section
 forgetting the extra data.
 -/
 @[simps!]
-def inducedPseudofunctor : StrictPseudofunctor (InducedBicategory C F) C :=
+def forget : StrictPseudofunctor (InducedBicategory C F) C :=
   StrictPseudofunctor.mk' {
     obj X := F X.as
     map f := f.hom
