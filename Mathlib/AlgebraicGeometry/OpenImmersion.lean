@@ -429,6 +429,9 @@ lemma of_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) [IsOpenImmersion 
   IsOpenImmersion.of_isIso_stalkMap _ <|
     IsOpenEmbedding.of_comp _ (Scheme.Hom.isOpenEmbedding g) (Scheme.Hom.isOpenEmbedding (f ≫ g))
 
+instance : MorphismProperty.HasOfPostcompProperty @IsOpenImmersion @IsOpenImmersion where
+  of_postcomp f g _ _ := .of_comp f g
+
 theorem iff_isIso_stalkMap {X Y : Scheme.{u}} (f : X ⟶ Y) :
     IsOpenImmersion f ↔ IsOpenEmbedding f ∧ ∀ x, IsIso (f.stalkMap x) :=
   ⟨fun H ↦ ⟨H.1, fun x ↦ inferInstanceAs <| IsIso (f.toPshHom.stalkMap x)⟩,
