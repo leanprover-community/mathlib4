@@ -32,20 +32,20 @@ variable {X Y : SSet.{u}} {x₀ x₁ x₂ : X _⦋0⦌}
 variable (x₀ x₁) in
 /-- In a simplicial set, an edge from a vertex `x₀` to `x₁` is
 a `1`-simplex with prescribed `0`-dimensional faces. -/
-def Edge := Truncated.Edge (X := (truncation 2).obj X) x₀ x₁
+def Edge := ((truncation 2).obj X).Edge x₀ x₁
 
 namespace Edge
 
 /-- Constructor for `SSet.Edge` which takes as an input a term in the definitionally
 equal type `SSet.Truncated.Edge` for the `2`-truncation of the simplicial set.
 (This definition is made to contain abuse of defeq in other definitions.) -/
-def ofTruncated (e : Truncated.Edge (X := (truncation 2).obj X) x₀ x₁) :
+def ofTruncated (e : ((truncation 2).obj X).Edge x₀ x₁) :
     Edge x₀ x₁ := e
 
 /-- The edge of the `2`-truncation of a simplicial set `X` that is induced
 by an edge of `X`. -/
 def toTruncated (e : Edge x₀ x₁) :
-    Truncated.Edge (X := (truncation 2).obj X) x₀ x₁ :=
+    ((truncation 2).obj X).Edge x₀ x₁ :=
   e
 
 /-- In a simplicial set, an edge from a vertex `x₀` to `x₁` is
@@ -53,7 +53,7 @@ a `1`-simplex with prescribed `0`-dimensional faces. -/
 def edge (e : Edge x₀ x₁) : X _⦋1⦌ := e.toTruncated.edge
 
 @[simp]
-lemma ofTruncated_edge (e : Truncated.Edge (X := (truncation 2).obj X) x₀ x₁) :
+lemma ofTruncated_edge (e : ((truncation 2).obj X).Edge x₀ x₁) :
     (ofTruncated e).edge = e.edge := rfl
 
 @[simp]
@@ -106,8 +106,7 @@ lemma map_id (f : X ⟶ Y) :
   Truncated.Edge.map_id _ _
 
 /-- The edge given by a `1`-simplex. -/
-def mk' (s : X _⦋1⦌) : Edge (X.δ 1 s) (X.δ 0 s) :=
-  .ofTruncated (Truncated.Edge.mk' (X := (truncation 2).obj X) s)
+def mk' (s : X _⦋1⦌) : Edge (X.δ 1 s) (X.δ 0 s) := mk s
 
 @[simp]
 lemma mk'_edge (s : X _⦋1⦌) : (mk' s).edge = s := rfl
@@ -146,8 +145,7 @@ section
 variable (h : CompStruct e₀₁ e₁₂ e₀₂)
 
 /-- The underlying `2`-simplex in a structure `SSet.Edge.CompStruct`. -/
-def simplex : X _⦋2⦌ :=
-    h.toTruncated.simplex
+def simplex : X _⦋2⦌ := h.toTruncated.simplex
 
 @[simp]
 lemma d₂ : X.δ 2 h.simplex = e₀₁.edge := Truncated.Edge.CompStruct.d₂ h
