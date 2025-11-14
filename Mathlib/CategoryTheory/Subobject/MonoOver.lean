@@ -6,9 +6,11 @@ Authors: Bhavik Mehta, Kim Morrison
 import Mathlib.CategoryTheory.Comma.Over.Pullback
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Adjunction.Restrict
+import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+import Mathlib.CategoryTheory.WithTerminal.Cone
 
 /-!
 # Monomorphisms over a fixed object
@@ -36,7 +38,7 @@ and was ported to mathlib by Kim Morrison.
 -/
 
 
-universe v₁ v₂ u₁ u₂
+universe w' w v₁ v₂ v₃ u₁ u₂ u₃
 
 noncomputable section
 
@@ -47,13 +49,17 @@ open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory
 variable {C : Type u₁} [Category.{v₁} C] {X Y Z : C}
 variable {D : Type u₂} [Category.{v₂} D]
 
+/-- The object property in `Over X` of the structure morphism being a monomorphism. -/
+abbrev Over.isMono (X : C) : ObjectProperty (Over X) :=
+  fun f : Over X => Mono f.hom
+
 /-- The category of monomorphisms into `X` as a full subcategory of the over category.
 This isn't skeletal, so it's not a partial order.
 
 Later we define `Subobject X` as the quotient of this by isomorphisms.
 -/
 def MonoOver (X : C) :=
-  ObjectProperty.FullSubcategory fun f : Over X => Mono f.hom
+  ObjectProperty.FullSubcategory (Over.isMono X)
 
 instance (X : C) : Category (MonoOver X) :=
   ObjectProperty.FullSubcategory.category _
@@ -201,6 +207,94 @@ def slice {A : C} {f : Over A}
   counitIso :=
     MonoOver.liftComp _ _ _ _ ≪≫
       MonoOver.liftIso _ _ f.iteratedSliceEquiv.counitIso ≪≫ MonoOver.liftId
+
+section Limits
+
+variable {J : Type u₃} [Category.{v₃} J] (X : C)
+
+instance : (Over.isMono X).IsClosedUnderLimitsOfShape J where
+  limitsOfShape_le := fun F ⟨p, hp⟩ ↦ ⟨fun g h e ↦ by
+    refine (WithTerminal.isLimitEquiv.invFun p.isLimit).hom_ext (fun j ↦ ?_)
+    cases j with
+    | of j => have := hp j; rw [← cancel_mono ((p.diag.obj j).hom)]; simpa
+    | star => exact e⟩
+
+instance hasLimit (F : J ⥤ MonoOver X) [HasLimit (F ⋙ (Over.isMono X).ι)] :
+    HasLimit F :=
+  hasLimit_of_closedUnderLimits _ _ _
+
+instance hasLimitsOfShape [HasLimitsOfShape J (Over X)] :
+    HasLimitsOfShape J (MonoOver X) where
+
+instance hasFiniteLimits [HasFiniteLimits (Over X)] : HasFiniteLimits (MonoOver X) where
+  out _ _ _ := inferInstance
+
+instance hasLimitsOfSize [HasLimitsOfSize.{w, w'} (Over X)] :
+    HasLimitsOfSize.{w, w'} (MonoOver X) where
+
+end Limits
+
+section Colimits
+
+variable [HasCoproducts C] [HasStrongEpiMonoFactorisations C] {J : Type u₂} [Category.{v₂} J]
+
+/-- A helper function, providing the strong epi-mono factorization used construct to colimits. -/
+def strongEpiMonoFactorisationSigmaDesc (F : J ⥤ MonoOver Y) :
+    StrongEpiMonoFactorisation (Sigma.desc fun i ↦ (F.obj i).arrow) :=
+  Classical.choice <| HasStrongEpiMonoFactorisations.has_fac (Sigma.desc fun i ↦ (F.obj i).arrow)
+
+/-- If a category `C` has strong epi-mono factorization, for any `Y : C` and functor
+`F : J ⥤ MonoOver Y`, there is a cocone under F. -/
+def coconeOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) :
+    Cocone F where
+  pt := {
+    obj := .mk <| (strongEpiMonoFactorisationSigmaDesc F).m
+    property := (strongEpiMonoFactorisationSigmaDesc F).m_mono
+  }
+  ι := {
+    app j := {
+      left := Sigma.ι (fun i ↦ (F.obj i : C)) j ≫ (strongEpiMonoFactorisationSigmaDesc F).e
+      right := 𝟙 _
+    }
+  }
+
+lemma commSqOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) (c : Cocone F) :
+    CommSq (Sigma.desc fun i ↦ (c.ι.app i).left) (strongEpiMonoFactorisationSigmaDesc F).e
+      c.pt.arrow (strongEpiMonoFactorisationSigmaDesc F).m where
+  w := by
+    apply Sigma.hom_ext
+    intro j
+    simp only [colimit.ι_desc_assoc, Discrete.functor_obj_eq_as, Cofan.mk_pt, Cofan.mk_ι_app,
+      MonoFactorisation.fac, colimit.ι_desc]
+    convert (c.ι.app j).w
+    simp only [const_obj_obj, CostructuredArrow.right_eq_id, const_obj_map, comp_id]
+    exact rfl
+
+/-- A helper function, providing the lift structure used to construct colimits. -/
+def liftStructOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) (c : Cocone F) :
+    (commSqOfHasStrongEpiMonoFactorisation F c).LiftStruct :=
+  Classical.choice
+    (((strongEpiMonoFactorisationSigmaDesc F).e_strong_epi.llp _).sq_hasLift
+      (commSqOfHasStrongEpiMonoFactorisation F c)).exists_lift
+
+/-- The cocone `coconeOfHasStrongEpiMonoFactorisation F` is a colimit -/
+def isColimitCoconeOfHasStrongEpiMonoFactorisation (F : J ⥤ MonoOver Y) :
+    IsColimit (coconeOfHasStrongEpiMonoFactorisation F) where
+  desc c := {
+    left := (liftStructOfHasStrongEpiMonoFactorisation F c).l
+    right := 𝟙 _
+    w := by
+      simp only [id_obj, const_obj_obj, Functor.id_map, Discrete.functor_map_id, comp_id];
+      exact (liftStructOfHasStrongEpiMonoFactorisation F c).fac_right
+  }
+
+instance hasColimitsOfSize_of_hasStrongEpiMonoFactorisations :
+    HasColimitsOfSize.{w, w'} (MonoOver Y) where
+  has_colimits_of_shape _ _ :=
+    ⟨fun F ↦
+      ⟨coconeOfHasStrongEpiMonoFactorisation F, isColimitCoconeOfHasStrongEpiMonoFactorisation F⟩⟩
+
+end Colimits
 
 section Pullback
 
@@ -394,9 +488,7 @@ def imageForgetAdj : image ⊣ forget X :=
                     fac := Over.w k }
             · apply image.lift_fac
           left_inv := fun _ => Subsingleton.elim _ _
-          right_inv := fun k => by
-            ext
-            simp } }
+          right_inv := fun k => by simp } }
 
 instance : (forget X).IsRightAdjoint :=
   ⟨_, ⟨imageForgetAdj⟩⟩

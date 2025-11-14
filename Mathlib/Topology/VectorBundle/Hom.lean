@@ -329,7 +329,7 @@ variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B�
 another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending
 continuously on `m`, one can apply `ϕ m` to `g m`, and the resulting map is continuous.
 
-Note that the continuity of `ϕ` can not be always be stated as continuity of a map into a bundle,
+Note that the continuity of `ϕ` cannot be always be stated as continuity of a map into a bundle,
 as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` only have a nice topology when `b₁` and `b₂` are
 globally continuous, but we want to apply this lemma with only local information. Therefore, we
 formulate it using continuity of `ϕ` read in coordinates.
@@ -368,7 +368,7 @@ lemma ContinuousWithinAt.clm_apply_of_inCoordinates
 another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending
 continuously on `m`, one can apply `ϕ m` to `g m`, and the resulting map is continuous.
 
-Note that the continuity of `ϕ` can not be always be stated as continuity of a map into a bundle,
+Note that the continuity of `ϕ` cannot be always be stated as continuity of a map into a bundle,
 as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` only have a nice topology when `b₁` and `b₂` are
 globally continuous, but we want to apply this lemma with only local information. Therefore, we
 formulate it using continuity of `ϕ` read in coordinates.

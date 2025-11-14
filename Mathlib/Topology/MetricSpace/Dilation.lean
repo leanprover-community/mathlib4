@@ -59,6 +59,9 @@ variable (α : Type*) (β : Type*) [PseudoEMetricSpace α] [PseudoEMetricSpace �
 
 /-- A dilation is a map that uniformly scales the edistance between any two points. -/
 structure Dilation where
+  /-- The underlying function.
+
+  Do NOT use directly. Use the coercion instead. -/
   toFun : α → β
   edist_eq' : ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, edist (toFun x) (toFun y) = r * edist x y
 
@@ -240,10 +243,9 @@ def _root_.Isometry.toDilation (f : α → β) (hf : Isometry f) : α →ᵈ β 
 
 @[simp]
 lemma _root_.Isometry.toDilation_ratio {f : α → β} {hf : Isometry f} : ratio hf.toDilation = 1 := by
-  by_cases h : ∀ x y : α, edist x y = 0 ∨ edist x y = ⊤
+  by_cases! h : ∀ x y : α, edist x y = 0 ∨ edist x y = ⊤
   · exact ratio_of_trivial hf.toDilation h
-  · push_neg at h
-    obtain ⟨x, y, h₁, h₂⟩ := h
+  · obtain ⟨x, y, h₁, h₂⟩ := h
     exact ratio_unique h₁ h₂ (by simp [hf x y]) |>.symm
 
 theorem lipschitz : LipschitzWith (ratio f) (f : α → β) := fun x y => (edist_eq f x y).le
@@ -272,10 +274,9 @@ protected theorem coe_id : ⇑(Dilation.id α) = id :=
   rfl
 
 theorem ratio_id : ratio (Dilation.id α) = 1 := by
-  by_cases h : ∀ x y : α, edist x y = 0 ∨ edist x y = ∞
+  by_cases! h : ∀ x y : α, edist x y = 0 ∨ edist x y = ∞
   · rw [ratio, if_pos h]
-  · push_neg at h
-    rcases h with ⟨x, y, hne⟩
+  · rcases h with ⟨x, y, hne⟩
     refine (ratio_unique hne.1 hne.2 ?_).symm
     simp
 
@@ -342,9 +343,8 @@ theorem coe_mul (f g : α →ᵈ α) : ⇑(f * g) = f ∘ g :=
 
 @[simp]
 theorem ratio_mul (f g : α →ᵈ α) : ratio (f * g) = ratio f * ratio g := by
-  by_cases h : ∀ x y : α, edist x y = 0 ∨ edist x y = ∞
+  by_cases! h : ∀ x y : α, edist x y = 0 ∨ edist x y = ∞
   · simp [ratio_of_trivial, h]
-  push_neg at h
   exact ratio_comp' h
 
 /-- `Dilation.ratio` as a monoid homomorphism from `α →ᵈ α` to `ℝ≥0`. -/
@@ -397,7 +397,7 @@ theorem mapsTo_emetric_ball (x : α) (r : ℝ≥0∞) :
 /-- A dilation maps closed balls to closed balls and scales the radius by `ratio f`. -/
 theorem mapsTo_emetric_closedBall (x : α) (r' : ℝ≥0∞) :
     MapsTo (f : α → β) (EMetric.closedBall x r') (EMetric.closedBall (f x) (ratio f * r')) :=
-  fun y hy => (edist_eq f y x).trans_le <| mul_le_mul_left' hy _
+  fun y hy => (edist_eq f y x).trans_le <| by gcongr; exact hy
 
 theorem comp_continuousOn_iff {γ} [TopologicalSpace γ] {g : γ → α} {s : Set γ} :
     ContinuousOn ((f : α → β) ∘ g) s ↔ ContinuousOn g s :=
@@ -456,7 +456,7 @@ theorem diam_range : Metric.diam (range (f : α → β)) = ratio f * Metric.diam
 /-- A dilation maps balls to balls and scales the radius by `ratio f`. -/
 theorem mapsTo_ball (x : α) (r' : ℝ) :
     MapsTo (f : α → β) (Metric.ball x r') (Metric.ball (f x) (ratio f * r')) :=
-  fun y hy => (dist_eq f y x).trans_lt <| (mul_lt_mul_left <| NNReal.coe_pos.2 <| ratio_pos f).2 hy
+  fun y hy => (dist_eq f y x).trans_lt <| by gcongr; exacts [ratio_pos _, hy]
 
 /-- A dilation maps spheres to spheres and scales the radius by `ratio f`. -/
 theorem mapsTo_sphere (x : α) (r' : ℝ) :

@@ -112,7 +112,6 @@ instance : LE (Prepartition I) :=
   ⟨fun π π' => ∀ ⦃I⦄, I ∈ π → ∃ I' ∈ π', I ≤ I'⟩
 
 instance partialOrder : PartialOrder (Prepartition I) where
-  le := (· ≤ ·)
   le_refl _ I hI := ⟨I, hI, le_rfl⟩
   le_trans _ _ _ h₁₂ h₂₃ _ hI₁ :=
     let ⟨_, hI₂, hI₁₂⟩ := h₁₂ hI₁
@@ -195,7 +194,6 @@ theorem iUnion_def : π.iUnion = ⋃ J ∈ π, ↑J := rfl
 
 theorem iUnion_def' : π.iUnion = ⋃ J ∈ π.boxes, ↑J := rfl
 
--- Porting note: Previous proof was `:= Set.mem_iUnion₂`
 @[simp]
 theorem mem_iUnion : x ∈ π.iUnion ↔ ∃ J ∈ π, x ∈ J := by
   convert Set.mem_iUnion₂

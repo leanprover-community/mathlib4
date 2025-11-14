@@ -207,7 +207,7 @@ theorem trop_coe_ne_zero (x : R) : trop (x : WithTop R) ≠ 0 :=
   nofun
 
 @[simp]
-theorem zero_ne_trop_coe (x : R) : (0 : Tropical (WithTop R)) ≠ trop x :=
+theorem zero_ne_trop_coe (x : R) : 0 ≠ (trop x : Tropical (WithTop R)) :=
   nofun
 
 @[simp]
@@ -224,7 +224,6 @@ instance : Add (Tropical R) :=
   ⟨fun x y => trop (min (untrop x) (untrop y))⟩
 
 instance instAddCommSemigroupTropical : AddCommSemigroup (Tropical R) where
-  add := (· + ·)
   add_assoc _ _ _ := untrop_injective (min_assoc _ _ _)
   add_comm _ _ := untrop_injective (min_comm _ _)
 
@@ -370,7 +369,6 @@ theorem untrop_div [Sub R] (x y : Tropical R) : untrop (x / y) = untrop x - untr
   rfl
 
 instance instSemigroupTropical [AddSemigroup R] : Semigroup (Tropical R) where
-  mul := (· * ·)
   mul_assoc _ _ _ := untrop_injective (add_assoc _ _ _)
 
 instance instCommSemigroupTropical [AddCommSemigroup R] : CommSemigroup (Tropical R) :=
@@ -388,8 +386,6 @@ theorem trop_smul {α : Type*} [SMul α R] (x : R) (n : α) : trop (n • x) = t
   rfl
 
 instance instMulOneClassTropical [AddZeroClass R] : MulOneClass (Tropical R) where
-  one := 1
-  mul := (· * ·)
   one_mul _ := untrop_injective <| zero_add _
   mul_one _ := untrop_injective <| add_zero _
 
@@ -408,7 +404,6 @@ instance instCommMonoidTropical [AddCommMonoid R] : CommMonoid (Tropical R) :=
 
 instance instGroupTropical [AddGroup R] : Group (Tropical R) :=
   { instMonoidTropical with
-    inv := Inv.inv
     div_eq_mul_inv := fun _ _ => untrop_injective <| by simp [sub_eq_add_neg]
     inv_mul_cancel := fun _ => untrop_injective <| neg_add_cancel _
     zpow := fun n x => trop <| n • untrop x
@@ -458,8 +453,6 @@ instance mulRightStrictMono [Preorder R] [Add R] [AddRightStrictMono R] :
 
 instance instDistribTropical [LinearOrder R] [Add R] [AddLeftMono R] [AddRightMono R] :
     Distrib (Tropical R) where
-  mul := (· * ·)
-  add := (· + ·)
   left_distrib _ _ _ := untrop_injective (min_add_add_left _ _ _).symm
   right_distrib _ _ _ := untrop_injective (min_add_add_right _ _ _).symm
 

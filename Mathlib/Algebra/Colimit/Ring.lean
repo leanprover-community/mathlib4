@@ -44,7 +44,8 @@ variable (f : ∀ i j, i ≤ j → G i → G j)
 
 open FreeCommRing
 
-/-- The direct limit of a directed system is the rings glued together along the maps. -/
+/-- The direct limit of a directed system is the ring obtained by gluing the components along the
+maps. -/
 def DirectLimit : Type _ :=
   FreeCommRing (Σ i, G i) ⧸
     Ideal.span
@@ -179,7 +180,7 @@ lemma lift_injective [Nonempty ι] [IsDirected ι (· ≤ ·)]
     (injective : ∀ i, Function.Injective <| g i) :
     Function.Injective (lift G f P g Hg) := by
   simp_rw [injective_iff_map_eq_zero] at injective ⊢
-  intros z hz
+  intro z hz
   induction z using DirectLimit.induction_on with
   | ih _ g => rw [lift_of] at hz; rw [injective _ g hz, map_zero]
 

@@ -69,7 +69,7 @@ theorem pi_lift_π_apply' {β : Type v} (f : β → Type v) {P : Type v}
   simp
 
 /-- A restatement of `Types.Limit.map_π_apply` that uses `Pi.π` and `Pi.map`. -/
-@[simp]
+-- Not `@[simp]` since `simp` can prove it.
 theorem pi_map_π_apply {β : Type v} [Small.{u} β] {f g : β → Type u}
     (α : ∀ j, f j ⟶ g j) (b : β) (x) :
     (Pi.π g b : ∏ᶜ g → g b) (Pi.map α x) = α b ((Pi.π f b : ∏ᶜ f → f b) x) :=
@@ -89,8 +89,7 @@ def terminalLimitCone : Limits.LimitCone (Functor.empty (Type u)) where
       π := (Functor.uniqueFromEmpty _).hom }
   isLimit :=
     { lift := fun _ _ => PUnit.unit
-      fac := fun _ => by rintro ⟨⟨⟩⟩
-      uniq := fun _ _ _ => by constructor }
+      fac := fun _ => by rintro ⟨⟨⟩⟩ }
 
 /-- The terminal object in `Type u` is `PUnit`. -/
 noncomputable def terminalIso : ⊤_ Type u ≅ PUnit :=
@@ -100,8 +99,6 @@ noncomputable def terminalIso : ⊤_ Type u ≅ PUnit :=
 noncomputable def isTerminalPunit : IsTerminal (PUnit : Type u) :=
   terminalIsTerminal.ofIso terminalIso
 
--- Porting note: the following three instances have been added to ease
--- the automation in a definition in `AlgebraicTopology.SimplicialSet`
 noncomputable instance : Inhabited (⊤_ (Type u)) :=
   ⟨@terminal.from (Type u) _ _ (ULift (Fin 1)) (ULift.up 0)⟩
 
@@ -175,14 +172,14 @@ def binaryProductLimit (X Y : Type u) : IsLimit (binaryProductCone X Y) where
   fac _ j := Discrete.recOn j fun j => WalkingPair.casesOn j rfl rfl
   uniq _ _ w := funext fun x => Prod.ext (congr_fun (w ⟨left⟩) x) (congr_fun (w ⟨right⟩) x)
 
-/-- The category of types has `X × Y`, the usual cartesian product,
+/-- The category of types has `X × Y`, the usual Cartesian product,
 as the binary product of `X` and `Y`.
 -/
 @[simps]
 def binaryProductLimitCone (X Y : Type u) : Limits.LimitCone (pair X Y) :=
   ⟨_, binaryProductLimit X Y⟩
 
-/-- The categorical binary product in `Type u` is cartesian product. -/
+/-- The categorical binary product in `Type u` is Cartesian product. -/
 noncomputable def binaryProductIso (X Y : Type u) : Limits.prod X Y ≅ X × Y :=
   limit.isoLimitCone (binaryProductLimitCone X Y)
 
@@ -342,20 +339,13 @@ def productLimitCone {J : Type v} (F : J → Type max v u) :
     { lift := fun s x j => s.π.app ⟨j⟩ x
       uniq := fun _ _ w => funext fun x => funext fun j => (congr_fun (w ⟨j⟩) x :) }
 
-/-- The categorical product in `Type max v u` is the type theoretic product `Π j, F j`. -/
+/-- The categorical product in `Type max v u` is the type-theoretic product `Π j, F j`. -/
 noncomputable def productIso {J : Type v} (F : J → Type max v u) : ∏ᶜ F ≅ ∀ j, F j :=
   limit.isoLimitCone (productLimitCone.{v, u} F)
 
--- Porting note: was `@[elementwise (attr := simp)]`, but it produces a trivial lemma
--- It should produce the lemma below.
-@[simp]
+@[simp, elementwise (attr := simp)]
 theorem productIso_hom_comp_eval {J : Type v} (F : J → Type max v u) (j : J) :
     ((productIso.{v, u} F).hom ≫ fun f => f j) = Pi.π F j :=
-  rfl
-
-@[simp]
-theorem productIso_hom_comp_eval_apply {J : Type v} (F : J → Type max v u) (j : J) (x) :
-    ((productIso.{v, u} F).hom x) j = Pi.π F j x :=
   rfl
 
 @[elementwise (attr := simp)]
@@ -382,22 +372,15 @@ noncomputable def productLimitCone :
         simpa using (congr_fun (w ⟨j⟩) x :) }
 
 /-- The categorical product in `Type u` indexed in `Type v`
-is the type theoretic product `Π j, F j`, after shrinking back to `Type u`. -/
+is the type-theoretic product `Π j, F j`, after shrinking back to `Type u`. -/
 noncomputable def productIso :
     (∏ᶜ F : Type u) ≅ Shrink.{u} (∀ j, F j) :=
   limit.isoLimitCone (productLimitCone.{v, u} F)
 
-@[simp]
+@[elementwise (attr := simp)]
 theorem productIso_hom_comp_eval (j : J) :
     ((productIso.{v, u} F).hom ≫ fun f => (equivShrink (∀ j, F j)).symm f j) = Pi.π F j :=
   limit.isoLimitCone_hom_π (productLimitCone.{v, u} F) ⟨j⟩
-
--- Porting note:
--- `elementwise` seems to be broken. Applied to the previous lemma, it should produce:
-@[simp]
-theorem productIso_hom_comp_eval_apply (j : J) (x) :
-    (equivShrink (∀ j, F j)).symm ((productIso F).hom x) j = Pi.π F j x :=
-  congr_fun (productIso_hom_comp_eval F j) x
 
 @[elementwise (attr := simp)]
 theorem productIso_inv_comp_π (j : J) :
@@ -419,7 +402,7 @@ def coproductColimitCocone {J : Type v} (F : J → Type max v u) :
         funext ⟨j, x⟩
         exact congr_fun (w ⟨j⟩) x }
 
-/-- The categorical coproduct in `Type u` is the type theoretic coproduct `Σ j, F j`. -/
+/-- The categorical coproduct in `Type u` is the type-theoretic coproduct `Σ j, F j`. -/
 noncomputable def coproductIso {J : Type v} (F : J → Type max v u) : ∐ F ≅ Σ j, F j :=
   colimit.isoColimitCocone (coproductColimitCocone F)
 
@@ -428,8 +411,7 @@ theorem coproductIso_ι_comp_hom {J : Type v} (F : J → Type max v u) (j : J) :
     Sigma.ι F j ≫ (coproductIso F).hom = fun x : F j => (⟨j, x⟩ : Σ j, F j) :=
   colimit.isoColimitCocone_ι_hom (coproductColimitCocone F) ⟨j⟩
 
--- Porting note: was @[elementwise (attr := simp)], but it produces a trivial lemma
--- removed simp attribute because it seems it never applies
+@[elementwise (attr := simp)]
 theorem coproductIso_mk_comp_inv {J : Type v} (F : J → Type max v u) (j : J) :
     (↾fun x : F j => (⟨j, x⟩ : Σ j, F j)) ≫ (coproductIso F).inv = Sigma.ι F j :=
   rfl
@@ -487,8 +469,7 @@ variable (g h)
 noncomputable def equalizerIso : equalizer g h ≅ { x : Y // g x = h x } :=
   limit.isoLimitCone equalizerLimit
 
--- Porting note: was @[elementwise], but it produces a trivial lemma
-@[simp]
+@[elementwise (attr := simp)]
 theorem equalizerIso_hom_comp_subtype : (equalizerIso g h).hom ≫ Subtype.val = equalizer.ι g h := by
   rfl
 
@@ -523,11 +504,8 @@ theorem coequalizer_preimage_image_eq_of_preimage_eq (π : Y ⟶ Z) (e : f ≫ �
     rintro _ _ ⟨x⟩
     change x ∈ f ⁻¹' U ↔ x ∈ g ⁻¹' U
     rw [H]
-  -- Porting note: tidy was able to fill the structure automatically
-  have eqv : _root_.Equivalence fun x y => x ∈ U ↔ y ∈ U :=
-    { refl := by tauto
-      symm := by tauto
-      trans := by tauto }
+  have eqv : _root_.Equivalence fun x y => x ∈ U ↔ y ∈ U := by
+    aesop (add safe constructors _root_.Equivalence)
   ext
   constructor
   · rw [←
@@ -552,8 +530,7 @@ theorem coequalizerIso_π_comp_hom :
     coequalizer.π f g ≫ (coequalizerIso f g).hom = Function.Coequalizer.mk f g :=
   colimit.isoColimitCocone_ι_hom (coequalizerColimit f g) WalkingParallelPair.one
 
--- Porting note: was @[elementwise], but it produces a trivial lemma
-@[simp]
+@[elementwise (attr := simp)]
 theorem coequalizerIso_quot_comp_inv :
     ↾Function.Coequalizer.mk f g ≫ (coequalizerIso f g).inv = coequalizer.π f g :=
   rfl
@@ -764,7 +741,7 @@ def isColimitCocone : IsColimit (cocone f g) :=
       | Sum.inr x₂ => s.inr x₂) (by
     rintro _ _ ⟨t⟩
     exact congr_fun s.condition t)) (fun _ => rfl) (fun _ => rfl) (fun s m h₁ h₂ => by
-      ext ⟨x₁|x₂⟩
+      ext ⟨x₁ | x₂⟩
       · exact congr_fun h₁ x₁
       · exact congr_fun h₂ x₂)
 
@@ -776,7 +753,7 @@ lemma inl_rel'_inl_iff (x₁ y₁ : X₁) :
   · rintro (_ | ⟨_, _, h⟩)
     · exact Or.inl rfl
     · exact Or.inr ⟨_, _, h, rfl, rfl⟩
-  · rintro (rfl | ⟨_,_ , h, rfl, rfl⟩)
+  · rintro (rfl | ⟨_, _, h, rfl, rfl⟩)
     · apply Rel'.refl
     · exact Rel'.inl_inl _ _ h
 
@@ -886,6 +863,11 @@ lemma inl_eq_inr_iff [Mono f] (x₁ : X₁) (x₂ : X₂) :
   · rintro ⟨s, rfl, rfl⟩
     apply Rel'.inl_inr
 
+instance mono_inr [Mono f] : Mono (inr f g) := by
+  rw [mono_iff_injective]
+  intro x₂ y₂ h
+  simpa using (Pushout.quot_mk_eq_iff f g (Sum.inr x₂) (Sum.inr y₂)).1 h
+
 end Pushout
 
 variable {f g}
@@ -912,6 +894,30 @@ lemma pushoutCocone_inl_eq_inr_iff_of_isColimit {c : PushoutCocone f g} (hc : Is
     (by simp))]
   have := (mono_iff_injective f).2 h₁
   apply Pushout.inl_eq_inr_iff
+
+lemma pushoutCocone_inr_mono_of_isColimit {c : PushoutCocone f g} (hc : IsColimit c)
+    [Mono f] : Mono c.inr := by
+  change Mono ((Pushout.inr f g) ≫
+    ((Cocones.forget _).mapIso
+      (Cocones.ext (IsColimit.coconePointUniqueUpToIso hc
+        (Pushout.isColimitCocone f g)) (by simp))).inv)
+  infer_instance
+
+lemma pushoutCocone_inr_injective_of_isColimit {c : PushoutCocone f g} (hc : IsColimit c)
+    (h₁ : Function.Injective f) : Function.Injective c.inr := by
+  rw [← mono_iff_injective] at h₁ ⊢
+  exact pushoutCocone_inr_mono_of_isColimit hc
+
+instance mono_inl [Mono g] : Mono (Pushout.inl f g) :=
+  pushoutCocone_inr_mono_of_isColimit
+    (PushoutCocone.flipIsColimit (Pushout.isColimitCocone f g))
+
+instance [Mono f] : Mono (pushout.inr f g) :=
+  (pushoutCocone_inr_mono_of_isColimit (pushoutIsPushout f g):)
+
+instance [Mono g] : Mono (pushout.inl f g) :=
+  pushoutCocone_inr_mono_of_isColimit
+    (PushoutCocone.flipIsColimit (pushoutIsPushout f g))
 
 end Pushout
 

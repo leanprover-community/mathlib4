@@ -71,7 +71,7 @@ lemma isNoetherianObject_iff_not_strictMono :
   refine ⟨fun _ ↦ not_strictMono_of_wellFoundedGT, fun h ↦ ?_⟩
   dsimp only [IsNoetherianObject]
   rw [ObjectProperty.is_iff, isNoetherianObject, WellFoundedGT,
-    isWellFounded_iff, RelEmbedding.wellFounded_iff_no_descending_seq]
+    isWellFounded_iff, RelEmbedding.wellFounded_iff_isEmpty]
   exact ⟨fun f ↦ h f.toFun (fun a b h ↦ f.map_rel_iff.2 h)⟩
 
 variable {X} in

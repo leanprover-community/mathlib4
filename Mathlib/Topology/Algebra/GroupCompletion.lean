@@ -10,7 +10,7 @@ import Mathlib.Topology.Algebra.Group.Pointwise
 /-!
 # Completion of topological groups:
 
-This files endows the completion of a topological abelian group with a group structure.
+This file endows the completion of a topological abelian group with a group structure.
 More precisely the instance `UniformSpace.Completion.addGroup` builds an abelian group structure
 on the completion of an abelian group endowed with a compatible uniform structure.
 Then the instance `UniformSpace.Completion.isUniformAddGroup` proves this group structure is
@@ -266,8 +266,7 @@ theorem AddMonoidHom.completion_zero :
   refine Completion.induction_on x ?_ ?_
   · apply isClosed_eq (AddMonoidHom.continuous_completion (0 : α →+ β) continuous_const)
     exact continuous_const
-  · intro a
-    simp [(0 : α →+ β).completion_coe continuous_const, coe_zero]
+  · simp [(0 : α →+ β).completion_coe continuous_const, coe_zero]
 
 theorem AddMonoidHom.completion_add {γ : Type*} [AddCommGroup γ] [UniformSpace γ]
     [IsUniformAddGroup γ] (f g : α →+ γ) (hf : Continuous f) (hg : Continuous g) :
@@ -278,7 +277,6 @@ theorem AddMonoidHom.completion_add {γ : Type*} [AddCommGroup γ] [UniformSpace
   refine Completion.induction_on x ?_ ?_
   · exact isClosed_eq ((f + g).continuous_completion hfg)
       ((f.continuous_completion hf).add (g.continuous_completion hg))
-  · intro a
-    simp [(f + g).completion_coe hfg, coe_add, f.completion_coe hf, g.completion_coe hg]
+  · simp [(f + g).completion_coe hfg, coe_add, f.completion_coe hf, g.completion_coe hg]
 
 end AddMonoidHom

@@ -3,14 +3,11 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Algebra.Group.AddChar
-import Mathlib.Algebra.Group.TypeTags.Finite
 import Mathlib.Algebra.Order.GroupWithZero.Finset
 import Mathlib.Analysis.Normed.Group.Bounded
 import Mathlib.Analysis.Normed.Group.Int
 import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.Analysis.Normed.Ring.Basic
-import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Topology.MetricSpace.Dilation
 
 /-!
@@ -164,12 +161,8 @@ instance (priority := 100) NonUnitalSeminormedRing.toContinuousMul [NonUnitalSem
         convert
           ((continuous_fst.tendsto x).norm.mul
                 ((continuous_snd.tendsto x).sub tendsto_const_nhds).norm).add
-            (((continuous_fst.tendsto x).sub tendsto_const_nhds).norm.mul _)
-        -- Porting note: `show` used to select a goal to work on
-        rotate_right
-        · show Tendsto _ _ _
-          exact tendsto_const_nhds
-        · simp⟩
+            (((continuous_fst.tendsto x).sub tendsto_const_nhds).norm.mul tendsto_const_nhds)
+        simp⟩
 
 -- see Note [lower instance priority]
 /-- A seminormed ring is a topological ring. -/
@@ -267,17 +260,3 @@ lemma comap_mul_right_cobounded {a : α} (ha : a ≠ 0) :
 end Filter
 
 end NonUnitalNormedRing
-
-section NormedRing
-variable [NormedRing α] [NormMulClass α] [NormOneClass α] {a : α}
-
-protected lemma IsOfFinOrder.norm_eq_one (ha : IsOfFinOrder a) : ‖a‖ = 1 :=
-  ((normHom : α →*₀ ℝ).toMonoidHom.isOfFinOrder ha).eq_one <| norm_nonneg _
-
-example [Monoid β] (φ : β →* α) {x : β} {k : ℕ+} (h : x ^ (k : ℕ) = 1) :
-    ‖φ x‖ = 1 := (φ.isOfFinOrder <| isOfFinOrder_iff_pow_eq_one.2 ⟨_, k.2, h⟩).norm_eq_one
-
-@[simp] lemma AddChar.norm_apply {G : Type*} [AddLeftCancelMonoid G] [Finite G] (ψ : AddChar G α)
-    (x : G) : ‖ψ x‖ = 1 := (ψ.toMonoidHom.isOfFinOrder <| isOfFinOrder_of_finite _).norm_eq_one
-
-end NormedRing

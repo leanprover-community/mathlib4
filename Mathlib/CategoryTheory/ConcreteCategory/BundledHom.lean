@@ -91,7 +91,7 @@ def mkHasForget₂ {d : Type u → Type u} {hom_d : ∀ ⦃α β : Type u⦄ (_ 
     (h_map : ∀ {X Y : Bundled c} (f : X ⟶ Y), ⇑(map f) = ⇑f) :
     HasForget₂ (Bundled c) (Bundled d) :=
   HasForget₂.mk' (Bundled.map @obj) (fun _ => rfl) map (by
-    intros X Y f
+    intro X Y f
     rw [heq_eq_eq, forget_map_eq_coe, forget_map_eq_coe, h_map f])
 
 variable {d : Type u → Type u}

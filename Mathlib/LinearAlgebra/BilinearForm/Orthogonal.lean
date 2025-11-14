@@ -11,10 +11,10 @@ import Mathlib.LinearAlgebra.BilinearForm.Properties
 
 This file defines orthogonal bilinear forms.
 
-## Notations
+## Notation
 
 Given any term `B` of type `BilinForm`, due to a coercion, can use
-the notation `B x y` to refer to the function field, ie. `B x y = B.bilin x y`.
+the notation `B x y` to refer to the function field, i.e. `B x y = B.bilin x y`.
 
 In this file we use the following type variables:
 - `M`, `M'`, ... are modules over the commutative semiring `R`,
@@ -255,7 +255,6 @@ theorem toLin_restrict_ker_eq_inf_orthogonal (B : BilinForm K V) (W : Subspace K
     (LinearMap.ker <| B.domRestrict W).map W.subtype = (W ⊓ B.orthogonal ⊤ : Subspace K V) := by
   ext x; constructor <;> intro hx
   · rcases hx with ⟨⟨x, hx⟩, hker, rfl⟩
-    erw [LinearMap.mem_ker] at hker
     constructor
     · simp [hx]
     · intro y _
@@ -323,7 +322,7 @@ lemma finrank_orthogonal (hB : B.Nondegenerate) (hB₀ : B.IsRefl) (W : Submodul
     finrank K (B.orthogonal W) = finrank K V - finrank K W := by
   have := finrank_add_finrank_orthogonal hB₀ (W := W)
   rw [B.orthogonal_top_eq_bot hB hB₀, inf_bot_eq, finrank_bot, add_zero] at this
-  omega
+  cutsat
 
 lemma orthogonal_orthogonal (hB : B.Nondegenerate) (hB₀ : B.IsRefl) (W : Submodule K V) :
     B.orthogonal (B.orthogonal W) = W := by

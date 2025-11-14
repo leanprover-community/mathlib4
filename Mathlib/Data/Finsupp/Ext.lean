@@ -56,8 +56,7 @@ theorem mulHom_ext [MulOneClass N] ⦃f g : Multiplicative (α →₀ M) →* N�
     f = g :=
   MonoidHom.ext <|
     DFunLike.congr_fun <| by
-      have := @addHom_ext α M (Additive N) _ _
-        (MonoidHom.toAdditive'' f) (MonoidHom.toAdditive'' g) H
+      have := addHom_ext (f := f.toAdditiveRight) (g := g.toAdditiveRight) H
       ext
       rw [DFunLike.ext_iff] at this
       apply this

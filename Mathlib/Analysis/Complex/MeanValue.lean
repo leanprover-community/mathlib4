@@ -27,7 +27,8 @@ private theorem circleAverage_of_differentiable_on_off_countable_posRadius (hR :
   _ = f c := by
     rw [circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable hR hs h₁f h₂f,
       ← smul_assoc]
-    field_simp
+    match_scalars
+    simp [field]
 
 /--
 The **Mean Value Property** of complex differentiable functions: If `f : ℂ → E` is continuous on a

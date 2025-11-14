@@ -11,7 +11,7 @@ import Mathlib.Topology.Homeomorph.Lemmas
 
 In this file we define `TopologicalSpace` structure on `Mᵐᵒᵖ`, `Mᵃᵒᵖ`, `Mˣ`, and `AddUnits M`.
 This file does not import definitions of a topological monoid and/or a continuous multiplicative
-action, so we postpone the proofs of `HasContinuousMul Mᵐᵒᵖ` etc till we have these definitions.
+action, so we postpone the proofs of `HasContinuousMul Mᵐᵒᵖ` etc. till we have these definitions.
 
 ## Tags
 
@@ -19,7 +19,7 @@ topological space, opposite monoid, units
 -/
 
 
-variable {M X : Type*}
+variable {M N X : Type*}
 
 open Filter Topology
 
@@ -91,7 +91,7 @@ namespace Units
 
 open MulOpposite
 
-variable [TopologicalSpace M] [Monoid M] [TopologicalSpace X]
+variable [TopologicalSpace M] [Monoid M] [TopologicalSpace N] [Monoid N] [TopologicalSpace X]
 
 /-- The units of a monoid are equipped with a topology, via the embedding into `M × M`. -/
 @[to_additive
@@ -129,7 +129,7 @@ lemma isEmbedding_val_mk' {M : Type*} [Monoid M] [TopologicalSpace M] {f : M →
   refine ⟨⟨?_⟩, val_injective⟩
   rw [topology_eq_inf, inf_eq_left, ← continuous_iff_le_induced,
     @continuous_iff_continuousAt _ _ (.induced _ _)]
-  intros u s hs
+  intro u s hs
   simp only [← hf, nhds_induced, Filter.mem_map] at hs ⊢
   exact ⟨_, mem_inf_principal.1 (hc u u.isUnit hs), fun u' hu' ↦ hu' u'.isUnit⟩
 
@@ -159,5 +159,21 @@ protected theorem continuous_iff {f : X → Mˣ} :
 @[to_additive (attr := fun_prop)]
 theorem continuous_coe_inv : Continuous (fun u => ↑u⁻¹ : Mˣ → M) :=
   (Units.continuous_iff.1 continuous_id).2
+
+@[to_additive]
+lemma continuous_map {f : M →* N} (hf : Continuous f) : Continuous (map f) :=
+  Units.continuous_iff.mpr ⟨hf.comp continuous_val, hf.comp continuous_coe_inv⟩
+
+@[to_additive]
+lemma isOpenMap_map {f : M →* N} (hf_inj : Function.Injective f) (hf : IsOpenMap f) :
+    IsOpenMap (map f) := by
+  rintro _ ⟨U, hU, rfl⟩
+  have hg_openMap := hf.prodMap <| opHomeomorph.isOpenMap.comp (hf.comp opHomeomorph.symm.isOpenMap)
+  refine ⟨_, hg_openMap U hU, Set.ext fun y ↦ ?_⟩
+  simp only [embedProduct, OneHom.coe_mk, Set.mem_preimage, Set.mem_image, Prod.mk.injEq,
+    Prod.map, Prod.exists, MulOpposite.exists, MonoidHom.coe_mk]
+  refine ⟨fun ⟨a, b, h, ha, hb⟩ ↦ ⟨⟨a, b, hf_inj ?_, hf_inj ?_⟩, ?_⟩,
+    fun ⟨x, hxV, hx⟩ ↦ ⟨x, x.inv, by simp [hxV, ← hx]⟩⟩
+  all_goals simp_all
 
 end Units

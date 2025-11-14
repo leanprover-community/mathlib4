@@ -151,9 +151,7 @@ variable {ι M}
 @[simp]
 theorem linearEquivFunOnFintype_lof [Fintype ι] (i : ι) (m : M i) :
     (linearEquivFunOnFintype R ι M) (lof R ι M i m) = Pi.single i m := by
-  ext a
-  change (DFinsupp.equivFunOnFintype (lof R ι M i m)) a = _
-  convert _root_.congr_fun (DFinsupp.equivFunOnFintype_single i m) a
+  rfl
 
 @[simp]
 theorem linearEquivFunOnFintype_symm_single [Fintype ι] (i : ι) (m : M i) :
@@ -181,7 +179,7 @@ variable {ι M}
 theorem apply_eq_component (f : ⨁ i, M i) (i : ι) : f i = component R ι M i f := rfl
 
 -- Note(kmill): `@[ext]` cannot prove `ext_iff` because `R` is not determined by `f` or `g`.
--- This is not useful as an `@[ext]` lemma as the `ext` tactic can not infer `R`.
+-- This is not useful as an `@[ext]` lemma as the `ext` tactic cannot infer `R`.
 theorem ext_component {f g : ⨁ i, M i} (h : ∀ i, component R ι M i f = component R ι M i g) :
     f = g :=
   DFinsupp.ext h
@@ -374,9 +372,6 @@ theorem coeLinearMap_eq_dfinsuppSum [DecidableEq M] (x : DirectSum ι fun i => A
   rw [DFinsupp.sumAddHom_apply]
   simp only [LinearMap.toAddMonoidHom_coe, Submodule.coe_subtype]
 
-@[deprecated (since := "2025-04-06")]
-alias coeLinearMap_eq_dfinsupp_sum := coeLinearMap_eq_dfinsuppSum
-
 @[simp]
 theorem coeLinearMap_of (i : ι) (x : A i) : DirectSum.coeLinearMap A (of (fun i ↦ A i) i x) = x :=
   -- Porting note: spelled out arguments. (I don't know how this works.)
@@ -397,7 +392,7 @@ theorem IsInternal.ofBijective_coeLinearMap_same (h : IsInternal A)
 theorem IsInternal.ofBijective_coeLinearMap_of_ne (h : IsInternal A)
     {i j : ι} (hij : i ≠ j) (x : A i) :
     (LinearEquiv.ofBijective (coeLinearMap A) h).symm x j = 0 := by
-  rw [← coeLinearMap_of, LinearEquiv.ofBijective_symm_apply_apply, of_eq_of_ne i j _ hij]
+  rw [← coeLinearMap_of, LinearEquiv.ofBijective_symm_apply_apply, of_eq_of_ne i j _ hij.symm]
 
 theorem IsInternal.ofBijective_coeLinearMap_of_mem (h : IsInternal A)
     {i : ι} {x : M} (hx : x ∈ A i) :

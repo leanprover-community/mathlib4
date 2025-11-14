@@ -5,6 +5,11 @@ Authors: Mario Carneiro, Kim Morrison
 -/
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.SetTheory.Game.Ordinal
+import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Surreal.Basic` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Surreal numbers
@@ -335,20 +340,15 @@ instance : Neg Surreal :=
   ⟨Surreal.lift (fun x ox => ⟦⟨-x, ox.neg⟩⟧) fun _ _ a => Quotient.sound (neg_equiv_neg_iff.2 a)⟩
 
 instance addCommGroup : AddCommGroup Surreal where
-  add := (· + ·)
   add_assoc := by rintro ⟨_⟩ ⟨_⟩ ⟨_⟩; exact Quotient.sound add_assoc_equiv
-  zero := 0
   zero_add := by rintro ⟨a⟩; exact Quotient.sound (zero_add_equiv a)
   add_zero := by rintro ⟨a⟩; exact Quotient.sound (add_zero_equiv a)
-  neg := Neg.neg
   neg_add_cancel := by rintro ⟨a⟩; exact Quotient.sound (neg_add_cancel_equiv a)
   add_comm := by rintro ⟨_⟩ ⟨_⟩; exact Quotient.sound add_comm_equiv
   nsmul := nsmulRec
   zsmul := zsmulRec
 
 instance partialOrder : PartialOrder Surreal where
-  le := (· ≤ ·)
-  lt := (· < ·)
   le_refl := by rintro ⟨_⟩; apply @le_rfl PGame
   le_trans := by rintro ⟨_⟩ ⟨_⟩ ⟨_⟩; apply @le_trans PGame
   lt_iff_le_not_ge := by rintro ⟨_, ox⟩ ⟨_, oy⟩; apply @lt_iff_le_not_ge PGame

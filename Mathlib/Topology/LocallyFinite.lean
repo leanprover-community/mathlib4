@@ -48,6 +48,13 @@ theorem comp_injective {g : ι' → ι} (hf : LocallyFinite f) (hg : Injective g
     LocallyFinite (f ∘ g) :=
   hf.comp_injOn hg.injOn
 
+theorem of_comp_surjective {g : ι' → ι} (hg : Surjective g) (hfg : LocallyFinite (f ∘ g)) :
+    LocallyFinite f := by
+  simpa only [comp_def, surjInv_eq hg] using hfg.comp_injective (injective_surjInv hg)
+
+theorem on_range (hf : LocallyFinite f) : LocallyFinite ((↑) : range f → Set X) :=
+  of_comp_surjective rangeFactorization_surjective hf
+
 theorem _root_.locallyFinite_iff_smallSets :
     LocallyFinite f ↔ ∀ x, ∀ᶠ s in (𝓝 x).smallSets, { i | (f i ∩ s).Nonempty }.Finite :=
   forall_congr' fun _ => Iff.symm <|
@@ -194,8 +201,6 @@ theorem locallyFinite_sum {f : ι ⊕ ι' → Set X} :
 theorem LocallyFinite.sumElim {g : ι' → Set X} (hf : LocallyFinite f) (hg : LocallyFinite g) :
     LocallyFinite (Sum.elim f g) :=
   locallyFinite_sum.mpr ⟨hf, hg⟩
-
-@[deprecated (since := "2025-02-20")] alias LocallyFinite.sum_elim := LocallyFinite.sumElim
 
 theorem locallyFinite_option {f : Option ι → Set X} :
     LocallyFinite f ↔ LocallyFinite (f ∘ some) := by

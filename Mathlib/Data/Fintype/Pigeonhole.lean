@@ -71,6 +71,7 @@ theorem Finite.exists_ne_map_eq_of_infinite {α β} [Infinite α] [Finite β] (f
     ∃ x y : α, x ≠ y ∧ f x = f y := by
   simpa [Injective, and_comm] using not_injective_infinite_finite f
 
+attribute [local instance] Fintype.ofFinite in
 /-- The strong pigeonhole principle for infinitely many pigeons in
 finitely many pigeonholes.  If there are infinitely many pigeons in
 finitely many pigeonholes, then there is a pigeonhole with infinitely
@@ -83,7 +84,6 @@ theorem Finite.exists_infinite_fiber [Infinite α] [Finite β] (f : α → β) :
   classical
     by_contra! hf
     cases nonempty_fintype β
-    haveI := fun y => fintypeOfNotInfinite <| hf y
     let key : Fintype α :=
       { elems := univ.biUnion fun y : β => (f ⁻¹' {y}).toFinset
         complete := by simp }

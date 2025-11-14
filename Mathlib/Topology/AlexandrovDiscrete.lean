@@ -21,10 +21,6 @@ minimal neighborhood, which we call the *neighborhoods kernel* of the set.
 
 * `AlexandrovDiscrete`: Prop-valued typeclass for a topological space to be Alexandrov-discrete
 
-## TODO
-
-Finite product of Alexandrov-discrete spaces is Alexandrov-discrete.
-
 ## Tags
 
 Alexandroff, discrete, finitely generated, fg space
@@ -34,6 +30,7 @@ open Filter Set TopologicalSpace Topology
 
 /-- A topological space is **Alexandrov-discrete** or **finitely generated** if the intersection of
 a family of open sets is open. -/
+@[mk_iff]
 class AlexandrovDiscrete (α : Type*) [TopologicalSpace α] : Prop where
   /-- The intersection of a family of open sets is an open set. Use `isOpen_sInter` in the root
   namespace instead. -/
@@ -42,6 +39,12 @@ class AlexandrovDiscrete (α : Type*) [TopologicalSpace α] : Prop where
 variable {ι : Sort*} {κ : ι → Sort*} {α β : Type*}
 section
 variable [TopologicalSpace α] [TopologicalSpace β]
+
+lemma alexandrovDiscrete_iff_isClosed :
+    AlexandrovDiscrete α ↔ ∀ S : Set (Set α), (∀ s ∈ S, IsClosed s) → IsClosed (⋃₀ S) := by
+  conv_lhs => tactic =>
+    simp_rw +singlePass [alexandrovDiscrete_iff, compl_surjective.image_surjective.forall,
+      forall_mem_image, ← compl_sUnion, isOpen_compl_iff]
 
 instance DiscreteTopology.toAlexandrovDiscrete [DiscreteTopology α] : AlexandrovDiscrete α where
   isOpen_sInter _ _ := isOpen_discrete _
@@ -61,8 +64,8 @@ lemma isOpen_iInter₂ {f : ∀ i, κ i → Set α} (hf : ∀ i j, IsOpen (f i j
     IsOpen (⋂ i, ⋂ j, f i j) :=
   isOpen_iInter fun _ ↦ isOpen_iInter <| hf _
 
-lemma isClosed_sUnion (hS : ∀ s ∈ S, IsClosed s) : IsClosed (⋃₀ S) := by
-  simp only [← isOpen_compl_iff, compl_sUnion] at hS ⊢; exact isOpen_sInter <| forall_mem_image.2 hS
+lemma isClosed_sUnion (hS : ∀ s ∈ S, IsClosed s) : IsClosed (⋃₀ S) :=
+  alexandrovDiscrete_iff_isClosed.mp inferInstance S hS
 
 lemma isClosed_iUnion (hf : ∀ i, IsClosed (f i)) : IsClosed (⋃ i, f i) :=
   isClosed_sUnion <| forall_mem_range.2 hf
@@ -196,6 +199,18 @@ lemma isOpen_iff_forall_specializes : IsOpen s ↔ ∀ x y, x ⤳ y → y ∈ s 
   simp only [← nhdsKer_subset_iff_isOpen, Set.subset_def, mem_nhdsKer_iff_specializes, exists_imp,
     and_imp, @forall_swap (_ ⤳ _)]
 
+omit [AlexandrovDiscrete α] in
+lemma alexandrovDiscrete_iff_nhds : AlexandrovDiscrete α ↔ (∀ a : α, 𝓝 a = 𝓟 (nhdsKer {a})) where
+  mp _ a := principal_nhdsKer_singleton a |>.symm
+  mpr hα := by
+    simp only [alexandrovDiscrete_iff_isClosed, isClosed_iff_clusterPt, ClusterPt, funext hα,
+      inf_principal, principal_neBot_iff]
+    intro S hS a ha
+    rw [sUnion_eq_biUnion, inter_iUnion₂, nonempty_biUnion] at ha
+    obtain ⟨s, hs, has⟩ := ha
+    specialize hS s hs a has
+    exact mem_sUnion_of_mem hS hs
+
 lemma alexandrovDiscrete_coinduced {β : Type*} {f : α → β} :
     @AlexandrovDiscrete β (coinduced f ‹_›) :=
   @AlexandrovDiscrete.mk β (coinduced f ‹_›) fun S hS ↦ by
@@ -221,5 +236,15 @@ instance Sum.instAlexandrovDiscrete : AlexandrovDiscrete (α ⊕ β) :=
 instance Sigma.instAlexandrovDiscrete {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
     [∀ i, AlexandrovDiscrete (X i)] : AlexandrovDiscrete (Σ i, X i) :=
   alexandrovDiscrete_iSup fun _ ↦ alexandrovDiscrete_coinduced
+
+instance Prod.instAlexandrovDiscrete : AlexandrovDiscrete (α × β) := by
+  simp_rw [alexandrovDiscrete_iff_nhds, Prod.forall, nhds_prod_eq, ← principal_nhdsKer_singleton,
+    prod_principal_principal, nhdsKer_pair, forall_true_iff]
+
+instance Pi.instAlexandrovDiscreteOfFinite {ι : Type*} [Finite ι] {X : ι → Type*}
+    [Π i, TopologicalSpace (X i)] [∀ i, AlexandrovDiscrete (X i)] :
+    AlexandrovDiscrete (Π i, X i) := by
+  simp_rw [alexandrovDiscrete_iff_nhds, nhds_pi, ← principal_nhdsKer_singleton,
+    pi_principal, nhdsKer_singleton_pi, forall_true_iff]
 
 end

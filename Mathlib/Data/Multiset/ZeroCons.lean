@@ -184,7 +184,7 @@ theorem exists_cons_of_mem {s : Multiset α} {a : α} : a ∈ s → ∃ t, s = a
     let ⟨l₁, l₂, e⟩ := append_of_mem h
     e.symm ▸ ⟨(l₁ ++ l₂ : List α), Quot.sound perm_middle⟩
 
-@[simp, grind]
+@[simp, grind ←]
 theorem notMem_zero (a : α) : a ∉ (0 : Multiset α) :=
   List.not_mem_nil
 
@@ -354,7 +354,7 @@ theorem lt_cons_self (s : Multiset α) (a : α) : s < a ::ₘ s :=
 theorem le_cons_self (s : Multiset α) (a : α) : s ≤ a ::ₘ s :=
   le_of_lt <| lt_cons_self _ _
 
-theorem cons_le_cons_iff (a : α) : a ::ₘ s ≤ a ::ₘ t ↔ s ≤ t :=
+@[simp] theorem cons_le_cons_iff (a : α) : a ::ₘ s ≤ a ::ₘ t ↔ s ≤ t :=
   Quotient.inductionOn₂ s t fun _ _ => subperm_cons a
 
 theorem cons_le_cons (a : α) : s ≤ t → a ::ₘ s ≤ a ::ₘ t :=
@@ -465,6 +465,12 @@ theorem card_eq_three {s : Multiset α} : card s = 3 ↔ ∃ x y z, s = {x, y, z
       (List.length_eq_three.mp h).imp fun _a =>
         Exists.imp fun _b => Exists.imp fun _c => congr_arg _,
     fun ⟨_a, _b, _c, e⟩ => e.symm ▸ rfl⟩
+
+theorem card_eq_four {s : Multiset α} : card s = 4 ↔ ∃ x y z w, s = {x, y, z, w} :=
+  ⟨Quot.inductionOn s fun _l h =>
+      (List.length_eq_four.mp h).imp fun _a =>
+        Exists.imp fun _b => Exists.imp fun _c => Exists.imp fun _d => congr_arg _,
+    fun ⟨_a, _b, _c, _d, e⟩ => e.symm ▸ rfl⟩
 
 /-! ### Map for partial functions -/
 

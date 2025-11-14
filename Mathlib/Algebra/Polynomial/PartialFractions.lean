@@ -18,7 +18,7 @@ These results were formalised by the Xena Project, at the suggestion
 of Patrick Massot.
 
 
-# The main theorem
+## The main theorem
 
 * `div_eq_quo_add_sum_rem_div`: General partial fraction decomposition theorem for polynomials over
   an integral domain R :
@@ -28,7 +28,7 @@ of Patrick Massot.
 * The result is formalized here in slightly more generality, using finsets. That is, if ι is an
   arbitrary index type, g denotes a map from ι to R[X], and if s is an arbitrary finite subset of ι,
   with g i monic for all i ∈ s and for all i,j ∈ s, i ≠ j → g i is coprime to g j, then we have
-  ∃ q ∈ R[X] , r : ι → R[X] such that ∀ i ∈ s, deg(r i) < deg(g i) and
+  ∃ q ∈ R[X], r : ι → R[X] such that ∀ i ∈ s, deg(r i) < deg(g i) and
   f / ∏ g i = q + ∑ (r i) / (g i), where the product and sum are over s.
 
 * The proof is done by proving the two-denominator case and then performing finset induction for an

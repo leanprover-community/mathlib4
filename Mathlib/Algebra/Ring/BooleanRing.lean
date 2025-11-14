@@ -46,7 +46,7 @@ variable {α β γ : Type*}
 
 /-- A Boolean ring is a ring where multiplication is idempotent. -/
 class BooleanRing (α) extends Ring α where
-  /-- Multiplication in a boolean ring is idempotent. -/
+  /-- Multiplication in a Boolean ring is idempotent. -/
   isIdempotentElem (a : α) : IsIdempotentElem a
 
 namespace BooleanRing
@@ -160,9 +160,8 @@ def sup : Max α :=
 def inf : Min α :=
   ⟨(· * ·)⟩
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add priority 100. lower instance priority
-scoped [BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.sup
-scoped [BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.inf
+scoped [BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.sup
+scoped [BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.inf
 open BooleanAlgebraOfBooleanRing
 
 theorem sup_comm (a b : α) : a ⊔ b = b ⊔ a := by
@@ -229,8 +228,7 @@ def toBooleanAlgebra : BooleanAlgebra α :=
       norm_num [mul_add, mul_self, add_self]
       rw [← add_assoc, add_self] }
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add priority 100. lower instance priority
-scoped[BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.toBooleanAlgebra
+scoped[BooleanAlgebraOfBooleanRing] attribute [instance 100] BooleanRing.toBooleanAlgebra
 
 end BooleanRing
 
@@ -365,7 +363,7 @@ instance [Inhabited α] : Inhabited (AsBoolRing α) :=
   ‹Inhabited α›
 
 -- See note [reducible non-instances]
-/-- Every generalized Boolean algebra has the structure of a non unital commutative ring with the
+/-- Every generalized Boolean algebra has the structure of a nonunital commutative ring with the
 following data:
 
 * `a + b` unfolds to `a ∆ b` (symmetric difference)
@@ -523,7 +521,6 @@ instance : BooleanRing Bool where
   add_assoc := xor_assoc
   zero_add := Bool.false_xor
   add_zero := Bool.xor_false
-  sub_eq_add_neg _ _ := rfl
   neg_add_cancel := Bool.xor_self
   add_comm := xor_comm
   mul_assoc := and_assoc

@@ -51,15 +51,8 @@ open scoped Pointwise
 
 /-- A field which is both linearly ordered and conditionally complete with respect to the order.
 This axiomatizes the reals. -/
--- @[protect_proj] -- Porting note: does not exist anymore
 class ConditionallyCompleteLinearOrderedField (α : Type*) extends
-    Field α, ConditionallyCompleteLinearOrder α where
-  -- extends `IsStrictOrderedRing α` produces
-  -- (kernel) declaration has free variables
-  -- 'ConditionallyCompleteLinearOrderedField.toIsStrictOrderedRing'
-  [toIsStrictOrderedRing : IsStrictOrderedRing α]
-
-attribute [instance] ConditionallyCompleteLinearOrderedField.toIsStrictOrderedRing
+    Field α, ConditionallyCompleteLinearOrder α, IsStrictOrderedRing α where
 
 -- see Note [lower instance priority]
 /-- Any conditionally complete linearly ordered field is archimedean. -/
@@ -109,8 +102,7 @@ theorem coe_mem_cutMap_iff [CharZero β] : (q : β) ∈ cutMap β a ↔ (q : α)
   Rat.cast_injective.mem_set_image
 
 theorem cutMap_self (a : α) : cutMap α a = Iio a ∩ range (Rat.cast : ℚ → α) := by
-  ext
-  grind [mem_cutMap_iff, mem_inter_iff, mem_range]
+  grind [mem_cutMap_iff]
 
 end DivisionRing
 
@@ -158,7 +150,7 @@ section InducedMap
 variable (α β γ) [Field α] [LinearOrder α] [IsStrictOrderedRing α]
   [ConditionallyCompleteLinearOrderedField β] [ConditionallyCompleteLinearOrderedField γ]
 
-/-- The induced order preserving function from a linear ordered field to a conditionally complete
+/-- The induced order-preserving function from a linear ordered field to a conditionally complete
 linear ordered field, defined by taking the Sup in the codomain of all the rationals less than the
 input. -/
 def inducedMap (x : α) : β :=

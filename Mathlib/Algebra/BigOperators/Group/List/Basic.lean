@@ -53,7 +53,7 @@ theorem prod_concat : (l.concat a).prod = l.prod * a := by
 theorem prod_flatten {l : List (List M)} : l.flatten.prod = (l.map List.prod).prod := by
   induction l with
   | nil => simp
-  | cons head tail ih => simp only [*, List.flatten, map, prod_append, prod_cons]
+  | cons head tail ih => simp only [*, List.flatten_cons, map, prod_append, prod_cons]
 
 open scoped Relator in
 @[to_additive]
@@ -142,9 +142,6 @@ Instead, we write the statement in terms of `L[0]?.getD 1`.
   Instead, we write the statement in terms of `L[0]?.getD 0`. -/]
 theorem getElem?_zero_mul_tail_prod (l : List M) : l[0]?.getD 1 * l.tail.prod = l.prod := by
   cases l <;> simp
-
-@[deprecated (since := "2025-02-15")] alias get?_zero_mul_tail_prod := getElem?_zero_mul_tail_prod
-@[deprecated (since := "2025-02-15")] alias get?_zero_add_tail_sum := getElem?_zero_add_tail_sum
 
 /-- Same as `get?_zero_mul_tail_prod`, but avoiding the `List.headI` garbage complication by
   requiring the list to be nonempty. -/
@@ -338,7 +335,8 @@ variable [CommGroup G]
 
 /-- This is the `List.prod` version of `mul_inv` -/
 @[to_additive /-- This is the `List.sum` version of `add_neg` -/]
-theorem prod_inv : ∀ L : List G, L.prod⁻¹ = (L.map fun x => x⁻¹).prod
+theorem prod_inv {K : Type*} [DivisionCommMonoid K] :
+    ∀ L : List K, L.prod⁻¹ = (L.map fun x => x⁻¹).prod
   | [] => by simp
   | x :: xs => by simp [mul_comm, prod_inv xs]
 
@@ -480,6 +478,11 @@ end MonoidHom
 end MonoidHom
 
 namespace List
+
+theorem prod_zpow {β : Type*} [DivisionCommMonoid β] {r : ℤ} {l : List β} :
+    l.prod ^ r = (map (fun x ↦ x ^ r) l).prod :=
+  let fr : β →* β := ⟨⟨fun b ↦ b ^ r, one_zpow r⟩, (mul_zpow · · r)⟩
+  map_list_prod fr l
 
 /-- In a flatten, taking the first elements up to an index which is the sum of the lengths of the
 first `i` sublists, is the same as taking the flatten of the first `i` sublists. -/

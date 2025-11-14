@@ -61,7 +61,7 @@ noncomputable def isColimitPUnitCocone [IsConnected C] : IsColimit (pUnitCocone.
   fac s j := by
     ext ⟨⟩
     apply constant_of_preserves_morphisms (s.ι.app · PUnit.unit)
-    intros X Y f
+    intro X Y f
     exact congrFun (s.ι.naturality f).symm PUnit.unit
   uniq s m h := by
     ext ⟨⟩
@@ -150,8 +150,8 @@ lemma isConnected_of_isInitial {x : C} (h : Limits.IsInitial x) : IsConnected C 
   apply isConnected_of_zigzag
   intro j₁ j₂
   use [x, j₂]
-  simp only [List.chain_cons, List.Chain.nil, and_true, ne_eq, reduceCtorEq, not_false_eq_true,
-    List.getLast_cons, List.cons_ne_self, List.getLast_singleton]
+  simp only [List.isChain_cons_cons, List.isChain_singleton, and_true, ne_eq,
+    reduceCtorEq, not_false_eq_true, List.getLast_cons, List.cons_ne_self, List.getLast_singleton]
   exact ⟨Zag.symm <| Zag.of_hom <| h.to _, Zag.of_hom <| h.to _⟩
 
 /-- Prove that a category is connected by supplying an explicit terminal object. -/
@@ -160,8 +160,8 @@ lemma isConnected_of_isTerminal {x : C} (h : Limits.IsTerminal x) : IsConnected 
   apply isConnected_of_zigzag
   intro j₁ j₂
   use [x, j₂]
-  simp only [List.chain_cons, List.Chain.nil, and_true, ne_eq, reduceCtorEq, not_false_eq_true,
-    List.getLast_cons, List.cons_ne_self, List.getLast_singleton]
+  simp only [List.isChain_cons_cons, List.isChain_singleton, and_true, ne_eq,
+    reduceCtorEq, not_false_eq_true, List.getLast_cons, List.cons_ne_self, List.getLast_singleton]
   exact ⟨Zag.of_hom <| h.from _, Zag.symm <| Zag.of_hom <| h.from _⟩
 
 -- note : it seems making the following two as instances breaks things, so these are lemmas.

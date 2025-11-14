@@ -379,9 +379,9 @@ theorem Convex.second_derivative_within_at_symmetric_of_mem_interior {v w : E}
     apply C.congr' _ _
     · filter_upwards [self_mem_nhdsWithin]
       intro h (hpos : 0 < h)
-      match_scalars <;> field_simp
+      match_scalars <;> field
     · filter_upwards [self_mem_nhdsWithin] with h (hpos : 0 < h)
-      field_simp
+      simp [field]
   simpa only [sub_eq_zero] using isLittleO_const_const_iff.1 B
 
 end
@@ -599,7 +599,7 @@ theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : WithTop ℕ∞}
     apply fderivWithin_fderivWithin_eq_of_eventuallyEq
     filter_upwards [u_open.mem_nhds hy.2] with z hz
     change (z ∈ s) = (z ∈ s ∩ u)
-    aesop
+    simp_all
   have B : Tendsto (fun k ↦ fderivWithin 𝕜 (fderivWithin 𝕜 f s) s (y k)) atTop
       (𝓝 (fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x)) := by
     have : Tendsto y atTop (𝓝[s ∩ u] x) := by

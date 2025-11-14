@@ -50,7 +50,7 @@ We prove the main properties of the Jacobi symbol, including the following.
   reducing to the case `0 ≤ a < b` and `a`, `b` odd, and then swaps `a`, `b` and recurses using
   quadratic reciprocity.
 
-## Notations
+## Notation
 
 We define the notation `J(a | b)` for `jacobiSym a b`, localized to `NumberTheorySymbols`.
 
@@ -70,7 +70,7 @@ prime divisors (with multiplicity) of `b`, as provided by `b.factors`. This agre
 Jacobi symbol when `b` is odd and gives less meaningful values when it is not (e.g., the symbol
 is `1` when `b = 0`). This is called `jacobiSym a b`.
 
-We define localized notation (locale `NumberTheorySymbols`) `J(a | b)` for the Jacobi
+We define localized notation (scope `NumberTheorySymbols`) `J(a | b)` for the Jacobi
 symbol `jacobiSym a b`.
 -/
 
@@ -395,7 +395,7 @@ namespace jacobiSym
 /-- The **Law of Quadratic Reciprocity for the Jacobi symbol**, version with `qrSign` -/
 theorem quadratic_reciprocity' {a b : ℕ} (ha : Odd a) (hb : Odd b) :
     J(a | b) = qrSign b a * J(b | a) := by
-  -- define the right hand side for fixed `a` as a `ℕ →* ℤ`
+  -- define the right-hand side for fixed `a` as a `ℕ →* ℤ`
   let rhs : ℕ → ℕ →* ℤ := fun a =>
     { toFun := fun x => qrSign x a * J(x | a)
       map_one' := by convert ← mul_one (M := ℤ) _; (on_goal 1 => symm); all_goals apply one_left

@@ -56,8 +56,6 @@ def upath01 : Path (ULift.up 0 : ULift.{u} I) (ULift.up 1) where
   source' := rfl
   target' := rfl
 
-attribute [local instance] Path.Homotopic.setoid
-
 /-- The homotopy path class of 0 → 1 in `ULift I` -/
 def uhpath01 : @fromTop (TopCat.of <| ULift.{u} I) (ULift.up (0 : I)) ⟶ fromTop (ULift.up 1) :=
   ⟦upath01⟧
@@ -67,8 +65,6 @@ end unitInterval
 namespace ContinuousMap.Homotopy
 
 open unitInterval (uhpath01)
-
-attribute [local instance] Path.Homotopic.setoid
 
 section Casts
 
@@ -210,8 +206,6 @@ open CategoryTheory
 
 open scoped FundamentalGroupoid
 
-attribute [local instance] Path.Homotopic.setoid
-
 variable {X Y : TopCat.{u}} {f g : C(X, Y)} (H : ContinuousMap.Homotopy f g)
 
 /-- Given a homotopy H : f ∼ g, we have an associated natural isomorphism between the induced
@@ -231,7 +225,7 @@ open scoped ContinuousMap
 def equivOfHomotopyEquiv (hequiv : X ≃ₕ Y) : πₓ X ≌ πₓ Y := by
   apply CategoryTheory.Equivalence.mk (πₘ (TopCat.ofHom hequiv.toFun) : πₓ X ⥤ πₓ Y)
     (πₘ (TopCat.ofHom hequiv.invFun) : πₓ Y ⥤ πₓ X) <;>
-    simp only [Grpd.id_to_functor]
+    simp only [← Grpd.id_eq_id]
   · convert (asIso (homotopicMapsNatIso hequiv.left_inv.some)).symm
     exacts [((π).map_id X).symm, ((π).map_comp _ _).symm]
   · convert asIso (homotopicMapsNatIso hequiv.right_inv.some)

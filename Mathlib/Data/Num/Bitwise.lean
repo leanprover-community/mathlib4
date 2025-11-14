@@ -168,7 +168,7 @@ def lxor : Num → Num → Num
   | p, 0 => p
   | pos p, pos q => p ^^^ q
 
-instance : Xor Num where xor := Num.lxor
+instance : XorOp Num where xor := Num.lxor
 
 @[simp] lemma lxor_eq_xor (p q : Num) : p.lxor q = p ^^^ q := rfl
 
@@ -281,7 +281,7 @@ def bit0 : NzsNum → NzsNum :=
 def bit1 : NzsNum → NzsNum :=
   bit true
 
-/-- The `head` of a `NzsNum` is the boolean value of its LSB. -/
+/-- The `head` of a `NzsNum` is the Boolean value of its LSB. -/
 def head : NzsNum → Bool
   | msb b => b
   | b :: _ => b
@@ -352,7 +352,7 @@ namespace SNum
 
 open NzsNum
 
-/-- The `head` of a `SNum` is the boolean value of its LSB. -/
+/-- The `head` of a `SNum` is the Boolean value of its LSB. -/
 def head : SNum → Bool
   | zero z => z
   | nz p => p.head

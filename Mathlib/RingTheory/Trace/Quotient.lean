@@ -3,7 +3,6 @@ Copyright (c) 2024 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Riccardo Brasca
 -/
-
 import Mathlib.RingTheory.DedekindDomain.Dvr
 import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 import Mathlib.RingTheory.LocalRing.Quotient
@@ -43,8 +42,7 @@ lemma Algebra.trace_quotient_mk [IsLocalRing R] (x : S) :
   congr 1
   ext i j
   simp only [leftMulMatrix_apply, coe_lmul_eq_mul, LinearMap.toMatrix_apply,
-    basisQuotient_apply, LinearMap.mul_apply',
-    AddMonoidHom.mapMatrix_apply, AddMonoidHom.coe_coe, Matrix.map_apply, ← map_mul,
+    basisQuotient_apply, LinearMap.mul_apply', Matrix.map_apply, ← map_mul,
     basisQuotient_repr]
 
 end IsLocalRing
@@ -71,7 +69,7 @@ def equivQuotMaximalIdealOfIsLocalization : R ⧸ p ≃+* Rₚ ⧸ maximalIdeal 
       Ideal.Quotient.algebraMap_eq, Ideal.mk_ker, IsLocalization.AtPrime.comap_maximalIdeal Rₚ p]
   · intro x
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-    obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective p.primeCompl x
+    obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq p.primeCompl x
     obtain ⟨s', hs⟩ := Ideal.Quotient.mk_surjective (I := p) (Ideal.Quotient.mk p s)⁻¹
     simp only [IsScalarTower.algebraMap_eq R Rₚ (Rₚ ⧸ _),
       Ideal.Quotient.algebraMap_eq, RingHom.comp_apply]
@@ -87,12 +85,6 @@ def equivQuotMaximalIdealOfIsLocalization : R ⧸ p ≃+* Rₚ ⧸ maximalIdeal 
       mul_inv_cancel₀, mul_one, sub_self]
     rw [Ne, Ideal.Quotient.eq_zero_iff_mem]
     exact s.prop
-
-lemma IsLocalization.AtPrime.map_eq_maximalIdeal :
-    p.map (algebraMap R Rₚ) = maximalIdeal Rₚ := by
-  convert congr_arg (Ideal.map (algebraMap R Rₚ))
-    (IsLocalization.AtPrime.comap_maximalIdeal Rₚ p).symm
-  rw [map_comap p.primeCompl]
 
 local notation "pS" => Ideal.map (algebraMap R S) p
 local notation "pSₚ" => Ideal.map (algebraMap Rₚ Sₚ) (maximalIdeal Rₚ)
@@ -141,7 +133,7 @@ def quotMapEquivQuotMapMaximalIdealOfIsLocalization : S ⧸ pS ≃+* Sₚ ⧸ pS
       comap_map_eq_map_of_isLocalization_algebraMapSubmonoid]
   · intro x
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-    obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective
+    obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq
       (Algebra.algebraMapSubmonoid S p.primeCompl) x
     obtain ⟨α, hα : α ∉ p, e⟩ := s.prop
     obtain ⟨β, γ, hγ, hβ⟩ : ∃ β γ, γ ∈ p ∧ α * β = 1 + γ := by
@@ -201,7 +193,7 @@ lemma Algebra.trace_quotient_eq_of_isDedekindDomain (x) [IsDedekindDomain R] [Is
     Submonoid.map_le_of_le_comap _ <| p.primeCompl_le_nonZeroDivisors.trans
       (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _
         (FaithfulSMul.algebraMap_injective _ _))
-  haveI : IsDomain Sₚ := IsLocalization.isDomain_of_le_nonZeroDivisors S e
+  haveI : IsDomain Sₚ := IsLocalization.isDomain_of_le_nonZeroDivisors _ e
   haveI : NoZeroSMulDivisors Rₚ Sₚ := by
     rw [NoZeroSMulDivisors.iff_algebraMap_injective, RingHom.injective_iff_ker_eq_bot,
       RingHom.ker_eq_bot_iff_eq_zero]

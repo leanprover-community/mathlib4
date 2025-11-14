@@ -309,18 +309,12 @@ instance toField : Field S :=
   S.toSubfield.toField
 
 @[norm_cast]
-theorem coe_sum {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∑ i, f i) : L) = ∑ i, (f i : L) := by
-  classical
-    induction (Finset.univ : Finset ι) using Finset.induction_on with
-    | empty => simp
-    | insert i s hi H => rw [Finset.sum_insert hi, AddMemClass.coe_add, H, Finset.sum_insert hi]
+theorem coe_sum {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∑ i, f i) : L) = ∑ i, (f i : L) :=
+  AddSubmonoidClass.coe_finset_sum f Finset.univ
 
 @[norm_cast]
-theorem coe_prod {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∏ i, f i) : L) = ∏ i, (f i : L) := by
-  classical
-    induction (Finset.univ : Finset ι) using Finset.induction_on with
-    | empty => simp
-    | insert i s hi H => rw [Finset.prod_insert hi, MulMemClass.coe_mul, H, Finset.prod_insert hi]
+theorem coe_prod {ι : Type*} [Fintype ι] (f : ι → S) : (↑(∏ i, f i) : L) = ∏ i, (f i : L) :=
+  SubmonoidClass.coe_finset_prod f Finset.univ
 
 /-!
 `IntermediateField`s inherit structure from their `Subfield` coercions.
@@ -625,6 +619,11 @@ def lift {F : IntermediateField K L} (E : IntermediateField K F) : IntermediateF
 theorem lift_injective (F : IntermediateField K L) : Function.Injective F.lift :=
   map_injective F.val
 
+@[simp]
+theorem lift_inj {F : IntermediateField K L} (E E' : IntermediateField K F) :
+    lift E = lift E' ↔ E = E' :=
+  (lift_injective F).eq_iff
+
 theorem lift_le {F : IntermediateField K L} (E : IntermediateField K F) : lift E ≤ F := by
   rintro _ ⟨x, _, rfl⟩
   exact x.2
@@ -680,6 +679,11 @@ theorem mem_restrictScalars {E : IntermediateField L' L} {x : L} :
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars K : IntermediateField L' L → IntermediateField K L) :=
   fun U V H => ext fun x => by rw [← mem_restrictScalars K, H, mem_restrictScalars]
+
+@[simp]
+theorem restrictScalars_inj {E E' : IntermediateField L' L} :
+    E.restrictScalars K = E'.restrictScalars K ↔ E = E' :=
+  (restrictScalars_injective K).eq_iff
 
 end RestrictScalars
 

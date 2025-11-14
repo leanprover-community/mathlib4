@@ -186,6 +186,7 @@ instance : Bot (Subsemiring R) :=
 instance : Inhabited (Subsemiring R) :=
   ⟨⊥⟩
 
+@[norm_cast]
 theorem coe_bot : ((⊥ : Subsemiring R) : Set R) = Set.range ((↑) : ℕ → R) :=
   (Nat.castRingHom R).coe_rangeS
 
@@ -384,7 +385,7 @@ theorem mem_map_equiv {f : R ≃+* S} {K : Subsemiring R} {x : S} :
 
 theorem map_equiv_eq_comap_symm (f : R ≃+* S) (K : Subsemiring R) :
     K.map (f : R →+* S) = K.comap f.symm :=
-  SetLike.coe_injective (f.toEquiv.image_eq_preimage K)
+  SetLike.coe_injective (f.toEquiv.image_eq_preimage_symm K)
 
 theorem comap_equiv_eq_map_symm (f : R ≃+* S) (K : Subsemiring S) :
     K.comap (f : R →+* S) = K.map f.symm :=
@@ -522,8 +523,8 @@ theorem mem_closure_iff_exists_list {R} [Semiring R] {s : Set R} {x} :
       | mul x y _ _ ht hu =>
         obtain ⟨⟨t, ht1, ht2⟩, ⟨u, hu1, hu2⟩⟩ := And.intro ht hu
         exact ⟨t ++ u, List.forall_mem_append.2 ⟨ht1, hu1⟩, by rw [List.prod_append, ht2, hu2]⟩
-    | one => exact ⟨[], List.forall_mem_nil _, rfl⟩
-    | mul x y _ _ hL hM =>
+    | zero => exact ⟨[], List.forall_mem_nil _, rfl⟩
+    | add x y _ _ hL hM =>
       obtain ⟨⟨L, HL1, HL2⟩, ⟨M, HM1, HM2⟩⟩ := And.intro hL hM
       exact ⟨L ++ M, List.forall_mem_append.2 ⟨HL1, HM1⟩, by
         rw [List.map_append, List.sum_append, HL2, HM2]⟩

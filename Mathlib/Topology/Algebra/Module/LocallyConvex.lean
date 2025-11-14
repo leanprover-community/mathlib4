@@ -135,7 +135,7 @@ is closed admit disjoint convex open neighborhoods. -/
 theorem Disjoint.exists_open_convexes (disj : Disjoint s t)
     (hs₁ : Convex 𝕜 s) (hs₂ : IsCompact s) (ht₁ : Convex 𝕜 t) (ht₂ : IsClosed t) :
     ∃ u v, IsOpen u ∧ IsOpen v ∧ Convex 𝕜 u ∧ Convex 𝕜 v ∧ s ⊆ u ∧ t ⊆ v ∧ Disjoint u v := by
-  letI : UniformSpace E := IsTopologicalAddGroup.toUniformSpace E
+  letI : UniformSpace E := IsTopologicalAddGroup.rightUniformSpace E
   haveI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   have := (LocallyConvexSpace.convex_open_basis_zero 𝕜 E).comap fun x : E × E => x.2 - x.1
   rw [← uniformity_eq_comap_nhds_zero] at this
@@ -239,14 +239,12 @@ instance LinearOrderedSemiring.toLocallyConvexSpace {R : Type*} [TopologicalSpac
       intro
       refine nhds_top_basis.to_hasBasis' ?_ ?_
       · intros
-        refine ⟨Set.Ioi _, ?_, subset_refl _⟩
+        refine ⟨Set.Ioi _, ?_, subset_rfl⟩
         simp_all
       · simp +contextual
     refine (nhds_basis_Ioo' hl hu).to_hasBasis' ?_ ?_
     · simp only [id_eq, and_imp, Prod.forall]
-      intros
-      refine ⟨_, ?_, subset_refl _⟩
-      simp_all [Ioo_mem_nhds, convex_Ioo]
+      exact fun _ _ h₁ h₂ ↦ ⟨_, by simp [h₁, h₂, Ioo_mem_nhds, convex_Ioo], subset_rfl⟩
     · simp +contextual
 
 end LinearOrderedSemiring

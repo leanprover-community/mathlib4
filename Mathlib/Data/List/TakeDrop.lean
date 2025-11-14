@@ -36,7 +36,7 @@ theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length)
   simp
 
 @[simp] lemma take_eq_self_iff (x : List α) {n : ℕ} : x.take n = x ↔ x.length ≤ n :=
-  ⟨fun h ↦ by rw [← h]; simp; omega, take_of_length_le⟩
+  ⟨by grind, take_of_length_le⟩
 
 @[simp] lemma take_self_eq_iff (x : List α) {n : ℕ} : x = x.take n ↔ x.length ≤ n := by
   rw [Eq.comm, take_eq_self_iff]
@@ -73,7 +73,7 @@ lemma drop_length_sub_one {l : List α} (h : l ≠ []) : l.drop (l.length - 1) =
   | nil => aesop
   | cons a l ih =>
     by_cases hl : l = []
-    · aesop
+    · simp_all
     rw [length_cons, Nat.add_one_sub_one, List.drop_length_cons hl a]
     simp [getLast_cons, hl]
 
@@ -145,31 +145,19 @@ private theorem span.loop_eq_take_drop :
 theorem span_eq_takeWhile_dropWhile (l : List α) : span p l = (takeWhile p l, dropWhile p l) := by
   simpa using span.loop_eq_take_drop p l []
 
-@[deprecated (since := "2025-02-07")] alias span_eq_take_drop := span_eq_takeWhile_dropWhile
-
 end Filter
 
 /-! ### Miscellaneous lemmas -/
 
 theorem dropSlice_eq (xs : List α) (n m : ℕ) : dropSlice n m xs = xs.take n ++ xs.drop (n + m) := by
-  induction n generalizing xs
-  · cases xs <;> simp [dropSlice]
-  · cases xs <;> simp [dropSlice, *, Nat.succ_add]
+  induction n generalizing xs with cases xs with grind [dropSlice]
 
-@[simp]
+@[simp, grind =]
 theorem length_dropSlice (i j : ℕ) (xs : List α) :
-    (List.dropSlice i j xs).length = xs.length - min j (xs.length - i) := by
-  induction xs generalizing i j with
-  | nil => simp
-  | cons x xs xs_ih =>
-    cases i <;> simp only [List.dropSlice]
-    · cases j with
-      | zero => simp
-      | succ n => simp_all; omega
-    · simp [xs_ih]; omega
+    (dropSlice i j xs).length = xs.length - min j (xs.length - i) := by
+  induction xs generalizing i j with cases i with grind [dropSlice]
 
 theorem length_dropSlice_lt (i j : ℕ) (hj : 0 < j) (xs : List α) (hi : i < xs.length) :
-    (List.dropSlice i j xs).length < xs.length := by
-  simp; omega
+    (dropSlice i j xs).length < xs.length := by grind
 
 end List

@@ -95,9 +95,7 @@ theorem reduce.not {p : Prop} :
       dsimp; intro h
       exfalso
       have := congr_arg List.length h
-      simp? [List.length] at this says
-        simp only [List.length, zero_add, List.length_append] at this
-      omega
+      grind
     | cons hd tail =>
       obtain ⟨y, c⟩ := hd
       dsimp only
@@ -316,6 +314,28 @@ instance (L₁ : List (α × Bool)) : Fintype { L₂ // Red L₁ L₂ } :=
   Fintype.subtype (List.toFinset <| Red.enum L₁) fun _L₂ =>
     ⟨fun H => Red.enum.sound <| List.mem_toFinset.1 H, fun H =>
       List.mem_toFinset.2 <| Red.enum.complete H⟩
+
+@[to_additive]
+theorem IsReduced.reduce_eq (h : IsReduced L) : reduce L = L := by
+  rw [← h.red_iff_eq]
+  exact reduce.red
+
+@[to_additive]
+theorem IsReduced.of_reduce_eq (h : reduce L = L) : IsReduced L := by
+  rw [IsReduced, List.isChain_iff_forall_rel_of_append_cons_cons]
+  rintro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ l₁ l₂ hl rfl
+  rw [eq_comm, ← Bool.ne_not]
+  rintro rfl
+  exact reduce.not (h.trans hl)
+
+@[to_additive]
+theorem isReduced_iff_reduce_eq : IsReduced L ↔ reduce L = L where
+  mp h := h.reduce_eq
+  mpr := .of_reduce_eq
+
+@[to_additive]
+theorem isReduced_toWord {x : FreeGroup α} : IsReduced x.toWord := by
+  simp [isReduced_iff_reduce_eq]
 
 end Reduce
 

@@ -38,10 +38,10 @@ open Function OrderDual Set
 variable {α β γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → Sort*}
 
 @[simp] lemma iSup_ulift {ι : Type*} [SupSet α] (f : ULift ι → α) :
-    ⨆ i : ULift ι, f i = ⨆ i, f (.up i) := by simp [iSup]; congr with x; simp
+    ⨆ i : ULift ι, f i = ⨆ i, f (.up i) := by simp only [iSup]; congr with x; simp
 
 @[simp] lemma iInf_ulift {ι : Type*} [InfSet α] (f : ULift ι → α) :
-    ⨅ i : ULift ι, f i = ⨅ i, f (.up i) := by simp [iInf]; congr with x; simp
+    ⨅ i : ULift ι, f i = ⨅ i, f (.up i) := by simp only [iInf]; congr with x; simp
 
 section
 
@@ -913,11 +913,11 @@ theorem sInf_image {s : Set β} {f : β → α} : sInf (f '' s) = ⨅ a ∈ s, f
 
 theorem OrderIso.map_sSup_eq_sSup_symm_preimage [CompleteLattice β] (f : α ≃o β) (s : Set α) :
     f (sSup s) = sSup (f.symm ⁻¹' s) := by
-  rw [map_sSup, ← sSup_image, f.image_eq_preimage]
+  rw [map_sSup, ← sSup_image, f.image_eq_preimage_symm]
 
 theorem OrderIso.map_sInf_eq_sInf_symm_preimage [CompleteLattice β] (f : α ≃o β) (s : Set α) :
     f (sInf s) = sInf (f.symm ⁻¹' s) := by
-  rw [map_sInf, ← sInf_image, f.image_eq_preimage]
+  rw [map_sInf, ← sInf_image, f.image_eq_preimage_symm]
 
 /-
 ### iSup and iInf under set constructions
@@ -1128,12 +1128,12 @@ theorem iInf_option_elim (a : α) (f : β → α) : ⨅ o : Option β, o.elim a 
 dropped, without changing the result. -/
 @[simp]
 theorem iSup_ne_bot_subtype (f : ι → α) : ⨆ i : { i // f i ≠ ⊥ }, f i = ⨆ i, f i := by
-  by_cases htriv : ∀ i, f i = ⊥
+  by_cases! htriv : ∀ i, f i = ⊥
   · simp only [iSup_bot, (funext htriv : f = _)]
   refine (iSup_comp_le f _).antisymm (iSup_mono' fun i => ?_)
   by_cases hi : f i = ⊥
   · rw [hi]
-    obtain ⟨i₀, hi₀⟩ := not_forall.mp htriv
+    obtain ⟨i₀, hi₀⟩ := htriv
     exact ⟨⟨i₀, hi₀⟩, bot_le⟩
   · exact ⟨⟨i, hi⟩, rfl.le⟩
 
@@ -1242,22 +1242,18 @@ theorem iInf_apply {α : Type*} {β : α → Type*} {ι : Sort*} [∀ i, InfSet 
 
 theorem unary_relation_sSup_iff {α : Type*} (s : Set (α → Prop)) {a : α} :
     sSup s a ↔ ∃ r : α → Prop, r ∈ s ∧ r a := by
-  rw [sSup_apply]
   simp
 
 theorem unary_relation_sInf_iff {α : Type*} (s : Set (α → Prop)) {a : α} :
     sInf s a ↔ ∀ r : α → Prop, r ∈ s → r a := by
-  rw [sInf_apply]
   simp
 
 theorem binary_relation_sSup_iff {α β : Type*} (s : Set (α → β → Prop)) {a : α} {b : β} :
     sSup s a b ↔ ∃ r : α → β → Prop, r ∈ s ∧ r a b := by
-  rw [sSup_apply]
   simp
 
 theorem binary_relation_sInf_iff {α β : Type*} (s : Set (α → β → Prop)) {a : α} {b : β} :
     sInf s a b ↔ ∀ r : α → β → Prop, r ∈ s → r a b := by
-  rw [sInf_apply]
   simp
 
 section CompleteLattice
@@ -1379,7 +1375,5 @@ protected abbrev Function.Injective.completeLattice [Max α] [Min α] [SupSet α
   sSup_le _ _ h := (map_sSup _).trans_le <| iSup₂_le h
   sInf_le _ a h := (map_sInf _).trans_le <| iInf₂_le a h
   le_sInf _ _ h := (le_iInf₂ h).trans (map_sInf _).ge
-  top := ⊤
   le_top _ := (@le_top β _ _ _).trans map_top.ge
-  bot := ⊥
   bot_le _ := map_bot.le.trans bot_le

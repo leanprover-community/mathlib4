@@ -127,7 +127,8 @@ lemma smul_Icc (a b c : α) : a • Icc b c = Icc (a * b) (a * c) := by
   ext x
   constructor
   · rintro ⟨y, ⟨hby, hyc⟩, rfl⟩
-    exact ⟨mul_le_mul_left' hby _, mul_le_mul_left' hyc _⟩
+    dsimp
+    constructor <;> gcongr
   · rintro ⟨habx, hxac⟩
     obtain ⟨y, hy, rfl⟩ := exists_one_le_mul_of_le habx
     refine ⟨b * y, ⟨le_mul_of_one_le_right' hy, ?_⟩, (mul_assoc ..).symm⟩
@@ -849,7 +850,7 @@ theorem image_mul_const_uIcc (a b c : α) : (· * a) '' [[b, c]] = [[b * a, c * 
   if ha : a = 0 then by simp [ha]
   else calc
     (fun x => x * a) '' [[b, c]] = (· * a⁻¹) ⁻¹' [[b, c]] :=
-      (Units.mk0 a ha).mulRight.image_eq_preimage _
+      (Units.mk0 a ha).mulRight.image_eq_preimage_symm _
     _ = (fun x => x / a) ⁻¹' [[b, c]] := by simp only [div_eq_mul_inv]
     _ = [[b * a, c * a]] := preimage_div_const_uIcc ha _ _
 

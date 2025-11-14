@@ -79,6 +79,28 @@ theorem det_of_mem_unitary {A : Matrix n n α} (hA : A ∈ Matrix.unitaryGroup n
   · simpa [star, det_transpose] using congr_arg det hA.1
   · simpa [star, det_transpose] using congr_arg det hA.2
 
+open scoped Kronecker in
+/-- The kronecker product of two unitary matrices is unitary.
+
+This is stated for `unitary` instead of `unitaryGroup` as it holds even for
+non-commutative coefficients. -/
+theorem kronecker_mem_unitary {R m : Type*} [Semiring R] [StarRing R] [Fintype m]
+    [DecidableEq m] {U₁ : Matrix n n R} {U₂ : Matrix m m R}
+    (hU₁ : U₁ ∈ unitary (Matrix n n R)) (hU₂ : U₂ ∈ unitary (Matrix m m R)) :
+    U₁ ⊗ₖ U₂ ∈ unitary (Matrix (n × m) (n × m) R) := by
+  simp_rw [Unitary.mem_iff, star_eq_conjTranspose, conjTranspose_kronecker']
+  constructor <;> ext <;> simp only [mul_apply, submatrix_apply, kroneckerMap_apply, Prod.fst_swap,
+    conjTranspose_apply, ← star_apply, Prod.snd_swap, ← mul_assoc]
+  · simp_rw [mul_assoc _ (star U₁ _ _), ← Finset.univ_product_univ, Finset.sum_product]
+    rw [Finset.sum_comm]
+    simp_rw [← Finset.sum_mul, ← Finset.mul_sum, ← Matrix.mul_apply, hU₁.1, Matrix.one_apply,
+      mul_boole, ite_mul, zero_mul, Finset.sum_ite_irrel, ← Matrix.mul_apply, hU₂.1,
+      Matrix.one_apply, Finset.sum_const_zero, ← ite_and, Prod.eq_iff_fst_eq_snd_eq]
+  · simp_rw [mul_assoc _ _ (star U₂ _ _), ← Finset.univ_product_univ, Finset.sum_product,
+      ← Finset.sum_mul, ← Finset.mul_sum, ← Matrix.mul_apply, hU₂.2, Matrix.one_apply, mul_boole,
+      ite_mul, zero_mul, Finset.sum_ite_irrel, ← Matrix.mul_apply, hU₁.2, Matrix.one_apply,
+      Finset.sum_const_zero, ← ite_and, and_comm, Prod.eq_iff_fst_eq_snd_eq]
+
 namespace UnitaryGroup
 
 instance coeMatrix : Coe (unitaryGroup n α) (Matrix n n α) :=
@@ -95,7 +117,7 @@ def toLin' (A : unitaryGroup n α) :=
   Matrix.toLin' A.1
 
 theorem ext_iff (A B : unitaryGroup n α) : A = B ↔ ∀ i j, A i j = B i j :=
-  Subtype.ext_iff_val.trans ⟨fun h i j => congr_fun (congr_fun h i) j, Matrix.ext⟩
+  Subtype.ext_iff.trans ⟨fun h i j => congr_fun (congr_fun h i) j, Matrix.ext⟩
 
 @[ext]
 theorem ext (A B : unitaryGroup n α) : (∀ i j, A i j = B i j) → A = B :=
@@ -106,7 +128,7 @@ theorem star_mul_self (A : unitaryGroup n α) : star A.1 * A.1 = 1 :=
 
 @[simp]
 theorem det_isUnit (A : unitaryGroup n α) : IsUnit (A : Matrix n n α).det :=
-  isUnit_iff_isUnit_det _ |>.mp <| (unitary.toUnits A).isUnit
+  isUnit_iff_isUnit_det _ |>.mp <| (Unitary.toUnits A).isUnit
 
 section CoeLemmas
 
@@ -262,15 +284,7 @@ lemma of_mem_specialOrthogonalGroup_fin_two_iff {a b c d : R} :
     c * a + d * b = 0 ∧ c * c + d * d = 1) ∧ a * d - b * c = 1
   · simp [Matrix.mem_specialOrthogonalGroup_iff, Matrix.mem_orthogonalGroup_iff,
       ← Matrix.ext_iff, Fin.forall_fin_succ, Matrix.vecHead, Matrix.vecTail]
-  refine ⟨?_, ?_⟩
-  · rintro ⟨⟨⟨h₀, h₁⟩, -, h₂⟩, h₃⟩
-    refine ⟨?_, ?_, ?_⟩
-    · linear_combination - a * h₂ + c * h₁ + d * h₃
-    · linear_combination - c * h₀ + a * h₁ - b * h₃
-    · linear_combination h₀
-  · rintro ⟨rfl, rfl, H⟩
-    ring_nf at H ⊢
-    tauto
+  grind
 
 lemma mem_specialOrthogonalGroup_fin_two_iff {M : Matrix (Fin 2) (Fin 2) R} :
     M ∈ Matrix.specialOrthogonalGroup (Fin 2) R ↔

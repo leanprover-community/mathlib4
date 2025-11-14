@@ -51,8 +51,7 @@ def sym : α ≃ αˢʸᵐ :=
   Equiv.refl _
 
 /-- The element of `α` represented by `x : αˢʸᵐ`. -/
--- Porting note (kmill): `pp_nodot` has no effect here
--- unless RFC https://github.com/leanprover/lean4/issues/6178 leads to dot notation pp for CoeFun
+-- We add `@[pp_nodot]` in case RFC https://github.com/leanprover/lean4/issues/6178 happens.
 @[pp_nodot]
 def unsym : αˢʸᵐ ≃ α :=
   Equiv.refl _
@@ -248,8 +247,6 @@ theorem invOf_sym [Mul α] [AddMonoidWithOne α] [Invertible (2 : α)] (a : α) 
 
 instance nonAssocSemiring [Semiring α] [Invertible (2 : α)] : NonAssocSemiring αˢʸᵐ :=
   { SymAlg.addCommMonoid with
-    one := 1
-    mul := (· * ·)
     zero_mul := fun _ => by
       rw [mul_def, unsym_zero, zero_mul, mul_zero, add_zero,
         mul_zero, sym_zero]

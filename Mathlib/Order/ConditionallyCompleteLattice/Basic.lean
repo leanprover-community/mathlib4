@@ -501,13 +501,13 @@ theorem csSup_eq_csSup_of_forall_exists_le {s t : Set α}
     rw [this]
   by_cases B : BddAbove s ∨ BddAbove t
   · have Bs : BddAbove s := by
-      rcases B with hB|⟨b, hb⟩
+      rcases B with hB | ⟨b, hb⟩
       · exact hB
       · refine ⟨b, fun x hx ↦ ?_⟩
         rcases hs x hx with ⟨y, hy, hxy⟩
         exact hxy.trans (hb hy)
     have Bt : BddAbove t := by
-      rcases B with ⟨b, hb⟩|hB
+      rcases B with ⟨b, hb⟩ | hB
       · refine ⟨b, fun y hy ↦ ?_⟩
         rcases ht y hy with ⟨x, hx, hyx⟩
         exact hyx.trans (hb hx)
@@ -740,7 +740,7 @@ theorem isGLB_sInf (s : Set (WithTop α)) : IsGLB s (sInf s) := by
 
 noncomputable instance : CompleteLinearOrder (WithTop α) where
   __ := linearOrder
-  __ := LinearOrder.toBiheytingAlgebra
+  __ := linearOrder.toBiheytingAlgebra
   le_sSup s := (isLUB_sSup s).1
   sSup_le s := (isLUB_sSup s).2
   le_sInf s := (isGLB_sInf s).2
@@ -800,7 +800,7 @@ lemma MonotoneOn.csInf_eq_of_subset_of_forall_exists_le
   obtain rfl | hs := Set.eq_empty_or_nonempty s
   · obtain rfl : t = ∅ := by simpa [Set.eq_empty_iff_forall_notMem] using h
     rfl
-  apply le_antisymm _ (csInf_le_csInf ht (hs.image _) (image_mono hst))
+  refine le_antisymm ?_ (by gcongr; exacts [ht, hs.image f])
   refine le_csInf ((hs.mono hst).image f) ?_
   simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
   intro a ha
@@ -968,9 +968,10 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
     le_sInf := fun _ a haS => (WithTop.isGLB_sInf' ⟨a, haS⟩).2 haS }
 
 noncomputable instance WithTop.WithBot.completeLinearOrder {α : Type*}
-    [ConditionallyCompleteLinearOrder α] : CompleteLinearOrder (WithTop (WithBot α)) :=
-  -- FIXME: Spread notation doesn't work
-  { completeLattice, linearOrder, LinearOrder.toBiheytingAlgebra with }
+    [ConditionallyCompleteLinearOrder α] : CompleteLinearOrder (WithTop (WithBot α)) where
+  __ := completeLattice
+  __ := linearOrder
+  __ := linearOrder.toBiheytingAlgebra
 
 noncomputable instance WithBot.WithTop.completeLattice {α : Type*}
     [ConditionallyCompleteLattice α] : CompleteLattice (WithBot (WithTop α)) :=
@@ -981,7 +982,9 @@ noncomputable instance WithBot.WithTop.completeLattice {α : Type*}
     le_sInf := (WithTop.WithBot.completeLattice (α := αᵒᵈ)).sSup_le }
 
 noncomputable instance WithBot.WithTop.completeLinearOrder {α : Type*}
-    [ConditionallyCompleteLinearOrder α] : CompleteLinearOrder (WithBot (WithTop α)) :=
-  { completeLattice, linearOrder, LinearOrder.toBiheytingAlgebra with }
+    [ConditionallyCompleteLinearOrder α] : CompleteLinearOrder (WithBot (WithTop α)) where
+  __ := completeLattice
+  __ := linearOrder
+  __ := linearOrder.toBiheytingAlgebra
 
 end WithTopBot

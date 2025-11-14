@@ -51,7 +51,7 @@ theorem Module.rank_linearMap :
   rw [(linearMapEquivFun R S M N).rank_eq, rank_fun_eq_lift_mul,
     ← finrank_eq_card_chooseBasisIndex, ← finrank_eq_rank R, lift_natCast]
 
-/-- The finrank of `M →ₗ[R] N` as an `S`-module is `(finrank R M) * (finrank S N)`. -/
+/-- The `finrank` of `M →ₗ[R] N` as an `S`-module is `(finrank R M) * (finrank S N)`. -/
 theorem Module.finrank_linearMap :
     finrank S (M →ₗ[R] N) = finrank R M * finrank S N := by
   simp_rw [finrank, rank_linearMap, toNat_mul, toNat_lift]

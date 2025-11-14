@@ -20,6 +20,7 @@ import Mathlib.Tactic.Linter.UnusedTactic
 import Mathlib.Tactic.Linter.Style
 -- This import makes the `#min_imports` command available globally.
 import Mathlib.Tactic.MinImports
+import Mathlib.Tactic.TacticAnalysis.Declarations
 
 /-!
 This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.
@@ -58,12 +59,12 @@ Projects depending on mathlib can use `set_option linter.allMathlibLinters true`
 all these linters, or add the `weak.linter.mathlibStandardSet` option to their lakefile.
 -/
 register_linter_set linter.mathlibStandardSet :=
-  linter.allScriptsDocumented
-  linter.checkInitImports
-
+  -- linter.allScriptsDocumented -- disabled, let's not impose this requirement downstream.
+  -- linter.checkInitImports -- disabled, not relevant downstream.
   linter.hashCommand
   linter.oldObtain
   linter.style.cases
+  linter.style.induction
   linter.style.refine
   linter.style.commandStart
   linter.style.cdot
@@ -82,6 +83,20 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.maxHeartbeats
   -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
 
+/-- Define a set of linters that are used in the `nightly-testing` branch
+to catch any regressions.
+-/
+register_linter_set linter.nightlyRegressionSet :=
+  linter.tacticAnalysis.regressions.linarithToGrind
+  linter.tacticAnalysis.regressions.omegaToCutsat
+  linter.tacticAnalysis.regressions.ringToGrind
+  linter.tacticAnalysis.regressions.tautoToGrind
+
+/-- Define a set of linters that run once a week and get posted to Zulip.
+-/
+register_linter_set linter.weeklyLintSet :=
+  linter.tacticAnalysis.mergeWithGrind
+
 -- Check that all linter options mentioned in the mathlib standard linter set exist.
 open Lean Elab.Command Linter Mathlib.Linter Mathlib.Linter.Style
 
@@ -92,7 +107,11 @@ run_cmd liftTermElabM do
   let ls := linterSetsExt.getEntries env
   let some (_, mlLinters) := ls.find? (·.1 == ``linter.mathlibStandardSet) |
     throwError m!"'linter.mathlibStandardSet' is not defined."
-  for mll in mlLinters do
+  let some (_, nrLinters) := ls.find? (·.1 == ``linter.nightlyRegressionSet) |
+    throwError m!"'linter.nightlyRegressionSet is not defined."
+  let some (_, wlLinters) := ls.find? (·.1 == ``linter.weeklyLintSet) |
+    throwError m!"'linter.weeklyLintSet is not defined."
+  for mll in mlLinters ∪ nrLinters ∪ wlLinters do
     let [(mlRes, _)] ← realizeGlobalName mll |
       if !DefinedInScripts.contains mll then
         throwError "Unknown option '{mll}'!"

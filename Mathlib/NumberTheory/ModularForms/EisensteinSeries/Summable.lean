@@ -48,6 +48,18 @@ theorem abs_le_right_of_norm (m n : ℤ) : |m| ≤ ‖![n, m]‖ := by
   rw [Int.abs_eq_natAbs]
   exact Preorder.le_refl _
 
+lemma abs_norm_eq_max_natAbs (n : ℕ) : ‖![1, (n + 1 : ℤ)]‖ = n + 1 := by
+  simp only [EisensteinSeries.norm_eq_max_natAbs, Matrix.cons_val_zero, Matrix.cons_val_one,
+    Matrix.cons_val_fin_one]
+  norm_cast
+  simp
+
+lemma abs_norm_eq_max_natAbs_neg (n : ℕ) : ‖![1, -(n + 1 : ℤ)]‖ = n + 1 := by
+  simp only [EisensteinSeries.norm_eq_max_natAbs, Matrix.cons_val_zero, Matrix.cons_val_one,
+    Matrix.cons_val_fin_one]
+  norm_cast
+  simp
+
 section bounding_functions
 
 /-- Auxiliary function used for bounding Eisenstein series, defined as
@@ -106,12 +118,12 @@ lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
   refine (max_choice (x 0).natAbs (x 1).natAbs).imp (fun H0 ↦ ?_) (fun H1 ↦ ?_)
   · have : x 0 ≠ 0 := by
       rwa [← norm_ne_zero_iff, norm_eq_max_natAbs, H0, Nat.cast_ne_zero, Int.natAbs_ne_zero] at hx
-    simp only [norm_eq_max_natAbs, H0, Int.cast_natAbs, Int.cast_abs, div_pow, sq_abs, ne_eq,
+    simp only [norm_eq_max_natAbs, H0, Nat.cast_natAbs, Int.cast_abs, div_pow, sq_abs, ne_eq,
       OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff, Int.cast_eq_zero, this, div_self,
       le_refl]
   · have : x 1 ≠ 0 := by
       rwa [← norm_ne_zero_iff, norm_eq_max_natAbs, H1, Nat.cast_ne_zero, Int.natAbs_ne_zero] at hx
-    simp only [norm_eq_max_natAbs, H1, Int.cast_natAbs, Int.cast_abs, div_pow, sq_abs, ne_eq,
+    simp only [norm_eq_max_natAbs, H1, Nat.cast_natAbs, Int.cast_abs, div_pow, sq_abs, ne_eq,
       OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff, Int.cast_eq_zero, this, div_self,
       le_refl]
 
@@ -203,7 +215,7 @@ lemma summable_inv_of_isBigO_rpow_inv {α : Type*} [NormedField α] [CompleteSpa
 lemma linear_right_summable (z : ℂ) (c : ℤ) {k : ℤ} (hk : 2 ≤ k) :
     Summable fun d : ℤ ↦ ((c * z + d) ^ k)⁻¹ := by
   apply summable_inv_of_isBigO_rpow_inv (a := k) (by norm_cast)
-  lift k to ℕ using (by omega)
+  lift k to ℕ using (by cutsat)
   simp only [zpow_natCast, Int.cast_natCast, Real.rpow_natCast, ← inv_pow, ← abs_inv]
   apply (linear_inv_isBigO_right c z).abs_right.pow
 
@@ -211,7 +223,7 @@ lemma linear_right_summable (z : ℂ) (c : ℤ) {k : ℤ} (hk : 2 ≤ k) :
 lemma linear_left_summable {z : ℂ} (hz : z ≠ 0) (d : ℤ) {k : ℤ} (hk : 2 ≤ k) :
     Summable fun c : ℤ ↦ ((c * z + d) ^ k)⁻¹ := by
   apply summable_inv_of_isBigO_rpow_inv (a := k) (by norm_cast)
-  lift k to ℕ using (by omega)
+  lift k to ℕ using (by cutsat)
   simp only [zpow_natCast, Int.cast_natCast, Real.rpow_natCast, ← inv_pow, ← abs_inv]
   apply (linear_inv_isBigO_left d hz).abs_right.pow
 

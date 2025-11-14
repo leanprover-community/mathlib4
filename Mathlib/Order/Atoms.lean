@@ -549,6 +549,9 @@ end BooleanAlgebra
 
 namespace CompleteBooleanAlgebra
 
+/-- Every atomic complete Boolean algebra is completely atomic.
+
+This is not made an instance to avoid typeclass loops. -/
 -- See note [reducible non-instances]
 abbrev toCompleteAtomicBooleanAlgebra {α} [CompleteBooleanAlgebra α] [IsAtomic α] :
     CompleteAtomicBooleanAlgebra α where
@@ -624,7 +627,7 @@ theorem le_iff_atom_le_imp {a b : α} : a ≤ b ↔ ∀ c : α, IsAtom c → c �
 theorem eq_iff_atom_le_iff {a b : α} : a = b ↔ ∀ c, IsAtom c → (c ≤ a ↔ c ≤ b) := by
   refine ⟨fun h => by simp [h], fun h => ?_⟩
   rw [le_antisymm_iff, le_iff_atom_le_imp, le_iff_atom_le_imp]
-  aesop
+  simp_all
 
 end IsAtomistic
 
@@ -737,7 +740,6 @@ instance OrderDual.instIsSimpleOrder {α} [LE α] [BoundedOrder α] [IsSimpleOrd
 /-- A simple `BoundedOrder` induces a preorder. This is not an instance to prevent loops. -/
 protected def IsSimpleOrder.preorder {α} [LE α] [BoundedOrder α] [IsSimpleOrder α] :
     Preorder α where
-  le := (· ≤ ·)
   le_refl a := by rcases eq_bot_or_eq_top a with (rfl | rfl) <;> simp
   le_trans a b c := by
     rcases eq_bot_or_eq_top a with (rfl | rfl)
@@ -751,7 +753,7 @@ This is not an instance to prevent loops. -/
 protected def IsSimpleOrder.linearOrder [DecidableEq α] : LinearOrder α :=
   { (inferInstance : PartialOrder α) with
     le_total := fun a b => by rcases eq_bot_or_eq_top a with (rfl | rfl) <;> simp
-    -- Note from #23976: do we want this inlined or should this be a separate definition?
+    -- Note from https://github.com/leanprover-community/mathlib4/issues/23976: do we want this inlined or should this be a separate definition?
     toDecidableLE := fun a b =>
       if ha : a = ⊥ then isTrue (ha.le.trans bot_le)
       else
@@ -1092,18 +1094,12 @@ theorem Lattice.isStronglyAtomic [OrderBot α] [IsUpperModularLattice α] [IsAto
         (hbot ▸ IsUpperModularLattice.covBy_sup_of_inf_covBy) (h x hx).bot_covBy
     rwa [inf_eq_left] at h_inf
 
-@[deprecated (since := "2025-03-13")] alias CompleteLattice.isStronglyAtomic :=
-  Lattice.isStronglyAtomic
-
 /-- A lower-modular lattice that is coatomistic is strongly coatomic.
 Not an instance to prevent loops. -/
 theorem Lattice.isStronglyCoatomic [OrderTop α] [IsLowerModularLattice α]
     [IsCoatomistic α] : IsStronglyCoatomic α := by
   rw [← isStronglyAtomic_dual_iff_is_stronglyCoatomic]
   exact Lattice.isStronglyAtomic
-
-@[deprecated (since := "2025-03-13")] alias CompleteLattice.isStronglyCoatomic :=
-  Lattice.isStronglyCoatomic
 
 end Lattice
 

@@ -166,9 +166,8 @@ section Ring
 variable {R S}
 variable [CommRing R] [Ring S] [Algebra R S]
 
--- Porting note: Needed to add Algebra.toModule below
 theorem Module.Basis.algebraMap_injective {ι : Type*} [NoZeroDivisors R] [Nontrivial S]
-    (b : @Basis ι R S _ _ Algebra.toModule) : Function.Injective (algebraMap R S) :=
+    (b : Basis ι R S) : Function.Injective (algebraMap R S) :=
   have : NoZeroSMulDivisors R S := b.noZeroSMulDivisors
   FaithfulSMul.algebraMap_injective R S
 
@@ -185,21 +184,9 @@ variable [CommSemiring B] [Algebra A B] [Algebra B C] [IsScalarTower A B C] (f :
 def AlgHom.restrictDomain : B →ₐ[A] D :=
   f.comp (IsScalarTower.toAlgHom A B C)
 
--- Porting note: definition below used to be
---  { f with commutes' := fun _ => rfl }
--- but it complains about not finding (Algebra B D), despite it being given in the header of the thm
-
 /-- Extend the scalars of an `AlgHom`. -/
 def AlgHom.extendScalars : @AlgHom B C D _ _ _ _ (f.restrictDomain B).toRingHom.toAlgebra where
-  toFun := f.toFun
-  map_one' := by simp only [toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
-    map_one]
-  map_mul' := by simp only [toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
-    MonoidHom.toOneHom_coe, map_mul, MonoidHom.coe_coe, RingHom.coe_coe, forall_const]
-  map_zero' := by simp only [toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
-    MonoidHom.toOneHom_coe, MonoidHom.coe_coe, map_zero]
-  map_add' := by simp only [toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
-    MonoidHom.toOneHom_coe, MonoidHom.coe_coe, map_add, RingHom.coe_coe, forall_const]
+  __ := f
   commutes' := fun _ ↦ rfl
   __ := (f.restrictDomain B).toRingHom.toAlgebra
 

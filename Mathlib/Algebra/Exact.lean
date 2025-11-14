@@ -336,7 +336,7 @@ def Exact.splitSurjectiveEquiv (h : Function.Exact f g) (hf : Function.Injective
   · have h₁ : ∀ x, g (l.1 x) = x := LinearMap.congr_fun l.2
     have h₂ : ∀ x, g (f x) = 0 := congr_fun h.comp_eq_zero
     constructor
-    · intros x y e
+    · intro x y e
       simp only [add_apply, coe_comp, comp_apply, fst_apply, snd_apply] at e
       suffices x.2 = y.2 from Prod.ext (hf (by rwa [this, add_left_inj] at e)) this
       simpa [h₁, h₂] using DFunLike.congr_arg g e
@@ -375,7 +375,7 @@ def Exact.splitInjectiveEquiv
   · have h₁ : ∀ x, l.1 (f x) = x := LinearMap.congr_fun l.2
     have h₂ : ∀ x, g (f x) = 0 := congr_fun h.comp_eq_zero
     constructor
-    · intros x y e
+    · intro x y e
       simp only [prod_apply, Pi.prod, Prod.mk.injEq] at e
       obtain ⟨z, hz⟩ := (h (x - y)).mp (by simpa [sub_eq_zero] using e.2)
       suffices z = 0 by rw [← sub_eq_zero, ← hz, this, map_zero]
@@ -522,5 +522,11 @@ noncomputable def Function.Exact.linearEquivOfSurjective (h : Function.Exact f g
     (hg : Function.Surjective g) : (N ⧸ LinearMap.range f) ≃ₗ[R] P :=
   LinearEquiv.ofBijective ((LinearMap.range f).liftQ g (h · |>.mpr))
     ⟨LinearMap.injective_range_liftQ_of_exact h, LinearMap.surjective_range_liftQ _ hg⟩
+
+@[simp]
+lemma Function.Exact.linearEquivOfSurjective_symm_apply (h : Function.Exact f g)
+    (hg : Function.Surjective g) (x : N) :
+    (h.linearEquivOfSurjective hg).symm (g x) = Submodule.Quotient.mk x := by
+  simp [LinearEquiv.symm_apply_eq]
 
 end Ring

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Johannes Hölzl, Reid Barton, Kim Morrison, Patrick Massot, Kyle Miller,
 Minchao Wu, Yury Kudryashov, Floris van Doorn
 -/
+import Aesop
 import Mathlib.Data.Set.CoeSort
 import Mathlib.Data.SProd
 import Mathlib.Data.Subtype
@@ -42,7 +43,7 @@ More advanced theorems about these definitions are located in other files in `Ma
 - `Set.seq`: monadic `seq` operation on sets;
   we don't use monadic notation to ensure support for maps between different universes.
 
-## Notations
+## Notation
 
 - `f '' s`: image of a set;
 - `f ⁻¹' s`: preimage of a set;
@@ -70,6 +71,8 @@ variable {α : Type u} {β : Type v} {γ : Type w}
 @[simp, mfld_simps]
 theorem mem_setOf_eq {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
 
+grind_pattern mem_setOf_eq => x ∈ setOf p
+
 /-- This lemma is intended for use with `rw` where a membership predicate is needed,
 hence the explicit argument and the equality in the reverse direction from normal.
 See also `Set.mem_setOf_eq` for the reverse direction applied to an argument. -/
@@ -88,7 +91,7 @@ theorem notMem_setOf_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p 
 
 @[simp] theorem setOf_mem_eq {s : Set α} : { x | x ∈ s } = s := rfl
 
-@[simp, mfld_simps, grind]
+@[simp, mfld_simps, grind ←]
 theorem mem_univ (x : α) : x ∈ @univ α := trivial
 
 /-! ### Operations -/
@@ -154,12 +157,22 @@ def range (f : ι → α) : Set α := {x | ∃ y, f y = x}
 /-- Any map `f : ι → α` factors through a map `rangeFactorization f : ι → range f`. -/
 def rangeFactorization (f : ι → α) : ι → range f := fun i => ⟨f i, mem_range_self i⟩
 
+@[simp] lemma rangeFactorization_injective :
+    (Set.rangeFactorization f).Injective ↔ f.Injective := by
+  simp [Function.Injective, rangeFactorization]
+
+@[simp] lemma rangeFactorization_surjective : (rangeFactorization f).Surjective :=
+  fun ⟨_, i, rfl⟩ ↦ ⟨i, rfl⟩
+
+@[simp] lemma rangeFactorization_bijective :
+    (Set.rangeFactorization f).Bijective ↔ f.Injective := by simp [Function.Bijective]
+
 end Range
 
 /-- We can use the axiom of choice to pick a preimage for every element of `range f`. -/
 noncomputable def rangeSplitting (f : α → β) : range f → α := fun x => x.2.choose
 
--- This can not be a `@[simp]` lemma because the head of the left hand side is a variable.
+-- This cannot be a `@[simp]` lemma because the head of the left-hand side is a variable.
 theorem apply_rangeSplitting (f : α → β) (x : range f) : f (rangeSplitting f x) = x :=
   x.2.choose_spec
 
@@ -169,9 +182,13 @@ theorem comp_rangeSplitting (f : α → β) : f ∘ rangeSplitting f = Subtype.v
   simp only [Function.comp_apply]
   apply apply_rangeSplitting
 
+lemma Subtype.range_coind (f : α → β) {p : β → Prop} (h : ∀ (a : α), p (f a)) :
+    range (Subtype.coind f h) = Subtype.val ⁻¹' range f := by
+  simp [Set.ext_iff, Subtype.ext_iff]
+
 section Prod
 
-/-- The cartesian product `Set.prod s t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. -/
+/-- The Cartesian product `Set.prod s t` is the set of `(a, b)` such that `a ∈ s` and `b ∈ t`. -/
 def prod (s : Set α) (t : Set β) : Set (α × β) := {p | p.1 ∈ s ∧ p.2 ∈ t}
 
 @[default_instance]
@@ -191,10 +208,15 @@ theorem mem_prod : p ∈ s ×ˢ t ↔ p.1 ∈ s ∧ p.2 ∈ t := .rfl
 theorem prodMk_mem_set_prod_eq : ((a, b) ∈ s ×ˢ t) = (a ∈ s ∧ b ∈ t) :=
   rfl
 
-@[deprecated (since := "2025-02-21")]
-alias prod_mk_mem_set_prod_eq := prodMk_mem_set_prod_eq
-
 theorem mk_mem_prod (ha : a ∈ s) (hb : b ∈ t) : (a, b) ∈ s ×ˢ t := ⟨ha, hb⟩
+
+theorem prod_image_left (f : α → γ) (s : Set α) (t : Set β) :
+    (f '' s) ×ˢ t = (fun x ↦ (f x.1, x.2)) '' s ×ˢ t := by
+  aesop
+
+theorem prod_image_right (f : α → γ) (s : Set α) (t : Set β) :
+    t ×ˢ (f '' s) = (fun x ↦ (x.1, f x.2)) '' t ×ˢ s := by
+  aesop
 
 end Prod
 

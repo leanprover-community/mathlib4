@@ -14,7 +14,7 @@ Let `n ≥ 100` be an integer. Ivan writes the numbers `n, n+1, ..., 2*n` each o
 He then shuffles these `n+1` cards, and divides them into two piles. Prove that at least one
 of the piles contains two cards such that the sum of their numbers is a perfect square.
 
-# Solution
+## Solution
 
 We show there exists a triplet `a, b, c ∈ [n , 2n]` with `a < b < c` and each of the sums `(a + b)`,
 `(b + c)`, `(a + c)` being a perfect square. Specifically, we consider the linear system of
@@ -87,8 +87,7 @@ lemma exists_finset_3_le_card_with_pairs_summing_to_squares {n : ℕ} (hn : 100 
     grind
   · intro x hx y hy hxy
     simp only [Finset.mem_insert, Finset.mem_singleton] at hx hy
-    rcases hx with (rfl | rfl | rfl) <;> rcases hy with (rfl | rfl | rfl)
-    all_goals grind
+    rcases hx with (rfl | rfl | rfl) <;> rcases hy with (rfl | rfl | rfl) <;> grind
   · grind
 
 end Imo2021Q1

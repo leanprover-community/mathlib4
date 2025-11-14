@@ -209,8 +209,8 @@ theorem op_map_comp_obj (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
 
 theorem map_iSup (f : X ⟶ Y) {ι : Type*} (U : ι → Opens Y) :
     (map f).obj (iSup U) = iSup ((map f).obj ∘ U) := by
-  ext1; rw [iSup_def, iSup_def, map_obj]
-  dsimp; rw [Set.preimage_iUnion]
+  ext
+  simp
 
 section
 
@@ -320,7 +320,7 @@ lemma map_functorObj {X Y : TopCat} {f : X ⟶ Y} (hf : IsInducing f)
     (Opens.map f).obj (hf.functorObj U) = U := by
   apply le_antisymm
   · rintro x ⟨_, ⟨s, rfl⟩, _, ⟨rfl : _ = U, rfl⟩, hx : f x ∈ s⟩; exact hx
-  · intros x hx
+  · intro x hx
     obtain ⟨U, hU⟩ := U
     obtain ⟨t, ht, rfl⟩ := hf.isOpen_iff.mp hU
     exact Opens.mem_sSup.mpr ⟨⟨_, ht⟩, rfl, hx⟩
@@ -336,7 +336,7 @@ lemma le_functorObj_iff {X Y : TopCat} {f : X ⟶ Y} (hf : IsInducing f) {U : Op
   obtain ⟨t, ht, rfl⟩ := hf.isOpen_iff.mp hU
   constructor
   · exact fun i x hx ↦ (hf.mem_functorObj_iff ((Opens.map f).obj ⟨t, ht⟩)).mp (i hx)
-  · intros h x hx
+  · intro h x hx
     refine Opens.mem_sSup.mpr ⟨⟨_, V.2.union ht⟩, Opens.ext ?_, Set.mem_union_left t hx⟩
     dsimp
     rwa [Set.union_eq_right]

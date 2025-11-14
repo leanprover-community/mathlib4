@@ -28,8 +28,8 @@ For any `I : Ideal A`:
 
 * `HomogeneousIdeal.completeLattice`: `Ideal.IsHomogeneous` is preserved by `⊥`, `⊤`, `⊔`, `⊓`,
   `⨆`, `⨅`, and so the subtype of homogeneous ideals inherits a complete lattice structure.
-* `Ideal.homogeneousCore.gi`: `Ideal.homogeneousCore` forms a galois insertion with coercion.
-* `Ideal.homogeneousHull.gi`: `Ideal.homogeneousHull` forms a galois insertion with coercion.
+* `Ideal.homogeneousCore.gi`: `Ideal.homogeneousCore` forms a Galois insertion with coercion.
+* `Ideal.homogeneousHull.gi`: `Ideal.homogeneousHull` forms a Galois insertion with coercion.
 
 ## Implementation notes
 
@@ -429,7 +429,7 @@ theorem Ideal.homogeneousCore.gc : GaloisConnection toIdeal (Ideal.homogeneousCo
   ⟨fun H => I.toIdeal_homogeneousCore_eq_self ▸ Ideal.homogeneousCore_mono 𝒜 H,
     fun H => le_trans H (Ideal.homogeneousCore'_le _ _)⟩
 
-/-- `toIdeal : HomogeneousIdeal 𝒜 → Ideal A` and `Ideal.homogeneousCore 𝒜` forms a galois
+/-- `toIdeal : HomogeneousIdeal 𝒜 → Ideal A` and `Ideal.homogeneousCore 𝒜` forms a Galois
 coinsertion. -/
 def Ideal.homogeneousCore.gi : GaloisCoinsertion toIdeal (Ideal.homogeneousCore 𝒜) where
   choice I HI :=
@@ -535,7 +535,7 @@ theorem Ideal.homogeneousHull.gc : GaloisConnection (Ideal.homogeneousHull 𝒜)
   ⟨le_trans (Ideal.le_toIdeal_homogeneousHull _ _),
     fun H => J.homogeneousHull_toIdeal_eq_self ▸ Ideal.homogeneousHull_mono 𝒜 H⟩
 
-/-- `Ideal.homogeneousHull 𝒜` and `toIdeal : HomogeneousIdeal 𝒜 → Ideal A` form a galois
+/-- `Ideal.homogeneousHull 𝒜` and `toIdeal : HomogeneousIdeal 𝒜 → Ideal A` form a Galois
 insertion. -/
 def Ideal.homogeneousHull.gi : GaloisInsertion (Ideal.homogeneousHull 𝒜) toIdeal where
   choice I H := ⟨I, le_antisymm H (I.le_toIdeal_homogeneousHull 𝒜) ▸ isHomogeneous _⟩
@@ -562,11 +562,6 @@ open GradedRing SetLike.GradedMonoid DirectSum
 refers to `⨁_{i>0} 𝒜ᵢ`, or equivalently `{a | a₀ = 0}`. This definition is used in `Proj`
 construction where `ι` is always `ℕ` so the irrelevant ideal is simply elements with `0` as
 0-th coordinate.
-
-# Future work
-Here in the definition, `ι` is assumed to be `CanonicallyOrderedAddCommMonoid`. However, the notion
-of irrelevant ideal makes sense in a more general setting by defining it as the ideal of elements
-with `0` as i-th coordinate for all `i ≤ 0`, i.e. `{a | ∀ (i : ι), i ≤ 0 → aᵢ = 0}`.
 -/
 def HomogeneousIdeal.irrelevant : HomogeneousIdeal 𝒜 :=
   ⟨RingHom.ker (GradedRing.projZeroRingHom 𝒜), fun i r (hr : (decompose 𝒜 r 0 : A) = 0) => by

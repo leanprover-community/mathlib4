@@ -45,9 +45,7 @@ open Affine
 
 namespace Finset
 
-theorem univ_fin2 : (univ : Finset (Fin 2)) = {0, 1} := by
-  ext x
-  fin_cases x <;> simp
+theorem univ_fin2 : (univ : Finset (Fin 2)) = {0, 1} := rfl
 
 variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
 variable [S : AffineSpace V P]
@@ -437,7 +435,7 @@ theorem affineCombination_eq_linear_combination (s : Finset ι) (p : ι → V) (
 
 /-- An `affineCombination` equals a point if that point is in the set
 and has weight 1 and the other points in the set have weight 0. -/
--- Cannot be @[simp] because `i` can not be inferred by `simp`.
+-- Cannot be @[simp] because `i` cannot be inferred by `simp`.
 theorem affineCombination_of_eq_one_of_eq_zero (w : ι → k) (p : ι → P) {i : ι} (his : i ∈ s)
     (hwi : w i = 1) (hw0 : ∀ i2 ∈ s, i2 ≠ i → w i2 = 0) : s.affineCombination k p w = p i := by
   have h1 : ∑ i ∈ s, w i = 1 := hwi ▸ sum_eq_single i hw0 fun h => False.elim (h his)

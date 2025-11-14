@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Mario Carneiro
 -/
 import Mathlib.Algebra.Ring.CharZero
+import Mathlib.Algebra.Ring.Torsion
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Data.Real.Basic
 import Mathlib.Order.Interval.Set.UnorderedInterval
@@ -309,23 +310,19 @@ theorem real_smul {x : ℝ} {z : ℂ} : x • z = x * z :=
 
 end SMul
 
-instance addCommGroup : AddCommGroup ℂ :=
-  { zero := (0 : ℂ)
-    add := (· + ·)
-    neg := Neg.neg
-    sub := Sub.sub
-    nsmul := fun n z => n • z
-    zsmul := fun n z => n • z
-    zsmul_zero' := by intros; ext <;> simp [smul_re, smul_im]
-    nsmul_zero := by intros; ext <;> simp [smul_re, smul_im]
-    nsmul_succ := by intros; ext <;> simp [smul_re, smul_im] <;> ring
-    zsmul_succ' := by intros; ext <;> simp [smul_re, smul_im] <;> ring
-    zsmul_neg' := by intros; ext <;> simp [smul_re, smul_im] <;> ring
-    add_assoc := by intros; ext <;> simp <;> ring
-    zero_add := by intros; ext <;> simp
-    add_zero := by intros; ext <;> simp
-    add_comm := by intros; ext <;> simp <;> ring
-    neg_add_cancel := by intros; ext <;> simp }
+instance addCommGroup : AddCommGroup ℂ where
+  nsmul := (· • ·)
+  zsmul := (· • ·)
+  zsmul_zero' := by intros; ext <;> simp [smul_re, smul_im]
+  nsmul_zero := by intros; ext <;> simp [smul_re, smul_im]
+  nsmul_succ := by intros; ext <;> simp [smul_re, smul_im] <;> ring
+  zsmul_succ' := by intros; ext <;> simp [smul_re, smul_im] <;> ring
+  zsmul_neg' := by intros; ext <;> simp [smul_re, smul_im] <;> ring
+  add_assoc := by intros; ext <;> simp <;> ring
+  zero_add := by intros; ext <;> simp
+  add_zero := by intros; ext <;> simp
+  add_comm := by intros; ext <;> simp <;> ring
+  neg_add_cancel := by intros; ext <;> simp
 
 /-! ### Casts -/
 
@@ -359,12 +356,10 @@ instance addGroupWithOne : AddGroupWithOne ℂ :=
     natCast_zero := by ext <;> simp
     natCast_succ _ := by ext <;> simp
     intCast_ofNat _ := by ext <;> simp
-    intCast_negSucc _ := by ext <;> simp
-    one := 1 }
+    intCast_negSucc _ := by ext <;> simp }
 
 instance commRing : CommRing ℂ :=
   { addGroupWithOne with
-    mul := (· * ·)
     npow := @npowRec _ ⟨(1 : ℂ)⟩ ⟨(· * ·)⟩
     add_comm := by intros; ext <;> simp <;> ring
     left_distrib := by intros; ext <;> simp [mul_re, mul_im] <;> ring
@@ -427,7 +422,7 @@ lemma im_zsmul (n : ℤ) (z : ℂ) : (n • z).im = n • z.im := smul_im ..
 
 /-- This defines the complex conjugate as the `star` operation of the `StarRing ℂ`. It
 is recommended to use the ring endomorphism version `starRingEnd`, available under the
-notation `conj` in the locale `ComplexConjugate`. -/
+notation `conj` in the scope `ComplexConjugate`. -/
 instance : StarRing ℂ where
   star z := ⟨z.re, -z.im⟩
   star_involutive x := by simp only [eta, neg_neg]
@@ -742,6 +737,8 @@ lemma div_ofNat_im (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
 instance instCharZero : CharZero ℂ :=
   charZero_of_inj_zero fun n h => by rwa [← ofReal_natCast, ofReal_eq_zero, Nat.cast_eq_zero] at h
 
+instance instIsAddTorsionFree : IsAddTorsionFree ℂ := IsDomain.instIsAddTorsionFreeOfCharZero _
+
 /-- A complex number `z` plus its conjugate `conj z` is `2` times its real part. -/
 theorem re_eq_add_conj (z : ℂ) : (z.re : ℂ) = (z + conj z) / 2 := by
   simp only [add_conj, ofReal_mul, ofReal_ofNat, mul_div_cancel_left₀ (z.re : ℂ) two_ne_zero]
@@ -753,7 +750,7 @@ theorem im_eq_sub_conj (z : ℂ) : (z.im : ℂ) = (z - conj z) / (2 * I) := by
 
 /-- Show the imaginary number ⟨x, y⟩ as an "x + y*I" string
 
-Note that the Real numbers used for x and y will show as cauchy sequences due to the way Real
+Note that the Real numbers used for x and y will show as Cauchy sequences due to the way Real
 numbers are represented.
 -/
 unsafe instance instRepr : Repr ℂ where

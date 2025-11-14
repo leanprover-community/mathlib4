@@ -28,7 +28,7 @@ variable {α : Type u} {β : Type v} {ι : Type*} {X : ι → Type*} [Topologica
 section TotallyDisconnected
 
 /-- A set `s` is called totally disconnected if every subset `t ⊆ s` which is preconnected is
-a subsingleton, ie either empty or a singleton. -/
+a subsingleton, i.e. either empty or a singleton. -/
 def IsTotallyDisconnected (s : Set α) : Prop :=
   ∀ t, t ⊆ s → IsPreconnected t → t.Subsingleton
 
@@ -123,6 +123,17 @@ lemma TotallyDisconnectedSpace.eq_of_continuous [TopologicalSpace β]
     (i j : α) : f i = f j :=
   (isPreconnected_univ.image f hf.continuousOn).subsingleton ⟨i, trivial, rfl⟩ ⟨j, trivial, rfl⟩
 
+/-- The bijection `C(X, Y) ≃ Y` when `Y` is totally disconnected and `X` is connected. -/
+@[simps! symm_apply_apply]
+noncomputable def TotallyDisconnectedSpace.continuousMapEquivOfConnectedSpace
+    (X Y : Type*) [TopologicalSpace X]
+    [TopologicalSpace Y] [TotallyDisconnectedSpace Y] [ConnectedSpace X] :
+    C(X, Y) ≃ Y where
+  toFun f := f (Classical.arbitrary _)
+  invFun y := ⟨fun _ ↦ y, by continuity⟩
+  left_inv f := ContinuousMap.ext (TotallyDisconnectedSpace.eq_of_continuous _ f.2 _)
+  right_inv _ := rfl
+
 theorem isTotallyDisconnected_of_image [TopologicalSpace β] {f : α → β} (hf : ContinuousOn f s)
     (hf' : Injective f) (h : IsTotallyDisconnected (f '' s)) : IsTotallyDisconnected s :=
   fun _t hts ht _x x_in _y y_in =>
@@ -212,15 +223,6 @@ theorem exists_isClopen_of_totally_separated {α : Type*} [TopologicalSpace α]
     [TotallySeparatedSpace α] : Pairwise (∃ U : Set α, IsClopen U ∧ · ∈ U ∧ · ∈ Uᶜ) :=
   totallySeparatedSpace_iff_exists_isClopen.mp ‹_›
 
-/-- Let `X` be a topological space, and suppose that for all distinct `x,y ∈ X`, there
-  is some clopen set `U` such that `x ∈ U` and `y ∉ U`. Then `X` is totally disconnected. -/
-@[deprecated totallySeparatedSpace_iff_exists_isClopen (since := "2025-04-03")]
-theorem isTotallyDisconnected_of_isClopen_set {X : Type*} [TopologicalSpace X]
-    (hX : Pairwise (∃ (U : Set X), IsClopen U ∧ · ∈ U ∧ · ∉ U)) :
-    IsTotallyDisconnected (Set.univ : Set X) :=
-  (totallySeparatedSpace_iff X).mp (totallySeparatedSpace_iff_exists_isClopen.mpr hX)
-    |>.isTotallyDisconnected
-
 end TotallySeparated
 
 
@@ -299,7 +301,7 @@ theorem IsPreconnected.constant_of_mapsTo {S : Set α} (hS : IsPreconnected S)
     (hTm : MapsTo f S T) {x y : α} (hx : x ∈ S) (hy : y ∈ S) : f x = f y := by
   let F : S → T := hTm.restrict f S T
   suffices F ⟨x, hx⟩ = F ⟨y, hy⟩ by rwa [← Subtype.coe_inj] at this
-  exact (isPreconnected_iff_preconnectedSpace.mp hS).constant (hc.restrict_mapsTo _)
+  exact (isPreconnected_iff_preconnectedSpace.mp hS).constant (hc.mapsToRestrict _)
 
 /-- A version of `IsPreconnected.constant_of_mapsTo` that assumes that the codomain is nonempty and
 proves that `f` is equal to `const α y` on `S` for some `y ∈ T`. -/

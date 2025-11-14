@@ -5,7 +5,6 @@ Authors: Kim Morrison, Floris van Doorn
 -/
 import Mathlib.Init
 import Lean.Elab.DeclarationRange
-import Lean.Elab.Term
 
 /-!
 # `addRelatedDecl`
@@ -59,7 +58,7 @@ def addRelatedDecl (src : Name) (suffix : String) (ref : Syntax)
       { info with levelParams := newLevels, type := newType, name := tgt, value := newValue }
   | ConstantInfo.defnInfo info =>
     -- Structure fields are created using `def`, even when they are propositional,
-    -- so we don't rely on this to decided whether we should be constructing a `theorem` or a `def`.
+    -- so we don't rely on this to decide whether we should be constructing a `theorem` or a `def`.
     addAndCompile <| if ← isProp newType then .thmDecl
       { info with levelParams := newLevels, type := newType, name := tgt, value := newValue }
       else .defnDecl

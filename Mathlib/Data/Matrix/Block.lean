@@ -5,7 +5,7 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin
 -/
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Composition
-import Mathlib.Data.Matrix.ConjTranspose
+import Mathlib.LinearAlgebra.Matrix.ConjTranspose
 
 /-!
 # Block Matrices
@@ -331,10 +331,7 @@ theorem blockDiagonal_apply' (M : o → Matrix m n α) (i k j k') :
   rfl
 
 theorem blockDiagonal_apply (M : o → Matrix m n α) (ik jk) :
-    blockDiagonal M ik jk = if ik.2 = jk.2 then M ik.2 ik.1 jk.1 else 0 := by
-  cases ik
-  cases jk
-  rfl
+    blockDiagonal M ik jk = if ik.2 = jk.2 then M ik.2 ik.1 jk.1 else 0 := rfl
 
 @[simp]
 theorem blockDiagonal_apply_eq (M : o → Matrix m n α) (i j k) :
@@ -588,10 +585,7 @@ theorem blockDiagonal'_submatrix_eq_blockDiagonal (M : o → Matrix m n α) :
 
 theorem blockDiagonal'_apply (M : ∀ i, Matrix (m' i) (n' i) α) (ik jk) :
     blockDiagonal' M ik jk =
-      if h : ik.1 = jk.1 then M ik.1 ik.2 (cast (congr_arg n' h.symm) jk.2) else 0 := by
-  cases ik
-  cases jk
-  rfl
+      if h : ik.1 = jk.1 then M ik.1 ik.2 (cast (congr_arg n' h.symm) jk.2) else 0 := rfl
 
 @[simp]
 theorem blockDiagonal'_apply_eq (M : ∀ i, Matrix (m' i) (n' i) α) (k i j) :

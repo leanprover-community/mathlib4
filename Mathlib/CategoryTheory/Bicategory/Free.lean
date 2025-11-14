@@ -229,9 +229,8 @@ theorem mk_whisker_right {f g : a ⟶ b} (η : Hom₂ f g) (h : b ⟶ c) :
 
 variable (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d)
 
--- Porting note: I can not get this to typecheck, and I don't understand why.
--- theorem id_def : Hom.id a = 𝟙 a :=
---   rfl
+theorem id_def : Hom.id (B := B) a = 𝟙 a :=
+  rfl
 
 theorem comp_def : Hom.comp f g = f ≫ g :=
   rfl
@@ -321,7 +320,7 @@ theorem liftHom₂_congr {a b : FreeBicategory B} {f g : a ⟶ b} {η θ : Hom�
 `free_bicategory B` to `C`.
 -/
 @[simps]
-def lift : Pseudofunctor (FreeBicategory B) C where
+def lift : FreeBicategory B ⥤ᵖ C where
   obj := F.obj
   map := liftHom F
   mapId _ := Iso.refl _
@@ -330,11 +329,10 @@ def lift : Pseudofunctor (FreeBicategory B) C where
   -- Porting note: We'd really prefer not to be doing this by hand.
   -- in mathlib3 `tidy` did these inductions for us.
   map₂_comp := by
-    intros a b f g h η θ
+    intro a b f g h η θ
     induction η using Quot.rec
     · induction θ using Quot.rec <;> rfl
     · rfl
-  -- Porting note: still borked from here. The infoview doesn't update properly for me.
   map₂_whisker_left := by
     intro a b c f g h η
     induction η using Quot.rec

@@ -48,9 +48,7 @@ theorem div_mem {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hxy : x ≤ y) : x / 
 theorem fract_mem (x : ℝ) : fract x ∈ I :=
   ⟨fract_nonneg _, (fract_lt_one _).le⟩
 
-theorem mem_iff_one_sub_mem {t : ℝ} : t ∈ I ↔ 1 - t ∈ I := by
-  rw [mem_Icc, mem_Icc]
-  constructor <;> intro <;> constructor <;> linarith
+@[deprecated (since := "2025-08-14")] alias mem_iff_one_sub_mem := Icc.mem_iff_one_sub_mem
 
 lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 
@@ -66,7 +64,7 @@ theorem mul_le_right {x y : I} : x * y ≤ y :=
   Subtype.coe_le_coe.mp <| mul_le_of_le_one_left y.2.1 x.2.2
 
 /-- Unit interval central symmetry. -/
-def symm : I → I := fun t => ⟨1 - t, mem_iff_one_sub_mem.mp t.prop⟩
+def symm : I → I := fun t => ⟨1 - t, Icc.mem_iff_one_sub_mem.mp t.prop⟩
 
 @[inherit_doc]
 scoped notation "σ" => unitInterval.symm
@@ -90,6 +88,10 @@ theorem symm_bijective : Function.Bijective (symm : I → I) := symm_involutive.
 @[simp]
 theorem coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=
   rfl
+
+lemma image_coe_preimage_symm {s : Set I} :
+    Subtype.val '' (σ ⁻¹' s) = (1 - ·) ⁻¹' (Subtype.val '' s) := by
+  simp [symm_involutive, ← Function.Involutive.image_eq_preimage_symm, image_image]
 
 @[simp]
 theorem symm_projIcc (x : ℝ) :
@@ -219,10 +221,7 @@ instance : LinearOrderedCommMonoidWithZero I where
   zero_mul i := zero_mul i
   mul_zero i := mul_zero i
   zero_le_one := nonneg'
-  mul_le_mul_left i j h_ij k := by
-    simp only [← Subtype.coe_le_coe, coe_mul]
-    apply mul_le_mul le_rfl ?_ (nonneg i) (nonneg k)
-    simp [h_ij]
+  mul_le_mul_left i j h_ij k := by simp only [← Subtype.coe_le_coe, coe_mul]; gcongr; exact nonneg k
 
 lemma subtype_Iic_eq_Icc (x : I) : Subtype.val⁻¹' (Iic ↑x) = Icc 0 x := by
   rw [preimage_subtype_val_Iic]
@@ -386,19 +385,21 @@ theorem iccHomeoI_symm_apply_coe (a b : 𝕜) (h : a < b) (x : Set.Icc (0 : 𝕜
 
 end
 
-section NNReal
+namespace unitInterval
 
-open unitInterval NNReal
+open NNReal
 
 /-- The coercion from `I` to `ℝ≥0`. -/
-def unitInterval.toNNReal : I → ℝ≥0 := fun i ↦ ⟨i.1, i.2.1⟩
+def toNNReal : I → ℝ≥0 := fun i ↦ ⟨i.1, i.2.1⟩
 
-@[fun_prop]
-lemma unitInterval.toNNReal_continuous : Continuous toNNReal := by
-  delta toNNReal
-  fun_prop
+@[simp] lemma toNNReal_zero : toNNReal 0 = 0 := rfl
+@[simp] lemma toNNReal_one : toNNReal 1 = 1 := rfl
 
-@[simp]
-lemma unitInterval.coe_toNNReal (x : I) : ((toNNReal x) : ℝ) = x := rfl
+@[fun_prop] lemma toNNReal_continuous : Continuous toNNReal := by delta toNNReal; fun_prop
 
-end NNReal
+@[simp] lemma coe_toNNReal (x : I) : ((toNNReal x) : ℝ) = x := rfl
+
+@[simp] lemma toNNReal_add_toNNReal_symm (x : I) : toNNReal x + toNNReal (σ x) = 1 := by ext; simp
+@[simp] lemma toNNReal_symm_add_toNNReal (x : I) : toNNReal (σ x) + toNNReal x = 1 := by ext; simp
+
+end unitInterval

@@ -3,7 +3,8 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes, Kevin Buzzard
 -/
-import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.Group.Units.Basic
 
 /-!
@@ -152,6 +153,10 @@ theorem liftRight_inv_mul {f : M →* N} {g : M → Nˣ} (h : ∀ x, ↑(g x) = 
 end Units
 
 namespace MonoidHom
+variable {G M : Type*} [Group G]
+
+section Monoid
+variable [Monoid M]
 
 /-- If `f` is a homomorphism from a group `G` to a monoid `M`,
 then its image lies in the units of `M`,
@@ -160,14 +165,26 @@ and `f.toHomUnits` is the corresponding monoid homomorphism from `G` to `Mˣ`. -
   /-- If `f` is a homomorphism from an additive group `G` to an additive monoid `M`,
   then its image lies in the `AddUnits` of `M`,
   and `f.toHomUnits` is the corresponding homomorphism from `G` to `AddUnits M`. -/]
-def toHomUnits {G M : Type*} [Group G] [Monoid M] (f : G →* M) : G →* Mˣ :=
+def toHomUnits (f : G →* M) : G →* Mˣ :=
   Units.liftRight f (fun g => ⟨f g, f g⁻¹, map_mul_eq_one f (mul_inv_cancel _),
     map_mul_eq_one f (inv_mul_cancel _)⟩)
     fun _ => rfl
 
 @[to_additive (attr := simp)]
-theorem coe_toHomUnits {G M : Type*} [Group G] [Monoid M] (f : G →* M) (g : G) :
-    (f.toHomUnits g : M) = f g := rfl
+theorem coe_toHomUnits (f : G →* M) (g : G) : (f.toHomUnits g : M) = f g := rfl
+
+end Monoid
+
+variable [CommMonoid M]
+
+@[simp] lemma toHomUnits_mul (f g : G →* M) : (f * g).toHomUnits = f.toHomUnits * g.toHomUnits := by
+  ext; rfl
+
+/-- `MonoidHom.toHomUnits` as a `MulEquiv`. -/
+@[simps] def toHomUnitsMulEquiv : (G →* M) ≃* (G →* Mˣ) where
+  toFun := toHomUnits
+  invFun f := (Units.coeHom _).comp f
+  map_mul' := by simp
 
 end MonoidHom
 

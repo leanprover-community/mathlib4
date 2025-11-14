@@ -49,8 +49,7 @@ variable (n : d → ℤ)
 /-- Exponential monomials in `d` variables. -/
 def mFourier : C(UnitAddTorus d, ℂ) where
   toFun x := ∏ i : d, fourier (n i) (x i)
-  continuous_toFun := continuous_finset_prod _
-    fun i _ ↦ (fourier (n i)).continuous.comp (continuous_apply i)
+  continuous_toFun := by fun_prop
 
 variable {n} {x : UnitAddTorus d}
 
@@ -151,6 +150,11 @@ abbrev mFourierLp (p : ℝ≥0∞) [Fact (1 ≤ p)] (n : d → ℤ) :
 theorem coeFn_mFourierLp (p : ℝ≥0∞) [Fact (1 ≤ p)] (n : d → ℤ) :
     mFourierLp p n =ᵐ[volume] mFourier n :=
   ContinuousMap.coeFn_toLp volume (mFourier n)
+
+-- shortcut instance: avoids `synthInstance.maxHeartbeats` issue in `span_mFourierLp_closure_eq_top`
+instance {p : ℝ≥0∞} [Fact (1 ≤ p)] :
+    ContinuousSMul ℂ (Lp ℂ p (volume : Measure (UnitAddTorus d))) :=
+  inferInstance
 
 /-- For each `1 ≤ p < ∞`, the linear span of the monomials `mFourier n` is dense in the `Lᵖ` space
 of functions on `UnitAddTorus d`. -/

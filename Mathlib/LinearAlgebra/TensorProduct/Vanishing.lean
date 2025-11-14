@@ -274,10 +274,4 @@ theorem rTensor_injective_of_forall_fg_rTensor_injective
   (forall_vanishesTrivially_iff_forall_rTensor_injective R).mp
     ((forall_vanishesTrivially_iff_forall_fg_rTensor_injective R).mpr hMN) M'
 
-@[deprecated (since := "2025-01-03")] alias
-forall_vanishesTrivially_iff_forall_FG_rTensor_injective :=
-  forall_vanishesTrivially_iff_forall_fg_rTensor_injective
-@[deprecated (since := "2025-01-03")] alias rTensor_injective_of_forall_FG_rTensor_injective :=
-  rTensor_injective_of_forall_fg_rTensor_injective
-
 end TensorProduct
