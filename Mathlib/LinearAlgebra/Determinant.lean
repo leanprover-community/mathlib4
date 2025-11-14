@@ -750,4 +750,3 @@ theorem _root_.LinearMap.det_dualMap
   simp [LinearMap.dualMap_def, LinearMap.toMatrix_transpose]
 
 end Dual
-
