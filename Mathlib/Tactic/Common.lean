@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 
 -- First import Aesop, Qq, and Plausible
-module
+module  -- shake: keep-all, shake: keep-downstream
 
 public meta import Aesop
 public meta import Qq
