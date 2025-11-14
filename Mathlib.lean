@@ -6933,6 +6933,7 @@ import Mathlib.Topology.MetricSpace.Completion
 import Mathlib.Topology.MetricSpace.Congruence
 import Mathlib.Topology.MetricSpace.Contracting
 import Mathlib.Topology.MetricSpace.Cover
+import Mathlib.Topology.MetricSpace.CoveringNumbers
 import Mathlib.Topology.MetricSpace.Defs
 import Mathlib.Topology.MetricSpace.Dilation
 import Mathlib.Topology.MetricSpace.DilationEquiv
