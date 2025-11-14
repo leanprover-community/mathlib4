@@ -283,14 +283,9 @@ lemma _root_.MeasureTheory.memLp_id_of_self_sub_integral {p : ℝ≥0∞}
     _ ≤ 2 * ‖c‖ ^ (p - 1 : ℝ) * ‖y‖ + 2 ^ (p : ℝ) * ‖y - c‖ ^ (p : ℝ) := by
       gcongr
       positivity
-  · have : 0 ≤ ‖c‖ := by positivity
-    rcases eq_or_lt_of_le this with hc | hc
-    · simp only [← hc]
-      rw [Real.zero_rpow (by simpa using hp0)]
-      positivity
-    calc ‖c‖ ^ (p : ℝ )
+  · calc ‖c‖ ^ (p : ℝ )
     _ = ‖c‖ ^ ((p - 1) + 1 : ℝ) := by abel_nf
-    _ = ‖c‖ ^ (p - 1 : ℝ) * ‖c‖ := by rw [Real.rpow_add hc, Real.rpow_one]
+    _ = ‖c‖ ^ (p - 1 : ℝ) * ‖c‖ := by rw [Real.rpow_add (by positivity), Real.rpow_one]
     _ ≤ ‖c‖ ^ (p - 1 : ℝ) * (2 * ‖y‖) := by gcongr; linarith
     _ = 2 * ‖c‖ ^ (p - 1 : ℝ) * ‖y‖ + 0 := by ring
     _ ≤ 2 * ‖c‖ ^ (p - 1 : ℝ) * ‖y‖ + 2 ^ (p : ℝ) * ‖y - c‖ ^ (p : ℝ) := by gcongr; positivity
