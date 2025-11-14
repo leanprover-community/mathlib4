@@ -208,8 +208,7 @@ lemma dist_orthogonalProjection_eq_iff_oangle_eq {p p' : P} {s₁ s₂ : AffineS
 lemma) if twice the oriented angles at a point `p'` in their intersection between `p` and its
 orthogonal projections onto the subspaces are equal. -/
 lemma dist_orthogonalProjection_eq_of_two_zsmul_oangle_orthogonalProjection_eq {p p' : P}
-    {s₁ s₂ : AffineSubspace ℝ P} [s₁.direction.HasOrthogonalProjection]
-    [s₂.direction.HasOrthogonalProjection] (hp' : p' ∈ s₁ ⊓ s₂)
+    {s₁ s₂ : AffineSubspace ℝ P} (hp' : p' ∈ s₁ ⊓ s₂)
     (hp₁ : haveI : Nonempty s₁ := ⟨p', hp'.1⟩; orthogonalProjection s₁ p ≠ p')
     (hp₂ : haveI : Nonempty s₂ := ⟨p', hp'.2⟩; orthogonalProjection s₂ p ≠ p')
     (h : haveI : Nonempty s₁ := ⟨p', hp'.1⟩; haveI : Nonempty s₂ := ⟨p', hp'.2⟩;
@@ -309,7 +308,6 @@ lemma two_zsmul_oangle_eq_of_dist_orthogonalProjection_eq {p p₁ p₂ p₃ : P}
     rw [← hp, eq_comm, orthogonalProjection_eq_self_iff]
     convert AffineSubspace.mem_top ℝ V p
     rw [← AffineSubspace.span_union]
-    haveI : FiniteDimensional ℝ V := Module.finite_of_finrank_pos (by simp [hd2.out])
     convert ha.affineSpan_eq_top_iff_card_eq_finrank_add_one.2 ?_
     · simp
       grind
