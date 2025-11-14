@@ -27,6 +27,8 @@ open IsLocalizedModule
 variable {R M N L : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
   [AddCommMonoid N] [Module R N] [AddCommMonoid L] [Module R L]
 
+-- For every maximal ideal `p` of `R`, let `Mₚ` (resp. `Nₚ`, resp. `Lₚ`) the localizations
+-- of `M` (resp. `N`, resp. `L`) at `p`.
 variable
   (Rₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
   [∀ (P : Ideal R) [P.IsMaximal], CommSemiring (Rₚ P)]
@@ -127,6 +129,8 @@ variable {R M N L : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
   [AddCommMonoid N] [Module R N] [AddCommMonoid L] [Module R L] (s : Set R) (spn : Ideal.span s = ⊤)
 include spn
 
+-- For every element `r ∈ s`, let `Mᵣ` (resp. `Nᵣ`, resp. `Lᵣ`) the localizations
+-- of `M` (resp. `N`, resp. `L`) away from `r`.
 variable
   (Mₚ : ∀ _ : s, Type*)
   [∀ r : s, AddCommMonoid (Mₚ r)]
@@ -208,11 +212,81 @@ lemma exact_of_localized_span
 
 end localized_span
 
+section Algebra
+
+variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
+
+-- For every maximal ideal `p` of `R`, let `Rₚ` be the localization of `R` at `p`
+-- and `Sₚ` the localization of `S` at `p`.
+variable
+  (Rₚ : ∀ (p : Ideal R) [p.IsMaximal], Type*)
+  [∀ (p : Ideal R) [p.IsMaximal], CommSemiring (Rₚ p)]
+  [∀ (p : Ideal R) [p.IsMaximal], Algebra R (Rₚ p)]
+  (Sₚ : ∀ (p : Ideal R) [p.IsMaximal], Type*)
+  [∀ (p : Ideal R) [p.IsMaximal], CommSemiring (Sₚ p)]
+  [∀ (p : Ideal R) [p.IsMaximal], Algebra S (Sₚ p)]
+  [∀ (p : Ideal R) [p.IsMaximal], Algebra (Rₚ p) (Sₚ p)]
+  [∀ (p : Ideal R) [p.IsMaximal], Algebra R (Sₚ p)]
+  [∀ (p : Ideal R) [p.IsMaximal], IsScalarTower R (Rₚ p) (Sₚ p)]
+  [∀ (p : Ideal R) [p.IsMaximal], IsScalarTower R S (Sₚ p)]
+  [∀ (p : Ideal R) [p.IsMaximal], IsLocalization.AtPrime (Rₚ p) p]
+  [∀ (p : Ideal R) [p.IsMaximal],
+    IsLocalizedModule.AtPrime p (IsScalarTower.toAlgHom R S (Sₚ p) : S →ₗ[R] (Sₚ p))]
+
+open TensorProduct
+
+lemma IsLocalizedModule.map_linearMap_of_isLocalization (Rₚ Sₚ : Type*) [CommSemiring Rₚ]
+    [Algebra R Rₚ] [CommSemiring Sₚ] [Algebra S Sₚ] [Algebra R Sₚ] [IsScalarTower R S Sₚ]
+    [Algebra Rₚ Sₚ] [IsScalarTower R Rₚ Sₚ] (p : Ideal R) [p.IsPrime]
+    [IsLocalization.AtPrime Rₚ p]
+    [IsLocalizedModule.AtPrime p (IsScalarTower.toAlgHom R S Sₚ : S →ₗ[R] Sₚ)] :
+    IsLocalizedModule.map p.primeCompl (Algebra.linearMap R Rₚ)
+        (IsScalarTower.toAlgHom R S Sₚ : S →ₗ[R] Sₚ) (Algebra.linearMap R S) =
+    (Algebra.linearMap Rₚ Sₚ).restrictScalars R := by
+  apply IsLocalizedModule.linearMap_ext p.primeCompl (Algebra.linearMap _ _)
+    (IsScalarTower.toAlgHom R S Sₚ : S →ₗ[R] Sₚ)
+  ext
+  simp only [LinearMap.coe_comp, Function.comp_apply, Algebra.linearMap_apply, map_one,
+    LinearMap.coe_restrictScalars]
+  rw [show 1 = Algebra.linearMap R Rₚ 1 by simp, IsLocalizedModule.map_apply]
+  simp
+
+lemma injective_of_isLocalization_isMaximal
+    (H : ∀ (p : Ideal R) [p.IsMaximal], Function.Injective (algebraMap (Rₚ p) (Sₚ p))) :
+    Function.Injective (algebraMap R S) := by
+  apply injective_of_isLocalized_maximal (fun P _ ↦ Rₚ P) (fun P _ ↦ Algebra.linearMap _ _)
+    (fun P _ ↦ Sₚ P) (fun P _ ↦ IsScalarTower.toAlgHom R S (Sₚ P)) (Algebra.linearMap R S) _
+  intro p hp
+  convert_to Function.Injective ((Algebra.linearMap (Rₚ p) (Sₚ p)).restrictScalars R)
+  · rw [DFunLike.coe_fn_eq]
+    apply IsLocalizedModule.map_linearMap_of_isLocalization
+  · exact H p
+
+lemma surjective_of_isLocalization_isMaximal
+    (H : ∀ (p : Ideal R) [p.IsMaximal], Function.Surjective (algebraMap (Rₚ p) (Sₚ p))) :
+    Function.Surjective (algebraMap R S) := by
+  apply surjective_of_isLocalized_maximal (fun P _ ↦ Rₚ P) (fun P _ ↦ Algebra.linearMap _ _)
+    (fun P _ ↦ Sₚ P) (fun P _ ↦ IsScalarTower.toAlgHom R S (Sₚ P)) (Algebra.linearMap R S) _
+  intro p hp
+  convert_to Function.Surjective ((Algebra.linearMap (Rₚ p) (Sₚ p)).restrictScalars R)
+  · rw [DFunLike.coe_fn_eq]
+    apply IsLocalizedModule.map_linearMap_of_isLocalization
+  · exact H p
+
+lemma bijective_of_isLocalization_isMaximal
+    (H : ∀ (p : Ideal R) [p.IsMaximal], Function.Bijective (algebraMap (Rₚ p) (Sₚ p))) :
+    Function.Bijective (algebraMap R S) :=
+  ⟨injective_of_isLocalization_isMaximal _ _ (fun p _ ↦ (H p).1),
+    surjective_of_isLocalization_isMaximal _ _ (fun p _ ↦ (H p).2)⟩
+
+end Algebra
+
 section IsLocalization
 
-variable {R S : Type*} [CommSemiring R] [CommSemiring S]
-variable {s : Set R} (hs : span s = ⊤)
-  (Rᵣ : s → Type*) [∀ r, CommSemiring (Rᵣ r)] [∀ r, Algebra R (Rᵣ r)]
+variable {R S : Type*} [CommSemiring R] [CommSemiring S] {s : Set R} (hs : span s = ⊤)
+-- For every element `r ∈ s`, let `Rᵣ` be the localization of `R` away from `r`
+-- and `Sᵣ` the localization of `S` away from `f r`.
+variable (Rᵣ : s → Type*) [∀ r, CommSemiring (Rᵣ r)] [∀ r, Algebra R (Rᵣ r)]
   (Sᵣ : s → Type*) [∀ r, CommSemiring (Sᵣ r)] [∀ r, Algebra S (Sᵣ r)]
 variable (f : R →+* S) [∀ r, IsLocalization.Away r.val (Rᵣ r)]
     [∀ r, IsLocalization.Away (f r.val) (Sᵣ r)]
