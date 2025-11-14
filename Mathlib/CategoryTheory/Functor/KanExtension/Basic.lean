@@ -98,6 +98,7 @@ lemma hom_ext_of_isRightKanExtension {G : D ⥤ H} (γ₁ γ₂ : G ⟶ F')
 
 /-- If `(F', α)` is a right Kan extension of `F` along `L`, then this
 is the induced bijection `(G ⟶ F') ≃ (L ⋙ G ⟶ F)` for all `G`. -/
+@[simps!]
 noncomputable def homEquivOfIsRightKanExtension (G : D ⥤ H) :
     (G ⟶ F') ≃ (L ⋙ G ⟶ F) where
   toFun β := whiskerLeft _ β ≫ α
