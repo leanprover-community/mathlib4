@@ -197,7 +197,7 @@ theorem inner_fourier_toL2_eq (f : 𝓢(V, H)) :
 @[deprecated (since := "2025-11-13")]
 alias inner_fourierTransformCLM_toL2_eq := inner_fourier_toL2_eq
 
-theorem norm_fourier_toL2_eq (f : 𝓢(V, H)) :
+@[simp] theorem norm_fourier_toL2_eq (f : 𝓢(V, H)) :
     ‖(𝓕 f).toLp 2‖ = ‖f.toLp 2‖ := by
   simp_rw [norm_eq_sqrt_re_inner (𝕜 := ℂ), inner_fourier_toL2_eq]
 
