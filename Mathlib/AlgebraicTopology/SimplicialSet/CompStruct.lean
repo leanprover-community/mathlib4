@@ -53,7 +53,7 @@ a `1`-simplex with prescribed `0`-dimensional faces. -/
 def edge (e : Edge x₀ x₁) : X _⦋1⦌ := e.toTruncated.edge
 
 @[simp]
-lemma ofTruncated_edge (e : Truncated.Edge (X := (truncation 2).obj X) x₀ x₁) :
+lemma ofTruncated_edge (e : ((truncation 2).obj X).Edge x₀ x₁) :
     (ofTruncated e).edge = e.edge := rfl
 
 @[simp]
