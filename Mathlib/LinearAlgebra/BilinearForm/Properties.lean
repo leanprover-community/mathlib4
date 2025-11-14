@@ -371,7 +371,7 @@ variable {ι : Type*} [DecidableEq ι] [Finite ι]
 where `B` is a nondegenerate (symmetric) bilinear form and `b` is a finite basis. -/
 noncomputable def dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) :
     Basis ι K V :=
-  haveI := FiniteDimensional.of_fintype_basis b
+  haveI := b.finiteDimensional_of_finite
   b.dualBasis.map (B.toDual hB).symm
 
 variable {B : BilinForm K V}
@@ -379,13 +379,13 @@ variable {B : BilinForm K V}
 @[simp]
 theorem dualBasis_repr_apply (hB : B.Nondegenerate) (b : Basis ι K V) (x i) :
     (B.dualBasis hB b).repr x i = B x (b i) := by
-  have := FiniteDimensional.of_fintype_basis b
+  have := b.finiteDimensional_of_finite
   rw [dualBasis, Basis.map_repr, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
     Basis.dualBasis_repr, toDual_def]
 
 theorem apply_dualBasis_left (hB : B.Nondegenerate) (b : Basis ι K V) (i j) :
     B (B.dualBasis hB b i) (b j) = if j = i then 1 else 0 := by
-  have := FiniteDimensional.of_fintype_basis b
+  have := b.finiteDimensional_of_finite
   rw [dualBasis, Basis.map_apply, Basis.coe_dualBasis, ← toDual_def hB,
     LinearEquiv.apply_symm_apply, Basis.coord_apply, Basis.repr_self, Finsupp.single_apply]
 
