@@ -173,7 +173,7 @@ end SemiRingCat
 
 /-- The category of rings. -/
 structure RingCat where
-  /-- The object in the category of R-algebras associated to a type equipped with the appropriate
+  /-- The object in the category of rings associated to a type equipped with the appropriate
   typeclasses. -/
   of ::
   /-- The underlying type. -/
@@ -332,7 +332,7 @@ end RingCat
 
 /-- The category of commutative semirings. -/
 structure CommSemiRingCat where
-  /-- The object in the category of R-algebras associated to a type equipped with the appropriate
+  /-- The object in the category of commutative semirings associated to a type equipped with the appropriate
   typeclasses. -/
   of ::
   /-- The underlying type. -/
@@ -490,7 +490,7 @@ end CommSemiRingCat
 
 /-- The category of commutative rings. -/
 structure CommRingCat where
-  /-- The object in the category of R-algebras associated to a type equipped with the appropriate
+  /-- The object in the category of commutative rings associated to a type equipped with the appropriate
   typeclasses. -/
   of ::
   /-- The underlying type. -/
