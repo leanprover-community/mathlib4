@@ -38,6 +38,10 @@ theorem prod_right (α) [Finite (α × β)] [Nonempty α] : Finite β :=
 
 end Finite
 
+lemma Prod.finite_iff [Nonempty α] [Nonempty β] : Finite (α × β) ↔ Finite α ∧ Finite β where
+  mp _ := ⟨.prod_left β, .prod_right α⟩
+  mpr | ⟨_, _⟩ => inferInstance
+
 instance Pi.finite {α : Sort*} {β : α → Sort*} [Finite α] [∀ a, Finite (β a)] :
     Finite (∀ a, β a) := by
   classical
