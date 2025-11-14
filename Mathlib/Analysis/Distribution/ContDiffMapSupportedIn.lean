@@ -265,14 +265,15 @@ as a `𝕜`-linear map.
 
 This is subsumed by `toBoundedContinuousFunctionCLM` (not yet in Mathlib), which also bundles the
 continuity. -/
-@[simps -fullyApplied]
 noncomputable def toBoundedContinuousFunctionLM : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ F where
   toFun f := f
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
--- Workaround for simps' automatic name generation: manually specifying names is not supported yet.
-alias toBoundedContinuousFunctionLM_apply := toBoundedContinuousFunctionLM_apply_apply
+@[simp]
+lemma toBoundedContinuousFunctionLM_apply (f : 𝓓^{n}_{K}(E, F)) :
+    toBoundedContinuousFunctionLM 𝕜 f = f :=
+  rfl
 
 lemma toBoundedContinuousFunctionLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
     [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
@@ -534,10 +535,10 @@ protected theorem seminorm_apply (i : ℕ) (f : 𝓓^{⊤}_{K}(E, F)) :
 
 protected theorem seminorm_eq_bot_of_gt {i : ℕ} (hin : n < i) :
     ContDiffMapSupportedIn.seminorm 𝕜 E F n K i = ⊥ := by
+  have : ¬(i ≤ n) := by simpa using hin
   ext f
-  rw [ContDiffMapSupportedIn.seminorm_apply_withOrder,
-      iteratedFDerivWithOrderLM_apply_of_gt 𝕜 (by simpa)]
-  exact norm_zero
+  simp [ContDiffMapSupportedIn.seminorm_apply_withOrder, BoundedContinuousFunction.ext_iff,
+    this]
 
 theorem norm_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
     ‖(f : E →ᵇ F)‖ = ContDiffMapSupportedIn.seminorm 𝕜 E F n K 0 f := by
