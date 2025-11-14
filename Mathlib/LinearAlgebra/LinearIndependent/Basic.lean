@@ -272,15 +272,9 @@ alias LinearIndependent.linearCombination_ne_of_not_mem_support :=
 
 end Subtype
 
-section union
-
-open LinearMap Finsupp
-
 theorem LinearIndepOn.id_imageₛ {s : Set M} {f : M →ₗ[R] M'} (hs : LinearIndepOn R id s)
     (hf_inj : Set.InjOn f (span R s)) : LinearIndepOn R id (f '' s) :=
   id_image <| hs.map_injOn f (by simpa using hf_inj)
-
-end union
 
 theorem surjective_of_linearIndependent_of_span [Nontrivial R] (hv : LinearIndependent R v)
     (f : ι' ↪ ι) (hss : range v ⊆ span R (range (v ∘ f))) : Surjective f := by
@@ -559,30 +553,21 @@ theorem linearIndependent_monoidHom (G : Type*) [MulOneClass G] (L : Type*) [Com
 end Module
 
 section Nontrivial
+variable [Ring R] [AddCommGroup M] [Module R M] [Nontrivial R] [NoZeroSMulDivisors R M]
+  {v : ι → M} {i : ι}
 
-variable [Ring R] [Nontrivial R] [AddCommGroup M]
-variable [Module R M] [NoZeroSMulDivisors R M]
-variable {s t : Set M}
+lemma linearIndependent_unique_iff [Unique ι] : LinearIndependent R v ↔ v default ≠ 0 := by
+  refine ⟨?_, .of_subsingleton _⟩
+  simpa [linearIndependent_iff, Finsupp.linearCombination_unique, Finsupp.ext_iff,
+    Unique.forall_iff, or_imp] using fun h hv ↦ by simpa using h (.single default 1) hv
 
-theorem linearIndependent_unique_iff (v : ι → M) [Unique ι] :
-    LinearIndependent R v ↔ v default ≠ 0 := by
-  simp only [linearIndependent_iff, Finsupp.linearCombination_unique, smul_eq_zero]
-  refine ⟨fun h hv => ?_, fun hv l hl => Finsupp.unique_ext <| hl.resolve_right hv⟩
-  have := h (Finsupp.single default 1) (Or.inr hv)
-  exact one_ne_zero (Finsupp.single_eq_zero.1 this)
-
+@[deprecated LinearIndependent.of_subsingleton (since := "2025-11-11")]
 alias ⟨_, linearIndependent_unique⟩ := linearIndependent_unique_iff
 
 variable (R) in
 @[simp]
-theorem linearIndepOn_singleton_iff {i : ι} {v : ι → M} : LinearIndepOn R v {i} ↔ v i ≠ 0 :=
-  ⟨fun h ↦ h.ne_zero rfl, fun h ↦ linearIndependent_unique _ h⟩
-
-alias ⟨_, LinearIndepOn.singleton⟩ := linearIndepOn_singleton_iff
-
-variable (R) in
-theorem LinearIndepOn.id_singleton {x : M} (hx : x ≠ 0) : LinearIndepOn R id {x} :=
-  linearIndependent_unique Subtype.val hx
+theorem linearIndepOn_singleton_iff : LinearIndepOn R v {i} ↔ v i ≠ 0 :=
+  ⟨fun h ↦ h.ne_zero rfl, .singleton⟩
 
 @[simp]
 theorem linearIndependent_subsingleton_index_iff [Subsingleton ι] (f : ι → M) :

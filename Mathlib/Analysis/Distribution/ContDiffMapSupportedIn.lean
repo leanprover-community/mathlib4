@@ -59,8 +59,8 @@ larger space of test functions.
 * The technical choice of spelling `EqOn f 0 Kᶜ` in the definition, as opposed to `tsupport f ⊆ K`
   is to make rewriting `f x` to `0` easier when `x ∉ K`.
 * Since the most common case is by far the smooth case, we often reserve the "expected" name
-  of a result/definition to this case, and add `WithOrder` to the declaration taking care of
-  all regularities.
+  of a result/definition to this case, and add `WithOrder` to the declaration applying to
+  any regularity.
 * In `iteratedFDerivWithOrderLM`, we define the `i`-th iterated differentiation operator as
   a map from `𝓓^{n}_{K}` to `𝓓^{k}_{K}` without imposing relations on `n`, `k` and `i`. Of course
   this is defined as `0` if `k + i > n`. This creates some verbosity as all of these variables are
@@ -265,14 +265,18 @@ as a `𝕜`-linear map.
 
 This is subsumed by `toBoundedContinuousFunctionCLM` (not yet in Mathlib), which also bundles the
 continuity. -/
+@[simps -fullyApplied]
 noncomputable def toBoundedContinuousFunctionLM : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ F where
   toFun f := f
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-@[simp]
-lemma toBoundedContinuousFunctionLM_apply (f : 𝓓^{n}_{K}(E, F)) :
-    toBoundedContinuousFunctionLM 𝕜 f = f :=
+-- Workaround for simps' automatic name generation: manually specifying names is not supported yet.
+alias toBoundedContinuousFunctionLM_apply := toBoundedContinuousFunctionLM_apply_apply
+
+lemma toBoundedContinuousFunctionLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
+    [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (toBoundedContinuousFunctionLM 𝕜 : 𝓓^{n}_{K}(E, F) → _) = toBoundedContinuousFunctionLM 𝕜' :=
   rfl
 
 variable (n k) in
@@ -297,8 +301,8 @@ noncomputable def iteratedFDerivWithOrderLM (i : ℕ) :
   toFun f :=
     if hi : k + i ≤ n then
       .of_support_subset
-      (f.contDiff.iteratedFDeriv_right <| by exact_mod_cast hi)
-      ((support_iteratedFDeriv_subset i).trans f.tsupport_subset)
+        (f.contDiff.iteratedFDeriv_right <| by exact_mod_cast hi)
+        ((support_iteratedFDeriv_subset i).trans f.tsupport_subset)
     else 0
   map_add' f g := by
     split_ifs with hi
@@ -319,14 +323,20 @@ lemma iteratedFDerivWithOrderLM_apply {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
   rw [ContDiffMapSupportedIn.iteratedFDerivWithOrderLM]
   split_ifs <;> rfl
 
-lemma iteratedFDerivWithOrderLM_apply_of_le {i : ℕ} (hin : k + i ≤ n) (f : 𝓓^{n}_{K}(E, F)) :
+lemma iteratedFDerivWithOrderLM_apply_of_le {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) (hin : k + i ≤ n) :
     iteratedFDerivWithOrderLM 𝕜 n k i f = iteratedFDeriv ℝ i f := by
   simp [hin]
 
-lemma iteratedFDerivWithOrderLM_apply_of_gt {i : ℕ} (hin : ¬ (k + i ≤ n)) (f : 𝓓^{n}_{K}(E, F)) :
+lemma iteratedFDerivWithOrderLM_apply_of_gt {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) (hin : ¬ (k + i ≤ n)) :
     iteratedFDerivWithOrderLM 𝕜 n k i f = 0 := by
   ext : 1
   simp [hin]
+
+lemma iteratedFDerivWithOrderLM_eq_of_scalars {i : ℕ} (𝕜' : Type*) [NontriviallyNormedField 𝕜']
+    [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (iteratedFDerivWithOrderLM 𝕜 n k i : 𝓓^{n}_{K}(E, F) → _)
+      = iteratedFDerivWithOrderLM 𝕜' n k i :=
+  rfl
 
 /-- `iteratedFDerivLM 𝕜 i` is the `𝕜`-linear-map sending `f : 𝓓_{K}(E, F)` to
 its `i`-th iterated derivative as an element of `𝓓_{K}(E, E [×i]→L[ℝ] F)`.
@@ -354,8 +364,16 @@ lemma iteratedFDerivLM_apply {i : ℕ} (f : 𝓓_{K}(E, F)) :
     iteratedFDerivLM 𝕜 i f = iteratedFDeriv ℝ i f :=
   rfl
 
+/-- Note: this turns out to be a definitional equality thanks to decidablity of the order
+on `ℕ∞`. This means we could have *defined* `iteratedFDerivLM` this way, but we avoid it
+to make sure that `if`s won't appear in the smooth case. -/
 lemma iteratedFDerivLM_eq_withOrder (i : ℕ) :
-    (iteratedFDerivLM 𝕜 i : 𝓓_{K}(E, F) → _) = iteratedFDerivWithOrderLM 𝕜 ⊤ ⊤ i :=
+    (iteratedFDerivLM 𝕜 i : 𝓓_{K}(E, F) →ₗ[𝕜] _) = iteratedFDerivWithOrderLM 𝕜 ⊤ ⊤ i :=
+  rfl
+
+lemma iteratedFDerivLM_eq_of_scalars {i : ℕ} (𝕜' : Type*) [NontriviallyNormedField 𝕜']
+    [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (iteratedFDerivLM 𝕜 i : 𝓓_{K}(E, F) → _) = iteratedFDerivLM 𝕜' i :=
   rfl
 
 variable (n) in
@@ -378,13 +396,17 @@ lemma structureMapLM_eq {i : ℕ} :
       (iteratedFDerivLM 𝕜 i : 𝓓_{K}(E, F) →ₗ[𝕜] 𝓓_{K}(E, E [×i]→L[ℝ] F)) :=
   rfl
 
-lemma structureMapLM_apply_withOrder {i : ℕ} {f : 𝓓^{n}_{K}(E, F)} :
+lemma structureMapLM_apply_withOrder {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
     structureMapLM 𝕜 n i f = if i ≤ n then iteratedFDeriv ℝ i f else 0 := by
-  split_ifs with hi <;> simp [structureMapLM, hi]
+  simp [structureMapLM]
 
-lemma structureMapLM_apply {i : ℕ} {f : 𝓓_{K}(E, F)} :
+lemma structureMapLM_apply {i : ℕ} (f : 𝓓_{K}(E, F)) :
     structureMapLM 𝕜 ⊤ i f = iteratedFDeriv ℝ i f := by
-  rw [structureMapLM_eq]
+  simp [structureMapLM_eq]
+
+lemma structureMapLM_eq_of_scalars {i : ℕ} (𝕜' : Type*) [NontriviallyNormedField 𝕜']
+    [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (structureMapLM 𝕜 n i : 𝓓^{n}_{K}(E, F) → _) = structureMapLM 𝕜' n i :=
   rfl
 
 section Topology
