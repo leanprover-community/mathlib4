@@ -553,8 +553,11 @@ variable [∀ i, Zero (β₁ i)] [∀ i, Zero (β₂ i)]
 theorem zipWith_single_single (f : ∀ i, β₁ i → β₂ i → β i) (hf : ∀ i, f i 0 0 = 0)
     {i} (b₁ : β₁ i) (b₂ : β₂ i) :
     zipWith f hf (single i b₁) (single i b₂) = single i (f i b₁ b₂) := by
-  ext
-  grind [zipWith_apply, single_apply]
+  ext j
+  rw [zipWith_apply]
+  obtain rfl | hij := Decidable.eq_or_ne j i
+  · rw [single_eq_same, single_eq_same, single_eq_same]
+  · rw [single_eq_of_ne hij, single_eq_of_ne hij, single_eq_of_ne hij, hf]
 
 end SingleAndZipWith
 
@@ -920,8 +923,8 @@ variable [∀ i, Zero (β₁ i)] [∀ i, Zero (β₂ i)]
 theorem mapRange_def [∀ (i) (x : β₁ i), Decidable (x ≠ 0)] {f : ∀ i, β₁ i → β₂ i}
     {hf : ∀ i, f i 0 = 0} {g : Π₀ i, β₁ i} :
     mapRange f hf g = mk g.support fun i => f i.1 (g i.1) := by
-  ext
-  grind [mapRange_apply, mk_apply, mem_support_toFun]
+  ext i
+  by_cases h : g i ≠ 0 <;> simp at h <;> simp [h, hf]
 
 @[simp]
 theorem mapRange_single {f : ∀ i, β₁ i → β₂ i} {hf : ∀ i, f i 0 = 0} {i : ι} {b : β₁ i} :
@@ -967,8 +970,9 @@ theorem zipWith_def {ι : Type u} {β : ι → Type v} {β₁ : ι → Type v₁
     [∀ (i : ι) (x : β₁ i), Decidable (x ≠ 0)] [∀ (i : ι) (x : β₂ i), Decidable (x ≠ 0)]
     {f : ∀ i, β₁ i → β₂ i → β i} {hf : ∀ i, f i 0 0 = 0} {g₁ : Π₀ i, β₁ i} {g₂ : Π₀ i, β₂ i} :
     zipWith f hf g₁ g₂ = mk (g₁.support ∪ g₂.support) fun i => f i.1 (g₁ i.1) (g₂ i.1) := by
-  ext
-  grind [zipWith_apply, mk_apply, mem_support_toFun]
+  ext i
+  by_cases h1 : g₁ i ≠ 0 <;> by_cases h2 : g₂ i ≠ 0 <;> simp only [not_not, Ne] at h1 h2 <;>
+    simp [h1, h2, hf]
 
 theorem support_zipWith {f : ∀ i, β₁ i → β₂ i → β i} {hf : ∀ i, f i 0 0 = 0} {g₁ : Π₀ i, β₁ i}
     {g₂ : Π₀ i, β₂ i} : (zipWith f hf g₁ g₂).support ⊆ g₁.support ∪ g₂.support := by
@@ -977,8 +981,8 @@ theorem support_zipWith {f : ∀ i, β₁ i → β₂ i → β i} {hf : ∀ i, f
 end MapRangeAndZipWith
 
 theorem erase_def (i : ι) (f : Π₀ i, β i) : f.erase i = mk (f.support.erase i) fun j => f j.1 := by
-  ext
-  grind [erase_apply, mk_apply, mem_support_toFun]
+  ext j
+  by_cases h1 : j = i <;> by_cases h2 : f j ≠ 0 <;> simp at h2 <;> simp [h1, h2]
 
 @[simp]
 theorem support_erase (i : ι) (f : Π₀ i, β i) : (f.erase i).support = f.support.erase i := by
@@ -1009,8 +1013,7 @@ theorem filter_def (f : Π₀ i, β i) : f.filter p = mk (f.support.filter p) fu
 
 @[simp]
 theorem support_filter (f : Π₀ i, β i) : (f.filter p).support = {x ∈ f.support | p x} := by
-  ext
-  grind [mem_support_toFun, filter_apply]
+  ext i; by_cases h : p i <;> simp [h]
 
 theorem subtypeDomain_def (f : Π₀ i, β i) :
     f.subtypeDomain p = mk (f.support.subtype p) fun i => f i := by
