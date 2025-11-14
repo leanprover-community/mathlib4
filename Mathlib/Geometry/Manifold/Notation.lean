@@ -584,15 +584,14 @@ where
                 -- Try to unify the rhs with an expression m + 1, for a natural number m.
                 -- If we find one, that's the dimension of our model with corners.
                 -- TODO: the following code fails!
-                let a : Q(ℕ) := ← mkFreshExprMVar (some q(ℕ))
-                if ← isDefEqGuarded a q($a + 1) then
-                  let d : Q(ℕ) := ← Lean.instantiateMVars a
-                  return some d
-                else
-                  trace[Elab.DiffGeo.MDiff] "found a fact about `finrank ℝ E`, but the right hand \
-                    side `{rhs}` is not of the form `m + 1` for some `m`: continue the search"
-                  return none
-                  -- TODO: make test for this, where the rhs is something weird!
+                have rhs : Q(ℕ) := rhs
+                match rhs with
+                | ~q($n + 1) =>
+                  trace[Elab.DiffGeo.MDiff] "rhs `{rhs}` is `{n}` + 1"
+                  return some n
+                | _ =>
+                  throwError "found a fact about `finrank ℝ E`, but the right hand \
+                    side `{rhs}` is not of the form `m + 1` for some `m`"
               else
                 trace[Elab.DiffGeo.MDiff] "found a fact about finrank, \
                   but not about `finrank ℝ E`: continue the search"
@@ -602,8 +601,9 @@ where
           | _ => return none
         | _ => return none
       if let some E := (← searchIPSpace) then
-        -- We found a sphere in the inner product space E: search for a `Fact (finrank ℝ E) = m`,
-        -- then the sphere is m-1-dimensional, and modelEuclideanSpace m-1 is our model.
+        -- We found a sphere in the inner product space `E`:
+        -- search for a `Fact (finrank ℝ E) = m + 1`,
+        -- then the sphere is `m`-dimensional, and `modelEuclideanSpace m` is our model.
         let some nE ← factFinder E
           | throwError "Found no fact `finrank ℝ {E} = n + 1` in the local context"
         -- We have not imported `EuclideanSpace` yet, so build an expression by hand.

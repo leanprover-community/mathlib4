@@ -598,43 +598,119 @@ open ContDiff Metric Module
 
 variable [Fact (Module.finrank ℝ E'' = n + 1)]
 
-/-- error: Could not find a model with corners for `↑(sphere 0 1)` -/
+-- TODO: this fails without this line, because we only have an `InnerProductSpace` instance
+variable [NormedSpace ℝ E''] in
+/-- info: ContMDiff (𝓡 n) 𝓘(ℝ, E'') 2 f : Prop -/
 #guard_msgs in
 #check CMDiff 2 f
 
-/-- error: Could not find a model with corners for `↑(sphere 0 1)` -/
+-- TODO: this fails without this line, because we only have an `InnerProductSpace` instance
+variable [NormedSpace ℝ E''] in
+/-- info: ContMDiff (𝓡 n) 𝓘(ℝ, E'') ω f : Prop -/
 #guard_msgs in
 #check CMDiff ω f
 
-/-- error: Could not find a model with corners for `↑(sphere 0 1)` -/
+/-- info: ContMDiff 𝓘(ℝ, ℝ) (𝓡 n) ∞ g : Prop -/
 #guard_msgs in
 #check CMDiff ∞ g
 
-/-- error: Could not find a model with corners for `↑(sphere 0 1)` -/
+/-- info: MDifferentiableAt 𝓘(ℝ, ℝ) (𝓡 n) g 2 : Prop -/
 #guard_msgs in
 #check MDiffAt g 2
--- #check MDifferentiableAt 𝓘(ℝ) (𝓡 n) g 2
 
 end
 
-variable [Fact (Module.finrank ℝ E'' = 2 + 1)] in
-/-- error: Could not find a model with corners for `↑(Metric.sphere 0 1)` -/
-#guard_msgs in
-#check MDiff f
+section
 
+-- TODO: the next three tests fail without this line,
+-- because we only have an `InnerProductSpace` instance for `E''`
+variable [NormedSpace ℝ E'']
+
+-- TODO: these tests are still wrong, as somehow the math instance is not synthesised
 variable [Fact (Module.finrank ℝ E'' = 3)] in
-/-- error: Could not find a model with corners for `↑(Metric.sphere 0 1)` -/
+/--
+error: failed to synthesize
+  ChartedSpace (EuclideanSpace ℝ (Fin 2)) ↑(Metric.sphere 0 1)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#check MDifferentiable (𝓡 2) 𝓘(ℝ, E'') f
+
+variable [Fact (Module.finrank ℝ E'' = 2 + 1)] in
+/--
+error: failed to synthesize
+  ChartedSpace (EuclideanSpace ℝ (Fin 2)) ↑(Metric.sphere 0 1)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
 #guard_msgs in
 #check MDiff f
 
-variable [Fact (Module.finrank ℝ E'' = 2 + 4)] in -- should be 5
-/-- error: Could not find a model with corners for `↑(Metric.sphere 0 1)` -/
+variable [Fact (Module.finrank ℝ E'' = 4 + 1)] in
+/--
+error: failed to synthesize
+  ChartedSpace ℝ ↑(Metric.sphere 0 1)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#check MDifferentiable 𝓘(ℝ) (𝓡 4) f
+
+set_option trace.Elab.Diff true in
+variable [Fact (Module.finrank ℝ E'' = 4 + 1)] in
+/--
+error: failed to synthesize
+  ChartedSpace (EuclideanSpace ℝ (Fin 4)) ↑(Metric.sphere 0 1)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#check MDiff f
+
+-- Note: 3 and 2 + 1 are treated the same \o/
+-- (since our implementation uses qq matching, which does unification).
+variable [Fact (Module.finrank ℝ E'' = 3)] in
+/--
+error: failed to synthesize
+  ChartedSpace (EuclideanSpace ℝ (Fin 2)) ↑(Metric.sphere 0 1)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#check MDiff f
+
+variable [Fact (Module.finrank ℝ E'' = 2 + 4)] in -- should we infer 5 or 2 + 3?
+/--
+error: failed to synthesize
+  ChartedSpace (EuclideanSpace ℝ (Fin (2 + 3))) ↑(Metric.sphere 0 1)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
 #guard_msgs in
 #check MDiff f
 
 -- also fails, i.e. not due to our elaborators
--- variable [Fact (Module.finrank ℝ E'' = 4 + 1)] in
--- #check MDifferentiable 𝓘(ℝ) (𝓡 4) f
+variable [Fact (Module.finrank ℝ E'' = 4 + 1)] in
+/--
+error: failed to synthesize
+  ChartedSpace ℝ ↑(Metric.sphere 0 1)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#check MDifferentiable 𝓘(ℝ) (𝓡 4) f
+
+end
+
+-- TODO: it seems I'm missing support for recognising Euclidean space as a normed space...
+variable {f' : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 3)) 1) → E''}
+
+-- #check MDifferentiable (𝓡 2) 𝓘(ℝ, E'') f' passes
+
+/-- error: Could not find a model with corners for `↑(Metric.sphere 0 1)` -/
+#guard_msgs in
+#check MDiff f'
 
 end sphere
 
