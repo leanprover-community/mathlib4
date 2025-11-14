@@ -425,7 +425,7 @@ example : True := by norm_num1
 -- example : True ∧ True := by norm_num1
 
 /-!
-# Nat operations
+## Nat operations
 -/
 
 section Nat.sub
@@ -465,7 +465,7 @@ example : 1099 / 100 = 10 := by norm_num1
 end Nat.div
 
 /-!
-# Numbers in algebraic structures
+## Numbers in algebraic structures
 -/
 
 noncomputable def foo : ℝ := 1
