@@ -26,6 +26,8 @@ variable {𝕜 E F : Type*}
 variable [SeminormedRing 𝕜] [Zero E] [SMul 𝕜 E]
   [TopologicalSpace E]
 
+/-- A Montel space is a topological vector space that has the Heine-Borel property: every closed and
+(von Neumann) bounded set is compact. -/
 class MontelSpace (𝕜 E : Type*) [SeminormedRing 𝕜] [Zero E] [SMul 𝕜 E]
     [TopologicalSpace E] : Prop where
   heine_borel : ∀ (s : Set E) (_ : IsClosed s) (_ : IsVonNBounded 𝕜 s), IsCompact s
