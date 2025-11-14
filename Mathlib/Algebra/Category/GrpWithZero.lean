@@ -21,6 +21,8 @@ open CategoryTheory
 
 /-- The category of groups with zero. -/
 structure GrpWithZero where
+  /-- Construct a bundled `GrpWithZero` from a `GroupWithZero`. -/
+  of ::
   /-- The underlying group with zero. -/
   carrier : Type*
   [str : GroupWithZero carrier]
@@ -31,10 +33,6 @@ namespace GrpWithZero
 
 instance : CoeSort GrpWithZero Type* :=
   ⟨carrier⟩
-
-/-- Construct a bundled `GrpWithZero` from a `GroupWithZero`. -/
-abbrev of (α : Type*) [GroupWithZero α] : GrpWithZero where
-  carrier := α
 
 instance : Inhabited GrpWithZero :=
   ⟨of (WithZero PUnit)⟩

@@ -19,6 +19,8 @@ open CategoryTheory
 
 /-- The category of bornologies. -/
 structure Born where
+  /-- Construct a bundled `Born` from a `Bornology`. -/
+  of ::
   /-- The underlying bornology. -/
   carrier : Type*
   [str : Bornology carrier]
@@ -29,10 +31,6 @@ namespace Born
 
 instance : CoeSort Born Type* :=
   ⟨carrier⟩
-
-/-- Construct a bundled `Born` from a `Bornology`. -/
-abbrev of (α : Type*) [Bornology α] : Born where
-  carrier := α
 
 instance : Inhabited Born :=
   ⟨of PUnit⟩

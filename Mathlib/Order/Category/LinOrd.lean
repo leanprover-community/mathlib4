@@ -18,6 +18,8 @@ universe u
 
 /-- The category of linear orders. -/
 structure LinOrd where
+  /-- Construct a bundled `LinOrd` from the underlying type and typeclass. -/
+  of ::
   /-- The underlying linearly ordered type. -/
   (carrier : Type*)
   [str : LinearOrder carrier]
@@ -32,9 +34,6 @@ instance : CoeSort LinOrd (Type _) :=
   ⟨LinOrd.carrier⟩
 
 attribute [coe] LinOrd.carrier
-
-/-- Construct a bundled `LinOrd` from the underlying type and typeclass. -/
-abbrev of (X : Type*) [LinearOrder X] : LinOrd := ⟨X⟩
 
 /-- The type of morphisms in `LinOrd R`. -/
 @[ext]

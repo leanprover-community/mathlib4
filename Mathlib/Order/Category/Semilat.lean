@@ -24,6 +24,8 @@ open CategoryTheory
 
 /-- The category of sup-semilattices with a bottom element. -/
 structure SemilatSupCat : Type (u + 1) where
+  /-- Construct a bundled `SemilatSupCat` from a `SemilatticeSup`. -/
+  of ::
   /-- The underlying type of a sup-semilattice with a bottom element. -/
   protected X : Type u
   [isSemilatticeSup : SemilatticeSup X]
@@ -31,6 +33,8 @@ structure SemilatSupCat : Type (u + 1) where
 
 /-- The category of inf-semilattices with a top element. -/
 structure SemilatInfCat : Type (u + 1) where
+  /-- Construct a bundled `SemilatInfCat` from a `SemilatticeInf`. -/
+  of ::
   /-- The underlying type of an inf-semilattice with a top element. -/
   protected X : Type u
   [isSemilatticeInf : SemilatticeInf X]
@@ -42,10 +46,6 @@ instance : CoeSort SemilatSupCat Type* :=
   ⟨SemilatSupCat.X⟩
 
 attribute [instance] isSemilatticeSup isOrderBot
-
-/-- Construct a bundled `SemilatSupCat` from a `SemilatticeSup`. -/
-abbrev of (α : Type*) [SemilatticeSup α] [OrderBot α] : SemilatSupCat :=
-  ⟨α⟩
 
 theorem coe_of (α : Type*) [SemilatticeSup α] [OrderBot α] : ↥(of α) = α :=
   rfl
@@ -82,10 +82,6 @@ instance : CoeSort SemilatInfCat Type* :=
   ⟨SemilatInfCat.X⟩
 
 attribute [instance] isSemilatticeInf isOrderTop
-
-/-- Construct a bundled `SemilatInfCat` from a `SemilatticeInf`. -/
-abbrev of (α : Type*) [SemilatticeInf α] [OrderTop α] : SemilatInfCat :=
-  ⟨α⟩
 
 theorem coe_of (α : Type*) [SemilatticeInf α] [OrderTop α] : ↥(of α) = α :=
   rfl

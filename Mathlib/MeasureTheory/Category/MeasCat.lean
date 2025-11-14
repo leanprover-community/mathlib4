@@ -37,6 +37,8 @@ universe u v
 
 /-- The category of measurable spaces and measurable functions. -/
 structure MeasCat : Type (u + 1) where
+  /-- Construct a bundled `MeasCat` from the underlying type and the typeclass. -/
+  of ::
   /-- The underlying measurable space. -/
   carrier : Type u
   [str : MeasurableSpace carrier]
@@ -47,10 +49,6 @@ namespace MeasCat
 
 instance : CoeSort MeasCat Type* :=
   ⟨carrier⟩
-
-/-- Construct a bundled `MeasCat` from the underlying type and the typeclass. -/
-abbrev of (α : Type u) [ms : MeasurableSpace α] : MeasCat where
-  carrier := α
 
 theorem coe_of (X : Type u) [MeasurableSpace X] : (of X : Type u) = X :=
   rfl
