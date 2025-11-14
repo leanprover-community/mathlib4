@@ -65,7 +65,7 @@ def RegularMono.ofIso (e : X ≅ Y) : RegularMono e.hom where
   left := 𝟙 Y
   right := 𝟙 Y
   isLimit := Fork.IsLimit.mk _ (fun s ↦ s.ι ≫ e.inv) (by simp) fun s m w ↦ by
-    dsimp; rw [← w]; simp
+    simp [← w]
 
 /-- Regular monomorphisms are preserved by isomorphisms in the arrow category. -/
 def RegularMono.ofArrowIso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
@@ -102,7 +102,7 @@ instance MorphismProperty.regularMono.respectsIso :
 
 instance isRegularMono_of_regularMono (f : X ⟶ Y) [h : RegularMono f] : IsRegularMono f := ⟨h⟩
 
-instance (priority := low) regularMonoOfIsRegularMono (f : X ⟶ Y) [h : IsRegularMono f] :
+def regularMonoOfIsRegularMono (f : X ⟶ Y) [h : IsRegularMono f] :
     RegularMono f :=
   h.some
 
@@ -238,7 +238,7 @@ def RegularEpi.ofIso (e : X ≅ Y) : RegularEpi e.hom where
   left := 𝟙 X
   right := 𝟙 X
   isColimit := Cofork.IsColimit.mk _ (fun s ↦ e.inv ≫ s.π) (by simp) fun s m w ↦ by
-    dsimp; rw [← w]; simp
+    simp [← w]
 
 /-- Regular epimorphisms are preserved by isomorphisms in the arrow category. -/
 def RegularEpi.ofArrowIso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
@@ -275,7 +275,7 @@ instance MorphismProperty.regularEpi.respectsIso :
 
 instance isRegularEpi_of_regularEpi (f : X ⟶ Y) [h : RegularEpi f] : IsRegularEpi f := ⟨h⟩
 
-instance (priority := low) regularEpiOfIsRegularEpi (f : X ⟶ Y) [h : IsRegularEpi f] :
+def regularEpiOfIsRegularEpi (f : X ⟶ Y) [h : IsRegularEpi f] :
     RegularEpi f :=
   h.some
 
