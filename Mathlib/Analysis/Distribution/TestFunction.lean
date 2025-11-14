@@ -12,7 +12,7 @@ import Mathlib.Topology.ContinuousMap.Bounded.Normed
 
 This file develops the basic theory of bundled `n`-times continuously differentiable functions
 with compact support contained in some open set `Ω`. More explicitly, given normed spaces `E`
-and `F`, an open set `Ω : Opens E` and `n : ℕ∞`, we are interested is the space `𝓓^{n}(Ω, F)` of
+and `F`, an open set `Ω : Opens E` and `n : ℕ∞`, we are interested in the space `𝓓^{n}(Ω, F)` of
 maps `f : E → F` such that:
 
 - `f` is `n`-times continuously differentiable: `ContDiff ℝ n f`.
@@ -37,20 +37,20 @@ distributions, or "weak solutions" to PDEs, on `Ω`.
 
 ## Tags
 
-distributions
+distributions, test function
 -/
 
-open TopologicalSpace SeminormFamily Set Function Seminorm UniformSpace
-open scoped BoundedContinuousFunction Topology NNReal
+open Function Seminorm SeminormFamily Set TopologicalSpace UniformSpace
+open scoped BoundedContinuousFunction NNReal Topology
 
-variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : Opens E)
-variable (F : Type*) [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 variable [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 variable {n : ℕ∞}
 
-variable (n) in
-/-- The type of bundled `n`-times continuously differentiable maps with compact support. -/
+variable (𝕜 Ω F n) in
+/-- The type of bundled `n`-times continuously differentiable maps with compact support -/
 structure TestFunction : Type _ where
   /-- The underlying function. Use coercion instead. -/
   protected toFun : E → F
@@ -60,17 +60,15 @@ structure TestFunction : Type _ where
 
 /-- Notation for the space of bundled `n`-times continuously differentiable maps
 with compact support. -/
-scoped[Distributions] notation "𝓓^{" n "}(" Ω ", " F ")" =>
-  TestFunction Ω F n
+scoped[Distributions] notation "𝓓^{" n "}(" Ω ", " F ")" => TestFunction Ω F n
 
 /-- Notation for the space of "test functions", i.e. bundled smooth (infinitely differentiable) maps
 with compact support. -/
-scoped[Distributions] notation "𝓓(" Ω ", " F ")" =>
-  TestFunction Ω F ⊤
+scoped[Distributions] notation "𝓓(" Ω ", " F ")" => TestFunction Ω F ⊤
 
 open Distributions
 
-/-- `TestFunctionClass B Ω F n K` states that `B` is a type of `n`-times continously
+/-- `TestFunctionClass B Ω F n` states that `B` is a type of `n`-times continously
 differentiable functions `E → F` with compact support contained in `Ω : Opens E`. -/
 class TestFunctionClass (B : Type*)
     {E : outParam <| Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (Ω : outParam <| Opens E)
@@ -97,23 +95,19 @@ instance (B : Type*)
     (n : outParam ℕ∞) [TestFunctionClass B Ω F n] :
     BoundedContinuousMapClass B E F where
   map_bounded f := by
-    rcases (map_continuous f).bounded_above_of_compact_support (map_hasCompactSupport f) with
-      ⟨C, hC⟩
+    obtain ⟨C, hC⟩ := (map_continuous f).bounded_above_of_compact_support (map_hasCompactSupport f)
     exact map_bounded (BoundedContinuousFunction.ofNormedAddCommGroup f (map_continuous f) C hC)
 
 end TestFunctionClass
 
 namespace TestFunction
 
-instance toTestFunctionClass :
-    TestFunctionClass 𝓓^{n}(Ω, F) Ω F n where
+instance toTestFunctionClass : TestFunctionClass 𝓓^{n}(Ω, F) Ω F n where
   coe f := f.toFun
   coe_injective' f g h := by cases f; cases g; congr
   map_contDiff f := f.contDiff'
   map_hasCompactSupport f := f.hasCompactSupport'
   tsupport_map_subset f := f.tsupport_subset'
-
-variable {Ω F}
 
 protected theorem contDiff (f : 𝓓^{n}(Ω, F)) : ContDiff ℝ n f := map_contDiff f
 protected theorem hasCompactSupport (f : 𝓓^{n}(Ω, F)) : HasCompactSupport f :=
@@ -150,7 +144,7 @@ theorem copy_eq (f : 𝓓^{n}(Ω, F)) (f' : E → F) (h : f' = f) : f.copy f' h 
 
 @[simp]
 theorem coe_toBoundedContinuousFunction (f : 𝓓^{n}(Ω, F)) :
-   (f : BoundedContinuousFunction E F)  = (f : E → F) := rfl
+    (f : BoundedContinuousFunction E F) = (f : E → F) := rfl
 
 section AddCommGroup
 
