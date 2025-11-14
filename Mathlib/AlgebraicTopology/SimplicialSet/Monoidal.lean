@@ -21,7 +21,7 @@ category structure on `SSet`.
 
 universe u
 
-open Simplicial CategoryTheory MonoidalCategory Limits
+open Simplicial CategoryTheory MonoidalCategory Limits SimplicialObject.Truncated
 
 namespace SSet
 
@@ -99,5 +99,34 @@ def stdSimplex.isTerminalObj₀ : IsTerminal (Δ[0] : SSet.{u}) :=
 @[ext]
 lemma stdSimplex.ext₀ {X : SSet.{u}} {f g : X ⟶ Δ[0]} : f = g :=
   isTerminalObj₀.hom_ext _ _
+
+namespace Truncated
+
+variable (n : ℕ)
+
+open MonoidalCategory
+
+instance : CartesianMonoidalCategory (Truncated.{u} n) :=
+  (inferInstance : CartesianMonoidalCategory (_ ⥤ Type u))
+
+instance : MonoidalClosed (Truncated.{u} n) :=
+  inferInstanceAs (MonoidalClosed (_ ⥤ Type u))
+
+instance : (truncation.{u} n).Monoidal :=
+  inferInstanceAs ((Functor.whiskeringLeft _ _ _).obj _).Monoidal
+
+variable {n} {X Y : Truncated.{u} n}
+
+@[simp]
+lemma tensor_map_apply_fst {d e : (SimplexCategory.Truncated n)ᵒᵖ}
+    (f : d ⟶ e) (x : (X ⊗ Y : Truncated _).obj d) :
+    ((X ⊗ Y : Truncated _).map f x).1 = X.map f x.1 := rfl
+
+@[simp]
+lemma tensor_map_apply_snd {d e : (SimplexCategory.Truncated n)ᵒᵖ}
+    (f : d ⟶ e) (x : (X ⊗ Y : Truncated _).obj d) :
+    ((X ⊗ Y : Truncated _).map f x).2 = Y.map f x.2 := rfl
+
+end Truncated
 
 end SSet

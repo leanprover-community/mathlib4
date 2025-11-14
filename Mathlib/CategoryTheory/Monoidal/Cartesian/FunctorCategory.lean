@@ -188,6 +188,28 @@ protected def RepresentableBy.tensorObj {F : Cᵒᵖ ⥤ Type v} {G : Cᵒᵖ �
     · change h₂.homEquiv ((f ≫ g) ≫ snd X Y) = G.map f.op (h₂.homEquiv (g ≫ snd X Y))
       simp [h₂.homEquiv_comp]
 
+instance {J' : Type*} [Category J'] (F : J ⥤ J') :
+    ((Functor.whiskeringLeft J J' C).obj F).Monoidal :=
+  Functor.CoreMonoidal.toMonoidal
+    { εIso := Iso.refl _
+      μIso _ _ := Iso.refl _
+      μIso_hom_natural_left f G := by
+        ext
+        dsimp
+        ext
+        · simp only [comp_id, id_comp, whiskerRight_app_fst]
+          apply whiskerRight_app_fst
+        · simp only [comp_id, id_comp, whiskerRight_app_snd]
+          apply whiskerRight_app_snd
+      μIso_hom_natural_right G f := by
+        ext
+        dsimp
+        ext
+        · simp only [comp_id, id_comp, whiskerLeft_app_fst]
+          apply whiskerLeft_app_fst
+        · simp only [comp_id, id_comp, whiskerLeft_app_snd]
+          apply whiskerLeft_app_snd }
+
 end Monoidal
 
 end Functor

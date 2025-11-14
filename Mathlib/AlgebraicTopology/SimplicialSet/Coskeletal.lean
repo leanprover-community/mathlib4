@@ -69,14 +69,14 @@ noncomputable def lift {X : SSet.{u}} (sx : StrictSegal X) {n}
     arrow_src := fun i ↦ by
       let φ : strArrowMk₂ (mkOfLe _ _ (Fin.castSucc_le_succ i)) ⟶
         strArrowMk₂ (⦋0⦌.const _ i.castSucc) :=
-          StructuredArrow.homMk (δ 1).op
+          StructuredArrow.homMk (SimplexCategory.δ 1).op
           (Quiver.Hom.unop_inj (by ext x; fin_cases x; rfl))
       exact congr_fun (s.w φ) x
     arrow_tgt := fun i ↦ by
       dsimp
       let φ : strArrowMk₂ (mkOfLe _ _ (Fin.castSucc_le_succ i)) ⟶
           strArrowMk₂ (⦋0⦌.const _ i.succ) :=
-        StructuredArrow.homMk (δ 0).op
+        StructuredArrow.homMk (SimplexCategory.δ 0).op
           (Quiver.Hom.unop_inj (by ext x; fin_cases x; rfl))
       exact congr_fun (s.w φ) x }
 
@@ -127,7 +127,7 @@ lemma fac_aux₂ {n : ℕ}
       let α₂ := strArrowMk₂ (mkOfLe (n := n) ⟨i, by cutsat⟩ ⟨i + k, by cutsat⟩ (by simp))
       let β₀ : α ⟶ α₀ := StructuredArrow.homMk ((mkOfSucc 1).op) (Quiver.Hom.unop_inj
         (by ext x; fin_cases x <;> rfl))
-      let β₁ : α ⟶ α₁ := StructuredArrow.homMk ((δ 1).op) (Quiver.Hom.unop_inj
+      let β₁ : α ⟶ α₁ := StructuredArrow.homMk ((SimplexCategory.δ 1).op) (Quiver.Hom.unop_inj
         (by ext x; fin_cases x <;> rfl))
       let β₂ : α ⟶ α₂ := StructuredArrow.homMk ((mkOfSucc 0).op) (Quiver.Hom.unop_inj
         (by ext x; fin_cases x <;> rfl))
@@ -242,6 +242,10 @@ instance (C : Type u) [Category.{v} C] :
 /-- The essential data of the nerve functor is contained in the 2-truncation, which is
 recorded by the composite functor `nerveFunctor₂`. -/
 def nerveFunctor₂ : Cat.{v, u} ⥤ SSet.Truncated 2 := nerveFunctor ⋙ truncation 2
+
+instance (X : Cat.{v, u}) : (nerveFunctor₂.obj X).IsStrictSegal := by
+  dsimp [nerveFunctor₂]
+  infer_instance
 
 /-- The natural isomorphism between `nerveFunctor` and `nerveFunctor₂ ⋙ Truncated.cosk 2` whose
 components `nerve C ≅ (Truncated.cosk 2).obj (nerveFunctor₂.obj C)` shows that nerves of categories

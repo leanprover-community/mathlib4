@@ -104,6 +104,10 @@ def flipping : C ⥤ D ⥤ E ≌ D ⥤ C ⥤ E where
 def fullyFaithfulUncurry : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).FullyFaithful :=
   currying.fullyFaithfulFunctor
 
+/-- The functor `curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E` is fully faithful. -/
+def fullyFaithfulCurry : (curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E).FullyFaithful :=
+  currying.fullyFaithfulInverse
+
 instance : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).Full :=
   fullyFaithfulUncurry.full
 
