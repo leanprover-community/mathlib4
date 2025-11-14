@@ -271,21 +271,21 @@ def freeForgetAdjunction : free ⊣ Grpd.forgetToCat :=
 variable {C : Cat.{u, u}} {D : Grpd.{u, u}}
 
 lemma freeForgetAdjunction_homEquiv_apply (F : FreeGroupoid C ⥤ D) :
-    freeForgetAdjunction.homEquiv C (Grpd.of D) F = FreeGroupoid.of C ⋙ F :=
+    freeForgetAdjunction.homEquiv C D F = FreeGroupoid.of C ⋙ F :=
   rfl
 
 @[simp]
 lemma freeForgetAdjunction_homEquiv_apply_obj (F : FreeGroupoid C ⥤ D) (X : C) :
-    (freeForgetAdjunction.homEquiv C (Grpd.of D) F).obj X = F.obj (mk X) :=
+    (freeForgetAdjunction.homEquiv C D F).obj X = F.obj (mk X) :=
   rfl
 
 @[simp]
 lemma freeForgetAdjunction_homEquiv_apply_map (F : FreeGroupoid C ⥤ D) {X Y : C} (f : X ⟶ Y) :
-    (freeForgetAdjunction.homEquiv C (Grpd.of D) F).map f = F.map (homMk f) :=
+    (freeForgetAdjunction.homEquiv C D F).map f = F.map (homMk f) :=
   rfl
 
 lemma freeForgetAdjunction_homEquiv_symm_apply (F : C ⥤ forgetToCat.obj D) :
-    (freeForgetAdjunction.homEquiv (Cat.of C) D).symm F = FreeGroupoid.lift F := by
+    (freeForgetAdjunction.homEquiv C D).symm F = FreeGroupoid.lift F := by
   simp [freeForgetAdjunction, functorEquiv]
 
 @[simp]
