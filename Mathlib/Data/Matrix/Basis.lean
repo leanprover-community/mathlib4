@@ -32,6 +32,10 @@ def single (i : m) (j : n) (a : α) : Matrix m n α :=
 
 @[deprecated (since := "2025-05-05")] alias stdBasisMatrix := single
 
+lemma single_def (i : m) (j : n) (a : α) :
+    single i j a = of (fun i' j' => if i = i' ∧ j = j' then a else 0) :=
+  rfl
+
 /-- See also `single_eq_updateRow_zero` and `single_eq_updateCol_zero`. -/
 theorem single_eq_of_single_single (i : m) (j : n) (a : α) :
     single i j a = Matrix.of (Pi.single i (Pi.single j a)) := by
@@ -107,6 +111,14 @@ theorem single_mulVec [NonUnitalNonAssocSemiring α] [Fintype m]
   simp [h, h.symm]
 
 @[deprecated (since := "2025-05-05")] alias mulVec_stdBasisMatrix := single_mulVec
+
+lemma diagonal_eq_sum_single {R : Type*} [AddCommMonoid R] {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (f : ι → R) : Matrix.diagonal f = ∑ i : ι, single i i (f i) := ext fun j k ↦ by
+  rw [sum_apply, diagonal_apply, Finset.sum_eq_single j] <;> simp +contextual [single]
+
+lemma one_eq_sum_single {R : Type*} [AddCommMonoidWithOne R] {ι : Type*} [Fintype ι]
+    [DecidableEq ι] : (1 : Matrix ι ι R) = ∑ i : ι, single i i 1 :=
+  diagonal_eq_sum_single _
 
 theorem matrix_eq_sum_single [AddCommMonoid α] [Fintype m] [Fintype n] (x : Matrix m n α) :
     x = ∑ i : m, ∑ j : n, single i j (x i j) := by
@@ -238,6 +250,8 @@ end ext
 section
 
 variable [Zero α] (i : m) (j : n) (c : α) (i' : m) (j' : n)
+
+lemma single_apply : single i j c i' j' = if i = i' ∧ j = j' then c else 0 := rfl
 
 @[simp]
 theorem single_apply_same : single i j c i j = c :=
