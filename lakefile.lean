@@ -184,11 +184,3 @@ post_update pkg do
       IO.Process.setCurrentDir cwd
     if exitCode ≠ 0 then
       error s!"{pkg.name}: failed to fetch cache"
-#eval Lean.versionString
-#eval do
-  let toolchainFile := "lean-toolchain"
-  let toolchainContent ← IO.FS.readFile toolchainFile
-  let toolchainVersion := match toolchainContent.trim.splitOn ":" with
-    | [_, version] => version
-    | _ => toolchainContent.trim
-  return toolchainVersion
