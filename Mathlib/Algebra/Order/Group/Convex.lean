@@ -33,6 +33,10 @@ variable (α) in
 @[to_additive (attr := ext)] structure ConvexSubgroup extends Subgroup α where
   convex : IsConvexSubgroup toSubgroup
 
+@[to_additive] lemma ConvexSubgroup.toSubgroup_injective :
+    Function.Injective (ConvexSubgroup.toSubgroup : ConvexSubgroup α → Subgroup α) :=
+  fun ⟨_, _⟩ ⟨_, _⟩ ↦ by simp
+
 section
 
 variable [IsOrderedMonoid α]
@@ -88,8 +92,60 @@ variable [IsOrderedMonoid α]
     exacts [bG (G.convex le hb aG), aH (H.convex le ha bH)]
   toDecidableLE := Classical.decRel _
 
+-- TODO: Max and Min needs to go into LinearOrder
+@[to_additive] instance : Max (ConvexSubgroup α) where
+  max G H :=
+    have : (G : Set α) ∪ H = if G ≤ H then H else G := by
+      split_ifs with h
+      · simpa
+      · simpa using le_of_not_ge h
+    { carrier := G ∪ H
+      mul_mem' := by simp+contextual [this, mul_mem]
+      one_mem' := by simp
+      inv_mem' := by simp
+      convex := by simpa [IsConvexSubgroup, this] using ConvexSubgroup.convex _ }
+
+@[to_additive] instance : Min (ConvexSubgroup α) where
+  min G H := .mk (G.toSubgroup ⊓ H.toSubgroup)
+    fun _a _b hab hb1 ha ↦ ⟨G.convex hab hb1 ha.1, H.convex hab hb1 ha.2⟩
+
+@[to_additive] instance : SupSet (ConvexSubgroup α) where
+  sSup s :=
+  { carrier := {1} ∪ ⋃ G ∈ s, G
+    mul_mem' ha hb := by
+      rw [Set.mem_union, Set.mem_iUnion₂] at ha hb ⊢
+      obtain rfl | ⟨G, hG, haG⟩ := ha; · simpa using hb
+      obtain rfl | ⟨H, hH, hbH⟩ := hb; · simpa using .inr ⟨G, hG, haG⟩
+      right
+      obtain le | le := le_total G H
+      exacts [⟨H, hH, mul_mem (le haG) hbH⟩, ⟨G, hG, mul_mem haG (le hbH)⟩]
+    inv_mem' := by simp
+    one_mem' := by simp
+    convex a b hab hb1 := by
+      rintro (rfl | ex)
+      · exact .inl (hb1.antisymm hab)
+      obtain ⟨G, hG, haG⟩ := Set.mem_iUnion₂.mp ex
+      exact .inr <| Set.mem_iUnion₂.mpr ⟨G, hG, G.convex hab hb1 haG⟩ }
+
+@[to_additive] instance : InfSet (ConvexSubgroup α) where
+  sInf s := .mk (⨅ G : s, G.1.toSubgroup) fun a b hab hb1 ha ↦ by
+    rw [Subgroup.mem_iInf] at ha ⊢
+    exact fun G ↦ G.1.convex hab hb1 (ha G)
+
+@[to_additive] instance : Top (ConvexSubgroup α) where
+  top := .mk ⊤ fun _ _ _ _ _ ↦ ⟨⟩
+
+@[to_additive] instance : Bot (ConvexSubgroup α) where
+  bot := .mk ⊥ fun _a _b hab hb1 ha ↦ hb1.antisymm (ha.ge.trans hab)
+
 -- TODO: CompleteLinearOrder
--- Function.Injective.completeLattice
+@[to_additive] instance : CompleteLattice (ConvexSubgroup α) := by
+  refine ConvexSubgroup.toSubgroup_injective.completeLattice _
+    (fun G H ↦ le_antisymm ?_ ?_) (fun _ _ ↦ rfl) (fun _ ↦ ?_) (fun _ ↦ ?_) rfl rfl
+  · rintro a (ha | ha); exacts [G.mem_sup_left ha, G.mem_sup_right ha]
+  · sorry -- refine sup_le (le_sup_left (a := G) (b := H)) (le_sup_right (a := G) (b := H))
+  · sorry
+  · sorry
 
 variable (G : ConvexSubgroup α)
 
@@ -139,10 +195,6 @@ variable (G : ConvexSubgroup α)
 
 section ToBeMoved
 
-@[to_additive (attr := simp)]
-theorem Subgroup.mabs_mem_iff {G : Subgroup α} {a : α} : |a|ₘ ∈ G ↔ a ∈ G := by
-  obtain ⟨h, -⟩ | ⟨h, -⟩ := mabs_cases a <;> simp [h]
-
 @[to_additive] theorem FiniteMulArchimedeanClass.min_le_mk_mul (a b : α) (ha : a ≠ 1) (hb : b ≠ 1)
     (hab : a * b ≠ 1) : min (mk a ha) (mk b hb) ≤ mk (a * b) hab :=
   MulArchimedeanClass.min_le_mk_mul a b
@@ -157,9 +209,8 @@ theorem Subgroup.mabs_mem_iff {G : Subgroup α} {a : α} : |a|ₘ ∈ G ↔ a �
     (haG : a ∈ G) : b ∈ G := by
   rw [FiniteMulArchimedeanClass.mk_le_mk, MulArchimedeanClass.mk_le_mk] at le
   have ⟨n, le⟩ := le
-  refine G.toSubgroup.mabs_mem_iff.mp ?_
-  exact (IsConvexSubgroup.iff_ordConnected.mp G.convex).1 G.one_mem (G.pow_mem (by simpa) _)
-    ⟨one_le_mabs _, le⟩
+  exact mabs_mem_iff.mp <| (IsConvexSubgroup.iff_ordConnected.mp G.convex).1
+    G.one_mem (G.pow_mem (by simpa) _) ⟨one_le_mabs _, le⟩
 
 noncomputable def UpperSet.orderIsoWithTopOfFinite {α} [LinearOrder α] [Finite α] :
     UpperSet α ≃o WithTop α :=
@@ -197,7 +248,7 @@ upper sets of `FiniteArchimedeanClass`es. -/] def ConvexSubgroup.equivUpperSet :
     rintro ⟨a, ha1, haG, rfl⟩
     revert y
     refine FiniteMulArchimedeanClass.ind fun b hb1 le ↦ ?_
-    exact ⟨b, hb1, G.toSubgroup.mabs_mem_iff.mp <| by
+    exact ⟨b, hb1, mabs_mem_iff.mp <| by
       simpa using G.mem_of_finiteMulArchimedeanClass_mk_le le haG, rfl⟩
   invFun s := .mk s.finiteMulArchimedeanClassToSubgroup fun a b hab b_le ha b_ne ↦
     s.upper (MulArchimedeanClass.mk_monotoneOn (hab.trans b_le) b_le hab)
@@ -297,6 +348,5 @@ lemma MulArchimedean.tfae (h : Nontrivial α) : List.TFAE
   tfae_have 1 ↔ 2 := by sorry--mulArchimedean_iff_height_le_one
   tfae_have 1 ↔ 3 := by sorry--mulArchimedean_iff_exists_orderMonoidHom
   tfae_finish
-
 
 end
