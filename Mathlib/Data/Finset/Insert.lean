@@ -7,6 +7,7 @@ import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Finset.Dedup
 import Mathlib.Data.Finset.Empty
 import Mathlib.Data.Multiset.FinsetOps
+import Mathlib.Util.Delaborators
 
 /-!
 # Constructing finite sets by adding one element

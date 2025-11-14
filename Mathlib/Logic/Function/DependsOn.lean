@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
 import Mathlib.Data.Set.Restrict
+import Mathlib.Util.Delaborators
 
 /-!
 # Functions depending only on some variables

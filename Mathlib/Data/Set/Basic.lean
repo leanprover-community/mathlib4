@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Order.PropInstances
-import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Lift
 import Mathlib.Tactic.Tauto
-import Mathlib.Util.Delaborators
 
 /-!
 # Basic properties of sets

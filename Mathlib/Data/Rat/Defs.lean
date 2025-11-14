@@ -7,8 +7,7 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Rat.Init
 import Mathlib.Order.Basic
-import Mathlib.Tactic.Coe
-import Mathlib.Tactic.Lift
+import Mathlib.Tactic.Common
 
 /-!
 # Basics for the Rational Numbers
