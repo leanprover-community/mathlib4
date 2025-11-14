@@ -423,6 +423,9 @@ abbrev AsModule (M : Pic R) : Type u := ((equivShrink _).symm M).val
 
 noncomputable instance : CoeSort (Pic R) (Type u) := ⟨AsModule⟩
 
+noncomputable instance (R) [CommRing R] (M : Pic R) : AddCommGroup M :=
+  Module.addCommMonoidToAddCommGroup R
+
 private noncomputable def equivShrinkLinearEquiv (M : (Skeleton <| SemimoduleCat.{u} R)ˣ) :
     (id <| equivShrink _ M : Pic R) ≃ₗ[R] M :=
   have {M N : Skeleton (SemimoduleCat.{u} R)} : M = N → M ≃ₗ[R] N := by rintro rfl; exact .refl ..
