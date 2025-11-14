@@ -1,11 +1,11 @@
 import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Geometry.Manifold.Instances.Sphere
 
-/-- error: Goal is not of the form `ModelWithCorners 𝕜 E H -/
+/-- error: Goal is not of the form `ModelWithCorners 𝕜 E H` -/
 #guard_msgs in
 #find_model true
 
-/-- error: Goal is not of the form `ModelWithCorners 𝕜 E H -/
+/-- error: Goal is not of the form `ModelWithCorners 𝕜 E H` -/
 #guard_msgs in
 #find_model (2 + 2 = true)
 
@@ -20,11 +20,11 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} {E :
 -- or make #find_model print the model it found!
 set_option linter.hashCommand false
 
-/-- error: Goal is not of the form `ModelWithCorners 𝕜 E H -/
+/-- error: Goal is not of the form `ModelWithCorners 𝕜 E H` -/
 #guard_msgs in
 #find_model M
 
-/-- error: Goal is not of the form `ModelWithCorners 𝕜 E H -/
+/-- error: Goal is not of the form `ModelWithCorners 𝕜 E H` -/
 #guard_msgs in
 #find_model (ModelWithCorners 𝕜)
 
