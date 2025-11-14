@@ -897,7 +897,7 @@ lemma _root_.MeasurableEquiv.comap_apply (e : α ≃ᵐ β) (μ : Measure β) (s
 
 end MeasurableEmbedding
 
-lemma MeasureTheory.Measure.map_eq_comap [MeasurableSpace α] [MeasurableSpace β] {f : α → β}
+lemma MeasureTheory.Measure.map_eq_comap {_ : MeasurableSpace α} {_ : MeasurableSpace β} {f : α → β}
     {g : β → α} {μ : Measure α} (hf : Measurable f) (hg : MeasurableEmbedding g)
     (hμg : ∀ᵐ a ∂μ, a ∈ Set.range g) (hfg : ∀ a, f (g a) = a) : μ.map f = μ.comap g := by
   ext s hs
