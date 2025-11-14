@@ -96,7 +96,7 @@ def MorphismProperty.regularMono : MorphismProperty C := fun _ _ f => IsRegularM
 @[simp]
 theorem MorphismProperty.regularMono_iff (f : X ⟶ Y) :
     (MorphismProperty.regularMono C) f ↔ IsRegularMono f :=
-  by rfl
+  Iff.rfl
 
 instance MorphismProperty.regularMono.containsIdentities :
     (MorphismProperty.regularMono C).ContainsIdentities where
@@ -270,7 +270,7 @@ def MorphismProperty.regularEpi : MorphismProperty C := fun _ _ f => IsRegularEp
 @[simp]
 theorem MorphismProperty.regularEpi_iff (f : X ⟶ Y) :
     (MorphismProperty.regularEpi C) f ↔ IsRegularEpi f :=
-  by rfl
+  Iff.rfl
 
 instance MorphismProperty.regularEpi.containsIdentities :
     (MorphismProperty.regularEpi C).ContainsIdentities where
