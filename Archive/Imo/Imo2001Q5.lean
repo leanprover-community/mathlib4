@@ -11,7 +11,7 @@ import Mathlib.Geometry.Euclidean.Triangle
 Let `ABC` be a triangle. Let `AP` bisect `∠BAC` and let `BQ` bisect `∠ABC`, with `P` on `BC` and
 `Q` on `AC`. If `AB + BP = AQ + QB` and `∠BAC = 60°`, what are the angles of the triangle?
 
-# Solution
+## Solution
 
 We follow the solution from https://web.evanchen.cc/exams/IMO-2001-notes.pdf.
 
