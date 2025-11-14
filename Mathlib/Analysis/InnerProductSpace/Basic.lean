@@ -808,7 +808,6 @@ theorem neg_one_le_real_inner_of_norm_one {x y : F} (hx : ‖x‖ = 1) (hy : ‖
     -1 ≤ ⟪x, y⟫_ℝ := by
   simpa [hx, hy] using neg_le_of_abs_le (abs_real_inner_le_norm x y)
 
-@[simp]
 theorem inner_self_eq_one_of_norm_one {x : E} (hx : ‖x‖ = 1) : ⟪x, x⟫_𝕜 = 1 :=
   (inner_eq_one_iff_of_norm_one hx hx).mpr rfl
 
