@@ -368,7 +368,7 @@ Analysis:
     Schwartz space: 'SchwartzMap'
 
   Fourier analysis:
-    Fourier transform as an integral: 'Real.fourierIntegral'
+    Fourier transform as an integral: 'Real.fourierIntegral_eq'
     inversion formula: 'Continuous.fourier_inversion'
     Riemann-Lebesgue lemma: 'tendsto_integral_exp_inner_smul_cocompact'
     Parseval formula for Fourier series: 'tsum_sq_fourierCoeff'
