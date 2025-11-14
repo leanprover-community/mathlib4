@@ -6,6 +6,7 @@ Authors: Rémy Degenne, Etienne Marion
 import Mathlib.Analysis.InnerProductSpace.Positive
 import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 import Mathlib.MeasureTheory.SpecificCodomains.WithLp
+import Mathlib.Probability.Moments.Basic
 import Mathlib.Probability.Moments.CovarianceBilinDual
 
 /-!
@@ -55,7 +56,7 @@ lemma covarianceBilin_eq_covarianceBilinDual (x y : E) :
     covarianceBilin μ x y = covarianceBilinDual μ (toDualMap ℝ E x) (toDualMap ℝ E y) := rfl
 
 @[simp]
-lemma covarianceBilin_of_not_memLp [IsFiniteMeasure μ] (h : ¬MemLp id 2 μ) :
+lemma covarianceBilin_of_not_memLp (h : ¬MemLp id 2 μ) :
     covarianceBilin μ = 0 := by
   ext
   simp [covarianceBilin_eq_covarianceBilinDual, h]
@@ -64,7 +65,7 @@ lemma covarianceBilin_apply [CompleteSpace E] [IsFiniteMeasure μ] (h : MemLp id
     covarianceBilin μ x y = ∫ z, ⟪x, z - μ[id]⟫ * ⟪y, z - μ[id]⟫ ∂μ := by
   simp [covarianceBilin, covarianceBilinDual_apply' h]
 
-lemma covarianceBilin_comm [IsFiniteMeasure μ] (x y : E) :
+lemma covarianceBilin_comm (x y : E) :
     covarianceBilin μ x y = covarianceBilin μ y x := by
   rw [covarianceBilin_eq_covarianceBilinDual, covarianceBilinDual_comm,
     covarianceBilin_eq_covarianceBilinDual]
@@ -93,14 +94,25 @@ lemma covarianceBilin_real_self {μ : Measure ℝ} [IsFiniteMeasure μ] (x : ℝ
   rw [covarianceBilin_real, pow_two]
 
 @[simp]
-lemma covarianceBilin_self_nonneg [IsFiniteMeasure μ] (x : E) :
+lemma covarianceBilin_self_nonneg (x : E) :
     0 ≤ covarianceBilin μ x x := by
   simp [covarianceBilin]
 
-lemma isPosSemidef_covarianceBilin [IsFiniteMeasure μ] :
+lemma isPosSemidef_covarianceBilin :
     (covarianceBilin μ).toBilinForm.IsPosSemidef where
   eq := covarianceBilin_comm
   nonneg := covarianceBilin_self_nonneg
+
+lemma covarianceBilin_map {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
+    [MeasurableSpace F] [BorelSpace F] [SecondCountableTopology F] [CompleteSpace F]
+    [CompleteSpace E] [IsFiniteMeasure μ] (h : MemLp id 2 μ) (L : E →L[ℝ] F) (u v : F) :
+    covarianceBilin (μ.map L) u v = covarianceBilin μ (L.adjoint u) (L.adjoint v) := by
+  rw [covarianceBilin_apply, covarianceBilin_apply h]
+  · simp_rw [id, L.integral_id_map (h.integrable (by simp))]
+    rw [integral_map]
+    · simp_rw [← map_sub, ← L.adjoint_inner_left]
+    all_goals fun_prop
+  · exact memLp_map_measure_iff (by fun_prop) (by fun_prop) |>.2 (L.comp_memLp' h)
 
 lemma covarianceBilin_map_const_add [CompleteSpace E] [IsProbabilityMeasure μ] (c : E) :
     covarianceBilin (μ.map (fun x ↦ c + x)) = covarianceBilin μ := by
