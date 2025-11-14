@@ -131,7 +131,7 @@ theorem isClosed_iff {s : Set Γ₀} : IsClosed s ↔ (0 : Γ₀) ∈ s ∨ ∃ 
 theorem isOpen_Iio {a : Γ₀} : IsOpen (Iio a) :=
   isOpen_iff.mpr <| imp_iff_not_or.mp fun ha => ⟨a, ne_of_gt ha, Subset.rfl⟩
 
-lemma isOpen_singleton (h : γ ≠ 0) : IsOpen {γ} := by simp [isOpen_iff, h.symm]
+lemma isOpen_singleton (h : γ ≠ 0) : IsOpen {γ} := isOpen_singleton_nhdsAdjoint _ h
 
 /-!
 ### Instances
@@ -187,145 +187,72 @@ scoped instance (priority := 100) : HasContinuousInv₀ Γ₀ :=
     rw [ContinuousAt, nhds_of_ne_zero h]
     exact pure_le_nhds γ⁻¹⟩
 
-scoped instance : DiscreteTopology Γ₀ˣ := by
-  simp [discreteTopology_iff_singleton_mem_nhds, nhds_induced, nhds_prod_eq, Units.val_inj]
+instance : DiscreteTopology { g : Γ₀ // g ≠ 0 } := by
+  simpa [discreteTopology_iff_singleton_mem_nhds, nhds_induced] using by aesop
+
+instance : DiscreteTopology Γ₀ˣ :=
+  unitsHomeomorphNeZero.symm.discreteTopology
+
+theorem isInducing_unitsVal : IsInducing (Units.val : Γ₀ˣ → Γ₀) :=
+  by simp [isInducing_iff_nhds, ← image_singleton, Units.val_injective.preimage_image]
 
 lemma isOpenEmbedding_units_val : IsOpenEmbedding (Units.val : Γ₀ˣ → Γ₀) where
-  eq_induced := by
-    simp [← isInducing_iff, isInducing_iff_nhds, ← Set.image_singleton,
-      Units.val_injective.preimage_image]
+  eq_induced := isInducing_unitsVal.1
   injective := Units.val_injective
   isOpen_range := by simp [isOpen_iff]
 
-lemma locallyCompactSpace_of_compact_Iic {x : Γ₀} (hx : x ≠ 0)
-    (h : IsCompact (Iic x)) : LocallyCompactSpace Γ₀ := by
-  have key : ∀ x : Γ₀, (𝓝 x).HasBasis (fun r : Γ₀ ↦ x = 0 → r ≠ 0)
+lemma locallyCompactSpace_of_compact_Iio (h : IsCompact (Iio (1 : Γ₀))) :
+    LocallyCompactSpace Γ₀ := by
+  have key (x : Γ₀) : (𝓝 x).HasBasis (fun r : Γ₀ ↦ x = 0 → r ≠ 0)
       fun r ↦ if x = 0 then Iio r else {x} := by
-    intro x
-    rcases GroupWithZero.eq_zero_or_unit x with rfl | ⟨x, rfl⟩
-    · simpa using hasBasis_nhds_zero
-    · refine (hasBasis_nhds_units x).to_hasBasis ?_ ?_ <;> simp
-  refine LocallyCompactSpace.of_hasBasis key ?_
-  intro r i hr
-  split_ifs
-  · refine (h.image (continuous_mul_left (i / x))).of_isClosed_subset ?_ ?_
-    · simp_all [isClosed_iff, zero_lt_iff]
-    · rw [image_mul_left_Iic]
-      · simp [div_mul_cancel₀ _ hx, Iio_subset_Iic_self]
-      · simp_all [zero_lt_iff]
+    split_ifs with h
+    · simpa [h] using hasBasis_nhds_zero
+    · simpa [h] using (Filter.hasBasis_pure x).to_hasBasis (by simp) (by simp)
+  refine LocallyCompactSpace.of_hasBasis key fun r i hr ↦ ?_
+  split_ifs with hr0
+  · convert h.image (continuous_mul_left i)
+    rw [image_mul_left_Iio (zero_lt_iff.mpr <| hr hr0), mul_one]
   · exact isCompact_singleton
+
+theorem compact_Iio_of_locallyCompactSpace [LocallyCompactSpace Γ₀] (r : Γ₀) :
+    IsCompact (Iio r) := by
+  obtain rfl | hr0 := eq_or_ne r 0
+  · simp [← bot_eq_zero'']
+  obtain ⟨s, hs0, _, hcs⟩ := local_compact_nhds <| Iio_mem_nhds_zero (Γ₀ := Γ₀) one_ne_zero
+  obtain ⟨w, hw0, hws⟩ := hasBasis_nhds_zero.mem_iff.mp hs0
+  convert (hcs.of_isClosed_subset (by simp_all [isClosed_iff, zero_lt_iff]) hws).image
+    (continuous_mul_left (r / w))
+  rw [image_mul_left_Iio (by simp_all [zero_lt_iff]), div_mul_cancel₀ _ hw0]
+
+theorem compact_Iic_of_locallyCompactSpace [LocallyCompactSpace Γ₀] (r : Γ₀) :
+    IsCompact (Iic r) :=
+  Set.Iio_insert (a := r) ▸ (compact_Iio_of_locallyCompactSpace r).insert _
+
+theorem compact_Icc_of_locallyCompactSpace [LocallyCompactSpace Γ₀] (x y : Γ₀) :
+    IsCompact (Icc x y) :=
+  (compact_Iic_of_locallyCompactSpace y).of_isClosed_subset isClosed_Icc Icc_subset_Iic_self
 
 lemma locallyCompactSpace_iff_locallyFiniteOrder_units :
     LocallyCompactSpace Γ₀ ↔ Nonempty (LocallyFiniteOrder Γ₀ˣ) := by
-  -- the strategy is to cover any `[0, x)` by `[0, y) ∪ {y} ∪ ⋯ {x} \ {x}`,
-  -- since away from `0`, `{x}` is open. Then, the union of singletons is finite
-  -- by the compactness of `[0, x)`.
+  -- `[x, y]` is compact, but `Γ₀ˣ` is discrete, so `[x, y]` is finite.
   constructor
   · intro h
-    -- if we are locally compact, then we can find a finite cover of `[0, x)` and yank out
-    -- the finite set spanning from `y` to `x`
-    refine ⟨LocallyFiniteOrder.ofFiniteIcc ?_⟩
-    -- we reduce to the `[0, 1]` case, since that is easily scaled
-    suffices ∀ x : Γ₀ˣ, (Icc x 1).Finite by
-      rintro x y
-      -- first, deal with the trivial empty `Icc`
-      rcases lt_trichotomy y x with hxy | rfl | hxy
-      · rw [Set.Icc_eq_empty_of_lt]
-        · exact Set.finite_empty
-        · simp [hxy]
-      · simp
-      -- Finiteness is retained under inversion, so we can reduce to the `≤ 1` case
-      wlog h : x ≤ 1 generalizing x y
-      · push_neg at h
-        specialize this y⁻¹ x⁻¹ (inv_lt_inv' hxy) (inv_le_one_of_one_le (h.trans hxy).le)
-        refine this.inv.subset ?_
-        simp
-      rcases le_total y 1 with hy | hy
-      · exact (this x).subset (Set.Icc_subset_Icc_right hy)
-      · -- use the suffices hypothesis to argue using `Icc x y = Icc x 1 ∪ (Icc y⁻¹ 1)⁻¹`
-        have H : (Set.Icc y⁻¹ 1).Finite := this _
-        refine ((this x).union H.inv).subset (le_of_eq ?_)
-        rw [Set.inv_Icc, inv_one, Set.Icc_union_Icc_eq_Icc] <;>
-        simp [h, hy]
-    intro z
-    -- by local compactness, there is some compact neighborhood of 0 that is a subset of `Iio z`
-    -- which in turn, contains a `Iio y`. That is closed, so it is compact.
-    obtain ⟨t, ht, ht', ht''⟩ := local_compact_nhds (x := 0) (n := Iio z.val)
-      (by simp [hasBasis_nhds_zero.mem_of_mem])
-    rw [hasBasis_nhds_zero.mem_iff] at ht
-    obtain ⟨y, hy', hy⟩ := ht
-    lift y to Γ₀ˣ using IsUnit.mk0 _ hy'
-    -- we scale `Iio y` to `Iio 1`, which retains compactness, and insert `1` to get `Iic 1` compact
-    rw [← Set.image_subset_image_iff (OrderIso.mulLeft₀ y.val⁻¹ (by simp)).injective,
-      (OrderIso.mulLeft₀ _ _).image_Iio]
-      at hy
-    simp only [OrderIso.mulLeft₀_apply, ne_eq, Units.ne_zero, not_false_eq_true,
-      inv_mul_cancel₀] at hy
-    have : IsCompact (Iic (1 : Γ₀)) := by
-      refine ((ht''.image (continuous_mul_left y.val⁻¹)).insert 1).of_isClosed_subset
-        isClosed_Iic ?_
-      simp [← Iio_insert, insert_subset_insert_iff, hy]
-    -- cover `Iic 1` with `Iio z ∪ {z} ∪ ⋯ ∪ {1}`
-    let f : Γ₀ → Set Γ₀ := fun x ↦ if x < z then Iio z else {x}
-    have := this.elim_finite_subcover f ?_ ?_
-    · obtain ⟨s, hs⟩ := this
-      suffices (Icc z.val 1).Finite from this.preimage (Units.val_injective.injOn)
-      -- manipulate the cover by taking intersections with `Icc z 1` on both sides
-      refine (s.finite_toSet).subset (
-        ((Set.inter_subset_inter_right (Icc z.val 1) hs).trans ?_).trans' ?_)
-      · intro x
-        simp only [mem_inter_iff, mem_Icc, mem_iUnion, mem_ite, mem_Iio, not_lt, mem_singleton_iff,
-          exists_and_left, exists_prop, Finset.mem_coe, and_imp, forall_exists_index, f]
-        intro hzx
-        simp only [hzx.not_gt, imp_false, not_lt]
-        grind
-      · simp [Icc_subset_Iic_self]
-    · intro x
-      simp only [f]
-      split_ifs with hx
-      · exact isOpen_Iio
-      · refine isOpen_singleton ?_
-        rintro rfl
-        simp at hx
-    · -- prove that it is an actual cover
-      intro x
-      simp only [mem_iUnion, f]
-      intro
-      use x
-      simp [mem_ite]
+    refine ⟨LocallyFiniteOrder.ofFiniteIcc fun x y ↦ IsCompact.finite_of_discrete <|
+      isInducing_unitsVal.isCompact_iff.mpr ?_⟩
+    convert compact_Icc_of_locallyCompactSpace x.val y.val
+    exact Set.ext fun z ↦ ⟨fun ⟨z', h1, h2⟩ ↦ h2 ▸ h1,
+      fun h ↦ ⟨.mk0 z <| ne_of_gt <| x.zero_lt.trans_le h.1, h, rfl⟩⟩
   · rintro ⟨_⟩
-    -- it will suffices to show that `[0, 1]` is compact
-    apply locallyCompactSpace_of_compact_Iic one_ne_zero
-    refine isCompact_of_finite_subcover ?_
-    intro ι f hf hs
-    choose g hg hg' using hs
-    choose i hi using hg
-    simp only at hi
-    simp only [isOpen_iff, ne_eq] at hf
-    -- we have a cover of `[0, 1]` by some sets `f i` such that for `0 < x < 1 → x ∈ f i`
-    -- or there is an `r > 0` such that `[0, r) ∈ f i`.
-    -- choose some such `y > 0` such that `[0, y) ∈ f i` since we must have some such `y`,
-    -- since otherwise we would not cover `0`. Our "i" is the proof that `0 ≤ 1`.
-    obtain ⟨y, hy', hy⟩ := (hf (i zero_le_one)).neg_resolve_left (hi zero_le_one ▸ hg' zero_le_one)
-    classical
-    -- now, we can cover `[0, 1]` by `Iio y ∪ {y} ∪ ⋯ ∪ {1}`, where each of these is associated with
-    -- some `i : ι`. Since we are locally finite, `{y} ∪ ⋯ ∪ {1}` is the image of a finite set.
-    refine ⟨{i zero_le_one} ∪ (Finset.Icc (Units.mk0 _ hy') 1).attach.image
-      (fun z ↦ @i z.val ?_), ?_⟩
-    · -- we have a dependent function, so we need to prove we are inside `[0, 1]`
-      have := z.prop
-      rw [Finset.mem_Icc] at this
-      simpa [← Units.val_lt_val] using this.right
-    · intro z
-      simp only [mem_Iic, Finset.singleton_union, Finset.mem_insert, Finset.mem_image,
-        Finset.mem_attach, true_and, Subtype.exists, Finset.mem_Icc, ← Units.val_le_val,
-        Units.val_mk0, Units.val_one, iUnion_iUnion_eq_or_left, iUnion_exists, biUnion_and',
-        iUnion_iUnion_eq', mem_union, mem_iUnion]
-      intro hzx
-      -- either we are in `Iio y` or we are in `{y} ∪ ⋯ ∪ {1}`
-      rcases lt_or_ge z y with hzy | hzy
-      · exact Or.inl (hy (by simp [hzy]))
-      · refine Or.inr ⟨Units.mk0 z (ne_of_gt (hzy.trans_lt' (zero_lt_iff.mpr hy'))), ?_⟩
-        simp [hzy, hzx, hi, hg']
+    -- it suffices to show that `[0, 1)` is compact
+    refine locallyCompactSpace_of_compact_Iio ?_
+    -- for that, it suffices to show that the cofinite filter on `{ γ : Γ₀ˣ | γ < 1 }` tends to 0
+    let c : Iio (1 : Γ₀ˣ) → Γ₀ := (·.1.1)
+    have : Tendsto c cofinite (𝓝 0) := fun s hs ↦ by
+      obtain ⟨r, hr0, hrs⟩ := hasBasis_nhds_zero.mem_iff.mp hs
+      refine .of_finite_image ((finite_Ico (.mk0 r hr0) 1).subset ?_) Subtype.val_injective.injOn
+      exact fun y ⟨x, hx, hxy⟩ ↦ hxy ▸ ⟨le_of_not_gt fun hxr ↦ hx <| hrs hxr, x.2⟩
+    convert this.isCompact_insert_range_of_cofinite
+    exact Set.ext fun x ↦ ⟨fun hx ↦ or_iff_not_imp_left.mpr fun hx0 ↦ ⟨⟨.mk0 x hx0, hx⟩, rfl⟩,
+      Or.rec (· ▸ zero_lt_one) fun ⟨y, hxy⟩ ↦ hxy ▸ y.2⟩
 
 end WithZeroTopology
