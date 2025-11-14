@@ -30,8 +30,6 @@ variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
 namespace Monoidal
 
-namespace Monoidal
-
 namespace FunctorCategory
 
 variable (F G F' G' : C ⥤ D)
@@ -226,5 +224,10 @@ instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategor
 @[deprecated (since := "2025-11-06")] alias μ_app := Functor.LaxMonoidal.whiskeringRight_μ_app
 @[deprecated (since := "2025-11-06")] alias η_app := Functor.OplaxMonoidal.whiskeringRight_η_app
 @[deprecated (since := "2025-11-06")] alias δ_app := Functor.OplaxMonoidal.whiskeringRight_δ_app
+
+@[simps!]
+instance Functor.Monoidal.whiskeringLeft (E : Type*) [Category E] [MonoidalCategory E] (F : C ⥤ D) :
+    ((whiskeringLeft _ _ E).obj F).Monoidal :=
+  CoreMonoidal.toMonoidal { εIso := Iso.refl _, μIso _ _ := Iso.refl _ }
 
 end CategoryTheory
