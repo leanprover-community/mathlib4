@@ -124,6 +124,11 @@ theorem lift_unique (φ : C ⥤ G) (Φ : FreeGroupoid C ⥤ G) (hΦ : of C ⋙ �
   apply Quiver.FreeGroupoid.lift_unique
   exact congr_arg Functor.toPrefunctor hΦ
 
+theorem lift_id_comp_of : lift (𝟭 G) ⋙ of G = 𝟭 _ := by
+  rw [lift_unique (of G) (lift (𝟭 G) ⋙ of G) (by rw [← Functor.assoc, lift_spec, Functor.id_comp])]
+  symm; apply lift_unique
+  rw [Functor.comp_id]
+
 theorem lift_comp {H : Type u₂} [Groupoid.{v₂} H] (φ : C ⥤ G) (ψ : G ⥤ H) :
     lift (φ ⋙ ψ) = lift φ ⋙ ψ := by
   symm
