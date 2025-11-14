@@ -15,12 +15,18 @@ import Mathlib.Lean.Expr.Basic
 
 A regular monomorphism is a morphism that is the equalizer of some parallel pair.
 
-We give the constructions
-* `IsSplitMono → RegularMono` and
-* `RegularMono → Mono`
+In this file, we give the following definitions.
+* `RegularMono f`, which is a class carrying the data that exhibits `f` as a regular monomorphism.
+  That is, it carries a fork and data specifying `f` a the equalizer of that fork.
+* `IsRegularMono f`, which is a proposition stating that `f` is a regular monomorphism. In
+  particular, this doesn't carry any data.
+and constructions
+* `IsSplitMono f → RegularMono f` and
+* `RegularMono f → Mono f`
+as well as the dual definitions/constructions for regular epimorphisms.
 
-as well as the dual constructions for regular epimorphisms. Additionally, we give the construction
-* `RegularEpi ⟶ StrongEpi`.
+Additionally, we give the construction
+* `RegularEpi f ⟶ StrongEpi f`.
 
 We also define classes `IsRegularMonoCategory` and `IsRegularEpiCategory` for categories in which
 every monomorphism or epimorphism is regular, and deduce that these categories are
@@ -102,6 +108,7 @@ instance MorphismProperty.regularMono.respectsIso :
 
 instance isRegularMono_of_regularMono (f : X ⟶ Y) [h : RegularMono f] : IsRegularMono f := ⟨h⟩
 
+/-- Given `IsRegularMono f`, a choice of data for `RegularMono f`. -/
 def regularMonoOfIsRegularMono (f : X ⟶ Y) [h : IsRegularMono f] :
     RegularMono f :=
   h.some
@@ -275,6 +282,7 @@ instance MorphismProperty.regularEpi.respectsIso :
 
 instance isRegularEpi_of_regularEpi (f : X ⟶ Y) [h : RegularEpi f] : IsRegularEpi f := ⟨h⟩
 
+/-- Given `IsRegularEpi f`, a choice of data for `RegularEpi f`. -/
 def regularEpiOfIsRegularEpi (f : X ⟶ Y) [h : IsRegularEpi f] :
     RegularEpi f :=
   h.some
