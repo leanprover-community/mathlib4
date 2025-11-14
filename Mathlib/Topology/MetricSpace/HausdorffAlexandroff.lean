@@ -3,8 +3,9 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
+import Mathlib.Topology.Compactness.HilbertCubeEmbedding
 import Mathlib.Topology.Instances.CantorSet
-import Mathlib.Topology.UnitInterval
+import Mathlib.Topology.MetricSpace.PiNat
 
 /-!
 # Hausdorff–Alexandroff Theorem
@@ -62,7 +63,7 @@ theorem cantorToHilbert_surjective : cantorToHilbert.Surjective :=
 attribute [local instance] PiNat.metricSpace in
 theorem exists_retractionCantorSet {X : Set (ℕ → Bool)} (h_closed : IsClosed X)
     (h_nonempty : X.Nonempty) : ∃ f : (ℕ → Bool) → (ℕ → Bool), Continuous f ∧ Set.range f = X := by
-  rcases PiNat.exists_lipschitz_retraction_of_isClosed h_closed h_nonempty with ⟨f, fs, frange, hf⟩
+  obtain ⟨f, fs, frange, hf⟩ := PiNat.exists_lipschitz_retraction_of_isClosed h_closed h_nonempty
   exact ⟨f, hf.continuous, frange⟩
 
 theorem exists_nat_bool_continuous_surjective_of_compact (X : Type*) [Nonempty X] [MetricSpace X]
@@ -70,36 +71,17 @@ theorem exists_nat_bool_continuous_surjective_of_compact (X : Type*) [Nonempty X
   obtain ⟨emb, h_emb⟩ := exists_closed_embedding_to_hilbert_cube X
   let KH : Set (ℕ → unitInterval) := Set.range emb
   let KC : Set (ℕ → Bool) := cantorToHilbert ⁻¹' KH
-  have hKC_closed : IsClosed KC := by
-    apply IsClosed.preimage
-    · exact cantorToHilbert_continuous
-    · simp only [KH]
-      apply Topology.IsClosedEmbedding.isClosed_range h_emb
-  have hKC_nonempty : KC.Nonempty := by
-    apply Set.Nonempty.preimage
-    · exact Set.range_nonempty emb
-    · exact cantorToHilbert_surjective
-  rcases exists_retractionCantorSet hKC_closed hKC_nonempty with ⟨f, hf_continuous, hf_surjective⟩
+  have hKC_closed : IsClosed KC :=
+    IsClosed.preimage cantorToHilbert_continuous (Topology.IsClosedEmbedding.isClosed_range h_emb)
+  have hKC_nonempty : KC.Nonempty :=
+    Set.Nonempty.preimage (Set.range_nonempty emb) cantorToHilbert_surjective
+  obtain ⟨f, hf_continuous, hf_surjective⟩ := exists_retractionCantorSet hKC_closed hKC_nonempty
   let f' : (ℕ → Bool) → KC := Subtype.coind f (by simp [← hf_surjective])
   have hf'_continuous : Continuous f' := Continuous.subtype_mk hf_continuous _
-  have hf'_surjective : Function.Surjective f' := by
-    intro ⟨y, hy⟩
-    simp only [← hf_surjective, Set.mem_range] at hy
-    obtain ⟨x, hx⟩ := hy
-    use x
-    simpa [Subtype.eq_iff]
-  let g : X ≃ₜ KH := by
-    apply Topology.IsEmbedding.toHomeomorph
-    apply Topology.IsClosedEmbedding.toIsEmbedding h_emb
+  have hf'_surjective : Function.Surjective f' := Subtype.coind_surjective _ (by grind [Set.SurjOn])
+  let g : X ≃ₜ KH := h_emb.toIsEmbedding.toHomeomorph
   let h : KC → KH := KH.restrictPreimage cantorToHilbert
   have hh_continuous : Continuous h := Continuous.restrictPreimage cantorToHilbert_continuous
   have hh_surjective : Function.Surjective h :=
     Set.restrictPreimage_surjective _ cantorToHilbert_surjective
-  use g.symm ∘ h ∘ f'
-  constructor
-  · apply Continuous.comp
-    · exact Homeomorph.continuous_symm g
-    exact Continuous.comp hh_continuous hf'_continuous
-  · apply Function.Surjective.comp
-    · exact Homeomorph.surjective g.symm
-    exact Function.Surjective.comp hh_surjective hf'_surjective
+  use g.symm ∘ h ∘ f', by fun_prop, g.symm.surjective.comp <| hh_surjective.comp hf'_surjective
