@@ -45,6 +45,6 @@ def mapTokens (c : Char) (f : String → String) : String → String :=
 
 /-- Produce the head character from the string `s`, if `s` is not empty, otherwise `'A'`. -/
 def head (s : String) : Char :=
-  s.iter.curr
+  s.front
 
 end String
