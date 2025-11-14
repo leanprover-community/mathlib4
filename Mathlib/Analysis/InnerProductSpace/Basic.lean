@@ -813,8 +813,8 @@ theorem eq_of_norm_le_re_inner_eq_norm_sq {x y : E} (hle : ‖x‖ ≤ ‖y‖) 
   suffices H : re ⟪x - y, x - y⟫ ≤ 0 by rwa [re_inner_self_nonpos, sub_eq_zero] at H
   have H₁ : ‖x‖ ^ 2 ≤ ‖y‖ ^ 2 := by gcongr
   have H₂ : re ⟪y, x⟫ = ‖y‖ ^ 2 := by rwa [← inner_conj_symm, conj_re]
-  simpa [-inner_self_eq_norm_sq_to_K, inner_sub_left, inner_sub_right, ← norm_sq_eq_re_inner,
-    h, H₂] using H₁
+  simp only [inner_sub_left, inner_sub_right]
+  simpa [h, H₂] using H₁
 
 /-- Equality is achieved in the triangle inequality iff the two vectors are collinear. -/
 theorem norm_add_eq_iff_real {x y : F} : ‖x + y‖ = ‖x‖ + ‖y‖ ↔ ‖y‖ • x = ‖x‖ • y := by
