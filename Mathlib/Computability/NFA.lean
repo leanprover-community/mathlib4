@@ -827,7 +827,7 @@ theorem isRegular_reverse_iff {L : Language α} : L.reverse.IsRegular ↔ L.IsRe
   ⟨.of_reverse, .reverse⟩
 
 /-- Regular languages are closed under Kleene star. -/
-theorem IsRegular_kstar {L : Language α} (h : L.IsRegular) : L∗.IsRegular :=
+theorem IsRegular.kstar {L : Language α} (h : L.IsRegular) : L∗.IsRegular :=
   have ⟨σ, _, M, hM⟩ := h
   ⟨_, inferInstance, M.toNFA.kstar.toDFA, by simp [hM, NFA.accepts_kstar]⟩
 
