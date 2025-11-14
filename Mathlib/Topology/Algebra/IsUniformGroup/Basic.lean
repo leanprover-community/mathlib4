@@ -368,6 +368,20 @@ theorem tendstoUniformlyOnFilter_iff_inv_mul (F : ι → α → Gₗ) (f : α �
   rfl
 
 @[to_additive]
+theorem tendstoUniformly_iff (F : ι → α → G) (f : α → G) (p : Filter ι)
+    (hu : IsTopologicalGroup.rightUniformSpace G = u) :
+    TendstoUniformly F f p ↔ ∀ u ∈ 𝓝 (1 : G), ∀ᶠ i in p, ∀ a, F i a / f a ∈ u :=
+  hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩,
+    fun h _ ⟨u, hu, hv⟩ => mem_of_superset (h u hu) fun _ hi a => hv (hi a)⟩
+
+@[to_additive]
+theorem tendstoUniformlyOn_iff (F : ι → α → G) (f : α → G) (p : Filter ι) (s : Set α)
+    (hu : IsTopologicalGroup.rightUniformSpace G = u) :
+    TendstoUniformlyOn F f p s ↔ ∀ u ∈ 𝓝 (1 : G), ∀ᶠ i in p, ∀ a ∈ s, F i a / f a ∈ u :=
+  hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩,
+    fun h _ ⟨u, hu, hv⟩ => mem_of_superset (h u hu) fun _ hi a ha => hv (hi a ha)⟩
+
+@[to_additive]
 theorem tendstoUniformlyOnFilter_iff (F : ι → α → Gᵣ) (f : α → Gᵣ) (p : Filter ι)
     (p' : Filter α) :
     TendstoUniformlyOnFilter F f p p' ↔
@@ -415,7 +429,7 @@ theorem tendstoUniformlyOn_iff (F : ι → α → Gᵣ) (f : α → Gᵣ) (p : F
 /-
 @[to_additive]
 theorem tendstoLocallyUniformly_iff [TopologicalSpace α] (F : ι → α → G) (f : α → G)
-    (p : Filter ι) (hu : IsTopologicalGroup.toUniformSpace G = u) :
+    (p : Filter ι) (hu : IsTopologicalGroup.rightUniformSpace G = u) :
     TendstoLocallyUniformly F f p ↔
       ∀ u ∈ 𝓝 (1 : G), ∀ (x : α), ∃ t ∈ 𝓝 x, ∀ᶠ i in p, ∀ a ∈ t, F i a / f a ∈ u :=
   hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩, fun h _ ⟨u, hu, hv⟩ x =>
@@ -424,7 +438,7 @@ theorem tendstoLocallyUniformly_iff [TopologicalSpace α] (F : ι → α → G) 
 
 @[to_additive]
 theorem tendstoLocallyUniformlyOn_iff [TopologicalSpace α] (F : ι → α → G) (f : α → G)
-    (p : Filter ι) (s : Set α) (hu : IsTopologicalGroup.toUniformSpace G = u) :
+    (p : Filter ι) (s : Set α) (hu : IsTopologicalGroup.rightUniformSpace G = u) :
     TendstoLocallyUniformlyOn F f p s ↔
       ∀ u ∈ 𝓝 (1 : G), ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, ∀ᶠ i in p, ∀ a ∈ t, F i a / f a ∈ u :=
   hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩, fun h _ ⟨u, hu, hv⟩ x =>
@@ -435,6 +449,29 @@ theorem tendstoLocallyUniformlyOn_iff [TopologicalSpace α] (F : ι → α → G
 end IsUniformGroup
 
 open Filter Set Function
+
+section
+
+variable {α : Type*} {β : Type*} {hom : Type*}
+variable [TopologicalSpace α] [Group α] [IsTopologicalGroup α]
+
+-- β is a dense subgroup of α, inclusion is denoted by e
+variable [TopologicalSpace β] [Group β]
+variable [FunLike hom β α] [MonoidHomClass hom β α] {e : hom}
+
+@[to_additive]
+theorem tendsto_div_comap_self (de : IsDenseInducing e) (x₀ : α) :
+    Tendsto (fun t : β × β => t.2 / t.1) ((comap fun p : β × β => (e p.1, e p.2)) <| 𝓝 (x₀, x₀))
+      (𝓝 1) := by
+  have comm : ((fun x : α × α => x.2 / x.1) ∘ fun t : β × β => (e t.1, e t.2)) =
+      e ∘ fun t : β × β => t.2 / t.1 := by
+    ext t
+    simp
+  have lim : Tendsto (fun x : α × α => x.2 / x.1) (𝓝 (x₀, x₀)) (𝓝 (e 1)) := by
+    simpa using (continuous_div'.comp (@continuous_swap α α _ _)).tendsto (x₀, x₀)
+  simpa using de.tendsto_comap_nhds_nhds lim comm
+
+end
 
 namespace IsDenseInducing
 
@@ -667,7 +704,7 @@ already equipped with a uniform structure.
 [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 
 Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` does not inherit a
-uniform structure, so it is still provided manually via `IsTopologicalGroup.toUniformSpace`.
+uniform structure, so it is still provided manually via `IsTopologicalGroup.rightUniformSpace`.
 In the most common use cases, this coincides (definitionally) with the uniform structure on the
 quotient obtained via other means. -/
 @[to_additive /-- The quotient `G ⧸ N` of a complete first countable uniform additive group
@@ -677,7 +714,7 @@ subspaces are complete. In contrast to `QuotientAddGroup.completeSpace'`, in thi
 [N. Bourbaki, *General Topology*, IX.3.1 Proposition 4][bourbaki1966b]
 
 Even though `G` is equipped with a uniform structure, the quotient `G ⧸ N` does not inherit a
-uniform structure, so it is still provided manually via `IsTopologicalAddGroup.toUniformSpace`.
+uniform structure, so it is still provided manually via `IsTopologicalAddGroup.rightUniformSpace`.
 In the most common use case ─ quotients of normed additive commutative groups by subgroups ─
 significant care was taken so that the uniform structure inherent in that setting coincides
 (definitionally) with the uniform structure provided here. -/]

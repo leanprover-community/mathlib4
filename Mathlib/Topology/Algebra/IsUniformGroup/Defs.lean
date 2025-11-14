@@ -30,7 +30,7 @@ coincides with **both** the left and right uniform structures.
 
 ## Main results
 
-* `IsTopologicalAddGroup.toUniformSpace` and `comm_topologicalAddGroup_is_uniform` can be used
+* `IsTopologicalAddGroup.rightUniformSpace` and `comm_topologicalAddGroup_is_uniform` can be used
   to construct a canonical uniformity for a topological additive group.
 
 See `Mathlib/Topology/Algebra/IsUniformGroup/Basic.lean` for further results.
@@ -1011,6 +1011,51 @@ end OfComm
 
 end IsUniformGroup
 
+section IsTopologicalGroup
+
+open Filter
+
+variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
+
+/-- The right uniformity on a topological group (as opposed to the left uniformity).
+
+Warning: in general the right and left uniformities do not coincide and so one does not obtain a
+`IsUniformGroup` structure. Two important special cases where they _do_ coincide are for
+commutative groups (see `isUniformGroup_of_commGroup`) and for compact groups (see
+`IsUniformGroup.of_compactSpace`). -/
+@[to_additive /-- The right uniformity on a topological additive group (as opposed to the left
+uniformity).
+
+Warning: in general the right and left uniformities do not coincide and so one does not obtain a
+`IsUniformAddGroup` structure. Two important special cases where they _do_ coincide are for
+commutative additive groups (see `isUniformAddGroup_of_addCommGroup`) and for compact
+additive groups (see `IsUniformAddGroup.of_compactSpace`). -/]
+def IsTopologicalGroup.rightUniformSpace : UniformSpace G where
+  uniformity := comap (fun p : G × G => p.2 / p.1) (𝓝 1)
+  symm :=
+    have : Tendsto (fun p : G × G ↦ (p.2 / p.1)⁻¹) (comap (fun p : G × G ↦ p.2 / p.1) (𝓝 1))
+      (𝓝 1⁻¹) := tendsto_id.inv.comp tendsto_comap
+    by simpa [tendsto_comap_iff]
+  comp := Tendsto.le_comap fun U H ↦ by
+    rcases exists_nhds_one_split H with ⟨V, V_nhds, V_mul⟩
+    refine mem_map.2 (mem_of_superset (mem_lift' <| preimage_mem_comap V_nhds) ?_)
+    rintro ⟨x, y⟩ ⟨z, hz₁, hz₂⟩
+    simpa using V_mul _ hz₂ _ hz₁
+  nhds_eq_comap_uniformity _ := by simp only [comap_comap, Function.comp_def, nhds_translation_div]
+
+@[deprecated (since := "2025-09-26")]
+alias IsTopologicalAddGroup.toUniformSpace := IsTopologicalAddGroup.rightUniformSpace
+@[to_additive existing, deprecated (since := "2025-09-26")]
+alias IsTopologicalGroup.toUniformSpace := IsTopologicalGroup.rightUniformSpace
+
+attribute [local instance] IsTopologicalGroup.rightUniformSpace
+
+@[to_additive]
+theorem uniformity_eq_comap_nhds_one' : 𝓤 G = comap (fun p : G × G => p.2 / p.1) (𝓝 (1 : G)) :=
+  rfl
+
+end IsTopologicalGroup
+
 section TopologicalCommGroup
 
 universe u v w x
@@ -1035,32 +1080,15 @@ open Set
 
 end
 
-@[to_additive (attr := deprecated IsRightUniformGroup.rightUniformSpace_eq (since := "2025-09-26"))]
-alias IsUniformGroup.toUniformSpace_eq := IsRightUniformGroup.rightUniformSpace_eq
+@[to_additive]
+theorem IsUniformGroup.rightUniformSpace_eq {G : Type*} [u : UniformSpace G] [Group G]
+    [IsUniformGroup G] : IsTopologicalGroup.rightUniformSpace G = u := by
+  ext : 1
+  rw [uniformity_eq_comap_nhds_one' G, uniformity_eq_comap_nhds_one G]
+
+@[deprecated (since := "2025-09-26")]
+alias IsUniformAddGroup.toUniformSpace_eq := IsUniformAddGroup.rightUniformSpace_eq
+@[to_additive existing, deprecated (since := "2025-09-26")]
+alias IsUniformGroup.toUniformSpace_eq := IsUniformGroup.rightUniformSpace_eq
 
 end TopologicalCommGroup
-
-open Filter Set Function
-
-section
-
-variable {α : Type*} {β : Type*} {hom : Type*}
-variable [TopologicalSpace α] [Group α] [IsTopologicalGroup α]
-
--- β is a dense subgroup of α, inclusion is denoted by e
-variable [TopologicalSpace β] [Group β]
-variable [FunLike hom β α] [MonoidHomClass hom β α] {e : hom}
-
-@[to_additive]
-theorem tendsto_div_comap_self (de : IsDenseInducing e) (x₀ : α) :
-    Tendsto (fun t : β × β => t.2 / t.1) ((comap fun p : β × β => (e p.1, e p.2)) <| 𝓝 (x₀, x₀))
-      (𝓝 1) := by
-  have comm : ((fun x : α × α => x.2 / x.1) ∘ fun t : β × β => (e t.1, e t.2)) =
-      e ∘ fun t : β × β => t.2 / t.1 := by
-    ext t
-    simp
-  have lim : Tendsto (fun x : α × α => x.2 / x.1) (𝓝 (x₀, x₀)) (𝓝 (e 1)) := by
-    simpa using (continuous_div'.comp (@continuous_swap α α _ _)).tendsto (x₀, x₀)
-  simpa using de.tendsto_comap_nhds_nhds lim comm
-
-end
