@@ -155,57 +155,42 @@ instance : Zero 𝓓^{n}(Ω, F) where
 @[simps -fullyApplied]
 instance : Add 𝓓^{n}(Ω, F) where
   add f g := ⟨f + g, f.contDiff.add g.contDiff, f.hasCompactSupport.add g.hasCompactSupport,
-    tsupport_add.trans <| union_subset f.tsupport_subset g.tsupport_subset⟩
+    tsupport_add f g |>.trans <| union_subset f.tsupport_subset g.tsupport_subset⟩
 
 @[simps -fullyApplied]
 instance : Neg 𝓓^{n}(Ω, F) where
-  neg f := ⟨-f, f.contDiff.neg, f.hasCompactSupport.neg, tsupport_neg⟩
+  neg f := ⟨-f, f.contDiff.neg, f.hasCompactSupport.neg, tsupport_neg f ▸ f.tsupport_subset⟩
 
-instance instSub : Sub 𝓓^{n}(E, F) where
-  sub f g := TestFunction.mk (f - g) (f.contDiff.sub g.contDiff) (f.compact_supp.sub g.compact_supp)
+@[simps -fullyApplied]
+instance : Sub 𝓓^{n}(Ω, F) where
+  sub f g := ⟨f - g, f.contDiff.sub g.contDiff, f.hasCompactSupport.sub g.hasCompactSupport,
+    tsupport_sub f g |>.trans <| union_subset f.tsupport_subset g.tsupport_subset⟩
 
-instance instSMul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
-   SMul R 𝓓^{n}(E, F) where
-  smul c f := TestFunction.mk (c • (f : E → F)) (f.contDiff.const_smul c)  f.compact_supp.smul_left
+@[simps -fullyApplied]
+instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
+    SMul R 𝓓^{n}(Ω, F) where
+  smul c f := ⟨c • f, f.contDiff.const_smul c, f.hasCompactSupport.smul_left,
+    tsupport_smul_subset_right _ _ |>.trans f.tsupport_subset⟩
 
-@[simp]
-lemma coe_smul {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F]
-    (c : R) (f : 𝓓^{n}(E, F)) : (c • f : 𝓓^{n}(E, F)) = c • (f : E → F) :=
-  rfl
+instance : AddCommGroup 𝓓^{n}(Ω, F) := fast_instance%
+  DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
-@[simp]
-lemma smul_apply {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F]
-    (c : R) (f : 𝓓^{n}(E, F)) (x : E) : (c • f) x = c • (f x) :=
-  rfl
-
-instance : AddCommGroup 𝓓^{n}(E, F) :=
-  DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
-
-variable (E F K n)
-
+variable (Ω F n) in
 /-- Coercion as an additive homomorphism. -/
-def coeHom : 𝓓^{n}(E, F) →+ E → F where
+@[simps -fullyApplied]
+def coeFnAddMonoidHom : 𝓓^{n}(Ω, F) →+ E → F where
   toFun f := f
   map_zero' := coe_zero
   map_add' _ _ := rfl
-
-variable {E F}
-
-theorem coe_coeHom : (coeHom E F n : 𝓓^{n}(E, F) → E → F) = DFunLike.coe :=
-  rfl
-
-theorem coeHom_injective : Function.Injective (coeHom E F n) := by
-  rw [coe_coeHom]
-  exact DFunLike.coe_injective
 
 end AddCommGroup
 
 section Module
 
 instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
-    Module R 𝓓^{n}(E, F) :=
-  (coeHom_injective n).module R (coeHom E F n) fun _ _ => rfl
+    Module R 𝓓^{n}(Ω, F) :=
+  DFunLike.coe_injective.module R (coeFnAddMonoidHom Ω F n) fun _ _ ↦ rfl
 
 end Module
 
