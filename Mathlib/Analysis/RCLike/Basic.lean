@@ -235,6 +235,14 @@ theorem smul_im (r : ℝ) (z : K) : im (r • z) = r * im z := by
 theorem norm_ofReal (r : ℝ) : ‖(r : K)‖ = |r| :=
   norm_algebraMap' K r
 
+@[simp]
+theorem re_ofReal_pow (a : ℝ) (n : ℕ) : re ((a : K) ^ n) = a ^ n := by
+  rw [← ofReal_pow, @ofReal_re]
+
+@[simp]
+theorem im_ofReal_pow (a : ℝ) (n : ℕ) : im ((a : K) ^ n) = 0 := by
+  rw [← @ofReal_pow, @ofReal_im_ax]
+
 /-! ### Characteristic zero -/
 
 -- see Note [lower instance priority]

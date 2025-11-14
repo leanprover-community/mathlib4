@@ -73,8 +73,9 @@ theorem sin_angle_mul_norm_eq_sin_angle_mul_norm (x y : V) :
       Real.sin (angle x y) = √(⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫) / (‖x‖ * ‖y‖) := by
     simp [field, mul_assoc, sin_angle_mul_norm_mul_norm]
   rw [h_sin x y hx hy, h_sin y (x - y) hy (sub_ne_zero_of_ne hxy)]
+  simp only [inner_sub_left, inner_sub_right, real_inner_comm x y]
   have hsub : x - y ≠ 0 := sub_ne_zero_of_ne hxy
-  simp [field, inner_sub_left, inner_sub_right, real_inner_comm x y]
+  field_simp
   ring_nf
 
 /-- A variant of the law of sines, (two given sides are nonzero), vector angle form. -/

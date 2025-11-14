@@ -422,9 +422,8 @@ lemma enorm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
 lemma inner_eq_zero (b : OrthonormalBasis ι 𝕜 E) {i j : ι} (hij : i ≠ j) :
     ⟪b i, b j⟫ = 0 := b.orthonormal.inner_eq_zero hij
 
-@[simp]
 lemma inner_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) : ⟪b i, b i⟫ = 1 := by
-  simp [inner_self_eq_norm_sq_to_K]
+  simp
 
 lemma inner_eq_ite [DecidableEq ι] (b : OrthonormalBasis ι 𝕜 E) (i j : ι) :
     ⟪b i, b j⟫ = if i = j then 1 else 0 := by
