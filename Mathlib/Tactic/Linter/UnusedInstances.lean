@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas R. Murrills
 -/
 import Mathlib.Init
+import Mathlib.Lean.Message
 import Mathlib.Tactic.Lemma
 import Batteries
 import Qq
@@ -25,24 +26,6 @@ TODO: create Try This suggestions.
 -/
 
 open Lean Meta Elab Command Linter
-
-/-- `"foo".withPlural "foos" count` returns `"foo"` when `count` is `1`, and `"foos"` otherwise. -/
-def String.withPlural (singular plural : String) (count : Nat) : String :=
-  if count = 1 then singular else plural
-
-/--
-`f!"foo".withPlural f!"foos" count` returns `f!"foo"` when `count` is `1`, and `f!"foos"`
-otherwise.
--/
-def Std.Format.withPlural (singular plural : Format) (count : Nat) : Format :=
-  if count = 1 then singular else plural
-
-/--
-`m!"foo".withPlural m!"foos" count` returns `m!"foo"` when `count` is `1`, and `m!"foos"`
-otherwise.
--/
-def Lean.MessageData.withPlural (singular plural : MessageData) (count : Nat) : MessageData :=
-  if count = 1 then singular else plural
 
 /--
 Like `findConstantVal?`, but only finds the `ConstantVal` for `decl` in `env` if it is a theorem.
@@ -127,29 +110,6 @@ end Lean.Syntax
 namespace Lean.Elab.InfoTree
 
 /--
-Get the `parentDecl`s of every elaborated body. This includes `let rec`/`where`
-definitions. Assumes that every declaration elaboration proceeds through `Lean.Elab.Term.BodyInfo`.
--/
-def getDecls (t : InfoTree) : List Name :=
-  t.collectNodesBottomUp fun ctx i _ decls =>
-    match i with
-    | .ofCustomInfo i =>
-      if i.value.typeName == ``Lean.Elab.Term.BodyInfo then
-        if let some decl := ctx.parentDecl? then
-          decl :: decls
-        else decls
-      else decls
-    | _ => decls
-
-/--
-Get the declarations elaborated in the infotree `t` which are theorems according to the
-environment. This includes e.g. `instance`s of `Prop` classes in addition to declarations declared
-using the keyword `theorem` directly.
--/
-def getTheorems (t : InfoTree) (env : Environment) : List ConstantVal :=
-  t.getDecls.filterMap env.findTheoremConstantVal?
-
-/--
 Finds the first result of `f ctx info children` which is `some a`, descending the
 tree from the top. Merges and updates contexts as it descends the tree.
 
@@ -171,6 +131,9 @@ where go ctx?
 /--
 Finds the first result of `← f ctx info children` which is `some a`, descending the
 tree from the top. Merges and updates contexts as it descends the tree.
+
+If provided, `ctx?` is used as an initial context. This can be helpful when invoking `findSome?` in
+the middle of a larger traversal.
 -/
 partial def findSomeM? {m : Type → Type} [Monad m] {α}
     (f : ContextInfo → Info → PersistentArray InfoTree → m (Option α))
@@ -187,15 +150,46 @@ where go ctx?
     | none => ts.findSomeM? (go <| i.updateContext? ctx?)
   | hole _ => pure none
 
-def onFirstNode {α} (t : InfoTree) (f : ContextInfo → Info → PersistentArray InfoTree → α)
+/--
+Returns the value of `f ctx info children` on the outermost `.node info children` which has
+context, having merged and updated contexts appropriately.
+
+If provided, `ctx?` is used as an initial context. This can be helpful when invoking `onFirstNode?`
+in the middle of a larger traversal.
+-/
+def onFirstNode? {α} (t : InfoTree) (f : ContextInfo → Info → PersistentArray InfoTree → α)
     (ctx? : Option ContextInfo := none) : Option α :=
   t.findSome? (ctx? := ctx?) fun ctx i ch => some (f ctx i ch)
+
+/--
+Get the `parentDecl`s of every elaborated body. This includes `let rec`/`where`
+definitions. Assumes that every declaration body elaboration proceeds through a `CustomInfo` of
+`Lean.Elab.Term.BodyInfo`.
+-/
+def getBodyDecls (t : InfoTree) : List Name :=
+  t.collectNodesBottomUp fun ctx i _ decls =>
+    match i with
+    | .ofCustomInfo i =>
+      if i.value.typeName == ``Lean.Elab.Term.BodyInfo then
+        if let some decl := ctx.parentDecl? then
+          decl :: decls
+        else decls
+      else decls
+    | _ => decls
+
+/--
+Get the declarations elaborated in the infotree `t` which are theorems according to the
+environment. This includes e.g. `instance`s of `Prop` classes in addition to declarations declared
+using the keyword `theorem` directly.
+-/
+def getTheorems (t : InfoTree) (env : Environment) : List ConstantVal :=
+  t.getBodyDecls.filterMap env.findTheoremConstantVal?
 
 /--
 Given a constant name, find the first `TermInfo` whose expression is exactly that constant. Expects
 `decl` to be a fully resolved name.
 -/
-def getTermInfoForConst? (t : InfoTree) (decl : Name) : Option TermInfo :=
+def getConstTermInfo? (t : InfoTree) (decl : Name) : Option TermInfo :=
   t.findSome? fun
     | _, .ofTermInfo ti, _ => if ti.expr.isConstOf decl then some ti else none
     | _, _, _ => none
@@ -211,7 +205,7 @@ identifier, the `instance` token is used.
 Note that the behavior described here is undocumented, and subject to change.
 -/
 def getConstRef? (t : InfoTree) (decl : Name) : Option Syntax :=
-  t.getTermInfoForConst? decl |>.map (·.stx)
+  t.getConstTermInfo? decl |>.map (·.stx)
 
 /--
 Attempts to run `x : m α` with the monad's ref set to the syntax for the type signature of the
