@@ -268,7 +268,7 @@ def ConvexSubgroup.orderIsoUpperSet :
     (fun _G _H le _x ⟨a, ha1, haH, eq⟩ ↦ ⟨a, ha1, le haH, eq⟩)
     fun _s _t le _a hat ha1 ↦ le (hat ha1)
 
-lemma mulArchimedean_iff_subsingleton_finiteMulArchimedeanClass :
+@[to_additive] lemma mulArchimedean_iff_subsingleton_finiteMulArchimedeanClass :
     MulArchimedean α ↔ Subsingleton (FiniteMulArchimedeanClass α) where
   mp _ := inferInstance
   mpr s := MulArchimedeanClass.mulArchimedean_of_mk_eq_mk
@@ -290,7 +290,7 @@ omit [IsOrderedMonoid α] in
   · simp; rfl
   · exact add_tsub_cancel_of_le ((ENat.one_le_card_iff_nonempty _).mpr inferInstance)
 
-theorem height_eq_zero_iff : height α = 0 ↔ Subsingleton α := by
+@[to_additive] theorem height_eq_zero_iff : height α = 0 ↔ Subsingleton α := by
   rw [height, ENat.card_eq_zero_iff_empty]
   constructor <;> intro h
   · contrapose! h; simpa using exists_ne _
@@ -298,6 +298,7 @@ theorem height_eq_zero_iff : height α = 0 ↔ Subsingleton α := by
 
 end LinearOrderedCommGroup
 
+@[to_additive finite_finiteArchimedeanClass_iff_convexAddSubgroup]
 lemma finite_finiteMulArchimedeanClass_iff_convexSubgroup :
     Finite (FiniteMulArchimedeanClass α) ↔ Finite (ConvexSubgroup α) := by
   rw [ConvexSubgroup.equivUpperSet.finite_iff]
@@ -307,6 +308,7 @@ lemma finite_finiteMulArchimedeanClass_iff_convexSubgroup :
 
 open LinearOrderedCommGroup
 
+@[to_additive height_eq_card_finiteArchimedeanClass]
 lemma height_eq_card_finiteMulArchimedeanClass :
     height α = ENat.card (FiniteMulArchimedeanClass α) := by
   rw [height_eq_card_convexSubgroup_sub_one]
@@ -320,9 +322,15 @@ lemma height_eq_card_finiteMulArchimedeanClass :
     simp_rw [ENat.card_eq_top_of_infinite]
     rfl
 
+@[to_additive archimedean_iff_height_le_one]
 lemma mulArchimedean_iff_height_le_one : MulArchimedean α ↔ height α ≤ 1 := by
   rw [height_eq_card_finiteMulArchimedeanClass, ENat.card_le_one_iff_subsingleton,
     mulArchimedean_iff_subsingleton_finiteMulArchimedeanClass]
+
+lemma archimedean_iff_exists_orderAddMonoidHom {α} [AddCommGroup α] [LinearOrder α]
+    [IsOrderedAddMonoid α] : Archimedean α ↔ ∃ f : α →+o ℝ, Function.Injective f where
+  mp _ := Archimedean.exists_orderAddMonoidHom_real_injective α
+  mpr := fun ⟨f, hf⟩ ↦ .comap f.toAddMonoidHom (f.monotone'.strictMono_of_injective hf)
 
 lemma mulArchimedean_iff_exists_orderMonoidHom :
     MulArchimedean α ↔ ∃ f : α →*o Multiplicative ℝ, Function.Injective f where
@@ -330,7 +338,7 @@ lemma mulArchimedean_iff_exists_orderMonoidHom :
     ⟨⟨⟨⟨f, f.map_zero⟩, f.map_add⟩, f.monotone'⟩, hf⟩
   mpr := fun ⟨f, hf⟩ ↦ .comap f.toMonoidHom (f.monotone'.strictMono_of_injective hf)
 
-lemma MulArchimedean.tfae : List.TFAE
+theorem MulArchimedean.tfae : List.TFAE
   [ MulArchimedean α,
     height α ≤ 1,
     ∃ f : α →*o Multiplicative ℝ, Function.Injective f] := by
@@ -340,7 +348,7 @@ lemma MulArchimedean.tfae : List.TFAE
 
 /-- Equivalent characterisations for height 1. (Bourbaki, Eléments de mathématique. Fasc. XXX.
 Algèbre commutative. Chapitre 6: Valuations. §4 No5 proposition 8) -/
-lemma MulArchimedean.tfae_of_nontrivial [Nontrivial α] : List.TFAE
+theorem MulArchimedean.tfae_of_nontrivial [Nontrivial α] : List.TFAE
   [ MulArchimedean α,
     height α = 1,
     ∃ f : α →*o Multiplicative ℝ, Function.Injective f] := by
