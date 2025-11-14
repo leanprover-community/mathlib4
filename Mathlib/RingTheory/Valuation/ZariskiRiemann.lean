@@ -173,9 +173,11 @@ instance : QuasiSeparatedSpace (Place R K) := by
   refine .of_isTopologicalBasis (isTopologicalBasis R K) fun s t ↦ ?_
   sorry -- use `basicOpen_union`, reduce to showing `basicOpen R (s ∪ t)` is compact
 
-/- not part of this project, see p.2 of
+/- Not part of this project, see p.2 of
 https://scispace.com/pdf/some-closure-operations-in-zariski-riemann-spaces-of-7bx8on35dg.pdf
-See https://arxiv.org/pdf/1309.5190 Corollary 3.3 for a proof based on ultrafilters. -/
+  See https://arxiv.org/pdf/1309.5190 Corollary 3.3 for a proof based on ultrafilters.
+  See also https://math.stanford.edu/~conrad/Perfseminar/refs/wedhornadic.pdf §3.4,
+https://perso.ens-lyon.fr/sophie.morel/adic_notes.pdf §I.2.5. -/
 instance : SpectralSpace (Place R K) := by
   sorry
 
@@ -220,23 +222,64 @@ theorem Is1DFunctionField.iff_exists_transcendental_finiteDimensional :
 
 namespace Place
 
+open AlgebraicGeometry CategoryTheory
+
+noncomputable def _root_.IsHomeomorph.toRingedSpaceIso
+    {X Y : RingedSpace} (f : X ⟶ Y) (homeo : IsHomeomorph f.base)
+    (bij : ∀ x : X, Function.Bijective (f.stalkMap x)) :
+    X ≅ Y :=
+  have : Epi f.base := (TopCat.epi_iff_surjective _).mpr homeo.bijective.2
+  have (x : X) : IsIso (f.stalkMap x) := (ConcreteCategory.isIso_iff_bijective _).mpr (bij x)
+  have := (SheafedSpace.IsOpenImmersion.of_stalk_iso f homeo.isOpenEmbedding).to_iso
+  asIso f
+
+noncomputable def _root_.IsHomeomorph.toLocallyRingedSpaceIso
+    {X Y : LocallyRingedSpace} (f : X ⟶ Y) (homeo : IsHomeomorph f.base)
+    (bij : ∀ x : X, Function.Bijective (f.stalkMap x)) :
+    X ≅ Y :=
+  sorry
+  -- nontrivial; need to show the inverse also induces local ring homs on stalks
+  -- use `isLocalHom_equiv` and `AlgebraicGeometry.PresheafedSpace.stalkMap.isIso` (instance)
+
+def locallyRingedSpace.restrictToSpec (f : K) :
+    (locallyRingedSpace R K).restrict (basicOpen R {f}).isOpenEmbedding ⟶
+    Spec.toLocallyRingedSpace.obj (.op <| .of <| integralClosure (adjoin R {f}) K) :=
+  ΓSpec.locallyRingedSpaceAdjunction.homEquiv _ _ <| .op <| by
+    -- develop API to work with LRS morphisms from Γ-Spec adjunction?
+    sorry -- construct ring hom from `integralClosure R[f] K` to sections over `basicOpen R {f}`
+
+open Polynomial in
+attribute [local instance] FractionRing.liftAlgebra in
+theorem _root_.Polynomial.IsN2 {k K : Type*} [Field k] [Field K] [Algebra k[X] K]
+    [FaithfulSMul k[X] K] [FiniteDimensional (FractionRing k[X]) K] :
+    Module.Finite k[X] (integralClosure k[X] K) := by
+  sorry -- see https://stacks.math.columbia.edu/tag/032O for a proof
+  /- [Hartshorne, Theorem I.3.9A] (finiteness of integral closure) refers to
+    GTM 28 by Zariski and Samuel, Ch. V, Theorem 9 on p.267-268. -/
+  /- Corollary: `integralClosure k[X] K` is Noetherian, therefore Dedekind (still true if k[X]
+    replaced by any Dedekind domain by Krull–Akizuki, which we're not going to prove here).
+      Localizations at primes are therefore (discrete) valuation rings.
+      Transporting this to `adjoin k {f}` (isomorphic to `k[X]` if `f` transcendental),
+    we see that `restrictToSpec` is surjective.
+      When K/k is 1D function field, this shows every place other than the generic point is
+    a discrete valuation ring, recovering [Stichtenoth, Theorem 1.1.6].
+      TODO: connect Dedekind to regularity/smoothness so we can really claim
+    resolution of singularities. -/
+
 variable [Is1DFunctionField k K]
 
-/- show all places other than the generic point are discrete valuation rings
-(`IsDiscreteValuationRing`), see [Stichtenoth, Theorem 1.1.6]. -/
+def locallyRingedSpace.restrictIsoSpec (f : K) (hf : Transcendental k f) :
+    (locallyRingedSpace k K).restrict (basicOpen k {f}).isOpenEmbedding ≅
+    Spec.toLocallyRingedSpace.obj (.op <| .of <| integralClosure (adjoin k {f}) K) := by
+  refine IsHomeomorph.toLocallyRingedSpaceIso (restrictToSpec k K f) ?_ ?_
+  · sorry -- show homeomorphism, c.f. [Hartshorne, Lemma I.6.5]
+  · sorry -- show iso on stalks
 
 def scheme : Scheme where
-  __ := Place.locallyRingedSpace k K
-  local_affine := sorry
-  /- Sketch: show `basicOpen k f` for transcendental `f` is isomorphic to Spec B,
-    where B is the integral closure of k[f] in K, c.f. [Hartshorne, Lemma I.6.5].
-    The map to Spec B can be constructed using Gamma-Spec adjunction.
-
-    B is a Dedekind domain by [Hartshorne, Theorem I.6.3A] (a corollary of Krull–Akizuki,
-    https://stacks.math.columbia.edu/tag/00PG).
-    IsIntegralClosure.isDedekindDomain is a version with extra separability assumption.
-    finiteness + integrally closed implies Dedekind in this case.
-    Dedekind connects to regularity, smoothness → resolution of singularity. -/
+  __ := locallyRingedSpace k K
+  local_affine x := sorry
+    /- pick any k-transcendental element in K; for each place v either f ∈ v or f⁻¹ ∈ v,
+      so v ∈ basicOpen k {f} or v ∈ basicOpen k {f⁻¹}. Now use `restrictIsoSpec`. -/
 
 instance : CompactSpace (scheme k K) := inferInstanceAs <| CompactSpace <| Place k K
 
@@ -250,9 +293,7 @@ universe u
 
 variable (k K : Type u) [Field k] [Field K] [Algebra k K] [Is1DFunctionField k K]
 
-def structureMorphism : scheme k K ⟶ Spec (.of k) := sorry
--- use Gamma-Spec adjunction
--- the locallyRingedSpace version should also satisfy the valuative criterion
+def structureMorphism : scheme k K ⟶ Spec (.of k) := sorry -- use Γ-Spec adjunction
 
 instance : QuasiCompact (structureMorphism k K) :=
   (quasiCompact_iff_compactSpace _).mpr inferInstance
@@ -261,13 +302,15 @@ instance : QuasiSeparated (structureMorphism k K) :=
   (quasiSeparated_iff_quasiSeparatedSpace _).mpr inferInstance
 
 instance : LocallyOfFiniteType (structureMorphism k K) := by
-  sorry -- requires [Hartshorne, Theorem I.3.9A] (finiteness of integral closure)
-  -- It's better to prove the more general result https://stacks.math.columbia.edu/tag/032O
+  sorry  -- follows from `Polynomial.IsN2`
 
 instance : IsProper (structureMorphism k K) := .of_valuativeCriterion _ <| by
   sorry
 
-/- Following [Hartshorne, Theorem I.6.9] it is possible to show `Place.scheme k K`
+/- We don't have a valuative criterion for LocallyRingedSpace; if we had it should be satisfied
+even when K/k isn't a 1D function field.
+
+  Following [Hartshorne, Theorem I.6.9] it is possible to show `Place.scheme k K`
 is in fact projective over `k`. -/
 
 end SameUniverse

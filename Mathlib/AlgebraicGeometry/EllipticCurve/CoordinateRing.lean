@@ -126,7 +126,9 @@ theorem separable_twoTorsionPolynomial : E.twoTorsionPolynomial.toPoly.Separable
 
 /- By `trace_sq_sub_four_mul_norm`, `q² * E.twoTorsionPolynomial` is in K[X],
 but `E.twoTorsionPolynomial` is separable, hence squarefree, so q ∈ K[X].
-Use  `Polynomial.Separable.squarefree` and factorization in `UniqueFactorizationMonoid`. -/
+Use  `Polynomial.Separable.squarefree` and
+`UniqueFactorizationMonoid.squarefree_iff_nodup_normalizedFactors`.
+Maybe extract a lemma for `UniqueFactorizationMonoid`. -/
 theorem right_mem_of_isIntegral : q ∈ toRatFunc.range := by
   sorry
 
