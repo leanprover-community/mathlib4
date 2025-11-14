@@ -343,9 +343,12 @@ theorem isVonNBounded_sub :
 end IsTopologicalAddGroup
 
 /-- The union of all bounded set is the whole space. -/
-theorem isVonNBounded_covers : ⋃₀ setOf (IsVonNBounded 𝕜) = (Set.univ : Set E) :=
+theorem sUnion_isVonNBounded_eq_univ : ⋃₀ setOf (IsVonNBounded 𝕜) = (Set.univ : Set E) :=
   Set.eq_univ_iff_forall.mpr fun x =>
     Set.mem_sUnion.mpr ⟨{x}, isVonNBounded_singleton _, Set.mem_singleton _⟩
+
+@[deprecated (since := "2025-11-14")]
+alias isVonNBounded_covers := sUnion_isVonNBounded_eq_univ
 
 variable (𝕜 E)
 
