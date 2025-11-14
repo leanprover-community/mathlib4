@@ -65,7 +65,13 @@ variable {K} in
 But we no longer have `D(f * g) = D(f) ∩ D(g)`, so these form a subbasis, not a basis. -/
 def basicOpen (s : Finset K) : Opens (Place R K) where
   carrier := {v | (s : Set K) ⊆ v}
-  is_open' := by sorry
+  is_open' := by
+    convert isOpen_biInter_finset (s := s) (f := fun k => {v : Place R K | k ∈ v}) <|
+      fun f _ => isOpen_generateFrom_of_mem ⟨f, rfl⟩
+    ext x
+    refine ⟨?_, fun hx f hf => Set.mem_iInter.mp (Set.mem_iInter.mp hx f) hf⟩
+    rintro hx U ⟨i, rfl⟩ j ⟨z, rfl⟩
+    exact hx z
 
 theorem basicOpen_eq_top_iff {s : Finset K} :
     basicOpen R s = ⊤ ↔ (s : Set K) ⊆ integralClosure R K := by
