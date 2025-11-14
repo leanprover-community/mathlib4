@@ -238,7 +238,7 @@ lemma homologyMap_map_of_eq_neg_succ (n : ℕ) [NeZero n] (m : ℤ) (hmn : m = -
   congr 1
   rw [← cancel_epi (HomologicalComplex.pOpcycles ..)]
   obtain rfl : m = .negSucc n := hmn
-  simp [ConnectData.map, -Int.natCast_add]
+  simp
 
 end ConnectData
 
