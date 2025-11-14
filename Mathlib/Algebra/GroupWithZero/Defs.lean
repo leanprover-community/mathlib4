@@ -5,7 +5,6 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Logic.Nontrivial.Defs
-import Mathlib.Tactic.SplitIfs
 import Mathlib.Logic.Basic
 
 /-!
@@ -230,7 +229,7 @@ section
 variable [CancelMonoidWithZero M₀] {x : M₀}
 
 lemma eq_zero_or_one_of_sq_eq_self (hx : x ^ 2 = x) : x = 0 ∨ x = 1 :=
-  or_iff_not_imp_left.mpr (mul_left_injective₀ · <| by simpa [sq] using hx)
+  Classical.or_iff_not_imp_left.mpr (mul_left_injective₀ · <| by simpa [sq] using hx)
 
 end
 

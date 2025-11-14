@@ -6,7 +6,10 @@ Authors: Mario Carneiro, Johan Commelin
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Option.Basic
 import Mathlib.Logic.Nontrivial.Basic
-import Mathlib.Tactic.Common
+import Mathlib.Tactic.Coe
+import Mathlib.Tactic.Lift
+import Mathlib.Tactic.SimpRw
+import Mathlib.Tactic.Spread
 
 /-!
 # Adjoining a zero/one to semigroups and related algebraic structures
