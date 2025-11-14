@@ -39,39 +39,6 @@ open scoped PowerSeries.WithPiTopology
 namespace Nat.Partition
 variable {R : Type*} [CommSemiring R]
 
-/-- Convert a `Partition n` to a member of `(Finset.Icc 1 n).finsuppAntidiag n`
-(see `Nat.Partition.toFinsuppAntidiag_mem_finsuppAntidiag` for the proof).
-`p.toFinsuppAntidiag i` is defined as `i` times the number of occurrence of `i` in `p`. -/
-def toFinsuppAntidiag {n : ℕ} (p : Partition n) : ℕ →₀ ℕ where
-  toFun m := p.parts.count m * m
-  support := p.parts.toFinset
-  mem_support_toFun m := by
-    suffices m ∈ p.parts → m ≠ 0 by simpa
-    grind [→ parts_pos]
-
-theorem toFinsuppAntidiag_injective (n : ℕ) :
-    Function.Injective (toFinsuppAntidiag (n := n)) := by
-  unfold toFinsuppAntidiag
-  intro p q h
-  rw [Finsupp.mk.injEq] at h
-  obtain ⟨hfinset, hcount⟩ := h
-  rw [Nat.Partition.ext_iff, Multiset.ext]
-  intro m
-  obtain rfl | h0 := Nat.eq_zero_or_pos m
-  · grind [Multiset.count_eq_zero, → parts_pos]
-  · exact Nat.eq_of_mul_eq_mul_right h0 <| funext_iff.mp hcount m
-
-theorem toFinsuppAntidiag_mem_finsuppAntidiag {n : ℕ} (p : Partition n) :
-    p.toFinsuppAntidiag ∈ (Icc 1 n).finsuppAntidiag n := by
-  have hp : p.parts.toFinset ⊆ Icc 1 n := by
-    grind [Multiset.mem_toFinset, mem_Icc, → parts_pos]
-  suffices ∑ m ∈ Icc 1 n, Multiset.count m p.parts * m = n by simpa [toFinsuppAntidiag, hp]
-  convert ← p.parts_sum
-  rw [sum_multiset_count]
-  apply sum_subset hp
-  suffices ∀ (x : ℕ), 1 ≤ x → x ≤ n → x ∉ p.parts → x ∉ p.parts ∨ x = 0 by simpa
-  grind [→ parts_pos]
-
 /-- Generating function associated with character $f(i, c)$ for partition functions, where $i$ is a
 part of the partition, and $c$ is the count of that part in the partition. The character function is
 multiplied within one `n.Partition`, and summed among all `n.Partition` for a fixed `n`. This way,
