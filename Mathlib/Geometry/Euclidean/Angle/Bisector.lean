@@ -111,8 +111,7 @@ variable [Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
 
 attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
 
--- This lemma and subsequent lemmas have hypotheses after the colon so that `Nonempty` instances
--- (derived from hypotheses before the colon) can be in scope when `orthogonalProjection` is used.
+-- See https://github.com/leanprover/lean4/issues/11182 for why hypotheses are after the colon.
 /-- A point `p` is equidistant to two affine subspaces (typically lines, for this version of the
 lemma) if the oriented angles at a point `p'` in their intersection between `p` and its orthogonal
 projections onto the subspaces are equal. -/
@@ -129,6 +128,7 @@ lemma dist_orthogonalProjection_eq_of_oangle_eq {p p' : P} {s₁ s₂ : AffineSu
       angle_eq_iff_oangle_eq_or_wbtw hp₁ hp₂]
   exact .inl h
 
+-- See https://github.com/leanprover/lean4/issues/11182 for why hypotheses are after the colon.
 /-- The oriented angles at a point `p'` in their intersection between `p` and its orthogonal
 projections onto two affine subspaces (typically lines, for this version of the lemma) are equal
 if `p` is equidistant to the two subspaces. -/
@@ -189,6 +189,7 @@ lemma oangle_eq_of_dist_orthogonalProjection_eq {p p' : P} {s₁ s₂ : AffineSu
     rw [Set.pair_comm] at h'
     exact hc h'
 
+-- See https://github.com/leanprover/lean4/issues/11182 for why hypotheses are after the colon.
 /-- A point `p` is equidistant to two affine subspaces (typically lines, for this version of the
 lemma) if and only if the oriented angles at a point `p'` in their intersection between `p` and
 its orthogonal projections onto the subspaces are equal. -/
@@ -204,6 +205,7 @@ lemma dist_orthogonalProjection_eq_iff_oangle_eq {p p' : P} {s₁ s₂ : AffineS
   fun hne hp₁ hp₂ ↦ ⟨oangle_eq_of_dist_orthogonalProjection_eq hp' hne,
    dist_orthogonalProjection_eq_of_oangle_eq hp' hp₁ hp₂⟩
 
+-- See https://github.com/leanprover/lean4/issues/11182 for why hypotheses are after the colon.
 /-- A point `p` is equidistant to two affine subspaces (typically lines, for this version of the
 lemma) if twice the oriented angles at a point `p'` in their intersection between `p` and its
 orthogonal projections onto the subspaces are equal. -/
