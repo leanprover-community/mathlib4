@@ -116,7 +116,7 @@ lemma diagonal_eq_sum_single {R : Type*} [AddCommMonoid R] {ι : Type*} [Fintype
     (f : ι → R) : Matrix.diagonal f = ∑ i : ι, single i i (f i) := ext fun j k ↦ by
   rw [sum_apply, diagonal_apply, Finset.sum_eq_single j] <;> simp +contextual [single]
 
-lemma one_eq_sum_single {R : Type*} [AddCommMonoidWithOne R] {ι : Type*} [Fintype ι]
+lemma one_eq_sum_single {R : Type*} [AddCommMonoid R] [One R] {ι : Type*} [Fintype ι]
     [DecidableEq ι] : (1 : Matrix ι ι R) = ∑ i : ι, single i i 1 :=
   diagonal_eq_sum_single _
 
