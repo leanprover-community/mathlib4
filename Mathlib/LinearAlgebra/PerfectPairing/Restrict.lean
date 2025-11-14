@@ -242,7 +242,7 @@ private lemma restrictScalars_field_aux
   obtain ⟨n, -, b', -⟩ := p.exists_basis_basis_of_span_eq_top_of_mem_algebraMap _ _ hM hN <| by
     rintro - ⟨m, rfl⟩ - ⟨n, rfl⟩
     exact hp m n
-  have : FiniteDimensional K (LinearMap.range i) := FiniteDimensional.of_fintype_basis b'
+  have : FiniteDimensional K (LinearMap.range i) := b'.finiteDimensional_of_finite
   exact Finite.equiv (LinearEquiv.ofInjective i hi).symm
 
 include hi hj in
