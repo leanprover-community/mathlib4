@@ -282,7 +282,7 @@ theorem isUnit_of_sub_one_mem_jacobson_bot (r : R) (h : r - 1 ∈ jacobson (⊥ 
     IsUnit r := by
   obtain ⟨s, hs⟩ := exists_mul_sub_mem_of_sub_one_mem_jacobson r h
   rw [mem_bot, sub_eq_zero, mul_comm] at hs
-  exact isUnit_of_mul_eq_one _ _ hs
+  exact .of_mul_eq_one _ hs
 
 theorem mem_jacobson_bot {x : R} : x ∈ jacobson (⊥ : Ideal R) ↔ ∀ y, IsUnit (x * y + 1) :=
   ⟨fun hx y =>
