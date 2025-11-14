@@ -26,7 +26,7 @@ open CategoryTheory
 
 /-- The category of semirings. -/
 structure SemiRingCat where
-  /-- The object in the category of R-algebras associated to a type equipped with the appropriate
+  /-- The object in the category of semirings associated to a type equipped with the appropriate
   typeclasses. -/
   of ::
   /-- The underlying type. -/
