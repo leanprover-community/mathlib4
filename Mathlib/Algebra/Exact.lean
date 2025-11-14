@@ -523,4 +523,10 @@ noncomputable def Function.Exact.linearEquivOfSurjective (h : Function.Exact f g
   LinearEquiv.ofBijective ((LinearMap.range f).liftQ g (h · |>.mpr))
     ⟨LinearMap.injective_range_liftQ_of_exact h, LinearMap.surjective_range_liftQ _ hg⟩
 
+@[simp]
+lemma Function.Exact.linearEquivOfSurjective_symm_apply (h : Function.Exact f g)
+    (hg : Function.Surjective g) (x : N) :
+    (h.linearEquivOfSurjective hg).symm (g x) = Submodule.Quotient.mk x := by
+  simp [LinearEquiv.symm_apply_eq]
+
 end Ring

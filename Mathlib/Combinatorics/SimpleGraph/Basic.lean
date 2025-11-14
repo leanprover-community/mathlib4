@@ -436,6 +436,11 @@ theorem mem_edgeSet : s(v, w) ∈ G.edgeSet ↔ G.Adj v w :=
 theorem not_isDiag_of_mem_edgeSet : e ∈ edgeSet G → ¬e.IsDiag :=
   Sym2.ind (fun _ _ => Adj.ne) e
 
+@[simp] lemma not_mem_edgeSet_of_isDiag : e.IsDiag → e ∉ edgeSet G :=
+  imp_not_comm.1 G.not_isDiag_of_mem_edgeSet
+
+alias _root_.Sym2.IsDiag.not_mem_edgeSet := not_mem_edgeSet_of_isDiag
+
 theorem edgeSet_inj : G₁.edgeSet = G₂.edgeSet ↔ G₁ = G₂ := (edgeSetEmbedding V).eq_iff_eq
 
 @[simp]
@@ -588,10 +593,16 @@ theorem fromEdgeSet_edgeSet : fromEdgeSet G.edgeSet = G := by
   ext v w
   exact ⟨fun h => h.1, fun h => ⟨h, G.ne_of_adj h⟩⟩
 
+lemma edgeSet_eq_iff : G.edgeSet = s ↔ G = fromEdgeSet s ∧ Disjoint s {e | e.IsDiag} where
+  mp := by rintro rfl; simp +contextual [Set.disjoint_right]
+  mpr := by rintro ⟨rfl, hs⟩; simp [hs]
+
 @[simp]
 theorem fromEdgeSet_empty : fromEdgeSet (∅ : Set (Sym2 V)) = ⊥ := by
   ext v w
   simp only [fromEdgeSet_adj, Set.mem_empty_iff_false, false_and, bot_adj]
+
+@[simp] lemma fromEdgeSet_not_isDiag : fromEdgeSet {e : Sym2 V | ¬ e.IsDiag} = ⊤ := by ext; simp
 
 @[simp]
 theorem fromEdgeSet_univ : fromEdgeSet (Set.univ : Set (Sym2 V)) = ⊤ := by
@@ -813,6 +824,26 @@ def incidenceSetEquivNeighborSet (v : V) : G.incidenceSet v ≃ G.neighborSet v 
     exact incidence_other_neighbor_edge _ hw
 
 end Incidence
+
+section IsCompleteBetween
+
+variable {s t : Set V}
+
+/-- The condition that the portion of the simple graph `G` _between_ `s` and `t` is complete, that
+is, every vertex in `s` is adjacent to every vertex in `t`, and vice versa. -/
+def IsCompleteBetween (G : SimpleGraph V) (s t : Set V) :=
+  ∀ ⦃v₁⦄, v₁ ∈ s → ∀ ⦃v₂⦄, v₂ ∈ t → G.Adj v₁ v₂
+
+theorem IsCompleteBetween.disjoint (h : G.IsCompleteBetween s t) : Disjoint s t :=
+  Set.disjoint_left.mpr fun v hv₁ hv₂ ↦ (G.loopless v) (h hv₁ hv₂)
+
+theorem isCompleteBetween_comm : G.IsCompleteBetween s t ↔ G.IsCompleteBetween t s where
+  mp h _ h₁ _ h₂ := (h h₂ h₁).symm
+  mpr h _ h₁ _ h₂ := (h h₂ h₁).symm
+
+alias ⟨IsCompleteBetween.symm, _⟩ := isCompleteBetween_comm
+
+end IsCompleteBetween
 
 section Subsingleton
 

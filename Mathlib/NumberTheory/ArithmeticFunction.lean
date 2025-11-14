@@ -9,6 +9,7 @@ import Mathlib.NumberTheory.Divisors
 import Mathlib.Data.Nat.Squarefree
 import Mathlib.Data.Nat.GCD.BigOperators
 import Mathlib.Data.Nat.Factorization.Induction
+import Mathlib.Data.Nat.Factorization.PrimePow
 import Mathlib.Tactic.ArithMult
 
 /-!
@@ -1066,15 +1067,33 @@ theorem cardDistinctFactors_eq_cardFactors_iff_squarefree {n : ℕ} (h0 : n ≠ 
     apply List.nodup_dedup
   · simp [h.dedup, cardFactors]
 
+theorem cardDistinctFactors_eq_one_iff {n : ℕ} : ω n = 1 ↔ IsPrimePow n := by
+  rw [ArithmeticFunction.cardDistinctFactors_apply, isPrimePow_iff_card_primeFactors_eq_one,
+    ← Nat.toFinset_factors, List.card_toFinset]
+
 @[simp]
 theorem cardDistinctFactors_apply_prime_pow {p k : ℕ} (hp : p.Prime) (hk : k ≠ 0) :
-    ω (p ^ k) = 1 := by
-  rw [cardDistinctFactors_apply, hp.primeFactorsList_pow, List.replicate_dedup hk,
-    List.length_singleton]
+    ω (p ^ k) = 1 :=
+  cardDistinctFactors_eq_one_iff.mpr <| hp.isPrimePow.pow hk
 
 @[simp]
 theorem cardDistinctFactors_apply_prime {p : ℕ} (hp : p.Prime) : ω p = 1 := by
   rw [← pow_one p, cardDistinctFactors_apply_prime_pow hp one_ne_zero]
+
+theorem cardDistinctFactors_mul {m n : ℕ} (h : m.Coprime n) : ω (m * n) = ω m + ω n := by
+  simp [cardDistinctFactors_apply, Nat.perm_primeFactorsList_mul_of_coprime h |>.dedup |>.length_eq,
+    Nat.coprime_primeFactorsList_disjoint h |>.dedup_append]
+
+open scoped Function in
+theorem cardDistinctFactors_prod {ι : Type*} {s : Finset ι} {f : ι → ℕ}
+    (h : (s : Set ι).Pairwise (Nat.Coprime on f)) : ω (∏ i ∈ s, f i) = ∑ i ∈ s, ω (f i) := by
+  induction s using Finset.cons_induction_on with
+  | empty => simp
+  | cons a s ha ih =>
+    rw [prod_cons, sum_cons, cardDistinctFactors_mul, ih]
+    · exact fun {x} hx {y} hy hxy => h (by simp [hx]) (by simp [hy]) hxy
+    · exact Coprime.prod_right fun i hi =>
+        h (by simp) (by simp [hi]) (ne_of_mem_of_not_mem hi ha).symm
 
 /-- `μ` is the Möbius function. If `n` is squarefree with an even number of distinct prime factors,
   `μ n = 1`. If `n` is squarefree with an odd number of distinct prime factors, `μ n = -1`.
