@@ -236,8 +236,9 @@ def sheafPushforwardContinuousId' [IsContinuous.{t} F'' J J] :
   sheafPushforwardContinuousIso eF'' _ _ _ ≪≫ sheafPushforwardContinuousId _ _
 
 variable {F G} in
-/-- The composition of two pushforward functors on sheaves identifies to
-the pushforward for the composition of the two functors. -/
+/-- When we have an isomorphism `F ⋙ G ≅ FG` between continuous functors
+between sites, the composition of the pushforward functors for
+`G` and `F` identifies to the pushforward functor for `FG`. -/
 @[simps!]
 def sheafPushforwardContinuousComp'
     [IsContinuous.{t} G K L] [IsContinuous.{t} FG J L] :
