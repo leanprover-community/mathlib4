@@ -254,6 +254,8 @@ def orderCore (only? : Bool) (hyps : Array Expr) (negGoal : Expr) (g : MVarId) :
           throwError "Unexpected Prop" }
         let type : Q(Type u) := type
         let instLinearOrder ← synthInstanceQ q(LinearOrder $type)
+        -- Here we only need to translate the hypotheses,
+        -- since the goal will remain to derive `False`.
         let (_, factsNat) ← translateToInt type instLinearOrder idxToAtom facts
         let factsExpr : Array Expr := factsNat.filterMap fun factNat =>
           match factNat with

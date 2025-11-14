@@ -157,6 +157,11 @@ Additional diagnostic information may be available using the `set_option trace.o
 example (a b c : Set α) : a ∩ (b ∪ c) ≥ (a ∩ b) ∪ (a ∩ c) := by
   order
 
+-- Contrived example for universes not of the form `Sort (u + 1)`.
+example {α : Sort (max (v + 1) (u + 1))} [LinearOrder α] {a b c : α} (hab : a < b)
+    (habc : min a b ≤ c) (hcba : min c b ≤ a) : a = c := by
+  order
+
 -- worst case for the current algorithm
 example [PartialOrder α]
     (x1 y1 : α)
