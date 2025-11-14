@@ -9,7 +9,7 @@ import Mathlib.Tactic.Push
 /-! # Contrapose
 
 The `contrapose` tactic transforms the goal into its contrapositive when that goal is an
-implication or an iff. It also avoids creating double negations if there already is a negation.
+implication or an iff. It also avoids creating a double negation if there already is a negation.
 
 * `contrapose` turns a goal `P → Q` into `¬ Q → ¬ P` and a goal `P ↔ Q` into `¬ P ↔ ¬ Q`
 * `contrapose!` runs `contrapose` and then pushes negations inside `P` and `Q` using `push_neg`
@@ -82,7 +82,7 @@ elab_rules : tactic
     throwTacticEx `contrapose g m!"the goal `{target}` is not of the form `_ → _` or `_ ↔ _`"
 
 /--
-Transforms the goal into its contrapositive and pushes negations in the resulting goal.
+Transforms the goal into its contrapositive and pushes negations in the result.
 Usage matches `contrapose`
 -/
 syntax (name := contrapose!) "contrapose!" (ppSpace colGt ident (" with " ident)?)? : tactic
