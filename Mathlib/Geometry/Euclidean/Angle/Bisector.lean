@@ -208,15 +208,15 @@ lemma dist_orthogonalProjection_eq_iff_oangle_eq {p p' : P} {s₁ s₂ : AffineS
 lemma) if twice the oriented angles at a point `p'` in their intersection between `p` and its
 orthogonal projections onto the subspaces are equal. -/
 lemma dist_orthogonalProjection_eq_of_two_zsmul_oangle_orthogonalProjection_eq {p p' : P}
-    {s₁ s₂ : AffineSubspace ℝ P} (hp' : p' ∈ s₁ ⊓ s₂)
-    (hp₁ : haveI : Nonempty s₁ := ⟨p', hp'.1⟩; orthogonalProjection s₁ p ≠ p')
-    (hp₂ : haveI : Nonempty s₂ := ⟨p', hp'.2⟩; orthogonalProjection s₂ p ≠ p')
-    (h : haveI : Nonempty s₁ := ⟨p', hp'.1⟩; haveI : Nonempty s₂ := ⟨p', hp'.2⟩;
-      (2 : ℤ) • ∡ (orthogonalProjection s₁ p : P) p' p =
-        (2 : ℤ) • ∡ p p' (orthogonalProjection s₂ p)) :
+    {s₁ s₂ : AffineSubspace ℝ P} (hp' : p' ∈ s₁ ⊓ s₂) :
     haveI : Nonempty s₁ := ⟨p', hp'.1⟩
     haveI : Nonempty s₂ := ⟨p', hp'.2⟩
+    orthogonalProjection s₁ p ≠ p' →
+    orthogonalProjection s₂ p ≠ p' →
+    (2 : ℤ) • ∡ (orthogonalProjection s₁ p : P) p' p =
+      (2 : ℤ) • ∡ p p' (orthogonalProjection s₂ p) →
     dist p (orthogonalProjection s₁ p) = dist p (orthogonalProjection s₂ p) := by
+  intro hp₁ hp₂ h
   haveI : Nonempty s₁ := ⟨p', hp'.1⟩
   haveI : Nonempty s₂ := ⟨p', hp'.2⟩
   have h' : ∡ (orthogonalProjection s₁ p : P) p' p = ∡ p p' (orthogonalProjection s₂ p) :=
@@ -311,7 +311,7 @@ lemma two_zsmul_oangle_eq_of_dist_orthogonalProjection_eq {p p₁ p₂ p₃ : P}
     convert ha.affineSpan_eq_top_iff_card_eq_finrank_add_one.2 ?_
     · simp
       grind
-    · simp [hd2.out]
+    · simpa using Fact.out
   have hp := oangle_eq_of_dist_orthogonalProjection_eq
     ⟨left_mem_affineSpan_pair _ _ _, left_mem_affineSpan_pair _ _ _⟩ ho h
   have h₂₁ : p₂ ≠ p₁ := ha.injective.ne (by decide : (1 : Fin 3) ≠ 0)
