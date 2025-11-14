@@ -377,12 +377,12 @@ def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
         let fa : FreeAlgebra R X := Quot.mk (Rel R X) a
         let fb : FreeAlgebra R X := Quot.mk (Rel R X) b
         change liftAux R (F ∘ ι R) (fa + fb) = F (fa + fb)
-        rw [map_add, map_add, ha, hb]
+        grind
       | mul a b ha hb =>
         let fa : FreeAlgebra R X := Quot.mk (Rel R X) a
         let fb : FreeAlgebra R X := Quot.mk (Rel R X) b
         change liftAux R (F ∘ ι R) (fa * fb) = F (fa * fb)
-        rw [map_mul, map_mul, ha, hb] }
+        grind }
 
 @[simp]
 theorem liftAux_eq (f : X → A) : liftAux R f = lift R f := by

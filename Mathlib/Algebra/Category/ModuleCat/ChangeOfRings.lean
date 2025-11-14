@@ -325,7 +325,7 @@ theorem map'_comp {M₁ M₂ M₃ : ModuleCat.{v} R} (l₁₂ : M₁ ⟶ M₂) (
   induction x using TensorProduct.induction_on with
   | zero => rfl
   | tmul => rfl
-  | add _ _ ihx ihy => rw [map_add, map_add, ihx, ihy]
+  | add _ _ ihx ihy => grind
 
 end ExtendScalars
 

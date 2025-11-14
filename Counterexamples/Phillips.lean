@@ -397,7 +397,7 @@ def _root_.ContinuousLinearMap.toBoundedAdditiveMeasure [TopologicalSpace α] [D
         ofNormedAddCommGroupDiscrete (indicator s 1) 1 (norm_indicator_le_one s) +
           ofNormedAddCommGroupDiscrete (indicator t 1) 1 (norm_indicator_le_one t) := by
       ext x; simp [indicator_union_of_disjoint hst]
-    rw [this, f.map_add]
+    grind
   exists_bound :=
     ⟨‖f‖, fun s => by
       have I :
