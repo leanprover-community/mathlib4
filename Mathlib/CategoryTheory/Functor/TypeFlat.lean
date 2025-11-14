@@ -29,10 +29,6 @@ instance [InitiallySmall.{w} C] : FinallySmall.{w} Cᵒᵖ where
 instance [FinallySmall.{w} C] : InitiallySmall.{w} Cᵒᵖ where
   initial_smallCategory := ⟨_, _, (fromFinalModel.{w} C).op, inferInstance⟩
 
---noncomputable def Equivalence.isInitialEquiv {D : Type*} [Category D] (e : C ≌ D) (X : C) :
---    IsInitial X ≃ IsInitial (e.functor.obj X) := by
---  exact IsInitial.isInitialIffObj e.functor X
-
 namespace Presheaf
 
 variable {F : C ⥤ Type w} [LocallySmall.{w} C]
