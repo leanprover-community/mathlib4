@@ -224,7 +224,7 @@ lemma homologyMap_map_of_eq_succ (n : ℕ) [NeZero n] (m : ℤ) (hmn : m = n)
   congr 1
   rw [← cancel_epi (HomologicalComplex.pOpcycles ..)]
   subst hmn
-  simp [ConnectData.map, -Int.natCast_add]
+  simp
 
 lemma homologyMap_map_of_eq_neg_succ (n : ℕ) [NeZero n] (m : ℤ) (hmn : m = -↑(n + 1))
     [HasHomology h.cochainComplex m] [HasHomology K n]
