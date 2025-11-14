@@ -3,33 +3,31 @@ Copyright (c) 2025 Judith Ludwig and Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Junyan Xu
 -/
-import Mathlib.Algebra.Group.Subgroup.Defs
-import Mathlib.Algebra.Order.Group.Unbundled.Basic
-import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Algebra.Group.Subgroup.Ker
-import Mathlib.Algebra.Order.Hom.Monoid
-import Mathlib.SetTheory.Cardinal.Finite
-import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Data.Real.Embedding
-import Mathlib.RingTheory.Valuation.RankOne
+import Mathlib.Algebra.Group.Subgroup.Order
 import Mathlib.Algebra.Order.Archimedean.Class
-import Mathlib.Order.Interval.Set.OrdConnected
+import Mathlib.Data.Finite.Card
+import Mathlib.Data.Real.Embedding
+import Mathlib.Data.Set.Card
+import Mathlib.GroupTheory.QuotientGroup.Defs
 import Mathlib.Order.Birkhoff
 
 /-! # Convex subgroups of a linearly ordered abelian group -/
 
 variable {α β : Type*} [CommGroup α] [LinearOrder α] [CommGroup β] [LinearOrder β]
 
-/-- A subgroup `H` of a linearly ordered abelian group is convex, if for any `a, b` such that
-`a ≤ b ≤ 1`, `a ∈ H` implies `b ∈ H`. -/
-@[to_additive] def IsConvexSubgroup (H : Subgroup α) : Prop :=
+/-- A subgroup `H` of a linearly ordered abelian group is convex, if for any `a ≤ b ≤ 1`,
+`a ∈ H` implies `b ∈ H`. -/
+@[to_additive /-- A subgroup `H` of a linearly ordered additive abelian group is convex,
+if for any `a ≤ b ≤ 0`, `a ∈ H` implies `b ∈ H`. -/]
+def IsConvexSubgroup (H : Subgroup α) : Prop :=
   ∀ ⦃a b : α⦄, a ≤ b → b ≤ 1 → a ∈ H → b ∈ H
 
+/-- The type of convex subgroups of a linearly ordered additive abelian group. -/
 structure ConvexAddSubgroup (α) [AddCommGroup α] [LinearOrder α] extends AddSubgroup α where
   convex : IsConvexAddSubgroup toAddSubgroup
 
 variable (α) in
+/-- The type of convex subgroups of a linearly ordered abelian group. -/
 @[to_additive (attr := ext)] structure ConvexSubgroup extends Subgroup α where
   convex : IsConvexSubgroup toSubgroup
 
@@ -191,56 +189,32 @@ theorem coe_min : min G H = (G : Set α) ∩ H := rfl
     exact lt_irrefl _ <| (hab _ rfl).trans (hba _ rfl)
   toDecidableLE := Classical.decRel _
 
-@[to_additive] private lemma QuotientGroup.mul_le_mul_left (x y z : α ⧸ G) (le : x ≤ y) :
-    z * x ≤ z * y := by
-  intro ca hca
-  obtain ⟨b, rfl, hb⟩ := le _ x.out_eq
-  exact ⟨ca * x.out⁻¹ * b, by simp [hca], by simpa [mul_assoc]⟩
+@[to_additive] instance : IsOrderedMonoid (α ⧸ G) :=
+  have {x y z : α ⧸ G} (le : x ≤ y) : z * x ≤ z * y := fun ca hca ↦ by
+    obtain ⟨b, rfl, hb⟩ := le _ x.out_eq
+    exact ⟨ca * x.out⁻¹ * b, by simp [hca], by simpa [mul_assoc]⟩
+  { mul_le_mul_left _ _ le _ := this le
+    mul_le_mul_right _ _ le z := by simpa only [← mul_comm z] using this le }
 
-@[to_additive] instance : IsOrderedMonoid (α ⧸ G) where
-  mul_le_mul_left _ _ le _ := QuotientGroup.mul_le_mul_left _ _ _ _ le
-  mul_le_mul_right _ _ le z := by
-    simp_rw [← mul_comm z]; exact QuotientGroup.mul_le_mul_left _ _ _ _ le
-
-@[to_additive] def QuotientGroup.mkOrderedMonoidHom : α →*o α ⧸ G where
+/-- The quotient map by a convex subgroup as an ordered group homomorphism. -/
+@[to_additive
+/-- The quotient map by a convex subgroup as an ordered additive group homomorphism. -/]
+def QuotientGroup.mkOrderedMonoidHom : α →*o α ⧸ G where
   __ := QuotientGroup.mk' G.toSubgroup
   monotone' a b le a' eq := ⟨a' * a⁻¹ * b, by simp [eq], by simp [mul_assoc, le]⟩
 
--- remove this?
-@[to_additive] lemma QuotientGroup.monotone_mk : Monotone (β :=  α ⧸ G) (⟦·⟧) :=
-  (QuotientGroup.mkOrderedMonoidHom _).monotone'
-
 end ConvexSubgroup
-
-section ToBeMoved
 
 variable [IsOrderedMonoid α]
 
-@[to_additive] theorem FiniteMulArchimedeanClass.min_le_mk_mul (a b : α) (ha : a ≠ 1) (hb : b ≠ 1)
-    (hab : a * b ≠ 1) : min (mk a ha) (mk b hb) ≤ mk (a * b) hab :=
-  MulArchimedeanClass.min_le_mk_mul a b
-
-@[to_additive] theorem FiniteMulArchimedeanClass.mk_inv (a : α) (ha : a ≠ 1) :
-    mk a⁻¹ (by simp [ha]) = mk a ha :=
-  Subtype.ext (MulArchimedeanClass.mk_inv a)
-
 @[to_additive] theorem ConvexSubgroup.mem_of_finiteMulArchimedeanClass_mk_le
-    (G : ConvexSubgroup α) {a b : α} {ha1 : a ≠ 1} {hb1 : b ≠ 1}
+    {G : ConvexSubgroup α} {a b : α} {ha1 : a ≠ 1} {hb1 : b ≠ 1}
     (le : FiniteMulArchimedeanClass.mk a ha1 ≤ .mk b hb1)
     (haG : a ∈ G) : b ∈ G := by
   rw [FiniteMulArchimedeanClass.mk_le_mk, MulArchimedeanClass.mk_le_mk] at le
   have ⟨n, le⟩ := le
   exact mabs_mem_iff.mp <| (IsConvexSubgroup.iff_ordConnected.mp G.convex).1
     G.one_mem (G.pow_mem (by simpa) _) ⟨one_le_mabs _, le⟩
-
-noncomputable def UpperSet.orderIsoWithTopOfFinite {α} [LinearOrder α] [Finite α] :
-    UpperSet α ≃o WithTop α :=
-  WithTop.subtypeOrderIso.symm.trans <| .withTopCongr <| .trans
-    (.setCongr {⊤}ᶜ (setOf InfIrred) <| by ext; simp) <| .symm .infIrredUpperSet
-
-end ToBeMoved
-
-variable [IsOrderedMonoid α]
 
 /-- The (convex) subgroup of a linearly ordered group consisting of all elements lying
 in an upper set of `FiniteMulArchimedeanClass`es. -/
@@ -255,17 +229,17 @@ def UpperSet.finiteMulArchimedeanClassToSubgroup
     · simp_rw [one_mul] at hab ⊢; exact hb hab
     obtain rfl | hb1 := eq_or_ne b 1
     · simp_rw [mul_one] at hab ⊢; exact ha hab
-    apply s.upper (FiniteMulArchimedeanClass.min_le_mk_mul a b ha1 hb1 hab)
-    obtain eq | eq := min_choice (FiniteMulArchimedeanClass.mk a ha1)
-      (FiniteMulArchimedeanClass.mk b hb1) <;> rw [eq]
+    apply s.upper (FiniteMulArchimedeanClass.min_le_mk_mul ha1 hb1 hab)
+    obtain eq | eq := min_choice (FiniteMulArchimedeanClass.mk a ha1) (.mk b hb1) <;> rw [eq]
     exacts [ha ha1, hb hb1]
   one_mem' ha := (ha rfl).elim
-  inv_mem' {a} ha ha1 := by rw [FiniteMulArchimedeanClass.mk_inv a (by simpa using ha1)]; exact ha _
+  inv_mem' {a} ha ha1 := by rw [FiniteMulArchimedeanClass.mk_inv (by simpa using ha1)]; exact ha _
 
 /-- The convex subgroups of a linearly ordered group are in bijection with upper sets of
 `FiniteMulArchimedeanClass`es. -/
 @[to_additive /-- The convex subgroups of a linearly ordered additive group are in bijection with
-upper sets of `FiniteArchimedeanClass`es. -/] def ConvexSubgroup.equivUpperSet :
+upper sets of `FiniteArchimedeanClass`es. -/]
+def ConvexSubgroup.equivUpperSet :
     ConvexSubgroup α ≃ UpperSet (FiniteMulArchimedeanClass α) where
   toFun G := .mk {x | ∃ a : α, ∃ ha : a ≠ 1, a ∈ G ∧ x = .mk a ha} fun x y le ↦ by
     rintro ⟨a, ha1, haG, rfl⟩
@@ -304,28 +278,23 @@ namespace LinearOrderedCommGroup
 
 variable (α) in
 /-- The height of a totally ordered abelian group is the number of non-trivial convex subgroups. -/
-@[to_additive] noncomputable def height : ℕ∞ := .card (ConvexSubgroup α) - 1
+@[to_additive /-- The height of a totally ordered additive abelian group
+is the number of non-trivial convex subgroups. -/]
+noncomputable def height : ℕ∞ := .card {G : ConvexSubgroup α // G ≠ ⊥}
 
 omit [IsOrderedMonoid α] in
-@[to_additive] theorem height_eq_card_subtype :
-    height α = .card {G : ConvexSubgroup α // G ≠ ⊥} := by
+@[to_additive] theorem height_eq_card_convexSubgroup_sub_one :
+    height α = .card (ConvexSubgroup α) - 1 := by
   apply ENat.add_right_injective_of_ne_top ENat.one_ne_top
-  dsimp only
-  convert (congr_arg Cardinal.toENat (Cardinal.mk_sum_compl {(⊥ : ConvexSubgroup α)})).symm
-  · rw [height, ENat.card, add_tsub_cancel_of_le]
-    apply (ENat.one_le_card_iff_nonempty _).mpr inferInstance
+  convert congr_arg Cardinal.toENat (Cardinal.mk_sum_compl {(⊥ : ConvexSubgroup α)})
   · simp; rfl
+  · exact add_tsub_cancel_of_le ((ENat.one_le_card_iff_nonempty _).mpr inferInstance)
 
 theorem height_eq_zero_iff : height α = 0 ↔ Subsingleton α := by
-  constructor <;> rw [height_eq_card_subtype]
-  · simp only [ne_eq, ENat.card_eq_zero_iff_empty]
-    contrapose!; intro
-    simpa using exists_ne _
-  · intro _
-    rw [ENat.card_eq_zero_iff_empty, isEmpty_iff]
-    simp only [ne_eq, Subtype.forall, imp_false, Decidable.not_not]
-    intro G
-    apply Subsingleton.elim
+  rw [height, ENat.card_eq_zero_iff_empty]
+  constructor <;> intro h
+  · contrapose! h; simpa using exists_ne _
+  · simpa [isEmpty_iff, eq_comm] using Subsingleton.elim _
 
 end LinearOrderedCommGroup
 
@@ -333,15 +302,17 @@ lemma finite_finiteMulArchimedeanClass_iff_convexSubgroup :
     Finite (FiniteMulArchimedeanClass α) ↔ Finite (ConvexSubgroup α) := by
   rw [ConvexSubgroup.equivUpperSet.finite_iff]
   constructor <;> intro
-  · rw [UpperSet.orderIsoWithTopOfFinite.toEquiv.finite_iff, WithTop]; infer_instance
+  · rw [OrderIso.upperSetWithTopOfFinite.toEquiv.finite_iff, WithTop]; infer_instance
   · exact .of_injective _ (OrderEmbedding.infIrredUpperSet.toEmbedding.trans (.subtype _)).injective
 
+open LinearOrderedCommGroup
+
 lemma height_eq_card_finiteMulArchimedeanClass :
-    LinearOrderedCommGroup.height α = ENat.card (FiniteMulArchimedeanClass α) := by
-  rw [LinearOrderedCommGroup.height]
+    height α = ENat.card (FiniteMulArchimedeanClass α) := by
+  rw [height_eq_card_convexSubgroup_sub_one]
   by_cases fin : Finite (FiniteMulArchimedeanClass α)
   · simp_rw [ENat.card_congr <| ConvexSubgroup.equivUpperSet.trans
-      UpperSet.orderIsoWithTopOfFinite.toEquiv, ENat.card, WithTop, ← Nat.cast_card,
+      OrderIso.upperSetWithTopOfFinite.toEquiv, ENat.card, WithTop, ← Nat.cast_card,
       Finite.card_option, Nat.cast_add, map_add, map_natCast]
     rfl
   · have := finite_finiteMulArchimedeanClass_iff_convexSubgroup.not.mp fin
@@ -349,20 +320,19 @@ lemma height_eq_card_finiteMulArchimedeanClass :
     simp_rw [ENat.card_eq_top_of_infinite]
     rfl
 
-lemma mulArchimedean_iff_height_le_one :
-    MulArchimedean α ↔ LinearOrderedCommGroup.height α ≤ 1 := by
+lemma mulArchimedean_iff_height_le_one : MulArchimedean α ↔ height α ≤ 1 := by
   rw [height_eq_card_finiteMulArchimedeanClass, ENat.card_le_one_iff_subsingleton,
     mulArchimedean_iff_subsingleton_finiteMulArchimedeanClass]
 
-lemma mulArchimedean_iff_exists_orderMonoidHom : MulArchimedean α ↔
-    ∃ f : α →*o Multiplicative ℝ, Function.Injective f where
+lemma mulArchimedean_iff_exists_orderMonoidHom :
+    MulArchimedean α ↔ ∃ f : α →*o Multiplicative ℝ, Function.Injective f where
   mp _ := have ⟨f, hf⟩ := Archimedean.exists_orderAddMonoidHom_real_injective (Additive α)
     ⟨⟨⟨⟨f, f.map_zero⟩, f.map_add⟩, f.monotone'⟩, hf⟩
   mpr := fun ⟨f, hf⟩ ↦ .comap f.toMonoidHom (f.monotone'.strictMono_of_injective hf)
 
 lemma MulArchimedean.tfae : List.TFAE
   [ MulArchimedean α,
-    LinearOrderedCommGroup.height α ≤ 1,
+    height α ≤ 1,
     ∃ f : α →*o Multiplicative ℝ, Function.Injective f] := by
   tfae_have 1 ↔ 2 := mulArchimedean_iff_height_le_one
   tfae_have 1 ↔ 3 := mulArchimedean_iff_exists_orderMonoidHom
@@ -372,9 +342,9 @@ lemma MulArchimedean.tfae : List.TFAE
 Algèbre commutative. Chapitre 6: Valuations. §4 No5 proposition 8) -/
 lemma MulArchimedean.tfae_of_nontrivial [Nontrivial α] : List.TFAE
   [ MulArchimedean α,
-    LinearOrderedCommGroup.height α = 1,
+    height α = 1,
     ∃ f : α →*o Multiplicative ℝ, Function.Injective f] := by
   convert MulArchimedean.tfae (α := α) using 3
   rw [le_iff_eq_or_lt, or_iff_left]
-  rw [ENat.lt_one_iff_eq_zero, LinearOrderedCommGroup.height_eq_zero_iff]
+  rw [ENat.lt_one_iff_eq_zero, height_eq_zero_iff]
   exact not_subsingleton α

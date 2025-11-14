@@ -668,6 +668,13 @@ theorem mk_le_mk {a : M} (ha : a ≠ 1) {b : M} (hb : b ≠ 1) :
 theorem mk_lt_mk {a : M} (ha : a ≠ 1) {b : M} (hb : b ≠ 1) :
     mk a ha < mk b hb ↔ MulArchimedeanClass.mk a < MulArchimedeanClass.mk b := .rfl
 
+@[to_additive] theorem min_le_mk_mul {a b : M} (ha : a ≠ 1) (hb : b ≠ 1)
+    (hab : a * b ≠ 1) : min (mk a ha) (mk b hb) ≤ mk (a * b) hab :=
+  MulArchimedeanClass.min_le_mk_mul a b
+
+@[to_additive] theorem mk_inv {a : M} (ha : a ≠ 1) : mk a⁻¹ (by simp [ha]) = mk a ha :=
+  Subtype.ext (MulArchimedeanClass.mk_inv a)
+
 /-- An induction principle for `FiniteMulArchimedeanClass`. -/
 @[to_additive (attr := elab_as_elim) /--An induction principle for `FiniteArchimedeanClass`. -/]
 theorem ind {motive : FiniteMulArchimedeanClass M → Prop}
