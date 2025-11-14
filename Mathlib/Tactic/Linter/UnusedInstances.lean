@@ -220,7 +220,7 @@ when nested in `mutual` blocks or buried somewhere in `cmd`). Does not handle `l
 `where`-style `let rec` declarations.
 -/
 private def withDeclSigRef {m : Type → Type} [Monad m] [MonadRef m] {α}
-    (cmd : Syntax) (t : InfoTree) (decl : Name) (x : m α) : m α := withRef cmd do
+    (t : InfoTree) (cmd : Syntax) (decl : Name) (x : m α) : m α := withRef cmd do
   let some idRef := t.getConstRef? decl | x
   let sigRef? := cmd.findSome? fun
     | `(Parser.Command.theorem| theorem $id$[.{$_,*}]? $sig:declSig $_:declVal)
