@@ -27,34 +27,47 @@ variable {v : Level} {M : Q(Type v)}
 
 section DischargeM
 
+/-- The kinds of proof stored in the field_simp cache. -/
 inductive ProofKind : Type
   | nonzero : ProofKind
   | positive : ProofKind
 deriving BEq, Hashable
 
+/-- The type used by field_simp to cache proofs. -/
+structure Cache where
+  map : Std.HashMap (Nat × ProofKind) (Option Expr)
+  list : List (Option Expr)
+
+def Cache.getMVars (c : Cache) : MetaM <| List MVarId := do
+  return List.reverse <| c.list.filterMap fun
+    | none => none
+    | some e => if e.isMVar then e.mvarId! else none
+
+instance : EmptyCollection Cache where
+  emptyCollection := ⟨∅, []⟩
+
 structure Discharge.Context where
   discharger : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)
 
 abbrev DischargeM :=
-  ReaderT Discharge.Context <| CacheAtomM (Std.HashMap (Nat × ProofKind) (Option Expr))
+  ReaderT Discharge.Context <| CacheAtomM Cache
 
 def DischargeM.disch {u : Level} (i : ℕ) (kind : ProofKind) (type : Q(Sort u)) :
     DischargeM Q($type) := do
   let ⟨discharger⟩ ← read
-  let c ← CacheAtomM.get (σ := Std.HashMap (Nat × ProofKind) (Option Expr))
+  let ⟨c, l⟩ ← CacheAtomM.get (σ := Cache)
   match c.get? ⟨i, kind⟩  with
   | none =>
     try
-      -- logInfo m!"Running discharger on goal {type}"
       let pf ← discharger type
-      CacheAtomM.set (c.insert (i, kind) (some pf))
+      CacheAtomM.set (⟨(c.insert (i, kind) (some pf)), some pf :: l⟩ : Cache)
       return pf
-    catch | _ => CacheAtomM.set (c.insert (i, kind) none); failure
+    catch | _ => CacheAtomM.set (⟨(c.insert (i, kind) none), none :: l⟩ : Cache); failure
   | some none => failure
   | some (some pf) => return pf
 
 def DischargeM.run {α : Type} (m : DischargeM α)
-  (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) : AtomM α := (m ⟨disch⟩).run' ∅
+  (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) : AtomM α := (m ⟨disch⟩).run' ⟨∅, []⟩
 
 end DischargeM
 
@@ -725,7 +738,7 @@ cannot discharge the corresponding side conditions. The discharger will try, amo
 denominators of the resulting expression and provide proofs that they are nonzero/positive to enable
 further progress.
 -/
-elab (name := fieldSimp) "field_simp"tk:"!"?  d:(discharger)? args:(simpArgs)? loc:(location)? :
+elab (name := fieldSimp) "field_simp" tk:"!"?  d:(discharger)? args:(simpArgs)? loc:(location)? :
     tactic => withMainContext do
   let disch ← parseDischarger d args
   let disch {u : Level} (type : Q(Sort u)) : MetaM Q($type) :=
@@ -742,17 +755,17 @@ elab (name := fieldSimp) "field_simp"tk:"!"?  d:(discharger)? args:(simpArgs)? l
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   transformAtLocation (m ·) "field_simp" (failIfUnchanged := true) (mayCloseGoalFromHyp := true) loc
   if tk.isSome then
-    let mut goals : List MVarId := []
-    for ⟨⟨i, kind⟩, pf⟩ in ← cs.get do
-      let some pf := pf | unreachable!
-      if pf.isMVar then
-        goals := pf.mvarId! :: goals
+    let mut sideGoals ← (← cs.get).getMVars
     let currGoals ← getGoals
     if currGoals.length < numGoals then
-      setGoals (goals ++ currGoals)
+      setGoals (sideGoals ++ currGoals)
     else
       let g :: l := currGoals | unreachable!
-      setGoals (g :: goals ++ l)
+      setGoals (g :: sideGoals ++ l)
+
+@[inherit_doc fieldSimp] macro "field_simp!" d:(discharger)? args:(simpArgs)? loc:(location)? :
+    tactic =>
+  `(tactic| field_simp ! $[$d:discharger]? $[$args:simpArgs]? $[$loc:location]?)
 
 /--
 The goal of the `field_simp` conv tactic is to bring an expression in a (semi-)field over a common
