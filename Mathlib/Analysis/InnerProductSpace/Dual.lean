@@ -66,7 +66,7 @@ def toDualMap : E →ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
 variable {E}
 
 @[simp]
-theorem toDualMap_apply {x y : E} : toDualMap 𝕜 E x y = ⟪x, y⟫ :=
+theorem toDualMap_apply {x : E} : toDualMap 𝕜 E x = innerSL 𝕜 x :=
   rfl
 
 variable {𝕜} in
@@ -108,8 +108,7 @@ theorem ext_inner_left_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
   apply (toDualMap 𝕜 E).map_eq_iff.mp
   refine (Function.Injective.eq_iff ContinuousLinearMap.coe_injective).mp (b.ext ?_)
   intro i
-  simp only [ContinuousLinearMap.coe_coe]
-  rw [toDualMap_apply, toDualMap_apply]
+  simp only [ContinuousLinearMap.coe_coe, toDualMap_apply, innerSL_apply]
   rw [← inner_conj_symm]
   conv_rhs => rw [← inner_conj_symm]
   exact congr_arg conj (h i)
@@ -168,12 +167,12 @@ def toDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
 variable {𝕜} {E}
 
 @[simp]
-theorem toDual_apply {x y : E} : toDual 𝕜 E x y = ⟪x, y⟫ :=
+theorem toDual_apply {x : E} : toDual 𝕜 E x = toDualMap 𝕜 E x :=
   rfl
 
 @[simp]
 theorem toDual_symm_apply {x : E} {y : StrongDual 𝕜 E} : ⟪(toDual 𝕜 E).symm y, x⟫ = y x := by
-  rw [← toDual_apply]
+  rw [← innerSL_apply, ← toDualMap_apply, ← toDual_apply]
   simp only [LinearIsometryEquiv.apply_symm_apply]
 
 /-- Maps a bounded sesquilinear form to its continuous linear map,
