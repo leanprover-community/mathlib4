@@ -369,7 +369,7 @@ lemma lintegral_closedBall_diff_exp_logRatio_mul_sq_le [IsProbabilityMeasure μ]
     congr
     norm_cast
     simp only [Nat.cast_pow, Nat.cast_ofNat, ENNReal.toReal_div]
-    field
+    ring
 
 open Metric in
 lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]

@@ -17,7 +17,7 @@ m₁, m₂, ..., mₖ (not necessarily different) such that
 
   1 + (2ᵏ - 1)/ n = (1 + 1/m₁) * (1 + 1/m₂) * ... * (1 + 1/mₖ).
 
-# Solution
+## Solution
 
 Adaptation of the solution found in https://www.imo-official.org/problems/IMO2013SL.pdf
 
