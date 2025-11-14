@@ -268,8 +268,9 @@ theorem bot_codisjoint : Codisjoint ⊥ a ↔ a = ⊤ :=
 lemma Codisjoint.ne_bot_of_ne_top (h : Codisjoint a b) (ha : a ≠ ⊤) : b ≠ ⊥ := by
   rintro rfl; exact ha <| by simpa using h
 
-lemma Codisjoint.ne_bot_of_ne_top' (h : Codisjoint a b) (hb : b ≠ ⊤) : a ≠ ⊥ := by
-  rintro rfl; exact hb <| by simpa using h
+@[deprecated ne_bot_of_ne_top (since := "2025-11-07")]
+lemma Codisjoint.ne_bot_of_ne_top' (h : Codisjoint a b) (hb : b ≠ ⊤) : a ≠ ⊥ :=
+  ne_bot_of_ne_top h.symm hb
 
 end PartialBoundedOrder
 

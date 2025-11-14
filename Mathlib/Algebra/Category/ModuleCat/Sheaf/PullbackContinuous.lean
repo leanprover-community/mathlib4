@@ -52,6 +52,9 @@ of sheaves of modules. -/
 noncomputable def pullbackPushforwardAdjunction : pullback.{v} φ ⊣ pushforward.{v} φ :=
   Adjunction.ofIsRightAdjoint (pushforward φ)
 
+instance : (pullback.{v} φ).IsLeftAdjoint :=
+  (pullbackPushforwardAdjunction φ).isLeftAdjoint
+
 end
 
 section
