@@ -75,6 +75,8 @@ open Simplex
 variable [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
 variable (t : Triangle ℝ P)
 
+attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
+
 variable {t} in
 /-- A point `p` is equidistant to two sides of a triangle if and only if the oriented angles at
 their common vertex are equal modulo `π`. -/
@@ -164,7 +166,6 @@ lemma eq_excenter_of_two_zsmul_oangle_eq {p : P} {i₁ i₂ i₃ : Fin 3} (h₁�
     at h₂
   have hp : p ∈ affineSpan ℝ (Set.range t.points) := by
     convert AffineSubspace.mem_top ℝ V p
-    haveI : FiniteDimensional ℝ V := Module.finite_of_finrank_pos (by simp [hd2.out])
     rw [t.independent.affineSpan_eq_top_iff_card_eq_finrank_add_one]
     simp [hd2.out]
   have hr : ∃ r : ℝ, ∀ i, dist p ((t.faceOpposite i).orthogonalProjectionSpan p) = r := by
