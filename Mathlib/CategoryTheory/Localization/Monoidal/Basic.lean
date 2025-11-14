@@ -40,6 +40,14 @@ class IsMonoidal : Prop extends W.IsMultiplicative where
   whiskerLeft (X : C) {Y₁ Y₂ : C} (g : Y₁ ⟶ Y₂) (hg : W g) : W (X ◁ g)
   whiskerRight {X₁ X₂ : C} (f : X₁ ⟶ X₂) (hf : W f) (Y : C) : W (f ▷ Y)
 
+/-- Alternative constructor for `W.IsMonoidal` given that `W` is multiplicative and stable under
+tensoring morphisms. -/
+lemma IsMonoidal.mk' [W.IsMultiplicative]
+    (h : ∀ {X₁ X₂ Y₁ Y₂ : C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) (_ : W f) (_ : W g), W (f ⊗ₘ g)) :
+    W.IsMonoidal where
+  whiskerLeft X _ _ g hg := by simpa using h (𝟙 X) g (W.id_mem _) hg
+  whiskerRight f hf Y := by simpa using h f (𝟙 Y) hf (W.id_mem _)
+
 variable [W.IsMonoidal]
 
 lemma whiskerLeft_mem (X : C) {Y₁ Y₂ : C} (g : Y₁ ⟶ Y₂) (hg : W g) : W (X ◁ g) :=
@@ -52,6 +60,16 @@ lemma tensorHom_mem {X₁ X₂ : C} (f : X₁ ⟶ X₂) {Y₁ Y₂ : C} (g : Y�
     (hf : W f) (hg : W g) : W (f ⊗ₘ g) := by
   rw [tensorHom_def]
   exact comp_mem _ _ _ (whiskerRight_mem _ _ hf _) (whiskerLeft_mem _ _ _ hg)
+
+/-- The inverse image under a monoidal functor of a monoidal morphism property which respects
+isomorphisms is monoidal. -/
+instance {C' : Type*} [Category C'] [MonoidalCategory C'] (F : C' ⥤ C) [F.Monoidal]
+    [W.RespectsIso] : (W.inverseImage F).IsMonoidal := .mk' _ fun f g hf hg ↦ by
+  simp only [inverseImage_iff] at hf hg ⊢
+  rw [Functor.Monoidal.map_tensor _ f g]
+  apply MorphismProperty.RespectsIso.precomp
+  apply MorphismProperty.RespectsIso.postcomp
+  exact tensorHom_mem _ _ _ hf hg
 
 end MorphismProperty
 
