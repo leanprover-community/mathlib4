@@ -24,27 +24,28 @@ variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F
 variable {f : E → F} {x y : E} {t : 𝕜} {n : ℕ}
 
 /-- The iterated derivative is given by the derivative of the `n-1` iterated derivative. -/
-theorem bar {m : Fin (n + 1) → E} (hf : DifferentiableAt 𝕜 (iteratedFDeriv 𝕜 n f) x) :
+theorem DifferentiableAt.iteratedFDeriv_succ_apply_left' {m : Fin (n + 1) → E}
+    (hf : DifferentiableAt 𝕜 (iteratedFDeriv 𝕜 n f) x) :
     iteratedFDeriv 𝕜 (n + 1) f x m =
     fderiv 𝕜 (fun y ↦ iteratedFDeriv 𝕜 n f y (Fin.tail m)) x (m 0) := by
   convert iteratedFDeriv_succ_apply_left m
   simp [fderiv_continuousMultilinear_apply_const hf]
 
-theorem deriv_comp_add_smul (hf : DifferentiableAt 𝕜 f (x + t • y)) :
+theorem DifferentiableAt.deriv_comp_add_smul (hf : DifferentiableAt 𝕜 f (x + t • y)) :
     deriv (fun (s : 𝕜) ↦ f (x + s • y)) t = fderiv 𝕜 f (x + t • y) y := by
   have hg : Differentiable 𝕜 (fun (s : 𝕜) ↦ (x + s • y)) := by fun_prop
   convert fderiv_comp_deriv t hf hg.differentiableAt
   simpa using (deriv_smul_const (x := t) differentiableAt_id y).symm
 
-theorem deriv_fderiv_add_smul (hf : ContDiffAt 𝕜 (n + 1) f (x + t • y)) :
+theorem ContDiffAt.deriv_fderiv_add_smul (hf : ContDiffAt 𝕜 (n + 1) f (x + t • y)) :
     deriv (fun (s : 𝕜) ↦ iteratedFDeriv 𝕜 n f (x + s • y) (fun _ ↦ y)) t =
     iteratedFDeriv 𝕜 (n + 1) f (x + t • y) (fun _ ↦ y) := by
   have hf' : DifferentiableAt 𝕜 (iteratedFDeriv 𝕜 n f) (x + t • y) := by
     apply hf.differentiableAt_iteratedFDeriv
     norm_cast
     exact lt_add_one n
-  convert deriv_comp_add_smul (hf'.continuousMultilinear_apply_const _)
-  exact bar hf'
+  convert (hf'.continuousMultilinear_apply_const _).deriv_comp_add_smul
+  exact hf'.iteratedFDeriv_succ_apply_left'
 
 end NontriviallyNormedField
 
@@ -57,34 +58,35 @@ variable [CompleteSpace F]
 /-- *Taylor's theorem with remainder in integral form*.
 
 Version for higher dimensions. -/
-theorem baz (hf : ∀ (t : ℝ) (_ht : t ∈ Set.uIcc 0 1), ContDiffAt ℝ (n + 1) f (x + t • y)) :
+theorem add_eq_sum_add_integral_iteratedFDeriv (hf : ∀ (t : ℝ) (_ht : t ∈ Set.Icc 0 1),
+    ContDiffAt ℝ (n + 1) f (x + t • y)) :
     f (x + y) = ∑ k ∈ Finset.range (n + 1), (k ! : ℝ)⁻¹ • (iteratedFDeriv ℝ k f x (fun _ ↦ y)) +
     (n ! : ℝ)⁻¹ • ∫ t in 0..1, (1 - t)^n • iteratedFDeriv ℝ (n + 1) f (x + t • y) (fun _ ↦ y) := by
+  simp_rw [← Set.uIcc_of_le zero_le_one] at hf
   induction n with
   | zero =>
     -- The base case follows from the fundamental theorem of calculus
     have h_eq : Set.EqOn (fun t ↦ (fderiv ℝ f (x + t • y)) y) (deriv fun (s : ℝ) ↦ f (x + s • y))
         (Set.uIcc 0 1) := by
       intro t ht
-      rw [deriv_comp_add_smul]
-      apply (hf t ht).differentiableAt
-      simp
+      rw [DifferentiableAt.deriv_comp_add_smul]
+      exact (hf t ht).differentiableAt (le_refl _)
     simp only [zero_add, Finset.range_one, Finset.sum_singleton, factorial_zero, cast_one, inv_one,
       iteratedFDeriv_zero_apply, one_smul, pow_zero, reduceAdd, iteratedFDeriv_one_apply]
     rw [← sub_eq_iff_eq_add', Eq.comm, intervalIntegral.integral_congr h_eq]
     have hf' : ∀ (t : ℝ) (ht : t ∈ Set.uIcc 0 1), DifferentiableAt ℝ (fun s ↦ f (x + s • y)) t :=
       fun t ht ↦ ((hf t ht).differentiableAt (by simp)).comp t (by fun_prop)
     have hint : IntervalIntegrable (deriv (fun s ↦ f (x + s • y))) MeasureTheory.volume 0 1 := by
-      apply ContinuousOn.intervalIntegrable
-      apply ContinuousOn.congr _ h_eq.symm
-      apply ContinuousOn.clm_apply _ (by fun_prop)
-      apply ContinuousOn.comp (t := (fun t ↦ x + t • y) '' (Set.uIcc (0 : ℝ) 1))
-      · intro z ⟨t, ht, hz⟩
+      have h₁ : ContinuousOn (fderiv ℝ f) ((fun t ↦ x + t • y) '' Set.uIcc (0 : ℝ) 1) := by
+        intro z ⟨t, ht, hz⟩
         rw [← hz]
         exact (((hf t ht).fderiv_right (le_refl _)).continuousAt (n := 0)).continuousWithinAt
-      · fun_prop
-      · intro t ht
+      have h₂ : ContinuousOn (fun x_1 ↦ fderiv ℝ f (x + x_1 • y)) (Set.uIcc (0 : ℝ) 1) := by
+        apply h₁.comp (t := (fun t ↦ x + t • y) '' (Set.uIcc (0 : ℝ) 1)) (by fun_prop)
+        intro t ht
         use t
+      apply (ContinuousOn.congr _ h_eq.symm).intervalIntegrable
+      fun_prop
     simpa using intervalIntegral.integral_deriv_eq_sub hf' hint
   | succ n ih =>
     -- We use the inductive hypothesis to cancel all lower order terms
@@ -110,14 +112,13 @@ theorem baz (hf : ∀ (t : ℝ) (_ht : t ∈ Set.uIcc 0 1), ContDiffAt ℝ (n + 
     have hv : ∀ (t : ℝ) (ht : t ∈ Set.uIcc 0 1), HasDerivAt (v (n + 1)) (v (n + 1 + 1) t) t := by
       intro t ht
       unfold v
-      rw [← deriv_fderiv_add_smul (hf t ht)]
+      rw [← (hf t ht).deriv_fderiv_add_smul]
       have h_diff : DifferentiableAt ℝ (iteratedFDeriv ℝ (n + 1) f) (x + t • y) := by
         apply (hf t ht).differentiableAt_iteratedFDeriv
         norm_cast
         grind
       refine DifferentiableAt.hasDerivAt ?_
-      apply DifferentiableAt.continuousMultilinear_apply_const
-      exact h_diff.comp t (by fun_prop)
+      fun_prop
     have hv' : ContinuousOn (v (n + 1 + 1)) (Set.uIcc 0 1) := by
       intro t ht
       have h_cont : ContinuousAt (iteratedFDeriv ℝ (n + 1 + 1) f) (x + t • y) :=
