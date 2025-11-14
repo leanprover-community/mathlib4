@@ -39,7 +39,7 @@ larger space of test functions.
   from `ContDiffMapSupportedIn E F ⊤ K` to `ContDiffMapSupportedIn E (E [×i]→L[ℝ] F) ⊤ K`.
 - `ContDiffMapSupportedIn.topologicalSpace`, `ContDiffMapSupportedIn.uniformSpace`: the topology
   and uniform structures on `𝓓^{n}_{K}(E, F)`, given by uniform convergence of the functions and
-  all its derivatives up to order `n`.
+  all their derivatives up to order `n`.
 
 ## Main statements
 
