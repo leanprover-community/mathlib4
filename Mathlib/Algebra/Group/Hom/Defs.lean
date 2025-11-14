@@ -226,7 +226,7 @@ is the behavior we desire.
 variable [FunLike F M N]
 
 /-- See note [hom simp lemma priority] -/
-@[to_additive (attr := simp mid)]
+@[to_additive (attr := simp mid, grind =)]
 theorem map_one [OneHomClass F M N] (f : F) : f 1 = 1 :=
   OneHomClass.map_one f
 
@@ -318,7 +318,7 @@ instance MulHom.mulHomClass : MulHomClass (M →ₙ* N) M N where
 variable [FunLike F M N]
 
 /-- See note [hom simp lemma priority] -/
-@[to_additive (attr := simp mid)]
+@[to_additive (attr := simp mid, grind =)]
 theorem map_mul [MulHomClass F M N] (f : F) (x y : M) : f (x * y) = f x * f y :=
   MulHomClass.map_mul f x y
 
@@ -422,7 +422,7 @@ variable [FunLike F G H]
 @[to_additive]
 theorem map_div' [DivInvMonoid G] [DivInvMonoid H] [MulHomClass F G H]
     (f : F) (hf : ∀ a, f a⁻¹ = (f a)⁻¹) (a b : G) : f (a / b) = f a / f b := by
-  rw [div_eq_mul_inv, div_eq_mul_inv, map_mul, hf]
+  grind [div_eq_mul_inv]
 
 @[to_additive]
 lemma map_comp_div' [DivInvMonoid G] [DivInvMonoid H] [MulHomClass F G H] (f : F)
@@ -432,7 +432,7 @@ lemma map_comp_div' [DivInvMonoid G] [DivInvMonoid H] [MulHomClass F G H] (f : F
 /-- Group homomorphisms preserve inverse.
 
 See note [hom simp lemma priority] -/
-@[to_additive (attr := simp mid) /-- Additive group homomorphisms preserve negation. -/]
+@[to_additive (attr := simp mid, grind =) /-- Additive group homomorphisms preserve negation. -/]
 theorem map_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
     (f : F) (a : G) : f a⁻¹ = (f a)⁻¹ :=
   eq_inv_of_mul_eq_one_left <| map_mul_eq_one f <| inv_mul_cancel _
@@ -453,7 +453,7 @@ lemma map_comp_mul_inv [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : 
 /-- Group homomorphisms preserve division.
 
 See note [hom simp lemma priority] -/
-@[to_additive (attr := simp mid) /-- Additive group homomorphisms preserve subtraction. -/]
+@[to_additive (attr := simp mid, grind =) /-- Additive group homomorphisms preserve subtraction. -/]
 theorem map_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) :
     ∀ a b, f (a / b) = f a / f b := map_div' _ <| map_inv f
 
@@ -462,7 +462,7 @@ lemma map_comp_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (
     f ∘ (g / h) = f ∘ g / f ∘ h := by ext; simp
 
 /-- See note [hom simp lemma priority] -/
-@[to_additive (attr := simp mid) (reorder := 9 10)]
+@[to_additive (attr := simp mid, grind =) (reorder := 9 10)]
 theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) :
     ∀ n : ℕ, f (a ^ n) = f a ^ n
   | 0 => by rw [pow_zero, pow_zero, map_one]
@@ -486,7 +486,7 @@ lemma map_comp_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H] (f
 /-- Group homomorphisms preserve integer power.
 
 See note [hom simp lemma priority] -/
-@[to_additive (attr := simp mid) (reorder := 9 10)
+@[to_additive (attr := simp mid, grind =) (reorder := 9 10)
 /-- Additive group homomorphisms preserve integer scaling. -/]
 theorem map_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
     (f : F) (g : G) (n : ℤ) : f (g ^ n) = f g ^ n := map_zpow' f (map_inv f) g n

@@ -164,9 +164,7 @@ def symm {f g : C ⟶ D} (h : Homotopy f g) : Homotopy g f where
 def trans {e f g : C ⟶ D} (h : Homotopy e f) (k : Homotopy f g) : Homotopy e g where
   hom := h.hom + k.hom
   zero i j w := by rw [Pi.add_apply, Pi.add_apply, h.zero i j w, k.zero i j w, zero_add]
-  comm i := by
-    rw [AddMonoidHom.map_add, AddMonoidHom.map_add, h.comm, k.comm]
-    abel
+  comm i := by grind [Homotopy.comm]
 
 /-- the sum of two homotopies is a homotopy between the sum of the respective morphisms. -/
 @[simps!]
@@ -174,9 +172,7 @@ def add {f₁ g₁ f₂ g₂ : C ⟶ D} (h₁ : Homotopy f₁ g₁) (h₂ : Homo
     Homotopy (f₁ + f₂) (g₁ + g₂) where
   hom := h₁.hom + h₂.hom
   zero i j hij := by rw [Pi.add_apply, Pi.add_apply, h₁.zero i j hij, h₂.zero i j hij, add_zero]
-  comm i := by
-    simp only [HomologicalComplex.add_f_apply, h₁.comm, h₂.comm, AddMonoidHom.map_add]
-    abel
+  comm i := by grind [HomologicalComplex.add_f_apply, Homotopy.comm]
 
 /-- the scalar multiplication of an homotopy -/
 @[simps!]
