@@ -17,7 +17,7 @@ satisfy the corresponding properties.
 This is used in `Mathlib.Algebra.Category.ModuleCat.Presheaf.Pullback` to study
 the behaviour with respect to composition of the pullback functors on presheaves
 of modules, by reducing these definitions and properties to the (obvious) case of the
-pushforward functors. Similar results shall be obtainted for sheaves of modules (TODO).
+pushforward functors. Similar results shall be obtained for sheaves of modules (TODO).
 
 -/
 
