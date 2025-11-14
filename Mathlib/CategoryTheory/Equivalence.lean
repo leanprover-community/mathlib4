@@ -323,7 +323,7 @@ def adjointifyη : 𝟭 C ≅ F ⋙ G := by
 @[reassoc]
 theorem adjointify_η_ε (X : C) :
     F.map ((adjointifyη η ε).hom.app X) ≫ ε.hom.app (F.obj X) = 𝟙 (F.obj X) := by
-  dsimp [adjointifyη,Trans.trans]
+  dsimp [adjointifyη, Trans.trans]
   simp only [comp_id, assoc, map_comp]
   have := ε.hom.naturality (F.map (η.inv.app X)); dsimp at this; rw [this]; clear this
   rw [← assoc _ _ (F.map _)]
@@ -707,9 +707,6 @@ def ObjectProperty.fullSubcategoryCongr {P P' : ObjectProperty C} (h : P = P') :
   inverse := ObjectProperty.ιOfLE h.symm.le
   unitIso := Iso.refl _
   counitIso := Iso.refl _
-
-@[deprecated (since := "2025-03-04")]
-alias Equivalence.ofFullSubcategory := ObjectProperty.fullSubcategoryCongr
 
 namespace Iso
 

@@ -316,7 +316,7 @@ theorem IsCompact.elim_finite_subcover_image {b : Set ι} {c : ι → Set X} (hs
     ∃ b', b' ⊆ b ∧ Set.Finite b' ∧ s ⊆ ⋃ i ∈ b', c i := by
   simp only [Subtype.forall', biUnion_eq_iUnion] at hc₁ hc₂
   rcases hs.elim_finite_subcover (fun i => c i : b → Set X) hc₁ hc₂ with ⟨d, hd⟩
-  refine ⟨Subtype.val '' d.toSet, ?_, d.finite_toSet.image _, ?_⟩
+  refine ⟨Subtype.val '' (d : Set b), ?_, d.finite_toSet.image _, ?_⟩
   · simp
   · rwa [biUnion_image]
 
@@ -467,6 +467,9 @@ theorem isCompact_iUnion {ι : Sort*} {f : ι → Set X} [Finite ι] (h : ∀ i,
 
 @[simp] theorem Set.Finite.isCompact (hs : s.Finite) : IsCompact s :=
   biUnion_of_singleton s ▸ hs.isCompact_biUnion fun _ _ => isCompact_singleton
+
+@[simp] theorem Set.sUnion_isCompact_eq_univ : ⋃₀ {(s : Set X) | IsCompact s} = univ :=
+  eq_univ_of_forall <| fun x ↦ ⟨{x}, by simp⟩
 
 theorem IsCompact.finite_of_discrete [DiscreteTopology X] (hs : IsCompact s) : s.Finite := by
   have : ∀ x : X, ({x} : Set X) ∈ 𝓝 x := by simp [nhds_discrete]
@@ -855,23 +858,6 @@ theorem isCompact_range [CompactSpace X] {f : X → Y} (hf : Continuous f) : IsC
 
 theorem isCompact_diagonal [CompactSpace X] : IsCompact (diagonal X) :=
   @range_diag X ▸ isCompact_range (continuous_id.prodMk continuous_id)
-
-/-- If `X` is a compact topological space, then `Prod.snd : X × Y → Y` is a closed map. -/
-theorem isClosedMap_snd_of_compactSpace [CompactSpace X] :
-    IsClosedMap (Prod.snd : X × Y → Y) := fun s hs => by
-  rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
-  intro y hy
-  have : univ ×ˢ {y} ⊆ sᶜ := by
-    exact fun (x, y') ⟨_, rfl⟩ hs => hy ⟨(x, y'), hs, rfl⟩
-  rcases generalized_tube_lemma isCompact_univ isCompact_singleton hs.isOpen_compl this
-    with ⟨U, V, -, hVo, hU, hV, hs⟩
-  refine mem_nhds_iff.2 ⟨V, ?_, hVo, hV rfl⟩
-  rintro _ hzV ⟨z, hzs, rfl⟩
-  exact hs ⟨hU trivial, hzV⟩ hzs
-
-/-- If `Y` is a compact topological space, then `Prod.fst : X × Y → X` is a closed map. -/
-theorem isClosedMap_fst_of_compactSpace [CompactSpace Y] : IsClosedMap (Prod.fst : X × Y → X) :=
-  isClosedMap_snd_of_compactSpace.comp isClosedMap_swap
 
 theorem exists_subset_nhds_of_compactSpace [CompactSpace X] [Nonempty ι]
     {V : ι → Set X} (hV : Directed (· ⊇ ·) V) (hV_closed : ∀ i, IsClosed (V i)) {U : Set X}
