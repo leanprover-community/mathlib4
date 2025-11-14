@@ -87,9 +87,9 @@ private lemma angle_le_angle_add_angle_aux {x y : V} (Hx : ‖x‖ = 1) (Hy : �
     rw [sub_ne_zero, ne_comm, sq_ne_one_iff]
     constructor <;> contrapose! hxy
     · rw [inner_eq_one_iff_of_norm_one Hx Hy] at hxy
-      simp [Hy, hxy, inner_self_eq_one_of_norm_one]
+      simp [Hy, hxy]
     · rw [inner_eq_neg_one_iff_of_norm_one Hx Hy] at hxy
-      simp [Hy, hxy, inner_self_eq_one_of_norm_one]
+      simp [Hy, hxy]
   rw [← smul_assoc, smul_eq_mul]
   field_simp
   rw [sq, ← real_inner_self_eq_norm_sq]
