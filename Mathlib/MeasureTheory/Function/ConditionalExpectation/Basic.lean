@@ -335,6 +335,24 @@ theorem condExp_condExp_of_le {m₁ m₂ m₀ : MeasurableSpace α} {μ : Measur
   rw [setIntegral_condExp (hm₁₂.trans hm₂) integrable_condExp hs]
   rw [setIntegral_condExp (hm₁₂.trans hm₂) hf hs, setIntegral_condExp hm₂ hf (hm₁₂ s hs)]
 
+/-- Conditional expectation commutes with continuous linear maps. -/
+theorem _root_.ContinuousLinearMap.comp_condExp_comm {F : Type*} [NormedAddCommGroup F]
+    [CompleteSpace F] [NormedSpace ℝ F] (hf_int : Integrable f μ) (T : E →L[ℝ] F) :
+    T ∘ μ[f|m] =ᵐ[μ] μ[T ∘ f|m] := by
+  by_cases hm : m ≤ m₀
+  · by_cases hμ : SigmaFinite (μ.trim hm)
+    · refine ae_eq_condExp_of_forall_setIntegral_eq hm ?_ (fun s ms hs => ?_) (fun s ms hs => ?_) ?_
+      · exact T.integrable_comp hf_int
+      · exact (T.integrable_comp integrable_condExp).integrableOn
+      · calc
+          ∫ x in s, (T ∘ μ[f|m]) x ∂μ = T (∫ x in s, μ[f|m] x ∂μ) :=
+            T.integral_comp_comm integrable_condExp.restrict
+          _ = T (∫ x in s, f x ∂μ) := congrArg T (setIntegral_condExp hm hf_int ms)
+          _ = ∫ x in s, (T ∘ f) x ∂μ := (T.integral_comp_comm hf_int.restrict).symm
+      · exact T.cont.comp_aestronglyMeasurable stronglyMeasurable_condExp.aestronglyMeasurable
+    · simp [condExp_of_not_sigmaFinite hm hμ]
+  · simp [condExp_of_not_le hm]
+
 section RCLike
 variable [InnerProductSpace 𝕜 E]
 
