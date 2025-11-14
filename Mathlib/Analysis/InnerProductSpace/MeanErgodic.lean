@@ -100,4 +100,4 @@ theorem ContinuousLinearMap.tendsto_birkhoffAverage_orthogonalProjection (f : E 
     · simpa using f.le_of_opNorm_le hf x
     · have : ∀ y, ⟪f y, x⟫ = ⟪y, x⟫ := by
         simpa [Submodule.mem_orthogonal, inner_sub_left, sub_eq_zero] using hx
-      simp [this, ← norm_sq_eq_re_inner]
+      simp [this]
