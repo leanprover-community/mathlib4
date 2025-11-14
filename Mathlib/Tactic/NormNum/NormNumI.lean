@@ -31,7 +31,6 @@ structure ResultI (a : Q(ℂ)) where
 --     im := r.im.cast q(Complex.im $b) }
   -- have : a = b := (q(rfl (a := $a)) :)
   -- $h ▸ r
-#check NormNum.Result
 
 def ResultI.mk' {z : Q(ℂ)} {p1 p2 : Q(ℝ)} (h1 : NormNum.Result q($p1))
     (h2 : NormNum.Result q($p2)) (pf₁ : Q(RCLike.re $z = $p1)) (pf₂ : Q(RCLike.im $z = $p2)) :
@@ -47,6 +46,16 @@ def ResultI.add {a b : Q(ℂ)} (ha : ResultI q($a)) (hb : ResultI q($b)) :
   return .mk' (← ha.re.add hb.re q(inferInstance)) (← ha.im.add hb.im q(inferInstance))
     q(map_add RCLike.re $a $b) q(map_add RCLike.im $a $b)
 
+def ResultI.neg {z : Q(ℂ)} (ha : ResultI q($z)) :
+    MetaM (ResultI q(-$z)) := do
+  return .mk' (← ha.re.neg q(inferInstance)) (← ha.im.neg q(inferInstance))
+    q(map_neg RCLike.re $z) q(map_neg RCLike.im $z)
+
+def ResultI.sub {a b : Q(ℂ)} (ha : ResultI q($a)) (hb : ResultI q($b)) :
+    MetaM (ResultI q($a - $b)) := do
+  return .mk' (← ha.re.sub hb.re q(inferInstance)) (← ha.im.sub hb.im q(inferInstance))
+    q(map_sub RCLike.re $a $b) q(map_sub RCLike.im $a $b)
+
 def ResultI.mul {a b : Q(ℂ)} (ha : ResultI q($a)) (hb : ResultI q($b)) :
     MetaM (ResultI q($a * $b)) := do
   return .mk'
@@ -55,6 +64,23 @@ def ResultI.mul {a b : Q(ℂ)} (ha : ResultI q($a)) (hb : ResultI q($b)) :
     (← (← ha.re.mul hb.im q(inferInstance)).add (← ha.im.mul hb.re q(inferInstance))
       q(inferInstance))
     q(RCLike.mul_re $a $b) q(RCLike.mul_im $a $b)
+
+def ResultI.conj {z : Q(ℂ)} (hz : ResultI q($z)) :
+    MetaM (ResultI q(conj $z)) := do
+  return .mk' hz.re (← hz.im.neg q(inferInstance))
+    q(RCLike.conj_re $z) q(RCLike.conj_im $z)
+
+def ResultI.inv {z : Q(ℂ)} (hz : ResultI q($z)) :
+    MetaM (ResultI q($z⁻¹)) := do
+  return .mk'
+    (← (← (← (← hz.re.mul hz.re q(inferInstance)).add (← hz.im.mul hz.im q(inferInstance))
+      q(inferInstance)).inv q(inferInstance) (Option.some q(inferInstance))).mul hz.re
+      q(inferInstance))
+    (← ((← (← (← (← hz.re.mul hz.re q(inferInstance)).add (← hz.im.mul hz.im q(inferInstance))
+      q(inferInstance)).inv q(inferInstance) (Option.some q(inferInstance))).mul hz.im
+      q(inferInstance))).neg q(inferInstance))
+    q(by rw [RCLike.inv_re, div_eq_mul_inv, mul_comm, RCLike.normSq_apply])
+    q(by rw [RCLike.inv_im, div_eq_mul_inv, mul_comm, RCLike.normSq_apply, mul_neg])
 
 -- /-- Assert that a complex number is equal to `re + im * I`. -/
 -- structure IsComplex [RCLike ℂ] (z : ℂ) (re im : ℝ) : Prop where
@@ -169,24 +195,23 @@ partial def parse (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
     let r1 ← parse z₁
     let r2 ← parse z₂
     return ((← r1.mul r2).eqTrans q(rfl))
-  -- | ~q($z⁻¹) =>
-  --   let ⟨_x, _y, pf⟩ ← parse z
-  --   pure ⟨_, _, q(.inv $pf)⟩
-  -- | ~q($z₁ / $z₂) => do
-  --   let ⟨_a, _b, pf⟩ ← parse q($z₁ * $z₂⁻¹)
-  --   return ⟨_, _, q($pf)⟩
-  -- | ~q(-$w) => do
-  --   let ⟨_a, _b, pf⟩ ← parse w
-  --   return ⟨_, _, q(.neg $pf)⟩
-  -- | ~q($z₁ - $z₂) =>
-  --   let ⟨_a₁, _b₁, pf₁⟩ ← parse z₁
-  --   let ⟨_a₂, _b₂, pf₂⟩ ← parse z₂
-  --   pure ⟨_, _, q(.sub $pf₁ $pf₂)⟩
-  -- | ~q(conj $w) =>
-  --   let ⟨_a, _b, pf⟩ ← parse w
-  --   return ⟨_, _, q(.conj $pf)⟩
+  | ~q($z⁻¹) =>
+    let r ← parse z
+    return ((← r.inv).eqTrans q(rfl))
+  | ~q($z₁ / $z₂) => do
+    let r ← parse q($z₁ * $z₂⁻¹)
+    return r.eqTrans q(rfl)
+  | ~q(-$w) => do
+    let r ← parse w
+    return ((← r.neg).eqTrans q(rfl))
+  | ~q($z₁ - $z₂) =>
+    let r1 ← parse z₁
+    let r2 ← parse z₂
+    return ((← r1.sub r2).eqTrans q(rfl))
+  | ~q(conj $w) =>
+    let r ← parse w
+    return ((← r.conj).eqTrans q(rfl))
   -- | ~q($w ^ ($n' : ℕ)) =>
-  --   let ⟨n, hn⟩ ← NormNum.deriveNat q($n') q(inferInstance)
   --   let ⟨_, _, pf⟩ ← parse w
   --   let ⟨_, _, pfp⟩ ← parsePow n.natLit! q($w) q($n') hn q($pf)
   --   return ⟨_, _, q($pfp)⟩
@@ -202,17 +227,20 @@ partial def parse (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
   --     let _i : $k' =Q Int.negSucc $n := ⟨⟩
   --     return ⟨a, b, q(.of_pow_negSucc $hm $pf)⟩
   -- | ~q(Complex.I) =>
-  --   pure ⟨_, _, q(.I)⟩
+      -- a bit tricky because `I.im` could be either `1` or `0`
+  --   return ResultI.mk' (NormNum.Result.isNat q(inferInstance) q(0) q(⟨rfl⟩))
+  --     (NormNum.Result.isNat q(inferInstance) q(1) q(⟨rfl⟩))
+  --     q(Nat.cast_zero (R := ℝ) ▸ RCLike.I_re) q(Nat.cast_one (R := ℝ) ▸ RCLike.I_im)
   | ~q(0) =>
-    ResultI.mk' (z := q(0)) (NormNum.Result.isNat q(inferInstance) q(0) q(⟨rfl⟩))
-      ((NormNum.Result.isNat q(inferInstance) q(0) q(⟨rfl⟩)))
-      q(Nat.cast_zero (R := ℝ) ▸ RCLike.zero_re) q(Nat.cast_zero (R := ℝ) ▸ RCLike.zero_im)
+  return ResultI.mk' (NormNum.Result.isNat q(inferInstance) q(0) q(⟨rfl⟩))
+    (NormNum.Result.isNat q(inferInstance) q(0) q(⟨rfl⟩))
+    q(Nat.cast_zero (R := ℝ) ▸ RCLike.zero_re) q(Nat.cast_zero (R := ℝ) ▸ RCLike.zero_im)
   | ~q(1) =>
-    ResultI.mk' (z := q(1)) (NormNum.Result.isNat q(inferInstance) q(1) q(⟨rfl⟩))
-      (NormNum.Result.isNat q(inferInstance) q(0) q(⟨rfl⟩))
-      q(Nat.cast_one (R := ℝ) ▸ RCLike.one_re) q(Nat.cast_zero (R := ℝ) ▸ RCLike.one_im)
+  return ResultI.mk' (NormNum.Result.isNat q(inferInstance) q(1) q(⟨rfl⟩))
+    (NormNum.Result.isNat q(inferInstance) q(0) q(⟨rfl⟩))
+    q(Nat.cast_one (R := ℝ) ▸ RCLike.one_re) q(Nat.cast_zero (R := ℝ) ▸ RCLike.one_im)
   | ~q(OfNat.ofNat $en (self := @instOfNatAtLeastTwo ℂ _ _ $inst)) =>
-    ResultI.mk' (z := z) (NormNum.Result.isNat q(inferInstance) q($en) q(⟨rfl⟩))
+    return ResultI.mk' (NormNum.Result.isNat q(inferInstance) q($en) q(⟨rfl⟩))
       (NormNum.Result.isNat q(inferInstance) q(0) q(⟨rfl⟩))
       q(@Nat.cast_ofNat ℝ $en _ $inst ▸ RCLike.ofNat_re $en)
       q(Nat.cast_zero (R := ℝ) ▸ RCLike.ofNat_im $en)
@@ -227,9 +255,9 @@ noncomputable def normalize (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
   let rb ← Mathlib.Meta.NormNum.derive (α := q(ℝ)) q(RCLike.im $z)
   -- let { expr := (a' : Q(ℝ)), proof? := (pf_a ) } ← ra.toSimpResult | unreachable!
   -- let { expr := (b' : Q(ℝ)), proof? := (pf_b ) } ← rb.toSimpResult | unreachable!
-  -- -- return ⟨a', b', q(eq_eq $pf $pf_a $pf_b)⟩
-  -- return ResultI.mk' ra rb q(rfl) q(rfl)
-  sorry
+  -- return ⟨a', b', q(eq_eq $pf $pf_a $pf_b)⟩
+  return ResultI.mk' ra rb q(rfl) q(rfl)
+  -- sorry
 
 #exit
 -- TODO: change to use `x + y*I` so that it's fine for `ℝ` too.
