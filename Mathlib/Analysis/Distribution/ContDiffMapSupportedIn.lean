@@ -449,13 +449,18 @@ noncomputable def structureMapCLM (i : ℕ) :
   toLinearMap := structureMapLM 𝕜 n i
   cont := continuous_iInf_dom continuous_induced_dom
 
-lemma structureMapCLM_apply_withOrder {i : ℕ} {f : 𝓓^{n}_{K}(E, F)} :
+lemma structureMapCLM_apply_withOrder {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
     structureMapCLM 𝕜 n i f = if i ≤ n then iteratedFDeriv ℝ i f else 0 := by
   simp [structureMapCLM, structureMapLM_apply_withOrder]
 
-lemma structureMapCLM_apply {i : ℕ} {f : 𝓓_{K}(E, F)} :
+lemma structureMapCLM_apply {i : ℕ} (f : 𝓓_{K}(E, F)) :
     structureMapCLM 𝕜 ⊤ i f = iteratedFDeriv ℝ i f := by
   simp [structureMapCLM, structureMapLM_apply]
+
+lemma structureMapCLM_eq_of_scalars {i : ℕ} (𝕜' : Type*) [NontriviallyNormedField 𝕜']
+    [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (structureMapCLM 𝕜 n i : 𝓓^{n}_{K}(E, F) → _) = structureMapCLM 𝕜' n i :=
+  rfl
 
 /-- The **universal property** of the topology on `𝓓^{n}_{K}(E, F)`: a map to `𝓓^{n}_{K}(E, F)`
 is continuous if and only if its composition with each structure map
