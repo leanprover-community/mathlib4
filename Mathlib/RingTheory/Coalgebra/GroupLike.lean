@@ -53,9 +53,7 @@ lemma IsGroupLikeElem.map [FunLike F A B] [CoalgHomClass F R A B] (f : F)
 /-- A coalgebra isomorphism preserves group-like elements. -/
 @[simp] lemma isGroupLikeElem_map [EquivLike F A B] [CoalgEquivClass F R A B] (f : F) :
     IsGroupLikeElem R (f a) ↔ IsGroupLikeElem R a where
-  mp ha := by
-    rw [← (CoalgEquivClass.toCoalgEquiv f).symm_apply_apply a]
-    exact ha.map (CoalgEquivClass.toCoalgEquiv f).symm
+  mp ha := (CoalgEquivClass.toCoalgEquiv f).symm_apply_apply a ▸ ha.map _
   mpr := .map f
 
 variable (R A) in
