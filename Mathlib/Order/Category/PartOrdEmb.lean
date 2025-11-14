@@ -249,9 +249,7 @@ def cocone : Cocone F where
         rw [← (F.map (b₁ ≫ d)).le_iff_le]
         conv_rhs => rw [h₂]
         conv_rhs at h => rw [h₁]
-        simp only [Functor.map_comp, hom_comp, RelEmbedding.coe_trans, Function.comp_apply,
-          ← hl₁, ← hl₂]
-        simpa using h }
+        simpa [← hl₁, ← hl₂] using h }
   ι.naturality _ _ f := by ext x; exact ConcreteCategory.congr_hom (c.w f) x
 
 /-- Auxiliary definition for `isColimitCocone`. -/
