@@ -85,7 +85,7 @@ theorem orthonormal_iff_ite [DecidableEq ι] {v : ι → E} :
     constructor
     · intro i
       have h' : ‖v i‖ ^ 2 = 1 ^ 2 := by
-        simp [-inner_self_eq_norm_sq_to_K, @norm_sq_eq_re_inner 𝕜, h i i]
+        rw [@norm_sq_eq_re_inner 𝕜, h i i]; simp
       have h₁ : 0 ≤ ‖v i‖ := norm_nonneg _
       have h₂ : (0 : ℝ) ≤ 1 := zero_le_one
       rwa [sq_eq_sq₀ h₁ h₂] at h'
