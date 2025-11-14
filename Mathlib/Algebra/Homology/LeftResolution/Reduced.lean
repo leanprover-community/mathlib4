@@ -24,7 +24,7 @@ functor `Λ.reduced.F : A ⥤ C` preserves zero morphisms.
 
 For example, if `A := ModuleCat R` and `C` is the full subcategory
 of flat `R`-modules, we may first define `Λ` by using the
-functor which sends a `R`-module `M` to the free `R`-module
+functor which sends an `R`-module `M` to the free `R`-module
 on the elements of `M`. Then, `Λ.reduced.F.obj M` will be obtained
 from the free `R`-module on `M` by factoring out the direct factor
 corresponding to the submodule spanned by the generator corresponding
