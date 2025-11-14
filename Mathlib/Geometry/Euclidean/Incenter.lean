@@ -120,11 +120,14 @@ lemma sum_excenterWeightsUnnorm_empty_pos : 0 < ∑ i, s.excenterWeightsUnnorm �
   simp_rw [excenterWeightsUnnorm_empty_apply]
   positivity
 
+lemma excenterWeights_empty_pos (i : Fin (n + 1)) : 0 < s.excenterWeights ∅ i := by
+  simp only [excenterWeights, excenterWeightsUnnorm_empty_apply, Pi.smul_apply, smul_eq_mul]
+  positivity
+
 @[simp]
 lemma sign_excenterWeights_empty (i : Fin (n + 1)) : SignType.sign (s.excenterWeights ∅ i) = 1 := by
-  simp only [excenterWeights, excenterWeightsUnnorm_empty_apply, Pi.smul_apply, smul_eq_mul]
   rw [sign_eq_one_iff]
-  positivity
+  exact s.excenterWeights_empty_pos i
 
 /-- The existence of the incenter, expressed in terms of `ExcenterExists`. -/
 @[simp] lemma excenterExists_empty : s.ExcenterExists ∅ :=
@@ -355,6 +358,22 @@ lemma ExcenterExists.excenter_mem_affineSpan_range {signs : Finset (Fin (n + 1))
 
 lemma incenter_mem_affineSpan_range : s.incenter ∈ affineSpan ℝ (Set.range s.points) :=
   s.excenterExists_empty.excenter_mem_affineSpan_range
+
+lemma incenter_mem_interior : s.incenter ∈ s.interior := by
+  have h := s.excenterExists_empty.sum_excenterWeights_eq_one
+  rw [incenter_eq_affineCombination, s.affineCombination_mem_interior_iff h]
+  intro i
+  refine ⟨s.excenterWeights_empty_pos i, ?_⟩
+  by_contra! hp
+  obtain ⟨j, hj⟩ := exists_ne i
+  rw [← Finset.sum_add_sum_compl {j, i}, Finset.sum_pair hj] at h
+  revert h
+  apply ne_of_gt
+  nth_rw 2 [add_comm]
+  grw [hp]
+  rw [add_assoc, lt_add_iff_pos_right]
+  exact add_pos_of_pos_of_nonneg (s.excenterWeights_empty_pos j)
+    (Finset.sum_nonneg fun k _ ↦ (s.excenterWeights_empty_pos k).le)
 
 lemma excenter_singleton_mem_affineSpan_range [Nat.AtLeastTwo n] (i : Fin (n + 1)) :
     s.excenter {i} ∈ affineSpan ℝ (Set.range s.points) :=
