@@ -50,46 +50,25 @@ end MontelSpace
 
 end Normed
 
-variable {R 𝕜 𝕜₁ 𝕜₂ : Type*}
-  [NormedField 𝕜₁] [NormedField 𝕜₂] {σ : 𝕜₁ →+* 𝕜₂}
+variable {𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] {σ : 𝕜₁ →+* 𝕜₂}
 variable {E F : Type*}
   [AddCommGroup E] [Module 𝕜₁ E]
   [UniformSpace E]
   [AddCommGroup F] [Module 𝕜₂ F]
   [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜₂ F]
 
-#check UniformConvergenceCLM σ F {(s : Set E) | IsCompact s}
-
 open CompactConvergenceCLM
 
 variable (σ E F) in
 /-- The linear equivalence that sends a continuous linear map to the type copy endowed with the
-weak operator topology. -/
-def _root_.ContinuousLinearMap.toCompactConvergenceCLM :
+weak operator topology.
+
+This definition is only used to prove the continuous linear equivalence. -/
+private def _root_.LinearEquiv.toCompactConvergenceCLM :
     (E →SL[σ] F) ≃ₗ[𝕜₂] E →SL_c[σ] F :=
   LinearEquiv.refl 𝕜₂ _
 
-@[simp]
-theorem _root_.ContinuousLinearMap.toCompactConvergenceCLM_apply (f : E →SL[σ] F) (x : E) :
-    (ContinuousLinearMap.toCompactConvergenceCLM σ E F f) x = f x := rfl
-
-@[simp]
-theorem _root_.ContinuousLinearMap.toCompactConvergenceCLM_symm_apply (f : E →SL_c[σ] F) (x : E) :
-    (ContinuousLinearMap.toCompactConvergenceCLM σ E F).symm f x = f x := rfl
-
-variable [ContinuousSMul 𝕜₁ E]
-
-theorem _root_.Bornology.IsVonNBounded.isVonNBounded_closure [T1Space E] {a : Set E}
-    (ha : IsVonNBounded 𝕜₁ a) : IsVonNBounded 𝕜₁ (closure a) := by
-  intro V hV
-  rcases exists_mem_nhds_isClosed_subset hV with ⟨W, hW₁, hW₂, hW₃⟩
-  specialize ha hW₁
-  filter_upwards [ha] with b ha'
-  grw [closure_mono ha', closure_smul₀ ]
-  apply smul_set_mono
-  grw [closure_subset_iff_isClosed.mpr hW₂, hW₃]
-
-variable [IsUniformAddGroup E]
+variable [IsUniformAddGroup E] [ContinuousSMul 𝕜₁ E]
 
 variable (σ E F) in
 /-- If `E` is a Montel space, then the strong topology on `E →L[𝕜] F` coincides with the topology
@@ -100,7 +79,7 @@ We realize this equality in terms of a continuous linear equivalence between the
 This is Proposition 34.5 in Treves - Topological vector spaces, distributions, and kernels. -/
 def _root_.ContinuousLinearEquiv.toCompactConvergenceCLM [T1Space E] [MontelSpace 𝕜₁ E] :
     (E →SL[σ] F) ≃L[𝕜₂] E →SL_c[σ] F where
-  __ := ContinuousLinearMap.toCompactConvergenceCLM σ E F
+  __ := LinearEquiv.toCompactConvergenceCLM σ E F
   continuous_toFun := by
     simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe, continuous_def]
     intro s hs
@@ -109,13 +88,13 @@ def _root_.ContinuousLinearEquiv.toCompactConvergenceCLM [T1Space E] [MontelSpac
     intro x hx
     exact hx.totallyBounded.isVonNBounded 𝕜₁
   continuous_invFun := by
-    apply continuous_of_continuousAt_zero (ContinuousLinearMap.toCompactConvergenceCLM σ E F).symm
+    apply continuous_of_continuousAt_zero (LinearEquiv.toCompactConvergenceCLM σ E F).symm
     rw [ContinuousAt, _root_.map_zero, CompactConvergenceCLM.hasBasis_nhds_zero.tendsto_iff
       ContinuousLinearMap.hasBasis_nhds_zero]
     rintro ⟨a, b⟩ ⟨ha, hb⟩
     use ⟨closure a, b⟩
     exact ⟨⟨MontelSpace.isCompact_of_isClosed_isVonNBounded 𝕜₁ isClosed_closure
-      ha.isVonNBounded_closure, hb⟩, fun _ hf _ hx ↦ hf _ (subset_closure hx)⟩
+      ha.closure, hb⟩, fun _ hf _ hx ↦ hf _ (subset_closure hx)⟩
 
 @[simp]
 theorem _root_.ContinuousLinearEquiv.toCompactConvergenceCLM_apply [T1Space E] [MontelSpace 𝕜₁ E]
