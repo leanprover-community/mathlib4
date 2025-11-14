@@ -111,11 +111,12 @@ open Module
 
 variable [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
 
+attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
+
 /-- A point `p` is equidistant to two affine subspaces (typically lines, for this version of the
 lemma) if the oriented angles at a point `p'` in their intersection between `p` and its orthogonal
 projections onto the subspaces are equal. -/
 lemma dist_orthogonalProjection_eq_of_oangle_eq {p p' : P} {s₁ s₂ : AffineSubspace ℝ P}
-    [s₁.direction.HasOrthogonalProjection] [s₂.direction.HasOrthogonalProjection]
     (hp' : p' ∈ s₁ ⊓ s₂)
     (hp₁ : haveI : Nonempty s₁ := ⟨p', hp'.1⟩; orthogonalProjection s₁ p ≠ p')
     (hp₂ : haveI : Nonempty s₂ := ⟨p', hp'.2⟩; orthogonalProjection s₂ p ≠ p')
@@ -132,7 +133,6 @@ lemma dist_orthogonalProjection_eq_of_oangle_eq {p p' : P} {s₁ s₂ : AffineSu
 projections onto two affine subspaces (typically lines, for this version of the lemma) are equal
 if `p` is equidistant to the two subspaces. -/
 lemma oangle_eq_of_dist_orthogonalProjection_eq {p p' : P} {s₁ s₂ : AffineSubspace ℝ P}
-    [s₁.direction.HasOrthogonalProjection] [s₂.direction.HasOrthogonalProjection]
     (hp' : p' ∈ s₁ ⊓ s₂)
     (hne : haveI : Nonempty s₁ := ⟨p', hp'.1⟩; haveI : Nonempty s₂ := ⟨p', hp'.2⟩;
       (orthogonalProjection s₁ p : P) ≠ orthogonalProjection s₂ p)
@@ -144,7 +144,6 @@ lemma oangle_eq_of_dist_orthogonalProjection_eq {p p' : P} {s₁ s₂ : AffineSu
   haveI : Nonempty s₁ := ⟨p', hp'.1⟩
   haveI : Nonempty s₂ := ⟨p', hp'.2⟩
   haveI : Nonempty (s₁ ⊓ s₂ : AffineSubspace ℝ P) := ⟨p', hp'⟩
-  haveI : FiniteDimensional ℝ V := Module.finite_of_finrank_pos (by simp [hd2.out])
   have hp₁ : orthogonalProjection s₁ p ≠ p' := by
     intro hp
     rw [hp, ← sq_eq_sq₀ dist_nonneg dist_nonneg, pow_two, pow_two, dist_comm p p',
@@ -195,7 +194,6 @@ lemma oangle_eq_of_dist_orthogonalProjection_eq {p p' : P} {s₁ s₂ : AffineSu
 lemma) if and only if the oriented angles at a point `p'` in their intersection between `p` and
 its orthogonal projections onto the subspaces are equal. -/
 lemma dist_orthogonalProjection_eq_iff_oangle_eq {p p' : P} {s₁ s₂ : AffineSubspace ℝ P}
-    [s₁.direction.HasOrthogonalProjection] [s₂.direction.HasOrthogonalProjection]
     (hp' : p' ∈ s₁ ⊓ s₂)
     (hne : haveI : Nonempty s₁ := ⟨p', hp'.1⟩; haveI : Nonempty s₂ := ⟨p', hp'.2⟩;
       (orthogonalProjection s₁ p : P) ≠ orthogonalProjection s₂ p)
