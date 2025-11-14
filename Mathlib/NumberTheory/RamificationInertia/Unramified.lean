@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.NumberTheory.RamificationInertia.Basic
-import Mathlib.RingTheory.Unramified.LocalRing
 import Mathlib.RingTheory.LocalRing.ResidueField.Instances
+import Mathlib.RingTheory.Unramified.LocalRing
 
 /-!
 

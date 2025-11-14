@@ -402,9 +402,9 @@ theorem descPochhammer_eval_eq_descFactorial (n k : ℕ) :
   | succ k ih =>
     rw [descPochhammer_succ_right, Nat.descFactorial_succ, mul_sub, eval_sub, eval_mul_X,
       ← Nat.cast_comm k, eval_natCast_mul, ← Nat.cast_comm n, ← sub_mul, ih]
-    by_cases h : n < k
+    by_cases! h : n < k
     · rw [Nat.descFactorial_eq_zero_iff_lt.mpr h, Nat.cast_zero, mul_zero, mul_zero, Nat.cast_zero]
-    · rw [Nat.cast_mul, Nat.cast_sub <| not_lt.mp h]
+    · rw [Nat.cast_mul, Nat.cast_sub h]
 
 theorem descPochhammer_int_eq_ascFactorial (a b : ℕ) :
     (descPochhammer ℤ b).eval (a + b : ℤ) = (a + 1).ascFactorial b := by

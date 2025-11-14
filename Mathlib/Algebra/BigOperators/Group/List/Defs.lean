@@ -63,6 +63,19 @@ theorem prod_map_one {l : List ι} :
     (l.map fun _ => (1 : M)).prod = 1 := by
   induction l with simp [*]
 
+@[to_additive]
+lemma prod_induction_nonempty
+    (p : M → Prop) (hom : ∀ a b, p a → p b → p (a * b)) (hl : l ≠ []) (base : ∀ x ∈ l, p x) :
+    p l.prod := by
+  induction l with
+  | nil => simp at hl
+  | cons a l ih =>
+    by_cases hl_empty : l = []
+    · simp [*]
+    rw [List.prod_cons]
+    simp only [mem_cons, forall_eq_or_imp] at base
+    exact hom _ _ (base.1) (ih hl_empty base.2)
+
 end MulOneClass
 
 section Monoid

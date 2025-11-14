@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Int.Init
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.SplitIfs
 
 /-!
 # Basic lemmas about semigroups, monoids, and groups
@@ -1039,7 +1038,7 @@ lemma hom_coe_pow {F : Type*} [Monoid F] (c : F → M → M) (h1 : c 1 = id)
   | n + 1 => by rw [pow_succ, iterate_succ, hmul, hom_coe_pow c h1 hmul f n]
 
 /-!
-# Instances for `grind`.
+### Instances for `grind`.
 -/
 
 open Lean

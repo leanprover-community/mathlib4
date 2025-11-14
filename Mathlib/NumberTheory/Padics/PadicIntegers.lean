@@ -510,10 +510,9 @@ instance : IsAdicComplete (maximalIdeal ℤ_[p]) ℤ_[p] where
     · refine ⟨x'.lim, fun n => ?_⟩
       have : (0 : ℝ) < (p : ℝ) ^ (-n : ℤ) := zpow_pos (mod_cast hp.out.pos) _
       obtain ⟨i, hi⟩ := equiv_def₃ (equiv_lim x') this
-      by_cases hin : i ≤ n
+      by_cases! hin : i ≤ n
       · exact (hi i le_rfl n hin).le
-      · push_neg at hin
-        specialize hi i le_rfl i le_rfl
+      · specialize hi i le_rfl i le_rfl
         specialize hx hin.le
         have := nonarchimedean (x n - x i : ℤ_[p]) (x i - x'.lim)
         rw [sub_add_sub_cancel] at this
