@@ -372,7 +372,6 @@ private theorem le_trans {d₁ d₂ d₃ : ManyOneDegree} : d₁ ≤ d₂ → d�
   apply ManyOneReducible.trans
 
 instance instPartialOrder : PartialOrder ManyOneDegree where
-  le := (· ≤ ·)
   le_refl := le_refl
   le_trans _ _ _ := le_trans
   le_antisymm _ _ := le_antisymm

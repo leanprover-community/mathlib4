@@ -288,20 +288,20 @@ theorem abs_exp (x : ℝ) : |exp x| = exp x :=
 lemma exp_abs_le (x : ℝ) : exp |x| ≤ exp x + exp (-x) := by
   cases le_total x 0 <;> simp [abs_of_nonpos, abs_of_nonneg, exp_nonneg, *]
 
-@[mono]
+@[mono, gcongr]
 theorem exp_strictMono : StrictMono exp := fun x y h => by
   rw [← sub_add_cancel y x, Real.exp_add]
   exact (lt_mul_iff_one_lt_left (exp_pos _)).2
       (lt_of_lt_of_le (by linarith) (add_one_le_exp_of_nonneg (by linarith)))
 
-@[gcongr]
+@[deprecated exp_strictMono (since := "2025-10-20")]
 theorem exp_lt_exp_of_lt {x y : ℝ} (h : x < y) : exp x < exp y := exp_strictMono h
 
-@[mono]
+@[gcongr, mono]
 theorem exp_monotone : Monotone exp :=
   exp_strictMono.monotone
 
-@[gcongr, bound]
+@[bound] -- temporary lemma for the `bound` tactic
 theorem exp_le_exp_of_le {x y : ℝ} (h : x ≤ y) : exp x ≤ exp y := exp_monotone h
 
 @[simp]
@@ -593,6 +593,7 @@ theorem exp_1_approx_succ_eq {n} {a₁ b₁ : ℝ} {m : ℕ} (en : n + 1 = m) {r
     |exp 1 - expNear n 1 a₁| ≤ |1| ^ n / n.factorial * b₁ := by
   subst er
   refine exp_approx_succ _ en _ _ ?_ h
+  simp
   field_simp [show (m : ℝ) ≠ 0 by norm_cast; cutsat]
   simp
 

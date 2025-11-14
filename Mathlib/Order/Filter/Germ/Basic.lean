@@ -52,7 +52,7 @@ For each of the following structures we prove that if `β` has this structure, t
 filter, germ
 -/
 
-assert_not_exists OrderedSemiring
+assert_not_exists IsOrderedRing
 
 open scoped Relator
 namespace Filter
@@ -690,7 +690,6 @@ theorem const_le_iff [LE β] [NeBot l] {x y : β} : (↑x : Germ l β) ≤ ↑y 
   liftRel_const_iff
 
 instance instPreorder [Preorder β] : Preorder (Germ l β) where
-  le := (· ≤ ·)
   le_refl f := inductionOn f <| EventuallyLE.refl l
   le_trans f₁ f₂ f₃ := inductionOn₃ f₁ f₂ f₃ fun _ _ _ => EventuallyLE.trans
 

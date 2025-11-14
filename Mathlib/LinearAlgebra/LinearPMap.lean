@@ -223,7 +223,6 @@ instance inhabited : Inhabited (E →ₗ.[R] F) :=
   ⟨⊥⟩
 
 instance semilatticeInf : SemilatticeInf (E →ₗ.[R] F) where
-  le := (· ≤ ·)
   le_refl f := ⟨le_refl f.domain, fun _ _ h => Subtype.eq h ▸ rfl⟩
   le_trans := fun _ _ _ ⟨fg_le, fg_eq⟩ ⟨gh_le, gh_eq⟩ =>
     ⟨le_trans fg_le gh_le, fun x _ hxz =>
@@ -242,7 +241,6 @@ instance semilatticeInf : SemilatticeInf (E →ₗ.[R] F) where
     ⟨fun _ hx => hx.snd.fst, fun ⟨_, _, _, hx⟩ _ h => hx.trans <| congr_arg g <| Subtype.eq <| h⟩
 
 instance orderBot : OrderBot (E →ₗ.[R] F) where
-  bot := ⊥
   bot_le f :=
     ⟨bot_le, fun x y h => by
       have hx : x = 0 := Subtype.eq ((mem_bot R).1 x.2)
@@ -374,7 +372,6 @@ instance instIsScalarTower [SMul M N] [IsScalarTower M N F] : IsScalarTower M N 
   ⟨fun a b f => ext' <| smul_assoc a b f.toFun⟩
 
 instance instMulAction : MulAction M (E →ₗ.[R] F) where
-  smul := (· • ·)
   one_smul := fun ⟨_s, f⟩ => ext' <| one_smul M f
   mul_smul a b f := ext' <| mul_smul a b f.toFun
 

@@ -916,9 +916,9 @@ def ChartedSpace.sum_of_nonempty [Nonempty H] : ChartedSpace H (M ⊕ M') where
       use ChartedSpace.chartAt x, cm'.chart_mem_atlas x
 
 open scoped Classical in
-instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') :=
-  if h : Nonempty H then ChartedSpace.sum_of_nonempty else by
-  push_neg at h
+instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') := by
+  by_cases! h : Nonempty H
+  · exact ChartedSpace.sum_of_nonempty
   have : IsEmpty M := isEmpty_of_chartedSpace H
   have : IsEmpty M' := isEmpty_of_chartedSpace H
   exact empty H (M ⊕ M')
@@ -1491,7 +1491,7 @@ def OpenPartialHomeomorph.toStructomorph {e : OpenPartialHomeomorph M H} (he : e
     let t : Opens H := { carrier := e.target, is_open' := e.open_target }
     Structomorph G s t := by
   intro s t
-  by_cases h : Nonempty e.source
+  by_cases! h : Nonempty e.source
   · exact { e.toHomeomorphSourceTarget with
       mem_groupoid :=
         -- The atlas of H on itself has only one chart, hence c' is the inclusion.
@@ -1500,8 +1500,7 @@ def OpenPartialHomeomorph.toStructomorph {e : OpenPartialHomeomorph M H} (he : e
         -- with `c'` yields a chart in the maximal atlas of `s`.
         fun c c' hc hc' ↦ G.compatible_of_mem_maximalAtlas (G.subset_maximalAtlas hc)
           (G.restriction_mem_maximalAtlas_subtype he h c' hc') }
-  · push_neg at h
-    have : IsEmpty t := isEmpty_coe_sort.mpr
+  · have : IsEmpty t := isEmpty_coe_sort.mpr
       (by convert e.image_source_eq_target ▸ image_eq_empty.mpr (isEmpty_coe_sort.mp h))
     exact { Homeomorph.empty with
       -- `c'` cannot exist: it would be the restriction of `chartAt H x` at some `x ∈ t`.
