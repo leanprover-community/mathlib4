@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
 import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
+import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 import Mathlib.RingTheory.Polynomial.GaussLemma
 import Mathlib.RingTheory.Polynomial.RationalRoot
 
@@ -71,13 +72,26 @@ def minpolyDiv : K⟮f⟯[X] :=
   p.map (algebraMap K K⟮f⟯) - C (AdjoinSimple.gen K f) * q.map (algebraMap K K⟮f⟯)
 
 theorem minpolyDiv_aeval : (minpolyDiv p q).aeval rfX = 0 := by
-  sorry
+  unfold minpolyDiv
+  simp only [aeval_sub, aeval_map_algebraMap, map_mul, aeval_C, IntermediateField.algebraMap_apply,
+    AdjoinSimple.coe_gen]
+  rw [aeval_algebraMap_apply, aeval_X_left_apply, aeval_algebraMap_apply, aeval_X_left_apply,
+    div_mul_cancel₀ p.toRatFunc ?_]
+  · exact sub_self ((algebraMap K[X] K(X)) p)
+  exact (map_ne_zero_iff (algebraMap K[X] K(X)) (IsFractionRing.injective K[X] K(X))).mpr hq
 
 theorem isAlgebraic_div : IsAlgebraic K⟮f⟯ rfX := by
+  use minpolyDiv p q
+  refine ⟨?_, minpolyDiv_aeval p q hp hq coprime⟩
   sorry
 
 theorem isAlgebraic_adjoin_div : Algebra.IsAlgebraic K⟮f⟯ K(X) := by
-  sorry
+  have : Algebra.IsAlgebraic K⟮f⟯ K⟮f⟯⟮rfX⟯ := by
+    apply IntermediateField.isAlgebraic_adjoin_simple
+    rw [←isAlgebraic_iff_isIntegral]
+    exact isAlgebraic_div p q hp hq coprime
+  exact ((IntermediateField.equivOfEq (adjoin_X_eq_top p q hp hq coprime)).trans
+    IntermediateField.topEquiv).isAlgebraic
 
 /- Hints:
 
