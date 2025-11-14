@@ -96,4 +96,4 @@ theorem exists_nat_bool_continuous_surjective_of_compact (X : Type*) [Nonempty X
     Set.restrictPreimage_surjective _ cantorToHilbert_surjective
   -- Take the composition `g.symm ∘ h ∘ f'` as the desired continuous surjection from the Cantor
   -- space to `X`.
-  use g.symm ∘ h ∘ f', by fun_prop, g.symm.surjective.comp <| hh_surjective.comp hf'_surjective
+  exact ⟨g.symm ∘ h ∘ f', by fun_prop, g.symm.surjective.comp <| hh_surjective.comp hf'_surjective⟩
