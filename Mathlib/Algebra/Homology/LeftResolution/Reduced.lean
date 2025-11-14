@@ -81,9 +81,8 @@ def karoubi.π : karoubi.F Λ ⋙ (functorExtension₂ C A).obj ι ⟶ 𝟭 (Kar
 
 @[simp]
 lemma karoubi.π_app_toKaroubi_obj (X : A) :
-    (karoubi.π Λ).app ((toKaroubi _).obj X) = (karoubi.π' Λ).app X :=
-  NatTrans.congr_app (whiskeringLeftObjToKaroubiFullyFaithful.map_preimage
-    (Y := 𝟭 _) (karoubi.π' Λ)) X
+    (karoubi.π Λ).app ((toKaroubi _).obj X) = (karoubi.π' Λ).app X := by
+  simp [π, whiskeringLeftObjToKaroubiFullyFaithful]
 
 instance (X : A) : Epi ((karoubi.π Λ).app ((toKaroubi _).obj X)) := by
   rw [karoubi.π_app_toKaroubi_obj]
