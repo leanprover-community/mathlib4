@@ -156,7 +156,7 @@ theorem ofDigits_digits {b : ℕ} [NeZero b] {x : ℝ} (hb : 1 < b) (hx : x ∈ 
   · exact summable_ofDigitsTerm
 
 /-- A generalization of the identity `0.(9) = 1` to arbitrary positional numeral systems. -/
-theorem ofDigits_const_last_eq_one {b : ℕ} [NeZero b] (hb : 1 < b) :
+theorem ofDigits_const_last_eq_one {b : ℕ} (hb : 1 < b) :
     ofDigits (fun _ ↦ (⟨b - 1, Nat.sub_one_lt_of_lt hb⟩ : Fin b)) = 1 := by
   simp only [ofDigits, ofDigitsTerm, ← inv_pow]
   rw [Summable.tsum_mul_left]
@@ -169,8 +169,9 @@ theorem ofDigits_const_last_eq_one {b : ℕ} [NeZero b] (hb : 1 < b) :
   · rw [summable_nat_add_iff (f := fun n ↦ (b : ℝ)⁻¹ ^ n) 1]
     apply summable_geometric_of_lt_one (by positivity) (by simp [inv_lt_one_iff₀, hb])
 
-theorem ofDigits_SurjOn {b : ℕ} [NeZero b] (hb : 1 < b) :
+theorem ofDigits_SurjOn {b : ℕ} (hb : 1 < b) :
     Set.SurjOn (ofDigits (b := b)) Set.univ (Set.Icc 0 1) := by
+  have : NeZero b := ⟨by grind⟩
   intro y hy
   by_cases hy' : y ∈ Set.Ico 0 1
   · use digits y b
