@@ -205,6 +205,7 @@ lemma dist_orthogonalProjection_eq_iff_oangle_eq {p p' : P} {s₁ s₂ : AffineS
   fun hne hp₁ hp₂ ↦ ⟨oangle_eq_of_dist_orthogonalProjection_eq hp' hne,
    dist_orthogonalProjection_eq_of_oangle_eq hp' hp₁ hp₂⟩
 
+-- See https://github.com/leanprover/lean4/issues/11182 for why hypotheses are after the colon.
 /-- A point `p` is equidistant to two affine subspaces (typically lines, for this version of the
 lemma) if twice the oriented angles at a point `p'` in their intersection between `p` and its
 orthogonal projections onto the subspaces are equal. -/
