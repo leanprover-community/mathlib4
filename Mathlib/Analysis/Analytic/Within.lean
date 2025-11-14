@@ -42,7 +42,7 @@ lemma analyticWithinAt_of_singleton_mem {f : E → F} {s : Set E} {x : E} (h : {
   rcases mem_nhdsWithin.mp h with ⟨t, ot, xt, st⟩
   rcases Metric.mem_nhds_iff.mp (ot.mem_nhds xt) with ⟨r, r0, rt⟩
   exact ⟨constFormalMultilinearSeries 𝕜 E (f x), .ofReal r,
-  { r_le := by simp only [FormalMultilinearSeries.constFormalMultilinearSeries_radius, le_top]
+  { r_le := by simp only [constFormalMultilinearSeries_radius, le_top]
     r_pos := by positivity
     hasSum := by
       intro y ys yr

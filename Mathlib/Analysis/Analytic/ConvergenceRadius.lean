@@ -125,10 +125,15 @@ theorem radius_eq_top_of_forall_image_add_eq_zero (n : ℕ) (hn : ∀ m, p (m + 
     mem_atTop_sets.2 ⟨n, fun _ hk => tsub_add_cancel_of_le hk ▸ hn _⟩
 
 @[simp]
-theorem constFormalMultilinearSeries_radius {v : F} :
+theorem _root_.constFormalMultilinearSeries_radius {v : F} :
     (constFormalMultilinearSeries 𝕜 E v).radius = ⊤ :=
   (constFormalMultilinearSeries 𝕜 E v).radius_eq_top_of_forall_image_add_eq_zero 1
     (by simp [constFormalMultilinearSeries])
+
+theorem _root_.hasSum_constFormalMultilinearSeries {x : E} {v : F} :
+    HasSum (fun n ↦ constFormalMultilinearSeries 𝕜 E v n (fun _ ↦ x)) v := by
+  refine hasSum_single 0 fun n hn => ?_
+  simp [constFormalMultilinearSeries_apply_of_nonzero hn]
 
 /-- `0` has infinite radius of convergence -/
 @[simp] lemma zero_radius : (0 : FormalMultilinearSeries 𝕜 E F).radius = ∞ := by

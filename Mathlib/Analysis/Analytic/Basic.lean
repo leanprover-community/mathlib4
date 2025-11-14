@@ -109,12 +109,12 @@ def AnalyticAt (f : E → F) (x : E) :=
 def AnalyticWithinAt (f : E → F) (s : Set E) (x : E) : Prop :=
   ∃ p : FormalMultilinearSeries 𝕜 E F, HasFPowerSeriesWithinAt f p s x
 
-/-- Given a function `f : E → F`, we say that `f` is analytic on a set `s` if it is analytic around
-every point of `s`. -/
+/-- Given a function `f : E → F`, we say that `f` is analytic on a neighborhood of a set `s` if it
+is analytic around every point of `s`. -/
 def AnalyticOnNhd (f : E → F) (s : Set E) :=
   ∀ x, x ∈ s → AnalyticAt 𝕜 f x
 
-/-- `f` is analytic within `s` if it is analytic within `s` at each point of `s`.  Note that
+/-- `f` is analytic on `s` if it is analytic within `s` at each point of `s`.  Note that
 this is weaker than `AnalyticOnNhd 𝕜 f s`, as `f` is allowed to be arbitrary outside `s`. -/
 def AnalyticOn (f : E → F) (s : Set E) : Prop :=
   ∀ x ∈ s, AnalyticWithinAt 𝕜 f s x
@@ -145,6 +145,24 @@ theorem HasFPowerSeriesWithinAt.analyticWithinAt (hf : HasFPowerSeriesWithinAt f
 theorem HasFPowerSeriesWithinOnBall.analyticWithinAt (hf : HasFPowerSeriesWithinOnBall f p s x r) :
     AnalyticWithinAt 𝕜 f s x :=
   hf.hasFPowerSeriesWithinAt.analyticWithinAt
+
+-- Note: this may also be obtained by combining `hasFPowerSeriesOnBall_const`
+-- together with `HasFPowerSeriesWithinOnBall.congr`. This has the downside of moving
+-- things down in the import tree, so we prefer to redo the proof by hand.
+theorem HasFPowerSeriesWithinAt.empty :
+    HasFPowerSeriesWithinAt f (constFormalMultilinearSeries 𝕜 E (f x)) ∅ x := by
+  refine ⟨⊤, ⟨by simp, by simp, fun {y} hxy hy ↦ ?_⟩⟩
+  simp only [insert_empty_eq, mem_singleton_iff] at hxy
+  rw [hxy]
+  exact hasSum_constFormalMultilinearSeries
+
+@[simp]
+theorem AnalyticWithinAt.empty : AnalyticWithinAt 𝕜 f ∅ x :=
+  ⟨_, .empty⟩
+
+@[simp]
+theorem AnalyticOn.empty : AnalyticOn 𝕜 f ∅ :=
+  fun _ ↦ False.elim
 
 /-- If a function `f` has a power series `p` around `x`, then the function `z ↦ f (z - y)` has the
 same power series around `x + y`. -/
