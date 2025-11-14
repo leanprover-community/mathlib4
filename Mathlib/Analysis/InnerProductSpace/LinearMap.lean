@@ -192,7 +192,6 @@ def innerSL : E →L⋆[𝕜] E →L[𝕜] 𝕜 :=
 theorem innerSL_apply_coe (v : E) : ⇑(innerSL 𝕜 v) = fun w => ⟪v, w⟫ :=
   rfl
 
-@[simp]
 theorem innerSL_apply (v w : E) : innerSL 𝕜 v w = ⟪v, w⟫ :=
   rfl
 
