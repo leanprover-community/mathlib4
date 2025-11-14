@@ -86,7 +86,7 @@ lemma card_pow_le [DecidableEq G] {A : Finset G} (hA : IsApproximateSubgroup K (
     obtain ⟨F, hF, hSF⟩ := hA.sq_covBySMul
     calc
       (#(A ^ (n + 2)) : ℝ) ≤ #(F ^ (n + 1) * A) := by
-        gcongr; exact mod_cast Set.pow_subset_pow_mul_of_sq_subset_mul hSF (by omega)
+        gcongr; exact mod_cast Set.pow_subset_pow_mul_of_sq_subset_mul hSF (by cutsat)
       _ ≤ #(F ^ (n + 1)) * #A := mod_cast Finset.card_mul_le
       _ ≤ #F ^ (n + 1) * #A := by gcongr; exact mod_cast Finset.card_pow_le
       _ ≤ K ^ (n + 1) * #A := by gcongr
@@ -178,7 +178,7 @@ end IsApproximateSubgroup
 open Set in
 /-- A `1`-approximate subgroup is the same thing as a subgroup. -/
 @[to_additive (attr := simp)
-"A `1`-approximate subgroup is the same thing as a subgroup."]
+/-- A `1`-approximate subgroup is the same thing as a subgroup. -/]
 lemma isApproximateSubgroup_one {A : Set G} :
     IsApproximateSubgroup 1 (A : Set G) ↔ ∃ H : Subgroup G, H = A where
   mp hA := by

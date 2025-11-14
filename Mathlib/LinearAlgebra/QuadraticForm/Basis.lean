@@ -17,6 +17,7 @@ a basis.
 -/
 
 open LinearMap (BilinMap)
+open Module
 
 namespace QuadraticMap
 variable {ι R M N : Type*}

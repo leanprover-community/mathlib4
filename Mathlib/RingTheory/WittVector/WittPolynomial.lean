@@ -190,7 +190,7 @@ The polynomials `xInTermsOfW` give the coordinate transformation in the backward
 that corresponds to the ordinary `X n`. -/
 noncomputable def xInTermsOfW [Invertible (p : R)] : ℕ → MvPolynomial ℕ R
   | n => (X n - ∑ i : Fin n,
-          C ((p : R) ^ (i : ℕ)) * xInTermsOfW i ^ p ^ (n - (i : ℕ))) * C ((⅟ p : R) ^ n)
+          C ((p : R) ^ (i : ℕ)) * xInTermsOfW i ^ p ^ (n - (i : ℕ))) * C ((⅟p : R) ^ n)
 
 theorem xInTermsOfW_eq [Invertible (p : R)] {n : ℕ} : xInTermsOfW p R n =
     (X n - ∑ i ∈ range n, C ((p : R) ^ i) *
@@ -221,7 +221,7 @@ theorem xInTermsOfW_vars_aux (n : ℕ) :
     n ∈ (xInTermsOfW p ℚ n).vars ∧ (xInTermsOfW p ℚ n).vars ⊆ range (n + 1) := by
   induction n using Nat.strongRecOn with | ind n ih => ?_
   rw [xInTermsOfW_eq, mul_comm, vars_C_mul _ (Invertible.ne_zero _),
-    vars_sub_of_disjoint, vars_X, range_succ, insert_eq]
+    vars_sub_of_disjoint, vars_X, range_add_one, insert_eq]
   on_goal 1 =>
     simp only [true_and, true_or, mem_union, mem_singleton]
     intro i
@@ -241,8 +241,8 @@ theorem xInTermsOfW_vars_aux (n : ℕ) :
     replace H := (ih j hj).2 (vars_pow _ _ H)
     rw [mem_range] at H
   · rw [mem_range]
-    omega
-  · omega
+    cutsat
+  · cutsat
 
 theorem xInTermsOfW_vars_subset (n : ℕ) : (xInTermsOfW p ℚ n).vars ⊆ range (n + 1) :=
   (xInTermsOfW_vars_aux p n).2

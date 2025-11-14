@@ -59,9 +59,9 @@ variable [Nontrivial R]
 theorem degree_Phi : (Φ R a b).degree = ((5 : ℕ) : WithBot ℕ) := by
   suffices degree (X ^ 5 - C (a : R) * X) = ((5 : ℕ) : WithBot ℕ) by
     rwa [Φ, degree_add_eq_left_of_degree_lt]
-    convert (degree_C_le (R := R)).trans_lt (WithBot.coe_lt_coe.mpr (show 0 < 5 by norm_num))
+    convert (degree_C_le (R := R)).trans_lt (WithBot.coe_lt_coe.mpr (show 0 < 5 by simp))
   rw [degree_sub_eq_left_of_degree_lt] <;> rw [degree_X_pow]
-  exact (degree_C_mul_X_le (a : R)).trans_lt (WithBot.coe_lt_coe.mpr (show 1 < 5 by norm_num))
+  exact (degree_C_mul_X_le (a : R)).trans_lt (WithBot.coe_lt_coe.mpr (show 1 < 5 by simp))
 
 theorem natDegree_Phi : (Φ R a b).natDegree = 5 :=
   natDegree_eq_of_degree_eq_some (degree_Phi a b)
@@ -169,7 +169,7 @@ theorem not_solvable_by_rad' (x : ℂ) (hx : aeval x (Φ ℚ 4 2) = 0) : ¬IsSol
 /-- **Abel-Ruffini Theorem** -/
 theorem exists_not_solvable_by_rad : ∃ x : ℂ, IsAlgebraic ℚ x ∧ ¬IsSolvableByRad ℚ x := by
   obtain ⟨x, hx⟩ := exists_root_of_splits (algebraMap ℚ ℂ) (IsAlgClosed.splits_codomain (Φ ℚ 4 2))
-    (ne_of_eq_of_ne (degree_Phi 4 2) (mt WithBot.coe_eq_coe.mp (show 5 ≠ 0 by norm_num)))
+    (ne_of_eq_of_ne (degree_Phi 4 2) (mt WithBot.coe_eq_coe.mp (show 5 ≠ 0 by simp)))
   exact ⟨x, ⟨Φ ℚ 4 2, (monic_Phi 4 2).ne_zero, hx⟩, not_solvable_by_rad' x hx⟩
 
 end AbelRuffini

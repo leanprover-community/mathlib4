@@ -14,7 +14,7 @@ some theorems about orthogonal families of subspaces.
 
 noncomputable section
 
-open RCLike Real Filter Topology ComplexConjugate Finsupp
+open RCLike Real Filter Topology ComplexConjugate Finsupp Module
 
 open LinearMap (BilinForm)
 
@@ -153,7 +153,7 @@ theorem OrthogonalFamily.comp {γ : Type*} {f : γ → ι} (hf : Function.Inject
 
 theorem OrthogonalFamily.orthonormal_sigma_orthonormal {α : ι → Type*} {v_family : ∀ i, α i → G i}
     (hv_family : ∀ i, Orthonormal 𝕜 (v_family i)) :
-    Orthonormal 𝕜 fun a : Σi, α i => V a.1 (v_family a.1 a.2) := by
+    Orthonormal 𝕜 fun a : Σ i, α i => V a.1 (v_family a.1 a.2) := by
   constructor
   · rintro ⟨i, v⟩
     simpa only [LinearIsometry.norm_map] using (hv_family i).left v

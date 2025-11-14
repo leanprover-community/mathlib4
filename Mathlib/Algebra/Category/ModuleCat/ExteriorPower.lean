@@ -115,7 +115,7 @@ lemma iso₀_hom_naturality {M N : ModuleCat.{u} R} (f : M ⟶ N) :
     map f 0 ≫ (iso₀ N).hom = (iso₀ M).hom :=
   ModuleCat.hom_ext (exteriorPower.zeroEquiv_naturality f.hom)
 
-/-- The isomorphism `M.exteriorPower 0 ≅ M`. -/
+/-- The isomorphism `M.exteriorPower 1 ≅ M`. -/
 noncomputable def iso₁ (M : ModuleCat.{u} R) : M.exteriorPower 1 ≅ M :=
   (exteriorPower.oneEquiv R M).toModuleIso
 

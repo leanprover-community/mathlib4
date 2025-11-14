@@ -52,11 +52,6 @@ theorem mem_lists_iff (s : Multiset α) (l : List α) : l ∈ lists s ↔ s = �
 
 end Multiset
 
-@[simp]
-theorem perm_toList {f₁ f₂ : Finset α} : f₁.toList ~ f₂.toList ↔ f₁ = f₂ :=
-  ⟨fun h => Finset.ext_iff.mpr (fun x => by simpa [← Finset.mem_toList] using Perm.mem_iff h),
-   fun h ↦ Perm.of_eq <| congrArg Finset.toList h⟩
-
 instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := by
   refine Fintype.ofFinset ?_ ?_
   · let univSubsets := ((Finset.univ : Finset α).powerset.1 : (Multiset (Finset α)))
@@ -93,7 +88,7 @@ instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := b
         by_contra hab
         absurd h
         rw [hab] at ha
-        exact perm_toList.mp <| Perm.trans (id (Perm.symm ha)) hb
+        exact Finset.perm_toList.mp <| Perm.trans ha.symm hb
   · intro l
     simp only [Finset.mem_mk, Multiset.mem_bind, Finset.mem_val, Finset.mem_powerset,
       Finset.subset_univ, Multiset.mem_lists_iff, Multiset.quot_mk_to_coe, true_and]

@@ -20,9 +20,7 @@ group of `x`.
 
 open CategoryTheory
 
-universe u
-
-variable {X : Type u} [TopologicalSpace X]
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 variable {x₀ x₁ : X}
 
 noncomputable section
@@ -42,10 +40,7 @@ def reflTransSymmAux (x : I × I) : ℝ :=
 @[continuity, fun_prop]
 theorem continuous_reflTransSymmAux : Continuous reflTransSymmAux := by
   refine continuous_if_le ?_ ?_ (Continuous.continuousOn ?_) (Continuous.continuousOn ?_) ?_
-  · fun_prop
-  · fun_prop
-  · fun_prop
-  · fun_prop
+  iterate 4 fun_prop
   intro x hx
   norm_num [hx, mul_assoc]
 
@@ -56,13 +51,13 @@ theorem reflTransSymmAux_mem_I (x : I × I) : reflTransSymmAux x ∈ I := by
     · apply mul_nonneg
       · apply mul_nonneg
         · unit_interval
-        · norm_num
+        · simp
       · unit_interval
     · rw [mul_assoc]
       apply mul_le_one₀
       · unit_interval
       · apply mul_nonneg
-        · norm_num
+        · simp
         · unit_interval
       · linarith
   · constructor
@@ -85,10 +80,8 @@ def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.sy
     cases le_or_gt (x : ℝ) 2⁻¹ with
     | inl hx => simp [hx, ← extend_extends]
     | inr hx =>
-      simp? [hx.not_le, ← extend_extends] says
-        simp only [one_div, hx.not_ge, ↓reduceIte, Set.Icc.coe_one, one_mul, ← extend_extends,
-          extend_symm, ContinuousMap.coe_mk, Function.comp_apply]
-      ring_nf
+      have : p.extend (2 - 2 * ↑x) = p.extend (1 - (2 * ↑x - 1)) := by ring_nf
+      simpa [hx.not_ge, ← extend_extends]
   prop' t := by norm_num [reflTransSymmAux]
 
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from the constant path based at `x₁` to
@@ -208,7 +201,7 @@ end Path
 /-- The fundamental groupoid of a space `X` is defined to be a wrapper around `X`, and we
 subsequently put a `CategoryTheory.Groupoid` structure on it. -/
 @[ext]
-structure FundamentalGroupoid (X : Type u) where
+structure FundamentalGroupoid (X : Type*) where
   /-- View a term of `FundamentalGroupoid X` as a term of `X`. -/
   as : X
 
@@ -252,72 +245,37 @@ instance (X : Type*) [Subsingleton X] :
 -- TODO: It seems that `Equiv.nontrivial_congr` doesn't exist.
 -- Once it is added, please add the corresponding lemma and instance.
 
-instance {X : Type u} [Inhabited X] : Inhabited (FundamentalGroupoid X) :=
+instance {X : Type*} [Inhabited X] : Inhabited (FundamentalGroupoid X) :=
   ⟨⟨default⟩⟩
 
-attribute [local instance] Path.Homotopic.setoid
-
-instance : CategoryTheory.Groupoid (FundamentalGroupoid X) where
+instance : Groupoid (FundamentalGroupoid X) where
   Hom x y := Path.Homotopic.Quotient x.as y.as
   id x := ⟦Path.refl x.as⟧
-  comp {_ _ _} := Path.Homotopic.Quotient.comp
-  id_comp {x _} f :=
-    Quotient.inductionOn f fun a =>
-      show ⟦(Path.refl x.as).trans a⟧ = ⟦a⟧ from Quotient.sound ⟨Path.Homotopy.reflTrans a⟩
-  comp_id {_ y} f :=
-    Quotient.inductionOn f fun a =>
-      show ⟦a.trans (Path.refl y.as)⟧ = ⟦a⟧ from Quotient.sound ⟨Path.Homotopy.transRefl a⟩
-  assoc {_ _ _ _} f g h :=
-    Quotient.inductionOn₃ f g h fun p q r =>
-      show ⟦(p.trans q).trans r⟧ = ⟦p.trans (q.trans r)⟧ from
-        Quotient.sound ⟨Path.Homotopy.transAssoc p q r⟩
-  inv {x y} p :=
-    Quotient.lift (fun l : Path x.as y.as => ⟦l.symm⟧)
-      (by
-        rintro a b ⟨h⟩
-        simp only
-        rw [Quotient.eq]
-        exact ⟨h.symm₂⟩)
-      p
-  inv_comp {_ y} f :=
-    Quotient.inductionOn f fun a =>
-      show ⟦a.symm.trans a⟧ = ⟦Path.refl y.as⟧ from
-        Quotient.sound ⟨(Path.Homotopy.reflSymmTrans a).symm⟩
-  comp_inv {x _} f :=
-    Quotient.inductionOn f fun a =>
-      show ⟦a.trans a.symm⟧ = ⟦Path.refl x.as⟧ from
-        Quotient.sound ⟨(Path.Homotopy.reflTransSymm a).symm⟩
+  comp := Path.Homotopic.Quotient.comp
+  id_comp := by rintro _ _ ⟨f⟩; exact Quotient.sound ⟨Path.Homotopy.reflTrans f⟩
+  comp_id := by rintro _ _ ⟨f⟩; exact Quotient.sound ⟨Path.Homotopy.transRefl f⟩
+  assoc := by rintro _ _ _ _ ⟨f⟩ ⟨g⟩ ⟨h⟩; exact Quotient.sound ⟨Path.Homotopy.transAssoc f g h⟩
+  inv := Quotient.lift (fun f ↦ ⟦f.symm⟧) (by rintro a b ⟨h⟩; exact Quotient.sound ⟨h.symm₂⟩)
+  inv_comp := by rintro _ _ ⟨f⟩; exact Quotient.sound ⟨(Path.Homotopy.reflSymmTrans f).symm⟩
+  comp_inv := by rintro _ _ ⟨f⟩; exact Quotient.sound ⟨(Path.Homotopy.reflTransSymm f).symm⟩
 
 theorem comp_eq (x y z : FundamentalGroupoid X) (p : x ⟶ y) (q : y ⟶ z) : p ≫ q = p.comp q := rfl
 
 theorem id_eq_path_refl (x : FundamentalGroupoid X) : 𝟙 x = ⟦Path.refl x.as⟧ := rfl
 
+/-- The functor on fundamental groupoid induced by a continuous map. -/
+@[simps] def map (f : C(X, Y)) : FundamentalGroupoid X ⥤ FundamentalGroupoid Y where
+  obj x := ⟨f x.as⟩
+  map p := p.mapFn f
+  map_id _ := rfl
+  map_comp := by rintro _ _ _ ⟨p⟩ ⟨q⟩; exact congr_arg Quotient.mk'' (p.map_trans q f.continuous)
+
 /-- The functor sending a topological space `X` to its fundamental groupoid. -/
-def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
+def fundamentalGroupoidFunctor : TopCat ⥤ Grpd where
   obj X := { α := FundamentalGroupoid X }
-  map f :=
-    { obj := fun x => ⟨f x.as⟩
-      map := fun {X Y} p => by exact Path.Homotopic.Quotient.mapFn p f.hom
-      map_id := fun _ => rfl
-      map_comp := fun {x y z} p q => by
-        refine Quotient.inductionOn₂ p q fun a b => ?_
-        simp only [comp_eq, ← Path.Homotopic.map_lift, ← Path.Homotopic.comp_lift, Path.map_trans] }
-  map_id X := by
-    simp only
-    change _ = (⟨_, _, _⟩ : FundamentalGroupoid X ⥤ FundamentalGroupoid X)
-    congr
-    ext x y p
-    refine Quotient.inductionOn p fun q => ?_
-    rw [← Path.Homotopic.map_lift]
-    conv_rhs => rw [← q.map_id]
-    rfl
-  map_comp f g := by
-    simp only
-    congr
-    ext x y p
-    refine Quotient.inductionOn p fun q => ?_
-    simp only
-    rfl
+  map f := map f.hom
+  map_id X := by simp only [map]; congr; ext x y ⟨p⟩; rfl
+  map_comp f g := by simp only [map]; congr; ext x y ⟨p⟩; rfl
 
 @[inherit_doc] scoped notation "π" => FundamentalGroupoid.fundamentalGroupoidFunctor
 
@@ -346,7 +304,15 @@ abbrev toPath {X : TopCat} {x₀ x₁ : πₓ X} (p : x₀ ⟶ x₁) :
 
 /-- Help the typechecker by converting a path in a topological space to an arrow in the
 fundamental groupoid of that space. -/
-abbrev fromPath {X : TopCat} {x₀ x₁ : X} (p : Path.Homotopic.Quotient x₀ x₁) :
+abbrev fromPath {x₀ x₁ : X} (p : Path.Homotopic.Quotient x₀ x₁) :
     FundamentalGroupoid.mk x₀ ⟶ FundamentalGroupoid.mk x₁ := p
+
+lemma eqToHom_eq {x₀ x₁ : X} (h : x₀ = x₁) :
+    eqToHom (congr_arg mk h) = ⟦(Path.refl x₁).cast h rfl⟧ := by subst h; rfl
+
+@[reassoc]
+lemma conj_eqToHom {x y x' y' : X} {p : Path x y} (hx : x' = x) (hy : y' = y) :
+    eqToHom (congr_arg mk hx) ≫ ⟦p⟧ ≫ eqToHom (congr_arg mk hy.symm) = ⟦p.cast hx hy⟧ := by
+  subst hx hy; simp
 
 end FundamentalGroupoid

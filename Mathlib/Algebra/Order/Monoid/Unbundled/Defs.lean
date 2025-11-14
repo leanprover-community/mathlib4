@@ -45,7 +45,7 @@ the most common usage. In the opposite direction, the implication
 ```
 holds -- note the `Co*ntra*` assumption on the `(≤)`-relation.
 
-# Formalization notes
+## Formalization notes
 
 We stick to the convention of using `Function.swap (*)` (or `Function.swap (+)`), for the
 typeclass assumptions, since `Function.swap` is slightly better behaved than `flip`.
@@ -252,6 +252,10 @@ abbrev AddRightReflectLE [Add M] [LE M] : Prop :=
   ContravariantClass M M (swap (· + ·)) (· ≤ ·)
 
 attribute [to_additive existing] MulLeftReflectLE MulRightReflectLE
+
+instance [Add M] [Preorder M] [i₁ : AddRightMono M] [i₂ : AddRightReflectLE M] :
+    Lean.Grind.OrderedAdd M where
+  add_le_left_iff := fun c => ⟨i₁.elim c, i₂.elim c⟩
 
 theorem rel_iff_cov [CovariantClass M N μ r] [ContravariantClass M N μ r] (m : M) {a b : N} :
     r (μ m a) (μ m b) ↔ r a b :=

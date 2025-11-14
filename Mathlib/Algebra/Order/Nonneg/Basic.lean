@@ -31,7 +31,7 @@ equal, this often confuses the elaborator. Similar problems arise when doing cas
 The disadvantage is that we have to duplicate some instances about `Set.Ici` to this subtype.
 -/
 assert_not_exists GeneralizedHeytingAlgebra
-assert_not_exists OrderedCommMonoid
+assert_not_exists IsOrderedMonoid
 -- TODO -- assert_not_exists PosMulMono
 assert_not_exists mem_upperBounds
 
@@ -69,6 +69,17 @@ theorem mk_add_mk [AddZeroClass α] [Preorder α] [AddLeftMono α] {x y : α}
 protected theorem coe_add [AddZeroClass α] [Preorder α] [AddLeftMono α]
     (a b : { x : α // 0 ≤ x }) : ((a + b : { x : α // 0 ≤ x }) : α) = a + b :=
   rfl
+
+instance [AddZeroClass α] [Preorder α] [AddLeftMono α] [IsLeftCancelAdd α] :
+    IsLeftCancelAdd { x : α // 0 ≤ x } where
+  add_left_cancel _ _ _ eq := Subtype.ext (add_left_cancel congr($eq))
+
+instance [AddZeroClass α] [Preorder α] [AddLeftMono α] [IsRightCancelAdd α] :
+    IsRightCancelAdd { x : α // 0 ≤ x } where
+  add_right_cancel _ _ _ eq := Subtype.ext (add_right_cancel congr($eq))
+
+instance [AddZeroClass α] [Preorder α] [AddLeftMono α] [IsCancelAdd α] :
+    IsCancelAdd { x : α // 0 ≤ x } where
 
 instance nsmul [AddMonoid α] [Preorder α] [AddLeftMono α] : SMul ℕ { x : α // 0 ≤ x } :=
   ⟨fun n x => ⟨n • (x : α), nsmul_nonneg x.prop n⟩⟩
@@ -201,7 +212,7 @@ variable [Semiring α] [PartialOrder α] [ZeroLEOneClass α]
 
 instance semiring : Semiring { x : α // 0 ≤ x } :=
   Subtype.coe_injective.semiring _ Nonneg.coe_zero Nonneg.coe_one
-    (fun _ _ => rfl) (fun _ _=> rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
 
 instance monoidWithZero : MonoidWithZero { x : α // 0 ≤ x } := by infer_instance

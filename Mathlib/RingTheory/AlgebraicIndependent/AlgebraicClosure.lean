@@ -60,10 +60,6 @@ theorem extendScalars_of_isIntegral [Algebra.IsIntegral R S] : AlgebraicIndepend
   have := Module.nontrivial R S
   exact hx.extendScalars S
 
-@[deprecated (since := "2025-02-08")] alias extendScalars_of_isSimpleRing := extendScalars
-@[deprecated (since := "2025-02-08")] protected alias subalgebra := extendScalars
-@[deprecated (since := "2025-02-08")] alias subalgebra_of_isIntegral := extendScalars_of_isIntegral
-
 theorem subalgebraAlgebraicClosure [IsDomain R] [NoZeroDivisors A] :
     AlgebraicIndependent (Subalgebra.algebraicClosure R A) x :=
   hx.extendScalars _
@@ -127,7 +123,7 @@ theorem isAlgebraic_adjoin_iff_top :
 
 theorem isAlgebraic_adjoin_iff_bot :
     Algebra.IsAlgebraic R (adjoin F s) ↔ Algebra.IsAlgebraic R (Algebra.adjoin F s) :=
-  (IsAlgebraic.isAlgebraic_iff_bot ..).symm
+  IsAlgebraic.isAlgebraic_iff_bot ..
 
 theorem transcendental_adjoin_iff {x : S} :
     Transcendental (adjoin F s) x ↔ Transcendental (Algebra.adjoin F s) x :=

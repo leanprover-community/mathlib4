@@ -61,7 +61,7 @@ theorem binaryCofan_inr {A B : C} [MonoCoprod C] (c : BinaryCofan A B) (hc : IsC
   haveI hc' : IsColimit (BinaryCofan.mk c.inr c.inl) :=
     BinaryCofan.IsColimit.mk _ (fun f₁ f₂ => hc.desc (BinaryCofan.mk f₂ f₁))
       (by simp) (by simp)
-      (fun f₁ f₂ m h₁ h₂ => BinaryCofan.IsColimit.hom_ext hc (by aesop_cat) (by aesop_cat))
+      (fun f₁ f₂ m h₁ h₂ => BinaryCofan.IsColimit.hom_ext hc (by cat_disch) (by cat_disch))
   exact binaryCofan_inl _ hc'
 
 instance {A B : C} [MonoCoprod C] [HasBinaryCoproduct A B] : Mono (coprod.inl : A ⟶ A ⨿ B) :=
@@ -76,8 +76,7 @@ theorem mono_inl_iff {A B : C} {c₁ c₂ : BinaryCofan A B} (hc₁ : IsColimit 
     ∀ (c₁ c₂ : BinaryCofan A B) (_ : IsColimit c₁) (_ : IsColimit c₂) (_ : Mono c₁.inl),
       Mono c₂.inl
     by exact ⟨fun h₁ => this _ _ hc₁ hc₂ h₁, fun h₂ => this _ _ hc₂ hc₁ h₂⟩
-  intro c₁ c₂ hc₁ hc₂
-  intro
+  intro c₁ c₂ hc₁ hc₂ _
   simpa only [IsColimit.comp_coconePointUniqueUpToIso_hom] using
     mono_comp c₁.inl (hc₁.coconePointUniqueUpToIso hc₂).hom
 
@@ -128,7 +127,7 @@ def isColimitBinaryCofanSum : IsColimit (binaryCofanSum c c₁ c₂ hc₁ hc₂)
     (fun f₁ f₂ => Cofan.IsColimit.hom_ext hc₂ _ _ (by simp))
     (fun f₁ f₂ m hm₁ hm₂ => by
       apply Cofan.IsColimit.hom_ext hc
-      rintro (i₁|i₂) <;> aesop_cat)
+      rintro (i₁|i₂) <;> cat_disch)
 
 lemma mono_binaryCofanSum_inl [MonoCoprod C] :
     Mono (binaryCofanSum c c₁ c₂ hc₁ hc₂).inl :=

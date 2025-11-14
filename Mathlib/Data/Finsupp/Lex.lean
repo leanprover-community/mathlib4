@@ -36,7 +36,7 @@ theorem _root_.Pi.lex_eq_finsupp_lex {r : α → α → Prop} {s : N → N → P
 
 theorem lex_def {r : α → α → Prop} {s : N → N → Prop} {a b : α →₀ N} :
     Finsupp.Lex r s a b ↔ ∃ j, (∀ d, r d j → a d = b d) ∧ s (a j) (b j) :=
-  Iff.rfl
+  .rfl
 
 theorem lex_eq_invImage_dfinsupp_lex (r : α → α → Prop) (s : N → N → Prop) :
     Finsupp.Lex r s = InvImage (DFinsupp.Lex r fun _ ↦ s) toDFinsupp :=
@@ -46,11 +46,11 @@ instance [LT α] [LT N] : LT (Lex (α →₀ N)) :=
   ⟨fun f g ↦ Finsupp.Lex (· < ·) (· < ·) (ofLex f) (ofLex g)⟩
 
 theorem lex_lt_iff [LT α] [LT N] {a b : Lex (α →₀ N)} :
-    a < b ↔ ∃ i, (∀ j, j < i → ofLex a j = ofLex b j) ∧ ofLex a i < ofLex b i :=
-  Finsupp.lex_def
+    a < b ↔ ∃ i, (∀ j, j < i → a j = b j) ∧ a i < b i :=
+  .rfl
 
 theorem lex_lt_iff_of_unique [Preorder α] [LT N] [Unique α] {a b : Lex (α →₀ N)} :
-    a < b ↔ ofLex a default < ofLex b default := by
+    a < b ↔ a default < b default := by
   simp only [lex_lt_iff, Unique.exists_iff, and_iff_right_iff_imp]
   refine fun _ j hj ↦ False.elim (lt_irrefl j ?_)
   simpa only [Unique.uniq] using hj
@@ -84,36 +84,37 @@ instance Lex.linearOrder [LinearOrder N] : LinearOrder (Lex (α →₀ N)) where
   le := (· ≤ ·)
   __ := LinearOrder.lift' (toLex ∘ toDFinsupp ∘ ofLex) finsuppEquivDFinsupp.injective
 
-theorem Lex.single_strictAnti : StrictAnti (fun (a : α) ↦ toLex (single a 1)) := by
+theorem Lex.single_strictAnti : StrictAnti fun (a : α) ↦ toLex (single a 1) := by
   intro a b h
   simp only [LT.lt, Finsupp.lex_def]
   simp only [ofLex_toLex, Nat.lt_eq]
   use a
   constructor
   · intro d hd
-    simp only [Finsupp.single_eq_of_ne hd.ne', Finsupp.single_eq_of_ne (hd.trans h).ne']
+    simp only [Finsupp.single_eq_of_ne hd.ne, Finsupp.single_eq_of_ne (hd.trans h).ne]
   · simp [h.ne']
 
 theorem Lex.single_lt_iff {a b : α} : toLex (single b 1) < toLex (single a 1) ↔ a < b :=
-  Lex.single_strictAnti.lt_iff_lt
+  Lex.single_strictAnti.lt_iff_gt
 
 theorem Lex.single_le_iff {a b : α} : toLex (single b 1) ≤ toLex (single a 1) ↔ a ≤ b :=
-  Lex.single_strictAnti.le_iff_le
+  Lex.single_strictAnti.le_iff_ge
 
-theorem Lex.single_antitone : Antitone (fun (a : α) ↦ toLex (single a 1)) :=
+theorem Lex.single_antitone : Antitone fun (a : α) ↦ toLex (single a 1) :=
   Lex.single_strictAnti.antitone
 
 variable [PartialOrder N]
 
 theorem toLex_monotone : Monotone (@toLex (α →₀ N)) :=
-  fun a b h ↦ DFinsupp.toLex_monotone (id h : ∀ i, ofLex (toDFinsupp a) i ≤ ofLex (toDFinsupp b) i)
+  fun a b h ↦ DFinsupp.toLex_monotone (id h : ∀ i, (toDFinsupp a) i ≤ (toDFinsupp b) i)
 
+@[deprecated lex_lt_iff (since := "2025-10-12")]
 theorem lt_of_forall_lt_of_lt (a b : Lex (α →₀ N)) (i : α) :
     (∀ j < i, ofLex a j = ofLex b j) → ofLex a i < ofLex b i → a < b :=
   fun h1 h2 ↦ ⟨i, h1, h2⟩
 
 theorem lex_le_iff_of_unique [Unique α] {a b : Lex (α →₀ N)} :
-    a ≤ b ↔ ofLex a default ≤ ofLex b default := by
+    a ≤ b ↔ a default ≤ b default := by
   simp only [le_iff_eq_or_lt]
   apply or_congr _ lex_lt_iff_of_unique
   conv_lhs => rw [← toLex_ofLex a, ← toLex_ofLex b, toLex_inj]
@@ -151,7 +152,7 @@ variable [AddRightStrictMono N]
 
 instance Lex.addRightStrictMono : AddRightStrictMono (Lex (α →₀ N)) :=
   ⟨fun f _ _ ⟨a, lta, ha⟩ ↦
-    ⟨a, fun j ja ↦ congr_arg (· + ofLex f j) (lta j ja), add_lt_add_right ha _⟩⟩
+    ⟨a, fun j ja ↦ congr_arg (· + f j) (lta j ja), add_lt_add_right ha _⟩⟩
 
 instance Lex.addRightMono : AddRightMono (Lex (α →₀ N)) :=
   addRightMono_of_addRightStrictMono _

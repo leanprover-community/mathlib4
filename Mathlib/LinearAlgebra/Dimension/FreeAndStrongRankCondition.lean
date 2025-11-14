@@ -186,7 +186,7 @@ theorem finrank_eq_one_iff' [Module.Free K V] :
   rw [← rank_eq_one_iff]
   exact toNat_eq_iff one_ne_zero
 
-/-- A finite dimensional module has dimension at most 1 iff
+/-- A finite-dimensional module has dimension at most 1 iff
 there is some `v : V` so every vector is a multiple of `v`.
 -/
 theorem finrank_le_one_iff [Module.Free K V] [Module.Finite K V] :
@@ -215,17 +215,10 @@ theorem lift_cardinalMk_eq_lift_cardinalMk_field_pow_lift_rank [Module.Free K V]
   rwa [Finsupp.equivFunOnFinite.cardinal_eq, mk_arrow, hs.mk_eq_rank'', lift_power, lift_lift,
     lift_lift, lift_umax] at this
 
-@[deprecated (since := "2024-11-10")]
-alias lift_cardinal_mk_eq_lift_cardinal_mk_field_pow_lift_rank :=
-  lift_cardinalMk_eq_lift_cardinalMk_field_pow_lift_rank
-
 theorem cardinalMk_eq_cardinalMk_field_pow_rank (K V : Type u) [Ring K] [StrongRankCondition K]
     [AddCommGroup V] [Module K V] [Module.Free K V] [Module.Finite K V] :
     #V = #K ^ Module.rank K V := by
   simpa using lift_cardinalMk_eq_lift_cardinalMk_field_pow_lift_rank K V
-
-@[deprecated (since := "2024-11-10")]
-alias cardinal_mk_eq_cardinal_mk_field_pow_rank := cardinalMk_eq_cardinalMk_field_pow_rank
 
 variable (K V) in
 theorem cardinal_lt_aleph0_of_finiteDimensional [Finite K] [Module.Free K V] [Module.Finite K V] :

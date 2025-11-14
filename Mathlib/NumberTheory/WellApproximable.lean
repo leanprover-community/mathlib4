@@ -64,8 +64,8 @@ open scoped MeasureTheory Topology Pointwise
 
 /-- In a seminormed group `A`, given `n : ℕ` and `δ : ℝ`, `approxOrderOf A n δ` is the set of
 elements within a distance `δ` of a point of order `n`. -/
-@[to_additive "In a seminormed additive group `A`, given `n : ℕ` and `δ : ℝ`,
-`approxAddOrderOf A n δ` is the set of elements within a distance `δ` of a point of order `n`."]
+@[to_additive /-- In a seminormed additive group `A`, given `n : ℕ` and `δ : ℝ`,
+`approxAddOrderOf A n δ` is the set of elements within a distance `δ` of a point of order `n`. -/]
 def approxOrderOf (A : Type*) [SeminormedGroup A] (n : ℕ) (δ : ℝ) : Set A :=
   thickening δ {y | orderOf y = n}
 
@@ -77,10 +77,10 @@ theorem mem_approxOrderOf_iff {A : Type*} [SeminormedGroup A] {n : ℕ} {δ : �
 /-- In a seminormed group `A`, given a sequence of distances `δ₁, δ₂, ...`, `wellApproximable A δ`
 is the limsup as `n → ∞` of the sets `approxOrderOf A n δₙ`. Thus, it is the set of points that
 lie in infinitely many of the sets `approxOrderOf A n δₙ`. -/
-@[to_additive addWellApproximable "In a seminormed additive group `A`, given a sequence of
+@[to_additive addWellApproximable /-- In a seminormed additive group `A`, given a sequence of
 distances `δ₁, δ₂, ...`, `addWellApproximable A δ` is the limsup as `n → ∞` of the sets
 `approxAddOrderOf A n δₙ`. Thus, it is the set of points that lie in infinitely many of the sets
-`approxAddOrderOf A n δₙ`."]
+`approxAddOrderOf A n δₙ`. -/]
 def wellApproximable (A : Type*) [SeminormedGroup A] (δ : ℕ → ℝ) : Set A :=
   blimsup (fun n => approxOrderOf A n (δ n)) atTop fun n => 0 < n
 
@@ -292,7 +292,8 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     rw [OrderIso.apply_blimsup e, ← hu₀ p]
     exact blimsup_congr (Eventually.of_forall fun n hn =>
       approxAddOrderOf.vadd_eq_of_mul_dvd (δ n) hn.1 hn.2)
-  by_cases h : ∀ p : Nat.Primes, A p =ᵐ[μ] (∅ : Set 𝕊) ∧ B p =ᵐ[μ] (∅ : Set 𝕊)
+  set_option push_neg.use_distrib true in
+  by_cases! h : ∀ p : Nat.Primes, A p =ᵐ[μ] (∅ : Set 𝕊) ∧ B p =ᵐ[μ] (∅ : Set 𝕊)
   · replace h : ∀ p : Nat.Primes, (u p +ᵥ E : Set _) =ᵐ[μ] E := by
       intro p
       replace hE₂ : E =ᵐ[μ] C p := hE₂ p (h p)
@@ -302,7 +303,6 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
       rw [hC]
     exact ae_empty_or_univ_of_forall_vadd_ae_eq_self hE₀ h hu
   · right
-    simp only [not_forall, not_and_or] at h
     obtain ⟨p, hp⟩ := h
     rw [hE₁ p]
     cases hp
@@ -321,7 +321,7 @@ lemma _root_.NormedAddCommGroup.exists_norm_nsmul_le {A : Type*}
     (ξ : A) {n : ℕ} (hn : 0 < n) (δ : ℝ) (hδ : μ univ ≤ (n + 1) • μ (closedBall (0 : A) (δ / 2))) :
     ∃ j ∈ Icc 1 n, ‖j • ξ‖ ≤ δ := by
   have : IsFiniteMeasure μ := CompactSpace.isFiniteMeasure
-  let B : Icc 0 n → Set A := fun j ↦ closedBall ((j : ℕ) • ξ) (δ/2)
+  let B : Icc 0 n → Set A := fun j ↦ closedBall ((j : ℕ) • ξ) (δ / 2)
   have hB : ∀ j, IsClosed (B j) := fun j ↦ isClosed_closedBall
   suffices ¬ Pairwise (Disjoint on B) by
     obtain ⟨i, j, hij, x, hx⟩ := exists_lt_mem_inter_of_not_pairwise_disjoint this

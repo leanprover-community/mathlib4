@@ -32,7 +32,7 @@ section Semiring
 variable [Semiring R] {p q r : R[X]}
 
 theorem supDegree_eq_natDegree (p : R[X]) : p.toFinsupp.supDegree id = p.natDegree := by
-  obtain rfl|h := eq_or_ne p 0
+  obtain rfl | h := eq_or_ne p 0
   · simp
   apply WithBot.coe_injective
   rw [← AddMonoidAlgebra.supDegree_withBot_some_comp, Function.comp_id, supDegree_eq_degree,
@@ -58,9 +58,8 @@ theorem as_sum_support_C_mul_X_pow (p : R[X]) : p = ∑ i ∈ p.support, C (p.co
 for any `n` satisfying `p.natDegree < n`.
 -/
 theorem sum_over_range' [AddCommMonoid S] (p : R[X]) {f : ℕ → R → S} (h : ∀ n, f n 0 = 0) (n : ℕ)
-    (w : p.natDegree < n) : p.sum f = ∑ a ∈ range n, f a (coeff p a) := by
-  rcases p with ⟨⟩
-  have := supp_subset_range w
+    (hn : p.natDegree < n) : p.sum f = ∑ a ∈ range n, f a (coeff p a) := by
+  have := supp_subset_range hn
   simp only [Polynomial.sum, support, coeff] at this ⊢
   exact Finsupp.sum_of_support_subset _ this _ fun n _hn => h n
 
@@ -80,16 +79,20 @@ theorem sum_fin [AddCommMonoid S] (f : ℕ → R → S) (hf : ∀ i, f i 0 = 0) 
   rw [sum_over_range' _ hf n ((natDegree_lt_iff_degree_lt hp).mpr hn),
     Fin.sum_univ_eq_sum_range fun i => f i (p.coeff i)]
 
-theorem as_sum_range' (p : R[X]) (n : ℕ) (w : p.natDegree < n) :
+theorem as_sum_range' (p : R[X]) (n : ℕ) (hn : p.natDegree < n) :
     p = ∑ i ∈ range n, monomial i (coeff p i) :=
-  p.sum_monomial_eq.symm.trans <| p.sum_over_range' monomial_zero_right _ w
+  p.sum_monomial_eq.symm.trans <| p.sum_over_range' monomial_zero_right _ hn
 
 theorem as_sum_range (p : R[X]) : p = ∑ i ∈ range (p.natDegree + 1), monomial i (coeff p i) :=
-  p.sum_monomial_eq.symm.trans <| p.sum_over_range <| monomial_zero_right
+  p.as_sum_range' _ (lt_add_one _)
+
+theorem as_sum_range_C_mul_X_pow' (p : R[X]) {n : ℕ} (hn : p.natDegree < n) :
+    p = ∑ i ∈ range n, C (coeff p i) * X ^ i :=
+  (p.as_sum_range' _ hn).trans <| by simp only [C_mul_X_pow_eq_monomial]
 
 theorem as_sum_range_C_mul_X_pow (p : R[X]) :
     p = ∑ i ∈ range (p.natDegree + 1), C (coeff p i) * X ^ i :=
-  p.as_sum_range.trans <| by simp only [C_mul_X_pow_eq_monomial]
+  p.as_sum_range_C_mul_X_pow' (lt_add_one _)
 
 theorem mem_support_C_mul_X_pow {n a : ℕ} {c : R} (h : a ∈ support (C c * X ^ n)) : a = n :=
   mem_singleton.1 <| support_C_mul_X_pow' n c h

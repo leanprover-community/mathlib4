@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
 import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Algebra.GradedMonoid
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Algebra.GradedMulAction
+import Mathlib.Algebra.Order.Ring.Unbundled.Basic
+import Mathlib.Algebra.Ring.Int.Defs
 /-!
 # The filtration on abelian groups and rings
 
@@ -93,7 +94,7 @@ class IsModuleFiltration (F : ι → σ) (F_lt : outParam <| ι → σ) [IsRingF
 
 /-- A convenience constructor for `IsModuleFiltration` when the index is the integers. -/
 lemma IsModuleFiltration.mk_int (F : ℤ → σ) (mono : Monotone F) [SetLike.GradedMonoid F]
-    (F' : ℤ → σM) (mono' : Monotone F') [SetLike.GradedSMul F F']:
+    (F' : ℤ → σM) (mono' : Monotone F') [SetLike.GradedSMul F F'] :
     letI := IsRingFiltration.mk_int F mono
     IsModuleFiltration F (fun n ↦ F (n - 1)) F' (fun n ↦ F' (n - 1)) :=
   letI := IsRingFiltration.mk_int F mono

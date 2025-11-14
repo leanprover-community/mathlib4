@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Kim Morrison
 -/
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
+import Mathlib.Algebra.Group.Shrink
 import Mathlib.Algebra.Module.Projective
-import Mathlib.Algebra.Small.Group
 import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 
 /-!
@@ -14,7 +14,7 @@ import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 
 universe v u w
 
-open CategoryTheory ModuleCat
+open CategoryTheory Module ModuleCat
 
 variable {R : Type u} [Ring R] (P : ModuleCat.{v} R)
 

@@ -56,7 +56,9 @@ for the corresponding `mem_iff` statement formulated without using a sigma type.
 theorem HasBasis.lift {ι} {p : ι → Prop} {s : ι → Set α} {f : Filter α} (hf : f.HasBasis p s)
     {β : ι → Type*} {pg : ∀ i, β i → Prop} {sg : ∀ i, β i → Set γ} {g : Set α → Filter γ}
     (hg : ∀ i, (g (s i)).HasBasis (pg i) (sg i)) (gm : Monotone g) :
-    (f.lift g).HasBasis (fun i : Σi, β i => p i.1 ∧ pg i.1 i.2) fun i : Σi, β i => sg i.1 i.2 := by
+    (f.lift g).HasBasis
+      (fun i : Σ i, β i => p i.1 ∧ pg i.1 i.2)
+      fun i : Σ i, β i => sg i.1 i.2 := by
   refine ⟨fun t => (hf.mem_lift_iff hg gm).trans ?_⟩
   simp [Sigma.exists, and_assoc, exists_and_left]
 
@@ -326,7 +328,7 @@ theorem lift'_inf (f g : Filter α) {s : Set α → Set β} (hs : ∀ t₁ t₂,
     (f ⊓ g).lift' s = f.lift' s ⊓ g.lift' s := by
   rw [inf_eq_iInf, inf_eq_iInf, lift'_iInf hs]
   refine iInf_congr ?_
-  rintro (_|_) <;> rfl
+  rintro (_ | _) <;> rfl
 
 theorem lift'_inf_le (f g : Filter α) (s : Set α → Set β) :
     (f ⊓ g).lift' s ≤ f.lift' s ⊓ g.lift' s :=

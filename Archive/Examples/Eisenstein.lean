@@ -35,7 +35,7 @@ example : Irreducible (X ^ 4 - 10 * X ^ 2 + 1 : ℤ[X]) := by
   have hq_deg : q.natDegree = 2 := by unfold q; compute_degree!
   have hq_monic : q.Monic := by unfold q; monicity!
   have hfq : f = q ^ 2 - 12 * q + 12 := by ring
-   -- On the other hand, `f %ₘ q = 12`, which is not a multiple of `9`.
+  -- On the other hand, `f %ₘ q = 12`, which is not a multiple of `9`.
   apply generalizedEisenstein (K := ZMod 3) (q := q) (p := 2)
   · set q₃ : (ZMod 3)[X] := X ^ 2 + 1
     have hdeg_q₃ : q₃.natDegree = 2 := by unfold q₃; compute_degree!

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
 import Mathlib.Order.Filter.AtTopBot.Field
-import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Field
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Linarith.Frontend
 
@@ -103,9 +103,7 @@ theorem discrim_eq_zero_of_existsUnique (ha : a ≠ 0) (h : ∃! x, a * (x * x) 
   generalize discrim a b c = d at h
   obtain ⟨x, rfl, hx⟩ := h
   specialize hx (-(x + b / a))
-  field_simp [ha] at hx
-  specialize hx (by ring)
-  linear_combination -(2 * a * x + b) * hx
+  grind
 
 theorem discrim_eq_zero_iff (ha : a ≠ 0) :
     discrim a b c = 0 ↔ (∃! x, a * (x * x) + b * x + c = 0) := by
@@ -138,8 +136,7 @@ theorem discrim_le_zero (h : ∀ x : K, 0 ≤ a * (x * x) + b * x + c) : discrim
   -- if a > 0
   · have ha' : 0 ≤ 4 * a := mul_nonneg zero_le_four ha.le
     convert neg_nonpos.2 (mul_nonneg ha' (h (-b / (2 * a)))) using 1
-    field_simp
-    ring
+    field
 
 lemma discrim_le_zero_of_nonpos (h : ∀ x : K, a * (x * x) + b * x + c ≤ 0) : discrim a b c ≤ 0 :=
   discrim_neg a b c ▸ discrim_le_zero <| by simpa only [neg_mul, ← neg_add, neg_nonneg]

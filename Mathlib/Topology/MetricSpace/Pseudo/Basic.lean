@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
+Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
@@ -208,15 +208,9 @@ protected lemma IsInducing.isSeparable_preimage {f : β → α} [TopologicalSpac
   have := this.secondCountableTopology
   exact .of_subtype _
 
-@[deprecated (since := "2024-10-28")]
-alias _root_.Inducing.isSeparable_preimage := IsInducing.isSeparable_preimage
-
 protected theorem IsEmbedding.isSeparable_preimage {f : β → α} [TopologicalSpace β]
     (hf : IsEmbedding f) {s : Set α} (hs : IsSeparable s) : IsSeparable (f ⁻¹' s) :=
   hf.isInducing.isSeparable_preimage hs
-
-@[deprecated (since := "2024-10-26")]
-alias _root_.Embedding.isSeparable_preimage := IsEmbedding.isSeparable_preimage
 
 end Topology
 

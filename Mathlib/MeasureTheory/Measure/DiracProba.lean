@@ -75,13 +75,7 @@ lemma continuous_diracProba : Continuous (fun (x : X) ↦ diracProba x) := by
   simp only [diracProba, ProbabilityMeasure.coe_mk, lintegral_dirac' _ f_mble]
   exact (ENNReal.continuous_coe.comp f.continuous).continuousAt
 
-/-- In a T0 topological space equipped with a sigma algebra which contains all open sets,
-the assignment `x ↦ diracProba x` is injective. -/
-lemma injective_diracProba_of_T0 [T0Space X] :
-    Function.Injective (fun (x : X) ↦ diracProba x) := by
-  intro x y δx_eq_δy
-  by_contra x_ne_y
-  exact dirac_ne_dirac x_ne_y <| congr_arg Subtype.val δx_eq_δy
+@[deprecated (since := "2025-08-15")] alias injective_diracProba_of_T0 := injective_diracProba
 
 lemma not_tendsto_diracProba_of_not_tendsto [CompletelyRegularSpace X] {x : X} (L : Filter X)
     (h : ¬ Tendsto id L (𝓝 x)) :
@@ -130,7 +124,7 @@ noncomputable def diracProbaInverse : range (diracProba (X := X)) → X :=
 lemma diracProbaInverse_eq [T0Space X] {x : X} {μ : range (diracProba (X := X))}
     (h : μ = diracProba x) :
     diracProbaInverse μ = x := by
-  apply injective_diracProba_of_T0 (X := X)
+  apply injective_diracProba (X := X)
   simp only [← h]
   exact (mem_range.mp μ.prop).choose_spec
 
@@ -183,9 +177,6 @@ that takes a point `x : X` to the delta-measure `diracProba x` is an embedding
 theorem isEmbedding_diracProba [T0Space X] [CompletelyRegularSpace X] :
     IsEmbedding (fun (x : X) ↦ diracProba x) :=
   IsEmbedding.subtypeVal.comp diracProbaHomeomorph.isEmbedding
-
-@[deprecated (since := "2024-10-26")]
-alias embedding_diracProba := isEmbedding_diracProba
 
 end embed_to_probabilityMeasure
 

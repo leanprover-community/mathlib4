@@ -69,14 +69,7 @@ theorem IsTrail.even_countP_edges_iff {u v : V} {p : G.Walk u v} (ht : p.IsTrail
           not_false_iff, exists_prop, and_true, Classical.not_not, true_and, iff_and_self]
         rintro rfl
         exact huv.ne
-    · rw [decide_eq_true_eq, not_or] at h
-      simp only [h.1, h.2, not_false_iff, true_and, add_zero, Ne] at ih ⊢
-      rw [ih]
-      constructor <;>
-        · rintro h' h'' rfl
-          simp only [imp_false, not_true, Classical.not_not] at h'
-          cases h'
-          simp only [not_true, and_false, false_and] at h
+    · grind
 
 /-- An *Eulerian trail* (also known as an "Eulerian path") is a walk
 `p` that visits every edge exactly once.  The lemma `SimpleGraph.Walk.IsEulerian.IsTrail` shows
@@ -95,8 +88,8 @@ theorem IsEulerian.isTrail {u v : V} {p : G.Walk u v} (h : p.IsEulerian) : p.IsT
 
 theorem IsEulerian.mem_edges_iff {u v : V} {p : G.Walk u v} (h : p.IsEulerian) {e : Sym2 V} :
     e ∈ p.edges ↔ e ∈ G.edgeSet :=
-  ⟨ fun h => p.edges_subset_edgeSet h
-  , fun he => by simpa [Nat.succ_le] using (h e he).ge ⟩
+  ⟨fun h => p.edges_subset_edgeSet h,
+   fun he => by simpa [Nat.succ_le] using (h e he).ge⟩
 
 /-- The edge set of an Eulerian graph is finite. -/
 def IsEulerian.fintypeEdgeSet {u v : V} {p : G.Walk u v} (h : p.IsEulerian) :
@@ -137,7 +130,6 @@ theorem IsEulerian.even_degree_iff {x u v : V} {p : G.Walk u v} (ht : p.IsEuleri
   change Multiset.card _ = _
   congr 1
   convert_to _ = (ht.isTrail.edgesFinset.filter (x ∈ ·)).val
-  have : Fintype G.edgeSet := fintypeEdgeSet ht
   rw [ht.edgesFinset_eq, G.incidenceFinset_eq_filter x]
 
 theorem IsEulerian.card_filter_odd_degree [Fintype V] [DecidableRel G.Adj] {u v : V}
@@ -148,8 +140,7 @@ theorem IsEulerian.card_filter_odd_degree [Fintype V] [DecidableRel G.Adj] {u v 
   simp only [← Nat.not_even_iff_odd, Finset.card_eq_zero]
   simp only [ht.even_degree_iff, Ne, not_forall, not_and, Classical.not_not, exists_prop]
   obtain rfl | hn := eq_or_ne u v
-  · left
-    simp
+  · simp
   · right
     convert_to _ = ({u, v} : Finset V).card
     · simp [hn]

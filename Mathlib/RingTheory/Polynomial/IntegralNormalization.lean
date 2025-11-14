@@ -3,7 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker, Andrew Yang, Yuyang Zhao
 -/
-import Mathlib.Algebra.Polynomial.Monic
+import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.RingTheory.Polynomial.ScaleRoots
 
 /-!
@@ -57,9 +57,6 @@ theorem support_integralNormalization_subset :
     (integralNormalization p).support ⊆ p.support := by
   intro
   simp +contextual [sum_def, integralNormalization, coeff_monomial, mem_support_iff]
-
-@[deprecated (since := "2024-11-30")]
-alias integralNormalization_support := support_integralNormalization_subset
 
 theorem integralNormalization_coeff_degree {i : ℕ} (hi : p.degree = i) :
     (integralNormalization p).coeff i = 1 := by rw [integralNormalization_coeff, if_pos hi]
