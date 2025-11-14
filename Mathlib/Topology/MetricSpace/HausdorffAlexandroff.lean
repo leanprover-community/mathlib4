@@ -10,8 +10,8 @@ import Mathlib.Topology.MetricSpace.PiNat
 /-!
 # Hausdorff–Alexandroff Theorem
 
-In this file, we prove the Hausdorff–Alexandroff theorem, which states that every compact
-metric space is a continuous image of the Cantor set.
+In this file, we prove the Hausdorff–Alexandroff theorem, which states that every
+nonempty compact metric space is a continuous image of the Cantor set.
 
 ## Proof Outline
 
@@ -66,22 +66,30 @@ theorem exists_retractionCantorSet {X : Set (ℕ → Bool)} (h_closed : IsClosed
   obtain ⟨f, fs, frange, hf⟩ := PiNat.exists_lipschitz_retraction_of_isClosed h_closed h_nonempty
   exact ⟨f, hf.continuous, frange⟩
 
+/-- **Hausdorff–Alexandroff theorem**: every nonempty compact metric space is a continuous image
+of the Cantor set. -/
 theorem exists_nat_bool_continuous_surjective_of_compact (X : Type*) [Nonempty X] [MetricSpace X]
     [CompactSpace X] : ∃ f : (ℕ → Bool) → X, Continuous f ∧ Function.Surjective f := by
+  -- `X` is homeomorphic to a closed subset `KH` of the Hilbert cube.
   obtain ⟨emb, h_emb⟩ := exists_closed_embedding_to_hilbert_cube X
   let KH : Set (ℕ → unitInterval) := Set.range emb
+  let g : X ≃ₜ KH := h_emb.toIsEmbedding.toHomeomorph
+  -- `KC` is the closed preimage of `KH` under the continuous surjection `cantorToHilbert`.
   let KC : Set (ℕ → Bool) := cantorToHilbert ⁻¹' KH
   have hKC_closed : IsClosed KC :=
     IsClosed.preimage cantorToHilbert_continuous (Topology.IsClosedEmbedding.isClosed_range h_emb)
   have hKC_nonempty : KC.Nonempty :=
     Set.Nonempty.preimage (Set.range_nonempty emb) cantorToHilbert_surjective
+  -- Take a retraction `f'` from the Cantor space to `KC`.
   obtain ⟨f, hf_continuous, hf_surjective⟩ := exists_retractionCantorSet hKC_closed hKC_nonempty
   let f' : (ℕ → Bool) → KC := Subtype.coind f (by simp [← hf_surjective])
   have hf'_continuous : Continuous f' := Continuous.subtype_mk hf_continuous _
   have hf'_surjective : Function.Surjective f' := Subtype.coind_surjective _ (by grind [Set.SurjOn])
-  let g : X ≃ₜ KH := h_emb.toIsEmbedding.toHomeomorph
+  -- Let `h` be the restriction of `cantorToHilbert` to `KC → KH`.
   let h : KC → KH := KH.restrictPreimage cantorToHilbert
   have hh_continuous : Continuous h := Continuous.restrictPreimage cantorToHilbert_continuous
   have hh_surjective : Function.Surjective h :=
     Set.restrictPreimage_surjective _ cantorToHilbert_surjective
+  -- Take the composition `g.symm ∘ h ∘ f'` as the desired continuous surjection from the Cantor
+  -- space to `X`.
   use g.symm ∘ h ∘ f', by fun_prop, g.symm.surjective.comp <| hh_surjective.comp hf'_surjective
