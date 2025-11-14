@@ -1084,8 +1084,8 @@ import Mathlib.Algebra.Polynomial.UnitTrinomial
 import Mathlib.Algebra.PresentedMonoid.Basic
 import Mathlib.Algebra.Prime.Defs
 import Mathlib.Algebra.Prime.Lemmas
-import Mathlib.Algebra.QuadraticAlgebra
 import Mathlib.Algebra.QuadraticAlgebra.Basic
+import Mathlib.Algebra.QuadraticAlgebra.Defs
 import Mathlib.Algebra.QuadraticDiscriminant
 import Mathlib.Algebra.Quandle
 import Mathlib.Algebra.Quaternion
@@ -1390,6 +1390,7 @@ import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.PairingCore
 import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
 import Mathlib.AlgebraicTopology.SimplicialSet.CategoryWithFibrations
+import Mathlib.AlgebraicTopology.SimplicialSet.CompStruct
 import Mathlib.AlgebraicTopology.SimplicialSet.CompStructTruncated
 import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
 import Mathlib.AlgebraicTopology.SimplicialSet.Degenerate
@@ -6506,14 +6507,14 @@ import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.TautoSet
 import Mathlib.Tactic.TermCongr
 import Mathlib.Tactic.ToAdditive
-import Mathlib.Tactic.ToAdditive.Frontend
-import Mathlib.Tactic.ToAdditive.GuessName
-import Mathlib.Tactic.ToAdditive.ToAdditive
-import Mathlib.Tactic.ToAdditive.ToDual
 import Mathlib.Tactic.ToDual
 import Mathlib.Tactic.ToExpr
 import Mathlib.Tactic.ToLevel
 import Mathlib.Tactic.Trace
+import Mathlib.Tactic.Translate.Core
+import Mathlib.Tactic.Translate.GuessName
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Tactic.Translate.ToDual
 import Mathlib.Tactic.TryThis
 import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.TypeStar
