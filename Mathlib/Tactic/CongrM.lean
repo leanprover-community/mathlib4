@@ -76,6 +76,6 @@ elab_rules : tactic
     withMainContext do
       let gStx ← Term.exprToSyntax (← getMainTarget)
       -- Gives the expected type to `refine` as a workaround for its elaboration order.
-      evalTactic <| ← `(tactic| refine without_cdot(congr($(⟨pattern⟩)) : $gStx))
+      evalTactic <| ← `(tactic| refine (congr($(⟨pattern⟩)) : $gStx))
 
 end Mathlib.Tactic

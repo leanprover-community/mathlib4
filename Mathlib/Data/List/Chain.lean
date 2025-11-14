@@ -425,9 +425,9 @@ lemma isChain_flatten : ∀ {L : List (List α)}, [] ∉ L →
 | [l], _ => by simp [flatten]
 | (l₁ :: l₂ :: L), hL => by
     rw [mem_cons, not_or, ← Ne] at hL
-    rw [flatten, isChain_append, isChain_flatten hL.2, forall_mem_cons, isChain_cons_cons]
+    rw [flatten_cons, isChain_append, isChain_flatten hL.2, forall_mem_cons, isChain_cons_cons]
     rw [mem_cons, not_or, ← Ne] at hL
-    simp only [forall_mem_cons, and_assoc, flatten, head?_append_of_ne_nil _ hL.2.1.symm]
+    simp only [forall_mem_cons, and_assoc, flatten_cons, head?_append_of_ne_nil _ hL.2.1.symm]
     exact Iff.rfl.and (Iff.rfl.and <| Iff.rfl.and and_comm)
 
 @[deprecated (since := "2025-09-24")] alias chain'_flatten := isChain_flatten
@@ -476,7 +476,7 @@ alias exists_chain_of_relationReflTransGen := exists_isChain_cons_of_relationRef
 -/
 theorem exists_isChain_ne_nil_of_relationReflTransGen (h : Relation.ReflTransGen r a b) :
     ∃ l, ∃ (hl : l ≠ []), IsChain r l ∧ l.head hl = a ∧ getLast l hl = b := by
-  rcases exists_isChain_cons_of_relationReflTransGen h with ⟨l, _⟩; use (a :: l); grind
+  rcases exists_isChain_cons_of_relationReflTransGen h with ⟨l, _⟩; grind
 
 /-- Given a chain `l`, such that a predicate `p` holds for its head if it is nonempty,
 and if `r x y → p x → p y`, then the predicate is true everywhere in the chain.
@@ -485,11 +485,7 @@ That is, we can propagate the predicate down the chain.
 theorem IsChain.induction (p : α → Prop) (l : List α) (h : IsChain r l)
     (carries : ∀ ⦃x y : α⦄, r x y → p x → p y) (initial : (lne : l ≠ []) → p (l.head lne)) :
     ∀ i ∈ l, p i := by
-  induction l using twoStepInduction with
-  | nil => grind  [not_mem_nil]
-  | singleton => grind
-  | cons_cons a b l IH IH2 =>
-    grind
+  induction l using twoStepInduction with grind
 
 @[deprecated (since := "2025-09-24")] alias Chain'.induction := IsChain.induction
 
