@@ -366,11 +366,11 @@ instance isUniformAddGroup [UniformSpace F] [IsUniformAddGroup F] :
 
 instance instContinuousEvalConst [TopologicalSpace F] [IsTopologicalAddGroup F]
     [ContinuousSMul 𝕜₁ E] : ContinuousEvalConst (E →SL[σ] F) E F :=
-  UniformConvergenceCLM.continuousEvalConst σ F _ Bornology.isVonNBounded_covers
+  UniformConvergenceCLM.continuousEvalConst σ F _ Bornology.sUnion_isVonNBounded_eq_univ
 
 instance instT2Space [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜₁ E]
     [T2Space F] : T2Space (E →SL[σ] F) :=
-  UniformConvergenceCLM.t2Space σ F _ Bornology.isVonNBounded_covers
+  UniformConvergenceCLM.t2Space σ F _ Bornology.sUnion_isVonNBounded_eq_univ
 
 protected theorem hasBasis_nhds_zero_of_basis [TopologicalSpace F] [IsTopologicalAddGroup F]
     {ι : Type*} {p : ι → Prop} {b : ι → Set F} (h : (𝓝 0 : Filter F).HasBasis p b) :
@@ -450,7 +450,7 @@ theorem isVonNBounded_iff {R : Type*} [NormedDivisionRing R]
 theorem completeSpace [UniformSpace F] [IsUniformAddGroup F] [ContinuousSMul 𝕜₂ F] [CompleteSpace F]
     [ContinuousSMul 𝕜₁ E] (h : IsCoherentWith {s : Set E | IsVonNBounded 𝕜₁ s}) :
     CompleteSpace (E →SL[σ] F) :=
-  UniformConvergenceCLM.completeSpace _ _ h isVonNBounded_covers
+  UniformConvergenceCLM.completeSpace _ _ h sUnion_isVonNBounded_eq_univ
 
 instance instCompleteSpace [IsTopologicalAddGroup E] [ContinuousSMul 𝕜₁ E] [SequentialSpace E]
     [UniformSpace F] [IsUniformAddGroup F] [ContinuousSMul 𝕜₂ F] [CompleteSpace F] :
