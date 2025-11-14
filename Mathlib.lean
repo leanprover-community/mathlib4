@@ -4401,6 +4401,7 @@ import Mathlib.LinearAlgebra.InvariantBasisNumber
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.LinearAlgebra.JordanChevalley
 import Mathlib.LinearAlgebra.Lagrange
+import Mathlib.LinearAlgebra.LeftExact
 import Mathlib.LinearAlgebra.LinearDisjoint
 import Mathlib.LinearAlgebra.LinearIndependent.Basic
 import Mathlib.LinearAlgebra.LinearIndependent.Defs
@@ -5582,6 +5583,7 @@ import Mathlib.RingTheory.AdicCompletion.Topology
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Adjoin.Dimension
 import Mathlib.RingTheory.Adjoin.FG
+import Mathlib.RingTheory.Adjoin.FGBaseChange
 import Mathlib.RingTheory.Adjoin.Field
 import Mathlib.RingTheory.Adjoin.Polynomial
 import Mathlib.RingTheory.Adjoin.PowerBasis
@@ -5908,6 +5910,7 @@ import Mathlib.RingTheory.Nakayama
 import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.RingTheory.Nilpotent.Exp
+import Mathlib.RingTheory.Nilpotent.GeometricallyReduced
 import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.NoetherNormalization
 import Mathlib.RingTheory.Noetherian.Basic
@@ -6506,6 +6509,9 @@ import Mathlib.Tactic.TermCongr
 import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic.ToAdditive.Frontend
 import Mathlib.Tactic.ToAdditive.GuessName
+import Mathlib.Tactic.ToAdditive.ToAdditive
+import Mathlib.Tactic.ToAdditive.ToDual
+import Mathlib.Tactic.ToDual
 import Mathlib.Tactic.ToExpr
 import Mathlib.Tactic.ToLevel
 import Mathlib.Tactic.Trace

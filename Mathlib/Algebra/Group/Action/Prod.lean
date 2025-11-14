@@ -25,7 +25,7 @@ scalar multiplication as a homomorphism from `α × β` to `β`.
 * `Mathlib/Algebra/Group/Action/Sigma.lean`
 * `Mathlib/Algebra/Group/Action/Sum.lean`
 
-# Porting notes
+## Porting notes
 
 The `to_additive` attribute can be used to generate both the `smul` and `vadd` lemmas
 from the corresponding `pow` lemmas, as explained on zulip here:
