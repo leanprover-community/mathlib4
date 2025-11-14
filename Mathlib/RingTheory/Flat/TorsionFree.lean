@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matthew Jasper, Kevin Buzzard
 -/
 
-import Mathlib.Algebra.Module.Torsion
+import Mathlib.Algebra.Module.Torsion.Basic
 import Mathlib.RingTheory.DedekindDomain.Dvr
 import Mathlib.RingTheory.Flat.Localization
 import Mathlib.RingTheory.Flat.Tensor
