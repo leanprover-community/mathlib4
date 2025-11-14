@@ -9,7 +9,6 @@ import Lean.Compiler.NoncomputableAttr
 import Lean.Elab.Tactic.Ext
 import Lean.Meta.Tactic.Rfl
 import Lean.Meta.Tactic.Symm
-import Lean.Meta.Tactic.TryThis
 import Mathlib.Data.Array.Defs
 import Mathlib.Data.Nat.Notation
 import Mathlib.Lean.Expr.ReplaceRec
@@ -17,7 +16,7 @@ import Mathlib.Lean.Meta.Simp
 import Mathlib.Lean.Name
 import Mathlib.Tactic.Eqns -- just to copy the attribute
 import Mathlib.Tactic.Simps.Basic
-import Mathlib.Tactic.ToAdditive.GuessName
+import Mathlib.Tactic.Translate.GuessName
 
 /-!
 # The translation attribute.

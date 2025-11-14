@@ -3,7 +3,7 @@ Copyright (c) 2025 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Bryan Gin-ge Chen
 -/
-import Mathlib.Tactic.ToAdditive.Frontend
+import Mathlib.Tactic.Translate.Core
 
 /-!
 # The `@[to_dual]` attribute.
