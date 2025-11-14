@@ -33,4 +33,9 @@ theorem T_zpow_width_invariant (N : ℕ) (k n : ℤ) (f : SlashInvariantForm (Ga
   rw [modular_T_zpow_smul z (N * n)]
   simpa only [Int.cast_mul, Int.cast_natCast] using vAdd_width_periodic N k n f z
 
+lemma slash_S_apply (f : ℍ → ℂ) (k : ℤ) (z : ℍ) :
+    (f ∣[k] ModularGroup.S) z = f (UpperHalfPlane.mk (-z)⁻¹ z.im_inv_neg_coe_pos) * z ^ (-k) := by
+  rw [SL_slash_apply, denom, UpperHalfPlane.modular_S_smul]
+  simp [ModularGroup.S]
+
 end SlashInvariantForm
