@@ -132,8 +132,8 @@ lemma of_ringEquiv {R R' M M'} [Semiring R] [AddCommMonoid M] [Module R M]
   let I := Module.Free.ChooseBasisIndex R M
   obtain ⟨e₃ : M ≃ₗ[R] I →₀ R⟩ := Module.Free.chooseBasis R M
   let e : M' ≃+ (I →₀ R') :=
-    (e₂.symm.trans e₃).toAddEquiv.trans (Finsupp.mapRange.addEquiv (α := I) e₁.toAddEquiv)
-  have he (x) : e x = Finsupp.mapRange.addEquiv (α := I) e₁.toAddEquiv (e₃ (e₂.symm x)) := rfl
+    (e₂.symm.trans e₃).toAddEquiv.trans (Finsupp.mapRange.addEquiv (ι := I) e₁.toAddEquiv)
+  have he (x) : e x = Finsupp.mapRange.addEquiv (ι := I) e₁.toAddEquiv (e₃ (e₂.symm x)) := rfl
   let e' : M' ≃ₗ[R'] (I →₀ R') :=
     { __ := e, map_smul' := fun m x ↦ Finsupp.ext fun i ↦ by simp [he, map_smulₛₗ] }
   exact of_basis (.ofRepr e')

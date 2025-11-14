@@ -23,10 +23,23 @@ variable {ι F M N O G H : Type*}
 
 namespace Finsupp
 section Zero
-variable [Zero M] [Zero N]
+variable [Zero M] [Zero N] [Zero O]
 
 lemma apply_single [FunLike F M N] [ZeroHomClass F M N] (e : F) (i : ι) (m : M) (b : ι) :
     e (single i m b) = single i (e m) b := apply_single' e (map_zero e) i m b
+
+/-- Composition with a fixed zero-preserving homomorphism is itself a zero-preserving homomorphism
+on functions. -/
+@[simps]
+def mapRange.zeroHom (f : ZeroHom M N) : ZeroHom (ι →₀ M) (ι →₀ N) where
+  toFun := Finsupp.mapRange f f.map_zero
+  map_zero' := mapRange_zero
+
+@[simp] lemma mapRange.zeroHom_id : mapRange.zeroHom (.id M) = .id (ι →₀ M) := by ext; simp
+
+lemma mapRange.zeroHom_comp (f : ZeroHom N O) (f₂ : ZeroHom M N) :
+    mapRange.zeroHom (ι := ι) (f.comp f₂) = (mapRange.zeroHom f).comp (mapRange.zeroHom f₂) := by
+  ext; simp
 
 end Zero
 
@@ -327,7 +340,7 @@ instance instIsAddTorsionFree [IsAddTorsionFree M] : IsAddTorsionFree (ι →₀
 end AddMonoid
 
 section AddCommMonoid
-variable [AddCommMonoid M]
+variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid O]
 
 instance instAddCommMonoid : AddCommMonoid (ι →₀ M) :=
   fast_instance% DFunLike.coe_injective.addCommMonoid
@@ -339,6 +352,52 @@ lemma single_add_single_eq_single_add_single {k l m n : ι} {u v : M} (hu : u �
   classical
     simp_rw [DFunLike.ext_iff, coe_add, single_eq_pi_single, ← funext_iff]
     exact Pi.single_add_single_eq_single_add_single hu hv
+
+/-- Composition with a fixed additive homomorphism is itself an additive homomorphism on functions.
+-/
+@[simps]
+def mapRange.addMonoidHom (f : M →+ N) : (ι →₀ M) →+ ι →₀ N where
+  toFun := mapRange f f.map_zero
+  map_zero' := mapRange_zero
+  map_add' := mapRange_add f.map_add
+
+@[simp]
+lemma mapRange.addMonoidHom_id :
+    mapRange.addMonoidHom (AddMonoidHom.id M) = AddMonoidHom.id (ι →₀ M) :=
+  AddMonoidHom.ext mapRange_id
+
+lemma mapRange.addMonoidHom_comp (f : N →+ O) (g : M →+ N) :
+    mapRange.addMonoidHom (ι := ι) (f.comp g) =
+      (mapRange.addMonoidHom f).comp (mapRange.addMonoidHom g) := by ext; simp
+
+@[simp]
+lemma mapRange.addMonoidHom_toZeroHom (f : M →+ N) :
+    (mapRange.addMonoidHom f).toZeroHom = mapRange.zeroHom (ι := ι) f.toZeroHom := rfl
+
+/-- `Finsupp.mapRange.AddMonoidHom` as an equiv. -/
+@[simps! apply]
+def mapRange.addEquiv (em' : M ≃+ N) : (ι →₀ M) ≃+ (ι →₀ N) where
+  toEquiv := mapRange.equiv em' em'.map_zero
+  __ := mapRange.addMonoidHom em'.toAddMonoidHom
+
+@[simp]
+lemma mapRange.addEquiv_refl : mapRange.addEquiv (.refl M) = .refl (ι →₀ M) := by ext; simp
+
+lemma mapRange.addEquiv_trans (e₁ : M ≃+ N) (e₂ : N ≃+ O) :
+    mapRange.addEquiv (ι := ι) (e₁.trans e₂) =
+      (mapRange.addEquiv e₁).trans (mapRange.addEquiv e₂) := by ext; simp
+
+@[simp]
+lemma mapRange.addEquiv_symm (e : M ≃+ N) :
+    (mapRange.addEquiv (ι := ι) e).symm = mapRange.addEquiv e.symm := rfl
+
+@[simp]
+lemma mapRange.addEquiv_toAddMonoidHom (e : M ≃+ N) :
+    mapRange.addEquiv (ι := ι) e = mapRange.addMonoidHom (ι := ι) e.toAddMonoidHom := rfl
+
+@[simp]
+lemma mapRange.addEquiv_toEquiv (e : M ≃+ N) :
+    mapRange.addEquiv (ι := ι) e = mapRange.equiv (ι := ι) (e : M ≃ N) e.map_zero := rfl
 
 end AddCommMonoid
 
