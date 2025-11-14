@@ -12,7 +12,7 @@ import Mathlib.Topology.ContinuousMap.Bounded.Normed
 
 This file develops the basic theory of bundled `n`-times continuously differentiable functions
 with compact support contained in some open set `Ω`. More explicitly, given normed spaces `E`
-and `F`, an open set `Ω : Opens E` and `n : ℕ∞`, we are interested is the space `𝓓^{n}(Ω, F)` of
+and `F`, an open set `Ω : Opens E` and `n : ℕ∞`, we are interested in the space `𝓓^{n}(Ω, F)` of
 maps `f : E → F` such that:
 
 - `f` is `n`-times continuously differentiable: `ContDiff ℝ n f`.
@@ -37,7 +37,7 @@ distributions, or "weak solutions" to PDEs, on `Ω`.
 
 ## Tags
 
-distributions
+distributions, test function
 -/
 
 open TopologicalSpace SeminormFamily Set Function Seminorm UniformSpace
@@ -50,7 +50,7 @@ variable [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
 variable {n : ℕ∞}
 
 variable (n) in
-/-- The type of bundled `n`-times continuously differentiable maps with compact support. -/
+/-- The type of bundled `n`-times continuously differentiable maps with compact support -/
 structure TestFunction : Type _ where
   /-- The underlying function. Use coercion instead. -/
   protected toFun : E → F
@@ -60,13 +60,11 @@ structure TestFunction : Type _ where
 
 /-- Notation for the space of bundled `n`-times continuously differentiable maps
 with compact support. -/
-scoped[Distributions] notation "𝓓^{" n "}(" Ω ", " F ")" =>
-  TestFunction Ω F n
+scoped[Distributions] notation "𝓓^{" n "}(" Ω ", " F ")" => TestFunction Ω F n
 
 /-- Notation for the space of "test functions", i.e. bundled smooth (infinitely differentiable) maps
 with compact support. -/
-scoped[Distributions] notation "𝓓(" Ω ", " F ")" =>
-  TestFunction Ω F ⊤
+scoped[Distributions] notation "𝓓(" Ω ", " F ")" => TestFunction Ω F ⊤
 
 open Distributions
 
@@ -97,16 +95,14 @@ instance (B : Type*)
     (n : outParam ℕ∞) [TestFunctionClass B Ω F n] :
     BoundedContinuousMapClass B E F where
   map_bounded f := by
-    rcases (map_continuous f).bounded_above_of_compact_support (map_hasCompactSupport f) with
-      ⟨C, hC⟩
+    obtain ⟨C, hC⟩ := (map_continuous f).bounded_above_of_compact_support (map_hasCompactSupport f)
     exact map_bounded (BoundedContinuousFunction.ofNormedAddCommGroup f (map_continuous f) C hC)
 
 end TestFunctionClass
 
 namespace TestFunction
 
-instance toTestFunctionClass :
-    TestFunctionClass 𝓓^{n}(Ω, F) Ω F n where
+instance toTestFunctionClass : TestFunctionClass 𝓓^{n}(Ω, F) Ω F n where
   coe f := f.toFun
   coe_injective' f g h := by cases f; cases g; congr
   map_contDiff f := f.contDiff'
