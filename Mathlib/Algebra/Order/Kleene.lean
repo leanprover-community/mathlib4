@@ -324,7 +324,6 @@ protected abbrev idemSemiring [IdemSemiring α] [Zero β] [One β] [Add β] [Mul
   { hf.semiring f zero one add mul nsmul npow natCast, hf.semilatticeSup _ sup,
     ‹Bot β› with
     add_eq_sup := fun a b ↦ hf <| by rw [sup, add, add_eq_sup]
-    bot := ⊥
     bot_le := fun a ↦ bot.trans_le <| @bot_le _ _ _ <| f a }
 
 -- See note [reducible non-instances]
