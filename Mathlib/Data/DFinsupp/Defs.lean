@@ -549,11 +549,8 @@ variable [∀ i, Zero (β₁ i)] [∀ i, Zero (β₂ i)]
 theorem zipWith_single_single (f : ∀ i, β₁ i → β₂ i → β i) (hf : ∀ i, f i 0 0 = 0)
     {i} (b₁ : β₁ i) (b₂ : β₂ i) :
     zipWith f hf (single i b₁) (single i b₂) = single i (f i b₁ b₂) := by
-  ext j
-  rw [zipWith_apply]
-  obtain rfl | hij := Decidable.eq_or_ne j i
-  · rw [single_eq_same, single_eq_same, single_eq_same]
-  · rw [single_eq_of_ne hij, single_eq_of_ne hij, single_eq_of_ne hij, hf]
+  ext
+  grind [single_apply, zipWith_apply]
 
 end SingleAndZipWith
 
@@ -919,8 +916,8 @@ variable [∀ i, Zero (β₁ i)] [∀ i, Zero (β₂ i)]
 theorem mapRange_def [∀ (i) (x : β₁ i), Decidable (x ≠ 0)] {f : ∀ i, β₁ i → β₂ i}
     {hf : ∀ i, f i 0 = 0} {g : Π₀ i, β₁ i} :
     mapRange f hf g = mk g.support fun i => f i.1 (g i.1) := by
-  ext i
-  by_cases h : g i ≠ 0 <;> simp at h <;> simp [h, hf]
+  ext
+  grind [mapRange_apply, mem_support_toFun, mk_apply]
 
 @[simp]
 theorem mapRange_single {f : ∀ i, β₁ i → β₂ i} {hf : ∀ i, f i 0 = 0} {i : ι} {b : β₁ i} :
@@ -966,9 +963,8 @@ theorem zipWith_def {ι : Type u} {β : ι → Type v} {β₁ : ι → Type v₁
     [∀ (i : ι) (x : β₁ i), Decidable (x ≠ 0)] [∀ (i : ι) (x : β₂ i), Decidable (x ≠ 0)]
     {f : ∀ i, β₁ i → β₂ i → β i} {hf : ∀ i, f i 0 0 = 0} {g₁ : Π₀ i, β₁ i} {g₂ : Π₀ i, β₂ i} :
     zipWith f hf g₁ g₂ = mk (g₁.support ∪ g₂.support) fun i => f i.1 (g₁ i.1) (g₂ i.1) := by
-  ext i
-  by_cases h1 : g₁ i ≠ 0 <;> by_cases h2 : g₂ i ≠ 0 <;> simp only [not_not, Ne] at h1 h2 <;>
-    simp [h1, h2, hf]
+  ext
+  grind [mem_support_toFun, mk_apply, zipWith_apply]
 
 theorem support_zipWith {f : ∀ i, β₁ i → β₂ i → β i} {hf : ∀ i, f i 0 0 = 0} {g₁ : Π₀ i, β₁ i}
     {g₂ : Π₀ i, β₂ i} : (zipWith f hf g₁ g₂).support ⊆ g₁.support ∪ g₂.support := by
@@ -977,8 +973,8 @@ theorem support_zipWith {f : ∀ i, β₁ i → β₂ i → β i} {hf : ∀ i, f
 end MapRangeAndZipWith
 
 theorem erase_def (i : ι) (f : Π₀ i, β i) : f.erase i = mk (f.support.erase i) fun j => f j.1 := by
-  ext j
-  by_cases h1 : j = i <;> by_cases h2 : f j ≠ 0 <;> simp at h2 <;> simp [h1, h2]
+  ext
+  grind [erase_apply, mk_apply, mem_support_toFun]
 
 @[simp]
 theorem support_erase (i : ι) (f : Π₀ i, β i) : (f.erase i).support = f.support.erase i := by
@@ -1005,7 +1001,8 @@ section FilterAndSubtypeDomain
 variable {p : ι → Prop} [DecidablePred p]
 
 theorem filter_def (f : Π₀ i, β i) : f.filter p = mk (f.support.filter p) fun i => f i.1 := by
-  ext i; by_cases h1 : p i <;> by_cases h2 : f i ≠ 0 <;> simp at h2 <;> simp [h1, h2]
+  ext
+  grind [filter_apply, mem_support_toFun, mk_apply]
 
 @[simp]
 theorem support_filter (f : Π₀ i, β i) : (f.filter p).support = {x ∈ f.support | p x} := by
@@ -1018,7 +1015,7 @@ theorem subtypeDomain_def (f : Π₀ i, β i) :
 @[simp]
 theorem support_subtypeDomain {f : Π₀ i, β i} :
     (subtypeDomain p f).support = f.support.subtype p := by
-  ext i
+  ext
   simp
 
 end FilterAndSubtypeDomain
@@ -1253,10 +1250,8 @@ theorem mapRange.addMonoidHom_id :
 theorem mapRange.addMonoidHom_comp (f : ∀ i, β₁ i →+ β₂ i) (f₂ : ∀ i, β i →+ β₁ i) :
     (mapRange.addMonoidHom fun i => (f i).comp (f₂ i)) =
       (mapRange.addMonoidHom f).comp (mapRange.addMonoidHom f₂) := by
-  refine AddMonoidHom.ext <| mapRange_comp (fun i x => f i x) (fun i x => f₂ i x) ?_ ?_ ?_
-  · intros; apply map_zero
-  · intros; apply map_zero
-  · intros; dsimp; simp only [map_zero]
+  ext
+  simp
 
 /-- `DFinsupp.mapRange.addMonoidHom` as an `AddEquiv`. -/
 @[simps apply]
