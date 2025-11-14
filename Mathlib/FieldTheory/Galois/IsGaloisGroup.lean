@@ -150,7 +150,7 @@ instance of_isGalois [IsGalois K L] : IsGaloisGroup Gal(L/K) K L where
   faithful := inferInstance
   commutes := inferInstance
   isInvariant := ⟨fun x ↦ (InfiniteGalois.mem_bot_iff_fixed x).mpr⟩
- 
+
 theorem card_eq_finrank [IsGaloisGroup G K L] : Nat.card G = Module.finrank K L := by
   rcases fintypeOrInfinite G with _ | hG
   · have : FaithfulSMul G L := faithful K
