@@ -13,16 +13,20 @@ import Mathlib.Topology.MetricSpace.PiNat
 In this file, we prove the Hausdorff–Alexandroff theorem, which states that every
 nonempty compact metric space is a continuous image of the Cantor set.
 
+## Main theorems
+
+* `exists_nat_bool_continuous_surjective_of_compact`: Hausdorff–Alexandroff Theorem.
+
 ## Proof Outline
 
 First, note that the Cantor set is homeomorphic to `ℕ → Bool`, as shown in
-`Mathlib.Topology.Instances.CantorSet`. Therefore, in this file, we work only with the space
+`cantorSetHomeomorphNatToBool`. Therefore, in this file, we work only with the space
 `ℕ → Bool` and refer to it as the "Cantor space".
 
 The proof consists of three steps. Let `X` be a compact metric space.
 
 1. Every compact metric space is homeomorphic to a closed subset of the Hilbert cube.
-   This is already proved in `Mathlib.Topology.Compactness.HilbertCubeEmbedding`. Using this result,
+   This is already proved in `exists_closed_embedding_to_hilbert_cube`. Using this result,
    we may assume that `X` is a closed subset of the Hilbert cube.
 2. We construct a continuous surjection `cantorToHilbert` from the Cantor space to the Hilbert
    cube.
