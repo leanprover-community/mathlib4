@@ -77,30 +77,37 @@ jobs:
         if: ${{ steps.check_toolchain.outputs.toolchain_modified == 'false' }}
         id: check_manifest
         run: |
-          if [ "${{ steps.PR.outputs.pr_found }}" != "true" ]; then
-            echo "has_diff=true" >> "${GITHUB_OUTPUT}"
-            echo "PR does not exist, let create-pull-request run"
-          elif [ "${{ contains(steps.PR.outputs.pr_labels, 'merge-conflict') }}" == "true" ]; then
-            echo "has_diff=true" >> "${GITHUB_OUTPUT}"
-            echo "merge-conflict on PR, let create-pull-request run"
-          elif [ -n "${{ steps.get-branch-sha.outputs.sha }}" ]; then
-            # Branch exists, compare the file
-            if git diff --quiet "origin/$BRANCH_NAME" -- lake-manifest.json; then
-              echo "has_diff=false" >> "${GITHUB_OUTPUT}"
-              echo "No differences in lake-manifest.json"
-            else
-              echo "has_diff=true" >> "${GITHUB_OUTPUT}"
-              echo "Differences found in lake-manifest.json"
-            fi
-          else
-            # Branch doesn't exist, consider it as different
-            echo "has_diff=true" >> "${GITHUB_OUTPUT}"
-            echo "Branch does not exist, treating as different"
+          # Default to false
+          create_pr=false
+          # Log individual reasons for running the create-pull-request action
+          if [ -z "${{ steps.get-branch-sha.outputs.sha }}" ]; then
+            create_pr=true
+            echo "$BRANCH_NAME does not exist, need to run create-pull-request to create it"
           fi
+          if [ "${{ steps.PR.outputs.pr_found }}" != "true" ]; then
+            create_pr=true
+            echo "PR does not exist, need to run create-pull-request to check whether one should be created"
+          fi
+          if [ "${{ steps.PR.outputs.pr_found }}" == "true" ] && \
+             git diff --quiet "origin/master" -- lake-manifest.json; then
+            create_pr=true
+            echo "No differences found with lake-manifest.json on master, need to run create-pull-request to close the PR"
+          fi
+          if [ "${{ contains(steps.PR.outputs.pr_labels, 'merge-conflict') }}" == "true" ]; then
+            create_pr=true
+            echo "merge-conflict on PR, need to run create-pull-request to update $BRANCH_NAME"
+          fi
+          if [ -n "${{ steps.get-branch-sha.outputs.sha }}" ] && \
+             ! git diff --quiet "origin/$BRANCH_NAME" -- lake-manifest.json; then
+            create_pr=true
+            echo "Differences found with lake-manifest.json on $BRANCH_NAME, need to run create-pull-request to update $BRANCH_NAME"
+          fi
+          # Otherwise, there's no reason to run create-pull-request
+          echo "create_pr=$create_pr" >> "${GITHUB_OUTPUT}"
 
       - name: Generate PR title
         id: pr-title
-        if: ${{ steps.check_manifest.outputs.has_diff == 'true' }}
+        if: ${{ steps.check_manifest.outputs.create_pr == 'true' }}
         run: |
           echo "timestamp=$(date -u +"%Y-%m-%d-%H-%M")" >> "$GITHUB_ENV"
           echo "pr_title=chore: update Mathlib dependencies $(date -u +"%Y-%m-%d")" >> "$GITHUB_ENV"
