@@ -701,18 +701,7 @@ lemma domDomRestrict_aux {ι} [DecidableEq ι] (P : ι → Prop) [DecidablePred 
     [DecidableEq {a // P a}]
     (x : (i : {a // P a}) → M₁ i) (z : (i : {a // ¬ P a}) → M₁ i) (i : {a : ι // P a})
     (c : M₁ i) : (fun j ↦ if h : P j then Function.update x i c ⟨j, h⟩ else z ⟨j, h⟩) =
-    Function.update (fun j => if h : P j then x ⟨j, h⟩ else z ⟨j, h⟩) i c := by
-  ext j
-  by_cases h : j = i
-  #adaptation_note /-- 2025-10-31 https://github.com/leanprover/lean4/issues/11036
-    Used to be `<;> grind [Function.update_self, Function.update_of_ne]` -/
-  · subst h
-    simp [i.2]
-  · split <;> rename_i h'
-    · simp only [Function.update_of_ne h, h', ↓reduceDIte]
-      apply Function.update_of_ne
-      simpa [← Subtype.coe_inj]
-    · simp [Function.update_of_ne h, h']
+    Function.update (fun j => if h : P j then x ⟨j, h⟩ else z ⟨j, h⟩) i c := by grind
 
 lemma domDomRestrict_aux_right {ι} [DecidableEq ι] (P : ι → Prop) [DecidablePred P] {M₁ : ι → Type*}
     [DecidableEq {a // ¬ P a}]
