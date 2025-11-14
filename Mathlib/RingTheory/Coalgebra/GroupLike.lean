@@ -30,7 +30,7 @@ variable (R) in
 /-- A group-like element in a coalgebra is an element `a` such that `ε(a) = 1` and `Δ(a) = a ⊗ₜ a`,
 where `ε` and `Δ` are the counit and comultiplication respectively. -/
 @[mk_iff]
-structure IsGroupLikeElem (a : A) where
+structure IsGroupLikeElem (a : A) : Prop where
   /-- A group-like element `a` satisfies `ε(a) = 1`. -/
   counit_eq_one : counit (R := R) a = 1
   /-- A group-like element `a` satisfies `Δ(a) = a ⊗ₜ a`. -/
