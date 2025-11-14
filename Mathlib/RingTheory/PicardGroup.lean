@@ -507,7 +507,7 @@ instance (R) [CommRing R] [IsLocalRing R] : Subsingleton (Pic R) :=
   subsingleton_iff.mpr fun _ _ _ _ ↦ free_of_flat_of_isLocalRing
 
 /-- The Picard group of a semilocal ring is trivial. -/
-instance [Finite (MaximalSpectrum R)] : Subsingleton (Pic R) :=
+instance (R) [CommRing R] [Finite (MaximalSpectrum R)] : Subsingleton (Pic R) :=
   subsingleton_iff.mpr fun _ _ _ _ ↦ free_of_flat_of_finrank_eq _ _ 1
     fun _ ↦ let _ := @Ideal.Quotient.field; Invertible.finrank_eq_one ..
 
