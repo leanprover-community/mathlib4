@@ -119,31 +119,6 @@ end ContinuousLinearMap
 
 namespace LinearMap
 
-section LeftInverse
-
-variable [DivisionRing 𝕜] [AddCommGroup E] [AddCommGroup F] [Module 𝕜 E] [Module 𝕜 F]
-
-variable (f : E →ₗ[𝕜] F)
-
-open scoped Classical in
-/-- The left inverse of `f : E →ₗ[𝕜] F`.
-
-If `f` is not injective, then we use the junk value `0`. -/
-def leftInverse : F →ₗ[𝕜] E :=
-  if h_inj : LinearMap.ker f = ⊥ then
-  Classical.choose (f.exists_leftInverse_of_injective h_inj)
-  else 0
-
-/-- If `f` is injective, then the left inverse composed with `f` is the identity. -/
-@[simp]
-theorem leftInverse_apply_of_inj (h_inj : LinearMap.ker f = ⊥) (x : E) :
-    f.leftInverse (f x) = x := by
-  have := Classical.choose_spec (f.exists_leftInverse_of_injective h_inj)
-  rw [LinearMap.ext_iff] at this
-  simpa [leftInverse, h_inj] using this x
-
-end LeftInverse
-
 section compInv
 
 variable [DivisionRing 𝕜] [DivisionRing 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
@@ -154,7 +129,7 @@ variable (f : E →ₛₗ[σ₁₂] F) (g : E →ₗ[𝕜] Eₗ)
 
 open scoped Classical in
 /-- Composition with the left inverse as a CLM. -/
-def compLeftInverse :=
+private def compLeftInverse :=
   if h : LinearMap.ker g = ⊥ ∧ ∃ (C : ℝ), ∀ (x : E), ‖f x‖ ≤ C * ‖g x‖ then
   (f ∘ₛₗ (g.leftInverse.domRestrict
     (LinearMap.range g))).mkContinuousOfExistsBound
@@ -169,7 +144,7 @@ def compLeftInverse :=
   else 0
 
 @[simp]
-theorem compLeftInverse_apply_of_inj_bdd (h_inj : LinearMap.ker g = ⊥)
+private theorem compLeftInverse_apply_of_inj_bdd (h_inj : LinearMap.ker g = ⊥)
     (h_norm : ∃ (C : ℝ), ∀ (x : E), ‖f x‖ ≤ C * ‖g x‖) (y : LinearMap.range g) :
     f.compLeftInverse g y = (f ∘ₛₗ (g.leftInverse.domRestrict
       (LinearMap.range g))) y := by

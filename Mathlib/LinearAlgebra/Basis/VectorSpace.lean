@@ -252,6 +252,27 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
   rw [Basis.ofVectorSpace_apply_self, fb_eq, hC.constr_basis]
   exact leftInverse_invFun (LinearMap.ker_eq_bot.1 hf_inj) _
 
+open scoped Classical in
+/-- The left inverse of `f : E →ₗ[𝕜] F`.
+
+If `f` is not injective, then we use the junk value `0`. -/
+noncomputable
+def LinearMap.leftInverse (f : V →ₗ[K] V') : V' →ₗ[K] V :=
+  if h_inj : LinearMap.ker f = ⊥ then
+  (f.exists_leftInverse_of_injective h_inj).choose
+  else 0
+
+@[simp]
+theorem LinearMap.leftInverse_comp_of_inj {f : V →ₗ[K] V'} (h_inj : LinearMap.ker f = ⊥) :
+    f.leftInverse ∘ₗ f = LinearMap.id := by
+  simpa [leftInverse, h_inj] using (f.exists_leftInverse_of_injective h_inj).choose_spec
+
+/-- If `f` is injective, then the left inverse composed with `f` is the identity. -/
+@[simp]
+theorem LinearMap.leftInverse_apply_of_inj {f : V →ₗ[K] V'} (h_inj : LinearMap.ker f = ⊥) (x : V) :
+    f.leftInverse (f x) = x :=
+  LinearMap.ext_iff.mp (f.leftInverse_comp_of_inj h_inj) x
+
 theorem Submodule.exists_isCompl (p : Submodule K V) : ∃ q : Submodule K V, IsCompl p q :=
   let ⟨f, hf⟩ := p.subtype.exists_leftInverse_of_injective p.ker_subtype
   ⟨LinearMap.ker f, LinearMap.isCompl_of_proj <| LinearMap.ext_iff.1 hf⟩
