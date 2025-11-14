@@ -45,7 +45,7 @@ def ofTruncated (e : ((truncation 2).obj X).Edge x₀ x₁) :
 /-- The edge of the `2`-truncation of a simplicial set `X` that is induced
 by an edge of `X`. -/
 def toTruncated (e : Edge x₀ x₁) :
-    Truncated.Edge (X := (truncation 2).obj X) x₀ x₁ :=
+    ((truncation 2).obj X).Edge x₀ x₁ :=
   e
 
 /-- In a simplicial set, an edge from a vertex `x₀` to `x₁` is
