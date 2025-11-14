@@ -351,6 +351,6 @@ noncomputable def cantorSetHomeomorphNatToBool : cantorSet ≃ₜ (ℕ → Bool)
   Homeomorph.symm <| Continuous.homeoOfEquivCompactToT2 (f := cantorSetEquivNatToBool.symm)
     (Continuous.subtype_mk (Continuous.comp continuous_ofDigits (by fun_prop)) _)
 
-/-- The Cantor space is homeomorphic to its countable product. -/
+/-- The Cantor space is homeomorphic to a countable product of copies of itself. -/
 def cantorSpaceHomeomorphNatToCantorSpace : (ℕ → Bool) ≃ₜ (ℕ → ℕ → Bool) :=
   (Homeomorph.piCongrLeft Nat.pairEquiv.symm).trans Homeomorph.piCurry
