@@ -621,28 +621,24 @@ end
 
 section
 
+variable {G : Type*} [NormedAddCommGroup G] [InnerProductSpace ℝ G]
+  {f : (Metric.sphere (0 : G) 1) → E''}
+  --{f : (Metric.sphere (0 : G) 1) → E''} {g : ℝ → (Metric.sphere (0 : G) 1)}
+
 -- TODO: the next three tests fail without this line,
--- because we only have an `InnerProductSpace` instance for `E''`
-variable [NormedSpace ℝ E'']
+-- because we only have an `InnerProductSpace` instance for `G`
+--variable [NormedSpace ℝ G]
 
 -- TODO: these tests are still wrong, as somehow the math instance is not synthesised
-variable [Fact (Module.finrank ℝ E'' = 3)] in
-/--
-error: failed to synthesize
-  ChartedSpace (EuclideanSpace ℝ (Fin 2)) ↑(Metric.sphere 0 1)
-
-Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
--/
+variable [Fact (Module.finrank ℝ G = 3)] in
+/-- info: MDifferentiable (𝓡 2) 𝓘(ℝ, E'') f : Prop -/
 #guard_msgs in
 #check MDifferentiable (𝓡 2) 𝓘(ℝ, E'') f
 
-variable [Fact (Module.finrank ℝ E'' = 2 + 1)] in
-/--
-error: failed to synthesize
-  ChartedSpace (EuclideanSpace ℝ (Fin 2)) ↑(Metric.sphere 0 1)
+#where
 
-Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
--/
+variable [Fact (Module.finrank ℝ E'' = 2 + 1)] in
+/-- error: Could not find a model with corners for `↑(Metric.sphere 0 1)` -/
 #guard_msgs in
 #check MDiff f
 
@@ -712,6 +708,8 @@ variable {f' : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 3)) 1) → E''}
 #check MDiff f'
 
 end sphere
+
+#exit
 
 section UpperHalfPlane
 
