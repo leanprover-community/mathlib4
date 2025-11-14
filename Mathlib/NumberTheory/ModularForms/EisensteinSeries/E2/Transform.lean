@@ -454,16 +454,21 @@ lemma sigma_isBigO_add_one (k : ℕ) : (fun n : ℕ => ((sigma k (n + 1)) : ℂ)
   simp
   exact tendsto_add_atTop_nat 1
 
+
+
 lemma G2_differentiableOn : DifferentiableOn ℂ (↑ₕG2) upperHalfPlaneSet := by
   have := G2_q_exp
   apply DifferentiableOn.congr (f := fun z => 2 * riemannZeta 2 - 8 * ↑π ^ 2 * ∑' (n : ℕ+),
-    ↑((ArithmeticFunction.sigma 1) ↑n) * cexp (2 * ↑π * I * ↑z) ^ (n : ℕ))
+    ↑((ArithmeticFunction.sigma 1) n) * cexp (2 * ↑π * I * ↑z) ^ (n : ℕ))
   simp only [zpow_natCast, differentiableOn_const, DifferentiableOn.fun_sub_iff_right]
   apply DifferentiableOn.const_mul
   apply SummableLocallyUniformlyOn.differentiableOn  (by exact isOpen_upperHalfPlaneSet)
   have := summableLocallyUniformlyOn_iteratedDerivWithin_smul_cexp 0 2 (p := 1) (by simp)
     (sigma_isBigO 1)
   simp at this
+
+
+
 
   sorry
   intro i z hz

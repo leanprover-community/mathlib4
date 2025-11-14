@@ -10,19 +10,18 @@ import Mathlib.NumberTheory.LSeries.Dirichlet
 import Mathlib.NumberTheory.LSeries.HurwitzZetaValues
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 import Mathlib.NumberTheory.TsumDivsorsAntidiagonal
-import Mathlib.Topology.EMetricSpace.Paracompact
-import Mathlib.Topology.Separation.CompletelyRegular
 
 /-!
 # Eisenstein series q-expansions
 
-We give the q-expansion of Eisenstein series of weight `k` and level 1. In particular we show that
-for even `k` with `3 ≤ k` Eisenstein series can we written as
-`1 - (2k / bernoulli k) ∑' n, σ_{k-1}(n) q^n` where `q = exp(2πiz)` and `σ_{k-1}(n)` is the sum of
-the `(k-1)`-th powers of the divisors of `n`. We need `k` to be even so that the Eisenstein series
-are non-zero and we require `k ≥ 3` so that the series converges absolutely.
+We give the q-expansion of Eisenstein series of weight `k` and level 1. In particular, we prove
+`EisensteinSeries.q_expansion_bernoulli` which says that for even `k` with `3 ≤ k`
+Eisenstein series can we written as `1 - (2k / bernoulli k) ∑' n, σ_{k-1}(n) q^n` where
+`q = exp(2πiz)` and `σ_{k-1}(n)` is the sum of the `(k-1)`-th powers of the divisors of `n`.
+We need `k` to be even so that the Eisenstein series are non-zero and we require `k ≥ 3` so that
+the series converges absolutely.
 
-The proof relies of the identity
+The proof relies on the identity
 `∑' n : ℤ, 1 / (z + n) ^ (k + 1) = ((-2πi)^(k+1) / k!) ∑' n : ℕ, n^k q^n` which comes from
 differentiating the expansion of `π cot(πz)` in terms of exponentials. Since our Eisenstein series
 are defined as sums over coprime integer pairs, we also need to relate these to sums over all pairs
@@ -35,7 +34,7 @@ gives the q-expansion with a Riemann zeta factor, which we simplify using the fo
 open Set Metric TopologicalSpace Function Filter Complex ArithmeticFunction
   ModularForm EisensteinSeries
 
-open scoped Topology Real Nat Complex Pointwise
+open scoped Topology Real Nat Complex Pointwise ArithmeticFunction.sigma
 
 open _root_.UpperHalfPlane hiding I
 
@@ -212,7 +211,7 @@ lemma summable_prod_eisSummand {k : ℕ} (hk : 3 ≤ k) (z : ℍ) :
 
 lemma tsum_eisSummand_eq_tsum_sigma_mul_cexp_pow {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
     ∑' v, eisSummand k v z = 2 * riemannZeta k + 2 * ((-2 * π * I) ^ k / (k - 1)!) *
-    ∑' (n : ℕ+), sigma (k - 1) n * cexp (2 * π * I * z) ^ (n : ℕ) := by
+    ∑' (n : ℕ+), σ (k - 1) n * cexp (2 * π * I * z) ^ (n : ℕ) := by
   rw [← (finTwoArrowEquiv ℤ).symm.tsum_eq, finTwoArrowEquiv_symm_apply,
     Summable.tsum_prod (summable_prod_eisSummand hk z),
     tsum_int_eq_zero_add_two_mul_tsum_pnat (fun n ↦ ?h₁)
@@ -267,7 +266,7 @@ lemma tsum_eisSummand_eq_riemannZeta_mul_eisensteinSeries {k : ℕ} (hk : 3 ≤ 
 /-- The q-Expansion of normalised Eisenstein series of level one with `riemannZeta` term. -/
 lemma EisensteinSeries.q_expansion_riemannZeta {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
     E hk z = 1 + (riemannZeta k)⁻¹ * (-2 * π * I) ^ k / (k - 1)! *
-    ∑' n : ℕ+, sigma (k - 1) n * cexp (2 * π * I * z) ^ (n : ℤ) := by
+    ∑' n : ℕ+, σ (k - 1) n * cexp (2 * π * I * z) ^ (n : ℤ) := by
   have : eisensteinSeries_MF (Int.toNat_le.mp hk) 0 z = eisensteinSeries_SIF (N := 1) 0 k z := rfl
   rw [E, ModularForm.IsGLPos.smul_apply, this, eisensteinSeries_SIF_apply 0 k z, eisensteinSeries]
   have HE1 := tsum_eisSummand_eq_tsum_sigma_mul_cexp_pow hk hk2 z
@@ -290,6 +289,6 @@ private lemma eisensteinSeries_coeff_identity {k : ℕ} (hk2 : Even k) (hkn0 : k
 /-- The q-Expansion of normalised Eisenstein series of level one with `bernoulli` term. -/
 lemma EisensteinSeries.q_expansion_bernoulli {k : ℕ} (hk : 3 ≤ k) (hk2 : Even k) (z : ℍ) :
     E hk z = 1 - (2 * k / bernoulli k) *
-    ∑' n : ℕ+, sigma (k - 1) n * cexp (2 * π * I * z) ^ (n : ℤ) := by
+    ∑' n : ℕ+, σ (k - 1) n * cexp (2 * π * I * z) ^ (n : ℤ) := by
   convert q_expansion_riemannZeta hk hk2 z using 1
   rw [eisensteinSeries_coeff_identity hk2 (by grind), neg_mul, ← sub_eq_add_neg]
