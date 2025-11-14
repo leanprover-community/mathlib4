@@ -378,6 +378,7 @@ def toOverUnit : C ⥤ Over (𝟙_ C) where
   map f := Over.homMk f
 
 /-- The slice category over the terminal unit object is equivalent to the original category. -/
+@[simps]
 def equivToOverUnit : Over (𝟙_ C) ≌ C where
   functor := Over.forget _
   inverse := toOverUnit _
