@@ -109,7 +109,7 @@ section Oriented
 
 open Module
 
-variable [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
+variable [Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
 
 attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
 
