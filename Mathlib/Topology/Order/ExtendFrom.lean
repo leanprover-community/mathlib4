@@ -12,10 +12,14 @@ import Mathlib.Topology.Order.DenselyOrdered
 
 open Filter Set Topology
 
-variable {α β : Type*}
+variable {α β : Type*} [TopologicalSpace α] [LinearOrder α] [DenselyOrdered α] [OrderTopology α]
+  [TopologicalSpace β] {f : α → β} {a b : α} {la lb : β}
 
-theorem continuousOn_Icc_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [DenselyOrdered α]
-    [OrderTopology α] [TopologicalSpace β] [RegularSpace β] {f : α → β} {a b : α} {la lb : β}
+section RegularSpace
+
+variable [RegularSpace β]
+
+theorem continuousOn_Icc_extendFrom_Ioo
     (hab : a ≠ b) (hf : ContinuousOn f (Ioo a b)) (ha : Tendsto f (𝓝[>] a) (𝓝 la))
     (hb : Tendsto f (𝓝[<] b) (𝓝 lb)) : ContinuousOn (extendFrom (Ioo a b) f) (Icc a b) := by
   apply continuousOn_extendFrom
@@ -26,24 +30,20 @@ theorem continuousOn_Icc_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [
     · exact ⟨lb, hb.mono_left <| nhdsWithin_mono _ Ioo_subset_Iio_self⟩
     · exact ⟨f x, hf x h⟩
 
-theorem eq_lim_at_left_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [DenselyOrdered α]
-    [OrderTopology α] [TopologicalSpace β] [T2Space β] {f : α → β} {a b : α} {la : β} (hab : a < b)
-    (ha : Tendsto f (𝓝[>] a) (𝓝 la)) : extendFrom (Ioo a b) f a = la := by
-  apply extendFrom_eq
-  · rw [closure_Ioo hab.ne]
-    simp only [le_of_lt hab, left_mem_Icc]
-  · simpa [hab]
+theorem continuousOn_uIcc_extendFrom_uIoo
+    (hab : a ≠ b) (hf : ContinuousOn f (uIoo a b)) (ha : Tendsto f (𝓝[≠] a) (𝓝 la))
+    (hb : Tendsto f (𝓝[≠] b) (𝓝 lb)) : ContinuousOn (extendFrom (uIoo a b) f) (uIcc a b) := by
+  obtain ⟨la, hla⟩ : ∃ la, Tendsto f (𝓝[>] min a b) (𝓝 la) :=
+    min_rec' (fun i ↦ ∃ la, Tendsto f (𝓝[>] i) (𝓝 la))
+      ⟨_, ha.mono_left (nhdsGT_le_nhdsNE _)⟩
+      ⟨_, hb.mono_left (nhdsGT_le_nhdsNE _)⟩
+  obtain ⟨lb, hlb⟩ : ∃ lb, Tendsto f (𝓝[<] max a b) (𝓝 lb) :=
+    max_rec' (fun i ↦ ∃ lb, Tendsto f (𝓝[<] i) (𝓝 lb))
+      ⟨_, ha.mono_left (nhdsLT_le_nhdsNE _)⟩
+      ⟨_, hb.mono_left (nhdsLT_le_nhdsNE _)⟩
+  exact continuousOn_Icc_extendFrom_Ioo (by simp [hab]) hf hla hlb
 
-theorem eq_lim_at_right_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [DenselyOrdered α]
-    [OrderTopology α] [TopologicalSpace β] [T2Space β] {f : α → β} {a b : α} {lb : β} (hab : a < b)
-    (hb : Tendsto f (𝓝[<] b) (𝓝 lb)) : extendFrom (Ioo a b) f b = lb := by
-  apply extendFrom_eq
-  · rw [closure_Ioo hab.ne]
-    simp only [le_of_lt hab, right_mem_Icc]
-  · simpa [hab]
-
-theorem continuousOn_Ico_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [DenselyOrdered α]
-    [OrderTopology α] [TopologicalSpace β] [RegularSpace β] {f : α → β} {a b : α} {la : β}
+theorem continuousOn_Ico_extendFrom_Ioo
     (hab : a < b) (hf : ContinuousOn f (Ioo a b)) (ha : Tendsto f (𝓝[>] a) (𝓝 la)) :
     ContinuousOn (extendFrom (Ioo a b) f) (Ico a b) := by
   apply continuousOn_extendFrom
@@ -55,10 +55,39 @@ theorem continuousOn_Ico_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [
       simpa [hab]
     · exact ⟨f x, hf x h⟩
 
-theorem continuousOn_Ioc_extendFrom_Ioo [TopologicalSpace α] [LinearOrder α] [DenselyOrdered α]
-    [OrderTopology α] [TopologicalSpace β] [RegularSpace β] {f : α → β} {a b : α} {lb : β}
+theorem continuousOn_Ioc_extendFrom_Ioo
     (hab : a < b) (hf : ContinuousOn f (Ioo a b)) (hb : Tendsto f (𝓝[<] b) (𝓝 lb)) :
     ContinuousOn (extendFrom (Ioo a b) f) (Ioc a b) := by
-  have := @continuousOn_Ico_extendFrom_Ioo αᵒᵈ _ _ _ _ _ _ _ f _ _ lb hab
-  erw [Ico_toDual, Ioi_toDual, Ioo_toDual] at this
+  have := continuousOn_Ico_extendFrom_Ioo (f := f ∘ OrderDual.ofDual) (la := lb) hab.dual
+  rw [Ico_toDual, Ioi_toDual, Ioo_toDual] at this
   exact this hf hb
+
+end RegularSpace
+
+section T2Space
+
+variable [T2Space β]
+
+theorem eq_lim_at_left_extendFrom_Ioo (hab : a < b)
+    (ha : Tendsto f (𝓝[>] a) (𝓝 la)) : extendFrom (Ioo a b) f a = la := by
+  apply extendFrom_eq
+  · rw [closure_Ioo hab.ne]
+    simp only [le_of_lt hab, left_mem_Icc]
+  · simpa [hab]
+
+theorem eq_lim_at_right_extendFrom_Ioo (hab : a < b)
+    (hb : Tendsto f (𝓝[<] b) (𝓝 lb)) : extendFrom (Ioo a b) f b = lb := by
+  apply extendFrom_eq
+  · rw [closure_Ioo hab.ne]
+    simp only [le_of_lt hab, right_mem_Icc]
+  · simpa [hab]
+
+theorem eq_lim_at_left_extendFrom_uIoo (hab : a ≠ b)
+    (ha : Tendsto f (𝓝[≠] a) (𝓝 la)) : extendFrom (uIoo a b) f a = la :=
+  extendFrom_eq (by simp [hab]) (ha.mono_left nhdsWithin_uIoo_left_le_nhdsNE)
+
+theorem eq_lim_at_right_extendFrom_uIoo (hab : a ≠ b)
+    (hb : Tendsto f (𝓝[≠] b) (𝓝 lb)) : extendFrom (uIoo a b) f b = lb :=
+  extendFrom_eq (by simp [hab]) (hb.mono_left nhdsWithin_uIoo_right_le_nhdsNE)
+
+end T2Space
