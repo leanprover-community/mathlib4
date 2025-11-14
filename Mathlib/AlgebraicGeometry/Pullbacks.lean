@@ -833,8 +833,7 @@ lemma prodComparisonIso_pullback_Spec_inv_left_fst_fst {R S : CommRingCat.{u}} (
           (pullback.snd B.hom (Spec.map f)) ≫ pullback.fst _ _ := by
   rw [← cancel_epi (prodComparisonIso (Over.pullback (Spec.map f)) A B).hom.left,
     Over.hom_left_inv_left_assoc]
-  simp [CartesianMonoidalCategory.prodComparison]
-  rfl
+  simp [CartesianMonoidalCategory.prodComparison, fst]
 
 @[simp]
 lemma prodComparisonIso_pullback_Spec_inv_left_fst_fst' {R S : CommRingCat.{u}} (f : R ⟶ S)
