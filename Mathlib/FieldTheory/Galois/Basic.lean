@@ -341,7 +341,7 @@ theorem card_fixingSubgroup_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
   conv_rhs => rw [← fixedField_fixingSubgroup K, IntermediateField.finrank_fixedField_eq_card]
 
 /-- The Galois correspondence from intermediate fields to subgroups. -/
-@[simps! apply symm_apply, stacks 09DW]
+@[simps! apply, stacks 09DW]
 def intermediateFieldEquivSubgroup [FiniteDimensional F E] [IsGalois F E] :
     IntermediateField F E ≃o (Subgroup Gal(E/F))ᵒᵈ where
   toFun := OrderDual.toDual ∘ IntermediateField.fixingSubgroup
@@ -351,6 +351,20 @@ def intermediateFieldEquivSubgroup [FiniteDimensional F E] [IsGalois F E] :
   map_rel_iff' {K L} := by
     rw [← fixedField_fixingSubgroup L, IntermediateField.le_iff_le, fixedField_fixingSubgroup L]
     rfl
+
+section
+variable [FiniteDimensional F E] [IsGalois F E]
+
+lemma ofDual_intermediateFieldEquivSubgroup_apply (a : IntermediateField F E) :
+    (intermediateFieldEquivSubgroup a).ofDual = a.fixingSubgroup := rfl
+
+@[simp] lemma intermediateFieldEquivSubgroup_symm_apply (H : (Subgroup Gal(E/F))ᵒᵈ) :
+    intermediateFieldEquivSubgroup.symm H = fixedField H.ofDual := rfl
+
+lemma intermediateFieldEquivSubgroup_symm_apply_toDual (H : Subgroup Gal(E/F)) :
+    intermediateFieldEquivSubgroup.symm (.toDual H) = fixedField H := rfl
+
+end
 
 /-- The Galois correspondence as a `GaloisInsertion`. -/
 def galoisInsertionIntermediateFieldSubgroup [FiniteDimensional F E] :
