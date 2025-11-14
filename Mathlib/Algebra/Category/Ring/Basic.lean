@@ -332,8 +332,8 @@ end RingCat
 
 /-- The category of commutative semirings. -/
 structure CommSemiRingCat where
-  /-- The object in the category of commutative semirings associated to a type equipped with the appropriate
-  typeclasses. -/
+  /-- The object in the category of commutative semirings associated to a type equipped with the
+  appropriate typeclasses. -/
   of ::
   /-- The underlying type. -/
   carrier : Type u
