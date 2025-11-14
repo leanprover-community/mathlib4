@@ -6,6 +6,7 @@ Authors: Jeremy Avigad
 import Mathlib.Data.Int.Init
 import Mathlib.Data.Nat.Basic
 import Mathlib.Logic.Nontrivial.Defs
+import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Lift
 import Mathlib.Tactic.OfNat

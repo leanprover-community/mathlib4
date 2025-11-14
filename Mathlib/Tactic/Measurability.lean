@@ -6,7 +6,6 @@ Authors: Miyahara Kō
 
 import Mathlib.Tactic.Measurability.Init
 import Mathlib.Tactic.FunProp.Decl
-import Mathlib.Algebra.Group.Defs
 
 /-!
 # Measurability

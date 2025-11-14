@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 
 import Mathlib.Data.Nat.Basic
+import Mathlib.Tactic.Push
 import Batteries.WF
 
 /-!
