@@ -167,29 +167,20 @@ instance distribLattice : DistribLattice (Digraph V) :=
   { adj_injective.distribLattice Digraph.Adj (fun _ _ ↦ rfl) fun _ _ ↦ rfl with
     le := fun G H ↦ ∀ ⦃a b⦄, G.Adj a b → H.Adj a b }
 
-instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Digraph V) :=
-  { Digraph.distribLattice with
-    le := (· ≤ ·)
-    sup := (· ⊔ ·)
-    inf := (· ⊓ ·)
-    compl := HasCompl.compl
-    sdiff := (· \ ·)
-    top := Digraph.completeDigraph V
-    bot := Digraph.emptyDigraph V
-    le_top := fun _ _ _ _ ↦ trivial
-    bot_le := fun _ _ _ h ↦ h.elim
-    sdiff_eq := fun _ _ ↦ rfl
-    inf_compl_le_bot := fun _ _ _ h ↦ absurd h.1 h.2
-    top_le_sup_compl := fun G v w _ ↦ by tauto
-    sSup := sSup
-    le_sSup := fun _ G hG _ _ hab ↦ ⟨G, hG, hab⟩
-    sSup_le := fun s G hG a b ↦ by
-      rintro ⟨H, hH, hab⟩
-      exact hG _ hH hab
-    sInf := sInf
-    sInf_le := fun _ _ hG _ _ hab ↦ hab hG
-    le_sInf := fun _ _ hG _ _ hab ↦ fun _ hH ↦ hG _ hH hab
-    iInf_iSup_eq := fun f ↦ by ext; simp [Classical.skolem] }
+instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Digraph V) where
+  top := Digraph.completeDigraph V
+  bot := Digraph.emptyDigraph V
+  le_top _ _ _ _ := trivial
+  bot_le _ _ _ h := h.elim
+  inf_compl_le_bot _ _ _ h := absurd h.1 h.2
+  top_le_sup_compl G v w _ := by tauto
+  le_sSup _ G hG _ _ hab := ⟨G, hG, hab⟩
+  sSup_le s G hG a b := by
+    rintro ⟨H, hH, hab⟩
+    exact hG _ hH hab
+  sInf_le _ _ hG _ _ hab := hab hG
+  le_sInf _ _ hG _ _ hab _ hH := hG _ hH hab
+  iInf_iSup_eq f := by ext; simp [Classical.skolem]
 
 @[simp] theorem top_adj (v w : V) : (⊤ : Digraph V).Adj v w := trivial
 
