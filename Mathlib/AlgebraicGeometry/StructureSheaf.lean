@@ -414,7 +414,7 @@ theorem toOpen_Γgerm_apply (x : PrimeSpectrum.Top R) (f : R) :
   rfl
 
 theorem isUnit_to_basicOpen_self (f : R) : IsUnit (toOpen R (PrimeSpectrum.basicOpen f) f) :=
-  isUnit_of_mul_eq_one _ (const R 1 f (PrimeSpectrum.basicOpen f) fun _ => id) <| by
+  .of_mul_eq_one (const R 1 f (PrimeSpectrum.basicOpen f) fun _ => id) <| by
     rw [toOpen_eq_const, const_mul_rev]
 
 theorem isUnit_toStalk (x : PrimeSpectrum.Top R) (f : x.asIdeal.primeCompl) :
@@ -580,8 +580,8 @@ theorem toBasicOpen_to_map (s f : R) :
 -- The proof here follows the argument in Hartshorne's Algebraic Geometry, Proposition II.2.2.
 theorem toBasicOpen_injective (f : R) : Function.Injective (toBasicOpen R f) := by
   intro s t h_eq
-  obtain ⟨a, ⟨b, hb⟩, rfl⟩ := IsLocalization.mk'_surjective (Submonoid.powers f) s
-  obtain ⟨c, ⟨d, hd⟩, rfl⟩ := IsLocalization.mk'_surjective (Submonoid.powers f) t
+  obtain ⟨a, ⟨b, hb⟩, rfl⟩ := IsLocalization.exists_mk'_eq (Submonoid.powers f) s
+  obtain ⟨c, ⟨d, hd⟩, rfl⟩ := IsLocalization.exists_mk'_eq (Submonoid.powers f) t
   simp only [toBasicOpen_mk'] at h_eq
   rw [IsLocalization.eq]
   -- We know that the fractions `a/b` and `c/d` are equal as sections of the structure sheaf on
