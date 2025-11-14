@@ -3,11 +3,9 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jireh Loreaux
 -/
-import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Group.Invertible.Basic
-import Mathlib.Logic.Basic
-import Mathlib.Data.Set.Basic
 import Mathlib.Algebra.Notation.Prod
+import Mathlib.Data.Set.Basic
 
 /-!
 # Centers of magmas and semigroups

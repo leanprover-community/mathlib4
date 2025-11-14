@@ -11,6 +11,7 @@ import Mathlib.Order.Max
 import Mathlib.Order.Monotone.Defs
 import Mathlib.Order.RelClasses
 import Mathlib.Tactic.Choose
+import Mathlib.Tactic.Contrapose
 
 /-!
 # Monotonicity

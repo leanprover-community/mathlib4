@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Defs
+import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Rat.Init
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Common
-import Mathlib.Data.Nat.Basic
 
 /-!
 # Basics for the Rational Numbers

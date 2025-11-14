@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Finsupp.Single
-import Mathlib.Tactic.FastInstance
 
 /-!
 # Additive monoid structure on `ι →₀ M`
