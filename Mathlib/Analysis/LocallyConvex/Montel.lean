@@ -8,11 +8,19 @@ import Mathlib.Analysis.Normed.Module.FiniteDimension
 /-!
 # Montel spaces
 
+A Montel space is a topological vector space that has the Heine-Borel property: every closed and
+(von Neumann) bounded set is compact.
+
+* `MontelSpace.finiteDimensional_of_normedSpace`: every normed Montel space is finite dimensional.
+* `ContinuousLinearEquiv.toCompactConvergenceCLM`: if `E` is a Montel space then topology of compact
+convergence and the strong topology on `E →SL[σ] F` coincide. We record this a continuous linear
+equivalence between `E →SL[σ] F` and `E →SL_c[σ] F`.
+
 -/
 
 open Filter Topology Set ContinuousLinearMap Bornology
 
-section definition
+section Definition
 
 variable {𝕜 E F : Type*}
 variable [SeminormedRing 𝕜] [Zero E] [SMul 𝕜 E]
@@ -31,7 +39,7 @@ theorem isCompact_of_isClosed_isVonNBounded [hm : MontelSpace 𝕜 E] {s : Set E
 
 end MontelSpace
 
-end definition
+end Definition
 
 section Normed
 
@@ -41,7 +49,7 @@ variable {𝕜 E F : Type*}
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace 𝕜]
   [hM : MontelSpace 𝕜 E]
 
-theorem finiteDimensional : FiniteDimensional 𝕜 E :=
+theorem finiteDimensional_of_normedSpace : FiniteDimensional 𝕜 E :=
   FiniteDimensional.of_isCompact_closedBall₀ 𝕜 zero_lt_one
     (isCompact_of_isClosed_isVonNBounded 𝕜 Metric.isClosed_closedBall
       (NormedSpace.isVonNBounded_closedBall _ _ _) )
@@ -53,7 +61,7 @@ end Normed
 variable {𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] {σ : 𝕜₁ →+* 𝕜₂}
 variable {E F : Type*}
   [AddCommGroup E] [Module 𝕜₁ E]
-  [UniformSpace E]
+  [UniformSpace E] [IsUniformAddGroup E] [ContinuousSMul 𝕜₁ E]
   [AddCommGroup F] [Module 𝕜₂ F]
   [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜₂ F]
 
@@ -67,8 +75,6 @@ This definition is only used to prove the continuous linear equivalence. -/
 private def _root_.LinearEquiv.toCompactConvergenceCLM :
     (E →SL[σ] F) ≃ₗ[𝕜₂] E →SL_c[σ] F :=
   LinearEquiv.refl 𝕜₂ _
-
-variable [IsUniformAddGroup E] [ContinuousSMul 𝕜₁ E]
 
 variable (σ E F) in
 /-- If `E` is a Montel space, then the strong topology on `E →L[𝕜] F` coincides with the topology
