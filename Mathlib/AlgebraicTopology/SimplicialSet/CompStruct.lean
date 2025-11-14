@@ -39,7 +39,7 @@ namespace Edge
 /-- Constructor for `SSet.Edge` which takes as an input a term in the definitionally
 equal type `SSet.Truncated.Edge` for the `2`-truncation of the simplicial set.
 (This definition is made to contain abuse of defeq in other definitions.) -/
-def ofTruncated (e : Truncated.Edge (X := (truncation 2).obj X) x₀ x₁) :
+def ofTruncated (e : ((truncation 2).obj X).Edge x₀ x₁) :
     Edge x₀ x₁ := e
 
 /-- The edge of the `2`-truncation of a simplicial set `X` that is induced
