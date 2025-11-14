@@ -25,15 +25,15 @@ set.
 
 -/
 
-variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] 
+variable {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {a c : 𝕜} {f : 𝕜 → E} {s : Set 𝕜}
 
 @[fun_prop]
-lemma MeromorphicAt.slope (hf : MeromorphicAt f c) : MeromorphicAt (slope f a) c :=  
-  ((id c).sub (const a c)).inv.smul (hf.sub (const (f a) c)) 
+lemma MeromorphicAt.slope (hf : MeromorphicAt f c) : MeromorphicAt (slope f a) c :=
+  ((id c).sub (const a c)).inv.smul (hf.sub (const (f a) c))
 
 @[fun_prop]
-lemma MeromorphicAt.dslope (hf : MeromorphicAt f c) : MeromorphicAt (dslope f a) c := by 
+lemma MeromorphicAt.dslope (hf : MeromorphicAt f c) : MeromorphicAt (dslope f a) c := by
   classical exact hf.slope.update a (deriv f a)
 
 @[fun_prop]
@@ -43,7 +43,7 @@ lemma ContinuousAt.dslope (hf : DifferentiableAt 𝕜 f c) : ContinuousAt (dslop
   · rw [continuousAt_dslope_of_ne h]; exact hf.continuousAt
 
 @[fun_prop]
-theorem AnalyticAt.dslope (hf : AnalyticAt 𝕜 f c) : AnalyticAt 𝕜 (dslope f a) c := 
+theorem AnalyticAt.dslope (hf : AnalyticAt 𝕜 f c) : AnalyticAt 𝕜 (dslope f a) c :=
   hf.meromorphicAt.dslope.analyticAt (ContinuousAt.dslope hf.differentiableAt)
 
 theorem AnalyticOnNhd.dslope (hf : AnalyticOnNhd 𝕜 f s) : AnalyticOnNhd 𝕜 (dslope f a) s :=
