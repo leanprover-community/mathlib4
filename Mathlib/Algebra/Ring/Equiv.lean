@@ -9,7 +9,6 @@ import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.Notation.Prod
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Logic.Equiv.Set
-import Mathlib.Util.Delaborators
 
 /-!
 # (Semi)ring equivs

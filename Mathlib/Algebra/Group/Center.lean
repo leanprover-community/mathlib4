@@ -6,7 +6,6 @@ Authors: Eric Wieser, Jireh Loreaux
 import Mathlib.Algebra.Group.Invertible.Basic
 import Mathlib.Algebra.Notation.Prod
 import Mathlib.Data.Set.Basic
-import Mathlib.Util.Delaborators
 
 /-!
 # Centers of magmas and semigroups
