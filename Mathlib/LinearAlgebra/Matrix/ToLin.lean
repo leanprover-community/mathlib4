@@ -1181,9 +1181,14 @@ end LinearMap
 
 namespace Matrix
 
-theorem intrinsicStar_toLin' (A : Matrix n m R) :
-    star A.toLin' = (A.map star).toLin' := by
+theorem intrinsicStar_toLin' (A : Matrix n m R) : star A.toLin' = (A.map star).toLin' := by
   simp [← LinearMap.toMatrix'.injective.eq_iff, LinearMap.toMatrix'_intrinsicStar]
+
+/-- Given a matrix `A`, `A.toLin'` is self-adjoint (with respect to the intrinsic star)
+iff all its elements are self-adjoint. -/
+theorem isSelfAdjoint_toLin'_iff_forall_isSelfAdjoint_apply (A : Matrix n m R) :
+    IsSelfAdjoint A.toLin' ↔ ∀ i j, IsSelfAdjoint (A i j) := by
+  simp [IsSelfAdjoint, intrinsicStar_toLin', ← ext_iff]
 
 end Matrix
 
