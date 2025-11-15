@@ -6,6 +6,7 @@ Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 import Mathlib.Algebra.GroupWithZero.Submonoid.Instances
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Algebra.Order.Ring.Basic
+import Mathlib.Algebra.Ring.Torsion
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.Tactic.TFAE
 
