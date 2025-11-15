@@ -87,6 +87,15 @@ instance : NatTrans.CommShift F.mapDerivedCategoryFactors.hom ℤ :=
       simp only [id_comp, mapDerivedCategoryFactorsh_hom_app, assoc, comp_id,
         ← Functor.map_comp_assoc, Iso.inv_hom_id_app, map_id, comp_obj])
 
+/-- The commute of `DerivedCategory.singleFunctor` with `F` and `F.mapDerivedCategory`. -/
+noncomputable def mapDerivedCategorySingleFunctor (n : ℤ) :
+    (DerivedCategory.singleFunctor C₁ n) ⋙ F.mapDerivedCategory ≅
+      F ⋙ (DerivedCategory.singleFunctor C₂ n) :=
+  (isoWhiskerRight (DerivedCategory.singleFunctorIsoCompQ C₁ n) _)
+    ≪≫ associator .. ≪≫ (isoWhiskerLeft _ F.mapDerivedCategoryFactors) ≪≫ (associator ..).symm
+      ≪≫ isoWhiskerRight (HomologicalComplex.singleMapHomologicalComplex F (ComplexShape.up ℤ) n) _
+        ≪≫ (associator ..) ≪≫ (isoWhiskerLeft _ (DerivedCategory.singleFunctorIsoCompQ C₂ n)).symm
+
 instance : F.mapDerivedCategory.IsTriangulated :=
   Functor.isTriangulated_of_precomp_iso F.mapDerivedCategoryFactorsh
 
