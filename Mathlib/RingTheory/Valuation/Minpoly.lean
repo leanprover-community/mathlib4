@@ -13,7 +13,8 @@ We prove some results about valuations of zero coefficients of minimal polynomia
 
 Let `K` be a field with a valuation `v` and let `L` be a field extension of `K`.
 
-# Main Results
+## Main statements
+
 * `coeff_zero_minpoly` : for `x ∈ K` the valuation of the zeroth coefficient of the minimal
   polynomial of `algebraMap K L x` over `K` is equal to the valuation of `x`.
 * `pow_coeff_zero_ne_zero_of_unit` : for any unit `x : Lˣ`, we prove that a certain power of the

@@ -29,7 +29,7 @@ of application of this criterion.
 * `Polynomial.irreducible_of_eisenstein_criterion` : the classic Eisenstein criterion.
   It is the particular case where `q := X`.
 
-# TODO
+## TODO
 
 The case of a polynomial `q := X - a` is interesting,
 then the mod `P ^ 2` hypothesis can rephrased as saying

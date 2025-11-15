@@ -15,7 +15,7 @@ Two `R`-algebras `A` and `B` are Morita equivalent if the categories of modules 
 `B` are `R`-linearly equivalent. In this file, we prove that Morita equivalence is an equivalence
 relation and that isomorphic algebras are Morita equivalent.
 
-# Main definitions
+## Main definitions
 
 - `MoritaEquivalence R A B`: a structure containing an `R`-linear equivalence of categories between
   the module categories of `A` and `B`.
