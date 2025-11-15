@@ -5,6 +5,7 @@ Authors: Joseph Hua
 -/
 import Mathlib.CategoryTheory.Groupoid.Grpd
 import Mathlib.CategoryTheory.Groupoid.FreeGroupoidOfCategory
+import Mathlib.CategoryTheory.Adjunction.Reflective
 
 /-!
 # Free groupoid functor
