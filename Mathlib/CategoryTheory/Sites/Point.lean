@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.Limits.Types.Filtered
 import Mathlib.CategoryTheory.Sites.Limits
 import Mathlib.CategoryTheory.Sites.LocallyBijective
+import Mathlib.CategoryTheory.Filtered.FinallySmall
 
 /-!
 # Points of a site
@@ -82,9 +83,8 @@ lemma toPresheafFiber_naturality_apply {P Q : Cᵒᵖ ⥤ A} (g : P ⟶ Q) (X : 
 
 variable [PreservesFilteredColimitsOfSize.{w, w} (forget A)]
 
-instance : PreservesColimitsOfShape Φ.fiber.Elementsᵒᵖ (forget A) := by
-  have : PreservesFilteredColimitsOfSize.{w, w} (forget A) := inferInstance
-  sorry
+instance : PreservesColimitsOfShape Φ.fiber.Elementsᵒᵖ (forget A) :=
+  Functor.Final.preservesColimitsOfShape_of_final (FinallySmall.fromFilteredFinalModel.{w} _) _
 
 lemma toPresheafFiber_jointly_surjective (p : ToType (Φ.presheafFiber.obj P)) :
     ∃ (X : C) (x : Φ.fiber.obj X) (z : ToType (P.obj (op X))),
