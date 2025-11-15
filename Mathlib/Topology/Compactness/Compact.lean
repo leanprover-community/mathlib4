@@ -694,6 +694,37 @@ theorem generalized_tube_lemma (hs : IsCompact s) {t : Set Y} (ht : IsCompact t)
   rcases hp with ⟨⟨u, v⟩, ⟨⟨huo, hsu⟩, hvo, htv⟩, hn⟩
   exact ⟨u, v, huo, hvo, hsu, htv, hn⟩
 
+/-- A relative version of `IsCompact.nhdsSet_prod_eq`: if `s` and `t` are compact sets,
+then the neighborhoods filter of `s ×ˢ t` within `s' ×ˢ t'` is the product of the neighborhoods
+filters of `s` and `t` within `s'` and `t'`.
+
+For general sets, only the `≤` inequality holds, see `nhdsSetWithin_prod_le`. -/
+lemma IsCompact.nhdsSetWithin_prod_eq {s s' : Set X} {t t' : Set Y} (hs : IsCompact s)
+    (ht : IsCompact t) : 𝓝ˢ[s' ×ˢ t'] (s ×ˢ t) = 𝓝ˢ[s'] s ×ˢ 𝓝ˢ[t'] t := by
+  simp [nhdsSetWithin, ← prod_inf_prod, hs.nhdsSet_prod_eq ht]
+
+open Topology Set in
+/-- A variant of `generalized_tube_lemma` in terms of `nhdsSetWithin`. -/
+lemma generalized_tube_lemma' {s s' : Set X} (hs : IsCompact s) {t t' : Set Y} (ht : IsCompact t)
+    {n : Set (X × Y)} (hn : n ∈ 𝓝ˢ[s' ×ˢ t'] (s ×ˢ t)) :
+    ∃ u ∈ 𝓝ˢ[s'] s, ∃ v ∈ 𝓝ˢ[t'] t, u ×ˢ v ⊆ n := by
+  rwa [hs.nhdsSetWithin_prod_eq ht, Filter.mem_prod_iff] at hn
+
+open Topology Set in
+/-- A variant of `generalized_tube_lemma` that only replaces the set in one direction. -/
+lemma generalized_tube_lemma_left {s s' : Set X} (hs : IsCompact s) {t : Set Y} (ht : IsCompact t)
+    {n : Set (X × Y)} (hn : n ∈ 𝓝ˢ[s' ×ˢ t] (s ×ˢ t)) : ∃ u ∈ 𝓝ˢ[s'] s, u ×ˢ t ⊆ n := by
+  rw [hs.nhdsSetWithin_prod_eq ht, nhdsSetWithin_self, Filter.mem_prod_principal] at hn
+  exact ⟨_, hn, fun x hx ↦ hx.1 _ hx.2⟩
+
+open Topology Set in
+/-- A variant of `generalized_tube_lemma` that only replaces the set in one direction. -/
+lemma generalized_tube_lemma_right {s : Set X} (hs : IsCompact s) {t t' : Set Y} (ht : IsCompact t)
+    {n : Set (X × Y)} (hn : n ∈ 𝓝ˢ[s ×ˢ t'] (s ×ˢ t)) : ∃ u ∈ 𝓝ˢ[t'] t, s ×ˢ u ⊆ n := by
+  rw [hs.nhdsSetWithin_prod_eq ht, nhdsSetWithin_self, Filter.mem_prod_iff] at hn
+  obtain ⟨s', hs', u, hu, h⟩ := hn
+  exact ⟨u, hu, (prod_mono_left hs').trans h⟩
+
 -- see Note [lower instance priority]
 instance (priority := 10) Subsingleton.compactSpace [Subsingleton X] : CompactSpace X :=
   ⟨subsingleton_univ.isCompact⟩
