@@ -7033,6 +7033,7 @@ import Mathlib.Topology.Order.ProjIcc
 import Mathlib.Topology.Order.Real
 import Mathlib.Topology.Order.Rolle
 import Mathlib.Topology.Order.ScottTopology
+import Mathlib.Topology.Order.ScottTopologyDCPO
 import Mathlib.Topology.Order.T5
 import Mathlib.Topology.Order.UpperLowerSetTopology
 import Mathlib.Topology.Order.WithTop
