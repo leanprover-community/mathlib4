@@ -58,7 +58,7 @@ lemma exist_nat_eq' [FiniteRingKrullDim R] : ∃ n : ℕ, ringKrullDim R = n := 
   exact (WithBot.coe_unbot (ringKrullDim R) ringKrullDim_ne_bot).symm.trans
     (WithBot.coe_inj.mpr (ENat.coe_toNat this).symm)
 
-local instance small_of_quotient' [Small.{v} R] (I : Ideal R) : Small.{v} (R ⧸ I) :=
+local instance small_of_quotient'' [Small.{v} R] (I : Ideal R) : Small.{v} (R ⧸ I) :=
   small_of_surjective Ideal.Quotient.mk_surjective
 
 open CategoryTheory Abelian IsLocalRing Module RingTheory.Sequence
@@ -86,21 +86,6 @@ def quotSMulTopLinearEquiv (x : R) (e : M ≃ₗ[R] N) :
   right_inv y := by
     induction y using Submodule.Quotient.induction_on
     simp [quotSMulTopLinearMap]
-
-def Ideal.smulTopLinearMap (I : Ideal R) (f : M →ₗ[R] N) :
-    M ⧸ I • (⊤ : Submodule R M) →ₗ[R] N ⧸ I • (⊤ : Submodule R N) :=
-  Submodule.mapQ _ _ f (Submodule.smul_top_le_comap_smul_top I f)
-
-def Ideal.smulTopLinearEquiv (I : Ideal R) (e : M ≃ₗ[R] N) :
-    (M ⧸ I • (⊤ : Submodule R M)) ≃ₗ[R] (N ⧸ I • (⊤ : Submodule R N)) where
-  __ := Ideal.smulTopLinearMap I e
-  invFun := Ideal.smulTopLinearMap I e.symm
-  left_inv y := by
-    induction y using Submodule.Quotient.induction_on
-    simp [smulTopLinearMap]
-  right_inv y := by
-    induction y using Submodule.Quotient.induction_on
-    simp [smulTopLinearMap]
 
 omit [IsLocalRing R] [IsNoetherianRing R] in
 lemma Ideal.ofList_reverse (rs : List R) : Ideal.ofList rs.reverse = Ideal.ofList rs := by
