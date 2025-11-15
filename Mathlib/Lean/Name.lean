@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
+Authors: Kim Morrison, Thomas R. Murrills
 -/
 import Mathlib.Init
 import Lean.Meta.Match.MatcherInfo
@@ -65,3 +65,19 @@ def Lean.Name.isAuxLemma (n : Name) : Bool :=
 /-- Unfold all lemmas created by `Lean.Meta.mkAuxLemma`. -/
 def Lean.Meta.unfoldAuxLemmas (e : Expr) : MetaM Expr := do
   deltaExpand e Lean.Name.isAuxLemma
+
+/--
+Given a `base : Name`, returns the first name from `base`, `base_1`, `base_2`, ... for which
+`alreadyUsed` is `false`.
+
+If `startingIdx` is `some i`, starts by checking if `base_i` is `alreadyUsed` and counts up from
+`i`.
+-/
+partial def Lean.Name.mkUnusedNameWithIndexAfter (alreadyUsed : Name → Bool) (base : Name)
+    (startingIdx : Option Nat := none) : Name :=
+  if let some idx := startingIdx then go idx
+  else if alreadyUsed base then go 1 else base
+where
+  go n : Name :=
+  let new := base.appendIndexAfter n
+  if alreadyUsed new then go (n+1) else new
