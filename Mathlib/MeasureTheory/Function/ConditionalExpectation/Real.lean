@@ -215,13 +215,13 @@ theorem Integrable.uniformIntegrable_condExp {ι : Type*} [IsFiniteMeasure μ] {
 
 section PullOut
 
-variable {E F G : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+variable {E F G : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedAddCommGroup G] [NormedSpace ℝ G]
   [CompleteSpace G] (B : F →L[ℝ] E →L[ℝ] G)
 
-/-- Auxiliary lemma for `condExp_mul_of_stronglyMeasurable_left`. -/
-theorem condExp_stronglyMeasurable_simpleFunc_bilin (hm : m ≤ m0) (f : @SimpleFunc α m F)
-    {g : α → E} (hg : Integrable g μ) :
+/-- Auxiliary lemma for `condExp_bilin_of_stronglyMeasurable_left`. -/
+theorem condExp_stronglyMeasurable_simpleFunc_bilin [CompleteSpace E]
+    (hm : m ≤ m0) (f : @SimpleFunc α m F) {g : α → E} (hg : Integrable g μ) :
     μ[fun a ↦ B (f a) (g a)|m] =ᵐ[μ] fun a ↦ B (f a) (μ[g|m] a) := by
   have : ∀ (s c) (f : α → E),
       (fun x ↦ B (Set.indicator s (Function.const α c) x) (f x)) =
@@ -249,9 +249,9 @@ theorem condExp_stronglyMeasurable_simpleFunc_bilin (hm : m ≤ m0) (f : @Simple
       _ =ᵐ[μ] fun a ↦ B (g₁ a) (μ[g|m] a) + B (g₂ a) (μ[g|m] a) := EventuallyEq.add h_eq₁ h_eq₂
       _ =ᵐ[μ] fun a ↦ B ((g₁ + g₂) a) (μ[g|m] a) := by simp
 
-theorem condExp_stronglyMeasurable_bilin_of_bound (hm : m ≤ m0) [IsFiniteMeasure μ]
-    {f : α → F} {g : α → E} (hf : StronglyMeasurable[m] f) (hg : Integrable g μ)
-    (c : ℝ) (hf_bound : ∀ᵐ x ∂μ, ‖f x‖ ≤ c) :
+theorem condExp_stronglyMeasurable_bilin_of_bound [CompleteSpace E]
+    (hm : m ≤ m0) [IsFiniteMeasure μ] {f : α → F} {g : α → E} (hf : StronglyMeasurable[m] f)
+    (hg : Integrable g μ) (c : ℝ) (hf_bound : ∀ᵐ x ∂μ, ‖f x‖ ≤ c) :
     μ[fun a ↦ B (f a) (g a)|m] =ᵐ[μ] fun a ↦ B (f a) (μ[g|m] a) := by
   let fs := hf.approxBounded c
   have hfs_tendsto : ∀ᵐ x ∂μ, Tendsto (fs · x) atTop (𝓝 (f x)) :=
@@ -302,9 +302,10 @@ theorem condExp_stronglyMeasurable_bilin_of_bound (hm : m ≤ m0) [IsFiniteMeasu
       (memLp_one_iff_integrable.2 integrable_condExp)
 
 /-- Pull-out property of the conditional expectation. -/
-theorem condExp_bilin_of_stronglyMeasurable_left {f : α → F} {g : α → E}
+theorem condExp_bilin_of_stronglyMeasurable_left [CompleteSpace E] {f : α → F} {g : α → E}
     (hf : StronglyMeasurable[m] f) (hfg : Integrable (fun x ↦ B (f x) (g x)) μ)
-    (hg : Integrable g μ) : μ[fun x ↦ B (f x) (g x)|m] =ᵐ[μ] fun x ↦ B (f x) (μ[g|m] x) := by
+    (hg : Integrable g μ) :
+    μ[fun x ↦ B (f x) (g x)|m] =ᵐ[μ] fun x ↦ B (f x) (μ[g|m] x) := by
   by_cases hm : m ≤ m0; swap; · exact ae_of_all _ <| by simp [condExp_of_not_le hm]
   by_cases hμm : SigmaFinite (μ.trim hm)
   swap; · exact ae_of_all _ <| by simp [condExp_of_not_sigmaFinite hm hμm]
@@ -342,7 +343,6 @@ theorem condExp_bilin_of_stronglyMeasurable_left {f : α → F} {g : α → E}
   · simpa only [hxs, Set.indicator_of_mem] using h_norm n x hxs
   · simp only [hxs, Set.indicator_of_notMem, not_false_iff, _root_.norm_zero, Nat.cast_nonneg]
 
-omit [CompleteSpace E] in
 /-- Pull-out property of the conditional expectation. -/
 lemma condExp_bilin_of_stronglyMeasurable_right [CompleteSpace F] {f : α → F} {g : α → E}
     (hg : StronglyMeasurable[m] g)
@@ -352,8 +352,8 @@ lemma condExp_bilin_of_stronglyMeasurable_right [CompleteSpace F] {f : α → F}
   exact condExp_bilin_of_stronglyMeasurable_left B.flip hg hfg hf
 
 /-- Pull-out property of the conditional expectation. -/
-theorem condExp_bilin_of_aestronglyMeasurable_left {f : α → F} {g : α → E}
-    (hf : AEStronglyMeasurable[m] f μ)
+theorem condExp_bilin_of_aestronglyMeasurable_left [CompleteSpace E]
+    {f : α → F} {g : α → E} (hf : AEStronglyMeasurable[m] f μ)
     (hfg : Integrable (fun x ↦ B (f x) (g x)) μ) (hg : Integrable g μ) :
     μ[fun x ↦ B (f x) (g x)|m] =ᵐ[μ] fun x ↦ B (f x) (μ[g|m] x) := calc
   μ[fun x ↦ B (f x) (g x)|m]
@@ -367,7 +367,6 @@ theorem condExp_bilin_of_aestronglyMeasurable_left {f : α → F} {g : α → E}
   _ =ᵐ[μ] fun x ↦ B (f x) (μ[g|m] x) := by
     filter_upwards [hf.ae_eq_mk] with a ha using by rw [ha]
 
-omit [CompleteSpace E] in
 /-- Pull-out property of the conditional expectation. -/
 lemma condExp_bilin_of_aestronglyMeasurable_right [CompleteSpace F] {f : α → F} {g : α → E}
     (hg : AEStronglyMeasurable[m] g μ)
@@ -377,14 +376,14 @@ lemma condExp_bilin_of_aestronglyMeasurable_right [CompleteSpace F] {f : α → 
   exact condExp_bilin_of_aestronglyMeasurable_left B.flip hg hfg hf
 
 /-- Pull-out property of the conditional expectation. -/
-theorem condExp_smul_of_aestronglyMeasurable_left {f : α → ℝ} {g : α → E}
+theorem condExp_smul_of_aestronglyMeasurable_left [CompleteSpace E] {f : α → ℝ} {g : α → E}
     (hf : AEStronglyMeasurable[m] f μ) (hfg : Integrable (f • g) μ) (hg : Integrable g μ) :
     μ[f • g|m] =ᵐ[μ] f • μ[g|m] :=
   condExp_bilin_of_aestronglyMeasurable_left
     (ContinuousLinearMap.smulRightL ℝ ℝ E (ContinuousLinearMap.id ℝ ℝ)).flip hf hfg hg
 
 /-- Pull-out property of the conditional expectation. -/
-theorem condExp_smul_of_aestronglyMeasurable_right {f : α → ℝ} {g : α → E}
+theorem condExp_smul_of_aestronglyMeasurable_right [CompleteSpace E] {f : α → ℝ} {g : α → E}
     (hf : Integrable f μ) (hfg : Integrable (f • g) μ) (hg : AEStronglyMeasurable[m] g μ) :
     μ[f • g|m] =ᵐ[μ] μ[f|m] • g :=
   condExp_bilin_of_aestronglyMeasurable_left
