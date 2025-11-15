@@ -291,8 +291,7 @@ variable (K : Set (WeakDual 𝕜 V)) (K_cpt : IsCompact K)
 theorem isSeqCompact_of_bounded_of_closed {s : Set (WeakDual 𝕜 V)}
     (hb : Bornology.IsBounded (StrongDual.toWeakDual ⁻¹' s)) (hc : IsClosed s) :
     IsSeqCompact s := by
-  have b_isCompact : IsCompact s := by
-    exact isCompact_of_bounded_of_closed hb hc
+  have b_isCompact : IsCompact s := isCompact_of_bounded_of_closed hb hc
   have b_isCompact' : CompactSpace s :=
     isCompact_iff_compactSpace.mp b_isCompact
   have b_isMetrizable : TopologicalSpace.MetrizableSpace s :=
