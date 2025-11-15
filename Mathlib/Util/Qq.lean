@@ -17,14 +17,23 @@ open Lean Elab Tactic Meta
 
 namespace Qq
 
+/-- If `e` has type `Sort u` for some level `u`, return `u` and `e : Q(Sort u)`. -/
+def getLevelQ (e : Expr) : MetaM (Σ u : Lean.Level, Q(Sort u)) := do
+  return ⟨← getLevel e, e⟩
+
+/-- If `e` has type `Type u` for some level `u`, return `u` and `e : Q(Type u)`. -/
+def getLevelQ' (e : Expr) : MetaM (Σ u : Lean.Level, Q(Type u)) := do
+  let u ← getLevel e
+  let some v := (← instantiateLevelMVars u).dec | throwError "not a Type{indentExpr e}"
+  return ⟨v, e⟩
+
 /-- Variant of `inferTypeQ` that yields a type in `Type u` rather than `Sort u`.
 Throws an error if the type is a `Prop` or if it's otherwise not possible to represent
 the universe as `Type u` (for example due to universe level metavariables). -/
 -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Using.20.60QQ.60.20when.20you.20only.20have.20an.20.60Expr.60/near/303349037
 def inferTypeQ' (e : Expr) : MetaM ((u : Level) × (α : Q(Type $u)) × Q($α)) := do
   let α ← inferType e
-  let .sort u ← whnf (← inferType α) | throwError "not a type{indentExpr α}"
-  let some v := (← instantiateLevelMVars u).dec | throwError "not a Type{indentExpr e}"
+  let ⟨v, α⟩ ← getLevelQ' α
   pure ⟨v, α, e⟩
 
 theorem QuotedDefEq.rfl {u : Level} {α : Q(Sort u)} {a : Q($α)} : @QuotedDefEq u α a a := ⟨⟩
