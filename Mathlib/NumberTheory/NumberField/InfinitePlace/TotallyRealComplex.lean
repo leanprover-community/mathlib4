@@ -3,8 +3,9 @@ Copyright (c) 2022 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Xavier Roblot
 -/
+import Mathlib.FieldTheory.PrimeField
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
--- import Mathlib.Sandbox
+
 
 /-!
 # Totally real and totally complex number fields
@@ -32,7 +33,7 @@ open InfinitePlace Module
 
 section TotallyRealField
 
-/-
+/-⊤
 
 ## Totally real number fields
 
@@ -99,9 +100,8 @@ instance _root_.IntermediateField.isTotallyReal_bot [CharZero K] :
 
 instance _root_.Subfield.isTotallyReal_bot [CharZero K] :
       IsTotallyReal (⊥ : Subfield K) := by
-  sorry
-  -- rw [Subfield.bot_eq_of_charZero]
-  -- exact IsTotallyReal.ofRingEquiv (algebraMap ℚ K).rangeRestrictFieldEquiv
+  rw [Subfield.bot_eq_of_charZero]
+  exact IsTotallyReal.ofRingEquiv (algebraMap ℚ K).rangeRestrictFieldEquiv
 
 section maximalRealSubfield
 
