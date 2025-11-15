@@ -228,8 +228,8 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
     linear_combination 4 * (a - 1) * pythag
 
 theorem stereo_right_inv (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : stereoToFun v (stereoInvFun hv w) = w := by
-  simp only [stereoToFun, stereoInvFun, stereoInvFunAux, smul_add, map_add, map_smul, innerSL_apply,
-    Submodule.orthogonalProjection_mem_subspace_eq_self]
+  simp only [stereoToFun, stereoInvFun, stereoInvFunAux, smul_add, map_add, map_smul,
+    innerSL_apply_apply, Submodule.orthogonalProjection_mem_subspace_eq_self]
   have h₁ : (ℝ ∙ v)ᗮ.orthogonalProjection v = 0 :=
     Submodule.orthogonalProjection_orthogonalComplement_singleton_eq_zero v
   have h₂ : ⟪v, w⟫ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
@@ -405,7 +405,7 @@ instance EuclideanSpace.instIsManifoldSphere
       simp only [modelWithCornersSelf_coe, modelWithCornersSelf_coe_symm,
         Set.range_id, Set.inter_univ, Set.univ_inter, Set.compl_singleton_eq, Set.preimage_setOf_eq]
       simp only [id, comp_apply, Submodule.subtypeL_apply, OpenPartialHomeomorph.coe_coe_symm,
-        innerSL_apply, Ne, sphere_ext_iff, real_inner_comm (v' : E)]
+        innerSL_apply_apply, Ne, sphere_ext_iff, real_inner_comm (v' : E)]
       rfl)
 
 instance (n : ℕ) : IsManifold (𝓡 n) ω (sphere (0 :  EuclideanSpace ℝ (Fin (n + 1))) 1) :=
