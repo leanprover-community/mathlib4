@@ -42,7 +42,9 @@ variable {R : Type*} [CommSemiring R]
 /-- Generating function associated with character $f(i, c)$ for partition functions, where $i$ is a
 part of the partition, and $c$ is the count of that part in the partition. The character function is
 multiplied within one `n.Partition`, and summed among all `n.Partition` for a fixed `n`. This way,
-each `n` is assigned a value, which we use as the coefficients of the power series. -/
+each `n` is assigned a value, which we use as the coefficients of the power series.
+
+See the module docstring of `Combinatorics.Enumerative.Partition.GenFun` for more details. -/
 def genFun (f : ℕ → ℕ → R) : R⟦X⟧ :=
   PowerSeries.mk fun n ↦ ∑ p : n.Partition, ∏ i ∈ p.parts.toFinset, f i (p.parts.count i)
 
@@ -163,5 +165,13 @@ theorem hasProd_genFun (f : ℕ → ℕ → R) :
     exact mem_of_subset (finsuppAntidiag_mono hs.le _) p.toFinsuppAntidiag_mem_finsuppAntidiag
   · exact fun g hg hg' ↦ aux_prod_coeff_eq_zero_of_notMem_range f (by simp) hg (by simpa using hg')
   · exact fun p _ ↦ aux_prod_f_eq_prod_coeff f p hs.le (by simp)
+
+theorem multipliable_genFun (f : ℕ → ℕ → R) :
+    Multipliable fun i ↦ (1 : R⟦X⟧) + ∑' j, f (i + 1) (j + 1) • X ^ ((i + 1) * (j + 1)) :=
+  (hasProd_genFun f).multipliable
+
+theorem genFun_eq_tprod (f : ℕ → ℕ → R) :
+    genFun f = ∏' i, (1 + ∑' j, f (i + 1) (j + 1) • X ^ ((i + 1) * (j + 1))) :=
+  (hasProd_genFun f).tprod_eq.symm
 
 end Nat.Partition
