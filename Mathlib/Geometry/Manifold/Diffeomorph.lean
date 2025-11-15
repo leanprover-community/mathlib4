@@ -702,6 +702,54 @@ def sumAssoc : Diffeomorph I I ((M ⊕ M') ⊕ M'') (M ⊕ (M' ⊕ M'')) n where
 theorem sumAssoc_coe :
     (sumAssoc I M n M' M'' : (M ⊕ M') ⊕ M'' → M ⊕ (M' ⊕ M'')) = Equiv.sumAssoc M M' M'' := rfl
 
+variable (I M M' N N' n) in
+def sumSumSumComm : Diffeomorph I I ((M ⊕ M') ⊕ N ⊕ N') ((M ⊕ N) ⊕ M' ⊕ N') n where
+  toEquiv := Equiv.sumSumSumComm M M' N N'
+  contMDiff_toFun := by
+    -- Please, tell me there is a tactic for this!
+    -- better approach: compose the relevant diffeomorphisms instead
+    dsimp [Equiv.sumSumSumComm]
+    -- change ContMDiff I I n ((Diffeomorph.sumAssoc I (M ⊕ N) n M' N') ∘
+    --   (Diffeomorph.sumCongr ((Diffeomorph.sumAssoc I M n N M').symm) (Diffeomorph.refl I N' n)) ∘
+    --   Diffeomorph.sumCongr
+    --     (Diffeomorph.sumCongr (Diffeomorph.refl I M n) (Diffeomorph.sumComm I M' n N))
+    --     (Diffeomorph.refl I _ n) ∘
+    --   (Diffeomorph.sumCongr (Diffeomorph.sumAssoc I M n M' N) (Diffeomorph.refl I _ n)) ∘
+    --   (Diffeomorph.sumAssoc I (M ⊕ M') n N N').symm)
+    apply ContMDiff.comp (I' := I)
+    · exact Diffeomorph.contMDiff (sumAssoc I (M ⊕ N) n M' N')
+    · apply ContMDiff.comp (I' := I)
+      · exact Diffeomorph.contMDiff ((sumAssoc I M n N M').symm.sumCongr (Diffeomorph.refl I N' n))
+      · apply ContMDiff.comp (I' := I)
+        · exact Diffeomorph.contMDiff
+            (((Diffeomorph.refl I M n).sumCongr (sumComm I M' n N)).sumCongr
+              (Diffeomorph.refl I N' n))
+        · apply ContMDiff.comp (I' := I)
+          · exact Diffeomorph.contMDiff ((sumAssoc I M n M' N).sumCongr (Diffeomorph.refl I N' n))
+          · exact Diffeomorph.contMDiff (sumAssoc I (M ⊕ M') n N N').symm
+  contMDiff_invFun := by
+    change ContMDiff I I n ((sumAssoc I (M ⊕ M') n N N') ∘
+      Sum.map (sumAssoc I M n M' N).symm (Diffeomorph.refl I N' n) ∘
+      Sum.map (sumCongr (Diffeomorph.refl I M n) (sumComm I N n M')) (Diffeomorph.refl I N' n) ∘
+      Sum.map (sumAssoc I M n N M') (Diffeomorph.refl I N' n) ∘
+      (sumAssoc I (M ⊕ N) n M' N').symm)
+    apply ContMDiff.comp (I' := I)
+    · apply Diffeomorph.contMDiff
+    · sorry -- apply ContMDiff.comp (I' := I) leads astray here
+      -- could change again... but is the wrong approach!
+
+@[simp, mfld_simps]
+theorem sumSumSumComm_coe :
+  (sumSumSumComm I M n M' N N').toEquiv = Equiv.sumSumSumComm M M' N N' := rfl
+
+@[simp, mfld_simps]
+theorem sumSumSumComm_apply (x : (M ⊕ M') ⊕ N ⊕ N') :
+  (sumSumSumComm I M n M' N N') x = (Equiv.sumSumSumComm M M' N N') x := rfl
+
+@[simp, mfld_simps]
+theorem sumSumSumComm_symm :
+  (sumSumSumComm I M n M' N N').symm = sumSumSumComm I M n N M' N' := rfl
+
 variable (I M n) in
 /-- The canonical diffeomorphism `M ⊕ ∅ → M` -/
 def sumEmpty [IsEmpty M'] : Diffeomorph I I (M ⊕ M') M n where
@@ -715,7 +763,7 @@ theorem sumEmpty_toEquiv [IsEmpty M'] : (sumEmpty I M n).toEquiv = Equiv.sumEmpt
 @[simp, mfld_simps]
 lemma sumEmpty_apply_inl [IsEmpty M'] (x : M) : (sumEmpty I M (M' := M') n) (Sum.inl x) = x := rfl
 
-/-- The unique diffeomorphism between two empty types -/
+/-- The unique diffeomorphism between two empty types. -/
 protected def empty [IsEmpty M] [IsEmpty M'] : Diffeomorph I I M M' n where
   __ := Equiv.equivOfIsEmpty M M'
   contMDiff_toFun x := (IsEmpty.false x).elim
