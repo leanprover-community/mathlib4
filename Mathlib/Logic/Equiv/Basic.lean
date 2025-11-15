@@ -7,8 +7,6 @@ import Mathlib.Logic.Equiv.Option
 import Mathlib.Logic.Equiv.Sum
 import Mathlib.Logic.Function.Conjugate
 import Mathlib.Tactic.Lift
-import Mathlib.Util.TransImports
-import Mathlib.Data.Set.Operations
 
 /-!
 # Equivalence between types
