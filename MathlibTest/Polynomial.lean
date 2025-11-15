@@ -1,5 +1,9 @@
 import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.Algebra.Module.ULift
+import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.Tactic.Polynomial.Basic
+
+section native_decide
 
 open Polynomial
 
@@ -40,3 +44,44 @@ def pu1 : (ULift.{1} ℕ)[X] :=
   ⟨⟨{1}, Pi.single 1 (ULift.up 37),
     by intro; simp [Pi.single, Function.update_apply, ←ULift.down_inj]⟩⟩
 example : reprStr pu1 = "C (ULift.up 37) * X" := by native_decide
+
+
+
+end native_decide
+
+/-! # The `polynomial Tactic -/
+
+axiom sorryPolynomialTest {P : Prop} : P
+section poly
+open _root_.Polynomial
+
+example (a : ℚ) : (X + C a)^2 = X^2 + C (2*a) * X +  C (a^2) := by
+  polynomial
+
+example (a : ℚ) : (X + C a)^2 = X^2 + (2*a) • X +  C (a^2) := by
+  polynomial
+
+example (a : ℚ) : (2*X + C a)^2 = 4 * monomial 2 1 + monomial 1 (4*a) + monomial 0 (a^2) := by
+  polynomial
+
+example (a : ℚ) : (X - C a)*(X + C a) = X^2 - C (a^2) := by
+  polynomial
+
+end poly
+
+section mvpoly
+open _root_.MvPolynomial
+
+example (a : ℚ) : (X 0 + C a)^2 = X 0^2 + C (2*a) * X 0 +  C (a^2) := by
+  polynomial
+
+example (a : ℚ) : (X 0 + C a)^2 = X 0^2 + (2*a) • X 0 +  C (a^2) := by
+  polynomial
+
+example (a : ℚ) : (X 0 - C a)*(X 0 + C a) = (X 0)^2 - C (a^2) := by
+  polynomial
+
+example (a : ℚ) : (X 0 - X 1 * C a)*(X 0 + X 1 * C a) = (X 0)^2 - (X 1) ^ 2 * C (a^2) := by
+  polynomial
+
+end mvpoly
