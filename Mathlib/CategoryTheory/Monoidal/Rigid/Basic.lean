@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
 import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
-import Mathlib.CategoryTheory.Closed.Monoidal
+import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 import Mathlib.Tactic.ApplyFun
 
 /-!
