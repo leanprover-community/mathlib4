@@ -7,6 +7,7 @@ import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.Analysis.Normed.Operator.Completeness
 import Mathlib.Topology.Algebra.Module.WeakDual
 import Mathlib.Topology.MetricSpace.PiNat
+
 /-!
 # Weak dual of normed space
 
