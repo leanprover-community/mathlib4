@@ -46,7 +46,7 @@ each `n` is assigned a value, which we use as the coefficients of the power seri
 
 See the module docstring of `Combinatorics.Enumerative.Partition.GenFun` for more details. -/
 def genFun (f : ℕ → ℕ → R) : R⟦X⟧ :=
-  PowerSeries.mk fun n ↦ ∑ p : n.Partition, p.parts.toFinsupp.prod (f · ·)
+  PowerSeries.mk fun n ↦ ∑ p : n.Partition, p.parts.toFinsupp.prod f
 
 variable [TopologicalSpace R]
 
@@ -122,7 +122,7 @@ private theorem aux_prod_coeff_eq_zero_of_notMem_range (f : ℕ → ℕ → R) {
 
 private theorem aux_prod_f_eq_prod_coeff (f : ℕ → ℕ → R) {n : ℕ} (p : Partition n) {s : Finset ℕ}
     (hs : Icc 1 n ⊆ s) (hs0 : 0 ∉ s) :
-    p.parts.toFinsupp.prod (f · ·) =
+    p.parts.toFinsupp.prod f =
     ∏ i ∈ s, coeff (p.toFinsuppAntidiag i) (1 + ∑' j, f i (j + 1) • X ^ (i * (j + 1))) := by
   simp_rw [Finsupp.prod, Multiset.toFinsupp_support, Multiset.toFinsupp_apply]
   apply prod_subset_one_on_sdiff
