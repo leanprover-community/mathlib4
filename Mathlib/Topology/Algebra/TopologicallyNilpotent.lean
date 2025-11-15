@@ -79,9 +79,9 @@ theorem exists_pow_mem_of_mem_nhds {a : R} (ha : IsTopologicallyNilpotent a)
 
 end MonoidWithZero
 
-section Ring
+section Semiring
 
-variable {R : Type*} [TopologicalSpace R] [Ring R]
+variable {R : Type*} [TopologicalSpace R] [Semiring R]
 
 /-- If `a` and `b` commute and `a` is topologically nilpotent,
   then `a * b` is topologically nilpotent. -/
@@ -112,11 +112,11 @@ theorem add_of_commute [IsLinearTopology R R] {a b : R}
   exact ⟨na + nb, fun m hm ↦
     I.add_pow_mem_of_pow_mem_of_le_of_commute ha hb (le_trans hm (Nat.le_add_right _ _)) h⟩
 
-end Ring
+end Semiring
 
-section CommRing
+section CommSemiring
 
-variable {R : Type*} [TopologicalSpace R] [CommRing R] [IsLinearTopology R R]
+variable {R : Type*} [TopologicalSpace R] [CommSemiring R] [IsLinearTopology R R]
 
 /-- If `a` is topologically nilpotent, then `a * b` is topologically nilpotent. -/
 theorem mul_right {a : R} (ha : IsTopologicallyNilpotent a) (b : R) :
@@ -146,6 +146,6 @@ theorem mem_topologicalNilradical_iff {a : R} :
     a ∈ topologicalNilradical R ↔ IsTopologicallyNilpotent a := by
   simp [topologicalNilradical]
 
-end CommRing
+end CommSemiring
 
 end IsTopologicallyNilpotent

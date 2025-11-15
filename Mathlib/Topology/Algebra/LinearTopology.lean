@@ -82,7 +82,9 @@ namespace IsLinearTopology
 
 section Module
 
-variable {R R' M : Type*} [Ring R] [Ring R'] [AddCommGroup M] [Module R M] [Module R' M]
+section Semi
+
+variable {R R' M : Type*} [Semiring R] [Semiring R'] [AddCommMonoid M] [Module R M] [Module R' M]
   [SMulCommClass R R' M] [TopologicalSpace M]
 
 variable (R M) in
@@ -103,14 +105,6 @@ variable (R) in
 lemma hasBasis_submodule [IsLinearTopology R M] : (𝓝 (0 : M)).HasBasis
     (fun N : Submodule R M ↦ (N : Set M) ∈ 𝓝 0) (fun N : Submodule R M ↦ (N : Set M)) :=
   IsLinearTopology.hasBasis_submodule'
-
-variable (R) in
-lemma hasBasis_open_submodule [ContinuousAdd M] [IsLinearTopology R M] :
-    (𝓝 (0 : M)).HasBasis
-      (fun N : Submodule R M ↦ IsOpen (N : Set M)) (fun N : Submodule R M ↦ (N : Set M)) :=
-  hasBasis_submodule R |>.congr
-    (fun N ↦ ⟨N.toAddSubgroup.isOpen_of_mem_nhds, fun hN ↦ hN.mem_nhds (zero_mem N)⟩)
-    (fun _ _ ↦ rfl)
 
 variable (R) in
 /-- A variant of `IsLinearTopology.mk_of_hasBasis` asking for an explicit proof that `S`
@@ -149,11 +143,6 @@ theorem _root_.isLinearTopology_iff_hasBasis_submodule :
       (fun N : Submodule R M ↦ (N : Set M) ∈ 𝓝 0) (fun N : Submodule R M ↦ (N : Set M)) :=
   ⟨fun _ ↦ hasBasis_submodule R, fun h ↦ .mk_of_hasBasis R h⟩
 
-theorem _root_.isLinearTopology_iff_hasBasis_open_submodule [ContinuousAdd M] :
-    IsLinearTopology R M ↔ (𝓝 0).HasBasis
-      (fun N : Submodule R M ↦ IsOpen (N : Set M)) (fun N : Submodule R M ↦ (N : Set M)) :=
-  ⟨fun _ ↦ hasBasis_open_submodule R, fun h ↦ .mk_of_hasBasis R h⟩
-
 /-- The discrete topology on any `R`-module is `R`-linear. -/
 instance [DiscreteTopology M] : IsLinearTopology R M :=
   have : HasBasis (𝓝 0 : Filter M) (fun _ ↦ True) (fun (_ : Unit) ↦ (⊥ : Submodule R M)) := by
@@ -161,7 +150,7 @@ instance [DiscreteTopology M] : IsLinearTopology R M :=
     exact hasBasis_pure _
   mk_of_hasBasis R this
 
-variable (R R') in
+variable (R R' M) in
 open Set Pointwise in
 /-- Assume that `M` is a module over two rings `R` and `R'`, and that its topology
 is linear with respect to each of these rings. Then, it has a basis of neighborhoods of zero
@@ -170,13 +159,13 @@ made of sub-`(R, R')`-bimodules.
 The proof is inspired by lemma 9 in [I. Kaplansky, *Topological Rings*](kaplansky_topological_1947).
 TODO: Formalize the lemma in its full strength.
 
-Note: due to the lack of a satisfying theory of sub-bimodules, we use `AddSubgroup`s with
+Note: due to the lack of a satisfying theory of sub-bimodules, we use `AddSubmonoid`s with
 extra conditions. -/
-lemma hasBasis_subbimodule [IsLinearTopology R M] [IsLinearTopology R' M] :
+lemma hasBasis_subbimodule' [IsLinearTopology R M] [IsLinearTopology R' M] :
     (𝓝 (0 : M)).HasBasis
-      (fun I : AddSubgroup M ↦ (I : Set M) ∈ 𝓝 0 ∧
+      (fun I : AddSubmonoid M ↦ (I : Set M) ∈ 𝓝 0 ∧
         (∀ r : R, ∀ x ∈ I, r • x ∈ I) ∧ (∀ r' : R', ∀ x ∈ I, r' • x ∈ I))
-      (fun I : AddSubgroup M ↦ (I : Set M)) := by
+      (fun I : AddSubmonoid M ↦ (I : Set M)) := by
   -- Start from a neighborhood `V`. It contains some open sub-`R`-module `I`.
   refine IsLinearTopology.hasBasis_submodule R |>.to_hasBasis (fun I hI ↦ ?_)
     (fun I hI ↦ ⟨{I with smul_mem' := fun r x hx ↦ hI.2.1 r x hx}, hI.1, subset_rfl⟩)
@@ -206,36 +195,20 @@ lemma hasBasis_subbimodule [IsLinearTopology R M] [IsLinearTopology R' M] :
     uR' • S = uR' • (J : Set M) ∪ uR • uR' • (J : Set M) := by simp_rw [S, smul_union, smul_comm]
     _ ⊆ J ∪ uR • J := by gcongr
     _ = S := rfl
-  set A : AddSubgroup M := .closure S
+  set A : AddSubmonoid M := .closure S
   have hRA : ∀ r : R, ∀ i ∈ A, r • i ∈ A := fun r i hi ↦ by
-    refine AddSubgroup.closure_induction (fun x hx => ?base) ?zero (fun x y _ _ hx hy ↦ ?add)
-      (fun x _ hx ↦ ?neg) hi
-    case base => exact AddSubgroup.subset_closure <| hRS <| Set.smul_mem_smul trivial hx
+    refine AddSubmonoid.closure_induction (fun x hx => ?base) ?zero (fun x y _ _ hx hy ↦ ?add) hi
+    case base => exact AddSubmonoid.subset_closure <| hRS <| Set.smul_mem_smul trivial hx
     case zero => simp_rw [smul_zero]; exact zero_mem _
     case add => simp_rw [smul_add]; exact add_mem hx hy
-    case neg => simp_rw [smul_neg]; exact neg_mem hx
   have hR'A : ∀ r' : R', ∀ i ∈ A, r' • i ∈ A := fun r' i hi ↦ by
-    refine AddSubgroup.closure_induction (fun x hx => ?base) ?zero (fun x y _ _ hx hy ↦ ?add)
-      (fun x _ hx ↦ ?neg) hi
-    case base => exact AddSubgroup.subset_closure <| hR'S <| Set.smul_mem_smul trivial hx
+    refine AddSubmonoid.closure_induction (fun x hx => ?base) ?zero (fun x y _ _ hx hy ↦ ?add) hi
+    case base => exact AddSubmonoid.subset_closure <| hR'S <| Set.smul_mem_smul trivial hx
     case zero => simp_rw [smul_zero]; exact zero_mem _
     case add => simp_rw [smul_add]; exact add_mem hx hy
-    case neg => simp_rw [smul_neg]; exact neg_mem hx
-  have A_sub_I : (A : Set M) ⊆ I := I.toAddSubgroup.closure_le.mpr S_sub_I
-  have J_sub_A : (J : Set M) ⊆ A := subset_trans subset_union_left AddSubgroup.subset_closure
+  have A_sub_I : (A : Set M) ⊆ I := I.toAddSubmonoid.closure_le.mpr S_sub_I
+  have J_sub_A : (J : Set M) ⊆ A := subset_trans subset_union_left AddSubmonoid.subset_closure
   exact ⟨A, ⟨mem_of_superset hJ J_sub_A, hRA, hR'A⟩, A_sub_I⟩
-
-variable (R R') in
-open Set Pointwise in
-/-- A variant of `IsLinearTopology.hasBasis_subbimodule` using `IsOpen I` instead of `I ∈ 𝓝 0`. -/
-lemma hasBasis_open_subbimodule [ContinuousAdd M] [IsLinearTopology R M] [IsLinearTopology R' M] :
-    (𝓝 (0 : M)).HasBasis
-      (fun I : AddSubgroup M ↦ IsOpen (I : Set M) ∧
-        (∀ r : R, ∀ x ∈ I, r • x ∈ I) ∧ (∀ r' : R', ∀ x ∈ I, r' • x ∈ I))
-      (fun I : AddSubgroup M ↦ (I : Set M)) :=
-  hasBasis_subbimodule R R' |>.congr
-    (fun N ↦ and_congr_left' ⟨N.isOpen_of_mem_nhds, fun hN ↦ hN.mem_nhds (zero_mem N)⟩)
-    (fun _ _ ↦ rfl)
 
 -- Even though `R` can be recovered from `a`, the nature of this lemma means that `a` will
 -- often be left for Lean to infer, so making `R` explicit is useful in practice.
@@ -261,33 +234,99 @@ theorem _root_.IsCentralScalar.isLinearTopology_iff [Module Rᵐᵒᵖ M] [IsCen
   · exact mk_of_hasBasis' Rᵐᵒᵖ (IsLinearTopology.hasBasis_submodule R)
       fun S r m hm ↦ unop_smul_eq_smul r m ▸ S.smul_mem _ hm
 
+end Semi
+
+variable {R R' M : Type*} [Ring R] [Ring R'] [AddCommGroup M] [Module R M] [Module R' M]
+  [SMulCommClass R R' M] [TopologicalSpace M]
+
+variable (R) in
+lemma hasBasis_open_submodule [ContinuousAdd M] [IsLinearTopology R M] :
+    (𝓝 (0 : M)).HasBasis
+      (fun N : Submodule R M ↦ IsOpen (N : Set M)) (fun N : Submodule R M ↦ (N : Set M)) :=
+  hasBasis_submodule R |>.congr
+    (fun N ↦ ⟨N.toAddSubgroup.isOpen_of_mem_nhds, fun hN ↦ hN.mem_nhds (zero_mem N)⟩)
+    (fun _ _ ↦ rfl)
+
+theorem _root_.isLinearTopology_iff_hasBasis_open_submodule [ContinuousAdd M] :
+    IsLinearTopology R M ↔ (𝓝 0).HasBasis
+      (fun N : Submodule R M ↦ IsOpen (N : Set M)) (fun N : Submodule R M ↦ (N : Set M)) :=
+  ⟨fun _ ↦ hasBasis_open_submodule R, fun h ↦ .mk_of_hasBasis R h⟩
+
+variable (R R') in
+open Set Pointwise in
+/-- Assume that `M` is a module over two rings `R` and `R'`, and that its topology
+is linear with respect to each of these rings. Then, it has a basis of neighborhoods of zero
+made of sub-`(R, R')`-bimodules.
+
+The proof is inspired by lemma 9 in [I. Kaplansky, *Topological Rings*](kaplansky_topological_1947).
+TODO: Formalize the lemma in its full strength.
+
+Note: due to the lack of a satisfying theory of sub-bimodules, we use `AddSubmonoid`s with
+extra conditions. -/
+lemma hasBasis_subbimodule [IsLinearTopology R M] [IsLinearTopology R' M] :
+    (𝓝 (0 : M)).HasBasis
+      (fun I : AddSubgroup M ↦ (I : Set M) ∈ 𝓝 0 ∧
+        (∀ r : R, ∀ x ∈ I, r • x ∈ I) ∧ (∀ r' : R', ∀ x ∈ I, r' • x ∈ I))
+      (fun I : AddSubgroup M ↦ (I : Set M)) :=
+  hasBasis_subbimodule' R R' M |>.to_hasBasis
+    (fun A hA ↦ ⟨{A with neg_mem' hx := by simpa using hA.2.1 (-1) _ hx}, by simpa using hA⟩)
+    (fun A hA ↦ ⟨A.toAddSubmonoid, by simpa using hA⟩)
+
+variable (R R') in
+open Set Pointwise in
+/-- A variant of `IsLinearTopology.hasBasis_subbimodule` using `IsOpen I` instead of `I ∈ 𝓝 0`. -/
+lemma hasBasis_open_subbimodule [ContinuousAdd M] [IsLinearTopology R M] [IsLinearTopology R' M] :
+    (𝓝 (0 : M)).HasBasis
+      (fun I : AddSubgroup M ↦ IsOpen (I : Set M) ∧
+        (∀ r : R, ∀ x ∈ I, r • x ∈ I) ∧ (∀ r' : R', ∀ x ∈ I, r' • x ∈ I))
+      (fun I : AddSubgroup M ↦ (I : Set M)) :=
+  hasBasis_subbimodule R R' |>.congr
+    (fun N ↦ and_congr_left' ⟨N.isOpen_of_mem_nhds, fun hN ↦ hN.mem_nhds (zero_mem N)⟩)
+    (fun _ _ ↦ rfl)
+
 end Module
 
 section Ring
 
-variable {R : Type*} [Ring R] [TopologicalSpace R]
+section Semi
+
+variable {R : Type*} [Semiring R] [TopologicalSpace R]
 
 theorem hasBasis_ideal [IsLinearTopology R R] :
     (𝓝 0).HasBasis (fun I : Ideal R ↦ (I : Set R) ∈ 𝓝 0) (fun I : Ideal R ↦ (I : Set R)) :=
   hasBasis_submodule R
-
-theorem hasBasis_open_ideal [ContinuousAdd R] [IsLinearTopology R R] :
-    (𝓝 0).HasBasis (fun I : Ideal R ↦ IsOpen (I : Set R)) (fun I : Ideal R ↦ (I : Set R)) :=
-  hasBasis_open_submodule R
 
 theorem _root_.isLinearTopology_iff_hasBasis_ideal :
     IsLinearTopology R R ↔ (𝓝 0).HasBasis
       (fun I : Ideal R ↦ (I : Set R) ∈ 𝓝 0) (fun I : Ideal R ↦ (I : Set R)) :=
   isLinearTopology_iff_hasBasis_submodule
 
+theorem hasBasis_right_ideal [IsLinearTopology Rᵐᵒᵖ R] :
+    (𝓝 0).HasBasis (fun I : Submodule Rᵐᵒᵖ R ↦ (I : Set R) ∈ 𝓝 0) (fun I ↦ (I : Set R)) :=
+  hasBasis_submodule Rᵐᵒᵖ
+
+theorem tendsto_mul_zero_of_left [IsLinearTopology Rᵐᵒᵖ R] {ι : Type*} {f : Filter ι}
+    (a b : ι → R) (ha : Tendsto a f (𝓝 0)) :
+    Tendsto (a * b) f (𝓝 0) :=
+  tendsto_smul_zero (R := Rᵐᵒᵖ) _ _ ha
+
+theorem tendsto_mul_zero_of_right [IsLinearTopology R R] {ι : Type*} {f : Filter ι}
+    (a b : ι → R) (hb : Tendsto b f (𝓝 0)) :
+    Tendsto (a * b) f (𝓝 0) :=
+  tendsto_smul_zero (R := R) _ _ hb
+
+end Semi
+
+variable {R : Type*} [Ring R] [TopologicalSpace R]
+
+theorem hasBasis_open_ideal [ContinuousAdd R] [IsLinearTopology R R] :
+    (𝓝 0).HasBasis (fun I : Ideal R ↦ IsOpen (I : Set R)) (fun I : Ideal R ↦ (I : Set R)) :=
+  hasBasis_open_submodule R
+
 theorem _root_.isLinearTopology_iff_hasBasis_open_ideal [IsTopologicalRing R] :
     IsLinearTopology R R ↔ (𝓝 0).HasBasis
       (fun I : Ideal R ↦ IsOpen (I : Set R)) (fun I : Ideal R ↦ (I : Set R)) :=
   isLinearTopology_iff_hasBasis_open_submodule
-
-theorem hasBasis_right_ideal [IsLinearTopology Rᵐᵒᵖ R] :
-    (𝓝 0).HasBasis (fun I : Submodule Rᵐᵒᵖ R ↦ (I : Set R) ∈ 𝓝 0) (fun I ↦ (I : Set R)) :=
-  hasBasis_submodule Rᵐᵒᵖ
 
 open Set Pointwise in
 /-- If a ring `R` is linearly ordered as a left *and* right module over itself,
@@ -327,21 +366,11 @@ theorem _root_.isLinearTopology_iff_hasBasis_open_twoSidedIdeal [ContinuousAdd R
     ⟨.mk_of_hasBasis' R h fun I r x hx ↦ I.mul_mem_left r x hx,
       .mk_of_hasBasis' Rᵐᵒᵖ h fun I r x hx ↦ I.mul_mem_right x r.unop hx⟩⟩
 
-theorem tendsto_mul_zero_of_left [IsLinearTopology Rᵐᵒᵖ R] {ι : Type*} {f : Filter ι}
-    (a b : ι → R) (ha : Tendsto a f (𝓝 0)) :
-    Tendsto (a * b) f (𝓝 0) :=
-  tendsto_smul_zero (R := Rᵐᵒᵖ) _ _ ha
-
-theorem tendsto_mul_zero_of_right [IsLinearTopology R R] {ι : Type*} {f : Filter ι}
-    (a b : ι → R) (hb : Tendsto b f (𝓝 0)) :
-    Tendsto (a * b) f (𝓝 0) :=
-  tendsto_smul_zero (R := R) _ _ hb
-
 end Ring
 
 section CommRing
 
-variable {R M : Type*} [CommRing R] [TopologicalSpace R]
+variable {R M : Type*} [CommSemiring R] [TopologicalSpace R]
 
 /-- If `R` is commutative and left-linearly topologized, it is also right-linearly topologized. -/
 instance (priority := 100) [IsLinearTopology R R] :
