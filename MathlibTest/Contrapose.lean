@@ -44,3 +44,8 @@ example (p : Prop) (h : p) : p := by
 example (p q : Type) (h : p → q) : p → q := by
   fail_if_success { contrapose }
   exact h
+
+example (p q r : Prop) (h' : ¬p ∨ ¬q) (h : p ∧ q) : r := by
+  fail_if_success contrapose! +fdsewfjdsk h
+  contrapose! +distrib h
+  exact h'
