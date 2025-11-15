@@ -249,13 +249,7 @@ def orderCore (only? : Bool) (hyps : Array Expr) (negGoal : Expr) (g : MVarId) :
         return
       -- if fast procedure failed and order is linear, we try `omega`
       if orderType == .lin then
-        let u ← mkFreshLevelMVar
-        let expectedType : Expr := .sort u.succ
-        if !(← isDefEq (← inferType type) expectedType) then
-          let e := "Translation to `Int` failed: unexpected Prop instead of type."
-          trace[order] e
-          throwError e
-        let type : Q(Type u) := type
+        let ⟨u, type⟩ ← getLevelQ' type
         let instLinearOrder ← synthInstanceQ q(LinearOrder $type)
         -- Here we only need to translate the hypotheses,
         -- since the goal will remain to derive `False`.
