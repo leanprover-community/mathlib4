@@ -51,19 +51,15 @@ Suppose `{sᵢ}` is a local frame on `U`, and `hs : IsLocalFrameOn s U`.
   only depends on `t` at `x`.
 * `IsLocalFrameOn.eq_iff_coeff hs`: two sections `t` and `t'` are equal at `x` if and only if their
   coefficients at `x` w.r.t. `{sᵢ}` agree.
-* `IsLocalFrameOn.contMDiffOn_of_coeff hs`: a section `t` is `C^k` on `U` if each coefficient
-  `hs.coeff i t` is `C^k` on `U`
-* `IsLocalFrameOn.contMDiffAt_of_coeff hs`: a section `t` is `C^k` at `x ∈ U`
-  if all of its frame coefficients are
-* `IsLocalFrameOn.contMDiffOn_off_coeff hs`: a section `t` is `C^k` on an open set `t ⊆ U`
-  ff all of its frame coefficients are
-* `MDifferentiable` versions of the above three statements
-
-# TODO
-* `IsLocalFrameOn.contMDiffOn_coeff hs`: if `t` is a `C^k` section, each coefficient
+* `IsLocalFrameOn.contMDiffOn_coeff hs`: if a section `t` is `C^k` on `U`, each coefficient
   `hs.coeff i t` is `C^k` on `U`
 * `IsLocalFrameOn.contMDiffAt_iff_coeff hs`: a section `t` is `C^k` at `x ∈ U`
   iff all of its frame coefficients are
+* `IsLocalFrameOn.contMDiffOn_iff_coeff hs`: a section `t` is `C^k` on an open set `t ⊆ U`
+  iff all of its frame coefficients are
+* `MDifferentiable` versions of the above three statements
+
+# TODO
 * `IsLocalFrameOn.contMDiffOn_iff_coeff hs`: a section `t` is `C^k` on an open set `t ⊆ U`
   iff all of its frame coefficients are
 * a `MDifferentiable` version of each of these
@@ -247,6 +243,32 @@ lemma contMDiffAt_of_coeff_aux [Fintype ι] (h : ∀ i, CMDiffAt n (hs.coeff i t
     (hu : IsOpen u) (hx : x ∈ u) : CMDiffAt n (T% t) x :=
   hs.contMDiffAt_of_coeff h (hu.mem_nhds hx)
 
+/-- Given a local frame `s i` on a neighbourhood `u` of `x`, if a section `t` is `C^k` at `x`,
+each coefficient of `t` w.r.t. `s i` is `C^k` at `x`. -/
+lemma contMDiffAt_coeff [Fintype ι] (ht : CMDiffAt n (T% t) x) (hx : u ∈ 𝓝 x) (i : ι) :
+    CMDiffAt n (hs.coeff i t) x := by
+  -- TODO think how to prove this. works for standard local frames; also here??
+  sorry
+
+/-- Given a local frame `s i` on `u`, if a section `t` is `C^k` on `u`, each coefficient of `t`
+w.r.t. `s i` is `C^k` on `u`. -/
+lemma contMDiffOn_coeff [Fintype ι] (ht : CMDiff[u] n (T% t)) (i : ι) :
+    CMDiff[u] n (hs.coeff i t) := by
+  -- TODO think how to prove this. works for standard local frames; also here??
+  sorry
+
+/-- Given a local frame `s i ` on `u`, a section `t` has `C^k` coefficients on `u` w.r.t. `s i`
+iff `t` is `C^n` on `u`. -/
+lemma contMDiffOn_iff_coeff [Fintype ι] :
+    (∀ i, CMDiff[u] n (hs.coeff i t)) ↔ CMDiff[u] n (T% t) :=
+  ⟨fun h ↦ contMDiffOn_of_coeff hs h, fun h ht ↦ contMDiffOn_coeff hs h ht⟩
+
+/-- Given a local frame `s i` on a neighbourhood `u` of `x`,
+a section `t` has `C^k` coefficients at `x` w.r.t. `s i` iff `t` is `C^n` at `x`. -/
+lemma contMDiffAt_iff_coeff [Fintype ι] (hu : u ∈ 𝓝 x) :
+    (∀ i, CMDiffAt n (hs.coeff i t) x) ↔ CMDiffAt n (T% t) x :=
+  ⟨fun h ↦ contMDiffAt_of_coeff hs h hu, fun ht i ↦ contMDiffAt_coeff hs ht hu i⟩
+
 section
 
 variable (hs : IsLocalFrameOn I F 1 s u)
@@ -277,6 +299,32 @@ has differentiable coefficients at `x ∈ u` w.r.t. `s i`, then `t` is different
 lemma mdifferentiableAt_of_coeff_aux [Fintype ι] (h : ∀ i, MDiffAt (hs.coeff i t) x)
     (hu : IsOpen u) (hx : x ∈ u) : MDiffAt (T% t) x :=
   hs.mdifferentiableAt_of_coeff h (hu.mem_nhds hx)
+
+/-- Given a local frame `s i` on a neighbourhood `u` of `x`, if a section `t` is differentiable at
+`x`, each coefficient of `t` w.r.t. `s i` is differentiable at `x`. -/
+lemma mdifferentiableAt_coeff [Fintype ι] (ht : MDiffAt (T% t) x) (hx : u ∈ 𝓝 x) (i : ι) :
+    MDiffAt (hs.coeff i t) x := by
+  -- should be similar to the C^n proof above
+  sorry
+
+/-- Given a local frame `s i` on `u`, if a section `t` is differentiable on `u`, each coefficient
+of `t` w.r.t. `s i` is differentiable on `u`. -/
+lemma mdifferentiableOn_coeff [Fintype ι] (ht : MDiff[u] (T% t)) (i : ι) :
+    MDiff[u] (hs.coeff i t) := by
+  -- should be similar to the C^n proof above
+  sorry
+
+/-- Given a local frame `s i ` on `u`, a section `t` has differentiable coefficients on `u` w.r.t.
+`s i` iff `t` is differentiable on `u`. -/
+lemma mdifferentiableOn_iff_coeff [Fintype ι] :
+    (∀ i, MDiff[u] (hs.coeff i t)) ↔ MDiff[u] (T% t) :=
+  ⟨fun h ↦ mdifferentiableOn_of_coeff hs h, fun h ht ↦ mdifferentiableOn_coeff hs h ht⟩
+
+/-- Given a local frame `s i` on a neighbourhood `u` of `x`, a section `t` has differentiable
+coefficients at `x` w.r.t. `s i` iff `t` is differentiable at `x`. -/
+lemma mdifferentiableAt_iff_coeff [Fintype ι] (hu : u ∈ 𝓝 x) :
+    (∀ i, MDiffAt (hs.coeff i t) x) ↔ MDiffAt (T% t) x :=
+  ⟨fun h ↦ mdifferentiableAt_of_coeff hs h hu, fun ht i ↦ mdifferentiableAt_coeff hs ht hu i⟩
 
 end
 
