@@ -256,10 +256,8 @@ theorem isCompact_closedBall [ProperSpace 𝕜] (x' : StrongDual 𝕜 E) (r : �
     IsCompact (toStrongDual ⁻¹' closedBall x' r) :=
   isCompact_of_bounded_of_closed isBounded_closedBall (isClosed_closedBall x' r)
 
-variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-variable (V : Type*) [SeminormedAddCommGroup V] [NormedSpace 𝕜 V]
-variable [TopologicalSpace.SeparableSpace V]
-variable (K : Set (WeakDual 𝕜 V))
+variable (𝕜 V : Type*) [NontriviallyNormedField 𝕜] [SeminormedAddCommGroup V] [NormedSpace 𝕜 V]
+variable [TopologicalSpace.SeparableSpace V] (K : Set (WeakDual 𝕜 V))
 
 /- There exists a sequence of continuous functions that separates points on the weak dual. -/
 lemma exists_continuous_separating : ∃ (gs : ℕ → (WeakDual 𝕜 V) → 𝕜),
