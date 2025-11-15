@@ -37,7 +37,7 @@ theorem card_range (n : ℕ) : card (range n) = n :=
 theorem range_subset {m n : ℕ} : range m ⊆ range n ↔ m ≤ n :=
   List.range_subset
 
-@[simp]
+@[simp, push]
 theorem mem_range {m n : ℕ} : m ∈ range n ↔ m < n :=
   List.mem_range
 

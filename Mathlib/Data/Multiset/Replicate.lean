@@ -45,6 +45,7 @@ theorem replicate_one (a : α) : replicate 1 a = {a} := rfl
 @[simp] theorem card_replicate (n) (a : α) : card (replicate n a) = n :=
   length_replicate
 
+@[push]
 theorem mem_replicate {a b : α} {n : ℕ} : b ∈ replicate n a ↔ n ≠ 0 ∧ b = a :=
   List.mem_replicate
 

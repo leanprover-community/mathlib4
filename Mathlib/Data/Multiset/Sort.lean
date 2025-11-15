@@ -77,7 +77,7 @@ section
 variable {a : α} {s : Multiset α}
 variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [IsTotal α r]
 
-@[simp]
+@[simp, push]
 theorem mem_sort : a ∈ sort s r ↔ a ∈ s := by rw [← mem_coe, sort_eq]
 
 @[simp]
