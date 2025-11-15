@@ -444,10 +444,10 @@ theorem coe_toContinuousAffineEquiv : ⇑e.toContinuousAffineEquiv = e :=
   rfl
 
 /-- Reinterpret a `AffineIsometryEquiv` as a `ContinuousAffineEquiv`. -/
-instance : CoeTC (P ≃ᵃⁱ[𝕜] P₂) (P ≃ᴬ[𝕜] P₂) :=
+instance : Coe (P ≃ᵃⁱ[𝕜] P₂) (P ≃ᴬ[𝕜] P₂) :=
   ⟨fun e => e.toContinuousAffineEquiv⟩
 
-instance : CoeTC (P ≃ᵃⁱ[𝕜] P₂) (P →ᴬ[𝕜] P₂) :=
+instance : Coe (P ≃ᵃⁱ[𝕜] P₂) (P →ᴬ[𝕜] P₂) :=
   ⟨fun e => e.toContinuousAffineEquiv.toContinuousAffineMap⟩
 
 @[simp]
