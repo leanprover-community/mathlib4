@@ -8,19 +8,20 @@ import Mathlib.Topology.Constructions
 /-!
 # Neighborhoods relative to a subset
 
-This file develops API on the relative version `nhdsWithin` of `nhds`, which is defined in previous
-definition files.
+This file develops API on the relative versions `nhdsWithin` and `nhdsSetWithin` of `nhds` and
+`nhdsSet`, which are defined in previous definition files.
 
 Their basic properties studied in this file include the relationship between neighborhood filters
 relative to a set and neighborhood filters in the corresponding subtype, and are in later files used
-to develop relativ versions `ContinuousOn` and `ContinuousWithinAt` of `Continuous` and
+to develop relative versions `ContinuousOn` and `ContinuousWithinAt` of `Continuous` and
 `ContinuousAt`.
 
 ## Notation
 
 * `𝓝 x`: the filter of neighborhoods of a point `x`;
 * `𝓟 s`: the principal filter of a set `s`;
-* `𝓝[s] x`: the filter `nhdsWithin x s` of neighborhoods of a point `x` within a set `s`.
+* `𝓝[s] x`: the filter `nhdsWithin x s` of neighborhoods of a point `x` within a set `s`;
+* `𝓝ˢ[t] s`: the filter `nhdsWithin s t` of neighborhoods of a set `s` within a set `t`.
 
 -/
 
@@ -506,3 +507,89 @@ theorem frequently_nhds_subtype_iff (s : Set α) (a : s) (P : α → Prop) :
 theorem tendsto_nhdsWithin_iff_subtype {s : Set α} {a : α} (h : a ∈ s) (f : α → β) (l : Filter β) :
     Tendsto f (𝓝[s] a) l ↔ Tendsto (s.restrict f) (𝓝 ⟨a, h⟩) l := by
   rw [nhdsWithin_eq_map_subtype_coe h, tendsto_map'_iff]; rfl
+
+/-!
+## The `nhdsSetWithin`-filter
+-/
+
+variable [TopologicalSpace β]
+
+@[gcongr, mono]
+lemma nhdsSetWithin_mono_left {s s' t : Set α} (h : s ⊆ s') : 𝓝ˢ[t] s ≤ 𝓝ˢ[t] s' :=
+  inf_le_inf_right _ <| nhdsSet_mono h
+
+@[gcongr, mono]
+lemma nhdsSetWithin_mono_right {s t t' : Set α} (h : t ⊆ t') : 𝓝ˢ[t] s ≤ 𝓝ˢ[t'] s :=
+  inf_le_inf_left _ <| principal_mono.2 h
+
+lemma nhdsSetWithin_hasBasis {ι : Sort*} {p : ι → Prop} {s' : ι → Set α} {s : Set α}
+    (h : (𝓝ˢ s).HasBasis p s') (t : Set α) : (𝓝ˢ[t] s).HasBasis p fun i => s' i ∩ t :=
+  h.inf_principal t
+
+lemma nhdsSetWithin_basis_open (s t : Set α) :
+    (𝓝ˢ[t] s).HasBasis (fun u => IsOpen u ∧ s ⊆ u) fun u => u ∩ t :=
+  nhdsSetWithin_hasBasis (hasBasis_nhdsSet s) t
+
+lemma mem_nhdsSetWithin {s t u : Set α} : u ∈ 𝓝ˢ[t] s ↔ ∃ v, IsOpen v ∧ s ⊆ v ∧ v ∩ t ⊆ u := by
+  simpa [and_assoc] using (nhdsSetWithin_basis_open s t).mem_iff
+
+@[simp]
+lemma nhdsSetWithin_singleton {x : α} {s : Set α} : 𝓝ˢ[s] {x} = 𝓝[s] x := by
+  simp [nhdsSetWithin, nhdsWithin]
+
+@[simp]
+lemma nhdsSetWithin_univ {s : Set α} : 𝓝ˢ[univ] s = 𝓝ˢ s := by
+  simp [nhdsSetWithin]
+
+@[simp]
+lemma nhdsSetWithin_univ' {s : Set α} : 𝓝ˢ[s] univ = 𝓟 s := by
+  simp [nhdsSetWithin]
+
+@[simp]
+lemma nhdsSetWithin_self {s : Set α} : 𝓝ˢ[s] s = 𝓟 s := by
+  simp [nhdsSetWithin, principal_le_nhdsSet]
+
+@[simp]
+lemma nhdsSetWithin_empty {s : Set α} : 𝓝ˢ[∅] s = ⊥ := by
+  simp [nhdsSetWithin]
+
+@[simp]
+lemma nhdsSetWithin_empty' {s : Set α} : 𝓝ˢ[s] ∅ = ⊥ := by
+  simp [nhdsSetWithin]
+
+lemma principal_inter_le_nhdsSetWithin {s t : Set α} : 𝓟 (s ∩ t) ≤ 𝓝ˢ[t] s := by
+  simpa [nhdsSetWithin] using inf_le_of_left_le (b := 𝓟 t) <| principal_le_nhdsSet
+
+lemma nhdsSetWithin_prod_le {s s' : Set α} {t t' : Set β} :
+    𝓝ˢ[s' ×ˢ t'] (s ×ˢ t) ≤ 𝓝ˢ[s'] s ×ˢ 𝓝ˢ[t'] t := by
+  simpa [nhdsSetWithin, ← prod_inf_prod] using inf_le_of_left_le <| nhdsSet_prod_le _ _
+
+theorem mem_nhdsSet_induced {α β : Type*} {t : TopologicalSpace β} (f : α → β) (s u : Set α) :
+    u ∈ @nhdsSet α (t.induced f) s ↔ ∃ v ∈ 𝓝ˢ (f '' s), f ⁻¹' v ⊆ u := by
+  letI := t.induced f
+  simp_rw [mem_nhdsSet_iff_exists, isOpen_induced_iff]
+  refine ⟨fun ⟨v, ⟨v', hv'⟩, hv⟩ ↦ ?_, fun ⟨v, ⟨v', hv'⟩, hv⟩ ↦ ?_⟩
+  · refine ⟨v', ⟨v', hv'.1, ?_, subset_rfl⟩, hv'.2.trans_subset hv.2⟩
+    exact (image_mono hv.1).trans (by simp [hv'])
+  · exact ⟨f ⁻¹' v', ⟨v', hv'.1, rfl⟩, image_subset_iff.1 hv'.2.1, (preimage_mono hv'.2.2).trans hv⟩
+
+theorem nhdsSet_induced {α β : Type*} {t : TopologicalSpace β} (f : α → β) (s : Set α) :
+    @nhdsSet α (t.induced f) s = comap f (𝓝ˢ (f '' s)) := by
+  ext s
+  rw [mem_nhdsSet_induced, mem_comap]
+
+theorem map_nhdsSet_induced_eq {α β : Type*} {t : TopologicalSpace β} {f : α → β} (s : Set α) :
+    map f (@nhdsSet α (t.induced f) s) = 𝓝ˢ[range f] (f '' s) := by
+  rw [nhdsSet_induced, Filter.map_comap, nhdsSetWithin]
+
+lemma Topology.IsInducing.map_nhdsSet_eq {f : α → β} (hf : IsInducing f) (s : Set α) :
+    (𝓝ˢ s).map f = 𝓝ˢ[range f] (f '' s) :=
+  hf.eq_induced ▸ map_nhdsSet_induced_eq s
+
+lemma map_nhdsSet_subtype_val {s : Set α} (t : Set s) :
+    map (↑) (𝓝ˢ t) = 𝓝ˢ[s] ((↑) '' t) := by
+  rw [IsInducing.subtypeVal.map_nhdsSet_eq, Subtype.range_val]
+
+lemma mem_nhdsSet_subtype_iff_nhdsSetWithin {s : Set α} {t u : Set s} :
+    u ∈ 𝓝ˢ t ↔ (↑) '' u ∈ 𝓝ˢ[s] ((↑) '' t) := by
+  rw [← map_nhdsSet_subtype_val, image_mem_map_iff Subtype.val_injective]
