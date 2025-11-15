@@ -82,7 +82,7 @@ end
 section
 
 /-!
-# Riemannian structure on an inner product vector space
+### Riemannian structure on an inner product vector space
 
 We endow an inner product vector space with the canonical Riemannian metric, given by the
 inner product of the vector space in each of the tangent spaces, and we show that this construction
@@ -179,7 +179,7 @@ end
 section
 
 /-!
-# Constructing a distance from a Riemannian structure
+### Constructing a distance from a Riemannian structure
 
 Let `M` be a real manifold with a Riemannian structure. We construct the associated distance and
 show that the associated topology coincides with the pre-existing topology. Therefore, one may
