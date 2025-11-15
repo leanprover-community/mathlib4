@@ -290,6 +290,19 @@ theorem subset_succChain : s ⊆ SuccChain r s :=
 
 end Chain
 
+/-! ### Nests -/
+
+/--
+A nest is a chain which contains the top and bottom.
+-/
+structure Nest (α : Type*) [LE α] [OrderTop α] [OrderBot α] where
+  /-- The `carrier` of a nest is the underlying set. -/
+  carrier : Set α
+  /-- By definition, a nest is a chain -/
+  chain : IsChain (· ≤ ·) carrier
+  mem_bot : ⊥ ∈ carrier
+  mem_top : ⊤ ∈ carrier
+
 /-! ### Flags -/
 
 
@@ -342,6 +355,12 @@ theorem top_mem [OrderTop α] (s : Flag α) : (⊤ : α) ∈ s :=
 theorem bot_mem [OrderBot α] (s : Flag α) : (⊥ : α) ∈ s :=
   s.maxChain.bot_mem
 
+/-- A Flag is a Nest -/
+def toNest [OrderTop α] [OrderBot α] (s : Flag α) : Nest α where
+  carrier := s.carrier
+  chain := s.Chain'
+  mem_bot := Flag.bot_mem _
+  mem_top := Flag.top_mem _
 /-- Reinterpret a maximal chain as a flag. -/
 def ofIsMaxChain (c : Set α) (hc : IsMaxChain (· ≤ ·) c) : Flag α := ⟨c, hc.isChain, hc.2⟩
 
