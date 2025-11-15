@@ -111,6 +111,61 @@ theorem proximity_sub_proximity_inv_eq_circleAverage {f : ℂ → ℂ} (h₁f : 
 -/
 
 /--
+The proximity function of `f + g` at `⊤` is less than or equal to the sum of the
+proximity functions of `f` and `g`, plus `log 2`.
+-/
+theorem proximity_top_add_le [NormedSpace ℂ E] {f₁ f₂ : ℂ → E} (h₁f₁ : MeromorphicOn f₁ Set.univ)
+    (h₁f₂ : MeromorphicOn f₂ Set.univ) :
+    proximity (f₁ + f₂) ⊤ ≤ (proximity f₁ ⊤) + (proximity f₂ ⊤) + (fun _ ↦ log 2) := by
+  simp only [proximity, reduceDIte, Pi.add_apply]
+  intro r
+  have h₂f₁ : MeromorphicOn f₁ (sphere 0 |r|) := fun x _ ↦ h₁f₁ x trivial
+  have h₂f₂ : MeromorphicOn f₂ (sphere 0 |r|) := fun x _ ↦ h₁f₂ x trivial
+  have h₃f₁ := circleIntegrable_posLog_norm_meromorphicOn h₂f₁
+  have h₃f₂ := circleIntegrable_posLog_norm_meromorphicOn h₂f₂
+  calc circleAverage (fun x ↦ log⁺ ‖f₁ x + f₂ x‖) 0 r
+  _ ≤ circleAverage (fun x ↦ log⁺ ‖f₁ x‖ + log⁺ ‖f₂ x‖ + log 2) 0 r :=
+    circleAverage_mono (circleIntegrable_posLog_norm_meromorphicOn (h₂f₁.fun_add h₂f₂))
+      ((h₃f₁.add h₃f₂).add (circleIntegrable_const (log 2) 0 r))
+      fun x _ ↦ posLog_norm_add_le (f₁ x) (f₂ x)
+  _ = circleAverage (log⁺ ‖f₁ ·‖) 0 r + circleAverage (log⁺ ‖f₂ ·‖) 0 r + log 2 := by
+    rw [← circleAverage_add h₃f₁ h₃f₂, ← circleAverage_const (log 2),
+      ← circleAverage_add (h₃f₁.add h₃f₂) (circleIntegrable_const (log 2) 0 r)]
+    congr 1
+    ext
+    simp [circleAverage_const]
+
+/--
+The proximity function of a sum of functions at `⊤` is less than or equal to the
+sum of the proximity functions of the summand, plus `log` of the number of
+summands.
+-/
+theorem proximity_top_sum_le [NormedSpace ℂ E] {α : Type*} (s : Finset α) (f : α → ℂ → E)
+  (hf : ∀ a, MeromorphicOn (f a) Set.univ) :
+    proximity (∑ a ∈ s, f a) ⊤ ≤ ∑ a ∈ s, (proximity (f a) ⊤) + (fun _ ↦ log s.card) := by
+  simp only [proximity, reduceDIte, Finset.sum_apply]
+  intro r
+  have h₂f : ∀ i ∈ s, CircleIntegrable (log⁺ ‖f i ·‖) 0 r :=
+    fun i _ ↦ circleIntegrable_posLog_norm_meromorphicOn (fun x _ ↦ hf i x trivial)
+  simp only [Pi.add_apply, Finset.sum_apply]
+  calc circleAverage (log⁺ ‖∑ c ∈ s, f c ·‖) 0 r
+  _ ≤ circleAverage (∑ c ∈ s, log⁺ ‖f c ·‖ + log s.card) 0 r := by
+    apply circleAverage_mono
+    · apply circleIntegrable_posLog_norm_meromorphicOn
+      apply (MeromorphicOn.fun_sum (hf ·)).mono_set (by tauto)
+    · apply (CircleIntegrable.fun_sum s h₂f).add (circleIntegrable_const _ _ _)
+    · intro x hx
+      rw [add_comm]
+      apply posLog_norm_sum_le
+  _ = ∑ c ∈ s, circleAverage (log⁺ ‖f c ·‖) 0 r + log s.card := by
+    nth_rw 2 [← circleAverage_const (log s.card) 0 r]
+    rw [← circleAverage_sum h₂f, ← circleAverage_add (CircleIntegrable.sum s h₂f)
+      (circleIntegrable_const (log s.card) 0 r)]
+    congr 1
+    ext x
+    simp
+
+/--
 The proximity function `f * g` at `⊤` is less than or equal to the sum of the
 proximity functions of `f` and `g`, respectively.
 -/
