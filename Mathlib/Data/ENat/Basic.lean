@@ -78,6 +78,7 @@ theorem coe_sub (m n : ℕ) : ↑(m - n) = (m - n : ℕ∞) :=
 
 @[simp] theorem mul_top (hm : m ≠ 0) : m * ⊤ = ⊤ := WithTop.mul_top hm
 @[simp] theorem top_mul (hm : m ≠ 0) : ⊤ * m = ⊤ := WithTop.top_mul hm
+theorem top_mul_top : (⊤ : ℕ∞) * ⊤ = ⊤ := WithTop.top_mul_top
 
 /-- A version of `mul_top` where the RHS is stated as an `ite` -/
 theorem mul_top' : m * ⊤ = if m = 0 then 0 else ⊤ := WithTop.mul_top' m
