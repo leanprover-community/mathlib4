@@ -17,6 +17,7 @@ import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 import Mathlib.RingTheory.Regular.RegularSequence
+import Mathlib.RingTheory.Regular.Category
 import Mathlib.RingTheory.LocalRing.Module
 import Mathlib.Algebra.Algebra.Shrink
 /-!
@@ -81,6 +82,14 @@ lemma mem_quotSMulTop_annihilator (x : R) (M : Type*) [AddCommGroup M] [Module R
   refine mem_annihilator.mpr (fun m ↦ ?_)
   rcases Submodule.Quotient.mk_surjective _ m with ⟨m', hm'⟩
   simpa [← hm', ← Submodule.Quotient.mk_smul] using Submodule.smul_mem_pointwise_smul m' x ⊤ trivial
+
+variable {R} in
+lemma quotSMulTop_nontrivial [IsLocalRing R] {x : R} (mem : x ∈ maximalIdeal R)
+    (L : Type*) [AddCommGroup L] [Module R L] [Module.Finite R L] [Nontrivial L] :
+    Nontrivial (QuotSMulTop x L) := by
+  apply Submodule.Quotient.nontrivial_of_lt_top _ (Ne.lt_top' _)
+  apply Submodule.top_ne_pointwise_smul_of_mem_jacobson_annihilator
+  exact IsLocalRing.maximalIdeal_le_jacobson _ mem
 
 section
 
@@ -302,7 +311,7 @@ lemma projectiveDimension_eq_zero_of_projective (M : ModuleCat.{v} R) [Projectiv
     assumption
 
 variable [Small.{v} R]
-
+/-
 lemma projectiveDimension_quotient_eq_length (rs : List R) (reg : IsRegular R rs) :
     projectiveDimension (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs))) = rs.length := by
   have mem_max : ∀ x ∈ rs, x ∈ maximalIdeal R := by
@@ -319,3 +328,4 @@ lemma projectiveDimension_quotient_eq_length (rs : List R) (reg : IsRegular R rs
   rw [projectiveDimension_quotient_regular_sequence (ModuleCat.of R (Shrink.{v} R)) rs
     (((Shrink.linearEquiv R R).isWeaklyRegular_congr rs).mpr reg.1) mem_max]
   rw [projectiveDimension_eq_zero_of_projective, zero_add]
+-/

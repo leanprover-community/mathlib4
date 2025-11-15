@@ -160,6 +160,11 @@ lemma Retract.hasProjectiveDimensionLT {X Y : C} (h : Retract X Y) (n : ℕ)
     ((Ext.mk₀ h.r).comp x (zero_add i)).eq_zero_of_hasProjectiveDimensionLT n hi,
     Ext.comp_zero]
 
+lemma Retract.projective {X Y : C} (h : Retract X Y) [Projective Y] :
+    Projective X := by
+  rw [projective_iff_hasProjectiveDimensionLT_one]
+  apply h.hasProjectiveDimensionLT
+
 lemma hasProjectiveDimensionLT_of_iso {X X' : C} (e : X ≅ X') (n : ℕ)
     [HasProjectiveDimensionLT X n] :
     HasProjectiveDimensionLT X' n :=
