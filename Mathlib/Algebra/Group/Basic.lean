@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Int.Init
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.SplitIfs
 
 /-!
 # Basic lemmas about semigroups, monoids, and groups

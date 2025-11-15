@@ -30,8 +30,8 @@ Arguments:
 * `src : Name` is the existing declaration that we are modifying.
 * `suffix : String` will be appended to `src` to form the name of the new declaration.
 * `ref : Syntax` is the syntax where the user requested the related declaration.
-* `construct type value levels : MetaM (Expr × List Name)`
-  given the type, value, and universe variables of the original declaration,
+* `construct value levels : MetaM (Expr × List Name)`
+  given an `Expr.const` referring to the original declaration, and its universe variables,
   should construct the value of the new declaration,
   along with the names of its universe variables.
 * `attrs` is the attributes that should be applied to both the new and the original declaration,
@@ -42,14 +42,15 @@ Arguments:
 -/
 def addRelatedDecl (src : Name) (suffix : String) (ref : Syntax)
     (attrs? : Option (Syntax.TSepArray `Lean.Parser.Term.attrInstance ","))
-    (construct : Expr → Expr → List Name → MetaM (Expr × List Name)) :
+    (construct : Expr → List Name → MetaM (Expr × List Name)) :
     MetaM Unit := do
   let tgt := match src with
     | Name.str n s => Name.mkStr n <| s ++ suffix
     | x => x
   addDeclarationRangesFromSyntax tgt (← getRef) ref
   let info ← getConstInfo src
-  let (newValue, newLevels) ← construct info.type info.value! info.levelParams
+  let value := .const src (info.levelParams.map mkLevelParam)
+  let (newValue, newLevels) ← construct value info.levelParams
   let newValue ← instantiateMVars newValue
   let newType ← instantiateMVars (← inferType newValue)
   match info with
