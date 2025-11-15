@@ -209,9 +209,8 @@ theorem coe_extendedHomₐ_eq_span (I : FractionalIdeal A⁰ K) :
     IsLocalization.algebraMap_eq_map_map_submonoid A⁰ B K L]
   rfl
 
-variable [IsIntegrallyClosed A] [IsIntegrallyClosed B]
-
-theorem le_one_of_extendedHomₐ_le_one (hI : extendedHomₐ L B I ≤ 1) : I ≤ 1 := by
+theorem le_one_of_extendedHomₐ_le_one [IsIntegrallyClosed A] [IsIntegrallyClosed B]
+  (hI : extendedHomₐ L B I ≤ 1) : I ≤ 1 := by
   contrapose! hI
   rw [SetLike.not_le_iff_exists] at hI ⊢
   obtain ⟨x, hx₁, hx₂⟩ := hI
@@ -222,7 +221,8 @@ theorem le_one_of_extendedHomₐ_le_one (hI : extendedHomₐ L B I ≤ 1) : I �
     rw [mem_one_iff, ← IsIntegrallyClosed.isIntegral_iff] at hx₂ ⊢
     exact IsIntegral.tower_bot_of_field <| isIntegral_trans _ hx₂
 
-theorem extendedHomₐ_le_one_iff : extendedHomₐ L B I ≤ 1 ↔ I ≤ 1 :=
+theorem extendedHomₐ_le_one_iff [IsIntegrallyClosed A] [IsIntegrallyClosed B] :
+    extendedHomₐ L B I ≤ 1 ↔ I ≤ 1 :=
   ⟨fun h ↦ le_one_of_extendedHomₐ_le_one L B h, fun a ↦ extended_le_one_of_le_one L _ I a⟩
 
 section IsDedekindDomain
