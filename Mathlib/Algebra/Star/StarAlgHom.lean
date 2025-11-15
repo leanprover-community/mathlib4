@@ -651,6 +651,8 @@ instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiri
     NonUnitalAlgHomClass F R A B :=
   { }
 
+namespace StarAlgEquivClass
+
 /-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` and `StarHomClass F A B` into
 an actual `StarAlgEquiv`. This is declared as the default coercion from `F` to `A ≃⋆ₐ[R] B`. -/
 @[coe]
@@ -666,6 +668,8 @@ instance instCoeHead {F R A B : Type*} [Add A] [Mul A] [SMul R A] [Star A] [Add 
     [SMul R B] [Star B] [EquivLike F A B] [AlgEquivClass F R A B] [StarHomClass F A B] :
     CoeHead F (A ≃⋆ₐ[R] B) :=
   ⟨toStarAlgEquiv⟩
+
+end StarAlgEquivClass
 
 namespace StarAlgEquiv
 
