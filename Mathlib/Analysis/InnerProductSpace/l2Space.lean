@@ -458,7 +458,7 @@ protected theorem hasSum_inner_mul_inner (b : HilbertBasis ι 𝕜 E) (x y : E) 
     HasSum (fun i => ⟪x, b i⟫ * ⟪b i, y⟫) ⟪x, y⟫ := by
   convert (b.hasSum_repr y).mapL (innerSL 𝕜 x) using 1
   ext i
-  rw [innerSL_apply, b.repr_apply_apply, inner_smul_right, mul_comm]
+  rw [innerSL_apply_apply, b.repr_apply_apply, inner_smul_right, mul_comm]
 
 protected theorem summable_inner_mul_inner (b : HilbertBasis ι 𝕜 E) (x y : E) :
     Summable fun i => ⟪x, b i⟫ * ⟪b i, y⟫ :=
