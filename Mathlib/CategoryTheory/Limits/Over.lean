@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Limits.Comma
 import Mathlib.CategoryTheory.Limits.ConeCategory
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 
 /-!
 # Limits and colimits in the over and under categories
@@ -39,6 +40,9 @@ instance hasColimit_of_hasColimit_comp_forget (F : J ⥤ Over X) [i : HasColimit
   CostructuredArrow.hasColimit (i₁ := i)
 
 instance [HasColimitsOfShape J C] : HasColimitsOfShape J (Over X) where
+
+instance [HasFiniteColimits C] : HasFiniteColimits (Over X) where
+  out _ _ _ := inferInstance
 
 instance [HasColimits C] : HasColimits (Over X) :=
   ⟨inferInstance⟩
