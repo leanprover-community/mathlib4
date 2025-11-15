@@ -109,11 +109,6 @@ lemma index_equiv (f : ι' ≃ ι) (v₁ : ι → P₁) (v₂ : ι → P₂) :
   refine ⟨r, hr, fun i₁ i₂ => ?_⟩
   simpa [f.right_inv i₁, f.right_inv i₂] using h (f.symm i₁) (f.symm i₂)
 
-/-- Permuting the index set preserves similarity. -/
-lemma perm (e : Equiv.Perm (ι)) {t₁ : ι → P₁} {t₂ : ι → P₂} :
-    Similar (t₁ ∘ e) (t₂ ∘ e) ↔ Similar t₁ t₂ :=
-  (index_equiv e t₁ t₂)
-
 section Triangle
 
 variable {a b c : P₁} {a' b' c' : P₂}
@@ -127,7 +122,7 @@ theorem comm_left (h : ![a, b, c] ∼ ![a', b', c']) :
   have hr : ![b', a', c'] = ![a', b', c'] ∘ Equiv.swap 0 1 := by
     ext i
     fin_cases i <;> simp; rfl
-  grind [Similar.perm]
+  grind [index_equiv]
 
 /-- Swapping the last two vertices preserves similarity. -/
 theorem comm_right (h : ![a, b, c] ∼ ![a', b', c']) :
@@ -138,7 +133,7 @@ theorem comm_right (h : ![a, b, c] ∼ ![a', b', c']) :
   have hr : ![a', c', b'] = ![a', b', c'] ∘ Equiv.swap 1 2 := by
     ext i
     fin_cases i <;> simp; rfl
-  grind [Similar.perm]
+  grind [index_equiv]
 
 /-- Reversing the order of vertices preserves similarity. -/
 theorem reverse_of_three (h : ![a, b, c] ∼ ![a', b', c']) :
@@ -149,7 +144,7 @@ theorem reverse_of_three (h : ![a, b, c] ∼ ![a', b', c']) :
   have hr : ![c', b', a'] = ![a', b', c'] ∘ Equiv.swap 0 2 := by
     ext i
     fin_cases i <;> simp; rfl
-  grind [Similar.perm]
+  grind [index_equiv]
 
 end Triangle
 
