@@ -81,7 +81,7 @@ assigns vertices to colors and a proof that it is as proper coloring.
 (Note: this is a definitionally the constructor for `SimpleGraph.Hom`,
 but with a syntactically better proper coloring hypothesis.)
 -/
-@[match_pattern]
+@[match_pattern, simps]
 def Coloring.mk (color : V → α) (valid : ∀ {v w : V}, G.Adj v w → color v ≠ color w) :
     G.Coloring α :=
   ⟨color, @valid⟩
@@ -115,11 +115,11 @@ theorem Coloring.not_adj_of_mem_colorClass {c : α} {v w : V} (hv : v ∈ C.colo
 theorem Coloring.color_classes_independent (c : α) : IsAntichain G.Adj (C.colorClass c) :=
   fun _ hv _ hw _ => C.not_adj_of_mem_colorClass hv hw
 
--- TODO make this computable
-noncomputable instance [Fintype V] [Fintype α] : Fintype (Coloring G α) := by
-  classical
-  change Fintype (RelHom G.Adj (completeGraph α).Adj)
-  apply Fintype.ofInjective _ RelHom.coe_fn_injective
+instance instFintypeColoring [Fintype V] [Fintype α] [DecidableEq V] [DecidableRel G.Adj] :
+    Fintype (G.Coloring α) :=
+  -- I'll have this for now, until typeclass can infer the `Top.adjDecidable α`
+  @RelHom.instFintype V α G.Adj (completeGraph α).Adj
+    ‹Fintype V› ‹Fintype α› ‹DecidableEq V› ‹DecidableRel G.Adj› (Top.adjDecidable α)
 
 instance [DecidableEq α] {c : α} :
     DecidablePred (· ∈ C.colorClass c) :=
