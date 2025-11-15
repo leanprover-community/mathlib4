@@ -19,7 +19,7 @@ namespace TopologicalSpace
 variable {ι X Y : Type*} {A : ι → Type*} [TopologicalSpace X] [TopologicalSpace Y] [Finite ι]
   [∀ i, TopologicalSpace (A i)]
 
-/-- A topological space is *pseudo metrizable* if there exists a pseudo metric space structure
+/-- A topological space is *pseudometrizable* if there exists a pseudometric space structure
 compatible with the topology. To endow such a space with a compatible distance, use
 `letI : PseudoMetricSpace X := TopologicalSpace.pseudoMetrizableSpacePseudoMetric X`. -/
 class PseudoMetrizableSpace (X : Type*) [t : TopologicalSpace X] : Prop where
@@ -40,8 +40,8 @@ instance pseudoMetrizableSpace_prod [PseudoMetrizableSpace X] [PseudoMetrizableS
   letI : PseudoMetricSpace Y := pseudoMetrizableSpacePseudoMetric Y
   inferInstance
 
-/-- Given an inducing map of a topological space into a pseudo metrizable space, the source space
-is also pseudo metrizable. -/
+/-- Given an inducing map of a topological space into a pseudometrizable space, the source space
+is also pseudometrizable. -/
 theorem _root_.Topology.IsInducing.pseudoMetrizableSpace [PseudoMetrizableSpace Y] {f : X → Y}
     (hf : IsInducing f) : PseudoMetrizableSpace X :=
   letI : PseudoMetricSpace Y := pseudoMetrizableSpacePseudoMetric Y
