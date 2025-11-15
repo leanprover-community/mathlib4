@@ -125,6 +125,13 @@ instance : Singleton α (Compacts α) where
 theorem mem_singleton (x y : α) : x ∈ ({y} : Compacts α) ↔ x = y :=
   Iff.rfl
 
+theorem singleton_injective : Function.Injective ({·} : α → Compacts α) :=
+  .of_comp (f := SetLike.coe) Set.singleton_injective
+
+@[simp]
+theorem singleton_inj {x y : α} : ({x} : Compacts α) = {y} ↔ x = y :=
+  singleton_injective.eq_iff
+
 /-- The image of a compact set under a continuous function. -/
 protected def map (f : α → β) (hf : Continuous f) (K : Compacts α) : Compacts β :=
   ⟨f '' K.1, K.2.image hf⟩
@@ -141,9 +148,20 @@ theorem map_comp (f : β → γ) (g : α → β) (hf : Continuous f) (hg : Conti
     K.map (f ∘ g) (hf.comp hg) = (K.map g hg).map f hf :=
   Compacts.ext <| Set.image_comp _ _ _
 
+theorem map_injective {f : α → β} (hf : Continuous f) (hf' : Function.Injective f) :
+    Function.Injective (Compacts.map f hf) :=
+  .of_comp (f := SetLike.coe) <| hf'.image_injective.comp SetLike.coe_injective
+
 @[simp]
 theorem map_singleton {f : α → β} (hf : Continuous f) (x : α) : Compacts.map f hf {x} = {f x} :=
   Compacts.ext Set.image_singleton
+
+@[simp]
+theorem map_injective_iff {f : α → β} (hf : Continuous f) :
+    Function.Injective (Compacts.map f hf) ↔ Function.Injective f := by
+  refine ⟨fun h => .of_comp (f := ({·} : β → Compacts β)) ?_, map_injective hf⟩
+  simp_rw [Function.comp_def, ← map_singleton hf]
+  exact h.comp singleton_injective
 
 /-- A homeomorphism induces an equivalence on compact sets, by taking the image. -/
 @[simps]
@@ -274,6 +292,13 @@ theorem toCompacts_singleton (x : α) : toCompacts {x} = {x} :=
 @[simp]
 theorem toCloseds_singleton [T2Space α] (x : α) : toCloseds {x} = Closeds.singleton x :=
   rfl
+
+theorem singleton_injective : Function.Injective ({·} : α → NonemptyCompacts α) :=
+  .of_comp (f := SetLike.coe) Set.singleton_injective
+
+@[simp]
+theorem singleton_inj {x y : α} : ({x} : NonemptyCompacts α) = {y} ↔ x = y :=
+  singleton_injective.eq_iff
 
 /-- In an inhabited space, the type of nonempty compact subsets is also inhabited, with
 default element the singleton set containing the default element. -/
