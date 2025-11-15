@@ -58,7 +58,7 @@ lemma Gammaℝ_add_two {s : ℂ} (hs : s ≠ 0) : Gammaℝ (s + 2) = Gammaℝ s 
 lemma Gammaℂ_add_one {s : ℂ} (hs : s ≠ 0) : Gammaℂ (s + 1) = Gammaℂ s * s / 2 / π := by
   rw [Gammaℂ_def, Gammaℂ_def, Gamma_add_one _ hs, neg_add,
     cpow_add _ _ (mul_ne_zero two_ne_zero (ofReal_ne_zero.mpr pi_ne_zero)), cpow_neg_one]
-  field
+  ring
 
 lemma Gammaℝ_ne_zero_of_re_pos {s : ℂ} (hs : 0 < re s) : Gammaℝ s ≠ 0 := by
   apply mul_ne_zero
@@ -78,7 +78,7 @@ lemma Gammaℝ_one : Gammaℝ 1 = 1 := by
 @[simp]
 lemma Gammaℂ_one : Gammaℂ 1 = 1 / π := by
   rw [Gammaℂ_def, cpow_neg_one, Complex.Gamma_one]
-  field
+  ring
 
 section analyticity
 
