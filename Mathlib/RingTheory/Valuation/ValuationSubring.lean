@@ -91,7 +91,6 @@ theorem mem_top (x : K) : x ∈ (⊤ : ValuationSubring K) :=
 theorem le_top : A ≤ ⊤ := fun _a _ha => mem_top _
 
 instance : OrderTop (ValuationSubring K) where
-  top := ⊤
   le_top := le_top
 
 instance : Inhabited (ValuationSubring K) :=
