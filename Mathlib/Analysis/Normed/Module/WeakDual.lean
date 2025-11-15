@@ -279,7 +279,7 @@ lemma exists_continuous_separating : ∃ (gs : ℕ → (WeakDual 𝕜 V) → �
 lemma metrizable_of_compact (K_cpt : IsCompact K) : TopologicalSpace.MetrizableSpace K := by
   have : CompactSpace K := isCompact_iff_compactSpace.mp K_cpt
   obtain ⟨gs, gs_cont, gs_sep⟩ := exists_continuous_separating 𝕜 V
-  refine Metric.PiNatEmbed.TopologicalSpace.MetrizableSpace.of_countable_separating
+  exact Metric.PiNatEmbed.TopologicalSpace.MetrizableSpace.of_countable_separating
     (fun n k ↦ gs n k) (fun n ↦ (gs_cont n).comp continuous_subtype_val)
     fun x y hxy ↦ gs_sep <| Subtype.val_injective.ne hxy
 
