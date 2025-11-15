@@ -14,7 +14,7 @@ import Mathlib.NumberTheory.ModularForms.EisensteinSeries.MDifferentiable
 We show that Eisenstein series of weight `k` and level `Γ(N)` with congruence condition
 `a : Fin 2 → ZMod N` are Modular Forms.
 
-# TODO
+## TODO
 
 Add q-expansions and prove that they are not all identically zero.
 -/

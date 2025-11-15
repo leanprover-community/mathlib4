@@ -438,35 +438,25 @@ instance distribLattice : DistribLattice G.Subgraph :=
     le := fun x y => x.verts ⊆ y.verts ∧ ∀ ⦃v w : V⦄, x.Adj v w → y.Adj v w }
 
 instance : BoundedOrder (Subgraph G) where
-  top := ⊤
-  bot := ⊥
   le_top x := ⟨Set.subset_univ _, fun _ _ => x.adj_sub⟩
   bot_le _ := ⟨Set.empty_subset _, fun _ _ => False.elim⟩
 
 /-- Note that subgraphs do not form a Boolean algebra, because of `verts`. -/
-def completelyDistribLatticeMinimalAxioms : CompletelyDistribLattice.MinimalAxioms G.Subgraph :=
-  { Subgraph.distribLattice with
-    le := (· ≤ ·)
-    sup := (· ⊔ ·)
-    inf := (· ⊓ ·)
-    top := ⊤
-    bot := ⊥
-    le_top := fun G' => ⟨Set.subset_univ _, fun _ _ => G'.adj_sub⟩
-    bot_le := fun _ => ⟨Set.empty_subset _, fun _ _ => False.elim⟩
-    sSup := sSup
-    -- Porting note: needed `apply` here to modify elaboration; previously the term itself was fine.
-    le_sSup := fun s G' hG' => ⟨by apply Set.subset_iUnion₂ G' hG', fun _ _ hab => ⟨G', hG', hab⟩⟩
-    sSup_le := fun s G' hG' =>
-      ⟨Set.iUnion₂_subset fun _ hH => (hG' _ hH).1, by
-        rintro a b ⟨H, hH, hab⟩
-        exact (hG' _ hH).2 hab⟩
-    sInf := sInf
-    sInf_le := fun _ G' hG' => ⟨Set.iInter₂_subset G' hG', fun _ _ hab => hab.1 hG'⟩
-    le_sInf := fun _ G' hG' =>
-      ⟨Set.subset_iInter₂ fun _ hH => (hG' _ hH).1, fun _ _ hab =>
-        ⟨fun _ hH => (hG' _ hH).2 hab, G'.adj_sub hab⟩⟩
-    iInf_iSup_eq := fun f => Subgraph.ext (by simpa using iInf_iSup_eq)
-      (by ext; simp [Classical.skolem]) }
+def completelyDistribLatticeMinimalAxioms : CompletelyDistribLattice.MinimalAxioms G.Subgraph where
+  le_top G' := ⟨Set.subset_univ _, fun _ _ => G'.adj_sub⟩
+  bot_le _ := ⟨Set.empty_subset _, fun _ _ => False.elim⟩
+  -- Porting note: needed `apply` here to modify elaboration; previously the term itself was fine.
+  le_sSup s G' hG' := ⟨by apply Set.subset_iUnion₂ G' hG', fun _ _ hab => ⟨G', hG', hab⟩⟩
+  sSup_le s G' hG' :=
+    ⟨Set.iUnion₂_subset fun _ hH => (hG' _ hH).1, by
+      rintro a b ⟨H, hH, hab⟩
+      exact (hG' _ hH).2 hab⟩
+  sInf_le _ G' hG' := ⟨Set.iInter₂_subset G' hG', fun _ _ hab => hab.1 hG'⟩
+  le_sInf _ G' hG' :=
+    ⟨Set.subset_iInter₂ fun _ hH => (hG' _ hH).1, fun _ _ hab =>
+      ⟨fun _ hH => (hG' _ hH).2 hab, G'.adj_sub hab⟩⟩
+  iInf_iSup_eq f := Subgraph.ext (by simpa using iInf_iSup_eq)
+    (by ext; simp [Classical.skolem])
 
 instance : CompletelyDistribLattice G.Subgraph :=
   .ofMinimalAxioms completelyDistribLatticeMinimalAxioms
@@ -1154,6 +1144,17 @@ theorem _root_.SimpleGraph.induce_eq_coe_induce_top (s : Set V) :
 section Induce
 
 variable {G' G'' : G.Subgraph} {s s' : Set V}
+
+@[simp]
+theorem IsInduced.induce_top_verts (h : G'.IsInduced) : induce ⊤ G'.verts = G' :=
+  Subgraph.ext rfl <| funext₂ fun _ _ ↦ propext
+    ⟨fun ⟨hu, hv, h'⟩ ↦ h hu hv h', fun h ↦ ⟨G'.edge_vert h, G'.edge_vert h.symm, h.adj_sub⟩⟩
+
+theorem isInduced_iff_exists_eq_induce_top (G' : G.Subgraph) :
+    G'.IsInduced ↔ ∃ s, G' = induce ⊤ s := by
+  refine ⟨fun h ↦ ⟨G'.verts, h.induce_top_verts.symm⟩, fun ⟨s, h⟩ _ hu _ hv hadj ↦ ?_⟩
+  rw [h, (h ▸ rfl : s = G'.verts)]
+  exact ⟨hu, hv, hadj⟩
 
 @[gcongr]
 theorem induce_mono (hg : G' ≤ G'') (hs : s ⊆ s') : G'.induce s ≤ G''.induce s' := by
