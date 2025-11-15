@@ -45,11 +45,9 @@ lemma count_diff (a : α) (l₁ : List α) :
 
 lemma countP_diff (hl : l₂ <+~ l₁) (p : α → Bool) :
     countP p (l₁.diff l₂) = countP p l₁ - countP p l₂ := by
-  -- TODO: drop `letI`, use `exact` instead of `convert`
-  letI : DecidableEq α := instDecidableEqOfLawfulBEq
   refine (Nat.sub_eq_of_eq_add ?_).symm
   rw [← countP_append]
-  convert ((subperm_append_diff_self_of_count_le <| subperm_ext_iff.1 hl).symm.trans
+  exact ((subperm_append_diff_self_of_count_le <| subperm_ext_iff.1 hl).symm.trans
     perm_append_comm).countP_eq _
 
 @[simp]
