@@ -14,6 +14,31 @@ import Mathlib.CategoryTheory.Filtered.FinallySmall
 /-!
 # Points of a site
 
+Let `C` be a category equipped with a Grothendieck topology `J`. In this file,
+we define the notion of point of the site `(C, J)`, as a
+structure `GrothendieckTopology.Point`. Such a `Φ : J.Point` consists
+in a functor `Φ.fiber : C ⥤ Type w` such that the category `Φ.fiber.Elements`
+is cofiltered (and initially small) and such that if `x : Φ.fiber.obj X`
+and `R` is a covering sieve of `X`, then `x` belongs to the image
+of some `y : Φ.fiber.obj Y` by a morphism `f : Y ⟶ X` which belongs to `R`.
+The fact that `Φ.fiber.Elementsᵒᵖ` is filtered allows to define
+`Φ.presheafFiber : (Cᵒᵖ ⥤ A) ⥤ A` by taking the filtering colimit
+of the evaluation functors at `op X` when `(X : C, x : F.obj X)` varies in
+`Φ.fiber.Elementsᵒᵖ`. We define `Φ.sheafFiber : Sheaf J A ⥤ A` as the
+restriction of `Φ.presheafFiber` to the full subcategory of sheaves.
+
+Under certain assumptions, we show that if `A` is concrete and
+`P ⟶ Q` is a locally bijective morphism between presheaves,
+then the induced morphism on fibers is a bijection. It follows
+that `Φ.sheafFiber : Sheaf J A ⥤ A` is not only the restriction of
+`Φ.presheafFiber` but it may also be thought as a localization
+of this functor with respect to the class of morphisms `J.W`.
+In particular, the fiber of a presheaf identifies to the fiber of
+its associated sheaf.
+
+We show that both `Φ.presheafFiber` and `Φ.sheafFiber`
+commute to finite limits and to arbitrary colimits.
+
 -/
 
 universe w' w v v' u u'
@@ -221,6 +246,26 @@ end
 
 noncomputable def sheafFiber : Sheaf J A ⥤ A :=
   sheafToPresheaf J A ⋙ Φ.presheafFiber
+
+variable (A) in
+noncomputable def sheafToPresheafCompPresheafFiber :
+    sheafToPresheaf J A ⋙ Φ.presheafFiber ≅ Φ.sheafFiber := Iso.refl _
+
+instance (P : Cᵒᵖ ⥤ A) [HasWeakSheafify J A]
+    [PreservesFilteredColimitsOfSize.{w, w} (forget A)] [LocallySmall.{w} C]
+    [J.WEqualsLocallyBijective A] [(forget A).ReflectsIsomorphisms] :
+    IsIso (Φ.presheafFiber.map (CategoryTheory.toSheafify J P)) :=
+  W_isInvertedBy_presheafFiber _ _ (W_toSheafify J P)
+
+variable (A) in
+noncomputable def presheafToSheafCompSheafFiber [HasWeakSheafify J A]
+    [PreservesFilteredColimitsOfSize.{w, w} (forget A)] [LocallySmall.{w} C]
+    [J.WEqualsLocallyBijective A] [(forget A).ReflectsIsomorphisms] :
+    presheafToSheaf J A ⋙ Φ.sheafFiber ≅ Φ.presheafFiber :=
+  Functor.isoWhiskerLeft (presheafToSheaf J A) (Φ.sheafToPresheafCompPresheafFiber A).symm ≪≫
+    (NatIso.ofComponents
+      (fun P ↦ asIso ((Φ.presheafFiber (A := A)).map (CategoryTheory.toSheafify J P) :))
+        (by simp [← Functor.map_comp])).symm
 
 instance [LocallySmall.{w} C] [HasFiniteLimits A] [AB5OfSize.{w, w} A] :
     PreservesFiniteLimits (Φ.presheafFiber (A := A)) :=
