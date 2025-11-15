@@ -42,24 +42,22 @@ section IsIntegral
 
 /-- `exp(q * πi)` for `q : ℚ` is integral over `ℤ`. -/
 theorem Complex.isIntegral_exp_rat_mul_pi_mul_I (q : ℚ) : IsIntegral ℤ <| exp <| q * π * I := by
-  refine ⟨X ^ (2 * q.den) - 1, Polynomial.monic_X_pow_sub <| by simp [q.den_pos], ?_⟩
+  refine ⟨X ^ (2 * q.den) - 1, monic_X_pow_sub <| by simp [q.den_pos], ?_⟩
   nth_rw 1 [← q.num_div_den]
-  simp [← Complex.exp_nat_mul,
+  simp [← exp_nat_mul,
     show 2 * q.den * (q.num / q.den * π * I) = q.den / q.den * q.num * (2 * π * I) by ring_nf]
 
 /-- `2 sin(q * π)` for `q : ℚ` is integral over `ℤ`, using the complex `sin` function. -/
 theorem Complex.isIntegral_two_mul_sin_rat_mul_pi (q : ℚ) : IsIntegral ℤ <| 2 * sin (q * π) := by
-  convert integralClosure ℤ ℂ |>.mul_mem (integralClosure ℤ ℂ |>.sub_mem
-      (isIntegral_exp_rat_mul_pi_mul_I (-q)) (isIntegral_exp_rat_mul_pi_mul_I q))
-    Complex.isIntegral_int_I using 1
+  convert ((isIntegral_exp_rat_mul_pi_mul_I (-q)).sub (isIntegral_exp_rat_mul_pi_mul_I q))
+    |>.mul isIntegral_int_I using 1
   unfold sin
   push_cast
   ring_nf
 
 /-- `2 cos(q * π)` for `q : ℚ` is integral over `ℤ`, using the complex `cos` function. -/
 theorem Complex.isIntegral_two_mul_cos_rat_mul_pi (q : ℚ) : IsIntegral ℤ <| 2 * cos (q * π) := by
-  convert integralClosure ℤ ℂ |>.add_mem (isIntegral_exp_rat_mul_pi_mul_I q)
-    (isIntegral_exp_rat_mul_pi_mul_I (-q)) using 1
+  convert (isIntegral_exp_rat_mul_pi_mul_I q).add (isIntegral_exp_rat_mul_pi_mul_I (-q)) using 1
   unfold cos
   push_cast
   ring_nf
@@ -79,28 +77,23 @@ alias isIntegral_two_mul_cos_rat_mul_pi := Real.isIntegral_two_mul_cos_rat_mul_p
 
 /-- `sin(q * π)` for `q : ℚ` is algebraic over `ℤ`, using the complex `sin` function. -/
 theorem Complex.isAlgebraic_sin_rat_mul_pi (q : ℚ) : IsAlgebraic ℤ <| sin <| q * π :=
-  IsAlgebraic.of_mul (by simp) (IsAlgebraic.algebraMap <| Algebra.IsAlgebraic.isAlgebraic (2 : ℤ))
-    (Complex.isIntegral_two_mul_sin_rat_mul_pi q |>.isAlgebraic)
+  .of_mul (by simp) (isAlgebraic_algebraMap _) (isIntegral_two_mul_sin_rat_mul_pi q).isAlgebraic
 
 /-- `cos(q * π)` for `q : ℚ` is algebraic over `ℤ`, using the complex `cos` function. -/
 theorem Complex.isAlgebraic_cos_rat_mul_pi (q : ℚ) : IsAlgebraic ℤ <| cos <| q * π :=
-  IsAlgebraic.of_mul (by simp) (IsAlgebraic.algebraMap <| Algebra.IsAlgebraic.isAlgebraic (2 : ℤ))
-    (Complex.isIntegral_two_mul_cos_rat_mul_pi q |>.isAlgebraic)
+  .of_mul (by simp) (isAlgebraic_algebraMap _) (isIntegral_two_mul_cos_rat_mul_pi q).isAlgebraic
 
 /-- `sin(q * π)` for `q : ℚ` is algebraic over `ℤ`, using the real `sin` function. -/
 theorem Real.isAlgebraic_sin_rat_mul_pi (q : ℚ) : IsAlgebraic ℤ <| sin <| q * π :=
-  IsAlgebraic.of_mul (by simp) (IsAlgebraic.algebraMap <| Algebra.IsAlgebraic.isAlgebraic (2 : ℤ))
-    (Real.isIntegral_two_mul_sin_rat_mul_pi q |>.isAlgebraic)
+  .of_mul (by simp) (isAlgebraic_algebraMap _) (isIntegral_two_mul_sin_rat_mul_pi q).isAlgebraic
 
 /-- `cos(q * π)` for `q : ℚ` is algebraic over `ℤ`, using the real `cos` function. -/
 theorem Real.isAlgebraic_cos_rat_mul_pi (q : ℚ) : IsAlgebraic ℤ <| cos <| q * π :=
-  IsAlgebraic.of_mul (by simp) (IsAlgebraic.algebraMap <| Algebra.IsAlgebraic.isAlgebraic (2 : ℤ))
-    (Real.isIntegral_two_mul_cos_rat_mul_pi q |>.isAlgebraic)
+  .of_mul (by simp) (isAlgebraic_algebraMap _) (isIntegral_two_mul_cos_rat_mul_pi q).isAlgebraic
 
 /-- `tan(q * π)` for `q : ℚ` is algebraic over `ℤ`, using the complex `tan` function. -/
 theorem Complex.tan_rat_mul_pi_isAlgebraic (q : ℚ) : IsAlgebraic ℤ <| tan <| q * π :=
-  IsAlgebraic.mul (Complex.isAlgebraic_sin_rat_mul_pi q)
-    (IsAlgebraic.inv <| Complex.isAlgebraic_cos_rat_mul_pi q)
+  (isAlgebraic_sin_rat_mul_pi q).mul (isAlgebraic_cos_rat_mul_pi q).inv
 
 /-- `tan(q * π)` for `q : ℚ` is algebraic over `ℤ`, using the real `tan` function. -/
 theorem Real.tan_rat_mul_pi_isAlgebraic (q : ℚ) : IsAlgebraic ℤ <| tan <| q * π :=
