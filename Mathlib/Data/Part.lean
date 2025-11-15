@@ -115,7 +115,7 @@ def none : Part α :=
 instance : Inhabited (Part α) :=
   ⟨none⟩
 
-@[simp]
+@[simp, grind .]
 theorem notMem_none (a : α) : a ∉ @none α := fun h => h.fst
 
 @[deprecated (since := "2025-05-23")] alias not_mem_none := notMem_none
@@ -406,7 +406,7 @@ theorem map_some (f : α → β) (a : α) : map f (some a) = some (f a) :=
 theorem mem_assert {p : Prop} {f : p → Part α} : ∀ {a} (h : p), a ∈ f h → a ∈ assert p f
   | _, x, ⟨h, rfl⟩ => ⟨⟨x, h⟩, rfl⟩
 
-@[simp]
+@[simp, grind =]
 theorem mem_assert_iff {p : Prop} {f : p → Part α} {a} : a ∈ assert p f ↔ ∃ h : p, a ∈ f h :=
   ⟨fun ha => match a, ha with
     | _, ⟨_, rfl⟩ => ⟨_, ⟨_, rfl⟩⟩,
