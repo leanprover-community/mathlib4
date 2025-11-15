@@ -5,7 +5,6 @@ Authors: Michael Jendrusch, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 import Mathlib.CategoryTheory.Monoidal.Functor
-import Mathlib.CategoryTheory.Limits.Types.Shapes
 
 /-!
 # The category of types is a (symmetric) monoidal category
@@ -13,8 +12,6 @@ import Mathlib.CategoryTheory.Limits.Types.Shapes
 
 
 open CategoryTheory Limits MonoidalCategory
-
-open Tactic
 
 universe v u
 
