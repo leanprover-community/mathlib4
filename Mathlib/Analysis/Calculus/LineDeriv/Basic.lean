@@ -107,6 +107,10 @@ def lineDeriv (f : E → F) (x : E) (v : E) : F :=
 variable {𝕜}
 variable {f f₁ : E → F} {f' f₀' f₁' : F} {s t : Set E} {x v : E}
 
+lemma HasLineDerivWithinAt.hasDerivWithinAt (hf : HasLineDerivWithinAt 𝕜 f f' s x v) :
+    HasDerivWithinAt (fun t ↦ f (x + t • v)) f' ((fun t ↦ x + t • v) ⁻¹' s) (0 : 𝕜) :=
+  hf
+
 lemma HasLineDerivWithinAt.mono (hf : HasLineDerivWithinAt 𝕜 f f' s x v) (hst : t ⊆ s) :
     HasLineDerivWithinAt 𝕜 f f' t x v :=
   HasDerivWithinAt.mono hf (preimage_mono hst)
@@ -231,7 +235,7 @@ end Module
 section NormedSpace
 
 /-!
-Results that need a normed space structure on `E`
+### Results that need a normed space structure on the domain
 -/
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
