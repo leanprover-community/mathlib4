@@ -808,6 +808,11 @@ theorem neg_one_le_real_inner_of_norm_one {x y : F} (hx : ‖x‖ = 1) (hy : ‖
     -1 ≤ ⟪x, y⟫_ℝ := by
   simpa [hx, hy] using neg_le_of_abs_le (abs_real_inner_le_norm x y)
 
+/-- If `x` and `y` are unit vectors, then `-1 ≤ ⟪x, y⟫ ≤ 1`. -/
+theorem real_inner_mem_Icc_of_norm_one {x y : F} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
+    ⟪x, y⟫_ℝ ∈ Set.Icc (-1) 1 :=
+  ⟨neg_one_le_real_inner_of_norm_one hx hy, real_inner_le_one_of_norm_one hx hy⟩
+
 theorem inner_self_eq_one_of_norm_one {x : E} (hx : ‖x‖ = 1) : ⟪x, x⟫_𝕜 = 1 :=
   (inner_eq_one_iff_of_norm_one hx hx).mpr rfl
 
