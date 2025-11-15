@@ -48,6 +48,11 @@ See the module docstring of `Combinatorics.Enumerative.Partition.GenFun` for mor
 def genFun (f : ℕ → ℕ → R) : R⟦X⟧ :=
   PowerSeries.mk fun n ↦ ∑ p : n.Partition, p.parts.toFinsupp.prod f
 
+@[simp]
+lemma coeff_genFun (f : ℕ → ℕ → R) (n : ℕ) :
+    (genFun f).coeff n = ∑ p : n.Partition, p.parts.toFinsupp.prod f :=
+  PowerSeries.coeff_mk _ _
+
 variable [TopologicalSpace R]
 
 /-- The infinite sum in the formula `Nat.Partition.hasProd_genFun` always converges. -/
@@ -160,7 +165,7 @@ theorem hasProd_genFun (f : ℕ → ℕ → R) :
     suffices 1 ≤ i → i ≤ d → ∃ a ∈ s, a + 1 = i by simpa
     intro h1 h2
     refine ⟨i - 1, mem_of_subset hs ?_, ?_⟩ <;> grind
-  rw [genFun, coeff_mk, coeff_prod]
+  rw [coeff_genFun, coeff_prod]
   refine (sum_of_injOn toFinsuppAntidiag (toFinsuppAntidiag_injective d).injOn ?_ ?_ ?_).symm
   · intro p _
     exact mem_of_subset (finsuppAntidiag_mono hs.le _) p.toFinsuppAntidiag_mem_finsuppAntidiag
