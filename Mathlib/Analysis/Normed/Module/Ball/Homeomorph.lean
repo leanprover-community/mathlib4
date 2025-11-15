@@ -71,7 +71,7 @@ def OpenPartialHomeomorph.univUnitBall : OpenPartialHomeomorph E E where
       rw [Real.sqrt_ne_zero']
       nlinarith [norm_nonneg y, mem_ball_zero_iff.1 hy]
     exact ContinuousOn.smul (ContinuousOn.inv₀
-      (continuousOn_const.sub (continuous_norm.continuousOn.pow _)).sqrt this) continuousOn_id
+      (ContinuousOn.const.sub (continuous_norm.continuousOn.pow _)).sqrt this) continuousOn_id
 
 @[simp]
 theorem OpenPartialHomeomorph.univUnitBall_apply_zero : univUnitBall (0 : E) = 0 := by

@@ -145,12 +145,14 @@ theorem continuous_iff_continuousAt : Continuous f ↔ ∀ x, ContinuousAt f x :
     hf x <| hU.mem_nhds hx⟩
 
 @[fun_prop]
-theorem continuousAt_const : ContinuousAt (fun _ : X => y) x :=
+theorem ContinuousAt.const : ContinuousAt (fun _ : X => y) x :=
   tendsto_const_nhds
+@[deprecated (since := "2025-11-13")] alias continuousAt_const := ContinuousAt.const
 
 @[continuity, fun_prop]
-theorem continuous_const : Continuous fun _ : X => y :=
-  continuous_iff_continuousAt.mpr fun _ => continuousAt_const
+theorem Continuous.const : Continuous fun _ : X => y :=
+  continuous_iff_continuousAt.mpr fun _ => .const
+@[deprecated (since := "2025-11-13")] alias continuous_const := Continuous.const
 
 theorem Filter.EventuallyEq.continuousAt (h : f =ᶠ[𝓝 x] fun _ => y) :
     ContinuousAt f x :=

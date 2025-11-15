@@ -355,7 +355,7 @@ theorem circleIntegral_eq_of_differentiable_on_annulus_off_countable {c : ℂ} {
       (circleIntegral.integral_sub_inv_smul_sub_smul _ _ _ _).symm
     _ = ∮ z in C(c, r), (z - c)⁻¹ • (z - c) • f z :=
       (circleIntegral_sub_center_inv_smul_eq_of_differentiable_on_annulus_off_countable h0 hle hs
-        ((continuousOn_id.sub continuousOn_const).smul hc) fun z hz =>
+        ((continuousOn_id.sub ContinuousOn.const).smul hc) fun z hz =>
         (differentiableAt_id.sub_const _).smul (hd z hz))
     _ = ∮ z in C(c, r), f z := circleIntegral.integral_sub_inv_smul_sub_smul _ _ _ _
 
@@ -402,11 +402,11 @@ theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of
     _ = ‖∮ z in C(c, r), (z - c)⁻¹ • (f z - y)‖ := by
       simp only [smul_sub]
       have hc' : ContinuousOn (fun z => (z - c)⁻¹) (sphere c r) :=
-        (continuousOn_id.sub continuousOn_const).inv₀ fun z hz => sub_ne_zero.2 <| hzne _ hz
+        (continuousOn_id.sub ContinuousOn.const).inv₀ fun z hz => sub_ne_zero.2 <| hzne _ hz
       rw [circleIntegral.integral_sub] <;> refine (hc'.smul ?_).circleIntegrable hr0.le
       · exact hc.mono <| subset_inter
           (sphere_subset_closedBall.trans <| closedBall_subset_closedBall hrR) hzne
-      · exact continuousOn_const
+      · exact ContinuousOn.const
     _ ≤ 2 * π * r * (r⁻¹ * (ε / (2 * π))) := by
       refine circleIntegral.norm_integral_le_of_norm_le_const hr0.le fun z hz => ?_
       specialize hzne z hz
@@ -445,7 +445,7 @@ theorem circleIntegral_eq_zero_of_differentiable_on_off_countable {R : ℝ} (h0 
       (circleIntegral.integral_sub_inv_smul_sub_smul _ _ _ _).symm
     _ = (2 * ↑π * I : ℂ) • (c - c) • f c :=
       (circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable h0 hs
-        ((continuousOn_id.sub continuousOn_const).smul hc) fun z hz =>
+        ((continuousOn_id.sub ContinuousOn.const).smul hc) fun z hz =>
         (differentiableAt_id.sub_const _).smul (hd z hz))
     _ = 0 := by rw [sub_self, zero_smul, smul_zero]
 
@@ -471,11 +471,11 @@ theorem circleIntegral_sub_inv_smul_of_differentiable_on_off_countable_aux {R : 
       F z = (z - w)⁻¹ • (f z - f w) := update_of_ne (hne z hz) ..
       _ = (z - w)⁻¹ • f z - (z - w)⁻¹ • f w := smul_sub _ _ _
   have hc' : ContinuousOn (fun z => (z - w)⁻¹) (sphere c R) :=
-    (continuousOn_id.sub continuousOn_const).inv₀ fun z hz => sub_ne_zero.2 <| hne z hz
+    (continuousOn_id.sub ContinuousOn.const).inv₀ fun z hz => sub_ne_zero.2 <| hne z hz
   rw [← circleIntegral.integral_sub_inv_of_mem_ball hw.1, ← circleIntegral.integral_smul_const, ←
     sub_eq_zero, ← circleIntegral.integral_sub, ← circleIntegral.integral_congr hR.le hFeq, HI]
   exacts [(hc'.smul (hc.mono sphere_subset_closedBall)).circleIntegrable hR.le,
-    (hc'.smul continuousOn_const).circleIntegrable hR.le]
+    (hc'.smul ContinuousOn.const).circleIntegrable hR.le]
 
 /-- **Cauchy integral formula**: if `f : ℂ → E` is continuous on a closed disc of radius `R` and is
 complex differentiable at all but countably many points of its interior, then for any `w` in this

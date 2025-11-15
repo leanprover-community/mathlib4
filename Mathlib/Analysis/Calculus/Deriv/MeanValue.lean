@@ -84,7 +84,7 @@ theorem exists_ratio_hasDerivAt_eq_ratio_slope :
   have hhh' : ∀ x ∈ Ioo a b, HasDerivAt h (h' x) x := fun x hx =>
     ((hff' x hx).const_mul (g b - g a)).sub ((hgg' x hx).const_mul (f b - f a))
   have hhc : ContinuousOn h (Icc a b) :=
-    (continuousOn_const.mul hfc).sub (continuousOn_const.mul hgc)
+    (ContinuousOn.const.mul hfc).sub (ContinuousOn.const.mul hgc)
   rcases exists_hasDerivAt_eq_zero hab hhc hI hhh' with ⟨c, cmem, hc⟩
   exact ⟨c, cmem, sub_eq_zero.1 hc⟩
 

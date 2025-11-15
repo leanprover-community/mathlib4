@@ -439,7 +439,7 @@ theorem isPreconnected_univ_pi [∀ i, TopologicalSpace (X i)] {s : ∀ i, Set (
       rwa [update_preimage_univ_pi]
       exact fun j _ => this j trivial
     have hconn : IsPreconnected S :=
-      (hs i).image _ (continuous_const.update i continuous_id).continuousOn
+      (hs i).image _ (Continuous.const.update i continuous_id).continuousOn
     have hSu : (S ∩ u).Nonempty := ⟨_, mem_image_of_mem _ (hfs _ trivial), hI⟩
     have hSv : (S ∩ v).Nonempty := ⟨_, ⟨_, this _ trivial, update_eq_self _ _⟩, h⟩
     refine (hconn u v uo vo (hsub.trans hsuv) hSu hSv).mono ?_

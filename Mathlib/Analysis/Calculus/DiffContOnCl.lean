@@ -45,7 +45,7 @@ theorem diffContOnCl_univ : DiffContOnCl 𝕜 f univ ↔ Differentiable 𝕜 f :
   isClosed_univ.diffContOnCl_iff.trans differentiableOn_univ
 
 theorem diffContOnCl_const {c : F} : DiffContOnCl 𝕜 (fun _ : E => c) s :=
-  ⟨differentiableOn_const c, continuousOn_const⟩
+  ⟨differentiableOn_const c, ContinuousOn.const⟩
 
 namespace DiffContOnCl
 

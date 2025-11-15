@@ -445,7 +445,7 @@ theorem continuousOn_of_dominated {F : X → α → G} {bound : α → ℝ} {s :
   · simp only [integral, hG, L1.integral]
     exact continuousOn_setToFun_of_dominated (dominatedFinMeasAdditive_weightedSMul μ)
       hF_meas h_bound bound_integrable h_cont
-  · simp [integral, hG, continuousOn_const]
+  · simp [integral, hG, ContinuousOn.const]
 
 theorem continuous_of_dominated {F : X → α → G} {bound : α → ℝ}
     (hF_meas : ∀ x, AEStronglyMeasurable (F x) μ) (h_bound : ∀ x, ∀ᵐ a ∂μ, ‖F x a‖ ≤ bound a)

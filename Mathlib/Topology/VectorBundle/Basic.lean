@@ -494,7 +494,7 @@ def trivialVectorBundleCore (ι : Type*) [Inhabited ι] : VectorBundleCore R B F
   coordChange _ _ _ := ContinuousLinearMap.id R F
   coordChange_self _ _ _ _ := rfl
   coordChange_comp _ _ _ _ _ _ := rfl
-  continuousOn_coordChange _ _ := continuousOn_const
+  continuousOn_coordChange _ _ := ContinuousOn.const
 
 instance (ι : Type*) [Inhabited ι] : Inhabited (VectorBundleCore R B F ι) :=
   ⟨trivialVectorBundleCore R B F ι⟩

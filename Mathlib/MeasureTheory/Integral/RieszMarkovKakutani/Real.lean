@@ -384,7 +384,7 @@ lemma measure_le_of_isCompact_of_integral [ν.OuterRegular]
     μ.real K = ∫ x, K.indicator 1 x ∂μ := integral_indicator_one hK.measurableSet |>.symm
     _ ≤ ∫ x, f x ∂μ := by
       refine integral_mono ?_ f.integrable hfK
-      exact (continuousOn_const.integrableOn_compact hK).integrable_indicator hK.measurableSet
+      exact (ContinuousOn.const.integrableOn_compact hK).integrable_indicator hK.measurableSet
     _ ≤ ∫ x, f x ∂ν := hμν f
     _ ≤ ∫ x, V.indicator 1 x ∂ν := by
       refine integral_mono f.integrable ?_ hfV

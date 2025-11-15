@@ -126,7 +126,7 @@ theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
   have hsub : sphere z r ⊆ closedBall z r := sphere_subset_closedBall
   refine circleIntegral.norm_integral_lt_of_norm_le_const_of_lt hr ?_ ?_ ⟨w, rfl, ?_⟩
   · show ContinuousOn (fun ζ : ℂ => (ζ - z)⁻¹ • f ζ) (sphere z r)
-    refine ((continuousOn_id.sub continuousOn_const).inv₀ ?_).smul (hd.continuousOn_ball.mono hsub)
+    refine ((continuousOn_id.sub ContinuousOn.const).inv₀ ?_).smul (hd.continuousOn_ball.mono hsub)
     exact fun ζ hζ => sub_ne_zero.2 (ne_of_mem_sphere hζ hr.ne')
   · show ∀ ζ ∈ sphere z r, ‖(ζ - z)⁻¹ • f ζ‖ ≤ ‖f z‖ / r
     rintro ζ (hζ : ‖ζ - z‖ = r)
@@ -248,7 +248,7 @@ theorem norm_eqOn_closure_of_isPreconnected_of_isMaxOn {f : E → F} {U : Set E}
     (hc : IsPreconnected U) (ho : IsOpen U) (hd : DiffContOnCl ℂ f U) (hcU : c ∈ U)
     (hm : IsMaxOn (norm ∘ f) U c) : EqOn (norm ∘ f) (const E ‖f c‖) (closure U) :=
   (norm_eqOn_of_isPreconnected_of_isMaxOn hc ho hd.differentiableOn hcU hm).of_subset_closure
-    hd.continuousOn.norm continuousOn_const subset_closure Subset.rfl
+    hd.continuousOn.norm ContinuousOn.const subset_closure Subset.rfl
 
 section StrictConvex
 
@@ -287,7 +287,7 @@ theorem eqOn_closure_of_isPreconnected_of_isMaxOn_norm {f : E → F} {U : Set E}
     (hc : IsPreconnected U) (ho : IsOpen U) (hd : DiffContOnCl ℂ f U) (hcU : c ∈ U)
     (hm : IsMaxOn (norm ∘ f) U c) : EqOn f (const E (f c)) (closure U) :=
   (eqOn_of_isPreconnected_of_isMaxOn_norm hc ho hd.differentiableOn hcU hm).of_subset_closure
-    hd.continuousOn continuousOn_const subset_closure Subset.rfl
+    hd.continuousOn ContinuousOn.const subset_closure Subset.rfl
 
 /-- **Maximum modulus principle**. Let `f : E → F` be a function between complex normed spaces.
 Suppose that the codomain `F` is a strictly convex space, `f` is complex differentiable on a set

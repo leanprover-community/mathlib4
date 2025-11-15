@@ -123,7 +123,7 @@ theorem continuousOn_taylorWithinEval {f : ℝ → E} {x : ℝ} {n : ℕ} {s : S
     ContinuousOn (fun t => taylorWithinEval f n s t x) s := by
   simp_rw [taylor_within_apply]
   refine continuousOn_finset_sum (Finset.range (n + 1)) fun i hi => ?_
-  refine (continuousOn_const.mul ((continuousOn_const.sub continuousOn_id).pow _)).smul ?_
+  refine (ContinuousOn.const.mul ((ContinuousOn.const.sub continuousOn_id).pow _)).smul ?_
   rw [contDiffOn_nat_iff_continuousOn_differentiableOn_deriv hs] at hf
   simp only [Finset.mem_range] at hi
   refine hf.1 i ?_

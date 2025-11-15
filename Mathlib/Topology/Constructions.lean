@@ -824,7 +824,7 @@ theorem continuous_update [DecidableEq ι] (i : ι) :
 @[to_additive (attr := continuity) /-- `Pi.single i x` is continuous in `x`. -/]
 theorem continuous_mulSingle [∀ i, One (A i)] [DecidableEq ι] (i : ι) :
     Continuous fun x => (Pi.mulSingle i x : ∀ i, A i) :=
-  continuous_const.update _ continuous_id
+  Continuous.const.update _ continuous_id
 
 section Fin
 variable {n : ℕ} {A : Fin (n + 1) → Type*} [∀ i, TopologicalSpace (A i)]
