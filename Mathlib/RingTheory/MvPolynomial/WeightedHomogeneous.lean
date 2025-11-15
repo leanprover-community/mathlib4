@@ -10,6 +10,7 @@ import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Data.Finsupp.Weight
 import Mathlib.RingTheory.GradedAlgebra.Basic
+import Mathlib.Tactic.Order
 
 /-!
 # Weighted homogeneous polynomials
@@ -528,8 +529,7 @@ theorem weightedDegree_eq_zero_iff [CanonicallyOrderedAdd M]
   · intro hx
     by_contra hx'
     exact absurd (hw _ _ (hx hx')) hx'
-  · intro hax _
-    simp only [hax, zero_smul]
+  · order
 
 end OrderedAddCommMonoid
 
