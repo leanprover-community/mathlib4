@@ -12,11 +12,11 @@ import Mathlib.Algebra.Field.ZMod
 
 A prime field is a field that does not contain any nontrivial subfield. Prime fields are `ℚ` in
 characteristic `0` and `ZMod p` in characteristic `p` with `p` a prime number. Any field `K`
-contains a prime field, it is the smallest field contained in `K`.
+contains a unique prime field: it is the smallest field contained in `K`.
 
 ## Results
 
-* The fields `ℚ` and `ZMod p` are prime fields. This is stated as the instance that
+* The fields `ℚ` and `ZMod p` are prime fields. These are stated as the instances that says yha
   the corresponding `Subfield` type is a `Subsingleton`.
 * `Subfield.bot_eq_of_charZero` : the smallest subfield of a field of characteristic `0` is (the
   image of) `ℚ`.
