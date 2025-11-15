@@ -11,6 +11,8 @@ import Mathlib.Tactic.NormNum
 private axiom test_sorry : ∀ {α}, α
 open List Set
 
+set_option linter.style.mono true
+
 example (x y z k : ℕ)
     (h : 3 ≤ (4 : ℕ))
     (h' : z ≤ y) :
