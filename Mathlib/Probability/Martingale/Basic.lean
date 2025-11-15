@@ -578,6 +578,21 @@ theorem Submartingale.sum_smul_sub' {E : Type*} [NormedAddCommGroup E] [NormedSp
     Submartingale (fun n => ∑ k ∈ Finset.range n, ξ (k + 1) • (f (k + 1) - f k)) 𝒢 μ :=
   hf.sum_smul_sub hξ (fun _ => hbdd _) fun _ => hnonneg _
 
+theorem Submartingale.sum_mul_sub [IsFiniteMeasure μ] {R : ℝ} {ξ f : ℕ → Ω → ℝ}
+    (hf : Submartingale f 𝒢 μ) (hξ : Adapted 𝒢 ξ) (hbdd : ∀ n ω, ξ n ω ≤ R)
+    (hnonneg : ∀ n ω, 0 ≤ ξ n ω) :
+    Submartingale (fun n => ∑ k ∈ Finset.range n, ξ k * (f (k + 1) - f k)) 𝒢 μ :=
+  hf.sum_smul_sub hξ hbdd hnonneg
+
+/-- Given a discrete submartingale `f` and a predictable process `ξ` (i.e. `ξ (n + 1)` is adapted)
+the process defined by `fun n => ∑ k ∈ Finset.range n, ξ (k + 1) * (f (k + 1) - f k)` is also a
+submartingale. -/
+theorem Submartingale.sum_mul_sub' [IsFiniteMeasure μ] {R : ℝ} {ξ f : ℕ → Ω → ℝ}
+    (hf : Submartingale f 𝒢 μ) (hξ : Adapted 𝒢 fun n => ξ (n + 1)) (hbdd : ∀ n ω, ξ n ω ≤ R)
+    (hnonneg : ∀ n ω, 0 ≤ ξ n ω) :
+    Submartingale (fun n => ∑ k ∈ Finset.range n, ξ (k + 1) * (f (k + 1) - f k)) 𝒢 μ :=
+  hf.sum_smul_sub' hξ hbdd hnonneg
+
 end Nat
 
 end MeasureTheory

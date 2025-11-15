@@ -401,6 +401,18 @@ lemma condExp_mul_of_aestronglyMeasurable_right {f g : α → ℝ} (hg : AEStron
     (hfg : Integrable (f * g) μ) (hf : Integrable f μ) : μ[f * g | m] =ᵐ[μ] μ[f | m] * g :=
   condExp_bilin_of_aestronglyMeasurable_right (ContinuousLinearMap.mul ℝ ℝ) hg hfg hf
 
+/-- Pull-out property of the conditional expectation. -/
+theorem condExp_mul_of_stronglyMeasurable_left {f g : α → ℝ} (hf : StronglyMeasurable[m] f)
+    (hfg : Integrable (f * g) μ) (hg : Integrable g μ) : μ[f * g|m] =ᵐ[μ] f * μ[g|m] :=
+  condExp_bilin_of_aestronglyMeasurable_left (ContinuousLinearMap.mul ℝ ℝ)
+    hf.aestronglyMeasurable hfg hg
+
+/-- Pull-out property of the conditional expectation. -/
+lemma condExp_mul_of_stronglyMeasurable_right {f g : α → ℝ} (hg : StronglyMeasurable[m] g)
+    (hfg : Integrable (f * g) μ) (hf : Integrable f μ) : μ[f * g | m] =ᵐ[μ] μ[f | m] * g :=
+  condExp_bilin_of_aestronglyMeasurable_right (ContinuousLinearMap.mul ℝ ℝ)
+    hg.aestronglyMeasurable hfg hf
+
 end PullOut
 
 end MeasureTheory
