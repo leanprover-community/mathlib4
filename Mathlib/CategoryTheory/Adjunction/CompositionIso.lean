@@ -14,10 +14,10 @@ and show that the left adjoint functors satisfy properties similar to the left/r
 unitality and the associativity of pseudofunctors if the right adjoint functors
 satisfy the corresponding properties.
 
-This shall be used to study the behaviour with respect to composition of
-the pullback functors on presheaves of modules, by reducing these definitions and
-properties to the (obvious) case of the pushforward functors. Similar results shall
-be obtained for sheaves of modules (TODO).
+This is used in `Mathlib.Algebra.Category.ModuleCat.Presheaf.Pullback` to study
+the behaviour with respect to composition of the pullback functors on presheaves
+of modules, by reducing these definitions and properties to the (obvious) case of the
+pushforward functors. Similar results shall be obtained for sheaves of modules (TODO).
 
 -/
 
