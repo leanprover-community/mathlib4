@@ -26,7 +26,7 @@ section UnitVectorAngles
 /-- Gets the orthogonal direction of one vector relative to another. -/
 private noncomputable def ortho (y x : V) : V := x - (ℝ ∙ y).starProjection x
 
-private lemma inner_ortho_nonneg_of_norm_one {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
+private lemma inner_ortho_nonneg_of_norm_eq_one {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     0 ≤ ⟪x, ortho y x⟫ := by
   rw [ortho, Submodule.starProjection_unit_singleton _ hy, inner_sub_right,
     inner_self_eq_one_of_norm_one hx, real_inner_smul_right, real_inner_comm, sub_nonneg]
@@ -69,7 +69,7 @@ private lemma inner_ortho_right_eq_sin_angle {x y : V} (hx : ‖x‖ = 1) (hy : 
   have H0 : 0 ≤ ⟪x, normalize (ortho y x)⟫ := by
     rw [NormedSpace.normalize, real_inner_smul_right]
     exact Left.mul_nonneg (inv_nonneg_of_nonneg (norm_nonneg (ortho y x)))
-      (inner_ortho_nonneg_of_norm_one hx hy)
+      (inner_ortho_nonneg_of_norm_eq_one hx hy)
   simp_all [abs_of_nonneg H0]
 
 private lemma angle_le_angle_add_angle_aux {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) :
@@ -99,7 +99,7 @@ private lemma angle_le_angle_add_angle_aux {x y : V} (Hx : ‖x‖ = 1) (Hy : �
   rw [real_inner_comm x, H0]
   field_simp; simp
 
-lemma angle_le_angle_add_angle_of_norm_one {x y z : V}
+lemma angle_le_angle_add_angle_of_norm_eq_one {x y z : V}
     (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) (Hz : ‖z‖ = 1) :
     angle x z ≤ angle x y + angle y z := by
   rcases lt_or_ge Real.pi (angle x y + angle y z) with H | H
@@ -139,7 +139,7 @@ theorem InnerProductGeometry.angle_le_angle_add_angle (x y z : V) :
   · simpa [hy] using angle_le_pi x z
   by_cases hz : z = 0
   · simpa [hz] using angle_nonneg x y
-  simpa using angle_le_angle_add_angle_of_norm_one (norm_normalize_eq_one_iff.mpr hx)
+  simpa using angle_le_angle_add_angle_of_norm_eq_one (norm_normalize_eq_one_iff.mpr hx)
     (norm_normalize_eq_one_iff.mpr hy) (norm_normalize_eq_one_iff.mpr hz)
 
 namespace EuclideanGeometry
