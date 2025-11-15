@@ -24,12 +24,12 @@ The birthday of a pre-game can be understood as representing the depth of its ga
 other hand, the birthday of a game more closely matches Conway's original description. The lemma
 `SetTheory.Game.birthday_eq_pGameBirthday` links both definitions together.
 
-# Main declarations
+## Main declarations
 
 - `SetTheory.PGame.birthday`: The birthday of a pre-game.
 - `SetTheory.Game.birthday`: The birthday of a game.
 
-# Todo
+## Todo
 
 - Characterize the birthdays of other basic arithmetical operations.
 -/
