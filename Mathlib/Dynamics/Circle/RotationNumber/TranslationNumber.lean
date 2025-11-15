@@ -416,7 +416,7 @@ theorem ceil_map_map_zero_le : ⌈f (g 0)⌉ ≤ ⌈f 0⌉ + ⌈g 0⌉ :=
     ⌈f (g 0)⌉ ≤ ⌈f 0 + ⌈g 0⌉⌉ := ceil_mono <| f.map_map_zero_le g
     _ = ⌈f 0⌉ + ⌈g 0⌉ := ceil_add_intCast _ _
 
-theorem map_map_zero_lt : f (g 0) < f 0 + g 0 + 1 := by
+theorem map_map_zero_lt : f (g 0) < f 0 + g 0 + 1 :=
   calc
     f (g 0) ≤ f 0 + ⌈g 0⌉ := f.map_map_zero_le g
     _ < f 0 + (g 0 + 1) := by gcongr; exact ceil_lt_add_one _
