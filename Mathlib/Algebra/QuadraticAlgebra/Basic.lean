@@ -6,7 +6,6 @@ Authors: Antoine Chambert-Loir
 
 import Mathlib.Algebra.QuadraticAlgebra.Defs
 import Mathlib.Algebra.Star.Unitary
-import Mathlib.Tactic.FieldSimp
 
 /-! # Quadratic algebras : involution and norm.
 
