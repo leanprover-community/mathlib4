@@ -401,13 +401,15 @@ theorem map_id (K : NonemptyCompacts α) : K.map id continuous_id = K := by
   simp
 
 theorem map_comp (f : β → γ) (g : α → β) (hf : Continuous f) (hg : Continuous g)
-    (K : NonemptyCompacts α) : K.map (f ∘ g) (hf.comp hg) = (K.map g hg).map f hf :=
-  NonemptyCompacts.ext <| Set.image_comp _ _ _
+    (K : NonemptyCompacts α) : K.map (f ∘ g) (hf.comp hg) = (K.map g hg).map f hf := by
+  ext
+  simp
 
 @[simp]
 theorem map_singleton {f : α → β} (hf : Continuous f) (x : α) :
-    NonemptyCompacts.map f hf {x} = {f x} :=
-  NonemptyCompacts.ext Set.image_singleton
+    NonemptyCompacts.map f hf {x} = {f x} := by
+  ext
+  simp
 
 theorem map_injective {f : α → β} (hf : Continuous f) (hf' : Function.Injective f) :
     Function.Injective (NonemptyCompacts.map f hf) :=
