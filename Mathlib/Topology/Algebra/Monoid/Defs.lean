@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Topology.Constructions.SumProd
+import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Topological monoids - definitions
@@ -59,6 +60,13 @@ lemma Filter.tendsto_of_div_tendsto_one {α E : Type*} [CommGroup E] [Topologica
     [ContinuousMul E] {f g : α → E} (m : E) {x : Filter α} (hf : Tendsto f x (𝓝 m))
     (hfg : Tendsto (g / f) x (𝓝 1)) : Tendsto g x (𝓝 m) := by
   simpa using Tendsto.mul hf hfg
+
+@[to_additive]
+theorem Filter.limUnder_mul [T2Space M] {α : Type*} {f g : α → M} {x : Filter α} [NeBot x]
+    {a b : M} (h₁ : Tendsto f x (𝓝 a)) (h₂ : Tendsto g x (𝓝 b)) :
+    @limUnder _ _ _ ⟨a * b⟩ x (fun x ↦ f x * g x) =
+    @limUnder _ _ _ ⟨a⟩ x f * @limUnder _ _ _ ⟨b⟩ x g := by
+  rw[Tendsto.limUnder_eq h₁, Tendsto.limUnder_eq h₂, Tendsto.limUnder_eq <| Tendsto.mul h₁ h₂]
 
 variable {X : Type*} [TopologicalSpace X] {f g : X → M} {s : Set X} {x : X}
 

@@ -20,8 +20,7 @@ typeclass for measures invariant under action of an (additive or multiplicative)
 some basic properties of such measures.
 -/
 
-
-open scoped ENNReal NNReal Pointwise Topology
+open scoped ENNReal NNReal Pointwise Topology symmDiff
 open MeasureTheory.Measure Set Function Filter
 
 namespace MeasureTheory
@@ -100,6 +99,22 @@ theorem measure_preimage_smul (c : G) (s : Set α) : μ ((c • ·) ⁻¹' s) = 
 @[to_additive (attr := simp)]
 theorem measure_smul (c : G) (s : Set α) : μ (c • s) = μ s := by
   simpa only [preimage_smul_inv] using measure_preimage_smul μ c⁻¹ s
+
+@[to_additive]
+theorem measure_smul_inter (c : G) (s t : Set α) : μ (c • s ∩ t) = μ (s ∩ c⁻¹ • t) := by
+  rw[← measure_smul _ c (s ∩ c⁻¹ • t), smul_set_inter, smul_smul, mul_inv_cancel, one_smul]
+
+@[to_additive]
+theorem measure_smul_union (c : G) (s t : Set α) : μ (c • s ∪ t) = μ (s ∪ c⁻¹ • t) := by
+  rw[← measure_smul _ c (s ∪ c⁻¹ • t), smul_set_union, smul_smul, mul_inv_cancel, one_smul]
+
+@[to_additive]
+theorem measure_smul_sdiff (c : G) (s t : Set α) : μ (c • s \ t) = μ (s \ c⁻¹ • t) := by
+  rw[← measure_smul _ c (s \ c⁻¹ • t), smul_set_sdiff, smul_smul, mul_inv_cancel, one_smul]
+
+@[to_additive]
+theorem measure_smul_symmDiff (c : G) (s t : Set α) : μ ((c • s) ∆ t) = μ (s ∆ (c⁻¹ • t)) := by
+  rw[← measure_smul _ c (s ∆ (c⁻¹ • t)), smul_set_symmDiff, smul_smul, mul_inv_cancel, one_smul]
 
 variable {μ}
 

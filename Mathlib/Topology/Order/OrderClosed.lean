@@ -628,6 +628,19 @@ theorem le_of_tendsto_of_tendsto' {f g : β → α} {b : Filter β} {a₁ a₂ :
     (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : ∀ x, f x ≤ g x) : a₁ ≤ a₂ :=
   le_of_tendsto_of_tendsto hf hg (Eventually.of_forall h)
 
+theorem limUnder_le_of_tendsto_of_tendsto [T2Space α] {f g : β → α} {b : Filter β} {a₁ a₂ : α}
+    [NeBot b] (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : f ≤ᶠ[b] g) :
+    @limUnder _ _ _ ⟨a₁⟩ b f ≤ @limUnder _ _ _ ⟨a₂⟩ b g := by
+  rw[Tendsto.limUnder_eq hf, Tendsto.limUnder_eq hg]
+  exact le_of_tendsto_of_tendsto hf hg h
+
+alias limUnder_le_of_eventuallyLE := limUnder_le_of_tendsto_of_tendsto
+
+theorem limUnder_le_of_tendsto_of_tendsto' [T2Space α] {f g : β → α} {b : Filter β} {a₁ a₂ : α}
+    [NeBot b] (hf : Tendsto f b (𝓝 a₁)) (hg : Tendsto g b (𝓝 a₂)) (h : ∀ x, f x ≤ g x) :
+    @limUnder _ _ _ ⟨a₁⟩ b f ≤ @limUnder _ _ _ ⟨a₂⟩ b g :=
+  limUnder_le_of_tendsto_of_tendsto hf hg (Eventually.of_forall h)
+
 @[simp]
 theorem closure_le_eq [TopologicalSpace β] {f g : β → α} (hf : Continuous f) (hg : Continuous g) :
     closure { b | f b ≤ g b } = { b | f b ≤ g b } :=
