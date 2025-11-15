@@ -37,7 +37,7 @@ universe u v w
 
 open List
 
-variable {α : Type u} {β : α → Type v}
+variable {α : Type u} {β γ : α → Type v}
 
 /-- `AList β` is a key-value map stored as a `List` (i.e. a linked list).
   It is a wrapper around certain `List` functions with the added constraint
@@ -117,6 +117,11 @@ theorem empty_entries : (∅ : AList β).entries = [] :=
 @[simp]
 theorem keys_empty : (∅ : AList β).keys = [] :=
   rfl
+
+theorem eq_empty_iff (m : AList β) : m.entries = [] ↔ m = ∅ := by
+  apply Iff.intro
+  · intro hm; apply ext; simp [hm]
+  · intro hm; simp [hm]
 
 /-! ### singleton -/
 
@@ -203,6 +208,10 @@ end
 /-- Fold a function over the key-value pairs in the map. -/
 def foldl {δ : Type w} (f : δ → ∀ a, β a → δ) (d : δ) (m : AList β) : δ :=
   m.entries.foldl (fun r a => f r a.1 a.2) d
+
+def foldr {δ : Type w} (f : ∀ a, β a → δ → δ) (d : δ) (m : AList β) : δ :=
+  m.entries.foldr (fun a r => f a.1 a.2 r) d
+
 
 /-! ### erase -/
 
@@ -431,6 +440,11 @@ theorem lookup_union_eq_some {a} {b : β a} {s₁ s₂ : AList β} :
     lookup a (s₁ ∪ s₂) = some b ↔ lookup a s₁ = some b ∨ a ∉ s₁ ∧ lookup a s₂ = some b :=
   mem_dlookup_kunion
 
+@[simp]
+theorem lookup_union_eq_none {x : α} {m₁ m₂ : AList β} :
+  (m₁ ∪ m₂).lookup x = none ↔ m₁.lookup x = none ∧ m₂.lookup x = none :=
+  dlookup_kunion_eq_none
+
 theorem mem_lookup_union_middle {a} {b : β a} {s₁ s₂ s₃ : AList β} :
     b ∈ lookup a (s₁ ∪ s₃) → a ∉ s₂ → b ∈ lookup a (s₁ ∪ s₂ ∪ s₃) :=
   mem_dlookup_kunion_middle
@@ -442,10 +456,241 @@ theorem union_assoc {s₁ s₂ s₃ : AList β} : (s₁ ∪ s₂ ∪ s₃).entri
   lookup_ext (AList.nodupKeys _) (AList.nodupKeys _)
     (by simp [not_or, or_assoc, and_or_left, and_assoc])
 
+
+/-! Filter -/
+
+/-- `m.filter_map p` performs two operations on `m`:
+(1) It removes the key-value bindings `(x, y)` such that `p x y = None`.
+(2) It updates the remaining key-value bindings `(x, y)` to `(x, y')`
+where `p x y = Some y'`.
+-/
+def filter_map (m : AList β) (p : (x : α) → β x → Option (γ x)) : AList γ :=
+  m.foldr (fun x y acc =>
+    match p x y with
+    | some y' => acc.insert x y'
+    | none => acc
+  ) ∅
+
+/-- `m.filter p` removes the key-value bindings `(x, y)` for which `p x y` is false. -/
+def filter (m : AList β) (p : (x : α) → β x → Prop)
+  [∀ x y, Decidable (p x y)] : AList β :=
+  m.filter_map fun x y => if p x y then some y else none
+
+@[simp]
+theorem empty_filter_map {p : (x : α) → β x → Option (γ x)} : AList.filter_map ∅ p = ∅ := by
+  simp [filter_map, foldr]
+
+theorem insert_filter_map {m : AList β} {p : (x : α) → β x → Option (γ x)} {x : α} {y : β x} :
+  x ∉ m →
+  (m.insert x y).filter_map p =
+    match p x y with
+    | some y' => (m.filter_map p).insert x y'
+    | none    => m.filter_map p
+:= by
+  intros hx_nin_m
+  apply ext
+  cases (Option.eq_none_or_eq_some (p x y))
+  case a.inl hnone =>
+    simp [hnone, insert, List.kerase_of_notMem_keys hx_nin_m]
+    simp [filter_map, foldr, hnone]
+  case a.inr hsome =>
+    have ⟨y', hsome'⟩ := hsome
+    simp [hsome', insert, List.kerase_of_notMem_keys hx_nin_m]
+    simp [filter_map, foldr, hsome']
+
+theorem lookup_filter_map_eq_some
+  {m : AList β} {p : (x : α) → β x → Option (γ x)} (x : α) (y' : γ x) :
+  (m.filter_map p).lookup x = some y' →
+  ∃ y, m.lookup x = some y ∧ p x y = some y'
+:= by
+  revert x y'
+  induction m
+  case H0 => intro x y'; simp
+  case IH x y m hm ih =>
+    intro x' y'
+    rw [insert_filter_map hm]
+    match (Option.eq_none_or_eq_some (p x y)) with
+    | Or.inl hnone =>
+      simp [hnone]; intro hy'
+      have ⟨z, hz, hp⟩ := ih x' y' hy'
+      match Decidable.em (x' = x) with
+      | Or.inr hneq => simp [lookup_insert_ne hneq]; exists z
+      | Or.inl heq =>
+        cases heq
+        rw [←lookup_eq_none] at hm
+        simp [hm] at *
+    | Or.inr ⟨z, hsome⟩ =>
+      simp [hsome]
+      intro hy'
+      match Decidable.em (x' = x) with
+      | Or.inr hneq =>
+        simp [lookup_insert_ne hneq] at *
+        have ⟨z', hz', hp'⟩ := ih x' y' hy'
+        exists z'
+      | Or.inl heq =>
+        cases heq; simp at *
+        cases hy'; assumption
+
+theorem lookup_filter_map_eq_none
+  {m : AList β} {p : (x : α) → β x → Option (γ x)} (x : α) :
+  (m.filter_map p).lookup x = none →
+  m.lookup x = none ∨ ∃ y, m.lookup x = some y ∧ p x y = none
+:= by
+  revert x
+  induction m
+  case H0 => intro x; simp
+  case IH x y m hm ih =>
+    intro x'
+    rw [insert_filter_map hm]
+    match (Option.eq_none_or_eq_some (p x y)) with
+    | Or.inl hnone =>
+      simp [hnone]
+      intro hlkp_x'
+      match ih x' hlkp_x' with
+      | Or.inl hm_lkp_x' =>
+        match Decidable.em (x' = x) with
+        | Or.inr hneq => apply Or.inl ⟨hneq, hm_lkp_x'⟩
+        | Or.inl heq =>
+          cases heq
+          apply Or.inr ⟨y, by simp, hnone⟩
+      | Or.inr ⟨y', hy', hp'⟩ =>
+        apply Or.inr
+        match Decidable.em (x' = x) with
+        | Or.inr hneq =>
+          exists y'; apply And.intro _ hp'
+          simp [hneq]; assumption
+        | Or.inl heq => cases heq; exists y; simp; assumption
+    | Or.inr ⟨z, hsome⟩ =>
+      simp [hsome]
+      intro hneq hlkp_x'
+      match ih x' hlkp_x' with
+      | Or.inl hm_lkp_x' => apply Or.inl ⟨hneq, hm_lkp_x'⟩
+      | Or.inr ⟨y', hy', hp'⟩ =>
+        apply Or.inr ⟨y', by simp [hneq, hy'], hp'⟩
+
+theorem lookup_filter_map_eq_some_iff
+  {m : AList β} {p : (x : α) → β x → Option (γ x)} (x : α) (y' : γ x) :
+  (m.filter_map p).lookup x = some y' ↔
+  ∃ y, m.lookup x = some y ∧ p x y = some y'
+:= by
+  apply Iff.intro (lookup_filter_map_eq_some x y')
+  intro ⟨y, hy, hp⟩
+  match ((m.filter_map p).lookup x).eq_none_or_eq_some with
+  | Or.inl hnone =>
+    match lookup_filter_map_eq_none x hnone with
+    | Or.inl hlkp_x_none => simp [hy] at *
+    | Or.inr ⟨z, hz, hp⟩ => simp [hy] at *; cases hz; simp [hp] at *
+  | Or.inr ⟨z, hsome⟩ =>
+    have ⟨z', hz', hp'⟩ := lookup_filter_map_eq_some x z hsome
+    simp [hy] at *; cases hz'; simp [hp] at *; cases hp'; assumption
+
+theorem lookup_filter_map_eq_none_iff
+  {m : AList β} {p : (x : α) → β x → Option (γ x)} (x : α) :
+  (m.filter_map p).lookup x = none ↔
+  m.lookup x = none ∨ ∃ y, m.lookup x = some y ∧ p x y = none
+:= by
+  apply Iff.intro (lookup_filter_map_eq_none x)
+  apply ((m.filter_map p).lookup x).eq_none_or_eq_some.elim (fun _ => ·)
+  apply flip; intro
+  | Or.inl hnone =>
+    intro ⟨y, hsome⟩
+    have ⟨y', hy', hp'⟩ := lookup_filter_map_eq_some x y hsome
+    simp [hnone] at *
+  | Or.inr ⟨y, hsome, hp⟩ =>
+    intro ⟨y', hsome⟩
+    have ⟨z, hz, hp'⟩ := lookup_filter_map_eq_some x y' hsome
+    simp [*] at *; cases hz; simp [hp] at *
+
+theorem filter_map_is_permutation_respecting
+  {m₁ m₂ : AList β} {p : (x : α) → β x → Option (γ x)} :
+  m₁.entries.Perm m₂.entries →
+  ∀ x, (m₁.filter_map p).lookup x = (m₂.filter_map p).lookup x
+:= by
+  intro hperm x
+  cases ((m₂.filter_map p).lookup x).eq_none_or_eq_some
+  case inl hnone =>
+    rw [hnone]
+    rw [lookup_filter_map_eq_none_iff] at *
+    rw [perm_lookup hperm]
+    assumption
+  case inr hsome =>
+    have ⟨y, hsomey⟩ := hsome
+    rw [hsomey]
+    rw [lookup_filter_map_eq_some_iff] at *
+    rw [perm_lookup hperm]
+    assumption
+
+
+/-! ### merge -/
+
+/-- `merge s₁ s₂ f` computes an association list that contains the same keys
+as the union of `s₁` and `s₂`. A key `x` that is both in `s₁` and `s₂` is bound
+to `f y₁ y₂` where `(x, y₁) ∈ s₁` and `(x, y₂) ∈ s₂`. The original bindings
+(in `s₁` or in `s₂`) are kept for remaining keys.
+-/
+def merge (m₁ m₂ : AList β) (f : {x : α} → β x → β x → β x) : AList β :=
+  (m₁ ∪ m₂).filter_map fun x _ =>
+    match m₁.lookup x, m₂.lookup x with
+    | some y₁, some y₂ => some (f y₁ y₂)
+    | some y₁,    none => some y₁
+    |    none, some y₂ => some y₂
+    |    none,    none => none
+
+theorem lookup_merge_none {m₁ m₂ : AList β} {f : {x : α} → β x → β x → β x} {x : α} :
+  m₁.lookup x = none →
+  m₂.lookup x = none →
+  (merge m₁ m₂ f).lookup x = none
+:= by
+  intro hm₁_lkp hm₂_lkp
+  simp [merge, lookup_filter_map_eq_none_iff, *]
+
+theorem lookup_merge_eq_none {m₁ m₂ : AList β} {f : {x : α} → β x → β x → β x} {x : α} :
+  (merge m₁ m₂ f).lookup x = none →
+  m₁.lookup x = none ∧
+  m₂.lookup x = none
+:= by
+  rw [merge, lookup_filter_map_eq_none_iff]
+  simp [lookup_union_eq_none]
+  intro
+  | Or.inl h => exact h
+  | Or.inr ⟨⟨y, hlkp⟩, hmatch⟩ =>
+    revert hmatch
+    apply hlkp.elim
+    · intro hsome
+      simp [hsome]; cases (m₂.lookup x) <;> simp
+    · intro ⟨_, hsome⟩
+      simp [hsome]; cases (m₁.lookup x) <;> simp
+
+theorem lookup_merge_some_left {m₁ m₂ : AList β} {f : {x : α} → β x → β x → β x} {x : α} {y : β x} :
+  m₁.lookup x = some y →
+  m₂.lookup x = none →
+  (merge m₁ m₂ f).lookup x = some y
+:= by
+  intro hm₁_lkp hm₂_lkp
+  simp [merge, lookup_filter_map_eq_some_iff, *]
+
+theorem lookup_merge_some_right
+  {m₁ m₂ : AList β} {f : {x : α} → β x → β x → β x} {x : α} {y : β x} :
+  m₁.lookup x = none →
+  m₂.lookup x = some y →
+  (merge m₁ m₂ f).lookup x = some y
+:= by
+  intro hm₁_lkp hm₂_lkp
+  simp [merge, lookup_filter_map_eq_some_iff, ←lookup_eq_none, *]
+
+theorem lookup_merge_some_inter
+  {m₁ m₂ : AList β} {f : {x : α} → β x → β x → β x} {x : α} {y₁ y₂ : β x} :
+  m₁.lookup x = some y₁ →
+  m₂.lookup x = some y₂ →
+  (merge m₁ m₂ f).lookup x = some (f y₁ y₂)
+:= by
+  intro hm₁_lkp hm₂_lkp
+  simp [merge, lookup_filter_map_eq_some_iff, *]
+
 end
 
-/-! ### disjoint -/
 
+/-! ### disjoint -/
 
 /-- Two associative lists are disjoint if they have no common keys. -/
 def Disjoint (s₁ s₂ : AList β) : Prop :=
