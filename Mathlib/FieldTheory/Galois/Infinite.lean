@@ -101,6 +101,10 @@ lemma fixedField_bot [IsGalois k K] :
     IntermediateField.fixedField (⊤ : Subgroup Gal(K/k)) = ⊥ := by
   rw [← IntermediateField.fixingSubgroup_bot, fixedField_fixingSubgroup]
 
+theorem mem_bot_iff_fixed [IsGalois k K] (x : K) :
+    x ∈ (⊥ : IntermediateField k K) ↔ ∀ (f : Gal(K/k)), f x = x := by
+  simp [← fixedField_bot, IntermediateField.mem_fixedField_iff]
+
 open IntermediateField in
 /-- For a subgroup `H` of `Gal(K/k)`, the fixed field of the image of `H` under the restriction to
 a normal intermediate field `E` is equal to the fixed field of `H` in `K` intersecting with `E`. -/
