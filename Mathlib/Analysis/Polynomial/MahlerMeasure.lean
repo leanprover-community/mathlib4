@@ -195,7 +195,7 @@ theorem logMahlerMeasure_C_mul_X_add_C {a : ℂ} (ha : a ≠ 0) (b : ℂ) :
   rw [show C a * X + C b = C a * (X + C (a⁻¹ * b)) by simp [mul_add, ← map_mul, ha],
     logMahlerMeasure_C_mul ha (X_add_C_ne_zero (a⁻¹ * b)), logMahlerMeasure_X_add_C]
 
-theorem logMahlerMeasure_degree_eq_one {p : ℂ[X]} (h : p.degree = 1) : p.logMahlerMeasure =
+theorem logMahlerMeasure_of_degree_eq_one {p : ℂ[X]} (h : p.degree = 1) : p.logMahlerMeasure =
     log ‖p.coeff 1‖ + log⁺ ‖(p.coeff 1)⁻¹ * p.coeff 0‖ := by
   rw [eq_X_add_C_of_degree_le_one (le_of_eq h)]
   simp [logMahlerMeasure_C_mul_X_add_C (show p.coeff 1 ≠ 0 by exact coeff_ne_zero_of_eq_degree h)]
@@ -222,7 +222,7 @@ theorem mahlerMeasure_C_mul_X_add_C {a : ℂ} (ha : a ≠ 0) (b : ℂ) :
   norm_cast
   simp [mul_max, ha]
 
-theorem mahlerMeasure_degree_eq_one {p : ℂ[X]} (h : p.degree = 1) :
+theorem mahlerMeasure_of_degree_eq_one {p : ℂ[X]} (h : p.degree = 1) :
     p.mahlerMeasure = max ‖p.coeff 1‖ ‖p.coeff 0‖ := by
   rw [eq_X_add_C_of_degree_le_one (le_of_eq h)]
   simp [mahlerMeasure_C_mul_X_add_C (show p.coeff 1 ≠ 0 by exact coeff_ne_zero_of_eq_degree h)]
