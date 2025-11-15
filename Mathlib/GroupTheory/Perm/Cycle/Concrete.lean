@@ -368,6 +368,9 @@ theorem toCycle_eq_toList (f : Perm α) (hf : IsCycle f) (x : α) (hx : f x ≠ 
   rw [toCycle, key]
   simp [hx]
 
+theorem exists_toCycle_toList (f : Perm α) (hf : IsCycle f) : ∃ x, toCycle f hf = toList f x :=
+  Exists.casesOn hf (fun x h => ⟨ x, Perm.toCycle_eq_toList f hf x h.1⟩)
+
 theorem nodup_toCycle (f : Perm α) (hf : IsCycle f) : (toCycle f hf).Nodup := by
   obtain ⟨x, hx, -⟩ := id hf
   simpa [toCycle_eq_toList f hf x hx] using nodup_toList _ _
@@ -375,6 +378,13 @@ theorem nodup_toCycle (f : Perm α) (hf : IsCycle f) : (toCycle f hf).Nodup := b
 theorem nontrivial_toCycle (f : Perm α) (hf : IsCycle f) : (toCycle f hf).Nontrivial := by
   obtain ⟨x, hx, -⟩ := id hf
   simp [toCycle_eq_toList f hf x hx, hx, Cycle.nontrivial_coe_nodup_iff (nodup_toList _ _)]
+
+@[simp]
+theorem toCycle_next (f : Perm α) (hf : f.IsCycle) (hx : x ∈ toCycle f hf) :
+    (toCycle f hf).next (nodup_toCycle f hf) x hx = f x := by
+  have ⟨ l, hl ⟩ := exists_toCycle_toList f hf
+  simp only [hl, Cycle.mem_coe_iff] at ⊢ hx
+  exact Equiv.Perm.next_toList_eq_apply f l x hx
 
 /-- Any cyclic `f : Perm α` is isomorphic to the nontrivial `Cycle α`
 that corresponds to repeated application of `f`.
