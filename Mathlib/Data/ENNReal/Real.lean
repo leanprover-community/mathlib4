@@ -15,7 +15,7 @@ files.
 
 This file provides a `positivity` extension for `ENNReal.ofReal`.
 
-# Main theorems
+## Main statements
 
   - `trichotomy (p : ℝ≥0∞) : p = 0 ∨ p = ∞ ∨ 0 < p.toReal`: often used for `WithLp` and `lp`
   - `dichotomy (p : ℝ≥0∞) [Fact (1 ≤ p)] : p = ∞ ∨ 1 ≤ p.toReal`: often used for `WithLp` and `lp`
