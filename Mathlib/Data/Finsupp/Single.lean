@@ -29,7 +29,7 @@ noncomputable section
 
 open Finset Function
 
-variable {α β γ ι M M' N P G H R S : Type*}
+variable {α β M N P : Type*}
 
 namespace Finsupp
 
@@ -47,26 +47,25 @@ def single (a : α) (b : M) : α →₀ M where
   toFun :=
     haveI := Classical.decEq α
     Pi.single a b
-  mem_support_toFun a' := by
-    classical
-      obtain rfl | hb := eq_or_ne b 0
-      · simp [Pi.single, update]
-      rw [if_neg hb, mem_singleton]
-      obtain rfl | ha := eq_or_ne a' a
-      · simp [hb, Pi.single, update]
-      simp [ha]
+  mem_support_toFun a' := by aesop (add simp [Pi.single, Function.update])
 
-theorem single_apply [Decidable (a = a')] : single a b a' = if a = a' then b else 0 := by
-  classical
-  simp_rw [@eq_comm _ a a', single, coe_mk, Pi.single_apply]
+@[simp]
+theorem coe_single [DecidableEq α] (a : α) (b : M) : ⇑(single a b) = Pi.single a b := by
+  dsimp [single]
+  congr!
+
+@[deprecated (since := "2025-10-25")]
+alias single_eq_pi_single := coe_single
+
+theorem single_apply [Decidable (a' = a)] : single a b a' = if a' = a then b else 0 := by
+  classical aesop
 
 theorem single_apply_left {f : α → β} (hf : Function.Injective f) (x z : α) (y : M) :
     single (f x) y (f z) = single x y z := by classical simp only [single_apply, hf.eq_iff]
 
+-- TODO: reprove this for `Pi.single` (where should this lemma go?)
 theorem single_eq_set_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b := by
-  classical
-  ext
-  simp [single_apply, Set.indicator, @eq_comm _ a]
+  classical aesop (add simp [Set.indicator])
 
 @[simp]
 theorem single_eq_same : (single a b : α →₀ M) a = b := by
@@ -83,9 +82,6 @@ theorem single_eq_of_ne' (h : a ≠ a') : (single a b : α →₀ M) a' = 0 := b
 theorem single_eq_update [DecidableEq α] (a : α) (b : M) :
     ⇑(single a b) = Function.update (0 : _) a b := by
   classical rw [single_eq_set_indicator, ← Set.piecewise_eq_indicator, Set.piecewise_singleton]
-
-theorem single_eq_pi_single [DecidableEq α] (a : α) (b : M) : ⇑(single a b) = Pi.single a b :=
-  single_eq_update a b
 
 @[simp]
 theorem single_zero (a : α) : (single a 0 : α →₀ M) = 0 :=
@@ -194,7 +190,7 @@ theorem unique_single_eq_iff [Unique α] {b' : M} : single a b = single a' b' �
   rw [Finsupp.unique_ext_iff, Unique.eq_default a, Unique.eq_default a', single_eq_same,
     single_eq_same]
 
-lemma apply_single' [Zero N] [Zero P] (e : N → P) (he : e 0 = 0) (a : α) (n : N) (b : α) :
+lemma apply_single' [Zero N] (e : N → M) (he : e 0 = 0) (a : α) (n : N) (b : α) :
     e ((single a n) b) = single a (e n) b := by
   classical
   simp only [single_apply]
@@ -242,7 +238,7 @@ theorem card_support_le_one' [Nonempty α] {f : α →₀ M} :
 @[simp]
 theorem equivFunOnFinite_single [DecidableEq α] [Finite α] (x : α) (m : M) :
     Finsupp.equivFunOnFinite (Finsupp.single x m) = Pi.single x m := by
-  simp [Finsupp.single_eq_pi_single, equivFunOnFinite]
+  simp [equivFunOnFinite]
 
 @[simp]
 theorem equivFunOnFinite_symm_single [DecidableEq α] [Finite α] (x : α) (m : M) :
@@ -437,13 +433,12 @@ end Erase
 
 section MapRange
 
-variable [Zero M] [Zero N] [Zero P]
+variable [Zero M] [Zero N]
 
 @[simp]
 theorem mapRange_single {f : M → N} {hf : f 0 = 0} {a : α} {b : M} :
     mapRange f hf (single a b) = single a (f b) :=
-  ext fun a' => by
-    classical simpa only [single_eq_pi_single] using Pi.apply_single _ (fun _ => hf) a _ a'
+  ext fun a' => by classical exact Pi.apply_single _ (fun _ => hf) a _ a'
 
 end MapRange
 
@@ -461,15 +456,10 @@ theorem single_of_embDomain_single (l : α →₀ M) (f : α ↪ β) (a : β) (b
       rw [← support_embDomain, h, support_single_ne_zero _ hb]
     have ha : a ∈ Finset.map f l.support := by simp only [h_map_support, Finset.mem_singleton]
     rcases Finset.mem_map.1 ha with ⟨c, _hc₁, hc₂⟩
-    use c
-    constructor
+    refine ⟨c, ?_, ?_⟩
     · ext d
-      rw [← embDomain_apply f l, h]
-      by_cases h_cases : c = d
-      · simp only [Eq.symm h_cases, hc₂, single_eq_same]
-      · rw [single_apply, single_apply, if_neg, if_neg h_cases]
-        by_contra hfd
-        exact h_cases (f.injective (hc₂.trans hfd))
+      rw [← embDomain_apply f l]
+      by_cases c = d <;> aesop
     · exact hc₂
 
 @[simp]
