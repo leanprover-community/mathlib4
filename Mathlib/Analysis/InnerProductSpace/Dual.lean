@@ -66,10 +66,9 @@ def toDualMap : E →ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
 variable {E}
 
 @[simp]
-theorem toDualMap_apply {x : E} : toDualMap 𝕜 E x = innerSL 𝕜 x :=
-  rfl
-
 theorem toDualMap_apply_apply {x y : E} : toDualMap 𝕜 E x y = ⟪x, y⟫ := rfl
+
+@[deprecated (since := "2025-11-15")] alias toDualMap_apply := toDualMap_apply_apply
 
 variable {𝕜} in
 @[simp]
@@ -169,10 +168,9 @@ def toDual : E ≃ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
 variable {𝕜} {E}
 
 @[simp]
-theorem toDual_apply {x : E} : toDual 𝕜 E x = toDualMap 𝕜 E x :=
-  rfl
-
 theorem toDual_apply_apply {x y : E} : toDual 𝕜 E x y = ⟪x, y⟫ := rfl
+
+@[deprecated (since := "2025-11-15")] alias toDual_apply := toDual_apply_apply
 
 @[simp]
 theorem toDual_symm_apply {x : E} {y : StrongDual 𝕜 E} : ⟪(toDual 𝕜 E).symm y, x⟫ = y x := by
