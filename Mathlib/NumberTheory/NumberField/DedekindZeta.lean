@@ -21,7 +21,7 @@ In this file, we define and prove results about the Dedekind zeta function of a 
   computation of the residue of the Dedekind zeta function at `s = 1`, see Chap. 7 of
   [D. Marcus, *Number Fields*][marcus1977number]
 
-# TODO
+## TODO
 
 Generalize the construction of the Dedekind zeta function.
 -/
