@@ -9,6 +9,14 @@ import Mathlib.CategoryTheory.Comma.Over.Basic
 /-!
 # Lifting properties in Over categories
 
+In this file, we show that if `sq` is a commutative square in
+a category `Over S` for `S : C`, there is a lift for `sq`
+if there is a lift for the underlying commutative square
+in the category `C`. It follows that if `i` and `p` are
+morphisms in `Over S`, then `i` has the left lifting
+property with respect to `p` when `i.left` has
+the left lifting property with respect to `p.left`.
+
 -/
 
 universe v u
