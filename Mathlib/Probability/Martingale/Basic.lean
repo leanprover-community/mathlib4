@@ -520,7 +520,7 @@ theorem Submartingale.sum_mul_sub [PartialOrder E] [IsOrderedModule ℝ E] [Orde
     (hf : Submartingale f 𝒢 μ) (hξ : Adapted 𝒢 ξ) (hbdd : ∀ n ω, ξ n ω ≤ R)
     (hnonneg : ∀ n ω, 0 ≤ ξ n ω) :
     Submartingale (fun n => ∑ k ∈ Finset.range n, ξ k • (f (k + 1) - f k)) 𝒢 μ := by
-  have hξbdd : ∀ i, ∃ C, ∀ ω, |ξ i ω| ≤ C := fun i =>
+  have hξbdd : ∀ i, ∃ C, ∀ ω, ‖ξ i ω‖ ≤ C := fun i =>
     ⟨R, fun ω => (abs_of_nonneg (hnonneg i ω)).trans_le (hbdd i ω)⟩
   have hint : ∀ m, Integrable (∑ k ∈ Finset.range m, ξ k • (f (k + 1) - f k)) μ := by
     choose C hC using hξbdd
@@ -539,19 +539,25 @@ theorem Submartingale.sum_mul_sub [PartialOrder E] [IsOrderedModule ℝ E] [Orde
   refine submartingale_of_condExp_sub_nonneg_nat hadp hint fun i => ?_
   simp only [← Finset.sum_Ico_eq_sub _ (Nat.le_succ _),
     Nat.Ico_succ_singleton, Finset.sum_singleton]
-  exact EventuallyLE.trans (EventuallyLE.mul_nonneg (Eventually.of_forall (hnonneg _))
-    (hf.condExp_sub_nonneg (Nat.le_succ _))) (condExp_mul_of_stronglyMeasurable_left (hξ _)
-    (((hf.integrable _).sub (hf.integrable _)).bdd_mul
-      hξ.stronglyMeasurable.aestronglyMeasurable (hξbdd _))
-    ((hf.integrable _).sub (hf.integrable _))).symm.le
+  obtain ⟨C, hC⟩ := hξbdd i
+  filter_upwards [hf.condExp_sub_nonneg i.le_succ,
+    condExp_smul_of_aestronglyMeasurable_left (hξ i).aestronglyMeasurable
+    (((hf.integrable (i + 1)).sub (hf.integrable i)).smul_of_top_right
+      (memLp_top_of_bound hξ.stronglyMeasurable.aestronglyMeasurable C (ae_of_all _ hC)))
+    ((hf.integrable _).sub (hf.integrable _))] with ω hω1 hω2
+  simp only [Pi.zero_apply, Nat.succ_eq_add_one, Pi.smul_apply'] at hω1 hω2 ⊢
+  grw [← smul_zero (0 : ℝ), hnonneg i ω, hω1, hω2]
+  · exact hnonneg i ω
+  · simp
 
 /-- Given a discrete submartingale `f` and a predictable process `ξ` (i.e. `ξ (n + 1)` is adapted)
 the process defined by `fun n => ∑ k ∈ Finset.range n, ξ (k + 1) * (f (k + 1) - f k)` is also a
 submartingale. -/
-theorem Submartingale.sum_mul_sub' [IsFiniteMeasure μ] {R : ℝ} {ξ f : ℕ → Ω → ℝ}
+theorem Submartingale.sum_mul_sub' [PartialOrder E] [IsOrderedModule ℝ E] [OrderClosedTopology E]
+    [IsOrderedAddMonoid E] [IsFiniteMeasure μ] {R : ℝ} {ξ : ℕ → Ω → ℝ} {f : ℕ → Ω → E}
     (hf : Submartingale f 𝒢 μ) (hξ : Adapted 𝒢 fun n => ξ (n + 1)) (hbdd : ∀ n ω, ξ n ω ≤ R)
     (hnonneg : ∀ n ω, 0 ≤ ξ n ω) :
-    Submartingale (fun n => ∑ k ∈ Finset.range n, ξ (k + 1) * (f (k + 1) - f k)) 𝒢 μ :=
+    Submartingale (fun n => ∑ k ∈ Finset.range n, ξ (k + 1) • (f (k + 1) - f k)) 𝒢 μ :=
   hf.sum_mul_sub hξ (fun _ => hbdd _) fun _ => hnonneg _
 
 end Nat
