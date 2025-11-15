@@ -345,6 +345,45 @@ theorem even_xor {m n : ℕ} : Even (m ^^^ n) ↔ (Even m ↔ Even n) := by
   simp only [even_iff, xor_mod_two_eq]
   cutsat
 
+@[simp]
+theorem xor_one_of_even {n : ℕ} (h : Even n) : n ^^^ 1 = n + 1 := by
+  cases n with
+  | zero => rfl
+  | succ n =>
+    simp [HXor.hXor, instXorOp, xor, bitwise, even_iff.mp h, ← mul_two, div_two_mul_two_of_even h]
+
+@[simp]
+theorem xor_one_of_not_even {n : ℕ} (h : ¬Even n) : n ^^^ 1 = n - 1 := by
+  cases n with
+  | zero =>
+    exact (h <| even_iff.mpr rfl).elim
+  | succ n =>
+    simp only [HXor.hXor, instXorOp, xor, bitwise, reduceDiv, bitwise_zero_right]
+    grind
+
+/-- The xor of the numbers from 0 to n can be easily calculated using `n mod 4`. -/
+theorem xor_range (n : ℕ) : (List.range (n + 1)).foldl (· ^^^ ·) 0 =
+    match Fin.ofNat 4 n with | 0 => n | 1 => 1 | 2 => n + 1 | 3 => 0 := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    nth_rw 3 [← show Fin.ofNat 4 1 = (1 : ℕ) from Fin.val_ofNat ..]
+    rw [List.range_succ, List.foldl_append, ih, ← Fin.ofNat_add, List.foldl_cons, List.foldl_nil]
+    match h : Fin.ofNat 4 n with
+    | 0 =>
+      rw [Fin.zero_add, ← xor_one_of_even <| even_iff.mpr ?_, xor_xor_cancel_left]
+      rw [← @mod_mod_of_dvd _ 4 _ <| by simp, ← Fin.val_ofNat 4, h]
+      rfl
+    | 1 =>
+      rw [Nat.xor_comm]
+      refine xor_one_of_even <| even_iff.mpr ?_
+      rw [add_mod, ← @mod_mod_of_dvd _ 4 n <| by simp, ← Fin.val_ofNat 4, h]
+      rfl
+    | 2 =>
+      apply Nat.xor_self
+    | 3 =>
+      apply zero_xor
+
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
   cases b <;> simp <;> omega
 
