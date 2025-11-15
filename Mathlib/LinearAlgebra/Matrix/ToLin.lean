@@ -329,6 +329,10 @@ theorem Matrix.range_mulVecLin (M : Matrix m n R) :
     LinearMap.range M.mulVecLin = span R (range M.col) := by
   rw [← vecMulLinear_transpose, range_vecMulLinear, row_transpose]
 
+theorem Matrix.col_mem_range_mulVecLin (M : Matrix m n R) (j : n) :
+    M.col j ∈ LinearMap.range M.mulVecLin := by
+  simp [Matrix.range_mulVecLin, Submodule.mem_span_of_mem]
+
 theorem Matrix.mulVec_injective_iff {M : Matrix m n R} :
     Function.Injective M.mulVec ↔ LinearIndependent R M.col := by
   change Function.Injective (fun x ↦ _) ↔ _
