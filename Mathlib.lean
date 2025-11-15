@@ -4,6 +4,10 @@ import Mathlib.Algebra.AddConstMap.Basic
 import Mathlib.Algebra.AddConstMap.Equiv
 import Mathlib.Algebra.AddTorsor.Basic
 import Mathlib.Algebra.AddTorsor.Defs
+import Mathlib.Algebra.AffineMonoid.Basic
+import Mathlib.Algebra.AffineMonoid.Embedding
+import Mathlib.Algebra.AffineMonoid.Irreducible
+import Mathlib.Algebra.AffineMonoid.UniqueSums
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Algebra.Defs
