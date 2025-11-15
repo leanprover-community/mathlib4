@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.MorphismProperty.Composition
 # Subcategories of comma categories defined by morphism properties
 
 Given functors `L : A ⥤ T` and `R : B ⥤ T` and morphism properties `P`, `Q` and `W`
-on `T`, A` and `B` respectively, we define the subcategory `P.Comma L R Q W` of
+on `T`, `A` and `B` respectively, we define the subcategory `P.Comma L R Q W` of
 `Comma L R` where
 
 - objects are objects of `Comma L R` with the structural morphism satisfying `P`, and

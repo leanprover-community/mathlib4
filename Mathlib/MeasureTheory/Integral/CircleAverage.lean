@@ -53,7 +53,7 @@ noncomputable def circleAverage : E :=
 lemma circleAverage_def :
     circleAverage f c R = (2 * π)⁻¹ • ∫ θ in 0..2 * π, f (circleMap c R θ) := rfl
 
-/-- Expression of `circleAverage´ in terms of interval averages. -/
+/-- Expression of `circleAverage'` in terms of interval averages. -/
 lemma circleAverage_eq_intervalAverage :
     circleAverage f c R = ⨍ θ in 0..2 * π, f (circleMap c R θ) := by
   simp [circleAverage, interval_average_eq]
@@ -68,7 +68,7 @@ lemma circleAverage_eq_intervalAverage :
     one_smul]
 
 /--
-Expression of `circleAverage´ with arbitrary center in terms of `circleAverage` with center zero.
+Expression of `circleAverage'` with arbitrary center in terms of `circleAverage` with center zero.
 -/
 lemma circleAverage_fun_add :
     circleAverage (fun z ↦ f (z + c)) 0 R = circleAverage f c R := by

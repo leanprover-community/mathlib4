@@ -120,7 +120,7 @@ theorem mulExpNegMulSq_eq_sqrt_mul_mulExpNegMulSq_one (hε : 0 < ε) (x : ℝ) :
     mulExpNegMulSq ε x = (√ε)⁻¹ * mulExpNegMulSq 1 (sqrt ε * x) := by
   grind [mulExpNegMulSq]
 
-/-- For fixed `ε > 0`, the mapping `x ↦ mulExpNegMulSq ε x` is bounded by `(√ε)⁻¹ -/
+/-- For fixed `ε > 0`, the mapping `x ↦ mulExpNegMulSq ε x` is bounded by `(√ε)⁻¹`. -/
 theorem abs_mulExpNegMulSq_le (hε : 0 < ε) {x : ℝ} : |mulExpNegMulSq ε x| ≤ (√ε)⁻¹ := by
   rw [mulExpNegMulSq_eq_sqrt_mul_mulExpNegMulSq_one hε x, abs_mul, abs_of_pos (by positivity)]
   apply mul_le_of_le_one_right

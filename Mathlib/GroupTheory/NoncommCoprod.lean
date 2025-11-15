@@ -49,7 +49,7 @@ def noncommCoprod (comm : ∀ m n, Commute (f m) (g n)) : M × N →ₙ* P where
   toFun mn := f mn.fst * g mn.snd
   map_mul' mn mn' := by simpa using (comm _ _).mul_mul_mul_comm _ _
 
-/-- Variant of `MulHom.noncommCoprod_apply` with the product written in the other direction` -/
+/-- Variant of `MulHom.noncommCoprod_apply` with the product written in the other direction. -/
 @[to_additive
   /-- Variant of `AddHom.noncommCoprod_apply`, with the sum written in the other direction -/]
 theorem noncommCoprod_apply' (comm) (mn : M × N) :
@@ -84,7 +84,7 @@ def noncommCoprod : M × N →* P where
   map_one' := by simp only [Prod.fst_one, Prod.snd_one, map_one, mul_one]
   __ := f.toMulHom.noncommCoprod g.toMulHom comm
 
-/-- Variant of `MonoidHom.noncomCoprod_apply` with the product written in the other direction` -/
+/-- Variant of `MonoidHom.noncomCoprod_apply` with the product written in the other direction. -/
 @[to_additive
   /-- Variant of `AddMonoidHom.noncomCoprod_apply` with the sum written in the other direction -/]
 theorem noncommCoprod_apply' (comm) (mn : M × N) :

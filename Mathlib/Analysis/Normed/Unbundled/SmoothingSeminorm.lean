@@ -12,12 +12,12 @@ import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
 /-!
 # smoothingSeminorm
-In this file, we prove [BGR, Proposition 1.3.2/1][bosch-guntzer-remmert] : if `μ` is a
-nonarchimedean seminorm on a commutative ring `R`, then `
+In this file, we prove [BGR, Proposition 1.3.2/1][bosch-guntzer-remmert]: if `μ` is a
+nonarchimedean seminorm on a commutative ring `R`, then
 `iInf (fun (n : PNat), (μ(x ^ (n : ℕ))) ^ (1 / (n : ℝ)))` is a power-multiplicative nonarchimedean
 seminorm on `R`.
 
-## Main Definitions
+## Main definitions
 * `smoothingSeminormSeq` : the `ℝ`-valued sequence sending `n` to `((f( (x ^ n)) ^ (1 / n : ℝ)`.
 * `smoothingFun` : the iInf of the sequence `n ↦ f(x ^ (n : ℕ))) ^ (1 / (n : ℝ)`.
 * `smoothingSeminorm` : if `μ 1 ≤ 1` and `μ` is nonarchimedean, then `smoothingFun`

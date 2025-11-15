@@ -42,7 +42,7 @@ variable
 variable (𝕜) in
 /--
 Convenience reformulation of the second iterated derivative, as a map from `E` to bilinear maps
-`E →ₗ[ℝ] E →ₗ[ℝ] ℝ
+`E →ₗ[ℝ] E →ₗ[ℝ] ℝ`.
 -/
 noncomputable def bilinearIteratedFDerivWithinTwo (f : E → F) (s : Set E) : E → E →ₗ[𝕜] E →ₗ[𝕜] F :=
   fun x ↦ (fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x).toLinearMap₁₂
@@ -50,7 +50,7 @@ noncomputable def bilinearIteratedFDerivWithinTwo (f : E → F) (s : Set E) : E 
 variable (𝕜) in
 /--
 Convenience reformulation of the second iterated derivative, as a map from `E` to bilinear maps
-`E →ₗ[ℝ] E →ₗ[ℝ] ℝ
+`E →ₗ[ℝ] E →ₗ[ℝ] ℝ`.
 -/
 noncomputable def bilinearIteratedFDerivTwo (f : E → F) : E → E →ₗ[𝕜] E →ₗ[𝕜] F :=
   fun x ↦ (fderiv 𝕜 (fderiv 𝕜 f) x).toLinearMap₁₂

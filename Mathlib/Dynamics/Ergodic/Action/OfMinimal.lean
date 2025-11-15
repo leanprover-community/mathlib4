@@ -19,7 +19,7 @@ is based on the ergodicity of the left action of a group on itself
 and the following fact that we prove in `ergodic_smul_of_denseRange_pow` below:
 
 If a monoid `M` continuously acts on an R₁ topological space `X`,
-`g` is an element of `M such that its natural powers are dense in `M`,
+`g` is an element of `M` such that its natural powers are dense in `M`,
 and `μ` is a finite inner regular measure on `X` which is ergodic with respect to the action of `M`,
 then the scalar multiplication by `g` is an ergodic map.
 
@@ -63,11 +63,11 @@ theorem aeconst_of_dense_setOf_preimage_smul_eq (hsm : NullMeasurableSet s μ)
   aeconst_of_dense_setOf_preimage_smul_ae hsm <| hd.mono fun _ h ↦ mem_setOf.2 <| .of_eq h
 
 /-- If a monoid `M` continuously acts on an R₁ topological space `X`,
-`g` is an element of `M such that its natural powers are dense in `M`,
+`g` is an element of `M` such that its natural powers are dense in `M`,
 and `μ` is a finite inner regular measure on `X` which is ergodic with respect to the action of `M`,
 then the scalar multiplication by `g` is an ergodic map. -/
 @[to_additive /-- If an additive monoid `M` continuously acts on an R₁ topological space `X`,
-`g` is an element of `M such that its natural multiples are dense in `M`,
+`g` is an element of `M` such that its natural multiples are dense in `M`,
 and `μ` is a finite inner regular measure on `X` which is ergodic with respect to the action of `M`,
 then the vector addition of `g` is an ergodic map. -/]
 theorem ergodic_smul_of_denseRange_pow {M : Type*} [Monoid M] [TopologicalSpace M]
@@ -121,11 +121,11 @@ theorem aeconst_of_dense_aestabilizer_smul (hsm : NullMeasurableSet s μ)
     simpa only [preimage_smul] using hg
 
 /-- If a monoid `M` continuously acts on an R₁ topological space `X`,
-`g` is an element of `M such that its integer powers are dense in `M`,
+`g` is an element of `M` such that its integer powers are dense in `M`,
 and `μ` is a finite inner regular measure on `X` which is ergodic with respect to the action of `M`,
 then the scalar multiplication by `g` is an ergodic map. -/
 @[to_additive /-- If an additive monoid `M` continuously acts on an R₁ topological space `X`,
-`g` is an element of `M such that its integer multiples are dense in `M`,
+`g` is an element of `M` such that its integer multiples are dense in `M`,
 and `μ` is a finite inner regular measure on `X` which is ergodic with respect to the action of `M`,
 then the vector addition of `g` is an ergodic map. -/]
 theorem ergodic_smul_of_denseRange_zpow {g : G} (hg : DenseRange (g ^ · : ℤ → G))

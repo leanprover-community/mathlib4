@@ -15,7 +15,7 @@ import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 Given a linearly ordered commutative group with zero `Γ`, a valuation `v : A → Γ` on a ring `A` is
 *discrete*, if there is an element `γ : Γˣ` that is `< 1` and generated the range of `v`,
 implemented as `MonoidWithZeroHom.valueGroup v`. When `Γ := ℤₘ₀` (defined in
-`Multiplicative.termℤₘ₀`), `γ` = ofAdd (-1)` and the condition of being discrete is
+`Multiplicative.termℤₘ₀`), `γ = ofAdd (-1)` and the condition of being discrete is
 equivalent to asking that `ofAdd (-1 : ℤ)` belongs to the image, in turn equivalent to asking that
 `1 : ℤ` belongs to the image of the corresponding *additive* valuation.
 
@@ -27,7 +27,7 @@ discrete, we use the name `IsRankOneDiscrete` to refer to discrete valuations in
 * `Valuation.IsRankOneDiscrete`: We define a `Γ`-valued valuation `v` to be discrete if there is
   an element `γ : Γˣ` that is `< 1` and generates the range of `v`.
 * `Valuation.IsUniformizer`: Given a `Γ`-valued valuation `v` on a ring `R`, an element `π : R` is
-  a uniformizer if `v π` is a generator of the value group that is `<1`.
+  a uniformizer if `v π` is a generator of the value group that is `< 1`.
 * `Valuation.Uniformizer`: A structure bundling an element of a ring and a proof that it is a
   uniformizer.
 

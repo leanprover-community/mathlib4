@@ -11,7 +11,7 @@ import Mathlib.Logic.Basic
 The `subsingleton` tactic closes `Eq` or `HEq` goals using an argument
 that the types involved are subsingletons.
 To first approximation, it does `apply Subsingleton.elim` but it also will try `proof_irrel_heq`,
-and it is careful not to accidentally specialize `Sort _` to `Prop.
+and it is careful not to accidentally specialize `Sort _` to `Prop`.
 -/
 
 open Lean Meta
