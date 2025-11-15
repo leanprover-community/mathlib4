@@ -322,7 +322,7 @@ Single Variable Real Analysis:
     Leibniz formula: 'deriv_mul'
   Taylor-like theorems:
     Taylor's theorem with little-o remainder: "https://en.wikipedia.org/wiki/Taylor%27s_theorem#Taylor's_theorem_in_one_real_variable"
-    Taylor's theorem with integral form for remainder: 'https://en.wikipedia.org/wiki/Taylor%27s_theorem#Explicit_formulas_for_the_remainder'
+    Taylor's theorem with integral form for remainder: 'add_eq_sum_add_integral_iteratedDeriv'
     Taylor's theorem with Lagrange form for remainder: 'taylor_mean_remainder_lagrange'
     Taylor series expansions: 'https://en.wikipedia.org/wiki/Taylor_series'
   Elementary functions (trigonometric, rational, $\exp$, $\log$, etc):
@@ -465,7 +465,7 @@ Multivariable calculus:
     $k$-th order partial derivatives: ''
     partial derivatives commute: 'second_derivative_symmetric'
     Taylor's theorem with little-o remainder: ''
-    Taylor's theorem with integral form for remainder: ''
+    Taylor's theorem with integral form for remainder: 'add_eq_sum_add_integral_iteratedFDeriv'
     local extrema: 'IsLocalMin.fderiv_eq_zero'
     convexity of functions on an open convex subset of $\R^n$: 'ConvexOn'
     diffeomorphisms: 'Structomorph'

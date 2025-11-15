@@ -1604,6 +1604,7 @@ import Mathlib.Analysis.Calculus.TangentCone.Prod
 import Mathlib.Analysis.Calculus.TangentCone.ProperSpace
 import Mathlib.Analysis.Calculus.TangentCone.Real
 import Mathlib.Analysis.Calculus.Taylor
+import Mathlib.Analysis.Calculus.TaylorIntegral
 import Mathlib.Analysis.Calculus.UniformLimitsDeriv
 import Mathlib.Analysis.Calculus.VectorField
 import Mathlib.Analysis.Complex.AbelLimit
