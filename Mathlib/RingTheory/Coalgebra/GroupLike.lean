@@ -77,6 +77,8 @@ lemma val_injective : Injective (val : GroupLike R A → A) := by rintro ⟨a, h
 @[simp, norm_cast] lemma val_inj {a b : GroupLike R A} : a.val = b.val ↔ a = b :=
   val_injective.eq_iff
 
+@[simp] lemma mk_eq_mk (ha hb) : mk a ha = mk b hb ↔ a = b := by simp [← val_inj]
+
 /-- Identity equivalence between `GroupLike R A` and `{a : A // IsGroupLikeElem R a}`. -/
 def valEquiv : GroupLike R A ≃ Subtype (IsGroupLikeElem R : A → Prop) where
   toFun a := ⟨a.1, a.2⟩
