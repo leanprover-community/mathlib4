@@ -20,7 +20,7 @@ import Mathlib.Data.Rat.Floor
 import Mathlib.Tactic.NormNum.LegendreSymbol
 import Mathlib.Tactic.NormNum.Pow
 import Mathlib.Tactic.NormNum.RealSqrt
-import Mathlib.Tactic.NormNum.Irrational
+import Mathlib.Tactic.NormNum.IsSquare
 import Mathlib.Tactic.Simproc.Factors
 
 /-!
@@ -608,6 +608,11 @@ end Factorial
 
 section irrational
 
+example : ¬ Irrational (2 : ℕ) := by norm_num1
+example : ¬ Irrational (-2 : ℤ) := by norm_num1
+example : ¬ Irrational (33/11 : ℚ) := by norm_num1
+example : ¬ Irrational (-33/11 - 1/2 : ℚ) := by norm_num1
+
 example : Irrational √2 := by norm_num1
 example : Irrational √(5 - 2) := by norm_num1
 example : Irrational √(7/4) := by norm_num1
@@ -622,9 +627,17 @@ example : Irrational ((87/6) ^ (54/321 : ℝ)) := by norm_num1
 example : Irrational
   √5210644015679228794060694325390955853335898483908056458352183851018372555735221 := by norm_num1
 
--- Large numerator does not affect performance.
--- We only need to check that it is coprime with the denominator.
-example : Irrational (100 ^ ((10^1000 + 10^500) / 3 : ℝ)) := by norm_num1
-
-
 end irrational
+
+section IsSquare
+
+example : IsSquare (243089725342304986 ^ 2 : ℕ) := by norm_num1
+example : ¬IsSquare (243089725342304986 ^ 2 + 1 : ℤ) := by norm_num1
+example : ¬IsSquare (10^101 : ℕ) := by norm_num1
+example : IsSquare (100^100 : ℤ) := by norm_num1
+example : ¬IsSquare (-256 : ℤ) := by norm_num1
+example : IsSquare ((15553 * 256) / (15553 * 289) : ℚ) := by norm_num1
+example : ¬IsSquare (21/8 : ℚ) := by norm_num1
+example : ¬IsSquare (-21/8 : ℚ) := by norm_num1
+
+end IsSquare

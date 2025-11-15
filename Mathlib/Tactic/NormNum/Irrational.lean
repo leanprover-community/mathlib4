@@ -32,6 +32,14 @@ namespace NormNum
 open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 
 section lemmas
+
+private theorem IsRat_not_Irrational {x n d} (h : IsRat x n d) : ¬ Irrational x := by
+  obtain ⟨_, hx⟩ := h
+  simp [hx]
+
+private theorem IsNNRat_not_Irrational {x n d} (h : IsNNRat x n d) : ¬ Irrational x :=
+  IsRat_not_Irrational h.to_isRat
+
 private theorem irrational_rpow_rat_of_not_power {q : ℚ} {a b : ℕ}
     (h : ∀ p : ℚ, q ^ a ≠ p ^ b) (hb : 0 < b) (hq : 0 ≤ q) :
     Irrational (Real.rpow q (a / b : ℚ)) := by
@@ -339,6 +347,27 @@ def evalIrrationalSqrt : NormNumExt where eval {u α} e := do
       assumeInstancesCommute
       return Result.isTrue
         q(irrational_sqrt_rat_of_den $pf $pf_coprime $denCert.pf_left $denCert.pf_right)
+  | _ => failure
+
+/-- `norm_num` extension that proves `¬ Irrational x` for rational `x`. -/
+@[norm_num Irrational _]
+def evalIrrational : NormNumExt where eval {u α} e := do
+  let 0 := u | failure
+  let ~q(Prop) := α | failure
+  let ~q(Irrational $x) := e | failure
+  match ← derive x with
+  | .isNat (sℝ : Q(AddMonoidWithOne ℝ)) ex pf =>
+    assumeInstancesCommute
+    return .isFalse (x := q(Irrational $x)) q(($pf).out ▸ (Nat.not_irrational $ex))
+  | .isNegNat sℝ ex pf =>
+    assumeInstancesCommute
+    return .isFalse (x := q(Irrational $x)) q(($pf).out ▸ (Int.not_irrational (-$ex)))
+  | .isNNRat sℝ eq en ed pf =>
+    assumeInstancesCommute
+    return .isFalse (x := q(Irrational $x)) q(IsNNRat_not_Irrational $pf)
+  | .isNegNNRat sℝ eq en ed pf =>
+    assumeInstancesCommute
+    return .isFalse (x := q(Irrational $x)) q(IsRat_not_Irrational $pf)
   | _ => failure
 
 end NormNum
