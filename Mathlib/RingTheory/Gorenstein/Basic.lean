@@ -20,6 +20,7 @@ import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 import Mathlib.RingTheory.CohenMacaulay.Basic
 import Mathlib.RingTheory.LocalRing.Module
 import Mathlib.RingTheory.GlobalDimension
+import Mathlib.RingTheory.Regular.ProjectiveDimension
 import Mathlib.Algebra.Algebra.Shrink
 import Mathlib.RingTheory.RingHom.Flat
 /-!
@@ -27,35 +28,6 @@ import Mathlib.RingTheory.RingHom.Flat
 # The Definition of Gorenstein (Local) Ring
 
 -/
-
-section ENat
-
-lemma ENat.add_le_add_right_iff (a b : ℕ∞) (c : ℕ) :
-    a + c ≤ b + c ↔ a ≤ b := by
-  induction a with
-  | top => simpa only [_root_.top_add, top_le_iff] using WithTop.add_coe_eq_top_iff
-  | coe a => induction b with
-    | top => simp
-    | coe b => simp [← Nat.cast_add]
-
-lemma WithBot.add_le_add_right_iff (a b : WithBot ℕ∞) (c : ℕ) :
-    a + c ≤ b + c ↔ a ≤ b := by
-  induction a with
-  | bot => simp
-  | coe a =>
-    induction b with
-    | bot => simp
-    | coe b =>
-      norm_cast
-      exact ENat.add_le_add_right_iff a b c
-
-lemma WithBot.add_one_le_zero_iff_eq_bot (a : WithBot ℕ∞) :
-    a + 1 ≤ 0 ↔ a = ⊥ := by
-  induction a with
-  | bot => simp
-  | coe a => simp [← WithBot.coe_one, ← WithBot.coe_add]
-
-end ENat
 
 universe v u
 
