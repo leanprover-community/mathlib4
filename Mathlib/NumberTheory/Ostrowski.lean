@@ -249,7 +249,6 @@ theorem equiv_padic_of_bounded :
       rw [← padicNorm.nat_eq_one_iff] at hpm
       simp only [← rpow_natCast, p.cast_nonneg, ← rpow_mul, neg_mul, mul_one, ← rpow_neg, hpm,
         cast_one]
-      congr
       field_simp [h.1.ne']
   · by_contra! hne
     apply hq_prime.elim.ne_one
