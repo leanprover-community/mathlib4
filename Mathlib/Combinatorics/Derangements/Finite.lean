@@ -92,8 +92,8 @@ theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
   induction n using Nat.strongRecOn with | ind n hyp => _
   rcases n with _ | _ | n
   -- knock out cases 0 and 1
-  · rfl
-  · rfl
+  · simp +decide
+  · simp
   -- now we have n ≥ 2. rewrite everything in terms of card_derangements, so that we can use
   -- `card_derangements_fin_add_two`
   rw [numDerangements_add_two, card_derangements_fin_add_two, mul_add, hyp, hyp] <;> omega
