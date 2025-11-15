@@ -84,14 +84,12 @@ namespace GrothendieckTopology
 
 variable (J : GrothendieckTopology C)
 
-structure Point [LocallySmall.{w} C] where
+structure Point where
   fiber : C ⥤ Type w
   isCofiltered : IsCofiltered fiber.Elements := by infer_instance
   initiallySmall : InitiallySmall.{w} fiber.Elements := by infer_instance
   jointly_surjective {X : C} (R : Sieve X) (h : R ∈ J X) (x : fiber.obj X) :
     ∃ (Y : C) (f : Y ⟶ X) (_ : R f) (y : fiber.obj Y), fiber.map f y = x
-
-variable [LocallySmall.{w} C]
 
 namespace Point
 
@@ -103,7 +101,7 @@ variable {J} (Φ : Point.{w} J) {A : Type u'} [Category.{v'} A]
 instance : HasColimitsOfShape Φ.fiber.Elementsᵒᵖ A :=
     hasColimitsOfShape_of_finallySmall _ _
 
-instance [AB5OfSize.{w, w} A] [HasFiniteLimits A] :
+instance [LocallySmall.{w} C] [AB5OfSize.{w, w} A] [HasFiniteLimits A] :
     HasExactColimitsOfShape Φ.fiber.Elementsᵒᵖ A := by
   obtain ⟨D, _, _, F, _⟩ := FinallySmall.exists_of_isFiltered.{w} Φ.fiber.Elementsᵒᵖ
   exact HasExactColimitOfShape.of_final F A
@@ -147,7 +145,7 @@ lemma toPresheafFiber_naturality_apply {P Q : Cᵒᵖ ⥤ A} (g : P ⟶ Q) (X : 
   rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply]
   exact congr_fun ((forget A).congr_map (Φ.toPresheafFiber_naturality g X x)) p
 
-variable [PreservesFilteredColimitsOfSize.{w, w} (forget A)]
+variable [PreservesFilteredColimitsOfSize.{w, w} (forget A)] [LocallySmall.{w} C]
 
 instance : PreservesColimitsOfShape Φ.fiber.Elementsᵒᵖ (forget A) :=
   Functor.Final.preservesColimitsOfShape_of_final (FinallySmall.fromFilteredFinalModel.{w} _) _
@@ -220,16 +218,16 @@ lemma W_isInvertedBy_presheafFiber
 
 end
 
-instance [HasFiniteLimits A] [AB5OfSize.{w, w} A] :
+noncomputable def sheafFiber : Sheaf J A ⥤ A :=
+  sheafToPresheaf J A ⋙ Φ.presheafFiber
+
+instance [LocallySmall.{w} C] [HasFiniteLimits A] [AB5OfSize.{w, w} A] :
     PreservesFiniteLimits (Φ.presheafFiber (A := A)) :=
   ObjectProperty.preservesFiniteLimits.prop_of_isColimit
     (colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ evaluation _ A))
       (by dsimp; infer_instance)
 
-noncomputable def sheafFiber : Sheaf J A ⥤ A :=
-  sheafToPresheaf J A ⋙ Φ.presheafFiber
-
-instance [HasFiniteLimits A] [AB5OfSize.{w, w} A] :
+instance [LocallySmall.{w} C] [HasFiniteLimits A] [AB5OfSize.{w, w} A] :
     PreservesFiniteLimits (Φ.sheafFiber (A := A)) := comp_preservesFiniteLimits _ _
 
 end Point
