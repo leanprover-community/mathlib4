@@ -31,7 +31,7 @@ For Gaussian distributions in `ℝ`, see the file `Mathlib.Probability.Distribut
 
 -/
 
-open MeasureTheory Complex NormedSpace
+open MeasureTheory Complex
 open scoped ENNReal NNReal
 
 namespace ProbabilityTheory
