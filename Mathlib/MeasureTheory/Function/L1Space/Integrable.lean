@@ -689,37 +689,31 @@ variable [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β] {f : α → β}
 
 -- TODO: try generalising all lemmas below to enorm classes
 
-/-- If `f` is `ℝ`-valued and integrable, then for any `c > 0` the set `{x | f x ≥ c}` has finite
-measure. -/
+/-- If `f` is integrable, then for any `c > 0` the set `{x | f x ≥ c}` has finite measure. -/
 lemma Integrable.measure_ge_lt_top (hf : Integrable f μ) {ε : β} (ε_pos : 0 < ε) :
     μ {a : α | ε ≤ f a} < ∞ := by
   refine lt_of_le_of_lt (measure_mono ?_) (hf.measure_norm_ge_lt_top (norm_pos_iff.2 ε_pos.ne'))
   intro x hx
-  simp only [mem_setOf_eq] at hx ⊢
   apply norm_le_norm_of_abs_le_abs
   rw [abs_of_nonneg ε_pos.le]
   exact hx.trans (le_abs_self _)
 
-/-- If `f` is integrable, then for any `c < 0` the set `{x | f x ≤ c}` has finite
-measure. -/
+/-- If `f` is integrable, then for any `c < 0` the set `{x | f x ≤ c}` has finite measure. -/
 lemma Integrable.measure_le_lt_top (hf : Integrable f μ) {c : β} (c_neg : c < 0) :
     μ {a : α | f a ≤ c} < ∞ := by
   refine lt_of_le_of_lt (measure_mono ?_) (hf.measure_norm_ge_lt_top (norm_pos_iff.2 c_neg.ne))
   intro x hx
-  simp only [mem_setOf_eq] at hx ⊢
   apply norm_le_norm_of_abs_le_abs
   rw [abs_of_nonpos c_neg.le, abs_of_nonpos (hx.trans c_neg.le)]
   exact neg_le_neg hx
 
-/-- If `f` is integrable, then for any `c > 0` the set `{x | f x > c}` has finite
-measure. -/
+/-- If `f` is integrable, then for any `c > 0` the set `{x | f x > c}` has finite measure. -/
 lemma Integrable.measure_gt_lt_top (hf : Integrable f μ) {ε : β} (ε_pos : 0 < ε) :
     μ {a : α | ε < f a} < ∞ :=
   lt_of_le_of_lt (measure_mono (fun _ hx ↦ (Set.mem_setOf_eq ▸ hx).le))
     (Integrable.measure_ge_lt_top hf ε_pos)
 
-/-- If `f` is integrable, then for any `c < 0` the set `{x | f x < c}` has finite
-measure. -/
+/-- If `f` is integrable, then for any `c < 0` the set `{x | f x < c}` has finite measure. -/
 lemma Integrable.measure_lt_lt_top {f : α → β} (hf : Integrable f μ) {c : β} (c_neg : c < 0) :
     μ {a : α | f a < c} < ∞ :=
   lt_of_le_of_lt (measure_mono (fun _ hx ↦ (Set.mem_setOf_eq ▸ hx).le))
