@@ -221,9 +221,7 @@ theorem null_of_frequently_le_of_frequently_ge {c d : ℝ≥0} (hcd : c < d) (s 
   apply lt_irrefl (ρ s')
   calc
     ρ s' ≤ c * μ s' := v.measure_le_of_frequently_le (c • μ) hρ s' fun x hx => hc x hx.1
-    _ < d * μ s' := by
-      apply (ENNReal.mul_lt_mul_right h _).2 (ENNReal.coe_lt_coe.2 hcd)
-      exact (lt_of_le_of_lt (measure_mono inter_subset_right) μo).ne
+    _ < d * μ s' := by gcongr; exact measure_ne_top_of_subset inter_subset_right μo
     _ ≤ ρ s' := v.measure_le_of_frequently_le ρ smul_absolutelyContinuous s' fun x hx ↦ hd x hx.1
 
 /-- If `ρ` is absolutely continuous with respect to `μ`, then for almost every `x`,
