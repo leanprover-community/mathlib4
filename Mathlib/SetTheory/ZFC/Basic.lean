@@ -149,6 +149,7 @@ noncomputable def allZFSetDefinable {n} (F : (Fin n → ZFSet.{u}) → ZFSet.{u}
 end Classical
 
 namespace ZFSet
+variable {x y z : ZFSet.{u}}
 
 open PSet
 
@@ -173,26 +174,35 @@ instance : Membership ZFSet ZFSet where
 theorem mk_mem_iff {x y : PSet} : mk x ∈ mk y ↔ x ∈ y :=
   Iff.rfl
 
+@[ext] lemma ext : (∀ z : ZFSet.{u}, z ∈ x ↔ z ∈ y) → x = y :=
+  Quotient.inductionOn₂ x y fun _ _ h => Quotient.sound (Mem.ext fun w => h ⟦w⟧)
+
+instance : SetLike ZFSet.{u} ZFSet.{u} where
+  coe x := {y | y ∈ x}
+  coe_injective' x y hxy := by ext z; exact congr(z ∈ $hxy)
+
 /-- Convert a ZFC set into a `Set` of ZFC sets -/
+@[deprecated SetLike.coe (since := "2025-11-05")]
 def toSet (u : ZFSet.{u}) : Set ZFSet.{u} :=
   { x | x ∈ u }
 
-@[simp]
-theorem mem_toSet (a u : ZFSet.{u}) : a ∈ u.toSet ↔ a ∈ u :=
+@[deprecated SetLike.mem_coe (since := "2025-11-05")]
+theorem mem_toSet (a u : ZFSet.{u}) : a ∈ (u : Set ZFSet.{u}) ↔ a ∈ u :=
   Iff.rfl
 
-instance small_toSet (x : ZFSet.{u}) : Small.{u} x.toSet :=
+instance small_coe (x : ZFSet.{u}) : Small.{u} x :=
   Quotient.inductionOn x fun a => by
-    let f : a.Type → (mk a).toSet := fun i => ⟨mk <| a.Func i, func_mem a i⟩
+    let f (i : a.Type) : mk a := ⟨mk <| a.Func i, func_mem a i⟩
     suffices Function.Surjective f by exact small_of_surjective this
     rintro ⟨y, hb⟩
     induction y using Quotient.inductionOn
     obtain ⟨i, h⟩ := hb
     exact ⟨i, Subtype.coe_injective (Quotient.sound h.symm)⟩
 
+@[deprecated (since := "2025-11-05")] alias small_toSet := small_coe
+
 /-- A nonempty set is one that contains some element. -/
-protected def Nonempty (u : ZFSet) : Prop :=
-  u.toSet.Nonempty
+protected def Nonempty (u : ZFSet.{u}) : Prop := (u : Set ZFSet.{u}).Nonempty
 
 theorem nonempty_def (u : ZFSet) : u.Nonempty ↔ ∃ x, x ∈ u :=
   Iff.rfl
@@ -200,9 +210,9 @@ theorem nonempty_def (u : ZFSet) : u.Nonempty ↔ ∃ x, x ∈ u :=
 theorem nonempty_of_mem {x u : ZFSet} (h : x ∈ u) : u.Nonempty :=
   ⟨x, h⟩
 
-@[simp]
-theorem nonempty_toSet_iff {u : ZFSet} : u.toSet.Nonempty ↔ u.Nonempty :=
-  Iff.rfl
+@[simp, norm_cast] lemma nonempty_coe : (x : Set ZFSet.{u}).Nonempty ↔ x.Nonempty := .rfl
+
+@[deprecated (since := "2025-11-05")] alias nonempty_toSet := nonempty_coe
 
 /-- `x ⊆ y` as ZFC sets means that all members of `x` are members of `y`. -/
 protected def Subset (x y : ZFSet.{u}) :=
@@ -228,23 +238,18 @@ theorem subset_iff : ∀ {x y : PSet}, mk x ⊆ mk y ↔ x ⊆ y
         let ⟨b, ab⟩ := h a
         ⟨b, za.trans ab⟩⟩
 
-@[simp]
-theorem toSet_subset_iff {x y : ZFSet} : x.toSet ⊆ y.toSet ↔ x ⊆ y := by
+@[deprecated SetLike.coe_subset_coe (since := "2025-11-05")]
+theorem toSet_subset_iff {x y : ZFSet} : (x : Set ZFSet.{u}) ⊆ y ↔ x ⊆ y := by
   simp [subset_def, Set.subset_def]
 
-@[ext]
-theorem ext {x y : ZFSet.{u}} : (∀ z : ZFSet.{u}, z ∈ x ↔ z ∈ y) → x = y :=
-  Quotient.inductionOn₂ x y fun _ _ h => Quotient.sound (Mem.ext fun w => h ⟦w⟧)
+@[deprecated SetLike.coe_injective (since := "2025-11-05")]
+theorem toSet_injective : Function.Injective ((↑) : ZFSet.{u} → Set ZFSet.{u}) :=
+ SetLike.coe_injective
 
-theorem toSet_injective : Function.Injective toSet := fun _ _ h => ext <| Set.ext_iff.1 h
+@[simp, norm_cast]
+lemma coe_inj : (x : Set ZFSet.{u}) = y ↔ x = y := SetLike.coe_injective.eq_iff
 
-@[simp]
-theorem toSet_inj {x y : ZFSet} : x.toSet = y.toSet ↔ x = y :=
-  toSet_injective.eq_iff
-
-instance : SetLike ZFSet ZFSet where
-  coe := toSet
-  coe_injective' := toSet_injective
+@[deprecated (since := "2025-11-05")] alias toSet_inj := coe_inj
 
 instance : HasSSubset ZFSet := ⟨(· < ·)⟩
 
@@ -278,8 +283,9 @@ theorem notMem_empty (x) : x ∉ (∅ : ZFSet.{u}) :=
 
 @[deprecated (since := "2025-05-23")] alias not_mem_empty := notMem_empty
 
-@[simp]
-theorem toSet_empty : toSet ∅ = ∅ := by simp [toSet]
+@[simp, norm_cast] lemma coe_empty : ((∅ : ZFSet.{u}) : Set ZFSet.{u}) = ∅ := by ext; simp
+
+@[deprecated (since := "2025-11-05")] alias toSet_empty := coe_empty
 
 @[simp]
 theorem empty_subset (x : ZFSet.{u}) : (∅ : ZFSet) ⊆ x :=
@@ -338,19 +344,22 @@ theorem mem_insert (x y : ZFSet) : x ∈ insert x y :=
 theorem mem_insert_of_mem {y z : ZFSet} (x) (h : z ∈ y) : z ∈ insert x y :=
   mem_insert_iff.2 <| Or.inr h
 
-@[simp]
-theorem toSet_insert (x y : ZFSet) : (insert x y).toSet = insert x y.toSet := by
-  ext
-  simp
+@[simp, norm_cast]
+lemma coe_insert (x y : ZFSet) : (↑(insert x y) : Set ZFSet.{u}) = insert x ↑y := by ext; simp
+
+@[deprecated (since := "2025-11-05")] alias toSet_insert := coe_insert
 
 @[simp]
-theorem mem_singleton {x y : ZFSet.{u}} : x ∈ @singleton ZFSet.{u} ZFSet.{u} _ y ↔ x = y :=
+theorem mem_singleton {x y : ZFSet.{u}} : x ∈ ({y} : ZFSet.{u}) ↔ x = y :=
   Quotient.inductionOn₂ x y fun _ _ => PSet.mem_singleton.trans eq.symm
 
-@[simp]
-theorem toSet_singleton (x : ZFSet) : ({x} : ZFSet).toSet = {x} := by
-  ext
-  simp
+theorem notMem_singleton {x y : ZFSet.{u}} : x ∉ ({y} : ZFSet.{u}) ↔ x ≠ y :=
+  mem_singleton.not
+
+@[simp, norm_cast]
+lemma coe_singleton (x : ZFSet) : (({x} : ZFSet) : Set ZFSet) = {x} := by ext; simp
+
+@[deprecated (since := "2025-11-05")] alias toSet_singleton := coe_singleton
 
 theorem insert_nonempty (u v : ZFSet) : (insert u v).Nonempty :=
   ⟨u, mem_insert u v⟩
@@ -421,11 +430,15 @@ theorem mem_sep {p : ZFSet.{u} → Prop} {x y : ZFSet.{u}} :
 theorem sep_empty (p : ZFSet → Prop) : (∅ : ZFSet).sep p = ∅ :=
   (eq_empty _).mpr fun _ h ↦ notMem_empty _ (mem_sep.mp h).1
 
-@[simp]
-theorem toSet_sep (a : ZFSet) (p : ZFSet → Prop) :
-    (ZFSet.sep p a).toSet = { x ∈ a.toSet | p x } := by
+theorem sep_subset {x p} : ZFSet.sep p x ⊆ x :=
+  fun _ h => (mem_sep.1 h).1
+
+@[simp, norm_cast]
+lemma coe_sep (a : ZFSet) (p : ZFSet → Prop) : (ZFSet.sep p a : Set ZFSet) = {x ∈ a | p x} := by
   ext
   simp
+
+@[deprecated (since := "2025-11-05")] alias toSet_sep := coe_sep
 
 /-- The powerset operation, the collection of subsets of a ZFC set -/
 def powerset : ZFSet → ZFSet :=
@@ -523,14 +536,19 @@ theorem sUnion_singleton {x : ZFSet.{u}} : ⋃₀ ({x} : ZFSet) = x :=
 theorem sInter_singleton {x : ZFSet.{u}} : ⋂₀ ({x} : ZFSet) = x :=
   ext fun y => by simp_rw [mem_sInter (singleton_nonempty x), mem_singleton, forall_eq]
 
-@[simp]
-theorem toSet_sUnion (x : ZFSet.{u}) : (⋃₀ x).toSet = ⋃₀ (toSet '' x.toSet) := by
+@[simp, norm_cast]
+lemma coe_sUnion (x : ZFSet.{u}) : (⋃₀ x : Set ZFSet) = ⋃₀ (SetLike.coe '' (x : Set ZFSet)) := by
   ext
   simp
 
-theorem toSet_sInter {x : ZFSet.{u}} (h : x.Nonempty) : (⋂₀ x).toSet = ⋂₀ (toSet '' x.toSet) := by
+@[deprecated (since := "2025-11-05")] alias toSet_sUnion := coe_sUnion
+
+@[simp, norm_cast]
+lemma coe_sInter (h : x.Nonempty) : (⋂₀ x : Set ZFSet) = ⋂₀ (SetLike.coe '' (x : Set ZFSet)) := by
   ext
   simp [mem_sInter h]
+
+@[deprecated (since := "2025-11-05")] alias toSet_sInter := coe_sInter
 
 theorem singleton_injective : Function.Injective (@singleton ZFSet ZFSet _) := fun x y H => by
   let this := congr_arg sUnion H
@@ -561,43 +579,43 @@ instance : Inter ZFSet :=
 instance : SDiff ZFSet :=
   ⟨ZFSet.diff⟩
 
-@[simp]
-theorem toSet_union (x y : ZFSet.{u}) : (x ∪ y).toSet = x.toSet ∪ y.toSet := by
-  change (⋃₀ {x, y}).toSet = _
-  simp
+@[simp] lemma sUnion_pair (x y : ZFSet.{u}) : ⋃₀ ({x, y} : ZFSet.{u}) = x ∪ y := rfl
 
-@[simp]
-theorem toSet_inter (x y : ZFSet.{u}) : (x ∩ y).toSet = x.toSet ∩ y.toSet := by
-  change (ZFSet.sep (fun z => z ∈ y) x).toSet = _
-  ext
-  simp
+@[simp] lemma sep_mem (x y : ZFSet.{u}) : x.sep (· ∈ y) = x ∩ y := rfl
+@[simp] lemma sep_notMem (x y : ZFSet.{u}) : x.sep (· ∉ y) = x \ y := rfl
 
-@[simp]
-theorem toSet_sdiff (x y : ZFSet.{u}) : (x \ y).toSet = x.toSet \ y.toSet := by
-  change (ZFSet.sep (fun z => z ∉ y) x).toSet = _
-  ext
-  simp
+@[simp] lemma mem_union : z ∈ x ∪ y ↔ z ∈ x ∨ z ∈ y := by simp [← sUnion_pair]
+@[simp] lemma mem_inter : z ∈ x ∩ y ↔ z ∈ x ∧ z ∈ y := by simp [← sep_mem]
+@[simp] lemma mem_sdiff : z ∈ x \ y ↔ z ∈ x ∧ z ∉ y := by simp [← sep_notMem]
 
-@[simp]
-theorem mem_union {x y z : ZFSet.{u}} : z ∈ x ∪ y ↔ z ∈ x ∨ z ∈ y := by
-  rw [← mem_toSet]
-  simp
+@[simp, norm_cast]
+lemma coe_union (x y : ZFSet.{u}) : (↑(x ∪ y) : Set ZFSet) = ↑x ∪ ↑y := by ext; simp
 
-@[simp]
-theorem mem_inter {x y z : ZFSet.{u}} : z ∈ x ∩ y ↔ z ∈ x ∧ z ∈ y :=
-  @mem_sep (fun z : ZFSet.{u} => z ∈ y) x z
+@[deprecated (since := "2025-11-05")] alias toSet_union := coe_union
 
-@[simp]
-theorem mem_diff {x y z : ZFSet.{u}} : z ∈ x \ y ↔ z ∈ x ∧ z ∉ y :=
-  @mem_sep (fun z : ZFSet.{u} => z ∉ y) x z
+@[simp, norm_cast]
+lemma coe_inter (x y : ZFSet.{u}) : (↑(x ∩ y) : Set ZFSet) = ↑x ∩ ↑y := by ext; simp
 
-@[simp]
-theorem sUnion_pair {x y : ZFSet.{u}} : ⋃₀ ({x, y} : ZFSet.{u}) = x ∪ y :=
-  rfl
+@[deprecated (since := "2025-11-05")] alias toSet_inter := coe_inter
+
+@[simp, norm_cast]
+lemma coe_sdiff (x y : ZFSet.{u}) : (↑(x \ y) : Set ZFSet) = ↑x \ ↑y := by ext; simp
+
+@[deprecated (since := "2025-11-05")] alias toSet_sdiff := coe_sdiff
+
+@[simp] lemma inter_eq_left_of_subset (hxy : x ⊆ y) : x ∩ y = x := by ext; simpa using @hxy _
+@[simp] lemma inter_eq_right_of_subset (hyx : y ⊆ x) : x ∩ y = y := by ext; simpa using @hyx _
 
 theorem mem_wf : @WellFounded ZFSet (· ∈ ·) :=
   (wellFounded_lift₂_iff (H := fun a b c d hx hy =>
     propext ((@Mem.congr_left a c hx).trans (@Mem.congr_right b d hy _)))).mpr PSet.mem_wf
+
+/-- `ZFSet.powerset` is equivalent to `Set.powerset`. -/
+def powersetEquiv (x : ZFSet.{u}) : x.powerset ≃ 𝒫 (x : Set ZFSet) where
+  toFun y := ⟨y.1, Set.mem_powerset (mem_powerset.1 y.2)⟩
+  invFun s := ⟨x.sep (· ∈ s.1), mem_powerset.2 sep_subset⟩
+  left_inv := by simp +contextual [Function.LeftInverse]
+  right_inv := by simp +contextual [Function.LeftInverse, Function.RightInverse, Set.setOf_and]
 
 /-- Induction on the `∈` relation. -/
 @[elab_as_elim]
@@ -656,11 +674,11 @@ theorem mem_image {f : ZFSet.{u} → ZFSet.{u}} [Definable₁ f] {x y : ZFSet.{u
     ⟨fun ⟨a, ya⟩ => ⟨⟦A a⟧, Mem.mk A a, ((Quotient.sound ya).trans Definable₁.mk_out).symm⟩,
       fun ⟨_, hz, e⟩ => e ▸ image.mk _ _ hz⟩
 
-@[simp]
-theorem toSet_image (f : ZFSet → ZFSet) [Definable₁ f] (x : ZFSet) :
-    (image f x).toSet = f '' x.toSet := by
-  ext
-  simp
+@[simp, norm_cast]
+lemma coe_image (f : ZFSet → ZFSet) [Definable₁ f] (x : ZFSet) :
+    (image f x : Set ZFSet) = f '' x := by ext; simp
+
+@[deprecated (since := "2025-11-05")] alias toSet_image := coe_image
 
 section Small
 
@@ -671,7 +689,7 @@ noncomputable def range (f : α → ZFSet.{u}) : ZFSet.{u} :=
   ⟦⟨_, Quotient.out ∘ f ∘ (equivShrink α).symm⟩⟧
 
 @[simp]
-theorem mem_range {f : α → ZFSet.{u}} {x : ZFSet.{u}} : x ∈ range f ↔ x ∈ Set.range f :=
+theorem mem_range {f : α → ZFSet.{u}} {x : ZFSet.{u}} : x ∈ range f ↔ ∃ i, f i = x :=
   Quotient.inductionOn x fun y => by
     constructor
     · rintro ⟨z, hz⟩
@@ -680,10 +698,10 @@ theorem mem_range {f : α → ZFSet.{u}} {x : ZFSet.{u}} : x ∈ range f ↔ x �
       use equivShrink α z
       simpa [hz] using PSet.Equiv.symm (Quotient.mk_out y)
 
-@[simp]
-theorem toSet_range (f : α → ZFSet.{u}) : (range f).toSet = Set.range f := by
-  ext
-  simp
+@[simp, norm_cast]
+lemma coe_range (f : α → ZFSet.{u}) : (range f : Set ZFSet) = .range f := by ext; simp
+
+@[deprecated (since := "2025-11-05")] alias toSet_range := coe_range
 
 theorem mem_range_self {f : α → ZFSet.{u}} (a : α) : f a ∈ range f := by simp
 
@@ -697,10 +715,12 @@ noncomputable def iUnion (f : α → ZFSet.{u}) : ZFSet.{u} :=
 theorem mem_iUnion {f : α → ZFSet.{u}} {x : ZFSet.{u}} : x ∈ ⋃ i, f i ↔ ∃ i, x ∈ f i := by
   simp [iUnion]
 
-@[simp]
-theorem toSet_iUnion (f : α → ZFSet.{u}) : (⋃ i, f i).toSet = ⋃ i, (f i).toSet := by
+@[simp, norm_cast]
+lemma coe_iUnion (f : α → ZFSet.{u}) : (↑(⋃ i, f i) : Set ZFSet) = ⋃ i, (f i : Set ZFSet) := by
   ext
   simp
+
+@[deprecated (since := "2025-11-05")] alias toSet_iUnion := coe_iUnion
 
 theorem subset_iUnion (f : α → ZFSet.{u}) (i : α) : f i ⊆ ⋃ i, f i := by
   intro x hx
@@ -712,8 +732,10 @@ end Small
 def pair (x y : ZFSet.{u}) : ZFSet.{u} :=
   {{x}, {x, y}}
 
-@[simp]
-theorem toSet_pair (x y : ZFSet.{u}) : (pair x y).toSet = {{x}, {x, y}} := by simp [pair]
+@[simp, norm_cast]
+lemma coe_pair (x y : ZFSet.{u}) : (pair x y : Set ZFSet) = {{x}, {x, y}} := by simp [pair]
+
+@[deprecated (since := "2025-11-05")] alias toSet_pair := coe_pair
 
 /-- A subset of pairs `{(a, b) ∈ x × y | p a b}` -/
 def pairSep (p : ZFSet.{u} → ZFSet.{u} → Prop) (x y : ZFSet.{u}) : ZFSet.{u} :=
