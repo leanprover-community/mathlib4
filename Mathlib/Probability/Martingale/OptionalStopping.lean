@@ -129,7 +129,8 @@ theorem smul_le_stoppedValue_hittingBtwn [IsFiniteMeasure μ] (hsub : Submarting
   have h := setIntegral_ge_of_const_le (measurableSet_le measurable_const
     (Finset.measurable_range_sup'' fun n _ => (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)))
       (measure_ne_top _ _) this (Integrable.integrableOn (hsub.integrable_stoppedValue
-        (hittingBtwn_isStoppingTime hsub.adapted measurableSet_Ici) (mod_cast hittingBtwn_le)))
+        (hittingBtwn_isStoppingTime hsub.adapted measurableSet_Ici)
+        (by simpa using hittingBtwn_le)))
   rw [ENNReal.le_ofReal_iff_toReal_le, ENNReal.toReal_smul]
   · exact h
   · exact ENNReal.mul_ne_top (by simp) (measure_ne_top _ _)
@@ -190,7 +191,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
       · exact smul_le_stoppedValue_hittingBtwn hsub n
       · exact (hsub.integrable n).integrableOn
       · refine Integrable.integrableOn ?_
-        refine hsub.integrable_stoppedValue ?_ (fun ω ↦ mod_cast hittingBtwn_le ω)
+        refine hsub.integrable_stoppedValue ?_ (by simpa using hittingBtwn_le)
         exact hittingBtwn_isStoppingTime hsub.adapted measurableSet_Ici
       · exact nullMeasurableSet_lt (Finset.measurable_range_sup'' fun n _ ↦
           (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)).aemeasurable aemeasurable_const
@@ -221,10 +222,10 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
           (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)) measurable_const
       · exact Integrable.integrableOn (hsub.integrable_stoppedValue
           (hittingBtwn_isStoppingTime hsub.adapted measurableSet_Ici)
-          (fun ω ↦ mod_cast hittingBtwn_le ω))
+          (by simpa using hittingBtwn_le))
       · exact Integrable.integrableOn (hsub.integrable_stoppedValue
           (hittingBtwn_isStoppingTime hsub.adapted measurableSet_Ici)
-          (fun ω ↦ mod_cast hittingBtwn_le ω))
+          (by simpa using hittingBtwn_le))
       exacts [integral_nonneg fun x => hnonneg _ _, integral_nonneg fun x => hnonneg _ _]
     _ ≤ ENNReal.ofReal (μ[f n]) := by
       refine ENNReal.ofReal_le_ofReal ?_

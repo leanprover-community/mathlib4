@@ -3,6 +3,7 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
 -/
+import Mathlib.Order.SuccPred.LinearLocallyFinite
 import Mathlib.Probability.Process.Filtration
 import Mathlib.Topology.Instances.Discrete
 
@@ -204,10 +205,16 @@ theorem Adapted.progMeasurable_of_discrete [TopologicalSpace ι] [DiscreteTopolo
   h.progMeasurable_of_continuous fun _ => continuous_of_discreteTopology
 
 -- this dot notation will make more sense once we have a more general definition for predictable
-theorem Predictable.adapted {f : Filtration ℕ m} {u : ℕ → Ω → β} (hu : Adapted f fun n => u (n + 1))
-    (hu0 : StronglyMeasurable[f 0] (u 0)) : Adapted f u := fun n =>
-  match n with
-  | 0 => hu0
-  | n + 1 => (hu n).mono (f.mono n.le_succ)
+theorem Predictable.adapted {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
+    [SuccOrder ι] {f : Filtration ι m} {u : ι → Ω → β}
+    (hu : Adapted f fun n => u (succ n)) (hu0 : StronglyMeasurable[f ⊥] (u ⊥)) :
+    Adapted f u := by
+  intro n
+  by_cases hn : n = ⊥
+  · rw [hn]; exact hu0
+  · obtain ⟨m, rfl⟩ : ∃ m, n = succ m := by
+      have : PredOrder ι := LinearLocallyFiniteOrder.predOrder ι
+      exact ⟨pred n, by simp [succ_pred_of_not_isMin, hn]⟩
+    exact (hu m).mono (f.mono (le_succ m))
 
 end MeasureTheory
