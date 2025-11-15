@@ -3,23 +3,14 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.CategoryTheory.Abelian.Injective.Dimension
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.Noetherian.Basic
-import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.Algebra.Category.Grp.Zero
-import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 import Mathlib.Algebra.Category.ModuleCat.Projective
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.CategoryTheory.Abelian.Projective.Dimension
-import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
-import Mathlib.RingTheory.Regular.RegularSequence
-import Mathlib.RingTheory.Regular.Category
+import Mathlib.CategoryTheory.Abelian.Projective.Dimension
+import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.LocalRing.Module
-import Mathlib.Algebra.Algebra.Shrink
+import Mathlib.RingTheory.Regular.Category
+import Mathlib.RingTheory.Regular.RegularSequence
 /-!
 
 # ProjectiveDimension of quotient by regular element
@@ -310,8 +301,31 @@ lemma projectiveDimension_eq_zero_of_projective (M : ModuleCat.{v} R) [Projectiv
       ModuleCat.isZero_iff_subsingleton, not_subsingleton_iff_nontrivial]
     assumption
 
+section
+
+variable {M N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+
+/-- The linear map `M/IM → N/IN` induced by `M → N`. -/
+def Ideal.smulTopLinearMap (I : Ideal R) (f : M →ₗ[R] N) :
+    M ⧸ I • (⊤ : Submodule R M) →ₗ[R] N ⧸ I • (⊤ : Submodule R N) :=
+  Submodule.mapQ _ _ f (Submodule.smul_top_le_comap_smul_top I f)
+
+/-- The linear map `M/IM ≃ N/IN` induced by `M ≃ N`. -/
+def Ideal.smulTopLinearEquiv (I : Ideal R) (e : M ≃ₗ[R] N) :
+    (M ⧸ I • (⊤ : Submodule R M)) ≃ₗ[R] (N ⧸ I • (⊤ : Submodule R N)) where
+  __ := Ideal.smulTopLinearMap I e
+  invFun := Ideal.smulTopLinearMap I e.symm
+  left_inv y := by
+    induction y using Submodule.Quotient.induction_on
+    simp [smulTopLinearMap]
+  right_inv y := by
+    induction y using Submodule.Quotient.induction_on
+    simp [smulTopLinearMap]
+
+end
+
 variable [Small.{v} R]
-/-
+
 lemma projectiveDimension_quotient_eq_length (rs : List R) (reg : IsRegular R rs) :
     projectiveDimension (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs))) = rs.length := by
   have mem_max : ∀ x ∈ rs, x ∈ maximalIdeal R := by
@@ -328,4 +342,3 @@ lemma projectiveDimension_quotient_eq_length (rs : List R) (reg : IsRegular R rs
   rw [projectiveDimension_quotient_regular_sequence (ModuleCat.of R (Shrink.{v} R)) rs
     (((Shrink.linearEquiv R R).isWeaklyRegular_congr rs).mpr reg.1) mem_max]
   rw [projectiveDimension_eq_zero_of_projective, zero_add]
--/
