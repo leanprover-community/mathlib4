@@ -3,10 +3,9 @@ Copyright (c) 2023 Apurva Nakade. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
-module
-
-public import Mathlib.Algebra.Order.Nonneg.Module
-public import Mathlib.Geometry.Convex.Cone.Basic
+import Mathlib.Algebra.Order.Nonneg.Module
+import Mathlib.Geometry.Convex.Cone.Basic
+import Mathlib.Algebra.Module.Submodule.Pointwise
 
 /-!
 # Pointed cones
@@ -225,4 +224,22 @@ lemma to_isOrderedModule (C : PointedCone R E) (h : ∀ x y : E, x ≤ y ↔ y -
     IsOrderedModule R E := .of_smul_nonneg <| by simp +contextual [h, C.smul_mem]
 
 end OrderedAddCommGroup
+
+section Salient
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
+open Pointwise
+
+/-- A pointed cone is salient iff an element `x` being a member of both the cone and its negative
+is equivalent to `x = 0`. -/
+lemma salient_iff_mem_neg_eq_zero (C : PointedCone R E) :
+    (C : ConvexCone R E).Salient ↔ ∀ x, (x ∈ C ∧ x ∈ -C) ↔ x = 0 := by
+  simp [ConvexCone.Salient, not_imp_not, iff_iff_implies_and_implies, forall_and]
+
+/-- A pointed cone is salient iff the intersection of the cone with its negative
+is `{0}`f. -/
+lemma salient_iff_inter_neg_eq_zero (C : PointedCone R E) :
+    (C : ConvexCone R E).Salient ↔ (C ∩ -C : Set E) = {0} := by
+  simp [ConvexCone.Salient, Set.eq_singleton_iff_unique_mem, not_imp_not]
+
+end Salient
 end PointedCone
