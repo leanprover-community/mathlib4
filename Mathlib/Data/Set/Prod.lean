@@ -6,6 +6,8 @@ Authors: Mario Carneiro, Johannes Hölzl, Patrick Massot
 import Mathlib.Data.Set.Image
 import Mathlib.Data.SProd
 import Mathlib.Data.Sum.Basic
+import Mathlib.Logic.Equiv.Basic
+import Mathlib.Order.BooleanAlgebra.Set
 
 /-!
 # Sets in product and pi types
