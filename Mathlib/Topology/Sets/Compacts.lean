@@ -396,8 +396,9 @@ theorem coe_map {f : α → β} (hf : Continuous f) (s : NonemptyCompacts α) :
   rfl
 
 @[simp]
-theorem map_id (K : NonemptyCompacts α) : K.map id continuous_id = K :=
-  NonemptyCompacts.ext <| Set.image_id _
+theorem map_id (K : NonemptyCompacts α) : K.map id continuous_id = K := by
+  ext
+  simp
 
 theorem map_comp (f : β → γ) (g : α → β) (hf : Continuous f) (hg : Continuous g)
     (K : NonemptyCompacts α) : K.map (f ∘ g) (hf.comp hg) = (K.map g hg).map f hf :=
@@ -414,10 +415,9 @@ theorem map_injective {f : α → β} (hf : Continuous f) (hf' : Function.Inject
 
 @[simp]
 theorem map_injective_iff {f : α → β} (hf : Continuous f) :
-    Function.Injective (NonemptyCompacts.map f hf) ↔ Function.Injective f := by
-  refine ⟨fun h => .of_comp (f := ({·} : β → NonemptyCompacts β)) ?_, map_injective hf⟩
-  simp_rw [Function.comp_def, ← map_singleton hf]
-  exact h.comp singleton_injective
+    Function.Injective (NonemptyCompacts.map f hf) ↔ Function.Injective f :=
+  ⟨fun h => .of_comp (f := ({·} : β → NonemptyCompacts β)) fun _ _ _ ↦ 
+    singleton_injective (h (by simp_all)), map_injective hf⟩
 
 instance toCompactSpace {s : NonemptyCompacts α} : CompactSpace s :=
   isCompact_iff_compactSpace.1 s.isCompact
