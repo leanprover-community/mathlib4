@@ -103,7 +103,7 @@ lemma quotOfListConsSMulTopEquivQuotSMulTopInner_naturality (f : M →ₗ[R] M�
 lemma top_eq_ofList_cons_smul_iff :
     (⊤ : Submodule R M) = Ideal.ofList (r :: rs) • ⊤ ↔
       (⊤ : Submodule R (QuotSMulTop r M)) = Ideal.ofList rs • ⊤ := by
-  conv => congr <;> rw [eq_comm, ← subsingleton_quotient_iff_eq_top]
+  conv => congr <;> rw [eq_comm, ← Quotient.subsingleton_iff]
   exact (quotOfListConsSMulTopEquivQuotSMulTopInner M r rs).toEquiv.subsingleton_congr
 
 end Submodule
@@ -199,11 +199,10 @@ lemma _root_.LinearEquiv.isWeaklyRegular_congr [Module R M₂] (e : M ≃ₗ[R] 
 lemma _root_.AddEquiv.isRegular_congr {e : M ≃+ M₂} {as bs}
     (h : List.Forall₂ (fun (r : R) (s : S) => ∀ x, e (r • x) = s • e x) as bs) :
     IsRegular M as ↔ IsRegular M₂ bs := by
-  conv => congr <;> rw [isRegular_iff, ne_eq, eq_comm,
-    ← subsingleton_quotient_iff_eq_top]
+  conv => congr <;> rw [isRegular_iff, ne_comm, ← Quotient.nontrivial_iff]
   let e' := QuotientAddGroup.congr _ _ e <|
     AddHom.map_smul_top_toAddSubgroup_of_surjective e.surjective h
-  exact and_congr (e.isWeaklyRegular_congr h) e'.subsingleton_congr.not
+  exact and_congr (e.isWeaklyRegular_congr h) e'.nontrivial_congr
 
 lemma _root_.LinearEquiv.isRegular_congr' (e : M ≃ₛₗ[σ] M₂) (rs : List R) :
     IsRegular M rs ↔ IsRegular M₂ (rs.map σ) :=
@@ -494,8 +493,8 @@ def ndrecIterModByRegularWithRing
 
 lemma quot_ofList_smul_nontrivial {rs : List R} (h : IsRegular M rs)
     (N : Submodule R M) : Nontrivial (M ⧸ Ideal.ofList rs • N) :=
-  Submodule.Quotient.nontrivial_of_lt_top _ <|
-    lt_of_le_of_lt (smul_mono_right _ le_top) h.top_ne_smul.symm.lt_top
+  Submodule.Quotient.nontrivial_iff.2 <|
+    ne_top_of_le_ne_top h.top_ne_smul.symm (smul_mono_right _ le_top)
 
 lemma nontrivial {rs : List R} (h : IsRegular M rs) : Nontrivial M :=
   haveI := quot_ofList_smul_nontrivial h ⊤
