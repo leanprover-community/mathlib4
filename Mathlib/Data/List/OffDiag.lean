@@ -7,6 +7,8 @@ import Mathlib.Data.List.Count
 import Mathlib.Data.List.Enum
 import Mathlib.Data.List.Perm.Basic
 import Mathlib.Data.List.Nodup
+import Mathlib.Data.List.Flatten
+import Mathlib.Data.List.ProdSigma
 
 /-!
 # Definition and basic properties of `List.offDiag`
@@ -15,7 +17,7 @@ In this file we define `List.offDiag l` to be the product `l.product l`
 with the diagonal removed.
 -/
 
-assert_not_exists ne_of_gt
+assert_not_exists Preorder
 
 namespace List
 
@@ -46,6 +48,19 @@ theorem length_offDiag' (l : List α) : length l.offDiag = length l * (length l 
 theorem length_offDiag (l : List α) : length l.offDiag = length l ^ 2 - length l := by
   simp [length_offDiag', Nat.mul_sub, Nat.pow_two]
 
+@[gcongr]
+protected theorem Perm.offDiag {l₁ l₂ : List α} (h : l₁ ~ l₂) : l₁.offDiag ~ l₂.offDiag := by
+  induction h with
+  | nil => simp
+  | cons x h ih => grw [offDiag_cons_perm, offDiag_cons_perm, ih, h]
+  | swap x y l =>
+    grw [offDiag_cons_perm, offDiag_cons_perm, offDiag_cons_perm, offDiag_cons_perm]
+    simp only [map_cons, cons_append, append_assoc]
+    grw [perm_middle, perm_middle, Perm.swap, perm_append_comm_assoc _ (l.map (x, ·)),
+      perm_append_comm_assoc _ (l.map (x, ·)), perm_append_comm_assoc _ (l.map (·, x)),
+      perm_append_comm_assoc _ (l.map (·, x))]
+  | trans _ _ ih₁ ih₂ => exact ih₁.trans ih₂
+
 theorem mem_offDiag_iff_getElem {x : α × α} :
     x ∈ l.offDiag ↔ ∃ (i : ℕ) (_ : i < l.length) (j : ℕ) (_ : j < l.length),
       i ≠ j ∧ l[i] = x.1 ∧ l[j] = x.2 := by
@@ -54,7 +69,7 @@ theorem mem_offDiag_iff_getElem {x : α × α} :
     Nat.zero_add, Prod.ext_iff, ← exists_and_right, exists_and_left, @exists_comm α, and_assoc,
     exists_eq_left', ne_comm]
 
-theorem count_offDiag [BEq α] [LawfulBEq α] (l : List α) (a b : α) :
+theorem count_offDiag_eq_mul_sub_bif [BEq α] [LawfulBEq α] (l : List α) (a b : α) :
     count (a, b) l.offDiag = count a l * count b l - bif a == b then count a l else 0 := by
   induction l with
   | nil => simp
@@ -79,25 +94,30 @@ theorem count_offDiag [BEq α] [LawfulBEq α] (l : List α) (a b : α) :
       grind
     · simp [h₁, h₂]
 
+protected theorem Nodup.offDiag (h : l.Nodup) : l.offDiag.Nodup := by
+  letI := Classical.decEq α
+  rw [nodup_iff_count_le_one]
+  rintro ⟨x, y⟩
+  rw [count_offDiag_eq_mul_sub_bif l x y]
+  grind
+
+protected theorem Nodup.of_offDiag (h : l.offDiag.Nodup) : l.Nodup := by
+  letI := Classical.decEq α
+  simp only [nodup_iff_count_le_one, Prod.forall, count_offDiag_eq_mul_sub_bif] at *
+  intro a
+  specialize h a a
+  contrapose! h
+  rw [Nat.not_le] at h
+  suffices 1 + l.count a < l.count a * l.count a by simpa
+  calc
+    1 + l.count a < l.count a + l.count a := by simpa
+    _ ≤ l.count a * l.count a := by
+      rw [← Nat.two_mul]
+      exact Nat.mul_le_mul_right _ h
+
 /-- `List.offDiag l` has no duplicates iff the original list has no duplicates. -/
 @[simp]
-theorem nodup_offDiag : l.offDiag.Nodup ↔ l.Nodup := by
-  simp_rw [offDiag, nodup_flatMap, forall_mem_iff_getElem, getElem_zipIdx]
-  refine ⟨fun h ↦ ?_, fun h ↦ ⟨fun i _ ↦ (Pairwise.map _ ?_ (h.sublist <| eraseIdx_sublist ..)), ?_⟩⟩
-  · replace h := h.2
-    simp only [Nodup, pairwise_iff_getElem, getElem_zipIdx] at h ⊢
-    intro i j hi hj hlt heq
-    specialize h i j (by simpa) (by simpa) hlt
-    simp only [Function.onFun, heq, Nat.zero_add] at h
-    exact h.of_map (mem_eraseIdx_iff_getElem.2 ⟨j, hj, ne_of_gt hlt, rfl⟩)
-      (mem_eraseIdx_iff_getElem.2 ⟨i, hi, ne_of_lt hlt, heq⟩)
-  · intro a b h
-    simp [*]
-  · simp_rw [pairwise_iff_getElem, Disjoint, mem_map, getElem_zipIdx]
-    rintro i j hlt _ ⟨a, -, rfl⟩ ⟨b, -, hab⟩
-    simp [h.get_inj_iff, Fin.cast, Fin.val_inj, hlt.ne'] at hab
-
-protected alias ⟨Nodup.of_offDiag, Nodup.offDiag⟩ := nodup_offDiag
+theorem nodup_offDiag : l.offDiag.Nodup ↔ l.Nodup := ⟨.of_offDiag, .offDiag⟩
 
 /-- If `l : List α` is a list with no duplicates, then `x : α × α` belongs to `List.offDiag l`
 iff both components of `x` belong to `l` and they are not equal. -/

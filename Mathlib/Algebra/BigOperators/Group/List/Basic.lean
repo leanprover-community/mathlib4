@@ -124,14 +124,13 @@ theorem length_pos_of_prod_lt_one [Preorder M] (L : List M) (h : L.prod < 1) : 0
   length_pos_of_prod_ne_one L h.ne
 
 @[to_additive]
-theorem prod_set :
-    ∀ (L : List M) (n : ℕ) (a : M),
-      (L.set n a).prod =
-        ((L.take n).prod * if n < L.length then a else 1) * (L.drop (n + 1)).prod
-  | x :: xs, 0, a => by simp [set]
-  | x :: xs, i + 1, a => by
-    simp [set, prod_set xs i a, mul_assoc, Nat.add_lt_add_iff_right]
-  | [], _, _ => by simp [set, (Nat.zero_le _).not_gt]
+theorem prod_set (L : List M) (n : ℕ) (a : M) :
+    (L.set n a).prod =
+      ((L.take n).prod * if n < L.length then a else 1) * (L.drop (n + 1)).prod := by
+  rcases Nat.lt_or_ge n L.length with hn | hn
+  · simp [set_eq_take_cons_drop, hn, mul_assoc]
+  · simp [set_eq_take_append_cons_drop, drop_of_length_le, take_of_length_le, hn,
+      Nat.not_lt_of_le hn, Nat.le_trans hn]
 
 /-- We'd like to state this as `L.headI * L.tail.prod = L.prod`, but because `L.headI` relies on an
 inhabited instance to return a garbage value on the empty list, this is not possible.
@@ -291,7 +290,7 @@ lemma eq_of_prod_take_eq [LeftCancelMonoid M] {L L' : List M} (h : L.length = L'
     (h' : ∀ i ≤ L.length, (L.take i).prod = (L'.take i).prod) : L = L' := by
   refine ext_get h fun i h₁ h₂ => ?_
   have : (L.take (i + 1)).prod = (L'.take (i + 1)).prod := h' _ (Nat.succ_le_of_lt h₁)
-  rw [prod_take_succ L i h₁, prod_take_succ L' i h₂, h' i (le_of_lt h₁)] at this
+  rw [prod_take_succ L i h₁, prod_take_succ L' i h₂, h' i (Nat.le_of_lt h₁)] at this
   convert mul_left_cancel this
 
 section Group
@@ -355,8 +354,7 @@ theorem prod_set' (L : List G) (n : ℕ) (a : G) :
   split_ifs with hn
   · rw [mul_comm _ a, mul_assoc a, prod_drop_succ L n hn, mul_comm _ (drop n L).prod, ←
       mul_assoc (take n L).prod, prod_take_mul_prod_drop, mul_comm a, mul_assoc]
-  · simp only [take_of_length_le (le_of_not_gt hn), prod_nil, mul_one,
-      drop_eq_nil_of_le ((le_of_not_gt hn).trans n.le_succ)]
+  · simp (disch := grind) [take_of_length_le, drop_eq_nil_of_le]
 
 @[to_additive]
 lemma prod_map_ite_eq {A : Type*} [DecidableEq A] (l : List A) (f g : A → G) (a : A) :
