@@ -190,7 +190,7 @@ lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular [Small.{v} R] (M 
   have sub : Subsingleton M ↔ Subsingleton (QuotSMulTop x M) := by
     refine ⟨fun h ↦ inferInstance, fun h ↦ ?_⟩
     by_contra!
-    exact (not_subsingleton_iff_nontrivial.mpr (quotSMulTop_nontrivial mem M)) h
+    exact (not_subsingleton_iff_nontrivial.mpr (quotSMulTop_nontrivial' mem M)) h
   have aux (n : ℕ) : projectiveDimension (ModuleCat.of R (QuotSMulTop x M)) ≤ n ↔
     projectiveDimension M + 1 ≤ n := by
     match n with
@@ -271,7 +271,7 @@ lemma projectiveDimension_quotient_regular_sequence [Small.{v} R] (M : ModuleCat
     | [] => simp at len
     | x :: rs' =>
       simp only [List.mem_cons, forall_eq_or_imp] at mem
-      let _ : Nontrivial (QuotSMulTop x M) := quotSMulTop_nontrivial mem.1 M
+      let _ : Nontrivial (QuotSMulTop x M) := quotSMulTop_nontrivial' mem.1 M
       simp only [Nat.cast_add, Nat.cast_one]
       simp only [List.length_cons, Nat.add_right_cancel_iff] at len
       have : IsSMulRegular M x := ((isWeaklyRegular_cons_iff M _ _).mp reg).1
