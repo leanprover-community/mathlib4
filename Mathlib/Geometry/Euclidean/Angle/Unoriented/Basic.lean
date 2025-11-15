@@ -343,7 +343,7 @@ between the original vectors. -/
 @[simp]
 lemma angle_normalize_right (x y : V) :
     angle x (NormedSpace.normalize y) = angle x y := by
-  rw [angle_comm]; simp
+  rw [angle_comm, angle_normalize_left, angle_comm]
 
 /-- The inner product of two unit vectors is equal to the cosine of the angle between them. -/
 lemma inner_eq_cos_angle_of_norm_eq_one {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :

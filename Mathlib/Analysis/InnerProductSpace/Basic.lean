@@ -800,7 +800,8 @@ theorem inner_eq_neg_one_iff_of_norm_eq_one {x y : E} (hx : ‖x‖ = 1) (hy : �
   rw [← neg_eq_iff_eq_neg, ← inner_neg_right, inner_eq_one_iff_of_norm_eq_one hx (norm_neg y ▸ hy)]
 
 /-- The inner product of two unit vectors is less than or equal to `1`. -/
-theorem real_inner_le_one_of_norm_eq_one {x y : F} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) : ⟪x, y⟫_ℝ ≤ 1 := by
+theorem real_inner_le_one_of_norm_eq_one {x y : F} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
+    ⟪x, y⟫_ℝ ≤ 1 := by
   simpa [hx, hy] using real_inner_le_norm x y
 
 /-- The inner product of two unit vectors is greater than or equal to `-1`. -/
