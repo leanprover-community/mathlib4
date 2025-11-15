@@ -34,8 +34,16 @@ section Fintype
 
 open Module
 
-variable (K : Type*) [Field K] [NumberField K]
+variable (K : Type*) [Field K]
 variable (A : Type*) [Field A] [CharZero A]
+
+instance [CharZero K] [Algebra.IsIntegral ℚ K] [IsAlgClosed A] : Nonempty (K →+* A) := by
+  obtain ⟨f⟩ : Nonempty (K →ₐ[ℚ] A) := by
+      apply IntermediateField.nonempty_algHom_of_splits
+      exact fun x ↦ ⟨Algebra.IsIntegral.isIntegral x, IsAlgClosed.splits_codomain _⟩
+  exact ⟨f.toRingHom⟩
+
+variable [NumberField K]
 
 /-- There are finitely many embeddings of a number field. -/
 noncomputable instance : Fintype (K →+* A) :=
@@ -46,10 +54,6 @@ variable [IsAlgClosed A]
 /-- The number of embeddings of a number field is equal to its finrank. -/
 theorem card : Fintype.card (K →+* A) = finrank ℚ K := by
   rw [Fintype.ofEquiv_card RingHom.equivRatAlgHom.symm, AlgHom.card]
-
-instance : Nonempty (K →+* A) := by
-  rw [← Fintype.card_pos_iff, NumberField.Embeddings.card K A]
-  exact Module.finrank_pos
 
 end Fintype
 
@@ -269,9 +273,13 @@ theorem IsConj.comp (hσ : IsConj φ σ) (ν : Gal(K/k)) :
   ext
   simpa [← AlgEquiv.mul_apply, ← mul_assoc] using RingHom.congr_fun hσ _
 
+theorem isConj_sq_eq_one (hσ : IsConj φ σ) :
+    σ ^ 2 = 1 := by
+  ext; simpa using isConj_apply_apply hσ _
+
 lemma orderOf_isConj_two_of_ne_one (hσ : IsConj φ σ) (hσ' : σ ≠ 1) :
     orderOf σ = 2 :=
-  orderOf_eq_prime_iff.mpr ⟨by ext; simpa using isConj_apply_apply hσ _, hσ'⟩
+  orderOf_eq_prime_iff.mpr ⟨isConj_sq_eq_one hσ, hσ'⟩
 
 section Extension
 
