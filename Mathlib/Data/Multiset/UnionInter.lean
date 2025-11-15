@@ -127,11 +127,11 @@ lemma mem_inter : a ∈ s ∩ t ↔ a ∈ s ∧ a ∈ t :=
     rw [← cons_erase h₁, cons_inter_of_pos _ h₂]; apply mem_cons_self⟩
 
 instance instLattice : Lattice (Multiset α) where
-  sup := (· ∪ ·)
+  max := (· ∪ ·)
   sup_le _ _ _ := union_le
   le_sup_left _ _ := le_union_left
   le_sup_right _ _ := le_union_right
-  inf := (· ∩ ·)
+  min := (· ∩ ·)
   le_inf _ _ _ := le_inter
   inf_le_left _ _ := inter_le_left
   inf_le_right _ _ := inter_le_right

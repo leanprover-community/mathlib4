@@ -227,14 +227,14 @@ variable [CompleteLattice α] (f : α →o α)
 
 instance : SemilatticeSup (fixedPoints f) :=
   { Subtype.partialOrder _ with
-    sup := fun x y => f.nextFixed (x ⊔ y) (f.le_map_sup_fixedPoints x y)
+    max := fun x y => f.nextFixed (x ⊔ y) (f.le_map_sup_fixedPoints x y)
     le_sup_left := fun _ _ => Subtype.coe_le_coe.1 <| le_sup_left.trans (f.le_nextFixed _)
     le_sup_right := fun _ _ => Subtype.coe_le_coe.1 <| le_sup_right.trans (f.le_nextFixed _)
     sup_le := fun _ _ _ hxz hyz => f.nextFixed_le _ <| sup_le hxz hyz }
 
 instance : SemilatticeInf (fixedPoints f) :=
   { OrderDual.instSemilatticeInf (fixedPoints f.dual) with
-    inf := fun x y => f.prevFixed (x ⊓ y) (f.map_inf_fixedPoints_le x y) }
+    min := fun x y => f.prevFixed (x ⊓ y) (f.map_inf_fixedPoints_le x y) }
 
 instance : CompleteSemilatticeSup (fixedPoints f) :=
   { Subtype.partialOrder _ with

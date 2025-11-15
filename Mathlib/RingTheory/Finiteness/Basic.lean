@@ -54,7 +54,7 @@ theorem fg_iSup {ι : Sort*} [Finite ι] (N : ι → Submodule R M) (h : ∀ i, 
   simpa [iSup_plift_down] using fg_biSup Finset.univ (N ∘ PLift.down) fun i _ => h i.down
 
 instance : SemilatticeSup {P : Submodule R M // P.FG} where
-  sup := fun P Q ↦ ⟨P.val ⊔ Q.val, Submodule.FG.sup P.property Q.property⟩
+  max := fun P Q ↦ ⟨P.val ⊔ Q.val, Submodule.FG.sup P.property Q.property⟩
   le_sup_left := fun P Q ↦ by rw [← Subtype.coe_le_coe]; exact le_sup_left
   le_sup_right := fun P Q ↦ by rw [← Subtype.coe_le_coe]; exact le_sup_right
   sup_le := fun P Q R hPR hQR ↦ by

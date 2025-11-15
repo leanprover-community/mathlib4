@@ -50,8 +50,8 @@ def Lattice.copy (c : Lattice α)
     (sup : α → α → α) (eq_sup : sup = (by infer_instance : Max α).max)
     (inf : α → α → α) (eq_inf : inf = (by infer_instance : Min α).min) : Lattice α where
   le := le
-  sup := sup
-  inf := inf
+  max := sup
+  min := inf
   lt := fun a b ↦ le a b ∧ ¬ le b a
   le_refl := by intros; simp [eq_le]
   le_trans := by intro _ _ _ hab hbc; rw [eq_le] at hab hbc ⊢; exact le_trans hab hbc

@@ -449,7 +449,7 @@ theorem inf_apply (p q : Seminorm 𝕜 E) (x : E) : (p ⊓ q) x = ⨅ u : E, p u
 
 noncomputable instance instLattice : Lattice (Seminorm 𝕜 E) :=
   { Seminorm.instSemilatticeSup with
-    inf := (· ⊓ ·)
+    min := (· ⊓ ·)
     inf_le_left := fun p q x =>
       ciInf_le_of_le bddBelow_range_add x <| by
         simp only [sub_self, map_zero, add_zero]; rfl

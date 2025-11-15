@@ -149,7 +149,7 @@ instance : CompleteLattice (RingCon R) where
   __ := completeLatticeOfInf (RingCon R) fun s =>
     ⟨fun r hr x y h => (h : ∀ r ∈ s, (r : RingCon R) x y) r hr,
       fun _r hr _x _y h _r' hr' => hr hr' h⟩
-  inf c d :=
+  min c d :=
     { toSetoid := c.toSetoid ⊓ d.toSetoid
       mul' := fun h1 h2 => ⟨c.mul h1.1 h2.1, d.mul h1.2 h2.2⟩
       add' := fun h1 h2 => ⟨c.add h1.1 h2.1, d.add h1.2 h2.2⟩ }

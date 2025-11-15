@@ -49,11 +49,11 @@ instance partialOrder (x : X) : PartialOrder (OpenNhds x) where
 
 instance (x : X) : Lattice (OpenNhds x) :=
   { OpenNhds.partialOrder x with
-    inf := fun U V => ⟨U.1 ⊓ V.1, ⟨U.2, V.2⟩⟩
+    min := fun U V => ⟨U.1 ⊓ V.1, ⟨U.2, V.2⟩⟩
     le_inf := fun U V W => @le_inf _ _ U.1.1 V.1.1 W.1.1
     inf_le_left := fun U V => @inf_le_left _ _ U.1.1 V.1.1
     inf_le_right := fun U V => @inf_le_right _ _ U.1.1 V.1.1
-    sup := fun U V => ⟨U.1 ⊔ V.1, Set.mem_union_left V.1.1 U.2⟩
+    max := fun U V => ⟨U.1 ⊔ V.1, Set.mem_union_left V.1.1 U.2⟩
     sup_le := fun U V W => @sup_le _ _ U.1.1 V.1.1 W.1.1
     le_sup_left := fun U V => @le_sup_left _ _ U.1.1 V.1.1
     le_sup_right := fun U V => @le_sup_right _ _ U.1.1 V.1.1 }

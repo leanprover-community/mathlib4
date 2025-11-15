@@ -39,7 +39,7 @@ instance [SemilatticeSup β] : Max (α →o β) where
 
 instance [SemilatticeSup β] : SemilatticeSup (α →o β) :=
   { (_ : PartialOrder (α →o β)) with
-    sup := Max.max
+    max := Max.max
     le_sup_left := fun _ _ _ => le_sup_left
     le_sup_right := fun _ _ _ => le_sup_right
     sup_le := fun _ _ _ h₀ h₁ x => sup_le (h₀ x) (h₁ x) }
@@ -52,7 +52,7 @@ instance [SemilatticeInf β] : Min (α →o β) where
 
 instance [SemilatticeInf β] : SemilatticeInf (α →o β) :=
   { (_ : PartialOrder (α →o β)), (dualIso α β).symm.toGaloisInsertion.liftSemilatticeInf with
-    inf := (· ⊓ ·) }
+    min := (· ⊓ ·) }
 
 instance lattice [Lattice β] : Lattice (α →o β) :=
   { (_ : SemilatticeSup (α →o β)), (_ : SemilatticeInf (α →o β)) with }
