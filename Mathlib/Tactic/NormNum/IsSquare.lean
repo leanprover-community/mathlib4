@@ -1,8 +1,20 @@
+/-
+Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasilii Nesterov
+-/
 import Mathlib.Tactic.NormNum.Irrational
 
-namespace Tactic
+/-! # `norm_num` extension for `IsSquare`
 
-namespace NormNum
+This module defines a `norm_num` extension for `IsSquare x` for rational `x`.
+
+## Implementation details
+To decide `IsSquare x`, we reduce it to `0 ≤ x ∧ ¬ Irrational √x` and use the existing `norm_num`
+extensions for `Irrational` and `LE`.
+-/
+
+namespace Tactic.NormNum
 
 section Lemmas
 

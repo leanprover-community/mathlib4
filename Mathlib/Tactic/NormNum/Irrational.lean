@@ -19,10 +19,6 @@ is not a `q`-th power of any rational number. This, in turn, reduces to proving 
 `b` is not a `q`-th power of a natural number, assuming `p` and `q` are coprime.
 To show that a given `n : ℕ` is not a `q`-th power, we find a natural number `k`
 such that `k ^ q < n < (k + 1) ^ q`, using binary search.
-
-## TODO
-Disprove `Irrational x` for rational `x`.
-
 -/
 
 namespace Tactic
