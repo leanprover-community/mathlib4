@@ -230,20 +230,15 @@ theorem nth_mul_coeff' (n : ℕ) :
       (x * y).coeff (n + 1) - y.coeff (n + 1) * x.coeff 0 ^ p ^ (n + 1) -
         x.coeff (n + 1) * y.coeff 0 ^ p ^ (n + 1) := by
   simp only [← peval_polyOfInterest']
-  obtain ⟨f₀, hf₀⟩ := exists_restrict_to_vars k (polyOfInterest_vars p n)
-  have : ∀ (a : Multiset (Fin 2)) (b : Multiset ℕ), a ×ˢ b = a.product b := fun a b => rfl
+  obtain ⟨f₀, hf₀⟩ := exists_restrict_to_vars (s := SetLike.coe (univ ×ˢ range (n + 1))) k
+    (polyOfInterest_vars p n)
   let f : TruncatedWittVector p (n + 1) k → TruncatedWittVector p (n + 1) k → k := by
     intro x y
     apply f₀
     rintro ⟨a, ha⟩
     apply Function.uncurry ![x, y]
-    simp_rw [product_val, this, range_val, Multiset.range_succ] at ha
-    let S : Set (Fin 2 × ℕ) := (fun a => a.2 = n ∨ a.2 < n)
-    have ha' : a ∈ S := by
-      convert ha
-      dsimp [S]
-      congr!
-      simp
+    let S : Set (Fin 2 × ℕ) := { a | a.2 = n ∨ a.2 < n }
+    have ha' : a ∈ S := by grind
     refine ⟨a.fst, ⟨a.snd, ?_⟩⟩
     obtain ⟨ha, ha⟩ := ha' <;> omega
   use f
