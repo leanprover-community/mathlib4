@@ -179,10 +179,10 @@ private lemma hom_comp_inv :
   ext x
   simp
 
+attribute [-ext] MvPolynomial.algHom_ext MvPolynomial.algHom_ext' in
 private lemma inv_comp_hom :
     (P.tensorModelOfHasCoeffsInv R₀).comp (P.tensorModelOfHasCoeffsHom R₀) = AlgHom.id R _ := by
-  ext x
-  obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
+  ext
   simp
 
 /-- The natural isomorphism `R ⊗[R₀] S₀ ≃ₐ[R] S`. -/
