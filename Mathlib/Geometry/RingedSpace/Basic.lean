@@ -82,7 +82,7 @@ theorem isUnit_res_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U)) (x :
   obtain ⟨W', hxW', i₁, i₂, heq'⟩ := X.presheaf.germ_eq x hxW hxW _ _ heq
   use W', i₁ ≫ Opens.infLELeft U V, hxW'
   simp only [map_mul, map_one] at heq'
-  simpa using isUnit_of_mul_eq_one _ _ heq'
+  simpa using .of_mul_eq_one _ heq'
 
 /-- If a section `f` is a unit in each stalk, `f` must be a unit. -/
 theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
@@ -113,9 +113,7 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
     -- We need to rephrase the result from `HasForget` to `CommRingCat`.
     ∃ gl : X.presheaf.obj (op U), (∀ i, ((sheaf X).val.map (iVU i).op) gl = g i) ∧ _ :=
     X.sheaf.existsUnique_gluing' V U iVU hcover g ic
-  apply isUnit_of_mul_eq_one f gl
-  apply X.sheaf.eq_of_locally_eq' V U iVU hcover
-  intro i
+  refine .of_mul_eq_one gl <| X.sheaf.eq_of_locally_eq' V U iVU hcover _ _ fun i ↦ ?_
   -- We need to rephrase the goal from `HasForget` to `CommRingCat`.
   change ((sheaf X).val.map (iVU i).op).hom (f * gl) = ((sheaf X).val.map (iVU i).op) 1
   rw [RingHom.map_one, RingHom.map_mul, gl_spec]

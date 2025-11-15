@@ -3,7 +3,9 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li
 -/
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.GroupWithZero.Nat
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Monoid.NatCast
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Pigeonhole
@@ -899,9 +901,6 @@ protected noncomputable def withLength [InfiniteDimensionalOrder α] (n : ℕ) :
 /-- if `α` is infinite dimensional, then `α` is nonempty. -/
 lemma nonempty_of_infiniteDimensionalOrder [InfiniteDimensionalOrder α] : Nonempty α :=
   ⟨LTSeries.withLength α 0 0⟩
-
-@[deprecated (since := "2025-03-01")]
-alias nonempty_of_infiniteDimensionalType := nonempty_of_infiniteDimensionalOrder
 
 lemma nonempty_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : Nonempty α := by
   obtain ⟨p, _⟩ := (SetRel.finiteDimensional_iff _).mp ‹_›

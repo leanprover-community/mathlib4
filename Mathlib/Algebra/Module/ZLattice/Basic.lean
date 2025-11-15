@@ -332,7 +332,7 @@ theorem setFinite_inter [ProperSpace E] [Finite ι] {s : Set E} (hs : Bornology.
 theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpace E] [Finite ι] :
     MeasurableSet (fundamentalDomain b) := by
   cases nonempty_fintype ι
-  haveI : FiniteDimensional ℝ E := FiniteDimensional.of_fintype_basis b
+  haveI : FiniteDimensional ℝ E := b.finiteDimensional_of_finite
   let D : Set (ι → ℝ) := Set.pi Set.univ fun _ : ι => Set.Ico (0 : ℝ) 1
   rw [(_ : fundamentalDomain b = b.equivFun.toLinearMap ⁻¹' D)]
   · refine measurableSet_preimage (LinearMap.continuous_of_finiteDimensional _).measurable ?_
@@ -365,7 +365,7 @@ theorem measure_fundamentalDomain_ne_zero [Finite ι] [MeasurableSpace E] [Borel
 theorem measure_fundamentalDomain [Fintype ι] [DecidableEq ι] [MeasurableSpace E] (μ : Measure E)
     [BorelSpace E] [Measure.IsAddHaarMeasure μ] (b₀ : Basis ι ℝ E) :
     μ (fundamentalDomain b) = ENNReal.ofReal |b₀.det b| * μ (fundamentalDomain b₀) := by
-  have : FiniteDimensional ℝ E := FiniteDimensional.of_fintype_basis b
+  have : FiniteDimensional ℝ E := b.finiteDimensional_of_finite
   convert μ.addHaar_preimage_linearEquiv (b.equiv b₀ (Equiv.refl ι)) (fundamentalDomain b₀)
   · rw [Set.eq_preimage_iff_image_eq (LinearEquiv.bijective _), map_fundamentalDomain,
       Basis.map_equiv, Equiv.refl_symm, Basis.reindex_refl]
@@ -394,7 +394,7 @@ theorem fundamentalDomain_ae_parallelepiped [Fintype ι] [MeasurableSpace E] (μ
     [BorelSpace E] [Measure.IsAddHaarMeasure μ] :
     fundamentalDomain b =ᵐ[μ] parallelepiped b := by
   classical
-  have : FiniteDimensional ℝ E := FiniteDimensional.of_fintype_basis b
+  have : FiniteDimensional ℝ E := b.finiteDimensional_of_finite
   rw [← measure_symmDiff_eq_zero_iff, symmDiff_of_le (fundamentalDomain_subset_parallelepiped b)]
   suffices (parallelepiped b \ fundamentalDomain b) ⊆ ⋃ i,
       AffineSubspace.mk' (b i) (span ℝ (b '' (Set.univ \ {i}))) by
@@ -508,18 +508,21 @@ instance instModuleFinite_of_discrete_submodule {E : Type*} [NormedAddCommGroup 
 theorem ZLattice.module_free [IsZLattice K L] : Module.Free ℤ L := by
   have : Module.Finite ℤ L := module_finite K L
   have : Module ℚ E := Module.compHom E (algebraMap ℚ K)
+  have : IsAddTorsionFree E := .of_module_rat _
   infer_instance
 
 instance instModuleFree_of_discrete_submodule {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] (L : Submodule ℤ E) [DiscreteTopology L] :
     Module.Free ℤ L := by
   have : Module ℚ E := Module.compHom E (algebraMap ℚ ℝ)
+  have : IsAddTorsionFree E := .of_module_rat _
   infer_instance
 
 theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
   classical
   have : Module.Finite ℤ L := module_finite K L
   have : Module ℚ E := Module.compHom E (algebraMap ℚ K)
+  have : IsAddTorsionFree E := .of_module_rat _
   let b₀ := Module.Free.chooseBasis ℤ L
   -- Let `b` be a `ℤ`-basis of `L` formed of vectors of `E`
   let b := Subtype.val ∘ b₀

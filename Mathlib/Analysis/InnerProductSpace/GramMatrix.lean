@@ -56,7 +56,7 @@ lemma gram_single [DecidableEq n] (i : n) (x : E) :
   simp
 
 lemma submatrix_gram (v : n → E) {m : Set n} (f : m → n) :
-  (gram 𝕜 v).submatrix f f = gram 𝕜 (v ∘ f) := rfl
+    (gram 𝕜 v).submatrix f f = gram 𝕜 (v ∘ f) := rfl
 
 variable (𝕜) in
 /-- A Gram matrix is Hermitian. -/
@@ -78,7 +78,7 @@ theorem posSemidef_gram (v : n → E) :
     PosSemidef (gram 𝕜 v) := by
   refine ⟨isHermitian_gram _ _, fun x ↦ ?_⟩
   rw [star_dotProduct_gram_mulVec, le_iff_re_im]
-  simp [inner_self_nonneg]
+  simp
 
 /-- In a normed space, positive definiteness of `gram 𝕜 v` implies linear independence of `v`. -/
 theorem linearIndependent_of_posDef_gram {v : n → E} (h_gram : PosDef (gram 𝕜 v)) :

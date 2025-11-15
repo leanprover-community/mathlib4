@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Gabriel Ebner
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Nat.Init
 import Mathlib.Tactic.SplitIfs
-import Mathlib.Tactic.OfNat
 
 /-!
 # Cast of natural numbers
