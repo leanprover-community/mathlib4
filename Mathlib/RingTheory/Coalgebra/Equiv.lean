@@ -56,8 +56,8 @@ def toCoalgEquiv [EquivLike F A B] [CoalgEquivClass F R A B] (f : F) : A ≃ₗc
 
 /-- Reinterpret an element of a type of coalgebra equivalences as a coalgebra equivalence. -/
 instance instCoeToCoalgEquiv
-    [EquivLike F A B] [CoalgEquivClass F R A B] : CoeHead F (A ≃ₗc[R] B) where
-  coe f := toCoalgEquiv f
+    [EquivLike F A B] [CoalgEquivClass F R A B] (f : F) : CoeDep F f (A ≃ₗc[R] B) where
+  coe := toCoalgEquiv f
 
 end CoalgEquivClass
 

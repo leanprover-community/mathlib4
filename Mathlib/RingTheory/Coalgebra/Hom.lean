@@ -70,8 +70,8 @@ def toCoalgHom (f : F) : A →ₗc[R] B :=
     counit_comp := CoalgHomClass.counit_comp f
     map_comp_comul := CoalgHomClass.map_comp_comul f }
 
-instance instCoeToCoalgHom : CoeHead F (A →ₗc[R] B) :=
-  ⟨CoalgHomClass.toCoalgHom⟩
+instance instCoeToCoalgHom (f : F) : CoeDep F f (A →ₗc[R] B) :=
+  ⟨CoalgHomClass.toCoalgHom f⟩
 
 @[simp]
 theorem counit_comp_apply (f : F) (x : A) : counit (f x) = counit (R := R) x :=

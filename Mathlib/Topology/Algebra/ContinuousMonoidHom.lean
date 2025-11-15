@@ -112,8 +112,8 @@ def toContinuousMonoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B] (f :
 `ContinuousMonoidHom` via `ContinuousMonoidHom.toContinuousMonoidHom`. -/
 @[to_additive /-- Any type satisfying `AddMonoidHomClass` and `ContinuousMapClass` can be cast into
 `ContinuousAddMonoidHom` via `ContinuousAddMonoidHom.toContinuousAddMonoidHom`. -/]
-instance [MonoidHomClass F A B] [ContinuousMapClass F A B] : CoeOut F (A →ₜ* B) :=
-  ⟨ContinuousMonoidHom.toContinuousMonoidHom⟩
+instance [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) : CoeDep F f (A →ₜ* B) :=
+  ⟨ContinuousMonoidHom.toContinuousMonoidHom f⟩
 
 @[to_additive (attr := simp)]
 lemma coe_coe [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
