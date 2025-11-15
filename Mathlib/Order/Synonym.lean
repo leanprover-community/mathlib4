@@ -16,7 +16,7 @@ This file provides three type synonyms for order theory:
 * `Lex α`: Type synonym of `α` to equip it with its lexicographic order. The precise meaning depends
   on the type we take the lex of. Examples include `Prod`, `Sigma`, `List`, `Finset`.
 * `Colex α`: Type synonym of `α` to equip it with its colexicographic order. The precise meaning
-  depends on the type we take the colex of. Examples include `Finset`.
+  depends on the type we take the colex of. Examples include `Finset`, `DFinsupp`, `Finsupp`.
 
 ## Notation
 

@@ -60,6 +60,10 @@ theorem lex_lt_of_lt [∀ i, PartialOrder (β i)] {r} (hwf : WellFounded r) {x y
   simp_rw [Pi.Lex, le_antisymm_iff]
   exact lex_lt_of_lt_of_preorder hwf hlt
 
+theorem lex_iff_of_unique [Unique ι] [∀ i, LT (β i)] {r} [IsIrrefl ι r] {x y : ∀ i, β i} :
+    Pi.Lex r (· < ·) x y ↔ x default < y default := by
+  simp [Pi.Lex, Unique.forall_iff, Unique.exists_iff, irrefl]
+
 theorem isTrichotomous_lex [∀ i, IsTrichotomous (β i) s] (wf : WellFounded r) :
     IsTrichotomous (∀ i, β i) (Pi.Lex r @s) :=
   { trichotomous := fun a b => by
@@ -92,6 +96,14 @@ instance [LT ι] [∀ a, LT (β a)] : LT (Colex (∀ i, β i)) :=
 @[simp] theorem toColex_apply (x : ∀ i, β i) (i : ι) : toColex x i = x i := rfl
 @[simp] theorem ofColex_apply (x : Colex (∀ i, β i)) (i : ι) : ofColex x i = x i := rfl
 
+theorem lex_lt_iff_of_unique [Unique ι] [∀ i, LT (β i)] [Preorder ι] {x y : Lex (∀ i, β i)} :
+    x < y ↔ x default < y default :=
+  lex_iff_of_unique
+
+theorem colex_lt_iff_of_unique [Unique ι] [∀ i, LT (β i)] [Preorder ι] {x y : Colex (∀ i, β i)} :
+    x < y ↔ x default < y default :=
+  lex_iff_of_unique
+
 instance Lex.isStrictOrder [LinearOrder ι] [∀ a, PartialOrder (β a)] :
     IsStrictOrder (Lex (∀ i, β i)) (· < ·) where
   irrefl := fun a ⟨k, _, hk₂⟩ => lt_irrefl (a k) hk₂
@@ -122,6 +134,14 @@ noncomputable instance Lex.linearOrder [LinearOrder ι] [WellFoundedLT ι]
 noncomputable instance Colex.linearOrder [LinearOrder ι] [WellFoundedGT ι]
     [∀ a, LinearOrder (β a)] : LinearOrder (Colex (∀ i, β i)) :=
   Lex.linearOrder (ι := ιᵒᵈ)
+
+theorem lex_le_iff_of_unique [Unique ι] [LinearOrder ι] [WellFoundedLT ι] [∀ i, LinearOrder (β i)]
+    {x y : Lex (∀ i, β i)} : x ≤ y ↔ x default ≤ y default := by
+  simp_rw [← not_lt, not_iff_not, lex_lt_iff_of_unique]
+
+theorem colex_le_iff_of_unique [Unique ι] [LinearOrder ι] [WellFoundedGT ι] [∀ i, LinearOrder (β i)]
+    {x y : Colex (∀ i, β i)} : x ≤ y ↔ x default ≤ y default := by
+  simp_rw [← not_lt, not_iff_not, colex_lt_iff_of_unique]
 
 section Lex
 
