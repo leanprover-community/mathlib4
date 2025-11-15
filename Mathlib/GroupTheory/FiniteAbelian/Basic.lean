@@ -13,6 +13,7 @@ import Mathlib.Data.ZMod.QuotientRing
 * `AddCommGroup.equiv_free_prod_directSum_zmod` : Any finitely generated abelian group is the
   product of a power of `ℤ` and a direct sum of some `ZMod (p i ^ e i)` for some prime powers
   `p i ^ e i`.
+* `CommGroup.equiv_free_prod_prod_multiplicative_zmod` is a version for multiplicative groups.
 * `AddCommGroup.equiv_directSum_zmod_of_finite` : Any finite abelian group is a direct sum of
   some `ZMod (p i ^ e i)` for some prime powers `p i ^ e i`.
 * `CommGroup.equiv_prod_multiplicative_zmod_of_finite` is a version for multiplicative groups.
@@ -172,5 +173,22 @@ theorem equiv_prod_multiplicative_zmod_of_finite (G : Type*) [CommGroup G] [Fini
   obtain ⟨ι, inst, n, h₁, h₂⟩ := AddCommGroup.equiv_directSum_zmod_of_finite' (Additive G)
   exact ⟨ι, inst, n, h₁, ⟨MulEquiv.toAdditive.symm <| h₂.some.trans <|
     (DirectSum.addEquivProd _).trans (MulEquiv.piMultiplicative _).toAdditiveRight⟩⟩
+
+/-- The **Structure theorem of finitely generated abelian groups** in a multiplicative version :
+    Any finitely generated abelian group is the product of a power of `ℤ`
+    and a direct product of some `ZMod (p i ^ e i)` for some prime powers `p i ^ e i`. -/
+theorem equiv_free_prod_prod_multiplicative_zmod (G : Type*) [CommGroup G] [hG : Group.FG G] :
+    ∃ (ι j : Type) (_ : Fintype ι) (_ : Fintype j) (p : ι → ℕ)
+    (_ : ∀ i, Nat.Prime <| p i) (e : ι → ℕ),
+      Nonempty <| G ≃* (j → Multiplicative ℤ) × ((i : ι) → Multiplicative (ZMod (p i ^ e i))) := by
+  obtain ⟨n, ι, inst, x, p, e, equiv⟩ := AddCommGroup.equiv_free_prod_directSum_zmod (Additive G)
+  exact ⟨ι, (Fin n), inst, by infer_instance, x, p, e, ⟨MulEquiv.toAdditive (G := G).symm <|
+    equiv.some.trans <|
+    (((Finsupp.addEquivFunOnFinite.trans <|
+      (((AddEquiv.piAdditive _).trans
+        (AddEquiv.arrowCongr (Equiv.refl _) (AddEquiv.additiveMultiplicative ℤ)
+    )).symm)).prodCongr (DirectSum.addEquivProd _ )).trans <|
+    (AddEquiv.prodAdditive _ _).symm
+  )⟩⟩
 
 end CommGroup
