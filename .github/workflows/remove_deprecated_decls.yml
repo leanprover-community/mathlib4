@@ -169,7 +169,6 @@ jobs:
       run: |
         # Check if the branch exists remotely
         SHA=$(git ls-remote --heads origin "$BRANCH_NAME" | awk '{print $1}')
-        
         if [ -n "$SHA" ]; then
           echo "Branch '$BRANCH_NAME' exists with SHA: $SHA"
           echo "sha=$SHA" >> "${GITHUB_OUTPUT}"
