@@ -38,7 +38,7 @@ variable
 namespace Real
 
 /-!
-# Definition
+### Definition
 -/
 
 variable (f c R) in

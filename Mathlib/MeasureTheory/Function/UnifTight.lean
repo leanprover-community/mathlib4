@@ -21,7 +21,7 @@ is also proved later in the file.
   exists some measurable set `s` with finite measure such that the Lp-norm of
   `f i` restricted to `sᶜ` is smaller than `ε` for all `i`.
 
-# Main results
+## Main results
 
 * `MeasureTheory.unifTight_finite`: a finite sequence of Lp functions is uniformly
   tight.

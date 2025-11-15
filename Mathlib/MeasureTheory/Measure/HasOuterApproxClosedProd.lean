@@ -24,7 +24,7 @@ such that for any two families bounded continuous functions
 
 We specialize these results to the cases where one of the families contains only one type.
 
-# Main statements
+## Main statements
 
 * `ext_of_integral_prod_mul_prod_boundedContinuousFunction`: A finite measure `μ`
   over `(Π i, X i) × (Π j, Y j)` is determined by the values
@@ -46,7 +46,7 @@ We specialize these results to the cases where one of the families contains only
   `ν` is the only finite measure `ξ` such that for all real bounded continuous functions
   `f` and `g` we have `∫ z, f z.1 * g z.2 ∂ξ = ∫ x, f x ∂μ * ∫ y, g y ∂ν`.
 
-# Tags
+## Tags
 
 bounded continuous function, product measure
 -/

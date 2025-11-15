@@ -386,7 +386,7 @@ section
 open MeasureTheory
 
 /-!
-# Almost everywhere measurable functions
+### Almost everywhere measurable functions
 
 A function is almost everywhere measurable if it coincides almost everywhere with a measurable
 function. We define this property, called `AEMeasurable f μ`. It's properties are discussed in

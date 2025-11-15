@@ -28,7 +28,7 @@ formulate the martingale convergence theorem.
   probability theory sense if it is uniformly integrable in the measure theory sense and
   has uniformly bounded Lp-norm.
 
-# Main results
+## Main results
 
 * `MeasureTheory.unifIntegrable_finite`: a finite sequence of Lp functions is uniformly
   integrable.
