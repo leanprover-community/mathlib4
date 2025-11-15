@@ -3,10 +3,12 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Canonical
+import Mathlib.Algebra.Group.Pointwise.Set.Finite
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
+import Mathlib.Algebra.Order.Group.Units
+import Mathlib.Order.Interval.Finset.Defs
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Order.OrderClosed
-import Mathlib.Topology.Separation.Regular
 
 /-!
 # The topology on linearly ordered commutative groups with zero
@@ -129,6 +131,8 @@ theorem isClosed_iff {s : Set Γ₀} : IsClosed s ↔ (0 : Γ₀) ∈ s ∨ ∃ 
 theorem isOpen_Iio {a : Γ₀} : IsOpen (Iio a) :=
   isOpen_iff.mpr <| imp_iff_not_or.mp fun ha => ⟨a, ne_of_gt ha, Subset.rfl⟩
 
+lemma isOpen_singleton (h : γ ≠ 0) : IsOpen {γ} := isOpen_singleton_nhdsAdjoint _ h
+
 /-!
 ### Instances
 -/
@@ -182,5 +186,73 @@ scoped instance (priority := 100) : ContinuousInv₀ Γ₀ :=
   ⟨fun γ h => by
     rw [ContinuousAt, nhds_of_ne_zero h]
     exact pure_le_nhds γ⁻¹⟩
+
+instance : DiscreteTopology { g : Γ₀ // g ≠ 0 } := by
+  simpa [discreteTopology_iff_singleton_mem_nhds, nhds_induced] using by aesop
+
+instance : DiscreteTopology Γ₀ˣ :=
+  unitsHomeomorphNeZero.symm.discreteTopology
+
+theorem isInducing_unitsVal : IsInducing (Units.val : Γ₀ˣ → Γ₀) :=
+  by simp [isInducing_iff_nhds, ← image_singleton, Units.val_injective.preimage_image]
+
+lemma isOpenEmbedding_units_val : IsOpenEmbedding (Units.val : Γ₀ˣ → Γ₀) where
+  eq_induced := isInducing_unitsVal.1
+  injective := Units.val_injective
+  isOpen_range := by simp [isOpen_iff]
+
+lemma locallyCompactSpace_of_compact_Iio (h : IsCompact (Iio (1 : Γ₀))) :
+    LocallyCompactSpace Γ₀ := by
+  have key (x : Γ₀) : (𝓝 x).HasBasis (fun r : Γ₀ ↦ x = 0 → r ≠ 0)
+      fun r ↦ if x = 0 then Iio r else {x} := by
+    split_ifs with h
+    · simpa [h] using hasBasis_nhds_zero
+    · simpa [h] using (Filter.hasBasis_pure x).to_hasBasis (by simp) (by simp)
+  refine LocallyCompactSpace.of_hasBasis key fun r i hr ↦ ?_
+  split_ifs with hr0
+  · convert h.image (continuous_mul_left i)
+    rw [image_mul_left_Iio (zero_lt_iff.mpr <| hr hr0), mul_one]
+  · exact isCompact_singleton
+
+theorem compact_Iio_of_locallyCompactSpace [LocallyCompactSpace Γ₀] (r : Γ₀) :
+    IsCompact (Iio r) := by
+  obtain rfl | hr0 := eq_or_ne r 0
+  · simp [← bot_eq_zero'']
+  obtain ⟨s, hs0, _, hcs⟩ := local_compact_nhds <| Iio_mem_nhds_zero (Γ₀ := Γ₀) one_ne_zero
+  obtain ⟨w, hw0, hws⟩ := hasBasis_nhds_zero.mem_iff.mp hs0
+  convert (hcs.of_isClosed_subset (by simp_all [isClosed_iff, zero_lt_iff]) hws).image
+    (continuous_mul_left (r / w))
+  rw [image_mul_left_Iio (by simp_all [zero_lt_iff]), div_mul_cancel₀ _ hw0]
+
+theorem compact_Iic_of_locallyCompactSpace [LocallyCompactSpace Γ₀] (r : Γ₀) :
+    IsCompact (Iic r) :=
+  Set.Iio_insert (a := r) ▸ (compact_Iio_of_locallyCompactSpace r).insert _
+
+theorem compact_Icc_of_locallyCompactSpace [LocallyCompactSpace Γ₀] (x y : Γ₀) :
+    IsCompact (Icc x y) :=
+  (compact_Iic_of_locallyCompactSpace y).of_isClosed_subset isClosed_Icc Icc_subset_Iic_self
+
+lemma locallyCompactSpace_iff_locallyFiniteOrder_units :
+    LocallyCompactSpace Γ₀ ↔ Nonempty (LocallyFiniteOrder Γ₀ˣ) := by
+  -- `[x, y]` is compact, but `Γ₀ˣ` is discrete, so `[x, y]` is finite.
+  constructor
+  · intro h
+    refine ⟨LocallyFiniteOrder.ofFiniteIcc fun x y ↦ IsCompact.finite_of_discrete <|
+      isInducing_unitsVal.isCompact_iff.mpr ?_⟩
+    convert compact_Icc_of_locallyCompactSpace x.val y.val
+    exact Set.ext fun z ↦ ⟨fun ⟨z', h1, h2⟩ ↦ h2 ▸ h1,
+      fun h ↦ ⟨.mk0 z <| ne_of_gt <| x.zero_lt.trans_le h.1, h, rfl⟩⟩
+  · rintro ⟨_⟩
+    -- it suffices to show that `[0, 1)` is compact
+    refine locallyCompactSpace_of_compact_Iio ?_
+    -- for that, it suffices to show that the cofinite filter on `{ γ : Γ₀ˣ | γ < 1 }` tends to 0
+    let c : Iio (1 : Γ₀ˣ) → Γ₀ := (·.1.1)
+    have : Tendsto c cofinite (𝓝 0) := fun s hs ↦ by
+      obtain ⟨r, hr0, hrs⟩ := hasBasis_nhds_zero.mem_iff.mp hs
+      refine .of_finite_image ((finite_Ico (.mk0 r hr0) 1).subset ?_) Subtype.val_injective.injOn
+      exact fun y ⟨x, hx, hxy⟩ ↦ hxy ▸ ⟨le_of_not_gt fun hxr ↦ hx <| hrs hxr, x.2⟩
+    convert this.isCompact_insert_range_of_cofinite
+    exact Set.ext fun x ↦ ⟨fun hx ↦ or_iff_not_imp_left.mpr fun hx0 ↦ ⟨⟨.mk0 x hx0, hx⟩, rfl⟩,
+      Or.rec (· ▸ zero_lt_one) fun ⟨y, hxy⟩ ↦ hxy ▸ y.2⟩
 
 end WithZeroTopology
