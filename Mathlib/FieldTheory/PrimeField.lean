@@ -16,7 +16,7 @@ contains a unique prime field: it is the smallest field contained in `K`.
 
 ## Results
 
-* The fields `ℚ` and `ZMod p` are prime fields. These are stated as the instances that says yha
+* The fields `ℚ` and `ZMod p` are prime fields. These are stated as the instances that says that
   the corresponding `Subfield` type is a `Subsingleton`.
 * `Subfield.bot_eq_of_charZero` : the smallest subfield of a field of characteristic `0` is (the
   image of) `ℚ`.
