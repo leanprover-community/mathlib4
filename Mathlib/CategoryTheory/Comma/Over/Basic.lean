@@ -210,8 +210,8 @@ theorem mapId_eq (Y : T) : map (𝟙 Y) = 𝟭 _ := by
 
 /-- The natural isomorphism arising from `mapForget_eq`. -/
 @[simps!]
-def mapId (Y : T) : map (𝟙 Y) ≅ 𝟭 _ := eqToIso (mapId_eq Y)
---  NatIso.ofComponents fun X => isoMk (Iso.refl _)
+def mapId (Y : T) : map (𝟙 Y) ≅ 𝟭 _ :=
+  NatIso.ofComponents (fun _ ↦ isoMk (Iso.refl _))
 
 /-- Mapping by `f` and then forgetting is the same as forgetting. -/
 theorem mapForget_eq {X Y : T} (f : X ⟶ Y) :
@@ -238,13 +238,18 @@ theorem mapComp_eq {X Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) :
 /-- The natural isomorphism arising from `mapComp_eq`. -/
 @[simps!]
 def mapComp {X Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    map (f ≫ g) ≅ (map f) ⋙ (map g) := eqToIso (mapComp_eq f g)
+    map (f ≫ g) ≅ map f ⋙ map g :=
+  NatIso.ofComponents (fun _ ↦ isoMk (Iso.refl _))
 
 /-- If `f = g`, then `map f` is naturally isomorphic to `map g`. -/
 @[simps!]
 def mapCongr {X Y : T} (f g : X ⟶ Y) (h : f = g) :
     map f ≅ map g :=
-  NatIso.ofComponents (fun A ↦ eqToIso (by rw [h]))
+  NatIso.ofComponents (fun _ ↦ isoMk (Iso.refl _))
+
+@[simp]
+lemma mapCongr_rfl {X Y : T} (f : X ⟶ Y) :
+    mapCongr f f rfl = Iso.refl _ := rfl
 
 variable (T) in
 /-- The functor defined by the over categories -/
