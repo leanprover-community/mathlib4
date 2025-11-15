@@ -185,6 +185,11 @@ theorem IsCodetecting.isCoseparating [HasCoequalizers C] :
     IsCodetecting P → IsCoseparating P := by
   simpa only [← isSeparating_op_iff, ← isDetecting_op_iff] using IsDetecting.isSeparating
 
+lemma IsSeparating.mono_iff (hP : IsSeparating P) {X Y : C} (f : X ⟶ Y) :
+    Mono f ↔ ∀ (G : C) (_ : P G), ∀ (g₁ g₂ : G ⟶ X), g₁ ≫ f = g₂ ≫ f → g₁ = g₂ :=
+  ⟨fun _ _ _ _ _ h ↦ by simpa [cancel_mono] using h,
+    fun hf ↦ ⟨fun g₁ g₂ h ↦ hP _ _  (fun G hG h' ↦ hf _ hG _ _ (by simp [h]))⟩⟩
+
 theorem IsSeparating.isDetecting [Balanced C] (hP : IsSeparating P) :
     IsDetecting P := by
   intro X Y f hf
