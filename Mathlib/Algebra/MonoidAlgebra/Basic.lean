@@ -417,12 +417,13 @@ variable [CommMonoid M] [CommSemiring R] [CommSemiring S] [Algebra R S]
 /-- If `S` is an `R`-algebra, then `MonoidAlgebra S M` is a `MonoidAlgebra R M` algebra.
 
 Warning: This produces a diamond for
-`Algebra (MonoidAlgebra R M) (MonoidAlgebra (MonoidAlgebra S M) M)`.
+`Algebra (MonoidAlgebra R M) (MonoidAlgebra (MonoidAlgebra S M) M)` and another one fro
+`Algebra (MonoidAlgebra R M) (MonoidAlgebra R M)`.
 That's why it is not a global instance. -/
 @[to_additive
 /-- If `S` is an `R`-algebra, then `S[M]` is an `R[M]`-algebra.
 
-Warning: This produces a diamond for `Algebra R[M] S[M][M]`.
+Warning: This produces a diamond for `Algebra R[M] S[M][M]` and another one for `Algebra R[M] R[M]`.
 That's why it is not a global instance. -/]
 noncomputable abbrev algebraMonoidAlgebra : Algebra (MonoidAlgebra R M) (MonoidAlgebra S M) :=
   (mapRangeRingHom M (algebraMap R S)).toAlgebra
