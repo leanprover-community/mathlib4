@@ -226,7 +226,7 @@ class MeasurableSingletonClass (α : Type*) [MeasurableSpace α] : Prop where
 
 export MeasurableSingletonClass (measurableSet_singleton)
 
-@[simp]
+@[simp, measurability]
 lemma MeasurableSet.singleton [MeasurableSpace α] [MeasurableSingletonClass α] (a : α) :
     MeasurableSet {a} :=
   measurableSet_singleton a
