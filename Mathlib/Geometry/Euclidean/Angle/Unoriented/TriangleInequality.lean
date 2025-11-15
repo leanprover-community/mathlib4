@@ -11,7 +11,7 @@ import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
 /-!
 # The Triangle Inequality for Angles
 
-This file contains proof that angles obey the triangle inequality.
+This file contains the proof that angles obey the triangle inequality.
 -/
 
 open InnerProductGeometry

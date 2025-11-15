@@ -7,7 +7,6 @@ import Mathlib.Analysis.InnerProductSpace.Subspace
 import Mathlib.Analysis.NormedSpace.Normalize
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 
-
 /-!
 # Angles between vectors
 
