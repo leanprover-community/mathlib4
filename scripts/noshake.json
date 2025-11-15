@@ -284,6 +284,7 @@
   "Mathlib.Tactic.LinearCombination":
   ["Mathlib.Tactic.LinearCombination.Lemmas"],
   "Mathlib.Tactic.Lemma": ["Lean.Parser.Command"],
+  "Mathlib.Tactic.Isolate.Tagging": ["Mathlib.Tactic.Isolate.Core"],
   "Mathlib.Tactic.IrreducibleDef":
   ["Mathlib.Data.Subtype", "Mathlib.Util.TermReduce"],
   "Mathlib.Tactic.ITauto": ["Batteries.Tactic.Init", "Mathlib.Logic.Basic"],
@@ -449,6 +450,7 @@
   "Mathlib.Data.Set.Image":
   ["Batteries.Tactic.Congr", "Mathlib.Data.Set.SymmDiff"],
   "Mathlib.Data.Seq.Parallel": ["Mathlib.Init.Data.Prod"],
+  "Mathlib.Data.Real.Sqrt": ["Mathlib.Tactic.Isolate"],
   "Mathlib.Data.Rat.NatSqrt.Defs": ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.Data.Part": ["Mathlib.Algebra.Notation.Defs"],
   "Mathlib.Data.PEquiv": ["Batteries.Tactic.Congr"],
