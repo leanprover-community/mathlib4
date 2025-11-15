@@ -353,17 +353,19 @@ lemma mapRangeAlgHom_single (f : A →ₐ[R] B) (m : M) (a : A) :
     mapRangeAlgHom M f (single m a) = single m (f a) := by
   classical ext; simp [single_apply, apply_ite f]
 
-variable (M) in
+variable (R M) in
 /-- The algebra isomorphism of monoid algebras induced by an isomorphism of the base algebras. -/
 @[to_additive (attr := simps apply)
 /-- The algebra isomorphism of additive monoid algebras induced by an isomorphism of the base
 algebras. -/]
-noncomputable def mapRangeAlgEquiv (f : A ≃ₐ[R] B) :
-    MonoidAlgebra A M ≃ₐ[R] MonoidAlgebra B M where
-  __ := mapRangeAlgHom M f
-  invFun := mapRangeAlgHom M (f.symm : B →ₐ[R] A)
+noncomputable def mapRangeAlgEquiv (e : A ≃ₐ[R] B) : MonoidAlgebra A M ≃ₐ[R] MonoidAlgebra B M where
+  __ := mapRangeAlgHom M e
+  invFun := mapRangeAlgHom M (e.symm : B →ₐ[R] A)
   left_inv _ := by aesop
   right_inv _ := by aesop
+
+@[simp] lemma symm_mapRangeAlgEquiv (e : A ≃ₐ[R] B) :
+    (mapRangeAlgEquiv R M e).symm = mapRangeAlgEquiv R M e.symm := rfl
 
 end mapRange
 
