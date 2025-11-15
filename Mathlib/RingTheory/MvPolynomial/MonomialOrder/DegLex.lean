@@ -44,4 +44,12 @@ theorem totalDegree_mul_of_isDomain [IsCancelMulZero R] (hf : f ≠ 0) (hg : g �
     ← degree_degLexDegree (σ := σᵒᵈ), MonomialOrder.degree_mul hf hg]
   simp
 
+theorem totalDegree_le_of_dvd_of_isDomain [IsCancelMulZero R] (h : f ∣ g) (hg : g ≠ 0) :
+    f.totalDegree ≤ g.totalDegree := by
+  obtain ⟨r, rfl⟩ := h
+  rw [totalDegree_mul_of_isDomain]
+  · exact Nat.le_add_right f.totalDegree r.totalDegree
+  · exact fun h ↦ hg (by simp [h])
+  · exact fun h ↦ hg (by simp [h])
+
 end MvPolynomial

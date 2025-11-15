@@ -10,7 +10,7 @@ import Mathlib.Tactic.FieldSimp
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.Basis
 import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
-
+import Mathlib.RingTheory.Finiteness.Cardinality
 /-!
 # Determinant of families of vectors
 
@@ -307,6 +307,13 @@ lemma isUnit_iff_isUnit_det [Module.Finite R M] [Module.Free R M] (f : M →ₗ[
   let b := Module.Free.chooseBasis R M
   rw [← isUnit_toMatrix_iff b, ← det_toMatrix b, Matrix.isUnit_iff_isUnit_det (toMatrix b b f)]
 
+/-- If a linear map has determinant different from `1`, then the module is free. -/
+theorem free_of_det_ne_one {f : M →ₗ[R] M} (hf : f.det ≠ 1) : Module.Free R M := by
+  by_cases H : ∃ s : Finset M, Nonempty (Basis s R M)
+  · rcases H with ⟨s, ⟨hs⟩⟩
+    exact Module.Free.of_basis hs
+  · classical simp [LinearMap.coe_det, H] at hf
+
 /-- If a linear map has determinant different from `1`, then the space is finite-dimensional. -/
 theorem finite_of_det_ne_one {f : M →ₗ[R] M} (hf : f.det ≠ 1) : Module.Finite R M := by
   by_cases H : ∃ s : Finset M, Nonempty (Basis s R M)
@@ -485,6 +492,38 @@ theorem LinearEquiv.coe_ofIsUnitDet {f : M →ₗ[R] M'} {v : Basis ι R M} {v' 
     (LinearEquiv.ofIsUnitDet h : M →ₗ[R] M') = f := by
   ext x
   rfl
+
+/-- Builds a linear equivalence from an endomorphism whose determinant is a unit. -/
+noncomputable def LinearMap.equivOfIsUnitDet
+    [Module.Free R M] [Module.Finite R M]
+    {f : M →ₗ[R] M} (h : IsUnit f.det) :
+    M ≃ₗ[R] M := by
+  by_cases hR : Nontrivial R
+  · let ⟨ι, b⟩ := (Module.Free.exists_basis R M).some
+    have : Finite ι := Module.Finite.finite_basis b
+    have : Fintype ι := Fintype.ofFinite ι
+    have : DecidableEq ι := Classical.typeDecidableEq ι
+    exact LinearEquiv.ofIsUnitDet (by rwa [det_toMatrix b])
+  · exact 1
+
+@[simp]
+theorem LinearMap.equivOfIsUnitDet_apply
+    [Module.Free R M] [Module.Finite R M]
+    {f : M →ₗ[R] M} (h : IsUnit f.det) (x : M) :
+    (LinearMap.equivOfIsUnitDet h) x = f x := by
+  by_cases hR : Nontrivial R
+  · simp [equivOfIsUnitDet, dif_pos hR]
+  · rw [not_nontrivial_iff_subsingleton] at hR
+    have : Subsingleton M := Module.subsingleton R M
+    apply Subsingleton.allEq
+
+@[simp]
+theorem LinearMap.coe_equivOfIsUnitDet
+    [Module.Free R M] [Module.Finite R M]
+    {f : M →ₗ[R] M} (h : IsUnit f.det) :
+    (LinearMap.equivOfIsUnitDet h : M →ₗ[R] M) = f := by
+  ext
+  apply LinearMap.equivOfIsUnitDet_apply
 
 /-- Builds a linear equivalence from a linear map on a finite-dimensional vector space whose
 determinant is nonzero. -/

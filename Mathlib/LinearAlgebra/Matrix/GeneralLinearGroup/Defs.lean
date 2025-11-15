@@ -74,6 +74,13 @@ lemma det_ne_zero [Nontrivial R] (g : GL n R) : g.val.det ≠ 0 :=
 def toLin : GL n R ≃* LinearMap.GeneralLinearGroup R (n → R) :=
   Units.mapEquiv toLinAlgEquiv'.toMulEquiv
 
+/-- The isomorphism from `GL n R` to the general linear group of a module
+associated with a basis. -/
+noncomputable def toLin'
+    {V : Type*} [AddCommGroup V] [Module R V] (b : Module.Basis n R V) :
+    GL n R ≃* LinearMap.GeneralLinearGroup R V :=
+  toLin.trans (LinearMap.GeneralLinearGroup.congrLinearEquiv b.equivFun.symm)
+
 /-- Given a matrix with invertible determinant, we get an element of `GL n R`. -/
 @[simps! val]
 def mk' (A : Matrix n n R) (_ : Invertible (Matrix.det A)) : GL n R :=
