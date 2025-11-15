@@ -51,7 +51,7 @@ theorem pairwise_le_finRange (n : ℕ) : Pairwise (· ≤ ·) (finRange n) := by
 
 @[simp]
 lemma count_finRange {n : ℕ} (a : Fin n) : count a (finRange n) = 1 := by
-  simp [count_eq_of_nodup (nodup_finRange n)]
+  simp [List.Nodup.count (nodup_finRange n)]
 
 theorem get_finRange {n : ℕ} {i : ℕ} (h) :
     (finRange n).get ⟨i, h⟩ = ⟨i, length_finRange (n := n) ▸ h⟩ := by
@@ -78,8 +78,8 @@ theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map
 
 theorem ofFn_eq_pmap {n} {f : Fin n → α} :
     ofFn f = pmap (fun i hi => f ⟨i, hi⟩) (range n) fun _ => mem_range.1 := by
-  rw [pmap_eq_map_attach]
-  exact ext_getElem (by simp) fun i hi1 hi2 => by simp [List.getElem_ofFn hi1]
+  ext
+  grind
 
 theorem ofFn_id (n) : ofFn id = finRange n :=
   rfl
