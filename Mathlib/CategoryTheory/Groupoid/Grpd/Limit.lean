@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Hua
 -/
 import Mathlib.CategoryTheory.Category.Cat.Limit
-import Mathlib.CategoryTheory.Groupoid.FreeGroupoidOfCategory
+import Mathlib.CategoryTheory.Groupoid.Grpd.Free
 import Mathlib.CategoryTheory.Monad.Limits
 
 /-!
