@@ -38,6 +38,8 @@ def inferTypeQ' (e : Expr) : MetaM ((u : Level) × (α : Q(Type $u)) × Q($α)) 
 
 theorem QuotedDefEq.rfl {u : Level} {α : Q(Sort u)} {a : Q($α)} : @QuotedDefEq u α a a := ⟨⟩
 
+theorem QuotedLevelDefEq.rfl {u : Level} : @QuotedLevelDefEq u u := ⟨⟩
+
 /-- Return a local declaration whose type is definitionally equal to `sort`.
 
 This is a Qq version of `Lean.Meta.findLocalDeclWithType?` -/
