@@ -4,6 +4,7 @@ import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 import Mathlib.Tactic.Linter.DirectoryDependency
 import Mathlib.Tactic.Linter.DocPrime
 import Mathlib.Tactic.Linter.DocString
+import Mathlib.Tactic.Linter.EmptyLine
 import Mathlib.Tactic.Linter.GlobalAttributeIn
 import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.Linter.Header
@@ -70,6 +71,7 @@ register_linter_set linter.mathlibStandardSet :=
   linter.style.cdot
   linter.style.docString
   linter.style.dollarSyntax
+  linter.style.emptyLine
   linter.style.lambdaSyntax
   linter.style.header
   linter.style.longLine

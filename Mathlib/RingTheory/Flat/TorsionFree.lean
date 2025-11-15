@@ -69,7 +69,6 @@ variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 open scoped nonZeroDivisors
 
 open LinearMap in
-
 /-- Scalar multiplication `m ↦ r • m` by a nonzerodivisor `r` is injective on a flat module. -/
 lemma isSMulRegular_of_nonZeroDivisors {r : R} (hr : r ∈ R⁰) [Flat R M] : IsSMulRegular M r := by
   apply isSMulRegular_of_isRegular
