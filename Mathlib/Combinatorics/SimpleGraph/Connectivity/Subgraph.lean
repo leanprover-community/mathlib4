@@ -270,6 +270,11 @@ theorem toSubgraph_adj_iff {u v u' v'} (w : G.Walk u v) :
 lemma mem_support_of_adj_toSubgraph {u v u' v' : V} {p : G.Walk u v} (hp : p.toSubgraph.Adj u' v') :
     u' ∈ p.support := p.mem_verts_toSubgraph.mp (p.toSubgraph.edge_vert hp)
 
+lemma adj_toSubgraph_iff_mem_edges {u v u' v' : V} {p : G.Walk u v} :
+    p.toSubgraph.Adj u' v' ↔ s(u', v') ∈ p.edges := by
+  rw [← p.mem_edges_toSubgraph]
+  rfl
+
 namespace IsPath
 
 lemma neighborSet_toSubgraph_startpoint {u v} {p : G.Walk u v}
@@ -591,5 +596,42 @@ lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.N
       refine ⟨hw, Walk.connected_induce_support _ _ _⟩
 
 end induced_subgraphs
+
+protected lemma Connected.toSubgraph {H : SimpleGraph V} (h : H ≤ G) (hconn : H.Connected) :
+    (toSubgraph H h).Connected := by
+  obtain ⟨hpreconn, _⟩ := hconn
+  simp_all only [Subgraph.connected_iff_forall_exists_walk_subgraph, toSubgraph_verts,
+    Set.univ_nonempty, Set.mem_univ, forall_const, true_and]
+  intro u v
+  obtain ⟨p, _⟩ := hpreconn.set_univ_walk_nonempty u v
+  use p.transfer G (fun e he ↦ edgeSet_subset_edgeSet.mpr h (p.edges_subset_edgeSet he))
+  constructor
+  · simp
+  · intro x y hxy
+    rw [Walk.adj_toSubgraph_iff_mem_edges, Walk.edges_transfer] at hxy
+    exact p.edges_subset_edgeSet hxy
+
+namespace Subgraph
+
+protected lemma Connected.map_coe {G' : G.Subgraph} {G'' : G'.coe.Subgraph}
+    (f : G'.coe →g G) (hconn : G''.Connected) : (G''.map f).Connected := by
+  rw [connected_iff_forall_exists_walk_subgraph]
+  simp only [map_verts, Set.image_nonempty, hconn.nonempty, Set.mem_image, Subtype.exists,
+    forall_exists_index, and_imp, true_and]
+  intro u v u' _ hu'' hfu'' v' _ hv'' hfv''
+  rw [← hfu'', ← hfv'']
+  rw [connected_iff_forall_exists_walk_subgraph] at hconn
+  obtain ⟨_, hp⟩ := hconn
+  obtain ⟨p, _⟩ := hp hu'' hv''
+  use p.map f
+  rw [p.toSubgraph_map]
+  gcongr
+
+protected lemma Connected.coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph)
+    (hconn : G''.Connected) :
+    (Subgraph.coeSubgraph G'').Connected := by
+  exact hconn.map_coe G'.hom
+
+end Subgraph
 
 end SimpleGraph
