@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.Option.NAry
 import Mathlib.Data.Seq.Computation
 import Mathlib.Data.ENat.Defs
+import Mathlib.Order.Monotone.Defs
 
 /-!
 # Possibly infinite lists
@@ -673,6 +674,15 @@ def map (f : α → β) : Seq α → Seq β
       · rw [al e]
         assumption
       · contradiction⟩
+
+/-- Compose a sequence with a monotone function to obtain a subsequence. -/
+def subsequence {f : ℕ → ℕ} (hf : Monotone f) : Seq α → Seq α
+  | ⟨s, al⟩ =>
+    ⟨s ∘ f, by
+      have := Nat.le_induction_step_iff.mp @al
+      exact Nat.le_induction_step_iff.mpr fun n m h ↦ this _ _ <| hf h⟩
+
+alias comp := subsequence
 
 /-- Flatten a sequence of sequences. (It is required that the
   sequences be nonempty to ensure productivity; in the case
