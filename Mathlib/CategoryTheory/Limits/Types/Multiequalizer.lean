@@ -9,6 +9,11 @@ import Mathlib.CategoryTheory.Limits.Types.Limits
 /-!
 # Multiequalizers in Type
 
+Given `J : MulticospanShape` and `I : MulticospanIndex J (Type u)`,
+we define a type `I.sections`. When `c : Multifork I`, we show
+that `c` is a limit iff the canonical map
+`c.toSections : c.pt → I.sections` is a bijection.
+
 -/
 
 universe v u
