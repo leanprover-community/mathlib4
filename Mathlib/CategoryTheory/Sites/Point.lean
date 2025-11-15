@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Functor.TypeFlat
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.Limits.Types.Filtered
+import Mathlib.CategoryTheory.ObjectProperty.PreservesLimits
 import Mathlib.CategoryTheory.Sites.Limits
 import Mathlib.CategoryTheory.Sites.LocallyBijective
 import Mathlib.CategoryTheory.Filtered.FinallySmall
@@ -67,6 +68,8 @@ variable {J} (Φ : Point.{w} J) {A : Type u'} [Category.{v'} A]
 
 instance : HasColimitsOfShape Φ.fiber.Elementsᵒᵖ A :=
     hasColimitsOfShape_of_finallySmall _ _
+
+instance : HasExactColimitsOfShape Φ.fiber.Elementsᵒᵖ A :=
 
 noncomputable def presheafFiber : (Cᵒᵖ ⥤ A) ⥤ A :=
   colimit ((CategoryOfElements.π Φ.fiber).op ⋙ evaluation _ A)
