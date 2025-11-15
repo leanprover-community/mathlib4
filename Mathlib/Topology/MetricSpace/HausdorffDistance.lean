@@ -250,6 +250,11 @@ theorem exists_pos_forall_lt_edist (hs : IsCompact s) (ht : IsClosed t) (hst : D
   rcases ENNReal.lt_iff_exists_nnreal_btwn.1 this with ⟨r, h₀, hr⟩
   exact ⟨r, ENNReal.coe_pos.mp h₀, fun y hy z hz => hr.trans_le <| le_infEdist.1 (h hy) z hz⟩
 
+theorem infEdist_prod (x : α × β) (s : Set α) (t : Set β) :
+    infEdist x (s ×ˢ t) = max (infEdist x.1 s) (infEdist x.2 t) := by
+  simp_rw +singlePass [infEdist, Prod.edist_eq, iInf_prod, Set.mem_prod, iInf_and, iInf_sup_eq,
+    sup_iInf_eq, iInf_sup_eq, sup_iInf_eq]
+
 end InfEdist
 
 /-! ### The Hausdorff distance as a function into `ℝ≥0∞`. -/
@@ -421,6 +426,24 @@ theorem hausdorffEdist_singleton : hausdorffEdist {x} {y} = edist x y := by
   simp_rw [hausdorffEdist, iSup_singleton, infEdist_singleton]
   nth_rw 2 [edist_comm]
   exact max_self _
+
+theorem hausdorffEdist_iUnion_le {ι : Sort*} {s t : ι → Set α} :
+    hausdorffEdist (⋃ i, s i) (⋃ i, t i) ≤ ⨆ i, hausdorffEdist (s i) (t i) := by
+  simp_rw [hausdorffEdist, max_le_iff, iSup_iUnion, iSup_le_iff, infEdist_iUnion]
+  constructor <;> refine fun i x hx => (iInf_le _ i).trans <| le_iSup_of_le i ?_
+  · exact le_max_of_le_left <| le_iSup₂_of_le x hx le_rfl
+  · exact le_max_of_le_right <| le_iSup₂_of_le x hx le_rfl
+
+theorem hausdorffEdist_union_le {s₁ s₂ t₁ t₂ : Set α} :
+    hausdorffEdist (s₁ ∪ s₂) (t₁ ∪ t₂) ≤ max (hausdorffEdist s₁ t₁) (hausdorffEdist s₂ t₂) := by
+  simp_rw [union_eq_iUnion, sup_eq_iSup]
+  convert hausdorffEdist_iUnion_le with (_ | _)
+
+theorem hausdorffEdist_prod_le {s₁ t₁ : Set α} {s₂ t₂ : Set β} :
+    hausdorffEdist (s₁ ×ˢ s₂) (t₁ ×ˢ t₂) ≤ max (hausdorffEdist s₁ t₁) (hausdorffEdist s₂ t₂) := by
+  refine le_of_forall_ge fun _ _ => ?_
+  simp_all only [hausdorffEdist, infEdist_prod, max_le_iff, iSup_le_iff, mem_prod, true_and,
+    implies_true]
 
 end HausdorffEdist
 
