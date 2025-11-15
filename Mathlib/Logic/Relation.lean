@@ -229,13 +229,13 @@ lemma map_symmetric {r : α → α → Prop} (hr : Symmetric r) (f : α → β) 
   rintro _ _ ⟨x, y, hxy, rfl, rfl⟩; exact ⟨_, _, hr hxy, rfl, rfl⟩
 
 lemma map_transitive {r : α → α → Prop} (hr : Transitive r) {f : α → β}
-    (hf : ∀ x y, f x = f y → r x y) :
+    (hf : Subrelation ((· = ·) on f) r) :
     Transitive (Relation.Map r f f) := by
   rintro _ _ _ ⟨x, y, hxy, rfl, rfl⟩ ⟨y', z, hyz, hy, rfl⟩
-  exact ⟨x, z, hr hxy <| hr (hf _ _ hy.symm) hyz, rfl, rfl⟩
+  exact ⟨x, z, hr hxy <| hr (hf hy.symm) hyz, rfl, rfl⟩
 
 lemma map_equivalence {r : α → α → Prop} (hr : Equivalence r) (f : α → β)
-    (hf : f.Surjective) (hf_ker : ∀ x y, f x = f y → r x y) :
+    (hf : f.Surjective) (hf_ker : Subrelation ((· = ·) on f) r) :
     Equivalence (Relation.Map r f f) where
   refl := map_reflexive hr.reflexive hf
   symm := @(map_symmetric hr.symmetric _)
@@ -278,13 +278,13 @@ attribute [refl] ReflGen.refl
 
 namespace ReflGen
 
-theorem to_reflTransGen : ∀ {a b}, ReflGen r a b → ReflTransGen r a b
+theorem to_reflTransGen : Subrelation (ReflGen r) (ReflTransGen r)
   | a, _, refl => by rfl
   | _, _, single h => ReflTransGen.tail ReflTransGen.refl h
 
-theorem mono {p : α → α → Prop} (hp : ∀ a b, r a b → p a b) : ∀ {a b}, ReflGen r a b → ReflGen p a b
+theorem mono {p : α → α → Prop} (hp : Subrelation r p) : Subrelation (ReflGen r) (ReflGen p)
   | a, _, ReflGen.refl => by rfl
-  | a, b, single h => single (hp a b h)
+  | a, b, single h => single <| hp h
 
 instance : IsRefl α (ReflGen r) :=
   ⟨@refl α r⟩
@@ -299,8 +299,8 @@ theorem trans (hab : ReflTransGen r a b) (hbc : ReflTransGen r b c) : ReflTransG
   | refl => assumption
   | tail _ hcd hac => exact hac.tail hcd
 
-theorem single (hab : r a b) : ReflTransGen r a b :=
-  refl.tail hab
+theorem single : Subrelation r (ReflTransGen r) :=
+  refl.tail
 
 theorem head (hab : r a b) (hbc : ReflTransGen r b c) : ReflTransGen r a c := by
   induction hbc with
@@ -363,7 +363,7 @@ end ReflTransGen
 
 namespace TransGen
 
-theorem to_reflTransGen {a b} (h : TransGen r a b) : ReflTransGen r a b := by
+theorem to_reflTransGen : Subrelation (TransGen r) (ReflTransGen r) := fun h ↦ by
   induction h with
   | single h => exact ReflTransGen.single h
   | tail _ bc ab => exact ReflTransGen.tail ab bc
@@ -438,8 +438,8 @@ lemma reflGen_eq_self (hr : Reflexive r) : ReflGen r = r := by
 
 lemma reflexive_reflGen : Reflexive (ReflGen r) := fun _ ↦ .refl
 
-lemma reflGen_minimal {r' : α → α → Prop} (hr' : Reflexive r') (h : ∀ x y, r x y → r' x y) {x y : α}
-    (hxy : ReflGen r x y) : r' x y := by
+lemma reflGen_minimal {r' : α → α → Prop} (hr' : Reflexive r') (h : Subrelation r r') :
+    Subrelation (ReflGen r) r' := fun hxy ↦ by
   simpa [reflGen_eq_self hr'] using ReflGen.mono h hxy
 
 end reflGen
@@ -473,40 +473,43 @@ theorem transitive_transGen : Transitive (TransGen r) := fun _ _ _ ↦ TransGen.
 theorem transGen_idem : TransGen (TransGen r) = TransGen r :=
   transGen_eq_self transitive_transGen
 
-theorem TransGen.lift {p : β → β → Prop} {a b : α} (f : α → β) (h : ∀ a b, r a b → p (f a) (f b))
-    (hab : TransGen r a b) : TransGen p (f a) (f b) := by
+theorem TransGen.lift {p : β → β → Prop} (f : α → β) (h : Subrelation r (p on f)) :
+    Subrelation (TransGen r) (TransGen p on f) := fun hab ↦ by
   induction hab with
-  | single hac => exact TransGen.single (h a _ hac)
-  | tail _ hcd hac => exact TransGen.tail hac (h _ _ hcd)
+  | single hac => exact TransGen.single <| h hac
+  | tail _ hcd hac => exact TransGen.tail hac <| h hcd
 
-theorem TransGen.lift' {p : β → β → Prop} {a b : α} (f : α → β)
-    (h : ∀ a b, r a b → TransGen p (f a) (f b)) (hab : TransGen r a b) :
-    TransGen p (f a) (f b) := by
+theorem TransGen.lift' {p : β → β → Prop} (f : α → β) (h : Subrelation r (TransGen p on f)) :
+    Subrelation (TransGen r) (TransGen p on f) := fun hab ↦ by
   simpa [transGen_idem] using hab.lift f h
 
 theorem TransGen.closed {p : α → α → Prop} :
-    (∀ a b, r a b → TransGen p a b) → TransGen r a b → TransGen p a b :=
+    (Subrelation r (TransGen p)) → Subrelation (TransGen r) (TransGen p) :=
   TransGen.lift' id
 
-lemma TransGen.closed' {P : α → Prop} (dc : ∀ {a b}, r a b → P b → P a)
-    {a b : α} (h : TransGen r a b) : P b → P a :=
-  h.head_induction_on dc fun hr _ hi ↦ dc hr ∘ hi
+lemma TransGen.closed' {P : α → Prop} (dc : Subrelation r (swap (· → ·) on P)) :
+    Subrelation (TransGen r) (swap (· → ·) on P) :=
+  fun h ↦ h.head_induction_on dc fun hr _ hi ↦ dc hr ∘ hi
 
 theorem TransGen.mono {p : α → α → Prop} :
-    (∀ a b, r a b → p a b) → TransGen r a b → TransGen p a b :=
+    (Subrelation r p) → Subrelation (TransGen r) (TransGen p) :=
   TransGen.lift id
 
-lemma transGen_minimal {r' : α → α → Prop} (hr' : Transitive r') (h : ∀ x y, r x y → r' x y)
-    {x y : α} (hxy : TransGen r x y) : r' x y := by
+lemma transGen_minimal {r' : α → α → Prop} (hr' : Transitive r') (h : Subrelation r r') :
+    Subrelation (TransGen r) r' := fun hxy ↦ by
   simpa [transGen_eq_self hr'] using TransGen.mono h hxy
 
-theorem TransGen.swap (h : TransGen r b a) : TransGen (swap r) a b := by
+theorem TransGen.swap : Subrelation (swap (TransGen r)) (TransGen (swap r)) := fun h ↦ by
   induction h with
   | single h => exact TransGen.single h
   | tail _ hbc ih => exact ih.head hbc
 
-theorem transGen_swap : TransGen (swap r) a b ↔ TransGen r b a :=
+theorem transGen_swap : TransGen (swap r) a b ↔ swap (TransGen r) a b :=
   ⟨TransGen.swap, TransGen.swap⟩
+
+theorem transGen_swap_eq_swap_transGen : TransGen (swap r) = swap (TransGen r) := by
+  ext a b
+  exact transGen_swap
 
 end TransGen
 
@@ -526,12 +529,12 @@ theorem reflTransGen_iff_eq_or_transGen : ReflTransGen r a b ↔ b = a ∨ Trans
     · rfl
     · exact h.to_reflTransGen
 
-theorem ReflTransGen.lift {p : β → β → Prop} {a b : α} (f : α → β)
-    (h : ∀ a b, r a b → p (f a) (f b)) (hab : ReflTransGen r a b) : ReflTransGen p (f a) (f b) :=
-  ReflTransGen.trans_induction_on hab (fun _ ↦ refl) (ReflTransGen.single ∘ h _ _) fun _ _ ↦ trans
+theorem ReflTransGen.lift {p : β → β → Prop} (f : α → β) (h : Subrelation r (p on f)) :
+    Subrelation (ReflTransGen r) (ReflTransGen p on f) := fun hab ↦
+  ReflTransGen.trans_induction_on hab (fun _ ↦ refl) (ReflTransGen.single ∘ h) fun _ _ ↦ trans
 
-theorem ReflTransGen.mono {p : α → α → Prop} : (∀ a b, r a b → p a b) →
-    ReflTransGen r a b → ReflTransGen p a b :=
+theorem ReflTransGen.mono {p : α → α → Prop} : (Subrelation r p) →
+    Subrelation (ReflTransGen r) (ReflTransGen p) :=
   ReflTransGen.lift id
 
 theorem reflTransGen_eq_self (refl : Reflexive r) (trans : Transitive r) : ReflTransGen r = r :=
@@ -542,7 +545,7 @@ theorem reflTransGen_eq_self (refl : Reflexive r) (trans : Transitive r) : ReflT
       | tail _ h₂ IH => exact trans IH h₂, single⟩
 
 lemma reflTransGen_minimal {r' : α → α → Prop} (hr₁ : Reflexive r') (hr₂ : Transitive r')
-    (h : ∀ x y, r x y → r' x y) {x y : α} (hxy : ReflTransGen r x y) : r' x y := by
+    (h : Subrelation r r') : Subrelation (ReflTransGen r) r' := fun hxy ↦ by
   simpa [reflTransGen_eq_self hr₁ hr₂] using ReflTransGen.mono h hxy
 
 theorem reflexive_reflTransGen : Reflexive (ReflTransGen r) := fun _ ↦ refl
@@ -564,22 +567,27 @@ instance : IsTrans α (ReflTransGen r) :=
 theorem reflTransGen_idem : ReflTransGen (ReflTransGen r) = ReflTransGen r :=
   reflTransGen_eq_self reflexive_reflTransGen transitive_reflTransGen
 
-theorem ReflTransGen.lift' {p : β → β → Prop} {a b : α} (f : α → β)
-    (h : ∀ a b, r a b → ReflTransGen p (f a) (f b))
-    (hab : ReflTransGen r a b) : ReflTransGen p (f a) (f b) := by
+theorem ReflTransGen.lift' {p : β → β → Prop} (f : α → β)
+    (h : Subrelation r (ReflTransGen p on f)) : Subrelation (ReflTransGen r) (ReflTransGen p on f)
+    := fun hab ↦ by
   simpa [reflTransGen_idem] using hab.lift f h
 
 theorem reflTransGen_closed {p : α → α → Prop} :
-    (∀ a b, r a b → ReflTransGen p a b) → ReflTransGen r a b → ReflTransGen p a b :=
+    (Subrelation r (ReflTransGen p)) → Subrelation (ReflTransGen r) (ReflTransGen p) :=
   ReflTransGen.lift' id
 
-theorem ReflTransGen.swap (h : ReflTransGen r b a) : ReflTransGen (swap r) a b := by
+theorem ReflTransGen.swap : Subrelation (swap <| ReflTransGen r) (ReflTransGen <| swap r) := by
+  intro _ _ h
   induction h with
   | refl => rfl
   | tail _ hbc ih => exact ih.head hbc
 
 theorem reflTransGen_swap : ReflTransGen (swap r) a b ↔ ReflTransGen r b a :=
   ⟨ReflTransGen.swap, ReflTransGen.swap⟩
+
+theorem reflTransGen_swap_eq_swap_reflTransGen : ReflTransGen (swap r) = swap (ReflTransGen r) := by
+  ext a b
+  exact reflTransGen_swap
 
 @[simp] lemma reflGen_transGen : ReflGen (TransGen r) = ReflTransGen r := by
   ext x y
@@ -589,10 +597,10 @@ theorem reflTransGen_swap : ReflTransGen (swap r) a b ↔ ReflTransGen r b a :=
   ext x y
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · simpa [reflTransGen_idem]
-      using TransGen.to_reflTransGen <| TransGen.mono (fun _ _ ↦ ReflGen.to_reflTransGen) h
+      using TransGen.to_reflTransGen <| TransGen.mono (ReflGen.to_reflTransGen) h
   · obtain (rfl | h) := reflTransGen_iff_eq_or_transGen.mp h
     · exact .single .refl
-    · exact TransGen.mono (fun _ _ ↦ .single) h
+    · exact TransGen.mono (.single) h
 
 @[simp] lemma reflTransGen_reflGen : ReflTransGen (ReflGen r) = ReflTransGen r := by
   simp only [← transGen_reflGen, reflGen_eq_self reflexive_reflGen]
@@ -624,10 +632,10 @@ see for example `Quot.eqvGen_exact` and `Quot.eqvGen_sound`. -/
 def setoid : Setoid α :=
   Setoid.mk _ (EqvGen.is_equivalence r)
 
-theorem mono {r p : α → α → Prop} (hrp : ∀ a b, r a b → p a b) (h : EqvGen r a b) :
-    EqvGen p a b := by
+theorem mono {r p : α → α → Prop} (hrp : Subrelation r p) : Subrelation (EqvGen r) (EqvGen p) := by
+  intro _ _ h
   induction h with
-  | rel a b h => exact EqvGen.rel _ _ (hrp _ _ h)
+  | rel a b h => exact EqvGen.rel _ _ <| hrp h
   | refl => exact EqvGen.refl _
   | symm a b _ ih => exact EqvGen.symm _ _ ih
   | trans a b c _ _ hab hbc => exact EqvGen.trans _ _ _ hab hbc
@@ -671,8 +679,8 @@ theorem church_rosser (h : ∀ a b c, r a b → r a c → ∃ d, ReflGen r b d �
     | single hba => exact ⟨a, hea, hcb.tail hba⟩
 
 
-theorem join_of_single (h : Reflexive r) (hab : r a b) : Join r a b :=
-  ⟨b, hab, h b⟩
+theorem join_of_single (h : Reflexive r) : Subrelation r (Join r) :=
+  fun hab ↦ ⟨_, hab, h _⟩
 
 theorem symmetric_join : Symmetric (Join r) := fun _ _ ⟨c, hac, hcb⟩ ↦ ⟨c, hcb, hac⟩
 
@@ -693,18 +701,18 @@ theorem equivalence_join_reflTransGen
     Equivalence (Join (ReflTransGen r)) :=
   equivalence_join reflexive_reflTransGen transitive_reflTransGen fun _ _ _ ↦ church_rosser h
 
-theorem join_of_equivalence {r' : α → α → Prop} (hr : Equivalence r) (h : ∀ a b, r' a b → r a b) :
-    Join r' a b → r a b
-  | ⟨_, hac, hbc⟩ => hr.trans (h _ _ hac) (hr.symm <| h _ _ hbc)
+theorem join_of_equivalence {r' : α → α → Prop} (hr : Equivalence r) (h : Subrelation r' r) :
+    Subrelation (Join r') r :=
+  fun ⟨_, hac, hbc⟩ ↦ hr.trans (h hac) (hr.symm <| h hbc)
 
 theorem reflTransGen_of_transitive_reflexive {r' : α → α → Prop} (hr : Reflexive r)
-    (ht : Transitive r) (h : ∀ a b, r' a b → r a b) (h' : ReflTransGen r' a b) : r a b := by
+    (ht : Transitive r) (h : Subrelation r' r) : Subrelation (ReflTransGen r') r := fun h' ↦ by
   induction h' with
   | refl => exact hr _
-  | tail _ hbc ih => exact ht ih (h _ _ hbc)
+  | tail _ hbc ih => exact ht ih <| h hbc
 
 theorem reflTransGen_of_equivalence {r' : α → α → Prop} (hr : Equivalence r) :
-    (∀ a b, r' a b → r a b) → ReflTransGen r' a b → r a b :=
+    (Subrelation r' r) → Subrelation (ReflTransGen r') r :=
   reflTransGen_of_transitive_reflexive hr.1 (fun _ _ _ ↦ hr.trans)
 
 end Join
@@ -717,12 +725,12 @@ open Relation
 
 variable {r : α → α → Prop} {a b : α}
 
-theorem Quot.eqvGen_exact (H : Quot.mk r a = Quot.mk r b) : EqvGen r a b :=
-  @Quotient.exact _ (EqvGen.setoid r) a b (congrArg
-    (Quot.lift (Quotient.mk (EqvGen.setoid r)) (fun x y h ↦ Quot.sound (EqvGen.rel x y h))) H)
+theorem Quot.eqvGen_exact : Subrelation ((· = ·) on Quot.mk r) (EqvGen r) :=
+  fun H ↦ Quotient.exact <| congrArg
+    (Quot.lift (Quotient.mk <| EqvGen.setoid r) (fun _ _ h ↦ Quot.sound <| EqvGen.rel _ _ h)) H
 
-theorem Quot.eqvGen_sound (H : EqvGen r a b) : Quot.mk r a = Quot.mk r b :=
-  EqvGen.rec
+theorem Quot.eqvGen_sound : Subrelation (EqvGen r) ((· = ·) on Quot.mk r) :=
+  fun H ↦ EqvGen.rec
     (fun _ _ h ↦ Quot.sound h)
     (fun _ ↦ rfl)
     (fun _ _ _ IH ↦ Eq.symm IH)
