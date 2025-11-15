@@ -436,7 +436,7 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
           using a '\\' at the end of a line allows you to continue the string on the following \
           line, removing all intervening whitespace."
         else ""
-        Linter.logLint linter.style.longLine (.ofRange ⟨line.startPos, line.stopPos⟩)
+        Linter.logLint linter.style.longLine (.ofRange ⟨(line.drop 100).startPos, line.stopPos⟩)
           m!"This line exceeds the 100 character limit, please shorten it!{stringMsg}"
 initialize addLinter longLineLinter
 
