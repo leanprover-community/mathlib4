@@ -117,7 +117,8 @@ theorem isMaxRank_iff_closure_finiteIndex {u : Fin (rank K) → (𝓞 K)ˣ} :
     rfl
   have h₂ : DiscreteTopology
       (span ℤ (Set.range fun i ↦ (logEmbedding K) (Additive.ofMul (u i)))) := by
-    refine DiscreteTopology.of_subset (inferInstance : DiscreteTopology (unitLattice K)) ?_
+    rw [← SetLike.isDiscrete_iff_discreteTopology]
+    refine (inferInstance : DiscreteTopology (unitLattice K)).isDiscrete.mono ?_
     rw [SetLike.coe_subset_coe, Submodule.span_le]
     rintro _ ⟨i, rfl⟩
     exact ⟨Additive.ofMul (u i), mem_top, rfl⟩

@@ -753,6 +753,9 @@ theorem infinite_of_mem_nhds {X} [TopologicalSpace X] [T1Space X] (x : X) [hx : 
 instance Finite.instDiscreteTopology [T1Space X] [Finite X] : DiscreteTopology X :=
   discreteTopology_iff_forall_isClosed.mpr (· |>.toFinite.isClosed)
 
+lemma Set.Finite.isDiscrete [T1Space X] {s : Set X} (hs : s.Finite) : IsDiscrete s :=
+  ⟨@Finite.instDiscreteTopology _ _ _ hs.to_subtype⟩
+
 theorem Set.Finite.continuousOn [T1Space X] [TopologicalSpace Y] {s : Set X} (hs : s.Finite)
     (f : X → Y) : ContinuousOn f s := by
   rw [continuousOn_iff_continuous_restrict]
@@ -780,36 +783,37 @@ lemma isClosed_inter_singleton [T1Space X] {A : Set X} {a : X} : IsClosed (A ∩
 lemma isClosed_singleton_inter [T1Space X] {A : Set X} {a : X} : IsClosed ({a} ∩ A) :=
   Subsingleton.singleton_inter.isClosed
 
-theorem singleton_mem_nhdsWithin_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X}
+theorem singleton_mem_nhdsWithin_of_mem_discrete {s : Set X} (hs : IsDiscrete s) {x : X}
     (hx : x ∈ s) : {x} ∈ 𝓝[s] x := by
+  rw [isDiscrete_iff_discreteTopology] at hs
   have : ({⟨x, hx⟩} : Set s) ∈ 𝓝 (⟨x, hx⟩ : s) := by simp [nhds_discrete]
   simpa only [nhdsWithin_eq_map_subtype_coe hx, image_singleton] using
     @image_mem_map _ _ _ ((↑) : s → X) _ this
 
 /-- The neighbourhoods filter of `x` within `s`, under the discrete topology, is equal to
 the pure `x` filter (which is the principal filter at the singleton `{x}`.) -/
-theorem nhdsWithin_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X} (hx : x ∈ s) :
+theorem nhdsWithin_of_mem_discrete {s : Set X} (hs : IsDiscrete s) {x : X} (hx : x ∈ s) :
     𝓝[s] x = pure x :=
-  le_antisymm (le_pure_iff.2 <| singleton_mem_nhdsWithin_of_mem_discrete hx) (pure_le_nhdsWithin hx)
+  (le_pure_iff.2 <| singleton_mem_nhdsWithin_of_mem_discrete hs hx).antisymm (pure_le_nhdsWithin hx)
 
 theorem Filter.HasBasis.exists_inter_eq_singleton_of_mem_discrete {ι : Type*} {p : ι → Prop}
-    {t : ι → Set X} {s : Set X} [DiscreteTopology s] {x : X} (hb : (𝓝 x).HasBasis p t)
+    {t : ι → Set X} {s : Set X} (hs : IsDiscrete s) {x : X} (hb : (𝓝 x).HasBasis p t)
     (hx : x ∈ s) : ∃ i, p i ∧ t i ∩ s = {x} := by
-  rcases (nhdsWithin_hasBasis hb s).mem_iff.1 (singleton_mem_nhdsWithin_of_mem_discrete hx) with
+  rcases (nhdsWithin_hasBasis hb s).mem_iff.1 (singleton_mem_nhdsWithin_of_mem_discrete hs hx) with
     ⟨i, hi, hix⟩
   exact ⟨i, hi, hix.antisymm <| singleton_subset_iff.2 ⟨mem_of_mem_nhds <| hb.mem_of_mem hi, hx⟩⟩
 
 /-- A point `x` in a discrete subset `s` of a topological space admits a neighbourhood
 that only meets `s` at `x`. -/
-theorem nhds_inter_eq_singleton_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X}
+theorem nhds_inter_eq_singleton_of_mem_discrete {s : Set X} (hs : IsDiscrete s) {x : X}
     (hx : x ∈ s) : ∃ U ∈ 𝓝 x, U ∩ s = {x} := by
-  simpa using (𝓝 x).basis_sets.exists_inter_eq_singleton_of_mem_discrete hx
+  simpa using (𝓝 x).basis_sets.exists_inter_eq_singleton_of_mem_discrete hs hx
 
 /-- Let `x` be a point in a discrete subset `s` of a topological space, then there exists an open
 set that only meets `s` at `x`. -/
-theorem isOpen_inter_eq_singleton_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X}
+theorem isOpen_inter_eq_singleton_of_mem_discrete {s : Set X} (hs : IsDiscrete s) {x : X}
     (hx : x ∈ s) : ∃ U : Set X, IsOpen U ∧ U ∩ s = {x} := by
-  obtain ⟨U, hU_nhds, hU_inter⟩ := nhds_inter_eq_singleton_of_mem_discrete hx
+  obtain ⟨U, hU_nhds, hU_inter⟩ := nhds_inter_eq_singleton_of_mem_discrete hs hx
   obtain ⟨t, ht_sub, ht_open, ht_x⟩ := mem_nhds_iff.mp hU_nhds
   refine ⟨t, ht_open, Set.Subset.antisymm ?_ ?_⟩
   · exact hU_inter ▸ Set.inter_subset_inter_left s ht_sub
@@ -821,9 +825,9 @@ such that
 1. `U` is a punctured neighborhood of `x` (i.e. `U ∪ {x}` is a neighbourhood of `x`),
 2. `U` is disjoint from `s`.
 -/
-theorem disjoint_nhdsWithin_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X} (hx : x ∈ s) :
+theorem disjoint_nhdsWithin_of_mem_discrete {s : Set X} (hs : IsDiscrete s) {x : X} (hx : x ∈ s) :
     ∃ U ∈ 𝓝[≠] x, Disjoint U s :=
-  let ⟨V, h, h'⟩ := nhds_inter_eq_singleton_of_mem_discrete hx
+  let ⟨V, h, h'⟩ := nhds_inter_eq_singleton_of_mem_discrete hs hx
   ⟨{x}ᶜ ∩ V, inter_mem_nhdsWithin _ h,
     disjoint_iff_inter_eq_empty.mpr (by rw [inter_assoc, h', compl_inter_self])⟩
 
