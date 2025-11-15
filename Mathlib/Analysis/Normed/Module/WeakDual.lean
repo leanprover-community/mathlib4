@@ -283,10 +283,7 @@ lemma metrizable_of_compact (K_cpt : IsCompact K) : TopologicalSpace.MetrizableS
     (fun n k ↦ gs n k) (fun n ↦ (gs_cont n).comp continuous_subtype_val)
     fun x y hxy ↦ gs_sep <| Subtype.val_injective.ne hxy
 
-variable (𝕜 : Type*) [NontriviallyNormedField 𝕜] [ProperSpace 𝕜]
-variable (V : Type*) [SeminormedAddCommGroup V] [NormedSpace 𝕜 V]
-variable [TopologicalSpace.SeparableSpace V]
-variable (K : Set (WeakDual 𝕜 V)) (K_cpt : IsCompact K)
+variable [ProperSpace 𝕜] (K_cpt : IsCompact K)
 
 theorem isSeqCompact_of_bounded_of_closed {s : Set (WeakDual 𝕜 V)}
     (hb : Bornology.IsBounded (StrongDual.toWeakDual ⁻¹' s)) (hc : IsClosed s) :
