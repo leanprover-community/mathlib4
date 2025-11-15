@@ -641,7 +641,7 @@ theorem existsUnique_pos_generator (h₀ : 0 < d) (hd : ¬IsSquare d) :
       zpow_neg_one, neg_mul, ← zpow_add, ← sub_eq_add_neg] at hn₁
     rcases hn₁ with hn₁ | hn₁
     · rcases Int.isUnit_iff.mp
-          (isUnit_of_mul_eq_one _ _ <|
+          (.of_mul_eq_one _ <|
             sub_eq_zero.mp <| (ha₁.zpow_eq_one_iff (n₂ * n₁ - 1)).mp hn₁) with
         (rfl | rfl)
       · rw [zpow_one]
