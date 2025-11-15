@@ -103,6 +103,10 @@ theorem locallySmall_congr {C : Type u} [Category.{v} C] {D : Type u'} [Category
     (e : C ≌ D) : LocallySmall.{w} C ↔ LocallySmall.{w} D :=
   ⟨fun _ => locallySmall_of_faithful e.inverse, fun _ => locallySmall_of_faithful e.functor⟩
 
+instance (C : Type u) [Category.{v} C] [EssentiallySmall.{w} C] [LocallySmall.{w'} C] :
+    LocallySmall.{w'} (SmallModel.{w} C) :=
+  (locallySmall_congr (equivSmallModel.{w} C)).1 inferInstance
+
 instance (priority := 100) locallySmall_self (C : Type u) [Category.{v} C] :
     LocallySmall.{v} C where
 

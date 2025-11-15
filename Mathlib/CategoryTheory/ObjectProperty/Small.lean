@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
-import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+import Mathlib.CategoryTheory.ObjectProperty.Equivalence
 import Mathlib.CategoryTheory.ObjectProperty.Opposite
-import Mathlib.Logic.Small.Basic
+import Mathlib.CategoryTheory.EssentiallySmall
 
 /-!
 # Smallness of a property of objects
@@ -16,13 +16,13 @@ In this file, given `P : ObjectProperty C`, we define
 
 -/
 
-universe w v u
+universe w v v' u u'
 
 namespace CategoryTheory.ObjectProperty
 
 open Opposite
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
 /-- A property of objects is small relative to a universe `w`
 if the corresponding subtype is. -/
@@ -189,5 +189,29 @@ instance (P : ObjectProperty C) [ObjectProperty.EssentiallySmall.{w} P] :
 instance (P : ObjectProperty Cᵒᵖ) [ObjectProperty.EssentiallySmall.{w} P] :
     ObjectProperty.EssentiallySmall.{w} P.unop := by
   simpa
+
+instance (P : ObjectProperty C) [LocallySmall.{w} C]
+    [ObjectProperty.EssentiallySmall.{w} P] : EssentiallySmall.{w} P.FullSubcategory := by
+  obtain ⟨Q, _, h₁, h₂⟩ := EssentiallySmall.exists_small_le P
+  have := (isEquivalence_ιOfLE_iff h₁).2 h₂
+  rw [← essentiallySmall_congr (ιOfLE h₁).asEquivalence]
+  exact essentiallySmall_of_small_of_locallySmall _
+
+instance [EssentiallySmall.{w} C] :
+    ObjectProperty.EssentiallySmall.{w} (⊤ : ObjectProperty C) where
+  exists_small_le' :=
+    ⟨ofObj (equivSmallModel.{w} C).inverse.obj, inferInstance,
+      fun X _ ↦ ⟨_, ⟨_⟩, ⟨(equivSmallModel.{w} C).unitIso.app X⟩⟩⟩
+
+instance (P : ObjectProperty C) [ObjectProperty.Small.{w} P]
+    (F : C ⥤ D) : ObjectProperty.Small.{w} (P.strictMap F) :=
+  small_of_surjective (f := fun (X : Subtype P) ↦ ⟨F.obj X.1, ⟨_, X.2⟩⟩) (by
+    rintro ⟨_, ⟨X, hX⟩⟩
+    exact ⟨⟨X, hX⟩, rfl⟩)
+
+instance (P : ObjectProperty C) [ObjectProperty.EssentiallySmall.{w} P]
+    (F : C ⥤ D) : ObjectProperty.EssentiallySmall.{w} (P.map F) := by
+  obtain ⟨Q, _, h₁, h₂⟩ := EssentiallySmall.exists_small_le P
+  exact ⟨Q.strictMap F, inferInstance, (map_monotone h₂ F).trans (by simp)⟩
 
 end CategoryTheory.ObjectProperty

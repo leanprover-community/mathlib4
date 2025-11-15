@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.ObjectProperty.Small
 import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
+import Mathlib.CategoryTheory.ObjectProperty.Retract
 import Mathlib.CategoryTheory.Limits.Presentation
 
 /-!
@@ -338,6 +339,16 @@ instance [Q.IsClosedUnderLimitsOfShape Jᵒᵖ] :
   rwa [← isClosedUnderLimitsOfShape_op_iff_unop]
 
 end
+
+instance [P.IsClosedUnderColimitsOfShape WalkingParallelPair] :
+    P.IsStableUnderRetracts where
+  of_retract {X Y} h hY := by
+    let c : Cofork (h.r ≫ h.i) (𝟙 Y) := Cofork.ofπ h.r (by simp)
+    have hc : IsColimit c :=
+      Cofork.IsColimit.mk _ (fun s ↦ h.i ≫ s.π)
+        (fun s ↦ by simpa using s.condition)
+        (fun s m hm ↦ by dsimp [c] at hm; simp [← hm])
+    exact P.prop_of_isColimit hc (by rintro (_ | _) <;> exact hY)
 
 end ObjectProperty
 
