@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Anatole Dedecker
 -/
 
+import Mathlib.RingTheory.Finiteness.Defs
 import Mathlib.RingTheory.TwoSidedIdeal.Operations
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.Algebra.OpenSubgroup
+import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 
 /-! # Linear topologies on modules and rings
 
@@ -82,7 +82,7 @@ namespace IsLinearTopology
 
 section Module
 
-variable {R R' M : Type*} [Ring R] [Ring R'] [AddCommGroup M] [Module R M] [Module R' M]
+variable {R R' S M : Type*} [Ring R] [Ring R'] [AddCommGroup M] [Module R M] [Module R' M]
   [SMulCommClass R R' M] [TopologicalSpace M]
 
 variable (R M) in
@@ -153,6 +153,16 @@ theorem _root_.isLinearTopology_iff_hasBasis_open_submodule [ContinuousAdd M] :
     IsLinearTopology R M ↔ (𝓝 0).HasBasis
       (fun N : Submodule R M ↦ IsOpen (N : Set M)) (fun N : Submodule R M ↦ (N : Set M)) :=
   ⟨fun _ ↦ hasBasis_open_submodule R, fun h ↦ .mk_of_hasBasis R h⟩
+
+theorem _root_.isLinearTopology_iff_exists_submodule_isOpen_subset [ContinuousAdd M] :
+    IsLinearTopology R M ↔
+      ∀ s : Set M, IsOpen s → 0 ∈ s → ∃ N : Submodule R M, IsOpen (X := M) N ∧ ↑N ⊆ s := by
+  rw [isLinearTopology_iff_hasBasis_open_submodule, hasBasis_iff]
+  refine ⟨fun H s hs h0s ↦ (H _).mp (hs.mem_nhds h0s), fun H t ↦ ?_⟩
+  refine ⟨fun ht ↦ ?_, fun ⟨N, hN, hNt⟩ ↦ mem_of_superset (hN.mem_nhds N.zero_mem) hNt⟩
+  obtain ⟨s, hst, hs, h0s⟩ := mem_nhds_iff.mp ht
+  obtain ⟨N, hN, hNs⟩ := H s hs h0s
+  exact ⟨N, hN, hNs.trans hst⟩
 
 /-- The discrete topology on any `R`-module is `R`-linear. -/
 instance [DiscreteTopology M] : IsLinearTopology R M :=
@@ -260,6 +270,96 @@ theorem _root_.IsCentralScalar.isLinearTopology_iff [Module Rᵐᵒᵖ M] [IsCen
       fun S r m hm ↦ op_smul_eq_smul r m ▸ S.smul_mem _ hm
   · exact mk_of_hasBasis' Rᵐᵒᵖ (IsLinearTopology.hasBasis_submodule R)
       fun S r m hm ↦ unop_smul_eq_smul r m ▸ S.smul_mem _ hm
+
+variable (R M) in
+lemma nonarchimedeanAddGroup [IsTopologicalAddGroup M] [IsLinearTopology R M] :
+    NonarchimedeanAddGroup M := by
+  refine ⟨fun U hU ↦ ?_⟩
+  obtain ⟨N, hN, hNU⟩ := (hasBasis_submodule R).mem_iff.mp hU
+  exact ⟨⟨N.toAddSubgroup, N.toAddSubgroup.isOpen_of_mem_nhds hN⟩, hNU⟩
+
+lemma _root_.isLinearTopology_int_iff_nonarchimedeanAddGroup [IsTopologicalAddGroup M] :
+    IsLinearTopology ℤ M ↔ NonarchimedeanAddGroup M := by
+  refine ⟨fun _ ↦ IsLinearTopology.nonarchimedeanAddGroup ℤ M, fun _ ↦ ?_⟩
+  refine isLinearTopology_iff_exists_submodule_isOpen_subset.mpr fun s hs h0s ↦ ?_
+  obtain ⟨V, hV⟩ := NonarchimedeanAddGroup.is_nonarchimedean s (hs.mem_nhds h0s)
+  exact ⟨V.1.toIntSubmodule, V.2, hV⟩
+
+instance [NonarchimedeanAddGroup M] : IsLinearTopology ℤ M :=
+  isLinearTopology_int_iff_nonarchimedeanAddGroup.mpr inferInstance
+
+section CompactSpace
+
+variable [TopologicalSpace R] [CompactSpace R] [ContinuousSMul R M]
+
+lemma _root_.Submodule.isOpen_leAddSubgroup_of_compactSpace
+    {G : AddSubgroup M} (hG : IsOpen (X := M) G) :
+    IsOpen (X := M) (Submodule.leAddSubgroup R G) := by
+  refine isOpen_iff_mem_nhds.mpr fun x hx ↦ ?_
+  suffices ∀ s : Set R, IsCompact s → ∃ V ∈ 𝓝 x, ∀ a ∈ s, ∀ b ∈ V, a • b ∈ G by
+    obtain ⟨V, hV, H⟩ := this Set.univ isCompact_univ
+    refine (𝓝 x).mem_of_superset hV ?_
+    simpa [Set.subset_def, Submodule.mem_leAddSubgroup, forall_comm (α := R)] using H
+  intros s hs
+  refine hs.induction_on ?_ ?_ ?_ ?_
+  · simp only [Set.mem_empty_iff_false, IsEmpty.forall_iff, implies_true, and_true]
+    exact ⟨Set.univ, Filter.univ_mem⟩
+  · rintro s₁ s₂ hs₁s₂ ⟨V, hV, H⟩
+    exact ⟨V, hV, fun a ha b hb ↦ H a (hs₁s₂ ha) b hb⟩
+  · rintro s₁ s₂ ⟨V₁, hV₁, H₁⟩ ⟨V₂, hV₂, H₂⟩
+    exact ⟨_, Filter.inter_mem hV₁ hV₂, fun a ha b hb ↦ ha.elim (H₁ a · b hb.1) (H₂ a · b hb.2)⟩
+  · intro a ha
+    have := continuous_smul.tendsto (a, x) (hG.mem_nhds (hx _))
+    simp only [nhds_prod_eq, Filter.mem_map, Filter.mem_prod_iff] at this
+    obtain ⟨t₁, ht₁, t₂, ht₂, H⟩ := this
+    exact ⟨t₁, mem_nhdsWithin_of_mem_nhds ht₁, t₂, ht₂, fun a ha b hb ↦ @H (a, b) (by simp [*])⟩
+
+instance (priority := low) [NonarchimedeanAddGroup M] :
+    IsLinearTopology R M := by
+  refine isLinearTopology_iff_exists_submodule_isOpen_subset.mpr fun s hs h0s ↦ ?_
+  obtain ⟨V, hV⟩ := NonarchimedeanAddGroup.is_nonarchimedean s (hs.mem_nhds h0s)
+  exact ⟨.leAddSubgroup R V.1, Submodule.isOpen_leAddSubgroup_of_compactSpace V.2,
+    subset_trans (Submodule.leAddSubgroup_le _ _) hV⟩
+
+lemma _root_.isLinearTopology_iff_nonarchimedeanAddGroup_of_compactSpace [IsTopologicalAddGroup M] :
+    IsLinearTopology R M ↔ NonarchimedeanAddGroup M := by
+  refine ⟨fun _ ↦ IsLinearTopology.nonarchimedeanAddGroup R M, fun _ ↦ inferInstance⟩
+
+end CompactSpace
+
+section restrictScalars
+
+variable (R S M)
+variable [Ring S] [Module S M]
+
+lemma restrictScalars [SMul R S] [IsScalarTower R S M] [hS : IsLinearTopology S M] :
+    IsLinearTopology R M := by
+  rw [isLinearTopology_iff_hasBasis_submodule] at hS ⊢
+  exact hS.to_hasBasis' (fun N hN ↦ ⟨N.restrictScalars R, hN, by simp⟩) (by simp)
+
+lemma of_restrictScalars [Module R S] [IsScalarTower R S M] [Module.Finite R S]
+    [IsLinearTopology R M] [ContinuousAdd M] [ContinuousConstSMul S M] :
+    IsLinearTopology S M := by
+  rw [isLinearTopology_iff_exists_submodule_isOpen_subset]
+  intro s hs h0s
+  obtain ⟨N, hN, hNs⟩ := (IsLinearTopology.hasBasis_open_submodule R).mem_iff.mp (hs.mem_nhds h0s)
+  refine ⟨_, ?_, subset_trans (Submodule.leAddSubgroup_le _ N.toAddSubgroup) hNs⟩
+  obtain ⟨s, hs⟩ := Module.Finite.fg_top (R := R) (M := S)
+  convert isOpen_biInter_finset (s := s) (fun i _ ↦ (continuous_const_smul i).isOpen_preimage _ hN)
+  ext
+  simp [Submodule.mem_leAddSubgroup_iff_of_span_eq_top _ hs]
+
+lemma iff_restrictScalars [Module R S] [IsScalarTower R S M] [Module.Finite R S]
+    [ContinuousAdd M] [ContinuousConstSMul S M] :
+    IsLinearTopology S M ↔ IsLinearTopology R M :=
+  ⟨fun _ ↦ restrictScalars R S M, fun _ ↦ of_restrictScalars R S M⟩
+
+lemma _root_.isLinearTopology_iff_nonarchimedeanAddGroup_of_finite [Module.Finite ℤ R]
+    [IsTopologicalAddGroup M] [ContinuousConstSMul R M] :
+    IsLinearTopology R M ↔ NonarchimedeanAddGroup M :=
+  (iff_restrictScalars ℤ R M).trans isLinearTopology_int_iff_nonarchimedeanAddGroup
+
+end restrictScalars
 
 end Module
 
