@@ -96,8 +96,8 @@ example (a b : α) [Lattice α] : a ⊓ b ≤ a ⊔ b := by
 example (a b : α) [Lattice α] : a ⊔ b = b ⊔ a := by
   order
 
--- example (a b c : α) [Lattice α] : a ⊓ (b ⊔ c) ≥ (a ⊓ b) ⊔ (a ⊓ c) := by
---   order
+example (a b c : α) [Lattice α] : a ⊓ (b ⊔ c) ≥ (a ⊓ b) ⊔ (a ⊓ c) := by
+  order
 
 set_option trace.order true in
 /--
