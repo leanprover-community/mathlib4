@@ -127,27 +127,22 @@ lemma stirling_series_hasSum {k : ℕ} (hk : 1 ≤ k) :
 
 /-- **Robbins' sharp stepwise bound** for the Stirling sequence:
 The absolute difference of consecutive log values is bounded by $1/(12k(k+1))$. -/
-theorem log_stirlingSeq_diff_le {k : ℕ} (hk : 1 ≤ k) :
-    |Real.log (stirlingSeq (k + 1)) - Real.log (stirlingSeq k)|
-      ≤ (1 : ℝ) / (12 * k * (k + 1)) := by
-  -- log(stirlingSeq) is decreasing, therefore the difference is non-positive
-  rw [abs_of_nonpos (log_stirlingSeq_diff_nonpos hk)]
-  have : -(Real.log (stirlingSeq (k + 1)) - Real.log (stirlingSeq k))
-      = Real.log (stirlingSeq k) - Real.log (stirlingSeq (k + 1)) := by ring
-  rw [this, ← (stirling_series_hasSum hk).tsum_eq]
-  set r := ((1 : ℝ) / (2 * k + 1)) ^ 2
-  -- Bound the series: sum of coefficients * r^j ≤ (1/3) * geometric series
-  calc (∑' j : ℕ, (1 : ℝ) / (2 * (j + 1) + 1) * r ^ (j + 1))
-      ≤ (∑' j : ℕ, (1 / 3 : ℝ) * r ^ (j + 1)) := stirling_series_le_geom hk
-    _ = (1 / 3) * (∑' j : ℕ, r ^ (j + 1)) := by rw [tsum_mul_left]
-    _ = (1 / 3) * (r * ∑' j : ℕ, r ^ j) := by
-        congr 1
-        rw [← tsum_mul_left]
-        exact tsum_congr fun _ => by ring
-    _ = (1 / 3) * (r / (1 - r)) := by
-        -- Evaluate geometric series: ∑ r^j = 1/(1-r)
-        rw [tsum_geometric_of_lt_one (by positivity) (ratio_sq_lt_one hk)]
-        ring
-    _ = (1 : ℝ) / (12 * k * (k + 1)) := geom_ratio_identity hk
+theorem log_stirlingSeq_diff_le (k : ℕ) :
+    Real.log (stirlingSeq k) - Real.log (stirlingSeq (k + 1)) ≤ (1 : ℝ) / (12 * k * (k + 1)) := by
+  rcases k with (_ | k)
+  · suffices 0 ≤ Real.log (Real.exp 1 / Real.sqrt 2) by simpa
+    apply Real.log_nonneg
+    grw [one_le_div (by positivity), ← Real.add_one_le_exp, Real.sqrt_le_left (by positivity)]
+    norm_num
+  set r := ((1 : ℝ) / (2 * (k + 1) + 1)) ^ 2 with hr
+  have hr1 : r < 1 := by grw [hr, ← k.zero_le]; norm_num
+  suffices HasSum (fun j ↦ r ^ (j + 1) / 3) ((1 : ℝ) / (12 * (k + 1 : ℕ) * ((k + 1 : ℕ) + 1))) by
+    refine hasSum_le (fun j ↦ ?_) (log_stirlingSeq_diff_hasSum k) this
+    simpa [hr, field] using show (3 : ℝ) ≤ 2 * (j + 1) + 1 by norm_cast; grind
+  convert ((hasSum_geometric_of_lt_one (by positivity) hr1).mul_right r).div_const 3 using 1
+  push_cast
+  simp only [hr, field]
+  ring_nf
+  field
 
 end Stirling
