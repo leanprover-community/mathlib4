@@ -441,9 +441,17 @@ theorem exists_mem_iff_getElem {l : List α} {p : α → Prop} :
   simp only [mem_iff_getElem]
   exact ⟨fun ⟨_x, ⟨i, hi, hix⟩, hxp⟩ ↦ ⟨i, hi, hix ▸ hxp⟩, fun ⟨i, hi, hp⟩ ↦ ⟨_, ⟨i, hi, rfl⟩, hp⟩⟩
 
+theorem exists_mem_iff_get {l : List α} {p : α → Prop} :
+    (∃ x ∈ l, p x) ↔ ∃ (i : Fin l.length), p (l.get i) :=
+  exists_mem_iff_getElem.trans ⟨fun ⟨i, hi, h⟩ ↦ ⟨⟨i, hi⟩, h⟩, fun ⟨i, h⟩ ↦ ⟨i, i.isLt, h⟩⟩
+
 theorem forall_mem_iff_getElem {l : List α} {p : α → Prop} :
     (∀ x ∈ l, p x) ↔ ∀ (i : ℕ) (_ : i < l.length), p l[i] := by
   simp [mem_iff_getElem, @forall_swap α]
+
+theorem forall_mem_iff_get {l : List α} {p : α → Prop} :
+    (∀ x ∈ l, p x) ↔ ∀ (i : Fin l.length), p (l.get i) :=
+  forall_mem_iff_getElem.trans ⟨fun h i ↦ h i i.isLt, fun h i hi ↦ h ⟨i, hi⟩⟩
 
 @[simp]
 theorem get_surjective_iff {l : List α} : l.get.Surjective ↔ (∀ x, x ∈ l) :=
