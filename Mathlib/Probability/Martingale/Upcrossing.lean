@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
 import Mathlib.Order.Interval.Set.Monotone
+import Mathlib.Probability.Notation
 import Mathlib.Probability.Process.HittingTime
 import Mathlib.Probability.Martingale.Basic
 import Mathlib.Tactic.AdaptationNote

@@ -683,39 +683,43 @@ lemma Integrable.measure_norm_gt_lt_top {f : α → β} (hf : Integrable f μ) {
     μ {x | ε < ‖f x‖} < ∞ :=
   lt_of_le_of_lt (measure_mono (fun _ h ↦ (Set.mem_setOf_eq ▸ h).le)) (hf.measure_norm_ge_lt_top hε)
 
+section Order
+
+variable [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β] {f : α → β}
+
 -- TODO: try generalising all lemmas below to enorm classes
 
-/-- If `f` is `ℝ`-valued and integrable, then for any `c > 0` the set `{x | f x ≥ c}` has finite
-measure. -/
-lemma Integrable.measure_ge_lt_top {f : α → ℝ} (hf : Integrable f μ) {ε : ℝ} (ε_pos : 0 < ε) :
+/-- If `f` is integrable, then for any `c > 0` the set `{x | f x ≥ c}` has finite measure. -/
+lemma Integrable.measure_ge_lt_top (hf : Integrable f μ) {ε : β} (ε_pos : 0 < ε) :
     μ {a : α | ε ≤ f a} < ∞ := by
-  refine lt_of_le_of_lt (measure_mono ?_) (hf.measure_norm_ge_lt_top ε_pos)
+  refine lt_of_le_of_lt (measure_mono ?_) (hf.measure_norm_ge_lt_top (norm_pos_iff.2 ε_pos.ne'))
   intro x hx
-  simp only [Real.norm_eq_abs, Set.mem_setOf_eq] at hx ⊢
+  apply norm_le_norm_of_abs_le_abs
+  rw [abs_of_nonneg ε_pos.le]
   exact hx.trans (le_abs_self _)
 
-/-- If `f` is `ℝ`-valued and integrable, then for any `c < 0` the set `{x | f x ≤ c}` has finite
-measure. -/
-lemma Integrable.measure_le_lt_top {f : α → ℝ} (hf : Integrable f μ) {c : ℝ} (c_neg : c < 0) :
+/-- If `f` is integrable, then for any `c < 0` the set `{x | f x ≤ c}` has finite measure. -/
+lemma Integrable.measure_le_lt_top (hf : Integrable f μ) {c : β} (c_neg : c < 0) :
     μ {a : α | f a ≤ c} < ∞ := by
-  refine lt_of_le_of_lt (measure_mono ?_) (hf.measure_norm_ge_lt_top (show 0 < -c by linarith))
+  refine lt_of_le_of_lt (measure_mono ?_) (hf.measure_norm_ge_lt_top (norm_pos_iff.2 c_neg.ne))
   intro x hx
-  simp only [Real.norm_eq_abs, Set.mem_setOf_eq] at hx ⊢
-  exact (show -c ≤ - f x by linarith).trans (neg_le_abs _)
+  apply norm_le_norm_of_abs_le_abs
+  rw [abs_of_nonpos c_neg.le, abs_of_nonpos (hx.trans c_neg.le)]
+  exact neg_le_neg hx
 
-/-- If `f` is `ℝ`-valued and integrable, then for any `c > 0` the set `{x | f x > c}` has finite
-measure. -/
-lemma Integrable.measure_gt_lt_top {f : α → ℝ} (hf : Integrable f μ) {ε : ℝ} (ε_pos : 0 < ε) :
+/-- If `f` is integrable, then for any `c > 0` the set `{x | f x > c}` has finite measure. -/
+lemma Integrable.measure_gt_lt_top (hf : Integrable f μ) {ε : β} (ε_pos : 0 < ε) :
     μ {a : α | ε < f a} < ∞ :=
   lt_of_le_of_lt (measure_mono (fun _ hx ↦ (Set.mem_setOf_eq ▸ hx).le))
     (Integrable.measure_ge_lt_top hf ε_pos)
 
-/-- If `f` is `ℝ`-valued and integrable, then for any `c < 0` the set `{x | f x < c}` has finite
-measure. -/
-lemma Integrable.measure_lt_lt_top {f : α → ℝ} (hf : Integrable f μ) {c : ℝ} (c_neg : c < 0) :
+/-- If `f` is integrable, then for any `c < 0` the set `{x | f x < c}` has finite measure. -/
+lemma Integrable.measure_lt_lt_top {f : α → β} (hf : Integrable f μ) {c : β} (c_neg : c < 0) :
     μ {a : α | f a < c} < ∞ :=
   lt_of_le_of_lt (measure_mono (fun _ hx ↦ (Set.mem_setOf_eq ▸ hx).le))
     (Integrable.measure_le_lt_top hf c_neg)
+
+end Order
 
 theorem LipschitzWith.integrable_comp_iff_of_antilipschitz {K K'} {f : α → β} {g : β → γ}
     (hg : LipschitzWith K g) (hg' : AntilipschitzWith K' g) (g0 : g 0 = 0) :
@@ -990,10 +994,20 @@ theorem Integrable.smul_of_top_right {f : α → β} {φ : α → 𝕜} (hf : In
   rw [← memLp_one_iff_integrable] at hf ⊢
   exact MemLp.smul hf hφ
 
+theorem Integrable.bdd_smul {f : α → β} {φ : α → 𝕜} (hf : Integrable f μ)
+    (C : ℝ) (hφ1 : AEStronglyMeasurable φ μ) (hφ2 : ∀ᵐ a ∂μ, ‖φ a‖ ≤ C) :
+    Integrable (φ • f) μ :=
+  hf.smul_of_top_right (memLp_top_of_bound hφ1 C hφ2)
+
 theorem Integrable.smul_of_top_left {f : α → β} {φ : α → 𝕜} (hφ : Integrable φ μ)
     (hf : MemLp f ∞ μ) : Integrable (φ • f) μ := by
   rw [← memLp_one_iff_integrable] at hφ ⊢
   exact MemLp.smul hf hφ
+
+theorem Integrable.smul_bdd {f : α → β} {φ : α → 𝕜} (hφ : Integrable φ μ)
+    (C : ℝ) (hf1 : AEStronglyMeasurable f μ) (hf2 : ∀ᵐ a ∂μ, ‖f a‖ ≤ C) :
+    Integrable (φ • f) μ :=
+  hφ.smul_of_top_left (memLp_top_of_bound hf1 C hf2)
 
 @[fun_prop]
 theorem Integrable.smul_const {f : α → 𝕜} (hf : Integrable f μ) (c : β) :
@@ -1049,11 +1063,13 @@ theorem integrable_mul_const_iff {c : 𝕜} (hc : IsUnit c) (f : α → 𝕜) :
 
 theorem Integrable.bdd_mul' {f g : α → 𝕜} {c : ℝ} (hg : Integrable g μ)
     (hf : AEStronglyMeasurable f μ) (hf_bound : ∀ᵐ x ∂μ, ‖f x‖ ≤ c) :
-    Integrable (fun x => f x * g x) μ := by
-  refine Integrable.mono' (hg.norm.smul c) (hf.mul hg.1) ?_
-  filter_upwards [hf_bound] with x hx
-  rw [Pi.smul_apply, smul_eq_mul]
-  exact (norm_mul_le _ _).trans (mul_le_mul_of_nonneg_right hx (norm_nonneg _))
+    Integrable (fun x => f x * g x) μ :=
+  hg.bdd_smul c hf hf_bound
+
+theorem Integrable.mul_bdd {f g : α → 𝕜} {c : ℝ} (hf : Integrable f μ)
+    (hg : AEStronglyMeasurable g μ) (hg_bound : ∀ᵐ x ∂μ, ‖g x‖ ≤ c) :
+    Integrable (fun x => f x * g x) μ :=
+  hf.smul_bdd c hg hg_bound
 
 theorem Integrable.mul_of_top_right {f : α → 𝕜} {φ : α → 𝕜} (hf : Integrable f μ)
     (hφ : MemLp φ ∞ μ) : Integrable (φ * f) μ :=
