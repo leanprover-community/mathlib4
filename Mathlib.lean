@@ -1388,6 +1388,7 @@ import Mathlib.AlgebraicTopology.SimplicialObject.Split
 import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.IsUniquelyCodimOneFace
 import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Pairing
 import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.PairingCore
+import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Rank
 import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
 import Mathlib.AlgebraicTopology.SimplicialSet.CategoryWithFibrations
