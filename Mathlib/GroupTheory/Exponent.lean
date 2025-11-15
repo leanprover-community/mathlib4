@@ -599,7 +599,7 @@ theorem Monoid.exponent_prod {M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂] :
 
 end PiProd
 
-/-! # Properties of monoids with exponent two -/
+/-! ### Properties of monoids with exponent two -/
 
 section ExponentTwo
 
