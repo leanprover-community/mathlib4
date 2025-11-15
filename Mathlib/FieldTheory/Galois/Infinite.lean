@@ -15,7 +15,7 @@ open subgroups and normal subgroups. We first verify that `IntermediateField.fix
 `IntermediateField.fixedField` are inverses of each other between intermediate fields and
 closed subgroups of the Galois group.
 
-# Main definitions and results
+## Main definitions and results
 
 In `K/k`, for any intermediate field `L` :
 

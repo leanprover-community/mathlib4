@@ -21,12 +21,12 @@ the relation `M ↾ R ≤r M` holds only with the assumption `R ⊆ M.E`,
 whereas `M ＼ D`, being defined as `M ↾ (M.E \ D)`, satisfies `M ＼ D ≤r M` unconditionally.
 This is often quite convenient.
 
-# Main Declarations
+## Main Declarations
 
 * `Matroid.delete M D`, written `M ＼ D`, is the restriction of `M` to the set `M.E \ D`,
   or equivalently the matroid on `M.E \ D` whose independent sets are the `M`-independent sets.
 
-# Naming conventions
+## Naming conventions
 
 We use the abbreviation `deleteElem` in lemma names to refer to the deletion `M ＼ {e}`
 of a single element `e : α` from `M : Matroid α`.
