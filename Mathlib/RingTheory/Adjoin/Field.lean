@@ -113,7 +113,7 @@ theorem minpoly_neg_splits [Algebra K L] {x : L} (g : ((minpoly K x).map (algebr
   rw [minpoly.neg]
   apply splits_mul _ _ g.comp_neg_X
   simpa only [map_pow, map_neg, map_one] using
-    splits_C (algebraMap K L) ((-1) ^ (minpoly K x).natDegree)
+    (map_C (algebraMap K L) ▸ splits_C (algebraMap K L <| (-1) ^ _) :)
 
 theorem minpoly_add_algebraMap_splits [Algebra K L] {x : L} (r : K)
     (g : ((minpoly K x).map (algebraMap K L)).Splits) :

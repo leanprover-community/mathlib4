@@ -79,13 +79,13 @@ instance [h : Fact ((p.map (RingHom.id F)).Splits)] : Unique p.Gal :=
   uniqueGalOfSplits _ h.1
 
 instance uniqueGalZero : Unique (0 : F[X]).Gal :=
-  uniqueGalOfSplits _ (splits_zero _)
+  uniqueGalOfSplits _ (by simp)
 
 instance uniqueGalOne : Unique (1 : F[X]).Gal :=
   uniqueGalOfSplits _ (splits_one _)
 
 instance uniqueGalC (x : F) : Unique (C x).Gal :=
-  uniqueGalOfSplits _ (splits_C _ _)
+  uniqueGalOfSplits _ (by simp)
 
 instance uniqueGalX : Unique (X : F[X]).Gal :=
   uniqueGalOfSplits _ (splits_X _)
@@ -315,17 +315,16 @@ theorem splits_in_splittingField_of_comp (hq : q.natDegree ≠ 0) :
     by_cases h₁ : p₁.comp q = 0
     · rcases comp_eq_zero_iff.mp h₁ with h | h
       · rw [h, zero_mul]
-        exact splits_zero _
+        simp [P]
       · exact False.elim (hq (by rw [h.2, natDegree_C]))
     by_cases h₂ : p₂.comp q = 0
     · rcases comp_eq_zero_iff.mp h₂ with h | h
-      · rw [h, mul_zero]
-        exact splits_zero _
+      · simp [h, P]
       · exact False.elim (hq (by rw [h.2, natDegree_C]))
     have key := mul_splits_in_splittingField_of_mul h₁ h₂ hp₁ hp₂
     rwa [← mul_comp] at key
   exact
-    WfDvdMonoid.induction_on_irreducible p (splits_zero _) (fun _ => splits_of_isUnit _)
+    WfDvdMonoid.induction_on_irreducible p (by simp) (fun _ => splits_of_isUnit _)
       fun _ _ _ h => key2 (key1 h)
 
 /-- `Polynomial.Gal.restrict` for the composition of polynomials. -/

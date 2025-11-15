@@ -43,14 +43,14 @@ def Splits (f : K[X]) : Prop :=
   Factors f
 
 @[simp]
-theorem splits_zero : Splits ((0 : K[X]).map i) := by
+theorem splits_zero : Splits (0 : K[X]) := by
   simp [Splits]
 
 theorem splits_of_map_eq_C {f : K[X]} {a : L} (h : f.map i = C a) : Splits (f.map i) := by
   simp [Splits, h]
 
 @[simp]
-theorem splits_C (a : K) : Splits ((C a).map i) := by
+theorem splits_C (a : K) : Splits (C a) := by
   simp [Splits]
 
 theorem splits_of_map_degree_eq_one {f : K[X]} (hf : degree (f.map i) = 1) : Splits (f.map i) :=
@@ -82,10 +82,10 @@ theorem splits_map_iff {L : Type*} [CommRing L] (i : K →+* L) (j : L →+* F) 
   simp [Splits, Polynomial.map_map]
 
 theorem splits_one : Splits (map i 1) :=
-  splits_C i 1
+  map_C i ▸ splits_C _
 
 theorem splits_of_isUnit [IsDomain K] {u : K[X]} (hu : IsUnit u) : (u.map i).Splits :=
-  (isUnit_iff.mp hu).choose_spec.2 ▸ splits_C _ _
+  (isUnit_iff.mp hu).choose_spec.2 ▸ map_C i ▸ splits_C _
 
 theorem splits_X_sub_C {x : K} : ((X - C x).map i).Splits :=
   splits_of_degree_le_one _ <| degree_X_sub_C_le _

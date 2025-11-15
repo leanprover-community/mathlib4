@@ -110,7 +110,7 @@ def lift [Algebra K F] (f : K[X]) [IsSplittingField K L f]
   if hf0 : f = 0 then
     (Algebra.ofId K F).comp <|
       (Algebra.botEquiv K L : (⊥ : Subalgebra K L) →ₐ[K] K).comp <| by
-        rw [← (splits_iff L f).1 (show (f.map (RingHom.id K)).Splits from hf0.symm ▸ splits_zero _)]
+        rw [← (splits_iff L f).1 (show (f.map (RingHom.id K)).Splits by simp [hf0])]
         exact Algebra.toTop
   else AlgHom.comp (by
     rw [← adjoin_rootSet L f]
@@ -192,5 +192,5 @@ theorem IntermediateField.adjoin_rootSet_isSplittingField (hp : (p.map (algebraM
   isSplittingField_iff.mpr ⟨splits_of_splits hp fun _ hx ↦ subset_adjoin K (p.rootSet L) hx, rfl⟩
 
 theorem Polynomial.isSplittingField_C (a : K) : Polynomial.IsSplittingField K K (C a) where
-  splits' := by simp only [splits_C]
+  splits' := by simp
   adjoin_rootSet' := by simp
