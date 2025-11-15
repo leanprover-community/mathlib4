@@ -6,7 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Functor.TypeFlat
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.Limits.Types.Filtered
-import Mathlib.CategoryTheory.ObjectProperty.PreservesLimits
+import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.PreservesLimits
 import Mathlib.CategoryTheory.Sites.Limits
 import Mathlib.CategoryTheory.Sites.LocallyBijective
 import Mathlib.CategoryTheory.Filtered.FinallySmall
@@ -22,9 +22,41 @@ namespace CategoryTheory
 
 open Limits Opposite
 
+-- to be moved
+instance {C D : Type*} [Category C] [Category D] [HasFiniteLimits D] (X : C) :
+    PreservesFiniteLimits ((evaluation C D).obj X) where
+  preservesFiniteLimits J _ _ := by
+    infer_instance
+
+-- to be moved
+lemma HasExactColimitOfShape.of_final
+    {J₁ J₂ : Type*} [Category J₁] [Category J₂] (F : J₁ ⥤ J₂) [F.Final]
+    (C : Type*) [Category C] [HasFiniteLimits C]
+    [HasColimitsOfShape J₁ C] [HasExactColimitsOfShape J₁ C] :
+    letI : HasColimitsOfShape J₂ C := Functor.Final.hasColimitsOfShape_of_final F
+    HasExactColimitsOfShape J₂ C := by
+  letI : HasColimitsOfShape J₂ C := Functor.Final.hasColimitsOfShape_of_final F
+  constructor
+  let φ : (Functor.whiskeringLeft J₁ J₂ C).obj F ⋙ colim ⟶ colim :=
+    { app G := colimit.pre G F }
+  have : IsIso φ := by
+    rw [NatTrans.isIso_iff_isIso_app]
+    intro
+    dsimp [φ]
+    infer_instance
+  have : PreservesFiniteLimits ((Functor.whiskeringLeft J₁ J₂ C).obj F) :=
+    ⟨fun J _ _ ↦ ⟨fun {K} ↦ ⟨fun {c} hc ↦ ⟨evaluationJointlyReflectsLimits _
+    (fun j ↦ isLimitOfPreserves ((evaluation _ _).obj (F.obj j)) hc) ⟩⟩⟩⟩
+  exact preservesFiniteLimits_of_natIso (asIso φ)
+
 variable {C : Type u} [Category.{v} C]
 
 namespace Functor
+
+instance [LocallySmall.{w} C] (F : C ⥤ Type w) : LocallySmall.{w} F.Elements where
+  hom_small := by
+    rintro ⟨X, _⟩ ⟨Y, y⟩
+    exact small_of_injective (f := fun g ↦ g.val) (by cat_disch)
 
 lemma isCofiltered_elements (F : C ⥤ Type w) [HasFiniteLimits C] [PreservesFiniteLimits F] :
     IsCofiltered F.Elements where
@@ -52,12 +84,14 @@ namespace GrothendieckTopology
 
 variable (J : GrothendieckTopology C)
 
-structure Point where
+structure Point [LocallySmall.{w} C] where
   fiber : C ⥤ Type w
   isCofiltered : IsCofiltered fiber.Elements := by infer_instance
   initiallySmall : InitiallySmall.{w} fiber.Elements := by infer_instance
   jointly_surjective {X : C} (R : Sieve X) (h : R ∈ J X) (x : fiber.obj X) :
     ∃ (Y : C) (f : Y ⟶ X) (_ : R f) (y : fiber.obj Y), fiber.map f y = x
+
+variable [LocallySmall.{w} C]
 
 namespace Point
 
@@ -69,7 +103,10 @@ variable {J} (Φ : Point.{w} J) {A : Type u'} [Category.{v'} A]
 instance : HasColimitsOfShape Φ.fiber.Elementsᵒᵖ A :=
     hasColimitsOfShape_of_finallySmall _ _
 
-instance : HasExactColimitsOfShape Φ.fiber.Elementsᵒᵖ A :=
+instance [AB5OfSize.{w, w} A] [HasFiniteLimits A] :
+    HasExactColimitsOfShape Φ.fiber.Elementsᵒᵖ A := by
+  obtain ⟨D, _, _, F, _⟩ := FinallySmall.exists_of_isFiltered.{w} Φ.fiber.Elementsᵒᵖ
+  exact HasExactColimitOfShape.of_final F A
 
 noncomputable def presheafFiber : (Cᵒᵖ ⥤ A) ⥤ A :=
   colimit ((CategoryOfElements.π Φ.fiber).op ⋙ evaluation _ A)
@@ -183,14 +220,17 @@ lemma W_isInvertedBy_presheafFiber
 
 end
 
-instance : PreservesFiniteLimits (Φ.presheafFiber (A := A)) := sorry
+instance [HasFiniteLimits A] [AB5OfSize.{w, w} A] :
+    PreservesFiniteLimits (Φ.presheafFiber (A := A)) :=
+  ObjectProperty.preservesFiniteLimits.prop_of_isColimit
+    (colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ evaluation _ A))
+      (by dsimp; infer_instance)
 
 noncomputable def sheafFiber : Sheaf J A ⥤ A :=
   sheafToPresheaf J A ⋙ Φ.presheafFiber
 
-variable (K : Type) [SmallCategory K] [FinCategory K] [HasFiniteLimits A]
-
-instance : PreservesFiniteLimits (Φ.sheafFiber (A := A)) := comp_preservesFiniteLimits _ _
+instance [HasFiniteLimits A] [AB5OfSize.{w, w} A] :
+    PreservesFiniteLimits (Φ.sheafFiber (A := A)) := comp_preservesFiniteLimits _ _
 
 end Point
 

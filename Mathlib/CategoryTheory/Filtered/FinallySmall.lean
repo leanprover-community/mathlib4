@@ -17,29 +17,12 @@ variable (C : Type u) [Category.{v} C]
 
 namespace FinallySmall
 
-
-namespace exists_of_isFiltered
-
-lemma aux₁ [FinallySmall.{w} C] [IsFiltered C] :
-    ∃ (D : Type w) (_ : Category.{v} D) (_ : IsFiltered D) (_ : FinallySmall.{w} D)
-    (F : D ⥤ C), F.Final := by
-  let P : ObjectProperty C := Set.range (fromFinalModel C).obj
+lemma exists_of_isFiltered [IsFiltered C] [LocallySmall.{w} C] [FinallySmall.{w} C] :
+    ∃ (D : Type w) (_ : SmallCategory D) (_ : IsFiltered D) (F : D ⥤ C), F.Final := by
+  let e := ShrinkHoms.equivalence.{w} C
   sorry
 
-lemma aux₂ (C : Type w) [Category.{v} C] [FinallySmall.{w} C] [IsFiltered C] :
-    ∃ (D : Type w) (_ : SmallCategory D) (_ : IsFiltered D) (F : D ⥤ C), F.Final := by
-  sorry
-
-end exists_of_isFiltered
-
-variable [IsFiltered C] [FinallySmall.{w} C]
-
-open exists_of_isFiltered in
-lemma exists_of_isFiltered :
-    ∃ (D : Type w) (_ : SmallCategory D) (_ : IsFiltered D) (F : D ⥤ C), F.Final := by
-  obtain ⟨D, _, _, _, F, _⟩  := aux₁.{w} C
-  obtain ⟨E, _, _, G, _⟩  := aux₂.{w} D
-  exact ⟨E, inferInstance, inferInstance, G ⋙ F, inferInstance⟩
+variable [IsFiltered C] [LocallySmall.{w} C] [FinallySmall.{w} C]
 
 def FilteredFinalModel : Type w := (exists_of_isFiltered.{w} C).choose
 
