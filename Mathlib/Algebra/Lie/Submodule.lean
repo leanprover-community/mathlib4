@@ -105,7 +105,7 @@ protected theorem zero_mem : (0 : M) ∈ N :=
 
 @[simp]
 theorem mk_eq_zero {x} (h : x ∈ N) : (⟨x, h⟩ : N) = 0 ↔ x = 0 :=
-  Subtype.ext_iff_val
+  Subtype.ext_iff
 
 @[simp]
 theorem coe_toSet_mk (S : Set M) (h₁ h₂ h₃ h₄) :
@@ -136,7 +136,7 @@ protected def copy (s : Set M) (hs : s = ↑N) : LieSubmodule R L M where
   smul_mem' := by exact hs.symm ▸ N.smul_mem'
   lie_mem := by exact hs.symm ▸ N.lie_mem
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_copy (S : LieSubmodule R L M) (s : Set M) (hs : s = ↑S) : (S.copy s hs : Set M) = s :=
   rfl
 
@@ -439,43 +439,22 @@ variable {N N'}
   rw [disjoint_iff, disjoint_iff, ← toSubmodule_inj, inf_toSubmodule, bot_toSubmodule,
     ← disjoint_iff]
 
-@[deprecated disjoint_toSubmodule (since := "2025-04-03")]
-theorem disjoint_iff_toSubmodule :
-    Disjoint N N' ↔ Disjoint (N : Submodule R M) (N' : Submodule R M) := disjoint_toSubmodule.symm
-
 @[simp] lemma codisjoint_toSubmodule :
     Codisjoint (N : Submodule R M) (N' : Submodule R M) ↔ Codisjoint N N' := by
   rw [codisjoint_iff, codisjoint_iff, ← toSubmodule_inj, sup_toSubmodule,
     top_toSubmodule, ← codisjoint_iff]
 
-@[deprecated codisjoint_toSubmodule (since := "2025-04-03")]
-theorem codisjoint_iff_toSubmodule :
-    Codisjoint N N' ↔ Codisjoint (N : Submodule R M) (N' : Submodule R M) :=
-  codisjoint_toSubmodule.symm
-
 @[simp] lemma isCompl_toSubmodule :
     IsCompl (N : Submodule R M) (N' : Submodule R M) ↔ IsCompl N N' := by
   simp [isCompl_iff]
-
-@[deprecated isCompl_toSubmodule (since := "2025-04-03")]
-theorem isCompl_iff_toSubmodule :
-    IsCompl N N' ↔ IsCompl (N : Submodule R M) (N' : Submodule R M) := isCompl_toSubmodule.symm
 
 @[simp] lemma iSupIndep_toSubmodule {ι : Type*} {N : ι → LieSubmodule R L M} :
     iSupIndep (fun i ↦ (N i : Submodule R M)) ↔ iSupIndep N := by
   simp [iSupIndep_def, ← disjoint_toSubmodule]
 
-@[deprecated iSupIndep_toSubmodule (since := "2025-04-03")]
-theorem iSupIndep_iff_toSubmodule {ι : Type*} {N : ι → LieSubmodule R L M} :
-    iSupIndep N ↔ iSupIndep fun i ↦ (N i : Submodule R M) := iSupIndep_toSubmodule.symm
-
 @[simp] lemma iSup_toSubmodule_eq_top {ι : Sort*} {N : ι → LieSubmodule R L M} :
     ⨆ i, (N i : Submodule R M) = ⊤ ↔ ⨆ i, N i = ⊤ := by
   rw [← iSup_toSubmodule, ← top_toSubmodule (L := L), toSubmodule_inj]
-
-@[deprecated iSup_toSubmodule_eq_top (since := "2025-04-03")]
-theorem iSup_eq_top_iff_toSubmodule {ι : Sort*} {N : ι → LieSubmodule R L M} :
-    ⨆ i, N i = ⊤ ↔ ⨆ i, (N i : Submodule R M) = ⊤ := iSup_toSubmodule_eq_top.symm
 
 instance : Add (LieSubmodule R L M) where add := max
 
@@ -549,9 +528,10 @@ instance [Nontrivial M] : Nontrivial (LieSubmodule R L M) :=
 theorem nontrivial_iff_ne_bot {N : LieSubmodule R L M} : Nontrivial N ↔ N ≠ ⊥ := by
   constructor <;> contrapose!
   · rintro rfl
+    by_contra! h; rcases h with
       ⟨⟨m₁, h₁ : m₁ ∈ (⊥ : LieSubmodule R L M)⟩, ⟨m₂, h₂ : m₂ ∈ (⊥ : LieSubmodule R L M)⟩, h₁₂⟩
     simp [(LieSubmodule.mem_bot _).mp h₁, (LieSubmodule.mem_bot _).mp h₂] at h₁₂
-  · rw [not_nontrivial_iff_subsingleton, LieSubmodule.eq_bot_iff]
+  · rw [LieSubmodule.eq_bot_iff]
     rintro ⟨h⟩ m hm
     simpa using h ⟨m, hm⟩ ⟨_, N.zero_mem⟩
 

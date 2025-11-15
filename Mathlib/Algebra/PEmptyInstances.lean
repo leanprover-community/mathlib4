@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Tactic.ToAdditive
 
 /-!
 # Instances on pempty
@@ -20,4 +19,3 @@ universe u
 instance SemigroupPEmpty : Semigroup PEmpty.{u + 1} where
   mul x _ := by cases x
   mul_assoc x y z := by cases x
-

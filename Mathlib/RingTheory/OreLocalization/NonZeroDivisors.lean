@@ -68,7 +68,7 @@ protected theorem inv_def {r : R} {s : R⁰} :
   with_unfolding_all rfl
 
 protected theorem mul_inv_cancel (x : R[R⁰⁻¹]) (h : x ≠ 0) : x * x⁻¹ = 1 := by
-  induction' x with r s
+  induction x with | _ r s
   rw [OreLocalization.inv_def, OreLocalization.one_def]
   have hr : r ≠ 0 := by
     rintro rfl

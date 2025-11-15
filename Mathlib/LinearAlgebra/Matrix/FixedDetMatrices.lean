@@ -58,7 +58,7 @@ lemma smul_coe (m : R) (g : SpecialLinearGroup n R) (A : FixedDetMatrix n R m) :
 
 section IntegralFixedDetMatrices
 
-local notation:1024 "Δ" m : 1024 => (FixedDetMatrix (Fin 2) ℤ m)
+local notation:1024 "Δ" m:1024 => (FixedDetMatrix (Fin 2) ℤ m)
 
 variable {m : ℤ}
 
@@ -187,7 +187,7 @@ lemma reduce_mem_reps {m : ℤ} (hm : m ≠ 0) (A : Δ m) : reduce A ∈ reps m 
         simpa only [reps, Fin.isValue, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd, empty_mul,
           Equiv.symm_apply_apply, Set.mem_setOf_eq, of_apply, cons_val', vecMul, cons_dotProduct,
           vecHead, one_mul, vecTail, Function.comp_apply, Fin.succ_zero_eq_one, neg_mul,
-          dotProduct_empty, add_zero, zero_mul, zero_add, empty_val', cons_val_fin_one,
+          dotProduct_of_isEmpty, add_zero, zero_mul, zero_add, empty_val', cons_val_fin_one,
           cons_val_one, cons_val_zero, lt_add_neg_iff_add_lt, le_add_neg_iff_add_le]
       simp_all only [mul_comm n, zero_mul, ← sub_eq_add_neg, ← h2,
         Fin.isValue, and_true]
@@ -195,9 +195,9 @@ lemma reduce_mem_reps {m : ℤ} (hm : m ≠ 0) (A : Δ m) : reduce A ∈ reps m 
         mul_assoc, S_mul_S_eq, neg_mul, one_mul, coe_T_zpow, mul_neg, cons_mul, Nat.succ_eq_add_one,
         Nat.reduceAdd, empty_mul, Equiv.symm_apply_apply, neg_of, neg_cons, neg_empty,
         Set.mem_setOf_eq, of_apply, cons_val', Pi.neg_apply, vecMul, cons_dotProduct, vecHead,
-        vecTail, Function.comp_apply, Fin.succ_zero_eq_one, h, mul_zero, dotProduct_empty, add_zero,
-        zero_mul, neg_zero, empty_val', cons_val_fin_one, cons_val_one, cons_val_zero, lt_neg,
-        neg_add_rev, zero_add, le_add_neg_iff_add_le, ← le_neg, abs_neg, true_and]
+        vecTail, Function.comp_apply, Fin.succ_zero_eq_one, h, mul_zero, dotProduct_of_isEmpty,
+        add_zero, zero_mul, neg_zero, empty_val', cons_val_fin_one, cons_val_one, cons_val_zero,
+        lt_neg, neg_add_rev, zero_add, le_add_neg_iff_add_le, ← le_neg, abs_neg, true_and]
       refine ⟨?_, Int.ediv_mul_le _ hd, ?_⟩
       · simp only [Int.lt_iff_le_and_ne]
         exact ⟨not_lt.mp h1, A_a_ne_zero h hm⟩
@@ -221,7 +221,7 @@ private lemma prop_red_T (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → 
   solve_by_elim (maxDepth := 10)
 
 private lemma prop_red_T_pow (hS : ∀ B, C B → C (S • B)) (hT : ∀ B, C B → C (T • B)) :
-     ∀ B (n : ℤ), C (T^n • B) ↔ C B := by
+     ∀ B (n : ℤ), C (T ^ n • B) ↔ C B := by
   intro B n
   induction n with
   | zero => simp only [zpow_zero, one_smul]

@@ -28,9 +28,9 @@ variable [DecidableEq G] {A B : Finset G}
 theorem ruzsa_covering_mul (hB : B.Nonempty) (hK : #(A * B) ≤ K * #B) :
     ∃ F ⊆ A, #F ≤ K ∧ A ⊆ F * (B / B) := by
   haveI : ∀ F, Decidable ((F : Set G).PairwiseDisjoint (· • B)) := fun F ↦ Classical.dec _
-  set C := {F ∈ A.powerset | F.toSet.PairwiseDisjoint (· • B)}
+  set C := {F ∈ A.powerset | (SetLike.coe F).PairwiseDisjoint (· • B)}
   obtain ⟨F, hFmax⟩ := C.exists_maximal <| filter_nonempty_iff.2
-    ⟨∅, empty_mem_powerset _, by rw [coe_empty]; exact Set.pairwiseDisjoint_empty⟩
+    ⟨∅, empty_mem_powerset _, by simp [coe_empty]⟩
   simp only [C, mem_filter, mem_powerset] at hFmax
   obtain ⟨hFA, hF⟩ := hFmax.1
   refine ⟨F, hFA, le_of_mul_le_mul_right ?_ (by positivity : (0 : ℝ) < #B), fun a ha ↦ ?_⟩
@@ -41,11 +41,10 @@ theorem ruzsa_covering_mul (hB : B.Nonempty) (hK : #(A * B) ≤ K * #B) :
       _ ≤ K * #B := hK
   by_cases hau : a ∈ F
   · exact subset_mul_left _ hB.one_mem_div hau
-  by_cases H : ∀ b ∈ F, Disjoint (a • B) (b • B)
+  by_cases! H : ∀ b ∈ F, Disjoint (a • B) (b • B)
   · refine (hFmax.not_gt ?_ <| ssubset_insert hau).elim
     rw [insert_subset_iff, coe_insert]
     exact ⟨⟨ha, hFA⟩, hF.insert fun _ hb _ ↦ H _ hb⟩
-  push_neg at H
   simp_rw [not_disjoint_iff, ← inv_smul_mem_iff] at H
   obtain ⟨b, hb, c, hc₁, hc₂⟩ := H
   exact mem_mul.2 ⟨b, hb, b⁻¹ * a, mem_div.2 ⟨_, hc₂, _, hc₁, by simp⟩, by simp⟩

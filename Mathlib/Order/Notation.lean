@@ -7,6 +7,7 @@ import Qq
 import Mathlib.Lean.PrettyPrinter.Delaborator
 import Mathlib.Tactic.TypeStar
 import Mathlib.Tactic.Simps.NotationClass
+import Mathlib.Tactic.ToDual
 
 /-!
 # Notation classes for lattice operations
@@ -19,7 +20,7 @@ In this file we introduce typeclasses and definitions for lattice operations.
 * `Top`: type class for the `⊤` notation
 * `Bot`: type class for the `⊥` notation
 
-## Notations
+## Notation
 
 * `xᶜ`: complement in a lattice;
 * `x ⊔ y`: supremum/join, which is notation for `max x y`;
@@ -134,7 +135,7 @@ class HImp (α : Type*) where
 
 The difference between `HasCompl` and `HNot` is that the former belongs to Heyting algebras,
 while the latter belongs to co-Heyting algebras. They are both pseudo-complements, but `compl`
-underestimates while `HNot` overestimates. In boolean algebras, they are equal.
+underestimates while `HNot` overestimates. In Boolean algebras, they are equal.
 See `hnot_eq_compl`.
 -/
 @[notation_class]
@@ -160,7 +161,7 @@ class Top (α : Type*) where
   top : α
 
 /-- Typeclass for the `⊥` (`\bot`) notation -/
-@[notation_class, ext]
+@[notation_class, ext, to_dual]
 class Bot (α : Type*) where
   /-- The bot (`⊥`, `\bot`) element -/
   bot : α
@@ -171,10 +172,8 @@ notation "⊤" => Top.top
 /-- The bot (`⊥`, `\bot`) element -/
 notation "⊥" => Bot.bot
 
+@[to_dual]
 instance (priority := 100) top_nonempty (α : Type*) [Top α] : Nonempty α :=
   ⟨⊤⟩
-
-instance (priority := 100) bot_nonempty (α : Type*) [Bot α] : Nonempty α :=
-  ⟨⊥⟩
 
 attribute [match_pattern] Bot.bot Top.top

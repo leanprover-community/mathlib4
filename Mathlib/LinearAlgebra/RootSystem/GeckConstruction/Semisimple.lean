@@ -49,7 +49,7 @@ private lemma isNilpotent_e_aux {j : ι} (n : ℕ) (h : letI _i := P.indexNeg; j
       ∃ (k : ι) (x : ℕ), P.root k = P.root j + n • P.root i ∧
         (e i ^ n).col (.inr j) = x • Pi.single (.inr k) 1 := by
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-  have : NoZeroSMulDivisors ℤ M := .int_of_charZero R M
+  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
   letI := P.indexNeg
   have aux (n : ℕ) : (e i ^ (n + 1)).col (.inr j) = (e i).mulVec ((e i ^ n).col (.inr j)) := by
     rw [pow_succ', ← Matrix.mulVec_single_one, ← Matrix.mulVec_mulVec]; simp
@@ -70,7 +70,7 @@ private lemma isNilpotent_e_aux {j : ι} (n : ℕ) (h : letI _i := P.indexNeg; j
       · apply h
         rw [zero_add, one_smul, EmbeddingLike.apply_eq_iff_eq] at hk₁
         simp [← hk₁, -indexNeg_neg]
-      · have _i : (n + 1).AtLeastTwo := ⟨by omega⟩
+      · have _i : (n + 1).AtLeastTwo := ⟨by cutsat⟩
         exact P.nsmul_notMem_range_root (n := n + 1) (i := i) ⟨-j, hk₁⟩
     by_cases hij : P.root j + (n + 1) • P.root i ∈ range P.root
     · obtain ⟨l, hl⟩ := hij
@@ -95,7 +95,7 @@ lemma isNilpotent_e :
     IsNilpotent (e i) := by
   classical
   have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-  have : NoZeroSMulDivisors ℤ M := .int_of_charZero R M
+  have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
   letI := P.indexNeg
   rw [Matrix.isNilpotent_iff_forall_col]
   have case_inl (j : b.support) : (e i ^ 2).col (Sum.inl j) = 0 := by
@@ -131,7 +131,7 @@ lemma isNilpotent_e :
         rw [root_eq_neg_iff] at hij
         rw [hij, ← indexNeg_neg, neg_neg]
     rw [root_add_nsmul_mem_range_iff_le_chainTopCoeff hij'] at hk₁
-    omega
+    cutsat
 
 lemma isNilpotent_f :
     IsNilpotent (f i) := by

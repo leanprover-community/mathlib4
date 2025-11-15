@@ -682,7 +682,7 @@ instance Pi.isInvInvariant_volume {α} [Group α] [MeasureSpace α] [SigmaFinite
   pi.isInvInvariant _
 
 /-!
-### Measure preserving equivalences
+### Measure-preserving equivalences
 
 In this section we prove that some measurable equivalences (e.g., between `Fin 1 → α` and `α` or
 between `Fin 2 → α` and `α × α`) preserve measure or volume. These lemmas can be used to prove that
@@ -808,7 +808,7 @@ theorem measurePreserving_piUnique {X : ι → Type*} [Unique ι] {m : ∀ i, Me
     have : (piPremeasure fun i => (μ i).toOuterMeasure) = Measure.map e.symm (μ default) := by
       ext1 s
       rw [piPremeasure, Fintype.prod_unique, e.symm.map_apply, coe_toOuterMeasure]
-      congr 1; exact e.toEquiv.image_eq_preimage s
+      congr 1; exact e.toEquiv.image_eq_preimage_symm s
     simp_rw [Measure.pi, OuterMeasure.pi, this, ← coe_toOuterMeasure, boundedBy_eq_self,
       toOuterMeasure_toMeasure, MeasurableEquiv.map_map_symm]
 

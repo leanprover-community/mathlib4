@@ -223,15 +223,6 @@ theorem exists_isClopen_of_totally_separated {α : Type*} [TopologicalSpace α]
     [TotallySeparatedSpace α] : Pairwise (∃ U : Set α, IsClopen U ∧ · ∈ U ∧ · ∈ Uᶜ) :=
   totallySeparatedSpace_iff_exists_isClopen.mp ‹_›
 
-/-- Let `X` be a topological space, and suppose that for all distinct `x,y ∈ X`, there
-  is some clopen set `U` such that `x ∈ U` and `y ∉ U`. Then `X` is totally disconnected. -/
-@[deprecated totallySeparatedSpace_iff_exists_isClopen (since := "2025-04-03")]
-theorem isTotallyDisconnected_of_isClopen_set {X : Type*} [TopologicalSpace X]
-    (hX : Pairwise (∃ (U : Set X), IsClopen U ∧ · ∈ U ∧ · ∉ U)) :
-    IsTotallyDisconnected (Set.univ : Set X) :=
-  (totallySeparatedSpace_iff X).mp (totallySeparatedSpace_iff_exists_isClopen.mpr hX)
-    |>.isTotallyDisconnected
-
 end TotallySeparated
 
 
@@ -310,7 +301,7 @@ theorem IsPreconnected.constant_of_mapsTo {S : Set α} (hS : IsPreconnected S)
     (hTm : MapsTo f S T) {x y : α} (hx : x ∈ S) (hy : y ∈ S) : f x = f y := by
   let F : S → T := hTm.restrict f S T
   suffices F ⟨x, hx⟩ = F ⟨y, hy⟩ by rwa [← Subtype.coe_inj] at this
-  exact (isPreconnected_iff_preconnectedSpace.mp hS).constant (hc.restrict_mapsTo _)
+  exact (isPreconnected_iff_preconnectedSpace.mp hS).constant (hc.mapsToRestrict _)
 
 /-- A version of `IsPreconnected.constant_of_mapsTo` that assumes that the codomain is nonempty and
 proves that `f` is equal to `const α y` on `S` for some `y ∈ T`. -/
