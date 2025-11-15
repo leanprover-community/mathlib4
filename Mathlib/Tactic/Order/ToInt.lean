@@ -5,7 +5,7 @@ Authors: Vasilii Nesterov
 -/
 import Batteries.Data.List.Pairwise
 import Mathlib.Tactic.Order.CollectFacts
-import Mathlib.Tactic.GeneralizeProofs
+import Batteries.Tactic.GeneralizeProofs
 import Mathlib.Util.Qq
 
 /-!
