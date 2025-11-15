@@ -55,9 +55,11 @@ scoped[ProbabilityTheory] notation "𝔼[" X "]" => ∫ a, (X : _ → _) a
 scoped[ProbabilityTheory] notation P "⟦" s "|" m "⟧" =>
   MeasureTheory.condExp m P (Set.indicator s fun ω => (1 : ℝ))
 
+set_option quotPrecheck false in
 /-- `X =ₐₛ Y` if `X = Y` almost surely. -/
 scoped[ProbabilityTheory] notation:50 X " =ₐₛ " Y:50 => X =ᵐ[MeasureTheory.MeasureSpace.volume] Y
 
+set_option quotPrecheck false in
 /-- `X ≤ₐₛ Y` if `X ≤ Y` almost surely. -/
 scoped[ProbabilityTheory] notation:50 X " ≤ₐₛ " Y:50 => X ≤ᵐ[MeasureTheory.MeasureSpace.volume] Y
 
