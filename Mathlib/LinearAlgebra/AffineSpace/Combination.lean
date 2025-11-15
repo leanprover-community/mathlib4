@@ -402,17 +402,7 @@ theorem affineCombination_vsub (w₁ w₂ : ι → k) (p : ι → P) :
 theorem attach_affineCombination_of_injective [DecidableEq P] (s : Finset P) (w : P → k) (f : s → P)
     (hf : Function.Injective f) :
     s.attach.affineCombination k f (w ∘ f) = (image f univ).affineCombination k id w := by
-  simp only [affineCombination, weightedVSubOfPoint_apply, id, vadd_right_cancel_iff,
-    Function.comp_apply, AffineMap.coe_mk]
-  let g₁ : s → V := fun i => w (f i) • (f i -ᵥ Classical.choice S.nonempty)
-  let g₂ : P → V := fun i => w i • (i -ᵥ Classical.choice S.nonempty)
-  change univ.sum g₁ = (image f univ).sum g₂
-  have hgf : g₁ = g₂ ∘ f := by
-    ext
-    simp [g₁, g₂]
-  rw [hgf, sum_image]
-  · simp only [g₂,Function.comp_apply]
-  · exact fun _ _ _ _ hxy => hf hxy
+  simp [affineCombination, hf]
 
 theorem attach_affineCombination_coe (s : Finset P) (w : P → k) :
     s.attach.affineCombination k ((↑) : s → P) (w ∘ (↑)) = s.affineCombination k id w := by
