@@ -21,9 +21,8 @@ This file proves that eigenvalues of positive (semi)definite matrices are (nonne
 open WithLp Matrix Unitary
 open scoped ComplexOrder
 
-variable {m n 𝕜 : Type*} [Fintype m] [Fintype n] [RCLike 𝕜] {A : Matrix n n 𝕜}
-
 namespace Matrix
+variable {m n 𝕜 : Type*} [Fintype m] [Fintype n] [RCLike 𝕜] {A : Matrix n n 𝕜}
 
 /-! ### Positive semidefinite matrices -/
 
