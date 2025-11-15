@@ -155,6 +155,30 @@ theorem ofDigits_digits {b : ℕ} [NeZero b] {x : ℝ} (hb : 1 < b) (hx : x ∈ 
   · exact hasSum_ofDigitsTerm_digits x hb hx
   · exact summable_ofDigitsTerm
 
+/-- A generalization of the identity `0.(9) = 1` to arbitrary positional numeral systems. -/
+theorem ofDigits_const_last_eq_one {b : ℕ} (hb : 1 < b) :
+    ofDigits (fun _ ↦ (⟨b - 1, Nat.sub_one_lt_of_lt hb⟩ : Fin b)) = 1 := by
+  simp only [ofDigits, ofDigitsTerm, ← inv_pow]
+  rw [Summable.tsum_mul_left]
+  · rw [geom_series_succ _ (by simp [inv_lt_one_iff₀, hb]),
+      tsum_geometric_of_lt_one (by positivity) (by simp [inv_lt_one_iff₀, hb])]
+    push_cast [hb]
+    have : 0 < (b : ℝ) - 1 := by rify at hb; linarith
+    field_simp
+    ring
+  · rw [summable_nat_add_iff (f := fun n ↦ (b : ℝ)⁻¹ ^ n) 1]
+    apply summable_geometric_of_lt_one (by positivity) (by simp [inv_lt_one_iff₀, hb])
+
+theorem ofDigits_SurjOn {b : ℕ} (hb : 1 < b) :
+    Set.SurjOn (ofDigits (b := b)) Set.univ (Set.Icc 0 1) := by
+  have : NeZero b := ⟨by grind⟩
+  intro y hy
+  by_cases hy' : y ∈ Set.Ico 0 1
+  · use digits y b
+    simp [ofDigits_digits hb hy']
+  · simp only [Set.image_univ, show y = 1 by grind, Set.mem_range]
+    exact ⟨_, ofDigits_const_last_eq_one hb⟩
+
 theorem continuous_ofDigits {b : ℕ} : Continuous (@ofDigits b) := by
   match b with
   | 0 => fun_prop
