@@ -23,8 +23,10 @@ open scoped Topology
 open Real Filter
 
 open Set in
-lemma tendstoUniformlyOn_rpow_sub_one_log {s : Set ℝ} (hs : s ⊆ Ioi 0) (hs' : IsCompact s) :
-    TendstoUniformlyOn (fun (p : ℝ) (x : ℝ) => p⁻¹ * (x ^ p - 1)) log (𝓝[>] 0) s := by
+lemma tendstoLocallyUniformlyOn_rpow_sub_one_log :
+    TendstoLocallyUniformlyOn (fun (p : ℝ) (x : ℝ) => p⁻¹ * (x ^ p - 1)) log (𝓝[>] 0) (Ioi 0) := by
+  refine (tendstoLocallyUniformlyOn_iff_forall_isCompact isOpen_Ioi).mpr ?_
+  intro s hs hs'
   rw [Metric.tendstoUniformlyOn_iff]
   intro ε hε
   let pbound : ℝ := ε / (sSup ((fun x => ‖log x‖ ^ 2) '' s) + 1)
@@ -82,5 +84,5 @@ lemma tendstoUniformlyOn_rpow_sub_one_log {s : Set ℝ} (hs : s ⊆ Ioi 0) (hs' 
 
 lemma tendsto_rpow_sub_one_log {x : ℝ} (hx : 0 < x) :
     Tendsto (fun p => p⁻¹ * (x ^ p - 1)) (𝓝[>] 0) (𝓝 (log x)) :=
-  TendstoUniformlyOn.tendsto_at (s := {x})
-    (tendstoUniformlyOn_rpow_sub_one_log (by grind) isCompact_singleton) (by grind)
+  TendstoLocallyUniformlyOn.tendsto_at
+    tendstoLocallyUniformlyOn_rpow_sub_one_log (by grind)

@@ -33,15 +33,13 @@ lemma CFC.tendsto_cfc_rpow_sub_one_log {a : A} (ha : IsStrictlyPositive a) :
     Tendsto (fun p : ℝ => cfc (fun x => p⁻¹ * (x ^ p - 1)) a) (𝓝[>] 0) (𝓝 (CFC.log a)) := by
   refine tendsto_cfc_fun ?tendsto ?cont
   case cont =>
-    refine Eventually.of_forall ?_
-    intro p
-    refine ContinuousOn.mul (by fun_prop) ?_
-    refine ContinuousOn.sub ?_ (by fun_prop)
-    exact ContinuousOn.rpow_const (by fun_prop) (by grind)
+    exact .of_forall fun p ↦ by fun_prop (disch := grind -abstractProof)
   case tendsto =>
     let s := {a : A | IsStrictlyPositive a}
     let f (p : ℝ) (x : ℝ) := if p > 0 then p⁻¹ * (x ^ p - 1) else Real.log x
-    exact tendstoUniformlyOn_rpow_sub_one_log (by grind) (by grind)
+    have hmain := tendstoLocallyUniformlyOn_rpow_sub_one_log
+    rw [tendstoLocallyUniformlyOn_iff_forall_isCompact isOpen_Ioi] at hmain
+    exact hmain (spectrum ℝ a) (by grind) (by grind)
 
 open Classical Real in
 /-- `log` is operator monotone. -/
