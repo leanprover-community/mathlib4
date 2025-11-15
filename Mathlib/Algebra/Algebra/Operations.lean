@@ -294,6 +294,11 @@ instance : NonUnitalSemiring (Submodule R A) where
 instance : Pow (Submodule R A) ℕ where
   pow s n := npowRec n s
 
+theorem mul_top_eq_top_of_mul_eq_one (h : N * P = 1) : N * ⊤ = ⊤ :=
+  top_unique <| by
+    conv_lhs => rw [← Submodule.one_mul ⊤, ← h, mul_assoc]
+    exact smul_mono le_rfl le_top
+
 theorem pow_eq_npowRec {n : ℕ} : M ^ n = npowRec n M := rfl
 
 protected theorem pow_zero : M ^ 0 = 1 := rfl
@@ -368,6 +373,10 @@ theorem mem_one {x : A} : x ∈ (1 : Submodule R A) ↔ ∃ y, algebraMap R A y 
 
 theorem smul_one_eq_span (x : A) : x • (1 : Submodule R A) = span R {x} := by
   rw [one_eq_span, smul_span, smul_set_singleton, smul_eq_mul, mul_one]
+
+theorem span_singleton_algebraMap_of_isUnit {r : R} (h : IsUnit r) :
+    span R {algebraMap R A r} = 1 := by
+  conv_rhs => rw [one_eq_span, ← span_singleton_smul_eq h, ← algebraMap_eq_smul_one]
 
 protected theorem map_one {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') :
     map f.toLinearMap (1 : Submodule R A) = 1 := by
@@ -572,6 +581,11 @@ theorem span_pow (s : Set A) : ∀ n : ℕ, span R s ^ n = span R (s ^ n)
 theorem pow_eq_span_pow_set (n : ℕ) : M ^ n = span R ((M : Set A) ^ n) := by
   rw [← span_pow, span_eq]
 
+theorem top_mul_eq_top_of_mul_eq_one (h : N * P = 1) : ⊤ * P = ⊤ :=
+  top_unique <| by
+    conv_lhs => rw [← mul_one ⊤, ← h, ← mul_assoc]
+    exact smul_mono_left le_top
+
 /-- Dependent version of `Submodule.pow_induction_on_left`. -/
 @[elab_as_elim]
 protected theorem pow_induction_on_left' {C : ∀ (n : ℕ) (x), x ∈ M ^ n → Prop}
@@ -682,12 +696,45 @@ theorem map_unop_pow (n : ℕ) (M : Submodule R Aᵐᵒᵖ) :
 /-- `span` is a semiring homomorphism (recall multiplication is pointwise multiplication of subsets
 on either side). -/
 @[simps]
-noncomputable def span.ringHom : SetSemiring A →+* Submodule R A where
+def span.ringHom : SetSemiring A →+* Submodule R A where
   toFun s := Submodule.span R (SetSemiring.down s)
   map_zero' := span_empty
   map_one' := one_eq_span.symm
   map_add' := span_union
   map_mul' s t := by simp_rw [SetSemiring.down_mul, span_mul_span]
+
+variable (R) in
+/-- `(span R {·})` as a monoid homomorphism. -/
+def spanSingleton : A →* Submodule R A :=
+  Submodule.span.ringHom.toMonoidHom.comp SetSemiring.singletonMonoidHom
+
+@[simp] lemma spanSingleton_apply (x : A) : spanSingleton R x = Submodule.span R {x} := rfl
+
+section FaithfulSMul
+
+variable [FaithfulSMul R A]
+
+theorem span_singleton_eq_one_iff {x : A} : span R {x} = 1 ↔ ∃ r : Rˣ, x = algebraMap R A r where
+  mp h := by
+    obtain ⟨r, rfl⟩ := mem_one.mp (h ▸ mem_span_singleton_self x)
+    have ⟨r', eq⟩ := mem_span_singleton.mp (h ▸ algebraMap_mem 1)
+    rw [Algebra.smul_def, ← map_mul, (FaithfulSMul.algebraMap_injective R A).eq_iff] at eq
+    exact ⟨.mkOfMulEqOne _ _ (mul_comm _ r ▸ eq), rfl⟩
+  mpr := by rintro ⟨r, rfl⟩; exact span_singleton_algebraMap_of_isUnit r.isUnit
+
+theorem ker_spanSingleton :
+    MonoidHom.mker (Submodule.spanSingleton R) = (IsUnit.submonoid R).map (algebraMap R A) := by
+  ext; simp_rw [Submonoid.mem_map, IsUnit.mem_submonoid_iff, IsUnit, existsAndEq, true_and, eq_comm]
+  exact span_singleton_eq_one_iff
+
+/-- Exactness of the sequence `1 → Rˣ → Aˣ → (Submodule R A)ˣ → Pic R → Pic A` at `Aˣ`.
+See Exercise I.3.7(iv) in [Weibel2013] or Theorem 2.4 in [RobertsSingh1993]. -/
+theorem ker_unitsMap_spanSingleton :
+    (Units.map (Submodule.spanSingleton R)).ker =
+    (Units.map (algebraMap R A).toMonoidHom).range := by
+  ext; simpa [Units.ext_iff, eq_comm] using span_singleton_eq_one_iff
+
+end FaithfulSMul
 
 section
 
