@@ -609,7 +609,7 @@ theorem ofLinearEquiv_refl (p : P) :
   simp [ofLinearEquiv_apply]
 
 @[simp]
-theorem ofLinearEquiv_trans (A B : V ≃ₗ[k] V) (p₀ p₁ p₂ : P) :
+theorem ofLinearEquiv_trans_ofLinearEquiv (A B : V ≃ₗ[k] V) (p₀ p₁ p₂ : P) :
     (ofLinearEquiv A p₀ p₁).trans (ofLinearEquiv B p₁ p₂) =
       ofLinearEquiv (A.trans B) p₀ p₂ := by
   ext x
