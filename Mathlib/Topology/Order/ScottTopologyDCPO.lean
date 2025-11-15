@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Order.CompletePartialOrder
 public import Mathlib.Topology.Order.ScottTopology
-public import Mathlib.Topology.Sets.Opens
+public import Mathlib.Topology.Order.Category.FrameAdjunction
 
 /-!
 # Scott Complete Partial Order
@@ -268,5 +268,208 @@ lemma open_eq_open_of_basis' (u : Opens D) :
     apply Set.mem_of_mem_of_subset he c_in_u
 
 end AlgebraicDCPO
+
+section Sober
+open Locale TopCat CategoryTheory TopologicalSpace Topology.IsScott Set
+
+/-- A topological space is sober if the unit map of `adjunctionTopToLocalePT` is a
+homeomorphism -/
+def Sober (X : TopCat) := IsHomeomorph (adjunctionTopToLocalePT.unit.app X)
+
+-- TODO prove equivalence of alternative defenitions of Sober
+-- lemma alt_def {X: TopCat} : QuasiSober X ∧ T0Space X
+--    ↔ Sober X := by sorry
+
+/-- Lean's automation can prove this easily enough if a `simp [map_sSup, sSup_Prop_eq]`.
+    But using this lemma improves readability, especially as it's used multiple times -/
+lemma of_completelyPrime {D : Type*} [TopologicalSpace D]
+{P : Opens D → Prop} {x : PT (Opens D)} :
+  (x (sSup {u | P u})) ↔ ∃ u, P u ∧ x u := by
+  simp only [map_sSup, sSup_Prop_eq]
+  constructor
+  · rintro ⟨h, ⟨h2, h3, h4⟩, h5⟩
+    use h2
+    subst h4
+    exact ⟨h3, h5⟩
+  · rintro ⟨u, hu, hxu⟩
+    use x u
+    simp only [Set.mem_image, Set.mem_setOf_eq, eq_iff_iff]
+    constructor
+    · use u
+    · exact hxu
+
+variable {D : Type*} [tD : TopologicalSpace D] [aD : AlgebraicDCPO D]
+  [sD : IsScott D {d | DirectedOn (· ≤ ·) d}]
+
+/-- We claim that x is entirely determined by its set of basic opens `K x`.
+    Proving this correspondence establishes the homeomorphism below. -/
+abbrev K (x : PT (Opens D)) := { c | ∃ hc: c ∈ 𝕂 D, x <| ⟨c, hc⟩ᵘᵒ }
+
+/-- The set of basic opens is directed -/
+lemma directed_Kₓ (x : PT (Opens D)) : DirectedOn (· ≤ ·) (K x) := by
+  rintro c ⟨hc₀, hc₁⟩ d ⟨hd₀, hd₁⟩
+  let inf := ⟨c, hc₀⟩ᵘᵒ  ⊓ ⟨d, hd₀⟩ᵘᵒ
+  have inf_in_x : x inf := by
+    simp only [map_inf, inf]
+    exact ⟨hc₁, hd₁⟩
+
+  have this := by
+    rw [open_eq_open_of_basis' inf] at inf_in_x
+    exact of_completelyPrime.1 inf_in_x
+
+  obtain ⟨e', ⟨e, he₀, he'₀, he'₁⟩, he'₂⟩ := this
+
+  rw [he'₁] at he'₂
+  use e
+  constructor
+  · simp only [Set.mem_setOf_eq]
+    exact ⟨he₀, he'₂⟩
+  · simp only [Opens.ofCompact, Opens.mk_inf_mk, inf_eq_inter, Opens.mem_mk, mem_inter_iff, mem_Ici,
+      inf] at he'₀ ⊢
+    obtain ⟨h₁, h₂⟩ := he'₀
+    exact ⟨h₁, h₂⟩
+
+/-- Large calc proof extracted here. Showing surjectivity of the homeomorphism. -/
+lemma surjectivity : Function.Surjective (localePointOfSpacePoint D) := by
+      intro x
+      dsimp [pt, PT] at x
+      let Kₓ := K x
+      let inp := sSup Kₓ
+      use inp
+      apply FrameHom.ext
+      intro u
+      simp only [eq_iff_iff]
+      change sSup Kₓ ∈ u ↔ x u
+
+      calc
+        _ ↔ sSup Kₓ ∈ u.carrier := by rfl
+        _ ↔ sSup Kₓ ∈ ⋃₀ (Ici '' { e ∈ 𝕂 D | eᵘ ⊆ u}) := by
+          nth_rewrite 1 [open_eq_open_of_basis u.carrier u.isOpen]
+          rfl
+        _ ↔ ∃ e ∈ 𝕂 D, eᵘ ⊆ u ∧ e ≤ sSup Kₓ := by
+          constructor
+          · rintro ⟨e', he'₀, he'₁⟩
+            simp only [Set.mem_image, Set.mem_setOf_eq] at he'₀
+            choose e he₁ he₂ using he'₀
+            use e
+            simp only [← he₂, Ici, Set.mem_setOf_eq] at he'₁
+            exact ⟨he₁.1, he₁.2, he'₁⟩
+          · rintro ⟨e, he₀, he₁, he₂⟩
+            have he'₀ : eᵘ ∈ (Ici '' {c | c ∈ 𝕂 D ∧ cᵘ ⊆ u}) := by
+              simp only [Set.mem_image, Set.mem_setOf_eq]
+              use e
+            apply Set.subset_sUnion_of_mem at he'₀
+            have he₂ : sSup Kₓ ∈ eᵘ := by aesop
+            exact Set.mem_of_mem_of_subset he₂ he'₀
+        _ ↔ ∃ (e c : D), c ∈ Kₓ ∧ e ∈ 𝕂 D  ∧ eᵘ ⊆ u ∧ e ≤ c := by
+            constructor
+            · rintro ⟨e, he₀, he'₀, he₁⟩
+              use e
+              choose c hc₁ hc₂ using he₀ Kₓ (directed_Kₓ x) he₁
+              use c
+            · rintro ⟨e, c, hc₀, he₀, he'₀, e_le_c⟩
+              use e
+              have he₁ : e ≤ sSup Kₓ := by
+                trans c
+                · assumption
+                · have sSup_is_LUB := CompletePartialOrder.lubOfDirected Kₓ (directed_Kₓ x)
+                  exact sSup_is_LUB.1 hc₀
+              exact ⟨he₀, he'₀, he₁⟩
+        _ ↔ ∃ (e c : D) (hc: c ∈ 𝕂 D), e ∈ 𝕂 D ∧ eᵘ ⊆ u ∧ cᵘ ⊆ eᵘ ∧ x (⟨c, hc⟩ᵘᵒ) := by
+          constructor
+          · rintro ⟨e, c, ⟨hc₀, hc₁⟩, he₀, he₁, e_le_c⟩
+            use e; use c; use hc₀
+            exact ⟨he₀, he₁, Ici_subset_Ici.2 e_le_c, hc₁⟩
+
+          · rintro ⟨e, c, hc₀, he₀, he'₀, c'_le_e', hc'₀⟩
+            use e; use c;
+            exact ⟨⟨hc₀, hc'₀⟩, he₀, he'₀, Ici_subset_Ici.1 c'_le_e'⟩
+        _ ↔ ∃ (e: D) (he: e ∈ 𝕂 D), eᵘ ⊆ u ∧ x (⟨e, he⟩ᵘᵒ) := by
+          constructor
+          · rintro ⟨e, c, hc₀, he₀, he'₀, c'_le_e', hc'₀⟩
+            use e; use he₀; use he'₀
+            have c'_inf_e'_eq_c' : ⟨c, hc₀⟩ᵘᵒ ⊓ ⟨e, he₀⟩ᵘᵒ = ⟨c, hc₀⟩ᵘᵒ :=
+              by simp [Opens.ofCompact, Ici_subset_Ici.1 c'_le_e']
+            have lifted : x (⟨c, hc₀⟩ᵘᵒ ⊓ ⟨e, he₀⟩ᵘᵒ) = x (⟨c, hc₀⟩ᵘᵒ) :=
+              congrArg (⇑x) c'_inf_e'_eq_c'
+            simp only [map_inf, inf_Prop_eq, eq_iff_iff, and_iff_left_iff_imp] at lifted
+            exact lifted hc'₀
+          · -- this direction is trivial as the requirements for c are all satisfied by e itself
+            intro ⟨e, he₀, he'₀, he'₁⟩
+            use e; use e; use he₀;
+        _ ↔ x u := by
+          constructor
+          · let P (o: Opens D) := ∃ (c: D) (hc: c ∈ 𝕂 D), c ∈ u ∧ (o = ⟨c, hc⟩ᵘᵒ)
+            -- intro he
+            rintro ⟨e, he₀, he'₀, he'₁⟩
+            have he': ∃ u, P u ∧ x u := by
+              use ⟨e, he₀⟩ᵘᵒ
+              exact ⟨⟨e, he₀, Opens.mem_iff_Ici_subset.2 he'₀, rfl⟩, he'₁⟩
+
+            rw [← of_completelyPrime] at he'
+            rw [← open_eq_open_of_basis' u] at he'
+            exact he'
+          · intro hu
+            rw [open_eq_open_of_basis' u] at hu
+            rw [of_completelyPrime] at hu
+
+            obtain ⟨e', ⟨e, he₀, he'₀, he'₁⟩ , he'₂⟩ := hu
+            rw [he'₁] at he'₂
+            exact ⟨e, he₀, Opens.mem_iff_Ici_subset.1 he'₀, he'₂⟩
+
+theorem scott_is_sober : Sober (TopCat.of D) := by
+  dsimp only [Functor.id_obj, Functor.comp_obj, topToLocale_obj, adjunctionTopToLocalePT,
+        topCatOpToFrm_obj_coe, hom_ofHom, Sober]
+  constructor
+  · continuity
+  · -- Open Map
+    intro u hu
+    use ⟨u, hu⟩
+    ext x
+    simp only [Set.mem_setOf_eq, Set.image]
+    dsimp only [topCatOpToFrm_obj_coe] at x
+    constructor
+    · intro he
+      choose e he' using (surjectivity x)
+      subst he'
+      exact ⟨e, he, by rfl⟩
+    · intro hx
+      choose e he he' using hx
+      subst he'
+      exact he
+  · -- Bijective
+    constructor
+    · -- Injective
+      intro d e
+      contrapose
+      intro d_ne_e
+
+      change ¬ ((localePointOfSpacePoint D d) = (localePointOfSpacePoint D e))
+      rw [@FrameHom.ext_iff (Opens D) Prop (Opens.instCompleteLattice) Prop.instCompleteLattice
+        (localePointOfSpacePoint D d) (localePointOfSpacePoint D e)]
+      simp only [localePointOfSpacePoint_toFun, eq_iff_iff, not_forall]
+      rcases (@Ne.not_le_or_not_ge D _ _ _ d_ne_e) with d_nle_e | e_nle_d
+      · simp only [specialization_iff_ge, specializes_iff_forall_open, not_forall] at d_nle_e
+        obtain ⟨u, hu, d_in_u, e_ne_u⟩ := d_nle_e
+        use ⟨u, hu⟩
+        simp only [Opens.mem_mk]
+        intro h
+        exact (and_not_self_iff (e ∈ u)).1 ⟨h.1 d_in_u, e_ne_u⟩
+      · -- This follows dually from above. Attempting to resuse the above proof was unseccessfule
+        -- CompletePartialOrder instance for the dual type not implemented.
+        -- To do so binary relation, `r` of DirectedOn needs to be inverted,
+        -- but `r` is not stored/accessible.
+        -- It would be if DirectedOn was a struct rather than a function.
+        simp only [specialization_iff_ge, specializes_iff_forall_open, not_forall] at e_nle_d
+        obtain ⟨u, hu, e_in_u, d_ne_u⟩ := e_nle_d
+        use ⟨u, hu⟩
+        simp only [Opens.mem_mk]
+        intro h
+        exact (and_not_self_iff (d ∈ u)).1 ⟨h.2 e_in_u, d_ne_u⟩
+    · -- Surjective
+      exact surjectivity
+
+
+end Sober
 end IsScott
 end Topology
