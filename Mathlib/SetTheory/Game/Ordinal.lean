@@ -19,7 +19,7 @@ game whose left set consists of all previous ordinals.
 
 The map to surreals is defined in `Ordinal.toSurreal`.
 
-# Main declarations
+## Main declarations
 
 - `Ordinal.toPGame`: The canonical map between ordinals and pre-games.
 - `Ordinal.toPGameEmbedding`: The order embedding version of the previous map.
