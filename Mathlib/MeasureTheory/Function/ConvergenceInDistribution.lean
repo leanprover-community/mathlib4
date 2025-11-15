@@ -220,11 +220,17 @@ lemma tendstoInDistribution_of_tendstoInMeasure_sub
 
 /-- Convergence in probability (`TendstoInMeasure`) implies convergence in distribution
 (`TendstoInDistribution`). -/
-lemma TendstoInMeasure.tendstoInDistribution [l.IsCountablyGenerated]
+lemma TendstoInMeasure.tendstoInDistribution_of_aemeasurable [l.IsCountablyGenerated]
     (h : TendstoInMeasure μ X l Z) (hX : ∀ i, AEMeasurable (X i) μ) (hZ : AEMeasurable Z μ) :
     TendstoInDistribution X l Z μ :=
   tendstoInDistribution_of_tendstoInMeasure_sub X Z (tendstoInDistribution_const hZ)
-      (by simpa [tendstoInMeasure_iff_norm] using h) hX
+    (by simpa [tendstoInMeasure_iff_norm] using h) hX
+
+/-- Convergence in probability (`TendstoInMeasure`) implies convergence in distribution
+(`TendstoInDistribution`). -/
+lemma TendstoInMeasure.tendstoInDistribution [l.NeBot] [l.IsCountablyGenerated]
+    (h : TendstoInMeasure μ X l Z) (hX : ∀ i, AEMeasurable (X i) μ) :
+    TendstoInDistribution X l Z μ := h.tendstoInDistribution_of_aemeasurable hX (h.aemeasurable hX)
 
 /-- **Slutsky's theorem**: if `X n` converges in distribution to `Z`, and `Y n` converges in
 probability to a constant `c`, then the pair `(X n, Y n)` converges in distribution to `(Z, c)`. -/
