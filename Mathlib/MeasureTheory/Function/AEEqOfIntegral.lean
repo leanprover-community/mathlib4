@@ -120,7 +120,7 @@ variable {α E : Type*} {m m0 : MeasurableSpace α} {μ : Measure α}
 
 section AeEqOfForallSetIntegralEq
 
-section Real
+section Order
 
 variable [LinearOrder E] [IsOrderedAddMonoid E] [OrderTopology E]
   [IsOrderedModule ℝ E] [HasSolidNorm E] {f : α → E}
@@ -228,7 +228,7 @@ theorem ae_eq_zero_restrict_of_forall_setIntegral_eq_zero_real {f : α → ℝ}
   rw [integral_neg, neg_nonneg]
   exact (hf_zero s hs hμs).le
 
-end Real
+end Order
 
 theorem ae_eq_zero_restrict_of_forall_setIntegral_eq_zero {f : α → E}
     (hf_int_finite : ∀ s, MeasurableSet s → μ s < ∞ → IntegrableOn f s μ)
