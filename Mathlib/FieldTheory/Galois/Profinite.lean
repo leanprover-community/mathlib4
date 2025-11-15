@@ -16,7 +16,7 @@ In this file, we prove that given a field extension `K/k`, there is a continuous
 `Gal(K/k)` and the limit of `Gal(L/k)`, where `L` is a finite Galois intermediate field ordered by
 inverse inclusion, thus making `Gal(K/k)` profinite as a limit of finite groups.
 
-# Main definitions and results
+## Main definitions and results
 
 In a field extension `K/k`
 
