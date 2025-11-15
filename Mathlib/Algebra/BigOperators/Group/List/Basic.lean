@@ -32,13 +32,6 @@ section Monoid
 
 variable [Monoid M] [Monoid N] [Monoid P] {l l₁ l₂ : List M} {a : M}
 
-@[to_additive]
-theorem prod_eq_foldl : ∀ {l : List M}, l.prod = foldl (· * ·) 1 l
-  | [] => rfl
-  | cons a l => by
-    rw [prod_cons, prod_eq_foldl, ← foldl_assoc (α := M) (op := (· * ·))]
-    simp
-
 open scoped Relator in
 @[to_additive]
 theorem rel_prod {R : M → N → Prop} (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· * ·) (· * ·)) :
