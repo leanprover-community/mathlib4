@@ -667,8 +667,6 @@ instance instCoeHead {F R A B : Type*} [Add A] [Mul A] [SMul R A] [Star A] [Add 
     CoeHead F (A ≃⋆ₐ[R] B) :=
   ⟨toStarAlgEquiv⟩
 
-end StarAlgEquivClass
-
 namespace StarAlgEquiv
 
 section Basic
@@ -726,11 +724,9 @@ theorem coe_refl : ⇑(refl : A ≃⋆ₐ[R] A) = id :=
 
 /-- The inverse of a star algebra isomorphism is a star algebra isomorphism. -/
 @[symm]
-nonrec def symm (e : A ≃⋆ₐ[R] B) : B ≃⋆ₐ[R] A :=
-  { e.symm with
-    map_smul' := fun r b => by
-      simpa only [apply_inv_apply, inv_apply_apply] using
-        congr_arg (inv e) (map_smul e r (inv e b)).symm }
+nonrec def symm (e : A ≃⋆ₐ[R] B) : B ≃⋆ₐ[R] A where
+  toStarRingEquiv := e.toStarRingEquiv.symm
+  map_smul' := e.toAlgEquiv.symm.map_smul'
 
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply (e : A ≃⋆ₐ[R] B) : B → A :=
@@ -784,11 +780,9 @@ theorem to_ringEquiv_symm (f : A ≃⋆ₐ[R] B) : (f : A ≃+* B).symm = f.symm
 
 /-- Transitivity of `StarAlgEquiv`. -/
 @[trans]
-def trans (e₁ : A ≃⋆ₐ[R] B) (e₂ : B ≃⋆ₐ[R] C) : A ≃⋆ₐ[R] C :=
-  { e₁.toStarRingEquiv.trans e₂.toStarRingEquiv with
-    map_smul' := fun r a =>
-      show e₂.toFun (e₁.toFun (r • a)) = r • e₂.toFun (e₁.toFun a) by
-        rw [e₁.map_smul', e₂.map_smul'] }
+def trans (e₁ : A ≃⋆ₐ[R] B) (e₂ : B ≃⋆ₐ[R] C) : A ≃⋆ₐ[R] C where
+  __ := e₁.toStarRingEquiv.trans e₂.toStarRingEquiv
+  map_smul' := e₁.toAlgEquiv.trans e₂.toAlgEquiv |>.map_smul'
 
 @[simp]
 theorem apply_symm_apply (e : A ≃⋆ₐ[R] B) : ∀ x, e (e.symm x) = x :=
