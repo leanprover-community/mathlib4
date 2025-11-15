@@ -43,6 +43,14 @@ def toLinearEquiv (f : GeneralLinearGroup R M) : M ≃ₗ[R] M :=
 @[simp] lemma coe_toLinearEquiv (f : GeneralLinearGroup R M) :
     f.toLinearEquiv = (f : M → M) := rfl
 
+theorem toLinearEquiv_mul (f g : GeneralLinearGroup R M) :
+    (f * g).toLinearEquiv = f.toLinearEquiv * g.toLinearEquiv := by
+  rfl
+
+theorem toLinearEquiv_inv (f : GeneralLinearGroup R M) :
+    (f⁻¹).toLinearEquiv = (f.toLinearEquiv)⁻¹ := by
+  rfl
+
 /-- An equivalence from `M` to itself determines an invertible linear map. -/
 def ofLinearEquiv (f : M ≃ₗ[R] M) : GeneralLinearGroup R M where
   val := f
@@ -52,6 +60,14 @@ def ofLinearEquiv (f : M ≃ₗ[R] M) : GeneralLinearGroup R M where
 
 @[simp] lemma coe_ofLinearEquiv (f : M ≃ₗ[R] M) :
     ofLinearEquiv f = (f : M → M) := rfl
+
+theorem ofLinearEquiv_mul (f g : M ≃ₗ[R] M) :
+    ofLinearEquiv (f * g) = ofLinearEquiv f * ofLinearEquiv g := by
+  rfl
+
+theorem ofLinearEquiv_inv (f : M ≃ₗ[R] M) :
+    ofLinearEquiv (f⁻¹) = (ofLinearEquiv f)⁻¹ := by
+  rfl
 
 variable (R M) in
 /-- The general linear group on `R` and `M` is multiplicatively equivalent to the type of linear
