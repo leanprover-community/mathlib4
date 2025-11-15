@@ -129,20 +129,32 @@ theorem gcd_eq_gcd_ab : (gcd x y : ℤ) = x * gcdA x y + y * gcdB x y := by
 
 end
 
-theorem exists_mul_emod_eq_gcd {k n : ℕ} (hk : gcd n k < k) : ∃ m, n * m % k = gcd n k := by
-  have hk' := Int.ofNat_ne_zero.2 (ne_of_gt (lt_of_le_of_lt (zero_le (gcd n k)) hk))
-  have key := congr_arg (fun (m : ℤ) => (m % k).toNat) (gcd_eq_gcd_ab n k)
-  simp only at key
+theorem exists_mul_mod_eq_gcd {k n : ℕ} (hk : gcd n k < k) : ∃ m < k, n * m % k = gcd n k := by
+  have hk' := Int.ofNat_ne_zero.2 (Nat.zero_lt_of_lt hk).ne'
+  have key := congr(($(gcd_eq_gcd_ab n k) % k).toNat)
   rw [Int.add_mul_emod_self_left, ← Int.natCast_mod, Int.toNat_natCast, mod_eq_of_lt hk] at key
-  refine ⟨(n.gcdA k % k).toNat, Eq.trans (Int.ofNat.inj ?_) key.symm⟩
-  rw [Int.ofNat_eq_coe, Int.natCast_mod, Int.natCast_mul,
-    Int.toNat_of_nonneg (Int.emod_nonneg _ hk'), Int.ofNat_eq_coe,
+  refine ⟨(n.gcdA k % k).toNat, ?_, (Int.ofNat_inj.1 ?_).trans key.symm⟩
+  · rw [Int.toNat_lt (Int.emod_nonneg _ hk')]
+    exact Int.emod_lt _ hk'
+  rw [Int.natCast_mod, Int.natCast_mul, Int.toNat_of_nonneg (Int.emod_nonneg _ hk'),
     Int.toNat_of_nonneg (Int.emod_nonneg _ hk'), Int.mul_emod, Int.emod_emod, ← Int.mul_emod]
 
-theorem exists_mul_emod_eq_one_of_coprime {k n : ℕ} (hkn : Coprime n k) (hk : 1 < k) :
-    ∃ m, n * m % k = 1 :=
-  Exists.recOn (exists_mul_emod_eq_gcd (lt_of_le_of_lt (le_of_eq hkn) hk)) fun m hm ↦
-    ⟨m, hm.trans hkn⟩
+@[deprecated (since := "2025-11-01")] alias exists_mul_emod_eq_gcd := exists_mul_mod_eq_gcd
+
+theorem exists_mul_mod_eq_one_of_coprime {k n : ℕ} (hkn : Coprime n k) (hk : 1 < k) :
+    ∃ m < k, n * m % k = 1 := by
+  simpa [hkn, hk] using exists_mul_mod_eq_gcd (k := k) (n := n)
+
+@[deprecated (since := "2025-11-01")] alias exists_mul_emod_eq_one_of_coprime :=
+  exists_mul_mod_eq_one_of_coprime
+
+theorem exists_mul_mod_eq_of_coprime {k n : ℕ} (r : ℕ) (hkn : Coprime n k) (hk : k ≠ 0) :
+    ∃ m < k, n * m % k = r % k := by
+  obtain rfl | hk : k = 1 ∨ 1 < k := by omega
+  next => simp [mod_one]
+  obtain ⟨m, -, hm⟩ := exists_mul_mod_eq_one_of_coprime hkn hk
+  use (m * r) % k, mod_lt _ (by omega)
+  rw [mul_mod, mod_mod, ← mul_mod, ← mul_assoc, mul_mod, hm, one_mul, mod_mod]
 
 end Nat
 
