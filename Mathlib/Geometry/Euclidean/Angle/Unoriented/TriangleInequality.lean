@@ -19,9 +19,7 @@ open NormedSpace
 
 open scoped RealInnerProductSpace
 
-variable {V : Type*}
-variable [NormedAddCommGroup V]
-variable [InnerProductSpace ℝ V]
+variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 
 section UnitVectorAngles
 
