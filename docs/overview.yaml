@@ -459,10 +459,10 @@ Geometry:
     Nullstellensatz : 'MvPolynomial.vanishingIdeal_zeroLocus_eq_radical'
 
   Convex geometry:
-    convex cone: 'ConvexCone.ConvexCone'
+    convex cone: 'ConvexCone'
     salient cone: 'ConvexCone.Salient'
     positive cone: 'ConvexCone.positive'
-    pointed cone: 'PointedCone.PointedCone'
+    pointed cone: 'PointedCone'
     dual cone: 'PointedCone.dual'
     minimal tensor product: 'PointedCone.minTensorProduct'
     maximal tensor product: 'PointedCone.maxTensorProduct'
