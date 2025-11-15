@@ -62,19 +62,28 @@ lemma SpecMap_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
   rw [HasAffineProperty.iff_of_isAffine (P := @IsFinite), and_iff_right (by infer_instance),
     RingHom.finite_respectsIso.arrow_mk_iso_iff (arrowIsoΓSpecOfIsAffine f)]
 
-variable {X Y : Scheme.{u}} (f : X ⟶ Y)
+variable {X Y Z : Scheme.{u}} (f : X ⟶ Y)
 
 instance (priority := 900) [IsIso f] : IsFinite f := of_isIso @IsFinite f
 
 instance {Z : Scheme.{u}} (g : Y ⟶ Z) [IsFinite f] [IsFinite g] : IsFinite (f ≫ g) :=
   IsStableUnderComposition.comp_mem f g ‹IsFinite f› ‹IsFinite g›
 
+instance (f : X ⟶ Z) (g : Y ⟶ Z) [IsFinite g] : IsFinite (Limits.pullback.fst f g) :=
+  MorphismProperty.pullback_fst _ _ inferInstance
+
+instance (f : X ⟶ Z) (g : Y ⟶ Z) [IsFinite f] : IsFinite (Limits.pullback.snd f g) :=
+  MorphismProperty.pullback_snd _ _ inferInstance
+
+instance (f : X ⟶ Y) (V : Y.Opens) [IsFinite f] : IsFinite (f ∣_ V) :=
+  IsZariskiLocalAtTarget.restrict ‹_› V
+
 lemma iff_isIntegralHom_and_locallyOfFiniteType :
     IsFinite f ↔ IsIntegralHom f ∧ LocallyOfFiniteType f := by
   wlog hY : IsAffine Y
-  · rw [IsLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
-      IsLocalAtTarget.iff_of_openCover (P := @IsIntegralHom) Y.affineCover,
-      IsLocalAtTarget.iff_of_openCover (P := @LocallyOfFiniteType) Y.affineCover]
+  · rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
+      IsZariskiLocalAtTarget.iff_of_openCover (P := @IsIntegralHom) Y.affineCover,
+      IsZariskiLocalAtTarget.iff_of_openCover (P := @LocallyOfFiniteType) Y.affineCover]
     simp_rw [this, forall_and]
   rw [HasAffineProperty.iff_of_isAffine (P := @IsFinite),
     HasAffineProperty.iff_of_isAffine (P := @IsIntegralHom),
@@ -89,16 +98,16 @@ lemma eq_inf :
 instance (priority := 900) [IsFinite f] : IsIntegralHom f :=
   ((IsFinite.iff_isIntegralHom_and_locallyOfFiniteType f).mp ‹_›).1
 
-instance (priority := 900) [hf : IsFinite f] : LocallyOfFiniteType f :=
+instance (priority := 900) [IsFinite f] : LocallyOfFiniteType f :=
   ((IsFinite.iff_isIntegralHom_and_locallyOfFiniteType f).mp ‹_›).2
 
 lemma _root_.AlgebraicGeometry.IsClosedImmersion.iff_isFinite_and_mono :
     IsClosedImmersion f ↔ IsFinite f ∧ Mono f := by
   wlog hY : IsAffine Y
   · change _ ↔ _ ∧ monomorphisms _ f
-    rw [IsLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
-      IsLocalAtTarget.iff_of_openCover (P := @IsClosedImmersion) Y.affineCover,
-      IsLocalAtTarget.iff_of_openCover (P := monomorphisms _) Y.affineCover]
+    rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
+      IsZariskiLocalAtTarget.iff_of_openCover (P := @IsClosedImmersion) Y.affineCover,
+      IsZariskiLocalAtTarget.iff_of_openCover (P := monomorphisms _) Y.affineCover]
     simp_rw [this, forall_and, monomorphisms]
   rw [HasAffineProperty.iff_of_isAffine (P := @IsClosedImmersion),
     HasAffineProperty.iff_of_isAffine (P := @IsFinite),
@@ -113,8 +122,19 @@ lemma _root_.AlgebraicGeometry.IsClosedImmersion.eq_isFinite_inf_mono :
     @IsClosedImmersion = (@IsFinite ⊓ monomorphisms Scheme : MorphismProperty _) := by
   ext; exact IsClosedImmersion.iff_isFinite_and_mono _
 
-instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : IsFinite f :=
+instance (priority := 900) (f : X ⟶ Y) [IsClosedImmersion f] : IsFinite f :=
   ((IsClosedImmersion.iff_isFinite_and_mono f).mp ‹_›).1
+
+instance : MorphismProperty.HasOfPostcompProperty @IsFinite @IsSeparated :=
+  MorphismProperty.hasOfPostcompProperty_iff_le_diagonal.mpr
+    fun _ _ _ _ ↦ inferInstanceAs (IsFinite _)
+
+lemma of_comp (f : X ⟶ Y) (g : Y ⟶ Z) [IsFinite (f ≫ g)] [IsSeparated g] :
+    IsFinite f := MorphismProperty.of_postcomp _ _ g ‹_› ‹_›
+
+lemma comp_iff {f : X ⟶ Y} {g : Y ⟶ Z} [IsFinite g] :
+    IsFinite (f ≫ g) ↔ IsFinite f :=
+  ⟨fun _ ↦ .of_comp f g, fun _ ↦ inferInstance⟩
 
 end IsFinite
 
@@ -125,10 +145,10 @@ lemma isFinite_iff_locallyOfFiniteType_of_jacobsonSpace
     {X Y : Scheme.{u}} {f : X ⟶ Y} [Subsingleton X] [IsReduced X] [JacobsonSpace Y] :
     IsFinite f ↔ LocallyOfFiniteType f := by
   wlog hY : ∃ S, Y = Spec S generalizing X Y
-  · rw [IsLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
-      IsLocalAtTarget.iff_of_openCover (P := @LocallyOfFiniteType) Y.affineCover]
-    have inst (i) := ((Y.affineCover.pullbackCover f).f i).isOpenEmbedding.injective.subsingleton
-    have inst (i) := isReduced_of_isOpenImmersion ((Y.affineCover.pullbackCover f).f i)
+  · rw [IsZariskiLocalAtTarget.iff_of_openCover (P := @IsFinite) Y.affineCover,
+      IsZariskiLocalAtTarget.iff_of_openCover (P := @LocallyOfFiniteType) Y.affineCover]
+    have inst (i) := ((Y.affineCover.pullback₁ f).f i).isOpenEmbedding.injective.subsingleton
+    have inst (i) := isReduced_of_isOpenImmersion ((Y.affineCover.pullback₁ f).f i)
     have inst (i) := JacobsonSpace.of_isOpenEmbedding (Y.affineCover.f i).isOpenEmbedding
     exact forall_congr' fun i ↦ this ⟨_, rfl⟩
   obtain ⟨S, rfl⟩ := hY
@@ -154,7 +174,7 @@ lemma isFinite_iff_locallyOfFiniteType_of_jacobsonSpace
 @[stacks 01TB "(1) => (3)"]
 lemma Scheme.Hom.closePoints_subset_preimage_closedPoints
     {X Y : Scheme.{u}} (f : X ⟶ Y) [JacobsonSpace Y] [LocallyOfFiniteType f] :
-    closedPoints X ⊆ f.base ⁻¹' closedPoints Y := by
+    closedPoints X ⊆ f ⁻¹' closedPoints Y := by
   intro x hx
   have := isClosed_singleton_iff_isClosedImmersion.mp hx
   have := (isFinite_iff_locallyOfFiniteType_of_jacobsonSpace
@@ -164,7 +184,7 @@ lemma Scheme.Hom.closePoints_subset_preimage_closedPoints
 
 @[stacks 01TB "(1) => (2)"]
 lemma isClosed_singleton_iff_locallyOfFiniteType {X : Scheme.{u}} [JacobsonSpace X] {x : X} :
-    IsClosed ({x} : Set X) ↔ LocallyOfFiniteType (X.fromSpecResidueField x) := by
+    IsClosed {x} ↔ LocallyOfFiniteType (X.fromSpecResidueField x) := by
   constructor
   · exact fun H ↦ have := isClosed_singleton_iff_isClosedImmersion.mp H; inferInstance
   · intro H

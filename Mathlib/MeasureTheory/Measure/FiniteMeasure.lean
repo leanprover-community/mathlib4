@@ -3,6 +3,7 @@ Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
+import Mathlib.Analysis.RCLike.Lemmas
 import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 import Mathlib.MeasureTheory.Measure.Prod
@@ -732,12 +733,7 @@ variable {Ω Ω' : Type*} [MeasurableSpace Ω] [MeasurableSpace Ω']
 
 /-- The push-forward of a finite measure by a function between measurable spaces. -/
 noncomputable def map (ν : FiniteMeasure Ω) (f : Ω → Ω') : FiniteMeasure Ω' :=
-  ⟨(ν : Measure Ω).map f, by
-    constructor
-    by_cases f_aemble : AEMeasurable f ν
-    · rw [Measure.map_apply_of_aemeasurable f_aemble MeasurableSet.univ]
-      exact measure_lt_top (↑ν) (f ⁻¹' univ)
-    · simp [f_aemble]⟩
+  ⟨(ν : Measure Ω).map f, (ν : Measure Ω).isFiniteMeasure_map f⟩
 
 @[simp] lemma toMeasure_map (ν : FiniteMeasure Ω) (f : Ω → Ω') :
     (ν.map f).toMeasure = ν.toMeasure.map f := rfl

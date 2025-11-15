@@ -282,11 +282,11 @@ theorem isEmpty_algebraRat_iff_mixedCharZero [CharZero R] :
     IsEmpty (Algebra ℚ R) ↔ ∃ p > 0, MixedCharZero R p := by
   rw [← not_iff_not]
   push_neg
-  rw [not_isEmpty_iff, ← EqualCharZero.iff_not_mixedCharZero]
+  rw [← EqualCharZero.iff_not_mixedCharZero]
   apply EqualCharZero.nonempty_algebraRat_iff
 
 /-!
-# Splitting statements into different characteristic
+### Splitting statements into different characteristic
 
 Statements to split a proof by characteristic. There are 3 theorems here that are very
 similar. They only differ in the assumptions we can make on the positive characteristic
