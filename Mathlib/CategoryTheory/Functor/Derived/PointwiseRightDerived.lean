@@ -161,6 +161,23 @@ lemma hasPointwiseRightDerivedFunctor_of_inverts
   exact (isPointwiseLeftKanExtensionOfIsoOfIsLocalization W
     (Localization.fac F hF W.Q).symm).hasPointwiseLeftKanExtension  _
 
+lemma isRightDerivedFunctor_of_inverts
+    [L.IsLocalization W] (F' : D ⥤ H) (e : L ⋙ F' ≅ F) :
+    F'.IsRightDerivedFunctor e.inv W where
+  isLeftKanExtension :=
+    (isPointwiseLeftKanExtensionOfIsoOfIsLocalization W e.symm).isLeftKanExtension
+
+variable {W} in
+lemma isIso_of_isRightDerivedFunctor_of_inverts [L.IsLocalization W]
+    {F : C ⥤ H} (RF : D ⥤ H) (α : F ⟶ L ⋙ RF)
+    (hF : W.IsInvertedBy F) [RF.IsRightDerivedFunctor α W] :
+    IsIso α := by
+  let e := Localization.fac F hF L
+  have := isRightDerivedFunctor_of_inverts W _ e
+  have : α = e.inv ≫ whiskerLeft _ (rightDerivedUnique _ _ e.inv α W).hom := by simp
+  rw [this]
+  infer_instance
+
 end
 
 end Functor
