@@ -18,7 +18,7 @@ This file provides the tactics `tfae_have` and `tfae_finish` for proving goals o
 
 namespace Mathlib.Tactic.TFAE
 
-/-! # Parsing and syntax
+/-! ### Parsing and syntax
 
 We implement `tfae_have` in terms of a syntactic `have`. To support as much of the same syntax as
 possible, we recreate the parsers for `have`, except with the changes necessary for `tfae_have`.
@@ -139,7 +139,7 @@ example : TFAE [P, Q, R] := by
 syntax (name := tfaeFinish) "tfae_finish" : tactic
 
 
-/-! # Setup -/
+/-! ### Setup -/
 
 open List Lean Meta Expr Elab Tactic Mathlib.Tactic Qq
 
@@ -159,7 +159,7 @@ where
     | ~q($a :: $l') => return (a :: (← getExplicitList l'))
     | e => throwError "{e} must be an explicit list of propositions"
 
-/-! # Proof construction -/
+/-! ### Proof construction -/
 
 variable (hyps : Array (ℕ × ℕ × Expr)) (atoms : Array Q(Prop))
 
@@ -219,7 +219,7 @@ def proveTFAE (is : List ℕ) (l : Q(List Prop)) : MetaM Q(TFAE $l) := do
     let il ← proveGetLastDImpl hyps atoms i i' is' P P' l'
     return q(tfae_of_cycle $c $il)
 
-/-! # `tfae_have` components -/
+/-! ### `tfae_have` components -/
 
 /-- Construct a name for a hypothesis introduced by `tfae_have`. -/
 def mkTFAEId : TSyntax ``tfaeType → MacroM Name
@@ -240,7 +240,7 @@ def elabIndex (i : TSyntax `num) (maxIndex : ℕ) : MetaM ℕ := do
     throwErrorAt i "{i} must be between 1 and {maxIndex}"
   return i'
 
-/-! # Tactic implementation -/
+/-! ### Tactic implementation -/
 
 /-- Accesses the propositions at indices `i` and `j` of `tfaeList`, and constructs the expression
 `Pi <arr> Pj`, which will be the type of our `tfae_have` hypothesis -/
@@ -317,7 +317,7 @@ end Mathlib.Tactic.TFAE
 
 /-!
 
-# Deprecated "Goal-style" `tfae_have`
+### Deprecated "Goal-style" `tfae_have`
 
 This syntax and its implementation, which behaves like "Mathlib `have`" is deprecated; we preserve
 it here to provide graceful deprecation behavior.
