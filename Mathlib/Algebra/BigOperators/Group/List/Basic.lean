@@ -124,13 +124,13 @@ theorem length_pos_of_prod_lt_one [Preorder M] (L : List M) (h : L.prod < 1) : 0
   length_pos_of_prod_ne_one L h.ne
 
 @[to_additive]
-theorem prod_set (L : List M) (n : ℕ) (a : M) :
-    (L.set n a).prod =
-      ((L.take n).prod * if n < L.length then a else 1) * (L.drop (n + 1)).prod := by
-  rcases Nat.lt_or_ge n L.length with hn | hn
-  · simp [set_eq_take_cons_drop, hn, mul_assoc]
-  · simp [set_eq_take_append_cons_drop, drop_of_length_le, take_of_length_le, hn,
-      Nat.not_lt_of_le hn, Nat.le_trans hn]
+theorem prod_set :
+    ∀ (L : List M) (n : ℕ) (a : M),
+      (L.set n a).prod =
+        ((L.take n).prod * if n < L.length then a else 1) * (L.drop (n + 1)).prod
+  | x :: xs, 0, a => by simp [set]
+  | x :: xs, i + 1, a => by simp [set, prod_set xs i a, mul_assoc]
+  | [], _, _ => by simp [set]
 
 /-- We'd like to state this as `L.headI * L.tail.prod = L.prod`, but because `L.headI` relies on an
 inhabited instance to return a garbage value on the empty list, this is not possible.
