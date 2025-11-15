@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Tower
+import Mathlib.Algebra.Star.LinearMap
 import Mathlib.Algebra.Star.Pi
 import Mathlib.Data.Finite.Sum
 import Mathlib.Data.Matrix.Block
