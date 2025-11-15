@@ -7,7 +7,6 @@ import Mathlib.Algebra.Category.Grp.Zero
 import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 import Mathlib.CategoryTheory.Abelian.Projective.Dimension
-import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.LocalRing.Module
 import Mathlib.RingTheory.Regular.Category
 import Mathlib.RingTheory.Regular.RegularSequence
@@ -66,7 +65,7 @@ lemma mem_quotSMulTop_annihilator (x : R) (M : Type*) [AddCommGroup M] [Module R
   simpa [← hm', ← Submodule.Quotient.mk_smul] using Submodule.smul_mem_pointwise_smul m' x ⊤ trivial
 
 variable {R} in
-lemma quotSMulTop_nontrivial [IsLocalRing R] {x : R} (mem : x ∈ maximalIdeal R)
+lemma quotSMulTop_nontrivial' [IsLocalRing R] {x : R} (mem : x ∈ maximalIdeal R)
     (L : Type*) [AddCommGroup L] [Module R L] [Module.Finite R L] [Nontrivial L] :
     Nontrivial (QuotSMulTop x L) := by
   apply Submodule.Quotient.nontrivial_of_lt_top _ (Ne.lt_top' _)
@@ -82,7 +81,7 @@ variable [UnivLE.{v, w}]
 instance hasExt_of_small' [Small.{v} R] : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
   CategoryTheory.hasExt_of_enoughProjectives.{w} (ModuleCat.{v} R)
 
-instance [Small.{v} R] [IsNoetherianRing R] (N M : ModuleCat.{v} R)
+instance ext_finite [Small.{v} R] [IsNoetherianRing R] (N M : ModuleCat.{v} R)
     [Module.Finite R N] [Module.Finite R M] (i : ℕ) : Module.Finite R (Ext.{w} N M i) := by
   induction i generalizing N
   · exact Module.Finite.equiv ((Ext.linearEquiv₀ (R := R)).trans ModuleCat.homLinearEquiv).symm
