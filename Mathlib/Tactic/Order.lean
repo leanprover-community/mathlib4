@@ -222,7 +222,7 @@ def updateGraphWithNltInfSup (g : Graph)
 local instance : Ord (Nat × Expr) where
   compare x y := compare x.1 y.1
 
-/-- Core of the `order` tactic. -/
+/-- Implementation of `orderCore` in `AtomM`. -/
 def orderCoreImp (only? : Bool) (hyps : Array Expr) (negGoal : Expr) (g : MVarId) : AtomM Unit := do
   g.withContext do
     let TypeToFacts ← collectFacts only? hyps negGoal
@@ -272,6 +272,7 @@ def orderCoreImp (only? : Bool) (hyps : Array Expr) (negGoal : Expr) (g : MVarId
       "Additional diagnostic information may be available using " ++
       "the `set_option trace.order true` command.")
 
+/-- Core of the `order` tactic. -/
 def orderCore (only? : Bool) (hyps : Array Expr) (negGoal : Expr) (g : MVarId) : MetaM Unit :=
   (orderCoreImp only? hyps negGoal g).run .reducible
 
