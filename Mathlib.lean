@@ -367,6 +367,7 @@ import Mathlib.Algebra.Group.Hom.CompTypeclasses
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Algebra.Group.Hom.Instances
+import Mathlib.Algebra.Group.Ideal
 import Mathlib.Algebra.Group.Idempotent
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Group.InjSurj
@@ -4925,6 +4926,7 @@ import Mathlib.ModelTheory.Algebra.Ring.Basic
 import Mathlib.ModelTheory.Algebra.Ring.Definability
 import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 import Mathlib.ModelTheory.Arithmetic.Presburger.Basic
+import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Basic
 import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Defs
 import Mathlib.ModelTheory.Basic
 import Mathlib.ModelTheory.Bundled
