@@ -254,4 +254,4 @@ macro_rules
 We register `bound` with the `hint` tactic.
 -/
 
-register_hint bound
+register_hint 70 bound

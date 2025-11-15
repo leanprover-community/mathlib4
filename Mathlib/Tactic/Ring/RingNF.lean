@@ -243,4 +243,4 @@ end Mathlib.Tactic
 We register `ring` with the `hint` tactic.
 -/
 
-register_hint ring
+register_hint 1000 ring

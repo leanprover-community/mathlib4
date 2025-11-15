@@ -76,4 +76,4 @@ end Mathlib.Tactic.NoncommRing
 We register `noncomm_ring` with the `hint` tactic.
 -/
 
-register_hint noncomm_ring
+register_hint 1000 noncomm_ring
