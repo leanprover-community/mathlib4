@@ -303,6 +303,14 @@ protected theorem IsSwap.isCycle : IsSwap f → IsCycle f := by
   rintro ⟨x, y, hxy, rfl⟩
   exact isCycle_swap hxy
 
+theorem swap_isSwap_iff {a b : α} :
+    (swap a b).IsSwap ↔ a ≠ b := by
+  constructor
+  · intro h hab
+    apply h.isCycle.ne_one
+    aesop
+  · intro h; use a, b
+
 variable [Fintype α]
 
 theorem IsCycle.two_le_card_support (h : IsCycle f) : 2 ≤ #f.support :=
@@ -803,7 +811,7 @@ theorem IsCycleOn.exists_pow_eq {s : Finset α} (hf : f.IsCycleOn s) (ha : a ∈
 
 theorem IsCycleOn.exists_pow_eq' (hs : s.Finite) (hf : f.IsCycleOn s) (ha : a ∈ s) (hb : b ∈ s) :
     ∃ n : ℕ, (f ^ n) a = b := by
-  lift s to Finset α using id hs
+  lift s to Finset α using hs
   obtain ⟨n, -, hn⟩ := hf.exists_pow_eq ha hb
   exact ⟨n, hn⟩
 
@@ -890,7 +898,7 @@ theorem Countable.exists_cycleOn (hs : s.Countable) :
     refine ⟨(Equiv.addRight 1).extendDomain f, ?_, fun x hx =>
       of_not_not fun h => hx <| Perm.extendDomain_apply_not_subtype _ _ h⟩
     convert Int.addRight_one_isCycle.isCycleOn.extendDomain f
-    rw [Set.image_comp, Equiv.image_eq_preimage]
+    rw [Set.image_comp, Equiv.image_eq_preimage_symm]
     ext
     simp
 

@@ -15,4 +15,4 @@ The core implementation of the `gcongr` ("generalized congruence") tactic is in 
 We register `gcongr` with the `hint` tactic.
 -/
 
-register_hint gcongr
+register_hint 1000 gcongr

@@ -362,13 +362,15 @@ theorem IndepSets.iUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : M
   obtain ⟨n, ht1⟩ := ht1
   exact hyp n t1 t2 ht1 ht2
 
-theorem IndepSets.bUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
+theorem IndepSets.biUnion {s : ι → Set (Set Ω)} {s' : Set (Set Ω)} {_mΩ : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α} {u : Set ι} (hyp : ∀ n ∈ u, IndepSets (s n) s' κ μ) :
     IndepSets (⋃ n ∈ u, s n) s' κ μ := by
   intro t1 t2 ht1 ht2
   simp_rw [Set.mem_iUnion] at ht1
   rcases ht1 with ⟨n, hpn, ht1⟩
   exact hyp n hpn t1 t2 ht1 ht2
+
+@[deprecated (since := "2025-11-02")] alias IndepSets.bUnion := IndepSets.biUnion
 
 theorem IndepSets.inter {s₁ s' : Set (Set Ω)} (s₂ : Set (Set Ω)) {_mΩ : MeasurableSpace Ω}
     {κ : Kernel α Ω} {μ : Measure α} (h₁ : IndepSets s₁ s' κ μ) :
@@ -426,16 +428,10 @@ theorem iIndepSets.indepSets {s : ι → Set (Set Ω)} {_mΩ : MeasurableSpace �
     rcases Finset.mem_insert.mp hx with hx | hx
     · simp [hx, ht₁]
     · simp [Finset.mem_singleton.mp hx, hij.symm, ht₂]
-  have h1 : t₁ = ite (i = i) t₁ t₂ := by simp only [if_true]
-  have h2 : t₂ = ite (j = i) t₁ t₂ := by simp only [hij.symm, if_false]
   have h_inter : ⋂ (t : ι) (_ : t ∈ ({i, j} : Finset ι)), ite (t = i) t₁ t₂ =
       ite (i = i) t₁ t₂ ∩ ite (j = i) t₁ t₂ := by
     simp only [Finset.set_biInter_singleton, Finset.set_biInter_insert]
   filter_upwards [h_indep {i, j} hf_m] with a h_indep'
-  have h_prod : (∏ t ∈ ({i, j} : Finset ι), κ a (ite (t = i) t₁ t₂))
-      = κ a (ite (i = i) t₁ t₂) * κ a (ite (j = i) t₁ t₂) := by
-    simp only [hij, Finset.prod_singleton, Finset.prod_insert, not_false_iff,
-      Finset.mem_singleton]
   grind
 
 theorem iIndep.indep {m : ι → MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω}
@@ -971,8 +967,6 @@ theorem IndepFun.congr' {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
   have h2 : g ⁻¹' B =ᵐ[κ a] g' ⁻¹' B := hg'.fun_comp B
   rwa [← measure_congr h1, ← measure_congr h2, ← measure_congr (h1.inter h2)]
 
-@[deprecated (since := "2025-03-18")] alias IndepFun.ae_eq := IndepFun.congr'
-
 theorem IndepFun.comp {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     {mγ : MeasurableSpace γ} {mγ' : MeasurableSpace γ'} {φ : β → γ} {ψ : β' → γ'}
     (hfg : IndepFun f g κ μ) (hφ : Measurable φ) (hψ : Measurable ψ) :
@@ -1200,9 +1194,6 @@ theorem iIndepFun.indepFun_prodMk (hf_Indep : iIndepFun f κ μ)
   simp only [s, Finset.mem_insert, Finset.mem_singleton, not_or]
   exact ⟨hik.symm, hjk.symm⟩
 
-@[deprecated (since := "2025-03-05")]
-alias ProbabilityTheory.Kernel.iIndepFun.indepFun_prod_mk := iIndepFun.indepFun_prodMk
-
 theorem iIndepFun.indepFun_prodMk₀ (hf_Indep : iIndepFun f κ μ)
     (hf_meas : ∀ i, AEMeasurable (f i) (κ ∘ₘ μ)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
     IndepFun (fun a ↦ (f i a, f j a)) (f k) κ μ := by
@@ -1227,10 +1218,6 @@ lemma iIndepFun.indepFun_prodMk_prodMk (hf_indep : iIndepFun f κ μ)
     ⟨v ⟨i, mem_insert_self _ _⟩, v ⟨j, mem_insert_of_mem <| mem_singleton_self _⟩⟩
   have hg (i j : ι) : Measurable (g i j) := by fun_prop
   exact (hf_indep.indepFun_finset {i, j} {k, l} (by aesop) hf_meas).comp (hg i j) (hg k l)
-
-@[deprecated (since := "2025-03-05")]
-alias ProbabilityTheory.Kernel.iIndepFun.indepFun_prod_mk_prod_mk :=
-  iIndepFun.indepFun_prodMk_prodMk
 
 theorem iIndepFun.indepFun_prodMk_prodMk₀ (hf_indep : iIndepFun f κ μ)
     (hf_meas : ∀ i, AEMeasurable (f i) (κ ∘ₘ μ))

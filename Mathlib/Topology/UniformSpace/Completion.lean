@@ -498,6 +498,16 @@ theorem map_comp {g : β → γ} {f : α → β} (hg : UniformContinuous g) (hf 
     Completion.map g ∘ Completion.map f = Completion.map (g ∘ f) :=
   extension_map ((uniformContinuous_coe _).comp hg) hf
 
+/-- The uniform isomorphism between two completions of isomorphic uniform spaces. -/
+def mapEquiv (e : α ≃ᵤ β) : Completion α ≃ᵤ Completion β := cPkg.mapEquiv cPkg e
+
+@[simp]
+theorem mapEquiv_symm (e : α ≃ᵤ β) : (mapEquiv e).symm = mapEquiv e.symm :=
+  cPkg.mapEquiv_symm cPkg e
+
+@[simp]
+theorem mapEquiv_coe (e : α ≃ᵤ β) (a : α) : mapEquiv e a = (e a) := cPkg.mapEquiv_coe cPkg e a
+
 end Map
 
 /- In this section we construct isomorphisms between the completion of a uniform space and the
