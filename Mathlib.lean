@@ -1084,6 +1084,7 @@ import Mathlib.Algebra.Polynomial.UnitTrinomial
 import Mathlib.Algebra.PresentedMonoid.Basic
 import Mathlib.Algebra.Prime.Defs
 import Mathlib.Algebra.Prime.Lemmas
+import Mathlib.Algebra.QuadraticAlgebra
 import Mathlib.Algebra.QuadraticAlgebra.Basic
 import Mathlib.Algebra.QuadraticAlgebra.Defs
 import Mathlib.Algebra.QuadraticDiscriminant
@@ -4443,6 +4444,7 @@ import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
 import Mathlib.LinearAlgebra.Matrix.Gershgorin
 import Mathlib.LinearAlgebra.Matrix.Hadamard
 import Mathlib.LinearAlgebra.Matrix.Hermitian
+import Mathlib.LinearAlgebra.Matrix.HermitianFunctionalCalculus
 import Mathlib.LinearAlgebra.Matrix.Ideal
 import Mathlib.LinearAlgebra.Matrix.Integer
 import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
