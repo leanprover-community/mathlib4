@@ -7,7 +7,9 @@ import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.RingTheory.Derivation.Basic
 
 /-!
-# Results
+# Lie Algebra Structure on Derivations
+
+## Main statements
 
 - `Derivation.instLieAlgebra`: The `R`-derivations from `A` to `A` form a Lie algebra over `R`.
 
@@ -22,7 +24,7 @@ variable {D1 D2 : Derivation R A A} (a : A)
 
 section LieStructures
 
-/-! # Lie structures -/
+/-! ### Lie structures -/
 
 
 /-- The commutator of derivations is again a derivation. -/

@@ -15,7 +15,8 @@ Under the hood, `T` is defined as the `integralClosure` of `S` inside the
 `IntermediateField.normalClosure` of the extension `Frac S / Frac R` inside the `AlgebraicClosure`
 of `Frac S`. In particular, if `S` is a Dedekind domain, then `T` is also a Dedekind domain.
 
-# Technical notes
+## Technical notes
+
 * Many instances are proved about the `IntermediateField.normalClosure` of the extension
 `Frac S / Frac R` inside the `AlgebraicClosure` of `Frac S`. However these are only needed for the
 construction of `T` and to prove some results about it. Therefore, these instances are local.

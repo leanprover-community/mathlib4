@@ -11,7 +11,7 @@ import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
 
 In this file, we define the height of a prime ideal and the height of an ideal.
 
-# Main definitions
+## Main definitions
 
 * `Ideal.primeHeight` : The height of a prime ideal $\mathfrak{p}$. We define it as the supremum of
   the lengths of strictly decreasing chains of prime ideals below it. This definition is implemented
