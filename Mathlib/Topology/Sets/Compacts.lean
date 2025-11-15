@@ -416,7 +416,7 @@ theorem map_injective {f : α → β} (hf : Continuous f) (hf' : Function.Inject
 @[simp]
 theorem map_injective_iff {f : α → β} (hf : Continuous f) :
     Function.Injective (NonemptyCompacts.map f hf) ↔ Function.Injective f :=
-  ⟨fun h => .of_comp (f := ({·} : β → NonemptyCompacts β)) fun _ _ _ ↦ 
+  ⟨fun h => .of_comp (f := ({·} : β → NonemptyCompacts β)) fun _ _ _ ↦
     singleton_injective (h (by simp_all)), map_injective hf⟩
 
 instance toCompactSpace {s : NonemptyCompacts α} : CompactSpace s :=
