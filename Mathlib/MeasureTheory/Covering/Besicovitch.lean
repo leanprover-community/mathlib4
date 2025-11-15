@@ -846,7 +846,7 @@ theorem exists_disjoint_closedBall_covering_ae (μ : Measure α) [SFinite μ] (f
     refine fun x hx y hy heq ↦ v_disj.eq hx hy <| not_disjoint_iff.2 ⟨x.1, ?_⟩
     simp [*]
   have hinj : InjOn (fun x ↦ (x, r x)) t := LeftInvOn.injOn (f₁' := Prod.fst) fun _ _ ↦ rfl
-  simp only [graphOn, forall_mem_image, biUnion_image, hinj.pairwiseDisjoint_image] at *
+  simp only [graphOn_eq_image, forall_mem_image, biUnion_image, hinj.pairwiseDisjoint_image] at *
   exact ⟨t, r, countable_of_injective_of_countable_image hinj v_count, vs, vg, μv, v_disj⟩
 
 /-- In a space with the Besicovitch property, any set `s` can be covered with balls whose measures
