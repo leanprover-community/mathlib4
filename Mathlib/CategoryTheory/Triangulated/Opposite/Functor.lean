@@ -169,13 +169,8 @@ with the equivalences `Pretriangulated.triangleOpEquivalence` on `C` and `D`.
 noncomputable def mapTriangleOpCompTriangleOpEquivalenceFunctorApp (T : Triangle C) :
     (triangleOpEquivalence D).functor.obj (op (F.mapTriangle.obj T)) ≅
       F.op.mapTriangle.obj ((triangleOpEquivalence C).functor.obj (op T)) :=
-  Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
-    (by simp) (by simp) (by
-      dsimp
-      simp only [map_comp, shift_map_op, map_id, comp_id, op_comp, op_unop,
-        map_opShiftFunctorEquivalence_counitIso_inv_app_unop,
-        opShiftFunctorEquivalence_inverse, opShiftFunctorEquivalence_functor,
-        Quiver.Hom.op_unop, assoc, id_comp])
+  Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) (by simp)
+      (by simp [shift_map_op, map_opShiftFunctorEquivalence_counitIso_inv_app_unop])
 
 /--
 If `F : C ⥤ D` commutes with shifts, this expresses the compatibility of `F.mapTriangle`
@@ -186,7 +181,7 @@ noncomputable def mapTriangleOpCompTriangleOpEquivalenceFunctor :
       (triangleOpEquivalence C).functor ⋙ F.op.mapTriangle :=
   NatIso.ofComponents
     (fun T ↦ F.mapTriangleOpCompTriangleOpEquivalenceFunctorApp T.unop)
-    (by intros; ext <;> dsimp <;> simp only [comp_id, id_comp])
+    (by intros; ext <;> dsimp <;> simp only [id_comp, comp_id])
 
 /--
 If `F : C ⥤ D` commutes with shifts, this is the 2-commutative square of categories

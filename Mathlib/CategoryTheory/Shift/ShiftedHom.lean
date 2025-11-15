@@ -165,7 +165,7 @@ lemma map_mk₀ (m₀ : M) (hm₀ : m₀ = 0) (f : X ⟶ Y) (F : C ⥤ D) [F.Com
 
 @[simp]
 lemma id_map {a : M} (f : ShiftedHom X Y a) : f.map (𝟭 C) = f := by
-  simp [map, Functor.commShiftIso, Functor.CommShift.iso]
+  simp [map]
 
 lemma comp_map {a : M} (f : ShiftedHom X Y a) (F : C ⥤ D) [F.CommShift M]
     (G : D ⥤ E) [G.CommShift M] : f.map (F ⋙ G) = (f.map F).map G := by
