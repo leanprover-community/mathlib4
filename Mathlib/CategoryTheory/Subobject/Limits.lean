@@ -41,15 +41,11 @@ theorem pullback_factors (y : Subobject Y) (h : W ⟶ X) (hF : y.Factors (h ≫ 
       (Subobject.isPullback f y).lift_snd h' h w⟩
 
 theorem pullback_factors_iff (y : Subobject Y) (h : W ⟶ X) :
-  Subobject.Factors ((Subobject.pullback f).obj y) h ↔ y.Factors (h ≫ f) := by
+    Subobject.Factors ((Subobject.pullback f).obj y) h ↔ y.Factors (h ≫ f) := by
   refine ⟨fun hf ↦ ?_, fun hF ↦ pullback_factors f y h hF⟩
-  · intro hF
-    rw [factors_iff]
-    use Subobject.factorThru _ _ hF ≫ Subobject.pullbackπ f y
-    dsimp
-    simp [(Subobject.isPullback f y).w]
-  · intro hF
-    exact pullback_factors f y h hF
+  rw [factors_iff]
+  use Subobject.factorThru _ _ hf ≫ Subobject.pullbackπ f y
+  simp [(Subobject.isPullback f y).w]
 
 end Pullback
 
