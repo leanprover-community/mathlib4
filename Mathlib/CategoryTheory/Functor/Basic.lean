@@ -137,6 +137,14 @@ theorem map_dite (F : C ⥤ D) {X Y : C} {P : Prop} [Decidable P]
 theorem toPrefunctor_comp (F : C ⥤ D) (G : D ⥤ E) :
     F.toPrefunctor.comp G.toPrefunctor = (F ⋙ G).toPrefunctor := rfl
 
+lemma toPrefunctor_injective {F G : C ⥤ D} (h : F.toPrefunctor = G.toPrefunctor) :
+    F = G := by
+  obtain ⟨obj, map, _, _⟩ := F
+  obtain ⟨obj', map', _, _⟩ := G
+  obtain rfl : obj = obj' := congr_arg Prefunctor.obj h
+  obtain rfl : @map = @map' := by simpa [Functor.toPrefunctor] using h
+  rfl
+
 end
 
 end Functor

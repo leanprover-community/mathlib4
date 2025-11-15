@@ -12,7 +12,7 @@ import Mathlib.Tactic.HaveI
 import Mathlib.Tactic.ClearExclamation
 
 /-!
-## `norm_num` basic plugins
+# `norm_num` basic plugins
 
 This file adds `norm_num` plugins for
 * constructors and constants
@@ -34,7 +34,7 @@ open Qq
 
 theorem IsInt.raw_refl (n : ℤ) : IsInt n n := ⟨rfl⟩
 
-/-! # Constructors and constants -/
+/-! ### Constructors and constants -/
 
 theorem isNat_zero (α) [AddMonoidWithOne α] : IsNat (Zero.zero : α) (nat_lit 0) :=
   ⟨Nat.cast_zero.symm⟩
@@ -113,7 +113,7 @@ theorem isNat_natAbs_neg : {n : ℤ} → {a : ℕ} → IsInt n (.negOfNat a) →
   | .isNegNat _ a p => assumeInstancesCommute; return .isNat sℕ a q(isNat_natAbs_neg $p)
   | _ => failure
 
-/-! # Casts -/
+/-! ### Casts -/
 
 theorem isNat_natCast {R} [AddMonoidWithOne R] (n m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
@@ -149,7 +149,7 @@ theorem isintCast {R} [Ring R] (n m : ℤ) :
     return .isNegNat _ na q(isintCast $a (.negOfNat $na) $pa)
   | _ => failure
 
-/-! # Arithmetic -/
+/-! ### Arithmetic -/
 
 library_note2 «norm_num lemma function equality» /--
 Note: Many of the lemmas in this file use a function equality hypothesis like `f = HAdd.hAdd`
@@ -579,7 +579,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     assumeInstancesCommute
     return .isRat dα qa na da q(isRat_div $pa)
 
-/-! # Logic -/
+/-! ### Logic -/
 
 /-- The `norm_num` extension which identifies `True`. -/
 @[norm_num True] def evalTrue : NormNumExt where eval {u α} e :=
@@ -599,7 +599,7 @@ such that `norm_num` successfully recognises `a`. -/
   | true => return .isFalse q(not_not_intro $p)
   | false => return .isTrue q($p)
 
-/-! # (In)equalities -/
+/-! ### (In)equalities -/
 
 variable {α : Type u}
 
@@ -626,7 +626,7 @@ theorem ne_of_false_of_true {a b : Prop} (ha : ¬a) (hb : b) : a ≠ b := mt (·
 theorem ne_of_true_of_false {a b : Prop} (ha : a) (hb : ¬b) : a ≠ b := mt (· ▸ ha) hb
 theorem eq_of_false {a b : Prop} (ha : ¬a) (hb : ¬b) : a = b := propext (iff_of_false ha hb)
 
-/-! # Nat operations -/
+/-! ### Nat operations -/
 
 theorem isNat_natSucc : {a : ℕ} → {a' c : ℕ} →
     IsNat a a' → Nat.succ a' = c → IsNat (a.succ) c
