@@ -138,15 +138,21 @@ theorem ext'' {c d : RingCon R} (H : c.toSetoid = d.toSetoid) : c = d :=
 relations are equal. -/
 theorem coe_inj {c d : RingCon R} : ⇑c = ⇑d ↔ c = d := DFunLike.coe_fn_eq
 
+
+variable {R R' F : Type*} [Add R] [Add R']
+    [FunLike F R R'] [AddHomClass F R R'] [Mul R] [Mul R'] [MulHomClass F R R']
+
 /--
 Pulling back a `RingCon` across a ring homomorphism.
 -/
-def comap {R R' F : Type*} [Add R] [Add R']
-    [FunLike F R R'] [AddHomClass F R R'] [Mul R] [Mul R'] [MulHomClass F R R']
-    (J : RingCon R') (f : F) :
+def comap (J : RingCon R') (f : F) :
     RingCon R where
   __ := J.toCon.comap f (map_mul f)
   __ := J.toAddCon.comap f (map_add f)
+
+@[simp]
+theorem comap_rel {J : RingCon R'} {f : F} {x y : R} :
+    J.comap f x y ↔ J (f x) (f y) := Iff.rfl
 
 end Basic
 

@@ -38,8 +38,8 @@ instance (c : RingCon A) : Algebra S c.Quotient where
 
 variable (S) in
 /-- The algebra morphism from `A` to the quotient by a ring congruence. -/
-@[simps!] def mkₐ (c : RingCon A) : A →ₐ[S] c.Quotient := {
-  mk' c with commutes' _ := rfl }
+@[simps!] def mkₐ (c : RingCon A) : A →ₐ[S] c.Quotient :=
+  { mk' c with commutes' _ := rfl }
 
 theorem mkₐ_surjective (c : RingCon A) :
     Function.Surjective (c.mkₐ (S := S)) :=
