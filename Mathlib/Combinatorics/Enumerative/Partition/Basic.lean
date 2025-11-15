@@ -3,6 +3,7 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
+import Mathlib.Algebra.Order.Antidiag.Finsupp
 import Mathlib.Combinatorics.Enumerative.Composition
 import Mathlib.Tactic.ApplyFun
 
@@ -60,6 +61,12 @@ deriving DecidableEq
 
 namespace Partition
 
+attribute [grind →] parts_pos
+
+@[grind →]
+theorem le_of_mem_parts {n : ℕ} {p : Partition n} {m : ℕ} (h : m ∈ p.parts) : m ≤ n := by
+  simpa [p.parts_sum] using Multiset.le_sum_of_mem h
+
 /-- A composition induces a partition (just convert the list to a multiset). -/
 @[simps]
 def ofComposition (n : ℕ) (c : Composition n) : Partition n where
@@ -116,6 +123,38 @@ def ofSymShapeEquiv (μ : Partition n) (e : σ ≃ τ) :
   invFun := fun x => ⟨Sym.equivCongr e.symm x, by simp [ofSym_map, x.2]⟩
   left_inv := by intro x; simp
   right_inv := by intro x; simp
+
+/-- Convert a `Partition n` to a member of `(Finset.Icc 1 n).finsuppAntidiag n`
+(see `Nat.Partition.toFinsuppAntidiag_mem_finsuppAntidiag` for the proof).
+`p.toFinsuppAntidiag i` is defined as `i` times the number of occurrence of `i` in `p`. -/
+def toFinsuppAntidiag {n : ℕ} (p : Partition n) : ℕ →₀ ℕ where
+  toFun m := p.parts.count m * m
+  support := p.parts.toFinset
+  mem_support_toFun m := by
+    suffices m ∈ p.parts → m ≠ 0 by simpa
+    grind
+
+theorem toFinsuppAntidiag_injective (n : ℕ) : Function.Injective (toFinsuppAntidiag (n := n)) := by
+  unfold toFinsuppAntidiag
+  intro p q h
+  rw [Finsupp.mk.injEq] at h
+  obtain ⟨hfinset, hcount⟩ := h
+  rw [Nat.Partition.ext_iff, Multiset.ext]
+  intro m
+  obtain rfl | h0 := Nat.eq_zero_or_pos m
+  · grind [Multiset.count_eq_zero]
+  · exact Nat.eq_of_mul_eq_mul_right h0 <| funext_iff.mp hcount m
+
+theorem toFinsuppAntidiag_mem_finsuppAntidiag {n : ℕ} (p : Partition n) :
+    p.toFinsuppAntidiag ∈ (Finset.Icc 1 n).finsuppAntidiag n := by
+  have hp : p.parts.toFinset ⊆ Finset.Icc 1 n := by
+    grind [Multiset.mem_toFinset, Finset.mem_Icc]
+  suffices ∑ m ∈ Finset.Icc 1 n, Multiset.count m p.parts * m = n by simpa [toFinsuppAntidiag, hp]
+  convert ← p.parts_sum
+  rw [Finset.sum_multiset_count]
+  apply Finset.sum_subset hp
+  suffices ∀ (x : ℕ), 1 ≤ x → x ≤ n → x ∉ p.parts → x ∉ p.parts ∨ x = 0 by simpa
+  grind
 
 /-- The partition of exactly one part. -/
 def indiscrete (n : ℕ) : Partition n := ofSums n {n} rfl
