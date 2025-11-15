@@ -202,7 +202,7 @@ theorem SummableUniformlyOn.iteratedDerivWithin_tsum (m : ℕ) (hs : IsOpen s) (
       · simp [hm2, hsum r hr]
       · exact ((h m (by cutsat) (by cutsat)).summable (Set.mem_singleton s) hr).congr
           (fun _ ↦ by simp)
-    · exact SummableUniformlyOn_congr
+    · exact SummableUniformlyOn.congr
         (fun _ _ _ _ ht ↦ iteratedDerivWithin_succ) (h (m + 1) (by cutsat) (by cutsat))
 
 /-- If a sequence of functions `fₙ` is such that `∑ fₙ (z)` is summable for each `z` in an
@@ -262,7 +262,7 @@ theorem SummableUniformlyOn.contDiffOn_tsum {N : ℕ∞} (hs : IsOpen s)
     · apply SummableUniformlyOn.differentiableOn_tsum hs ?_ ?_ ?_
       · intro y hy
         exact SummableUniformlyOn.summable (h m hm.le) (Set.mem_singleton s) hy
-      · apply SummableUniformlyOn_congr (f := fun n => iteratedDerivWithin (m + 1) (f n) s)
+      · apply SummableUniformlyOn.congr (f := fun n => iteratedDerivWithin (m + 1) (f n) s)
         · intro a ha i x hx; rw [← iteratedDerivWithin_succ]
         · exact h (m + 1) h'm
       · intro n r hr
