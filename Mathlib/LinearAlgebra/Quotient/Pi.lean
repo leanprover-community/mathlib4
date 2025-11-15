@@ -12,7 +12,7 @@ import Mathlib.LinearAlgebra.Quotient.Basic
 This file contains some results on the quotient of a module by a direct sum of submodules,
 and the direct sum of quotients of modules by submodules.
 
-# Main definitions
+## Main definitions
 
 * `Submodule.piQuotientLift`: create a map out of the direct sum of quotients
 * `Submodule.quotientPiLift`: create a map out of the quotient of a direct sum
