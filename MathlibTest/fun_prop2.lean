@@ -1,7 +1,7 @@
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
-
+import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 
@@ -81,3 +81,11 @@ private theorem t1 : (5: ℕ) + (1 : ℕ∞) ≤ (12 : WithTop ℕ∞) := by nor
 example {f : ℝ → ℝ} (hf : ContDiff ℝ 12 f) :
     Differentiable ℝ (iteratedDeriv 5 (fun x ↦ f (2 * (f (x + x))) + x)) := by
   fun_prop (disch := (exact t1))
+
+/-- error: unknown goal -/
+#guard_msgs in
+example {α : Type*} {m₀ : MeasurableSpace α} {μ : MeasureTheory.Measure α} {M : Type*}
+    [CommMonoid M] [TopologicalSpace M] [ContinuousMul M] (l : Multiset (α → M))
+    (hl : ∀ f ∈ l, MeasureTheory.AEStronglyMeasurable f μ) :
+    MeasureTheory.AEStronglyMeasurable l.prod μ := by
+  fun_prop
