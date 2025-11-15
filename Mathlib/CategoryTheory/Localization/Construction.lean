@@ -191,7 +191,7 @@ def objEquiv : C ≃ W.Localization where
 morphisms in the localized category if it contains the image of the
 morphisms in the original category, the inverses of the morphisms
 in `W` and if it is stable under composition -/
-theorem morphismProperty_is_top (P : MorphismProperty W.Localization)
+theorem morphismProperty_eq_top (P : MorphismProperty W.Localization)
     [P.IsStableUnderComposition] (hP₁ : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), P (W.Q.map f))
     (hP₂ : ∀ ⦃X Y : C⦄ (w : X ⟶ Y) (hw : W w), P (wInv w hw)) :
     P = ⊤ := by
@@ -218,14 +218,18 @@ theorem morphismProperty_is_top (P : MorphismProperty W.Localization)
       · apply hP₁
       · apply hP₂
 
+@[deprecated (since := "2025-10-21")] alias morphismProperty_is_top := morphismProperty_eq_top
+
 /-- A `MorphismProperty` in `W.Localization` is satisfied by all
 morphisms in the localized category if it contains the image of the
 morphisms in the original category, if is stable under composition
 and if the property is stable by passing to inverses. -/
-theorem morphismProperty_is_top' (P : MorphismProperty W.Localization)
+theorem morphismProperty_eq_top' (P : MorphismProperty W.Localization)
     [P.IsStableUnderComposition] (hP₁ : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), P (W.Q.map f))
     (hP₂ : ∀ ⦃X Y : W.Localization⦄ (e : X ≅ Y) (_ : P e.hom), P e.inv) : P = ⊤ :=
-  morphismProperty_is_top P hP₁ (fun _ _ w _ => hP₂ _ (hP₁ w))
+  morphismProperty_eq_top P hP₁ (fun _ _ w _ => hP₂ _ (hP₁ w))
+
+@[deprecated (since := "2025-10-21")] alias morphismProperty_is_top' := morphismProperty_eq_top'
 
 namespace NatTransExtension
 
@@ -254,7 +258,7 @@ def natTransExtension {F₁ F₂ : W.Localization ⥤ D} (τ : W.Q ⋙ F₁ ⟶ 
     suffices MorphismProperty.naturalityProperty (NatTransExtension.app τ) = ⊤ by
       intro X Y f
       simpa only [← this] using MorphismProperty.top_apply f
-    refine morphismProperty_is_top'
+    refine morphismProperty_eq_top'
       (MorphismProperty.naturalityProperty (NatTransExtension.app τ))
       ?_ (MorphismProperty.naturalityProperty.stableUnderInverse _)
     intro X Y f
