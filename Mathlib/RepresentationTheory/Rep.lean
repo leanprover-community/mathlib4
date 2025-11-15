@@ -824,7 +824,7 @@ theorem repOfTprodIso_inv_apply (x : TensorProduct k V W) : (repOfTprodIso ρ τ
 end Representation
 
 /-!
-# The categorical equivalence `Rep k G ≌ Module.{u} (MonoidAlgebra k G)`.
+### The categorical equivalence `Rep k G ≌ Module.{u} (MonoidAlgebra k G)`.
 -/
 
 
