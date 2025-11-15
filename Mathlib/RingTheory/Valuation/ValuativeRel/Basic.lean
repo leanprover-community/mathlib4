@@ -723,7 +723,7 @@ lemma pow_rel_pow (hab : a ≤ᵥ b) (n : ℕ) : a ^ n ≤ᵥ b ^ n := by
   | zero => simp
   | succ _ hn => simp [pow_succ, mul_rel_mul hn hab]
 
-lemma pow_srel_pow (hab : a <ᵥ b) (n : ℕ) (hn : n ≠ 0) : a ^ n <ᵥ b ^ n := by
+lemma pow_srel_pow (hab : a <ᵥ b) {n : ℕ} (hn : n ≠ 0) : a ^ n <ᵥ b ^ n := by
   obtain (rfl | n) := n
   · aesop
   clear hn
