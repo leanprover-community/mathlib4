@@ -51,7 +51,7 @@ lemma IsGroupLikeElem.map [FunLike F A B] [CoalgHomClass F R A B] (f : F)
   comul_eq_tmul_self := by rw [← CoalgHomClass.map_comp_comul_apply, ha.comul_eq_tmul_self]; simp
 
 /-- A coalgebra isomorphism preserves group-like elements. -/
-@[simp] lemma isGroupLikeElem_map [EquivLike F A B] [CoalgEquivClass F R A B] (f : F) :
+@[simp] lemma isGroupLikeElem_map_equiv [EquivLike F A B] [CoalgEquivClass F R A B] (f : F) :
     IsGroupLikeElem R (f a) ↔ IsGroupLikeElem R a where
   mp ha := (CoalgEquivClass.toCoalgEquiv f).symm_apply_apply a ▸ ha.map _
   mpr := .map f
