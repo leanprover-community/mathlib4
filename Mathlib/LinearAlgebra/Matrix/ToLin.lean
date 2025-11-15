@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Tower
+import Mathlib.Algebra.Star.Pi
 import Mathlib.Data.Finite.Sum
 import Mathlib.Data.Matrix.Block
 import Mathlib.LinearAlgebra.Basis.Basic
@@ -1156,3 +1157,24 @@ def endVecAlgEquivMatrixEnd :
     split_ifs <;> rfl
 
 end
+
+namespace LinearMap
+variable {R m n : Type*} [CommSemiring R] [StarRing R] [Fintype m] [DecidableEq m]
+
+open scoped IntrinsicStar
+
+theorem toMatrix'_intrinsicStar (f : (m → R) →ₗ[R] (n → R)) :
+    (star f).toMatrix' = f.toMatrix'.map star := by
+  ext; simp [Pi.star_def, apply_ite]
+
+/-- A linear map `f : (m → R) →ₗ (n → R)` is self-adjoint (with respect to the intrinsic star)
+iff its corresponding matrix `f.toMatrix'` has all self-adjoint elements.
+
+So star-preserving maps correspond to their matrices containing only self-adjoint elements. -/
+theorem isSelfAdjoint_iff_forall_isSelfAdjoint_toMatrix'_apply (f : (m → R) →ₗ[R] (n → R)) :
+    IsSelfAdjoint f ↔ ∀ i j, IsSelfAdjoint (f.toMatrix' i j) := by
+  simp only [IsSelfAdjoint]
+  rw [← toMatrix'.injective.eq_iff]
+  simp [toMatrix'_intrinsicStar, ← Matrix.ext_iff]
+
+end LinearMap
