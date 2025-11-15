@@ -54,11 +54,13 @@ private lemma inner_normalized_ortho_sq_add_inner_sq_eq_one {x y : V}
     rw [H2, norm_smul, hy, Real.norm_eq_abs, mul_one] at hx
     apply eq_or_eq_neg_of_abs_eq at hx
     rcases hx with hx | hx <;> rw [hx] at H2 <;> simp_all
-  field_simp
-  rw [← real_inner_self_eq_norm_sq, inner_sub_left, inner_sub_right, inner_sub_right,
+  have H2 : (1 - ⟪y, x⟫ * ⟪x, y⟫) ^ 2 + ‖x - ⟪y, x⟫ • y‖ ^ 2 * ⟪x, y⟫ ^ 2 =
+      ‖x - ⟪y, x⟫ • y‖ ^ 2 := by
+    rw [← real_inner_self_eq_norm_sq, inner_sub_left, inner_sub_right, inner_sub_right,
     real_inner_smul_right, real_inner_smul_left, real_inner_smul_right, real_inner_smul_left,
     real_inner_comm x y, real_inner_self_eq_norm_sq, hx, real_inner_self_eq_norm_sq, hy]
-  ring
+    ring
+  field_simp; exact H2
 
 private lemma inner_ortho_right_eq_sin_angle {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     ⟪x, normalize (ortho y x)⟫ = Real.sin (angle x y) := by
