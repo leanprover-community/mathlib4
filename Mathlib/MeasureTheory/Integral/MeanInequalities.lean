@@ -274,7 +274,7 @@ theorem lintegral_rpow_add_lt_top_of_lintegral_rpow_lt_top {p : ℝ} {f g : α �
           ENNReal.mul_rpow_of_nonneg _ _ hp0, one_div,
           ENNReal.inv_mul_cancel two_ne_zero ENNReal.coe_ne_top, ENNReal.one_rpow, one_mul,
           ENNReal.rpow_neg_one]
-      rw [← ENNReal.mul_le_mul_left (ne_of_lt h_zero_lt_half_rpow).symm _]
+      rw [← ENNReal.mul_le_mul_iff_right h_zero_lt_half_rpow.ne']
       · rw [mul_add, ← mul_assoc, ← mul_assoc, h_rw, ← ENNReal.mul_rpow_of_nonneg _ _ hp0, mul_add]
         refine
           ENNReal.rpow_arith_mean_le_arith_mean2_rpow (1 / 2 : ℝ≥0∞) (1 / 2 : ℝ≥0∞) (f a) (g a) ?_
@@ -335,7 +335,7 @@ theorem lintegral_mul_rpow_le_lintegral_rpow_mul_lintegral_rpow {p q : ℝ}
     refine hf_top ?_
     have hp_not_neg : ¬p < 0 := by simp [hpq.nonneg]
     simpa [hpq.pos, hp_not_neg] using h
-  refine (ENNReal.mul_le_mul_left hf_zero_rpow hf_top_rpow).mpr (le_of_eq ?_)
+  gcongr
   congr
   ext1 a
   rw [← ENNReal.rpow_mul, hpq.sub_one_mul_conj]
@@ -402,7 +402,7 @@ private theorem lintegral_Lp_add_le_aux {p q : ℝ} (hpq : p.HolderConjugate q) 
     rpow_one] at h
   conv_rhs at h => enter [2]; rw [mul_comm]
   conv_lhs at h => rw [← one_mul (∫⁻ a : α, (f + g) a ^ p ∂μ)]
-  rwa [← mul_assoc, ENNReal.mul_le_mul_right h_add_zero h_add_top, mul_comm] at h
+  rwa [← mul_assoc, ENNReal.mul_le_mul_iff_left h_add_zero h_add_top, mul_comm] at h
 
 /-- **Minkowski's inequality for functions** `α → ℝ≥0∞`: the `ℒp` seminorm of the sum of two
 functions is bounded by the sum of their `ℒp` seminorms. -/
