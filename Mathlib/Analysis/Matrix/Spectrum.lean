@@ -180,7 +180,7 @@ lemma eigenvalues_eq_eigenvalues_iff :
   · suffices hA.eigenvalues₀ = hB.eigenvalues₀ by unfold eigenvalues; rw [this]
     simp_rw [← List.ofFn_inj, ← sort_roots_charpoly_eq_eigenvalues₀, h]
 
-theorem splits_charpoly (hA : A.IsHermitian) : A.charpoly.Splits (RingHom.id 𝕜) :=
+theorem splits_charpoly (hA : A.IsHermitian) : (A.charpoly.map (RingHom.id 𝕜)).Splits :=
   Polynomial.splits_iff_card_roots.mpr (by simp [hA.roots_charpoly_eq_eigenvalues])
 
 /-- The determinant of a Hermitian matrix is the product of its eigenvalues. -/
