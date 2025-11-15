@@ -150,6 +150,16 @@ def multinomial (f : α →₀ ℕ) : ℕ :=
 theorem multinomial_eq (f : α →₀ ℕ) : f.multinomial = Nat.multinomial f.support f :=
   rfl
 
+theorem multinomial_eq_of_support_subset {f : α →₀ ℕ} {s : Finset α} (h : f.support ⊆ s) :
+    f.multinomial = Nat.multinomial s f := by
+  simp only [Finsupp.multinomial_eq, Nat.multinomial]
+  congr 1
+  · simp [Finset.sum_subset h]
+  · rw [Finset.prod_subset h]
+    intro x _
+    simp only [Finsupp.mem_support_iff, ne_eq, Decidable.not_not, Nat.factorial_eq_one]
+    grind
+
 theorem multinomial_update (a : α) (f : α →₀ ℕ) :
     f.multinomial = (f.sum fun _ => id).choose (f a) * (f.update a 0).multinomial := by
   simp only [multinomial_eq]
