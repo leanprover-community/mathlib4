@@ -5,7 +5,7 @@ Authors: Edwin Fernando
 -/
 import Mathlib.Order.CompletePartialOrder
 import Mathlib.Topology.Order.ScottTopology
-import Mathlib.Topology.Sets.Opens
+import Mathlib.Topology.Order.Category.FrameAdjunction
 
 /-!
 # Scott Complete Partial Order
