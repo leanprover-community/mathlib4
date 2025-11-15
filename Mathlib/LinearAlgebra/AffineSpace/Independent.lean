@@ -776,6 +776,31 @@ theorem AffineIndependent.affineIndependent_update_of_notMem_affineSpan [Decidab
   replace ha : AffineIndependent k fun x : {x | x ≠ i} ↦ f x := h₁ ▸ AffineIndependent.subtype ha _
   exact AffineIndependent.affineIndependent_of_notMem_span ha <| by aesop
 
+
+/-- Swapping the first two points preserves affine independence. -/
+theorem AffineIndependent.comm_left {p₁ p₂ p₃ : P} (h : AffineIndependent k ![p₁, p₂, p₃]) :
+    AffineIndependent k ![p₂, p₁, p₃] := by
+  rw [← affineIndependent_equiv (Equiv.swap 0 1)]
+  convert h using 1
+  ext x
+  fin_cases x <;> rfl
+
+/-- Swapping the last two points preserves affine independence. -/
+theorem AffineIndependent.comm_right {p₁ p₂ p₃ : P} (h : AffineIndependent k ![p₁, p₂, p₃]) :
+    AffineIndependent k ![p₁, p₃, p₂] := by
+  rw [← affineIndependent_equiv (Equiv.swap 1 2)]
+  convert h using 1
+  ext x
+  fin_cases x <;> rfl
+
+/-- Reversing the order of three points preserves affine independence. -/
+theorem AffineIndependent.reverse_of_three (p₁ p₂ p₃ : P) (h : AffineIndependent k ![p₁, p₂, p₃]) :
+    AffineIndependent k ![p₃, p₂, p₁] := by
+  rw [← affineIndependent_equiv (Equiv.swap 0 2)]
+  convert h using 1
+  ext x
+  fin_cases x <;> rfl
+
 end DivisionRing
 
 section Ordered
