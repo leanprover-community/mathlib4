@@ -15,12 +15,13 @@ We prove basic properties of the maximal ideal of a local ring.
 
 -/
 
+namespace IsLocalRing
+
 variable {R S K : Type*}
+
 section CommSemiring
 
 variable [CommSemiring R]
-
-namespace IsLocalRing
 
 variable [IsLocalRing R]
 
@@ -87,15 +88,11 @@ theorem isField_iff_maximalIdeal_eq : IsField R ↔ maximalIdeal R = ⊥ :=
     ⟨Ring.ne_bot_of_isMaximal_of_not_isField inferInstance, fun h =>
       Ring.not_isField_iff_exists_prime.mpr ⟨_, h, Ideal.IsMaximal.isPrime' _⟩⟩
 
-end IsLocalRing
-
 end CommSemiring
 
 section CommRing
 
 variable [CommRing R]
-
-namespace IsLocalRing
 
 variable [IsLocalRing R]
 
@@ -108,11 +105,11 @@ theorem jacobson_eq_maximalIdeal (I : Ideal R) (h : I ≠ ⊤) :
   le_antisymm (sInf_le ⟨le_maximalIdeal h, maximalIdeal.isMaximal R⟩)
               (maximalIdeal_le_jacobson I)
 
-end IsLocalRing
+variable (R) in
+theorem ringJacobson_eq_maximalIdeal : Ring.jacobson R = maximalIdeal R :=
+  Ideal.jacobson_bot.symm.trans (jacobson_eq_maximalIdeal _ top_ne_bot.symm)
 
 end CommRing
-
-namespace IsLocalRing
 
 section
 
@@ -124,10 +121,10 @@ theorem ker_eq_maximalIdeal [DivisionRing K] (φ : R →+* K) (hφ : Function.Su
 
 end
 
-end IsLocalRing
-
-theorem IsLocalRing.maximalIdeal_eq_bot {R : Type*} [Field R] : IsLocalRing.maximalIdeal R = ⊥ :=
+theorem maximalIdeal_eq_bot {R : Type*} [Field R] : IsLocalRing.maximalIdeal R = ⊥ :=
   IsLocalRing.isField_iff_maximalIdeal_eq.mp (Field.toIsField R)
+
+end IsLocalRing
 
 lemma Subsemiring.isLocalRing_of_unit {R : Type*} [Semiring R] [IsLocalRing R] (S : Subsemiring R)
     (h_unit : ∀ (x : R) (hx : x ∈ S), IsUnit x → IsUnit (⟨x, hx⟩ : S)) :
