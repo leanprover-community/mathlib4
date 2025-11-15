@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
 import Mathlib.NumberTheory.Cyclotomic.Discriminant
-import Mathlib.RingTheory.Ideal.Norm.AbsNorm
-import Mathlib.RingTheory.Norm.Transitivity
+import Mathlib.NumberTheory.NumberField.Discriminant.Different
 import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
 import Mathlib.RingTheory.Prime
 
@@ -691,6 +690,93 @@ theorem absdiscr_prime [IsCyclotomicExtension {p} ℚ K] :
     infer_instance
   rw [absdiscr_prime_pow_succ p 0 K]
   simp [Nat.sub_sub]
+
+theorem natAbs_absdiscr_aux₁ (hk : 0 < k) :
+    p ^ (p ^ (k - 1) * ((p - 1) * k - 1)) =
+      (p ^ k : ℕ) ^ (p ^ k).totient /
+        ∏ q ∈ (p ^ k).primeFactors, q ^ ((p ^ k).totient / (q - 1)) := by
+  replace hp : p.Prime := hp.out
+  have h :  p ^ (k - 1) ≤ k * (p ^ (k - 1) * (p - 1)) := by
+    rw [mul_left_comm]
+    refine le_mul_of_one_le_right (Nat.zero_le _) ?_
+    exact Right.one_le_mul hk <| Nat.le_sub_one_of_lt <| hp.one_lt
+  simp_rw [Nat.totient_prime_pow hp hk, Nat.primeFactors_prime_pow hk.ne' hp, Finset.prod_singleton,
+    Nat.mul_div_left _ (Nat.sub_pos_of_lt hp.one_lt), ← pow_mul]
+  rw [Nat.pow_div h hp.pos]
+  simp_rw [Nat.sub_mul, one_mul, Nat.mul_sub, mul_one]
+  ring_nf
+
+theorem natAbs_absdiscr_aux₂ {n : ℕ} (hn : 0 < n) :
+    ∏ p ∈ n.primeFactors, p ^ (n.totient / (p - 1)) ∣ n ^ n.totient := by
+  have := Nat.prod_primeFactors_dvd n
+  rw [← Nat.pow_dvd_pow_iff (Nat.totient_pos.mpr hn).ne', ← Finset.prod_pow] at this
+  refine dvd_trans (Finset.prod_dvd_prod_of_dvd _ _ fun p hp ↦ ?_) this
+  exact Nat.pow_dvd_pow p <| Nat.div_le_self _ _
+
+theorem natAbs_absdiscr_aux₃ {n₁ n₂ : ℕ} (hn₁ : 0 < n₁) (hn₂ : 0 < n₂) (h : n₁.Coprime n₂) :
+    (n₁ ^ n₁.totient / ∏ p ∈ n₁.primeFactors, p ^ (n₁.totient / (p - 1))).Coprime
+      (n₂ ^ n₂.totient / ∏ p ∈ n₂.primeFactors, p ^ (n₂.totient / (p - 1))) := by
+  refine Nat.Coprime.coprime_div_left ?_ (natAbs_absdiscr_aux₂ hn₁)
+  refine Nat.Coprime.coprime_div_right ?_ (natAbs_absdiscr_aux₂ hn₂)
+  exact Nat.Coprime.pow_left _ (Nat.Coprime.pow_right _ h)
+
+open Algebra IntermediateField in
+theorem natAbs_absdiscr (n : ℕ) [hn : NeZero n] [hK : IsCyclotomicExtension {n} ℚ K] :
+    haveI : NumberField K := IsCyclotomicExtension.numberField {n} ℚ K
+    (discr K).natAbs = (n ^ n.totient / ∏ p ∈ n.primeFactors, p ^ (n.totient / (p - 1))) := by
+  haveI : NumberField K := IsCyclotomicExtension.numberField {n} ℚ K
+  induction n using Nat.recOnPrimeCoprime generalizing K hn with
+  | zero => exact (neZero_zero_iff_false.mp hn).elim
+  | prime_pow p k hp =>
+    have : Fact (Nat.Prime p) := ⟨hp⟩
+    rw [absdiscr_prime_pow p k K]
+    cases k with
+    | zero => simp
+    | succ k =>
+      simpa only [Int.reduceNeg, add_tsub_cancel_right, Int.natAbs_mul, Int.natAbs_pow,
+        IsUnit.neg_iff, isUnit_one, Int.natAbs_of_isUnit, one_pow, Int.natAbs_cast, one_mul]
+        using natAbs_absdiscr_aux₁ p (k + 1) k.zero_lt_succ
+  | coprime n₁ n₂ hn₁ hn₂ h hK₁ hK₂ =>
+    have : NeZero n₁ := NeZero.of_gt hn₁
+    have : NeZero n₂ := NeZero.of_gt hn₂
+    let ζ := zeta (n₁ * n₂) ℚ K
+    have hζ := zeta_spec (n₁ * n₂) ℚ K
+    have hζ₁ := hζ.pow (NeZero.pos _) (a := n₂) (b := n₁) (by rw [mul_comm])
+    have := hζ₁.intermediateField_adjoin_isCyclotomicExtension ℚ
+    have hζ₁' : IsPrimitiveRoot (AdjoinSimple.gen ℚ (ζ ^ n₂)) n₁ :=
+      IsPrimitiveRoot.coe_submonoidClass_iff.mp hζ₁
+    replace hK₁ := @hK₁ ℚ⟮ζ ^ n₂⟯ _ _ _ _ (of_intermediateField _)
+    have hζ₂ := hζ.pow (NeZero.pos _) (a := n₁) (b := n₂) rfl
+    have := hζ₂.intermediateField_adjoin_isCyclotomicExtension ℚ
+    have hζ₂' : IsPrimitiveRoot (AdjoinSimple.gen ℚ (ζ ^ n₁)) n₂ :=
+      IsPrimitiveRoot.coe_submonoidClass_iff.mp hζ₂
+    replace hK₂ := @hK₂ ℚ⟮ζ ^ n₁⟯ _ _ _ _ (of_intermediateField _)
+    have : IsGalois ℚ ℚ⟮ζ ^ n₂⟯ := isGalois {n₁} ℚ _
+    have h_top : ℚ⟮ζ ^ n₂⟯ ⊔ ℚ⟮ζ ^ n₁⟯ = ⊤ := by
+      have : IsCyclotomicExtension {n₁ * n₂} ℚ (⊤ : IntermediateField ℚ K) :=
+          hK.equiv _ _ _ topEquiv.symm
+      have : IsCyclotomicExtension {n₁ * n₂} ℚ ↥(ℚ⟮ζ ^ n₂⟯ ⊔ ℚ⟮ζ ^ n₁⟯) := by
+        rw [← Nat.Coprime.lcm_eq_mul h]
+        exact isCyclotomicExtension_lcm_sup ℚ K n₁ n₂ ℚ⟮ζ ^ n₂⟯ ℚ⟮ζ ^ n₁⟯
+      exact isCyclotomicExtension_eq {n₁ * n₂} ℚ K _ _
+    have h_cpr : IsCoprime (discr ℚ⟮ζ ^ n₂⟯) (discr ℚ⟮ζ ^ n₁⟯) := by
+      rw [Int.isCoprime_iff_nat_coprime, hK₁, hK₂]
+      exact natAbs_absdiscr_aux₃ n₁.pos_of_neZero n₂.pos_of_neZero h
+    have h_dsj : ℚ⟮ζ ^ n₂⟯.LinearDisjoint ℚ⟮ζ ^ n₁⟯ :=
+      linearDisjoint_of_isGalois_isCoprime_discr _ _ _ h_cpr
+    have h_div₁ := natAbs_absdiscr_aux₂ n₁.pos_of_neZero
+    have h_div₂ := natAbs_absdiscr_aux₂ n₂.pos_of_neZero
+    rw [natAbs_discr_eq_natAbs_discr_pow_mul_natAbs_discr_pow K ℚ⟮ζ ^ n₂⟯ ℚ⟮ζ ^ n₁⟯ h_dsj h_top
+      (isCoprime_differentIdeal_of_isCoprime_discr _ h_cpr), hK₁, hK₂,
+      finrank n₁ ℚ⟮ζ ^ n₂⟯, finrank n₂ ℚ⟮ζ ^ n₁⟯, Nat.div_pow h_div₁, Nat.div_pow h_div₂,
+      ← Nat.mul_div_mul_comm (pow_dvd_pow_of_dvd h_div₁ n₂.totient)
+      (pow_dvd_pow_of_dvd h_div₂ n₁.totient), Nat.primeFactors_mul (NeZero.ne _) (NeZero.ne _),
+      Finset.prod_union h.disjoint_primeFactors, ← Finset.prod_pow, ← Finset.prod_pow]
+    have {n p : ℕ} (hp : p ∈ n.primeFactors) : p - 1 ∣ n.totient :=
+      p.totient_prime (Nat.prime_of_mem_primeFactors hp) ▸ Nat.totient_dvd_of_dvd (b := n)
+        <| Nat.dvd_of_mem_primeFactors hp
+    simp_rw +contextual [← pow_mul, Nat.div_mul_right_comm (this _), Nat.totient_mul h]
+    rw [mul_pow, mul_comm n₂.totient]
 
 end IsCyclotomicExtension.Rat
 
