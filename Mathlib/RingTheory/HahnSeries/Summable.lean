@@ -811,6 +811,19 @@ theorem isUnit_of_orderTop_pos {x : HahnSeries Γ R} (h : 0 < (x - 1).orderTop) 
       rw [this]
       exact isAddUnit_zero
 
+/-- Make an element of `orderTopSubOnePos` -/
+@[simps]
+def toOrderTopSubOnePos {x : HahnSeries Γ R} (h : 0 < (x - 1).orderTop) :
+    orderTopSubOnePos Γ R where
+  val := ⟨x, (isUnit_of_orderTop_pos h).unit.inv, IsUnit.mul_val_inv (isUnit_of_orderTop_pos h),
+    IsUnit.val_inv_mul (isUnit_of_orderTop_pos h)⟩
+  property := h
+
+theorem toOrderTopSubOnePos_val_mem {g : Γ} (hg : 0 < g) (r : R) :
+    (toOrderTopSubOnePos (orderTop_sub_pos hg r)).val ∈ orderTopSubOnePos Γ R :=
+  (mem_orderTopSubOnePos_iff (toOrderTopSubOnePos (orderTop_sub_pos hg r)).val).mpr
+    (orderTop_sub_pos hg r)
+
 end CommRing
 
 section IsDomain
