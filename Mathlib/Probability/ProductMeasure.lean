@@ -413,9 +413,8 @@ lemma infinitePi_singleton [Fintype ι] [∀ i, MeasurableSingletonClass (X i)] 
   simpa [Set.univ_pi_singleton] using
     infinitePi_pi μ (s := .univ) (t := fun i ↦ {f i}) fun _ _ ↦ .singleton _
 
-@[simp] lemma infinitePi_dirac [Countable ι] [∀ i, MeasurableSingletonClass (X i)] (f : ∀ i, X i) :
-    infinitePi (fun i ↦ dirac (f i)) = dirac f :=
-  .symm <| eq_infinitePi _ fun s t ht ↦ by simp [dirac_apply]
+@[simp] lemma infinitePi_dirac (f : ∀ i, X i) : infinitePi (fun i ↦ dirac (f i)) = dirac f :=
+  .symm <| eq_infinitePi _ <| by simp +contextual [MeasurableSet.pi, Finset.countable_toSet]
 
 lemma _root_.measurePreserving_eval_infinitePi (i : ι) :
     MeasurePreserving (Function.eval i) (infinitePi μ) (μ i) where
