@@ -220,7 +220,8 @@ namespace MeasureTheory.Measure
 variable {G A : Type*} [Group G] [MulAction G A] [MeasurableSpace A]
   [MeasurableConstSMul G A] {μ ν : Measure A} {g : G}
 
-noncomputable instance : DistribMulAction Gᵈᵐᵃ (Measure A) where
+@[to_additive]
+noncomputable instance instMulActionDomMulAct : MulAction Gᵈᵐᵃ (Measure A) where
   smul g μ := μ.map (DomMulAct.mk.symm g⁻¹ • ·)
   one_smul μ := show μ.map _ = _ by simp
   mul_smul g g' μ := show μ.map _ = ((μ.map _).map _) by
@@ -228,10 +229,8 @@ noncomputable instance : DistribMulAction Gᵈᵐᵃ (Measure A) where
     · simp [Function.comp_def, mul_smul]
     · exact measurable_const_smul ..
     · exact measurable_const_smul ..
-  smul_zero g := show (0 : Measure A).map _ = 0 by simp
-  smul_add g μ ν := show (μ + ν).map _ = μ.map _ + ν.map _ by
-    rw [Measure.map_add]; exact measurable_const_smul ..
 
+@[to_additive]
 lemma domSMul_apply (μ : Measure A) (g : Gᵈᵐᵃ) (s : Set A) :
     (g • μ) s = μ (DomMulAct.mk.symm g • s) := by
   refine ((MeasurableEquiv.smul ((DomMulAct.mk.symm g : G)⁻¹)).map_apply _).trans ?_
@@ -244,5 +243,13 @@ instance : SMulCommClass ℝ≥0 Gᵈᵐᵃ (Measure A) where
   smul_comm r g μ := show r • μ.map _ = (r • μ).map _ by simp
 
 instance : SMulCommClass Gᵈᵐᵃ ℝ≥0 (Measure A) := .symm ..
+
+/-- Warnning: This instance is not additivisable as opposed to `instMulActionDomMulAct`.
+Use sparingly. -/
+noncomputable instance instDistribMulActionDomMulAct [MulAction G A] [MeasurableConstSMul G A] :
+    DistribMulAction Gᵈᵐᵃ (Measure A) where
+  smul_zero g := show (0 : Measure A).map _ = 0 by simp
+  smul_add g μ ν := show (μ + ν).map _ = μ.map _ + ν.map _ by
+    rw [Measure.map_add]; exact measurable_const_smul ..
 
 end MeasureTheory.Measure
