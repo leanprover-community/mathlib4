@@ -346,7 +346,7 @@ lemma angle_normalize_right (x y : V) :
   simp [angle_comm x]
 
 /-- The inner product of two unit vectors is equal to the cosine of the angle between them. -/
-lemma inner_eq_cos_angle_of_norm_one {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
+lemma inner_eq_cos_angle_of_norm_eq_one {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     ⟪x, y⟫ = Real.cos (angle x y) := by
   simp [cos_angle, hx, hy]
 
