@@ -242,7 +242,7 @@ protected theorem sup [LinearOrder E] [ContinuousSup E] [HasSolidNorm E] [IsOrde
         (Eventually.of_forall fun x => le_max_right _ _))
 
 protected theorem pos [LinearOrder E] [ContinuousSup E] [HasSolidNorm E] [IsOrderedAddMonoid E]
-    [IsOrderedModule ℝ E] [OrderClosedTopology E] {f : ι → Ω → E} (hf : Submartingale f ℱ μ) :
+    [IsOrderedModule ℝ E] {f : ι → Ω → E} (hf : Submartingale f ℱ μ) :
     Submartingale (f⁺) ℱ μ :=
   hf.sup (martingale_zero _ _ _).submartingale
 
