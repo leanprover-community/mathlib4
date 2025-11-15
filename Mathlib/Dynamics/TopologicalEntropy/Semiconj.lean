@@ -60,9 +60,10 @@ variable {X Y : Type*} {s F : Set X} {V : SetRel Y Y} {S : X → X} {T : Y → Y
 
 lemma IsDynCoverOf.image (h : Semiconj φ S T) (h' : IsDynCoverOf S F (map φ φ ⁻¹' V) n s) :
     IsDynCoverOf T (φ '' F) V n (φ '' s) := by
-  simp only [IsDynCoverOf, image_subset_iff, preimage_iUnion₂, biUnion_image]
-  refine h'.trans (iUnion₂_mono fun i _ ↦ subset_of_eq ?_)
-  rw [← h.preimage_dynEntourage V n, ball_preimage]
+  rintro _ ⟨x, hx, rfl⟩
+  obtain ⟨y, hy, hxy⟩ := h' hx
+  refine ⟨_, Set.mem_image_of_mem _ hy, show (x, y) ∈ map φ φ ⁻¹' dynEntourage T V n from ?_⟩
+  rwa [h.preimage_dynEntourage V n]
 
 lemma IsDynCoverOf.preimage (h : Semiconj φ S T) [V.IsSymm] {t : Finset Y}
     (h' : IsDynCoverOf T (φ '' F) V n t) :
@@ -75,18 +76,15 @@ lemma IsDynCoverOf.preimage (h : Semiconj φ S T) [V.IsSymm] {t : Finset Y}
   -- and may not even be in the range of `φ`. Hence, we first modify `t` to make it a subset
   -- of `φ '' F`. This requires taking larger entourages.
   obtain ⟨s, s_cover, s_card, s_inter⟩ := h'.nonempty_inter
-  choose! g gs_cover using fun (x : Y) (h : x ∈ s) ↦ nonempty_def.1 (s_inter x h)
-  choose! f f_section using fun (y : Y) (a : y ∈ φ '' F) ↦ a
-  refine ⟨s.image (f ∘ g), ?_, Finset.card_image_le.trans s_card⟩
-  simp only [IsDynCoverOf, Finset.mem_coe, image_subset_iff, preimage_iUnion₂] at s_cover ⊢
-  apply s_cover.trans
-  rw [← h.preimage_dynEntourage (V ○ V) n, Finset.set_biUnion_finset_image]
-  refine iUnion₂_mono fun i i_s ↦ ?_
-  rw [comp_apply, ball_preimage, (f_section (g i) (gs_cover i i_s).2).2]
-  refine preimage_mono fun x x_i ↦ mem_ball_dynEntourage_comp T n x (g i) ⟨i, ?_⟩
-  replace gs_cover := (gs_cover i i_s).1
-  rw [mem_ball_symmetry] at x_i gs_cover
-  exact ⟨x_i, gs_cover⟩
+  choose! g g_rel g_mem using fun (x : Y) (h : x ∈ s) ↦ nonempty_def.1 (s_inter x h)
+  choose! f _ φ_f using fun (y : Y) (hy : y ∈ φ '' F) ↦ hy
+  refine ⟨s.image (f ∘ g), fun x hx ↦ ?_, Finset.card_image_le.trans s_card⟩
+  simp only [Finset.coe_image, comp_apply, mem_image, SetLike.mem_coe, ← h.preimage_dynEntourage,
+    mem_preimage, map_apply, exists_exists_and_eq_and]
+  obtain ⟨y, hy, hxy⟩ := s_cover (Set.mem_image_of_mem _ hx)
+  refine ⟨y, hy, dynEntourage_comp_subset _ _ _ _ ⟨_, hxy, ?_⟩⟩
+  rw [φ_f _ (g_mem _ hy)]
+  exact g_rel _ hy
 
 lemma le_coverMincard_image (h : Semiconj φ S T) (F : Set X) [V.IsSymm] (n : ℕ) :
     coverMincard S F ((map φ φ) ⁻¹' (V ○ V)) n ≤ coverMincard T (φ '' F) V n := by
@@ -131,11 +129,14 @@ lemma coverEntropyInfEntourage_image_le (h : Semiconj φ S T) (F : Set X) (V : S
 theorem coverEntropy_image_of_comap (u : UniformSpace Y) {S : X → X} {T : Y → Y} {φ : X → Y}
     (h : Semiconj φ S T) (F : Set X) :
     coverEntropy T (φ '' F) = @coverEntropy X (comap φ u) S F := by
+  let : UniformSpace X := comap φ u
   apply le_antisymm
-  · refine iSup₂_le fun V V_uni ↦ (coverEntropyEntourage_image_le h F V).trans ?_
-    apply @coverEntropyEntourage_le_coverEntropy X (comap φ u) S F
+  · refine iSup₂_le fun V V_uni ↦
+      (coverEntropyEntourage_antitone _ _ SetRel.symmetrize_subset_self).trans <|
+      (coverEntropyEntourage_image_le h F _).trans ?_
+    apply coverEntropyEntourage_le_coverEntropy
     rw [uniformity_comap φ, mem_comap]
-    exact ⟨V, V_uni, Subset.rfl⟩
+    exact ⟨_, symmetrize_mem_uniformity V_uni, .rfl⟩
   · refine iSup₂_le fun U U_uni ↦ ?_
     simp only [uniformity_comap φ, mem_comap] at U_uni
     obtain ⟨V, V_uni, V_sub⟩ := U_uni
@@ -149,11 +150,14 @@ theorem coverEntropy_image_of_comap (u : UniformSpace Y) {S : X → X} {T : Y �
 theorem coverEntropyInf_image_of_comap (u : UniformSpace Y) {S : X → X} {T : Y → Y} {φ : X → Y}
     (h : Semiconj φ S T) (F : Set X) :
     coverEntropyInf T (φ '' F) = @coverEntropyInf X (comap φ u) S F := by
+  let : UniformSpace X := comap φ u
   apply le_antisymm
-  · refine iSup₂_le fun V V_uni ↦ (coverEntropyInfEntourage_image_le h F V).trans ?_
-    apply @coverEntropyInfEntourage_le_coverEntropyInf X (comap φ u) S F
+  · refine iSup₂_le fun V V_uni ↦
+      (coverEntropyInfEntourage_antitone _ _ SetRel.symmetrize_subset_self).trans <|
+      (coverEntropyInfEntourage_image_le h F _).trans ?_
+    apply coverEntropyInfEntourage_le_coverEntropyInf
     rw [uniformity_comap φ, mem_comap]
-    exact ⟨V, V_uni, Subset.rfl⟩
+    exact ⟨_, symmetrize_mem_uniformity V_uni, .rfl⟩
   · refine iSup₂_le fun U U_uni ↦ ?_
     simp only [uniformity_comap φ, mem_comap] at U_uni
     obtain ⟨V, V_uni, V_sub⟩ := U_uni
