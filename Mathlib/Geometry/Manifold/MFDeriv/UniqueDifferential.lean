@@ -189,12 +189,4 @@ theorem UniqueMDiffOn.bundle_preimage (hs : UniqueMDiffOn I s) :
     UniqueMDiffOn (I.prod 𝓘(𝕜, F)) (π F Z ⁻¹' s) := fun _p hp ↦
   (hs _ hp).bundle_preimage
 
--- TODO: move me to `Mathlib/Geometry/Manifold/VectorBundle/MDifferentiable.lean`
-variable [∀ b, AddCommMonoid (Z b)] [∀ b, Module 𝕜 (Z b)] [VectorBundle 𝕜 F Z]
-
-theorem Trivialization.mdifferentiable [ContMDiffVectorBundle 1 F Z I]
-    (e : Trivialization F (π F Z)) [MemTrivializationAtlas e] :
-    e.MDifferentiable (I.prod 𝓘(𝕜, F)) (I.prod 𝓘(𝕜, F)) :=
-  ⟨e.contMDiffOn.mdifferentiableOn le_rfl, e.contMDiffOn_symm.mdifferentiableOn le_rfl⟩
-
 end UniqueMDiff
