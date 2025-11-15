@@ -195,6 +195,17 @@ end ElabHead
 def elabDischarger (stx : TSyntax ``discharger) : TacticM Simp.Discharge :=
   (·.2) <$> tacticToDischarge stx.raw[3]
 
+/-- The configuration options for the `push` tactic. -/
+structure Config where
+  /-- If `true` (default `false`), rewrite `¬ (p ∧ q)` into `¬ p ∨ ¬ q` instead of `p → ¬ q`.
+  This is equivalent to using `set_option push_neg.use_distrib true`. -/
+  distrib : Bool := false
+  /-- If `true` (default: `true`), then calls to `push` will fail if they do not make progress. -/
+  failIfUnchanged : Bool := true
+
+/-- Function elaborating `Push.Config`. -/
+declare_config_elab elabPushConfig Config
+
 /--
 `push` pushes the given constant away from the head of the expression. For example
 - `push _ ∈ _` rewrites `x ∈ {y} ∪ zᶜ` into `x = y ∨ ¬ x ∈ z`.
@@ -212,12 +223,15 @@ To instead move a constant closer to the head of the expression, use the `pull` 
 
 To push a constant at a hypothesis, use the `push ... at h` or `push ... at *` syntax.
 -/
-elab (name := push) "push" disch?:(discharger)? head:(ppSpace colGt term) loc:(location)? :
-    tactic => do
+elab (name := push) "push" cfg:optConfig disch?:(discharger)? head:(ppSpace colGt term)
+    loc:(location)? : tactic => do
+  let cfg ← elabPushConfig cfg
   let disch? ← disch?.mapM elabDischarger
   let head ← elabHead head
   let loc := (loc.map expandLocation).getD (.targets #[] true)
-  transformAtLocation (pushCore head · disch?) "push" loc (failIfUnchanged := true) false
+  let level : LogIfUnchanged := if cfg.failIfUnchanged then .error else .warning
+  (if cfg.distrib then withOptions (·.setBool `push_neg.use_distrib true) else id) <|
+    transformAtLocation (pushCore head · disch?) "push" loc level
 
 /--
 Push negations into the conclusion or a hypothesis.
@@ -228,7 +242,7 @@ For instance, a hypothesis `h : ¬ ∀ x, ∃ y, x ≤ y` will be transformed by
 The `push` tactic can be extended using the `@[push]` attribute. `push` has special-casing
 built in for `push Not`, so that it can preserve binder names, and so that `¬ (p ∧ q)` can be
 transformed to either `p → ¬ q` (the default) or `¬ p ∨ ¬ q`. To get `¬ p ∨ ¬ q`, use
-`set_option push_neg.use_distrib true`.
+`set_option push_neg.use_distrib true` or `push_neg +distrib`.
 
 Tactics that introduce a negation usually have a version that automatically calls `push_neg` on
 that negation. These include `by_cases!`, `contrapose!` and `by_contra!`.
@@ -246,7 +260,8 @@ using the relevant lemmas. One can use this tactic at the goal using `push_neg`,
 at every hypothesis and the goal using `push_neg at *` or at selected hypotheses and the goal
 using say `push_neg at h h' ⊢`, as usual.
 -/
-macro (name := push_neg) "push_neg" loc:(location)? : tactic => `(tactic| push Not $[$loc]?)
+macro (name := push_neg) "push_neg" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| push $cfg Not $[$loc]?)
 
 /--
 `pull` is the inverse tactic to `push`.
@@ -269,7 +284,7 @@ elab (name := pull) "pull" disch?:(discharger)? head:(ppSpace colGt term) loc:(l
   let disch? ← disch?.mapM elabDischarger
   let head ← elabHead head
   let loc := (loc.map expandLocation).getD (.targets #[] true)
-  transformAtLocation (pullCore head · disch?) "pull" loc (failIfUnchanged := true) false
+  transformAtLocation (pullCore head · disch?) "pull" loc (failIfUnchanged := .error) false
 
 /-- A simproc variant of `push fun _ ↦ _`, to be used as `simp [↓pushFun]`. -/
 simproc_decl _root_.pushFun (fun _ ↦ ?_) := pushStep .lambda
@@ -280,13 +295,18 @@ simproc_decl _root_.pullFun (_) := pullStep .lambda
 section Conv
 
 @[inherit_doc push]
-elab "push" disch?:(discharger)? head:(ppSpace colGt term) : conv => withMainContext do
+elab "push" cfg:optConfig disch?:(discharger)? head:(ppSpace colGt term) : conv =>
+  withMainContext do
+  let cfg ← elabPushConfig cfg
   let disch? ← disch?.mapM elabDischarger
   let head ← elabHead head
-  Conv.applySimpResult (← pushCore head (← instantiateMVars (← Conv.getLhs)) disch?)
+  (if cfg.distrib then withOptions (·.setBool `push_neg.use_distrib true) else id) <|
+    -- TODO: this doesn't throw an error when it does nothing.
+    -- Note that conv-mode `simp` has the same problem.
+    Conv.applySimpResult (← pushCore head (← instantiateMVars (← Conv.getLhs)) disch?)
 
 @[inherit_doc push_neg]
-macro "push_neg" : conv => `(conv| push Not)
+macro "push_neg" cfg:optConfig : conv => `(conv| push $cfg Not)
 
 /--
 The syntax is `#push head e`, where `head` is a constant and `e` is an expression,
@@ -294,8 +314,8 @@ which will print the `push head` form of `e`.
 
 `#push` understands local variables, so you can use them to introduce parameters.
 -/
-macro (name := pushCommand) tk:"#push " head:ident ppSpace e:term : command =>
-  `(command| #conv%$tk push $head:ident => $e)
+macro (name := pushCommand) tk:"#push " cfg:optConfig head:ident ppSpace e:term : command =>
+  `(command| #conv%$tk push $cfg $head:ident => $e)
 
 /--
 The syntax is `#push_neg e`, where `e` is an expression,
@@ -303,7 +323,8 @@ which will print the `push_neg` form of `e`.
 
 `#push_neg` understands local variables, so you can use them to introduce parameters.
 -/
-macro (name := pushNegCommand) tk:"#push_neg " e:term : command => `(command| #push%$tk Not $e)
+macro (name := pushNegCommand) tk:"#push_neg " cfg:optConfig e:term : command =>
+ `(command| #push%$tk $cfg Not $e)
 
 @[inherit_doc pull]
 elab "pull" disch?:(discharger)? head:(ppSpace colGt term) : conv => withMainContext do

@@ -20,6 +20,7 @@ implication.
 
 -/
 namespace Mathlib.Tactic.Contrapose
+open Lean.Parser.Tactic
 
 lemma mtr {p q : Prop} : (¬ q → ¬ p) → (p → q) := fun h hp ↦ by_contra (fun h' ↦ h h' hp)
 
@@ -39,10 +40,14 @@ macro_rules
 Transforms the goal into its contrapositive and uses pushes negations inside `P` and `Q`.
 Usage matches `contrapose`
 -/
-syntax (name := contrapose!) "contrapose!" (ppSpace colGt ident (" with " ident)?)? : tactic
+syntax (name := contrapose!)
+  "contrapose!" optConfig (ppSpace colGt ident (" with " ident)?)? : tactic
 macro_rules
-  | `(tactic| contrapose!) => `(tactic| (contrapose; try push_neg))
-  | `(tactic| contrapose! $e) => `(tactic| (revert $e:ident; contrapose!; intro $e:ident))
-  | `(tactic| contrapose! $e with $e') => `(tactic| (revert $e:ident; contrapose!; intro $e':ident))
+  | `(tactic| contrapose! $cfg) =>
+    `(tactic| (contrapose; push_neg $[$(getConfigItems cfg)]* +failIfUnchanged))
+  | `(tactic| contrapose! $cfg:optConfig $e) =>
+    `(tactic| (revert $e:ident; contrapose! $cfg; intro $e:ident))
+  | `(tactic| contrapose! $cfg:optConfig $e with $e') =>
+    `(tactic| (revert $e:ident; contrapose! $cfg; intro $e':ident))
 
 end Mathlib.Tactic.Contrapose

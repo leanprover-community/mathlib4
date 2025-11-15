@@ -663,7 +663,7 @@ theorem IsCycle.isConj_iff (hσ : IsCycle σ) (hτ : IsCycle τ) :
     refine Finset.card_bij (fun a _ => π a) (fun _ ha => ?_) (fun _ _ _ _ ab => π.injective ab)
         fun b hb ↦ ⟨π⁻¹ b, ?_, π.apply_inv_self b⟩
     · simp [mem_support.1 ha]
-    contrapose! hb
+    contrapose hb
     rw [mem_support, Classical.not_not] at hb
     rw [mem_support, Classical.not_not, Perm.mul_apply, Perm.mul_apply, hb, Perm.apply_inv_self]
   mpr := hσ.isConj hτ

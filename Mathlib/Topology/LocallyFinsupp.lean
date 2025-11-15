@@ -183,7 +183,7 @@ protected def addSubgroup [AddCommGroup Y] : AddSubgroup (X → Y) where
   add_mem' {f g} hf hg := by
     constructor
     · intro x hx
-      contrapose! hx
+      contrapose hx
       simp [notMem_support.1 fun a ↦ hx (hf.1 a), notMem_support.1 fun a ↦ hx (hg.1 a)]
     · intro z hz
       obtain ⟨t₁, ht₁⟩ := hf.2 z hz

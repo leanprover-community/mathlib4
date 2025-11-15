@@ -104,7 +104,7 @@ theorem count_strict_mono {m n : ℕ} (hm : p m) (hmn : m < n) : count p m < cou
   (count_lt_count_succ_iff.2 hm).trans_le <| count_monotone _ (Nat.succ_le_iff.2 hmn)
 
 theorem count_injective {m n : ℕ} (hm : p m) (hn : p n) (heq : count p m = count p n) : m = n := by
-  by_contra! h : m ≠ n
+  by_contra! h
   wlog hmn : m < n
   · exact this hn hm heq.symm h.symm (by grind)
   · simpa [heq] using count_strict_mono hm hmn

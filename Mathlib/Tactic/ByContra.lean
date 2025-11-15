@@ -37,17 +37,18 @@ example : 1 < 2 := by
   -- h : ¬ 1 < 2 ⊢ False
 ```
 -/
-syntax (name := byContra!) "by_contra!" (ppSpace colGt binderIdent)? Term.optType : tactic
+syntax (name := byContra!) "by_contra!" optConfig (ppSpace colGt binderIdent)? Term.optType : tactic
 
 macro_rules
-  | `(tactic| by_contra! $[: $ty]?) =>
-    `(tactic| by_contra! $(mkIdent `this):ident $[: $ty]?)
-  | `(tactic| by_contra! _%$under $[: $ty]?) =>
-    `(tactic| by_contra! $(mkIdentFrom under `this):ident $[: $ty]?)
-  | `(tactic| by_contra! $e:ident) => `(tactic| (by_contra $e:ident; try push_neg at $e:ident))
-  | `(tactic| by_contra! $e:ident : $y) => `(tactic|
-       (by_contra! h
+  | `(tactic| by_contra! $cfg $[: $ty]?) =>
+    `(tactic| by_contra! $cfg $(mkIdent `this):ident $[: $ty]?)
+  | `(tactic| by_contra! $cfg _%$under $[: $ty]?) =>
+    `(tactic| by_contra! $cfg $(mkIdentFrom under `this):ident $[: $ty]?)
+  | `(tactic| by_contra! $cfg $e:ident) =>
+    `(tactic| by_contra $e:ident; push_neg $[$(getConfigItems cfg)]* +failIfUnchanged at $e:ident)
+  | `(tactic| by_contra! $cfg $e:ident : $y) => `(tactic|
+       (by_contra! $cfg h
         -- if the below `exact` call fails then this tactic should fail with the message
         -- tactic failed: <goal type> and <type of h> are not definitionally equal
-        have $e:ident : $y := by { (try push_neg); exact h }
+        have $e:ident : $y := by { push_neg $[$(getConfigItems cfg)]* -failIfUnchanged; exact h }
         clear h))
