@@ -5037,6 +5037,7 @@ import Mathlib.NumberTheory.Modular
 import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
 import Mathlib.NumberTheory.ModularForms.Basic
 import Mathlib.NumberTheory.ModularForms.BoundedAtCusp
+import Mathlib.NumberTheory.ModularForms.Bounds
 import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 import Mathlib.NumberTheory.ModularForms.Cusps
 import Mathlib.NumberTheory.ModularForms.DedekindEta
@@ -5052,6 +5053,7 @@ import Mathlib.NumberTheory.ModularForms.JacobiTheta.Bounds
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.Manifold
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.OneVariable
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
+import Mathlib.NumberTheory.ModularForms.LFunction
 import Mathlib.NumberTheory.ModularForms.LevelOne
 import Mathlib.NumberTheory.ModularForms.Petersson
 import Mathlib.NumberTheory.ModularForms.QExpansion
