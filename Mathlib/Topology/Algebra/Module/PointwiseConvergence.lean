@@ -62,6 +62,9 @@ notation:25 E " →Lₚₜ[" R "] " F => PointwiseConvergenceCLM (RingHom.id R) 
 
 namespace PointwiseConvergenceCLM
 
+instance [T2Space F] : T2Space (E →SLₚₜ[σ] F) :=
+  UniformConvergenceCLM.t2Space _ _ _ Set.sUnion_finite_eq_univ
+
 instance continuousEvalConst : ContinuousEvalConst (E →SLₚₜ[σ] F) E F :=
   UniformConvergenceCLM.continuousEvalConst _ _ _
     (sUnion_eq_univ_iff.mpr fun x ↦ ⟨{x}, finite_singleton x, rfl⟩)
