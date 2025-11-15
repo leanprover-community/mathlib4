@@ -5,10 +5,7 @@ Authors: Jineon Baek, Seewoo Lee, Bhavik Mehta, Arend Mellendijk
 -/
 import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.Algebra.Order.Group.Finset
-import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
-import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Algebra.Squarefree.Basic
 

@@ -8,12 +8,9 @@ import Mathlib.Analysis.Complex.Circle
 import Mathlib.Analysis.Normed.Module.Ball.Action
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.InnerProductSpace.Calculus
-import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Geometry.Manifold.Algebra.LieGroup
 import Mathlib.Geometry.Manifold.Instances.Real
-import Mathlib.Geometry.Manifold.MFDeriv.Basic
 import Mathlib.LinearAlgebra.Complex.FiniteDimensional
-import Mathlib.Tactic.Module
 
 /-!
 # Manifold structure on the sphere

@@ -8,7 +8,6 @@ import Mathlib.Topology.Instances.Irrational
 import Mathlib.Topology.Algebra.Order.Archimedean
 import Mathlib.Topology.Compactness.Paracompact
 import Mathlib.Topology.Metrizable.Urysohn
-import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.Topology.Separation.NotNormal
 import Mathlib.Topology.Baire.Lemmas
 import Mathlib.Topology.Baire.LocallyCompactRegular
