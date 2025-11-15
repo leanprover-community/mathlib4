@@ -53,7 +53,7 @@ lemma reflection_mem_weylGroup : Equiv.reflection P i ∈ P.weylGroup :=
 def weylGroup.ofIdx (i : ι) : P.weylGroup := ⟨_, P.reflection_mem_weylGroup i⟩
 
 @[simp] lemma weylGroup.ofIdx_smul (i : ι) (m : M) :
-    weylGroup.ofIdx P i • m = Equiv.reflection P i • m :=
+    (weylGroup.ofIdx P i : Aut P) • m = Equiv.reflection P i • m :=
   rfl
 
 /-- Usually `RootPairing.weylGroup.induction` will be more useful than this lemma. -/
@@ -186,7 +186,6 @@ lemma weylGroup_apply_root (g : P.weylGroup) (i : ι) :
     g • P.root i = P.root (P.weylGroupToPerm g i) :=
   Hom.root_weightMap_apply _ _ _ _
 
-@[simp]
 lemma InvariantForm.apply_weylGroup_smul {B : P.InvariantForm} (g : P.weylGroup) (x y : M) :
     B.form (g • x) (g • y) = B.form x y := by
   revert x y
@@ -197,5 +196,10 @@ lemma InvariantForm.apply_weylGroup_smul {B : P.InvariantForm} (g : P.weylGroup)
   | mul g₁ g₂ hg₁ hg₂ hg₁' hg₂' =>
     intro x y
     rw [← Submonoid.mk_mul_mk _ _ _ hg₁ hg₂, mul_smul, mul_smul, hg₁', hg₂']
+
+@[simp]
+lemma InvariantForm.apply_weylGroup_coe_mul {B : P.InvariantForm} (g : P.weylGroup) (x y : M) :
+    B.form ((g : P.Aut) • x) ((g : P.Aut) • y) = B.form x y :=
+  apply_weylGroup_smul _ g x y
 
 end RootPairing
