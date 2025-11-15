@@ -42,8 +42,7 @@ theorem LinearMap.lTensor_mul'_comp_assoc_comp_rTensor_comul_of
     lT A μ ∘ₗ α ∘ₗ rT A δ = δ ∘ₗ μ[R] :=
   calc _ = rT A μ ∘ₗ α⁻¹ ∘ₗ lT A δ := h
     _ = rT _ μ ∘ₗ α⁻¹ ∘ₗ ((λ ∘ₗ rT _ ε ∘ₗ δ) ⊗ₘ δ) := by ext; simp
-    _ = rT _ μ ∘ₗ α⁻¹ ∘ₗ rT _ λ ∘ₗ rT _ (rT _ ε) ∘ₗ (δ ⊗ₘ δ) := by
-      simp only [rTensor_comp_map]
+    _ = rT _ μ ∘ₗ α⁻¹ ∘ₗ rT _ λ ∘ₗ rT _ (rT _ ε) ∘ₗ (δ ⊗ₘ δ) := by simp only [rTensor_comp_map]
     _ = rT _ (μ[R] ∘ₗ λ ∘ₗ rTensor _ ε ∘ₗ α) ∘ₗ α⁻¹ ∘ₗ (δ ⊗ₘ δ) := by
       simp_rw [← LinearMap.comp_assoc]
       congr 1; ext; simp [smul_mul_assoc]
@@ -59,24 +58,17 @@ theorem LinearMap.lTensor_mul'_comp_assoc_comp_rTensor_comul_of
       simp only [rTensor_tensor, comp_assoc]
       simp only [← comp_assoc _ _ α⁻¹, LinearEquiv.symm_comp, id_comp]
     _ = (λ ∘ₗ rT _ ε) ∘ₗ α ∘ₗ (rT _ (rT _ μ[R] ∘ₗ α⁻¹ ∘ₗ lT _ δ) ∘ₗ α⁻¹) ∘ₗ lT A δ := by
-      rw [← h]
-      simp_rw [← comp_assoc]
+      simp_rw [← h, ← comp_assoc]
       congr 2
-      simp_rw [← rTensor_comp, lid_tensor, ← LinearEquiv.comp_coe,
-        LinearEquiv.coe_rTensor]
+      simp_rw [← rTensor_comp, lid_tensor, ← LinearEquiv.comp_coe, LinearEquiv.coe_rTensor]
       symm
       nth_rw 3 [comp_assoc]
-      simp only [rTensor_tensor, ← comp_assoc _ _ α⁻¹,
-        LinearEquiv.symm_comp, id_comp]
-      simp_rw [← comp_assoc, ← rTensor_comp]
-      nth_rw 2 [comp_assoc]
-      simp only [LinearEquiv.symm_comp, comp_id]
-      simp_rw [← rTensor_comp, comp_assoc]
+      simp only [rTensor_tensor, ← comp_assoc _ _ α⁻¹, LinearEquiv.symm_comp, id_comp]
+      simp only [LinearEquiv.symm_comp, comp_id, ← rTensor_comp, comp_assoc]
     _ = λ ∘ₗ rT _ ε ∘ₗ α ∘ₗ rT _ (rT _ μ[R]) ∘ₗ rT A α⁻¹ ∘ₗ α⁻¹ ∘ₗ lT _ (rT A δ ∘ₗ δ) := by
       simp_rw [comp_assoc]
       congr 3
-      simp_rw [← comp_assoc]
-      rw [← rTensor_comp]
+      simp_rw [← comp_assoc, ← rTensor_comp]
       nth_rw 1 [rTensor_comp]
       simp_rw [comp_assoc]
       congr 1
@@ -91,25 +83,23 @@ theorem LinearMap.lTensor_mul'_comp_assoc_comp_rTensor_comul_of
       simp_rw [rTensor_tensor, comp_assoc]
       simp only [← comp_assoc _ _ α⁻¹, LinearEquiv.symm_comp, id_comp]
     _ = λ ∘ₗ rT _ ε ∘ₗ rT _ μ[R] ∘ₗ (α⁻¹ ∘ₗ lT _ (lT A δ)) ∘ₗ lT _ δ := by
-      rw [assoc_tensor'']
-      simp_rw [LinearEquiv.trans_symm, ← LinearEquiv.comp_coe, LinearEquiv.symm_symm, comp_assoc]
+      simp_rw [assoc_tensor'', LinearEquiv.trans_symm, ← LinearEquiv.comp_coe,
+        LinearEquiv.symm_symm, comp_assoc]
       rfl
     _ = λ ∘ₗ rT _ ε ∘ₗ (rT _ μ[R] ∘ₗ lT _ δ) ∘ₗ α⁻¹ ∘ₗ lT _ δ := by
       simp_rw [lTensor_tensor, comp_assoc]
       simp only [← comp_assoc _ _ α, LinearEquiv.comp_symm, id_comp]
     _ = λ ∘ₗ rT _ ε ∘ₗ lT _ δ ∘ₗ (lT _ μ[R] ∘ₗ α ∘ₗ rT _ δ) := by
-      rw [rTensor_comp_lTensor, ← lTensor_comp_rTensor, h]
-      simp_rw [comp_assoc]
+      simp_rw [rTensor_comp_lTensor, ← lTensor_comp_rTensor, h, comp_assoc]
     _ = λ ∘ₗ (lT _ (δ ∘ₗ μ[R]) ∘ₗ rT _ ε) ∘ₗ α ∘ₗ rT _ δ := by
-      rw [lTensor_comp_rTensor, ← rTensor_comp_lTensor, lTensor_comp]
-      simp_rw [comp_assoc]
+      simp_rw [lTensor_comp_rTensor, ← rTensor_comp_lTensor, lTensor_comp, comp_assoc]
     _ = λ ∘ₗ lT _ (δ ∘ₗ μ[R]) ∘ₗ (rT _ ε ∘ₗ α) ∘ₗ rT _ δ := by
       simp_rw [comp_assoc]
     _ = λ ∘ₗ lT _ (δ ∘ₗ μ[R]) ∘ₗ (α ∘ₗ rT _ (rT _ ε)) ∘ₗ rT _ δ := by
       simp_rw [rTensor_tensor, comp_assoc]
       simp only [← comp_assoc _ _ α⁻¹, LinearEquiv.symm_comp, id_comp]
     _ = λ ∘ₗ lT _ (δ ∘ₗ μ[R]) ∘ₗ α ∘ₗ rT _ λ⁻¹ := by
-      rw [(by rfl : λ⁻¹ = (TensorProduct.mk R R A) 1), ← rTensor_counit_comp_comul, rTensor_comp]
+      rw [(by rfl : λ⁻¹ = TensorProduct.mk R R A 1), ← rTensor_counit_comp_comul, rTensor_comp]
       simp_rw [comp_assoc]
     _ = δ ∘ₗ μ[R] := ext' fun _ _ => by
       simp only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply, rTensor_tmul,
