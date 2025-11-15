@@ -283,7 +283,7 @@ theorem carrier_eq_coe (s : NonemptyCompacts α) : s.carrier = s :=
 theorem coe_toCompacts (s : NonemptyCompacts α) : (s.toCompacts : Set α) = s := rfl
 
 @[simp]
-theorem mem_toCompacts [T2Space α] (x : α) (s : NonemptyCompacts α) :
+theorem mem_toCompacts (x : α) (s : NonemptyCompacts α) :
     x ∈ s.toCompacts ↔ x ∈ s :=
   Iff.rfl
 
