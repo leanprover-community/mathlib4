@@ -5547,6 +5547,7 @@ import Mathlib.RepresentationTheory.Basic
 import Mathlib.RepresentationTheory.Character
 import Mathlib.RepresentationTheory.Coinduced
 import Mathlib.RepresentationTheory.Coinvariants
+import Mathlib.RepresentationTheory.Commutative
 import Mathlib.RepresentationTheory.FDRep
 import Mathlib.RepresentationTheory.FinGroupCharZero
 import Mathlib.RepresentationTheory.FiniteIndex
