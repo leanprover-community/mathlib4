@@ -124,9 +124,7 @@ private theorem aux_prod_f_eq_prod_coeff (f : ℕ → ℕ → R) {n : ℕ} (p : 
     (hs : Icc 1 n ⊆ s) (hs0 : 0 ∉ s) :
     p.parts.toFinsupp.prod (f · ·) =
     ∏ i ∈ s, coeff (p.toFinsuppAntidiag i) (1 + ∑' j, f i (j + 1) • X ^ (i * (j + 1))) := by
-  have : p.parts.toFinsupp.prod (f · ·) = ∏ i ∈ p.parts.toFinset, f i (p.parts.count i) := by
-    simp [Finsupp.prod]
-  rw [this]
+  simp_rw [Finsupp.prod, Multiset.toFinsupp_support, Multiset.toFinsupp_apply]
   apply prod_subset_one_on_sdiff
   · grind [Multiset.mem_toFinset, mem_Icc, → parts_pos]
   · intro x hx
