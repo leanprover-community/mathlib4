@@ -176,6 +176,13 @@ theorem toDual_symm_apply {x : E} {y : StrongDual 𝕜 E} : ⟪(toDual 𝕜 E).s
   rw [← toDual_apply]
   simp only [LinearIsometryEquiv.apply_symm_apply]
 
+@[simp]
+lemma toLinearIsometry_toDual :
+    (toDual 𝕜 E).toLinearIsometry = toDualMap 𝕜 E := rfl
+
+lemma toDual_apply_eq_toDualMap_apply (x : E) :
+    toDual 𝕜 E x = toDualMap 𝕜 E x := rfl
+
 /-- Maps a bounded sesquilinear form to its continuous linear map,
 given by interpreting the form as a map `B : E →L⋆[𝕜] StrongDual 𝕜 E`
 and dualizing the result using `toDual`.
