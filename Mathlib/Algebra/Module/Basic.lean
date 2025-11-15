@@ -5,10 +5,9 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Notation.Indicator
 import Mathlib.Algebra.GroupWithZero.Action.Units
-import Mathlib.Algebra.Module.NatInt
-import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+import Mathlib.Algebra.Module.Torsion.Free
+import Mathlib.Algebra.Notation.Indicator
 import Mathlib.Algebra.Ring.Invertible
 
 /-!
@@ -99,12 +98,12 @@ lemma support_smul_subset_right [Zero M] [SMulZeroClass R M] (f : α → R) (g :
     support (f • g) ⊆ support g :=
   fun x hbf hf ↦ hbf <| by rw [Pi.smul_apply', hf, smul_zero]
 
-lemma support_const_smul_of_ne_zero [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M]
-    (c : R) (g : α → M) (hc : c ≠ 0) : support (c • g) = support g :=
-  ext fun x ↦ by simp only [hc, mem_support, Pi.smul_apply, Ne, smul_eq_zero, false_or]
+lemma support_const_smul_of_ne_zero [Semiring R] [IsDomain R] [AddCommMonoid M] [Module R M]
+    [Module.IsTorsionFree R M] (c : R) (g : α → M) (hc : c ≠ 0) : support (c • g) = support g :=
+  ext fun _ ↦ smul_ne_zero_iff_right hc
 
-lemma support_smul [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M] (f : α → R)
-    (g : α → M) : support (f • g) = support f ∩ support g :=
+lemma support_smul [Semiring R] [IsDomain R] [AddCommMonoid M] [Module R M]
+    [Module.IsTorsionFree R M] (f : α → R) (g : α → M) : support (f • g) = support f ∩ support g :=
   ext fun _ => smul_ne_zero_iff
 
 lemma support_const_smul_subset [Zero M] [SMulZeroClass R M] (a : R) (f : α → M) :

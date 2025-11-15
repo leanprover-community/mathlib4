@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Module.Submodule.Lattice
+import Mathlib.Algebra.Module.Torsion.Field
 import Mathlib.Data.Set.Card
 import Mathlib.LinearAlgebra.Dual.Defs
 import Mathlib.Tactic.Module

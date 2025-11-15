@@ -3,7 +3,8 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Algebra.GroupWithZero.Action.Units
+import Mathlib.Algebra.Module.Torsion.Free
 import Mathlib.Algebra.Notation.Prod
 import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
@@ -82,9 +83,9 @@ used implications are:
 * When `α` is an linear ordered semifield, `β` is an `α`-module:
   * `PosSMulStrictMono → PosSMulReflectLT`
   * `PosSMulMono → PosSMulReflectLE`
-* When `α` is a semiring, `β` is an `α`-module with `NoZeroSMulDivisors`:
+* When `α` is a semiring, `β` is an `α`-module with `Module.IsTorsionFree`:
   * `PosSMulMono → PosSMulStrictMono` (not registered as instance)
-* When `α` is a ring, `β` is an `α`-module with `NoZeroSMulDivisors`:
+* When `α` is a ring, `β` is an `α`-module with `Module.IsTorsionFree`:
   * `SMulPosMono → SMulPosStrictMono` (not registered as instance)
 
 Further, the bundled non-granular typeclasses imply the granular ones like so:
@@ -760,7 +761,7 @@ lemma PosSMulMono.of_smul_nonneg [PartialOrder α] [PartialOrder β] [IsOrderedA
     (h : ∀ a : α, 0 ≤ a → ∀ b : β, 0 ≤ b → 0 ≤ a • b) : PosSMulMono α β where
   smul_le_smul_of_nonneg_left _a ha b₁ b₂ := by simpa [sub_nonneg, smul_sub] using h _ ha (b₂ - b₁)
 
-variable [NoZeroSMulDivisors α β]
+variable [IsDomain α] [Module.IsTorsionFree α β]
 
 section PartialOrder
 variable [Preorder α] [PartialOrder β]
@@ -797,7 +798,7 @@ lemma IsOrderedModule.of_smul_nonneg [IsOrderedAddMonoid α] [IsOrderedAddMonoid
   smul_le_smul_of_nonneg_right _b hb a₁ a₂ := by
     simpa [sub_nonneg, sub_smul] using (h (a₂ - a₁) · _ hb)
 
-variable [NoZeroSMulDivisors α β]
+variable [IsDomain α] [Module.IsTorsionFree α β]
 
 lemma SMulPosMono.toSMulPosStrictMono [SMulPosMono α β] : SMulPosStrictMono α β :=
   ⟨fun _b hb _a₁ _a₂ ha ↦ (smul_le_smul_of_nonneg_right ha.le hb.le).lt_of_ne <|
