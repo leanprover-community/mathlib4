@@ -7,7 +7,7 @@ import Mathlib.Analysis.Matrix.Spectrum
 import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-!
-# Spectrum of positive definite matrices
+# Spectrum of positive (semi)definite matrices
 
 This file proves that eigenvalues of positive (semi)definite matrices are (nonnegative) positive.
 
