@@ -399,7 +399,7 @@ instance : DivisibleBy (AddCircle p) ℤ where
 
 omit [IsStrictOrderedRing 𝕜] in
 @[simp] lemma coe_fract (x : 𝕜) : (↑(Int.fract x) : AddCircle (1 : 𝕜)) = x := by
-  simp [← Int.self_sub_floor]
+  simp [← Int.self_sub_floor, mem_zmultiples_iff]
 
 end FloorRing
 
