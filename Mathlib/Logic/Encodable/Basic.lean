@@ -518,8 +518,8 @@ def encode' (α) [Encodable α] : α ↪ ℕ :=
 instance {α} [Encodable α] : IsAntisymm _ (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
   (RelEmbedding.preimage _ _).isAntisymm
 
-instance {α} [Encodable α] : IsTotal _ (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
-  (RelEmbedding.preimage _ _).isTotal
+instance {α} [Encodable α] : Std.Total (Encodable.encode' α ⁻¹'o (· ≤ ·)) :=
+  (RelEmbedding.preimage _ _).stdTotal
 
 end Encodable
 

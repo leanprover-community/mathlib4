@@ -112,12 +112,12 @@ instance [IsAsymm ι r] [∀ i, IsAntisymm (α i) (s i)] : IsAntisymm _ (Lex r s
     · exact (irrefl _ hji).elim
     · exact congr_arg (Sigma.mk _ ·) <| antisymm hab hba⟩
 
-instance [IsTrichotomous ι r] [∀ i, IsTotal (α i) (s i)] : IsTotal _ (Lex r s) :=
+instance [IsTrichotomous ι r] [∀ i, Std.Total (s i)] : Std.Total (Lex r s) :=
   ⟨by
     rintro ⟨i, a⟩ ⟨j, b⟩
     obtain hij | rfl | hji := trichotomous_of r i j
     · exact Or.inl (Lex.left _ _ hij)
-    · obtain hab | hba := total_of (s i) a b
+    · obtain hab | hba := Std.Total.total (r := s i) a b
       · exact Or.inl (Lex.right _ _ hab)
       · exact Or.inr (Lex.right _ _ hba)
     · exact Or.inr (Lex.left _ _ hji)⟩
