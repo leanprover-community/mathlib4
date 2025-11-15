@@ -200,6 +200,7 @@ import Mathlib.Tactic.NormNum.Ineq
 import Mathlib.Tactic.NormNum.Inv
 import Mathlib.Tactic.NormNum.Irrational
 import Mathlib.Tactic.NormNum.IsCoprime
+import Mathlib.Tactic.NormNum.IsSquare
 import Mathlib.Tactic.NormNum.LegendreSymbol
 import Mathlib.Tactic.NormNum.ModEq
 import Mathlib.Tactic.NormNum.NatFactorial
