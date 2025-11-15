@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Kexing Ying
 -/
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.PullOut
-import Mathlib.Probability.Notation
-import Mathlib.Probability.Process.Stopping
 import Mathlib.Probability.Process.Predictable
+import Mathlib.Probability.Process.Stopping
 
 /-!
 # Martingales
