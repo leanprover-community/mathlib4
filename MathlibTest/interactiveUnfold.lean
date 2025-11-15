@@ -111,3 +111,9 @@ info: Unfolds for fun x => id x:
 -/
 #guard_msgs in
 #unfold? fun x => id x
+
+-- We don't want to get the suggestion `inst✝.toMulOneClass.toMul.1 a a` because it isn't useful:
+variable {α : Type} [Group α] (a : α) in
+/-- info: No unfolds found for a * a -/
+#guard_msgs in
+#unfold? a * a
