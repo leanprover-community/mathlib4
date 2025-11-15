@@ -16,7 +16,7 @@ a `congrm` call with holes specified by selecting subexpressions in the goal.
 open Lean Meta Server ProofWidgets
 
 
-/-! # CongrM widget -/
+/-! ### CongrM widget -/
 
 /-- Return the link text and inserted text above and below of the congrm widget. -/
 @[nolint unusedArguments]
