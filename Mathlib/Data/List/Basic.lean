@@ -567,7 +567,7 @@ theorem getElem_idxOf [BEq α] [LawfulBEq α] {a : α} : ∀ {l : List α} (h : 
     l[idxOf a l] = a
   | b :: l, h => by
     by_cases h' : b = a <;>
-    simp [h', getElem_idxOf (l := l)]
+    simp [h', getElem_idxOf]
 
 -- This is incorrectly named and should be `get_idxOf`;
 -- this already exists, so will require a deprecation dance.
