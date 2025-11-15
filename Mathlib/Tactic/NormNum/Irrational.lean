@@ -11,7 +11,7 @@ import Mathlib.Tactic.Rify
 /-! # `norm_num` extension for `Irrational`
 
 This module defines a `norm_num` extension for `Irrational x ^ y` for rational `x` and `y`. It also
-supports `Irrational √x` expressions.
+supports `Irrational √x` expressions. We also disprove `Irrational x` for rational `x`.
 
 ## Implementation details
 To prove that `(a / b) ^ (p / q)` is irrational, we reduce the problem to showing that `(a / b) ^ p`
