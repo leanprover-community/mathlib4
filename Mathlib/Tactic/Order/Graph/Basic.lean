@@ -63,6 +63,8 @@ partial def buildTransitiveLeProofDFS (g : Graph) (v t : Nat) (tExpr : Expr) :
   modify fun s => {s with visited := s.visited.insert v}
   if v == t then
     return ← mkAppM ``le_refl #[tExpr]
+  if !g.contains v then
+    return none
   for edge in g[v]! do
     let u := edge.dst
     if !(← get).visited.contains u then

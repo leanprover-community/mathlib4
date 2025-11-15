@@ -152,7 +152,6 @@ initialize registerTraceClass `order
 component in the `≤`-graph, implying they must be equal, and then uses it to derive `False`. -/
 def findContradictionWithNe (graph : Graph) (facts : Array AtomicFact) : AtomM (Option Expr) := do
   let scc := graph.findSCCs
-  dbg_trace "found scc"
   for fact in facts do
     let .ne lhs rhs neProof := fact | continue
     if scc[lhs]! != scc[rhs]! then
@@ -187,8 +186,9 @@ def updateGraphWithNltInfSup (g : Graph)
   let mut usedNltFacts : Vector Bool _ := .replicate nltFacts.size false
   let infSupFacts := facts.filter fun fact => fact matches .isInf .. | .isSup ..
   let mut g := g
+  let vertices : Std.HashSet Nat := g.fold (init := ∅) fun acc v edges =>
+    (acc.insert v).insertMany <| edges.map (fun e => e.dst)
   repeat do
-    dbg_trace "go"
     let mut changed : Bool := false
     for h : i in [:nltFacts.size] do
       if usedNltFacts[i] then
@@ -198,9 +198,8 @@ def updateGraphWithNltInfSup (g : Graph)
       g := g.addEdge ⟨rhs, lhs, ← mkAppM ``le_of_not_lt_le #[proof, pf]⟩
       changed := true
       usedNltFacts := usedNltFacts.set i true
-    dbg_trace "og"
     for fact in infSupFacts do
-      for (idx, _) in g do
+      for idx in vertices do
         match fact with
         | .isSup lhs rhs sup =>
           let some pf1 ← g.buildTransitiveLeProof lhs idx | continue
@@ -217,7 +216,6 @@ def updateGraphWithNltInfSup (g : Graph)
         | _ => panic! "Non-isInf or isSup fact in infSupFacts."
     if !changed then
       break
-  dbg_trace "phew"
   return g
 
 /-- Necessary for tracing below. -/
@@ -228,7 +226,6 @@ local instance : Ord (Nat × Expr) where
 def orderCoreImp (only? : Bool) (hyps : Array Expr) (negGoal : Expr) (g : MVarId) : AtomM Unit := do
   g.withContext do
     let TypeToFacts ← collectFacts only? hyps negGoal
-    dbg_trace (← get).atoms.size
     let atomsMsg := String.intercalate "\n" <| Array.toList <|
       ← (← get).atoms.mapIdxM
         fun idx atom => do return s!"#{idx} := {← ppExpr atom}"
@@ -239,24 +236,18 @@ def orderCoreImp (only? : Bool) (hyps : Array Expr) (negGoal : Expr) (g : MVarId
       let factsMsg := String.intercalate "\n" (facts.map toString).toList
       trace[order] "Collected facts:\n{factsMsg}"
       let facts ← replaceBotTop facts
-      let factsMsg := String.intercalate "\n" (facts.map toString).toList
-      trace[order] "After BotTop:\n{factsMsg}"
       let processedFacts : Array AtomicFact ← preprocessFacts facts orderType
       let factsMsg := String.intercalate "\n" (processedFacts.map toString).toList
       trace[order] "Processed facts:\n{factsMsg}"
       let mut graph ← Graph.constructLeGraph processedFacts
-      dbg_trace "Graph is constructed"
       graph ← updateGraphWithNltInfSup graph processedFacts
-      dbg_trace "Graph is updated with inf & sup"
       if orderType == .pre then
         let some pf ← findContradictionWithNle graph processedFacts | continue
         g.assign pf
         return
-      dbg_trace "Before contradiction"
       if let some pf ← findContradictionWithNe graph processedFacts then
         g.assign pf
         return
-      dbg_trace "No contradiction found"
       -- if fast procedure failed and order is linear, we try `omega`
       if orderType == .lin then
         let ⟨u, type⟩ ← getLevelQ' type

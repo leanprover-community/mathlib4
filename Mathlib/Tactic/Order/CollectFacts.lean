@@ -46,8 +46,6 @@ instance : ToString AtomicFact where
   | .isInf lhs rhs res => s!"#{res} := #{lhs} ⊓ #{rhs}"
   | .isSup lhs rhs res => s!"#{res} := #{lhs} ⊔ #{rhs}"
 
-#check AtomM
-
 /-- State for `CollectFactsM`. It contains a map where the key `t` maps to a
 pair `(atomToIdx, facts)`. `atomToIdx` is a `DiscrTree` containing atomic expressions with their
 indices, and `facts` stores `AtomicFact`s about them. -/
@@ -69,7 +67,6 @@ partial def addAtom {u : Level} (type : Q(Type u)) (x : Q($type)) : CollectFacts
   | some (idx, _) => return idx
   | none =>
     let (idx, ⟨x', _⟩) := ← AtomM.addAtomQ x
-    dbg_trace f!"added atom {idx}"
     match x' with
     | ~q((@OrderTop.toTop _ $instLE $instTop).top) =>
       addFact type (.isTop idx)

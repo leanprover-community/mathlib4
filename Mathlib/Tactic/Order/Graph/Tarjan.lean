@@ -83,7 +83,9 @@ def findSCCs (g : Graph) : Std.HashMap Nat Nat :=
     time := 0
   }
   let res := (findSCCsImp g).run s |>.snd.lowlink
-  dbg_trace f!"check: {res.size == g.size}"
+  let vertices : Std.HashSet Nat := g.fold (init := ∅) fun acc v edges =>
+    (acc.insert v).insertMany <| edges.map (fun e => e.dst)
+  assert! res.size == vertices.size
   res
 
 end Mathlib.Tactic.Order.Graph
