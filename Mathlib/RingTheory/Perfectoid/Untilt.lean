@@ -65,7 +65,7 @@ lemma pow_dvd_untiltAux_sub_untiltAux (x : PreTilt O p) {m n : ℕ} (h : m ≤ n
     simp only [Ideal.Quotient.mk_out, map_pow, Nat.sub_add_cancel h]
     calc
       _ = (coeff (ModP O p) p (n' - (n' - m))) x := by simp [Nat.sub_sub_self h]
-      _ = (coeff (ModP O p) p n') (((frobenius (Ring.Perfection (ModP O p) p) p))^[n' - m] x) :=
+      _ = (coeff (ModP O p) p n') (((frobenius (Perfection (ModP O p) p) p))^[n' - m] x) :=
         (coeff_iterate_frobenius' x n' (n' - m) (Nat.sub_le n' m)).symm
       _ = _ := by simp [iterate_frobenius]
 
