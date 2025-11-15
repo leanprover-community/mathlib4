@@ -48,7 +48,7 @@ theorem isPrimitiveRoot_exp_of_coprime (i n : ℕ) (h0 : n ≠ 0) (hi : i.Coprim
     IsPrimitiveRoot (exp (2 * π * I * (i / n))) n :=
   isPrimitiveRoot_exp_of_isCoprime _ _ h0 hi.isCoprime
 
-theorem isPrimitiveRoot_exp_two_rat (q : ℚ) : IsPrimitiveRoot (exp (2 * π * I * q)) q.den := by
+theorem isPrimitiveRoot_exp_rat (q : ℚ) : IsPrimitiveRoot (exp (2 * π * I * q)) q.den := by
   convert isPrimitiveRoot_exp_of_isCoprime _ _ q.den_nz <|
     Int.isCoprime_iff_nat_coprime.mpr q.reduced
   nth_rw 1 [← Rat.num_div_den q]
@@ -57,7 +57,7 @@ theorem isPrimitiveRoot_exp_two_rat (q : ℚ) : IsPrimitiveRoot (exp (2 * π * I
 theorem isPrimitiveRoot_exp_rat_of_even_num (q : ℚ) (h : Even q.num) :
     IsPrimitiveRoot (exp (π * I * q)) q.den := by
   have ⟨n, hn⟩ := even_iff_exists_two_nsmul _ |>.mp h
-  convert isPrimitiveRoot_exp_two_rat (n / q.den) using 1
+  convert isPrimitiveRoot_exp_rat (n / q.den) using 1
   · nth_rw 1 [← q.num_div_den, hn]
     grind [Rat.cast_mul, Rat.cast_ofNat]
   · rw [← Int.cast_natCast, ← Rat.divInt_eq_div, ← Rat.mk_eq_divInt _ _ (by simp) ?_]
@@ -66,7 +66,7 @@ theorem isPrimitiveRoot_exp_rat_of_even_num (q : ℚ) (h : Even q.num) :
 
 theorem isPrimitiveRoot_exp_rat_of_odd_num (q : ℚ) (h : Odd q.num) :
     IsPrimitiveRoot (exp (π * I * q)) (2 * q.den) := by
-  convert isPrimitiveRoot_exp_two_rat (q / 2) using 1
+  convert isPrimitiveRoot_exp_rat (q / 2) using 1
   · grind [Rat.cast_div, Rat.cast_ofNat]
   · nth_rw 2 [← q.num_div_den]
     rw [mul_comm, div_div, ← Int.cast_ofNat, ← Int.cast_natCast, ← Int.cast_mul,
