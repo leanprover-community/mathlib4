@@ -17,7 +17,6 @@ This file defines unoriented angles in Euclidean affine spaces.
 
 * `EuclideanGeometry.angle`, with notation `∠`, is the undirected angle determined by three
   points.
-
 -/
 
 
