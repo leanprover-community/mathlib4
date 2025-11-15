@@ -298,7 +298,7 @@ theorem addHaar_image_linearMap (f : E →ₗ[ℝ] E) (s : Set E) :
   rcases ne_or_eq (LinearMap.det f) 0 with (hf | hf)
   · let g := (f.equivOfDetNeZero hf).toContinuousLinearEquiv
     change μ (g '' s) = _
-    rw [ContinuousLinearEquiv.image_eq_preimage g s, addHaar_preimage_continuousLinearEquiv]
+    rw [ContinuousLinearEquiv.image_eq_preimage_symm g s, addHaar_preimage_continuousLinearEquiv]
     congr
   · simp only [hf, zero_mul, ENNReal.ofReal_zero, abs_zero]
     have : μ (LinearMap.range f) = 0 :=
@@ -504,9 +504,8 @@ theorem addHaar_real_closedBall (x : E) {r : ℝ} (hr : 0 ≤ r) :
 
 theorem addHaar_closedBall_eq_addHaar_ball [Nontrivial E] (x : E) (r : ℝ) :
     μ (closedBall x r) = μ (ball x r) := by
-  by_cases h : r < 0
+  by_cases! h : r < 0
   · rw [Metric.closedBall_eq_empty.mpr h, Metric.ball_eq_empty.mpr h.le]
-  push_neg at h
   rw [addHaar_closedBall μ x h, addHaar_ball μ x h]
 
 theorem addHaar_real_closedBall_eq_addHaar_real_ball [Nontrivial E] (x : E) (r : ℝ) :
@@ -563,7 +562,7 @@ variable {ι G : Type*} [Fintype ι] [DecidableEq ι] [NormedAddCommGroup G] [No
 
 theorem addHaar_parallelepiped (b : Basis ι ℝ G) (v : ι → G) :
     b.addHaar (parallelepiped v) = ENNReal.ofReal |b.det v| := by
-  have : FiniteDimensional ℝ G := FiniteDimensional.of_fintype_basis b
+  have : FiniteDimensional ℝ G := b.finiteDimensional_of_finite
   have A : parallelepiped v = b.constr ℕ v '' parallelepiped b := by
     rw [image_parallelepiped]
     exact congr_arg _ <| funext fun i ↦ (b.constr_basis ℕ v i).symm
