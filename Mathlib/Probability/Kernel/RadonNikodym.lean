@@ -476,6 +476,13 @@ lemma measurableSet_mutuallySingular (κ η : Kernel α γ) [IsFiniteKernel κ] 
   exact measurable_kernel_prodMk_left (measurableSet_mutuallySingularSet κ η).compl
     (measurableSet_singleton 0)
 
+@[measurability]
+lemma measurableSet_eq_zero (κ : Kernel α γ) [IsFiniteKernel κ] :
+    MeasurableSet {a | κ a = 0} := by
+  have h_sing : {a | κ a = 0} = {a | κ a ⟂ₘ κ a} := by ext; simp
+  rw [h_sing]
+  exact measurableSet_mutuallySingular κ κ
+
 @[simp]
 lemma singularPart_self (κ : Kernel α γ) [IsFiniteKernel κ] : κ.singularPart κ = 0 := by
   ext : 1; rw [zero_apply, singularPart_eq_zero_iff_absolutelyContinuous]

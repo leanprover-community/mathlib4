@@ -100,6 +100,10 @@ noncomputable instance instAddCommMonoid : AddCommMonoid (Kernel α β) :=
 
 instance instPartialOrder : PartialOrder (Kernel α β) := .lift _ DFunLike.coe_injective
 
+lemma le_iff {κ η : Kernel α β} : κ ≤ η ↔ ∀ a, κ a ≤ η a := Iff.rfl
+
+@[simp] protected lemma zero_le (κ : Kernel α β) : 0 ≤ κ := fun _ ↦ Measure.zero_le _
+
 instance {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
     AddLeftMono (Kernel α β) :=
   ⟨fun _ _ _ hμ a ↦ add_le_add_left (hμ a) _⟩
