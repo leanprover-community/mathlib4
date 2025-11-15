@@ -1065,32 +1065,6 @@ theorem Integrable.simpleFunc_mul' (hm : m ≤ m0) (g : @SimpleFunc X m ℝ) (hf
     Integrable (⇑g * f) μ :=
   hf.simpleFunc_bilinearMap' (ContinuousLinearMap.mul ℝ ℝ) hm g
 
-variable {E F G : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedAddCommGroup G] [NormedSpace ℝ G]
-  (B : F →L[ℝ] E →L[ℝ] G) {f : X → E}
-
-theorem Integrable.simpleFunc_bilinearMap (g : SimpleFunc X F) (hf : Integrable f μ) :
-    Integrable (fun x ↦ B (g x) (f x)) μ := by
-  refine
-    SimpleFunc.induction (fun c s hs => ?_)
-      (fun g₁ g₂ _ h_int₁ h_int₂ =>
-        (h_int₁.add h_int₂).congr (by simp_rw [SimpleFunc.coe_add, Pi.add_apply, map_add]; rfl))
-      g
-  simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
-    SimpleFunc.coe_zero, Set.piecewise_eq_indicator]
-  have : (fun x ↦ B (Set.indicator s (Function.const X c) x) (f x)) =
-      fun x ↦ s.indicator ((B c) ∘ f) x := by
-    ext1 x
-    by_cases hx : x ∈ s <;> simp [hx]
-  rw [this, integrable_indicator_iff hs]
-  exact ((B c).integrable_comp hf).integrableOn
-
-theorem Integrable.simpleFunc_bilinearMap'
-    (hm : m ≤ m0) (g : @SimpleFunc X m F) (hf : Integrable f μ) :
-    Integrable (fun x ↦ B (g x) (f x)) μ := by
-  rw [← SimpleFunc.coe_toLargerSpace_eq hm g]
-  exact hf.simpleFunc_bilinearMap B (g.toLargerSpace hm)
-
 end MeasureTheory
 
 end BilinearMap
