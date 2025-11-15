@@ -558,6 +558,14 @@ lemma iSup_unique [Unique ι] (f : ι → α) : ⨆ i, f i = f default := by
 lemma iInf_unique [Unique ι] (f : ι → α) : ⨅ i, f i = f default := by
   simp only [congr_arg f (Unique.eq_default _), iInf_const]
 
+theorem iSup_pi_unique [Unique ι] (f : ι' → α) :
+    ⨆ (x : ι → ι'), f (x default) = ⨆ (x : ι'), f x := by
+  simpa [le_antisymm_iff, le_iSup_iff] using ⟨fun _ h x ↦ h (x default), fun _ h x ↦ h fun _ ↦ x⟩
+
+theorem iInf_pi_unique [Unique ι] (f : ι' → α) :
+    ⨅ (x : ι → ι'), f (x default) = ⨅ (x : ι'), f x :=
+  @iSup_pi_unique αᵒᵈ _ _ _ _ _
+
 @[simp]
 theorem iSup_bot : (⨆ _ : ι, ⊥ : α) = ⊥ :=
   bot_unique iSup_const_le
