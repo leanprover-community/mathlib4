@@ -12,6 +12,7 @@ import Mathlib.Algebra.Group.Submonoid.MulOpposite
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Data.Fintype.EquivFin
 import Mathlib.Data.Int.Basic
+import Mathlib.Algebra.Group.Int.Defs
 
 /-!
 # Submonoids: membership criteria
