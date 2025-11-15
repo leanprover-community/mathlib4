@@ -11,7 +11,7 @@ Some useful lemmas about Array.extract
 -/
 
 universe u
-variable {α : Type u} {i : Nat}
+variable  {α : Type u} {i : Nat}
 
 namespace Array
 
