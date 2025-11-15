@@ -56,6 +56,18 @@ lemma isSmall_iff_eq_ofHoms :
   · rintro ⟨_, _, _, _, rfl⟩
     infer_instance
 
+lemma iSup_ofHoms {α : Type*} {ι : α → Type t} {A B : ∀ a, ι a → C}
+    (f : ∀ a, ∀ i, A a i ⟶ B a i) :
+    ⨆ (a : α), ofHoms (f a) = ofHoms (fun (j : Σ (a : α), ι a) ↦ f j.1 j.2) := by
+  ext f
+  simp [ofHoms_iff]
+
+instance {ι : Type t} [Small.{w} ι] (W : ι → MorphismProperty C) [∀ i, IsSmall.{w} (W i)] :
+    IsSmall.{w} (⨆ i, W i) := by
+  choose α A B f hf using fun i ↦ (isSmall_iff_eq_ofHoms.{w} (W i)).1 inferInstance
+  simp only [hf, iSup_ofHoms]
+  infer_instance
+
 end MorphismProperty
 
 end CategoryTheory
