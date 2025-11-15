@@ -8,7 +8,7 @@ import Mathlib.Algebra.EuclideanDomain.Field
 import Mathlib.Algebra.Polynomial.Module.Basic
 import Mathlib.Analysis.Calculus.ContDiff.Basic
 import Mathlib.Analysis.Calculus.Deriv.Pow
-import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Analysis.Calculus.Deriv.MeanValue
 
@@ -434,3 +434,97 @@ theorem exists_taylor_mean_remainder_bound {f : ℝ → E} {a b : ℝ} {n : ℕ}
   rw [div_mul_eq_mul_div₀]
   refine taylor_mean_remainder_bound hab hf hx fun y => ?_
   exact (hf.continuousOn_iteratedDerivWithin rfl.le <| uniqueDiffOn_Icc h).norm.le_sSup_image_Icc
+
+/-! ### Extension of Taylor's Theorem to `x < x₀` -/
+
+
+theorem taylorCoeffWithin_neg {f : ℝ → ℝ} {x₀ : ℝ} (d : ℕ) :
+    taylorCoeffWithin (fun x => f (-x)) d Set.univ (-x₀)
+      = (-1)^d * taylorCoeffWithin f d Set.univ x₀ := by
+  field_simp [taylorCoeffWithin, iteratedDerivWithin_univ, iteratedDeriv_comp_neg, ←mul_assoc]
+
+theorem taylorWithinEval_neg {f : ℝ → ℝ} (x₀ x : ℝ) {n : ℕ} :
+    taylorWithinEval (fun x => f (-x)) n Set.univ (-x₀) (-x)
+      = taylorWithinEval f n Set.univ x₀ x := by
+  simp only [taylorWithinEval, taylorWithin, PolynomialModule.comp_apply,
+    PolynomialModule.map_single, PolynomialModule.eval_single, map_sum, map_neg, sub_neg_eq_add]
+  apply Finset.sum_congr rfl (fun d _ ↦ ?_)
+  simp [taylorCoeffWithin_neg d, ← mul_pow, ← mul_assoc, PolynomialModule.eval_smul,
+    Polynomial.eval_pow, Polynomial.eval_X, sub_eq_neg_add x x₀]
+
+theorem taylorCoeffWithin_eq {f : ℝ → ℝ} {x₀ : ℝ} {d : ℕ}
+    (s : Set ℝ) (hx : x₀ ∈ s) (hs : UniqueDiffOn ℝ s) (hf : ContDiff ℝ d f) :
+    taylorCoeffWithin f d s x₀ = taylorCoeffWithin f d Set.univ x₀ := by
+  simp only [taylorCoeffWithin, iteratedDerivWithin_eq_iteratedDeriv hf hs hx,
+    iteratedDerivWithin_univ]
+
+theorem taylorWithin_eq {f : ℝ → ℝ} {x₀ : ℝ} {d : ℕ}
+    {s : Set ℝ} (hx : x₀ ∈ s) (hs : UniqueDiffOn ℝ s) (hf : ContDiff ℝ d f) :
+    taylorWithin f d s x₀ = taylorWithin f d Set.univ x₀ := by
+  rw [taylorWithin, taylorWithin, Finset.sum_congr rfl (fun k hk => ?_)]
+  rw [taylorCoeffWithin_eq s hx hs (ContDiff.of_le hf ?_)]
+  rwa [Nat.cast_le, Nat.le_iff_lt_add_one, ←Finset.mem_range]
+
+theorem taylorWithinEval_eq {f : Real → Real} {x₀ : Real} {d : Nat}
+    {s : Set ℝ} (hx : x₀ ∈ s) (hs : UniqueDiffOn ℝ s) (hf : ContDiff ℝ d f) :
+    taylorWithinEval f d s x₀ = taylorWithinEval f d Set.univ x₀ := by
+  ext x
+  rw [taylorWithinEval, taylorWithinEval, taylorWithin_eq hx hs hf]
+
+/-- **Taylor's theorem** with the general mean value form of the remainder for `x < x₀`.
+
+We assume that `f` is `n+1`-times continuously differentiable in the closed set `Icc x x₀` and
+`n+1`-times differentiable on the open set `Ioo x x₀`, and `g` is a differentiable function on
+`Ioo x x₀` and continuous on `Icc x x₀`. Then there exists an `x' ∈ Ioo x x₀` such that
+$$f(x) - (P_n f)(x₀, x) = \frac{(x - x')^n}{n!} \frac{g(x) - g(x₀)}{g' x'},$$
+where $P_n f$ denotes the Taylor polynomial of degree $n$. -/
+theorem taylor_mean_remainder' {f : ℝ → ℝ} {g g' : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ} (hx : x < x₀)
+    (hf : ContDiffOn ℝ n f (Icc x x₀))
+    (hf' : DifferentiableOn ℝ (iteratedDerivWithin n f (Icc x x₀)) (Ioo x x₀))
+    (gcont : ContinuousOn g (Icc x x₀))
+    (gdiff : ∀ x_1 : ℝ, x_1 ∈ Ioo x x₀ → HasDerivAt g (g' x_1) x_1)
+    (g'_ne : ∀ x_1 : ℝ, x_1 ∈ Ioo x x₀ → g' x_1 ≠ 0) :
+    ∃ x' ∈ Ioo x x₀, f x - taylorWithinEval f n (Icc x x₀) x₀ x =
+    ((x - x') ^ n / n ! * (g x - g x₀) / g' x') • iteratedDerivWithin (n + 1) f (Icc x x₀) x' := by
+  -- We apply the mean value theorem
+  rcases exists_ratio_hasDerivAt_eq_ratio_slope (fun t => taylorWithinEval f n (Icc x x₀) t x)
+      (fun t => ((n ! : ℝ)⁻¹ * (x - t) ^ n) • iteratedDerivWithin (n + 1) f (Icc x x₀) t) hx
+      (continuousOn_taylorWithinEval (uniqueDiffOn_Icc hx) hf)
+      (fun _ hy => taylorWithinEval_hasDerivAt_Ioo x hx hy hf hf') g g' gcont gdiff with ⟨y, hy, h⟩
+  use y, hy
+  -- The rest is simplifications and trivial calculations
+  simp only [taylorWithinEval_self] at h
+  rw [mul_comm, ← div_left_inj' (g'_ne y hy), mul_div_cancel_right₀ _ (g'_ne y hy)] at h
+  rw [← neg_sub]
+  rw [← h]
+  field_simp [g'_ne y hy]
+  ring
+
+/-- **Taylor's theorem** with the Lagrange form of the remainder for `x < x₀`.
+
+We assume that `f` is `n+1`-times continuously differentiable in the closed set `Icc x x₀` and
+`n+1`-times differentiable on the open set `Ioo x x₀`. Then there exists an `x' ∈ Ioo x x₀` such
+that $$f(x) - (P_n f)(x₀, x) = \frac{f^{(n+1)}(x') (x - x₀)^{n+1}}{(n+1)!},$$
+where $P_n f$ denotes the Taylor polynomial of degree $n$ and $f^{(n+1)}$ is the $n+1$-th iterated
+derivative. -/
+theorem taylor_mean_remainder_lagrange' {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ} (hx : x < x₀)
+    (hf : ContDiffOn ℝ n f (Icc x x₀))
+    (hf' : DifferentiableOn ℝ (iteratedDerivWithin n f (Icc x x₀)) (Ioo x x₀)) :
+    ∃ x' ∈ Ioo x x₀, f x - taylorWithinEval f n (Icc x x₀) x₀ x =
+      iteratedDerivWithin (n + 1) f (Icc x x₀) x' * (x - x₀) ^ (n + 1) / (n + 1)! := by
+  have gcont : ContinuousOn (fun t : ℝ => (x - t) ^ (n + 1)) (Icc x x₀) := by fun_prop
+  have xy_ne : ∀ y : ℝ, y ∈ Ioo x x₀ → (x - y) ^ n ≠ 0 := by
+    intro y hy
+    refine pow_ne_zero _ ?_
+    rw [mem_Ioo] at hy
+    rw [sub_ne_zero]
+    exact hy.1.ne
+  have hg' : ∀ y : ℝ, y ∈ Ioo x x₀ → -(↑n + 1) * (x - y) ^ n ≠ 0 := fun y hy =>
+    mul_ne_zero (neg_ne_zero.mpr (Nat.cast_add_one_ne_zero n)) (xy_ne y hy)
+  -- We apply the general theorem with g(t) = (x - t)^(n+1)
+  rcases taylor_mean_remainder' hx hf hf' gcont (fun y _ => monomial_has_deriv_aux y x _) hg' with
+    ⟨y, hy, h⟩
+  use y, hy
+  simp only [sub_self, zero_pow, Ne, Nat.succ_ne_zero, not_false_iff, zero_sub, mul_neg] at h
+  rw [h, neg_div, ← div_neg, neg_mul, neg_neg]
+  field_simp [xy_ne y hy, Nat.factorial]; ring
