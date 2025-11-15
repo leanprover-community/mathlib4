@@ -387,18 +387,51 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
         · intros z
           refine AnalyticAt.deriv ?_
           exact hf z
-
         ·
-          have : deriv (fun z => (z - z₀)^(r - k) *
+          obtain ⟨hAR2, HR2⟩ := hR₂
+          have derivOfderivk : deriv (fun z => (z - z₀)^(r - k) *
             (r.factorial / (r - k).factorial * R₁ z + (z - z₀) * R₂ z)) z =
-             (z - z₀) ^ (r - (k + 1)) *
-              (↑r.factorial / ↑(r - (k + 1)).factorial * R₁ z + (z - z₀) * R₂ z)
-              := sorry
+             ↑(r - k) * (z - z₀) ^ (r - k - 1) *
+              (↑r.factorial / ↑(r - k).factorial * R₁ z + (z - z₀) * R₂ z) +
+            (z - z₀) ^ (r - k) * (↑r.factorial / ↑(r - k).factorial *
+           deriv R₁ z + (R₂ z + (z - z₀) * deriv R₂ z)) := by {
+                rw [deriv_fun_mul]
+                rw [deriv_fun_add]
+                rw [deriv_fun_mul]
+                rw [deriv_fun_mul]
+                simp only [differentiableAt_fun_id, differentiableAt_const,
+                  DifferentiableAt.fun_sub, deriv_fun_pow'', deriv_fun_sub, deriv_id'',
+                  deriv_const', sub_zero, mul_one, deriv_div_const, zero_div, zero_mul, zero_add,
+                  one_mul]
+                · simp only [differentiableAt_fun_id, differentiableAt_const,
+                  DifferentiableAt.fun_sub]
+                · exact AnalyticAt.differentiableAt (hAR2 z)
+                · simp only [differentiableAt_const]
+                · exact AnalyticAt.differentiableAt (hf1 z)
+                · refine DifferentiableAt.fun_mul ?_ ?_
+                  · simp only [differentiableAt_const]
+                  · exact AnalyticAt.differentiableAt (hf1 z)
+                · refine DifferentiableAt.fun_mul ?_ ?_
+                  · simp only [differentiableAt_fun_id, differentiableAt_const,
+                    DifferentiableAt.fun_sub]
+                  · exact AnalyticAt.differentiableAt (hAR2 z)
+                · simp only [differentiableAt_fun_id, differentiableAt_const,
+                  DifferentiableAt.fun_sub, DifferentiableAt.fun_pow]
+                · refine (DifferentiableAt.fun_add_iff_right ?_).mpr ?_
+                  · refine DifferentiableAt.fun_mul ?_ ?_
+                    · simp only [differentiableAt_const]
+                    · exact AnalyticAt.differentiableAt (hf1 z)
+                  · refine DifferentiableAt.fun_mul ?_ ?_
+                    · simp only [differentiableAt_fun_id, differentiableAt_const,
+                      DifferentiableAt.fun_sub]
+                    · exact AnalyticAt.differentiableAt (hAR2 z)}
+
           have :  deriv (deriv^[k] R) z =
             deriv (fun z => (z - z₀)^(r - k) *
             (r.factorial / (r - k).factorial * R₁ z + (z - z₀) * R₂ z)) z := by {
+
               rw [← iteratedDeriv_eq_iterate]
-              rw [← iteratedDeriv_eq_iterate] at hR₂
+              rw [← iteratedDeriv_eq_iterate] at HR2
               rw [← iteratedDeriv_succ]
               rw [deriv_fun_mul]
               rw [deriv_fun_add]
@@ -408,6 +441,7 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
                 differentiableAt_const, DifferentiableAt.fun_sub,
                 deriv_fun_pow'', deriv_fun_sub, deriv_id'', deriv_const', sub_zero, mul_one,
                 deriv_div_const, zero_div, zero_mul, zero_add, one_mul]
+              rw [← derivOfderivk]
               sorry
               sorry
               sorry
@@ -418,7 +452,7 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
               sorry
               sorry
             }
-          rw [this];clear this
+          rw [this]; clear this
           rw [deriv_fun_mul]
           rw [deriv_fun_add]
           rw [deriv_fun_mul]
@@ -427,16 +461,29 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
             differentiableAt_const, DifferentiableAt.fun_sub,
             deriv_fun_pow'', deriv_fun_sub, deriv_id'', deriv_const', sub_zero, mul_one,
             deriv_div_const, zero_div, zero_mul, zero_add, one_mul]
-          clear this
           sorry
-          sorry
-          sorry
-          sorry
-          sorry
-          sorry
-          sorry
-          sorry
-          sorry
+          · simp only [differentiableAt_fun_id, differentiableAt_const, DifferentiableAt.fun_sub]
+          · exact AnalyticAt.differentiableAt (hAR2 z)
+          · simp only [differentiableAt_const]
+          · exact AnalyticAt.differentiableAt (hf1 z)
+          · refine DifferentiableAt.fun_mul ?_ ?_
+            · simp only [differentiableAt_const]
+            · exact AnalyticAt.differentiableAt (hf1 z)
+          · refine DifferentiableAt.fun_mul ?_ ?_
+            · refine DifferentiableAt.sub_const ?_ z₀
+              simp only [differentiableAt_fun_id]
+            · exact AnalyticAt.differentiableAt (hAR2 z)
+          · refine DifferentiableAt.fun_pow ?_ (r - k)
+            refine DifferentiableAt.sub_const ?_ z₀
+            simp only [differentiableAt_fun_id]
+          · refine (DifferentiableAt.fun_add_iff_left ?_).mpr ?_
+            · refine DifferentiableAt.fun_mul ?_ ?_
+              · refine DifferentiableAt.sub_const ?_ z₀
+                simp only [differentiableAt_fun_id]
+              · exact AnalyticAt.differentiableAt (hAR2 z)
+            · refine DifferentiableAt.fun_mul ?_ ?_
+              · simp only [differentiableAt_const]
+              · exact AnalyticAt.differentiableAt (hf1 z)
 
 
 
@@ -482,7 +529,7 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
         --   }
 
         }
-
+#exit
 
 
 lemma iterated_deriv_eq_zero_iff_order_eq_n :
@@ -740,12 +787,13 @@ lemma AnalyticAtEq (f g : ℂ → ℂ) (U : Set ℂ) (z : ℂ) :
       := by {
         sorry
       }
-      unfold HasSum at this ⊢
-      have Hinsert : insert x U = U := by simp_all [Set.insert_eq_of_mem]
-      rw [Hinsert] at this ⊢
-      intros y Hxy
-      have := this Hxy
-      rwa [← Heq _ Hxy]
+      -- unfold HasSum at this ⊢
+      -- have Hinsert : insert x U = U := by simp_all [Set.insert_eq_of_mem]
+      -- rw [Hinsert] at this ⊢
+      -- intros y Hxy
+      -- have := this Hxy
+      -- rwa [← Heq _ Hxy]
+      sorry
 
 
 
