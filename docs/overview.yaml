@@ -460,9 +460,9 @@ Geometry:
 
   Convex geometry:
     convex cone: 'ConvexCone.ConvexCone'
-    pointed cone: 'PointedCone.PointedCone'
     salient cone: 'ConvexCone.Salient'
-    positive cone: 'PointedCone.positive'
+    positive cone: 'ConvexCone.positive'
+    pointed cone: 'PointedCone.PointedCone'
     dual cone: 'PointedCone.dual'
     minimal tensor product: 'PointedCone.minTensorProduct'
     maximal tensor product: 'PointedCone.maxTensorProduct'
