@@ -130,12 +130,13 @@ lemma toPresheafFiber_naturality {P Q : Cᵒᵖ ⥤ A} (g : P ⟶ Q) (X : C) (x 
       g.app (op X) ≫ Φ.toPresheafFiber X x Q :=
   ((Φ.toPresheafFiberNatTrans X x).naturality g).symm
 
-section
-
 variable {FC : A → A → Type*} {CC : A → Type w'}
   [∀ (X Y : A), FunLike (FC X Y) (CC X) (CC Y)]
   [ConcreteCategory.{w'} A FC]
-  {P Q : Cᵒᵖ ⥤ A}
+
+section
+
+variable {P Q : Cᵒᵖ ⥤ A}
 
 @[simp]
 lemma toPresheafFiber_naturality_apply {P Q : Cᵒᵖ ⥤ A} (g : P ⟶ Q) (X : C) (x : Φ.fiber.obj X)
@@ -229,6 +230,41 @@ instance [LocallySmall.{w} C] [HasFiniteLimits A] [AB5OfSize.{w, w} A] :
 
 instance [LocallySmall.{w} C] [HasFiniteLimits A] [AB5OfSize.{w, w} A] :
     PreservesFiniteLimits (Φ.sheafFiber (A := A)) := comp_preservesFiniteLimits _ _
+
+instance : PreservesColimitsOfSize.{w, w} (Φ.presheafFiber (A := A)) where
+  preservesColimitsOfShape :=
+    (ObjectProperty.preservesColimitsOfShape _).prop_of_isColimit
+      (colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ evaluation _ A))
+        (by dsimp; infer_instance)
+
+instance [HasSheafify J A] [J.WEqualsLocallyBijective A] [(forget A).ReflectsIsomorphisms]
+    [PreservesFilteredColimitsOfSize.{w, w} (forget A)] [LocallySmall.{w} C] :
+    PreservesColimitsOfSize.{w, w} (Φ.sheafFiber (A := A)) where
+  preservesColimitsOfShape {K _} := ⟨fun {F} ↦
+    preservesColimit_of_preserves_colimit_cocone
+      (Sheaf.isColimitSheafifyCocone _ (colimit.isColimit _))
+        (IsColimit.ofIsoColimit (isColimitOfPreserves Φ.presheafFiber
+          (colimit.isColimit (F ⋙ sheafToPresheaf J A))) (by
+            let G := colimit (F ⋙ sheafToPresheaf J A)
+            let φ := (sheafificationAdjunction J A).unit.app G
+            have : IsIso (Φ.presheafFiber.map φ) :=
+              W_isInvertedBy_presheafFiber _ _ (W_toSheafify J _)
+            refine Cocones.ext (asIso (Φ.presheafFiber.map φ)) (fun k ↦ ?_)
+            -- needs cleanup
+            dsimp [sheafFiber, Sheaf.sheafifyCocone, φ]
+            simp [← Functor.map_comp]
+            congr 1
+            have (G : Sheaf J A) :
+                ((sheafificationAdjunction J A).counit.app G).val ≫
+                  (sheafificationAdjunction J A).unit.app G.val = 𝟙 _ := by
+              simp [← cancel_mono ((sheafToPresheaf _ _).map
+                ((sheafificationAdjunction J A).counit.app G))]
+            rw [← cancel_epi ((sheafToPresheaf _ _).map
+              ((sheafificationAdjunction J A).counit.app (F.obj k))),
+              sheafToPresheaf_map, ← Sheaf.comp_val_assoc,
+              IsIso.hom_inv_id, Sheaf.id_val, Category.id_comp,
+              ← (sheafificationAdjunction J A).unit_naturality, reassoc_of% this]
+            dsimp))⟩
 
 end Point
 

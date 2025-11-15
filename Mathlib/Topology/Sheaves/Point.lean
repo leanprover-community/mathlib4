@@ -35,7 +35,7 @@ def point (t : T) : GrothendieckTopology.Point.{u} (grothendieckTopology T) wher
         obtain rfl : f = g := by subsingleton
         exact ⟨_, 𝟙 _, rfl⟩ }
   initiallySmall := initiallySmall_of_essentiallySmall _
-  surjective {U} R hR := by
+  jointly_surjective {U} R hR := by
     rintro ⟨⟨x, hx₁⟩, (hx₂ : x = t)⟩
     obtain ⟨V, f, hb, hx₃⟩ := hR x hx₁
     exact ⟨V, f, hb, ⟨⟨x, hx₃⟩, hx₂⟩, rfl⟩

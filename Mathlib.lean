@@ -2466,6 +2466,7 @@ import Mathlib.CategoryTheory.Limits.FinallySmall
 import Mathlib.CategoryTheory.Limits.FintypeCat
 import Mathlib.CategoryTheory.Limits.FormalCoproducts
 import Mathlib.CategoryTheory.Limits.Fubini
+import Mathlib.CategoryTheory.Limits.Fubini2
 import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
