@@ -69,7 +69,7 @@ instance : Groupoid (FreeGroupoid C) :=
 
 namespace FreeGroupoid
 
-/-- The localization map from the category `C` to the groupoid `FreeGroupoid C` -/
+/-- The localization functor from the category `C` to the groupoid `FreeGroupoid C` -/
 def of : C ⥤ FreeGroupoid C where
   __ := Quiver.FreeGroupoid.of C ⋙q (Quotient.functor (FreeGroupoid.homRel C)).toPrefunctor
   map_id X := Quotient.sound _ (FreeGroupoid.homRel.map_id X)
