@@ -140,8 +140,7 @@ instance : Inhabited ℕ+ :=
 
 -- Some lemmas that rewrite `PNat.mk n h`, for `n` an explicit numeral, into explicit numerals.
 @[simp]
-theorem mk_one {h} : (⟨1, h⟩ : ℕ+) = (1 : ℕ+) :=
-  rfl
+theorem mk_one {h} : @Eq ℕ+ ⟨1, h⟩ 1 := rfl
 
 @[norm_cast]
 theorem one_coe : ((1 : ℕ+) : ℕ) = 1 :=
