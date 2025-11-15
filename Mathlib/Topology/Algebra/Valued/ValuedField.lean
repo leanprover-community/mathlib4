@@ -441,3 +441,30 @@ scoped notation "𝓀[" K "]" => ResidueField K
 end Valued
 
 end Notation
+
+namespace Valued
+
+variable (K : Type*) {Γ₀ : Type*} [Field K] [LinearOrderedCommGroupWithZero Γ₀] [Valued K Γ₀]
+
+lemma isOpenEmbedding_algebraMap_integer :
+    Topology.IsOpenEmbedding (algebraMap 𝒪[K] K) :=
+  isOpenEmbedding_subtype_integer _
+
+lemma isClosedEmbedding_algebraMap_integer :
+    Topology.IsClosedEmbedding (algebraMap 𝒪[K] K) :=
+  isClosedEmbedding_subtype_integer _
+
+lemma discreteTopology_valuationRing_iff_discreteTopology :
+    DiscreteTopology 𝒪[K] ↔ DiscreteTopology K := by
+  refine ⟨fun _ ↦ discreteTopology_iff_isOpen_singleton.mpr fun x ↦ ?_, fun _ ↦ inferInstance⟩
+  have hk : IsOpen (𝒪[K] : Set K) := isOpen_integer K
+  rcases le_total (Valued.v x) 1 with hx | hx
+  · simpa using hk.isOpenMap_subtype_val _ (isOpen_discrete {⟨x, hx⟩})
+  · have hx0 : x ≠ 0 := v.pos_iff.mp <| hx.trans_lt' zero_lt_one
+    replace hx : Valued.v x⁻¹ ≤ 1 := by rwa [map_inv₀, inv_le_one₀ (zero_lt_one.trans_le hx)]
+    have h1 : IsOpen ({⟨x⁻¹, hx⟩} : Set 𝒪[K]) := isOpen_discrete _
+    have h2 : IsOpen {x⁻¹} := by simpa using hk.isOpenMap_subtype_val _ h1
+    simp only [isOpen_iff_mem_nhds, Set.mem_singleton_iff, forall_eq] at h2
+    simpa [isOpen_iff_mem_nhds, -Filter.map_inv] using continuousAt_inv₀ hx0 h2
+
+end Valued
