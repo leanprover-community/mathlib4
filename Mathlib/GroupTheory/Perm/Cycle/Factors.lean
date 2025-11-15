@@ -397,30 +397,20 @@ where
       ⟨cycleOf f x :: m, by
         obtain ⟨hm₁, hm₂, hm₃⟩ := hm
         rw [hfg hx] at hm₁ ⊢
-        constructor
-        · rw [List.prod_cons, hm₁]
-          simp
-        · exact
-            ⟨fun g' hg' =>
-              ((List.mem_cons).1 hg').elim (fun hg' => hg'.symm ▸ isCycle_cycleOf _ hx) (hm₂ g'),
-              List.pairwise_cons.2
-                ⟨fun g' hg' y =>
-                  or_iff_not_imp_left.2 fun hgy =>
-                    have hxy : SameCycle g x y :=
-                      Classical.not_not.1 (mt cycleOf_apply_of_not_sameCycle hgy)
-                    have hg'm : (g' :: m.erase g') ~ m :=
-                      List.cons_perm_iff_perm_erase.2 ⟨hg', List.Perm.refl _⟩
-                    have : ∀ h ∈ m.erase g', Disjoint g' h :=
-                      (List.pairwise_cons.1 ((hg'm.pairwise_iff Disjoint.symm).2 hm₃)).1
-                    by_cases id fun hg'y : g' y ≠ y =>
-                      (disjoint_prod_right _ this y).resolve_right <| by
-                        have hsc : SameCycle g⁻¹ x (g y) := by
-                          rwa [sameCycle_inv, sameCycle_apply_right]
-                        rw [disjoint_prod_perm hm₃ hg'm.symm, List.prod_cons,
-                            ← eq_inv_mul_iff_mul_eq] at hm₁
-                        rwa [hm₁, mul_apply, mul_apply, cycleOf_inv, hsc.cycleOf_apply,
-                          inv_apply_self, inv_eq_iff_eq, eq_comm],
-                  hm₃⟩⟩⟩
+        rw [List.pairwise_cons]
+        refine ⟨?_, fun g' hg' ↦ ?_, fun g' hg' y ↦ ?_, hm₃⟩
+        · simp [List.prod_cons, hm₁]
+        · exact ((List.mem_cons).1 hg').elim (fun hg' => hg'.symm ▸ isCycle_cycleOf _ hx) (hm₂ g')
+        by_contra!
+        obtain ⟨hgy, hg'y⟩ := this
+        have hxy : SameCycle g x y := not_imp_comm.1 cycleOf_apply_of_not_sameCycle hgy
+        have hg'm : g' :: m.erase g' ~ m := List.cons_perm_iff_perm_erase.2 ⟨hg', .refl _⟩
+        have : ∀ h ∈ m.erase g', Disjoint g' h :=
+          (List.pairwise_cons.1 ((hg'm.pairwise_iff Disjoint.symm).2 hm₃)).1
+        refine hg'y <| (disjoint_prod_right _ this y).resolve_right ?_
+        have hsc : SameCycle g⁻¹ x (g y) := by rwa [sameCycle_inv, sameCycle_apply_right]
+        rw [disjoint_prod_perm hm₃ hg'm.symm, List.prod_cons, ← eq_inv_mul_iff_mul_eq] at hm₁
+        simpa [hm₁, cycleOf_inv, hsc.cycleOf_apply, Perm.eq_inv_iff_eq, eq_comm] using hg'y⟩
 
 theorem mem_list_cycles_iff {α : Type*} [Finite α] {l : List (Perm α)}
     (h1 : ∀ σ : Perm α, σ ∈ l → σ.IsCycle) (h2 : l.Pairwise Disjoint) {σ : Perm α} :
@@ -691,9 +681,8 @@ theorem disjoint_mul_inv_of_mem_cycleFactorsFinset {f g : Perm α} (h : f ∈ cy
   intro x
   by_cases hx : f x = x
   · exact Or.inr hx
-  · refine Or.inl ?_
-    rw [mul_apply, ← h.right, apply_inv_self]
-    rwa [← support_inv, apply_mem_support, support_inv, mem_support]
+  rw [mul_apply, ← h.right _ (by simpa [Perm.eq_inv_iff_eq])]
+  simp
 
 /-- If c is a cycle, a ∈ c.support and c is a cycle of f, then `c = f.cycleOf a` -/
 theorem cycle_is_cycleOf {f c : Equiv.Perm α} {a : α} (ha : a ∈ c.support)
@@ -749,11 +738,7 @@ theorem mem_cycleFactorsFinset_conj (g k c : Perm α) :
   intro hc a ha
   simp only [coe_mul, Function.comp_apply, EmbeddingLike.apply_eq_iff_eq]
   apply hc
-  rw [mem_support] at ha ⊢
-  contrapose! ha
-  simp only [mul_smul, ← Perm.smul_def] at ha ⊢
-  rw [ha]
-  simp only [Perm.smul_def, apply_inv_self]
+  simpa [inv_def, eq_symm_apply] using ha
 
 /-- If a permutation commutes with every cycle of `g`, then it commutes with `g`
 
