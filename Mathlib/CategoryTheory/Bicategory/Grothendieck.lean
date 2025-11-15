@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Calle Sönne
+Authors: Calle Sönne, Joseph Hua
 -/
 
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
@@ -26,14 +26,14 @@ given by projecting to the first factors, i.e.
 
 ## The CoGrothendieck construction
 
-Given a category `𝒮` and any pseudofunctor `F` from `𝒮ᵒᵖ` to `Cat`, we associate to it a category
-`∫ᶜ F` (TODO: promote `CategoryStruct` to `Category` instance), defined as follows:
+Given a category `𝒮` and any pseudofunctor `F` from `𝒮ᵒᵖ` to `Cat`,
+we associate to it a category `∫ᶜ F`, defined as follows:
 * Objects: pairs `(S, a)` where `S` is an object of the base category and `a` is an object of the
   category `F(S)`.
 * Morphisms: morphisms `(R, b) ⟶ (S, a)` are defined as pairs `(f, h)` where `f : R ⟶ S` is a
   morphism in `𝒮` and `h : b ⟶ F(f)(a)`
 
-The category `∫ᶜ F` is equipped with a functor `∫ᶜ F ⥤ 𝒮` (TODO: define this functor),
+The category `∫ᶜ F` is equipped with a functor `∫ᶜ F ⥤ 𝒮`,
 given by projecting to the first factors, i.e.
 * On objects, it sends `(S, a)` to `S`
 * On morphisms, it sends `(f, h)` to `f`
@@ -51,7 +51,6 @@ This is consistent with the convention for the Grothendieck construction on 1-fu
 pseudofunctor from `LocallyDiscrete 𝒮 ⥤ᵖ Catᵒᵖ` to `Cat`.
 2. Deduce the results in `CategoryTheory.Grothendieck` as a specialization of
    `Pseudofunctor.Grothendieck`.
-3. Dualize all `CoGrothendieck` results to `Grothendieck`.
 
 ## References
 [Vistoli2008] "Notes on Grothendieck Topologies, Fibered Categories and Descent Theory" by
@@ -106,6 +105,115 @@ instance categoryStruct : CategoryStruct (∫ F) where
 instance (X : ∫ F) : Inhabited (Hom X X) :=
   ⟨𝟙 X⟩
 
+section
+
+variable {a b : ∫ F}
+
+@[ext (iff := false)]
+lemma Hom.ext (f g : a ⟶ b) (hfg₁ : f.base = g.base)
+    (hfg₂ : eqToHom (hfg₁ ▸ rfl) ≫ f.fiber = g.fiber) : f = g := by
+  cases f; cases g
+  dsimp at hfg₁ hfg₂
+  cat_disch
+
+lemma Hom.ext_iff (f g : a ⟶ b) :
+    f = g ↔ ∃ (hfg : f.base = g.base), eqToHom (hfg ▸ rfl) ≫ f.fiber = g.fiber where
+  mp hfg := by subst hfg; simp
+  mpr := fun ⟨hfg₁, hfg₂⟩ => Hom.ext f g hfg₁ hfg₂
+
+lemma Hom.congr {a b : ∫ F} {f g : a ⟶ b} (h : f = g) :
+    f.fiber = eqToHom (h ▸ rfl) ≫ g.fiber := by
+  subst h
+  simp
+
+end
+
+attribute [local simp] PrelaxFunctor.map₂_eqToHom in
+/-- The category structure on `∫ F`. -/
+instance category : Category (∫ F) where
+  toCategoryStruct := Pseudofunctor.Grothendieck.categoryStruct
+  id_comp {a b} f := by
+    ext
+    · simp
+    · simp [F.mapComp_id_left_hom_app, Strict.leftUnitor_eqToIso, ← Functor.map_comp_assoc]
+  comp_id {a b} f := by
+    ext
+    · simp
+    · simp [F.mapComp_id_right_hom_app, Strict.rightUnitor_eqToIso]
+  assoc f g h := by
+    ext
+    · simp
+    · simp [mapComp_assoc_right_hom_app_assoc, Strict.associator_eqToIso]
+
+variable (F)
+
+/-- The projection `∫ F ⥤ 𝒮` given by projecting both objects and homs to the first factor. -/
+@[simps]
+def forget (F : Pseudofunctor (LocallyDiscrete 𝒮) Cat.{v₂, u₂}) : ∫ F ⥤ 𝒮 where
+  obj X := X.base
+  map f := f.base
+
+section
+
+attribute [local simp]
+  Strict.leftUnitor_eqToIso Strict.rightUnitor_eqToIso Strict.associator_eqToIso
+
+variable {F} {G : Pseudofunctor (LocallyDiscrete 𝒮) Cat.{v₂, u₂}}
+  {H : Pseudofunctor (LocallyDiscrete 𝒮) Cat.{v₂, u₂}}
+
+/-- The Grothendieck construction is functorial: a strong natural transformation `α : F ⟶ G`
+induces a functor `Grothendieck.map : ∫ F ⥤ ∫ G`. -/
+@[simps!]
+def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
+  obj a := {
+    base := a.base
+    fiber := (α.app ⟨a.base⟩).obj a.fiber }
+  map {a b} f := {
+    base := f.1
+    fiber := (α.naturality f.1.toLoc).inv.app a.fiber ≫ (α.app ⟨b.base⟩).map f.2 }
+  map_id a := by
+    ext
+    · dsimp
+    · simp [StrongTrans.naturality_id_inv_app, ← map_comp]
+  map_comp {a b c} f g := by
+    ext
+    · dsimp
+    · dsimp
+      simp only [map_comp, assoc, ← Cat.comp_map, NatTrans.naturality_assoc]
+      simp [naturality_comp_inv_app, ← map_comp]
+
+@[simp]
+lemma map_id_map {x y : ∫ F} (f : x ⟶ y) : (map (𝟙 F)).map f = f := by
+  ext <;> simp
+
+@[simp]
+theorem map_comp_forget (α : F ⟶ G) : map α ⋙ forget G = forget F := rfl
+
+section
+
+variable (F)
+
+/-- The natural isomorphism witnessing the pseudo-unity constraint of `Grothendieck.map`. -/
+def mapIdIso : map (𝟙 F) ≅ 𝟭 (∫ F) :=
+  NatIso.ofComponents (fun _ ↦ eqToIso (by cat_disch))
+
+lemma map_id_eq : map (𝟙 F) = 𝟭 (∫ F) :=
+  Functor.ext_of_iso (mapIdIso F) (fun x ↦ by simp [map]) (fun x ↦ by simp [mapIdIso])
+
+end
+
+/-- The natural isomorphism witnessing the pseudo-functoriality of `Grothendieck.map`. -/
+def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β :=
+  NatIso.ofComponents (fun _ ↦ eqToIso (by cat_disch)) (fun f ↦ by
+    dsimp
+    simp only [comp_id, id_comp]
+    ext <;> simp)
+
+lemma map_comp_eq (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) = map α ⋙ map β :=
+  Functor.ext_of_iso (mapCompIso α β) (fun _ ↦ by simp [map]) (fun _ ↦ by simp [mapCompIso])
+
+end
+
 end Grothendieck
 
 /-- The type of objects in the fibered category associated to a contravariant
@@ -144,6 +252,9 @@ instance categoryStruct : CategoryStruct (∫ᶜ F) where
     fiber := f.fiber ≫ (F.map f.base.op.toLoc).map g.fiber ≫
       (F.mapComp g.base.op.toLoc f.base.op.toLoc).inv.app Z.fiber }
 
+instance (X : ∫ᶜ F) : Inhabited (Hom X X) :=
+  ⟨𝟙 X⟩
+
 section
 
 variable {a b : ∫ᶜ F}
@@ -152,10 +263,8 @@ variable {a b : ∫ᶜ F}
 lemma Hom.ext (f g : a ⟶ b) (hfg₁ : f.base = g.base)
     (hfg₂ : f.fiber = g.fiber ≫ eqToHom (hfg₁ ▸ rfl)) : f = g := by
   cases f; cases g
-  congr
   dsimp at hfg₁
-  rw [← conj_eqToHom_iff_heq _ _ rfl (hfg₁ ▸ rfl)]
-  simpa only [eqToHom_refl, id_comp] using hfg₂
+  cat_disch
 
 lemma Hom.ext_iff (f g : a ⟶ b) :
     f = g ↔ ∃ (hfg : f.base = g.base), f.fiber = g.fiber ≫ eqToHom (hfg ▸ rfl) where
@@ -187,8 +296,7 @@ instance category : Category (∫ᶜ F) where
 
 variable (F)
 
-/-- The projection `∫ᶜ F ⥤ 𝒮` given by projecting both objects and homs to the first
-factor. -/
+/-- The projection `∫ᶜ F ⥤ 𝒮` given by projecting both objects and homs to the first factor. -/
 @[simps]
 def forget (F : LocallyDiscrete 𝒮ᵒᵖ ⥤ᵖ Cat.{v₂, u₂}) : ∫ᶜ F ⥤ 𝒮 where
   obj X := X.base
