@@ -286,11 +286,10 @@ variable [ProperSpace 𝕜] (K_cpt : IsCompact K)
 theorem isSeqCompact_of_bounded_of_closed {s : Set (WeakDual 𝕜 V)}
     (hb : Bornology.IsBounded (StrongDual.toWeakDual ⁻¹' s)) (hc : IsClosed s) :
     IsSeqCompact s := by
-  have b_isCompact : IsCompact s := isCompact_of_bounded_of_closed hb hc
   have b_isCompact' : CompactSpace s :=
-    isCompact_iff_compactSpace.mp b_isCompact
+    isCompact_iff_compactSpace.mp <| isCompact_of_bounded_of_closed hb hc
   have b_isMetrizable : TopologicalSpace.MetrizableSpace s :=
-    metrizable_of_compact 𝕜 V s b_isCompact
+    metrizable_of_compact 𝕜 V s <| isCompact_of_bounded_of_closed hb hc
   have seq_cont_phi : SeqContinuous (fun φ : s ↦ (φ : WeakDual 𝕜 V)) :=
     continuous_iff_seqContinuous.mp continuous_subtype_val
   simpa using IsSeqCompact.range seq_cont_phi
