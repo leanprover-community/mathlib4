@@ -23,7 +23,7 @@ import Mathlib.Algebra.Algebra.Shrink
 
 # ProjectiveDimension of quotient by regular element
 
-For `M` a finitely generated module over Noetherian ring `R` and an `R`-regular element `x`,
+For `M` a finitely generated module over Noetherian local ring `R` and an `R`-regular element `x`,
 `projdim(M/xM) = projdim(M) + 1`
 
 -/
@@ -290,3 +290,32 @@ lemma projectiveDimension_quotient_regular_sequence [Small.{v} R] (M : ModuleCat
         ← add_assoc, ← projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular M x this mem.1,
         ← hn (ModuleCat.of R (QuotSMulTop x M)) rs' ((isWeaklyRegular_cons_iff M _ _).mp reg).2
           mem.2 len]
+
+omit [IsLocalRing R] [IsNoetherianRing R] in
+lemma projectiveDimension_eq_zero_of_projective (M : ModuleCat.{v} R) [Projective M]
+    [Nontrivial M] : projectiveDimension M = 0 := by
+  apply le_antisymm
+  · rw [← Nat.cast_zero, projectiveDimension_le_iff M 0]
+    infer_instance
+  · rw [← Nat.cast_zero, projectiveDimension_ge_iff M 0, hasProjectiveDimensionLT_zero_iff_isZero,
+      ModuleCat.isZero_iff_subsingleton, not_subsingleton_iff_nontrivial]
+    assumption
+
+variable [Small.{v} R]
+
+lemma projectiveDimension_quotient_eq_length (rs : List R) (reg : IsRegular R rs) :
+    projectiveDimension (ModuleCat.of R (Shrink.{v} (R ⧸ Ideal.ofList rs))) = rs.length := by
+  have mem_max : ∀ x ∈ rs, x ∈ maximalIdeal R := by
+    intro x hx
+    apply IsLocalRing.le_maximalIdeal reg.2.symm
+    simpa using (Ideal.mem_span x).mpr fun p a ↦ a hx
+  let e : (Shrink.{v} (R ⧸ Ideal.ofList rs)) ≃ₗ[R]
+    (Shrink.{v} R) ⧸ Ideal.ofList rs • (⊤ : Submodule R (Shrink.{v} R)) :=
+    ((Shrink.linearEquiv R _).trans (Submodule.quotEquivOfEq _ _ (by simp))).trans
+    ((Ideal.ofList rs).smulTopLinearEquiv (Shrink.linearEquiv R R).symm)
+  rw [projectiveDimension_eq_of_iso e.toModuleIso]
+  let _ : Module.Finite R (Shrink.{v} R) := Module.Finite.equiv (Shrink.linearEquiv R _).symm
+  let _ : Module.Free R (Shrink.{v} R) := Module.Free.of_equiv (Shrink.linearEquiv R _).symm
+  rw [projectiveDimension_quotient_regular_sequence (ModuleCat.of R (Shrink.{v} R)) rs
+    (((Shrink.linearEquiv R R).isWeaklyRegular_congr rs).mpr reg.1) mem_max]
+  rw [projectiveDimension_eq_zero_of_projective, zero_add]
