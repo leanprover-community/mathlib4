@@ -36,7 +36,7 @@ end IsIntegral
 
 variable {θ : ℝ}
 
-open Real Polynomial
+open Real
 
 section IsIntegral
 
