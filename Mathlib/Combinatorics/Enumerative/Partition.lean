@@ -60,6 +60,9 @@ deriving DecidableEq
 
 namespace Partition
 
+theorem le_of_mem_parts {n : ℕ} {p : Partition n} {m : ℕ} (h : m ∈ p.parts) : m ≤ n := by
+  simpa [p.parts_sum] using Multiset.le_sum_of_mem h
+
 /-- A composition induces a partition (just convert the list to a multiset). -/
 @[simps]
 def ofComposition (n : ℕ) (c : Composition n) : Partition n where
@@ -173,6 +176,14 @@ def distincts (n : ℕ) : Finset (Partition n) :=
 /-- The finset of those partitions in which every part is odd and used at most once. -/
 def oddDistincts (n : ℕ) : Finset (Partition n) :=
   odds n ∩ distincts n
+
+/-- The finset of those partitions in which every part satisfies a certain condition. -/
+def restricted (n : ℕ) (p : ℕ → Prop) [DecidablePred p] : Finset (n.Partition) :=
+  Finset.univ.filter fun x ↦ ∀ i ∈ x.parts, p i
+
+/-- The finset of those partitions in which every part is used less than `m` times. -/
+def countRestricted (n : ℕ) (m : ℕ) : Finset (n.Partition) :=
+  Finset.univ.filter fun x ↦ ∀ i ∈ x.parts, x.parts.count i < m
 
 end Partition
 
