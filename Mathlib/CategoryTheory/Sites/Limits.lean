@@ -170,9 +170,12 @@ instance createsLimits [HasLimitsOfSize.{u₁, u₂} D] :
 instance hasLimitsOfSize [HasLimitsOfSize.{u₁, u₂} D] : HasLimitsOfSize.{u₁, u₂} (Sheaf J D) :=
   hasLimits_of_hasLimits_createsLimits (sheafToPresheaf J D)
 
-variable {D : Type w} [Category.{max v u} D]
+instance [HasFiniteLimits D] :
+    PreservesFiniteLimits (sheafToPresheaf J D) where
+  preservesFiniteLimits _ _ _ := inferInstance
 
-example [HasLimits D] : HasLimits (Sheaf J D) := inferInstance
+example {D : Type w} [Category.{max v u} D] [HasLimits D] :
+    HasLimits (Sheaf J D) := inferInstance
 
 end
 
