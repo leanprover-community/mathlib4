@@ -51,8 +51,7 @@ variable [TopologicalSpace R]
 /-- The infinite sum in the formula `Nat.Partition.hasProd_genFun` always converges. -/
 theorem summable_genFun_term (f : ℕ → ℕ → R) (i : ℕ) :
     Summable fun j ↦ f (i + 1) (j + 1) • (X : R⟦X⟧) ^ ((i + 1) * (j + 1)) := by
-  rcases subsingleton_or_nontrivial R with h | h
-  · simpa [Subsingleton.eq_zero] using summable_zero
+  nontriviality R
   apply WithPiTopology.summable_of_tendsto_order_atTop_nhds_top
   refine ENat.tendsto_nhds_top_iff_natCast_lt.mpr (fun n ↦ Filter.eventually_atTop.mpr ⟨n, ?_⟩)
   intro m hm
