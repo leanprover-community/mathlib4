@@ -24,6 +24,7 @@ end Lemmas
 
 open Qq Lean Elab.Tactic Mathlib.Meta.NormNum
 
+/-- `norm_num` extension that decides `IsSquare x` for rational `x`. -/
 @[norm_num IsSquare _]
 def evalIsSquare : NormNumExt where eval {u α} e := do
   let 0 := u | failure
