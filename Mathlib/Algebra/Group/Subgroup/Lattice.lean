@@ -531,6 +531,11 @@ theorem _root_.AddSubgroup.toSubgroup'_closure (S : Set (Additive G)) :
   congr_arg AddSubgroup.toSubgroup' (toAddSubgroup'_closure _).symm
 
 @[to_additive]
+theorem mem_biSup_of_mem {ι : Sort*} {S : ι → Subgroup G} {p : ι → Prop} {i : ι} (hi : p i) :
+    ∀ {x : G}, x ∈ S i → x ∈ ⨆ i, ⨆ (_ : p i), S i :=
+  fun hx ↦ mem_iSup_of_mem i (mem_iSup_of_mem hi hx)
+
+@[to_additive]
 theorem mem_biSup_of_directedOn {ι} {p : ι → Prop} {K : ι → Subgroup G} {i : ι} (hp : p i)
     (hK : DirectedOn ((· ≤ ·) on K) {i | p i})
     {x : G} : x ∈ (⨆ i, ⨆ (_h : p i), K i) ↔ ∃ i, p i ∧ x ∈ K i := by
