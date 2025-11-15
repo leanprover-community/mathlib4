@@ -97,8 +97,12 @@ abbrev under : Ideal A := Ideal.comap (algebraMap A B) P
 
 theorem under_def : P.under A = Ideal.comap (algebraMap A B) P := rfl
 
-instance IsPrime.under [hP : P.IsPrime] : (P.under A).IsPrime :=
+instance IsCompletelyPrime.under [hP : P.IsCompletelyPrime] : (P.under A).IsCompletelyPrime :=
   hP.comap (algebraMap A B)
+
+theorem IsPrime.under {B : Type*} [CommSemiring B] [Algebra A B] (P : Ideal B)
+    [hP : P.IsPrime] : (P.under A).IsPrime :=
+  inferInstance
 
 @[simp]
 lemma under_smul : (g • P : Ideal B).under A = P.under A := by
