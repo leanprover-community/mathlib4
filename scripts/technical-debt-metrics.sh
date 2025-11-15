@@ -86,6 +86,7 @@ titlesPathsAndRegexes=(
   "maxHeartBeats modifications"    ":^MathlibTest" "^ *set_option .*maxHeartbeats.* [0-9][0-9]*"
   "CommRing (Fin n) instances"     "*"      "^open Fin.CommRing "
   "NatCast (Fin n) instances"      "*"      "^open Fin.NatCast "
+  "nonrec occurrences"             "*"      "nonrec "
 )
 
 for i in ${!titlesPathsAndRegexes[@]}; do
