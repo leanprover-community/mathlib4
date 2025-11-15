@@ -994,10 +994,20 @@ theorem Integrable.smul_of_top_right {f : α → β} {φ : α → 𝕜} (hf : In
   rw [← memLp_one_iff_integrable] at hf ⊢
   exact MemLp.smul hf hφ
 
+theorem Integrable.bdd_smul {f : α → β} {φ : α → 𝕜} (hf : Integrable f μ)
+    (C : ℝ) (hφ1 : AEStronglyMeasurable φ μ) (hφ2 : ∀ᵐ a ∂μ, ‖φ a‖ ≤ C) :
+    Integrable (φ • f) μ :=
+  hf.smul_of_top_right (memLp_top_of_bound hφ1 C hφ2)
+
 theorem Integrable.smul_of_top_left {f : α → β} {φ : α → 𝕜} (hφ : Integrable φ μ)
     (hf : MemLp f ∞ μ) : Integrable (φ • f) μ := by
   rw [← memLp_one_iff_integrable] at hφ ⊢
   exact MemLp.smul hf hφ
+
+theorem Integrable.smul_bdd {f : α → β} {φ : α → 𝕜} (hφ : Integrable φ μ)
+    (C : ℝ) (hf1 : AEStronglyMeasurable f μ) (hf2 : ∀ᵐ a ∂μ, ‖f a‖ ≤ C) :
+    Integrable (φ • f) μ :=
+  hφ.smul_of_top_left (memLp_top_of_bound hf1 C hf2)
 
 @[fun_prop]
 theorem Integrable.smul_const {f : α → 𝕜} (hf : Integrable f μ) (c : β) :
@@ -1053,11 +1063,13 @@ theorem integrable_mul_const_iff {c : 𝕜} (hc : IsUnit c) (f : α → 𝕜) :
 
 theorem Integrable.bdd_mul' {f g : α → 𝕜} {c : ℝ} (hg : Integrable g μ)
     (hf : AEStronglyMeasurable f μ) (hf_bound : ∀ᵐ x ∂μ, ‖f x‖ ≤ c) :
-    Integrable (fun x => f x * g x) μ := by
-  refine Integrable.mono' (hg.norm.smul c) (hf.mul hg.1) ?_
-  filter_upwards [hf_bound] with x hx
-  rw [Pi.smul_apply, smul_eq_mul]
-  exact (norm_mul_le _ _).trans (mul_le_mul_of_nonneg_right hx (norm_nonneg _))
+    Integrable (fun x => f x * g x) μ :=
+  hg.bdd_smul c hf hf_bound
+
+theorem Integrable.mul_bdd {f g : α → 𝕜} {c : ℝ} (hf : Integrable f μ)
+    (hg : AEStronglyMeasurable g μ) (hg_bound : ∀ᵐ x ∂μ, ‖g x‖ ≤ c) :
+    Integrable (fun x => f x * g x) μ :=
+  hf.smul_bdd c hg hg_bound
 
 theorem Integrable.mul_of_top_right {f : α → 𝕜} {φ : α → 𝕜} (hf : Integrable f μ)
     (hφ : MemLp φ ∞ μ) : Integrable (φ * f) μ :=
