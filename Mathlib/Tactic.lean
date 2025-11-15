@@ -1,5 +1,7 @@
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.Algebra.Basic
+import Mathlib.Tactic.Algebra.Lemmas
 import Mathlib.Tactic.Algebraize
 import Mathlib.Tactic.ApplyAt
 import Mathlib.Tactic.ApplyCongr
