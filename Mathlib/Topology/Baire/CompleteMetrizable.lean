@@ -18,7 +18,7 @@ open scoped ENNReal
 variable {X : Type*} [TopologicalSpace X] [IsCompletelyPseudoMetrizableSpace X]
 
 /-- **First Baire theorem**: a completely pseudometrizable topological space has Baire property. -/
-instance (priority := 100) BaireSpace.of_pseudoMetricSpace_completeSpace : BaireSpace X := by
+instance (priority := 100) BaireSpace.of_completelyPseudoMetrizable : BaireSpace X := by
   let _ := upgradeIsCompletelyPseudoMetrizable X
   refine ⟨fun f ho hd => ?_⟩
   let B : ℕ → ℝ≥0∞ := fun n => 1 / 2 ^ n
