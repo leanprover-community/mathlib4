@@ -10,14 +10,14 @@ import Mathlib.CategoryTheory.Adjunction.Mates
 
 In this file, given isomorphisms between compositions of right adjoint functors,
 we obtain isomorphisms between the corresponding compositions of the left adjoint functors,
-and show that the left adjoint functors satisfy properties similar to the left/right
+and show that the left adjoint functors satisfies properties similar to the left/right
 unitality and the associativity of pseudofunctors if the right adjoint functors
-satisfy the corresponding properties.
+satisfies the corresponding properties.
 
-This shall be used to study the behaviour with respect to composition of
-the pullback functors on presheaves of modules, by reducing these definitions and
-properties to the (obvious) case of the pushforward functors. Similar results shall
-be obtained for sheaves of modules (TODO).
+This is used in `Mathlib.Algebra.Category.ModuleCat.Presheaf.Pullback` to study
+the behaviour with respect to composition of the pullback functors on presheaves
+of modules, by reducing these definitions and properties to the (obvious) case of the
+pushforward functors. Similar results shall be obtained for sheaves of modules (TODO).
 
 -/
 
@@ -29,11 +29,22 @@ open Functor
 
 namespace Adjunction
 
+section
+
+variable {F : C₀ ⥤ C₀} {G : C₀ ⥤ C₀} (adj : F ⊣ G) (e : G ≅ 𝟭 C₀)
+
 /-- If a right adjoint functor is isomorphic to the identity functor,
 so is the left adjoint. -/
 @[simps! -isSimp]
 def leftAdjointIdIso {F : C₀ ⥤ C₀} {G : C₀ ⥤ C₀} (adj : F ⊣ G) (e : G ≅ 𝟭 C₀) :
     F ≅ 𝟭 C₀ := (conjugateIsoEquiv .id adj).symm e.symm
+
+@[simp]
+lemma conjugateEquiv_leftAdjointIdIso_hom :
+    conjugateEquiv .id adj (leftAdjointIdIso adj e).hom = e.inv := by
+  simp [leftAdjointIdIso]
+
+end
 
 section
 
@@ -61,6 +72,13 @@ lemma leftAdjointCompIso_hom (e₀₁₂ : G₂₁ ⋙ G₁₀ ≅ G₂₀) :
     (leftAdjointCompIso adj₀₁ adj₁₂ adj₀₂ e₀₁₂).hom =
       leftAdjointCompNatTrans adj₀₁ adj₁₂ adj₀₂ e₀₁₂.inv :=
   rfl
+
+@[simp]
+lemma conjugateEquiv_leftAdjointCompIso_inv (e₀₁₂ : G₂₁ ⋙ G₁₀ ≅ G₂₀) :
+    conjugateEquiv (adj₀₁.comp adj₁₂) adj₀₂
+      (leftAdjointCompIso adj₀₁ adj₁₂ adj₀₂ e₀₁₂).inv = e₀₁₂.hom := by
+  dsimp only [leftAdjointCompIso]
+  simp
 
 end
 
