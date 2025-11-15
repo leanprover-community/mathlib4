@@ -394,7 +394,8 @@ lemma bracket_choose_twoCocycleAux [IsLieAbelian M] (E : Extension R M L) {s : L
 open LieModule.Cohomology
 
 /-- The 2-cocycle attached to an extension with a linear section. -/
-noncomputable def twoCocycle [IsLieAbelian M] (E : Extension R M L) {s : L →ₗ[R] E.L}
+@[simps]
+noncomputable def twoCocycleOf [IsLieAbelian M] (E : Extension R M L) {s : L →ₗ[R] E.L}
     (hs : Function.LeftInverse E.proj s) :
     letI := E.ringModuleOf
     have := E.lieModuleOf
