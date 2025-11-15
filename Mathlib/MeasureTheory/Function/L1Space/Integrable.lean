@@ -687,21 +687,29 @@ lemma Integrable.measure_norm_gt_lt_top {f : α → β} (hf : Integrable f μ) {
 
 /-- If `f` is `ℝ`-valued and integrable, then for any `c > 0` the set `{x | f x ≥ c}` has finite
 measure. -/
-lemma Integrable.measure_ge_lt_top {f : α → ℝ} (hf : Integrable f μ) {ε : ℝ} (ε_pos : 0 < ε) :
+lemma Integrable.measure_ge_lt_top {E : Type*} [NormedAddCommGroup E] [LinearOrder E]
+    [HasSolidNorm E] [IsOrderedAddMonoid E] {f : α → E}
+    (hf : Integrable f μ) {ε : E} (ε_pos : 0 < ε) :
     μ {a : α | ε ≤ f a} < ∞ := by
-  refine lt_of_le_of_lt (measure_mono ?_) (hf.measure_norm_ge_lt_top ε_pos)
+  refine lt_of_le_of_lt (measure_mono ?_) (hf.measure_norm_ge_lt_top (norm_pos_iff.2 ε_pos.ne'))
   intro x hx
-  simp only [Real.norm_eq_abs, Set.mem_setOf_eq] at hx ⊢
+  simp only [mem_setOf_eq] at hx ⊢
+  apply norm_le_norm_of_abs_le_abs
+  rw [abs_eq_self.2 ε_pos.le]
   exact hx.trans (le_abs_self _)
 
 /-- If `f` is `ℝ`-valued and integrable, then for any `c < 0` the set `{x | f x ≤ c}` has finite
 measure. -/
-lemma Integrable.measure_le_lt_top {f : α → ℝ} (hf : Integrable f μ) {c : ℝ} (c_neg : c < 0) :
+lemma Integrable.measure_le_lt_top {E : Type*} [NormedAddCommGroup E] [LinearOrder E]
+    [HasSolidNorm E] [IsOrderedAddMonoid E] {f : α → E}
+    (hf : Integrable f μ) {c : E} (c_neg : c < 0) :
     μ {a : α | f a ≤ c} < ∞ := by
-  refine lt_of_le_of_lt (measure_mono ?_) (hf.measure_norm_ge_lt_top (show 0 < -c by linarith))
+  refine lt_of_le_of_lt (measure_mono ?_) (hf.measure_norm_ge_lt_top (norm_pos_iff.2 c_neg.ne))
   intro x hx
-  simp only [Real.norm_eq_abs, Set.mem_setOf_eq] at hx ⊢
-  exact (show -c ≤ - f x by linarith).trans (neg_le_abs _)
+  simp only [mem_setOf_eq] at hx ⊢
+  apply norm_le_norm_of_abs_le_abs
+  rw [abs_eq_neg_self.2 c_neg.le, abs_eq_neg_self.2 (hx.trans c_neg.le)]
+  exact neg_le_neg hx
 
 /-- If `f` is `ℝ`-valued and integrable, then for any `c > 0` the set `{x | f x > c}` has finite
 measure. -/

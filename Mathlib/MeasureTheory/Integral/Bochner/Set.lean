@@ -746,7 +746,7 @@ theorem setIntegral_ge_of_const_le [CompleteSpace E] {c : E} (hs : MeasurableSet
   rw [← setIntegral_const c]
   exact setIntegral_mono_on (integrableOn_const hμs) hfint hs hf
 
-theorem setIntegral_ge_of_const_le_real (f : X → ℝ) {c : ℝ} (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
+theorem setIntegral_ge_of_const_le_real {f : X → ℝ} {c : ℝ} (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     (hf : ∀ x ∈ s, c ≤ f x) (hfint : IntegrableOn (fun x : X => f x) s μ) :
     c * μ.real s ≤ ∫ x in s, f x ∂μ := by
   simpa [mul_comm] using setIntegral_ge_of_const_le hs hμs hf hfint

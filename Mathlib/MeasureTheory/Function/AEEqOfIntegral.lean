@@ -122,7 +122,8 @@ section AeEqOfForallSetIntegralEq
 
 section Real
 
-variable {f : α → ℝ}
+variable [LinearOrder E] [IsOrderedAddMonoid E] [OrderTopology E]
+  [IsOrderedModule ℝ E] [HasSolidNorm E] {f : α → E}
 
 theorem ae_nonneg_of_forall_setIntegral_nonneg (hf : Integrable f μ)
     (hf_zero : ∀ s, MeasurableSet s → μ s < ∞ → 0 ≤ ∫ x in s, f x ∂μ) : 0 ≤ᵐ[μ] f := by
@@ -130,17 +131,23 @@ theorem ae_nonneg_of_forall_setIntegral_nonneg (hf : Integrable f μ)
   rw [ae_const_le_iff_forall_lt_measure_zero]
   intro b hb_neg
   let s := {x | f x ≤ b}
-  have hs : NullMeasurableSet s μ := nullMeasurableSet_le hf.1.aemeasurable aemeasurable_const
+  have hs : NullMeasurableSet s μ := hf.1.nullMeasurableSet_le aestronglyMeasurable_const
   have mus : μ s < ∞ := Integrable.measure_le_lt_top hf hb_neg
-  have h_int_gt : (∫ x in s, f x ∂μ) ≤ b * μ.real s := by
+  have h_int_gt : (∫ x in s, f x ∂μ) ≤ μ.real s • b := by
     have h_const_le : (∫ x in s, f x ∂μ) ≤ ∫ _ in s, b ∂μ := by
       refine setIntegral_mono_ae_restrict hf.integrableOn (integrableOn_const mus.ne) ?_
       rw [EventuallyLE, ae_restrict_iff₀ (hs.mono μ.restrict_le_self)]
       exact Eventually.of_forall fun x hxs => hxs
-    rwa [setIntegral_const, smul_eq_mul, mul_comm] at h_const_le
+    rwa [setIntegral_const] at h_const_le
   contrapose! h_int_gt with H
   calc
-    b * μ.real s < 0 := mul_neg_of_neg_of_pos hb_neg <| ENNReal.toReal_pos H mus.ne
+    μ.real s • b < 0 := by
+      refine lt_of_le_of_ne ?_ ?_
+      · grw [hb_neg]
+        simp
+      · apply smul_ne_zero
+        · exact ENNReal.toReal_ne_zero.2 ⟨H, mus.ne⟩
+        · exact hb_neg.ne
     _ ≤ ∫ x in s, f x ∂μ := by
       rw [← μ.restrict_toMeasurable mus.ne]
       exact hf_zero _ (measurableSet_toMeasurable ..) (by rwa [measure_toMeasurable])
