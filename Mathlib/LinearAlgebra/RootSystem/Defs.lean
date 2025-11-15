@@ -202,6 +202,8 @@ abbrev coroot' (i : ι) : Dual R M := P.toLinearMap.flip (P.coroot i)
 /-- This is the pairing between roots and coroots. -/
 def pairing : R := P.root' i (P.coroot j)
 
+@[simp] lemma pairing_flip : P.flip.pairing i j = P.pairing j i := rfl
+
 @[simp]
 lemma root_coroot_eq_pairing : P.toLinearMap (P.root i) (P.coroot j) = P.pairing i j :=
   rfl
@@ -602,6 +604,10 @@ alias _root_.RootSystem.reflection_perm_eq_reflection_perm_iff :=
 /-- The Coxeter Weight of a pair gives the weight of an edge in a Coxeter diagram, when it is
 finite.  It is `4 cos² θ`, where `θ` describes the dihedral angle between hyperplanes. -/
 def coxeterWeight : R := pairing P i j * pairing P j i
+
+@[simp] lemma coxeterWeight_flip :
+    P.flip.coxeterWeight i j = P.coxeterWeight i j := by
+  simp [coxeterWeight, mul_comm (P.pairing j i)]
 
 lemma coxeterWeight_swap : coxeterWeight P i j = coxeterWeight P j i := by
   simp only [coxeterWeight, mul_comm]
