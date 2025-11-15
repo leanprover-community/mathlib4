@@ -1,14 +1,14 @@
-import Mathlib
+-- import Mathlib.Algebra.Algebra.Rat
+-- import Mathlib.Algebra.CharP.IntermediateField
+-- import Mathlib.Algebra.Field.ZMod
 
--- instance {K : Type*} (p : ℕ) [Field K] [CharP K p] : Algebra (ZMod p) K := ZMod.algebra K p
+-- -- instance {K : Type*} (p : ℕ) [Field K] [CharP K p] : Algebra (ZMod p) K := ZMod.algebra K p
 
---- #find_home! instAlgebraZModOfCharP
+-- --- #find_home! instAlgebraZModOfCharP
 
-instance : Subsingleton (Subfield ℚ) := subsingleton_of_top_le_bot fun x _ ↦
-  have h := Subsingleton.elim ((⊥ : Subfield ℚ).subtype.comp (Rat.castHom _)) (.id _ : ℚ →+* ℚ)
-  (congr($h x) : _ = x) ▸ Subtype.prop _
-
-#find_home! instSubsingletonSubfieldRat
+-- instance : Subsingleton (Subfield ℚ) := subsingleton_of_top_le_bot fun x _ ↦
+--   have h := Subsingleton.elim ((⊥ : Subfield ℚ).subtype.comp (Rat.castHom _)) (.id _ : ℚ →+* ℚ)
+--   (congr($h x) : _ = x) ▸ Subtype.prop _
 
 -- instance (p : ℕ) [hp : Fact (Nat.Prime p)] : Subsingleton (Subfield (ZMod p)) :=
 --  subsingleton_of_top_le_bot fun x _ ↦
@@ -16,13 +16,13 @@ instance : Subsingleton (Subfield ℚ) := subsingleton_of_top_le_bot fun x _ ↦
 --     (ZMod.castHom dvd_rfl _)) (.id _ : ZMod p →+* ZMod p)
 --   (congr($h x) : _ = x) ▸ Subtype.prop _
 
-theorem Subfield.bot_eq_of_charZero {K : Type*} [Field K] [CharZero K] :
-    (⊥ : Subfield K) = (algebraMap ℚ K).fieldRange := by
-  rw [eq_comm, eq_bot_iff, ← Subfield.map_bot (algebraMap ℚ K),
-    subsingleton_iff_bot_eq_top.mpr inferInstance, ← RingHom.fieldRange_eq_map]
+-- theorem Subfield.bot_eq_of_charZero {K : Type*} [Field K] [CharZero K] :
+--     (⊥ : Subfield K) = (algebraMap ℚ K).fieldRange := by
+--   rw [eq_comm, eq_bot_iff, ← Subfield.map_bot (algebraMap ℚ K),
+--     subsingleton_iff_bot_eq_top.mpr inferInstance, ← RingHom.fieldRange_eq_map]
 
--- theorem Subfield.bot_eq_of_charP {K : Type*} (p : ℕ) [hp : Fact (Nat.Prime p)]
---     [Field K] [CharP K p] :
+-- theorem Subfield.bot_eq_of_zMod_algebra {K : Type*} (p : ℕ) [hp : Fact (Nat.Prime p)]
+--     [Field K] [Algebra (ZMod p) K] :
 --     (⊥ : Subfield K) = (algebraMap (ZMod p) K).fieldRange := by
 --   rw [eq_comm, eq_bot_iff, ← Subfield.map_bot (algebraMap (ZMod p) K),
 --     subsingleton_iff_bot_eq_top.mpr inferInstance, ← RingHom.fieldRange_eq_map]
