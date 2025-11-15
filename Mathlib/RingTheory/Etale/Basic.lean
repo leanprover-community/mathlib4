@@ -108,13 +108,28 @@ end OfEquiv
 
 section Comp
 
+variable [Algebra A B] [IsScalarTower R A B]
+
 variable (R A B) in
-theorem comp [Algebra A B] [IsScalarTower R A B] [FormallyEtale R A] [FormallyEtale A B] :
+theorem comp [FormallyEtale R A] [FormallyEtale A B] :
     FormallyEtale R B :=
   FormallyEtale.iff_formallyUnramified_and_formallySmooth.mpr
     ⟨FormallyUnramified.comp R A B, FormallySmooth.comp R A B⟩
 
+lemma Algebra.FormallyEtale.of_restrictScalars [FormallyUnramified R A] [FormallyEtale R B] :
+    FormallyEtale A B :=
+  have := FormallyUnramified.of_restrictScalars R A B
+  have := FormallySmooth.of_restrictScalars R A B
+  .of_formallyUnramified_and_formallySmooth
+
 end Comp
+
+lemma Algebra.FormallyEtale.iff_of_surjective
+    {R S : Type u} [CommRing R] [CommRing S]
+    [Algebra R S] (h : Function.Surjective (algebraMap R S)) :
+    Algebra.FormallyEtale R S ↔ IsIdempotentElem (RingHom.ker (algebraMap R S)) := by
+  rw [FormallyEtale.iff_formallyUnramified_and_formallySmooth, ← FormallySmooth.iff_of_surjective h,
+    and_iff_right (FormallyUnramified.of_surjective (Algebra.ofId R S) h)]
 
 section BaseChange
 
