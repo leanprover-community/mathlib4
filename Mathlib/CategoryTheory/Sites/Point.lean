@@ -21,9 +21,35 @@ namespace CategoryTheory
 
 open Limits Opposite
 
-variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
+variable {C : Type u} [Category.{v} C]
+
+namespace Functor
+
+lemma isCofiltered_elements (F : C ⥤ Type w) [HasFiniteLimits C] [PreservesFiniteLimits F] :
+    IsCofiltered F.Elements where
+  nonempty := ⟨⊤_ C, (terminalIsTerminal.isTerminalObj F).from PUnit .unit⟩
+  cone_objs := by
+    rintro ⟨X, x⟩ ⟨Y, y⟩
+    let h := mapIsLimitOfPreservesOfIsLimit F _ _ (prodIsProd X Y)
+    let h' := Types.binaryProductLimit (F.obj X) (F.obj Y)
+    exact ⟨⟨X ⨯ Y, (h'.conePointUniqueUpToIso h).hom ⟨x, y⟩⟩,
+      ⟨prod.fst, congr_fun (h'.conePointUniqueUpToIso_hom_comp h (.mk .left)) _⟩,
+      ⟨prod.snd, congr_fun (h'.conePointUniqueUpToIso_hom_comp h (.mk .right)) _⟩, by tauto⟩
+  cone_maps := by
+    rintro ⟨X, x⟩ ⟨Y, y⟩ ⟨f, hf⟩ ⟨g, hg⟩
+    dsimp at f g hf hg
+    subst hg
+    let h := isLimitForkMapOfIsLimit F _ (equalizerIsEqualizer f g)
+    let h' := (Types.equalizerLimit (g := F.map f) (h := F.map g)).isLimit
+    exact ⟨⟨equalizer f g, (h'.conePointUniqueUpToIso h).hom ⟨x, hf⟩⟩,
+      ⟨equalizer.ι f g, congr_fun (h'.conePointUniqueUpToIso_hom_comp h .zero) ⟨x, hf⟩⟩,
+      by ext; exact equalizer.condition f g⟩
+
+end Functor
 
 namespace GrothendieckTopology
+
+variable (J : GrothendieckTopology C)
 
 structure Point where
   fiber : C ⥤ Type w
