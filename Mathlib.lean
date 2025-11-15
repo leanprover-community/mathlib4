@@ -3496,6 +3496,7 @@ import Mathlib.Data.List.NatAntidiagonal
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.NodupEquivFin
 import Mathlib.Data.List.OfFn
+import Mathlib.Data.List.OffDiag
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Palindrome
 import Mathlib.Data.List.Perm.Basic
