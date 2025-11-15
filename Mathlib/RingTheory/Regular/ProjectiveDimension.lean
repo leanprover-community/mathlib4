@@ -7,7 +7,6 @@ import Mathlib.Algebra.Category.Grp.Zero
 import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 import Mathlib.CategoryTheory.Abelian.Projective.Dimension
-import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.LocalRing.Module
 import Mathlib.RingTheory.Regular.Category
 import Mathlib.RingTheory.Regular.RegularSequence
