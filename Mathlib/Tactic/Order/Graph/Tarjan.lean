@@ -45,14 +45,20 @@ partial def tarjanDFS (g : Graph) (v : Nat) : StateM TarjanState Unit := do
       let u := edge.dst
       if !(← get).visited.contains u then
         tarjanDFS g u
+        assert! (← get).lowlink.contains v
+        assert! (← get).lowlink.contains u
         modify fun s => {s with
           lowlink := s.lowlink.insert v (min s.lowlink[v]! s.lowlink[u]!),
         }
       else if (← get).onStack.contains u then
+        assert! (← get).lowlink.contains v
+        assert! (← get).lowlink.contains u
         modify fun s => {s with
           lowlink := s.lowlink.insert v (min s.lowlink[v]! s.id[u]!),
         }
 
+  assert! (← get).id.contains v
+  assert! (← get).lowlink.contains v
   if (← get).id[v]! = (← get).lowlink[v]! then
     let mut w := 0
     while true do

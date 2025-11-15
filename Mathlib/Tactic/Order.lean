@@ -154,6 +154,12 @@ def findContradictionWithNe (graph : Graph) (facts : Array AtomicFact) : AtomM (
   let scc := graph.findSCCs
   for fact in facts do
     let .ne lhs rhs neProof := fact | continue
+    if lhs == rhs then
+      return some <| ← mkAppM ``not_not_intro #[← mkEqRefl (← get).atoms[lhs]!]
+    if !scc.contains lhs || !scc.contains rhs then
+      continue
+    assert! scc.contains lhs
+    assert! scc.contains rhs
     if scc[lhs]! != scc[rhs]! then
       continue
     let some pf1 ← graph.buildTransitiveLeProof lhs rhs
