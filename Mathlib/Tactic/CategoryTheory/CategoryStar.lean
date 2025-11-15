@@ -47,7 +47,7 @@ private def insertAfterLevels (us : Array Name) (levelNames : List Name) (newLev
 The syntax `Category* C` creates a new distinct implicit universe parameter `v`, placed
 just before any parameters appearing in `C` and its type, and elaborates to `Category.{v} C`.
 -/
-elab "Category*" ppSpace C:term : term => commitIfNoEx <| withoutErrToSorry do
+elab "Category*" ppSpace C:term:arg : term => commitIfNoEx <| withoutErrToSorry do
   let u ← mkFreshLevelMVar
   let cExpr ← instantiateMVars <| ← elabTermEnsuringType C (some <| .sort <| .succ u)
   let tpCExpr ← instantiateMVars <| ← Meta.inferType cExpr
