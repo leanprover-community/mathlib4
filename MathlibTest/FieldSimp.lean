@@ -309,6 +309,14 @@ example : P (x / (x * y + x * z))  := by test_field_simp
 #guard_msgs in
 example : P (2 * x - 1 * x) := by test_field_simp
 
+/-- info: P x -/
+#guard_msgs in
+example : P (x * 1) := by test_field_simp
+
+/-- info: P x -/
+#guard_msgs in
+example : P (x * 1) := by test_field_simp
+
 /-- info: P (x * (2 - 1 - 1)) -/
 #guard_msgs in
 example : P (2 * x - x - x) := by test_field_simp
@@ -328,6 +336,19 @@ example : P ((3 - 2) * x - x) := by test_field_simp
 #guard_msgs in
 example : P (0 * x) := by test_field_simp
 
+/-- info: P 0 -/
+#guard_msgs in
+example : P (x * 0) := by test_field_simp
+
+/-- error: `simp` made no progress -/
+#guard_msgs in
+example (hx : x = 0) : x * y = 0 := by
+  field_simp
+
+-- For local hypotheses, these need to be passed in explicitly.
+example (hx : x = 0) : x * y = 0 := by
+  field_simp [hx]
+
 /-- info: P (0 * (x * y + 1)) -/
 #guard_msgs in
 example : P (0 * x * y + 0) := by test_field_simp
@@ -345,6 +366,88 @@ example : P (-(-x)) := by test_field_simp
 /-- info: P (0 - (0 + -x)) -/
 #guard_msgs in
 example : P (0 -(0 + (-x))) := by test_field_simp
+
+/-! ### Parentheses -/
+-- Terms in parentheses are sometimes expanded, but not always.
+-- Telling when this happens is a bit brittle.
+
+/-- info: P x -/
+#guard_msgs in
+example {a : ℚ} : P (a - (a - x)) := by test_field_simp
+
+/-- info: P x -/
+#guard_msgs in
+example {a : ℚ} : P (y - (y - x)) := by test_field_simp
+
+/-- info: P a -/
+#guard_msgs in
+example {a : ℚ} : P (a - (x - x)) := by test_field_simp
+
+/-- info: P 0 -/
+#guard_msgs in
+example {a : ℚ} : P (a - (x - (x + 0) + a)) := by test_field_simp
+
+/-- info: P (y + a - x) -/
+#guard_msgs in
+example {a : ℚ} : P (a - (x - (y + a) + a)) := by test_field_simp
+
+/-- info: P (y + a) -/
+#guard_msgs in
+example {a : ℚ} : P (x - (x - (y + a))) := by test_field_simp
+
+/-- error: `simp` made no progress -/
+#guard_msgs in
+example {a : ℚ} : P (x - (x - (y + a) + a)) := by test_field_simp
+
+/-- error: `simp` made no progress -/
+#guard_msgs in
+example {a : ℚ} : P (x - (x + y - (y + a))) := by test_field_simp
+
+-- In contrast, this example makes progress.
+/-- info: P a -/
+#guard_msgs in
+example {a : ℚ} : P (x - (x + y - y - a)) := by test_field_simp
+
+/-! ### Parentheses -/
+-- Terms in parentheses are sometimes expanded, but not always.
+-- Telling when this happens is a bit brittle.
+
+/-- info: P x -/
+#guard_msgs in
+example {a : ℚ} : P (a - (a - x)) := by test_field_simp
+
+/-- info: P x -/
+#guard_msgs in
+example {a : ℚ} : P (y - (y - x)) := by test_field_simp
+
+/-- info: P a -/
+#guard_msgs in
+example {a : ℚ} : P (a - (x - x)) := by test_field_simp
+
+/-- info: P 0 -/
+#guard_msgs in
+example {a : ℚ} : P (a - (x - (x + 0) + a)) := by test_field_simp
+
+/-- info: P (y + a - x) -/
+#guard_msgs in
+example {a : ℚ} : P (a - (x - (y + a) + a)) := by test_field_simp
+
+/-- info: P (y + a) -/
+#guard_msgs in
+example {a : ℚ} : P (x - (x - (y + a))) := by test_field_simp
+
+/-- error: `simp` made no progress -/
+#guard_msgs in
+example {a : ℚ} : P (x - (x - (y + a) + a)) := by test_field_simp
+
+/-- error: `simp` made no progress -/
+#guard_msgs in
+example {a : ℚ} : P (x - (x + y - (y + a))) := by test_field_simp
+
+-- In contrast, this example makes progress.
+/-- info: P a -/
+#guard_msgs in
+example {a : ℚ} : P (x - (x + y - y - a)) := by test_field_simp
 
 /-! ### Transparency
 
@@ -759,6 +862,38 @@ example {V : Type*} [AddCommGroup V] (F : V → ℚ)
         * F x * F y * F (x - y) * F (x - y) := by
   field_simp
   exact test_sorry
+
+private lemma smulY_sub_negY_aux {F} [Field F] {a₁ a₃ x y z : F} (h0 : z ≠ 0) :
+    y / z ^ 3 - (-(y / z ^ 3) - a₁ * (x / z ^ 2) - a₃) =
+      z * (2 * y + a₁ * x * z + a₃ * z ^ 3) / z ^ 4 := by
+  field_simp; ring
+
+private lemma addX_smul_one_smul_one_aux {F} [Field F] {a₁ a₂ x dx dy : F} (h0 : dy ≠ 0) :
+    (-dx / dy) ^ 2 + a₁ * (-dx / dy) - a₂ - x - x - x =
+      (dx ^ 2 - a₁ * dx * dy - (3 * x + a₂) * dy ^ 2) / dy ^ 2 := by
+  field_simp; ring
+
+private lemma addY_smul_one_smul_one_aux {F} [Field F] {a₁ a₃ dx dy x y ψ₃ t : F} (h0 : dy ≠ 0) :
+    ((a₁ * dy - dx) * ψ₃ + 0 * t + (-y - (a₁ * x + a₃)) * dy ^ 3) / dy ^ 3 =
+      -(-dx / dy * (x - ψ₃ / dy ^ 2 - x) + y) - a₁ * (x - ψ₃ / dy ^ 2) - a₃ := by
+  field_simp; ring
+
+private lemma smulY_neg_aux {F} [Field F] {a₁ a₃ x y z : F} (hz : z ≠ 0) :
+    (y + a₁ * x * z + a₃ * z ^ 3) / (-z) ^ 3 = -(y / z ^ 3) - a₁ * (x / z ^ 2) - a₃ := by
+  field_simp; ring
+
+private lemma smulX_add_aux {F} [Field F] {m n m₂ n₂ a s : F}
+    (hm : m ≠ 0) (hn : n ≠ 0) (ha : a ≠ 0) (hs : s ≠ 0) :
+    n₂ / n ^ 4 * (m₂ / m ^ 4) / (a * s / (n * m) ^ 2) ^ 2 = n₂ * m₂ / (a * s) ^ 2 := by
+  field_simp
+
+private lemma smulY_add_sub_negY_aux {F} [Field F] {m n m₂ n₂ a s am an : F}
+    (hm : m ≠ 0) (hn : n ≠ 0) (ha : a ≠ 0) (hs : s ≠ 0) :
+    (m₂ / m ^ 4 * (an * m / (a * n) ^ 2) - n₂ / n ^ 4 * (am * n / (a * m) ^ 2))
+      / (a * s / (n * m) ^ 2)
+      = (an * m₂ * n - am * n₂ * m) * a / (s * n * m) / a ^ 4 := by
+  field_simp
+
 
 /-! ## Discharger -/
 
