@@ -5,7 +5,6 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Logic.Nontrivial.Defs
-import Mathlib.Tactic.SplitIfs
 import Mathlib.Logic.Basic
 
 /-!

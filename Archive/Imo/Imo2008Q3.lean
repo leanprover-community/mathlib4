@@ -11,7 +11,7 @@ import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
 Prove that there exist infinitely many positive integers `n` such that `n^2 + 1` has a prime
 divisor which is greater than `2n + √(2n)`.
 
-# Solution
+## Solution
 We first prove the following lemma: for every prime `p > 20`, satisfying `p ≡ 1 [MOD 4]`,
 there exists `n ∈ ℕ` such that `p ∣ n^2 + 1` and `p > 2n + √(2n)`. Then the statement of the
 problem follows from the fact that there exist infinitely many primes `p ≡ 1 [MOD 4]`.
