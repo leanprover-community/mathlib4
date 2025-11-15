@@ -3,13 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+import Mathlib.LinearAlgebra.LeftExact
+import Mathlib.LinearAlgebra.TensorProduct.Pi
 import Mathlib.RingTheory.Finiteness.Projective
+import Mathlib.RingTheory.Flat.IsBaseChange
 import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.RingTheory.Noetherian.Basic
-import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 
@@ -86,6 +84,16 @@ theorem Module.FinitePresentation.exists_fin [fp : Module.FinitePresentation R M
     (LinearMap.quotKerEquivOfSurjective _ <| LinearMap.range_eq_top.mp ?_).symm, ?_⟩
   · simpa [range_linearCombination] using hι₁
   · simpa [LinearMap.ker_comp, Submodule.comap_equiv_eq_map_symm] using hι₂.map _
+
+/-- An alternative version of `Module.FinitePresentation.exists_fin` that provides a right exact
+sequence. -/
+theorem Module.FinitePresentation.exists_fin' [fp : Module.FinitePresentation R M] :
+    ∃ (n m : ℕ) (f : (Fin n → R) →ₗ[R] M) (g : (Fin m → R) →ₗ[R] (Fin n → R)),
+    Function.Surjective f ∧ Function.Exact g f := by
+  obtain ⟨n, K, e, h⟩ := exists_fin R M
+  obtain ⟨m, g', hg'⟩ := K.fg_iff_exists_fin_linearMap.mp h
+  refine ⟨n, m, e.symm ∘ₗ K.mkQ, g', by simpa using K.mkQ_surjective,
+    e.symm.injective.comp_exact_iff_exact.mpr (LinearMap.exact_iff.mpr (by simpa using hg'.symm))⟩
 
 /-- A finitely presented module is isomorphic to the quotient of a finite free module by a finitely
 generated submodule. -/
@@ -615,5 +623,41 @@ lemma Module.FinitePresentation.linearEquivMapExtendScalars_symm_apply
     (LocalizedModule.mkLinearMap S N) (Localization S)) f) =
     (LocalizedModule.mkLinearMap S (M →ₗ[R] N)) f :=
   IsLocalizedModule.linearEquiv_symm_apply S _ _ f
+
+variable (R M N) in
+open TensorProduct LinearMap in
+theorem Module.FinitePresentation.isBaseChange_map (S : Type*) [CommRing S] [Algebra R S]
+    [Module.Flat R S]
+    [Module.FinitePresentation R M] : IsBaseChange S (LinearMap.baseChangeHom R S M N) := by
+  have h_free (n : ℕ) : IsBaseChange S (LinearMap.baseChangeHom R S (Fin n → R) N) := by
+    let e₁ := TensorProduct.piRight R S S (fun _ : Fin n ↦ R)
+    let e₂ := LinearEquiv.congrLeft (S ⊗[R] N) S e₁.symm
+    let e₃ := (LinearEquiv.piCongrRight (fun _ ↦ (LinearMap.ringLmapEquivSelf ..).symm ≪≫ₗ
+      (LinearEquiv.congrLeft (S ⊗[R] N) S (AlgebraTensorModule.rid R S S).symm))) ≪≫ₗ
+      (LinearMap.lsum S (fun _ : Fin n ↦ _) S) ≪≫ₗ e₂
+    let e₄ : ((Fin n → R) →ₗ[R] N) ≃ₗ[R] (Fin n → N) :=
+      (LinearMap.lsum R (fun _ : Fin n ↦ R) R).symm ≪≫ₗ
+      LinearEquiv.piCongrRight (fun _ ↦ LinearMap.ringLmapEquivSelf ..)
+    refine IsBaseChange.of_equiv
+      ((e₄.baseChange R S) ≪≫ₗ (TensorProduct.piRight R S S (fun _ : Fin n ↦ N)) ≪≫ₗ e₃)
+        (fun f ↦ TensorProduct.AlgebraTensorModule.curry_injective (LinearMap.ext fun s ↦ ?_))
+    ext i
+    simpa [e₄, e₃, e₂, e₁, LinearEquiv.congrLeft, LinearEquiv.baseChange] using
+      (tmul_eq_smul_one_tmul s (f (Pi.single i 1))).symm
+  obtain ⟨n, m, f, g, hf, hfg⟩ := Module.FinitePresentation.exists_fin' R M
+  refine IsBaseChange.of_left_exact S (f := f.lcomp R N) (g := g.lcomp R N)
+    (f' := (f.baseChange S).lcomp S (S ⊗[R] N)) (g' := (g.baseChange S).lcomp S (S ⊗[R] N))
+    _ _ _ ?_ ?_ (h_free n) (h_free m) ?_ ?_ ?_ ?_
+  · exact LinearMap.ext fun φ ↦ TensorProduct.AlgebraTensorModule.curry_injective
+      (LinearMap.ext fun s ↦ (LinearMap.ext fun m ↦ (by simp)))
+  · exact LinearMap.ext fun φ ↦ TensorProduct.AlgebraTensorModule.curry_injective
+      (LinearMap.ext fun s ↦ (LinearMap.ext fun m ↦ (by simp)))
+  · exact exact_lcomp_of_exact_of_surjective _ hfg hf
+  · exact lcomp_injective_of_surjective f hf
+  · apply exact_lcomp_of_exact_of_surjective
+    · exact (lTensor_exact S hfg hf)
+    · exact LinearMap.lTensor_surjective S hf
+  · apply lcomp_injective_of_surjective
+    exact LinearMap.lTensor_surjective S hf
 
 end CommRing
