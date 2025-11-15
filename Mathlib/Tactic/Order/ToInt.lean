@@ -106,9 +106,12 @@ def mkFinFun {u : Level} {α : Q(Type $u)} (atoms : Array Q($α)) : MetaM Expr :
 preserving all the facts except for `.isTop` and `.isBot`. These facts are filtered at the
 preprocessing step. -/
 def translateToInt {u : Lean.Level} (type : Q(Type u)) (inst : Q(LinearOrder $type))
-    (idxToAtom : Std.HashMap ℕ Q($type))
     (facts : Array AtomicFact) :
-    MetaM <| Std.HashMap ℕ Q(ℤ) × Array AtomicFact := do
+    AtomM <| Std.HashMap ℕ Q(ℤ) × Array AtomicFact := do
+  let mut idxToAtom : Std.HashMap Nat Q($type) := ∅
+  for (atom, i) in (← get).atoms.zipIdx do
+    if (← inferType atom) == type then
+      idxToAtom := idxToAtom.insert i atom
   haveI nE : Q(ℕ) := mkNatLitQ idxToAtom.size
   haveI finFun : Q(Fin $nE → $type) :=
     ← mkFinFun (Array.ofFn fun (n : Fin idxToAtom.size) => idxToAtom[n]!)
