@@ -256,6 +256,10 @@ theorem fib_succ_sub_goldenRatio_mul_fib (n : ℕ) : Nat.fib (n + 1) - φ * Nat.
 @[deprecated (since := "2025-08-23")]
 alias _root_.fib_golden_conj_exp := fib_succ_sub_goldenRatio_mul_fib
 
+/-- Relationship between the Fibonacci Sequence, Golden Ratio and its conjugate's exponents -/
+lemma goldenConj_mul_fib_succ_add_fib (n : ℕ) : ψ * Nat.fib (n + 1) + Nat.fib n = ψ ^ (n + 1) := by
+  grind [fib_succ_sub_goldenRatio_mul_fib]
+
 /-- Relationship between the Fibonacci Sequence, Golden Ratio and its exponents -/
 lemma goldenRatio_mul_fib_succ_add_fib (n : ℕ) : φ * Nat.fib (n + 1) + Nat.fib n = φ ^ (n + 1) := by
   induction n with
@@ -270,5 +274,9 @@ lemma goldenRatio_mul_fib_succ_add_fib (n : ℕ) : φ * Nat.fib (n + 1) + Nat.fi
 
 @[deprecated (since := "2025-08-23")]
 alias _root_.fib_golden_exp' := goldenRatio_mul_fib_succ_add_fib
+
+/-- Relationship between the Fibonacci Sequence, Golden Ratio and its exponents -/
+theorem fib_succ_sub_goldenConj_mul_fib (n : ℕ) : Nat.fib (n + 1) - ψ * Nat.fib n = φ ^ n := by
+  grind [goldenRatio_mul_fib_succ_add_fib]
 
 end Real
