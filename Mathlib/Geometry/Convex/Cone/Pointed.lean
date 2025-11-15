@@ -236,7 +236,7 @@ lemma salient_iff_mem_neg_eq_zero (C : PointedCone R E) :
   simp [ConvexCone.Salient, not_imp_not, iff_iff_implies_and_implies, forall_and]
 
 /-- A pointed cone is salient iff the intersection of the cone with its negative
-is `{0}`f. -/
+is the set `{0}`. -/
 lemma salient_iff_inter_neg_eq_zero (C : PointedCone R E) :
     (C : ConvexCone R E).Salient ↔ (C ∩ -C : Set E) = {0} := by
   simp [ConvexCone.Salient, Set.eq_singleton_iff_unique_mem, not_imp_not]
