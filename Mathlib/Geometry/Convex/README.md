@@ -8,3 +8,9 @@ See the `Mathlib.Analysis.Convex` folder for the results that need a norm or an 
 
 The topics currently covered are:
 * Cones
+* Polytopes
+
+## TODO
+
+A lot of the material under `Analysis.Convex` could move here.
+Please ask Yaël Dillies on Zulip if you would like to help.
