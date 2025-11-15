@@ -141,11 +141,22 @@ protected theorem Perm.congr_fun {f g : Equiv.Perm α} (h : f = g) (x : α) : f 
 /-- Any type is equivalent to itself. -/
 @[refl] protected def refl (α : Sort*) : α ≃ α := ⟨id, id, fun _ => rfl, fun _ => rfl⟩
 
+instance : EquivLike.Refl (α ≃ α) where
+  id := Equiv.refl α
+
+theorem refl_eq_refl : Equiv.refl α = EquivLike.refl := rfl
+
 instance inhabited' : Inhabited (α ≃ α) := ⟨Equiv.refl α⟩
 
 /-- Inverse of an equivalence `e : α ≃ β`. -/
 @[symm]
 protected def symm (e : α ≃ β) : β ≃ α := ⟨e.invFun, e.toFun, e.right_inv, e.left_inv⟩
+
+instance : EquivLike.Symm (α ≃ β) (β ≃ α) where
+  symm e := e.symm
+
+theorem symm_eq_symm (e : α ≃ β) :
+    e.symm = EquivLike.symm e := rfl
 
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply (e : α ≃ β) : β → α := e.symm
@@ -161,6 +172,12 @@ theorem right_inv' (e : α ≃ β) : Function.RightInverse e.symm e := e.right_i
 @[trans]
 protected def trans (e₁ : α ≃ β) (e₂ : β ≃ γ) : α ≃ γ :=
   ⟨e₂ ∘ e₁, e₁.symm ∘ e₂.symm, e₂.left_inv.comp e₁.left_inv, e₂.right_inv.comp e₁.right_inv⟩
+
+instance : EquivLike.Trans (α ≃ β) (β ≃ γ) (α ≃ γ) where
+  comp e₂ e₁ := e₁.trans e₂
+
+theorem trans_eq_trans (e₁ : α ≃ β) (e₂ : β ≃ γ) :
+    e₁.trans e₂ = EquivLike.trans e₁ e₂ := rfl
 
 @[simps]
 instance : Trans Equiv Equiv Equiv where
@@ -271,6 +288,7 @@ theorem Perm.coe_subsingleton {α : Type*} [Subsingleton α] (e : Perm α) : (e 
   (e : α ≃ β).self_comp_symm
 
 @[simp, grind =] theorem symm_trans_apply (f : α ≃ β) (g : β ≃ γ) (a : γ) :
+
     (f.trans g).symm a = f.symm (g.symm a) := rfl
 
 theorem symm_symm_apply (f : α ≃ β) (b : α) : f.symm.symm b = f b := rfl
@@ -292,6 +310,7 @@ theorem apply_eq_iff_eq_symm_apply {x : α} {y : β} (f : α ≃ β) : f x = y �
 theorem cast_eq_iff_heq {α β} (h : α = β) {a : α} {b : β} : Equiv.cast h a = b ↔ a ≍ b := by
   subst h; simp
 
+
 theorem symm_apply_eq {α β} (e : α ≃ β) {x y} : e.symm x = y ↔ x = e y := by grind
 
 theorem eq_symm_apply {α β} (e : α ≃ β) {x y} : y = e.symm x ↔ e y = x := by grind
@@ -299,13 +318,13 @@ theorem eq_symm_apply {α β} (e : α ≃ β) {x y} : y = e.symm x ↔ e y = x :
 @[simp, grind =] theorem symm_symm (e : α ≃ β) : e.symm.symm = e := rfl
 
 theorem symm_bijective : Function.Bijective (Equiv.symm : (α ≃ β) → β ≃ α) :=
-  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+  EquivLike.symm_bijective
 
 @[simp] theorem trans_refl (e : α ≃ β) : e.trans (Equiv.refl β) = e := by grind
 
 @[simp, grind =] theorem refl_symm : (Equiv.refl α).symm = Equiv.refl α := rfl
 
-@[simp] theorem refl_trans (e : α ≃ β) : (Equiv.refl α).trans e = e := by cases e; rfl
+@[simp] theorem refl_trans (e : α ≃ β) : (Equiv.refl α).trans e = e := rfl
 
 @[simp] theorem symm_trans_self (e : α ≃ β) : e.symm.trans e = Equiv.refl β := by grind
 
@@ -739,43 +758,43 @@ end
 variable {p : α → Prop} {q : β → Prop} (e : α ≃ β)
 
 protected lemma forall_congr_right : (∀ a, q (e a)) ↔ ∀ b, q b :=
-  ⟨fun h a ↦ by simpa using h (e.symm a), fun h _ ↦ h _⟩
+  EquivLike.forall_congr_right e
 
 protected lemma forall_congr_left : (∀ a, p a) ↔ ∀ b, p (e.symm b) :=
-  e.symm.forall_congr_right.symm
+  EquivLike.forall_congr_left_symm e
 
 protected lemma forall_congr (h : ∀ a, p a ↔ q (e a)) : (∀ a, p a) ↔ ∀ b, q b :=
-  e.forall_congr_left.trans (by simp [h])
+  EquivLike.forall_congr e h
 
 protected lemma forall_congr' (h : ∀ b, p (e.symm b) ↔ q b) : (∀ a, p a) ↔ ∀ b, q b :=
-  e.forall_congr_left.trans (by simp [h])
+  EquivLike.forall_congr'_symm e h
 
 protected lemma exists_congr_right : (∃ a, q (e a)) ↔ ∃ b, q b :=
-  ⟨fun ⟨_, h⟩ ↦ ⟨_, h⟩, fun ⟨a, h⟩ ↦ ⟨e.symm a, by simpa using h⟩⟩
+  EquivLike.exists_congr_right e
 
 protected lemma exists_congr_left : (∃ a, p a) ↔ ∃ b, p (e.symm b) :=
-  e.symm.exists_congr_right.symm
+  EquivLike.exists_congr_left_symm e
 
 protected lemma exists_congr (h : ∀ a, p a ↔ q (e a)) : (∃ a, p a) ↔ ∃ b, q b :=
-  e.exists_congr_left.trans <| by simp [h]
+  EquivLike.exists_congr e h
 
 protected lemma exists_congr' (h : ∀ b, p (e.symm b) ↔ q b) : (∃ a, p a) ↔ ∃ b, q b :=
-  e.exists_congr_left.trans <| by simp [h]
+  EquivLike.exists_congr'_symm e h
 
 protected lemma exists_subtype_congr (e : {a // p a} ≃ {b // q b}) : (∃ a, p a) ↔ ∃ b, q b := by
   simp [← nonempty_subtype, nonempty_congr e]
 
 protected lemma existsUnique_congr_right : (∃! a, q (e a)) ↔ ∃! b, q b :=
-  e.exists_congr <| by simpa using fun _ _ ↦ e.forall_congr (by simp)
+  EquivLike.existsUnique_congr_right e
 
 protected lemma existsUnique_congr_left : (∃! a, p a) ↔ ∃! b, p (e.symm b) :=
-  e.symm.existsUnique_congr_right.symm
+  EquivLike.existsUnique_congr_left e
 
 protected lemma existsUnique_congr (h : ∀ a, p a ↔ q (e a)) : (∃! a, p a) ↔ ∃! b, q b :=
-  e.existsUnique_congr_left.trans <| by simp [h]
+  EquivLike.existsUnique_congr e h
 
 protected lemma existsUnique_congr' (h : ∀ b, p (e.symm b) ↔ q b) : (∃! a, p a) ↔ ∃! b, q b :=
-  e.existsUnique_congr_left.trans <| by simp [h]
+  EquivLike.existsUnique_congr'_symm e h
 
 protected lemma existsUnique_subtype_congr (e : {a // p a} ≃ {b // q b}) :
     (∃! a, p a) ↔ ∃! b, q b := by
