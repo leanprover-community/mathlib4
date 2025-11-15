@@ -37,12 +37,14 @@ larger space of test functions.
   `ContDiffMapSupportedIn E (E [×i]→L[ℝ] F) k K`.
 - `ContDiffMapSupportedIn.iteratedFDerivLM`: specialization of the above, giving a `𝕜`-linear map
   from `ContDiffMapSupportedIn E F ⊤ K` to `ContDiffMapSupportedIn E (E [×i]→L[ℝ] F) ⊤ K`.
+- `ContDiffMapSupportedIn.topologicalSpace`, `ContDiffMapSupportedIn.uniformSpace`: the topology
+  and uniform structures on `𝓓^{n}_{K}(E, F)`, given by uniform convergence of the functions and
+  all their derivatives up to order `n`.
 
 ## Main statements
 
-TODO:
-- `ContDiffMapSupportedIn.instIsUniformAddGroup` and
-  `ContDiffMapSupportedIn.instLocallyConvexSpace`: `ContDiffMapSupportedIn` is a locally convex
+- `ContDiffMapSupportedIn.isTopologicalAddGroup`, `ContDiffMapSupportedIn.continuousSMul` and
+  `ContDiffMapSupportedIn.instLocallyConvexSpace`: `𝓓^{n}_{K}(E, F)` is a locally convex
   topological vector space.
 
 ## Notation
@@ -263,14 +265,15 @@ as a `𝕜`-linear map.
 
 This is subsumed by `toBoundedContinuousFunctionCLM` (not yet in Mathlib), which also bundles the
 continuity. -/
-@[simps -fullyApplied]
 noncomputable def toBoundedContinuousFunctionLM : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ F where
   toFun f := f
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
--- Workaround for simps' automatic name generation: manually specifying names is not supported yet.
-alias toBoundedContinuousFunctionLM_apply := toBoundedContinuousFunctionLM_apply_apply
+@[simp]
+lemma toBoundedContinuousFunctionLM_apply (f : 𝓓^{n}_{K}(E, F)) :
+    toBoundedContinuousFunctionLM 𝕜 f = f :=
+  rfl
 
 lemma toBoundedContinuousFunctionLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
     [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
@@ -382,7 +385,7 @@ This only makes mathematical sense if `i ≤ n`, otherwise we define it as the z
 
 We call these "structure maps" because they define the topology on `𝓓^{n}_{K}(E, F)`.
 
-This is subsumed by `structureMapCLM` (not yet in Mathlib), which also bundles the
+This is subsumed by `structureMapCLM`, which also bundles the
 continuity. -/
 noncomputable def structureMapLM (i : ℕ) :
     𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ (E [×i]→L[ℝ] F) :=
@@ -406,5 +409,152 @@ lemma structureMapLM_eq_of_scalars {i : ℕ} (𝕜' : Type*) [NontriviallyNormed
     [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
     (structureMapLM 𝕜 n i : 𝓓^{n}_{K}(E, F) → _) = structureMapLM 𝕜' n i :=
   rfl
+
+section Topology
+
+noncomputable instance topologicalSpace : TopologicalSpace 𝓓^{n}_{K}(E, F) :=
+  ⨅ (i : ℕ), induced (structureMapLM ℝ n i) inferInstance
+
+noncomputable instance uniformSpace : UniformSpace 𝓓^{n}_{K}(E, F) := .replaceTopology
+  (⨅ (i : ℕ), UniformSpace.comap (structureMapLM ℝ n i) inferInstance)
+  toTopologicalSpace_iInf.symm
+
+protected theorem uniformSpace_eq_iInf : (uniformSpace : UniformSpace 𝓓^{n}_{K}(E, F)) =
+    ⨅ (i : ℕ), UniformSpace.comap (structureMapLM ℝ n i) inferInstance :=
+  UniformSpace.replaceTopology_eq _ toTopologicalSpace_iInf.symm
+
+instance isTopologicalAddGroup : IsTopologicalAddGroup 𝓓^{n}_{K}(E, F) := by
+  refine topologicalAddGroup_iInf (fun i ↦ ?_)
+  exact topologicalAddGroup_induced _
+
+instance isUniformAddGroup : IsUniformAddGroup 𝓓^{n}_{K}(E, F) := by
+  rw [ContDiffMapSupportedIn.uniformSpace_eq_iInf]
+  refine isUniformAddGroup_iInf (fun i ↦ ?_)
+  exact IsUniformAddGroup.comap _
+
+instance continuousSMul : ContinuousSMul 𝕜 𝓓^{n}_{K}(E, F) := by
+  refine continuousSMul_iInf
+    (fun i ↦ continuousSMul_induced (structureMapLM 𝕜 n i))
+
+instance locallyConvexSpace : LocallyConvexSpace ℝ 𝓓^{n}_{K}(E, F) :=
+  LocallyConvexSpace.iInf fun _ ↦ LocallyConvexSpace.induced _
+
+variable (n) in
+/-- `structureMapCLM 𝕜 n i` is the continuous `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to its
+`i`-th iterated derivative as an element of `E →ᵇ (E [×i]→L[ℝ] F)`.
+This only makes mathematical sense if `i ≤ n`, otherwise we define it as the zero map.
+
+We call these "structure maps" because they define the topology on `𝓓^{n}_{K}(E, F)`. -/
+noncomputable def structureMapCLM (i : ℕ) :
+    𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ (E [×i]→L[ℝ] F) where
+  toLinearMap := structureMapLM 𝕜 n i
+  cont := continuous_iInf_dom continuous_induced_dom
+
+lemma structureMapCLM_apply_withOrder {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
+    structureMapCLM 𝕜 n i f = if i ≤ n then iteratedFDeriv ℝ i f else 0 := by
+  simp [structureMapCLM, structureMapLM_apply_withOrder]
+
+lemma structureMapCLM_apply {i : ℕ} (f : 𝓓_{K}(E, F)) :
+    structureMapCLM 𝕜 ⊤ i f = iteratedFDeriv ℝ i f := by
+  simp [structureMapCLM, structureMapLM_apply]
+
+lemma structureMapCLM_eq_of_scalars {i : ℕ} (𝕜' : Type*) [NontriviallyNormedField 𝕜']
+    [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (structureMapCLM 𝕜 n i : 𝓓^{n}_{K}(E, F) → _) = structureMapCLM 𝕜' n i :=
+  rfl
+
+/-- The **universal property** of the topology on `𝓓^{n}_{K}(E, F)`: a map to `𝓓^{n}_{K}(E, F)`
+is continuous if and only if its composition with each structure map
+`structureMapCLM ℝ n i : 𝓓^{n}_{K}(E, F) → (E →ᵇ (E [×i]→L[ℝ] F))` is continuous.
+
+Since `structureMapCLM ℝ n i` is zero whenever `i > n`, it suffices to check it for `i ≤ n`,
+as proven by `continuous_iff_comp_with_order`. -/
+-- Note: if needed, we could allow an extra parameter `𝕜` in case the use wants to use
+-- `structureMapCLM 𝕜 n i`.
+theorem continuous_iff_comp {X} [TopologicalSpace X] (φ : X → 𝓓^{n}_{K}(E, F)) :
+    Continuous φ ↔ ∀ i, Continuous (structureMapCLM ℝ n i ∘ φ) := by
+  simp_rw [continuous_iInf_rng, continuous_induced_rng]
+  rfl
+
+/-- The **universal property** of the topology on `𝓓^{n}_{K}(E, F)`: a map to `𝓓^{n}_{K}(E, F)`
+is continuous if and only if its composition with the structure map
+`structureMapCLM ℝ n i : 𝓓^{n}_{K}(E, F) → (E →ᵇ (E [×i]→L[ℝ] F))` is continuous for each `i ≤ n`.
+Since `structureMapCLM ℝ n i` is zero whenever `i > n`, it suffices to check it for `i ≤ n`,
+as proven by `continuous_iff_comp_of_le`. -/
+-- Note: if needed, we could allow an extra parameter `𝕜` in case the use wants to use
+-- `structureMapCLM 𝕜 n i`.
+theorem continuous_iff_comp_withOrder {X : Type*} [TopologicalSpace X] (φ : X → 𝓓^{n}_{K}(E, F)) :
+    Continuous φ ↔ ∀ (i : ℕ), i ≤ n → Continuous (structureMapCLM ℝ n i ∘ φ) := by
+  rw [continuous_iff_comp]
+  congrm (∀ i, ?_)
+  by_cases hin : i ≤ n <;> simp only [hin, true_imp_iff, false_imp_iff, iff_true]
+  refine continuous_zero.congr fun x ↦ ?_
+  ext t : 1
+  simp [hin, structureMapCLM_apply_withOrder]
+
+variable (E F n K)
+
+/-- The seminorms on the space `𝓓^{n}_{K}(E, F)` given by sup norm on the `i`-th derivative. -/
+protected noncomputable def seminorm (i : ℕ) : Seminorm 𝕜 𝓓^{n}_{K}(E, F) :=
+  (normSeminorm 𝕜 (E →ᵇ (E [×i]→L[ℝ] F))).comp (structureMapLM 𝕜 n i)
+
+/-- The seminorms on the space `𝓓^{n}_{K}(E, F)` given by sup of the
+`ContDiffMapSupportedIn.seminorm k`for `k ≤ i`. -/
+protected noncomputable def seminorm' (i : ℕ) : Seminorm 𝕜 𝓓^{n}_{K}(E, F) :=
+  (Finset.Iic i).sup (ContDiffMapSupportedIn.seminorm 𝕜 E F n K)
+
+protected theorem withSeminorms :
+    WithSeminorms (ContDiffMapSupportedIn.seminorm 𝕜 E F n K) := by
+  let p : SeminormFamily 𝕜 𝓓^{n}_{K}(E, F) ((_ : ℕ) × Fin 1) :=
+    SeminormFamily.sigma fun i ↦ fun _ ↦
+      (normSeminorm 𝕜 (E →ᵇ (E [×i]→L[ℝ] F))).comp (structureMapLM 𝕜 n i)
+  have : WithSeminorms p :=
+    withSeminorms_iInf fun i ↦ LinearMap.withSeminorms_induced (norm_withSeminorms _ _) _
+  exact this.congr_equiv (Equiv.sigmaUnique _ _).symm
+
+protected theorem withSeminorms' :
+    WithSeminorms (ContDiffMapSupportedIn.seminorm' 𝕜 E F n K) :=
+  (ContDiffMapSupportedIn.withSeminorms 𝕜 E F n K).partial_sups
+
+variable {E F n K}
+
+-- TODO: Once we have `iteratedFDerivWithOrderCLM`, maybe we should restate this lemma
+-- in terms of these? Same for the lemma below.
+-- TODO: Should this be `@[simp]` instead of the one below? I don't want `simp` to
+-- force `WithOrder` variants on people, but maybe this is not a good argument.
+protected theorem seminorm_apply_withOrder (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
+    ContDiffMapSupportedIn.seminorm 𝕜 E F n K i f =
+      ‖(iteratedFDerivWithOrderLM 𝕜 n 0 i f : E →ᵇ (E [×i]→L[ℝ] F))‖ :=
+  rfl
+
+@[simp]
+protected theorem seminorm_apply (i : ℕ) (f : 𝓓^{⊤}_{K}(E, F)) :
+    ContDiffMapSupportedIn.seminorm 𝕜 E F ⊤ K i f =
+      ‖(iteratedFDerivLM 𝕜 i f : E →ᵇ (E [×i]→L[ℝ] F))‖ :=
+  rfl
+
+protected theorem seminorm_eq_bot_of_gt {i : ℕ} (hin : n < i) :
+    ContDiffMapSupportedIn.seminorm 𝕜 E F n K i = ⊥ := by
+  have : ¬(i ≤ n) := by simpa using hin
+  ext f
+  simp [ContDiffMapSupportedIn.seminorm_apply_withOrder, BoundedContinuousFunction.ext_iff,
+    this]
+
+theorem norm_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
+    ‖(f : E →ᵇ F)‖ = ContDiffMapSupportedIn.seminorm 𝕜 E F n K 0 f := by
+  simp [BoundedContinuousFunction.norm_eq_iSup_norm,
+    ContDiffMapSupportedIn.seminorm_apply_withOrder]
+
+/-- The inclusion of the space `𝓓^{n}_{K}(E, F)` into the space `E →ᵇ F` of bounded continuous
+functions as a continuous `𝕜`-linear map. -/
+noncomputable def toBoundedContinuousFunctionCLM : 𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ F :=
+  { toLinearMap := toBoundedContinuousFunctionLM 𝕜
+    cont := show Continuous (toBoundedContinuousFunctionLM 𝕜) by
+      refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
+        (norm_withSeminorms 𝕜 _) _ (fun _ ↦ ⟨{0}, 1, fun f ↦ ?_⟩)
+      simp [norm_toBoundedContinuousFunction ℝ f,
+        ContDiffMapSupportedIn.seminorm_apply_withOrder] }
+
+end Topology
 
 end ContDiffMapSupportedIn
