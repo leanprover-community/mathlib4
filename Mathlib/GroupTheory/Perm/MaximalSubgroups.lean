@@ -171,7 +171,7 @@ lemma _root_.Subgroup.isPretransitive_of_stabilizer_lt
     rw [this, Subgroup.map_le_iff_le_comap]
     rw [show Subgroup.comap G.subtype (stabilizer (Perm α) s) = stabilizer G s from rfl, h]
 
-lemma _root_.IsBlock.subsingleton_of_ssubset_compl_of_stabilizer_le
+lemma _root_.MulAction.IsBlock.subsingleton_of_ssubset_compl_of_stabilizer_le
     {s B : Set α} {G : Subgroup (Perm α)}
     (hB_ss_sc : B ⊂ sᶜ) (hG : stabilizer (Perm α) s ≤ G) (hB : IsBlock G B) :
     B.Subsingleton := by
@@ -215,7 +215,7 @@ lemma _root_.IsBlock.subsingleton_of_ssubset_compl_of_stabilizer_le
     · simp [φ]
     · exact ofSubtype_apply_of_mem g hx
 
-lemma _root_.IsBlock.subsingleton_of_stabilizer_lt_of_subset
+lemma _root_.MulAction.IsBlock.subsingleton_of_stabilizer_lt_of_subset
     {s B : Set α} {G : Subgroup (Perm α)}
     (hB_not_le_sc : ∀ (B : Set α), IsBlock G B → B ⊆ sᶜ → B.Subsingleton)
     (hG : stabilizer (Perm α) s < G) (hBs : B ⊆ s) (hB : IsBlock G B) :
@@ -273,7 +273,7 @@ lemma _root_.IsBlock.subsingleton_of_stabilizer_lt_of_subset
 
 variable [Finite α]
 
-lemma _root_.IsBlock.compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl
+lemma _root_.MulAction.IsBlock.compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl
     {s B : Set α} {G : Subgroup (Perm α)}
     (hG : stabilizer (Perm α) s ≤ G)
     (hBs : ¬ B ⊆ s) (hBsc : ¬ B ⊆ sᶜ) (hB : IsBlock G B) :
@@ -332,6 +332,12 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
     exact G.isPretransitive_of_stabilizer_lt hG
   apply IsPreprimitive.mk
   -- We now have to prove that all blocks of `G` are trivial
+  -- We reduce to proving that a block which is not a subsingleton is `univ`.
+  intro B hB
+  unfold IsTrivialBlock
+  rw [or_iff_not_imp_left]
+  intro hB'
+
   -- The proof needs 4 steps
   /- Step 1 : `sᶜ` is not a block.
        This uses that `Nat.card s < Nat.card sᶜ`.
@@ -353,18 +359,13 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
   have hB_not_le_sc (B : Set α) (hB : IsBlock G B) (hBsc : B ⊆ sᶜ) :
       B.Subsingleton := by
     apply IsBlock.subsingleton_of_ssubset_compl_of_stabilizer_le ?_ (le_of_lt hG) hB (s := s)
-    exact HasSubset.Subset.ssubset_of_ne hBsc (by aesop)
+    exact HasSubset.Subset.ssubset_of_ne hBsc (by aesop) -- uses Step 1
 
   -- Step 3 : A block contained in `s` is a subsingleton
   have hB_not_le_s (B : Set α) (hB : IsBlock G B) (hBs : B ⊆ s ) :
       B.Subsingleton :=
     IsBlock.subsingleton_of_stabilizer_lt_of_subset hB_not_le_sc hG hBs hB
 
-  -- Conclusion : we reduce to proving that a block which is not a subsingleton is `univ`.
-  intro B hB
-  unfold IsTrivialBlock
-  rw [or_iff_not_imp_left]
-  intro hB'
   -- NB: `grind` proves the two arguments
   have hsc_le_B : sᶜ ⊆ B :=
     IsBlock.compl_subset_of_stabilizer_le_of_not_subset_of_not_subset_compl (le_of_lt hG)
@@ -380,7 +381,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
   apply isBlock_iff_smul_eq_of_nonempty.mp hB (g := g)
   apply nonempty_inter_of_lt_ncard_add_ncard
   calc Nat.card α = s.ncard + sᶜ.ncard := by rw [Set.ncard_add_ncard_compl]
-      _ < sᶜ.ncard + sᶜ.ncard := by rw [Nat.add_lt_add_iff_right]; exact hα
+      _ < sᶜ.ncard + sᶜ.ncard := by rwa [Nat.add_lt_add_iff_right]
       _ = 2 * sᶜ.ncard := by rw [two_mul]
       _ ≤ 2 * B.ncard := by have := Set.ncard_le_ncard hsc_le_B; gcongr
       _ = _ := by simp only [Set.ncard_smul_set, ← two_mul]
