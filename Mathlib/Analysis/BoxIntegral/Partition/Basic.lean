@@ -287,7 +287,7 @@ theorem biUnion_top : (π.biUnion fun _ => ⊤) = π := by
   simp
 
 @[congr]
-theorem biUnion_congr (h : π₁ = π₂) (hi : ∀ J ∈ π₁, πi₁ J = πi₂ J) :
+theorem biUnion_congr (h : π₁ = π₂) (hi : ∀ J ∈ π₁, binderNameHint J πi₁ (πi₁ J) = πi₂ J) :
     π₁.biUnion πi₁ = π₂.biUnion πi₂ := by
   subst π₂
   ext J
