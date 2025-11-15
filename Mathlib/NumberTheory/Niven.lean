@@ -40,12 +40,16 @@ open Real Polynomial
 
 section IsIntegral
 
-/-- `exp(q * πi)` for `q : ℚ` is integral over `ℤ`. -/
+lemma Complex.exp_rat_mul_pi_mul_I_pow_two_mul_den (q : ℚ) : exp (q * π * I) ^ (2 * q.den) = 1 := by
+  nth_rw 1 [← q.num_div_den, ← exp_nat_mul]
+  push_cast
+  rw [show 2 * q.den * (q.num / q.den * π * I) = q.num * (2 * π * I) by field,
+    exp_int_mul_two_pi_mul_I]
+
+/-- `exp(q * π * I)` for `q : ℚ` is integral over `ℤ`. -/
 theorem Complex.isIntegral_exp_rat_mul_pi_mul_I (q : ℚ) : IsIntegral ℤ <| exp <| q * π * I := by
-  refine ⟨X ^ (2 * q.den) - 1, monic_X_pow_sub <| by simp [q.den_pos], ?_⟩
-  nth_rw 1 [← q.num_div_den]
-  simp [← exp_nat_mul,
-    show 2 * q.den * (q.num / q.den * π * I) = q.den / q.den * q.num * (2 * π * I) by ring_nf]
+  refine .of_pow (Nat.mul_pos zero_lt_two q.den_pos) ?_
+  exact exp_rat_mul_pi_mul_I_pow_two_mul_den _ ▸ isIntegral_one
 
 /-- `2 sin(q * π)` for `q : ℚ` is integral over `ℤ`, using the complex `sin` function. -/
 theorem Complex.isIntegral_two_mul_sin_rat_mul_pi (q : ℚ) : IsIntegral ℤ <| 2 * sin (q * π) := by
