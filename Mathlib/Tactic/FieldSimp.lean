@@ -787,4 +787,4 @@ attribute [field, inherit_doc FieldSimp.proc] fieldEq fieldLe fieldLt
 /-!
  We register `field_simp` with the `hint` tactic.
  -/
-register_hint field_simp
+register_hint 1000 field_simp

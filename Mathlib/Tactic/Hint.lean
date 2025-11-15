@@ -14,7 +14,7 @@ import Mathlib.Tactic.Basic
 # The `hint` tactic.
 
 The `hint` tactic tries the kitchen sink:
-it runs every tactic registered via the `register_hint tac` command
+it runs every tactic registered via the `register_hint <prio> tac` command
 on the current goal, and reports which ones succeed.
 
 ## Future work
@@ -45,22 +45,16 @@ def getHints : CoreM (List (Nat × TSyntax `tactic)) :=
 
 open Lean.Elab.Command in
 /--
-Register a tactic for use with the `hint` tactic, e.g. `register_hint simp_all`.
-An optional priority can be provided with `register_hint (priority := n) tac`.
-Tactics with larger priorities run before those with smaller priorities. The default
-priority is `1000`.
+Register a tactic for use with the `hint` tactic, e.g. `register_hint 1000 simp_all`.
+The numeric argument specifies the priority: tactics with larger priorities run before
+those with smaller priorities. The priority must be provided explicitly.
 -/
 elab (name := registerHintStx)
-    "register_hint" p:("(" "priority" ":=" num ")")? tac:tactic : command =>
+    "register_hint" prio:num tac:tactic : command =>
     liftTermElabM do
-  -- remove comments
-  let prio := match p with
-    | some stx =>
-        match stx.raw[3]?.bind Syntax.isNatLit? with
-        | some n => n
-        | none => 1000
-    | none => 1000
   let tac : TSyntax `tactic := ⟨tac.raw.copyHeadTailInfoFrom .missing⟩
+  let some prio := prio.raw.isNatLit?
+    | throwError "expected a numeric literal for priority"
   addHint prio tac
 
 initialize
@@ -126,7 +120,7 @@ def hint (stx : Syntax) : TacticM Unit := withMainContext do
   | none => admitGoal (← getMainGoal)
 
 /--
-The `hint` tactic tries every tactic registered using `register_hint tac`,
+The `hint` tactic tries every tactic registered using `register_hint <prio> tac`,
 and reports any that succeed.
 -/
 syntax (name := hintStx) "hint" : tactic
