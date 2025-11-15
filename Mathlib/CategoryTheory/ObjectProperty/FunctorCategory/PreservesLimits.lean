@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 
 We make the typeclass `PreservesLimitsOfShape K` (resp. `PreservesFiniteLimits`)
 a property of objects in the functor category `J ⥤ C`, and show that
-it is stable under colimits of shape `K'` when colimits of shape `K'`
+it is stable under colimits of shape `K'` when they
 commute to limits of shape `K` (resp. to finite limits).
 
 -/
