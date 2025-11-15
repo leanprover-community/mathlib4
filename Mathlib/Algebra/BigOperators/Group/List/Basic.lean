@@ -32,29 +32,6 @@ section Monoid
 
 variable [Monoid M] [Monoid N] [Monoid P] {l l₁ l₂ : List M} {a : M}
 
-@[to_additive]
-theorem prod_eq_foldl : ∀ {l : List M}, l.prod = foldl (· * ·) 1 l
-  | [] => rfl
-  | cons a l => by
-    rw [prod_cons, prod_eq_foldl, ← foldl_assoc (α := M) (op := (· * ·))]
-    simp
-
-@[to_additive (attr := simp)]
-theorem prod_append : (l₁ ++ l₂).prod = l₁.prod * l₂.prod :=
-  calc
-    (l₁ ++ l₂).prod = foldr (· * ·) (1 * foldr (· * ·) 1 l₂) l₁ := by simp [List.prod]
-    _ = l₁.prod * l₂.prod := foldr_assoc
-
-@[to_additive]
-theorem prod_concat : (l.concat a).prod = l.prod * a := by
-  rw [concat_eq_append, prod_append, prod_singleton]
-
-@[to_additive (attr := simp)]
-theorem prod_flatten {l : List (List M)} : l.flatten.prod = (l.map List.prod).prod := by
-  induction l with
-  | nil => simp
-  | cons head tail ih => simp only [*, List.flatten_cons, map, prod_append, prod_cons]
-
 open scoped Relator in
 @[to_additive]
 theorem rel_prod {R : M → N → Prop} (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· * ·) (· * ·)) :
@@ -82,8 +59,8 @@ theorem prod_hom₂_nonempty {l : List ι} (f : M → N → P)
 theorem prod_hom₂ (l : List ι) (f : M → N → P) (hf : ∀ a b c d, f (a * b) (c * d) = f a c * f b d)
     (hf' : f 1 1 = 1) (f₁ : ι → M) (f₂ : ι → N) :
     (l.map fun i => f (f₁ i) (f₂ i)).prod = f (l.map f₁).prod (l.map f₂).prod := by
-  rw [prod, prod, prod, foldr_map, foldr_map, foldr_map,
-    ← l.foldr_hom₂ f _ _ (fun x y => f (f₁ x) (f₂ x) * y) _ _ (by simp [hf]), hf']
+  simp only [prod_eq_foldr, foldr_map]
+  rw [← foldr_hom₂ l f _ _ ((fun x y => f (f₁ x) (f₂ x) * y) ) _ _ (by simp [hf]), hf']
 
 @[to_additive (attr := simp)]
 theorem prod_map_mul {M : Type*} [CommMonoid M] {l : List ι} {f g : ι → M} :
@@ -302,7 +279,7 @@ variable [Group G]
 @[to_additive /-- This is the `List.sum` version of `add_neg_rev` -/]
 theorem prod_inv_reverse : ∀ L : List G, L.prod⁻¹ = (L.map fun x => x⁻¹).reverse.prod
   | [] => by simp
-  | x :: xs => by simp [prod_inv_reverse xs]
+  | x :: xs => by simp [prod_append, prod_inv_reverse xs]
 
 /-- A non-commutative variant of `List.prod_reverse` -/
 @[to_additive /-- A non-commutative variant of `List.sum_reverse` -/]
@@ -324,8 +301,7 @@ theorem prod_range_div' (n : ℕ) (f : ℕ → G) :
     ((range n).map fun k ↦ f k / f (k + 1)).prod = f 0 / f n := by
   induction n with
   | zero => exact (div_self' (f 0)).symm
-  | succ n h =>
-    rw [range_succ, map_append, map_singleton, prod_append, prod_singleton, h, div_mul_div_cancel]
+  | succ n h => simp [range_succ, prod_append, map_append, h]
 
 end Group
 
