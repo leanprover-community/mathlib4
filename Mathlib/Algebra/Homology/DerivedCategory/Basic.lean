@@ -36,7 +36,7 @@ If `C : Type u` and `Category.{v} C`, the constructed localized category of coch
 complexes with respect to quasi-isomorphisms has morphisms in `Type (max u v)`.
 However, in certain circumstances, it shall be possible to prove that they are `v`-small
 (when `C` is a Grothendieck abelian category (e.g. the category of modules over a ring),
-it should be so by a theorem of Hovey.).
+it should be so by a theorem of Hovey).
 
 Then, when working with derived categories in mathlib, the user should add the variable
 `[HasDerivedCategory.{w} C]` which is the assumption that there is a chosen derived

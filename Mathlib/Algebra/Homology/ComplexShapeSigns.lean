@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.GradedObject.Trifunctor
 
 In this file, we shall introduce various typeclasses which will allow
 the construction of the total complex of a bicomplex and of the
-the monoidal category structure on categories of homological complexes (TODO).
+monoidal category structure on categories of homological complexes (TODO).
 
 The most important definition is that of `TotalComplexShape c₁ c₂ c₁₂` given
 three complex shapes `c₁`, `c₂`, `c₁₂`: it allows the definition of a total

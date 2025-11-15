@@ -12,7 +12,7 @@ import Mathlib.Order.BooleanAlgebra.Set
 /-!
 # The natural numbers form an ordered semiring
 
-This file contains the commutative linear orderded semiring instance on the natural numbers.
+This file contains the commutative linear ordered semiring instance on the natural numbers.
 
 See note [foundational algebra order theory].
 -/

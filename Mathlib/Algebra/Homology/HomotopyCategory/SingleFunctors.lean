@@ -85,8 +85,8 @@ end CochainComplex
 
 namespace HomotopyCategory
 
-/-- The collection of all single functors `C ⥤ HomotopyCategory C (ComplexShape.up ℤ))`
-for `n : ℤ` along with their compatibilites with shifts. -/
+/-- The collection of all single functors `C ⥤ HomotopyCategory C (ComplexShape.up ℤ)`
+for `n : ℤ` along with their compatibilities with shifts. -/
 noncomputable def singleFunctors : SingleFunctors C (HomotopyCategory C (ComplexShape.up ℤ)) ℤ :=
   (CochainComplex.singleFunctors C).postcomp (HomotopyCategory.quotient _ _)
 

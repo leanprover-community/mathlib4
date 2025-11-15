@@ -8,7 +8,7 @@ import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Data.Nat.Cast.Basic
 
 /-!
-# Transporting `CharZero` accross injective `AddMonoidHom`s
+# Transporting `CharZero` across injective `AddMonoidHom`s
 
 This file exists in order to avoid adding extra imports to other files in this subdirectory.
 -/

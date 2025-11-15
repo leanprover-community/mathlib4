@@ -11,7 +11,7 @@ import Mathlib.Algebra.Homology.DerivedCategory.Basic
 
 Given a short exact short complex `S` in the category `CochainComplex C ℤ`,
 we construct a distinguished triangle
-`Q.obj S.X₁ ⟶ Q.obj S.X₂ ⟶  Q.obj S.X₃ ⟶ (Q.obj S.X₃)⟦1⟧`
+`Q.obj S.X₁ ⟶ Q.obj S.X₂ ⟶ Q.obj S.X₃ ⟶ (Q.obj S.X₃)⟦1⟧`
 in the derived category of `C`.
 (See `triangleOfSES` and `triangleOfSES_distinguished`.)
 
@@ -45,7 +45,7 @@ noncomputable def triangleOfSES : Triangle (DerivedCategory C) :=
   Triangle.mk (Q.map S.f) (Q.map S.g) (triangleOfSESδ hS)
 
 /-- The triangle `triangleOfSES` attached to a short exact sequence `S` of cochain
-complexes is isomorphism to the standard distinguished triangle associated to
+complexes is isomorphic to the standard distinguished triangle associated to
 the morphism `S.f`. -/
 noncomputable def triangleOfSESIso :
     triangleOfSES hS ≅ Q.mapTriangle.obj (CochainComplex.mappingCone.triangle S.f) := by

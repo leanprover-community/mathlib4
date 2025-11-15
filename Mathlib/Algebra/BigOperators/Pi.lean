@@ -15,8 +15,8 @@ import Mathlib.Data.Fintype.Basic
 /-!
 # Big operators for Pi Types
 
-This file contains theorems relevant to big operators in binary and arbitrary product
-of monoids and groups
+This file contains theorems relevant to big operators in binary and arbitrary products
+of monoids and groups.
 -/
 
 open scoped Finset

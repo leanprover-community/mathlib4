@@ -64,8 +64,8 @@ instance isCentralScalar {S : Type*} [Semiring S] [SMul S R] [Module S M] [IsSca
 instance inhabited : Inhabited (M ⧸ N) :=
   ⟨0⟩
 
-/-- Map sending an element of `M` to the corresponding element of `M/N`, when `N` is a
-lie_submodule of the lie_module `N`. -/
+/-- Map sending an element of `M` to the corresponding element of `M / N`, when `N` is a
+Lie submodule of the Lie module `M`. -/
 abbrev mk : M → M ⧸ N :=
   Submodule.Quotient.mk
 
