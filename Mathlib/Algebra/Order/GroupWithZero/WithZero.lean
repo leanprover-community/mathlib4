@@ -1,10 +1,9 @@
 /-
 Copyright (c) 2024 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Buzzard
+Authors: Kevin Buzzard, Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 /-!
 
 # Covariant instances on `WithZero`
@@ -73,7 +72,7 @@ lemma WithZero.withZeroUnitsEquiv_strictMono :
 
 /-- Given any linearly ordered commutative group with zero `α`, this is the order isomorphism
 between `WithZero αˣ` with `α`. -/
-@[simps!]
+-- @[simps!]
 def OrderIso.withZeroUnits : WithZero αˣ ≃o α where
   __ := withZeroUnitsEquiv
   map_rel_iff' := WithZero.withZeroUnitsEquiv_strictMono.le_iff_le

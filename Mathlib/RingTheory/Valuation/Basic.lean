@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
+Authors: Kevin Buzzard, Johan Commelin, Patrick Massot, Filippo A. E. Nuccio
 -/
 import Mathlib.Algebra.GroupWithZero.Submonoid.Instances
 import Mathlib.Algebra.Order.Hom.Monoid
+import Mathlib.Algebra.Order.GroupWithZero.Range
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.Tactic.TFAE
@@ -448,15 +449,60 @@ lemma mem_leAddSubgroup_iff {v : Valuation R Γ₀} {γ : Γ₀} {x : R} :
 lemma leAddSubgroup_monotone (v : Valuation R Γ₀) : Monotone v.leAddSubgroup :=
   fun _ _ h _ ↦ h.trans'
 
+
+open MonoidWithZeroHom in
+/-- The restriction of a valuation so that it takes values in its `valueGroup₀`. -/
+def restrict : Valuation R (MonoidWithZeroHom.valueGroup₀ v) where
+  __ := restrict₀ v
+  map_add_le_max' x y := by
+    by_cases H : v x ≠ 0 ∨ v y ≠ 0
+    · rcases H with h | h
+      · simp [h]
+        split_ifs with H _ hy
+        · right; rfl
+        · right; simp
+        · simp [← Units.val_le_val]
+          apply map_add_le _ (by rfl)
+          rw [hy]
+          simp
+        · simp [← Units.val_le_val]
+      · simp [h]
+        split_ifs with H _ hy
+        · left; rfl
+        · left; simp
+        · simp [← Units.val_le_val]
+          rw [add_comm]
+          apply map_add_le _ (by rfl)
+          rw [hy]
+          simp
+        · simp [← Units.val_le_val]
+    · simp only [ne_eq, not_or, Decidable.not_not] at H
+      simp only [ZeroHom.toFun_eq_coe, toZeroHom_coe, restrict₀_apply, H, ↓reduceDIte, max_self,
+        le_zero_iff, dite_eq_left_iff, WithZero.coe_ne_zero, imp_false, Decidable.not_not]
+      simpa using map_add_le _ (le_of_eq H.1) (le_of_eq H.2)
+
+@[simp]
+lemma restrict_def (x : R) : v.restrict x = MonoidWithZeroHom.restrict₀ v x := rfl
+
+open MonoidWithZeroHom in
 /-- The subgroup of elements whose valuation is less than a certain unit. -/
-@[simps] def ltAddSubgroup (v : Valuation R Γ₀) (γ : Γ₀ˣ) : AddSubgroup R where
-  carrier := { x | v x < γ }
+@[simps] def ltAddSubgroup (v : Valuation R Γ₀) (γ : (valueGroup₀ v)ˣ) : AddSubgroup R where
+  carrier := { x | v.restrict x < γ }
   zero_mem' := by simp
-  add_mem' {x y} x_in y_in := lt_of_le_of_lt (v.map_add x y) (max_lt x_in y_in)
+  add_mem' {x y} x_in y_in := by
+    rcases (eq_zero_or_neZero (v x)).symm, (eq_zero_or_neZero (v y)).symm with ⟨hx₀ | _, hy₀ | _⟩
+    · simp only [restrict_def, restrict₀_apply, Set.mem_setOf_eq]
+      split_ifs with h
+      · exact Units.zero_lt γ
+      apply lt_of_le_of_lt _ (max_lt x_in y_in)
+      simp only [restrict_def, restrict₀_of_ne_zero hx₀.ne, restrict₀_of_ne_zero hy₀.ne, le_sup_iff,
+        WithZero.coe_le_coe]
+      exact v.map_add' ..
+    all_goals simp_all [v.map_add_of_left_eq_zero, v.map_add_of_right_eq_zero]
   neg_mem' x_in := by rwa [Set.mem_setOf, map_neg]
 
 @[simp] lemma mem_ltAddSubgroup_iff {v : Valuation R Γ₀} {γ x} :
-    x ∈ ltAddSubgroup v γ ↔ v x < γ :=
+    x ∈ ltAddSubgroup v γ ↔ v.restrict x < γ :=
   Iff.rfl
 
 lemma ltAddSubgroup_monotone (v : Valuation R Γ₀) : Monotone v.ltAddSubgroup :=
@@ -591,8 +637,6 @@ lemma lt_one_iff_lt_one (h : v₁.IsEquiv v₂) {x : R} :
   rw [← v₁.map_one, h.lt_iff_lt, map_one]
 
 end IsEquiv
-
--- end of namespace
 section
 
 theorem isEquiv_of_map_strictMono [LinearOrderedCommMonoidWithZero Γ₀]
