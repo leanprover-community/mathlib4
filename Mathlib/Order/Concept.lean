@@ -251,6 +251,16 @@ theorem intent_injective : Injective (@intent α β r) := fun _ _ => ext'
 @[deprecated (since := "2025-07-10")]
 alias snd_injective := intent_injective
 
+/-- Copy a concept, adjusting definitional equalities. -/
+@[simps!]
+def copy (c : Concept α β r) (e : Set α) (he : e = c.extent) (i : Set β) (hi : i = c.intent) :
+    Concept α β r := ⟨e, i, he ▸ hi ▸ c.upperPolar_extent, he ▸ hi ▸ c.lowerPolar_intent⟩
+
+theorem copy_eq (c : Concept α β r)
+    (e : Set α) (he : e = c.extent) (i : Set β) (hi : i = c.intent) :
+    c.copy e he i hi = c := by
+  ext; simp_all
+
 theorem rel_extent_intent {x y} (hx : x ∈ c.extent) (hy : y ∈ c.intent) : r x y := by
   rw [← c.upperPolar_extent] at hy
   exact hy hx
@@ -281,6 +291,24 @@ theorem codisjoint_extent_intent [IsTrichotomous α r'] [IsTrans α r'] :
   · cases hx <| mem_extent_of_rel_extent h hy
   · contradiction
   · assumption
+
+theorem isCompl_extent_intent [IsStrictTotalOrder α r'] (c' : Concept α α r') :
+    IsCompl c.extent c.intent :=
+  ⟨c.disjoint_extent_intent, c.codisjoint_extent_intent⟩
+
+theorem isLowerSet_extent_le [LE α] [IsTrans α (· ≤ ·)] (c : Concept α α (· ≤ ·)) :
+    IsLowerSet c.extent :=
+  fun _ _ ↦ mem_extent_of_rel_extent
+
+theorem isUpperSet_intent_le [LE α] [IsTrans α (· ≤ ·)] (c : Concept α α (· ≤ ·)) :
+    IsUpperSet c.intent :=
+  fun _ _ ↦ mem_intent_of_intent_rel
+
+theorem isLowerSet_extent_lt [PartialOrder α] (c : Concept α α (· < ·)) : IsLowerSet c.extent :=
+  fun _ _ hb ha ↦ hb.eq_or_lt.elim (fun h ↦ h ▸ ha) fun hb ↦ mem_extent_of_rel_extent hb ha
+
+theorem isUpperSet_intent_lt [PartialOrder α] (c : Concept α α (· < ·)) : IsUpperSet c.intent :=
+  fun _ _ hb ha ↦ hb.eq_or_lt.elim (fun h ↦ h ▸ ha) fun hb ↦ mem_intent_of_intent_rel hb ha
 
 instance instSupConcept : Max (Concept α β r) :=
   ⟨fun c d =>
