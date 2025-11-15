@@ -5,7 +5,6 @@ Authors: Fabrizio Barroero
 -/
 
 import Mathlib.Analysis.Analytic.Polynomial
-import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.Complex.JensenFormula
 import Mathlib.Analysis.Complex.Polynomial.Basic
 
