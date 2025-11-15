@@ -1,15 +1,31 @@
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Algebra.Field.Subfield.Basic
+import Mathlib
 
-instance : Subsingleton (Subfield ℚ) := by
-  refine ⟨fun F G ↦ Subfield.ext fun x ↦ ?_⟩
-  change (algebraMap ℚ F x).val ∈ _ ↔ (algebraMap ℚ G x).val ∈ _
-  simp_rw [SetLike.coe_mem]
+-- instance {K : Type*} (p : ℕ) [Field K] [CharP K p] : Algebra (ZMod p) K := ZMod.algebra K p
+
+--- #find_home! instAlgebraZModOfCharP
+
+instance : Subsingleton (Subfield ℚ) := subsingleton_of_top_le_bot fun x _ ↦
+  have h := Subsingleton.elim ((⊥ : Subfield ℚ).subtype.comp (Rat.castHom _)) (.id _ : ℚ →+* ℚ)
+  (congr($h x) : _ = x) ▸ Subtype.prop _
+
+#find_home! instSubsingletonSubfieldRat
+
+-- instance (p : ℕ) [hp : Fact (Nat.Prime p)] : Subsingleton (Subfield (ZMod p)) :=
+--  subsingleton_of_top_le_bot fun x _ ↦
+--   have h := Subsingleton.elim ((⊥ : Subfield (ZMod p)).subtype.comp
+--     (ZMod.castHom dvd_rfl _)) (.id _ : ZMod p →+* ZMod p)
+--   (congr($h x) : _ = x) ▸ Subtype.prop _
 
 theorem Subfield.bot_eq_of_charZero {K : Type*} [Field K] [CharZero K] :
     (⊥ : Subfield K) = (algebraMap ℚ K).fieldRange := by
   rw [eq_comm, eq_bot_iff, ← Subfield.map_bot (algebraMap ℚ K),
     subsingleton_iff_bot_eq_top.mpr inferInstance, ← RingHom.fieldRange_eq_map]
+
+-- theorem Subfield.bot_eq_of_charP {K : Type*} (p : ℕ) [hp : Fact (Nat.Prime p)]
+--     [Field K] [CharP K p] :
+--     (⊥ : Subfield K) = (algebraMap (ZMod p) K).fieldRange := by
+--   rw [eq_comm, eq_bot_iff, ← Subfield.map_bot (algebraMap (ZMod p) K),
+--     subsingleton_iff_bot_eq_top.mpr inferInstance, ← RingHom.fieldRange_eq_map]
 
 -- variable {G : Type*} (K L : Type*) [Group G] [Finite G] [Field K] [Field L] [Algebra K L]
 --   [MulSemiringAction G L] [IsGaloisGroup G K L]

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Xavier Roblot
 -/
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
-import Mathlib.Sandbox
+-- import Mathlib.Sandbox
 
 /-!
 # Totally real and totally complex number fields
@@ -99,8 +99,9 @@ instance _root_.IntermediateField.isTotallyReal_bot [CharZero K] :
 
 instance _root_.Subfield.isTotallyReal_bot [CharZero K] :
       IsTotallyReal (⊥ : Subfield K) := by
-  rw [Subfield.bot_eq_of_charZero]
-  exact IsTotallyReal.ofRingEquiv (algebraMap ℚ K).rangeRestrictFieldEquiv
+  sorry
+  -- rw [Subfield.bot_eq_of_charZero]
+  -- exact IsTotallyReal.ofRingEquiv (algebraMap ℚ K).rangeRestrictFieldEquiv
 
 section maximalRealSubfield
 
