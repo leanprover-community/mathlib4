@@ -16,7 +16,7 @@ variable [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
-@[aesop safe 20 apply (rule_sets := [Measurable]), fun_prop]
+@[fun_prop]
 theorem Measurable.inner {_ : MeasurableSpace α} [MeasurableSpace E] [OpensMeasurableSpace E]
     [SecondCountableTopology E] {f g : α → E} (hf : Measurable f)
     (hg : Measurable g) : Measurable fun t => ⟪f t, g t⟫ :=
@@ -34,7 +34,7 @@ theorem Measurable.inner_const {_ : MeasurableSpace α} [MeasurableSpace E] [Ope
     Measurable fun t => ⟪f t, c⟫ :=
   Measurable.inner hf measurable_const
 
-@[aesop safe 20 apply (rule_sets := [Measurable]), fun_prop]
+@[fun_prop]
 theorem AEMeasurable.inner {m : MeasurableSpace α} [MeasurableSpace E] [OpensMeasurableSpace E]
     [SecondCountableTopology E] {μ : MeasureTheory.Measure α} {f g : α → E}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) : AEMeasurable (fun x => ⟪f x, g x⟫) μ := by

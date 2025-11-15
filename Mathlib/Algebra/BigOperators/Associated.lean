@@ -62,7 +62,6 @@ theorem Associated.prod {M : Type*} [CommMonoid M] {ι : Type*} (s : Finset ι) 
   | insert j s hjs IH =>
     classical
     convert_to (∏ i ∈ insert j s, f i) ~ᵤ (∏ i ∈ insert j s, g i)
-    rw [Finset.prod_insert hjs, Finset.prod_insert hjs]
     grind [Associated.mul_mul]
 
 theorem exists_associated_mem_of_dvd_prod [CancelCommMonoidWithZero M₀] {p : M₀} (hp : Prime p)
@@ -87,7 +86,7 @@ theorem divisor_closure_eq_closure [CancelCommMonoidWithZero M₀]
     apply subset_closure
     simp only [Set.mem_setOf]
     simp only [Multiset.prod_zero] at hprod
-    left; exact isUnit_of_mul_eq_one _ _ hprod.symm
+    left; exact .of_mul_eq_one _ hprod.symm
   | cons c s hind =>
     simp only [Multiset.mem_cons, forall_eq_or_imp, Set.mem_setOf] at hm
     simp only [Multiset.prod_cons] at hprod
@@ -98,7 +97,7 @@ theorem divisor_closure_eq_closure [CancelCommMonoidWithZero M₀]
       · simp only [← mul_assoc, ← hprod, ← Multiset.prod_cons, mul_comm]
         refine multiset_prod_mem _ _ (Multiset.forall_mem_cons.2 ⟨subset_closure ?_,
           Multiset.forall_mem_cons.2 ⟨subset_closure ?_, fun t ht => subset_closure (hs t ht)⟩⟩)
-        · left; exact isUnit_of_mul_eq_one_right _ _ hk
+        · left; exact .of_mul_eq_one_right _ hk
         · left; exact ha₁
       · rw [← mul_one s.prod, ← hk, ← mul_assoc, ← mul_assoc, mul_eq_mul_right_iff, mul_comm]
         left; exact hprod
