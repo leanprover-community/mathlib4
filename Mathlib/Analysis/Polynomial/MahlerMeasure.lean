@@ -256,28 +256,25 @@ theorem mahlerMeasure_eq_leadingCoeff_mul_prod_roots (p : ℂ[X]) : p.mahlerMeas
 open Filter MeasureTheory Set in
 /-- The Mahler measure of a polynomial is bounded above by the sum of the norms of its coefficients.
 -/
-lemma mahlerMeasure_le_sum_norm_coeff (p : ℂ[X]) : p.mahlerMeasure ≤ p.sum fun _ a ↦ ‖a‖ := by
+theorem mahlerMeasure_le_sum_norm_coeff (p : ℂ[X]) : p.mahlerMeasure ≤ p.sum fun _ a ↦ ‖a‖ := by
   by_cases hp : p = 0
   · simp [hp]
-  simp only [mahlerMeasure, ne_eq, hp, logMahlerMeasure]
-  have : 0 < p.sum fun x a ↦ ‖a‖ := by
-    apply Finset.sum_pos' (fun i _ ↦ norm_nonneg (p.coeff i))
-    use p.natDegree
-    simp [hp]
-  have : (p.sum fun _ a ↦ ‖a‖) = rexp (circleAverage (fun _ ↦ log (p.sum fun _ a ↦ ‖a‖)) 0 1) := by
-    simp [circleAverage_def, mul_assoc, exp_log this]
-  rw [this]
-  simp only [not_false_eq_true, reduceIte, circleAverage_def]
+  have : 0 < p.sum fun _ a ↦ ‖a‖ :=
+    Finset.sum_pos' (fun i _ ↦ norm_nonneg (p.coeff i)) ⟨p.natDegree, by simp [hp]⟩
+  rw [show (p.sum fun _ a ↦ ‖a‖) = rexp (circleAverage (fun _ ↦ log (p.sum fun _ a ↦ ‖a‖)) 0 1)
+    by simp [circleAverage_def, mul_assoc, exp_log this]]
+  simp only [mahlerMeasure, ne_eq, hp, logMahlerMeasure_def, not_false_eq_true, reduceIte,
+    circleAverage_def]
   gcongr
   apply intervalIntegral.integral_mono_ae_restrict (le_of_lt two_pi_pos)
     p.intervalIntegrable_mahlerMeasure (by simp)
-  simp only [EventuallyLE, eventually_iff_exists_mem]
+  rw [EventuallyLE, eventually_iff_exists_mem]
   use {x : ℝ | eval (circleMap 0 1 x) p ≠ 0}
   constructor
   · rw [mem_ae_iff]
     simp only [compl, mem_setOf_eq, Decidable.not_not, measurableSet_Icc,
       Measure.restrict_apply', Inter.inter, Set.inter]
-    apply Finite.measure_zero <| Finite.of_diff _ <| finite_singleton (2 * π)
+    apply (Finite.of_diff _ <| finite_singleton (2 * π)).measure_zero
     have : {a | eval (circleMap 0 1 a) p = 0 ∧ a ∈ Icc 0 (2 * π)} \ {2 * π}
         = {a | a ∈ Ico 0 (2 * π) ∧ eval (circleMap 0 1 a) p = 0} := by
       ext
