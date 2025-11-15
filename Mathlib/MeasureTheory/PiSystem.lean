@@ -67,6 +67,13 @@ variable {α β : Type*}
 def IsPiSystem (C : Set (Set α)) : Prop :=
   ∀ᵉ (s ∈ C) (t ∈ C), (s ∩ t : Set α).Nonempty → s ∩ t ∈ C
 
+theorem isPiSystem_iff_of_nmem_empty {C : Set (Set α)} (hC : ∅ ∈ C) :
+    (∀ᵉ (s ∈ C) (t ∈ C), s ∩ t ∈ C) ↔ IsPiSystem C := by
+  refine ⟨fun h s hs t ht _ ↦ h s hs t ht, fun h s hs t ht ↦ ?_⟩
+  by_cases h1 :(s ∩ t).Nonempty
+  · exact h s hs t ht h1
+  · exact (not_nonempty_iff_eq_empty.mp h1) ▸ hC
+
 namespace MeasurableSpace
 
 theorem isPiSystem_measurableSet {α : Type*} [MeasurableSpace α] :
