@@ -293,11 +293,59 @@ def mkWindow (orig : String) (start ctx : Nat) : String :=
   let tail := middle.drop ctx |>.takeWhile (!·.isWhitespace)
   s!"{headCtx}{middle.take ctx}{tail}"
 
+/--
+`gitModifiedRef` is the `IO.Ref` tracking whether the `commandStart` linter should run on the
+current file, *based on the `git diff`*.
+
+`gitModifiedRef` is initially set to `none`.
+Upon first parsing a file, the linter calls `git diff --name-only master...` to see if the current
+file appears in the list.
+If that is the case, then it sets the `IO.Ref` to `some true`.
+Otherwise, it sets it to `some false`.
+
+If, however, the linter finds an error somewhere in the file, then it sets `gitModifiedRef` to
+`some true` anyway, since a file with an error is likely a file being modified and hence a file
+where running this linter is probably expected.
+-/
+--  TODO: if this works well with the `commandStart` linter, then switch more linters towards
+--  using `gitModifiedRef`.
+initialize gitModifiedRef : IO.Ref (Option Bool) ← IO.mkRef none
+
+/--
+Checks whether the input `modName` corresponds to a file that `git` considers to be modified.
+
+If `git diff --name-only master...` fails for some reason, then we assume that the file is modified.
+
+Otherwise, we check whether or not `modName` appears in the output.
+-/
+def isGitModified (modName : Name) : IO Bool := do
+  -- On the `commandStart` test file we always return `true`, since we want the linter to inspect
+  -- the file.
+  if modName == `MathlibTest.CommandStart then
+    return true
+  let diffFiles ← (do
+    let gd ← IO.Process.run {cmd := "git", args := #["diff", "--name-only", "master..."]}
+    pure (some gd)) <|> pure none
+  if let some diffFiles := diffFiles then
+    if diffFiles.isEmpty then return false
+    let diffModules ← (diffFiles.trim.splitOn "\n").mapM
+      fun s : String => (moduleNameOfFileName s none <|> return Name.anonymous : IO Name)
+    return diffModules.contains modName
+  else
+    return true
+
 @[inherit_doc Mathlib.Linter.linter.style.commandStart]
 def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless Linter.getLinterValue linter.style.commandStart (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
+    -- If there are errors, then the file is "modified" and we set `gitModifiedRef` to `true`.
+    -- We skip checking the current command, though, until the errors have been fixed.
+    gitModifiedRef.set (some true)
+    return
+  if (← gitModifiedRef.get) == none then
+    gitModifiedRef.set (← isGitModified (← getMainModule))
+  unless (← gitModifiedRef.get) == some true do
     return
   if stx.find? (·.isOfKind ``runCmd) |>.isSome then
     return
