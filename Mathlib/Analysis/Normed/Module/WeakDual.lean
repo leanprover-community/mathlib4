@@ -298,8 +298,7 @@ theorem isSeqCompact_of_bounded_of_closed {s : Set (WeakDual 𝕜 V)}
     metrizable_of_compact 𝕜 V s b_isCompact
   have seq_cont_phi : SeqContinuous (fun φ : s ↦ (φ : WeakDual 𝕜 V)) :=
     continuous_iff_seqContinuous.mp continuous_subtype_val
-  convert IsSeqCompact.range seq_cont_phi
-  simp [Subtype.range_coe_subtype]
+  simpa using IsSeqCompact.range seq_cont_phi
 
 /-- The **Sequential Banach-Alaoglu theorem**: the polar set of a neighborhood `s` of the origin in
 a separable normed space `V` is a sequentially compact subset of `WeakDual 𝕜 V`. -/
