@@ -585,6 +585,21 @@ instance preservesFiniteProducts : PreservesFiniteProducts hoFunctor :=
 noncomputable instance Monoidal : Monoidal hoFunctor :=
   Monoidal.ofChosenFiniteProducts hoFunctor
 
+open MonoidalCategory
+
+/-- An equivalence between the vertices of a simplicial set `X` and the
+objects of `hoFunctor.obj X`. -/
+def proNormalMonoidalEquiv (X : SSet.{u}) :
+    (𝟙_ SSet ⟶ X) ≃ Cat.chosenTerminal ⥤ hoFunctor.obj X :=
+  (SSet.unitHomEquiv X).trans <|
+    (hoFunctor.obj.equiv.{u} X).symm.trans Cat.fromChosenTerminalEquiv.symm
+
+theorem proNormalMonoidalEquiv_eq (X : SSet.{u}) (x : 𝟙_ SSet ⟶ X) :
+    hoFunctor.proNormalMonoidalEquiv X x = LaxMonoidal.ε hoFunctor ≫ hoFunctor.map x := by
+  simp [proNormalMonoidalEquiv]
+  rw [Equiv.symm_apply_eq, ← Equiv.eq_symm_apply]
+  rfl
+
 end hoFunctor
 
 end
