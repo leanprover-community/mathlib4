@@ -29,7 +29,7 @@ section
 
 variable {P : ℚ → Prop} {x y z : ℚ}
 
-/-- error: field_simp made no progress on goal -/
+/-- error: field_simp made no progress on the goal -/
 #guard_msgs in
 example : P (1 : ℚ) := by test_field_simp
 
@@ -43,7 +43,7 @@ example : P (x ^ 0) := by test_field_simp
 #guard_msgs in
 example : P (x ^ 1) := by test_field_simp
 
-/-- error: field_simp made no progress on goal -/
+/-- error: field_simp made no progress on the goal -/
 #guard_msgs in
 example : P x := by test_field_simp
 
@@ -181,7 +181,7 @@ example {a : Nat} : P (a* x - a * x) := by test_field_simp
 
 /-! ### Two atoms -/
 
-/-- error: field_simp made no progress on goal -/
+/-- error: field_simp made no progress on the goal -/
 #guard_msgs in
 example : P (x + y) := by test_field_simp
 
@@ -959,7 +959,7 @@ example {K : Type} [Semifield K] {x y : K} (h : x + y ≠ 0) : x / (x + y) + y /
 -- Extracted from `Analysis/SpecificLimits/Basic.lean`
 
 -- `field_simp` assumes commutativity: in its absence, it does nothing.
-/-- error: field_simp made no progress on goal -/
+/-- error: field_simp made no progress on the goal -/
 #guard_msgs in
 example {K : Type*} [DivisionRing K] {n' x : K} (h : n' ≠ 0) (h' : n' + x ≠ 0) :
     1 / (1 + x / n') = n' / (n' + x) := by
