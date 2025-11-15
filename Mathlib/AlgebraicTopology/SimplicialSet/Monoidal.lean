@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Jack McKoen
 -/
 import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
-import Mathlib.CategoryTheory.Closed.FunctorToTypes
+import Mathlib.CategoryTheory.Monoidal.Closed.FunctorToTypes
 import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
 
 /-!
