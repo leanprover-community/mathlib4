@@ -277,7 +277,7 @@ instance : (forget ProfiniteGrp.{u}).ReflectsIsomorphisms :=
 end ProfiniteGrp
 
 /-!
-# Limits in the category of profinite groups
+### Limits in the category of profinite groups
 
 In this section, we construct limits in the category of profinite groups.
 
