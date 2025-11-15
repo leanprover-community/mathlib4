@@ -87,11 +87,11 @@ variable (γ : Path x y)
 protected theorem continuous : Continuous γ :=
   γ.continuous_toFun
 
-@[simp]
+@[simp, grind =]
 protected theorem source : γ 0 = x :=
   γ.source'
 
-@[simp]
+@[simp, grind =]
 protected theorem target : γ 1 = y :=
   γ.target'
 
@@ -379,6 +379,21 @@ theorem map_map (γ : Path x y) {Z : Type*} [TopologicalSpace Z]
   ext
   rfl
 
+/-- Restrict a path to a subspace when its range is contained in that subspace. -/
+def codRestrict {s : Set X} {x y : s} (γ : Path x.val y.val) (hmem : ∀ t, γ t ∈ s) :
+    Path x y where
+  toFun := s.codRestrict γ hmem
+  continuous_toFun := γ.continuous.codRestrict hmem
+  source' := Subtype.ext γ.source
+  target' := Subtype.ext γ.target
+
+@[simp]
+theorem codRestrict_coe {s : Set X} {x y : s} (γ : Path x.val y.val) (hmem : ∀ t, γ t ∈ s) (t : I) :
+    (γ.codRestrict hmem t : X) = γ t := rfl
+
+theorem map_codRestrict {s : Set X} {x y : s} (γ : Path x.val y.val) (hmem : ∀ t, γ t ∈ s) :
+    (γ.codRestrict hmem).map continuous_subtype_val = γ := rfl
+
 /-- Casting a path from `x` to `y` to a path from `x'` to `y'` when `x' = x` and `y' = y` -/
 def cast (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : Path x' y' where
   toFun := γ
@@ -388,12 +403,34 @@ def cast (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : Path x' y' where
 
 @[simp] theorem cast_rfl_rfl (γ : Path x y) : γ.cast rfl rfl = γ := rfl
 
+@[simp] theorem cast_cast {x y x' y' x'' y'' : X}
+    (γ : Path x y) (hx : x' = x) (hy : y' = y) (hx' : x'' = x') (hy' : y'' = y') :
+    (γ.cast hx hy).cast hx' hy' = γ.cast (hx'.trans hx) (hy'.trans hy) := by
+  subst_vars
+  rfl
+
+@[simp] theorem cast_refl {x y : X} (h : y = x) :
+    (Path.refl x).cast h h = Path.refl y := by
+  subst_vars
+  rfl
+
 @[simp]
+theorem cast_symm {a₁ a₂ b₁ b₂ : X} (γ : Path a₂ b₂) (ha : a₁ = a₂) (hb : b₁ = b₂) :
+    (γ.symm).cast hb ha = (γ.cast ha hb).symm :=
+  rfl
+
+@[deprecated cast_symm (since := "2025-11-13")]
 theorem symm_cast {a₁ a₂ b₁ b₂ : X} (γ : Path a₂ b₂) (ha : a₁ = a₂) (hb : b₁ = b₂) :
     (γ.cast ha hb).symm = γ.symm.cast hb ha :=
   rfl
 
 @[simp]
+theorem cast_trans {a₁ a₂ b₁ b₂ c₁ c₂ : X} (γ : Path a₂ b₂)
+    (γ' : Path b₂ c₂) (ha : a₁ = a₂) (hb : b₁ = b₂) (hc : c₁ = c₂) :
+    (γ.trans γ').cast ha hc = (γ.cast ha hb).trans (γ'.cast hb hc) :=
+  rfl
+
+@[deprecated cast_trans (since := "2025-11-13")]
 theorem trans_cast {a₁ a₂ b₁ b₂ c₁ c₂ : X} (γ : Path a₂ b₂)
     (γ' : Path b₂ c₂) (ha : a₁ = a₂) (hb : b₁ = b₂) (hc : c₁ = c₂) :
     (γ.cast ha hb).trans (γ'.cast hb hc) = (γ.trans γ').cast ha hc :=
@@ -653,5 +690,55 @@ theorem refl_reparam {f : I → I} (hfcont : Continuous f) (hf₀ : f 0 = 0) (hf
     (refl x).reparam f hfcont hf₀ hf₁ = refl x := by
   ext
   simp
+
+/-- Generic Lebesgue partition lemma for paths: Given an open cover of a path's range,
+there exists a finite partition of [0,1] such that each segment lies entirely in one set
+from the cover. -/
+theorem exists_partition_in_cover
+    {ι : Type*} (U : ι → Set X) (hU_open : ∀ i, IsOpen (U i))
+    {x y : X} (γ : Path x y) (hU_cover : Set.range γ ⊆ ⋃ i, U i) :
+    ∃ (n : ℕ) (t : Fin (n + 1) → unitInterval),
+      StrictMono t ∧ t 0 = 0 ∧ t (Fin.last n) = 1 ∧
+      (∀ i : Fin n, ∃ j : ι,
+        ∀ s : unitInterval, (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ s ∈ U j) := by
+  -- Pull back the cover along γ to get an open cover of unitInterval
+  let V : ι → Set unitInterval := fun i => γ ⁻¹' (U i)
+  have hV_open : ∀ i, IsOpen (V i) := fun i => (hU_open i).preimage γ.continuous
+  have hV_cover : (Set.univ : Set unitInterval) ⊆ ⋃ i, V i := by
+    intro s _
+    obtain ⟨i, hi⟩ := Set.mem_iUnion.mp (hU_cover (Set.mem_range_self s))
+    exact Set.mem_iUnion.mpr ⟨i, hi⟩
+  obtain ⟨n, t, ht_strict, ht0, htn, ht_cover⟩ :=
+    exists_strictMono_Icc_subset_open_cover_unitInterval hV_open hV_cover
+  refine ⟨n, t, ht_strict, ht0, htn, ?_⟩
+  -- Each segment is in some U j
+  intro i
+  obtain ⟨j, hj⟩ := ht_cover i
+  refine ⟨j, fun s hs => ?_⟩
+  exact hj ⟨hs.1, hs.2⟩
+
+/-- Generic Lebesgue partition lemma for paths, neighborhood version: If every point on a path
+has a neighborhood with property P, then there exists a partition such that each segment lies
+in an open set with property P. This follows immediately from the cover version. -/
+theorem exists_partition_with_property {x y : X} (γ : Path x y) (P : Set X → Prop)
+    (h : ∀ z ∈ Set.range γ, ∃ U : Set X, IsOpen U ∧ z ∈ U ∧ P U) :
+    ∃ (n : ℕ) (t : Fin (n + 1) → unitInterval),
+      StrictMono t ∧ t 0 = 0 ∧ t (Fin.last n) = 1 ∧
+      (∀ i : Fin n, ∃ U : Set X, IsOpen U ∧ P U ∧
+        ∀ s : unitInterval, (t i.castSucc : ℝ) ≤ s ∧ s ≤ (t i.succ : ℝ) → γ s ∈ U) := by
+  -- For each z, choose a neighborhood U z with property P
+  choose U hU_open hU_mem hU_P using h
+  -- These form an open cover of the path's range
+  have h_cover : Set.range γ ⊆ ⋃ z : Set.range γ, U z.val z.property := by
+    intro w hw
+    exact Set.mem_iUnion.mpr ⟨⟨w, hw⟩, hU_mem w hw⟩
+  -- Apply the cover version
+  obtain ⟨n, t, h_mono, h_start, h_end, h_segments⟩ :=
+    exists_partition_in_cover (fun z : Set.range γ => U z.val z.property)
+      (fun z => hU_open z.val z.property) γ h_cover
+  refine ⟨n, t, h_mono, h_start, h_end, ?_⟩
+  intro i
+  obtain ⟨⟨z, hz⟩, h_seg⟩ := h_segments i
+  exact ⟨U z hz, hU_open z hz, hU_P z hz, h_seg⟩
 
 end Path
