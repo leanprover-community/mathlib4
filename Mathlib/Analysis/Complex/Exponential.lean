@@ -449,6 +449,13 @@ theorem norm_exp_sub_one_sub_id_le {x : ℂ} (hx : ‖x‖ ≤ 1) : ‖exp x - 1
     _ ≤ ‖x‖ ^ 2 * 1 := by gcongr; norm_num [Nat.factorial]
     _ = ‖x‖ ^ 2 := by rw [mul_one]
 
+theorem _root_.Real.norm_exp_sub_one_sub_id_le {x : ℝ} (hx : ‖x‖ ≤ 1) :
+    ‖Real.exp x - 1 - x‖ ≤ ‖x‖ ^ 2 := calc
+  _ = ‖((Real.exp x - 1 - x) : ℂ)‖ := by exact_mod_cast Complex.norm_real _
+  _ = ‖Complex.exp x - 1 - (x : ℂ)‖ := by simp
+  _ ≤ ‖(x : ℂ)‖ ^ 2 := Complex.norm_exp_sub_one_sub_id_le (by exact_mod_cast hx)
+  _ = ‖x‖ ^ 2 := by simp
+
 lemma norm_exp_sub_sum_le_exp_norm_sub_sum (x : ℂ) (n : ℕ) :
     ‖exp x - ∑ m ∈ range n, x ^ m / m.factorial‖
       ≤ Real.exp ‖x‖ - ∑ m ∈ range n, ‖x‖ ^ m / m.factorial := by
