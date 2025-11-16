@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 -/
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.NonUnitalHom
+import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.MonoidAlgebra.MapDomain
 import Mathlib.Algebra.MonoidAlgebra.Module
@@ -352,24 +353,25 @@ lemma mapRangeAlgHom_single (f : A →ₐ[R] B) (m : M) (a : A) :
     mapRangeAlgHom M f (single m a) = single m (f a) := by
   classical ext; simp [single_apply, apply_ite f]
 
-variable (M) in
+variable (R M) in
 /-- The algebra isomorphism of monoid algebras induced by an isomorphism of the base algebras. -/
 @[to_additive (attr := simps apply)
 /-- The algebra isomorphism of additive monoid algebras induced by an isomorphism of the base
 algebras. -/]
-noncomputable def mapRangeAlgEquiv (f : A ≃ₐ[R] B) :
-    MonoidAlgebra A M ≃ₐ[R] MonoidAlgebra B M where
-  __ := mapRangeAlgHom M f
-  invFun := mapRangeAlgHom M (f.symm : B →ₐ[R] A)
+noncomputable def mapRangeAlgEquiv (e : A ≃ₐ[R] B) : MonoidAlgebra A M ≃ₐ[R] MonoidAlgebra B M where
+  __ := mapRangeAlgHom M e
+  invFun := mapRangeAlgHom M (e.symm : B →ₐ[R] A)
   left_inv _ := by aesop
   right_inv _ := by aesop
+
+@[simp] lemma symm_mapRangeAlgEquiv (e : A ≃ₐ[R] B) :
+    (mapRangeAlgEquiv R M e).symm = mapRangeAlgEquiv R M e.symm := rfl
 
 end mapRange
 
 section
 
-variable (k)
-
+variable (k) in
 /-- When `V` is a `k[G]`-module, multiplication by a group element `g` is a `k`-linear map. -/
 def GroupSMul.linearMap [Monoid G] [CommSemiring k] (V : Type*) [AddCommMonoid V] [Module k V]
     [Module (MonoidAlgebra k G) V] [IsScalarTower k (MonoidAlgebra k G) V] (g : G) : V →ₗ[k] V where
@@ -377,15 +379,13 @@ def GroupSMul.linearMap [Monoid G] [CommSemiring k] (V : Type*) [AddCommMonoid V
   map_add' x y := smul_add (single g (1 : k)) x y
   map_smul' _c _x := smul_algebra_smul_comm _ _ _
 
+variable (k) in
 @[simp]
 theorem GroupSMul.linearMap_apply [Monoid G] [CommSemiring k] (V : Type*) [AddCommMonoid V]
     [Module k V] [Module (MonoidAlgebra k G) V] [IsScalarTower k (MonoidAlgebra k G) V] (g : G)
     (v : V) : (GroupSMul.linearMap k V g) v = single g (1 : k) • v :=
   rfl
 
-section
-
-variable {k}
 variable [Monoid G] [CommSemiring k] {V W : Type*} [AddCommMonoid V] [Module k V]
   [Module (MonoidAlgebra k G) V] [IsScalarTower k (MonoidAlgebra k G) V] [AddCommMonoid W]
   [Module k W] [Module (MonoidAlgebra k G) W] [IsScalarTower k (MonoidAlgebra k G) W]
@@ -414,7 +414,33 @@ theorem equivariantOfLinearOfComm_apply (v : V) : (equivariantOfLinearOfComm f h
 
 end
 
-end
+variable [CommMonoid M] [CommSemiring R] [CommSemiring S] [Algebra R S]
+
+/-- If `S` is an `R`-algebra, then `MonoidAlgebra S M` is a `MonoidAlgebra R M` algebra.
+
+Warning: This produces a diamond for
+`Algebra (MonoidAlgebra R M) (MonoidAlgebra (MonoidAlgebra S M) M)` and another one fro
+`Algebra (MonoidAlgebra R M) (MonoidAlgebra R M)`.
+That's why it is not a global instance. -/
+@[to_additive
+/-- If `S` is an `R`-algebra, then `S[M]` is an `R[M]`-algebra.
+
+Warning: This produces a diamond for `Algebra R[M] S[M][M]` and another one for `Algebra R[M] R[M]`.
+That's why it is not a global instance. -/]
+noncomputable abbrev algebraMonoidAlgebra : Algebra (MonoidAlgebra R M) (MonoidAlgebra S M) :=
+  (mapRangeRingHom M (algebraMap R S)).toAlgebra
+
+attribute [local instance] algebraMonoidAlgebra
+
+@[to_additive (attr := simp)]
+lemma algebraMap_def :
+    algebraMap (MonoidAlgebra R M) (MonoidAlgebra S M) = mapRangeRingHom M (algebraMap R S) :=
+  rfl
+
+@[to_additive (dont_translate := R)]
+instance [CommSemiring T] [Algebra R T] [Algebra S T] [IsScalarTower R S T] :
+    IsScalarTower R (MonoidAlgebra S M) (MonoidAlgebra T M) :=
+  .of_algebraMap_eq' (mapRangeAlgHom _ (IsScalarTower.toAlgHom R S T)).comp_algebraMap.symm
 
 end MonoidAlgebra
 
