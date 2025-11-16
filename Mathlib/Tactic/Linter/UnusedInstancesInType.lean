@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas R. Murrills
 -/
 import Mathlib.Init
-import Mathlib.Lean.Message
 import Mathlib.Lean.Expr
 import Mathlib.Lean.Environment
 import Mathlib.Lean.Elab.InfoTree
@@ -66,9 +65,9 @@ private def _root_.Lean.Name.unusedInstancesMsg (declName : Name)
     (unusedInstanceBinders : Array Parameter) : MessageData :=
   let unusedInstanceBinders := unusedInstanceBinders.map toMessageData
   m!"`{.ofConstName declName}` has the \
-  {"hypothesis".withPlural "hypotheses" unusedInstanceBinders.size} \
+  {if unusedInstanceBinders.size = 1 then "hypothesis" else "hypotheses"} \
   {.andList unusedInstanceBinders.toList} which \
-  {"is".withPlural "are" unusedInstanceBinders.size} not used in the remainder of the type."
+  {if unusedInstanceBinders.size = 1 then "is" else "are"} not used in the remainder of the type."
 
 /--
 Gathers instance hypotheses in the type of `decl` that are unused in the remainder of the type and
