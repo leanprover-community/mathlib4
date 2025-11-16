@@ -326,7 +326,6 @@ def iteratedSliceBackward : Over f.left ⥤ Over f where
   obj g := mk (homMk g.hom : mk (g.hom ≫ f.hom) ⟶ f)
   map α := homMk (homMk α.left (w_assoc α f.hom)) (OverMorphism.ext (w α))
 
-@[simp]
 theorem iteratedSliceBackward_forget (f : Over X) :
     iteratedSliceBackward f ⋙ Over.forget f = Over.map f.hom :=
   rfl
