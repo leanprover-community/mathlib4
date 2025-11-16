@@ -34,9 +34,10 @@ A structure for storing information about a parameter of some declaration, usual
 telescope. We use this for recording the expressions and index associated to a parameter which was
 unused in the remainder of the type.
 
-`m!"{param}"` displays as `` `[{param.type?.get}]` (#{param.idx})`` (backticks included) if `type?`
-is `some _`, and as `parameter #{param.idx}` as a failsafe if `type?` is `none`. (We always expect
-`type?` to be `some _`, but would like a fallback if there are unexpected issues in telescoping.)
+`m!"{param}"` displays as `` `[{param.type?.get}]` (#{param.idx + 1})`` (backticks included) if
+`type?` is `some _`, and as `parameter #{param.idx + 1}` as a failsafe if `type?` is `none`. (We
+always expect `type?` to be `some _`, but would like a fallback if there are unexpected issues in
+telescoping.)
 -/
 private structure Parameter where
   /- TODO: include syntax references to the binders here, and use the "real" fvars created during
