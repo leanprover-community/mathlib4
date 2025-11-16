@@ -96,7 +96,7 @@ lemma tendsto_integral_gaussian_smul (hf : Integrable f) (h'f : Integrable (𝓕
   apply B.congr'
   filter_upwards [Ioi_mem_atTop 0] with c (hc : 0 < c)
   congr with w
-  rw [fourierIntegral_gaussian_innerProductSpace' (by simpa)]
+  rw [fourier_gaussian_innerProductSpace' (by simpa)]
   congr
   · simp
   · simp; ring

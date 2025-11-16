@@ -33,21 +33,21 @@ Schwartz space. -/
 noncomputable def fourierTransformCLM : 𝓢(V, E) →L[𝕜] 𝓢(V, E) := by
   refine mkCLM ((𝓕 : (V → E) → (V → E)) ·) ?_ ?_ ?_ ?_
   · intro f g x
-    simp only [fourierIntegral_eq, add_apply, smul_add]
+    simp only [fourier_eq, add_apply, smul_add]
     rw [integral_add]
     · exact (fourierIntegral_convergent_iff _).2 f.integrable
     · exact (fourierIntegral_convergent_iff _).2 g.integrable
   · intro c f x
-    simp only [fourierIntegral_eq, smul_apply, smul_comm _ c, integral_smul, RingHom.id_apply]
+    simp only [fourier_eq, smul_apply, smul_comm _ c, integral_smul, RingHom.id_apply]
   · intro f
-    exact Real.contDiff_fourierIntegral (fun n _ ↦ integrable_pow_mul volume f n)
+    exact Real.contDiff_fourier (fun n _ ↦ integrable_pow_mul volume f n)
   · rintro ⟨k, n⟩
     refine ⟨Finset.range (n + integrablePower (volume : Measure V) + 1) ×ˢ Finset.range (k + 1),
        (2 * π) ^ n * (2 * ↑n + 2) ^ k * (Finset.range (n + 1) ×ˢ Finset.range (k + 1)).card
          * 2 ^ integrablePower (volume : Measure V) *
          (∫ (x : V), (1 + ‖x‖) ^ (- (integrablePower (volume : Measure V) : ℝ))) * 2,
        ⟨by positivity, fun f x ↦ ?_⟩⟩
-    apply (pow_mul_norm_iteratedFDeriv_fourierIntegral_le (f.smooth ⊤)
+    apply (pow_mul_norm_iteratedFDeriv_fourier_le (f.smooth ⊤)
       (fun k n _hk _hn ↦ integrable_pow_mul_iteratedFDeriv _ f k n) le_top le_top x).trans
     simp only [mul_assoc]
     gcongr
