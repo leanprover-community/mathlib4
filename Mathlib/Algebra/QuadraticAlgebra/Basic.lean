@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
-import Mathlib.Algebra.QuadraticAlgebra
+import Mathlib.Algebra.QuadraticAlgebra.Defs
 import Mathlib.Algebra.Star.Unitary
 import Mathlib.Tactic.FieldSimp
 
