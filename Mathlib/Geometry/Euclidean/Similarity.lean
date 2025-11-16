@@ -115,7 +115,7 @@ theorem similar_of_side_angle_side (h_not_col : ¬ Collinear ℝ {a, b, c})
   all_goals simp; grind [dist_comm]
 
 /-- For two similar triangles, the corresponding angles are equal. -/
-theorem angle_eq_of_similar (h : ![a, b, c] ∼ ![a', b', c']) :
+theorem _root_.Similar.angle_eq (h : ![a, b, c] ∼ ![a', b', c']) :
     ∠ a b c = ∠ a' b' c' := by
   rw [similar_iff_exists_pos_dist_eq] at h
   rcases h with ⟨r, hr_pos, hdist⟩
@@ -145,13 +145,12 @@ theorem angle_eq_of_similar (h : ![a, b, c] ∼ ![a', b', c']) :
   repeat exact ⟨angle_nonneg _ _ _, angle_le_pi _ _ _ ⟩
 
 /-- In two similar triangles, all three corresponding angles are equal. -/
-theorem Similar.angle_eq_all (h : ![a, b, c] ∼ ![a', b', c']) :
+theorem _root_.Similar.angle_eq_all (h : ![a, b, c] ∼ ![a', b', c']) :
     ∠ a b c = ∠ a' b' c' ∧ ∠ b c a = ∠ b' c' a' ∧ ∠ c a b = ∠ c' a' b' := by
-  have h1 := angle_eq_of_similar h
-  have h2 := angle_eq_of_similar h.comm_right
+  have h2 := h.comm_right.angle_eq
   rw [angle_comm, angle_comm a'] at h2
-  have h3 := angle_eq_of_similar h.comm_left
+  have h3 := h.comm_left.angle_eq
   rw [angle_comm, angle_comm b'] at h3
-  exact ⟨h1, h2, h3⟩
+  exact ⟨h.angle_eq, h2, h3⟩
 
 end EuclideanGeometry
