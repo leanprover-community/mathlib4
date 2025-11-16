@@ -156,7 +156,7 @@ lemma finsuppLeft_smul' (s : S) (t : (ι →₀ M) ⊗[R] N) :
   | tmul p n => ext; simp [smul_tmul', finsuppLeft_apply_tmul_apply]
 
 variable (R M N ι S)
-/-- When `M` is also an `S`-module, then `TensorProduct.finsuppLeft R M N``
+/-- When `M` is also an `S`-module, then `TensorProduct.finsuppLeft R M N`
   is an `S`-linear equiv -/
 noncomputable def finsuppLeft' :
     (ι →₀ M) ⊗[R] N ≃ₗ[S] ι →₀ M ⊗[R] N where
