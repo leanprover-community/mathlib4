@@ -158,6 +158,16 @@ lemma map_id : map φ φ (𝟙 _) (𝟙 _) (by rw [id_comp, comp_id]) = 𝟙 _ :
   ext n
   simp [ext_from_iff _ (n + 1) n rfl, map]
 
+lemma triangle_mor₃_hom : (CochainComplex.mappingCone.triangle φ₁).mor₃ ≫
+    (CategoryTheory.shiftFunctor (CochainComplex C ℤ) 1).map a =
+    CochainComplex.mappingCone.map φ₁ φ₂ a b comm ≫
+    (CochainComplex.mappingCone.triangle φ₂).mor₃ := by
+  ext n
+  simp [CochainComplex.mappingCone.map]
+  apply CochainComplex.mappingCone.ext_from _ (n + 1) n rfl
+  · simp
+  · simp
+
 variable (a' : K₂ ⟶ K₃) (b' : L₂ ⟶ L₃)
 
 @[reassoc]
