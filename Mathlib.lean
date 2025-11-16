@@ -1611,6 +1611,7 @@ import Mathlib.Analysis.Complex.Angle
 import Mathlib.Analysis.Complex.Arg
 import Mathlib.Analysis.Complex.Asymptotics
 import Mathlib.Analysis.Complex.Basic
+import Mathlib.Analysis.Complex.BorelCaratheodory
 import Mathlib.Analysis.Complex.Cardinality
 import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.Complex.Circle
