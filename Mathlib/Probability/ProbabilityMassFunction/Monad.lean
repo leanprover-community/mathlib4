@@ -202,6 +202,7 @@ theorem bindOnSupport_apply (b : β) :
 theorem support_bindOnSupport :
     (p.bindOnSupport f).support = ⋃ (a : α) (h : a ∈ p.support), (f a h).support := by
   ext
+  -- `simp` suffices; squeezed for performance
   simp only [mem_support_iff, bindOnSupport_apply, ne_eq, ENNReal.tsum_eq_zero,
     dite_eq_left_iff, mul_eq_zero, not_forall, not_or, and_exists_self,
     Set.mem_iUnion]
