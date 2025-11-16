@@ -47,7 +47,7 @@ theorem exists_translation : ∃ tr : Fin n → ℤ, ∀ i j, val i ≤ val j �
   · simp [h_eq]
   generalize_proofs _ hi hj
   rw [← hi.choose_spec, ← hj.choose_spec] at h_eq
-  conv => lhs; rw [← hi.choose_spec, ← hj.choose_spec]
+  conv_lhs => rw [← hi.choose_spec, ← hj.choose_spec]
   have := List.sorted_mergeSort (l := li) (le := fun a b ↦ decide (a ≤ b))
       (by simpa using Preorder.le_trans) (by simpa using LinearOrder.le_total)
   rw [List.pairwise_iff_get] at this
