@@ -326,6 +326,14 @@ theorem integrable_comp_iff ⦃f : γ → E⦄ (hf : AEStronglyMeasurable f ((η
   simp only [Integrable, hf, hasFiniteIntegral_comp_iff' hf, true_and, eventually_and, hf.comp,
     hf.norm.integral_kernel_comp]
 
+protected lemma _root_.MeasureTheory.Measure.integrable_comp_iff {μ : Measure α} {f : β → E}
+    (hf : AEStronglyMeasurable f (κ ∘ₘ μ)) :
+    Integrable f (κ ∘ₘ μ)
+      ↔ (∀ᵐ x ∂μ, Integrable f (κ x)) ∧ Integrable (fun x ↦ ∫ y, ‖f y‖ ∂κ x) μ := by
+  rw [Measure.comp_eq_comp_const_apply, ProbabilityTheory.integrable_comp_iff]
+  · simp
+  · simpa [Kernel.comp_apply]
+
 theorem _root_.MeasureTheory.Integrable.ae_of_comp ⦃f : γ → E⦄ (hf : Integrable f ((η ∘ₖ κ) a)) :
     ∀ᵐ x ∂κ a, Integrable f (η x) := ((integrable_comp_iff hf.1).1 hf).1
 
