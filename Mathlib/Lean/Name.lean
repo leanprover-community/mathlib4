@@ -79,5 +79,5 @@ partial def Lean.Name.mkUnusedNameWithIndexAfter (alreadyUsed : Name → Bool) (
   else if alreadyUsed base then go 1 else base
 where
   go n : Name :=
-    let new := base.appendIndexAfter n
-    if alreadyUsed new then go (n+1) else new
+  let new := base.appendIndexAfter n
+  if alreadyUsed new then go (n+1) else new
