@@ -818,16 +818,10 @@ lemma exists_mem_edges_of_not_reachable_deleteEdges (w : G.Walk u v) {s : Set (S
     (huv : ¬ (G.deleteEdges s).Reachable u v) : ∃ e ∈ s, e ∈ w.edges := by
   contrapose! huv; exact ⟨w.toDeleteEdges _ fun _ ↦ imp_not_comm.1 <| huv _⟩
 
-/-- A walk between two vertices separated by a set of edges must go through one of those edges. -/
+/-- A walk between two vertices separated by an edge must go through that edge. -/
 lemma mem_edges_of_not_reachable_deleteEdges (w : G.Walk u v) {e : Sym2 V}
     (huv : ¬ (G.deleteEdges {e}).Reachable u v) : e ∈ w.edges := by
   simpa using w.exists_mem_edges_of_not_reachable_deleteEdges huv
-
-lemma IsTrail.disjoint_edges_takeUntil_dropUntil [DecidableEq V] (hw : w.IsTrail)
-    (hx : x ∈ w.support) : (w.takeUntil x hx).edges.Disjoint (w.dropUntil x hx).edges := by
-  have := hw.edges_nodup
-  rw [← w.take_spec hx, edges_append] at this
-  exact this.disjoint
 
 /-- A trail doesn't go through an edge that disconnects one of its endpoints from the endpoints of
 the trail. -/
