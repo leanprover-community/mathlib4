@@ -11,6 +11,10 @@ import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 /-!
 # Taylor's formula with an integral remainder
 
+In this file we prove Taylor's formula with the remainder term in integral form.
+
+* `add_eq_sum_add_integral_iteratedFDeriv`: version for higher dimensions with `iteratedFDeriv`
+* `add_eq_sum_add_integral_iteratedDeriv`: one-dimensional version with `iteratedDeriv`
 -/
 
 open Nat
