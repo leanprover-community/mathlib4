@@ -6,7 +6,7 @@ Authors: Thomas R. Murrills
 import Mathlib.Init
 import Mathlib.Lean.Expr
 import Mathlib.Lean.Environment
-import Mathlib.Lean.Elab.InfoTree
+import Mathlib.Util.DeclarationManipulation
 
 /-!
 # Linters for Unused Instances in Types
@@ -127,6 +127,10 @@ which logs
 > This linter can be disabled with \`set_option {linter.fooLinter.name} false\`
 
 pluralizing as appropriate.
+
+The ambient ref during `log t thm unusedParams` is the location of the type signature of the
+theorem `thm`, if it can be found; else, we use the location of the theorem's name; else, we use
+the whole command.
 -/
 def _root_.Lean.Syntax.logUnusedInstancesInTheoremsWhere (cmd : Syntax)
     (declFilter : ConstantVal → Bool) (instanceTypeFilter : Expr → Bool)
@@ -136,9 +140,8 @@ def _root_.Lean.Syntax.logUnusedInstancesInTheoremsWhere (cmd : Syntax)
     let thms := t.getTheorems (← getEnv) |>.filter declFilter
     for thm in thms do
       thm.onUnusedInstancesWhere instanceTypeFilter fun unusedParams =>
-        -- TODO: restore in order to log on type signature
-        -- t.withDeclSigRef cmd thm.name do
-        log t thm unusedParams
+        t.withThmSigRef cmd thm.name do
+          log t thm unusedParams
 
 section Decidable
 
