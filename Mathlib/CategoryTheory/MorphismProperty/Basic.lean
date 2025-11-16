@@ -104,7 +104,7 @@ end
 
 section
 
-variable {C : Type u} [Category C] {D : Type*} [Category D]
+variable {C : Type u} [Category.{v} C] {D : Type*} [Category D]
 
 /-- The inverse image of a `MorphismProperty D` by a functor `C ⥤ D` -/
 def inverseImage (P : MorphismProperty D) (F : C ⥤ D) : MorphismProperty C := fun _ _ f =>
@@ -221,7 +221,7 @@ end
 
 section
 
-variable (C : Type u) [Category C]
+variable (C : Type u) [Category.{v} C]
 
 /-- The `MorphismProperty C` satisfied by isomorphisms in `C`. -/
 def isomorphisms : MorphismProperty C := fun _ _ f => IsIso f
@@ -502,7 +502,7 @@ def pi {J : Type w} {C : J → Type u} [∀ j, Category.{v} (C j)]
     (W : ∀ j, MorphismProperty (C j)) : MorphismProperty (∀ j, C j) :=
   fun _ _ f => ∀ j, (W j) (f j)
 
-variable {C} [Category C]
+variable {C} [Category.{v} C]
 
 /-- The morphism property on `J ⥤ C` which is defined objectwise
 from `W : MorphismProperty C`. -/
@@ -520,7 +520,7 @@ end MorphismProperty
 
 namespace NatTrans
 
-variable {C : Type u} [Category C] {D : Type*} [Category D]
+variable {C : Type u} [Category.{v} C] {D : Type*} [Category D]
 
 lemma isIso_app_iff_of_iso {F G : C ⥤ D} (α : F ⟶ G) {X Y : C} (e : X ≅ Y) :
     IsIso (α.app X) ↔ IsIso (α.app Y) :=
