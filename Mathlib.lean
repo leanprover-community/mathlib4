@@ -4553,6 +4553,7 @@ import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 import Mathlib.LinearAlgebra.SesquilinearForm.Star
 import Mathlib.LinearAlgebra.Span.Basic
 import Mathlib.LinearAlgebra.Span.Defs
+import Mathlib.LinearAlgebra.SpecialLinearGroup
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.LinearAlgebra.SymmetricAlgebra.Basic
 import Mathlib.LinearAlgebra.SymmetricAlgebra.Basis
