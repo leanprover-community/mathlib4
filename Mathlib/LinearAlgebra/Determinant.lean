@@ -7,6 +7,8 @@ import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.Reindex
 import Mathlib.Tactic.FieldSimp
+import Mathlib.LinearAlgebra.Dual.Basis
+import Mathlib.LinearAlgebra.Matrix.Dual
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.Basis
 import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
@@ -511,11 +513,8 @@ theorem LinearMap.equivOfIsUnitDet_apply
     [Module.Free R M] [Module.Finite R M]
     {f : M →ₗ[R] M} (h : IsUnit f.det) (x : M) :
     (LinearMap.equivOfIsUnitDet h) x = f x := by
-  by_cases hR : Nontrivial R
-  · simp [equivOfIsUnitDet, dif_pos hR]
-  · rw [not_nontrivial_iff_subsingleton] at hR
-    have : Subsingleton M := Module.subsingleton R M
-    apply Subsingleton.allEq
+  nontriviality M
+  simp [equivOfIsUnitDet, dif_pos (Module.nontrivial R M)]
 
 @[simp]
 theorem LinearMap.coe_equivOfIsUnitDet
@@ -744,3 +743,17 @@ theorem det_isUnitSMul {w : ι → R} (hw : ∀ i, IsUnit (w i)) :
   e.det_unitsSMul_self _
 
 end Module.Basis
+
+section Dual
+
+/-- The determinant of the transpose of an endomorphism coincides with its determinant. -/
+theorem _root_.LinearMap.det_dualMap
+    [Module.Free R M] [Module.Finite R M] (f : M →ₗ[R] M) :
+    f.dualMap.det = f.det := by
+  set b := Module.Free.chooseBasis R M
+  have : Fintype (Module.Free.ChooseBasisIndex R M) :=
+    Module.Free.ChooseBasisIndex.fintype R M
+  rw [← LinearMap.det_toMatrix b, ← LinearMap.det_toMatrix b.dualBasis]
+  simp [LinearMap.dualMap_def, LinearMap.toMatrix_transpose]
+
+end Dual
