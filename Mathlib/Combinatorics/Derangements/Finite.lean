@@ -13,7 +13,7 @@ import Mathlib.Tactic.Ring
 
 This file contains lemmas that describe the cardinality of `derangements α` when `α` is a fintype.
 
-# Main definitions
+## Main definitions
 
 * `card_derangements_invariant`: A lemma stating that the number of derangements on a type `α`
     depends only on the cardinality of `α`.

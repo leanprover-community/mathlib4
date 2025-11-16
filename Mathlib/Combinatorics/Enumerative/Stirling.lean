@@ -12,20 +12,18 @@ import Mathlib.Data.Nat.Choose.Basic
 
 This file defines Stirling numbers of the first and second kinds, proves their fundamental
 recurrence relations, and establishes some of their key properties and identities.
--/
 
-/-!
-# The Stirling numbers of the first kind
+## The Stirling numbers of the first kind
 
 The unsigned Stirling numbers of the first kind, represent the number of ways
 to partition `n` distinct elements into `k` non-empty cycles.
 
-# The Stirling numbers of the second kind
+## The Stirling numbers of the second kind
 
 The Stirling numbers of the second kind, represent the number of ways to partition
 `n` distinct elements into `k` non-empty subsets.
 
-# Main definitions
+## Main definitions
 
 * `Nat.stirlingFirst`: the number of ways to partition `n` distinct elements into `k` non-empty
   cycles, defined by the recursive relationship it satisfies.
