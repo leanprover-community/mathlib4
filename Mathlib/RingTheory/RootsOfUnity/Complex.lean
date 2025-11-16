@@ -67,7 +67,8 @@ theorem isPrimitiveRoot_exp_rat_of_even_num (q : ℚ) (h : Even q.num) :
 theorem isPrimitiveRoot_exp_rat_of_odd_num (q : ℚ) (h : Odd q.num) :
     IsPrimitiveRoot (exp (π * I * q)) (2 * q.den) := by
   convert isPrimitiveRoot_exp_rat (q / 2) using 1
-  · grind [Rat.cast_div, Rat.cast_ofNat]
+  · push_cast
+    ring_nf
   · nth_rw 2 [← q.num_div_den]
     rw [mul_comm, div_div, ← Int.cast_ofNat, ← Int.cast_natCast, ← Int.cast_mul,
       ← Rat.divInt_eq_div, ← Nat.cast_ofNat (R := ℤ), ← Nat.cast_mul,
