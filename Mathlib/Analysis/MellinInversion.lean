@@ -91,7 +91,7 @@ alias mellinInv_eq_fourierIntegralInv := mellinInv_eq_fourierInv
 variable [CompleteSpace E]
 
 /-- The inverse Mellin transform of the Mellin transform applied to `x > 0` is x. -/
-theorem mellin_inversion (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (hf : MellinConvergent f σ)
+theorem mellinInv_mellin_eq (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (hf : MellinConvergent f σ)
     (hFf : VerticalIntegrable (mellin f) σ) (hfx : ContinuousAt f x) :
     mellinInv σ (mellin f) x = f x := by
   let g := fun (u : ℝ) => Real.exp (-σ * u) • f (Real.exp (-u))
@@ -126,4 +126,4 @@ theorem mellin_inversion (σ : ℝ) (f : ℝ → E) {x : ℝ} (hx : 0 < x) (hf :
         inv_mul_cancel₀ (ne_of_gt (rpow_pos_of_pos hx σ)), one_smul]
 
 @[deprecated (since := "2025-11-16")]
-alias mellinInv_mellin_eq := mellin_inversion
+alias mellin_inversion := mellinInv_mellin_eq
