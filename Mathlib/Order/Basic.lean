@@ -128,8 +128,6 @@ lemma not_lt_iff_le_imp_ge : ¬ a < b ↔ (a ≤ b → b ≤ a) := by
 
 @[deprecated (since := "2025-05-11")] alias not_lt_iff_le_imp_le := not_lt_iff_le_imp_ge
 
-lemma ge_of_eq (h : a = b) : b ≤ a := le_of_eq h.symm
-
 @[simp] lemma lt_self_iff_false (x : α) : x < x ↔ False := ⟨lt_irrefl x, False.elim⟩
 
 alias le_trans' := ge_trans
@@ -208,11 +206,6 @@ end Preorder
 section PartialOrder
 
 variable [PartialOrder α] {a b : α}
-
-theorem ge_antisymm : a ≤ b → b ≤ a → b = a :=
-  flip le_antisymm
-
-theorem lt_of_le_of_ne' : a ≤ b → b ≠ a → a < b := fun h₁ h₂ ↦ lt_of_le_of_ne h₁ h₂.symm
 
 theorem Ne.lt_of_le : a ≠ b → a ≤ b → a < b :=
   flip lt_of_le_of_ne
@@ -293,7 +286,6 @@ protected theorem Decidable.eq_or_lt_of_le [DecidableLE α] (h : a ≤ b) : a = 
 
 theorem eq_or_lt_of_le (h : a ≤ b) : a = b ∨ a < b := (lt_or_eq_of_le h).symm
 theorem eq_or_lt_of_le' (h : a ≤ b) : b = a ∨ a < b := (eq_or_lt_of_le h).imp Eq.symm id
-theorem lt_or_eq_of_le' (h : a ≤ b) : a < b ∨ b = a := (eq_or_lt_of_le' h).symm
 
 alias LE.le.lt_or_eq_dec := Decidable.lt_or_eq_of_le
 alias LE.le.eq_or_lt_dec := Decidable.eq_or_lt_of_le
