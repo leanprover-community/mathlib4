@@ -546,8 +546,7 @@ lemma smul_mem_fixedPoints_of_normal [hH : H.Normal]
 
 /-- The set of fixed points of a normal subgroup is stable under the group action. -/
 @[to_additive /-- The set of fixed points of a normal subgroup is stable under the group action. -/]
-def fixedPointsSubMulOfNormal [hH : H.Normal]
-    : SubMulAction G α where
+def fixedPointsSubMulOfNormal [hH : H.Normal] : SubMulAction G α where
   carrier := MulAction.fixedPoints H α
   smul_mem' := smul_mem_fixedPoints_of_normal
 
