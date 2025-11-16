@@ -529,7 +529,7 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
         --   }
 
         }
-#exit
+
 
 
 lemma iterated_deriv_eq_zero_iff_order_eq_n :
