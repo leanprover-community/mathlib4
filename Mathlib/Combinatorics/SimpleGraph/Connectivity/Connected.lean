@@ -26,6 +26,11 @@ import Mathlib.Combinatorics.SimpleGraph.Subgraph
 * `SimpleGraph.isBridge_iff_mem_and_forall_cycle_notMem` characterizes bridge edges in terms of
   there being no cycle containing them.
 
+## TODO
+
+`IsBridge` is unpractical: we shouldn't require the edge to be present.
+See https://github.com/leanprover-community/mathlib4/issues/31690.
+
 ## Tags
 trails, paths, cycles, bridge edges
 -/
@@ -804,10 +809,12 @@ In this section, we prove results about 2-connected components of a graph, but w
 
 Should we explicitly have
 ```
-def IsTwoEdgeReachable (u v : V) : Prop := ∀ e, (G.deleteEdges {e}).Reachable u v
+def IsEdgeReachable (k : ℕ) (u v : V) : Prop :=
+  ∀ ⦃s : Set (Sym2 V)⦄, s.encard < k → (G.deleteEdges s).Reachable u v
 ```
-? This is equivalent to the less idiomatic condition
+? `G.IsEdgeReachable 2 u v` would then be equivalent to the less idiomatic condition
 `∃ x, ¬ (G.deleteEdges {s(x, y)}).Reachable u y` we use below.
+See https://github.com/leanprover-community/mathlib4/issues/31691.
 -/
 
 namespace Walk
