@@ -290,11 +290,11 @@ theorem mahlerMeasure_le_sum_norm_coeff (p : ℂ[X]) : p.mahlerMeasure ≤ p.sum
 
 open Multiset in
 theorem norm_coeff_le_binom_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
-    ‖p.coeff n‖ ≤ (p.natDegree).choose (p.natDegree - n) * p.mahlerMeasure := by
+    ‖p.coeff n‖ ≤ (p.natDegree).choose n * p.mahlerMeasure := by
   by_cases hp : p = 0
   · simp [hp]
   rcases lt_or_ge p.natDegree n with hlt | hn
-  · simp [coeff_eq_zero_of_natDegree_lt hlt, le_of_lt hlt, mahlerMeasure_nonneg]
+  · simp [coeff_eq_zero_of_natDegree_lt hlt, Nat.choose_eq_zero_of_lt hlt]
   rw [mahlerMeasure_eq_leadingCoeff_mul_prod_roots, mul_left_comm,
     coeff_eq_esymm_roots_of_card (splits_iff_card_roots.mp (IsAlgClosed.splits p)) hn, mul_assoc,
     norm_mul, norm_mul, norm_pow, norm_neg, norm_one, one_pow, one_mul,
@@ -302,10 +302,10 @@ theorem norm_coeff_le_binom_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
     Finset.sum_multiset_map_count]
   apply le_trans <| norm_sum_le _ _
   simp_rw [nsmul_eq_mul, norm_mul, _root_.norm_natCast]
-  let S := (powersetCard (p.natDegree - n) p.roots)
+  let S := powersetCard (p.natDegree - n) p.roots
   calc
-  ∑ x ∈ S.toFinset, (count x S) * ‖x.prod‖
-     ≤ ∑ x ∈ S.toFinset, (count x S) * ((p.roots).map (fun a ↦ max 1 ‖a‖)).prod := by
+  ∑ x ∈ S.toFinset, count x S * ‖x.prod‖
+     ≤ ∑ x ∈ S.toFinset, count x S * ((p.roots).map (fun a ↦ max 1 ‖a‖)).prod := by
     gcongr with x hx
     rw [mem_toFinset, mem_powersetCard] at hx
     rw [Finset.prod_multiset_map_count, Finset.prod_multiset_count, norm_prod]
@@ -324,12 +324,12 @@ theorem norm_coeff_le_binom_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
       gcongr with a
       · exact le_max_left 1 ‖a‖
       · exact hx.1
-  _  = ↑(p.natDegree.choose (p.natDegree - n)) * (Multiset.map (fun a ↦ 1 ⊔ ‖a‖) p.roots).prod := by
+  _  = p.natDegree.choose n * (p.roots.map (fun a ↦ 1 ⊔ ‖a‖)).prod := by
     rw [← Finset.sum_mul]
     congr
     norm_cast
     simp only [mem_powersetCard, mem_toFinset, imp_self, implies_true, sum_count_eq_card,
-      card_powersetCard, S]
+      card_powersetCard, S, ← Nat.choose_symm hn]
     congr
     exact splits_iff_card_roots.mp <| IsAlgClosed.splits p
 
