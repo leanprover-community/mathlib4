@@ -41,27 +41,6 @@ where
 namespace InfoTree
 
 /--
-Finds the first result of `f ctx info children` which is `some a`, descending the
-tree from the top. Merges and updates contexts as it descends the tree.
-
-`f` is **only** evaluated on nodes when some context is present. An initial context should be
-provided via the `ctx?` argument if invoking `findSome?` during a larger traversal of the infotree.
-A failure to provide `ctx? := some ctx` when `t` is not the outermost `InfoTree` is thus likely to
-cause `findSome?` to always return `none`.
--/
-partial def findSome? {α} (f : ContextInfo → Info → PersistentArray InfoTree → Option α)
-    (t : InfoTree) (ctx? : Option ContextInfo := none) : Option α :=
-  go ctx? t
-where go ctx?
-  | context ctx t => go (ctx.mergeIntoOuter? ctx?) t
-  | node i ts =>
-    let a := match ctx? with
-      | none => none
-      | some ctx => f ctx i ts
-    a <|> ts.findSome? (go <| i.updateContext? ctx?)
-  | hole _ => none
-
-/--
 Finds the first result of `← f ctx info children` which is `some a`, descending the
 tree from the top. Merges and updates contexts as it descends the tree.
 
@@ -84,6 +63,19 @@ where go ctx?
     | some a => pure a
     | none => ts.findSomeM? (go <| i.updateContext? ctx?)
   | hole _ => pure none
+
+/--
+Finds the first result of `f ctx info children` which is `some a`, descending the
+tree from the top. Merges and updates contexts as it descends the tree.
+
+`f` is **only** evaluated on nodes when some context is present. An initial context should be
+provided via the `ctx?` argument if invoking `findSome?` during a larger traversal of the infotree.
+A failure to provide `ctx? := some ctx` when `t` is not the outermost `InfoTree` is thus likely to
+cause `findSome?` to always return `none`.
+-/
+def findSome? {α} (f : ContextInfo → Info → PersistentArray InfoTree → Option α)
+    (t : InfoTree) (ctx? : Option ContextInfo := none) : Option α :=
+  Id.run <| t.findSomeM? f ctx?
 
 /--
 Returns the value of `f ctx info children` on the outermost `.node info children` which has
