@@ -65,6 +65,8 @@ arithmetic functions, dirichlet convolution, divisors
 
 -/
 
+set_option linter.style.longFile 1700
+
 open Finset
 
 open Nat
@@ -1422,6 +1424,89 @@ theorem prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero [CommGroupWithZero R]
 
 end SpecialFunctions
 
+section Sum
+
+theorem sum_zeta (N : ℕ) : ∑ n ∈ Icc 0 N, zeta n = N := by
+  simp only [zeta_apply, sum_ite, sum_const_zero, sum_const, smul_eq_mul, mul_one, zero_add]
+  rw [show {x ∈ Icc 0 N | ¬x = 0} = Ioc 0 N by ext; simp; cutsat]
+  simp
+
+/-- Useful lemma for reordering sums. -/
+lemma divisorsAntidiagonal_of_le_eq_prod_filter {n N : ℕ} (n_ne_zero : n ≠ 0) (hn : n ≤ N) :
+    n.divisorsAntidiagonal = ((Icc 0 N) ×ˢ (Icc 0 N)).filter
+    (fun x ↦ x.1 * x.2 = n) := by
+  ext ⟨n1, n2⟩
+  rw [Nat.mem_divisorsAntidiagonal]
+  simp only [ne_eq, Finset.mem_filter, Finset.mem_product, Finset.mem_Icc, zero_le, true_and]
+  constructor
+  · intro ⟨hn1, hn2⟩
+    refine ⟨⟨?_, ?_⟩, hn1⟩ <;> apply le_trans (Nat.le_of_dvd (by omega) _) hn
+    · exact ⟨n2, hn1.symm⟩
+    use n1
+    rw [← hn1, mul_comm]
+  · intro ⟨⟨hn1, hn2⟩, hn3⟩
+    exact ⟨hn3, n_ne_zero⟩
+
+variable {R : Type*} [Semiring R]
+
+theorem sum_mul_eq_sum_prod_filter (f g : ArithmeticFunction R) (N : ℕ) :
+    ∑ n ∈ Icc 0 N, (f * g) n = ∑ x ∈ Icc 0 N ×ˢ Icc 0 N with x.1 * x.2 ≤ N, f x.1 * g x.2 := by
+  simp only [mul_apply]
+  trans ∑ n ∈ Icc 0 N, ∑ x ∈ Icc 0 N ×ˢ Icc 0 N with x.1 * x.2 = n, f x.1 * g x.2
+  · refine sum_congr rfl fun n hn ↦ ?_
+    by_cases h : n = 0
+    · simp only [h, divisorsAntidiagonal_zero, sum_empty, _root_.mul_eq_zero]
+      rw [sum_congr rfl (g := 0)]
+      · simp
+      intro x hx
+      simp only [mem_Icc, _root_.zero_le, true_and, mem_filter, mem_product, Pi.zero_apply] at *
+      rcases hx.2 with hx|hx <;> simp [hx]
+    push_neg at h
+    simp only [mem_Icc, _root_.zero_le, true_and] at hn
+    rw [divisorsAntidiagonal_of_le_eq_prod_filter h hn]
+  · simp_rw [sum_filter]
+    rw [sum_comm]
+    apply sum_congr rfl
+    simp
+
+theorem sum_mul_eq_sum_sum (f g : ArithmeticFunction R) (N : ℕ) :
+    ∑ n ∈ Icc 0 N, (f * g) n = ∑ n ∈ Icc 0 N, f n * ∑ m ∈ Icc 0 (N / n), g m := by
+  rw [sum_mul_eq_sum_prod_filter, sum_filter, sum_product]
+  refine sum_congr rfl fun n _ ↦ ?_
+  simp only [sum_ite, not_le, sum_const_zero, add_zero, mul_sum]
+  by_cases h : n = 0
+  · simp [h]
+  congr
+  ext
+  simp only [mem_filter, mem_Icc, _root_.zero_le, true_and]
+  constructor
+  · intro ⟨_, _⟩
+    apply Nat.le_div_iff_mul_le (zero_lt_of_ne_zero h) |>.mpr
+    rwa [mul_comm]
+  · intro hm
+    constructor
+    · apply le_trans hm <| div_le_self ..
+    · trans n * (N / n)
+      · gcongr
+      · exact mul_div_le ..
+
+theorem sum_mul_zeta_eq_sum (f : ArithmeticFunction R) (N : ℕ) :
+    ∑ n ∈ Icc 0 N, (f * zeta) n = ∑ n ∈ Icc 0 N, f n  * ↑(N / n) := by
+  rw [sum_mul_eq_sum_sum]
+  refine  sum_congr rfl fun n hn ↦ ?_
+  simp_rw [natCoe_apply]
+  rw_mod_cast [sum_zeta]
+
+theorem sum_zeta0_eq_sum_div (N : ℕ) :
+    ∑ n ∈ Icc 0 N, sigma 0 n = ∑ n ∈ Icc 0 N, (N / n) := by
+  rw [← zeta_mul_pow_eq_sigma, pow_zero_eq_zeta]
+  convert sum_mul_zeta_eq_sum zeta N using 1
+  simp only [zeta_apply, cast_id, ite_mul, zero_mul, one_mul]
+  refine sum_congr rfl fun n hn ↦ ?_
+  simp
+  tauto
+
+end Sum
 end ArithmeticFunction
 
 namespace Nat.Coprime
