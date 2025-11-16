@@ -2,7 +2,7 @@ import Mathlib.Tactic.Linter.UnusedInstancesInType
 
 section decidable
 
-set_option linter.unusedDecidable true
+set_option linter.unusedDecidableInType true
 
 section unused
 
@@ -10,7 +10,7 @@ section unused
 warning: `foo` has the hypothesis `[DecidableEq α]` (#2) which is not used in the remainder of the type.
 Consider removing these hypotheses and using `classical` in the proof instead. For terms, consider using `open Scoped classical in` at the term level (not the command level).
 
-Note: This linter can be disabled with `set_option linter.unusedDecidable false`
+Note: This linter can be disabled with `set_option linter.unusedDecidableInType false`
 -/
 #guard_msgs in
 theorem foo {α} [DecidableEq α] : True := True.intro
@@ -24,7 +24,7 @@ theorem bar {α} [DecidableEq α] (s : Foo α) : s = s := rfl
 warning: `foo₂` has the hypothesis `[(α : Type) → Decidable (Nonempty α)]` (#2) which is not used in the remainder of the type.
 Consider removing these hypotheses and using `classical` in the proof instead. For terms, consider using `open Scoped classical in` at the term level (not the command level).
 
-Note: This linter can be disabled with `set_option linter.unusedDecidable false`
+Note: This linter can be disabled with `set_option linter.unusedDecidableInType false`
 -/
 #guard_msgs in
 theorem foo₂ (a : Type) [∀ α : Type, Decidable (Nonempty α)] (_ : Unit) [Nonempty a] : True :=
@@ -36,7 +36,7 @@ warning: `foo₃` has the hypotheses `[(α : Type) →
   Decidable (Nonempty α)]` (#2) and `[DecidableEq β]` (#3) which are not used in the remainder of the type.
 Consider removing these hypotheses and using `classical` in the proof instead. For terms, consider using `open Scoped classical in` at the term level (not the command level).
 
-Note: This linter can be disabled with `set_option linter.unusedDecidable false`
+Note: This linter can be disabled with `set_option linter.unusedDecidableInType false`
 -/
 #guard_msgs in
 theorem foo₃ {β} [∀ α : Type, Decidable (Nonempty α)] [DecidableEq β] : True := trivial
@@ -46,7 +46,7 @@ theorem foo₃ {β} [∀ α : Type, Decidable (Nonempty α)] [DecidableEq β] : 
 warning: `foo₄` has the hypothesis `[DecidableEq β]` (#2) which is not used in the remainder of the type.
 Consider removing these hypotheses and using `classical` in the proof instead. For terms, consider using `open Scoped classical in` at the term level (not the command level).
 
-Note: This linter can be disabled with `set_option linter.unusedDecidable false`
+Note: This linter can be disabled with `set_option linter.unusedDecidableInType false`
 -/
 #guard_msgs in
 theorem foo₄ {β} : let _ := 2; ∀ [DecidableEq β], True := trivial
@@ -76,7 +76,7 @@ theorem fooUsing₁ [DecidableEq (Nat → Nat)] : Uses (DecidableEq (Nat → Nat
 warning: `fooUsing₂` has the hypothesis `[DecidablePred Nonempty]` (#1) which is not used in the remainder of the type.
 Consider removing these hypotheses and using `classical` in the proof instead. For terms, consider using `open Scoped classical in` at the term level (not the command level).
 
-Note: This linter can be disabled with `set_option linter.unusedDecidable false`
+Note: This linter can be disabled with `set_option linter.unusedDecidableInType false`
 -/
 #guard_msgs in
 theorem fooUsing₂ [DecidablePred Nonempty] [DecidableEq (Nat → Nat)] :
