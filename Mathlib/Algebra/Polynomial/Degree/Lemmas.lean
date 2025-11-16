@@ -355,7 +355,7 @@ lemma natDegree_eq_one : p.natDegree = 1 ↔ ∃ a ≠ 0, ∃ b, C a * X + C b =
   · rintro ⟨a, ha, b, rfl⟩
     simp [ha]
 
-theorem subsingleton_isRoot_of_natDegree_eq_one [IsLeftCancelMulZero R] [IsRightCancelAdd R]
+theorem subsingleton_isRoot_of_natDegree_eq_one [IsLeftCancelMulZero R]
     (h : p.natDegree = 1) : { x | IsRoot p x }.Subsingleton := by
   intro r₁
   obtain ⟨r₂, hr₂, r₃, rfl⟩ : ∃ a, a ≠ 0 ∧ ∃ b, C a * X + C b = p := by rwa [natDegree_eq_one] at h

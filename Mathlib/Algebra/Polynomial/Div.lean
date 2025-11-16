@@ -756,7 +756,7 @@ lemma _root_.Irreducible.isRoot_eq_bot_of_natDegree_ne_one
     (hi : Irreducible p) (hdeg : p.natDegree ≠ 1) : p.IsRoot = ⊥ :=
   le_bot_iff.mp fun _ ↦ hi.not_isRoot_of_natDegree_ne_one hdeg
 
-lemma _root_.Irreducible.subsingleton_isRoot [IsLeftCancelMulZero R] [IsRightCancelAdd R]
+lemma _root_.Irreducible.subsingleton_isRoot [IsLeftCancelMulZero R]
     (hi : Irreducible p) : { x | p.IsRoot x }.Subsingleton :=
   fun _ hx ↦ (subsingleton_isRoot_of_natDegree_eq_one <| natDegree_eq_of_degree_eq_some <|
     degree_eq_one_of_irreducible_of_root hi hx) hx
