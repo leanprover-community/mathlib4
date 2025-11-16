@@ -1497,7 +1497,9 @@ theorem sum_mul_zeta_eq_sum (f : ArithmeticFunction R) (N : ℕ) :
   simp_rw [natCoe_apply]
   rw_mod_cast [sum_zeta]
 
-theorem sum_zeta0_eq_sum_div (N : ℕ) :
+--TODO: Dirichlet hyperbola method to get sums of length `sqrt N`
+/-- An `O(N)` formula for the sum of the number of divisors function. -/
+theorem sum_sigma0_eq_sum_div (N : ℕ) :
     ∑ n ∈ Icc 0 N, sigma 0 n = ∑ n ∈ Icc 0 N, (N / n) := by
   rw [← zeta_mul_pow_eq_sigma, pow_zero_eq_zeta]
   convert sum_mul_zeta_eq_sum zeta N using 1
