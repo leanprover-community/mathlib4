@@ -52,6 +52,7 @@ jobs:
       lint-outcome: ${{ steps.lint.outcome }}
       mk_all-outcome: ${{ steps.mk_all.outcome }}
       noisy-outcome: ${{ steps.noisy.outcome }}
+      # shake-outcome: ${{ steps.shake.outcome }}
       test-outcome: ${{ steps.test.outcome }}
     defaults: # On Hoskinson runners, landrun is already installed.
       run: # note that .pr-branch/.lake must be created in a step below before we use this
