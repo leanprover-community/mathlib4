@@ -3,18 +3,17 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 -/
-import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Tactic.Spread
-import Mathlib.Util.AssertExists
 import Mathlib.Tactic.StacksAttribute
 
 /-!
 # Semirings and rings
 
-This file defines semirings, rings and domains. This is analogous to `Algebra.Group.Defs` and
-`Algebra.Group.Basic`, the difference being that the former is about `+` and `*` separately, while
+This file defines semirings, rings and domains. This is analogous to
+`Mathlib/Algebra/Group/Defs.lean` and `Mathlib/Algebra/Group/Basic.lean`, the difference being that
+those are about `+` and `*` separately, while the present file is about their interaction.
 the present file is about their interaction.
 
 ## Main definitions

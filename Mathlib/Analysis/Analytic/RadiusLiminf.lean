@@ -56,4 +56,10 @@ theorem radius_eq_liminf :
     filter_upwards [eventually_lt_of_lt_liminf hr, eventually_gt_atTop 0] with n hn hn₀
     simpa using NNReal.coe_le_coe.2 ((this _ hn₀).1 hn.le)
 
+/-- The **Cauchy-Hadamard theorem** for formal multilinear series: The inverse of the radius
+is equal to $\limsup_{n\to\infty} \sqrt[n]{‖p n‖}$. -/
+theorem radius_inv_eq_limsup :
+    p.radius⁻¹ = limsup (fun n ↦ ((‖p n‖₊ ^ (1 / (n : ℝ)) : ℝ≥0) : ℝ≥0∞)) atTop := by
+  simpa [ENNReal.inv_liminf] using congr($(p.radius_eq_liminf)⁻¹)
+
 end FormalMultilinearSeries

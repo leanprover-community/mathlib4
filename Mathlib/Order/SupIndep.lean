@@ -209,7 +209,6 @@ protected theorem SupIndep.disjoint_sup_sup {s : Finset ι} {f : ι → α} {u v
   induction u using Finset.induction generalizing v with
   | empty => simp
   | insert x u hx ih =>
-    specialize ih (v := insert x v)
     grind [= SupIndep, = disjoint_comm, ← Disjoint.disjoint_sup_left_of_disjoint_sup_right]
 
 theorem supIndep_sigma_iff' {β : ι → Type*} {s : Finset ι} {g : ∀ i, Finset (β i)}
@@ -412,7 +411,7 @@ lemma iSupIndep.injOn_iInf {β : ι → Type*} (t : (i : ι) → β i → α) (h
   simp_all
 
 theorem iSupIndep.injective (ht : iSupIndep t) (h_ne_bot : ∀ i, t i ≠ ⊥) : Injective t := by
-  suffices univ = {i | t i ≠ ⊥} by rw [injective_iff_injOn_univ, this]; exact ht.injOn
+  suffices univ = {i | t i ≠ ⊥} by simpa [← this] using ht.injOn
   simp_all
 
 theorem iSupIndep_pair {i j : ι} (hij : i ≠ j) (huniv : ∀ k, k = i ∨ k = j) :

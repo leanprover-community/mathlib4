@@ -22,7 +22,7 @@ variable {K n : Type*} [NormedField K] [Fintype n] [DecidableEq n] {A : Matrix n
 
 /-- **Gershgorin's circle theorem**: for any eigenvalue `μ` of a square matrix `A`, there exists an
 index `k` such that `μ` lies in the closed ball of center the diagonal term `A k k` and of
-radius the sum of the norms `∑ j ≠ k, ‖A k j‖. -/
+radius the sum of the norms `∑ j ≠ k, ‖A k j‖`. -/
 theorem eigenvalue_mem_ball {μ : K} (hμ : Module.End.HasEigenvalue (Matrix.toLin' A) μ) :
     ∃ k, μ ∈ Metric.closedBall (A k k) (∑ j ∈ Finset.univ.erase k, ‖A k j‖) := by
   cases isEmpty_or_nonempty n
@@ -42,7 +42,7 @@ theorem eigenvalue_mem_ball {μ : K} (hμ : Module.End.HasEigenvalue (Matrix.toL
     simp_rw [mem_closedBall_iff_norm']
     refine ⟨i, ?_⟩
     calc
-      _ = ‖(A i i * v i - μ * v i) * (v i)⁻¹‖ := by congr; field_simp
+      _ = ‖(A i i * v i - μ * v i) * (v i)⁻¹‖ := by congr; field
       _ = ‖(A i i * v i - ∑ j, A i j * v j) * (v i)⁻¹‖ := by
                 rw [show μ * v i = ∑ x : n, A i x * v x by
                   rw [← dotProduct, ← Matrix.mulVec]
