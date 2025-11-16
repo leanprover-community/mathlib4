@@ -12,7 +12,7 @@ import Mathlib.Topology.Maps.Basic
 This file defines homeomorphisms between two topological spaces. They are bijections with both
 directions continuous. We denote homeomorphisms with the notation `≃ₜ`.
 
-# Main definitions and results
+## Main definitions and results
 
 * `Homeomorph X Y`: The type of homeomorphisms from `X` to `Y`.
   This type can be denoted using the following notation: `X ≃ₜ Y`.
