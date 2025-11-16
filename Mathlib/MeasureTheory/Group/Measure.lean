@@ -876,7 +876,7 @@ instance _root_.ContinuousMulEquiv.isHaarMeasure_map [BorelSpace G] [IsTopologic
     [IsTopologicalGroup H] (e : G ≃ₜ* H) : (μ.map e).IsHaarMeasure :=
   e.toMulEquiv.isHaarMeasure_map μ e.continuous e.symm.continuous
 
-/-- A convenience wrapper for MeasureTheory.Measure.isAddHaarMeasure_map`. -/
+/-- A convenience wrapper for `MeasureTheory.Measure.isAddHaarMeasure_map`. -/
 instance _root_.ContinuousLinearEquiv.isAddHaarMeasure_map
     {E F R S : Type*} [Semiring R] [Semiring S]
     [AddCommGroup E] [Module R E] [AddCommGroup F] [Module S F]
