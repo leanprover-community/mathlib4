@@ -87,7 +87,7 @@ variable {I}
 
 open ChosenPullbacksAlong
 
-attribute [local instance] BraidedCategory.ofCartesianMonoidalCategory
+variable [BraidedCategory C]
 
 /-- The currying operation `Hom ((star I).obj A) X → Hom A (I ⟹ X.left)`. -/
 def sectionsCurry {X : Over I} {A : C} (u : (toOver I).obj A ⟶ X) :
