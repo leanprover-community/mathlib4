@@ -183,7 +183,7 @@ end
 
 section
 
-variable {C : Type u} [CategoryStruct C]
+variable {C : Type u} [CategoryStruct.{v} C]
 
 /-- A morphism property `P` satisfies `P.RespectsRight Q` if it is stable under post-composition
 with morphisms satisfying `Q`, i.e. whenever `P` holds for `f` and `Q` holds for `i` then `P`
