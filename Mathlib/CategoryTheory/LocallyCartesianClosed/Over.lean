@@ -59,8 +59,7 @@ open Limits
 variable {X : C} (Y Z : Over X)
 
 /-- The canonical pullback cone constructed from `ChosenPullbacksAlong.isPullback.`
-Note: The source of noncomputability is the non-constructive implementation of `IsPullback.isLimit`.
-Otherwise, `ChosenPullbacksAlong.isPullback` is constructive.
+Note: this limit cone is computable as lifts are constructed from the data contained in the `ChosenPullbackAlong` instance, contrary to `IsPullback.isLimit`, which constructs lifting data from `CategoryTheory.Square.IsPullback` (a `Prop`).
 -/
 def isLimitPullbackCone [ChosenPullbacksAlong Z.hom] :
     IsLimit (isPullback Y.hom Z.hom |>.cone) :=
