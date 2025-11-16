@@ -203,7 +203,7 @@ theorem isBoundedUnder (hp : p 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, 
   apply isBoundedUnder_of
   cases le_or_gt (p x) 1 with
   | inl hfx =>
-    use 1, fun m => le_trans (h_le m) (rpow_le_one (by positivity) hfx (by positivity))
+    use 1, fun m ↦ le_trans (h_le m) (rpow_le_one (by positivity) hfx (by positivity))
   | inr hfx =>
     use p x
     refine fun m ↦ le_trans (h_le m) <| rpow_le_self_of_one_le hfx.le ?_
