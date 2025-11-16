@@ -21,17 +21,13 @@ def Foo (α) [DecidableEq α] := Unit
 theorem bar {α} [DecidableEq α] (s : Foo α) : s = s := rfl
 
 /--
-warning: unused variable `x`
-
-Note: This linter can be disabled with `set_option linter.unusedVariables false`
----
 warning: `foo₂` has the hypothesis `[(α : Type) → Decidable (Nonempty α)]` (#2) which is not used in the remainder of the type.
 Consider removing these hypotheses and using `classical` in the proof instead. For terms, consider using `open Scoped classical in` at the term level (not the command level).
 
 Note: This linter can be disabled with `set_option linter.unusedDecidable false`
 -/
 #guard_msgs in
-theorem foo₂ (a : Type) [∀ α : Type, Decidable (Nonempty α)] (x : Unit) [Nonempty a] : True :=
+theorem foo₂ (a : Type) [∀ α : Type, Decidable (Nonempty α)] (_ : Unit) [Nonempty a] : True :=
   trivial
 
 -- TODO: why the newline + indentation in the pretty-printing of the forall?
