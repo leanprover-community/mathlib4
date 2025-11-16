@@ -38,7 +38,7 @@ variable {α : Type*} {M M' N : Matroid α} {e f : α} {I B D R X : Set α}
 
 namespace Matroid
 
-/-! ### Deletion -/
+/-! ## Deletion -/
 
 section Delete
 
