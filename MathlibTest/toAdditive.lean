@@ -30,6 +30,21 @@ class my_has_scalar (M : Type u) (α : Type v) where
 
 instance : my_has_scalar Nat Nat := ⟨fun a b => a * b⟩
 attribute [to_additive (reorder := 1 2) my_has_scalar] my_has_pow
+/--
+error: Cannot apply attribute @[to_additive] to 'Test.my_has_pow.pow': it is already translated to 'Test.my_has_scalar.smul'. ⏎
+If you need to set the `reorder` or `relevant_arg` option, this is still possible with the ⏎
+`@[to_additive (reorder := ...)]` or `@[to_additive (relevant_arg := ...)]` syntax.
+-/
+#guard_msgs in
+attribute [to_additive] my_has_pow.pow
+/--
+error: `to_additive` validation failed: expected
+  {β : Type u} → {α : Type v} → [self : my_has_scalar β α] → α → β → α
+but 'Test.my_has_scalar.smul' has type
+  {M : Type u} → {α : Type v} → [self : my_has_scalar M α] → M → α → α
+-/
+#guard_msgs in
+attribute [to_additive (reorder := 1 2)] my_has_pow.pow
 attribute [to_additive (reorder := 1 2, 4 5)] my_has_pow.pow
 
 @[to_additive bar1]
