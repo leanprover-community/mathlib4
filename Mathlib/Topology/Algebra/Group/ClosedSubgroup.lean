@@ -14,7 +14,7 @@ import Mathlib.Topology.Algebra.Group.Quotient
 This file builds the frame of closed subgroups in a topological group `G`,
 and its additive version `ClosedAddSubgroup`.
 
-# Main definitions and results
+## Main definitions and results
 
 * `normalCore_isClosed`: The `normalCore` of a closed subgroup is closed.
 
