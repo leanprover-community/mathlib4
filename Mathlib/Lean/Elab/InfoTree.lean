@@ -92,9 +92,6 @@ def onHighestNode? {α} (t : InfoTree) (ctx? : Option ContextInfo)
     (f : ContextInfo → Info → PersistentArray InfoTree → α) : Option α :=
   t.findSome? (ctx? := ctx?) fun ctx i ch => some (f ctx i ch)
 
-end Lean.Elab.InfoTree
-namespace InfoTree
-
 /--
 Get the `parentDecl`s of every elaborated body.
 
