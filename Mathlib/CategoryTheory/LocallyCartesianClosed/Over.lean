@@ -131,13 +131,12 @@ lemma tensorObj_ext {A : C} {Y Z : Over X} (f₁ f₂ : A ⟶ (Y ⊗ Z).left)
 @[simp]
 lemma tensorObj_left (Y Z : Over X) : (Y ⊗ Z).left = pullbackObj Y.hom Z.hom := rfl
 
--- @[simp]
 lemma tensorObj_hom (Y Z : Over X) : (Y ⊗ Z).hom = snd Y.hom Z.hom ≫ Z.hom := rfl
 
 @[simp]
 lemma tensorUnit_left : (𝟙_ (Over X)).left = X := rfl
 
---@[simp]
+@[simp]
 lemma tensorUnit_hom : (𝟙_ (Over X)).hom = 𝟙 X := rfl
 
 lemma fst_eq_fst' (Y Z : Over X) :
@@ -155,204 +154,110 @@ lemma lift_left {W Y Z : Over X} (f : W ⟶ Y) (g : W ⟶ Z) :
 @[simp]
 lemma toUnit_left {Z : Over X} : (toUnit Z).left = Z.hom := rfl
 
-lemma associator_hom_fst' (R S T : Over X) :
-    (α_ R S T).hom ≫ fst' R.hom (S ⊗ T).hom = fst' (R ⊗ S).hom T.hom ≫ fst' R.hom S.hom :=
-  associator_hom_fst _ _ _
-
 @[reassoc (attr := simp)]
 lemma associator_hom_left_fst (R S T : Over X) :
     (α_ R S T).hom.left ≫ fst R.hom (S ⊗ T).hom = fst (R ⊗ S).hom T.hom ≫ fst R.hom S.hom := by
-  simpa only [fst_eq_fst'] using congr_arg CommaMorphism.left (associator_hom_fst' R S T)
-
-@[reassoc (attr := simp)]
-lemma associator_hom_snd'_fst' (R S T : Over X) :
-    (α_ R S T).hom ≫ snd' R.hom (S ⊗ T).hom ≫ fst' S.hom T.hom =
-      fst' (R ⊗ S).hom T.hom ≫ snd' R.hom S.hom :=
-  associator_hom_snd_fst _ _ _
+  simpa only [fst_eq_fst'] using congr_arg CommaMorphism.left (associator_hom_fst R S T)
 
 @[reassoc (attr := simp)]
 lemma associator_hom_left_snd_fst (R S T : Over X) :
     (α_ R S T).hom.left ≫ snd R.hom (S ⊗ T).hom ≫ fst S.hom T.hom =
       fst (R ⊗ S).hom T.hom ≫ snd R.hom S.hom := by
-  simpa only using congr_arg CommaMorphism.left (associator_hom_snd'_fst' R S T)
-
-@[reassoc (attr := simp)]
-lemma associator_hom_snd'_snd' (R S T : Over X) :
-    (α_ R S T).hom ≫ snd' R.hom (S ⊗ T).hom ≫ snd' S.hom T.hom =
-      snd' (R ⊗ S).hom T.hom :=
-  associator_hom_snd_snd _ _ _
+  simpa only using congr_arg CommaMorphism.left (associator_hom_snd_fst R S T)
 
 @[reassoc (attr := simp)]
 lemma associator_hom_left_snd_snd (R S T : Over X) :
     (α_ R S T).hom.left ≫ snd R.hom (S ⊗ T).hom ≫ snd S.hom T.hom =
       snd (R ⊗ S).hom T.hom := by
-  simpa only [snd_eq_snd'] using congr_arg CommaMorphism.left (associator_hom_snd'_snd' R S T)
-
-@[reassoc (attr := simp)]
-lemma associator_inv_fst'_fst' (R S T : Over X) :
-    (α_ R S T).inv ≫ fst' (R ⊗ S).hom T.hom ≫ fst' R.hom S.hom =
-      fst' R.hom (S ⊗ T).hom :=
-  associator_inv_fst_fst _ _ _
+  simpa only [snd_eq_snd'] using congr_arg CommaMorphism.left (associator_hom_snd_snd R S T)
 
 @[reassoc (attr := simp)]
 lemma associator_inv_left_fst_fst (R S T : Over X) :
     (α_ R S T).inv.left ≫ fst (R ⊗ S).hom T.hom ≫ fst R.hom S.hom = fst R.hom (S ⊗ T).hom := by
-  simpa only [fst_eq_fst'] using congr_arg CommaMorphism.left (associator_inv_fst'_fst' R S T)
-
-@[reassoc (attr := simp)]
-lemma associator_inv_fst'_snd' (R S T : Over X) :
-    (α_ R S T).inv ≫ fst' (R ⊗ S).hom T.hom ≫ snd' R.hom S.hom =
-      snd' R.hom (S ⊗ T).hom ≫ fst' S.hom T.hom :=
-  associator_inv_fst_snd _ _ _
+  simpa only [fst_eq_fst'] using congr_arg CommaMorphism.left (associator_inv_fst_fst R S T)
 
 @[reassoc (attr := simp)]
 lemma associator_inv_left_fst_snd (R S T : Over X) :
     (α_ R S T).inv.left ≫ fst (R ⊗ S).hom T.hom ≫ snd R.hom S.hom =
       snd R.hom (S ⊗ T).hom ≫ fst S.hom T.hom := by
   simpa only [snd_eq_snd', fst_eq_fst']
-    using congr_arg CommaMorphism.left (associator_inv_fst'_snd' R S T)
-
-@[reassoc (attr := simp)]
-lemma associator_inv_snd' (R S T : Over X) :
-    (α_ R S T).inv ≫ snd' (R ⊗ S).hom T.hom =
-      snd' R.hom (S ⊗ T).hom ≫ snd' S.hom T.hom :=
-  associator_inv_snd _ _ _
+    using congr_arg CommaMorphism.left (associator_inv_fst_snd R S T)
 
 @[reassoc (attr := simp)]
 lemma associator_inv_left_snd (R S T : Over X) :
     (α_ R S T).inv.left ≫ snd (R ⊗ S).hom T.hom =
       snd R.hom (S ⊗ T).hom ≫ snd S.hom T.hom := by
-  simpa only [snd_eq_snd'] using congr_arg CommaMorphism.left (associator_inv_snd' R S T)
-
-@[simp]
-lemma leftUnitor_hom (Z : Over X) :
-    (λ_ Z).hom = snd' _ Z.hom := rfl
+  simpa only [snd_eq_snd'] using congr_arg CommaMorphism.left (associator_inv_snd R S T)
 
 @[simp]
 lemma leftUnitor_hom_left (Z : Over X) :
     (λ_ Z).hom.left = snd _ Z.hom := rfl
 
 @[reassoc (attr := simp)]
-lemma leftUnitor_inv_fst' (Z : Over X) :
-    (λ_ Z).inv ≫ fst' (𝟙 X) Z.hom = Over.homMk Z.hom :=
-  leftUnitor_inv_fst _
-
-@[reassoc (attr := simp)]
 lemma leftUnitor_inv_left_fst (Z : Over X) :
     (λ_ Z).inv.left ≫ fst (𝟙 X) Z.hom = Z.hom := by
-  simpa only [Over.homMk_left] using congr_arg CommaMorphism.left (leftUnitor_inv_fst' Z)
-
-@[reassoc (attr := simp)]
-lemma leftUnitor_inv_left_snd' (Y : Over X) :
-    (λ_ Y).inv ≫ snd' (𝟙 X) Y.hom = Over.homMk (𝟙 Y.left) :=
-  leftUnitor_inv_snd _
+  simpa only [Over.homMk_left] using congr_arg CommaMorphism.left (leftUnitor_inv_fst Z)
 
 @[reassoc (attr := simp)]
 lemma leftUnitor_inv_left_snd (Y : Over X) :
     (λ_ Y).inv.left ≫ snd (𝟙 X) Y.hom = 𝟙 Y.left := by
-  simpa only [Over.homMk_left] using congr_arg CommaMorphism.left (leftUnitor_inv_left_snd' Y)
-
-lemma rightUnitor_hom (Y : Over X) :
-    (ρ_ Y).hom = fst' _ (𝟙 X) := rfl
+  simpa only [Over.homMk_left] using congr_arg CommaMorphism.left (leftUnitor_inv_snd Y)
 
 @[simp]
 lemma rightUnitor_hom_left (Y : Over X) :
     (ρ_ Y).hom.left = fst _ (𝟙 X) := rfl
 
 @[reassoc (attr := simp)]
-lemma rightUnitor_inv_fst' (Y : Over X) :
-    (ρ_ Y).inv ≫ fst' Y.hom (𝟙 X) = Over.homMk (𝟙 Y.left) :=
-  rightUnitor_inv_fst _
-
-@[reassoc (attr := simp)]
 lemma rightUnitor_inv_left_fst (Y : Over X) :
     (ρ_ Y).inv.left ≫ fst Y.hom (𝟙 X) = 𝟙 Y.left := by
-  simpa only [Over.homMk_left] using congr_arg CommaMorphism.left (rightUnitor_inv_fst' Y)
-
-@[reassoc (attr := simp)]
-lemma rightUnitor_inv_snd' (Y : Over X) :
-    (ρ_ Y).inv ≫ snd' Y.hom (𝟙 X) = Over.homMk Y.hom :=
-  rightUnitor_inv_snd _
+  simpa only [Over.homMk_left] using congr_arg CommaMorphism.left (rightUnitor_inv_fst Y)
 
 @[reassoc (attr := simp)]
 lemma rightUnitor_inv_left_snd (Y : Over X) :
     (ρ_ Y).inv.left ≫ snd Y.hom (𝟙 X) = Y.hom := by
-  simpa only [Over.homMk_left] using congr_arg CommaMorphism.left (rightUnitor_inv_snd' Y)
+  simpa only [Over.homMk_left] using congr_arg CommaMorphism.left (rightUnitor_inv_snd Y)
 
 lemma whiskerLeft_left {R S T : Over X} (f : S ⟶ T) :
     (R ◁ f).left = pullbackMap R.hom T.hom R.hom S.hom (𝟙 _) f.left (𝟙 _) := by
-  simp only [pullbackMap]
-  rfl
-
-@[reassoc (attr := simp)]
-lemma whiskerLeft_fst' (R : Over X) {S T : Over X} (f : S ⟶ T) :
-    (R ◁ f) ≫ fst' R.hom T.hom = fst' R.hom S.hom :=
-  whiskerLeft_fst _ _
+  cat_disch
 
 @[reassoc (attr := simp)]
 lemma whiskerLeft_left_fst {R S T : Over X} (f : S ⟶ T) :
     (R ◁ f).left ≫ fst R.hom T.hom = fst R.hom S.hom := by
-  simpa only [fst_eq_fst'] using congr_arg CommaMorphism.left (whiskerLeft_fst' R f)
-
-@[reassoc (attr := simp)]
-lemma whiskerLeft_snd' (R : Over X) {S T : Over X} (f : S ⟶ T) :
-    (R ◁ f) ≫ snd' R.hom T.hom = snd' R.hom S.hom ≫ f :=
-  whiskerLeft_snd _ _
+  simpa only [fst_eq_fst'] using congr_arg CommaMorphism.left (whiskerLeft_fst R f)
 
 @[reassoc (attr := simp)]
 lemma whiskerLeft_left_snd {R S T : Over X} (f : S ⟶ T) :
     (R ◁ f).left ≫ snd R.hom T.hom = snd R.hom S.hom ≫ f.left := by
-  simpa only [snd_eq_snd'] using congr_arg CommaMorphism.left (whiskerLeft_snd' R f)
+  simpa only [snd_eq_snd'] using congr_arg CommaMorphism.left (whiskerLeft_snd R f)
 
 lemma whiskerRight_left {R S T : Over X} (f : S ⟶ T) :
     (f ▷ R).left = pullbackMap T.hom R.hom S.hom R.hom f.left (𝟙 _) (𝟙 _) := by
-  simp only [pullbackMap]
-  rfl
-
-@[reassoc (attr := simp)]
-lemma whiskerRight_fst' {S T : Over X} (f : S ⟶ T) (R : Over X) :
-    (f ▷ R) ≫ fst' T.hom R.hom = fst' S.hom R.hom ≫ f :=
-  whiskerRight_fst _ _
+  cat_disch
 
 @[reassoc (attr := simp)]
 lemma whiskerRight_left_fst {R S T : Over X} (f : S ⟶ T) :
     (f ▷ R).left ≫ fst T.hom R.hom = fst S.hom R.hom ≫ f.left := by
-  simpa only [fst_eq_fst'] using congr_arg CommaMorphism.left (whiskerRight_fst' f R)
-
-@[reassoc (attr := simp)]
-lemma whiskerRight_snd' {S T : Over X} (f : S ⟶ T) (R : Over X) :
-    (f ▷ R) ≫ snd' T.hom R.hom = snd' S.hom R.hom :=
-  whiskerRight_snd _ _
+  simpa only [fst_eq_fst'] using congr_arg CommaMorphism.left (whiskerRight_fst f R)
 
 @[reassoc (attr := simp)]
 lemma whiskerRight_left_snd {R S T : Over X} (f : S ⟶ T) :
     (f ▷ R).left ≫ snd T.hom R.hom = snd S.hom R.hom := by
-  simpa only [snd_eq_snd'] using congr_arg CommaMorphism.left (whiskerRight_snd' f R)
+  simpa only [snd_eq_snd'] using congr_arg CommaMorphism.left (whiskerRight_snd f R)
 
 lemma tensorHom_left {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
     (f ⊗ₘ g).left = pullbackMap S.hom U.hom R.hom T.hom f.left g.left (𝟙 _) := by
-  simp only [pullbackMap]
-  rfl
-
-@[reassoc (attr := simp)]
-lemma tensorHom_fst' {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
-    (f ⊗ₘ g) ≫ fst' S.hom U.hom = fst' R.hom T.hom ≫ f :=
-  tensorHom_fst _ _
+  cat_disch
 
 @[reassoc (attr := simp)]
 lemma tensorHom_left_fst {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
     (f ⊗ₘ g).left ≫ fst S.hom U.hom = fst R.hom T.hom ≫ f.left := by
-  simpa only [fst_eq_fst'] using congr_arg CommaMorphism.left (tensorHom_fst' f g)
-
-@[reassoc (attr := simp)]
-lemma tensorHom_snd' {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
-    (f ⊗ₘ g) ≫ snd' S.hom U.hom = snd' R.hom T.hom ≫ g :=
-  tensorHom_snd _ _
+  simpa only [fst_eq_fst'] using congr_arg CommaMorphism.left (tensorHom_fst f g)
 
 @[reassoc (attr := simp)]
 lemma tensorHom_left_snd {R S T U : Over X} (f : R ⟶ S) (g : T ⟶ U) :
     (f ⊗ₘ g).left ≫ snd S.hom U.hom = snd R.hom T.hom ≫ g.left := by
-  simpa only [snd_eq_snd'] using congr_arg CommaMorphism.left (tensorHom_snd' f g)
+  simpa only [snd_eq_snd'] using congr_arg CommaMorphism.left (tensorHom_snd f g)
 
 end Over
 

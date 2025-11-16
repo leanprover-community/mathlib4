@@ -3,13 +3,16 @@ Copyright (c) 2025 Sina Hazratpour. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour
 -/
-import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullback
+import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
+import Mathlib.CategoryTheory.LocallyCartesianClosed.Over
 
 /-!
 # Exponentiable morphisms
 
-We define an exponentiable morphism `f : I ⟶ J` to be a morphism with a chosen pullback functor
-`Over J ⥤ Over I` together with a right adjoint, called the pushforward functor.
+We define an exponentiable morphism `f : I ⟶ J` to be a morphism with a functorial choice of
+pullbacks, given by `ChosenPullbacksAlong f`, together with a right adjoint to
+the pullback functor `ChosenPullbacksAlong.pulback f : Over J ⥤ Over I`. We call this right adjoint
+the pushforward functor along `f`.
 
 ## Main results
 
@@ -18,7 +21,7 @@ We define an exponentiable morphism `f : I ⟶ J` to be a morphism with a chosen
 
 ### TODO
 
-- The pullback of an exponentiable morphism is exponentiable.
+- Any pullback of an exponentiable morphism is exponentiable.
 
 -/
 
@@ -28,9 +31,7 @@ namespace CategoryTheory
 
 open Category MonoidalCategory Functor Adjunction
 
-open Over hiding pullback mapPullbackAdj pullbackId pullbackComp
-
-open ChosenPullback
+open ChosenPullbacksAlong
 
 attribute [local instance] CartesianMonoidalCategory.ofFiniteProducts
 
@@ -38,7 +39,7 @@ variable {C : Type u} [Category.{v} C]
 
 /-- A morphism `f : I ⟶ J` is exponentiable if the pullback functor `Over J ⥤ Over I`
 has a right adjoint. -/
-class ExponentiableMorphism {I J : C} (f : I ⟶ J) [Over.ChosenPullback f] where
+class ExponentiableMorphism {I J : C} (f : I ⟶ J) [ChosenPullbacksAlong f] where
   /-- The pushforward functor -/
   pushforward : Over I ⥤ Over J
   /-- The pushforward functor is right adjoint to the pullback functor -/
@@ -56,7 +57,7 @@ instance isExponentiable [ChosenPullbacks C] {I J : C} (f : I ⟶ J) [Exponentia
 
 section
 
-variable {I J : C} (f : I ⟶ J) [ChosenPullback f] [ExponentiableMorphism f]
+variable {I J : C} (f : I ⟶ J) [ChosenPullbacksAlong f] [ExponentiableMorphism f]
 
 /-- The dependent evaluation natural transformation as the counit of the adjunction. -/
 abbrev ev : pushforward f ⋙ pullback f ⟶ 𝟭 _ :=
@@ -115,41 +116,26 @@ theorem pushforward_curry_uncurry {X : Over I} {A : Over J} (v : A ⟶ (pushforw
     pushforwardCurry (pushforwardUncurry v) = v :=
   pullbackAdjPushforward f |>.homEquiv A X |>.right_inv v
 
-instance : ChosenPullback (Over.mk f).hom := by
-  dsimp only [mk_hom]
+instance : ChosenPullbacksAlong (Over.mk f).hom := by
+  dsimp only [Over.mk_hom]
   infer_instance
 
 instance OverMkHom : ExponentiableMorphism (Over.mk f).hom := by
-  dsimp only [mk_hom]
+  dsimp only [Over.mk_hom]
   infer_instance
 
 end
 
 section
 
-variable {I : C}
+attribute [local instance] ChosenPullbacksAlong.id
 
-attribute [local instance] ChosenPullback.id
+attribute [local instance] ChosenPullbacksAlong.comp
 
-attribute [local instance] ChosenPullback.comp
-
-/-- The chosen pullback functor of the identity morphism is naturally isomorphic to the
-identity functor. -/
-def _root_.CategoryTheory.Over.ChosenPullback.pullbackId : pullback (𝟙 I) ≅ 𝟭 (Over I) :=
-  conjugateIsoEquiv (mapPullbackAdj (𝟙 _)) (Adjunction.id (C := Over _)) (Over.mapId _).symm
-
-/-- The chosen pullback functor of a composition of morphisms is naturally isomorphic to
-the composition of the chosen pullback functors. -/
-def _root_.CategoryTheory.Over.ChosenPullback.pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
-    [ChosenPullback f] [ChosenPullback g] :
-    pullback (f ≫ g) ≅ pullback g ⋙ pullback f :=
-  conjugateIsoEquiv (mapPullbackAdj _) ((mapPullbackAdj _).comp (mapPullbackAdj _))
-    (Over.mapComp _ _).symm
-
-/-- The identity morphisms `𝟙` are exponentiable. -/
+/-- The identity morphisms `𝟙 _` are exponentiable. -/
 @[simps]
 instance id (I : C) : ExponentiableMorphism (𝟙 I) :=
-  ⟨𝟭 _, ofNatIsoLeft (F:= 𝟭 _) Adjunction.id (pullbackId).symm⟩
+  ⟨𝟭 _, ofNatIsoLeft (F := 𝟭 _) Adjunction.id (pullbackId I).symm⟩
 
 /-- The pushforward of the identity is naturally isomorphic to the identity functor. -/
 def pushforwardIdIso (I : C) : pushforward (𝟙 I) ≅ 𝟭 (Over I) := Iso.refl _
@@ -157,7 +143,7 @@ def pushforwardIdIso (I : C) : pushforward (𝟙 I) ≅ 𝟭 (Over I) := Iso.ref
 /-- The composition of exponentiable morphisms is exponentiable. -/
 @[simps]
 instance comp {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
-    [ChosenPullback f] [ChosenPullback g]
+    [ChosenPullbacksAlong f] [ChosenPullbacksAlong g]
     [ExponentiableMorphism f] [ExponentiableMorphism g] :
     ExponentiableMorphism (f ≫ g) :=
   ⟨pushforward f ⋙ pushforward g,
@@ -167,7 +153,7 @@ instance comp {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
 /-- The natural isomorphism between pushforward of the composition and the composition of
 pushforward functors. -/
 def pushforwardCompIso {I J K : C} (f : I ⟶ J) (g : J ⟶ K)
-    [ChosenPullback f] [ChosenPullback g]
+    [ChosenPullbacksAlong f] [ChosenPullbacksAlong g]
     [ExponentiableMorphism f] [ExponentiableMorphism g] :
     pushforward (f ≫ g) ≅ pushforward f ⋙ pushforward g :=
   Iso.refl _
