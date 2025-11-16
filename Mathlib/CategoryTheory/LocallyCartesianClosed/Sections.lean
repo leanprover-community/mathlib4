@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour
 -/
 import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
+import Mathlib.CategoryTheory.LocallyCartesianClosed.Over
 import Mathlib.CategoryTheory.Closed.Cartesian
 
 /-!
@@ -25,30 +26,13 @@ namespace CategoryTheory
 
 open Category Limits MonoidalCategory CartesianClosed CartesianMonoidalCategory
 
-
-section
-
-variable {I : C} (X : C)
-
-example : ChosenPullback.pullbackObj (toUnit X) (toUnit I) = X ⊗ I := by rfl
-
-example : ChosenPullback.snd (toUnit X) (toUnit I) = CartesianMonoidalCategory.snd X I := rfl
-
-example : (toOver I).obj X = Over.mk (ChosenPullback.snd (toUnit X) (toUnit I)) := by rfl
-
-example : ((toOver I).obj X).hom = CartesianMonoidalCategory.snd X I := by rfl
-
-end
-
-end CartesianMonoidalCategory
-
-end Prelim
-
 section Sections
+
+variable {C : Type u₁} [Category.{v₁} C] [CartesianMonoidalCategory C]
 
 variable (I : C) [Exponentiable I]
 
-/-- The first leg of a cospan constructing a pullback diagram in `C` used to define `sections` . -/
+/-- The first leg of a cospan to define `sectionsObj` as a pullback in `C`. -/
 abbrev curryId : 𝟙_ C ⟶ (I ⟹ I) :=
   curry <| (ρ_ _).hom
 
@@ -58,9 +42,9 @@ theorem toUnit_comp_curryId {A : C} : toUnit A ≫ curryId I = curry (fst I A) :
 
 namespace Over
 
-open ChosenPullback
+open ChosenPullbacksAlong
 
-variable {I} [ChosenPullback (curryId I)]
+variable {I} [ChosenPullbacksAlong (curryId I)]
 
 /-- The object of sections of `X : Over I` defined by the following
 pullback diagram:
@@ -80,16 +64,27 @@ abbrev sectionsObj (X : Over I) : C :=
 def sectionsMap {X X' : Over I} (u : X ⟶ X') :
     sectionsObj X ⟶ sectionsObj X' :=
   pullbackMap _ _ _ _ (exp I |>.map u.left) (𝟙 _) (𝟙 _)
-    (by simp [← Functor.map_comp] ) (by simp only [comp_id, id_comp])
+    (by simp [← Functor.map_comp]) (by cat_disch)
+
+@[simp]
+lemma sectionsMap_fst {X X' : Over I} (u : X ⟶ X') :
+    sectionsMap u ≫ fst _ _ = ChosenPullbacksAlong.fst _ _ ≫ (exp I).map u.left := by
+  simp [sectionsMap, pullbackMap_fst]
+
+@[simp]
+lemma sectionsMap_snd {X X' : Over I} (u : X ⟶ X') :
+    sectionsMap u ≫ snd _ _ = ChosenPullbacksAlong.snd _ _ := by
+  simp [sectionsMap, pullbackMap_snd]
 
 @[simp]
 lemma sectionsMap_id {X : Over I} : sectionsMap (𝟙 X) = 𝟙 _ := by
-  apply ChosenPullback.hom_ext <;> simp [sectionsMap]
+  cat_disch
 
 @[simp]
 lemma sectionsMap_comp {X X' X'' : Over I} (u : X ⟶ X') (v : X' ⟶ X'') :
     sectionsMap (u ≫ v) = sectionsMap u ≫ sectionsMap v := by
-  apply ChosenPullback.hom_ext <;> simp [sectionsMap]
+  ext
+  simp? [sectionsMap]
 
 variable (I)
 
@@ -101,12 +96,14 @@ def sections : Over I ⥤ C where
 
 variable {I}
 
-open ChosenPullback
+open ChosenPullbacksAlong
+
+attribute [local instance] BraidedCategory.ofCartesianMonoidalCategory
 
 /-- The currying operation `Hom ((star I).obj A) X → Hom A (I ⟹ X.left)`. -/
 def sectionsCurry {X : Over I} {A : C} (u : (toOver I).obj A ⟶ X) :
     A ⟶ (sections I).obj X :=
-  ChosenPullback.lift (curry ((β_ I A).hom ≫ u.left)) (toUnit A) (by
+  ChosenPullbacksAlong.lift (curry ((β_ I A).hom ≫ u.left)) (toUnit A) (by
     rw [curry_natural_right, assoc, ← Functor.map_comp, w, toOver_obj_hom, ← curry_natural_right,
     toUnit_comp_curryId]
     congr
@@ -115,7 +112,7 @@ def sectionsCurry {X : Over I} {A : C} (u : (toOver I).obj A ⟶ X) :
 /-- The uncurrying operation `Hom A (section X) → Hom ((star I).obj A) X`. -/
 def sectionsUncurry {X : Over I} {A : C} (v : A ⟶ (sections I).obj X) :
     (toOver I).obj A ⟶ X := by
-  let v₂ : A ⟶ (I ⟹ X.left) := v ≫ ChosenPullback.fst (exp I |>.map X.hom) (curryId I)
+  let v₂ : A ⟶ (I ⟹ X.left) := v ≫ ChosenPullbacksAlong.fst (exp I |>.map X.hom) (curryId I)
   have comm : toUnit A ≫ (curryId I) = v₂ ≫ (exp I).map X.hom := by
     rw [IsTerminal.hom_ext isTerminalTensorUnit (toUnit A ) (v ≫ snd ..)]
     simp [v₂, condition]
@@ -130,8 +127,8 @@ def sectionsUncurry {X : Over I} {A : C} (v : A ⟶ (sections I).obj X) :
 theorem sections_curry_uncurry {X : Over I} {A : C} {v : A ⟶ (sections I).obj X} :
     sectionsCurry (sectionsUncurry v) = v := by
   dsimp [sectionsCurry, sectionsUncurry]
-  let v₂ : A ⟶ (I ⟹ X.left) := v ≫ ChosenPullback.fst (exp I |>.map X.hom) (curryId I)
-  apply ChosenPullback.hom_ext
+  let v₂ : A ⟶ (I ⟹ X.left) := v ≫ ChosenPullbacksAlong.fst (exp I |>.map X.hom) (curryId I)
+  apply ChosenPullbacksAlong.hom_ext
   · simp
   · subsingleton
 
@@ -163,9 +160,9 @@ def coreHomEquivToOverSections : CoreHomEquiv (toOver I) (sections I) where
   homEquiv_naturality_right := by
     intro A X' X u g
     dsimp [sectionsCurry, sectionsUncurry, curryId]
-    apply ChosenPullback.hom_ext
-    · simp only [ChosenPullback.lift_fst, sectionsMap, assoc, pullbackMap_fst,
-      ChosenPullback.lift_fst_assoc, ← curry_natural_right, assoc]
+    apply ChosenPullbacksAlong.hom_ext
+    · simp only [ChosenPullbacksAlong.lift_fst, sectionsMap, assoc, pullbackMap_fst,
+      ChosenPullbacksAlong.lift_fst_assoc, ← curry_natural_right, assoc]
     · aesop
 
 variable (I) in
