@@ -268,19 +268,3 @@ theorem ContinuousOn.isSeparable_image [TopologicalSpace β] {f : α → β} {s 
     (hf : ContinuousOn f s) (hs : IsSeparable s) : IsSeparable (f '' s) := by
   rw [image_eq_range, ← image_univ]
   exact (isSeparable_univ_iff.2 hs.separableSpace).image hf.restrict
-
-section BoundedSpace
-
-/-- If a pseudoemetric space has bounded distance, then it is bounded as a pseudometric space. -/
-lemma PseudoEMetricSpace.boundedSpace_toPseudoMetricSpace [PseudoEMetricSpace β]
-    {C : ℝ≥0} (hβ : ∀ a b : β, edist a b ≤ C) :
-    letI : PseudoMetricSpace β := PseudoEMetricSpace.toPseudoMetricSpace
-      fun x y ↦ ne_top_of_le_ne_top ENNReal.coe_ne_top (hβ x y)
-    BoundedSpace β := by
-  letI := PseudoEMetricSpace.toPseudoMetricSpace
-    fun x y ↦ ne_top_of_le_ne_top ENNReal.coe_ne_top (hβ x y)
-  refine Metric.boundedSpace_iff.2 ⟨C, fun x y ↦ ?_⟩
-  grw [dist_edist, hβ, ENNReal.coe_toReal]
-  exact ENNReal.coe_ne_top
-
-end BoundedSpace

@@ -618,6 +618,9 @@ lemma boundedSpace_iff_nndist : BoundedSpace α ↔ ∃ C, ∀ a b : α, nndist 
   rw [← isBounded_univ, Metric.isBounded_iff_nndist]
   simp
 
+lemma boundedSpace_iff_edist : BoundedSpace α ↔ ∃ C : ℝ≥0, ∀ a b : α, edist a b ≤ C := by
+  simp [Metric.boundedSpace_iff_nndist]
+
 theorem toUniformSpace_eq :
     ‹PseudoMetricSpace α›.toUniformSpace = .ofDist dist dist_self dist_comm dist_triangle :=
   UniformSpace.ext PseudoMetricSpace.uniformity_dist
