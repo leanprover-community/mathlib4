@@ -201,16 +201,11 @@ theorem bindOnSupport_apply (b : β) :
 @[simp]
 theorem support_bindOnSupport :
     (p.bindOnSupport f).support = ⋃ (a : α) (h : a ∈ p.support), (f a h).support := by
-  refine Set.ext fun b => ?_
-  simp only [ENNReal.tsum_eq_zero, not_or, mem_support_iff, bindOnSupport_apply, Ne, not_forall,
-    mul_eq_zero, Set.mem_iUnion]
-  exact
-    ⟨fun hb =>
-      let ⟨a, ⟨ha, ha'⟩⟩ := hb
-      ⟨a, ha, by simpa [ha] using ha'⟩,
-      fun hb =>
-      let ⟨a, ha, ha'⟩ := hb
-      ⟨a, ⟨ha, by simpa [(mem_support_iff _ a).1 ha] using ha'⟩⟩⟩
+  ext
+  -- `simp` suffices; squeezed for performance
+  simp only [mem_support_iff, bindOnSupport_apply, ne_eq, ENNReal.tsum_eq_zero,
+    dite_eq_left_iff, mul_eq_zero, not_forall, not_or, and_exists_self,
+    Set.mem_iUnion]
 
 theorem mem_support_bindOnSupport_iff (b : β) :
     b ∈ (p.bindOnSupport f).support ↔ ∃ (a : α) (h : a ∈ p.support), b ∈ (f a h).support := by
