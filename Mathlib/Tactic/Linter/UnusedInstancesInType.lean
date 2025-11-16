@@ -18,8 +18,8 @@ in the remainder of the type.
 Currently, these linters only handle theorems. (This also includes `lemma`s and `instance`s of
 `Prop` classes.)
 
-- `unusedDecidable` linter (currently off by default): suggests replacing type-unused `Decidable*`
-  instance hypotheses, and could therefore be replaced by `classical` in the proof.
+- `unusedDecidableInType` linter (currently off by default): suggests replacing type-unused
+  `Decidable*` instance hypotheses, and could therefore be replaced by `classical` in the proof.
 
 TODO: log on type signature instead of whole command
 TODO: add more linters!
@@ -164,13 +164,13 @@ def isDecidableVariant (type : Expr) : Bool :=
     n == ``DecidableLT
 
 /--
-The `unusedDecidable` linter checks if a theorem's hypotheses include `Decidable*` instances which
-are not used in the remainder of the type. If so, it suggests removing the instances and using
+The `unusedDecidableInType` linter checks if a theorem's hypotheses include `Decidable*` instances
+which are not used in the remainder of the type. If so, it suggests removing the instances and using
 `classical` or `open scoped Classical in`, as appropriate, in the theorem's proof instead.
 
 This linter fires only on theorems. (This includes `lemma`s and `instance`s of `Prop` classes.)
 -/
-register_option linter.unusedDecidable : Bool := {
+register_option linter.unusedDecidableInType : Bool := {
   defValue := false
   descr := "enable the unused `Decidable*` instance linter, which lints against `Decidable*` \
     instances in the hypotheses of theorems which are not used in the type, and can therefore be \
@@ -180,21 +180,21 @@ register_option linter.unusedDecidable : Bool := {
 /-- Detects `Decidable*` instance hypotheses in the types of theorems which are not used in the
 remainder of the type, and suggests replacing them with a use of `classical` in the proof or
 `open scoped Classical in` at the term level. -/
-def unusedDecidable : Linter where
+def unusedDecidableInType : Linter where
   run := withSetOptionIn fun cmd => do
-    unless getLinterValue linter.unusedDecidable (← getLinterOptions) do
+    unless getLinterValue linter.unusedDecidableInType (← getLinterOptions) do
       return
     cmd.logUnusedInstancesInTheoremsWhere
       (!(`Decidable).isPrefixOf ·.name)
       isDecidableVariant
       fun _ thm unusedParams => do
-        logLint linter.unusedDecidable (← getRef) m!"\
+        logLint linter.unusedDecidableInType (← getRef) m!"\
           {thm.name.unusedInstancesMsg unusedParams}\n\
           Consider removing these hypotheses and using `classical` in the proof instead. \
           For terms, consider using `open Scoped classical in` at the term level (not the command \
           level)."
 
-initialize addLinter unusedDecidable
+initialize addLinter unusedDecidableInType
 
 end Decidable
 
