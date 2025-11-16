@@ -130,7 +130,7 @@ lemma volume_needleSpace : ℙ (needleSpace d) = ENNReal.ofReal (d * π) := by
 
 lemma measurable_needleCrossesIndicator : Measurable (needleCrossesIndicator l) := by
   unfold needleCrossesIndicator
-  refine Measurable.indicator measurable_const (IsClosed.measurableSet (IsClosed.inter ?l ?r))
+  refine Measurable.indicator measurable_const (IsClosed.measurableSet (IsClosed.and ?l ?r))
   all_goals simp only [tsub_le_iff_right, zero_add, ← neg_le_iff_add_nonneg']
   case' l => refine isClosed_le continuous_fst ?_
   case' r => refine isClosed_le (Continuous.neg continuous_fst) ?_

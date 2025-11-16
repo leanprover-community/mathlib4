@@ -9,8 +9,6 @@ import Mathlib.LinearAlgebra.Dual.Basis
 import Mathlib.LinearAlgebra.Matrix.Dual
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Charpoly.BaseChange
-import Mathlib.Algebra.Group.Subgroup.Lattice
-import Mathlib.Algebra.Polynomial.Basic
 
 /-!
 # The special linear group of a module
@@ -597,3 +595,4 @@ end
 end center
 
 end SpecialLinearGroup
+

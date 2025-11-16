@@ -204,8 +204,7 @@ lemma eventually_norm_symmL_trivializationAt_self_comp_lt (x : B) {r : ℝ} (hr 
       grw [← le_opNorm]
       simp
     _ = δ * C * ‖G.symm w‖^2 + g' y w w := by ring
-    _ = δ * C * g x (G.symm w) (G.symm w) + g' y w w := by
-      simp [← real_inner_self_eq_norm_sq, hg]
+    _ = δ * C * g x (G.symm w) (G.symm w) + g' y w w := by simp [← hg]
     _ = δ * C * g' x w w + g' y w w := by
       rw [← hgx]; rfl
   have : (1 - δ * C) * g' x w w ≤ g' y w w := by linarith
@@ -309,8 +308,7 @@ lemma eventually_norm_symmL_trivializationAt_comp_self_lt (x : B) {r : ℝ} (hr 
       grw [← le_opNorm]
       simp
     _ = δ * C * ‖G.symm w‖^2 + g' x w w := by ring
-    _ = δ * C * g x (G.symm w) (G.symm w) + g' x w w := by
-      simp [← real_inner_self_eq_norm_sq, hg]
+    _ = δ * C * g x (G.symm w) (G.symm w) + g' x w w := by simp [← hg]
     _ = δ * C * g' x w w + g' x w w := by
       congr
       rw [inCoordinates_apply_eq₂ h'x h'x (Set.mem_univ _)]
