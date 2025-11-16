@@ -234,10 +234,6 @@ noncomputable def mynorm {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace 
   neg' r := by simp
   smul' a v := by simp [← mul_assoc, ← Real.sqrt_mul_self_eq_abs, Real.sqrt_mul (mul_self_nonneg a)]
 
-noncomputable def aux {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
-  (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) :
-  SeminormFamily ℝ (TangentSpace IB x) (Fin 1) := fun _ ↦ mynorm φ hpos hsymm
-
 structure TangentSpaceAuy
   (x : B) (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
   (hpos : ∀ v, 0 ≤ φ v v)
@@ -437,6 +433,14 @@ noncomputable instance {x : B}
       rw [this]
     exact le_of_eq h9
 
+lemma bbs {x : B}
+  (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
+  (hpos : ∀ v, 0 ≤ φ v v)
+  (hsymm : ∀ u v, φ u v = φ v u)
+  (hdef : ∀ v, φ v v = 0 → v = 0) :
+  WithSeminorms (fun (_ : Fin 1) => normSeminorm ℝ (TangentSpaceAuy x φ hpos hsymm hdef)) :=
+  norm_withSeminorms ℝ (TangentSpaceAuy x φ hpos hsymm hdef)
+
 -- Create type synonym with mynorm
 def TangentSpaceAux {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
   (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) :=
@@ -449,64 +453,43 @@ instance {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] �
   Norm (TangentSpaceAux φ hpos hsymm) where
   norm v := mynorm φ hpos hsymm v
 
--- (Need to prove this is actually a normed space - skipping details)
-instance {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
-  (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) :
-   NormedAddCommGroup (TangentSpaceAux φ hpos hsymm) := sorry
-instance {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
-  (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) :
-   NormedSpace ℝ (TangentSpaceAux φ hpos hsymm) := sorry
+-- Linear equivalence between TangentSpace and TangentSpaceAuy
+def tangentSpaceEquiv {x : B}
+  (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
+  (hpos : ∀ v, 0 ≤ φ v v)
+  (hsymm : ∀ u v, φ u v = φ v u)
+  (hdef : ∀ v, φ v v = 0 → v = 0) :
+  TangentSpace IB x ≃ₗ[ℝ] TangentSpaceAuy x φ hpos hsymm hdef where
+  toFun v := ⟨v⟩
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+  invFun u := u.val
+  left_inv _ := rfl
+  right_inv _ := rfl
 
--- The linear equivalence
-def tangentSpaceEquiv {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
-  (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) :
-  TangentSpace IB x ≃ₗ[ℝ] TangentSpaceAux φ hpos hsymm where
-  toFun := id
-  map_add' := fun _ _ => sorry
-  map_smul' := fun _ _ => sorry
-  invFun := id
-  left_inv := fun _ => rfl
-  right_inv := fun _ => rfl
+instance {x : B} : FiniteDimensional ℝ (TangentSpace IB x) := sorry
 
--- It's continuous in both directions (finite dimensions!)
+instance {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
+  (hpos : ∀ v, 0 ≤ φ v v)
+  (hsymm : ∀ u v, φ u v = φ v u)
+  (hdef : ∀ v, φ v v = 0 → v = 0) :
+  FiniteDimensional ℝ (TangentSpaceAuy x φ hpos hsymm hdef) := sorry
+
+-- It's continuous (finite dimensions)
 lemma tangentSpaceEquiv_continuous {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
-  (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) :
-  Continuous (tangentSpaceEquiv φ hpos hsymm).toLinearMap :=
-  letI : FiniteDimensional ℝ (TangentSpace IB x) := sorry
+  (hpos : ∀ v, 0 ≤ φ v v)
+  (hsymm : ∀ u v, φ u v = φ v u)
+  (hdef : ∀ v, φ v v = 0 → v = 0) :
+  Continuous (tangentSpaceEquiv φ hpos hsymm hdef).toLinearMap :=
   LinearMap.continuous_of_finiteDimensional _
 
-lemma tangentSpaceEquiv_continuous_symm {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
-  (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) :
-  Continuous (tangentSpaceEquiv φ hpos hsymm).symm.toLinearMap :=
-  letI : FiniteDimensional ℝ (TangentSpaceAux φ hpos hsymm) := sorry
-  LinearMap.continuous_of_finiteDimensional _
-
--- Now we need the abstract lemma that uses these continuous maps
-lemma withSeminorms_of_linearEquiv_finite_dim
-  {E F : Type*}
-  [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-  [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F]
-  (e : E ≃ₗ[ℝ] F)
-  (he : Continuous e.toLinearMap)
-  (he_symm : Continuous e.symm.toLinearMap)
-  : WithSeminorms (fun (i : Fin 1) => (normSeminorm ℝ F : Seminorm ℝ F)) := by
-  exact norm_withSeminorms ℝ F
-
-#check IsBoundedLinearMap.isLinearMap_and_continuous_iff_isBoundedLinearMap
-#check LinearMap.continuous_of_finiteDimensional
-#check SeminormFamily.withSeminorms_of_hasBasis
-#check schwartz_withSeminorms
-
-#check norm_withSeminorms
-#check LinearMap.continuous_of_finiteDimensional
-#check fun (x : B) => WithSeminorms.congr (norm_withSeminorms ℝ (TangentSpace IB x))
-#check Seminorm.IsBounded
-#check WithSeminorms.congr
-#check WithSeminorms.continuous_seminorm
-#check Seminorm.bound_of_continuous
-#check SeminormFamily.withSeminorms_of_hasBasis
-#check schwartz_withSeminorms
-#check normSeminorm
+lemma tangentSpaceEquiv_continuous_symm {x : B}
+  (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
+  (hpos : ∀ v, 0 ≤ φ v v)
+  (hsymm : ∀ u v, φ u v = φ v u)
+  (hdef : ∀ v, φ v v = 0 → v = 0) :
+    Continuous (tangentSpaceEquiv φ hpos hsymm hdef).symm.toLinearMap :=
+    LinearMap.continuous_of_finiteDimensional _
 
 /-
 Quoting
@@ -520,80 +503,63 @@ then the identities from E to E' and from E'to E are continuous thanks to
 LinearMap.continuous_of_finiteDimensional. This gives the desired norm equivalence.
 -/
 
-lemma norm_pointwise {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
+noncomputable def aux {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
   (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) :
-  ∀ y : TangentSpaceAux φ hpos hsymm,
-    @Norm.norm (TangentSpaceAux φ hpos hsymm)
-      (instNormTangentSpaceAux φ hpos hsymm) y = mynorm φ hpos hsymm y := by
-  intro y
-  dsimp [instNormTangentSpaceAux, Norm.norm, mynorm]
+  SeminormFamily ℝ (TangentSpace IB x) (Fin 1) := fun _ ↦ mynorm φ hpos hsymm
 
-lemma bbr {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
-  (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) :
-    WithSeminorms (aux φ hpos hsymm) := by
-    letI : FiniteDimensional ℝ (TangentSpace IB x) := sorry
-    letI : FiniteDimensional ℝ (TangentSpaceAux φ hpos hsymm) := sorry
+lemma bbr {x : B}
+  (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
+  (hpos : ∀ v, 0 ≤ φ v v)
+  (hsymm : ∀ u v, φ u v = φ v u)
+  (hdef : ∀ v, φ v v = 0 → v = 0) :
+  WithSeminorms (aux φ hpos hsymm) := by
+    have h1 : WithSeminorms fun x_1 ↦ normSeminorm ℝ (TangentSpaceAuy x φ hpos hsymm hdef) :=
+      norm_withSeminorms ℝ (TangentSpaceAuy x φ hpos hsymm hdef)
+    have h_eq : ∀ i v, aux φ hpos hsymm i v =
+                       normSeminorm ℝ (TangentSpaceAuy x φ hpos hsymm hdef) ⟨v⟩ := by
+      intro i v
+      simp [aux, mynorm]
+      rfl
+    let e := tangentSpaceEquiv φ hpos hsymm hdef
     apply WithSeminorms.congr (norm_withSeminorms ℝ (TangentSpace IB x))
-    · intro j
-      let diagonal : TangentSpace IB x →ₗ[ℝ] TangentSpace IB x × TangentSpace IB x :=
-        LinearMap.prod (LinearMap.id : TangentSpace IB x →ₗ[ℝ] TangentSpace IB x)
-                       (LinearMap.id : TangentSpace IB x →ₗ[ℝ] TangentSpace IB x)
-      have h_diag_cont : Continuous diagonal :=
-        LinearMap.continuous_of_finiteDimensional diagonal
-      let φ_bilinear : TangentSpace IB x × TangentSpace IB x → ℝ :=
-        fun  p => φ p.1 p.2
-      have : Continuous φ_bilinear := ContinuousLinearMap.continuous₂ φ
-      have : Continuous (fun v ↦ φ v v) := this.comp h_diag_cont
-      have : Continuous (fun v ↦ Real.sqrt ((φ v) v)) := Continuous.sqrt this
-      have h_need : Continuous (aux φ hpos hsymm j) := by
-        dsimp [aux, mynorm]
-        let diagonal : TangentSpace IB x → TangentSpace IB x × TangentSpace IB x := fun v => (v, v)
-        exact this
-      obtain ⟨s, C, hC, hbound⟩ := Seminorm.bound_of_continuous
-        (norm_withSeminorms ℝ (TangentSpace IB x))
-        (aux φ hpos hsymm j)
-        h_need
-      use s, C
-      exact hbound
-    · intro j
-      have he := tangentSpaceEquiv_continuous_symm φ hpos hsymm
-      have h_linear : IsLinearMap ℝ (tangentSpaceEquiv φ hpos hsymm).symm :=
-        sorry
-      have h_bounded : IsBoundedLinearMap ℝ (tangentSpaceEquiv φ hpos hsymm).symm := by
+    · have e_cont : Continuous (tangentSpaceEquiv φ hpos hsymm hdef).toLinearMap :=
+      LinearMap.continuous_of_finiteDimensional _
+      have : IsBoundedLinearMap ℝ (tangentSpaceEquiv φ hpos hsymm hdef).toLinearMap := by
         rw [← IsBoundedLinearMap.isLinearMap_and_continuous_iff_isBoundedLinearMap]
-        exact And.symm ⟨he, h_linear⟩
-      obtain ⟨C, hC⟩ := h_bounded.bound
+        exact ⟨LinearMap.isLinear _, e_cont⟩
+      obtain ⟨C, hC⟩ := this.bound
+      intro i
+      use {0}, ⟨max C 1, by positivity⟩
+      intro v
       simp
-      by_cases h : C = 0
-      · have : C = 0 := h
-        exfalso
-        have : ∃ v : TangentSpaceAux φ hpos hsymm, v ≠ 0 := by exact sorry
-        obtain ⟨v, hv⟩ := this
-        have : ‖(tangentSpaceEquiv φ hpos hsymm).symm v‖ ≤ 0 := by
-          calc ‖(tangentSpaceEquiv φ hpos hsymm).symm v‖
-              ≤ C * ‖v‖ := hC.2 v
-            _ = 0 * ‖v‖ := by rw [h]
-            _ = 0 := by ring
-        have : (tangentSpaceEquiv φ hpos hsymm).symm v = 0 := by
-          exact norm_le_zero_iff.mp this
-        have : v = 0 := by
-          have := LinearEquiv.injective (tangentSpaceEquiv φ hpos hsymm).symm
-          exact this (by simpa using ‹(tangentSpaceEquiv φ hpos hsymm).symm v = 0›)
-        exact hv this
-      · have : C ≠ 0 := h
-        have hC_pos : 0 < C := by exact sorry
-        use {0}, ⟨C, le_of_lt hC_pos⟩
-        intro v
-        simp
-        have hC₂ := hC.right
-        have : (normSeminorm ℝ (TangentSpace IB x)) v ≤ C * (aux φ hpos hsymm j) v :=
-           calc normSeminorm ℝ (TangentSpace IB x) v
-            = ‖v‖ := rfl
-          _ = ‖(tangentSpaceEquiv φ hpos hsymm).symm (tangentSpaceEquiv φ hpos hsymm v)‖ := by simp
-          _ ≤ C * ‖tangentSpaceEquiv φ hpos hsymm v‖ := by exact sorry
-          _ = C * mynorm φ hpos hsymm v := by rfl
-          _ = C * aux φ hpos hsymm j v := by rfl
-        exact this
+      have hhave : ‖(tangentSpaceEquiv φ hpos hsymm hdef) v‖ ≤ C * ‖v‖ := hC.2 v
+      have h_aux_eq : aux φ hpos hsymm i v = mynorm φ hpos hsymm v := rfl
+      have h_norm_eq : ‖tangentSpaceEquiv φ hpos hsymm hdef v‖ = mynorm φ hpos hsymm v := rfl
+      rw [h_aux_eq, ← h_norm_eq]
+      have : mynorm φ hpos hsymm v  ≤ max C 1 * ‖v‖ := calc
+        mynorm φ hpos hsymm v = ‖tangentSpaceEquiv φ hpos hsymm hdef v‖ := h_norm_eq.symm
+        _ ≤ C * ‖v‖ := hhave
+        _ ≤ max C 1 * ‖v‖ := by gcongr; exact le_max_left C 1
+      exact this
+    · have e_cont : Continuous (tangentSpaceEquiv φ hpos hsymm hdef).symm.toLinearMap :=
+      LinearMap.continuous_of_finiteDimensional _
+      have : IsBoundedLinearMap ℝ (tangentSpaceEquiv φ hpos hsymm hdef).symm.toLinearMap := by
+        rw [← IsBoundedLinearMap.isLinearMap_and_continuous_iff_isBoundedLinearMap]
+        exact ⟨LinearMap.isLinear _, e_cont⟩
+      obtain ⟨C, hC⟩ := this.bound
+      intro j
+      use {0}, ⟨max C 1, by positivity⟩
+      intro v
+      simp [Finset.sup_singleton]
+      have hhave :
+       ‖(tangentSpaceEquiv φ hpos hsymm hdef).symm (tangentSpaceEquiv φ hpos hsymm hdef v)‖
+               ≤ C * ‖tangentSpaceEquiv φ hpos hsymm hdef v‖ := hC.2 ⟨v⟩
+      simp [tangentSpaceEquiv] at hhave
+      have :   ‖v‖ ≤ max C 1 * (aux φ hpos hsymm j) v :=
+         calc ‖v‖ ≤ C * mynorm φ hpos hsymm v := hhave
+              _ ≤ max C 1 * mynorm φ hpos hsymm v := by gcongr; exact le_max_left C 1
+              _ = max C 1 * aux φ hpos hsymm j v := rfl
+      exact this
 
 lemma qux {α : Type*} [Unique α] (s : Finset α) : s = ∅ ∨ s = {default} := by
   by_cases h : s = ∅
@@ -602,10 +568,10 @@ lemma qux {α : Type*} [Unique α] (s : Finset α) : s = ∅ ∨ s = {default} :
     refine Or.inr ⟨Finset.nonempty_iff_ne_empty.mpr h, fun x hx ↦ Unique.uniq _ _⟩
 
 lemma aux_tvs {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
-   (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) :
+   (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0) :
     Bornology.IsVonNBounded ℝ {v | (φ v) v < 1} := by
   rw [WithSeminorms.isVonNBounded_iff_finset_seminorm_bounded
-        (p := aux φ hpos hsymm) (bbr φ hpos hsymm)]
+        (p := aux φ hpos hsymm) (bbr φ hpos hsymm hdef)]
   intro I
   letI J : Finset (Fin 1) := {1}
   suffices ∃ r > 0, ∀ x ∈ {v | (φ v) v < 1}, (J.sup (aux φ hpos hsymm)) x < r by
