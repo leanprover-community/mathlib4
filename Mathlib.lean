@@ -2335,6 +2335,7 @@ import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Filtered.Connected
 import Mathlib.CategoryTheory.Filtered.CostructuredArrow
 import Mathlib.CategoryTheory.Filtered.Final
+import Mathlib.CategoryTheory.Filtered.FinallySmall
 import Mathlib.CategoryTheory.Filtered.Flat
 import Mathlib.CategoryTheory.Filtered.Grothendieck
 import Mathlib.CategoryTheory.Filtered.OfColimitCommutesFiniteLimit
