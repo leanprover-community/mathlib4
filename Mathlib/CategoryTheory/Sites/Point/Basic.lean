@@ -83,32 +83,57 @@ instance [LocallySmall.{w} C] [AB5OfSize.{w, w} A] [HasFiniteLimits A] :
 noncomputable def presheafFiber : (Cᵒᵖ ⥤ A) ⥤ A :=
   (Functor.whiskeringLeft _ _ _).obj (CategoryOfElements.π Φ.fiber).op ⋙ colim
 
+/-- Given a point `Φ` of a site `(C, J)`, `X : C` and `x : Φ.fiber.obj X`, this
+is the canonical map `P.obj (op X) ⟶ Φ.presheafFiber.obj P`. -/
+noncomputable def toPresheafFiber (X : C) (x : Φ.fiber.obj X) (P : Cᵒᵖ ⥤ A) :
+    P.obj (op X) ⟶ Φ.presheafFiber.obj P :=
+  colimit.ι ((CategoryOfElements.π Φ.fiber).op ⋙ P) (op ⟨X, x⟩)
+
+@[ext]
+lemma toPresheafFiber_hom_ext
+    {P : Cᵒᵖ ⥤ A} {T : A} {f g : Φ.presheafFiber.obj P ⟶ T}
+    (h : ∀ (X : C) (x : Φ.fiber.obj X), Φ.toPresheafFiber X x P ≫ f =
+      Φ.toPresheafFiber X x P ≫ g) : f = g :=
+  colimit.hom_ext (by rintro ⟨⟨X, x⟩⟩; exact h X x)
+
 /-- Given a point `Φ` of a site `(C, J)`, `X : C` and `x : Φ.fiber.obj X`,
 this is the map `P.obj (op X) ⟶ Φ.presheafFiber.obj P` for any `P : Cᵒᵖ ⥤ A`
 as natural transformation. -/
 noncomputable def toPresheafFiberNatTrans (X : C) (x : Φ.fiber.obj X) :
     (evaluation Cᵒᵖ A).obj (op X) ⟶ Φ.presheafFiber where
-  app P := colimit.ι ((CategoryOfElements.π Φ.fiber).op ⋙ P) (op ⟨X, x⟩)
-  naturality _ _ f := by simp [presheafFiber]
+  app := Φ.toPresheafFiber X x
+  naturality _ _ f := by simp [presheafFiber, toPresheafFiber]
 
-/-- Given a point `Φ` of a site `(C, J)`, `X : C` and `x : Φ.fiber.obj X`, this
-is the canonical map `P.obj (op X) ⟶ Φ.presheafFiber.obj P`. -/
-noncomputable abbrev toPresheafFiber (X : C) (x : Φ.fiber.obj X) (P : Cᵒᵖ ⥤ A) :
-    P.obj (op X) ⟶ Φ.presheafFiber.obj P :=
-  (Φ.toPresheafFiberNatTrans X x).app P
-
-@[elementwise (attr := simp)]
+@[elementwise (attr := simp), reassoc (attr := simp)]
 lemma toPresheafFiber_w {X Y : C} (f : X ⟶ Y) (x : Φ.fiber.obj X) (P : Cᵒᵖ ⥤ A) :
     P.map f.op ≫ Φ.toPresheafFiber X x P =
       Φ.toPresheafFiber Y (Φ.fiber.map f x) P :=
   colimit.w ((CategoryOfElements.π Φ.fiber).op ⋙ P)
       (CategoryOfElements.homMk ⟨X, x⟩ ⟨Y, Φ.fiber.map f x⟩ f rfl).op
 
-@[reassoc]
+@[reassoc (attr := simp)]
 lemma toPresheafFiber_naturality {P Q : Cᵒᵖ ⥤ A} (g : P ⟶ Q) (X : C) (x : Φ.fiber.obj X) :
     Φ.toPresheafFiber X x P ≫ Φ.presheafFiber.map g =
       g.app (op X) ≫ Φ.toPresheafFiber X x Q :=
   ((Φ.toPresheafFiberNatTrans X x).naturality g).symm
+
+section
+
+variable {P : Cᵒᵖ ⥤ A} {T : A}
+  (φ : ∀ (X : C) (_ : Φ.fiber.obj X), P.obj (op X) ⟶ T)
+  (hφ : ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (x : Φ.fiber.obj X),
+    P.map f.op ≫ φ X x = φ Y (Φ.fiber.map f x) := by cat_disch)
+
+noncomputable def presheafFiberDesc :
+    Φ.presheafFiber.obj P ⟶ T :=
+  colimit.desc _ (Cocone.mk _ { app x := φ x.unop.1 x.unop.2 })
+
+@[reassoc (attr := simp)]
+lemma toPresheafFiber_presheafFiberDesc (X : C) (x : Φ.fiber.obj X) :
+    Φ.toPresheafFiber X x P ≫ Φ.presheafFiberDesc φ hφ = φ X x :=
+  colimit.ι_desc _ _
+
+end
 
 variable {FC : A → A → Type*} {CC : A → Type w'}
   [∀ (X Y : A), FunLike (FC X Y) (CC X) (CC Y)]
