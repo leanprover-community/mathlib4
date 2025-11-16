@@ -292,6 +292,12 @@ theorem restrict_map_subtype {n : ℕ} (s : Affine.Simplex k P n) :
     (s.restrict _ le_rfl).map (AffineSubspace.subtype _) Subtype.coe_injective = s :=
   rfl
 
+lemma restrict_reindex {m n : ℕ} (s : Affine.Simplex k P n) (e : Fin (n + 1) ≃ Fin (m + 1))
+    {S : AffineSubspace k P} (hS : affineSpan k (Set.range s.points) ≤ S) :
+    letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.reindex e).restrict S (s.reindex_range_points e ▸ hS) = (s.restrict S hS).reindex e :=
+  rfl
+
 end restrict
 
 end Simplex
@@ -318,6 +324,27 @@ lemma affineCombination_mem_setInterior_iff {I : Set k} {n : ℕ} {s : Simplex k
     s.independent w' w hw' hw hww']
   exact hw'01
 
+@[simp] lemma setInterior_reindex (I : Set k) {m n : ℕ} (s : Simplex k P n)
+    (e : Fin (n + 1) ≃ Fin (m + 1)) : (s.reindex e).setInterior I = s.setInterior I := by
+  ext p
+  refine ⟨fun ⟨w, hw, hwI, h⟩ ↦ ?_, fun ⟨w, hw, hwI, h⟩ ↦ ?_⟩
+  · subst h
+    simp_rw [reindex]
+    rw [← Function.comp_id w, ← e.self_comp_symm, ← Function.comp_assoc,
+      ← Equiv.coe_toEmbedding, ← Finset.univ.affineCombination_map e.symm.toEmbedding,
+      map_univ_equiv]
+    have hw' : ∑ i, (w ∘ e) i = 1 := by rwa [sum_comp_equiv, map_univ_equiv]
+    rw [affineCombination_mem_setInterior_iff hw']
+    exact fun i ↦ hwI (e i)
+  · subst h
+    rw [← Function.comp_id w, ← Function.comp_id s.points, ← e.symm_comp_self,
+      ← Function.comp_assoc, ← Function.comp_assoc, ← e.coe_toEmbedding,
+      ← Finset.univ.affineCombination_map e.toEmbedding, map_univ_equiv]
+    change Finset.univ.affineCombination k (s.reindex e).points _ ∈ _
+    have hw' : ∑ i, (w ∘ e.symm) i = 1 := by rwa [sum_comp_equiv, map_univ_equiv]
+    rw [affineCombination_mem_setInterior_iff hw']
+    exact fun i ↦ hwI (e.symm i)
+
 lemma setInterior_mono {I J : Set k} (hij : I ⊆ J) {n : ℕ} (s : Simplex k P n) :
     s.setInterior I ⊆ s.setInterior J :=
   fun _ ⟨w, hw, hw01, hww⟩ ↦ ⟨w, hw, fun i ↦ hij (hw01 i), hww⟩
@@ -335,6 +362,10 @@ interior of the convex hull of the vertices. -/
 protected def interior {n : ℕ} (s : Simplex k P n) : Set P :=
   s.setInterior (Set.Ioo 0 1)
 
+@[simp] lemma interior_reindex {m n : ℕ} (s : Simplex k P n) (e : Fin (n + 1) ≃ Fin (m + 1)) :
+    (s.reindex e).interior = s.interior :=
+  s.setInterior_reindex _ _
+
 lemma affineCombination_mem_interior_iff {n : ℕ} {s : Simplex k P n} {w : Fin (n + 1) → k}
     (hw : ∑ i, w i = 1) :
     Finset.univ.affineCombination k s.points w ∈ s.interior ↔ ∀ i, w i ∈ Set.Ioo 0 1 :=
@@ -345,6 +376,10 @@ of the vertices with weights between 0 and 1 inclusive. This is equivalent to th
 the vertices or the closure of the interior. -/
 protected def closedInterior {n : ℕ} (s : Simplex k P n) : Set P :=
   s.setInterior (Set.Icc 0 1)
+
+@[simp] lemma closedInterior_reindex {m n : ℕ} (s : Simplex k P n) (e : Fin (n + 1) ≃ Fin (m + 1)) :
+    (s.reindex e).closedInterior = s.closedInterior :=
+  s.setInterior_reindex _ _
 
 lemma affineCombination_mem_closedInterior_iff {n : ℕ} {s : Simplex k P n} {w : Fin (n + 1) → k}
     (hw : ∑ i, w i = 1) :
