@@ -239,54 +239,90 @@ noncomputable def aux {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB 
   SeminormFamily ℝ (TangentSpace IB x) (Fin 1) := fun _ ↦ mynorm φ hpos hsymm
 
 structure TangentSpaceAuy
-  (x : B) where
+  (x : B) (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
+  (hpos : ∀ v, 0 ≤ φ v v)
+  (hsymm : ∀ u v, φ u v = φ v u)
+  (hdef : ∀ v, φ v v = 0 → v = 0) where
   val : TangentSpace IB x
 
-lemma TangentSpaceAuy.ext_iff {x : B} (u v : TangentSpaceAuy x) :
+lemma TangentSpaceAuy.ext_iff {x : B}
+  (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
+  (hpos : ∀ v, 0 ≤ φ v v)
+  (hsymm : ∀ u v, φ u v = φ v u)
+  (hdef : ∀ v, φ v v = 0 → v = 0)
+  (u v : TangentSpaceAuy x φ hpos hsymm hdef) :
   u = v ↔ u.val = (v.val : TangentSpace IB x) := by
   cases u; cases v; simp
 
-instance {x : B} : Zero (@TangentSpaceAuy EB _ _ _ _ IB B _ _ x) where
+instance {x : B}
+  (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
+  (hpos : ∀ v, 0 ≤ φ v v)
+  (hsymm : ∀ u v, φ u v = φ v u)
+  (hdef : ∀ v, φ v v = 0 → v = 0) :
+  Zero (@TangentSpaceAuy EB _ _ _ _ IB B _ _ x φ hpos hsymm hdef) where
   zero := ⟨0⟩
 
-instance {x : B} : Add (@TangentSpaceAuy EB _ _ _ _ IB B _ _ x) where
+instance {x : B}
+  (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
+  (hpos : ∀ v, 0 ≤ φ v v)
+  (hsymm : ∀ u v, φ u v = φ v u)
+  (hdef : ∀ v, φ v v = 0 → v = 0) :
+  Add (@TangentSpaceAuy EB _ _ _ _ IB B _ _ x φ hpos hsymm hdef) where
   add u v := ⟨u.val + v.val⟩
 
-instance {x : B} : Neg (@TangentSpaceAuy EB _ _ _ _ IB B _ _ x) where
+instance {x : B}
+  (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
+  (hpos : ∀ v, 0 ≤ φ v v)
+  (hsymm : ∀ u v, φ u v = φ v u)
+  (hdef : ∀ v, φ v v = 0 → v = 0) :
+  Neg (@TangentSpaceAuy EB _ _ _ _ IB B _ _ x φ hpos hsymm hdef) where
   neg u := ⟨-u.val⟩
 
 noncomputable
-instance {x : B} : Sub (@TangentSpaceAuy EB _ _ _ _ IB B _ _ x) where
+instance {x : B}
+  (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
+  (hpos : ∀ v, 0 ≤ φ v v)
+  (hsymm : ∀ u v, φ u v = φ v u)
+  (hdef : ∀ v, φ v v = 0 → v = 0) :
+  Sub (@TangentSpaceAuy EB _ _ _ _ IB B _ _ x φ hpos hsymm hdef) where
   sub u v := ⟨u.val - v.val⟩
 
 noncomputable
-instance {x : B} : SMul ℝ (@TangentSpaceAuy EB _ _ _ _ IB B _ _ x) where
+instance {x : B}
+  (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
+  (hpos : ∀ v, 0 ≤ φ v v)
+  (hsymm : ∀ u v, φ u v = φ v u)
+  (hdef : ∀ v, φ v v = 0 → v = 0) :
+  SMul ℝ (@TangentSpaceAuy EB _ _ _ _ IB B _ _ x φ hpos hsymm hdef) where
   smul a u := ⟨a • u.val⟩
 
 -- The norm (parametrized by φ)
 noncomputable instance {x : B}
   (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
-  (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) :
-  Norm (@TangentSpaceAuy EB _ _ _ _ IB B _ _ x) where
+  (hpos : ∀ v, 0 ≤ φ v v)
+  (hsymm : ∀ u v, φ u v = φ v u)
+  (hdef : ∀ v, φ v v = 0 → v = 0) :
+  Norm (@TangentSpaceAuy EB _ _ _ _ IB B _ _ x φ hpos hsymm hdef) where
   norm v := mynorm φ hpos hsymm v.val
 
 -- Helper lemmas (assuming you have these for mynorm)
 lemma mynorm_sub_self {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
-  (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u)
-  (v : TangentSpaceAuy x) :
+  (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0)
+  (v : TangentSpaceAuy x φ hpos hsymm hdef) :
   mynorm φ hpos hsymm (v.val - v.val) = 0 := by
   sorry
 
 lemma mynorm_sub_comm {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
-  (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u)
-  (u v : TangentSpaceAuy x) :
+  (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0)
+  (u v : TangentSpaceAuy x φ hpos hsymm hdef) :
   mynorm φ hpos hsymm (u.val - v.val) = mynorm φ hpos hsymm (v.val - u.val) := by
   sorry
 
 lemma my_eq_of_dist_eq_zero {x : B}
   (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
   (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0) :
- ∀ {u v: TangentSpaceAuy x}, (mynorm φ hpos hsymm) (u.val - v.val) = 0 → u = v := by
+  ∀ {u v: TangentSpaceAuy x φ hpos hsymm hdef},
+    (mynorm φ hpos hsymm) (u.val - v.val) = 0 → u = v := by
     intro u v h
     rw [mynorm] at h
     have h1 : √((φ (u.val - v.val)) (u.val - v.val)) = 0 := h
@@ -294,42 +330,112 @@ lemma my_eq_of_dist_eq_zero {x : B}
       (Real.sqrt_eq_zero (hpos (u.val - v.val))).mp h
     have h3 : u.val - v.val = 0 := (hdef (u.val - v.val)) h2
     have h4 : u.val = v.val := sub_eq_zero.mp h3
-    exact (TangentSpaceAuy.ext_iff u v).mpr h4
+    exact (TangentSpaceAuy.ext_iff φ hpos hsymm hdef u v).mpr h4
+
+lemma my_dist_triangle {x : B}
+  (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
+  (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0) :
+  ∀ (x_1 y z : TangentSpaceAuy x φ hpos hsymm hdef),
+    (mynorm φ hpos hsymm) (x_1.val - z.val) ≤
+      (mynorm φ hpos hsymm) (x_1.val - y.val) + (mynorm φ hpos hsymm) (y.val - z.val) := by
+  intro u v w
+  have h1 : mynorm φ hpos hsymm ((u.val - v.val) + (v.val - w.val)) ≤
+    mynorm φ hpos hsymm (u.val - v.val) + mynorm φ hpos hsymm (v.val - w.val)
+    := (mynorm φ hpos hsymm).add_le' (u.val - v.val) (v.val - w.val)
+  have h2 : (u.val - v.val) + (v.val - w.val) = u.val - w.val :=
+    sub_add_sub_cancel u.val v.val w.val
+  rw [h2] at h1
+  exact h1
 
 -- NormedAddCommGroup instance
 noncomputable instance {x : B}
   (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
   (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0) :
-  NormedAddCommGroup (@TangentSpaceAuy EB _ _ _ _ IB B _ _ x) where
+  NormedAddCommGroup (@TangentSpaceAuy EB _ _ _ _ IB B _ _ x φ hpos hsymm hdef) where
   norm := fun v => mynorm φ hpos hsymm v.val
   dist_eq := by intros; rfl
-  add_assoc := fun u v w => TangentSpaceAuy.ext_iff _ _ |>.mpr (add_assoc u.val v.val w.val)
-  zero_add := fun u => TangentSpaceAuy.ext_iff _ _ |>.mpr (zero_add u.val)
-  add_zero := fun u => TangentSpaceAuy.ext_iff _ _ |>.mpr (add_zero u.val)
+  add_assoc := fun u v w => TangentSpaceAuy.ext_iff _ _ _ _ _ _|>.mpr (add_assoc u.val v.val w.val)
+  zero_add := fun u => TangentSpaceAuy.ext_iff _ _ _ _ _ _ |>.mpr (zero_add u.val)
+  add_zero := fun u => TangentSpaceAuy.ext_iff _ _ _ _ _ _ |>.mpr (add_zero u.val)
   nsmul := nsmulRec
   zsmul := zsmulRec
-  neg_add_cancel := fun u => TangentSpaceAuy.ext_iff _ _ |>.mpr (neg_add_cancel u.val)
-  add_comm := fun u v => TangentSpaceAuy.ext_iff _ _ |>.mpr (add_comm u.val v.val)
-  sub_eq_add_neg := fun u v => TangentSpaceAuy.ext_iff _ _ |>.mpr (sub_eq_add_neg u.val v.val)
-  dist_self := mynorm_sub_self φ hpos hsymm
-  dist_comm := mynorm_sub_comm φ hpos hsymm
-  dist_triangle := sorry -- triangle inequality
+  neg_add_cancel := fun u => TangentSpaceAuy.ext_iff _ _ _ _ _ _ |>.mpr (neg_add_cancel u.val)
+  add_comm := fun u v => TangentSpaceAuy.ext_iff _ _ _ _ _ _ |>.mpr (add_comm u.val v.val)
+  sub_eq_add_neg :=
+    fun u v => TangentSpaceAuy.ext_iff _ _ _ _ _ _ |>.mpr (sub_eq_add_neg u.val v.val)
+  dist_self := mynorm_sub_self φ hpos hsymm hdef
+  dist_comm := mynorm_sub_comm φ hpos hsymm hdef
+  dist_triangle := my_dist_triangle φ hpos hsymm hdef
   eq_of_dist_eq_zero := my_eq_of_dist_eq_zero φ hpos hsymm hdef
 
+example (x : B)
+  (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
+  (hpos : ∀ v, 0 ≤ φ v v)
+  (hsymm : ∀ u v, φ u v = φ v u)
+  (hdef : ∀ v, φ v v = 0 → v = 0)
+  (u v : (@TangentSpaceAuy EB _ _ _ _ IB B _ _ x φ hpos hsymm hdef)) :
+  ‖u + v‖ ≤ ‖u‖ + ‖v‖ :=
+  norm_add_le u v
+
+noncomputable
+example (x : B)
+  (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
+  (hpos : ∀ v, 0 ≤ φ v v)
+  (hsymm : ∀ u v, φ u v = φ v u)
+  (hdef : ∀ v, φ v v = 0 → v = 0) :
+  NormedAddCommGroup (@TangentSpaceAuy EB _ _ _ _ IB B _ _ x φ hpos hsymm hdef) :=
+  inferInstance
+
+example (x : B)
+  (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
+  (hpos : ∀ v, 0 ≤ φ v v)
+  (hsymm : ∀ u v, φ u v = φ v u)
+  (hdef : ∀ v, φ v v = 0 → v = 0)
+  (u : (@TangentSpaceAuy EB _ _ _ _ IB B _ _ x φ hpos hsymm hdef)) :
+  ‖u‖ = mynorm φ hpos hsymm u.val :=
+  rfl
+
 -- Module and NormedSpace instances
-instance {x : B} : Module ℝ (@TangentSpaceAuy EB _ _ _ _ IB B _ _ x) where
-  one_smul u := TangentSpaceAuy.ext_iff _ _ |>.mpr (one_smul ℝ u.val)
-  mul_smul a b u := TangentSpaceAuy.ext_iff _ _ |>.mpr (mul_smul a b u.val)
-  smul_add a u v := TangentSpaceAuy.ext_iff _ _ |>.mpr (smul_add a u.val v.val)
-  smul_zero a := TangentSpaceAuy.ext_iff _ _ |>.mpr (smul_zero a)
-  zero_smul u := TangentSpaceAuy.ext_iff _ _ |>.mpr (zero_smul ℝ u.val)
-  add_smul a b u := TangentSpaceAuy.ext_iff _ _ |>.mpr (add_smul a b u.val)
+noncomputable
+instance {x : B}
+  (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
+  (hpos : ∀ v, 0 ≤ φ v v)
+  (hsymm : ∀ u v, φ u v = φ v u)
+  (hdef : ∀ v, φ v v = 0 → v = 0) :
+  Module ℝ (@TangentSpaceAuy EB _ _ _ _ IB B _ _ x φ hpos hsymm hdef) where
+  one_smul u := TangentSpaceAuy.ext_iff _ _ _ _ _ _ |>.mpr (one_smul ℝ u.val)
+  mul_smul a b u := TangentSpaceAuy.ext_iff _ _ _ _ _ _ |>.mpr (mul_smul a b u.val)
+  smul_add a u v := TangentSpaceAuy.ext_iff _ _ _ _ _ _ |>.mpr (smul_add a u.val v.val)
+  smul_zero a := TangentSpaceAuy.ext_iff _ _ _ _ _ _ |>.mpr (smul_zero a)
+  zero_smul u := TangentSpaceAuy.ext_iff _ _ _ _ _ _ |>.mpr (zero_smul ℝ u.val)
+  add_smul a b u := TangentSpaceAuy.ext_iff _ _ _ _ _ _ |>.mpr (add_smul a b u.val)
 
 noncomputable instance {x : B}
   (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
-  (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) :
-  NormedSpace ℝ (@TangentSpaceAuy EB _ _ _ _ IB B _ _ x) where
-  norm_smul_le := sorry -- ‖a • u‖ ≤ |a| * ‖u‖
+  (hpos : ∀ v, 0 ≤ φ v v) (hsymm : ∀ u v, φ u v = φ v u) (hdef : ∀ v, φ v v = 0 → v = 0) :
+  NormedSpace ℝ (@TangentSpaceAuy EB _ _ _ _ IB B _ _ x φ hpos hsymm hdef) where
+  norm_smul_le := by
+    intro a u
+    have ha : φ (a • u.val) = a • φ u.val := φ.map_smul a u.val
+    have hb : (φ (a • u.val)) (a • u.val) = a * (φ u.val) (a • u.val) := by
+      rw [ha]
+      rfl
+    have hc : (φ u.val) (a • u.val) = a * (φ u.val u.val) :=
+      (φ u.val).map_smul a u.val
+    have hd : φ (a • u.val) (a • u.val) = a * a * φ u.val u.val := by
+      rw [hb, hc]
+      ring
+    have h3 : norm (a • u) = mynorm φ hpos hsymm (a • u).val := rfl
+    have h7 : norm (a • u) = Real.sqrt (φ (a • u.val) (a • u.val)) := h3
+    have h8 : norm (a • u) = Real.sqrt ( a * a * φ u.val u.val) := by
+      rw [hd] at h7
+      exact h7
+    have h9 : norm (a • u) = |a| * Real.sqrt (φ u.val u.val) := by
+      rw [h8]
+      rw [Real.sqrt_mul' (a * a) (hpos u.val)]
+      have : √(a * a) = |a| := Real.sqrt_mul_self_eq_abs a
+      rw [this]
+    exact le_of_eq h9
 
 -- Create type synonym with mynorm
 def TangentSpaceAux {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
