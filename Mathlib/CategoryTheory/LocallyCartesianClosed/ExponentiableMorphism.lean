@@ -18,8 +18,6 @@ the pushforward functor along `f`.
 
 - The identity morphisms are exponentiable.
 - The composition of exponentiable morphisms is exponentiable.
-- A morphism `f : I ⟶ J` is exponentiable if and only if the object `Over.mk f` is exponentiable
-  in the slice category `Over J`.
 
 ### TODO
 
@@ -32,8 +30,6 @@ universe v u
 namespace CategoryTheory
 
 open Category MonoidalCategory Functor Adjunction
-
-open Over hiding pullback mapPullbackAdj pullbackId pullbackComp
 
 open ChosenPullbacksAlong
 
@@ -121,11 +117,11 @@ theorem pushforward_curry_uncurry {X : Over I} {A : Over J} (v : A ⟶ (pushforw
   pullbackAdjPushforward f |>.homEquiv A X |>.right_inv v
 
 instance : ChosenPullbacksAlong (Over.mk f).hom := by
-  dsimp only [mk_hom]
+  dsimp only [Over.mk_hom]
   infer_instance
 
 instance OverMkHom : ExponentiableMorphism (Over.mk f).hom := by
-  dsimp only [mk_hom]
+  dsimp only [Over.mk_hom]
   infer_instance
 
 end
