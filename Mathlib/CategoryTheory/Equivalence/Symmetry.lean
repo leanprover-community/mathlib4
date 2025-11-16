@@ -83,7 +83,7 @@ lemma inverseFunctorMapIso_symm_eq_isoInverseOfIsoFunctor {e f : C ≌ D} (α : 
     Iso.isoInverseOfIsoFunctor ((functorFunctor _ _).mapIso α) := by
   cat_disch
 
-/-- An "unopped" version of the equivalence `inverseFunctorObj'. -/
+/-- An "unopped" version of the equivalence `inverseFunctorObj'`. -/
 @[simps!]
 def inverseFunctorObj' (e : C ≌ D) :
     Opposite.unop ((inverseFunctor C D).obj e) ≅ e.inverse :=

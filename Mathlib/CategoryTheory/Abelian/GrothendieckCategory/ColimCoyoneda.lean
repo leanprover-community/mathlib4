@@ -91,7 +91,7 @@ lemma epi_f [IsFiltered J] : Epi (f y) := by
     (fun j ↦ by simpa using hf y j)
     (fun _ ↦ by simpa using hy.symm)).epi_f rfl
 
-/-- The kernel of `g y` gives a family of subobjects of `X` indexed by `Under j`0`, and
+/-- The kernel of `g y` gives a family of subobjects of `X` indexed by `Under j₀`, and
 we consider it as a functor `Under j₀ ⥤ MonoOver X`. -/
 @[simps]
 noncomputable def F : Under j₀ ⥤ MonoOver X where
