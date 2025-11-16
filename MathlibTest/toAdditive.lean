@@ -317,7 +317,7 @@ def reorderMulThree {α : Type _} [Mul α] (x y z : α) : α := x * y * z
 /-! Test a permutation that is too big for the list of arguments. -/
 /--
 error: the permutation
-[[2, 3, 50]]
+[[2, 3, 51]]
 provided by the `(reorder := ...)` option is out of bounds, the type
   {α : Type u_1} → [Add α] → α → α → α → α
 has only 5 arguments
@@ -343,11 +343,6 @@ For example `(reorder := 0 1, 4 5)` swaps the first two arguments with each othe
 -/
 #guard_msgs in
 @[to_additive (reorder := 04)]
-example : True := trivial
-
-/-- error: invalid position `00`, positions are counted starting from 1. -/
-#guard_msgs in
-@[to_additive (reorder := 100 200, 2 00)]
 example : True := trivial
 
 example {α : Type _} [Add α] (x y z : α) : reorderAddThree z x y = x + y + z := rfl

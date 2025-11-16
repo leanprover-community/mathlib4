@@ -132,7 +132,7 @@ initialize changeNumeralAttr : NameMapExtension (List Nat) ←
       "Auxiliary attribute for `to_additive` that stores functions that have numerals as argument."
     add := fun
     | _, `(attr| translate_change_numeral $[$arg]*) =>
-      pure <| arg.map (·.1.isNatLit?.get!.pred) |>.toList
+      pure <| arg.map (·.1.isNatLit?.get!) |>.toList
     | _, _ => throwUnsupportedSyntax }
 
 /-- `TranslateData` is a structure that holds all data required for a translation attribute. -/
