@@ -36,3 +36,25 @@ attribute [to_dual lt_of_eq_of_lt''] lt_of_eq_of_lt
 attribute [to_dual lt_of_lt_of_eq''] lt_of_lt_of_eq
 
 attribute [to_dual] Max
+
+-- We need to tag the lemmas used by `grind` in order to translate `grind` proofs.
+namespace Lean.Grind.Order
+
+attribute [to_dual existing le_of_eq_1] le_of_eq_2
+attribute [to_dual self (reorder := 4 5)] le_of_not_le
+attribute [to_dual self (reorder := 6 7)] lt_of_not_le le_of_not_lt eq_of_le_of_le
+attribute [to_dual self (reorder := 4 6, 7 8)] le_trans
+attribute [to_dual self (reorder := 6 8, 9 10)] lt_trans
+attribute [to_dual existing (reorder := 6 8, 9 10) le_lt_trans] lt_le_trans
+attribute [to_dual self (reorder := 5 6)] le_eq_true_of_lt
+attribute [to_dual self (reorder := 6 7)] le_eq_false_of_lt lt_eq_false_of_lt lt_eq_false_of_le
+
+/- For now, we don't tag any `grind` lemmas involving offsets, but this may be done in the future.
+These offset lemmas are:
+
+le_of_eq_1_k, le_of_eq_2_k, le_of_not_lt_k, lt_of_not_le_k, le_trans_k, lt_trans_k, le_lt_trans_k,
+lt_le_trans_k, le_unsat_k, lt_unsat_k, le_eq_true_of_le_k, le_eq_true_of_lt_k, lt_eq_true_of_lt_k,
+lt_eq_true_of_le_k, le_eq_false_of_le_k, lt_eq_false_of_le_k, lt_eq_false_of_lt_k,
+le_eq_false_of_lt_k -/
+
+end Lean.Grind.Order
