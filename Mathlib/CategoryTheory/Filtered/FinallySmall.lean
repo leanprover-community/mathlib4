@@ -55,7 +55,7 @@ lemma exists_of_isFiltered :
       { obj X := ⟨(fromFinalModel.{w} C₀).obj X, by tauto⟩
         map f := (fromFinalModel.{w} C₀).map f }
     have : (G ⋙ P.ι).Final := inferInstanceAs (fromFinalModel.{w} C₀).Final
-    refine ⟨P.FullSubcategory, small_of_surjective (f := G.obj)
+    exact ⟨P.FullSubcategory, small_of_surjective (f := G.obj)
       (by rintro ⟨_, Y, _, rfl⟩; exact ⟨Y, rfl⟩), inferInstance, inferInstance, P.ι,
       Functor.final_of_comp_full_faithful' G P.ι ⟩
   have (C₀ : Type u) [Category.{w} C₀] (_ : IsFiltered C₀) (_ : FinallySmall.{w} C₀) :
