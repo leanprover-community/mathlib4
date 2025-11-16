@@ -53,6 +53,16 @@ protected theorem isCompact (s : Compacts α) : IsCompact (s : Set α) :=
 instance (K : Compacts α) : CompactSpace K :=
   isCompact_iff_compactSpace.1 K.isCompact
 
+/-- Reinterpret a compact as a closed set. -/
+@[simps]
+def toCloseds [T2Space α] (s : Compacts α) : Closeds α :=
+  ⟨s, s.isCompact.isClosed⟩
+
+@[simp]
+theorem mem_toCloseds [T2Space α] {x : α} {s : Compacts α} :
+    x ∈ s.toCloseds ↔ x ∈ s :=
+  Iff.rfl
+
 instance : CanLift (Set α) (Compacts α) (↑) IsCompact where prf K hK := ⟨⟨K, hK⟩, rfl⟩
 
 @[ext]
@@ -127,6 +137,10 @@ instance : Singleton α (Compacts α) where
 @[simp]
 theorem mem_singleton (x y : α) : x ∈ ({y} : Compacts α) ↔ x = y :=
   Iff.rfl
+
+@[simp]
+theorem toCloseds_singleton [T2Space α] (x : α) : toCloseds {x} = Closeds.singleton x :=
+  rfl
 
 theorem singleton_injective : Function.Injective ({·} : α → Compacts α) :=
   .of_comp (f := SetLike.coe) Set.singleton_injective
@@ -258,8 +272,19 @@ protected theorem nonempty (s : NonemptyCompacts α) : (s : Set α).Nonempty :=
   s.nonempty'
 
 /-- Reinterpret a nonempty compact as a closed set. -/
+@[simps]
 def toCloseds [T2Space α] (s : NonemptyCompacts α) : Closeds α :=
   ⟨s, s.isCompact.isClosed⟩
+
+@[simp]
+theorem toCloseds_toCompacts [T2Space α] (s : NonemptyCompacts α) :
+    s.toCompacts.toCloseds = s.toCloseds :=
+  rfl
+
+@[simp]
+theorem mem_toCloseds [T2Space α] {x : α} {s : NonemptyCompacts α} :
+    x ∈ s.toCloseds ↔ x ∈ s :=
+  Iff.rfl
 
 @[ext]
 protected theorem ext {s t : NonemptyCompacts α} (h : (s : Set α) = t) : s = t :=
@@ -274,6 +299,11 @@ theorem carrier_eq_coe (s : NonemptyCompacts α) : s.carrier = s :=
 
 @[simp]
 theorem coe_toCompacts (s : NonemptyCompacts α) : (s.toCompacts : Set α) = s := rfl
+
+@[simp]
+theorem mem_toCompacts {x : α} {s : NonemptyCompacts α} :
+    x ∈ s.toCompacts ↔ x ∈ s :=
+  Iff.rfl
 
 instance : Max (NonemptyCompacts α) :=
   ⟨fun s t => ⟨s.toCompacts ⊔ t.toCompacts, s.nonempty.mono subset_union_left⟩⟩
