@@ -286,7 +286,7 @@ theorem restrict_map_subtype {n : ℕ} (s : Affine.Simplex k P n) :
   rfl
 
 lemma restrict_reindex {m n : ℕ} (s : Affine.Simplex k P n) (e : Fin (n + 1) ≃ Fin (m + 1))
-    (S : AffineSubspace k P) (hS : affineSpan k (Set.range s.points) ≤ S) :
+    {S : AffineSubspace k P} (hS : affineSpan k (Set.range s.points) ≤ S) :
     letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
     (s.reindex e).restrict S (s.reindex_range_points e ▸ hS) = (s.restrict S hS).reindex e :=
   rfl
