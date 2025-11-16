@@ -786,6 +786,13 @@ lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : 
   have heP₁ : s(x, y) ∉ P₁.edges := fun h ↦ hxP₁ <| P₁.fst_mem_support_of_mem_edges h
   exact (h hxy).trans (Reachable.symm ⟨P₁.toDeleteEdges {s(x, y)} (by aesop)⟩)
 
+/-- If `e` is an adge in `G` and is a bridge in a larger graph `G'`, then it's a bridge in `G`. -/
+theorem IsBridge.anti_of_mem_edgeSet {G' : SimpleGraph V} {e : Sym2 V} (hle : G ≤ G')
+    (h : e ∈ G.edgeSet) (h' : G'.IsBridge e) : G.IsBridge e :=
+  isBridge_iff_mem_and_forall_cycle_notMem.mpr ⟨h, fun _ p hp hpe ↦
+    isBridge_iff_mem_and_forall_cycle_notMem.mp h' |>.right
+      (p.mapLe hle) (Walk.IsCycle.mapLe hle hp) (p.edges_mapLe_eq_edges hle ▸ hpe)⟩
+
 end BridgeEdges
 
 end SimpleGraph
