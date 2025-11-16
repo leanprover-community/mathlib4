@@ -39,8 +39,8 @@ three generated declarations.
 syntax attrOption := &"attr" " := " Parser.Term.attrInstance,*
 /--
 `(reorder := ...)` reorders the arguments/hypotheses in the generated declaration.
-It uses cycle notation. For example `(reorder := 1 2, 5 6)` swaps the first two
-arguments with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move
+It uses cycle notation. For example `(reorder := 0 1, 4 5)` swaps the first two
+arguments with each other and the fifth and the sixth argument and `(reorder := 2 3 4)` will move
 the fifth argument before the third argument. This is used in `to_dual` to swap the arguments in
 `≤`, `<` and `⟶`. It is also used in `to_additive` to translate from `^` to `•`.
 -/
@@ -247,7 +247,7 @@ structure Config : Type where
   existing : Bool := false
   /-- An optional flag stating that the target of the translation is the target itself.
   This can be used to reorder arguments, such as in
-  `attribute [to_dual self (reorder := 3 4)] LE.le`.
+  `attribute [to_dual self (reorder := 2 3)] LE.le`.
   It can also be used to give a hint to `shouldTranslate`, such as in
   `attribute [to_additive self] Unit`.
   If `self := true`, we should also have `existing := true`. -/
@@ -872,8 +872,8 @@ def elabTranslationAttr (stx : Syntax) : CoreM Config :=
             throwErrorAt cycle[0] "\
               invalid cycle `{cycle[0]}`, a cycle must have at least 2 elements.\n\
               `(reorder := ...)` uses cycle notation to specify a permutation.\n\
-              For example `(reorder := 1 2, 5 6)` swaps the first two arguments with each other \
-              and the fifth and the sixth argument and `(reorder := 3 4 5)` will move \
+              For example `(reorder := 0 1, 4 5)` swaps the first two arguments with each other \
+              and the fifth and the sixth argument and `(reorder := 2 3 4)` will move \
               the fifth argument before the third argument."
           let cycle ← cycle.toList.mapM fun n => match n.getNat with
             | 0 => throwErrorAt n "invalid position `{n}`, positions are counted starting from 1."

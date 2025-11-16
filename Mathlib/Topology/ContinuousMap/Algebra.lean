@@ -124,7 +124,7 @@ instance instNSMul [AddMonoid β] [ContinuousAdd β] : SMul ℕ C(α, β) :=
 instance instPow [Monoid β] [ContinuousMul β] : Pow C(α, β) ℕ :=
   ⟨fun f n => ⟨(⇑f) ^ n, f.continuous.pow n⟩⟩
 
-@[to_additive (attr := norm_cast) (reorder := 7 8)]
+@[to_additive (attr := norm_cast) (reorder := 6 7)]
 theorem coe_pow [Monoid β] [ContinuousMul β] (f : C(α, β)) (n : ℕ) : ⇑(f ^ n) = (⇑f) ^ n :=
   rfl
 
@@ -191,7 +191,7 @@ instance instZSMul [AddGroup β] [IsTopologicalAddGroup β] : SMul ℤ C(α, β)
 instance instZPow [Group β] [IsTopologicalGroup β] : Pow C(α, β) ℤ where
   pow f z := ⟨(⇑f) ^ z, f.continuous.zpow z⟩
 
-@[to_additive (attr := norm_cast) (reorder := 7 8)]
+@[to_additive (attr := norm_cast) (reorder := 6 7)]
 theorem coe_zpow [Group β] [IsTopologicalGroup β] (f : C(α, β)) (z : ℤ) : ⇑(f ^ z) = (⇑f) ^ z :=
   rfl
 

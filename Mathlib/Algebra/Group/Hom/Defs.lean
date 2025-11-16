@@ -462,7 +462,7 @@ lemma map_comp_div [Group G] [DivisionMonoid H] [MonoidHomClass F G H] (f : F) (
     f ∘ (g / h) = f ∘ g / f ∘ h := by ext; simp
 
 /-- See note [hom simp lemma priority] -/
-@[to_additive (attr := simp mid, grind =) (reorder := 9 10)]
+@[to_additive (attr := simp mid, grind =) (reorder := 8 9)]
 theorem map_pow [Monoid G] [Monoid H] [MonoidHomClass F G H] (f : F) (a : G) :
     ∀ n : ℕ, f (a ^ n) = f a ^ n
   | 0 => by rw [pow_zero, pow_zero, map_one]
@@ -486,7 +486,7 @@ lemma map_comp_zpow' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H] (f
 /-- Group homomorphisms preserve integer power.
 
 See note [hom simp lemma priority] -/
-@[to_additive (attr := simp mid, grind =) (reorder := 9 10)
+@[to_additive (attr := simp mid, grind =) (reorder := 8 9)
 /-- Additive group homomorphisms preserve integer scaling. -/]
 theorem map_zpow [Group G] [DivisionMonoid H] [MonoidHomClass F G H]
     (f : F) (g : G) (n : ℤ) : f (g ^ n) = f g ^ n := map_zpow' f (map_inv f) g n

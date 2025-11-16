@@ -68,13 +68,13 @@ attribute [ext] SMul VAdd
 @[inherit_doc] infixl:65 " -ᵥ " => VSub.vsub
 
 attribute [to_additive existing] Mul Div HMul instHMul HDiv instHDiv HSMul
-attribute [to_additive (reorder := 1 2) SMul] Pow
-attribute [to_additive (reorder := 1 2)] HPow
-attribute [to_additive existing (reorder := 1 2, 5 6) hSMul] HPow.hPow
-attribute [to_additive existing (reorder := 1 2, 4 5) smul] Pow.pow
+attribute [to_additive (reorder := 0 1) SMul] Pow
+attribute [to_additive (reorder := 0 1)] HPow
+attribute [to_additive existing (reorder := 0 1, 4 5) hSMul] HPow.hPow
+attribute [to_additive existing (reorder := 0 1, 3 4) smul] Pow.pow
 
 attribute [to_additive (attr := default_instance)] instHSMul
-attribute [to_additive existing (reorder := 1 2)] instHPow
+attribute [to_additive existing (reorder := 0 1)] instHPow
 
 variable {G : Type*}
 

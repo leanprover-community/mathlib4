@@ -62,10 +62,10 @@ theorem max_comm' {α} [LinearOrder α] (x y : α) : max x y = max y x := max_co
 ```
 
 Use the `(reorder := ...)` syntax to reorder the arguments compared to the dual declaration.
-This is specified using cycle notation. For example `(reorder := 1 2, 5 6)` swaps the first two
-arguments with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move
+This is specified using cycle notation. For example `(reorder := 0 1, 4 5)` swaps the first two
+arguments with each other and the fifth and the sixth argument and `(reorder := 2 3 4)` will move
 the fifth argument before the third argument. For example, this is used to tag `LE.le`
-with `(reorder := 3 4)`, so that `a ≤ b` gets transformed into `b ≤ a`.
+with `(reorder := 2 3)`, so that `a ≤ b` gets transformed into `b ≤ a`.
 
 Use the `to_dual self` syntax to use the lemma as its own dual. This is often
 combined with the `(reorder := ...)` syntax, because a lemma is usually dual to itself only

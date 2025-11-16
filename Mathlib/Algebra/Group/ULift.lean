@@ -65,11 +65,11 @@ instance smul [SMul α β] : SMul α (ULift β) :=
 theorem smul_down [SMul α β] (a : α) (b : ULift.{w} β) : (a • b).down = a • b.down :=
   rfl
 
-@[to_additive existing (reorder := 1 2) smul]
+@[to_additive existing (reorder := 0 1) smul]
 instance pow [Pow α β] : Pow (ULift α) β :=
   ⟨fun x n => up (x.down ^ n)⟩
 
-@[to_additive existing (attr := simp) (reorder := 1 2, 4 5) smul_down]
+@[to_additive existing (attr := simp) (reorder := 0 1, 3 4) smul_down]
 theorem pow_down [Pow α β] (a : ULift.{w} α) (b : β) : (a ^ b).down = a.down ^ b :=
   rfl
 

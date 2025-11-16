@@ -62,8 +62,8 @@ Use the `to_additive existing` syntax to use an existing additive declaration, i
 automatically generating it.
 
 Use the `(reorder := ...)` syntax to reorder the arguments in the generated additive declaration.
-This is specified using cycle notation. For example `(reorder := 1 2, 5 6)` swaps the first two
-arguments with each other and the fifth and the sixth argument and `(reorder := 3 4 5)` will move
+This is specified using cycle notation. For example `(reorder := 0 1, 4 5)` swaps the first two
+arguments with each other and the fifth and the sixth argument and `(reorder := 2 3 4)` will move
 the fifth argument before the third argument. This is mostly useful to translate declarations using
 `Pow` to those using `SMul`.
 

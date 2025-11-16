@@ -129,18 +129,18 @@ variable [∀ i, Pow (M i) α]
 @[to_additive existing instSMul]
 instance instPow : Pow (∀ i, M i) α where pow f a i := f i ^ a
 
-@[to_additive (attr := simp, to_additive) (reorder := 5 6) smul_apply]
+@[to_additive (attr := simp, to_additive) (reorder := 4 5) smul_apply]
 lemma pow_apply (f : ∀ i, M i) (a : α) (i : ι) : (f ^ a) i = f i ^ a := rfl
 
-@[to_additive (attr := push ←, to_additive) (reorder := 5 6) smul_def]
+@[to_additive (attr := push ←, to_additive) (reorder := 4 5) smul_def]
 lemma pow_def (f : ∀ i, M i) (a : α) : f ^ a = fun i ↦ f i ^ a := rfl
 
 variable {M : Type*} [Pow M α]
 
-@[to_additive (attr := simp, to_additive) (reorder := 2 3, 5 6) smul_const]
+@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) smul_const]
 lemma _root_.Function.const_pow (a : M) (b : α) : const ι a ^ b = const ι (a ^ b) := rfl
 
-@[to_additive (attr := to_additive) (reorder := 6 7) smul_comp]
+@[to_additive (attr := to_additive) (reorder := 5 6) smul_comp]
 lemma pow_comp (f : β → M) (a : α) (g : ι → β) : (f ^ a) ∘ g = f ∘ g ^ a := rfl
 
 end Pow

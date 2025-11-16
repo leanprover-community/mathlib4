@@ -32,10 +32,10 @@ instance [h : Inv α] : Inv αᵒᵈ := h
 @[to_additive]
 instance [h : Div α] : Div αᵒᵈ := h
 
-@[to_additive (attr := to_additive) (reorder := 1 2) OrderDual.instSMul]
+@[to_additive (attr := to_additive) (reorder := 0 1) OrderDual.instSMul]
 instance OrderDual.instPow [h : Pow α β] : Pow αᵒᵈ β := h
 
-@[to_additive (attr := to_additive) (reorder := 1 2) OrderDual.instSMul']
+@[to_additive (attr := to_additive) (reorder := 0 1) OrderDual.instSMul']
 instance OrderDual.instPow' [h : Pow α β] : Pow α βᵒᵈ := h
 
 @[to_additive]
@@ -122,16 +122,16 @@ theorem toDual_div [Div α] (a b : α) : toDual (a / b) = toDual a / toDual b :=
 @[to_additive (attr := simp)]
 theorem ofDual_div [Div α] (a b : αᵒᵈ) : ofDual (a / b) = ofDual a / ofDual b := rfl
 
-@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) toDual_smul]
+@[to_additive (attr := simp, to_additive) (reorder := 0 1, 3 4) toDual_smul]
 theorem toDual_pow [Pow α β] (a : α) (b : β) : toDual (a ^ b) = toDual a ^ b := rfl
 
-@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) ofDual_smul]
+@[to_additive (attr := simp, to_additive) (reorder := 0 1, 3 4) ofDual_smul]
 theorem ofDual_pow [Pow α β] (a : αᵒᵈ) (b : β) : ofDual (a ^ b) = ofDual a ^ b := rfl
 
-@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) toDual_smul']
+@[to_additive (attr := simp, to_additive) (reorder := 0 1, 3 4) toDual_smul']
 theorem pow_toDual [Pow α β] (a : α) (b : β) : a ^ toDual b = a ^ b := rfl
 
-@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) ofDual_smul']
+@[to_additive (attr := simp, to_additive) (reorder := 0 1, 3 4) ofDual_smul']
 theorem pow_ofDual [Pow α β] (a : α) (b : βᵒᵈ) : a ^ ofDual b = a ^ b := rfl
 
 /-! ### Lexicographical order -/
@@ -149,10 +149,10 @@ instance [h : Inv α] : Inv (Lex α) := h
 @[to_additive]
 instance [h : Div α] : Div (Lex α) := h
 
-@[to_additive (attr := to_additive) (reorder := 1 2) Lex.instSMul]
+@[to_additive (attr := to_additive) (reorder := 0 1) Lex.instSMul]
 instance Lex.instPow [h : Pow α β] : Pow (Lex α) β := h
 
-@[to_additive (attr := to_additive) (reorder := 1 2) Lex.instSMul']
+@[to_additive (attr := to_additive) (reorder := 0 1) Lex.instSMul']
 instance Lex.instPow' [h : Pow α β] : Pow α (Lex β) := h
 
 @[to_additive]
@@ -248,16 +248,16 @@ theorem toLex_div [Div α] (a b : α) : toLex (a / b) = toLex a / toLex b := rfl
 @[to_additive (attr := simp)]
 theorem ofLex_div [Div α] (a b : Lex α) : ofLex (a / b) = ofLex a / ofLex b := rfl
 
-@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) toLex_smul]
+@[to_additive (attr := simp, to_additive) (reorder := 0 1, 3 4) toLex_smul]
 theorem toLex_pow [Pow α β] (a : α) (b : β) : toLex (a ^ b) = toLex a ^ b := rfl
 
-@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) ofLex_smul]
+@[to_additive (attr := simp, to_additive) (reorder := 0 1, 3 4) ofLex_smul]
 theorem ofLex_pow [Pow α β] (a : Lex α) (b : β) : ofLex (a ^ b) = ofLex a ^ b := rfl
 
-@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) toLex_smul']
+@[to_additive (attr := simp, to_additive) (reorder := 0 1, 3 4) toLex_smul']
 theorem pow_toLex [Pow α β] (a : α) (b : β) : a ^ toLex b = a ^ b := rfl
 
-@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) ofLex_smul']
+@[to_additive (attr := simp, to_additive) (reorder := 0 1, 3 4) ofLex_smul']
 theorem pow_ofLex [Pow α β] (a : α) (b : Lex β) : a ^ ofLex b = a ^ b := rfl
 
 /-! ### Colexicographical order -/
@@ -275,10 +275,10 @@ instance [h : Inv α] : Inv (Colex α) := h
 @[to_additive]
 instance [h : Div α] : Div (Colex α) := h
 
-@[to_additive (attr := to_additive) (reorder := 1 2) Colex.instSMul]
+@[to_additive (attr := to_additive) (reorder := 0 1) Colex.instSMul]
 instance Colex.instPow [h : Pow α β] : Pow (Colex α) β := h
 
-@[to_additive (attr := to_additive) (reorder := 1 2) Colex.instSMul']
+@[to_additive (attr := to_additive) (reorder := 0 1) Colex.instSMul']
 instance Colex.instPow' [h : Pow α β] : Pow α (Colex β) := h
 
 @[to_additive]
@@ -374,14 +374,14 @@ theorem toColex_div [Div α] (a b : α) : toColex (a / b) = toColex a / toColex 
 @[to_additive (attr := simp)]
 theorem ofColex_div [Div α] (a b : Colex α) : ofColex (a / b) = ofColex a / ofColex b := rfl
 
-@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) toColex_smul]
+@[to_additive (attr := simp, to_additive) (reorder := 0 1, 3 4) toColex_smul]
 theorem toColex_pow [Pow α β] (a : α) (b : β) : toColex (a ^ b) = toColex a ^ b := rfl
 
-@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) ofColex_smul]
+@[to_additive (attr := simp, to_additive) (reorder := 0 1, 3 4) ofColex_smul]
 theorem ofColex_pow [Pow α β] (a : Colex α) (b : β) : ofColex (a ^ b) = ofColex a ^ b := rfl
 
-@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) toColex_smul']
+@[to_additive (attr := simp, to_additive) (reorder := 0 1, 3 4) toColex_smul']
 theorem pow_toColex [Pow α β] (a : α) (b : β) : a ^ toColex b = a ^ b := rfl
 
-@[to_additive (attr := simp, to_additive) (reorder := 1 2, 4 5) ofColex_smul']
+@[to_additive (attr := simp, to_additive) (reorder := 0 1, 3 4) ofColex_smul']
 theorem pow_ofColex [Pow α β] (a : α) (b : Colex β) : a ^ ofColex b = a ^ b := rfl
