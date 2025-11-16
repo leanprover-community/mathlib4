@@ -752,6 +752,17 @@ lemma Pi.induced_precomp [TopologicalSpace Y] {ι' : Type*} (φ : ι' → ι) :
     ⨅ i', induced (eval (φ i')) ‹TopologicalSpace Y› :=
   induced_precomp' φ
 
+/-- Homeomorphism between `X → Y → Z` and `X × Y → Z` with product topologies. -/
+@[simps]
+def Homeomorph.piCurry {X Y Z : Type*}
+    [TopologicalSpace Z] :
+    (X × Y → Z) ≃ₜ (X → Y → Z) where
+  toFun := Function.curry
+  invFun := Function.uncurry
+  right_inv := congrFun rfl
+  left_inv := congrFun rfl
+  continuous_toFun := continuous_pi (fun i ↦ Pi.continuous_precomp (Prod.mk i))
+
 @[continuity, fun_prop]
 lemma Pi.continuous_restrict (S : Set ι) :
     Continuous (S.restrict : (∀ i : ι, A i) → (∀ i : S, A i)) :=
