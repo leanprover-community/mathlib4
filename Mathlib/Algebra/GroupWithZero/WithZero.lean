@@ -363,6 +363,23 @@ lemma exp_injective : Injective (exp : M → Mᵐ⁰) :=
 
 @[simp] lemma exp_inj {x y : M} : exp x = exp y ↔ x = y := exp_injective.eq_iff
 
+/-- Recursion principle for `Mᵐ⁰`. To construct predicate for all elements of `Mᵐ⁰`, it is enough to
+construct its value at `0` and its value at `exp a` for all `a : M`. -/
+-- TODO: Uncomment once it stops firing on `WithZero M`.
+-- See https://github.com/leanprover-community/mathlib4/issues/31213
+@[elab_as_elim] -- , induction_eliminator, cases_eliminator]
+def expRecOn {motive : Mᵐ⁰ → Sort*} (x : Mᵐ⁰) (zero : motive 0) (exp : ∀ a, motive (exp a)) :
+    motive x := Option.recOn x zero exp
+
+@[simp] lemma expRecOn_zero {motive : Mᵐ⁰ → Sort*} (zero : motive 0) (exp : ∀ a, motive (exp a)) :
+    expRecOn 0 zero exp = zero := rfl
+
+@[simp] lemma expRecOn_exp {motive : Mᵐ⁰ → Sort*} (x : M) (zero : motive 0)
+    (exp : ∀ a, motive (exp a)) :
+    expRecOn (M := M) (motive := motive) (.exp x) zero exp = exp x := rfl
+
+instance : CanLift Mᵐ⁰ M exp (· ≠ 0) where prf | (.exp a : Mᵐ⁰), _ => ⟨a, rfl⟩
+
 variable [AddMonoid M]
 
 /-- The logarithm as a function `Mᵐ⁰ → M` with junk value `log 0 = 0`. -/
