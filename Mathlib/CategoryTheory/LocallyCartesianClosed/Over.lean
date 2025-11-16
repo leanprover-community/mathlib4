@@ -427,7 +427,7 @@ attribute [local instance] cartesianMonoidalCategoryOver
 omit [CartesianMonoidalCategory C] in
 /-- The functor `pullback f : Over X ⥤ Over Y` is naturally isomorphic to
 `toOver : Over X ⥤ Over (Over.mk f)` post-composed with the
-iterated slice equivlanece `Over (Over.mk f) ⥤ Over Y`. -/
+iterated slice equivalence `Over (Over.mk f) ⥤ Over Y`. -/
 def toOverIteratedSliceForwardIsoPullback [ChosenPullbacks C] {X Y : C} (f : Y ⟶ X) :
     toOver (Over.mk f) ⋙ (Over.mk f).iteratedSliceForward ≅ pullback f :=
   conjugateIsoEquiv ((Over.mk f).iteratedSliceEquiv.symm.toAdjunction.comp (forgetAdjToOver _))
