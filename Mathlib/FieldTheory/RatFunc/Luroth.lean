@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2025 Junyan Xu. All rights reserved.
+Copyright (c) 2025 Justus Springer and Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Junyan Xu
+Authors: Justus Springer, Junyan Xu
 -/
 import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
 import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
