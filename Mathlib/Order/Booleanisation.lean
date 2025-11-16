@@ -47,7 +47,7 @@ instance instDecidableEq [DecidableEq α] : DecidableEq (Booleanisation α) :=
 algebra. -/
 @[match_pattern] def lift : α → Booleanisation α := Sum.inl
 
-/-- The inclusion `a ↦ aᶜ from a generalized Boolean algebra to its generated Boolean algebra. -/
+/-- The inclusion `a ↦ aᶜ` from a generalized Boolean algebra to its generated Boolean algebra. -/
 @[match_pattern] def comp : α → Booleanisation α := Sum.inr
 
 /-- The complement operator on `Booleanisation α` sends `a` to `aᶜ` and `aᶜ` to `a`, for `a : α`. -/
