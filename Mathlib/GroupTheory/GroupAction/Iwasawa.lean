@@ -14,7 +14,7 @@ import Mathlib.GroupTheory.Subgroup.Simple
 For a group `G`, this consists of an action of `G` on a type `α` and,
 for every `a : α`, of a subgroup `T a`, such that the following properties hold:
   - for all `a`, `T a` is commutative
-  - for all `g : G` and `a : α`, `T (g • a) = MulAut.conj g • T a
+  - for all `g : G` and `a : α`, `T (g • a) = MulAut.conj g • T a`
   - the subgroups `T a` generate `G`
 
 We then prove two versions of the Iwasawa criterion when
