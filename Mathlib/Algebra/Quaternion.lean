@@ -36,7 +36,7 @@ We also define the following algebraic structures on `ℍ[R]`:
 The following notation is available with `open Quaternion` or `open scoped Quaternion`.
 
 * `ℍ[R,c₁,c₂,c₃]` : `QuaternionAlgebra R c₁ c₂ c₃`
-* `ℍ[R,c₁,c₂] : `QuaternionAlgebra R c₁ 0 c₂`
+* `ℍ[R,c₁,c₂]` : `QuaternionAlgebra R c₁ 0 c₂`
 * `ℍ[R]` : quaternions over `R`.
 
 ## Implementation notes

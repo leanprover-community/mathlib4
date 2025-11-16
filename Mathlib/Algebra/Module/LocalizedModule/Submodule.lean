@@ -16,7 +16,7 @@ Results about localizations of submodules and quotient modules are provided in t
 ## Main results
 - `Submodule.localized`:
   The localization of an `R`-submodule of `M` at `p` viewed as an `Rₚ`-submodule of `Mₚ`.
-  A direct consequence of this is that `Rₚ` is flat over `R, see `IsLocalization.flat`.
+  A direct consequence of this is that `Rₚ` is flat over `R`; see `IsLocalization.flat`.
 - `Submodule.toLocalized`:
   The localization map of a submodule `M' →ₗ[R] M'.localized p`.
 - `Submodule.toLocalizedQuotient`:

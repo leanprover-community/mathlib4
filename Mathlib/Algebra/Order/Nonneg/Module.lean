@@ -11,7 +11,7 @@ import Mathlib.Algebra.Order.Nonneg.Basic
 # Modules over nonnegative elements
 
 For an ordered ring `R`, this file proves that any (ordered) `R`-module `M` is also an (ordered)
-`R≥0`-module`.
+`R≥0`-module.
 
 Among other things, these instances are useful for working with `ConvexCone`.
 -/
