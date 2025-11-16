@@ -114,7 +114,7 @@ partial def isUserFriendly (e : Expr) : MetaM Bool := do
     (isUserFriendly f) <&&> do
       let finfo ← getFunInfoNArgs f e.getAppNumArgs
       e.getAppNumArgs.allM fun i _ =>
-        if finfo.paramInfo[i]!.isExplicit then isUserFriendly args[i]! else return true
+        if finfo.paramInfo[i]?.all (·.isExplicit) then isUserFriendly args[i]! else return true
   | _ => return true
 
 /-- Return the consecutive unfoldings of `e` that are user friendly. -/
