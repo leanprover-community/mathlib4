@@ -374,7 +374,7 @@ instance StructuredArrow.final_map₂_id [IsFiltered C] {E : Type u₃} [Categor
     (T ⋙ S).final_iff_isFiltered_structuredArrow.mp inferInstance e
   apply final_of_natIso (map₂IsoPreEquivalenceInverseCompProj d e u α).symm
 
-/-- `StructuredArrow.map` is final if the functor `T` is final` and its domain is filtered. -/
+/-- `StructuredArrow.map` is final if the functor `T` is final and its domain is filtered. -/
 instance StructuredArrow.final_map [IsFiltered C] {S S' : D} (f : S ⟶ S') (T : C ⥤ D) [T.Final] :
     Final (map (T := T) f) := by
   haveI := NatIso.isIso_of_isIso_app (𝟙 T)

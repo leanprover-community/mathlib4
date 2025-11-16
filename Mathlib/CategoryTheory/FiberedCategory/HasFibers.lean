@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.FiberedCategory.Fibered
 
 In this file we introduce a typeclass `HasFibers` for a functor `p : 𝒳 ⥤ 𝒮`, consisting of:
 - A collection of categories `Fib S` for every `S` in `𝒮` (the fiber categories)
-- Functors `ι : Fib S ⥤ 𝒳` such that `ι ⋙ p = const (Fib S) S
+- Functors `ι : Fib S ⥤ 𝒳` such that `ι ⋙ p = const (Fib S) S`
 - The induced functor `Fib S ⥤ Fiber p S` is an equivalence.
 
 We also provide a canonical `HasFibers` instance, which uses the standard fibers `Fiber p S`

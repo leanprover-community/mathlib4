@@ -30,7 +30,7 @@ Given a compact, topological group `G` with an action on `F.obj X` on each `X`, 
 - `transitive_of_isGalois`: `G` acts transitively on `F.obj X` for all Galois objects `X : C`
 - `continuous_smul`: the action of `G` on `F.obj X` is continuous if `F.obj X` is equipped with the
   discrete topology for all `X : C`.
-- `non_trivial': if `g : G` acts trivial on all `F.obj X`, then `g = 1`.
+- `non_trivial'`: if `g : G` acts trivially on all `F.obj X`, then `g = 1`.
 
 Given this data, we define `toAut F G : G →* Aut F` in the natural way.
 
