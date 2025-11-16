@@ -25,7 +25,7 @@ Note: This linter can be disabled with `set_option linter.style.header false`
 set_option linter.style.header true in
 
 /-!
-# Tests for the `directoryDependency` linter
+## Tests for the `directoryDependency` linter
 -/
 
 -- Some unit-tests for internal functions.
