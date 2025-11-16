@@ -3,7 +3,7 @@ Copyright (c) 2025 Sina Hazratpour. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour
 -/
-import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullback
+import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
 import Mathlib.CategoryTheory.Closed.Cartesian
 
 /-!
@@ -25,84 +25,6 @@ namespace CategoryTheory
 
 open Category Limits MonoidalCategory CartesianClosed CartesianMonoidalCategory
 
-open Over hiding pullback mapPullbackAdj
-
-open ChosenPullback
-
-variable {C : Type u₁} [Category.{v₁} C] [CartesianMonoidalCategory C]
-
-attribute [local instance] BraidedCategory.ofCartesianMonoidalCategory
-
-section Prelim
-
-namespace CartesianMonoidalCategory
-
-/-- The functor which maps an object `X` in `C` to the projection `X ⊗ I ⟶ I` in `Over I`.
-This is the computable analogue of the functor `Over.star`. -/
-@[simps! obj_left obj_hom map_left]
-def toOver (I : C) : C ⥤ Over I where
-  obj X := Over.mk <| CartesianMonoidalCategory.snd X I
-  map {X Y} f := Over.homMk (f ▷ I)
-
-@[simp]
-lemma toOver_map {I : C} {Y Z : C} (f : Y ⟶ Z) :
-    (toOver I).map f = Over.homMk (f ▷ I) := by
-  simp only [toOver]
-
-variable (C)
-
-/-- The functor from `C` to `Over (𝟙_ C)` which sends `X : C` to `Over.mk <| toUnit X`. -/
-@[simps! obj_left obj_hom map_left]
-def toOverUnit : C ⥤ Over (𝟙_ C) where
-  obj X := Over.mk <| toUnit X
-  map {X Y} f := Over.homMk f
-
-/-- The slice category over the terminal unit object is equivalent to the original category. -/
-def equivOverUnit : Over (𝟙_ C) ≌ C :=
-  CategoryTheory.Equivalence.mk (Over.forget _) (toOverUnit C)
-    (NatIso.ofComponents fun X => Over.isoMk (Iso.refl _))
-    (NatIso.ofComponents fun X => Iso.refl _)
-
-attribute [local instance] Over.ChosenPullback.cartesianMonoidalCategoryToUnit
-
-variable {C}
-
-/-- The isomorphism of functors `toOverUnit C ⋙ ChosenPullback.pullback (toUnit I)` and
-`toOver I`. -/
-def toOverCompPullback (I : C) :
-    toOverUnit C ⋙ pullback (toUnit I) ≅ toOver I :=
-  NatIso.ofComponents fun X => Iso.refl _
-
-/-- The functor `toOver I` is the right adjoint to the functor `Over.forget I`. -/
-@[simps! unit_app counit_app]
-def forgetAdjToOver (I : C) : Over.forget I ⊣ toOver I where
-  unit.app X := Over.homMk (lift (𝟙 X.left) (X.hom))
-  counit.app X := fst X I
-
-theorem forgetAdjToOver.homEquiv_symm {I : C} (X : Over I) (A : C) (f : X ⟶ (toOver I).obj A) :
-     ((forgetAdjToOver I).homEquiv X A).symm f = f.left ≫ (fst _ _) := by
-   rw [Adjunction.homEquiv_counit, forgetAdjToOver_counit_app]
-   simp
-
-/-- The isomorphism of functors `toOver (𝟙_ C)` and `toOverUnit C`. -/
-def toOverIsoToOverUnit : toOver (𝟙_ C) ≅ toOverUnit C  :=
-  (forgetAdjToOver (𝟙_ C)).rightAdjointUniq (equivOverUnit C |>.toAdjunction)
-
-/-- A natural isomorphism between the functors `toOver I` and `toOver J ⋙ pullback f`
-for any morphism `f : X ⟶ Y`. -/
-def toOverPullbackIsoToOver {I J : C} (f : I ⟶ J)
-    [ChosenPullback f] :
-    toOver J ⋙ ChosenPullback.pullback f ≅ toOver I :=
-  conjugateIsoEquiv ((ChosenPullback.mapPullbackAdj f).comp (forgetAdjToOver J))
-    (forgetAdjToOver I) (mapForget f)
-
-/-- The functor `Over.pullback f : Over Y ⥤ Over X` is naturally isomorphic to
-`Over.star : Over Y ⥤ Over (Over.mk f)` post-composed with the
-iterated slice equivlanece `Over (Over.mk f) ⥤ Over X`. -/
-def toOverIteratedSliceForwardIsoPullback [ChosenPullbacks C] {X Y : C} (f : X ⟶ Y) :
-    toOver (Over.mk f) ⋙ (Over.mk f).iteratedSliceForward ≅ pullback f :=
-  conjugateIsoEquiv ((Over.mk f).iteratedSliceEquiv.symm.toAdjunction.comp (forgetAdjToOver _))
-  (mapPullbackAdj f) (eqToIso (iteratedSliceBackward_forget (Over.mk f)))
 
 section
 
