@@ -250,9 +250,8 @@ end Submartingale
 
 section Submartingale
 
-theorem submartingale_of_setIntegral_le [LinearOrder E] [IsOrderedAddMonoid E] [OrderTopology E]
-    [IsOrderedModule ℝ E] [HasSolidNorm E] [SigmaFiniteFiltration μ ℱ]
-    {f : ι → Ω → E} (hadp : Adapted ℱ f)
+theorem submartingale_of_setIntegral_le [SigmaFiniteFiltration μ ℱ]
+    {f : ι → Ω → ℝ} (hadp : Adapted ℱ f)
     (hint : ∀ i, Integrable (f i) μ) (hf : ∀ i j : ι,
       i ≤ j → ∀ s : Set Ω, MeasurableSet[ℱ i] s → ∫ ω in s, f i ω ∂μ ≤ ∫ ω in s, f j ω ∂μ) :
     Submartingale f ℱ μ := by
@@ -356,10 +355,7 @@ section SubSuper
 
 section OfSetIntegral
 
-variable [LinearOrder E] [IsOrderedAddMonoid E] [OrderTopology E] [IsOrderedModule ℝ E]
-  [HasSolidNorm E]
-
-theorem submartingale_of_setIntegral_le_succ [IsFiniteMeasure μ] {f : ℕ → Ω → E}
+theorem submartingale_of_setIntegral_le_succ [IsFiniteMeasure μ] {f : ℕ → Ω → ℝ}
     (hadp : Adapted 𝒢 f) (hint : ∀ i, Integrable (f i) μ)
     (hf : ∀ i, ∀ s : Set Ω, MeasurableSet[𝒢 i] s → ∫ ω in s, f i ω ∂μ ≤ ∫ ω in s, f (i + 1) ω ∂μ) :
     Submartingale f 𝒢 μ := by
@@ -368,7 +364,7 @@ theorem submartingale_of_setIntegral_le_succ [IsFiniteMeasure μ] {f : ℕ → �
   | refl => rfl
   | step hk₁ hk₂ => exact hk₂.trans (hf _ s (𝒢.mono hk₁ _ hs))
 
-theorem supermartingale_of_setIntegral_succ_le [IsFiniteMeasure μ] {f : ℕ → Ω → E}
+theorem supermartingale_of_setIntegral_succ_le [IsFiniteMeasure μ] {f : ℕ → Ω → ℝ}
     (hadp : Adapted 𝒢 f) (hint : ∀ i, Integrable (f i) μ)
     (hf : ∀ i, ∀ s : Set Ω, MeasurableSet[𝒢 i] s → ∫ ω in s, f (i + 1) ω ∂μ ≤ ∫ ω in s, f i ω ∂μ) :
     Supermartingale f 𝒢 μ := by
