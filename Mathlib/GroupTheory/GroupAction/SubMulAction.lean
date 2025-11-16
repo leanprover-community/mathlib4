@@ -550,8 +550,7 @@ def fixedPointsSubMulOfNormal [hH : H.Normal] : SubMulAction G α where
   carrier := MulAction.fixedPoints H α
   smul_mem' := smul_mem_fixedPoints_of_normal
 
-instance [hH : H.Normal] :
-    MulAction G (MulAction.fixedPoints H α) :=
+instance [hH : H.Normal] : MulAction G (MulAction.fixedPoints H α) :=
   SubMulAction.mulAction' fixedPointsSubMulOfNormal
 
 @[simp]
