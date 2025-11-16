@@ -291,6 +291,10 @@ theorem degree_C (r : R) :
     m.degree (C r) = 0 := by
   rw [degree_eq_zero_iff_totalDegree_eq_zero, totalDegree_C]
 
+@[simp]
+theorem leadingCoeff_C (c : R) : m.leadingCoeff (C c) = c := by
+  simp [leadingCoeff]
+
 theorem eq_C_of_degree_eq_zero {f : MvPolynomial σ R} (hf : m.degree f = 0) :
     f = C (m.leadingCoeff f) := by
   ext d
@@ -659,11 +663,26 @@ lemma leadingCoeff_leadingTerm (f : MvPolynomial σ R) :
     m.leadingCoeff (m.leadingTerm f) = m.leadingCoeff f := by
   simp [leadingTerm, leadingCoeff_monomial]
 
+@[simp]
+lemma leadingTerm_leadingTerm (f : MvPolynomial σ R) :
+    m.leadingTerm (m.leadingTerm f) = m.leadingTerm f := by
+  classical
+  by_cases h : f = 0 <;> simp [leadingTerm, h, degree_monomial]
+
+@[simp]
+lemma leadingTerm_C (c : R) : m.leadingTerm (C c) = C c := by
+  simp [leadingTerm, leadingCoeff_C]
+
 end Semiring
 
 section Ring
 
 variable {R : Type*} [CommRing R]
+
+lemma degree_ne_zero_of_sub_leadingTerm_ne_zero {f : MvPolynomial σ R}
+    (h : f - m.leadingTerm f ≠ 0) : m.degree f ≠ 0 := by
+  contrapose! h
+  rw [m.degree_eq_zero_iff.mp h, leadingTerm_C, sub_eq_zero]
 
 @[simp]
 theorem degree_neg {f : MvPolynomial σ R} :
@@ -710,25 +729,24 @@ theorem degree_sub_leadingTerm (f : MvPolynomial σ R) :
   rw [h', mem_support_iff] at h
   simp [leadingTerm, leadingCoeff] at h
 
-theorem degree_sub_leadingTerm_lt_degree {f : MvPolynomial σ R} (h : f - m.leadingTerm f ≠ 0) :
+theorem degree_sub_leadingTerm_lt_degree {f : MvPolynomial σ R} (h : m.degree f ≠ 0) :
     m.degree (f - m.leadingTerm f) ≺[m] m.degree f := by
   classical
-  apply lt_of_le_of_ne (m.degree_sub_leadingTerm_le f) ?_
-  simp_intro h'
-  apply m.degree_mem_support at h
-  rw [h', mem_support_iff] at h
-  simp [leadingTerm, leadingCoeff] at h
+  by_cases hl : f - m.leadingTerm f = 0
+  · simpa [hl, toSyn_lt_iff_ne_zero]
+  · apply lt_of_le_of_ne (m.degree_sub_leadingTerm_le f)
+    by_contra! h'
+    simp only [EmbeddingLike.apply_eq_iff_eq] at h'
+    apply m.degree_mem_support at hl
+    rw [h', mem_support_iff] at hl
+    simp [leadingTerm, leadingCoeff] at hl
 
 theorem degree_sub_leadingTerm_lt_iff {f : MvPolynomial σ R} :
     m.degree (f - m.leadingTerm f) ≺[m] m.degree f ↔ m.degree f ≠ 0 := by
-  constructor
-  · intro h h'
-    simp only [h', map_zero] at h
-    exact not_lt_bot h
-  · intro h
-    by_cases hl : f - m.leadingTerm f = 0
-    · simpa [hl, toSyn_lt_iff_ne_zero]
-    · exact m.degree_sub_leadingTerm_lt_degree hl
+  refine ⟨?_, degree_sub_leadingTerm_lt_degree⟩
+  intro h h'
+  simp only [h', map_zero] at h
+  exact not_lt_bot h
 
 end Ring
 
