@@ -49,7 +49,7 @@ abbrev Derives : Prop := W₁.IsInvertedBy (Φ.functor ⋙ F)
 
 namespace Derives
 
-variable (h : Φ.Derives F) [Φ.IsRightDerivabilityStructure]
+variable {Φ F} (h : Φ.Derives F) [Φ.IsRightDerivabilityStructure]
 
 include h
 
@@ -61,19 +61,19 @@ section
 
 variable {L₂ : C₂ ⥤ D₂} [L₂.IsLocalization W₂] {RF : D₂ ⥤ H} (α : F ⟶ L₂ ⋙ RF)
 
-lemma isIso_α (X₁ : C₁) [RF.IsRightDerivedFunctor α W₂] :
+lemma isIso (X₁ : C₁) [RF.IsRightDerivedFunctor α W₂] :
     IsIso (α.app (Φ.functor.obj X₁)) := by
   let G : W₁.Localization ⥤ H := Localization.lift (Φ.functor ⋙ F) h W₁.Q
   let eG := Localization.Lifting.iso W₁.Q W₁ (Φ.functor ⋙ F) G
   have := Functor.isRightDerivedFunctor_of_inverts W₁ G eG
   have := (Φ.functor ⋙ F).hasPointwiseRightDerivedFunctor_of_inverts h
-  rw [← Φ.isIso_α_iff_of_isRightDerivabilityStructure W₁.Q L₂ F G eG.inv RF α]
+  rw [← Φ.isIso_iff_of_isRightDerivabilityStructure W₁.Q L₂ F G eG.inv RF α]
   infer_instance
 
-lemma isRightDerivedFunctor_of_isIso_α (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁))) :
+lemma isRightDerivedFunctor_of_isIso (hα : ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁))) :
     RF.IsRightDerivedFunctor α W₂ := by
   have := h.hasPointwiseRightDerivedFunctor
-  have := h.isIso_α _ _ (F.totalRightDerivedUnit L₂ W₂)
+  have := h.isIso (F.totalRightDerivedUnit L₂ W₂)
   have := Φ.essSurj_of_hasRightResolutions L₂
   let φ := (F.totalRightDerived L₂ W₂).rightDerivedDesc (F.totalRightDerivedUnit L₂ W₂) W₂ RF α
   have hφ : F.totalRightDerivedUnit L₂ W₂ ≫ Functor.whiskerLeft L₂ φ = α :=
@@ -86,8 +86,12 @@ lemma isRightDerivedFunctor_of_isIso_α (hα : ∀ (X₁ : C₁), IsIso (α.app 
     simp only [← hφ, NatTrans.comp_app, Functor.whiskerLeft_app, isIso_comp_left_iff] at hα
     infer_instance
   rw [← Functor.isRightDerivedFunctor_iff_of_iso (F.totalRightDerivedUnit L₂ W₂) α W₂
-    (asIso φ) (by aesop)]
+    (asIso φ) (by cat_disch)]
   infer_instance
+
+lemma isRightDerivedFunctor_iff_isIso :
+    RF.IsRightDerivedFunctor α W₂ ↔ ∀ (X₁ : C₁), IsIso (α.app (Φ.functor.obj X₁)) :=
+  ⟨fun _ _ ↦ h.isIso α _, h.isRightDerivedFunctor_of_isIso α⟩
 
 end
 
