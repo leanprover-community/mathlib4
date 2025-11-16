@@ -61,20 +61,10 @@ abbrev sectionsObj (X : Over I) : C :=
   pullbackObj (exp I |>.map X.hom) (curryId I)
 
 /-- The functoriality of `sectionsObj`. -/
-def sectionsMap {X X' : Over I} (u : X ⟶ X') :
+abbrev sectionsMap {X X' : Over I} (u : X ⟶ X') :
     sectionsObj X ⟶ sectionsObj X' :=
   pullbackMap _ _ _ _ (exp I |>.map u.left) (𝟙 _) (𝟙 _)
     (by simp [← Functor.map_comp]) (by cat_disch)
-
-@[simp]
-lemma sectionsMap_fst {X X' : Over I} (u : X ⟶ X') :
-    sectionsMap u ≫ fst _ _ = ChosenPullbacksAlong.fst _ _ ≫ (exp I).map u.left := by
-  simp [sectionsMap, pullbackMap_fst]
-
-@[simp]
-lemma sectionsMap_snd {X X' : Over I} (u : X ⟶ X') :
-    sectionsMap u ≫ snd _ _ = ChosenPullbacksAlong.snd _ _ := by
-  simp [sectionsMap, pullbackMap_snd]
 
 @[simp]
 lemma sectionsMap_id {X : Over I} : sectionsMap (𝟙 X) = 𝟙 _ := by
@@ -83,8 +73,7 @@ lemma sectionsMap_id {X : Over I} : sectionsMap (𝟙 X) = 𝟙 _ := by
 @[simp]
 lemma sectionsMap_comp {X X' X'' : Over I} (u : X ⟶ X') (v : X' ⟶ X'') :
     sectionsMap (u ≫ v) = sectionsMap u ≫ sectionsMap v := by
-  ext
-  simp? [sectionsMap]
+  cat_disch
 
 variable (I)
 
@@ -161,7 +150,7 @@ def coreHomEquivToOverSections : CoreHomEquiv (toOver I) (sections I) where
     intro A X' X u g
     dsimp [sectionsCurry, sectionsUncurry, curryId]
     apply ChosenPullbacksAlong.hom_ext
-    · simp only [ChosenPullbacksAlong.lift_fst, sectionsMap, assoc, pullbackMap_fst,
+    · simp only [ChosenPullbacksAlong.lift_fst, assoc, pullbackMap_fst,
       ChosenPullbacksAlong.lift_fst_assoc, ← curry_natural_right, assoc]
     · aesop
 
