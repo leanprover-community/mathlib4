@@ -5,6 +5,7 @@ Authors: Yakov Pechersky, Yury Kudryashov
 -/
 import Mathlib.Data.Set.Image
 import Mathlib.Data.List.InsertIdx
+import Mathlib.Data.List.Basic
 
 /-! # Some lemmas about lists involving sets
 

@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.BigOperators.Group.List.Defs
-import Mathlib.Order.RelClasses
 import Mathlib.Data.List.TakeDrop
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Perm.Basic
@@ -14,6 +13,7 @@ import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Order.Basic
 
 /-!
 # Sums and products from lists
