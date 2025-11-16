@@ -35,13 +35,13 @@ variable {c p₁ p₂ : P}
 def perpBisector (p₁ p₂ : P) : AffineSubspace ℝ P :=
   mk' (midpoint ℝ p₁ p₂) (LinearMap.ker (innerₛₗ ℝ (p₂ -ᵥ p₁)))
 
-/-- A point `c` belongs the perpendicular bisector of `[p₁, p₂] iff `p₂ -ᵥ p₁` is orthogonal to
+/-- A point `c` belongs the perpendicular bisector of `[p₁, p₂]` iff `p₂ -ᵥ p₁` is orthogonal to
 `c -ᵥ midpoint ℝ p₁ p₂`. -/
 theorem mem_perpBisector_iff_inner_eq_zero' :
     c ∈ perpBisector p₁ p₂ ↔ ⟪p₂ -ᵥ p₁, c -ᵥ midpoint ℝ p₁ p₂⟫ = 0 :=
   Iff.rfl
 
-/-- A point `c` belongs the perpendicular bisector of `[p₁, p₂] iff `c -ᵥ midpoint ℝ p₁ p₂` is
+/-- A point `c` belongs the perpendicular bisector of `[p₁, p₂]` iff `c -ᵥ midpoint ℝ p₁ p₂` is
 orthogonal to `p₂ -ᵥ p₁`. -/
 theorem mem_perpBisector_iff_inner_eq_zero :
     c ∈ perpBisector p₁ p₂ ↔ ⟪c -ᵥ midpoint ℝ p₁ p₂, p₂ -ᵥ p₁⟫ = 0 :=

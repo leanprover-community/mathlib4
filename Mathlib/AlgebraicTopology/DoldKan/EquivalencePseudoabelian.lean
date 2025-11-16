@@ -97,8 +97,8 @@ theorem equivalence_functor : (equivalence : SimplicialObject C ≌ _).functor =
 theorem equivalence_inverse : (equivalence : SimplicialObject C ≌ _).inverse = Γ :=
   rfl
 
-/-- The natural isomorphism `NΓ' satisfies the compatibility that is needed
-for the construction of our counit isomorphism `η` -/
+/-- The natural isomorphism `NΓ'` satisfies the compatibility that is needed
+for the construction of our counit isomorphism `η`. -/
 theorem hη :
     Compatibility.τ₀ =
       Compatibility.τ₁ isoN₁ isoΓ₀

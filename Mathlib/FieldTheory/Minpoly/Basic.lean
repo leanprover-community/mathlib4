@@ -158,7 +158,7 @@ theorem unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
 
 open Polynomial in
 /-- If a monic polynomial `p : A[X]` of degree `n` annihilates an element `x` in an `A`-algebra `B`,
-such that `{xⁱ | 0 ≤ i < n} is linearly independent over `A`, then `p` is the minimal polynomial
+such that `{xⁱ | 0 ≤ i < n}` is linearly independent over `A`, then `p` is the minimal polynomial
 of `x` over `A`. -/
 theorem eq_of_linearIndependent {p : A[X]} (monic : p.Monic) (hp0 : p.aeval x = 0)
     (n : ℕ) (hpn : p.degree = n) (ind : LinearIndependent A fun i : Fin n ↦ x ^ i.val) :
