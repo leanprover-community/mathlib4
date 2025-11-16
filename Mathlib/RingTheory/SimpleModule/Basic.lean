@@ -68,7 +68,7 @@ instance (R) [DivisionRing R] : IsSimpleModule R R where
 /-- A ring is semisimple if it is semisimple as a module over itself. -/
 abbrev IsSemisimpleRing := IsSemisimpleModule R R
 
-instance [Subsingleton R] : IsSemisimpleRing R :=
+instance (priority := low) [Subsingleton R] : IsSemisimpleRing R :=
   (isSemisimpleModule_iff R R).mpr Subsingleton.instComplementedLattice
 
 variable {R S} in
