@@ -83,19 +83,19 @@ instance [LocallySmall.{w} C] [AB5OfSize.{w, w} A] [HasFiniteLimits A] :
 noncomputable def presheafFiber : (Cᵒᵖ ⥤ A) ⥤ A :=
   (Functor.whiskeringLeft _ _ _).obj (CategoryOfElements.π Φ.fiber).op ⋙ colim
 
+/-- Given a point `Φ` of a site `(C, J)`, `X : C` and `x : Φ.fiber.obj X`, this
+is the canonical map `P.obj (op X) ⟶ Φ.presheafFiber.obj P`. -/
+noncomputable def toPresheafFiber (X : C) (x : Φ.fiber.obj X) (P : Cᵒᵖ ⥤ A) :
+    P.obj (op X) ⟶ Φ.presheafFiber.obj P :=
+  colimit.ι ((CategoryOfElements.π Φ.fiber).op ⋙ P) (op ⟨X, x⟩)
+
 /-- Given a point `Φ` of a site `(C, J)`, `X : C` and `x : Φ.fiber.obj X`,
 this is the map `P.obj (op X) ⟶ Φ.presheafFiber.obj P` for any `P : Cᵒᵖ ⥤ A`
 as natural transformation. -/
 noncomputable def toPresheafFiberNatTrans (X : C) (x : Φ.fiber.obj X) :
     (evaluation Cᵒᵖ A).obj (op X) ⟶ Φ.presheafFiber where
-  app P := colimit.ι ((CategoryOfElements.π Φ.fiber).op ⋙ P) (op ⟨X, x⟩)
-  naturality _ _ f := by simp [presheafFiber]
-
-/-- Given a point `Φ` of a site `(C, J)`, `X : C` and `x : Φ.fiber.obj X`, this
-is the canonical map `P.obj (op X) ⟶ Φ.presheafFiber.obj P`. -/
-noncomputable abbrev toPresheafFiber (X : C) (x : Φ.fiber.obj X) (P : Cᵒᵖ ⥤ A) :
-    P.obj (op X) ⟶ Φ.presheafFiber.obj P :=
-  (Φ.toPresheafFiberNatTrans X x).app P
+  app := Φ.toPresheafFiber X x
+  naturality _ _ f := by simp [presheafFiber, toPresheafFiber]
 
 @[elementwise (attr := simp)]
 lemma toPresheafFiber_w {X Y : C} (f : X ⟶ Y) (x : Φ.fiber.obj X) (P : Cᵒᵖ ⥤ A) :
