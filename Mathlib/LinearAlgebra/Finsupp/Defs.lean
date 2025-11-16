@@ -338,7 +338,8 @@ variable {ι}
 
 /-- If `M` is an `R`-module and `ι` is an nonempty type, then every additive endomorphism
 of `ι →₀ M` that commutes with all `R`-endomorphisms of `ι →₀ M` comes from an additive
-endomorphism of `M` that commutes with all `R`-endomorphisms of `M`. -/
+endomorphism of `M` that commutes with all `R`-endomorphisms of `M`.
+See (15) in F4 of §28 on p.131 of [Lorenz2008]. -/
 @[simps!] noncomputable def ringEquivEndFinsupp (i : ι) :
     End (End R M) M ≃+* End (End R (ι →₀ M)) (ι →₀ M) where
   __ := ringHomEndFinsupp ι
