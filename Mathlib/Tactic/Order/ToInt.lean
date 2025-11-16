@@ -110,7 +110,7 @@ def translateToInt {u : Lean.Level} (type : Q(Type u)) (inst : Q(LinearOrder $ty
     AtomM <| Std.HashMap ℕ Q(ℤ) × Array AtomicFact := do
   let mut idxToAtom : Std.HashMap Nat Q($type) := ∅
   for atom in (← get).atoms do
-    if (← inferType atom) == type then
+    if ← withReducible <| isDefEq type (← inferType atom) then
       idxToAtom := idxToAtom.insert idxToAtom.size atom
   haveI nE : Q(ℕ) := mkNatLitQ idxToAtom.size
   haveI finFun : Q(Fin $nE → $type) :=

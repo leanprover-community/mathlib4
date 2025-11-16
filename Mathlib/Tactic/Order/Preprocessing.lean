@@ -60,12 +60,12 @@ def replaceBotTop (facts : Array AtomicFact) :
     | .isBot idx =>
       let type ← inferType (← get).atoms[idx]!
       for (atom, i) in (← get).atoms.zipIdx do
-        if (← inferType atom) == type && i != idx then
+        if (← withReducible <| isDefEq type (← inferType atom)) && i != idx then
           res := res.push <| .le idx i (← mkAppOptM ``bot_le #[none, none, none, atom])
     | .isTop idx =>
       let type ← inferType (← get).atoms[idx]!
       for (atom, i) in (← get).atoms.zipIdx do
-        if (← inferType atom) == type && i != idx then
+        if (← withReducible <| isDefEq type (← inferType atom)) && i != idx then
           res := res.push <| .le i idx (← mkAppOptM ``le_top #[none, none, none, atom])
     | _ =>
       res := res.push fact
