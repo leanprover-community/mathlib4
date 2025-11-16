@@ -20,7 +20,7 @@ If `f` is a rational function, i.e. an element in the field `K(X)` (`FractionRin
 for some field `K`, we can write `f = p / q` where `p` and `q` are coprime polynomials in `K[X]`
 with `q` nonzero.
 
-We define the degree of `f` to be the larger of the delgrees (`Polynomial.natDegree`)
+We define the degree of `f` to be the larger of the degrees (`Polynomial.natDegree`)
 of `p` and `q`. It turns out that if `f` is not a constant, its degree is equal to the degree of
 the field extension K(X)/K(f) (`Module.finrank K⟮f⟯ (FractionRing K[X])`).
 
@@ -71,19 +71,19 @@ and therefore K(X) is algebraic over K(f): -/
 def minpolyDiv : K⟮f⟯[X] :=
   p.map (algebraMap K K⟮f⟯) - C (AdjoinSimple.gen K f) * q.map (algebraMap K K⟮f⟯)
 
+omit hp coprime in
 theorem minpolyDiv_aeval : (minpolyDiv p q).aeval rfX = 0 := by
-  unfold minpolyDiv
-  simp only [aeval_sub, aeval_map_algebraMap, map_mul, aeval_C, IntermediateField.algebraMap_apply,
-    AdjoinSimple.coe_gen]
-  rw [aeval_algebraMap_apply, aeval_X_left_apply, aeval_algebraMap_apply, aeval_X_left_apply,
-    div_mul_cancel₀ p.toRatFunc ?_]
-  · exact sub_self ((algebraMap K[X] K(X)) p)
-  exact (map_ne_zero_iff (algebraMap K[X] K(X)) (IsFractionRing.injective K[X] K(X))).mpr hq
+  have toRatFunc_ne_zero : q.toRatFunc ≠ 0 :=
+    (map_ne_zero_iff _ <| IsFractionRing.injective _ _).mpr hq
+  simp only [minpolyDiv, aeval_sub, aeval_map_algebraMap, map_mul, aeval_C,
+    IntermediateField.algebraMap_apply, AdjoinSimple.coe_gen]
+  simp_rw [aeval_algebraMap_apply, aeval_X_left_apply, div_mul_cancel₀ _ toRatFunc_ne_zero]
+  exact sub_self ((algebraMap K[X] K(X)) p)
 
 -- Note: this needs f is not a constant, i.e. `max p.natDegree q.natDegree ≠ 0`.
 theorem isAlgebraic_div : IsAlgebraic K⟮f⟯ rfX := by
   use minpolyDiv p q
-  refine ⟨?_, minpolyDiv_aeval p q hp hq coprime⟩
+  refine ⟨?_, minpolyDiv_aeval p q hq⟩
   sorry
 
 theorem isAlgebraic_adjoin_div : Algebra.IsAlgebraic K⟮f⟯ K(X) := by
