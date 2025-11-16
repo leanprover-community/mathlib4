@@ -79,18 +79,6 @@ theorem rank_pos_of_free [Module.Free R M] [Nontrivial M] :
   (pos_of_ne_zero <| Cardinal.mk_ne_zero _).trans_le
     (Free.chooseBasis R M).linearIndependent.cardinal_le_rank
 
-theorem rank_pos_iff_of_free [Nontrivial R] [Module.Free R M] :
-    0 < Module.rank R M ↔ Nontrivial M := by
-  refine ⟨fun h ↦ ?_, fun _ ↦ rank_pos_of_free⟩
-  rw [← not_subsingleton_iff_nontrivial]
-  intro h'
-  simp only [rank_subsingleton', lt_self_iff_false] at h
-
-theorem rank_zero_iff_of_free [Nontrivial R] [Module.Free R M] :
-    Module.rank R M = 0 ↔ Subsingleton M := by
-  rw [← not_nontrivial_iff_subsingleton, iff_not_comm,
-    ← rank_pos_iff_of_free (R := R), pos_iff_ne_zero]
-
 variable [Nontrivial R]
 
 section

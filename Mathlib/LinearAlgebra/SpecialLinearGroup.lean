@@ -30,7 +30,7 @@ When `V` is free and finite over `R`, we define
 * `SpecialLinearGroup.dualMap`
 * `SpecialLinearGroup.baseChange`
 
-We define `Matrix.SpecialLinaerGroup.toLin'_equiv`: the mul equivalence
+We define `Matrix.SpecialLinaerGruop.toLin'_equiv`: the mul equivalence
 from `Matrix.SpecialLinearGroup n R` to `SpecialLinearGroup R (n → R)`
 and its variant
 `Matrix.SpecialLinearGroup.toLin_equiv`,
@@ -38,20 +38,6 @@ from `Matrix.SpecialLinearGroup n R` to `SpecialLinearGroup R V`,
 associated with a finite basis of `V`.
 
 -/
--- Two lemmas on  finrank
--- TODO : move elsewhere
-theorem Module.finrank_eq_zero_iff_of_free {R M : Type*} [CommRing R] [Nontrivial R]
-    [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M] :
-    Module.finrank R M = 0 ↔ Subsingleton M := by
-  have := Module.rank_lt_aleph0 R M
-  rw [← not_le] at this
-  simp [Module.finrank, this, rank_zero_iff_of_free]
-
-theorem Module.finrank_pos_iff_of_free {R M : Type*} [CommRing R] [Nontrivial R]
-    [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M] :
-    0 < Module.finrank R M ↔ Nontrivial M := by
-  rw [← not_subsingleton_iff_nontrivial, ← iff_not_comm]
-  simp [Module.finrank_eq_zero_iff_of_free]
 
 variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
 
