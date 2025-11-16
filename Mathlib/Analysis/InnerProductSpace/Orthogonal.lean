@@ -119,6 +119,17 @@ theorem isClosed_orthogonal : IsClosed (Kᗮ : Set E) := by
 instance instOrthogonalCompleteSpace [CompleteSpace E] : CompleteSpace Kᗮ :=
   K.isClosed_orthogonal.completeSpace_coe
 
+lemma map_orthogonal (f : E ≃ₗᵢ[𝕜] F) : Kᗮ.map f = (K.map f)ᗮ := by
+  ext x
+  simp only [mem_map, mem_orthogonal, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+  constructor
+  · rintro ⟨y, hy, rfl⟩ x hx
+    simp [hy x hx]
+  · rintro h
+    refine ⟨f.symm x, ?_, by simp⟩
+    intro y hy
+    rw [← show f.symm (f y) = y by simp, LinearIsometryEquiv.inner_map_map, h y hy]
+
 variable (𝕜 E)
 
 /-- `orthogonal` gives a `GaloisConnection` between
