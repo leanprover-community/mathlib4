@@ -245,7 +245,6 @@ theorem sup_exists :
       · subst hf
         apply coeq_condition
       · rw [@w' _ _ mX mY f']
-        simp only [Finset.mem_insert, PSigma.mk.injEq, heq_eq_eq, true_and] at mf'
         grind
     · rw [@w' _ _ mX' mY' f' _]
       apply Finset.mem_of_mem_insert_of_ne mf'
@@ -281,9 +280,8 @@ theorem cocone_nonempty (F : J ⥤ C) : Nonempty (Cocone F) := by
   classical
   let O := Finset.univ.image F.obj
   let H : Finset (Σ' (X Y : C) (_ : X ∈ O) (_ : Y ∈ O), X ⟶ Y) :=
-    Finset.univ.biUnion   fun X : J =>
-      Finset.univ.biUnion fun Y : J =>
-        Finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp [O], by simp [O], F.map f⟩
+    Finset.univ.biUnion fun X : J => Finset.univ.biUnion fun Y : J =>
+      Finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp [O], by simp [O], F.map f⟩
   obtain ⟨Z, f, w⟩ := sup_exists O H
   refine ⟨⟨Z, ⟨fun X => f (by simp [O]), ?_⟩⟩⟩
   intro j j' g

@@ -35,7 +35,7 @@ lemma hasEigenvector_toLin_diagonal (d : n → R) (i : n) (b : Basis n R M) :
 
 /-- Standard basis vectors are eigenvectors of any associated diagonal linear operator. -/
 lemma hasEigenvector_toLin'_diagonal (d : n → R) (i : n) :
-    HasEigenvector (toLin' (diagonal d)) (d i) (Pi.basisFun R n i)  :=
+    HasEigenvector (toLin' (diagonal d)) (d i) (Pi.basisFun R n i) :=
   hasEigenvector_toLin_diagonal _ _ (Pi.basisFun R n)
 
 /-- Eigenvalues of a diagonal linear operator are the diagonal entries. -/
@@ -84,10 +84,8 @@ lemma iSup_eigenspace_toLin'_diagonal_eq_top :
     ⨆ μ, eigenspace (diagonal d).toLin' μ = ⊤ :=
   iSup_eigenspace_toLin_diagonal_eq_top d <| Pi.basisFun R n
 
-variable [IsDomain R]
-
 @[simp]
-lemma maxGenEigenspace_toLin_diagonal_eq_eigenspace :
+lemma maxGenEigenspace_toLin_diagonal_eq_eigenspace [IsDomain R] :
     maxGenEigenspace ((diagonal d).toLin b b) μ = eigenspace ((diagonal d).toLin b b) μ := by
   refine le_antisymm (fun x hx ↦ ?_) eigenspace_le_maxGenEigenspace
   obtain ⟨k, hk⟩ := (mem_maxGenEigenspace _ _ _).mp hx
@@ -103,9 +101,28 @@ lemma maxGenEigenspace_toLin_diagonal_eq_eigenspace :
   simp [toLin_apply, mulVec_eq_sum, diagonal_apply, aux, ← Finset.smul_sum]
 
 @[simp]
-lemma maxGenEigenspace_toLin'_diagonal_eq_eigenspace :
+lemma maxGenEigenspace_toLin'_diagonal_eq_eigenspace [IsDomain R] :
     maxGenEigenspace (diagonal d).toLin' μ = eigenspace (diagonal d).toLin' μ :=
   maxGenEigenspace_toLin_diagonal_eq_eigenspace d <| Pi.basisFun R n
+
+@[simp]
+theorem _root_.LinearMap.spectrum_toMatrix (f : M →ₗ[R] M) (b : Basis n R M) :
+    spectrum R (f.toMatrix b b) = spectrum R f :=
+  AlgEquiv.spectrum_eq (LinearMap.toMatrixAlgEquiv b) f
+
+@[simp]
+theorem _root_.LinearMap.spectrum_toMatrix' (f : (n → R) →ₗ[R] (n → R)) :
+    spectrum R f.toMatrix' = spectrum R f :=
+  AlgEquiv.spectrum_eq LinearMap.toMatrixAlgEquiv' f
+
+@[simp]
+theorem spectrum_toLin (A : Matrix n n R) (b : Basis n R M) :
+    spectrum R (A.toLin b b) = spectrum R A :=
+  AlgEquiv.spectrum_eq (Matrix.toLinAlgEquiv b) A
+
+@[simp]
+theorem spectrum_toLin' (A : Matrix n n R) : spectrum R A.toLin' = spectrum R A :=
+  AlgEquiv.spectrum_eq Matrix.toLinAlgEquiv' A
 
 end Matrix
 

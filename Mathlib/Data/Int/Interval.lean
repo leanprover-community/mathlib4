@@ -125,26 +125,6 @@ theorem Icc_eq_pair : Finset.Icc a (a + 1) = {a, a + 1} := by
   simp
   omega
 
-@[deprecated Fintype.card_Icc (since := "2025-03-28")]
-theorem card_fintype_Icc : Fintype.card (Set.Icc a b) = (b + 1 - a).toNat := by
-  simp
-
-@[deprecated Fintype.card_Ico (since := "2025-03-28")]
-theorem card_fintype_Ico : Fintype.card (Set.Ico a b) = (b - a).toNat := by
-  simp
-
-@[deprecated Fintype.card_Ioc (since := "2025-03-28")]
-theorem card_fintype_Ioc : Fintype.card (Set.Ioc a b) = (b - a).toNat := by
-  simp
-
-@[deprecated Fintype.card_Ioo (since := "2025-03-28")]
-theorem card_fintype_Ioo : Fintype.card (Set.Ioo a b) = (b - a - 1).toNat := by
-  simp
-
-@[deprecated Fintype.card_uIcc (since := "2025-03-28")]
-theorem card_fintype_uIcc : Fintype.card (Set.uIcc a b) = (b - a).natAbs + 1 := by
-  simp
-
 theorem card_fintype_Icc_of_le (h : a ≤ b + 1) : (Fintype.card (Set.Icc a b) : ℤ) = b + 1 - a := by
   simp [h]
 
@@ -184,3 +164,31 @@ theorem image_Ico_emod (n a : ℤ) (h : 0 ≤ a) : (Ico n (n + a)).image (· % a
     · rw [Int.add_mul_emod_self_left, Int.emod_eq_of_lt hia.left hia.right]
 
 end Int
+
+section Nat
+
+lemma Finset.Icc_succ_succ (m n : ℕ) :
+    Icc (-(m + 1) : ℤ) (n + 1) = Icc (-m : ℤ) n ∪ {(-(m + 1) : ℤ), (n + 1 : ℤ)} := by
+  ext
+  simp only [mem_Icc, union_insert, union_singleton, mem_insert]
+  omega
+
+lemma Finset.Ico_succ_succ (m n : ℕ) :
+    Ico (-(m + 1) : ℤ) (n + 1) = Ico (-m : ℤ) n ∪ {(-(m + 1) : ℤ), (n : ℤ)} := by
+  ext
+  simp only [mem_Ico, union_insert, union_singleton, mem_insert]
+  omega
+
+lemma Finset.Ioc_succ_succ (m n : ℕ) :
+    Ioc (-(m + 1) : ℤ) (n + 1) = Ioc (-m : ℤ) n ∪ {-(m : ℤ), (n + 1 : ℤ)} := by
+  ext
+  simp only [mem_Ioc, union_insert, union_singleton, mem_insert]
+  omega
+
+lemma Finset.Ioo_succ_succ (m n : ℕ) :
+    Ioo (-(m + 1) : ℤ) (n + 1) = Ioo (-m : ℤ) n ∪ {-(m : ℤ), (n : ℤ)} := by
+  ext
+  simp only [mem_Ioo, union_insert, union_singleton, mem_insert]
+  omega
+
+end Nat

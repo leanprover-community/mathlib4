@@ -17,7 +17,7 @@ the `strictIndexes` are positive and `A v = 0`.
 
 The function `findPositiveVector` solves this problem.
 
-# Algorithm sketch
+## Algorithm sketch
 
 1. We translate the problem stated above to some Linear Programming problem. See `stateLP` for
   details. Let us denote the corresponding matrix `B`.
