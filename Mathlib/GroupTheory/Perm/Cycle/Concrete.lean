@@ -380,6 +380,19 @@ theorem nontrivial_toCycle (f : Perm α) (hf : IsCycle f) : (toCycle f hf).Nontr
   simp [toCycle_eq_toList f hf x hx, hx, Cycle.nontrivial_coe_nodup_iff (nodup_toList _ _)]
 
 @[simp]
+theorem mem_toCycle_iff_support (f : Perm α) (hf : f.IsCycle) : x ∈ f.toCycle hf ↔ f x ≠ x := by
+  constructor
+  · have ⟨ l, hl ⟩ := exists_toCycle_toList f hf
+    simp only [hl, Cycle.mem_coe_iff, ne_eq]
+    intro h
+    have ⟨ h1, h2 ⟩ := mem_toList_iff.mp h
+    exact ((isCycle_iff_sameCycle (mem_support.mp h2)).mp (y := x) hf).mp h1
+  · intro h
+    simp only [toCycle_eq_toList f hf x h, Cycle.mem_coe_iff, toList, mem_iterate, iterate_eq_pow]
+    use 0
+    exact ⟨ by simpa, by simp ⟩
+
+@[simp]
 theorem toCycle_next (f : Perm α) (hf : f.IsCycle) (hx : x ∈ toCycle f hf) :
     (toCycle f hf).next (nodup_toCycle f hf) x hx = f x := by
   have ⟨ l, hl ⟩ := exists_toCycle_toList f hf
