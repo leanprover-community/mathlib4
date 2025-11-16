@@ -188,7 +188,7 @@ lemma tan_eq_zero_of_cos_eq_zero {x} (h : cos x = 0) : tan x = 0 := by
 
 theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq (x : ℂ) (h : cos x ≠ -1) :
     cos x = (1 - tan (x / 2) ^ 2) / (1 + tan (x / 2) ^ 2) := by
-  conv_lhs => rw [show x = 2 * (x / 2) by group, cos_two_mul']
+  conv_lhs => rw [← mul_div_cancel₀ x two_ne_zero, cos_two_mul']
   have : cos (x / 2) ≠ 0 := by grind [cos_ne_zero_iff, cos_eq_neg_one_iff]
   rw [div_eq_mul_inv (1 - tan (x / 2) ^ 2) (1 + tan (x / 2) ^ 2), inv_one_add_tan_sq this,
     ← tan_mul_cos this]
@@ -197,16 +197,16 @@ theorem cos_eq_two_mul_tan_half_div_one_sub_tan_half_sq (x : ℂ) (h : cos x ≠
 /-- `tan (x / 2)` takes the junk value `0` when `sin x = 0` so this always holds. -/
 theorem sin_eq_two_mul_tan_half_div_one_add_tan_half_sq (x : ℂ) :
     sin x = (2 * tan (x / 2)) / (1 + tan (x / 2) ^ 2) := by
-  conv_lhs => rw [show x = 2 * (x / 2) by group, sin_two_mul]
+  conv_lhs => rw [← mul_div_cancel₀ x two_ne_zero, sin_two_mul]
   by_cases h : cos (x / 2) = 0
   · simp [h, tan_eq_zero_of_cos_eq_zero]
   · rw [div_eq_mul_inv (2 * tan (x / 2)) (1 + tan (x / 2) ^ 2), inv_one_add_tan_sq h,
       ← tan_mul_cos h]
-    group
+    ring
 
 theorem tan_eq_one_sub_tan_half_sq_div_one_add_tan_half_sq (x : ℂ) :
     tan x = (2 * tan (x / 2)) / (1 - tan (x / 2) ^ 2) := by
-  conv_lhs => rw [show x = 2 * (x / 2) by group, tan_two_mul]
+  conv_lhs => rw [← mul_div_cancel₀ x two_ne_zero, tan_two_mul]
 
 open scoped Topology
 
