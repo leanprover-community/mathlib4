@@ -53,7 +53,7 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr)
       if (← isClass? type).isSome then
         if (← synthesizeInstance thmId x type) then
           continue
-      else if (← isFunProp type.getForallBody) then
+      else if (← isFunPropGoal type) then
         -- try function property
         if let some ⟨proof⟩ ← funProp type then
           if (← isDefEq x proof) then
