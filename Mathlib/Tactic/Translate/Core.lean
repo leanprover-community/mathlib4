@@ -1068,7 +1068,6 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
     -- If `tgt` is not in the environment, the translation to `tgt` was added only for
     -- translating the namespace, and `src` wasn't actually tagged.
     if (← getEnv).contains tgt then
-      MetaM.run' <| checkExistingType t src tgt cfg.reorder cfg.dontTranslate
       let mut updated := false
       if cfg.reorder != [] then
         modifyEnv (t.reorderAttr.addEntry · (src, cfg.reorder))
@@ -1077,11 +1076,12 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
         modifyEnv (t.relevantArgAttr.addEntry · (src, relevantArg))
         updated := true
       if updated then
+        MetaM.run' <| checkExistingType t src tgt cfg.reorder cfg.dontTranslate
         return #[tgt]
       throwError
-        "Cannot apply attribute @[{t.attrName}] to '{src}': it is already translated to '{tgt}'. \
-        If you need to set the `reorder` or `relevant_arg` option, this is still possible with the \
-        `@[{t.attrName} (reorder := ...)]` or `@[{t.attrName} (relevant_arg := ...)]` syntax."
+      "Cannot apply attribute @[{t.attrName}] to '{src}': it is already translated to '{tgt}'. \n\
+      If you need to set the `reorder` or `relevant_arg` option, this is still possible with the \n\
+      `@[{t.attrName} (reorder := ...)]` or `@[{t.attrName} (relevant_arg := ...)]` syntax."
   let tgt ← targetName t cfg src
   let alreadyExists := (← getEnv).contains tgt
   if cfg.existing != alreadyExists && !(← isInductive src) && !cfg.self then
