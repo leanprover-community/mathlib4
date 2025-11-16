@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Thomas R. Murrills
 -/
 import Mathlib.Init
-import Mathlib.Lean.Name
 import Lean.Elab.Term
 
 /-!
@@ -29,8 +28,13 @@ Given a `namePrefix` (`` `u`` by default), returns the first name out of `namePr
 `namePrefix_2`, ... which does not appear in `usedLevelNames`. Note `mkFreshLevelName` does not
 attempt to use `namePrefix` itself as a level name.
 -/
-def mkFreshLevelName (usedLevelNames : List Name) (namePrefix : Name := `u) : Name :=
-  namePrefix.mkUnusedNameWithIndexAfter usedLevelNames.elem (some 1)
+partial def mkFreshLevelName (usedLevelNames : List Name) (namePrefix : Name := `u) : Name :=
+  go 1
+where
+  /-- Check if `namePrefix.appendIndexAfter n` is unused, else recurse with `n+1`. -/
+  go n : Name :=
+    let u := namePrefix.appendIndexAfter n
+    if usedLevelNames.elem u then go (n+1) else u
 
 /--
 Creates a fresh `Level` parameter which does not appear in the current state's `levelNames`, and
