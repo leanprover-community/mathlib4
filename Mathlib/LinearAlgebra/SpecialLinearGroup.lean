@@ -39,6 +39,36 @@ associated with a finite basis of `V`.
 
 -/
 
+-- Four lemmas on rank, finrank
+-- TODO : move elsewhere
+theorem Module.rank_pos_iff_of_free {R M : Type*} [Ring R] [Nontrivial R]
+    [AddCommGroup M] [Module R M] [Module.Free R M] :
+    0 < Module.rank R M ↔ Nontrivial M := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ rank_pos_of_free⟩
+  rw [← not_subsingleton_iff_nontrivial]
+  intro h'
+  simp only [rank_subsingleton', lt_self_iff_false] at h
+
+theorem Module.rank_zero_iff_of_free {R M : Type*} [Ring R] [Nontrivial R]
+    [AddCommGroup M] [Module R M] [Module.Free R M] :
+    Module.rank R M = 0 ↔ Subsingleton M := by
+  rw [← not_nontrivial_iff_subsingleton, iff_not_comm,
+    ← Module.rank_pos_iff_of_free (R := R), pos_iff_ne_zero]
+
+theorem Module.finrank_eq_zero_iff_of_free {R M : Type*} [CommRing R] [Nontrivial R]
+    [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M] :
+    Module.finrank R M = 0 ↔ Subsingleton M := by
+  have := Module.rank_lt_aleph0 R M
+  rw [← not_le] at this
+  simp [Module.finrank, this, Module.rank_zero_iff_of_free]
+
+theorem Module.finrank_pos_iff_of_free {R M : Type*} [CommRing R] [Nontrivial R]
+    [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M] :
+    0 < Module.finrank R M ↔ Nontrivial M := by
+  rw [← not_subsingleton_iff_nontrivial, ← iff_not_comm]
+  simp [Module.finrank_eq_zero_iff_of_free]
+
+
 variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
 
 variable (R V) in
@@ -507,8 +537,8 @@ variable {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Module.Basis ι R V)
 
 -- compare with `Matrix.SpecialLinearGroup.centerEquivRootsOfUnity`
 -- TODO : golf!
-theorem centerCongr_toLinEquiv_trans_centerEquivRootsOfUnity_eq (g) :
-    ((centerCongr (toLinEquiv b)).trans centerEquivRootsOfUnity g).val =
+theorem centerCongr_toLin_equiv_trans_centerEquivRootsOfUnity_eq (g) :
+    ((centerCongr (toLin_equiv b)).trans centerEquivRootsOfUnity g).val =
       Matrix.SpecialLinearGroup.center_equiv_rootsOfUnity g := by
   by_cases hV : Subsingleton V
   · convert Eq.refl (1 : Rˣ) <;>
@@ -520,7 +550,7 @@ theorem centerCongr_toLinEquiv_trans_centerEquivRootsOfUnity_eq (g) :
         Module.finrank_eq_card_basis b, Fintype.card_of_isEmpty])
     rw [not_subsingleton_iff_nontrivial] at hV
     have := Module.Free.instFaithfulSMulOfNontrivial R V
-    suffices (((((Subgroup.centerCongr (Matrix.SpecialLinearGroup.toLinEquiv b)).trans
+    suffices (((((Subgroup.centerCongr (Matrix.SpecialLinearGroup.toLin_equiv b)).trans
       centerEquivRootsOfUnity g).val : R) • LinearMap.id) : V →ₗ[R] V) =
         ((Matrix.SpecialLinearGroup.center_equiv_rootsOfUnity g).val : R) • LinearMap.id by
       rw [← Units.val_inj]
@@ -530,15 +560,15 @@ theorem centerCongr_toLinEquiv_trans_centerEquivRootsOfUnity_eq (g) :
         id_eq] at this
       rw [MulEquiv.trans_apply, this]
     simp only [MulEquiv.trans_apply]
-    have hgg' := Subgroup.centerCongr_apply_coe (Matrix.SpecialLinearGroup.toLinEquiv b) g
+    have hgg' := Subgroup.centerCongr_apply_coe (Matrix.SpecialLinearGroup.toLin_equiv b) g
     rw [← Subtype.coe_inj, ← LinearEquiv.toLinearMap_inj, LinearMap.ext_iff] at hgg'
-    set g' := ((Subgroup.centerCongr (Matrix.SpecialLinearGroup.toLinEquiv b)) g)
+    set g' := ((Subgroup.centerCongr (Matrix.SpecialLinearGroup.toLin_equiv b)) g)
     ext x
     have := centerEquivRootsOfUnity_apply_apply g' x
     simp only [smul_def, Units.smul_def] at this
     simp only [LinearMap.smul_apply, LinearMap.id_coe, id_eq]
     rw [this, ← LinearEquiv.coe_toLinearMap, hgg',
-      Matrix.SpecialLinearGroup.toLinEquiv.toLinearMap_eq,
+      Matrix.SpecialLinearGroup.toLin_equiv.toLinearMap_eq,
       Matrix.SpecialLinearGroup.eq_scalar_center_equiv_rootsOfUnity g,
       Matrix.toLin_scalar]
     simp
