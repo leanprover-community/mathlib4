@@ -178,27 +178,6 @@ This allows translating automatically generated declarations such as `IsRegular.
 def findPrefixTranslation (env : Environment) (nm : Name) (t : TranslateData) : Name :=
   nm.mapPrefix (findTranslation? env t)
 
-/-- Add a name translation to the translations map. -/
-def insertTranslation (t : TranslateData) (src tgt : Name) (failIfExists := true) : CoreM Unit := do
-  if let some tgt' := findTranslation? (← getEnv) t src then
-    if failIfExists then
-      throwError "The translation {src} ↦ {tgt'} already exists"
-    else
-      trace[translate] "The translation {src} ↦ {tgt'} already exists"
-      return
-  modifyEnv (t.translations.addEntry · (src, tgt))
-  trace[translate] "Added translation {src} ↦ {tgt}"
-  -- For an attribute like `to_dual`, we also insert the reverse direction of the translation
-  if t.isDual && src != tgt then
-    if let some src' := findTranslation? (← getEnv) t tgt then
-      if failIfExists then
-        throwError "The translation {tgt} ↦ {src'} already exists"
-      else
-        trace[translate] "The translation {tgt} ↦ {src'} already exists"
-        return
-    modifyEnv (t.translations.addEntry · (tgt, src))
-    trace[translate] "Also added translation {tgt} ↦ {src}"
-
 /-- `ArgInfo` stores information about how a constant should be translated. -/
 structure ArgInfo where
   /-- The arguments that should be reordered when translating, using cycle notation. -/
@@ -206,16 +185,39 @@ structure ArgInfo where
   /-- The argument used to determine whether this constant should be translated. -/
   relevantArg : Nat := 0
 
-/-- Add a name translation to the translations map and add the `argInfo` information to `src`. -/
-def insertTranslationAndInfo (t : TranslateData) (src tgt : Name) (argInfo : ArgInfo)
+/-- Compute the `ArgInfo` for the reverse translation. The `reorder` permutation is inverted.
+In parctice, `relevantArg` does not overlap with `reorder` for dual translations,
+so we don't bother applying the permutation to `relevantArg`. -/
+def ArgInfo.reverse (i : ArgInfo) : ArgInfo where
+  reorder := i.reorder.map (·.reverse)
+  relevantArg := i.relevantArg
+
+/-- Add a name translation to the translations map and add the `argInfo` information to `src`.
+If the translation attribute is dual, als add the reverse translation. -/
+def insertTranslation (t : TranslateData) (src tgt : Name) (argInfo : ArgInfo)
     (failIfExists := true) : CoreM Unit := do
-  insertTranslation t src tgt failIfExists
-  if argInfo.reorder != [] then
-    trace[translate] "@[{t.attrName}] will reorder the arguments of {tgt} by {argInfo.reorder}."
-    t.reorderAttr.add src argInfo.reorder
-  if argInfo.relevantArg != 0 then
-    trace[translate_detail] "Setting relevant_arg for {src} to be {argInfo.relevantArg}."
-    t.relevantArgAttr.add src argInfo.relevantArg
+  insertTranslationAux t src tgt failIfExists argInfo
+  if t.isDual && src != tgt then
+    insertTranslationAux t tgt src failIfExists argInfo.reverse
+where
+  /-- Insert only one direction of a translation. -/
+  insertTranslationAux (t : TranslateData) (src tgt : Name) (failIfExists : Bool)
+      (argInfo : ArgInfo) : CoreM Unit := do
+    if let some tgt' := findTranslation? (← getEnv) t src then
+      if failIfExists then
+        throwError "The translation {src} ↦ {tgt'} already exists"
+      else
+        trace[translate] "The translation {src} ↦ {tgt'} already exists"
+    else
+      modifyEnv (t.translations.addEntry · (src, tgt))
+      trace[translate] "Added translation {src} ↦ {tgt}"
+    let { reorder, relevantArg } := argInfo
+    if reorder != [] then
+      trace[translate] "@[{t.attrName}] will reorder the arguments of {src} by {reorder}."
+      t.reorderAttr.add src reorder
+    if relevantArg != 0 then
+      trace[translate_detail] "Setting relevant_arg for {src} to be {relevantArg}."
+      t.relevantArgAttr.add src relevantArg
 
 /-- `Config` is the type of the arguments that can be provided to `to_additive`. -/
 structure Config : Type where
@@ -653,7 +655,7 @@ partial def transformDeclAux (t : TranslateData) (cfg : Config) (pre tgt_pre : N
   -- if the auxiliary declaration doesn't have prefix `pre`, then we have to add this declaration
   -- to the translation dictionary, since otherwise we cannot translate the name.
   if !pre.isPrefixOf src then
-    insertTranslation t src tgt
+    insertTranslation t src tgt {}
   -- now transform the source declaration
   let trgDecl : ConstantInfo ← MetaM.run' <|
     if src == pre then
@@ -761,7 +763,7 @@ def translateLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT Cor
       throwError "{names[0]!} and {nm} do not generate the same number of {desc}."
   for (srcLemmas, tgtLemmas) in auxLemmas.zip <| auxLemmas.eraseIdx! 0 do
     for (srcLemma, tgtLemma) in srcLemmas.zip tgtLemmas do
-      insertTranslationAndInfo t srcLemma tgtLemma argInfo
+      insertTranslation t srcLemma tgtLemma argInfo
 
 /--
 Find the argument of `nm` that appears in the first translatable (type-class) argument.
@@ -825,7 +827,7 @@ def proceedFieldsAux (t : TranslateData) (src tgt : Name) (argInfo : ArgInfo)
     throwError "Failed to map fields of {src}, {tgt} with {srcFields} ↦ {tgtFields}.\n \
       Lengths do not match."
   for srcField in srcFields, tgtField in tgtFields do
-    insertTranslationAndInfo t srcField tgtField argInfo
+    insertTranslation t srcField tgtField argInfo
 
 /-- Add the structure fields of `src` to the translations dictionary
 so that they will be translated correctly. -/
@@ -1095,7 +1097,7 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
     MetaM.run' <| checkExistingType t src tgt cfg.reorder cfg.dontTranslate
   let relevantArg ← cfg.relevantArg?.getDM <| MetaM.run' <| findRelevantArg t src
   let argInfo := { reorder := cfg.reorder, relevantArg }
-  insertTranslationAndInfo t src tgt argInfo alreadyExists
+  insertTranslation t src tgt argInfo alreadyExists
   let nestedNames ←
     if alreadyExists then
       -- since `tgt` already exists, we just need to copy metadata and
