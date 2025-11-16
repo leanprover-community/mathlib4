@@ -16,7 +16,7 @@ In this file, we prove that given a field extension `K/k`, there is a continuous
 `Gal(K/k)` and the limit of `Gal(L/k)`, where `L` is a finite Galois intermediate field ordered by
 inverse inclusion, thus making `Gal(K/k)` profinite as a limit of finite groups.
 
-# Main definitions and results
+## Main definitions and results
 
 In a field extension `K/k`
 
@@ -295,7 +295,7 @@ lemma isOpen_mulEquivToLimit_image_fixingSubgroup [IsGalois k K]
 lemma mulEquivToLimit_symm_continuous [IsGalois k K] : Continuous (mulEquivToLimit k K).symm := by
   apply continuous_of_continuousAt_one _ (continuousAt_def.mpr _ )
   simp only [map_one, krullTopology_mem_nhds_one_iff_of_isGalois, ← MulEquiv.coe_toEquiv_symm,
-    ← MulEquiv.toEquiv_eq_coe, ← (mulEquivToLimit k K).image_eq_preimage]
+    ← MulEquiv.toEquiv_eq_coe, ← (mulEquivToLimit k K).image_eq_preimage_symm]
   intro H ⟨L, le⟩
   rw [mem_nhds_iff]
   use mulEquivToLimit k K '' L.1.fixingSubgroup
