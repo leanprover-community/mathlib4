@@ -9,8 +9,8 @@ import Mathlib.Analysis.Complex.Schwarz
 /-!
 # Borel-Carathéodory theorem
 
-This file proves the Borel-Carathéodory theorem, stating that for any function `f` 
-analytic on the open ball `|z| < R` such that `Re(f z) < M` for all `|z| < R`, 
+This file proves the Borel-Carathéodory theorem, stating that for any function `f`
+analytic on the open ball `|z| < R` such that `Re(f z) < M` for all `|z| < R`,
 we have the growth bound:
 
 `‖f z‖ ≤ 2 * M * ‖z‖ / (R - ‖z‖) + ‖f 0‖ * (R + ‖z‖) / (R - ‖z‖)`
@@ -23,8 +23,8 @@ we have the growth bound:
 ## Implementation notes
 
 The proof proceeds by applying the Schwarz lemma to the transformed function
-`φ(z) = f(z) / (2M - f(z))`, which maps the ball into the unit disk. We then 
-express `f` in terms of `φ`, use the Schwarz lemma bound for `φ` and conclude. 
+`φ(z) = f(z) / (2M - f(z))`, which maps the ball into the unit disk. We then
+express `f` in terms of `φ`, use the Schwarz lemma bound for `φ` and conclude.
 -/
 
 open Metric
@@ -33,10 +33,10 @@ namespace DifferentiableOn
 
 variable {s : Set ℂ} {f : ℂ → ℂ} {M : ℝ}
 
-/-- A differentiable function that avoids a value M remains differentiable 
+/-- A differentiable function that avoids a value M remains differentiable
 when divided by M minus itself. -/
 lemma div_const_sub (hf : DifferentiableOn ℂ f s)
-    (hf₁ : Set.MapsTo f s {z | z ≠ M}) : 
+    (hf₁ : Set.MapsTo f s {z | z ≠ M}) :
     DifferentiableOn ℂ (fun z ↦ f z / (M - f z)) s :=
   div hf (hf.const_sub ↑M) fun _ hx => sub_ne_zero.mpr (hf₁ hx).symm
 
@@ -65,7 +65,7 @@ lemma norm_two_mul_div_one_add_le (hM : M > 0) (hφ : ‖φ‖ < 1) :
 lemma norm_lt_norm_two_mul_sub (hM : M > 0) (hz : z.re < M) : ‖z‖ < ‖2 * M - z‖ := by
   apply (sq_lt_sq₀ (norm_nonneg z) (norm_nonneg (2 * M - z))).mp
   rw [Complex.sq_norm, Complex.sq_norm]
-  simp only [normSq_apply, sub_re, mul_re, re_ofNat, ofReal_re, im_ofNat, ofReal_im, 
+  simp only [normSq_apply, sub_re, mul_re, re_ofNat, ofReal_re, im_ofNat, ofReal_im,
     mul_zero, sub_zero, sub_im, mul_im, zero_mul, add_zero, zero_sub, mul_neg, neg_mul,
     neg_neg, add_lt_add_iff_right]; ring_nf
   calc _ = - (M * M * 4) + z.re^2 + M^2 * 4 := by ring_nf
@@ -113,7 +113,7 @@ theorem borelCaratheodory_zero (hM : M > 0) (hf : DifferentiableOn ℂ f (ball 0
   have : 2 * M - f z ≠ 0 := sub_ne_zero_of_ne (fun h => by simpa [← h, hM] using hf₁ hz)
   calc ‖f z‖
     _ = ‖2 * M * φ / (1 + φ)‖ := by rw [eq_mul_div_one_add_of_eq_div_sub hM.ne' this rfl]
-    _ ≤ 2 * M * ‖φ‖ / (1 - ‖φ‖) := norm_two_mul_div_one_add_le hM 
+    _ ≤ 2 * M * ‖φ‖ / (1 - ‖φ‖) := norm_two_mul_div_one_add_le hM
         (hφR.trans_lt ((div_lt_one₀ hR).mpr hzR))
     _ = 2 * M * (‖φ‖ / (1 - ‖φ‖)) := by ring
     _ ≤ 2 * M * (‖z‖ / R / (1 - ‖z‖ / R)) := by gcongr; simpa [div_lt_one hR]
