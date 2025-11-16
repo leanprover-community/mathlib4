@@ -104,7 +104,6 @@
   "Mathlib.Tactic.FastInstance",
   "Mathlib.Tactic.Field",
   "Mathlib.Tactic.FieldSimp",
-  "Mathlib.Tactic.Field",
   "Mathlib.Tactic.FinCases",
   "Mathlib.Tactic.Find",
   "Mathlib.Tactic.Finiteness",
@@ -217,8 +216,8 @@
   ["Mathlib.Topology.Connected.TotallyDisconnected"],
   "Mathlib.Topology.Order.LeftRightNhds":
   ["Mathlib.Algebra.Ring.Pointwise.Set"],
-  "Mathlib.Topology.Instances.CantorSet": ["Mathlib.Data.Stream.Init"],
   "Mathlib.Topology.Instances.ENNReal.Lemmas": ["Mathlib.Tactic.Bound"],
+  "Mathlib.Topology.Instances.CantorSet": ["Mathlib.Data.Stream.Init"],
   "Mathlib.Topology.DiscreteSubset": ["Mathlib.Tactic.TautoSet"],
   "Mathlib.Topology.Defs.Basic": ["Mathlib.Tactic.FunProp"],
   "Mathlib.Topology.Category.UniformSpace":
@@ -266,8 +265,8 @@
   "Mathlib.Tactic.NormNum.Parity": ["Mathlib.Algebra.Ring.Int.Parity"],
   "Mathlib.Tactic.NormNum.ModEq":
   ["Mathlib.Data.Int.ModEq", "Mathlib.Tactic.NormNum.DivMod"],
-  "Mathlib.Tactic.NormNum.Ineq":
-  ["Mathlib.Algebra.Order.Monoid.WithTop"],
+  "Mathlib.Tactic.NormNum.IsSquare": ["Mathlib.Tactic.NormNum.Irrational"],
+  "Mathlib.Tactic.NormNum.Ineq": ["Mathlib.Algebra.Order.Monoid.WithTop"],
   "Mathlib.Tactic.NormNum.BigOperators":
   ["Mathlib.Algebra.BigOperators.Group.Finset.Basic",
    "Mathlib.Data.List.FinRange"],
