@@ -236,7 +236,7 @@ theorem Functor.Final.exists_coeq_of_locally_small [IsFilteredOrEmpty C] [Final 
   obtain ⟨c', t₁, t₂, h⟩ := (Types.FilteredColimit.colimit_eq_iff.{v₁, v₁, v₁} _).mp this
   refine ⟨IsFiltered.coeq t₁ t₂, t₁ ≫ IsFiltered.coeqHom t₁ t₂, ?_⟩
   conv_rhs => rw [IsFiltered.coeq_condition t₁ t₂]
-  dsimp only [comp_obj, coyoneda_obj_obj, unop_op, Functor.comp_map, coyoneda_obj_map] at h
+  dsimp only [comp_obj, flip_obj_obj, yoneda_obj_obj, comp_map, flip_obj_map, yoneda_map_app] at h
   simp [reassoc_of% h]
 
 end LocallySmall
@@ -374,7 +374,7 @@ instance StructuredArrow.final_map₂_id [IsFiltered C] {E : Type u₃} [Categor
     (T ⋙ S).final_iff_isFiltered_structuredArrow.mp inferInstance e
   apply final_of_natIso (map₂IsoPreEquivalenceInverseCompProj d e u α).symm
 
-/-- `StructuredArrow.map` is final if the functor `T` is final` and its domain is filtered. -/
+/-- `StructuredArrow.map` is final if the functor `T` is final and its domain is filtered. -/
 instance StructuredArrow.final_map [IsFiltered C] {S S' : D} (f : S ⟶ S') (T : C ⥤ D) [T.Final] :
     Final (map (T := T) f) := by
   haveI := NatIso.isIso_of_isIso_app (𝟙 T)

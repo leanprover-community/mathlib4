@@ -556,7 +556,7 @@ def fromSpec {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
       let e : _ ≃ _ :=
         ⟨FromSpec.toFun f_deg hm, ToSpec.toFun f, toSpec_fromSpec _ _ _, fromSpec_toSpec _ _ _⟩
       change IsOpen <| e ⁻¹' _
-      rw [Set.preimage_equiv_eq_image_symm, h₁, Set.image_iUnion]
+      rw [← Equiv.image_symm_eq_preimage, h₁, Set.image_iUnion]
       exact isOpen_iUnion fun i ↦ toSpec.image_basicOpen_eq_basicOpen f_deg hm a i ▸
         PrimeSpectrum.isOpen_basicOpen }
 
@@ -720,7 +720,7 @@ lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
   constructor
   · rintro ⟨y, hy⟩
     obtain ⟨y, rfl⟩ := HomogeneousLocalization.mk_surjective y
-    refine isUnit_of_mul_eq_one _
+    refine .of_mul_eq_one
       (.mk ⟨y.deg, y.den, y.num, (mk_mem_toSpec_base_apply _ _ _).not.mp hy⟩) <| val_injective _ ?_
     simp only [RingHom.algebraMap_toAlgebra, map_mk, RingHom.id_apply, val_mul, val_mk, mk_eq_mk',
       val_one, IsLocalization.mk'_mul_mk'_eq_one']
