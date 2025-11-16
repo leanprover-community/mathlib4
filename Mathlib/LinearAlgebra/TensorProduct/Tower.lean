@@ -675,12 +675,12 @@ theorem _root_.LinearEquiv.baseChange_one :
 theorem _root_.LinearEquiv.baseChange_trans (e : M ≃ₗ[R] N) (f : N ≃ₗ[R] P) :
     (e.trans f).baseChange R A M P = (e.baseChange R A M N).trans  (f.baseChange R A N P) := by
   ext x
-  simp [← LinearEquiv.coe_toLinearMap]
-  simp only [LinearEquiv.coe_trans, baseChange_eq_ltensor, lTensor_comp_apply]
+  simp only [← LinearEquiv.coe_toLinearMap, LinearEquiv.coe_baseChange, LinearEquiv.trans_apply,
+    LinearEquiv.coe_trans, baseChange_eq_ltensor, lTensor_comp_apply]
 
 theorem _root_.LinearEquiv.baseChange_mul (e : M ≃ₗ[R] M) (f : M ≃ₗ[R] M) :
     (e * f).baseChange R A M M = (e.baseChange R A M M) * (f.baseChange R A M M) := by
-  simp only [LinearEquiv.mul_eq_trans, LinearEquiv.baseChange_trans]
+  simp [LinearEquiv.mul_eq_trans, LinearEquiv.baseChange_trans]
 
 theorem _root_.LinearEquiv.baseChange_symm (e : M ≃ₗ[R] N) :
     e.symm.baseChange R A N M = (e.baseChange R A M N).symm := by
@@ -707,7 +707,7 @@ lemma _root_.LinearEquiv.baseChange_zpow (f : M ≃ₗ[R] M) (n : ℤ) :
   | succ n h =>
     simp only [zpow_add_one, LinearEquiv.baseChange_mul, h]
   | pred n h =>
-    simp only [@zpow_sub_one, LinearEquiv.baseChange_mul, h, LinearEquiv.baseChange_inv]
+    simp only [zpow_sub_one, LinearEquiv.baseChange_mul, h, LinearEquiv.baseChange_inv]
 
 variable {R A M N} in
 theorem rTensor_baseChange (φ : A →ₐ[R] B) (t : A ⊗[R] M) (f : M →ₗ[R] N) :

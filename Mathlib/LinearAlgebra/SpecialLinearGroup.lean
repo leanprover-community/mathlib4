@@ -9,7 +9,6 @@ import Mathlib.LinearAlgebra.Dual.Basis
 import Mathlib.LinearAlgebra.Matrix.Dual
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Charpoly.BaseChange
-import Mathlib.Algebra.Group.Subgroup.Lattice
 
 /-!
 # The special linear group of a module
@@ -31,44 +30,14 @@ When `V` is free and finite over `R`, we define
 * `SpecialLinearGroup.dualMap`
 * `SpecialLinearGroup.baseChange`
 
-We define `Matrix.SpecialLinaerGruop.toLin'Equiv`: the mul equivalence
+We define `Matrix.SpecialLinearGruop.toLin'_equiv`: the mul equivalence
 from `Matrix.SpecialLinearGroup n R` to `SpecialLinearGroup R (n → R)`
 and its variant
-`Matrix.SpecialLinearGroup.toLinEquiv`,
+`Matrix.SpecialLinearGroup.toLin_equiv`,
 from `Matrix.SpecialLinearGroup n R` to `SpecialLinearGroup R V`,
 associated with a finite basis of `V`.
 
 -/
-
--- Four lemmas on rank, finrank
--- TODO : move elsewhere
-theorem Module.rank_pos_iff_of_free {R M : Type*} [Ring R] [Nontrivial R]
-    [AddCommGroup M] [Module R M] [Module.Free R M] :
-    0 < Module.rank R M ↔ Nontrivial M := by
-  refine ⟨fun h ↦ ?_, fun _ ↦ rank_pos_of_free⟩
-  rw [← not_subsingleton_iff_nontrivial]
-  intro h'
-  simp only [rank_subsingleton', lt_self_iff_false] at h
-
-theorem Module.rank_zero_iff_of_free {R M : Type*} [Ring R] [Nontrivial R]
-    [AddCommGroup M] [Module R M] [Module.Free R M] :
-    Module.rank R M = 0 ↔ Subsingleton M := by
-  rw [← not_nontrivial_iff_subsingleton, iff_not_comm,
-    ← Module.rank_pos_iff_of_free (R := R), pos_iff_ne_zero]
-
-theorem Module.finrank_eq_zero_iff_of_free {R M : Type*} [CommRing R] [Nontrivial R]
-    [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M] :
-    Module.finrank R M = 0 ↔ Subsingleton M := by
-  have := Module.rank_lt_aleph0 R M
-  rw [← not_le] at this
-  simp [Module.finrank, this, Module.rank_zero_iff_of_free]
-
-theorem Module.finrank_pos_iff_of_free {R M : Type*} [CommRing R] [Nontrivial R]
-    [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M] :
-    0 < Module.finrank R M ↔ Nontrivial M := by
-  rw [← not_subsingleton_iff_nontrivial, ← iff_not_comm]
-  simp [Module.finrank_eq_zero_iff_of_free]
-
 
 variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
 
@@ -97,60 +66,10 @@ theorem ext (u v : SpecialLinearGroup R V) : (∀ x, u x = v x) → u = v :=
 
 section rankOne
 
-variable [Nontrivial R] [Module.Free R V] [Module.Finite R V]
-
--- Move to other file ?
-theorem _root_.nonempty_linearEquiv_of_finrank_eq_one (d1 : Module.finrank R V = 1) :
-    Nonempty (R ≃ₗ[R] V) := by
-  let ⟨ι, b⟩ := (Module.Free.exists_basis R V).some
-  have : Finite ι := Module.Finite.finite_basis b
-  have : Fintype ι := Fintype.ofFinite ι
-  have : DecidableEq ι := Classical.typeDecidableEq ι
-  rw [Module.finrank_eq_card_basis b, Fintype.card_eq_one_iff] at d1
-  obtain ⟨i, hi⟩ := d1
-  exact ⟨{
-    toFun r := r • (b i)
-    invFun v := b.repr v i
-    left_inv r := by simp
-    right_inv v := b.repr.injective <| by ext j; simp [hi j]
-    map_add' r s := by simp [add_smul]
-    map_smul' r s := by simp [mul_smul] }⟩
-
-theorem existsUnique_eq_smul_id_of_finrank_eq_one (d1 : Module.finrank R V = 1) (u : V →ₗ[R] V) :
-    ∃! c : R, u = c • LinearMap.id := by
-  let e := (nonempty_linearEquiv_of_finrank_eq_one d1).some
-  set c := e.symm (u (e 1)) with hc
-  suffices u = c • LinearMap.id by
-    use c
-    simp only [this, true_and]
-    intro d hcd
-    rw [LinearMap.ext_iff] at hcd
-    specialize hcd (e 1)
-    simp only [LinearMap.smul_apply, LinearMap.id_coe, id_eq] at hcd
-    have hcd' := LinearEquiv.congr_arg (e := e.symm) hcd
-    simp only [map_smul, LinearEquiv.symm_apply_apply, smul_eq_mul, mul_one] at hcd'
-    rw [hcd']
-  ext x
-  have (x : V) : x = (e.symm x) • (e 1) := by simp [← LinearEquiv.map_smul]
-  rw [this x]
-  simp only [hc, map_smul, LinearMap.smul_apply, LinearMap.id_coe, id_eq]
-  rw [← this]
-
-/-- Endomorphisms of a free module of rank one are homotheties. -/
-noncomputable def LinearEquiv.smul_id_of_finrank_eq_one (d1 : Module.finrank R V = 1) :
-    R ≃ₗ[R] (V →ₗ[R] V) where
-  toFun := fun c ↦ c • LinearMap.id
-  map_add' c d := by ext; simp [add_smul]
-  map_smul' c d := by ext; simp [mul_smul]
-  invFun u := (existsUnique_eq_smul_id_of_finrank_eq_one d1 u).choose
-  left_inv c := by
-    simp [← (existsUnique_eq_smul_id_of_finrank_eq_one d1 (c • LinearMap.id)).choose_spec.2 c]
-  right_inv u :=
-    ((existsUnique_eq_smul_id_of_finrank_eq_one d1 u).choose_spec.1).symm
-
-theorem subsingleton_of_finrank_eq_one (d1 : Module.finrank R V = 1) :
+theorem subsingleton_of_finrank_eq_one [Module.Free R V] (d1 : Module.finrank R V = 1) :
     Subsingleton (SpecialLinearGroup R V) where
   allEq u v := by
+    nontriviality R
     ext x
     by_cases hx : x = 0
     · simp [hx]
@@ -189,17 +108,6 @@ instance : Pow (SpecialLinearGroup R V) ℤ where
 
 instance : Inhabited (SpecialLinearGroup R V) :=
   ⟨1⟩
-
--- TODO: move?
-theorem _root_.LinearMap.det_dualMap
-    [Module.Free R V] [Module.Finite R V] (f : V →ₗ[R] V) :
-    f.dualMap.det = f.det := by
-  set b := Module.Free.chooseBasis R V
-  have : Fintype (Module.Free.ChooseBasisIndex R V) :=
-    Module.Free.ChooseBasisIndex.fintype R V
-  rw [← LinearMap.det_toMatrix b, ← LinearMap.det_toMatrix b.dualBasis]
-  rw [LinearMap.dualMap_def, LinearMap.toMatrix_transpose]
-  simp only [Matrix.det_transpose, LinearMap.det_toMatrix]
 
 /-- The transpose of an element in `SpecialLinearGroup R V`. -/
 def dualMap
@@ -256,7 +164,7 @@ theorem coe_dualMap
 
 end CoeLemmas
 
-instance : Group (SpecialLinearGroup R V) :=
+instance : Group (SpecialLinearGroup R V) := fast_instance%
   Function.Injective.group _ Subtype.coe_injective coe_one coe_mul coe_inv coe_div coe_pow coe_zpow
 
 /-- A version of `Matrix.toLin' A` that produces linear equivalences. -/
@@ -285,6 +193,31 @@ theorem toLinearEquiv_injective :
     Function.Injective (toLinearEquiv : SpecialLinearGroup R V →* V ≃ₗ[R] V) :=
   Subtype.val_injective
 
+/-- The canonical group morphism from the special linear group
+to the general linear group. -/
+def toGeneralLinearGroup : SpecialLinearGroup R V →* LinearMap.GeneralLinearGroup R V :=
+  (LinearMap.GeneralLinearGroup.generalLinearEquiv R V).symm.toMonoidHom.comp toLinearEquiv
+
+lemma toGeneralLinearGroup_toLinearEquiv_apply (u : SpecialLinearGroup R V) :
+    u.toGeneralLinearGroup.toLinearEquiv = u.toLinearEquiv := rfl
+
+lemma coe_toGeneralLinearGroup_apply (u : SpecialLinearGroup R V) :
+    u.toGeneralLinearGroup.val = u.toLinearEquiv := rfl
+
+lemma toGeneralLinearGroup_injective :
+    Function.Injective ⇑(toGeneralLinearGroup (R := R) (V := V)) :=  by
+  simp [toGeneralLinearGroup, toLinearEquiv_injective]
+
+lemma mem_range_toGeneralLinearGroup_iff {u : LinearMap.GeneralLinearGroup R V} :
+    u ∈ Set.range ⇑(toGeneralLinearGroup (R := R) (V := V)) ↔
+      u.toLinearEquiv.det = 1 := by
+  constructor
+  · rintro ⟨v, hv⟩
+    rw [← hv, toGeneralLinearGroup_toLinearEquiv_apply]
+    exact v.prop
+  · intro hu
+    refine ⟨⟨u.toLinearEquiv, hu⟩, rfl⟩
+
 section baseChange
 
 open TensorProduct
@@ -293,7 +226,7 @@ variable {S : Type*} [CommRing S] [Algebra R S]
   [Module.Free R V] [Module.Finite R V]
 
 /-- By base change, an `R`-algebra `S` induces a group homomorphism from
-`SpecialLinearGroup R V` to `SpecialLinearGroup S (S ⊗[R] V)`. -/
+`SpecialLinearGroup R V` to `SpecialLinearGroup S (S ⊗[R] V)`. -/
 @[simps]
 def baseChange : SpecialLinearGroup R V →* SpecialLinearGroup S (S ⊗[R] V) where
   toFun g := ⟨LinearEquiv.baseChange R S V V g, by
@@ -332,47 +265,42 @@ theorem congr_linearEquiv_symm (e : V ≃ₗ[R] W) :
 
 theorem congr_linearEquiv_trans (e : V ≃ₗ[R] W) (f : W ≃ₗ[R] X) :
     (congr_linearEquiv e).trans (congr_linearEquiv f) = congr_linearEquiv (e.trans f) := by
-  aesop
+  rfl
 
 theorem congr_linearEquiv_refl :
     congr_linearEquiv (LinearEquiv.refl R V) = MulEquiv.refl _ := by
   rfl
 
-
 end SpecialLinearGroup
 
-section Matrix
-
 namespace Matrix.SpecialLinearGroup
-
-open LinearMap LinearEquiv
 
 variable {n : Type*} [Fintype n] [DecidableEq n] (b : Module.Basis n R V)
 
 /-- The canonical isomorphism from `SL(n, R)` to the special linear group of the module `n → R`. -/
-def toLin'Equiv :
-    SpecialLinearGroup n R ≃* _root_.SpecialLinearGroup R (n → R) where
-  toFun A := ⟨toLin' A, by
+def toLin'_equiv : SpecialLinearGroup n R ≃* _root_.SpecialLinearGroup R (n → R) where
+  toFun A := ⟨Matrix.SpecialLinearGroup.toLin' A,
+    by
       simp [← Units.val_inj, LinearEquiv.coe_det, Units.val_one,
-        toLin'_to_linearMap]⟩
-  invFun u := ⟨toMatrix' u,
+        Matrix.SpecialLinearGroup.toLin'_to_linearMap]⟩
+  invFun u := ⟨LinearMap.toMatrix' u,
       by simp [← LinearEquiv.coe_det, u.prop]⟩
   left_inv A := Subtype.coe_injective <| by
-    rw [← eq_symm_apply, toMatrix'_symm, toLin'_to_linearMap]
+    rw [← LinearEquiv.eq_symm_apply, LinearMap.toMatrix'_symm,
+      Matrix.SpecialLinearGroup.toLin'_to_linearMap]
   right_inv u := Subtype.coe_injective <| by
-    simp [← toLinearMap_inj, toLin']
+    simp [← LinearEquiv.toLinearMap_inj, Matrix.SpecialLinearGroup.toLin']
   map_mul' A B := Subtype.coe_injective (by simp)
 
 /-- The isomorphism from `Matrix.SpecialLinearGroup n R`
 to the special linear group of a module associated with a basis of that module. -/
 noncomputable def toLinEquiv (b : Module.Basis n R V) :
     SpecialLinearGroup n R ≃* _root_.SpecialLinearGroup R V :=
-  toLin'Equiv.trans
-    (SpecialLinearGroup.congr_linearEquiv
-      (b.repr.trans (Finsupp.linearEquivFunOnFinite R R n)).symm)
+  SpecialLinearGroup.toLin'_equiv.trans
+    (SpecialLinearGroup.congr_linearEquiv b.equivFun.symm)
 
 theorem toLinEquiv.toLinearMap_eq
-    (b : Module.Basis n R V) (g : SpecialLinearGroup n R) :
+    (b : Module.Basis n R V) (g : Matrix.SpecialLinearGroup n R) :
     (toLinEquiv b g : V →ₗ[R] V) = (Matrix.toLin b b g) :=
   rfl
 
