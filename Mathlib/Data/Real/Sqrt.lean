@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Floris van Doorn, Yury Kudryashov
 -/
 import Mathlib.Topology.Instances.NNReal.Lemmas
 import Mathlib.Topology.Order.MonotoneContinuity
+import Mathlib.Tactic.Isolate
 
 /-!
 # Square root of a real number
@@ -54,12 +55,20 @@ lemma sqrt_le_sqrt : sqrt x ≤ sqrt y ↔ x ≤ y := sqrt.le_iff_le
 
 lemma sqrt_lt_sqrt : sqrt x < sqrt y ↔ x < y := sqrt.lt_iff_lt
 
+@[isolate]
 lemma sqrt_eq_iff_eq_sq : sqrt x = y ↔ x = y ^ 2 := sqrt.toEquiv.apply_eq_iff_eq_symm_apply
 
+@[isolate]
 lemma sqrt_le_iff_le_sq : sqrt x ≤ y ↔ x ≤ y ^ 2 := sqrt.to_galoisConnection _ _
 
+@[isolate]
+lemma sqrt_lt_iff_lt_sq : sqrt x < y ↔ x < y ^ 2 := by conv_rhs => rw [← sqrt_lt_sqrt, sqrt_sq]
+
+@[isolate]
 lemma le_sqrt_iff_sq_le : x ≤ sqrt y ↔ x ^ 2 ≤ y := (sqrt.symm.to_galoisConnection _ _).symm
 
+@[isolate]
+lemma lt_sqrt_iff_sq_lt : x < sqrt y ↔ x ^ 2 < y := by conv_rhs => rw [← sqrt_lt_sqrt, sqrt_sq]
 
 @[simp] lemma sqrt_eq_zero : sqrt x = 0 ↔ x = 0 := by simp [sqrt_eq_iff_eq_sq]
 
@@ -159,6 +168,7 @@ theorem sq_sqrt (h : 0 ≤ x) : √x ^ 2 = x := by rw [sq, mul_self_sqrt h]
 @[simp]
 theorem sqrt_sq (h : 0 ≤ x) : √(x ^ 2) = x := by rw [sq, sqrt_mul_self h]
 
+@[isolate]
 theorem sqrt_eq_iff_eq_sq (hx : 0 ≤ x) (hy : 0 ≤ y) : √x = y ↔ x = y ^ 2 := by
   rw [sq, sqrt_eq_iff_mul_self_eq hx hy]
 
@@ -197,6 +207,7 @@ theorem sqrt_monotone : Monotone Real.sqrt :=
 theorem sqrt_lt_sqrt (hx : 0 ≤ x) (h : x < y) : √x < √y :=
   (sqrt_lt_sqrt_iff hx).2 h
 
+@[isolate]
 theorem sqrt_le_left (hy : 0 ≤ y) : √x ≤ y ↔ x ≤ y ^ 2 := by
   rw [sqrt, ← Real.le_toNNReal_iff_coe_le hy, NNReal.sqrt_le_iff_le_sq, sq, ← Real.toNNReal_mul hy,
     Real.toNNReal_le_toNNReal_iff (mul_self_nonneg y), sq]
@@ -205,6 +216,7 @@ theorem sqrt_le_iff : √x ≤ y ↔ 0 ≤ y ∧ x ≤ y ^ 2 := by
   rw [← and_iff_right_of_imp fun h => (sqrt_nonneg x).trans h, and_congr_right_iff]
   exact sqrt_le_left
 
+@[isolate]
 theorem sqrt_lt (hx : 0 ≤ x) (hy : 0 ≤ y) : √x < y ↔ x < y ^ 2 := by
   rw [← sqrt_lt_sqrt_iff hx, sqrt_sq hy]
 
@@ -213,6 +225,7 @@ theorem sqrt_lt' (hy : 0 < y) : √x < y ↔ x < y ^ 2 := by
 
 /-- Note: if you want to conclude `x ≤ √y`, then use `Real.le_sqrt_of_sq_le`.
 If you have `x > 0`, consider using `Real.le_sqrt'` -/
+@[isolate]
 theorem le_sqrt (hx : 0 ≤ x) (hy : 0 ≤ y) : x ≤ √y ↔ x ^ 2 ≤ y :=
   le_iff_le_iff_lt_iff_lt.2 <| sqrt_lt hy hx
 
@@ -355,6 +368,7 @@ theorem sqrt_div_self' : √x / x = 1 / √x := by rw [← div_sqrt, one_div_div
 
 theorem sqrt_div_self : √x / x = (√x)⁻¹ := by rw [sqrt_div_self', one_div]
 
+@[isolate]
 theorem lt_sqrt (hx : 0 ≤ x) : x < √y ↔ x ^ 2 < y := by
   rw [← sqrt_lt_sqrt_iff (sq_nonneg _), sqrt_sq hx]
 
