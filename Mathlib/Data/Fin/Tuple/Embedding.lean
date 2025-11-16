@@ -66,7 +66,7 @@ theorem init_snoc {n : ℕ} (x : Fin n ↪ α) {a : α} (ha : a ∉ range x) :
   simp [snoc, init]
 
 theorem snoc_castSucc {n : ℕ} {x : Fin n ↪ α} {a : α} {ha : a ∉ range x} {i : Fin n} :
-    snoc x ha i.castSucc  = x i := by
+    snoc x ha i.castSucc = x i := by
   rw [coe_snoc, Fin.snoc_castSucc]
 
 theorem snoc_last {n : ℕ} {x : Fin n ↪ α} {a : α} {ha : a ∉ range x} :

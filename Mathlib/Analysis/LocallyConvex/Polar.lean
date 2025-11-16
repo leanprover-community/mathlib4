@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Kalle Kytölä
 -/
 import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.LinearAlgebra.SesquilinearForm
+import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 import Mathlib.Topology.Algebra.Module.WeakBilin
 
 /-!

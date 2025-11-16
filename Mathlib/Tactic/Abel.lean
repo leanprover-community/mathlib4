@@ -16,7 +16,7 @@ Evaluate expressions in the language of additive, commutative monoids and groups
 -/
 
 -- TODO: assert_not_exists NonUnitalNonAssociativeSemiring
-assert_not_exists OrderedAddCommMonoid TopologicalSpace PseudoMetricSpace
+assert_not_exists IsOrderedMonoid TopologicalSpace PseudoMetricSpace
 
 namespace Mathlib.Tactic.Abel
 open Lean Elab Meta Tactic Qq
@@ -544,4 +544,4 @@ end Mathlib.Tactic.Abel
 We register `abel` with the `hint` tactic.
 -/
 
-register_hint abel
+register_hint 1000 abel

@@ -252,7 +252,7 @@ lemma IsLocalDiffeomorph.isLocalDiffeomorphOn
     {f : M → N} (hf : IsLocalDiffeomorph I J n f) (s : Set M) : IsLocalDiffeomorphOn I J n f s :=
   fun x ↦ hf x
 
-/-! # Basic properties of local diffeomorphisms -/
+/-! ### Basic properties of local diffeomorphisms -/
 section Basic
 variable {f : M → N} {s : Set M} {x : M}
 variable {I J n}
@@ -355,9 +355,6 @@ noncomputable def IsLocalDiffeomorph.diffeomorph_of_bijective
       apply ((Φ x).symm.contMDiffOn.congr (aux x)).contMDiffAt (((Φ x).open_target).mem_nhds ?_)
       have : y = (Φ x) x := ((hgInverse.2 y).congr (hfx hx)).mp rfl
       exact this ▸ (Φ x).map_source hx }
-
-@[deprecated (since := "2025-03-24")] alias
-IslocalDiffeomorph.diffeomorph_of_bijective := IsLocalDiffeomorph.diffeomorph_of_bijective
 
 end Basic
 
