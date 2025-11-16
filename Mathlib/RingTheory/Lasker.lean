@@ -63,16 +63,8 @@ lemma isPrimary_decomposition_pairwise_ne_radical {I : Ideal R}
   classical
   refine ⟨(s.image (fun J ↦ {I ∈ s | I.radical = J.radical})).image fun t ↦ t.inf id,
     ?_, ?_, ?_⟩
-  · rw [← hs]
-    refine le_antisymm ?_ ?_ <;> intro x hx
-    · simp only [Finset.inf_image, CompTriple.comp_eq, Submodule.mem_finsetInf,
-      Function.comp_apply, Finset.mem_filter, id_eq, and_imp] at hx ⊢
-      intro J hJ
-      exact hx J hJ J hJ rfl
-    · simp only [Submodule.mem_finsetInf, id_eq, Finset.inf_image, CompTriple.comp_eq,
-      Function.comp_apply, Finset.mem_filter, and_imp] at hx ⊢
-      intro J _ K hK _
-      exact hx K hK
+  · ext
+    grind [Finset.inf_image, Submodule.mem_finsetInf]
   · simp only [Finset.mem_image, exists_exists_and_eq_and, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂]
     intro J hJ
