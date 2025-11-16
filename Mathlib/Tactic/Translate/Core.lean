@@ -186,14 +186,14 @@ structure ArgInfo where
   relevantArg : Nat := 0
 
 /-- Compute the `ArgInfo` for the reverse translation. The `reorder` permutation is inverted.
-In parctice, `relevantArg` does not overlap with `reorder` for dual translations,
+In practice, `relevantArg` does not overlap with `reorder` for dual translations,
 so we don't bother applying the permutation to `relevantArg`. -/
 def ArgInfo.reverse (i : ArgInfo) : ArgInfo where
   reorder := i.reorder.map (·.reverse)
   relevantArg := i.relevantArg
 
 /-- Add a name translation to the translations map and add the `argInfo` information to `src`.
-If the translation attribute is dual, als add the reverse translation. -/
+If the translation attribute is dual, also add the reverse translation. -/
 def insertTranslation (t : TranslateData) (src tgt : Name) (argInfo : ArgInfo)
     (failIfExists := true) : CoreM Unit := do
   insertTranslationAux t src tgt failIfExists argInfo
