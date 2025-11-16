@@ -2910,6 +2910,7 @@ import Mathlib.CategoryTheory.Sites.MorphismProperty
 import Mathlib.CategoryTheory.Sites.NonabelianCohomology.H1
 import Mathlib.CategoryTheory.Sites.Over
 import Mathlib.CategoryTheory.Sites.Plus
+import Mathlib.CategoryTheory.Sites.Point.Basic
 import Mathlib.CategoryTheory.Sites.Precoverage
 import Mathlib.CategoryTheory.Sites.Preserves
 import Mathlib.CategoryTheory.Sites.PreservesLocallyBijective

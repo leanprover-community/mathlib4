@@ -5,6 +5,7 @@ Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 import Mathlib.CategoryTheory.Category.Cat
+import Mathlib.CategoryTheory.EssentiallySmall
 
 /-!
 # The category of elements
@@ -104,6 +105,11 @@ def isoMk {F : C ⥤ Type w} (x y : F.Elements) (e : x.1 ≅ y.1) (he : F.map e.
     x ≅ y where
   hom := homMk x y e.hom he
   inv := homMk y x e.inv (by rw [← he, FunctorToTypes.map_inv_map_hom_apply])
+
+instance [LocallySmall.{w} C] (F : C ⥤ Type w) : LocallySmall.{w} F.Elements where
+  hom_small := by
+    rintro ⟨X, _⟩ ⟨Y, y⟩
+    exact small_of_injective (f := fun g ↦ g.val) (by cat_disch)
 
 end CategoryOfElements
 
