@@ -85,7 +85,7 @@ If `ctx?` is `some ctx`, `ctx` is used as an initial context. A `ctx?` of `none`
 used when operating on the first node of the entire infotree. Otherwise, it is likely that no
 context will be found.
 -/
-def onFirstNode? {α} (t : InfoTree) (ctx? : Option ContextInfo)
+def onHighestNode? {α} (t : InfoTree) (ctx? : Option ContextInfo)
     (f : ContextInfo → Info → PersistentArray InfoTree → α) : Option α :=
   t.findSome? (ctx? := ctx?) fun ctx i ch => some (f ctx i ch)
 
