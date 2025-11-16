@@ -132,11 +132,12 @@ instance [LocallySmall.{w} C] [AB5OfSize.{w, w} A] [HasFiniteLimits A] :
   exact HasExactColimitOfShape.of_final F A
 
 noncomputable def presheafFiber : (Cᵒᵖ ⥤ A) ⥤ A :=
-  colimit ((CategoryOfElements.π Φ.fiber).op ⋙ evaluation _ A)
+  (Functor.whiskeringLeft _ _ _).obj (CategoryOfElements.π Φ.fiber).op ⋙ colim
 
 noncomputable def toPresheafFiberNatTrans (X : C) (x : Φ.fiber.obj X) :
-    (evaluation Cᵒᵖ A).obj (op X) ⟶ Φ.presheafFiber :=
-  colimit.ι ((CategoryOfElements.π Φ.fiber).op ⋙ evaluation _ A) ⟨_, x⟩
+    (evaluation Cᵒᵖ A).obj (op X) ⟶ Φ.presheafFiber where
+  app P := colimit.ι ((CategoryOfElements.π Φ.fiber).op ⋙ P) (op ⟨X, x⟩)
+  naturality _ _ f := by simp [presheafFiber]
 
 noncomputable abbrev toPresheafFiber (X : C) (x : Φ.fiber.obj X) (P : Cᵒᵖ ⥤ A) :
     P.obj (op X) ⟶ Φ.presheafFiber.obj P :=
@@ -146,8 +147,8 @@ noncomputable abbrev toPresheafFiber (X : C) (x : Φ.fiber.obj X) (P : Cᵒᵖ �
 lemma toPresheafFiber_w {X Y : C} (f : X ⟶ Y) (x : Φ.fiber.obj X) (P : Cᵒᵖ ⥤ A) :
     P.map f.op ≫ Φ.toPresheafFiber X x P =
       Φ.toPresheafFiber Y (Φ.fiber.map f x) P :=
-  NatTrans.congr_app (colimit.w ((CategoryOfElements.π Φ.fiber).op ⋙ evaluation _ A)
-    (CategoryOfElements.homMk ⟨_, x⟩ ⟨_, Φ.fiber.map f x⟩ f rfl).op) P
+  colimit.w ((CategoryOfElements.π Φ.fiber).op ⋙ P)
+      (CategoryOfElements.homMk ⟨X, x⟩ ⟨Y, Φ.fiber.map f x⟩ f rfl).op
 
 @[reassoc]
 lemma toPresheafFiber_naturality {P Q : Cᵒᵖ ⥤ A} (g : P ⟶ Q) (X : C) (x : Φ.fiber.obj X) :
@@ -180,16 +181,16 @@ lemma toPresheafFiber_jointly_surjective (p : ToType (Φ.presheafFiber.obj P)) :
     ∃ (X : C) (x : Φ.fiber.obj X) (z : ToType (P.obj (op X))),
       Φ.toPresheafFiber X x P z = p := by
   obtain ⟨⟨X, x⟩, z, rfl⟩ := Types.jointly_surjective_of_isColimit
-    (isColimitOfPreserves ((evaluation _ A).obj P ⋙ forget A)
-    (colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ evaluation _ A))) p
+    (isColimitOfPreserves (forget A)
+      (colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ P))) p
   exact ⟨X, x, z, rfl⟩
 
 lemma toPresheafFiber_jointly_surjective₂ (p₁ p₂ : ToType (Φ.presheafFiber.obj P)) :
     ∃ (X : C) (x : Φ.fiber.obj X) (z₁ z₂ : ToType (P.obj (op X))),
       Φ.toPresheafFiber X x P z₁ = p₁ ∧ Φ.toPresheafFiber X x P z₂ = p₂ := by
   obtain ⟨⟨X, x⟩, z₁, z₂, rfl, rfl⟩ := Types.FilteredColimit.jointly_surjective_of_isColimit₂
-    (isColimitOfPreserves ((evaluation _ A).obj P ⋙ forget A)
-    (colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ evaluation _ A))) p₁ p₂
+    (isColimitOfPreserves (forget A)
+      (colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ P))) p₁ p₂
   exact ⟨X, x, z₁, z₂, rfl, rfl⟩
 
 lemma toPresheafFiber_eq_iff' (X : C) (x : Φ.fiber.obj X) (z₁ z₂ : ToType (P.obj (op X))) :
@@ -197,8 +198,8 @@ lemma toPresheafFiber_eq_iff' (X : C) (x : Φ.fiber.obj X) (z₁ z₂ : ToType (
       ∃ (Y : C) (f : Y ⟶ X) (y : Φ.fiber.obj Y), Φ.fiber.map f y = x ∧
         P.map f.op z₁ = P.map f.op z₂ := by
   refine (Types.FilteredColimit.isColimit_eq_iff'
-    (ht := (isColimitOfPreserves ((evaluation _ A).obj P ⋙ forget A)
-    (colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ evaluation _ A)))) ..).trans ?_
+    (ht := isColimitOfPreserves (forget A)
+      (colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ P))) ..).trans ?_
   constructor
   · rintro ⟨⟨Y, y⟩, ⟨f, hf⟩, hf'⟩
     exact ⟨Y, f, y, hf, hf'⟩
@@ -268,19 +269,22 @@ noncomputable def presheafToSheafCompSheafFiber [HasWeakSheafify J A]
         (by simp [← Functor.map_comp])).symm
 
 instance [LocallySmall.{w} C] [HasFiniteLimits A] [AB5OfSize.{w, w} A] :
-    PreservesFiniteLimits (Φ.presheafFiber (A := A)) :=
-  ObjectProperty.preservesFiniteLimits.prop_of_isColimit
-    (colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ evaluation _ A))
-      (by dsimp; infer_instance)
+    PreservesFiniteLimits (Φ.presheafFiber (A := A)) := by
+  dsimp [presheafFiber]
+  have : PreservesFiniteLimits ((Functor.whiskeringLeft Φ.fiber.Elementsᵒᵖ Cᵒᵖ A).obj
+      (CategoryOfElements.π Φ.fiber).op) := by
+    constructor
+    intro _ _ _
+    infer_instance
+  apply comp_preservesFiniteLimits
 
 instance [LocallySmall.{w} C] [HasFiniteLimits A] [AB5OfSize.{w, w} A] :
     PreservesFiniteLimits (Φ.sheafFiber (A := A)) := comp_preservesFiniteLimits _ _
 
 instance : PreservesColimitsOfSize.{w, w} (Φ.presheafFiber (A := A)) where
-  preservesColimitsOfShape :=
-    (ObjectProperty.preservesColimitsOfShape _).prop_of_isColimit
-      (colimit.isColimit ((CategoryOfElements.π Φ.fiber).op ⋙ evaluation _ A))
-        (by dsimp; infer_instance)
+  preservesColimitsOfShape := by
+    dsimp [presheafFiber]
+    infer_instance
 
 instance [HasSheafify J A] [J.WEqualsLocallyBijective A] [(forget A).ReflectsIsomorphisms]
     [PreservesFilteredColimitsOfSize.{w, w} (forget A)] [LocallySmall.{w} C] :
