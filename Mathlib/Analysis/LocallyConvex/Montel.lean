@@ -8,8 +8,11 @@ import Mathlib.Analysis.Normed.Module.FiniteDimension
 /-!
 # Montel spaces
 
-A Montel space is a topological vector space that has the Heine-Borel property: every closed and
+A Montel space is a topological vector space `E`that has the Heine-Borel property: every closed and
 (von Neumann) bounded set is compact.
+
+Note that we are not requiring that `E` is a barrelled space, so the usual definition of a Montel
+space would be `[MontelSpace 𝕜 E] [BarrelledSpace 𝕜 E]`.
 
 * `MontelSpace.finiteDimensional_of_normedSpace`: every normed Montel space is finite dimensional.
 * `ContinuousLinearEquiv.toCompactConvergenceCLM`: if `E` is a Montel space then topology of compact
@@ -27,10 +30,13 @@ variable [SeminormedRing 𝕜] [Zero E] [SMul 𝕜 E]
   [TopologicalSpace E]
 
 /-- A Montel space is a topological vector space that has the Heine-Borel property: every closed and
-(von Neumann) bounded set is compact. -/
+(von Neumann) bounded set is compact.
+
+Note that we are not requiring that `E` is a barrelled space, so the usual definition of a Montel
+space would be `[MontelSpace 𝕜 E] [BarrelledSpace 𝕜 E]`. -/
 class MontelSpace (𝕜 E : Type*) [SeminormedRing 𝕜] [Zero E] [SMul 𝕜 E]
     [TopologicalSpace E] : Prop where
-  heine_borel : ∀ (s : Set E) (_ : IsClosed s) (_ : IsVonNBounded 𝕜 s), IsCompact s
+  heine_borel : ∀ s : Set E, IsClosed s → IsVonNBounded 𝕜 s → IsCompact s
 
 namespace MontelSpace
 
