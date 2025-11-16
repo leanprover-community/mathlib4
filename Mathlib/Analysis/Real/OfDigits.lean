@@ -28,7 +28,7 @@ representations of reals as sequences of digits in positional system.
 namespace Real
 
 /-- `ofDigits` takes a sequence of digits `(d₀, d₁, ...)` in base `b` and returns the
-  real numnber `0.d₀d₁d₂... = ∑ᵢ(dᵢ/bⁱ)`. This auxiliary definition `ofDigitsTerm` sends the
+  real number `0.d₀d₁d₂... = ∑ᵢ(dᵢ/bⁱ)`. This auxiliary definition `ofDigitsTerm` sends the
   sequence to the function sending `i` to `dᵢ/bⁱ`. -/
 noncomputable def ofDigitsTerm {b : ℕ} (digits : ℕ → Fin b) : ℕ → ℝ :=
   fun i ↦ (digits i) * ((b : ℝ) ^ (i + 1))⁻¹
@@ -74,7 +74,7 @@ theorem ofDigits_le_one {b : ℕ} (digits : ℕ → Fin b) : ofDigits digits ≤
   · simp_rw [pow_succ', mul_inv, ← inv_pow, ← mul_assoc]
     rw [tsum_mul_left, tsum_geometric_of_lt_one (by positivity) (by simp [inv_lt_one_iff₀, hb])]
     have := sub_pos.mpr hb
-    field_simp
+    field
   · simp_rw [pow_succ', mul_inv, ← inv_pow, ← mul_assoc]
     refine Summable.mul_left _ (summable_geometric_of_lt_one (by positivity) ?_)
     simp [inv_lt_one_iff₀, hb]
