@@ -877,4 +877,42 @@ lemma affineSpan_pair_eq_of_right_mem_of_ne {p₁ p₂ p₃ : P} (h : p₁ ∈ l
     line[k, p₂, p₁] = line[k, p₂, p₃] :=
   affineSpan_pair_eq_of_mem_of_mem_of_ne (left_mem_affineSpan_pair _ _ _) h hne.symm
 
+/-- Given two triples of points, if the lines determined by corresponding pairs of points are
+parallel, or more generally the directions of the lines in the second triple are contained in those
+of the lines in the first triple with one pair being parallel (this does not provide extra
+mathematical generality, but can sometimes be more convenient when using this lemma), and one of
+the points in the first triple does not lie on the line through the other two (typically, if they
+are not collinear), then the vectors between corresponding pairs of points are all related by the
+same nonzero scale factor. -/
+theorem exists_eq_smul_of_parallel {p₁ p₂ p₃ p₄ p₅ p₆ : P} (h₂ : p₂ ∉ line[k, p₁, p₃])
+    (h₁₂₄₅ : line[k, p₁, p₂] ∥ line[k, p₄, p₅])
+    (h₂₃₅₆ : line[k, p₅, p₆].direction ≤ line[k, p₂, p₃].direction)
+    (h₃₁₆₄ : line[k, p₆, p₄].direction ≤ line[k, p₃, p₁].direction) :
+    ∃ r : k, r ≠ 0 ∧ p₅ -ᵥ p₄ = r • (p₂ -ᵥ p₁) ∧ p₆ -ᵥ p₅ = r • (p₃ -ᵥ p₂) ∧
+      p₄ -ᵥ p₆ = r • (p₁ -ᵥ p₃) := by
+  rw [AffineSubspace.affineSpan_pair_parallel_iff_vectorSpan_eq, vectorSpan_pair_rev,
+    vectorSpan_pair_rev, Submodule.span_singleton_eq_span_singleton] at h₁₂₄₅
+  rw [direction_affineSpan, direction_affineSpan, vectorSpan_pair_rev, vectorSpan_pair_rev,
+    Submodule.span_singleton_le_iff_mem, Submodule.mem_span_singleton] at h₂₃₅₆ h₃₁₆₄
+  obtain ⟨r₁, hr₁⟩ := h₁₂₄₅
+  obtain ⟨r₂, hr₂⟩ := h₂₃₅₆
+  obtain ⟨r₃, hr₃⟩ := h₃₁₆₄
+  rw [Units.smul_def] at hr₁
+  by_cases h : (r₁ : k) = r₂
+  · refine ⟨r₁, r₁.ne_zero, hr₁.symm, h ▸ hr₂.symm, ?_⟩
+    rw [← neg_inj, neg_vsub_eq_vsub_rev, ← smul_neg, neg_vsub_eq_vsub_rev,
+      ← vsub_add_vsub_cancel p₆ p₅ p₄, ← vsub_add_vsub_cancel p₃ p₂ p₁, smul_add, hr₁, h, hr₂]
+  · exfalso
+    have h₁₂ : (r₁ : k) • (p₂ -ᵥ p₁) + r₂ • (p₃ -ᵥ p₂) ∈ vectorSpan k {p₁, p₃} := by
+      rw [hr₁, hr₂, add_comm, vsub_add_vsub_cancel, ← neg_vsub_eq_vsub_rev, neg_mem_iff, ← hr₃]
+      exact smul_vsub_mem_vectorSpan_pair _ _ _
+    have h₁₁ : (r₁ : k) • (p₂ -ᵥ p₁) + (r₁ : k) • (p₃ -ᵥ p₂) ∈ vectorSpan k {p₁, p₃} := by
+      rw [add_comm, ← smul_add, vsub_add_vsub_cancel]
+      exact smul_vsub_rev_mem_vectorSpan_pair _ _ _
+    have h₂₁ : (r₂ - r₁) • (p₃ -ᵥ p₂) ∈ vectorSpan k {p₁, p₃} := by
+      simpa [sub_smul] using sub_mem h₁₂ h₁₁
+    rw [Submodule.smul_mem_iff _ (by rwa [sub_ne_zero, ne_comm]), ← direction_affineSpan,
+      AffineSubspace.vsub_left_mem_direction_iff_mem (right_mem_affineSpan_pair _ _ _)] at h₂₁
+    exact h₂ h₂₁
+
 end DivisionRing
