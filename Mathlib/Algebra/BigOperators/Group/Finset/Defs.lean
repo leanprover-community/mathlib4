@@ -508,7 +508,7 @@ lemma prod_nbij' (i : ι → κ) (j : κ → ι) (hi : ∀ a ∈ s, i a ∈ t) (
 /-- Specialization of `Finset.prod_nbij'` that automatically fills in most arguments.
 
 See `Fintype.prod_equiv` for the version where `s` and `t` are `univ`. -/
-@[to_additive /-- `Specialization of `Finset.sum_nbij'` that automatically fills in most arguments.
+@[to_additive /-- Specialization of `Finset.sum_nbij'` that automatically fills in most arguments.
 
 See `Fintype.sum_equiv` for the version where `s` and `t` are `univ`. -/]
 lemma prod_equiv (e : ι ≃ κ) (hst : ∀ i, i ∈ s ↔ e i ∈ t) (hfg : ∀ i ∈ s, f i = g (e i)) :
@@ -517,7 +517,7 @@ lemma prod_equiv (e : ι ≃ κ) (hst : ∀ i, i ∈ s ↔ e i ∈ t) (hfg : ∀
 /-- Specialization of `Finset.prod_bij` that automatically fills in most arguments.
 
 See `Fintype.prod_bijective` for the version where `s` and `t` are `univ`. -/
-@[to_additive /-- `Specialization of `Finset.sum_bij` that automatically fills in most arguments.
+@[to_additive /-- Specialization of `Finset.sum_bij` that automatically fills in most arguments.
 
 See `Fintype.sum_bijective` for the version where `s` and `t` are `univ`. -/]
 lemma prod_bijective (e : ι → κ) (he : e.Bijective) (hst : ∀ i, i ∈ s ↔ e i ∈ t)

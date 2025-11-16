@@ -1289,8 +1289,7 @@ variable {R A M M' : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] (S :
   [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
   [IsLocalization S A]
 
-/-- If `M'` is the localization of `M` at `S` and `A = S⁻¹R`, then
-`M' is an `A`-module. -/
+/-- If `M'` is the localization of `M` at `S` and `A = S⁻¹R`, then `M'` is an `A`-module. -/
 @[reducible] noncomputable def module (f : M →ₗ[R] M') [IsLocalizedModule S f] : Module A M' :=
   (IsLocalizedModule.iso S f).symm.toAddEquiv.module A
 
