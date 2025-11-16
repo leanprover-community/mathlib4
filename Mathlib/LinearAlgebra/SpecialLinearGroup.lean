@@ -30,7 +30,7 @@ When `V` is free and finite over `R`, we define
 * `SpecialLinearGroup.dualMap`
 * `SpecialLinearGroup.baseChange`
 
-We define `Matrix.SpecialLinearGruop.toLin'_equiv`: the mul equivalence
+We define `Matrix.SpecialLinearGroup.toLin'_equiv`: the mul equivalence
 from `Matrix.SpecialLinearGroup n R` to `SpecialLinearGroup R (n → R)`
 and its variant
 `Matrix.SpecialLinearGroup.toLin_equiv`,
@@ -294,19 +294,19 @@ def toLin'_equiv : SpecialLinearGroup n R ≃* _root_.SpecialLinearGroup R (n �
 
 /-- The isomorphism from `Matrix.SpecialLinearGroup n R`
 to the special linear group of a module associated with a basis of that module. -/
-noncomputable def toLinEquiv (b : Module.Basis n R V) :
+noncomputable def toLin_equiv (b : Module.Basis n R V) :
     SpecialLinearGroup n R ≃* _root_.SpecialLinearGroup R V :=
   SpecialLinearGroup.toLin'_equiv.trans
     (SpecialLinearGroup.congr_linearEquiv b.equivFun.symm)
 
-theorem toLinEquiv.toLinearMap_eq
+theorem toLin_equiv.toLinearMap_eq
     (b : Module.Basis n R V) (g : Matrix.SpecialLinearGroup n R) :
-    (toLinEquiv b g : V →ₗ[R] V) = (Matrix.toLin b b g) :=
+    (toLin_equiv b g : V →ₗ[R] V) = (Matrix.toLin b b g) :=
   rfl
 
-theorem toLinEquiv.symm_toLinearMap_eq
+theorem toLin_equiv.symm_toLinearMap_eq
     (b : Module.Basis n R V) (g : _root_.SpecialLinearGroup R V) :
-    ((toLinEquiv b).symm g : Matrix n n R) = LinearMap.toMatrix b b g :=
+    ((toLin_equiv b).symm g : Matrix n n R) = LinearMap.toMatrix b b g :=
   rfl
 
 end Matrix.SpecialLinearGroup
@@ -327,7 +327,7 @@ theorem center_eq_bot_of_finrank_le_one (h : Module.finrank R V ≤ 1) :
     (Matrix.SpecialLinearGroup (Module.Free.ChooseBasisIndex R V) R)) := by
     infer_instance
   rw [Equiv.subsingleton_congr
-    (Subgroup.centerCongr (Matrix.SpecialLinearGroup.toLinEquiv b)).toEquiv] at this
+    (Subgroup.centerCongr (Matrix.SpecialLinearGroup.toLin_equiv b)).toEquiv] at this
   exact Subgroup.eq_bot_of_subsingleton _
 
 theorem mem_center_iff {g : SpecialLinearGroup R V} :
@@ -337,14 +337,14 @@ theorem mem_center_iff {g : SpecialLinearGroup R V} :
   let b := Module.Free.chooseBasis R V
   let := Module.Free.ChooseBasisIndex.fintype R V
   rw [Module.finrank_eq_card_basis b]
-  let e := (Matrix.SpecialLinearGroup.toLinEquiv b).symm
+  let e := (Matrix.SpecialLinearGroup.toLin_equiv b).symm
   rw [← show e g ∈ Subgroup.center _ ↔ g ∈ Subgroup.center _ from
     MulEquivClass.apply_mem_center_iff e]
   rw [Matrix.SpecialLinearGroup.mem_center_iff]
   apply exists_congr
   simp only [Matrix.scalar_apply, and_congr_right_iff, e]
   intro r hr
-  suffices ((Matrix.SpecialLinearGroup.toLinEquiv b).symm g) =
+  suffices ((Matrix.SpecialLinearGroup.toLin_equiv b).symm g) =
     Matrix.of fun i j ↦ (b.repr (g (b j))) i by
     simp only [this]
     rw [← (LinearMap.toMatrix b b).injective.eq_iff]
@@ -354,7 +354,7 @@ theorem mem_center_iff {g : SpecialLinearGroup R V} :
     simp [Matrix.diagonal, LinearMap.toMatrix_apply,
       Finsupp.single, Pi.single_apply, Iff.symm eq_comm]
   ext
-  simp [Matrix.SpecialLinearGroup.toLinEquiv.symm_toLinearMap_eq, LinearMap.toMatrix_apply]
+  simp [Matrix.SpecialLinearGroup.toLin_equiv.symm_toLinearMap_eq, LinearMap.toMatrix_apply]
 
 theorem mem_center_iff_spec {g : SpecialLinearGroup R V}
     (hg : g ∈ Subgroup.center (SpecialLinearGroup R V)) (x : V) :
@@ -548,5 +548,3 @@ end
 end center
 
 end SpecialLinearGroup
-
-end Matrix
