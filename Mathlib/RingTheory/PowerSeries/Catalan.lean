@@ -15,10 +15,6 @@ We introduce the Catalan generating function as a formal power series over `ℕ`
 * `PowerSeries.catalanSeries`: The Catalan generating function as a power series.
 
 ## Main Results
-* `PowerSeries.sum_coeff_X_catalanSeries`: When `n` is a positive integer, the sum of coefficients
-  of `X^i * catalan (n - i)` for `0 ≤ i ≤ n` is `catalan (n - 1)`.
-* `PowerSeries.coeff_X_mul_catalanSeries`: The coefficient of `X * catalanSeries` at `X^n` is
-  `catalan (n - 1)` when `n > 0`.
 * `PowerSeries.catalanSeries_one_add_X_mul_self_sq`: The Catalan generating function satisfies the
   equation `catalanSeries = 1 + X * catalanSeries ^ 2`.
 
@@ -43,21 +39,6 @@ lemma catalanSeries_coeff (n : ℕ) : (coeff n) catalanSeries = catalan n := by
 lemma catalanSeries_constantCoeff : constantCoeff catalanSeries = 1 := by
   rw [← PowerSeries.coeff_zero_eq_constantCoeff_apply]
   simp only [catalanSeries_coeff, catalan_zero]
-
-theorem sum_coeff_X_catalanSeries (n : ℕ) (hn : 0 < n) :
-  ∑ i ∈ range (n + 1), coeff i X * catalan (n - i) =
-    catalan (n - 1) := by
-  have : ∀ i ∈ range (n + 1), coeff i X * catalan (n - i) =
-    if i = 1 then catalan (n - 1) else 0 := by
-    intros i hi
-    simp_all only [coeff_X, ite_mul, one_mul, zero_mul, mem_range]
-  simp_all [sum_congr rfl this, sum_ite_eq', mem_range, lt_add_iff_pos_left]
-
-theorem coeff_X_mul_catalanSeries (n : ℕ) (hn : 0 < n) :
-  coeff n (X * catalanSeries) = catalan (n - 1) := by
-  simp [coeff_mul, Nat.sum_antidiagonal_eq_sum_range_succ
-    (fun x y => coeff x X * catalan y)]
-  rw [sum_coeff_X_catalanSeries n hn]
 
 theorem catalanSeries_one_add_X_mul_self_sq : catalanSeries = 1 + X * catalanSeries ^ 2 := by
   ext n
