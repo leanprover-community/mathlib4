@@ -66,6 +66,10 @@ def toDualMap : E →ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
 variable {E}
 
 @[simp]
+theorem toContinuousLinearMap_toDualMap :
+    (toDualMap 𝕜 E).toContinuousLinearMap = innerSL 𝕜 := rfl
+
+@[simp]
 theorem toDualMap_apply_apply {x y : E} : toDualMap 𝕜 E x y = ⟪x, y⟫ := rfl
 
 @[deprecated (since := "2025-11-15")] alias toDualMap_apply := toDualMap_apply_apply
