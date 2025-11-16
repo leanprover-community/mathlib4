@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Emily Riehl, Joël Riou
 
 import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
+import Mathlib.AlgebraicTopology.SimplicialSet.CompStruct
 import Mathlib.AlgebraicTopology.SimplexCategory.Truncated
 import Mathlib.CategoryTheory.Category.ReflQuiv
 import Mathlib.Combinatorics.Quiver.ReflQuiver
@@ -42,59 +43,52 @@ open SimplexCategory.Truncated SimplicialObject.Truncated
 
 universe v u
 
-section
-
 /-- A 2-truncated simplicial set `S` has an underlying refl quiver with `S _⦋0⦌₂` as its underlying
 type. -/
 def OneTruncation₂ (S : SSet.Truncated 2) := S _⦋0⦌₂
 
-/-- The hom-types of the refl quiver underlying a simplicial set `S` are types of edges in `S _⦋1⦌₂`
-together with source and target equalities. -/
-@[ext]
-structure OneTruncation₂.Hom {S : SSet.Truncated 2} (X Y : OneTruncation₂ S) where
-  /-- An arrow in `OneTruncation₂.Hom X Y` includes the data of a 1-simplex. -/
-  edge : S _⦋1⦌₂
-  /-- An arrow in `OneTruncation₂.Hom X Y` includes a source equality. -/
-  src_eq : S.map (δ₂ 1).op edge = X
-  /-- An arrow in `OneTruncation₂.Hom X Y` includes a target equality. -/
-  tgt_eq : S.map (δ₂ 0).op edge = Y
+@[deprecated (since := "2025-11-01")] alias OneTruncation₂.Hom := Truncated.Edge
+
+namespace OneTruncation₂
 
 /-- A 2-truncated simplicial set `S` has an underlying refl quiver `SSet.OneTruncation₂ S`. -/
-instance (S : SSet.Truncated 2) : ReflQuiver (OneTruncation₂ S) where
-  Hom X Y := SSet.OneTruncation₂.Hom X Y
-  id X :=
-    { edge := S.map (σ₂ (n := 0) 0).op X
-      src_eq := by
-        simp only [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_one_comp_σ₂_zero,
-          op_id, FunctorToTypes.map_id_apply]
-      tgt_eq := by
-        simp only [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_zero_comp_σ₂_zero,
-          op_id, FunctorToTypes.map_id_apply] }
+@[simps -isSimp]
+instance reflQuiver (S : SSet.Truncated 2) : ReflQuiver (OneTruncation₂ S) where
+  Hom := Truncated.Edge
+  id := Truncated.Edge.id
 
-@[simp]
-lemma OneTruncation₂.id_edge {S : SSet.Truncated 2} (X : OneTruncation₂ S) :
-    OneTruncation₂.Hom.edge (𝟙rq X) = S.map (σ₂ 0).op X := rfl
+@[ext]
+lemma hom_ext
+    {S : SSet.Truncated 2} {x y : OneTruncation₂ S} {f g : x ⟶ y}
+    (h : f.edge = g.edge) : f = g :=
+  Truncated.Edge.ext h
+
+@[deprecated "Use reflQuiver_id" (since := "2025-11-01")]
+lemma id_edge {S : SSet.Truncated 2} (x : OneTruncation₂ S) :
+    Truncated.Edge.edge (𝟙rq x) = S.map (σ₂ 0).op x := by
+  rfl
+
+/-- The prefunctor on refl quivers `OneTruncation₂` induced by a morphisms
+of `2`-truncated simplicial sets. -/
+@[simps]
+def map {S T : SSet.Truncated 2} (f : S ⟶ T) :
+    OneTruncation₂ S ⥤rq OneTruncation₂ T where
+  obj x := f.app _ x
+  map e := e.map f
+  map_id x := by ext; simp [← FunctorToTypes.naturality, reflQuiver_id]
+
+end OneTruncation₂
 
 /-- The functor that carries a 2-truncated simplicial set to its underlying refl quiver. -/
 @[simps]
 def oneTruncation₂ : SSet.Truncated.{u} 2 ⥤ ReflQuiv.{u, u} where
   obj S := ReflQuiv.of (OneTruncation₂ S)
-  map {S T} F := {
-    obj := F.app (op ⦋0⦌₂)
-    map := fun f ↦
-      { edge := F.app _ f.edge
-        src_eq := by rw [← FunctorToTypes.naturality, f.src_eq]
-        tgt_eq := by rw [← FunctorToTypes.naturality, f.tgt_eq] }
-    map_id := fun X ↦ OneTruncation₂.Hom.ext (by
-      dsimp
-      rw [← FunctorToTypes.naturality]) }
+  map f := OneTruncation₂.map f
 
-@[ext]
-lemma OneTruncation₂.hom_ext {S : SSet.Truncated 2} {x y : OneTruncation₂ S} {f g : x ⟶ y} :
-    f.edge = g.edge → f = g := OneTruncation₂.Hom.ext
+namespace OneTruncation₂
 
 @[simp]
-lemma OneTruncation₂.homOfEq_edge
+lemma homOfEq_edge
     {X : SSet.Truncated.{u} 2} {x₁ y₁ x₂ y₂ : OneTruncation₂ X}
     (f : x₁ ⟶ y₁) (hx : x₁ = x₂) (hy : y₁ = y₂) :
     (Quiver.homOfEq f hx hy).edge = f.edge := by
@@ -106,15 +100,14 @@ variable {C : Type u} [Category.{v} C]
 
 /-- An equivalence between the type of objects underlying a category and the type of 0-simplices in
 the 2-truncated nerve. -/
-@[simps]
-def OneTruncation₂.nerveEquiv :
-    OneTruncation₂ ((SSet.truncation 2).obj (nerve C)) ≃ C where
-  toFun X := X.obj' 0
+@[simps -isSimp]
+def nerveEquiv : OneTruncation₂ ((SSet.truncation 2).obj (nerve C)) ≃ C where
+  toFun X := X.obj 0
   invFun X := .mk₀ X
   left_inv _ := ComposableArrows.ext₀ rfl
 
 /-- A hom equivalence over the function `OneTruncation₂.nerveEquiv`. -/
-def OneTruncation₂.nerveHomEquiv (X Y : OneTruncation₂ ((SSet.truncation 2).obj (nerve C))) :
+def nerveHomEquiv {X Y : OneTruncation₂ ((SSet.truncation 2).obj (nerve C))} :
     (X ⟶ Y) ≃ (nerveEquiv X ⟶ nerveEquiv Y) where
   toFun φ := eqToHom (congr_arg ComposableArrows.left φ.src_eq.symm) ≫ φ.edge.hom ≫
       eqToHom (congr_arg ComposableArrows.left φ.tgt_eq)
@@ -126,57 +119,52 @@ def OneTruncation₂.nerveHomEquiv (X Y : OneTruncation₂ ((SSet.truncation 2).
     ext
     exact ComposableArrows.ext₁ (congr_arg ComposableArrows.left φ.src_eq).symm
       (congr_arg ComposableArrows.left φ.tgt_eq).symm rfl
-  right_inv f := by dsimp; simp only [comp_id, id_comp]; rfl
+  right_inv f := by cat_disch
+
+@[simp]
+lemma nerveHomEquiv_id (X : OneTruncation₂ ((SSet.truncation 2).obj (nerve C))) :
+    nerveHomEquiv (𝟙rq X) = 𝟙 _ :=
+  nerveHomEquiv.symm.injective (by
+    simp only [nerveEquiv_apply, Equiv.symm_apply_apply]
+    obtain ⟨x, rfl⟩ := ComposableArrows.mk₀_surjective X
+    ext
+    exact ComposableArrows.ext₁ rfl rfl (by aesop))
 
 /-- The refl quiver underlying a nerve is isomorphic to the refl quiver underlying the category. -/
-def OneTruncation₂.ofNerve₂ (C : Type u) [Category.{u} C] :
-    ReflQuiv.of (OneTruncation₂ (nerveFunctor₂.obj (Cat.of C))) ≅ ReflQuiv.of C := by
-  apply ReflQuiv.isoOfEquiv.{u,u} OneTruncation₂.nerveEquiv OneTruncation₂.nerveHomEquiv ?_
-  intro X
-  unfold nerveEquiv nerveHomEquiv
-  simp only [Cat.of_α, op_obj, ComposableArrows.obj', Fin.zero_eta, Fin.isValue, Equiv.coe_fn_mk,
-    nerveEquiv_apply, Nat.reduceAdd, id_edge, eqToHom_refl, comp_id, id_comp, ReflQuiver.id_eq_id]
-  unfold nerve truncation SimplicialObject.truncation SimplexCategory.Truncated.inclusion
-  -- the following was obtained by `simp?`
-  simp only [ObjectProperty.ι_obj, SimplexCategory.len_mk, Nat.reduceAdd, Fin.isValue,
-    SimplexCategory.toCat_map, whiskeringLeft_obj_obj, Functor.comp_map, op_obj, op_map,
-    Quiver.Hom.unop_op, ObjectProperty.ι_map, ComposableArrows.whiskerLeft_map, Fin.zero_eta,
-    Monotone.functor_obj, Fin.mk_one, homOfLE_leOfHom]
-  change X.map (𝟙 _) = _
-  rw [X.map_id]
-  rfl
+def ofNerve₂ (C : Type u) [Category.{u} C] :
+    ReflQuiv.of (OneTruncation₂ ((truncation 2).obj (nerve C))) ≅ ReflQuiv.of C :=
+  ReflQuiv.isoOfEquiv.{u,u} OneTruncation₂.nerveEquiv
+    (fun _  _↦ OneTruncation₂.nerveHomEquiv) nerveHomEquiv_id
+
+lemma nerve_hom_ext {X : (SSet.Truncated 2)} {C : Type u} [Category.{u} C]
+    {F G : X ⟶ ((truncation 2).obj (nerve C))}
+    (h : OneTruncation₂.map F = OneTruncation₂.map G) : F = G :=
+  SSet.Truncated.IsStrictSegal.hom_ext (fun f ↦ by
+    obtain ⟨x₀, x₁, f, rfl⟩ := Truncated.Edge.exists_of_simplex f
+    simpa using congr_arg Truncated.Edge.edge (ReflPrefunctor.congr_hom h f))
+
+@[deprecated (since := "2025-11-06")] alias _root_.CategoryTheory.toNerve₂.ext := nerve_hom_ext
+
+end
+end OneTruncation₂
 
 /-- The refl quiver underlying a nerve is naturally isomorphic to the refl quiver underlying the
 category. -/
 @[simps! hom_app_obj hom_app_map inv_app_obj_obj inv_app_obj_map inv_app_map]
 def OneTruncation₂.ofNerve₂.natIso :
     nerveFunctor₂.{u,u} ⋙ SSet.oneTruncation₂ ≅ ReflQuiv.forget :=
-  NatIso.ofComponents (fun C => OneTruncation₂.ofNerve₂ C) (by
-  · intro C D F
-    fapply ReflPrefunctor.ext <;> simp
-    · exact fun _ ↦ rfl
-    · intro X Y f
+  NatIso.ofComponents (fun C => OneTruncation₂.ofNerve₂ C)
+    (fun F ↦ ReflPrefunctor.ext (by cat_disch) (fun x y f ↦ by
       obtain ⟨f, rfl, rfl⟩ := f
-      unfold SSet.oneTruncation₂ nerveFunctor₂ SSet.truncation SimplicialObject.truncation
-        nerveFunctor toReflPrefunctor
-      simp only [comp_obj, whiskeringLeft_obj_obj, ReflQuiv.of_val, Functor.comp_map,
-        whiskeringLeft_obj_map, whiskerLeft_app, op_obj, ofNerve₂, Cat.of_α, nerveEquiv,
-        ComposableArrows.obj', Fin.zero_eta, Fin.isValue, ReflQuiv.comp_eq_comp, Nat.reduceAdd,
-        op_map, Quiver.Hom.unop_op, nerve_map, SimplexCategory.toCat_map, ReflPrefunctor.comp_obj,
-        ReflPrefunctor.comp_map]
-      simp [nerveHomEquiv, ReflQuiv.isoOfEquiv, ReflQuiv.isoOfQuivIso, Quiv.isoOfEquiv])
-
-end
-
-section
+      simp [ofNerve₂, ReflQuiv.isoOfEquiv, ReflQuiv.isoOfQuivIso,
+        Quiv.isoOfEquiv, nerveMap_app, nerveHomEquiv, nerveFunctor₂,
+        SimplicialObject.truncation, ReflQuiv.category]))
 
 private lemma map_map_of_eq.{w} {C : Type u} [Category.{v} C] (V : Cᵒᵖ ⥤ Type w) {X Y Z : C}
     {α : X ⟶ Y} {β : Y ⟶ Z} {γ : X ⟶ Z} {φ} :
     α ≫ β = γ → V.map α.op (V.map β.op φ) = V.map γ.op φ := by
   rintro rfl
   simp
-
-variable {V : SSet}
 
 namespace Truncated
 
@@ -227,51 +215,258 @@ def ev02₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : ev0₂ φ ⟶ ev2₂ �
 def ev01₂ {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) : ev0₂ φ ⟶ ev1₂ φ :=
   ⟨V.map δ2₂.op φ, map_map_of_eq V (SimplexCategory.δ_comp_δ (j := 1) le_rfl), map_map_of_eq V rfl⟩
 
+end Truncated
+
+namespace OneTruncation₂
+
+variable (V : SSet.Truncated.{u} 2)
 
 /-- The 2-simplices in a 2-truncated simplicial set `V` generate a hom relation on the free
 category on the underlying refl quiver of `V`. -/
-inductive HoRel₂ {V : SSet.Truncated 2} :
-    (X Y : Cat.FreeRefl (OneTruncation₂ V)) → (f g : X ⟶ Y) → Prop
-  | mk (φ : V _⦋2⦌₂) :
-    HoRel₂ _ _
-      (Quot.mk _ (Quiver.Hom.toPath (ev02₂ φ)))
-      (Quot.mk _ ((Quiver.Hom.toPath (ev01₂ φ)).comp
-        (Quiver.Hom.toPath (ev12₂ φ))))
+inductive HoRel₂ : HomRel (Cat.FreeRefl (OneTruncation₂ V)) where
+  | of_compStruct {x₀ x₁ x₂ : V _⦋0⦌₂} {e₀₁ : Truncated.Edge x₀ x₁}
+    {e₁₂ : Truncated.Edge x₁ x₂} {e₀₂ : Truncated.Edge x₀ x₂}
+    (h : Truncated.Edge.CompStruct e₀₁ e₁₂ e₀₂) :
+    HoRel₂
+      ((Cat.FreeRefl.quotientFunctor (OneTruncation₂ V)).map
+        (Quiver.Hom.toPath e₀₁ ≫ Quiver.Hom.toPath e₁₂))
+      ((Cat.FreeRefl.quotientFunctor (OneTruncation₂ V)).map (Quiver.Hom.toPath e₀₂))
 
-/-- A 2-simplex whose faces are identified with certain arrows in `OneTruncation₂ V` defines
-a term of type `HoRel₂` between those arrows. -/
-theorem HoRel₂.mk' {V : SSet.Truncated 2} (φ : V _⦋2⦌₂) {X₀ X₁ X₂ : OneTruncation₂ V}
-    (f₀₁ : X₀ ⟶ X₁) (f₁₂ : X₁ ⟶ X₂) (f₀₂ : X₀ ⟶ X₂)
-    (h₀₁ : f₀₁.edge = V.map (δ₂ 2).op φ) (h₁₂ : f₁₂.edge = V.map (δ₂ 0).op φ)
-    (h₀₂ : f₀₂.edge = V.map (δ₂ 1).op φ) :
-    HoRel₂ _ _ (Quot.mk _ (Quiver.Hom.toPath f₀₂))
-      (Quot.mk _ ((Quiver.Hom.toPath f₀₁).comp (Quiver.Hom.toPath f₁₂))) := by
-  obtain rfl : X₀ = ev0₂ φ := by
-    rw [← f₀₂.src_eq, h₀₂, ← FunctorToTypes.map_comp_apply, ← op_comp]
-    rfl
-  obtain rfl : X₁ = ev1₂ φ := by
-    rw [← f₀₁.tgt_eq, h₀₁, ← FunctorToTypes.map_comp_apply, ← op_comp]
-    rfl
-  obtain rfl : X₂ = ev2₂ φ := by
-    rw [← f₁₂.tgt_eq, h₁₂, ← FunctorToTypes.map_comp_apply, ← op_comp]
-    rfl
-  obtain rfl : f₀₁ = ev01₂ φ := by ext; assumption
-  obtain rfl : f₁₂ = ev12₂ φ := by ext; assumption
-  obtain rfl : f₀₂ = ev02₂ φ := by ext; assumption
-  constructor
+
+@[deprecated "HoRel₂.of_compStruct" (since := "2025-11-06")]
+lemma HoRel₂.mk' {x₀ x₁ x₂ : V _⦋0⦌₂} {e₀₁ : Truncated.Edge x₀ x₁}
+    {e₁₂ : Truncated.Edge x₁ x₂} {e₀₂ : Truncated.Edge x₀ x₂}
+    (h : Truncated.Edge.CompStruct e₀₁ e₁₂ e₀₂) :
+    HoRel₂ V
+      ((Cat.FreeRefl.quotientFunctor (OneTruncation₂ V)).map
+        (Quiver.Hom.toPath e₀₁ ≫ Quiver.Hom.toPath e₁₂))
+      ((Cat.FreeRefl.quotientFunctor (OneTruncation₂ V)).map (Quiver.Hom.toPath e₀₂)) :=
+  HoRel₂.of_compStruct h
+
+end OneTruncation₂
+
+namespace Truncated
+
+variable (V W : SSet.Truncated.{u} 2)
 
 /-- The type underlying the homotopy category of a 2-truncated simplicial set `V`. -/
-def _root_.SSet.Truncated.HomotopyCategory (V : SSet.Truncated.{u} 2) : Type u :=
-  Quotient (HoRel₂ (V := V))
+def HomotopyCategory : Type u :=
+  Quotient (OneTruncation₂.HoRel₂ V)
 
-instance (V : SSet.Truncated.{u} 2) : Category.{u} (V.HomotopyCategory) :=
-  inferInstanceAs (Category (CategoryTheory.Quotient ..))
+namespace HomotopyCategory
+
+instance : Category.{u} V.HomotopyCategory :=
+  inferInstanceAs (Category (CategoryTheory.Quotient _))
 
 /-- A canonical functor from the free category on the refl quiver underlying a 2-truncated
 simplicial set `V` to its homotopy category. -/
-def _root_.SSet.Truncated.HomotopyCategory.quotientFunctor (V : SSet.Truncated.{u} 2) :
+def quotientFunctor :
     Cat.FreeRefl (OneTruncation₂ V) ⥤ V.HomotopyCategory :=
   Quotient.functor _
+
+instance : (quotientFunctor V).Full :=
+  Quotient.full_functor _
+
+variable {V}
+
+/-- Constructor for objects of the homotopy category of a `2`-truncated simplicial set. -/
+def mk (x : V _⦋0⦌₂) : V.HomotopyCategory :=
+  (quotientFunctor V).obj (.mk x)
+
+lemma mk_surjective : Function.Surjective (mk (V := V)) := by
+  rintro ⟨⟨x⟩⟩
+  exact ⟨x, rfl⟩
+
+/-- The morphism in the homotopy category of a `2`-truncated simplicial set that
+is induced by an edge. -/
+def homMk {x₀ x₁ : V _⦋0⦌₂} (e : Edge x₀ x₁) : mk x₀ ⟶ mk x₁ :=
+  (quotientFunctor V).map (Cat.FreeRefl.homMk e)
+
+lemma congr_arrowMk_homMk {x₀ x₁ : V _⦋0⦌₂} (e : Edge x₀ x₁)
+    {y₀ y₁ : V _⦋0⦌₂} (e' : Edge y₀ y₁) (h : e.edge = e'.edge) :
+    Arrow.mk (homMk e) = Arrow.mk (homMk e') := by
+  obtain rfl : x₀ = y₀ := by rw [← e.src_eq, ← e'.src_eq, h]
+  obtain rfl : x₁ = y₁ := by rw [← e.tgt_eq, ← e'.tgt_eq, h]
+  obtain rfl : e = e' := by aesop
+  rfl
+
+@[simp]
+lemma homMk_id (x : V _⦋0⦌₂) :
+    homMk (.id x) = 𝟙 (mk x) := by
+  rw [homMk, ← OneTruncation₂.reflQuiver_id, Cat.FreeRefl.homMk_id,
+    CategoryTheory.Functor.map_id]
+  rfl
+
+@[reassoc]
+lemma homMk_comp_homMk {x₀ x₁ x₂ : V _⦋0⦌₂} {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂}
+    {e₀₂ : Edge x₀ x₂} (h : Edge.CompStruct e₀₁ e₁₂ e₀₂) :
+    homMk e₀₁ ≫ homMk e₁₂ = homMk e₀₂ := by
+  simpa [homMk] using  CategoryTheory.Quotient.sound _
+    (OneTruncation₂.HoRel₂.of_compStruct h)
+
+variable (V) in
+/-- If `V` is a `2`-truncated simplicial sets, this is the family of
+morphisms in `V.HomotopyCategory` corresponding to the edges of `V`.
+(Any morphism in `V.HomotopyCategory` is in the multiplicative closure
+of this family of morphisms, see `multiplicativeClosure_morphismPropertyHomMk`.) -/
+def morphismPropertyHomMk : MorphismProperty V.HomotopyCategory :=
+    .ofHoms (fun (e : Σ (x y : V _⦋0⦌₂), Edge x y) ↦ homMk e.2.2)
+
+lemma morphismPropertyHomMk_of_edge {x y : V _⦋0⦌₂} (e : Edge x y) :
+    morphismPropertyHomMk V (homMk e) := by
+  dsimp only [morphismPropertyHomMk]
+  rw [MorphismProperty.ofHoms_iff]
+  exact ⟨⟨x, y, e⟩, rfl⟩
+
+lemma morphismPropertyHomMk_eq_strictMap :
+    morphismPropertyHomMk V =
+      (Cat.FreeRefl.morphismPropertyHomMk (OneTruncation₂ V)).strictMap (quotientFunctor V) := by
+  ext _ _ f
+  constructor
+  · rintro ⟨_⟩
+    exact MorphismProperty.map_mem_strictMap _ _ _ ⟨_⟩
+  · rintro ⟨⟨_, _, e⟩⟩
+    exact morphismPropertyHomMk_of_edge e
+
+open MorphismProperty in
+lemma multiplicativeClosure_morphismPropertyHomMk :
+    (morphismPropertyHomMk V).multiplicativeClosure = ⊤ :=
+  le_antisymm (by simp) (fun x y f _ ↦ by
+    obtain ⟨f, rfl⟩ := (quotientFunctor _).map_surjective f
+    rw [morphismPropertyHomMk_eq_strictMap]
+    refine strictMap_multiplicativeClosure_le _ _ _ ?_
+    rw [Cat.FreeRefl.multiplicativeClosure_morphismPropertyHomMk]
+    exact map_mem_strictMap _ _ _ (by simp))
+
+lemma morphismProperty_eq_top {W : MorphismProperty V.HomotopyCategory}
+    [W.IsMultiplicative]
+    (hW : ∀ {x y : V _⦋0⦌₂} (e : Edge x y), W (homMk e)) :
+    W = ⊤ :=
+  le_antisymm (by simp) (by
+    rw [← multiplicativeClosure_morphismPropertyHomMk,
+      MorphismProperty.multiplicativeClosure_le_iff]
+    rintro _ _ _ ⟨_, _, e⟩
+    exact hW e)
+
+section
+
+variable {D : Type*} [Category D]
+
+section
+
+variable (obj : V _⦋0⦌₂ → D) (map : ∀ {x y : V _⦋0⦌₂}, Edge x y → (obj x ⟶ obj y))
+  (map_id : ∀ (x : V _⦋0⦌₂), map (.id x) = 𝟙 _)
+  (map_comp : ∀ {x₀ x₁ x₂ : V _⦋0⦌₂}
+    {e₀₁ : Edge x₀ x₁} {e₁₂ : Edge x₁ x₂} {e₀₂ : Edge x₀ x₂}
+    (_ : Edge.CompStruct e₀₁ e₁₂ e₀₂), map e₀₁ ≫ map e₁₂ = map e₀₂)
+
+/-- Constructor for functors from the homotopy category. -/
+def lift : V.HomotopyCategory ⥤ D :=
+  CategoryTheory.Quotient.lift _
+    (Cat.FreeRefl.lift' obj (fun f ↦ map f) map_id) (by
+      rintro _ _ _ _ ⟨h⟩
+      simp only [Functor.map_comp]
+      convert map_comp h <;> apply Cat.FreeRefl.lift'_map)
+
+@[simp]
+lemma lift_obj_mk (x : V _⦋0⦌₂) : (lift obj map map_id map_comp).obj (mk x) = obj x := rfl
+
+@[simp]
+lemma lift_map_homMk {x y : V _⦋0⦌₂} (e : Edge x y) :
+    (lift obj map map_id map_comp).map (homMk e) = map e :=
+  Category.id_comp _
+
+end
+
+variable {F G : V.HomotopyCategory ⥤ D}
+
+section
+
+variable (φ : ∀ (x : V _⦋0⦌₂), F.obj (mk x) ⟶ G.obj (mk x))
+  (hφ : ∀ ⦃x y : V _⦋0⦌₂⦄ (e : Edge x y), F.map (homMk e) ≫ φ y = φ x ≫ G.map (homMk e))
+
+/-- Constructor for natural transformations between functors from `V.HomotopyCategory`. -/
+def mkNatTrans : F ⟶ G where
+  app _ := φ _
+  naturality _ _ f := by
+    have : MorphismProperty.naturalityProperty (fun (x : V.HomotopyCategory) ↦ φ _) = ⊤ :=
+      morphismProperty_eq_top (fun e ↦ hφ e)
+    exact this.symm.le f (by simp)
+
+@[simp]
+lemma mkNatTrans_app_mk (v : V _⦋0⦌₂) :
+    (mkNatTrans φ hφ).app (mk v) = φ v := rfl
+
+end
+
+section
+
+variable (iso : ∀ (x : V _⦋0⦌₂), F.obj (mk x) ≅ G.obj (mk x))
+  (hiso : ∀ ⦃x y : V _⦋0⦌₂⦄ (e : Edge x y), F.map (homMk e) ≫ (iso y).hom =
+    (iso x).hom ≫ G.map (homMk e))
+
+/-- Constructor for natural isomorphisms between functors from `V.HomotopyCategory`. -/
+def mkNatIso : F ≅ G :=
+  NatIso.ofComponents (fun _ ↦ iso _) (fun f ↦ (mkNatTrans _ hiso).naturality f)
+
+@[simp]
+lemma mkNatIso_hom_app_mk (v : V _⦋0⦌₂) :
+    (mkNatIso iso hiso).hom.app (mk v) = (iso v).hom := rfl
+
+@[simp]
+lemma mkNatIso_inv_app_mk (v : V _⦋0⦌₂) :
+    (mkNatIso iso hiso).inv.app (mk v) = (iso v).inv := rfl
+
+end
+
+lemma functor_ext {F G : V.HomotopyCategory ⥤ D}
+    (h₁ : ∀ (x : V _⦋0⦌₂), F.obj (mk x) = G.obj (mk x))
+    (h₂ : ∀ ⦃x y : V _⦋0⦌₂⦄ (e : Edge x y),
+      F.map (homMk e) = eqToHom (h₁ x) ≫ G.map (homMk e) ≫ eqToHom (h₁ y).symm) :
+    F = G :=
+  Functor.ext_of_iso (mkNatIso (fun x ↦ eqToIso (h₁ x))
+    (fun _ _ e ↦ by simp [h₂ e])) (fun _ ↦ h₁ _) (fun x ↦ by
+      obtain ⟨x, rfl⟩ := x.mk_surjective
+      simp)
+
+end
+
+end HomotopyCategory
+
+section
+
+open HomotopyCategory
+
+variable {V W} (f : V ⟶ W)
+
+/-- A map of 2-truncated simplicial sets induces a functor between homotopy categories. -/
+def mapHomotopyCategory :
+    V.HomotopyCategory ⥤ W.HomotopyCategory :=
+  CategoryTheory.Quotient.lift _
+    ((oneTruncation₂ ⋙ Cat.freeRefl).map f ⋙ quotientFunctor W) (by
+      rintro _ _ _ _ ⟨h⟩
+      exact CategoryTheory.Quotient.sound _ ⟨h.map f⟩)
+
+@[simp]
+lemma mapHomotopyCategory_obj (x : V _⦋0⦌₂) :
+    (mapHomotopyCategory f).obj (.mk x) = .mk (f.app _ x) := rfl
+
+@[simp]
+lemma mapHomotopyCategory_homMk {x y : V _⦋0⦌₂} (e : Edge x y) :
+    (mapHomotopyCategory f).map (homMk e) = homMk (e.map f) := rfl
+
+end
+
+/-- The functor that takes a 2-truncated simplicial set to its homotopy category. -/
+def hoFunctor₂ : SSet.Truncated.{u} 2 ⥤ Cat.{u,u} where
+  obj V := Cat.of V.HomotopyCategory
+  map F := mapHomotopyCategory F
+  map_id _ := HomotopyCategory.functor_ext (by simp) (by cat_disch)
+  map_comp _ _ := HomotopyCategory.functor_ext (by simp) (by cat_disch)
+
+theorem hoFunctor₂_naturality {X Y : SSet.Truncated.{u} 2} (f : X ⟶ Y) :
+    (oneTruncation₂ ⋙ Cat.freeRefl).map f ⋙ SSet.Truncated.HomotopyCategory.quotientFunctor Y =
+      SSet.Truncated.HomotopyCategory.quotientFunctor X ⋙ mapHomotopyCategory f := rfl
 
 /-- By `Quotient.lift_unique'` (not `Quotient.lift`) we have that `quotientFunctor V` is an
 epimorphism. -/
@@ -279,52 +474,13 @@ theorem HomotopyCategory.lift_unique' (V : SSet.Truncated.{u} 2) {D} [Category D
     (F₁ F₂ : V.HomotopyCategory ⥤ D)
     (h : HomotopyCategory.quotientFunctor V ⋙ F₁ = HomotopyCategory.quotientFunctor V ⋙ F₂) :
     F₁ = F₂ :=
-  Quotient.lift_unique' (C := Cat.FreeRefl (OneTruncation₂ V))
-    (HoRel₂ (V := V)) _ _ h
-
-/-- A map of 2-truncated simplicial sets induces a functor between homotopy categories. -/
-def mapHomotopyCategory {V W : SSet.Truncated.{u} 2} (F : V ⟶ W) :
-    V.HomotopyCategory ⥤ W.HomotopyCategory :=
-  CategoryTheory.Quotient.lift _
-    ((oneTruncation₂ ⋙ Cat.freeRefl).map F ⋙ HomotopyCategory.quotientFunctor W)
-    (by
-      rintro _ _ _ _ ⟨φ⟩
-      apply CategoryTheory.Quotient.sound
-      apply HoRel₂.mk' (φ := F.app _ φ)
-        (f₀₁ := (oneTruncation₂.map F).map (ev01₂ φ))
-        (f₀₂ := (oneTruncation₂.map F).map (ev02₂ φ))
-        (f₁₂ := (oneTruncation₂.map F).map (ev12₂ φ))
-      all_goals
-        apply FunctorToTypes.naturality)
-
-/-- The functor that takes a 2-truncated simplicial set to its homotopy category. -/
-def hoFunctor₂ : SSet.Truncated.{u} 2 ⥤ Cat.{u,u} where
-  obj V := Cat.of (V.HomotopyCategory)
-  map {S T} F := mapHomotopyCategory F
-  map_id S := by
-    apply Quotient.lift_unique'
-    simp [mapHomotopyCategory, Quotient.lift_spec]
-    exact Eq.trans (Functor.id_comp ..) (Functor.comp_id _).symm
-  map_comp {S T U} F G := by
-    apply Quotient.lift_unique'
-    simp [mapHomotopyCategory, SSet.Truncated.HomotopyCategory.quotientFunctor]
-    rw [Quotient.lift_spec, Cat.comp_eq_comp, Cat.comp_eq_comp, ← Functor.assoc, Functor.assoc,
-      Quotient.lift_spec, Functor.assoc, Quotient.lift_spec]
-
-theorem hoFunctor₂_naturality {X Y : SSet.Truncated.{u} 2} (f : X ⟶ Y) :
-    (oneTruncation₂ ⋙ Cat.freeRefl).map f ⋙ SSet.Truncated.HomotopyCategory.quotientFunctor Y =
-      SSet.Truncated.HomotopyCategory.quotientFunctor X ⋙ mapHomotopyCategory f := rfl
+  Quotient.lift_unique' _ _ _ h
 
 end Truncated
 
 /-- The functor that takes a simplicial set to its homotopy category by passing through the
 2-truncation. -/
 def hoFunctor : SSet.{u} ⥤ Cat.{u, u} := SSet.truncation 2 ⋙ Truncated.hoFunctor₂
-
-end
-
-end
-section
 
 /-- Since `⦋0⦌ : SimplexCategory` is terminal, `Δ[0]` has a unique point and thus
 `OneTruncation₂ ((truncation 2).obj Δ[0])` has a unique inhabitant. -/
@@ -344,16 +500,17 @@ instance (x y : OneTruncation₂ ((truncation 2).obj Δ[0])) : Unique (x ⟶ y) 
     ext
     exact this.allEq _ _
 
+instance : Unique ((truncation.{u} 2).obj Δ[0]).HomotopyCategory :=
+  inferInstanceAs (Unique <| CategoryTheory.Quotient _)
+
+instance : IsDiscrete ((truncation.{u} 2).obj Δ[0]).HomotopyCategory where
+  subsingleton x y :=
+    inferInstanceAs (Subsingleton ((_ : CategoryTheory.Quotient _) ⟶ _))
+  eq_of_hom _ := by subsingleton
+
 /-- The category `hoFunctor.obj (Δ[0])` is terminal. -/
-def isTerminalHoFunctorDeltaZero : IsTerminal (hoFunctor.obj (Δ[0])) := by
-  letI : Unique ((truncation 2).obj Δ[0]).HomotopyCategory :=
-    inferInstanceAs (Unique <| CategoryTheory.Quotient Truncated.HoRel₂)
-  letI sub : Subsingleton ((truncation 2).obj Δ[0]).HomotopyCategory := by infer_instance
-  letI : IsDiscrete ((truncation 2).obj Δ[0]).HomotopyCategory :=
-    { subsingleton X Y :=
-        inferInstanceAs <| Subsingleton ((_ : CategoryTheory.Quotient Truncated.HoRel₂) ⟶ _)
-      eq_of_hom f := sub.allEq _ _ }
-  apply Cat.isTerminalOfUniqueOfIsDiscrete
+def isTerminalHoFunctorDeltaZero : IsTerminal (hoFunctor.{u}.obj (Δ[0])) :=
+  Cat.isTerminalOfUniqueOfIsDiscrete
 
 /-- The homotopy category functor preserves generic terminal objects. -/
 noncomputable def hoFunctor.terminalIso : hoFunctor.obj (⊤_ SSet) ≅ ⊤_ Cat :=
@@ -366,8 +523,5 @@ instance hoFunctor.preservesTerminal : PreservesLimit (empty.{0} SSet) hoFunctor
 instance hoFunctor.preservesTerminal' :
     PreservesLimitsOfShape (Discrete PEmpty.{1}) hoFunctor :=
   preservesLimitsOfShape_pempty_of_preservesTerminal _
-
-end
-
 
 end SSet

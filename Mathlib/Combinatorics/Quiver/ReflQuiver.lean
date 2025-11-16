@@ -48,6 +48,8 @@ structure ReflPrefunctor (V : Type u₁) [ReflQuiver.{v₁} V] (W : Type u₂) [
 
 namespace ReflPrefunctor
 
+attribute [simp] map_id
+
 -- These lemmas cannot be `@[simp]` because after `whnfR` they have a variable on the LHS.
 -- Nevertheless they are sometimes useful when building functors.
 lemma mk_obj {V W : Type*} [ReflQuiver V] [ReflQuiver W] {obj : V → W} {map} {X : V} :
@@ -119,8 +121,8 @@ infixl:60 " ⋙rq " => ReflPrefunctor.comp
 /-- Notation for the identity prefunctor on a reflexive quiver. -/
 notation "𝟭rq" => id
 
-theorem congr_map {U V : Type*} [Quiver U] [Quiver V] (F : U ⥤q V) {X Y : U} {f g : X ⟶ Y}
-    (h : f = g) : F.map f = F.map g := congrArg F.map h
+theorem congr_map {U V : Type*} [ReflQuiver U] [ReflQuiver V] (F : U ⥤rq V) {X Y : U}
+    {f g : X ⟶ Y} (h : f = g) : F.map f = F.map g := congrArg F.map h
 
 /-- An equality of refl prefunctors gives an equality on objects. -/
 theorem congr_obj {U V : Type*} [ReflQuiver U] [ReflQuiver V] {F G : U ⥤rq V}
