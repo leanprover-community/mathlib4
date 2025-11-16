@@ -3,9 +3,7 @@ Copyright (c) 2025 Nailin Guan, Jingting Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Jingting Wang
 -/
-import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
 import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
 
 /-!
