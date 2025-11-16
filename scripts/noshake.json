@@ -104,7 +104,6 @@
   "Mathlib.Tactic.FastInstance",
   "Mathlib.Tactic.Field",
   "Mathlib.Tactic.FieldSimp",
-  "Mathlib.Tactic.Field",
   "Mathlib.Tactic.FinCases",
   "Mathlib.Tactic.Find",
   "Mathlib.Tactic.Finiteness",
@@ -217,8 +216,8 @@
   ["Mathlib.Topology.Connected.TotallyDisconnected"],
   "Mathlib.Topology.Order.LeftRightNhds":
   ["Mathlib.Algebra.Ring.Pointwise.Set"],
-  "Mathlib.Topology.Instances.CantorSet": ["Mathlib.Data.Stream.Init"],
   "Mathlib.Topology.Instances.ENNReal.Lemmas": ["Mathlib.Tactic.Bound"],
+  "Mathlib.Topology.Instances.CantorSet": ["Mathlib.Data.Stream.Init"],
   "Mathlib.Topology.DiscreteSubset": ["Mathlib.Tactic.TautoSet"],
   "Mathlib.Topology.Defs.Basic": ["Mathlib.Tactic.FunProp"],
   "Mathlib.Topology.Category.UniformSpace":
@@ -266,8 +265,7 @@
   "Mathlib.Tactic.NormNum.Parity": ["Mathlib.Algebra.Ring.Int.Parity"],
   "Mathlib.Tactic.NormNum.ModEq":
   ["Mathlib.Data.Int.ModEq", "Mathlib.Tactic.NormNum.DivMod"],
-  "Mathlib.Tactic.NormNum.Ineq":
-  ["Mathlib.Algebra.Order.Monoid.WithTop"],
+  "Mathlib.Tactic.NormNum.Ineq": ["Mathlib.Algebra.Order.Monoid.WithTop"],
   "Mathlib.Tactic.NormNum.BigOperators":
   ["Mathlib.Algebra.BigOperators.Group.Finset.Basic",
    "Mathlib.Data.List.FinRange"],
@@ -426,6 +424,8 @@
   "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Operations"],
   "Mathlib.Lean.Expr.Basic": ["Batteries.Logic"],
   "Mathlib.GroupTheory.MonoidLocalization.Basic": ["Mathlib.Init.Data.Prod"],
+  "Mathlib.GroupTheory.FreeGroup.Basic":
+  ["Mathlib.Algebra.BigOperators.Group.List.Basic"],
   "Mathlib.Geometry.Manifold.Sheaf.Smooth":
   ["Mathlib.CategoryTheory.Sites.Whiskering"],
   "Mathlib.Geometry.Manifold.PoincareConjecture":
@@ -582,6 +582,8 @@
    "Mathlib.Logic.Function.Defs",
    "Mathlib.Tactic.OfNat"],
   "Mathlib.Algebra.GeomSum": ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
+  "Mathlib.Algebra.FreeMonoid.Basic":
+  ["Mathlib.Algebra.BigOperators.Group.List.Basic"],
   "Mathlib.Algebra.Category.Ring.Basic":
   ["Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso"],
   "Mathlib.Algebra.Category.MonCat.Basic":
