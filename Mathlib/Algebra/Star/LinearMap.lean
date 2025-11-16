@@ -121,7 +121,7 @@ namespace Module.End
 
 open scoped IntrinsicStar
 
-theorem _root_.IsUnit.intrinsicStar {f : End R E} (hf : IsUnit f) :
+theorem IsUnit.intrinsicStar {f : End R E} (hf : IsUnit f) :
     IsUnit (star f) := by
   obtain ⟨u, rfl⟩ := hf
   refine Units.isUnit <| Units.mk (star (u : End R E)) (star (u⁻¹ : (End R E)ˣ)) ?_ ?_
@@ -129,6 +129,7 @@ theorem _root_.IsUnit.intrinsicStar {f : End R E} (hf : IsUnit f) :
     rw [mul_eq_comp, ← LinearMap.intrinsicStar_comp]
     simp [← mul_eq_comp, one_eq_id]
 
+open Module.End in
 theorem isUnit_intrinsicStar_iff {f : End R E} :
     IsUnit (star f) ↔ IsUnit f :=
   ⟨fun h ↦ star_star f ▸ h.intrinsicStar, fun h ↦ h.intrinsicStar⟩
