@@ -21,31 +21,6 @@ conditions added is bijection.
 
 -/
 
-namespace AddMonoidHom
-
-variable {M₁ M₂ M₃ N₁ N₂ N₃ : Type*}
-variable [AddGroup M₁] [AddGroup M₂] [AddGroup M₃]
-variable [AddGroup N₁] [AddGroup N₂] [AddGroup N₃]
-variable (f₁ : M₁ →+ M₂) (f₂ : M₂ →+ M₃)
-variable (g₁ : N₁ →+ N₂) (g₂ : N₂ →+ N₃)
-variable (i₁ : M₁ →+ N₁) (i₂ : M₂ →+ N₂) (i₃ : M₃ →+ N₃)
-variable (hc₁ : g₁.comp i₁ = i₂.comp f₁) (hc₂ : g₂.comp i₂ = i₃.comp f₂)
-variable (hf₁ : Function.Exact f₁ f₂) (hg₁ : Function.Exact g₁ g₂)
-
-include hf₁ hg₁ hc₁ hc₂ in
-lemma bijective_of_surjective_bijective_surjective (surjf : Function.Surjective f₂)
-    (surjg : Function.Surjective g₂) (bij2 : Function.Bijective i₂)
-    (surj1 : Function.Surjective i₁) : Function.Bijective i₃ := by
-  sorry
-
-include hf₁ hg₁ hc₁ hc₂ in
-lemma bijective_of_injective_bijective_injective (injf : Function.Injective f₁)
-    (injg : Function.Injective g₁) (bij2 : Function.Bijective i₂) (inj3 : Function.Injective i₃) :
-    Function.Bijective i₁ := by
-  sorry
-
-end AddMonoidHom
-
 universe w w' u u' v v'
 
 namespace CategoryTheory
@@ -100,9 +75,9 @@ lemma bijective_of_preservesProjectiveObjects (h : F.FullyFaithful) [HasExt.{w} 
     have surj2 : Function.Surjective g' := (AddCommGrpCat.epi_iff_surjective _).mp
       ((Ext.contravariant_sequence_exact₃' FS_exact (F.obj Y) n (n + 1) (add_comm 1 n)).epi_f
       (isz2.eq_zero_of_tgt _))
-    apply AddMonoidHom.bijective_of_surjective_bijective_surjective f g f' g'
+    apply AddMonoidHom.bijective_of_surjective_of_bijective_of_right_exact f g f' g'
       (F.mapExtAddHom S.X₂ Y n) (F.mapExtAddHom S.X₁ Y n) (F.mapExtAddHom S.X₃ Y (n + 1)) _ _
-      exac1 exac2 surj1 surj2 (bij S.X₁) (bij S.X₂).2
+      exac1 exac2 (bij S.X₂).2 (bij S.X₁) surj1 surj2
     · ext x
       simp [f, f', Ext.mapExt_comp_eq_comp_mapExt, Ext.mapExt_mk₀_eq_mk₀_map]
     · ext x
@@ -143,9 +118,9 @@ lemma bijective_of_preservesInjectiveObjects (h : F.FullyFaithful) [HasExt.{w} C
     have surj2 : Function.Surjective g' := (AddCommGrpCat.epi_iff_surjective _).mp
       ((Ext.covariant_sequence_exact₁' (F.obj X) FS_exact n (n + 1) rfl).epi_f
       (isz2.eq_zero_of_tgt _))
-    apply AddMonoidHom.bijective_of_surjective_bijective_surjective f g f' g'
+    apply AddMonoidHom.bijective_of_surjective_of_bijective_of_right_exact f g f' g'
       (F.mapExtAddHom X S.X₂ n) (F.mapExtAddHom X S.X₃ n) (F.mapExtAddHom X S.X₁ (n + 1)) _ _
-      exac1 exac2 surj1 surj2 (bij S.X₃) (bij S.X₂).2
+      exac1 exac2 (bij S.X₂).2 (bij S.X₃) surj1 surj2
     · ext x
       simp [f, f', Ext.mapExt_comp_eq_comp_mapExt, Ext.mapExt_mk₀_eq_mk₀_map]
     · ext x
