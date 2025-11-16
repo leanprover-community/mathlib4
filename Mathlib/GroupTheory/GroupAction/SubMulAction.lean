@@ -531,9 +531,7 @@ end Units
 
 section FixedPoints
 
-variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
-
-variable {H : Subgroup G}
+variable {G : Type*} [Group G] {α : Type*} [MulAction G α] {H : Subgroup G}
 
 @[to_additive]
 lemma smul_mem_fixedPoints_of_normal [hH : H.Normal]
