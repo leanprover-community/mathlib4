@@ -172,6 +172,8 @@ theorem nodup_append' {l₁ l₂ : List α} :
 theorem disjoint_of_nodup_append {l₁ l₂ : List α} (d : Nodup (l₁ ++ l₂)) : Disjoint l₁ l₂ :=
   (nodup_append'.1 d).2.2
 
+protected alias Nodup.disjoint := disjoint_of_nodup_append
+
 theorem Nodup.append (d₁ : Nodup l₁) (d₂ : Nodup l₂) (dj : Disjoint l₁ l₂) : Nodup (l₁ ++ l₂) :=
   nodup_append'.2 ⟨d₁, d₂, dj⟩
 
