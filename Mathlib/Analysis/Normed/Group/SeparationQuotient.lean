@@ -28,7 +28,7 @@ All the following definitions are in the `SeparationQuotient` namespace. Hence w
 
 ## Main results
 
-* `norm_normedMk_eq_one : the operator norm of the projection is `1` if the subspace is not `⊤`.
+* `norm_normedMk_eq_one` : the operator norm of the projection is `1` if the subspace is not `⊤`.
 
 * `norm_liftNormedAddGroupHom_le` : `‖liftNormedAddGroupHom f hf‖ ≤ ‖f‖`.
 -/
