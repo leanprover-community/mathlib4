@@ -43,14 +43,13 @@ lemma exists_of_isFiltered :
           exact ⟨X, hX⟩
         cocone_objs := by
           rintro ⟨X, hX⟩ ⟨Y, hY⟩
-          obtain ⟨Z, hZ, ⟨f⟩⟩ := hP (IsFiltered.max X Y)
-          exact ⟨⟨Z, hZ⟩, (IsFiltered.leftToMax X Y ≫ f :),
+          obtain ⟨Z, hZ, ⟨f⟩⟩ := hP (max X Y)
+          exact ⟨⟨Z, hZ⟩, (leftToMax X Y ≫ f :),
             (rightToMax X Y ≫ f :), by tauto⟩
         cocone_maps := by
           rintro ⟨X, hX⟩ ⟨Y, hY⟩ (f₁ : X ⟶ Y) (f₂ : X ⟶ Y)
-          obtain ⟨Z, hZ, ⟨g⟩⟩ := hP (IsFiltered.coeq f₁ f₂)
-          exact ⟨⟨Z, hZ⟩, (IsFiltered.coeqHom f₁ f₂ ≫ g :),
-            IsFiltered.coeq_condition_assoc _ _ _⟩ }
+          obtain ⟨Z, hZ, ⟨g⟩⟩ := hP (coeq f₁ f₂)
+          exact ⟨⟨Z, hZ⟩, (coeqHom f₁ f₂ ≫ g :), coeq_condition_assoc _ _ _⟩ }
     let G : FinalModel.{w} C₀ ⥤ P.FullSubcategory :=
       { obj X := ⟨(fromFinalModel.{w} C₀).obj X, by tauto⟩
         map f := (fromFinalModel.{w} C₀).map f }
@@ -62,10 +61,10 @@ lemma exists_of_isFiltered :
       ∃ (D : Type w) (_ : SmallCategory D) (_ : IsFiltered D) (F : D ⥤ C₀), F.Final := by
     obtain ⟨D, _, _, _, F, _⟩ := this C₀
     let e := equivSmallModel.{w} D
-    exact ⟨_, _, IsFiltered.of_equivalence e, e.inverse ⋙ F, inferInstance⟩
+    exact ⟨_, _, of_equivalence e, e.inverse ⋙ F, inferInstance⟩
   let e := ShrinkHoms.equivalence.{w} C
   obtain ⟨D, _, _, F, _⟩ := this (ShrinkHoms.{u} C)
-    (IsFiltered.of_equivalence e) (finallySmall_of_final_of_finallySmall e.functor)
+    (of_equivalence e) (finallySmall_of_final_of_finallySmall e.functor)
   exact ⟨D, inferInstance, inferInstance, F ⋙ e.inverse, inferInstance⟩
 
 /-- If `C` is a locally small filtered finally small category,
