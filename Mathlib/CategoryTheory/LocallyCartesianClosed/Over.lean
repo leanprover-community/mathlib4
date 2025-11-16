@@ -68,7 +68,7 @@ def isLimitPullbackCone [ChosenPullbacksAlong Z.hom] :
 
 /-- The binary fan provided by `fst'` and `snd'`. -/
 def binaryFan [ChosenPullbacksAlong Z.hom] : BinaryFan Y Z :=
-  BinaryFan.mk (P:= (pullback Z.hom ⋙ Over.map Z.hom).obj (Over.mk Y.hom))
+  BinaryFan.mk (P := (pullback Z.hom ⋙ Over.map Z.hom).obj (Over.mk Y.hom))
     (fst' Y.hom Z.hom) (snd' Y.hom Z.hom)
 
 @[simp]
