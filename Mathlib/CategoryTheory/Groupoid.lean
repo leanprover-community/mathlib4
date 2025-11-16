@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Combinatorics.Quiver.Symmetric
 import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
+import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # Groupoids
@@ -35,7 +36,7 @@ namespace CategoryTheory
 
 universe v v₂ u u₂
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 /-- A `Groupoid` is a category such that all morphisms are isomorphisms. -/
 class Groupoid (obj : Type u) : Type max u (v + 1) extends Category.{v} obj where
   /-- The inverse morphism -/
@@ -95,7 +96,7 @@ variable (X Y)
 @[simps!]
 def Groupoid.isoEquivHom : (X ≅ Y) ≃ (X ⟶ Y) where
   toFun := Iso.hom
-  invFun f := ⟨f, Groupoid.inv f, (by simp), (by simp)⟩
+  invFun f := { hom := f, inv := Groupoid.inv f }
 
 variable (C)
 
@@ -185,5 +186,16 @@ instance isGroupoidProd {α : Type u} {β : Type u₂} [Category.{v} α] [Catego
   all_isIso f := (isIso_prod_iff (f := f)).mpr ⟨inferInstance, inferInstance⟩
 
 end
+
+open MorphismProperty in
+lemma isGroupoid_iff_isomorphisms_eq_top (C : Type*) [Category C] :
+    IsGroupoid C ↔ isomorphisms C = ⊤ := by
+  constructor
+  · rw [eq_top_iff]
+    intro _ _
+    simp only [isomorphisms.iff, top_apply]
+    infer_instance
+  · intro h
+    exact ⟨of_eq_top h⟩
 
 end CategoryTheory

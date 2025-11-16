@@ -43,12 +43,12 @@ in which case it's also equivalent to being a finite product of normal domains.
 
 We'd need to add these conditions if we want exactly the products of Dedekind domains.
 
-In fact noetherianity is sufficient to guarantee finitely many minimal primes, so `IsDedekindRing`
+In fact Noetherianity is sufficient to guarantee finitely many minimal primes, so `IsDedekindRing`
 could be defined as `IsReduced`, `IsNoetherian`, `Ring.DimensionLEOne`, and either
 `IsIntegrallyClosed` or `NormalDomain`. If we use `NormalDomain` then `IsReduced` is automatic,
 but we could also consider a version of `NormalDomain` that only requires the localizations are
 `IsIntegrallyClosed` but may not be domains, and that may not equivalent to the ring itself being
-`IsIntegrallyClosed` (even for noetherian rings?).
+`IsIntegrallyClosed` (even for Noetherian rings?).
 -/
 
 
@@ -257,6 +257,12 @@ theorem pow_dvd_pow_iff [IsDomain R] [IsIntegrallyClosed R]
   obtain ⟨k, hk⟩ := algebraMap_eq_of_integral hy
   refine ⟨k, IsFractionRing.injective R K ?_⟩
   rw [map_mul, hk, mul_div_cancel₀ _ ha]
+
+@[simp]
+theorem _root_.Associated.pow_iff [IsDomain R] [IsIntegrallyClosed R] {n : ℕ} (hn : n ≠ 0)
+    {a b : R} :
+    Associated (a ^ n) (b ^ n) ↔ Associated a b := by
+  simp_rw [← dvd_dvd_iff_associated, pow_dvd_pow_iff hn]
 
 variable (R)
 

@@ -82,7 +82,7 @@ instance instNontrivial [Nonempty α] : Nontrivial (WithOne α) :=
   Option.nontrivial
 
 /-- The canonical map from `α` into `WithOne α` -/
-@[to_additive (attr := coe) /-- The canonical map from `α` into `WithZero α` -/]
+@[to_additive (attr := coe, match_pattern) /-- The canonical map from `α` into `WithZero α` -/]
 def coe : α → WithOne α :=
   Option.some
 
@@ -163,8 +163,6 @@ protected theorem cases_on {P : WithOne α → Prop} : ∀ x : WithOne α, P 1 �
 
 @[to_additive]
 instance instMulOneClass [Mul α] : MulOneClass (WithOne α) where
-  mul := (· * ·)
-  one := 1
   one_mul := (Option.lawfulIdentity_merge _).left_id
   mul_one := (Option.lawfulIdentity_merge _).right_id
 

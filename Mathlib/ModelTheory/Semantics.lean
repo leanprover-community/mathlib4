@@ -34,11 +34,8 @@ in a style inspired by the [Flypitch project](https://flypitch.github.io/).
 
 ## Implementation Notes
 
-- Formulas use a modified version of de Bruijn variables. Specifically, a `L.BoundedFormula α n`
-  is a formula with some variables indexed by a type `α`, which cannot be quantified over, and some
-  indexed by `Fin n`, which can. For any `φ : L.BoundedFormula α (n + 1)`, we define the formula
-  `∀' φ : L.BoundedFormula α n` by universally quantifying over the variable indexed by
-  `n : Fin (n + 1)`.
+- `BoundedFormula` uses a locally nameless representation with bound variables as well-scoped de
+  Bruijn levels. See the implementation note in `Syntax.lean` for details.
 
 ## References
 
@@ -231,7 +228,8 @@ namespace BoundedFormula
 
 open Term
 
-/-- A bounded formula can be evaluated as true or false by giving values to each free variable. -/
+/-- A bounded formula can be evaluated as true or false by giving values to each free and bound
+variable. -/
 def Realize : ∀ {l} (_f : L.BoundedFormula α l) (_v : α → M) (_xs : Fin l → M), Prop
   | _, falsum, _v, _xs => False
   | _, equal t₁ t₂, v, xs => t₁.realize (Sum.elim v xs) = t₂.realize (Sum.elim v xs)
@@ -394,7 +392,7 @@ theorem realize_liftAt {n n' m : ℕ} {φ : L.BoundedFormula α n} {v : α → M
     refine forall_congr' fun x => iff_eq_eq.mpr (congr rfl (funext (Fin.lastCases ?_ fun i => ?_)))
     · simp only [Function.comp_apply, val_last, snoc_last]
       refine (congr rfl (Fin.ext ?_)).trans (snoc_last _ _)
-      split_ifs <;> dsimp; omega
+      split_ifs <;> dsimp; cutsat
     · simp only [Function.comp_apply, Fin.snoc_castSucc]
       refine (congr rfl (Fin.ext ?_)).trans (snoc_castSucc _ _ _)
       simp only [coe_castSucc, coe_cast]
@@ -404,7 +402,7 @@ theorem realize_liftAt_one {n m : ℕ} {φ : L.BoundedFormula α n} {v : α → 
     (hmn : m ≤ n) :
     (φ.liftAt 1 m).Realize v xs ↔
       φ.Realize v (xs ∘ fun i => if ↑i < m then castSucc i else i.succ) := by
-  simp [realize_liftAt (add_le_add_right hmn 1), castSucc]
+  simp [realize_liftAt, hmn, castSucc]
 
 @[simp]
 theorem realize_liftAt_one_self {n : ℕ} {φ : L.BoundedFormula α n} {v : α → M}
@@ -436,7 +434,7 @@ theorem realize_restrictFreeVar [DecidableEq α] {n : ℕ} {φ : L.BoundedFormul
     rw [realize_restrictVarLeft v' (by simp [hv']), realize_restrictVarLeft v' (by simp [hv'])]
     simp
   | rel =>
-    simp only [Realize, freeVarFinset.eq_3, Finset.biUnion_val, restrictFreeVar]
+    simp only [Realize, freeVarFinset.eq_3, restrictFreeVar]
     congr!
     rw [realize_restrictVarLeft v' (by simp [hv'])]
     simp
@@ -572,8 +570,6 @@ theorem realize_relabel_sumInr (φ : L.Formula (Fin n)) {v : Empty → M} {x : F
   rw [BoundedFormula.realize_relabel, Formula.Realize, Sum.elim_comp_inr, Fin.castAdd_zero,
     cast_refl, Function.comp_id,
     Subsingleton.elim (x ∘ (natAdd n : Fin 0 → Fin n)) default]
-
-@[deprecated (since := "2025-02-21")] alias realize_relabel_sum_inr := realize_relabel_sumInr
 
 @[simp]
 theorem realize_equal {t₁ t₂ : L.Term α} {x : α → M} :
@@ -733,7 +729,7 @@ theorem completeTheory.subset [MT : M ⊨ T] : T ⊆ L.completeTheory M :=
 end Theory
 
 instance model_completeTheory : M ⊨ L.completeTheory M :=
-  Theory.model_iff_subset_completeTheory.2 (subset_refl _)
+  Theory.model_iff_subset_completeTheory.2 subset_rfl
 
 variable (M N)
 
@@ -840,9 +836,7 @@ theorem realize_toFormula (φ : L.BoundedFormula α n) (v : α ⊕ (Fin n) → M
     · rcases x with _ | x
       · simp
       · refine Fin.lastCases ?_ ?_ x
-        · rw [Sum.elim_inr, Sum.elim_inr,
-            finSumFinEquiv_symm_last, Sum.map_inr, Sum.elim_inr]
-          simp [Fin.snoc]
+        · simp [Fin.snoc]
         · simp only [castSucc, Sum.elim_inr,
             finSumFinEquiv_symm_apply_castAdd, Sum.map_inl, Sum.elim_inl]
           rw [← castSucc]

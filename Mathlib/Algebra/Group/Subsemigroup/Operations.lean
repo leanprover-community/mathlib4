@@ -454,7 +454,7 @@ def prod (s : Subsemigroup M) (t : Subsemigroup N) : Subsemigroup (M × N) where
   carrier := s ×ˢ t
   mul_mem' hp hq := ⟨s.mul_mem hp.1 hq.1, t.mul_mem hp.2 hq.2⟩
 
-@[to_additive coe_prod]
+@[to_additive (attr := norm_cast) coe_prod]
 theorem coe_prod (s : Subsemigroup M) (t : Subsemigroup N) :
     (s.prod t : Set (M × N)) = (s : Set M) ×ˢ (t : Set N) :=
   rfl
@@ -502,7 +502,7 @@ theorem mem_map_equiv {f : M ≃* N} {K : Subsemigroup M} {x : N} :
 @[to_additive]
 theorem map_equiv_eq_comap_symm (f : M ≃* N) (K : Subsemigroup M) :
     K.map (f : M →ₙ* N) = K.comap (f.symm : N →ₙ* M) :=
-  SetLike.coe_injective (f.toEquiv.image_eq_preimage K)
+  SetLike.coe_injective (f.toEquiv.image_eq_preimage_symm K)
 
 @[to_additive]
 theorem comap_equiv_eq_map_symm (f : N ≃* M) (K : Subsemigroup M) :

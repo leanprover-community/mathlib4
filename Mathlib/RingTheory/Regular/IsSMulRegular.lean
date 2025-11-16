@@ -3,7 +3,7 @@ Copyright (c) 2024 Brendan Murphy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Brendan Murphy
 -/
-import Mathlib.Algebra.Module.Torsion
+import Mathlib.Algebra.Module.Torsion.Basic
 import Mathlib.RingTheory.Flat.Basic
 import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 import Mathlib.RingTheory.QuotSMulTop
@@ -12,7 +12,7 @@ import Mathlib.RingTheory.QuotSMulTop
 # Lemmas about the `IsSMulRegular` Predicate
 
 For modules over a ring the proposition `IsSMulRegular r M` is equivalent to
-`r` being a *non zero-divisor*, i.e. `r • x = 0` only if `x = 0` for `x ∈ M`.
+`r` being a *non-zero-divisor*, i.e. `r • x = 0` only if `x = 0` for `x ∈ M`.
 This specific result is `isSMulRegular_iff_smul_eq_zero_imp_eq_zero`.
 Lots of results starting from this, especially ones about quotients (which
 don't make sense without some algebraic assumptions), are in this file.

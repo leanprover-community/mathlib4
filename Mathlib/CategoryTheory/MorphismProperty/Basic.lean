@@ -118,6 +118,16 @@ lemma monotone_map (F : C ⥤ D) :
   intro P Q h X Y f ⟨X', Y', f', hf', ⟨e⟩⟩
   exact ⟨X', Y', f', h _ hf', ⟨e⟩⟩
 
+@[simp]
+lemma map_top_eq_top_of_essSurj_of_full (F : C ⥤ D) [F.EssSurj] [F.Full] :
+    (⊤ : MorphismProperty C).map F = ⊤ := by
+  rw [eq_top_iff]
+  intro X Y f _
+  refine ⟨F.objPreimage X, F.objPreimage Y, F.preimage ?_, ⟨⟨⟩, ⟨?_⟩⟩⟩
+  · exact (Functor.objObjPreimageIso F X).hom ≫ f ≫ (Functor.objObjPreimageIso F Y).inv
+  · exact Arrow.isoMk' _ _ (Functor.objObjPreimageIso F X) (Functor.objObjPreimageIso F Y)
+      (by simp)
+
 section
 
 variable (P : MorphismProperty C)
@@ -221,6 +231,8 @@ variable {C}
 /-- `P` respects isomorphisms, if it respects the morphism property `isomorphisms C`, i.e.
 it is stable under pre- and postcomposition with isomorphisms. -/
 abbrev RespectsIso (P : MorphismProperty C) : Prop := P.Respects (isomorphisms C)
+
+instance inf (P Q : MorphismProperty C) [P.RespectsIso] [Q.RespectsIso] : (P ⊓ Q).RespectsIso where
 
 lemma RespectsIso.mk (P : MorphismProperty C)
     (hprecomp : ∀ {X Y Z : C} (e : X ≅ Y) (f : Y ⟶ Z) (_ : P f), P (e.hom ≫ f))
@@ -343,13 +355,7 @@ lemma map_isoClosure (P : MorphismProperty C) (F : C ⥤ D) :
   · exact monotone_map _ (le_isoClosure P)
 
 lemma map_id_eq_isoClosure (P : MorphismProperty C) :
-    P.map (𝟭 _) = P.isoClosure := by
-  apply le_antisymm
-  · rw [map_le_iff]
-    intro X Y f hf
-    exact P.le_isoClosure _ hf
-  · intro X Y f hf
-    exact hf
+    P.map (𝟭 _) = P.isoClosure := rfl
 
 lemma map_id (P : MorphismProperty C) [RespectsIso P] :
     P.map (𝟭 _) = P := by

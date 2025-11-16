@@ -102,7 +102,7 @@ lemma cons_inter_of_neg (s : Multiset α) : a ∉ t → (a ::ₘ s) ∩ t = s �
   Quotient.inductionOn₂ s t fun _l₁ _l₂ h => congr_arg ofList <| cons_bagInter_of_neg _ h
 
 lemma inter_le_left : s ∩ t ≤ s :=
-  Quotient.inductionOn₂ s t fun _l₁ _l₂ => (bagInter_sublist_left _ _).subperm
+  Quotient.inductionOn₂ s t fun _l₁ _l₂ => bagInter_sublist_left.subperm
 
 lemma inter_le_right : s ∩ t ≤ t := by
   induction s using Multiset.induction_on generalizing t with
@@ -313,7 +313,7 @@ theorem inter_eq_zero_iff_disjoint [DecidableEq α] {s t : Multiset α} :
 
 @[simp]
 theorem disjoint_union_left [DecidableEq α] {s t u : Multiset α} :
-    Disjoint (s ∪ t) u ↔ Disjoint s u ∧ Disjoint t u :=  disjoint_sup_left
+    Disjoint (s ∪ t) u ↔ Disjoint s u ∧ Disjoint t u := disjoint_sup_left
 
 @[simp]
 theorem disjoint_union_right [DecidableEq α] {s t u : Multiset α} :

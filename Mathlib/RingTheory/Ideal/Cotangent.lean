@@ -3,7 +3,7 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Module.Torsion
+import Mathlib.Algebra.Module.Torsion.Basic
 import Mathlib.Algebra.Ring.Idempotent
 import Mathlib.LinearAlgebra.Dimension.Finite
 import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
@@ -27,7 +27,7 @@ Additional support is also given to the cotangent space `m ⧸ m ^ 2` of a local
 
 namespace Ideal
 
--- Porting note: universes need to be explicit to avoid bad universe levels in `quotCotangent`
+-- Universes need to be explicit to avoid bad universe levels in `quotCotangent`
 universe u v w
 
 variable {R : Type u} {S : Type v} {S' : Type w} [CommRing R] [CommSemiring S] [Algebra S R]

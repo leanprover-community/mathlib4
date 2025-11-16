@@ -7,7 +7,7 @@ import Mathlib.NumberTheory.Divisors
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
-#  `Nat.divisors` as a multiplicative homomorpism
+# `Nat.divisors` as a multiplicative homomorpism
 
 The main definition of this file is `Nat.divisorsHom : ℕ →* Finset ℕ`,
 exhibiting `Nat.divisors` as a multiplicative homomorphism from `ℕ` to `Finset ℕ`.
@@ -32,7 +32,7 @@ def Nat.divisorsHom : ℕ →* Finset ℕ where
   map_one' := divisors_one
 
 lemma Nat.Prime.divisors_sq {p : ℕ} (hp : p.Prime) : (p ^ 2).divisors = {p ^ 2, p, 1} := by
-  simp [divisors_prime_pow hp, range_succ]
+  simp [divisors_prime_pow hp, range_add_one]
 
 lemma List.nat_divisors_prod (l : List ℕ) : divisors l.prod = (l.map divisors).prod :=
   map_list_prod Nat.divisorsHom l

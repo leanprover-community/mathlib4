@@ -117,7 +117,7 @@ open Complex
 
 theorem cosh_dist' (z w : ℍ) :
     Real.cosh (dist z w) = ((z.re - w.re) ^ 2 + z.im ^ 2 + w.im ^ 2) / (2 * z.im * w.im) := by
-  field_simp [cosh_dist, Complex.dist_eq, Complex.sq_norm, normSq_apply]
+  simp [field, cosh_dist, Complex.dist_eq, Complex.sq_norm, normSq_apply]
   ring
 
 /-- Euclidean center of the circle with center `z` and radius `r` in the hyperbolic metric. -/
@@ -203,8 +203,8 @@ nonrec theorem dist_of_re_eq (h : z.re = w.re) : dist z w = dist (log z.im) (log
   nth_rw 4 [← abs_of_pos w.im_pos]
   simp only [← _root_.abs_mul, Real.dist_eq]
   congr 1
-  field_simp
-  ring
+  field
+
 /-- Hyperbolic distance between two points is greater than or equal to the distance between the
 logarithms of their imaginary parts. -/
 theorem dist_log_im_le (z w : ℍ) : dist (log z.im) (log w.im) ≤ dist z w :=

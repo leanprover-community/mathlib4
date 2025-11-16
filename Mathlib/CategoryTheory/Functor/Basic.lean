@@ -22,7 +22,7 @@ set_option mathlib.tactic.category.grind true
 
 namespace CategoryTheory
 
--- declare the `v`'s first; see note [CategoryTheory universes].
+-- declare the `v`'s first; see note [category theory universes].
 universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
 section
@@ -50,7 +50,7 @@ end
 /-- Notation for a functor between categories. -/
 -- A functor is basically a function, so give ⥤ a similar precedence to → (25).
 -- For example, `C × D ⥤ E` should parse as `(C × D) ⥤ E` not `C × (D ⥤ E)`.
-scoped [CategoryTheory] infixr:26 " ⥤ " => Functor -- type as \func
+scoped[CategoryTheory] infixr:26 " ⥤ " => Functor -- type as \func
 
 attribute [simp] Functor.map_id Functor.map_comp
 attribute [grind =] Functor.map_id
@@ -78,7 +78,7 @@ protected def id : C ⥤ C where
   map f := f
 
 /-- Notation for the identity functor on a category. -/
-scoped [CategoryTheory] notation "𝟭" => Functor.id -- Type this as `\sb1`
+scoped[CategoryTheory] notation "𝟭" => Functor.id -- Type this as `\sb1`
 
 instance : Inhabited (C ⥤ C) :=
   ⟨Functor.id C⟩
@@ -108,20 +108,17 @@ theorem congr_map (F : C ⥤ D) {X Y : C} {f g : X ⟶ Y}
 
 /-- `F ⋙ G` is the composition of a functor `F` and a functor `G` (`F` first, then `G`).
 -/
-@[simps obj]
+@[simps (attr := grind =) obj]
 def comp (F : C ⥤ D) (G : D ⥤ E) : C ⥤ E where
   obj X := G.obj (F.obj X)
   map f := G.map (F.map f)
 
 /-- Notation for composition of functors. -/
-scoped [CategoryTheory] infixr:80 " ⋙ " => Functor.comp
+scoped[CategoryTheory] infixr:80 " ⋙ " => Functor.comp
 
-@[simp]
+@[simp, grind =]
 theorem comp_map (F : C ⥤ D) (G : D ⥤ E) {X Y : C} (f : X ⟶ Y) :
     (F ⋙ G).map f = G.map (F.map f) := rfl
-
-attribute [grind =] comp_obj
-attribute [grind =] comp_map
 
 -- These are not simp lemmas because rewriting along equalities between functors
 -- is not necessarily a good idea.
@@ -139,6 +136,14 @@ theorem map_dite (F : C ⥤ D) {X Y : C} {P : Prop} [Decidable P]
 @[simp]
 theorem toPrefunctor_comp (F : C ⥤ D) (G : D ⥤ E) :
     F.toPrefunctor.comp G.toPrefunctor = (F ⋙ G).toPrefunctor := rfl
+
+lemma toPrefunctor_injective {F G : C ⥤ D} (h : F.toPrefunctor = G.toPrefunctor) :
+    F = G := by
+  obtain ⟨obj, map, _, _⟩ := F
+  obtain ⟨obj', map', _, _⟩ := G
+  obtain rfl : obj = obj' := congr_arg Prefunctor.obj h
+  obtain rfl : @map = @map' := by simpa [Functor.toPrefunctor] using h
+  rfl
 
 end
 

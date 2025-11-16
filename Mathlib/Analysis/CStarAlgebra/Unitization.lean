@@ -147,7 +147,7 @@ instance Unitization.instCStarRing : CStarRing (Unitization 𝕜 E) where
         rw [← Ne, ← norm_pos_iff] at h
         simp only [Unitization.splitMul_apply, Unitization.snd_star,
           Unitization.fst_star] at this
-        exact (mul_le_mul_right h).mp this
+        exact (mul_le_mul_iff_left₀ h).mp this
     -- in this step we make use of the key lemma `norm_splitMul_snd_sq`
     have h₂ : ‖(Unitization.splitMul 𝕜 E (star x * x)).snd‖
         = ‖(Unitization.splitMul 𝕜 E x).snd‖ ^ 2 := by
@@ -165,9 +165,9 @@ instance Unitization.instCStarRing : CStarRing (Unitization 𝕜 E) where
     rw [h₂, h₃]
     /- use the definition of the norm, and split into cases based on whether the norm in the first
     coordinate is bigger or smaller than the norm in the second coordinate. -/
-    by_cases h : ‖(Unitization.splitMul 𝕜 E x).fst‖ ≤ ‖(Unitization.splitMul 𝕜 E x).snd‖
+    by_cases! h : ‖(Unitization.splitMul 𝕜 E x).fst‖ ≤ ‖(Unitization.splitMul 𝕜 E x).snd‖
     · rw [sq, sq, sup_eq_right.mpr h, sup_eq_right.mpr (mul_self_le_mul_self (norm_nonneg _) h)]
-    · replace h := (not_le.mp h).le
+    · replace h := h.le
       rw [sq, sq, sup_eq_left.mpr h, sup_eq_left.mpr (mul_self_le_mul_self (norm_nonneg _) h)]
 
 /-- The minimal unitization (over `ℂ`) of a C⋆-algebra, equipped with the C⋆-norm. When `A` is

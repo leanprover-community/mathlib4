@@ -588,43 +588,33 @@ theorem continuous_parametric_primitive_of_continuous
       · exact norm_integral_le_integral_norm_uIoc
   _ ≤ ∫ t in Icc (b₀ - δ) (b₀ + δ), ‖f p t‖ ∂μ + ∫ t in Icc a b, ‖f p t - f q t‖ ∂μ := by
       gcongr
-      · apply setIntegral_mono_set
-        · exact (hf.uncurry_left _).norm.integrableOn_Icc
-        · exact Eventually.of_forall (fun x ↦ norm_nonneg _)
-        · have : Ι b₀ s ⊆ Icc (b₀ - δ) (b₀ + δ) := by
-            apply uIoc_subset_uIcc.trans (uIcc_subset_Icc ?_ ⟨hs.1.le, hs.2.le⟩ )
-            simp [δpos.le]
-          exact Eventually.of_forall this
-      · apply setIntegral_mono_set
-        · exact ((hf.uncurry_left _).sub (hf.uncurry_left _)).norm.integrableOn_Icc
-        · exact Eventually.of_forall (fun x ↦ norm_nonneg _)
-        · have : Ι a₀ b₀ ⊆ Icc a b := uIoc_subset_uIcc.trans
-            (uIcc_subset_Icc ⟨a_lt.1.le, lt_b.1.le⟩ ⟨a_lt.2.le, lt_b.2.le⟩)
-          exact Eventually.of_forall this
+      · exact Eventually.of_forall (fun x ↦ norm_nonneg _)
+      · exact (hf.uncurry_left _).norm.integrableOn_Icc
+      · apply uIoc_subset_uIcc.trans (uIcc_subset_Icc ?_ ⟨hs.1.le, hs.2.le⟩ )
+        simp [δpos.le]
+      · exact Eventually.of_forall (fun x ↦ norm_nonneg _)
+      · exact ((hf.uncurry_left _).sub (hf.uncurry_left _)).norm.integrableOn_Icc
+      · exact uIoc_subset_uIcc.trans (uIcc_subset_Icc ⟨a_lt.1.le, lt_b.1.le⟩ ⟨a_lt.2.le, lt_b.2.le⟩)
   _ ≤ ∫ t in Icc (b₀ - δ) (b₀ + δ), M + 1 ∂μ + ∫ _t in Icc a b, δ ∂μ := by
-      gcongr ?_ + ?_
-      · apply setIntegral_mono_on
-        · exact (hf.uncurry_left _).norm.integrableOn_Icc
-        · exact continuous_const.integrableOn_Icc
-        · exact measurableSet_Icc
-        · intro x hx
-          calc ‖f p x‖ = ‖f q x + (f p x - f q x)‖ := by congr; abel
-          _ ≤ ‖f q x‖ + ‖f p x - f q x‖ := norm_add_le _ _
-          _ ≤ M + δ := by
-              gcongr
-              · apply hM
-                change (fun x ↦ ‖Function.uncurry f x‖) (q, x) ∈ _
-                apply mem_image_of_mem
-                simp only [singleton_prod, mem_image, Prod.mk.injEq, true_and, exists_eq_right]
-                exact h'δ hx
-              · exact le_of_lt (hv _ hp _ (h'δ hx))
-          _ ≤ M + 1 := by linarith
-      · apply setIntegral_mono_on
-        · exact ((hf.uncurry_left _).sub (hf.uncurry_left _)).norm.integrableOn_Icc
-        · exact continuous_const.integrableOn_Icc
-        · exact measurableSet_Icc
-        · intro x hx
-          exact le_of_lt (hv _ hp _ hx)
+      gcongr with x hx x hx
+      · exact (hf.uncurry_left _).norm.integrableOn_Icc
+      · exact continuous_const.integrableOn_Icc
+      · exact nullMeasurableSet_Icc
+      · calc ‖f p x‖ = ‖f q x + (f p x - f q x)‖ := by congr; abel
+        _ ≤ ‖f q x‖ + ‖f p x - f q x‖ := norm_add_le _ _
+        _ ≤ M + δ := by
+            gcongr
+            · apply hM
+              change (fun x ↦ ‖Function.uncurry f x‖) (q, x) ∈ _
+              apply mem_image_of_mem
+              simp only [singleton_prod, mem_image, Prod.mk.injEq, true_and, exists_eq_right]
+              exact h'δ hx
+            · exact le_of_lt (hv _ hp _ (h'δ hx))
+        _ ≤ M + 1 := by linarith
+      · exact ((hf.uncurry_left _).sub (hf.uncurry_left _)).norm.integrableOn_Icc
+      · exact continuous_const.integrableOn_Icc
+      · exact nullMeasurableSet_Icc
+      · exact le_of_lt (hv _ hp _ hx)
   _ = (M + 1) * μ.real (Icc (b₀ - δ) (b₀ + δ)) + δ * μ.real (Icc a b) := by simp [mul_comm]
   _ < ε := h''δ
 

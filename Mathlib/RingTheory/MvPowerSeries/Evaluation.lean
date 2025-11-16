@@ -131,7 +131,7 @@ variable {φ : R →+* S}
 private instance : UniformSpace (MvPolynomial σ R) :=
   comap toMvPowerSeries (Pi.uniformSpace _)
 
-/-- The induced uniform structure of MvPolynomial σ R is an add group uniform structure -/
+/-- The induced uniform structure of MvPolynomial σ R is an additive group uniform structure -/
 private instance [IsUniformAddGroup R] : IsUniformAddGroup (MvPolynomial σ R) :=
   IsUniformAddGroup.comap coeToMvPowerSeries.ringHom
 
@@ -341,7 +341,7 @@ theorem comp_aeval (ha : HasEval a)
     [IsTopologicalRing T] [IsLinearTopology T T]
     [T2Space T] [Algebra R T] [ContinuousSMul R T] [CompleteSpace T]
     {ε : S →ₐ[R] T} (hε : Continuous ε) :
-    ε.comp (aeval ha) = aeval (ha.map hε)  := by
+    ε.comp (aeval ha) = aeval (ha.map hε) := by
   apply DFunLike.ext'
   simp only [AlgHom.coe_comp, coe_aeval ha]
   rw [← RingHom.coe_coe,

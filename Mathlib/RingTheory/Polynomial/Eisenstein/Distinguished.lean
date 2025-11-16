@@ -40,7 +40,7 @@ lemma map_eq_X_pow {f : R[X]} {I : Ideal R} (distinguish : f.IsDistinguishedAt I
   ext i
   by_cases ne : i = f.natDegree
   · simp [ne, distinguish.monic]
-  · rcases lt_or_gt_of_ne ne with lt|gt
+  · rcases lt_or_gt_of_ne ne with lt | gt
     · simpa [ne, eq_zero_iff_mem] using (distinguish.mem lt)
     · simp [ne, Polynomial.coeff_eq_zero_of_natDegree_lt gt]
 

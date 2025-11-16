@@ -35,12 +35,12 @@ theorem harmonic_le_one_add_log (n : ℕ) :
   simp_rw [harmonic_eq_sum_Icc, Rat.cast_sum, Rat.cast_inv, Rat.cast_natCast]
   rw [← Finset.sum_erase_add (Finset.Icc 1 n) _ (Finset.left_mem_Icc.mpr hn), add_comm,
     Nat.cast_one, inv_one]
-  refine add_le_add_left ?_ 1
+  gcongr
   simp only [Finset.Icc_erase_left]
   calc ∑ d ∈ .Ico 2 (n + 1), (d : ℝ)⁻¹
     _ = ∑ d ∈ .Ico 2 (n + 1), (↑(d + 1) - 1)⁻¹ := ?_
-    _ ≤ ∫ x in (2)..↑(n + 1), (x - 1)⁻¹ := ?_
-    _ = ∫ x in (1)..n, x⁻¹ := ?_
+    _ ≤ ∫ x in 2..↑(n + 1), (x - 1)⁻¹ := ?_
+    _ = ∫ x in 1..n, x⁻¹ := ?_
     _ = Real.log ↑n := ?_
   · simp_rw [Nat.cast_add, Nat.cast_one, add_sub_cancel_right]
   · exact @AntitoneOn.sum_le_integral_Ico 2 (n + 1) (fun x : ℝ ↦ (x - 1)⁻¹) (by linarith [hn]) <|

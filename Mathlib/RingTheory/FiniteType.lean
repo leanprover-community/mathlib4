@@ -209,6 +209,11 @@ theorem isNoetherianRing (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
 theorem _root_.Subalgebra.fg_iff_finiteType (S : Subalgebra R A) : S.FG ↔ Algebra.FiniteType R S :=
   S.fg_top.symm.trans ⟨fun h => ⟨h⟩, fun h => h.out⟩
 
+lemma adjoin_of_finite {A : Type*} [CommSemiring A] [Algebra R A] {t : Set A} (h : Set.Finite t) :
+    FiniteType R (Algebra.adjoin R t) := by
+  rw [← Subalgebra.fg_iff_finiteType]
+  exact ⟨h.toFinset, by simp⟩
+
 end FiniteType
 
 end Algebra
@@ -527,11 +532,8 @@ theorem support_gen_of_gen {S : Set (MonoidAlgebra R M)} (hS : Algebra.adjoin R 
   refine le_antisymm le_top ?_
   rw [← hS, adjoin_le_iff]
   intro f hf
-  -- Porting note: ⋃ notation did not work here. Was
-  -- ⋃ (g : MonoidAlgebra R M) (H : g ∈ S), (of R M '' g.support)
   have hincl : (of R M '' f.support) ⊆
-      Set.iUnion fun (g : MonoidAlgebra R M)
-        => Set.iUnion fun (_ : g ∈ S) => (of R M '' g.support) := by
+      ⋃ (g : MonoidAlgebra R M) (H : g ∈ S), (of R M '' g.support) := by
     intro s hs
     exact Set.mem_iUnion₂.2 ⟨f, ⟨hf, hs⟩⟩
   exact adjoin_mono hincl (mem_adjoin_support f)

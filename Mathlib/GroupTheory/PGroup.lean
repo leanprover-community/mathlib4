@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2018 . All rights reserved.
+Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
 -/
@@ -279,7 +279,7 @@ theorem to_sup_of_normal_right' {H K : Subgroup G} (hH : IsPGroup p H) (hK : IsP
     to_sup_of_normal_right (hH.of_equiv (Subgroup.subgroupOfEquivOfLe hHK).symm)
       (hK.of_equiv (Subgroup.subgroupOfEquivOfLe Subgroup.le_normalizer).symm)
   ((congr_arg (fun H : Subgroup K.normalizer => IsPGroup p H)
-            (Subgroup.sup_subgroupOf_eq hHK Subgroup.le_normalizer)).mp
+            ((Subgroup.subgroupOf_sup hHK Subgroup.le_normalizer).symm)).mp
         hHK').of_equiv
     (Subgroup.subgroupOfEquivOfLe (sup_le hHK Subgroup.le_normalizer))
 
@@ -330,9 +330,9 @@ theorem le_or_disjoint_of_coprime [hp : Fact p.Prime] {P : Subgroup G} (hP : IsP
     contrapose! h_cop
     exact Nat.Prime.not_coprime_iff_dvd.mpr ⟨p, hp.out, h_cop⟩
   refine h3.symm.imp (fun h4 ↦ ?_) (fun h4 ↦ ?_)
-  · rw [← Subgroup.relindex_eq_one]
-    exact Nat.eq_one_of_dvd_coprimes h4 (H.relindex_dvd_index_of_normal P)
-      (Subgroup.relindex_dvd_card H P)
+  · rw [← Subgroup.relIndex_eq_one]
+    exact Nat.eq_one_of_dvd_coprimes h4 (H.relIndex_dvd_index_of_normal P)
+      (Subgroup.relIndex_dvd_card H P)
   · exact disjoint_iff.mpr (Subgroup.inf_eq_bot_of_coprime h4)
 
 section P2comm

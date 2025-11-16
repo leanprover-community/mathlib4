@@ -206,7 +206,7 @@ theorem tendsto_of_le_liminf_of_limsup_le {f : Filter β} {u : β → α} {a : �
   · exact tendsto_of_liminf_eq_limsup (le_antisymm (le_trans (liminf_le_limsup h h') hsup) hinf)
       (le_antisymm hsup (le_trans hinf (liminf_le_limsup h h'))) h h'
 
-/-- Assume that, for any `a < b`, a sequence can not be infinitely many times below `a` and
+/-- Assume that, for any `a < b`, a sequence cannot be infinitely many times below `a` and
 above `b`. If it is also ultimately bounded above and below, then it has to converge. This even
 works if `a` and `b` are restricted to a dense subset.
 -/
@@ -303,7 +303,7 @@ theorem Antitone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R →
         using Antitone.isCoboundedUnder_ge_of_isCobounded f_decr cobdd
     · rcases hd with ⟨e, ⟨he, fe_eq_d⟩⟩
       filter_upwards [he] with x hx using (fe_eq_d.symm ▸ f_decr hx)
-  · by_cases h' : ∃ c, c < F.limsSup ∧ Set.Ioo c F.limsSup = ∅
+  · by_cases! h' : ∃ c, c < F.limsSup ∧ Set.Ioo c F.limsSup = ∅
     · rcases h' with ⟨c, c_lt, hc⟩
       have B : ∃ᶠ n in F, F.limsSup ≤ n := by
         apply (frequently_lt_of_lt_limsSup cobdd c_lt).mono
@@ -313,7 +313,6 @@ theorem Antitone.map_limsSup_of_continuousAt {F : Filter R} [NeBot F] {f : R →
         simp only [hc, Set.not_nonempty_empty] at this
       apply liminf_le_of_frequently_le _ (bdd_above.isBoundedUnder f_decr)
       exact B.mono fun x hx ↦ f_decr hx
-    push_neg at h'
     by_contra! H
     have not_bot : ¬ IsBot F.limsSup := fun maybe_bot ↦
       lt_irrefl (F.liminf f) <| lt_of_le_of_lt

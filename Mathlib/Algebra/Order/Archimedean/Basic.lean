@@ -298,11 +298,10 @@ theorem exists_mem_Ioc_zpow (hx : 0 < x) (hy : 1 < y) : ∃ n : ℤ, x ∈ Ioc (
 
 /-- For any `y < 1` and any positive `x`, there exists `n : ℕ` with `y ^ n < x`. -/
 theorem exists_pow_lt_of_lt_one (hx : 0 < x) (hy : y < 1) : ∃ n : ℕ, y ^ n < x := by
-  by_cases y_pos : y ≤ 0
+  by_cases! y_pos : y ≤ 0
   · use 1
     simp only [pow_one]
     exact y_pos.trans_lt hx
-  rw [not_le] at y_pos
   rcases pow_unbounded_of_one_lt x⁻¹ ((one_lt_inv₀ y_pos).2 hy) with ⟨q, hq⟩
   exact ⟨q, by rwa [inv_pow, inv_lt_inv₀ hx (pow_pos y_pos _)] at hq⟩
 
@@ -328,7 +327,7 @@ lemma exists_pow_btwn_of_lt_mul {a b c : K} (h : a < b * c) (hb₀ : 0 < b) (hb�
     intro hf
     simp only [hf, pow_zero] at H
     exact (H.trans <| (mul_lt_of_lt_one_right hb₀ hc₁).trans_le hb₁).false
-  rw [(Nat.succ_pred_eq_of_ne_zero hn).symm, pow_succ, mul_lt_mul_right hc₀] at H
+  rw [(Nat.succ_pred_eq_of_ne_zero hn).symm, pow_succ, mul_lt_mul_iff_left₀ hc₀] at H
   exact Nat.find_min this (Nat.sub_one_lt hn) H
 
 /-- If `a < b * c`, `b` is positive and `0 < c < 1`, then there is a power `c ^ n` with `n : ℤ`
@@ -412,11 +411,10 @@ theorem exists_div_btwn {x y : K} {n : ℕ} (h : x < y) (nh : (y - x)⁻¹ < n) 
   obtain ⟨z, zh⟩ := exists_floor (x * n)
   refine ⟨z + 1, ?_⟩
   have n0' := (inv_pos.2 (sub_pos.2 h)).trans nh
-  have n0 := Nat.cast_pos.1 n0'
   rw [div_lt_iff₀ n0']
   refine ⟨(lt_div_iff₀ n0').2 <| (lt_iff_lt_of_le_iff_le (zh _)).1 (lt_add_one _), ?_⟩
   rw [Int.cast_add, Int.cast_one]
-  refine lt_of_le_of_lt (add_le_add_right ((zh _).1 le_rfl) _) ?_
+  grw [(zh _).1 le_rfl]
   rwa [← lt_sub_iff_add_lt', ← sub_mul, ← div_lt_iff₀' (sub_pos.2 h), one_div]
 
 theorem exists_rat_btwn {x y : K} (h : x < y) : ∃ q : ℚ, x < q ∧ q < y := by

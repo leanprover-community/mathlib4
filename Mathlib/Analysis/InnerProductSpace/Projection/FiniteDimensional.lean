@@ -7,7 +7,7 @@ import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
 import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 import Mathlib.Algebra.DirectSum.Decomposition
-import Mathlib.Analysis.NormedSpace.RCLike
+import Mathlib.Analysis.Normed.Module.RCLike.Basic
 
 /-!
 # Orthogonal projections in finite-dimensional spaces
@@ -139,8 +139,8 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
     ∃ l : List F, l.length ≤ n ∧ φ = (l.map fun v => (ℝ ∙ v)ᗮ.reflection).prod := by
   -- We prove this by strong induction on `n`, the dimension of the orthogonal complement of the
   -- fixed subspace of the endomorphism `φ`
-  induction' n with n IH generalizing φ
-  · -- Base case: `n = 0`, the fixed subspace is the whole space, so `φ = id`
+  induction n generalizing φ with
+  | zero => -- Base case: `n = 0`, the fixed subspace is the whole space, so `φ = id`
     refine ⟨[], rfl.le, show φ = 1 from ?_⟩
     have : ker (ContinuousLinearMap.id ℝ F - φ) = ⊤ := by
       rwa [le_zero_iff, finrank_eq_zero, orthogonal_eq_bot_iff] at hn
@@ -149,7 +149,8 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
     have := LinearMap.congr_fun (LinearMap.ker_eq_top.mp this) x
     simpa only [sub_eq_zero, ContinuousLinearMap.coe_sub, LinearMap.sub_apply,
       LinearMap.zero_apply] using this
-  · -- Inductive step.  Let `W` be the fixed subspace of `φ`.  We suppose its complement to have
+  | succ n IH =>
+    -- Inductive step.  Let `W` be the fixed subspace of `φ`.  We suppose its complement to have
     -- dimension at most n + 1.
     let W := ker (ContinuousLinearMap.id ℝ F - φ)
     have hW : ∀ w ∈ W, φ w = w := fun w hw => (sub_eq_zero.mp hw).symm
@@ -157,7 +158,7 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
     · obtain ⟨V, hV₁, hV₂⟩ := IH φ hn'
       exact ⟨V, hV₁.trans n.le_succ, hV₂⟩
     -- Take a nonzero element `v` of the orthogonal complement of `W`.
-    haveI : Nontrivial Wᗮ := nontrivial_of_finrank_pos (by omega : 0 < finrank ℝ Wᗮ)
+    haveI : Nontrivial Wᗮ := nontrivial_of_finrank_pos (by cutsat : 0 < finrank ℝ Wᗮ)
     obtain ⟨v, hv⟩ := exists_ne (0 : Wᗮ)
     have hφv : φ v ∈ Wᗮ := by
       intro w hw

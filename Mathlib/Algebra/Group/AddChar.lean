@@ -28,7 +28,7 @@ We also include some constructions specific to the case when `A = R` is a ring; 
 For more refined results of a number-theoretic nature (primitive characters, Gauss sums, etc)
 see `Mathlib/NumberTheory/LegendreSymbol/AddCharacter.lean`.
 
-# Implementation notes
+## Implementation notes
 
 Due to their role as the dual of an additive group, additive characters must themselves be an
 additive group. This contrasts to their pointwise operations which make them a multiplicative group.
@@ -92,6 +92,8 @@ variable {A B M N : Type*} [AddMonoid A] [AddMonoid B] [Monoid M] [Monoid N] {ψ
 instance instFunLike : FunLike (AddChar A M) A M where
   coe := AddChar.toFun
   coe_injective' φ ψ h := by cases φ; cases ψ; congr
+
+initialize_simps_projections AddChar (toFun → apply) -- needs to come after FunLike instance
 
 @[ext] lemma ext (f g : AddChar A M) (h : ∀ x : A, f x = g x) : f = g :=
   DFunLike.ext f g h

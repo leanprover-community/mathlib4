@@ -14,7 +14,7 @@ The Cantor normal form of an ordinal is generally defined as its base `ω` expan
 non-zero exponents in decreasing order. Here, we more generally define a base `b` expansion
 `Ordinal.CNF` in this manner, which is well-behaved for any `b ≥ 2`.
 
-# Implementation notes
+## Implementation notes
 
 We implement `Ordinal.CNF` as an association list, where keys are exponents and values are
 coefficients. This is because this structure intrinsically reflects two key properties of the Cantor
@@ -23,7 +23,7 @@ normal form:
 - It is ordered.
 - It has finitely many entries.
 
-# Todo
+## Todo
 
 - Prove the basic results relating the CNF to the arithmetic operations on ordinals.
 -/
@@ -224,7 +224,7 @@ theorem coeff_of_le_one {b : Ordinal} (hb : b ≤ 1) (o : Ordinal) : coeff b o =
     · apply coeff_of_mem_CNF
       rw [CNF.of_le_one hb ho]
       simp
-    · rw [single_eq_of_ne ha.symm]
+    · rw [single_eq_of_ne ha]
       apply coeff_of_not_mem_CNF
       rw [CNF.of_le_one hb ho]
       simpa using ha

@@ -69,7 +69,7 @@ private theorem eps_pos {ε : ℝ} {n : ℕ} (h : 100 ≤ (4 : ℝ) ^ n * ε ^ 5
     (pos_of_mul_pos_right ((show 0 < (100 : ℝ) by simp).trans_le h) (by positivity))
 
 private theorem m_pos [Nonempty α] (hPα : #P.parts * 16 ^ #P.parts ≤ card α) : 0 < m :=
-  Nat.div_pos (hPα.trans' <| by unfold stepBound; gcongr; norm_num) <|
+  Nat.div_pos (hPα.trans' <| by unfold stepBound; gcongr; simp) <|
     stepBound_pos (P.parts_nonempty <| univ_nonempty.ne_empty).card_pos
 
 /-- Local extension for the `positivity` tactic: A few facts that are needed many times for the
@@ -215,21 +215,15 @@ theorem add_div_le_sum_sq_div_card (hst : s ⊆ t) (f : ι → 𝕜) (d : 𝕜) 
   have h₂ : x ^ 2 ≤ ((∑ i ∈ s, (f i - (∑ j ∈ t, f j) / #t)) / #s) ^ 2 := by
     apply h₁.trans
     rw [sum_sub_distrib, sum_const, nsmul_eq_mul, sub_div, mul_div_cancel_left₀ _ hscard.ne']
-  apply (add_le_add_right ht _).trans
+  grw [ht]
   rw [← mul_div_right_comm, le_div_iff₀ htcard, add_mul, div_mul_cancel₀ _ htcard.ne']
   have h₃ := mul_sq_le_sum_sq hst (fun i => (f i - (∑ j ∈ t, f j) / #t)) h₂ hscard.ne'
-  apply (add_le_add_left h₃ _).trans
-  -- Porting note: was
-  -- simp [← mul_div_right_comm _ (#t : 𝕜), sub_div' _ _ _ htcard.ne', ← sum_div, ← add_div,
-  --   mul_pow, div_le_iff₀ (sq_pos_of_ne_zero htcard.ne'), sub_sq, sum_add_distrib, ← sum_mul,
-  --   ← mul_sum]
-  simp_rw [sub_div' htcard.ne']
-  conv_lhs => enter [2, 2, x]; rw [div_pow]
-  rw [div_pow, ← sum_div, ← mul_div_right_comm _ (#t : 𝕜), ← add_div,
-    div_le_iff₀ (sq_pos_of_ne_zero htcard.ne')]
-  simp_rw [sub_sq, sum_add_distrib, sum_const, nsmul_eq_mul, sum_sub_distrib, mul_pow, ← sum_mul,
-    ← mul_sum, ← sum_mul]
-  ring_nf; rfl
+  grw [h₃]
+  simp only [sub_div' htcard.ne', div_pow, ← sum_div, ← mul_div_right_comm _ (#t : 𝕜), ← add_div,
+    div_le_iff₀ (sq_pos_of_ne_zero htcard.ne'), sub_sq, sum_add_distrib, sum_const,
+    sum_sub_distrib, mul_pow, ← sum_mul, nsmul_eq_mul, two_mul]
+  ring_nf
+  rfl
 
 end SzemerediRegularity
 

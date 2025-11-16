@@ -447,7 +447,7 @@ theorem starProjection_singleton {v : E} (w : E) :
     (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ((‖v‖ ^ 2 : ℝ) : 𝕜)) • ((𝕜 ∙ v).starProjection w) =
       (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ⟪v, w⟫) • v := by
     simp [mul_smul, smul_starProjection_singleton 𝕜 w, -map_pow]
-  convert key using 1 <;> field_simp [hv']
+  convert key using 1 <;> match_scalars <;> field_simp [hv']
 
 @[deprecated (since := "2025-07-07")] alias orthogonalProjection_singleton :=
   starProjection_singleton
@@ -473,9 +473,7 @@ theorem exists_add_mem_mem_orthogonal [K.HasOrthogonalProjection] (v : E) :
 
 /-- The orthogonal projection onto `K` of an element of `Kᗮ` is zero. -/
 theorem orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero [K.HasOrthogonalProjection]
-    {v : E} (hv : v ∈ Kᗮ) : K.orthogonalProjection v = 0 := by
-  ext
-  convert eq_starProjection_of_mem_orthogonal (K := K) _ _ <;> simp [hv]
+    {v : E} (hv : v ∈ Kᗮ) : K.orthogonalProjection v = 0 := orthogonalProjection_eq_zero_iff.mpr hv
 
 /-- The projection into `U` from an orthogonal submodule `V` is the zero map. -/
 theorem IsOrtho.orthogonalProjection_comp_subtypeL {U V : Submodule 𝕜 E}

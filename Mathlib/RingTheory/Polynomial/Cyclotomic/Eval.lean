@@ -63,7 +63,7 @@ private theorem cyclotomic_neg_one_pos {n : ℕ} (hn : 2 < n) {R}
 theorem cyclotomic_pos {n : ℕ} (hn : 2 < n) {R}
     [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] (x : R) :
     0 < eval x (cyclotomic n R) := by
-  induction' n using Nat.strong_induction_on with n ih
+  induction n using Nat.strong_induction_on with | _ n ih
   have hn' : 0 < n := pos_of_gt hn
   have hn'' : 1 < n := one_lt_two.trans hn
   have := prod_cyclotomic_eq_geom_sum hn' R
@@ -113,7 +113,7 @@ theorem cyclotomic_pos_and_nonneg (n : ℕ) {R}
       and_self]
   · simp only [zero_add, reduceAdd, cyclotomic_two, eval_add, eval_X, eval_one]
     constructor <;> intro <;> linarith
-  · constructor <;> intro <;> [skip; apply le_of_lt] <;> apply cyclotomic_pos (by omega)
+  · constructor <;> intro <;> [skip; apply le_of_lt] <;> apply cyclotomic_pos (by cutsat)
 
 /-- Cyclotomic polynomials are always positive on inputs larger than one.
 Similar to `cyclotomic_pos` but with the condition on the input rather than index of the
@@ -292,7 +292,7 @@ theorem sub_one_pow_totient_lt_natAbs_cyclotomic_eval {n : ℕ} {q : ℕ} (hn' :
   · rw [zero_tsub, zero_pow (Nat.totient_pos.2 (pos_of_gt hn')).ne', pos_iff_ne_zero,
       Int.natAbs_ne_zero, Nat.cast_zero, ← coeff_zero_eq_eval_zero, cyclotomic_coeff_zero _ hn']
     exact one_ne_zero
-  rw [← @Nat.cast_lt ℝ, Nat.cast_pow, Nat.cast_sub hq'.le, Nat.cast_one, Int.cast_natAbs]
+  rw [← @Nat.cast_lt ℝ, Nat.cast_pow, Nat.cast_sub hq'.le, Nat.cast_one, Nat.cast_natAbs]
   refine (sub_one_pow_totient_lt_cyclotomic_eval hn' (Nat.one_lt_cast.2 hq')).trans_le ?_
   convert (cyclotomic.eval_apply (q : ℤ) n (algebraMap ℤ ℝ)).trans_le (le_abs_self _)
   simp
