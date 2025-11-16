@@ -46,15 +46,15 @@ private structure Parameter where
   fvar? : Option Expr
   /-- The type of the parameter created in a telescope for logging. -/
   type? : Option Expr
-  /-- The index of the parameter among the `forall` binders in the type (starting at 1). -/
+  /-- The index of the parameter among the `forall` binders in the type (starting at 0). -/
   idx : Nat
 
 instance : ToMessageData Parameter where
   toMessageData (param : Parameter) :=
     if let some type := param.type? then
-      m!"`[{type}]` (#{param.idx})"
+      m!"`[{type}]` (#{param.idx + 1})"
     else
-      m!"parameter #{param.idx}"
+      m!"parameter #{param.idx + 1}"
 
 /--
 Given a (full, resolvable) declaration name `foo` and an array of parameters
@@ -92,7 +92,7 @@ private def _root_.Lean.ConstantVal.onUnusedInstancesWhere (decl : ConstantVal)
             return {
                 fvar? := fvars[idx]?
                 type? := ← fvars[idx]?.mapM (inferType ·)
-                idx := idx + 1
+                idx
               }
           logOnUnused unusedInstances
 
