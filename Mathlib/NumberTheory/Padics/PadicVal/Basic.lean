@@ -94,18 +94,15 @@ theorem maxPowDiv_eq_multiplicity {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0) (h : F
 @[csimp]
 theorem padicValNat_eq_maxPowDiv : @padicValNat = @maxPowDiv := by
   ext p n
-  by_cases h : 1 < p ∧ 0 < n
+  set_option push_neg.use_distrib true in by_cases! h : 1 < p ∧ 0 < n
   · rw [padicValNat_def' h.1.ne' h.2.ne', maxPowDiv_eq_multiplicity h.1 h.2.ne']
     exact Nat.finiteMultiplicity_iff.2 ⟨h.1.ne', h.2⟩
-  · simp only [not_and_or, not_gt_eq, Nat.le_zero] at h
-    apply h.elim
-    · intro h
-      interval_cases p
+  · rcases h with (h | h)
+    · interval_cases p
       · simp [Classical.em]
       · dsimp [padicValNat, maxPowDiv]
         rw [go, if_neg]; simp
-    · intro h
-      simp [h]
+    · simp [Nat.le_zero.mp h]
 
 end padicValNat
 
@@ -320,15 +317,11 @@ theorem le_padicValRat_add_of_le {q r : ℚ} (hqr : q + r ≠ 0)
       rw [← q.num_divInt_den, ← r.num_divInt_den, padicValRat_le_padicValRat_iff hqn hrn hqd hrd, ←
         emultiplicity_le_emultiplicity_iff] at h
       calc
-        _ ≤
-            min (emultiplicity (↑p) (q.num * r.den * q.den))
-              (emultiplicity (↑p) (↑q.den * r.num * ↑q.den)) :=
+        _ ≤ min (emultiplicity ↑p (q.num * r.den * q.den))
+                (emultiplicity ↑p (q.den * r.num * q.den)) :=
           le_min
             (by rw [emultiplicity_mul (a :=_ * _) (Nat.prime_iff_prime_int.1 hp.1), add_comm])
-            (by
-              rw [mul_assoc,
-                  emultiplicity_mul (b := _ * _) (Nat.prime_iff_prime_int.1 hp.1)]
-              exact add_le_add_left h _)
+            (by grw [mul_assoc, emultiplicity_mul (b := _ * _) (Nat.prime_iff_prime_int.1 hp.1), h])
         _ ≤ _ := min_le_emultiplicity_add
 
 /-- The minimum of the valuations of `q` and `r` is at most the valuation of `q + r`. -/

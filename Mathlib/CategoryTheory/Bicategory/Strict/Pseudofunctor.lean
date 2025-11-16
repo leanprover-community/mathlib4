@@ -31,7 +31,7 @@ open Bicategory
 namespace Pseudofunctor
 
 variable {B : Type u₁} {C : Type u₂} [Bicategory.{w₁, v₁} B]
-  [Strict B] [Bicategory.{w₂, v₂} C] (F : Pseudofunctor B C)
+  [Strict B] [Bicategory.{w₂, v₂} C] (F : B ⥤ᵖ C)
 
 lemma mapComp'_comp_id {b₀ b₁ : B} (f : b₀ ⟶ b₁) :
     F.mapComp' f (𝟙 b₁) f = (ρ_ _).symm ≪≫ whiskerLeftIso _ (F.mapId b₁).symm := by
@@ -163,6 +163,13 @@ lemma mapComp'₀₂₃_inv (hf : f₀₂ ≫ f₂₃ = f) :
   rw [← cancel_epi (F.mapComp' f₀₂ f₂₃ f).hom, Iso.hom_inv_id]
   simp [mapComp'₀₂₃_hom _ _ _ _ _ _ f h₀₂ h₁₃ hf]
 
+@[to_app (attr := reassoc)]
+lemma mapComp'₀₂₃_inv_comp_mapComp'₀₁₃_hom (hf : f₀₂ ≫ f₂₃ = f) :
+    (F.mapComp' f₀₂ f₂₃ f).inv ≫ (F.mapComp' f₀₁ f₁₃ f).hom =
+      (F.mapComp' f₀₁ f₁₂ f₀₂ h₀₂).hom ▷ F.map f₂₃ ≫ (α_ _ _ _).hom ≫
+      F.map f₀₁ ◁ (F.mapComp' f₁₂ f₂₃ f₁₃ h₁₃).inv := by
+  simp [mapComp'₀₂₃_inv _ _ _ _ _ _ _ h₀₂ h₁₃ hf]
+
 end associativity
 
 section CommSq
@@ -214,7 +221,7 @@ end Pseudofunctor
 namespace LaxFunctor
 
 variable {B : Type u₁} {C : Type u₂} [Bicategory.{w₁, v₁} B]
-  [Strict B] [Bicategory.{w₂, v₂} C] (F : LaxFunctor B C)
+  [Strict B] [Bicategory.{w₂, v₂} C] (F : B ⥤ᴸ C)
 
 section associativity
 
@@ -247,7 +254,7 @@ end LaxFunctor
 namespace OplaxFunctor
 
 variable {B : Type u₁} {C : Type u₂} [Bicategory.{w₁, v₁} B]
-  [Strict B] [Bicategory.{w₂, v₂} C] (F : OplaxFunctor B C)
+  [Strict B] [Bicategory.{w₂, v₂} C] (F : B ⥤ᵒᵖᴸ C)
 
 section associativity
 

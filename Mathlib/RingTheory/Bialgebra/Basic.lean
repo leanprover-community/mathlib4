@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ali Ramsey, Kevin Buzzard
 -/
 import Mathlib.RingTheory.Coalgebra.Basic
-import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Bialgebras
@@ -165,6 +165,8 @@ end CommSemiring
 namespace Bialgebra
 
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+
+@[simp] lemma counitAlgHom_self : counitAlgHom R R = .id R R := rfl
 
 /-- If `R` is a commutative semiring and `A` is an `R`-algebra,
 then `Bialgebra.ofAlgHom` consumes the counit and comultiplication
