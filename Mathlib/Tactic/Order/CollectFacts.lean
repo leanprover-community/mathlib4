@@ -155,12 +155,5 @@ and `facts` contains all collected `AtomicFact`s about them. -/
 def collectFacts (only? : Bool) (hyps : Array Expr) (negGoal : Expr) :
     AtomM <| Std.HashMap Expr <| Array AtomicFact := do
   return (← (collectFactsImp only? hyps negGoal).run ∅).snd
-  -- let res := (← ((collectFactsImp only? hyps negGoal).run ∅).run .default).snd
-  -- return res
-  -- sorry
-  -- return res.map fun _ facts =>
-  --   let idxToAtom : Std.HashMap Nat Expr := atomToIdx.fold (init := ∅) fun acc _ value =>
-  --     acc.insert value.fst value.snd
-  --   (idxToAtom, facts)
 
 end Mathlib.Tactic.Order
