@@ -357,6 +357,9 @@ theorem of_isLocalization (S : Submonoid R) [IsLocalization S A]
     Module.Invertible A N :=
   .congr (IsLocalizedModule.isBaseChange S A f).equiv
 
+instance (S : Submonoid R) : Module.Invertible (Localization S) (LocalizedModule S M) :=
+  of_isLocalization S (LocalizedModule.mkLinearMap S M)
+
 instance (L) [AddCommMonoid L] [Module R L] [Module A L] [IsScalarTower R A L]
     [Module.Invertible A L] : Module.Invertible A (L ⊗[R] M) :=
   .congr (AlgebraTensorModule.cancelBaseChange R A A L M)
@@ -508,6 +511,34 @@ end CommRing.Pic
 end CommRing
 
 end PicardGroup
+
+namespace Module.Invertible
+
+variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] [Module.Invertible R M]
+
+-- TODO: generalize to CommSemiring by generalizing `CommRing.Pic.instSubsingletonOfIsLocalRing`
+theorem tensorProductComm_eq_refl : TensorProduct.comm R M M = .refl .. := by
+  let f (P : Ideal R) [P.IsMaximal] := LocalizedModule.mkLinearMap P.primeCompl M
+  let ff (P : Ideal R) [P.IsMaximal] := TensorProduct.map (f P) (f P)
+  refine LinearEquiv.toLinearMap_injective <| LinearMap.eq_of_localization_maximal _ ff _ ff _ _
+    fun P _ ↦ .trans (b := (TensorProduct.comm ..).toLinearMap) ?_ ?_
+  · apply IsLocalizedModule.linearMap_ext P.primeCompl (ff P) (ff P)
+    ext; dsimp
+    apply IsLocalizedModule.map_apply
+  let Rp := Localization P.primeCompl
+  have ⟨e⟩ := free_iff_linearEquiv.mp (inferInstance : Free Rp (LocalizedModule P.primeCompl M))
+  have e := e.restrictScalars R
+  ext x y
+  refine (congr e e ≪≫ₗ equivOfCompatibleSMul Rp ..).injective ?_
+  suffices e y ⊗ₜ[Rp] e x = e x ⊗ₜ e y by simpa [equivOfCompatibleSMul]
+  conv_lhs => rw [← mul_one (e y), ← smul_eq_mul, smul_tmul, smul_eq_mul,
+    mul_comm, ← smul_eq_mul, ← smul_tmul, smul_eq_mul, mul_one]
+
+variable {R M} in
+theorem tmul_comm {m₁ m₂ : M} : m₁ ⊗ₜ[R] m₂ = m₂ ⊗ₜ m₁ :=
+  DFunLike.congr_fun (tensorProductComm_eq_refl ..) (m₂ ⊗ₜ m₁)
+
+end Module.Invertible
 
 namespace Submodule
 
