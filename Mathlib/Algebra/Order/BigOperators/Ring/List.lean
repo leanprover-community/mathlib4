@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell
 -/
 import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Algebra.BigOperators.Group.List.Defs
 
 /-!
 # Big operators on a list in ordered rings
