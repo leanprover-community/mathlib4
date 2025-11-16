@@ -97,7 +97,7 @@ in a function application with the `translate_change_numeral` attribute.
 numerals as argument that should be changed if `shouldTranslate` succeeds on the first argument,
 i.e. when the numeral is only translated if the first argument is a variable
 (or consists of variables).
-The arguments `n₁ ...` are the positions of the numeral arguments (starting counting from 1). -/
+The arguments `n₁ ...` are the positions of the numeral arguments. -/
 syntax (name := translate_change_numeral) "translate_change_numeral" (ppSpace num)* : attr
 
 initialize registerTraceClass `translate
@@ -875,15 +875,12 @@ def elabTranslationAttr (stx : Syntax) : CoreM Config :=
               For example `(reorder := 0 1, 4 5)` swaps the first two arguments with each other \
               and the fifth and the sixth argument and `(reorder := 2 3 4)` will move \
               the fifth argument before the third argument."
-          let cycle ← cycle.toList.mapM fun n => match n.getNat with
-            | 0 => throwErrorAt n "invalid position `{n}`, positions are counted starting from 1."
-            | n+1 => pure n
-          reorder := cycle :: reorder
+          reorder := cycle.toList.map (·.getNat) :: reorder
       | `(bracketedOption| (relevant_arg := $n)) =>
         if let some arg := relevantArg? then
           throwErrorAt opt "cannot specify `relevant_arg` multiple times"
         else
-          relevantArg? := n.getNat.pred
+          relevantArg? := n.getNat
       | `(bracketedOption| (dont_translate := $[$types:ident]*)) =>
         dontTranslate := dontTranslate ++ types.toList
       | _ => throwUnsupportedSyntax

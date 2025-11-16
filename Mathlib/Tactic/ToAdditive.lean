@@ -11,7 +11,7 @@ import Mathlib.Tactic.Translate.ToAdditive
 
 attribute [to_additive self] Empty PEmpty Unit PUnit
 
-attribute [translate_change_numeral 2] OfNat OfNat.ofNat
+attribute [translate_change_numeral 1] OfNat OfNat.ofNat
 
 attribute [to_additive] One
 attribute [to_additive existing Zero.toOfNat0] One.toOfNat1

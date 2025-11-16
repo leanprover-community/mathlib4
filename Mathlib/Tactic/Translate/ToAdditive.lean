@@ -173,10 +173,10 @@ mismatch error.
     ```
       open Lean in run_cmd logInfo m!"{ToAdditive.relevantArgAttr.find? (← getEnv) `d}"
     ```
-    The expected output is `n` where the `n`-th (0-indexed) argument of `d` is a type (family)
+    The expected output is `n` where the `n`-th argument of `d` is a type (family)
     with a multiplicative structure on it. `none` means `0`.
     If you get a different output (or a failure), you could add the attribute
-    `@[to_additive (relevant_arg := n)]` manually, where `n` is an (1-indexed) argument with a
+    `@[to_additive (relevant_arg := n)]` manually, where `n` is an argument with a
     multiplicative structure.
 * Option 3: Arguments / universe levels are incorrectly ordered in the additive version.
   This likely only happens when the multiplicative declaration involves `pow`/`^`. Solutions:

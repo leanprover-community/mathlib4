@@ -737,7 +737,7 @@ structure fields/constructors.
 structure SimpleNSMul (β : Type 1) (α : Type) where
   x : Nat
 
-@[to_additive (reorder := 0 1) (relevant_arg := 2)]
+@[to_additive (reorder := 0 1) (relevant_arg := 1)]
 structure SimplePow (α : Type) (β : Type 1) where
   x : Nat
 
@@ -764,7 +764,7 @@ lemma simplePowZero_x'' {β} : (simplePowZero Nat β).x = 0 := by
 structure AddMonoidAlgebra' (k G : Type) where
   x : G → k
 
-@[to_additive (relevant_arg := 2)]
+@[to_additive (relevant_arg := 1)]
 structure MonoidAlgebra' (k G : Type) where
   x : G → k
 
