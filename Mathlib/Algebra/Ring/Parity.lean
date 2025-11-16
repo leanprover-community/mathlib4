@@ -8,6 +8,8 @@ import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Cast.Commute
 import Mathlib.Data.Set.Operations
 import Mathlib.Logic.Function.Iterate
+import Mathlib.Tactic.NoncommRing
+import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Even and odd elements in rings
@@ -97,7 +99,7 @@ alias ⟨Odd.exists_bit1, _⟩ := odd_iff_exists_bit1
     Set.range (fun x : α ↦ 2 * x + 1) = {a | Odd a} := by ext x; simp [Odd, eq_comm]
 
 lemma Even.add_odd : Even a → Odd b → Odd (a + b) := by
-  rintro ⟨a, rfl⟩ ⟨b, rfl⟩; exact ⟨a + b, by rw [mul_add, ← two_mul, add_assoc]⟩
+  rintro ⟨a, rfl⟩ ⟨b, rfl⟩; exact ⟨a + b, by noncomm_ring⟩
 
 lemma Even.odd_add (ha : Even a) (hb : Odd b) : Odd (b + a) := add_comm a b ▸ ha.add_odd hb
 lemma Odd.add_even (ha : Odd a) (hb : Even b) : Odd (a + b) := add_comm a b ▸ hb.add_odd ha
@@ -105,11 +107,10 @@ lemma Odd.add_even (ha : Odd a) (hb : Even b) : Odd (a + b) := add_comm a b ▸ 
 lemma Odd.add_odd : Odd a → Odd b → Even (a + b) := by
   rintro ⟨a, rfl⟩ ⟨b, rfl⟩
   refine ⟨a + b + 1, ?_⟩
-  rw [two_mul, two_mul]
-  ac_rfl
+  noncomm_ring
 
 @[simp] lemma odd_one : Odd (1 : α) :=
-  ⟨0, (zero_add _).symm.trans (congr_arg (· + (1 : α)) (mul_zero _).symm)⟩
+  ⟨0, by noncomm_ring⟩
 
 @[simp] lemma Even.add_one (h : Even a) : Odd (a + 1) := h.add_odd odd_one
 @[simp] lemma Even.one_add (h : Even a) : Odd (1 + a) := h.odd_add odd_one
@@ -131,8 +132,7 @@ lemma Odd.natCast {R : Type*} [Semiring R] {n : ℕ} (hn : Odd n) : Odd (n : R) 
 @[simp] lemma Odd.mul : Odd a → Odd b → Odd (a * b) := by
   rintro ⟨a, rfl⟩ ⟨b, rfl⟩
   refine ⟨2 * a * b + b + a, ?_⟩
-  rw [mul_add, add_mul, mul_one, ← add_assoc, one_mul, mul_assoc, ← mul_add, ← mul_add, ← mul_assoc,
-    ← Nat.cast_two, ← Nat.cast_comm]
+  noncomm_ring
 
 lemma Odd.pow {n : ℕ} (ha : Odd a) : Odd (a ^ n) := by
   induction n with
@@ -151,7 +151,7 @@ lemma Odd.pow_add_pow_eq_zero [IsCancelAdd α] (hn : Odd n) (hab : a + b = 0) :
   calc
     _ = (a ^ (2 * k + 1) + b ^ (2 * k + 1)) * a ^ 2 + b ^ (2 * k + 3) := by
       rw [add_mul, ← pow_add, add_right_comm]; rfl
-    _ = _ := by rw [ih, zero_mul, zero_add, zero_add, this, ← pow_add]
+    _ = _ := by rw [ih]; noncomm_ring [this]
 
 theorem Even.of_isUnit_two (h : IsUnit (2 : α)) (a : α) : Even a :=
   let ⟨u, hu⟩ := h; ⟨u⁻¹ * a, by rw [← mul_add, ← two_mul, ← hu, Units.inv_mul_cancel_left]⟩
