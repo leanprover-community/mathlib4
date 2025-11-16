@@ -214,10 +214,10 @@ where
     let { reorder, relevantArg } := argInfo
     if reorder != [] then
       trace[translate] "@[{t.attrName}] will reorder the arguments of {src} by {reorder}."
-      t.reorderAttr.add src reorder
+      modifyEnv (t.reorderAttr.addEntry · (src, reorder))
     if relevantArg != 0 then
       trace[translate_detail] "Setting relevant_arg for {src} to be {relevantArg}."
-      t.relevantArgAttr.add src relevantArg
+      modifyEnv (t.relevantArgAttr.addEntry · (src, relevantArg))
 
 /-- `Config` is the type of the arguments that can be provided to `to_additive`. -/
 structure Config : Type where
@@ -1070,15 +1070,10 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
     -- If `tgt` is not in the environment, the translation to `tgt` was added only for
     -- translating the namespace, and `src` wasn't actually tagged.
     if (← getEnv).contains tgt then
-      let mut updated := false
-      if cfg.reorder != [] then
-        modifyEnv (t.reorderAttr.addEntry · (src, cfg.reorder))
-        updated := true
-      if let some relevantArg := cfg.relevantArg? then
-        modifyEnv (t.relevantArgAttr.addEntry · (src, relevantArg))
-        updated := true
-      if updated then
+      if cfg.reorder != [] || cfg.relevantArg?.isSome then
         MetaM.run' <| checkExistingType t src tgt cfg.reorder cfg.dontTranslate
+        insertTranslation t src tgt (failIfExists := false)
+          { reorder := cfg.reorder, relevantArg := cfg.relevantArg?.getD 0 }
         return #[tgt]
       throwError
       "Cannot apply attribute @[{t.attrName}] to '{src}': it is already translated to '{tgt}'. \n\
