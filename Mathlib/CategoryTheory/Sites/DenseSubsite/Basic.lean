@@ -473,7 +473,7 @@ instance faithful_sheafPushforwardContinuous [G.IsContinuous J K] :
 end IsCoverDense
 
 /-- If `G : C ⥤ D` is cover dense and full, then the
-map `(P ⟶ Q) → (G.op ⋙ P ⟶ G.op ⋙ Q)` is bijective when `Q` is a sheaf`. -/
+map `(P ⟶ Q) → (G.op ⋙ P ⟶ G.op ⋙ Q)` is bijective when `Q` is a sheaf. -/
 lemma whiskerLeft_obj_map_bijective_of_isCoverDense (G : C ⥤ D)
     [G.IsCoverDense K] [G.IsLocallyFull K] {A : Type*} [Category A]
     (P Q : Dᵒᵖ ⥤ A) (hQ : Presheaf.IsSheaf K Q) :
