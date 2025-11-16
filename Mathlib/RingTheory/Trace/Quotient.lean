@@ -3,7 +3,6 @@ Copyright (c) 2024 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Riccardo Brasca
 -/
-
 import Mathlib.RingTheory.DedekindDomain.Dvr
 import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 import Mathlib.RingTheory.LocalRing.Quotient
@@ -86,12 +85,6 @@ def equivQuotMaximalIdealOfIsLocalization : R ⧸ p ≃+* Rₚ ⧸ maximalIdeal 
       mul_inv_cancel₀, mul_one, sub_self]
     rw [Ne, Ideal.Quotient.eq_zero_iff_mem]
     exact s.prop
-
-lemma IsLocalization.AtPrime.map_eq_maximalIdeal :
-    p.map (algebraMap R Rₚ) = maximalIdeal Rₚ := by
-  convert congr_arg (Ideal.map (algebraMap R Rₚ))
-    (IsLocalization.AtPrime.comap_maximalIdeal Rₚ p).symm
-  rw [map_comap p.primeCompl]
 
 local notation "pS" => Ideal.map (algebraMap R S) p
 local notation "pSₚ" => Ideal.map (algebraMap Rₚ Sₚ) (maximalIdeal Rₚ)

@@ -166,6 +166,8 @@ namespace Bialgebra
 
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
+@[simp] lemma counitAlgHom_self : counitAlgHom R R = .id R R := rfl
+
 /-- If `R` is a commutative semiring and `A` is an `R`-algebra,
 then `Bialgebra.ofAlgHom` consumes the counit and comultiplication
 as algebra homomorphisms that satisfy the coalgebra axioms to define

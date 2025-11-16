@@ -187,7 +187,7 @@ lemma fermat_primeFactors_one_lt (n p : ℕ) (hn : 1 < n) (hp : p.Prime)
 
 -- TODO: move to NumberTheory.Mersenne, once we have that.
 /-!
-# Primality of Mersenne numbers `Mₙ = a ^ n - 1`
+### Primality of Mersenne numbers `Mₙ = a ^ n - 1`
 -/
 
 /-- Prime `a ^ n - 1` implies `a = 2` and prime `n`. -/

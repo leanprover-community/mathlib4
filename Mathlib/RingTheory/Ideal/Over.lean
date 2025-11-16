@@ -176,6 +176,48 @@ theorem LiesOver.trans [𝔓.LiesOver P] [P.LiesOver p] : 𝔓.LiesOver p where
 theorem LiesOver.tower_bot [hp : 𝔓.LiesOver p] [hP : 𝔓.LiesOver P] : P.LiesOver p where
   over := by rw [𝔓.over_def p, 𝔓.over_def P, under_under]
 
+/--
+Consider the following commutative diagram of ring maps
+```
+A → B
+↓   ↓
+C → D
+```
+and let `P` be an ideal of `B`. The image in `C` of the ideal of `A` under `P` is included
+in the ideal of `C` under the image of `P` in `D`.
+-/
+theorem map_under_le_under_map {C D : Type*} [CommSemiring C] [Semiring D] [Algebra A C]
+    [Algebra C D] [Algebra A D] [Algebra B D] [IsScalarTower A C D] [IsScalarTower A B D] :
+    map (algebraMap A C) (under A P) ≤ under C (map (algebraMap B D) P) := by
+  apply le_comap_of_map_le
+  rw [map_map, ← IsScalarTower.algebraMap_eq, map_le_iff_le_comap,
+    IsScalarTower.algebraMap_eq A B D, ← comap_comap]
+  exact comap_mono <| le_comap_map
+
+/--
+Consider the following commutative diagram of ring maps
+```
+A → B
+↓   ↓
+C → D
+```
+and let `P` be an ideal of `B`. Assume that the image in `C` of the ideal of `A` under `P`
+is maximal and that the image of `P` in `D` is not equal to `D`, then the image in `C` of the
+ideal of `A` under `P` is equal to the ideal of `C` under the image of `P` in `D`.
+-/
+theorem under_map_eq_map_under {C D : Type*} [CommSemiring C] [Semiring D] [Algebra A C]
+    [Algebra C D] [Algebra A D] [Algebra B D] [IsScalarTower A C D] [IsScalarTower A B D]
+    (h₁ : (map (algebraMap A C) (under A P)).IsMaximal) (h₂ : map (algebraMap B D) P ≠ ⊤) :
+    under C (map (algebraMap B D) P) = map (algebraMap A C) (under A P) :=
+  (IsCoatom.le_iff_eq (isMaximal_def.mp h₁) (comap_ne_top (algebraMap C D) h₂)).mp <|
+    map_under_le_under_map P
+
+theorem disjoint_primeCompl_of_liesOver [p.IsPrime] [hPp : 𝔓.LiesOver p] :
+  Disjoint ((Algebra.algebraMapSubmonoid C p.primeCompl) : Set C) (𝔓 : Set C) := by
+  rw [liesOver_iff, under_def, SetLike.ext'_iff, coe_comap] at hPp
+  simpa only [Algebra.algebraMapSubmonoid, primeCompl, hPp, ← le_compl_iff_disjoint_left]
+    using Set.subset_compl_comm.mp (by simp)
+
 variable (B)
 
 instance under_liesOver_of_liesOver [𝔓.LiesOver p] : (𝔓.under B).LiesOver p :=

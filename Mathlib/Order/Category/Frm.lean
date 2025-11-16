@@ -24,6 +24,8 @@ open CategoryTheory Order
 
 /-- The category of frames. -/
 structure Frm where
+  /-- Construct a bundled `Frm` from the underlying type and typeclass. -/
+  of ::
   /-- The underlying frame. -/
   (carrier : Type*)
   [str : Frame carrier]
@@ -38,9 +40,6 @@ instance : CoeSort Frm (Type _) :=
   ⟨Frm.carrier⟩
 
 attribute [coe] Frm.carrier
-
-/-- Construct a bundled `Frm` from the underlying type and typeclass. -/
-abbrev of (X : Type*) [Frame X] : Frm := ⟨X⟩
 
 /-- The type of morphisms in `Frm R`. -/
 @[ext]

@@ -284,6 +284,9 @@ instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
       rw [algebraMap_eq_smul_one, ← smul_tmul', smul_mul_assoc, ← one_def, one_mul]
     algebraMap := TensorProduct.includeLeftRingHom.comp (algebraMap S A) }
 
+lemma algebraMap_def [SMulCommClass R S A] :
+    algebraMap S (A ⊗[R] B) = includeLeftRingHom.comp (algebraMap S A) := rfl
+
 example : (Semiring.toNatAlgebra : Algebra ℕ (ℕ ⊗[ℕ] B)) = leftAlgebra := rfl
 
 -- This is for the `undergrad.yaml` list.
@@ -476,6 +479,10 @@ abbrev rightAlgebra : Algebra B (A ⊗[R] B) :=
     simp [mul_comm]
 
 attribute [local instance] TensorProduct.rightAlgebra
+
+lemma algebraMap_eq_includeRight :
+    letI := rightAlgebra (R := R) (A := A) (B := B)
+    algebraMap B (A ⊗[R] B) = includeRight (R := R) (A := A) (B := B) := rfl
 
 instance right_isScalarTower : IsScalarTower R B (A ⊗[R] B) :=
   IsScalarTower.of_algebraMap_eq fun r => (Algebra.TensorProduct.includeRight.commutes r).symm

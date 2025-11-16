@@ -224,7 +224,7 @@ variable (P) in
 /-- A property of ring homomorphisms `Q` codescends along `Q'` if whenever
 `R' →+* R' ⊗[R] S` satisfies `Q` and `R →+* R'` satisfies `Q'`, then `R →+* S` satisfies `Q`. -/
 def CodescendsAlong : Prop :=
-  ∀ (R S R' S' : Type u) [CommRing R] [CommRing S] [CommRing R'] [CommRing S'],
+  ∀ ⦃R S R' S' : Type u⦄ [CommRing R] [CommRing S] [CommRing R'] [CommRing S'],
   ∀ [Algebra R S] [Algebra R R'] [Algebra R S'] [Algebra S S'] [Algebra R' S'],
     ∀ [IsScalarTower R S S'] [IsScalarTower R R' S'],
       ∀ [Algebra.IsPushout R S R' S'],
@@ -248,13 +248,19 @@ lemma CodescendsAlong.algebraMap_tensorProduct (hPQ : CodescendsAlong P Q)
     (h : Q (algebraMap R S)) (H : P (algebraMap S (S ⊗[R] T))) :
     P (algebraMap R T) :=
   let _ : Algebra T (S ⊗[R] T) := Algebra.TensorProduct.rightAlgebra
-  hPQ R T S (S ⊗[R] T) h H
+  hPQ h H
 
 lemma CodescendsAlong.includeRight (hPQ : CodescendsAlong P Q) (h : Q (algebraMap R T))
     (H : P ((Algebra.TensorProduct.includeRight.toRingHom : T →+* S ⊗[R] T))) :
     P (algebraMap R S) := by
   let _ : Algebra T (S ⊗[R] T) := Algebra.TensorProduct.rightAlgebra
-  apply hPQ R S T (S ⊗[R] T) h H
+  apply hPQ h H
+
+variable {Q} {P' : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+
+lemma CodescendsAlong.and (hP : CodescendsAlong P Q) (hP' : CodescendsAlong P' Q) :
+    CodescendsAlong (fun f ↦ P f ∧ P' f) Q :=
+  fun _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ h₁ h₂ ↦ ⟨hP h₁ h₂.1, hP' h₁ h₂.2⟩
 
 end Descent
 

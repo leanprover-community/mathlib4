@@ -461,7 +461,7 @@ lemma two_pow_mul_factorial_le_factorial_two_mul (n : ℕ) : 2 ^ n * n ! ≤ (2 
 
 
 /-!
-# Factorial via binary splitting.
+### Factorial via binary splitting.
 
 We prove this is equal to the standard factorial and mark it `@[csimp]`.
 

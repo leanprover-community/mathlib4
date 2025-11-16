@@ -24,7 +24,7 @@ namespace AddMonoidAlgebra
 
 /-!
 
-# sup-degree and inf-degree of an `AddMonoidAlgebra`
+## sup-degree and inf-degree of an `AddMonoidAlgebra`
 
 Let `R` be a semiring and let `A` be a `SemilatticeSup`.
 For an element `f : R[A]`, this file defines
@@ -48,7 +48,7 @@ The main results are
 * `AddMonoidAlgebra.le_infDegree_add`:
   the inf-degree of a sum is at least the inf of the inf-degrees.
 
-## Implementation notes
+### Implementation notes
 
 The current plan is to state and prove lemmas about `Finset.sup (Finsupp.support f) D` with a
 "generic" degree/weight function `D` from the grading Type `A` to a somewhat ordered Type `B`.
@@ -443,10 +443,10 @@ lemma sum_ne_zero_of_injOn_supDegree' (hs : ∃ i ∈ s, f i ≠ 0)
     ∑ i ∈ s, f i ≠ 0 := by
   obtain ⟨j, hj, hne⟩ := hs
   obtain ⟨i, hi, he⟩ := exists_mem_eq_sup _ ⟨j, hj⟩ (supDegree D ∘ f)
-  by_cases h : ∀ k ∈ s, k = i
+  by_cases! h : ∀ k ∈ s, k = i
   · refine (sum_eq_single_of_mem j hj (fun k hk hne => ?_)).trans_ne hne
     rw [h k hk, h j hj] at hne; exact hne.irrefl.elim
-  push_neg at h; obtain ⟨j, hj, hne⟩ := h
+  obtain ⟨j, hj, hne⟩ := h
   apply ne_zero_of_supDegree_ne_bot (D := D)
   have (k) (hk : k ∈ s) (hne : k ≠ i) : supDegree D (f k) < supDegree D (f i) :=
     ((le_sup hk).trans_eq he).lt_of_ne (hd.ne hk hi hne)

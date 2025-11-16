@@ -19,6 +19,8 @@ universe u
 
 /-- The category of partial orders. -/
 structure PartOrdEmb where
+  /-- Construct a bundled `PartOrdEmb` from the underlying type and typeclass. -/
+  of ::
   /-- The underlying partially ordered type. -/
   (carrier : Type*)
   [str : PartialOrder carrier]
@@ -33,9 +35,6 @@ instance : CoeSort PartOrdEmb (Type _) :=
   ⟨PartOrdEmb.carrier⟩
 
 attribute [coe] PartOrdEmb.carrier
-
-/-- Construct a bundled `PartOrdEmb` from the underlying type and typeclass. -/
-abbrev of (X : Type*) [PartialOrder X] : PartOrdEmb := ⟨X⟩
 
 /-- The type of morphisms in `PartOrdEmb R`. -/
 @[ext]

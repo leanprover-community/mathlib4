@@ -629,7 +629,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
         have fy : f y = Ay.some := by simp_rw [f, if_neg ys]
         -- case where the common prefix to `x` and `s`, or `y` and `s`, is shorter than the
         -- common part to `x` and `y` -- then `f x = f y`.
-        by_cases H : longestPrefix x s < firstDiff x y ∨ longestPrefix y s < firstDiff x y
+        by_cases! H : longestPrefix x s < firstDiff x y ∨ longestPrefix y s < firstDiff x y
         · have : cylinder x (longestPrefix x s) = cylinder y (longestPrefix y s) := by
             rcases H with H | H
             · exact cylinder_longestPrefix_eq_of_longestPrefix_lt_firstDiff hs hne H xs ys
@@ -641,8 +641,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
           congr
         -- case where the common prefix to `x` and `s` is long, as well as the common prefix to
         -- `y` and `s`. Then all points remain in the same cylinders.
-        · push_neg at H
-          have I1 : cylinder Ax.some (firstDiff x y) = cylinder x (firstDiff x y) := by
+        · have I1 : cylinder Ax.some (firstDiff x y) = cylinder x (firstDiff x y) := by
             rw [← mem_cylinder_iff_eq]
             exact cylinder_anti x H.1 Ax.some_mem.2
           have I3 : cylinder y (firstDiff x y) = cylinder Ay.some (firstDiff x y) := by

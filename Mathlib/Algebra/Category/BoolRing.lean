@@ -24,7 +24,8 @@ open CategoryTheory Order
 
 /-- The category of Boolean rings. -/
 structure BoolRing where
-  private mk ::
+  /-- Construct a bundled `BoolRing` from a `BooleanRing`. -/
+  of ::
   /-- The underlying type. -/
   carrier : Type u
   [booleanRing : BooleanRing carrier]
@@ -39,10 +40,6 @@ instance : CoeSort BoolRing Type* :=
 attribute [coe] carrier
 
 attribute [instance] booleanRing
-
-/-- Construct a bundled `BoolRing` from a `BooleanRing`. -/
-abbrev of (α : Type*) [BooleanRing α] : BoolRing :=
-  ⟨α⟩
 
 theorem coe_of (α : Type*) [BooleanRing α] : ↥(of α) = α :=
   rfl

@@ -22,6 +22,9 @@ open CategoryTheory
 
 /-- A bundled topological commutative ring. -/
 structure TopCommRingCat where
+  /-- Construct a bundled `TopCommRingCat` from the underlying type and the appropriate typeclasses.
+  -/
+  of ::
   /-- carrier of a topological commutative ring. -/
   α : Type u
   [isCommRing : CommRing α]
@@ -55,11 +58,6 @@ instance (R S : TopCommRingCat.{u}) : FunLike { f : R →+* S // Continuous f } 
 instance : ConcreteCategory TopCommRingCat.{u} fun R S => { f : R →+* S // Continuous f } where
   hom f := f
   ofHom f := f
-
-/-- Construct a bundled `TopCommRingCat` from the underlying type and the appropriate typeclasses.
--/
-abbrev of (X : Type u) [CommRing X] [TopologicalSpace X] [IsTopologicalRing X] : TopCommRingCat :=
-  ⟨X⟩
 
 theorem coe_of (X : Type u) [CommRing X] [TopologicalSpace X] [IsTopologicalRing X] :
     (of X : Type u) = X := rfl

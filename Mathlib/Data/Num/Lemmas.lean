@@ -532,12 +532,10 @@ instance distrib : Distrib PosNum where
   right_distrib := by transfer; simp [mul_add, mul_comm]
 
 instance linearOrder : LinearOrder PosNum where
-  lt := (· < ·)
   lt_iff_le_not_ge := by
     intro a b
     transfer_rw
     apply lt_iff_le_not_ge
-  le := (· ≤ ·)
   le_refl := by transfer
   le_trans := by
     intro a b c

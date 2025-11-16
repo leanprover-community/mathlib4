@@ -309,7 +309,7 @@ theorem add_const [AddGroup ι] [Preorder ι] [AddRightMono ι]
 theorem add_const_nat {f : Filtration ℕ m} {τ : Ω → WithTop ℕ} (hτ : IsStoppingTime f τ) {i : ℕ} :
     IsStoppingTime f fun ω => τ ω + i := by
   refine isStoppingTime_of_measurableSet_eq fun j => ?_
-  by_cases hij : i ≤ j
+  by_cases! hij : i ≤ j
   · simp only [ENat.some_eq_coe]
     have h_eq : {ω | τ ω + i = j} = {ω | τ ω = (j - i : ℕ)} := by
       ext ω
@@ -322,8 +322,7 @@ theorem add_const_nat {f : Filtration ℕ m} {τ : Ω → WithTop ℕ} (hτ : Is
         simp_rw [eq_comm, ← Nat.sub_eq_iff_eq_add hij, eq_comm]
     rw [h_eq]
     exact f.mono (j.sub_le i) _ (hτ.measurableSet_eq (j - i))
-  · rw [not_le] at hij
-    convert @MeasurableSet.empty _ (f.1 j)
+  · convert @MeasurableSet.empty _ (f.1 j)
     ext ω
     simp only [Set.mem_empty_iff_false, iff_false, Set.mem_setOf]
     cases τ ω with

@@ -304,21 +304,11 @@ theorem tsum_geometric_le_of_norm_lt_one (x : R) (h : ‖x‖ < 1) :
 
 variable [HasSummableGeomSeries R]
 
-theorem geom_series_mul_neg (x : R) (h : ‖x‖ < 1) : (∑' i : ℕ, x ^ i) * (1 - x) = 1 := by
-  have := (summable_geometric_of_norm_lt_one h).hasSum.mul_right (1 - x)
-  refine tendsto_nhds_unique this.tendsto_sum_nat ?_
-  have : Tendsto (fun n : ℕ ↦ 1 - x ^ n) atTop (𝓝 1) := by
-    simpa using tendsto_const_nhds.sub (tendsto_pow_atTop_nhds_zero_of_norm_lt_one h)
-  convert← this
-  rw [← geom_sum_mul_neg, Finset.sum_mul]
+theorem geom_series_mul_neg (x : R) (h : ‖x‖ < 1) : (∑' i : ℕ, x ^ i) * (1 - x) = 1 :=
+  (summable_geometric_of_norm_lt_one h).tsum_pow_mul_one_sub
 
-theorem mul_neg_geom_series (x : R) (h : ‖x‖ < 1) : (1 - x) * ∑' i : ℕ, x ^ i = 1 := by
-  have := (summable_geometric_of_norm_lt_one h).hasSum.mul_left (1 - x)
-  refine tendsto_nhds_unique this.tendsto_sum_nat ?_
-  have : Tendsto (fun n : ℕ ↦ 1 - x ^ n) atTop (𝓝 1) := by
-    simpa using tendsto_const_nhds.sub (tendsto_pow_atTop_nhds_zero_of_norm_lt_one h)
-  convert← this
-  rw [← mul_neg_geom_sum, Finset.mul_sum]
+theorem mul_neg_geom_series (x : R) (h : ‖x‖ < 1) : (1 - x) * ∑' i : ℕ, x ^ i = 1 :=
+  (summable_geometric_of_norm_lt_one h).one_sub_mul_tsum_pow
 
 theorem geom_series_succ (x : R) (h : ‖x‖ < 1) : ∑' i : ℕ, x ^ (i + 1) = ∑' i : ℕ, x ^ i - 1 := by
   rw [eq_sub_iff_add_eq, (summable_geometric_of_norm_lt_one h).tsum_eq_zero_add,
@@ -634,7 +624,7 @@ end SummableLeGeometric
 theorem summable_of_ratio_norm_eventually_le {α : Type*} [SeminormedAddCommGroup α]
     [CompleteSpace α] {f : ℕ → α} {r : ℝ} (hr₁ : r < 1)
     (h : ∀ᶠ n in atTop, ‖f (n + 1)‖ ≤ r * ‖f n‖) : Summable f := by
-  by_cases hr₀ : 0 ≤ r
+  by_cases! hr₀ : 0 ≤ r
   · rw [eventually_atTop] at h
     rcases h with ⟨N, hN⟩
     rw [← @summable_nat_add_iff α _ _ _ _ N]
@@ -645,8 +635,7 @@ theorem summable_of_ratio_norm_eventually_le {α : Type*} [SeminormedAddCommGrou
     refine le_geom (u := fun n ↦ ‖f (n + N)‖) hr₀ n fun i _ ↦ ?_
     convert hN (i + N) (N.le_add_left i) using 3
     ac_rfl
-  · push_neg at hr₀
-    refine .of_norm_bounded_eventually_nat summable_zero ?_
+  · refine .of_norm_bounded_eventually_nat summable_zero ?_
     filter_upwards [h] with _ hn
     by_contra! h
     exact not_lt.mpr (norm_nonneg _) (lt_of_le_of_lt hn <| mul_neg_of_neg_of_pos hr₀ h)

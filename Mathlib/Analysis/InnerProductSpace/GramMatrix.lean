@@ -78,7 +78,7 @@ theorem posSemidef_gram (v : n → E) :
     PosSemidef (gram 𝕜 v) := by
   refine ⟨isHermitian_gram _ _, fun x ↦ ?_⟩
   rw [star_dotProduct_gram_mulVec, le_iff_re_im]
-  simp [inner_self_nonneg]
+  simp
 
 /-- In a normed space, positive definiteness of `gram 𝕜 v` implies linear independence of `v`. -/
 theorem linearIndependent_of_posDef_gram {v : n → E} (h_gram : PosDef (gram 𝕜 v)) :

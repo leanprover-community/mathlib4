@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, Bhavik Mehta,
   Yaël Dillies
 -/
+import Mathlib.Algebra.BigOperators.Finsupp.Basic
 import Mathlib.Algebra.Order.Antidiag.Pi
-import Mathlib.Data.Finsupp.Basic
 
 /-!
 # Antidiagonal of finitely supported functions as finsets
@@ -25,6 +25,8 @@ We define it using `Finset.piAntidiag s n`, the corresponding antidiagonal in `�
   contained in `s` and such that the sum of its values equals `n : μ`.
 
 -/
+
+assert_not_exists Field
 
 open Finsupp Function
 
@@ -101,6 +103,14 @@ theorem finsuppAntidiag_insert {a : ι} {s : Finset ι}
   rw [mem_finsuppAntidiag_insert h, mem_biUnion]
   simp_rw [mem_map, mem_attach, true_and, Subtype.exists, Embedding.coeFn_mk, exists_prop, and_comm,
     eq_comm]
+
+@[gcongr]
+theorem finsuppAntidiag_mono {s t : Finset ι} (h : s ⊆ t) (n : μ) :
+    finsuppAntidiag s n ⊆ finsuppAntidiag t n := by
+  intro a
+  simp_rw [mem_finsuppAntidiag']
+  rintro ⟨hsum, hmem⟩
+  exact ⟨hsum, hmem.trans h⟩
 
 variable [AddCommMonoid μ'] [HasAntidiagonal μ'] [DecidableEq μ']
 

@@ -151,7 +151,7 @@ theorem ContinuousLinearMap.continuous_det : Continuous fun f : E →L[𝕜] E =
   -- TODO: this could be easier with `det_cases`
   by_cases h : ∃ s : Finset E, Nonempty (Basis (↥s) 𝕜 E)
   · rcases h with ⟨s, ⟨b⟩⟩
-    haveI : FiniteDimensional 𝕜 E := FiniteDimensional.of_fintype_basis b
+    haveI : FiniteDimensional 𝕜 E := b.finiteDimensional_of_finite
     classical
     simp_rw [LinearMap.det_eq_det_toMatrix_of_finset b]
     refine Continuous.matrix_det ?_

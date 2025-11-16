@@ -253,7 +253,7 @@ theorem mul_eq_one : a * b = 1 ↔ a = 1 ∧ b = 1 :=
 end CommMonoid
 
 /-!
-# `IsUnit` predicate
+### `IsUnit` predicate
 -/
 
 

@@ -1128,12 +1128,12 @@ theorem iInf_option_elim (a : α) (f : β → α) : ⨅ o : Option β, o.elim a 
 dropped, without changing the result. -/
 @[simp]
 theorem iSup_ne_bot_subtype (f : ι → α) : ⨆ i : { i // f i ≠ ⊥ }, f i = ⨆ i, f i := by
-  by_cases htriv : ∀ i, f i = ⊥
+  by_cases! htriv : ∀ i, f i = ⊥
   · simp only [iSup_bot, (funext htriv : f = _)]
   refine (iSup_comp_le f _).antisymm (iSup_mono' fun i => ?_)
   by_cases hi : f i = ⊥
   · rw [hi]
-    obtain ⟨i₀, hi₀⟩ := not_forall.mp htriv
+    obtain ⟨i₀, hi₀⟩ := htriv
     exact ⟨⟨i₀, hi₀⟩, bot_le⟩
   · exact ⟨⟨i, hi⟩, rfl.le⟩
 
@@ -1375,7 +1375,5 @@ protected abbrev Function.Injective.completeLattice [Max α] [Min α] [SupSet α
   sSup_le _ _ h := (map_sSup _).trans_le <| iSup₂_le h
   sInf_le _ a h := (map_sInf _).trans_le <| iInf₂_le a h
   le_sInf _ _ h := (le_iInf₂ h).trans (map_sInf _).ge
-  top := ⊤
   le_top _ := (@le_top β _ _ _).trans map_top.ge
-  bot := ⊥
   bot_le _ := map_bot.le.trans bot_le

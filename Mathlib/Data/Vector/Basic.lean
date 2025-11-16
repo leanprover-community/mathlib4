@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 import Mathlib.Data.Vector.Defs
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.OfFn
-import Mathlib.Data.List.Scan
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
 import Mathlib.Algebra.BigOperators.Group.List.Basic

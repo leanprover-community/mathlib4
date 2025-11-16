@@ -8,7 +8,6 @@ import Mathlib.Algebra.Notation.Defs
 import Mathlib.Algebra.Regular.Defs
 import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.BinaryRec
-import Mathlib.Logic.Function.Defs
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.OfNat
 import Mathlib.Tactic.Basic

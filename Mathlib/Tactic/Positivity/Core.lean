@@ -530,4 +530,4 @@ macro_rules | `(tactic| gcongr_discharger) => `(tactic| positivity)
 We register `positivity` with the `hint` tactic.
 -/
 
-register_hint positivity
+register_hint 1000 positivity

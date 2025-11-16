@@ -69,9 +69,9 @@ theorem functionField_iff (Fqt : Type*) [Field Fqt] [Algebra Fq[X] Fqt]
       simp only [map_one, map_mul, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
   constructor <;> intro h
   · let b := Module.finBasis (RatFunc Fq) F
-    exact FiniteDimensional.of_fintype_basis (b.mapCoeffs e this)
+    exact (b.mapCoeffs e this).finiteDimensional_of_finite
   · let b := Module.finBasis Fqt F
-    refine FiniteDimensional.of_fintype_basis (b.mapCoeffs e.symm ?_)
+    refine (b.mapCoeffs e.symm ?_).finiteDimensional_of_finite
     intro c x; convert (this (e.symm c) x).symm; simp only [e.apply_symm_apply]
 
 namespace FunctionField

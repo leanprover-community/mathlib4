@@ -304,7 +304,7 @@ end TransvectionStruct
 end Transvection
 
 /-!
-# Reducing matrices by left and right multiplication by transvections
+### Reducing matrices by left and right multiplication by transvections
 
 In this section, we show that any matrix can be reduced to diagonal form by left and right
 multiplication by transvections (or, equivalently, by elementary operations on lines and columns).
@@ -551,12 +551,11 @@ theorem exists_isTwoBlockDiagonal_list_transvec_mul_mul_list_transvec
   by_cases H : IsTwoBlockDiagonal M
   · refine ⟨List.nil, List.nil, by simpa using H⟩
   -- we have already proved this when the last coefficient is nonzero
-  by_cases hM : M (inr unit) (inr unit) ≠ 0
+  by_cases hM : M (inr unit) (inr unit) = 0; swap
   · exact exists_isTwoBlockDiagonal_of_ne_zero M hM
   -- when the last coefficient is zero but there is a nonzero coefficient on the last row or the
   -- last column, we will first put this nonzero coefficient in last position, and then argue as
   -- above.
-  push_neg at hM
   simp only [not_and_or, IsTwoBlockDiagonal, toBlocks₁₂, toBlocks₂₁, ← Matrix.ext_iff] at H
   have : ∃ i : Fin r, M (inl i) (inr unit) ≠ 0 ∨ M (inr unit) (inl i) ≠ 0 := by
     rcases H with H | H

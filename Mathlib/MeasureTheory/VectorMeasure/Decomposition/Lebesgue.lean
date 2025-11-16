@@ -98,11 +98,10 @@ instance haveLebesgueDecomposition_smul (s : SignedMeasure α) (μ : Measure α)
 
 instance haveLebesgueDecomposition_smul_real (s : SignedMeasure α) (μ : Measure α)
     [s.HaveLebesgueDecomposition μ] (r : ℝ) : (r • s).HaveLebesgueDecomposition μ := by
-  by_cases hr : 0 ≤ r
+  by_cases! hr : 0 ≤ r
   · lift r to ℝ≥0 using hr
     exact s.haveLebesgueDecomposition_smul μ _
-  · rw [not_le] at hr
-    refine
+  · refine
       { posPart := by
           rw [toJordanDecomposition_smul_real, JordanDecomposition.real_smul_posPart_neg _ _ hr]
           infer_instance

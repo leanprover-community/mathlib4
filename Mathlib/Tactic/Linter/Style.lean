@@ -155,7 +155,7 @@ initialize addLinter missingEndLinter
 end Style.missingEnd
 
 /-!
-# The `cdot` linter
+### The `cdot` linter
 
 The `cdot` linter is a syntax-linter that flags uses of the "cdot" `·` that are achieved
 by typing a character different from `·`.
@@ -224,7 +224,7 @@ initialize addLinter cdotLinter
 end Style
 
 /-!
-# The `dollarSyntax` linter
+### The `dollarSyntax` linter
 
 The `dollarSyntax` linter flags uses of `<|` that are achieved by typing `$`.
 These are disallowed by the mathlib style guide, as using `<|` pairs better with `|>`.
@@ -264,7 +264,7 @@ initialize addLinter dollarSyntaxLinter
 end Style.dollarSyntax
 
 /-!
-# The `lambdaSyntax` linter
+### The `lambdaSyntax` linter
 
 The `lambdaSyntax` linter is a syntax linter that flags uses of the symbol `λ` to define anonymous
 functions, as opposed to the `fun` keyword. These are syntactically equivalent; mathlib style
@@ -310,7 +310,7 @@ initialize addLinter lambdaSyntaxLinter
 end Style.lambdaSyntax
 
 /-!
-# The "longFile" linter
+### The "longFile" linter
 
 The "longFile" linter emits a warning on files which are longer than a certain number of lines
 (1500 by default).
@@ -395,7 +395,7 @@ initialize addLinter longFileLinter
 
 end Style.longFile
 
-/-! # The "longLine linter" -/
+/-! ### The "longLine linter" -/
 
 /-- The "longLine" linter emits a warning on lines longer than 100 characters.
 We allow lines containing URLs to be longer, though. -/
@@ -481,7 +481,7 @@ initialize addLinter doubleUnderscore
 
 end Style.nameCheck
 
-/-! # The "openClassical" linter -/
+/-! ### The "openClassical" linter -/
 
 /-- The "openClassical" linter emits a warning on `open Classical` statements which are not
 scoped to a single declaration. A non-scoped `open Classical` can hide that some theorem statements
@@ -531,7 +531,7 @@ initialize addLinter openClassicalLinter
 
 end Style.openClassical
 
-/-! # The "show" linter -/
+/-! ### The "show" linter -/
 
 /--
 The "show" linter emits a warning if the `show` tactic changed the goal. `show` should only be used

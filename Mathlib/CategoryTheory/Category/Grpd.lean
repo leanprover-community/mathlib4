@@ -74,6 +74,8 @@ def forgetToCat : Grpd.{v, u} ⥤ Cat.{v, u} where
   obj C := Cat.of C
   map := id
 
+instance (X : Grpd) : Groupoid (Grpd.forgetToCat.obj X) := inferInstanceAs (Groupoid X)
+
 instance forgetToCat_full : forgetToCat.Full where map_surjective f := ⟨f, rfl⟩
 
 instance forgetToCat_faithful : forgetToCat.Faithful where

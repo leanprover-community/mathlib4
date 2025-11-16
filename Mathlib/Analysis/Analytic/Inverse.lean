@@ -111,9 +111,9 @@ theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
       (Finset.univ : Finset (Composition (n + 2))) =
         {c | Composition.length c < n + 2}.toFinset ∪ {Composition.ones (n + 2)} := by
       refine Subset.antisymm (fun c _ => ?_) (subset_univ _)
-      by_cases h : c.length < n + 2
+      by_cases! h : c.length < n + 2
       · simp [h]
-      · simp [Composition.eq_ones_iff_le_length.2 (not_lt.1 h)]
+      · simp [Composition.eq_ones_iff_le_length.2 h]
     have B :
       Disjoint ({c | Composition.length c < n + 2} : Set (Composition (n + 2))).toFinset
         {Composition.ones (n + 2)} := by

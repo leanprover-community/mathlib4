@@ -374,11 +374,10 @@ variable {G} in
 /-- If `G` is a subgraph of `H` then `G.minDegree ≤ H.minDegree`. -/
 lemma minDegree_le_minDegree {H : SimpleGraph V} [DecidableRel G.Adj] [DecidableRel H.Adj]
     (hle : G ≤ H) : G.minDegree ≤ H.minDegree := by
-  by_cases hne : Nonempty V
+  by_cases! hne : Nonempty V
   · apply le_minDegree_of_forall_le_degree
     exact fun v ↦ (G.minDegree_le_degree v).trans (G.degree_le_of_le hle)
-  · push_neg at hne
-    simp
+  · simp
 
 /-- In a nonempty graph, the minimal degree is less than the number of vertices. -/
 theorem minDegree_lt_card [DecidableRel G.Adj] [Nonempty V] :
@@ -422,10 +421,9 @@ lemma maxDegree_of_isEmpty [DecidableRel G.Adj] [IsEmpty V] : G.maxDegree = 0 :=
 degree. -/
 theorem maxDegree_le_of_forall_degree_le [DecidableRel G.Adj] (k : ℕ) (h : ∀ v, G.degree v ≤ k) :
     G.maxDegree ≤ k := by
-  by_cases hV : IsEmpty V
+  by_cases! hV : IsEmpty V
   · simp
-  · push_neg at hV
-    obtain ⟨_, hv⟩ := G.exists_maximal_degree_vertex
+  · obtain ⟨_, hv⟩ := G.exists_maximal_degree_vertex
     exact hv ▸ h _
 
 @[simp]
@@ -434,10 +432,9 @@ lemma maxDegree_bot_eq_zero : (⊥ : SimpleGraph V).maxDegree = 0 :=
 
 @[simp]
 lemma minDegree_le_maxDegree [DecidableRel G.Adj] : G.minDegree ≤ G.maxDegree := by
-  by_cases he : IsEmpty V
+  by_cases! he : IsEmpty V
   · simp
-  · push_neg at he
-    exact he.elim fun v ↦ (minDegree_le_degree _ v).trans (degree_le_maxDegree _ v)
+  · exact he.elim fun v ↦ (minDegree_le_degree _ v).trans (degree_le_maxDegree _ v)
 
 @[simp]
 lemma minDegree_bot_eq_zero : (⊥ : SimpleGraph V).minDegree = 0 :=

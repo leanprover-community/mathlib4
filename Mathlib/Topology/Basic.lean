@@ -185,6 +185,10 @@ theorem isClosed_imp {p q : X → Prop} (hp : IsOpen { x | p x }) (hq : IsClosed
 theorem IsClosed.not : IsClosed { a | p a } → IsOpen { a | ¬p a } :=
   isOpen_compl_iff.mpr
 
+theorem IsClosed.and :
+    IsClosed { x | p₁ x } → IsClosed { x | p₂ x } → IsClosed { x | p₁ x ∧ p₂ x } :=
+  IsClosed.inter
+
 /-!
 ### Limits of filters in topological spaces
 

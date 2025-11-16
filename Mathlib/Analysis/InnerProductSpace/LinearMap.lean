@@ -162,11 +162,11 @@ def innerₛₗ : E →ₗ⋆[𝕜] E →ₗ[𝕜] 𝕜 :=
     inner_add_right fun _ _ _ => inner_smul_right _ _ _
 
 @[simp]
-theorem innerₛₗ_apply_coe (v : E) : ⇑(innerₛₗ 𝕜 v) = fun w => ⟪v, w⟫ :=
+theorem coe_innerₛₗ_apply (v : E) : ⇑(innerₛₗ 𝕜 v) = fun w => ⟪v, w⟫ :=
   rfl
 
 @[simp]
-theorem innerₛₗ_apply (v w : E) : innerₛₗ 𝕜 v w = ⟪v, w⟫ :=
+theorem innerₛₗ_apply_apply (v w : E) : innerₛₗ 𝕜 v w = ⟪v, w⟫ :=
   rfl
 
 variable (F)
@@ -179,21 +179,21 @@ def innerₗ : F →ₗ[ℝ] F →ₗ[ℝ] ℝ := innerₛₗ ℝ
 
 variable {F}
 
-@[simp] lemma innerₗ_apply (v w : F) : innerₗ F v w = ⟪v, w⟫_ℝ := rfl
+@[simp] lemma innerₗ_apply_apply (v w : F) : innerₗ F v w = ⟪v, w⟫_ℝ := rfl
 
 /-- The inner product as a continuous sesquilinear map. Note that `toDualMap` (resp. `toDual`)
 in `InnerProductSpace.Dual` is a version of this given as a linear isometry (resp. linear
 isometric equivalence). -/
 def innerSL : E →L⋆[𝕜] E →L[𝕜] 𝕜 :=
   LinearMap.mkContinuous₂ (innerₛₗ 𝕜) 1 fun x y => by
-    simp only [norm_inner_le_norm, one_mul, innerₛₗ_apply]
+    simp only [norm_inner_le_norm, one_mul, innerₛₗ_apply_apply]
 
 @[simp]
-theorem innerSL_apply_coe (v : E) : ⇑(innerSL 𝕜 v) = fun w => ⟪v, w⟫ :=
+theorem coe_innerSL_apply (v : E) : ⇑(innerSL 𝕜 v) = fun w => ⟪v, w⟫ :=
   rfl
 
 @[simp]
-theorem innerSL_apply (v w : E) : innerSL 𝕜 v w = ⟪v, w⟫ :=
+theorem innerSL_apply_apply (v w : E) : innerSL 𝕜 v w = ⟪v, w⟫ :=
   rfl
 
 /-- The inner product as a continuous sesquilinear map, with the two arguments flipped. -/
@@ -202,13 +202,21 @@ def innerSLFlip : E →L[𝕜] E →L⋆[𝕜] 𝕜 :=
     (innerSL 𝕜)
 
 @[simp]
-theorem innerSLFlip_apply (x y : E) : innerSLFlip 𝕜 x y = ⟪y, x⟫ :=
+theorem innerSLFlip_apply_apply (x y : E) : innerSLFlip 𝕜 x y = ⟪y, x⟫ :=
   rfl
 
 variable (F) in
-@[simp] lemma innerSL_real_flip : (innerSL ℝ (E := F)).flip = innerSL ℝ (E := F) := by
+@[simp] lemma flip_innerSL_real : (innerSL ℝ (E := F)).flip = innerSL ℝ (E := F) := by
   ext v w
   exact real_inner_comm _ _
+
+@[deprecated (since := "2025-11-15")] alias innerₛₗ_apply_coe := coe_innerₛₗ_apply
+@[deprecated (since := "2025-11-15")] alias innerₛₗ_apply := innerₛₗ_apply_apply
+@[deprecated (since := "2025-11-15")] alias innerₗ_apply := innerₗ_apply_apply
+@[deprecated (since := "2025-11-15")] alias innerSL_apply_coe := coe_innerSL_apply
+@[deprecated (since := "2025-11-15")] alias innerSL_apply := innerSL_apply_apply
+@[deprecated (since := "2025-11-15")] alias innerSLFlip_apply := innerSLFlip_apply_apply
+@[deprecated (since := "2025-11-15")] alias innerSL_real_flip := flip_innerSL_real
 
 variable {𝕜}
 

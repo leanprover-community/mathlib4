@@ -184,7 +184,7 @@ lemma exists_map_eq_top
 
 attribute [local simp] Scheme.Hom.resLE_comp_resLE
 
-/-- Given a diagram `{ Dᵢ }` of schemes and a open `U ⊆ Dᵢ`,
+/-- Given a diagram `{ Dᵢ }` of schemes and an open `U ⊆ Dᵢ`,
 this is the diagram of `{ Dⱼᵢ⁻¹ U }_{j ≤ i}`. -/
 @[simps] noncomputable
 def opensDiagram (i : I) (U : (D.obj i).Opens) : Over i ⥤ Scheme where
@@ -201,7 +201,7 @@ instance (i : I) (U : (D.obj i).Opens) (j : Over i) :
     IsOpenImmersion ((opensDiagramι D i U).app j) := by
   delta opensDiagramι; infer_instance
 
-/-- Given a diagram `{ Dᵢ }` of schemes and a open `U ⊆ Dᵢ`,
+/-- Given a diagram `{ Dᵢ }` of schemes and an open `U ⊆ Dᵢ`,
 the preimage of `U ⊆ Dᵢ` under the map `lim Dᵢ ⟶ Dᵢ` is the limit of `{ Dⱼᵢ⁻¹ U }_{j ≤ i}`.
 This is the underlying cone, and it is limiting as witnessed by `isLimitOpensCone` below. -/
 @[simps] noncomputable
@@ -211,7 +211,7 @@ def opensCone (i : I) (U : (D.obj i).Opens) : Cone (opensDiagram D i U) where
 
 attribute [local instance] CategoryTheory.isConnected_of_hasTerminal
 
-/-- Given a diagram `{ Dᵢ }_{i ∈ I}` of schemes and a open `U ⊆ Dᵢ`,
+/-- Given a diagram `{ Dᵢ }_{i ∈ I}` of schemes and an open `U ⊆ Dᵢ`,
 the preimage of `U ⊆ Dᵢ` under the map `lim Dᵢ ⟶ Dᵢ` is the limit of `{ Dⱼᵢ⁻¹ U }_{j ≤ i}`. -/
 noncomputable
 def isLimitOpensCone [IsCofiltered I] (i : I) (U : (D.obj i).Opens) :
@@ -264,7 +264,7 @@ lemma Scheme.compactSpace_of_isLimit [IsCofiltered I]
 
 /-!
 
-# Cofiltered Limits and Schemes of Finite Type
+## Cofiltered Limits and Schemes of Finite Type
 
 Given a cofiltered diagram `D` of quasi-compact `S`-schemes with affine transition maps,
 and another scheme `X` of finite type over `S`.
@@ -575,13 +575,13 @@ lemma Scheme.exists_hom_hom_comp_eq_comp_of_locallyOfFiniteType
 end LocallyOfFiniteType
 
 /-!
-## Sections of the limit
+### Sections of the limit
 
-Let `D` be a cofiltered diagram schemes with affine transition map.
+Let `D` be a cofiltered diagram of schemes with affine transition maps.
 Consider the canonical map `colim Γ(Dᵢ, ⊤) ⟶ Γ(lim Dᵢ, ⊤)`.
 
 If `D` consists of quasicompact schemes, then this map is injective. More generally, we show
-that if `s t : Γ(Dᵢ, U)` have equal image in `lim Dᵢ`, then they are equal at some `Γ(Dⱼ, Dⱼᵢ⁻¹U)`.
+that if `s t : Γ(Dᵢ, U)` have equal image in `lim Dᵢ`, then they are equal at some `Γ(Dⱼ, Dⱼᵢ⁻¹ U)`.
 See `AlgebraicGeometry.exists_app_map_eq_map_of_isLimit`.
 
 If `D` consists of qcqs schemes, then this map is surjective. Specifically, we show that

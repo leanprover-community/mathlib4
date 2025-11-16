@@ -329,7 +329,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
       calc
         ‖f (x + y) - f x - L e (n e) m y‖ ≤ (1 / 2) ^ e * (1 / 2) ^ m := by
           simpa only [add_sub_cancel_left] using J1
-        _ = 4 * (1 / 2) ^ e * (1 / 2) ^ (m + 2) := by field
+        _ = 4 * (1 / 2) ^ e * (1 / 2) ^ (m + 2) := by ring
         _ ≤ 4 * (1 / 2) ^ e * ‖y‖ := by gcongr
     -- use the previous estimates to see that `f (x + y) - f x - f' y` is small.
     calc
@@ -604,7 +604,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     calc
       ‖L0 e - L0 e'‖ ≤ 12 * (1 / 2) ^ e := M _ _ _ _ _ _ le_rfl le_rfl le_rfl le_rfl he'
       _ < 12 * (ε / 12) := mul_lt_mul' le_rfl he (le_of_lt P) (by norm_num)
-      _ = ε := by field  -- As it is Cauchy, the sequence `L0` converges, to a limit `f'` in `K`.
+      _ = ε := by ring  -- As it is Cauchy, the sequence `L0` converges, to a limit `f'` in `K`.
   obtain ⟨f', f'K, hf'⟩ : ∃ f' ∈ K, Tendsto L0 atTop (𝓝 f') :=
     cauchySeq_tendsto_of_isComplete hK (fun e => (hn e (n e) (n e) le_rfl le_rfl).1) this
   have Lf' : ∀ e p, n e ≤ p → ‖L e (n e) p - f'‖ ≤ 12 * (1 / 2) ^ e := by
@@ -653,7 +653,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
             positivity
           · simp only [pow_add, tsub_le_iff_left] at h'k
             simpa only [hy.1, mem_Icc, true_and, one_div, pow_one] using h'k
-        _ = 4 * (1 / 2) ^ e * (1 / 2) ^ (m + 2) := by field
+        _ = 4 * (1 / 2) ^ e * (1 / 2) ^ (m + 2) := by ring
         _ ≤ 4 * (1 / 2) ^ e * (y - x) := by gcongr
         _ = 4 * (1 / 2) ^ e * ‖y - x‖ := by rw [Real.norm_of_nonneg yzero.le]
     calc

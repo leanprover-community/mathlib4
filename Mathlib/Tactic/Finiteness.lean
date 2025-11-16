@@ -71,4 +71,4 @@ macro (name := finiteness_nonterminal) "finiteness_nonterminal" c:Aesop.tactic_c
 /-!
  We register `finiteness` with the `hint` tactic.
  -/
-register_hint finiteness
+register_hint 1000 finiteness

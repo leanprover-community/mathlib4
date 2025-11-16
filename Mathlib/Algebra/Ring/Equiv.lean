@@ -6,9 +6,9 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 import Mathlib.Algebra.Group.Equiv.Opposite
 import Mathlib.Algebra.GroupWithZero.Equiv
 import Mathlib.Algebra.GroupWithZero.InjSurj
+import Mathlib.Algebra.Notation.Prod
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Logic.Equiv.Set
-import Mathlib.Algebra.Notation.Prod
 
 /-!
 # (Semi)ring equivs

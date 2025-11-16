@@ -24,7 +24,9 @@ universe u
 
 /-- The category of topological spaces. -/
 structure TopCat where
-  private mk ::
+  /-- The object in `TopCat` associated to a type equipped with the appropriate
+  typeclasses. -/
+  of ::
   /-- The underlying type. -/
   carrier : Type u
   [str : TopologicalSpace carrier]
@@ -39,11 +41,6 @@ instance : CoeSort (TopCat) (Type u) :=
   ⟨TopCat.carrier⟩
 
 attribute [coe] TopCat.carrier
-
-/-- The object in `TopCat` associated to a type equipped with the appropriate
-typeclasses. This is the preferred way to construct a term of `TopCat`. -/
-abbrev of (X : Type u) [TopologicalSpace X] : TopCat :=
-  ⟨X⟩
 
 lemma coe_of (X : Type u) [TopologicalSpace X] : (of X : Type u) = X :=
   rfl

@@ -129,7 +129,7 @@ theorem affineSpan_pair_eq_altitude_iff {n : ℕ} [NeZero n] (s : Simplex ℝ P 
       simpa using h
     · rw [finrank_direction_altitude, finrank_span_set_eq_card]
       · simp
-      · exact LinearIndepOn.id_singleton _ <| by simpa using hne
+      · exact .singleton <| by simpa using hne
 
 /-- The foot of an altitude is the orthogonal projection of a vertex of a simplex onto the
 opposite face. -/

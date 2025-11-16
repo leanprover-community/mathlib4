@@ -17,6 +17,7 @@ import Batteries.Tactic.Basic
 import Batteries.Tactic.Case
 import Batteries.Tactic.HelpCmd
 import Batteries.Tactic.Alias
+import Batteries.Tactic.GeneralizeProofs
 
 -- Import syntax for leansearch
 import LeanSearchClient
@@ -31,6 +32,7 @@ import Mathlib.Tactic.ApplyCongr
 import Mathlib.Tactic.ApplyAt
 import Mathlib.Tactic.ApplyWith
 import Mathlib.Tactic.Basic
+import Mathlib.Tactic.ByCases
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.CasesM
 import Mathlib.Tactic.Check
@@ -56,7 +58,6 @@ import Mathlib.Tactic.Find
 import Mathlib.Tactic.FunProp
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.GRewrite
-import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.GuardGoalNums
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Tactic.HigherOrder
@@ -134,16 +135,16 @@ import hierarchy.
 
 section Hint
 
-register_hint (priority := 200) grind
-register_hint (priority := 1000) trivial
-register_hint (priority := 500) tauto
-register_hint (priority := 1000) split
-register_hint (priority := 1000) intro
-register_hint (priority := 80) aesop
-register_hint (priority := 800) simp_all?
-register_hint (priority := 600) exact?
-register_hint (priority := 1000) decide
-register_hint (priority := 200) omega
-register_hint (priority := 200) fun_prop
+register_hint 200 grind
+register_hint 1000 trivial
+register_hint 500 tauto
+register_hint 1000 split
+register_hint 1000 intro
+register_hint 80 aesop
+register_hint 800 simp_all?
+register_hint 600 exact?
+register_hint 1000 decide
+register_hint 200 omega
+register_hint 200 fun_prop
 
 end Hint

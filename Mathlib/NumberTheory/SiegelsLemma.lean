@@ -75,7 +75,7 @@ private lemma image_T_subset_S [DecidableEq α] [DecidableEq β] (v) (hv : v ∈
   refine ⟨fun i ↦ ?_, fun i ↦ ?_⟩
   all_goals
     simp only [mul_neg]
-    gcongr ∑ _ : α, ?_ with j _ -- Get rid of sums
+    gcongr ∑ _ : β, ?_ with j _ -- Get rid of sums
     rw [← mul_comm (v j)] -- Move A i j to the right of the products
     rcases le_total 0 (A i j) with hsign | hsign-- We have to distinguish cases: we have now 4 goals
   · rw [negPart_eq_zero.2 hsign]

@@ -18,7 +18,7 @@ such that for any two indices `i` and `j` with `1 ≤ i ≤ j ≤ m` and `aᵢ +
 there exists an index `k` such that `aᵢ + aⱼ = aₖ`.
 Show that `(a₁+a₂+...+aₘ)/m ≥ (n+1)/2`
 
-# Sketch of solution
+## Sketch of solution
 
 We can order the numbers so that `a₁ ≤ a₂ ≤ ... ≤ aₘ`.
 The key idea is to pair the numbers in the sum and show that `aᵢ + aₘ₊₁₋ᵢ ≥ n+1`.

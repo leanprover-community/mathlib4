@@ -265,8 +265,8 @@ lemma iSup_iInf_eq (f : ∀ i, κ i → α) :
   refine le_antisymm iSup_iInf_le ?_
   rw [minAx.iInf_iSup_eq']
   refine iSup_le fun g => ?_
-  have ⟨a, ha⟩ : ∃ a, ∀ b, ∃ f, ∃ h : a = g f, h ▸ b = f (g f) := of_not_not fun h => by
-    push_neg at h
+  have ⟨a, ha⟩ : ∃ a, ∀ b, ∃ f, ∃ h : a = g f, h ▸ b = f (g f) := by
+    by_contra! h
     choose h hh using h
     have := hh _ h rfl
     contradiction

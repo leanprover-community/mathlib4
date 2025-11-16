@@ -26,7 +26,7 @@ section OrderClosedTopology
 variable {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderClosedTopology α] {a b c d : α}
 
 /-!
-# Formulae for `𝓝ˢ` of intervals
+### Formulae for `𝓝ˢ` of intervals
 -/
 
 @[simp] theorem nhdsSet_Ioi : 𝓝ˢ (Ioi a) = 𝓟 (Ioi a) := isOpen_Ioi.nhdsSet_eq

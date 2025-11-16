@@ -252,7 +252,7 @@ lemma IsLocalDiffeomorph.isLocalDiffeomorphOn
     {f : M → N} (hf : IsLocalDiffeomorph I J n f) (s : Set M) : IsLocalDiffeomorphOn I J n f s :=
   fun x ↦ hf x
 
-/-! # Basic properties of local diffeomorphisms -/
+/-! ### Basic properties of local diffeomorphisms -/
 section Basic
 variable {f : M → N} {s : Set M} {x : M}
 variable {I J n}

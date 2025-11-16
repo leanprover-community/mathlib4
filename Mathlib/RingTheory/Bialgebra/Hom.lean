@@ -330,6 +330,8 @@ theorem counitBialgHom_apply (x : A) :
 theorem counitBialgHom_toCoalgHom :
     counitBialgHom R A = Coalgebra.counitCoalgHom R A := rfl
 
+@[simp] lemma counitBialgHom_self : counitBialgHom R R = .id R R := rfl
+
 instance subsingleton_to_ring : Subsingleton (A →ₐc[R] R) :=
   ⟨fun _ _ => BialgHom.coe_coalgHom_injective (Subsingleton.elim _ _)⟩
 

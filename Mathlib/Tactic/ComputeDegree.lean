@@ -525,4 +525,4 @@ end Mathlib.Tactic.ComputeDegree
 /-!
  We register `compute_degree` with the `hint` tactic.
  -/
-register_hint compute_degree
+register_hint 1000 compute_degree

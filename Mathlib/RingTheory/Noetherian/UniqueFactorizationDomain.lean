@@ -10,7 +10,7 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.Ideal
 
 ## Main results
 
-# IsNoetherianRing.wfDvdMonoid
+- IsNoetherianRing.wfDvdMonoid
 -/
 
 variable {R : Type*} [CommSemiring R] [IsDomain R]
