@@ -115,18 +115,17 @@ theorem intrinsicStar_rTensor (f : E →ₗ[R] F) : star (rTensor G f) = rTensor
 end TensorProduct
 
 section IsUnit
-open Module End
 
-theorem _root_.IsUnit.intrinsicStar {f : End R E} (hf : IsUnit f) :
+theorem _root_.IsUnit.intrinsicStar {f : E →ₗ[R] E} (hf : IsUnit f) :
     IsUnit (star f) := by
   obtain ⟨u, rfl⟩ := hf
-  refine Units.isUnit <| Units.mk (star (u : End R E)) (star (u⁻¹ : (End R E)ˣ)) ?_ ?_
+  refine Units.isUnit <| Units.mk (star (u : E →ₗ[R] E)) (star (u⁻¹ : (E →ₗ[R] E)ˣ)) ?_ ?_
   all_goals
     ext
-    rw [mul_apply]
-    simp [← mul_apply]
+    rw [Module.End.mul_apply]
+    simp [← Module.End.mul_apply]
 
-theorem isUnit_intrinsicStar_iff {f : End R E} :
+theorem isUnit_intrinsicStar_iff {f : E →ₗ[R] E} :
     IsUnit (star f) ↔ IsUnit f :=
   ⟨fun h ↦ star_star f ▸ h.intrinsicStar, fun h ↦ h.intrinsicStar⟩
 
