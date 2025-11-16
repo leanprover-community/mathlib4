@@ -127,8 +127,8 @@ theorem _root_.IsUnit.intrinsicStar {f : End R E} (hf : IsUnit f) :
   refine Units.isUnit <| Units.mk (star (u : End R E)) (star (u⁻¹ : (End R E)ˣ)) ?_ ?_
   all_goals
     ext
-    rw [Module.End.mul_apply]
-    simp [← Module.End.mul_apply]
+    rw [mul_apply]
+    simp [← mul_apply]
 
 theorem isUnit_intrinsicStar_iff {f : End R E} :
     IsUnit (star f) ↔ IsUnit f :=
