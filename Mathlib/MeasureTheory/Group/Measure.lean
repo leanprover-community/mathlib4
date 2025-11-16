@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Mathlib.Algebra.Group.Pointwise.Set.Card
+import Mathlib.GroupTheory.Complement
 import Mathlib.MeasureTheory.Group.Action
+import Mathlib.MeasureTheory.Group.Pointwise
 import Mathlib.MeasureTheory.Measure.Prod
 import Mathlib.Topology.Algebra.Module.Equiv
 import Mathlib.Topology.ContinuousMap.CocompactMap
@@ -270,6 +272,18 @@ theorem eventually_div_right_iff (μ : Measure G) [IsMulRightInvariant μ] (t : 
   conv_rhs => rw [Filter.Eventually, ← map_div_right_ae μ t]
   rfl
 
+@[to_additive AddSubgroup.index_mul_measure]
+lemma Subgroup.index_mul_measure (H : Subgroup G) [H.FiniteIndex] (hH : MeasurableSet (H : Set G))
+    (μ : Measure G) [IsMulLeftInvariant μ] : H.index * μ H = μ univ := by
+  obtain ⟨s, hs, -⟩ := H.exists_isComplement_left 1
+  have hs' : Finite s := hs.finite_left_iff.mpr inferInstance
+  calc
+    H.index * μ H = ∑' a : s, μ (a.val • H) := by simp [measure_smul, hs.encard_left]
+    _ = μ univ := by
+      rw [← measure_iUnion _ fun _ ↦ hH.const_smul _]
+      · simp [hs.mul_eq]
+      · exact fun a b hab ↦ hs.pairwiseDisjoint_smul a.2 b.2 (Subtype.val_injective.ne hab)
+
 end Group
 
 namespace Measure
@@ -413,6 +427,9 @@ instance : (count : Measure G).IsMulRightInvariant where
       count_apply (measurable_mul_const _ hs),
       encard_preimage_of_bijective (Group.mulRight_bijective _)]
 
+/- TODO: To avoid repeating the proofs, the following two lemmas should be consequences of
+a similar result about `SMulInvariantMeasure`. -/
+
 @[to_additive]
 protected theorem IsMulLeftInvariant.comap {H} [Group H] {mH : MeasurableSpace H} [MeasurableMul H]
     (μ : Measure H) [IsMulLeftInvariant μ] {f : G →* H} (hf : MeasurableEmbedding f) :
@@ -429,6 +446,24 @@ protected theorem IsMulLeftInvariant.comap {H} [Group H] {mH : MeasurableSpace H
       · intro ⟨y, yins, hy⟩
         exact ⟨g⁻¹ * y, by simp [yins], by simp [hy]⟩
     rw [this, ← map_apply (by fun_prop), IsMulLeftInvariant.map_mul_left_eq_self]
+    exact hf.measurableSet_image.mpr hs
+
+@[to_additive]
+protected theorem IsMulRightInvariant.comap {H} [Group H] {mH : MeasurableSpace H} [MeasurableMul H]
+    (μ : Measure H) [IsMulRightInvariant μ] {f : G →* H} (hf : MeasurableEmbedding f) :
+    (μ.comap f).IsMulRightInvariant where
+  map_mul_right_eq_self g := by
+    ext s hs
+    rw [map_apply (by fun_prop) hs]
+    repeat rw [hf.comap_apply]
+    have : f '' ((· * g) ⁻¹' s) = (· * f g) ⁻¹' (f '' s) := by
+      ext
+      constructor
+      · rintro ⟨y, hy, rfl⟩
+        exact ⟨y * g, hy, by simp⟩
+      · intro ⟨y, yins, hy⟩
+        exact ⟨y * g⁻¹, by simp [yins], by simp [hy]⟩
+    rw [this, ← map_apply (by fun_prop), IsMulRightInvariant.map_mul_right_eq_self]
     exact hf.measurableSet_image.mpr hs
 
 end MeasurableMul

@@ -63,7 +63,7 @@ theorem Finset.centerMass_insert [DecidableEq ι] (ha : i ∉ t) (hw : ∑ j ∈
 theorem Finset.centerMass_singleton (hw : w i ≠ 0) : ({i} : Finset ι).centerMass w z = z i := by
   rw [centerMass, sum_singleton, sum_singleton]
   match_scalars
-  field_simp
+  field
 
 @[simp] lemma Finset.centerMass_neg_left : t.centerMass (-w) z = t.centerMass w z := by
   simp [centerMass, inv_neg]
@@ -143,6 +143,34 @@ theorem inf_le_centerMass {s : Finset ι} {f : ι → α} {w : ι → R} (hw₀ 
 end Finset
 
 variable {z}
+
+lemma Finset.centerMass_const (hw : ∑ j ∈ t, w j ≠ 0) (c : E) :
+    t.centerMass w (Function.const _ c) = c := by
+  simp [centerMass, ← sum_smul, hw]
+
+lemma Finset.centerMass_congr [DecidableEq ι] {t' : Finset ι} {w' : ι → R} {z' : ι → E}
+    (h : ∀ i, (i ∈ t ∧ w i ≠ 0 ∨ i ∈ t' ∧ w' i ≠ 0) → i ∈ t ∩ t' ∧ w i = w' i ∧ z i = z' i) :
+    t.centerMass w z = t'.centerMass w' z' := by
+  classical
+  rw [← centerMass_filter_ne_zero, centerMass, ← centerMass_filter_ne_zero, centerMass]
+  congr 1
+  · congr 1
+    exact sum_congr (by grind) (by grind)
+  · exact sum_congr (by grind) (by grind)
+
+lemma Finset.centerMass_congr_finset [DecidableEq ι] {t' : Finset ι}
+    (h : ∀ i ∈ t ∪ t', w i ≠ 0 → i ∈ t ∩ t') : t.centerMass w z = t'.centerMass w z :=
+  centerMass_congr (by grind)
+
+lemma Finset.centerMass_congr_weights {w' : ι → R} (h : ∀ i ∈ t, w i = w' i) :
+    t.centerMass w z = t.centerMass w' z := by
+  classical
+  exact centerMass_congr (by grind)
+
+lemma Finset.centerMass_congr_fun {z' : ι → E} (h : ∀ i ∈ t, w i ≠ 0 → z i = z' i) :
+    t.centerMass w z = t.centerMass w z' := by
+  classical
+  exact centerMass_congr (by grind)
 
 lemma Finset.centerMass_of_sum_add_sum_eq_zero {s t : Finset ι}
     (hw : ∑ i ∈ s, w i + ∑ i ∈ t, w i = 0) (hz : ∑ i ∈ s, w i • z i + ∑ i ∈ t, w i • z i = 0) :
