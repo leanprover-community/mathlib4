@@ -9,22 +9,37 @@ import Mathlib.Data.Set.BooleanAlgebra
 import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
-# Basic relations and operations related to subgraphs
+# Subgraphs of multigraphs
 
-This file contains the basic theory of relations and operations related to subgraphs of graphs.
+This file develops the basic theory of subgraphs for multigraphs `Graph α β`:
+the subgraph relation, standard classes of subgraphs (spanning, induced, closed),
+and components.
 
-## Definitions
+## Main definitions
 
-* `Graph.copy`
-* `Graph.IsSubgraph`
-* `Graph.edgeRestrict`
-* `Graph.edgeDelete`
-* `Graph.induce`
-* `Graph.vertexDelete`
-* `Graph.IsSpanningSubgraph`
-* `Graph.IsInducedSubgraph`
-* `Graph.IsClosedSubgraph`
+- `Graph.copy`: produce a graph equal to a given one but with definitional conveniences.
+- `Graph.IsSubgraph`: the subgraph relation; used as the partial order `≤` on graphs.
+- `Graph.IsSpanningSubgraph` (notation `≤s`): same vertex set as the ambient graph.
+- `Graph.IsInducedSubgraph` (notation `≤i`): contains every ambient link between its vertices.
+- `Graph.IsClosedSubgraph` (notation `≤c`): union of components of the ambient graph.
+- `Graph.IsCompOf`: components, defined as minimal nonempty closed subgraphs.
 
+## Notation
+
+- `H ≤ G` means `H` is a subgraph of `G` (`Graph.IsSubgraph`).
+- `H ≤s G` means `H` is a spanning subgraph of `G`.
+- `H ≤i G` means `H` is an induced subgraph of `G`.
+- `H ≤c G` means `H` is a closed subgraph of `G` (a union of components of `G`).
+
+## Implementation notes
+
+Following the overall design of `Graph`, subgraphs are terms of the same type `Graph α β`
+rather than a separate `Subgraph` structure. This allows us to reuse notation and lemmas
+uniformly and to express the subgraph order directly as a partial order on `Graph α β`.
+
+## Tags
+
+graphs, subgraph, induced subgraph, spanning subgraph, closed subgraph, component
 -/
 
 variable {α β : Type*} {x y z u v w : α} {e f : β} {G H K : Graph α β} {F F₁ F₂ : Set β}
@@ -38,8 +53,9 @@ open scoped Sym2
 
 namespace Graph
 
-/-- `Copy` creates an identical graph with different definitions for its vertex set and edge set.
-  This is mainly used to create graphs with improved definitional properties. -/
+/-- `Graph.copy` produces a graph equal to `G` but with provided definitional choices
+for `vertexSet`, `edgeSet`, and `IsLink`. This is mainly useful for improving
+definitional equalities while keeping the same underlying graph. -/
 @[simps]
 def copy (G : Graph α β) {V : Set α} {E : Set β} {IsLink : β → α → α → Prop} (hV : V(G) = V)
     (hE : E(G) = E) (h_isLink : ∀ e x y, G.IsLink e x y ↔ IsLink e x y) : Graph α β where
@@ -64,7 +80,8 @@ lemma copy_eq_self (G : Graph α β) {V : Set α} {E : Set β} {IsLink : β → 
     G.copy hV hE h_isLink = G := by
   ext <;> simp_all
 
-/-- `IsSubgraph H G` means that `V(H) ⊆ V(G)`, and every link in `H` is a link in `G`. -/
+/-- `IsSubgraph H G` means `V(H) ⊆ V(G)` and every link of `H` is a link of `G`.
+This is the relation used for `H ≤ G`. -/
 structure IsSubgraph (H G : Graph α β) : Prop where
   vertex_subset : V(H) ⊆ V(G)
   isLink_of_isLink : ∀ ⦃e x y⦄, H.IsLink e x y → G.IsLink e x y
@@ -165,9 +182,6 @@ lemma vertexSet_ssubset_or_edgeSet_ssubset_of_lt (h : G < H) : V(G) ⊂ V(H) ∨
   simp only [ssubset_iff_subset_ne, vertexSet_mono h.1, ne_eq, true_and, edgeSet_mono h.1]
   by_contra! heq
   exact h.2 <| ext_of_le_le h.1 le_rfl heq.1 heq.2
-
-/- TODO : Is is reasonable to only keep the `EqOn` versions of the above?
-Also, what about functional `≤` versions? -/
 
 /-! ### Spanning Subgraphs -/
 
