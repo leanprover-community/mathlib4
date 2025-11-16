@@ -59,7 +59,6 @@ lemma IsAddTorsionFree.of_noZeroSMulDivisors : IsAddTorsionFree M where
   nsmul_right_injective n hn := by
     simp_rw [← Nat.cast_smul_eq_nsmul R]; apply smul_right_injective; simpa
 
-@[deprecated IsAddTorsionFree.of_noZeroSMulDivisors (since := "2025-10-19")]
 theorem Nat.noZeroSMulDivisors
     (R) (M) [Semiring R] [CharZero R] [AddCommMonoid M] [Module R M] [NoZeroSMulDivisors R M] :
     NoZeroSMulDivisors ℕ M where

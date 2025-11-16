@@ -5140,7 +5140,9 @@ import Mathlib.NumberTheory.SmoothNumbers
 import Mathlib.NumberTheory.SumFourSquares
 import Mathlib.NumberTheory.SumPrimeReciprocals
 import Mathlib.NumberTheory.SumTwoSquares
+import Mathlib.NumberTheory.Transcendental.Lindemann.AlgebraicPart
 import Mathlib.NumberTheory.Transcendental.Lindemann.AnalyticalPart
+import Mathlib.NumberTheory.Transcendental.Lindemann.Basic
 import Mathlib.NumberTheory.Transcendental.Liouville.Basic
 import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleNumber
 import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleWith
@@ -5905,6 +5907,7 @@ import Mathlib.RingTheory.MvPolynomial.Localization
 import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
 import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
+import Mathlib.RingTheory.MvPolynomial.Symmetric.Eval
 import Mathlib.RingTheory.MvPolynomial.Symmetric.FundamentalTheorem
 import Mathlib.RingTheory.MvPolynomial.Symmetric.NewtonIdentities
 import Mathlib.RingTheory.MvPolynomial.Tower
