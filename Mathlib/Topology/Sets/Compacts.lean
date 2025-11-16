@@ -59,7 +59,7 @@ def toCloseds [T2Space α] (s : Compacts α) : Closeds α :=
   ⟨s, s.isCompact.isClosed⟩
 
 @[simp]
-theorem mem_toCloseds [T2Space α] (x : α) (s : Compacts α) :
+theorem mem_toCloseds [T2Space α] {x : α} {s : Compacts α} :
     x ∈ s.toCloseds ↔ x ∈ s :=
   Iff.rfl
 
@@ -264,7 +264,7 @@ theorem toCloseds_toCompacts [T2Space α] (s : NonemptyCompacts α) :
   rfl
 
 @[simp]
-theorem mem_toCloseds [T2Space α] (x : α) (s : NonemptyCompacts α) :
+theorem mem_toCloseds [T2Space α] {x : α} {s : NonemptyCompacts α} :
     x ∈ s.toCloseds ↔ x ∈ s :=
   Iff.rfl
 
@@ -283,7 +283,7 @@ theorem carrier_eq_coe (s : NonemptyCompacts α) : s.carrier = s :=
 theorem coe_toCompacts (s : NonemptyCompacts α) : (s.toCompacts : Set α) = s := rfl
 
 @[simp]
-theorem mem_toCompacts (x : α) (s : NonemptyCompacts α) :
+theorem mem_toCompacts {x : α} {s : NonemptyCompacts α} :
     x ∈ s.toCompacts ↔ x ∈ s :=
   Iff.rfl
 
