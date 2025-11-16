@@ -208,7 +208,6 @@
  ["docBlame", "Submodule.quotientPi_aux.toFun"],
  ["docBlame", "Tactic.Elementwise.tacticElementwise!___"],
  ["docBlame", "Tactic.Elementwise.tacticElementwise___"],
- ["docBlame", "ToAdditive.additiveTestUnsafe.visit"],
  ["docBlame", "WittVector.Isocrystal.frob"],
  ["docBlame", "AlgebraicGeometry.PresheafedSpace.Hom.base"],
  ["docBlame", "AlgebraicGeometry.PresheafedSpace.Hom.c"],
