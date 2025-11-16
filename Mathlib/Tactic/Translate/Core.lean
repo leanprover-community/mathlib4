@@ -1061,16 +1061,27 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
   if (kind != AttributeKind.global) then
     throwError "`{t.attrName}` can only be used as a global attribute"
   withOptions (· |>.updateBool `trace.translate (cfg.trace || ·)) <| do
+  -- If `src` was already tagged, we allow the `(reorder := ...)` or `(relevant_arg := ...)` syntax
+  -- for updating this information on constants that are already tagged.
+  -- In particular, this is necessary for structure projections like `HPow.hPow`.
   if let some tgt := findTranslation? (← getEnv) t src then
-    -- we allow `(reorder := ...)` or `(relevant_arg := ...)` syntax
-    -- for updating this information on constants that are already tagged
-    -- for example, this is necessary for `HPow.hPow`
-    if cfg.reorder != [] then
-      modifyEnv (t.reorderAttr.addEntry · (src, cfg.reorder))
-      return #[tgt]
-    if let some relevantArg := cfg.relevantArg? then
-      modifyEnv (t.relevantArgAttr.addEntry · (src, relevantArg))
-      return #[tgt]
+    -- If `tgt` is not in the environment, the translation to `tgt` was added only for
+    -- translating the namespace, and `src` wasn't actually tagged.
+    if (← getEnv).contains tgt then
+      let mut updated := false
+      if cfg.reorder != [] then
+        modifyEnv (t.reorderAttr.addEntry · (src, cfg.reorder))
+        updated := true
+      if let some relevantArg := cfg.relevantArg? then
+        modifyEnv (t.relevantArgAttr.addEntry · (src, relevantArg))
+        updated := true
+      if updated then
+        MetaM.run' <| checkExistingType t src tgt cfg.reorder cfg.dontTranslate
+        return #[tgt]
+      throwError
+      "Cannot apply attribute @[{t.attrName}] to '{src}': it is already translated to '{tgt}'. \n\
+      If you need to set the `reorder` or `relevant_arg` option, this is still possible with the \n\
+      `@[{t.attrName} (reorder := ...)]` or `@[{t.attrName} (relevant_arg := ...)]` syntax."
   let tgt ← targetName t cfg src
   let alreadyExists := (← getEnv).contains tgt
   if cfg.existing != alreadyExists && !(← isInductive src) && !cfg.self then
