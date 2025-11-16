@@ -8,6 +8,7 @@ import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.Normed.Operator.LinearIsometry
 import Mathlib.LinearAlgebra.AffineSpace.Restrict
+import Mathlib.Topology.Algebra.AffineSubspace
 import Mathlib.Topology.Algebra.ContinuousAffineEquiv
 
 /-!
@@ -207,6 +208,10 @@ theorem id_apply (x : P) : (AffineIsometry.id : P →ᵃⁱ[𝕜] P) x = x :=
 theorem id_toAffineMap : (id.toAffineMap : P →ᵃ[𝕜] P) = AffineMap.id 𝕜 P :=
   rfl
 
+@[simp]
+theorem id_toContinuousAffineMap : id.toContinuousAffineMap = ContinuousAffineMap.id 𝕜 P :=
+  rfl
+
 instance : Inhabited (P →ᵃⁱ[𝕜] P) :=
   ⟨id⟩
 
@@ -269,6 +274,11 @@ theorem coe_subtypeₐᵢ (s : AffineSubspace 𝕜 P) [Nonempty s] : ⇑s.subtyp
 @[simp]
 theorem subtypeₐᵢ_toAffineMap (s : AffineSubspace 𝕜 P) [Nonempty s] :
     s.subtypeₐᵢ.toAffineMap = s.subtype :=
+  rfl
+
+@[simp]
+theorem subtypeₐᵢ_toContinuousAffineMap (s : AffineSubspace 𝕜 P) [Nonempty s] :
+    s.subtypeₐᵢ.toContinuousAffineMap = s.subtypeA :=
   rfl
 
 end AffineSubspace
@@ -478,6 +488,9 @@ theorem toAffineEquiv_refl : (refl 𝕜 P).toAffineEquiv = AffineEquiv.refl 𝕜
   rfl
 
 @[simp]
+theorem toContinuousAffineEquiv_refl : (refl 𝕜 P).toContinuousAffineEquiv = .refl 𝕜 P := rfl
+
+@[simp]
 theorem toIsometryEquiv_refl : (refl 𝕜 P).toIsometryEquiv = IsometryEquiv.refl P :=
   rfl
 
@@ -509,6 +522,14 @@ theorem toAffineEquiv_symm : e.symm.toAffineEquiv = e.toAffineEquiv.symm :=
 
 @[simp]
 theorem coe_symm_toAffineEquiv : ⇑e.toAffineEquiv.symm = e.symm :=
+  rfl
+
+@[simp]
+theorem toContinuousAffineEquiv_symm :
+    e.symm.toContinuousAffineEquiv = e.toContinuousAffineEquiv.symm := rfl
+
+@[simp]
+theorem coe_symm_toContinuousAffineEquiv : ⇑e.toContinuousAffineEquiv.symm = e.symm :=
   rfl
 
 @[simp]
