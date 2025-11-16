@@ -5,8 +5,6 @@ Authors: Peter Nelson, Jun Kwon
 -/
 import Mathlib.Combinatorics.Graph.Basic
 import Mathlib.Tactic.TFAE
-import Mathlib.Data.Set.BooleanAlgebra
-import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
 # Subgraphs of multigraphs
