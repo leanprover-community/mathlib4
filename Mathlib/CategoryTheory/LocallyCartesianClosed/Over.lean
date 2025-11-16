@@ -81,17 +81,23 @@ theorem binaryFan_pt_hom [ChosenPullbacksAlong Z.hom] :
     (binaryFan Y Z).pt.hom = snd Y.hom Z.hom ≫ Z.hom := by
   rfl
 
+@[simp]
+theorem binaryFan_fst [ChosenPullbacksAlong Z.hom] :
+    (binaryFan Y Z).fst = fst' Y.hom Z.hom :=
+  rfl
+
+@[simp]
+theorem binaryFan_snd [ChosenPullbacksAlong Z.hom] :
+    (binaryFan Y Z).snd = snd' Y.hom Z.hom :=
+  rfl
+
 /-- The binary fan provided by `fst'` and `snd'` is a binary product in `Over X`. -/
 def binaryFanIsBinaryProduct [ChosenPullbacksAlong Z.hom] :
     IsLimit (binaryFan Y Z) :=
   BinaryFan.IsLimit.mk (binaryFan Y Z)
     (fun u v => Over.homMk (lift (u.left) (v.left) (by rw [Over.w u, Over.w v])) (by simp))
-    (fun a b => by simp [binaryFan]; aesop)
-    (fun a b => by simp [binaryFan]; aesop)
-    (fun a b m h₁ h₂ => by
-      apply Over.OverMorphism.ext
-      simp only [Over.homMk_left]
-      apply hom_ext (f:= Y.hom) (g:= Z.hom) <;> aesop)
+    (by cat_disch) (by cat_disch)
+    (fun a b m h₁ h₂ => by ext; apply hom_ext (f := Y.hom) (g := Z.hom) <;> aesop)
 
 end
 
@@ -101,7 +107,7 @@ chosen pullbacks. Contrast this with the noncomputable instance provided by
 -/
 def cartesianMonoidalCategoryOver [ChosenPullbacks C] (X : C) :
     CartesianMonoidalCategory (Over X) :=
-  ofChosenFiniteProducts (C:= Over X)
+  ofChosenFiniteProducts (C := Over X)
     ⟨Limits.asEmptyCone (Over.mk (𝟙 X)), Limits.IsTerminal.ofUniqueHom (fun Y ↦ Over.homMk Y.hom)
       fun Y m ↦ Over.OverMorphism.ext (by simpa using m.w)⟩
     (fun Y Z ↦ ⟨ _ , binaryFanIsBinaryProduct Y Z⟩)
