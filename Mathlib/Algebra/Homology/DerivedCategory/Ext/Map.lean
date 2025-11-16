@@ -30,6 +30,24 @@ noncomputable def Functor.mapCochainComplexSingleFunctor (n : ℤ) :
       F ⋙ (CochainComplex.singleFunctor D n) :=
   HomologicalComplex.singleMapHomologicalComplex F (ComplexShape.up ℤ) n
 
+lemma Functor.mapHomologicalComplex_map_exact {ι : Type*} (c : ComplexShape ι)
+    (S : ShortComplex (HomologicalComplex C c)) (hS : S.Exact) :
+    (S.map (F.mapHomologicalComplex c)).Exact := by
+  refine (HomologicalComplex.exact_iff_degreewise_exact _).mpr (fun i ↦ ?_)
+  have : (F.mapHomologicalComplex c) ⋙ (HomologicalComplex.eval D c i) =
+    (HomologicalComplex.eval C c i) ⋙ F := by aesop_cat
+  simp_rw [← ShortComplex.map_comp, this, ShortComplex.map_comp]
+  exact ((HomologicalComplex.exact_iff_degreewise_exact S).mp hS i).map F
+
+instance {ι : Type*} (c : ComplexShape ι) : PreservesFiniteLimits (F.mapHomologicalComplex c) := by
+  have := ((F.mapHomologicalComplex c).exact_tfae.out 1 3).mp
+  exact (this (F.mapHomologicalComplex_map_exact c)).1
+
+instance {ι : Type*} (c : ComplexShape ι) :
+    PreservesFiniteColimits (F.mapHomologicalComplex c) := by
+  have := ((F.mapHomologicalComplex c).exact_tfae.out 1 3).mp
+  exact (this (F.mapHomologicalComplex_map_exact c)).2
+
 section ShiftedHom
 
 open DerivedCategory in
@@ -45,25 +63,7 @@ section
 
 universe t t'
 
-lemma Functor.mapHomologicalComplex_map_exact {ι : Type*} (c : ComplexShape ι)
-    (S : ShortComplex (HomologicalComplex C c)) (hS : S.Exact) :
-    (S.map (F.mapHomologicalComplex c)).Exact := by
-  refine (HomologicalComplex.exact_iff_degreewise_exact _).mpr (fun i ↦ ?_)
-  have : (F.mapHomologicalComplex c) ⋙ (HomologicalComplex.eval D c i) =
-    (HomologicalComplex.eval C c i) ⋙ F := by aesop_cat
-  simp_rw [← ShortComplex.map_comp, this, ShortComplex.map_comp]
-  exact ((HomologicalComplex.exact_iff_degreewise_exact S).mp hS i).map F
-
 variable [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
-
-instance {ι : Type*} (c : ComplexShape ι) : PreservesFiniteLimits (F.mapHomologicalComplex c) := by
-  have := ((F.mapHomologicalComplex c).exact_tfae.out 1 3).mp
-  exact (this (F.mapHomologicalComplex_map_exact c)).1
-
-instance {ι : Type*} (c : ComplexShape ι) :
-    PreservesFiniteColimits (F.mapHomologicalComplex c) := by
-  have := ((F.mapHomologicalComplex c).exact_tfae.out 1 3).mp
-  exact (this (F.mapHomologicalComplex_map_exact c)).2
 
 open DerivedCategory
 
@@ -118,43 +118,6 @@ lemma Functor.mapTriangleOfSES {S : ShortComplex (CochainComplex C ℤ)} (hS : S
     CochainComplex.mappingCone.mapHomologicalComplexXIso,
     CochainComplex.mappingCone.mapHomologicalComplexXIso'_hom,
     mapHomologicalComplex_map_f, CochainComplex.mappingCone.desc_f _ _ _ _ n (n + 1) rfl]
-
-omit [HasDerivedCategory.{t} C] in
-lemma CochainComplex.mappingCone.descShortComplex_hom {S₁ S₂ : ShortComplex (CochainComplex C ℤ)}
-    (f : S₁ ⟶ S₂) : CochainComplex.mappingCone.descShortComplex S₁ ≫ f.τ₃ =
-    CochainComplex.mappingCone.map S₁.f S₂.f f.τ₁ f.τ₂ f.comm₁₂.symm ≫
-    CochainComplex.mappingCone.descShortComplex S₂ := by
-  ext n
-  simp [CochainComplex.mappingCone.map, CochainComplex.mappingCone.descShortComplex]
-  apply CochainComplex.mappingCone.ext_from _ (n + 1) n rfl
-  · simp
-  · have : (S₁.g ≫ f.τ₃).f n = (f.τ₂ ≫ S₂.g).f n := by rw [f.comm₂₃]
-    simpa
-
-omit [HasDerivedCategory.{t} C] in
-lemma CochainComplex.mappingCone.triangle_mor₃_hom {K₁ L₁ K₂ L₂ : CochainComplex C ℤ}
-    (f : K₁ ⟶ L₁) (g : K₂ ⟶ L₂) (a : K₁ ⟶ K₂) (b : L₁ ⟶ L₂) (comm : f ≫ b = a ≫ g) :
-    (CochainComplex.mappingCone.triangle f).mor₃ ≫ (shiftFunctor (CochainComplex C ℤ) 1).map a =
-    CochainComplex.mappingCone.map f g a b comm ≫ (CochainComplex.mappingCone.triangle g).mor₃ := by
-  ext n
-  simp [CochainComplex.mappingCone.map]
-  apply CochainComplex.mappingCone.ext_from _ (n + 1) n rfl
-  · simp
-  · simp
-
-lemma triangleOfSESδ_hom {S₁ S₂ : ShortComplex (CochainComplex C ℤ)} (hS₁ : S₁.ShortExact)
-    (hS₂ : S₂.ShortExact) (f : S₁ ⟶ S₂) : (triangleOfSESδ hS₁) ≫ ((shiftFunctor
-    (DerivedCategory C) (1 : ℤ)).map (Q.map f.τ₁)) = (Q.map f.τ₃) ≫ triangleOfSESδ hS₂ := by
-  simp only [triangleOfSESδ, CochainComplex.mappingCone.triangle_obj₁, Category.assoc,
-    IsIso.inv_comp_eq]
-  rw [← Functor.comp_map, ← (Q.commShiftIso (1 : ℤ)).hom.naturality, ← Category.assoc,
-    ← Category.assoc, ← Category.assoc, ← Category.assoc]
-  change _ ≫ ((Q.commShiftIso 1).app S₂.X₁).hom = _ ≫ ((Q.commShiftIso 1).app S₂.X₁).hom
-  rw [Iso.cancel_iso_hom_right, ← Q.map_comp]
-  let g := CochainComplex.mappingCone.map S₁.f S₂.f f.τ₁ f.τ₂ f.comm₁₂.symm
-  simp only [Functor.comp_obj, Functor.comp_map, CochainComplex.mappingCone.descShortComplex_hom f,
-    Functor.map_comp, Category.assoc, IsIso.hom_inv_id, Category.comp_id]
-  rw [← Q.map_comp, ← Q.map_comp, CochainComplex.mappingCone.triangle_mor₃_hom]
 
 lemma Functor.mapShiftedHom_singleδ {S : ShortComplex C} (hS : S.ShortExact) :
     (F.mapShiftedHom S.X₃ S.X₁ 1) hS.singleδ = (hS.map_of_exact F).singleδ := by
