@@ -80,6 +80,7 @@ theorem minpolyDiv_aeval : (minpolyDiv p q).aeval rfX = 0 := by
   · exact sub_self ((algebraMap K[X] K(X)) p)
   exact (map_ne_zero_iff (algebraMap K[X] K(X)) (IsFractionRing.injective K[X] K(X))).mpr hq
 
+-- Note: this needs f is not a constant, i.e. `max p.natDegree q.natDegree ≠ 0`.
 theorem isAlgebraic_div : IsAlgebraic K⟮f⟯ rfX := by
   use minpolyDiv p q
   refine ⟨?_, minpolyDiv_aeval p q hp hq coprime⟩
@@ -129,10 +130,9 @@ lemma algEquivOfTranscendental_apply_X :
 example : IsIntegrallyClosed K[X] := inferInstance
 
 /- Since K[f] is isomorphic to K[X] and K[X] is integrally closed, K[f] is also integrally closed.
-  This sorry does not to be filled in for this project.
-  (`IsIntegrallyClosed.of_equiv` is now in mathlib but our repo is not so up to date.) -/
+-/
 theorem isIntegrallyClosed_adjoin_div : IsIntegrallyClosed K[f] := by
-  sorry
+  sorry -- use `IsIntegrallyClosed.of_equiv`
 
 /- If `p.natDegree > q.natDegree`, then `minpolyDiv p q` has degree equal to the degree of `p`.
 If moreover `p` is monic, then `minpolyDiv p q` is also monic. For convenience, we shall assume
@@ -159,11 +159,8 @@ shows that it suffices to show it is irreducible over K[f]. -/
 def minpolyDiv' : K[f][X] :=
   p.map (algebraMap ..) - C ⟨f, Algebra.subset_adjoin rfl⟩ * q.map (algebraMap ..)
 
-scoped instance : Algebra K[f] K⟮f⟯ :=
-  (Subalgebra.inclusion <| Algebra.adjoin_le (subset_adjoin _ _)).toAlgebra
-/- This makes K(f) an algebra over K[f]. Relevant instances are found below
-`IntermediateField.algebraAdjoinAdjoin.instAlgebraSubtypeMemSubalgebraAdjoinAdjoin` in mathlib
-but our repo is not so up to date. You can copy the instances over if you need them. -/
+open scoped IntermediateField.algebraAdjoinAdjoin
+#synth Algebra K[f] K⟮f⟯
 
 theorem map_minpolyDiv' : (minpolyDiv' p q).map (algebraMap ..) = minpolyDiv p q := by
   sorry
