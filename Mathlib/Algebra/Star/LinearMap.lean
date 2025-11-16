@@ -22,10 +22,11 @@ is mathematically distinct from the global instance on `E →ₗ[𝕜] E` where
 For that reason, the intrinsic star operation is scoped to `IntrinsicStar`.
 -/
 
-namespace LinearMap
 variable {R E F : Type*} [Semiring R] [InvolutiveStar R]
   [AddCommMonoid E] [Module R E] [StarAddMonoid E] [StarModule R E]
   [AddCommMonoid F] [Module R F] [StarAddMonoid F] [StarModule R F]
+
+namespace LinearMap
 
 /-- The intrinsic star operation on linear maps `E →ₗ F` defined by
 `(star f) x = star (f (star x))`. -/
@@ -114,21 +115,23 @@ theorem intrinsicStar_rTensor (f : E →ₗ[R] F) : star (rTensor G f) = rTensor
 
 end TensorProduct
 
-section IsUnit
+end LinearMap
 
-theorem _root_.IsUnit.intrinsicStar {f : E →ₗ[R] E} (hf : IsUnit f) :
+namespace Module.End
+
+open scoped IntrinsicStar
+
+theorem _root_.IsUnit.intrinsicStar {f : End R E} (hf : IsUnit f) :
     IsUnit (star f) := by
   obtain ⟨u, rfl⟩ := hf
-  refine Units.isUnit <| Units.mk (star (u : E →ₗ[R] E)) (star (u⁻¹ : (E →ₗ[R] E)ˣ)) ?_ ?_
+  refine Units.isUnit <| Units.mk (star (u : End R E)) (star (u⁻¹ : (End R E)ˣ)) ?_ ?_
   all_goals
     ext
     rw [Module.End.mul_apply]
     simp [← Module.End.mul_apply]
 
-theorem isUnit_intrinsicStar_iff {f : E →ₗ[R] E} :
+theorem isUnit_intrinsicStar_iff {f : End R E} :
     IsUnit (star f) ↔ IsUnit f :=
   ⟨fun h ↦ star_star f ▸ h.intrinsicStar, fun h ↦ h.intrinsicStar⟩
 
-end IsUnit
-
-end LinearMap
+end Module.End
