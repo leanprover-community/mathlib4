@@ -59,7 +59,9 @@ open Limits
 variable {X : C} (Y Z : Over X)
 
 /-- The canonical pullback cone constructed from `ChosenPullbacksAlong.isPullback.`
-Note: this limit cone is computable as lifts are constructed from the data contained in the `ChosenPullbackAlong` instance, contrary to `IsPullback.isLimit`, which constructs lifting data from `CategoryTheory.Square.IsPullback` (a `Prop`).
+Note: this limit cone is computable as lifts are constructed from the data contained in the
+`ChosenPullbackAlong` instance, contrary to `IsPullback.isLimit`, which constructs lifting data from
+`CategoryTheory.Square.IsPullback` (a `Prop`).
 -/
 def isLimitPullbackCone [ChosenPullbacksAlong Z.hom] :
     IsLimit (isPullback Y.hom Z.hom |>.cone) :=
@@ -138,11 +140,11 @@ lemma tensorUnit_left : (𝟙_ (Over X)).left = X := rfl
 --@[simp]
 lemma tensorUnit_hom : (𝟙_ (Over X)).hom = 𝟙 X := rfl
 
-lemma fst_eq_fst' {Y Z : Over X} :
+lemma fst_eq_fst' (Y Z : Over X) :
     CartesianMonoidalCategory.fst Y Z = fst' Y.hom Z.hom :=
   rfl
 
-lemma snd_eq_snd' {Y Z : Over X} :
+lemma snd_eq_snd' (Y Z : Over X) :
     CartesianMonoidalCategory.snd Y Z = snd' Y.hom Z.hom :=
   rfl
 
