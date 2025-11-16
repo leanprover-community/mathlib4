@@ -17,7 +17,7 @@ Although we provide a `PartialOrder` instance on `Matroid α` corresponding to t
 we do not use the `M ≤ N` / `N < M` notation directly,
 instead writing `N ≤m M` and `N <m M` for more convenient dot notation.
 
-# Main Declarations
+## Main Declarations
 
 * `Matroid.IsMinor N M`, written `N ≤m M`, means that `N = M ／ C ＼ D` for some
   subset `C` and `D` of `M.E`.

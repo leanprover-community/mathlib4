@@ -20,7 +20,7 @@ such that this property holds for all `I`, `J` and `X`.
 A matroid satisfying this condition has a well-defined cardinality-valued rank function,
 both for itself and all its minors.
 
-# Main Declarations
+## Main Declarations
 
 * `Matroid.InvariantCardinalRank` : a typeclass capturing the idea that a matroid and all its minors
   have a well-behaved cardinal-valued rank function.
@@ -30,7 +30,7 @@ both for itself and all its minors.
   showing that `Finitary` matroids are `InvariantCardinalRank`.
 * `cRk_inter_add_cRk_union_le` states that cardinal rank is submodular.
 
-# Notes
+## Notes
 
 It is not (provably) the case that all matroids are `InvariantCardinalRank`,
 since the equicardinality of bases in general matroids is independent of ZFC
@@ -41,7 +41,7 @@ The `ℕ∞`-valued rank and rank functions `Matroid.eRank` and `Matroid.eRk`,
 which have a more unconditionally strong API,
 are developed in `Mathlib/Data/Matroid/Rank/ENat.lean`.
 
-# Implementation Details
+## Implementation Details
 
 Since the functions `cRank` and `cRk` are defined as suprema,
 independently of the `Matroid.InvariantCardinalRank` typeclass,
@@ -52,7 +52,7 @@ and its value may differ on a set `X` and the closure of `X`.
 We state and prove theorems without `InvariantCardinalRank` whenever possible,
 which sometime makes their proofs longer than they would be with the instance.
 
-# TODO
+## TODO
 
 * Higgs' theorem : if the generalized continuum hypothesis holds,
   then every matroid is `InvariantCardinalRank`.
