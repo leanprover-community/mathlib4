@@ -61,8 +61,7 @@ lemma norm_two_mul_div_one_add_le (hM : M > 0) (hφ : ‖φ‖ < 1) :
   · linarith
   · rw [← norm_one (α := ℂ)]; exact norm_sub_le_norm_add 1 φ
 
-/-- The Schwarz transform z/(2M - z) has norm less than the norm of 2M - z 
-when Re(z) < M. -/
+/-- The Schwarz transform z/(2M - z) has norm less than 1 when Re(z) < M. -/
 lemma norm_lt_norm_two_mul_sub (hM : M > 0) (hz : z.re < M) : ‖z‖ < ‖2 * M - z‖ := by
   apply (sq_lt_sq₀ (norm_nonneg z) (norm_nonneg (2 * M - z))).mp
   rw [Complex.sq_norm, Complex.sq_norm]
@@ -72,7 +71,7 @@ lemma norm_lt_norm_two_mul_sub (hM : M > 0) (hz : z.re < M) : ‖z‖ < ‖2 * M
   calc _ = - (M * M * 4) + z.re^2 + M^2 * 4 := by ring_nf
        _ < - (z.re * M * 4) + z.re^2 + M^2 * 4 := by gcongr
 
-/-- The Schwarz transform maps values with bounded real part into the unit disk. -/
+/-- The Schwarz transform maps values with real part < M into the unit disk. -/
 lemma norm_div_lt_one (hM : M > 0) (hz : z.re < M) : ‖z / (2 * M - z)‖ < 1 := by
   by_cases h : ‖z‖ > 0
   · rw [norm_div, div_lt_one (h.trans (norm_lt_norm_two_mul_sub hM hz))]
