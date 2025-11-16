@@ -8,7 +8,6 @@ import Mathlib.Lean.Message
 import Mathlib.Lean.Expr
 import Mathlib.Lean.Environment
 import Mathlib.Lean.Elab.InfoTree
-import Mathlib.Tactic.Lemma
 
 /-!
 # Linters for Unused Instances in Types
