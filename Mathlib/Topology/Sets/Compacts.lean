@@ -94,6 +94,9 @@ instance [CompactSpace α] : BoundedOrder (Compacts α) :=
 /-- The type of compact sets is inhabited, with default element the empty set. -/
 instance : Inhabited (Compacts α) := ⟨⊥⟩
 
+instance [IsEmpty α] : Unique (Compacts α) where
+  uniq _ := Compacts.ext (Subsingleton.elim _ _)
+
 @[simp]
 theorem coe_sup (s t : Compacts α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t :=
   rfl
@@ -131,6 +134,21 @@ theorem singleton_injective : Function.Injective ({·} : α → Compacts α) :=
 @[simp]
 theorem singleton_inj {x y : α} : ({x} : Compacts α) = {y} ↔ x = y :=
   singleton_injective.eq_iff
+
+instance [Nonempty α] : Nontrivial (Compacts α) := by
+  constructor
+  obtain ⟨x⟩ := ‹Nonempty α›
+  exact ⟨⊥, {x}, ne_of_apply_ne SetLike.coe (Set.empty_ne_singleton x)⟩
+
+@[simp]
+theorem subsingleton_iff : Subsingleton (Compacts α) ↔ IsEmpty α := by
+  refine ⟨fun h => ?_, fun _ => inferInstance⟩
+  contrapose! h
+  infer_instance
+
+@[simp]
+theorem nontrivial_iff : Nontrivial (Compacts α) ↔ Nonempty α := by
+  rw [← not_subsingleton_iff_nontrivial, subsingleton_iff, not_isEmpty_iff]
 
 /-- The image of a compact set under a continuous function. -/
 protected def map (f : α → β) (hf : Continuous f) (K : Compacts α) : Compacts β :=
@@ -304,6 +322,38 @@ theorem singleton_inj {x y : α} : ({x} : NonemptyCompacts α) = {y} ↔ x = y :
 default element the singleton set containing the default element. -/
 instance [Inhabited α] : Inhabited (NonemptyCompacts α) :=
   ⟨{default}⟩
+
+instance [IsEmpty α] : IsEmpty (NonemptyCompacts α) :=
+  ⟨fun K => not_isEmpty_iff.mpr K.nonempty.to_type ‹_›⟩
+
+@[simp]
+theorem isEmpty_iff : IsEmpty (NonemptyCompacts α) ↔ IsEmpty α :=
+  ⟨fun _ => Function.isEmpty ({·} : α → NonemptyCompacts α), fun _ => inferInstance⟩
+
+instance [Nonempty α] : Nonempty (NonemptyCompacts α) :=
+  .map ({·}) ‹_›
+
+@[simp]
+theorem nonempty_iff : Nonempty (NonemptyCompacts α) ↔ Nonempty α := by
+  simp_rw [← not_isEmpty_iff, isEmpty_iff]
+
+instance [Subsingleton α] : Subsingleton (NonemptyCompacts α) := by
+  refine ⟨fun K L => NonemptyCompacts.ext ?_⟩
+  rw [Subsingleton.eq_univ_of_nonempty K.nonempty, Subsingleton.eq_univ_of_nonempty L.nonempty]
+
+@[simp]
+theorem subsingleton_iff : Subsingleton (NonemptyCompacts α) ↔ Subsingleton α :=
+  ⟨fun _ => singleton_injective.subsingleton, fun _ => inferInstance⟩
+
+instance [Unique α] : Unique (NonemptyCompacts α) :=
+  .mk' _
+
+instance [Nontrivial α] : Nontrivial (NonemptyCompacts α) :=
+  singleton_injective.nontrivial
+
+@[simp]
+theorem nontrivial_iff : Nontrivial (NonemptyCompacts α) ↔ Nontrivial α := by
+  simp_rw [← not_subsingleton_iff_nontrivial, subsingleton_iff]
 
 instance toCompactSpace {s : NonemptyCompacts α} : CompactSpace s :=
   isCompact_iff_compactSpace.1 s.isCompact
