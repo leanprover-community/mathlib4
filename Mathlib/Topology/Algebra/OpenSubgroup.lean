@@ -354,7 +354,7 @@ theorem isOpen_of_isOpen_subideal {U I : Ideal R} (h : U ≤ I) (hU : IsOpen (U 
 end Ideal
 
 /-!
-# Open normal subgroups of a topological group
+### Open normal subgroups of a topological group
 
 This section builds the lattice `OpenNormalSubgroup G` of open subgroups in a topological group `G`,
 and its additive version `OpenNormalAddSubgroup`.
@@ -442,7 +442,7 @@ end OpenNormalSubgroup
 end
 
 /-!
-# Existence of an open subgroup in any clopen neighborhood of the neutral element
+### Existence of an open subgroup in any clopen neighborhood of the neutral element
 
 This section proves the lemma `IsTopologicalGroup.exist_openSubgroup_sub_clopen_nhds_of_one`, which
 states that in a compact topological group, for any clopen neighborhood of 1,
