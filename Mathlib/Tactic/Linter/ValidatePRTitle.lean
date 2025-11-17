@@ -68,7 +68,7 @@ Return all error messages for violations found.
 -/
 def validateTitle (title : String) : Array String := Id.run do
   -- The title should be of the form "abbrev: main title" or "abbrev(scope): main title".
-  -- We use the parser above to extract abbrev, scope and main title,
+  -- We use the parser above to extract abbrev and scope ignoring the main title,
   -- but give some custom errors in some easily detectable cases.
   if !title.contains ':' then
     return #["error: the PR title does not contain a colon"]
@@ -83,7 +83,7 @@ def validateTitle (title : String) : Array String := Id.run do
     let knownKinds := ["feat", "chore", "perf", "refactor", "style", "fix", "doc", "test", "ci"]
     let mut isFine := false
     for k in knownKinds do
-      if kind.startsWith k then isFine := true
+      isFine := isFine || kind.startsWith k
     if isFine == false then
       errors := errors.push s!"error: the PR title should be of the form \
         \"kind: main title\" or \"kind(scope): main title\"\n
