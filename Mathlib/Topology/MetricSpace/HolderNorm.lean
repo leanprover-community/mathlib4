@@ -154,7 +154,7 @@ lemma MemHolder.mono' {C s : ℝ≥0} (hf : MemHolder r f) (hs : s ≤ r)
     MemHolder s f := by
   letI := PseudoEMetricSpace.toPseudoMetricSpace
     fun x y ↦ ne_top_of_le_ne_top ENNReal.coe_ne_top (hX x y)
-  have := PseudoEMetricSpace.boundedSpace_toPseudoMetricSpace hX
+  have := Metric.boundedSpace_iff_edist.2 ⟨C, hX⟩
   exact hf.mono hs
 
 /-- If a function is locally `r`-Hölder over a bounded set,
@@ -172,8 +172,7 @@ lemma HolderOnWith.mono_right' {C C' s : ℝ≥0} {t : Set X} (hf : HolderOnWith
   simp_rw [← HolderWith.restrict_iff] at *
   letI := PseudoEMetricSpace.toPseudoMetricSpace
     fun x y : t ↦ ne_top_of_le_ne_top ENNReal.coe_ne_top (ht x.2 y.2)
-  have : BoundedSpace t :=
-    PseudoEMetricSpace.boundedSpace_toPseudoMetricSpace fun x y : t ↦ ht x.2 y.2
+  have : BoundedSpace t := Metric.boundedSpace_iff_edist.2 ⟨C', fun x y ↦ ht x.2 y.2⟩
   exact MemHolder.mono ⟨C, hf⟩ hs
 
 /-- If a function is `r`-Hölder and `t`-Hölder, then it is `s`-Hölder for `r ≤ s ≤ t`. -/
