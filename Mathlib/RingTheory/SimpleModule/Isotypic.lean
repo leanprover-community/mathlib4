@@ -71,7 +71,17 @@ theorem IsIsotypicOfType.of_isSimpleModule [IsSimpleModule R M] : IsIsotypicOfTy
     rw [isSimpleModule_iff_isAtom, isAtom_iff_eq_top] at hS
     exact ⟨.trans (.ofEq _ _ hS) Submodule.topEquiv⟩
 
-variable {R M N S}
+variable {R}
+
+theorem IsIsotypic.of_self [IsSemisimpleRing R] (h : IsIsotypic R R) : IsIsotypic R M :=
+  fun m _ m' _ ↦
+    have ⟨_, ⟨e⟩⟩ := IsSemisimpleRing.exists_linearEquiv_ideal_of_isSimpleModule R m
+    have ⟨_, ⟨e'⟩⟩ := IsSemisimpleRing.exists_linearEquiv_ideal_of_isSimpleModule R m'
+    have := IsSimpleModule.congr e.symm
+    have := IsSimpleModule.congr e'.symm
+    ⟨e'.trans <| (h _ _).some.trans e.symm⟩
+
+variable {M N S}
 
 theorem IsIsotypicOfType.of_linearEquiv_type (h : IsIsotypicOfType R M S) (e : S ≃ₗ[R] N) :
     IsIsotypicOfType R M N := fun m _ ↦ ⟨(h m).some.trans e⟩
