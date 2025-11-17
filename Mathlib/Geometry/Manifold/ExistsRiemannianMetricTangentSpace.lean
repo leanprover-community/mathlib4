@@ -467,13 +467,16 @@ def tangentSpaceEquiv {x : B}
   left_inv _ := rfl
   right_inv _ := rfl
 
-instance {x : B} : FiniteDimensional ℝ (TangentSpace IB x) := sorry
+instance {x : B} : FiniteDimensional ℝ (TangentSpace IB x) := by
+  change FiniteDimensional ℝ EB
+  infer_instance
 
 instance {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
   (hpos : ∀ v, 0 ≤ φ v v)
   (hsymm : ∀ u v, φ u v = φ v u)
   (hdef : ∀ v, φ v v = 0 → v = 0) :
-  FiniteDimensional ℝ (TangentSpaceAuy x φ hpos hsymm hdef) := sorry
+  FiniteDimensional ℝ (TangentSpaceAuy x φ hpos hsymm hdef) := by
+  exact LinearEquiv.finiteDimensional (tangentSpaceEquiv φ hpos hsymm hdef)
 
 -- It's continuous (finite dimensions)
 lemma tangentSpaceEquiv_continuous {x : B} (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
@@ -887,7 +890,7 @@ lemma riemannian_unit_ball_bounded (f : SmoothPartitionOfUnity B IB B)
   have h2 : ∀ (u v : TangentSpace IB b),
     ((g_global_bilin f b).toFun u).toFun v = ((g_global_bilin f b).toFun v).toFun u := by
     exact fun u v ↦ riemannian_metric_symm f b u v
-  exact aux_tvs (g_global_bilin f b) h1 h2
+  exact aux_tvs (g_global_bilin f b) h1 h2 sorry
 
 noncomputable
 def riemannian_metric_exists'
