@@ -101,8 +101,7 @@ lemma isoClosure_iff :
   ⟨fun h ↦ h.of_le_isoClosure (by rfl) (P.le_isoClosure.trans h.le_isCardinalPresentable),
     isoClosure⟩
 
-include h
-
+include h in
 lemma presentable [LocallySmall.{w} C] (X : C) :
     IsPresentable.{w} X := by
   obtain ⟨J, _, _, ⟨hX⟩⟩ := h.exists_colimitsOfShape X
@@ -116,11 +115,13 @@ lemma presentable [LocallySmall.{w} C] (X : C) :
   have := hX.isCardinalPresentable h.le_isCardinalPresentable _ le hκ'
   exact isPresentable_of_isCardinalPresentable _ κ'
 
+include h in
 lemma isStrongGenerator : P.IsStrongGenerator :=
   IsStrongGenerator.mk_of_exists_colimitsOfShape.{w} (fun X ↦ by
     obtain ⟨_, _, _, hX⟩ := h.exists_colimitsOfShape X
     exact ⟨_, _, hX⟩)
 
+include h in
 lemma isPresentable_eq_retractClosure :
     isCardinalPresentable C κ = P.retractClosure := by
   refine le_antisymm (fun X hX ↦ ?_) ?_
@@ -131,6 +132,7 @@ lemma isPresentable_eq_retractClosure :
     exact ⟨_, p.prop_diag_obj j, ⟨{ i := _, r := _, retract := hf}⟩⟩
   · simpa only [ObjectProperty.retractClosure_le_iff] using h.le_isCardinalPresentable
 
+include h in
 lemma essentiallySmall_isPresentable
     [ObjectProperty.EssentiallySmall.{w} P] [LocallySmall.{w} C] :
     ObjectProperty.EssentiallySmall.{w} (isCardinalPresentable C κ) := by
