@@ -231,57 +231,47 @@ lemma Triangle.eqToHom_hom₂ {A B : Triangle C} (h : A = B) :
 lemma Triangle.eqToHom_hom₃ {A B : Triangle C} (h : A = B) :
     (eqToHom h).hom₃ = eqToHom (by subst h; rfl) := by subst h; rfl
 
+namespace Triangle
+
 section Preadditive
 
 variable [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive]
 
+@[simps (attr := grind =)]
 instance : Zero (T₁ ⟶ T₂) where
   zero :=
     { hom₁ := 0
       hom₂ := 0
       hom₃ := 0 }
 
-@[simp] lemma Triangle.zero_hom₁ : (0 : T₁ ⟶ T₂).hom₁ = 0 := rfl
-@[simp] lemma Triangle.zero_hom₂ : (0 : T₁ ⟶ T₂).hom₂ = 0 := rfl
-@[simp] lemma Triangle.zero_hom₃ : (0 : T₁ ⟶ T₂).hom₃ = 0 := rfl
-
+@[simps (attr := grind =)]
 instance : Add (T₁ ⟶ T₂) where
   add f g :=
     { hom₁ := f.hom₁ + g.hom₁
       hom₂ := f.hom₂ + g.hom₂
       hom₃ := f.hom₃ + g.hom₃ }
 
-@[simp] lemma Triangle.add_hom₁ (f g : T₁ ⟶ T₂) : (f + g).hom₁ = f.hom₁ + g.hom₁ := rfl
-@[simp] lemma Triangle.add_hom₂ (f g : T₁ ⟶ T₂) : (f + g).hom₂ = f.hom₂ + g.hom₂ := rfl
-@[simp] lemma Triangle.add_hom₃ (f g : T₁ ⟶ T₂) : (f + g).hom₃ = f.hom₃ + g.hom₃ := rfl
-
+@[simps (attr := grind =)]
 instance : Neg (T₁ ⟶ T₂) where
   neg f :=
     { hom₁ := -f.hom₁
       hom₂ := -f.hom₂
       hom₃ := -f.hom₃ }
 
-@[simp] lemma Triangle.neg_hom₁ (f : T₁ ⟶ T₂) : (-f).hom₁ = -f.hom₁ := rfl
-@[simp] lemma Triangle.neg_hom₂ (f : T₁ ⟶ T₂) : (-f).hom₂ = -f.hom₂ := rfl
-@[simp] lemma Triangle.neg_hom₃ (f : T₁ ⟶ T₂) : (-f).hom₃ = -f.hom₃ := rfl
-
+@[simps (attr := grind =)]
 instance : Sub (T₁ ⟶ T₂) where
   sub f g :=
     { hom₁ := f.hom₁ - g.hom₁
       hom₂ := f.hom₂ - g.hom₂
       hom₃ := f.hom₃ - g.hom₃ }
 
-@[simp] lemma Triangle.sub_hom₁ (f g : T₁ ⟶ T₂) : (f - g).hom₁ = f.hom₁ - g.hom₁ := rfl
-@[simp] lemma Triangle.sub_hom₂ (f g : T₁ ⟶ T₂) : (f - g).hom₂ = f.hom₂ - g.hom₂ := rfl
-@[simp] lemma Triangle.sub_hom₃ (f g : T₁ ⟶ T₂) : (f - g).hom₃ = f.hom₃ - g.hom₃ := rfl
-
 section
 
 variable {R : Type*} [Semiring R] [Linear R C]
   [∀ (n : ℤ), Functor.Linear R (shiftFunctor C n)]
 
-instance :
-    SMul R (T₁ ⟶ T₂) where
+@[simps (attr := grind =)]
+instance : SMul R (T₁ ⟶ T₂) where
   smul n f :=
     { hom₁ := n • f.hom₁
       hom₂ := n • f.hom₂
@@ -289,13 +279,9 @@ instance :
 
 omit [∀ (n : ℤ), (shiftFunctor C n).Additive]
 
-@[simp] lemma Triangle.smul_hom₁ (n : R) (f : T₁ ⟶ T₂) : (n • f).hom₁ = n • f.hom₁ := rfl
-@[simp] lemma Triangle.smul_hom₂ (n : R) (f : T₁ ⟶ T₂) : (n • f).hom₂ = n • f.hom₂ := rfl
-@[simp] lemma Triangle.smul_hom₃ (n : R) (f : T₁ ⟶ T₂) : (n • f).hom₃ = n • f.hom₃ := rfl
-
 end
 
-instance instAddCommGroupTriangleMorphism : AddCommGroup (T₁ ⟶ T₂) where
+instance : AddCommGroup (T₁ ⟶ T₂) where
   zero_add f := by ext <;> apply zero_add
   add_assoc f g h := by ext <;> apply add_assoc
   add_zero f := by ext <;> apply add_zero
@@ -310,7 +296,7 @@ instance instAddCommGroupTriangleMorphism : AddCommGroup (T₁ ⟶ T₂) where
   zsmul_succ' n f := by ext <;> apply SubNegMonoid.zsmul_succ'
   zsmul_neg' n f := by ext <;> apply SubNegMonoid.zsmul_neg'
 
-instance instPreadditiveTriangle : Preadditive (Triangle C) where
+instance : Preadditive (Triangle C) where
 
 end Preadditive
 
@@ -332,6 +318,8 @@ instance : Module R (T₁ ⟶ T₂) where
 instance : Linear R (Triangle C) where
 
 end Linear
+
+end Triangle
 
 /-- The obvious triangle `X₁ ⟶ X₁ ⊞ X₂ ⟶ X₂ ⟶ X₁⟦1⟧`. -/
 @[simps!]
