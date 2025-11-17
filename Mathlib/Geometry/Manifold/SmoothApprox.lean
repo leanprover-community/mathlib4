@@ -101,10 +101,10 @@ theorem Continuous.exists_contMDiff_approx_and_eqOn (n : ℕ∞)
       · simpa [hx'] using this.and (f_cont.continuousAt.eventually_ne hx')
     exact ⟨_, this, (fun _ ↦ f x), contMDiffOn_const, fun y hy ↦ ⟨hy.1.2, by simp [hy.1.1], hy.2⟩⟩
 
-theorem Continuous.exists_contMDiff_approx
+theorem Continuous.exists_contMDiff_approx (n : ℕ∞)
     (f_cont : Continuous f) (ε_cont : Continuous ε) (ε_pos : ∀ x, 0 < ε x) :
-    ∃ g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯, (∀ x, dist (g x) (f x) < ε x) ∧ support g ⊆ support f := by
-  obtain ⟨g, g_approx, -, g_supp⟩ := f_cont.exists_contMDiff_approx_and_eqOn I ⊤ ε_cont ε_pos
+    ∃ g : C^n⟮I, M; 𝓘(ℝ, F), F⟯, (∀ x, dist (g x) (f x) < ε x) ∧ support g ⊆ support f := by
+  obtain ⟨g, g_approx, -, g_supp⟩ := f_cont.exists_contMDiff_approx_and_eqOn I n ε_cont ε_pos
     isClosed_empty mem_nhdsSet_empty contMDiffOn_empty
   exact ⟨g, g_approx, g_supp⟩
 
@@ -127,10 +127,10 @@ theorem Continuous.exists_contDiff_approx_and_eqOn (n : ℕ∞)
     ε_cont ε_pos hS hU hfU.contMDiffOn
   exact ⟨g, g.contMDiff.contDiff, g_approx, g_eqOn, g_supp⟩
 
-theorem Continuous.exists_contDiff_approx
+theorem Continuous.exists_contDiff_approx (n : ℕ∞)
     (f_cont : Continuous f) (ε_cont : Continuous ε) (ε_pos : ∀ x, 0 < ε x) :
-    ∃ g : E → F, ContDiff ℝ ∞ g ∧ (∀ x, dist (g x) (f x) < ε x) ∧ support g ⊆ support f := by
-  obtain ⟨g, g_contDiff, g_approx, -, g_supp⟩ := f_cont.exists_contDiff_approx_and_eqOn ⊤
+    ∃ g : E → F, ContDiff ℝ n g ∧ (∀ x, dist (g x) (f x) < ε x) ∧ support g ⊆ support f := by
+  obtain ⟨g, g_contDiff, g_approx, -, g_supp⟩ := f_cont.exists_contDiff_approx_and_eqOn n
     ε_cont ε_pos isClosed_empty mem_nhdsSet_empty contDiffOn_empty
   exact ⟨g, g_contDiff, g_approx, g_supp⟩
 
