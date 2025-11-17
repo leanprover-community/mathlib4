@@ -335,7 +335,7 @@ theorem hittingBtwn_eq_hittingBtwn_of_exists {m₁ m₂ : ι} (h : m₁ ≤ m₂
 @[deprecated (since := "2025-10-25")] alias hitting_eq_hitting_of_exists :=
   hittingBtwn_eq_hittingBtwn_of_exists
 
-/-- `hittingBtwn` is antitone with respect to the set. -/
+/-- `hittingBtwn` is nonincreasing with respect to the set. -/
 lemma hittingBtwn_anti (u : ι → Ω → β) (n m : ι) : Antitone (hittingBtwn u · n m) := by
   intro E F hEF ω
   simp only [hittingBtwn_def]
