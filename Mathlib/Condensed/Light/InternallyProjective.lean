@@ -68,11 +68,10 @@ lemma ihom_map_val_app (A B P : LightCondMod.{u} R) (S : LightProfinite) (e : A 
     (x : (P ⟶[LightCondMod R] A).val.obj ⟨S⟩) :
     (((ihom P).map e).val.app ⟨S⟩) x = (ihomPoints R P B S).symm (ihomPoints R P A S x ≫ e) := by
   apply (ihomPoints R P B S).injective
-  simp only [ihomPoints_apply, Equiv.apply_symm_apply]
-  rw [← MonoidalClosed.uncurry_natural_right, ← Adjunction.homEquiv_naturality_right_symm]
+  simp only [ihomPoints_apply, Equiv.apply_symm_apply, ← MonoidalClosed.uncurry_natural_right,
+    ← Adjunction.homEquiv_naturality_right_symm]
   congr
-  ext
-  simp
+  cat_disch
 
 lemma ihomPoints_symm_comp (B P : LightCondMod.{u} R) (S S' : LightProfinite) (π : S ⟶ S')
     (f : P ⊗ (free R).obj S'.toCondensed ⟶ B) :
