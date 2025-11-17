@@ -210,7 +210,7 @@ protected lemma MeasurableSet.imp {p q : α → Prop}
     MeasurableSet {x | p x → q x} := by
   have h_eq : {x | p x → q x} = {x | p x}ᶜ ∪ {x | q x} := by ext; grind
   rw [h_eq]
-  exact MeasurableSet.union hs.compl ht
+  exact hs.compl.union ht
 
 protected lemma MeasurableSet.iff {p q : α → Prop}
     (hs : MeasurableSet {x | p x}) (ht : MeasurableSet {x | q x}) :
