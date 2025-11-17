@@ -101,10 +101,11 @@ end LiftCommShift
 /-- When `r : HomRel C` is compatible with the shift by an additive monoid, and
 `F : C ⥤ D` is a functor which commutes with the shift and is compatible with `r`, then
 the induced functor `Quotient.lift r F _ : Quotient r ⥤ D` also commutes with the shift. -/
+@[simps -isSimp commShiftIso]
 noncomputable instance liftCommShift :
     (Quotient.lift r F hF).CommShift A where
-  iso := LiftCommShift.iso F r hF
-  zero := by
+  commShiftIso := LiftCommShift.iso F r hF
+  commShiftIso_zero := by
     ext1
     apply natTrans_ext
     ext X
@@ -115,7 +116,7 @@ noncomputable instance liftCommShift :
       lift_map_functor_map, ← F.map_comp_assoc, Iso.inv_hom_id_app]
     dsimp [lift_obj_functor_obj]
     rw [F.map_id, id_comp]
-  add a b := by
+  commShiftIso_add a b := by
     ext1
     apply natTrans_ext
     ext X
@@ -139,10 +140,9 @@ instance liftCommShift_compatibility :
   shift_comm a := by
     ext X
     dsimp
-    erw [Functor.map_id, id_comp, comp_id]
-    rw [Functor.commShiftIso_comp_hom_app]
-    erw [LiftCommShift.iso_hom_app]
-    rw [← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.map_id, id_comp]
+    rw [Functor.commShiftIso_comp_hom_app, liftCommShift_commShiftIso,
+      LiftCommShift.iso_hom_app, ← Functor.map_comp_assoc, Iso.hom_inv_id_app]
+    simp [lift, Quotient.functor]
 
 end Quotient
 

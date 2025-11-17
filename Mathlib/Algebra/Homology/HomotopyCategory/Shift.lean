@@ -231,14 +231,14 @@ def mapCochainComplexShiftIso (n : ℤ) :
 
 instance commShiftMapCochainComplex :
     (F.mapHomologicalComplex (ComplexShape.up ℤ)).CommShift ℤ where
-  iso := F.mapCochainComplexShiftIso
-  zero := by
+  commShiftIso := F.mapCochainComplexShiftIso
+  commShiftIso_zero := by
     ext
     rw [CommShift.isoZero_hom_app]
     dsimp
     simp only [CochainComplex.shiftFunctorZero_inv_app_f, CochainComplex.shiftFunctorZero_hom_app_f,
        HomologicalComplex.XIsoOfEq, eqToIso, eqToHom_map, eqToHom_trans, eqToHom_refl]
-  add := fun a b => by
+  commShiftIso_add := fun a b => by
     ext
     rw [CommShift.isoAdd_hom_app]
     dsimp
