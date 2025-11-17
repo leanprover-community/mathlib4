@@ -818,10 +818,10 @@ variable {ι : Type*} {β : ι → Type*}
   map_mul' _ _ := by ext; simp [Matrix.mul_apply]
 
 /-- `piEquiv` as an `AlgEquiv`. -/
-@[simps!] def piAlgEquiv (R) [CommSemiring R] [∀ i, Semiring (β i)] [∀ i, Algebra R (β i)]
-    [Fintype n] [DecidableEq n] : Matrix n n (Π i, β i) ≃ₐ[R] Π i, Matrix n n (β i) where
+@[simps!] def piAlgEquiv (R) [∀ i, AddCommMonoid (β i)] [∀ i, Mul (β i)] [∀ i, SMul R (β i)]
+    [Fintype n] : Matrix n n (Π i, β i) ≃ₐ[R] Π i, Matrix n n (β i) where
   __ := piRingEquiv
-  commutes' := (AlgHom.mk' (piRingEquiv (β := β) (n := n)).toRingHom fun _ _ ↦ rfl).commutes
+  map_smul' _ _ := rfl
 
 end Pi
 
