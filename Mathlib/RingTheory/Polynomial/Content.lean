@@ -50,7 +50,7 @@ theorem isPrimitive_one : IsPrimitive (1 : R[X]) := fun _ h =>
 
 theorem Monic.isPrimitive {p : R[X]} (hp : p.Monic) : p.IsPrimitive := by
   rintro r ⟨q, h⟩
-  exact isUnit_of_mul_eq_one r (q.coeff p.natDegree) (by rwa [← coeff_C_mul, ← h])
+  exact .of_mul_eq_one (q.coeff p.natDegree) (by rwa [← coeff_C_mul, ← h])
 
 theorem IsPrimitive.ne_zero [Nontrivial R] {p : R[X]} (hp : p.IsPrimitive) : p ≠ 0 := by
   rintro rfl
