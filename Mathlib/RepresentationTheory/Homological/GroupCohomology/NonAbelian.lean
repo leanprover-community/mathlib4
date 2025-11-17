@@ -190,8 +190,7 @@ theorem map_exact (hf : Function.Injective f) (hfg : Function.Exact f g)
     refine ⟨Quotient.mk _ (⟨a, fun g h ↦ hf ?_⟩ : Z1 G A), Quotient.eq.mpr ?_⟩
     · simp only [map_add, map_smul]
       exact b.mem_of_cohomologous (f ∘ a) (.symm ⟨x, ha⟩) g h
-    · simp only [Z1.setoid_r]
-      exact .symm ⟨x, by simpa using ha⟩
+    · exact .symm ⟨x, by simpa using ha⟩
   · rw [← map_comp_apply, ((g.comp f).ext (g := 0) hfg.apply_apply_eq_zero), zero_map_apply]
 
 end H1
@@ -261,7 +260,7 @@ noncomputable def δ₁₂_aux (b : G → B) (c : Z1 G C) (hbc : ∀ (x : G), c 
     ⟨(b st.1) + st.1 • (b st.2) - b (st.1 * st.2), (hfg _).mp (by simp [← hbc, c.prop])⟩, ?_⟩
   refine funext fun ⟨x, y, z⟩ ↦ hf ?_
   dsimp only [d₂₃, ModuleCat.hom_ofHom, AddHom.coe_coe, LinearMap.coe_mk, AddHom.coe_mk]
-  conv in ((A.ρ _) _) => change x • _
+  conv in ((A.ρ x) _) => change x • _
   rw [sub_add_eq_add_sub]
   change _ = f 0
   have : (x • b y + x • y • b z + -(x • b (y * z))) ∈ AddSubgroup.center B :=
@@ -327,7 +326,7 @@ variable {G : Type u} [Group G] {k : Type u} [CommRing k] (A : Rep k G)
 
 open CategoryTheory
 
-/-- `H0 G A` and `A.ρ.invariants` are in fact defEq. -/
+/-- `H0 G A` and `A.ρ.invariants` are defEq. -/
 noncomputable def H0Iso : groupCohomology.H0 A ≃+ H0 G A :=
   (groupCohomology.H0Iso A).toLinearEquiv.toAddEquiv
 
