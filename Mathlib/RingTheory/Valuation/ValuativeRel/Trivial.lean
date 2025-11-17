@@ -32,7 +32,7 @@ open WithZero
 The domain condition is necessary so that the relation is closed when multiplying.
 -/
 def trivialRel : ValuativeRel R where
-  rel x y := if y = 0 then x = 0 else True
+  Rel x y := if y = 0 then x = 0 else True
   rel_total _ _ := by split_ifs <;> simp_all
   rel_trans _ _ := by split_ifs; simp_all
   rel_add _ _ := by split_ifs; simp_all
