@@ -152,13 +152,6 @@ namespace Sheaf
 
 variable (J A)
 
-lemma isMonoidal_transport {D : Type u₂} [Category.{v₂} D] (K : GrothendieckTopology D)
-    (G : D ⥤ C) [G.IsCoverDense J] [G.Full] [G.IsContinuous K J]
-    [(G.sheafPushforwardContinuous A K J).EssSurj] [(K.W (A := A)).IsMonoidal] :
-    (J.W (A := A)).IsMonoidal := by
-  rw [← J.W_inverseImage_whiskeringLeft K G]
-  infer_instance
-
 /-- The monoidal category structure on `Sheaf J A` that is obtained
 by localization of the monoidal category structure on the category
 of presheaves. -/
