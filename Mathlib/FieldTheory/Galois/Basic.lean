@@ -355,8 +355,8 @@ def intermediateFieldEquivSubgroup [FiniteDimensional F E] [IsGalois F E] :
 section
 variable [FiniteDimensional F E] [IsGalois F E]
 
-lemma ofDual_intermediateFieldEquivSubgroup_apply (a : IntermediateField F E) :
-    (intermediateFieldEquivSubgroup a).ofDual = a.fixingSubgroup := rfl
+lemma ofDual_intermediateFieldEquivSubgroup_apply (K : IntermediateField F E) :
+    (intermediateFieldEquivSubgroup K).ofDual = K.fixingSubgroup := rfl
 
 @[simp] lemma intermediateFieldEquivSubgroup_symm_apply (H : (Subgroup Gal(E/F))ᵒᵈ) :
     intermediateFieldEquivSubgroup.symm H = fixedField H.ofDual := rfl
