@@ -102,6 +102,7 @@ theorem isAlgebraic_adjoin_div : Algebra.IsAlgebraic K⟮f⟯ K(X) := by
 * Now use `IntermediateField.equivOfEq` and `IntermediateField.topEquiv` to construct an `AlgHom`
   between `K⟮f⟯⟮rfX⟯` and K(X), and use `AlgEquiv.isAlgebraic` to conclude. -/
 
+
 theorem finrank_eq_natDegree_minpoly :
     Module.finrank K⟮f⟯ K(X) = (minpoly K⟮f⟯ rfX).natDegree :=
   sorry -- use `IntermediateField.adjoin.finrank`
@@ -110,8 +111,11 @@ theorem transcendental_polynomial : Algebra.Transcendental K K(X) := by
   sorry -- show that `rfX` is a transcendental element
 
 theorem transcendental_adjoin_div : Algebra.Transcendental K K⟮f⟯ := by
-  sorry -- argue by contradiction,
-  -- using `transcendental_polynomial`, `isAlgebraic_adjoin_div` and `Algebra.IsAlgebraic.trans`
+  have htrans := transcendental_polynomial p q hp hq coprime
+  have := isAlgebraic_adjoin_div p q hp hq coprime
+  rw [Algebra.transcendental_iff_not_isAlgebraic] at ⊢ htrans
+  intro H
+  exact htrans (Algebra.IsAlgebraic.trans K K⟮f⟯ K(X))
 
 theorem transcendental_div : Transcendental K f := by
   sorry -- argue by contradiction using `IntermediateField.isAlgebraic_adjoin`
