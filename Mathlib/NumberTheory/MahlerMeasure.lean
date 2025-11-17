@@ -11,8 +11,7 @@ import Mathlib.Data.Pi.Interval
 /-!
 # Mahler measure of integer polynomials
 
-In this file we define the Mahler measure of a polynomial over `ℤ[X]` and prove some basic
-properties.
+The main purpose of this file is to prove Northcott's Theorem for the Mahler measure.
 
 ## Main results
 
@@ -24,10 +23,19 @@ namespace Polynomial
 
 open Int
 
+private lemma degree_map_int_castRingHom (p : ℤ[X]) :
+    (map (castRingHom ℂ) p).natDegree = p.natDegree := by
+  rcases eq_or_ne p 0 with rfl | hp
+  · simp
+  · simp [hp]
+
 lemma one_le_mahlerMeasure_of_ne_zero {p : ℤ[X]} (hp : p ≠ 0) :
-    1 ≤ (p.map (Int.castRingHom ℂ)).mahlerMeasure := by
-  --add general estimate
-  sorry
+    1 ≤ (p.map (castRingHom ℂ)).mahlerMeasure := by
+  apply le_trans _ (p.map (castRingHom ℂ)).leading_coeff_le_mahlerMeasure
+  rw [leadingCoeff, p.degree_map_int_castRingHom]
+  simp only [coeff_map, coeff_natDegree, eq_intCast, Complex.norm_intCast]
+  norm_cast
+  exact one_le_abs <| leadingCoeff_ne_zero.mpr hp
 
 section Northcott
 
@@ -93,11 +101,7 @@ theorem card_mahlerMeasure_le_prod (n : ℕ) (B : ℝ≥0) :
     apply le_trans <| (p.map (Int.castRingHom ℂ)).norm_coeff_le_binom_mahlerMeasure d
     gcongr
     · exact mahlerMeasure_nonneg (map (Int.castRingHom ℂ) p)
-    · have h_deg : (map (Int.castRingHom ℂ) p).natDegree = p.natDegree := by
-        rcases eq_or_ne p 0 with rfl | hp
-        · simp
-        · simp [hp]
-      rw [h_deg]
+    · rw [p.degree_map_int_castRingHom]
       by_cases hd : d ≤ p.natDegree
       · exact choose_le_choose d hp
       · grind [choose_ne_zero_iff, choose_zero_right]
