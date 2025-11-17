@@ -476,6 +476,9 @@ This is the highest factorial I can `#eval` using the naive implementation witho
 #eval 9718 ! |>.log2
 ```
 
+Similarly, evaluation of `ascFactorial 100 15000` fails with the naive implementation
+but works with the binary recursion.
+
 We could implement a tail-recursive version (or just use `Nat.fold`),
 but instead let's jump straight to binary splitting.
 -/
