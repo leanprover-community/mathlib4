@@ -3,10 +3,7 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Devon Tuma
 -/
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.RingTheory.Coprime.Basic
-import Mathlib.Tactic.AdaptationNote
+import Mathlib.Algebra.Polynomial.Factors
 
 /-!
 # Scaling the roots of a polynomial
@@ -78,8 +75,13 @@ theorem degree_scaleRoots (p : R[X]) {s : R} : degree (scaleRoots p s) = degree 
 theorem natDegree_scaleRoots (p : R[X]) (s : R) : natDegree (scaleRoots p s) = natDegree p := by
   simp only [natDegree, degree_scaleRoots]
 
+@[simp]
+lemma leadingCoeff_scaleRoots (p : R[X]) (r : R) :
+    (p.scaleRoots r).leadingCoeff = p.leadingCoeff := by
+  rw [leadingCoeff, natDegree_scaleRoots, coeff_scaleRoots_natDegree]
+
 theorem monic_scaleRoots_iff {p : R[X]} (s : R) : Monic (scaleRoots p s) ↔ Monic p := by
-  simp only [Monic, leadingCoeff, natDegree_scaleRoots, coeff_scaleRoots_natDegree]
+  simp only [Monic, leadingCoeff_scaleRoots]
 
 theorem map_scaleRoots (p : R[X]) (x : R) (f : R →+* S) (h : f p.leadingCoeff ≠ 0) :
     (p.scaleRoots x).map f = (p.map f).scaleRoots (f x) := by
@@ -109,6 +111,11 @@ lemma scaleRoots_zero (p : R[X]) :
 @[simp]
 lemma one_scaleRoots (r : R) :
     (1 : R[X]).scaleRoots r = 1 := by ext; simp
+
+@[simp]
+lemma X_add_C_scaleRoots (r s : R) : (X + C r).scaleRoots s = (X + C (r * s)) := by
+  nontriviality R
+  ext (_|_|i) <;> simp
 
 end Semiring
 
@@ -142,6 +149,10 @@ theorem scaleRoots_eval₂_mul {p : S[X]} (f : S →+* R) (r : R) (s : S) :
 
 theorem scaleRoots_eval₂_eq_zero {p : S[X]} (f : S →+* R) {r : R} {s : S} (hr : eval₂ f r p = 0) :
     eval₂ f (f s * r) (scaleRoots p s) = 0 := by rw [scaleRoots_eval₂_mul, hr, mul_zero]
+
+lemma scaleRoots_eval_mul (p : R[X]) (r s : R) :
+    eval (s * r) (p.scaleRoots s) = s ^ p.natDegree * eval r p :=
+  scaleRoots_eval₂_mul _ _ _
 
 theorem scaleRoots_aeval_eq_zero [Algebra R A] {p : R[X]} {a : A} {r : R} (ha : aeval a p = 0) :
     aeval (algebraMap R A r * a) (scaleRoots p r) = 0 := by
@@ -206,6 +217,24 @@ lemma mul_scaleRoots_of_noZeroDivisors (p q : R[X]) (r : R) [NoZeroDivisors R] :
   apply mul_scaleRoots'
   simp only [ne_eq, mul_eq_zero, leadingCoeff_eq_zero, hp, hq, or_self, not_false_eq_true]
 
+lemma pow_scaleRoots' (p : R[X]) (r : R) (n : ℕ)
+    (hp : p.leadingCoeff ^ n ≠ 0) :
+    (p ^ n).scaleRoots r = p.scaleRoots r ^ n := by
+  induction n with
+  | zero => simp
+  | succ n IH =>
+    rw [pow_succ, mul_scaleRoots', IH, pow_succ]
+    · refine mt (by simp +contextual [pow_succ]) hp
+    · rwa [leadingCoeff_pow' (mt (by simp +contextual [pow_succ]) hp), ← pow_succ]
+
+lemma pow_scaleRoots_of_isReduced [IsReduced R] (p : R[X]) (r : R) (n : ℕ) :
+    (p ^ n).scaleRoots r = p.scaleRoots r ^ n := by
+  by_cases hp : p = 0
+  · simp [hp, zero_pow_eq, apply_ite (scaleRoots · r)]
+  by_cases hn : n = 0
+  · simp [hn]
+  exact pow_scaleRoots' _ _ _ (by simp_all)
+
 lemma add_scaleRoots_of_natDegree_eq (p q : R[X]) (r : R) (h : natDegree p = natDegree q) :
     r ^ (natDegree p - natDegree (p + q)) • (p + q).scaleRoots r =
       p.scaleRoots r + q.scaleRoots r := by
@@ -252,8 +281,73 @@ lemma isCoprime_scaleRoots (p q : R[X]) (r : R) (hr : IsUnit r) (h : IsCoprime p
   simp only [s, smul_mul_assoc, ← mul_scaleRoots, smul_smul, mul_assoc,
     ← mul_pow, IsUnit.val_inv_mul, one_pow, mul_one, ← smul_add, one_smul, e, natDegree_one,
     one_scaleRoots, ← add_scaleRoots_of_natDegree_eq _ _ _ this, tsub_zero]
+
 alias _root_.IsCoprime.scaleRoots := isCoprime_scaleRoots
 
+lemma Factors.scaleRoots {p : R[X]} (hp : p.Factors) (r : R) :
+    (p.scaleRoots r).Factors := by
+  cases subsingleton_or_nontrivial R
+  · rwa [Subsingleton.elim (p.scaleRoots r) p]
+  obtain rfl | hp0 := eq_or_ne p 0
+  · simp
+  obtain ⟨m, hm⟩ := factors_iff_exists_multiset'.mp hp
+  rw [hm, mul_scaleRoots', scaleRoots_C]
+  · clear hm
+    refine .mul (.C _) ?_
+    induction m using Multiset.induction_on with
+    | empty => simp
+    | cons a s IH =>
+      rw [Multiset.map_cons, Multiset.prod_cons, mul_scaleRoots', X_add_C_scaleRoots]
+      · exact .mul (.X_add_C _) IH
+      · simp only [leadingCoeff_X_add_C, one_mul, ne_eq, leadingCoeff_eq_zero]
+        exact (monic_multiset_prod_of_monic _ _ fun a _ ↦ monic_X_add_C _).ne_zero
+  · rw [(monic_multiset_prod_of_monic _ _ fun a _ ↦ monic_X_add_C _).leadingCoeff]
+    simpa
+
 end CommSemiring
+
+section Ring
+
+@[simp]
+lemma X_sub_C_scaleRoots [Ring R] (r s : R) :
+    (X - C r).scaleRoots s = (X - C (r * s)) := by
+  nontriviality R
+  ext (_|_|i) <;> simp
+
+end Ring
+
+section CommRing
+
+variable [CommRing R]
+
+lemma rootMultiplicity_scaleRoots (p : R[X]) {r a : R} (hr : IsLeftRegular r) :
+    rootMultiplicity (r * a) (p.scaleRoots r) = rootMultiplicity a p := by
+  cases subsingleton_or_nontrivial R
+  · simp [Subsingleton.elim p 0]
+  obtain rfl | hp := eq_or_ne p 0
+  · simp
+  obtain ⟨q, e, hq⟩ := exists_eq_pow_rootMultiplicity_mul_and_not_dvd p hp a
+  have hq0 : q ≠ 0 := by contrapose! hp; simp_all
+  conv_lhs => rw [e]
+  rw [mul_scaleRoots', pow_scaleRoots', X_sub_C_scaleRoots, mul_comm, mul_comm _ (q.scaleRoots r),
+    rootMultiplicity_mul_X_sub_C_pow (q.scaleRoots_ne_zero hq0 _)]
+  · rw [dvd_iff_isRoot, IsRoot.def] at hq
+    simp only [Nat.add_eq_right, rootMultiplicity_eq_zero_iff, IsRoot.def]
+    rw [mul_comm, scaleRoots_eval_mul, (hr.pow q.natDegree).mul_left_eq_zero_iff]
+    tauto
+  · simp
+  · rwa [leadingCoeff_pow' (by simp), leadingCoeff_X_sub_C,
+      one_pow, one_mul, ne_eq, leadingCoeff_eq_zero]
+
+lemma roots_scaleRoots [IsDomain R] (p : R[X]) {r : R} (hr : IsUnit r) :
+    (p.scaleRoots r).roots = p.roots.map (r * ·) := by
+  classical
+  ext a
+  have : Function.Bijective (α := R) (r * ·) := IsUnit.isUnit_iff_mulLeft_bijective.mp hr
+  obtain ⟨a, rfl⟩ := this.2 a
+  simp [Multiset.count_map_eq_count' _ p.roots this.1 a,
+    rootMultiplicity_scaleRoots _ hr.isRegular.left]
+
+end CommRing
 
 end Polynomial
