@@ -302,6 +302,10 @@ def smallEquiv (hf : IsImmersionAtOfComplement F I J n f x) : F ≃ₗ[𝕜] hf.
   letI φ : F ≃ₗ[𝕜] A' := LinearEquiv.ofInjective (LinearMap.prod 0 .id) (by intro x y hxy; simp_all)
   exact φ.trans <| LinearEquiv.ofInjective _ (by simp_all [A'])
 
+-- TODO: upgrade smallEquiv to a continuous linear equiv!
+def smallEquivScifi (hf : IsImmersionAtOfComplement F I J n f x) : F ≃L[𝕜] hf.smallComplement :=
+  sorry
+
 -- This statement is weaker than `smallEquiv`, but is it still useful?
 lemma small (hf : IsImmersionAtOfComplement F I J n f x) : Small.{u} F := by
   use hf.smallComplement
@@ -337,14 +341,8 @@ lemma mk_of_charts (equiv : (E × F) ≃L[𝕜] E'') (domChart : OpenPartialHome
   rw [IsImmersionAt_def]
   have aux : IsImmersionAtOfComplement F I J n f x := by
     apply IsImmersionAtOfComplement.mk_of_charts <;> assumption
-  obtain ⟨F', ⟨equivF'⟩⟩ := aux.small
-  use F', by sorry, by sorry -- TODO: need to upgrade aux.small above!
-  -- TODO: need to fix this proof if we want F to be in any universe!
-  sorry
-  -- let F' : Type u := sorry
-  -- let eq : F ≃L[𝕜] F' := sorry
-  -- use F, by infer_instance, by infer_instance
-  -- apply IsImmersionAtOfComplement.mk_of_charts <;> assumption
+  use aux.smallComplement, by infer_instance, by infer_instance
+  rwa [← IsImmersionAtOfComplement.congr_F aux.smallEquivScifi]
 
 /-- `f : M → N` is a `C^n` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
 around `x` and `f x`, respectively such that in these charts, `f` looks like `u ↦ (u, 0)`.
@@ -358,11 +356,10 @@ lemma mk_of_continuousAt {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : 
     (hwrittenInExtend : EqOn ((codChart.extend J) ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
       (domChart.extend I).target) : IsImmersionAt I J n f x := by
   rw [IsImmersionAt_def]
-  -- TODO: need to fix this proof if we want F to be in any universe!
-  sorry --use F, by infer_instance, by infer_instance
-  --apply IsImmersionAtOfComplement.mk_of_continuousAt <;> assumption
-
-#exit
+  have aux : IsImmersionAtOfComplement F I J n f x := by
+    apply IsImmersionAtOfComplement.mk_of_continuousAt <;> assumption
+  use aux.smallComplement, by infer_instance, by infer_instance
+  rwa [← IsImmersionAtOfComplement.congr_F aux.smallEquivScifi]
 
 /-- A choice of complement of the model normed space `E` of `M` in the model normed space
 `E'` of `N` -/
