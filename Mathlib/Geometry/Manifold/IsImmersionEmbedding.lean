@@ -152,7 +152,6 @@ irreducible_def IsImmersionAt (f : M → N) (x : M) : Prop :=
   ∃ (F : Type u) (_ : NormedAddCommGroup F) (_ : NormedSpace 𝕜 F),
     IsImmersionAtOfComplement F I J n f x
 
-
 variable {f g : M → N} {x : M}
 
 namespace IsImmersionAtOfComplement
@@ -300,9 +299,6 @@ lemma congr_F (e : F ≃L[𝕜] F') :
 
 end IsImmersionAtOfComplement
 
--- TODO: need to fix the IsImmersionAt proofs!
-#exit
-
 namespace IsImmersionAt
 
 lemma mk_of_charts (equiv : (E × F) ≃L[𝕜] E'') (domChart : OpenPartialHomeomorph M H)
@@ -314,8 +310,12 @@ lemma mk_of_charts (equiv : (E × F) ≃L[𝕜] E'') (domChart : OpenPartialHome
     (hwrittenInExtend : EqOn ((codChart.extend J) ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
       (domChart.extend I).target) : IsImmersionAt I J n f x := by
   rw [IsImmersionAt_def]
-  use F, by infer_instance, by infer_instance
-  apply IsImmersionAtOfComplement.mk_of_charts <;> assumption
+  -- TODO: need to fix this proof if we want F to be in any universe!
+  sorry
+  -- let F' : Type u := sorry
+  -- let eq : F ≃L[𝕜] F' := sorry
+  -- use F, by infer_instance, by infer_instance
+  -- apply IsImmersionAtOfComplement.mk_of_charts <;> assumption
 
 /-- `f : M → N` is a `C^n` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
 around `x` and `f x`, respectively such that in these charts, `f` looks like `u ↦ (u, 0)`.
@@ -329,8 +329,9 @@ lemma mk_of_continuousAt {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : 
     (hwrittenInExtend : EqOn ((codChart.extend J) ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
       (domChart.extend I).target) : IsImmersionAt I J n f x := by
   rw [IsImmersionAt_def]
-  use F, by infer_instance, by infer_instance
-  apply IsImmersionAtOfComplement.mk_of_continuousAt <;> assumption
+  -- TODO: need to fix this proof if we want F to be in any universe!
+  sorry --use F, by infer_instance, by infer_instance
+  --apply IsImmersionAtOfComplement.mk_of_continuousAt <;> assumption
 
 /-- A choice of complement of the model normed space `E` of `M` in the model normed space
 `E'` of `N` -/
