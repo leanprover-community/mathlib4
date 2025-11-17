@@ -1289,8 +1289,7 @@ variable {R A M M' : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] (S :
   [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
   [IsLocalization S A]
 
-/-- If `M'` is the localization of `M` at `S` and `A = S⁻¹R`, then
-`M' is an `A`-module. -/
+/-- If `M'` is the localization of `M` at `S` and `A = S⁻¹R`, then `M'` is an `A`-module. -/
 @[reducible] noncomputable def module (f : M →ₗ[R] M') [IsLocalizedModule S f] : Module A M' :=
   (IsLocalizedModule.iso S f).symm.toAddEquiv.module A
 
@@ -1360,7 +1359,7 @@ theorem noZeroSMulDivisors (S : Submonoid R) [NoZeroSMulDivisors R M] [IsLocaliz
     [IsLocalizedModule S f] : NoZeroSMulDivisors A N := by
   rw [noZeroSMulDivisors_iff]
   intro c x hcx
-  obtain ⟨a, s, rfl⟩ := IsLocalization.mk'_surjective S c
+  obtain ⟨a, s, rfl⟩ := IsLocalization.exists_mk'_eq S c
   obtain ⟨⟨m, t⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S f x
   rw [Function.uncurry_apply_pair] at hcx ⊢
   rw [mk'_smul_mk', mk'_eq_zero, IsLocalizedModule.eq_zero_iff S] at hcx

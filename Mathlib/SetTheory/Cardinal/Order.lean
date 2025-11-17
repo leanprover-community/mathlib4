@@ -79,7 +79,6 @@ instance : LE Cardinal.{u} :=
       propext ⟨fun ⟨e⟩ => ⟨e.congr e₁ e₂⟩, fun ⟨e⟩ => ⟨e.congr e₁.symm e₂.symm⟩⟩⟩
 
 instance partialOrder : PartialOrder Cardinal.{u} where
-  le := (· ≤ ·)
   le_refl := by
     rintro ⟨α⟩
     exact ⟨Embedding.refl _⟩
@@ -492,7 +491,7 @@ theorem lift_mk_le_lift_mk_mul_of_lift_mk_preimage_le {α : Type u} {β : Type v
             (Equiv.ulift.image _).trans
               (Equiv.trans
                 (by
-                  rw [Equiv.image_eq_preimage]
+                  rw [Equiv.image_eq_preimage_symm]
                   simp only [preimage, mem_singleton_iff, ULift.up_inj, mem_setOf_eq, coe_setOf]
                   exact Equiv.refl _)
                 Equiv.ulift.symm)).trans_le
