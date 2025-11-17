@@ -23,10 +23,12 @@ open CategoryTheory
 
 open CategoryTheory.MonoidalCategory
 
-namespace CategoryTheory.Monoidal
+namespace CategoryTheory
 
 variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
+
+namespace Monoidal
 
 namespace FunctorCategory
 
@@ -190,15 +192,19 @@ instance functorCategorySymmetric : SymmetricCategory (C ⥤ D) where
 
 end SymmetricCategory
 
+end Monoidal
+
 @[simps]
-instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
+instance Functor.LaxMonoidal.whiskeringRight
+    {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
     [MonoidalCategory E] (L : D ⥤ E) [L.LaxMonoidal] :
     ((Functor.whiskeringRight C D E).obj L).LaxMonoidal where
   ε := { app X := Functor.LaxMonoidal.ε L }
   μ F G := { app X := Functor.LaxMonoidal.μ L (F.obj X) (G.obj X) }
 
 @[simps]
-instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
+instance Functor.OplaxMonoidal.whiskeringRight
+    {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategory D]
     [MonoidalCategory E] (L : D ⥤ E) [L.OplaxMonoidal] :
     ((Functor.whiskeringRight C D E).obj L).OplaxMonoidal where
   η := { app X := Functor.OplaxMonoidal.η L }
@@ -210,32 +216,18 @@ instance {C D E : Type*} [Category C] [Category D] [Category E] [MonoidalCategor
     [MonoidalCategory E] (L : D ⥤ E) [L.Monoidal] :
     ((Functor.whiskeringRight C D E).obj L).Monoidal where
 
-instance (E : Type*) [Category E] [MonoidalCategory E] (F : C ⥤ D) :
-    ((Functor.whiskeringLeft _ _ E).obj F).Monoidal := Functor.CoreMonoidal.toMonoidal {
-  εIso := Iso.refl _
-  μIso _ _ := Iso.refl _ }
+@[deprecated (since := "2025-11-06")] alias instLaxMonoidalFunctorObjWhiskeringRight :=
+  Functor.LaxMonoidal.whiskeringRight
+@[deprecated (since := "2025-11-06")] alias instOplaxMonoidalFunctorObjWhiskeringRight :=
+  Functor.OplaxMonoidal.whiskeringRight
+@[deprecated (since := "2025-11-06")] alias ε_app := Functor.LaxMonoidal.whiskeringRight_ε_app
+@[deprecated (since := "2025-11-06")] alias μ_app := Functor.LaxMonoidal.whiskeringRight_μ_app
+@[deprecated (since := "2025-11-06")] alias η_app := Functor.OplaxMonoidal.whiskeringRight_η_app
+@[deprecated (since := "2025-11-06")] alias δ_app := Functor.OplaxMonoidal.whiskeringRight_δ_app
 
-instance (E : Type*) [Category E] [MonoidalCategory E] (e : C ≌ D) :
-    (e.congrLeft (E := E)).functor.Monoidal :=
-  inferInstanceAs ((Functor.whiskeringLeft _ _ E).obj e.inverse).Monoidal
+@[simps!]
+instance Functor.Monoidal.whiskeringLeft (E : Type*) [Category E] [MonoidalCategory E] (F : C ⥤ D) :
+    ((whiskeringLeft _ _ E).obj F).Monoidal :=
+  CoreMonoidal.toMonoidal { εIso := Iso.refl _, μIso _ _ := Iso.refl _ }
 
-instance (E : Type*) [Category E] [MonoidalCategory E] (e : C ≌ D) :
-    (e.congrLeft (E := E)).inverse.Monoidal :=
-  inferInstanceAs ((Functor.whiskeringLeft _ _ E).obj e.functor).Monoidal
-
--- TODO: improve automation here by adding `@[simps!]` to the instance
--- making whiskeringLeft monoidal, after the renaming PR #31346 is merged
-instance (E : Type*) [Category E] [MonoidalCategory E] (e : C ≌ D) :
-    (e.congrLeft (E := E)).IsMonoidal where
-  leftAdjoint_ε := by
-    ext
-    rw [Adjunction.homEquiv_apply]
-    simp [Equivalence.congrLeft]
-    rfl
-  leftAdjoint_μ X Y := by
-    ext
-    rw [Adjunction.homEquiv_apply]
-    change 𝟙 _ = _ ≫ (𝟙 _) ≫ _
-    simp [Equivalence.congrLeft, ← Functor.map_comp]
-
-end CategoryTheory.Monoidal
+end CategoryTheory

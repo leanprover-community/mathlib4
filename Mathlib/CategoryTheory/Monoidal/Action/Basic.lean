@@ -48,12 +48,12 @@ class MonoidalLeftActionStruct [MonoidalCategoryStruct C] where
   actionObj : C → D → D
   /-- The left action of a map `f : c ⟶ c'` in `C` on an object `d` in `D`.
   If we are to consider the action as a functor `Α : C ⥤ D ⥤ D`,
-  this is (Α.map f).app d`. This is denoted `f ⊵ₗ d` -/
+  this is `(Α.map f).app d`. This is denoted `f ⊵ₗ d`. -/
   actionHomLeft {c c' : C} (f : c ⟶ c') (d : D) :
     actionObj c d ⟶ actionObj c' d
   /-- The action of an object `c : C` on a map `f : d ⟶ d'` in `D`.
   If we are to consider the action as a functor `Α : C ⥤ D ⥤ D`,
-  this is (Α.obj c).map f`. This is denoted `c ⊴ₗ f`. -/
+  this is `(Α.obj c).map f`. This is denoted `c ⊴ₗ f`. -/
   actionHomRight (c : C) {d d' : D} (f : d ⟶ d') :
     actionObj c d ⟶ actionObj c d'
   /-- The action of a pair of maps `f : c ⟶ c'` and `d ⟶ d'`. By default,
@@ -362,12 +362,12 @@ class MonoidalRightActionStruct [MonoidalCategoryStruct C] where
   actionObj : D → C → D
   /-- The right action of a map `f : c ⟶ c'` in `C` on an object `d` in `D`.
   If we are to consider the action as a functor `Α : C ⥤ D ⥤ D`,
-  this is (Α.map f).app d`. This is denoted `d ⊴ᵣ f` -/
+  this is `(Α.map f).app d`. This is denoted `d ⊴ᵣ f`. -/
   actionHomRight (d : D) {c c' : C} (f : c ⟶ c') :
     actionObj d c ⟶ actionObj d c'
   /-- The action of an object `c : C` on a map `f : d ⟶ d'` in `D`.
   If we are to consider the action as a functor `Α : C ⥤ D ⥤ D`,
-  this is (Α.obj c).map f`. This is denoted `f ⊵ᵣ c`. -/
+  this is `(Α.obj c).map f`. This is denoted `f ⊵ᵣ c`. -/
   actionHomLeft {d d' : D} (f : d ⟶ d') (c : C) :
     actionObj d c ⟶ actionObj d' c
   /-- The action of a pair of maps `f : c ⟶ c'` and `d ⟶ d'`. By default,
