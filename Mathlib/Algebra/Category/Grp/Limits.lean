@@ -143,7 +143,7 @@ instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J GrpCat.{u} where
   has_limit _ := inferInstance
 
 /-- The category of groups has all limits. -/
-@[to_additive (relevant_arg := 100) /-- The category of additive groups has all limits. -/]
+@[to_additive (relevant_arg := _) /-- The category of additive groups has all limits. -/]
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} GrpCat.{u} where
   has_limits_of_shape J _ := { }
 
@@ -155,7 +155,7 @@ instance hasLimits : HasLimits GrpCat.{u} :=
 
 This means the underlying monoid of a limit can be computed as a limit in the category of monoids.
 -/
-@[to_additive (relevant_arg := 100) AddGrpCat.forget₂AddMonPreservesLimitsOfSize
+@[to_additive (relevant_arg := _) AddGrpCat.forget₂AddMonPreservesLimitsOfSize
 /-- The forgetful functor from additive groups to additive monoids preserves all limits.
 
 This means the underlying additive monoid of a limit can be computed as a limit in the category of
@@ -179,7 +179,7 @@ instance forget_preservesLimitsOfShape [Small.{u} J] :
 /-- The forgetful functor from groups to types preserves all limits.
 
 This means the underlying type of a limit can be computed as a limit in the category of types. -/
-@[to_additive (relevant_arg := 100)
+@[to_additive (relevant_arg := _)
 /-- The forgetful functor from additive groups to types preserves all limits.
 
 This means the underlying type of a limit can be computed as a limit in the category of types. -/]
@@ -203,7 +203,7 @@ noncomputable instance forget_createsLimitsOfShape :
 
 /-- The forgetful functor from groups to types creates all limits.
 -/
-@[to_additive (relevant_arg := 100)
+@[to_additive (relevant_arg := _)
 /-- The forgetful functor from additive groups to types creates all limits. -/]
 noncomputable instance forget_createsLimitsOfSize :
     CreatesLimitsOfSize.{w, v} (forget GrpCat.{u}) where
@@ -311,7 +311,7 @@ instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J CommGrpCat.{u} wher
   has_limit _ := inferInstance
 
 /-- The category of commutative groups has all limits. -/
-@[to_additive (relevant_arg := 100)
+@[to_additive (relevant_arg := _)
 /-- The category of additive commutative groups has all limits. -/]
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} CommGrpCat.{u} where
   has_limits_of_shape _ _ := { }
@@ -339,7 +339,7 @@ instance forget₂Group_preservesLimitsOfShape :
 (That is, the underlying group could have been computed instead as limits in the category
 of groups.)
 -/
-@[to_additive (relevant_arg := 100)
+@[to_additive (relevant_arg := _)
 /-- The forgetful functor from additive commutative groups to additive groups preserves all
 limits. (That is, the underlying group could have been computed instead as limits in the
 category of additive groups.) -/]
@@ -423,7 +423,7 @@ noncomputable instance forget_createsLimitsOfShape (J : Type v) [Category.{w} J]
 
 /-- The forgetful functor from commutative groups to types creates all limits.
 -/
-@[to_additive (relevant_arg := 100)
+@[to_additive (relevant_arg := _)
 /-- The forgetful functor from additive commutative groups to types creates all limits. -/]
 noncomputable instance forget_createsLimitsOfSize :
     CreatesLimitsOfSize.{w, v} (forget CommGrpCat.{u}) where
