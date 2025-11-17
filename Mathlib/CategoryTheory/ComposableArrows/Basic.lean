@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.CategoryTheory.Category.Preorder
+import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Tactic.FinCases
@@ -274,6 +275,14 @@ lemma ext₁ {F G : ComposableArrows C 1}
 
 lemma mk₁_surjective (X : ComposableArrows C 1) : ∃ (X₀ X₁ : C) (f : X₀ ⟶ X₁), X = mk₁ f :=
   ⟨_, _, X.map' 0 1, ext₁ rfl rfl (by simp)⟩
+
+/-- The bijection between `ComposableArrows C 1` and `Arrow C`. -/
+@[simps]
+def arrowEquiv : ComposableArrows C 1 ≃ Arrow C where
+  toFun F := Arrow.mk F.hom
+  invFun f := mk₁ f.hom
+  left_inv F := ComposableArrows.ext₁ rfl rfl (by simp)
+  right_inv _ := rfl
 
 variable (F)
 
