@@ -156,8 +156,8 @@ def instL2OpMetricSpace : MetricSpace (Matrix m n 𝕜) := by
       dist_eq := l2OpNormedAddCommGroupAux.dist_eq }
   exact normed_add_comm_group.replaceUniformity <| by
     congr
-    rw [← @IsUniformAddGroup.toUniformSpace_eq _ (Matrix.instUniformSpace m n 𝕜) _ _]
-    rw [@IsUniformAddGroup.toUniformSpace_eq _ PseudoEMetricSpace.toUniformSpace _ _]
+    rw [← @IsUniformAddGroup.rightUniformSpace_eq _ (Matrix.instUniformSpace m n 𝕜) _ _]
+    rw [@IsUniformAddGroup.rightUniformSpace_eq _ PseudoEMetricSpace.toUniformSpace _ _]
 
 scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instL2OpMetricSpace
 
@@ -210,7 +210,7 @@ lemma l2_opNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) :
     |>.opNorm_comp_le <| (toEuclideanLin (n := l) (m := n) (𝕜 := 𝕜) ≪≫ₗ toContinuousLinearMap) B
   convert this
   ext1 x
-  exact congr($(Matrix.toLin'_mul A B) x)
+  exact congr(toLp 2 ($(Matrix.toLin'_mul A B) x))
 
 lemma l2_opNNNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ :=
   l2_opNorm_mul A B
