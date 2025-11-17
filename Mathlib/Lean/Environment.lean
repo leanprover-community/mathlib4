@@ -6,6 +6,10 @@ Authors: Thomas R. Murrills
 import Mathlib.Init
 import Lean.Environment
 
+/-!
+# Additional utilities for `Lean.Environment`
+-/
+
 namespace Lean.Environment
 
 section constKind
