@@ -589,6 +589,8 @@ import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 import Mathlib.Algebra.Homology.HomotopyCofiber
 import Mathlib.Algebra.Homology.ImageToKernel
 import Mathlib.Algebra.Homology.LeftResolution.Basic
+import Mathlib.Algebra.Homology.LeftResolution.Reduced
+import Mathlib.Algebra.Homology.LeftResolution.Transport
 import Mathlib.Algebra.Homology.Linear
 import Mathlib.Algebra.Homology.LocalCohomology
 import Mathlib.Algebra.Homology.Localization
@@ -3974,6 +3976,7 @@ import Mathlib.FieldTheory.NormalizedTrace
 import Mathlib.FieldTheory.Perfect
 import Mathlib.FieldTheory.PerfectClosure
 import Mathlib.FieldTheory.PolynomialGaloisGroup
+import Mathlib.FieldTheory.PrimeField
 import Mathlib.FieldTheory.PrimitiveElement
 import Mathlib.FieldTheory.PurelyInseparable.Basic
 import Mathlib.FieldTheory.PurelyInseparable.Exponent
