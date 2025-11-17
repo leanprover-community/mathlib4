@@ -5,6 +5,7 @@ Authors: Calle Sönne, Joël Riou, Ravi Vakil
 -/
 import Mathlib.AlgebraicGeometry.Gluing
 import Mathlib.AlgebraicGeometry.Sites.BigZariski
+import Mathlib.CategoryTheory.Limits.Types.Multiequalizer
 import Mathlib.CategoryTheory.Sites.Hypercover.One
 
 /-!
