@@ -1064,7 +1064,7 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
       if cfg.reorder != [] || cfg.relevantArg?.isSome then
         MetaM.run' <| checkExistingType t src tgt cfg.reorder cfg.dontTranslate
         let argInfo := { reorder := cfg.reorder, relevantArg := cfg.relevantArg?.getD 0 }
-        modifyEnv (t.argInfoAttr.addEntry · (src, argInfo))
+        insertTranslation t src tgt argInfo
         return #[tgt]
       throwError
       "Cannot apply attribute @[{t.attrName}] to '{src}': it is already translated to '{tgt}'. \n\
