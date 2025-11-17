@@ -240,13 +240,8 @@ instance (E : Type*) [Category E] [MonoidalCategory E] (e : C ≌ D) :
 
 instance (E : Type*) [Category E] [MonoidalCategory E] (e : C ≌ D) :
     (e.congrLeft (E := E)).IsMonoidal where
-  leftAdjoint_ε := by
-    ext
-    rw [Adjunction.homEquiv_apply]
-    simp [Equivalence.congrLeft]
   leftAdjoint_μ X Y := by
     ext
-    rw [Adjunction.homEquiv_apply]
-    simp [Equivalence.congrLeft, ← Functor.map_comp]
+    simp [← Functor.map_comp]
 
 end CategoryTheory
