@@ -50,6 +50,10 @@ lemma smulVec_def' (N : Matrix ι ι R) (v : ι → M) : N • v = ∑ j : ι, f
 lemma smul_vec_apply (N : Matrix ι ι R) (v : ι → M) (i : ι) :
     (N • v) i = ∑ j : ι, N i j • v j := rfl
 
+instance (S) [Ring S] [SMul R S] [Module S M] [IsScalarTower R S M] :
+    IsScalarTower R (Matrix ι ι S) (ι → M) where
+  smul_assoc _ _ _ := by ext; simp [Finset.smul_sum]
+
 end Matrix
 
 namespace LinearMap

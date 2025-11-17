@@ -26,6 +26,6 @@ open CategoryTheory Matrix
 @[simps]
 def ModuleCat.toMatrixModCat : ModuleCat R ⥤ ModuleCat (Matrix ι ι R) where
   obj M := ModuleCat.of (Matrix ι ι R) (ι → M)
-  map f := ModuleCat.ofHom f.hom.mapModule
-  map_id _ := ModuleCat.hom_ext LinearMap.id_mapModule
-  map_comp f g := ModuleCat.hom_ext (LinearMap.comp_mapModule f.hom g.hom)
+  map f := ModuleCat.ofHom f.hom.mapMatrixModule
+  map_id _ := ModuleCat.hom_ext LinearMap.id_mapMatrixModule
+  map_comp f g := ModuleCat.hom_ext (LinearMap.comp_mapMatrixModule f.hom g.hom)
