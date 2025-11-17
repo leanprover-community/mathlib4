@@ -101,8 +101,8 @@ theorem degree_wronskian_lt_add {a b : R[X]} (ha : a ≠ 0) (hb : b ≠ 0) :
 
 /--
 `natDegree` version of the above theorem.
-Note this would be false with just `(ha : a ≠ 0) (hb : b ≠ 0),
-as when `a = b = 1` we have `(wronskian a b).natDegree = a.natDegree = b.natDegree = 0`.
+Note this would be false with just `(ha : a ≠ 0)` and `(hb : b ≠ 0)`,
+since when `a = b = 1` we have `(wronskian a b).natDegree = a.natDegree = b.natDegree = 0`.
 -/
 theorem natDegree_wronskian_lt_add {a b : R[X]} (hw : wronskian a b ≠ 0) :
     (wronskian a b).natDegree < a.natDegree + b.natDegree := by
