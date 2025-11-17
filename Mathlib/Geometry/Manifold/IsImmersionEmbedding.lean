@@ -37,12 +37,13 @@ This shortens the overall argument, as the definition of submersions has the sam
 ## Main results
 * `IsImmersionAt.congr_of_eventuallyEq`: being an immersion is a local property.
   If `f` and `g` agree near `x` and `f` is an immersion at `x`, so is `g`
+* `IsImmersionAtOfComplement.congr_F`: being an immersion at `x` is stable under replacing the
+  complement `F` by an isomorphic copy
 * `isImmersion_iff_isImmersionAt`: `f` is an immersion iff `f` is an immersion at each `x`
 
 ## TODO
-* Show `IsImmersionAtOfComplement` is stable under replacing `F` by an isomorphic copy.
-  (In fact, the converse also holds: any two complements are isomorphic, as they are isomorphic
-  to the cokernel of the differential `mfderiv I J f x`.)
+* The converse to `IsImmersionAtOfComplement.congr_F` also holds: any two complements are
+  isomorphic, as they are isomorphic to the cokernel of the differential `mfderiv I J f x`.
 * The set where `LiftSourceTargetPropertyAt` holds is open.
 * `IsImmersionAt.contMDiffAt`: if f is an immersion at `x`, it is `C^n` at `x`.
 * `IsImmersion.contMDiff`: if f is an immersion, it is `C^n`.
@@ -281,6 +282,21 @@ then `f` is an immersion at `x` if and only if `g` is an immersion at `x`. -/
 lemma congr_iff (hfg : f =ᶠ[𝓝 x] g) :
     IsImmersionAtOfComplement F I J n f x ↔ IsImmersionAtOfComplement F I J n g x :=
   ⟨fun h ↦ h.congr_of_eventuallyEq hfg, fun h ↦ h.congr_of_eventuallyEq hfg.symm⟩
+
+lemma trans_F (h : IsImmersionAtOfComplement F I J n f x) (e : F ≃L[𝕜] F') :
+    IsImmersionAtOfComplement F' I J n f x := by
+  rewrite [IsImmersionAtOfComplement_def]
+  refine ⟨h.domChart, h.codChart, h.mem_domChart_source, h.mem_codChart_source,
+    h.domChart_mem_maximalAtlas, h.codChart_mem_maximalAtlas, h.source_subset_preimage_source, ?_⟩
+  use ((ContinuousLinearEquiv.refl 𝕜 E).prodCongr e.symm).trans h.equiv
+  apply Set.EqOn.trans h.writtenInCharts
+  intro x hx
+  simp
+
+/-- Being an immersion at `x` is stable under replacing `F` by an isomorphism copy. -/
+lemma congr_F (e : F ≃L[𝕜] F') :
+    IsImmersionAtOfComplement F I J n f x ↔ IsImmersionAtOfComplement F' I J n f x :=
+  ⟨fun h ↦ trans_F (e := e) h, fun h ↦ trans_F (e := e.symm) h⟩
 
 end IsImmersionAtOfComplement
 
