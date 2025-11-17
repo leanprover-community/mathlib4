@@ -29,7 +29,7 @@ We prove four versions of this theorem.
   continuity on the closed interval $[a, b]$ it assumes that $f$ tends to the same limit as $x$
   tends to $a$ from the right and as $x$ tends to $b$ from the left.
 * `exists_deriv_eq_zero'` relates to `exists_deriv_eq_zero` as `exists_hasDerivAt_eq_zero'`
-  relates to ``exists_hasDerivAt_eq_zero`.
+  relates to `exists_hasDerivAt_eq_zero`.
 
 ## References
 
