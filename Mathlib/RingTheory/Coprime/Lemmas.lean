@@ -55,6 +55,9 @@ theorem Nat.Coprime.cast {R : Type*} [CommRing R] {a b : ℕ} (h : Nat.Coprime a
     IsCoprime (a : R) (b : R) :=
   mod_cast h.isCoprime.intCast
 
+theorem Rat.isCoprime_num_den (x : ℚ) : IsCoprime x.num x.den :=
+  x.reduced.cast.of_isCoprime_of_dvd_left Int.dvd_natAbs_self
+
 theorem ne_zero_or_ne_zero_of_nat_coprime {A : Type u} [CommRing A] [Nontrivial A] {a b : ℕ}
     (h : Nat.Coprime a b) : (a : A) ≠ 0 ∨ (b : A) ≠ 0 :=
   IsCoprime.ne_zero_or_ne_zero (R := A) <| by
