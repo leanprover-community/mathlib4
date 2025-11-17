@@ -80,13 +80,11 @@ attribute [instance 900] LinearOrder.toDecidableLT
 attribute [instance 900] LinearOrder.toDecidableLE
 attribute [instance 900] LinearOrder.toDecidableEq
 
-/-- In a linearly ordered type, we assume the order relations are all decidable. -/
-@[to_dual existing toDecidableLT] def LinearOrder.toDecidableLT' : DecidableLT' α :=
-  fun a b => toDecidableLT b a
+@[to_dual existing toDecidableLT, inherit_doc toDecidableLT]
+def LinearOrder.toDecidableLT' : DecidableLT' α := fun a b => toDecidableLT b a
 
-/-- In a linearly ordered type, we assume the order relations are all decidable. -/
-@[to_dual existing toDecidableLE] def LinearOrder.toDecidableLE' : DecidableLE' α :=
-  fun a b => toDecidableLE b a
+@[to_dual existing toDecidableLE, inherit_doc toDecidableLE]
+def LinearOrder.toDecidableLE' : DecidableLE' α := fun a b => toDecidableLE b a
 
 instance : Std.IsLinearOrder α where
   le_total := LinearOrder.le_total
