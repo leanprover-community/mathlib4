@@ -7,6 +7,7 @@ Authors: Fabrizio Barroero
 import Mathlib.Analysis.Analytic.Polynomial
 import Mathlib.Analysis.Complex.JensenFormula
 import Mathlib.Analysis.Complex.Polynomial.Basic
+import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 
 /-!
 # Mahler measure of complex polynomials
@@ -251,6 +252,22 @@ theorem mahlerMeasure_eq_leadingCoeff_mul_prod_roots (p : ℂ[X]) : p.mahlerMeas
   rw [exp_add, exp_log <| mahlerMeasure_pos_of_ne_zero hp,
     exp_log <|norm_pos_iff.mpr <| leadingCoeff_ne_zero.mpr hp] at this
   simp [this, exp_multiset_sum, posLog_eq_log_max_one, exp_log]
+
+/-!
+### Estimates for the Mahler measure
+-/
+
+lemma one_le_prod_max_one_norm_roots (p : ℂ[X]) : 1 ≤ (p.roots.map (fun a ↦ max 1 ‖a‖)).prod := by
+  grind [Multiset.one_le_prod, Multiset.mem_map]
+
+lemma leading_coeff_le_mahlerMeasure (p : ℂ[X]) : ‖p.leadingCoeff‖ ≤ p.mahlerMeasure := by
+  rw [mahlerMeasure_eq_leadingCoeff_mul_prod_roots]
+  exact le_mul_of_one_le_right (norm_nonneg p.leadingCoeff) (one_le_prod_max_one_norm_roots p)
+
+lemma prod_max_one_norm_roots_le_mahlerMeasure_of_one_le_leadingCoeff {p : ℂ[X]}
+    (hlc : 1 ≤ ‖p.leadingCoeff‖) : (p.roots.map (fun a ↦ max 1 ‖a‖)).prod ≤ p.mahlerMeasure := by
+  rw [mahlerMeasure_eq_leadingCoeff_mul_prod_roots]
+  exact le_mul_of_one_le_left (le_trans zero_le_one (one_le_prod_max_one_norm_roots p)) hlc
 
 open Filter MeasureTheory Set in
 /-- The Mahler measure of a polynomial is bounded above by the sum of the norms of its coefficients.
