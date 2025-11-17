@@ -89,7 +89,7 @@ theorem Sphere.eq_or_eq_secondInter_of_mem_mk'_span_singleton_iff_mem {s : Spher
 
 /-- A point on a line through a point on a sphere and a second point equals that point or
 `secondInter`. -/
-lemma Sphere.eq_or_eq_secondInter_of_mem_affineSpan_pair_iff_mem {s : Sphere P} {p q : P}
+lemma Sphere.eq_or_eq_secondInter_iff_mem_of_mem_affineSpan_pair {s : Sphere P} {p q : P}
     (hp : p ∈ s) {p' : P} (hp' : p' ∈ line[ℝ, p, q]) :
     p' = p ∨ p' = s.secondInter p (q -ᵥ p) ↔ p' ∈ s := by
   convert s.eq_or_eq_secondInter_of_mem_mk'_span_singleton_iff_mem hp ?_
