@@ -6,6 +6,7 @@ Authors: Nailin Guan
 import Mathlib.Algebra.Category.ModuleCat.Injective
 import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+import Mathlib.CategoryTheory.Linear.LinearFunctor
 import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
 import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
 /-!
@@ -16,11 +17,15 @@ import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
 
 universe u v v'
 
-variable (R : Type u) [Ring R]
+variable (R : Type u)
 
 open CategoryTheory
 
 namespace ModuleCat
+
+section Ring
+
+variable [Ring R]
 
 /-- Universe lift functor for `R`-module. -/
 @[simps obj map]
@@ -75,5 +80,19 @@ instance [Small.{v} R] : (uliftFunctor.{u, v, v'} R).PreservesProjectiveObjects 
 instance [Small.{v} R] : (uliftFunctor.{u, v, v'} R).PreservesInjectiveObjects where
   injective_obj {M} inj := (Module.injective_iff_injective_object R _).mp
     (Module.ulift_injective_of_injective R ((Module.injective_iff_injective_object R M).mpr inj))
+
+end Ring
+
+section CommRing
+
+variable [CommRing R]
+
+instance : (uliftFunctor.{u, v, v'} R).Linear R where
+  map_smul f r := by
+    simp only [uliftFunctor_obj, uliftFunctor_map, hom_smul, LinearMap.smul_comp,
+      LinearMap.comp_smul]
+    rfl
+
+end CommRing
 
 end ModuleCat
