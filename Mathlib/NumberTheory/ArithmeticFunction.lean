@@ -1491,7 +1491,7 @@ theorem sum_mul_eq_sum_sum (f g : ArithmeticFunction R) (N : ℕ) :
       · exact mul_div_le ..
 
 theorem sum_mul_zeta_eq_sum (f : ArithmeticFunction R) (N : ℕ) :
-    ∑ n ∈ Icc 0 N, (f * zeta) n = ∑ n ∈ Icc 0 N, f n  * ↑(N / n) := by
+    ∑ n ∈ Icc 0 N, (f * zeta) n = ∑ n ∈ Icc 0 N, f n * ↑(N / n) := by
   rw [sum_mul_eq_sum_sum]
   refine  sum_congr rfl fun n hn ↦ ?_
   simp_rw [natCoe_apply]
