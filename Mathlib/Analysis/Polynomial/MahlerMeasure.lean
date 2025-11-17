@@ -5,9 +5,8 @@ Authors: Fabrizio Barroero
 -/
 
 import Mathlib.Analysis.Analytic.Polynomial
-import Mathlib.Analysis.CStarAlgebra.Classes
-import Mathlib.Analysis.SpecialFunctions.Integrability.LogMeromorphic
-import Mathlib.MeasureTheory.Integral.CircleAverage
+import Mathlib.Analysis.Complex.JensenFormula
+import Mathlib.Analysis.Complex.Polynomial.Basic
 
 /-!
 # Mahler measure of complex polynomials
@@ -26,6 +25,9 @@ properties.
 
 - `Polynomial.mahlerMeasure_mul`: the Mahler measure of the product of two polynomials is the
   product of their Mahler measures.
+- `mahlerMeasure_eq_leadingCoeff_mul_prod_roots`: the Mahler measure of a polynomial is the absolute
+  value of its leading coefficient times the product of the absolute values of its roots lying
+  outside the unit disk.
 -/
 
 namespace Polynomial
@@ -137,8 +139,119 @@ theorem prod_mahlerMeasure_eq_mahlerMeasure_prod (s : Multiset ℂ[X]) :
   | empty => simp
   | cons _ _ ih => simp [mahlerMeasure_mul, ih]
 
-theorem logMahlerMeasure_mul_eq_add_logMahelerMeasure {p q : ℂ[X]} (hpq : p * q ≠ 0) :
+theorem logMahlerMeasure_mul_eq_add_logMahlerMeasure {p q : ℂ[X]} (hpq : p * q ≠ 0) :
     (p * q).logMahlerMeasure = p.logMahlerMeasure + q.logMahlerMeasure := by
   simp_all [logMahlerMeasure_eq_log_MahlerMeasure, mahlerMeasure_mul, log_mul]
+
+theorem logMahlerMeasure_C_mul {a : ℂ} (ha : a ≠ 0) {p : ℂ[X]} (hp : p ≠ 0) :
+    (C a * p).logMahlerMeasure = log ‖a‖ + p.logMahlerMeasure := by
+  rw [logMahlerMeasure_mul_eq_add_logMahlerMeasure (by simp [ha, hp]), logMahlerMeasure_const]
+
+open MeromorphicOn Metric in
+/-- The logarithmic Mahler measure of `X - C z` is the `log⁺` of the absolute value of `z`. -/
+@[simp]
+theorem logMahlerMeasure_X_sub_C (z : ℂ) : (X - C z).logMahlerMeasure = log⁺ ‖z‖ := by
+  rcases eq_or_ne z 0 with rfl | hz₀
+  · simp
+  have hmeroOnB : MeromorphicOn (· - z) (closedBall 0 |1|) := id.sub <| const z
+  simp_rw [logMahlerMeasure_def, eval_sub, eval_X, eval_C]
+  rw [circleAverage_log_norm one_ne_zero hmeroOnB, abs_one,
+  -- get rid of the `meromorphicTrailingCoeffAt`
+    AnalyticAt.meromorphicTrailingCoeffAt_of_ne_zero (by fun_prop) (by simp [hz₀]),
+    ← finsum_mem_support]
+  set B := closedBall (0 : ℂ) 1
+  -- separate cases depending on whether z is in the open `ball 0 1` or not
+  by_cases hzBall : z ∈ ball 0 1
+  · have hzdiv1 := divisor_sub_const_self (show z ∈ B by grind [ball_subset_closedBall])
+    suffices (fun u ↦ -(divisor (· - z) B u * log ‖u‖)).support = {z} by
+      simp [this, hzdiv1, posLog_def]
+      grind [mem_ball_zero_iff, log_nonpos, norm_nonneg]
+    rw [Function.support_eq_iff]
+    constructor
+    · simp_rw [Set.mem_singleton_iff]
+      intro _ rfl
+      rw [hzdiv1]
+      grind [log_eq_zero, norm_eq_zero, mem_ball_zero_iff, norm_nonneg]
+    · intro _ hu
+      rw [Set.mem_singleton_iff] at hu
+      simp [divisor_sub_const_of_ne hu]
+  · have h1lez : 1 ≤ ‖z‖ := by grind [mem_ball_zero_iff]
+    suffices (fun u ↦ -(divisor (· - z) B u * log ‖u‖)).support = ∅ by
+      simp [this, posLog_eq_log_max_one <| norm_nonneg z, h1lez]
+    rw [Function.support_eq_empty_iff]
+    ext x
+    rcases eq_or_ne x z with rfl | hx
+    · by_cases hB : x ∈ B
+      · rw [Pi.zero_apply]
+        grind [log_eq_zero, mem_closedBall_zero_iff]
+      · simpa using .inl <| Function.locallyFinsuppWithin.apply_eq_zero_of_notMem _ hB
+    simpa using .inl <| divisor_sub_const_of_ne hx
+
+@[simp]
+theorem logMahlerMeasure_X_add_C (z : ℂ) : (X + C z).logMahlerMeasure = log⁺ ‖z‖ := by
+  simp [← sub_neg_eq_add, ← map_neg]
+
+theorem logMahlerMeasure_C_mul_X_add_C {a : ℂ} (ha : a ≠ 0) (b : ℂ) :
+    (C a * X + C b).logMahlerMeasure = log ‖a‖ + log⁺ ‖a⁻¹ * b‖ := by
+  rw [show C a * X + C b = C a * (X + C (a⁻¹ * b)) by simp [mul_add, ← map_mul, ha],
+    logMahlerMeasure_C_mul ha (X_add_C_ne_zero (a⁻¹ * b)), logMahlerMeasure_X_add_C]
+
+theorem logMahlerMeasure_of_degree_eq_one {p : ℂ[X]} (h : p.degree = 1) : p.logMahlerMeasure =
+    log ‖p.coeff 1‖ + log⁺ ‖(p.coeff 1)⁻¹ * p.coeff 0‖ := by
+  rw [eq_X_add_C_of_degree_le_one (le_of_eq h)]
+  simp [logMahlerMeasure_C_mul_X_add_C (show p.coeff 1 ≠ 0 by exact coeff_ne_zero_of_eq_degree h)]
+
+/-- The Mahler measure of `X - C z` equals `max 1 ‖z‖`. -/
+@[simp]
+theorem mahlerMeasure_X_sub_C (z : ℂ) : (X - C z).mahlerMeasure = max 1 ‖z‖ := by
+  have := logMahlerMeasure_X_sub_C z
+  rw [logMahlerMeasure_eq_log_MahlerMeasure] at this
+  apply_fun exp at this
+  rwa [posLog_eq_log_max_one (norm_nonneg z),
+    exp_log (mahlerMeasure_pos_of_ne_zero <| X_sub_C_ne_zero z),
+    exp_log (lt_of_lt_of_le zero_lt_one <| le_max_left 1 ‖z‖)] at this
+
+@[simp]
+theorem mahlerMeasure_X_add_C (z : ℂ) : (X + C z).mahlerMeasure = max 1 ‖z‖ := by
+  simp [← sub_neg_eq_add, ← map_neg]
+
+@[simp]
+theorem mahlerMeasure_C_mul_X_add_C {a : ℂ} (ha : a ≠ 0) (b : ℂ) :
+    (C a * X + C b).mahlerMeasure = max ‖a‖ ‖b‖ := by
+  simp only [show C a * X + C b = C a * (X + C (a⁻¹ * b)) by simp [mul_add, ← map_mul, ha],
+    mahlerMeasure_mul, mahlerMeasure_const, ← coe_nnnorm, mahlerMeasure_X_add_C]
+  norm_cast
+  simp [mul_max, ha]
+
+theorem mahlerMeasure_of_degree_eq_one {p : ℂ[X]} (h : p.degree = 1) :
+    p.mahlerMeasure = max ‖p.coeff 1‖ ‖p.coeff 0‖ := by
+  rw [eq_X_add_C_of_degree_le_one (le_of_eq h)]
+  simp [mahlerMeasure_C_mul_X_add_C (show p.coeff 1 ≠ 0 by exact coeff_ne_zero_of_eq_degree h)]
+
+/-- The logarithmic Mahler measure of a polynomial is the `log` of the absolute value of its leading
+  coefficient plus the sum of the `log`s of the absolute values of its roots lying outside the unit
+  disk. -/
+theorem logMahlerMeasure_eq_log_leadingCoeff_add_sum_log_roots (p : ℂ[X]) : p.logMahlerMeasure =
+    log ‖p.leadingCoeff‖ + (p.roots.map (fun a ↦ log⁺ ‖a‖)).sum := by
+  by_cases hp : p = 0
+  · simp [hp]
+  have : ∀ x ∈ Multiset.map (fun x ↦ max 1 ‖x‖) p.roots, x ≠ 0 := by grind [Multiset.mem_map]
+  nth_rw 1 [eq_prod_roots_of_splits_id (IsAlgClosed.splits p)]
+  rw [logMahlerMeasure_mul_eq_add_logMahlerMeasure (by simp [hp, X_sub_C_ne_zero])]
+  simp [posLog_eq_log_max_one, logMahlerMeasure_eq_log_MahlerMeasure,
+    prod_mahlerMeasure_eq_mahlerMeasure_prod, log_multiset_prod this]
+
+/-- The Mahler measure of a polynomial is the absolute value of its leading coefficient times
+  the product of the absolute values of its roots lying outside the unit disk. -/
+theorem mahlerMeasure_eq_leadingCoeff_mul_prod_roots (p : ℂ[X]) : p.mahlerMeasure =
+    ‖p.leadingCoeff‖ * (p.roots.map (fun a ↦ max 1 ‖a‖)).prod := by
+  by_cases hp : p = 0;
+  · simp [hp]
+  have := logMahlerMeasure_eq_log_leadingCoeff_add_sum_log_roots p
+  rw [logMahlerMeasure_eq_log_MahlerMeasure] at this
+  apply_fun exp at this
+  rw [exp_add, exp_log <| mahlerMeasure_pos_of_ne_zero hp,
+    exp_log <|norm_pos_iff.mpr <| leadingCoeff_ne_zero.mpr hp] at this
+  simp [this, exp_multiset_sum, posLog_eq_log_max_one, exp_log]
 
 end Polynomial
