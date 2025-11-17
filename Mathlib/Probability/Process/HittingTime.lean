@@ -85,17 +85,12 @@ lemma hittingBtwn_empty (n m : ι) : hittingBtwn u ∅ n m = fun _ ↦ m := by e
 lemma hittingAfter_empty (n : ι) : hittingAfter u ∅ n = fun _ ↦ ⊤ := by ext; simp [hittingAfter]
 
 @[simp]
-lemma hittingBtwn_univ {ι : Type*} [ConditionallyCompleteLattice ι] {u : ι → Ω → β} (n m : ι) :
+lemma hittingBtwn_univ {ι : Type*} [ConditionallyCompleteLinearOrder ι] {u : ι → Ω → β} (n m : ι) :
     hittingBtwn u .univ n m = fun _ ↦ min n m := by
   ext ω
   classical
   simp only [hittingBtwn_def, Set.mem_Icc, Set.mem_univ, and_true, Set.setOf_true, Set.inter_univ]
-  by_cases hnm : n ≤ m
-  · simp only [hnm, csInf_Icc, ↓reduceIte, ite_eq_left_iff, not_exists, not_and]
-    exact fun h ↦ absurd hnm (h n le_rfl)
-  · simp [hnm]
-    intro k hnk hkm
-    exact absurd (hnk.trans hkm) hnm
+  by_cases hnm : n ≤ m <;> simp [hnm] <;> grind
 
 @[simp]
 lemma hittingAfter_univ {ι : Type*} [ConditionallyCompleteLattice ι] {u : ι → Ω → β} (n : ι) :
