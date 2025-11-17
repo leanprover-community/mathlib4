@@ -21,8 +21,8 @@ variable {R : Type*} [CommRing R] {a b : R}
 /-- The norm of an element in a quadratic algebra is the determinant of the endomorphism defined by
 left multiplication by that element. -/
 @[simp]
-theorem det_toModuleEnd_eq_norm (z : QuadraticAlgebra R a b) :
-    (Module.toModuleEnd R (QuadraticAlgebra R a b) z).det = z.norm := by
+theorem det_toLinearMap_eq_norm (z : QuadraticAlgebra R a b) :
+    (DistribMulAction.toLinearMap R (QuadraticAlgebra R a b) z).det = z.norm := by
   rw [← LinearMap.det_toMatrix <| basis ..]
   have : !![z.re, a * z.im; z.im, z.re + b * z.im].det = z.norm := by
     simp [norm]
