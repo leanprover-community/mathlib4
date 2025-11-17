@@ -50,7 +50,7 @@ noncomputable def equivSmallSheafificationIso
     (((equivSmallModel LightProfinite.{u}).op.congrLeft.symm.toAdjunction.comp
     (sheafificationAdjunction _ _)).comp (equivSmall C).toAdjunction)).symm <|
   NatIso.ofComponents (fun X ↦ ((equivSmallModel LightProfinite).op.invFunIdAssoc _).symm)
-    (by intros; ext; simp [Equivalence.sheafCongr])
+
 
 variable (R : Type u) [CommRing R]
 
@@ -68,6 +68,6 @@ noncomputable def equivSmallFreeIso :
     (fun X ↦ (fullyFaithfulSheafToPresheaf _ _).preimageIso
       (isoWhiskerRight ((equivSmallModel LightProfinite).op.invFunIdAssoc _).symm _ ≪≫
         (Functor.associator _ _ _)))
-    (by intros; ext; simp [Equivalence.sheafCongr, ← NatTrans.naturality_apply]; rfl)
+
 
 end LightCondensed
