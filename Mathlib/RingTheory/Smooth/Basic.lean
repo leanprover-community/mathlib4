@@ -7,6 +7,7 @@ import Mathlib.RingTheory.FiniteStability
 import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 import Mathlib.RingTheory.Localization.Away.AdjoinRoot
 import Mathlib.RingTheory.Smooth.Kaehler
+import Mathlib.RingTheory.Unramified.Basic
 
 /-!
 
@@ -381,6 +382,8 @@ open scoped Polynomial in
 instance polynomial (R : Type*) [CommRing R] :
   FormallySmooth R R[X] := .of_equiv (MvPolynomial.pUnitAlgEquiv.{_, 0} R)
 
+instance : FormallySmooth R R := .of_equiv (MvPolynomial.isEmptyAlgEquiv R Empty)
+
 end Polynomial
 
 section Comp
@@ -397,7 +400,40 @@ theorem comp [FormallySmooth R A] [FormallySmooth A B] : FormallySmooth R B := b
   apply_fun AlgHom.restrictScalars R at e'
   exact ⟨f''.restrictScalars _, e'.trans (AlgHom.ext fun _ => rfl)⟩
 
+lemma of_restrictScalars [FormallyUnramified R A] [FormallySmooth R B] :
+    FormallySmooth A B := by
+  refine iff_comp_surjective.mpr fun C _ _ I hI f ↦ ?_
+  algebraize [(algebraMap A C).comp (algebraMap R A)]
+  obtain ⟨g, hg⟩ := Algebra.FormallySmooth.comp_surjective _ _ I hI (f.restrictScalars R)
+  suffices g.comp (IsScalarTower.toAlgHom R A B) = IsScalarTower.toAlgHom R A C from
+    ⟨{ __ := g, commutes' x := congr($this x) }, AlgHom.ext fun x ↦ congr($hg x)⟩
+  apply Algebra.FormallyUnramified.comp_injective _ hI
+  rw [← AlgHom.comp_assoc, hg]
+  exact AlgHom.ext f.commutes
+
 end Comp
+
+section surjective
+
+variable {R : Type*} [CommRing R]
+variable {P A : Type*} [CommRing A] [Algebra R A] [CommRing P] [Algebra R P]
+variable (f : P →ₐ[R] A)
+
+lemma iff_of_surjective (h : Function.Surjective (algebraMap R A)) :
+    Algebra.FormallySmooth R A ↔ IsIdempotentElem (RingHom.ker (algebraMap R A)) := by
+  rw [Algebra.FormallySmooth.iff_split_surjection (Algebra.ofId R A) h]
+  constructor
+  · intro ⟨g, hg⟩
+    let e : A ≃ₐ[R] R ⧸ RingHom.ker (algebraMap R A) ^ 2 :=
+      .ofAlgHom _ _ (Ideal.Quotient.algHom_ext _ (by ext)) hg
+    rw [IsIdempotentElem, ← pow_two, ← Ideal.mk_ker (I := _ ^ 2), ← Ideal.Quotient.algebraMap_eq,
+      ← e.toAlgHom.comp_algebraMap, RingHom.ker_comp_of_injective _ (by exact e.injective)]
+  · intro H
+    let e := (Ideal.quotientEquivAlgOfEq _ ((pow_two _).trans H)).trans
+      (Ideal.quotientKerAlgEquivOfSurjective (f := Algebra.ofId R A) h)
+    exact ⟨e.symm.toAlgHom, AlgHom.ext <| h.forall.mpr fun x ↦ by simp⟩
+
+end surjective
 
 section BaseChange
 

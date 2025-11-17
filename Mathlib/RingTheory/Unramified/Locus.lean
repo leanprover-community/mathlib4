@@ -48,13 +48,13 @@ lemma IsUnramifiedAt.comp
     (p : Ideal A) (P : Ideal B) [P.LiesOver p] [p.IsPrime] [P.IsPrime]
     [IsUnramifiedAt R p] [IsUnramifiedAt A P] : IsUnramifiedAt R P := by
   have : FormallyUnramified (Localization.AtPrime p) (Localization.AtPrime P) :=
-    .of_comp A _ _
+    .of_restrictScalars A _ _
   exact FormallyUnramified.comp R (Localization.AtPrime p) _
 
 variable (R) in
 lemma IsUnramifiedAt.of_restrictScalars (P : Ideal B) [P.IsPrime]
     [IsUnramifiedAt R P] : IsUnramifiedAt A P :=
-  FormallyUnramified.of_comp R _ _
+  FormallyUnramified.of_restrictScalars R _ _
 
 end
 
