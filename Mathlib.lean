@@ -3977,6 +3977,7 @@ import Mathlib.FieldTheory.NormalizedTrace
 import Mathlib.FieldTheory.Perfect
 import Mathlib.FieldTheory.PerfectClosure
 import Mathlib.FieldTheory.PolynomialGaloisGroup
+import Mathlib.FieldTheory.PrimeField
 import Mathlib.FieldTheory.PrimitiveElement
 import Mathlib.FieldTheory.PurelyInseparable.Basic
 import Mathlib.FieldTheory.PurelyInseparable.Exponent
