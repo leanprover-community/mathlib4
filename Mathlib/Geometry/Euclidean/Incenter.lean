@@ -419,22 +419,63 @@ lemma ExcenterExists.affineCombination_eq_excenter_iff {signs : Finset (Fin (n +
     rw [excenter, exsphere]
 
 variable {s} in
+lemma ExcenterExists.excenter_notMem_affineSpan_face {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) {fs : Finset (Fin (n + 1))} {m : ℕ} (hfs : #fs = m + 1)
+    (hne : m ≠ n) : s.excenter signs ∉ affineSpan ℝ (Set.range (s.face hfs).points) := by
+  intro hm
+  rw [range_face_points] at hm
+  obtain ⟨i, hi⟩ : ∃ i, i ∉ (fs : Set (Fin (n + 1))) := by
+    simp only [SetLike.mem_coe]
+    have hc : #fs < #(Finset.univ : Finset (Fin (n + 1))) := by
+      have : m + 1 ≤ #fs := hfs.ge
+      grw [fs.subset_univ] at this
+      simp only [Finset.card_univ, Fintype.card_fin] at *
+      cutsat
+    obtain ⟨i, -, hi⟩ := Finset.exists_mem_notMem_of_card_lt_card hc
+    exact ⟨i, hi⟩
+  rw [excenter_eq_affineCombination] at hm
+  exact h.excenterWeights_ne_zero i (s.independent.eq_zero_of_affineCombination_mem_affineSpan
+    h.sum_excenterWeights_eq_one hm (Finset.mem_univ i) hi)
+
+lemma incenter_notMem_affineSpan_face {fs : Finset (Fin (n + 1))} {m : ℕ} (hfs : #fs = m + 1)
+    (hne : m ≠ n) : s.incenter ∉ affineSpan ℝ (Set.range (s.face hfs).points) :=
+  s.excenterExists_empty.excenter_notMem_affineSpan_face hfs hne
+
+variable {s} in
+lemma ExcenterExists.excenter_notMem_affineSpan_faceOpposite {signs : Finset (Fin (n + 1))}
+    (h : s.ExcenterExists signs) (i : Fin (n + 1)) :
+    s.excenter signs ∉ affineSpan ℝ (Set.range (s.faceOpposite i).points) :=
+  h.excenter_notMem_affineSpan_face _ (by have := NeZero.ne n; cutsat)
+
+lemma incenter_notMem_affineSpan_faceOpposite (i : Fin (n + 1)) :
+    s.incenter ∉ affineSpan ℝ (Set.range (s.faceOpposite i).points) :=
+  s.excenterExists_empty.excenter_notMem_affineSpan_faceOpposite i
+
+variable {s} in
 lemma ExcenterExists.excenter_ne_point {signs : Finset (Fin (n + 1))}
     (h : s.ExcenterExists signs) (i : Fin (n + 1)) : s.excenter signs ≠ s.points i := by
-  intro he
-  rw [eq_comm, ← Finset.univ.affineCombination_affineCombinationSingleWeights ℝ s.points
-    (Finset.mem_univ _), h.affineCombination_eq_excenter_iff
-    (Finset.univ.sum_affineCombinationSingleWeights ℝ (Finset.mem_univ _))] at he
-  obtain ⟨j, hij⟩ : ∃ j, j ≠ i := exists_ne i
-  have he' : Finset.affineCombinationSingleWeights ℝ i j = s.excenterWeights signs j := by
-    rw [he]
-  simp only [ne_eq, hij, not_false_eq_true, Finset.affineCombinationSingleWeights_apply_of_ne]
-    at he'
-  exact h.excenterWeights_ne_zero _ he'.symm
+  have hf := h.excenter_notMem_affineSpan_face (fs := {i}) (m := 0) (by simp) (NeZero.ne' _)
+  simpa using hf
 
 lemma incenter_ne_point (i : Fin (n + 1)) :
     s.incenter ≠ s.points i :=
   s.excenterExists_empty.excenter_ne_point i
+
+variable {s} in
+lemma ExcenterExists.excenter_notMem_affineSpan_pair [Nat.AtLeastTwo n]
+    {signs : Finset (Fin (n + 1))} (h : s.ExcenterExists signs) (i j : Fin (n + 1)) :
+    s.excenter signs ∉ affineSpan ℝ {s.points i, s.points j} := by
+  by_cases hij : i = j
+  · simp only [hij, Set.mem_singleton_iff, Set.insert_eq_of_mem,
+      AffineSubspace.mem_affineSpan_singleton]
+    exact h.excenter_ne_point j
+  · convert h.excenter_notMem_affineSpan_face (fs := {i, j}) (m := 1) (by simp_all)
+      Nat.AtLeastTwo.ne_one.symm
+    simp [Set.image_insert_eq]
+
+lemma incenter_notMem_affineSpan_pair [Nat.AtLeastTwo n] (i j : Fin (n + 1)) :
+    s.incenter ∉ affineSpan ℝ {s.points i, s.points j} :=
+  s.excenterExists_empty.excenter_notMem_affineSpan_pair i j
 
 variable {s} in
 lemma ExcenterExists.excenterWeights_eq_excenterWeights_iff {signs₁ signs₂ : Finset (Fin (n + 1))}
