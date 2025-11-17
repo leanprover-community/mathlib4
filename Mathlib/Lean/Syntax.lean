@@ -6,7 +6,7 @@ Authors: Thomas R. Murrills
 import Mathlib.Init
 
 /-!
-# Addional utilities for `Syntax`
+# Additional utilities for `Lean.Syntax`
 -/
 
 namespace Lean.Syntax
