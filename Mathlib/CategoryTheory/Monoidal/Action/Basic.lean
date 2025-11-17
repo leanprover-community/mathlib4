@@ -30,7 +30,7 @@ on `d` is `d ⊙ᵣ c`, and the structure isomorphisms are of the form
 * Left/Right Modules in `D` over a monoid object in `C`.
   Equivalence with `Mod_` when `D` is `C`. Bimodules objects.
 * Given a monad `M` on `C`, equivalence between `Algebra M`, and modules in `C`
-  on `M.toMon : Mon_ (C ⥤ C)`.
+  on `M.toMon : Mon (C ⥤ C)`.
 * Canonical left action of `Type u` on `u`-small cocomplete categories via the
   copower.
 
@@ -48,12 +48,12 @@ class MonoidalLeftActionStruct [MonoidalCategoryStruct C] where
   actionObj : C → D → D
   /-- The left action of a map `f : c ⟶ c'` in `C` on an object `d` in `D`.
   If we are to consider the action as a functor `Α : C ⥤ D ⥤ D`,
-  this is (Α.map f).app d`. This is denoted `f ⊵ₗ d` -/
+  this is `(Α.map f).app d`. This is denoted `f ⊵ₗ d`. -/
   actionHomLeft {c c' : C} (f : c ⟶ c') (d : D) :
     actionObj c d ⟶ actionObj c' d
   /-- The action of an object `c : C` on a map `f : d ⟶ d'` in `D`.
   If we are to consider the action as a functor `Α : C ⥤ D ⥤ D`,
-  this is (Α.obj c).map f`. This is denoted `c ⊴ₗ f`. -/
+  this is `(Α.obj c).map f`. This is denoted `c ⊴ₗ f`. -/
   actionHomRight (c : C) {d d' : D} (f : d ⟶ d') :
     actionObj c d ⟶ actionObj c d'
   /-- The action of a pair of maps `f : c ⟶ c'` and `d ⟶ d'`. By default,
@@ -100,7 +100,7 @@ scoped notation "λₗ["J"]" => MonoidalLeftActionStruct.actionUnitIso (C := J)
 end MonoidalLeftAction
 
 open scoped MonoidalLeftAction in
-/-- A `MonoidalLeftAction C D` is is the data of:
+/-- A `MonoidalLeftAction C D` is the data of:
 - For every object `c : C` and `d : D`, an object `c ⊙ₗ d` of `D`.
 - For every morphism `f : (c : C) ⟶ c'` and every `d : D`, a morphism
   `f ⊵ₗ d : c ⊙ₗ d ⟶ c' ⊙ₗ d`.
@@ -331,12 +331,12 @@ def curriedAction : C ⥤ D ⥤ D where
 variable {C} in
 /-- Bundle `d ↦ c ⊙ₗ d` as a functor. -/
 @[simps!]
-abbrev actionLeft (c : C) : D ⥤ D := curriedAction C D|>.obj c
+abbrev actionLeft (c : C) : D ⥤ D := curriedAction C D |>.obj c
 
 variable {D} in
 /-- Bundle `c ↦ c ⊙ₗ d` as a functor. -/
 @[simps!]
-abbrev actionRight (d : D) : C ⥤ D := curriedAction C D|>.flip.obj d
+abbrev actionRight (d : D) : C ⥤ D := curriedAction C D |>.flip.obj d
 
 /-- Bundle `αₗ _ _ _` as an isomorphism of trifunctors. -/
 @[simps!]
@@ -362,12 +362,12 @@ class MonoidalRightActionStruct [MonoidalCategoryStruct C] where
   actionObj : D → C → D
   /-- The right action of a map `f : c ⟶ c'` in `C` on an object `d` in `D`.
   If we are to consider the action as a functor `Α : C ⥤ D ⥤ D`,
-  this is (Α.map f).app d`. This is denoted `d ⊴ᵣ f` -/
+  this is `(Α.map f).app d`. This is denoted `d ⊴ᵣ f`. -/
   actionHomRight (d : D) {c c' : C} (f : c ⟶ c') :
     actionObj d c ⟶ actionObj d c'
   /-- The action of an object `c : C` on a map `f : d ⟶ d'` in `D`.
   If we are to consider the action as a functor `Α : C ⥤ D ⥤ D`,
-  this is (Α.obj c).map f`. This is denoted `f ⊵ᵣ c`. -/
+  this is `(Α.obj c).map f`. This is denoted `f ⊵ᵣ c`. -/
   actionHomLeft {d d' : D} (f : d ⟶ d') (c : C) :
     actionObj d c ⟶ actionObj d' c
   /-- The action of a pair of maps `f : c ⟶ c'` and `d ⟶ d'`. By default,
@@ -414,7 +414,7 @@ scoped notation "ρᵣ["J"]" => MonoidalRightActionStruct.actionUnitIso (C := J)
 end MonoidalRightAction
 
 open scoped MonoidalRightAction in
-/-- A `MonoidalRightAction C D` is is the data of:
+/-- A `MonoidalRightAction C D` is the data of:
 - For every object `c : C` and `d : D`, an object `c ⊙ᵣ d` of `D`.
 - For every morphism `f : (c : C) ⟶ c'` and every `d : D`, a morphism
   `f ⊵ᵣ d : c ⊙ᵣ d ⟶ c' ⊙ᵣ d`.
@@ -641,12 +641,12 @@ def curriedAction : C ⥤ D ⥤ D where
 variable {C} in
 /-- Bundle `d ↦ d ⊙ᵣ c` as a functor. -/
 @[simps!]
-abbrev actionRight (c : C) : D ⥤ D := curriedAction C D|>.obj c
+abbrev actionRight (c : C) : D ⥤ D := curriedAction C D |>.obj c
 
 variable {D} in
 /-- Bundle `c ↦ d ⊙ᵣ c` as a functor. -/
 @[simps!]
-abbrev actionLeft (d : D) : C ⥤ D := curriedAction C D|>.flip.obj d
+abbrev actionLeft (d : D) : C ⥤ D := curriedAction C D |>.flip.obj d
 
 /-- Bundle `αᵣ _ _ _` as an isomorphism of trifunctors. -/
 @[simps!]

@@ -142,7 +142,7 @@ protected def copy (S : Subsemigroup M) (s : Set M) (hs : s = S) :
 
 variable {S : Subsemigroup M}
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_copy {s : Set M} (hs : s = S) : (S.copy s hs : Set M) = s :=
   rfl
 
@@ -186,11 +186,11 @@ alias _root_.AddSubsemigroup.not_mem_bot := AddSubsemigroup.notMem_bot
 theorem mem_top (x : M) : x ∈ (⊤ : Subsemigroup M) :=
   Set.mem_univ x
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_top : ((⊤ : Subsemigroup M) : Set M) = Set.univ :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_bot : ((⊥ : Subsemigroup M) : Set M) = ∅ :=
   rfl
 
@@ -201,7 +201,7 @@ instance : Min (Subsemigroup M) :=
     { carrier := S₁ ∩ S₂
       mul_mem' := fun ⟨hx, hx'⟩ ⟨hy, hy'⟩ => ⟨S₁.mul_mem hx hy, S₂.mul_mem hx' hy'⟩ }⟩
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_inf (p p' : Subsemigroup M) : ((p ⊓ p' : Subsemigroup M) : Set M) = (p : Set M) ∩ p' :=
   rfl
 
@@ -235,6 +235,9 @@ open Subsemigroup
 def eqLocus (f g : M →ₙ* N) : Subsemigroup M where
   carrier := { x | f x = g x }
   mul_mem' (hx : _ = _) (hy : _ = _) := by simp [*]
+
+@[to_additive (attr := simp)]
+theorem mem_eqLocus {f g : M →ₙ* N} {x : M} : x ∈ f.eqLocus g ↔ f x = g x := Iff.rfl
 
 @[to_additive]
 theorem eq_of_eqOn_top {f g : M →ₙ* N} (h : Set.EqOn f g (⊤ : Subsemigroup M)) : f = g :=
@@ -281,6 +284,22 @@ instance toSemigroup {M : Type*} [Semigroup M] {A : Type*} [SetLike A M] [MulMem
 instance toCommSemigroup {M} [CommSemigroup M] {A : Type*} [SetLike A M] [MulMemClass A M]
     (S : A) : CommSemigroup S := fast_instance%
   Subtype.coe_injective.commSemigroup Subtype.val fun _ _ => rfl
+
+/-- A submagma of a left cancellative magma inherits left cancellation. -/
+@[to_additive
+/-- An additive submagma of a left cancellative additive magma inherits left cancellation. -/]
+instance isLeftCancelMul [IsLeftCancelMul M] (S : A) : IsLeftCancelMul S :=
+  Subtype.coe_injective.isLeftCancelMul Subtype.val fun _ _ => rfl
+
+/-- A submagma of a right cancellative magma inherits right cancellation. -/
+@[to_additive
+/-- An additive submagma of a right cancellative additive magma inherits right cancellation. -/]
+instance isRightCancelMul [IsRightCancelMul M] (S : A) : IsRightCancelMul S :=
+  Subtype.coe_injective.isRightCancelMul Subtype.val fun _ _ => rfl
+
+/-- A submagma of a cancellative magma inherits cancellation. -/
+@[to_additive /-- An additive submagma of a cancellative additive magma inherits cancellation. -/]
+instance isCancelMul [IsCancelMul M] (S : A) : IsCancelMul S where
 
 /-- The natural semigroup hom from a subsemigroup of semigroup `M` to `M`. -/
 @[to_additive /-- The natural semigroup hom from an `AddSubsemigroup` of

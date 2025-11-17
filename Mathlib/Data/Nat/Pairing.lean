@@ -148,7 +148,7 @@ theorem add_le_pair (m n : ℕ) : m + n ≤ pair m n := by
   simp only [pair, Nat.add_assoc]
   split_ifs
   · have := le_mul_self n
-    omega
+    cutsat
   · exact Nat.le_add_left _ _
 
 theorem unpair_add_le (n : ℕ) : (unpair n).1 + (unpair n).2 ≤ n :=

@@ -117,10 +117,8 @@ theorem derivative_succ_aux (n ν : ℕ) :
     norm_cast
     congr 1
     convert (Nat.choose_mul_succ_eq n (ν + 1)).symm using 1
-    · -- Porting note: was
-      -- convert mul_comm _ _ using 2
-      -- simp
-      rw [mul_comm, Nat.succ_sub_succ_eq_sub]
+    · convert mul_comm _ _ using 2
+      simp
     · apply mul_comm
 
 theorem derivative_succ (n ν : ℕ) : Polynomial.derivative (bernsteinPolynomial R n (ν + 1)) =
@@ -162,7 +160,7 @@ open Polynomial
 theorem iterate_derivative_at_0 (n ν : ℕ) :
     (Polynomial.derivative^[ν] (bernsteinPolynomial R n ν)).eval 0 =
       (ascPochhammer R ν).eval ((n - (ν - 1) : ℕ) : R) := by
-  by_cases h : ν ≤ n
+  by_cases! h : ν ≤ n
   · induction ν generalizing n with
     | zero => simp [eval_at_0]
     | succ ν ih =>
@@ -176,8 +174,7 @@ theorem iterate_derivative_at_0 (n ν : ℕ) :
       · have : n - 1 - (ν - 1) = n - ν := by omega
         rw [this, ascPochhammer_eval_succ]
         rw_mod_cast [tsub_add_cancel_of_le (h'.trans n.pred_le)]
-  · simp only [not_le] at h
-    rw [tsub_eq_zero_iff_le.mpr (Nat.le_sub_one_of_lt h), eq_zero_of_lt R h]
+  · rw [tsub_eq_zero_iff_le.mpr (Nat.le_sub_one_of_lt h), eq_zero_of_lt R h]
     simp [pos_iff_ne_zero.mp (pos_of_gt h)]
 
 theorem iterate_derivative_at_0_ne_zero [CharZero R] (n ν : ℕ) (h : ν ≤ n) :
@@ -214,7 +211,7 @@ theorem iterate_derivative_at_1 (n ν : ℕ) (h : ν ≤ n) :
   · simp
   · norm_cast
     congr
-    omega
+    cutsat
 
 theorem iterate_derivative_at_1_ne_zero [CharZero R] (n ν : ℕ) (h : ν ≤ n) :
     (Polynomial.derivative^[n - ν] (bernsteinPolynomial R n ν)).eval 1 ≠ 0 := by

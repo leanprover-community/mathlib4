@@ -34,7 +34,7 @@ as `(2 : ℤ) • ∡ _ _ _ = (2 : ℤ) • ∡ _ _ _`.
 -/
 
 
-library_note "IMO geometry formalization conventions"/--
+library_note2 «IMO geometry formalization conventions» /--
 We apply the following conventions for formalizing IMO geometry problems. A problem is assumed
 to take place in the plane unless that is clearly not intended, so it is not required to prove
 that the points are coplanar (whether or not that in fact follows from the other conditions).

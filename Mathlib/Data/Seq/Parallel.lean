@@ -73,8 +73,7 @@ theorem terminates_parallel.aux :
       simp only [parallel.aux2, rmap, List.foldr_cons, destruct_pure]
       split <;> simp
     · obtain ⟨a', e⟩ := IH m
-      simp only [parallel.aux2, rmap, List.foldr_cons]
-      simp? [parallel.aux2] at e says simp only [parallel.aux2, rmap] at e
+      simp only [parallel.aux2, rmap, List.foldr_cons] at ⊢ e
       rw [e]
       exact ⟨a', rfl⟩
   · intro s IH l S m
@@ -97,11 +96,7 @@ theorem terminates_parallel.aux :
           (Sum.inr List.nil) l with a' | ls <;> erw [e] at e'
         · contradiction
         have := IH' m _ e
-        -- Porting note: `revert e'` & `intro e'` are required.
-        revert e'
-        cases destruct c <;> intro e' <;> [injection e'; injection e' with h']
-        rw [← h']
-        simp [this]
+        grind
     rcases h : parallel.aux2 l with a | l'
     · exact lem1 _ _ ⟨a, h⟩
     · have H2 : corec parallel.aux1 (l, S) = think _ := destruct_eq_think (by
@@ -161,14 +156,7 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
         apply IH _ _ _ (Or.inr _) T
         rw [a, Seq.get?_tail]
       rcases e : Seq.get? S 0 with - | o
-      · have D : Seq.destruct S = none := by
-          dsimp [Seq.destruct]
-          rw [e]
-          rfl
-        rw [D]
-        simp only
-        have TT := TT l'
-        rwa [Seq.destruct_eq_none D, Seq.tail_nil] at TT
+      · grind [Seq.get?_zero_eq_none, Seq.get?_nil]
       · have D : Seq.destruct S = some (o, S.tail) := by
           dsimp [Seq.destruct]
           rw [e]

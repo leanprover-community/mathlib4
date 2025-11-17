@@ -6,6 +6,7 @@ Authors: Jeremy Avigad
 import Mathlib.Data.Int.Init
 import Mathlib.Data.Nat.Basic
 import Mathlib.Logic.Nontrivial.Defs
+import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Lift
 import Mathlib.Tactic.OfNat
@@ -25,6 +26,8 @@ variable {a b c d m n : ℤ}
 -- TODO: Tag in Lean
 attribute [simp] natAbs_pos
 
+@[gcongr] alias ⟨_, GCongr.ofNat_le_ofNat⟩ := ofNat_le
+
 instance instNontrivial : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
 
 @[simp] lemma ofNat_injective : Function.Injective ofNat := @Int.ofNat.inj
@@ -40,7 +43,7 @@ lemma inductionOn'_add_one (hz : b ≤ z) :
     (z + 1).inductionOn' b H0 Hs Hp = Hs z hz (z.inductionOn' b H0 Hs Hp) := by
   apply cast_eq_iff_heq.mpr
   lift z - b to ℕ using Int.sub_nonneg.mpr hz with zb hzb
-  rw [show z + 1 - b = zb + 1 by omega]
+  rw [show z + 1 - b = zb + 1 by cutsat]
   have : b + zb = z := by omega
   subst this
   convert cast_heq _ _

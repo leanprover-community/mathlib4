@@ -6,7 +6,7 @@ Authors: Oliver Nash
 import Mathlib.LinearAlgebra.Multilinear.Curry
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
-/-! # Multilinear maps over finite dimensional spaces
+/-! # Multilinear maps over finite-dimensional spaces
 
 The main results are that multilinear maps over finitely-generated, free modules are
 finitely-generated and free.

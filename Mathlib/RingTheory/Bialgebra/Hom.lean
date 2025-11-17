@@ -18,7 +18,7 @@ This file defines bundled homomorphisms of `R`-bialgebras. We simply mimic
 * `Bialgebra.counitBialgHom R A : A →ₐc[R] R`: the counit of a bialgebra as a bialgebra
   homomorphism.
 
-## Notations
+## Notation
 
 * `A →ₐc[R] B` : `R`-bialgebra homomorphism from `A` to `B`.
 
@@ -329,6 +329,8 @@ theorem counitBialgHom_apply (x : A) :
 @[simp]
 theorem counitBialgHom_toCoalgHom :
     counitBialgHom R A = Coalgebra.counitCoalgHom R A := rfl
+
+@[simp] lemma counitBialgHom_self : counitBialgHom R R = .id R R := rfl
 
 instance subsingleton_to_ring : Subsingleton (A →ₐc[R] R) :=
   ⟨fun _ _ => BialgHom.coe_coalgHom_injective (Subsingleton.elim _ _)⟩

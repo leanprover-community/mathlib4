@@ -87,43 +87,58 @@ theorem ZMod.isSquare_neg_one_mul {m n : ℕ} (hc : m.Coprime n) (hm : IsSquare 
     exact ⟨(x, y), rfl⟩
   simpa only [RingEquiv.map_neg_one] using this.map (ZMod.chineseRemainder hc).symm
 
-/-- If a prime `p` divides `n` such that `-1` is a square modulo `n`, then `p % 4 ≠ 3`. -/
-theorem Nat.Prime.mod_four_ne_three_of_dvd_isSquare_neg_one {p n : ℕ} (hpp : p.Prime) (hp : p ∣ n)
-    (hs : IsSquare (-1 : ZMod n)) : p % 4 ≠ 3 := by
-  obtain ⟨y, h⟩ := ZMod.isSquare_neg_one_of_dvd hp hs
+/-- If `p` is a prime factor of `n` such that `-1` is a square modulo `n`, then `p % 4 ≠ 3`. -/
+theorem Nat.mod_four_ne_three_of_mem_primeFactors_of_isSquare_neg_one {p n : ℕ}
+    (hp : p ∈ n.primeFactors) (hs : IsSquare (-1 : ZMod n)) : p % 4 ≠ 3 := by
+  obtain ⟨y, h⟩ := ZMod.isSquare_neg_one_of_dvd (Nat.dvd_of_mem_primeFactors hp) hs
   rw [← sq, eq_comm, show (-1 : ZMod p) = -1 ^ 2 by ring] at h
-  haveI : Fact p.Prime := ⟨hpp⟩
+  have : Fact p.Prime := ⟨Nat.prime_of_mem_primeFactors hp⟩
   exact ZMod.mod_four_ne_three_of_sq_eq_neg_sq' one_ne_zero h
 
+@[deprecated "Note that the statement now uses `Nat.primeFactors`, \
+  you can use `Nat.mem_primeFactors` to get the previous formulation" (since := "2025-10-15")]
+alias Nat.Prime.mod_four_ne_three_of_dvd_isSquare_neg_one :=
+  Nat.mod_four_ne_three_of_mem_primeFactors_of_isSquare_neg_one
+
 /-- If `n` is a squarefree natural number, then `-1` is a square modulo `n` if and only if
-`n` is not divisible by a prime `q` such that `q % 4 = 3`. -/
-theorem ZMod.isSquare_neg_one_iff {n : ℕ} (hn : Squarefree n) :
-    IsSquare (-1 : ZMod n) ↔ ∀ {q : ℕ}, q.Prime → q ∣ n → q % 4 ≠ 3 := by
-  refine ⟨fun H q hqp hqd => hqp.mod_four_ne_three_of_dvd_isSquare_neg_one hqd H, fun H => ?_⟩
+`n` does not have a prime factor `q` such that `q % 4 = 3`. -/
+theorem ZMod.isSquare_neg_one_iff_forall_mem_primeFactors_mod_four_ne_three {n : ℕ}
+    (hn : Squarefree n) : IsSquare (-1 : ZMod n) ↔ ∀ q ∈ n.primeFactors, q % 4 ≠ 3 := by
+  refine ⟨fun H q hq ↦ Nat.mod_four_ne_three_of_mem_primeFactors_of_isSquare_neg_one hq H,
+    fun H ↦ ?_⟩
   induction n using induction_on_primes with
   | zero => exact False.elim (hn.ne_zero rfl)
   | one => exact ⟨0, by simp only [mul_zero, eq_iff_true_of_subsingleton]⟩
   | prime_mul p n hpp ih =>
-    haveI : Fact p.Prime := ⟨hpp⟩
+    have : Fact p.Prime := ⟨hpp⟩
     have hcp : p.Coprime n := by
       by_contra hc
       exact hpp.not_isUnit (hn p <| mul_dvd_mul_left p <| hpp.dvd_iff_not_coprime.mpr hc)
-    have hp₁ := ZMod.exists_sq_eq_neg_one_iff.mpr (H hpp (dvd_mul_right p n))
-    exact ZMod.isSquare_neg_one_mul hcp hp₁
-      (ih hn.of_mul_right fun hqp hqd => H hqp <| dvd_mul_of_dvd_right hqd _)
+    have hp₁ := ZMod.exists_sq_eq_neg_one_iff.mpr <| H _ <|
+      Nat.mem_primeFactors.mpr ⟨hpp, Nat.dvd_mul_right .., Squarefree.ne_zero hn⟩
+    exact ZMod.isSquare_neg_one_mul hcp hp₁ <| ih hn.of_mul_right fun q hqp => H q <|
+        Nat.mem_primeFactors.mpr ⟨Nat.prime_of_mem_primeFactors hqp,
+          dvd_mul_of_dvd_right (Nat.dvd_of_mem_primeFactors hqp) _, Squarefree.ne_zero hn⟩
+
+@[deprecated "Note that the statement now uses `Nat.primeFactors`, \
+  you can use `Nat.mem_primeFactors` and `Squarefree.ne_zero` to get the previous formulation"
+  (since := "2025-10-15")]
+alias ZMod.isSquare_neg_one_iff :=
+  ZMod.isSquare_neg_one_iff_forall_mem_primeFactors_mod_four_ne_three
 
 /-- If `n` is a squarefree natural number, then `-1` is a square modulo `n` if and only if
 `n` has no divisor `q` that is `≡ 3 mod 4`. -/
 theorem ZMod.isSquare_neg_one_iff' {n : ℕ} (hn : Squarefree n) :
     IsSquare (-1 : ZMod n) ↔ ∀ {q : ℕ}, q ∣ n → q % 4 ≠ 3 := by
   have help : ∀ a b : ZMod 4, a ≠ 3 → b ≠ 3 → a * b ≠ 3 := by decide
-  rw [ZMod.isSquare_neg_one_iff hn]
-  refine ⟨?_, fun H q _ => H⟩
+  rw [ZMod.isSquare_neg_one_iff_forall_mem_primeFactors_mod_four_ne_three hn]
+  refine ⟨?_, fun H q hq => H <| Nat.dvd_of_mem_primeFactors hq⟩
   intro H
   refine @induction_on_primes _ ?_ ?_ (fun p q hp hq hpq => ?_)
   · exact fun _ => by simp
   · exact fun _ => by simp
-  · replace hp := H hp (dvd_of_mul_right_dvd hpq)
+  · replace hp := H _ <|
+      Nat.mem_primeFactors.mpr ⟨hp, dvd_of_mul_right_dvd hpq, Squarefree.ne_zero hn⟩
     replace hq := hq (dvd_of_mul_left_dvd hpq)
     rw [show 3 = 3 % 4 by simp, Ne, ← ZMod.natCast_eq_natCast_iff'] at hp hq ⊢
     rw [Nat.cast_mul]
@@ -141,7 +156,7 @@ theorem Nat.eq_sq_add_sq_of_isSquare_mod_neg_one {n : ℕ} (h : IsSquare (-1 : Z
   | zero => exact ⟨0, 0, rfl⟩
   | one => exact ⟨0, 1, rfl⟩
   | prime_mul p n hpp ih =>
-    haveI : Fact p.Prime := ⟨hpp⟩
+    have : Fact p.Prime := ⟨hpp⟩
     have hp : IsSquare (-1 : ZMod p) := ZMod.isSquare_neg_one_of_dvd ⟨n, rfl⟩ h
     obtain ⟨u, v, huv⟩ := Nat.Prime.sq_add_sq (ZMod.exists_sq_eq_neg_one_iff.mp hp)
     obtain ⟨x, y, hxy⟩ := ih (ZMod.isSquare_neg_one_of_dvd ⟨p, mul_comm _ _⟩ h)
@@ -153,7 +168,7 @@ theorem ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_isCoprime {n x y : ℤ} (h : n 
     (hc : IsCoprime x y) : IsSquare (-1 : ZMod n.natAbs) := by
   obtain ⟨u, v, huv⟩ : IsCoprime x n := by
     have hc2 : IsCoprime (x ^ 2) (y ^ 2) := hc.pow
-    rw [show y ^ 2 = n + -1 * x ^ 2 by omega] at hc2
+    rw [show y ^ 2 = n + -1 * x ^ 2 by cutsat] at hc2
     exact (IsCoprime.pow_left_iff zero_lt_two).mp hc2.of_add_mul_right_right
   have H : u * y * (u * y) - -1 = n * (-v ^ 2 * n + u ^ 2 + 2 * v) := by
     linear_combination -u ^ 2 * h + (n * v - u * x - 1) * huv
@@ -200,31 +215,25 @@ every prime `q` such that `q % 4 = 3` in the prime factorization of `n` is even.
 (The assumption `0 < n` is not present, since for `n = 0`, both sides are satisfied;
 the right-hand side holds, since `padicValNat q 0 = 0` by definition.) -/
 theorem Nat.eq_sq_add_sq_iff {n : ℕ} :
-    (∃ x y : ℕ, n = x ^ 2 + y ^ 2) ↔ ∀ {q : ℕ}, q.Prime → q % 4 = 3 → Even (padicValNat q n) := by
+    (∃ x y, n = x ^ 2 + y ^ 2) ↔ ∀ q ∈ n.primeFactors, q % 4 = 3 → Even (padicValNat q n) := by
   rcases n.eq_zero_or_pos with (rfl | hn₀)
-  · exact ⟨fun _ q _ _ => (@padicValNat.zero q).symm ▸ Even.zero, fun _ => ⟨0, 0, rfl⟩⟩
+  · exact ⟨fun _ q _ _ ↦ padicValNat.zero.symm ▸ Even.zero, fun _ ↦ ⟨0, 0, rfl⟩⟩
   -- now `0 < n`
-  rw [Nat.eq_sq_add_sq_iff_eq_sq_mul]
-  refine ⟨fun H q hq h => ?_, fun H => ?_⟩
-  · obtain ⟨a, b, h₁, h₂⟩ := H
-    have hqb := padicValNat.eq_zero_of_not_dvd fun hf =>
-      (hq.mod_four_ne_three_of_dvd_isSquare_neg_one hf h₂) h
-    have hab : a ^ 2 * b ≠ 0 := h₁ ▸ hn₀.ne'
-    have ha₂ := left_ne_zero_of_mul hab
-    have ha := mt sq_eq_zero_iff.mpr ha₂
-    have hb := right_ne_zero_of_mul hab
-    haveI hqi : Fact q.Prime := ⟨hq⟩
-    simp_rw [h₁, padicValNat.mul ha₂ hb, padicValNat.pow 2 ha, hqb, add_zero]
-    exact even_two_mul _
-  · obtain ⟨b, a, hb₀, ha₀, hab, hb⟩ := Nat.sq_mul_squarefree_of_pos hn₀
-    refine ⟨a, b, hab.symm, (ZMod.isSquare_neg_one_iff hb).mpr fun {q} hqp hqb hq4 => ?_⟩
-    refine Nat.not_even_iff_odd.2 ?_ (H hqp hq4)
-    have hqb' : padicValNat q b = 1 :=
-      b.factorization_def hqp ▸ le_antisymm (hb.natFactorization_le_one _)
-        ((hqp.dvd_iff_one_le_factorization hb₀.ne').mp hqb)
-    haveI hqi : Fact q.Prime := ⟨hqp⟩
-    simp_rw [← hab, padicValNat.mul (pow_ne_zero 2 ha₀.ne') hb₀.ne', hqb',
-      padicValNat.pow 2 ha₀.ne']
-    exact odd_two_mul_add_one _
+  refine eq_sq_add_sq_iff_eq_sq_mul.trans ⟨fun ⟨a, b, h₁, h₂⟩ q hq h ↦ ?_, fun H ↦ ?_⟩
+  · have : Fact q.Prime := ⟨prime_of_mem_primeFactors hq⟩
+    have : q ∣ b → q ∈ b.primeFactors := by grind [mem_primeFactors]
+    grind [padicValNat.mul, padicValNat.pow,
+      padicValNat.eq_zero_of_not_dvd, mod_four_ne_three_of_mem_primeFactors_of_isSquare_neg_one]
+  · obtain ⟨b, a, hb₀, ha₀, hab, hb⟩ := sq_mul_squarefree_of_pos hn₀
+    refine ⟨a, b, hab.symm, ZMod.isSquare_neg_one_iff_forall_mem_primeFactors_mod_four_ne_three hb
+      |>.mpr fun q hq hq4 ↦ ?_⟩
+    have : Fact q.Prime := ⟨prime_of_mem_primeFactors hq⟩
+    have := Nat.primeFactors_mono <| Dvd.intro_left _ hab
+    have : b.factorization q = 1 := by grind [Squarefree.natFactorization_le_one,
+      Prime.dvd_iff_one_le_factorization, prime_of_mem_primeFactors, dvd_of_mem_primeFactors]
+    grind [factorization_def, prime_of_mem_primeFactors, padicValNat.mul, padicValNat.pow]
 
 end Main
+
+instance {n : ℕ} : Decidable (∃ x y, n = x ^ 2 + y ^ 2) :=
+  decidable_of_iff' _ Nat.eq_sq_add_sq_iff

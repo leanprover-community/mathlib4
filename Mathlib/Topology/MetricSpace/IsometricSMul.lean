@@ -39,23 +39,16 @@ universe u v w
 variable (M : Type u) (G : Type v) (X : Type w)
 
 /-- An additive action is isometric if each map `x ↦ c +ᵥ x` is an isometry. -/
-class IsIsometricVAdd [PseudoEMetricSpace X] [VAdd M X] : Prop where
-  protected isometry_vadd : ∀ c : M, Isometry ((c +ᵥ ·) : X → X)
-
-@[deprecated (since := "2025-03-10")] alias IsometricVAdd := IsIsometricVAdd
+class IsIsometricVAdd (X : Type w) [PseudoEMetricSpace X] [VAdd M X] : Prop where
+  isometry_vadd (X) : ∀ c : M, Isometry ((c +ᵥ ·) : X → X)
 
 /-- A multiplicative action is isometric if each map `x ↦ c • x` is an isometry. -/
 @[to_additive]
-class IsIsometricSMul [PseudoEMetricSpace X] [SMul M X] : Prop where
-  protected isometry_smul : ∀ c : M, Isometry ((c • ·) : X → X)
+class IsIsometricSMul (X : Type w) [PseudoEMetricSpace X] [SMul M X] : Prop where
+  isometry_smul (X) : ∀ c : M, Isometry ((c • ·) : X → X)
 
-@[deprecated (since := "2025-03-10")] alias IsometricSMul := IsIsometricSMul
-
--- Porting note: Lean 4 doesn't support `[]` in classes, so make a lemma instead of `export`ing
-@[to_additive]
-theorem isometry_smul {M : Type u} (X : Type w) [PseudoEMetricSpace X] [SMul M X]
-    [IsIsometricSMul M X] (c : M) : Isometry (c • · : X → X) :=
-  IsIsometricSMul.isometry_smul c
+export IsIsometricSMul (isometry_smul)
+export IsIsometricVAdd (isometry_vadd)
 
 @[to_additive]
 instance (priority := 100) IsIsometricSMul.to_continuousConstSMul [PseudoEMetricSpace X] [SMul M X]

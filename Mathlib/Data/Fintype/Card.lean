@@ -96,7 +96,7 @@ theorem toFinset_card {α : Type*} (s : Set α) [Fintype s] : s.toFinset.card = 
 
 end Set
 
-@[simp]
+@[simp, grind =]
 theorem Finset.card_univ [Fintype α] : #(univ : Finset α) = Fintype.card α := rfl
 
 theorem Finset.eq_univ_of_card [Fintype α] (s : Finset α) (hs : #s = Fintype.card α) :
@@ -127,8 +127,7 @@ theorem Finset.card_compl_lt_iff_nonempty [Fintype α] [DecidableEq α] (s : Fin
   sᶜ.card_lt_iff_ne_univ.trans s.compl_ne_univ_iff_nonempty
 
 theorem Finset.card_univ_diff [DecidableEq α] [Fintype α] (s : Finset α) :
-    #(univ \ s) = Fintype.card α - #s :=
-  Finset.card_sdiff (subset_univ s)
+    #(univ \ s) = Fintype.card α - #s := by grind
 
 theorem Finset.card_compl [DecidableEq α] [Fintype α] (s : Finset α) : #sᶜ = Fintype.card α - #s :=
   Finset.card_univ_diff s

@@ -76,7 +76,7 @@ lemma natCast_of_isNilpotent_of_coprime (h : p.Coprime n) :
   obtain ⟨m, hm⟩ := hp
   suffices ∃ a b : A, p ^ m * a + n * b = 1 by
     obtain ⟨a, b, h⟩ := this
-    apply isUnit_of_mul_eq_one (n : A) b
+    refine .of_mul_eq_one b ?_
     simpa [hm] using h
   refine ⟨(p ^ m).gcdA n, (p ^ m).gcdB n, ?_⟩
   norm_cast
@@ -88,9 +88,9 @@ theorem natCast_factorial_of_isNilpotent [Fact p.Prime] (h : n < p) :
   | zero => simp
   | succ n ih =>
     simp only [factorial_succ, cast_mul, IsUnit.mul_iff]
-    refine ⟨.natCast_of_isNilpotent_of_coprime hp ?_, ih (by omega)⟩
+    refine ⟨.natCast_of_isNilpotent_of_coprime hp ?_, ih (by cutsat)⟩
     rw [Nat.Prime.coprime_iff_not_dvd Fact.out]
-    exact Nat.not_dvd_of_pos_of_lt (by omega) h
+    exact Nat.not_dvd_of_pos_of_lt (by cutsat) h
 
 end Nilpotent
 

@@ -131,7 +131,7 @@ theorem maximalIdeal_isPrincipal_of_isDedekindDomain [IsLocalRing R] [IsDomain R
     · apply Submodule.FG.map; exact IsNoetherian.noetherian _
   · have :
         (M.map (DistribMulAction.toLinearMap R K x)).comap (Algebra.linearMap R K) = ⊤ := by
-      by_contra h; apply hx
+      contrapose! hx with h
       rintro m' ⟨m, hm, rfl : algebraMap R K m = m'⟩
       obtain ⟨k, hk⟩ := hb₃ m hm
       have hk' : x * algebraMap R K m = algebraMap R K k := by
@@ -183,8 +183,8 @@ theorem tfae_of_isNoetherianRing_of_isLocalRing_of_isDomain
     intro H
     constructor
     intro I J
-    by_cases hI : I = ⊥; · subst hI; left; exact bot_le
-    by_cases hJ : J = ⊥; · subst hJ; right; exact bot_le
+    by_cases hI : I = ⊥; · order
+    by_cases hJ : J = ⊥; · order
     obtain ⟨n, rfl⟩ := H I hI
     obtain ⟨m, rfl⟩ := H J hJ
     exact (le_total m n).imp Ideal.pow_le_pow_right Ideal.pow_le_pow_right

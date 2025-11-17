@@ -18,7 +18,7 @@ datatypes representing isomorphisms of `AddMonoid`s/`AddGroup`s and `Monoid`s/`G
 * `MulEquivClass`, `AddEquivClass`: classes for types containing bundled equivalences that
   preserve multiplication/addition.
 
-## Notations
+## Notation
 
 * ``infix ` ≃* `:25 := MulEquiv``
 * ``infix ` ≃+ `:25 := AddEquiv``
@@ -446,7 +446,7 @@ protected def cast {ι : Type*} {M : ι → Type*} [∀ i, Mul (M i)] {i j : ι}
   map_mul' _ _ := by cases h; rfl
 
 /-!
-## Monoids
+### Monoids
 -/
 
 section MulOneClass
@@ -522,7 +522,7 @@ theorem toMonoidHom_injective : Injective (toMonoidHom : M ≃* N → M →* N) 
 end MulOneClass
 
 /-!
-# Groups
+### Groups
 -/
 
 /-- A multiplicative equivalence of groups preserves inversion. -/

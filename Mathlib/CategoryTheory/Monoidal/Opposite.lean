@@ -158,6 +158,7 @@ instance monoidalCategoryOp : MonoidalCategory Cᵒᵖ where
   whiskerRight f X := (f.unop ▷ X.unop).op
   tensorHom f g := (f.unop ⊗ₘ g.unop).op
   tensorHom_def _ _ := Quiver.Hom.unop_inj (tensorHom_def' _ _)
+  tensorHom_comp_tensorHom _ _ _ _ := Quiver.Hom.unop_inj <| by simp
   tensorUnit := op (𝟙_ C)
   associator X Y Z := (α_ (unop X) (unop Y) (unop Z)).symm.op
   leftUnitor X := (λ_ (unop X)).symm.op
@@ -237,6 +238,7 @@ instance monoidalCategoryMop : MonoidalCategory Cᴹᵒᵖ where
   whiskerRight f X := (X.unmop ◁ f.unmop).mop
   tensorHom f g := (g.unmop ⊗ₘ f.unmop).mop
   tensorHom_def _ _ := Quiver.Hom.unmop_inj (tensorHom_def' _ _)
+  tensorHom_comp_tensorHom _ _ _ _ := Quiver.Hom.unmop_inj <| by simp
   tensorUnit := mop (𝟙_ C)
   associator X Y Z := (α_ (unmop Z) (unmop Y) (unmop X)).symm.mop
   leftUnitor X := (ρ_ (unmop X)).mop
@@ -348,9 +350,9 @@ instance MonoidalOpposite.mopMopEquivalenceInverseMonoidal :
 
 instance : (mopMopEquivalence C).IsMonoidal where
   leftAdjoint_ε := by
-    simp [ε, η, Adjunction.homEquiv, mopMopEquivalence, Equivalence.trans, unmopEquiv, ε]
+    simp [ε, η, mopMopEquivalence, Equivalence.trans, unmopEquiv, ε]
   leftAdjoint_μ X Y := by
-    simp [μ, δ, Adjunction.homEquiv, mopMopEquivalence, Equivalence.trans, unmopEquiv, μ]
+    simp [μ, δ, mopMopEquivalence, Equivalence.trans, unmopEquiv, μ]
 
 /-- The identification `mop X ⊗ mop Y = mop (Y ⊗ X)` as a natural isomorphism. -/
 @[simps!]
@@ -432,7 +434,7 @@ instance : (opOpEquivalence C).inverse.Monoidal := monoidalOpOp
 @[deprecated (since := "2025-06-08")] alias unopUnop_δ := monoidalUnopUnop_δ
 
 instance : (opOpEquivalence C).IsMonoidal where
-  leftAdjoint_ε := by simp [Adjunction.homEquiv, opOpEquivalence]
-  leftAdjoint_μ := by simp [Adjunction.homEquiv, opOpEquivalence]
+  leftAdjoint_ε := by simp [opOpEquivalence]
+  leftAdjoint_μ := by simp [opOpEquivalence]
 
 end CategoryTheory
