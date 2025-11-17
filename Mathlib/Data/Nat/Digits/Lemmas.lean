@@ -302,7 +302,7 @@ theorem ofDigits_neg_one :
     ring
 
 /-- Explicit computation of the `i`-th digit of `n` in base `b`. -/
-theorem getD_digits (b n i : ℕ) (h : 2 ≤ b) : (digits b n).getD i 0 = n / b ^ i % b := by
+theorem getD_digits (n i : ℕ) {b : ℕ} (h : 2 ≤ b) : (digits b n).getD i 0 = n / b ^ i % b := by
   obtain ⟨b, rfl⟩ := Nat.exists_eq_add_of_le' h
   clear h
   rw [List.getD_eq_getElem?_getD]
