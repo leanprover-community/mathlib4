@@ -20,7 +20,7 @@ variable (C : Type u) [Category.{v} C]
 
 /-- The functor `ComposableArrows C n ⥤ ComposableArrows C 1`
 which sends `S` to `mk₁ (S.map' i j)` when `i`, `j` and `n`
-are such that `i ≤ j` and `j≤ n`. -/
+are such that `i ≤ j` and `j ≤ n`. -/
 @[simps]
 noncomputable def functorArrows (i j n : ℕ) (hij : i ≤ j := by cutsat)
       (hj : j ≤ n := by cutsat) :
