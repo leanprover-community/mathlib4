@@ -449,14 +449,49 @@ being an immersion includes a choice of linear isomorphism between `E × F` and 
 the choice of `F` enters. If you need closer control over the complement `F`,
 use `IsImmersionOfComplement` instead.
 -/
-def IsImmersion (f : M → N) : Prop := ∀ x, IsImmersionAt I J n f x
+def IsImmersion (f : M → N) : Prop :=
+  ∃ (F : Type u) (_ : NormedAddCommGroup F) (_ : NormedSpace 𝕜 F), IsImmersionOfComplement F I J n f
+  --∀ x, IsImmersionAt I J n f x
 
 namespace IsImmersion
 
 variable {f g : M → N}
 
+/-- A choice of complement of the model normed space `E` of `M` in the model normed space
+`E'` of `N` -/
+def complement (h : IsImmersion I J n f) : Type u := Classical.choose h
+
+noncomputable instance (h : IsImmersion I J n f) : NormedAddCommGroup h.complement :=
+  Classical.choose <| Classical.choose_spec h
+
+noncomputable instance (h : IsImmersion I J n f) : NormedSpace 𝕜 h.complement :=
+  Classical.choose <| Classical.choose_spec <| Classical.choose_spec h
+
+lemma isImmersionOfComplement_complement (h : IsImmersion I J n f) :
+    IsImmersionOfComplement h.complement I J n f :=
+  Classical.choose_spec <| Classical.choose_spec <| Classical.choose_spec h
+
 /-- If `f` is an immersion, it is an immersion at each point. -/
-lemma isImmersionAt (h : IsImmersion I J n f) (x : M) : IsImmersionAt I J n f x := h x
+lemma isImmersionAt (h : IsImmersion I J n f) (x : M) : IsImmersionAt I J n f x := by
+  rw [IsImmersionAt_def]
+  use h.complement, by infer_instance, by infer_instance, h.isImmersionOfComplement_complement x
+
+/-- If `f` is an immersion at each point, it is also an immersion.
+
+Note that this lemma has some mathematical content with our definitions: being an immersion involves
+a global choice of complement (which is independent of the chosen point). -/
+lemma ofIsImmersionAt (f : M → N) (h : ∀ x, IsImmersionAt I J n f x) : IsImmersion I J n f := by
+  by_cases hM : Nonempty M
+  · inhabit M
+    let x : M := Inhabited.default
+    use (h x).complement, by infer_instance, by infer_instance
+    intro y
+    -- now, construct a linear equivalence from (h y).complement to F...
+    -- TODO: need some API to translate here!
+    sorry
+  · -- We can choose *any* complement: the immersion condition is vacuous as M is empty.
+    use E'', by infer_instance, by infer_instance
+    exact fun y ↦ (not_nonempty_iff.mp hM).false y |>.elim
 
 /-- If `f = g` and `f` is an immersion, so is `g`. -/
 theorem congr (h : IsImmersion I J n f) (heq : f = g) : IsImmersion I J n g :=
