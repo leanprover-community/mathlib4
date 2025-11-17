@@ -14,13 +14,9 @@ import Mathlib.Condensed.Light.Module
 
 # Closed symmetric monoidal structure on light condensed modules
 
-We define a symmetric monoidal structure on a category of sheaves on a small site that is equivalent
-to light condensed modules, by localizing the symmetric monoidal structure on the presheaf category.
-
-By Day's reflection theorem, we obtain a closed structure.
-
-Finally, we transfer all this structure along the equivalence of categories, to obtain the closed
-symmetric monoidal structure on light condensed modules.
+We define a symmetric monoidal structure on light condensed modules by localizing the symmetric
+monoidal structure on the presheaf category. By Day's reflection theorem, we obtain a closed
+structure.
 -/
 
 universe u
