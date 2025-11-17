@@ -282,16 +282,10 @@ lemma congr_iff (hfg : f =ᶠ[𝓝 x] g) :
     IsImmersionAtOfComplement F I J n f x ↔ IsImmersionAtOfComplement F I J n g x :=
   ⟨fun h ↦ h.congr_of_eventuallyEq hfg, fun h ↦ h.congr_of_eventuallyEq hfg.symm⟩
 
-def LinearMap.equivRange_of_injective {f : E →ₗ[𝕜] F} (hf : Injective f) : E ≃ LinearMap.range f :=
-  sorry -- see ContinuousLinearEquiv.equivRange, and boil this down
-
-def LinearMap.equivRange_of_injective' {f : E →ₗ[𝕜] F} (hf : Injective f) : E ≃ₗ[𝕜] LinearMap.range f :=
-  sorry -- see ContinuousLinearEquiv.equivRange, and boil this down
-
-def smallComplement (hf : IsImmersionAtOfComplement F I J n f x) : Type u := by
-  letI A' : Submodule 𝕜 (E × F) := LinearMap.range (LinearMap.prod 0 .id)
-  letI φ : F ≃ A' := LinearMap.equivRange_of_injective (by intro x y hxy; simp_all)
-  use LinearMap.range (hf.equiv.domRestrict A') -- xxx: better tactic/explicit term?
+/-- Given an immersion `f` at `x`, this is a choice of complement which lives in the same universe
+as the model space for the co-domain of `f`: this is useful to avoid universe restrictions. -/
+def smallComplement (hf : IsImmersionAtOfComplement F I J n f x) : Type u :=
+  LinearMap.range (hf.equiv.domRestrict (LinearMap.range (LinearMap.prod 0 .id)))
 
 instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedAddCommGroup hf.smallComplement := by
   unfold smallComplement
@@ -301,23 +295,18 @@ instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedSpace 𝕜 hf.smal
   unfold smallComplement
   infer_instance
 
+/-- If `f` is an immersion at `x`, then any complement used in this definition is
+isomorphic to the `smallComplement`. -/
 def smallEquiv (hf : IsImmersionAtOfComplement F I J n f x) : F ≃ₗ[𝕜] hf.smallComplement := by
-  simp only [smallComplement]
-  set A' : Submodule 𝕜 (E × F) := LinearMap.range (LinearMap.prod 0 .id)
-  set φ : F ≃ A' := LinearMap.equivRange_of_injective (by intro x y hxy; simp_all)
-  show F ≃ₗ[𝕜] (LinearMap.range ((hf.equiv.toLinearEquiv).domRestrict A'))
-  apply φ.trans (LinearMap.equivRange_of_injective' ?_))--(by simp))
-  sorry
+  letI A' : Submodule 𝕜 (E × F) := LinearMap.range (LinearMap.prod 0 .id)
+  letI φ : F ≃ₗ[𝕜] A' := LinearEquiv.ofInjective (LinearMap.prod 0 .id) (by intro x y hxy; simp_all)
+  exact φ.trans <| LinearEquiv.ofInjective _ (by simp_all [A'])
 
-#exit
+-- This statement is weaker than `smallEquiv`, but is it still useful?
 lemma small (hf : IsImmersionAtOfComplement F I J n f x) : Small.{u} F := by
-  let A' : Submodule 𝕜 (E × F) := LinearMap.range (LinearMap.prod 0 .id)
-  let φ : F ≃ A' := LinearMap.equivRange_of_injective (by intro x y hxy; simp_all)
-  refine ⟨?_⟩
-  use LinearMap.range (hf.equiv.domRestrict A')
-  exact ⟨φ.trans (LinearMap.equivRange_of_injective (by simp))⟩
+  use hf.smallComplement
+  exact ⟨hf.smallEquiv⟩
 
-#exit
 lemma trans_F (h : IsImmersionAtOfComplement F I J n f x) (e : F ≃L[𝕜] F') :
     IsImmersionAtOfComplement F' I J n f x := by
   rewrite [IsImmersionAtOfComplement_def]
