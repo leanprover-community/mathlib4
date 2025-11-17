@@ -476,7 +476,7 @@ alias exists_chain_of_relationReflTransGen := exists_isChain_cons_of_relationRef
 -/
 theorem exists_isChain_ne_nil_of_relationReflTransGen (h : Relation.ReflTransGen r a b) :
     ∃ l, ∃ (hl : l ≠ []), IsChain r l ∧ l.head hl = a ∧ getLast l hl = b := by
-  rcases exists_isChain_cons_of_relationReflTransGen h with ⟨l, _⟩; use (a :: l); grind
+  rcases exists_isChain_cons_of_relationReflTransGen h with ⟨l, _⟩; grind
 
 /-- Given a chain `l`, such that a predicate `p` holds for its head if it is nonempty,
 and if `r x y → p x → p y`, then the predicate is true everywhere in the chain.

@@ -41,6 +41,8 @@ theorem hasBasis_nhds [TopologicalSpace R] [IsValuativeTopology R] (x : R) :
       fun γ : (ValueGroupWithZero R)ˣ => { z | v (z - x) < γ } :=
   hasBasis_nhds_iff.mp ‹_› _
 
+/-! ### Alternate constructors -/
+
 section
 
 variable [TopologicalSpace R] [ContinuousConstVAdd R R]
@@ -133,7 +135,7 @@ instance (priority := low) isTopologicalAddGroup : IsTopologicalAddGroup R := by
   · simpa [ContinuousAt] using (continuous_const_vadd (-x₀)).continuousAt (x := x₀)
 
 instance (priority := low) : IsTopologicalRing R :=
-  letI := IsTopologicalAddGroup.toUniformSpace R
+  letI := IsTopologicalAddGroup.rightUniformSpace R
   letI := isUniformAddGroup_of_addCommGroup (G := R)
   inferInstance
 
