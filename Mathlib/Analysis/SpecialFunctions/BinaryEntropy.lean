@@ -213,8 +213,7 @@ This is a generalization of the binary entropy function `binEntropy`. -/
 
 lemma qaryEntropy_pos (hp₀ : 0 < p) (hp₁ : p < 1) : 0 < qaryEntropy q p := by
   unfold qaryEntropy
-  have := binEntropy_pos hp₀ hp₁
-  positivity
+  positivity [binEntropy_pos hp₀ hp₁]
 
 lemma qaryEntropy_nonneg (hp₀ : 0 ≤ p) (hp₁ : p ≤ 1) : 0 ≤ qaryEntropy q p := by
   obtain rfl | hp₀ := hp₀.eq_or_lt
@@ -340,7 +339,7 @@ lemma deriv2_qaryEntropy :
           simp [field, sub_ne_zero_of_ne xne1.symm, this, d_oneminus]
           ring
       · apply DifferentiableAt.add
-        simp only [differentiableAt_const]
+        · simp only [differentiableAt_const]
         exact DifferentiableAt.log (by fun_prop) (sub_ne_zero.mpr xne1.symm)
     filter_upwards [eventually_ne_nhds xne0, eventually_ne_nhds xne1]
       with y xne0 h2 using deriv_qaryEntropy xne0 h2
