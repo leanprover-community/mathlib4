@@ -15,7 +15,6 @@ import Mathlib.Algebra.Homology.DerivedCategory.Ext.Bijection
 universe u v v'
 
 variable (R : Type u) [CommRing R]
--- need to investigate why `Ring` stop `Module` instance on `Ext`
 
 open CategoryTheory Abelian
 
