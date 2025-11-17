@@ -411,7 +411,7 @@ theorem invFunIdAssoc_inv_app (e : C ≌ D) (F : D ⥤ E) (X : D) :
   simp
 
 /-- If `C` is equivalent to `D`, then `C ⥤ E` is equivalent to `D ⥤ E`. -/
-@[simps! functor inverse unitIso counitIso]
+@[simps! functor inverse unitIso_hom_app unitIso_inv_app counitIso_hom_app counitIso_inv_app]
 def congrLeft (e : C ≌ D) : C ⥤ E ≌ D ⥤ E where
   functor := (whiskeringLeft _ _ _).obj e.inverse
   inverse := (whiskeringLeft _ _ _).obj e.functor
@@ -423,25 +423,8 @@ def congrLeft (e : C ≌ D) : C ⥤ E ≌ D ⥤ E where
     simp only [funInvIdAssoc_inv_app, id_obj, comp_obj, invFunIdAssoc_hom_app,
       Functor.comp_map, ← F.map_comp, unit_inverse_comp, map_id]
 
-@[simp]
-theorem congrLeft_unit (e : C ≌ D) : (e.congrLeft (E := E)).unit = e.congrLeft.unitIso.hom :=
-  rfl
-
-@[simp]
-theorem congrLeft_counit (e : C ≌ D) : (e.congrLeft (E := E)).counit = e.congrLeft.counitIso.hom :=
-  rfl
-
-@[simp]
-theorem congrLeft_unitInv (e : C ≌ D) : (e.congrLeft (E := E)).unitInv = e.congrLeft.unitIso.inv :=
-  rfl
-
-@[simp]
-theorem congrLeft_counitInv (e : C ≌ D) :
-    (e.congrLeft (E := E)).counitInv = e.congrLeft.counitIso.inv :=
-  rfl
-
 /-- If `C` is equivalent to `D`, then `E ⥤ C` is equivalent to `E ⥤ D`. -/
-@[simps! functor inverse unitIso counitIso]
+@[simps! functor inverse unitIso_hom_app unitIso_inv_app counitIso_hom_app counitIso_inv_app]
 def congrRight (e : C ≌ D) : E ⥤ C ≌ E ⥤ D where
   functor := (whiskeringRight _ _ _).obj e.functor
   inverse := (whiskeringRight _ _ _).obj e.inverse
