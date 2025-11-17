@@ -621,11 +621,11 @@ lemma toAddSubmonoid_irrelevant_le {P : AddSubmonoid A} :
 
 lemma toIdeal_irrelevant_le {I : Ideal A} :
     𝒜₊.toIdeal ≤ I ↔ ∀ i > 0, .ofClass (𝒜 i) ≤ I.toAddSubmonoid :=
-  irrelevant_toAddSubmonoid_le _
+  toAddSubmonoid_irrelevant_le _
 
 lemma irrelevant_le {P : HomogeneousIdeal 𝒜} :
     𝒜₊ ≤ P ↔ ∀ i > 0, .ofClass (𝒜 i) ≤ P.toAddSubmonoid :=
-  irrelevant_toIdeal_le _
+  toIdeal_irrelevant_le _
 
 end HomogeneousIdeal
 
