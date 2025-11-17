@@ -641,7 +641,7 @@ be a family of convex sets. Suppose that for each point `x : M` there exists a n
 for all `x`.
 
 This is a special case of `exists_contMDiffSection_forall_mem_convex_of_local` where `V` is the
-trivial bundle. See also `exists_smooth_forall_mem_convex_of_local_const`. -/
+trivial bundle. See also `exists_contMDiffMap_mem_convex_of_local_const`. -/
 theorem exists_contMDiffMap_forall_mem_convex_of_local (ht : ∀ x, Convex ℝ (t x))
     (Hloc : ∀ x : M, ∃ U ∈ 𝓝 x, ∃ g : M → F, ContMDiffOn I 𝓘(ℝ, F) n g U ∧ ∀ y ∈ U, g y ∈ t y) :
     ∃ g : C^n⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x :=
@@ -662,11 +662,15 @@ a family of convex sets. Suppose that for each point `x : M` there exists a vect
 for all `y` in a neighborhood of `x` we have `c ∈ t y`. Then there exists a smooth function
 `g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯` such that `g x ∈ t x` for all `x`. See also
 `exists_contMDiffMap_forall_mem_convex_of_local`. -/
-theorem exists_smooth_forall_mem_convex_of_local_const (ht : ∀ x, Convex ℝ (t x))
-    (Hloc : ∀ x : M, ∃ c : F, ∀ᶠ y in 𝓝 x, c ∈ t y) : ∃ g : C^∞⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x :=
+theorem exists_contMDiffMap_forall_mem_convex_of_local_const (ht : ∀ x, Convex ℝ (t x))
+    (Hloc : ∀ x : M, ∃ c : F, ∀ᶠ y in 𝓝 x, c ∈ t y) : ∃ g : C^n⟮I, M; 𝓘(ℝ, F), F⟯, ∀ x, g x ∈ t x :=
   exists_contMDiffMap_forall_mem_convex_of_local I ht fun x =>
     let ⟨c, hc⟩ := Hloc x
     ⟨_, hc, fun _ => c, contMDiffOn_const, fun _ => id⟩
+
+@[deprecated (since := "2025-11-06")]
+alias exists_smooth_forall_mem_convex_of_local_const :=
+  exists_contMDiffMap_forall_mem_convex_of_local_const
 
 /-- Let `M` be a smooth σ-compact manifold with extended distance. Let `K : ι → Set M` be a locally
 finite family of closed sets, let `U : ι → Set M` be a family of open sets such that `K i ⊆ U i` for
