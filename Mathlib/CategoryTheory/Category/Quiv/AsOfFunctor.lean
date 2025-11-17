@@ -51,7 +51,9 @@ namespace CategoryTheory.Quiv
 open Opposite
 universe w₂ w₁ w' w v₂ v₁ v u₂ u₁ u
 
+/-- Convenience instance so we can write `0 : WalkingParallelPairᵒᵖ := op .zero. -/
 scoped instance : Zero (WalkingParallelPairᵒᵖ) := ⟨.op .zero⟩
+/-- Convenience instance so we can write `1 : WalkingParallelPairᵒᵖ := op .one. -/
 scoped instance : One (WalkingParallelPairᵒᵖ) := ⟨.op .one⟩
 
 @[simp← ] lemma WalkingQuiver.zero_def : (0 : WalkingParallelPairᵒᵖ) = .op .zero := rfl
@@ -91,6 +93,7 @@ abbrev src (e : F.obj 1) := F.map (Quiver.Hom.op .left) e
 corresponding quiver. -/
 abbrev tgt (e : F.obj 1) := F.map (Quiver.Hom.op .right) e
 
+/-- Hint to help lean recognize edge types. -/
 unif_hint hom_eq_asFunctor1 (X : Quiv.{v, u}) where
   ⊢ (s t : ULift.{max w v} X) × (s.1 ⟶ t.1) ≟ (asFunctor.{w} X).obj 1
 
@@ -99,9 +102,9 @@ unif_hint hom_eq_asFunctor1 (X : Quiv.{v, u}) where
 @[simp] lemma asFunctor_tgt (e : (s t : ULift X) × (s.1 ⟶ t.1)) :
   tgt e = e.2.1 := rfl
 
-@[simp] lemma src_asFunctor {s t : ULift X} (e : (s.1 ⟶ t.1)) :
+lemma src_asFunctor {s t : ULift X} (e : (s.1 ⟶ t.1)) :
   src (⟨s, t, e⟩ : (asFunctor.{w} X).obj 1) = s := rfl
-@[simp] lemma tgt_asFunctor {s t : ULift X} (e : (s.1 ⟶ t.1)) :
+lemma tgt_asFunctor {s t : ULift X} (e : (s.1 ⟶ t.1)) :
   tgt (⟨s, t, e⟩ : (asFunctor.{w} X).obj 1) = t := rfl
 
 @[ext]
@@ -113,8 +116,6 @@ lemma asFunctor.hom_ext (f g : (s t : ULift.{max w v} X) × (s.1 ⟶ t.1))
   cases hs; cases ht
   congr
   exact heq_iff_eq.mp he
-
-attribute [simp high] asFunctor.hom_ext_iff
 
 /-- The type of vertices of a quiver in functor form. -/
 abbrev Vertex (F : WalkingParallelPairᵒᵖ ⥤ Type w) := F.obj 0
@@ -181,14 +182,9 @@ lemma edge_disjoint {F : WalkingParallelPairᵒᵖ ⥤ Type w}
     (st₁ st₂ : Vertex F × Vertex F) (h : st₁ ≠ st₂) :
     Function.onFun Disjoint (fun st' ↦ {e.1 | e : Edge F st'.1 st'.2 }) st₁ st₂ := by
   intro es hst₁ hst₂ e he
-  specialize hst₁ he
-  specialize hst₂ he
-  simp only [Set.mem_setOf_eq] at hst₁ hst₂
-  rcases hst₁ with ⟨⟨e₁, hs₁, ht₁⟩, he₁⟩
-  rcases hst₂ with ⟨⟨e₂, hs₂, ht₂⟩, he₂⟩
-  simp only at he₁ he₂; subst he₁ he₂
-  have : st₁ = st₂ := by ext <;> simp_all
-  contradiction
+  rcases hst₁ he with ⟨⟨e₁, hs₁, ht₁⟩, ⟨⟩⟩
+  rcases hst₂ he with ⟨⟨e₂, hs₂, ht₂⟩, ⟨⟩⟩
+  grind
 
 /-- We can cast an `Edge` along paired equalities of its source and target.
 Unlike `Quiver.Hom` and `homOfEq`, the source and target are internally only tracked
@@ -256,6 +252,7 @@ instance {Q : Quiv.{v, u}} {s t : Vertex Q.asFunctor} :
     right_inv e := rfl
   }⟩⟩
 
+/-- Recursor for assigning a more precise type to an edge of a quiver in functor form. -/
 @[elab_as_elim]
 def map_hom {motive : (F.obj 1) → Sort*}
     (f : {s t : Vertex F} → (e : Edge F s t) → motive e) (e : F.obj 1) : motive e :=
@@ -278,7 +275,7 @@ by hand. -/
 lemma naturality_tgt (f : F.obj 1) : tgt (μ.app 1 f) = (μ.app 0 (tgt f)) := by
   simpa using congrFun (μ.naturality ⟨.right⟩).symm f
 
-/-- The image of an precisely-typed edge under a natural transformation. -/
+/-- The image of a precisely-typed edge under a natural transformation. -/
 def natTransEdge (f : Edge F s t) : Edge G (μ.app 0 s) (μ.app 0 t) :=
   Subtype.map (μ.app 1) (fun e ⟨hs, ht⟩ ↦ by simp [hs, ht]) f
 
@@ -327,17 +324,20 @@ lemma naturality_tgt_up {f : F.obj 1} :
 lemma naturality_tgt_down {f : ULift (F.obj 1)} :
     tgt f.down = ULift.down (@tgt (F ⋙ uliftFunctor.{w'}) f) := by rfl
 
-def natTransEdge_up {f : F.obj 1} :
+/-- The image of an edge under composition with `uliftFunctor`. -/
+def natTransEdgeUp {f : F.obj 1} :
     Edge (F ⋙ uliftFunctor.{w'}) (ULift.up (src f)) (ULift.up (tgt f)) :=
   ⟨ULift.up f, by simp⟩
 
-def natTransEdge_down (f : ULift (F.obj 1)) :
+/-- The image of a `ULift`ed edge under `ULift.down`. -/
+def natTransEdgeDown (f : ULift (F.obj 1)) :
     Edge F (ULift.down (@src (F ⋙ uliftFunctor.{w'}) f))
       (ULift.down (@tgt (F ⋙ uliftFunctor.{w'}) f)) :=
   ⟨ULift.down f, by simp [naturality_src_down, naturality_tgt_down]⟩
 
 namespace asFunctor
 
+/-- The image of a precisely-typed edge between `asFunctor`s under a natural transformation. -/
 def natTransEdge
     (μ : X.asFunctor ⟶ Y.asFunctor) {s t : X} (f : s ⟶ t) :
     Y.str.Hom (μ.app 0 ⟨s⟩).1 (μ.app 0 ⟨t⟩).1 :=
