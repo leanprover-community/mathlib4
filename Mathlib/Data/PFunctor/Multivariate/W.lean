@@ -14,7 +14,7 @@ as the least fixpoint of a polynomial functor.
 ## Main definitions
 
 * `W_mk`     - constructor
-* `W_dest    - destructor
+* `W_dest`   - destructor
 * `W_rec`    - recursor: basis for defining functions by structural recursion on `P.W α`
 * `W_rec_eq` - defining equation for `W_rec`
 * `W_ind`    - induction principle for `P.W α`
