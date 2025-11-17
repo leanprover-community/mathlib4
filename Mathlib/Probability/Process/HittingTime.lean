@@ -355,7 +355,7 @@ lemma hittingAfter_anti (u : ι → Ω → β) (n : ι) : Antitone (hittingAfter
   split_ifs with hF hE hE
   · norm_cast
     gcongr
-    exacts [⟨n, by simp only [mem_lowerBounds, Set.mem_setOf_eq, and_imp]; grind⟩, hE, hEF]
+    exacts [⟨n, by simp only [mem_lowerBounds]; grind⟩, hE, hEF]
   · simp
   · obtain ⟨t, ht⟩ := hE
     exact absurd ⟨t, ht.1, hEF ht.2⟩ hF
