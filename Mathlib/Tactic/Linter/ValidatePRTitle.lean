@@ -16,12 +16,16 @@ verify whether the title or body are written in present imperative tense.
 
 open Std.Internal.Parsec String
 
+/-- Basic parser for PR titles: given a title `feat(scope): main title` or `feat: title`,
+extracts the `feat` and `scope` components. In the future, this will be extended to also parse
+the main PR title. -/
 -- TODO: also parse and return the main PR title
 def prTitle : Parser (String × Option String) :=
   Prod.mk
     <$> (["feat", "chore", "perf", "refactor", "style", "fix", "doc", "test", "ci"].firstM pstring)
     <*> (
-      (skipString "(" *> some <$> manyChars (notFollowedBy (skipString "):") *> any) <* skipString "): ")
+      (skipString "(" *> some <$> manyChars (notFollowedBy (skipString "):") *> any)
+        <* skipString "): ")
       <|> (skipString ": " *> pure none)
     )
 
