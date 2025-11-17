@@ -211,7 +211,7 @@ where
     unless argInfo matches {} do
       trace[translate] "@[{t.attrName}] will reorder the arguments of {src} by {argInfo.reorder}."
       trace[translate_detail] "Setting relevant_arg for {src} to be {argInfo.relevantArg}."
-      t.argInfoAttr.add src argInfo
+      modifyEnv (t.argInfoAttr.addEntry · (src, argInfo))
 
 /-- `Config` is the type of the arguments that can be provided to `to_additive`. -/
 structure Config : Type where
@@ -1064,7 +1064,7 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
       if cfg.reorder != [] || cfg.relevantArg?.isSome then
         MetaM.run' <| checkExistingType t src tgt cfg.reorder cfg.dontTranslate
         let argInfo := { reorder := cfg.reorder, relevantArg := cfg.relevantArg?.getD 0 }
-        insertTranslation t src tgt argInfo
+        insertTranslation t src tgt argInfo false
         return #[tgt]
       throwError
       "Cannot apply attribute @[{t.attrName}] to '{src}': it is already translated to '{tgt}'. \n\
