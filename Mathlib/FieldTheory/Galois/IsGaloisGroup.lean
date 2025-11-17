@@ -189,7 +189,7 @@ variable (H H' : Subgroup G) (F F' : IntermediateField K L)
 instance to_subgroup [hGKL : IsGaloisGroup G K L] :
     IsGaloisGroup H (FixedPoints.intermediateField H : IntermediateField K L) L where
   faithful := have := hGKL.faithful; inferInstance
-  commutes := ⟨fun g x y ↦ by simp_rw [IntermediateField.smul_def, smul_eq_mul, smul_mul', x.2 g]⟩
+  commutes := inferInstanceAs <| SMulCommClass H (FixedPoints.subfield H L) L
   isInvariant := ⟨fun x h ↦ ⟨⟨x, h⟩, rfl⟩⟩
 
 theorem card_subgroup_eq_finrank_fixedpoints [IsGaloisGroup G K L] :
@@ -210,7 +210,7 @@ instance to_intermediateField [Finite G] [hGKL : IsGaloisGroup G K L] :
 
 theorem card_fixingSubgroup_eq_finrank [Finite G] [IsGaloisGroup G K L] :
     Nat.card (fixingSubgroup G (F : Set L)) = Module.finrank F L :=
-  card_eq_finrank (fixingSubgroup G (F : Set L)) F L
+  card_eq_finrank ..
 
 section GaloisCorrespondence
 
@@ -244,14 +244,13 @@ section IsGaloisGroup
 variable [hGKL : IsGaloisGroup G K L]
 
 theorem fixingSubgroup_top : fixingSubgroup G ((⊤ : IntermediateField K L) : Set L) = ⊥ := by
-  simp only [Subgroup.ext_iff, mem_fixingSubgroup_iff, Subgroup.mem_bot]
-  exact fun x ↦ ⟨fun h ↦ hGKL.faithful.eq_of_smul_eq_smul (by simpa using h), fun h ↦ by simp [h]⟩
+  have := hGKL.faithful
+  ext; simpa [mem_fixingSubgroup_iff, Set.ext_iff] using MulAction.fixedBy_eq_univ_iff_eq_one
 
 theorem fixedPoints_top :
     (FixedPoints.intermediateField (⊤ : Subgroup G) : IntermediateField K L) = ⊥ := by
-  simp only [eq_bot_iff, SetLike.le_def, FixedPoints.mem_intermediateField_iff, Subtype.forall,
-    Subgroup.mem_top, Subgroup.mk_smul, forall_const]
-  exact hGKL.isInvariant.isInvariant
+  convert IsGaloisGroup.fixedPoints_eq_bot G K L
+  ext; simp
 
 theorem fixingSubgroup_fixedPoints [Finite G] :
     fixingSubgroup G ((FixedPoints.intermediateField H : IntermediateField K L) : Set L) = H := by
