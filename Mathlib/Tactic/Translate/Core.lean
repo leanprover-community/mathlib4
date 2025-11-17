@@ -184,19 +184,14 @@ def findTranslation? (env : Environment) (t : TranslateData) : Name → Option N
 /-- Get the translation for the given name,
 falling back to translating a prefix of the name if the full name can't be translated.
 This allows translating automatically generated declarations such as `IsRegular.casesOn`. -/
-<<<<<<< HEAD:Mathlib/Tactic/Translate/Core.lean
 def findPrefixTranslation (env : Environment) (nm : Name) (t : TranslateData) : Name :=
-  nm.mapPrefix (findTranslation? env t)
-=======
-def findPrefixTranslation (env : Environment) (nm : Name) : Name :=
   nm.mapPrefix fun n ↦ do
-    if let some n' := findTranslation? env n then
+    if let some n' := findTranslation? env t n then
       return n'
     if isPrivateName n then
-      let n' ← findTranslation? env (privateToUserName n)
+      let n' ← findTranslation? env t (privateToUserName n)
       return mkPrivateName env n'
     none
->>>>>>> c1f4864fe18 (chore: port to_additive):Mathlib/Tactic/ToAdditive/Frontend.lean
 
 /-- Compute the `ArgInfo` for the reverse translation. The `reorder` permutation is inverted.
 In practice, `relevantArg` does not overlap with `reorder` for dual translations,
@@ -649,15 +644,9 @@ partial def transformDeclAux (t : TranslateData) (cfg : Config) (pre tgt_pre : N
     else
       trace[translate_detail] "Already visited {tgt} as translation of {src}."
     return
-<<<<<<< HEAD:Mathlib/Tactic/Translate/Core.lean
-  let srcDecl ← getConstInfo src
-  -- we first unfold all auxlemmas, since they are not always able to be translated on their own
-  let srcDecl ← MetaM.run' do declUnfoldAuxLemmas srcDecl
-=======
   let srcDecl ← withoutExporting do getConstInfo src
-  -- we first unfold all auxlemmas, since they are not always able to be additivized on their own
+  -- we first unfold all auxlemmas, since they are not always able to be translated on their own
   let srcDecl ← withoutExporting do MetaM.run' do declUnfoldAuxLemmas srcDecl
->>>>>>> c1f4864fe18 (chore: port to_additive):Mathlib/Tactic/ToAdditive/Frontend.lean
   -- we then transform all auxiliary declarations generated when elaborating `pre`
   for n in findAuxDecls srcDecl.type pre do
     transformDeclAux t cfg pre tgt_pre n
@@ -953,17 +942,10 @@ def elabTranslationAttr (stx : Syntax) : CoreM Config :=
   | _ => throwUnsupportedSyntax
 
 mutual
-<<<<<<< HEAD:Mathlib/Tactic/Translate/Core.lean
 /-- Apply attributes to the original and translated declarations. -/
 partial def applyAttributes (t : TranslateData) (stx : Syntax) (rawAttrs : Array Syntax)
-    (src tgt : Name) (argInfo : ArgInfo) : TermElabM (Array Name) := do
+    (src tgt : Name) (argInfo : ArgInfo) : TermElabM (Array Name) := withoutExporting do
   -- we only copy the `instance` attribute, since it is nice to directly tag `instance` declarations
-=======
-/-- Apply attributes to the multiplicative and additive declarations. -/
-partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr src tgt : Name)
-    (argInfo : ArgInfo) : TermElabM (Array Name) := withoutExporting do
-  -- we only copy the `instance` attribute, since `@[to_additive] instance` is nice to allow
->>>>>>> c1f4864fe18 (chore: port to_additive):Mathlib/Tactic/ToAdditive/Frontend.lean
   copyInstanceAttribute src tgt
   -- Warn users if the original declaration has an attributee
   if src != tgt && linter.existingAttributeWarning.get (← getOptions) then
@@ -976,7 +958,6 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
         calling @[{t.attrName}].\nThe preferred method is to use something like \
         `@[{t.attrName} (attr := {appliedAttrs})]`\nto apply the attribute to both \
         {src} and the target declaration {tgt}."
-<<<<<<< HEAD:Mathlib/Tactic/Translate/Core.lean
     warnAttr stx Lean.Meta.Ext.extExtension
       (fun b n => (b.tree.values.any fun t => t.declName = n)) t.attrName `ext src tgt
     warnAttr stx Lean.Meta.Rfl.reflExt (·.values.contains ·) t.attrName `refl src tgt
@@ -984,15 +965,6 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
     warnAttr stx Batteries.Tactic.transExt (·.values.contains ·) t.attrName `trans src tgt
     warnAttr stx Lean.Meta.coeExt (·.contains ·) t.attrName `coe src tgt
     warnParametricAttr stx Lean.Linter.deprecatedAttr t.attrName `deprecated src tgt
-=======
-    warnAttr stx Ext.extExtension
-      (fun b n => (b.tree.values.any fun t => t.declName = n)) thisAttr `ext src tgt
-    warnAttr stx Lean.Meta.Rfl.reflExt (·.values.contains ·) thisAttr `refl src tgt
-    warnAttr stx Lean.Meta.Symm.symmExt (·.values.contains ·) thisAttr `symm src tgt
-    warnAttr stx Batteries.Tactic.transExt (·.values.contains ·) thisAttr `trans src tgt
-    warnAttr stx Lean.Meta.coeExt (·.contains ·) thisAttr `coe src tgt
-    warnParametricAttr stx Lean.Linter.deprecatedAttr thisAttr `deprecated src tgt
->>>>>>> c1f4864fe18 (chore: port to_additive):Mathlib/Tactic/ToAdditive/Frontend.lean
     -- the next line also warns for `@[to_additive, simps]`, because of the application times
     warnParametricAttr stx simpsAttr t.attrName `simps src tgt
     warnAttrCore stx Term.elabAsElim.hasTag t.attrName `elab_as_elim src tgt
@@ -1060,25 +1032,14 @@ partial def copyMetaData (t : TranslateData) (cfg : Config) (src tgt : Name) (ar
 Make a new copy of a declaration, replacing fragments of the names of identifiers in the type and
 the body using the `translations` dictionary.
 -/
-<<<<<<< HEAD:Mathlib/Tactic/Translate/Core.lean
 partial def transformDecl (t : TranslateData) (cfg : Config) (src tgt : Name)
-    (argInfo : ArgInfo := {}) : CoreM (Array Name) := do
+    (argInfo : ArgInfo := {}) : CoreM (Array Name) := withDeclNameForAuxNaming tgt do
   transformDeclAux t cfg src tgt src
   copyMetaData t cfg src tgt argInfo
 
 /-- Verify that the type of given `srcDecl` translates to that of `tgtDecl`. -/
 partial def checkExistingType (t : TranslateData) (src tgt : Name) (reorder : List (List Nat))
-    (dont : List Ident) : MetaM Unit := do
-=======
-partial def transformDecl (cfg : Config) (src tgt : Name) (argInfo : ArgInfo := {}) :
-    CoreM (Array Name) := withDeclNameForAuxNaming tgt do
-  transformDeclAux cfg src tgt src
-  copyMetaData cfg src tgt argInfo
-
-/-- Verify that the type of given `srcDecl` translates to that of `tgtDecl`. -/
-partial def checkExistingType (src tgt : Name) (reorder : List (List Nat)) (dont : List Ident) :
-    MetaM Unit := withoutExporting do
->>>>>>> c1f4864fe18 (chore: port to_additive):Mathlib/Tactic/ToAdditive/Frontend.lean
+    (dont : List Ident) : MetaM Unit := withoutExporting do
   let mut srcDecl ← getConstInfo src
   let tgtDecl ← getConstInfo tgt
   if 0 ∈ reorder.flatten then
