@@ -173,7 +173,7 @@ private lemma smul_aux {M : Type*} [AddCommGroup M] {a₁ a₂ a₃ : M} (n₁ n
     n₃ = n₁ * n₂ → n₁ • a₂ = a₃ → n₁ • (n₂ • a₁ + a₂) = n₃ • a₁ + a₃ :=
   fun _ _ ↦ (by subst_vars; simp [smul_smul])
 
-/-- This function evaluates the `ℤ`-scaler multiple of an element of `ExSum` into normal form. -/
+/-- This function evaluates the `ℤ`-scalar multiple of an element of `ExSum` into normal form. -/
 def evalSmul (sα : Q(LieRing $α)) {a : Q($α)} (va : ExSum sα a) (coeff : ℤ) :
     Result (ExSum sα) q($coeff • $a) :=
   match va with
