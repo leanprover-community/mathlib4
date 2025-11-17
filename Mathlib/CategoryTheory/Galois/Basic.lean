@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Limits.FintypeCat
 import Mathlib.CategoryTheory.Limits.MonoCoprod
 import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
+import Mathlib.CategoryTheory.Limits.Types.Equalizers
 import Mathlib.CategoryTheory.SingleObj
 import Mathlib.Data.Finite.Card
 
