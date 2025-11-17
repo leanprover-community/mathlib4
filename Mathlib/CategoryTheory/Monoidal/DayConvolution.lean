@@ -814,7 +814,7 @@ lemma ι_map_associator_hom_eq_associator_hom (d d' d'')
   exact associator_hom_unit_unit V _ _ _ _ _ _
 
 /-- In a `LawfulDayConvolutionMonoidalCategoryStruct`, `ι.obj (𝟙_ D)`
-is a Day convolution unit`. -/
+is a Day convolution unit. -/
 def convolutionUnit : DayConvolutionUnit (ι C V D|>.obj <| 𝟙_ D) where
   can := unitUnit _ _ _
   isPointwiseLeftKanExtensionCan := isPointwiseLeftKanExtensionUnitUnit _ _ _
