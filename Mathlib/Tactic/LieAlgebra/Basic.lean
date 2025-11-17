@@ -270,12 +270,12 @@ partial def evalLieLie (sα : Q(LieRing $α)) {a b : Q($α)} (va : ExLie sα a) 
     CoreM <| Result (ExSum sα) q(⁅$a, $b⁆) := do
   checkSystem decl_name%.toString
   -- This function expects both arguments to be already in the basis.
-  if !(va.isLyndon && vb.isLyndon) then unreachable!
+  if !(va.isLyndon && vb.isLyndon) then panic! "this is mathematically impossible"
   match va.cmp vb with
   | .eq =>
     -- If `va` and `vb` are in the basis, and they have the same flattened list, then it can be
     -- proved that they are in fact equal.
-    if !(va.eq vb) then unreachable!
+    if !(va.eq vb) then panic! "this is mathematically impossible"
     have : $a =Q $b := ⟨⟩
     return ⟨q(0), .zero, q(lie_self $a)⟩
   | .gt =>
@@ -286,7 +286,7 @@ partial def evalLieLie (sα : Q(LieRing $α)) {a b : Q($α)} (va : ExLie sα a) 
     if (ExLie.lie va vb).isLyndon then
       return ⟨q((1 : ℤ) • ⁅$a, $b⁆ + 0), (ExLie.lie va vb).toExSum, q(lie_aux3 ⁅$a, $b⁆)⟩
     match vb with
-    | .atom _ => unreachable!
+    | .atom _ => panic! "this is mathematically impossible"
     | .lie vx vy =>
       let ⟨_, vc₁, pc₁⟩ ← evalLieLie sα va vy
       let ⟨_, vc₂, pc₂⟩ ← evalLie₁ sα vx vc₁
@@ -299,7 +299,7 @@ partial def evalLieLie (sα : Q(LieRing $α)) {a b : Q($α)} (va : ExLie sα a) 
 partial def evalLie₁ (sα : Q(LieRing $α)) {a b : Q($α)} (va : ExLie sα a) (vb : ExSum sα b) :
     CoreM <| Result (ExSum sα) q(⁅$a, $b⁆) := do
   -- This function requires the first argument to be in the basis.
-  if !va.isLyndon then unreachable!
+  if !va.isLyndon then panic! "this is mathematically impossible!"
   match vb with
   | .zero =>
     return ⟨_, .zero, q(lie_zero $a)⟩
@@ -374,7 +374,7 @@ def isAtom {u} (α : Q(Type u)) (e : Q($α)) : AtomM Bool := do
   let .const n _ := (← withReducible <| whnf e).getAppFn | return true
   match n with
   | ``HAdd.hAdd | ``Add.add | ``HSMul.hSMul | ``Neg.neg
-  | ``HSub.hSub | ``Sub.sub | ``Bracket.bracket => return false
+  | ``HSub.hSub | ``Sub.sub | ``Bracket.bracket | ``Zero.zero => return false
   | _ => return true
 
 /--
@@ -448,7 +448,7 @@ partial def eval {u : Lean.Level} {α : Q(Type u)} (sα : Q(LieRing $α))
     | _ => els
   | _ => els
 
-private theorem eq_aux {α} {a b c : α} (_ : (a : α) = c) (_ : b = c) : a = b := by subst_vars; rfl
+private theorem eq_aux {α} {a b c : α} (_ : a = c) (_ : b = c) : a = b := by subst_vars; rfl
 
 /-- Prove an equality in a `LieRing` by reducing two sides of the equation to Lyndon normal form. -/
 def proveEq (g : MVarId) : AtomM Unit := do
