@@ -62,7 +62,7 @@ theorem finiteMultiplicity_iff_emultiplicity_ne_top :
 
 theorem finiteMultiplicity_of_emultiplicity_eq_natCast {n : ℕ} (h : emultiplicity a b = n) :
     FiniteMultiplicity a b := by
-  by_contra! nh
+  by_contra nh
   rw [← emultiplicity_eq_top, h] at nh
   trivial
 
@@ -411,7 +411,7 @@ theorem Nat.finiteMultiplicity_iff {a b : ℕ} : FiniteMultiplicity a b ↔ a �
               match a with
               | 0 => ha rfl
               | 1 => ha1 rfl
-              | b+2 => by omega
+              | b+2 => by cutsat
           not_lt_of_ge (le_of_dvd (Nat.pos_of_ne_zero hb) (h b)) (b.lt_pow_self ha_gt_one),
       fun h => by cases h <;> simp [*]⟩
 
@@ -652,7 +652,7 @@ theorem multiplicity_self {a : α} : multiplicity a a = 1 := by
     nth_rw 1 [← mul_one a] at hv
     simp only [sq, mul_assoc, mul_eq_mul_left_iff] at hv
     obtain hv | rfl := hv
-    · have : IsUnit a := isUnit_of_mul_eq_one a v hv.symm
+    · have : IsUnit a := .of_mul_eq_one v hv.symm
       simpa [this] using ha.not_unit
     · simpa using ha.ne_zero
   · simp [ha]

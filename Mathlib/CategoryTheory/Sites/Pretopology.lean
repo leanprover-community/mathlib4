@@ -97,6 +97,8 @@ instance orderTop : OrderTop (Pretopology C) where
 instance : Inhabited (Pretopology C) :=
   ⟨⊤⟩
 
+variable {C}
+
 /-- A pretopology `K` can be completed to a Grothendieck topology `J` by declaring a sieve to be
 `J`-covering if it contains a family in `K`.
 
@@ -120,14 +122,17 @@ def toGrothendieck (K : Pretopology C) : GrothendieckTopology C where
     apply t₃ (RS _ hg) _ hf
 
 theorem mem_toGrothendieck (K : Pretopology C) (X S) :
-    S ∈ toGrothendieck C K X ↔ ∃ R ∈ K X, R ≤ (S : Presieve X) :=
+    S ∈ toGrothendieck K X ↔ ∃ R ∈ K X, R ≤ (S : Presieve X) :=
   Iff.rfl
 
+end Pretopology
+
+variable {C} in
 /-- The largest pretopology generating the given Grothendieck topology.
 
 See [MM92] Chapter III, Section 2, Equations (3,4).
 -/
-def ofGrothendieck (J : GrothendieckTopology C) : Pretopology C where
+def GrothendieckTopology.toPretopology (J : GrothendieckTopology C) : Pretopology C where
   coverings X := {R | Sieve.generate R ∈ J X}
   has_isos X Y f i := J.covering_of_eq_top (by simp)
   pullbacks X Y f R hR := by simpa [Sieve.pullbackArrows_comm] using J.pullback_stable f hR
@@ -141,8 +146,12 @@ def ofGrothendieck (J : GrothendieckTopology C) : Pretopology C where
     rintro Y g ⟨W, h, g, hg, rfl⟩
     exact ⟨_, h, _, ⟨_, _, _, hf, hg, rfl⟩, by simp⟩
 
+@[deprecated (since := "2025-09-19")]
+alias Pretopology.ofGrothendieck := GrothendieckTopology.toPretopology
+
 /-- We have a Galois insertion from pretopologies to Grothendieck topologies. -/
-def gi : GaloisInsertion (toGrothendieck C) (ofGrothendieck C) where
+def Pretopology.gi : GaloisInsertion
+    (toGrothendieck (C := C)) (GrothendieckTopology.toPretopology (C := C)) where
   gc K J := by
     constructor
     · intro h X R hR
@@ -151,12 +160,17 @@ def gi : GaloisInsertion (toGrothendieck C) (ofGrothendieck C) where
       apply J.superset_covering _ (h _ hR)
       rwa [Sieve.giGenerate.gc]
   le_l_u J _ S hS := ⟨S, J.superset_covering (Sieve.le_generate S.arrows) hS, le_rfl⟩
-  choice x _ := toGrothendieck C x
+  choice x _ := toGrothendieck x
   choice_eq _ _ := rfl
 
-lemma mem_ofGrothendieck (t : GrothendieckTopology C) {X : C} (S : Presieve X) :
-    S ∈ ofGrothendieck C t X ↔ Sieve.generate S ∈ t X :=
+lemma GrothendieckTopology.mem_toPretopology (t : GrothendieckTopology C) {X : C} (S : Presieve X) :
+    S ∈ t.toPretopology X ↔ Sieve.generate S ∈ t X :=
   Iff.rfl
+
+@[deprecated (since := "2025-09-19")]
+alias Pretopology.mem_ofGrothendieck := GrothendieckTopology.mem_toPretopology
+
+namespace Pretopology
 
 /--
 The trivial pretopology, in which the coverings are exactly singleton isomorphisms. This topology is
@@ -201,7 +215,7 @@ instance orderBot : OrderBot (Pretopology C) where
     exact K.has_isos f
 
 /-- The trivial pretopology induces the trivial Grothendieck topology. -/
-theorem toGrothendieck_bot : toGrothendieck C ⊥ = ⊥ :=
+theorem toGrothendieck_bot : toGrothendieck (C := C) ⊥ = ⊥ :=
   (gi C).gc.l_bot
 
 instance : InfSet (Pretopology C) where
@@ -231,9 +245,9 @@ lemma mem_sInf (T : Set (Pretopology C)) {X : C} (S : Presieve X) :
   simp
 
 lemma sInf_ofGrothendieck (T : Set (GrothendieckTopology C)) :
-    ofGrothendieck C (sInf T) = sInf (ofGrothendieck C '' T) := by
+    (sInf T).toPretopology = sInf (GrothendieckTopology.toPretopology '' T) := by
   ext X S
-  simp [mem_sInf, mem_ofGrothendieck, GrothendieckTopology.mem_sInf]
+  simp [mem_sInf, GrothendieckTopology.mem_toPretopology, GrothendieckTopology.mem_sInf]
 
 lemma isGLB_sInf (T : Set (Pretopology C)) : IsGLB T (sInf T) :=
   IsGLB.of_image (f := fun J ↦ J.coverings) Iff.rfl (_root_.isGLB_sInf _)
@@ -267,14 +281,11 @@ end Pretopology
 /-- If `J` is a precoverage that has isomorphisms and is stable under composition and
 base change, it defines a pretopology. -/
 @[simps toPrecoverage]
-def Precoverage.toPretopology [HasPullbacks C] (J : Precoverage C) [J.HasIsos]
+def Precoverage.toPretopology [Limits.HasPullbacks C] (J : Precoverage C) [J.HasIsos]
     [J.IsStableUnderBaseChange] [J.IsStableUnderComposition] : Pretopology C where
   __ := J
   has_isos X Y f hf := mem_coverings_of_isIso f
-  pullbacks X Y f R hR := by
-    obtain ⟨ι, Z, g, rfl⟩ := R.exists_eq_ofArrows
-    rw [← Presieve.ofArrows_pullback]
-    exact mem_coverings_of_isPullback _ hR _ _ _ fun i ↦ (IsPullback.of_hasPullback _ _).flip
+  pullbacks X Y f R hR := J.pullbackArrows_mem f hR
   transitive X R Ti hR hTi := by
     obtain ⟨ι, Z, g, rfl⟩ := R.exists_eq_ofArrows
     choose κ W p hp using fun ⦃Y⦄ (f : Y ⟶ X) hf ↦ (Ti f hf).exists_eq_ofArrows

@@ -19,7 +19,7 @@ Let `M` and `N` be `R`-modules. In this section we prove that `Hom(N,M)` is subs
 there exist `r : R`, such that `IsSMulRegular M r` and `r ∈ ann(N)`.
 This is the case if `Depth[I](M) = 0`.
 
-# Main Results
+## Main statements
 
 * `IsSMulRegular.subsingleton_linearMap_iff` : for `R` module `N M`, `Hom(N, M) = 0`
   iff there is a `M`-regular in `Module.annihilator R N`.
@@ -43,10 +43,9 @@ lemma subsingleton_linearMap_iff [IsNoetherianRing R] [Module.Finite R M] [Modul
     Subsingleton (N →ₗ[R] M) ↔ ∃ r ∈ Module.annihilator R N, IsSMulRegular M r := by
   refine ⟨fun hom0 ↦ ?_, fun ⟨r, mem_ann, reg⟩ ↦
     linearMap_subsingleton_of_mem_annihilator reg mem_ann⟩
-  by_cases htrivial : Subsingleton M
+  cases subsingleton_or_nontrivial M
   · exact ⟨0, ⟨Submodule.zero_mem (Module.annihilator R N), IsSMulRegular.zero⟩⟩
-  · let _ : Nontrivial M := not_subsingleton_iff_nontrivial.mp htrivial
-    by_contra! h
+  · by_contra! h
     have hexist : ∃ p ∈ associatedPrimes R M, Module.annihilator R N ≤ p := by
       rcases associatedPrimes.nonempty R M with ⟨Ia, hIa⟩
       apply (Ideal.subset_union_prime_finite (associatedPrimes.finite R M) Ia Ia _).mp

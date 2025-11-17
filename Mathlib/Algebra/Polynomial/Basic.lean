@@ -404,7 +404,7 @@ theorem monomial_zero_right (n : ℕ) : monomial n (0 : R) = 0 :=
 theorem monomial_zero_one : monomial 0 (1 : R) = 1 :=
   rfl
 
--- TODO: can't we just delete this one?
+@[deprecated map_add (since := "2025-11-15")]
 theorem monomial_add (n : ℕ) (r s : R) : monomial n (r + s) = monomial n r + monomial n s :=
   (monomial n).map_add _ _
 
@@ -457,6 +457,9 @@ theorem toFinsupp_C (a : R) : (C a).toFinsupp = single 0 a :=
 theorem C_0 : C (0 : R) = 0 := by simp
 
 theorem C_1 : C (1 : R) = 1 :=
+  rfl
+
+theorem C_ofNat (n : ℕ) [n.AtLeastTwo] : C ofNat(n) = (ofNat(n) : R[X]) :=
   rfl
 
 theorem C_mul : C (a * b) = C a * C b :=
@@ -597,6 +600,7 @@ theorem coeff_monomial_of_ne {m n : ℕ} (c : R) (h : m ≠ n) : (monomial n c).
 theorem coeff_zero (n : ℕ) : coeff (0 : R[X]) n = 0 :=
   rfl
 
+@[aesop simp]
 theorem coeff_one {n : ℕ} : coeff (1 : R[X]) n = if n = 0 then 1 else 0 := by
   simp_rw [eq_comm (a := n) (b := 0)]
   exact coeff_monomial
@@ -616,6 +620,7 @@ theorem coeff_X_zero : coeff (X : R[X]) 0 = 0 :=
 @[simp]
 theorem coeff_monomial_succ : coeff (monomial (n + 1) a) 0 = 0 := by simp [coeff_monomial]
 
+@[aesop simp]
 theorem coeff_X : coeff (X : R[X]) n = if 1 = n then 1 else 0 :=
   coeff_monomial
 
@@ -631,6 +636,7 @@ theorem notMem_support_iff : n ∉ p.support ↔ p.coeff n = 0 := by simp
 
 @[deprecated (since := "2025-05-23")] alias not_mem_support_iff := notMem_support_iff
 
+@[aesop simp]
 theorem coeff_C : coeff (C a) n = ite (n = 0) a 0 := by
   convert coeff_monomial (a := a) (m := n) (n := 0) using 2
   simp [eq_comm]
@@ -841,7 +847,6 @@ theorem sum_eq_of_subset {S : Type*} [AddCommMonoid S] {p : R[X]} (f : ℕ → R
 theorem mul_eq_sum_sum :
     p * q = ∑ i ∈ p.support, q.sum fun j a => (monomial (i + j)) (p.coeff i * a) := by
   apply toFinsupp_injective
-  rcases p with ⟨⟩; rcases q with ⟨⟩
   simp_rw [sum, coeff, toFinsupp_sum, support, toFinsupp_mul, toFinsupp_monomial,
     AddMonoidAlgebra.mul_def, Finsupp.sum]
 
@@ -947,7 +952,6 @@ theorem support_erase (p : R[X]) (n : ℕ) : support (p.erase n) = (support p).e
 
 theorem monomial_add_erase (p : R[X]) (n : ℕ) : monomial n (coeff p n) + p.erase n = p :=
   toFinsupp_injective <| by
-    rcases p with ⟨⟩
     rw [toFinsupp_add, toFinsupp_monomial, toFinsupp_erase, coeff]
     exact Finsupp.single_add_erase _ _
 
@@ -1112,10 +1116,10 @@ theorem coeff_sub (p q : R[X]) (n : ℕ) : coeff (p - q) n = coeff p n - coeff q
 
 @[simp]
 theorem monomial_neg (n : ℕ) (a : R) : monomial n (-a) = -monomial n a := by
-  rw [eq_neg_iff_add_eq_zero, ← monomial_add, neg_add_cancel, monomial_zero_right]
+  rw [eq_neg_iff_add_eq_zero, ← map_add, neg_add_cancel, monomial_zero_right]
 
 theorem monomial_sub (n : ℕ) : monomial n (a - b) = monomial n a - monomial n b := by
-  rw [sub_eq_add_neg, monomial_add, monomial_neg, sub_eq_add_neg]
+  rw [sub_eq_add_neg, map_add, monomial_neg, sub_eq_add_neg]
 
 @[simp]
 theorem support_neg {p : R[X]} : (-p).support = p.support := by
@@ -1164,6 +1168,13 @@ instance [IsCancelAdd R] [IsCancelMulZero R] : IsCancelMulZero R[X] where
 
 instance [IsCancelAdd R] [IsDomain R] : IsDomain R[X] where
 
+/-- See also `Polynomial.isCancelMulZero_iff`: in order for `R[X]` to have cancellative
+multiplication (stronger than `NoZeroDivisors` in general, but equivalent if `R` is a ring),
+`R` must have both cancellative multiplication and cancellative addition. -/
+theorem noZeroDivisors_iff : NoZeroDivisors R[X] ↔ NoZeroDivisors R where
+  mp _ := C_injective.noZeroDivisors _ C_0 fun _ _ ↦ C_mul
+  mpr _ := inferInstance
+
 end Semiring
 
 section DivisionSemiring
@@ -1206,7 +1217,7 @@ protected instance repr [Repr R] [DecidableEq R] : Repr R[X] :=
           if coeff p n = 1
           then (80, "X ^ " ++ Nat.repr n)
           else (70, "C " ++ reprArg (coeff p n) ++ " * X ^ " ++ Nat.repr n))
-      (p.support.sort (· ≤ ·))
+      p.support.sort
     match termPrecAndReprs with
     | [] => "0"
     | [(tprec, t)] => if prec ≥ tprec then Lean.Format.paren t else t

@@ -45,8 +45,11 @@ instance (A : Matrix n n α) [Decidable (Aᴴ = A)] : Decidable (IsHermitian A) 
 
 theorem IsHermitian.eq {A : Matrix n n α} (h : A.IsHermitian) : Aᴴ = A := h
 
-protected theorem IsHermitian.isSelfAdjoint {A : Matrix n n α} (h : A.IsHermitian) :
-    IsSelfAdjoint A := h
+theorem isHermitian_iff_isSelfAdjoint {A : Matrix n n α} :
+    A.IsHermitian ↔ IsSelfAdjoint A := Iff.rfl
+
+protected alias ⟨IsHermitian.isSelfAdjoint, _root_.IsSelfAdjoint.isHermitian⟩ :=
+  isHermitian_iff_isSelfAdjoint
 
 theorem IsHermitian.ext {A : Matrix n n α} : (∀ i j, star (A j i) = A i j) → A.IsHermitian := by
   intro h; ext i j; exact h i j
@@ -181,8 +184,12 @@ theorem isHermitian_mul_conjTranspose_self [Fintype n] (A : Matrix m n α) :
     (A * Aᴴ).IsHermitian := by rw [IsHermitian, conjTranspose_mul, conjTranspose_conjTranspose]
 
 /-- Note this is more general than `IsSelfAdjoint.star_mul_self` as `B` can be rectangular. -/
-theorem isHermitian_transpose_mul_self [Fintype m] (A : Matrix m n α) : (Aᴴ * A).IsHermitian := by
+theorem isHermitian_conjTranspose_mul_self [Fintype m] (A : Matrix m n α) :
+    (Aᴴ * A).IsHermitian := by
   rw [IsHermitian, conjTranspose_mul, conjTranspose_conjTranspose]
+
+@[deprecated (since := "2025-11-10")] alias isHermitian_transpose_mul_self :=
+  isHermitian_conjTranspose_mul_self
 
 /-- Note this is more general than `IsSelfAdjoint.conjugate'` as `B` can be rectangular. -/
 theorem isHermitian_conjTranspose_mul_mul [Fintype m] {A : Matrix m m α} (B : Matrix m n α)
@@ -251,6 +258,54 @@ theorem IsHermitian.zpow [Fintype m] [DecidableEq m] {A : Matrix m m α} (h : A.
     (A ^ k).IsHermitian := by
   rw [IsHermitian, conjTranspose_zpow, h]
 
+section SchurComplement
+
+/-- Notation for `Sum.elim`, scoped within the `Matrix` namespace. -/
+scoped infixl:65 " ⊕ᵥ " => Sum.elim
+
+theorem schur_complement_eq₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A : Matrix m m α}
+    (B : Matrix m n α) (D : Matrix n n α) (x : m → α) (y : n → α) [Invertible A]
+    (hA : A.IsHermitian) :
+    (star (x ⊕ᵥ y)) ᵥ* (Matrix.fromBlocks A B Bᴴ D) ⬝ᵥ (x ⊕ᵥ y) =
+      (star (x + (A⁻¹ * B) *ᵥ y)) ᵥ* A ⬝ᵥ (x + (A⁻¹ * B) *ᵥ y) +
+        (star y) ᵥ* (D - Bᴴ * A⁻¹ * B) ⬝ᵥ y := by
+  simp [Function.star_sumElim, vecMul_fromBlocks, add_vecMul,
+    dotProduct_mulVec, vecMul_sub, Matrix.mul_assoc, hA.eq,
+    conjTranspose_nonsing_inv, star_mulVec]
+  abel
+
+theorem schur_complement_eq₂₂ [Fintype m] [Fintype n] [DecidableEq n] (A : Matrix m m α)
+    (B : Matrix m n α) {D : Matrix n n α} (x : m → α) (y : n → α) [Invertible D]
+    (hD : D.IsHermitian) :
+    (star (x ⊕ᵥ y)) ᵥ* (Matrix.fromBlocks A B Bᴴ D) ⬝ᵥ (x ⊕ᵥ y) =
+      (star ((D⁻¹ * Bᴴ) *ᵥ x + y)) ᵥ* D ⬝ᵥ ((D⁻¹ * Bᴴ) *ᵥ x + y) +
+        (star x) ᵥ* (A - B * D⁻¹ * Bᴴ) ⬝ᵥ x := by
+  simp [Function.star_sumElim, vecMul_fromBlocks, add_vecMul,
+    dotProduct_mulVec, vecMul_sub, Matrix.mul_assoc, hD.eq,
+    conjTranspose_nonsing_inv, star_mulVec]
+  abel
+
+namespace IsHermitian
+
+theorem fromBlocks₁₁ [Fintype m] [DecidableEq m] {A : Matrix m m α} (B : Matrix m n α)
+    (D : Matrix n n α) (hA : A.IsHermitian) :
+    (Matrix.fromBlocks A B Bᴴ D).IsHermitian ↔ (D - Bᴴ * A⁻¹ * B).IsHermitian := by
+  have hBAB : (Bᴴ * A⁻¹ * B).IsHermitian := isHermitian_conjTranspose_mul_mul _ hA.inv
+  rw [isHermitian_fromBlocks_iff]
+  exact ⟨fun h ↦ h.2.2.2.sub hBAB, fun h ↦ ⟨hA, rfl, conjTranspose_conjTranspose B,
+    sub_add_cancel D _ ▸ h.add hBAB⟩⟩
+
+theorem fromBlocks₂₂ [Fintype n] [DecidableEq n] (A : Matrix m m α) (B : Matrix m n α)
+    {D : Matrix n n α} (hD : D.IsHermitian) :
+    (Matrix.fromBlocks A B Bᴴ D).IsHermitian ↔ (A - B * D⁻¹ * Bᴴ).IsHermitian := by
+  rw [← isHermitian_submatrix_equiv (Equiv.sumComm n m), Equiv.sumComm_apply,
+    fromBlocks_submatrix_sum_swap_sum_swap]
+  convert IsHermitian.fromBlocks₁₁ _ _ hD <;> simp
+
+end IsHermitian
+
+end SchurComplement
+
 end CommRing
 
 section RCLike
@@ -273,7 +328,7 @@ theorem isHermitian_iff_isSymmetric [Fintype n] [DecidableEq n] {A : Matrix n n 
     IsHermitian A ↔ A.toEuclideanLin.IsSymmetric := by
   rw [LinearMap.IsSymmetric, (WithLp.toLp_surjective _).forall₂]
   simp only [toEuclideanLin_toLp, Matrix.toLin'_apply, EuclideanSpace.inner_eq_star_dotProduct,
-    WithLp.ofLp_toLp, star_mulVec]
+    star_mulVec]
   constructor
   · rintro (h : Aᴴ = A) x y
     rw [dotProduct_comm, ← dotProduct_mulVec, h, dotProduct_comm]

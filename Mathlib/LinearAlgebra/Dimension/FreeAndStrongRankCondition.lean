@@ -170,7 +170,8 @@ theorem Module.rank_le_one_iff_top_isPrincipal [Module.Free K V] :
   rw [← Submodule.rank_le_one_iff_isPrincipal, rank_top]
 
 /-- A module has dimension 1 iff there is some `v : V` so `{v}` is a basis.
--/
+
+See also `Module.Basis.nonempty_unique_index_of_finrank_eq_one` -/
 theorem finrank_eq_one_iff [Module.Free K V] (ι : Type*) [Unique ι] :
     finrank K V = 1 ↔ Nonempty (Basis ι K V) := by
   constructor
@@ -186,7 +187,7 @@ theorem finrank_eq_one_iff' [Module.Free K V] :
   rw [← rank_eq_one_iff]
   exact toNat_eq_iff one_ne_zero
 
-/-- A finite dimensional module has dimension at most 1 iff
+/-- A finite-dimensional module has dimension at most 1 iff
 there is some `v : V` so every vector is a multiple of `v`.
 -/
 theorem finrank_le_one_iff [Module.Free K V] [Module.Finite K V] :

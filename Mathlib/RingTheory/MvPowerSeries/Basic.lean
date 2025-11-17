@@ -122,7 +122,7 @@ section Semiring
 variable [Semiring R]
 
 /-- The `n`th monomial as multivariate formal power series:
-  it is defined as the `R`-linear map from `R` to the semi-ring
+  it is defined as the `R`-linear map from `R` to the semiring
   of multivariate formal power series associating to each `a`
   the map sending `n : σ →₀ ℕ` to the value `a`
   and sending all other `x : σ →₀ ℕ` different from `n` to `0`. -/
@@ -206,8 +206,7 @@ instance : AddMonoidWithOne (MvPowerSeries σ R) :=
   { show AddMonoid (MvPowerSeries σ R) by infer_instance with
     natCast := fun n => monomial 0 n
     natCast_zero := by simp [Nat.cast]
-    natCast_succ := by simp [Nat.cast, monomial_zero_one]
-    one := 1 }
+    natCast_succ := by simp [Nat.cast, monomial_zero_one] }
 
 instance : Mul (MvPowerSeries σ R) :=
   letI := Classical.decEq σ
@@ -625,10 +624,10 @@ section CommSemiring
 
 open Finset.HasAntidiagonal Finset
 
-variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
+variable {R : Type*} [CommSemiring R] {ι : Type*}
 
 /-- Coefficients of a product of power series -/
-theorem coeff_prod [DecidableEq σ]
+theorem coeff_prod [DecidableEq ι] [DecidableEq σ]
     (f : ι → MvPowerSeries σ R) (d : σ →₀ ℕ) (s : Finset ι) :
     coeff d (∏ j ∈ s, f j) =
       ∑ l ∈ finsuppAntidiag s d,
@@ -665,9 +664,9 @@ theorem coeff_prod [DecidableEq σ]
 
 theorem prod_monomial (f : ι → σ →₀ ℕ) (g : ι → R) (s : Finset ι) :
     ∏ i ∈ s, monomial (f i) (g i) = monomial (∑ i ∈ s, f i) (∏ i ∈ s, g i) := by
-  induction s using Finset.induction with
+  induction s using Finset.cons_induction with
   | empty => simp
-  | insert a s ha h => simp [ha, h, monomial_mul_monomial]
+  | cons a s ha h => simp [h, monomial_mul_monomial]
 
 /-- The `d`th coefficient of a power of a multivariate power series
 is the sum, indexed by `finsuppAntidiag (Finset.range n) d`, of products of coefficients -/
@@ -679,7 +678,7 @@ theorem coeff_pow [DecidableEq σ] (f : MvPowerSeries σ R) {n : ℕ} (d : σ �
     rw [this, coeff_prod]
   rw [Finset.prod_const, card_range]
 
-theorem monmial_pow (m : σ →₀ ℕ) (a : R) (n : ℕ) :
+theorem monomial_pow (m : σ →₀ ℕ) (a : R) (n : ℕ) :
     (monomial m a) ^ n = monomial (n • m) (a ^ n) := by
   rw [Finset.pow_eq_prod_const, prod_monomial, ← Finset.nsmul_eq_sum_const,
     ← Finset.pow_eq_prod_const]
@@ -708,7 +707,7 @@ theorem coeff_eq_zero_of_constantCoeff_nilpotent {f : MvPowerSeries σ R} {m : �
   rw [prod_congr rfl hs', prod_const]
   suffices m ≤ #s by
     obtain ⟨m', hm'⟩ := Nat.exists_eq_add_of_le this
-    rw [hm', pow_add, hf, MulZeroClass.zero_mul]
+    rw [hm', pow_add, hf, zero_mul]
   rw [← Nat.add_le_add_iff_right, add_comm #s,
     Finset.card_sdiff_add_card_eq_card (filter_subset _ _), card_range]
   apply le_trans _ hn
@@ -822,6 +821,10 @@ theorem coe_mul : ((φ * ψ : MvPolynomial σ R) : MvPowerSeries σ R) = φ * ψ
   MvPowerSeries.ext fun n => by
     classical
     simp only [coeff_coe, MvPowerSeries.coeff_mul, coeff_mul]
+
+@[simp, norm_cast]
+lemma coe_smul (φ : MvPolynomial σ R) (r : R) :
+    (r • φ : MvPolynomial σ R) = r • (φ : MvPowerSeries σ R) := rfl
 
 @[simp, norm_cast]
 theorem coe_C (a : R) : ((C a : MvPolynomial σ R) : MvPowerSeries σ R) = MvPowerSeries.C a :=

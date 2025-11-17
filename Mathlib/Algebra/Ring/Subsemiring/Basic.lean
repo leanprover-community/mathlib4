@@ -186,6 +186,7 @@ instance : Bot (Subsemiring R) :=
 instance : Inhabited (Subsemiring R) :=
   ⟨⊥⟩
 
+@[norm_cast]
 theorem coe_bot : ((⊥ : Subsemiring R) : Set R) = Set.range ((↑) : ℕ → R) :=
   (Nat.castRingHom R).coe_rangeS
 
@@ -384,7 +385,7 @@ theorem mem_map_equiv {f : R ≃+* S} {K : Subsemiring R} {x : S} :
 
 theorem map_equiv_eq_comap_symm (f : R ≃+* S) (K : Subsemiring R) :
     K.map (f : R →+* S) = K.comap f.symm :=
-  SetLike.coe_injective (f.toEquiv.image_eq_preimage K)
+  SetLike.coe_injective (f.toEquiv.image_eq_preimage_symm K)
 
 theorem comap_equiv_eq_map_symm (f : R ≃+* S) (K : Subsemiring S) :
     K.comap (f : R →+* S) = K.map f.symm :=

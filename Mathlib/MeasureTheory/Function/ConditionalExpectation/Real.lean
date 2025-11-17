@@ -70,7 +70,7 @@ theorem eLpNorm_one_condExp_le_eLpNorm (f : α → ℝ) : eLpNorm (μ[f|m]) 1 μ
       exact abs_le_abs hx₁ hx₂
     _ = eLpNorm f 1 μ := by
       rw [eLpNorm_one_eq_lintegral_enorm, eLpNorm_one_eq_lintegral_enorm,
-        ← ENNReal.toReal_eq_toReal (hasFiniteIntegral_iff_enorm.mp integrable_condExp.2).ne
+        ← ENNReal.toReal_eq_toReal_iff' (hasFiniteIntegral_iff_enorm.mp integrable_condExp.2).ne
           (hasFiniteIntegral_iff_enorm.mp hf.2).ne,
         ← integral_norm_eq_lintegral_enorm
           (stronglyMeasurable_condExp.mono hm).aestronglyMeasurable,
@@ -235,10 +235,8 @@ theorem condExp_stronglyMeasurable_simpleFunc_mul (hm : m ≤ m0) (f : @SimpleFu
     classical simp_rw [Set.indicator_apply, hx]
   · have h_add := @SimpleFunc.coe_add _ _ m _ g₁ g₂
     calc
-      μ[⇑(g₁ + g₂) * g|m] =ᵐ[μ] μ[(⇑g₁ + ⇑g₂) * g|m] := by
-        refine condExp_congr_ae (EventuallyEq.mul ?_ EventuallyEq.rfl); rw [h_add]
-      _ =ᵐ[μ] μ[⇑g₁ * g|m] + μ[⇑g₂ * g|m] := by
-        rw [add_mul]; exact condExp_add (hg.simpleFunc_mul' hm _) (hg.simpleFunc_mul' hm _) _
+      μ[⇑(g₁ + g₂) * g|m] =ᵐ[μ] μ[⇑g₁ * g|m] + μ[⇑g₂ * g|m] := by
+        rw [h_add, add_mul]; exact condExp_add (hg.simpleFunc_mul' hm _) (hg.simpleFunc_mul' hm _) _
       _ =ᵐ[μ] ⇑g₁ * μ[g|m] + ⇑g₂ * μ[g|m] := EventuallyEq.add h_eq₁ h_eq₂
       _ =ᵐ[μ] ⇑(g₁ + g₂) * μ[g|m] := by rw [h_add, add_mul]
 
@@ -288,11 +286,7 @@ theorem condExp_stronglyMeasurable_mul_of_bound (hm : m ≤ m0) [IsFiniteMeasure
 theorem condExp_stronglyMeasurable_mul_of_bound₀ (hm : m ≤ m0) [IsFiniteMeasure μ] {f g : α → ℝ}
     (hf : AEStronglyMeasurable[m] f μ) (hg : Integrable g μ) (c : ℝ)
     (hf_bound : ∀ᵐ x ∂μ, ‖f x‖ ≤ c) : μ[f * g|m] =ᵐ[μ] f * μ[g|m] := by
-  have : μ[f * g|m] =ᵐ[μ] μ[hf.mk f * g|m] :=
-    condExp_congr_ae (EventuallyEq.mul hf.ae_eq_mk EventuallyEq.rfl)
-  refine this.trans ?_
-  have : f * μ[g|m] =ᵐ[μ] hf.mk f * μ[g|m] := EventuallyEq.mul hf.ae_eq_mk EventuallyEq.rfl
-  refine EventuallyEq.trans ?_ this.symm
+  grw [hf.ae_eq_mk]
   refine condExp_stronglyMeasurable_mul_of_bound hm hf.stronglyMeasurable_mk hg c ?_
   filter_upwards [hf_bound, hf.ae_eq_mk] with x hxc hx_eq
   rwa [← hx_eq]

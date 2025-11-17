@@ -63,7 +63,7 @@ lemma IsMonicOfDegree.exists_natDegree_lt {p : R[X]} {n : ℕ} (hn : n ≠ 0)
     rw [add_comm, hp.natDegree_eq, hp.leadingCoeff_eq, map_one, one_mul]
   · refine p.eraseLead_natDegree_le.trans_lt ?_
     rw [hp.natDegree_eq]
-    omega
+    cutsat
 
 lemma IsMonicOfDegree.mul {p q : R[X]} {m n : ℕ} (hp : IsMonicOfDegree p m)
     (hq : IsMonicOfDegree q n) :
@@ -178,7 +178,7 @@ lemma isMonicOfDegree_one_iff {f : R[X]} : IsMonicOfDegree f 1 ↔ ∃ r : R, f 
   ext1 n
   rcases n.eq_zero_or_pos with rfl | hn
   · simp
-  · exact H.coeff_eq (isMonicOfDegree_X_add_one _) (by omega)
+  · exact H.coeff_eq (isMonicOfDegree_X_add_one _) (by cutsat)
 
 lemma isMonicOfDegree_add_add_two (a b : R) : IsMonicOfDegree (X ^ 2 + C a * X + C b) 2 := by
   rw [add_assoc]
@@ -196,7 +196,7 @@ lemma isMonicOfDegree_two_iff {f : R[X]} :
   · obtain rfl : n = 0 := Nat.lt_one_iff.mp hn
     simp
   · simp
-  · exact H.coeff_eq (isMonicOfDegree_add_add_two ..) (by omega)
+  · exact H.coeff_eq (isMonicOfDegree_add_add_two ..) (by cutsat)
 
 end Semiring
 
@@ -257,7 +257,7 @@ lemma IsMonicOfDegree.of_dvd_add {a b r : R[X]} {m n : ℕ} (hmn : n ≤ m) (ha 
     ∃ q : R[X], IsMonicOfDegree q (m - n) ∧ a = q * b - r := by
   obtain ⟨q, hq⟩ := exists_eq_mul_left_of_dvd  h
   refine ⟨q, hb.of_mul_right ?_, eq_sub_iff_add_eq.mpr hq⟩
-  rw [← hq, show m - n + n = m by omega]
+  rw [← hq, show m - n + n = m by cutsat]
   exact ha.add_right hr
 
 lemma IsMonicOfDegree.of_dvd_sub {a b r : R[X]} {m n : ℕ} (hmn : n ≤ m) (ha : IsMonicOfDegree a m)

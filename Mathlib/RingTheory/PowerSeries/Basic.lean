@@ -626,10 +626,10 @@ section CommSemiring
 
 open Finset.HasAntidiagonal Finset
 
-variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
+variable {R : Type*} [CommSemiring R] {ι : Type*}
 
 /-- Coefficients of a product of power series -/
-theorem coeff_prod (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
+theorem coeff_prod [DecidableEq ι] (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
     coeff d (∏ j ∈ s, f j) = ∑ l ∈ finsuppAntidiag s d, ∏ i ∈ s, coeff (l i) (f i) := by
   simp only [coeff]
   rw [MvPowerSeries.coeff_prod, ← AddEquiv.finsuppUnique_symm d, ← mapRange_finsuppAntidiag_eq,
@@ -647,8 +647,8 @@ theorem prod_monomial (f : ι → ℕ) (g : ι → R) (s : Finset ι) :
   simpa [monomial, Finsupp.single_finset_sum] using
     MvPowerSeries.prod_monomial (fun i ↦ Finsupp.single () (f i)) g s
 
-theorem monmial_pow (m : ℕ) (a : R) (n : ℕ) : (monomial m a) ^ n = monomial (n * m) (a ^ n) := by
-  simpa [monomial] using MvPowerSeries.monmial_pow (Finsupp.single () m) a n
+theorem monomial_pow (m : ℕ) (a : R) (n : ℕ) : (monomial m a) ^ n = monomial (n * m) (a ^ n) := by
+  simpa [monomial] using MvPowerSeries.monomial_pow (Finsupp.single () m) a n
 
 /-- The `n`-th coefficient of the `k`-th power of a power series. -/
 lemma coeff_pow (k n : ℕ) (φ : R⟦X⟧) :
@@ -665,7 +665,7 @@ lemma coeff_one_mul (φ ψ : R⟦X⟧) : coeff 1 (φ * ψ) =
   have : Finset.antidiagonal 1 = {(0, 1), (1, 0)} := by exact rfl
   rw [coeff_mul, this, Finset.sum_insert, Finset.sum_singleton, coeff_zero_eq_constantCoeff,
     mul_comm, add_comm]
-  norm_num
+  simp
 
 /-- First coefficient of the `n`-th power of a power series. -/
 lemma coeff_one_pow (n : ℕ) (φ : R⟦X⟧) :
@@ -673,7 +673,7 @@ lemma coeff_one_pow (n : ℕ) (φ : R⟦X⟧) :
   rcases Nat.eq_zero_or_pos n with (rfl | hn)
   · simp
   induction n with
-  | zero => omega
+  | zero => cutsat
   | succ n' ih =>
       have h₁ (m : ℕ) : φ ^ (m + 1) = φ ^ m * φ := by exact rfl
       have h₂ : Finset.antidiagonal 1 = {(0, 1), (1, 0)} := by exact rfl
@@ -807,6 +807,10 @@ theorem coe_add : ((φ + ψ : R[X]) : PowerSeries R) = φ + ψ := by
 @[simp, norm_cast]
 theorem coe_mul : ((φ * ψ : R[X]) : PowerSeries R) = φ * ψ :=
   PowerSeries.ext fun n => by simp only [coeff_coe, PowerSeries.coeff_mul, coeff_mul]
+
+@[simp, norm_cast]
+lemma coe_smul (φ : R[X]) (r : R) :
+    (r • φ : Polynomial R) = r • (φ : PowerSeries R) := rfl
 
 @[simp, norm_cast]
 theorem coe_C (a : R) : ((C a : R[X]) : PowerSeries R) = PowerSeries.C a := by

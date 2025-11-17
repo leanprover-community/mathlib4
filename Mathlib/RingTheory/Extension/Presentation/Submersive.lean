@@ -247,7 +247,7 @@ lemma dimension_comp_eq_dimension_add_dimension [Finite ι] [Finite ι'] [Finite
   have : Nat.card σ' ≤ Nat.card ι' :=
     card_relations_le_card_vars_of_isFinite Q
   simp only [Nat.card_sum]
-  omega
+  cutsat
 
 section
 
@@ -382,9 +382,7 @@ lemma baseChange_jacobian [Finite σ] : (P.baseChange T).jacobian = 1 ⊗ₜ P.j
     simp only [baseChange, jacobiMatrix_apply, Presentation.baseChange_relation,
       RingHom.mapMatrix_apply, Matrix.map_apply,
       Presentation.baseChange_toGenerators, MvPolynomial.pderiv_map]
-  rw [h]
-  erw [← RingHom.map_det, aeval_map_algebraMap]
-  rw [P.algebraMap_apply]
+  rw [h, ← RingHom.map_det, Generators.algebraMap_apply, aeval_map_algebraMap, P.algebraMap_apply]
   apply aeval_one_tmul
 
 end BaseChange
@@ -542,6 +540,19 @@ noncomputable def reindex (P : SubmersivePresentation R S ι σ)
     {ι' σ' : Type*} [Finite σ'] (e : ι' ≃ ι) (f : σ' ≃ σ) : SubmersivePresentation R S ι' σ' where
   __ := P.toPreSubmersivePresentation.reindex e f
   jacobian_isUnit := by simp [P.jacobian_isUnit]
+
+/-- If `S = 0`, this is the submersive presentation on one generator and one relation. -/
+@[simps]
+noncomputable def ofSubsingleton [Subsingleton S] : SubmersivePresentation R S PUnit PUnit where
+  val _ := 1
+  σ' _ := 1
+  aeval_val_σ' _ := Subsingleton.elim _ _
+  relation _ := 1
+  span_range_relation_eq_ker := by
+    simp [Generators.ker, Extension.ker, RingHom.ker_eq_top_of_subsingleton]
+  map _ := ⟨⟩
+  map_inj _ _ _ := rfl
+  jacobian_isUnit := isUnit_of_subsingleton _
 
 end Constructions
 

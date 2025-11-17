@@ -3,7 +3,6 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.BigOperators.Group.List.Basic
 import Mathlib.Algebra.Group.Embedding
 import Mathlib.Algebra.Group.Finsupp
 import Mathlib.Algebra.Group.Nat.Defs
@@ -94,7 +93,7 @@ theorem toFinsupp_append {R : Type*} [AddZeroClass R] (l₁ l₂ : List R)
   | inl h =>
     rw [getD_append _ _ _ _ h, Finsupp.embDomain_notin_range, add_zero]
     rintro ⟨k, rfl : length l₁ + k = n⟩
-    omega
+    cutsat
   | inr h =>
     rcases Nat.exists_eq_add_of_le h with ⟨k, rfl⟩
     rw [getD_append_right _ _ _ _ h, Nat.add_sub_cancel_left, getD_eq_default _ _ h, zero_add]
@@ -126,6 +125,6 @@ theorem toFinsupp_eq_sum_mapIdx_single {R : Type*} [AddMonoid R] (l : List R)
   induction l using List.reverseRecOn with
   | nil => exact toFinsupp_nil
   | append_singleton x xs ih =>
-    classical simp [toFinsupp_concat_eq_toFinsupp_add_single, ih]
+    classical simp [toFinsupp_concat_eq_toFinsupp_add_single, sum_append, ih]
 
 end List

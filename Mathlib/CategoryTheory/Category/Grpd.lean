@@ -74,6 +74,8 @@ def forgetToCat : Grpd.{v, u} ⥤ Cat.{v, u} where
   obj C := Cat.of C
   map := id
 
+instance (X : Grpd) : Groupoid (Grpd.forgetToCat.obj X) := inferInstanceAs (Groupoid X)
+
 instance forgetToCat_full : forgetToCat.Full where map_surjective f := ⟨f, rfl⟩
 
 instance forgetToCat_faithful : forgetToCat.Faithful where
@@ -84,7 +86,7 @@ theorem comp_eq_comp {C D E : Grpd.{v, u}} (f : C ⟶ D) (g : D ⟶ E) : f ≫ g
   rfl
 
 /-- Converts identity in the category of groupoids to the functor identity -/
-theorem id_eq_id {C : Grpd.{v, u}} : 𝟙 C = 𝟭 C  :=
+theorem id_eq_id {C : Grpd.{v, u}} : 𝟙 C = 𝟭 C :=
   rfl
 
 @[deprecated (since := "2025-09-04")] alias hom_to_functor := comp_eq_comp

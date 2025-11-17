@@ -265,6 +265,13 @@ theorem mk_le_mk : mk a ≤ mk b ↔ ∃ n, |b|ₘ ≤ |a|ₘ ^ n := .rfl
 @[to_additive]
 theorem mk_lt_mk : mk a < mk b ↔ ∀ n, |b|ₘ ^ n < |a|ₘ := .rfl
 
+@[to_additive]
+theorem mk_le_mk_iff_lt (ha : a ≠ 1) : mk a ≤ mk b ↔ ∃ n, |b|ₘ < |a|ₘ ^ n := by
+  refine ⟨fun ⟨n, hn⟩ ↦ ⟨n + 1, hn.trans_lt ?_⟩, fun ⟨n, hn⟩ ↦ ?_⟩
+  · rw [pow_succ]
+    exact lt_mul_of_one_lt_right' _ (one_lt_mabs.mpr ha)
+  · exact ⟨n, hn.le⟩
+
 /-- 1 is in its own class (see `MulArchimedeanClass.mk_eq_top_iff`),
 which is also the largest class. -/
 @[to_additive /-- 0 is in its own class (see `ArchimedeanClass.mk_eq_top_iff`),
@@ -323,8 +330,8 @@ theorem mk_monotoneOn : MonotoneOn mk (Set.Iic (1 : M)) := by
 theorem min_le_mk_mul (a b : M) : min (mk a) (mk b) ≤ mk (a * b) := by
   by_contra! h
   rw [lt_min_iff] at h
-  have h1 := (mk_lt_mk.mp h.1 2).trans_le (mabs_mul _ _)
-  have h2 := (mk_lt_mk.mp h.2 2).trans_le (mabs_mul _ _)
+  have h1 := (mk_lt_mk.mp h.1 2).trans_le (mabs_mul_le _ _)
+  have h2 := (mk_lt_mk.mp h.2 2).trans_le (mabs_mul_le _ _)
   simp only [mul_lt_mul_iff_left, mul_lt_mul_iff_right, pow_two] at h1 h2
   exact h1.not_gt h2
 
@@ -435,11 +442,10 @@ theorem one_lt_of_one_lt_of_mk_lt (ha : 1 < a) (hab : mk a < mk (b / a)) :
 theorem mulArchimedean_of_mk_eq_mk (h : ∀ a ≠ (1 : M), ∀ b ≠ 1, mk a = mk b) :
     MulArchimedean M where
   arch x y hy := by
-    by_cases hx : x ≤ 1
+    by_cases! hx : x ≤ 1
     · use 0
       simpa using hx
-    · have hx : 1 < x := lt_of_not_ge hx
-      have hxy : mk x = mk y := h x hx.ne.symm y hy.ne.symm
+    · have hxy : mk x = mk y := h x hx.ne.symm y hy.ne.symm
       obtain ⟨_, ⟨m, hm⟩⟩ := (mk_eq_mk).mp hxy
       rw [mabs_eq_self.mpr hx.le, mabs_eq_self.mpr hy.le] at hm
       exact ⟨m, hm⟩
@@ -737,9 +743,8 @@ theorem withTopOrderIso_apply_coe (A : FiniteMulArchimedeanClass M) :
 
 @[to_additive]
 theorem withTopOrderIso_symm_apply {a : M} (h : a ≠ 1) :
-    (withTopOrderIso M).symm (MulArchimedeanClass.mk a) = mk a h := by
-  unfold mk withTopOrderIso
-  convert WithTop.subtypeOrderIso_symm_apply (MulArchimedeanClass.mk_eq_top_iff.ne.mpr h)
+    (withTopOrderIso M).symm (MulArchimedeanClass.mk a) = mk a h :=
+  WithTop.subtypeOrderIso_symm_apply (MulArchimedeanClass.mk_eq_top_iff.ne.mpr h)
 
 variable {N : Type*} [CommGroup N] [LinearOrder N] [IsOrderedMonoid N]
 
