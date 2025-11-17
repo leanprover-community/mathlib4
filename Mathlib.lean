@@ -4261,6 +4261,7 @@ import Mathlib.Lean.Meta.Simp
 import Mathlib.Lean.Meta.Tactic.Rewrite
 import Mathlib.Lean.Name
 import Mathlib.Lean.PrettyPrinter.Delaborator
+import Mathlib.Lean.Syntax
 import Mathlib.Lean.Thunk
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
@@ -7139,6 +7140,7 @@ import Mathlib.Util.AtomM
 import Mathlib.Util.AtomM.Recurse
 import Mathlib.Util.CompileInductive
 import Mathlib.Util.CountHeartbeats
+import Mathlib.Util.DeclarationManipulation
 import Mathlib.Util.Delaborators
 import Mathlib.Util.DischargerAsTactic
 import Mathlib.Util.ElabWithoutMVars
