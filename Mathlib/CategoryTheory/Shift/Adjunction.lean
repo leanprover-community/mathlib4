@@ -227,7 +227,7 @@ namespace CommShift
 
 
 /-- Constructor for `Adjunction.CommShift`. -/
-lemma mk' (h : NatTrans.CommShift adj.unit A) :
+lemma mk' (_ : NatTrans.CommShift adj.unit A) :
     adj.CommShift A where
   commShift_counit := ⟨fun a ↦ by
     ext
@@ -235,9 +235,7 @@ lemma mk' (h : NatTrans.CommShift adj.unit A) :
       Functor.commShiftIso_comp_hom_app, Functor.whiskerRight_app, assoc, Functor.whiskerLeft_app,
       Functor.commShiftIso_id_hom_app, comp_id]
     refine (compatibilityCounit_of_compatibilityUnit adj _ _ (fun X ↦ ?_) _).symm
-    simpa only [NatTrans.comp_app,
-      Functor.commShiftIso_id_hom_app, Functor.whiskerRight_app, id_comp,
-      Functor.commShiftIso_comp_hom_app] using congr_app (h.shift_comm a) X⟩
+    simpa [Functor.commShiftIso_comp_hom_app] using NatTrans.shift_app_comm adj.unit a X⟩
 
 variable [adj.CommShift A]
 
@@ -370,15 +368,15 @@ open RightAdjointCommShift in
 Given an adjunction `F ⊣ G` and a `CommShift` structure on `F`, this constructs
 the unique compatible `CommShift` structure on `G`.
 -/
-@[simps]
+@[simps -isSimp]
 noncomputable def rightAdjointCommShift [F.CommShift A] : G.CommShift A where
-  iso a := iso adj a
-  zero := by
+  commShiftIso a := iso adj a
+  commShiftIso_zero := by
     refine CommShift.compatibilityUnit_unique_right adj (F.commShiftIso 0) _ _
       (compatibilityUnit_iso adj 0) ?_
     rw [F.commShiftIso_zero]
     exact CommShift.compatibilityUnit_isoZero adj
-  add a b := by
+  commShiftIso_add a b := by
     refine CommShift.compatibilityUnit_unique_right adj (F.commShiftIso (a + b)) _ _
       (compatibilityUnit_iso adj (a + b)) ?_
     rw [F.commShiftIso_add]
@@ -454,15 +452,15 @@ open LeftAdjointCommShift in
 Given an adjunction `F ⊣ G` and a `CommShift` structure on `G`, this constructs
 the unique compatible `CommShift` structure on `F`.
 -/
-@[simps]
+@[simps -isSimp]
 noncomputable def leftAdjointCommShift [G.CommShift A] : F.CommShift A where
-  iso a := iso adj a
-  zero := by
+  commShiftIso a := iso adj a
+  commShiftIso_zero := by
     refine CommShift.compatibilityUnit_unique_left adj _ _ (G.commShiftIso 0)
       (compatibilityUnit_iso adj 0) ?_
     rw [G.commShiftIso_zero]
     exact CommShift.compatibilityUnit_isoZero adj
-  add a b := by
+  commShiftIso_add a b := by
     refine CommShift.compatibilityUnit_unique_left adj _ _ (G.commShiftIso (a + b))
       (compatibilityUnit_iso adj (a + b)) ?_
     rw [G.commShiftIso_add]
