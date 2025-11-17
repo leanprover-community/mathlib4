@@ -647,12 +647,6 @@ def toAdjunction : e.functor ⊣ e.inverse where
   unit := e.unit
   counit := e.counit
 
-lemma toAdjunction_homEquiv_apply {X : C} {Y : D} (f : e.functor.obj X ⟶ Y) :
-  e.toAdjunction.homEquiv X Y f = e.unit.app X ≫ e.inverse.map f := rfl
-
-lemma toAdjunction_homEquiv_symm_apply {X : C} {Y : D} (f : X ⟶ e.inverse.obj Y) :
-  (e.toAdjunction.homEquiv X Y).symm f = e.functor.map f ≫ e.counit.app Y := rfl
-
 lemma isLeftAdjoint_functor : e.functor.IsLeftAdjoint where
   exists_rightAdjoint := ⟨_, ⟨e.toAdjunction⟩⟩
 
