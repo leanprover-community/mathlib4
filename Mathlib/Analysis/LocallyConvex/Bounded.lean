@@ -276,6 +276,11 @@ theorem isVonNBounded_insert (x : E) {s : Set E} :
 
 protected alias ⟨_, IsVonNBounded.insert⟩ := isVonNBounded_insert
 
+/-- Finite sets are bounded. -/
+theorem _root_.Set.Finite.isVonNBounded {s : Set E} (hs : s.Finite) :
+    IsVonNBounded 𝕜 s := fun _ hV ↦
+  (absorbent_nhds_zero hV).absorbs_finite hs
+
 section ContinuousAdd
 
 variable [ContinuousAdd E] {s t : Set E}
@@ -338,9 +343,12 @@ theorem isVonNBounded_sub :
 end IsTopologicalAddGroup
 
 /-- The union of all bounded set is the whole space. -/
-theorem isVonNBounded_covers : ⋃₀ setOf (IsVonNBounded 𝕜) = (Set.univ : Set E) :=
+theorem sUnion_isVonNBounded_eq_univ : ⋃₀ setOf (IsVonNBounded 𝕜) = (Set.univ : Set E) :=
   Set.eq_univ_iff_forall.mpr fun x =>
     Set.mem_sUnion.mpr ⟨{x}, isVonNBounded_singleton _, Set.mem_singleton _⟩
+
+@[deprecated (since := "2025-11-14")]
+alias isVonNBounded_covers := sUnion_isVonNBounded_eq_univ
 
 variable (𝕜 E)
 
@@ -398,7 +406,7 @@ variable (𝕜) in
 theorem Filter.Tendsto.isVonNBounded_range [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
     [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
     {f : ℕ → E} {x : E} (hf : Tendsto f atTop (𝓝 x)) : Bornology.IsVonNBounded 𝕜 (range f) :=
-  letI := IsTopologicalAddGroup.toUniformSpace E
+  letI := IsTopologicalAddGroup.rightUniformSpace E
   haveI := isUniformAddGroup_of_addCommGroup (G := E)
   hf.cauchySeq.totallyBounded_range.isVonNBounded 𝕜
 
@@ -505,3 +513,29 @@ theorem isBounded_iff_subset_smul_closedBall {s : Set E} :
 end NormedSpace
 
 end VonNBornologyEqMetric
+
+section QuasiCompleteSpace
+
+/-- A locally convex space is quasi-complete if every closed and von Neumann bounded set is
+complete. -/
+class QuasiCompleteSpace (𝕜 : Type*) (E : Type*) [Zero E] [UniformSpace E] [SeminormedRing 𝕜]
+    [SMul 𝕜 E] : Prop where
+  /-- A locally convex space is quasi-complete if every closed and von Neumann bounded set is
+  complete. -/
+  quasiComplete : ∀ ⦃s : Set E⦄, Bornology.IsVonNBounded 𝕜 s → IsClosed s → IsComplete s
+
+variable {𝕜 : Type*} {E : Type*} [Zero E] [UniformSpace E] [SeminormedRing 𝕜] [SMul 𝕜 E]
+
+/-- A complete space is quasi-complete with respect to any scalar ring. -/
+instance [CompleteSpace E] : QuasiCompleteSpace 𝕜 E where
+  quasiComplete _ _ := IsClosed.isComplete
+
+/-- [Bourbaki, *Topological Vector Spaces*, III §1.6][bourbaki1987] -/
+theorem isCompact_closure_of_totallyBounded_quasiComplete {E : Type*} {𝕜 : Type*} [NormedField 𝕜]
+    [AddCommGroup E] [Module 𝕜 E] [UniformSpace E] [IsUniformAddGroup E] [ContinuousSMul 𝕜 E]
+    [QuasiCompleteSpace 𝕜 E] {s : Set E} (hs : TotallyBounded s) : IsCompact (closure s) :=
+  hs.closure.isCompact_of_isComplete
+    (QuasiCompleteSpace.quasiComplete (TotallyBounded.isVonNBounded 𝕜 (TotallyBounded.closure hs))
+    isClosed_closure)
+
+end QuasiCompleteSpace

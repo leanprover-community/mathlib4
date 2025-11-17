@@ -51,7 +51,7 @@ lemma lt_of_mem_primesBelow {p n : ℕ} (h : p ∈ n.primesBelow) : p < n :=
 
 lemma primesBelow_succ (n : ℕ) :
     primesBelow (n + 1) = if n.Prime then insert n (primesBelow n) else primesBelow n := by
-  rw [primesBelow, primesBelow, Finset.range_succ, Finset.filter_insert]
+  rw [primesBelow, primesBelow, Finset.range_add_one, Finset.filter_insert]
 
 lemma notMem_primesBelow (n : ℕ) : n ∉ primesBelow n :=
   fun hn ↦ (lt_of_mem_primesBelow hn).false
@@ -352,7 +352,7 @@ lemma prod_mem_smoothNumbers (n N : ℕ) :
 /-- The sets of `N`-smooth and of `(N+1)`-smooth numbers are the same when `N` is not prime.
 See `Nat.equivProdNatSmoothNumbers` for when `N` is prime. -/
 lemma smoothNumbers_succ {N : ℕ} (hN : ¬ N.Prime) : (N + 1).smoothNumbers = N.smoothNumbers := by
-  simp only [smoothNumbers_eq_factoredNumbers, Finset.range_succ, factoredNumbers_insert _ hN]
+  simp only [smoothNumbers_eq_factoredNumbers, Finset.range_add_one, factoredNumbers_insert _ hN]
 
 @[simp] lemma smoothNumbers_one : smoothNumbers 1 = {1} := by
   simp +decide only [not_false_eq_true, smoothNumbers_succ, smoothNumbers_zero]
@@ -404,7 +404,7 @@ def equivProdNatSmoothNumbers {p : ℕ} (hp : p.Prime) :
     ℕ × smoothNumbers p ≃ smoothNumbers (p + 1) :=
   ((prodCongrRight fun _ ↦ setCongr <| smoothNumbers_eq_factoredNumbers p).trans <|
     equivProdNatFactoredNumbers hp Finset.notMem_range_self).trans <|
-    setCongr <| (smoothNumbers_eq_factoredNumbers (p + 1)) ▸ Finset.range_succ ▸ rfl
+    setCongr <| (smoothNumbers_eq_factoredNumbers (p + 1)) ▸ Finset.range_add_one ▸ rfl
 
 @[simp]
 lemma equivProdNatSmoothNumbers_apply {p e m : ℕ} (hp : p.Prime) (hm : m ∈ p.smoothNumbers) :
@@ -480,8 +480,9 @@ lemma smoothNumbersUpTo_subset_image (N k : ℕ) :
   · rw [lt_succ, le_sqrt']
     refine LE.le.trans ?_ (hm ▸ hn₁)
     nth_rw 1 [← mul_one (m ^ 2)]
-    exact mul_le_mul_left' (Finset.one_le_prod' fun p hp ↦
-      (prime_of_mem_primesBelow <| Finset.mem_powerset.mp hs hp).one_lt.le) _
+    gcongr
+    exact Finset.one_le_prod' fun p hp ↦
+      (prime_of_mem_primesBelow <| Finset.mem_powerset.mp hs hp).one_le
 
 /-- The cardinality of the set of `k`-smooth numbers `≤ N` is bounded by `2^π(k-1) * √N`. -/
 lemma smoothNumbersUpTo_card_le (N k : ℕ) :

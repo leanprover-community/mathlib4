@@ -125,7 +125,7 @@ lemma independent_iInf_maxGenEigenspace_of_forall_mapsTo
     exact MapsTo.iterate (fun m hm ↦ p.sub_mem (hp hm) (p.smul_mem _ hm)) k
   refine ⟨k, Submodule.mem_inf.mp ⟨?_, ?_⟩⟩
   · refine aux (f l) (χ₂ l) k (⨅ i, (f i).maxGenEigenspace (χ₁ i)) ?_ hx
-    simp only [Submodule.iInf_coe]
+    simp only [Submodule.coe_iInf]
     exact h l χ₁
   · rw [map_add, hk, zero_add]
     suffices (s.sup fun χ ↦ (⨅ i, (f i).maxGenEigenspace (χ i))).map (g ^ k) ≤
@@ -135,7 +135,7 @@ lemma independent_iInf_maxGenEigenspace_of_forall_mapsTo
     refine iSup₂_mono fun χ _ ↦ ?_
     rintro - ⟨u, hu, rfl⟩
     refine aux (f l) (χ₂ l) k (⨅ i, (f i).maxGenEigenspace (χ i)) ?_ hu
-    simp only [Submodule.iInf_coe]
+    simp only [Submodule.coe_iInf]
     exact h l χ
 
 /-- Given a family of endomorphisms `i ↦ f i` which are compatible in the sense that every maximal

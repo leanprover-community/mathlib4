@@ -18,7 +18,7 @@ and sums indexed by finite sets.
 ## Main declarations
 
 * `Multiset.prod`: `s.prod f` is the product of `f i` over all `i ∈ s`. Not to be mistaken with
-  the cartesian product `Multiset.product`.
+  the Cartesian product `Multiset.product`.
 * `Multiset.sum`: `s.sum f` is the sum of `f i` over all `i ∈ s`.
 -/
 
@@ -44,7 +44,7 @@ theorem prod_map_erase [DecidableEq ι] {a : ι} (h : a ∈ m) :
 
 @[to_additive (attr := simp, grind =)]
 theorem prod_add (s t : Multiset M) : prod (s + t) = prod s * prod t :=
-  Quotient.inductionOn₂ s t fun l₁ l₂ => by simp
+  Quotient.inductionOn₂ s t fun l₁ l₂ => by simp [List.prod_append]
 
 @[to_additive]
 theorem prod_nsmul (m : Multiset M) : ∀ n : ℕ, (n • m).prod = m.prod ^ n

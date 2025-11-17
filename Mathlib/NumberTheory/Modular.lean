@@ -37,7 +37,7 @@ Any `z : ℍ` can be moved to `𝒟` by an element of `SL(2,ℤ)`:
 If both `z` and `γ • z` are in the open domain `𝒟ᵒ` then `z = γ • z`:
 `eq_smul_self_of_mem_fdo_mem_fdo {z : ℍ} {g : SL(2,ℤ)} (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : z = g • z`
 
-# Discussion
+## Discussion
 
 Standard proofs make use of the identity
 
@@ -60,7 +60,7 @@ those, to minimize `|(g•z).re|` (see `ModularGroup.exists_row_one_eq_and_min_r
 -/
 
 
-open Complex hiding abs_two
+open Complex
 
 open Matrix hiding mul_smul
 
@@ -451,7 +451,7 @@ theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |g 1 0| �
     rwa [sq_le_sq, abs_one] at this
   suffices c ≠ 0 → 9 * c ^ 4 < 16 by
     rcases eq_or_ne c 0 with (hc | hc)
-    · rw [hc]; norm_num
+    · rw [hc]; simp
     · refine (abs_lt_of_sq_lt_sq' ?_ (by simp)).2
       specialize this hc
       linarith

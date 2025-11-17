@@ -3,8 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Order.RelClasses
 import Mathlib.Data.List.Basic
+import Mathlib.Data.Nat.Basic
+import Mathlib.Order.RelClasses
 
 /-!
 # Lexicographic ordering of lists.
@@ -44,13 +45,9 @@ theorem lex_nil_or_eq_nil {r : α → α → Prop} (l : List α) : List.Lex r []
   | [] => Or.inr rfl
   | _ :: _ => .inl .nil
 
-@[deprecated (since := "2025-03-14")] alias Lex.nil_left_or_eq_nil := lex_nil_or_eq_nil
-
 @[simp]
 theorem lex_singleton_iff {r : α → α → Prop} (a b : α) : List.Lex r [a] [b] ↔ r a b :=
   ⟨fun | .rel h => h, .rel⟩
-
-@[deprecated (since := "2025-03-14")] alias Lex.singleton_iff := lex_singleton_iff
 
 namespace Lex
 
@@ -124,11 +121,12 @@ theorem to_ne : ∀ {l₁ l₂ : List α}, Lex (· ≠ ·) l₁ l₂ → l₁ �
 theorem _root_.Decidable.List.Lex.ne_iff [DecidableEq α] {l₁ l₂ : List α}
     (H : length l₁ ≤ length l₂) : Lex (· ≠ ·) l₁ l₂ ↔ l₁ ≠ l₂ :=
   ⟨to_ne, fun h => by
-    induction' l₁ with a l₁ IH generalizing l₂ <;> rcases l₂ with - | ⟨b, l₂⟩
+    induction l₁ generalizing l₂ <;> rcases l₂ with - | ⟨b, l₂⟩
     · contradiction
     · apply nil
     · exact (not_lt_of_ge H).elim (succ_pos _)
-    · by_cases ab : a = b
+    case cons.cons a l₁ IH =>
+      by_cases ab : a = b
       · subst b
         exact .cons <| IH (le_of_succ_le_succ H) (mt (congr_arg _) h)
       · exact .rel ab ⟩

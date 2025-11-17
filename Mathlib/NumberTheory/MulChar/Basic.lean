@@ -321,21 +321,18 @@ theorem inv_mul (χ : MulChar R R') : χ⁻¹ * χ = 1 := by
   rw [one_apply_coe]
 
 /-- The commutative group structure on `MulChar R R'`. -/
-noncomputable instance commGroup : CommGroup (MulChar R R') :=
-  { one := 1
-    mul := (· * ·)
-    inv := Inv.inv
-    inv_mul_cancel := inv_mul
-    mul_assoc := by
-      intro χ₁ χ₂ χ₃
-      ext a
-      simp only [mul_assoc, Pi.mul_apply, MulChar.coeToFun_mul]
-    mul_comm := by
-      intro χ₁ χ₂
-      ext a
-      simp only [mul_comm, Pi.mul_apply, MulChar.coeToFun_mul]
-    one_mul := MulChar.one_mul
-    mul_one := MulChar.mul_one }
+noncomputable instance commGroup : CommGroup (MulChar R R') where
+  inv_mul_cancel := inv_mul
+  mul_assoc := by
+    intro χ₁ χ₂ χ₃
+    ext a
+    simp only [mul_assoc, Pi.mul_apply, MulChar.coeToFun_mul]
+  mul_comm := by
+    intro χ₁ χ₂
+    ext a
+    simp only [mul_comm, Pi.mul_apply, MulChar.coeToFun_mul]
+  one_mul := MulChar.one_mul
+  mul_one := MulChar.mul_one
 
 /-- If `a` is a unit and `n : ℕ`, then `(χ ^ n) a = (χ a) ^ n`. -/
 theorem pow_apply_coe (χ : MulChar R R') (n : ℕ) (a : Rˣ) : (χ ^ n) a = χ a ^ n := by
@@ -465,10 +462,9 @@ theorem IsQuadratic.inv {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ⁻¹ = �
   rcases hχ x with (h₀ | h₁ | h₂)
   · rw [h₀, Ring.inverse_zero]
   · rw [h₁, Ring.inverse_one]
-  · have : (-1 : R') = (-1 : R'ˣ) := by
-      simp -- Porting note: was `by norm_cast`
-    rw [h₂, this, Ring.inverse_unit (-1 : R'ˣ)]
-    rfl
+  · -- Porting note (#11573): was `by norm_cast`
+    have : (-1 : R') = (-1 : R'ˣ) := by norm_cast; simp
+    rw [h₂, this, Ring.inverse_unit (-1 : R'ˣ), inv_neg, inv_one]
 
 /-- The square of a quadratic character is the trivial character. -/
 theorem IsQuadratic.sq_eq_one {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ ^ 2 = 1 := by

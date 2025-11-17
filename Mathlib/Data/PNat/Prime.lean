@@ -125,8 +125,7 @@ theorem dvd_prime {p m : ℕ+} (pp : p.Prime) : m ∣ p ↔ m = 1 ∨ m = p := b
   simp
 
 theorem Prime.ne_one {p : ℕ+} : p.Prime → p ≠ 1 := by
-  intro pp
-  intro contra
+  intro pp contra
   apply Nat.Prime.ne_one pp
   rw [PNat.coe_eq_one_iff]
   apply contra
@@ -254,12 +253,7 @@ theorem Coprime.gcd_mul (k : ℕ+) {m n : ℕ+} (h : m.Coprime n) :
   rw [← coprime_coe] at h; apply eq
   simp only [gcd_coe, mul_coe]; apply Nat.Coprime.gcd_mul k h
 
-theorem gcd_eq_left {m n : ℕ+} : m ∣ n → m.gcd n = m := by
-  rw [dvd_iff]
-  intro h
-  apply eq
-  simp only [gcd_coe]
-  apply Nat.gcd_eq_left h
+@[deprecated (since := "2025-11-14")] alias ⟨_, gcd_eq_left⟩ := gcd_eq_left_iff_dvd
 
 theorem Coprime.pow {m n : ℕ+} (k l : ℕ) (h : m.Coprime n) : (m ^ k : ℕ).Coprime (n ^ l) := by
   rw [← coprime_coe] at *; apply Nat.Coprime.pow; apply h

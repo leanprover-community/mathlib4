@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
 import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Group.Int.Sum
 import Mathlib.Algebra.Order.Ring.Int
 
@@ -19,7 +20,7 @@ Prove that there exist two positive integers $b$ and $N$ for which
 $$\left|\sum_{j=m+1}^n (a_j-b)\right| ≤ 1007^2$$
 for all integers $m,n$ such that $N ≤ m < n$.
 
-# Solution
+## Solution
 
 We follow solution 2 ("juggling") from https://web.evanchen.cc/exams/IMO-2015-notes.pdf.
 

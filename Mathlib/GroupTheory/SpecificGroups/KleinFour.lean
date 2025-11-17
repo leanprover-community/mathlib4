@@ -17,7 +17,7 @@ produces the third one.
 * `IsKleinFour` : A mixin class which states that the group has order four and exponent two.
 * `mulEquiv'` : An equivalence between a Klein four-group and a group of exponent two which
   preserves the identity is in fact an isomorphism.
-* `mulEquiv`: Any two Klein four-groups are isomorphic via any identity preserving equivalence.
+* `mulEquiv`: Any two Klein four-groups are isomorphic via any identity-preserving equivalence.
 
 ## References
 
@@ -39,7 +39,7 @@ produces the third one.
 non-cyclic abelian group
 -/
 
-/-! # Klein four-groups as a mixin class -/
+/-! ### Klein four-groups as a mixin class -/
 
 /-- An (additive) Klein four-group is an (additive) group of cardinality four and exponent two. -/
 class IsAddKleinFour (G : Type*) [AddGroup G] : Prop where

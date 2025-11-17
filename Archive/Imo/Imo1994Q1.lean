@@ -18,7 +18,7 @@ such that for any two indices `i` and `j` with `1 ≤ i ≤ j ≤ m` and `aᵢ +
 there exists an index `k` such that `aᵢ + aⱼ = aₖ`.
 Show that `(a₁+a₂+...+aₘ)/m ≥ (n+1)/2`
 
-# Sketch of solution
+## Sketch of solution
 
 We can order the numbers so that `a₁ ≤ a₂ ≤ ... ≤ aₘ`.
 The key idea is to pair the numbers in the sum and show that `aᵢ + aₘ₊₁₋ᵢ ≥ n+1`.
@@ -35,7 +35,7 @@ theorem tedious (m : ℕ) (k : Fin (m + 1)) : m - ((m + 1 - ↑k) + m) % (m + 1)
   obtain ⟨k, hk⟩ := k
   rw [Nat.lt_succ_iff, le_iff_exists_add] at hk
   rcases hk with ⟨c, rfl⟩
-  have : (k + c + 1 - k) + (k + c) = c + (k + c + 1) := by omega
+  have : (k + c + 1 - k) + (k + c) = c + (k + c + 1) := by cutsat
   rw [Fin.val_mk, this, Nat.add_mod_right, Nat.mod_eq_of_lt, Nat.add_sub_cancel]
   omega
 

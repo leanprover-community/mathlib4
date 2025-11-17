@@ -61,8 +61,7 @@ theorem Finset.prod_nonneg_of_card_nonpos_even {α β : Type*}
       Finset.prod_nonneg fun x _ => by
         split_ifs with hx
         · simp [hx]
-        simp? at hx ⊢ says simp only [not_le, one_mul] at hx ⊢
-        exact le_of_lt hx
+        linarith
     _ = _ := by
       rw [Finset.prod_mul_distrib, Finset.prod_ite, Finset.prod_const_one, mul_one,
         Finset.prod_const, neg_one_pow_eq_pow_mod_two, Nat.even_iff.1 h0, pow_zero, one_mul]
@@ -139,9 +138,7 @@ theorem deriv2_sqrt_mul_log (x : ℝ) :
     convert (((hasDerivAt_log hx.ne').const_add 2).div ((hasDerivAt_sqrt hx.ne').const_mul 2) <|
       mul_ne_zero two_ne_zero h₀).deriv using 1
     nth_rw 3 [← mul_self_sqrt hx.le]
-    generalize √x = sqx at h₀ -- else field_simp rewrites sqrt x * sqrt x back to x
-    field_simp
-    ring
+    field
 
 theorem strictConcaveOn_sqrt_mul_log_Ioi :
     StrictConcaveOn ℝ (Set.Ioi 1) fun x => √x * log x := by

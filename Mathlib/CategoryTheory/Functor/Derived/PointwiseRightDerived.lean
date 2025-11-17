@@ -136,7 +136,7 @@ def isPointwiseLeftKanExtensionAtOfIsoOfIsLocalization
     simp only [← this, map_id, comp_id, Iso.inv_hom_id_app_assoc]
 
 /-- If `L` is a localization functor for `W` and `e : F ≅ L ⋙ G` is an isomorphism,
-then `e.hom` makes `G` a poinwise left Kan extension of `F` along `L`. -/
+then `e.hom` makes `G` a pointwise left Kan extension of `F` along `L`. -/
 noncomputable def isPointwiseLeftKanExtensionOfIsoOfIsLocalization
     {G : D ⥤ H} (e : F ≅ L ⋙ G) [L.IsLocalization W] :
     (LeftExtension.mk _ e.hom).IsPointwiseLeftKanExtension := fun Y ↦
@@ -160,6 +160,34 @@ lemma hasPointwiseRightDerivedFunctor_of_inverts
   rw [hasPointwiseRightDerivedFunctorAt_iff F W.Q W]
   exact (isPointwiseLeftKanExtensionOfIsoOfIsLocalization W
     (Localization.fac F hF W.Q).symm).hasPointwiseLeftKanExtension  _
+
+lemma isRightDerivedFunctor_of_inverts
+    [L.IsLocalization W] (F' : D ⥤ H) (e : L ⋙ F' ≅ F) :
+    F'.IsRightDerivedFunctor e.inv W where
+  isLeftKanExtension :=
+    (isPointwiseLeftKanExtensionOfIsoOfIsLocalization W e.symm).isLeftKanExtension
+
+instance [L.IsLocalization W] (hF : W.IsInvertedBy F) :
+    (Localization.lift F hF L).IsRightDerivedFunctor (Localization.fac F hF L).inv W :=
+  isRightDerivedFunctor_of_inverts W _ _
+
+variable {W} in
+lemma isIso_of_isRightDerivedFunctor_of_inverts [L.IsLocalization W]
+    {F : C ⥤ H} (RF : D ⥤ H) (α : F ⟶ L ⋙ RF)
+    (hF : W.IsInvertedBy F) [RF.IsRightDerivedFunctor α W] :
+    IsIso α := by
+  have : α = (Localization.fac F hF L).inv ≫
+    whiskerLeft _ (rightDerivedUnique _ _ (Localization.fac F hF L).inv α W).hom := by simp
+  rw [this]
+  infer_instance
+
+variable {W} in
+lemma isRightDerivedFunctor_iff_of_inverts [L.IsLocalization W]
+    {F : C ⥤ H} (RF : D ⥤ H) (α : F ⟶ L ⋙ RF)
+    (hF : W.IsInvertedBy F) :
+    RF.IsRightDerivedFunctor α W ↔ IsIso α :=
+  ⟨fun _ ↦ isIso_of_isRightDerivedFunctor_of_inverts RF α hF, fun _ ↦
+    isRightDerivedFunctor_of_inverts W RF (asIso α).symm⟩
 
 end
 

@@ -13,7 +13,7 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 The absolute value of an element in a group which is also a lattice is its supremum with its
 negation. This generalizes the usual absolute value on real numbers (`|x| = max x (-x)`).
 
-## Notations
+## Notation
 
 - `|a|`: The *absolute value* of an element `a` of an additive lattice ordered group
 - `|a|ₘ`: The *absolute value* of an element `a` of a multiplicative lattice ordered group
@@ -70,19 +70,15 @@ theorem inv_le_of_mabs_le (h : |a|ₘ ≤ b) : b⁻¹ ≤ a :=
 theorem le_of_mabs_le (h : |a|ₘ ≤ b) : a ≤ b :=
   (mabs_le.mp h).2
 
-/-- The **triangle inequality** in `LinearOrderedCommGroup`s. -/
-@[to_additive /-- The **triangle inequality** in `LinearOrderedAddCommGroup`s. -/]
-theorem mabs_mul (a b : G) : |a * b|ₘ ≤ |a|ₘ * |b|ₘ := by
-  rw [mabs_le, mul_inv]
-  constructor <;> gcongr <;> apply_rules [inv_mabs_le, le_mabs_self]
+@[deprecated (since := "2025-08-14")] alias mabs_mul := mabs_mul_le
 
 @[to_additive]
-theorem mabs_mul' (a b : G) : |a|ₘ ≤ |b|ₘ * |b * a|ₘ := by simpa using mabs_mul b⁻¹ (b * a)
+theorem mabs_mul' (a b : G) : |a|ₘ ≤ |b|ₘ * |b * a|ₘ := by simpa using mabs_mul_le b⁻¹ (b * a)
 
 @[to_additive]
 theorem mabs_div (a b : G) : |a / b|ₘ ≤ |a|ₘ * |b|ₘ := by
   rw [div_eq_mul_inv, ← mabs_inv b]
-  exact mabs_mul a _
+  exact mabs_mul_le a _
 
 @[to_additive]
 theorem mabs_div_le_iff : |a / b|ₘ ≤ c ↔ a / b ≤ c ∧ b / a ≤ c := by
@@ -113,7 +109,7 @@ theorem mabs_div_mabs_le_mabs_div (a b : G) : |a|ₘ / |b|ₘ ≤ |a / b|ₘ :=
   div_le_iff_le_mul.2 <|
     calc
       |a|ₘ = |a / b * b|ₘ := by rw [div_mul_cancel]
-      _ ≤ |a / b|ₘ * |b|ₘ := mabs_mul _ _
+      _ ≤ |a / b|ₘ * |b|ₘ := mabs_mul_le _ _
 
 @[to_additive]
 theorem mabs_mabs_div_mabs_le_mabs_div (a b : G) : |(|a|ₘ / |b|ₘ)|ₘ ≤ |a / b|ₘ :=
@@ -177,7 +173,7 @@ theorem eq_of_mabs_div_eq_one {a b : G} (h : |a / b|ₘ = 1) : a = b :=
 theorem mabs_div_le (a b c : G) : |a / c|ₘ ≤ |a / b|ₘ * |b / c|ₘ :=
   calc
     |a / c|ₘ = |a / b * (b / c)|ₘ := by rw [div_mul_div_cancel]
-    _ ≤ |a / b|ₘ * |b / c|ₘ := mabs_mul _ _
+    _ ≤ |a / b|ₘ * |b / c|ₘ := mabs_mul_le _ _
 
 @[to_additive]
 theorem mabs_div_le_max_div {a b c : G} (hac : a ≤ b) (hcd : b ≤ c) (d : G) :
@@ -189,16 +185,13 @@ theorem mabs_div_le_max_div {a b c : G} (hac : a ≤ b) (hcd : b ≤ c) (d : G) 
     exact le_max_of_le_right <| div_le_div_left' hac _
 
 @[to_additive]
-theorem mabs_mul_three (a b c : G) : |a * b * c|ₘ ≤ |a|ₘ * |b|ₘ * |c|ₘ :=
-  (mabs_mul _ _).trans (mul_le_mul_right' (mabs_mul _ _) _)
+theorem mabs_mul_three (a b c : G) : |a * b * c|ₘ ≤ |a|ₘ * |b|ₘ * |c|ₘ := by
+  grw [mabs_mul_le, mabs_mul_le]
 
 @[to_additive]
 theorem mabs_div_le_of_le_of_le {a b lb ub : G} (hal : lb ≤ a) (hau : a ≤ ub) (hbl : lb ≤ b)
     (hbu : b ≤ ub) : |a / b|ₘ ≤ ub / lb :=
   mabs_div_le_iff.2 ⟨div_le_div'' hau hbl, div_le_div'' hbu hal⟩
-
-@[deprecated (since := "2025-03-02")]
-alias dist_bdd_within_interval := abs_sub_le_of_le_of_le
 
 @[to_additive]
 theorem eq_of_mabs_div_le_one (h : |a / b|ₘ ≤ 1) : a = b :=

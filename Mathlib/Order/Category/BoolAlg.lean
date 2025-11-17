@@ -7,9 +7,9 @@ import Mathlib.Order.Category.HeytAlg
 import Mathlib.Order.Hom.CompleteLattice
 
 /-!
-# The category of boolean algebras
+# The category of Boolean algebras
 
-This defines `BoolAlg`, the category of boolean algebras.
+This defines `BoolAlg`, the category of Boolean algebras.
 -/
 
 
@@ -19,9 +19,11 @@ universe u
 
 open CategoryTheory
 
-/-- The category of boolean algebras. -/
+/-- The category of Boolean algebras. -/
 structure BoolAlg where
-  /-- The underlying boolean algebra. -/
+  /-- Construct a bundled `BoolAlg` from the underlying type and typeclass. -/
+  of ::
+  /-- The underlying Boolean algebra. -/
   carrier : Type*
   [str : BooleanAlgebra carrier]
 
@@ -35,9 +37,6 @@ instance : CoeSort BoolAlg (Type _) :=
   ⟨BoolAlg.carrier⟩
 
 attribute [coe] BoolAlg.carrier
-
-/-- Construct a bundled `BoolAlg` from the underlying type and typeclass. -/
-abbrev of (X : Type*) [BooleanAlgebra X] : BoolAlg := ⟨X⟩
 
 /-- The type of morphisms in `BoolAlg R`. -/
 @[ext]

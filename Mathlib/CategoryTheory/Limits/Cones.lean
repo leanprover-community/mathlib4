@@ -15,7 +15,7 @@ We define `Cone F`, a cone over a functor `F`,
 and `F.cones : Cᵒᵖ ⥤ Type`, the functor associating to `X` the cones over `F` with cone point `X`.
 
 A cone `c` is defined by specifying its cone point `c.pt` and a natural transformation `c.π`
-from the constant `c.pt` valued functor to `F`.
+from the constant `c.pt`-valued functor to `F`.
 
 We provide `c.w f : c.π.app j ≫ F.map f = c.π.app j'` for any `f : j ⟶ j'`
 as a wrapper for `c.π.naturality f` avoiding unneeded identity morphisms.
@@ -34,7 +34,7 @@ For more results about the category of cones, see `cone_category.lean`.
 -/
 
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
 open CategoryTheory
@@ -109,7 +109,7 @@ section
 
 Example: if `J` is a category coming from a poset then the data required to make
 a term of type `Cone F` is morphisms `πⱼ : c.pt ⟶ F j` for all `j : J` and,
-for all `i ≤ j` in `J`, morphisms `πᵢⱼ : F i ⟶ F j` such that `πᵢ ≫ πᵢⱼ = πᵢ`.
+for all `i ≤ j` in `J`, morphisms `πᵢⱼ : F i ⟶ F j` such that `πᵢ ≫ πᵢⱼ = πⱼ`.
 
 `Cone F` is equivalent, via `cone.equiv` below, to `Σ X, F.cones.obj X`.
 -/
@@ -289,6 +289,11 @@ instance {c d : Cone F} (f : c ≅ d) : IsIso f.hom.hom := ⟨f.inv.hom, by simp
 
 instance {c d : Cone F} (f : c ≅ d) : IsIso f.inv.hom := ⟨f.hom.hom, by simp⟩
 
+@[reassoc (attr := simp)]
+lemma ConeMorphism.map_w {c c' : Cone F} (f : c ⟶ c') (G : C ⥤ D) (j : J) :
+    G.map f.hom ≫ G.map (c'.π.app j) = G.map (c.π.app j) := by
+  simp only [← map_comp, ConeMorphism.w]
+
 namespace Cones
 
 /-- To give an isomorphism between cones, it suffices to give an
@@ -422,7 +427,7 @@ def functoriality : Cone F ⥤ Cone (F ⋙ G) where
           naturality := by intros; erw [← G.map_comp]; simp } }
   map f :=
     { hom := G.map f.hom
-      w := fun j => by simp [-ConeMorphism.w, ← f.w j] }
+      w := ConeMorphism.map_w f G }
 
 /-- Functoriality is functorial. -/
 def functorialityCompFunctoriality (H : D ⥤ E) :
@@ -505,6 +510,11 @@ lemma CoconeMorphism.inv_hom_id {c d : Cocone F} (f : c ≅ d) : f.inv.hom ≫ f
 instance {c d : Cocone F} (f : c ≅ d) : IsIso f.hom.hom := ⟨f.inv.hom, by simp⟩
 
 instance {c d : Cocone F} (f : c ≅ d) : IsIso f.inv.hom := ⟨f.hom.hom, by simp⟩
+
+@[reassoc (attr := simp)]
+lemma CoconeMorphism.map_w {c c' : Cocone F} (f : c ⟶ c') (G : C ⥤ D) (j : J) :
+    G.map (c.ι.app j) ≫ G.map f.hom = G.map (c'.ι.app j) := by
+  simp only [← map_comp, CoconeMorphism.w]
 
 namespace Cocones
 
@@ -637,7 +647,7 @@ def functoriality : Cocone F ⥤ Cocone (F ⋙ G) where
           naturality := by intros; erw [← G.map_comp]; simp } }
   map f :=
     { hom := G.map f.hom
-      w := by intros; rw [← Functor.map_comp, CoconeMorphism.w] }
+      w := CoconeMorphism.map_w f G }
 
 /-- Functoriality is functorial. -/
 def functorialityCompFunctoriality (H : D ⥤ E) :

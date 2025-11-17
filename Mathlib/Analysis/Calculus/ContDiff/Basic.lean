@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 import Mathlib.Analysis.Calculus.ContDiff.Defs
 import Mathlib.Analysis.Calculus.ContDiff.FaaDiBruno
 import Mathlib.Analysis.Calculus.FDeriv.Add
-import Mathlib.Analysis.Calculus.FDeriv.Mul
+import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 
 /-!
 # Higher differentiability of composition
@@ -20,7 +20,7 @@ We also expand the API around `C^n` functions.
 
 Similar results are given for `C^n` functions on domains.
 
-## Notations
+## Notation
 
 We use the notation `E [×n]→L[𝕜] F` for the space of continuous multilinear maps on `E^n` with
 values in `F`. This is the space in which the `n`-th derivative of a function from `E` to `F` lives.
@@ -501,8 +501,8 @@ end linear
 /-! ### The Cartesian product of two C^n functions is C^n. -/
 section prod
 
-/-- If two functions `f` and `g` admit Taylor series `p` and `q` in a set `s`, then the cartesian
-product of `f` and `g` admits the cartesian product of `p` and `q` as a Taylor series. -/
+/-- If two functions `f` and `g` admit Taylor series `p` and `q` in a set `s`, then the Cartesian
+product of `f` and `g` admits the Cartesian product of `p` and `q` as a Taylor series. -/
 theorem HasFTaylorSeriesUpToOn.prodMk {n : WithTop ℕ∞}
     (hf : HasFTaylorSeriesUpToOn n f p s) {g : E → G}
     {q : E → FormalMultilinearSeries 𝕜 E G} (hg : HasFTaylorSeriesUpToOn n g q s) :
@@ -516,10 +516,7 @@ theorem HasFTaylorSeriesUpToOn.prodMk {n : WithTop ℕ∞}
   · intro m hm
     exact (L m).continuous.comp_continuousOn ((hf.cont m hm).prodMk (hg.cont m hm))
 
-@[deprecated (since := "2025-03-09")]
-alias HasFTaylorSeriesUpToOn.prod := HasFTaylorSeriesUpToOn.prodMk
-
-/-- The cartesian product of `C^n` functions at a point in a domain is `C^n`. -/
+/-- The Cartesian product of `C^n` functions at a point in a domain is `C^n`. -/
 @[fun_prop]
 theorem ContDiffWithinAt.prodMk {s : Set E} {f : E → F} {g : E → G}
     (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g s x) :
@@ -540,35 +537,23 @@ theorem ContDiffWithinAt.prodMk {s : Set E} {f : E → F} {g : E → G}
     exact ⟨u ∩ v, Filter.inter_mem hu hv, _,
       (hp.mono inter_subset_left).prodMk (hq.mono inter_subset_right)⟩
 
-@[deprecated (since := "2025-03-09")]
-alias ContDiffWithinAt.prod := ContDiffWithinAt.prodMk
-
-/-- The cartesian product of `C^n` functions on domains is `C^n`. -/
+/-- The Cartesian product of `C^n` functions on domains is `C^n`. -/
 @[fun_prop]
 theorem ContDiffOn.prodMk {s : Set E} {f : E → F} {g : E → G} (hf : ContDiffOn 𝕜 n f s)
     (hg : ContDiffOn 𝕜 n g s) : ContDiffOn 𝕜 n (fun x : E => (f x, g x)) s := fun x hx =>
   (hf x hx).prodMk (hg x hx)
 
-@[deprecated (since := "2025-03-09")]
-alias ContDiffOn.prod := ContDiffOn.prodMk
-
-/-- The cartesian product of `C^n` functions at a point is `C^n`. -/
+/-- The Cartesian product of `C^n` functions at a point is `C^n`. -/
 @[fun_prop]
 theorem ContDiffAt.prodMk {f : E → F} {g : E → G} (hf : ContDiffAt 𝕜 n f x)
     (hg : ContDiffAt 𝕜 n g x) : ContDiffAt 𝕜 n (fun x : E => (f x, g x)) x :=
   contDiffWithinAt_univ.1 <| hf.contDiffWithinAt.prodMk hg.contDiffWithinAt
 
-@[deprecated (since := "2025-03-09")]
-alias ContDiffAt.prod := ContDiffAt.prodMk
-
-/-- The cartesian product of `C^n` functions is `C^n`. -/
+/-- The Cartesian product of `C^n` functions is `C^n`. -/
 @[fun_prop]
 theorem ContDiff.prodMk {f : E → F} {g : E → G} (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
     ContDiff 𝕜 n fun x : E => (f x, g x) :=
   contDiffOn_univ.1 <| hf.contDiffOn.prodMk hg.contDiffOn
-
-@[deprecated (since := "2025-03-09")]
-alias ContDiff.prod := ContDiff.prodMk
 
 end prod
 
@@ -1183,8 +1168,7 @@ theorem ContDiffWithinAt.fderivWithin'' {f : E → F → G} {g : E → F} {t : S
   have : ∀ k : ℕ, k ≤ m → ContDiffWithinAt 𝕜 k (fun x => fderivWithin 𝕜 (f x) t (g x)) s x₀ := by
     intro k hkm
     obtain ⟨v, hv, -, f', hvf', hf'⟩ :=
-      (hf.of_le <| (add_le_add_right hkm 1).trans hmn).hasFDerivWithinAt_nhds (by simp)
-        (hg.of_le hkm) hgt
+      (hf.of_le <| by grw [hkm, hmn]).hasFDerivWithinAt_nhds (by simp) (hg.of_le hkm) hgt
     refine hf'.congr_of_eventuallyEq_insert ?_
     filter_upwards [hv, ht]
     exact fun y hy h2y => (hvf' y hy).fderivWithin h2y

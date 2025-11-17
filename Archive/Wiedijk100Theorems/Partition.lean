@@ -5,7 +5,7 @@ Authors: Bhavik Mehta, Aaron Anderson
 -/
 import Mathlib.Algebra.Order.Antidiag.Finsupp
 import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Combinatorics.Enumerative.Partition
+import Mathlib.Combinatorics.Enumerative.Partition.Basic
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 import Mathlib.RingTheory.PowerSeries.Inverse
@@ -32,7 +32,7 @@ equal:
 
 $$\prod_{i=0}^\infty \frac {1}{1-X^{2i+1}} = \prod_{i=0}^\infty (1+X^{i+1})$$
 
-In fact, we do not take a limit: it turns out that comparing the `n`'th coefficients of the partial
+In fact, we do not take a limit: it turns out that comparing the `n`-th coefficients of the partial
 products up to `m := n + 1` is sufficient.
 
 In particular, we

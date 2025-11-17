@@ -101,9 +101,15 @@ theorem map_topologicalClosure_le [StarModule R B] [IsTopologicalSemiring B] [Co
   image_closure_subset_closure_image hφ
 
 theorem topologicalClosure_map [StarModule R B] [IsTopologicalSemiring B] [ContinuousStar B]
-    (s : StarSubalgebra R A) (φ : A →⋆ₐ[R] B) (hφ : IsClosedEmbedding φ) :
+    (s : StarSubalgebra R A) (φ : A →⋆ₐ[R] B) (hφ : IsClosedMap φ) (hφ' : Continuous φ) :
     (map φ s).topologicalClosure = map φ s.topologicalClosure :=
-  SetLike.coe_injective <| hφ.closure_image_eq _
+  SetLike.coe_injective <| hφ.closure_image_eq_of_continuous hφ' _
+
+variable (R) in
+open StarAlgebra in
+lemma topologicalClosure_adjoin_le_centralizer_centralizer [T2Space A] (s : Set A) :
+    (adjoin R s).topologicalClosure ≤ centralizer R (centralizer R s) :=
+  topologicalClosure_minimal (adjoin_le_centralizer_centralizer R s) (Set.isClosed_centralizer _)
 
 theorem _root_.Subalgebra.topologicalClosure_star_comm (s : Subalgebra R A) :
     (star s).topologicalClosure = star s.topologicalClosure := by
@@ -212,6 +218,10 @@ theorem isClosedEmbedding_coe (x : A) : IsClosedEmbedding ((↑) : elemental R x
   eq_induced := rfl
   injective := Subtype.coe_injective
   isClosed_range := by simpa using isClosed R x
+
+lemma le_centralizer_centralizer [T2Space A] (x : A) :
+    elemental R x ≤ centralizer R (centralizer R {x}) :=
+  topologicalClosure_adjoin_le_centralizer_centralizer ..
 
 @[elab_as_elim]
 theorem induction_on {x y : A}

@@ -150,7 +150,7 @@ theorem det_mul (M N : Matrix n n R) : det (M * N) = det M * det N :=
         Fintype.sum_equiv (Equiv.mulRight σ⁻¹) _ _ fun τ => by
           have : (∏ j, M (τ j) (σ j)) = ∏ j, M ((τ * σ⁻¹) j) j := by
             rw [← (σ⁻¹ : _ ≃ _).prod_comp]
-            simp only [Equiv.Perm.coe_mul, apply_inv_self, Function.comp_apply]
+            simp
           have h : ε σ * ε (τ * σ⁻¹) = ε τ :=
             calc
               ε σ * ε (τ * σ⁻¹) = ε (τ * σ⁻¹ * σ) := by
@@ -471,11 +471,7 @@ theorem det_updateCol_add_smul_self (A : Matrix n n R) {i j : n} (hij : i ≠ j)
 
 theorem det_eq_zero_of_not_linearIndependent_rows [IsDomain R] {A : Matrix m m R}
     (hA : ¬ LinearIndependent R (fun i ↦ A i)) :
-    det A = 0 := by
-  obtain ⟨c, hc0, i, hci⟩ := Fintype.not_linearIndependent_iff.1 hA
-  have h0 := A.det_updateRow_sum i c
-  rwa [det_eq_zero_of_row_eq_zero (i := i) (fun j ↦ by simp [hc0]), smul_eq_mul, eq_comm,
-    mul_eq_zero_iff_left hci] at h0
+    det A = 0 := detRowAlternating.map_linearDependent A hA
 
 theorem linearIndependent_rows_of_det_ne_zero [IsDomain R] {A : Matrix m m R} (hA : A.det ≠ 0) :
     LinearIndependent R (fun i ↦ A i) := by
@@ -491,6 +487,21 @@ theorem det_eq_zero_of_not_linearIndependent_cols [IsDomain R] {A : Matrix m m R
     det A = 0 := by
   contrapose! hA
   exact linearIndependent_cols_of_det_ne_zero hA
+
+theorem det_vecMulVec [Nontrivial n] (u v : n → R) : (vecMulVec u v).det = 0 := by
+  obtain ⟨i, j, hij⟩ := exists_pair_ne n
+  let uv' := ((vecMulVec u v).updateRow i v).updateRow j v
+  have huv' : uv'.det = 0 := by
+    refine detRowAlternating.map_eq_zero_of_eq _ ?_ hij
+    simp [uv', hij]
+  have : vecMulVec u v =
+      (uv'.updateRow i (u i • uv' i)).updateRow j (u j • uv'.updateRow i (u i • uv' i) j) := by
+    unfold uv'
+    rw [updateRow_comm _ hij, updateRow_idem, updateRow_ne hij.symm, updateRow_ne hij,
+      updateRow_self, updateRow_self, updateRow_comm _ hij, updateRow_idem,
+      ← update_vecMulVec u v j, update_eq_self, ← update_vecMulVec u v i, update_eq_self]
+  rw [this, det_updateRow_smul, updateRow_eq_self, det_updateRow_smul, updateRow_eq_self, huv',
+    mul_zero, mul_zero]
 
 theorem det_eq_of_forall_row_eq_smul_add_const_aux {A B : Matrix n n R} {s : Finset n} :
     ∀ (c : n → R) (_ : ∀ i, i ∉ s → c i = 0) (k : n) (_ : k ∉ s)
@@ -618,9 +629,7 @@ theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Mat
       exact (this k x).1
     · intro σ hσ
       rw [mem_preserving_snd] at hσ
-      have hσ' : ∀ x, (σ⁻¹ x).snd = x.snd := by
-        intro x
-        conv_rhs => rw [← Perm.apply_inv_self σ x, hσ]
+      have hσ' x : (σ⁻¹ x).snd = x.snd := by simpa [eq_comm] using hσ (σ⁻¹ x)
       have mk_apply_eq : ∀ k x, ((σ (x, k)).fst, k) = σ (x, k) := by
         intro k x
         ext
@@ -629,9 +638,9 @@ theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Mat
       have mk_inv_apply_eq : ∀ k x, ((σ⁻¹ (x, k)).fst, k) = σ⁻¹ (x, k) := by grind
       refine ⟨fun k _ => ⟨fun x => (σ (x, k)).fst, fun x => (σ⁻¹ (x, k)).fst, ?_, ?_⟩, ?_, ?_⟩
       · intro x
-        simp only [mk_apply_eq, inv_apply_self]
+        simp [mk_apply_eq]
       · intro x
-        simp only [mk_inv_apply_eq, apply_inv_self]
+        simp [mk_inv_apply_eq]
       · apply Finset.mem_univ
       · ext ⟨k, x⟩
         · simp only [coe_fn_mk, prodCongrLeft_apply]

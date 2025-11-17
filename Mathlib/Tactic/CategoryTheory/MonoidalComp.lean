@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2022. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Yuma Mizuno, Oleksandr Manzyuk
 -/
@@ -44,7 +44,7 @@ open scoped MonoidalCategory
 A typeclass carrying a choice of monoidal structural isomorphism between two objects.
 Used by the `⊗≫` monoidal composition operator, and the `coherence` tactic.
 -/
--- We could likely turn this into a `Prop` valued existential if that proves useful.
+-- We could likely turn this into a `Prop`-valued existential if that proves useful.
 class MonoidalCoherence (X Y : C) where
   /-- A monoidal structural isomorphism between two objects. -/
   iso : X ≅ Y
