@@ -305,8 +305,6 @@ lemma mk_of_continuousAt {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : 
   use F, by infer_instance, by infer_instance
   apply IsImmersionAtOfComplement.mk_of_continuousAt <;> assumption
 
--- TODO: clean up from here!
-
 /-- A choice of complement of the model normed space `E` of `M` in the model normed space
 `E'` of `N` -/
 def complement (h : IsImmersionAt I J n f x) : Type u := by
@@ -412,7 +410,7 @@ lemma congr_iff (hfg : f =ᶠ[𝓝 x] g) :
 
 end IsImmersionAt
 
-variable (I J n) in
+variable (F I J n) in
 /-- `f : M → N` is a `C^n` immersion if around each point `x ∈ M`,
 there are charts `φ` and `ψ` of `M` and `N` around `x` and `f x`, respectively
 such that in these charts, `f` looks like `u ↦ (u, 0)`.
@@ -421,6 +419,35 @@ In other words, `f` is an immersion at each `x ∈ M`.
 
 This definition has a fixed parameter `F`, which is a choice of complement of `E` in `E'`:
 being an immersion at `x` includes a choice of linear isomorphism between `E × F` and `E'`.
+-/
+def IsImmersionOfComplement (f : M → N) : Prop := ∀ x, IsImmersionAtOfComplement F I J n f x
+
+namespace IsImmersionOfComplement
+
+variable {f g : M → N}
+
+/-- If `f` is an immersion, it is an immersion at each point. -/
+lemma isImmersionAt (h : IsImmersionOfComplement F I J n f) (x : M) :
+    IsImmersionAtOfComplement F I J n f x := h x
+
+/-- If `f = g` and `f` is an immersion, so is `g`. -/
+theorem congr (h : IsImmersionOfComplement F I J n f) (heq : f = g) :
+    IsImmersionOfComplement F I J n g :=
+  heq ▸ h
+
+end IsImmersionOfComplement
+
+variable (I J n) in
+/-- `f : M → N` is a `C^n` immersion if around each point `x ∈ M`,
+there are charts `φ` and `ψ` of `M` and `N` around `x` and `f x`, respectively
+such that in these charts, `f` looks like `u ↦ (u, 0)`.
+
+In other words, `f` is an immersion at each `x ∈ M`.
+
+Implicit in this definition is an abstract choice `F` of a complement of `E` in `E'`:
+being an immersion includes a choice of linear isomorphism between `E × F` and `E'`, which is where
+the choice of `F` enters. If you need closer control over the complement `F`,
+use `IsImmersionOfComplement` instead.
 -/
 def IsImmersion (f : M → N) : Prop := ∀ x, IsImmersionAt I J n f x
 
