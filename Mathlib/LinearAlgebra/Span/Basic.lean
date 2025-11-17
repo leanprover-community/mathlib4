@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Submodule.EqLocus
 import Mathlib.Algebra.Module.Submodule.Equiv
-import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 import Mathlib.LinearAlgebra.Span.Defs
 import Mathlib.Order.CompactlyGenerated.Basic

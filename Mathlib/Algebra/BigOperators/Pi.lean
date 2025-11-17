@@ -6,10 +6,8 @@ Authors: Simon Hudon, Patrick Massot
 import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
 import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Notation.Indicator
+import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Ring.Pi
-import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Data.Fintype.Basic
 
 /-!

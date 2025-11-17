@@ -3,11 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.LinearAlgebra.Prod
 import Mathlib.Algebra.Module.Submodule.Invariant
-import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.Algebra.Ring.Idempotent
+import Mathlib.LinearAlgebra.GeneralLinearGroup
+import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!
 # Projection to a subspace
