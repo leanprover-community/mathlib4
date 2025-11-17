@@ -248,6 +248,51 @@ jobs:
             echo "✅ All inputRevs in lake-manifest.json are valid"
           fi
 
+      - name: verify ProofWidgets lean-toolchain matches on versioned releases
+        # Only enforce this on the main mathlib4 repository, not on nightly-testing
+        if: github.repository == 'leanprover-community/mathlib4'
+        shell: bash
+        run: |
+          cd pr-branch
+
+          # Read the lean-toolchain file
+          TOOLCHAIN=$(cat lean-toolchain | tr -d '[:space:]')
+          echo "Lean toolchain: $TOOLCHAIN"
+
+          # Check if toolchain matches the versioned release pattern: leanprover/lean4:vX.Y.Z (with optional suffix like -rc1)
+          if [[ "$TOOLCHAIN" =~ ^leanprover/lean4:v[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?$ ]]; then
+            echo "✓ Detected versioned Lean release: $TOOLCHAIN"
+            echo "Verifying ProofWidgets lean-toolchain matches..."
+
+            # Check if ProofWidgets lean-toolchain exists
+            if [ ! -f .lake/packages/proofwidgets/lean-toolchain ]; then
+              echo "❌ Error: .lake/packages/proofwidgets/lean-toolchain does not exist"
+              echo "This file should be created by 'lake env' during dependency download."
+              exit 1
+            fi
+
+            # Read ProofWidgets lean-toolchain
+            PROOFWIDGETS_TOOLCHAIN=$(cat .lake/packages/proofwidgets/lean-toolchain | tr -d '[:space:]')
+            echo "ProofWidgets toolchain: $PROOFWIDGETS_TOOLCHAIN"
+
+            # Compare the two
+            if [ "$TOOLCHAIN" != "$PROOFWIDGETS_TOOLCHAIN" ]; then
+              echo "❌ Error: Lean toolchain mismatch!"
+              echo "  Main lean-toolchain: $TOOLCHAIN"
+              echo "  ProofWidgets lean-toolchain: $PROOFWIDGETS_TOOLCHAIN"
+              echo ""
+              echo "When using a versioned Lean release (leanprover/lean4:vX.Y.Z),"
+              echo "the ProofWidgets dependency must use the same toolchain."
+              echo "Please update the ProofWidgets dependency to use $TOOLCHAIN"
+              exit 1
+            else
+              echo "✅ ProofWidgets lean-toolchain matches: $TOOLCHAIN"
+            fi
+          else
+            echo "ℹ Lean toolchain is not a versioned release (pattern: leanprover/lean4:vX.Y.Z)"
+            echo "Skipping ProofWidgets toolchain verification."
+          fi
+
       - name: get cache (1/3 - setup and initial fetch)
         id: get_cache_part1_setup
         shell: bash # only runs `cache get` from `master-branch`, so doesn't need to be inside landrun
