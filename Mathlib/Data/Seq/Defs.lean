@@ -682,8 +682,6 @@ def subsequence {f : ℕ → ℕ} (hf : Monotone f) : Seq α → Seq α
       have := Nat.le_induction_step_iff.mp @al
       exact Nat.le_induction_step_iff.mpr fun n m h ↦ this _ _ <| hf h⟩
 
-alias comp := subsequence
-
 /-- Flatten a sequence of sequences. (It is required that the
   sequences be nonempty to ensure productivity; in the case
   of an infinite sequence of `nil`, the first element is never
