@@ -348,7 +348,7 @@ lemma hittingBtwn_anti (u : ι → Ω → β) (n m : ι) : Antitone (hittingBtwn
     exact absurd ⟨t, ht.1, hEF ht.2⟩ hF
   · simp
 
-/-- `hittingAfter` is antitone with respect to the set. -/
+/-- `hittingAfter` is nonincreasing with respect to the set. -/
 lemma hittingAfter_anti (u : ι → Ω → β) (n : ι) : Antitone (hittingAfter u · n) := by
   intro E F hEF ω
   simp only [hittingAfter_def]
