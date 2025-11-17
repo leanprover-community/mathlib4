@@ -9,8 +9,8 @@ import Mathlib.Analysis.Complex.Schwarz
 /-!
 # Borel-Carathéodory theorem
 
-This file proves the Borel-Carathéodory theorem: for any function `f` analytic on the 
-open ball `|z| < R` such that `Re(f z) < M` for all `|z| < R`, we have 
+This file proves the Borel-Carathéodory theorem: for any function `f` analytic on the
+open ball `|z| < R` such that `Re(f z) < M` for all `|z| < R`, we have
 `‖f z‖ ≤ 2 * M * ‖z‖ / (R - ‖z‖) + ‖f 0‖ * (R + ‖z‖) / (R - ‖z‖)`
 
 ## Main results
@@ -21,7 +21,7 @@ open ball `|z| < R` such that `Re(f z) < M` for all `|z| < R`, we have
 ## Implementation Notes
 
 The proof applies the Schwarz lemma to the transformed function `w(z) = f(z) / (2M - f(z))`,
-which maps the ball `|z| < R` into the unit disk provided that `(f z).re < M` for all `|z| < R`. 
+which maps the ball `|z| < R` into the unit disk provided that `(f z).re < M` for all `|z| < R`.
 After obtaining bounds on `w`, we invert the transformation to recover bounds on `f`.
 
 ## Tags
@@ -93,7 +93,7 @@ lemma schwarz_applied (hM : 0 < M) (hf : DifferentiableOn ℂ f (ball 0 R))
   · norm_cast
     exact DifferentiableOn.div_const_sub hf
       (hf₁.mono_right fun a ha h => by simp [h] at ha; linarith [ha, hM])
-  · rw [← h0]; intro x hx; rw [mem_ball, dist_zero_right]; 
+  · rw [← h0]; intro x hx; rw [mem_ball, dist_zero_right];
     exact norm_div_two_mul_sub_lt_one hM (hf₁ hx)
 
 end SchwarzTransform
