@@ -96,7 +96,6 @@ private def _root_.Lean.ConstantVal.onUnusedInstancesWhere (decl : ConstantVal)
               }
           logOnUnused unusedInstances
 
--- TODO: we plan to use `_cmd` in future
 /--
 Finds theorems whose bodies were elaborated in the current infotrees and whose (full)
 declaration names satisfy `nameFilter`. Checks their type to see if it contains instance hypotheses
@@ -128,6 +127,7 @@ which logs
 
 pluralizing as appropriate.
 -/
+@[nolint unusedArguments] -- TODO: we plan to use `_cmd` in future
 def _root_.Lean.Syntax.logUnusedInstancesInTheoremsWhere (_cmd : Syntax)
     (declFilter : ConstantVal → Bool) (instanceTypeFilter : Expr → Bool)
     (log : InfoTree → ConstantVal → Array Parameter → TermElabM Unit) :
