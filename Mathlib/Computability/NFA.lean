@@ -510,10 +510,10 @@ theorem concat_acceptsFrom {S1 : Set σ1} :
   induction z generalizing S1 with
   | nil =>
     suffices h : (∃ a ∈ S1, a ∈ M1.accept ∧ [] ∈ M2.accepts)
-      ↔ (∃ s ∈ S1, s ∈ M1.accept) ∧ [] ∈ M2.accepts by simpa [mem_acceptsFrom_nil M1]
+      ↔ (∃ s ∈ S1, s ∈ M1.accept) ∧ [] ∈ M2.accepts by simpa [nil_mem_acceptsFrom M1]
     tauto
   | cons a z ih =>
-    simp only [mem_acceptsFrom_cons, ↓concat_stepSet_inl, stepSet, acceptsFrom_union,
+    simp only [cons_mem_acceptsFrom, ↓concat_stepSet_inl, stepSet, acceptsFrom_union,
       concat_acceptsFrom_inr, acceptsFrom_iUnion, add_eq_sup, max, SemilatticeSup.sup,
       Set.mem_union z, ih, mem_iUnion, exists_prop]; clear ih
     simp_rw [↑mem_acceptsFrom_sep_fact]
@@ -521,30 +521,30 @@ theorem concat_acceptsFrom {S1 : Set σ1} :
     · rintro (⟨x, hx, ⟨y, hy, rfl⟩⟩ | ⟨s1, hs1, s2, hs2, hz, haccept1⟩)
       · exists (a :: x)
         constructor
-        · simpa [mem_acceptsFrom_cons (M:=M1), stepSet,
+        · simpa [cons_mem_acceptsFrom (M:=M1), stepSet,
             Set.mem_iUnion₂ (s:=fun i _ => M1.acceptsFrom (M1.step i a))]
         · tauto
       · exists []
         constructor
-        · simp only [mem_acceptsFrom_nil (M:=M1)]
+        · simp only [nil_mem_acceptsFrom (M:=M1)]
           tauto
         · exists (a :: z)
-          simp only [accepts_acceptsFrom, mem_acceptsFrom_cons (M:=M2), stepSet,
-            acceptsFrom_biUnion,
+          simp only [accepts_acceptsFrom, cons_mem_acceptsFrom (M:=M2), stepSet,
+            acceptsFrom_iUnion₂,
             Set.mem_iUnion₂ (s:=fun i _ => M2.acceptsFrom (M2.step i a))]
           tauto
     · rintro ⟨x, hx, y, hy, heq⟩
       cases x with
       | nil =>
-        rw [mem_acceptsFrom_nil] at hx
+        rw [nil_mem_acceptsFrom] at hx
         obtain ⟨s1, hs1, haccept1⟩ := hx
         simp only [List.nil_append] at heq; subst y
-        simp only [accepts_acceptsFrom, mem_acceptsFrom_cons (M:=M2), stepSet, acceptsFrom_biUnion,
+        simp only [accepts_acceptsFrom, cons_mem_acceptsFrom (M:=M2), stepSet, acceptsFrom_iUnion₂,
           Set.mem_iUnion₂ (s:=fun i _ => M2.acceptsFrom (M2.step i a))] at hy
         tauto
       | cons b x =>
         obtain ⟨rfl, rfl⟩ := heq
-        simp only [mem_acceptsFrom_cons (M:=M1), stepSet, acceptsFrom_biUnion,
+        simp only [cons_mem_acceptsFrom (M:=M1), stepSet, acceptsFrom_iUnion₂,
           Set.mem_iUnion₂ (s:=fun i _ => M1.acceptsFrom (M1.step i a))] at hx
         left; tauto
 
