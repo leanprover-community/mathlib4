@@ -119,9 +119,13 @@ theorem sameCycle_apply_right : SameCycle f x (f y) ↔ SameCycle f x y := by
 theorem sameCycle_symm_apply_left : SameCycle f (f.symm x) y ↔ SameCycle f x y := by
   rw [← sameCycle_apply_left, apply_symm_apply]
 
+@[deprecated (since := "2025-11-17")] alias sameCycle_inv_apply_left := sameCycle_symm_apply_left
+
 @[simp]
 theorem sameCycle_symm_apply_right : SameCycle f x (f.symm y) ↔ SameCycle f x y := by
   rw [← sameCycle_apply_right, apply_symm_apply]
+
+@[deprecated (since := "2025-11-17")] alias sameCycle_inv_apply_right := sameCycle_symm_apply_right
 
 @[simp]
 theorem sameCycle_zpow_left {n : ℤ} : SameCycle f ((f ^ n) x) y ↔ SameCycle f x y :=

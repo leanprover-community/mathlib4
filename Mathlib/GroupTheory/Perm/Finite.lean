@@ -57,6 +57,9 @@ theorem perm_symm_on_of_perm_on_finset {s : Finset α} {f : Perm α} (h : ∀ x 
   obtain ⟨y2, hy2, rfl⟩ := h0 y hy
   simpa using hy2
 
+@[deprecated (since := "2025-11-17")]
+alias perm_inv_on_of_perm_on_finset := perm_symm_on_of_perm_on_finset
+
 theorem perm_symm_mapsTo_of_mapsTo (f : Perm α) {s : Set α} [Finite s] (h : Set.MapsTo f s s) :
     Set.MapsTo f.symm s s := by
   cases nonempty_fintype s
@@ -66,15 +69,23 @@ theorem perm_symm_mapsTo_of_mapsTo (f : Perm α) {s : Set α} [Finite s] (h : Se
         (fun a ha => Set.mem_toFinset.mpr (h (Set.mem_toFinset.mp ha)))
         (Set.mem_toFinset.mpr hx)
 
+@[deprecated (since := "2025-11-17")] alias perm_inv_mapsTo_of_mapsTo := perm_symm_mapsTo_of_mapsTo
+
 @[simp]
 theorem perm_symm_mapsTo_iff_mapsTo {f : Perm α} {s : Set α} [Finite s] :
     Set.MapsTo f.symm s s ↔ Set.MapsTo f s s :=
   ⟨perm_symm_mapsTo_of_mapsTo f⁻¹, perm_symm_mapsTo_of_mapsTo f⟩
 
+@[deprecated (since := "2025-11-17")]
+alias perm_inv_mapsTo_iff_mapsTo := perm_symm_mapsTo_iff_mapsTo
+
 theorem perm_symm_on_of_perm_on_finite {f : Perm α} {p : α → Prop} [Finite { x // p x }]
     (h : ∀ x, p x → p (f x)) {x : α} (hx : p x) : p (f.symm x) := by
   have : Finite { x | p x } := by simpa
   simpa using perm_symm_mapsTo_of_mapsTo (s := {x | p x}) f h hx
+
+@[deprecated (since := "2025-11-17")]
+alias perm_inv_on_of_perm_on_finite := perm_symm_on_of_perm_on_finite
 
 /-- If the permutation `f` maps `{x // p x}` into itself, then this returns the permutation
   on `{x // p x}` induced by `f`. Note that the `h` hypothesis is weaker than for
