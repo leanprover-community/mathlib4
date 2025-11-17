@@ -339,6 +339,7 @@ protected theorem le_zero {o : Ordinal} : o ≤ 0 ↔ o = 0 :=
 
 private theorem pos_iff_ne_zero {o : Ordinal} : 0 < o ↔ o ≠ 0 := bot_lt_iff_ne_bot
 
+@[deprecated not_neg (since := "2025-11-21")]
 protected theorem not_lt_zero (o : Ordinal) : ¬o < 0 :=
   not_lt_bot
 

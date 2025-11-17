@@ -119,7 +119,7 @@ protected theorem zero_le (o : NatOrdinal) : 0 ≤ o :=
   _root_.zero_le (α := Ordinal) o
 
 theorem not_lt_zero (o : NatOrdinal) : ¬ o < 0 :=
-  Ordinal.not_lt_zero o
+  not_neg (α := Ordinal)
 
 @[simp]
 theorem lt_one_iff_zero {o : NatOrdinal} : o < 1 ↔ o = 0 :=
@@ -487,10 +487,7 @@ theorem nmul_comm (a b) : a ⨳ b = b ⨳ a := by
     exact H _ hd _ hc
 termination_by (a, b)
 
-@[simp]
-theorem nmul_zero (a) : a ⨳ 0 = 0 := by
-  rw [← nonpos_iff_eq_zero, nmul_le_iff]
-  exact fun _ _ a ha => (Ordinal.not_lt_zero a ha).elim
+@[simp] lemma nmul_zero (a) : a ⨳ 0 = 0 := by simp [← nonpos_iff_eq_zero, nmul_le_iff]
 
 @[simp]
 theorem zero_nmul (a) : 0 ⨳ a = 0 := by rw [nmul_comm, nmul_zero]

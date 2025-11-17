@@ -319,8 +319,8 @@ theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) 
   -- but it has been inlined for the sake of imports
   refine ⟨fun h ↦ ?_, lintegral_eq_zero_of_ae_eq_zero⟩
   have meas_levels_0 : ∀ ε > 0, μ { x | ε ≤ f x } = 0 := fun ε εpos ↦ by
-    by_contra! h'; rw [← zero_lt_iff] at h'
-    refine ((mul_pos_iff.mpr ⟨εpos, h'⟩).trans_le ?_).ne' h
+    by_contra! h'
+    refine ((ENNReal.mul_pos εpos.ne' h').trans_le ?_).ne' h
     calc
       _ ≥ ∫⁻ a in {x | ε ≤ f x}, f a ∂μ := setLIntegral_le_lintegral _ _
       _ ≥ ∫⁻ _ in {x | ε ≤ f x}, ε ∂μ :=
@@ -328,7 +328,8 @@ theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) 
       _ = _ := setLIntegral_const _ _
   obtain ⟨u, -, bu, tu⟩ := exists_seq_strictAnti_tendsto' (α := ℝ≥0∞) zero_lt_one
   have u_union : {x | f x ≠ 0} = ⋃ n, {x | u n ≤ f x} := by
-    ext x; rw [mem_iUnion, mem_setOf_eq, ← zero_lt_iff]
+    ext x
+    rw [mem_iUnion, mem_setOf_eq, ← pos_iff_ne_zero]
     rw [ENNReal.tendsto_atTop_zero] at tu
     constructor <;> intro h'
     · obtain ⟨n, hn⟩ := tu _ h'; use n, hn _ le_rfl

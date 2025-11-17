@@ -316,15 +316,12 @@ theorem SimpleFunc.exists_upperSemicontinuous_le_lintegral_le (f : α →ₛ ℝ
   induction f using MeasureTheory.SimpleFunc.induction generalizing ε with
   | @const c s hs =>
     by_cases hc : c = 0
-    · refine ⟨fun _ => 0, ?_, upperSemicontinuous_const, ?_⟩
-      · classical
-        simp only [hc, Set.indicator_zero', Pi.zero_apply, SimpleFunc.const_zero, imp_true_iff,
+    · classical
+      refine ⟨fun _ => 0, ?_, upperSemicontinuous_const, ?_⟩
+      · simp only [hc, Set.indicator_zero', Pi.zero_apply, SimpleFunc.const_zero, imp_true_iff,
           SimpleFunc.coe_zero, Set.piecewise_eq_indicator,
           SimpleFunc.coe_piecewise, le_zero_iff]
-      · classical
-        simp only [hc, Set.indicator_zero', lintegral_const, zero_mul, Pi.zero_apply,
-          SimpleFunc.const_zero, zero_add, zero_le', SimpleFunc.coe_zero,
-          Set.piecewise_eq_indicator, ENNReal.coe_zero, SimpleFunc.coe_piecewise]
+      · simp [hc, lintegral_const]
     have μs_lt_top : μ s < ∞ := by
       classical
       simpa only [hs, hc, lt_top_iff_ne_top, true_and, SimpleFunc.coe_const, or_false,

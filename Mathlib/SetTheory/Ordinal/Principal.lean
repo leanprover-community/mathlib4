@@ -72,9 +72,7 @@ theorem not_principal_iff_of_monotone
     ¬ Principal op o ↔ ∃ a < o, o ≤ op a a := by
   simp [principal_iff_of_monotone h₁ h₂]
 
-@[simp]
-theorem principal_zero : Principal op 0 := fun a _ h =>
-  (Ordinal.not_lt_zero a h).elim
+@[simp] lemma principal_zero : Principal op 0 := by simp [Principal]
 
 @[simp]
 theorem principal_one_iff : Principal op 1 ↔ op 0 0 = 0 := by
@@ -168,7 +166,7 @@ theorem principal_add_iff_add_left_eq_self : Principal (· + ·) o ↔ ∀ a < o
     · exact op_eq_self_of_principal hao (isNormal_add_right a) ho
         (isSuccLimit_of_principal_add ho₁ ho)
     · rcases le_one_iff.1 ho₁ with (rfl | rfl)
-      · exact (Ordinal.not_lt_zero a hao).elim
+      · exact (not_neg hao).elim
       · rw [lt_one_iff_zero] at hao
         rw [hao, zero_add]
   · rw [← h a hao]
@@ -380,7 +378,7 @@ theorem principal_mul_iff_le_two_or_omega0_opow_opow :
     · exact Or.inl ho₂
     · rcases principal_add_iff_zero_or_omega0_opow.1 (principal_add_of_principal_mul ho ho₂.ne')
         with (rfl | ⟨a, rfl⟩)
-      · exact (Ordinal.not_lt_zero 2 ho₂).elim
+      · exact (not_neg ho₂).elim
       · rcases principal_add_iff_zero_or_omega0_opow.1
           (principal_add_of_principal_mul_opow one_lt_omega0 ho) with (rfl | ⟨b, rfl⟩)
         · simp
