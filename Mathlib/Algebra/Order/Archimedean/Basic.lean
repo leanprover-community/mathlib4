@@ -183,7 +183,7 @@ theorem add_one_pow_unbounded_of_pos (x : R) (hy : 0 < y) : ∃ n : ℕ, x < (y 
       _ = n * y := nsmul_eq_mul _ _
       _ < 1 + n * y := lt_one_add _
       _ ≤ (1 + y) ^ n :=
-        one_add_mul_le_pow' (mul_nonneg hy.le hy.le) (mul_nonneg this this)
+        one_add_mul_le_pow_of_sq_nonneg (pow_nonneg hy.le _) (pow_nonneg this _)
           (add_nonneg zero_le_two hy.le) _
       _ = (y + 1) ^ n := by rw [add_comm]
 
