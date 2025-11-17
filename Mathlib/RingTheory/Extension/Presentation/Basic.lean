@@ -359,14 +359,7 @@ private lemma aux_surjective : Function.Surjective (Q.aux P) := fun p ↦ by
   induction p using MvPolynomial.induction_on with
   | C a =>
     use rename Sum.inr <| P.σ a
-    simp only [aux, aeval_rename, Sum.elim_comp_inr]
-    have (p : MvPolynomial ι R) :
-        aeval (C ∘ P.val) p = (C (aeval P.val p) : MvPolynomial ι' S) := by
-      induction p using MvPolynomial.induction_on with
-      | C a => simp
-      | add p q hp hq => simp [hp, hq]
-      | mul_X p i h => simp [h]
-    simp [this]
+    simp [aux, aeval_rename]
   | add p q hp hq =>
     obtain ⟨a, rfl⟩ := hp
     obtain ⟨b, rfl⟩ := hq
@@ -440,6 +433,27 @@ lemma comp_aeval_relation_inl (r : σ') :
       Q.relation r := by
   change (Q.aux P) _ = _
   simp [comp_relation, compRelationAux_map]
+
+variable (g : S) [IsLocalization.Away g T] (P : Generators R S ι)
+
+/-- The composition of a presentation `P` with a
+localization away from an element has the form `R[Xᵢ, Y]/(fⱼ, (P.σ g) Y - 1)`,
+if the chosen section of `P` preserves `-1` and `0`.
+Note: If `S` is non-trivial, we can ensure this by only modifying `P.σ`. -/
+lemma relation_comp_localizationAway_inl (P : Presentation R S ι σ)
+    (h1 : P.σ (-1) = -1) (h0 : P.σ 0 = 0) (r : Unit) :
+    ((Presentation.localizationAway T g).comp P).relation (Sum.inl r) =
+      rename Sum.inr (P.σ g) * X (Sum.inl ()) - 1 := by
+  classical
+  simp only [Presentation.comp, Sum.elim_inl, Presentation.compRelationAux,
+    Presentation.localizationAway_relation, sub_eq_add_neg, C_mul_X_eq_monomial,
+    ← map_one C, ← map_neg C]
+  refine (Finsupp.sum_single_add_single (Finsupp.single () 1) 0 g (-1 : S) _ ?_ ?_).trans ?_
+  · simp
+  · simp [h0]
+  · simp only [Finsupp.mapDomain_single, h1, map_neg, map_one, Finsupp.mapDomain_zero,
+      monomial_zero', mul_one, add_left_inj]
+    rfl
 
 end Composition
 
