@@ -310,8 +310,7 @@ theorem getD_digits (b n i : ℕ) (h : 2 ≤ b) : (digits b n).getD i 0 = n / b 
   | zero => simp
   | ind n IH =>
     rcases i with _ | i
-    · have h0 : 0 = default := rfl
-      rw [← List.head?_eq_getElem?, h0, Option.getD_default_eq_iget,
+    · rw [← List.head?_eq_getElem?, ← default_eq_zero, Option.getD_default_eq_iget,
         ← List.head!_eq_head?, head!_digits (by grind)]
       simp
     · simp [IH _ (le_of_lt_succ (div_lt_self' n b)), pow_succ', Nat.div_div_eq_div_mul]
