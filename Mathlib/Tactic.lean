@@ -223,6 +223,7 @@ import Mathlib.Tactic.Order.CollectFacts
 import Mathlib.Tactic.Order.Graph.Basic
 import Mathlib.Tactic.Order.Graph.Tarjan
 import Mathlib.Tactic.Order.Preprocessing
+import Mathlib.Tactic.Order.ToInt
 import Mathlib.Tactic.PNatToNat
 import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.Peel
@@ -284,14 +285,14 @@ import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.TautoSet
 import Mathlib.Tactic.TermCongr
 import Mathlib.Tactic.ToAdditive
-import Mathlib.Tactic.ToAdditive.Frontend
-import Mathlib.Tactic.ToAdditive.GuessName
-import Mathlib.Tactic.ToAdditive.ToAdditive
-import Mathlib.Tactic.ToAdditive.ToDual
 import Mathlib.Tactic.ToDual
 import Mathlib.Tactic.ToExpr
 import Mathlib.Tactic.ToLevel
 import Mathlib.Tactic.Trace
+import Mathlib.Tactic.Translate.Core
+import Mathlib.Tactic.Translate.GuessName
+import Mathlib.Tactic.Translate.ToAdditive
+import Mathlib.Tactic.Translate.ToDual
 import Mathlib.Tactic.TryThis
 import Mathlib.Tactic.TypeCheck
 import Mathlib.Tactic.TypeStar
