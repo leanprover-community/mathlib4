@@ -309,8 +309,9 @@ lemma ContinuousLinearMap.range_prod {f : E →L[𝕜] F} {g : E →L[𝕜] F'} 
   ext x
   simp
 
--- TODO: upgrade smallEquiv to a continuous linear equiv!
-def smallEquivScifi [CompleteSpace E] [CompleteSpace F] (hf : IsImmersionAtOfComplement F I J n f x) : F ≃L[𝕜] hf.smallComplement := by
+/-- Stronger version of `smallEquiv` -/
+def smallEquivScifi [CompleteSpace E] [CompleteSpace E''] [CompleteSpace F]
+    (hf : IsImmersionAtOfComplement F I J n f x) : F ≃L[𝕜] hf.smallComplement := by
   --letI A' : Submodule 𝕜 (E × F) := LinearMap.range (LinearMap.prod 0 .id)
   let phis : F →L[𝕜] E × F := ContinuousLinearMap.prod (0 : F →L[𝕜] E) (.id _ _)
   let A' : Submodule 𝕜 (E × F) := LinearMap.range phis
@@ -320,64 +321,25 @@ def smallEquivScifi [CompleteSpace E] [CompleteSpace F] (hf : IsImmersionAtOfCom
   have h2 : IsClosed (range phis) := by
     have : (range (fun (x : F) ↦ ((0 : E), x))) = {0} ×ˢ univ := by grind
     simpa [phis, ContinuousLinearMap.range_prod, this] using isClosed_singleton.prod isClosed_univ
-  have aux : F ≃L[𝕜] A' := ContinuousLinearMap.equivRange h h2
-  let psi : A' →ₗ[𝕜] E'' := hf.equiv.domRestrict (LinearMap.range phis)
   have : CompleteSpace (LinearMap.range phis) := h2.completeSpace_coe
-  --let sdfdsf := ContinuousLinearMap.equivRange (f := psi)-- sorry
-  --apply aux.trans <| ContinuousLinearMap.equivRange (f := psi) sorry sorry-- sorry
-  sorry
-#exit
--- #check ContinuousLinearMap.equivRange
--- #check LinearEquiv.toContinuousLinearEquivOfContinuous
--- def ContinuousLinearEquiv.ofInjective [CompleteSpace E] [CompleteSpace F] (f : E →L[𝕜] F) (hf : Injective f) : E ≃L[𝕜] (LinearMap.range f) := by
---   apply ContinuousLinearMap.equivRange hf
---   --sorry -- IsClosed (range ⇑f)
---   have : IsClosed (range f) := by
---     sorry
---   have : CompleteSpace (LinearMap.range f) := by
---     apply this.completeSpace_coe
---   let aux : E ≃ₗ[𝕜] (LinearMap.range f) := LinearEquiv.ofInjective f.toLinearMap hf
 
---   exact LinearEquiv.toContinuousLinearEquivOfContinuous aux f.rangeRestrict.continuous
---#exit
-#check LinearMap.rangeRestrict
-#check ContinuousLinearMap.rangeRestrict
-#check ContinuousLinearMap.equivRange
-
--- new def: CLMap injective is an equiv to its range; reference the others!
-
--- use LinearEquiv.toContinuousLinearEquivOfContinuous (Banch open mapping theorem),
--- and turn injective into clequiv
-
-def smallEquivScifiSandbox [CompleteSpace F] [CompleteSpace E] (hf : IsImmersionAtOfComplement F I J n f x) : F ≃L[𝕜] hf.smallComplement := by
-  letI A' : Submodule 𝕜 (E × F) := LinearMap.range (LinearMap.prod 0 .id)
-  let phis : F →L[𝕜] E × F := ContinuousLinearMap.prod (0 : F →L[𝕜] E) (.id _ _)
-  -- this yields a continuous linear map, i.e. no need to prove continuity again
-  have h : Injective <| ContinuousLinearMap.prod (0 : F →L[𝕜] E) (.id _ _) := by
-    intro x y hxy; simp_all
-
-  have : IsClosed (LinearMap.range phis.toLinearMap) := by
-    simp_all [phis]
-    rw [range_prod]
+  have aux : F ≃L[𝕜] A' := ContinuousLinearMap.equivRange h h2
+  letI psi : A' →ₗ[𝕜] E'' := hf.equiv.domRestrict (LinearMap.range phis)
+  letI psi' : A' →L[𝕜] E'' := .mk psi (Pi.continuous_restrict_apply _ hf.equiv.continuous)
+  have h3 : Injective psi' := by
+    simp only [psi', psi, ContinuousLinearMap.coe_mk']
+    rw [LinearMap.injective_domRestrict_iff]
     simp
-    --ContinuousLinearMap.prod (0 : F →L[𝕜] E) (.id _ _)
-    sorry
-  have aux := ContinuousLinearMap.equivRange h this
-  --convert aux
-  have : LinearMap.range phis = LinearMap.range (LinearMap.prod 0 .id) := by
-    sorry--simp at aux
-  rw [this] at aux
-  simp only [smallComplement]
-  simp
-  convert aux
-
-
-  -- but we want a CLEquiv!
-  --letI φ : F ≃L[𝕜] A' := ContinuousLinearMap.rangeRestrict phis--(f := ContinuousLinearMap.prod 0 .id) --(by intro x y hxy; simp_all)
-  -- ContinuousLinearMap.equivRange yields a CLEquiv, but we need to prove a closed range
-  sorry--exact φ.trans <| LinearEquiv.ofInjective _ (by simp_all [A'])
-
-#exit
+  have : IsClosed (range psi') := by
+    simp only [psi, psi', ContinuousLinearMap.coe_mk']
+    -- LinearMap.range_domRestrict does not fire, but this does...
+    have : range ((hf.equiv.toLinearEquiv).domRestrict (LinearMap.range phis)) =
+        Submodule.map hf.equiv.toLinearEquiv (LinearMap.range phis) := by
+      ext x
+      simp
+    rw [this]
+    simpa
+  apply aux.trans (ContinuousLinearMap.equivRange h3 this)
 
 -- This statement is weaker than `smallEquiv`, but is it still useful?
 lemma small (hf : IsImmersionAtOfComplement F I J n f x) : Small.{u} F := by
@@ -403,8 +365,9 @@ end IsImmersionAtOfComplement
 
 namespace IsImmersionAt
 
-lemma mk_of_charts (equiv : (E × F) ≃L[𝕜] E'') (domChart : OpenPartialHomeomorph M H)
-    (codChart : OpenPartialHomeomorph N G)
+lemma mk_of_charts [CompleteSpace E] [CompleteSpace E''] [CompleteSpace F]
+    (equiv : (E × F) ≃L[𝕜] E'')
+    (domChart : OpenPartialHomeomorph M H) (codChart : OpenPartialHomeomorph N G)
     (hx : x ∈ domChart.source) (hfx : f x ∈ codChart.source)
     (hdomChart : domChart ∈ IsManifold.maximalAtlas I n M)
     (hcodChart : codChart ∈ IsManifold.maximalAtlas J n N)
@@ -421,7 +384,8 @@ lemma mk_of_charts (equiv : (E × F) ≃L[𝕜] E'') (domChart : OpenPartialHome
 around `x` and `f x`, respectively such that in these charts, `f` looks like `u ↦ (u, 0)`.
 This version does not assume that `f` maps `φ.source` to `ψ.source`,
 but that `f` is continuous at `x`. -/
-lemma mk_of_continuousAt {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : (E × F) ≃L[𝕜] E'')
+lemma mk_of_continuousAt [CompleteSpace E] [CompleteSpace E''] [CompleteSpace F]
+    {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : (E × F) ≃L[𝕜] E'')
     (domChart : OpenPartialHomeomorph M H) (codChart : OpenPartialHomeomorph N G)
     (hx : x ∈ domChart.source) (hfx : f x ∈ codChart.source)
     (hdomChart : domChart ∈ IsManifold.maximalAtlas I n M)
