@@ -401,7 +401,7 @@ lemma tendsto_setIntegral_of_L1 {ι} (f : α → G) (hfi : Integrable f μ) {F :
   refine tendsto_integral_of_L1 f hfi.restrict ?_ ?_
   · filter_upwards [hFi] with i hi using hi.restrict
   · simp_rw [← eLpNorm_one_eq_lintegral_enorm] at hF ⊢
-    exact tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hF (fun _ ↦ zero_le')
+    exact tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hF (fun _ ↦ zero_le _)
       (fun _ ↦ eLpNorm_mono_measure _ Measure.restrict_le_self)
 
 /-- If `F i → f` in `L1`, then `∫ x in s, F i x ∂μ → ∫ x in s, f x ∂μ`. -/
