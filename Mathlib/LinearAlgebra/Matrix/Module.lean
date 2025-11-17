@@ -26,7 +26,7 @@ variable {ι R M N P : Type*} [Ring R] [Fintype ι] [DecidableEq ι] [AddCommGro
 namespace Matrix.Module
 
 /-- `Mⁿ` is a `Mₙ(R)` module, note that this creates a diamond when `M` is `Matrix ι ι R` or when
-  `M` is `R`. (The intended name is `Matrix.smulVec`.) -/
+  `M` is `R`. (The intended name in lemmas is `smulVec`.) -/
 scoped instance matrixModule : Module (Matrix ι ι R) (ι → M) where
   smul N v i := ∑ j : ι, N i j • v j
   one_smul v := funext fun i ↦ show ∑ _, _ = _ by simp [one_apply]
