@@ -452,8 +452,7 @@ private theorem eq_aux {α} {a b c : α} (_ : (a : α) = c) (_ : b = c) : a = b 
 
 /-- Prove an equality in a `LieRing` by reducing two sides of the equation to Lyndon normal form. -/
 def proveEq (g : MVarId) : AtomM Unit := do
-  let some (α, e₁, e₂) := (← whnfR <|← instantiateMVars <|← g.getType).eq?
-    | throwError "lie_ring failed: not an equality"
+  let some (α, e₁, e₂) := (← g.getType').eq? | throwError "lie_ring failed: not an equality"
   let .sort u ← whnf (← inferType α) | unreachable!
   let v ← (try u.dec catch _ => throwError "not a type{indentExpr α}")
   have α : Q(Type v) := α
