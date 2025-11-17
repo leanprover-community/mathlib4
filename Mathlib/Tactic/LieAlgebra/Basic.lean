@@ -536,8 +536,8 @@ section elaborator
 /-- An elaborator which evaluates a `LieRing` expression to its Lyndon normal form. -/
 syntax (name := lie_reduce_term) "lie_reduce%" term : term
 
-@[term_elab lie_reduce_term] private def lieReduceElabImpl : Elab.Term.TermElab := fun stx _ => do
-  let e ← Term.elabTerm stx[1] none
+@[term_elab lie_reduce_term] private def lieReduceElabImpl : Elab.Term.TermElab := fun stx type => do
+  let e ← Term.elabTerm stx[1] type
   let α ← inferType e
   Term.synthesizeSyntheticMVarsNoPostponing
   let .sort u ← whnf (← inferType α) | unreachable!
