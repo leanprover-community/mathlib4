@@ -148,7 +148,7 @@ partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
     if s.hasError then return s
     let rec
     /-- Applies the alignment mapping to a `Substring`. -/
-    alignSubstr : Substring → Substring
+    alignSubstr : Substring.Raw → Substring.Raw
       | ⟨_newStr, start, stop⟩ => c.substring (align start) (align stop),
     /-- Applies the alignment mapping to a `SourceInfo`. -/
     alignInfo : SourceInfo → SourceInfo
