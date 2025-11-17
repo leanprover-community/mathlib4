@@ -2232,6 +2232,7 @@ import Mathlib.CategoryTheory.Category.PartialFun
 import Mathlib.CategoryTheory.Category.Pointed
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Category.Quiv
+import Mathlib.CategoryTheory.Category.Quiv.AsOfFunctor
 import Mathlib.CategoryTheory.Category.ReflQuiv
 import Mathlib.CategoryTheory.Category.RelCat
 import Mathlib.CategoryTheory.Category.TwoP

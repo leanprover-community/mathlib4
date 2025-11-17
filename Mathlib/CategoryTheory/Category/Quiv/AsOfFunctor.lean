@@ -370,13 +370,13 @@ lemma naturality_tgt {U V : Quiv.{v, u}} {s t : U.α} (f : s ⟶ t)
 
 
 instance : (Functor.of (asFunctor.{w, v, u})).Full := ⟨fun {U V : Quiv.{v, u}} μ ↦
-  ⟨⟨ULift.conj (μ.app 0), asFunctor.natTransEdge μ⟩, by
+  ⟨⟨ULift.down ∘ μ.app 0 ∘ ULift.up, asFunctor.natTransEdge μ⟩, by
     ext q₀ x
     rcases q₀ with ⟨⟨⟩⟩
-    · simp [Functor.of, zero_def]
+    · simp [Functor.of, ULift.map, ULift.up_down]
     · rcases x with ⟨⟨s⟩, ⟨t⟩, f : s ⟶ t⟩
       simp only [Functor.of, asFunctor_obj, ULift.down_up, asFunctor.functorial_map_app, asHom,
-        ULift.map_up, ULift.conj.eq_1, ULift.up_down]
+        ULift.map_up, Function.comp_apply, ULift.up_down]
       ext <;> simp_rw [← one_def] <;> [rw [naturality_src]; rw [naturality_tgt]; simp] <;> simp⟩⟩
 
 instance : (Functor.of (asFunctor.{w, v, u})).Faithful := ⟨fun {X Y} μ ν h => by
