@@ -572,22 +572,23 @@ theorem denseRange_algebraMap_pi [NumberField K] :
     (fun _ _ hwv ↦ (eq_iff_isEquiv (K := K)).not.1 hwv)
   -- Define the sequence `yₙ = ∑ v, 1 / (1 + aᵥ ^ (-n)) * zᵥ` in `K`
   let y := fun n ↦ ∑ v, (1 / (1 + (a v)⁻¹ ^ n)) * WithAbs.equiv v.1 (z v)
-  -- At each place `v` the limit of `y` with respect to `v`'s topology is `zᵥ`.
+  -- We will show that this sequence converges to `z` in the product topology.
   have : atTop.Tendsto (fun n v ↦ (WithAbs.equiv v.1).symm (y n)) (𝓝 z) := by
-    refine tendsto_pi_nhds.2 fun v ↦ ?_
-    simp_rw [← Fintype.sum_pi_single v z, y, map_sum, map_mul]
+    -- At a fixed place `u`, the limit of `y` with respect to `u`'s topology is `zᵤ`.
+    refine tendsto_pi_nhds.2 fun u ↦ ?_
+    simp_rw [← Fintype.sum_pi_single u z, y, map_sum, map_mul]
     refine tendsto_finset_sum _ fun w _ ↦ ?_
-    by_cases hw : v = w
-    · -- Because `1 / (1 + aᵥ ^ (-n)) → 1` in `WithAbs v.1`.
-      rw [← hw, Pi.single_apply v (z v), if_pos rfl]
-      have : v (a v)⁻¹ < 1 := by simpa [← inv_pow, inv_lt_one_iff₀] using .inr (hx v).1
-      simpa using (WithAbs.tendsto_one_div_one_add_pow_nhds_one this).mul_const (z v)
-    · -- And `1 / (1 + aᵥ ^ (-n)) → 0` in `WithAbs w.1` when `w ≠ v`.
+    by_cases hw : u = w
+    · -- Because `1 / (1 + aᵤ ^ (-n)) → 1` in `WithAbs u.1`.
+      rw [← hw, Pi.single_apply u (z u), if_pos rfl]
+      have : u (a u)⁻¹ < 1 := by simpa [← inv_pow, inv_lt_one_iff₀] using .inr (hx u).1
+      simpa using (WithAbs.tendsto_one_div_one_add_pow_nhds_one this).mul_const (z u)
+    · -- And `1 / (1 + aᵤ ^ (-n)) → 0` in `WithAbs w.1` when `w ≠ u`.
       simp only [Pi.single_apply w (z w), hw, if_false]
-      have : 1 < v (a w)⁻¹ := by simpa [one_lt_inv_iff₀] using
-        ⟨v.pos_iff.2 fun ha ↦ by linarith [map_zero w ▸ ha ▸ (hx w).1], (hx w).2 v hw⟩
+      have : 1 < u (a w)⁻¹ := by simpa [one_lt_inv_iff₀] using
+        ⟨u.pos_iff.2 fun ha ↦ by linarith [map_zero w ▸ ha ▸ (hx w).1], (hx w).2 u hw⟩
       simpa using (tendsto_zero_iff_norm_tendsto_zero.2 <|
-        v.1.tendsto_div_one_add_pow_nhds_zero this).mul_const ((WithAbs.equiv v.1).symm _)
+        u.1.tendsto_div_one_add_pow_nhds_zero this).mul_const ((WithAbs.equiv u.1).symm _)
   -- So taking a sufficiently large index of the sequence `yₙ` gives the desired term.
   let ⟨N, h⟩ := Metric.tendsto_atTop.1 this r hr
   exact ⟨y N, dist_comm z (algebraMap K _ (y N)) ▸ h N le_rfl⟩
