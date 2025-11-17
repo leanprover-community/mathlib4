@@ -209,10 +209,6 @@ theorem contMDiffAt_one [One M'] : ContMDiffAt I I' n (1 : M → M') x :=
 theorem contMDiffWithinAt_const : ContMDiffWithinAt I I' n (fun _ : M => c) s x :=
   contMDiffAt_const.contMDiffWithinAt
 
-@[simp]
-theorem contMDiffWithinAt_empty : ContMDiffWithinAt I I' n f ∅ x :=
-  contMDiffWithinAt_const.congr (fun _ ↦ False.elim) rfl
-
 @[to_additive]
 theorem contMDiffWithinAt_one [One M'] : ContMDiffWithinAt I I' n (1 : M → M') s x :=
   contMDiffAt_const.contMDiffWithinAt

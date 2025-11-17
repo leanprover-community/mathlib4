@@ -203,10 +203,6 @@ theorem mfderivWithin_const :
     mfderivWithin I I' (fun _ : M => c) s x = (0 : TangentSpace I x →L[𝕜] TangentSpace I' c) :=
   (hasMFDerivWithinAt_const _ _ _).mfderivWithin_eq_zero
 
-@[simp]
-theorem mdifferentiableWithinAt_empty {f : M → M'} : MDifferentiableWithinAt I I' f ∅ x :=
-  mdifferentiableWithinAt_const.congr (fun _ ↦ False.elim) rfl
-
 end Const
 
 section Prod

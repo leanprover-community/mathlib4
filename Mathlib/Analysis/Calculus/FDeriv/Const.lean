@@ -179,10 +179,6 @@ theorem differentiableWithinAt_intCast [IntCast F] (z : ℤ) :
 theorem differentiableWithinAt_ofNat (n : ℕ) [OfNat F n] :
     DifferentiableWithinAt 𝕜 (ofNat(n) : E → F) s x := differentiableWithinAt_const _
 
-@[simp, fun_prop]
-theorem differentiableWithinAt_empty : DifferentiableWithinAt 𝕜 f ∅ x :=
-  (differentiableWithinAt_const (f x)).congr (fun _ ↦ False.elim) rfl
-
 theorem fderivWithin_const_apply (c : F) : fderivWithin 𝕜 (fun _ => c) s x = 0 := by
   rw [fderivWithin, if_pos]
   apply hasFDerivWithinAt_const
