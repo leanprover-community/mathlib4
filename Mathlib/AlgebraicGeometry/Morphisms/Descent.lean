@@ -108,7 +108,7 @@ lemma of_pullback_fst_Spec_of_codescendsAlong [P.RespectsIso]
   refine hQQ'.algebraMap_tensorProduct (R := R) (S := T) (T := S) _ (H₁ h) ?_
   rwa [← pullbackSpecIso_hom_fst R T S, P.cancel_left_of_respectsIso, H₂] at hf
 
-/-- If `X` admits a morphism `p : T ⟶ X` from an affine scheme satisfying `P', to
+/-- If `X` admits a morphism `p : T ⟶ X` from an affine scheme satisfying `P'`, to
 show a property descends along a morphism `f : X ⟶ Z` satisfying `P'`, `X` may assumed to
 be affine. -/
 lemma IsStableUnderBaseChange.of_pullback_fst_of_isAffine [P'.RespectsIso]
