@@ -169,8 +169,10 @@ theorem logMahlerMeasure_X_sub_C (z : ℂ) : (X - C z).logMahlerMeasure = log⁺
       grind [mem_ball_zero_iff, log_nonpos, norm_nonneg]
     rw [Function.support_eq_iff]
     constructor
-    · simp [hzdiv1]
-      grind [mem_ball_zero_iff, norm_nonneg]
+    · simp_rw [Set.mem_singleton_iff]
+      intro _ rfl
+      rw [hzdiv1]
+      grind [log_eq_zero, norm_eq_zero, mem_ball_zero_iff, norm_nonneg]
     · intro _ hu
       rw [Set.mem_singleton_iff] at hu
       simp [divisor_sub_const_of_ne hu]
@@ -181,8 +183,8 @@ theorem logMahlerMeasure_X_sub_C (z : ℂ) : (X - C z).logMahlerMeasure = log⁺
     ext x
     rcases eq_or_ne x z with rfl | hx
     · by_cases hB : x ∈ B
-      · simp
-        grind [mem_closedBall_zero_iff]
+      · rw [Pi.zero_apply]
+        grind [log_eq_zero, mem_closedBall_zero_iff]
       · simpa using .inl <| Function.locallyFinsuppWithin.apply_eq_zero_of_notMem _ hB
     simpa using .inl <| divisor_sub_const_of_ne hx
 
