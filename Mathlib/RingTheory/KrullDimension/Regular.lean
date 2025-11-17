@@ -84,7 +84,7 @@ theorem supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes {x : R}
   have : Nonempty (Module.support R M) := nonempty_support_of_nontrivial.to_subtype
   have : Nonempty (Module.support R (QuotSMulTop x M)) := nonempty_support_of_nontrivial.to_subtype
   simp only [supportDim, Order.krullDim_eq_iSup_length]
-  apply WithBot.coe_le_coe.mpr
+  apply WithBot.coe_le_coe.mpr -- TODO (after WithBot change?)
   simp only [ENat.iSup_add, iSup_le_iff]
   intro p
   have hp := p.head.2
