@@ -334,7 +334,7 @@ lemma deriv_n_neg_1_then_order_gt_zero (f : ℂ → ℂ) z₀ (hf : AnalyticAt �
 --     sorry
 --   | succ k ih => sorry
 
-lemma change_deriv (R : ℂ → ℂ) :  deriv^[k] (deriv R) z = deriv (deriv^[k] R) z := by {
+lemma change_deriv (R : ℂ → ℂ) (z: ℂ) :  deriv^[k] (deriv R) z = deriv (deriv^[k] R) z := by {
 
           have : deriv^[k] (deriv R) z = deriv^[k+1] R z := by {simp only [Function.iterate_succ,
             Function.comp_apply]}
@@ -361,40 +361,51 @@ lemma change_deriv (R : ℂ → ℂ) :  deriv^[k] (deriv R) z = deriv (deriv^[k]
 lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
   (hf : ∀ z : ℂ, AnalyticAt ℂ R z) (hf1 : ∀ z : ℂ, AnalyticAt ℂ R₁ z)
   (hR₁ : ∀ z, R z  = (z - z₀)^r * R₁ z) :
-  ∀ k ≤ r, ∃ R₂ : ℂ → ℂ, (∀ z : ℂ, AnalyticAt ℂ R₂ z) ∧  deriv^[k] R z =
+  ∀ k ≤ r, ∃ R₂ : ℂ → ℂ, (∀ z : ℂ, AnalyticAt ℂ R₂ z) ∧ ∀ z, deriv^[k] R z =
    (z - z₀)^(r-k) * (r.factorial/(r-k).factorial * R₁ z + (z-z₀)* R₂ z) := by {
       intros k hkr
       induction' k with k IH
       · use 0
         simp only [Function.iterate_zero, id_eq, tsub_zero,
           Pi.zero_apply, mul_zero, add_zero]
-        rw [hR₁ z]
-        simp only [mul_eq_mul_left_iff, pow_eq_zero_iff', ne_eq]
+        -- constructor
+        -- rw [hR₁ z]
+        -- simp only [mul_eq_mul_left_iff, pow_eq_zero_iff', ne_eq]
         constructor
         · intros z
           refine Differentiable.analyticAt ?_ z
           exact differentiable_zero
-        · left
+        · intros z
+          rw [hR₁ z]
+          simp only [mul_eq_mul_left_iff, pow_eq_zero_iff', ne_eq]
+          left
           rw [div_self]
           simp only [one_mul]
           simp only [ne_eq, Nat.cast_eq_zero]
           exact Nat.factorial_ne_zero r
       · simp only [Function.iterate_succ, Function.comp_apply]
-        obtain ⟨R₂, hR₂⟩ := IH (Nat.le_of_succ_le hkr)
-        rw [change_deriv R]
+
         use (deriv R)
         constructor
         · intros z
           refine AnalyticAt.deriv ?_
           exact hf z
-        ·
+        · intros z
+          obtain ⟨R₂, hR₂⟩ := IH (Nat.le_of_succ_le hkr)
+          rw [change_deriv R z]
           obtain ⟨hAR2, HR2⟩ := hR₂
-          have derivOfderivk : deriv (fun z => (z - z₀)^(r - k) *
+          have derivOfderivk : ∀ z, deriv (fun z => (z - z₀)^(r - k) *
+
             (r.factorial / (r - k).factorial * R₁ z + (z - z₀) * R₂ z)) z =
+
              ↑(r - k) * (z - z₀) ^ (r - k - 1) *
+
               (↑r.factorial / ↑(r - k).factorial * R₁ z + (z - z₀) * R₂ z) +
+
             (z - z₀) ^ (r - k) * (↑r.factorial / ↑(r - k).factorial *
+
            deriv R₁ z + (R₂ z + (z - z₀) * deriv R₂ z)) := by {
+                intros z
                 rw [deriv_fun_mul]
                 rw [deriv_fun_add]
                 rw [deriv_fun_mul]
@@ -403,6 +414,7 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
                   DifferentiableAt.fun_sub, deriv_fun_pow'', deriv_fun_sub, deriv_id'',
                   deriv_const', sub_zero, mul_one, deriv_div_const, zero_div, zero_mul, zero_add,
                   one_mul]
+
                 · simp only [differentiableAt_fun_id, differentiableAt_const,
                   DifferentiableAt.fun_sub]
                 · exact AnalyticAt.differentiableAt (hAR2 z)
@@ -425,112 +437,33 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
                     · simp only [differentiableAt_fun_id, differentiableAt_const,
                       DifferentiableAt.fun_sub]
                     · exact AnalyticAt.differentiableAt (hAR2 z)}
-
-          have :  deriv (deriv^[k] R) z =
-            deriv (fun z => (z - z₀)^(r - k) *
-            (r.factorial / (r - k).factorial * R₁ z + (z - z₀) * R₂ z)) z := by {
-
-              rw [← iteratedDeriv_eq_iterate]
-              rw [← iteratedDeriv_eq_iterate] at HR2
-              rw [← iteratedDeriv_succ]
-              rw [deriv_fun_mul]
-              rw [deriv_fun_add]
-              rw [deriv_fun_mul]
-              rw [deriv_fun_mul]
-              simp only [differentiableAt_fun_id,
-                differentiableAt_const, DifferentiableAt.fun_sub,
-                deriv_fun_pow'', deriv_fun_sub, deriv_id'', deriv_const', sub_zero, mul_one,
-                deriv_div_const, zero_div, zero_mul, zero_add, one_mul]
-              rw [← derivOfderivk]
-              sorry
-              sorry
-              sorry
-              sorry
-              sorry
-              sorry
-              sorry
-              sorry
-              sorry
+          conv => enter [1,1]; ext z; rw [HR2]
+          have HRz : ∀z, deriv (fun z => (z - z₀) ^ r * R₁ z) z =
+            ↑r * (z - z₀) ^ (r - 1) * R₁ z + (z - z₀) ^ r * deriv R₁ z := by {
+            intros z
+            rw [deriv_fun_mul]
+            simp only [differentiableAt_fun_id, differentiableAt_const, DifferentiableAt.fun_sub,
+              deriv_fun_pow'', deriv_fun_sub, deriv_id'', deriv_const', sub_zero, mul_one]
+            simp only [differentiableAt_fun_id, differentiableAt_const, DifferentiableAt.fun_sub,
+              DifferentiableAt.fun_pow]
+            exact AnalyticAt.differentiableAt (hf1 z)
             }
-          rw [this]; clear this
-          rw [deriv_fun_mul]
-          rw [deriv_fun_add]
-          rw [deriv_fun_mul]
-          rw [deriv_fun_mul]
-          simp only [differentiableAt_fun_id,
-            differentiableAt_const, DifferentiableAt.fun_sub,
-            deriv_fun_pow'', deriv_fun_sub, deriv_id'', deriv_const', sub_zero, mul_one,
-            deriv_div_const, zero_div, zero_mul, zero_add, one_mul]
+
+          have : ∀z,  deriv R z = deriv (fun z => (z - z₀) ^ r * R₁ z) z := by {
+            intros z
+            conv => enter [1,1]; ext z ;rw [hR₁]
+          }
+          have : ∀ z, deriv R z = ↑r * (z - z₀) ^ (r - 1) *
+              R₁ z + (z - z₀) ^ r * deriv R₁ z := by {
+            intros z
+            rw [this]
+            rw [HRz]
+          }
+          rw [derivOfderivk]
+          conv => enter [2,2,2,2]; rw [this]
           sorry
-          · simp only [differentiableAt_fun_id, differentiableAt_const, DifferentiableAt.fun_sub]
-          · exact AnalyticAt.differentiableAt (hAR2 z)
-          · simp only [differentiableAt_const]
-          · exact AnalyticAt.differentiableAt (hf1 z)
-          · refine DifferentiableAt.fun_mul ?_ ?_
-            · simp only [differentiableAt_const]
-            · exact AnalyticAt.differentiableAt (hf1 z)
-          · refine DifferentiableAt.fun_mul ?_ ?_
-            · refine DifferentiableAt.sub_const ?_ z₀
-              simp only [differentiableAt_fun_id]
-            · exact AnalyticAt.differentiableAt (hAR2 z)
-          · refine DifferentiableAt.fun_pow ?_ (r - k)
-            refine DifferentiableAt.sub_const ?_ z₀
-            simp only [differentiableAt_fun_id]
-          · refine (DifferentiableAt.fun_add_iff_left ?_).mpr ?_
-            · refine DifferentiableAt.fun_mul ?_ ?_
-              · refine DifferentiableAt.sub_const ?_ z₀
-                simp only [differentiableAt_fun_id]
-              · exact AnalyticAt.differentiableAt (hAR2 z)
-            · refine DifferentiableAt.fun_mul ?_ ?_
-              · simp only [differentiableAt_const]
-              · exact AnalyticAt.differentiableAt (hf1 z)
-
-
-
-
-
-
-
-
-
-
-        -- use (deriv R₂)
-        -- have : deriv (fun z => (z - z₀) ^ (r - k) *
-        --   (r.factorial / (r - k).factorial * R₁ z + (z - z₀) * R₂ z)) z =
-        --   (z - z₀) ^ (r - (k + 1)) *
-        --   (r.factorial / (r - (k + 1)).factorial * R₁ z +
-        --     (z - z₀) * deriv R₂ z) := by {
-        --     rw [deriv_fun_mul]
-        --     simp only [differentiableAt_fun_id, differentiableAt_const,
-        --       DifferentiableAt.fun_sub, deriv_fun_pow'',
-        --       deriv_fun_sub, deriv_id'', deriv_const', sub_zero, mul_one]
-        --     · have : (z - z₀) ^ (r - k) * deriv (fun z =>
-        --         r.factorial / (r - k).factorial * R₁ z + (z - z₀) * R₂ z) z =
-        --         (z - z₀) ^ (r - (k + 1)) *
-        --         (r.factorial / (r - (k + 1)).factorial * R₁ z +
-        --           (z - z₀) * deriv R₂ z) := by {
-        --             sorry
-        --           -- left
-        --           -- nth_rw 3 [← pow_one (z - z₀)]
-        --           -- rw [← pow_add]
-        --           -- rw [Nat.sub_add_cancel (Nat.succ_le_of_lt
-        --           --   (lt_of_le_of_lt hkr (Nat.lt_succ_self r)))]
-        --         }
-        --       simp [this, add_comm]
-        --       have : r.factorial / (r - k).factorial =
-        --           (r.factorial / ((r - (k + 1)).factorial) * ↑(r - k)) := by {
-        --             sorry
-        --           }
-        --       rw [this, mul_assoc]
-        --       ring
-        --     · aesop
-        --     · apply AnalyticAt.differentiableAt
-        --       simp only [gt_iff_lt, ne_eq, smul_eq_mul]
-        --   }
 
         }
-
-
 
 lemma iterated_deriv_eq_zero_iff_order_eq_n :
   ∀ z₀ n (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀) (ho : analyticOrderAt f z₀ ≠ ⊤),
