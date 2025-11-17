@@ -56,10 +56,6 @@ instance : MonoidalClosed (LightCondMod.{u} R) :=
 instance : (presheafToSheaf (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R)).Monoidal :=
   inferInstance
 
-instance : (free R).Monoidal :=
-  letI : (presheafToSheaf (coherentTopology LightProfinite.{u}) (ModuleCat.{u} R)).Monoidal :=
-    inferInstance
-  letI : (sheafToPresheaf (coherentTopology LightProfinite.{u}) (Type u)).Monoidal := inferInstance
-  inferInstanceAs (composeAndSheafify _ _).Monoidal
+instance : (free R).Monoidal := inferInstanceAs (composeAndSheafify _ _).Monoidal
 
 end LightCondensed
