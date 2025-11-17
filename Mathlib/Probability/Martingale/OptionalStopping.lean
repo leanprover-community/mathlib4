@@ -126,7 +126,7 @@ theorem smul_le_stoppedValue_hittingBtwn [IsFiniteMeasure μ] (hsub : Submarting
     exact
       let ⟨j, hj₁, hj₂⟩ := hx
       ⟨j, hj₁, hj₂⟩
-  have h := setIntegral_ge_of_const_le (measurableSet_le measurable_const
+  have h := setIntegral_ge_of_const_le_real (measurableSet_le measurable_const
     (Finset.measurable_range_sup'' fun n _ => (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)))
       (measure_ne_top _ _) this (Integrable.integrableOn (hsub.integrable_stoppedValue
         (hittingBtwn_isStoppingTime hsub.adapted measurableSet_Ici) (mod_cast hittingBtwn_le)))

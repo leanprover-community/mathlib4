@@ -301,7 +301,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     gcongr
     have h : ∀ n, (y n - ε') * μ.real (E n) ≤ ∫ x in (E n), f x ∂μ := by
       intro n
-      apply setIntegral_ge_of_const_le (hE.2.2.2 n) (hE' n)
+      apply setIntegral_ge_of_const_le_real (hE.2.2.2 n) (hE' n)
       · intro x hx
         dsimp [y]; linarith [(hE.2.2.1 n x hx).1]
       · apply Integrable.integrableOn
