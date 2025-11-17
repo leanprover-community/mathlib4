@@ -124,7 +124,7 @@ lemma isTightMeasureSet_of_forall_basis_tendsto (b : OrthonormalBasis ι 𝕜 E)
       refine iSup_le fun μ ↦ (iSup_le fun hμS ↦ ?_)
       gcongr with i
       exact le_biSup (fun μ ↦ μ {x | r / √(Fintype.card ι) < ‖⟪b i, x⟫_𝕜‖}) hμS
-  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds ?_ (fun _ ↦ zero_le') h_le
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds ?_ (fun _ ↦ zero_le _) h_le
   rw [← Finset.sum_const_zero]
   refine tendsto_finset_sum Finset.univ fun i _ ↦ (h i).comp ?_
   exact tendsto_id.atTop_div_const (by positivity)
@@ -152,7 +152,7 @@ lemma isTightMeasureSet_iff_inner_tendsto :
     simp [not_lt.mpr hr]
   have h' : Tendsto (fun r ↦ ⨆ μ ∈ S, μ {x | r * ‖y‖⁻¹ < ‖x‖}) atTop (𝓝 0) :=
     h.comp <| (tendsto_mul_const_atTop_of_pos (by positivity)).mpr tendsto_id
-  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h' (fun _ ↦ zero_le') ?_
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds h' (fun _ ↦ zero_le _) ?_
   intro r
   have h_le (μ : Measure E) : μ {x | r < ‖⟪y, x⟫_𝕜‖} ≤ μ {x | r * ‖y‖⁻¹ < ‖x‖} := by
     refine measure_mono fun x hx ↦ ?_
