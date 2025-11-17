@@ -844,7 +844,8 @@ def elabArgStx (declName : Name) (argNames : Array Name) (args : Array Expr)
   let n ← match stx with
     | `($name:ident) => match argNames.idxOf? name.getId with
       | some n => pure n
-      | none => throwErrorAt stx "invalid argument '{stx}', it is not an argument of '{declName}'."
+      | none => throwErrorAt stx
+        "invalid argument '{stx}', it is not an argument of '{.ofConstName declName}'."
     | `($n:num) =>
       if n.getNat = 0 then
         throwErrorAt stx "invalid index `{stx}`, arguments are counted starting from 1."
