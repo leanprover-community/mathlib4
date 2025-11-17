@@ -467,7 +467,7 @@ jobs:
           MATHLIB_CACHE_SAS_RAW: ${{ secrets.MATHLIB_CACHE_SAS }}
 
       - name: Check {Mathlib, Tactic, Counterexamples, Archive}.lean
-        if: always()
+        if: ${{ always() && steps.mk_all.outcome != 'skipped' }}
         run: |
           if [[ "${{ steps.mk_all.outcome }}" != "success" ]]; then
             echo "Please run 'lake exe mk_all' to regenerate the import all files"
