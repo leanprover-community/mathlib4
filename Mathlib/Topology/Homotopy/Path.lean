@@ -247,6 +247,11 @@ theorem trans ⦃p₀ p₁ p₂ : Path x₀ x₁⦄ (h₀ : p₀.Homotopic p₁)
 theorem equivalence : Equivalence (@Homotopic X _ x₀ x₁) :=
   ⟨refl, (symm ·), (trans · ·)⟩
 
+instance : IsEquiv (Path x₀ x₁) Homotopic where
+  refl := refl
+  symm := symm
+  trans := trans
+
 nonrec theorem map {p q : Path x₀ x₁} (h : p.Homotopic q) (f : C(X, Y)) :
     Homotopic (p.map f.continuous) (q.map f.continuous) :=
   h.map fun F => F.map f
