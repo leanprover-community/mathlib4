@@ -23,7 +23,7 @@ structure TarjanState extends DFSState where
   lowlink : Std.HashMap Nat Nat
   /-- The stack of visited vertices used in Tarjan's algorithm. -/
   stack : Array Nat
-  /-- `onStack[v] = true` iff `v` is in `stack`. The structure is used to check it efficiently. -/
+  /-- `onStack.contains v` iff `v` is in `stack`. The structure is used to check it efficiently. -/
   onStack : Std.HashSet Nat
   /-- A time counter that increments each time the algorithm visits an unvisited vertex. -/
   time : Nat
@@ -71,8 +71,8 @@ def findSCCsImp (g : Graph) : StateM TarjanState Unit := do
     if !(← get).visited.contains v then
       tarjanDFS g v
 
-/-- Finds the strongly connected components of the graph `g`. Returns an array where the value at
-index `v` represents the SCC number containing vertex `v`. The numbering of SCCs is arbitrary. -/
+/-- Finds the strongly connected components of the graph `g`. Returns a hashmap where the value at
+key `v` represents the SCC number containing vertex `v`. The numbering of SCCs is arbitrary. -/
 def findSCCs (g : Graph) : Std.HashMap Nat Nat :=
   let s : TarjanState := {
     visited := ∅
@@ -82,7 +82,6 @@ def findSCCs (g : Graph) : Std.HashMap Nat Nat :=
     onStack := ∅
     time := 0
   }
-  let res := (findSCCsImp g).run s |>.snd.lowlink
-  res
+  (findSCCsImp g).run s |>.snd.lowlink
 
 end Mathlib.Tactic.Order.Graph

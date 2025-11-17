@@ -46,9 +46,8 @@ instance : ToString AtomicFact where
   | .isInf lhs rhs res => s!"#{res} := #{lhs} ⊓ #{rhs}"
   | .isSup lhs rhs res => s!"#{res} := #{lhs} ⊔ #{rhs}"
 
-/-- State for `CollectFactsM`. It contains a map where the key `t` maps to a
-pair `(atomToIdx, facts)`. `atomToIdx` is a `DiscrTree` containing atomic expressions with their
-indices, and `facts` stores `AtomicFact`s about them. -/
+/-- State for `CollectFactsM`. It contains a map that maps a type to atomic facts collected for
+this type. -/
 abbrev CollectFactsState := Std.HashMap Expr <| Array AtomicFact
 
 /-- Monad for the fact collection procedure. -/
@@ -149,9 +148,8 @@ where
 passed to the tactic using square brackets. If `only?` is true, we collect facts only from `hyps`
 and `negGoal`, otherwise we also use the local context.
 
-For each occurring type `α`, the returned map contains a pair `(idxToAtom, facts)`,
-where the map `idxToAtom` converts indices to found atomic expressions of type `α`,
-and `facts` contains all collected `AtomicFact`s about them. -/
+For each occurring type `α`, the returned map contains an array containing all collected
+`AtomicFact`s about atoms of type `α`. -/
 def collectFacts (only? : Bool) (hyps : Array Expr) (negGoal : Expr) :
     AtomM <| Std.HashMap Expr <| Array AtomicFact := do
   return (← (collectFactsImp only? hyps negGoal).run ∅).snd

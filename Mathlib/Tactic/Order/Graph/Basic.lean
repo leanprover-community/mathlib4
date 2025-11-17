@@ -17,13 +17,13 @@ namespace Mathlib.Tactic.Order
 open Lean Expr Meta
 
 /-- An edge in a graph. In the `order` tactic, the `proof` field stores the of
-`atomToIdx[src] ≤ atomToIdx[dst]`. -/
+`atoms[src] ≤ atoms[dst]`. -/
 structure Edge where
   /-- Source of the edge. -/
   src : Nat
   /-- Destination of the edge. -/
   dst : Nat
-  /-- Proof of `atomToIdx[src] ≤ atomToIdx[dst]`. -/
+  /-- Proof of `atoms[src] ≤ atoms[dst]`. -/
   proof : Expr
 
 -- For debugging purposes.
@@ -38,10 +38,7 @@ namespace Graph
 
 /-- Adds an `edge` to the graph. -/
 def addEdge (g : Graph) (edge : Edge) : Graph :=
-  if g.contains edge.src then
-    g.modify edge.src fun edges => edges.push edge
-  else
-    g.insert edge.src #[edge]
+  g.alter edge.src fun | none => #[edge] | some edges => edges.push edge
 
 /-- Constructs a directed `Graph` using `≤` facts. It ignores all other facts. -/
 def constructLeGraph (facts : Array AtomicFact) : MetaM Graph := do
@@ -53,7 +50,7 @@ def constructLeGraph (facts : Array AtomicFact) : MetaM Graph := do
 
 /-- State for the DFS algorithm. -/
 structure DFSState where
-  /-- `visited[v] = true` if and only if the algorithm has already entered vertex `v`. -/
+  /-- `visited.contains v` if and only if the algorithm has already entered vertex `v`. -/
   visited : Std.HashSet Nat
 
 /-- DFS algorithm for constructing a proof that `x ≤ y` by finding a path from `x` to `y` in the

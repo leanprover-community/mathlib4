@@ -58,6 +58,8 @@ def replaceBotTop (facts : Array AtomicFact) :
   for fact in facts do
     match fact with
     | .isBot idx =>
+      -- `atoms` contains atoms for all types we are working on, so here we need to filter only
+      -- those with the same type as `atoms[idx]`
       let type ← inferType (← get).atoms[idx]!
       for (atom, i) in (← get).atoms.zipIdx do
         if (← withReducible <| isDefEq type (← inferType atom)) && i != idx then

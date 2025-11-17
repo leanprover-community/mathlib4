@@ -154,11 +154,11 @@ def findContradictionWithNe (graph : Graph) (facts : Array AtomicFact) : AtomM (
   let scc := graph.findSCCs
   for fact in facts do
     let .ne lhs rhs neProof := fact | continue
+    -- It is possible that `lhs` or `rhs` is not in the `≤`-graph if there were no `≤`-facts
+    -- involving them. In this case we can use this fact only if `lhs = rhs`
     if lhs == rhs then
       return some <| mkApp neProof (← mkEqRefl (← get).atoms[lhs]!)
-    if !scc.contains lhs || !scc.contains rhs then
-      continue
-    if scc[lhs]! != scc[rhs]! then
+    if !scc.contains lhs || !scc.contains rhs || scc[lhs]! != scc[rhs]! then
       continue
     let some pf1 ← graph.buildTransitiveLeProof lhs rhs
       | panic! "Cannot find path in strongly connected component"
