@@ -63,7 +63,7 @@ lemma excenterWeightsUnnorm_reindex (e : Fin (n + 1) ≃ Fin (m + 1)) (signs : F
     (s.reindex e).excenterWeightsUnnorm signs =
       s.excenterWeightsUnnorm (signs.map e.symm.toEmbedding) ∘ e.symm := by
   ext i
-  simp [excenterWeightsUnnorm, height_reindex]
+  simp [excenterWeightsUnnorm]
 
 @[simp] lemma excenterWeightsUnnorm_empty_apply (i : Fin (n + 1)) :
     s.excenterWeightsUnnorm ∅ i = (s.height i)⁻¹ :=
