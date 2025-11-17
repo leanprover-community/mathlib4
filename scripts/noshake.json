@@ -35,6 +35,7 @@
   "Lean.Elab.ElabRules",
   "Lean.Elab.Tactic.Config",
   "Lean.Meta.Tactic.Simp.RegisterCommand",
+  "Mathlib.Algebra.BigOperators.Pi",
   "Mathlib.Algebra.Group.Invertible.Defs",
   "Mathlib.AlgebraicGeometry.Restrict",
   "Mathlib.AlgebraicTopology.DoldKan.Notations",
