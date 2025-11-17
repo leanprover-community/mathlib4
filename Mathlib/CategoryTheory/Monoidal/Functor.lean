@@ -913,9 +913,9 @@ def rightAdjointLaxMonoidal : G.LaxMonoidal where
 this typeclass expresses compatibilities between the adjunction and the (op)lax
 monoidal structures. -/
 class IsMonoidal [G.LaxMonoidal] : Prop where
-  leftAdjoint_ε : ε G = adj.homEquiv _ _ (η F) := by cat_disch
-  leftAdjoint_μ (X Y : D) :
-    μ G X Y = adj.homEquiv _ _ (δ F _ _ ≫ (adj.counit.app X ⊗ₘ adj.counit.app Y)) := by cat_disch
+  leftAdjoint_ε : ε G = adj.unit.app _ ≫ G.map (η F) := by cat_disch
+  leftAdjoint_μ (X Y : D) : μ G X Y =
+    adj.unit.app _ ≫ G.map (δ F _ _ ≫ (adj.counit.app X ⊗ₘ adj.counit.app Y)) := by cat_disch
 
 instance :
     letI := adj.rightAdjointLaxMonoidal
@@ -935,44 +935,31 @@ lemma unit_app_unit_comp_map_η : adj.unit.app (𝟙_ C) ≫ G.map (η F) = ε G
 @[reassoc]
 lemma unit_app_tensor_comp_map_δ (X Y : C) :
     adj.unit.app (X ⊗ Y) ≫ G.map (δ F X Y) = (adj.unit.app X ⊗ₘ adj.unit.app Y) ≫ μ G _ _ := by
-  rw [IsMonoidal.leftAdjoint_μ (adj := adj), homEquiv_unit]
-  dsimp
-  simp [← adj.unit_naturality_assoc, ← Functor.map_comp, ← δ_natural_assoc]
+  simp [IsMonoidal.leftAdjoint_μ (adj := adj), ← adj.unit_naturality_assoc,
+    ← Functor.map_comp, ← δ_natural_assoc]
 
 @[reassoc]
 lemma map_ε_comp_counit_app_unit : F.map (ε G) ≫ adj.counit.app (𝟙_ D) = η F := by
-  rw [IsMonoidal.leftAdjoint_ε (adj := adj), homEquiv_unit, map_comp,
-    assoc, counit_naturality, left_triangle_components_assoc]
+  simp [IsMonoidal.leftAdjoint_ε (adj := adj)]
 
 @[reassoc]
 lemma map_μ_comp_counit_app_tensor (X Y : D) :
     F.map (μ G X Y) ≫ adj.counit.app (X ⊗ Y) =
       δ F _ _ ≫ (adj.counit.app X ⊗ₘ adj.counit.app Y) := by
-  rw [IsMonoidal.leftAdjoint_μ (adj := adj), homEquiv_unit]
-  simp
+  simp [IsMonoidal.leftAdjoint_μ (adj := adj)]
 
 instance : (Adjunction.id (C := C)).IsMonoidal where
-  leftAdjoint_ε := by simp [id, homEquiv]
-  leftAdjoint_μ := by simp [id, homEquiv]
 
 instance isMonoidal_comp {F' : D ⥤ E} {G' : E ⥤ D} (adj' : F' ⊣ G')
     [F'.OplaxMonoidal] [G'.LaxMonoidal] [adj'.IsMonoidal] : (adj.comp adj').IsMonoidal where
   leftAdjoint_ε := by
-    dsimp [homEquiv]
-    rw [← adj.unit_app_unit_comp_map_η, ← adj'.unit_app_unit_comp_map_η,
-      assoc, comp_unit_app, assoc, ← Functor.map_comp,
-      ← adj'.unit_naturality_assoc, ← map_comp, ← map_comp]
+    simp [IsMonoidal.leftAdjoint_ε (adj := adj'), IsMonoidal.leftAdjoint_ε (adj := adj),
+      ← map_comp, ← adj'.unit_naturality_assoc]
   leftAdjoint_μ X Y := by
-    apply ((adj.comp adj').homEquiv _ _).symm.injective
-    dsimp only [comp_obj, comp_μ, id_obj, comp_δ]
-    rw [Equiv.symm_apply_apply]
-    dsimp [homEquiv]
-    rw [comp_counit_app, comp_counit_app, comp_counit_app, assoc, ← tensorHom_comp_tensorHom,
-      δ_natural_assoc]
-    dsimp
-    rw [← adj'.map_μ_comp_counit_app_tensor, ← map_comp_assoc, ← map_comp_assoc,
-      ← map_comp_assoc, ← adj.map_μ_comp_counit_app_tensor, assoc,
-      F.map_comp_assoc, counit_naturality]
+    simp only [comp_obj, comp_μ, IsMonoidal.leftAdjoint_μ (adj := adj), id_obj,
+      IsMonoidal.leftAdjoint_μ (adj := adj'), assoc, ← map_comp, comp_unit_app, comp_δ,
+      comp_counit_app, ← tensorHom_comp_tensorHom, δ_natural_assoc, Functor.comp_map]
+    simp
 
 end LaxMonoidal
 
@@ -1110,11 +1097,11 @@ instance isMonoidal_refl : (Equivalence.refl (C := C)).IsMonoidal :=
 instance isMonoidal_symm [e.inverse.Monoidal] [e.IsMonoidal] :
     e.symm.IsMonoidal where
   leftAdjoint_ε := by
-    simp only [toAdjunction, Adjunction.homEquiv_unit]
+    simp only [toAdjunction]
     dsimp [symm]
     rw [counitIso_inv_app_comp_functor_map_η_inverse]
   leftAdjoint_μ X Y := by
-    simp only [toAdjunction, Adjunction.homEquiv_unit]
+    simp only [toAdjunction]
     dsimp [symm]
     rw [map_comp, counitIso_inv_app_tensor_comp_functor_map_δ_inverse_assoc]
     simp [← map_comp]
