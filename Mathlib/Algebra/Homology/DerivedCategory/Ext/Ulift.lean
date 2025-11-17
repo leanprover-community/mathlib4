@@ -31,9 +31,14 @@ instance hasExt_of_small''_lift [Small.{v} R] :
   let _ : Small.{max v v'} R := small_lift R
   CategoryTheory.hasExt_of_enoughProjectives.{w'} (ModuleCat.{max v v'} R)
 
-
-def ModuleCat.extUliftLinearEquiv [Small.{v} R] (M N : ModuleCat.{v} R) (n : ℕ) :
+variable {R} in
+noncomputable def ModuleCat.extUliftLinearEquiv [Small.{v} R] (M N : ModuleCat.{v} R) (n : ℕ) :
     Ext.{w} M N n ≃ₗ[R] Ext.{w'} ((uliftFunctor.{u, v, v'} R).obj M)
-    ((uliftFunctor.{u, v, v'} R).obj N) n := by
+    ((uliftFunctor.{u, v, v'} R).obj N) n :=
+  LinearEquiv.ofBijective (Functor.mapExtLinearMap.{w, w'} (uliftFunctor.{u, v, v'} R) R M N n)
+    (Functor.mapExt_bijective_of_preservesProjectiveObjects.{w, w'}
+    (uliftFunctor.{u, v, v'} R) (fullyFaithfulUliftFunctor.{u, v, v'} R) M N n)
 
-  sorry
+lemma ModuleCat.extUliftLinearEquiv_toLinearMap [Small.{v} R] (M N : ModuleCat.{v} R) (n : ℕ) :
+    ModuleCat.extUliftLinearEquiv.{u, v, v'} M N n =
+    (Functor.mapExtLinearMap.{w, w'} (uliftFunctor.{u, v, v'} R) R M N n) := rfl
