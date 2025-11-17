@@ -5,6 +5,7 @@ Authors: Michael Rothgang
 -/
 import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
+import Mathlib.Analysis.Normed.Operator.Banach
 
 /-! # Smooth immersions and embeddings
 
@@ -302,9 +303,81 @@ def smallEquiv (hf : IsImmersionAtOfComplement F I J n f x) : F ≃ₗ[𝕜] hf.
   letI φ : F ≃ₗ[𝕜] A' := LinearEquiv.ofInjective (LinearMap.prod 0 .id) (by intro x y hxy; simp_all)
   exact φ.trans <| LinearEquiv.ofInjective _ (by simp_all [A'])
 
+-- seems to be missing!
+lemma ContinuousLinearMap.range_prod {f : E →L[𝕜] F} {g : E →L[𝕜] F'} :
+    range (ContinuousLinearMap.prod f g) = range (fun x ↦ (f x, g x)) := by
+  ext x
+  simp
+
 -- TODO: upgrade smallEquiv to a continuous linear equiv!
-def smallEquivScifi (hf : IsImmersionAtOfComplement F I J n f x) : F ≃L[𝕜] hf.smallComplement :=
+def smallEquivScifi [CompleteSpace E] [CompleteSpace F] (hf : IsImmersionAtOfComplement F I J n f x) : F ≃L[𝕜] hf.smallComplement := by
+  --letI A' : Submodule 𝕜 (E × F) := LinearMap.range (LinearMap.prod 0 .id)
+  let phis : F →L[𝕜] E × F := ContinuousLinearMap.prod (0 : F →L[𝕜] E) (.id _ _)
+  let A' : Submodule 𝕜 (E × F) := LinearMap.range phis
+  -- this yields a continuous linear map, i.e. no need to prove continuity again
+  have h : Injective <| ContinuousLinearMap.prod (0 : F →L[𝕜] E) (.id _ _) := by
+    intro x y hxy; simp_all
+  have h2 : IsClosed (range phis) := by
+    have : (range (fun (x : F) ↦ ((0 : E), x))) = {0} ×ˢ univ := by grind
+    simpa [phis, ContinuousLinearMap.range_prod, this] using isClosed_singleton.prod isClosed_univ
+  have aux : F ≃L[𝕜] A' := ContinuousLinearMap.equivRange h h2
+  let psi : A' →ₗ[𝕜] E'' := hf.equiv.domRestrict (LinearMap.range phis)
+  have : CompleteSpace (LinearMap.range phis) := h2.completeSpace_coe
+  --let sdfdsf := ContinuousLinearMap.equivRange (f := psi)-- sorry
+  --apply aux.trans <| ContinuousLinearMap.equivRange (f := psi) sorry sorry-- sorry
   sorry
+#exit
+-- #check ContinuousLinearMap.equivRange
+-- #check LinearEquiv.toContinuousLinearEquivOfContinuous
+-- def ContinuousLinearEquiv.ofInjective [CompleteSpace E] [CompleteSpace F] (f : E →L[𝕜] F) (hf : Injective f) : E ≃L[𝕜] (LinearMap.range f) := by
+--   apply ContinuousLinearMap.equivRange hf
+--   --sorry -- IsClosed (range ⇑f)
+--   have : IsClosed (range f) := by
+--     sorry
+--   have : CompleteSpace (LinearMap.range f) := by
+--     apply this.completeSpace_coe
+--   let aux : E ≃ₗ[𝕜] (LinearMap.range f) := LinearEquiv.ofInjective f.toLinearMap hf
+
+--   exact LinearEquiv.toContinuousLinearEquivOfContinuous aux f.rangeRestrict.continuous
+--#exit
+#check LinearMap.rangeRestrict
+#check ContinuousLinearMap.rangeRestrict
+#check ContinuousLinearMap.equivRange
+
+-- new def: CLMap injective is an equiv to its range; reference the others!
+
+-- use LinearEquiv.toContinuousLinearEquivOfContinuous (Banch open mapping theorem),
+-- and turn injective into clequiv
+
+def smallEquivScifiSandbox [CompleteSpace F] [CompleteSpace E] (hf : IsImmersionAtOfComplement F I J n f x) : F ≃L[𝕜] hf.smallComplement := by
+  letI A' : Submodule 𝕜 (E × F) := LinearMap.range (LinearMap.prod 0 .id)
+  let phis : F →L[𝕜] E × F := ContinuousLinearMap.prod (0 : F →L[𝕜] E) (.id _ _)
+  -- this yields a continuous linear map, i.e. no need to prove continuity again
+  have h : Injective <| ContinuousLinearMap.prod (0 : F →L[𝕜] E) (.id _ _) := by
+    intro x y hxy; simp_all
+
+  have : IsClosed (LinearMap.range phis.toLinearMap) := by
+    simp_all [phis]
+    rw [range_prod]
+    simp
+    --ContinuousLinearMap.prod (0 : F →L[𝕜] E) (.id _ _)
+    sorry
+  have aux := ContinuousLinearMap.equivRange h this
+  --convert aux
+  have : LinearMap.range phis = LinearMap.range (LinearMap.prod 0 .id) := by
+    sorry--simp at aux
+  rw [this] at aux
+  simp only [smallComplement]
+  simp
+  convert aux
+
+
+  -- but we want a CLEquiv!
+  --letI φ : F ≃L[𝕜] A' := ContinuousLinearMap.rangeRestrict phis--(f := ContinuousLinearMap.prod 0 .id) --(by intro x y hxy; simp_all)
+  -- ContinuousLinearMap.equivRange yields a CLEquiv, but we need to prove a closed range
+  sorry--exact φ.trans <| LinearEquiv.ofInjective _ (by simp_all [A'])
+
+#exit
 
 -- This statement is weaker than `smallEquiv`, but is it still useful?
 lemma small (hf : IsImmersionAtOfComplement F I J n f x) : Small.{u} F := by
