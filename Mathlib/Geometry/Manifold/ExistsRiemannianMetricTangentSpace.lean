@@ -94,17 +94,6 @@ instance (x : B) : IsTopologicalAddGroup (V E x) := by
   unfold V
   infer_instance
 
-example : ContMDiffVectorBundle n (F →L[ℝ] F →L[ℝ] ℝ) (fun b ↦ E b →L[ℝ] V E b) IB :=
-  ContMDiffVectorBundle.continuousLinearMap (IB := IB) (n := n)
-    (F₁ := F) (E₁ := E) (F₂ := F →L[ℝ] ℝ) (E₂ := V E)
-
-example : ContMDiffVectorBundle n (EB →L[ℝ] EB →L[ℝ] ℝ)
-(fun b ↦ (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) b →L[ℝ] V (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _) b)
-IB :=
-  ContMDiffVectorBundle.continuousLinearMap (IB := IB) (n := n)
-  (F₁ := EB) (E₁ := (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _)) (F₂ := EB →L[ℝ] ℝ)
-  (E₂ := V (@TangentSpace ℝ _ _ _ _ _ _ IB B _ _))
-
 variable (E) in
 /-- The real vector bundle `Hom(E, Hom(E, T)) = Hom(E, V)`, whose fiber at `x` is
 (equivalent to) the space of continuous real bilinear maps `E x → E x → ℝ`. -/
@@ -364,33 +353,6 @@ noncomputable instance {x : B}
   dist_triangle := my_dist_triangle φ hpos hsymm hdef
   eq_of_dist_eq_zero := my_eq_of_dist_eq_zero φ hpos hsymm hdef
 
-example (x : B)
-  (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
-  (hpos : ∀ v, 0 ≤ φ v v)
-  (hsymm : ∀ u v, φ u v = φ v u)
-  (hdef : ∀ v, φ v v = 0 → v = 0)
-  (u v : (@TangentSpaceAuy EB _ _ _ _ IB B _ _ x φ hpos hsymm hdef)) :
-  ‖u + v‖ ≤ ‖u‖ + ‖v‖ :=
-  norm_add_le u v
-
-noncomputable
-example (x : B)
-  (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
-  (hpos : ∀ v, 0 ≤ φ v v)
-  (hsymm : ∀ u v, φ u v = φ v u)
-  (hdef : ∀ v, φ v v = 0 → v = 0) :
-  NormedAddCommGroup (@TangentSpaceAuy EB _ _ _ _ IB B _ _ x φ hpos hsymm hdef) :=
-  inferInstance
-
-example (x : B)
-  (φ : TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ)
-  (hpos : ∀ v, 0 ≤ φ v v)
-  (hsymm : ∀ u v, φ u v = φ v u)
-  (hdef : ∀ v, φ v v = 0 → v = 0)
-  (u : (@TangentSpaceAuy EB _ _ _ _ IB B _ _ x φ hpos hsymm hdef)) :
-  ‖u‖ = mynorm φ hpos hsymm u.val :=
-  rfl
-
 -- Module and NormedSpace instances
 noncomputable
 instance {x : B}
@@ -603,10 +565,6 @@ theorem g_bilin_symm (i p : B) (v w : TangentSpace IB p) :
   unfold g_bilin
   simp
   rw [real_inner_comm]
-
-example (x y : EB) : (innerSL ℝ (E := EB)) x y = Inner.inner ℝ x y := rfl
-
-example (x y : EB) : (innerSL ℝ (E := EB)).flip y x = (innerSL ℝ (E := EB)) x y := rfl
 
 open SmoothPartitionOfUnity
 
