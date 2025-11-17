@@ -71,7 +71,7 @@ theorem getD_append_right (l l' : List α) (d : α) (n : ℕ) (h : l.length ≤ 
     (l ++ l').getD n d = l'.getD (n - l.length) d := by
   grind
 
-theorem getD_eq_getD_getElem? (n : ℕ) : l.getD n d = l[n]?.getD d := rfl
+@[deprecated (since := "2025-11-17")] alias getD_eq_getD_getElem? := getD_eq_getElem?_getD
 
 end getD
 
