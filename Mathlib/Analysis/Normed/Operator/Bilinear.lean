@@ -402,6 +402,7 @@ theorem nnnorm_smulRight_apply (c : StrongDual 𝕜 E) (f : Fₗ) : ‖smulRight
 variable (𝕜 E Fₗ) in
 /-- `ContinuousLinearMap.smulRight` as a continuous trilinear map:
 `smulRightL (c : StrongDual 𝕜 E) (f : F) (x : E) = c x • f`. -/
+@[simps! apply_apply]
 def smulRightL : StrongDual 𝕜 E →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] Fₗ :=
   LinearMap.mkContinuous₂
     { toFun := smulRightₗ
@@ -416,10 +417,10 @@ def smulRightL : StrongDual 𝕜 E →L[𝕜] Fₗ →L[𝕜] E →L[𝕜] Fₗ 
       simp only [coe_smulRightₗ, one_mul, norm_smulRight_apply, LinearMap.coe_mk, AddHom.coe_mk,
         le_refl]
 
-
-@[simp]
-theorem norm_smulRightL_apply (c : StrongDual 𝕜 E) (f : Fₗ) : ‖smulRightL 𝕜 E Fₗ c f‖ = ‖c‖ * ‖f‖ :=
-  norm_smulRight_apply c f
+@[deprecated norm_smulRight_apply (since := "2025-11-12")]
+theorem norm_smulRightL_apply (c : StrongDual 𝕜 E) (f : Fₗ) :
+    ‖smulRightL 𝕜 E Fₗ c f‖ = ‖c‖ * ‖f‖ := by
+  simp
 
 end ContinuousLinearMap
 
