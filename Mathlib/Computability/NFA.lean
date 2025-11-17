@@ -174,7 +174,6 @@ variable (M) in
 in `M.evalFrom S x`. -/
 def acceptsFrom (S : Set σ) : Language α := {x | ∃ s ∈ M.accept, s ∈ M.evalFrom S x}
 
-variable (M) in
 theorem mem_acceptsFrom {S : Set σ} {x : List α} :
     x ∈ M.acceptsFrom S ↔ ∃ s ∈ M.accept, s ∈ M.evalFrom S x := by
   rfl
