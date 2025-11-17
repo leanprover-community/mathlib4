@@ -975,6 +975,10 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
       trace[simps.debug] "`simp` simplified rhs to{indentExpr result.expr}"
       rhs := result.expr
       prf := result.proof?.getD prf
+      -- Unfortunately, there are some `simp` proofs that could be by `rfl`,
+      -- but have a more complicated proof term. Hence, we ahve to add the `defeqAttr` manually.
+      if ← isDefEq rhs result.expr then
+        defeqAttr.setTag declName
     else
       trace[simps.debug] "`simp` failed to simplify rhs"
   let eqAp := mkApp3 (mkConst `Eq [lvl]) type lhs rhs
