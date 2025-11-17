@@ -177,9 +177,8 @@ variable (r₁ : Path.Homotopic.Quotient a₂ a₃) (r₂ : Path.Homotopic.Quoti
 /-- Products commute with path composition.
 This is `trans_prod_eq_prod_trans` descended to the quotient. -/
 theorem comp_prod_eq_prod_comp : prod q₁ q₂ ⬝ prod r₁ r₂ = prod (q₁ ⬝ r₁) (q₂ ⬝ r₂) := by
-  induction q₁, q₂ using Quotient.inductionOn₂
-  induction r₁, r₂ using Quotient.inductionOn₂
-  simp only [Quotient.mk''_eq_mk]
+  induction q₁, q₂ using Path.Homotopic.Quotient.ind₂
+  induction r₁, r₂ using Path.Homotopic.Quotient.ind₂
   simp only [prod_lift, ← Path.Homotopic.Quotient.mk_trans, Path.trans_prod_eq_prod_trans]
 
 variable {c₁ c₂ : α × β}
@@ -195,23 +194,20 @@ abbrev projRight (p : Path.Homotopic.Quotient c₁ c₂) : Path.Homotopic.Quotie
 /-- Lemmas showing projection is the inverse of product. -/
 @[simp]
 theorem projLeft_prod : projLeft (prod q₁ q₂) = q₁ := by
-  induction q₁, q₂ using Quotient.inductionOn₂
-  simp only [Quotient.mk''_eq_mk]
+  induction q₁, q₂ using Path.Homotopic.Quotient.ind₂
   rw [projLeft, prod_lift, ← Path.Homotopic.Quotient.mk_map]
   congr
 
 @[simp]
 theorem projRight_prod : projRight (prod q₁ q₂) = q₂ := by
-  induction q₁, q₂ using Quotient.inductionOn₂
-  simp only [Quotient.mk''_eq_mk]
+  induction q₁, q₂ using Path.Homotopic.Quotient.ind₂
   rw [projRight, prod_lift, ← Path.Homotopic.Quotient.mk_map]
   congr
 
 @[simp]
 theorem prod_projLeft_projRight (p : Path.Homotopic.Quotient (a₁, b₁) (a₂, b₂)) :
     prod (projLeft p) (projRight p) = p := by
-  induction p using Quotient.inductionOn
-  simp only [Quotient.mk''_eq_mk]
+  induction p using Path.Homotopic.Quotient.ind
   simp only [projLeft, projRight, ← Path.Homotopic.Quotient.mk_map]
   congr
 
