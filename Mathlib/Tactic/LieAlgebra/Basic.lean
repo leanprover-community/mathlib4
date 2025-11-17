@@ -540,10 +540,8 @@ syntax (name := lie_reduce_term) "lie_reduce%" term : term
   let e ← Term.elabTerm stx[1] type
   let ⟨u, α, e⟩ ← inferTypeQ' e
   let sα ← synthInstanceQ q(LieRing $α)
-  -- logInfo m!"the expression is {e}"
-  let ⟨a, _, _⟩ ← Mathlib.Tactic.AtomM.run .reducible (eval sα e)
-  -- logInfo m!"the expression is simplified into {a}, with inner expression {repr va}"
-  TryThis.addTermSuggestion stx a
+  let a ← Mathlib.Tactic.AtomM.run .reducible (eval sα e)
+  TryThis.addTermSuggestion stx a.1
   return a
 
 end elaborator
