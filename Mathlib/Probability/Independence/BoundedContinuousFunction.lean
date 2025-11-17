@@ -43,19 +43,19 @@ function `f : (Π s : I, E s) → ℝ`, we have `∫ ω in A, f (X · ω) ∂P =
 This again is formulated with different versions. We also provide versions in terms of
 `IndepSets` instead of `Indep`.
 
-# Main statement
+## Main statement
 
 * `indep_comap_process_of_bcf`: A `σ`-algebra `m` is independent from a stochastic process `X`
   if for any `A` such that `MeasurableSet[m] A`, any `I : Finset S`, and any bounded continuous
   function `f : (Π s : I, E s) → ℝ`, we have
   `∫ ω in A, f (X · ω) ∂P = P.real A * ∫ ω, f (X · ω) ∂P`.
 
-# Notations
+## Notations
 
 to avoid writing `boundedContinuousFunction` in the names, which is quite lengthy, we abbreviate it
 to `bcf`.
 
-# Tags
+## Tags
 
 independence, bounded continuous functions
 -/
