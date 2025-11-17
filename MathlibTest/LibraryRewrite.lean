@@ -110,6 +110,8 @@ Pattern n + m
 Pattern a + b
 · 1 + n
   add_comm
+· [n, 1].sum
+  List.sum_pair
 -/
 #guard_msgs in
 #rw?? n + 1

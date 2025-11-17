@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
-import Mathlib.Algebra.QuadraticAlgebra
+import Mathlib.Algebra.QuadraticAlgebra.Defs
 import Mathlib.Algebra.Star.Unitary
 import Mathlib.Tactic.FieldSimp
 
@@ -26,7 +26,6 @@ We prove :
   `w.norm` isn't a zero divisor in `R`.
 
 * If `R` is a field, and `∀ r, r ^ 2 ≠ a + b * r`, then `QuadraticAlgebra R a b` is a field.
-`
 -/
 
 namespace QuadraticAlgebra
