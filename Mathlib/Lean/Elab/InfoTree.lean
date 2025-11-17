@@ -53,7 +53,9 @@ partial def findSomeM? {m : Type → Type} [Monad m] {α}
     (f : ContextInfo → Info → PersistentArray InfoTree → m (Option α))
     (t : InfoTree) (ctx? : Option ContextInfo := none) : m (Option α) :=
   go ctx? t
-where go ctx?
+where
+  /-- Accumulates contexts and visits nodes if `ctx?` is not `none`. -/
+  go ctx?
   | context ctx t => go (ctx.mergeIntoOuter? ctx?) t
   | node i ts => do
     let a ← match ctx? with
