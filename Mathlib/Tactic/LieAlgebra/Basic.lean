@@ -390,9 +390,7 @@ partial def eval {u : Lean.Level} {α : Q(Type u)} (sα : Q(LieRing $α))
   /- the function evaluates to this `els` part if no applicable operator has been identified.
   In which case, this function will check if the expression is zero, and make the expression into
   an atom if it's not zero. -/
-  let els := do match e with
-    | ~q(0) => return ⟨_, .zero, q(Eq.refl 0)⟩
-    | _ => evalAtom sα e
+  let els := evalAtom sα e
   -- `n` is the outmost operator here.
   let .const n _ := (← withReducible <| whnf e).getAppFn | els
   -- the following part matches `n` with operators that we can deal with.
@@ -413,14 +411,6 @@ partial def eval {u : Lean.Level} {α : Q(Type u)} (sα : Q(LieRing $α))
         let ⟨_, va, pa⟩ ← eval sα a
         let ⟨_, vb, pb⟩ := evalSmul sα va n'
         return ⟨_, vb, (q(nsmul_congr $pa $pb) : Expr)⟩
-    | ~q(-($n : ℤ) • $a) =>
-      let n' : ℤ := (← whnf n).intLit!
-      if n' == 0 then
-        return ⟨q(0), .zero, (q(zero_nsmul $a) : Expr)⟩
-      else
-        let ⟨_, va, pa⟩ ← eval sα a
-        let ⟨_, vb, pb⟩ := evalSmul sα va (-n' : ℤ)
-        return ⟨_, vb, (q(zsmul_congr $pa $pb) : Expr)⟩
     | ~q(($n : ℤ) • $a) =>
       let n' : ℤ := (← whnf n).intLit!
       if n' == 0 then
@@ -452,6 +442,10 @@ partial def eval {u : Lean.Level} {α : Q(Type u)} (sα : Q(LieRing $α))
       let ⟨_, vc, pc⟩ ← evalLie sα va vb
       return ⟨_, vc, q(lie_congr $pa $pb $pc)⟩
     | _ => els
+  | ``Zero.zero =>
+    match e with
+    | ~q(0) => return ⟨_, .zero, q(Eq.refl 0)⟩
+    | _ => els
   | _ => els
 
 private theorem eq_aux {α} {a b c : α} (_ : (a : α) = c) (_ : b = c) : a = b := by subst_vars; rfl
@@ -477,11 +471,11 @@ where
       (e₁ e₂ : Q($α)) : AtomM Q($e₁ = $e₂) := do
     profileitM Exception "lie_ring" (← getOptions) do
       let ⟨a, va, pa⟩ ← eval sα e₁
-      let ⟨_b, vb, pb⟩ ← eval sα e₂
+      let ⟨b, vb, pb⟩ ← eval sα e₂
       unless va.eq vb do
         throwError "tactic lie_ring failed, expressions are not equal, the left hand side is \
-        simplified to {a} but the right hand side is simplified to {_b}\n"
-      let pb : Q($e₂ = $a) := pb
+        simplified to {a} but the right hand side is simplified to {b}\n"
+      have : $a =Q $b := ⟨⟩
       return q(eq_aux $pa $pb)
 
 /--
@@ -516,11 +510,8 @@ open Command in
     | `(#lie_reduce $e) =>
       try
         let e ← Term.elabTerm e none
-        let α ← inferType e
         Term.synthesizeSyntheticMVarsNoPostponing
-        let .sort u ← whnf (← inferType α) | unreachable!
-        let v ← try u.dec catch _ => throwError "not a type {indentExpr α}"
-        have α : Q(Type v) := α
+        let ⟨u, α, e⟩ ← inferTypeQ' e
         let sα ← synthInstanceQ q(LieRing $α)
         let ⟨a, _, _⟩ ← Mathlib.Tactic.AtomM.run .reducible (eval sα e)
         -- TryThis.addTermSuggestion stx a
@@ -536,13 +527,14 @@ section elaborator
 /-- An elaborator which evaluates a `LieRing` expression to its Lyndon normal form. -/
 syntax (name := lie_reduce_term) "lie_reduce%" term : term
 
-@[term_elab lie_reduce_term] private def lieReduceElabImpl : Elab.Term.TermElab := fun stx type => do
-  let e ← Term.elabTerm stx[1] type
-  let ⟨u, α, e⟩ ← inferTypeQ' e
-  let sα ← synthInstanceQ q(LieRing $α)
-  let a ← Mathlib.Tactic.AtomM.run .reducible (eval sα e)
-  TryThis.addTermSuggestion stx a.1
-  return a
+@[term_elab lie_reduce_term] private def lieReduceElabImpl : Elab.Term.TermElab :=
+  fun stx type => do
+    let e ← Term.elabTerm stx[1] type
+    let ⟨u, α, e⟩ ← inferTypeQ' e
+    let sα ← synthInstanceQ q(LieRing $α)
+    let a ← Mathlib.Tactic.AtomM.run .reducible (eval sα e)
+    TryThis.addTermSuggestion stx a.1
+    return a.1
 
 end elaborator
 
