@@ -169,4 +169,7 @@ lemma piScalarRight_symm_single (x : N) (i : ι) :
     (piScalarRight R S N ι).symm (Pi.single i x) = x ⊗ₜ Pi.single i 1 := by
   simp [piScalarRight]
 
+-- See also `TensorProduct.piScalarRight_symm_algebraMap` in
+-- `Mathlib/RingTheory/TensorProduct/Pi.lean`.
+
 end TensorProduct
