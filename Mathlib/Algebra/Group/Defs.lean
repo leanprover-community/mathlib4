@@ -8,7 +8,6 @@ import Mathlib.Algebra.Notation.Defs
 import Mathlib.Algebra.Regular.Defs
 import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.BinaryRec
-import Mathlib.Logic.Function.Defs
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Tactic.OfNat
 import Mathlib.Tactic.Basic
@@ -26,7 +25,7 @@ The file does not contain any lemmas except for
 * axioms of typeclasses restated in the root namespace;
 * lemmas required for instances.
 
-For basic lemmas about these classes see `Algebra.Group.Basic`.
+For basic lemmas about these classes see `Mathlib/Algebra/Group/Basic.lean`.
 
 We register the following instances:
 

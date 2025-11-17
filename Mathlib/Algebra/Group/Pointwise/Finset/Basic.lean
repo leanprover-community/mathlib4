@@ -61,7 +61,7 @@ section One
 
 variable [One α] {s : Finset α} {a : α}
 
-/-- The finset `1 : Finset α` is defined as `{1}` in scope Pointwise`. -/
+/-- The finset `1 : Finset α` is defined as `{1}` in scope `Pointwise`. -/
 @[to_additive /-- The finset `0 : Finset α` is defined as `{0}` in scope `Pointwise`. -/]
 protected def one : One (Finset α) :=
   ⟨{1}⟩
@@ -273,6 +273,7 @@ theorem inv_filter (s : Finset α) (p : α → Prop) [DecidablePred p] :
     ({x ∈ s | p x} : Finset α)⁻¹ = {x ∈ s⁻¹ | p x⁻¹} := by
   ext; simp
 
+@[to_additive]
 theorem inv_filter_univ (p : α → Prop) [Fintype α] [DecidablePred p] :
     ({x | p x} : Finset α)⁻¹ = {x | p x⁻¹} := by
   simp
