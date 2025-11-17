@@ -185,7 +185,7 @@ which are not used in the remainder of the type. If so, it suggests removing the
 This linter fires only on theorems. (This includes `lemma`s and `instance`s of `Prop` classes.)
 -/
 register_option linter.unusedDecidableInType : Bool := {
-  defValue := false
+  defValue := true
   descr := "enable the unused `Decidable*` instance linter, which lints against `Decidable*` \
     instances in the hypotheses of theorems which are not used in the type, and can therefore be \
     replaced by a use of `classical` in the proof."
