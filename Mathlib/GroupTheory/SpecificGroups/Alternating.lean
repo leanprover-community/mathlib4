@@ -111,6 +111,13 @@ theorem alternatingGroup.index_eq_two [Nontrivial α] :
 theorem alternatingGroup.index_eq_one [Subsingleton α] : (alternatingGroup α).index = 1 := by
   rw [Subgroup.index_eq_one]; apply Subsingleton.elim
 
+/-- The group isomorphism between `alternatingGroup`s induced by the given `Equiv`. -/
+@[simps ! apply_coe]
+def Equiv.altCongrHom {β : Type*} [Fintype β] [DecidableEq β] (e : α ≃ β) :
+    ↥(alternatingGroup α) ≃* ↥(alternatingGroup β) :=
+  e.permCongrHom.subgroupMap (alternatingGroup α) |>.trans <|
+    MulEquiv.subgroupCongr <| by simp [Subgroup.ext_iff, Subgroup.map_equiv_eq_comap_symm]
+
 theorem two_mul_nat_card_alternatingGroup [Nontrivial α] :
     2 * Nat.card (alternatingGroup α) = Nat.card (Perm α) := by
   simp only [← alternatingGroup.index_eq_two (α := α), index_mul_card]
@@ -155,8 +162,7 @@ theorem isConj_of {σ τ : alternatingGroup α} (hc : IsConj (σ : Perm α) (τ 
         rw [disjoint_iff_disjoint_support, support_swap ab, Finset.disjoint_insert_left,
           Finset.disjoint_singleton_left]
         exact ⟨Finset.mem_compl.1 ha, Finset.mem_compl.1 hb⟩
-      rw [mul_assoc π _ σ, hd.commute.eq, coe_inv, coe_mk]
-      simp [mul_assoc]
+      simp [mul_assoc, hd.commute.eq]
 
 theorem isThreeCycle_isConj (h5 : 5 ≤ Fintype.card α) {σ τ : alternatingGroup α}
     (hσ : IsThreeCycle (σ : Perm α)) (hτ : IsThreeCycle (τ : Perm α)) : IsConj σ τ :=
@@ -274,7 +280,7 @@ theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
         (⟨finRotate 5, finRotate_bit1_mem_alternatingGroup (n := 2)⟩ : alternatingGroup (Fin 5)) ∈
           normalClosure _ :=
         SetLike.mem_coe.1 (subset_normalClosure (Set.mem_singleton _))
-      -- Porting note: added `:` to help the elaborator
+      -- Porting note: added `:` to help the elaborator (otherwise we get a timeout)
       exact (mul_mem (Subgroup.normalClosure_normal.conj_mem _ h
         ⟨Fin.cycleRange 2, Fin.isThreeCycle_cycleRange_two.mem_alternatingGroup⟩) (inv_mem h) :))
 
@@ -321,7 +327,7 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
   · simp at ha
   · have h04 : (0 : Fin 5) ≠ 4 := by decide
     have h13 : (1 : Fin 5) ≠ 3 := by decide
-    rw [Disjoint.cycleType, (isCycle_swap h04).cycleType, (isCycle_swap h13).cycleType,
+    rw [Disjoint.cycleType_mul, (isCycle_swap h04).cycleType, (isCycle_swap h13).cycleType,
       card_support_swap h04, card_support_swap h13]
     · simp
     · rw [disjoint_iff_disjoint_support, support_swap h04, support_swap h13]

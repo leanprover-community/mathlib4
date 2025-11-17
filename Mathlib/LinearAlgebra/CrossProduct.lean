@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak, Kyle Miller, Eric Wieser
 -/
 import Mathlib.Algebra.Lie.Basic
-import Mathlib.Data.Matrix.Notation
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+import Mathlib.LinearAlgebra.Matrix.Notation
 
 /-!
 # Cross products
@@ -27,7 +27,7 @@ as a bilinear map.
 
 ## Notation
 
-The locale `Matrix` gives the following notation:
+The scope `Matrix` gives the following notation:
 
 * `⨯₃` for the cross product
 

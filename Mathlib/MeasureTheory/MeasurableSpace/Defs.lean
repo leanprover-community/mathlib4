@@ -205,6 +205,20 @@ protected theorem MeasurableSet.cond {s₁ s₂ : Set α} (h₁ : MeasurableSet 
 protected theorem MeasurableSet.const (p : Prop) : MeasurableSet { _a : α | p } := by
   by_cases p <;> simp [*]
 
+protected lemma MeasurableSet.imp {p q : α → Prop}
+    (hs : MeasurableSet {x | p x}) (ht : MeasurableSet {x | q x}) :
+    MeasurableSet {x | p x → q x} := by
+  have h_eq : {x | p x → q x} = {x | p x}ᶜ ∪ {x | q x} := by ext; grind
+  rw [h_eq]
+  exact hs.compl.union ht
+
+protected lemma MeasurableSet.iff {p q : α → Prop}
+    (hs : MeasurableSet {x | p x}) (ht : MeasurableSet {x | q x}) :
+    MeasurableSet {x | p x ↔ q x} := by
+  have h_eq : {x | p x ↔ q x} = {x | p x → q x} ∩ {x | q x → p x} := by ext; simp; grind
+  rw [h_eq]
+  exact (hs.imp ht).inter (ht.imp hs)
+
 /-- Every set has a measurable superset. Declare this as local instance as needed. -/
 theorem nonempty_measurable_superset (s : Set α) : Nonempty { t // s ⊆ t ∧ MeasurableSet t } :=
   ⟨⟨univ, subset_univ s, MeasurableSet.univ⟩⟩
@@ -471,6 +485,11 @@ end MeasurableSpace
 def Measurable [MeasurableSpace α] [MeasurableSpace β] (f : α → β) : Prop :=
   ∀ ⦃t : Set β⦄, MeasurableSet t → MeasurableSet (f ⁻¹' t)
 
+add_aesop_rules safe tactic
+  (rule_sets := [Measurable])
+  (index := [target @Measurable ..])
+  (by fun_prop (disch := measurability))
+
 namespace MeasureTheory
 
 set_option quotPrecheck false in
@@ -495,8 +514,7 @@ protected theorem Measurable.comp {_ : MeasurableSpace α} {_ : MeasurableSpace 
     Measurable (g ∘ f) :=
   fun _ h => hf (hg h)
 
--- This is needed due to reducibility issues with the `measurability` tactic.
-@[fun_prop, aesop safe 50 (rule_sets := [Measurable])]
+@[fun_prop]
 protected theorem Measurable.comp' {_ : MeasurableSpace α} {_ : MeasurableSpace β}
     {_ : MeasurableSpace γ} {g : β → γ} {f : α → β} (hg : Measurable g) (hf : Measurable f) :
     Measurable (fun x => g (f x)) := Measurable.comp hg hf

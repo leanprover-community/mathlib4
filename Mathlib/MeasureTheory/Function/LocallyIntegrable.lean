@@ -213,7 +213,7 @@ theorem locallyIntegrableOn_of_locallyIntegrable_restrict [OpensMeasurableSpace 
   simpa only [IntegrableOn, Measure.restrict_restrict hu_o.measurableSet, inter_comm] using
     ht_int.mono_set hu_sub
 
-/-- If `s` is closed, being locally integrable on `s` wrt `μ` is equivalent to being locally
+/-- If `s` is closed, being locally integrable on `s` w.r.t. `μ` is equivalent to being locally
 integrable with respect to `μ.restrict s`. For the one-way implication without assuming `s` closed,
 see `locallyIntegrableOn_of_locallyIntegrable_restrict`. -/
 theorem locallyIntegrableOn_iff_locallyIntegrable_restrict [OpensMeasurableSpace X]
@@ -278,9 +278,6 @@ theorem MemLp.locallyIntegrable [IsLocallyFiniteMeasure μ] {p : ℝ≥0∞}
   refine ⟨U, hU, ?_⟩
   rw [IntegrableOn, ← memLp_one_iff_integrable]
   apply (hf.restrict U).mono_exponent hp
-
-@[deprecated (since := "2025-02-21")]
-alias Memℒp.locallyIntegrable := MemLp.locallyIntegrable
 
 theorem locallyIntegrable_const_enorm [IsLocallyFiniteMeasure μ] {c : ε} (hc : ‖c‖ₑ ≠ ∞) :
     LocallyIntegrable (fun _ => c) μ :=
@@ -355,8 +352,9 @@ theorem locallyIntegrable_finset_sum {ι} (s : Finset ι) {f : ι → X → ε''
 /-- If `f` is locally integrable and `g` is continuous with compact support,
 then `g • f` is integrable. -/
 theorem LocallyIntegrable.integrable_smul_left_of_hasCompactSupport
-    [NormedSpace ℝ E] [OpensMeasurableSpace X] [T2Space X] {f : X → E}
-    (hf : LocallyIntegrable f μ) {g : X → ℝ} (hg : Continuous g) (h'g : HasCompactSupport g) :
+    {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+    [OpensMeasurableSpace X] [T2Space X] {f : X → E} (hf : LocallyIntegrable f μ)
+    {g : X → 𝕜} (hg : Continuous g) (h'g : HasCompactSupport g) :
     Integrable (fun x ↦ g x • f x) μ := by
   let K := tsupport g
   have hK : IsCompact K := h'g
@@ -374,8 +372,9 @@ theorem LocallyIntegrable.integrable_smul_left_of_hasCompactSupport
 /-- If `f` is locally integrable and `g` is continuous with compact support,
 then `f • g` is integrable. -/
 theorem LocallyIntegrable.integrable_smul_right_of_hasCompactSupport
-    [NormedSpace ℝ E] [OpensMeasurableSpace X] [T2Space X] {f : X → ℝ} (hf : LocallyIntegrable f μ)
-    {g : X → E} (hg : Continuous g) (h'g : HasCompactSupport g) :
+     {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+     [OpensMeasurableSpace X] [T2Space X] {f : X → 𝕜} (hf : LocallyIntegrable f μ)
+     {g : X → E} (hg : Continuous g) (h'g : HasCompactSupport g) :
     Integrable (fun x ↦ f x • g x) μ := by
   let K := tsupport g
   have hK : IsCompact K := h'g
@@ -548,17 +547,11 @@ theorem MonotoneOn.memLp_top (hmono : MonotoneOn f s) {a b : X}
   apply ae_of_all _ fun y hy ↦ ?_
   exact (hC _ (mem_image_of_mem f hy)).trans (le_abs_self _)
 
-@[deprecated (since := "2025-02-21")]
-alias MonotoneOn.memℒp_top := MonotoneOn.memLp_top
-
 theorem MonotoneOn.memLp_of_measure_ne_top (hmono : MonotoneOn f s) {a b : X}
     (ha : IsLeast s a) (hb : IsGreatest s b) (hs : μ s ≠ ∞) (h's : MeasurableSet s) :
     MemLp f p (μ.restrict s) :=
   (hmono.memLp_top ha hb h's).mono_exponent_of_measure_support_ne_top (s := univ)
     (by simp) (by simpa using hs) le_top
-
-@[deprecated (since := "2025-02-21")]
-alias MonotoneOn.memℒp_of_measure_ne_top := MonotoneOn.memLp_of_measure_ne_top
 
 theorem MonotoneOn.memLp_isCompact [IsFiniteMeasureOnCompacts μ] (hs : IsCompact s)
     (hmono : MonotoneOn f s) : MemLp f p (μ.restrict s) := by
@@ -567,31 +560,19 @@ theorem MonotoneOn.memLp_isCompact [IsFiniteMeasureOnCompacts μ] (hs : IsCompac
   · exact hmono.memLp_of_measure_ne_top (hs.isLeast_sInf h) (hs.isGreatest_sSup h)
       hs.measure_lt_top.ne hs.measurableSet
 
-@[deprecated (since := "2025-02-21")]
-alias MonotoneOn.memℒp_isCompact := MonotoneOn.memLp_isCompact
-
 theorem AntitoneOn.memLp_top (hanti : AntitoneOn f s) {a b : X}
     (ha : IsLeast s a) (hb : IsGreatest s b) (h's : MeasurableSet s) :
     MemLp f ∞ (μ.restrict s) :=
   MonotoneOn.memLp_top (E := Eᵒᵈ) hanti ha hb h's
-
-@[deprecated (since := "2025-02-21")]
-alias AntitoneOn.memℒp_top := AntitoneOn.memLp_top
 
 theorem AntitoneOn.memLp_of_measure_ne_top (hanti : AntitoneOn f s) {a b : X}
     (ha : IsLeast s a) (hb : IsGreatest s b) (hs : μ s ≠ ∞) (h's : MeasurableSet s) :
     MemLp f p (μ.restrict s) :=
   MonotoneOn.memLp_of_measure_ne_top (E := Eᵒᵈ) hanti ha hb hs h's
 
-@[deprecated (since := "2025-02-21")]
-alias AntitoneOn.memℒp_of_measure_ne_top := AntitoneOn.memLp_of_measure_ne_top
-
 theorem AntitoneOn.memLp_isCompact [IsFiniteMeasureOnCompacts μ] (hs : IsCompact s)
     (hanti : AntitoneOn f s) : MemLp f p (μ.restrict s) :=
   MonotoneOn.memLp_isCompact (E := Eᵒᵈ) hs hanti
-
-@[deprecated (since := "2025-02-21")]
-alias AntitoneOn.memℒp_isCompact := AntitoneOn.memLp_isCompact
 
 theorem MonotoneOn.integrableOn_of_measure_ne_top (hmono : MonotoneOn f s) {a b : X}
     (ha : IsLeast s a) (hb : IsGreatest s b) (hs : μ s ≠ ∞) (h's : MeasurableSet s) :

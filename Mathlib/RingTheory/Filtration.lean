@@ -55,9 +55,10 @@ variable (F F' : I.Filtration M) {I}
 namespace Ideal.Filtration
 
 theorem pow_smul_le (i j : ℕ) : I ^ i • F.N j ≤ F.N (i + j) := by
-  induction' i with _ ih
-  · simp
-  · rw [pow_succ', mul_smul, add_assoc, add_comm 1, ← add_assoc]
+  induction i with
+  | zero => simp
+  | succ _ ih =>
+    rw [pow_succ', mul_smul, add_assoc, add_comm 1, ← add_assoc]
     exact (smul_mono_right _ ih).trans (F.smul_le _)
 
 theorem pow_smul_le_pow_smul (i j k : ℕ) : I ^ (i + k) • F.N j ≤ I ^ k • F.N (i + j) := by
@@ -185,10 +186,9 @@ theorem Stable.exists_pow_smul_eq (h : F.Stable) : ∃ n₀, ∀ k, F.N (n₀ + 
   obtain ⟨n₀, hn⟩ := h
   use n₀
   intro k
-  induction' k with _ ih
-  · simp
-  · rw [← add_assoc, ← hn, ih, add_comm, pow_add, mul_smul, pow_one]
-    omega
+  induction k with
+  | zero => simp
+  | succ _ ih => rw [← add_assoc, ← hn, ih, add_comm, pow_add, mul_smul, pow_one]; cutsat
 
 theorem Stable.exists_pow_smul_eq_of_ge (h : F.Stable) :
     ∃ n₀, ∀ n ≥ n₀, F.N n = I ^ (n - n₀) • F.N n₀ := by
@@ -201,7 +201,7 @@ theorem Stable.exists_pow_smul_eq_of_ge (h : F.Stable) :
 theorem stable_iff_exists_pow_smul_eq_of_ge :
     F.Stable ↔ ∃ n₀, ∀ n ≥ n₀, F.N n = I ^ (n - n₀) • F.N n₀ := by
   refine ⟨Stable.exists_pow_smul_eq_of_ge, fun h => ⟨h.choose, fun n hn => ?_⟩⟩
-  rw [h.choose_spec n hn, h.choose_spec (n + 1) (by omega), smul_smul, ← pow_succ',
+  rw [h.choose_spec n hn, h.choose_spec (n + 1) (by cutsat), smul_smul, ← pow_succ',
     tsub_add_eq_add_tsub hn]
 
 theorem Stable.exists_forall_le (h : F.Stable) (e : F.N 0 ≤ F'.N 0) :
@@ -209,9 +209,10 @@ theorem Stable.exists_forall_le (h : F.Stable) (e : F.N 0 ≤ F'.N 0) :
   obtain ⟨n₀, hF⟩ := h
   use n₀
   intro n
-  induction' n with n hn
-  · refine (F.antitone ?_).trans e; simp
-  · rw [add_right_comm, ← hF]
+  induction n with
+  | zero => refine (F.antitone ?_).trans e; simp
+  | succ n hn =>
+    rw [add_right_comm, ← hF]
     · exact (smul_mono_right _ hn).trans (F'.smul_le _)
     simp
 
@@ -296,22 +297,20 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     apply Submodule.sum_mem _ _
     rintro ⟨_, _, ⟨n', rfl⟩, _, ⟨hn', rfl⟩, m, hm, rfl⟩ -
     dsimp only [Subtype.coe_mk]
-    rw [Subalgebra.smul_def, smul_single_apply, if_pos (show n' ≤ n + 1 by omega)]
+    rw [Subalgebra.smul_def, smul_single_apply, if_pos (show n' ≤ n + 1 by cutsat)]
     have e : n' ≤ n := by omega
     have := F.pow_smul_le_pow_smul (n - n') n' 1
     rw [tsub_add_cancel_of_le e, pow_one, add_comm _ 1, ← add_tsub_assoc_of_le e, add_comm] at this
     exact this (Submodule.smul_mem_smul ((l _).2 <| n + 1 - n') hm)
   · let F' := Submodule.span (reesAlgebra I) (⋃ i ≤ n₀, single R i '' (F.N i : Set M))
     intro hF i
-    have : ∀ i ≤ n₀, single R i '' (F.N i : Set M) ⊆ F' := by
-      -- Porting note: Original proof was
-      -- `fun i hi => Set.Subset.trans (Set.subset_iUnion₂ i hi) Submodule.subset_span`
-      intro i hi
-      refine Set.Subset.trans ?_ Submodule.subset_span
-      refine @Set.subset_iUnion₂ _ _ _ (fun i => fun _ => ↑((single R i) '' ((N F i) : Set M))) i ?_
-      exact hi
-    induction' i with j hj
-    · exact this _ (zero_le _)
+    have : ∀ i ≤ n₀, single R i '' (F.N i : Set M) ⊆ F' := fun i hi =>
+      -- Porting note: need to add hint for `s`
+      (Set.subset_iUnion₂ (s := fun i _ => (single R i '' (N F i : Set M))) i hi).trans
+        Submodule.subset_span
+    induction i with
+    | zero => exact this _ (zero_le _)
+    | succ j hj => ?_
     by_cases hj' : j.succ ≤ n₀
     · exact this _ hj'
     simp only [not_le, Nat.lt_succ_iff] at hj'
@@ -404,9 +403,10 @@ theorem Ideal.mem_iInf_smul_pow_eq_bot_iff [IsNoetherianRing R] [Module.Finite R
   · rintro ⟨r, eq⟩
     rw [Submodule.mem_iInf]
     intro i
-    induction' i with i hi
-    · simp
-    · rw [add_comm, pow_add, ← smul_smul, pow_one, ← eq]
+    induction i with
+    | zero => simp
+    | succ i hi =>
+      rw [add_comm, pow_add, ← smul_smul, pow_one, ← eq]
       exact Submodule.smul_mem_smul r.prop hi
 
 theorem Ideal.iInf_pow_smul_eq_bot_of_le_jacobson [IsNoetherianRing R]

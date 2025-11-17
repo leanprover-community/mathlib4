@@ -24,7 +24,7 @@ exactly two elements (see `Equiv.sumEquivSigmaBool`).
 
 ## Notes
 
-The definition of `Sigma` takes values in `Type*`. This effectively forbids `Prop`- valued sigma
+The definition of `Sigma` takes values in `Type*`. This effectively forbids `Prop`-valued sigma
 types. To that effect, we have `PSigma`, which takes value in `Sort*` and carries a more
 complicated universe signature as a consequence.
 -/

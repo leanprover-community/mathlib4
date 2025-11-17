@@ -5,9 +5,9 @@ Authors: Heather Macbeth
 -/
 import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.Analysis.InnerProductSpace.Orientation
-import Mathlib.Data.Complex.Orientation
 import Mathlib.LinearAlgebra.Alternating.Curry
 import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+import Mathlib.LinearAlgebra.Complex.Orientation
 import Mathlib.Tactic.LinearCombination
 
 /-!
@@ -104,14 +104,14 @@ theorem areaForm_apply_self (x : E) : ω x x = 0 := by
   rw [areaForm_to_volumeForm]
   refine o.volumeForm.map_eq_zero_of_eq ![x, x] ?_ (?_ : (0 : Fin 2) ≠ 1)
   · simp
-  · norm_num
+  · simp
 
 theorem areaForm_swap (x y : E) : ω x y = -ω y x := by
   simp only [areaForm_to_volumeForm]
   convert o.volumeForm.map_swap ![y, x] (_ : (0 : Fin 2) ≠ 1)
   · ext i
     fin_cases i <;> rfl
-  · norm_num
+  · simp
 
 @[simp]
 theorem areaForm_neg_orientation : (-o).areaForm = -o.areaForm := by
@@ -349,8 +349,8 @@ theorem inner_mul_inner_add_areaForm_mul_areaForm' (a x : E) :
   apply (o.basisRightAngleRotation a ha).ext
   intro i
   fin_cases i
-  · simp [real_inner_self_eq_norm_sq, mul_comm, real_inner_comm]
-  · simp [real_inner_self_eq_norm_sq, mul_comm, o.areaForm_swap a x]
+  · simp [mul_comm, real_inner_comm]
+  · simp [mul_comm, o.areaForm_swap a x]
 
 /-- For vectors `a x y : E`, the identity `⟪a, x⟫ * ⟪a, y⟫ + ω a x * ω a y = ‖a‖ ^ 2 * ⟪x, y⟫`. -/
 theorem inner_mul_inner_add_areaForm_mul_areaForm (a x y : E) :
@@ -368,8 +368,8 @@ theorem inner_mul_areaForm_sub' (a x : E) : ⟪a, x⟫ • ω a - ω a x • inn
   apply (o.basisRightAngleRotation a ha).ext
   intro i
   fin_cases i
-  · simp [real_inner_self_eq_norm_sq, mul_comm, o.areaForm_swap a x]
-  · simp [real_inner_self_eq_norm_sq, mul_comm, real_inner_comm]
+  · simp [mul_comm, o.areaForm_swap a x]
+  · simp [mul_comm, real_inner_comm]
 
 /-- For vectors `a x y : E`, the identity `⟪a, x⟫ * ω a y - ω a x * ⟪a, y⟫ = ‖a‖ ^ 2 * ω x y`. -/
 theorem inner_mul_areaForm_sub (a x y : E) : ⟪a, x⟫ * ω a y - ω a x * ⟪a, y⟫ = ‖a‖ ^ 2 * ω x y :=
@@ -420,7 +420,7 @@ theorem kahler_swap (x y : E) : o.kahler x y = conj (o.kahler y x) := by
 
 @[simp]
 theorem kahler_apply_self (x : E) : o.kahler x x = ‖x‖ ^ 2 := by
-  simp [kahler_apply_apply, real_inner_self_eq_norm_sq]
+  simp [kahler_apply_apply]
 
 @[simp]
 theorem kahler_rightAngleRotation_left (x y : E) :
@@ -470,8 +470,6 @@ theorem norm_kahler (x y : E) : ‖o.kahler x y‖ = ‖x‖ * ‖y‖ := by
   · linear_combination o.normSq_kahler x y
   · positivity
   · positivity
-
-@[deprecated (since := "2025-02-17")] alias abs_kahler := norm_kahler
 
 theorem eq_zero_or_eq_zero_of_kahler_eq_zero {x y : E} (hx : o.kahler x y = 0) : x = 0 ∨ y = 0 := by
   have : ‖x‖ * ‖y‖ = 0 := by simpa [hx] using (o.norm_kahler x y).symm

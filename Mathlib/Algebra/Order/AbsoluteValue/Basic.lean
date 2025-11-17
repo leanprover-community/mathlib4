@@ -113,6 +113,10 @@ protected theorem pos_iff {x : R} : 0 < abv x ↔ x ≠ 0 :=
   (abv.nonneg x).lt_iff_ne'.trans abv.ne_zero_iff
 protected alias ⟨_, pos⟩ := AbsoluteValue.pos_iff
 
+@[simp]
+protected theorem nonpos_iff {x : R} : abv x ≤ 0 ↔ x = 0 := by
+  simp only [← abv.eq_zero, le_antisymm_iff, abv.nonneg, and_true]
+
 theorem map_one_of_isLeftRegular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
   h <| by simp [← abv.map_mul]
 
@@ -180,12 +184,8 @@ lemma apply_nat_le_self [IsOrderedRing S] (n : ℕ) : abv n ≤ n := by
   · simp [Subsingleton.eq_zero (n : R)]
   induction n with
   | zero => simp
-  | succ n hn =>
-    simp only [Nat.cast_succ]
-    calc
-      abv (n + 1) ≤ abv n + abv 1 := abv.add_le ..
-      _ = abv n + 1 := congrArg (abv n + ·) abv.map_one
-      _ ≤ n + 1 := add_le_add_right hn 1
+  | succ n ih =>
+  · grw [Nat.cast_succ, Nat.cast_succ, abv.add_le, abv.map_one, ih]
 
 end IsDomain
 
@@ -263,7 +263,7 @@ protected def abs : AbsoluteValue S S where
   toFun := abs
   nonneg' := abs_nonneg
   eq_zero' _ := abs_eq_zero
-  add_le' := abs_add
+  add_le' := abs_add_le
   map_mul' := abs_mul
 
 instance : Inhabited (AbsoluteValue S S) :=

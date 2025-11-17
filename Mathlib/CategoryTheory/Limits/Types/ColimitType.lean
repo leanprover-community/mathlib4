@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Functor.Basic
-import Mathlib.CategoryTheory.Types
+import Mathlib.CategoryTheory.Types.Basic
 
 /-!
 # The colimit type of a functor to types
@@ -83,6 +83,14 @@ def precompose (c : CoconeTypes.{w₁} F) {G : J ⥤ Type w₀'} (app : ∀ j, G
   ι j := c.ι j ∘ app j
   ι_naturality f := by
     rw [Function.comp_assoc, naturality, ← Function.comp_assoc, ι_naturality]
+
+/-- Given `F : J ⥤ w₀`, `c : F.CoconeTypes` and `G : J' ⥤ J`, this is
+the induced cocone in `(G ⋙ F).CoconeTypes`. -/
+@[simps]
+def precomp (c : CoconeTypes.{w₁} F) {J' : Type*} [Category J'] (G : J' ⥤ J) :
+    CoconeTypes.{w₁} (G ⋙ F) where
+  pt := c.pt
+  ι _ := c.ι _
 
 end CoconeTypes
 

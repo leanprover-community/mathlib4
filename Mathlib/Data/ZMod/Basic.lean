@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.CharP.Basic
-import Mathlib.Algebra.Module.End
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Data.Fintype.Units
 import Mathlib.GroupTheory.GroupAction.SubMulAction
@@ -566,7 +565,7 @@ theorem intCast_eq_iff (p : ℕ) (n : ℤ) (z : ZMod p) [NeZero p] :
   constructor
   · rintro rfl
     refine ⟨n / p, ?_⟩
-    rw [val_intCast, Int.emod_add_ediv]
+    rw [val_intCast, Int.emod_add_mul_ediv]
   · rintro ⟨k, rfl⟩
     rw [Int.cast_add, Int.cast_mul, Int.cast_natCast, Int.cast_natCast, natCast_val,
       ZMod.natCast_self, zero_mul, add_zero, cast_id]
@@ -994,13 +993,12 @@ theorem val_cast_of_lt {n : ℕ} {a : ℕ} (h : a < n) : (a : ZMod n).val = a :=
 theorem val_cast_zmod_lt {m : ℕ} [NeZero m] (n : ℕ) [NeZero n] (a : ZMod m) :
     (a.cast : ZMod n).val < m := by
   rcases m with (⟨⟩|⟨m⟩); · cases NeZero.ne 0 rfl
-  by_cases h : m < n
+  by_cases! h : m < n
   · rcases n with (⟨⟩|⟨n⟩); · simp at h
     rw [← natCast_val, val_cast_of_lt]
     · apply a.val_lt
     apply lt_of_le_of_lt (Nat.le_of_lt_succ (ZMod.val_lt a)) h
-  · rw [not_lt] at h
-    apply lt_of_lt_of_le (ZMod.val_lt _) (le_trans h (Nat.le_succ m))
+  · apply lt_of_lt_of_le (ZMod.val_lt _) (le_trans h (Nat.le_succ m))
 
 theorem neg_val' {n : ℕ} [NeZero n] (a : ZMod n) : (-a).val = (n - a.val) % n :=
   calc
@@ -1227,7 +1225,7 @@ variable (G) in
 lemma ZModModule.two_le_char [NeZero n] [Nontrivial G] : 2 ≤ n := by
   have := NeZero.ne n
   have := char_ne_one n G
-  omega
+  cutsat
 
 lemma ZModModule.periodicPts_add_left [NeZero n] (x : G) : periodicPts (x + ·) = .univ :=
   Set.eq_univ_of_forall fun y ↦ ⟨n, NeZero.pos n, by

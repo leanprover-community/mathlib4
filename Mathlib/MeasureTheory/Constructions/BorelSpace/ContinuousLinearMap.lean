@@ -3,7 +3,7 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Bilinear
+import Mathlib.Analysis.Normed.Operator.Bilinear
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 
@@ -51,7 +51,6 @@ theorem measurable_apply [MeasurableSpace F] [BorelSpace F] (x : E) :
     Measurable fun f : E →L[𝕜] F => f x :=
   (apply 𝕜 F x).continuous.measurable
 
-@[measurability]
 theorem measurable_apply' [MeasurableSpace E] [OpensMeasurableSpace E] [MeasurableSpace F]
     [BorelSpace F] : Measurable fun (x : E) (f : E →L[𝕜] F) => f x :=
   measurable_pi_lambda _ fun f => f.measurable

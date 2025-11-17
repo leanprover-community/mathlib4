@@ -134,7 +134,7 @@ theorem left_lt_add_div_two : a < (a + b) / 2 ↔ a < b := by simp [lt_div_iff�
 theorem add_div_two_lt_right : (a + b) / 2 < b ↔ a < b := by simp [div_lt_iff₀, mul_two]
 
 theorem add_thirds (a : α) : a / 3 + a / 3 + a / 3 = a := by
-  rw [div_add_div_same, div_add_div_same, ← two_mul, ← add_one_mul 2 a, two_add_one_eq_three,
+  rw [← add_div, ← add_div, ← two_mul, ← add_one_mul 2 a, two_add_one_eq_three,
     mul_div_cancel_left₀ a three_ne_zero]
 
 /-!
@@ -611,6 +611,7 @@ theorem min_div_div_right_of_nonpos (hc : c ≤ 0) (a b : α) : min (a / c) (b /
 theorem max_div_div_right_of_nonpos (hc : c ≤ 0) (a b : α) : max (a / c) (b / c) = min a b / c :=
   Eq.symm <| Antitone.map_min fun _ _ => div_le_div_of_nonpos_of_le hc
 
+@[simp]
 theorem abs_inv (a : α) : |a⁻¹| = |a|⁻¹ :=
   map_inv₀ (absHom : α →*₀ α) a
 
@@ -636,6 +637,17 @@ theorem uniform_continuous_npow_on_bounded (B : α) {ε : α} (hε : 0 < ε) (n 
     (mul_nonneg (abs_nonneg _) n.cast_nonneg)
   refine max_le ?_ (hr.trans <| le_add_of_nonneg_right zero_le_one)
   exact add_sub_cancel r q ▸ (abs_add_le ..).trans (add_le_add hr hqr.1)
+
+lemma two_mul_le_add_mul_sq {ε : α} (hε : 0 < ε) :
+    2 * a * b ≤ ε * a ^ 2 + ε⁻¹ * b ^ 2 := by
+  have h : 2 * (ε * a) * b ≤ (ε * a) ^ 2 + b ^ 2 := two_mul_le_add_sq (ε * a) b
+  calc 2 * a * b
+  _ = 2 * a * b * (ε * ε⁻¹) := by rw [mul_inv_cancel₀ hε.ne', mul_one]
+  _ = (2 * (ε * a) * b) * ε⁻¹ := by simp_rw [mul_assoc, mul_comm ε, mul_assoc]
+  _ ≤ ((ε * a) ^ 2 + b ^ 2) * ε⁻¹ := by gcongr; exact inv_nonneg.mpr hε.le
+  _ = ε * a ^ 2 + ε⁻¹ * b ^ 2 := by
+    rw [mul_comm _ ε⁻¹, mul_pow, mul_add, ← mul_assoc, pow_two, ← mul_assoc, inv_mul_cancel₀ hε.ne',
+      one_mul]
 
 end
 

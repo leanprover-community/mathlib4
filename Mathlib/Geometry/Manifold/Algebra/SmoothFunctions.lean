@@ -114,7 +114,6 @@ def compLeftMonoidHom {G' : Type*} [Monoid G'] [TopologicalSpace G'] [ChartedSpa
 
 variable (I') {N}
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215):
 -- TODO: generalize to any `C^n` map instead of `Set.inclusion`
 /-- For a Lie group `G` and open sets `U ⊆ V` in `N`, the 'restriction' group homomorphism from
 `C^n⟮I, V; I', G⟯` to `C^n⟮I, U; I', G⟯`. -/
@@ -325,7 +324,6 @@ theorem smul_comp' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] (f : 
 functions with values in `𝕜`. -/
 instance module' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
     Module C^n⟮I, N; 𝓘(𝕜), 𝕜⟯ C^n⟮I, N; 𝓘(𝕜, V), V⟯ where
-  smul := (· • ·)
   smul_add c f g := by ext x; exact smul_add (c x) (f x) (g x)
   add_smul c₁ c₂ f := by ext x; exact add_smul (c₁ x) (c₂ x) (f x)
   mul_smul c₁ c₂ f := by ext x; exact mul_smul (c₁ x) (c₂ x) (f x)

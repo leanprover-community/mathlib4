@@ -92,7 +92,7 @@ section Examples
 @[simp]
 theorem bernoulli'_zero : bernoulli' 0 = 1 := by
   rw [bernoulli'_def]
-  norm_num
+  simp
 
 @[simp]
 theorem bernoulli'_one : bernoulli' 1 = 1 / 2 := by
@@ -129,7 +129,7 @@ theorem sum_bernoulli' (n : ℕ) : (∑ k ∈ range n, (n.choose k : ℚ) * bern
   refine sum_congr rfl fun k hk => ?_
   congr
   have : ((n - k : ℕ) : ℚ) + 1 ≠ 0 := by norm_cast
-  field_simp [← cast_sub (mem_range.1 hk).le, mul_comm]
+  simp only [← cast_sub (mem_range.1 hk).le, succ_eq_add_one, field, mul_comm]
   rw_mod_cast [tsub_add_eq_add_tsub (mem_range.1 hk).le, choose_mul_succ_eq]
 
 /-- The exponential generating function for the Bernoulli numbers `bernoulli' n`. -/
@@ -152,9 +152,7 @@ theorem bernoulli'PowerSeries_mul_exp_sub_one :
   simp_rw [mem_antidiagonal]
   rintro ⟨i, j⟩ rfl
   have := factorial_mul_factorial_dvd_factorial_add i j
-  field_simp [mul_comm _ (bernoulli' i), mul_assoc, add_choose]
-  norm_cast
-  simp [mul_comm (j + 1)]
+  simp [field, add_choose, *]
 
 /-- Odd Bernoulli numbers (greater than 1) are zero. -/
 theorem bernoulli'_odd_eq_zero {n : ℕ} (h_odd : Odd n) (hlt : 1 < n) : bernoulli' n = 0 := by
@@ -232,7 +230,7 @@ theorem bernoulli_spec' (n : ℕ) :
   · refine sum_congr rfl fun p h => ?_
     obtain ⟨h', h''⟩ : p ∈ _ ∧ p ≠ _ := by rwa [mem_sdiff, mem_singleton] at h
     simp [bernoulli_eq_bernoulli'_of_ne_one ((not_congr (antidiagonal_congr h' h₁)).mp h'')]
-  · field_simp [h₃]
+  · simp [field, h₃]
     norm_num
 
 /-- The exponential generating function for the Bernoulli numbers `bernoulli n`. -/
@@ -256,8 +254,7 @@ theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A -
   refine congr_arg (algebraMap ℚ A) (sum_congr rfl fun x h => eq_div_of_mul_eq (hfact n.succ) ?_)
   rw [mem_antidiagonal] at h
   rw [← h, add_choose, cast_div_charZero (factorial_mul_factorial_dvd_factorial_add _ _)]
-  field_simp [hfact x.1, mul_comm _ (bernoulli x.1), mul_assoc]
-  left; left; ring
+  simp [field, mul_comm _ (bernoulli x.1), mul_assoc]
 
 section Faulhaber
 
@@ -282,7 +279,7 @@ theorem sum_range_pow (n p : ℕ) :
     intro m h
     simp only [exp_pow_eq_rescale_exp, rescale, RingHom.coe_mk]
     -- manipulate factorials and binomial coefficients
-    simp? at h says simp only [succ_eq_add_one, mem_range] at h
+    have h : m < q + 1 := by simpa using h
     rw [choose_eq_factorial_div_factorial h.le, eq_comm, div_eq_iff (hne q.succ), succ_eq_add_one,
       mul_assoc _ _ (q.succ ! : ℚ), mul_comm _ (q.succ ! : ℚ), ← mul_assoc, div_mul_eq_mul_div]
     simp only [MonoidHom.coe_mk, OneHom.coe_mk, coeff_exp, Algebra.algebraMap_self, one_div,
@@ -324,8 +321,7 @@ theorem sum_range_pow (n p : ℕ) :
   -- massage `hps` into our goal
   rw [hps, sum_mul]
   refine sum_congr rfl fun x _ => ?_
-  field_simp [mul_right_comm _ ↑p !, ← mul_assoc _ _ ↑p !, factorial]
-  ring
+  simp [field, factorial]
 
 /-- Alternate form of **Faulhaber's theorem**, relating the sum of p-th powers to the Bernoulli
 numbers: $$\sum_{k=1}^{n} k^p = \sum_{i=0}^p (-1)^iB_i\binom{p+1}{i}\frac{n^{p+1-i}}{p+1}.$$

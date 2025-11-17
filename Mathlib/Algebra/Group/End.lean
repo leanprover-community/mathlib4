@@ -32,7 +32,7 @@ end monoid, aut group
 
 assert_not_exists HeytingAlgebra MonoidWithZero MulAction RelIso
 
-variable {A M G α β : Type*}
+variable {A M G α β γ : Type*}
 
 /-! ### Type endomorphisms -/
 
@@ -179,14 +179,6 @@ theorem self_trans_inv (e : Perm α) : e.trans e⁻¹ = 1 :=
 theorem symm_mul (e : Perm α) : e.symm * e = 1 :=
   Equiv.self_trans_symm e
 
-/-- If `α` is equivalent to `β`, then `Perm α` is isomorphic to `Perm β`. -/
-def permCongrHom (e : α ≃ β) : Equiv.Perm α ≃* Equiv.Perm β where
-  toFun x := e.symm.trans (x.trans e)
-  invFun y := e.trans (y.trans e.symm)
-  left_inv _ := by ext; simp
-  right_inv _ := by ext; simp
-  map_mul' _ _ := by ext; simp
-
 /-! Lemmas about `Equiv.Perm.sumCongr` re-expressed via the group structure. -/
 
 
@@ -282,7 +274,42 @@ theorem subtypeCongrHom_injective (p : α → Prop) [DecidablePred p] :
 /-- If `e` is also a permutation, we can write `permCongr`
 completely in terms of the group structure. -/
 @[simp]
-theorem permCongr_eq_mul (e p : Perm α) : e.permCongr p = e * p * e⁻¹ :=
+theorem _root_.Equiv.permCongr_eq_mul (e p : Perm α) : e.permCongr p = e * p * e⁻¹ :=
+  rfl
+
+@[deprecated (since := "2025-08-29")] alias permCongr_eq_mul := Equiv.permCongr_eq_mul
+
+@[simp]
+lemma _root_.Equiv.permCongr_mul (e : α ≃ β) (p q : Perm α) :
+    e.permCongr (p * q) = e.permCongr p * e.permCongr q :=
+  permCongr_trans e q p |>.symm
+
+def _root_.Equiv.permCongrHom (e : α ≃ β) : Perm α ≃* Perm β where
+  toEquiv := e.permCongr
+  map_mul' p q := e.permCongr_mul p q
+
+attribute [inherit_doc Equiv.permCongr] Equiv.permCongrHom
+extend_docs Equiv.permCongrHom after "This is `Equiv.permCongr` as a `MulEquiv`."
+
+@[deprecated (since := "2025-08-23")] alias permCongrHom := Equiv.permCongrHom
+
+@[simp]
+theorem _root_.Equiv.permCongrHom_symm (e : α ≃ β) :
+    e.permCongrHom.symm = e.symm.permCongrHom :=
+  rfl
+
+@[simp]
+theorem _root_.Equiv.permCongrHom_trans (e : α ≃ β) (e' : β ≃ γ) :
+    e.permCongrHom.trans e'.permCongrHom = (e.trans e').permCongrHom :=
+  rfl
+
+@[simp]
+lemma _root_.Equiv.permCongrHom_coe_equiv (e : α ≃ β) :
+    (↑e.permCongrHom : Perm α ≃ Perm β) = e.permCongr :=
+  rfl
+
+@[simp]
+lemma _root_.Equiv.permCongrHom_coe (e : α ≃ β) : ⇑e.permCongrHom = ⇑e.permCongr :=
   rfl
 
 section ExtendDomain
@@ -340,8 +367,8 @@ variable {p : α → Prop} {f : Perm α}
 def subtypePerm (f : Perm α) (h : ∀ x, p (f x) ↔ p x) : Perm { x // p x } where
   toFun := fun x => ⟨f x, (h _).2 x.2⟩
   invFun := fun x => ⟨f⁻¹ x, (h (f⁻¹ x)).1 <| by simpa using x.2⟩
-  left_inv _ := by simp only [Perm.inv_apply_self, Subtype.coe_eta]
-  right_inv _ := by simp only [Perm.apply_inv_self, Subtype.coe_eta]
+  left_inv _ := by simp
+  right_inv _ := by simp
 
 @[simp]
 theorem subtypePerm_apply (f : Perm α) (h : ∀ x, p (f x) ↔ p x) (x : { x // p x }) :
@@ -359,7 +386,7 @@ theorem subtypePerm_mul (f g : Perm α) (hf hg) :
   rfl
 
 private theorem inv_aux : (∀ x, p (f x) ↔ p x) ↔ ∀ x, p (f⁻¹ x) ↔ p x :=
-  f⁻¹.surjective.forall.trans <| by simp_rw [f.apply_inv_self, Iff.comm]
+  f⁻¹.surjective.forall.trans <| by simp [Iff.comm]
 
 /-- See `Equiv.Perm.inv_subtypePerm`. -/
 theorem subtypePerm_inv (f : Perm α) (hf) :
@@ -492,12 +519,10 @@ theorem swap_mul_self (i j : α) : swap i j * swap i j = 1 :=
 
 theorem swap_mul_eq_mul_swap (f : Perm α) (x y : α) : swap x y * f = f * swap (f⁻¹ x) (f⁻¹ y) :=
   Equiv.ext fun z => by
-    simp only [Perm.mul_apply, swap_apply_def]
-    split_ifs <;>
-      simp_all only [Perm.apply_inv_self, Perm.eq_inv_iff_eq, not_true]
+    simp only [Perm.mul_apply, swap_apply_def]; split_ifs <;> simp_all [Perm.eq_inv_iff_eq]
 
 theorem mul_swap_eq_swap_mul (f : Perm α) (x y : α) : f * swap x y = swap (f x) (f y) * f := by
-  rw [swap_mul_eq_mul_swap, Perm.inv_apply_self, Perm.inv_apply_self]
+  simp [swap_mul_eq_mul_swap]
 
 theorem swap_apply_apply (f : Perm α) (x y : α) : swap (f x) (f y) = f * swap x y * f⁻¹ := by
   rw [mul_swap_eq_swap_mul, mul_inv_cancel_right]

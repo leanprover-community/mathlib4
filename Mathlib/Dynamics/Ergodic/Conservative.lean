@@ -10,7 +10,7 @@ import Mathlib.Combinatorics.Pigeonhole
 /-!
 # Conservative systems
 
-In this file we define `f : α → α` to be a *conservative* system w.r.t a measure `μ` if `f` is
+In this file we define `f : α → α` to be a *conservative* system w.r.t. a measure `μ` if `f` is
 non-singular (`MeasureTheory.QuasiMeasurePreserving`) and for every measurable set `s` of
 positive measure at least one point `x ∈ s` returns back to `s` after some number of iterations of
 `f`. There are several properties that look like they are stronger than this one but actually follow

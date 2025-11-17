@@ -183,7 +183,7 @@ theorem add_one_pow_unbounded_of_pos (x : R) (hy : 0 < y) : ∃ n : ℕ, x < (y 
       _ = n * y := nsmul_eq_mul _ _
       _ < 1 + n * y := lt_one_add _
       _ ≤ (1 + y) ^ n :=
-        one_add_mul_le_pow' (mul_nonneg hy.le hy.le) (mul_nonneg this this)
+        one_add_mul_le_pow_of_sq_nonneg (pow_nonneg hy.le _) (pow_nonneg this _)
           (add_nonneg zero_le_two hy.le) _
       _ = (y + 1) ^ n := by rw [add_comm]
 
@@ -298,11 +298,10 @@ theorem exists_mem_Ioc_zpow (hx : 0 < x) (hy : 1 < y) : ∃ n : ℤ, x ∈ Ioc (
 
 /-- For any `y < 1` and any positive `x`, there exists `n : ℕ` with `y ^ n < x`. -/
 theorem exists_pow_lt_of_lt_one (hx : 0 < x) (hy : y < 1) : ∃ n : ℕ, y ^ n < x := by
-  by_cases y_pos : y ≤ 0
+  by_cases! y_pos : y ≤ 0
   · use 1
     simp only [pow_one]
     exact y_pos.trans_lt hx
-  rw [not_le] at y_pos
   rcases pow_unbounded_of_one_lt x⁻¹ ((one_lt_inv₀ y_pos).2 hy) with ⟨q, hq⟩
   exact ⟨q, by rwa [inv_pow, inv_lt_inv₀ hx (pow_pos y_pos _)] at hq⟩
 
@@ -328,7 +327,7 @@ lemma exists_pow_btwn_of_lt_mul {a b c : K} (h : a < b * c) (hb₀ : 0 < b) (hb�
     intro hf
     simp only [hf, pow_zero] at H
     exact (H.trans <| (mul_lt_of_lt_one_right hb₀ hc₁).trans_le hb₁).false
-  rw [(Nat.succ_pred_eq_of_ne_zero hn).symm, pow_succ, mul_lt_mul_right hc₀] at H
+  rw [(Nat.succ_pred_eq_of_ne_zero hn).symm, pow_succ, mul_lt_mul_iff_left₀ hc₀] at H
   exact Nat.find_min this (Nat.sub_one_lt hn) H
 
 /-- If `a < b * c`, `b` is positive and `0 < c < 1`, then there is a power `c ^ n` with `n : ℤ`

@@ -133,9 +133,7 @@ theorem copy_eq (f : A →⋆ₙ+* B) (f' : A → B) (h : f' = f) : f.copy f' h 
   DFunLike.ext' h
 
 @[simp]
-theorem coe_mk (f : A →ₙ+* B) (h) :
-    ((⟨f, h⟩ : A  →⋆ₙ+* B) : A → B) = f :=
-  rfl
+theorem coe_mk (f : A →ₙ+* B) (h) : ((⟨f, h⟩ : A →⋆ₙ+* B) : A → B) = f := rfl
 
 @[simp]
 theorem mk_coe (f : A →⋆ₙ+* B) (h₁ h₂ h₃ h₄) :
@@ -359,7 +357,7 @@ theorem symm_symm (e : A ≃⋆+* B) : e.symm.symm = e := rfl
 theorem symm_bijective : Function.Bijective (symm : (A ≃⋆+* B) → B ≃⋆+* A) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
-theorem coe_mk (e h₁) : ⇑(⟨e, h₁⟩ : A ≃⋆+* B) = e := rfl
+@[simp] theorem coe_mk (e h₁) : ⇑(⟨e, h₁⟩ : A ≃⋆+* B) = e := rfl
 
 @[simp]
 theorem mk_coe (e : A ≃⋆+* B) (e' h₁ h₂ h₃ h₄ h₅) :

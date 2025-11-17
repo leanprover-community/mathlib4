@@ -10,7 +10,7 @@ import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 /-!
 # Limits related to polynomial and rational functions
 
-This file proves basic facts about limits of polynomial and rationals functions.
+This file proves basic facts about limits of polynomial and rational functions.
 The main result is `Polynomial.isEquivalent_atTop_lead`, which states that for
 any polynomial `P` of degree `n` with leading coefficient `a`, the corresponding
 polynomial function is equivalent to `a * x^n` as `x` goes to +∞.
@@ -129,7 +129,7 @@ theorem div_tendsto_zero_of_degree_lt (hdeg : P.degree < Q.degree) :
   refine (isEquivalent_atTop_div P Q).symm.tendsto_nhds ?_
   rw [← mul_zero]
   refine (tendsto_zpow_atTop_zero ?_).const_mul _
-  omega
+  cutsat
 
 theorem div_tendsto_zero_iff_degree_lt (hQ : Q ≠ 0) :
     Tendsto (fun x => eval x P / eval x Q) atTop (𝓝 0) ↔ P.degree < Q.degree := by
@@ -163,7 +163,7 @@ theorem div_tendsto_atTop_of_degree_gt' (hdeg : Q.degree < P.degree)
   refine (isEquivalent_atTop_div P Q).symm.tendsto_atTop ?_
   apply Tendsto.const_mul_atTop hpos
   apply tendsto_zpow_atTop_atTop
-  omega
+  cutsat
 
 theorem div_tendsto_atTop_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 0)
     (hnng : 0 ≤ P.leadingCoeff / Q.leadingCoeff) :
@@ -184,7 +184,7 @@ theorem div_tendsto_atBot_of_degree_gt' (hdeg : Q.degree < P.degree)
   refine (isEquivalent_atTop_div P Q).symm.tendsto_atBot ?_
   apply Tendsto.const_mul_atTop_of_neg hneg
   apply tendsto_zpow_atTop_atTop
-  omega
+  cutsat
 
 theorem div_tendsto_atBot_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 0)
     (hnps : P.leadingCoeff / Q.leadingCoeff ≤ 0) :
@@ -197,10 +197,9 @@ theorem div_tendsto_atBot_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 
 
 theorem abs_div_tendsto_atTop_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 0) :
     Tendsto (fun x => |eval x P / eval x Q|) atTop atTop := by
-  by_cases h : 0 ≤ P.leadingCoeff / Q.leadingCoeff
+  by_cases! h : 0 ≤ P.leadingCoeff / Q.leadingCoeff
   · exact tendsto_abs_atTop_atTop.comp (P.div_tendsto_atTop_of_degree_gt Q hdeg hQ h)
-  · push_neg at h
-    exact tendsto_abs_atBot_atTop.comp (P.div_tendsto_atBot_of_degree_gt Q hdeg hQ h.le)
+  · exact tendsto_abs_atBot_atTop.comp (P.div_tendsto_atBot_of_degree_gt Q hdeg hQ h.le)
 
 end PolynomialDivAtTop
 

@@ -85,7 +85,7 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
       _ ∣ (a + ↑p * b) ^ i - (a ^ (i - 1) * (↑p * b) * ↑i + a ^ i) := by
         simp only [sq_dvd_add_pow_sub_sub (↑p * b) a i, ← sub_sub]
   simp_rw [← mem_span_singleton, ← Ideal.Quotient.eq] at *
-  let s : R := (p : R)^2
+  let s : R := (p : R) ^ 2
   calc
     (Ideal.Quotient.mk (span {s})) (∑ i ∈ range p, (a + (p : R) * b) ^ i * a ^ (p - 1 - i)) =
         ∑ i ∈ Finset.range p,
@@ -256,6 +256,16 @@ theorem Int.sq_mod_four_eq_one_of_odd {x : ℤ} : Odd x → x ^ 2 % 4 = 1 := by
   rw [add_assoc, ← add_mul, Int.add_mul_emod_self_right]
   decide
 
+lemma Int.eight_dvd_sq_sub_one_of_odd {k : ℤ} (hk : Odd k) : 8 ∣ k ^ 2 - 1 := by
+  rcases hk with ⟨m, rfl⟩
+  have eq : (2 * m + 1) ^ 2 - 1 = 4 * (m * (m + 1)) := by ring
+  simpa [eq] using (mul_dvd_mul_iff_left four_ne_zero).mpr (two_dvd_mul_add_one m)
+
+lemma Nat.eight_dvd_sq_sub_one_of_odd {k : ℕ} (hk : Odd k) : 8 ∣ k ^ 2 - 1 := by
+  rcases hk with ⟨m, rfl⟩
+  have eq : (2 * m + 1) ^ 2 - 1 = 4 * (m * (m + 1)) := by ring_nf; grind
+  simpa [eq] using (mul_dvd_mul_iff_left four_ne_zero).mpr (two_dvd_mul_add_one m)
+
 theorem Int.two_pow_two_pow_add_two_pow_two_pow {x y : ℤ} (hx : ¬2 ∣ x) (hxy : 4 ∣ x - y) (i : ℕ) :
     emultiplicity 2 (x ^ 2 ^ i + y ^ 2 ^ i) = ↑(1 : ℕ) := by
   have hx_odd : Odd x := by rwa [← Int.not_even_iff_odd, even_iff_two_dvd]
@@ -317,7 +327,7 @@ theorem Int.two_pow_sub_pow {x y : ℤ} {n : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 
   have hxy4 : 4 ∣ x ^ 2 - y ^ 2 := by
     rw [Int.dvd_iff_emod_eq_zero, Int.sub_emod, Int.sq_mod_four_eq_one_of_odd _,
       Int.sq_mod_four_eq_one_of_odd hy]
-    · norm_num
+    · simp
     · simp only [← Int.not_even_iff_odd, even_iff_two_dvd, hx, not_false_iff]
   rw [Int.two_pow_sub_pow' d hxy4 _, sq_sub_sq, ← Int.ofNat_mul_out,
     emultiplicity_mul Int.prime_two, emultiplicity_mul Int.prime_two]
@@ -359,7 +369,7 @@ theorem pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : 
   · exact Nat.two_pow_sub_pow hxy hx hneven
   · exact hn
   · exact Nat.sub_ne_zero_of_lt hyx
-  · omega
+  · cutsat
   · simp [← Nat.pos_iff_ne_zero, tsub_pos_iff_lt, Nat.pow_lt_pow_left hyx hn]
 
 variable {p : ℕ} [hp : Fact p.Prime] (hp1 : Odd p)

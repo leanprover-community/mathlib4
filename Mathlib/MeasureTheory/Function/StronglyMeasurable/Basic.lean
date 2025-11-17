@@ -60,6 +60,11 @@ variable [TopologicalSpace β]
 def StronglyMeasurable [MeasurableSpace α] (f : α → β) : Prop :=
   ∃ fs : ℕ → α →ₛ β, ∀ x, Tendsto (fun n => fs n x) atTop (𝓝 (f x))
 
+add_aesop_rules safe tactic
+  (rule_sets := [Measurable])
+  (index := [target @StronglyMeasurable ..])
+  (by fun_prop (disch := measurability))
+
 /-- The notation for StronglyMeasurable giving the measurable space instance explicitly. -/
 scoped notation "StronglyMeasurable[" m "]" => @MeasureTheory.StronglyMeasurable _ _ _ m
 
@@ -93,14 +98,6 @@ lemma StronglyMeasurable.of_subsingleton_cod [Subsingleton β] : StronglyMeasura
   let f_sf : α →ₛ β := ⟨f, fun x => ?_, Set.Subsingleton.finite Set.subsingleton_of_subsingleton⟩
   · exact ⟨fun _ => f_sf, fun x => tendsto_const_nhds⟩
   · simp [Set.preimage, eq_iff_true_of_subsingleton]
-
-@[deprecated StronglyMeasurable.of_subsingleton_cod (since := "2025-04-09")]
-lemma Subsingleton.stronglyMeasurable [Subsingleton β] (f : α → β) : StronglyMeasurable f :=
-  .of_subsingleton_cod
-
-@[deprecated StronglyMeasurable.of_subsingleton_dom (since := "2025-04-09")]
-lemma Subsingleton.stronglyMeasurable' [Subsingleton α] (f : α → β) : StronglyMeasurable f :=
-  .of_subsingleton_dom
 
 @[fun_prop]
 theorem stronglyMeasurable_const {b : β} : StronglyMeasurable fun _ : α => b :=
@@ -145,9 +142,6 @@ lemma StronglyMeasurable.of_discrete [Countable α] : StronglyMeasurable f := by
   obtain ⟨g, hg⟩ := exists_surjective_nat α
   exact ⟨simpleFuncAux f g, hg.forall.2 fun m ↦
     tendsto_nhds_of_eventually_eq simpleFuncAux_eventuallyEq⟩
-
-@[deprecated StronglyMeasurable.of_discrete (since := "2025-04-09")]
-theorem StronglyMeasurable.of_finite [Finite α] : StronglyMeasurable f := .of_discrete
 
 end StronglyMeasurable
 
@@ -309,14 +303,14 @@ protected theorem finStronglyMeasurable [TopologicalSpace β] [Zero β] {m0 : Me
     (by rwa [Measure.restrict_univ])
 
 /-- A strongly measurable function is measurable. -/
-@[aesop 5% apply (rule_sets := [Measurable])]
+@[fun_prop]
 protected theorem measurable {_ : MeasurableSpace α} [TopologicalSpace β] [PseudoMetrizableSpace β]
     [MeasurableSpace β] [BorelSpace β] (hf : StronglyMeasurable f) : Measurable f :=
   measurable_of_tendsto_metrizable (fun n => (hf.approx n).measurable)
     (tendsto_pi_nhds.mpr hf.tendsto_approx)
 
 /-- A strongly measurable function is almost everywhere measurable. -/
-@[aesop 5% apply (rule_sets := [Measurable])]
+@[fun_prop]
 protected theorem aemeasurable {_ : MeasurableSpace α} [TopologicalSpace β]
     [PseudoMetrizableSpace β] [MeasurableSpace β] [BorelSpace β] {μ : Measure α}
     (hf : StronglyMeasurable f) : AEMeasurable f μ :=
@@ -360,8 +354,6 @@ protected theorem prodMk {m : MeasurableSpace α} [TopologicalSpace β] [Topolog
   rw [nhds_prod_eq]
   exact Tendsto.prodMk (hf.tendsto_approx x) (hg.tendsto_approx x)
 
-@[deprecated (since := "2025-03-05")] protected alias prod_mk := StronglyMeasurable.prodMk
-
 @[fun_prop]
 theorem comp_measurable [TopologicalSpace β] {_ : MeasurableSpace α} {_ : MeasurableSpace γ}
     {f : α → β} {g : γ → α} (hf : StronglyMeasurable f) (hg : Measurable g) :
@@ -396,7 +388,7 @@ section Arithmetic
 
 variable {mα : MeasurableSpace α} [TopologicalSpace β]
 
-@[to_additive (attr := fun_prop, aesop safe 20 apply (rule_sets := [Measurable]))]
+@[to_additive (attr := fun_prop)]
 protected theorem mul [Mul β] [ContinuousMul β] (hf : StronglyMeasurable f)
     (hg : StronglyMeasurable g) : StronglyMeasurable (f * g) :=
   ⟨fun n => hf.approx n * hg.approx n, fun x => (hf.tendsto_approx x).mul (hg.tendsto_approx x)⟩
@@ -411,7 +403,7 @@ theorem const_mul [Mul β] [ContinuousMul β] (hf : StronglyMeasurable f) (c : �
     StronglyMeasurable fun x => c * f x :=
   stronglyMeasurable_const.mul hf
 
-@[to_additive (attr := fun_prop, aesop safe 20 apply (rule_sets := [Measurable])) const_nsmul]
+@[to_additive (attr := fun_prop) const_nsmul]
 protected theorem pow [Monoid β] [ContinuousMul β] (hf : StronglyMeasurable f) (n : ℕ) :
     StronglyMeasurable (f ^ n) :=
   ⟨fun k => hf.approx k ^ n, fun x => (hf.tendsto_approx x).pow n⟩
@@ -421,7 +413,7 @@ protected theorem inv [Inv β] [ContinuousInv β] (hf : StronglyMeasurable f) :
     StronglyMeasurable f⁻¹ :=
   ⟨fun n => (hf.approx n)⁻¹, fun x => (hf.tendsto_approx x).inv⟩
 
-@[to_additive (attr := fun_prop, aesop safe 20 apply (rule_sets := [Measurable]))]
+@[to_additive (attr := fun_prop)]
 protected theorem div [Div β] [ContinuousDiv β] (hf : StronglyMeasurable f)
     (hg : StronglyMeasurable g) : StronglyMeasurable (f / g) :=
   ⟨fun n => hf.approx n / hg.approx n, fun x => (hf.tendsto_approx x).div' (hg.tendsto_approx x)⟩
@@ -437,7 +429,7 @@ theorem mul_iff_left [CommGroup β] [IsTopologicalGroup β] (hf : StronglyMeasur
     StronglyMeasurable (g * f) ↔ StronglyMeasurable g :=
   mul_comm g f ▸ mul_iff_right hf
 
-@[to_additive (attr := fun_prop, aesop safe 20 apply (rule_sets := [Measurable]))]
+@[to_additive (attr := fun_prop)]
 protected theorem smul {𝕜} [TopologicalSpace 𝕜] [SMul 𝕜 β] [ContinuousSMul 𝕜 β] {f : α → 𝕜}
     {g : α → β} (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
     StronglyMeasurable fun x => f x • g x :=
@@ -535,13 +527,13 @@ variable [MeasurableSpace α] [TopologicalSpace β]
 
 open Filter
 
-@[fun_prop, aesop safe 20 (rule_sets := [Measurable])]
+@[fun_prop]
 protected theorem sup [Max β] [ContinuousSup β] (hf : StronglyMeasurable f)
     (hg : StronglyMeasurable g) : StronglyMeasurable (f ⊔ g) :=
   ⟨fun n => hf.approx n ⊔ hg.approx n, fun x =>
     (hf.tendsto_approx x).sup_nhds (hg.tendsto_approx x)⟩
 
-@[fun_prop, aesop safe 20 (rule_sets := [Measurable])]
+@[fun_prop]
 protected theorem inf [Min β] [ContinuousInf β] (hf : StronglyMeasurable f)
     (hg : StronglyMeasurable g) : StronglyMeasurable (f ⊓ g) :=
   ⟨fun n => hf.approx n ⊓ hg.approx n, fun x =>
@@ -625,7 +617,7 @@ variable {n : MeasurableSpace β} in
 lemma Finset.stronglyMeasurable_prod_apply {ι : Type*} {f : ι → α → β → M} {g : α → β}
     {s : Finset ι} (hf : ∀ i ∈ s, StronglyMeasurable ↿(f i)) (hg : Measurable g) :
     StronglyMeasurable fun a ↦ (∏ i ∈ s, f i a) (g a) := by
-  simp; fun_prop (discharger := assumption)
+  simp only [Finset.prod_apply]; fun_prop (discharger := assumption)
 
 end CommMonoid
 
@@ -652,7 +644,7 @@ section SecondCountableStronglyMeasurable
 variable {mα : MeasurableSpace α} [MeasurableSpace β]
 
 /-- In a space with second countable topology, measurable implies strongly measurable. -/
-@[aesop 90% apply (rule_sets := [Measurable])]
+@[fun_prop]
 theorem _root_.Measurable.stronglyMeasurable [TopologicalSpace β] [PseudoMetrizableSpace β]
     [SecondCountableTopology β] [OpensMeasurableSpace β] (hf : Measurable f) :
     StronglyMeasurable f := by
@@ -890,13 +882,13 @@ theorem induction' [MeasurableSpace α] [Nonempty β] [TopologicalSpace β]
     simp_rw [SimpleFunc.coe_piecewise]
     exact pcw f.stronglyMeasurable g.stronglyMeasurable hs Pf Pg
 
-@[fun_prop, aesop safe 20 apply (rule_sets := [Measurable])]
+@[fun_prop]
 protected theorem dist {_ : MeasurableSpace α} {β : Type*} [PseudoMetricSpace β] {f g : α → β}
     (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
     StronglyMeasurable fun x => dist (f x) (g x) :=
   continuous_dist.comp_stronglyMeasurable (hf.prodMk hg)
 
-@[fun_prop, aesop safe 20 apply (rule_sets := [Measurable])]
+@[fun_prop]
 protected theorem edist {_ : MeasurableSpace α} {β : Type*} [PseudoEMetricSpace β] {f g : α → β}
     (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
     StronglyMeasurable fun x => edist (f x) (g x) :=
@@ -1079,7 +1071,7 @@ protected theorem tendsto_approx : ∀ x, Tendsto (fun n => hf.approx n x) atTop
 end sequence
 
 /-- A finitely strongly measurable function is strongly measurable. -/
-@[aesop 5% apply (rule_sets := [Measurable])]
+@[fun_prop]
 protected theorem stronglyMeasurable [Zero β] [TopologicalSpace β]
     (hf : FinStronglyMeasurable f μ) : StronglyMeasurable f :=
   ⟨hf.approx, hf.tendsto_approx⟩
@@ -1236,7 +1228,7 @@ theorem measurable_uncurry_of_continuous_of_measurable {α β ι : Type*} [Topol
         (fun p : α × (t_sf n).range => u (↑p.snd) p.fst) ∘ Prod.swap :=
       rfl
     rw [this, @measurable_swap_iff α (↥(t_sf n).range) β m]
-    exact measurable_from_prod_countable fun j => h j
+    exact measurable_from_prod_countable_left fun j => h j
   have :
     (fun p : ι × α => u (t_sf n p.fst) p.snd) =
       (fun p : ↥(t_sf n).range × α => u p.fst p.snd) ∘ fun p : ι × α =>
@@ -1269,7 +1261,7 @@ theorem stronglyMeasurable_uncurry_of_continuous_of_stronglyMeasurable {α β ι
           (fun p : α × (t_sf n).range => u (↑p.snd) p.fst) ∘ Prod.swap :=
         rfl
       rw [this, measurable_swap_iff]
-      exact measurable_from_prod_countable fun j => (h j).measurable
+      exact measurable_from_prod_countable_left fun j => (h j).measurable
     · have : IsSeparable (⋃ i : (t_sf n).range, range (u i)) :=
         .iUnion fun i => (h i).isSeparable_range
       apply this.mono

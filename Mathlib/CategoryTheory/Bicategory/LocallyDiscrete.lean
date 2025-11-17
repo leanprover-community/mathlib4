@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Calle Sönne
 -/
 import Mathlib.CategoryTheory.Discrete.Basic
-import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
-import Mathlib.CategoryTheory.Bicategory.Strict
+import Mathlib.CategoryTheory.Bicategory.Strict.Basic
 
 /-!
 # Locally discrete bicategories
@@ -106,17 +105,6 @@ instance locallyDiscreteBicategory.strict : Strict (LocallyDiscrete C) where
 
 end
 
-section
-
-variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
-
-@[simp]
-lemma PrelaxFunctor.map₂_eqToHom (F : PrelaxFunctor B C) {a b : B} {f g : a ⟶ b} (h : f = g) :
-    F.map₂ (eqToHom h) = eqToHom (F.congr_map h) := by
-  subst h; simp only [eqToHom_refl, PrelaxFunctor.map₂_id]
-
-end
-
 namespace Bicategory
 
 /-- A bicategory is locally discrete if the categories of 1-morphisms are discrete. -/
@@ -153,7 +141,7 @@ def toLoc {a b : C} (f : a ⟶ b) : LocallyDiscrete.mk a ⟶ LocallyDiscrete.mk 
 lemma id_toLoc (a : C) : (𝟙 a).toLoc = 𝟙 (LocallyDiscrete.mk a) :=
   rfl
 
-@[simp]
+@[simp, grind _=_]
 lemma comp_toLoc {a b c : C} (f : a ⟶ b) (g : b ⟶ c) : (f ≫ g).toLoc = f.toLoc ≫ g.toLoc :=
   rfl
 

@@ -109,21 +109,20 @@ theorem card_le : #(L.Term α) ≤ max ℵ₀ #(α ⊕ (Σ i, L.Functions i)) :=
 theorem card_sigma : #(Σ n, L.Term (α ⊕ (Fin n))) = max ℵ₀ #(α ⊕ (Σ i, L.Functions i)) := by
   refine le_antisymm ?_ ?_
   · rw [mk_sigma]
-    refine (sum_le_iSup_lift _).trans ?_
+    refine (sum_le_lift_mk_mul_iSup _).trans ?_
     rw [mk_nat, lift_aleph0, mul_eq_max_of_aleph0_le_left le_rfl, max_le_iff,
       ciSup_le_iff' (bddAbove_range _)]
     · refine ⟨le_max_left _ _, fun i => card_le.trans ?_⟩
       refine max_le (le_max_left _ _) ?_
-      rw [← add_eq_max le_rfl, mk_sum, mk_sum, mk_sum, add_comm (Cardinal.lift #α), lift_add,
-        add_assoc, lift_lift, lift_lift, mk_fin, lift_natCast]
-      exact add_le_add_right (nat_lt_aleph0 _).le _
+      grw [← add_eq_max le_rfl, mk_sum, mk_sum, mk_sum, add_comm (Cardinal.lift #α), lift_add,
+        add_assoc, lift_lift, lift_lift, mk_fin, lift_natCast, nat_lt_aleph0]
     · rw [← one_le_iff_ne_zero]
       refine _root_.trans ?_ (le_ciSup (bddAbove_range _) 1)
       rw [one_le_iff_ne_zero, mk_ne_zero_iff]
       exact ⟨var (Sum.inr 0)⟩
   · rw [max_le_iff, ← infinite_iff]
     refine ⟨Infinite.of_injective
-        (fun i => ⟨i + 1, var (Sum.inr (Fin.ofNat _ i))⟩) fun i j ij => ?_, ?_⟩
+        (fun i => ⟨i + 1, var (Sum.inr (last i))⟩) fun i j ij => ?_, ?_⟩
     · cases ij
       rfl
     · rw [Cardinal.le_def]

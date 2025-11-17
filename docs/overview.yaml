@@ -12,7 +12,7 @@ General algebra:
     presheafed space: 'AlgebraicGeometry.PresheafedSpace'
     sheafed space: 'AlgebraicGeometry.SheafedSpace'
     monoidal category: 'CategoryTheory.MonoidalCategory'
-    cartesian closed: 'CategoryTheory.CartesianClosed'
+    Cartesian closed: 'CategoryTheory.CartesianClosed'
     abelian category: 'CategoryTheory.Abelian'
 
   Numbers:
@@ -59,7 +59,7 @@ General algebra:
     localization: 'Localization'
     local ring: 'IsLocalRing'
     Noetherian ring: 'IsNoetherianRing'
-    ordered ring: 'OrderedRing'
+    # ordered ring: 'OrderedRing'
 
   Ideals and quotients:
     ideal of a commutative ring: 'Ideal'
@@ -149,7 +149,7 @@ General algebra:
 
   Representation theory:
     representation : 'Representation'
-    category of finite dimensional representations : 'FDRep'
+    category of finite-dimensional representations : 'FDRep'
     character : 'FDRep.character'
     orthogonality of characters : 'FDRep.char_orthonormal'
 
@@ -268,8 +268,8 @@ Analysis:
     normed vector space over a normed field: 'NormedSpace'
     topology on a normed vector space: 'NormSMulClass.toIsBoundedSMul'
     equivalence of norms in finite dimension: 'LinearEquiv.toContinuousLinearEquiv'
-    finite dimensional normed spaces over complete normed fields are complete: 'Submodule.complete_of_finiteDimensional'
-    Heine-Borel theorem (finite dimensional normed spaces are proper): 'FiniteDimensional.proper'
+    finite-dimensional normed spaces over complete normed fields are complete: 'Submodule.complete_of_finiteDimensional'
+    Heine-Borel theorem (finite-dimensional normed spaces are proper): 'FiniteDimensional.proper'
     norm of a continuous linear map: 'LinearMap.mkContinuous'
     Banach-Steinhaus theorem: 'banach_steinhaus'
     Banach open mapping theorem: 'ContinuousLinearMap.isOpenMap'
@@ -358,16 +358,17 @@ Analysis:
     principle of isolated zeros: 'AnalyticAt.eventually_eq_zero_or_eventually_ne_zero'
     principle of analytic continuation: 'AnalyticOnNhd.eqOn_of_preconnected_of_frequently_eq'
     analyticity of holomorphic functions: 'DifferentiableOn.analyticAt'
-    Schwarz lemma: 'Complex.abs_le_abs_of_mapsTo_ball_self'
+    Schwarz lemma: 'Complex.norm_le_norm_of_mapsTo_ball_self'
     removable singularity: 'Complex.differentiableOn_update_limUnder_insert_of_isLittleO'
     Phragmen-Lindelöf principle: 'PhragmenLindelof.horizontal_strip'
     fundamental theorem of algebra: 'Complex.isAlgClosed'
+    First Main Theorem of Value Distribution Theory: 'ValueDistribution.characteristic_sub_characteristic_inv_le'
 
   Distribution theory:
     Schwartz space: 'SchwartzMap'
 
   Fourier analysis:
-    Fourier transform as an integral: 'Real.fourierIntegral'
+    Fourier transform as an integral: 'Real.fourierIntegral_eq'
     inversion formula: 'Continuous.fourier_inversion'
     Riemann-Lebesgue lemma: 'tendsto_integral_exp_inner_smul_cocompact'
     Parseval formula for Fourier series: 'tsum_sq_fourierCoeff'
@@ -437,6 +438,11 @@ Geometry:
     discrete spaces are 0-manifolds: 'IsManifold.of_discreteTopology'
     0-manifolds are discrete spaces: 'ChartedSpace.discreteTopology'
 
+  Riemannian manifolds:
+    Riemannian/bundle metric: 'Bundle.RiemannianMetric'
+    Smooth bundle metric: 'Bundle.ContMDiffRiemannianMetric'
+    Riemannian manifold: 'IsRiemannianManifold'
+
   Smooth vector and fiber bundles:
     (topological) fiber bundle: 'FiberBundle'
     (smooth) vector bundle: 'ContMDiffVectorBundle'
@@ -451,6 +457,15 @@ Geometry:
     locally ringed space: 'AlgebraicGeometry.LocallyRingedSpace'
     scheme: 'AlgebraicGeometry.Scheme'
     Nullstellensatz : 'MvPolynomial.vanishingIdeal_zeroLocus_eq_radical'
+
+  Convex geometry:
+    convex cone: 'ConvexCone'
+    salient cone: 'ConvexCone.Salient'
+    positive cone: 'ConvexCone.positive'
+    pointed cone: 'PointedCone'
+    dual cone: 'PointedCone.dual'
+    minimal tensor product: 'PointedCone.minTensorProduct'
+    maximal tensor product: 'PointedCone.maxTensorProduct'
 
 Combinatorics:
   Pigeonhole principles:
