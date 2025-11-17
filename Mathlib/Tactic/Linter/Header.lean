@@ -97,7 +97,7 @@ In conclusion, either the parsing is successful, and the linter can continue wit
 or the parsing is not successful and the linter will flag a missing module doc-string!
 -/
 def parseUpToHere (pos : String.Pos.Raw) (post : String := "") : CommandElabM Syntax := do
-  let upToHere : Substring := { str := (← getFileMap).source, startPos := ⟨0⟩, stopPos := pos }
+  let upToHere : Substring.Raw := { str := (← getFileMap).source, startPos := ⟨0⟩, stopPos := pos }
   -- Append a further string after the content of `upToHere`.
   Parser.testParseModule (← getEnv) "linter.style.header" (upToHere.toString ++ post)
 
