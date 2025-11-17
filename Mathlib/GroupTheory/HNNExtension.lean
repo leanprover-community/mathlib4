@@ -526,8 +526,7 @@ theorem prod_unitsSMul (u : ℤˣ) (w : NormalWord d) :
         -- simp [equiv_symm_eq_conj, mul_assoc].
         simp only [toSubgroup_neg_one, toSubgroupEquiv_neg_one, Units.val_neg, Units.val_one,
           Int.reduceNeg, zpow_neg, zpow_one, inv_inv]
-        erw [equiv_symm_eq_conj]
-        simp [mul_assoc]
+        grind [equiv_symm_eq_conj, mul_assoc]
   · simp only [unitsSMulGroup, SetLike.coe_sort_coe, prod_cons, prod_group_smul, map_mul, map_inv]
     rcases Int.units_eq_one_or u with (rfl | rfl)
     · -- Before https://github.com/leanprover/lean4/pull/2644, this proof was just
