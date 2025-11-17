@@ -85,9 +85,8 @@ lemma hittingBtwn_empty (n m : ι) : hittingBtwn u ∅ n m = fun _ ↦ m := by e
 lemma hittingAfter_empty (n : ι) : hittingAfter u ∅ n = fun _ ↦ ⊤ := by ext; simp [hittingAfter]
 
 @[simp]
-lemma hittingBtwn_univ {ι : Type*} [ConditionallyCompleteLattice ι] {u : ι → Ω → β} (n m : ι)
-    [Decidable (n ≤ m)] :
-    hittingBtwn u .univ n m = fun _ ↦ if n ≤ m then n else m := by
+lemma hittingBtwn_univ {ι : Type*} [ConditionallyCompleteLattice ι] {u : ι → Ω → β} (n m : ι) :
+    hittingBtwn u .univ n m = fun _ ↦ min n m := by
   ext ω
   classical
   simp only [hittingBtwn_def, Set.mem_Icc, Set.mem_univ, and_true, Set.setOf_true, Set.inter_univ]
@@ -336,30 +335,27 @@ theorem hittingBtwn_eq_hittingBtwn_of_exists {m₁ m₂ : ι} (h : m₁ ≤ m₂
 @[deprecated (since := "2025-10-25")] alias hitting_eq_hitting_of_exists :=
   hittingBtwn_eq_hittingBtwn_of_exists
 
-/-- `hittingBtwn` is antitone with respect to the set. -/
+/-- `hittingBtwn` is nonincreasing with respect to the set. -/
 lemma hittingBtwn_anti (u : ι → Ω → β) (n m : ι) : Antitone (hittingBtwn u · n m) := by
   intro E F hEF ω
   simp only [hittingBtwn_def]
   split_ifs with hF hE hE
   · gcongr
-    exacts [⟨n, by
-      simp only [mem_lowerBounds, Set.mem_inter_iff, Set.mem_Icc, Set.mem_setOf_eq, and_imp];
-        grind⟩,
-      hE, hEF]
+    exacts [⟨n, by simp [mem_lowerBounds]; grind⟩, hE, hEF]
   · obtain ⟨t, ht⟩ := hF
     exact csInf_le_of_le ⟨n, by simp [mem_lowerBounds]; grind⟩ ht ht.1.2
   · obtain ⟨t, ht⟩ := hE
     exact absurd ⟨t, ht.1, hEF ht.2⟩ hF
   · simp
 
-/-- `hittingAfter` is antitone with respect to the set. -/
+/-- `hittingAfter` is nonincreasing with respect to the set. -/
 lemma hittingAfter_anti (u : ι → Ω → β) (n : ι) : Antitone (hittingAfter u · n) := by
   intro E F hEF ω
   simp only [hittingAfter_def]
   split_ifs with hF hE hE
   · norm_cast
     gcongr
-    exacts [⟨n, by simp only [mem_lowerBounds, Set.mem_setOf_eq, and_imp]; grind⟩, hE, hEF]
+    exacts [⟨n, by simp only [mem_lowerBounds]; grind⟩, hE, hEF]
   · simp
   · obtain ⟨t, ht⟩ := hE
     exact absurd ⟨t, ht.1, hEF ht.2⟩ hF
@@ -396,9 +392,7 @@ lemma hittingBtwn_mono_left (u : ι → Ω → β) (s : Set β) (m : ι) :
   simp only [hittingBtwn]
   split_ifs with h_n h_n' h_n'
   · gcongr
-    exacts [⟨n, by
-      simp only [mem_lowerBounds, Set.mem_inter_iff, Set.mem_Icc, Set.mem_setOf_eq, and_imp];
-        grind⟩, h_n']
+    exacts [⟨n, by simp [mem_lowerBounds]; grind⟩, h_n']
   · obtain ⟨t, ht⟩ := h_n
     exact csInf_le_of_le ⟨n, by simp [mem_lowerBounds]; grind⟩ ht ht.1.2
   · have ⟨t, ht⟩ := h_n'
@@ -412,7 +406,7 @@ lemma hittingAfter_mono (u : ι → Ω → β) (s : Set β) : Monotone (hittingA
   split_ifs with h_n h_m h_m
   · norm_cast
     gcongr
-    exacts [⟨n, by simp only [mem_lowerBounds, Set.mem_setOf_eq, and_imp]; grind⟩, h_m]
+    exacts [⟨n, by simp [mem_lowerBounds]; grind⟩, h_m]
   · simp
   · have ⟨t, ht⟩ := h_m
     exact absurd ⟨t, hnm.trans ht.1, ht.2⟩ h_n
