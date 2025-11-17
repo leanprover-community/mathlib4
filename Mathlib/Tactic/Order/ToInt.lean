@@ -103,8 +103,8 @@ def mkFinFun {u : Level} {α : Q(Type $u)} (atoms : Array Q($α)) : MetaM Expr :
     return q(fun (x : Fin $m) ↦ ($rarrayExpr).get x.val)
 
 /-- Translates a set of values in a linear ordered type to `ℤ`,
-preserving all the facts except for `.isTop` and `.isBot`. These facts are filtered at the
-preprocessing step. -/
+preserving all the facts except for `.isTop` and `.isBot`. We assume that these facts are filtered
+at the preprocessing step. -/
 def translateToInt {u : Lean.Level} (type : Q(Type u)) (inst : Q(LinearOrder $type))
     (facts : Array AtomicFact) :
     AtomM <| Std.HashMap ℕ Q(ℤ) × Array AtomicFact := do
