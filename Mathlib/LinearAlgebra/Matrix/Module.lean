@@ -40,7 +40,7 @@ scoped instance matrixModule : Module (Matrix ι ι R) (ι → M) where
     simp [add_smul, Finset.sum_add_distrib]
   zero_smul v := funext fun i ↦ show ∑ _, _ = _ by simp
 
-lemma smul_vec_def (N : Matrix ι ι R) (v : ι → M) :
+lemma smulVec_def (N : Matrix ι ι R) (v : ι → M) :
     N • v = fun i ↦ ∑ j : ι, N i j • v j := rfl
 
 lemma smul_vec_def' (N : Matrix ι ι R) (v : ι → M) : N • v = ∑ j : ι, fun i ↦ N i j • v j := by
