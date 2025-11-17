@@ -877,7 +877,7 @@ structure Config where
   isSimp := true
   /-- Other attributes to apply to generated lemmas. -/
   attrs : Array Syntax := #[]
-  /-- simplify the right-hand side of generated simp-lemmas using `dsimp, simp`. -/
+  /-- simplify the right-hand side of generated simp-lemmas. -/
   simpRhs := false
   /-- TransparencyMode used to reduce the type in order to detect whether it is a structure. -/
   typeMd := TransparencyMode.instances
@@ -970,18 +970,13 @@ def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
   let mut (rhs, prf) := (rhs, mkAppN (mkConst `Eq.refl [lvl]) #[type, lhs])
   if cfg.simpRhs then
     let ctx ← mkSimpContext
-    let (rhs2, _) ← dsimp rhs ctx
-    if rhs != rhs2 then
-      trace[simps.debug] "`dsimp` simplified rhs to{indentExpr rhs2}"
-    else
-      trace[simps.debug] "`dsimp` failed to simplify rhs"
-    let (result, _) ← simp rhs2 ctx
-    if rhs2 != result.expr then
+    let (result, _) ← simp rhs ctx
+    if rhs != result.expr then
       trace[simps.debug] "`simp` simplified rhs to{indentExpr result.expr}"
+      rhs := result.expr
+      prf := result.proof?.getD prf
     else
       trace[simps.debug] "`simp` failed to simplify rhs"
-    rhs := result.expr
-    prf := result.proof?.getD prf
   let eqAp := mkApp3 (mkConst `Eq [lvl]) type lhs rhs
   let declType ← mkForallFVars args eqAp
   let declValue ← mkLambdaFVars args prf
