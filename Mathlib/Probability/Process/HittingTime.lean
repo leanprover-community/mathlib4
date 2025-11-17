@@ -341,10 +341,7 @@ lemma hittingBtwn_anti (u : ι → Ω → β) (n m : ι) : Antitone (hittingBtwn
   simp only [hittingBtwn_def]
   split_ifs with hF hE hE
   · gcongr
-    exacts [⟨n, by
-      simp only [mem_lowerBounds, Set.mem_inter_iff, Set.mem_Icc, Set.mem_setOf_eq, and_imp];
-        grind⟩,
-      hE, hEF]
+    exacts [⟨n, by simp [mem_lowerBounds]; grind⟩, hE, hEF]
   · obtain ⟨t, ht⟩ := hF
     exact csInf_le_of_le ⟨n, by simp [mem_lowerBounds]; grind⟩ ht ht.1.2
   · obtain ⟨t, ht⟩ := hE
