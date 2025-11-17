@@ -5,6 +5,10 @@ Authors: Thomas R. Murrills
 -/
 import Mathlib.Init
 
+/-!
+# Addional utilities for `Syntax`
+-/
+
 namespace Lean.Syntax
 
 /-- Finds the first subtree of `stx` for which `p subtree` is `some a`, descending the tree from
