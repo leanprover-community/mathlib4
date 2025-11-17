@@ -248,7 +248,7 @@ lemma range_reindex_face {m n : ℕ} (s : Simplex k P m) (e : Fin (m + 1) ≃ Fi
   simp only [range_face_points, reindex_points, Set.image_comp]
   simp
 
-lemma range_reindex_faceOpposite {m n : ℕ} [NeZero m] [NeZero n] (s : Simplex k P m)
+@[simp] lemma range_reindex_faceOpposite {m n : ℕ} [NeZero m] [NeZero n] (s : Simplex k P m)
     (e : Fin (m + 1) ≃ Fin (n + 1)) (i : Fin (n + 1)) :
     Set.range ((s.reindex e).faceOpposite i).points =
       Set.range (s.faceOpposite (e.symm i)).points := by
