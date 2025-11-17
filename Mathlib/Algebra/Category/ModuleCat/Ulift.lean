@@ -21,6 +21,8 @@ open CategoryTheory
 
 namespace ModuleCat
 
+/-- Universe lift functor for `R`-module. -/
+@[simps obj map]
 def uliftFunctor : ModuleCat.{v} R ⥤ ModuleCat.{max v v'} R where
   obj X := ModuleCat.of R (ULift.{v', v} X)
   map f := ModuleCat.ofHom <|
@@ -30,6 +32,7 @@ def uliftFunctor : ModuleCat.{v} R ⥤ ModuleCat.{max v v'} R where
     ext
     simp
 
+/-- The universe lift functor for `R`-module is fully faithful. -/
 def fullyFaithfulUliftFunctor : (uliftFunctor R).FullyFaithful where
   preimage f := ModuleCat.ofHom (ULift.moduleEquiv.toLinearMap.comp
     (f.hom.comp ULift.moduleEquiv.symm.toLinearMap))
