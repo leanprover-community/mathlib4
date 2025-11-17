@@ -40,8 +40,8 @@ lemma Abelian.Ext.mapExt_zero [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) :
 
 open Ext
 
-lemma bijective_of_preservesProjectiveObjects (h : F.FullyFaithful) [HasExt.{w} C] [HasExt.{w'} D]
-    [EnoughProjectives C] [F.PreservesProjectiveObjects] (X Y : C) (n : ℕ) :
+lemma Functor.mapExt_bijective_of_preservesProjectiveObjects (h : F.FullyFaithful) [HasExt.{w} C]
+    [HasExt.{w'} D] [EnoughProjectives C] [F.PreservesProjectiveObjects] (X Y : C) (n : ℕ) :
     Function.Bijective (F.mapExt X Y n) := by
   induction n generalizing X
   · simpa [Ext.mapExt_zero] using Functor.FullyFaithful.map_bijective h X Y
@@ -83,8 +83,8 @@ lemma bijective_of_preservesProjectiveObjects (h : F.FullyFaithful) [HasExt.{w} 
     · ext x
       simp [g, g', Ext.mapExt_comp_eq_comp_mapExt, Ext.mapExt_extClass_eq_extClass_map]
 
-lemma bijective_of_preservesInjectiveObjects (h : F.FullyFaithful) [HasExt.{w} C] [HasExt.{w'} D]
-    [EnoughInjectives C] [F.PreservesInjectiveObjects] (X Y : C) (n : ℕ) :
+lemma Functoe.mapExt_bijective_of_preservesInjectiveObjects (h : F.FullyFaithful) [HasExt.{w} C]
+    [HasExt.{w'} D] [EnoughInjectives C] [F.PreservesInjectiveObjects] (X Y : C) (n : ℕ) :
     Function.Bijective (F.mapExt X Y n) := by
   induction n generalizing Y
   · simpa [Ext.mapExt_zero] using Functor.FullyFaithful.map_bijective h X Y
