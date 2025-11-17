@@ -279,8 +279,8 @@ theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.sp
   exact v.associates_irreducible
 
 @[simp]
-theorem intValuation_eq_one_iff {R : Type*} [CommRing R] [IsDedekindDomain R]
-    {v : HeightOneSpectrum R} {x : R} : v.intValuation x = 1 ↔ x ∉ v.asIdeal := by
+theorem intValuation_eq_one_iff {v : HeightOneSpectrum R} {x : R} :
+    v.intValuation x = 1 ↔ x ∉ v.asIdeal := by
   refine ⟨fun h ↦ by simp [← (intValuation_lt_one_iff_mem _ _).not, h], fun h ↦ ?_⟩
   exact le_antisymm (v.intValuation_le_one x) <| by
     simp [← not_lt, (v.intValuation_lt_one_iff_mem _).not, h]
@@ -660,7 +660,7 @@ open IsDedekindDomain.HeightOneSpectrum
 
 variable {R : Type*} [CommRing R] [IsDedekindDomain R] [Algebra R ℚ] [IsFractionRing R ℚ]
 
-theorem valuation_le_one_iff_den (𝔭 : HeightOneSpectrum R) (x : ℚ) :
+theorem valuation_le_one_iff_den {𝔭 : HeightOneSpectrum R} {x : ℚ} :
     𝔭.valuation ℚ x ≤ 1 ↔ ↑x.den ∉ 𝔭.asIdeal := by
   have : CharZero R := ⟨.of_comp (f := algebraMap R ℚ) (by simpa using Nat.cast_injective)⟩
   have : (x.den : R) ≠ 0 := by simp
