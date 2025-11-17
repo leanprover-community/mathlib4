@@ -12,7 +12,7 @@ import Mathlib.LinearAlgebra.Matrix.Module
   `LinearMap.mapModule` and `Matrix.matrixModule`.
 
 # TODO
-- Prove `Mod-R` and `Mod-Mₙ(R)` are morita-equivalent.
+- Prove `R` and `Mₙ(R)` are morita-equivalent.
 -/
 
 universe u
