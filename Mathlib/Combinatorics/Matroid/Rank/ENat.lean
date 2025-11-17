@@ -32,14 +32,14 @@ the rank function is often the preferred perspective on matroids in the literatu
 (The above doesn't work as well for infinite matroids,
 which is why mathlib defines matroids using bases/independence. )
 
-# Main Declarations
+## Main Declarations
 
 * `Matroid.eRank M` is the `ℕ∞`-valued cardinality of each base of `M`.
 * `Matroid.eRk M X` is the `ℕ∞`-valued cardinality of each `M`-basis of `X`.
 * `Matroid.eRk_inter_add_eRk_union_le` : the function `M.eRk` is submodular.
 * `Matroid.dual_eRk_add_eRank` : a subtraction-free formula for the dual rank of a set.
 
-# Notes
+## Notes
 
 It is natural to ask if equicardinality of bases holds if 'cardinality' refers to
 a term in `Cardinal` instead of `ℕ∞`, but the answer is that it doesn't.
@@ -47,7 +47,7 @@ The cardinal-valued rank functions `Matroid.cRank` and `Matroid.cRk` are defined
 `Mathlib/Data/Matroid/Rank/Cardinal.lean`, but have less desirable properties in general.
 See the module docstring of that file for a discussion.
 
-# Implementation Details
+## Implementation Details
 
 It would be equivalent to define `Matroid.eRank (M : Matroid α) := (Matroid.cRank M).toENat`
 and similar for `Matroid.eRk`, and some of the API for `cRank`/`cRk` would carry over
@@ -347,13 +347,9 @@ lemma eRank_ne_top_iff (M : Matroid α) : M.eRank ≠ ⊤ ↔ M.RankFinite := by
   rw [← hB.encard_eq_eRank, encard_ne_top_iff]
   exact ⟨fun h ↦ hB.rankFinite_of_finite h, fun h ↦ hB.finite⟩
 
-@[deprecated (since := "2025-04-13")] alias rankFinite_iff_eRk_ne_top := eRank_ne_top_iff
-
 @[simp]
 lemma eRank_eq_top_iff (M : Matroid α) : M.eRank = ⊤ ↔ M.RankInfinite := by
   rw [← not_rankFinite_iff, ← eRank_ne_top_iff, not_not]
-
-@[deprecated (since := "2025-04-13")] alias rankInfinite_iff_eRk_eq_top := eRank_eq_top_iff
 
 @[simp]
 lemma eRank_lt_top_iff : M.eRank < ⊤ ↔ M.RankFinite := by
@@ -377,8 +373,6 @@ lemma eRk_lt_top_iff : M.eRk X < ⊤ ↔ M.IsRkFinite X := by
 
 lemma IsRkFinite.eRk_lt_top (h : M.IsRkFinite X) : M.eRk X < ⊤ :=
   eRk_lt_top_iff.2 h
-
-@[deprecated (since := "2025-04-13")] alias eRk_lt_top_of_finite := IsRkFinite.eRk_lt_top
 
 /-- If `X` is a finite-rank set, and `I` is a subset of `X` of cardinality
 no larger than the rank of `X` that spans `X`, then `I` is a basis for `X`. -/
