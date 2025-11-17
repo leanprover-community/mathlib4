@@ -19,7 +19,7 @@ universe u
 
 variable (R ι : Type*) [Ring R] [Fintype ι] [DecidableEq ι]
 
-open CategoryTheory Matrix
+open CategoryTheory Matrix.Module
 
 /-- The functor from `Mod-R` to `Mod-Mₙ(R)` induced by `LinearMap.mapModule` and
   `Matrix.matrixModule`. -/

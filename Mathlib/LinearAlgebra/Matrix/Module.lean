@@ -23,7 +23,7 @@ matrix, module
 variable {ι R M N P : Type*} [Ring R] [Fintype ι] [DecidableEq ι] [AddCommGroup M] [Module R M]
   [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R P]
 
-namespace Matrix
+namespace Matrix.Module
 
 /-- `Mⁿ` is a `Mₙ(R)` module, note that this creates a diamond when `M` is `Matrix ι ι R` or when
   `M` is `R`. (The intended name is `Matrix.smulVec`.) -/
@@ -54,11 +54,11 @@ instance (S) [Ring S] [SMul R S] [Module S M] [IsScalarTower R S M] :
     IsScalarTower R (Matrix ι ι S) (ι → M) where
   smul_assoc _ _ _ := by ext; simp [Finset.smul_sum]
 
-end Matrix
+end Matrix.Module
 
 namespace LinearMap
 
-open Matrix
+open Matrix.Module
 
 /-- The induced linear map from `Mⁿ` to `Nⁿ` by a linear map `f : M → N`, this is the matrix linear
   version of `LinearMap.compLeft`. -/
