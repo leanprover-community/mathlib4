@@ -486,13 +486,8 @@ To prove an equality in an Lie algebra, please try `lie_algebra`.
 -/
 elab (name := lie_ring) "lie_ring" : tactic =>
   withMainContext do
-    let s ← Lean.saveState
-    try
-      liftMetaMAtMain fun g ↦ do
-        AtomM.run .reducible (proveEq g)
-    catch e =>
-      restoreState s
-      throw e
+    liftMetaMAtMain fun g ↦ do
+      AtomM.run .reducible (proveEq g)
 
 end execution
 
