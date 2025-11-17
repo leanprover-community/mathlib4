@@ -35,9 +35,6 @@ namespace Int
 
 variable {a b n : ℤ}
 
-theorem ModEq.dvd_iff (h : a ≡ b [ZMOD n]) : n ∣ a ↔ n ∣ b :=
-  ⟨fun ha ↦ by simpa using h.dvd.add ha, fun hb ↦ by simpa using h.symm.dvd.add hb⟩
-
 theorem sq_modEq_sq {p : ℤ} (hp : Prime p) :
     a ^ 2 ≡ b ^ 2 [ZMOD p] ↔ a ≡ b [ZMOD p] ∨ a ≡ -b [ZMOD p] := by
   rw [modEq_comm]
@@ -47,12 +44,6 @@ theorem sq_modEq_sq {p : ℤ} (hp : Prime p) :
 end Int
 
 open Finset
-
-@[gcongr]
-theorem MvPolynomial.eval₂_dvd_eval₂ {σ R S : Type*} [CommSemiring R] [CommSemiring S]
-    (f : R →+* S) (g : σ → S) {p q : MvPolynomial σ R} (h : p ∣ q) :
-    p.eval₂ f g ∣ q.eval₂ f g :=
-  map_dvd (eval₂Hom f g) h
 
 protected theorem MvPolynomial.IsWeightedHomogeneous.expand {σ R M : Type*} [CommSemiring R]
     [AddCommMonoid M] {w : σ → M} {φ : MvPolynomial σ R} {n : M} (h : φ.IsWeightedHomogeneous w n)
@@ -68,15 +59,6 @@ protected nonrec theorem MvPolynomial.IsHomogeneous.expand {σ R : Type*} [CommS
     {φ : MvPolynomial σ R} {n : ℕ} (h : φ.IsHomogeneous n) (p : ℕ) :
     (φ.expand p).IsHomogeneous (p • n) :=
   h.expand p
-
-theorem MvPolynomial.expand_mul_eq_comp {σ R : Type*} [CommSemiring R] (p q : ℕ) :
-    expand (σ := σ) (R := R) (p * q) = (expand p).comp (expand q) := by
-  ext1 i
-  simp [pow_mul]
-
-theorem MvPolynomial.expand_mul {σ R : Type*} [CommSemiring R] (p q : ℕ)
-    (φ : MvPolynomial σ R) : φ.expand (p * q) = (φ.expand q).expand p :=
-  DFunLike.congr_fun (expand_mul_eq_comp p q) φ
 
 open scoped BigOperators Nat
 
@@ -329,16 +311,6 @@ lemma eval_cyclotomic₂_le_add_pow_totient_int (hab : b < a) (hb : 0 < b) :
 end Int
 
 end MvPolynomial
-
-@[to_additive (attr := nontriviality)]
-lemma Subsingleton.orderOf_eq {M : Type*} [Monoid M] [Subsingleton M] {x : M} :
-    orderOf x = 1 := by
-  rw [Subsingleton.elim x 1, orderOf_one]
-
-@[to_additive]
-lemma IsUnit.orderOf_eq_one {M : Type*} [Monoid M] [Subsingleton Mˣ] {x : M} (h : IsUnit x) :
-    orderOf x = 1 := by
-  rw [← h.unit_spec, orderOf_units, Subsingleton.orderOf_eq]
 
 lemma multiplicity_eq_padicValInt {p : ℕ} {n : ℤ} (hp : p ≠ 1) (hn : n ≠ 0) :
     multiplicity (p : ℤ) n = padicValInt p n := by
@@ -1055,7 +1027,7 @@ private lemma zsigmondy_aux {b : ℤ} {p k : ℕ} (hpos : 0 < b) (hn : 2 < p * k
       · exact one_le_pow₀ hpos
     have Hp₅ : p < 5 := by
       rwa [mul_comm, Nat.choose_two_right, Nat.div_lt_iff_lt_mul two_pos, mul_assoc,
-        mul_lt_mul_left, tsub_lt_iff_left] at Hlt₅
+        mul_lt_mul_iff_right₀, tsub_lt_iff_left] at Hlt₅
       all_goals exact hp.pos
     obtain rfl : p = 3 := by
       interval_cases p <;> first | rfl | norm_num1 at hp
