@@ -31,7 +31,7 @@ This shortens the overall argument, as the definition of submersions has the sam
   w.r.t. the chosen complement `F`.
 * `IsImmersion I J n f` means `f : M → N` is an immersion at every point `x : M`,
   w.r.t. some global choice of complement.
-  `isImmersion_iff_isImmersionAt` proves this is equivalent to `f` being an
+  `isImmersion_iff_isImmersionAt` will prove this is equivalent to `f` being an
   immersion at every point `x` (i.e., with respect to a complement that can depend on `x`).
 
 ## Main results
@@ -39,11 +39,11 @@ This shortens the overall argument, as the definition of submersions has the sam
   If `f` and `g` agree near `x` and `f` is an immersion at `x`, so is `g`
 * `IsImmersionAtOfComplement.congr_F`: being an immersion at `x` is stable under replacing the
   complement `F` by an isomorphic copy
-* `isImmersion_iff_isImmersionAt`: `f` is an immersion iff `f` is an immersion at each `x`
 
 ## TODO
 * The converse to `IsImmersionAtOfComplement.congr_F` also holds: any two complements are
   isomorphic, as they are isomorphic to the cokernel of the differential `mfderiv I J f x`.
+* `isImmersion_iff_isImmersionAt`: `f` is an immersion iff `f` is an immersion at each `x`
 * The set where `LiftSourceTargetPropertyAt` holds is open.
 * `IsImmersionAt.contMDiffAt`: if f is an immersion at `x`, it is `C^n` at `x`.
 * `IsImmersion.contMDiff`: if f is an immersion, it is `C^n`.
@@ -503,28 +503,6 @@ lemma isImmersionOfComplement_complement (h : IsImmersion I J n f) :
 lemma isImmersionAt (h : IsImmersion I J n f) (x : M) : IsImmersionAt I J n f x := by
   rw [IsImmersionAt_def]
   use h.complement, by infer_instance, by infer_instance, h.isImmersionOfComplement_complement x
-
-/-- If `f` is an immersion at each point, it is also an immersion.
-
-Note that this lemma has some mathematical content with our definitions: being an immersion involves
-a global choice of complement (which is independent of the chosen point). -/
-lemma ofIsImmersionAt (f : M → N) (h : ∀ x, IsImmersionAt I J n f x) : IsImmersion I J n f := by
-  by_cases hM : Nonempty M
-  · inhabit M
-    let x : M := Inhabited.default
-    use (h x).complement, by infer_instance, by infer_instance
-    intro y
-    -- Once we have the equivalence (h x).complement to cokernel mfderiv f x,
-    -- we get a linear equivalence from (h y).complement to F,
-    have todo : (h y).complement ≃L[𝕜] (h x).complement := sorry
-    rw [IsImmersionAtOfComplement.congr_F todo.symm]
-    exact (h y).isImmersionAtOfComplement_complement
-  · -- We can choose *any* complement: the immersion condition is vacuous as M is empty.
-    use E'', by infer_instance, by infer_instance
-    exact fun y ↦ (not_nonempty_iff.mp hM).false y |>.elim
-
-lemma _root_.isImmersion_iff_isImmersionAt : IsImmersion I J n f ↔ ∀ x, IsImmersionAt I J n f x :=
-  ⟨fun h x ↦ h.isImmersionAt x, fun h ↦ ofIsImmersionAt f h⟩
 
 /-- If `f = g` and `f` is an immersion, so is `g`. -/
 theorem congr (h : IsImmersion I J n f) (heq : f = g) : IsImmersion I J n g :=
