@@ -75,7 +75,7 @@ The elimination approach implemented here follows the theory of Hall sets and Ly
 see for example, ‹https://personal.math.ubc.ca/~cass/research/pdf/Free.pdf›
 -/
 
-open Lean Meta Elab Tactic Qq
+open Lean Meta Elab Tactic Qq Core
 
 namespace Mathlib.Tactic.LieRing
 
@@ -215,8 +215,8 @@ private theorem add_pf_add_overlap (_ : a₁ = b₁) (_ : a₂ + b₂ = c₂) :
 /-- This function evaluates the sum of two `ExSum` expressions and reduce it to the normal form. The
 "monomials" are sorted in the order of `ExLie.cmp`. -/
 private partial def evalAdd (sα : Q(LieRing $α)) {a b : Q($α)} (va : ExSum sα a) (vb : ExSum sα b) :
-    Lean.Core.CoreM <| Result (ExSum sα) q($a + $b) := do
-  Lean.Core.checkSystem decl_name%.toString
+    CoreM <| Result (ExSum sα) q($a + $b) := do
+  checkSystem decl_name%.toString
   match va, vb with
   | .zero, vb => return ⟨b, vb, q(add_pf_zero_add $b)⟩
   | va, .zero => return ⟨a, va, q(add_pf_add_zero $a)⟩
@@ -227,11 +227,11 @@ private partial def evalAdd (sα : Q(LieRing $α)) {a b : Q($α)} (va : ExSum s�
         let n₃ : ℤ := n₁ + n₂
         let h : Q($n₁ + $n₂ = $n₃) := q(rfl (a := $n₃))
         let h' : Q($n₃ = (0 : ℤ)) := (q(rfl (a := $n₃)) : Expr)
-        haveI' : $a₁ =Q $b₁ := ⟨⟩
+        have : $a₁ =Q $b₁ := ⟨⟩
         return ⟨c, vc, (q(add_pf_add_overlap_zero (Eq.trans $h $h') (rfl (a := $a₁)) $pc) : Expr)⟩
       else
         let ⟨_, vc, pc⟩ ← evalAdd sα va₂ vb₂
-        haveI' : $a₁ =Q $b₁ := ⟨⟩
+        have : $a₁ =Q $b₁ := ⟨⟩
         return ⟨_, .add va₁ (n₁ + n₂) vc, q(add_pf_add_overlap rfl $pc)⟩
     else
       if let .lt := va₁.cmp vb₁ then
@@ -267,8 +267,8 @@ which is also the main part of the whole reduction algorithm. Termination of the
 actually proved, but it is written to be mutually recursive to speed up the implementation (and save
 a lot of proving work). -/
 partial def evalLieLie (sα : Q(LieRing $α)) {a b : Q($α)} (va : ExLie sα a) (vb : ExLie sα b) :
-    Lean.Core.CoreM <| Result (ExSum sα) q(⁅$a, $b⁆) := do
-  Lean.Core.checkSystem decl_name%.toString
+    CoreM <| Result (ExSum sα) q(⁅$a, $b⁆) := do
+  checkSystem decl_name%.toString
   -- This function expects both arguments to be already in the basis.
   if !(va.isLyndon && vb.isLyndon) then unreachable!
   match va.cmp vb with
@@ -276,7 +276,7 @@ partial def evalLieLie (sα : Q(LieRing $α)) {a b : Q($α)} (va : ExLie sα a) 
     -- If `va` and `vb` are in the basis, and they have the same flattened list, then it can be
     -- proved that they are in fact equal.
     if !(va.eq vb) then unreachable!
-    haveI' : $a =Q $b := ⟨⟩
+    have : $a =Q $b := ⟨⟩
     return ⟨q(0), .zero, q(lie_self $a)⟩
   | .gt =>
     let ⟨_, vc₁, pc₁⟩ ← evalLieLie sα vb va
@@ -297,7 +297,7 @@ partial def evalLieLie (sα : Q(LieRing $α)) {a b : Q($α)} (va : ExLie sα a) 
 
 /-- This function evaluates an expression of the form `⁅ExLie, ExSum⁆` into its normal form. -/
 partial def evalLie₁ (sα : Q(LieRing $α)) {a b : Q($α)} (va : ExLie sα a) (vb : ExSum sα b) :
-    Lean.Core.CoreM <| Result (ExSum sα) q(⁅$a, $b⁆) := do
+    CoreM <| Result (ExSum sα) q(⁅$a, $b⁆) := do
   -- This function requires the first argument to be in the basis.
   if !va.isLyndon then unreachable!
   match vb with
@@ -312,7 +312,7 @@ partial def evalLie₁ (sα : Q(LieRing $α)) {a b : Q($α)} (va : ExLie sα a) 
 
 /-- This function evaluates an expression of the form `⁅ExSum, ExLie⁆` into its normal form. -/
 partial def evalLie₂ (sα : Q(LieRing $α)) {a b : Q($α)} (va : ExSum sα a) (vb : ExLie sα b) :
-    Lean.Core.CoreM <| Result (ExSum sα) q(⁅$a, $b⁆) := do
+    CoreM <| Result (ExSum sα) q(⁅$a, $b⁆) := do
   let ⟨_, vc, pc⟩ ← evalLie₁ sα vb va
   let ⟨_, vd, pd⟩ := evalSmul sα vc (-1)
   return ⟨_, vd, q(lie_aux4 $a $b $pc $pd)⟩
@@ -321,7 +321,7 @@ end
 
 /-- This function evaluates an expression of the form `⁅ExSum, ExSum⁆` into its normal form. -/
 partial def evalLie (sα : Q(LieRing $α)) {a b : Q($α)} (va : ExSum sα a) (vb : ExSum sα b) :
-    Lean.Core.CoreM <| Result (ExSum sα) q(⁅$a, $b⁆) := do
+    CoreM <| Result (ExSum sα) q(⁅$a, $b⁆) := do
   match va with
   | .zero => return ⟨_, .zero, q(zero_lie $b)⟩
   | .add va₁ n va₂ =>
@@ -493,7 +493,7 @@ To prove an equality in an Lie algebra, please try `lie_algebra`.
 -/
 elab (name := lie_ring) "lie_ring" : tactic =>
   withMainContext do
-    let s ← saveState
+    let s ← Lean.saveState
     try
       liftMetaMAtMain fun g ↦ do
         AtomM.run .reducible (proveEq g)
