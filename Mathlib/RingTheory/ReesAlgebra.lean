@@ -83,7 +83,7 @@ theorem monomial_mem_adjoin_monomial {I : Ideal R} {n : ℕ} {r : R} (hr : r ∈
       rw [add_comm n 1, smul_eq_mul, ← monomial_mul_monomial]
       exact Subalgebra.mul_mem _ (Algebra.subset_adjoin (Set.mem_image_of_mem _ hr)) (hn hs)
     · intro x y hx hy
-      rw [monomial_add]
+      rw [map_add]
       exact Subalgebra.add_mem _ hx hy
 
 theorem adjoin_monomial_eq_reesAlgebra :
