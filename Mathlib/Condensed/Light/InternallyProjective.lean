@@ -73,20 +73,15 @@ lemma ihom_map_val_app (A B P : LightCondMod.{u} R) (S : LightProfinite) (e : A 
   congr
   ext
   simp
-  rfl
 
 lemma ihomPoints_symm_comp (B P : LightCondMod.{u} R) (S S' : LightProfinite) (π : S ⟶ S')
     (f : P ⊗ (free R).obj S'.toCondensed ⟶ B) :
     (ihomPoints R P B S).symm (P ◁ (free R).map (lightProfiniteToLightCondSet.map π) ≫ f) =
       ((P ⟶[LightCondMod R] B).val.map π.op) ((ihomPoints R P B S').symm f) := by
-  simp only [ihomPoints_symm_apply, MonoidalClosed.curry_natural_left, Adjunction.homEquiv_apply,
-    comp_obj, map_comp, Adjunction.unit_naturality_assoc]
-  rw [GrothendieckTopology.yonedaEquiv_comp, GrothendieckTopology.yonedaEquiv_comp,
-    GrothendieckTopology.yonedaEquiv_apply, GrothendieckTopology.yonedaEquiv_apply]
   have : (lightProfiniteToLightCondSet.map π).val.app (Opposite.op S) (𝟙 S) =
       S'.toCondensed.val.map π.op (𝟙 S') := rfl
-  rw [this]
-  simp
+  simp [ihomPoints_symm_apply, MonoidalClosed.curry_natural_left, Adjunction.homEquiv_apply,
+    GrothendieckTopology.yonedaEquiv_apply, this]
   rfl
 
 /--
@@ -126,8 +121,7 @@ lemma internallyProjective_iff_tensor_condition (P : LightCondMod R) : Internall
     have := ihomPoints_symm_comp R B P S' S π ((ihomPoints R P B S) g)
     dsimp at hh
     rw [hh] at this
-    simp [this]
-    rfl
+    simp [this, Quiver.Hom.op]
 
 /--
 `P : LightCondMod R` is internally projective if and
