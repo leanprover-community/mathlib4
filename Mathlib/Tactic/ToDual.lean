@@ -6,6 +6,7 @@ Authors: Jovan Gerbscheid
 module
 
 public meta import Mathlib.Tactic.Translate.ToDual
+import all Init.Core  -- TODO: for accessing proofs
 
 
 /-!
@@ -34,12 +35,9 @@ It is used by `@[to_dual]` in order to deal with `DecidableLE`. -/] DecidableLE
 set_option linter.existingAttributeWarning false in
 attribute [to_dual self (reorder := 3 4)] ge_iff_le gt_iff_lt
 
--- FIXME: these are failing after @kim-em's attempts
--- to rebase `modulize` on `nightly-testing-2025-11-16`.
--- It seems perhaps they are not actually used, but we need to fix this.
--- attribute [to_dual le_of_eq_of_le''] le_of_eq_of_le
--- attribute [to_dual le_of_le_of_eq''] le_of_le_of_eq
--- attribute [to_dual lt_of_eq_of_lt''] lt_of_eq_of_lt
--- attribute [to_dual lt_of_lt_of_eq''] lt_of_lt_of_eq
+attribute [to_dual le_of_eq_of_le''] le_of_eq_of_le
+attribute [to_dual le_of_le_of_eq''] le_of_le_of_eq
+attribute [to_dual lt_of_eq_of_lt''] lt_of_eq_of_lt
+attribute [to_dual lt_of_lt_of_eq''] lt_of_lt_of_eq
 
 attribute [to_dual] Max
