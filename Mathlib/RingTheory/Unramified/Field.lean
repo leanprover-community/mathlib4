@@ -197,7 +197,7 @@ theorem range_eq_top_of_isPurelyInseparable
 theorem isSeparable : Algebra.IsSeparable K L := by
   have := finite_of_free (R := K) (S := L)
   rw [← separableClosure.eq_top_iff]
-  have := of_comp K (separableClosure K L) L
+  have := of_restrictScalars K (separableClosure K L) L
   have := EssFiniteType.of_comp K (separableClosure K L) L
   ext
   change _ ↔ _ ∈ (⊤ : Subring _)
