@@ -458,6 +458,15 @@ Geometry:
     scheme: 'AlgebraicGeometry.Scheme'
     Nullstellensatz : 'MvPolynomial.vanishingIdeal_zeroLocus_eq_radical'
 
+  Convex geometry:
+    convex cone: 'ConvexCone'
+    salient cone: 'ConvexCone.Salient'
+    positive cone: 'ConvexCone.positive'
+    pointed cone: 'PointedCone'
+    dual cone: 'PointedCone.dual'
+    minimal tensor product: 'PointedCone.minTensorProduct'
+    maximal tensor product: 'PointedCone.maxTensorProduct'
+
 Combinatorics:
   Pigeonhole principles:
     finite: 'Fintype.exists_ne_map_eq_of_card_lt'
