@@ -83,7 +83,7 @@ lemma Functor.mapExt_bijective_of_preservesProjectiveObjects (h : F.FullyFaithfu
     · ext x
       simp [g, g', Ext.mapExt_comp_eq_comp_mapExt, Ext.mapExt_extClass_eq_extClass_map]
 
-lemma Functoe.mapExt_bijective_of_preservesInjectiveObjects (h : F.FullyFaithful) [HasExt.{w} C]
+lemma Functor.mapExt_bijective_of_preservesInjectiveObjects (h : F.FullyFaithful) [HasExt.{w} C]
     [HasExt.{w'} D] [EnoughInjectives C] [F.PreservesInjectiveObjects] (X Y : C) (n : ℕ) :
     Function.Bijective (F.mapExt X Y n) := by
   induction n generalizing Y
