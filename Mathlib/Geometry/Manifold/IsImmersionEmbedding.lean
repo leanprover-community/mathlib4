@@ -289,13 +289,25 @@ def LinearMap.equivRange_of_injective' {f : E →ₗ[𝕜] F} (hf : Injective f)
   sorry -- see ContinuousLinearEquiv.equivRange, and boil this down
 
 def smallComplement (hf : IsImmersionAtOfComplement F I J n f x) : Type u := by
+  letI A' : Submodule 𝕜 (E × F) := LinearMap.range (LinearMap.prod 0 .id)
+  letI φ : F ≃ A' := LinearMap.equivRange_of_injective (by intro x y hxy; simp_all)
+  use LinearMap.range (hf.equiv.domRestrict A') -- xxx: better tactic/explicit term?
+
+instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedAddCommGroup hf.smallComplement := by
+  unfold smallComplement
+  infer_instance
+
+instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedSpace 𝕜 hf.smallComplement := by
+  unfold smallComplement
+  infer_instance
+
+def smallEquiv (hf : IsImmersionAtOfComplement F I J n f x) : F ≃ₗ[𝕜] hf.smallComplement := by
+  simp only [smallComplement]
+  set A' : Submodule 𝕜 (E × F) := LinearMap.range (LinearMap.prod 0 .id)
+  set φ : F ≃ A' := LinearMap.equivRange_of_injective (by intro x y hxy; simp_all)
+  show F ≃ₗ[𝕜] (LinearMap.range ((hf.equiv.toLinearEquiv).domRestrict A'))
+  apply φ.trans (LinearMap.equivRange_of_injective' ?_))--(by simp))
   sorry
-
-instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedAddCommGroup hf.smallComplement := sorry
-
-instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedSpace 𝕜 hf.smallComplement := sorry
-
-def smallEquiv (hf : IsImmersionAtOfComplement F I J n f x) : F ≃ₗ[𝕜] hf.smallComplement := sorry
 
 #exit
 lemma small (hf : IsImmersionAtOfComplement F I J n f x) : Small.{u} F := by
@@ -305,6 +317,7 @@ lemma small (hf : IsImmersionAtOfComplement F I J n f x) : Small.{u} F := by
   use LinearMap.range (hf.equiv.domRestrict A')
   exact ⟨φ.trans (LinearMap.equivRange_of_injective (by simp))⟩
 
+#exit
 lemma trans_F (h : IsImmersionAtOfComplement F I J n f x) (e : F ≃L[𝕜] F') :
     IsImmersionAtOfComplement F' I J n f x := by
   rewrite [IsImmersionAtOfComplement_def]
