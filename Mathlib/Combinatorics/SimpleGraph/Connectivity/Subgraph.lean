@@ -275,15 +275,12 @@ lemma adj_toSubgraph_iff_mem_edges {u v u' v' : V} {p : G.Walk u v} :
   rw [← p.mem_edges_toSubgraph]
   rfl
 
-lemma adj_toSubgraph_toPath {u v u' v' : V} {p : G.Walk u v} [DecidableEq V]
-    (hp : p.bypass.toSubgraph.Adj u' v') : p.toSubgraph.Adj u' v' := by
-  simp_all only [adj_toSubgraph_iff_mem_edges]
-  exact p.edges_toPath_subset hp
-
 lemma toSubgraph_bypass_le_toSubgraph {u v : V} {p : G.Walk u v} [DecidableEq V] :
     p.bypass.toSubgraph ≤ p.toSubgraph := by
-  refine ⟨?_, fun _ _ h ↦ adj_toSubgraph_toPath h⟩
-  simpa using p.support_bypass_subset
+  constructor
+  · simpa using p.support_bypass_subset
+  · simp only [adj_toSubgraph_iff_mem_edges]
+    exact fun _ _ h ↦ p.edges_toPath_subset h
 
 namespace IsPath
 
