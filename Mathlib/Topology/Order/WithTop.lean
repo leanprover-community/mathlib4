@@ -120,13 +120,11 @@ instance [ts : TopologicalSpace ι] [ht : OrderTopology ι] [SecondCountableTopo
             · exact f_fin
             · intro i hi
               apply isOpen_generateFrom_of_mem
-              simp [d]
               grind
           · apply @Finite.isOpen_biInter _ _ (generateFrom {s | ∃ a ∈ d, s = Ioi a ∨ s = Iio a})
             · exact g_fin
             · intro i hi
               apply isOpen_generateFrom_of_mem
-              simp [d]
               grind
   -- Consider an interval of the form `Iio a`. We should cover it by finite intersections of
   -- our sets.
@@ -165,13 +163,11 @@ instance [ts : TopologicalSpace ι] [ht : OrderTopology ι] [SecondCountableTopo
             · exact f_fin
             · intro i hi
               apply isOpen_generateFrom_of_mem
-              simp [d]
               grind
           · apply @Finite.isOpen_biInter _ _ (generateFrom {s | ∃ a ∈ d, s = Ioi a ∨ s = Iio a})
             · exact g_fin
             · intro i hi
               apply isOpen_generateFrom_of_mem
-              simp [d]
               grind
 
 end TopologicalSpace
@@ -183,7 +179,7 @@ variable {ι : Type*} [LinearOrder ι] [TopologicalSpace ι] [OrderTopology ι]
 section Coe
 
 lemma isEmbedding_coe : Topology.IsEmbedding ((↑) : ι → WithTop ι) := by
-  refine WithTop.coe_strictMono.isEmbedding_of_ordConnected ?_
+  refine WithTop.coe_strictMono.isEmbedding_of_ordConnected (α := ι) ?_
   rw [WithTop.range_coe]
   exact Set.ordConnected_Iio
 

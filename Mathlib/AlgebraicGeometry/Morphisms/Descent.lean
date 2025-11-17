@@ -3,10 +3,8 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Affine
 import Mathlib.AlgebraicGeometry.Morphisms.AffineAnd
 import Mathlib.AlgebraicGeometry.Morphisms.LocalIso
-import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 import Mathlib.CategoryTheory.MorphismProperty.Descent
 
 /-!
@@ -49,7 +47,7 @@ lemma Scheme.exists_hom_isAffine_of_isZariskiLocalAtSource (X : Scheme.{u}) [Com
   let p : ∐ (fun i : 𝒰.I₀ ↦ 𝒰.X i) ⟶ X := Sigma.desc (fun i ↦ 𝒰.f i)
   refine ⟨_, p, ⟨fun x ↦ ?_⟩, ?_, inferInstance⟩
   · obtain ⟨i, x, rfl⟩ := X.affineCover.finiteSubcover.exists_eq x
-    use (Sigma.ι (fun i ↦ X.affineCover.finiteSubcover.X i) i).base x
+    use Sigma.ι X.affineCover.finiteSubcover.X i x
     rw [← Scheme.Hom.comp_apply, Sigma.ι_desc]
   · rw [IsZariskiLocalAtSource.iff_of_openCover (P := P) (sigmaOpenCover _)]
     exact fun i ↦ by simpa [p] using IsZariskiLocalAtSource.of_isOpenImmersion _
@@ -110,7 +108,7 @@ lemma of_pullback_fst_Spec_of_codescendsAlong [P.RespectsIso]
   refine hQQ'.algebraMap_tensorProduct (R := R) (S := T) (T := S) _ (H₁ h) ?_
   rwa [← pullbackSpecIso_hom_fst R T S, P.cancel_left_of_respectsIso, H₂] at hf
 
-/-- If `X` admits a morphism `p : T ⟶ X` from an affine scheme satisfying `P', to
+/-- If `X` admits a morphism `p : T ⟶ X` from an affine scheme satisfying `P'`, to
 show a property descends along a morphism `f : X ⟶ Z` satisfying `P'`, `X` may assumed to
 be affine. -/
 lemma IsStableUnderBaseChange.of_pullback_fst_of_isAffine [P'.RespectsIso]
@@ -140,7 +138,7 @@ lemma IsZariskiLocalAtTarget.descendsAlong_inf_quasiCompact [IsZariskiLocalAtTar
   apply IsZariskiLocalAtTarget.descendsAlong
   intro R X Y f g hf h
   wlog hX : ∃ T, X = Spec T generalizing X
-  · have _ : CompactSpace X := by simpa [← quasiCompact_over_affine_iff f] using hf.2
+  · have _ : CompactSpace X := by simpa [← quasiCompact_iff_compactSpace f] using hf.2
     obtain ⟨Y, p, hsurj, hP', hY⟩ := X.exists_hom_isAffine_of_isZariskiLocalAtSource @IsLocalIso
     refine this (f := (Y.isoSpec.inv ≫ p) ≫ f) ?_ ?_ ⟨_, rfl⟩
     · rw [Category.assoc, (P' ⊓ @QuasiCompact).cancel_left_of_respectsIso]

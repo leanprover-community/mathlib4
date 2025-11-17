@@ -5,7 +5,8 @@ Authors: Kim Morrison, Johannes Hölzl
 -/
 import Mathlib.Algebra.Category.Grp.Preadditive
 import Mathlib.GroupTheory.FreeAbelianGroup
-import Mathlib.CategoryTheory.Limits.Types.Shapes
+import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Limits.Types.Coproducts
 
 /-!
 # Adjunctions regarding the category of (abelian) groups
@@ -88,13 +89,12 @@ example {G H : AddCommGrpCat.{u}} (f : G ⟶ H) [Mono f] : Function.Injective f 
 
 instance : (free.{u}).PreservesMonomorphisms where
   preserves {X Y} f _ := by
-    by_cases hX : IsEmpty X
+    by_cases! hX : IsEmpty X
     · constructor
       intros
       apply (IsInitial.isInitialObj free _
         ((Types.initial_iff_empty X).2 hX).some).isZero.eq_of_tgt
-    · push_neg at hX
-      have hf : Function.Injective f := by rwa [← mono_iff_injective]
+    · have hf : Function.Injective f := by rwa [← mono_iff_injective]
       obtain ⟨g, hg⟩ := hf.hasLeftInverse
       have : IsSplitMono f := IsSplitMono.mk' { retraction := g }
       infer_instance

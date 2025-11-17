@@ -57,7 +57,7 @@ lemma ineq (h0 : x 0 = 1) (hp : ∀ k, 0 < x k) :
       · exact sum_pos (fun k _ ↦ hp _) (nonempty_range_iff.2 hn)
     -- We move the fraction into the denominator.
     _ = (∑ k ∈ range n, x (k + 1) + 1) ^ 2 / ((∑ k ∈ range n, x (k + 1)) * (1 + 1 / n)) := by
-      field_simp
+      field
     -- We make use of the `le_avg` lemma.
     _ ≤ (∑ k ∈ range (n + 1), x k) ^ 2 / ∑ k ∈ range (n + 1), x (k + 1) := by
       gcongr
