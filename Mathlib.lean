@@ -193,6 +193,7 @@ import Mathlib.Algebra.Category.ModuleCat.Subobject
 import Mathlib.Algebra.Category.ModuleCat.Tannaka
 import Mathlib.Algebra.Category.ModuleCat.Topology.Basic
 import Mathlib.Algebra.Category.ModuleCat.Topology.Homology
+import Mathlib.Algebra.Category.ModuleCat.Ulift
 import Mathlib.Algebra.Category.MonCat.Adjunctions
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Algebra.Category.MonCat.Colimits
