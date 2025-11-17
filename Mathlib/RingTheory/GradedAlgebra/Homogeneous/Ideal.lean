@@ -615,11 +615,11 @@ lemma irrelevant_eq_span : 𝒜₊.toIdeal = .span (⋃ i > 0, 𝒜 i) :=
     Ideal.span_le.mpr <| iUnion_subset fun _ ↦ iUnion_subset fun hi _ hx ↦
     mem_irrelevant_of_mem _ hi hx
 
-lemma irrelevant_toAddSubmonoid_le {P : AddSubmonoid A} :
+lemma toAddSubmonoid_irrelevant_le {P : AddSubmonoid A} :
     𝒜₊.toAddSubmonoid ≤ P ↔ ∀ i > 0, .ofClass (𝒜 i) ≤ P := by
   rw [irrelevant_eq_iSup, iSup₂_le_iff]
 
-lemma irrelevant_toIdeal_le {I : Ideal A} :
+lemma toIdeal_irrelevant_le {I : Ideal A} :
     𝒜₊.toIdeal ≤ I ↔ ∀ i > 0, .ofClass (𝒜 i) ≤ I.toAddSubmonoid :=
   irrelevant_toAddSubmonoid_le _
 
