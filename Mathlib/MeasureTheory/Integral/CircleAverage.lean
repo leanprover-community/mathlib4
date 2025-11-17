@@ -38,7 +38,7 @@ variable
 namespace Real
 
 /-!
-# Definition
+### Definition
 -/
 
 variable (f c R) in
@@ -53,7 +53,7 @@ noncomputable def circleAverage : E :=
 lemma circleAverage_def :
     circleAverage f c R = (2 * π)⁻¹ • ∫ θ in 0..2 * π, f (circleMap c R θ) := rfl
 
-/-- Expression of `circleAverage´ in terms of interval averages. -/
+/-- Expression of `circleAverage` in terms of interval averages. -/
 lemma circleAverage_eq_intervalAverage :
     circleAverage f c R = ⨍ θ in 0..2 * π, f (circleMap c R θ) := by
   simp [circleAverage, interval_average_eq]
@@ -68,7 +68,7 @@ lemma circleAverage_eq_intervalAverage :
     one_smul]
 
 /--
-Expression of `circleAverage´ with arbitrary center in terms of `circleAverage` with center zero.
+Expression of `circleAverage` with arbitrary center in terms of `circleAverage` with center zero.
 -/
 lemma circleAverage_fun_add :
     circleAverage (fun z ↦ f (z + c)) 0 R = circleAverage f c R := by
@@ -201,6 +201,17 @@ theorem circleAverage_const_on_circle [CompleteSpace E] {a : E}
 /-!
 ## Inequalities
 -/
+
+/--
+Circle averages respect the `≤` relation.
+-/
+@[gcongr]
+theorem circleAverage_mono {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → ℝ} (hf₁ : CircleIntegrable f₁ c R)
+    (hf₂ : CircleIntegrable f₂ c R) (h : ∀ x ∈ Metric.sphere c |R|, f₁ x ≤ f₂ x) :
+    circleAverage f₁ c R ≤ circleAverage f₂ c R := by
+  apply (mul_le_mul_iff_of_pos_left (by simp [pi_pos])).2
+  apply intervalIntegral.integral_mono_on_of_le_Ioo (le_of_lt two_pi_pos) hf₁ hf₂
+  exact fun x _ ↦ by simp [h (circleMap c R x)]
 
 /--
 If `f x` is smaller than `a` on for every point of the circle, then the circle average of `f` is
