@@ -134,14 +134,14 @@ theorem evalFrom_union (S1 S2 : Set σ) (x : List α) :
 variable (M) in
 @[simp]
 theorem evalFrom_iUnion {ι : Sort*} (s : ι → Set σ) (x : List α) :
-    M.evalFrom (⋃ (i : ι), s i) x = ⋃ (i : ι), M.evalFrom (s i) x := by
+    M.evalFrom (⋃ i, s i) x = ⋃ i, M.evalFrom (s i) x := by
   induction x generalizing s with
   | nil => simp
   | cons a x ih => simp [stepSet, Set.iUnion_comm (ι:=σ) (ι':=ι), ih]
 
 variable (M) in
-theorem evalFrom_biUnion {ι : Type*} (t : Set ι) (f : ι → Set σ) (x : List α) :
-    M.evalFrom (⋃ i ∈ t, f i) x = ⋃ i ∈ t, M.evalFrom (f i) x := by
+theorem evalFrom_iUnion₂ {ι : Sort*} {κ : ι → Sort*} (f : ∀ i, κ i → Set σ) (x : List α) :
+    M.evalFrom (⋃ i j, f i j) x = ⋃ i j, M.evalFrom (f i j) x := by
   simp
 
 variable (M) in
@@ -159,19 +159,18 @@ variable (M) in
 in `M.evalFrom S x`. -/
 def acceptsFrom (S : Set σ) : Language α := {x | ∃ s ∈ M.accept, s ∈ M.evalFrom S x}
 
-variable (M) in
 theorem mem_acceptsFrom {S : Set σ} {x : List α} :
     x ∈ M.acceptsFrom S ↔ ∃ s ∈ M.accept, s ∈ M.evalFrom S x := by
   rfl
 
 variable (M) in
 @[simp]
-theorem mem_acceptsFrom_nil {S : Set σ} : [] ∈ M.acceptsFrom S ↔ ∃ s ∈ S, s ∈ M.accept := by
+theorem nil_mem_acceptsFrom {S : Set σ} : [] ∈ M.acceptsFrom S ↔ ∃ s ∈ S, s ∈ M.accept := by
   simp only [mem_acceptsFrom, evalFrom_nil]; tauto
 
 variable (M) in
 @[simp]
-theorem mem_acceptsFrom_cons {S : Set σ} {a : α} {x : List α} :
+theorem cons_mem_acceptsFrom {S : Set σ} {a : α} {x : List α} :
     a :: x ∈ M.acceptsFrom S ↔ x ∈ M.acceptsFrom (M.stepSet S a) := by
   simp [mem_acceptsFrom]
 
