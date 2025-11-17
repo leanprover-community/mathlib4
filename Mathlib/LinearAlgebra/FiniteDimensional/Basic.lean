@@ -532,11 +532,9 @@ section finrank_eq_one
 /-- A vector space with a nonzero vector `v` has dimension 1 iff `v` spans.
 -/
 theorem finrank_eq_one_iff_of_nonzero (v : V) (nz : v ≠ 0) :
-    finrank K V = 1 ↔ span K ({v} : Set V) = ⊤ :=
-  ⟨fun h => by simpa using (basisSingleton Unit h v nz).span_eq, fun s =>
-    finrank_eq_card_basis
-      (Basis.mk (LinearIndepOn.id_singleton _ nz)
-        (by simp [← s]))⟩
+    finrank K V = 1 ↔ span K ({v} : Set V) = ⊤ where
+  mp h := by simpa using (basisSingleton Unit h v nz).span_eq
+  mpr s := finrank_eq_card_basis <| .mk (.of_subsingleton (v := ![v]) 0 nz) <| by simp [← s]
 
 /-- A module with a nonzero vector `v` has dimension 1 iff every vector is a multiple of `v`.
 -/

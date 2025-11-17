@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.Generator.StrongGenerator
 
 Let `C` be a category, a regular cardinal `κ` and `P : ObjectProperty C`.
 We define a predicate `P.IsCardinalFilteredGenerator κ` saying that
-`P` consists of `κ`-presentable objects and that any objects in `C`
+`P` consists of `κ`-presentable objects and that any object in `C`
 is a `κ`-filtered colimit of objects satisfying `P`.
 We show that if this condition is satisfied, then `P` is a strong generator
 (see `IsCardinalFilteredGenerator.isStrongGenerator`). Moreover,
