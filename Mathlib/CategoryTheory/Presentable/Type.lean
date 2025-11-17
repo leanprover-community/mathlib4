@@ -110,9 +110,9 @@ namespace CategoryTheory
 
 namespace Types
 
-variable {X : Type u} (κ : Cardinal.{u}) [Fact κ.IsRegular]
+variable {X : Type u}
 
-lemma isCardinalPresentable_iff :
+lemma isCardinalPresentable_iff (κ : Cardinal.{u}) [Fact κ.IsRegular] :
     IsCardinalPresentable X κ ↔ HasCardinalLT X κ := by
   refine ⟨fun _ ↦ ?_, fun hX ↦ hX.isCardinalPresentable⟩
   have := preservesColimitsOfShape_of_isCardinalPresentable X κ
