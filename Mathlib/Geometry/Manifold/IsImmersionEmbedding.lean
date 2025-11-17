@@ -282,6 +282,29 @@ lemma congr_iff (hfg : f =ᶠ[𝓝 x] g) :
     IsImmersionAtOfComplement F I J n f x ↔ IsImmersionAtOfComplement F I J n g x :=
   ⟨fun h ↦ h.congr_of_eventuallyEq hfg, fun h ↦ h.congr_of_eventuallyEq hfg.symm⟩
 
+def LinearMap.equivRange_of_injective {f : E →ₗ[𝕜] F} (hf : Injective f) : E ≃ LinearMap.range f :=
+  sorry -- see ContinuousLinearEquiv.equivRange, and boil this down
+
+def LinearMap.equivRange_of_injective' {f : E →ₗ[𝕜] F} (hf : Injective f) : E ≃ₗ[𝕜] LinearMap.range f :=
+  sorry -- see ContinuousLinearEquiv.equivRange, and boil this down
+
+def smallComplement (hf : IsImmersionAtOfComplement F I J n f x) : Type u := by
+  sorry
+
+instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedAddCommGroup hf.smallComplement := sorry
+
+instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedSpace 𝕜 hf.smallComplement := sorry
+
+def smallEquiv (hf : IsImmersionAtOfComplement F I J n f x) : F ≃ₗ[𝕜] hf.smallComplement := sorry
+
+#exit
+lemma small (hf : IsImmersionAtOfComplement F I J n f x) : Small.{u} F := by
+  let A' : Submodule 𝕜 (E × F) := LinearMap.range (LinearMap.prod 0 .id)
+  let φ : F ≃ A' := LinearMap.equivRange_of_injective (by intro x y hxy; simp_all)
+  refine ⟨?_⟩
+  use LinearMap.range (hf.equiv.domRestrict A')
+  exact ⟨φ.trans (LinearMap.equivRange_of_injective (by simp))⟩
+
 lemma trans_F (h : IsImmersionAtOfComplement F I J n f x) (e : F ≃L[𝕜] F') :
     IsImmersionAtOfComplement F' I J n f x := by
   rewrite [IsImmersionAtOfComplement_def]
@@ -310,6 +333,10 @@ lemma mk_of_charts (equiv : (E × F) ≃L[𝕜] E'') (domChart : OpenPartialHome
     (hwrittenInExtend : EqOn ((codChart.extend J) ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
       (domChart.extend I).target) : IsImmersionAt I J n f x := by
   rw [IsImmersionAt_def]
+  have aux : IsImmersionAtOfComplement F I J n f x := by
+    apply IsImmersionAtOfComplement.mk_of_charts <;> assumption
+  obtain ⟨F', ⟨equivF'⟩⟩ := aux.small
+  use F', by sorry, by sorry -- TODO: need to upgrade aux.small above!
   -- TODO: need to fix this proof if we want F to be in any universe!
   sorry
   -- let F' : Type u := sorry
@@ -332,6 +359,8 @@ lemma mk_of_continuousAt {f : M → N} {x : M} (hf : ContinuousAt f x) (equiv : 
   -- TODO: need to fix this proof if we want F to be in any universe!
   sorry --use F, by infer_instance, by infer_instance
   --apply IsImmersionAtOfComplement.mk_of_continuousAt <;> assumption
+
+#exit
 
 /-- A choice of complement of the model normed space `E` of `M` in the model normed space
 `E'` of `N` -/
