@@ -539,11 +539,7 @@ noncomputable def leftHomologyData [HasZeroObject C] (s : S.Splitting) :
       sub_eq_self, reassoc_of% hx, zero_comp])
     (fun x _ b hb => by simp only [← hb, assoc, f_r, comp_id])
   let f' := hi.lift (KernelFork.ofι S.f S.zero)
-  have hf' : f' = 𝟙 _ := by
-    apply Fork.IsLimit.hom_ext hi
-    dsimp
-    erw [Fork.IsLimit.lift_ι hi]
-    simp only [Fork.ι_ofι, id_comp]
+  have hf' : f' = 𝟙 _ := by simp [f']
   have wπ : f' ≫ (0 : S.X₁ ⟶ 0) = 0 := comp_zero
   have hπ : IsColimit (CokernelCofork.ofπ 0 wπ) := CokernelCofork.IsColimit.ofEpiOfIsZero _
       (by rw [hf']; infer_instance) (isZero_zero _)
