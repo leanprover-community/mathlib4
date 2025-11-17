@@ -47,7 +47,7 @@ section Ring
 variable [CommRing R]
 
 section IsOrderedRing
-variable [IsOrderedRing R]
+variable [IsStrictOrderedRing R]
 
 instance : Zero (ArchimedeanClass R) where
   zero := mk 1
@@ -72,7 +72,7 @@ private theorem mk_mul_le_of_le {x₁ y₁ x₂ y₂ : R} (hx : mk x₁ ≤ mk x
     simp_rw [ArchimedeanOrder.val_of, abs_mul]
   ring
 
-/-- Multipilication in `R` transfers to Addition in `ArchimedeanClass R`. -/
+/-- Multiplication in `R` transfers to Addition in `ArchimedeanClass R`. -/
 instance : Add (ArchimedeanClass R) where
   add := lift₂ (fun x y ↦ .mk <| x * y) fun _ _ _ _ hx hy ↦
     (mk_mul_le_of_le hx.le hy.le).antisymm (mk_mul_le_of_le hx.ge hy.ge)
@@ -119,8 +119,16 @@ instance : IsOrderedAddMonoid (ArchimedeanClass R) where
     rw [← mk_mul, ← mk_mul]
     exact mk_mul_le_of_le h le_rfl
 
+lemma isAddRegular_mk {x : R} (hx : x ≠ 0) : IsAddRegular (mk x) := by
+  rw [← isAddLeftRegular_iff_isAddRegular]
+  rintro y z hyz
+  induction y with | mk y =>
+  induction z with | mk z =>
+  simpa [← mk_mul, mk_eq_mk, mul_left_comm _ (|x|), abs_pos.2 hx] using hyz
+
 noncomputable instance : LinearOrderedAddCommMonoidWithTop (ArchimedeanClass R) where
   top_add' x := by induction x with | mk x => rw [← mk_zero, ← mk_mul, zero_mul]
+  isAddLeftRegular_of_ne_top x := by induction x with | mk x => simp +contextual [isAddRegular_mk]
 
 variable (R) in
 /-- `ArchimedeanClass.mk` defines an `AddValuation` on the ring `R`. -/
@@ -129,7 +137,7 @@ noncomputable def addValuation : AddValuation R (ArchimedeanClass R) := AddValua
 
 @[simp] theorem addValuation_apply (a : R) : addValuation R a = mk a := rfl
 
-variable {S : Type*} [LinearOrder S] [CommRing S] [IsOrderedRing S]
+variable {S : Type*} [LinearOrder S] [CommRing S] [IsStrictOrderedRing S]
 
 @[simp]
 theorem orderHom_zero (f : S →+o R) : orderHom f 0 = mk (f 1) := by
@@ -238,6 +246,7 @@ private theorem zsmul_succ' (n : ℕ) (x : ArchimedeanClass R) :
 
 noncomputable instance : LinearOrderedAddCommGroupWithTop (ArchimedeanClass R) where
   neg_top := by simp [← mk_zero, ← mk_inv]
+  top_add' := by simp
   add_neg_cancel_of_ne_top x h := by
     induction x with | mk x
     simp [← mk_inv, ← mk_mul, mul_inv_cancel₀ (mk_eq_top_iff.not.1 h)]
