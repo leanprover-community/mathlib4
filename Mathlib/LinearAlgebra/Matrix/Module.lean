@@ -8,7 +8,7 @@ import Mathlib.Data.Matrix.Mul
 import Mathlib.LinearAlgebra.Pi
 
 /-!
-# Main Results
+## Main Results
 
 - `Matrix.matrixModule`: This instance shows `ι → M` is a module over `Matrix ι ι R`, and the action
   of it is a generalization of `Matrix.mulVec`.
