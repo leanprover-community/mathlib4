@@ -161,16 +161,16 @@ namespace Functor
 commutes with their pullbacks by an additive map `φ`.
 -/
 noncomputable instance commShiftPullback : (PullbackShift.functor φ F).CommShift A where
-  iso a := isoWhiskerRight (pullbackShiftIso C φ a (φ a) rfl) F ≪≫
+  commShiftIso a := isoWhiskerRight (pullbackShiftIso C φ a (φ a) rfl) F ≪≫
     F.commShiftIso (φ a) ≪≫ isoWhiskerLeft _  (pullbackShiftIso D φ a (φ a) rfl).symm
-  zero := by
+  commShiftIso_zero := by
     ext
     dsimp
     simp only [F.commShiftIso_zero' (A := B) (φ 0) (by rw [map_zero]), CommShift.isoZero'_hom_app,
       assoc, CommShift.isoZero_hom_app, pullbackShiftFunctorZero'_hom_app, map_comp,
       pullbackShiftFunctorZero'_inv_app]
     rfl
-  add _ _ := by
+  commShiftIso_add _ _ := by
     ext
     simp only [PullbackShift.functor, comp_obj, Iso.trans_hom, isoWhiskerRight_hom,
       isoWhiskerLeft_hom, Iso.symm_hom, NatTrans.comp_app, whiskerRight_app, whiskerLeft_app,

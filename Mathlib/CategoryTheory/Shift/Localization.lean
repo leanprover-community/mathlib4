@@ -167,8 +167,8 @@ end commShiftOfLocalization
 is induced by a functor which commutes with the shift, then
 this functor commutes with the shift. -/
 noncomputable def commShiftOfLocalization : F'.CommShift A where
-  iso := commShiftOfLocalization.iso L W F F'
-  zero := by
+  commShiftIso := commShiftOfLocalization.iso L W F F'
+  commShiftIso_zero := by
     ext1
     apply natTrans_ext L W
     intro X
@@ -179,7 +179,7 @@ noncomputable def commShiftOfLocalization : F'.CommShift A where
     dsimp
     simp only [← Functor.map_comp_assoc, ← Functor.map_comp,
       Iso.inv_hom_id_app, id_obj, map_id, Category.id_comp, Iso.hom_inv_id_app_assoc]
-  add a b := by
+  commShiftIso_add a b := by
     ext1
     apply natTrans_ext L W
     intro X
