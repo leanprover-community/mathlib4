@@ -305,28 +305,28 @@ lemma iff_hasBasis_min_inv :
     obtain hxy | hxy := rel_total (x * y) 1
     · refine ⟨x * x, zero_srel_mul hx hx, setOf_subset_setOf.mpr fun z hz ↦ ?_⟩
       simp only [Valuation.Compatible.rel_iff_le («v» := v),
-        Valuation.Compatible.srel_iff_lt («v» := v), map_mul] at *
+        Valuation.srel_iff_lt («v» := v), map_mul] at *
       refine ((mul_lt_mul_iff_left₀ (zero_lt_iff.2 ((v).apply_posSubmonoid_ne_zero
-        ⟨y, by simpa [Valuation.Compatible.srel_iff_lt («v» := v)] using hy⟩))).2 hz.1).trans_le ?_
+        ⟨y, by simpa [Valuation.srel_iff_lt («v» := v)] using hy⟩))).2 hz.1).trans_le ?_
       rw [mul_assoc]
       exact (mul_le_iff_le_one_right (zero_lt_iff.2 ((v).apply_posSubmonoid_ne_zero
-        ⟨x, by simpa [Valuation.Compatible.srel_iff_lt («v» := v)] using hx⟩))).2 hxy
+        ⟨x, by simpa [Valuation.srel_iff_lt («v» := v)] using hx⟩))).2 hxy
     · refine ⟨y * y, zero_srel_mul hy hy, setOf_subset_setOf.mpr fun z hz ↦ ?_⟩
       simp only [Valuation.Compatible.rel_iff_le («v» := v),
-        Valuation.Compatible.srel_iff_lt («v» := v), map_mul] at *
+        Valuation.srel_iff_lt («v» := v), map_mul] at *
       rw [← mul_lt_mul_iff_left₀ (zero_lt_iff.2 ((valuation R).apply_posSubmonoid_ne_zero
-         ⟨y, by simpa [Valuation.Compatible.srel_iff_lt («v» := v)] using hy⟩)), mul_assoc]
+         ⟨y, by simpa [Valuation.srel_iff_lt («v» := v)] using hy⟩)), mul_assoc]
       exact hz.2.trans_le hxy
   · rintro x hx
     obtain hx1 | h1x := le_total (v x) 1
     · refine ⟨(x, 1), ⟨hx, zero_srel_one⟩, setOf_subset_setOf.mpr fun z hz ↦ ⟨?_, ?_⟩⟩
       · rwa [mul_one] at hz
-      · simp only [Valuation.Compatible.srel_iff_lt («v» := v), map_mul, map_one, mul_one] at hz ⊢
+      · simp only [Valuation.srel_iff_lt («v» := v), map_mul, map_one, mul_one] at hz ⊢
         rw [← mul_lt_mul_iff_left₀ (zero_lt_iff.2 ((valuation R).apply_posSubmonoid_ne_zero
           ⟨x, hx⟩))] at hz
         exact hz.trans_le (mul_le_one' hx1 hx1)
     · refine ⟨(1, x), ⟨zero_srel_one, hx⟩, setOf_subset_setOf.mpr fun z hz ↦ ⟨?_, hz⟩⟩
-      simp only [Valuation.Compatible.srel_iff_lt («v» := v), map_mul, map_one] at hz ⊢
+      simp only [Valuation.srel_iff_lt («v» := v), map_mul, map_one] at hz ⊢
       refine lt_of_lt_of_le (lt_of_le_of_lt ?_ hz) h1x
       exact le_mul_of_one_le_right' h1x
 
@@ -347,7 +347,7 @@ lemma iff_hasBasis_of_compatible {Γ₀ : Type*} [LinearOrderedCommMonoidWithZer
       fun rs : R × R ↦ { x | v' x * v' rs.2 < v' rs.1 } := by
   rw [iff_hasBasis_pair]
   refine HasBasis.to_hasBasis_iff ?_ ?_ <;>
-  · simp [Valuation.Compatible.srel_iff_lt («v» := v'), zero_lt_iff];
+  · simp [Valuation.srel_iff_lt («v» := v'), zero_lt_iff];
     grind
 
 lemma hasBasis_nhds_zero_of_compatible {Γ₀ : Type*} [LinearOrderedCommMonoidWithZero Γ₀]
