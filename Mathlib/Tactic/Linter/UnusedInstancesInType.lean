@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas R. Murrills
 -/
 import Mathlib.Init
-import Mathlib.Lean.Expr
+import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Environment
 import Mathlib.Lean.Elab.InfoTree
 
