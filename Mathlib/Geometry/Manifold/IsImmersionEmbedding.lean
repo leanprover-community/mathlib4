@@ -513,9 +513,11 @@ lemma ofIsImmersionAt (f : M → N) (h : ∀ x, IsImmersionAt I J n f x) : IsImm
     let x : M := Inhabited.default
     use (h x).complement, by infer_instance, by infer_instance
     intro y
-    -- now, construct a linear equivalence from (h y).complement to F...
-    -- TODO: need some API to translate here!
-    sorry
+    -- Once we have the equivalence (h x).complement to cokernel mfderiv f x,
+    -- we get a linear equivalence from (h y).complement to F,
+    have todo : (h y).complement ≃L[𝕜] (h x).complement := sorry
+    rw [IsImmersionAtOfComplement.congr_F todo.symm]
+    exact (h y).isImmersionAtOfComplement_complement
   · -- We can choose *any* complement: the immersion condition is vacuous as M is empty.
     use E'', by infer_instance, by infer_instance
     exact fun y ↦ (not_nonempty_iff.mp hM).false y |>.elim
