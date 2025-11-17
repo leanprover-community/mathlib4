@@ -35,7 +35,6 @@
   "Lean.Elab.ElabRules",
   "Lean.Elab.Tactic.Config",
   "Lean.Meta.Tactic.Simp.RegisterCommand",
-  "Mathlib.Algebra.BigOperators.Pi",
   "Mathlib.Algebra.Group.Invertible.Defs",
   "Mathlib.AlgebraicGeometry.Restrict",
   "Mathlib.AlgebraicTopology.DoldKan.Notations",
@@ -589,7 +588,7 @@
   ["Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso"],
   "Mathlib.Algebra.Category.MonCat.Basic":
   ["Mathlib.Algebra.Ring.Action.Group"],
-  "Mathlib.Algebra.BigOperators.Pi": ["Mathlib.Data.Finset.Lattice.Fold"],
+  "Mathlib.Algebra.BigOperators.Pi": ["Mathlib.Algebra.Group.Action.Defs"],
   "Mathlib.Algebra.BigOperators.Group.List.Lemmas":
   ["Mathlib.Data.List.ProdSigma"],
   "Mathlib.Algebra.BigOperators.Group.List": ["Mathlib.Data.List.ProdSigma"],
