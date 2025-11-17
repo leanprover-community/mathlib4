@@ -348,7 +348,6 @@ instance [P.IsClosedUnderColimitsOfShape WalkingParallelPair] :
       Cofork.IsColimit.mk _ (fun s ↦ h.i ≫ s.π)
         (fun s ↦ by simpa using s.condition)
         (fun s m hm ↦ by dsimp [c] at hm; simp [← hm])
-
     exact P.prop_of_isColimit hc (by rintro (_ | _) <;> exact hY)
 
 end ObjectProperty

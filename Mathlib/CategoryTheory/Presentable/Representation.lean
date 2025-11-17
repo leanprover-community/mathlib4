@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Presentable.Dense
 
 In this file, we show that if `C` is a locally `κ`-presentable category,
 then `C` identifies to the category of `κ`-continuous presheaves on
-the fullsubcategory of `κ`-presentable objects of `C`.
+the full subcategory of `κ`-presentable objects of `C`.
 
 -/
 
