@@ -24,7 +24,9 @@ universe u
 
 /-- The category of topological spaces. -/
 structure TopCat where
-  private mk ::
+  /-- The object in `TopCat` associated to a type equipped with the appropriate
+  typeclasses. -/
+  of ::
   /-- The underlying type. -/
   carrier : Type u
   [str : TopologicalSpace carrier]
@@ -39,11 +41,6 @@ instance : CoeSort (TopCat) (Type u) :=
   ⟨TopCat.carrier⟩
 
 attribute [coe] TopCat.carrier
-
-/-- The object in `TopCat` associated to a type equipped with the appropriate
-typeclasses. This is the preferred way to construct a term of `TopCat`. -/
-abbrev of (X : Type u) [TopologicalSpace X] : TopCat :=
-  ⟨X⟩
 
 lemma coe_of (X : Type u) [TopologicalSpace X] : (of X : Type u) = X :=
   rfl
@@ -154,11 +151,6 @@ equal function coercion for a continuous map `C(X, Y)`.
 
 instance inhabited : Inhabited TopCat :=
   ⟨TopCat.of Empty⟩
-
-@[deprecated
-  "Simply remove this from the `simp`/`rw` set: the LHS and RHS are now identical."
-  (since := "2025-01-30")]
-lemma hom_apply {X Y : TopCat} (f : X ⟶ Y) (x : X) : f x = ContinuousMap.toFun f.hom x := rfl
 
 /-- The discrete topology on any type. -/
 def discrete : Type u ⥤ TopCat.{u} where

@@ -59,7 +59,7 @@ is an epimorphism (see `epi_f`). If `κ` is a regular cardinal that is
 bigger than the cardinality of `Subobject X` and `J` is `κ`-filtered,
 it follows that for some `φ : j₀ ⟶ j` in `Under j₀`,
 the inclusion `(kernel.ι (g y)).app j` is an isomorphism,
-which implies that that `y ≫ Y.map φ = 0` (see the lemma `injectivity₀`).
+which implies that `y ≫ Y.map φ = 0` (see the lemma `injectivity₀`).
 -/
 
 /-- The natural transformation `X ⟶ Y.obj t.right` for `t : Under j₀`
@@ -91,7 +91,7 @@ lemma epi_f [IsFiltered J] : Epi (f y) := by
     (fun j ↦ by simpa using hf y j)
     (fun _ ↦ by simpa using hy.symm)).epi_f rfl
 
-/-- The kernel of `g y` gives a family of subobjects of `X` indexed by `Under j`0`, and
+/-- The kernel of `g y` gives a family of subobjects of `X` indexed by `Under j₀`, and
 we consider it as a functor `Under j₀ ⥤ MonoOver X`. -/
 @[simps]
 noncomputable def F : Under j₀ ⥤ MonoOver X where

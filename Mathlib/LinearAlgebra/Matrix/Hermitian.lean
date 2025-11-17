@@ -45,8 +45,11 @@ instance (A : Matrix n n α) [Decidable (Aᴴ = A)] : Decidable (IsHermitian A) 
 
 theorem IsHermitian.eq {A : Matrix n n α} (h : A.IsHermitian) : Aᴴ = A := h
 
-protected theorem IsHermitian.isSelfAdjoint {A : Matrix n n α} (h : A.IsHermitian) :
-    IsSelfAdjoint A := h
+theorem isHermitian_iff_isSelfAdjoint {A : Matrix n n α} :
+    A.IsHermitian ↔ IsSelfAdjoint A := Iff.rfl
+
+protected alias ⟨IsHermitian.isSelfAdjoint, _root_.IsSelfAdjoint.isHermitian⟩ :=
+  isHermitian_iff_isSelfAdjoint
 
 theorem IsHermitian.ext {A : Matrix n n α} : (∀ i j, star (A j i) = A i j) → A.IsHermitian := by
   intro h; ext i j; exact h i j
@@ -181,8 +184,12 @@ theorem isHermitian_mul_conjTranspose_self [Fintype n] (A : Matrix m n α) :
     (A * Aᴴ).IsHermitian := by rw [IsHermitian, conjTranspose_mul, conjTranspose_conjTranspose]
 
 /-- Note this is more general than `IsSelfAdjoint.star_mul_self` as `B` can be rectangular. -/
-theorem isHermitian_transpose_mul_self [Fintype m] (A : Matrix m n α) : (Aᴴ * A).IsHermitian := by
+theorem isHermitian_conjTranspose_mul_self [Fintype m] (A : Matrix m n α) :
+    (Aᴴ * A).IsHermitian := by
   rw [IsHermitian, conjTranspose_mul, conjTranspose_conjTranspose]
+
+@[deprecated (since := "2025-11-10")] alias isHermitian_transpose_mul_self :=
+  isHermitian_conjTranspose_mul_self
 
 /-- Note this is more general than `IsSelfAdjoint.conjugate'` as `B` can be rectangular. -/
 theorem isHermitian_conjTranspose_mul_mul [Fintype m] {A : Matrix m m α} (B : Matrix m n α)
@@ -321,7 +328,7 @@ theorem isHermitian_iff_isSymmetric [Fintype n] [DecidableEq n] {A : Matrix n n 
     IsHermitian A ↔ A.toEuclideanLin.IsSymmetric := by
   rw [LinearMap.IsSymmetric, (WithLp.toLp_surjective _).forall₂]
   simp only [toEuclideanLin_toLp, Matrix.toLin'_apply, EuclideanSpace.inner_eq_star_dotProduct,
-    WithLp.ofLp_toLp, star_mulVec]
+    star_mulVec]
   constructor
   · rintro (h : Aᴴ = A) x y
     rw [dotProduct_comm, ← dotProduct_mulVec, h, dotProduct_comm]

@@ -5,7 +5,7 @@ Authors: Frédéric Dupuis
 -/
 
 import Mathlib.Analysis.CStarAlgebra.Module.Constructions
-import Mathlib.Analysis.Matrix
+import Mathlib.Analysis.Matrix.Normed
 import Mathlib.Topology.UniformSpace.Matrix
 
 /-!
@@ -418,8 +418,7 @@ lemma reindexₐ_apply [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [M
 
 lemma mapₗ_reindexₐ [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
     [Star A] [AddCommMonoid B] [Mul B] [Module R B] [Star B] {e : m ≃ n} {M : CStarMatrix m m A}
-    (φ : A →ₗ[R] B) : reindexₐ R B e (M.mapₗ φ) = ((reindexₐ R A e M).mapₗ φ) := by
-  ext; simp [reindexₐ, reindexₗ]
+    (φ : A →ₗ[R] B) : reindexₐ R B e (M.mapₗ φ) = ((reindexₐ R A e M).mapₗ φ) := rfl
 
 @[simp]
 lemma reindexₐ_symm [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A]
@@ -714,9 +713,6 @@ instance instIsTopologicalAddGroup : IsTopologicalAddGroup (CStarMatrix m n A) :
 instance instIsUniformAddGroup : IsUniformAddGroup (CStarMatrix m n A) :=
   Pi.instIsUniformAddGroup
 
-@[deprecated (since := "2025-03-31")] alias instUniformAddGroup :=
-  CStarMatrix.instIsUniformAddGroup
-
 instance instContinuousSMul {R : Type*} [SMul R A] [TopologicalSpace R] [ContinuousSMul R A] :
     ContinuousSMul R (CStarMatrix m n A) := instContinuousSMulForall
 
@@ -759,7 +755,7 @@ instance instCStarRing : CStarRing (CStarMatrix n n A) :=
                     rfl
       have h₂ : ‖v‖ = √(‖v‖ ^ 2) := by simp
       rw [h₂, ← Real.sqrt_mul]
-      gcongr
+      · gcongr
       positivity
     rw [← Real.sqrt_le_sqrt_iff (by positivity)]
     simp [hmain]

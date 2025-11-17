@@ -32,7 +32,7 @@ section GeometricPMF
 
 /-- The pmf of the geometric distribution depending on its success probability. -/
 noncomputable
-def geometricPMFReal (p : ℝ) (n : ℕ) : ℝ := (1-p) ^ n * p
+def geometricPMFReal (p : ℝ) (n : ℕ) : ℝ := (1 - p) ^ n * p
 
 lemma geometricPMFRealSum (hp_pos : 0 < p) (hp_le_one : p ≤ 1) :
     HasSum (fun n ↦ geometricPMFReal p n) 1 := by
@@ -47,14 +47,12 @@ lemma geometricPMFRealSum (hp_pos : 0 < p) (hp_le_one : p ≤ 1) :
 lemma geometricPMFReal_pos {n : ℕ} (hp_pos : 0 < p) (hp_lt_one : p < 1) :
     0 < geometricPMFReal p n := by
   rw [geometricPMFReal]
-  have : 0 < 1 - p := sub_pos.mpr hp_lt_one
-  positivity
+  positivity [sub_pos.mpr hp_lt_one]
 
 lemma geometricPMFReal_nonneg {n : ℕ} (hp_pos : 0 < p) (hp_le_one : p ≤ 1) :
     0 ≤ geometricPMFReal p n := by
   rw [geometricPMFReal]
-  have : 0 ≤ 1 - p := sub_nonneg.mpr hp_le_one
-  positivity
+  positivity [sub_nonneg.mpr hp_le_one]
 
 /-- Geometric distribution with success probability `p`. -/
 noncomputable

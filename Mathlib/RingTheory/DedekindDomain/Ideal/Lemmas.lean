@@ -58,10 +58,6 @@ theorem exists_notMem_one_of_ne_bot [IsDedekindDomain A] {I : Ideal A} (hI0 : I 
 @[deprecated (since := "2025-05-23")]
 alias exists_not_mem_one_of_ne_bot := exists_notMem_one_of_ne_bot
 
-theorem mul_left_strictMono [IsDedekindDomain A] {I : FractionalIdeal A⁰ K} (hI : I ≠ 0) :
-    StrictMono (I * ·) :=
-  strictMono_of_le_iff_le fun _ _ => (mul_left_le_iff hI).symm
-
 end FractionalIdeal
 
 end Inverse
@@ -191,6 +187,11 @@ lemma FractionalIdeal.inv_le_comm {I J : FractionalIdeal A⁰ K} (hI : I ≠ 0) 
     I⁻¹ ≤ J ↔ J⁻¹ ≤ I := by
   simpa using le_inv_comm (A := A) (K := K) (inv_ne_zero hI) (inv_ne_zero hJ)
 
+@[simp]
+theorem FractionalIdeal.inv_le_inv_iff {I J : FractionalIdeal A⁰ K} (hI : I ≠ 0) (hJ : J ≠ 0) :
+    I⁻¹ ≤ J⁻¹ ↔ J ≤ I := by
+  rw [le_inv_comm (inv_ne_zero hI) hJ, inv_inv]
+
 open FractionalIdeal
 
 
@@ -217,16 +218,14 @@ theorem Ideal.exist_integer_multiples_notMem {J : Ideal A} (hJ : J ≠ ⊤) {ι 
     · contrapose! hpI
       -- And if all `a`-multiples of `I` are an element of `J`,
       -- then `a` is actually an element of `J / I`, contradiction.
-      refine (mem_div_iff_of_nonzero hI0).mpr fun y hy => Submodule.span_induction ?_ ?_ ?_ ?_ hy
+      refine (mem_div_iff_of_ne_zero hI0).mpr fun y hy => Submodule.span_induction ?_ ?_ ?_ ?_ hy
       · rintro _ ⟨i, hi, rfl⟩; exact hpI i hi
       · rw [mul_zero]; exact Submodule.zero_mem _
       · intro x y _ _ hx hy; rw [mul_add]; exact Submodule.add_mem _ hx hy
       · intro b x _ hx; rw [mul_smul_comm]; exact Submodule.smul_mem _ b hx
   -- To show the inclusion of `J / I` into `I⁻¹ = 1 / I`, note that `J < I`.
-  calc
-    ↑J / I = ↑J * I⁻¹ := div_eq_mul_inv (↑J) I
-    _ < 1 * I⁻¹ := mul_right_strictMono (inv_ne_zero hI0) ?_
-    _ = I⁻¹ := one_mul _
+  rw [div_eq_mul_inv]
+  refine mul_lt_of_lt_one_left (by simpa [pos_iff_ne_zero]) ?_
   rw [← coeIdeal_top]
   -- And multiplying by `I⁻¹` is indeed strictly monotone.
   exact
@@ -243,10 +242,7 @@ lemma Ideal.mul_iInf (I : Ideal A) {ι : Type*} [Nonempty ι] (J : ι → Ideal 
   refine (le_iInf fun i ↦ Ideal.mul_mono_right (iInf_le _ _)).antisymm ?_
   have H : ⨅ i, I * J i ≤ I := (iInf_le _ (Nonempty.some ‹_›)).trans Ideal.mul_le_right
   obtain ⟨K, hK⟩ := Ideal.dvd_iff_le.mpr H
-  rw [hK]
-  refine mul_le_mul_left' ?_ I
-  rw [le_iInf_iff]
-  intro i
+  grw [hK, le_iInf (a := K) fun i ↦ ?_]
   rw [← mul_le_mul_iff_of_pos_left (a := I), ← hK]
   · exact iInf_le _ _
   · exact bot_lt_iff_ne_bot.mpr hI
@@ -1011,6 +1007,16 @@ theorem coe_primesOverFinset : primesOverFinset p B = primesOver p B := by
     (fun ⟨hPp, h⟩ => ⟨hPp, ⟨hpm.eq_of_le (comap_ne_top _ hPp.ne_top) (le_comap_of_map_le h)⟩⟩)
     (fun ⟨hPp, h⟩ => ⟨hPp, map_le_of_le_comap h.1.le⟩)
 
+include hpb in
+theorem mem_primesOverFinset_iff {P : Ideal B} : P ∈ primesOverFinset p B ↔ P ∈ primesOver p B := by
+  rw [← Finset.mem_coe, coe_primesOverFinset hpb]
+
+variable {R} (A) in
+theorem IsLocalRing.primesOverFinset_eq [IsLocalRing A] [IsDedekindDomain A]
+    [Algebra R A] [FaithfulSMul R A] [Module.Finite R A] {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
+    primesOverFinset p A = {IsLocalRing.maximalIdeal A} := by
+  rw [← Finset.coe_eq_singleton, coe_primesOverFinset hp0, IsLocalRing.primesOver_eq A hp0]
+
 namespace IsDedekindDomain.HeightOneSpectrum
 
 /--
@@ -1046,7 +1052,7 @@ theorem primesOver_finite : (primesOver p B).Finite := by
 noncomputable instance : Fintype (p.primesOver B) := Set.Finite.fintype (primesOver_finite p B)
 
 theorem primesOver_ncard_ne_zero : (primesOver p B).ncard ≠ 0 := by
-  rcases exists_ideal_liesOver_maximal_of_isIntegral p B with ⟨P, hPm, hp⟩
+  rcases exists_maximal_ideal_liesOver_of_isIntegral (S := B) p with ⟨P, hPm, hp⟩
   exact Set.ncard_ne_zero_of_mem ⟨hPm.isPrime, hp⟩ (primesOver_finite p B)
 
 theorem one_le_primesOver_ncard : 1 ≤ (primesOver p B).ncard :=
