@@ -10,6 +10,7 @@ import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+import Mathlib.Tactic.Order
 
 /-!
 # More operations on modules and ideals
@@ -1104,11 +1105,8 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
     by_cases HI : (I : Set R) ⊆ f a ∪ f b ∪ ⋃ j ∈ (↑t : Set ι), f j
     · specialize ih hp.2 hn HI
       rcases ih with (ih | ih | ⟨k, hkt, ih⟩)
-      · left
-        exact ih
-      · right
-        left
-        exact ih
+      · order
+      · order
       · right
         right
         exact ⟨k, Finset.mem_insert_of_mem hkt, ih⟩
@@ -1283,9 +1281,6 @@ theorem Finsupp.mem_ideal_span_range_iff_exists_finsupp {x : R} {v : α → R} :
 theorem Ideal.mem_span_range_iff_exists_fun [Fintype α] {x : R} {v : α → R} :
     x ∈ Ideal.span (Set.range v) ↔ ∃ c : α → R, ∑ i, c i * v i = x :=
   Submodule.mem_span_range_iff_exists_fun _
-
-@[deprecated (since := "2025-04-02")] alias mem_ideal_span_range_iff_exists_fun :=
-  Ideal.mem_span_range_iff_exists_fun
 
 end span_range
 
