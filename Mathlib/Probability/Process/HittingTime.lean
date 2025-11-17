@@ -85,9 +85,8 @@ lemma hittingBtwn_empty (n m : ι) : hittingBtwn u ∅ n m = fun _ ↦ m := by e
 lemma hittingAfter_empty (n : ι) : hittingAfter u ∅ n = fun _ ↦ ⊤ := by ext; simp [hittingAfter]
 
 @[simp]
-lemma hittingBtwn_univ {ι : Type*} [ConditionallyCompleteLattice ι] {u : ι → Ω → β} (n m : ι)
-    [Decidable (n ≤ m)] :
-    hittingBtwn u .univ n m = fun _ ↦ if n ≤ m then n else m := by
+lemma hittingBtwn_univ {ι : Type*} [ConditionallyCompleteLattice ι] {u : ι → Ω → β} (n m : ι) :
+    hittingBtwn u .univ n m = fun _ ↦ min n m := by
   ext ω
   classical
   simp only [hittingBtwn_def, Set.mem_Icc, Set.mem_univ, and_true, Set.setOf_true, Set.inter_univ]
