@@ -49,17 +49,13 @@ theorem isConj_of_support_equiv
 
 end Conjugation
 
-
-
 theorem perm_inv_on_of_perm_on_finset {s : Finset α} {f : Perm α} (h : ∀ x ∈ s, f x ∈ s) {y : α}
     (hy : y ∈ s) : f⁻¹ y ∈ s := by
   have h0 : ∀ y ∈ s, ∃ (x : _) (hx : x ∈ s), y = (fun i (_ : i ∈ s) => f i) x hx :=
     Finset.surj_on_of_inj_on_of_card_le (fun x hx => (fun i _ => f i) x hx) (fun a ha => h a ha)
       (fun a₁ a₂ ha₁ ha₂ heq => (Equiv.apply_eq_iff_eq f).mp heq) rfl.ge
-  obtain ⟨y2, hy2, heq⟩ := h0 y hy
-  convert hy2
-  rw [heq]
-  simp only [inv_apply_self]
+  obtain ⟨y2, hy2, rfl⟩ := h0 y hy
+  simpa using hy2
 
 theorem perm_inv_mapsTo_of_mapsTo (f : Perm α) {s : Set α} [Finite s] (h : Set.MapsTo f s s) :
     Set.MapsTo (f⁻¹ :) s s := by
@@ -120,34 +116,27 @@ theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type*} [Finite m] [Finit
     {σ : Perm (m ⊕ n)} (h : Set.MapsTo σ (Set.range Sum.inl) (Set.range Sum.inl)) :
     σ ∈ (sumCongrHom m n).range := by
   classical
-    have h1 : ∀ x : m ⊕ n, (∃ a : m, Sum.inl a = x) → ∃ a : m, Sum.inl a = σ x := by
-      rintro x ⟨a, ha⟩
-      apply h
-      rw [← ha]
-      exact ⟨a, rfl⟩
-    have h3 : ∀ x : m ⊕ n, (∃ b : n, Sum.inr b = x) → ∃ b : n, Sum.inr b = σ x := by
-      rintro x ⟨b, hb⟩
-      apply (perm_mapsTo_inl_iff_mapsTo_inr σ).mp h
-      rw [← hb]
-      exact ⟨b, rfl⟩
-    let σ₁' := subtypePermOfFintype σ h1
-    let σ₂' := subtypePermOfFintype σ h3
-    let σ₁ := permCongr (Equiv.ofInjective _ Sum.inl_injective).symm σ₁'
-    let σ₂ := permCongr (Equiv.ofInjective _ Sum.inr_injective).symm σ₂'
-    rw [MonoidHom.mem_range, Prod.exists]
-    use σ₁, σ₂
-    rw [Perm.sumCongrHom_apply]
-    ext x
-    rcases x with a | b
-    · rw [Equiv.sumCongr_apply, Sum.map_inl, permCongr_apply, Equiv.symm_symm,
-        apply_ofInjective_symm Sum.inl_injective]
-      rw [ofInjective_apply, Subtype.coe_mk, Subtype.coe_mk]
-      dsimp [Set.range]
-      rw [subtypePerm_apply]
-    · rw [Equiv.sumCongr_apply, Sum.map_inr, permCongr_apply, Equiv.symm_symm,
-        apply_ofInjective_symm Sum.inr_injective, ofInjective_apply]
-      dsimp [Set.range]
-      rw [subtypePerm_apply]
+  have h1 : ∀ x : m ⊕ n, (∃ a : m, Sum.inl a = x) → ∃ a : m, Sum.inl a = σ x := by
+    rintro _ ⟨a, rfl⟩; exact h ⟨a, rfl⟩
+  have h3 : ∀ x : m ⊕ n, (∃ b : n, Sum.inr b = x) → ∃ b : n, Sum.inr b = σ x := by
+    rintro _ ⟨b, rfl⟩; exact (perm_mapsTo_inl_iff_mapsTo_inr σ).mp h ⟨b, rfl⟩
+  let σ₁' := subtypePermOfFintype σ h1
+  let σ₂' := subtypePermOfFintype σ h3
+  let σ₁ := permCongr (Equiv.ofInjective _ Sum.inl_injective).symm σ₁'
+  let σ₂ := permCongr (Equiv.ofInjective _ Sum.inr_injective).symm σ₂'
+  rw [MonoidHom.mem_range, Prod.exists]
+  use σ₁, σ₂
+  rw [Perm.sumCongrHom_apply]
+  ext (a | b)
+  · rw [Equiv.sumCongr_apply, Sum.map_inl, permCongr_apply, Equiv.symm_symm,
+      apply_ofInjective_symm Sum.inl_injective]
+    rw [ofInjective_apply, Subtype.coe_mk, Subtype.coe_mk]
+    dsimp [Set.range]
+    rw [subtypePerm_apply]
+  · rw [Equiv.sumCongr_apply, Sum.map_inr, permCongr_apply, Equiv.symm_symm,
+      apply_ofInjective_symm Sum.inr_injective, ofInjective_apply]
+    dsimp [Set.range]
+    rw [subtypePerm_apply]
 
 nonrec theorem Disjoint.orderOf {σ τ : Perm α} (hστ : Disjoint σ τ) :
     orderOf (σ * τ) = Nat.lcm (orderOf σ) (orderOf τ) :=
@@ -171,48 +160,47 @@ theorem Disjoint.extendDomain {p : β → Prop} [DecidablePred p] (f : α ≃ Su
 theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ π)
     (hc2 : IsConj τ ρ) (hd1 : Disjoint σ τ) (hd2 : Disjoint π ρ) : IsConj (σ * τ) (π * ρ) := by
   classical
-    cases nonempty_fintype α
-    obtain ⟨f, rfl⟩ := isConj_iff.1 hc1
-    obtain ⟨g, rfl⟩ := isConj_iff.1 hc2
-    have hd1' := coe_inj.2 hd1.support_mul
-    have hd2' := coe_inj.2 hd2.support_mul
-    rw [coe_union] at *
-    have hd1'' := disjoint_coe.2 (disjoint_iff_disjoint_support.1 hd1)
-    have hd2'' := disjoint_coe.2 (disjoint_iff_disjoint_support.1 hd2)
-    refine isConj_of_support_equiv ?_ ?_
-    · refine
-          ((Equiv.setCongr hd1').trans (Equiv.Set.union hd1'')).trans
-            ((Equiv.sumCongr (subtypeEquiv f fun a => ?_) (subtypeEquiv g fun a => ?_)).trans
-              ((Equiv.setCongr hd2').trans (Equiv.Set.union hd2'')).symm) <;>
-      · simp only [Set.mem_image, toEmbedding_apply, exists_eq_right, support_conj, coe_map,
-          apply_eq_iff_eq]
-    · intro x hx
-      simp only [trans_apply, symm_trans_apply, Equiv.setCongr_apply, Equiv.setCongr_symm_apply,
-        Equiv.sumCongr_apply]
-      rw [hd1', Set.mem_union] at hx
-      rcases hx with hxσ | hxτ
-      · rw [mem_coe, mem_support] at hxσ
-        rw [Set.union_apply_left, Set.union_apply_left]
-        · simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inl, comp_apply,
-            Set.union_symm_apply_left, Subtype.coe_mk, apply_eq_iff_eq]
-          have h := (hd2 (f x)).resolve_left ?_
-          · rw [mul_apply, mul_apply] at h
-            rw [h, inv_apply_self, (hd1 x).resolve_left hxσ]
-          · rwa [mul_apply, mul_apply, inv_apply_self, apply_eq_iff_eq]
-        · rwa [Subtype.coe_mk, mem_coe, mem_support]
-        · rwa [Subtype.coe_mk, Perm.mul_apply, (hd1 x).resolve_left hxσ, mem_coe,
-            apply_mem_support, mem_support]
-      · rw [mem_coe, ← apply_mem_support, mem_support] at hxτ
-        rw [Set.union_apply_right, Set.union_apply_right]
-        · simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inr, comp_apply,
-            Set.union_symm_apply_right, Subtype.coe_mk]
-          have h := (hd2 (g (τ x))).resolve_right ?_
-          · rw [mul_apply, mul_apply] at h
-            rw [inv_apply_self, h, (hd1 (τ x)).resolve_right hxτ]
-          · rwa [mul_apply, mul_apply, inv_apply_self, apply_eq_iff_eq]
-        · rwa [Subtype.coe_mk, mem_coe, ← apply_mem_support, mem_support]
-        · rwa [Subtype.coe_mk, Perm.mul_apply, (hd1 (τ x)).resolve_right hxτ,
-            mem_coe, mem_support]
+  cases nonempty_fintype α
+  obtain ⟨f, rfl⟩ := isConj_iff.1 hc1
+  obtain ⟨g, rfl⟩ := isConj_iff.1 hc2
+  have hd1' := coe_inj.2 hd1.support_mul
+  have hd2' := coe_inj.2 hd2.support_mul
+  rw [coe_union] at *
+  have hd1'' := disjoint_coe.2 (disjoint_iff_disjoint_support.1 hd1)
+  have hd2'' := disjoint_coe.2 (disjoint_iff_disjoint_support.1 hd2)
+  refine isConj_of_support_equiv ?_ ?_
+  · refine ((Equiv.setCongr hd1').trans (Equiv.Set.union hd1'')).trans <|
+      (Equiv.sumCongr (subtypeEquiv f fun a => ?_) <| subtypeEquiv g fun a => ?_).trans
+        ((Equiv.setCongr hd2').trans (Equiv.Set.union hd2'')).symm <;>
+      simp only [Set.mem_image, toEmbedding_apply, exists_eq_right, support_conj, coe_map,
+        apply_eq_iff_eq]
+  intro x hx
+  simp only [trans_apply, symm_trans_apply, Equiv.setCongr_apply, Equiv.setCongr_symm_apply,
+    Equiv.sumCongr_apply]
+  rw [hd1', Set.mem_union] at hx
+  rcases hx with hxσ | hxτ
+  · rw [mem_coe, mem_support] at hxσ
+    rw [Set.union_apply_left, Set.union_apply_left]
+    · simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inl, comp_apply,
+        Set.union_symm_apply_left, Subtype.coe_mk, apply_eq_iff_eq]
+      have h := (hd2 (f x)).resolve_left ?_
+      · rw [mul_apply, mul_apply] at h
+        rw [h, inv_apply_self, (hd1 x).resolve_left hxσ]
+      · rwa [mul_apply, mul_apply, inv_apply_self, apply_eq_iff_eq]
+    · rwa [Subtype.coe_mk, mem_coe, mem_support]
+    · rwa [Subtype.coe_mk, Perm.mul_apply, (hd1 x).resolve_left hxσ, mem_coe,
+        apply_mem_support, mem_support]
+  · rw [mem_coe, ← apply_mem_support, mem_support] at hxτ
+    rw [Set.union_apply_right, Set.union_apply_right]
+    · simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inr, comp_apply,
+        Set.union_symm_apply_right, Subtype.coe_mk]
+      have h := (hd2 (g (τ x))).resolve_right ?_
+      · rw [mul_apply, mul_apply] at h
+        rw [inv_apply_self, h, (hd1 (τ x)).resolve_right hxτ]
+      · rwa [mul_apply, mul_apply, inv_apply_self, apply_eq_iff_eq]
+    · rwa [Subtype.coe_mk, mem_coe, ← apply_mem_support, mem_support]
+    · rwa [Subtype.coe_mk, Perm.mul_apply, (hd1 (τ x)).resolve_right hxτ,
+        mem_coe, mem_support]
 
 theorem apply_mem_fixedPoints_iff_mem_of_mem_centralizer {g p : Perm α}
     (hp : p ∈ Subgroup.centralizer {g}) {x : α} :
