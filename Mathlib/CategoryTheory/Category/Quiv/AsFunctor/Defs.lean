@@ -12,7 +12,8 @@ import Mathlib.Data.Set.Lattice.Image
 import Mathlib.Logic.Small.Set
 
 -- import Mathlib.CategoryTheory.Category.Quiv.Shapes
-import Mathlib.CategoryTheory.Category.Quiv.WalkingQuiver
+import Mathlib.CategoryTheory.Category.Quiv
+import Mathlib.Tactic.ApplyFun
 
 /-!
   # Quivers as (co-)presheaves on the walking quiver
@@ -44,23 +45,46 @@ set_option structureDiamondWarning true
 
 open CategoryTheory Limits Bicategory Strict UnivLE ObjectProperty
 
+#check Quiv
+
 attribute [pp_with_univ] Quiv Quiver
 
+-- namespace WalkingQuiver
+-- open Opposite
+
+-- @[match_pattern] def zero := op WalkingParallelPair.zero
+-- @[match_pattern] def one := op WalkingParallelPair.one
+
+-- @[match_pattern] def id (X : WalkingParallelPairᵒᵖ) : X ⟶ X :=
+--   op (WalkingParallelPairHom.id X.unop)
+
+-- end WalkingQuiver
+
 namespace CategoryTheory.Quiv
-universe w₂ w₁ w v₂ v₁ v u₂ u₁ u
+open Opposite
+universe w₂ w₁ w' w v₂ v₁ v u₂ u₁ u
+
+scoped instance : Zero (WalkingParallelPairᵒᵖ) := ⟨.op .zero⟩
+scoped instance : One (WalkingParallelPairᵒᵖ) := ⟨.op .one⟩
+
+@[simp← ] lemma WalkingQuiver.zero_def : (0 : WalkingParallelPairᵒᵖ) = .op .zero := rfl
+@[simp← ] lemma WalkingQuiver.one_def : (1 : WalkingParallelPairᵒᵖ) = .op .one := rfl
+
+open WalkingQuiver
 
 /-- Interpret a quiver as a co-presheaf on the walking quiver. -/
 @[simps -fullyApplied, pp_with_univ]
-def asFunctor (Q : Quiv.{v, u}) : WalkingQuiver ⥤ Type max w v u where
+def asFunctor (Q : Quiv.{v, u}) : WalkingParallelPairᵒᵖ ⥤ Type max w v u where
   obj
   | 0 => ULift.{max w v} Q.α
   | 1 => (s t : ULift.{max w v} Q.α) × (Q.str.Hom s.1 t.1)
-  map
-  | .id _ => ↾id
-  | .source => ↾(·.1)
-  | .target => ↾(·.2.1)
-  map_id m := by cases m <;> {unfold_projs; simp}
-  map_comp := by rintro _ _ ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
+  map :=
+  @fun
+  | .op _, .op _, ⟨.id x⟩ => ↾id
+  | 1, 0, .op .left => ↾(·.1)
+  | 1, 0, .op .right => ↾(·.2.1)
+  map_id := by rintro ⟨⟨⟩⟩ <;> rfl
+  map_comp := by rintro ⟨⟩ ⟨⟩ ⟨⟨⟩⟩ ⟨⟨⟩⟩ ⟨⟨⟩⟩ <;> rfl
     -- cases Z; swap
     -- · cases g; cases f; rfl
     -- · cases Y; swap
@@ -72,9 +96,9 @@ def asFunctor (Q : Quiv.{v, u}) : WalkingQuiver ⥤ Type max w v u where
 @[simps] instance asFunctor.functorial : Functorial asFunctor where
   map {U V : Quiv.{v, u}} (f : U ⟶ V) :=
   { app
-    | 0 => ULift.map f.obj
+    | ⟨.zero⟩ => ULift.map f.obj
     | 1 => ↾(fun ⟨s, t, hom⟩ ↦ ⟨ULift.map f.obj s, ULift.map f.obj t, f.map hom⟩)
-    naturality := by rintro _ ⟨⟩ ⟨⟩ <;> rfl }
+    naturality := by rintro ⟨⟩ ⟨⟨⟩⟩ ⟨⟨⟩⟩ <;> rfl }
     -- m m' f' := by
     --   cases m'; swap
     --   · cases f'; simp
@@ -82,30 +106,32 @@ def asFunctor (Q : Quiv.{v, u}) : WalkingQuiver ⥤ Type max w v u where
     --     · cases f'; rfl
     --     · cases f' <;> { ext ⟨s, t, hom⟩; simp }}
 
-namespace PresheafWalkingQuiver
+-- namespace PresheafWalkingParallelPair
+
+variable {F : WalkingParallelPairᵒᵖ ⥤ Type w} {X : Quiv.{v, u}}
 
 /-- The source of an element of `F.obj 1`, interpreted as the source of an edge in the
 corresponding quiver. -/
-abbrev src {F : WalkingQuiver ⥤ Type w} (e : F.obj 1) := F.map .source e
+abbrev src (e : F.obj 1) := F.map (Quiver.Hom.op .left) e
 /-- The target of an element of `F.obj 1`, interpreted as the target of an edge in the
 corresponding quiver. -/
-abbrev tgt {F : WalkingQuiver ⥤ Type w} (e : F.obj 1) := F.map .target e
+abbrev tgt (e : F.obj 1) := F.map (Quiver.Hom.op .right) e
 
 unif_hint hom_eq_asFunctor1 (X : Quiv.{v, u}) where
   ⊢ (s t : ULift.{max w v} X) × (s.1 ⟶ t.1) ≟ (asFunctor.{w} X).obj 1
 
-@[simp] lemma asFunctor_src {X : Quiv} (e : (s t : ULift X) × (s.1 ⟶ t.1)) :
+@[simp] lemma asFunctor_src (e : (s t : ULift X) × (s.1 ⟶ t.1)) :
   src e = e.1 := rfl
-@[simp] lemma asFunctor_tgt {X : Quiv} (e : (s t : ULift X) × (s.1 ⟶ t.1)) :
+@[simp] lemma asFunctor_tgt (e : (s t : ULift X) × (s.1 ⟶ t.1)) :
   tgt e = e.2.1 := rfl
 
-@[simp] lemma src_asFunctor {X : Quiv} {s t : ULift X} (e : (s.1 ⟶ t.1)) :
+@[simp] lemma src_asFunctor {s t : ULift X} (e : (s.1 ⟶ t.1)) :
   src (⟨s, t, e⟩ : (asFunctor.{w} X).obj 1) = s := rfl
-@[simp] lemma tgt_asFunctor {X : Quiv} {s t : ULift X} (e : (s.1 ⟶ t.1)) :
+@[simp] lemma tgt_asFunctor {s t : ULift X} (e : (s.1 ⟶ t.1)) :
   tgt (⟨s, t, e⟩ : (asFunctor.{w} X).obj 1) = t := rfl
 
 @[ext]
-lemma asFunctor.hom_ext {X : Quiv.{v, u}} (f g : (s t : ULift.{max w v} X) × (s.1 ⟶ t.1))
+lemma asFunctor.hom_ext (f g : (s t : ULift.{max w v} X) × (s.1 ⟶ t.1))
     (hs : src f = src g) (ht : tgt f = tgt g) (he : HEq f.2.2 g.2.2) : f = g := by
   rcases f with ⟨fs, ft, fe⟩
   rcases g with ⟨gs, gt, ge⟩
@@ -117,11 +143,12 @@ lemma asFunctor.hom_ext {X : Quiv.{v, u}} (f g : (s t : ULift.{max w v} X) × (s
 attribute [simp high] asFunctor.hom_ext_iff
 
 /-- The type of vertices of a quiver in functor form. -/
-abbrev Vertex (F : WalkingQuiver ⥤ Type w) := F.obj 0
+abbrev Vertex (F : WalkingParallelPairᵒᵖ ⥤ Type w) := F.obj 0
 /-- The type of all edges of a quiver in functor form. -/
-abbrev Edges (F : WalkingQuiver ⥤ Type w) := F.obj 1
+abbrev Edges (F : WalkingParallelPairᵒᵖ ⥤ Type w) := F.obj 1
 /-- The type of edges between two vertices of a quiver in functor form. -/
-abbrev Edge (F : WalkingQuiver ⥤ Type w) (s t : Vertex F) := {e : F.obj 1 // src e = s ∧ tgt e = t}
+abbrev Edge (F : WalkingParallelPairᵒᵖ ⥤ Type w) (s t : Vertex F) :=
+  {e : F.obj 1 // src e = s ∧ tgt e = t}
 
 instance {F s t} : CoeOut (Edge F s t) (F.obj 1) where
   coe e := e.1
@@ -130,25 +157,27 @@ instance {F e} : CoeDep (F.obj 1) e (Edge F (src e) (tgt e)) where
   coe := ⟨e, rfl, rfl⟩
 
 @[ext]
-lemma Edge.ext {F : WalkingQuiver ⥤ Type w} {s t : Vertex F} {e f : Edge F s t} (h : e.1 = f.1) :
+lemma Edge.ext {s t : Vertex F} {e f : Edge F s t} (h : e.1 = f.1) :
   e = f := by cases e; cases f; simp_all
 
 /-- Assign a more precise type to an edge of a quiver in functor form. -/
-abbrev hom {F : WalkingQuiver ⥤ Type w} (e : F.obj 1) : Edge F (src e) (tgt e) := ↑e
+@[coe] abbrev hom (e : F.obj 1) : Edge F (src e) (tgt e) := ↑e
 
 @[simp]
-lemma src_edge {F : WalkingQuiver ⥤ Type w} {s t : Vertex F} (e : Edge F s t) : src e = s := e.2.1
+lemma src_edge {s t : Vertex F} (e : Edge F s t) : src e = s := e.2.1
 @[simp]
-lemma tgt_edge {F : WalkingQuiver ⥤ Type w} {s t : Vertex F} (e : Edge F s t) : tgt e = t := e.2.2
+lemma tgt_edge {s t : Vertex F} (e : Edge F s t) : tgt e = t := e.2.2
+
+variable (F)
 
 /-- A vertex of a quiver in functor form is connected iff it is either the
 source or target of an edge. -/
-abbrev vertexConnected (F : WalkingQuiver ⥤ Type w) (x : Vertex F) :=
+abbrev vertexConnected (x : Vertex F) :=
   ∃ y, Nonempty (Edge F x y) ∨ Nonempty (Edge F y x)
 
 /-- A more useful statement of `¬ vertexConnected F ·`. -/
 @[simp]
-lemma not_vertexConnected_iff (F : WalkingQuiver ⥤ Type w) (x : Vertex F) :
+lemma not_vertexConnected_iff (x : Vertex F) :
     ¬ vertexConnected F x ↔ ∀ (e : F.obj 1), src e ≠ x ∧ tgt e ≠ x where
   mp h e := by
     contrapose h
@@ -170,9 +199,11 @@ lemma not_vertexConnected_iff (F : WalkingQuiver ⥤ Type w) (x : Vertex F) :
       specialize h e
       cases h; simp_all
 
+variable {F}
+
 /-- If the source or target vertices of two sets of edges differ, then the sets
 are disjoint. -/
-lemma edge_disjoint {F : WalkingQuiver ⥤ Type w}
+lemma edge_disjoint {F : WalkingParallelPairᵒᵖ ⥤ Type w}
     (st₁ st₂ : Vertex F × Vertex F) (h : st₁ ≠ st₂) :
     Function.onFun Disjoint (fun st' ↦ {e.1 | e : Edge F st'.1 st'.2 }) st₁ st₂ := by
   intro es hst₁ hst₂ e he
@@ -190,12 +221,12 @@ Unlike `Quiver.Hom` and `homOfEq`, the source and target are internally only tra
 by the subtype prop, so no casts appear in the result and `edgeOfEq` is a bit better
 behaved. -/
 -- @[simp]
-def edgeOfEq {F : WalkingQuiver ⥤ Type w} {s s' t t' : Vertex F} (e : Edge F s t)
+def edgeOfEq {s s' t t' : Vertex F} (e : Edge F s t)
     (hs : s = s') (ht : t = t') : Edge F s' t' := ⟨e.1, by simp [←hs, ←ht]⟩
 
 /-- `edgeOfEq` as an Equiv. -/
 @[simps]
-def Edge.equivOfEq {F : WalkingQuiver ⥤ Type w} {s s' t t' : Vertex F} (hs : s = s') (ht : t = t') :
+def Edge.equivOfEq {s s' t t' : Vertex F} (hs : s = s') (ht : t = t') :
     Edge F s t ≃ Edge F s' t' := {
   toFun e := edgeOfEq e hs ht
   invFun e := edgeOfEq e hs.symm ht.symm
@@ -204,38 +235,38 @@ def Edge.equivOfEq {F : WalkingQuiver ⥤ Type w} {s s' t t' : Vertex F} (hs : s
 }
 
 @[simp]
-lemma edgeOfEq_val {F : WalkingQuiver ⥤ Type w} {s s' t t' : Vertex F} (hs : s = s') (ht : t = t')
+lemma edgeOfEq_val {s s' t t' : Vertex F} (hs : s = s') (ht : t = t')
     (e : Edge F s t) : (edgeOfEq e hs ht).1 = e.1 := by simp [edgeOfEq]
 
-lemma edgeOfEq_inj {F : WalkingQuiver ⥤ Type w} {s s' t t' : Vertex F}
+lemma edgeOfEq_inj {s s' t t' : Vertex F}
     (hs₁ hs₂ : s = s') (ht₁ ht₂ : t = t') (e e' : Edge F s t) :
     edgeOfEq e hs₁ ht₁ = edgeOfEq e' hs₂ ht₂ ↔ e = e' := by
   cases hs₁; cases hs₂; cases ht₁; cases ht₂; simp [edgeOfEq]
 
 @[simp]
-lemma edgeOfEq_refl {F : WalkingQuiver ⥤ Type w} {s t : Vertex F} (e : Edge F s t) :
+lemma edgeOfEq_refl {s t : Vertex F} (e : Edge F s t) :
     edgeOfEq e rfl rfl = e := by simp [edgeOfEq]
 
 @[simp]
-lemma edgeOfEq_trans {F : WalkingQuiver ⥤ Type w} {s s' s'' t t' t'' : Vertex F}
+lemma edgeOfEq_trans {s s' s'' t t' t'' : Vertex F}
     (e : Edge F s t) (hs : s = s') (hs' : s' = s'') (ht : t = t') (ht' : t' = t'') :
     edgeOfEq (edgeOfEq e hs ht) hs' ht' = edgeOfEq e (hs.trans hs') (ht.trans ht') :=
   by simp [edgeOfEq]
 
 @[simp]
-lemma edgeOfEq_eq_iff {F : WalkingQuiver ⥤ Type w} {s s' t t' : Vertex F}
+lemma edgeOfEq_eq_iff {s s' t t' : Vertex F}
     (e : Edge F s t) (e' : Edge F s' t') (hs : s = s') (ht : t = t') :
     edgeOfEq e hs ht = e' ↔ e = edgeOfEq e' hs.symm ht.symm := by
   cases hs; cases ht; rfl
 
 @[simp]
-lemma eq_edgeOfEq_iff {F : WalkingQuiver ⥤ Type w} {s s' t t' : Vertex F}
+lemma eq_edgeOfEq_iff {s s' t t' : Vertex F}
     (e : Edge F s t) (e' : Edge F s' t') (hs : s' = s) (ht : t' = t) :
     e = edgeOfEq e' hs ht ↔ edgeOfEq e hs.symm ht.symm = e' := by
   cases hs; cases ht; rfl
 
 @[simp]
-lemma hom_edge {F : WalkingQuiver ⥤ Type w} {s t : Vertex F} (e : Edge F s t) :
+lemma hom_edge {s t : Vertex F} (e : Edge F s t) :
     hom e.1 = edgeOfEq e (src_edge _).symm (tgt_edge _).symm := by
   simp [edgeOfEq]
 
@@ -252,26 +283,26 @@ instance {Q : Quiv.{v, u}} {s t : Vertex Q.asFunctor} :
   }⟩⟩
 
 @[elab_as_elim]
-def map_hom {F : WalkingQuiver ⥤ Type w} {motive : (F.obj 1) → Sort*}
+def map_hom {motive : (F.obj 1) → Sort*}
     (f : {s t : Vertex F} → (e : Edge F s t) → motive e) (e : F.obj 1) : motive e :=
   f (hom e)
 
 section naturality
 
-variable {X Y : Quiv.{v, u}} {F G : WalkingQuiver ⥤ Type w} --{X Y : Quiv.{u, max u v}}
+variable {X Y : Quiv.{v, u}} {F G : WalkingParallelPairᵒᵖ ⥤ Type w} --{X Y : Quiv.{u, max u v}}
          (μ : F ⟶ G) {s t : Vertex F} {f : Edge F s t}
 
 /-- Rephrasing naturality as a property of `src`, which can be more convenient when rewriting
 by hand. -/
 @[simp↓]
 lemma naturality_src (f : F.obj 1) : src (μ.app 1 f) = (μ.app 0 (src f)) := by
-  simpa using congrFun (μ.naturality .source).symm f
+  simpa using congrFun (μ.naturality ⟨.left⟩).symm f
 
 /-- Rephrasing naturality as a property of `tgt`, which can be more convenient when rewriting
 by hand. -/
 @[simp↓]
 lemma naturality_tgt (f : F.obj 1) : tgt (μ.app 1 f) = (μ.app 0 (tgt f)) := by
-  simpa using congrFun (μ.naturality .target).symm f
+  simpa using congrFun (μ.naturality ⟨.right⟩).symm f
 
 /-- The image of an precisely-typed edge under a natural transformation. -/
 def natTransEdge (f : Edge F s t) : Edge G (μ.app 0 s) (μ.app 0 t) :=
@@ -279,128 +310,125 @@ def natTransEdge (f : Edge F s t) : Edge G (μ.app 0 s) (μ.app 0 t) :=
 
 @[simp]
 lemma naturality_src_limit {J : Type w} [SmallCategory J]
-    {F : J ⥤ WalkingQuiver ⥤ Type max w u} (j : J) e :
-    src (limit.π (F.flip.obj 1) j e) = limit.π (F.flip.obj 0) j (@src (F := F.flip ⋙ lim) e) := by
-  let ε := Types.limNatIsoSectionsFunctor.app (F.flip.obj 1) |>.toEquiv
-  set e' := ε e with e'_def
-  symm at e'_def; rw [Equiv.apply_eq_iff_eq_symm_apply] at e'_def
-  rcases e' with ⟨e', he'⟩
-  subst e'_def
-  simp only [zero_eq, Functor.sectionsFunctor_obj, Functor.flip_obj_obj, lim_obj,
-    Iso.toEquiv_symm_fun, Iso.app_inv, ε]
-  conv_rhs =>
-    simp only [src, one_eq, zero_eq, Functor.comp_map, ε]
-    rw [← types_comp_apply _ (lim.map _), ← Types.limNatIsoSectionsFunctor.inv.naturality,
-    ← types_comp_apply _ (limit.π _ _), Category.assoc]
-  simp [Types.limNatIsoSectionsFunctor]
+    {F : J ⥤ WalkingParallelPairᵒᵖ ⥤ Type max w u} (j : J) e :
+    src (limit.π (F.flip.obj 1) j e) = limit.π (F.flip.obj 0) j (src (F := F.flip ⋙ lim) e) := by
+  simp [zero_def, one_def, src]
 
 @[simp]
 lemma naturality_src_colimit {J : Type w} [SmallCategory J]
-    {F : J ⥤ WalkingQuiver ⥤ Type max w u} (j : J) e :
-    @src (F := F.flip ⋙ colim) (colimit.ι (F.flip.obj 1) j e) =
+    {F : J ⥤ WalkingParallelPairᵒᵖ ⥤ Type max w u} (j : J) e :
+    src (F := F.flip ⋙ colim) (colimit.ι (F.flip.obj 1) j e) =
       colimit.ι (F.flip.obj 0) j (src e) := by
-  let ε := Types.colimNatIsoColimitTypeFunctor.app (F.flip.obj 1) |>.toEquiv
-  set e' := ε (colimit.ι (F.flip.obj 1) j e) with ← e'_def
-  rw [Equiv.apply_eq_iff_eq_symm_apply] at e'_def
-  rw [e'_def]
-  simp_rw [ε, Iso.toEquiv_symm_fun, Iso.app_inv]
-  simp only [zero_eq, Functor.comp_obj, colim_obj, src, one_eq, Functor.comp_map]
-  rw [← types_comp_apply _ (colim.map _), ← Types.colimNatIsoColimitTypeFunctor.inv.naturality]
-  unfold e' ε
-  simpa [Sigma.map, Quot.map] using Types.colimitEquivColimitType_symm_apply _ _ _
+  simp [zero_def, one_def, src]
 
 @[simp]
 lemma naturality_tgt_limit {J : Type w} [SmallCategory J]
-    {F : J ⥤ WalkingQuiver ⥤ Type max w u} (j : J) e :
-    tgt (limit.π (F.flip.obj 1) j e) = limit.π (F.flip.obj 0) j (@tgt (F := F.flip ⋙ lim) e) := by
-  let ε := Types.limNatIsoSectionsFunctor.app (F.flip.obj 1) |>.toEquiv
-  set e' := ε e with e'_def
-  symm at e'_def; rw [Equiv.apply_eq_iff_eq_symm_apply] at e'_def
-  rcases e' with ⟨e', he'⟩
-  subst e'_def
-  simp only [zero_eq, Functor.sectionsFunctor_obj, Functor.flip_obj_obj, lim_obj,
-    Iso.toEquiv_symm_fun, Iso.app_inv, ε]
-  conv_rhs =>
-    simp only [tgt, one_eq, zero_eq, Functor.comp_map, ε]
-    rw [← types_comp_apply _ (lim.map _), ← Types.limNatIsoSectionsFunctor.inv.naturality,
-    ← types_comp_apply _ (limit.π _ _), Category.assoc]
-  simp [Types.limNatIsoSectionsFunctor]
+    {F : J ⥤ WalkingParallelPairᵒᵖ ⥤ Type max w u} (j : J) e :
+    tgt (limit.π (F.flip.obj 1) j e) = limit.π (F.flip.obj 0) j (tgt (F := F.flip ⋙ lim) e) := by
+  simp [zero_def, one_def, tgt]
 
 @[simp]
 lemma naturality_tgt_colimit {J : Type w} [SmallCategory J]
-    {F : J ⥤ WalkingQuiver ⥤ Type max w u} (j : J) e :
-    @tgt (F := F.flip ⋙ colim) (colimit.ι (F.flip.obj 1) j e) =
+    {F : J ⥤ WalkingParallelPairᵒᵖ ⥤ Type max w u} (j : J) e :
+    tgt (F := F.flip ⋙ colim) (colimit.ι (F.flip.obj 1) j e) =
       colimit.ι (F.flip.obj 0) j (tgt e) := by
-  let ε := Types.colimNatIsoColimitTypeFunctor.app (F.flip.obj 1) |>.toEquiv
-  set e' := ε (colimit.ι (F.flip.obj 1) j e) with ← e'_def
-  rw [Equiv.apply_eq_iff_eq_symm_apply] at e'_def
-  rw [e'_def]
-  simp_rw [ε, Iso.toEquiv_symm_fun, Iso.app_inv]
-  simp only [zero_eq, Functor.comp_obj, colim_obj, tgt, one_eq, Functor.comp_map]
-  rw [← types_comp_apply _ (colim.map _), ← Types.colimNatIsoColimitTypeFunctor.inv.naturality]
-  unfold e' ε
-  simpa [Sigma.map, Quot.map] using Types.colimitEquivColimitType_symm_apply _ _ _
-
+  simp [zero_def, one_def, tgt]
 
 --Special cases for `ULift` and postcomposition by `uliftFunctor`, which
 --can't be written as natural transformations from `F` as `Type w ≠ Type max w w'`.
 
 @[simp]
-lemma naturality_src_up.{w'} {f : F.obj 1} :
+lemma naturality_src_up {f : F.obj 1} :
   @src (F ⋙ uliftFunctor.{w'}) (ULift.up f) = ULift.up (src f) := by rfl
 
 
-lemma naturality_src_down.{w'} {f : ULift (F.obj 1)} :
+lemma naturality_src_down {f : ULift (F.obj 1)} :
     src f.down = ULift.down (@src (F ⋙ uliftFunctor.{w'}) f) := by rfl
 
 @[simp]
-lemma naturality_tgt_up.{w'} {f : F.obj 1} :
+lemma naturality_tgt_up {f : F.obj 1} :
   @tgt (F ⋙ uliftFunctor.{w'}) (ULift.up f) = ULift.up (tgt f) := by rfl
 
 -- @[simp]
-lemma naturality_tgt_down.{w'} {f : ULift (F.obj 1)} :
+lemma naturality_tgt_down {f : ULift (F.obj 1)} :
     tgt f.down = ULift.down (@tgt (F ⋙ uliftFunctor.{w'}) f) := by rfl
 
-def natTransEdge_up.{w'} {f : F.obj 1} :
+def natTransEdge_up {f : F.obj 1} :
     Edge (F ⋙ uliftFunctor.{w'}) (ULift.up (src f)) (ULift.up (tgt f)) :=
   ⟨ULift.up f, by simp⟩
 
-def natTransEdge_down.{w'} (f : ULift (F.obj 1)) :
+def natTransEdge_down (f : ULift (F.obj 1)) :
     Edge F (ULift.down (@src (F ⋙ uliftFunctor.{w'}) f))
       (ULift.down (@tgt (F ⋙ uliftFunctor.{w'}) f)) :=
   ⟨ULift.down f, by simp [naturality_src_down, naturality_tgt_down]⟩
 
-def asFunctor.natTransEdge
+namespace asFunctor
+
+def natTransEdge
     (μ : X.asFunctor ⟶ Y.asFunctor) {s t : X} (f : s ⟶ t) :
     Y.str.Hom (μ.app 0 ⟨s⟩).1 (μ.app 0 ⟨t⟩).1 :=
   Quiver.homOfEq (μ.app 1 ⟨⟨s⟩, ⟨t⟩, f⟩).2.2
     (congrArg ULift.down <| naturality_src μ _) (congrArg ULift.down <| naturality_tgt μ _)
 
 @[simp]
-lemma asFunctor.natTransEdge_heq
+lemma natTransEdge_heq
     (μ : X.asFunctor ⟶ Y.asFunctor) {s t : X} {f : s ⟶ t} :
-    HEq (asFunctor.natTransEdge μ f) (μ.app 1 ⟨⟨s⟩, ⟨t⟩, f⟩).2.2 := by
-  simp [asFunctor.natTransEdge, Quiver.homOfEq]
+    HEq (natTransEdge μ f) (μ.app 1 ⟨⟨s⟩, ⟨t⟩, f⟩).2.2 := by
+  simp [natTransEdge, Quiver.homOfEq]
 
 @[simp]
-lemma asFunctor.natTransEdge_heq'
+lemma natTransEdge_heq'
     (μ : X.asFunctor ⟶ Y.asFunctor) {f : (s t : ULift X) × (s.1 ⟶ t.1)} :
-    HEq (asFunctor.natTransEdge μ f.2.2) (μ.app 1 f).2.2 := by
-  simp [asFunctor.natTransEdge, Quiver.homOfEq]
+    HEq (natTransEdge μ f.2.2) (μ.app 1 f).2.2 := by
+  simp [natTransEdge, Quiver.homOfEq]
+
+@[simp]
+lemma naturality_src {U V : Quiv.{v, u}} {s t : U.α} (f : s ⟶ t)
+    (μ : U.asFunctor ⟶ V.asFunctor) :
+    src (μ.app 1 ⟨⟨s⟩, ⟨t⟩, f⟩) = μ.app 0 ⟨s⟩ := by
+  simp [asFunctor, src, Quiver.Hom.op]
+
+@[simp]
+lemma naturality_tgt {U V : Quiv.{v, u}} {s t : U.α} (f : s ⟶ t)
+    (μ : U.asFunctor ⟶ V.asFunctor) :
+    tgt (μ.app 1 ⟨⟨s⟩, ⟨t⟩, f⟩) = μ.app 0 ⟨t⟩ := by
+  simp [asFunctor, tgt, Quiver.Hom.op]
 
 
+instance : (Functor.of (asFunctor.{w, v, u})).Full := ⟨fun {U V : Quiv.{v, u}} μ ↦
+  ⟨⟨ULift.conj (μ.app 0), asFunctor.natTransEdge μ⟩, by
+    ext q₀ x
+    rcases q₀ with ⟨⟨⟩⟩
+    · simp [Functor.of, zero_def]
+    · rcases x with ⟨⟨s⟩, ⟨t⟩, f : s ⟶ t⟩
+      simp only [Functor.of, asFunctor_obj, ULift.down_up, asFunctor.functorial_map_app, asHom,
+        ULift.map_up, ULift.conj.eq_1, ULift.up_down]
+      ext <;> simp_rw [← one_def] <;> [rw [naturality_src]; rw [naturality_tgt]; simp] <;> simp⟩⟩
+
+instance : (Functor.of (asFunctor.{w, v, u})).Faithful := ⟨fun {X Y} μ ν h => by
+  rw [NatTrans.ext_iff, funext_iff] at h
+  apply Prefunctor.ext
+  · intro x₁ x₂ f
+    simp_rw [eqRec_eq_cast, cast_cast, eq_cast_iff_heq]
+    replace h := congrFun (h 1) ⟨⟨x₁⟩, ⟨x₂⟩, f⟩
+    rw [asFunctor.hom_ext_iff] at h
+    rcases h with ⟨_, _, he⟩
+    exact he
+  · intro x
+    simpa [Functor.of] using congrFun (h 0) ⟨x⟩⟩
+
+end asFunctor
 end naturality
-end Quiv.PresheafWalkingQuiver
+-- end Quiv.PresheafWalkingParallelPair
 namespace uliftFunctor
-open Quiv.PresheafWalkingQuiver
+-- open Quiv.PresheafWalkingParallelPair
 
 @[simps!]
-def vertexEquiv.{w', w} {F : WalkingQuiver ⥤ Type w} :
-    Vertex (F ⋙ uliftFunctor.{w'}) ≃ Vertex F :=
+def vertexEquiv : Vertex (F ⋙ uliftFunctor.{w'}) ≃ Vertex F :=
   Equiv.ulift
 
 @[simps!]
-def edgeEquiv.{w', w} {F : WalkingQuiver ⥤ Type w} (s t : Vertex (F ⋙ uliftFunctor.{w'})) :
+def edgeEquiv (s t : Vertex (F ⋙ uliftFunctor.{w'})) :
     Edge (F ⋙ uliftFunctor.{w'}) s t ≃ Edge F (vertexEquiv s) (vertexEquiv t) :=
   Equiv.ulift.subtypeEquiv fun e ↦ by
     constructor
@@ -415,77 +443,32 @@ def edgeEquiv.{w', w} {F : WalkingQuiver ⥤ Type w} (s t : Vertex (F ⋙ uliftF
         simp [h₁, h₂, vertexEquiv, src, tgt]
 
 end uliftFunctor
-namespace Quiv
+-- namespace Quiv
 attribute [local simp] ULift.down_up ULift.up_down
-open PresheafWalkingQuiver asFunctor uliftFunctor
+open asFunctor uliftFunctor
 section
-universe w₂ w₁ w v₂ v₁ v u₂ u₁ u
+-- universe w₂ w₁ w v₂ v₁ v u₂ u₁ u
 
 
--- At many points in the following proofs, we have multiple goals all of which we intend to
--- ultimately solve with `simp`, but some of which need to be unstuck first. As such, the
--- multiGoal linter is unhelpful here.
-set_option linter.style.multiGoal false
+-- -- At many points in the following proofs, we have multiple goals all of which we intend to
+-- -- ultimately solve with `simp`, but some of which need to be unstuck first. As such, the
+-- -- multiGoal linter is unhelpful here.
+-- set_option linter.style.multiGoal false
 
 @[simp]
 def mk (α : Type u) (hom : α → α → Type v) : Quiv where
   α := α
-  str := {Hom := hom}
-
--- -- linter false positives on `aesop_cat` syntax for tactic rules
--- set_option linter.unusedTactic false
--- set_option linter.unreachableTactic false
-
-#check ULift.map_conj
-
---TODO move to `asFunctor`
-@[simp]
-lemma naturality_src_asFunctor {U V : Quiv.{v, u}} {s t : U.α} (f : s ⟶ t)
-    (μ : U.asFunctor ⟶ V.asFunctor) :
-    src (μ.app 1 ⟨⟨s⟩, ⟨t⟩, f⟩) = μ.app 0 ⟨s⟩ := by
-  simp [asFunctor]
-
-@[simp]
-lemma naturality_tgt_asFunctor {U V : Quiv.{v, u}} {s t : U.α} (f : s ⟶ t)
-    (μ : U.asFunctor ⟶ V.asFunctor) :
-    tgt (μ.app 1 ⟨⟨s⟩, ⟨t⟩, f⟩) = μ.app 0 ⟨t⟩ := by
-  simp [asFunctor]
-
-instance : (Functor.of (asFunctor.{w, v, u})).Full := ⟨fun {U V : Quiv.{v, u}} μ ↦
-  ⟨⟨ULift.conj (μ.app 0), asFunctor.natTransEdge μ⟩, by
-    ext q₀ x
-    cases q₀
-    · simp [Functor.of]
-    · rcases x with ⟨⟨s⟩, ⟨t⟩, f⟩
-      simp only [Functor.of, asFunctor_obj, ULift.down_up, asFunctor.functorial_map_app, asHom,
-        ULift.map_up, ULift.conj.eq_1, ULift.up_down]
-      -- TODO: `ext <;> simp` doesn't work here, but once either the src or tgt cases
-      -- are cleared with a manual `rw`, the rest is `all_goals simp`
-      ext
-      rw [naturality_src]
-      all_goals simp⟩⟩
-
-instance : (Functor.of (asFunctor.{w, v, u})).Faithful := ⟨fun {X Y} μ ν h => by
-  rw [NatTrans.ext_iff, funext_iff] at h
-  apply Prefunctor.ext
-  · intro x₁ x₂ f
-    simp_rw [eqRec_eq_cast, cast_cast, eq_cast_iff_heq]
-    replace h := congrFun (h 1) ⟨⟨x₁⟩, ⟨x₂⟩, f⟩
-    rw [asFunctor.hom_ext_iff] at h
-    rcases h with ⟨_, _, he⟩
-    exact he
-  · intro x
-    simpa [Functor.of] using congrFun (h 0) ⟨x⟩⟩
+  str.Hom := hom
 
 end
 end Quiv
 
-structure SmallAsQuivStruct.{v, u, w} (F : WalkingQuiver ⥤ Type w) : Prop where
-  small_vertex : Small.{u} (Quiv.PresheafWalkingQuiver.Vertex F)
-  small_edge : ∀ s t, Small.{v} (Quiv.PresheafWalkingQuiver.Edge F s t)
+structure SmallAsQuivStruct.{v, u, w} (F : WalkingParallelPairᵒᵖ ⥤ Type w) : Prop where
+  small_vertex : Small.{u} (Quiv.Vertex F)
+  small_edge : ∀ s t, Small.{v} (Quiv.Edge F s t)
 
--- open Quiv.PresheafWalkingQuiver in
-/-- A functor `WalkingQuiver ⥤ Type w` is `v, u`-small "as a quiver" if it corresponds to a
+-- open Quiv.PresheafWalkingParallelPair in
+/-- A functor `WalkingParallelPairᵒᵖ ⥤ Type w` is `v, u`-small "as a quiver" if it corresponds to a
 `Quiv.{v, u}` -- that is, its indicated vertex type is `u`-small and the
 subtype restricting its indicated edge type to a given source and target is
 `v`-small for all sources and targets.
@@ -499,17 +482,17 @@ parameters first `v, u` first. -/
 --can't use the generalized projection notation on a local together with explicit
 --universe levels, so there's not much point. If that ever changes, we should
 --move this to `CategoryTheory.Functor`.
-def SmallAsQuiv.{v, u, w} : ObjectProperty (WalkingQuiver ⥤ Type w) :=
+def SmallAsQuiv.{v, u, w} : ObjectProperty (WalkingParallelPairᵒᵖ ⥤ Type w) :=
   SmallAsQuivStruct.{v, u, w}
 
 
 
 -- @[pp_with_univ, mk_iff]
--- class SmallAsQuiv.{v, u, w} (F : WalkingQuiver ⥤ Type w) where
+-- class SmallAsQuiv.{v, u, w} (F : WalkingParallelPairᵒᵖ ⥤ Type w) where
 --   [small_vertex : Small.{u} (Vertex F)]
 --   [small_edge : ∀ (s t : Vertex F), Small.{v} (Edge F s t)]
 
--- abbrev SmallAsQuiv.objProp.{v, u, w} : ObjectProperty (WalkingQuiver ⥤ Type w) :=
+-- abbrev SmallAsQuiv.objProp.{v, u, w} : ObjectProperty (WalkingParallelPairᵒᵖ ⥤ Type w) :=
 --   SmallAsQuiv.{v, u}
 
 -- @[pp_with_univ]
@@ -528,8 +511,8 @@ def SmallAsQuiv.{v, u, w} : ObjectProperty (WalkingQuiver ⥤ Type w) :=
 namespace SmallAsQuiv
 universe v' u' v u w' w
 --TODO consolidate `open`s
-open Quiv PresheafWalkingQuiver uliftFunctor
-variable (F : WalkingQuiver ⥤ Type w) (V : Quiv.{v, u})
+open Quiv uliftFunctor
+variable (F : WalkingParallelPairᵒᵖ ⥤ Type w) (V : Quiv.{v, u})
 
 /-- Make an instance of `SmallOfQuivIs.{v, u, w}` via typeclass synthesis. Not an instance as it
 would cause a loop with `Small.{u} (Vertex F)` and `Small.{v} (Edge F _ _)` -/
@@ -549,11 +532,11 @@ variable {F}
 instance : Small.{u} (Vertex F) := SmallAsQuiv.prop_of_is F |>.small_vertex
 instance (s t : Vertex F) : Small.{v} (Edge F s t) := SmallAsQuiv.prop_of_is F |>.small_edge s t
 
--- instance _root_.CategoryTheory.ObjectProperty.Is.small_vertex {F : WalkingQuiver ⥤ Type w}
+-- instance _root_.CategoryTheory.ObjectProperty.Is.small_vertex {F : WalkingParallelPairᵒᵖ ⥤ Type w}
 --     [inst : SmallAsQuiv.{v, u, w}.Is F] : Small.{u} (Vertex F) :=
 --   inst.prop.1
 
--- instance _root_.CategoryTheory.ObjectProperty.Is.small_edge {F : WalkingQuiver ⥤ Type w}
+-- instance _root_.CategoryTheory.ObjectProperty.Is.small_edge {F : WalkingParallelPairᵒᵖ ⥤ Type w}
 --     [inst : SmallAsQuiv.{v, u, w}.Is F] (s t : Vertex F) :
 --   Small.{v} (Edge F s t) := inst.prop.2 s t
 
@@ -570,7 +553,7 @@ instance smallAsQuiv_asFunctor' :
     SmallAsQuiv.{v, u}.Is (Functor.of asFunctor.{w, v, u} |>.obj V) :=
   smallAsQuiv_asFunctor V
 
-instance smallAsQuiv_trans {F : WalkingQuiver ⥤ Type w} [IsSmallAsQuiv.{v, u, w} F] :
+instance smallAsQuiv_trans {F : WalkingParallelPairᵒᵖ ⥤ Type w} [IsSmallAsQuiv.{v, u, w} F] :
     SmallAsQuiv.{max v' v, max u' u, w}.Is F :=
   ⟨small_lift _, fun _ _ ↦ small_lift _⟩
 
@@ -586,27 +569,25 @@ instance smallAsQuiv_closedUnderIso : IsClosedUnderIsomorphisms SmallAsQuiv.{v, 
             refine ⟨fun h ↦ ?_, by rintro rfl; rfl⟩
             apply_fun (μ.hom.app 0) at h
             simpa using h
-          simp [src, tgt, εᵥ, this]
+          simp [εᵥ, this]
       small_map εₑ }
-
--- namespace SmallAsQuivSubcategory
 
 /-- An abbreviation of
 `ObjectProperty.FullSubcategory.obj (P := SmallAsQuivSubcategory.{v, u, w})`, provided
 for convenience. -/
 abbrev obj (F : SmallAsQuivSubcategory.{v, u, w}) := ObjectProperty.FullSubcategory.obj F
 
+variable {F G H : SmallAsQuivSubcategory.{v, u, w}}
+
 instance {F : SmallAsQuivSubcategory.{v, u, w}} : IsSmallAsQuiv.{v, u, w} (obj F) :=
   is_of_prop _ F.property
 
 /-- Typecheck a hom in `SmallAsQuiv.FullSubcategory` as a natural transformation between
 its `obj`s. These are definitionally the same, but treating them as such confuses `simp`. -/
-@[reducible] def hom {F G : SmallAsQuivSubcategory.{v, u, w}} (η : F ⟶ G) : obj F ⟶ obj G :=
-  η
+@[reducible] def hom (η : F ⟶ G) : obj F ⟶ obj G := η
 
 @[ext]
-lemma hom_ext {F G : SmallAsQuivSubcategory.{v, u, w}} {μ ν : F ⟶ G}
-    (h : ∀ X, (hom μ).app X = (hom ν).app X) : μ = ν := by
+lemma hom_ext {μ ν : F ⟶ G} (h : ∀ X, (hom μ).app X = (hom ν).app X) : μ = ν := by
   apply NatTrans.ext
   ext1 X
   simpa using h X
@@ -614,50 +595,34 @@ lemma hom_ext {F G : SmallAsQuivSubcategory.{v, u, w}} {μ ν : F ⟶ G}
 -- def obj (F : SmallAsQuiv.)
 
 @[simp]
-lemma id_app {F : SmallAsQuivSubcategory.{v, u, w}} X :
-     (hom <| 𝟙 F).app X = 𝟙 (obj F |>.obj X) := rfl
+lemma id_app X : (hom <| 𝟙 F).app X = 𝟙 (obj F |>.obj X) := rfl
 
--- @[simp]
--- lemma comp_comp_left
---     {F : WalkingQuiver ⥤ Type w} {G H I : SmallAsQuivSubcategory.{v, u, w}}
---     (μ : F ⟶ G.1) (η : G ⟶ H) (ϑ : H ⟶ I) :
---     (μ ≫ (η ≫ ϑ : G ⟶ I)) = (μ ≫ η ≫ ϑ) := by
---   rfl
-
--- @[simp]
--- lemma comp_comp_right
---     {F G H : SmallAsQuivSubcategory.{v, u, w}} {I : WalkingQuiver ⥤ Type w}
---     (μ : F ⟶ G) (η : G ⟶ H) (ϑ : H.1 ⟶ I) :
---     ((μ ≫ η : F ⟶ H) ≫ ϑ : F.1 ⟶ I) = ((μ ≫ η : F.1 ⟶ H.1) ≫ ϑ) := by
---   rfl
-
-lemma comp_eq_comp {F G H : SmallAsQuivSubcategory.{v, u, w}} (μ : F ⟶ G) (η : G ⟶ H) :
+lemma comp_eq_comp (μ : F ⟶ G) (η : G ⟶ H) :
     μ ≫ η = (hom μ ≫ hom η : obj F ⟶ obj H) := rfl
 
 @[simp]
-lemma comp_app {F G H : SmallAsQuivSubcategory.{v, u, w}} (μ : F ⟶ G) (η : G ⟶ H) X :
+lemma comp_app (μ : F ⟶ G) (η : G ⟶ H) X :
     (hom (μ ≫ η)).app X = (hom μ).app X ≫ (hom η).app X := rfl
 
-#discr_tree_simp_key comp_app
-
 /-- Create an isomorphism in `SmallAsQuivSubcategory.{v, u, w}` from a natural
-isomorphism between functors `F G : WalkingQuiver ⥤ Type w`. -/
+isomorphism between functors `F G : WalkingParallelPairᵒᵖ ⥤ Type w`. -/
 @[simp]
-def isoMk {F G : WalkingQuiver ⥤ Type w} [IsSmallAsQuiv.{v, u, w} F] [IsSmallAsQuiv.{v, u, w} G]
-    (μ : F ≅ G) : mkObj F ≅ mkObj G := InducedCategory.isoMk μ
+def isoMk {F G : WalkingParallelPairᵒᵖ ⥤ Type w}
+    [IsSmallAsQuiv.{v, u, w} F] [IsSmallAsQuiv.{v, u, w} G] (μ : F ≅ G) : mkObj F ≅ mkObj G :=
+  InducedCategory.isoMk μ
 
 end SmallAsQuiv
 
-open Quiv PresheafWalkingQuiver in
-/-- Construct a bundled quiver from a small functor out of the `WalkingQuiver`. -/
+open Quiv in
+/-- Construct a bundled quiver from a small functor out of the `WalkingParallelPair`. -/
 @[simps -isSimp]
 def ofFunctor.{v, u, w} F [IsSmallAsQuiv.{v, u, w} F] : Quiv.{v, u} where
   α := Shrink (Vertex F)
   str := { Hom x y := Shrink (Edge F (equivShrink _ |>.symm x) (equivShrink _ |>.symm y)) }
 
-open uliftFunctor in
+open Quiv.uliftFunctor in
 /-- If `F` is `SmallAsQuiv.{v, u}`, then so is `F ⋙ uliftFunctor.{w}` for any `w`. -/
-instance uliftFunctor_smallAsQuiv.{v, u, w', w} {F : WalkingQuiver ⥤ Type w}
+instance uliftFunctor_smallAsQuiv.{v, u, w', w} {F : WalkingParallelPairᵒᵖ ⥤ Type w}
     [IsSmallAsQuiv.{v, u, w} F] :
     SmallAsQuiv.{v, u}.Is (F ⋙ uliftFunctor.{w'}) where
   prop :=
@@ -670,9 +635,9 @@ instance uliftFunctor_smallAsQuiv.{v, u, w', w} {F : WalkingQuiver ⥤ Type w}
 
 namespace ofFunctor
 universe v' u' v u w' w
-open Quiv PresheafWalkingQuiver uliftFunctor
+open Quiv uliftFunctor
 
-variable {F : WalkingQuiver ⥤ Type w} [IsSmallAsQuiv.{v, u, w} F]
+variable {F : WalkingParallelPairᵒᵖ ⥤ Type w} [IsSmallAsQuiv.{v, u, w} F]
 
 instance : Quiver (Shrink <| Vertex F) := ofFunctor F |>.str
 
@@ -732,7 +697,7 @@ noncomputable def edge_unit {S T : Vertex F} : Edge F (out (mk S)) (out (mk T)) 
 
 /-- Remove `out (mk ...)` pairs from the back of a chain of compositions. -/
 @[simps]
-noncomputable def edge_unit_whisker {G : WalkingQuiver ⥤ Type w} [IsSmallAsQuiv.{v', u'} G]
+noncomputable def edge_unit_whisker {G : WalkingParallelPairᵒᵖ ⥤ Type w} [IsSmallAsQuiv.{v', u'} G]
     {S T : Vertex F} (f : Vertex F → Vertex G) :
     Edge G (f <| out (mk S)) (f <| out (mk T)) ≃ Edge G (f S) (f T) where
   toFun e := edgeOfEq e (congrArg f (out_mk S)) (congrArg f (out_mk T))
@@ -781,7 +746,7 @@ lemma recOn_mkHom_mkHom {motive : (x y : ofFunctor F) → (x ⟶ y) → Sort*}
   congr
 
 @[simp]
-lemma mkHom_outHom {F : WalkingQuiver ⥤ Type w} [IsSmallAsQuiv.{v, u, w} F] {s t : ofFunctor F}
+lemma mkHom_outHom {F : WalkingParallelPairᵒᵖ ⥤ Type w} [IsSmallAsQuiv.{v, u, w} F] {s t : ofFunctor F}
     (f : s ⟶ t) : mkHom (outHom f) = Quiver.homOfEq f (mk_out s).symm (mk_out t).symm := by
   cases f using recOn_mkHom with | @h s t f =>
   rw [outHom_mkHom, mkHom_edgeOfEq]
@@ -820,14 +785,14 @@ noncomputable instance functorial :
 
 open SmallAsQuiv in
 @[simp]
-lemma mk_nat {F G : WalkingQuiver ⥤ Type w}
+lemma mk_nat {F G : WalkingParallelPairᵒᵖ ⥤ Type w}
     [IsSmallAsQuiv.{v, u, w} F] [IsSmallAsQuiv.{v, u, w} G] (μ : F ⟶ G) (X : Vertex F) :
     let μ : mkObj F ⟶ mkObj G := μ
     (map (ofFunctor <| obj.{v, u, w} ·) μ).obj (mk X) = mk ((hom μ).app 0 X) := by
   simp
 
 @[simp]
-lemma mkHom_nat {F G : WalkingQuiver ⥤ Type w}
+lemma mkHom_nat {F G : WalkingParallelPairᵒᵖ ⥤ Type w}
     [IsSmallAsQuiv.{v, u, w} F] [IsSmallAsQuiv.{v, u, w} G]
     (μ : F ⟶ G) {S T : Vertex F} (e : Edge F S T) :
     let μ : SmallAsQuiv.mkObj F ⟶ SmallAsQuiv.mkObj G := μ
@@ -838,19 +803,19 @@ lemma mkHom_nat {F G : WalkingQuiver ⥤ Type w}
 
 /-- `ofFunctor` respects isomorphisms: it maps isomorphic functors to isomorphic quivers. -/
 @[simps!]
-noncomputable def mapIso {F G : WalkingQuiver ⥤ Type w}
+noncomputable def mapIso {F G : WalkingParallelPairᵒᵖ ⥤ Type w}
     [SmallAsQuiv.{v, u}.Is F] [SmallAsQuiv.{v, u}.Is G] (η : F ≅ G) :
     ofFunctor F ≅ ofFunctor G :=
   Functor.of (ofFunctor <| SmallAsQuiv.obj.{v, u, w} ·) |>.mapIso <| SmallAsQuiv.isoMk η
 
 @[simp]
-lemma mapIso_hom {F G : WalkingQuiver ⥤ Type w}
+lemma mapIso_hom {F G : WalkingParallelPairᵒᵖ ⥤ Type w}
     [IsSmallAsQuiv.{v, u, w} F] [IsSmallAsQuiv.{v, u, w} G] (η : F ≅ G) :
     (mapIso η).hom = { obj := mk ∘ (η.hom.app 0) ∘ out,
                        map := mkHom ∘ (⟨η.hom.app 1 ·.1, by simp, by simp⟩) ∘ outHom } := rfl
 
 @[simp]
-lemma mapIso_inv {F G : WalkingQuiver ⥤ Type w}
+lemma mapIso_inv {F G : WalkingParallelPairᵒᵖ ⥤ Type w}
     [IsSmallAsQuiv.{v, u, w} F] [IsSmallAsQuiv.{v, u, w} G] (η : F ≅ G) :
     (mapIso η).inv = { obj := mk ∘ (η.inv.app 0) ∘ out,
                        map := mkHom ∘ (⟨η.inv.app 1 ·.1, by simp, by simp⟩) ∘ outHom } := rfl
@@ -862,28 +827,43 @@ section
 universe w' w v u v' u'
 
 variable (F) [SmallAsQuiv.{v, u, max w v u}.Is F]
-open ofFunctor SmallAsQuiv Quiv PresheafWalkingQuiver
+open ofFunctor SmallAsQuiv Quiv WalkingQuiver Opposite
 open scoped SmallAsQuiv
 -- attribute [-simp] Shrink.out
 
+#check Quiver.Hom.op
+
+#check Opposite.recOn
+
+
+/-- Recursor for opposite morphisms in terms of `Quiver.Hom.op`. Can't be a `cases_eliminator`
+or `cases` would attempt to apply it to all morphisms unconditionally. -/
+@[elab_as_elim]
+def _root_.Quiver.Hom.opRec {V} [Quiver V] {motive : {X Y : Vᵒᵖ} → (X ⟶ Y) → Sort*}
+    (op : {Y X : V} → (unop : Y ⟶ X) → motive unop.op) {X Y : Vᵒᵖ} : (f : X ⟶ Y) → motive f
+| ⟨f⟩ => op f
 
 /-- `asFunctor` and `ofFunctor` at the same universe level compose to the identity
 (up to isomorphism). -/
-@[simps!?]
+@[simps!]
 noncomputable def asFunctorOfFunctorNatIso : asFunctor.{w} (ofFunctor F) ≅ F :=
-  NatIso.ofComponents
-    (fun
-      | 0 => { hom X := out X.1, inv X := .up <| ofFunctor.mk X }
-      | 1 => { hom f := (ofFunctor.outHom f.2.2).1,
-               inv e := ⟨⟨ofFunctor.mk (src e)⟩, ⟨ofFunctor.mk (tgt e)⟩, ofFunctor.mkHom (hom e)⟩,
-               hom_inv_id := by
-                 ext ⟨s, t, e⟩
-                 apply asFunctor.hom_ext
-                 all_goals simp [src, tgt, types_comp_apply, Quiver.homOfEq]
-               inv_hom_id := by ext; simp [types_comp_apply, edgeOfEq] })
+  NatIso.ofComponents (fun
+  | 0 => { hom X := out X.1, inv X := .up <| ofFunctor.mk X }
+  | 1 => { hom f := (ofFunctor.outHom f.2.2).1,
+           inv e := ⟨⟨ofFunctor.mk (src e)⟩, ⟨ofFunctor.mk (tgt e)⟩, ofFunctor.mkHom (hom e)⟩,
+           hom_inv_id := by
+             ext ⟨s, t, e⟩
+             apply asFunctor.hom_ext
+             all_goals simp [Quiver.homOfEq]
+           inv_hom_id := by ext; simp [edgeOfEq] })
+  (by
+    rintro ⟨i⟩ ⟨j⟩ f
+    cases f using Quiver.Hom.opRec with | op f => cases f with
+    | id _ => cases i <;> {ext x; simp}
+    | left | right => ext x; simp; simp [Quiver.Hom.op, asHom])
 
 /-- The essential image of `asFunctor.{w, v, u}` is equivalent to the subcategory of functors
-`WalkingQuiver ⥤ Type max w v u` that are `SmallAsQuiv.{v, u}`. -/
+`WalkingParallelPairᵒᵖ ⥤ Type max w v u` that are `SmallAsQuiv.{v, u}`. -/
 @[simps! +simpRhs]
 noncomputable def asFunctor.essImageEquiv :
     (Functor.of asFunctor.{w, v, u}).EssImageSubcategory ≌ SmallAsQuiv.{v, u}.FullSubcategory :=
@@ -893,7 +873,7 @@ noncomputable def asFunctor.essImageEquiv :
     · exact prop_of_iso SmallAsQuiv.{v, u} (Functor.essImage.getIso h) <| prop_of_is _ _
 
 /-- The category of quivers `Quiv.{v, u}` is equivalent to the subcategory of functors
-`WalkingQuiver ⥤ Type max w v u` that are `SmallAsQuiv.{v, u}`. -/
+`WalkingParallelPairᵒᵖ ⥤ Type max w v u` that are `SmallAsQuiv.{v, u}`. -/
 noncomputable def quivEquiv : Quiv.{v, u} ≌ SmallAsQuiv.{v, u, max w v u}.FullSubcategory :=
   have : (Functor.of asFunctor.{w, v, u}).toEssImage.IsEquivalence := inferInstance
   let ε := (Functor.of asFunctor.{w, v, u}).toEssImage.asEquivalence.trans asFunctor.essImageEquiv
@@ -955,7 +935,7 @@ noncomputable def ofFunctorAsFunctorNatIso (V : Quiv.{v, u}) :
 --     ULift.{max w' v, u} ↑((Functor.of fun x ↦ ofFunctor (obj x)).obj X) := rfl
 
 -- lemma SmallAsQuiv.fullSubcategoryEquiv_functor_obj_obj_obj
---   (X : SmallAsQuiv.FullSubcategory) (x : WalkingQuiver) :
+--   (X : SmallAsQuiv.FullSubcategory) (x : WalkingParallelPair) :
 --   (fullSubcategoryEquiv.functor.obj X).obj.obj x =
 --     match x with
 --     | 0 => ULift.{max w' v, u} ↑((Functor.of fun x ↦ ofFunctor (obj x)).obj X)
@@ -965,27 +945,27 @@ noncomputable def ofFunctorAsFunctorNatIso (V : Quiv.{v, u}) :
 
 namespace quivEquiv
 
-/-- `quivEquiv.{w}.functor` as a functor into `WalkingQuiver ⥤ Type w`. -/
+/-- `quivEquiv.{w}.functor` as a functor into `WalkingParallelPairᵒᵖ ⥤ Type w`. -/
 @[simp]
 noncomputable def inclusion :=
   quivEquiv.{w, v, u}.functor ⋙ SmallAsQuiv.{v, u}.ι
 
 -- In this section, we explicitly define `whiskerOf` and `whiskerAs` ourselves, because
 -- `Equivalence.congrFoo` would create functors to and from `SmallAsQuivSubcategory`, not
--- just to `WalkingQuiver ⥤ Type w`.
+-- just to `WalkingParallelPairᵒᵖ ⥤ Type w`.
 variable {C : Type v'} [Category.{u'} C]
 
-/-- Lift a functor `F : C ⥤ WalkingQuiver ⥤ Type max w v u` that satisfies
+/-- Lift a functor `F : C ⥤ WalkingParallelPairᵒᵖ ⥤ Type max w v u` that satisfies
 `∀ (X : C), SmallAsQuiv.{v, u} (F.obj X)` to a functor `F' : C ⥤ Quiv.{v, u}`. -/
 @[simp]
-noncomputable def whiskerOf (F : C ⥤ WalkingQuiver ⥤ Type max w v u)
+noncomputable def whiskerOf (F : C ⥤ WalkingParallelPairᵒᵖ ⥤ Type max w v u)
     [hF : ∀ X, IsSmallAsQuiv.{v, u} (F.obj X)] : C ⥤ Quiv.{v, u} :=
   lift _ F (fun _ ↦ prop_of_is _ _) ⋙ quivEquiv.{w, v, u}.inverse
 
-/-- Lift a functor `F : C ⥤ Quiv.{v, u}` to a functor `F : C ⥤ WalkingQuiver ⥤ Type max w v u`. -/
+/-- Lift a functor `F : C ⥤ Quiv.{v, u}` to a functor `F : C ⥤ WalkingParallelPairᵒᵖ ⥤ Type max w v u`. -/
 @[simp]
 noncomputable def whiskerAs
-    (F : C ⥤ Quiv.{v, u}) : C ⥤ WalkingQuiver ⥤ Type max w v u :=
+    (F : C ⥤ Quiv.{v, u}) : C ⥤ WalkingParallelPairᵒᵖ ⥤ Type max w v u :=
   F ⋙ quivEquiv.{w}.functor ⋙ SmallAsQuiv.ι
 
 /-- `whiskerAs.obj X` is `SmallAsQuiv.{v, u}` for all `X` -/
@@ -996,7 +976,7 @@ open Functor in
 /-- `whiskerAs` and `whiskerOf` compose to the identity, up to natural isomorphism. -/
 @[simps!]
 noncomputable def whiskerAs_whiskerOf
-    (F : C ⥤ WalkingQuiver ⥤ Type max w v u) [hF : ∀ X, IsSmallAsQuiv.{v, u} (F.obj X)] :
+    (F : C ⥤ WalkingParallelPairᵒᵖ ⥤ Type max w v u) [hF : ∀ X, IsSmallAsQuiv.{v, u} (F.obj X)] :
     whiskerAs (whiskerOf F) ≅ F :=
   calc
   _ ≅ _ := (isoWhiskerRight
@@ -1083,7 +1063,7 @@ lemma inverse_map_spec (η : F ⟶ G) :
 
 end quivEquiv.as
 
-def smallAsQuiv_ofMono {F G : WalkingQuiver ⥤ Type w} [IsSmallAsQuiv.{v, u, w} G]
+def smallAsQuiv_ofMono {F G : WalkingParallelPairᵒᵖ ⥤ Type w} [IsSmallAsQuiv.{v, u, w} G]
     (μ : F ⟶ G) [hμ : Mono μ] : SmallAsQuiv.{v, u, w} F where
   small_vertex := small_of_injective (f := μ.app 0) (hμ' 0)
   small_edge s t :=
@@ -1098,7 +1078,7 @@ where
 /-- Similarly to **Type**, two vertices are identified in a filtered colimit iff
 they are already identified in some quiver in the base of the cone. -/
 lemma filteredColimit_inj [UnivLE.{w, v}] {J : Type w} [Category.{w} J] [IsFilteredOrEmpty J]
-    (F : J ⥤ WalkingQuiver ⥤ Type v) (c : ColimitCocone F) (q₀ : WalkingQuiver)
+    (F : J ⥤ WalkingParallelPairᵒᵖ ⥤ Type v) (c : ColimitCocone F) (q₀ : WalkingParallelPairᵒᵖ)
     {i j : J} (xᵢ : F.obj i |>.obj q₀) (xⱼ : F.obj j |>.obj q₀) :
     (c.1.ι.app i).app q₀ xᵢ = (c.1.ι.app j).app q₀ xⱼ ↔
       ∃ (k : J) (f : i ⟶ k) (g : j ⟶ k), (F.map f).app q₀ xᵢ = (F.map g).app q₀ xⱼ := by
@@ -1122,9 +1102,9 @@ lemma filteredColimit_inj [UnivLE.{w, v}] {J : Type w} [Category.{w} J] [IsFilte
 
 
 section
-variable {F G : WalkingQuiver ⥤ Type w} [IsSmallAsQuiv.{v, u, w} F]
+variable {F G : WalkingParallelPairᵒᵖ ⥤ Type w} [IsSmallAsQuiv.{v, u, w} F]
 
-/-- For an arrow `ε : F ⟶ G` between presheafs `F G : WalkingQuiver ⥤ Type w`,
+/-- For an arrow `ε : F ⟶ G` between presheafs `F G : WalkingParallelPairᵒᵖ ⥤ Type w`,
 `Epi ε` is sufficient only to prove that the vertex types of `G` are small, because
 the identification of vertices under `ε` may combine a `u`-sized collection of vertices
 into a single vertex; if it does not also identify a similar proportion of edges, then
@@ -1159,7 +1139,7 @@ where
     simp_rw [NatTrans.epi_iff_epi_app, CategoryTheory.epi_iff_surjective] at hε₁
     exact hε₁ m
 
-/-- For an arrow `ε : F ⟶ G` between presheafs `F G : WalkingQuiver ⥤ Type w`,
+/-- For an arrow `ε : F ⟶ G` between presheafs `F G : WalkingParallelPairᵒᵖ ⥤ Type w`,
 `Epi ε` is sufficient only to prove that the vertex types of `G` are small, because
 the identification of vertices under `ε` may combine a `u`-sized collection of vertices
 into a single vertex; if it does not also identify a similar proportion of edges, then
@@ -1193,7 +1173,7 @@ lemma smallAsQuiv_ofEpi_ofSmallEdges'
     convert (Set.unionEqSigmaOfDisjoint disjoint).symm with ⟨s, t⟩
     simp
 
-/-- For an arrow `ε : F ⟶ G` between presheafs `F G : WalkingQuiver ⥤ Type w`,
+/-- For an arrow `ε : F ⟶ G` between presheafs `F G : WalkingParallelPairᵒᵖ ⥤ Type w`,
 if the preimage under `ε` of every vertex in `G` is `v`-small, then
 we can infer `SmallAsQuiv.{v, u} G` from `Epi ε` and `SmallAsQuiv.{v, u} F`. -/
 lemma smallAsQuiv_ofEpi_ofSmallPreimages
@@ -1212,7 +1192,7 @@ lemma smallAsQuiv_ofEpi_ofSmallPreimages
   _ ≃ _ := Equiv.sigmaAssocProd
     (γ := fun s' t' ↦ Shrink.{v, w} <| Edge F (σ s s') (σ t t'))
 
-/-- For an arrow `ε : F ⟶ G` between presheafs `F G : WalkingQuiver ⥤ Type w` with
+/-- For an arrow `ε : F ⟶ G` between presheafs `F G : WalkingParallelPairᵒᵖ ⥤ Type w` with
 `SmallAsQuiv.{v, u} F`, if `u ≤ v`, then certainly we can infer `SmallAsQuiv.{v, u} G`
 from `Epi ε`. -/
 def smallAsQuiv_ofEpi_ofSmall [UnivLE.{u, v}] (ε : F ⟶ G) [hε : Epi ε] : SmallAsQuiv.{v, u, w} G :=
