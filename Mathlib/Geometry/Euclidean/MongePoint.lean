@@ -265,7 +265,7 @@ lemma mongePlane_reindex {m n : ℕ} (s : Simplex ℝ P (n + 2)) (e : Fin (n + 3
   · simp [Function.comp_assoc]
   · simp_rw [centroidWeights, Function.const_comp, Finset.card_compl]
     congr 4
-    by_cases h : i₁ = i₂ <;> simp[h]
+    by_cases h : i₁ = i₂ <;> simp [h]
 
 /-- The Monge plane associated with vertices `i₁` and `i₂` equals that
 associated with `i₂` and `i₁`. -/
