@@ -62,7 +62,6 @@ instance [Preorder β] [OrderBot β] : Bot (α →o β) where
   bot := const α ⊥
 
 instance orderBot [Preorder β] [OrderBot β] : OrderBot (α →o β) where
-  bot := ⊥
   bot_le _ _ := bot_le
 
 @[simps]
@@ -70,7 +69,6 @@ instance instTopOrderHom [Preorder β] [OrderTop β] : Top (α →o β) where
   top := const α ⊤
 
 instance orderTop [Preorder β] [OrderTop β] : OrderTop (α →o β) where
-  top := ⊤
   le_top _ _ := le_top
 
 instance [CompleteLattice β] : InfSet (α →o β) where
@@ -128,10 +126,10 @@ theorem iterate_sup_le_sup_iff {α : Type*} [SemilatticeSup α] (f : α →o α)
       | succ n ih =>
         intro a₁ a₂
         calc
-          f^[n+1] (a₁ ⊔ a₂) = f^[n] (f (a₁ ⊔ a₂)) := Function.iterate_succ_apply f n _
+          f^[n + 1] (a₁ ⊔ a₂) = f^[n] (f (a₁ ⊔ a₂)) := Function.iterate_succ_apply f n _
           _ ≤ f^[n] (f a₁ ⊔ a₂) := f.mono.iterate n (h a₁ a₂)
           _ ≤ f^[n] (f a₁) ⊔ a₂ := ih _ _
-          _ = f^[n+1] a₁ ⊔ a₂ := by rw [← Function.iterate_succ_apply]
+          _ = f^[n + 1] a₁ ⊔ a₂ := by rw [← Function.iterate_succ_apply]
     calc
       f^[n₁ + n₂] (a₁ ⊔ a₂) = f^[n₁] (f^[n₂] (a₁ ⊔ a₂)) :=
         Function.iterate_add_apply f n₁ n₂ _

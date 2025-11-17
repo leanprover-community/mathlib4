@@ -71,7 +71,7 @@ theorem HasFiniteFPowerSeriesOnBall.mk' {f : E → F} {p : FormalMultilinearSeri
 
 /-- Given a function `f : E → F`, a formal multilinear series `p` and `n : ℕ`, we say that
 `f` has `p` as a finite power series around `x` if `f (x + y) = ∑' pₙ yⁿ` for all `y` in a
-neighborhood of `0`and `pₙ = 0` for `n ≤ m`. -/
+neighborhood of `0` and `pₙ = 0` for `n ≤ m`. -/
 def HasFiniteFPowerSeriesAt (f : E → F) (p : FormalMultilinearSeries 𝕜 E F) (x : E) (n : ℕ) :=
   ∃ r, HasFiniteFPowerSeriesOnBall f p x n r
 
@@ -376,8 +376,7 @@ theorem hasFiniteFPowerSeriesOnBall_changeOrigin (p : FormalMultilinearSeries �
     (k : ℕ) (hn : ∀ (m : ℕ), n + k ≤ m → p m = 0) :
     HasFiniteFPowerSeriesOnBall (p.changeOrigin · k) (p.changeOriginSeries k) 0 n ⊤ :=
   (p.changeOriginSeries k).hasFiniteFPowerSeriesOnBall_of_finite
-    (fun _ hm => p.changeOriginSeries_finite_of_finite hn k
-    (by rw [add_comm n k]; apply add_le_add_left hm))
+    fun _ hm => p.changeOriginSeries_finite_of_finite hn k <| by grw [hm, add_comm]
 
 theorem changeOrigin_eval_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
     (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (x y : E) :

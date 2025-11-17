@@ -44,7 +44,7 @@ See the documentation of `to_additive.attr` for more information.
 -- assert_not_exists AddCommMonoidWithOne
 assert_not_exists MonoidWithZero
 assert_not_exists MulAction
-assert_not_exists OrderedCommMonoid
+assert_not_exists IsOrderedMonoid
 
 variable {ι κ M N G α : Type*}
 
@@ -75,7 +75,7 @@ theorem prod_val [CommMonoid M] (s : Finset M) : s.1.prod = s.prod id := by
 
 end Finset
 
-library_note "operator precedence of big operators"/--
+library_note2 «operator precedence of big operators» /--
 There is no established mathematical convention
 for the operator precedence of big operators like `∏` and `∑`.
 We will have to make a choice.
@@ -386,9 +386,6 @@ section ToList
 theorem prod_map_toList (s : Finset ι) (f : ι → M) : (s.toList.map f).prod = s.prod f := by
   rw [Finset.prod, ← Multiset.prod_coe, ← Multiset.map_coe, Finset.coe_toList]
 
-@[deprecated (since := "2025-04-09")] alias prod_to_list := prod_map_toList
-@[deprecated (since := "2025-04-09")] alias sum_to_list := sum_map_toList
-
 @[to_additive (attr := simp, grind =)]
 theorem prod_toList {M : Type*} [CommMonoid M] (s : Finset M) :
     s.toList.prod = ∏ x ∈ s, x := by
@@ -511,7 +508,7 @@ lemma prod_nbij' (i : ι → κ) (j : κ → ι) (hi : ∀ a ∈ s, i a ∈ t) (
 /-- Specialization of `Finset.prod_nbij'` that automatically fills in most arguments.
 
 See `Fintype.prod_equiv` for the version where `s` and `t` are `univ`. -/
-@[to_additive /-- `Specialization of `Finset.sum_nbij'` that automatically fills in most arguments.
+@[to_additive /-- Specialization of `Finset.sum_nbij'` that automatically fills in most arguments.
 
 See `Fintype.sum_equiv` for the version where `s` and `t` are `univ`. -/]
 lemma prod_equiv (e : ι ≃ κ) (hst : ∀ i, i ∈ s ↔ e i ∈ t) (hfg : ∀ i ∈ s, f i = g (e i)) :
@@ -520,7 +517,7 @@ lemma prod_equiv (e : ι ≃ κ) (hst : ∀ i, i ∈ s ↔ e i ∈ t) (hfg : ∀
 /-- Specialization of `Finset.prod_bij` that automatically fills in most arguments.
 
 See `Fintype.prod_bijective` for the version where `s` and `t` are `univ`. -/
-@[to_additive /-- `Specialization of `Finset.sum_bij` that automatically fills in most arguments.
+@[to_additive /-- Specialization of `Finset.sum_bij` that automatically fills in most arguments.
 
 See `Fintype.sum_bijective` for the version where `s` and `t` are `univ`. -/]
 lemma prod_bijective (e : ι → κ) (he : e.Bijective) (hst : ∀ i, i ∈ s ↔ e i ∈ t)

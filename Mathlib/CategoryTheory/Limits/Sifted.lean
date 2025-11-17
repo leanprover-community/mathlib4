@@ -23,7 +23,7 @@ preserves finite products. We achieve this characterization in this file.
 - `IsSifted.colimPreservesFiniteProductsOfIsSifted`: The `Type`-valued colimit functor for sifted
   diagrams preserves finite products.
 - `IsSifted.of_colimit_preservesFiniteProducts`: The converse: if the `Type`-valued colimit functor
-  preserves finite producs, the category is sifted.
+  preserves finite products, the category is sifted.
 - `IsSifted.of_final_functor_from_sifted`: A category admitting a final functor from a sifted
   category is itself sifted.
 

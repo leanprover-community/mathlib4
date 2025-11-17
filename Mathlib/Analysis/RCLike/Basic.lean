@@ -3,7 +3,7 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Algebra.Algebra.Field
+import Mathlib.Algebra.Algebra.IsSimpleRing
 import Mathlib.Algebra.BigOperators.Balance
 import Mathlib.Algebra.Order.BigOperators.Expect
 import Mathlib.Algebra.Order.Star.Basic
@@ -163,10 +163,10 @@ theorem ofReal_injective : Function.Injective ((↑) : ℝ → K) :=
 
 @[norm_cast]
 theorem ofReal_inj {z w : ℝ} : (z : K) = (w : K) ↔ z = w :=
-  algebraMap.coe_inj
+  algebraMap.coe_inj _ _
 
 theorem ofReal_eq_zero {x : ℝ} : (x : K) = 0 ↔ x = 0 :=
-  algebraMap.lift_map_eq_zero_iff x
+  algebraMap.coe_eq_zero_iff _ _ _
 
 theorem ofReal_ne_zero {x : ℝ} : (x : K) ≠ 0 ↔ x ≠ 0 :=
   ofReal_eq_zero.not
@@ -211,8 +211,6 @@ theorem ofReal_finsuppProd {α M : Type*} [Zero M] (f : α →₀ M) (g : α →
     ((f.prod fun a b => g a b : ℝ) : K) = f.prod fun a b => (g a b : K) :=
   map_finsuppProd _ f g
 
-@[deprecated (since := "2025-04-06")] alias ofReal_finsupp_prod := ofReal_finsuppProd
-
 @[simp, norm_cast, rclike_simps]
 theorem real_smul_ofReal (r x : ℝ) : r • (x : K) = (r : K) * (x : K) :=
   real_smul_eq_coe_mul _ _
@@ -236,6 +234,14 @@ theorem smul_im (r : ℝ) (z : K) : im (r • z) = r * im z := by
 @[rclike_simps, norm_cast]
 theorem norm_ofReal (r : ℝ) : ‖(r : K)‖ = |r| :=
   norm_algebraMap' K r
+
+@[simp]
+theorem re_ofReal_pow (a : ℝ) (n : ℕ) : re ((a : K) ^ n) = a ^ n := by
+  rw [← ofReal_pow, @ofReal_re]
+
+@[simp]
+theorem im_ofReal_pow (a : ℝ) (n : ℕ) : im ((a : K) ^ n) = 0 := by
+  rw [← @ofReal_pow, @ofReal_im_ax]
 
 /-! ### Characteristic zero -/
 
