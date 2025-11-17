@@ -61,13 +61,7 @@ lemma triangle_map_exists (a b : ℤ) (h : a < b) (T T' : Triangle C)
     ∃ (f : T ⟶ T'), f.hom₂ = φ := by
   obtain ⟨a, comm₁⟩ := T'.coyoneda_exact₂ hT' (T.mor₁ ≫ φ) (t.zero _ a b)
   obtain ⟨c, ⟨comm₂, comm₃⟩⟩ := complete_distinguished_triangle_morphism _ _ hT hT' a φ comm₁
-  exact ⟨
-    { hom₁ := a
-      hom₂ := φ
-      hom₃ := c
-      comm₁ := comm₁
-      comm₂ := comm₂
-      comm₃ := comm₃ }, rfl⟩
+  exact ⟨{ hom₁ := a, hom₂ := φ, hom₃ := c }, rfl⟩
 
 /-- If `a < b`, then an isomorphism `T.obj₂ ≅ T'.obj₂` extends to an morphism `T ≅ T'`
 of distinguished triangles when for a t-structure, both `T.obj₁` and `T'.obj₁` are `≤ a` and
