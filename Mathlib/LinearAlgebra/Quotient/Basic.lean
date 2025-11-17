@@ -71,6 +71,9 @@ theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) := by
   refine ⟨⟨mk x, 0, ?_⟩⟩
   simpa using notMem_s
 
+theorem nontrivial_of_ne_top (h : p ≠ ⊤) : Nontrivial (M ⧸ p) :=
+  nontrivial_of_lt_top p h.lt_top
+
 end Quotient
 
 instance QuotientBot.infinite [Infinite M] : Infinite (M ⧸ (⊥ : Submodule R M)) :=
@@ -95,6 +98,9 @@ theorem subsingleton_quotient_iff_eq_top : Subsingleton (M ⧸ p) ↔ p = ⊤ :=
     rwa [sub_zero] at this
   · rintro rfl
     infer_instance
+
+instance [Subsingleton M] : Subsingleton (M ⧸ p) :=
+  Submodule.subsingleton_quotient_iff_eq_top.mpr (Subsingleton.elim _ _)
 
 theorem unique_quotient_iff_eq_top : Nonempty (Unique (M ⧸ p)) ↔ p = ⊤ :=
   ⟨fun ⟨h⟩ => subsingleton_quotient_iff_eq_top.mp (@Unique.instSubsingleton _ h),
