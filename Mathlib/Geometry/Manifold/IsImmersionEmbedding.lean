@@ -27,11 +27,17 @@ This shortens the overall argument, as the definition of submersions has the sam
 * `IsImmersionAt I J n f x` means that `f` is a `C^n` immersion at `x : M` for some choice of a
   complement `F` of the model normed space `E` of `M` in the model normed space `E'` of `N`.
   In most cases, prefer this definition over `IsImmersionAtOfComplement`.
-* `IsImmersion F I J n f` means `f : M → N` is an immersion at every point `x : M`.
+* `IsImmersionOfComplement F I J n f` means `f : M → N` is an immersion at every point `x : M`,
+  w.r.t. the chosen complement `F`.
+* `IsImmersion I J n f` means `f : M → N` is an immersion at every point `x : M`,
+  w.r.t. some global choice of complement.
+  `isImmersion_iff_isImmersionAt` proves this is equivalent to `f` being an
+  immersion at every point `x` (i.e., with respect to a complement that can depend on `x`).
 
 ## Main results
 * `IsImmersionAt.congr_of_eventuallyEq`: being an immersion is a local property.
   If `f` and `g` agree near `x` and `f` is an immersion at `x`, so is `g`
+* `isImmersion_iff_isImmersionAt`: `f` is an immersion iff `f` is an immersion at each `x`
 
 ## TODO
 * Show `IsImmersionAtOfComplement` is stable under replacing `F` by an isomorphic copy.
@@ -492,6 +498,9 @@ lemma ofIsImmersionAt (f : M → N) (h : ∀ x, IsImmersionAt I J n f x) : IsImm
   · -- We can choose *any* complement: the immersion condition is vacuous as M is empty.
     use E'', by infer_instance, by infer_instance
     exact fun y ↦ (not_nonempty_iff.mp hM).false y |>.elim
+
+lemma _root_.isImmersion_iff_isImmersionAt : IsImmersion I J n f ↔ ∀ x, IsImmersionAt I J n f x :=
+  ⟨fun h x ↦ h.isImmersionAt x, fun h ↦ ofIsImmersionAt f h⟩
 
 /-- If `f = g` and `f` is an immersion, so is `g`. -/
 theorem congr (h : IsImmersion I J n f) (heq : f = g) : IsImmersion I J n g :=
