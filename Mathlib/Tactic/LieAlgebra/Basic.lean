@@ -538,11 +538,7 @@ syntax (name := lie_reduce_term) "lie_reduce%" term : term
 
 @[term_elab lie_reduce_term] private def lieReduceElabImpl : Elab.Term.TermElab := fun stx type => do
   let e ← Term.elabTerm stx[1] type
-  let α ← inferType e
-  Term.synthesizeSyntheticMVarsNoPostponing
-  let .sort u ← whnf (← inferType α) | unreachable!
-  let v ← try u.dec catch _ => throwError "not a type {indentExpr α}"
-  have α : Q(Type v) := α
+  let ⟨u, α, e⟩ ← inferTypeQ' e
   let sα ← synthInstanceQ q(LieRing $α)
   -- logInfo m!"the expression is {e}"
   let ⟨a, _, _⟩ ← Mathlib.Tactic.AtomM.run .reducible (eval sα e)
