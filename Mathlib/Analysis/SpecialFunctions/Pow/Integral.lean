@@ -22,7 +22,7 @@ A variant of the formula with measures of sets of the form `{ω | f(ω) > t}` in
   `MeasureTheory.lintegral_rpow_eq_lintegral_meas_lt_mul`:
   other common special cases of the layer cake formulas, stating that for a nonnegative function `f`
   and `p > 0`, we have `∫ f(ω)ᵖ ∂μ(ω) = p * ∫ μ {ω | f(ω) ≥ t} * tᵖ⁻¹ dt` and
-  `∫ f(ω)ᵖ ∂μ(ω) = p * ∫ μ {ω | f(ω) > t} * tᵖ⁻¹ dt, respectively.
+  `∫ f(ω)ᵖ ∂μ(ω) = p * ∫ μ {ω | f(ω) > t} * tᵖ⁻¹ dt`, respectively.
 
 ## Tags
 

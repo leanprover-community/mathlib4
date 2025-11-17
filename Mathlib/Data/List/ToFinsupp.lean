@@ -3,7 +3,6 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.BigOperators.Group.List.Basic
 import Mathlib.Algebra.Group.Embedding
 import Mathlib.Algebra.Group.Finsupp
 import Mathlib.Algebra.Group.Nat.Defs
@@ -126,6 +125,6 @@ theorem toFinsupp_eq_sum_mapIdx_single {R : Type*} [AddMonoid R] (l : List R)
   induction l using List.reverseRecOn with
   | nil => exact toFinsupp_nil
   | append_singleton x xs ih =>
-    classical simp [toFinsupp_concat_eq_toFinsupp_add_single, ih]
+    classical simp [toFinsupp_concat_eq_toFinsupp_add_single, sum_append, ih]
 
 end List
