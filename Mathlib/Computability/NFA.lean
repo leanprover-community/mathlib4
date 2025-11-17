@@ -515,14 +515,14 @@ theorem mem_acceptsFrom_impl_mem_acceptsFrom_kstar {S : Set σ} {x : List α} :
     x ∈ M.kstar.acceptsFrom (M.kstarStates S) := by
   induction x generalizing S with
   | nil =>
-    simp only [mem_acceptsFrom_nil]
+    simp only [nil_mem_acceptsFrom]
     rintro ⟨s, hs, haccept⟩
     exists (some s)
     apply (fun x ↦ And.intro x (by simpa))
     rw [kstarStates, Function.Injective.mem_set_image (Option.some_injective _)]
     tauto
   | cons a x ih =>
-    simp_rw [mem_acceptsFrom_cons, stepSet, kstarStates, acceptsFrom_biUnion, ↑Set.mem_iUnion₂,
+    simp_rw [cons_mem_acceptsFrom, stepSet, kstarStates, acceptsFrom_iUnion₂, ↑Set.mem_iUnion₂,
       exists_prop, mem_image]
     tauto
 
@@ -591,7 +591,7 @@ theorem mem_evalFrom_impl_mem_evalFrom_kstar {x : List α} {S : Set σ} {t : σ}
   | nil =>
     simp
   | cons a x ih =>
-    simp only [evalFrom_cons, stepSet, evalFrom_biUnion, kstar_step, kstarStep,
+    simp only [evalFrom_cons, stepSet, evalFrom_iUnion₂, kstar_step, kstarStep,
       Set.biUnion_image, kstarStates, Set.image_union, Set.image_iUnion₂,
       exists_prop, mem_inter_iff, forall_exists_index, and_imp,
       evalFrom_union, mem_union, mem_iUnion, exists_prop]
@@ -624,7 +624,7 @@ theorem mem_evalFrom_impl_mem_evalFrom_kstar_start {x : List α} {S : Set σ} {s
   | cons a x ih =>
     intro _
     simp only [evalFrom_cons, stepSet, kstar_step, kstarStep, kstarStates, Set.biUnion_image]
-    simp only [evalFrom_union, evalFrom_biUnion, Set.image_union, Set.image_iUnion₂,
+    simp only [evalFrom_union, evalFrom_iUnion₂, Set.image_union, Set.image_iUnion₂,
       Set.mem_iUnion₂, exists_prop, Set.mem_union]
     simp only [mem_inter_iff, exists_and_right, forall_exists_index, and_imp]
     by_cases hnil : x = []
@@ -714,7 +714,7 @@ theorem mem_kstar_acceptsFrom {S : Set σ} {y : List α} {zs : List (List α)} :
   intro hy hzs
   induction y generalizing S zs with
   | nil =>
-    simp only [mem_acceptsFrom_nil] at hy
+    simp only [nil_mem_acceptsFrom] at hy
     rcases hy with ⟨s, hs, haccept⟩
     have hnonempty : (S ∩ M.accept).Nonempty := by exists s
     have hsub : {s} ⊆ S := by simpa [Set.singleton_subset_iff]
@@ -724,14 +724,14 @@ theorem mem_kstar_acceptsFrom {S : Set σ} {y : List α} {zs : List (List α)} :
     right
     apply Forall_mem_accepts_impl_mem_flatten_kstar_acceptsFrom haccept hzs
   | cons a y ih =>
-    rw [mem_acceptsFrom_cons] at hy
+    rw [cons_mem_acceptsFrom] at hy
     specialize ih hy hzs
     simp only [stepSet, kstarStates, Set.image_union, Set.image_iUnion₂, acceptsFrom_union,
-      acceptsFrom_biUnion, Language.add_def] at *
+      acceptsFrom_iUnion₂, Language.add_def] at *
     simp_rw [↑Set.mem_union] at ih
     left
-    simp only [List.cons_append, mem_acceptsFrom_cons (M:=M.kstar), stepSet, kstar_step,
-      kstarStep, kstarStates, Set.biUnion_image, Set.image_union, acceptsFrom_biUnion,
+    simp only [List.cons_append, cons_mem_acceptsFrom (M:=M.kstar), stepSet, kstar_step,
+      kstarStep, kstarStates, Set.biUnion_image, Set.image_union, acceptsFrom_iUnion₂,
       acceptsFrom_union, Language.add_def, Set.iUnion_union_distrib]
     rcases ih with (ih | ih)
     · simp [-append_mem_acceptsFrom, Set.mem_union_left _ ih]
@@ -761,7 +761,7 @@ theorem mem_acceptsFrom_kstar_impl_exists_flatten {S : Set σ} {x : List α} :
     exists [], []
     tauto
   | cons a x ih =>
-    simp only [mem_acceptsFrom_cons, stepSet, kstar_step, kstarStep, kstarStates,
+    simp only [cons_mem_acceptsFrom, stepSet, kstar_step, kstarStep, kstarStates,
       Set.biUnion_image, ←Set.image_iUnion₂, Set.iUnion_union_distrib] at hx
     obtain ⟨y, zs, rfl, hy, hzs⟩ := ih hx
     simp only [acceptsFrom_union, Language.add_def, mem_union (x:=y)] at hy
