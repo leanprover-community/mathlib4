@@ -6,6 +6,7 @@ Authors: Michael Stoll
 import Mathlib.Analysis.Complex.Convex
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 import Mathlib.Analysis.Calculus.Deriv.Shift
+import Mathlib.Analysis.SpecificLimits.RCLike
 
 /-!
 # Estimates for the complex logarithm
