@@ -316,6 +316,12 @@ theorem prev_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
           rw [nodup_iff_injective_get] at h
           apply h; rw [← H]; simp
 
+@[simp]
+theorem next_getLast_eq_head (l : List α) (h : l ≠ []) (hn : l.Nodup) :
+    l.next (l.getLast h) (getLast_mem h) = l.head h := by
+  have h1 : l.length - 1 + 1 = l.length := by grind [length_pos_iff]
+  simp [getLast_eq_getElem h, head_eq_getElem h, next_getElem l hn (l.length - 1) (by grind), h1]
+
 theorem pmap_next_eq_rotate_one (h : Nodup l) : (l.pmap l.next fun _ h => h) = l.rotate 1 := by
   apply List.ext_getElem
   · simp
