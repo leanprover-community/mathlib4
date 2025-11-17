@@ -720,7 +720,7 @@ lemma unique_decomposition_into_atoms {α} [CompleteAtomicBooleanAlgebra α] {S 
 
 /--
 Representation theorem for complete atomic boolean algebras:
-For a complete atomic Boolean algebra `α`, `orderIsoSetOfAtoms` is an order isomorphism
+For a complete atomic Boolean algebra `α`, `toSetOfIsAtom` is an order isomorphism
 between `α` and the set of subsets of its atoms.
 -/
 def toSetOfIsAtom {α} [CompleteAtomicBooleanAlgebra α] : α ≃o (Set {a : α // IsAtom a}) where
