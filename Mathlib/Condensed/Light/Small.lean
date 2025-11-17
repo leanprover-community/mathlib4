@@ -42,9 +42,10 @@ and sheaves on a small site.
 noncomputable def equivSmallSheafificationIso
     [HasWeakSheafify (coherentTopology LightProfinite.{u}) C]
     [HasWeakSheafify ((equivSmallModel.{u} LightProfinite.{u}).inverse.inducedTopology
-        (coherentTopology LightProfinite.{u})) C] :
+      (coherentTopology LightProfinite.{u})) C] :
     (equivSmallModel LightProfinite.{u}).op.congrLeft.inverse ⋙ presheafToSheaf _ _ ⋙
-      (equivSmall C).functor ≅ presheafToSheaf _ _ :=
+      (equivSmall C).functor ≅
+    presheafToSheaf _ _ :=
   (conjugateIsoEquiv (sheafificationAdjunction _ _)
     (((equivSmallModel LightProfinite.{u}).op.congrLeft.symm.toAdjunction.comp
     (sheafificationAdjunction _ _)).comp (equivSmall C).toAdjunction)).symm <|
