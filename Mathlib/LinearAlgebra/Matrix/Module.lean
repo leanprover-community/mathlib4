@@ -26,7 +26,7 @@ variable {ι R M N P : Type*} [Ring R] [Fintype ι] [DecidableEq ι] [AddCommGro
 namespace Matrix
 
 /-- `Mⁿ` is a `Mₙ(R)` module, note that this creates a diamond when `M` is `Matrix ι ι R` or when
-  `M` is `R`. -/
+  `M` is `R`. (The intended name is `Matrix.smulVec`.) -/
 scoped instance matrixModule : Module (Matrix ι ι R) (ι → M) where
   smul N v i := ∑ j : ι, N i j • v j
   one_smul v := funext fun i ↦ show ∑ _, _ = _ by simp [one_apply]
@@ -43,8 +43,8 @@ scoped instance matrixModule : Module (Matrix ι ι R) (ι → M) where
 lemma smulVec_def (N : Matrix ι ι R) (v : ι → M) :
     N • v = fun i ↦ ∑ j : ι, N i j • v j := rfl
 
-lemma smul_vec_def' (N : Matrix ι ι R) (v : ι → M) : N • v = ∑ j : ι, fun i ↦ N i j • v j := by
-  ext; simp [smul_vec_def]
+lemma smulVec_def' (N : Matrix ι ι R) (v : ι → M) : N • v = ∑ j : ι, fun i ↦ N i j • v j := by
+  ext; simp [smulVec_def]
 
 @[simp]
 lemma smul_vec_apply (N : Matrix ι ι R) (v : ι → M) (i : ι) :
@@ -56,20 +56,21 @@ namespace LinearMap
 
 open Matrix
 
-/-- The induced linear map from `Mⁿ` to `Nⁿ` by a linear map `f : M → N`. -/
+/-- The induced linear map from `Mⁿ` to `Nⁿ` by a linear map `f : M → N`, this is the matrix linear
+  version of `LinearMap.compLeft`. -/
 @[simps]
-def mapModule (f : M →ₗ[R] N) : (ι → M) →ₗ[Matrix ι ι R] (ι → N) where
+def mapMatrixModule (f : M →ₗ[R] N) : (ι → M) →ₗ[Matrix ι ι R] (ι → N) where
   toFun := LinearMap.compLeft f ι
   map_add' := map_add _
   map_smul' _ _ := by ext; simp
 
 @[simp]
-lemma id_mapModule :
-    LinearMap.id.mapModule = .id (R := Matrix ι ι R) (M := ι → M) := by
+lemma id_mapMatrixModule :
+    LinearMap.id.mapMatrixModule = .id (R := Matrix ι ι R) (M := ι → M) := by
   ext; simp
 
-lemma comp_mapModule (f : M →ₗ[R] N) (g : N →ₗ[R] P) :
-    (g ∘ₗ f).mapModule (ι := ι) = g.mapModule ∘ₗ f.mapModule := by
+lemma comp_mapMatrixModule (f : M →ₗ[R] N) (g : N →ₗ[R] P) :
+    (g ∘ₗ f).mapMatrixModule (ι := ι) = g.mapMatrixModule ∘ₗ f.mapMatrixModule := by
   ext; simp
 
 end LinearMap
