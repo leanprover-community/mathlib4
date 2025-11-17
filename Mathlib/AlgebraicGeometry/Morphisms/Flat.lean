@@ -128,10 +128,18 @@ lemma epi_of_flat_of_surjective (f : X ⟶ Y) [Flat f] [Surjective f] : Epi f :=
   intro x
   apply ConcreteCategory.mono_of_injective
   algebraize [(f.stalkMap x).hom]
-  have : Module.FaithfullyFlat (Y.presheaf.stalk (f.base.hom x)) (X.presheaf.stalk x) :=
+  have : Module.FaithfullyFlat (Y.presheaf.stalk (f x)) (X.presheaf.stalk x) :=
     @Module.FaithfullyFlat.of_flat_of_isLocalHom _ _ _ _ _ _ _
       (Flat.stalkMap f x) (f.toLRSHom.prop x)
   exact ‹RingHom.FaithfullyFlat _›.injective
+
+lemma flat_and_surjective_iff_faithfullyFlat_of_isAffine [IsAffine X] [IsAffine Y] :
+    Flat f ∧ Surjective f ↔ f.appTop.hom.FaithfullyFlat := by
+  rw [RingHom.FaithfullyFlat.iff_flat_and_comap_surjective,
+    MorphismProperty.arrow_mk_iso_iff @Surjective (arrowIsoSpecΓOfIsAffine f),
+    MorphismProperty.arrow_mk_iso_iff @Flat (arrowIsoSpecΓOfIsAffine f),
+    ← HasRingHomProperty.Spec_iff (P := @Flat), surjective_iff]
+  rfl
 
 end Flat
 
