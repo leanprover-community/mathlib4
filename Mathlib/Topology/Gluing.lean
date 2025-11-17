@@ -8,6 +8,7 @@ import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 import Mathlib.Topology.Category.TopCat.Opens
 import Mathlib.Tactic.Generalize
 import Mathlib.CategoryTheory.Elementwise
+import Mathlib.CategoryTheory.Limits.Types.Coequalizers
 import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 /-!
