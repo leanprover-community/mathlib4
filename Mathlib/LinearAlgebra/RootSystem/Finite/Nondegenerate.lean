@@ -121,8 +121,8 @@ lemma smul_coroot_eq_of_root_add_root_eq [P.IsAnisotropic] [NoZeroSMulDivisors R
     replace h₁ := congr_arg (fun n ↦ P.pairing j i • n) h₁
     simp only [add_smul, smul_add, ← mul_smul, smul_eq_mul] at h₁
     convert h₁ using 1
-    module
-    ring_nf
+    · module
+    · ring_nf
   simp only [h₄] at h₁
   apply smul_right_injective _ (c := lsq j) (RootPairing.IsAnisotropic.rootForm_root_ne_zero j)
   simp only
