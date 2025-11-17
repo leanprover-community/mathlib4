@@ -135,6 +135,13 @@ initialize changeNumeralAttr : NameMapExtension (List Nat) ←
       pure <| arg.map (·.1.isNatLit?.get!.pred) |>.toList
     | _, _ => throwUnsupportedSyntax }
 
+/-- `ArgInfo` stores information about how a constant should be translated. -/
+structure ArgInfo where
+  /-- The arguments that should be reordered when translating, using cycle notation. -/
+  reorder : List (List Nat) := []
+  /-- The argument used to determine whether this constant should be translated. -/
+  relevantArg : Nat := 0
+
 /-- `TranslateData` is a structure that holds all data required for a translation attribute. -/
 structure TranslateData : Type where
   /-- An attribute that tells that certain arguments of this definition are not
@@ -142,10 +149,8 @@ structure TranslateData : Type where
   This helps the translation heuristic by also transforming definitions if `ℕ` or another
   fixed type occurs as one of these arguments. -/
   ignoreArgsAttr : NameMapExtension (List Nat)
-  /-- `reorderAttr` stores the declarations that need their arguments reordered when translating.
-  This is specified using the `(reorder := ...)` syntax. -/
-  reorderAttr : NameMapExtension (List <| List Nat)
-  relevantArgAttr : NameMapExtension Nat
+  /-- `argInfoAttr` stores the declarations that need some extra information to be translated. -/
+  argInfoAttr : NameMapExtension ArgInfo
   /-- The global `dont_translate` attribute specifies that operations on the given type
   should not be translated. This can be either for types that are translated,
   such as `MonoidAlgebra` -> `AddMonoidAlgebra`, or for fixed types, such as `Fin n`/`ZMod n`.
@@ -165,7 +170,6 @@ structure TranslateData : Type where
   isDual : Bool
   guessNameData : GuessName.GuessNameData
 
-attribute [inherit_doc relevantArgOption] TranslateData.relevantArgAttr
 attribute [inherit_doc GuessName.GuessNameData] TranslateData.guessNameData
 
 /-- Get the translation for the given name. -/
@@ -177,13 +181,6 @@ falling back to translating a prefix of the name if the full name can't be trans
 This allows translating automatically generated declarations such as `IsRegular.casesOn`. -/
 def findPrefixTranslation (env : Environment) (nm : Name) (t : TranslateData) : Name :=
   nm.mapPrefix (findTranslation? env t)
-
-/-- `ArgInfo` stores information about how a constant should be translated. -/
-structure ArgInfo where
-  /-- The arguments that should be reordered when translating, using cycle notation. -/
-  reorder : List (List Nat) := []
-  /-- The argument used to determine whether this constant should be translated. -/
-  relevantArg : Nat := 0
 
 /-- Compute the `ArgInfo` for the reverse translation. The `reorder` permutation is inverted.
 In practice, `relevantArg` does not overlap with `reorder` for dual translations,
@@ -211,13 +208,10 @@ where
     else
       modifyEnv (t.translations.addEntry · (src, tgt))
       trace[translate] "Added translation {src} ↦ {tgt}"
-    let { reorder, relevantArg } := argInfo
-    if reorder != [] then
-      trace[translate] "@[{t.attrName}] will reorder the arguments of {src} by {reorder}."
-      modifyEnv (t.reorderAttr.addEntry · (src, reorder))
-    if relevantArg != 0 then
-      trace[translate_detail] "Setting relevant_arg for {src} to be {relevantArg}."
-      modifyEnv (t.relevantArgAttr.addEntry · (src, relevantArg))
+    unless argInfo matches {} do
+      trace[translate] "@[{t.attrName}] will reorder the arguments of {src} by {argInfo.reorder}."
+      trace[translate_detail] "Setting relevant_arg for {src} to be {argInfo.relevantArg}."
+      t.argInfoAttr.add src argInfo
 
 /-- `Config` is the type of the arguments that can be provided to `to_additive`. -/
 structure Config : Type where
@@ -268,7 +262,6 @@ They are expanded until they are applied to one more argument than the maximum i
 It also expands all kernel projections that have as head a constant `n` in `reorder`. -/
 def expand (t : TranslateData) (e : Expr) : MetaM Expr := do
   let env ← getEnv
-  let reorderFn : Name → List (List ℕ) := fun nm ↦ (t.reorderAttr.find? env nm |>.getD [])
   let e₂ ← Lean.Meta.transform (input := e) (skipConstInApp := true)
     (post := fun e => return .done e) fun e ↦
     e.withApp fun f args ↦ do
@@ -283,11 +276,11 @@ def expand (t : TranslateData) (e : Expr) : MetaM Expr := do
       return .visit <| (← whnfD (← inferType s)).withApp fun sf sargs ↦
         mkAppN (mkApp (mkAppN (.const projName sf.constLevels!) sargs) s) args
     | .const c _ =>
-      let reorder := reorderFn c
-      if reorder.isEmpty then
+      let some info := t.argInfoAttr.find? env c | return .continue
+      if info.reorder.isEmpty then
         -- no need to expand if nothing needs reordering
         return .continue
-      let needed_n := reorder.flatten.foldr Nat.max 0 + 1
+      let needed_n := info.reorder.flatten.foldr Nat.max 0 + 1
       if needed_n ≤ args.size then
         return .continue
       else
@@ -389,19 +382,18 @@ def applyReplacementFun (t : TranslateData) (e : Expr) (dontTranslate : Array FV
   return e'
 where /-- Implementation of `applyReplacementFun`. -/
   aux (env : Environment) (trace : Bool) : Expr → Expr :=
-  let reorderFn : Name → List (List ℕ) := fun nm ↦ (t.reorderAttr.find? env nm |>.getD [])
-  let relevantArg : Name → ℕ := fun nm ↦ (t.relevantArgAttr.find? env nm).getD 0
   Lean.Expr.replaceRec fun r e ↦ Id.run do
     if trace then
       dbg_trace s!"replacing at {e}"
     match e with
     | .const n₀ ls₀ => do
       let n₁ := findPrefixTranslation env n₀ t
-      let ls₁ : List Level := if 0 ∈ (reorderFn n₀).flatten then ls₀.swapFirstTwo else ls₀
+      let swapUniv := (t.argInfoAttr.find? env n₀).elim false (·.reorder.any (·.contains 0))
+      let ls₁ : List Level := if swapUniv then ls₀.swapFirstTwo else ls₀
       if trace then
         if n₀ != n₁ then
           dbg_trace s!"changing {n₀} to {n₁}"
-        if 0 ∈ (reorderFn n₀).flatten then
+        if swapUniv then
           dbg_trace s!"reordering the universe variables from {ls₀} to {ls₁}"
       return some <| .const n₁ ls₁
     | .app g x => do
@@ -414,9 +406,9 @@ where /-- Implementation of `applyReplacementFun`. -/
       let some nm := gf.constName? | return mkAppN (← r gf) (← gAllArgs.mapM r)
       -- e = `(nm y₁ .. yₙ x)
       /- Test if the head should not be replaced. -/
-      let relevantArgId := relevantArg nm
-      if h : relevantArgId < gAllArgs.size then
-        if let some fxd := shouldTranslate env t gAllArgs[relevantArgId] dontTranslate then
+      let { reorder, relevantArg } := t.argInfoAttr.find? env nm |>.getD {}
+      if h : relevantArg < gAllArgs.size then
+        if let some fxd := shouldTranslate env t gAllArgs[relevantArg] dontTranslate then
           if trace then
             match fxd with
             | .inl fxd => dbg_trace s!"The application of {nm} contains the fixed type \
@@ -426,7 +418,6 @@ where /-- Implementation of `applyReplacementFun`. -/
         else
           gf ← r gf
           /- Test if arguments should be reordered. -/
-          let reorder := reorderFn nm
           if !reorder.isEmpty then
             gAllArgs := gAllArgs.permute! reorder
             if trace then
@@ -780,7 +771,7 @@ def findRelevantArg (t : TranslateData) (nm : Name) : MetaM Nat := do
     let relevantArg? (tgt : Expr) : Option Nat := do
       let c ← tgt.getAppFn.constName?
       guard (findTranslation? env t c).isSome
-      let relevantArg := (t.relevantArgAttr.find? env c).getD 0
+      let relevantArg := (t.argInfoAttr.find? env c).elim 0 (·.relevantArg)
       let arg ← tgt.getArg? relevantArg
       xs.findIdx? (arg.containsFVar ·.fvarId!)
     -- run the above check on all hypotheses and on the conclusion
@@ -1072,8 +1063,8 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
     if (← getEnv).contains tgt then
       if cfg.reorder != [] || cfg.relevantArg?.isSome then
         MetaM.run' <| checkExistingType t src tgt cfg.reorder cfg.dontTranslate
-        insertTranslation t src tgt (failIfExists := false)
-          { reorder := cfg.reorder, relevantArg := cfg.relevantArg?.getD 0 }
+        let argInfo := { reorder := cfg.reorder, relevantArg := cfg.relevantArg?.getD 0 }
+        modifyEnv (t.argInfoAttr.addEntry · (src, argInfo))
         return #[tgt]
       throwError
       "Cannot apply attribute @[{t.attrName}] to '{src}': it is already translated to '{tgt}'. \n\
