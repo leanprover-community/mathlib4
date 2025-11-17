@@ -429,7 +429,7 @@ lemma ExcenterExists.excenter_notMem_affineSpan_face {signs : Finset (Fin (n + 1
     have hc : #fs < #(Finset.univ : Finset (Fin (n + 1))) := by
       have : m + 1 ≤ #fs := hfs.ge
       grw [fs.subset_univ] at this
-      simp at *
+      simp only [Finset.card_univ, Fintype.card_fin] at *
       cutsat
     obtain ⟨i, -, hi⟩ := Finset.exists_mem_notMem_of_card_lt_card hc
     exact ⟨i, hi⟩
