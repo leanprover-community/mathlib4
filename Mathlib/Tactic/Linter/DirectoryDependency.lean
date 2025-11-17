@@ -238,6 +238,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Lean.Expr),
   (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Lean.Environment),
   (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Lean.Elab.InfoTree),
+  (`Mathlib.Tactic.Linter.UnusedInstancesInType, `Mathlib.Util.DeclarationManipulation),
 
   (`Mathlib.Logic, `Batteries),
   -- TODO: should the next import direction be flipped?
