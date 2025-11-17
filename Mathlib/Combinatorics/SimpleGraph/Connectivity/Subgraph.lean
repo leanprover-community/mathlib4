@@ -280,7 +280,7 @@ lemma adj_toSubgraph_toPath {u v u' v' : V} {p : G.Walk u v} [DecidableEq V]
   simp_all only [adj_toSubgraph_iff_mem_edges]
   exact p.edges_toPath_subset hp
 
-lemma toSubgraph_toPath_le_toSubgraph {u v : V} {p : G.Walk u v} [DecidableEq V] :
+lemma toSubgraph_bypass_le_toSubgraph {u v : V} {p : G.Walk u v} [DecidableEq V] :
     p.bypass.toSubgraph ≤ p.toSubgraph := by
   refine ⟨?_, fun _ _ h ↦ adj_toSubgraph_toPath h⟩
   simpa using p.support_bypass_subset
