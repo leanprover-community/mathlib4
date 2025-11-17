@@ -69,6 +69,7 @@ theorem IsTotallyReal.of_algebra [IsTotallyReal K] [Algebra F K] : IsTotallyReal
 theorem isTotallyReal_iff_ofRingEquiv (f : F ≃+* K) : IsTotallyReal F ↔ IsTotallyReal K :=
   ⟨fun _ ↦ .ofRingEquiv f, fun _ ↦ .ofRingEquiv f.symm⟩
 
+@[simp]
 theorem isTotallyReal_top_iff : IsTotallyReal (⊤ : Subfield K) ↔ IsTotallyReal K :=
   isTotallyReal_iff_ofRingEquiv Subfield.topEquiv
 
