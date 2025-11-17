@@ -28,57 +28,53 @@ universe v u v₁ u₁
 noncomputable section
 
 namespace CategoryTheory
-namespace Core
+namespace Cat
+
+open Functor Core
 
 variable {G : Type u} [Groupoid.{v} G] {C : Type u} [Category.{v} C]
 
 /-- The functor from `Cat` to `Grpd` that takes the core of a category, on objects. -/
-def functor : Cat.{v,u} ⥤ Grpd.{v,u} where
+def core : Cat.{v,u} ⥤ Grpd.{v,u} where
   obj C := Grpd.of (Core C)
   map F := F.core
 
 /-- The adjunction between the forgetful functor from `Grpd` to `Cat` and the core
 functor from `Cat` to `Grpd`. -/
-def adjunction : Grpd.forgetToCat ⊣ functor :=
+def forgetCoreAdjunction : Grpd.forgetToCat ⊣ core :=
   Adjunction.mkOfHomEquiv
     { homEquiv _ _ := functorEquiv
       homEquiv_naturality_left_symm _ _ := rfl
       homEquiv_naturality_right := functorToCore_comp_right }
 
 @[simp]
-lemma adjunction_homEquiv_apply (F : G ⥤ C) :
-    adjunction.homEquiv (Grpd.of G) (Cat.of C) F = functorToCore F :=
+lemma forgetCoreAdjunction_homEquiv_apply (F : G ⥤ C) :
+    forgetCoreAdjunction.homEquiv (Grpd.of G) (Cat.of C) F = functorToCore F :=
   rfl
 
 @[simp]
-lemma adjunction_homEquiv_symm_apply (F : G ⥤ Core C) :
-    (adjunction.homEquiv (Grpd.of G) (Cat.of C)).symm F = F ⋙ inclusion C :=
+lemma forgetCoreAdjunction_homEquiv_symm_apply (F : G ⥤ Core C) :
+    (forgetCoreAdjunction.homEquiv (Grpd.of G) (Cat.of C)).symm F = F ⋙ inclusion C :=
   rfl
 
 @[simp]
-lemma adjunction_unit_app :
-    adjunction.unit.app (Grpd.of G) = functorToCore (𝟭 _) := rfl
+lemma forgetCoreAdjunction_unit_app :
+    forgetCoreAdjunction.unit.app (Grpd.of G) = functorToCore (𝟭 _) := rfl
 
 @[simp]
-lemma adjunction_counit_app :
-    (adjunction.counit.app (Cat.of C)) = inclusion C := rfl
-
-end Core
-
-namespace Grpd
-
-open Functor Core
+lemma forgetCoreAdjunction_counit_app :
+    (forgetCoreAdjunction.counit.app (Cat.of C)) = inclusion C := rfl
 
 instance : IsLeftAdjoint Grpd.forgetToCat :=
-  IsLeftAdjoint.mk ⟨functor, ⟨adjunction⟩⟩
+  IsLeftAdjoint.mk ⟨core, ⟨forgetCoreAdjunction⟩⟩
 
-instance : IsRightAdjoint functor :=
-  IsRightAdjoint.mk ⟨Grpd.forgetToCat, ⟨adjunction⟩⟩
+instance : IsRightAdjoint core :=
+  IsRightAdjoint.mk ⟨Grpd.forgetToCat, ⟨forgetCoreAdjunction⟩⟩
 
 instance : Coreflective Grpd.forgetToCat where
-  R := functor
-  adj := adjunction
+  R := core
+  adj := forgetCoreAdjunction
 
-end Grpd
+end Cat
 
 end CategoryTheory
