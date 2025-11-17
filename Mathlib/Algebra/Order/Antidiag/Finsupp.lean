@@ -104,6 +104,14 @@ theorem finsuppAntidiag_insert {a : ι} {s : Finset ι}
   simp_rw [mem_map, mem_attach, true_and, Subtype.exists, Embedding.coeFn_mk, exists_prop, and_comm,
     eq_comm]
 
+@[gcongr]
+theorem finsuppAntidiag_mono {s t : Finset ι} (h : s ⊆ t) (n : μ) :
+    finsuppAntidiag s n ⊆ finsuppAntidiag t n := by
+  intro a
+  simp_rw [mem_finsuppAntidiag']
+  rintro ⟨hsum, hmem⟩
+  exact ⟨hsum, hmem.trans h⟩
+
 variable [AddCommMonoid μ'] [HasAntidiagonal μ'] [DecidableEq μ']
 
 -- This should work under the assumption that e is an embedding and an AddHom
