@@ -94,21 +94,22 @@ private lemma strong_sperner_zero_aux {S : SimplicialComplex ℝ (Fin 1 → ℝ)
 /-- If a face is almost panchromatic (missing color i) and we can add a vertex with color i,
 we get a panchromatic face. -/
 private lemma almost_to_panchromatic {c : E → Fin (m + 1)} {X : Finset E} {y : E}
-    {i : Fin (m + 1)} (hX : IsAlmostPanchromatic c X i) (hy : c y = i) (hy_fresh : y ∉ X) :
+    {i : Fin (m + 1)} (h_surj : IsAlmostPanchromatic c X i) (hy : c y = i) (hy_fresh : y ∉ X) :
     IsPanchromatic c (insert y X) := by
   intro j _
   by_cases hj : j = i
   · exact ⟨y, Finset.mem_insert_self y X, hj ▸ hy⟩
-  · obtain ⟨x, hx_mem, hx_color⟩ := hX j (by simp [hj])
+  · have hj_mem : j ∈ (univ : Set _) \ {i} := by simp [hj]
+    obtain ⟨x, hx_mem, hx_color⟩ := h_surj j hj_mem
     exact ⟨x, Finset.mem_insert_of_mem hx_mem, hx_color⟩
 
 /-- A panchromatic face remains almost panchromatic after removing a vertex with any color. -/
 private lemma panchromatic_to_almost {c : E → Fin (m + 1)} {X : Finset E} {x : E}
-    (hX : IsPanchromatic c X) (hx : x ∈ X) :
+    (h_panch : IsPanchromatic c X) (hx : x ∈ X) :
     IsAlmostPanchromatic c (X.erase x) (c x) := by
   intro j hj
   simp at hj
-  obtain ⟨y, hy_mem, hy_color⟩ := hX j trivial
+  obtain ⟨y, hy_mem, hy_color⟩ := h_panch j trivial
   by_cases hyx : y = x
   · exfalso
     rw [hyx] at hy_color
@@ -117,10 +118,12 @@ private lemma panchromatic_to_almost {c : E → Fin (m + 1)} {X : Finset E} {x :
 
 /-- An almost panchromatic face with all colors except i has no vertex colored i. -/
 private lemma almost_panchromatic_no_color {c : E → Fin (m + 1)} {X : Finset E}
-    {i : Fin (m + 1)} (hX : IsAlmostPanchromatic c X i) :
+    {i : Fin (m + 1)} (h_almost : IsAlmostPanchromatic c X i) :
     ∀ x ∈ X, c x ≠ i := by
   intro x hx hc
-  obtain ⟨y, hy_mem, rfl⟩ := hX i (by simp : i ∈ univ \ {i} → False).elim
+  have : i ∉ (univ : Set _) \ {i} := by simp
+  have h_mem : i ∈ (univ : Set _) \ {i} := by simp; exact hc ▸ ⟨Set.mem_univ (c x), fun h => h rfl⟩
+  exact this h_mem
 
 /-- Each panchromatic face X contains exactly one vertex with each color.
 Given color i, there exists a unique x ∈ X with c(x) = i. -/
@@ -138,30 +141,24 @@ private lemma panchromatic_unique_color {m : ℕ} {c : (Fin (m + 1) → ℝ) →
   -- Uniqueness from cardinality
   intro y ⟨hy_mem, hy_color⟩
   by_contra hne
-  -- If x ≠ y both map to i, then |image| < |X|
-  -- But surjectivity + cardinality means image = target with |image| = m+1
+  -- If x ≠ y both map to i, then c is not injective on X
+  -- But surjectivity + equal cardinality means c must be bijective
   have h_img_univ : c '' ↑X = univ := by
     ext j
     simp only [Set.mem_image, Finset.mem_coe, Set.mem_univ, iff_true]
     exact h_surj (Set.mem_univ j)
-  have h_img_card : (c '' ↑X).ncard = m + 1 := by
-    rw [h_img_univ]
-    simp
-  -- If c is not injective on X, then |image| < |X|
-  have h_not_inj : ¬Function.Injective (X.restrict c) := by
-    intro h_inj
-    have : (⟨x, hx_mem⟩ : X) = ⟨y, hy_mem⟩ := h_inj (by simp [hx_color, hy_color])
-    exact hne (Subtype.mk_eq_mk.mp this)
-  have h_img_card_lt : (c '' ↑X).ncard < X.card := by
-    apply Set.ncard_image_lt
-    · simp [hX_card]
-    · intro h_inj
-      apply h_not_inj
-      intros ⟨a, ha⟩ ⟨b, hb⟩ hab
-      simp at hab
-      exact Subtype.mk_eq_mk.mpr (h_inj hab)
-  rw [hX_card] at h_img_card_lt
-  omega
+  have h_card_eq : X.card = Fintype.card (Fin (m + 1)) := by simp [hX_card]
+  -- c maps X surjectively to univ, and |X| = |univ|, so c must be injective
+  have h_inj : Function.Injective (fun (v : X) => c v.val) := by
+    apply Fintype.injective_iff_surjective.mpr
+    intro j
+    obtain ⟨z, hz_mem, hz_color⟩ := h_surj (Set.mem_univ j)
+    exact ⟨⟨z, hz_mem⟩, hz_color⟩
+  -- But x and y are distinct elements mapping to same value
+  have : (⟨x, hx_mem⟩ : X) = ⟨y, hy_mem⟩ := by
+    apply h_inj
+    simp [hx_color, hy_color]
+  exact hne (Subtype.mk_eq_mk.mp this)
 
 /-- A panchromatic (m+1)-simplex has exactly one vertex with color 0. -/
 private lemma panchromatic_has_unique_zero_color {m : ℕ}
@@ -182,16 +179,17 @@ private lemma panchromatic_remove_zero {m : ℕ}
 is panchromatic when viewed as a face of the induced (m)-simplex on the boundary. -/
 private lemma boundary_almost_is_lower_dim_panchromatic
     {c : (Fin (m + 2) → ℝ) → Fin (m + 2)} {X : Finset (Fin (m + 2) → ℝ)}
-    (hX_almost : IsAlmostPanchromatic c X 0)
+    (h_almost : IsAlmostPanchromatic c X 0)
     (hX_bdy : ∀ x ∈ X, x 0 = 0)
     (hc_sperner : ∀ x ∈ X, x 0 = 0 → c x ≠ 0) :
     -- The coloring restricted to {1,...,m+1} is surjective
-    ∀ i : Fin (m + 1), ∃ x ∈ X, (c x).castSucc = i := by
+    ∀ i : Fin (m + 1), ∃ x ∈ X, c x = i.castSucc := by
   intro i
   have : (i.castSucc) ≠ 0 := by simp
-  obtain ⟨x, hx_mem, hx_color⟩ := hX_almost i.castSucc (by simp [this])
+  have mem_cast : i.castSucc ∈ (univ : Set (Fin (m + 2))) \ {0} := by simp [this]
+  obtain ⟨x, hx_mem, hx_color⟩ := h_almost i.castSucc mem_cast
   use x, hx_mem
-  exact Fin.castSucc_injective i hx_color
+  exact hx_color
 
 /-- The key parity lemma: the total count of almost-panchromatic faces has the same parity
 as the count of panchromatic faces.
@@ -263,12 +261,14 @@ private lemma panchromatic_generates_zero_almost {c : (Fin (m + 2) → ℝ) → 
 
 /-- Helper: An almost-panchromatic face using m+1 colors has exactly m+1 vertices. -/
 private lemma almost_panchromatic_card {c : E → Fin (m + 1)} {X : Finset E}
-    (hX : IsAlmostPanchromatic c X i) : X.card = m := by
-  have h_surj : Set.SurjOn c X (univ \ {i}) := hX
+    (h_almost : IsAlmostPanchromatic c X i) : X.card = m := by
+  have h_surj : Set.SurjOn c X (univ \ {i}) := h_almost
   have h_card_le : (univ \ {i}).ncard ≤ X.card := ncard_le_card_of_surjOn h_surj (by simp)
   have h_card_eq : (univ \ {i}).ncard = m := by simp
   -- Lower bound from surjectivity: m ≤ |X|
-  have h_lower : m ≤ X.card := by omega
+  have h_lower : m ≤ X.card := by
+    calc m = (univ \ {i}).ncard := h_card_eq.symm
+      _ ≤ X.card := h_card_le
   -- Upper bound from affine independence: |X| ≤ m+1 (simplicial complex face property)
   -- Since X surjects onto m colors and has at most m+1 vertices,
   -- and cannot have color i, we get exactly m vertices
