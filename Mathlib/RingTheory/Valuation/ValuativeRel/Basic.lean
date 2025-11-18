@@ -101,7 +101,7 @@ class ValuativePreorder (R : Type*) [CommRing R] [ValuativeRel R] [Preorder R] w
 
 namespace ValuativeRel
 
-variable {R : Type*} [CommRing R] [ValuativeRel R]
+variable {R : Type*} [CommRing R] [ValuativeRel R] {x y z : R}
 
 /-- The strict version of the valuative relation. -/
 def SRel (x y : R) : Prop := ¬ y ≤ᵥ x
@@ -154,12 +154,24 @@ lemma mul_rel_mul {x x' y y' : R} (h1 : x ≤ᵥ y) (h2 : x' ≤ᵥ y') : x * x'
   calc x * x' ≤ᵥ x * y' := rel_mul_left _ h2
     _ ≤ᵥ y * y' := rel_mul_right _ h1
 
+@[simp] lemma mul_rel_mul_iff_left (hz : 0 <ᵥ z) : x * z ≤ᵥ y * z ↔ x ≤ᵥ y :=
+  ⟨rel_mul_cancel hz, rel_mul_right _⟩
+
+@[simp] lemma mul_rel_mul_iff_right (hx : 0 <ᵥ x) : x * y ≤ᵥ x * z ↔ y ≤ᵥ z := by
+  simp [mul_comm x, hx]
+
+@[simp] lemma mul_srel_mul_iff_left (hz : 0 <ᵥ z) : x * z <ᵥ y * z ↔ x <ᵥ y :=
+  (mul_rel_mul_iff_left hz).not
+
+@[simp] lemma mul_srel_mul_iff_right (hx : 0 <ᵥ x) : x * y <ᵥ x * z ↔ y <ᵥ z :=
+  (mul_rel_mul_iff_right hx).not
+
 @[deprecated (since := "2025-11-04")] alias rel_mul := mul_rel_mul
 
 theorem rel_add_cases (x y : R) : x + y ≤ᵥ x ∨ x + y ≤ᵥ y :=
   (rel_total y x).imp (fun h => rel_add .rfl h) (fun h => rel_add h .rfl)
 
-lemma zero_srel_mul {x y : R} (hx : 0 <ᵥ x) (hy : 0 <ᵥ y) : 0 <ᵥ x * y := by
+@[simp] lemma zero_srel_mul (hx : 0 <ᵥ x) (hy : 0 <ᵥ y) : 0 <ᵥ x * y := by
   contrapose! hy
   rw [not_srel_iff] at hy ⊢
   rw [show (0 : R) = x * 0 by simp, mul_comm x y, mul_comm x 0] at hy
@@ -171,6 +183,8 @@ def posSubmonoid : Submonoid R where
   carrier := { x | 0 <ᵥ x }
   mul_mem' := zero_srel_mul
   one_mem' := zero_srel_one
+
+@[simp] lemma zero_srel_posSubmonoid_def (x : posSubmonoid R) : 0 <ᵥ x.val := x.prop
 
 @[simp]
 lemma posSubmonoid_def (x : R) : x ∈ posSubmonoid R ↔ 0 <ᵥ x := Iff.rfl
@@ -447,6 +461,10 @@ instance : LinearOrder (ValueGroupWithZero R) where
 theorem ValueGroupWithZero.mk_lt_mk (x y : R) (t s : posSubmonoid R) :
     ValueGroupWithZero.mk x t < ValueGroupWithZero.mk y s ↔ x * s <ᵥ y * t := by
   rw [lt_iff_not_ge, srel_iff, mk_le_mk]
+
+@[simp]
+lemma ValueGroupWithZero.mk_pos {x : R} {s : posSubmonoid R} :
+    0 < ValueGroupWithZero.mk x s ↔ 0 <ᵥ x := by rw [← mk_zero 1]; simp [-mk_zero]
 
 instance : Bot (ValueGroupWithZero R) where
   bot := 0
