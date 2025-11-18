@@ -181,7 +181,12 @@ register_option linter.unusedDecidableInType : Bool := {
 remainder of the type, and suggests replacing them with a use of `classical` in the proof or
 `open scoped Classical in` at the term level. -/
 def unusedDecidableInType : Linter where
-  run := withSetOptionIn fun cmd => do
+  run := /- withSetOptionIn -/ fun cmd => do
+    /- `withSetOptionIn` currently breaks infotree searches, so do a cheap outermost check
+    until this is fixed: [Zulip](https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/bug.3A.20withSetOptionIn.20creates.20context-free.20info.20nodes/with/556896993) -/
+    if let `(command| set_option $opt:ident false in $_:command) := cmd then
+      if opt.getId == ``linter.unusedDecidableInType then
+        return
     unless getLinterValue linter.unusedDecidableInType (← getLinterOptions) do
       return
     cmd.logUnusedInstancesInTheoremsWhere
