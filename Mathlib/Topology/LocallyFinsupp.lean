@@ -308,8 +308,6 @@ section Lattice
 variable [Lattice Y]
 
 instance [Zero Y] : Lattice (locallyFinsuppWithin U Y) where
-  le := (· ≤ ·)
-  lt := (· < ·)
   le_refl := by simp [le_def]
   le_trans D₁ D₂ D₃ h₁₂ h₂₃ := fun x ↦ (h₁₂ x).trans (h₂₃ x)
   le_antisymm D₁ D₂ h₁₂ h₂₁ := by

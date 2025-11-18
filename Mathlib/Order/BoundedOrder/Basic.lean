@@ -227,21 +227,15 @@ instance instOrderBot [LE α] [OrderTop α] : OrderBot αᵒᵈ where
   __ := inferInstanceAs (Bot αᵒᵈ)
   bot_le := @le_top α _ _
 
-@[simp]
-theorem ofDual_bot [Top α] : ofDual ⊥ = (⊤ : α) :=
-  rfl
+@[simp] lemma ofDual_bot [Top α] : ofDual ⊥ = (⊤ : α) := rfl
+@[simp] lemma ofDual_top [Bot α] : ofDual ⊤ = (⊥ : α) := rfl
+@[simp] lemma toDual_bot [Bot α] : toDual (⊥ : α) = ⊤ := rfl
+@[simp] lemma toDual_top [Top α] : toDual (⊤ : α) = ⊥ := rfl
 
-@[simp]
-theorem ofDual_top [Bot α] : ofDual ⊤ = (⊥ : α) :=
-  rfl
-
-@[simp]
-theorem toDual_bot [Bot α] : toDual (⊥ : α) = ⊤ :=
-  rfl
-
-@[simp]
-theorem toDual_top [Top α] : toDual (⊤ : α) = ⊥ :=
-  rfl
+@[simp] lemma ofDual_eq_bot [Bot α] {a : αᵒᵈ} : ofDual a = ⊥ ↔ a = ⊤ := .rfl
+@[simp] lemma ofDual_eq_top [Top α] {a : αᵒᵈ} : ofDual a = ⊤ ↔ a = ⊥ := .rfl
+@[simp] lemma toDual_eq_bot [Top α] {a : α} : toDual a = ⊥ ↔ a = ⊤ := .rfl
+@[simp] lemma toDual_eq_top [Bot α] {a : α} : toDual a = ⊤ ↔ a = ⊥ := .rfl
 
 end OrderDual
 

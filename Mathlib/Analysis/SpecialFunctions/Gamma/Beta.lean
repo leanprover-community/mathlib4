@@ -405,7 +405,7 @@ theorem Gamma_mul_Gamma_one_sub (z : ℂ) : Gamma z * Gamma (1 - z) = π / sin (
       neg_eq_iff_eq_neg] at hk
     rw [hk]
     cases k
-    · rw [Int.ofNat_eq_coe, Int.cast_natCast, Complex.Gamma_neg_nat_eq_zero, zero_mul]
+    · rw [Int.ofNat_eq_natCast, Int.cast_natCast, Complex.Gamma_neg_nat_eq_zero, zero_mul]
     · rw [Int.cast_negSucc, neg_neg, Nat.cast_add, Nat.cast_one, add_comm, sub_add_cancel_left,
         Complex.Gamma_neg_nat_eq_zero, mul_zero]
   refine tendsto_nhds_unique ((GammaSeq_tendsto_Gamma z).mul (GammaSeq_tendsto_Gamma <| 1 - z)) ?_

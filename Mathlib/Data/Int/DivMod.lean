@@ -23,14 +23,14 @@ theorem mul_ediv_le_mul_ediv_assoc {a : Int} (ha : 0 ≤ a) (b : Int) {c : Int} 
   · rw [Int.le_ediv_iff_mul_le hlt, Int.mul_assoc]
     exact Int.mul_le_mul_of_nonneg_left (Int.ediv_mul_le b (Int.ne_of_gt hlt)) ha
 
-@[deprecated (since := "2025-10-06")] alias ediv_ediv_eq_ediv_mul := ediv_ediv
+@[deprecated (since := "2025-10-06")] alias ediv_ediv_eq_ediv_mul := ediv_ediv_of_nonneg
 
 theorem fdiv_fdiv_eq_fdiv_mul (m : Int) {n k : Int} (hn : 0 ≤ n) (hk : 0 ≤ k) :
     (m.fdiv n).fdiv k = m.fdiv (n * k) := by
   rw [Int.fdiv_eq_ediv_of_nonneg _ hn,
     Int.fdiv_eq_ediv_of_nonneg _ hk,
     Int.fdiv_eq_ediv_of_nonneg _ (Int.mul_nonneg hn hk),
-    ediv_ediv hn]
+    ediv_ediv_of_nonneg hn]
 
 /-! ### `emod` -/
 
