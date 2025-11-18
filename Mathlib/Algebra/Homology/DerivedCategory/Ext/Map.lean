@@ -311,15 +311,9 @@ lemma mapExt_extClass_eq_extClass_map [HasExt.{w} C] [HasExt.{w'} D] {S : ShortC
     (hS : S.ShortExact) : F.mapExt S.X₃ S.X₁ 1 hS.extClass = (hS.map_of_exact F).extClass := by
   let _ := HasDerivedCategory.standard C
   let _ := HasDerivedCategory.standard D
-  /-have : F.mapShiftedHom S.X₃ S.X₁ 1 hS.extClass.hom = (hS.map_of_exact F).extClass.hom := by
-    rw [hS.extClass_hom, (hS.map_of_exact F).extClass_hom]
-
-    sorry-/
-  --simp [hS.extClass_hom, (hS.map_of_exact F).extClass_hom]
-  #check F.mapShiftedHom_singleδ hS
-  /-simpa only [F.mapExt_eq_mapShiftedHom, Int.cast_ofNat_Int, Function.comp_apply,
-    Equiv.symm_apply_eq]-/
-  sorry
+  ext
+  rw [F.mapExt_eq_shiftedHom_map, hS.extClass_hom]
+  exact (F.mapShiftedHom_singleδ hS).trans (hS.map_of_exact F).extClass_hom.symm
 
 end Abelian.Ext
 
