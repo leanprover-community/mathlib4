@@ -59,7 +59,7 @@ def WithLp.delabToLp : Delab := delabApp
 
 end Notation
 
-variable (p : ℝ≥0∞) (K K' K'' V V' V'' : Type*)
+variable (p : ℝ≥0∞) (K K' : Type*) {K'' : Type*} (V : Type*) {V' V'' : Type*}
 
 namespace WithLp
 
@@ -114,8 +114,6 @@ lemma ofLp_bijective : Function.Bijective (@ofLp p V) :=
 
 lemma toLp_bijective : Function.Bijective (@toLp p V) :=
   ⟨toLp_injective p, toLp_surjective p⟩
-
-variable {V' V''}
 
 /-- Lift a function to `WithLp`. -/
 @[simp]
@@ -263,7 +261,7 @@ instance instModuleFinite
 
 section LinearMap
 
-variable {K K' K'' V} [Semiring K] [Semiring K'] [Semiring K'']
+variable {K K' V} [Semiring K] [Semiring K'] [Semiring K'']
   {σ : K →+* K'} {σ' : K' →+* K} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
   {τ : K' →+* K''} {τ' : K'' →+* K'} [RingHomInvPair τ τ'] [RingHomInvPair τ' τ]
   {ρ : K →+* K''} {ρ' : K'' →+* K} [RingHomInvPair ρ ρ'] [RingHomInvPair ρ' ρ]
