@@ -156,14 +156,14 @@ example {x} (h : 1 = x) : baz20 = x := by simp; guard_target = 1 = x; exact h
 @[to_additive bar21]
 def foo21 {N} {A} [Pow A N] (a : A) (n : N) : A := a ^ n
 
-run_cmd liftCoreM <| MetaM.run' <| guard <| relevantArgAttr.find? (← getEnv) `Test.foo21 == some 1
+run_meta guard <| argInfoAttr.find? (← getEnv) `Test.foo21 matches some ⟨[], 1⟩
 
 @[to_additive bar22]
 abbrev foo22 {α} [Monoid α] (a : α) : ℕ → α
   | 0 => 1
   | _ => a
 
-run_cmd liftCoreM <| MetaM.run' <| do
+run_meta do
   -- make `abbrev` definition `reducible` automatically
   guard <| (← getReducibilityStatus `Test.bar22) == .reducible
   -- make `abbrev` definition `inline` automatically
