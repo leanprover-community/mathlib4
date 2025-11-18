@@ -1042,10 +1042,11 @@ partial def transformDecl (t : TranslateData) (cfg : Config) (src tgt : Name)
   copyMetaData t cfg src tgt argInfo
 
 /-- Verify that the type of given `srcDecl` translates to that of `tgtDecl`. -/
-partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config) : MetaM Unit := do
+partial def checkExistingType (t : TranslateData) (src tgt : Name) (reorder : List (List Nat))
+    (dont : List Nat) : MetaM Unit := do
   let mut srcDecl ← getConstInfo src
   let tgtDecl ← getConstInfo tgt
-  if 0 ∈ cfg.reorder.flatten then
+  if 0 ∈ reorder.flatten then
     srcDecl := srcDecl.updateLevelParams srcDecl.levelParams.swapFirstTwo
   unless srcDecl.levelParams.length == tgtDecl.levelParams.length do
     throwError "`{t.attrName}` validation failed:\n  expected {srcDecl.levelParams.length} \
@@ -1056,8 +1057,7 @@ partial def checkExistingType (t : TranslateData) (src tgt : Name) (cfg : Config
     srcDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
   let tgtType := tgtDecl.type.instantiateLevelParams
     tgtDecl.levelParams (tgtDecl.levelParams.map mkLevelParam)
-  let type ← reorderForall cfg.reorder <| ← applyReplacementForall t cfg.dontTranslate <|
-    ← unfoldAuxLemmas type
+  let type ← reorderForall reorder <| ← applyReplacementForall t dont <| ← unfoldAuxLemmas type
   -- `instantiateLevelParams` normalizes universes, so we have to normalize both expressions
   unless ← withReducible <| isDefEq type tgtType do
     throwError "`{t.attrName}` validation failed: expected{indentExpr type}\nbut '{tgt}' has \
@@ -1087,7 +1087,7 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
         modifyEnv (t.relevantArgAttr.addEntry · (src, relevantArg))
         updated := true
       if updated then
-        MetaM.run' <| checkExistingType t src tgt cfg
+        MetaM.run' <| checkExistingType t src tgt cfg.reorder cfg.dontTranslate
         return #[tgt]
       throwError
       "Cannot apply attribute @[{t.attrName}] to '{src}': it is already translated to '{tgt}'. \n\
@@ -1103,7 +1103,7 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
       else
         "The translated declaration doesn't exist. Please remove the option `existing`."
   if alreadyExists then
-    MetaM.run' <| checkExistingType t src tgt cfg
+    MetaM.run' <| checkExistingType t src tgt cfg.reorder cfg.dontTranslate
   let relevantArg ← cfg.relevantArg?.getDM <| MetaM.run' <| findRelevantArg t src
   let argInfo := { reorder := cfg.reorder, relevantArg }
   insertTranslationAndInfo t src tgt argInfo alreadyExists
