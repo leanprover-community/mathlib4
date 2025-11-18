@@ -83,7 +83,7 @@ lemma isEmbedding_toUniformOnFun :
 
 theorem uniformContinuous_coe_fun [∀ i, ContinuousSMul 𝕜 (E i)] :
     UniformContinuous (DFunLike.coe : ContinuousMultilinearMap 𝕜 E F → (Π i, E i) → F) :=
-  (UniformOnFun.uniformContinuous_toFun isVonNBounded_covers).comp
+  (UniformOnFun.uniformContinuous_toFun sUnion_isVonNBounded_eq_univ).comp
     isUniformEmbedding_toUniformOnFun.uniformContinuous
 
 theorem uniformContinuous_eval_const [∀ i, ContinuousSMul 𝕜 (E i)] (x : Π i, E i) :
@@ -126,7 +126,7 @@ theorem completeSpace (h : IsCoherentWith {s : Set (Π i, E i) | IsVonNBounded �
       simp [DFunLike.ext_iff]
   have H : ∀ {m : Π i, E i},
       Continuous fun f : (Π i, E i) →ᵤ[{s | IsVonNBounded 𝕜 s}] F ↦ toFun _ f m :=
-    (uniformContinuous_eval (isVonNBounded_covers) _).continuous
+    (uniformContinuous_eval (sUnion_isVonNBounded_eq_univ) _).continuous
   rw [completeSpace_iff_isComplete_range isUniformInducing_toUniformOnFun, range_toUniformOnFun]
   simp only [setOf_and, setOf_forall]
   apply_rules [IsClosed.isComplete, IsClosed.inter]
