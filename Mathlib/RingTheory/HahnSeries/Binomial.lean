@@ -99,9 +99,14 @@ theorem binomial_power {x : orderTopSubOnePos Γ R} {r : R} :
     x ^ r = toOrderTopSubOnePos (orderTop_hsum_binomialFamily_pos x.2 r) :=
   rfl
 
-theorem binomialFamily_coeff {g : Γ} (hg : 0 < g) (r s : R) (k : ℕ) :
-    HahnSeries.coeff ((toOrderTopSubOnePos
-      (one_plus_single_mem_orderTopSubOnePos hg r)) ^ s).val (k • g) = Ring.choose s k • r ^ k := by
+theorem pow_add {x : orderTopSubOnePos Γ R} {r s : R} : x ^ (r + s) = x ^ r * x ^ s := by
+  suffices (x ^ (r + s)).val = (x ^ r * x ^ s).val by exact SetLike.coe_eq_coe.mp this
+  suffices (x ^ (r + s)).val.val = (x ^ r * x ^ s).val.val by exact Units.val_inj.mp this
+  simp [binomialFamily, hsum_powerSeriesFamily_mul, hsum_mul]
+
+theorem coeff_toOrderTopSubOnePos_pow {g : Γ} (hg : 0 < g) (r s : R) (k : ℕ) :
+    HahnSeries.coeff (toOrderTopSubOnePos (orderTop_sub_pos hg r) ^ s).val (k • g) =
+      Ring.choose s k • r ^ k := by
   simp only [val_toOrderTopSubOnePos_coe, binomial_power, coeff_hsum, smul_eq_mul]
   rw [finsum_eq_single _ k, binomialFamily_apply (orderTop_sub_pos hg r), add_sub_cancel_left,
     single_pow, coeff_smul, coeff_single_same (k • g) (r ^ k), smul_eq_mul]

@@ -819,11 +819,6 @@ def toOrderTopSubOnePos {x : HahnSeries Γ R} (h : 0 < (x - 1).orderTop) :
     IsUnit.val_inv_mul (isUnit_of_orderTop_pos h)⟩
   property := h
 
-theorem toOrderTopSubOnePos_val_mem {g : Γ} (hg : 0 < g) (r : R) :
-    (toOrderTopSubOnePos (orderTop_sub_pos hg r)).val ∈ orderTopSubOnePos Γ R :=
-  (mem_orderTopSubOnePos_iff (toOrderTopSubOnePos (orderTop_sub_pos hg r)).val).mpr
-    (orderTop_sub_pos hg r)
-
 end CommRing
 
 section IsDomain

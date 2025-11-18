@@ -421,18 +421,20 @@ theorem leadingCoeff_sub {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
 theorem orderTop_sub_ne {x y : HahnSeries Γ R} {g : Γ}
     (hxg : x.orderTop = g) (hyg : y.orderTop = g) (hxyc : x.leadingCoeff = y.leadingCoeff) :
     (x - y).orderTop ≠ g := by
-  refine orderTop_ne_of_coeff_zero ?_
-  have hx : x ≠ 0 := by
-    rw [← orderTop_ne_top, hxg]
-    exact WithTop.coe_ne_top
+  refine orderTop_ne_of_coeff_eq_zero ?_
+  have hx : x ≠ 0 := fun h ↦ by simp_all [orderTop_zero, WithTop.top_ne_coe]
   rw [orderTop_of_ne_zero hx, WithTop.coe_eq_coe] at hxg
-  have hy : y ≠ 0 := by
-    rw [← orderTop_ne_top, hyg]
-    exact WithTop.coe_ne_top
+  have hy : y ≠ 0 := fun h ↦ by simp_all [orderTop_zero, WithTop.top_ne_coe]
   rw [orderTop_of_ne_zero hy, WithTop.coe_eq_coe] at hyg
   simp only [leadingCoeff_of_ne_zero hx, leadingCoeff_of_ne_zero hy, untop_orderTop_of_ne_zero hx,
     untop_orderTop_of_ne_zero hy, hxg, hyg] at hxyc
   rwa [coeff_sub, sub_eq_zero]
+
+theorem le_orderTop_of_leadingCoeff_eq {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R} {g : Γ}
+    (hxg : x.orderTop = g) (hyg : y.orderTop = g) (hxyc : x.leadingCoeff = y.leadingCoeff) :
+    g < (x - y).orderTop :=
+  lt_of_le_of_ne (le_of_eq_of_le (by rw [hxg, hyg, inf_idem]) min_orderTop_le_orderTop_sub)
+    (orderTop_sub_ne hxg hyg hxyc).symm
 
 end AddGroup
 

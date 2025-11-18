@@ -276,7 +276,7 @@ theorem coeff_orderTop_ne {x : HahnSeries Γ R} {g : Γ} (hg : x.orderTop = g) :
   rw [← hg]
   exact x.isWF_support.min_mem (support_nonempty_iff.2 hx)
 
-theorem orderTop_ne_of_coeff_zero {x : HahnSeries Γ R} {i : Γ} (hx : x.coeff i = 0) :
+theorem orderTop_ne_of_coeff_eq_zero {x : HahnSeries Γ R} {i : Γ} (hx : x.coeff i = 0) :
     x.orderTop ≠ i :=
   fun h ↦ coeff_orderTop_ne h hx
 
