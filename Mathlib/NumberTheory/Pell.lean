@@ -320,10 +320,10 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     ∃ x y : ℤ, x ^ 2 - d * y ^ 2 = 1 ∧ y ≠ 0 := by
   let ξ : ℝ := √d
   have hξ : Irrational ξ := by
-    refine irrational_nrt_of_notint_nrt 2 d (sq_sqrt <| Int.cast_nonneg.mpr h₀.le) ?_ two_pos
+    refine irrational_nrt_of_notint_nrt 2 d (sq_sqrt <| Int.cast_nonneg h₀.le) ?_ two_pos
     rintro ⟨x, hx⟩
     refine hd ⟨x, @Int.cast_injective ℝ _ _ d (x * x) ?_⟩
-    rw [← sq_sqrt <| Int.cast_nonneg.mpr h₀.le, Int.cast_mul, ← hx, sq]
+    rw [← sq_sqrt <| Int.cast_nonneg h₀.le, Int.cast_mul, ← hx, sq]
   obtain ⟨M, hM₁⟩ := exists_int_gt (2 * |ξ| + 1)
   have hM : {q : ℚ | |q.1 ^ 2 - d * (q.2 : ℤ) ^ 2| < M}.Infinite := by
     refine Infinite.mono (fun q h => ?_) (infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational hξ)
@@ -641,7 +641,7 @@ theorem existsUnique_pos_generator (h₀ : 0 < d) (hd : ¬IsSquare d) :
       zpow_neg_one, neg_mul, ← zpow_add, ← sub_eq_add_neg] at hn₁
     rcases hn₁ with hn₁ | hn₁
     · rcases Int.isUnit_iff.mp
-          (isUnit_of_mul_eq_one _ _ <|
+          (.of_mul_eq_one _ <|
             sub_eq_zero.mp <| (ha₁.zpow_eq_one_iff (n₂ * n₁ - 1)).mp hn₁) with
         (rfl | rfl)
       · rw [zpow_one]

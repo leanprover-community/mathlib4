@@ -43,7 +43,7 @@ theorem isUnit_iff_not_dvd_char_of_ringChar_ne_zero (R : Type*) [CommRing R] (p 
     apply_fun ((↑) : ℤ → R) at hab
     push_cast at hab
     rw [hch, mul_zero, add_zero, mul_comm] at hab
-    exact isUnit_of_mul_eq_one (p : R) a hab
+    exact .of_mul_eq_one a hab
 
 /-- A prime `p` is a unit in a finite commutative ring `R`
 iff it does not divide the characteristic. -/

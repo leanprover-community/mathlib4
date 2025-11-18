@@ -270,8 +270,7 @@ protected def id (M : Type v) (ι : Type* := PUnit) [AddCommMonoid M] [Unique ι
     invFun := of (fun _ => M) default
     left_inv := fun x =>
       DirectSum.induction_on x (by rw [AddMonoidHom.map_zero, AddMonoidHom.map_zero])
-        (fun p x => by rw [Unique.default_eq p, toAddMonoid_of]; rfl) fun x y ihx ihy => by
-        rw [AddMonoidHom.map_add, AddMonoidHom.map_add, ihx, ihy]
+        (fun p x => by rw [Unique.default_eq p, toAddMonoid_of]; rfl) fun x y ihx ihy => by grind
     right_inv := fun _ => toAddMonoid_of _ _ _ }
 
 section CongrLeft
@@ -348,9 +347,6 @@ theorem coeAddMonoidHom_eq_dfinsuppSum [DecidableEq ι]
   simp only [DirectSum.coeAddMonoidHom, toAddMonoid, DFinsupp.liftAddHom, AddEquiv.coe_mk,
     Equiv.coe_fn_mk]
   exact DFinsupp.sumAddHom_apply _ x
-
-@[deprecated (since := "2025-04-06")]
-alias coeAddMonoidHom_eq_dfinsupp_sum := coeAddMonoidHom_eq_dfinsuppSum
 
 @[simp]
 theorem coeAddMonoidHom_of {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
