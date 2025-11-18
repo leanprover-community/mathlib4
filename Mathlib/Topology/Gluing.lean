@@ -8,6 +8,7 @@ import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 import Mathlib.Topology.Category.TopCat.Opens
 import Mathlib.Tactic.Generalize
 import Mathlib.CategoryTheory.Elementwise
+import Mathlib.CategoryTheory.Limits.Types.Coequalizers
 import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 /-!
@@ -293,7 +294,7 @@ structure MkCore where
 theorem MkCore.t_inv (h : MkCore) (i j : h.J) (x : h.V j i) : h.t i j ((h.t j i) x) = x := by
   have := h.cocycle j i j x ?_
   · rw [h.t_id] at this
-    · convert Subtype.eq this
+    · convert Subtype.ext this
   rw [h.V_id]
   trivial
 
