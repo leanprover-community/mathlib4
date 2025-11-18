@@ -297,15 +297,16 @@ instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedSpace 𝕜 hf.smal
   infer_instance
 
 /-- If `f` is an immersion at `x`, then any complement used in this definition is
-isomorphic to the `smallComplement`. -/
-def smallEquiv (hf : IsImmersionAtOfComplement F I J n f x) : F ≃ₗ[𝕜] hf.smallComplement := by
+isomorphic to the `smallComplement`. See `smallEquiv` for a `ContinuousLinearEquiv` version,
+assuming completeness of the domain and codomain. -/
+def smallEquivₗ (hf : IsImmersionAtOfComplement F I J n f x) : F ≃ₗ[𝕜] hf.smallComplement := by
   letI A' : Submodule 𝕜 (E × F) := LinearMap.range (LinearMap.prod 0 .id)
   letI φ : F ≃ₗ[𝕜] A' := LinearEquiv.ofInjective (LinearMap.prod 0 .id) (by intro x y hxy; simp_all)
   exact φ.trans <| LinearEquiv.ofInjective _ (by simp_all [A'])
 
-lemma smallEquiv_coe (hf : IsImmersionAtOfComplement F I J n f x) :
+lemma smallEquivₗ_coe (hf : IsImmersionAtOfComplement F I J n f x) :
   letI B := Pi.prod (0 : F → E) (@id F)
-  (hf.smallEquiv : F → _) =
+  (hf.smallEquivₗ : F → _) =
     (Set.rangeFactorization ((range B).restrict hf.equiv)) ∘ (Set.rangeFactorization B) := by
   rfl
 
@@ -321,8 +322,8 @@ lemma LinearMap.range_prod' {f : E →ₗ[𝕜] F} {g : E →ₗ[𝕜] F'} :
   ext x
   simp
 
-/-- Stronger version of `smallEquiv` -/
-def smallEquivScifi [CompleteSpace E] [CompleteSpace E''] [CompleteSpace F]
+/-- `ContinuousLinearEquiv` version of `smallEquivₗ` -/
+def smallEquiv [CompleteSpace E] [CompleteSpace E''] [CompleteSpace F]
     (hf : IsImmersionAtOfComplement F I J n f x) : F ≃L[𝕜] hf.smallComplement := by
   letI φ : F →L[𝕜] E × F := ContinuousLinearMap.prod (0 : F →L[𝕜] E) (.id _ _)
   have h : Injective φ := by intro x y hxy; simp_all [φ]
@@ -350,7 +351,7 @@ def smallEquivScifi [CompleteSpace E] [CompleteSpace E''] [CompleteSpace F]
 -- This statement is weaker than `smallEquiv`, but is it still useful?
 lemma small (hf : IsImmersionAtOfComplement F I J n f x) : Small.{u} F := by
   use hf.smallComplement
-  exact ⟨hf.smallEquiv⟩
+  exact ⟨hf.smallEquivₗ⟩
 
 lemma trans_F (h : IsImmersionAtOfComplement F I J n f x) (e : F ≃L[𝕜] F') :
     IsImmersionAtOfComplement F' I J n f x := by
@@ -384,7 +385,7 @@ lemma mk_of_charts [CompleteSpace E] [CompleteSpace E''] [CompleteSpace F]
   have aux : IsImmersionAtOfComplement F I J n f x := by
     apply IsImmersionAtOfComplement.mk_of_charts <;> assumption
   use aux.smallComplement, by infer_instance, by infer_instance
-  rwa [← IsImmersionAtOfComplement.congr_F aux.smallEquivScifi]
+  rwa [← IsImmersionAtOfComplement.congr_F aux.smallEquiv]
 
 /-- `f : M → N` is a `C^n` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
 around `x` and `f x`, respectively such that in these charts, `f` looks like `u ↦ (u, 0)`.
@@ -402,7 +403,7 @@ lemma mk_of_continuousAt [CompleteSpace E] [CompleteSpace E''] [CompleteSpace F]
   have aux : IsImmersionAtOfComplement F I J n f x := by
     apply IsImmersionAtOfComplement.mk_of_continuousAt <;> assumption
   use aux.smallComplement, by infer_instance, by infer_instance
-  rwa [← IsImmersionAtOfComplement.congr_F aux.smallEquivScifi]
+  rwa [← IsImmersionAtOfComplement.congr_F aux.smallEquiv]
 
 /-- A choice of complement of the model normed space `E` of `M` in the model normed space
 `E'` of `N` -/
