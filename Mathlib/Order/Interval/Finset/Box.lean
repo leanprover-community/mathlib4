@@ -85,7 +85,7 @@ end Prod
 namespace Int
 variable {x : ℤ × ℤ}
 
-attribute [norm_cast] toNat_ofNat
+attribute [norm_cast] toNat_natCast
 
 lemma card_box : ∀ {n}, n ≠ 0 → #(box n : Finset (ℤ × ℤ)) = 8 * n
   | n + 1, _ => by

@@ -34,7 +34,7 @@ instance : CoeOut ℍ ℂ := ⟨UpperHalfPlane.coe⟩
 instance : Inhabited ℍ :=
   ⟨⟨Complex.I, by simp⟩⟩
 
-@[ext] theorem ext {a b : ℍ} (h : (a : ℂ) = b) : a = b := Subtype.eq h
+@[ext] theorem ext {a b : ℍ} (h : (a : ℂ) = b) : a = b := Subtype.ext h
 
 @[simp, norm_cast] theorem ext_iff' {a b : ℍ} : (a : ℂ) = b ↔ a = b := UpperHalfPlane.ext_iff.symm
 

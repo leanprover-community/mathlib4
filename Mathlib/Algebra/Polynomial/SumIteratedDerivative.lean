@@ -71,7 +71,7 @@ theorem sumIDeriv_apply_of_lt {p : R[X]} {n : ℕ} (hn : p.natDegree < n) :
 theorem sumIDeriv_apply_of_le {p : R[X]} {n : ℕ} (hn : p.natDegree ≤ n) :
     sumIDeriv p = ∑ i ∈ range (n + 1), derivative^[i] p := by
   dsimp [sumIDeriv]
-  exact Finsupp.sum_of_support_subset _ (by simp [Nat.lt_succ, hn]) _ (by simp)
+  exact Finsupp.sum_of_support_subset _ (by simp [Nat.lt_succ_iff, hn]) _ (by simp)
 
 @[simp]
 theorem sumIDeriv_C (a : R) : sumIDeriv (C a) = C a := by

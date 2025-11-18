@@ -34,7 +34,7 @@ variable {R : Type*} [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorRing
 protected theorem le_floor {z : ℤ} : ∀ {r : ℚ}, z ≤ Rat.floor r ↔ (z : ℚ) ≤ r
   | ⟨n, d, h, c⟩ => by
     simp only [Rat.floor_def]
-    rw [mk'_eq_divInt]
+    rw [mk_eq_divInt]
     have h' := Int.ofNat_lt.2 (Nat.pos_of_ne_zero h)
     conv =>
       rhs
@@ -132,9 +132,9 @@ theorem isInt_intFloor_ofIsRat_neg (r : α) (n : ℕ) (d : ℕ) :
   constructor
   simp only [invOf_eq_inv, ← div_eq_mul_inv, Int.cast_id]
   rw [← ceil_intCast_div_natCast n d, Int.cast_natCast]
-  rw [@negOfNat_eq (toNat _), ofNat_eq_coe,
+  rw [@negOfNat_eq (toNat _), ofNat_eq_natCast,
     natCast_toNat_eq_self.mpr (ceil_nonneg (div_nonneg n.cast_nonneg d.cast_nonneg)),
-    ← Int.cast_natCast n, ceil_intCast_div_natCast n d, neg_neg, ← ofNat_eq_coe, ← negOfNat_eq,
+    ← Int.cast_natCast n, ceil_intCast_div_natCast n d, neg_neg, ← ofNat_eq_natCast, ← negOfNat_eq,
     ← floor_intCast_div_natCast (.negOfNat n) d, ← floor_cast (α := α), Rat.cast_div,
     cast_intCast, cast_natCast]
 
@@ -192,8 +192,8 @@ theorem isInt_intCeil_ofIsRat_neg (r : α) (n : ℕ) (d : ℕ) :
   rintro ⟨inv, rfl⟩
   constructor
   simp only [invOf_eq_inv, ← div_eq_mul_inv, Int.cast_id]
-  rw [@negOfNat_eq (n / d), ofNat_eq_coe, ← ofNat_ediv_ofNat, ← floor_natCast_div_natCast n d,
-    floor_natCast_div_natCast n d, ← neg_neg (n : ℤ), ← ofNat_eq_coe, ← negOfNat_eq,
+  rw [@negOfNat_eq (n / d), ofNat_eq_natCast, ← ofNat_ediv_ofNat, ← floor_natCast_div_natCast n d,
+    floor_natCast_div_natCast n d, ← neg_neg (n : ℤ), ← ofNat_eq_natCast, ← negOfNat_eq,
     ← ceil_intCast_div_natCast (.negOfNat n) d, ← ceil_cast (α := α), Rat.cast_div,
     cast_intCast, cast_natCast]
 
@@ -246,7 +246,7 @@ theorem isRat_intFract_of_isRat_negOfNat (r : α) (n d : ℕ) :
   rintro ⟨inv, rfl⟩
   refine ⟨inv, ?_⟩
   simp only [invOf_eq_inv, ← div_eq_mul_inv, fract_div_intCast_eq_div_intCast_mod,
-    negOfNat_eq, ofNat_eq_coe]
+    negOfNat_eq, ofNat_eq_natCast]
 
 /-- `norm_num` extension for `Int.fract` -/
 @[norm_num (Int.fract _)]

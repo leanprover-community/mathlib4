@@ -256,7 +256,7 @@ end
 section injOn
 
 theorem injOn_iff_injective : InjOn f s ↔ Injective (s.restrict f) :=
-  ⟨fun H a b h => Subtype.eq <| H a.2 b.2 h, fun H a as b bs h =>
+  ⟨fun H a b h => Subtype.ext <| H a.2 b.2 h, fun H a as b bs h =>
     congr_arg Subtype.val <| @H ⟨a, as⟩ ⟨b, bs⟩ h⟩
 
 alias ⟨InjOn.injective, _⟩ := Set.injOn_iff_injective

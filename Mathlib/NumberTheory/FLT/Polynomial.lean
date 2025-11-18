@@ -62,7 +62,7 @@ private lemma ineq_pqr_contradiction {p q r a b c : ℕ}
   calc
     _ = (p * a) * (q * r) + (q * b) * (r * p) + (r * c) * (p * q) + 1 := by ring
     _ ≤ (a + b + c) * (q * r) + (a + b + c) * (r * p) + (a + b + c) * (p * q) := by
-      rw [Nat.succ_le]
+      rw [Nat.succ_le_iff]
       gcongr
     _ = (q * r + r * p + p * q) * (a + b + c) := by ring
     _ ≤ _ := by gcongr

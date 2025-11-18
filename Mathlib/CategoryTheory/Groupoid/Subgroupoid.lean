@@ -151,7 +151,7 @@ theorem hom.inj_on_objects : Function.Injective (hom S).obj := by
   simp only [Subtype.mk_eq_mk]; exact hcd
 
 theorem hom.faithful : ∀ c d, Function.Injective fun f : c ⟶ d => (hom S).map f := by
-  rintro ⟨c, hc⟩ ⟨d, hd⟩ ⟨f, hf⟩ ⟨g, hg⟩ hfg; exact Subtype.eq hfg
+  rintro ⟨c, hc⟩ ⟨d, hd⟩ ⟨f, hf⟩ ⟨g, hg⟩ hfg; exact Subtype.ext hfg
 
 /-- The subgroup of the vertex group at `c` given by the subgroupoid -/
 def vertexSubgroup {c : C} (hc : c ∈ S.objs) : Subgroup (c ⟶ c) where

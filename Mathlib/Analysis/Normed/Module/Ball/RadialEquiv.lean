@@ -32,7 +32,7 @@ noncomputable def homeomorphUnitSphereProd :
     rw [mem_sphere_zero_iff_norm, norm_smul, norm_inv, norm_norm,
       inv_mul_cancel₀ (norm_ne_zero_iff.2 x.2)]⟩, ⟨‖x.1‖, norm_pos_iff.2 x.2⟩)
   invFun x := ⟨x.2.1 • x.1.1, smul_ne_zero x.2.2.out.ne' (ne_of_mem_sphere x.1.2 one_ne_zero)⟩
-  left_inv x := Subtype.eq <| by simp [smul_inv_smul₀ (norm_ne_zero_iff.2 x.2)]
+  left_inv x := Subtype.ext <| by simp [smul_inv_smul₀ (norm_ne_zero_iff.2 x.2)]
   right_inv
   | (⟨x, hx⟩, ⟨r, hr⟩) => by
     rw [mem_sphere_zero_iff_norm] at hx

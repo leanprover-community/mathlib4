@@ -56,7 +56,7 @@ theorem choose_modEq_choose_mod_mul_choose_div :
   rw [← sum_product', sum_congr rfl (fun a ha ↦ if_congr (h_iff a ha) rfl rfl), sum_ite_eq]
   split_ifs with h
   · simp
-  · rw [mem_product, mem_range, mem_range, not_and_or, lt_succ, not_le, not_lt] at h
+  · rw [mem_product, mem_range, mem_range, not_and_or, Nat.lt_succ_iff, not_le, not_lt] at h
     cases h <;> simp [choose_eq_zero_of_lt (by tauto)]
 
 /-- For primes `p`, `choose n k` is congruent to `choose (n % p) (k % p) * choose (n / p) (k / p)`
