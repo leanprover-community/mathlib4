@@ -3158,6 +3158,7 @@ import Mathlib.Combinatorics.SimpleGraph.Turan
 import Mathlib.Combinatorics.SimpleGraph.Tutte
 import Mathlib.Combinatorics.SimpleGraph.UniversalVerts
 import Mathlib.Combinatorics.SimpleGraph.Walk
+import Mathlib.Combinatorics.Sperner
 import Mathlib.Combinatorics.Young.SemistandardTableau
 import Mathlib.Combinatorics.Young.YoungDiagram
 import Mathlib.Computability.Ackermann
