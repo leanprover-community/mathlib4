@@ -103,6 +103,11 @@ theorem fooUsing₃ [DecidablePred Nonempty] [DecidableEq (Nat → Nat)]
     (_ : Uses (DecidablePred Nonempty) := trivial) : Uses (DecidableEq (Nat → Nat)) → True :=
   fun _ =>  trivial
 
+set_option linter.unusedDecidableInType false in
+theorem fooUsing₂' [DecidablePred Nonempty] [DecidableEq (Nat → Nat)] :
+    Uses (DecidableEq (Nat → Nat)) → True :=
+  fun _ =>  trivial
+
 end used
 
 end decidable
