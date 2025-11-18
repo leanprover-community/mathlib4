@@ -41,6 +41,17 @@ lemma ModuleCat.extUliftLinearEquiv_toLinearMap [Small.{v} R] (M N : ModuleCat.{
 
 end
 
+section
+
+variable [UnivLE.{v, w}] [UnivLE.{v', w'}]
+
+def extLinearEquivOfLinearEquiv [Small.{v} R] [Small.{v'} R]
+    {M N : ModuleCat.{v} R} {M' N' : ModuleCat.{v'} R}
+    (e1 : M ≃ₗ[R] M') (e2 : N ≃ₗ[R] N') (n : ℕ) :
+    Ext.{w} M N n ≃ₗ[R] Ext.{w'} M' N' n := sorry
+
+end
+
 section restrictScalars
 
 variable {R' : Type u'} [CommRing R']
@@ -75,7 +86,7 @@ variable (e : R ≃+* R')
 
 variable [UnivLE.{v, w}] [UnivLE.{v, w'}]
 
-noncomputable def ModuleCat.extRestrictScalarsLinearMap [Small.{v} R] [Small.{v} R']
+noncomputable def ModuleCat.extRestrictScalarsSemiLinearMap [Small.{v} R] [Small.{v} R']
     (M N : ModuleCat.{v} R') (n : ℕ) :
     letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
     letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
@@ -90,7 +101,7 @@ noncomputable def ModuleCat.extRestrictScalarsLinearMap [Small.{v} R] [Small.{v}
     ext
     simp
 
-noncomputable def ModuleCat.extRestrictScalarsLinearEquiv [Small.{v} R] [Small.{v} R']
+noncomputable def ModuleCat.extRestrictScalarsSemiLinearEquiv [Small.{v} R] [Small.{v} R']
     (M N : ModuleCat.{v} R') (n : ℕ) :
     letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
     letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
@@ -98,7 +109,7 @@ noncomputable def ModuleCat.extRestrictScalarsLinearEquiv [Small.{v} R] [Small.{
     ((ModuleCat.restrictScalars e.toRingHom).obj N) n :=
   let _ : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
   let _ : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
-  LinearEquiv.ofBijective (ModuleCat.extRestrictScalarsLinearMap.{w, w'} e M N n)
+  LinearEquiv.ofBijective (ModuleCat.extRestrictScalarsSemiLinearMap.{w, w'} e M N n)
     (Functor.mapExt_bijective_of_preservesProjectiveObjects.{w, w'}
     (ModuleCat.restrictScalars.{v} e.toRingHom)
     (ModuleCat.restrictScalarsEquivalenceOfRingEquiv e).fullyFaithfulFunctor M N n)
@@ -112,8 +123,8 @@ noncomputable def ModuleCat.iso_restrictScalars {M' : ModuleCat.{v} R'} {M : Mod
     map_smul' r m := by simp }
   e.toModuleIso
 
-noncomputable def extLinearEquivOfLinearEquiv [Small.{v} R] [Small.{v} R']
-    (M' N' : ModuleCat.{v} R') (M N : ModuleCat.{v} R)
+noncomputable def extSemiLinearEquivOfSemiLinearEquiv_equal_universe [Small.{v} R] [Small.{v} R']
+    {M N : ModuleCat.{v} R} {M' N' : ModuleCat.{v} R'}
     (e1 : letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
           letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
           M ≃ₛₗ[e.toRingHom] M')
@@ -131,7 +142,25 @@ noncomputable def extLinearEquivOfLinearEquiv [Small.{v} R] [Small.{v} R']
       map_smul' r' x := by simp [Iso.addCommGroupIsoToAddEquiv] }
   letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
   letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
-  (ModuleCat.extRestrictScalarsLinearEquiv.{w, w'} e M' N' n).trans e3
+  (ModuleCat.extRestrictScalarsSemiLinearEquiv.{w, w'} e M' N' n).trans e3
+
+end
+
+section
+
+variable (e : R ≃+* R') [UnivLE.{v, w}] [UnivLE.{v', w'}]
+
+def extSemiLinearEquivOfSemiLinearEquiv [Small.{v} R] [Small.{v'} R']
+    {M N : ModuleCat.{v} R} {M' N' : ModuleCat.{v'} R'}
+    (e1 : letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
+          letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
+          M ≃ₛₗ[e.toRingHom] M')
+    (e2 : letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
+          letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
+          N ≃ₛₗ[e.toRingHom] N')
+    (n : ℕ) : letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
+    letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
+    Ext.{w'} M' N' n ≃ₛₗ[e.symm.toRingHom] Ext.{w} M N n := sorry
 
 end
 
