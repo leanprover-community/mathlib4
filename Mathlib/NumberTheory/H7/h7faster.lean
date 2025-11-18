@@ -2189,18 +2189,18 @@ lemma one_le_r : 1 ≤  h7.r q hq0 h2mq := by
   refine Nat.zero_lt_of_ne_zero ?_
   exact h7.rneq0 q hq0 h2mq
 
-lemma l0_neq0 :  0 ≠ (h7.l₀' q hq0 h2mq : ℕ) := by {
-  have := h7.l₀_prop q hq0 h2mq
-  obtain ⟨r, hprop, H2⟩ := this
-  by_contra H
-  unfold l₀' at *
-  rw [← H] at hprop
-  simp only [CharP.cast_eq_zero, zero_add] at hprop
-  let one : Fin (h7.m) := ⟨0, by {
-    have : 1 < h7.m := by {sorry}
-    sorry}⟩
-  sorry
-}
+-- lemma l0_neq0 :  0 ≠ (h7.l₀' q hq0 h2mq : ℕ) := by {
+--   have := h7.l₀_prop q hq0 h2mq
+--   obtain ⟨r, hprop, H2⟩ := this
+--   by_contra H
+--   unfold l₀' at *
+--   rw [← H] at hprop
+--   simp only [CharP.cast_eq_zero, zero_add] at hprop
+--   let one : Fin (h7.m) := ⟨0, by {
+--     have : 1 < h7.m := by {sorry}
+--     sorry}⟩
+--   sorry
+-- }
 
 def cρ : ℤ := abs (h7.c₁ ^ (h7.r q hq0 h2mq) * h7.c₁^(2*h7.m * q))
 
