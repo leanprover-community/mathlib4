@@ -47,7 +47,7 @@ abbrev mathlibLeanOptions := #[
     -- for now until they can be addressed one by one.
     ⟨`backward.privateInPublic, true⟩,
     -- We disable the many warnings for now; this can be switched locally to work on the offenders.
-    ⟨`backward.privateInPublic.warnl, false⟩,
+    ⟨`backward.privateInPublic.warn, false⟩,
     -- Similarly, enforcing that tactic blocks embedded in terms are elaborated in the private scope
     -- can affect type inference, which breaks in multiple places and should be fixed separately.
     -- Note that this should be fixed first such that access to private declarations in such proofs
