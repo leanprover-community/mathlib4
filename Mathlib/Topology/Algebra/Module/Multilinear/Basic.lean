@@ -160,7 +160,7 @@ instance [DistribMulAction R'ᵐᵒᵖ M₂] [IsCentralScalar R' M₂] :
     IsCentralScalar R' (ContinuousMultilinearMap A M₁ M₂) :=
   ⟨fun _ _ => ext fun _ => op_smul_eq_smul _ _⟩
 
-instance : MulAction R' (ContinuousMultilinearMap A M₁ M₂) :=
+instance : MulAction R' (ContinuousMultilinearMap A M₁ M₂) := fast_instance%
   Function.Injective.mulAction toMultilinearMap toMultilinearMap_injective fun _ _ => rfl
 
 end SMul
@@ -181,7 +181,7 @@ theorem toMultilinearMap_add (f g : ContinuousMultilinearMap R M₁ M₂) :
     (f + g).toMultilinearMap = f.toMultilinearMap + g.toMultilinearMap :=
   rfl
 
-instance addCommMonoid : AddCommMonoid (ContinuousMultilinearMap R M₁ M₂) :=
+instance addCommMonoid : AddCommMonoid (ContinuousMultilinearMap R M₁ M₂) := fast_instance%
   toMultilinearMap_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
 /-- Evaluation of a `ContinuousMultilinearMap` at a vector as an `AddMonoidHom`. -/
@@ -481,7 +481,7 @@ instance : Sub (ContinuousMultilinearMap R M₁ M₂) :=
 theorem sub_apply (m : ∀ i, M₁ i) : (f - f') m = f m - f' m :=
   rfl
 
-instance : AddCommGroup (ContinuousMultilinearMap R M₁ M₂) :=
+instance : AddCommGroup (ContinuousMultilinearMap R M₁ M₂) := fast_instance%
   toMultilinearMap_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
@@ -535,6 +535,7 @@ variable {R' R'' A : Type*} [Monoid R'] [Monoid R''] [Semiring A] [∀ i, AddCom
   [DistribMulAction R'' M₂] [ContinuousConstSMul R'' M₂] [SMulCommClass A R'' M₂]
 
 instance [ContinuousAdd M₂] : DistribMulAction R' (ContinuousMultilinearMap A M₁ M₂) :=
+  fast_instance%
   Function.Injective.distribMulAction
     { toFun := toMultilinearMap,
       map_zero' := toMultilinearMap_zero,
@@ -552,7 +553,7 @@ variable {R' A : Type*} [Semiring R'] [Semiring A] [∀ i, AddCommMonoid (M₁ i
 
 /-- The space of continuous multilinear maps over an algebra over `R` is a module over `R`, for the
 pointwise addition and scalar multiplication. -/
-instance : Module R' (ContinuousMultilinearMap A M₁ M₂) :=
+instance : Module R' (ContinuousMultilinearMap A M₁ M₂) := fast_instance%
   Function.Injective.module _
     { toFun := toMultilinearMap,
       map_zero' := toMultilinearMap_zero,
