@@ -133,6 +133,7 @@ def deprecatedHashMap (oldDate newDate : String) :
       -- However, while this works locally, CI throws the error ` unknown module prefix 'Mathlib'`
       let lean := (modName.components.foldl (init := "")
         fun a b => (a.push System.FilePath.pathSeparator) ++ b.toString) ++ ".lean" |>.drop 1
+          |>.copy
       --let lean ← findLean searchPath modName
       let file ← IO.FS.readFile lean
       let fm := FileMap.ofString file
@@ -183,7 +184,7 @@ Note that this is the output of `Mathlib.Linter.CommandRanges.commandRangesLinte
 that the script here is parsing.
 -/
 def parseLine (line : String) : Option (List String.Pos.Raw) :=
-  match (line.dropRight 1).splitOn ": [" with
+  match (line.dropEnd 1).copy.splitOn ": [" with
   | [_, rest] =>
     let nums := rest.splitOn ", "
     if nums == [""] then some [] else
@@ -218,7 +219,7 @@ def rewriteOneFile (fname : String) (rgs : Array (Name × Lean.Syntax.Range)) :
   -- are always smaller than the command positions of the new file.
   let offset := option.toSubstring.stopPos
   let fileWithOptionAdded ← addAfterImports fname option
-  let fname_with_option := fname.dropRight ".lean".length ++ "_with_option.lean"
+  let fname_with_option := (fname.dropEnd ".lean".length).copy ++ "_with_option.lean"
   let file ← IO.FS.readFile fname
   let fm := file.toFileMap
   let rgsPos := rgs.map fun (decl, ⟨s, e⟩) =>

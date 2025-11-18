@@ -7,7 +7,7 @@ open Lake DSL
 -/
 
 require "leanprover-community" / "batteries" @ git "lean-pr-testing-11180"
-require "leanprover-community" / "Qq" @ git "master"
+require "leanprover-community" / "Qq" @ git "lean-pr-testing-11180"
 require "leanprover-community" / "aesop" @ git "nightly-testing"
 require "leanprover-community" / "proofwidgets" @ git "v0.0.80-pre1" -- ProofWidgets should always be pinned to a specific version
   with NameMap.empty.insert `errorOnBuild
@@ -15,7 +15,7 @@ require "leanprover-community" / "proofwidgets" @ git "v0.0.80-pre1" -- ProofWid
     Please run `lake exe cache get` to fetch the latest ProofWidgets. \
     If this does not work, report your issue on the Lean Zulip."
 require "leanprover-community" / "importGraph" @ git "main"
-require "leanprover-community" / "LeanSearchClient" @ git "main"
+require "leanprover-community" / "LeanSearchClient" @ git "lean-pr-testing-11180"
 require "leanprover-community" / "plausible" @ git "nightly-testing"
 
 
