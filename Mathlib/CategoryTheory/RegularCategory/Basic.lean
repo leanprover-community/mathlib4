@@ -76,8 +76,12 @@ See `monoFactorisation` for the actual mono factorisation.
 def e : X ⟶ (I f) :=
   coequalizer.π (pullback.fst f f) (pullback.snd f f)
 
+local instance eRegularEpi : RegularEpi (e f) := by
+  dsimp [e]; infer_instance
+
 instance e_isRegularEpi : IsRegularEpi (e f) := by
   dsimp [e]; infer_instance
+
 
 /--
 The `mono` component of the chosen mono factorisation associated to any regular category.
@@ -141,9 +145,12 @@ instance hasStrongEpiMonoFactorisations : HasStrongEpiMonoFactorisations C where
   has_fac f := ⟨strongEpiMonoFactorisation f⟩
 
 /-- In a regular category, every extremal epimorphism is an epimorphism. -/
-instance regularEpiOfExtremalEpi [s : ExtremalEpi f] : RegularEpi f :=
-  have := s.isIso (e f) (m f) (by simp)
+def regularEpiOfExtremalEpi [h : ExtremalEpi f] : RegularEpi f :=
+  have := h.isIso (e f) (m f) (by simp)
   RegularEpi.ofArrowIso <| Arrow.isoMk (f := .mk (e f)) (Iso.refl _) (asIso (m f))
+
+instance isRegularEpi_of_extremalEpi (f : X ⟶ Y) [ExtremalEpi f] : IsRegularEpi f :=
+  ⟨regularEpiOfExtremalEpi f⟩
 
 end Regular.StrongEpiMonoFactorisation
 end
