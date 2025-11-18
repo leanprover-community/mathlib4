@@ -33,11 +33,7 @@ def kernelIsLimit : IsLimit (kernelCone f) :=
     (fun s => ofHom <|
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): broken dot notation on LinearMap.ker
       LinearMap.codRestrict (LinearMap.ker f.hom) (Fork.ι s).hom fun c =>
-        LinearMap.mem_ker.2 <| by
-          -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-          erw [← ConcreteCategory.comp_apply]
-          rw [Fork.condition, HasZeroMorphisms.comp_zero (Fork.ι s) N]
-          rfl)
+        LinearMap.mem_ker.2 <| by simp [← ConcreteCategory.comp_apply])
     (fun _ => hom_ext <| LinearMap.subtype_comp_codRestrict _ _ _) fun s m h =>
       hom_ext <| LinearMap.ext fun x => Subtype.ext_iff.2 (by simp [← h]; rfl)
 
