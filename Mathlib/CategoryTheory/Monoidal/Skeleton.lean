@@ -96,9 +96,8 @@ noncomputable instance [F.Monoidal] : F.mapSkeleton.Monoidal := .instComp ..
 def Skeletal.monoidHom [F.Monoidal] (hC : Skeletal C) (hD : Skeletal D) :
     let _ := monoidOfSkeletalMonoidal hC
     let _ := monoidOfSkeletalMonoidal hD
-    C →* D :=
-  let _ := monoidOfSkeletalMonoidal hC
-  let _ := monoidOfSkeletalMonoidal hD
+    C →* D := by
+  intros; exact
   { toFun := F.obj
     map_one' := hD ⟨(Monoidal.εIso F).symm⟩
     map_mul' X Y := hD ⟨(Monoidal.μIso F X Y).symm⟩ }
@@ -112,9 +111,8 @@ noncomputable def Skeleton.monoidHom [F.Monoidal] : Skeleton C →* Skeleton D :
 def Skeletal.mulEquiv [e.functor.Monoidal] (hC : Skeletal C) (hD : Skeletal D) :
     let _ := monoidOfSkeletalMonoidal hC
     let _ := monoidOfSkeletalMonoidal hD
-    C ≃* D :=
-  let _ := monoidOfSkeletalMonoidal hC
-  let _ := monoidOfSkeletalMonoidal hD
+    C ≃* D := by
+  intros; exact
   { toFun := e.functor.obj
     invFun := e.inverse.obj
     left_inv X := hC ⟨(e.unitIso.app X).symm⟩
