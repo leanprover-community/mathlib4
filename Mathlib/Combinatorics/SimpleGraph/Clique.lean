@@ -3,8 +3,9 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.SimpleGraph.Paths
+import Mathlib.Combinatorics.SimpleGraph.Copy
 import Mathlib.Combinatorics.SimpleGraph.Operations
+import Mathlib.Combinatorics.SimpleGraph.Paths
 import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Data.Fintype.Powerset
@@ -183,6 +184,14 @@ lemma isClique_sup_edge_of_ne_iff {v w : α} {s : Set α} (h : v ≠ w) :
   ⟨fun h' ↦ ⟨h'.sdiff_of_sup_edge, (edge_comm .. ▸ h').sdiff_of_sup_edge⟩,
     fun h' ↦ isClique_sup_edge_of_ne_sdiff h h'.1 h'.2⟩
 
+/-- The vertices in a copy of `⊤` are a clique. -/
+theorem isClique_range_copy_top (f : Copy (⊤ : SimpleGraph β) G) :
+    G.IsClique (Set.range f) := by
+  intro _ ⟨_, h⟩ _ ⟨_, h'⟩ nh
+  rw [← h, ← Copy.topEmbedding_apply, ← h', ← Copy.topEmbedding_apply] at nh ⊢
+  rwa [← f.topEmbedding.coe_toEmbedding, (f.topEmbedding.apply_eq_iff_eq _ _).ne,
+    ← top_adj, ← f.topEmbedding.map_adj_iff] at nh
+
 end Clique
 
 /-! ### `n`-cliques -/
@@ -305,6 +314,12 @@ lemma IsNClique.erase_of_sup_edge_of_mem [DecidableEq α] {v w : α} {s : Finset
   isClique := coe_erase v _ ▸ hc.1.sdiff_of_sup_edge
   card_eq  := by rw [card_erase_of_mem hx, hc.2]
 
+/-- The vertices in a copy of `⊤ : SimpleGraph β` are a `card β`-clique. -/
+theorem isNClique_map_copy_top [Fintype β] (f : Copy (⊤ : SimpleGraph β) G) :
+    G.IsNClique (card β) (univ.map f.toEmbedding) := by
+  rw [isNClique_iff, card_map, card_univ, coe_map, coe_univ, Set.image_univ]
+  exact ⟨isClique_range_copy_top f, rfl⟩
+
 end NClique
 
 /-! ### Graphs without cliques -/
@@ -344,7 +359,7 @@ noncomputable def topEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :
     apply Iso.completeGraph
     simpa using (Fintype.equivFin h.choose).symm
   rw [← ha] at this
-  convert (Embedding.induce ↑h.choose.toSet).comp this.toEmbedding
+  convert (Embedding.induce ↑h.choose).comp this.toEmbedding
   exact hb.symm
 
 theorem not_cliqueFree_iff (n : ℕ) : ¬G.CliqueFree n ↔ Nonempty (completeGraph (Fin n) ↪g G) :=
@@ -352,6 +367,13 @@ theorem not_cliqueFree_iff (n : ℕ) : ¬G.CliqueFree n ↔ Nonempty (completeGr
 
 theorem cliqueFree_iff {n : ℕ} : G.CliqueFree n ↔ IsEmpty (completeGraph (Fin n) ↪g G) := by
   rw [← not_iff_not, not_cliqueFree_iff, not_isEmpty_iff]
+
+/-- A simple graph has no `card β`-cliques iff it does not contain `⊤ : SimpleGraph β`. -/
+theorem cliqueFree_iff_top_free {β : Type*} [Fintype β] :
+    G.CliqueFree (card β) ↔ (⊤ : SimpleGraph β).Free G := by
+  rw [← not_iff_not, not_free, not_cliqueFree_iff,
+    isContained_congr (Iso.completeGraph (Fintype.equivFin β)) Iso.refl]
+  exact ⟨fun ⟨f⟩ ↦ ⟨f.toCopy⟩, fun ⟨f⟩ ↦ ⟨f.topEmbedding⟩⟩
 
 theorem not_cliqueFree_card_of_top_embedding [Fintype α] (f : (⊤ : SimpleGraph α) ↪g G) :
     ¬G.CliqueFree (card α) := by
@@ -390,10 +412,9 @@ theorem CliqueFree.comap {H : SimpleGraph β} (f : H ↪g G) : G.CliqueFree n �
 
 /-- See `SimpleGraph.cliqueFree_of_chromaticNumber_lt` for a tighter bound. -/
 theorem cliqueFree_of_card_lt [Fintype α] (hc : card α < n) : G.CliqueFree n := by
-  by_contra h
-  refine Nat.lt_le_asymm hc ?_
-  rw [cliqueFree_iff, not_isEmpty_iff] at h
-  simpa only [Fintype.card_fin] using Fintype.card_le_of_embedding h.some.toEmbedding
+  rw [cliqueFree_iff]
+  contrapose! hc
+  simpa only [Fintype.card_fin] using Fintype.card_le_of_embedding hc.some.toEmbedding
 
 /-- A complete `r`-partite graph has no `n`-cliques for `r < n`. -/
 theorem cliqueFree_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι → Type*)
@@ -482,7 +503,7 @@ lemma CliqueFree.mem_of_sup_edge_isNClique {x y : α} {t : Finset α} {n : ℕ} 
 open Classical in
 /-- Adding an edge increases the clique number by at most one. -/
 protected theorem CliqueFree.sup_edge (h : G.CliqueFree n) (v w : α) :
-   (G ⊔ edge v w).CliqueFree (n + 1) :=
+    (G ⊔ edge v w).CliqueFree (n + 1) :=
   fun _ hs ↦ (hs.erase_of_sup_edge_of_mem <|
     (h.mono n.le_succ).mem_of_sup_edge_isNClique hs).not_cliqueFree h
 
@@ -733,7 +754,7 @@ variable [DecidableRel H.Adj]
 
 @[gcongr, mono]
 theorem cliqueFinset_mono (h : G ≤ H) : G.cliqueFinset n ⊆ H.cliqueFinset n :=
-  monotone_filter_right _ fun _ ↦ IsNClique.mono h
+  monotone_filter_right _ fun _ _ ↦ IsNClique.mono h
 
 variable [Fintype β] [DecidableEq β] (G)
 
@@ -781,7 +802,7 @@ instance [DecidableEq α] [DecidableRel G.Adj] {s : Finset α} : Decidable (G.Is
 lemma IsIndepSet.nonempty_mem_compl_mem_edge
     [Fintype α] [DecidableEq α] {s : Finset α} (indA : G.IsIndepSet s) {e} (he : e ∈ G.edgeSet) :
     { b ∈ sᶜ | b ∈ e }.Nonempty := by
-  obtain ⟨v , w⟩ := e
+  obtain ⟨v, w⟩ := e
   by_contra c
   rw [IsIndepSet] at indA
   rw [mem_edgeSet] at he

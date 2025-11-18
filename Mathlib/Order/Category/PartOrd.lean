@@ -19,6 +19,8 @@ universe u
 
 /-- The category of partial orders. -/
 structure PartOrd where
+  /-- Construct a bundled `PartOrd` from the underlying type and typeclass. -/
+  of ::
   /-- The underlying partially ordered type. -/
   (carrier : Type*)
   [str : PartialOrder carrier]
@@ -33,9 +35,6 @@ instance : CoeSort PartOrd (Type _) :=
   ⟨PartOrd.carrier⟩
 
 attribute [coe] PartOrd.carrier
-
-/-- Construct a bundled `PartOrd` from the underlying type and typeclass. -/
-abbrev of (X : Type*) [PartialOrder X] : PartOrd := ⟨X⟩
 
 /-- The type of morphisms in `PartOrd R`. -/
 @[ext]
@@ -109,12 +108,11 @@ lemma hom_ext {X Y : PartOrd} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 @[simp]
-lemma hom_ofHom {X Y : Type u} [PartialOrder X] [PartialOrder Y] (f : X →o Y) :
-  (ofHom f).hom = f := rfl
+lemma hom_ofHom {X Y : Type u} [PartialOrder X] [PartialOrder Y] (f : X →o Y) : (ofHom f).hom = f :=
+  rfl
 
 @[simp]
-lemma ofHom_hom {X Y : PartOrd} (f : X ⟶ Y) :
-    ofHom (Hom.hom f) = f := rfl
+lemma ofHom_hom {X Y : PartOrd} (f : X ⟶ Y) : ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {X : Type u} [PartialOrder X] : ofHom OrderHom.id = 𝟙 (of X) := rfl
@@ -203,10 +201,10 @@ def preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd :
 -- `simp`-normal form for `preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd_inv_app_hom_coe`
 @[simp]
 lemma preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd_inv_app_hom_coe' (X)
-  (a : preordToPartOrd.obj (Preord.dual.obj X)) :
-  (PartOrd.Hom.hom
-      (X := preordToPartOrd.obj (Preord.dual.obj X))
-      (Y := PartOrd.dual.obj (preordToPartOrd.obj X))
-      (preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd.inv.app X)) a =
-    (OrderIso.dualAntisymmetrization ↑X).symm a :=
+    (a : preordToPartOrd.obj (Preord.dual.obj X)) :
+    (PartOrd.Hom.hom
+        (X := preordToPartOrd.obj (Preord.dual.obj X))
+        (Y := PartOrd.dual.obj (preordToPartOrd.obj X))
+        (preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd.inv.app X)) a =
+      (OrderIso.dualAntisymmetrization ↑X).symm a :=
   rfl

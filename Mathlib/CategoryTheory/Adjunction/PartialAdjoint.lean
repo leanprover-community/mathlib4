@@ -7,7 +7,6 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Yoneda
-import Mathlib.Order.CompleteLattice.Basic
 
 /-!
 # Domain of definition of the partial left adjoint
@@ -41,14 +40,14 @@ namespace Functor
 
 open Category Opposite Limits
 
+section partialLeftAdjoint
+
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] (F : D ⥤ C)
 
 /-- Given a functor `F : D ⥤ C`, this is a predicate on objects `X : C` corresponding
 to the domain of definition of the (partial) left adjoint of `F`. -/
 def leftAdjointObjIsDefined : ObjectProperty C :=
   fun X ↦ IsCorepresentable (F ⋙ coyoneda.obj (op X))
-
-@[deprecated (since := "2025-03-05")] alias LeftAdjointObjIsDefined := leftAdjointObjIsDefined
 
 lemma leftAdjointObjIsDefined_iff (X : C) :
     F.leftAdjointObjIsDefined X ↔ IsCorepresentable (F ⋙ coyoneda.obj (op X)) := by rfl
@@ -101,6 +100,20 @@ lemma partialLeftAdjointHomEquiv_map_comp {X X' : F.PartialLeftAdjointSource} {Y
       by exact f ≫ F.partialLeftAdjointHomEquiv g := by
   rw [partialLeftAdjointHomEquiv_comp, partialLeftAdjointHomEquiv_map, assoc,
     ← partialLeftAdjointHomEquiv_comp, id_comp]
+
+@[reassoc]
+lemma partialLeftAdjointHomEquiv_symm_comp {X : F.PartialLeftAdjointSource} {Y Y' : D}
+    (f : X.obj ⟶ F.obj Y) (g : Y ⟶ Y') :
+    F.partialLeftAdjointHomEquiv.symm f ≫ g = F.partialLeftAdjointHomEquiv.symm (f ≫ F.map g) :=
+  CorepresentableBy.homEquiv_symm_comp ..
+
+@[reassoc]
+lemma partialLeftAdjointHomEquiv_comp_symm {X X' : F.PartialLeftAdjointSource} {Y : D}
+    (f : X'.obj ⟶ F.obj Y) (g : X ⟶ X') :
+    F.partialLeftAdjointMap g ≫ F.partialLeftAdjointHomEquiv.symm f =
+    F.partialLeftAdjointHomEquiv.symm (g ≫ f) := by
+  rw [Equiv.eq_symm_apply, partialLeftAdjointHomEquiv_comp, partialLeftAdjointHomEquiv_map,
+    assoc, ← partialLeftAdjointHomEquiv_comp, id_comp, Equiv.apply_symm_apply]
 
 /-- Given `F : D ⥤ C`, this is the partial adjoint functor `F.PartialLeftAdjointSource ⥤ D`. -/
 @[simps]
@@ -179,6 +192,163 @@ lemma leftAdjointObjIsDefined_colimit {J : Type*} [Category J] (R : J ⥤ C)
     (h : ∀ (j : J), F.leftAdjointObjIsDefined (R.obj j)) :
     F.leftAdjointObjIsDefined (colimit R) :=
   leftAdjointObjIsDefined_of_isColimit (colimit.isColimit R) h
+
+end partialLeftAdjoint
+
+section partialRightAdjoint
+
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D)
+
+/-- Given a functor `F : C ⥤ D`, this is a predicate on objects `X : D` corresponding
+to the domain of definition of the (partial) right adjoint of `F`. -/
+def rightAdjointObjIsDefined : ObjectProperty D :=
+  fun Y ↦ IsRepresentable (F.op ⋙ yoneda.obj Y)
+
+lemma rightAdjointObjIsDefined_iff (Y : D) :
+    F.rightAdjointObjIsDefined Y ↔ IsRepresentable (F.op ⋙ yoneda.obj Y) := by rfl
+
+variable {F} in
+lemma rightAdjointObjIsDefined_of_adjunction {G : D ⥤ C} (adj : F ⊣ G) (Y : D) :
+    F.rightAdjointObjIsDefined Y :=
+  (adj.representableBy Y).isRepresentable
+
+/-- The full subcategory where `F.partialRightAdjoint` shall be defined. -/
+abbrev PartialRightAdjointSource := F.rightAdjointObjIsDefined.FullSubcategory
+
+instance (Y : F.PartialRightAdjointSource) :
+    IsRepresentable (F.op ⋙ yoneda.obj Y.obj) := Y.property
+
+/-- Given `F : C ⥤ D`, this is `F.partialRightAdjoint` on objects: it sends
+`X : D` such that `F.rightAdjointObjIsDefined X` holds to an object of `C`
+which represents the functor `F ⋙ coyoneda.obj (op X.obj)`. -/
+noncomputable def partialRightAdjointObj (Y : F.PartialRightAdjointSource) : C :=
+  (F.op ⋙ yoneda.obj Y.obj).reprX
+
+/-- Given `F : C ⥤ D`, this is the canonical bijection
+`(X ⟶ F.partialRightAdjointObj Y) ≃ (F.obj X ⟶ Y.obj)`
+for all `X : C` and `Y : F.PartialRightAdjointSource`. -/
+noncomputable def partialRightAdjointHomEquiv {X : C} {Y : F.PartialRightAdjointSource} :
+    (X ⟶ F.partialRightAdjointObj Y) ≃ (F.obj X ⟶ Y.obj) :=
+  (F.op ⋙ yoneda.obj Y.obj).representableBy.homEquiv
+
+lemma partialRightAdjointHomEquiv_comp {X X' : C} {Y : F.PartialRightAdjointSource}
+    (f : X' ⟶ F.partialRightAdjointObj Y) (g : X ⟶ X') :
+    F.partialRightAdjointHomEquiv (g ≫ f) =
+      F.map g ≫ F.partialRightAdjointHomEquiv f :=
+  RepresentableBy.homEquiv_comp ..
+
+/-- Given `F : C ⥤ D`, this is `F.partialRightAdjoint` on morphisms. -/
+noncomputable def partialRightAdjointMap {X Y : F.PartialRightAdjointSource}
+    (f : X ⟶ Y) : F.partialRightAdjointObj X ⟶ F.partialRightAdjointObj Y :=
+    F.partialRightAdjointHomEquiv.symm (F.partialRightAdjointHomEquiv (𝟙 _) ≫ f)
+
+@[simp]
+lemma partialRightAdjointHomEquiv_map {X Y : F.PartialRightAdjointSource}
+    (f : X ⟶ Y) :
+    F.partialRightAdjointHomEquiv (F.partialRightAdjointMap f) =
+      F.partialRightAdjointHomEquiv (𝟙 _) ≫ f := by
+  simp [partialRightAdjointMap]
+
+lemma partialRightAdjointHomEquiv_map_comp {X : C} {Y Y' : F.PartialRightAdjointSource}
+    (f : X ⟶ F.partialRightAdjointObj Y) (g : Y ⟶ Y') :
+    F.partialRightAdjointHomEquiv (f ≫ F.partialRightAdjointMap g) =
+      F.partialRightAdjointHomEquiv f ≫ g := by
+  rw [partialRightAdjointHomEquiv_comp, partialRightAdjointHomEquiv_map,
+    ← assoc, ← partialRightAdjointHomEquiv_comp, comp_id]
+
+@[reassoc]
+lemma partialRightAdjointHomEquiv_comp_symm {X X' : C} {Y : F.PartialRightAdjointSource}
+    (f : F.obj X' ⟶ Y.obj) (g : X ⟶ X') :
+    g ≫ F.partialRightAdjointHomEquiv.symm f =
+      F.partialRightAdjointHomEquiv.symm (F.map g ≫ f) :=
+  RepresentableBy.comp_homEquiv_symm ..
+
+@[reassoc]
+lemma partialRightAdjointHomEquiv_symm_comp {X : C} {Y Y' : F.PartialRightAdjointSource}
+    (f : F.obj X ⟶ Y.obj) (g : Y ⟶ Y') :
+    F.partialRightAdjointHomEquiv.symm f ≫ F.partialRightAdjointMap g =
+      F.partialRightAdjointHomEquiv.symm (f ≫ g) := by
+  simp [Equiv.eq_symm_apply, partialRightAdjointHomEquiv_map_comp]
+
+/-- Given `F : C ⥤ D`, this is the partial adjoint functor `F.PartialLeftAdjointSource ⥤ C`. -/
+@[simps]
+noncomputable def partialRightAdjoint : F.PartialRightAdjointSource ⥤ C where
+  obj := F.partialRightAdjointObj
+  map := F.partialRightAdjointMap
+  map_id X := by
+    apply F.partialRightAdjointHomEquiv.injective
+    dsimp
+    rw [partialRightAdjointHomEquiv_map]
+    erw [comp_id]
+  map_comp {X Y Z} f g := by
+    apply F.partialRightAdjointHomEquiv.injective
+    dsimp
+    rw [partialRightAdjointHomEquiv_map, partialRightAdjointHomEquiv_comp,
+      partialRightAdjointHomEquiv_map, ← assoc]
+    erw [← assoc]
+    rw [← F.partialRightAdjointHomEquiv_comp, comp_id,
+      partialRightAdjointHomEquiv_map]
+
+variable {F}
+
+lemma isLeftAdjoint_of_rightAdjointObjIsDefined_eq_top
+    (h : F.rightAdjointObjIsDefined = ⊤) : F.IsLeftAdjoint := by
+  replace h : ∀ X, IsRepresentable (F.op ⋙ yoneda.obj X) := fun X ↦ by
+    simp only [← rightAdjointObjIsDefined_iff, h, Pi.top_apply, Prop.top_eq_true]
+  exact (Adjunction.adjunctionOfEquivRight
+    (fun X Y ↦ (F.op ⋙ yoneda.obj Y).representableBy.homEquiv.symm)
+    (fun X Y Y' g f ↦ (RepresentableBy.comp_homEquiv_symm ..).symm)).isLeftAdjoint
+
+variable (F) in
+lemma isLeftAdjoint_iff_rightAdjointObjIsDefined_eq_top :
+    F.IsLeftAdjoint ↔ F.rightAdjointObjIsDefined = ⊤ := by
+  refine ⟨fun h ↦ ?_, isLeftAdjoint_of_rightAdjointObjIsDefined_eq_top⟩
+  ext X
+  simpa only [Pi.top_apply, Prop.top_eq_true, iff_true]
+    using rightAdjointObjIsDefined_of_adjunction (Adjunction.ofIsLeftAdjoint F) X
+
+/-- Auxiliary definition for `rightAdjointObjIsDefined_of_isLimit`. -/
+noncomputable def representableByCompYonedaObjOfIsLimit {J : Type*} [Category J]
+    {R : J ⥤ F.PartialRightAdjointSource}
+    {c : Cone (R ⋙ ObjectProperty.ι _)} (hc : IsLimit c)
+    {c' : Cone (R ⋙ F.partialRightAdjoint)} (hc' : IsLimit c') :
+    (F.op ⋙ yoneda.obj c.pt).RepresentableBy c'.pt where
+  homEquiv {Y} :=
+    { toFun := fun f ↦ hc.lift (Cone.mk _
+        { app := fun j ↦ F.partialRightAdjointHomEquiv (f ≫ c'.π.app j)
+          naturality := fun j j' φ ↦ by
+            dsimp
+            rw [id_comp, ← c'.w φ, ← partialRightAdjointHomEquiv_map_comp,
+              ← assoc]
+            dsimp })
+      invFun := fun g ↦ hc'.lift (Cone.mk _
+        { app := fun j ↦ F.partialRightAdjointHomEquiv.symm (g ≫ c.π.app j)
+          naturality := fun j j' φ ↦ by
+            apply F.partialRightAdjointHomEquiv.injective
+            have := c.w φ
+            dsimp at this ⊢
+            rw [id_comp, Equiv.apply_symm_apply, partialRightAdjointHomEquiv_map_comp,
+              Equiv.apply_symm_apply, assoc, this] })
+      left_inv := fun f ↦ hc'.hom_ext (fun j ↦ by simp)
+      right_inv := fun g ↦ hc.hom_ext (fun j ↦ by simp) }
+  homEquiv_comp {Y Y'} g f := hc.hom_ext (fun j ↦ by
+    dsimp
+    simp only [IsLimit.fac, partialRightAdjointHomEquiv_comp, assoc] )
+
+lemma rightAdjointObjIsDefined_of_isLimit {J : Type*} [Category J] {R : J ⥤ D} {c : Cone R}
+    (hc : IsLimit c) [HasLimitsOfShape J C]
+    (h : ∀ (j : J), F.rightAdjointObjIsDefined (R.obj j)) :
+    F.rightAdjointObjIsDefined c.pt :=
+  (representableByCompYonedaObjOfIsLimit
+    (R := ObjectProperty.lift _ R h) hc (limit.isLimit _)).isRepresentable
+
+lemma rightAdjointObjIsDefined_limit {J : Type*} [Category J] (R : J ⥤ D)
+    [HasLimit R] [HasLimitsOfShape J C]
+    (h : ∀ (j : J), F.rightAdjointObjIsDefined (R.obj j)) :
+    F.rightAdjointObjIsDefined (limit R) :=
+  rightAdjointObjIsDefined_of_isLimit (limit.isLimit R) h
+
+end partialRightAdjoint
 
 end Functor
 

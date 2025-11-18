@@ -5,7 +5,7 @@ Authors: Jineon Baek, Seewoo Lee
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.LinearAlgebra.SesquilinearForm
+import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 import Mathlib.RingTheory.Coprime.Basic
 
 /-!
@@ -101,8 +101,8 @@ theorem degree_wronskian_lt_add {a b : R[X]} (ha : a ≠ 0) (hb : b ≠ 0) :
 
 /--
 `natDegree` version of the above theorem.
-Note this would be false with just `(ha : a ≠ 0) (hb : b ≠ 0),
-as when `a = b = 1` we have `(wronskian a b).natDegree = a.natDegree = b.natDegree = 0`.
+Note this would be false with just `(ha : a ≠ 0)` and `(hb : b ≠ 0)`,
+since when `a = b = 1` we have `(wronskian a b).natDegree = a.natDegree = b.natDegree = 0`.
 -/
 theorem natDegree_wronskian_lt_add {a b : R[X]} (hw : wronskian a b ≠ 0) :
     (wronskian a b).natDegree < a.natDegree + b.natDegree := by
@@ -133,9 +133,6 @@ theorem _root_.IsCoprime.wronskian_eq_zero_iff
   mpr hdab := by
     obtain ⟨hda, hdb⟩ := hdab
     rw [wronskian]
-    rw [hda, hdb]; simp only [MulZeroClass.mul_zero, MulZeroClass.zero_mul, sub_self]
-
-@[deprecated (since := "2024-11-06")]
-alias IsCoprime.wronskian_eq_zero_iff := IsCoprime.wronskian_eq_zero_iff
+    rw [hda, hdb]; simp only [mul_zero, zero_mul, sub_self]
 
 end Polynomial

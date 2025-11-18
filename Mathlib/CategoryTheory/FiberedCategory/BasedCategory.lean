@@ -5,7 +5,7 @@ Authors: Paul Lezeau, Calle Sönne
 -/
 
 import Mathlib.CategoryTheory.FiberedCategory.HomLift
-import Mathlib.CategoryTheory.Bicategory.Strict
+import Mathlib.CategoryTheory.Bicategory.Strict.Basic
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
@@ -54,7 +54,7 @@ def BasedCategory.ofFunctor {𝒳 : Type u₂} [Category.{v₂} 𝒳] (p : 𝒳 
 with the projections. -/
 structure BasedFunctor (𝒳 : BasedCategory.{v₂, u₂} 𝒮) (𝒴 : BasedCategory.{v₃, u₃} 𝒮) extends
     𝒳.obj ⥤ 𝒴.obj where
-  w : toFunctor ⋙ 𝒴.p = 𝒳.p := by aesop_cat
+  w : toFunctor ⋙ 𝒴.p = 𝒳.p := by cat_disch
 
 /-- Notation for `BasedFunctor`. -/
 scoped infixr:26 " ⥤ᵇ " => BasedFunctor
@@ -133,7 +133,7 @@ end BasedFunctor
 underlying functors, such that for all `a : 𝒳`, `α.app a` lifts `𝟙 S` whenever `𝒳.p.obj a = S`. -/
 structure BasedNatTrans {𝒳 : BasedCategory.{v₂, u₂} 𝒮} {𝒴 : BasedCategory.{v₃, u₃} 𝒮}
     (F G : 𝒳 ⥤ᵇ 𝒴) extends CategoryTheory.NatTrans F.toFunctor G.toFunctor where
-  isHomLift' : ∀ (a : 𝒳.obj), IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (toNatTrans.app a) := by aesop_cat
+  isHomLift' : ∀ (a : 𝒳.obj), IsHomLift 𝒴.p (𝟙 (𝒳.p.obj a)) (toNatTrans.app a) := by cat_disch
 
 namespace BasedNatTrans
 

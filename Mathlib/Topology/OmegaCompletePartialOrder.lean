@@ -34,7 +34,6 @@ open Topology.IsScott in
 alias Topology.IsScott.ωscottContinuous_iff_continuous :=
   Topology.IsScott.ωScottContinuous_iff_continuous
 
--- "Scott", "ωSup"
 namespace Scott
 
 /-- `x` is an `ω`-Sup of a chain `c` if it is the least upper bound of the range of `c`. -/

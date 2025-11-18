@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Logic.IsEmpty
 import Mathlib.Tactic.Inhabit
+import Mathlib.Tactic.Push.Attr
 
 /-!
 # Types with a unique term
@@ -19,7 +20,7 @@ In other words, a type that is `Inhabited` and a `Subsingleton`.
 
 ## Main statements
 
-* `Unique.mk'`: an inhabited subsingleton type is `Unique`. This can not be an instance because it
+* `Unique.mk'`: an inhabited subsingleton type is `Unique`. This cannot be an instance because it
   would lead to loops in typeclass inference.
 
 * `Function.Surjective.unique`: if the domain of a surjective function is `Unique`, then its
@@ -58,17 +59,12 @@ theorem unique_iff_existsUnique (α : Sort u) : Nonempty (Unique α) ↔ ∃! _ 
   ⟨fun ⟨u⟩ ↦ ⟨u.default, trivial, fun a _ ↦ u.uniq a⟩,
    fun ⟨a, _, h⟩ ↦ ⟨⟨⟨a⟩, fun _ ↦ h _ trivial⟩⟩⟩
 
-@[deprecated (since := "2024-12-17")] alias unique_iff_exists_unique := unique_iff_existsUnique
-
 theorem unique_subtype_iff_existsUnique {α} (p : α → Prop) :
     Nonempty (Unique (Subtype p)) ↔ ∃! a, p a :=
   ⟨fun ⟨u⟩ ↦ ⟨u.default.1, u.default.2, fun a h ↦ congr_arg Subtype.val (u.uniq ⟨a, h⟩)⟩,
    fun ⟨a, ha, he⟩ ↦ ⟨⟨⟨⟨a, ha⟩⟩, fun ⟨b, hb⟩ ↦ by
       congr
       exact he b hb⟩⟩⟩
-
-@[deprecated (since := "2024-12-17")]
-alias unique_subtype_iff_exists_unique := unique_subtype_iff_existsUnique
 
 /-- Given an explicit `a : α` with `Subsingleton α`, we can construct
 a `Unique α` instance. This is a def because the typeclass search cannot
@@ -153,7 +149,7 @@ theorem unique_iff_subsingleton_and_nonempty (α : Sort u) :
 
 variable {α : Sort*}
 
-@[simp]
+@[simp, push ←]
 theorem Pi.default_def {β : α → Sort v} [∀ a, Inhabited (β a)] :
     @default (∀ a, β a) _ = fun a : α ↦ @default (β a) _ :=
   rfl

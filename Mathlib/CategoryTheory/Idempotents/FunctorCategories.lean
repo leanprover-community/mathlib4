@@ -111,14 +111,16 @@ def karoubiFunctorCategoryEmbedding : Karoubi (J ⥤ C) ⥤ J ⥤ Karoubi C wher
 
 instance : (karoubiFunctorCategoryEmbedding J C).Full where
   map_surjective {P Q} f :=
-   ⟨{ f :=
+    ⟨{f :=
         { app := fun j => (f.app j).f
           naturality := fun j j' φ => by
             rw [← Karoubi.comp_p_assoc]
             have h := hom_ext_iff.mp (f.naturality φ)
-            simp only [comp_f] at h
             dsimp [karoubiFunctorCategoryEmbedding] at h
-            erw [← h, assoc, ← P.p.naturality_assoc φ, p_comp (f.app j')] }
+            simp only [assoc, h.symm, karoubiFunctorCategoryEmbedding_obj,
+              KaroubiFunctorCategoryEmbedding.obj_obj_p]
+            rw [← P.p.naturality_assoc]
+            exact congrArg _ (p_comp (f.app _)).symm }
       comm := by
         ext j
         exact (f.app j).comm }, rfl⟩

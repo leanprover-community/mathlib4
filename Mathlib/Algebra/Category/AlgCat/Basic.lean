@@ -128,11 +128,9 @@ lemma ofHom_apply {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X
     [Algebra R Y] (f : X →ₐ[R] Y) (x : X) : ofHom f x = f x := rfl
 
 lemma inv_hom_apply {A B : AlgCat.{v} R} (e : A ≅ B) (x : A) : e.inv (e.hom x) = x := by
-  rw [← comp_apply]
   simp
 
 lemma hom_inv_apply {A B : AlgCat.{v} R} (e : A ≅ B) (x : B) : e.hom (e.inv x) = x := by
-  rw [← comp_apply]
   simp
 
 instance : Inhabited (AlgCat R) :=

@@ -41,9 +41,9 @@ theorem isGood_iff : IsGood x A ↔
   | inl hx =>
     have hx' : 0 ≤ 2 * x - 1 := by linarith
     have h₁ : x + sqrt (2 * x - 1) = (sqrt (2 * x - 1) + 1) ^ 2 / 2 := by
-      rw [add_sq, sq_sqrt hx']; field_simp; ring
+      rw [add_sq, sq_sqrt hx']; field
     have h₂ : x - sqrt (2 * x - 1) = (sqrt (2 * x - 1) - 1) ^ 2 / 2 := by
-      rw [sub_sq, sq_sqrt hx']; field_simp; ring
+      rw [sub_sq, sq_sqrt hx']; field
     simp only [IsGood, *, div_nonneg (sq_nonneg _) (zero_le_two (α := ℝ)), sqrt_div (sq_nonneg _),
       and_true]
     rw [sqrt_sq, sqrt_sq_eq_abs] <;> [skip; positivity]
@@ -106,7 +106,7 @@ theorem isGood_sqrt2_iff : IsGood x (sqrt 2) ↔ x ∈ Icc (1 / 2) 1 := by
   exact ⟨h.one_half_le, not_lt.1 fun h₁ ↦ (h.sqrt_two_lt_of_one_lt h₁).false⟩
 
 theorem not_isGood_one : ¬IsGood x 1 := fun h ↦
-  h.sqrt_two_le.not_gt <| (lt_sqrt zero_le_one).2 (by norm_num)
+  h.sqrt_two_le.not_gt <| (lt_sqrt zero_le_one).2 (by simp)
 
 theorem isGood_two_iff : IsGood x 2 ↔ x = 3 / 2 :=
   (isGood_iff_of_sqrt_two_lt <| (sqrt_lt' two_pos).2 (by norm_num)).trans <| by norm_num

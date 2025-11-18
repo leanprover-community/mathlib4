@@ -312,7 +312,7 @@ lemma inrX_desc_f (i : ι) :
 
 @[reassoc (attr := simp)]
 lemma inr_desc :
-    inr φ ≫ desc φ α hα = α := by aesop_cat
+    inr φ ≫ desc φ α hα = α := by cat_disch
 
 @[reassoc (attr := simp)]
 lemma inrCompHomotopy_hom_desc_hom (hc : ∀ j, ∃ i, c.Rel i j) (i j : ι) :
@@ -361,7 +361,7 @@ noncomputable def descEquiv (K : HomologicalComplex C c) (hc : ∀ j, ∃ i, c.R
   right_inv f := (eq_desc φ f hc).symm
   left_inv := fun ⟨α, hα⟩ => by
     rw [descSigma_ext_iff]
-    aesop_cat
+    cat_disch
 
 end homotopyCofiber
 
@@ -456,15 +456,14 @@ lemma inlX_nullHomotopy_f (i j : ι) (hij : c.Rel j i) :
     inlX K i j hij ≫ (nullHomotopicMap K).f j =
       inlX K i j hij ≫ (π K ≫ ι₀ K - 𝟙 _).f j := by
   dsimp [nullHomotopicMap]
-  by_cases hj : ∃ (k : ι), c.Rel k j
+  by_cases! hj : ∃ (k : ι), c.Rel k j
   · obtain ⟨k, hjk⟩ := hj
     simp only [assoc, Homotopy.nullHomotopicMap'_f hjk hij, homotopyCofiber_X, homotopyCofiber_d,
       homotopyCofiber.d_sndX_assoc _ _ _ hij, add_comp, comp_add, homotopyCofiber.inlX_fstX_assoc,
       homotopyCofiber.inlX_sndX_assoc, zero_comp, add_zero, comp_sub, inlX_π_assoc, comp_id,
       zero_sub, ← HomologicalComplex.comp_f_assoc, biprod.lift_snd, neg_f_apply, id_f,
       neg_comp, id_comp]
-  · simp only [not_exists] at hj
-    simp only [Homotopy.nullHomotopicMap'_f_of_not_rel_right hij hj,
+  · simp only [Homotopy.nullHomotopicMap'_f_of_not_rel_right hij hj,
       homotopyCofiber_X, homotopyCofiber_d, assoc, comp_sub, comp_id,
       homotopyCofiber.d_sndX_assoc _ _ _ hij, add_comp, comp_add, zero_comp, add_zero,
       homotopyCofiber.inlX_fstX_assoc, homotopyCofiber.inlX_sndX_assoc,

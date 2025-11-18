@@ -45,7 +45,7 @@ lemma mem_stabilizer_iff {g : (Perm α)ᵈᵐᵃ} :
   simp only [MulAction.mem_stabilizer_iff]; rfl
 
 /-- The `invFun` component of `MulEquiv` from `MulAction.stabilizer (Perm α) f`
-  to the product of the `Equiv.Perm {a // f a = i} -/
+  to the product of the `Equiv.Perm {a // f a = i}`. -/
 def stabilizerEquiv_invFun (g : ∀ i, Perm {a // f a = i}) (a : α) : α := g (f a) ⟨a, rfl⟩
 
 lemma stabilizerEquiv_invFun_eq (g : ∀ i, Perm {a // f a = i}) {a : α} {i : ι} (h : f a = i) :
@@ -56,7 +56,7 @@ lemma comp_stabilizerEquiv_invFun (g : ∀ i, Perm {a // f a = i}) (a : α) :
   (g (f a) ⟨a, rfl⟩).prop
 
 /-- The `invFun` component of `MulEquiv` from `MulAction.stabilizer (Perm α) p`
-  to the product of the `Equiv.Perm {a | f a = i} (as an `Equiv.Perm α`) -/
+  to the product of the `Equiv.Perm {a | f a = i}` (as an `Equiv.Perm α`). -/
 def stabilizerEquiv_invFun_aux (g : ∀ i, Perm {a // f a = i}) : Perm α where
   toFun := stabilizerEquiv_invFun g
   invFun := stabilizerEquiv_invFun (fun i ↦ (g i).symm)
@@ -125,11 +125,7 @@ theorem stabilizer_card' :
     apply Finset.prod_bij (fun g _ => g.val)
     · exact fun g _ => Finset.coe_mem g
     · exact fun g _ g' _ =>  SetCoe.ext
-    · exact fun g hg => by
-        rw [Finset.mem_image] at hg
-        obtain ⟨a, _, rfl⟩ := hg
-        use ⟨f a, by simp only [Finset.mem_image, Finset.mem_univ, true_and, exists_apply_eq_apply]⟩
-        simp only [Finset.univ_eq_attach, Finset.mem_attach, exists_const]
+    · simp
     · intro i _
       apply congr_arg
       apply Fintype.card_congr

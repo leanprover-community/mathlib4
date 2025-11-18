@@ -93,9 +93,6 @@ lemma isEmbedding_toContinuousMap : IsEmbedding ((↑) : C(X, R)₀ → C(X, R))
   eq_induced := rfl
   injective _ _ h := ext fun x ↦ congr($(h) x)
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_toContinuousMap := isEmbedding_toContinuousMap
-
 instance [T0Space R] : T0Space C(X, R)₀ := isEmbedding_toContinuousMap.t0Space
 instance [R0Space R] : R0Space C(X, R)₀ := isEmbedding_toContinuousMap.r0Space
 instance [T1Space R] : T1Space C(X, R)₀ := isEmbedding_toContinuousMap.t1Space
@@ -127,12 +124,12 @@ lemma continuous_comp_left {X Y Z : Type*} [TopologicalSpace X]
 
 /-- The identity function as an element of `C(s, R)₀` when `0 ∈ (s : Set R)`. -/
 @[simps!]
-protected def id {s : Set R} [Zero s] (h0 : ((0 : s) : R) = 0) : C(s, R)₀ :=
-  ⟨.restrict s (.id R), h0⟩
+protected def id (s : Set R) [Fact (0 ∈ s)] : C(s, R)₀ :=
+  ⟨.restrict s (.id R), rfl⟩
 
 @[simp]
-lemma toContinuousMap_id {s : Set R} [Zero s] (h0 : ((0 : s) : R) = 0) :
-    (ContinuousMapZero.id h0 : C(s, R)) = .restrict s (.id R) :=
+lemma toContinuousMap_id {s : Set R} [Fact (0 ∈ s)] :
+    (ContinuousMapZero.id s : C(s, R)) = .restrict s (.id R) :=
   rfl
 
 end Basic
@@ -169,8 +166,7 @@ lemma mkD_of_not_zero [Zero X] {f : X → R} {g : C(X, R)₀} (hf : f 0 ≠ 0) :
 lemma mkD_apply_of_continuous [Zero X] {f : X → R} {g : C(X, R)₀} {x : X}
     (hf : Continuous f) (hf₀ : f 0 = 0) :
     mkD f g x = f x := by
-  rw [mkD_of_continuous hf hf₀]
-  rfl
+  rw [mkD_of_continuous hf hf₀, coe_mk, ContinuousMap.coe_mk]
 
 lemma mkD_of_continuousOn {s : Set X} [Zero s] {f : X → R} {g : C(s, R)₀}
     (hf : ContinuousOn f s) (hf₀ : f (0 : s) = 0) :
@@ -186,17 +182,16 @@ lemma mkD_of_not_continuousOn {s : Set X} [Zero s] {f : X → R} {g : C(s, R)₀
 lemma mkD_apply_of_continuousOn {s : Set X} [Zero s] {f : X → R} {g : C(s, R)₀} {x : s}
     (hf : ContinuousOn f s) (hf₀ : f (0 : s) = 0) :
     mkD (s.restrict f) g x = f x := by
-  rw [mkD_of_continuousOn hf hf₀]
-  rfl
+  rw [mkD_of_continuousOn hf hf₀, coe_mk, ContinuousMap.coe_mk, restrict_apply]
 
 open ContinuousMap in
 /-- Link between `ContinuousMapZero.mkD` and `ContinuousMap.mkD`. -/
 lemma mkD_eq_mkD_of_map_zero [Zero X] (f : X → R) (g : C(X, R)₀) (f_zero : f 0 = 0) :
     mkD f g = ContinuousMap.mkD f g := by
-  by_cases f_cont : Continuous f
-  · rw [mkD_of_continuous f_cont f_zero, ContinuousMap.mkD_of_continuous f_cont]
-    rfl
-  · rw [mkD_of_not_continuous f_cont, ContinuousMap.mkD_of_not_continuous f_cont]
+  ext
+  by_cases f_cont : Continuous f <;>
+    simp [*, ContinuousMap.mkD_of_continuous, mkD_of_continuous, mkD_of_not_continuous,
+      ContinuousMap.mkD_of_not_continuous]
 
 lemma mkD_eq_self [Zero X] {f g : C(X, R)₀} : mkD f g = f :=
   mkD_of_continuous f.continuous (map_zero f)

@@ -18,7 +18,7 @@ This file defines the conversion between bilinear forms and matrices.
 * `BilinForm.toMatrix`: calculate the matrix coefficients of a bilinear form
 * `BilinForm.toMatrix'`: calculate the matrix coefficients of a bilinear form on `n → R`
 
-## Notations
+## Notation
 
 In this file we use the following type variables:
 - `M₁` is a module over the commutative semiring `R₁`,
@@ -31,6 +31,7 @@ bilinear form, bilin form, BilinearForm, matrix, basis
 -/
 
 open LinearMap (BilinForm)
+open Module
 
 variable {R₁ : Type*} {M₁ : Type*} [CommSemiring R₁] [AddCommMonoid M₁] [Module R₁ M₁]
 variable {R₂ : Type*} {M₂ : Type*} [CommRing R₂] [AddCommGroup M₂] [Module R₂ M₂]
@@ -191,6 +192,14 @@ noncomputable def Matrix.toBilin : Matrix n n R₁ ≃ₗ[R₁] BilinForm R₁ M
 theorem BilinForm.toMatrix_apply (B : BilinForm R₁ M₁) (i j : n) :
     BilinForm.toMatrix b B i j = B (b i) (b j) :=
   LinearMap.toMatrix₂_apply _ _ B _ _
+
+theorem BilinForm.dotProduct_toMatrix_mulVec (B : BilinForm R₁ M₁) (x y : n → R₁) :
+    x ⬝ᵥ (BilinForm.toMatrix b B) *ᵥ y = B (b.equivFun.symm x) (b.equivFun.symm y) :=
+  dotProduct_toMatrix₂_mulVec b b B x y
+
+lemma BilinForm.apply_eq_dotProduct_toMatrix_mulVec (B : BilinForm R₁ M₁) (x y : M₁) :
+    B x y = (b.repr x) ⬝ᵥ (BilinForm.toMatrix b B) *ᵥ (b.repr y) :=
+  apply_eq_dotProduct_toMatrix₂_mulVec b b B x y
 
 @[simp]
 theorem Matrix.toBilin_apply (M : Matrix n n R₁) (x y : M₁) :

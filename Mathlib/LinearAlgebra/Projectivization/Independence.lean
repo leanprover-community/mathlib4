@@ -21,7 +21,7 @@ ambient vector space. Similarly for the definition of dependence.
 - A family of elements is dependent if and only if it is not independent.
 - Two elements are dependent if and only if they are equal.
 
-# Future Work
+## Future Work
 
 - Define collinearity in projective space.
 - Prove the axioms of a projective geometry are satisfied by the dependence relation.
@@ -65,9 +65,6 @@ theorem independent_iff_iSupIndep : Independent f ↔ iSupIndep fun i => (f i).s
     refine h.linearIndependent (Projectivization.submodule ∘ f) (fun i => ?_) fun i => ?_
     · simpa only [Function.comp_apply, submodule_eq] using Submodule.mem_span_singleton_self _
     · exact rep_nonzero (f i)
-
-@[deprecated (since := "2024-11-24")]
-alias independent_iff_completeLattice_independent := independent_iff_iSupIndep
 
 /-- A linearly dependent family of nonzero vectors gives a dependent family of points
 in projective space. -/

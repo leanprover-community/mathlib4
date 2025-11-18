@@ -18,7 +18,7 @@ This file provides the tactics `tfae_have` and `tfae_finish` for proving goals o
 
 namespace Mathlib.Tactic.TFAE
 
-/-! # Parsing and syntax
+/-! ### Parsing and syntax
 
 We implement `tfae_have` in terms of a syntactic `have`. To support as much of the same syntax as
 possible, we recreate the parsers for `have`, except with the changes necessary for `tfae_have`.
@@ -139,7 +139,7 @@ example : TFAE [P, Q, R] := by
 syntax (name := tfaeFinish) "tfae_finish" : tactic
 
 
-/-! # Setup -/
+/-! ### Setup -/
 
 open List Lean Meta Expr Elab Tactic Mathlib.Tactic Qq
 
@@ -159,7 +159,7 @@ where
     | ~q($a :: $l') => return (a :: (← getExplicitList l'))
     | e => throwError "{e} must be an explicit list of propositions"
 
-/-! # Proof construction -/
+/-! ### Proof construction -/
 
 variable (hyps : Array (ℕ × ℕ × Expr)) (atoms : Array Q(Prop))
 
@@ -187,15 +187,15 @@ def proveImpl (i j : ℕ) (P P' : Q(Prop)) : MetaM Q($P → $P') := do
 /-- Generate a proof of `Chain (· → ·) P l`. We assume `P : Prop` and `l : List Prop`, and that `l`
 is an explicit list. -/
 partial def proveChain (i : ℕ) (is : List ℕ) (P : Q(Prop)) (l : Q(List Prop)) :
-    MetaM Q(Chain (· → ·) $P $l) := do
+    MetaM Q(IsChain (· → ·) ($P :: $l)) := do
   match l with
-  | ~q([]) => return q(Chain.nil)
+  | ~q([]) => return q(.singleton _)
   | ~q($P' :: $l') =>
     -- `id` is a workaround for https://github.com/leanprover-community/quote4/issues/30
     let i' :: is' := id is | unreachable!
-    have cl' : Q(Chain (· → ·) $P' $l') := ← proveChain i' is' q($P') q($l')
+    have cl' : Q(IsChain (· → ·) ($P' :: $l')) := ← proveChain i' is' q($P') q($l')
     let p ← proveImpl hyps atoms i i' P P'
-    return q(Chain.cons $p $cl')
+    return q(.cons_cons $p $cl')
 
 /-- Attempt to prove `getLastD l P' → P` given an explicit list `l`. -/
 partial def proveGetLastDImpl (i i' : ℕ) (is : List ℕ) (P P' : Q(Prop)) (l : Q(List Prop)) :
@@ -219,7 +219,7 @@ def proveTFAE (is : List ℕ) (l : Q(List Prop)) : MetaM Q(TFAE $l) := do
     let il ← proveGetLastDImpl hyps atoms i i' is' P P' l'
     return q(tfae_of_cycle $c $il)
 
-/-! # `tfae_have` components -/
+/-! ### `tfae_have` components -/
 
 /-- Construct a name for a hypothesis introduced by `tfae_have`. -/
 def mkTFAEId : TSyntax ``tfaeType → MacroM Name
@@ -240,7 +240,7 @@ def elabIndex (i : TSyntax `num) (maxIndex : ℕ) : MetaM ℕ := do
     throwErrorAt i "{i} must be between 1 and {maxIndex}"
   return i'
 
-/-! # Tactic implementation -/
+/-! ### Tactic implementation -/
 
 /-- Accesses the propositions at indices `i` and `j` of `tfaeList`, and constructs the expression
 `Pi <arr> Pj`, which will be the type of our `tfae_have` hypothesis -/
@@ -317,7 +317,7 @@ end Mathlib.Tactic.TFAE
 
 /-!
 
-# Deprecated "Goal-style" `tfae_have`
+### Deprecated "Goal-style" `tfae_have`
 
 This syntax and its implementation, which behaves like "Mathlib `have`" is deprecated; we preserve
 it here to provide graceful deprecation behavior.

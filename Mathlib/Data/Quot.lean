@@ -321,8 +321,10 @@ theorem Quotient.liftOn_mk {s : Setoid α} (f : α → β) (h : ∀ a b : α, a 
   rfl
 
 @[simp]
-theorem Quotient.liftOn₂_mk {α : Sort*} {β : Sort*} {_ : Setoid α} (f : α → α → β)
-    (h : ∀ a₁ a₂ b₁ b₂ : α, a₁ ≈ b₁ → a₂ ≈ b₂ → f a₁ a₂ = f b₁ b₂) (x y : α) :
+theorem Quotient.liftOn₂_mk {α : Sort*} {β : Sort*} {γ : Sort*} {_ : Setoid α} {_ : Setoid β}
+    (f : α → β → γ)
+    (h : ∀ (a₁ : α) (b₁ : β) (a₂ : α) (b₂ : β), a₁ ≈ a₂ → b₁ ≈ b₂ → f a₁ b₁ = f a₂ b₂)
+    (x : α) (y : β) :
     Quotient.liftOn₂ (Quotient.mk _ x) (Quotient.mk _ y) f h = f x y :=
   rfl
 
@@ -678,7 +680,8 @@ theorem hrecOn₂'_mk'' {φ : Quotient s₁ → Quotient s₂ → Sort*}
   rfl
 
 /-- Map a function `f : α → β` that sends equivalent elements to equivalent elements
-to a function `Quotient sa → Quotient sb`. Useful to define unary operations on quotients. -/
+to a function `Quotient sa → Quotient sb`. Useful to define unary operations on quotients.
+This is a version of `Quotient.map` using `Setoid.r` instead of `≈`. -/
 protected def map' (f : α → β) (h : ∀ a b, s₁.r a b → s₂.r (f a) (f b)) :
     Quotient s₁ → Quotient s₂ :=
   Quot.map f h
@@ -688,8 +691,19 @@ theorem map'_mk'' (f : α → β) (h) (x : α) :
     (Quotient.mk'' x : Quotient s₁).map' f h = (Quotient.mk'' (f x) : Quotient s₂) :=
   rfl
 
-/-- A version of `Quotient.map₂` using curly braces and unification. -/
-@[deprecated (since := "2024-12-01")] protected alias map₂' := Quotient.map₂
+/-- Map a function `f : α → β → γ` that sends equivalent elements to equivalent elements
+to a function `f : Quotient sa → Quotient sb → Quotient sc`. Useful to define binary operations
+on quotients. This is a version of `Quotient.map₂` using `Setoid.r` instead of `≈`. -/
+protected def map₂' (f : α → β → γ)
+    (h : ∀ ⦃a₁ a₂ : α⦄, s₁.r a₁ a₂ → ∀ ⦃b₁ b₂ : β⦄, s₂.r b₁ b₂ → s₃.r (f a₁ b₁) (f a₂ b₂)) :
+    Quotient s₁ → Quotient s₂ → Quotient s₃ :=
+  Quotient.map₂ f h
+
+@[simp]
+theorem map₂'_mk'' (f : α → β → γ) (h) (x : α) :
+    (Quotient.mk'' x : Quotient s₁).map₂' f h =
+      (Quotient.map' (f x) (h (Setoid.refl x)) : Quotient s₂ → Quotient s₃) :=
+  rfl
 
 theorem exact' {a b : α} :
     (Quotient.mk'' a : Quotient s₁) = Quotient.mk'' b → s₁ a b :=

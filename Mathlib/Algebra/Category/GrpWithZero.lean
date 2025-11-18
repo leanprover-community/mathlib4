@@ -21,6 +21,8 @@ open CategoryTheory
 
 /-- The category of groups with zero. -/
 structure GrpWithZero where
+  /-- Construct a bundled `GrpWithZero` from a `GroupWithZero`. -/
+  of ::
   /-- The underlying group with zero. -/
   carrier : Type*
   [str : GroupWithZero carrier]
@@ -31,10 +33,6 @@ namespace GrpWithZero
 
 instance : CoeSort GrpWithZero Type* :=
   ⟨carrier⟩
-
-/-- Construct a bundled `GrpWithZero` from a `GroupWithZero`. -/
-abbrev of (α : Type*) [GroupWithZero α] : GrpWithZero where
-  carrier := α
 
 instance : Inhabited GrpWithZero :=
   ⟨of (WithZero PUnit)⟩
@@ -64,8 +62,7 @@ lemma coe_id {X : GrpWithZero} : (𝟙 X : X → X) = id := rfl
 
 lemma coe_comp {X Y Z : GrpWithZero} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
-@[simp] lemma forget_map {X Y : GrpWithZero} (f : X ⟶ Y) :
-  (forget GrpWithZero).map f = f := rfl
+@[simp] lemma forget_map {X Y : GrpWithZero} (f : X ⟶ Y) : (forget GrpWithZero).map f = f := rfl
 
 instance hasForgetToBipointed : HasForget₂ GrpWithZero Bipointed where
   forget₂ :=

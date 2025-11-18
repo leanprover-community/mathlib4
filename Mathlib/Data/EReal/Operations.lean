@@ -93,19 +93,16 @@ theorem add_top_of_ne_bot {x : EReal} (h : x ≠ ⊥) : x + ⊤ = ⊤ := by
 if and only if `x` is not `⊥`. -/
 theorem add_top_iff_ne_bot {x : EReal} : x + ⊤ = ⊤ ↔ x ≠ ⊥ := by rw [add_comm, top_add_iff_ne_bot]
 
-protected theorem add_pos_of_nonneg_of_pos {a b : EReal} (ha : 0 ≤ a) (hb : 0 < b) : 0 < a + b := by
-  lift a to ℝ≥0∞ using ha
-  lift b to ℝ≥0∞ using hb.le
-  norm_cast at *
-  simp [hb]
+@[deprecated (since := "2025-08-14")] alias add_pos_of_nonneg_of_pos :=
+  Right.add_pos_of_nonneg_of_pos
 
 protected theorem add_pos_of_pos_of_nonneg {a b : EReal} (ha : 0 < a) (hb : 0 ≤ b) : 0 < a + b :=
-  add_comm a b ▸ EReal.add_pos_of_nonneg_of_pos hb ha
+  add_comm a b ▸ Right.add_pos_of_nonneg_of_pos hb ha
 
 /-- For any two extended real numbers `a` and `b`, if both `a` and `b` are greater than `0`,
 then their sum is also greater than `0`. -/
 protected theorem add_pos {a b : EReal} (ha : 0 < a) (hb : 0 < b) : 0 < a + b :=
-  EReal.add_pos_of_nonneg_of_pos ha.le hb
+  Right.add_pos_of_nonneg_of_pos ha.le hb
 
 @[simp]
 theorem coe_add_top (x : ℝ) : (x : EReal) + ⊤ = ⊤ :=
@@ -148,7 +145,7 @@ theorem add_lt_add {x y z t : EReal} (h1 : x < y) (h2 : z < t) : x + z < y + t :
   · simp [h1, bot_le.trans_lt h2]
   · lift x to ℝ using ⟨h1.ne_top, hx⟩
     calc (x : EReal) + z < x + t := add_lt_add_left_coe h2 _
-    _ ≤ y + t := add_le_add_right h1.le _
+    _ ≤ y + t := by gcongr
 
 theorem add_lt_add_of_lt_of_le' {x y z t : EReal} (h : x < y) (h' : z ≤ t) (hbot : t ≠ ⊥)
     (htop : t = ⊤ → z = ⊤ → x = ⊥) : x + z < y + t := by
@@ -187,15 +184,11 @@ lemma add_ne_top_iff_ne_top_left {x y : EReal} (hy : y ≠ ⊥) (hy' : y ≠ ⊤
 lemma add_ne_top_iff_ne_top_right {x y : EReal} (hx : x ≠ ⊥) (hx' : x ≠ ⊤) :
     x + y ≠ ⊤ ↔ y ≠ ⊤ := add_comm x y ▸ add_ne_top_iff_ne_top_left hx hx'
 
-lemma add_ne_top_iff_of_ne_bot {x y : EReal} (hx : x ≠ ⊥) (hy : y ≠ ⊥) :
-    x + y ≠ ⊤ ↔ x ≠ ⊤ ∧ y ≠ ⊤ := by
-  refine ⟨?_, fun h ↦ add_ne_top h.1 h.2⟩
-  induction x <;> simp_all
-  induction y <;> simp_all
+@[deprecated (since := "2025-08-14")] alias add_ne_top_iff_of_ne_bot := add_ne_top_iff_ne_top₂
 
 lemma add_ne_top_iff_of_ne_bot_of_ne_top {x y : EReal} (hy : y ≠ ⊥) (hy' : y ≠ ⊤) :
     x + y ≠ ⊤ ↔ x ≠ ⊤ := by
-  induction x <;> simp [add_ne_top_iff_of_ne_bot, hy, hy']
+  induction x <;> simp [EReal.add_ne_top_iff_ne_top₂, hy, hy']
 
 /-- We do not have a notion of `LinearOrderedAddCommMonoidWithBot` but we can at least make
 the order dual of the extended reals into a `LinearOrderedAddCommMonoidWithTop`. -/
@@ -266,9 +259,9 @@ theorem neg_strictAnti : StrictAnti (- · : EReal → EReal) :=
     ⟨coe_strictMono.comp_strictAnti fun _ _ => neg_lt_neg, fun _ => bot_lt_coe _⟩,
       WithTop.forall.2 ⟨bot_lt_top, fun _ => coe_lt_top _⟩⟩
 
-@[simp] theorem neg_le_neg_iff {a b : EReal} : -a ≤ -b ↔ b ≤ a := neg_strictAnti.le_iff_le
+@[simp] theorem neg_le_neg_iff {a b : EReal} : -a ≤ -b ↔ b ≤ a := neg_strictAnti.le_iff_ge
 
-@[simp] theorem neg_lt_neg_iff {a b : EReal} : -a < -b ↔ b < a := neg_strictAnti.lt_iff_lt
+@[simp] theorem neg_lt_neg_iff {a b : EReal} : -a < -b ↔ b < a := neg_strictAnti.lt_iff_gt
 
 /-- `-a ≤ b` if and only if `-b ≤ a` on `EReal`. -/
 protected theorem neg_le {a b : EReal} : -a ≤ b ↔ -b ≤ a := by
@@ -286,8 +279,6 @@ protected theorem le_neg_of_le_neg {a b : EReal} (h : a ≤ -b) : b ≤ -a := ER
 
 /-- `-a < b` if and only if `-b < a` on `EReal`. -/
 theorem neg_lt_comm {a b : EReal} : -a < b ↔ -b < a := by rw [← neg_lt_neg_iff, neg_neg]
-
-@[deprecated (since := "2024-11-19")] alias neg_lt_iff_neg_lt := neg_lt_comm
 
 /-- If `-a < b` then `-b < a` on `EReal`. -/
 protected theorem neg_lt_of_neg_lt {a b : EReal} (h : -a < b) : -b < a := neg_lt_comm.mp h
@@ -312,12 +303,12 @@ def negOrderIso : EReal ≃o ERealᵒᵈ :=
     map_rel_iff' := neg_le_neg_iff }
 
 lemma neg_add {x y : EReal} (h1 : x ≠ ⊥ ∨ y ≠ ⊤) (h2 : x ≠ ⊤ ∨ y ≠ ⊥) :
-    - (x + y) = - x - y := by
+    -(x + y) = -x - y := by
   induction x <;> induction y <;> try tauto
   rw [← coe_add, ← coe_neg, ← coe_neg, ← coe_sub, neg_add']
 
 lemma neg_sub {x y : EReal} (h1 : x ≠ ⊥ ∨ y ≠ ⊥) (h2 : x ≠ ⊤ ∨ y ≠ ⊤) :
-    - (x - y) = - x + y := by
+    -(x - y) = -x + y := by
   rw [sub_eq_add_neg, neg_add _ _, sub_eq_add_neg, neg_neg] <;> simp_all
 
 /-- Induction principle for `EReal`s splitting into cases `↑(x : ℝ≥0∞)` and `-↑(x : ℝ≥0∞)`.
@@ -540,10 +531,6 @@ lemma le_add_of_forall_gt {a b c : EReal} (h₁ : a ≠ ⊥ ∨ b ≠ ⊤) (h₂
   rw [neg_add (.inr hb'.ne_top) (.inl ha'.ne_top)]
   exact h _ (EReal.lt_neg_of_lt_neg ha') _ (EReal.lt_neg_of_lt_neg hb')
 
-@[deprecated (since := "2024-11-19")] alias top_add_le_of_forall_add_le := add_le_of_forall_lt
-@[deprecated (since := "2024-11-19")] alias add_le_of_forall_add_le := add_le_of_forall_lt
-@[deprecated (since := "2024-11-19")] alias le_add_of_forall_le_add := le_add_of_forall_gt
-
 lemma _root_.ENNReal.toEReal_sub {x y : ℝ≥0∞} (hy_top : y ≠ ∞) (h_le : y ≤ x) :
     (x - y).toEReal = x.toEReal - y.toEReal := by
   lift y to ℝ≥0 using hy_top
@@ -741,16 +728,7 @@ lemma mul_nonpos_iff {a b : EReal} : a * b ≤ 0 ↔ 0 ≤ a ∧ b ≤ 0 ∨ a �
 lemma mul_eq_top (a b : EReal) :
     a * b = ⊤ ↔ (a = ⊥ ∧ b < 0) ∨ (a < 0 ∧ b = ⊥) ∨ (a = ⊤ ∧ 0 < b) ∨ (0 < a ∧ b = ⊤) := by
   induction a, b using EReal.induction₂_symm with
-  | symm h =>
-    rw [EReal.mul_comm, h]
-    refine ⟨fun H ↦ ?_, fun H ↦ ?_⟩ <;>
-    cases H with
-      | inl h => exact Or.inr (Or.inl ⟨h.2, h.1⟩)
-      | inr h => cases h with
-        | inl h => exact Or.inl ⟨h.2, h.1⟩
-        | inr h => cases h with
-          | inl h => exact Or.inr (Or.inr (Or.inr ⟨h.2, h.1⟩))
-          | inr h => exact Or.inr (Or.inr (Or.inl ⟨h.2, h.1⟩))
+  | symm h => grind [EReal.mul_comm]
   | top_top => simp
   | top_pos _ hx => simp [EReal.top_mul_coe_of_pos hx, hx]
   | top_zero => simp
@@ -864,7 +842,7 @@ def evalERealAdd : PositivityExt where eval {u α} zα pα e := do
       | _ => pure .none
     | .nonnegative pa =>
       match ← core zα pα b with
-      | .positive pb => pure (.positive q(EReal.add_pos_of_nonneg_of_pos $pa $pb))
+      | .positive pb => pure (.positive q(Right.add_pos_of_nonneg_of_pos $pa $pb))
       | .nonnegative pb => pure (.nonnegative q(add_nonneg $pa $pb))
       | _ => pure .none
     | _ => pure .none
@@ -885,11 +863,11 @@ def evalERealMul : PositivityExt where eval {u α} zα pα e := do
       | _ => pure .none
     | .nonnegative pa =>
       match (← core zα pα b).toNonneg with
-      | .some pb => pure (.nonnegative q(EReal.mul_nonneg $pa $pb))
-      | .none => pure .none
+      | some pb => pure (.nonnegative q(EReal.mul_nonneg $pa $pb))
+      | none => pure .none
     | .nonzero pa =>
       match (← core zα pα b).toNonzero with
-      | .some pb => pure (.nonzero q(mul_ne_zero $pa $pb))
+      | some pb => pure (.nonzero q(mul_ne_zero $pa $pb))
       | none => pure .none
     | _ => pure .none
   | _, _, _ => throwError "not a product of 2 `EReal`s"

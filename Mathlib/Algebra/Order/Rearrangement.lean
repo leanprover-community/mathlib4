@@ -3,7 +3,7 @@ Copyright (c) 2022 Mantas Bakšys. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys
 -/
-import Mathlib.Algebra.Order.Module.OrderedSMul
+import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Module.Synonym
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Data.Finset.Max
@@ -84,7 +84,7 @@ theorem MonovaryOn.sum_smul_comp_perm_le_sum_smul (hfg : MonovaryOn f g s)
     · exact mem_of_mem_insert_of_ne (hσ hx) (ne_of_apply_ne _ h₂)
   specialize hind (hfg.subset <| subset_insert _ _) hτs
   simp_rw [sum_insert has]
-  refine le_trans ?_ (add_le_add_left hind _)
+  grw [← hind]
   obtain hσa | hσa := eq_or_ne a (σ a)
   · rw [hτ, ← hσa, swap_self, trans_refl]
   have h1s : σ⁻¹ a ∈ s := by
@@ -170,26 +170,25 @@ theorem MonovaryOn.sum_smul_comp_perm_eq_sum_smul_iff (hfg : MonovaryOn f g s)
     (hσ : {x | σ x ≠ x} ⊆ s) :
     ∑ i ∈ s, f i • g (σ i) = ∑ i ∈ s, f i • g i ↔ MonovaryOn f (g ∘ σ) s := by
   classical
-  refine ⟨not_imp_not.1 fun h ↦ ?_, fun h ↦ (hfg.sum_smul_comp_perm_le_sum_smul hσ).antisymm ?_⟩
-  · rw [MonovaryOn] at h
-    push_neg at h
-    obtain ⟨x, hx, y, hy, hgxy, hfxy⟩ := h
-    set τ : Perm ι := (Equiv.swap x y).trans σ
-    have hτs : {x | τ x ≠ x} ⊆ s := by
-      refine (set_support_mul_subset σ <| swap x y).trans (Set.union_subset hσ fun z hz ↦ ?_)
-      obtain ⟨_, rfl | rfl⟩ := swap_apply_ne_self_iff.1 hz <;> assumption
-    refine ((hfg.sum_smul_comp_perm_le_sum_smul hτs).trans_lt' ?_).ne
-    obtain rfl | hxy := eq_or_ne x y
-    · cases lt_irrefl _ hfxy
-    simp only [τ, ← s.sum_erase_add _ hx,
-      ← (s.erase x).sum_erase_add _ (mem_erase.2 ⟨hxy.symm, hy⟩),
-      add_assoc, Equiv.coe_trans, Function.comp_apply, swap_apply_right, swap_apply_left]
-    refine add_lt_add_of_le_of_lt (Finset.sum_congr rfl fun z hz ↦ ?_).le
-      (smul_add_smul_lt_smul_add_smul hfxy hgxy)
-    simp_rw [mem_erase] at hz
-    rw [swap_apply_of_ne_of_ne hz.2.1 hz.1]
-  · convert h.sum_smul_comp_perm_le_sum_smul ((set_support_inv_eq _).subset.trans hσ) using 1
-    simp_rw [Function.comp_apply, apply_inv_self]
+  refine ⟨not_imp_not.1 fun h ↦ ?_, fun h ↦ (hfg.sum_smul_comp_perm_le_sum_smul hσ).antisymm <| by
+    simpa using h.sum_smul_comp_perm_le_sum_smul ((set_support_inv_eq _).subset.trans hσ)⟩
+  rw [MonovaryOn] at h
+  push_neg at h
+  obtain ⟨x, hx, y, hy, hgxy, hfxy⟩ := h
+  set τ : Perm ι := (Equiv.swap x y).trans σ
+  have hτs : {x | τ x ≠ x} ⊆ s := by
+    refine (set_support_mul_subset σ <| swap x y).trans (Set.union_subset hσ fun z hz ↦ ?_)
+    obtain ⟨_, rfl | rfl⟩ := swap_apply_ne_self_iff.1 hz <;> assumption
+  refine ((hfg.sum_smul_comp_perm_le_sum_smul hτs).trans_lt' ?_).ne
+  obtain rfl | hxy := eq_or_ne x y
+  · cases lt_irrefl _ hfxy
+  simp only [τ, ← s.sum_erase_add _ hx,
+    ← (s.erase x).sum_erase_add _ (mem_erase.2 ⟨hxy.symm, hy⟩),
+    add_assoc, Equiv.coe_trans, Function.comp_apply, swap_apply_right, swap_apply_left]
+  refine add_lt_add_of_le_of_lt (Finset.sum_congr rfl fun z hz ↦ ?_).le
+    (smul_add_smul_lt_smul_add_smul hfxy hgxy)
+  simp_rw [mem_erase] at hz
+  rw [swap_apply_of_ne_of_ne hz.2.1 hz.1]
 
 /-- **Equality case of the Rearrangement Inequality**: Pointwise scalar multiplication of `f` and
 `g`, which antivary together on `s`, is unchanged by a permutation if and only if `f` and `g ∘ σ`

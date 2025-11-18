@@ -3,7 +3,7 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection
+import Mathlib.Analysis.InnerProductSpace.Projection.Submodule
 import Mathlib.Dynamics.BirkhoffSum.NormedSpace
 
 /-!
@@ -100,4 +100,4 @@ theorem ContinuousLinearMap.tendsto_birkhoffAverage_orthogonalProjection (f : E 
     · simpa using f.le_of_opNorm_le hf x
     · have : ∀ y, ⟪f y, x⟫ = ⟪y, x⟫ := by
         simpa [Submodule.mem_orthogonal, inner_sub_left, sub_eq_zero] using hx
-      simp [this, ← norm_sq_eq_re_inner]
+      simp [this]

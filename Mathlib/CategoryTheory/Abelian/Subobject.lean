@@ -25,9 +25,9 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 namespace Abelian
 
 /-- In an abelian category, the subobjects and quotient objects of an object `X` are
-    order-isomorphic via taking kernels and cokernels.
-    Implemented here using subobjects in the opposite category,
-    since mathlib does not have a notion of quotient objects at the time of writing. -/
+order-isomorphic via taking kernels and cokernels.
+Implemented here using subobjects in the opposite category,
+since mathlib does not have a notion of quotient objects at the time of writing. -/
 @[simps!]
 def subobjectIsoSubobjectOp (X : C) : Subobject X ≃o (Subobject (op X))ᵒᵈ := by
   refine OrderIso.ofHomInv (cokernelOrderHom X) (kernelOrderHom X) ?_ ?_

@@ -5,7 +5,9 @@ Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
-import Mathlib.CategoryTheory.Limits.Types.Shapes
+import Mathlib.CategoryTheory.Limits.Types.Coproducts
+import Mathlib.CategoryTheory.Limits.Types.Products
+import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
@@ -212,7 +214,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       (Types.binaryCoproductColimit _ _)]
   apply BinaryCofan.isVanKampen_mk _ _ (fun X Y => Types.binaryCoproductColimit X Y) _
       fun f g => (Limits.Types.pullbackLimitCone f g).2
-  · intros _ _ _ _ f hαX hαY
+  · intro _ _ _ _ f hαX hαY
     constructor
     · refine ⟨⟨hαX.symm⟩, ⟨PullbackCone.isLimitAux' _ ?_⟩⟩
       intro s
@@ -358,7 +360,7 @@ theorem finitaryExtensive_of_reflective
     FinitaryExtensive D := by
   have : PreservesColimitsOfSize Gl := adj.leftAdjoint_preservesColimits
   constructor
-  intros X Y c hc
+  intro X Y c hc
   apply (IsVanKampenColimit.precompose_isIso_iff
     (Functor.isoWhiskerLeft _ (asIso adj.counit) ≪≫ Functor.rightUnitor _).hom).mp
   have : ∀ (Z : C) (i : Discrete WalkingPair) (f : Z ⟶ (colimit.cocone (pair X Y ⋙ Gr)).pt),
@@ -368,7 +370,7 @@ theorem finitaryExtensive_of_reflective
       · rintro ⟨⟨⟩⟩ <;> rfl
       · rintro ⟨⟨⟩⟩ ⟨j⟩ ⟨⟨rfl : _ = j⟩⟩ <;> simp
     rw [this]
-    rintro Z ⟨_|_⟩ f <;> dsimp <;> infer_instance
+    rintro Z ⟨_ | _⟩ f <;> dsimp <;> infer_instance
   refine ((FinitaryExtensive.vanKampen _ (colimit.isColimit <| pair X Y ⋙ _)).map_reflective
     adj).of_iso (IsColimit.uniqueUpToIso ?_ ?_)
   · exact isColimitOfPreserves Gl (colimit.isColimit _)
@@ -397,11 +399,11 @@ theorem finitaryExtensive_of_preserves_and_reflects (F : C ⥤ D) [FinitaryExten
     [ReflectsLimitsOfShape WalkingCospan F] [PreservesColimitsOfShape (Discrete WalkingPair) F]
     [ReflectsColimitsOfShape (Discrete WalkingPair) F] : FinitaryExtensive C := by
   constructor
-  intros X Y c hc
+  intro X Y c hc
   refine IsVanKampenColimit.of_iso ?_ (hc.uniqueUpToIso (coprodIsCoprod X Y)).symm
   have (i : Discrete WalkingPair) (Z : C) (f : Z ⟶ X ⨿ Y) :
     PreservesLimit (cospan f ((BinaryCofan.mk coprod.inl coprod.inr).ι.app i)) F := by
-    rcases i with ⟨_|_⟩ <;> dsimp <;> infer_instance
+    rcases i with ⟨_ | _⟩ <;> dsimp <;> infer_instance
   refine (FinitaryExtensive.vanKampen _
     (isColimitOfPreserves F (coprodIsCoprod X Y))).of_mapCocone F
 
@@ -448,9 +450,10 @@ theorem FinitaryExtensive.isVanKampen_finiteCoproducts_Fin [FinitaryExtensive C]
     Functor.hext (fun _ ↦ rfl) (by rintro ⟨i⟩ ⟨j⟩ ⟨⟨rfl : i = j⟩⟩; simp [f])
   clear_value f
   subst this
-  induction' n with n IH
-  · exact isVanKampenColimit_of_isEmpty _ hc
-  · apply IsVanKampenColimit.of_iso _
+  induction n with
+  | zero => exact isVanKampenColimit_of_isEmpty _ hc
+  | succ n IH =>
+    apply IsVanKampenColimit.of_iso _
       ((extendCofanIsColimit f (coproductIsCoproduct _) (coprodIsCoprod _ _)).uniqueUpToIso hc)
     apply @isVanKampenColimit_extendCofan _ _ _ _ _ _ _ _ ?_
     · apply IH
@@ -482,7 +485,7 @@ lemma FinitaryPreExtensive.hasPullbacks_of_is_coproduct [FinitaryPreExtensive C]
   { hom := Sigma.desc (fun j ↦ if h : j = i then eqToHom (congr_arg f h) ≫ coprod.inl else
       Sigma.ι (fun j : ({i}ᶜ : Set ι) ↦ f j) ⟨j, h⟩ ≫ coprod.inr)
     inv := coprod.desc (Sigma.ι f i) (Sigma.desc fun j ↦ Sigma.ι f j)
-    hom_inv_id := by aesop_cat
+    hom_inv_id := by cat_disch
     inv_hom_id := by
       ext j
       · simp

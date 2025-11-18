@@ -89,11 +89,11 @@ variable {Φ} {X₂ : C₂}
 structure Hom (R R' : Φ.RightResolution X₂) where
   /-- a morphism in the source category -/
   f : R.X₁ ⟶ R'.X₁
-  comm : R.w ≫ Φ.functor.map f = R'.w := by aesop_cat
+  comm : R.w ≫ Φ.functor.map f = R'.w := by cat_disch
 
 attribute [reassoc (attr := simp)] Hom.comm
 
-/-- The identity of a object in `Φ.RightResolution X₂`. -/
+/-- The identity of an object in `Φ.RightResolution X₂`. -/
 @[simps]
 def Hom.id (R : Φ.RightResolution X₂) : Hom R R where
   f := 𝟙 _
@@ -133,11 +133,11 @@ variable {Φ} {X₂ : C₂}
 structure Hom (L L' : Φ.LeftResolution X₂) where
   /-- a morphism in the source category -/
   f : L.X₁ ⟶ L'.X₁
-  comm : Φ.functor.map f ≫ L'.w = L.w := by aesop_cat
+  comm : Φ.functor.map f ≫ L'.w = L.w := by cat_disch
 
 attribute [reassoc (attr := simp)] Hom.comm
 
-/-- The identity of a object in `Φ.LeftResolution X₂`. -/
+/-- The identity of an object in `Φ.LeftResolution X₂`. -/
 @[simps]
 def Hom.id (L : Φ.LeftResolution X₂) : Hom L L where
   f := 𝟙 _

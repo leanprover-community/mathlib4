@@ -56,7 +56,7 @@ def engel (x : L) : LieSubalgebra R L :=
       rw [ad_pow_lie]
       apply Finset.sum_eq_zero
       intro ij hij
-      obtain (h|h) : m ≤ ij.1 ∨ n ≤ ij.2 := by rw [Finset.mem_antidiagonal] at hij; omega
+      obtain (h|h) : m ≤ ij.1 ∨ n ≤ ij.2 := by rw [Finset.mem_antidiagonal] at hij; cutsat
       all_goals simp [Module.End.pow_map_zero_of_le h, hm, hn] }
 
 lemma mem_engel_iff (x y : L) :
@@ -71,7 +71,7 @@ lemma self_mem_engel (x : L) : x ∈ engel R x := by
 lemma engel_zero : engel R (0 : L) = ⊤ := by
   rw [eq_top_iff]
   rintro x -
-  rw [mem_engel_iff, LieHom.map_zero]
+  rw [mem_engel_iff, map_zero]
   use 1
   simp only [pow_one, LinearMap.zero_apply]
 
@@ -88,7 +88,7 @@ lemma normalizer_engel (x : L) : normalizer (engel R x) = engel R x := by
   rw [← lie_skew, neg_mem_iff (G := L), mem_engel_iff] at hy
   rcases hy with ⟨n, hn⟩
   rw [mem_engel_iff]
-  use n+1
+  use n + 1
   rw [pow_succ, Module.End.mul_apply]
   exact hn
 

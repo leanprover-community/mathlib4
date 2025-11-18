@@ -136,11 +136,11 @@ variable {A D E : Type u} [TopologicalSpace A] [TopologicalSpace D] [Topological
 a continuous surjection $\pi$ from a compact space $D$ to a Fréchet space $A$ restricts to
 a compact subset $E$ of $D$, such that $\pi$ maps $E$ onto $A$ and satisfies the
 "Zorn subset condition", where $\pi(E_0) \ne A$ for any proper closed subset $E_0 \subsetneq E$. -/
-lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {π : D → A}
-    (π_cont : Continuous π) (π_surj : π.Surjective) : ∃ E : Set D, CompactSpace E ∧ π '' E = univ ∧
-    ∀ E₀ : Set E, E₀ ≠ univ → IsClosed E₀ → E.restrict π '' E₀ ≠ univ := by
+lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {X : D → A}
+    (X_cont : Continuous X) (X_surj : X.Surjective) : ∃ E : Set D, CompactSpace E ∧ X '' E = univ ∧
+    ∀ E₀ : Set E, E₀ ≠ univ → IsClosed E₀ → E.restrict X '' E₀ ≠ univ := by
   -- suffices to apply Zorn's lemma on the subsets of $D$ that are closed and mapped onto $A$
-  let S : Set <| Set D := {E : Set D | IsClosed E ∧ π '' E = univ}
+  let S : Set <| Set D := {E : Set D | IsClosed E ∧ X '' E = univ}
   suffices ∀ (C : Set <| Set D) (_ : C ⊆ S) (_ : IsChain (· ⊆ ·) C), ∃ s ∈ S, ∀ c ∈ C, s ⊆ c by
     rcases zorn_superset S this with ⟨E, E_min⟩
     obtain ⟨E_closed, E_surj⟩ := E_min.prop
@@ -159,16 +159,16 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {π : D
   by_cases hC : Nonempty C
   · refine eq_univ_of_forall fun a => inter_nonempty_iff_exists_left.mp ?_
     -- apply Cantor's intersection theorem
-    refine iInter_inter (ι := C) (π ⁻¹' {a}) _ ▸
+    refine iInter_inter (ι := C) (X ⁻¹' {a}) _ ▸
       IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _
       ?_ (fun c => ?_) (fun c => IsClosed.isCompact ?_) (fun c => ?_)
     · replace C_chain : IsChain (· ⊇ ·) C := C_chain.symm
-      have : ∀ s t : Set D, s ⊇ t → _ ⊇ _ := fun _ _ => inter_subset_inter_left <| π ⁻¹' {a}
+      have : ∀ s t : Set D, s ⊇ t → _ ⊇ _ := fun _ _ => inter_subset_inter_left <| X ⁻¹' {a}
       exact (directedOn_iff_directed.mp C_chain.directedOn).mono_comp (· ⊇ ·) this
     · rw [← image_inter_nonempty_iff, (C_sub c.mem).right, univ_inter]
       exact singleton_nonempty a
-    all_goals exact (C_sub c.mem).left.inter <| (T1Space.t1 a).preimage π_cont
-  · rw [@iInter_of_empty _ _ <| not_nonempty_iff.mp hC, image_univ_of_surjective π_surj]
+    all_goals exact (C_sub c.mem).left.inter <| (T1Space.t1 a).preimage X_cont
+  · rw [@iInter_of_empty _ _ <| not_nonempty_iff.mp hC, image_univ_of_surjective X_surj]
 
 /-- Lemma 2.1 in [Gleason, *Projective topological spaces*][gleason1958]:
 if $\rho$ is a continuous surjection from a topological space $E$ to a topological space $A$
@@ -193,7 +193,7 @@ lemma image_subset_closure_compl_image_compl_of_isOpen {ρ : E → A} (ρ_cont :
       zorn_subset _ (compl_ne_univ.mpr nonempty) is_open.isClosed_compl
     rcases nonempty_compl.mpr ne_univ with ⟨x, hx⟩
     -- prove $x \in N \cap (A \setminus \rho(E \setminus G))$
-    have hx' : x ∈ (ρ '' Gᶜ)ᶜ := fun h => hx <| image_subset ρ (by simp) h
+    have hx' : x ∈ (ρ '' Gᶜ)ᶜ := fun h => hx <| image_mono (by simp) h
     rcases ρ_surj x with ⟨y, rfl⟩
     have hy : y ∈ G ∩ ρ⁻¹' N := by simpa using mt (mem_image_of_mem ρ) <| mem_compl hx
     exact ⟨ρ y, mem_inter (mem_preimage.mp <| mem_of_mem_inter_right hy) hx'⟩
@@ -255,21 +255,21 @@ protected theorem CompactT2.ExtremallyDisconnected.projective [ExtremallyDisconn
   have D_comp : CompactSpace D := isCompact_iff_compactSpace.mp
     (isClosed_eq (φ_cont.comp continuous_fst) (f_cont.comp continuous_snd)).isCompact
   -- apply Lemma 2.4 to get closed $E$ satisfying "Zorn subset condition"
-  let π₁ : D → A := Prod.fst ∘ Subtype.val
-  have π₁_cont : Continuous π₁ := continuous_fst.comp continuous_subtype_val
-  have π₁_surj : π₁.Surjective := fun a => ⟨⟨⟨a, _⟩, (f_surj <| φ a).choose_spec.symm⟩, rfl⟩
-  rcases exists_compact_surjective_zorn_subset π₁_cont π₁_surj with ⟨E, _, E_onto, E_min⟩
+  let X₁ : D → A := Prod.fst ∘ Subtype.val
+  have X₁_cont : Continuous X₁ := continuous_fst.comp continuous_subtype_val
+  have X₁_surj : X₁.Surjective := fun a => ⟨⟨⟨a, _⟩, (f_surj <| φ a).choose_spec.symm⟩, rfl⟩
+  rcases exists_compact_surjective_zorn_subset X₁_cont X₁_surj with ⟨E, _, E_onto, E_min⟩
   -- apply Lemma 2.3 to get homeomorphism $\pi_1|_E : E \to A$
-  let ρ : E → A := E.restrict π₁
-  have ρ_cont : Continuous ρ := π₁_cont.continuousOn.restrict
+  let ρ : E → A := E.restrict X₁
+  have ρ_cont : Continuous ρ := X₁_cont.continuousOn.restrict
   have ρ_surj : ρ.Surjective := fun a => by
-    rcases (E_onto ▸ mem_univ a : a ∈ π₁ '' E) with ⟨d, ⟨hd, rfl⟩⟩; exact ⟨⟨d, hd⟩, rfl⟩
+    rcases (E_onto ▸ mem_univ a : a ∈ X₁ '' E) with ⟨d, ⟨hd, rfl⟩⟩; exact ⟨⟨d, hd⟩, rfl⟩
   let ρ' := ExtremallyDisconnected.homeoCompactToT2 ρ_cont ρ_surj E_min
   -- prove $\rho := \pi_2|_E \circ \pi_1|_E^{-1}$ satisfies $\phi = f \circ \rho$
-  let π₂ : D → B := Prod.snd ∘ Subtype.val
-  have π₂_cont : Continuous π₂ := continuous_snd.comp continuous_subtype_val
-  refine ⟨E.restrict π₂ ∘ ρ'.symm, ⟨π₂_cont.continuousOn.restrict.comp ρ'.symm.continuous, ?_⟩⟩
-  suffices f ∘ E.restrict π₂ = φ ∘ ρ' by
+  let X₂ : D → B := Prod.snd ∘ Subtype.val
+  have X₂_cont : Continuous X₂ := continuous_snd.comp continuous_subtype_val
+  refine ⟨E.restrict X₂ ∘ ρ'.symm, ⟨X₂_cont.continuousOn.restrict.comp ρ'.symm.continuous, ?_⟩⟩
+  suffices f ∘ E.restrict X₂ = φ ∘ ρ' by
     rw [← comp_assoc, this, comp_assoc, Homeomorph.self_comp_symm, comp_id]
   ext x
   exact x.val.mem.symm
@@ -282,8 +282,8 @@ end
 
 -- Note: It might be possible to use Gleason for this instead
 /-- The sigma-type of extremally disconnected spaces is extremally disconnected. -/
-instance instExtremallyDisconnected {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
-    [h₀ : ∀ i, ExtremallyDisconnected (π i)] : ExtremallyDisconnected (Σ i, π i) := by
+instance instExtremallyDisconnected {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
+    [h₀ : ∀ i, ExtremallyDisconnected (X i)] : ExtremallyDisconnected (Σ i, X i) := by
   constructor
   intro s hs
   rw [isOpen_sigma_iff] at hs ⊢

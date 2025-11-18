@@ -7,7 +7,6 @@ import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Data.Set.Finite.Range
 import Mathlib.Data.Set.Lattice
-import Mathlib.Data.Finite.Sigma
 import Mathlib.Data.Finite.Vector
 
 /-!
@@ -18,7 +17,7 @@ import Mathlib.Data.Finite.Vector
 finite sets
 -/
 
-assert_not_exists OrderedRing MonoidWithZero
+assert_not_exists IsOrderedRing MonoidWithZero
 
 namespace List
 variable (α : Type*) [Finite α] (n : ℕ)

@@ -27,7 +27,7 @@ universe u v w u₁
 
 namespace DirectSum
 
-open DirectSum Finsupp
+open DirectSum Finsupp Module
 
 section General
 
@@ -151,9 +151,7 @@ variable {ι M}
 @[simp]
 theorem linearEquivFunOnFintype_lof [Fintype ι] (i : ι) (m : M i) :
     (linearEquivFunOnFintype R ι M) (lof R ι M i m) = Pi.single i m := by
-  ext a
-  change (DFinsupp.equivFunOnFintype (lof R ι M i m)) a = _
-  convert _root_.congr_fun (DFinsupp.equivFunOnFintype_single i m) a
+  rfl
 
 @[simp]
 theorem linearEquivFunOnFintype_symm_single [Fintype ι] (i : ι) (m : M i) :
@@ -181,7 +179,7 @@ variable {ι M}
 theorem apply_eq_component (f : ⨁ i, M i) (i : ι) : f i = component R ι M i f := rfl
 
 -- Note(kmill): `@[ext]` cannot prove `ext_iff` because `R` is not determined by `f` or `g`.
--- This is not useful as an `@[ext]` lemma as the `ext` tactic can not infer `R`.
+-- This is not useful as an `@[ext]` lemma as the `ext` tactic cannot infer `R`.
 theorem ext_component {f g : ⨁ i, M i} (h : ∀ i, component R ι M i f = component R ι M i g) :
     f = g :=
   DFinsupp.ext h
@@ -374,9 +372,6 @@ theorem coeLinearMap_eq_dfinsuppSum [DecidableEq M] (x : DirectSum ι fun i => A
   rw [DFinsupp.sumAddHom_apply]
   simp only [LinearMap.toAddMonoidHom_coe, Submodule.coe_subtype]
 
-@[deprecated (since := "2025-04-06")]
-alias coeLinearMap_eq_dfinsupp_sum := coeLinearMap_eq_dfinsuppSum
-
 @[simp]
 theorem coeLinearMap_of (i : ι) (x : A i) : DirectSum.coeLinearMap A (of (fun i ↦ A i) i x) = x :=
   -- Porting note: spelled out arguments. (I don't know how this works.)
@@ -397,7 +392,7 @@ theorem IsInternal.ofBijective_coeLinearMap_same (h : IsInternal A)
 theorem IsInternal.ofBijective_coeLinearMap_of_ne (h : IsInternal A)
     {i j : ι} (hij : i ≠ j) (x : A i) :
     (LinearEquiv.ofBijective (coeLinearMap A) h).symm x j = 0 := by
-  rw [← coeLinearMap_of, LinearEquiv.ofBijective_symm_apply_apply, of_eq_of_ne i j _ hij]
+  rw [← coeLinearMap_of, LinearEquiv.ofBijective_symm_apply_apply, of_eq_of_ne i j _ hij.symm]
 
 theorem IsInternal.ofBijective_coeLinearMap_of_mem (h : IsInternal A)
     {i : ι} {x : M} (hx : x ∈ A i) :
@@ -417,9 +412,6 @@ theorem IsInternal.submodule_iSup_eq_top (h : IsInternal A) : iSup A = ⊤ := by
 /-- If a direct sum of submodules is internal then the submodules are independent. -/
 theorem IsInternal.submodule_iSupIndep (h : IsInternal A) : iSupIndep A :=
   iSupIndep_of_dfinsupp_lsum_injective _ h.injective
-
-@[deprecated (since := "2024-11-24")]
-alias IsInternal.submodule_independent := IsInternal.submodule_iSupIndep
 
 /-- Given an internal direct sum decomposition of a module `M`, and a basis for each of the
 components of the direct sum, the disjoint union of these bases is a basis for `M`. -/
@@ -499,20 +491,12 @@ theorem isInternal_submodule_of_iSupIndep_of_iSup_eq_top {A : ι → Submodule R
     (LinearMap.range_eq_top (f := DFinsupp.lsum _ _)).1 <|
       (Submodule.iSup_eq_range_dfinsupp_lsum _).symm.trans hs⟩
 
-@[deprecated (since := "2024-11-24")]
-alias isInternal_submodule_of_independent_of_iSup_eq_top :=
-  isInternal_submodule_of_iSupIndep_of_iSup_eq_top
-
 /-- `iff` version of `DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top`,
 `DirectSum.IsInternal.iSupIndep`, and `DirectSum.IsInternal.submodule_iSup_eq_top`. -/
 theorem isInternal_submodule_iff_iSupIndep_and_iSup_eq_top (A : ι → Submodule R M) :
     IsInternal A ↔ iSupIndep A ∧ iSup A = ⊤ :=
   ⟨fun i ↦ ⟨i.submodule_iSupIndep, i.submodule_iSup_eq_top⟩,
     And.rec isInternal_submodule_of_iSupIndep_of_iSup_eq_top⟩
-
-@[deprecated (since := "2024-11-24")]
-alias isInternal_submodule_iff_independent_and_iSup_eq_top :=
-  isInternal_submodule_iff_iSupIndep_and_iSup_eq_top
 
 /-- If a collection of submodules has just two indices, `i` and `j`, then
 `DirectSum.IsInternal` is equivalent to `isCompl`. -/
@@ -542,9 +526,6 @@ lemma isInternal_biSup_submodule_of_iSupIndep {A : ι → Submodule R M} (s : Se
   change m ∈ ((A i).comap p.subtype).map p.subtype ↔ _
   rw [Submodule.map_comap_subtype, inf_of_le_right (hp i i.property)]
 
-@[deprecated (since := "2024-11-24")]
-alias isInternal_biSup_submodule_of_independent := isInternal_biSup_submodule_of_iSupIndep
-
 /-! Now copy the lemmas for subgroup and submonoids. -/
 
 
@@ -552,15 +533,9 @@ theorem IsInternal.addSubmonoid_iSupIndep {M : Type*} [AddCommMonoid M] {A : ι 
     (h : IsInternal A) : iSupIndep A :=
   iSupIndep_of_dfinsuppSumAddHom_injective _ h.injective
 
-@[deprecated (since := "2024-11-24")]
-alias IsInternal.addSubmonoid_independent := IsInternal.addSubmonoid_iSupIndep
-
 theorem IsInternal.addSubgroup_iSupIndep {G : Type*} [AddCommGroup G] {A : ι → AddSubgroup G}
     (h : IsInternal A) : iSupIndep A :=
   iSupIndep_of_dfinsuppSumAddHom_injective' _ h.injective
-
-@[deprecated (since := "2024-11-24")]
-alias IsInternal.addSubgroup_independent := IsInternal.addSubgroup_iSupIndep
 
 end Ring
 

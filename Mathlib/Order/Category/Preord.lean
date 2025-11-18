@@ -22,6 +22,8 @@ open CategoryTheory
 
 /-- The category of preorders. -/
 structure Preord where
+  /-- Construct a bundled `Preord` from the underlying type and typeclass. -/
+  of ::
   /-- The underlying preordered type. -/
   (carrier : Type*)
   [str : Preorder carrier]
@@ -36,9 +38,6 @@ instance : CoeSort Preord (Type u) :=
   ⟨Preord.carrier⟩
 
 attribute [coe] Preord.carrier
-
-/-- Construct a bundled `Preord` from the underlying type and typeclass. -/
-abbrev of (X : Type u) [Preorder X] : Preord := ⟨X⟩
 
 /-- The type of morphisms in `Preord R`. -/
 @[ext]
@@ -112,12 +111,10 @@ lemma hom_ext {X Y : Preord} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 @[simp]
-lemma hom_ofHom {X Y : Type u} [Preorder X] [Preorder Y] (f : X →o Y) :
-  (ofHom f).hom = f := rfl
+lemma hom_ofHom {X Y : Type u} [Preorder X] [Preorder Y] (f : X →o Y) : (ofHom f).hom = f := rfl
 
 @[simp]
-lemma ofHom_hom {X Y : Preord} (f : X ⟶ Y) :
-    ofHom (Hom.hom f) = f := rfl
+lemma ofHom_hom {X Y : Preord} (f : X ⟶ Y) : ofHom (Hom.hom f) = f := rfl
 
 @[simp]
 lemma ofHom_id {X : Type u} [Preorder X] : ofHom OrderHom.id = 𝟙 (of X) := rfl

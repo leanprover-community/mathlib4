@@ -65,17 +65,9 @@ def parseSetOption : Syntax → Option Name
   | `(tactic|set_option $name:ident $_val in $_x) => some name.getId
   | _ => none
 
-/-- Deprecated alias for `Mathlib.Linter.Style.setOption.parseSetOption`. -/
-@[deprecated parseSetOption (since := "2024-12-07")]
-def parse_set_option := @parseSetOption
-
 /-- Whether a given piece of syntax is a `set_option` command, tactic or term. -/
 def isSetOption : Syntax → Bool :=
   fun stx ↦ parseSetOption stx matches some _name
-
-/-- Deprecated alias for `Mathlib.Linter.Style.setOption.isSetOption`. -/
-@[deprecated isSetOption (since := "2024-12-07")]
-def is_set_option := @isSetOption
 
 /-- The `setOption` linter: this lints any `set_option` command, term or tactic
 which sets a `debug`, `pp`, `profiler` or `trace` option.
@@ -163,7 +155,7 @@ initialize addLinter missingEndLinter
 end Style.missingEnd
 
 /-!
-# The `cdot` linter
+### The `cdot` linter
 
 The `cdot` linter is a syntax-linter that flags uses of the "cdot" `·` that are achieved
 by typing a character different from `·`.
@@ -185,7 +177,7 @@ register_option linter.style.cdot : Bool := {
 the character `·`. -/
 def isCDot? : Syntax → Bool
   | .node _ ``cdotTk #[.node _ `patternIgnore #[.node _ _ #[.atom _ v]]] => v == "·"
-  | .node _ ``Lean.Parser.Term.cdot #[.atom _ v] => v == "·"
+  | .node _ ``Lean.Parser.Term.cdot #[.atom _ v, _] => v == "·"
   | _ => false
 
 /--
@@ -217,7 +209,7 @@ def cdotLinter : Linter where run := withSetOptionIn fun stx ↦ do
       return
     for s in unwanted_cdot stx do
       Linter.logLint linter.style.cdot s
-        m!"Please, use '·' (typed as `\\.`) instead of '{s}' as 'cdot'."
+        m!"Please, use '·' (typed as `\\.`) instead of '.' as 'cdot'."
     -- We also check for isolated cdot's, i.e. when the cdot is on its own line.
     for cdot in Mathlib.Linter.findCDot stx do
       match cdot.find? (·.isOfKind `token.«· ») with
@@ -232,7 +224,7 @@ initialize addLinter cdotLinter
 end Style
 
 /-!
-# The `dollarSyntax` linter
+### The `dollarSyntax` linter
 
 The `dollarSyntax` linter flags uses of `<|` that are achieved by typing `$`.
 These are disallowed by the mathlib style guide, as using `<|` pairs better with `|>`.
@@ -272,7 +264,7 @@ initialize addLinter dollarSyntaxLinter
 end Style.dollarSyntax
 
 /-!
-# The `lambdaSyntax` linter
+### The `lambdaSyntax` linter
 
 The `lambdaSyntax` linter is a syntax linter that flags uses of the symbol `λ` to define anonymous
 functions, as opposed to the `fun` keyword. These are syntactically equivalent; mathlib style
@@ -318,7 +310,7 @@ initialize addLinter lambdaSyntaxLinter
 end Style.lambdaSyntax
 
 /-!
-#  The "longFile" linter
+### The "longFile" linter
 
 The "longFile" linter emits a warning on files which are longer than a certain number of lines
 (1500 by default).
@@ -403,7 +395,7 @@ initialize addLinter longFileLinter
 
 end Style.longFile
 
-/-! # The "longLine linter" -/
+/-! ### The "longLine linter" -/
 
 /-- The "longLine" linter emits a warning on lines longer than 100 characters.
 We allow lines containing URLs to be longer, though. -/
@@ -430,7 +422,7 @@ def longLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
         let fileMap ← getFileMap
         -- `impMods` is the syntax for the modules imported in the current file
         let (impMods, _) ← Parser.parseHeader
-          { input := fileMap.source, fileName := ← getFileName, fileMap := fileMap }
+          { inputString := fileMap.source, fileName := ← getFileName, fileMap := fileMap }
         return impMods.raw
       else return stx
     let sstr := stx.getSubstring?
@@ -489,7 +481,7 @@ initialize addLinter doubleUnderscore
 
 end Style.nameCheck
 
-/-! # The "openClassical" linter -/
+/-! ### The "openClassical" linter -/
 
 /-- The "openClassical" linter emits a warning on `open Classical` statements which are not
 scoped to a single declaration. A non-scoped `open Classical` can hide that some theorem statements
@@ -539,7 +531,7 @@ initialize addLinter openClassicalLinter
 
 end Style.openClassical
 
-/-! # The "show" linter -/
+/-! ### The "show" linter -/
 
 /--
 The "show" linter emits a warning if the `show` tactic changed the goal. `show` should only be used

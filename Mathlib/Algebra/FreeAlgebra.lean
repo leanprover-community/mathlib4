@@ -377,12 +377,12 @@ def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
         let fa : FreeAlgebra R X := Quot.mk (Rel R X) a
         let fb : FreeAlgebra R X := Quot.mk (Rel R X) b
         change liftAux R (F ∘ ι R) (fa + fb) = F (fa + fb)
-        rw [map_add, map_add, ha, hb]
+        grind
       | mul a b ha hb =>
         let fa : FreeAlgebra R X := Quot.mk (Rel R X) a
         let fb : FreeAlgebra R X := Quot.mk (Rel R X) b
         change liftAux R (F ∘ ι R) (fa * fb) = F (fa * fb)
-        rw [map_mul, map_mul, ha, hb] }
+        grind }
 
 @[simp]
 theorem liftAux_eq (f : X → A) : liftAux R f = lift R f := by
@@ -512,8 +512,8 @@ theorem ι_ne_algebraMap [Nontrivial R] (x : X) (r : R) : ι R x ≠ algebraMap 
   let f1 : FreeAlgebra R X →ₐ[R] R := lift R 1
   have hf0 : f0 (ι R x) = 0 := lift_ι_apply _ _
   have hf1 : f1 (ι R x) = 1 := lift_ι_apply _ _
-  rw [h, f0.commutes, Algebra.id.map_eq_self] at hf0
-  rw [h, f1.commutes, Algebra.id.map_eq_self] at hf1
+  rw [h, f0.commutes, Algebra.algebraMap_self_apply] at hf0
+  rw [h, f1.commutes, Algebra.algebraMap_self_apply] at hf1
   exact zero_ne_one (hf0.symm.trans hf1)
 
 @[simp]

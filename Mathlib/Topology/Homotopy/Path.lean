@@ -247,6 +247,11 @@ theorem trans ⦃p₀ p₁ p₂ : Path x₀ x₁⦄ (h₀ : p₀.Homotopic p₁)
 theorem equivalence : Equivalence (@Homotopic X _ x₀ x₁) :=
   ⟨refl, (symm ·), (trans · ·)⟩
 
+instance : IsEquiv (Path x₀ x₁) Homotopic where
+  refl := refl
+  symm := symm
+  trans := trans
+
 nonrec theorem map {p q : Path x₀ x₁} (h : p.Homotopic q) (f : C(X, Y)) :
     Homotopic (p.map f.continuous) (q.map f.continuous) :=
   h.map fun F => F.map f
@@ -281,7 +286,7 @@ theorem comp_lift (P₀ : Path x₀ x₁) (P₁ : Path x₁ x₂) : ⟦P₀.tran
   rfl
 
 /-- The image of a path homotopy class `P₀` under a map `f`.
-    This is `Path.map` descended to the quotient. -/
+This is `Path.map` descended to the quotient. -/
 def Quotient.mapFn (P₀ : Path.Homotopic.Quotient x₀ x₁) (f : C(X, Y)) :
     Path.Homotopic.Quotient (f x₀) (f x₁) :=
   Quotient.map (fun q : Path x₀ x₁ => q.map f.continuous) (fun _ _ h => Path.Homotopic.map h f) P₀
@@ -323,10 +328,14 @@ namespace ContinuousMap.Homotopy
 /-- Given a homotopy `H : f ∼ g`, get the path traced by the point `x` as it moves from
 `f x` to `g x`.
 -/
-def evalAt {X : Type*} {Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f g : C(X, Y)}
-    (H : ContinuousMap.Homotopy f g) (x : X) : Path (f x) (g x) where
+@[simps]
+def evalAt {f g : C(X, Y)} (H : ContinuousMap.Homotopy f g) (x : X) : Path (f x) (g x) where
   toFun t := H (t, x)
   source' := H.apply_zero x
   target' := H.apply_one x
+
+@[simp]
+theorem pathExtend_evalAt {f g : C(X, Y)} (H : f.Homotopy g) (x : X) :
+    (H.evalAt x).extend = (fun t ↦ H.extend t x) := rfl
 
 end ContinuousMap.Homotopy

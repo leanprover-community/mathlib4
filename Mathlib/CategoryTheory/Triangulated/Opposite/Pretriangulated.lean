@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 In this file, we shall construct the (pre)triangulated structure
 on the opposite category `Cᵒᵖ` of a (pre)triangulated category `C`.
 
-The shift on `Cᵒᵖ` was constructed in ``CategoryTheory.Triangulated.Opposite.Basic`,
+The shift on `Cᵒᵖ` was constructed in `CategoryTheory.Triangulated.Opposite.Basic`,
 and is such that shifting by `n : ℤ` on `Cᵒᵖ` corresponds to the shift by
 `-n` on `C`. In `CategoryTheory.Triangulated.Opposite.Triangle`, we constructed
 an equivalence `(Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ`, called
@@ -65,7 +65,7 @@ lemma mem_distinguishedTriangles_iff' (T : Triangle Cᵒᵖ) :
   rw [mem_distinguishedTriangles_iff]
   constructor
   · intro hT
-    exact ⟨_ ,hT, ⟨(triangleOpEquivalence C).counitIso.symm.app T⟩⟩
+    exact ⟨_, hT, ⟨(triangleOpEquivalence C).counitIso.symm.app T⟩⟩
   · rintro ⟨T', hT', ⟨e⟩⟩
     refine isomorphic_distinguished _ hT' _ ?_
     exact Iso.unop ((triangleOpEquivalence C).unitIso.app (Opposite.op T') ≪≫

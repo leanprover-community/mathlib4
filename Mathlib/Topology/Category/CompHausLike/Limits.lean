@@ -111,9 +111,7 @@ lemma finiteCoproduct.ι_jointly_surjective (R : finiteCoproduct X) :
 
 lemma finiteCoproduct.ι_desc_apply {B : CompHausLike P} {π : (a : α) → X a ⟶ B} (a : α) :
     ∀ x, finiteCoproduct.desc X π (finiteCoproduct.ι X a x) = π a x := by
-  intro x
-  change (ι X a ≫ desc X π) _ = _
-  simp only [ι_desc]
+  tauto
 
 instance : HasCoproduct X where
   exists_colimit := ⟨finiteCoproduct.cofan X, finiteCoproduct.isColimit X⟩
@@ -201,8 +199,7 @@ pairs `(x,y)` such that `f x = g y`, with the topology induced by the product.
 def pullback : CompHausLike P :=
   letI set := { xy : X × Y | f xy.fst = g xy.snd }
   haveI : CompactSpace set :=
-    isCompact_iff_compactSpace.mp (isClosed_eq (f.hom.continuous.comp continuous_fst)
-      (g.hom.continuous.comp continuous_snd)).isCompact
+    isCompact_iff_compactSpace.mp (isClosed_eq (by fun_prop) (by fun_prop)).isCompact
   CompHausLike.of P set
 
 /--
@@ -343,7 +340,7 @@ theorem hasPullbacksOfInclusions
 noncomputable instance [HasExplicitPullbacksOfInclusions P] :
     PreservesPullbacksOfInclusions (compHausLikeToTop P) :=
   { preservesPullbackInl := by
-      intros X Y Z f
+      intro X Y Z f
       infer_instance }
 
 instance [HasExplicitPullbacksOfInclusions P] : FinitaryExtensive (CompHausLike P) :=

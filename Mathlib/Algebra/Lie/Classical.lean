@@ -233,8 +233,7 @@ theorem soIndefiniteEquiv_apply {i : R} (hi : i * i = -1) (A : so' p q R) :
     (soIndefiniteEquiv p q R hi A : Matrix (p ⊕ q) (p ⊕ q) R) =
       (Pso p q R i)⁻¹ * (A : Matrix (p ⊕ q) (p ⊕ q) R) * Pso p q R i := by
   rw [soIndefiniteEquiv, LieEquiv.trans_apply, LieEquiv.ofEq_apply]
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [skewAdjointMatricesLieSubalgebraEquiv_apply]
+  grind [skewAdjointMatricesLieSubalgebraEquiv_apply]
 
 /-- A matrix defining a canonical even-rank symmetric bilinear form.
 
@@ -276,7 +275,7 @@ theorem jd_transform [Fintype l] : (PD l R)ᵀ * JD l R * PD l R = (2 : R) • S
   rw [h, PD, s_as_blocks, Matrix.fromBlocks_multiply, Matrix.fromBlocks_smul]
   simp [two_smul]
 
-theorem pd_inv [Fintype l] [Invertible (2 : R)] : PD l R * ⅟ (2 : R) • (PD l R)ᵀ = 1 := by
+theorem pd_inv [Fintype l] [Invertible (2 : R)] : PD l R * ⅟(2 : R) • (PD l R)ᵀ = 1 := by
   rw [PD, Matrix.fromBlocks_transpose, Matrix.fromBlocks_smul,
     Matrix.fromBlocks_multiply]
   simp
@@ -335,7 +334,7 @@ def PB :=
 
 variable [Fintype l]
 
-theorem pb_inv [Invertible (2 : R)] : PB l R * Matrix.fromBlocks 1 0 0 (⅟ (PD l R)) = 1 := by
+theorem pb_inv [Invertible (2 : R)] : PB l R * Matrix.fromBlocks 1 0 0 (⅟(PD l R)) = 1 := by
   rw [PB, Matrix.fromBlocks_multiply, mul_invOf_self]
   simp only [Matrix.mul_zero, Matrix.mul_one, Matrix.zero_mul, zero_add, add_zero,
     Matrix.fromBlocks_one]

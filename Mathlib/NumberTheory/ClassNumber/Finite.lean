@@ -21,12 +21,10 @@ finiteness of the class group for number fields and function fields.
   its integral closure has a finite class group
 -/
 
+open Module Ring
 open scoped nonZeroDivisors
 
 namespace ClassGroup
-
-open Ring
-
 section EuclideanDomain
 
 variable {R S : Type*} (K L : Type*) [EuclideanDomain R] [CommRing S] [IsDomain S]
@@ -41,7 +39,7 @@ variable {ι : Type*} [DecidableEq ι] [Fintype ι] (bS : Basis ι R S)
 
 /-- If `b` is an `R`-basis of `S` of cardinality `n`, then `normBound abv b` is an integer
 such that for every `R`-integral element `a : S` with coordinates `≤ y`,
-we have algebra.norm a ≤ norm_bound abv b * y ^ n`. (See also `norm_le` and `norm_lt`). -/
+we have `algebra.norm a ≤ normBound abv b * y ^ n`. (See also `norm_le` and `norm_lt`). -/
 noncomputable def normBound : ℤ :=
   let n := Fintype.card ι
   let i : ι := Nonempty.some bS.index_nonempty
@@ -94,8 +92,9 @@ theorem norm_lt {T : Type*} [Ring T] [LinearOrder T] [IsStrictOrderedRing T] (a 
     intro k
     exact @Finset.le_max' ℤ _ _ _ (Finset.mem_image.mpr ⟨k, Finset.mem_univ _, rfl⟩)
   have : (y' : T) < y := by
-    rw [y'_def, ←
-      Finset.max'_image (show Monotone (_ : ℤ → T) from fun x y h => Int.cast_le.mpr h)]
+    rw [y'_def,
+      ← Finset.max'_image (show Monotone (_ : ℤ → T) from fun x y h => Int.cast_le.mpr h)
+          _ (him.image _)]
     apply (Finset.max'_lt_iff _ (him.image _)).mpr
     simp only [Finset.mem_image]
     rintro _ ⟨x, ⟨k, -, rfl⟩, rfl⟩
@@ -104,8 +103,8 @@ theorem norm_lt {T : Type*} [Ring T] [LinearOrder T] [IsStrictOrderedRing T] (a 
   apply (Int.cast_le.mpr (norm_le abv bS a hy')).trans_lt
   simp only [Int.cast_mul, Int.cast_pow]
   apply mul_lt_mul' le_rfl
-  · exact pow_lt_pow_left₀ this (Int.cast_nonneg.mpr y'_nonneg) (@Fintype.card_ne_zero _ _ ⟨i⟩)
-  · exact pow_nonneg (Int.cast_nonneg.mpr y'_nonneg) _
+  · exact pow_lt_pow_left₀ this (Int.cast_nonneg y'_nonneg) (@Fintype.card_ne_zero _ _ ⟨i⟩)
+  · exact pow_nonneg (Int.cast_nonneg y'_nonneg) _
   · exact Int.cast_pos.mpr (normBound_pos abv bS)
 
 
@@ -197,8 +196,8 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     have := abv.nonneg b
     rw [ε_eq, Algebra.smul_def, eq_intCast, mul_rpow, ← rpow_mul, div_mul_cancel₀, rpow_neg_one,
       mul_left_comm, mul_inv_cancel₀, mul_one, rpow_natCast] <;>
-      try norm_cast; omega
-    · exact Iff.mpr Int.cast_nonneg this
+      try norm_cast; cutsat
+    · exact Iff.mpr Int.cast_nonneg_iff this
     · linarith
   set μ : Fin (cardM bS adm).succ ↪ R := distinctElems bS adm
   let s : ι →₀ R := bS.repr a
@@ -279,7 +278,7 @@ theorem exists_mk0_eq_mk0 [IsDedekindDomain S] [Algebra.IsAlgebraic R S] (I : (I
     · rw [mem_nonZeroDivisors_iff_ne_zero]
       rintro rfl
       rw [Ideal.zero_eq_bot, Ideal.mul_bot] at hJ
-      exact hM (Ideal.span_singleton_eq_bot.mp (I.2 _ hJ))
+      exact hM (Ideal.span_singleton_eq_bot.mp (I.2.2 _ hJ))
     · rw [ClassGroup.mk0_eq_mk0_iff]
       exact ⟨algebraMap _ _ M, b, hM, b_ne_zero, hJ⟩
     rw [← SetLike.mem_coe, ← Set.singleton_subset_iff, ← Ideal.span_le, ← Ideal.dvd_iff_le]

@@ -25,7 +25,7 @@ scalar multiplication as a homomorphism from `α × β` to `β`.
 * `Mathlib/Algebra/Group/Action/Sigma.lean`
 * `Mathlib/Algebra/Group/Action/Sum.lean`
 
-# Porting notes
+## Porting notes
 
 The `to_additive` attribute can be used to generate both the `smul` and `vadd` lemmas
 from the corresponding `pow` lemmas, as explained on zulip here:
@@ -112,8 +112,8 @@ variable (M N α) [Monoid M] [Monoid N]
 /-- Construct a `MulAction` by a product monoid from `MulAction`s by the factors.
   This is not an instance to avoid diamonds for example when `α := M × N`. -/
 @[to_additive AddAction.prodOfVAddCommClass
-"Construct an `AddAction` by a product monoid from `AddAction`s by the factors.
-This is not an instance to avoid diamonds for example when `α := M × N`."]
+/-- Construct an `AddAction` by a product monoid from `AddAction`s by the factors.
+This is not an instance to avoid diamonds for example when `α := M × N`. -/]
 abbrev MulAction.prodOfSMulCommClass [MulAction M α] [MulAction N α] [SMulCommClass M N α] :
     MulAction (M × N) α where
   smul mn a := mn.1 • mn.2 • a
@@ -124,7 +124,7 @@ abbrev MulAction.prodOfSMulCommClass [MulAction M α] [MulAction N α] [SMulComm
 
 /-- A `MulAction` by a product monoid is equivalent to commuting `MulAction`s by the factors. -/
 @[to_additive AddAction.prodEquiv
-"An `AddAction` by a product monoid is equivalent to commuting `AddAction`s by the factors."]
+/-- An `AddAction` by a product monoid is equivalent to commuting `AddAction`s by the factors. -/]
 def MulAction.prodEquiv :
     MulAction (M × N) α ≃ Σ' (_ : MulAction M α) (_ : MulAction N α), SMulCommClass M N α where
   toFun _ :=

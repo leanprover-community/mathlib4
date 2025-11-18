@@ -23,26 +23,16 @@ open Opposite CategoryTheory CategoryTheory.Category CategoryTheory.Functor TopC
 
 variable (C : Type*) [Category C]
 
--- Porting note: we used to have:
--- local attribute [tidy] tactic.auto_cases_opens
--- We would replace this by:
+-- We could enable:
 -- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opens
 -- although it doesn't appear to help in this file, in any case.
 
--- Porting note: we used to have:
--- local attribute [tidy] tactic.op_induction'
--- A possible replacement would be:
+-- We could enable:
 -- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Opposite
--- but this would probably require https://github.com/JLimperg/aesop/issues/59
--- In any case, it doesn't seem necessary here.
+-- but this would probably require https://github.com/leanprover-community/aesop/issues/59
+-- In any case, it doesn't seem to help in this file.
 
 namespace AlgebraicGeometry
-
--- Porting note: `PresheafSpace.{w} C` is the type of topological spaces in `Type w` equipped
--- with a presheaf with values in `C`; then there is a total of three universe parameters
--- in `PresheafSpace.{w, v, u} C`, where `C : Type u` and `Category.{v} C`.
--- In mathlib3, some definitions in this file unnecessarily assumed `w=v`. This restriction
--- has been removed.
 
 /-- A `PresheafedSpace C` is a topological space equipped with a presheaf of `C`s. -/
 structure PresheafedSpace where
@@ -71,8 +61,8 @@ instance [Inhabited C] : Inhabited (PresheafedSpace C) :=
   ⟨const (TopCat.of PEmpty) default⟩
 
 /-- A morphism between presheafed spaces `X` and `Y` consists of a continuous map
-    `f` between the underlying topological spaces, and a (notice contravariant!) map
-    from the presheaf on `Y` to the pushforward of the presheaf on `X` via `f`. -/
+`f` between the underlying topological spaces, and a (note: contravariant!) map
+from the presheaf on `Y` to the pushforward of the presheaf on `X` via `f`. -/
 structure Hom (X Y : PresheafedSpace C) where
   base : (X : TopCat) ⟶ (Y : TopCat)
   c : Y.presheaf ⟶ base _* X.presheaf
@@ -120,7 +110,7 @@ section
 attribute [local simp] id comp
 
 /-- The category of PresheafedSpaces. Morphisms are pairs, a continuous map and a presheaf map
-    from the presheaf on the target to the pushforward of the presheaf on the source. -/
+from the presheaf on the target to the pushforward of the presheaf on the source. -/
 instance categoryOfPresheafedSpaces : Category (PresheafedSpace C) where
   Hom := Hom
   id := id
@@ -171,7 +161,7 @@ does not follow from equality of their coercions `X → Y`.
 
 -- The `reassoc` attribute was added despite the LHS not being a composition of two homs,
 -- for the reasons explained in the docstring.
--- Porting note: as there is no composition in the LHS it is purposely `@[reassoc, simp]` rather
+-- As there is no composition in the LHS it is purposely `@[reassoc, simp]` rather
 -- than `@[reassoc (attr := simp)]`
 /-- Sometimes rewriting with `comp_c_app` doesn't work because of dependent type issues.
 In that case, `erw comp_c_app_assoc` might make progress.
@@ -321,10 +311,8 @@ theorem ofRestrict_top_c (X : PresheafedSpace C) :
       eqToHom
         (by
           rw [restrict_top_presheaf, ← Presheaf.Pushforward.comp_eq]
-          erw [Iso.inv_hom_id]
-          rw [Presheaf.id_pushforward]
-          dsimp) := by
-  /- another approach would be to prove the left hand side
+          tauto) := by
+  /- another approach would be to prove the left-hand side
        is a natural isomorphism, but I encountered a universe
        issue when `apply NatIso.isIso_of_isIso_app`. -/
   ext
@@ -389,7 +377,7 @@ variable {D : Type*} [Category D]
 namespace Functor
 
 /-- We can apply a functor `F : C ⥤ D` to the values of the presheaf in any `PresheafedSpace C`,
-    giving a functor `PresheafedSpace C ⥤ PresheafedSpace D` -/
+giving a functor `PresheafedSpace C ⥤ PresheafedSpace D` -/
 def mapPresheaf (F : C ⥤ D) : PresheafedSpace C ⥤ PresheafedSpace D where
   obj X :=
     { carrier := X.carrier
@@ -398,14 +386,8 @@ def mapPresheaf (F : C ⥤ D) : PresheafedSpace C ⥤ PresheafedSpace D where
     { base := f.base
       c := whiskerRight f.c F }
   -- Porting note: these proofs were automatic in mathlib3
-  map_id X := by
-    ext U
-    · rfl
-    · simp
-  map_comp f g := by
-    ext U
-    · rfl
-    · simp
+  map_id X := by ext <;> cat_disch
+  map_comp f g := by ext <;> cat_disch
 
 @[simp]
 theorem mapPresheaf_obj_X (F : C ⥤ D) (X : PresheafedSpace C) :

@@ -40,7 +40,7 @@ namespace Graph
 def addEdge (g : Graph) (edge : Edge) : Graph :=
   g.modify edge.src fun edges => edges.push edge
 
-/-- Constructs a directed `Graph` using `≤` facts. -/
+/-- Constructs a directed `Graph` using `≤` facts. It ignores all other facts. -/
 def constructLeGraph (nVertexes : Nat) (facts : Array AtomicFact) : MetaM Graph := do
   let mut res : Graph := Array.replicate nVertexes #[]
   for fact in facts do
@@ -64,9 +64,9 @@ partial def buildTransitiveLeProofDFS (g : Graph) (v t : Nat) (tExpr : Expr) :
     let u := edge.dst
     if !(← get).visited[u]! then
       match ← buildTransitiveLeProofDFS g u t tExpr with
-      | .some pf => return .some <| ← mkAppM ``le_trans #[edge.proof, pf]
-      | .none => continue
-  return .none
+      | some pf => return some <| ← mkAppM ``le_trans #[edge.proof, pf]
+      | none => continue
+  return none
 
 /-- Given a `≤`-graph `g`, finds a proof of `s ≤ t` using transitivity. -/
 def buildTransitiveLeProof (g : Graph) (idxToAtom : Std.HashMap Nat Expr) (s t : Nat) :
