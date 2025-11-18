@@ -15,7 +15,7 @@ import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
 
 -/
 
-universe u v v'
+universe v' v u
 
 variable (R : Type u)
 
@@ -60,24 +60,24 @@ lemma uliftFunctor_map_exact (S : ShortComplex (ModuleCat.{v} R)) (h : S.Exact) 
   use ULift.moduleEquiv.symm (R := R) y
   simpa
 
-instance : Limits.PreservesFiniteLimits (uliftFunctor.{u, v, v'} R) := by
-  have := ((CategoryTheory.Functor.exact_tfae (uliftFunctor.{u, v, v'} R)).out 1 3).mp
+instance : Limits.PreservesFiniteLimits (uliftFunctor.{v', v} R) := by
+  have := ((CategoryTheory.Functor.exact_tfae (uliftFunctor.{v', v} R)).out 1 3).mp
     (uliftFunctor_map_exact R)
   exact this.1
 
-instance : Limits.PreservesFiniteColimits (uliftFunctor.{u, v, v'} R) := by
-  have := ((CategoryTheory.Functor.exact_tfae (uliftFunctor.{u, v, v'} R)).out 1 3).mp
+instance : Limits.PreservesFiniteColimits (uliftFunctor.{v', v} R) := by
+  have := ((CategoryTheory.Functor.exact_tfae (uliftFunctor.{v', v} R)).out 1 3).mp
     (uliftFunctor_map_exact R)
   exact this.2
 
-instance [Small.{v} R] : (uliftFunctor.{u, v, v'} R).PreservesProjectiveObjects where
+instance [Small.{v} R] : (uliftFunctor.{v', v} R).PreservesProjectiveObjects where
   projective_obj {M} proj := by
     let _ : Small.{max v v', u} R := small_lift R
     let _ := (IsProjective.iff_projective M).mpr proj
     rw [← IsProjective.iff_projective]
     exact Module.Projective.of_equiv ULift.moduleEquiv.symm
 
-instance [Small.{v} R] : (uliftFunctor.{u, v, v'} R).PreservesInjectiveObjects where
+instance [Small.{v} R] : (uliftFunctor.{v', v} R).PreservesInjectiveObjects where
   injective_obj {M} inj := (Module.injective_iff_injective_object R _).mp
     (Module.ulift_injective_of_injective R ((Module.injective_iff_injective_object R M).mpr inj))
 
@@ -87,7 +87,7 @@ section CommRing
 
 variable [CommRing R]
 
-instance : (uliftFunctor.{u, v, v'} R).Linear R where
+instance : (uliftFunctor.{v', v} R).Linear R where
   map_smul f r := by
     simp only [uliftFunctor_obj, uliftFunctor_map, hom_smul, LinearMap.smul_comp,
       LinearMap.comp_smul]
