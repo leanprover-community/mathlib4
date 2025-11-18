@@ -82,8 +82,8 @@ noncomputable def ringOfFiniteDimensionalInnerProductSpace :
     dsimp [HMul.hMul]
     simp_rw [← rTensor_tmul, ← comp_apply, ← adjoint_rTensor, ← adjoint_comp,
       ← coassoc_symm, adjoint_comp, adjoint_lTensor, comp_apply]
-    rw [(by rfl : (_root_.TensorProduct.assoc 𝕜 A A A).symm.toLinearMap
-        = (assocIsometry 𝕜 A A A).symm.toLinearMap),
+    rw [show (_root_.TensorProduct.assoc 𝕜 A A A).symm.toLinearMap =
+        (assocIsometry 𝕜 A A A).symm.toLinearMap by rfl,
       LinearIsometryEquiv.adjoint_toLinearMap_eq_symm]
     rfl
   one := adjoint (counit (R := 𝕜) (A := A)) (1 : 𝕜)
