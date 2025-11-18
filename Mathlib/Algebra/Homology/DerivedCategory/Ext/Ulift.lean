@@ -86,7 +86,9 @@ variable (e : R ≃+* R')
 
 variable [UnivLE.{v, w}] [UnivLE.{v, w'}]
 
-noncomputable def ModuleCat.extRestrictScalarsSemiLinearMap [Small.{v} R] [Small.{v} R']
+namespace ModuleCat
+
+noncomputable def extRestrictScalarsSemiLinearMap [Small.{v} R] [Small.{v} R']
     (M N : ModuleCat.{v} R') (n : ℕ) :
     letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
     letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
@@ -101,7 +103,7 @@ noncomputable def ModuleCat.extRestrictScalarsSemiLinearMap [Small.{v} R] [Small
     ext
     simp
 
-noncomputable def ModuleCat.extRestrictScalarsSemiLinearEquiv [Small.{v} R] [Small.{v} R']
+noncomputable def extRestrictScalarsSemiLinearEquiv [Small.{v} R] [Small.{v} R']
     (M N : ModuleCat.{v} R') (n : ℕ) :
     letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
     letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
@@ -114,7 +116,7 @@ noncomputable def ModuleCat.extRestrictScalarsSemiLinearEquiv [Small.{v} R] [Sma
     (ModuleCat.restrictScalars.{v} e.toRingHom)
     (ModuleCat.restrictScalarsEquivalenceOfRingEquiv e).fullyFaithfulFunctor M N n)
 
-noncomputable def ModuleCat.iso_restrictScalars {M' : ModuleCat.{v} R'} {M : ModuleCat.{v} R}
+noncomputable def iso_restrictScalars {M' : ModuleCat.{v} R'} {M : ModuleCat.{v} R}
     (e' : letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
           letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
           M ≃ₛₗ[e.toRingHom] M') : M ≅ ((ModuleCat.restrictScalars e.toRingHom).obj M') :=
@@ -144,13 +146,15 @@ noncomputable def extSemiLinearEquivOfSemiLinearEquiv_equal_universe [Small.{v} 
   letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
   (ModuleCat.extRestrictScalarsSemiLinearEquiv.{w, w'} e M' N' n).trans e3
 
+end ModuleCat
+
 end
 
 section
 
 variable (e : R ≃+* R') [UnivLE.{v, w}] [UnivLE.{v', w'}]
 
-def extSemiLinearEquivOfSemiLinearEquiv [Small.{v} R] [Small.{v'} R']
+noncomputable def ModuleCat.extSemiLinearEquivOfSemiLinearEquiv [Small.{v} R] [Small.{v'} R']
     {M N : ModuleCat.{v} R} {M' N' : ModuleCat.{v'} R'}
     (e1 : letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
           letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
@@ -160,7 +164,22 @@ def extSemiLinearEquivOfSemiLinearEquiv [Small.{v} R] [Small.{v'} R']
           N ≃ₛₗ[e.toRingHom] N')
     (n : ℕ) : letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
     letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
-    Ext.{w'} M' N' n ≃ₛₗ[e.symm.toRingHom] Ext.{w} M N n := sorry
+    Ext.{w'} M' N' n ≃ₛₗ[e.symm.toRingHom] Ext.{w} M N n :=
+  letI : Small.{max v v'} R := small_lift R
+  letI : Small.{max v v'} R' := small_lift R'
+  let e3 : Ext.{w} M N n ≃ₗ[R] Ext.{max v v'} ((uliftFunctor.{u, v, v'} R).obj M)
+    ((uliftFunctor.{u, v, v'} R).obj N) n := ModuleCat.extUliftLinearEquiv.{w, max v v'} M N n
+  let e4 : Ext.{w'} M' N' n ≃ₗ[R'] Ext.{max v v'} ((uliftFunctor.{u', v', v} R').obj M')
+    ((uliftFunctor.{u', v', v} R').obj N') n := ModuleCat.extUliftLinearEquiv.{w', max v v'} M' N' n
+  letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
+  letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
+  let e1' : (uliftFunctor.{u, v, v'} R).obj M ≃ₛₗ[e.toRingHom]
+    (uliftFunctor.{u', v', v} R').obj M' :=
+    (ULift.moduleEquiv.trans e1).trans ULift.moduleEquiv.symm
+  let e2' : (uliftFunctor.{u, v, v'} R).obj N ≃ₛₗ[e.toRingHom]
+    (uliftFunctor.{u', v', v} R').obj N' :=
+    (ULift.moduleEquiv.trans e2).trans ULift.moduleEquiv.symm
+  (e4.trans (extSemiLinearEquivOfSemiLinearEquiv_equal_universe e e1' e2' n)).trans e3.symm
 
 end
 
