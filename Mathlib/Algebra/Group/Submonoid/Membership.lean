@@ -210,7 +210,7 @@ open Fintype
 @[to_additive]
 theorem card_bot {_ : Fintype (⊥ : Submonoid M)} : card (⊥ : Submonoid M) = 1 :=
   card_eq_one_iff.2
-    ⟨⟨(1 : M), Set.mem_singleton 1⟩, fun ⟨_y, hy⟩ => Subtype.eq <| mem_bot.1 hy⟩
+    ⟨⟨(1 : M), Set.mem_singleton 1⟩, fun ⟨_y, hy⟩ => Subtype.ext <| mem_bot.1 hy⟩
 
 @[to_additive]
 theorem eq_bot_of_card_le (h : card S ≤ 1) : S = ⊥ :=
