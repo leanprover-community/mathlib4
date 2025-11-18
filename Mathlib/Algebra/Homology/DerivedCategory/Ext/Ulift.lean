@@ -27,17 +27,17 @@ instance hasExt_of_small'' [Small.{v} R] : CategoryTheory.HasExt.{w} (ModuleCat.
 
 noncomputable def ModuleCat.extUliftLinearEquiv [Small.{v} R] (M N : ModuleCat.{v} R) (n : ℕ) :
     letI : Small.{max v v'} R := small_lift R
-    Ext.{w} M N n ≃ₗ[R] Ext.{w'} ((uliftFunctor.{u, v, v'} R).obj M)
-    ((uliftFunctor.{u, v, v'} R).obj N) n :=
+    Ext.{w} M N n ≃ₗ[R] Ext.{w'} ((uliftFunctor.{v', v} R).obj M)
+    ((uliftFunctor.{v', v} R).obj N) n :=
   letI : Small.{max v v'} R := small_lift R
-  LinearEquiv.ofBijective (Functor.mapExtLinearMap.{w, w'} (uliftFunctor.{u, v, v'} R) R M N n)
+  LinearEquiv.ofBijective (Functor.mapExtLinearMap.{w, w'} (uliftFunctor.{v', v} R) R M N n)
     (Functor.mapExt_bijective_of_preservesProjectiveObjects.{w, w'}
-    (uliftFunctor.{u, v, v'} R) (fullyFaithfulUliftFunctor.{u, v, v'} R) M N n)
+    (uliftFunctor.{v', v} R) (fullyFaithfulUliftFunctor R) M N n)
 
 lemma ModuleCat.extUliftLinearEquiv_toLinearMap [Small.{v} R] (M N : ModuleCat.{v} R) (n : ℕ) :
     letI : Small.{max v v'} R := small_lift R
     ModuleCat.extUliftLinearEquiv.{w, w', u, v, v'} M N n =
-    (Functor.mapExtLinearMap.{w, w'} (uliftFunctor.{u, v, v'} R) R M N n) := rfl
+    (Functor.mapExtLinearMap.{w, w'} (uliftFunctor.{v', v} R) R M N n) := rfl
 
 end
 
@@ -45,10 +45,22 @@ section
 
 variable [UnivLE.{v, w}] [UnivLE.{v', w'}]
 
-def extLinearEquivOfLinearEquiv [Small.{v} R] [Small.{v'} R]
-    {M N : ModuleCat.{v} R} {M' N' : ModuleCat.{v'} R}
-    (e1 : M ≃ₗ[R] M') (e2 : N ≃ₗ[R] N') (n : ℕ) :
-    Ext.{w} M N n ≃ₗ[R] Ext.{w'} M' N' n := sorry
+noncomputable def ModuleCat.extLinearEquivOfLinearEquiv [Small.{v} R] [Small.{v'} R]
+    {M N : ModuleCat.{v} R} {M' N' : ModuleCat.{v'} R} (e1 : M ≃ₗ[R] M') (e2 : N ≃ₗ[R] N') (n : ℕ) :
+    Ext.{w} M N n ≃ₗ[R] Ext.{w'} M' N' n :=
+  letI : Small.{max v v'} R := small_lift R
+  let e1' : (uliftFunctor.{v'} R).obj M ≅ (uliftFunctor.{v} R).obj M' :=
+    ((ULift.moduleEquiv.trans e1).trans ULift.moduleEquiv.symm).toModuleIso
+  let e2' : (uliftFunctor.{v'} R).obj N ≅ (uliftFunctor.{v} R).obj N' :=
+    ((ULift.moduleEquiv.trans e2).trans ULift.moduleEquiv.symm).toModuleIso
+  let e3 : Ext.{max v v'} ((uliftFunctor.{v'} R).obj M) ((uliftFunctor.{v'} R).obj N) n ≃ₗ[R]
+    Ext.{max v v'} ((uliftFunctor.{v} R).obj M') ((uliftFunctor.{v} R).obj N') n := {
+      __ := (((extFunctorObj.{max v v'} ((uliftFunctor.{v'} R).obj M) n).mapIso e2').trans
+        (((extFunctor.{max v v'} n).mapIso e1'.symm.op).app
+        ((uliftFunctor.{v} R).obj N'))).addCommGroupIsoToAddEquiv
+      map_smul' r' x := by simp [Iso.addCommGroupIsoToAddEquiv] }
+  ((ModuleCat.extUliftLinearEquiv.{w, max v v'} M N n).trans e3).trans
+      (ModuleCat.extUliftLinearEquiv.{w', max v v'} M' N' n).symm
 
 end
 
@@ -167,19 +179,15 @@ noncomputable def ModuleCat.extSemiLinearEquivOfSemiLinearEquiv [Small.{v} R] [S
     Ext.{w'} M' N' n ≃ₛₗ[e.symm.toRingHom] Ext.{w} M N n :=
   letI : Small.{max v v'} R := small_lift R
   letI : Small.{max v v'} R' := small_lift R'
-  let e3 : Ext.{w} M N n ≃ₗ[R] Ext.{max v v'} ((uliftFunctor.{u, v, v'} R).obj M)
-    ((uliftFunctor.{u, v, v'} R).obj N) n := ModuleCat.extUliftLinearEquiv.{w, max v v'} M N n
-  let e4 : Ext.{w'} M' N' n ≃ₗ[R'] Ext.{max v v'} ((uliftFunctor.{u', v', v} R').obj M')
-    ((uliftFunctor.{u', v', v} R').obj N') n := ModuleCat.extUliftLinearEquiv.{w', max v v'} M' N' n
   letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
   letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
-  let e1' : (uliftFunctor.{u, v, v'} R).obj M ≃ₛₗ[e.toRingHom]
-    (uliftFunctor.{u', v', v} R').obj M' :=
+  let e1' : (uliftFunctor.{v'} R).obj M ≃ₛₗ[e.toRingHom] (uliftFunctor.{v} R').obj M' :=
     (ULift.moduleEquiv.trans e1).trans ULift.moduleEquiv.symm
-  let e2' : (uliftFunctor.{u, v, v'} R).obj N ≃ₛₗ[e.toRingHom]
-    (uliftFunctor.{u', v', v} R').obj N' :=
+  let e2' : (uliftFunctor.{v'} R).obj N ≃ₛₗ[e.toRingHom] (uliftFunctor.{v} R').obj N' :=
     (ULift.moduleEquiv.trans e2).trans ULift.moduleEquiv.symm
-  (e4.trans (extSemiLinearEquivOfSemiLinearEquiv_equal_universe e e1' e2' n)).trans e3.symm
+  ((ModuleCat.extUliftLinearEquiv.{w', max v v'} M' N' n).trans
+    (extSemiLinearEquivOfSemiLinearEquiv_equal_universe e e1' e2' n)).trans
+      (ModuleCat.extUliftLinearEquiv.{w, max v v'} M N n).symm
 
 end
 
