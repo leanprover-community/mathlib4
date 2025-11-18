@@ -354,6 +354,15 @@ theorem _root_.Topology.IsQuotientMap.separableSpace [SeparableSpace α] [Topolo
     {f : α → β} (hf : IsQuotientMap f) : SeparableSpace β :=
   hf.surjective.denseRange.separableSpace hf.continuous
 
+theorem _root_.IsOpenMap.separableSpace_of_injective [TopologicalSpace β] [SeparableSpace β]
+    {f : α → β} (h : IsOpenMap f) (h' : Function.Injective f) : SeparableSpace α :=
+  let ⟨s, s_cnt, s_dense⟩ := exists_countable_dense β
+  ⟨f ⁻¹' s, s_cnt.preimage h', s_dense.preimage h⟩
+
+theorem _root_.Topology.IsOpenEmbedding.separableSpace [TopologicalSpace β] [SeparableSpace β]
+    {f : α → β} (h : IsOpenEmbedding f) : SeparableSpace α :=
+  h.isOpenMap.separableSpace_of_injective h.injective
+
 /-- The product of two separable spaces is a separable space. -/
 instance [TopologicalSpace β] [SeparableSpace α] [SeparableSpace β] : SeparableSpace (α × β) := by
   rcases exists_countable_dense α with ⟨s, hsc, hsd⟩
@@ -384,6 +393,19 @@ instance [SeparableSpace α] {r : α → α → Prop} : SeparableSpace (Quot r) 
 
 instance [SeparableSpace α] {s : Setoid α} : SeparableSpace (Quotient s) :=
   isQuotientMap_quot_mk.separableSpace
+
+instance [TopologicalSpace β] [SeparableSpace α] [SeparableSpace β] : SeparableSpace (α ⊕ β) := by
+  obtain ⟨s, hsc, hsd⟩ := exists_countable_dense α
+  obtain ⟨t, htc, htd⟩ := exists_countable_dense β
+  refine ⟨Sum.inl '' s ∪ Sum.inr '' t, (hsc.image _).union (htc.image _), ?_⟩
+  simp_rw [dense_iff_closure_eq, closure_union, IsClosedEmbedding.inl.closure_image_eq,
+    hsd.closure_eq, IsClosedEmbedding.inr.closure_image_eq, htd.closure_eq, image_univ,
+    range_inl_union_range_inr]
+
+theorem separableSpace_sum_iff [TopologicalSpace β] :
+    SeparableSpace (α ⊕ β) ↔ SeparableSpace α ∧ SeparableSpace β :=
+  ⟨fun _ => ⟨(IsOpenEmbedding.inl (Y := β)).separableSpace,
+    (IsOpenEmbedding.inr (X := α)).separableSpace⟩, fun ⟨_, _⟩ => inferInstance⟩
 
 /-- A topological space with discrete topology is separable iff it is countable. -/
 theorem separableSpace_iff_countable [DiscreteTopology α] : SeparableSpace α ↔ Countable α := by
