@@ -38,36 +38,19 @@ def reflTransSymmAux (x : I × I) : ℝ :=
   if (x.2 : ℝ) ≤ 1 / 2 then x.1 * 2 * x.2 else x.1 * (2 - 2 * x.2)
 
 @[continuity, fun_prop]
-theorem continuous_reflTransSymmAux : Continuous reflTransSymmAux := by
-  refine continuous_if_le ?_ ?_ (Continuous.continuousOn ?_) (Continuous.continuousOn ?_) ?_
-  iterate 4 fun_prop
-  intro x hx
-  norm_num [hx, mul_assoc]
+theorem continuous_reflTransSymmAux : Continuous reflTransSymmAux :=
+  continuous_if_le (by fun_prop) (by fun_prop) (by fun_prop) (by fun_prop) (by grind)
 
 theorem reflTransSymmAux_mem_I (x : I × I) : reflTransSymmAux x ∈ I := by
   dsimp only [reflTransSymmAux]
   split_ifs
   · constructor
-    · apply mul_nonneg
-      · apply mul_nonneg
-        · unit_interval
-        · simp
-      · unit_interval
+    · apply mul_nonneg <;> grind
     · rw [mul_assoc]
-      apply mul_le_one₀
-      · unit_interval
-      · apply mul_nonneg
-        · simp
-        · unit_interval
-      · linarith
+      apply mul_le_one₀ <;> grind
   · constructor
-    · apply mul_nonneg
-      · unit_interval
-      linarith [unitInterval.nonneg x.2, unitInterval.le_one x.2]
-    · apply mul_le_one₀
-      · unit_interval
-      · linarith [unitInterval.nonneg x.2, unitInterval.le_one x.2]
-      · linarith [unitInterval.nonneg x.2, unitInterval.le_one x.2]
+    · apply mul_nonneg <;> grind
+    · apply mul_le_one₀ <;> grind
 
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from the constant path based at `x₀` to
   `p.trans p.symm`. -/
@@ -78,10 +61,10 @@ def reflTransSymm (p : Path x₀ x₁) : Homotopy (Path.refl x₀) (p.trans p.sy
   map_one_left x := by
     simp only [reflTransSymmAux, Path.trans]
     cases le_or_gt (x : ℝ) 2⁻¹ with
-    | inl hx => simp [hx, ← extend_extends]
+    | inl hx => simp [hx, ← extend_apply]
     | inr hx =>
       have : p.extend (2 - 2 * ↑x) = p.extend (1 - (2 * ↑x - 1)) := by ring_nf
-      simpa [hx.not_ge, ← extend_extends]
+      simpa [hx.not_ge, ← extend_apply]
   prop' t := by norm_num [reflTransSymmAux]
 
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from the constant path based at `x₁` to
@@ -98,11 +81,8 @@ def transReflReparamAux (t : I) : ℝ :=
   if (t : ℝ) ≤ 1 / 2 then 2 * t else 1
 
 @[continuity, fun_prop]
-theorem continuous_transReflReparamAux : Continuous transReflReparamAux := by
-  refine continuous_if_le ?_ ?_ (Continuous.continuousOn ?_) (Continuous.continuousOn ?_) ?_ <;>
-    [fun_prop; fun_prop; fun_prop; fun_prop; skip]
-  intro x hx
-  simp [hx]
+theorem continuous_transReflReparamAux : Continuous transReflReparamAux :=
+  continuous_if_le (by fun_prop) (by fun_prop) (by fun_prop) (by fun_prop) (by grind)
 
 theorem transReflReparamAux_mem_I (t : I) : transReflReparamAux t ∈ I := by
   unfold transReflReparamAux
@@ -120,12 +100,8 @@ theorem trans_refl_reparam (p : Path x₀ x₁) :
         (Subtype.ext transReflReparamAux_zero) (Subtype.ext transReflReparamAux_one) := by
   ext
   unfold transReflReparamAux
-  simp only [Path.trans_apply, coe_reparam, Function.comp_apply, one_div, Path.refl_apply]
-  split_ifs
-  · rfl
-  · rfl
-  · simp
-  · simp
+  simp only [coe_reparam]
+  grind
 
 /-- For any path `p` from `x₀` to `x₁`, we have a homotopy from `p.trans (Path.refl x₁)` to `p`. -/
 def transRefl (p : Path x₀ x₁) : Homotopy (p.trans (Path.refl x₁)) p :=
@@ -147,15 +123,10 @@ def transAssocReparamAux (t : I) : ℝ :=
   if (t : ℝ) ≤ 1 / 4 then 2 * t else if (t : ℝ) ≤ 1 / 2 then t + 1 / 4 else 1 / 2 * (t + 1)
 
 @[continuity, fun_prop]
-theorem continuous_transAssocReparamAux : Continuous transAssocReparamAux := by
-  refine continuous_if_le ?_ ?_ (Continuous.continuousOn ?_)
-    (continuous_if_le ?_ ?_
-      (Continuous.continuousOn ?_) (Continuous.continuousOn ?_) ?_).continuousOn
-      ?_ <;>
-    [fun_prop; fun_prop; fun_prop; fun_prop; fun_prop; fun_prop; fun_prop; skip;
-      skip] <;>
-    · intro x hx
-      norm_num [hx]
+theorem continuous_transAssocReparamAux : Continuous transAssocReparamAux :=
+  continuous_if_le (by fun_prop) (by fun_prop) (by fun_prop)
+    (continuous_if_le (by fun_prop) (by fun_prop) (by fun_prop) (by fun_prop)
+      (by grind)).continuousOn (by grind)
 
 theorem transAssocReparamAux_mem_I (t : I) : transAssocReparamAux t ∈ I := by
   unfold transAssocReparamAux
@@ -173,16 +144,12 @@ theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : 
         (fun t => ⟨transAssocReparamAux t, transAssocReparamAux_mem_I t⟩) (by fun_prop)
         (Subtype.ext transAssocReparamAux_zero) (Subtype.ext transAssocReparamAux_one) := by
   ext x
-  simp only [transAssocReparamAux, Path.trans_apply, Function.comp_apply, mul_ite, Path.coe_reparam]
-  -- TODO: why does split_ifs not reduce the ifs??????
-  split_ifs with h₁ h₂ h₃ h₄ h₅
-  · rfl
-  iterate 6 exfalso; linarith
-  · have h : 2 * (2 * (x : ℝ)) - 1 = 2 * (2 * (↑x + 1 / 4) - 1) := by linarith
-    simp [h]
-  iterate 6 exfalso; linarith
-  · congr
-    ring
+  simp only [transAssocReparamAux, Path.trans_apply, Function.comp_apply, Path.coe_reparam]
+  split_ifs
+  iterate 12 grind
+  · linarith
+  · linarith
+  · grind
 
 /-- For paths `p q r`, we have a homotopy from `(p.trans q).trans r` to `p.trans (q.trans r)`. -/
 def transAssoc {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : Path x₁ x₂) (r : Path x₂ x₃) :
