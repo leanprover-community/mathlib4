@@ -51,13 +51,11 @@ def terminalReplacement (oldTacticName newTacticName : String) (oldTacticKind : 
   test ctxI i stx goal := do
     let tac ← newTactic ctxI i stx
     try
-      let goals ← ctxI.runTacticCode i goal tac
-      match goals with
+      let goalTypes ← ctxI.runTacticCode i goal tac ⟨Expr, MVarId.getType'⟩
+      match goalTypes with
       | [] => return .success tac
       | _ => do
-        let goalsMessages ← goals.mapM fun g => do
-          let e ← ctxI.runTactic i g <| fun g => do instantiateMVars (← g.getType)
-          pure m!"⊢ {MessageData.ofExpr e}\n"
+        let goalsMessages := goalTypes.map fun e => m!"⊢ {MessageData.ofExpr e}\n"
         return .remainingGoals tac goalsMessages
     catch _e =>
       let name ← mkAuxDeclName `extracted
@@ -331,14 +329,23 @@ def tryAtEachStepAesop := tryAtEachStep
   fun _ _ => return ⟨TSyntax.raw <|
     mkNode `Aesop.Frontend.Parser.aesopTactic #[mkAtom "aesop", mkNullNode]⟩
 
-/-- Run `grind +premises` at every step in proofs, reporting where it succeeds. -/
-register_option linter.tacticAnalysis.tryAtEachStepGrindPremises : Bool := {
+/-- Run `grind +suggestions` at every step in proofs, reporting where it succeeds. -/
+register_option linter.tacticAnalysis.tryAtEachStepGrindSuggestions : Bool := {
   defValue := false
 }
 
-@[tacticAnalysis linter.tacticAnalysis.tryAtEachStepGrindPremises,
-   inherit_doc linter.tacticAnalysis.tryAtEachStepGrindPremises]
-def tryAtEachStepGrindPremises := tryAtEachStep fun _ _ => `(tactic| grind +premises)
+@[tacticAnalysis linter.tacticAnalysis.tryAtEachStepGrindSuggestions,
+   inherit_doc linter.tacticAnalysis.tryAtEachStepGrindSuggestions]
+def tryAtEachStepGrindSuggestions := tryAtEachStep fun _ _ => `(tactic| grind +suggestions)
+
+/-- Run `simp_all? +suggestions` at every step in proofs, reporting where it succeeds. -/
+register_option linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions : Bool := {
+  defValue := false
+}
+
+@[tacticAnalysis linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions,
+   inherit_doc linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions]
+def tryAtEachStepSimpAllSuggestions := tryAtEachStep fun _ _ => `(tactic| simp_all? +suggestions)
 
 -- TODO: add compatibility with `rintro` and `intros`
 /-- Suggest merging two adjacent `intro` tactics which don't pattern match. -/
