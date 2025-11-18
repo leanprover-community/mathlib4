@@ -60,11 +60,11 @@ def IsSpernerColoring (S : SimplicialComplex ℝ E) (c : E → Fin (m + 1)) : Pr
   ∀ ⦃x i⦄, x ∈ S.vertices → x i = 0 → c x ≠ i
 
 /-- A finset is **panchromatic** (or **rainbow**) if the coloring is surjective onto all colors. -/
-def IsPanchromatic (c : (Fin n → ℝ) → Fin (m + 1)) (X : Finset (Fin n → ℝ)) : Prop :=
+def IsPanchromatic {α : Type*} (c : α → Fin (m + 1)) (X : Finset α) : Prop :=
   Set.SurjOn c X .univ
 
 /-- A finset is **almost panchromatic** if it uses all but exactly one color. -/
-def IsAlmostPanchromatic (c : E → Fin (m + 1)) (X : Finset E) (missing : Fin (m + 1)) : Prop :=
+def IsAlmostPanchromatic {α : Type*} (c : α → Fin (m + 1)) (X : Finset α) (missing : Fin (m + 1)) : Prop :=
   Set.SurjOn c X (univ \ {missing})
 
 /-! ### Helper lemmas -/
@@ -76,7 +76,7 @@ def OnBoundary (x : E) : Prop := ∃ i, x i = 0
 def FaceOnBoundary (X : Finset E) : Prop := ∀ x ∈ X, OnBoundary x
 
 /-- Count faces that are almost panchromatic (missing color i). -/
-def countAlmostPanchromatic (S : SimplicialComplex ℝ E) (c : E → Fin (m + 1))
+noncomputable def countAlmostPanchromatic (S : SimplicialComplex ℝ E) (c : E → Fin (m + 1))
     (i : Fin (m + 1)) : ℕ :=
   {s ∈ S.faces | IsAlmostPanchromatic c s i}.ncard
 
@@ -213,7 +213,7 @@ private lemma boundary_face_effectively_panchromatic
   exact hX_almost i (by simp [hi])
 
 /-- Count the 0-almost-panchromatic faces that lie on the boundary x₀ = 0. -/
-def countBoundaryAlmostPanchromatic (S : SimplicialComplex ℝ (Fin (m + 2) → ℝ))
+noncomputable def countBoundaryAlmostPanchromatic (S : SimplicialComplex ℝ (Fin (m + 2) → ℝ))
     (c : (Fin (m + 2) → ℝ) → Fin (m + 2)) : ℕ :=
   {s ∈ S.faces | IsAlmostPanchromatic c s 0 ∧ ∀ x ∈ s, x 0 = 0}.ncard
 
@@ -306,7 +306,8 @@ private lemma almost_panchromatic_card {S : SimplicialComplex ℝ (Fin (m + 2) �
   -- Upper bound from stdSimplex structure
   have h_upper : X.card ≤ m + 2 := stdSimplex_face_card_bound hSspace hX_face
   -- Exact equality from almost-panchromatic property
-  exact almost_panchromatic_card_exact hSspace hX_face h_lower h_upper ⟨c, hX⟩/-- A 0-almost-panchromatic m-face on the boundary is contained in exactly 1 panchromatic (m+1)-face.
+  exact almost_panchromatic_card_exact hSspace hX_face h_lower h_upper ⟨c, hX⟩
+  -- A 0-almost-panchromatic m-face on the boundary is contained in exactly 1 panchromatic (m+1)-face.
 An interior 0-almost-panchromatic m-face is contained in exactly 0 or 2 panchromatic (m+1)-faces. -/
 private lemma almost_panchromatic_containment {S : SimplicialComplex ℝ (Fin (m + 2) → ℝ)}
     {c : (Fin (m + 2) → ℝ) → Fin (m + 2)} {X : Finset (Fin (m + 2) → ℝ)}
