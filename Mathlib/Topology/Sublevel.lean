@@ -8,21 +8,21 @@ import Mathlib.Topology.Semicontinuous
 
 /-! # Sublevel sets
 
-* `Set.LeSublevel f b`, the sublevel set of a function `f`, `{ x | f x ≤ b }`
+* `Set.leSublevel f b`, the sublevel set of a function `f`, `{ x | f x ≤ b }`
 
-* `Set.LeSublevelOn A f b`, the sublevel set of on `A`, `{ x ∈ A | f x ≤ b }`
+* `Set.leSublevelOn A f b`, the sublevel set of on `A`, `{ x ∈ A | f x ≤ b }`
 
-* `Set.LeOverlevel f b`, the overlevel set of a function `f`, `{ x | b ≤ f x }`
+* `Set.leOverlevel f b`, the overlevel set of a function `f`, `{ x | b ≤ f x }`
 
-* `Set.LeOverlevelOn A f b`, the overlevel set of `f` on `A`, `{ x ∈ A | b ≤ f x }`
+* `Set.leOverlevelOn A f b`, the overlevel set of `f` on `A`, `{ x ∈ A | b ≤ f x }`
 
-* `Set.LtSublevel f b`, the strict sublevel set of a function `f`, `{ x | f x < b }`
+* `Set.ltSublevel f b`, the strict sublevel set of a function `f`, `{ x | f x < b }`
 
-* `Set.LtSublevelOn A f b`, the strict sublevel set of on `A`, `{ x ∈ A | f x < b }`
+* `Set.ltSublevelOn A f b`, the strict sublevel set of on `A`, `{ x ∈ A | f x < b }`
 
-* `Set.LtOverlevel f b`, the strict overlevel set of a function `f`, `{ x | b < f x }`
+* `Set.ltOverlevel f b`, the strict overlevel set of a function `f`, `{ x | b < f x }`
 
-* `Set.LtOverlevelOn A f b`, the strict overlevel set of `f` on `A`, `{ x ∈ A | b < f x }`
+* `Set.ltOverlevelOn A f b`, the strict overlevel set of `f` on `A`, `{ x ∈ A | b < f x }`
 
 * `Set.isClosed_leSublevel_iff`: `f` is lower semicontinuous
   if and only if all sublevels are closed.
@@ -44,68 +44,71 @@ open Function
 
 namespace Set
 
+open scoped Set.Notation
+
 variable {α β : Type*}
 
 variable (A : Set α) (f : α → β) (b : β)
 
-section LeSublevel
+section leSublevel
 
 section LE
 
 variable [LE β]
 
 /-- The sublevel sets of a function -/
-def LeSublevel : Set α := { x | f x ≤ b }
+def leSublevel : Set α := { x | f x ≤ b }
 
 /-- The sublevel sets of a function -/
-def LeSublevelOn : Set α := { x ∈ A | f x ≤ b }
+def leSublevelOn : Set α := { x ∈ A | f x ≤ b }
 
 /-- The overlevel sets of `f`. -/
-def LeOverlevel : Set α := LeSublevel (β := βᵒᵈ) f b
+def leOverlevel : Set α := leSublevel (β := βᵒᵈ) f b
 
 /-- The overlevel sets of `f` on `s`. -/
-def LeOverlevelOn : Set α := LeSublevelOn (β := βᵒᵈ) A f b
+def leOverlevelOn : Set α := leSublevelOn (β := βᵒᵈ) A f b
 
 variable {A f b}
 
 theorem mem_leSublevel_iff {a : α} :
-  a ∈ Set.LeSublevel f b ↔ f a ≤ b := by
-  simp [LeSublevel]
+    a ∈ Set.leSublevel f b ↔ f a ≤ b := by
+  simp [leSublevel]
 
 theorem mem_leSublevelOn_iff {a : α} :
-  a ∈ A.LeSublevelOn f b ↔ a ∈ A ∧ f a ≤ b := by
-  simp [LeSublevelOn]
+    a ∈ A.leSublevelOn f b ↔ a ∈ A ∧ f a ≤ b := by
+  simp [leSublevelOn]
 
 theorem leSublevelOn_eq_inter :
-    A.LeSublevelOn f b = A ∩ LeSublevel f b := rfl
+    A.leSublevelOn f b = A ∩ leSublevel f b := rfl
 
-theorem leSublevelOn_subset : LeSublevelOn A f b ⊆ A :=
-  fun _ hx ↦ hx.1
+theorem leSublevelOn_subset :
+    leSublevelOn A f b ⊆ A := fun _ hx ↦ hx.1
 
-theorem le_of_mem_leSublevelOn {x : α} (hx : x ∈ LeSublevelOn A f b) :
+theorem le_of_mem_leSublevelOn {x : α} (hx : x ∈ leSublevelOn A f b) :
     f x ≤ b := hx.2
 
 theorem leSublevel_restrict_eq_coe_val_preimage :
-    LeSublevel (A.restrict f) b = Subtype.val ⁻¹' (A.LeSublevelOn f b) := by
+    leSublevel (A.restrict f) b = A ↓∩ A.leSublevelOn f b := by
   ext ⟨x, hx⟩
   simp [mem_leSublevel_iff, mem_leSublevelOn_iff, hx]
 
 theorem mem_leOverlevel_iff {a : α} :
-  a ∈ Set.LeOverlevel f b ↔ b ≤ f a := mem_leSublevel_iff
+    a ∈ Set.leOverlevel f b ↔ b ≤ f a := mem_leSublevel_iff
 
 theorem mem_leOverlevelOn_iff {a : α} :
-  a ∈ A.LeOverlevelOn f b ↔ a ∈ A ∧ b ≤ f a := mem_leSublevelOn_iff
+    a ∈ A.leOverlevelOn f b ↔ a ∈ A ∧ b ≤ f a := mem_leSublevelOn_iff
 
 theorem leOverlevelOn_eq_inter :
-    A.LeOverlevelOn f b = A ∩ LeOverlevel f b := leSublevelOn_eq_inter
+    A.leOverlevelOn f b = A ∩ leOverlevel f b := leSublevelOn_eq_inter
 
-theorem leOverlevelOn_subset : LeOverlevelOn A f b ⊆ A := leSublevelOn_subset
+theorem leOverlevelOn_subset :
+    leOverlevelOn A f b ⊆ A := leSublevelOn_subset
 
-theorem le_of_mem_leOverlevelOn {x : α} (hx : x ∈ LeOverlevelOn A f b) :
+theorem le_of_mem_leOverlevelOn {x : α} (hx : x ∈ leOverlevelOn A f b) :
     b ≤ f x := le_of_mem_leSublevelOn hx
 
 theorem leOverlevel_restrict_eq_coe_val_preimage :
-    LeOverlevel (A.restrict f) b = Subtype.val ⁻¹' (A.LeOverlevelOn f b) :=
+    leOverlevel (A.restrict f) b = A ↓∩ A.leOverlevelOn f b :=
   leSublevel_restrict_eq_coe_val_preimage
 
 end LE
@@ -115,57 +118,59 @@ section LT
 variable [LT β]
 
 /-- The strict sublevel sets of `f`. -/
-def LtSublevel : Set α := { x | f x < b }
+def ltSublevel : Set α := { x | f x < b }
 
 /-- The strict sublevel sets of `f` on `A`. -/
-def LtSublevelOn : Set α := { x ∈ A | f x < b }
+def ltSublevelOn : Set α := { x ∈ A | f x < b }
 
 /-- The strict overlevel sets of `f`. -/
-def LtOverlevel : Set α := LtSublevel (β := βᵒᵈ) f b
+def ltOverlevel : Set α := ltSublevel (β := βᵒᵈ) f b
 
 /-- The strict overlevel sets of `f` on `s`. -/
-def LtOverlevelOn : Set α := LtSublevelOn (β := βᵒᵈ) A f b
+def ltOverlevelOn : Set α := ltSublevelOn (β := βᵒᵈ) A f b
 
 variable {A f b}
 
 theorem mem_ltSublevel_iff {a : α} :
-  a ∈ Set.LtSublevel f b ↔ f a < b := by
-  simp [LtSublevel]
+    a ∈ ltSublevel f b ↔ f a < b := by
+  simp [ltSublevel]
 
 theorem mem_ltSublevelOn_iff {a : α} :
-  a ∈ A.LtSublevelOn f b ↔ a ∈ A ∧ f a < b := by
-  simp [LtSublevelOn]
+    a ∈ A.ltSublevelOn f b ↔ a ∈ A ∧ f a < b := by
+  simp [ltSublevelOn]
 
 theorem ltSublevelOn_eq_inter :
-    A.LtSublevelOn f b = A ∩ LtSublevel f b := rfl
+    A.ltSublevelOn f b = A ∩ ltSublevel f b := rfl
 
-theorem ltSublevelOn_subset : LtSublevelOn A f b ⊆ A :=
+theorem ltSublevelOn_subset :
+    ltSublevelOn A f b ⊆ A :=
   fun _ hx ↦ hx.1
 
-theorem lt_of_mem_leSublevelOn {x : α} (hx : x ∈ LtSublevelOn A f b) :
+theorem lt_of_mem_leSublevelOn {x : α} (hx : x ∈ ltSublevelOn A f b) :
     f x < b := hx.2
 
 theorem mem_ltOverlevel_iff {a : α} :
-  a ∈ Set.LtOverlevel f b ↔ b < f a := mem_ltSublevel_iff
+    a ∈ ltOverlevel f b ↔ b < f a := mem_ltSublevel_iff
 
 theorem mem_ltOverlevelOn_iff {a : α} :
-  a ∈ A.LtOverlevelOn f b ↔ a ∈ A ∧ b < f a := mem_ltSublevelOn_iff
+    a ∈ A.ltOverlevelOn f b ↔ a ∈ A ∧ b < f a := mem_ltSublevelOn_iff
 
 theorem ltOverlevelOn_eq_inter :
-    A.LtOverlevelOn f b = A ∩ LtOverlevel f b := ltSublevelOn_eq_inter
+    A.ltOverlevelOn f b = A ∩ ltOverlevel f b := ltSublevelOn_eq_inter
 
-theorem ltOverlevelOn_subset : LtOverlevelOn A f b ⊆ A := ltSublevelOn_subset
+theorem ltOverlevelOn_subset :
+    ltOverlevelOn A f b ⊆ A := ltSublevelOn_subset
 
-theorem lt_of_mem_leOverlevelOn {x : α} (hx : x ∈ LtOverlevelOn A f b) :
+theorem lt_of_mem_leOverlevelOn {x : α} (hx : x ∈ ltOverlevelOn A f b) :
     b < f x := lt_of_mem_leSublevelOn hx
 
 theorem ltSublevel_restrict_eq_coe_val_preimage :
-    LtSublevel (A.restrict f) b = Subtype.val ⁻¹' (A.LtSublevelOn f b) := by
+    ltSublevel (A.restrict f) b = A ↓∩ A.ltSublevelOn f b := by
   ext ⟨x, hx⟩
   simp [mem_ltSublevel_iff, mem_ltSublevelOn_iff, hx]
 
 theorem ltOverlevel_restrict_eq_coe_val_preimage :
-    LtOverlevel (A.restrict f) b = Subtype.val ⁻¹' (A.LtOverlevelOn f b) :=
+    ltOverlevel (A.restrict f) b = A ↓∩ A.ltOverlevelOn f b :=
   ltSublevel_restrict_eq_coe_val_preimage
 
 end LT
@@ -175,35 +180,35 @@ section Preorder
 variable [Preorder β]
 
 theorem monotone_leSublevel :
-    Monotone (fun b ↦ LeSublevel f b) :=
+    Monotone (fun b ↦ leSublevel f b) :=
   fun _ _ hbc _ hb ↦ le_trans hb hbc
 
 theorem monotone_leSublevelOn :
-    Monotone (fun b ↦ A.LeSublevelOn f b) :=
+    Monotone (fun b ↦ A.leSublevelOn f b) :=
   fun _ _ hbc _ ⟨ha, hb⟩ ↦ ⟨ha, le_trans hb hbc⟩
 
 theorem antitone_leOverlevel :
-    Antitone (fun b ↦ LeOverlevel f b) :=
-fun _ _ hbc _ hb ↦ le_trans hbc hb
+    Antitone (fun b ↦ leOverlevel f b) :=
+  fun _ _ hbc _ hb ↦ le_trans hbc hb
 
 theorem antitone_leOverlevelOn :
-    Antitone (fun b ↦ A.LeOverlevelOn f b) :=
+    Antitone (fun b ↦ A.leOverlevelOn f b) :=
   fun _ _ hbc a ⟨ha, hb⟩ ↦ ⟨ha, by apply le_trans hbc hb⟩
 
 theorem monotone_ltSublevel :
-    Monotone (fun b ↦ LtSublevel f b) :=
+    Monotone (fun b ↦ ltSublevel f b) :=
   fun _ _ hbc _ hb ↦ lt_of_lt_of_le hb hbc
 
 theorem monotone_ltSublevelOn :
-    Monotone (fun b ↦ A.LtSublevelOn f b) :=
+    Monotone (fun b ↦ A.ltSublevelOn f b) :=
   fun _ _ hbc _ ⟨ha, hb⟩ ↦ ⟨ha, lt_of_lt_of_le hb hbc⟩
 
 theorem antitone_ltOverlevel :
-    Antitone (fun b ↦ LtOverlevel f b) :=
+    Antitone (fun b ↦ ltOverlevel f b) :=
   fun _ _ hbc _ hb ↦ lt_of_le_of_lt hbc hb
 
 theorem antitone_ltOverlevelOn :
-    Antitone (fun b ↦ A.LtOverlevelOn f b) :=
+    Antitone (fun b ↦ A.ltOverlevelOn f b) :=
   fun _ _ hbc _ ⟨ha, hb⟩ ↦ ⟨ha, by apply lt_of_le_of_lt hbc hb⟩
 
 end Preorder
@@ -213,23 +218,23 @@ section LinearOrder
 variable [LinearOrder β]
 
 theorem leSublevel_empty_iff :
-    LeSublevel f b = ∅ ↔ ∀ x, b < f x := by
+    leSublevel f b = ∅ ↔ ∀ x, b < f x := by
   simp [Set.ext_iff, mem_leSublevel_iff]
 
 theorem leSublevelOn_empty_iff :
-    LeSublevelOn A f b = ∅ ↔ ∀ x ∈ A, b < f x := by
-  simp [LeSublevelOn]
+    leSublevelOn A f b = ∅ ↔ ∀ x ∈ A, b < f x := by
+  simp [leSublevelOn]
 
 theorem leOverlevel_empty_iff :
-    LeOverlevel f b = ∅ ↔ ∀ x, f x < b := by
+    leOverlevel f b = ∅ ↔ ∀ x, f x < b := by
   simp [Set.ext_iff, mem_leOverlevel_iff]
 
 theorem leOverlevelOn_empty_iff :
-    LeOverlevelOn A f b = ∅ ↔ ∀ x ∈ A, f x < b := by
+    leOverlevelOn A f b = ∅ ↔ ∀ x ∈ A, f x < b := by
   apply leSublevelOn_empty_iff
 
 theorem inter_leSublevelOn_empty_iff {ι : Type*} {f : ι → α → β} {I : Set ι} (ne_A : A.Nonempty) :
-    ⋂ i ∈ I, LeSublevelOn A (f i) b = ∅ ↔ ∀ x ∈ A, ∃ i ∈ I, b < f i x := by
+    ⋂ i ∈ I, leSublevelOn A (f i) b = ∅ ↔ ∀ x ∈ A, ∃ i ∈ I, b < f i x := by
   rcases I.eq_empty_or_nonempty with ⟨rfl⟩ | ne_A
   · have : ¬(IsEmpty α) := fun _ ↦ IsEmpty.exists_iff.mp ne_A
     simpa [this] using ne_A
@@ -240,7 +245,7 @@ theorem inter_leSublevelOn_empty_iff {ι : Type*} {f : ι → α → β} {I : Se
   exact ne_A
 
 theorem inter_leOverlevelOn_empty_iff {ι : Type*} {f : ι → α → β} {I : Set ι} (ne_A : A.Nonempty) :
-    ⋂ i ∈ I, LeOverlevelOn A (f i) b = ∅ ↔ ∀ x ∈ A, ∃ i ∈ I, f i x < b := by
+    ⋂ i ∈ I, leOverlevelOn A (f i) b = ∅ ↔ ∀ x ∈ A, ∃ i ∈ I, f i x < b := by
   rcases I.eq_empty_or_nonempty with ⟨rfl⟩ | ne_A
   · have : ¬(IsEmpty α) := fun _ ↦ IsEmpty.exists_iff.mp ne_A
     simpa [this] using ne_A
@@ -251,23 +256,23 @@ theorem inter_leOverlevelOn_empty_iff {ι : Type*} {f : ι → α → β} {I : S
   exact ne_A
 
 theorem ltSublevel_empty_iff :
-    LtSublevel f b = ∅ ↔ ∀ x, b ≤ f x := by
+    ltSublevel f b = ∅ ↔ ∀ x, b ≤ f x := by
   simp [Set.ext_iff, mem_ltSublevel_iff]
 
 theorem ltSublevelOn_empty_iff :
-    LtSublevelOn A f b = ∅ ↔ ∀ x ∈ A, b ≤ f x := by
-  simp [LtSublevelOn]
+    ltSublevelOn A f b = ∅ ↔ ∀ x ∈ A, b ≤ f x := by
+  simp [ltSublevelOn]
 
 theorem ltOverlevel_empty_iff :
-    LtOverlevel f b = ∅ ↔ ∀ x, f x ≤ b := by
+    ltOverlevel f b = ∅ ↔ ∀ x, f x ≤ b := by
   simp [Set.ext_iff, mem_ltOverlevel_iff]
 
 theorem ltOverlevelOn_empty_iff :
-    LtOverlevelOn A f b = ∅ ↔ ∀ x ∈ A, f x ≤ b := by
+    ltOverlevelOn A f b = ∅ ↔ ∀ x ∈ A, f x ≤ b := by
   apply ltSublevelOn_empty_iff
 
 theorem inter_ltSublevelOn_empty_iff {ι : Type*} {f : ι → α → β} {I : Set ι} (ne_A : A.Nonempty) :
-    ⋂ i ∈ I, LtSublevelOn A (f i) b = ∅ ↔ ∀ x ∈ A, ∃ i ∈ I, b ≤ f i x := by
+    ⋂ i ∈ I, ltSublevelOn A (f i) b = ∅ ↔ ∀ x ∈ A, ∃ i ∈ I, b ≤ f i x := by
   rcases I.eq_empty_or_nonempty with ⟨rfl⟩ | ne_I
   · have : ¬(IsEmpty α) := fun _ ↦ IsEmpty.exists_iff.mp ne_A
     simpa [this] using ne_A
@@ -280,33 +285,29 @@ theorem inter_ltSublevelOn_empty_iff {ι : Type*} {f : ι → α → β} {I : Se
 variable [TopologicalSpace α]
 
 theorem isClosed_leSublevel_iff :
-    (∀ b, IsClosed (LeSublevel f b)) ↔ LowerSemicontinuous f :=
+    (∀ b, IsClosed (leSublevel f b)) ↔ LowerSemicontinuous f :=
   lowerSemicontinuous_iff_isClosed_preimage.symm
 
 theorem isClosed_val_preimage_leSublevelOn_iff :
-    (∀ b, IsClosed (Subtype.val ⁻¹' (LeSublevelOn A f b) : Set A)) ↔ LowerSemicontinuousOn f A := by
+    (∀ b, IsClosed (A ↓∩ leSublevelOn A f b)) ↔ LowerSemicontinuousOn f A := by
   rw [← lowerSemicontinuous_restrict_iff, ← isClosed_leSublevel_iff]
   simp_rw [← leSublevel_restrict_eq_coe_val_preimage]
 
 theorem isClosed_leSublevelOn_iff (hA : IsClosed A) :
-    (∀ b, IsClosed (LeSublevelOn A f b)) ↔ LowerSemicontinuousOn f A := by
+    (∀ b, IsClosed (leSublevelOn A f b)) ↔ LowerSemicontinuousOn f A := by
   simp_rw [leSublevelOn_eq_inter, ← IsClosed.inter_preimage_val_iff,
-      Topology.IsInducing.subtypeVal.isClosed_iff]
+    Topology.IsInducing.subtypeVal.isClosed_iff]
   rw [lowerSemicontinuousOn_iff_preimage_Iic]
-  apply forall_congr'
-  intro b
-  apply exists_congr
-  simp only [and_congr_right_iff]
-  intro s hs
+  congr! with b s hs
   rw [Subtype.preimage_val_eq_preimage_val_iff]
   exact eq_comm
 
 theorem isCompact_leSublevelOn (hfA : LowerSemicontinuousOn f A) (kA : IsCompact A) :
-    IsCompact (LeSublevelOn A f b) := by
+    IsCompact (leSublevelOn A f b) := by
   rw [lowerSemicontinuousOn_iff_preimage_Iic] at hfA
   obtain ⟨v, hv, hv'⟩ := hfA b
   haveI kA' : CompactSpace A := isCompact_iff_compactSpace.mp kA
-  suffices LeSublevelOn A f b = Subtype.val '' (Subtype.val ⁻¹' (LeSublevelOn A f b) : Set A) by
+  suffices leSublevelOn A f b = Subtype.val '' (A ↓∩ leSublevelOn A f b) by
     rw [this, ← Topology.IsInducing.subtypeVal.isCompact_iff]
     apply IsClosed.isCompact
     rw [Topology.IsInducing.subtypeVal.isClosed_iff]
@@ -317,19 +318,18 @@ theorem isCompact_leSublevelOn (hfA : LowerSemicontinuousOn f A) (kA : IsCompact
   simp [leSublevelOn_subset]
 
 theorem open_ltSublevel_iff :
-    (∀ b, IsOpen (LtSublevel f b)) ↔ UpperSemicontinuous f :=
+    (∀ b, IsOpen (ltSublevel f b)) ↔ UpperSemicontinuous f :=
   upperSemicontinuous_iff_isOpen_preimage.symm
 
 theorem open_val_preimage_ltSublevelOn_iff :
-    (∀ b, IsOpen (Subtype.val ⁻¹' (LtSublevelOn A f b) : Set A)) ↔ UpperSemicontinuousOn f A := by
+    (∀ b, IsOpen (A ↓∩ ltSublevelOn A f b)) ↔ UpperSemicontinuousOn f A := by
   rw [← upperSemicontinuousOn_iff_restrict, ← open_ltSublevel_iff]
   simp_rw [← ltSublevel_restrict_eq_coe_val_preimage]
 
 theorem open_ltSublevelOn_iff (hA : IsOpen A) :
-    (∀ b, IsOpen (LtSublevelOn A f b)) ↔ UpperSemicontinuousOn f A := by
+    (∀ b, IsOpen (ltSublevelOn A f b)) ↔ UpperSemicontinuousOn f A := by
   rw [← open_val_preimage_ltSublevelOn_iff]
-  apply forall_congr'
-  intro b
+  congr! with b
   apply hA.isOpenEmbedding_subtypeVal.isOpen_iff_preimage_isOpen
   intro a ha
   rw [mem_ltSublevelOn_iff] at ha
@@ -340,7 +340,7 @@ theorem inter_leSublevelOn_empty_iff_exists_finset_inter
     {I : Set ι} (ne_I : I.Nonempty)
     [TopologicalSpace α] (ks : IsCompact A)
     (hfi : ∀ i ∈ I, LowerSemicontinuousOn (f i) A) :
-    ⋂ i ∈ I, LeSublevelOn A (f i) b = ∅ ↔
+    ⋂ i ∈ I, leSublevelOn A (f i) b = ∅ ↔
       ∃ u : Finset I, ∀ x ∈ A, ∃ i ∈ u, b < f i x := by
   symm
   constructor
@@ -353,7 +353,7 @@ theorem inter_leSublevelOn_empty_iff_exists_finset_inter
       use i.val, i.prop
     · simpa [mem_leSublevelOn_iff, hx] using ne_I
   intro H
-  have := IsCompact.elim_finite_subfamily_closedOn ks (fun i ↦ LeSublevel (f i) b) (I := I) ?_ ?_
+  have := IsCompact.elim_finite_subfamily_closedOn ks (fun i ↦ leSublevel (f i) b) (I := I) ?_ ?_
   · obtain ⟨u, hu⟩ := this
     use u
     intro x hx
@@ -373,6 +373,6 @@ theorem inter_leSublevelOn_empty_iff_exists_finset_inter
 
 end LinearOrder
 
-end LeSublevel
+end leSublevel
 
 end Set

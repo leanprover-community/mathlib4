@@ -910,19 +910,20 @@ theorem Subtype.isCompact_iff {p : X → Prop} {s : Set { x // p x }} :
 theorem isCompact_iff_isCompact_univ : IsCompact s ↔ IsCompact (univ : Set s) := by
   rw [Subtype.isCompact_iff, image_univ, Subtype.range_coe]
 
+open scoped Set.Notation in
 /-- An elimination theorem for empty intersections of a family of sets
 in a compact subset which are closed in the compact subset
 but not necessarily in the ambient space. -/
 theorem IsCompact.elim_finite_subfamily_closedOn
     {X : Type*} [TopologicalSpace X] {s : Set X} (ks : IsCompact s)
     {ι : Type*} (t : ι → Set X) {I : Set ι}
-    (htc : ∀ i ∈ I, IsClosed (Subtype.val ⁻¹' (t i) : Set s))
+    (htc : ∀ i ∈ I, IsClosed (s ↓∩ (t i) : Set s))
     (hst : s ∩ ⋂ i ∈ I, t i = ∅) :
     ∃ u : Finset I, s ∩ ⋂ i ∈ u, t i = ∅  := by
-  suffices univ ∩ ⋂ i, (fun i : I ↦ Subtype.val ⁻¹' t i) i = ∅ by
+  suffices univ ∩ ⋂ i, (fun i : I ↦ s ↓∩ t i) i = ∅ by
     obtain ⟨u, hu⟩ := IsCompact.elim_finite_subfamily_closed
       (isCompact_iff_isCompact_univ.mp ks)
-      (fun i : I ↦ Subtype.val ⁻¹' (t i)) (fun i ↦ htc i.val i.prop) this
+      (fun i : I ↦ s ↓∩ t i) (fun i ↦ htc i.val i.prop) this
     use u
     simpa [eq_empty_iff_forall_notMem] using hu
   rw [Set.eq_empty_iff_forall_notMem] at hst ⊢
