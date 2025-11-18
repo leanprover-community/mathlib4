@@ -294,7 +294,8 @@ lemma intermediateFieldEquivSubgroup_symm_apply_toDual [Finite G] {H} :
 theorem fixingSubgroup_fixedPoints [Finite G] :
     fixingSubgroup G ((FixedPoints.intermediateField H : IntermediateField K L) : Set L) = H := by
   rw [← intermediateFieldEquivSubgroup_symm_apply_toDual,
-    ← ofDual_intermediateFieldEquivSubgroup_apply, OrderIso.apply_symm_apply, OrderDual.ofDual_toDual]
+    ← ofDual_intermediateFieldEquivSubgroup_apply,
+    OrderIso.apply_symm_apply, OrderDual.ofDual_toDual]
 
 theorem fixedPoints_fixingSubgroup [Finite G] :
     FixedPoints.intermediateField (fixingSubgroup G (F : Set L)) = F := by
