@@ -71,7 +71,8 @@ the model fiber `F`.
 # TODO
 In the following lemmas, let `e` be a compatible local trivialisation of `V`, and `b` a basis of
 the model fiber `F`.
-* `e.localFrame_coeff b i` describes the `i`-th coefficient of sections of `V` w.r.t. `e.localFrame b`:
+* `e.localFrame_coeff b i` describes the `i`-th coefficient of sections of `V` w.r.t.
+  `e.localFrame b`:
   `e.localFrame b i` is a linear map from sections of `V` to functions `M → 𝕜`.
 * `e.eventually_eq_localFrame_sum_coeff_smul b`: near `x`, we have
   `s = ∑ i, (e.localFrame_coeff b i s) • e.localFrame b i`
