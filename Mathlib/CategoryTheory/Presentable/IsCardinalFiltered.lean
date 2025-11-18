@@ -302,4 +302,14 @@ lemma IsCardinalFiltered.multicoequalizer
     (fun i ↦ IsFiltered.coeqHom (f₁ i) (f₂ i)) hι
   exact ⟨l, b, fun i ↦ by rw [← h i, IsFiltered.coeq_condition_assoc]⟩
 
+lemma Limits.IsTerminal.isCardinalFiltered {J : Type u} [Category.{v} J]
+    {X : J} (hX : IsTerminal X) (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+    IsCardinalFiltered J κ where
+  nonempty_cocone _ _ := ⟨{ pt := X, ι.app _ := hX.from _ }⟩
+
+lemma isCardinalFiltered_of_hasTerminal (J : Type u) [Category.{v} J]
+    [HasTerminal J] (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+    IsCardinalFiltered J κ :=
+  terminalIsTerminal.isCardinalFiltered _
+
 end CategoryTheory
