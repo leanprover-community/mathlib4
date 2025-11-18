@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Limits.FullSubcategory
 import Mathlib.Order.Category.PartOrdEmb
-import Mathlib.CategoryTheory.Presentable.Directed
 import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 
 /-!
@@ -149,6 +148,8 @@ namespace cocone
 
 variable (J : CardinalFilteredPoset κ)
 
+/-- Given `J : CardinalFilteredPoset κ`, this is hte partially ordered set consisting
+of subsets of `J.obj` that are of cardinality `< κ` and have a terminal object. -/
 def indexSet : Set (Set J.obj) := setOf (fun S ↦ HasCardinalLT S κ ∧ HasTerminal S)
 
 instance (S : indexSet J) : HasTerminal S := S.prop.2
@@ -187,22 +188,29 @@ instance : IsCardinalFiltered (indexSet J) κ :=
 
 instance : IsFiltered (indexSet J) := isFiltered_of_isCardinalFiltered _ κ
 
+/-- Given `J : CardinalFilteredPoset κ`, this is the functor which sends
+a subset `S` of `J.obj` of cardinality `< κ` with a terminal object to `S`
+as an object in `CardinalFilteredPoset κ`. -/
 @[simps]
 def functor : indexSet J ⥤ CardinalFilteredPoset κ where
   obj S := of (PartOrdEmb.of S.val)
-  map {j₁ j₂} f := PartOrdEmb.ofHom
+  map f := PartOrdEmb.ofHom
     { toFun x := ⟨x, leOfHom f x.2⟩
       inj' := by rintro ⟨x, _⟩ ⟨y, _⟩ h; simpa using h
       map_rel_iff' := by rfl }
 
 end cocone
 
+/-- The (colimit) cocone which expresses `J : CardinalFilteredPoset κ` as a colimit
+of its subsets that are of cardinality `< κ` and have a terminal object. -/
 @[simps]
 def cocone (J : CardinalFilteredPoset κ) : Cocone (cocone.functor J) where
   pt := J
   ι.app _ := PartOrdEmb.ofHom (OrderEmbedding.subtype _)
 
 open cocone in
+/-- Any object `J : CardinalFilteredPoset κ` is a colimit
+of its subsets that are of cardinality `< κ` and have a terminal object. -/
 noncomputable def isColimitCocone (J : CardinalFilteredPoset κ) :
     IsColimit (cocone J) :=
   isColimitOfReflects (CardinalFilteredPoset.ι ⋙ forget PartOrdEmb) (by
