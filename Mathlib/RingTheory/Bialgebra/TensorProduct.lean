@@ -45,6 +45,17 @@ noncomputable instance _root_.TensorProduct.instBialgebra : Bialgebra S (A ⊗[R
   simp_all only [AlgHom.toLinearMap_apply] <;>
   simp only [map_one, map_mul]
 
+lemma counitAlgHom_def :
+    counitAlgHom (R := S) (A := A ⊗[R] B) =
+      (Algebra.TensorProduct.rid _ _ _).toAlgHom.comp (Algebra.TensorProduct.map
+      (Bialgebra.counitAlgHom S A) (Bialgebra.counitAlgHom R B)) := rfl
+
+lemma comulAlgHom_def :
+    comulAlgHom (R := S) (A := A ⊗[R] B) =
+      (Algebra.TensorProduct.tensorTensorTensorComm R S R S A A B B).toAlgHom.comp
+        (Algebra.TensorProduct.map (Bialgebra.comulAlgHom S A)
+        (Bialgebra.comulAlgHom R B)) := rfl
+
 variable {R S A B C D}
 
 variable [Semiring C] [Semiring D] [Bialgebra S C]

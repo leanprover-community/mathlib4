@@ -50,7 +50,7 @@ membership of a subgroup's underlying set.
 subgroup, subgroups
 -/
 
-assert_not_exists RelIso OrderedCommMonoid Multiset MonoidWithZero
+assert_not_exists RelIso IsOrderedMonoid Multiset MonoidWithZero
 
 open Function
 open scoped Int
@@ -708,27 +708,26 @@ theorem le_normalizer : H ≤ normalizer H := fun x xH n => by
 
 end Normalizer
 
-@[deprecated (since := "2025-04-09")] alias IsCommutative := IsMulCommutative
-@[deprecated (since := "2025-04-09")] alias _root_.AddSubgroup.IsCommutative := IsAddCommutative
-
 /-- A subgroup of a commutative group is commutative. -/
 @[to_additive /-- A subgroup of a commutative group is commutative. -/]
 instance commGroup_isMulCommutative {G : Type*} [CommGroup G] (H : Subgroup G) :
     IsMulCommutative H :=
   ⟨CommMagma.to_isCommutative⟩
 
-@[deprecated (since := "2025-04-09")] alias commGroup_isCommutative := commGroup_isMulCommutative
-@[deprecated (since := "2025-04-09")] alias _root_.AddSubgroup.addCommGroup_isCommutative :=
-  commGroup_isMulCommutative
-
 @[to_additive]
 lemma mul_comm_of_mem_isMulCommutative [IsMulCommutative H] {a b : G} (ha : a ∈ H) (hb : b ∈ H) :
     a * b = b * a := by
   simpa only [MulMemClass.mk_mul_mk, Subtype.mk.injEq] using mul_comm (⟨a, ha⟩ : H) (⟨b, hb⟩ : H)
 
-@[deprecated (since := "2025-04-09")] alias mul_comm_of_mem_isCommutative :=
-  mul_comm_of_mem_isMulCommutative
-@[deprecated (since := "2025-04-09")] alias _root_.AddSubgroup.add_comm_of_mem_isCommutative :=
-  _root_.AddSubgroup.add_comm_of_mem_isAddCommutative
-
 end Subgroup
+
+@[to_additive]
+theorem Set.injOn_iff_map_eq_one {F G H S : Type*} [Group G] [Group H]
+    [FunLike F G H] [MonoidHomClass F G H] (f : F)
+    [SetLike S G] [OneMemClass S G] [MulMemClass S G] [InvMemClass S G] (s : S) :
+    Set.InjOn f s ↔ ∀ a ∈ s, f a = 1 → a = 1 where
+  mp h a ha ha' := by
+    refine h ha (one_mem s) ?_
+    rwa [map_one]
+  mpr h x hx y hy hxy := by
+    refine mul_inv_eq_one.1 <| h _ (mul_mem ?_ (inv_mem ?_)) ?_ <;> simp_all

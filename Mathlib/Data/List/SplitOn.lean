@@ -14,7 +14,7 @@ variable {α : Type*} (p : α → Bool) (xs : List α) (ls : List (List α))
 attribute [simp] splitAt_eq
 
 @[simp]
-theorem splitOn_nil [DecidableEq α] (a : α) : [].splitOn a = [[]] :=
+theorem splitOn_nil [BEq α] (a : α) : [].splitOn a = [[]] :=
   rfl
 
 @[simp]

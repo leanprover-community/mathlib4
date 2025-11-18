@@ -232,6 +232,10 @@ theorem map_iSup {ι : Sort*} (f : F) (p : ι → Submodule R M) :
     map f (⨆ i, p i) = ⨆ i, map f (p i) :=
   (gc_map_comap f : GaloisConnection (map f) (comap f)).l_iSup
 
+lemma disjoint_map {f : F} (hf : Function.Injective f) {p q : Submodule R M} (hpq : Disjoint p q) :
+    Disjoint (p.map f) (q.map f) := by
+  rw [disjoint_iff, ← map_inf f hf, disjoint_iff.mp hpq, map_bot]
+
 end
 
 @[simp]
@@ -453,7 +457,7 @@ theorem map_comap_subtype : map p.subtype (comap p.subtype p') = p ⊓ p' :=
   ext fun x => ⟨by rintro ⟨⟨_, h₁⟩, h₂, rfl⟩; exact ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ => ⟨⟨_, h₁⟩, h₂, rfl⟩⟩
 
 theorem eq_zero_of_bot_submodule : ∀ b : (⊥ : Submodule R M), b = 0
-  | ⟨b', hb⟩ => Subtype.eq <| show b' = 0 from (mem_bot R).1 hb
+  | ⟨b', hb⟩ => Subtype.ext <| show b' = 0 from (mem_bot R).1 hb
 
 /-- The infimum of a family of invariant submodule of an endomorphism is also an invariant
 submodule. -/
@@ -592,6 +596,10 @@ theorem inf_comap_le_comap_add (f₁ f₂ : M →ₛₗ[τ₁₂] M₂) :
   change f₁ m + f₂ m ∈ q
   change f₁ m ∈ q ∧ f₂ m ∈ q at h
   apply q.add_mem h.1 h.2
+
+lemma surjOn_iff_le_map [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂] M₂} {p : Submodule R M}
+    {q : Submodule R₂ M₂} : Set.SurjOn f p q ↔ q ≤ p.map f :=
+  Iff.rfl
 
 end Submodule
 

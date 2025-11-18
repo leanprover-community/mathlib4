@@ -45,7 +45,7 @@ lemma isUnit_iff : IsUnit u ↔ u = 1 ∨ u = -1 := by
   · exact ⟨⟨-1, -1, by decide, by decide⟩, rfl⟩
 
 lemma eq_one_or_neg_one_of_mul_eq_one (h : u * v = 1) : u = 1 ∨ u = -1 :=
-  isUnit_iff.1 (isUnit_of_mul_eq_one u v h)
+  isUnit_iff.1 (.of_mul_eq_one v h)
 
 lemma eq_one_or_neg_one_of_mul_eq_one' (h : u * v = 1) : u = 1 ∧ v = 1 ∨ u = -1 ∧ v = -1 := by
   have h' : v * u = 1 := mul_comm u v ▸ h

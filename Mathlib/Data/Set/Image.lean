@@ -329,7 +329,7 @@ theorem image_eq_preimage_of_inverse {f : α → β} {g : β → α} (h₁ : Lef
   funext fun s =>
     Subset.antisymm (image_subset_preimage_of_inverse h₁ s) (preimage_subset_image_of_inverse h₂ s)
 
-theorem _root_.Function.Involutive.image_eq_preimage {f : α → α} (hf : f.Involutive) :
+theorem _root_.Function.Involutive.image_eq_preimage_symm {f : α → α} (hf : f.Involutive) :
     image f = preimage f :=
   image_eq_preimage_of_inverse hf.leftInverse hf.rightInverse
 
@@ -1247,6 +1247,18 @@ theorem injective_iff {α β} {f : Option α → β} :
 
 theorem range_eq {α β} (f : Option α → β) : range f = insert (f none) (range (f ∘ some)) :=
   Set.ext fun _ => Option.exists.trans <| eq_comm.or Iff.rfl
+
+/-- The range of `Option.elim b f` is `{b} ∪ range f`. -/
+theorem range_elim {α β} (b : β) (f : α → β) :
+    range (fun o : Option α => o.elim b f) = insert b (range f) := by
+  rw [range_eq]
+  simp [Function.comp_def]
+
+/-- The image of `range some` under `Option.elim b f` equals `range f`. -/
+theorem image_elim_range_some_eq_range {α β} (f : α → β) (b : β) :
+    (fun o : Option α => o.elim b f) '' range some = range f := by
+  rw [← range_comp']
+  simp
 
 end Option
 

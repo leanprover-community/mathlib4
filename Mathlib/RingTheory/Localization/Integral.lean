@@ -57,7 +57,7 @@ alias coeffIntegerNormalization_of_not_mem_support := coeffIntegerNormalization_
 theorem coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
     (h : coeffIntegerNormalization M p i ≠ 0) : i ∈ p.support := by
   contrapose h
-  rw [Ne, Classical.not_not, coeffIntegerNormalization, dif_neg h]
+  rw [coeffIntegerNormalization, dif_neg h]
 
 /-- `integerNormalization g` normalizes `g` to have integer coefficients
 by clearing the denominators -/
@@ -402,9 +402,6 @@ theorem ideal_span_singleton_map_subset {L : Type*} [IsDomain R] [IsDomain S] [F
     (h (Ideal.mem_span_singleton.mpr ⟨y, rfl⟩))
 
 end IsFractionRing
-
-@[deprecated (since := "2025-03-23")]
-alias isAlgebraic_of_isLocalization := IsLocalization.isAlgebraic
 
 open nonZeroDivisors in
 lemma isAlgebraic_of_isFractionRing {R S} (K L) [CommRing R] [CommRing S] [Field K] [CommRing L]

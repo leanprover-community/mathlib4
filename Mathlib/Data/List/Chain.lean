@@ -304,7 +304,7 @@ lemma IsChain.cons_of_ne_nil {x : α} {l : List α} (l_ne_nil : l ≠ [])
     (hl : IsChain R l) (h : R x (l.head l_ne_nil)) : IsChain R (x :: l) := by
   refine hl.cons fun y hy ↦ ?_
   convert h
-  simpa [l.head?_eq_head l_ne_nil] using hy.symm
+  simpa [l.head?_eq_some_head l_ne_nil] using hy.symm
 
 @[deprecated (since := "2025-09-24")] alias Chain'.cons_of_ne_nil := IsChain.cons_of_ne_nil
 
@@ -476,7 +476,7 @@ alias exists_chain_of_relationReflTransGen := exists_isChain_cons_of_relationRef
 -/
 theorem exists_isChain_ne_nil_of_relationReflTransGen (h : Relation.ReflTransGen r a b) :
     ∃ l, ∃ (hl : l ≠ []), IsChain r l ∧ l.head hl = a ∧ getLast l hl = b := by
-  rcases exists_isChain_cons_of_relationReflTransGen h with ⟨l, _⟩; use (a :: l); grind
+  rcases exists_isChain_cons_of_relationReflTransGen h with ⟨l, _⟩; grind
 
 /-- Given a chain `l`, such that a predicate `p` holds for its head if it is nonempty,
 and if `r x y → p x → p y`, then the predicate is true everywhere in the chain.

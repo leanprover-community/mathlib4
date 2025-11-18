@@ -69,15 +69,15 @@ def symm : I → I := fun t => ⟨1 - t, Icc.mem_iff_one_sub_mem.mp t.prop⟩
 @[inherit_doc]
 scoped notation "σ" => unitInterval.symm
 
-@[simp]
+@[simp, grind =]
 theorem symm_zero : σ 0 = 1 :=
   Subtype.ext <| by simp [symm]
 
-@[simp]
+@[simp, grind =]
 theorem symm_one : σ 1 = 0 :=
   Subtype.ext <| by simp [symm]
 
-@[simp]
+@[simp, grind =]
 theorem symm_symm (x : I) : σ (σ x) = x :=
   Subtype.ext <| by simp [symm]
 
@@ -85,13 +85,13 @@ theorem symm_involutive : Function.Involutive (symm : I → I) := symm_symm
 
 theorem symm_bijective : Function.Bijective (symm : I → I) := symm_involutive.bijective
 
-@[simp]
+@[simp, grind =]
 theorem coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=
   rfl
 
 lemma image_coe_preimage_symm {s : Set I} :
     Subtype.val '' (σ ⁻¹' s) = (1 - ·) ⁻¹' (Subtype.val '' s) := by
-  simp [symm_involutive, ← Function.Involutive.image_eq_preimage, image_image]
+  simp [symm_involutive, ← Function.Involutive.image_eq_preimage_symm, image_image]
 
 @[simp]
 theorem symm_projIcc (x : ℝ) :
@@ -385,19 +385,21 @@ theorem iccHomeoI_symm_apply_coe (a b : 𝕜) (h : a < b) (x : Set.Icc (0 : 𝕜
 
 end
 
-section NNReal
+namespace unitInterval
 
-open unitInterval NNReal
+open NNReal
 
 /-- The coercion from `I` to `ℝ≥0`. -/
-def unitInterval.toNNReal : I → ℝ≥0 := fun i ↦ ⟨i.1, i.2.1⟩
+def toNNReal : I → ℝ≥0 := fun i ↦ ⟨i.1, i.2.1⟩
 
-@[fun_prop]
-lemma unitInterval.toNNReal_continuous : Continuous toNNReal := by
-  delta toNNReal
-  fun_prop
+@[simp] lemma toNNReal_zero : toNNReal 0 = 0 := rfl
+@[simp] lemma toNNReal_one : toNNReal 1 = 1 := rfl
 
-@[simp]
-lemma unitInterval.coe_toNNReal (x : I) : ((toNNReal x) : ℝ) = x := rfl
+@[fun_prop] lemma toNNReal_continuous : Continuous toNNReal := by delta toNNReal; fun_prop
 
-end NNReal
+@[simp] lemma coe_toNNReal (x : I) : ((toNNReal x) : ℝ) = x := rfl
+
+@[simp] lemma toNNReal_add_toNNReal_symm (x : I) : toNNReal x + toNNReal (σ x) = 1 := by ext; simp
+@[simp] lemma toNNReal_symm_add_toNNReal (x : I) : toNNReal (σ x) + toNNReal x = 1 := by ext; simp
+
+end unitInterval
