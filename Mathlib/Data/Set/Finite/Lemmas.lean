@@ -59,10 +59,8 @@ theorem Finite.induction_to_univ [Finite α] {C : Set α → Prop} (S0 : Set α)
     (H0 : C S0) (H1 : ∀ S ≠ univ, C S → ∃ a ∉ S, C (insert a S)) : C univ :=
   finite_univ.induction_to S0 (subset_univ S0) H0 (by simpa [ssubset_univ_iff])
 
-theorem sUnion_finite_eq_univ {X : Type*} : ⋃₀ {(s : Set X) | Set.Finite s} = Set.univ := by
-  rw [sUnion_eq_univ_iff]
-  intro x
-  exact ⟨{x}, finite_singleton x, Eq.refl x⟩
+theorem sUnion_finite_eq_univ {X : Type*} : ⋃₀ {(s : Set X) | Set.Finite s} = Set.univ :=
+  sUnion_eq_univ_iff.mpr fun x ↦ ⟨{x}, finite_singleton x, rfl⟩
 
 /-! ### Infinite sets -/
 
