@@ -14,7 +14,6 @@ Given `P : ObjectProperty C` and `κ : Cardinal`, we introduce a predicate
 
 -/
 
-
 universe w v u
 
 namespace CategoryTheory
