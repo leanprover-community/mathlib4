@@ -57,7 +57,7 @@ alias coeffIntegerNormalization_of_not_mem_support := coeffIntegerNormalization_
 theorem coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
     (h : coeffIntegerNormalization M p i ≠ 0) : i ∈ p.support := by
   contrapose h
-  rw [Ne, Classical.not_not, coeffIntegerNormalization, dif_neg h]
+  rw [coeffIntegerNormalization, dif_neg h]
 
 /-- `integerNormalization g` normalizes `g` to have integer coefficients
 by clearing the denominators -/
