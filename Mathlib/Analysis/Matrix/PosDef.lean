@@ -13,8 +13,10 @@ This file proves that eigenvalues of positive (semi)definite matrices are (nonne
 
 ## Main definitions
 
-* `InnerProductSpace.ofMatrix`: the inner product on `n → 𝕜` induced by a positive definite
-  matrix `A`, and is given by `⟪x, y⟫ = xᴴMy`.
+* `Matrix.PosSemidef.innerProductSpace`: the pre-inner product space on `n → 𝕜` induced by a
+  positive semi-definite matrix `M`, and is given by `⟪x, y⟫ = xᴴMy`.
+* `Matrix.PosDef.innerProductSpace`: the inner product space on `n → 𝕜` induced by a
+  positive definite matrix `M`, and is given by `⟪x, y⟫ = xᴴMy`.
 
 -/
 

@@ -24,10 +24,6 @@ order on matrices on `ℝ` or `ℂ`.
   and `xᴴMx` is nonnegative for all `x`.
 * `Matrix.PosDef` : a matrix `M : Matrix n n R` is positive definite if it is Hermitian and `xᴴMx`
   is greater than zero for all nonzero `x`.
-* `Matrix.PosSemidef.innerProductSpace`: the pre-inner product space on `n → 𝕜` induced by a
-  positive semi-definite matrix `M`, and is given by `⟪x, y⟫ = xᴴMy`.
-* `Matrix.PosDef.innerProductSpace`: the inner product space on `n → 𝕜` induced by a
-  positive definite matrix `M`, and is given by `⟪x, y⟫ = xᴴMy`.
 
 ## Main results
 
