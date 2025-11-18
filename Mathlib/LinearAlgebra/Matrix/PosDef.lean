@@ -3,7 +3,9 @@ Copyright (c) 2022 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Mohanad Ahmed
 -/
+import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Algebra.Order.Ring.Star
+import Mathlib.Data.Real.Star
 import Mathlib.LinearAlgebra.Matrix.DotProduct
 import Mathlib.LinearAlgebra.Matrix.Hermitian
 import Mathlib.LinearAlgebra.Matrix.Vec
@@ -35,20 +37,16 @@ order on matrices on `ℝ` or `ℂ`.
 
 -- TODO:
 -- assert_not_exists MonoidAlgebra
-assert_not_exists Matrix.IsHermitian.eigenvalues
+assert_not_exists NormedGroup
 
-open WithLp
-
-open scoped ComplexOrder
+open Matrix
 
 namespace Matrix
 
-variable {m n R R' 𝕜 : Type*}
+variable {m n R R' : Type*}
 variable [Fintype m] [Fintype n]
 variable [Ring R] [PartialOrder R] [StarRing R]
 variable [CommRing R'] [PartialOrder R'] [StarRing R']
-variable [RCLike 𝕜]
-open Matrix
 
 /-!
 ## Positive semidefinite matrices
@@ -75,10 +73,6 @@ namespace PosSemidef
 
 theorem isHermitian {M : Matrix n n R} (hM : M.PosSemidef) : M.IsHermitian :=
   hM.1
-
-theorem re_dotProduct_nonneg {M : Matrix n n 𝕜} (hM : M.PosSemidef) (x : n → 𝕜) :
-    0 ≤ RCLike.re (star x ⬝ᵥ (M *ᵥ x)) :=
-  RCLike.nonneg_iff.mp (hM.2 _) |>.1
 
 lemma conjTranspose_mul_mul_same {A : Matrix n n R} (hA : PosSemidef A)
     {m : Type*} [Fintype m] (B : Matrix n m R) :
@@ -278,10 +272,6 @@ namespace PosDef
 
 theorem isHermitian {M : Matrix n n R} (hM : M.PosDef) : M.IsHermitian :=
   hM.1
-
-theorem re_dotProduct_pos {M : Matrix n n 𝕜} (hM : M.PosDef) {x : n → 𝕜} (hx : x ≠ 0) :
-    0 < RCLike.re (star x ⬝ᵥ (M *ᵥ x)) :=
-  RCLike.pos_iff.mp (hM.2 _ hx) |>.1
 
 theorem posSemidef {M : Matrix n n R} (hM : M.PosDef) : M.PosSemidef := by
   refine ⟨hM.1, ?_⟩
@@ -551,28 +541,3 @@ theorem posDef_toMatrix' [DecidableEq n] {Q : QuadraticForm ℝ (n → ℝ)} (hQ
   exact .of_toQuadraticForm' (isSymm_toMatrix' Q) hQ
 
 end QuadraticForm
-
-namespace Matrix
-variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
-
-/-- A positive definite matrix `M` induces a norm `‖x‖ = sqrt (re xᴴMx)`. -/
-noncomputable abbrev NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
-    NormedAddCommGroup (n → 𝕜) :=
-  @InnerProductSpace.Core.toNormedAddCommGroup _ _ _ _ _
-    { inner x y := (M *ᵥ y) ⬝ᵥ star x
-      conj_inner_symm x y := by
-        rw [dotProduct_comm, star_dotProduct, starRingEnd_apply, star_star,
-          star_mulVec, dotProduct_comm (M *ᵥ y), dotProduct_mulVec, hM.isHermitian.eq]
-      re_inner_nonneg x := dotProduct_comm _ (star x) ▸ hM.posSemidef.re_dotProduct_nonneg x
-      definite x (hx : _ ⬝ᵥ _ = 0) := by
-        by_contra! h
-        simpa [hx, lt_irrefl, dotProduct_comm] using hM.re_dotProduct_pos h
-      add_left := by simp only [star_add, dotProduct_add, forall_const]
-      smul_left _ _ _ := by rw [← smul_eq_mul, ← dotProduct_smul, starRingEnd_apply, ← star_smul] }
-
-/-- A positive definite matrix `M` induces an inner product `⟪x, y⟫ = xᴴMy`. -/
-def InnerProductSpace.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
-    @InnerProductSpace 𝕜 (n → 𝕜) _ (NormedAddCommGroup.ofMatrix hM).toSeminormedAddCommGroup :=
-  InnerProductSpace.ofCore _
-
-end Matrix
