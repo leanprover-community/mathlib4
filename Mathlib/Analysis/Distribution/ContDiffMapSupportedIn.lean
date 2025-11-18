@@ -423,18 +423,15 @@ protected theorem uniformSpace_eq_iInf : (uniformSpace : UniformSpace 𝓓^{n}_{
     ⨅ (i : ℕ), UniformSpace.comap (structureMapLM ℝ n i) inferInstance :=
   UniformSpace.replaceTopology_eq _ toTopologicalSpace_iInf.symm
 
-instance isTopologicalAddGroup : IsTopologicalAddGroup 𝓓^{n}_{K}(E, F) := by
-  refine topologicalAddGroup_iInf (fun i ↦ ?_)
-  exact topologicalAddGroup_induced _
+instance isTopologicalAddGroup : IsTopologicalAddGroup 𝓓^{n}_{K}(E, F) :=
+  topologicalAddGroup_iInf fun _ ↦ topologicalAddGroup_induced _
 
 instance isUniformAddGroup : IsUniformAddGroup 𝓓^{n}_{K}(E, F) := by
   rw [ContDiffMapSupportedIn.uniformSpace_eq_iInf]
-  refine isUniformAddGroup_iInf (fun i ↦ ?_)
-  exact IsUniformAddGroup.comap _
+  exact isUniformAddGroup_iInf fun _ ↦ IsUniformAddGroup.comap _
 
-instance continuousSMul : ContinuousSMul 𝕜 𝓓^{n}_{K}(E, F) := by
-  refine continuousSMul_iInf
-    (fun i ↦ continuousSMul_induced (structureMapLM 𝕜 n i))
+instance continuousSMul : ContinuousSMul 𝕜 𝓓^{n}_{K}(E, F) :=
+  continuousSMul_iInf fun i ↦ continuousSMul_induced (structureMapLM 𝕜 n i)
 
 instance locallyConvexSpace : LocallyConvexSpace ℝ 𝓓^{n}_{K}(E, F) :=
   LocallyConvexSpace.iInf fun _ ↦ LocallyConvexSpace.induced _
@@ -468,20 +465,18 @@ is continuous if and only if its composition with each structure map
 `structureMapCLM ℝ n i : 𝓓^{n}_{K}(E, F) → (E →ᵇ (E [×i]→L[ℝ] F))` is continuous.
 
 Since `structureMapCLM ℝ n i` is zero whenever `i > n`, it suffices to check it for `i ≤ n`,
-as proven by `continuous_iff_comp_with_order`. -/
--- Note: if needed, we could allow an extra parameter `𝕜` in case the use wants to use
+as proven by `continuous_iff_comp_withOrder`. -/
+-- Note: if needed, we could allow an extra parameter `𝕜` in case the user wants to use
 -- `structureMapCLM 𝕜 n i`.
 theorem continuous_iff_comp {X} [TopologicalSpace X] (φ : X → 𝓓^{n}_{K}(E, F)) :
     Continuous φ ↔ ∀ i, Continuous (structureMapCLM ℝ n i ∘ φ) := by
-  simp_rw [continuous_iInf_rng, continuous_induced_rng]
-  rfl
+  simp [continuous_iInf_rng, continuous_induced_rng, structureMapCLM]
 
 /-- The **universal property** of the topology on `𝓓^{n}_{K}(E, F)`: a map to `𝓓^{n}_{K}(E, F)`
 is continuous if and only if its composition with the structure map
-`structureMapCLM ℝ n i : 𝓓^{n}_{K}(E, F) → (E →ᵇ (E [×i]→L[ℝ] F))` is continuous for each `i ≤ n`.
-Since `structureMapCLM ℝ n i` is zero whenever `i > n`, it suffices to check it for `i ≤ n`,
-as proven by `continuous_iff_comp_of_le`. -/
--- Note: if needed, we could allow an extra parameter `𝕜` in case the use wants to use
+`structureMapCLM ℝ n i : 𝓓^{n}_{K}(E, F) → (E →ᵇ (E [×i]→L[ℝ] F))` is continuous for each
+`i ≤ n`. -/
+-- Note: if needed, we could allow an extra parameter `𝕜` in case the user wants to use
 -- `structureMapCLM 𝕜 n i`.
 theorem continuous_iff_comp_withOrder {X : Type*} [TopologicalSpace X] (φ : X → 𝓓^{n}_{K}(E, F)) :
     Continuous φ ↔ ∀ (i : ℕ), i ≤ n → Continuous (structureMapCLM ℝ n i ∘ φ) := by
