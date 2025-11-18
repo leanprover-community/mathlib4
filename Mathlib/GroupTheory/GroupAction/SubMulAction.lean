@@ -554,7 +554,7 @@ instance [hH : H.Normal] : MulAction G (MulAction.fixedPoints H α) :=
 @[simp]
 lemma smul_fixedPoints_coe_of_normal [hH : H.Normal]
     (g : G) (a : MulAction.fixedPoints H α) :
-    (g • a).val = g • a.val :=
+    (g • a : MulAction.fixedPoints H α) = g • (a : α) :=
   rfl
 
 end FixedPoints
