@@ -27,7 +27,6 @@ basis under the Scott Topology. Prop 3.5.2 in [reneta2025]
 Prop 2.3.6(2) [abramsky_gabbay_maibaum_1994]
 
 ## Notation
-idfsdlfjdsf
 * `e` `c` : elements in the a set, usually of an open set, often compact.
 referred to as a `point` from here onwards
 * `e'` or `eᵘ` : upwards closures of point. for variable name `e'` and for computing value `eᵘ`
@@ -50,9 +49,9 @@ Scott topology, Algebraic DCPO, Stone Duality
 
 /-- notation for upward closure (↑ was taken) -/
 notation x:80 "ᵘ" => Set.Ici x
-
+namespace CompletePartialOrder
 /-- approximants: read as x is way smaller than y -/
-def approx {α : Type*} [CompletePartialOrder α] (x : α) (y : α) :=
+def Approx {α : Type*} [CompletePartialOrder α] (x : α) (y : α) :=
   ∀ (d : Set α), DirectedOn (· ≤ ·) d → y ≤ sSup d → ∃ a ∈ d, x ≤ a
 
 -- A different notion of compact from what we want is defined here
@@ -62,9 +61,9 @@ def approx {α : Type*} [CompletePartialOrder α] (x : α) (y : α) :=
 
 /-- x approximates itself. Compactness is a key property and abstracted by the
 `DirSupInacc` (inacessibility of directed joins property) -/
-def compact {α : Type*} [CompletePartialOrder α] (x : α) := approx x x
+def Compact {α : Type*} [CompletePartialOrder α] (x : α) := Approx x x
 /-- Set of compact points -/
-def compactSet (α : Type*) [CompletePartialOrder α] := {x : α | compact x}
+def compactSet (α : Type*) [CompletePartialOrder α] := {x : α | Compact x}
 /-- notation for compactSet -/
 notation "𝕂" α:80 => compactSet α
 
@@ -76,10 +75,11 @@ class AlgebraicDCPO (α : Type*) extends CompletePartialOrder α where
   algebraic : ∀ x : α, (compactLowerSet x).Nonempty ∧ DirectedOn (· ≤ ·) (compactLowerSet x) ∧
   x = sSup (compactLowerSet x)
 
-open Topology.IsScott TopologicalSpace Set Topology
+end CompletePartialOrder
 
 namespace Topology
 namespace IsScott
+open Topology.IsScott TopologicalSpace Set Topology CompletePartialOrder
 section CompletePartialOrder
 
 variable {α : Type*} [TopologicalSpace α] [CompletePartialOrder α]
@@ -132,123 +132,124 @@ lemma specialization_iff_ge {x y : α} : x ≤ y ↔ y ⤳ x := by
     -- in other words x ≤ y as required
     exact h_specialize
 
-lemma h_open {u : Set α} (hu : u ∈ Ici '' 𝕂 α) : IsOpen u := by
-    rw [@isOpen_iff_isUpperSet_and_dirSupInaccOn α {d | DirectedOn (· ≤ ·) d }]
+lemma isOpen_of_Ici_compact {u : Set α} (hu : u ∈ Ici '' 𝕂 α) : IsOpen u := by
+  rw [@isOpen_iff_isUpperSet_and_dirSupInaccOn α {d | DirectedOn (· ≤ ·) d }]
+  constructor
+  · -- u is an upper set
+    unfold IsUpperSet
+    intro x y x_le_y hx
+    simp_all only [mem_image]
+    obtain ⟨e, he⟩ := hu
+    obtain ⟨left, right⟩ := he
+    subst right
+    simp only [Ici, mem_setOf_eq] at hx ⊢
+    transitivity x
+    · exact hx
+    · exact x_le_y
+  · -- u is a Scott-Hausdorff open set, ie it has the inaccessable directed joins property
+    -- However the directed sets for our topology are defined precisely as
+    -- the directed sets of the our DCPOs
+    -- So compact points are precisely those points which have directed innaccessable joins
+    intro d hd nonempty _  x hx hx'
+    simp only [mem_image] at hu
+    choose y yCompact yUpper using hu
+    -- rewrite `x`'s LUB propoerty in terms of sSup
+    have hx : x = sSup d := by
+      have hsSupd := CompletePartialOrder.lubOfDirected d hd
+      exact IsLUB.unique hx hsSupd
+
+    have hy : y ≤ sSup d := by
+      rw [← hx]
+
+      subst yUpper
+      simp only [Ici, mem_setOf_eq] at hx'
+      exact hx'
+
+    choose a a_in_d ha' using yCompact d hd hy
+    have a_in_u : a ∈ u := by subst yUpper hx; exact ha'
+    use a
     constructor
-    · -- u is an upper set
-      unfold IsUpperSet
-      intro a b a_1 a_2
-      simp_all only [mem_image]
-      obtain ⟨w, h⟩ := hu
-      obtain ⟨left, right⟩ := h
-      subst right
-      simp only [Ici, mem_setOf_eq] at a_2 ⊢
-      transitivity a
-      · exact a_2
-      · exact a_1
-    · -- u is a Scott-Hausdorff open set, ie it has the inaccessable directed joins property
-      -- However the directed sets for our topology are defined precisely as
-      -- the directed sets of the our DCPOs
-      -- So compact points are precisely those points which have directed innaccessable joins
-      intro d hd nonempty _  x hx hx'
-      simp only [mem_image] at hu
-      choose y yCompact yUpper using hu
-      -- rewrite `x`'s LUB propoerty in terms of sSup
-      have hx : x = sSup d := by
-        have hsSupd := CompletePartialOrder.lubOfDirected d hd
-        exact IsLUB.unique hx hsSupd
-
-      have hy : y ≤ sSup d := by
-        rw [← hx]
-
-        subst yUpper
-        simp only [Ici, mem_setOf_eq] at hx'
-        exact hx'
-
-      choose a a_in_d ha' using yCompact d hd hy
-      have a_in_u : a ∈ u := by subst yUpper hx; exact ha'
-      use a
-      constructor
-      · exact a_in_d
-      · exact a_in_u
+    · exact a_in_d
+    · exact a_in_u
 
 /-- The upwards closure of a compact point which we know is open -/
-def open_of_compact (c : {c: α // compact c}) : Opens α :=
-  ⟨cᵘ, h_open <| Set.mem_image_of_mem Ici c.2⟩
+def open_of_Ici_Compact (c : {c: α // Compact c}) : Opens α :=
+  ⟨cᵘ, isOpen_of_Ici_compact <| Set.mem_image_of_mem Ici c.2⟩
 /-- The upwards closure of a compact point which we know is open.
 ᵘᵒ stand for upward open -/
-notation c:80"ᵘᵒ"  => open_of_compact c -- Ici, open
+notation c:80"ᵘᵒ"  => open_of_Ici_Compact c -- Ici, open
 
 end CompletePartialOrder
 
 section AlgebraicDCPO
 variable {D : Type*} [TopologicalSpace D] [AlgebraicDCPO D] [IsScott D {d | DirectedOn (· ≤ ·) d}]
 
-lemma h_nhds (x : D) (u : Set D) (x_in_u : x ∈ u) (hu : IsOpen u)
-  : ∃ v ∈ Ici '' 𝕂 D, x ∈ v ∧ v ⊆ u := by
+lemma mem_Ici_Compact_of_mem_Open (x : D) (u : Set D) (x_in_u : x ∈ u) (hu : IsOpen u)
+    : ∃ v ∈ Ici '' 𝕂 D, x ∈ v ∧ v ⊆ u := by
+  rw [@isOpen_iff_isUpperSet_and_dirSupInaccOn D {d | DirectedOn (· ≤ ·) d }] at hu
 
-    rw [@isOpen_iff_isUpperSet_and_dirSupInaccOn D {d | DirectedOn (· ≤ ·) d }] at hu
+  obtain ⟨upper, hausdorff⟩ := hu
+  have compactLowerBounded : ∀ x ∈ u, ∃ c: D, c ≤ x ∧ c ∈ u ∧ Compact c := by
+    intro x x_in_u
+    -- the Algebraicity property
+    obtain ⟨nonempty, directedCls, join⟩ := AlgebraicDCPO.algebraic x
 
-    obtain ⟨upper, hausdorff⟩ := hu
-    have compactLowerBounded : ∀ x ∈ u, ∃ c: D, c ≤ x ∧ c ∈ u ∧ compact c := by
-      intro x x_in_u
-      -- the Algebraicity property
-      obtain ⟨nonempty, directedCls, join⟩ := AlgebraicDCPO.algebraic x
+    -- We work with this cls to extract a compact elememt from it satisfying our needs
+    let cls := (compactLowerSet x)
 
-      -- We work with this cls to extract a compact elememt from it satisfying our needs
-      let cls := (compactLowerSet x)
+    -- by algebraicity, a point, `x`, is the meet of its `cls`
+    have x_is_LUB : IsLUB cls x:= by
+      rw [join]
+      apply CompletePartialOrder.lubOfDirected cls directedCls
 
-      -- by algebraicity, an point, `x`, is the meet of its `cls`
-      have x_is_LUB : IsLUB cls x:= by
-        rw [join]
-        apply CompletePartialOrder.lubOfDirected cls directedCls
+    -- We use the innacessible joins property to show get a nonempty intersection
+    -- The intersection contains exactly what we want, a compact point in u and ≤ x
+    have nonempty_inter := hausdorff directedCls nonempty directedCls x_is_LUB x_in_u
+    simp only [compactLowerSet, inter_nonempty, mem_inter_iff] at nonempty_inter
+    obtain ⟨c, ⟨hc₀, hc₁⟩, hc₂⟩ := nonempty_inter
+    exact ⟨c, hc₀, hc₂, hc₁⟩
 
-      -- We use the innacessible joins property to show get a nonempty intersection
-      -- The intersection contains exactly what we want, a compact point in u and ≤ x
-      have nonempty_inter := hausdorff directedCls nonempty directedCls x_is_LUB x_in_u
-      simp only [compactLowerSet, inter_nonempty, mem_inter_iff] at nonempty_inter
-      obtain ⟨c, ⟨hc₀, hc₁⟩, hc₂⟩ := nonempty_inter
-      exact ⟨c, hc₀, hc₂, hc₁⟩
+  -- given an x ∈ u, take it to its compact point
+  choose f hf hf' hf'' using compactLowerBounded
+  let f' : {x : D // x ∈ u} → D := fun x => f x.1 x.2
+  use Ici (f' ⟨x, x_in_u⟩)
 
-    -- given an x ∈ u, take it to its compact point
-    choose f hf hf' hf'' using compactLowerBounded
-    let f' : {x : D // x ∈ u} → D := fun x => f x.1 x.2
-    use Ici (f' ⟨x, x_in_u⟩)
-
+  constructor
+  · simp only [Ici, mem_image]
+    use (f' ⟨x, x_in_u⟩)
     constructor
-    · simp only [Ici, mem_image]
-      use (f' ⟨x, x_in_u⟩)
-      constructor
-      · apply hf''
-      · simp only [f']
-    · constructor
-      · apply hf
-      · intro y hy
-        simp only [mem_Ici, f'] at hy
-        apply upper hy
-        simp_all only
+    · apply hf''
+    · simp only [f']
+  · constructor
+    · apply hf
+    · intro y hy
+      simp only [mem_Ici, f'] at hy
+      apply upper hy
+      simp_all only
 
 /-- The upward closures of compact elements form a topological
 basis under the Scott Topology. Prop 3.5.2 in [reneta2025] -/
-lemma isTopologicalBasis_of_Ici_compact : IsTopologicalBasis (Ici '' 𝕂 D) := by
+theorem isTopologicalBasis_of_Ici_Compact : IsTopologicalBasis (Ici '' 𝕂 D) := by
   apply isTopologicalBasis_of_isOpen_of_nhds
   · -- every upper set of a compact element in the DCPO is a Scott open set
     -- This is the true by definition direction, as compactness corresponds to Scott-Hausdorrf open,
     -- and upper set corresponds to Upper set open
-    apply h_open
+    apply isOpen_of_Ici_compact
   · -- If an element `x` is in an open set `u`, we can find it in a set in the basis (`Ici c`)
-    apply h_nhds
+    apply mem_Ici_Compact_of_mem_Open
 
 /-- Any open set, `u`, can be constructed as a union of sets from the basis.
     The basis consists of the upward closures of those compact elements in `u`
-    This is the weaker version of the lemma using `Set`s instead of `Opens` -/
+    This is the weaker version of the lemma using `Set`s instead of `Opens`.
+    Note on naming: we now use basis instead of `Ici_Compact` after showing in
+    `isTopologicalBasis_of_Ici_Compact` that `Ici_Compact` is a basis -/
 lemma open_eq_open_of_basis (u : Set D) (hu : IsOpen u) :
   u = ⋃₀ (Ici '' { c ∈ 𝕂 D | cᵘ ⊆ u}) := by
   ext e
   simp only [sUnion_image, mem_setOf_eq, mem_iUnion, exists_prop]
   constructor
   · intro e_in_u
-    choose c' hc'₀ e_in_c' hc'₁ using h_nhds e u e_in_u hu
+    choose c' hc'₀ e_in_c' hc'₁ using mem_Ici_Compact_of_mem_Open e u e_in_u hu
     obtain ⟨c, hc₀, c'_eq⟩ := hc'₀
     use c
     simp_all only [and_self]
@@ -266,12 +267,12 @@ lemma open_eq_open_of_basis' (u : Opens D) :
   simp only [SetLike.mem_coe]
   constructor
   · intro e_in_u
-    choose c' hc'₀ e_in_c' hc'₁ using h_nhds e u e_in_u u.isOpen
+    choose c' hc'₀ e_in_c' hc'₁ using mem_Ici_Compact_of_mem_Open e u e_in_u u.isOpen
     simp only [Opens.mem_sSup]
-    use ⟨c', h_open hc'₀⟩
+    use ⟨c', isOpen_of_Ici_compact hc'₀⟩
     constructor
     · obtain ⟨c, hc₀, c'_eq⟩ := hc'₀
-      simp only [open_of_compact]
+      simp only [open_of_Ici_Compact]
       rw [← c'_eq] at hc'₁
       use c; use hc₀; use mem_iff_upSet_subset.2 hc'₁
       simp only [Opens.mk.injEq]
@@ -282,7 +283,7 @@ lemma open_eq_open_of_basis' (u : Opens D) :
     obtain ⟨c', hc'₀, he⟩ := he
     obtain ⟨c, hc₀, hc₁, hc'₁⟩ := hc'₀
     rw [mem_iff_upSet_subset] at hc₁
-    rw [open_of_compact] at hc'₁
+    rw [open_of_Ici_Compact] at hc'₁
     rw [hc'₁] at he
     exact Set.mem_of_mem_of_subset he hc₁
 
