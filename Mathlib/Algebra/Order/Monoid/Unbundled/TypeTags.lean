@@ -91,6 +91,8 @@ theorem toMul_lt {a b : Additive α} : a.toMul < b.toMul ↔ a < b :=
 @[gcongr] alias ⟨_, toMul_strictMono⟩ := toMul_lt
 @[gcongr] alias ⟨_, ofMul_strictMono⟩ := ofMul_lt
 
+@[deprecated (since := "2025-11-18")] alias foMul_strictMono := ofMul_strictMono
+
 end Preorder
 
 section OrderTop
