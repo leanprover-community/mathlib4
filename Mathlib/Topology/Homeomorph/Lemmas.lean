@@ -435,6 +435,16 @@ noncomputable def toHomeomorphOfSurjective {f : X → Y}
 noncomputable def homeomorphImage {f : X → Y} (hf : IsEmbedding f) (s : Set X) : s ≃ₜ f '' s :=
   (hf.comp .subtypeVal).toHomeomorph.trans <| .setCongr <| by simp [Set.range_comp]
 
+/-- An embedding restricts to a homeomorphism between the preimage and any subset of its range. -/
+noncomputable def homeomorphOfSubsetRange {f : X → Y} (hf : IsEmbedding f)
+    {s : Set Y} (hs : s ⊆ Set.range f) : (f ⁻¹' s) ≃ₜ s :=
+  hf.homeomorphImage (f ⁻¹' s) |>.trans <| .setCongr <| Set.image_preimage_eq_of_subset hs
+
+@[simp]
+theorem homeomorphOfSubsetRange_apply_coe {f : X → Y} (hf : IsEmbedding f)
+    {s : Set Y} (hs : s ⊆ Set.range f) (x : f ⁻¹' s) :
+    ↑(hf.homeomorphOfSubsetRange hs x) = f ↑x := rfl
+
 end Topology.IsEmbedding
 
 end
