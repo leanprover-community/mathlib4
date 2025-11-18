@@ -305,9 +305,7 @@ lemma IsCardinalFiltered.multicoequalizer
 lemma Limits.IsTerminal.isCardinalFiltered {J : Type u} [Category.{v} J]
     {X : J} (hX : IsTerminal X) (κ : Cardinal.{w}) [Fact κ.IsRegular] :
     IsCardinalFiltered J κ where
-  nonempty_cocone {A _} F _ := ⟨{
-    pt := X
-    ι.app _ := hX.from _ }⟩
+  nonempty_cocone _ _ := ⟨{ pt := X, ι.app _ := hX.from _ }⟩
 
 lemma isCardinalFiltered_of_hasTerminal (J : Type u) [Category.{v} J]
     [HasTerminal J] (κ : Cardinal.{w}) [Fact κ.IsRegular] :
