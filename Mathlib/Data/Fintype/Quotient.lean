@@ -25,6 +25,8 @@ by a finite type.
 
 -/
 
+-- We want the theorems in this file to be constructive.
+set_option linter.unusedDecidableInType false
 
 namespace Quotient
 
