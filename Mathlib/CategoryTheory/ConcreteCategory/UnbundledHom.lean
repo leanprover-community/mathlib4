@@ -22,12 +22,17 @@ namespace CategoryTheory
 /-- A class for unbundled homs used to define a category. `hom` must
 take two types `α`, `β` and instances of the corresponding structures,
 and return a predicate on `α → β`. -/
+@[deprecated "The prefered method for talking about concrete categories is to implement the \
+category manually and then provide the `ConcreteCategory` instance on top of this. See \
+`ConcreteCategory/Basic.lean`" (since := "2025-11-17")]
 class UnbundledHom {c : Type u → Type u} (hom : ∀ ⦃α β⦄, c α → c β → (α → β) → Prop) : Prop where
   hom_id : ∀ {α} (ia : c α), hom ia ia id
   hom_comp : ∀ {α β γ} {Iα : c α} {Iβ : c β} {Iγ : c γ} {g : β → γ} {f : α → β} (_ : hom Iβ Iγ g)
       (_ : hom Iα Iβ f), hom Iα Iγ (g ∘ f)
 
 namespace UnbundledHom
+
+set_option linter.deprecated false
 
 variable (c : Type u → Type u) (hom : ∀ ⦃α β⦄, c α → c β → (α → β) → Prop) [𝒞 : UnbundledHom hom]
 
@@ -37,7 +42,7 @@ instance bundledHom : BundledHom fun α β (Iα : c α) (Iβ : c β) => Subtype 
   id_toFun _ := rfl
   comp _ _ _ g f := ⟨g.1 ∘ f.1, hom_comp g.2 f.2⟩
   comp_toFun _ _ _ _ _ := rfl
-  hom_ext _ _ _ _ := Subtype.eq
+  hom_ext _ _ _ _ := Subtype.ext
 
 section HasForget₂
 

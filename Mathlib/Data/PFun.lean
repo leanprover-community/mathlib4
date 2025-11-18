@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 -/
 import Batteries.WF
+import Batteries.Tactic.GeneralizeProofs
 import Mathlib.Data.Part
 import Mathlib.Data.Rel
-import Mathlib.Tactic.GeneralizeProofs
 
 /-!
 # Partial functions

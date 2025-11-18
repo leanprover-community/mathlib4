@@ -576,6 +576,17 @@ theorem SurjOn.forall {p : β → Prop} (hf : s.SurjOn f t) (hf' : s.MapsTo f t)
     (∀ y ∈ t, p y) ↔ (∀ x ∈ s, p (f x)) :=
   ⟨fun H x hx ↦ H (f x) (hf' hx), fun H _y hy ↦ let ⟨x, hx, hxy⟩ := hf hy; hxy ▸ H x hx⟩
 
+theorem _root_.Subtype.coind_surjective {α β} {f : α → β} {p : Set β} (h : ∀ a, f a ∈ p)
+    (hf : Set.SurjOn f Set.univ p) :
+    (Subtype.coind f h).Surjective := fun ⟨_, hb⟩ ↦
+  let ⟨a, _, ha⟩ := hf hb
+  ⟨a, Subtype.coe_injective ha⟩
+
+theorem _root_.Subtype.coind_bijective {α β} {f : α → β} {p : Set β} (h : ∀ a, f a ∈ p)
+    (hf_inj : f.Injective) (hf_surj : Set.SurjOn f Set.univ p) :
+    (Subtype.coind f h).Bijective :=
+  ⟨Subtype.coind_injective h hf_inj, Subtype.coind_surjective h hf_surj⟩
+
 end surjOn
 
 /-! ### Bijectivity -/
@@ -700,7 +711,7 @@ lemma bijOn_of_subsingleton [Subsingleton α] (f : α → α) (s : Set α) : Bij
 theorem BijOn.bijective (h : BijOn f s t) : Bijective (h.mapsTo.restrict f s t) :=
   ⟨fun x y h' => Subtype.ext <| h.injOn x.2 y.2 <| Subtype.ext_iff.1 h', fun ⟨_, hy⟩ =>
     let ⟨x, hx, hxy⟩ := h.surjOn hy
-    ⟨⟨x, hx⟩, Subtype.eq hxy⟩⟩
+    ⟨⟨x, hx⟩, Subtype.ext hxy⟩⟩
 
 @[simp] lemma bijOn_univ : BijOn f univ univ ↔ Bijective f := by simp [Bijective, BijOn]
 
