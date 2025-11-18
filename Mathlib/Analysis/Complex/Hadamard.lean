@@ -405,7 +405,7 @@ lemma sSupNormIm_scale_right (f : ℂ → E) {l u : ℝ} (hul : l < u) :
   rw [this]
 
 /-- A technical lemma relating the bounds given by the three lines lemma on a general strip
-to the bounds for its scaled version on the strip ``re ⁻¹' [0, 1]`. -/
+to the bounds for its scaled version on the strip `re ⁻¹' [0, 1]`. -/
 lemma interpStrip_scale (f : ℂ → E) {l u : ℝ} (hul : l < u) (z : ℂ) : interpStrip (scale f l u)
     ((z - ↑l) / (↑u - ↑l)) = interpStrip' f l u z := by
   simp only [interpStrip, interpStrip']
