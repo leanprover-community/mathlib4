@@ -146,7 +146,7 @@ theorem evalFrom_iUnion₂ {ι : Sort*} {κ : ι → Sort*} (f : ∀ i, κ i →
   simp
 
 variable (M) in
-@[deprecated "Use evalFrom_iUnion₂" (since := "2025-11-17")]
+@[deprecated evalFrom_iUnion₂ (since := "2025-11-17")]
 theorem evalFrom_biUnion {ι : Type*} (t : Set ι) (f : ι → Set σ) :
     ∀ (x : List α), M.evalFrom (⋃ i ∈ t, f i) x = ⋃ i ∈ t, M.evalFrom (f i) x
   | [] => by simp
@@ -155,7 +155,7 @@ theorem evalFrom_biUnion {ι : Type*} (t : Set ι) (f : ι → Set σ) :
 variable (M) in
 theorem evalFrom_eq_biUnion_singleton (S : Set σ) (x : List α) :
     M.evalFrom S x = ⋃ s ∈ S, M.evalFrom {s} x := by
-  simp [←evalFrom_iUnion₂]
+  simp [← evalFrom_iUnion₂]
 
 theorem mem_evalFrom_iff_exists {s : σ} {S : Set σ} {x : List α} :
     s ∈ M.evalFrom S x ↔ ∃ t ∈ S, s ∈ M.evalFrom {t} x := by
