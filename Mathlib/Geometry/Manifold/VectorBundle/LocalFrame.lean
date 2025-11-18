@@ -340,13 +340,21 @@ If `x` is outside of `e.baseSet`, this returns the junk value 0. -/
 def localFrame : ι → (x : M) → V x :=
   fun i x ↦ if hx : x ∈ e.baseSet then e.basisAt b hx i else 0
 
+@[simp]
+lemma localFrame_apply_of_mem_baseSet {i : ι} (hx : x ∈ e.baseSet) :
+    e.localFrame b i x = e.basisAt b hx i := by
+  simp [localFrame, hx]
+
+lemma localFrame_apply_of_notMem {i : ι} (hx : x ∉ e.baseSet) : e.localFrame b i x = 0 := by
+  simp [localFrame, hx]
+
 /-- Each local frame `{sᵢ} ∈ Γ(E)` of a `C^k` vector bundle, defined by a local trivialisation `e`,
 is `C^k` on `e.baseSet`. -/
 lemma contMDiffOn_localFrame_baseSet (i : ι) : CMDiff[e.baseSet] n (T% (e.localFrame b i)) := by
   rw [e.contMDiffOn_section_baseSet_iff]
   apply (contMDiffOn_const (c := b i)).congr
   intro y hy
-  simp [localFrame, hy, basisAt]
+  simp [hy, basisAt]
 
 variable (I) in
 /-- `b.localFrame e i` is indeed a local frame on `e.baseSet` -/
@@ -355,23 +363,15 @@ lemma isLocalFrameOn_localFrame_baseSet : IsLocalFrameOn I F n (e.localFrame b) 
   linearIndependent := by
     intro x hx
     convert (e.basisAt b hx).linearIndependent
-    simp [localFrame, hx, basisAt]
+    simp [hx, basisAt]
   generating := by
     intro x hx
     convert (e.basisAt b hx).span_eq.ge
-    simp [localFrame, hx, basisAt]
+    simp [hx, basisAt]
 
 lemma _root_.contMDiffAt_localFrame_of_mem (i : ι) (hx : x ∈ e.baseSet) :
     CMDiffAt n (T% (e.localFrame b i)) x :=
   (e.isLocalFrameOn_localFrame_baseSet I n b).contMDiffAt e.open_baseSet hx _
-
-@[simp]
-lemma localFrame_apply_of_mem_baseSet {i : ι} (hx : x ∈ e.baseSet) :
-    e.localFrame b i x = e.basisAt b hx i := by
-  simp [localFrame, hx]
-
-lemma localFrame_apply_of_notMem {i : ι} (hx : x ∉ e.baseSet) : e.localFrame b i x = 0 := by
-  simp [localFrame, hx]
 
 variable [ContMDiffVectorBundle 1 F V I]
 
@@ -397,7 +397,7 @@ variable (e b) in
 lemma localFrame_coeff_apply_of_mem_baseSet (hx : x ∈ e.baseSet) (s : Π x : M, V x) (i : ι) :
     e.localFrame_coeff I b i s x = (e.basisAt b hx).repr (s x) i := by
   have he := e.isLocalFrameOn_localFrame_baseSet I 1 b
-  have : e.basisAt b hx = he.toBasisAt hx := by ext j; simp [localFrame, hx]
+  have : e.basisAt b hx = he.toBasisAt hx := by ext j; simp [hx]
   exact this ▸ he.coeff_apply_of_mem hx s i
 
 variable {s s' : Π x : M, V x}
