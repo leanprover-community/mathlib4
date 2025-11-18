@@ -188,7 +188,7 @@ end AddCommGroup
 section Module
 
 instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
-    Module R 𝓓^{n}(Ω, F) :=
+    Module R 𝓓^{n}(Ω, F) := fast_instance%
   DFunLike.coe_injective.module R (coeFnAddMonoidHom Ω F n) fun _ _ ↦ rfl
 
 end Module
