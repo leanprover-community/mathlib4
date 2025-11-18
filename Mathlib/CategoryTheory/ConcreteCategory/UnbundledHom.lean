@@ -32,6 +32,8 @@ class UnbundledHom {c : Type u → Type u} (hom : ∀ ⦃α β⦄, c α → c β
 
 namespace UnbundledHom
 
+set_option linter.deprecated false
+
 variable (c : Type u → Type u) (hom : ∀ ⦃α β⦄, c α → c β → (α → β) → Prop) [𝒞 : UnbundledHom hom]
 
 instance bundledHom : BundledHom fun α β (Iα : c α) (Iβ : c β) => Subtype (hom Iα Iβ) where

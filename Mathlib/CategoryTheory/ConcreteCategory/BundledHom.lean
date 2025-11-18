@@ -52,6 +52,8 @@ attribute [simp] BundledHom.id_toFun BundledHom.comp_toFun
 
 namespace BundledHom
 
+set_option linter.deprecated false
+
 variable [𝒞 : BundledHom hom]
 
 set_option synthInstance.checkSynthOrder false in
