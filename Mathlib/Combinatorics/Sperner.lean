@@ -124,29 +124,32 @@ private lemma almost_panchromatic_no_color {c : E → Fin (m + 1)} {X : Finset E
 
 /-- Each panchromatic face X contains exactly one vertex with each color.
 Given color i, there exists a unique x ∈ X with c(x) = i. -/
-private lemma panchromatic_unique_color {c : E → Fin (m + 1)} {X : Finset E}
+private lemma panchromatic_unique_color {m : ℕ} {c : (Fin (m + 1) → ℝ) → Fin (m + 1)}
+    {X : Finset (Fin (m + 1) → ℝ)}
     (hX : IsPanchromatic c X) (hX_card : X.card = m + 1) :
     ∀ i, ∃! x, x ∈ X ∧ c x = i := by
   intro i
   have h_surj : Set.SurjOn c X univ := hX
-  have h_card_eq : X.card = Fintype.card (Fin (m + 1)) := by simp [hX_card]
-  have h_bij : Function.Bijective (Set.restrict (c '' X) c) := by
-    apply (Set.bijective_iff_surjective_and_card).mpr
-    constructor
-    · exact h_surj
-    · rw [ncard_image_of_injective, hX_card]
-      apply Function.Injective.of_surjective
-      exact h_surj
+  -- Existence from surjectivity
+  have ⟨x, hx_mem, hx_color⟩ : ∃ x ∈ X, c x = i := by
+    have : i ∈ (univ : Set (Fin (m + 1))) := Set.mem_univ i
+    exact h_surj this
+  use x, ⟨hx_mem, hx_color⟩
+  -- Uniqueness from cardinality
+  intro y ⟨hy_mem, hy_color⟩
+  by_contra hne
   sorry
 
 /-- A panchromatic (m+1)-simplex has exactly one vertex with color 0. -/
-private lemma panchromatic_has_unique_zero_color {c : E → Fin (m + 2)} {X : Finset E}
+private lemma panchromatic_has_unique_zero_color {m : ℕ}
+    {c : (Fin (m + 2) → ℝ) → Fin (m + 2)} {X : Finset (Fin (m + 2) → ℝ)}
     (hX : IsPanchromatic c X) (hX_card : X.card = m + 2) :
     ∃! x, x ∈ X ∧ c x = 0 := by
-  sorry
+  exact panchromatic_unique_color hX hX_card 0
 
 /-- Removing the vertex with color 0 from a panchromatic (m+1)-face gives a 0-almost-panchromatic m-face. -/
-private lemma panchromatic_remove_zero {c : (Fin (m + 2) → ℝ) → Fin (m + 2)} {X : Finset (Fin (m + 2) → ℝ)}
+private lemma panchromatic_remove_zero {m : ℕ}
+    {c : (Fin (m + 2) → ℝ) → Fin (m + 2)} {X : Finset (Fin (m + 2) → ℝ)}
     (hX : IsPanchromatic c X) (hX_card : X.card = m + 2) :
     ∃ x ∈ X, c x = 0 ∧ IsAlmostPanchromatic c (X.erase x) 0 := by
   obtain ⟨x, ⟨hx_mem, hx_color⟩, _⟩ := panchromatic_has_unique_zero_color hX hX_card
@@ -321,8 +324,10 @@ private lemma panchromatic_to_zero_almost_unique {S : SimplicialComplex ℝ (Fin
 
 /-- Helper: Parity arithmetic for the main count. -/
 private lemma odd_of_odd_plus_even (a b : ℕ) (ha : Odd a) (hb : Even b) : Odd (a + b) := by
-  rw [Nat.odd_iff_mod_two_eq_one.mp ha, Nat.even_iff_mod_two_eq_zero.mp hb]
-  simp
+  rcases ha with ⟨k, rfl⟩
+  rcases hb with ⟨ℓ, rfl⟩
+  use k + ℓ
+  ring
 
 /-- **Sperner's lemma**: A Sperner triangulation contains at least one panchromatic simplex.
 
@@ -331,8 +336,14 @@ theorem sperner {S : SimplicialComplex ℝ (Fin (m + 1) → ℝ)} {c : E → Fin
     (hSspace : S.space = stdSimplex ℝ (Fin (m + 1))) (hSfin : S.faces.Finite)
     (hc : IsSpernerColoring S c) : ∃ X ∈ S.faces, IsPanchromatic c X := by
   have h_odd := strong_sperner hSspace hSfin hc
-  have h_pos : 0 < {s ∈ S.faces | IsPanchromatic c s}.ncard := Nat.Odd.pos h_odd
-  rcases Set.ncard_pos.mp h_pos with ⟨X, hX⟩
-  exact ⟨X, hX.1, hX.2⟩
+  rcases h_odd with ⟨k, rfl⟩
+  have h_pos : 0 < {s ∈ S.faces | IsPanchromatic c s}.ncard := Nat.succ_pos _
+  have : {s ∈ S.faces | IsPanchromatic c s}.Nonempty := by
+    rw [Set.nonempty_iff_ne_empty]
+    intro h_empty
+    rw [h_empty, Set.ncard_empty] at h_pos
+    exact Nat.lt_irrefl 0 h_pos
+  obtain ⟨X, hX_mem, hX_panch⟩ := this
+  exact ⟨X, hX_mem, hX_panch⟩
 
 end Geometry
