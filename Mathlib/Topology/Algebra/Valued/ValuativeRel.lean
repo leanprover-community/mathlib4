@@ -22,7 +22,7 @@ namespace IsValuativeTopology
 
 section
 
-/-! # Alternate constructors -/
+/-! ### Alternate constructors -/
 
 variable {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R]
 
