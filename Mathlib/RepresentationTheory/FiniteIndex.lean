@@ -35,7 +35,7 @@ namespace Rep
 open CategoryTheory Finsupp TensorProduct Representation
 
 variable {k G : Type u} [CommRing k] [Group G] {S : Subgroup G}
-  [DecidableRel (QuotientGroup.rightRel S)] (A : Rep k S)
+  [inst : DecidableRel (QuotientGroup.rightRel S)] (A : Rep k S)
 
 /-- Let `S ≤ G` be a subgroup and `(A, ρ)` a `k`-linear `S`-representation. Then given `g : G` and
 `a : A`, this is the function `G → A` sending `sg` to `ρ(s)(a)` for all `s : S` and everything else
@@ -188,8 +188,11 @@ noncomputable def indCoindNatIso : indFunctor k S.subtype ≅ coindFunctor k S.s
 noncomputable def resIndAdjunction : Action.res _ S.subtype ⊣ indFunctor k S.subtype :=
   (resCoindAdjunction k S.subtype).ofNatIsoRight (indCoindNatIso k S).symm
 
-noncomputable instance : (indFunctor k S.subtype).IsRightAdjoint :=
-  (resIndAdjunction k S).isRightAdjoint
+omit [DecidableRel (QuotientGroup.rightRel S)] in
+@[instance] -- Note: we must use `@[instance] theorem` here due to [lean4#5595](https://github.com/leanprover/lean4/issues/5595).
+theorem instIsRightAdjointSubtypeMemSubgroupIndFunctorSubtype :
+    (indFunctor k S.subtype).IsRightAdjoint :=
+  open scoped Classical in (resIndAdjunction k S).isRightAdjoint
 
 variable {k S}
 
@@ -225,8 +228,11 @@ variable (k S) in
 noncomputable def coindResAdjunction : coindFunctor k S.subtype ⊣ Action.res _ S.subtype :=
   (indResAdjunction k S.subtype).ofNatIsoLeft (indCoindNatIso k S)
 
-noncomputable instance : (coindFunctor k S.subtype).IsLeftAdjoint :=
-  (coindResAdjunction k S).isLeftAdjoint
+omit [DecidableRel (QuotientGroup.rightRel S)] in
+@[instance] -- Note: we must use `@[instance] theorem` here due to [lean4#5595](https://github.com/leanprover/lean4/issues/5595).
+theorem instIsLeftAdjointSubtypeMemSubgroupCoindFunctorSubtype :
+    (coindFunctor k S.subtype).IsLeftAdjoint :=
+  open scoped Classical in (coindResAdjunction k S).isLeftAdjoint
 
 @[simp]
 lemma coindResAdjunction_counit_app (B : Rep k G) :

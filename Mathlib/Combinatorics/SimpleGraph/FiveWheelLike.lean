@@ -228,9 +228,12 @@ lemma exists_max_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartit
 lemma CliqueFree.fiveWheelLikeFree_of_le (h : G.CliqueFree (r + 2)) (hk : r ≤ k) :
     G.FiveWheelLikeFree r k := fun hw ↦ (hw.card_inter_lt_of_cliqueFree h).not_ge hk
 
+end withDecEq
+
 /-- A maximally `Kᵣ₊₁`-free graph is `r`-colorable iff it is complete-multipartite. -/
 theorem colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree
     (h : Maximal (fun H => H.CliqueFree (r + 1)) G) : G.Colorable r ↔ G.IsCompleteMultipartite := by
+  classical
   match r with
   | 0 => exact ⟨fun _ ↦ fun x ↦ cliqueFree_one.1 h.1 |>.elim' x,
                 fun _ ↦ G.colorable_zero_iff.2 <| cliqueFree_one.1 h.1⟩
@@ -240,8 +243,6 @@ theorem colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree
     obtain ⟨_, _, _, _, _, hw⟩ :=
       exists_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartite h hc
     exact hw.not_colorable_succ
-
-end withDecEq
 
 section AES
 variable {i j n : ℕ} {d x v w₁ w₂ : α} {s t : Finset α}
@@ -422,6 +423,7 @@ is `2`-colorable.
 theorem colorable_of_cliqueFree_lt_minDegree [Fintype α] [DecidableRel G.Adj]
     (hf : G.CliqueFree (r + 1)) (hd : (3 * r - 4) * ‖α‖ / (3 * r - 1) < G.minDegree) :
     G.Colorable r := by
+  classical
   match r with
   | 0 | 1 => aesop
   | r + 2 =>
