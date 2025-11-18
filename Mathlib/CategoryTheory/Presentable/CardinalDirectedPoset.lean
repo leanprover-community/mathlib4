@@ -93,6 +93,8 @@ abbrev CardinalFilteredPoset.ι :
     CardinalFilteredPoset κ ⥤ PartOrdEmb :=
   ObjectProperty.ι _
 
+namespace CardinalFilteredPoset
+
 instance : HasCardinalFilteredColimits (CardinalFilteredPoset κ) κ where
   hasColimitsOfShape J _ _ := by
     have := isFiltered_of_isCardinalFiltered J κ
@@ -100,5 +102,7 @@ instance : HasCardinalFilteredColimits (CardinalFilteredPoset κ) κ where
 
 instance : IsCardinalAccessibleCategory (CardinalFilteredPoset κ) κ where
   exists_generator := sorry
+
+end CardinalFilteredPoset
 
 end CategoryTheory
