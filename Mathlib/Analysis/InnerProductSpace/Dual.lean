@@ -66,6 +66,10 @@ def toDualMap : E →ₗᵢ⋆[𝕜] StrongDual 𝕜 E :=
 variable {E}
 
 @[simp]
+theorem toContinuousLinearMap_toDualMap :
+    (toDualMap 𝕜 E).toContinuousLinearMap = innerSL 𝕜 := rfl
+
+@[simp]
 theorem toDualMap_apply_apply {x y : E} : toDualMap 𝕜 E x y = ⟪x, y⟫ := rfl
 
 @[deprecated (since := "2025-11-15")] alias toDualMap_apply := toDualMap_apply_apply
@@ -176,6 +180,13 @@ theorem toDual_apply_apply {x y : E} : toDual 𝕜 E x y = ⟪x, y⟫ := rfl
 theorem toDual_symm_apply {x : E} {y : StrongDual 𝕜 E} : ⟪(toDual 𝕜 E).symm y, x⟫ = y x := by
   rw [← toDual_apply_apply]
   simp only [LinearIsometryEquiv.apply_symm_apply]
+
+@[simp]
+lemma toLinearIsometry_toDual :
+    (toDual 𝕜 E).toLinearIsometry = toDualMap 𝕜 E := rfl
+
+lemma toDual_apply_eq_toDualMap_apply (x : E) :
+    toDual 𝕜 E x = toDualMap 𝕜 E x := rfl
 
 /-- Maps a bounded sesquilinear form to its continuous linear map,
 given by interpreting the form as a map `B : E →L⋆[𝕜] StrongDual 𝕜 E`
