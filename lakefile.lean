@@ -42,7 +42,16 @@ abbrev mathlibLeanOptions := #[
     ⟨`pp.unicode.fun, true⟩, -- pretty-prints `fun a ↦ b`
     ⟨`autoImplicit, false⟩,
     ⟨`experimental.module, true⟩,
+    -- Enforcing the module system's restrictions on using private declarations in public contexts
+    -- will require further API changes specific to the respective usage, so we disable these checks
+    -- for now until they can be addressed one by one.
     ⟨`backward.privateInPublic, true⟩,
+    -- We disable the many warnings for now; this can be switched locally to work on the offenders.
+    ⟨`backward.privateInPublic.warnl, false⟩,
+    -- Similarly, enforcing that tactic blocks embedded in terms are elaborated in the private scope
+    -- can affect type inference, which breaks in multiple places and should be fixed separately.
+    -- Note that this should be fixed first such that access to private declarations in such proofs
+    -- is allowed even when disabling `backward.privateInPublic`.
     ⟨`backward.proofsInPublic, true⟩,
     ⟨`maxSynthPendingDepth, .ofNat 3⟩
   ] ++ -- options that are used in `lake build`
@@ -64,7 +73,6 @@ package mathlib where
 lean_lib Mathlib where
   -- Enforce Mathlib's default linters and style options.
   leanOptions := mathlibLeanOptions
-  moreLeanArgs := #["-Dbackward.privateInPublic.warn=false"]
 
 -- NB. When adding further libraries, check if they should be excluded from `getLeanLibs` in
 -- `scripts/mk_all.lean`.
