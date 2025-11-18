@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.DerivedCategory.Basic
+import Mathlib.Algebra.Homology.DerivedCategory.Linear
 
 /-!
 # An exact functor induces a functor on derived categories
@@ -87,6 +88,9 @@ instance : NatTrans.CommShift F.mapDerivedCategoryFactors.hom ℤ :=
       simp only [id_comp, mapDerivedCategoryFactorsh_hom_app, assoc, comp_id,
         ← Functor.map_comp_assoc, Iso.inv_hom_id_app, map_id, comp_obj])
 
+instance : F.mapDerivedCategory.IsTriangulated :=
+  Functor.isTriangulated_of_precomp_iso F.mapDerivedCategoryFactorsh
+
 /-- The commute of `DerivedCategory.singleFunctor` with `F` and `F.mapDerivedCategory`. -/
 noncomputable def mapDerivedCategorySingleFunctor (n : ℤ) :
     (DerivedCategory.singleFunctor C₁ n) ⋙ F.mapDerivedCategory ≅
@@ -96,7 +100,11 @@ noncomputable def mapDerivedCategorySingleFunctor (n : ℤ) :
       ≪≫ isoWhiskerRight (HomologicalComplex.singleMapHomologicalComplex F (ComplexShape.up ℤ) n) _
         ≪≫ (associator ..) ≪≫ (isoWhiskerLeft _ (DerivedCategory.singleFunctorIsoCompQ C₂ n)).symm
 
-instance : F.mapDerivedCategory.IsTriangulated :=
-  Functor.isTriangulated_of_precomp_iso F.mapDerivedCategoryFactorsh
+variable (R : Type*) [Ring R] [CategoryTheory.Linear R C₁] [CategoryTheory.Linear R C₂]
+
+instance [F.Linear R] : F.mapDerivedCategory.Linear R := by
+  rw [← Localization.functor_linear_iff DerivedCategory.Qh (HomotopyCategory.quasiIso C₁
+    (ComplexShape.up ℤ)) R ((F.mapHomotopyCategory (ComplexShape.up ℤ)).comp DerivedCategory.Qh) _]
+  infer_instance
 
 end CategoryTheory.Functor
