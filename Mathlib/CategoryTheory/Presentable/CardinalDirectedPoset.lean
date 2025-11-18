@@ -84,7 +84,8 @@ with morphisms given by order embeddings. -/
 abbrev CardinalFilteredPoset :=
   (PartOrdEmb.isCardinalFiltered κ).FullSubcategory
 
-variable {κ} in
+variable {κ}
+
 /-- The embedding of the category of `κ`-filtered
 partially ordered types in the category of partially
 ordered types. -/
@@ -94,11 +95,17 @@ abbrev CardinalFilteredPoset.ι :
 
 namespace CardinalFilteredPoset
 
-variable {κ} in
 /-- Constructor for objects in `CardinalFilteredPoset κ`. -/
 abbrev of (J : PartOrdEmb.{u}) [IsCardinalFiltered J κ] : CardinalFilteredPoset κ where
   obj := J
   property := inferInstance
+
+lemma Hom.injective {J₁ J₂ : CardinalFilteredPoset κ} (f : J₁ ⟶ J₂) :
+    Function.Injective f := f.injective
+
+lemma Hom.le_iff_le {J₁ J₂ : CardinalFilteredPoset κ} (f : J₁ ⟶ J₂) (x₁ x₂ : J₁.obj) :
+    f x₁ ≤ f x₂ ↔ x₁ ≤ x₂ :=
+  f.hom.le_iff_le
 
 instance (J : CardinalFilteredPoset κ) : IsCardinalFiltered J.obj κ := J.property
 
@@ -107,6 +114,13 @@ instance : HasCardinalFilteredColimits (CardinalFilteredPoset κ) κ where
     have := isFiltered_of_isCardinalFiltered J κ
     infer_instance
 
+instance (A : Type u) [SmallCategory A] [IsCardinalFiltered A κ] :
+    PreservesColimitsOfShape A (forget (CardinalFilteredPoset κ)) := by
+  have := isFiltered_of_isCardinalFiltered A κ
+  change PreservesColimitsOfShape A (CardinalFilteredPoset.ι ⋙ forget _)
+  infer_instance
+
+variable (κ) in
 /-- The property of posets in `CardinalFilteredPoset κ` that are
 of cardinality `< κ` and have terminal object. -/
 def hasCardinalLTWithTerminal : ObjectProperty (CardinalFilteredPoset κ) :=
@@ -133,7 +147,7 @@ instance : ObjectProperty.EssentiallySmall.{u} (hasCardinalLTWithTerminal κ) wh
 
 namespace cocone
 
-variable {κ} (J : CardinalFilteredPoset κ)
+variable (J : CardinalFilteredPoset κ)
 
 def indexSet : Set (Set J.obj) := setOf (fun S ↦ HasCardinalLT S κ ∧ HasTerminal S)
 
@@ -183,13 +197,11 @@ def functor : indexSet J ⥤ CardinalFilteredPoset κ where
 
 end cocone
 
-variable {κ} in
 @[simps]
 def cocone (J : CardinalFilteredPoset κ) : Cocone (cocone.functor J) where
   pt := J
   ι.app _ := PartOrdEmb.ofHom (OrderEmbedding.subtype _)
 
-variable {κ} in
 open cocone in
 noncomputable def isColimitCocone (J : CardinalFilteredPoset κ) :
     IsColimit (cocone J) :=
@@ -201,14 +213,54 @@ noncomputable def isColimitCocone (J : CardinalFilteredPoset κ) :
 
 protected lemma isCardinalPresentable_iff (J : CardinalFilteredPoset κ) :
     IsCardinalPresentable J κ ↔ HasCardinalLT J.obj κ := by
-  refine ⟨fun _ ↦ ?_, fun hJ ↦ ?_⟩
+  refine ⟨fun _ ↦ ?_, fun hJ ↦ ⟨fun A _ _ ↦ ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨?_⟩⟩⟩⟩⟩
   · have : IsCardinalPresentable J.cocone.pt κ := by assumption
     obtain ⟨X, f, hf⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ (isColimitCocone J) (𝟙 _)
     have : IsSplitMono f := ⟨_, hf⟩
     exact X.2.1.of_injective f
       ((mono_iff_injective _).1 (inferInstanceAs (Mono ((forget _).map f))))
-  · sorry
+  · have := isFiltered_of_isCardinalFiltered A κ
+    replace hc := isColimitOfPreserves (forget _) hc
+    refine Types.FilteredColimit.isColimitOf' _ _ (fun f ↦ ?_) (fun j f g h ↦ ?_)
+    · dsimp at f
+      choose j g hg using fun (x : J.obj) ↦ Types.jointly_surjective_of_isColimit hc (f x)
+      let m := IsCardinalFiltered.max j hJ
+      let φ (x : J.obj) : (F.obj m).obj := F.map (IsCardinalFiltered.toMax j hJ x) (g x)
+      have hφ (x : J.obj) : f x = c.ι.app _ (φ x) := by
+        dsimp [φ]
+        rw [← hg, ← ConcreteCategory.comp_apply, c.w]
+        rfl
+      refine ⟨m,
+        PartOrdEmb.ofHom
+          { toFun := φ
+            inj' x y h := Hom.injective f (by simpa [hφ])
+            map_rel_iff' {x y} := ?_ }, ?_⟩
+      · simp only [Function.Embedding.coeFn_mk,
+          ← Hom.le_iff_le f, hφ, Hom.le_iff_le (c.ι.app m)]
+      · dsimp
+        ext x
+        rw [← hg]
+        exact ConcreteCategory.congr_hom (c.w (IsCardinalFiltered.toMax j hJ x)).symm (g x)
+    · choose k a hk using fun (x : J.obj) ↦
+        (Types.FilteredColimit.isColimit_eq_iff' hc _ _).1 (ConcreteCategory.congr_hom h x)
+      dsimp at f g h k a hk ⊢
+      obtain ⟨l, b, c, hl⟩ : ∃ (l : A) (c : j ⟶ l) (b : ∀ x, k x ⟶ l),
+          ∀ x, a x ≫ b x = c := by
+        let φ (x : J.obj) : j ⟶ IsCardinalFiltered.max k hJ :=
+          a x ≫ IsCardinalFiltered.toMax k hJ x
+        exact ⟨IsCardinalFiltered.coeq φ hJ,
+          IsCardinalFiltered.toCoeq φ hJ,
+          fun x ↦ IsCardinalFiltered.toMax k hJ x ≫ IsCardinalFiltered.coeqHom φ hJ,
+          fun x ↦ by simpa [φ] using IsCardinalFiltered.coeq_condition φ hJ x⟩
+      refine ⟨l, b, ?_⟩
+      ext x
+      dsimp
+      simp only [ConcreteCategory.comp_apply]
+      rw [← hl x]
+      simp only [Functor.map_comp, ConcreteCategory.comp_apply]
+      exact congr_arg _ (hk x)
 
+variable (κ) in
 lemma isCardinalFilteredGenerator_hasCardinalLTWithTerminal :
     (hasCardinalLTWithTerminal κ).IsCardinalFilteredGenerator κ where
   le_isCardinalPresentable := by
