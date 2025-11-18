@@ -6811,17 +6811,27 @@ theorem gelfondSchneider (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgeb
   have h2mq : 2 * h7.m ∣ q ^ 2 := sorry
 
   have use5 := use5 h7 q hq0 h2mq
-  --have hnr : h7.n q ≤ h7.r q hq0 h2mq := n_leq_r h7 q hq0 h2mq
+  have hnr : h7.n q ≤ h7.r q hq0 h2mq := n_leq_r h7 q hq0 h2mq
 
-  --nth_rw 1 [n] at hnr
+  nth_rw 1 [n] at hnr
   --dsimp [q] at hnr
   have : h7.r q hq0 h2mq ^ (h7.r q hq0 h2mq : ℝ) <
       (h7.c₁₅^ (h7.r q hq0 h2mq : ℝ))^
        ((2 * (h7.r q hq0 h2mq): ℝ)/((h7.r q hq0 h2mq : ℝ) - 3* h7.h : ℝ)) := by {
     refine (Real.rpow_inv_lt_iff_of_pos ?_ ?_ ?_).mp ?_
-    · sorry
-    · sorry
-    · sorry
+    · positivity
+    · apply Real.rpow_nonneg
+      · sorry
+    · refine div_pos ?_ ?_
+      · refine Left.mul_pos ?_ ?_
+        · simp only [Nat.ofNat_pos]
+        · norm_cast; exact r_qt_0 h7 q hq0 h2mq
+      · simp only [sub_pos]
+        calc _ < (h7.n q : ℝ):= ?_
+             _ ≤ (h7.r q hq0 h2mq :ℝ):= ?_
+        · unfold n; unfold q
+          sorry
+        · exact Nat.cast_le.mpr hnr
     · simp only [inv_div]
       rw [← Real.rpow_mul]
       ring_nf
@@ -6837,21 +6847,32 @@ theorem gelfondSchneider (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgeb
       rw [mul_div]
       simp only [mul_one, mul_neg]
       rw [← add_div]
-      sorry
-      sorry
-      sorry
-      sorry
-
-
-
-
+      rw [mul_comm]
+      rw [← sub_eq_add_neg]
+      exact use5
+      · norm_cast; exact rneq0 h7 q hq0 h2mq
+      · norm_cast; exact rneq0 h7 q hq0 h2mq
+      · positivity
   }
-  rw [← Real.rpow_inv_lt_iff_of_pos] at this
-  simp only [inv_div] at this
-  sorry
-  sorry
-  sorry
-  sorry
+  rw [← Real.rpow_mul] at this
+  nth_rw 1 [mul_comm] at this
+  rw [Real.rpow_mul] at this
+  rw [Real.rpow_lt_rpow_iff] at this
+  · sorry
+  · positivity
+  · apply Real.rpow_nonneg
+    · sorry
+  · norm_cast; exact r_qt_0 h7 q hq0 h2mq
+  · sorry
+  · sorry
+
+
+  -- rw [← Real.rpow_inv_lt_iff_of_pos] at this
+  -- simp only [inv_div] at this
+  -- sorry
+  -- sorry
+  -- sorry
+  -- sorry
 
 
 
