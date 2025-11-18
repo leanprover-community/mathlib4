@@ -235,7 +235,7 @@ structure Config : Type where
   /-- The attributes which we want to give to the original and translated declaration.
   For `simps` this will also add generated lemmas to the translation dictionary. -/
   attrs : Array Syntax := #[]
-  /-- A list of type variables that should not be translated. -/
+  /-- A list of positions of type variables that should not be translated. -/
   dontTranslate : List Nat := []
   /-- The `Syntax` element corresponding to the translation attribute,
   which we need for adding definition ranges, and for logging messages. -/
