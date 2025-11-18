@@ -49,10 +49,14 @@ larger space of test functions.
 
 ## Notation
 
-- `𝓓^{n}_{K}(E, F)`:  the space of `n`-times continuously differentiable functions `E → F`
-  which vanish outside of `K`.
-- `𝓓_{K}(E, F)`:  the space of smooth (infinitely differentiable) functions `E → F`
-  which vanish outside of `K`, i.e. `𝓓^{⊤}_{K}(E, F)`.
+- `𝓓^{n}_{K}(E, F)`: the space of `n`-times continuously differentiable functions `E → F`
+  which vanish outside of `K`. Scoped in `Distributions`.
+- `𝓓_{K}(E, F)`: the space of smooth (infinitely differentiable) functions `E → F`
+  which vanish outside of `K`, i.e. `𝓓^{⊤}_{K}(E, F)`. Scoped in `Distributions`.
+- `N[𝕜; F]_{K, n, i}` (or simply `N[𝕜]_{K, n, i}`): the `𝕜`-seminorm on `𝓓^{n}_{K}(E, F)`
+  given by the sup-norm of the `i`-th derivative. Scoped in `Distributions.Seminorm`.
+- `N[𝕜; F]_{K, i}` (or simply `N[𝕜]_{K, i}`): the `𝕜`-seminorm on `𝓓_{K}(E, F)`
+  given by the sup-norm of the `i`-th derivative. Scoped in `Distributions.Seminorm`.
 
 ## Implementation details
 
@@ -260,6 +264,12 @@ protected theorem bounded_iteratedFDeriv (f : 𝓓^{n}_{K}(E, F)) {i : ℕ} (hi 
     (f.contDiff.continuous_iteratedFDeriv <| (WithTop.le_coe rfl).mpr hi)
     (f.hasCompactSupport.iteratedFDeriv i)
 
+protected theorem iteratedFDeriv_zero_on_compl (f : 𝓓^{n}_{K}(E, F)) {i : ℕ} :
+    EqOn (iteratedFDeriv ℝ i f) 0 Kᶜ := by
+  intro x (hx : x ∉ K)
+  contrapose! hx
+  exact f.tsupport_subset (support_iteratedFDeriv_subset i hx)
+
 /-- Inclusion of `𝓓^{n}_{K}(E, F)` into the space `E →ᵇ F` of bounded continuous maps
 as a `𝕜`-linear map.
 
@@ -302,18 +312,18 @@ noncomputable def iteratedFDerivWithOrderLM (i : ℕ) :
   toFun f :=
     if hi : k + i ≤ n then
       .of_support_subset
-        (f.contDiff.iteratedFDeriv_right <| by exact_mod_cast hi)
+        (f.contDiff.iteratedFDeriv_right <| mod_cast hi)
         ((support_iteratedFDeriv_subset i).trans f.tsupport_subset)
     else 0
   map_add' f g := by
     split_ifs with hi
-    · have hi' : (i : WithTop ℕ∞) ≤ n := by exact_mod_cast le_of_add_le_right hi
+    · have hi' : (i : WithTop ℕ∞) ≤ n := mod_cast (le_of_add_le_right hi)
       ext
       simp [iteratedFDeriv_add (f.contDiff.of_le hi') (g.contDiff.of_le hi')]
     · simp
   map_smul' c f := by
     split_ifs with hi
-    · have hi' : (i : WithTop ℕ∞) ≤ n := by exact_mod_cast le_of_add_le_right hi
+    · have hi' : (i : WithTop ℕ∞) ≤ n := mod_cast (le_of_add_le_right hi)
       ext
       simp [iteratedFDeriv_const_smul_apply (f.contDiff.of_le hi').contDiffAt]
     · simp
@@ -352,11 +362,11 @@ noncomputable def iteratedFDerivLM (i : ℕ) :
     (f.contDiff.iteratedFDeriv_right le_rfl)
     ((support_iteratedFDeriv_subset i).trans f.tsupport_subset)
   map_add' f g := by
-    have hi : (i : WithTop ℕ∞) ≤ ∞ := by exact_mod_cast le_top
+    have hi : (i : WithTop ℕ∞) ≤ ∞ := mod_cast le_top
     ext
     simp [iteratedFDeriv_add (f.contDiff.of_le hi) (g.contDiff.of_le hi)]
   map_smul' c f := by
-    have hi : (i : WithTop ℕ∞) ≤ ∞ := by exact_mod_cast le_top
+    have hi : (i : WithTop ℕ∞) ≤ ∞ := mod_cast le_top
     ext
     simp [iteratedFDeriv_const_smul_apply (f.contDiff.of_le hi).contDiffAt]
 
@@ -489,9 +499,29 @@ theorem continuous_iff_comp_withOrder {X : Type*} [TopologicalSpace X] (φ : X �
 
 variable (E F n K)
 
-/-- The seminorms on the space `𝓓^{n}_{K}(E, F)` given by sup norm on the `i`-th derivative. -/
+/-- The seminorms on the space `𝓓^{n}_{K}(E, F)` given by the sup norm of the iterated derivatives.
+In the scope `Distributions.Seminorm`, we denote them by `N[𝕜; F]_{K, n, i}`
+(or `N[𝕜]_{K, n, i}`), or simply by `N[𝕜; F]_{K, i}` (or `N[𝕜; F]_{K, i}`) when `n = ∞`. -/
 protected noncomputable def seminorm (i : ℕ) : Seminorm 𝕜 𝓓^{n}_{K}(E, F) :=
   (normSeminorm 𝕜 (E →ᵇ (E [×i]→L[ℝ] F))).comp (structureMapLM 𝕜 n i)
+
+@[inherit_doc ContDiffMapSupportedIn.seminorm]
+scoped[Distributions.Seminorm] notation "N["𝕜"]_{"K","n","i"}" =>
+  ContDiffMapSupportedIn.seminorm 𝕜 _ _ n K i
+
+@[inherit_doc ContDiffMapSupportedIn.seminorm]
+scoped[Distributions.Seminorm] notation "N["𝕜"]_{"K","i"}" =>
+  ContDiffMapSupportedIn.seminorm 𝕜 _ _ ⊤ K i
+
+@[inherit_doc ContDiffMapSupportedIn.seminorm]
+scoped[Distributions.Seminorm] notation "N["𝕜";"F"]_{"K","n","i"}" =>
+  ContDiffMapSupportedIn.seminorm 𝕜 _ F n K i
+
+@[inherit_doc ContDiffMapSupportedIn.seminorm]
+scoped[Distributions.Seminorm] notation "N["𝕜";"F"]_{"K","i"}" =>
+  ContDiffMapSupportedIn.seminorm 𝕜 _ F ⊤ K i
+
+open scoped Distributions.Seminorm
 
 /-- The seminorms on the space `𝓓^{n}_{K}(E, F)` given by sup of the
 `ContDiffMapSupportedIn.seminorm k`for `k ≤ i`. -/
@@ -518,34 +548,53 @@ variable {E F n K}
 -- TODO: Should this be `@[simp]` instead of the one below? I don't want `simp` to
 -- force `WithOrder` variants on people, but maybe this is not a good argument.
 protected theorem seminorm_apply_withOrder (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
-    ContDiffMapSupportedIn.seminorm 𝕜 E F n K i f =
+    N[𝕜]_{K, n, i} f =
       ‖(iteratedFDerivWithOrderLM 𝕜 n 0 i f : E →ᵇ (E [×i]→L[ℝ] F))‖ :=
   rfl
 
 @[simp]
 protected theorem seminorm_apply (i : ℕ) (f : 𝓓^{⊤}_{K}(E, F)) :
-    ContDiffMapSupportedIn.seminorm 𝕜 E F ⊤ K i f =
+    N[𝕜]_{K, i} f =
       ‖(iteratedFDerivLM 𝕜 i f : E →ᵇ (E [×i]→L[ℝ] F))‖ :=
   rfl
 
-protected theorem seminorm_le_iff {C : ℝ} (hC : 0 ≤ C) (i : ℕ) (f : 𝓓^{⊤}_{K}(E, F)) :
-    ContDiffMapSupportedIn.seminorm 𝕜 E F ⊤ K i f ≤ C ↔
-      ∀ x ∈ K, ‖iteratedFDeriv ℝ i f x‖ ≤ C := by
-  rw [ContDiffMapSupportedIn.seminorm_apply, BoundedContinuousFunction.norm_le hC]
-  congrm ∀ x, ?_
-  by_cases hx : x ∈ K
-  · simp [hx]
-  · have : iteratedFDeriv ℝ i f x = 0 := by
-      contrapose! hx
-      exact f.tsupport_subset (support_iteratedFDeriv_subset i hx)
-    simp [hx, this, hC]
-
 protected theorem seminorm_eq_bot_of_gt {i : ℕ} (hin : n < i) :
-    ContDiffMapSupportedIn.seminorm 𝕜 E F n K i = ⊥ := by
+    N[𝕜; F]_{K, n, i} = ⊥ := by
   have : ¬(i ≤ n) := by simpa using hin
   ext f
   simp [ContDiffMapSupportedIn.seminorm_apply_withOrder, BoundedContinuousFunction.ext_iff,
     this]
+
+protected theorem seminorm_le_iff_withOrder {C : ℝ} (hC : 0 ≤ C) (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
+    N[𝕜]_{K, n, i} f ≤ C ↔ (i ≤ n → ∀ x ∈ K, ‖iteratedFDeriv ℝ i f x‖ ≤ C) := by
+  have : (∀ x, ‖iteratedFDeriv ℝ i f x‖ ≤ C) ↔ (∀ x ∈ K, ‖iteratedFDeriv ℝ i f x‖ ≤ C) := by
+    congrm ∀ x, ?_
+    by_cases hx : x ∈ K
+    · simp [hx]
+    · simp [hx, f.iteratedFDeriv_zero_on_compl hx, hC]
+  by_cases hi : i ≤ n
+  · simp [hi, forall_const, ContDiffMapSupportedIn.seminorm_apply_withOrder,
+      BoundedContinuousFunction.norm_le hC, this]
+  · push_neg at hi
+    simp [hi, ContDiffMapSupportedIn.seminorm_eq_bot_of_gt _ hi, hC]
+
+protected theorem seminorm_le_iff {C : ℝ} (hC : 0 ≤ C) (i : ℕ) (f : 𝓓_{K}(E, F)) :
+    N[𝕜]_{K, i} f ≤ C ↔ ∀ x ∈ K, ‖iteratedFDeriv ℝ i f x‖ ≤ C := by
+  simp_rw [ContDiffMapSupportedIn.seminorm_le_iff_withOrder 𝕜 hC, le_top, forall_const]
+
+theorem norm_iteratedFDeriv_apply_le_withOrder {i : ℕ} (hin : i ≤ n)
+    {f : 𝓓^{n}_{K}(E, F)} {x : E} :
+    ‖iteratedFDeriv ℝ i f x‖ ≤ N[𝕜]_{K, n, i} f :=
+  calc
+      ‖iteratedFDeriv ℝ i f x‖
+  _ = ‖structureMapLM ℝ n i f x‖ := by simp [structureMapLM_apply_withOrder, hin]
+  _ ≤ ‖structureMapLM ℝ n i f‖ := BoundedContinuousFunction.norm_coe_le_norm _ _
+  _ = N[𝕜]_{K, n, i} f := rfl
+
+theorem norm_iteratedFDeriv_apply_le {i : ℕ}
+    {f : 𝓓_{K}(E, F)} {x : E} :
+    ‖iteratedFDeriv ℝ i f x‖ ≤ N[𝕜]_{K, i} f :=
+  norm_iteratedFDeriv_apply_le_withOrder 𝕜 (mod_cast le_top)
 
 theorem norm_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
     ‖(f : E →ᵇ F)‖ = ContDiffMapSupportedIn.seminorm 𝕜 E F n K 0 f := by
