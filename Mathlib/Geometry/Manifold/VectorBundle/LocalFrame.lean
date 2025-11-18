@@ -69,7 +69,7 @@ the model fiber `F`.
 * `e.contMDiffOn_localFrame_baseSet`: each section `e.localFrame b i` is smooth on `e.baseSet`
 * `e.localFrame_coeff b i` describes the coefficient of sections of `V` w.r.t. `e.localFrame b`:
   `e.localFrame b i` is a linear map from sections of `V` to functions `M → 𝕜`.
-* `e.localFrame_eventually_eq_sum_coeff_smul b`: near `x`, we have
+* `e.eventually_eq_localFrame_sum_coeff_smul b`: near `x`, we have
   `s = ∑ i, (e.localFrame_coeff b i s) • e.localFrame b i`
 * `e.localFrame_coeff_congr b`: the coefficient `e.localFrame_coeff b i` of `s` in the local frame
   induced by `e` and `b` at `x` only depends on `s` at `x`.
@@ -356,7 +356,7 @@ lemma contMDiffOn_localFrame_baseSet (i : ι) : CMDiff[e.baseSet] n (T% (e.local
 
 variable (I) in
 /-- `b.localFrame e i` is indeed a local frame on `e.baseSet` -/
-lemma localFrame_isLocalFrameOn_baseSet : IsLocalFrameOn I F n (e.localFrame b) e.baseSet where
+lemma isLocalFrameOn_localFrame_baseSet : IsLocalFrameOn I F n (e.localFrame b) e.baseSet where
   contMDiffOn i := e.contMDiffOn_localFrame_baseSet _ b i
   linearIndependent := by
     intro x hx
@@ -369,7 +369,7 @@ lemma localFrame_isLocalFrameOn_baseSet : IsLocalFrameOn I F n (e.localFrame b) 
 
 lemma _root_.contMDiffAt_localFrame_of_mem (i : ι) (hx : x ∈ e.baseSet) :
     CMDiffAt n (T% (e.localFrame b i)) x :=
-  (e.localFrame_isLocalFrameOn_baseSet I n b).contMDiffAt e.open_baseSet hx _
+  (e.isLocalFrameOn_localFrame_baseSet I n b).contMDiffAt e.open_baseSet hx _
 
 @[simp]
 lemma localFrame_apply_of_mem_baseSet {i : ι} (hx : x ∈ e.baseSet) :
@@ -387,7 +387,7 @@ variable (I) in
 
 If x is outside of `e.baseSet`, this returns the junk value 0. -/
 def localFrame_coeff (i : ι) : (Π x : M, V x) →ₗ[𝕜] M → 𝕜 :=
-  (e.localFrame_isLocalFrameOn_baseSet I 1 b).coeff i
+  (e.isLocalFrameOn_localFrame_baseSet I 1 b).coeff i
 
 variable {e b}
 variable {x x' : M}
@@ -397,13 +397,13 @@ variable (e b) in
 lemma localFrame_coeff_apply_of_notMem_baseSet (hx : x ∉ e.baseSet) (s : Π x : M, V x) (i : ι) :
     e.localFrame_coeff I b i s x = 0 := by
   simpa [localFrame_coeff] using
-    (e.localFrame_isLocalFrameOn_baseSet I 1 b).coeff_apply_of_notMem hx s i
+    (e.isLocalFrameOn_localFrame_baseSet I 1 b).coeff_apply_of_notMem hx s i
 
 variable (e b) in
 @[simp]
 lemma localFrame_coeff_apply_of_mem_baseSet (hx : x ∈ e.baseSet) (s : Π x : M, V x) (i : ι) :
     e.localFrame_coeff I b i s x = (e.basisAt b hx).repr (s x) i := by
-  have he := e.localFrame_isLocalFrameOn_baseSet I 1 b
+  have he := e.isLocalFrameOn_localFrame_baseSet I 1 b
   have : e.basisAt b hx = he.toBasisAt hx := by ext j; simp [localFrame, hx]
   exact this ▸ he.coeff_apply_of_mem hx s i
 
@@ -412,7 +412,7 @@ variable {s s' : Π x : M, V x}
 lemma eq_sum_localFrame_coeff_smul [Fintype ι] (hx : x' ∈ e.baseSet) :
     s x' = (∑ i, (e.localFrame_coeff I b i s x') • e.localFrame b i x') := by
   simp only [localFrame_coeff]
-  exact (localFrame_isLocalFrameOn_baseSet I 1 e b).coeff_sum_eq s hx
+  exact (isLocalFrameOn_localFrame_baseSet I 1 e b).coeff_sum_eq s hx
 
 variable (e b) in
 /-- A local frame locally spans the space of sections for `V`: for each local trivialisation `e`
@@ -430,7 +430,7 @@ lemma localFrame_coeff_congr {i : ι} (hss' : s x = s' x) :
 variable (e b) in
 lemma localFrame_coeff_apply_zero_at (hs : s x = 0) (i : ι) : e.localFrame_coeff I b i s x = 0 := by
   simp only [localFrame_coeff]
-  exact (localFrame_isLocalFrameOn_baseSet I 1 e b).coeff_apply_zero_at hs i
+  exact (isLocalFrameOn_localFrame_baseSet I 1 e b).coeff_apply_zero_at hs i
 
 variable {n}
 
@@ -506,7 +506,7 @@ coefficients `b.localFrame_coeff e i s` in a local frame near `x` is -/
 lemma contMDiffAt_iff_localFrame_coeff (hx : x' ∈ e.baseSet) :
     CMDiffAt k (T% s) x' ↔ ∀ i, CMDiffAt k (e.localFrame_coeff I b i s) x' :=
   ⟨fun h i ↦ contMDiffAt_localFrame_coeff b hx h i,
-    fun hi ↦ (e.localFrame_isLocalFrameOn_baseSet I k b).contMDiffAt_of_coeff hi
+    fun hi ↦ (e.isLocalFrameOn_localFrame_baseSet I k b).contMDiffAt_of_coeff hi
     (e.open_baseSet.mem_nhds hx)⟩
 
 /-- A section `s` of `V` is `C^k` on `t ⊆ e.baseSet` iff each of its
@@ -576,7 +576,7 @@ coefficients `b.localFrame_coeff e i s` in a local frame near `x` is -/
 lemma mdifferentiableAt_iff_localFrame_coeff (hx : x' ∈ e.baseSet) :
     MDiffAt (T% s) x' ↔ ∀ i, MDiffAt (e.localFrame_coeff I b i s) x' :=
   ⟨fun h i ↦ mdifferentiableAt_localFrame_coeff b hx h i, fun hi ↦
-    (e.localFrame_isLocalFrameOn_baseSet I 1 b).mdifferentiableAt_of_coeff_aux hi e.open_baseSet hx⟩
+    (e.isLocalFrameOn_localFrame_baseSet I 1 b).mdifferentiableAt_of_coeff_aux hi e.open_baseSet hx⟩
 
 end MDifferentiable
 
