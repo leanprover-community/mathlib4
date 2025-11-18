@@ -189,11 +189,9 @@ def posSubmonoid : Submonoid R where
 @[simp]
 lemma posSubmonoid_def (x : R) : x ∈ posSubmonoid R ↔ 0 <ᵥ x := Iff.rfl
 
-@[simp]
 lemma right_cancel_posSubmonoid (x y : R) (u : posSubmonoid R) :
     x * u ≤ᵥ y * u ↔ x ≤ᵥ y := ⟨rel_mul_cancel u.prop, rel_mul_right _⟩
 
-@[simp]
 lemma left_cancel_posSubmonoid (x y : R) (u : posSubmonoid R) :
     u * x ≤ᵥ u * y ↔ x ≤ᵥ y := by
   simp only [← right_cancel_posSubmonoid x y u, mul_comm]
