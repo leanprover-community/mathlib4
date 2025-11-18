@@ -48,17 +48,6 @@ instance {ι : Type*} (c : ComplexShape ι) :
   have := ((F.mapHomologicalComplex c).exact_tfae.out 1 3).mp
   exact (this (F.mapHomologicalComplex_map_exact c)).2
 
-section ShiftedHom
-
-open DerivedCategory in
-/-- The map between `ShiftedHom` induced by `F.mapDerivedCategory` where `F` is exact. -/
-noncomputable def Functor.mapShiftedHom
-    [HasDerivedCategory.{w} C] [HasDerivedCategory.{w'} D] (X Y : C) (n : ℤ) :
-    ShiftedHom ((singleFunctor C 0).obj X) ((singleFunctor C 0).obj Y) n →
-    ShiftedHom ((singleFunctor D 0).obj (F.obj X)) ((singleFunctor D 0).obj (F.obj Y)) n :=
-  fun f ↦ (F.mapDerivedCategorySingleFunctor 0).inv.app X ≫
-    f.map F.mapDerivedCategory ≫ ((F.mapDerivedCategorySingleFunctor 0).hom.app Y)⟦n⟧'
-
 section
 
 universe t t'
@@ -67,7 +56,7 @@ variable [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
 
 open DerivedCategory
 
-lemma Functor.mapTriangleOfSES {S : ShortComplex (CochainComplex C ℤ)} (hS : S.ShortExact) :
+lemma Functor.mapTriangleOfSESδ {S : ShortComplex (CochainComplex C ℤ)} (hS : S.ShortExact) :
     F.mapDerivedCategory.map (triangleOfSESδ hS) =
     (F.mapDerivedCategoryFactors.hom.app S.X₃) ≫
     triangleOfSESδ (hS.map_of_exact (F.mapHomologicalComplex (ComplexShape.up ℤ))) ≫
@@ -120,12 +109,15 @@ lemma Functor.mapTriangleOfSES {S : ShortComplex (CochainComplex C ℤ)} (hS : S
     mapHomologicalComplex_map_f, CochainComplex.mappingCone.desc_f _ _ _ _ n (n + 1) rfl]
 
 lemma Functor.mapShiftedHom_singleδ {S : ShortComplex C} (hS : S.ShortExact) :
-    (F.mapShiftedHom S.X₃ S.X₁ 1) hS.singleδ = (hS.map_of_exact F).singleδ := by
-  simp only [mapShiftedHom, comp_obj, ShiftedHom.map, ShortComplex.ShortExact.singleδ,
+    (F.mapDerivedCategorySingleFunctor 0).inv.app S.X₃ ≫
+      ShiftedHom.map hS.singleδ F.mapDerivedCategory ≫
+        (shiftFunctor (DerivedCategory D) 1).map ((F.mapDerivedCategorySingleFunctor 0).hom.app
+          S.X₁) = (hS.map_of_exact F).singleδ := by
+  simp only [comp_obj, ShiftedHom.map, ShortComplex.ShortExact.singleδ,
     SingleFunctors.evaluation_obj, SingleFunctors.postcomp_functor, mapIso_hom,
     SingleFunctors.evaluation_map, ShortComplex.map_X₁, mapIso_inv, map_comp, Category.assoc,
     commShiftIso_hom_naturality, ShortComplex.map_X₃]
-  rw [F.mapTriangleOfSES]
+  rw [F.mapTriangleOfSESδ]
   simp only [ShortComplex.map_X₃, comp_obj, ShortComplex.map_X₁, Category.assoc,
     Iso.inv_hom_id_app_assoc]
   simp only [singleFunctorsPostcompQIso_hom_hom, NatTrans.id_app, map_id,
@@ -171,6 +163,17 @@ lemma Functor.mapShiftedHom_singleδ {S : ShortComplex C} (hS : S.ShortExact) :
   simp
 
 end
+
+section ShiftedHom
+
+open DerivedCategory in
+/-- The map between `ShiftedHom` induced by `F.mapDerivedCategory` where `F` is exact. -/
+noncomputable def Functor.mapShiftedHom
+    [HasDerivedCategory.{w} C] [HasDerivedCategory.{w'} D] (X Y : C) (n : ℤ) :
+    ShiftedHom ((singleFunctor C 0).obj X) ((singleFunctor C 0).obj Y) n →
+    ShiftedHom ((singleFunctor D 0).obj (F.obj X)) ((singleFunctor D 0).obj (F.obj Y)) n :=
+  fun f ↦ (F.mapDerivedCategorySingleFunctor 0).inv.app X ≫
+    f.map F.mapDerivedCategory ≫ ((F.mapDerivedCategorySingleFunctor 0).hom.app Y)⟦n⟧'
 
 lemma Functor.mapShiftedHom_zero [HasDerivedCategory.{w} C] [HasDerivedCategory.{w'} D]
     (X Y : C) (n : ℤ) : F.mapShiftedHom X Y n 0 = 0 := by simp [mapShiftedHom, ShiftedHom.map]
@@ -416,10 +419,15 @@ lemma mapExt_extClass_eq_extClass_map [HasExt.{w} C] [HasExt.{w'} D] {S : ShortC
     (hS : S.ShortExact) : F.mapExt S.X₃ S.X₁ 1 hS.extClass = (hS.map_of_exact F).extClass := by
   let _ := HasDerivedCategory.standard C
   let _ := HasDerivedCategory.standard D
-  have : F.mapShiftedHom S.X₃ S.X₁ 1 hS.extClass.hom = (hS.map_of_exact F).extClass.hom := by
-    rw [hS.extClass_hom, (hS.map_of_exact F).extClass_hom, F.mapShiftedHom_singleδ hS]
-  simpa only [F.mapExt_eq_mapShiftedHom, Int.cast_ofNat_Int, Function.comp_apply,
-    Equiv.symm_apply_eq]
+  /-have : F.mapShiftedHom S.X₃ S.X₁ 1 hS.extClass.hom = (hS.map_of_exact F).extClass.hom := by
+    rw [hS.extClass_hom, (hS.map_of_exact F).extClass_hom]
+
+    sorry-/
+  --simp [hS.extClass_hom, (hS.map_of_exact F).extClass_hom]
+  #check F.mapShiftedHom_singleδ hS
+  /-simpa only [F.mapExt_eq_mapShiftedHom, Int.cast_ofNat_Int, Function.comp_apply,
+    Equiv.symm_apply_eq]-/
+  sorry
 
 end Abelian.Ext
 
