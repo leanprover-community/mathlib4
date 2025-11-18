@@ -155,11 +155,7 @@ theorem count_eq_one_of_mem [DecidableEq α] {a : α} {l : List α} (d : Nodup l
     count a l = 1 :=
   _root_.le_antisymm (nodup_iff_count_le_one.1 d a) (Nat.succ_le_of_lt (count_pos_iff.2 h))
 
-theorem count_eq_of_nodup [DecidableEq α] {a : α} {l : List α} (d : Nodup l) :
-    count a l = if a ∈ l then 1 else 0 := by
-  split_ifs with h
-  · exact count_eq_one_of_mem d h
-  · exact count_eq_zero_of_not_mem h
+@[deprecated (since := "2025-11-07")] alias count_eq_of_nodup := Nodup.count
 
 theorem Nodup.of_append_left : Nodup (l₁ ++ l₂) → Nodup l₁ :=
   Nodup.sublist (sublist_append_left l₁ l₂)
@@ -175,6 +171,8 @@ theorem nodup_append' {l₁ l₂ : List α} :
 
 theorem disjoint_of_nodup_append {l₁ l₂ : List α} (d : Nodup (l₁ ++ l₂)) : Disjoint l₁ l₂ :=
   (nodup_append'.1 d).2.2
+
+protected alias Nodup.disjoint := disjoint_of_nodup_append
 
 theorem Nodup.append (d₁ : Nodup l₁) (d₂ : Nodup l₂) (dj : Disjoint l₁ l₂) : Nodup (l₁ ++ l₂) :=
   nodup_append'.2 ⟨d₁, d₂, dj⟩
@@ -219,7 +217,7 @@ theorem nodup_map_iff {f : α → β} {l : List α} (hf : Injective f) : Nodup (
 
 @[simp]
 theorem nodup_attach {l : List α} : Nodup (attach l) ↔ Nodup l :=
-  ⟨fun h => attach_map_subtype_val l ▸ h.map fun _ _ => Subtype.eq, fun h =>
+  ⟨fun h => attach_map_subtype_val l ▸ h.map fun _ _ => Subtype.ext, fun h =>
     Nodup.of_map Subtype.val ((attach_map_subtype_val l).symm ▸ h)⟩
 
 protected alias ⟨Nodup.of_attach, Nodup.attach⟩ := nodup_attach

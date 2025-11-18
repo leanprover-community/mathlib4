@@ -81,6 +81,10 @@ theorem prod_comm (f : α →₀ M) (g : β →₀ M') (h : α → M → β → 
       g.prod fun x' v' => f.prod fun x v => h x v x' v' :=
   Finset.prod_comm
 
+@[to_additive]
+theorem prod_finsetProd_comm {s : Finset β} (f : α →₀ M) (h : α → M → β → N) :
+    (f.prod fun a m => ∏ b ∈ s, h a m b) = ∏ b ∈ s, f.prod fun a m => h a m b := Finset.prod_comm
+
 @[to_additive (attr := simp)]
 theorem prod_ite_eq [DecidableEq α] (f : α →₀ M) (a : α) (b : α → M → N) :
     (f.prod fun x v => ite (a = x) (b x v) 1) = ite (a ∈ f.support) (b a (f a)) 1 := by
@@ -403,12 +407,23 @@ theorem univ_sum_single_apply' [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
   classical rw [Finset.sum_pi_single]
   simp
 
+lemma sum_single_add_single (f₁ f₂ : ι) (g₁ g₂ : A) (F : ι → A → B) (H : f₁ ≠ f₂)
+    (HF : ∀ f, F f 0 = 0) :
+    sum (single f₁ g₁ + single f₂ g₂) F = F f₁ g₁ + F f₂ g₂ := by
+  classical
+  simp [sum_of_support_subset _ support_single_add_single_subset, single_apply, H, HF, H.symm]
 
 theorem equivFunOnFinite_symm_eq_sum [Fintype α] [AddCommMonoid M] (f : α → M) :
-    equivFunOnFinite.symm f = ∑ a, Finsupp.single a (f a) := by
-  rw [← univ_sum_single (equivFunOnFinite.symm f)]
-  ext
-  simp
+    equivFunOnFinite.symm f = ∑ a, single a (f a) :=
+  (univ_sum_single _).symm
+
+theorem coe_univ_sum_single [Fintype α] [AddCommMonoid M] (f : α → M) :
+    ⇑(∑ a : α, single a (f a)) = f :=
+  congrArg _ (equivFunOnFinite_symm_eq_sum f).symm
+
+theorem equivFunOnFinite_symm_sum [Fintype α] [AddCommMonoid M] (f : α → M) :
+    ((equivFunOnFinite.symm f).sum fun _ n ↦ n) = ∑ a, f a := by
+  rw [equivFunOnFinite_symm_eq_sum, sum_fintype _ _ fun _ ↦ rfl, coe_univ_sum_single]
 
 theorem liftAddHom_apply_single [AddZeroClass M] [AddCommMonoid N] (f : α → M →+ N) (a : α)
     (b : M) : (liftAddHom (α := α) (M := M) (N := N)) f (single a b) = f a b :=
@@ -577,11 +592,9 @@ theorem Finsupp.sum_apply'' {A F : Type*} [AddZeroClass A] [AddCommMonoid F] [Fu
     · simp [hg0, h0]
     · simp [hgadd, hadd]
 
+@[deprecated "use instead `sum_finset_sum_index` (with equality reversed)" (since := "2025-11-07")]
 theorem Finsupp.sum_sum_index' (h0 : ∀ i, t i 0 = 0) (h1 : ∀ i x y, t i (x + y) = t i x + t i y) :
-    (∑ x ∈ s, f x).sum t = ∑ x ∈ s, (f x).sum t := by
-  classical
-  exact Finset.induction_on s rfl fun a s has ih => by
-    simp_rw [Finset.sum_insert has, Finsupp.sum_add_index' h0 h1, ih]
+    (∑ x ∈ s, f x).sum t = ∑ x ∈ s, (f x).sum t := (sum_finset_sum_index h0 h1).symm
 
 section
 

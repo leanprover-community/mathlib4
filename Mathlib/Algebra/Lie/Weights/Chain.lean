@@ -66,7 +66,7 @@ variable [LieRing.IsNilpotent L] (χ₁ χ₂ : L → R) (p q : ℤ)
 
 section
 
-variable [NoZeroSMulDivisors ℤ R] [NoZeroSMulDivisors R M] [IsNoetherian R M] (hχ₁ : χ₁ ≠ 0)
+variable [IsAddTorsionFree R] [NoZeroSMulDivisors R M] [IsNoetherian R M] (hχ₁ : χ₁ ≠ 0)
 include hχ₁
 
 lemma eventually_genWeightSpace_smul_add_eq_bot :
@@ -249,7 +249,7 @@ section
 
 variable {M}
 variable [LieRing.IsNilpotent L]
-variable [NoZeroSMulDivisors ℤ R] [NoZeroSMulDivisors R M] [IsNoetherian R M]
+variable [IsAddTorsionFree R] [NoZeroSMulDivisors R M] [IsNoetherian R M]
 variable (α : L → R) (β : Weight R L M)
 
 /-- This is the largest `n : ℕ` such that `i • α + β` is a weight for all `0 ≤ i ≤ n`. -/
@@ -312,14 +312,14 @@ lemma genWeightSpace_nsmul_add_ne_bot_of_le {n} (hn : n ≤ chainTopCoeff α β)
   by_cases hα : α = 0
   · rw [hα, smul_zero, zero_add]; exact β.genWeightSpace_ne_bot
   classical
-  rw [← Nat.lt_succ, Nat.succ_eq_add_one, chainTopCoeff_add_one _ _ hα] at hn
+  rw [← Nat.lt_succ_iff, Nat.succ_eq_add_one, chainTopCoeff_add_one _ _ hα] at hn
   exact Nat.find_min (eventually_genWeightSpace_smul_add_eq_bot M α β hα).exists hn
 
 lemma genWeightSpace_zsmul_add_ne_bot {n : ℤ}
     (hn : -chainBotCoeff α β ≤ n) (hn' : n ≤ chainTopCoeff α β) :
       genWeightSpace M (n • α + β : L → R) ≠ ⊥ := by
   rcases n with (n | n)
-  · simp only [Int.ofNat_eq_coe, Nat.cast_le, Nat.cast_smul_eq_nsmul] at hn' ⊢
+  · simp only [Int.ofNat_eq_natCast, Nat.cast_le, Nat.cast_smul_eq_nsmul] at hn' ⊢
     exact genWeightSpace_nsmul_add_ne_bot_of_le α β hn'
   · simp only [Int.negSucc_eq, ← Nat.cast_succ, neg_le_neg_iff, Nat.cast_le] at hn ⊢
     rw [neg_smul, ← smul_neg, Nat.cast_smul_eq_nsmul]

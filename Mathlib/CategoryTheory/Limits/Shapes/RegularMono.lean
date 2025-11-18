@@ -15,12 +15,18 @@ import Mathlib.Lean.Expr.Basic
 
 A regular monomorphism is a morphism that is the equalizer of some parallel pair.
 
-We give the constructions
-* `IsSplitMono → RegularMono` and
-* `RegularMono → Mono`
+In this file, we give the following definitions.
+* `RegularMono f`, which is a class carrying the data that exhibits `f` as a regular monomorphism.
+  That is, it carries a fork and data specifying `f` a the equalizer of that fork.
+* `IsRegularMono f`, which is a proposition stating that `f` is a regular monomorphism. In
+  particular, this doesn't carry any data.
+and constructions
+* `IsSplitMono f → RegularMono f` and
+* `RegularMono f → Mono f`
+as well as the dual definitions/constructions for regular epimorphisms.
 
-as well as the dual constructions for regular epimorphisms. Additionally, we give the construction
-* `RegularEpi ⟶ StrongEpi`.
+Additionally, we give the construction
+* `RegularEpi f ⟶ StrongEpi f`.
 
 We also define classes `IsRegularMonoCategory` and `IsRegularEpiCategory` for categories in which
 every monomorphism or epimorphism is regular, and deduce that these categories are
@@ -60,12 +66,12 @@ instance (priority := 100) RegularMono.mono (f : X ⟶ Y) [RegularMono f] : Mono
   mono_of_isLimit_fork RegularMono.isLimit
 
 /-- Every isomorphism is a regular monomorphism. -/
-instance (priority := 100) RegularMono.ofIso (f : X ⟶ Y) [IsIso f] : RegularMono f where
+def RegularMono.ofIso (e : X ≅ Y) : RegularMono e.hom where
   Z := Y
   left := 𝟙 Y
   right := 𝟙 Y
-  isLimit := Fork.IsLimit.mk _ (fun s ↦ s.ι ≫ inv f) (by simp) fun s m w ↦ by
-    rw [IsIso.eq_comp_inv, ← w]; simp
+  isLimit := Fork.IsLimit.mk _ (fun s ↦ s.ι ≫ e.inv) (by simp) fun s m w ↦ by
+    simp [← w]
 
 /-- Regular monomorphisms are preserved by isomorphisms in the arrow category. -/
 def RegularMono.ofArrowIso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
@@ -76,8 +82,9 @@ def RegularMono.ofArrowIso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
   right := e.inv.right ≫ h.right
   w := by
     have := Arrow.mk_hom g ▸ Arrow.w_mk_right e.inv
-    rw [← reassoc_of% this, ← reassoc_of% this, h.w]
-  isLimit := Fork.isLimitOfIsos _ h.isLimit _ (Comma.rightIso e) (Iso.refl _) (Comma.leftIso e)
+    simp_rw [← reassoc_of% this, h.w]
+  isLimit := Fork.isLimitOfIsos _ h.isLimit _
+    (Arrow.rightFunc.mapIso e) (Iso.refl _) (Arrow.leftFunc.mapIso e)
 
 /-- `IsRegularMono f` is the assertion that `f` is a regular monomorphism. -/
 abbrev IsRegularMono {X Y : C} (f : X ⟶ Y) : Prop := Nonempty (RegularMono f)
@@ -87,21 +94,22 @@ variable (C) in
 def MorphismProperty.regularMono : MorphismProperty C := fun _ _ f => IsRegularMono f
 
 @[simp]
-theorem MorphismProperty.regularMono.iff (f : X ⟶ Y) :
+theorem MorphismProperty.regularMono_iff (f : X ⟶ Y) :
     (MorphismProperty.regularMono C) f ↔ IsRegularMono f :=
-  by rfl
+  Iff.rfl
 
 instance MorphismProperty.regularMono.containsIdentities :
     (MorphismProperty.regularMono C).ContainsIdentities where
-  id_mem _ := ⟨RegularMono.ofIso _⟩
+  id_mem _ := ⟨RegularMono.ofIso <| Iso.refl _⟩
 
 instance MorphismProperty.regularMono.respectsIso :
     (MorphismProperty.regularMono C).RespectsIso :=
   RespectsIso.of_respects_arrow_iso _ (fun _ _ e h ↦ ⟨.ofArrowIso e (h := h.some)⟩)
 
-instance is_regular_mono_of_regular_mono (f : X ⟶ Y) [h : RegularMono f] : IsRegularMono f := ⟨h⟩
+instance isRegularMono_of_regularMono (f : X ⟶ Y) [h : RegularMono f] : IsRegularMono f := ⟨h⟩
 
-instance (priority := low) regularMonoOfIsRegularMono (f : X ⟶ Y) [h : IsRegularMono f] :
+/-- Given `IsRegularMono f`, a choice of data for `RegularMono f`. -/
+def regularMonoOfIsRegularMono (f : X ⟶ Y) [h : IsRegularMono f] :
     RegularMono f :=
   h.some
 
@@ -232,12 +240,12 @@ instance (priority := 100) RegularEpi.epi (f : X ⟶ Y) [RegularEpi f] : Epi f :
   epi_of_isColimit_cofork RegularEpi.isColimit
 
 /-- Every isomorphism is a regular epimorphism. -/
-instance (priority := 100) RegularEpi.ofIso (f : X ⟶ Y) [IsIso f] : RegularEpi f where
+def RegularEpi.ofIso (e : X ≅ Y) : RegularEpi e.hom where
   W := X
   left := 𝟙 X
   right := 𝟙 X
-  isColimit := Cofork.IsColimit.mk _ (fun s ↦ inv f ≫ s.π) (by simp) fun s m w ↦ by
-    rw [IsIso.eq_inv_comp, ← w]; simp
+  isColimit := Cofork.IsColimit.mk _ (fun s ↦ e.inv ≫ s.π) (by simp) fun s m w ↦ by
+    simp [← w]
 
 /-- Regular epimorphisms are preserved by isomorphisms in the arrow category. -/
 def RegularEpi.ofArrowIso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
@@ -250,7 +258,7 @@ def RegularEpi.ofArrowIso {X'} {Y'} {f : X ⟶ Y} {g : X' ⟶ Y'}
     simp only [Category.assoc, Arrow.w_mk_right, Arrow.mk_hom]
     rw [reassoc_of% h.w]
   isColimit := Cofork.isColimitOfIsos _ h.isColimit _
-    (Iso.refl _) (Comma.leftIso e) (Comma.rightIso e)
+    (Iso.refl _) (Arrow.leftFunc.mapIso e) (Arrow.rightFunc.mapIso e)
 
 /-- `IsRegularEpi f` is the assertion that `f` is a regular epimorphism. -/
 abbrev IsRegularEpi {X Y : C} (f : X ⟶ Y) : Prop := Nonempty (RegularEpi f)
@@ -260,21 +268,22 @@ variable (C) in
 def MorphismProperty.regularEpi : MorphismProperty C := fun _ _ f => IsRegularEpi f
 
 @[simp]
-theorem MorphismProperty.regularEpi.iff (f : X ⟶ Y) :
+theorem MorphismProperty.regularEpi_iff (f : X ⟶ Y) :
     (MorphismProperty.regularEpi C) f ↔ IsRegularEpi f :=
-  by rfl
+  Iff.rfl
 
 instance MorphismProperty.regularEpi.containsIdentities :
     (MorphismProperty.regularEpi C).ContainsIdentities where
-  id_mem _ := ⟨RegularEpi.ofIso _⟩
+  id_mem _ := ⟨RegularEpi.ofIso <| Iso.refl _⟩
 
 instance MorphismProperty.regularEpi.respectsIso :
     (MorphismProperty.regularEpi C).RespectsIso :=
   RespectsIso.of_respects_arrow_iso _ (fun _ _ e h ↦ ⟨.ofArrowIso e (h := h.some)⟩)
 
-instance is_regular_epi_of_regular_epi (f : X ⟶ Y) [h : RegularEpi f] : IsRegularEpi f := ⟨h⟩
+instance isRegularEpi_of_regularEpi (f : X ⟶ Y) [h : RegularEpi f] : IsRegularEpi f := ⟨h⟩
 
-instance (priority := low) regularEpiOfIsRegularEpi (f : X ⟶ Y) [h : IsRegularEpi f] :
+/-- Given `IsRegularEpi f`, a choice of data for `RegularEpi f`. -/
+def regularEpiOfIsRegularEpi (f : X ⟶ Y) [h : IsRegularEpi f] :
     RegularEpi f :=
   h.some
 

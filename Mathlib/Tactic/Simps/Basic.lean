@@ -507,10 +507,10 @@ This is checked by inspecting whether the first character of the remaining part 
 
 We use this variant because the latter is often a different field with an auto-generated name.
 -/
-private def dropPrefixIfNotNumber? (s : String) (pre : String) : Option Substring := do
+private def dropPrefixIfNotNumber? (s : String) (pre : String) : Option Substring.Raw := do
   let ret ← s.dropPrefix? pre
   -- flag is true when the remaining part is nonempty and starts with a digit.
-  let flag := ret.toString.data.head?.elim false Char.isDigit
+  let flag := ret.toString.toList.head?.elim false Char.isDigit
   if flag then none else some ret
 
 /-- A variant of `String.isPrefixOf` that does not consider `toFoo` to be a prefix to `toFoo_1`. -/
@@ -523,7 +523,7 @@ private def splitOnNotNumber (s delim : String) : List String :=
       | [] => []
       | (x :: xs) =>
         -- flag is true when this segment is nonempty and starts with a digit.
-        let flag := x.data.head?.elim false Char.isDigit
+        let flag := x.toList.head?.elim false Char.isDigit
         if flag then
           process xs (tail ++ delim ++ x)
         else
@@ -801,12 +801,12 @@ Optionally, this command accepts three optional arguments:
 def getRawProjections (stx : Syntax) (str : Name) (traceIfExists : Bool := false)
     (rules : Array ProjectionRule := #[]) (trc := false) :
     CoreM (List Name × Array ProjectionData) := do
-  withOptions (· |>.updateBool `trace.simps.verbose (trc || ·)) <| do
+  withOptions (·.updateBool `trace.simps.verbose (trc || ·)) do
   let env ← getEnv
   if let some data := (structureExt.getState env).find? str then
     -- We always print the projections when they already exists and are called by
     -- `initialize_simps_projections`.
-    withOptions (· |>.updateBool `trace.simps.verbose (traceIfExists || ·)) <| do
+    withOptions (·.updateBool `trace.simps.verbose (traceIfExists || ·)) do
       trace[simps.verbose]
         projectionsInfo data.2.toList "The projections for this structure have already been \
         initialized by a previous invocation of `initialize_simps_projections` or `@[simps]`.\n\
@@ -1193,7 +1193,7 @@ If `shortNm` is true, the generated names will only use the last projection name
 If `trc` is true, trace as if `trace.simps.verbose` is true. -/
 def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
     (todo : List (String × Syntax) := []) (trc := false) : AttrM (Array Name) :=
-  withOptions (· |>.updateBool `trace.simps.verbose (trc || ·)) <| do
+  withOptions (·.updateBool `trace.simps.verbose (trc || ·)) do
   let env ← getEnv
   let some d := env.find? nm | throwError "Declaration {nm} doesn't exist."
   let lhs : Expr := mkConst d.name <| d.levelParams.map Level.param
