@@ -2655,6 +2655,7 @@ import Mathlib.CategoryTheory.Localization.LocallySmall
 import Mathlib.CategoryTheory.Localization.Monoidal
 import Mathlib.CategoryTheory.Localization.Monoidal.Basic
 import Mathlib.CategoryTheory.Localization.Monoidal.Braided
+import Mathlib.CategoryTheory.Localization.Monoidal.Functor
 import Mathlib.CategoryTheory.Localization.Opposite
 import Mathlib.CategoryTheory.Localization.Pi
 import Mathlib.CategoryTheory.Localization.Preadditive

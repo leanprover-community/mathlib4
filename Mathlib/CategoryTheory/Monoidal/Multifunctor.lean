@@ -67,6 +67,28 @@ abbrev curriedTensorPostPost (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
 abbrev curriedTensorPostPost' (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
   bifunctorComp₂₃ (curriedTensorPost F) (curriedTensor C)
 
+/-- The natural isomorphism of bifunctors `F - ⊗ F - ≅ F (- ⊗ -)`, given a monoidal functor `F`. -/
+@[simps!]
+def Functor.curriedTensorPreIsoPost (F : C ⥤ D) [F.Monoidal] :
+    curriedTensorPre F ≅ curriedTensorPost F :=
+  NatIso.ofComponents (fun _ ↦ NatIso.ofComponents (fun _ ↦ Monoidal.μIso F _ _))
+
+/-- The functor which associates to a functor `F` the bifunctor `F - ⊗ F -`. -/
+@[simps]
+def curriedTensorPreFunctor : (C ⥤ D) ⥤ C ⥤ C ⥤ D where
+  obj F := curriedTensorPre F
+  map {F₁ F₂} f :=
+    { app X₁ :=
+        { app X₂ := f.app _ ⊗ₘ f.app _
+          naturality := by simp [← id_tensorHom] }
+      naturality _ _ _ := by
+        ext
+        simp [← tensorHom_id] }
+
+/-- The functor which associates to a functor `F` the bifunctor `F (- ⊗ -)`. -/
+abbrev curriedTensorPostFunctor : (C ⥤ D) ⥤ C ⥤ C ⥤ D :=
+  Functor.postcompose₂.flip.obj (curriedTensor C)
+
 end MonoidalCategory
 
 open MonoidalCategory
