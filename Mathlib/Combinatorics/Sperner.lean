@@ -14,6 +14,35 @@ import Mathlib.Data.Set.Card
 This file proves Sperner's lemma, a combinatorial result about colorings of triangulations
 of simplices.
 
+## ⚠️ WORK IN PROGRESS - BLOCKED ON MISSING INFRASTRUCTURE ⚠️
+
+**Status**: This PR is intentionally incomplete and contains `sorry` placeholders.
+
+**Blocking Issue**: The proof of `strong_sperner` requires `SimplicialComplex.boundary` API
+which does not currently exist in mathlib4. Specifically, we need:
+- Construction of the boundary complex of a simplicial complex
+- Relationship between faces of a complex and faces of its boundary
+- Dimensional reduction lemmas for boundary complexes
+
+**What's Complete**:
+- ✅ All definitions (`IsSpernerColoring`, `IsPanchromatic`, `IsAlmostPanchromatic`)
+- ✅ Basic lemmas about panchromatic and almost-panchromatic faces
+- ✅ The base case of `strong_sperner` (dimension 0)
+- ✅ The final theorem `sperner` (follows from `strong_sperner`)
+
+**What Needs Work**:
+- ⚠️ `almost_panchromatic_card`: Requires stronger injectivity lemmas
+- ⚠️ `almost_panchromatic_containment`: Requires boundary complex API
+- ⚠️ `strong_sperner` inductive step: Requires boundary complex API
+
+**Purpose of This PR**:
+1. Document the precise structure of Sperner's lemma proof
+2. Identify exactly what infrastructure is missing in mathlib4
+3. Provide a roadmap for completing the proof once infrastructure exists
+4. Request feedback on the approach and proof strategy
+
+All `sorry` statements include detailed comments explaining what's needed to complete them.
+
 ## Main definitions
 
 * `IsSpernerColoring`: A coloring is Sperner if vertices on a k-face only use colors from {0,...,k}
