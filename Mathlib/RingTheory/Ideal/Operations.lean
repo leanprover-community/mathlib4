@@ -10,6 +10,7 @@ import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+import Mathlib.Tactic.Order
 
 /-!
 # More operations on modules and ideals
@@ -1015,6 +1016,11 @@ theorem IsPrime.inf_le' {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp :
     s.inf f ≤ P ↔ ∃ i ∈ s, f i ≤ P :=
   ⟨fun h ↦ hp.prod_le.1 <| prod_le_inf.trans h, fun ⟨_, his, hip⟩ ↦ (Finset.inf_le his).trans hip⟩
 
+theorem IsPrime.notMem_of_isCoprime_of_mem {I : Ideal R} [I.IsPrime] {x y : R} (h : IsCoprime x y)
+    (hx : x ∈ I) : y ∉ I := fun hy ↦
+  have ⟨a, b, e⟩ := h
+  Ideal.IsPrime.one_notMem ‹_› (e ▸ I.add_mem (I.mul_mem_left a hx) (I.mul_mem_left b hy))
+
 theorem subset_union {R : Type u} [Ring R] {I J K : Ideal R} :
     (I : Set R) ⊆ J ∪ K ↔ I ≤ J ∨ I ≤ K :=
   AddSubgroupClass.subset_union
@@ -1104,11 +1110,8 @@ theorem subset_union_prime' {R : Type u} [CommRing R] {s : Finset ι} {f : ι �
     by_cases HI : (I : Set R) ⊆ f a ∪ f b ∪ ⋃ j ∈ (↑t : Set ι), f j
     · specialize ih hp.2 hn HI
       rcases ih with (ih | ih | ⟨k, hkt, ih⟩)
-      · left
-        exact ih
-      · right
-        left
-        exact ih
+      · order
+      · order
       · right
         right
         exact ⟨k, Finset.mem_insert_of_mem hkt, ih⟩

@@ -39,7 +39,7 @@ produces the third one.
 non-cyclic abelian group
 -/
 
-/-! # Klein four-groups as a mixin class -/
+/-! ### Klein four-groups as a mixin class -/
 
 /-- An (additive) Klein four-group is an (additive) group of cardinality four and exponent two. -/
 class IsAddKleinFour (G : Type*) [AddGroup G] : Prop where

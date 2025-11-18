@@ -24,7 +24,7 @@ and permit to manipulate them in a relatively smooth way:
   the identity map, when the set is the empty set.
 
   * `SubMulAction.fixingSubgroupInsertEquiv M a s` : the
-  multiplicative equivalence between `fixingSubgroup M (insert a s)``
+  multiplicative equivalence between `fixingSubgroup M (insert a s)`
   and `fixingSubgroup (stabilizer M a) s`
 
   * `SubMulAction.ofFixingSubgroup_insert_map` : the equivariant

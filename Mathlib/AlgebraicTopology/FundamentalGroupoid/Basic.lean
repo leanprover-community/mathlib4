@@ -236,15 +236,13 @@ namespace Quotient
 theorem refl_trans (γ : Homotopic.Quotient x₀ x₁) :
     trans (refl x₀) γ = γ := by
   induction γ using Quotient.ind with | mk γ =>
-  simp only [← mk_trans, ← mk_refl, eq]
-  exact Homotopic.refl_trans γ
+  simpa [← mk_trans, ← mk_refl, eq] using Homotopic.refl_trans γ
 
 @[simp, grind =]
 theorem trans_refl (γ : Homotopic.Quotient x₀ x₁) :
     trans γ (refl x₁) = γ := by
   induction γ using Quotient.ind with | mk γ =>
-  simp only [← mk_trans, ← mk_refl, eq]
-  exact Homotopic.trans_refl γ
+  simpa [← mk_trans, ← mk_refl, eq] using Homotopic.trans_refl γ
 
 @[simp, grind =]
 theorem refl_cast_trans {x₀ x₀' x₁ x₂ : X} (p : Homotopic.Quotient x₁ x₂)
@@ -266,15 +264,13 @@ theorem trans_refl_cast {x₀ x₁ x₁' x₂ : X} (p : Homotopic.Quotient x₀ 
 theorem trans_symm (γ : Homotopic.Quotient x₀ x₁) :
     trans γ (symm γ) = refl x₀ := by
   induction γ using Quotient.ind with | mk γ =>
-  simp only [← mk_trans, ← mk_symm, ← mk_refl, eq]
-  exact Homotopic.trans_symm γ
+  simpa [← mk_trans, ← mk_symm, ← mk_refl, eq] using Homotopic.trans_symm γ
 
 @[simp, grind =]
 theorem symm_trans (γ : Homotopic.Quotient x₀ x₁) :
     trans (symm γ) γ = refl x₁ := by
   induction γ using Quotient.ind with | mk γ =>
-  simp only [← mk_trans, ← mk_symm, ← mk_refl, eq]
-  exact Homotopic.symm_trans γ
+  simpa [← mk_trans, ← mk_symm, ← mk_refl, eq] using Homotopic.symm_trans γ
 
 @[simp, grind _=_]
 theorem trans_assoc {x₀ x₁ x₂ x₃ : X}
@@ -285,8 +281,7 @@ theorem trans_assoc {x₀ x₁ x₂ x₃ : X}
   induction γ₀ using Quotient.ind with | mk γ₀ =>
   induction γ₁ using Quotient.ind with | mk γ₁ =>
   induction γ₂ using Quotient.ind with | mk γ₂ =>
-  simp only [← mk_trans, eq]
-  exact Homotopic.trans_assoc γ₀ γ₁ γ₂
+  simpa [← mk_trans, eq] using Homotopic.trans_assoc γ₀ γ₁ γ₂
 
 end Quotient
 

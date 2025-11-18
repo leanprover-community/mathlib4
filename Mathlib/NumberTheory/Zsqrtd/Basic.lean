@@ -675,10 +675,8 @@ protected theorem le_total (a b : ℤ√d) : a ≤ b ∨ b ≤ a := by
   rwa [neg_sub] at t
 
 instance preorder : Preorder (ℤ√d) where
-  le := (· ≤ ·)
   le_refl a := show Nonneg (a - a) by simp only [sub_self]; trivial
   le_trans a b c hab hbc := by simpa [sub_add_sub_cancel'] using hab.add hbc
-  lt := (· < ·)
   lt_iff_le_not_ge _ _ := (and_iff_right_of_imp (Zsqrtd.le_total _ _).resolve_left).symm
 
 open Int in

@@ -250,6 +250,11 @@ theorem trans ⦃p₀ p₁ p₂ : Path x₀ x₁⦄ (h₀ : p₀.Homotopic p₁)
 theorem equivalence : Equivalence (@Homotopic X _ x₀ x₁) :=
   ⟨refl, (symm ·), (trans · ·)⟩
 
+instance : IsEquiv (Path x₀ x₁) Homotopic where
+  refl := refl
+  symm := symm
+  trans := trans
+
 nonrec theorem map {p q : Path x₀ x₁} (h : p.Homotopic q) (f : C(X, Y)) :
     Homotopic (p.map f.continuous) (q.map f.continuous) :=
   h.map fun F => F.map f
@@ -304,9 +309,23 @@ theorem eq {p q : Path x₀ x₁} : mk p = mk q ↔ Homotopic p q :=
 A reasoning principle for quotients that allows proofs about quotients to assume that all values are
 constructed with `Quotient.mk`.
 -/
+@[induction_eliminator]
 protected theorem ind {x y : X} {motive : Homotopic.Quotient x y → Prop} :
     (mk : (a : Path x y) → motive (Quotient.mk a)) → (q : Homotopic.Quotient x y) → motive q :=
   Quot.ind
+
+/--
+A reasoning principle for quotients that allows proofs about quotients to assume that all values are
+constructed with `Quotient.mk`. This is the two-variable version of `ind`.
+-/
+@[elab_as_elim]
+protected theorem ind₂ {Y : Type*} [TopologicalSpace Y] {x₀ y₀ : X} {x₁ y₁ : Y}
+    {motive : Homotopic.Quotient x₀ y₀ → Path.Homotopic.Quotient x₁ y₁ → Prop}
+    (mk : (a : Path x₀ y₀) → (b : Path x₁ y₁) → motive (Quotient.mk a) (Quotient.mk b))
+    (q₀ : Homotopic.Quotient x₀ y₀) (q₁ : Path.Homotopic.Quotient x₁ y₁) : motive q₀ q₁ := by
+  induction q₀ using Quot.ind with | mk a =>
+  induction q₁ using Quot.ind with | mk b =>
+  exact mk a b
 
 /-- The constant path homotopy class at a point. This is `Path.refl` descended to the quotient. -/
 def refl (x : X) : Path.Homotopic.Quotient x x :=
