@@ -14,7 +14,7 @@ import Mathlib.Algebra.Ring.Int.Defs
 
 In this file, we define the concept of filtration for abelian groups, rings, and modules.
 
-# Main definitions
+## Main definitions
 
 * `IsFiltration` : For a family of subsets `σ` of `A`, an increasing series of `F` in `σ` is a
   filtration if there is another series `F_lt` in `σ` equal to the
