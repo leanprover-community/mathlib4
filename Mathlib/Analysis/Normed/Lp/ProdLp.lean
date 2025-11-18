@@ -110,6 +110,22 @@ theorem smul_fst : (c • x).fst = c • x.fst :=
 theorem smul_snd : (c • x).snd = c • x.snd :=
   rfl
 
+variable (p 𝕜 α β)
+
+/-- `WithLp.fst` as a linear map. -/
+@[simps]
+def fstₗ : WithLp p (α × β) →ₗ[𝕜] α where
+  toFun := WithLp.fst
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+/-- `WithLp.snd` as a linear map. -/
+@[simps]
+def sndₗ : WithLp p (α × β) →ₗ[𝕜] β where
+  toFun := WithLp.snd
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
 end algebra
 
 /-! Note that the unapplied versions of these lemmas are deliberately omitted, as they break
@@ -469,6 +485,14 @@ def homeomorphProd : WithLp p (α × β) ≃ₜ α × β where
 @[simp]
 lemma toEquiv_homeomorphProd : (homeomorphProd p α β).toEquiv = WithLp.equiv p (α × β) := rfl
 
+@[fun_prop]
+protected lemma continuous_fst : Continuous (@WithLp.fst p α β) :=
+  continuous_fst.comp <| prod_continuous_ofLp ..
+
+@[fun_prop]
+protected lemma continuous_snd : Continuous (@WithLp.snd p α β) :=
+  continuous_snd.comp <| prod_continuous_ofLp ..
+
 variable [T0Space α] [T0Space β]
 
 instance instProdT0Space : T0Space (WithLp p (α × β)) :=
@@ -531,6 +555,18 @@ def prodContinuousLinearEquiv : WithLp p (α × β) ≃L[𝕜] α × β where
 @[simp]
 lemma prodContinuousLinearEquiv_symm_apply (x : α × β) :
     (prodContinuousLinearEquiv p 𝕜 α β).symm x = toLp p x := rfl
+
+/-- `WithLp.fst` as a continuous linear map. -/
+@[simps! coe apply]
+def fstL : WithLp p (α × β) →L[𝕜] α where
+  __ := fstₗ ..
+  cont := WithLp.continuous_fst ..
+
+/-- `WithLp.snd` as a continuous linear map. -/
+@[simps! coe apply]
+def sndL : WithLp p (α × β) →L[𝕜] β where
+  __ := sndₗ ..
+  cont := WithLp.continuous_snd ..
 
 end ContinuousLinearEquiv
 
