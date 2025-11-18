@@ -254,7 +254,6 @@ theorem ofDigits_bool_to_fin_three_mem_cantorSet (f : ℕ → Bool) :
   ofDigits_zero_two_sequence_mem_cantorSet (by grind)
 
 theorem cantorToTernary_ne_one {x : ℝ} {n : ℕ} : (cantorToTernary x).get n ≠ 1 := by
-  intro h
   grind [cantorToTernary, Fin.isValue, Stream'.get_map]
 
 theorem cantorSequence_get_succ (x : ℝ) (n : ℕ) :
@@ -350,3 +349,7 @@ noncomputable def cantorSetEquivNatToBool : cantorSet ≃ (ℕ → Bool) where
 noncomputable def cantorSetHomeomorphNatToBool : cantorSet ≃ₜ (ℕ → Bool) :=
   Homeomorph.symm <| Continuous.homeoOfEquivCompactToT2 (f := cantorSetEquivNatToBool.symm)
     (Continuous.subtype_mk (Continuous.comp continuous_ofDigits (by fun_prop)) _)
+
+/-- The Cantor space is homeomorphic to a countable product of copies of itself. -/
+def cantorSpaceHomeomorphNatToCantorSpace : (ℕ → Bool) ≃ₜ (ℕ → ℕ → Bool) :=
+  (Homeomorph.piCongrLeft Nat.pairEquiv.symm).trans Homeomorph.piCurry

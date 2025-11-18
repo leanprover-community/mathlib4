@@ -8,6 +8,7 @@ import Lean.Elab.Tactic.ElabTerm
 import Lean.Meta.Tactic.Intro
 import Mathlib.Lean.Expr.Basic
 import Batteries.Tactic.OpenPrivate
+import Batteries.Lean.Expr
 
 /-!
 # Generally useful tactics.
