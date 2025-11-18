@@ -323,10 +323,7 @@ theorem IsUniversalColimit.map_reflective
       ι := { app := fun j ↦ pullback.lift (Gr.map <| c'.ι.app j) (Gr.map (α'.app j) ≫ c.ι.app j) ?_
              naturality := ?_ } }
     · rw [← Gr.map_comp, ← hc'']
-      erw [← adj.unit_naturality]
-      rw [Gl.map_comp, hα'']
-      dsimp
-      simp only [Category.assoc, Functor.map_comp, adj.right_triangle_components_assoc]
+      exact (congrArg _ (Adjunction.unit_naturality _ _).symm).mpr (by simp_all)
     · intro i j g
       dsimp [α']
       ext

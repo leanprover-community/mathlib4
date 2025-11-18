@@ -40,7 +40,7 @@ the coefficients of a `MvPowerSeries`, its constant coefficient
 - `MvPowerSeries.coeff_eq_zero_of_constantCoeff_nilpotent`: if the constant coefficient
 of a `MvPowerSeries` is nilpotent, then some coefficients of its powers are automatically zero
 
-- `MvPowerSeries.map`: apply a `RingHom` to the coefficients of a `MvPowerSeries` (as a `RingHom)
+- `MvPowerSeries.map`: apply a `RingHom` to the coefficients of a `MvPowerSeries` (as a `RingHom`).
 
 - `MvPowerSeries.X_pow_dvd_iff`, `MvPowerSeries.X_dvd_iff`: equivalent
 conditions for (a power of) an indeterminate to divide a `MvPowerSeries`
@@ -206,8 +206,7 @@ instance : AddMonoidWithOne (MvPowerSeries σ R) :=
   { show AddMonoid (MvPowerSeries σ R) by infer_instance with
     natCast := fun n => monomial 0 n
     natCast_zero := by simp [Nat.cast]
-    natCast_succ := by simp [Nat.cast, monomial_zero_one]
-    one := 1 }
+    natCast_succ := by simp [Nat.cast, monomial_zero_one] }
 
 instance : Mul (MvPowerSeries σ R) :=
   letI := Classical.decEq σ
@@ -679,7 +678,7 @@ theorem coeff_pow [DecidableEq σ] (f : MvPowerSeries σ R) {n : ℕ} (d : σ �
     rw [this, coeff_prod]
   rw [Finset.prod_const, card_range]
 
-theorem monmial_pow (m : σ →₀ ℕ) (a : R) (n : ℕ) :
+theorem monomial_pow (m : σ →₀ ℕ) (a : R) (n : ℕ) :
     (monomial m a) ^ n = monomial (n • m) (a ^ n) := by
   rw [Finset.pow_eq_prod_const, prod_monomial, ← Finset.nsmul_eq_sum_const,
     ← Finset.pow_eq_prod_const]
@@ -822,6 +821,10 @@ theorem coe_mul : ((φ * ψ : MvPolynomial σ R) : MvPowerSeries σ R) = φ * ψ
   MvPowerSeries.ext fun n => by
     classical
     simp only [coeff_coe, MvPowerSeries.coeff_mul, coeff_mul]
+
+@[simp, norm_cast]
+lemma coe_smul (φ : MvPolynomial σ R) (r : R) :
+    (r • φ : MvPolynomial σ R) = r • (φ : MvPowerSeries σ R) := rfl
 
 @[simp, norm_cast]
 theorem coe_C (a : R) : ((C a : MvPolynomial σ R) : MvPowerSeries σ R) = MvPowerSeries.C a :=

@@ -9,7 +9,6 @@ import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.Algebra.Homology.Square
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
-import Mathlib.CategoryTheory.Limits.Types.Shapes
 import Mathlib.CategoryTheory.Sites.Abelian
 import Mathlib.CategoryTheory.Sites.Adjunction
 import Mathlib.CategoryTheory.Sites.Sheafification
@@ -35,7 +34,7 @@ the category of sheaves after the application of the
 functor `yoneda ⋙ presheafToSheaf J _`. Note that in the
 standard case of a covering by two open subsets, all
 the morphisms in the square would be monomorphisms,
-but this dissymetry allows the example of Nisnevich distinguished
+but this dissymmetry allows the example of Nisnevich distinguished
 squares in the case of the Nisnevich topology on schemes (in which case
 `f₂₄ : X₂ ⟶ X₄` shall be an open immersion and
 `f₃₄ : X₃ ⟶ X₄` an étale map that is an isomorphism over

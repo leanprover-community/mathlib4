@@ -389,7 +389,7 @@ end BaseChange
 
 /-- Given a pre-submersive presentation `P` and equivalences `ι' ≃ ι` and
 `σ' ≃ σ`, this is the induced pre-submersive presentation with variables indexed
-by `ι` and relations indexed by `κ -/
+by `ι` and relations indexed by `κ`. -/
 @[simps toPresentation, simps -isSimp map]
 noncomputable def reindex (P : PreSubmersivePresentation R S ι σ)
     {ι' σ' : Type*} (e : ι' ≃ ι) (f : σ' ≃ σ) :
@@ -540,6 +540,19 @@ noncomputable def reindex (P : SubmersivePresentation R S ι σ)
     {ι' σ' : Type*} [Finite σ'] (e : ι' ≃ ι) (f : σ' ≃ σ) : SubmersivePresentation R S ι' σ' where
   __ := P.toPreSubmersivePresentation.reindex e f
   jacobian_isUnit := by simp [P.jacobian_isUnit]
+
+/-- If `S = 0`, this is the submersive presentation on one generator and one relation. -/
+@[simps]
+noncomputable def ofSubsingleton [Subsingleton S] : SubmersivePresentation R S PUnit PUnit where
+  val _ := 1
+  σ' _ := 1
+  aeval_val_σ' _ := Subsingleton.elim _ _
+  relation _ := 1
+  span_range_relation_eq_ker := by
+    simp [Generators.ker, Extension.ker, RingHom.ker_eq_top_of_subsingleton]
+  map _ := ⟨⟩
+  map_inj _ _ _ := rfl
+  jacobian_isUnit := isUnit_of_subsingleton _
 
 end Constructions
 
