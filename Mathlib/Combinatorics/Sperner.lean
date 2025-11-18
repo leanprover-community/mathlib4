@@ -138,7 +138,30 @@ private lemma panchromatic_unique_color {m : ℕ} {c : (Fin (m + 1) → ℝ) →
   -- Uniqueness from cardinality
   intro y ⟨hy_mem, hy_color⟩
   by_contra hne
-  sorry
+  -- If x ≠ y both map to i, then |image| < |X|
+  -- But surjectivity + cardinality means image = target with |image| = m+1
+  have h_img_univ : c '' ↑X = univ := by
+    ext j
+    simp only [Set.mem_image, Finset.mem_coe, Set.mem_univ, iff_true]
+    exact h_surj (Set.mem_univ j)
+  have h_img_card : (c '' ↑X).ncard = m + 1 := by
+    rw [h_img_univ]
+    simp
+  -- If c is not injective on X, then |image| < |X|
+  have h_not_inj : ¬Function.Injective (X.restrict c) := by
+    intro h_inj
+    have : (⟨x, hx_mem⟩ : X) = ⟨y, hy_mem⟩ := h_inj (by simp [hx_color, hy_color])
+    exact hne (Subtype.mk_eq_mk.mp this)
+  have h_img_card_lt : (c '' ↑X).ncard < X.card := by
+    apply Set.ncard_image_lt
+    · simp [hX_card]
+    · intro h_inj
+      apply h_not_inj
+      intros ⟨a, ha⟩ ⟨b, hb⟩ hab
+      simp at hab
+      exact Subtype.mk_eq_mk.mpr (h_inj hab)
+  rw [hX_card] at h_img_card_lt
+  omega
 
 /-- A panchromatic (m+1)-simplex has exactly one vertex with color 0. -/
 private lemma panchromatic_has_unique_zero_color {m : ℕ}
@@ -179,7 +202,18 @@ private lemma boundary_sperner_coloring
     {c : (Fin (m + 2) → ℝ) → Fin (m + 2)}
     (hc : IsSpernerColoring S c) :
     IsSpernerColoring (SimplicialComplex.boundary S m) (fun x ↦ (c x).castSucc) := by
-  sorry
+  intro x i hx_vertex hx_i
+  -- x is a vertex of the boundary, so x is a vertex of S
+  -- and x i.castSucc = 0
+  -- By Sperner on S: c x ≠ i.castSucc
+  -- So (c x).castSucc ≠ i
+  have hx_S_vertex : x ∈ S.vertices := by
+    -- boundary vertices are vertices of S
+    sorry
+  have : c x ≠ i.castSucc := hc hx_S_vertex hx_i
+  intro h_eq
+  apply this
+  exact Fin.castSucc_injective _ h_eq
 
 /-- On the boundary {x₀ = 0}, a 0-almost-panchromatic m-face is panchromatic for colors {1,...,m+1}.
 By the Sperner condition, vertices with x₀ = 0 cannot have color 0, so the face uses all m+1 colors. -/
@@ -233,7 +267,12 @@ private lemma almost_panchromatic_card {c : E → Fin (m + 1)} {X : Finset E}
   have h_surj : Set.SurjOn c X (univ \ {i}) := hX
   have h_card_le : (univ \ {i}).ncard ≤ X.card := ncard_le_card_of_surjOn h_surj (by simp)
   have h_card_eq : (univ \ {i}).ncard = m := by simp
-  -- We need an upper bound on X.card, this should come from affine independence
+  -- Lower bound from surjectivity: m ≤ |X|
+  have h_lower : m ≤ X.card := by omega
+  -- Upper bound from affine independence: |X| ≤ m+1 (simplicial complex face property)
+  -- Since X surjects onto m colors and has at most m+1 vertices,
+  -- and cannot have color i, we get exactly m vertices
+  -- Full proof requires SimplicialComplex affine independence
   sorry
 
 -- A 0-almost-panchromatic m-face on the boundary is contained in exactly 1 panchromatic (m+1)-face.
