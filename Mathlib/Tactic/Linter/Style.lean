@@ -143,12 +143,16 @@ def missingEndLinter : Linter where run := withSetOptionIn fun stx ↦ do
       -- The last scope is always the "base scope", corresponding to no active `section`s or
       -- `namespace`s. We are interested in any *other* unclosed scopes.
       if sc.length == 1 then return
-      let ends := sc.dropLast.map fun s ↦ (s.header, s.isNoncomputable)
-      -- If the outermost scope corresponds to a `noncomputable section`, we ignore it.
-      let ends := if ends.getLast!.2 then ends.dropLast else ends
+      let ends := sc.dropLast
+      -- If the outermost scope(s) correspond to `public/meta/noncomputable section`, we ignore
+      -- them.
+      let ends := ends.reverse
+        |>.dropWhile (fun sc ↦ sc.currNamespace.isAnonymous &&
+          (sc.isMeta || sc.isPublic || sc.isNoncomputable))
+        |>.reverse
       -- If there are any further un-closed scopes, we emit a warning.
       if !ends.isEmpty then
-        let ending := (ends.map Prod.fst).foldl (init := "") fun a b ↦
+        let ending := (ends.map (·.header)).foldl (init := "") fun a b ↦
           a ++ s!"\n\nend{if b == "" then "" else " "}{b}"
         Linter.logLint linter.style.missingEnd stx
          m!"unclosed sections or namespaces; expected: '{ending}'"
