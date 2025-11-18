@@ -57,7 +57,6 @@ lemma curriedTensorPreIsoPost_hom_app_app (X₁ X₂ : C) :
         F.map (OplaxMonoidal.δ L _ _) := by
   simp [curriedTensorPreIsoPost]
 
-
 lemma curriedTensorPreIsoPost_hom_app_app' {X₁ X₂ : C} {Y₁ Y₂ : D}
     (e₁ : Y₁ ≅ L.obj X₁) (e₂ : Y₂ ≅ L.obj X₂) :
     letI e := Lifting.iso L W G F
