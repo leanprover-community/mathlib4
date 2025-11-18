@@ -349,8 +349,6 @@ instance addCommGroup : AddCommGroup Surreal where
   zsmul := zsmulRec
 
 instance partialOrder : PartialOrder Surreal where
-  le := (· ≤ ·)
-  lt := (· < ·)
   le_refl := by rintro ⟨_⟩; apply @le_rfl PGame
   le_trans := by rintro ⟨_⟩ ⟨_⟩ ⟨_⟩; apply @le_trans PGame
   lt_iff_le_not_ge := by rintro ⟨_, ox⟩ ⟨_, oy⟩; apply @lt_iff_le_not_ge PGame

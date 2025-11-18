@@ -117,7 +117,7 @@ theorem isRat_le_true [Ring α] [LinearOrder α] [IsStrictOrderedRing α] :
     have hb : 0 ≤ ⅟(db : α) := invOf_nonneg.mpr <| Nat.cast_nonneg db
     have h := (mul_le_mul_of_nonneg_left · hb) <| mul_le_mul_of_nonneg_right h ha
     rw [← mul_assoc, Int.commute_cast] at h
-    simp only [Int.ofNat_eq_coe, Int.mul_def, Int.cast_mul, Int.cast_natCast,
+    simp only [Int.ofNat_eq_natCast, Int.mul_def, Int.cast_mul, Int.cast_natCast,
       mul_invOf_cancel_right'] at h
     rwa [Int.commute_cast] at h
 
@@ -143,7 +143,7 @@ theorem isRat_lt_false [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
     (ha : IsRat a na da) (hb : IsRat b nb db) (h : decide (nb * da ≤ na * db)) : ¬a < b :=
   not_lt_of_ge (isRat_le_true hb ha h)
 
-/-! # (In)equalities -/
+/-! ### (In)equalities -/
 
 theorem isNat_lt_true [Semiring α] [PartialOrder α] [IsOrderedRing α] [CharZero α] :
     {a b : α} → {a' b' : ℕ} →
