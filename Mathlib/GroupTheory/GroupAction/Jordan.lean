@@ -322,7 +322,7 @@ theorem subgroup_eq_top_of_nontrivial [Finite α] (hα : Nat.card α ≤ 2) (hG 
   apply Subgroup.eq_top_of_le_card
   rw [Nat.card_perm]
   apply (Nat.factorial_le hα).trans
-  rwa [Nat.factorial_two, Nat.succ_le, one_lt_card_iff_ne_bot, ← nontrivial_iff_ne_bot]
+  rwa [Nat.factorial_two, Nat.succ_le_iff, one_lt_card_iff_ne_bot, ← nontrivial_iff_ne_bot]
 
 theorem isMultiplyPretransitive_of_nontrivial {K : Type*} [Group K] [MulAction K α]
     (hα : Nat.card α = 2) (hK : fixedPoints K α ≠ .univ) (n : ℕ) :
@@ -351,7 +351,7 @@ theorem isMultiplyPretransitive_of_nontrivial {K : Type*} [Group K] [MulAction K
   apply le_antisymm (card_le_card_group φ.range)
   simp only [Nat.card_perm, hα, Nat.factorial_two]
   by_contra H
-  simp only [not_le, Nat.lt_succ, Finite.card_le_one_iff_subsingleton] at H
+  simp only [not_le, Nat.lt_succ_iff, Finite.card_le_one_iff_subsingleton] at H
   apply hK
   apply Set.eq_univ_of_univ_subset
   intro a _ g
