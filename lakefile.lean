@@ -17,6 +17,7 @@ require "leanprover-community" / "proofwidgets" @ git "v0.0.80-pre1" -- ProofWid
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "lean-pr-testing-11180"
 require "leanprover-community" / "plausible" @ git "nightly-testing"
+require "Cli" from git "https://github.com/TwoFX/lean4-cli" @ "lean-pr-testing-11180"
 
 
 /-!
