@@ -584,7 +584,7 @@ theorem Sublist.orderedInsert_sublist [IsTrans α r] {as bs} (x) (hs : as <+ bs)
 
 section TotalAndTransitive
 
-variable [IsTotal α r] [IsTrans α r]
+variable [Std.Total r] [IsTrans α r]
 
 theorem Sorted.orderedInsert (a : α) : ∀ l, Sorted r l → Sorted r (orderedInsert r a l)
   | [], _ => sorted_singleton a
@@ -596,7 +596,7 @@ theorem Sorted.orderedInsert (a : α) : ∀ l, Sorted r l → Sorted r (orderedI
       intro b' bm
       rcases (mem_orderedInsert r).mp bm with be | bm
       · subst b'
-        exact (total_of r _ _).resolve_left h'
+        exact (Std.Total.total _ _).resolve_left h'
       · exact rel_of_sorted_cons h _ bm
 
 variable (r)
@@ -631,11 +631,11 @@ theorem pair_sublist_insertionSort {a b : α} {l : List α} (hab : r a b) (h : [
     [a, b] <+ insertionSort r l :=
   sublist_insertionSort (pairwise_pair.mpr hab) h
 
-variable [IsAntisymm α r] [IsTotal α r] [IsTrans α r]
+variable [IsAntisymm α r] [Std.Total r] [IsTrans α r]
 
 /--
 A version of `insertionSort_stable` which only assumes `c <+~ l` (instead of `c <+ l`), but
-additionally requires `IsAntisymm α r`, `IsTotal α r` and `IsTrans α r`.
+additionally requires `IsAntisymm α r`, `Std.Total r` and `IsTrans α r`.
 -/
 theorem sublist_insertionSort' {l c : List α} (hs : c.Sorted r) (hc : c <+~ l) :
     c <+ insertionSort r l := by
@@ -682,13 +682,13 @@ section Correctness
 
 section TotalAndTransitive
 
-variable {r} [IsTotal α r] [IsTrans α r]
+variable {r} [Std.Total r] [IsTrans α r]
 
 theorem Sorted.merge {l l' : List α} (h : Sorted r l) (h' : Sorted r l') :
     Sorted r (merge l l' (r · ·)) := by
   simpa using sorted_merge (le := (r · ·))
     (fun a b c h₁ h₂ => by simpa using _root_.trans (by simpa using h₁) (by simpa using h₂))
-    (fun a b => by simpa using IsTotal.total a b)
+    (fun a b => by simpa using Std.Total.total a b)
     l l' (by simpa using h) (by simpa using h')
 
 variable (r)
@@ -697,7 +697,7 @@ variable (r)
 theorem sorted_mergeSort' (l : List α) : Sorted r (mergeSort l (r · ·)) := by
   simpa using sorted_mergeSort (le := (r · ·))
     (fun _ _ _ => by simpa using trans_of r)
-    (by simpa using total_of r)
+    (by simpa using Std.Total.total)
     l
 
 variable [IsAntisymm α r]

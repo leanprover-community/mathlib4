@@ -28,15 +28,15 @@ three-way comparison result `Ordering`. -/
 def cmpLE {α} [LE α] [DecidableLE α] (x y : α) : Ordering :=
   if x ≤ y then if y ≤ x then Ordering.eq else Ordering.lt else Ordering.gt
 
-theorem cmpLE_swap {α} [LE α] [IsTotal α (· ≤ ·)] [DecidableLE α] (x y : α) :
+theorem cmpLE_swap {α} [LE α] [Std.Total (α := α) (· ≤ ·)] [DecidableLE α] (x y : α) :
     (cmpLE x y).swap = cmpLE y x := by
   by_cases xy : x ≤ y <;> by_cases yx : y ≤ x <;> simp [cmpLE, *, Ordering.swap]
-  cases not_or_intro xy yx (total_of _ _ _)
+  cases not_or_intro xy yx (Std.Total.total _ _)
 
-theorem cmpLE_eq_cmp {α} [Preorder α] [IsTotal α (· ≤ ·)] [DecidableLE α] [DecidableLT α]
+theorem cmpLE_eq_cmp {α} [Preorder α] [Std.Total (α := α) (· ≤ ·)] [DecidableLE α] [DecidableLT α]
     (x y : α) : cmpLE x y = cmp x y := by
   by_cases xy : x ≤ y <;> by_cases yx : y ≤ x <;> simp [cmpLE, lt_iff_le_not_ge, *, cmp, cmpUsing]
-  cases not_or_intro xy yx (total_of _ _ _)
+  cases not_or_intro xy yx (Std.Total.total _ _)
 
 namespace Ordering
 
