@@ -27,7 +27,7 @@ Moreover, including a scalar multiplication causes problems for inferring the no
 -/
 class FourierTransform (E : Type u) (F : outParam (Type v)) where
   /-- `𝓕 f` is the Fourier transform of `f`. The meaning of this notation is type-dependent. -/
-  fourierTransform : E → F
+  fourier : E → F
 
 /--
 The notation typeclass for the inverse Fourier transform.
@@ -40,14 +40,14 @@ Moreover, including a scalar multiplication causes problems for inferring the no
 class FourierTransformInv (E : Type u) (F : outParam (Type v)) where
   /-- `𝓕⁻ f` is the inverse Fourier transform of `f`. The meaning of this notation is
   type-dependent. -/
-  fourierTransformInv : E → F
+  fourierInv : E → F
 
 namespace FourierTransform
 
-export FourierTransformInv (fourierTransformInv)
+export FourierTransformInv (fourierInv)
 
-@[inherit_doc] scoped notation "𝓕" => fourierTransform
-@[inherit_doc] scoped notation "𝓕⁻" => fourierTransformInv
+@[inherit_doc] scoped notation "𝓕" => fourier
+@[inherit_doc] scoped notation "𝓕⁻" => fourierInv
 
 end FourierTransform
 
@@ -129,19 +129,19 @@ open FourierTransform
 
 /-- A `FourierPair` is a pair of spaces `E` and `F` such that `𝓕⁻ ∘ 𝓕 = id` on `E`. -/
 class FourierPair (E F : Type*) [FourierTransform E F] [FourierTransformInv F E] where
-  inv_fourier : ∀ (f : E), 𝓕⁻ (𝓕 f) = f
+  fourierInv_fourier_eq : ∀ (f : E), 𝓕⁻ (𝓕 f) = f
 
 /-- A `FourierInvPair` is a pair of spaces `E` and `F` such that `𝓕 ∘ 𝓕⁻ = id` on `E`. -/
 class FourierInvPair (E F : Type*) [FourierTransform F E] [FourierTransformInv E F] where
-  fourier_inv : ∀ (f : E), 𝓕 (𝓕⁻ f) = f
+  fourier_fourierInv_eq : ∀ (f : E), 𝓕 (𝓕⁻ f) = f
 
 namespace FourierTransform
 
-export FourierPair (inv_fourier)
-export FourierInvPair (fourier_inv)
+export FourierPair (fourierInv_fourier_eq)
+export FourierInvPair (fourier_fourierInv_eq)
 
-attribute [simp] inv_fourier
-attribute [simp] fourier_inv
+attribute [simp] fourierInv_fourier_eq
+attribute [simp] fourier_fourierInv_eq
 
 variable {R E F : Type*} [Semiring R] [AddCommMonoid E] [AddCommMonoid F] [Module R E] [Module R F]
   [FourierModule R E F] [FourierInvModule R F E] [FourierPair E F] [FourierInvPair F E]
@@ -151,8 +151,8 @@ variable (R E F) in
 def fourierEquiv : E ≃ₗ[R] F where
   __ := fourierₗ R E F
   invFun := 𝓕⁻
-  left_inv := inv_fourier
-  right_inv := fourier_inv
+  left_inv := fourierInv_fourier_eq
+  right_inv := fourier_fourierInv_eq
 
 @[simp]
 lemma fourierEquiv_apply (f : E) : fourierEquiv R E F f = 𝓕 f := rfl

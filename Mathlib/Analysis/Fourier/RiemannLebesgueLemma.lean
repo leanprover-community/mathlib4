@@ -207,9 +207,13 @@ theorem Real.tendsto_integral_exp_smul_cocompact (f : ℝ → E) :
   simp_rw [mul_comm]
   exact tendsto_integral_exp_inner_smul_cocompact f
 
-/-- The Riemann-Lebesgue lemma for functions on `ℝ`, formulated via `Real.fourierIntegral`. -/
-theorem Real.zero_at_infty_fourierIntegral (f : ℝ → E) : Tendsto (𝓕 f) (cocompact ℝ) (𝓝 0) :=
+/-- The Riemann-Lebesgue lemma for functions on `ℝ`, formulated via
+`Real.instFourierTransform.fourier`. -/
+theorem Real.zero_at_infty_fourier (f : ℝ → E) : Tendsto (𝓕 f) (cocompact ℝ) (𝓝 0) :=
   tendsto_integral_exp_inner_smul_cocompact f
+
+@[deprecated (since := "2025-11-16")]
+alias Real.zero_at_infty_fourierIntegral := Real.zero_at_infty_fourier
 
 /-- Riemann-Lebesgue lemma for functions on a finite-dimensional inner-product space, formulated
 via dual space. **Do not use** -- it is only a stepping stone to
