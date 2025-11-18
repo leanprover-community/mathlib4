@@ -163,6 +163,69 @@ end Assoc
 
 end Homotopy
 
+namespace Homotopic
+
+theorem refl_trans (p : Path x₀ x₁) :
+    ((Path.refl x₀).trans p).Homotopic p :=
+  ⟨Homotopy.reflTrans p⟩
+
+theorem trans_refl (p : Path x₀ x₁) :
+    (p.trans (Path.refl x₁)).Homotopic p :=
+  ⟨Homotopy.transRefl p⟩
+
+theorem trans_symm (p : Path x₀ x₁) :
+    (p.trans p.symm).Homotopic (Path.refl x₀) :=
+  ⟨(Homotopy.reflTransSymm p).symm⟩
+
+theorem symm_trans (p : Path x₀ x₁) :
+    (p.symm.trans p).Homotopic (Path.refl x₁) :=
+  ⟨(Homotopy.reflSymmTrans p).symm⟩
+
+theorem trans_assoc {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : Path x₁ x₂) (r : Path x₂ x₃) :
+    ((p.trans q).trans r).Homotopic (p.trans (q.trans r)) :=
+  ⟨Homotopy.transAssoc p q r⟩
+
+namespace Quotient
+
+@[simp, grind =]
+theorem refl_trans (γ : Homotopic.Quotient x₀ x₁) :
+    trans (refl x₀) γ = γ := by
+  induction γ using Quotient.ind with | mk γ =>
+  simpa [← mk_trans, ← mk_refl, eq] using Homotopic.refl_trans γ
+
+@[simp, grind =]
+theorem trans_refl (γ : Homotopic.Quotient x₀ x₁) :
+    trans γ (refl x₁) = γ := by
+  induction γ using Quotient.ind with | mk γ =>
+  simpa [← mk_trans, ← mk_refl, eq] using Homotopic.trans_refl γ
+
+@[simp, grind =]
+theorem trans_symm (γ : Homotopic.Quotient x₀ x₁) :
+    trans γ (symm γ) = refl x₀ := by
+  induction γ using Quotient.ind with | mk γ =>
+  simpa [← mk_trans, ← mk_symm, ← mk_refl, eq] using Homotopic.trans_symm γ
+
+@[simp, grind =]
+theorem symm_trans (γ : Homotopic.Quotient x₀ x₁) :
+    trans (symm γ) γ = refl x₁ := by
+  induction γ using Quotient.ind with | mk γ =>
+  simpa [← mk_trans, ← mk_symm, ← mk_refl, eq] using Homotopic.symm_trans γ
+
+@[simp, grind _=_]
+theorem trans_assoc {x₀ x₁ x₂ x₃ : X}
+    (γ₀ : Homotopic.Quotient x₀ x₁)
+    (γ₁ : Homotopic.Quotient x₁ x₂)
+    (γ₂ : Homotopic.Quotient x₂ x₃) :
+    trans (trans γ₀ γ₁) γ₂ = trans γ₀ (trans γ₁ γ₂) := by
+  induction γ₀ using Quotient.ind with | mk γ₀ =>
+  induction γ₁ using Quotient.ind with | mk γ₁ =>
+  induction γ₂ using Quotient.ind with | mk γ₂ =>
+  simpa [← mk_trans, eq] using Homotopic.trans_assoc γ₀ γ₁ γ₂
+
+end Quotient
+
+end Homotopic
+
 end Path
 
 /-- The fundamental groupoid of a space `X` is defined to be a wrapper around `X`, and we
@@ -218,7 +281,7 @@ instance {X : Type*} [Inhabited X] : Inhabited (FundamentalGroupoid X) :=
 instance : Groupoid (FundamentalGroupoid X) where
   Hom x y := Path.Homotopic.Quotient x.as y.as
   id x := ⟦Path.refl x.as⟧
-  comp := Path.Homotopic.Quotient.comp
+  comp := Path.Homotopic.Quotient.trans
   id_comp := by rintro _ _ ⟨f⟩; exact Quotient.sound ⟨Path.Homotopy.reflTrans f⟩
   comp_id := by rintro _ _ ⟨f⟩; exact Quotient.sound ⟨Path.Homotopy.transRefl f⟩
   assoc := by rintro _ _ _ _ ⟨f⟩ ⟨g⟩ ⟨h⟩; exact Quotient.sound ⟨Path.Homotopy.transAssoc f g h⟩
@@ -226,14 +289,14 @@ instance : Groupoid (FundamentalGroupoid X) where
   inv_comp := by rintro _ _ ⟨f⟩; exact Quotient.sound ⟨(Path.Homotopy.reflSymmTrans f).symm⟩
   comp_inv := by rintro _ _ ⟨f⟩; exact Quotient.sound ⟨(Path.Homotopy.reflTransSymm f).symm⟩
 
-theorem comp_eq (x y z : FundamentalGroupoid X) (p : x ⟶ y) (q : y ⟶ z) : p ≫ q = p.comp q := rfl
+theorem comp_eq (x y z : FundamentalGroupoid X) (p : x ⟶ y) (q : y ⟶ z) : p ≫ q = p.trans q := rfl
 
 theorem id_eq_path_refl (x : FundamentalGroupoid X) : 𝟙 x = ⟦Path.refl x.as⟧ := rfl
 
 /-- The functor on fundamental groupoid induced by a continuous map. -/
 @[simps] def map (f : C(X, Y)) : FundamentalGroupoid X ⥤ FundamentalGroupoid Y where
   obj x := ⟨f x.as⟩
-  map p := p.mapFn f
+  map p := p.map f
   map_id _ := rfl
   map_comp := by rintro _ _ _ ⟨p⟩ ⟨q⟩; exact congr_arg Quotient.mk'' (p.map_trans q f.continuous)
 
@@ -253,7 +316,7 @@ scoped notation "πₓ" => FundamentalGroupoid.fundamentalGroupoidFunctor.obj
 scoped notation "πₘ" => FundamentalGroupoid.fundamentalGroupoidFunctor.map
 
 theorem map_eq {X Y : TopCat} {x₀ x₁ : X} (f : C(X, Y)) (p : Path.Homotopic.Quotient x₀ x₁) :
-    (πₘ (TopCat.ofHom f)).map p = p.mapFn f := rfl
+    (πₘ (TopCat.ofHom f)).map p = p.map f := rfl
 
 /-- Help the typechecker by converting a point in a groupoid back to a point in
 the underlying topological space. -/
