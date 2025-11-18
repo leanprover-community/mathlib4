@@ -620,11 +620,10 @@ lemma isOrthogonal_symm : IsOrthogonal P i j ↔ IsOrthogonal P j i := by
 
 lemma isOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.reflection j) := by
   rw [commute_iff_eq]
-  ext v
+  ext
   replace h : P.pairing i j = 0 ∧ P.pairing j i = 0 := by simpa [IsOrthogonal] using h
-  erw [Module.End.mul_apply, Module.End.mul_apply]
-  simp only [LinearEquiv.coe_coe, reflection_apply, LinearMap.flip_apply, map_sub, map_smul,
-    root_coroot_eq_pairing, h, zero_smul, sub_zero]
+  simp only [LinearEquiv.mul_apply, reflection_apply, LinearMap.flip_apply, map_sub,
+    map_smul, root_coroot_eq_pairing, h, zero_smul, sub_zero]
   abel
 
 variable {P i j}
