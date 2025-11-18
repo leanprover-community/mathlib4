@@ -317,7 +317,6 @@ private lemma almost_panchromatic_containment {S : SimplicialComplex ℝ (Fin (m
     let containing_panchromatic := {Y ∈ S.faces | IsPanchromatic c Y ∧ X ⊂ Y ∧ Y.card = X.card + 1}
     (∀ x ∈ X, x 0 = 0) → containing_panchromatic.ncard = 1 ∧
     (∃ x ∈ X, x 0 ≠ 0) → containing_panchromatic.ncard ≤ 2 := by
-  intro containing_panchromatic
   constructor
   · intro hX_bdy
     -- Boundary case: X lies on {x₀ = 0}, so all vertices have x₀ = 0
@@ -409,7 +408,7 @@ private lemma almost_panchromatic_containment {S : SimplicialComplex ℝ (Fin (m
         ≤ {Y ∈ S.faces | X ⊂ Y ∧ Y.card = m + 2}.ncard := by
           apply Set.ncard_le_ncard h_subset
           exact Set.Finite.subset hSfin fun _ h => h.1
-      _ ≤ 2 := coboundary_card_bound hX_face hX_cardset_option linter.dupNamespace false in
+      _ ≤ 2 := coboundary_card_bound hX_face hX_card
 /-- The **strong Sperner lemma**: A Sperner triangulation contains an **odd** number of
 panchromatic simplices.
 
@@ -598,7 +597,9 @@ theorem strong_sperner {S : SimplicialComplex ℝ (Fin (m + 1) → ℝ)} {c : E 
         omega
 
     rw [← h_P_eq]
-    exact this/-- Helper: Partition 0-almost-panchromatic faces into boundary and interior. -/
+    exact this
+
+/-- Helper: Partition 0-almost-panchromatic faces into boundary and interior. -/
 private lemma partition_almost_panchromatic {S : SimplicialComplex ℝ (Fin (m + 2) → ℝ)}
     {c : (Fin (m + 2) → ℝ) → Fin (m + 2)} :
     {X ∈ S.faces | IsAlmostPanchromatic c X 0} =
@@ -614,9 +615,9 @@ private lemma partition_almost_panchromatic {S : SimplicialComplex ℝ (Fin (m +
       push_neg at h
       exact ⟨hX_face, hX_almost, h⟩
   · intro h
-    cases h with
-    | inl h => exact ⟨h.1, h.2.1⟩
-    | inr h => exact ⟨h.1, h.2.1⟩
+    cases h
+    · exact ⟨h.1, h.2.1⟩
+    · exact ⟨h.1, h.2.1⟩
 
 /-- Helper: Each panchromatic face generates exactly one 0-almost-panchromatic face. -/
 private lemma panchromatic_to_zero_almost_unique {S : SimplicialComplex ℝ (Fin (m + 2) → ℝ)}
