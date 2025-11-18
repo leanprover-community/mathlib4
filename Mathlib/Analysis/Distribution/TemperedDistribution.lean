@@ -52,25 +52,6 @@ end definition
 
 namespace TemperedDistribution
 
-section Tendsto
-
-open Filter
-open scoped Topology
-
-variable [NormedSpace ℝ E] [NormedSpace ℝ F] [NormedSpace 𝕜 V] [NormedSpace 𝕜 F]
-
-theorem tendsto_nhds {f : Filter α} (u : α → 𝓢'(𝕜, E, F, V)) (y₀ : 𝓢'(𝕜, E, F, V)) :
-    Tendsto u f (𝓝 y₀) ↔ ∀ (x : 𝓢(E, F)) (ε : ℝ), 0 < ε → ∀ᶠ (k : α) in f, ‖u k x  - y₀ x‖ < ε :=
-  PointwiseConvergenceCLM.withSeminorms.tendsto_nhds _ _
-
-theorem tendsto_nhds_atTop [SemilatticeSup α] [Nonempty α] (u : α → 𝓢'(𝕜, E, F, V))
-    (y₀ : 𝓢'(𝕜, E, F, V)) :
-    Tendsto u atTop (𝓝 y₀) ↔ ∀ (x : 𝓢(E, F)) (ε : ℝ), 0 < ε → ∃ (k₀ : α), ∀ (k : α), k₀ ≤ k →
-    ‖u k x  - y₀ x‖ < ε :=
-  PointwiseConvergenceCLM.withSeminorms.tendsto_nhds_atTop _ _
-
-end Tendsto
-
 section Construction
 
 variable [NormedSpace ℝ E] [NormedSpace ℝ D]
@@ -78,28 +59,9 @@ variable [NormedSpace ℝ E] [NormedSpace ℝ D]
   [NormedSpace ℝ G] [NormedSpace 𝕜 G]
   [NormedSpace 𝕜 V] [NormedSpace 𝕜 W]
 
-variable (V W) in
-def mkCLM (A : (𝓢(E, F) →L[𝕜] V) →ₗ[𝕜] (𝓢(D, G) →L[𝕜] W))
-  (hbound : ∀ (f : 𝓢(D, G)), ∃ (s : Finset 𝓢(E, F)) (C : ℝ≥0),
-  ∀ (B : 𝓢(E, F) →L[𝕜] V), ∃ (g : 𝓢(E, F)) (_hb : g ∈ s),
-  ‖(A B) f‖ ≤ C • ‖B g‖) : 𝓢'(𝕜, E, F, V) →L[𝕜] 𝓢'(𝕜, D, G, W) where
-  __ := (toUniformConvergenceCLM _ _ _).toLinearMap.comp
-    (A.comp (toUniformConvergenceCLM _ _ _).symm.toLinearMap)
-  cont := by
-    apply Seminorm.continuous_from_bounded PointwiseConvergenceCLM.withSeminorms
-      PointwiseConvergenceCLM.withSeminorms
-    intro f
-    obtain ⟨s, C, h⟩ := hbound f
-    use s, C
-    rw [← Seminorm.finset_sup_smul]
-    intro B
-    obtain ⟨g, h₁, h₂⟩ := h ((toUniformConvergenceCLM _ _ _).symm B)
-    refine le_trans ?_ (Seminorm.le_finset_sup_apply h₁)
-    exact h₂
-
 variable (V) in
 def mkCompCLM (A : 𝓢(D, G) →L[𝕜] 𝓢(E, F)) : 𝓢'(𝕜, E, F, V) →L[𝕜] 𝓢'(𝕜, D, G, V) :=
-    mkCLM V V
+    PointwiseConvergenceCLM.mkCLM V V
       {toFun f := f ∘L A, map_add' f g := by simp, map_smul' := by simp}
       (by
         intro f
