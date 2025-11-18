@@ -14,7 +14,7 @@ This PR implements Sperner's lemma but is **intentionally incomplete** due to mi
 
 The proof requires **`SimplicialComplex.boundary` API** which doesn't currently exist. Specifically:
 - Construction of the boundary complex of a simplicial complex
-- Relationship between faces of a complex and faces of its boundary  
+- Relationship between faces of a complex and faces of its boundary
 - Dimensional reduction lemmas for boundary traversal
 
 Without this, the inductive step of `strong_sperner` cannot be completed.
@@ -64,4 +64,3 @@ Thanks for reviewing! Let me know what you think.
 - `Mathlib/Analysis/Convex/SimplicialComplex/Boundary.lean`: Placeholder for boundary API
 
 **Related Issue:** #25231 (Sperner's lemma)
-
