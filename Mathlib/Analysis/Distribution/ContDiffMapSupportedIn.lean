@@ -110,6 +110,8 @@ class ContDiffMapSupportedInClass (B : Type*) (E F : outParam <| Type*)
 
 open ContDiffMapSupportedInClass
 
+namespace ContDiffMapSupportedInClass
+
 instance (B : Type*) (E F : outParam <| Type*)
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
     (n : outParam ℕ∞) (K : outParam <| Compacts E)
@@ -126,6 +128,8 @@ instance (B : Type*) (E F : outParam <| Type*)
     have := HasCompactSupport.intro K.isCompact (map_zero_on_compl f)
     rcases (map_continuous f).bounded_above_of_compact_support this with ⟨C, hC⟩
     exact map_bounded (BoundedContinuousFunction.ofNormedAddCommGroup f (map_continuous f) C hC)
+
+end ContDiffMapSupportedInClass
 
 namespace ContDiffMapSupportedIn
 
