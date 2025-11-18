@@ -25,16 +25,21 @@ structure SharplyLT : Prop where
 
 namespace SharplyLT
 
-variable (h : SharplyLT κ₁ κ₂)
+lemma le (h : SharplyLT κ₁ κ₂) : κ₁ ≤ κ₂ := h.lt.le
 
-include h
-lemma le : κ₁ ≤ κ₂ := h.lt.le
-
-lemma isCardinalAccessible
+lemma isCardinalAccessible (h : SharplyLT κ₁ κ₂)
     (C : Type u) [Category.{v} C] [IsCardinalAccessibleCategory C κ₁] :
     IsCardinalAccessibleCategory C κ₂ where
   toHasCardinalFilteredColimits := HasCardinalFilteredColimits.of_le C h.le
   exists_generator := sorry
+
+lemma trans (h₁₂ : SharplyLT κ₁ κ₂) {κ₃ : Cardinal.{w}} [Fact κ₃.IsRegular]
+    (h₂₃ : SharplyLT κ₂ κ₃) :
+    SharplyLT κ₁ κ₃ where
+  lt := h₁₂.lt.trans h₂₃.lt
+  isCardinalAccessible_cardinalDirectedPoset := by
+    have := h₁₂.isCardinalAccessible_cardinalDirectedPoset
+    exact h₂₃.isCardinalAccessible _
 
 end SharplyLT
 
