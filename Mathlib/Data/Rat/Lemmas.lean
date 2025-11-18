@@ -21,7 +21,7 @@ attribute [norm_cast] num_intCast den_intCast
 
 theorem num_dvd (a) {b : ℤ} (b0 : b ≠ 0) : (a /. b).num ∣ a := by
   rcases e : a /. b with ⟨n, d, h, c⟩
-  rw [Rat.mk'_eq_divInt, divInt_eq_divInt_iff b0 (mod_cast h)] at e
+  rw [Rat.mk_eq_divInt, divInt_eq_divInt_iff b0 (mod_cast h)] at e
   refine Int.natAbs_dvd.1 <| Int.dvd_natAbs.1 <| Int.natCast_dvd_natCast.2 <|
     c.dvd_of_dvd_mul_right ?_
   have := congr_arg Int.natAbs e
@@ -30,7 +30,7 @@ theorem num_dvd (a) {b : ℤ} (b0 : b ≠ 0) : (a /. b).num ∣ a := by
 theorem den_dvd (a b : ℤ) : ((a /. b).den : ℤ) ∣ b := by
   by_cases b0 : b = 0; · simp [b0]
   rcases e : a /. b with ⟨n, d, h, c⟩
-  rw [mk'_eq_divInt,
+  rw [mk_eq_divInt,
     divInt_eq_divInt_iff b0 (ne_of_gt (Int.natCast_pos.2 (Nat.pos_of_ne_zero h)))] at e
   refine Int.dvd_natAbs.1 <| Int.natCast_dvd_natCast.2 <| c.symm.dvd_of_dvd_mul_left ?_
   rw [← Int.natAbs_mul, ← Int.natCast_dvd_natCast, Int.dvd_natAbs, ← e]; simp
@@ -54,14 +54,14 @@ theorem num_den_mk {q : ℚ} {n d : ℤ} (hd : d ≠ 0) (qdf : q = n /. d) :
 
 theorem num_mk (n d : ℤ) : (n /. d).num = d.sign * n / n.gcd d := by
   have (m : ℕ) : Int.natAbs (m + 1) = m + 1 := by
-    rw [← Nat.cast_one, ← Nat.cast_add, Int.natAbs_cast]
+    rw [← Nat.cast_one, ← Nat.cast_add, Int.natAbs_natCast]
   rcases d with ((_ | _) | _) <;>
   simp [divInt, mkRat, Rat.normalize_eq, Int.sign, Int.gcd,
     Int.zero_ediv, this]
 
 theorem den_mk (n d : ℤ) : (n /. d).den = if d = 0 then 1 else d.natAbs / n.gcd d := by
   have (m : ℕ) : Int.natAbs (m + 1) = m + 1 := by
-    rw [← Nat.cast_one, ← Nat.cast_add, Int.natAbs_cast]
+    rw [← Nat.cast_one, ← Nat.cast_add, Int.natAbs_natCast]
   rcases d with ((_ | _) | _) <;>
     simp [divInt, mkRat, Rat.normalize_eq, Int.gcd,
       if_neg (Nat.cast_add_one_ne_zero _), this]
@@ -245,13 +245,13 @@ theorem num_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.Coprime a.natAb
     (a / b : ℚ).num = a := by
   lift b to ℕ using hb0.le
   simp only [Int.natAbs_natCast, Int.natCast_pos] at h hb0
-  rw [← Rat.divInt_eq_div, ← mk_eq_divInt _ _ hb0.ne' h]
+  rw [← Rat.divInt_eq_div, ← mk_eq_divInt (nz := hb0.ne') (c := h)]
 
 theorem den_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.Coprime a.natAbs b.natAbs) :
     ((a / b : ℚ).den : ℤ) = b := by
   lift b to ℕ using hb0.le
   simp only [Int.natAbs_natCast, Int.natCast_pos] at h hb0
-  rw [← Rat.divInt_eq_div, ← mk_eq_divInt _ _ hb0.ne' h]
+  rw [← Rat.divInt_eq_div, ← mk_eq_divInt (nz := hb0.ne') (c := h)]
 
 theorem div_int_inj {a b c d : ℤ} (hb0 : 0 < b) (hd0 : 0 < d) (h1 : Nat.Coprime a.natAbs b.natAbs)
     (h2 : Nat.Coprime c.natAbs d.natAbs) (h : (a : ℚ) / b = (c : ℚ) / d) : a = c ∧ b = d := by
