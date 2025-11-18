@@ -312,34 +312,28 @@ lemma ContinuousLinearMap.range_prod {f : E →L[𝕜] F} {g : E →L[𝕜] F'} 
 /-- Stronger version of `smallEquiv` -/
 def smallEquivScifi [CompleteSpace E] [CompleteSpace E''] [CompleteSpace F]
     (hf : IsImmersionAtOfComplement F I J n f x) : F ≃L[𝕜] hf.smallComplement := by
-  --letI A' : Submodule 𝕜 (E × F) := LinearMap.range (LinearMap.prod 0 .id)
-  let phis : F →L[𝕜] E × F := ContinuousLinearMap.prod (0 : F →L[𝕜] E) (.id _ _)
-  let A' : Submodule 𝕜 (E × F) := LinearMap.range phis
-  -- this yields a continuous linear map, i.e. no need to prove continuity again
-  have h : Injective <| ContinuousLinearMap.prod (0 : F →L[𝕜] E) (.id _ _) := by
-    intro x y hxy; simp_all
-  have h2 : IsClosed (range phis) := by
+  letI φ : F →L[𝕜] E × F := ContinuousLinearMap.prod (0 : F →L[𝕜] E) (.id _ _)
+  have h : Injective φ := by intro x y hxy; simp_all [φ]
+  have h2 : IsClosed (range φ) := by
     have : (range (fun (x : F) ↦ ((0 : E), x))) = {0} ×ˢ univ := by grind
-    simpa [phis, ContinuousLinearMap.range_prod, this] using isClosed_singleton.prod isClosed_univ
-  have : CompleteSpace (LinearMap.range phis) := h2.completeSpace_coe
-
-  have aux : F ≃L[𝕜] A' := ContinuousLinearMap.equivRange h h2
-  letI psi : A' →ₗ[𝕜] E'' := hf.equiv.domRestrict (LinearMap.range phis)
-  letI psi' : A' →L[𝕜] E'' := .mk psi (Pi.continuous_restrict_apply _ hf.equiv.continuous)
-  have h3 : Injective psi' := by
-    simp only [psi', psi, ContinuousLinearMap.coe_mk']
+    simpa [φ, ContinuousLinearMap.range_prod, this] using isClosed_singleton.prod isClosed_univ
+  have : CompleteSpace (LinearMap.range φ) := h2.completeSpace_coe
+  letI ψ : _ →L[𝕜] E'' := .mk (hf.equiv.domRestrict (LinearMap.range φ))
+    (Pi.continuous_restrict_apply _ hf.equiv.continuous)
+  have h3 : Injective ψ := by
+    simp only [ψ, ContinuousLinearMap.coe_mk']
     rw [LinearMap.injective_domRestrict_iff]
     simp
-  have : IsClosed (range psi') := by
-    simp only [psi, psi', ContinuousLinearMap.coe_mk']
-    -- LinearMap.range_domRestrict does not fire, but this does...
-    have : range ((hf.equiv.toLinearEquiv).domRestrict (LinearMap.range phis)) =
-        Submodule.map hf.equiv.toLinearEquiv (LinearMap.range phis) := by
+  have : IsClosed (range ψ) := by
+    simp only [ψ, ContinuousLinearMap.coe_mk']
+    -- LinearMap.range_domRestrict does not fire, but this lemma does...
+    have : range ((hf.equiv.toLinearEquiv).domRestrict (LinearMap.range φ)) =
+        Submodule.map hf.equiv.toLinearEquiv (LinearMap.range φ) := by
       ext x
       simp
     rw [this]
     simpa
-  apply aux.trans (ContinuousLinearMap.equivRange h3 this)
+  apply (ContinuousLinearMap.equivRange h h2).trans (ContinuousLinearMap.equivRange h3 this)
 
 -- This statement is weaker than `smallEquiv`, but is it still useful?
 lemma small (hf : IsImmersionAtOfComplement F I J n f x) : Small.{u} F := by
