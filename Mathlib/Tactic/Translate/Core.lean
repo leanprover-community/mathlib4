@@ -544,7 +544,7 @@ flag `k` as a type to not be translated.
 -/
 def getDontTranslates (given : List Ident) (type : Expr) : MetaM (List Nat) := do
   forallTelescope type fun xs _ => do
-    given.mapM fun id => withRef id.raw do
+    given.mapM fun id => withRef id.raw <| do
       let fvarId ← getFVarFromUserName id.getId
       return (xs.idxOf? fvarId).get!
 
