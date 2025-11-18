@@ -644,7 +644,7 @@ def _root_.LinearEquiv.baseChange (e : M ≃ₗ[R] N) : A ⊗[R] M ≃ₗ[A] A �
   AlgebraTensorModule.congr (.refl _ _) e
 
 theorem _root_.LinearEquiv.coe_baseChange (f : M ≃ₗ[R] N) :
-    (f.baseChange R A M N).toLinearMap = f.toLinearMap.baseChange A :=
+    (f.baseChange R A M N) = f.toLinearMap.baseChange A :=
    rfl
 
 /-- `baseChange` as a linear map.
@@ -669,7 +669,8 @@ lemma baseChange_pow (f : Module.End R M) (n : ℕ) :
 theorem _root_.LinearEquiv.baseChange_one :
     (1 : M ≃ₗ[R] M).baseChange R A M M = 1 := by
   ext x
-  simp [← LinearEquiv.coe_toLinearMap]
+  rw [← LinearEquiv.coe_toLinearMap, LinearEquiv.coe_baseChange]
+  simp
 
 theorem _root_.LinearEquiv.baseChange_trans (e : M ≃ₗ[R] N) (f : N ≃ₗ[R] P) :
     (e.trans f).baseChange R A M P = (e.baseChange R A M N).trans  (f.baseChange R A N P) := by
