@@ -45,6 +45,7 @@ lemma LinearMap.det_baseChange :
 lemma LinearEquiv.det_baseChange (f : M ≃ₗ[R] M) :
     LinearEquiv.det (f.baseChange R A _ _) = (LinearEquiv.det f).map (algebraMap R A) := by
   ext
-  simp [LinearMap.det_baseChange]
+  simp only [coe_det, Units.coe_map, MonoidHom.coe_coe]
+  apply LinearMap.det_baseChange
 
 /-! Also see `LinearMap.trace_baseChange` in `Mathlib/LinearAlgebra/Trace` -/
