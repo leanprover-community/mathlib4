@@ -522,7 +522,7 @@ def postcomp [IsTopologicalAddGroup F] [IsTopologicalAddGroup G] [ContinuousCons
 variable (σ F) {E} in
 lemma toUniformConvergenceCLM_continuous [IsTopologicalAddGroup F]
     [ContinuousConstSMul 𝕜₂ F]
-    (𝔖 : Set (Set E)) (h : 𝔖 ⊆ { S | IsVonNBounded 𝕜₁ S }) :
+    (𝔖 : Set (Set E)) (h : 𝔖 ⊆ {S | IsVonNBounded 𝕜₁ S}) :
     Continuous (ContinuousLinearMap.toUniformConvergenceCLM σ F 𝔖) :=
   continuous_id_of_le <| UniformConvergenceCLM.topologicalSpace_mono _ _ h
 
