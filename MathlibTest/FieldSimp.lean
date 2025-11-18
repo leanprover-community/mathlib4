@@ -743,11 +743,13 @@ example {x y : ℚ} (hx : y ≠ 0) {f : ℚ → ℚ} (hf : ∀ t, f t ≠ 0) :
     f (x * y / y) / f (x / y * y) = 1 := by
   field_simp [hf]
 
--- test for non-duplication of side conditions in subexpressions
+-- Ideally these goals would be deduplicated
 example {x y : ℚ} {f : ℚ → ℚ} (hf : ∀ t, f t ≠ 0) :
     f (x / x * y / y) / f (y / y) = 1 := by
   field_simp! [hf]
   · guard_target = x ≠ 0
+    exact test_sorry
+  · guard_target = y ≠ 0
     exact test_sorry
   · guard_target = y ≠ 0
     exact test_sorry
@@ -1023,3 +1025,16 @@ example {K : Type*} [DivisionRing K] {n' x : K} (h : n' ≠ 0) (h' : n' + x ≠ 
 example {K : Type*} [Field K] {n' x : K} (hn : n' ≠ 0) :
     1 / (1 + x / n') = n' / (n' + x) := by
   field_simp
+
+/-! ## Proof caching in subexpressions -/
+
+
+
+
+-- Make sure the proof in the `then` branche isn't cached and used in the `else` branch.
+example {x y : ℚ}: (if x ≠ 0 then x * y / x else x * y / x) = if x ≠ 0 then y else y := by
+  field_simp
+
+
+  -- field_simp
+  apply test_sorry

@@ -83,13 +83,26 @@ def AtomM.addAtomQ {u : Level} {α : Q(Type u)} (e : Q($α)) :
   let (n, e') ← AtomM.addAtom e
   return (n, ⟨e', ⟨⟩⟩)
 
-abbrev CacheAtomM (σ : Type) := StateRefT σ AtomM
+abbrev CacheAtomM (σ : Type) := ReaderT Nat <| StateRefT (Nat × σ) AtomM
 
-def CacheAtomM.get {σ : Type} : CacheAtomM σ σ := StateRefT'.get
+def CacheAtomM.get {σ : Type} : CacheAtomM σ σ := do
+  let ⟨_, s⟩ ← (StateRefT'.get : StateRefT (Nat × σ) AtomM _)
+  return s
 
-def CacheAtomM.set {σ : Type} (s : σ) : CacheAtomM σ Unit := StateRefT'.set s
+def CacheAtomM.set {σ : Type} (s : σ) : CacheAtomM σ Unit := do
+  let _ ← (StateRefT'.modifyGet fun ⟨n, _⟩ => ⟨(), n, s⟩ : StateRefT (Nat × σ) AtomM _ )
 
 def CacheAtomM.modifyGet {σ : Type} {α : Type} (f : σ → α × σ) : CacheAtomM σ α :=
-  StateRefT'.modifyGet f
+  (StateRefT'.modifyGet fun ⟨n, s⟩ ↦
+    let ⟨a, s⟩ := f s
+    ⟨a, n, s⟩ : StateRefT (Nat × σ) AtomM _)
 
+def CacheAtomM.incContext (σ : Type) : CacheAtomM σ Unit := do
+  let _ ← (StateRefT'.modifyGet fun ⟨n, s⟩ => ⟨(), n+1, s⟩ : StateRefT (Nat × σ) AtomM _)
+
+def CacheAtomM.withContext (i : Nat) (σ : Type) {α : Type} (m : CacheAtomM σ α) : CacheAtomM σ α :=
+  ReaderT.run m i
+
+def CacheAtomM.getContext (σ : Type) : CacheAtomM σ Nat :=  do
+  ReaderT.read
 end Mathlib.Tactic

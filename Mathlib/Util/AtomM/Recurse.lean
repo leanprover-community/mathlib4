@@ -143,11 +143,12 @@ monad.
 def onSubexpressions {σ : Type} (eval : Expr → CacheAtomM σ Simp.Result)
     (parent : Expr) (root := true) :
     RecurseT (CacheAtomM σ) Simp.Result :=
-  fun nctx cs rctx as ↦ do
+  fun nctx _ cs rctx as ↦ do
     let pre : Simp.Simproc := fun e =>
       try
         guard <| root || parent != e -- recursion guard
-        let r' ← eval e cs rctx as
+        let id ← cs.modifyGet fun ⟨n, s⟩ ↦ ⟨n, n+1, s⟩
+        let r' ← eval e id cs rctx as
         let r ← nctx.simp r'
         if ← withReducible <| isDefEq r.expr e then return .done { expr := r.expr }
         pure (.done r)
@@ -167,7 +168,7 @@ Runs a tactic in the `AtomM.RecurseM` monad, given initial data:
 * `x`: the tactic to run
 -/
 partial def RecurseT.runCached
-    {σ α : Type} (cs : IO.Ref σ) (s : IO.Ref AtomM.State) (cfg : Recurse.Config)
+    {σ α : Type} (cs : IO.Ref (Nat × σ)) (s : IO.Ref AtomM.State) (cfg : Recurse.Config)
     (eval : Expr → CacheAtomM σ Simp.Result)
     (simp : Simp.Result → MetaM Simp.Result) (x : RecurseT (CacheAtomM σ) α) :
     MetaM α := do
@@ -179,8 +180,8 @@ partial def RecurseT.runCached
     /-- The recursive context. -/
     rctx := { red := cfg.red, evalAtom },
     /-- The atom evaluator calls `AtomM.onSubexpressions` recursively. -/
-    evalAtom e := onSubexpressions eval e false nctx cs rctx s
-  withConfig ({ · with zetaDelta := cfg.zetaDelta }) <| x nctx cs rctx s
+    evalAtom e := onSubexpressions eval e false nctx 0 cs rctx s
+  withConfig ({ · with zetaDelta := cfg.zetaDelta }) <| x nctx 0 cs rctx s
 
 /--
 Normalizes an expression, given initial data:
@@ -193,7 +194,7 @@ Normalizes an expression, given initial data:
 * `simp`: a cleanup operation which will be used to post-process expressions
 * `tgt`: the expression to normalize
 -/
-def recurse {σ : Type} (cs : IO.Ref σ) (s : IO.Ref AtomM.State) (cfg : Recurse.Config)
+def recurse {σ : Type} (cs : IO.Ref (Nat × σ)) (s : IO.Ref AtomM.State) (cfg : Recurse.Config)
     (eval : Expr → CacheAtomM σ Simp.Result)
     (simp : Simp.Result → MetaM Simp.Result) (tgt : Expr) :
     MetaM Simp.Result := do

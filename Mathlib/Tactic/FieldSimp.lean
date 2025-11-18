@@ -33,9 +33,16 @@ inductive ProofKind : Type
   | positive : ProofKind
 deriving BEq, Hashable
 
+structure Key : Type where
+  /-- The index of the relevant atom -/
+  i : ℕ
+  kind : ProofKind
+  context : ℕ
+deriving BEq, Hashable
+
 /-- The type used by field_simp to cache proofs. -/
 structure Cache where
-  map : Std.HashMap (Nat × ProofKind) (Option Expr)
+  map : Std.HashMap Key (Option Expr)
   list : List (Option Expr)
 
 def Cache.getMVars (c : Cache) : MetaM <| List MVarId := do
@@ -55,19 +62,22 @@ abbrev DischargeM :=
 def DischargeM.disch {u : Level} (i : ℕ) (kind : ProofKind) (type : Q(Sort u)) :
     DischargeM Q($type) := do
   let ⟨discharger⟩ ← read
+  let context ← CacheAtomM.getContext Cache
+  logInfo m!"Discharging {type} in local context {context}"
   let ⟨c, l⟩ ← CacheAtomM.get (σ := Cache)
-  match c.get? ⟨i, kind⟩  with
+  match c.get? ⟨i, kind, context⟩  with
   | none =>
     try
       let pf ← discharger type
-      CacheAtomM.set (⟨(c.insert (i, kind) (some pf)), some pf :: l⟩ : Cache)
+      CacheAtomM.set (⟨(c.insert ⟨i, kind, context⟩ (some pf)), some pf :: l⟩ : Cache)
       return pf
-    catch | _ => CacheAtomM.set (⟨(c.insert (i, kind) none), none :: l⟩ : Cache); failure
+    catch | _ => CacheAtomM.set (⟨(c.insert ⟨i, kind, context⟩ none), none :: l⟩ : Cache); failure
   | some none => failure
   | some (some pf) => return pf
 
-def DischargeM.run {α : Type} (m : DischargeM α)
-  (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) : AtomM α := (m ⟨disch⟩).run' ⟨∅, []⟩
+def DischargeM.run {α : Type} (context : ℕ) (m : DischargeM α)
+    (disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type)) : AtomM α :=
+  (m ⟨disch⟩ context).run' ⟨0, ∅, []⟩
 
 end DischargeM
 
@@ -741,12 +751,13 @@ further progress.
 elab (name := fieldSimp) "field_simp" tk:"!"?  d:(discharger)? args:(simpArgs)? loc:(location)? :
     tactic => withMainContext do
   let disch ← parseDischarger d args
-  let disch {u : Level} (type : Q(Sort u)) : MetaM Q($type) :=
-    if tk.isSome then do
+  let disch {u : Level} (type : Q(Sort u)) : MetaM Q($type) := do
+    logInfo m!"Running discharger on {type}"
+    if tk.isSome then
       try disch type
       catch | _ => return ← mkFreshExprMVarQ type
     else disch type
-  let cs ← IO.mkRef {}
+  let cs ← IO.mkRef (0, {})
   let s ← IO.mkRef {}
   let cleanup r := do r.mkEqTrans (← simpOnlyNames [] r.expr) -- convert e.g. `x = x` to `True`
   let m := CacheAtomM.recurse cs s {}
@@ -755,7 +766,7 @@ elab (name := fieldSimp) "field_simp" tk:"!"?  d:(discharger)? args:(simpArgs)? 
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   transformAtLocation (m ·) "field_simp" (failIfUnchanged := true) (mayCloseGoalFromHyp := true) loc
   if tk.isSome then
-    let mut sideGoals ← (← cs.get).getMVars
+    let mut sideGoals ← (← cs.get).2.getMVars
     let currGoals ← getGoals
     if currGoals.length < numGoals then
       setGoals (sideGoals ++ currGoals)
@@ -796,7 +807,7 @@ elab "field_simp" d:(discharger)? args:(simpArgs)? : conv => do
   let x ← Conv.getLhs
   let disch : ∀ {u : Level} (type : Q(Sort u)), MetaM Q($type) ← parseDischarger d args
   -- bring into field_simp standard form
-  let r ← AtomM.run .reducible <| ((reduceExpr x).run disch)
+  let r ← AtomM.run .reducible <| ((reduceExpr x).run 0 disch)
   -- convert `x` to the output of the normalization
   Conv.applySimpResult r
 
@@ -829,7 +840,8 @@ def proc : Simp.Simproc := fun (t : Expr) ↦ do
   let ctx ← Simp.getContext
   let disch e : MetaM Expr := Prod.fst <$> (FieldSimp.discharge e).run ctx >>= Option.getM
   try
-    let r ← AtomM.run .reducible <| (FieldSimp.reduceProp t).run disch
+    -- TODO: This uses a single cache for all subexpressions, which is not sound.
+    let r ← AtomM.run .reducible <| (FieldSimp.reduceProp t).run 0 disch
     -- the `field_simp`-normal form is in opposition to the `simp`-lemmas `one_div` and `mul_inv`,
     -- so we need to undo any such lemma applications, otherwise we can get infinite loops
     return .visit <| ← r.mkEqTrans (← simpOnlyNames [``one_div, ``mul_inv] r.expr)
