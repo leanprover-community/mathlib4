@@ -33,7 +33,7 @@ variable {C : Type u} [Category.{v} C] (W : MorphismProperty C)
 instance [W.IsStableUnderRetracts] (J : Type u'') [Category.{v''} J] :
     (W.functorCategory J).IsStableUnderRetracts where
   of_retract hfg hg j :=
-    W.of_retract (hfg.map ((evaluation _ _).obj j).mapArrow) (hg j)
+    W.of_retract (hfg.map ((evaluation _ _).obj j)) (hg j)
 
 variable {W}
 

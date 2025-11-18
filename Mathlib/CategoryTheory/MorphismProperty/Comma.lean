@@ -5,6 +5,7 @@ Authors: Christian Merten
 -/
 import Mathlib.CategoryTheory.Comma.Over.Basic
 import Mathlib.CategoryTheory.MorphismProperty.Composition
+import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
 /-!
 # Subcategories of comma categories defined by morphism properties
@@ -88,10 +89,16 @@ instance [W.RespectsIso] : (W.structuredArrowObj L (X := X)).IsClosedUnderIsomor
 /-- The morphism property on `Over X` induced by a morphism property on `C`. -/
 def over (W : MorphismProperty T) {X : T} : MorphismProperty (Over X) := fun _ _ f ↦ W f.left
 
+lemma over_eq_inverseImage (W : MorphismProperty T) (X : T) :
+    W.over = W.inverseImage (Over.forget X) := rfl
+
 @[simp] lemma over_iff {Y Z : Over X} (f : Y ⟶ Z) : W.over f ↔ W f.left := .rfl
 
 /-- The morphism property on `Under X` induced by a morphism property on `C`. -/
 def under (W : MorphismProperty T) {X : T} : MorphismProperty (Under X) := fun _ _ f ↦ W f.right
+
+lemma under_eq_inverseImage (W : MorphismProperty T) (X : T) :
+    W.under = W.inverseImage (Under.forget X) := rfl
 
 @[simp] lemma under_iff {Y Z : Under X} (f : Y ⟶ Z) : W.under f ↔ W f.right := .rfl
 
@@ -481,5 +488,19 @@ lemma Under.w {A B : P.Under Q X} (f : A ⟶ B) :
   simp
 
 end Under
+
+instance HasFactorization.over
+    {C : Type*} [Category C] (W₁ W₂ : MorphismProperty C)
+    [W₁.HasFactorization W₂] (S : C) :
+    (W₁.over (X := S)).HasFactorization W₂.over where
+  nonempty_mapFactorizationData {X Y} f := by
+    let hf := W₁.factorizationData W₂ f.left
+    exact ⟨{
+      Z := .mk (hf.p ≫ Y.hom)
+      i := CategoryTheory.Over.homMk hf.i
+      p := CategoryTheory.Over.homMk hf.p
+      hi := hf.hi
+      hp := hf.hp
+    }⟩
 
 end CategoryTheory.MorphismProperty

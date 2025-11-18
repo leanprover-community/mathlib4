@@ -217,7 +217,6 @@ instance subsingleton_liftStruct_of_mono (sq : CommSq f i p g) [Mono p] :
 
 variable (sq : CommSq f i p g)
 
-
 /-- The assertion that a square has a `LiftStruct`. -/
 class HasLift : Prop where
   /-- Square has a `LiftStruct`. -/
