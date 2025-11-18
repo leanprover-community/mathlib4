@@ -67,7 +67,6 @@ instance (J : Type u) [SmallCategory J] [IsCardinalFiltered J κ] :
   colimitsOfShape_le := by
     have := isFiltered_of_isCardinalFiltered J κ
     rintro X ⟨p⟩
-    have hc := colimit.isColimit (p.diag ⋙ forget PartOrdEmb)
     simp only [(isCardinalFiltered κ).prop_iff_of_iso
       (p.isColimit.coconePointUniqueUpToIso
         (Limits.isColimitCocone (colimit.isColimit (p.diag ⋙ forget PartOrdEmb)))),
@@ -95,13 +94,46 @@ abbrev CardinalFilteredPoset.ι :
 
 namespace CardinalFilteredPoset
 
+instance (J : CardinalFilteredPoset κ) : IsCardinalFiltered J.obj κ := J.property
+
 instance : HasCardinalFilteredColimits (CardinalFilteredPoset κ) κ where
   hasColimitsOfShape J _ _ := by
     have := isFiltered_of_isCardinalFiltered J κ
     infer_instance
 
+/-- The property of posets in `CardinalFilteredPoset κ` that are
+of cardinality `< κ` and have terminal object. -/
+def hasCardinalLTWithTerminal : ObjectProperty (CardinalFilteredPoset κ) :=
+  fun J ↦ HasCardinalLT J.obj κ ∧ HasTerminal J.obj
+
+instance : ObjectProperty.EssentiallySmall.{u} (hasCardinalLTWithTerminal κ) where
+  exists_small_le' := by
+    obtain ⟨X, hX⟩ : ∃ (X : Type u), Cardinal.mk X = κ := ⟨κ.ord.toType, by simp⟩
+    let α : Type u := Σ (S : Set X) (_ : PartialOrder S),
+      ULift.{u} (PLift (IsCardinalFiltered S κ))
+    let (a : α) : PartialOrder a.1 := a.2.1
+    let ι (a : α) : CardinalFilteredPoset κ :=
+      { obj := .of a.1
+        property := a.2.2.1.1 }
+    refine ⟨.ofObj ι, inferInstance, fun J ⟨hJ, _⟩ ↦ ?_⟩
+    obtain ⟨f⟩ : Cardinal.mk J.obj ≤ Cardinal.mk X := by
+      simpa [hX] using ((hasCardinalLT_iff_cardinal_mk_lt _ _).1 hJ).le
+    let e := Equiv.ofInjective _ f.injective
+    letI : PartialOrder (Set.range f) := PartialOrder.lift e.symm e.symm.injective
+    let e' : Set.range f ≃o J.obj := { toEquiv := e.symm, map_rel_iff' := by rfl }
+    exact ⟨_, ⟨⟨Set.range f, inferInstance,
+      ⟨⟨IsCardinalFiltered.of_equivalence κ e'.symm.equivalence⟩⟩⟩⟩,
+        ⟨CardinalFilteredPoset.ι.preimageIso (PartOrdEmb.Iso.mk (by exact e'.symm))⟩⟩
+
+lemma isCardinalFilteredGenerator_hasCardinalLTWithTerminal :
+    (hasCardinalLTWithTerminal κ).IsCardinalFilteredGenerator κ where
+  le_isCardinalPresentable := sorry
+  exists_colimitsOfShape := sorry
+
 instance : IsCardinalAccessibleCategory (CardinalFilteredPoset κ) κ where
-  exists_generator := sorry
+  exists_generator :=
+    ⟨hasCardinalLTWithTerminal κ, inferInstance,
+      isCardinalFilteredGenerator_hasCardinalLTWithTerminal κ⟩
 
 end CardinalFilteredPoset
 
