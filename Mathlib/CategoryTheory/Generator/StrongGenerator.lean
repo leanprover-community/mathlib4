@@ -29,7 +29,7 @@ then `S` is a strong generator.
 
 -/
 
-universe w v u
+universe w' w v u
 
 namespace CategoryTheory
 
@@ -135,22 +135,20 @@ lemma isStrongGenerator_iff_exists_extremalEpi
     (Discrete.equivalence (equivShrink.{w} _)).symm, _, hP.extremalEpi_coproductFrom X⟩
 
 lemma IsStrongGenerator.mk_of_exists_colimitsOfShape
-    (hP : ∀ (X : C), ∃ (J : Type w) (_ : SmallCategory J), Nonempty (P.ColimitOfShape J X)) :
+    (hP : ∀ (X : C), ∃ (J : Type w) (_ : Category.{w'} J), P.colimitsOfShape J X) :
     P.IsStrongGenerator := by
   rw [isStrongGenerator_iff]
-  refine ⟨IsSeparating.mk_of_exists_colimitsOfShape hP,
-    fun X Y i _ hi ↦ ?_⟩
-  suffices ∃ (r : Y ⟶ X), r ≫ i = 𝟙 Y by
+  refine ⟨IsSeparating.mk_of_exists_colimitsOfShape hP, fun X Y i _ hi ↦ ?_⟩
+  suffices IsSplitEpi i by
     obtain ⟨r, fac⟩ := this
-    exact ⟨r, by simp [← cancel_mono i, fac], fac⟩
+    exact ⟨r, by simp [← cancel_mono i, fac]⟩
   obtain ⟨J, _, ⟨p⟩⟩ := hP Y
   choose φ hφ using fun j ↦ hi _ (p.prop_diag_obj j) (p.ι.app j)
-  dsimp at hφ
   let c : Cocone p.diag := Cocone.mk _
     { app := φ
       naturality j₁ j₂ f := by simp [← cancel_mono i, hφ] }
   refine ⟨p.isColimit.desc c, p.isColimit.hom_ext (fun j ↦ ?_)⟩
-  dsimp
+  dsimp at hφ ⊢
   rw [p.isColimit.fac_assoc, hφ, Category.comp_id]
 
 end ObjectProperty

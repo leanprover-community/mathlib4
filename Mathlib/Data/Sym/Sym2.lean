@@ -522,7 +522,7 @@ section Relations
 /-! ### Declarations about symmetric relations -/
 
 
-variable {r : α → α → Prop}
+variable {r r₁ r₂ : α → α → Prop}
 
 /-- Symmetric relations define a set on `Sym2 α` by taking all those pairs
 of elements that are related.
@@ -536,6 +536,16 @@ theorem fromRel_proj_prop {sym : Symmetric r} {z : α × α} : Sym2.mk z ∈ fro
 
 theorem fromRel_prop {sym : Symmetric r} {a b : α} : s(a, b) ∈ fromRel sym ↔ r a b :=
   Iff.rfl
+
+theorem fromRel_mono_iff (sym₁ : Symmetric r₁) (sym₂ : Symmetric r₂) :
+    fromRel sym₁ ⊆ fromRel sym₂ ↔ r₁ ≤ r₂ :=
+  ⟨fun hle a b ↦ @hle s(a, b), fun hle ↦ Sym2.ind hle⟩
+
+alias ⟨_, fromRel_mono⟩ := fromRel_mono_iff
+
+/-- `fromRel` induces an order embedding from symmetric relations to `Sym2` sets. -/
+def fromRelOrderEmbedding : { r : α → α → Prop // Symmetric r } ↪o Set (Sym2 α) :=
+  OrderEmbedding.ofMapLEIff (fun r ↦ Sym2.fromRel r.prop) fun _ _ ↦ fromRel_mono_iff ..
 
 theorem fromRel_bot : fromRel (fun (_ _ : α) z => z : Symmetric ⊥) = ∅ := by
   apply Set.eq_empty_of_forall_notMem fun e => _

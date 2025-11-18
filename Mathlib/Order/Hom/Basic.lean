@@ -506,6 +506,26 @@ higher universe. -/
 def uliftMap (f : α →o β) : ULift α →o ULift β :=
   ⟨fun i => ⟨f i.down⟩, fun _ _ h ↦ f.monotone h⟩
 
+/-- Lift an order homomorphism `f : α →o β` to an order homomorphism `α →o ULift β` in a
+higher universe. -/
+@[simps!]
+def uliftRightMap (f : α →o β) : α →o ULift β :=
+  ⟨fun i => ⟨f i⟩, fun _ _ h ↦ f.monotone h⟩
+
+/-- Lift an order homomorphism `f : α →o β` to an order homomorphism `ULift α →o β` in a
+higher universe. -/
+@[simps!]
+def uliftLeftMap (f : α →o β) : ULift α →o β :=
+  ⟨fun i => f i.down, fun _ _ h ↦ f.monotone h⟩
+
+@[simp]
+theorem uliftLeftMap_uliftRightMap_eq (f : α →o β) : f.uliftLeftMap.uliftRightMap = f.uliftMap :=
+  rfl
+
+@[simp]
+theorem uliftRightMap_uliftLeftMap_eq (f : α →o β) : f.uliftRightMap.uliftLeftMap = f.uliftMap :=
+  rfl
+
 end OrderHom
 
 -- See note [lower instance priority]
@@ -748,6 +768,9 @@ theorem refl_toEquiv : (refl α).toEquiv = Equiv.refl α :=
 
 /-- Inverse of an order isomorphism. -/
 def symm (e : α ≃o β) : β ≃o α := RelIso.symm e
+
+@[simp] lemma symm_mk (e : α ≃ β) (map_rel_iff') :
+    symm (.mk e map_rel_iff') = .mk e.symm (by simp [← map_rel_iff']) := rfl
 
 @[simp]
 theorem apply_symm_apply (e : α ≃o β) (x : β) : e (e.symm x) = x :=
@@ -1080,6 +1103,17 @@ end StrictMono
 /-- An order isomorphism is also an order isomorphism between dual orders. -/
 protected def OrderIso.dual [LE α] [LE β] (f : α ≃o β) : αᵒᵈ ≃o βᵒᵈ :=
   ⟨f.toEquiv, f.map_rel_iff⟩
+
+section
+variable [LE α] [LE β] (f : α ≃o β)
+
+@[simp] lemma OrderIso.dual_apply (x) : f.dual x = .toDual (f x.ofDual) := rfl
+
+@[simp] lemma OrderIso.dual_symm_apply (x) : f.dual.symm x = .toDual (f.symm x.ofDual) := rfl
+
+@[simp] lemma OrderIso.symm_dual : f.symm.dual = f.dual.symm := rfl
+
+end
 
 section LatticeIsos
 

@@ -92,7 +92,7 @@ theorem eventuallyEq_of_toReal_eventuallyEq {l : Filter α} {f g : α → ℝ≥
     (hfi : ∀ᶠ x in l, f x ≠ ∞) (hgi : ∀ᶠ x in l, g x ≠ ∞)
     (hfg : (fun x => (f x).toReal) =ᶠ[l] fun x => (g x).toReal) : f =ᶠ[l] g := by
   filter_upwards [hfi, hgi, hfg] with _ hfx hgx _
-  rwa [← ENNReal.toReal_eq_toReal hfx hgx]
+  rwa [← ENNReal.toReal_eq_toReal_iff' hfx hgx]
 
 theorem continuousOn_toNNReal : ContinuousOn ENNReal.toNNReal { a | a ≠ ∞ } := fun _a ha =>
   ContinuousAt.continuousWithinAt (tendsto_toNNReal ha)
@@ -611,6 +611,11 @@ protected theorem tsum_comm {f : α → β → ℝ≥0∞} : ∑' a, ∑' b, f a
 protected theorem tsum_add : ∑' a, (f a + g a) = ∑' a, f a + ∑' a, g a :=
   ENNReal.summable.tsum_add ENNReal.summable
 
+protected lemma sum_add_tsum_compl {ι : Type*} (s : Finset ι) (f : ι → ℝ≥0∞) :
+    ∑ i ∈ s, f i + ∑' i : ↥(s : Set ι)ᶜ, f i = ∑' i, f i := by
+  rw [tsum_subtype, sum_eq_tsum_indicator]
+  simp [← ENNReal.tsum_add]
+
 protected theorem tsum_le_tsum (h : ∀ a, f a ≤ g a) : ∑' a, f a ≤ ∑' a, g a :=
   ENNReal.summable.tsum_le_tsum h ENNReal.summable
 
@@ -826,6 +831,11 @@ theorem tendsto_toReal_iff {ι} {fi : Filter ι} {f : ι → ℝ≥0∞} (hf : �
   lift f to ι → ℝ≥0 using hf
   lift x to ℝ≥0 using hx
   simp [tendsto_coe]
+
+theorem tendsto_toReal_zero_iff {ι} {fi : Filter ι} {f : ι → ℝ≥0∞}
+    (hf : ∀ i, f i ≠ ∞ := by finiteness) :
+    Tendsto (fun n ↦ (f n).toReal) fi (𝓝 0) ↔ Tendsto f fi (𝓝 0) := by
+  rw [← ENNReal.toReal_zero, tendsto_toReal_iff hf ENNReal.zero_ne_top]
 
 theorem tsum_coe_ne_top_iff_summable_coe {f : α → ℝ≥0} :
     (∑' a, (f a : ℝ≥0∞)) ≠ ∞ ↔ Summable fun a => (f a : ℝ) := by
@@ -1291,7 +1301,7 @@ lemma truncateToReal_eq_toReal {t x : ℝ≥0∞} (t_ne_top : t ≠ ∞) (x_le :
   have x_lt_top : x < ∞ := lt_of_le_of_lt x_le t_ne_top.lt_top
   have obs : min t x ≠ ∞ := by
     simp_all only [ne_eq, min_eq_top, false_and, not_false_eq_true]
-  exact (ENNReal.toReal_eq_toReal obs x_lt_top.ne).mpr (min_eq_right x_le)
+  exact (ENNReal.toReal_eq_toReal_iff' obs x_lt_top.ne).mpr (min_eq_right x_le)
 
 lemma truncateToReal_le {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) {x : ℝ≥0∞} :
     truncateToReal t x ≤ t.toReal := by
@@ -1407,14 +1417,14 @@ lemma limsup_toReal_eq [NeBot f] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞) (le_b :
 @[simp, norm_cast]
 lemma ofNNReal_limsup {u : ι → ℝ≥0} (hf : f.IsBoundedUnder (· ≤ ·) u) :
     limsup u f = limsup (fun i ↦ (u i : ℝ≥0∞)) f := by
-  refine eq_of_forall_nnreal_iff fun r ↦ ?_
+  refine eq_of_forall_nnreal_le_iff fun r ↦ ?_
   rw [coe_le_coe, le_limsup_iff, le_limsup_iff]
   simp [forall_ennreal]
 
 @[simp, norm_cast]
 lemma ofNNReal_liminf {u : ι → ℝ≥0} (hf : f.IsCoboundedUnder (· ≥ ·) u) :
     liminf u f = liminf (fun i ↦ (u i : ℝ≥0∞)) f := by
-  refine eq_of_forall_nnreal_iff fun r ↦ ?_
+  refine eq_of_forall_nnreal_le_iff fun r ↦ ?_
   rw [coe_le_coe, le_liminf_iff, le_liminf_iff]
   simp [forall_ennreal]
 

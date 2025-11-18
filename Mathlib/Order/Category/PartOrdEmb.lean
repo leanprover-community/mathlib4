@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Johan Commelin
 -/
 import Mathlib.Order.Category.PartOrd
-import Mathlib.CategoryTheory.Limits.Types.Filtered
-import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.Limits.Filtered
+import Mathlib.CategoryTheory.Limits.Preserves.Filtered
+import Mathlib.CategoryTheory.Limits.Types.Filtered
 
 /-!
 # Category of partial orders, with order embeddings as morphisms
@@ -22,6 +22,8 @@ universe u
 
 /-- The category of partial orders. -/
 structure PartOrdEmb where
+  /-- Construct a bundled `PartOrdEmb` from the underlying type and typeclass. -/
+  of ::
   /-- The underlying partially ordered type. -/
   (carrier : Type*)
   [str : PartialOrder carrier]
@@ -36,9 +38,6 @@ instance : CoeSort PartOrdEmb (Type _) :=
   ⟨PartOrdEmb.carrier⟩
 
 attribute [coe] PartOrdEmb.carrier
-
-/-- Construct a bundled `PartOrdEmb` from the underlying type and typeclass. -/
-abbrev of (X : Type*) [PartialOrder X] : PartOrdEmb := ⟨X⟩
 
 /-- The type of morphisms in `PartOrdEmb R`. -/
 @[ext]
@@ -154,8 +153,14 @@ def Iso.mk {α β : PartOrdEmb.{u}} (e : α ≃o β) : α ≅ β where
   inv := ofHom e.symm
 
 /-- The order isomorphism induced by an isomorphism in `PartOrdEmb`. -/
+@[simps]
 def orderIsoOfIso {α β : PartOrdEmb.{u}} (e : α ≅ β) :
-    α ≃o β := sorry
+    α ≃o β where
+  toFun := e.hom
+  invFun := e.inv
+  left_inv := ConcreteCategory.congr_hom e.hom_inv_id
+  right_inv := ConcreteCategory.congr_hom e.inv_hom_id
+  map_rel_iff' := Hom.le_iff_le _ _ _
 
 /-- `OrderDual` as a functor. -/
 @[simps map]
@@ -253,9 +258,7 @@ def cocone : Cocone F where
         rw [← (F.map (b₁ ≫ d)).le_iff_le]
         conv_rhs => rw [h₂]
         conv_rhs at h => rw [h₁]
-        simp only [Functor.map_comp, hom_comp, RelEmbedding.coe_trans, Function.comp_apply,
-          ← hl₁, ← hl₂]
-        simpa using h }
+        simpa [← hl₁, ← hl₂] using h }
   ι.naturality _ _ f := by ext x; exact ConcreteCategory.congr_hom (c.w f) x
 
 /-- Auxiliary definition for `isColimitCocone`. -/

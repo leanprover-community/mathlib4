@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Presentable.Basic
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.MorphismProperty.Basic
 import Mathlib.CategoryTheory.Filtered.Final
-import Mathlib.CategoryTheory.Products.Unitor
-import Mathlib.Data.Finite.Sigma
+import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+import Mathlib.CategoryTheory.MorphismProperty.HasCardinalLT
+import Mathlib.CategoryTheory.ObjectProperty.HasCardinalLT
 
 /-!
 # `κ`-filtered categories and `κ`-directed poset
@@ -35,57 +34,11 @@ have to be multiplicative.)
 
 universe u v w
 
-lemma CategoryTheory.MorphismProperty.toSet_iSup {C : Type*} [Category C]
-    {ι : Type*} (W : ι → MorphismProperty C) :
-    (⨆ i , W i).toSet = ⋃ i, (W i).toSet := by
-  ext
-  simp [MorphismProperty.toSet]
-
-lemma CategoryTheory.MorphismProperty.toSet_max {C : Type*} [Category C]
-    (W₁ W₂ : MorphismProperty C) :
-    (W₁ ⊔ W₂).toSet = W₁.toSet ∪ W₂.toSet := rfl
-
-section
-
-open CategoryTheory Limits
-
-lemma hasCardinalLT_toSet_morphismPropertyOfHoms {C : Type*} [Category C]
-    {ι : Type*} {X Y : ι → C} (f : ∀ i, X i ⟶ Y i) {κ : Cardinal}
-    (h : HasCardinalLT ι κ) : HasCardinalLT (MorphismProperty.ofHoms f).toSet κ :=
-  h.of_surjective (fun i ↦ ⟨Arrow.mk (f i), ⟨i⟩⟩) (by
-    rintro ⟨f, hf⟩
-    rw [MorphismProperty.mem_toSet_iff, MorphismProperty.ofHoms_iff] at hf
-    obtain ⟨i, hf⟩ := hf
-    obtain rfl : f = _ := hf
-    exact ⟨i, rfl⟩)
-
-lemma hasCardinalLT_subtype_objectPropertyOfObj {C : Type*} [Category C]
-    {ι : Type*} (X : ι → C) {κ : Cardinal}
-    (h : HasCardinalLT ι κ) : HasCardinalLT (Subtype (ObjectProperty.ofObj X)) κ :=
-  h.of_surjective (fun i ↦ ⟨X i, by simp⟩) (by rintro ⟨_, ⟨i⟩⟩; exact ⟨i, rfl⟩)
-
-end
-
 namespace CategoryTheory
 
 open Limits
 
 namespace IsCardinalFiltered
-
-instance prod (J₁ J₂ : Type*) [Category J₁] [Category J₂]
-    (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    [IsCardinalFiltered J₁ κ] [IsCardinalFiltered J₂ κ] :
-    IsCardinalFiltered (J₁ × J₂) κ where
-  nonempty_cocone {C _} F hC := ⟨by
-    let c₁ := cocone (F ⋙ Prod.fst _ _) hC
-    let c₂ := cocone (F ⋙ Prod.snd _ _) hC
-    exact
-      { pt := (c₁.pt, c₂.pt)
-        ι.app i := (c₁.ι.app i, c₂.ι.app i)
-        ι.naturality i j f := by
-          ext
-          · simpa using c₁.w f
-          · simpa using c₂.w f}⟩
 
 namespace exists_cardinal_directed
 
@@ -110,8 +63,8 @@ structure Diagram where
   P : ObjectProperty J
   src {i j : J} {f : i ⟶ j} : W f → P i
   tgt {i j : J} {f : i ⟶ j} : W f → P j
-  hW : HasCardinalLT W.toSet κ
-  hP : HasCardinalLT (Subtype P) κ
+  hW : W.HasCardinalLT κ
+  hP : P.HasCardinalLT κ
 
 namespace Diagram
 
@@ -119,7 +72,7 @@ variable {J κ}
 
 /-- Given a `κ`-bounded diagram `D` in a category `J`, an object `e : J`
 is terminal if for any object `j` of `D`, there is a unique morphism `j ⟶ e` in `D`,
-that these unique morphisms are compatible with precomposition with morphims in `D`,
+that these unique morphisms are compatible with precomposition with morphisms in `D`,
 and that `𝟙 e` belongs to `D`. -/
 structure IsTerminal (D : Diagram J κ) (e : J) where
   prop_id : D.W (𝟙 e)
@@ -286,10 +239,8 @@ def Diagram.iSup {ι : Type*} (D : ι → Diagram J κ) (hι : HasCardinalLT ι 
     simp only [MorphismProperty.iSup_iff, iSup_apply, iSup_Prop_eq] at hf ⊢
     obtain ⟨i, hi⟩ := hf
     exact ⟨i, (D i).tgt hi⟩
-  hW := by
-    rw [MorphismProperty.toSet_iSup]
-    exact hasCardinalLT_iUnion _ hι (fun i ↦ (D i).hW)
-  hP := hasCardinalLT_subtype_iSup _ hι (fun i ↦ (D i).hP)
+  hW := .iSup (fun i ↦ (D i).hW) hι
+  hP := .iSup (fun i ↦ (D i).hP) hι
 
 variable {J κ} in
 /-- The union of two `κ`-bounded diagrams. -/
@@ -306,8 +257,8 @@ def Diagram.max (D₁ D₂ : Diagram J κ) :
     rintro _ _ _ (h | h)
     · exact Or.inl (D₁.tgt h)
     · exact Or.inr (D₂.tgt h)
-  hW := hasCardinalLT_union (Cardinal.IsRegular.aleph0_le Fact.out) D₁.hW D₂.hW
-  hP := hasCardinalLT_union (Cardinal.IsRegular.aleph0_le Fact.out) D₁.hP D₂.hP
+  hW := .union D₁.hW D₂.hW (Cardinal.IsRegular.aleph0_le Fact.out)
+  hP := .union D₁.hP D₂.hP (Cardinal.IsRegular.aleph0_le Fact.out)
 
 variable [IsCardinalFiltered J κ]
   (hJ : ∀ (e : J), ∃ (m : J) (_ : e ⟶ m), IsEmpty (m ⟶ e))
@@ -391,14 +342,9 @@ lemma isCardinalFiltered : IsCardinalFiltered (DiagramWithUniqueTerminal J κ) �
             exact Or.inl ⟨i, (D i).tgt hf⟩
           · exact Or.inr rfl
           · exact Or.inr rfl
-        hW := by
-          rw [MorphismProperty.toSet_max]
-          exact hasCardinalLT_union hκ D₁.hW
-            (hasCardinalLT_toSet_morphismPropertyOfHoms _
-              (hasCardinalLT_sigma _ _ hι (fun i ↦ (D i).hP)))
-        hP := hasCardinalLT_subtype_max hκ
-                (hasCardinalLT_subtype_iSup _ hι (fun i ↦ (D i).hP))
-                (hasCardinalLT_of_finite _ _ hκ) }
+        hW := .union D₁.hW (MorphismProperty.hasCardinalLT_ofHoms _
+          ((hasCardinalLT_sigma _ _ hι (fun i ↦ (D i).hP)))) hκ
+        hP := D₁.hP }
     have hD₂ {f : m ⟶ m} (hf : D₂.W f) : f = 𝟙 _ := by
       simp only [Diagram.max_W, Diagram.iSup_W, Diagram.single_W, D₁, D₀, D₂] at hf
       obtain ((hf | ⟨⟨⟩⟩) | hf) := hf
@@ -484,16 +430,8 @@ lemma final_functor : (functor J κ).Final := by
         rintro i j f (hf | ⟨⟨j, hj⟩⟩)
         · exact D₀.tgt hf
         · exact Or.inr ⟨⟨⟩⟩
-      hW :=
-        hasCardinalLT_union hκ
-          (hasCardinalLT_union hκ D.hW
-            (hasCardinalLT_toSet_morphismPropertyOfHoms _
-            (hasCardinalLT_of_finite _ _ hκ)))
-          (hasCardinalLT_toSet_morphismPropertyOfHoms _ D.hP)
-      hP :=
-        hasCardinalLT_union hκ D.hP
-          (hasCardinalLT_subtype_objectPropertyOfObj _
-            (hasCardinalLT_of_finite _ _ hκ)) }
+      hW := .union D₀.hW (MorphismProperty.hasCardinalLT_ofHoms _ D.hP) hκ
+      hP := D₀.hP }
   have h₂ {j : J} (hj : D.P j) {f : j ⟶ m₁} (hf : D₁.W f) :
       f = φ ⟨_, hj⟩ := by
     obtain ((hf | ⟨⟨⟩⟩) | ⟨⟨⟩⟩) := hf
