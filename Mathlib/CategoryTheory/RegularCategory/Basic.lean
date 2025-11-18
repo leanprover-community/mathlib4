@@ -64,6 +64,7 @@ local instance : HasCoequalizer (pullback.fst f f) (pullback.snd f f) :=
 
 /--
 The midpoint of the chosen mono factorisation associated to any regular category.
+It is defined to be the coequalizer of the kernel pair of an arrow `f`.
 See `monoFactorisation` for the actual mono factorisation.
 -/
 def I : C :=
@@ -71,11 +72,13 @@ def I : C :=
 
 /--
 The `e` component of the chosen mono factorisation associated to any regular category.
+It is defined to be the projection from the coequalizer of the kernel pair of an arrow `f`.
 See `monoFactorisation` for the actual mono factorisation.
 -/
 def e : X ⟶ (I f) :=
   coequalizer.π (pullback.fst f f) (pullback.snd f f)
 
+/-- The canonical regular epi structore on `e f`, as the coequalizer of the kernel pair of `f`. -/
 local instance eRegularEpi : RegularEpi (e f) := by
   dsimp [e]; infer_instance
 
@@ -84,6 +87,7 @@ instance e_isRegularEpi : IsRegularEpi (e f) := by
 
 /--
 The `mono` component of the chosen mono factorisation associated to any regular category.
+It is induced by the coequalizer of the kernel pair of an arrow `f`.
 See `monoFactorisation` for the actual mono factorisation.
 -/
 def m : (I f) ⟶ Y :=
