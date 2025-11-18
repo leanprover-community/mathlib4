@@ -100,7 +100,7 @@ open Zify
 `isNatProp tp` is true iff `tp` is an inequality or equality between natural numbers
 or the negation thereof.
 -/
-partial def isNatProp (e : Expr) : MetaM Bool := succeeds <| do
+partial def isNatProp (e : Expr) : MetaM Bool := succeeds do
   let (_, _, .const ``Nat [], _, _) ← e.ineqOrNotIneq? | failure
 
 /-- If `e` is of the form `((n : ℕ) : C)`, `isNatCoe e` returns `⟨n, C⟩`. -/
@@ -162,7 +162,7 @@ def natToInt : GlobalBranchingPreprocessor where
           pure h
       else
         pure h
-    withNewMCtxDepth <| AtomM.run .reducible <| do
+    withNewMCtxDepth <| AtomM.run .reducible do
     let nonnegs ← l.foldlM (init := ∅) fun (es : TreeSet (Nat × Nat) lexOrd.compare) h => do
       try
         let (_, _, a, b) ← (← inferType h).ineq?

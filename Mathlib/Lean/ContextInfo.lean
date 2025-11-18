@@ -72,7 +72,7 @@ def runTactic (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId) (x : MVarId �
     panic!"ContextInfo.runTactic: `goal` must be an element of `i.goalsBefore`"
   let mctx := i.mctxBefore
   let lctx := (mctx.decls.find! goal).2
-  ctx.runMetaMWithMessages lctx <| do
+  ctx.runMetaMWithMessages lctx do
     -- Make a fresh metavariable because the original goal is already assigned.
     let type ← goal.getType
     let goal ← Meta.mkFreshExprSyntheticOpaqueMVar type
