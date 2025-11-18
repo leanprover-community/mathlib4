@@ -35,8 +35,7 @@ section toCoalgebra
 variable {A : Type*} [NormedRing A] [InnerProductSpace 𝕜 A] [FiniteDimensional 𝕜 A]
   [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
 
-private local instance : Algebra 𝕜 A :=
-  Algebra.ofModule smul_mul_assoc mul_smul_comm
+private local instance : Algebra 𝕜 A := .ofModule smul_mul_assoc mul_smul_comm
 
 -- TODO: ease `NormedRing` to `Ring` and `NormedAddCommGroup`
 /-- A finite-dimensional inner product space with an algebra structure induces
@@ -48,8 +47,8 @@ noncomputable def Algebra.coalgebraOfFiniteDimensionalInnerProductSpace :
   counit := adjoint (Algebra.linearMap 𝕜 A)
   coassoc := by
     rw [← adjoint_lTensor, ← adjoint_rTensor,
-      (by rfl : (_root_.TensorProduct.assoc 𝕜 A A A).toLinearMap
-        = (assocIsometry 𝕜 A A A).symm.symm.toLinearMap),
+      show (_root_.TensorProduct.assoc 𝕜 A A A).toLinearMap =
+        (assocIsometry 𝕜 A A A).symm.symm.toLinearMap by rfl,
       ← LinearIsometryEquiv.adjoint_toLinearMap_eq_symm]
     simp_rw [← adjoint_comp]
     congr 1; ext; simp [mul_assoc]
