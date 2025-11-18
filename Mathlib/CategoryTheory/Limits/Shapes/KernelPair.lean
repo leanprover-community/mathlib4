@@ -209,6 +209,7 @@ theorem of_isIso_of_mono [IsIso a] [Mono f] : IsKernelPair f a a := by
 theorem of_hasPullback (f : X ⟶ Y) [HasPullback f f] :
     IsKernelPair f (pullback.fst f f) (pullback.snd f f) :=
   IsPullback.of_hasPullback f f
+
 end IsKernelPair
 
 end CategoryTheory
