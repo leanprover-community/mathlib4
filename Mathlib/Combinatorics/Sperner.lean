@@ -305,7 +305,9 @@ private lemma almost_panchromatic_card {c : E → Fin (m + 1)} {X : Finset E}
   -- Furthermore, c must be injective on X (else we couldn't hit all m colors)
   -- Therefore |X| = m
   -- This follows from Fintype.card_eq_of_bijective, but we need to set it up properly
-  sorry-- A 0-almost-panchromatic m-face on the boundary is contained in exactly 1 panchromatic (m+1)-face.
+  sorry
+
+/-- A 0-almost-panchromatic m-face on the boundary is contained in exactly 1 panchromatic (m+1)-face.
 An interior 0-almost-panchromatic m-face is contained in exactly 0 or 2 panchromatic (m+1)-faces. -/
 private lemma almost_panchromatic_containment {S : SimplicialComplex ℝ (Fin (m + 2) → ℝ)}
     {c : (Fin (m + 2) → ℝ) → Fin (m + 2)} {X : Finset (Fin (m + 2) → ℝ)}
