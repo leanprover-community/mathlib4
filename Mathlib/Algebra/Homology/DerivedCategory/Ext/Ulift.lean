@@ -25,19 +25,17 @@ variable [UnivLE.{v, w}] [UnivLE.{max v v', w'}]
 instance hasExt_of_small'' [Small.{v} R] : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
   CategoryTheory.hasExt_of_enoughProjectives.{w} (ModuleCat.{v} R)
 
-instance hasExt_of_small''_lift [Small.{v} R] :
-    CategoryTheory.HasExt.{w'} (ModuleCat.{max v v'} R) :=
-  let _ : Small.{max v v'} R := small_lift R
-  CategoryTheory.hasExt_of_enoughProjectives.{w'} (ModuleCat.{max v v'} R)
-
 noncomputable def ModuleCat.extUliftLinearEquiv [Small.{v} R] (M N : ModuleCat.{v} R) (n : ℕ) :
+    letI : Small.{max v v'} R := small_lift R
     Ext.{w} M N n ≃ₗ[R] Ext.{w'} ((uliftFunctor.{u, v, v'} R).obj M)
     ((uliftFunctor.{u, v, v'} R).obj N) n :=
+  letI : Small.{max v v'} R := small_lift R
   LinearEquiv.ofBijective (Functor.mapExtLinearMap.{w, w'} (uliftFunctor.{u, v, v'} R) R M N n)
     (Functor.mapExt_bijective_of_preservesProjectiveObjects.{w, w'}
     (uliftFunctor.{u, v, v'} R) (fullyFaithfulUliftFunctor.{u, v, v'} R) M N n)
 
 lemma ModuleCat.extUliftLinearEquiv_toLinearMap [Small.{v} R] (M N : ModuleCat.{v} R) (n : ℕ) :
+    letI : Small.{max v v'} R := small_lift R
     ModuleCat.extUliftLinearEquiv.{w, w', u, v, v'} M N n =
     (Functor.mapExtLinearMap.{w, w'} (uliftFunctor.{u, v, v'} R) R M N n) := rfl
 
@@ -104,6 +102,36 @@ noncomputable def ModuleCat.extRestrictScalarsLinearEquiv [Small.{v} R] [Small.{
     (Functor.mapExt_bijective_of_preservesProjectiveObjects.{w, w'}
     (ModuleCat.restrictScalars.{v} e.toRingHom)
     (ModuleCat.restrictScalarsEquivalenceOfRingEquiv e).fullyFaithfulFunctor M N n)
+
+noncomputable def ModuleCat.iso_restrictScalars {M' : ModuleCat.{v} R'} {M : ModuleCat.{v} R}
+    (e' : letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
+          letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
+          M ≃ₛₗ[e.toRingHom] M') : M ≅ ((ModuleCat.restrictScalars e.toRingHom).obj M') :=
+  let e : M ≃ₗ[R] ((ModuleCat.restrictScalars e.toRingHom).obj M') := {
+    __ := e'
+    map_smul' r m := by simp }
+  e.toModuleIso
+
+noncomputable def extLinearEquivOfLinearEquiv [Small.{v} R] [Small.{v} R']
+    (M' N' : ModuleCat.{v} R') (M N : ModuleCat.{v} R)
+    (e1 : letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
+          letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
+          M ≃ₛₗ[e.toRingHom] M')
+    (e2 : letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
+          letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
+          N ≃ₛₗ[e.toRingHom] N')
+    (n : ℕ) : letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
+    letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
+    Ext.{w} M' N' n ≃ₛₗ[e.symm.toRingHom] Ext.{w'} M N n :=
+  let e3 : Ext.{w'} ((ModuleCat.restrictScalars e.toRingHom).obj M')
+    ((ModuleCat.restrictScalars e.toRingHom).obj N') n ≃ₗ[R] Ext.{w'} M N n := {
+      __ := (((extFunctorObj.{w'} ((ModuleCat.restrictScalars e.toRingHom).obj M') n).mapIso
+        (ModuleCat.iso_restrictScalars e e2).symm).trans (((extFunctor.{w'} n).mapIso
+        (ModuleCat.iso_restrictScalars e e1).op).app N)).addCommGroupIsoToAddEquiv
+      map_smul' r' x := by simp [Iso.addCommGroupIsoToAddEquiv] }
+  letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
+  letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
+  (ModuleCat.extRestrictScalarsLinearEquiv.{w, w'} e M' N' n).trans e3
 
 end
 
