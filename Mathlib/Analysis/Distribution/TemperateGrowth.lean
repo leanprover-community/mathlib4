@@ -175,13 +175,16 @@ theorem _root_.ContinuousLinearMap.bilinear_hasTemperateGrowth [NormedSpace 𝕜
   refine .const_mul_left (.mul (h1 i ?_).norm_left (h2 (n-i) ?_).norm_left) _ <;>
   grind
 
-@[fun_prop]
-lemma _root_.Function.HasTemperateGrowth.id : Function.HasTemperateGrowth (fun (x : E) ↦ x) := by
+lemma _root_.Function.HasTemperateGrowth.id : Function.HasTemperateGrowth (id : E → E) := by
   apply Function.HasTemperateGrowth.of_fderiv (k := 1) (C := 1)
   · convert Function.HasTemperateGrowth.const (ContinuousLinearMap.id ℝ E)
     exact fderiv_id'
   · apply differentiable_id
   · simp
+
+@[fun_prop]
+lemma _root_.Function.HasTemperateGrowth.id' : Function.HasTemperateGrowth (fun (x : E) ↦ x) :=
+  Function.HasTemperateGrowth.id
 
 /-- The product of two functions of temperate growth is again of temperate growth.
 
