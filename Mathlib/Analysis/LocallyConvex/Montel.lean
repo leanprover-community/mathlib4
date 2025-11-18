@@ -8,7 +8,7 @@ import Mathlib.Analysis.Normed.Module.FiniteDimension
 /-!
 # Montel spaces
 
-A Montel space is a topological vector space `E`that has the Heine-Borel property: every closed and
+A Montel space is a topological vector space `E` that has the Heine-Borel property: every closed and
 (von Neumann) bounded set is compact.
 
 Note that we are not requiring that `E` is a barrelled space, so the usual definition of a Montel
@@ -16,8 +16,12 @@ space would be `[MontelSpace 𝕜 E] [BarrelledSpace 𝕜 E]`.
 
 * `MontelSpace.finiteDimensional_of_normedSpace`: every normed Montel space is finite dimensional.
 * `ContinuousLinearEquiv.toCompactConvergenceCLM`: if `E` is a Montel space then topology of compact
-convergence and the strong topology on `E →SL[σ] F` coincide. We record this a continuous linear
-equivalence between `E →SL[σ] F` and `E →SL_c[σ] F`.
+  convergence and the strong topology on `E →SL[σ] F` coincide. We record this as a continuous
+  linear equivalence between `E →SL[σ] F` and `E →SL_c[σ] F`. This is Proposition 34.5 in
+  [F. Trèves][treves1967].
+
+## References
+* [F. Trèves, *Topological vector spaces, distributions and kernels*][treves1967]
 
 -/
 
@@ -41,7 +45,7 @@ class MontelSpace (𝕜 E : Type*) [SeminormedRing 𝕜] [Zero E] [SMul 𝕜 E]
 namespace MontelSpace
 
 variable (𝕜) in
-theorem isCompact_of_isClosed_isVonNBounded [hm : MontelSpace 𝕜 E] {s : Set E}
+theorem isCompact_of_isClosed_of_isVonNBounded [hm : MontelSpace 𝕜 E] {s : Set E}
     (h_closed : IsClosed s) (h_bounded : IsVonNBounded 𝕜 s) : IsCompact s :=
   hm.heine_borel s h_closed h_bounded
 
@@ -59,7 +63,7 @@ variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜
 
 theorem finiteDimensional_of_normedSpace : FiniteDimensional 𝕜 E :=
   FiniteDimensional.of_isCompact_closedBall₀ 𝕜 zero_lt_one
-    (isCompact_of_isClosed_isVonNBounded 𝕜 Metric.isClosed_closedBall
+    (isCompact_of_isClosed_of_isVonNBounded 𝕜 Metric.isClosed_closedBall
       (NormedSpace.isVonNBounded_closedBall _ _ _) )
 
 end MontelSpace
@@ -77,7 +81,7 @@ open CompactConvergenceCLM
 
 variable (σ E F) in
 /-- The linear equivalence that sends a continuous linear map to the type copy endowed with the
-weak operator topology.
+topology of compact convergence.
 
 This definition is only used to prove the continuous linear equivalence. -/
 private def _root_.LinearEquiv.toCompactConvergenceCLM :
@@ -88,9 +92,7 @@ variable (σ E F) in
 /-- If `E` is a Montel space, then the strong topology on `E →L[𝕜] F` coincides with the topology
 of compact convergence.
 
-We realize this equality in terms of a continuous linear equivalence between the type synonyms.
-
-This is Proposition 34.5 in Treves - Topological vector spaces, distributions, and kernels. -/
+We realize this equality in terms of a continuous linear equivalence between the type synonyms. -/
 def _root_.ContinuousLinearEquiv.toCompactConvergenceCLM [T1Space E] [MontelSpace 𝕜₁ E] :
     (E →SL[σ] F) ≃L[𝕜₂] E →SL_c[σ] F where
   __ := LinearEquiv.toCompactConvergenceCLM σ E F
@@ -107,7 +109,7 @@ def _root_.ContinuousLinearEquiv.toCompactConvergenceCLM [T1Space E] [MontelSpac
       ContinuousLinearMap.hasBasis_nhds_zero]
     rintro ⟨a, b⟩ ⟨ha, hb⟩
     use ⟨closure a, b⟩
-    exact ⟨⟨MontelSpace.isCompact_of_isClosed_isVonNBounded 𝕜₁ isClosed_closure
+    exact ⟨⟨MontelSpace.isCompact_of_isClosed_of_isVonNBounded 𝕜₁ isClosed_closure
       ha.closure, hb⟩, fun _ hf _ hx ↦ hf _ (subset_closure hx)⟩
 
 @[simp]
