@@ -23,13 +23,14 @@ If furthermore the base ring is a domain, this is equivalent to the naïve
 
 open Module
 
-variable {R M N : Type*}
+variable {R S M N : Type*}
 
 section Semiring
-variable [Semiring R]
+variable [Semiring R] [Semiring S]
 
 section AddCommMonoid
-variable [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] {r : R} {m m₁ m₂ : M}
+variable [AddCommMonoid M] [Module R M] [Module S M] [AddCommMonoid N] [Module R N]
+  {r : R} {m m₁ m₂ : M}
 
 variable (R M) in
 /-- A `R`-module `M` is torsion-free if scalar multiplication by an element `r : R` is injective if
@@ -53,6 +54,9 @@ lemma Function.Injective.moduleIsTorsionFree [IsTorsionFree R N] (f : M → N) (
 instance IsAddTorsionFree.to_isTorsionFree_nat [IsAddTorsionFree M] : IsTorsionFree ℕ M where
   isSMulRegular n hn := nsmul_right_injective (by simpa [isRegular_iff_ne_zero] using hn)
 
+instance Subsingleton.to_moduleIsTorsionFree [Subsingleton M] : IsTorsionFree R M where
+  isSMulRegular _ _ := Function.injective_of_subsingleton _
+
 variable [IsTorsionFree R M]
 
 variable (M) in
@@ -67,6 +71,14 @@ protected lemma IsRegular.smul_right_injective (hr : IsRegular r) : ((r • ·) 
 
 protected lemma IsRegular.smul_ne_zero_iff_right (hr : IsRegular r) : r • m ≠ 0 ↔ m ≠ 0 :=
   hr.smul_eq_zero_iff_right.ne
+
+variable (R) in
+lemma Module.IsTorsionFree.trans [Module S R] [IsTorsionFree S R] [IsScalarTower S R R]
+    [SMulCommClass S R R] [IsScalarTower S R M] : IsTorsionFree S M where
+  isSMulRegular s hs x y hxy := by
+    refine (?_ : IsRegular (s • 1 : R)).isSMulRegular (by simpa using hxy)
+    exact ⟨fun x y hxy ↦ hs.isSMulRegular <| by simpa using hxy,
+      fun x y hxy ↦ hs.isSMulRegular <| by simpa using hxy⟩
 
 variable [IsDomain R]
 
