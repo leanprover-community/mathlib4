@@ -846,27 +846,36 @@ def cleanupConsts (cfg : RingNF.Config) (r : Simp.Result) : MetaM Simp.Result :=
   pure <| ←
     r.mkEqTrans (← Simp.main r.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
 
-/-- Collect all scalar rings from scalar multiplications and `algebraMap` applications in the
-expression. -/
-partial def collectScalarRings (e : Expr) : MetaM (List (Σ u : Lean.Level, Q(Type u))) := do
+/-- Collect all scalar rings from scalar multiplications using a state monad for performance. -/
+partial def collectScalarRingsAux (e : Expr) : StateT (List Expr) MetaM Unit  := do
   match_expr e with
   | SMul.smul R _ _ _ a =>
-    return [←getLevelQ' R] ++ (← collectScalarRings a)
+    modify fun l ↦ R :: l
+    collectScalarRingsAux a
   | DFunLike.coe _ _R _A _inst φ _ =>
       match_expr φ with
-      | algebraMap R _ _ _ _ => return [← getLevelQ' R]
-      | _ => return []
-  | HSMul.hSMul R _ _ _ _ a => return [←getLevelQ' R] ++ (← collectScalarRings a)
-  | Eq _ a b => return (← collectScalarRings a) ++ (← collectScalarRings b)
-  | HAdd.hAdd _ _ _ _ a b => return (← collectScalarRings a) ++ (← collectScalarRings b)
-  | Add.add _ _ _ a b => return (← collectScalarRings a) ++ (← collectScalarRings b)
-  | HMul.hMul _ _ _ _ a b => return (← collectScalarRings a) ++ (← collectScalarRings b)
-  | Mul.mul _ _ _ a b => return (← collectScalarRings a) ++ (← collectScalarRings b)
-  | HSub.hSub _ _ _ _ a b => return (← collectScalarRings a) ++ (← collectScalarRings b)
-  | Sub.sub _ _ _ a b => return (← collectScalarRings a) ++ (← collectScalarRings b)
-  | HPow.hPow _ _ _ _ a _ => collectScalarRings a
-  | Neg.neg _ _ a => collectScalarRings a
-  | _ => return []
+      | algebraMap R _ _ _ _ =>
+        modify fun l ↦ R :: l
+      | _ => return
+  | HSMul.hSMul R _ _ _ _ a =>
+    modify fun l ↦ R :: l
+    collectScalarRingsAux a
+  | Eq _ a b => collectScalarRingsAux a; collectScalarRingsAux b
+  | HAdd.hAdd _ _ _ _ a b => collectScalarRingsAux a; collectScalarRingsAux b
+  | Add.add _ _ _ a b => collectScalarRingsAux a; collectScalarRingsAux b
+  | HMul.hMul _ _ _ _ a b => collectScalarRingsAux a; collectScalarRingsAux b
+  | Mul.mul _ _ _ a b => collectScalarRingsAux a; collectScalarRingsAux b
+  | HSub.hSub _ _ _ _ a b => collectScalarRingsAux a; collectScalarRingsAux b
+  | Sub.sub _ _ _ a b => collectScalarRingsAux a; collectScalarRingsAux b
+  | HPow.hPow _ _ _ _ a _ => collectScalarRingsAux a
+  | Neg.neg _ _ a => collectScalarRingsAux a
+  | _ => return
+
+/-- Collect all scalar rings from scalar multiplications and `algebraMap` applications in the
+expression. -/
+partial def collectScalarRings (e : Expr) : MetaM (List Expr) := do
+  let ⟨_, l⟩ ← (collectScalarRingsAux e).run []
+  return l
 
 /-- Given two rings, determine which is 'larger' in the sense that the larger is an algebra
 over the smaller. Returns the first ring if they're the same or incompatible. -/
@@ -897,7 +906,7 @@ def pickLargerRing (r1 r2 : Σ u : Lean.Level, Q(Type u)) :
  Finds all scalar rings in the expression and picks the 'larger' one in the sense that
  it is an algebra over the smaller rings. -/
 def inferBase (ca : Cache q($sA)) (e : Expr) : MetaM <| Σ u : Lean.Level, Q(Type u) := do
-  let rings ← collectScalarRings e
+  let rings ← (← collectScalarRings e).mapM getLevelQ'
   let res ← match rings with
   | [] =>
     match ca.field, ca.czα, ca.commRing with
