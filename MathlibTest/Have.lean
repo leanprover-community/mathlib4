@@ -33,9 +33,9 @@ example : True := by
   have _h : Nat
   · exact this
   have _h' x : x < x + 1
-  · exact Nat.lt.base x
+  · exact Nat.lt_add_one x
   have _h'' (x : Nat) : x < x + 1
-  · exact Nat.lt.base x
+  · exact Nat.lt_add_one x
   let _m
   · exact 6
   let _m' x (y : Nat) : x + y = y + x

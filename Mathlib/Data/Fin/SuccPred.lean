@@ -244,7 +244,7 @@ open Fin.NatCast in
 @[norm_cast, simp]
 theorem coe_eq_castSucc {a : Fin n} : ((a : Nat) : Fin (n + 1)) = castSucc a := by
   ext
-  exact val_cast_of_lt (Nat.lt.step a.is_lt)
+  exact val_cast_of_lt (Nat.lt_succ_of_lt a.is_lt)
 
 open Fin.NatCast in
 theorem coe_succ_lt_iff_lt {n : ℕ} {j k : Fin n} : (j : Fin (n + 1)) < k ↔ j < k := by

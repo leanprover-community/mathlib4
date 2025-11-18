@@ -170,7 +170,7 @@ theorem coe_cycleRange_of_le (h : i ≤ j) :
   exact
     val_add_one_of_lt
       (calc
-        (i : ℕ) < j := Fin.lt_iff_val_lt_val.mp (lt_of_le_of_ne h h')
+        (i : ℕ) < j := Fin.lt_def.mp (lt_of_le_of_ne h h')
         _ ≤ n := Nat.lt_succ_iff.mp j.2)
 
 theorem cycleRange_of_lt [NeZero n] (h : i < j) : cycleRange j i = i + 1 := by
@@ -226,7 +226,7 @@ theorem succAbove_cycleRange (i j : Fin n) :
     rw [Fin.cycleRange_of_lt hlt, Fin.succAbove_of_castSucc_lt, this, swap_apply_of_ne_of_ne]
     · apply Fin.succ_ne_zero
     · exact (Fin.succ_injective _).ne hlt.ne
-    · rw [Fin.lt_iff_val_lt_val]
+    · rw [Fin.lt_def]
       simpa [this] using hlt
   · rw [heq, Fin.cycleRange_self, Fin.succAbove_of_castSucc_lt, swap_apply_right, Fin.castSucc_zero]
     · rw [Fin.castSucc_zero]
@@ -383,7 +383,7 @@ theorem cycleIcc_of_le_of_le (hik : i ≤ k) (hkj : k ≤ j) [NeZero n] :
       eq_of_val_eq (by simp [sub_val_of_le hij])
     simpa [ch, cycleRange_of_eq this] using by cutsat
   · have : subNat i.1 (k.cast (by cutsat)) (by simp [hik]) < (j - i).castLT (sub_val_lt_sub hij) :=
-      by simpa [lt_iff_val_lt_val, sub_val_of_le hij] using by cutsat
+      by simpa [lt_def, sub_val_of_le hij] using by cutsat
     rw [cycleRange_of_lt this, subNat]
     simp only [coe_cast, add_def, val_one', Nat.add_mod_mod, addNat_mk, cast_mk]
     rw [Nat.mod_eq_of_lt (by cutsat), Nat.mod_eq_of_lt (by cutsat)]

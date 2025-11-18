@@ -37,7 +37,7 @@ instance bundledHom : BundledHom fun α β (Iα : c α) (Iβ : c β) => Subtype 
   id_toFun _ := rfl
   comp _ _ _ g f := ⟨g.1 ∘ f.1, hom_comp g.2 f.2⟩
   comp_toFun _ _ _ _ _ := rfl
-  hom_ext _ _ _ _ := Subtype.eq
+  hom_ext _ _ _ _ := Subtype.ext
 
 section HasForget₂
 

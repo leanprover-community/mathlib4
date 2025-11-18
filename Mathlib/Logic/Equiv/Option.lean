@@ -276,7 +276,7 @@ theorem optionEquivSumPUnit_symm_inr {α} (a) : (optionEquivSumPUnit α).symm (S
 def optionIsSomeEquiv (α) : { x : Option α // x.isSome } ≃ α where
   toFun o := Option.get _ o.2
   invFun x := ⟨some x, rfl⟩
-  left_inv _ := Subtype.eq <| Option.some_get _
+  left_inv _ := Subtype.ext <| Option.some_get _
   right_inv _ := Option.get_some _ _
 
 end Equiv

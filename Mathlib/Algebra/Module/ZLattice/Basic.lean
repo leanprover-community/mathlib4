@@ -194,7 +194,7 @@ theorem fract_mem_fundamentalDomain (x : E) : fract b x ∈ fundamentalDomain b 
 def fractRestrict (x : E) : fundamentalDomain b := ⟨fract b x, fract_mem_fundamentalDomain b x⟩
 
 theorem fractRestrict_surjective : Function.Surjective (fractRestrict b) :=
-  fun x => ⟨↑x, Subtype.eq (fract_eq_self.mpr (Subtype.mem x))⟩
+  fun x => ⟨↑x, Subtype.ext (fract_eq_self.mpr (Subtype.mem x))⟩
 
 @[simp]
 theorem fractRestrict_apply (x : E) : (fractRestrict b x : E) = fract b x := rfl

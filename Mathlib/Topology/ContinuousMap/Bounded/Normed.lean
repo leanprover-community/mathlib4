@@ -177,7 +177,7 @@ theorem mkOfCompact_sub [CompactSpace α] (f g : C(α, β)) :
 
 @[simp]
 theorem coe_zsmulRec : ∀ z, ⇑(zsmulRec (· • ·) z f) = z • ⇑f
-  | Int.ofNat n => by rw [zsmulRec, Int.ofNat_eq_coe, coe_nsmul, natCast_zsmul]
+  | Int.ofNat n => by rw [zsmulRec, Int.ofNat_eq_natCast, coe_nsmul, natCast_zsmul]
   | Int.negSucc n => by rw [zsmulRec, negSucc_zsmul, coe_neg, coe_nsmul]
 
 instance instSMulInt : SMul ℤ (α →ᵇ β) where

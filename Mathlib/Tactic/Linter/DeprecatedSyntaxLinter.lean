@@ -107,7 +107,7 @@ where `<option>` contains `maxHeartbeats`, then it returns
 
 Otherwise, it returns `none`.
 -/
-def getSetOptionMaxHeartbeatsComment : Syntax → Option (Name × Nat × Substring)
+def getSetOptionMaxHeartbeatsComment : Syntax → Option (Name × Nat × Substring.Raw)
   | stx@`(command|set_option $mh $n:num in $_) =>
     let opt := mh.getId
     if !opt.components.contains `maxHeartbeats then

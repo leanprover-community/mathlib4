@@ -93,7 +93,7 @@ theorem ge_stable (s : Seq α) {aₙ : α} {n m : ℕ} (m_le_n : m ≤ n)
 
 @[ext]
 protected theorem ext {s t : Seq α} (h : ∀ n : ℕ, s.get? n = t.get? n) : s = t :=
-  Subtype.eq <| funext h
+  Subtype.ext <| funext h
 
 /-!
 ### Constructors
@@ -196,12 +196,12 @@ theorem destruct_cons (a : α) : ∀ s, destruct (cons a s) = some (a, s)
   | ⟨f, al⟩ => by
     unfold cons destruct Functor.map
     apply congr_arg fun s => some (a, s)
-    apply Subtype.eq; dsimp [tail]
+    apply Subtype.ext; dsimp [tail]
 
 theorem destruct_eq_none {s : Seq α} : destruct s = none → s = nil := by
   dsimp [destruct]
   rcases f0 : get? s 0 <;> intro h
-  · apply Subtype.eq
+  · apply Subtype.ext
     funext n
     induction n with | zero => exact f0 | succ n IH => exact s.2 IH
   · contradiction
@@ -213,7 +213,7 @@ theorem destruct_eq_cons {s : Seq α} {a s'} : destruct s = some (a, s') → s =
   · obtain ⟨f, al⟩ := s
     injections _ h1 h2
     rw [← h2]
-    apply Subtype.eq
+    apply Subtype.ext
     dsimp [tail, cons]
     rw [h1] at f0
     rw [← f0]
@@ -311,7 +311,7 @@ theorem corec_eq (f : β → Option (α × β)) (b : β) :
   rcases h : f b with - | s; · rfl
   obtain ⟨a, b'⟩ := s; dsimp [Corec.f]
   apply congr_arg fun b' => some (a, b')
-  apply Subtype.eq
+  apply Subtype.ext
   dsimp [corec, tail]
   rw [Stream'.corec'_eq, Stream'.tail_cons]
   dsimp [Corec.f]; rw [h]
@@ -353,7 +353,7 @@ def IsBisimulation :=
 `eq_of_bisim'` and `eq_of_bisim_strong` that does not mention `IsBisimulation` and look
 more like an induction principles. -/
 theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s₁ = s₂ := by
-  apply Subtype.eq
+  apply Subtype.ext
   apply Stream'.eq_of_bisim fun x y => ∃ s s' : Seq α, s.1 = x ∧ s'.1 = y ∧ R s s'
   · dsimp [Stream'.IsBisimulation]
     intro t₁ t₂ e
@@ -419,7 +419,7 @@ theorem coinduction :
       head s₁ = head s₂ →
         (∀ (β : Type u) (fr : Seq α → β), fr s₁ = fr s₂ → fr (tail s₁) = fr (tail s₂)) → s₁ = s₂
   | _, _, hh, ht =>
-    Subtype.eq (Stream'.coinduction hh fun β fr => ht β fun s => fr s.1)
+    Subtype.ext (Stream'.coinduction hh fun β fr => ht β fun s => fr s.1)
 
 theorem coinduction2 (s) (f g : Seq α → Seq β)
     (H :

@@ -482,7 +482,7 @@ theorem algHom_bijective [NoZeroSMulDivisors K L] [Algebra.IsAlgebraic K L] (f :
   obtain ⟨p, hp, he⟩ := Algebra.IsAlgebraic.isAlgebraic (R := K) b
   let f' : p.rootSet L → p.rootSet L := (rootSet_maps_to' (fun x ↦ x) f).restrict f _ _
   have : f'.Surjective := Finite.injective_iff_surjective.1
-    fun _ _ h ↦ Subtype.eq <| f.injective <| Subtype.ext_iff.1 h
+    fun _ _ h ↦ Subtype.ext <| f.injective <| Subtype.ext_iff.1 h
   obtain ⟨a, ha⟩ := this ⟨b, mem_rootSet.2 ⟨hp, he⟩⟩
   exact ⟨a, Subtype.ext_iff.1 ha⟩
 

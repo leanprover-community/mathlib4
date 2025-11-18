@@ -87,7 +87,7 @@ theorem isSquare_sign_iff {z : ℤ} : IsSquare z.sign ↔ 0 ≤ z := by
   | pred =>
     rw [sign_eq_neg_one_of_neg (by cutsat), ← neg_add', Int.neg_nonneg]
     norm_cast
-    simp only [reduceNeg, le_zero_eq, Nat.add_eq_zero, succ_ne_self, and_false, iff_false]
+    simp only [reduceNeg, le_zero_eq, Nat.add_eq_zero_iff, succ_ne_self, and_false, iff_false]
     rintro ⟨a | a, ⟨⟩⟩
 
 end Int

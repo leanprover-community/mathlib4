@@ -342,6 +342,13 @@ lemma exists_isFiveWheelLike_succ_of_not_adj_le_two (hW : ∀ ⦃y⦄, y ∈ s �
         notMem_mono inter_subset_left hbs, erase_eq_of_notMem <| notMem_mono inter_subset_right hat,
         card_insert_of_notMem (fun h ↦ G.irrefl (hW h)), hw.card_inter]
 
+#adaptation_note
+/--
+Due to a change in `grind` between `nightly-2025-10-31` and `nightly-2025-11-02`,
+this proof is no longer working. I've temporarily commented it out to get a build of
+`nightly-testing`.
+-/
+/-
 /--
 If `G` is a `Kᵣ₊₂`-free graph with `n` vertices containing a `Wᵣ,ₖ` but no `Wᵣ,ₖ₊₁`
 then `G.minDegree ≤ (2 * r + k) * n / (2 * r + k + 3)`
@@ -388,7 +395,8 @@ lemma minDegree_le_of_cliqueFree_fiveWheelLikeFree_succ [Fintype α]
       simp_rw [add_assoc, add_comm k, ← add_assoc, ← Wc, add_assoc, ← two_mul, mul_add,
                ← hw.card_inter, card_eq_sum_ones, ← mul_assoc, mul_sum, mul_one, mul_comm 2]
       gcongr with i <;> exact minDegree_le_degree ..
-    _ ≤ #X * (#W - 3 + 2 * k) + #Xᶜ * ((#W - 1) + 2 * (k - 1)) := by grind
+    _ ≤ (#X * (#W - 3) + #Xᶜ * (#W - 1)) + 2 * (#X * #(s ∩ t) + #Xᶜ * (#(s ∩ t) - 1)) := by gcongr
+    _ = #X * (#W - 3 + 2 * k) + #Xᶜ * ((#W - 1) + 2 * (k - 1)) := by grind
     _ ≤ _ := by
         by_cases hk : k = 0 -- so `s ∩ t = ∅` and hence `Xᶜ = ∅`
         · have Xu : X = univ := by
@@ -403,11 +411,16 @@ lemma minDegree_le_of_cliqueFree_fiveWheelLikeFree_succ [Fintype α]
         rw [hap, ← add_mul, card_add_card_compl, mul_comm, two_mul, ← add_assoc]
         gcongr
         cutsat
-
+-/
 end IsFiveWheelLike
 
 variable [DecidableEq α]
 
+#adaptation_note
+/--
+I've temporarily commented it out to get a build of `nightly-testing`. See the note above.
+-/
+/-
 /-- **Andrasfái-Erdős-Sós** theorem
 
 If `G` is a `Kᵣ₊₁`-free graph with `n` vertices and `(3 * r - 4) * n / (3 * r - 1) < G.minDegree`
@@ -442,6 +455,6 @@ theorem colorable_of_cliqueFree_lt_minDegree [Fintype α] [DecidableRel G.Adj]
       apply (Nat.mul_le_mul_right _ (Nat.div_mul_le_self ..)).trans
       nlinarith
     exact (hd.trans_le <| minDegree_le_minDegree hle).not_ge <| hD.trans <| this
-
+-/
 end AES
 end SimpleGraph

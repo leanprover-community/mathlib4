@@ -346,7 +346,7 @@ instance : IsLocalHom (equalizerFork f g).ι.hom := by
     conv_rhs => rw [h₁]
     rw [← f.hom.map_mul, ← g.hom.map_mul, h₄, f.hom.map_one, g.hom.map_one]
   rw [isUnit_iff_exists_inv]
-  exact ⟨⟨y, this⟩, Subtype.eq h₃⟩
+  exact ⟨⟨y, this⟩, Subtype.ext h₃⟩
 
 @[instance]
 theorem equalizer_ι_isLocalHom (F : WalkingParallelPair ⥤ CommRingCat.{u}) :

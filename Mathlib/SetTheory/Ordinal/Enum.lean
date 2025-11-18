@@ -148,6 +148,6 @@ theorem enumOrd_zero : enumOrd s 0 = sInf s := by
 noncomputable def enumOrdOrderIso (s : Set Ordinal) (hs : ¬ BddAbove s) : Ordinal ≃o s :=
   StrictMono.orderIsoOfSurjective (fun o => ⟨_, enumOrd_mem hs o⟩) (enumOrd_strictMono hs) fun s =>
     let ⟨a, ha⟩ := enumOrd_surjective hs s.prop
-    ⟨a, Subtype.eq ha⟩
+    ⟨a, Subtype.ext ha⟩
 
 end Ordinal

@@ -507,10 +507,10 @@ This is checked by inspecting whether the first character of the remaining part 
 
 We use this variant because the latter is often a different field with an auto-generated name.
 -/
-private def dropPrefixIfNotNumber? (s : String) (pre : String) : Option Substring := do
+private def dropPrefixIfNotNumber? (s : String) (pre : String) : Option Substring.Raw := do
   let ret ← s.dropPrefix? pre
   -- flag is true when the remaining part is nonempty and starts with a digit.
-  let flag := ret.toString.data.head?.elim false Char.isDigit
+  let flag := ret.toString.toList.head?.elim false Char.isDigit
   if flag then none else some ret
 
 /-- A variant of `String.isPrefixOf` that does not consider `toFoo` to be a prefix to `toFoo_1`. -/
@@ -523,7 +523,7 @@ private def splitOnNotNumber (s delim : String) : List String :=
       | [] => []
       | (x :: xs) =>
         -- flag is true when this segment is nonempty and starts with a digit.
-        let flag := x.data.head?.elim false Char.isDigit
+        let flag := x.toList.head?.elim false Char.isDigit
         if flag then
           process xs (tail ++ delim ++ x)
         else

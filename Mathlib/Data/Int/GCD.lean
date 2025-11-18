@@ -135,8 +135,8 @@ theorem exists_mul_emod_eq_gcd {k n : ℕ} (hk : gcd n k < k) : ∃ m, n * m % k
   simp only at key
   rw [Int.add_mul_emod_self_left, ← Int.natCast_mod, Int.toNat_natCast, mod_eq_of_lt hk] at key
   refine ⟨(n.gcdA k % k).toNat, Eq.trans (Int.ofNat.inj ?_) key.symm⟩
-  rw [Int.ofNat_eq_coe, Int.natCast_mod, Int.natCast_mul,
-    Int.toNat_of_nonneg (Int.emod_nonneg _ hk'), Int.ofNat_eq_coe,
+  rw [Int.ofNat_eq_natCast, Int.natCast_mod, Int.natCast_mul,
+    Int.toNat_of_nonneg (Int.emod_nonneg _ hk'), Int.ofNat_eq_natCast,
     Int.toNat_of_nonneg (Int.emod_nonneg _ hk'), Int.mul_emod, Int.emod_emod, ← Int.mul_emod]
 
 theorem exists_mul_emod_eq_one_of_coprime {k n : ℕ} (hkn : Coprime n k) (hk : 1 < k) :
@@ -212,12 +212,12 @@ theorem gcd_dvd_iff {a b : ℤ} {n : ℕ} : gcd a b ∣ n ↔ ∃ x y : ℤ, ↑
     exact ⟨_, _, rfl⟩
   · rintro ⟨x, y, h⟩
     rw [← Int.natCast_dvd_natCast, h]
-    exact Int.dvd_add (dvd_mul_of_dvd_left (gcd_dvd_left ..) _)
-      (dvd_mul_of_dvd_left (gcd_dvd_right ..) y)
+    exact Int.dvd_add (dvd_mul_of_dvd_left (gcd_dvd_left ..))
+      (dvd_mul_of_dvd_left (gcd_dvd_right ..))
 
 theorem gcd_greatest {a b d : ℤ} (hd_pos : 0 ≤ d) (hda : d ∣ a) (hdb : d ∣ b)
     (hd : ∀ e : ℤ, e ∣ a → e ∣ b → e ∣ d) : d = gcd a b :=
-  dvd_antisymm hd_pos (ofNat_zero_le (gcd a b)) (dvd_coe_gcd hda hdb)
+  dvd_antisymm hd_pos (natCast_nonneg (gcd a b)) (dvd_coe_gcd hda hdb)
     (hd _ (gcd_dvd_left ..) (gcd_dvd_right ..))
 
 /-- Euclid's lemma: if `a ∣ b * c` and `gcd a c = 1` then `a ∣ b`.
@@ -229,7 +229,7 @@ theorem dvd_of_dvd_mul_left_of_gcd_one {a b c : ℤ} (habc : a ∣ b * c) (hab :
   simp only [hab, Int.ofNat_zero, Int.natCast_succ, zero_add] at this
   have : b * a * gcdA a c + b * c * gcdB a c = b := by simp [mul_assoc, ← Int.mul_add, ← this]
   rw [← this]
-  exact Int.dvd_add (dvd_mul_of_dvd_left (dvd_mul_left a b) _) (dvd_mul_of_dvd_left habc _)
+  exact Int.dvd_add (dvd_mul_of_dvd_left (dvd_mul_left a b)) (dvd_mul_of_dvd_left habc)
 
 /-- Euclid's lemma: if `a ∣ b * c` and `gcd a b = 1` then `a ∣ c`.
 Compare with `IsCoprime.dvd_of_dvd_mul_right` and

@@ -64,7 +64,7 @@ def toSeq (s : WSeq α) [Productive s] : Seq α :=
     contradiction⟩
 
 theorem toSeq_ofSeq (s : Seq α) : toSeq (ofSeq s) = s := by
-  apply Subtype.eq; funext n
+  apply Subtype.ext; funext n
   dsimp [toSeq]; apply get_eq_of_mem
   rw [get?_ofSeq]; apply ret_mem
 

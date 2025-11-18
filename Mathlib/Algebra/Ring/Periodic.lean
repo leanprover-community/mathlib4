@@ -150,7 +150,7 @@ theorem Periodic.nat_mul_sub_eq [NonAssocRing α] (h : Periodic f c) (n : ℕ) :
 
 protected theorem Periodic.zsmul [AddGroup α] (h : Periodic f c) (n : ℤ) : Periodic f (n • c) := by
   rcases n with n | n
-  · simpa only [Int.ofNat_eq_coe, natCast_zsmul] using h.nsmul n
+  · simpa only [Int.ofNat_eq_natCast, natCast_zsmul] using h.nsmul n
   · simpa only [negSucc_zsmul] using (h.nsmul (n + 1)).neg
 
 protected theorem Periodic.int_mul [NonAssocRing α] (h : Periodic f c) (n : ℤ) :

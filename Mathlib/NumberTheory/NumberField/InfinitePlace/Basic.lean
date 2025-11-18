@@ -57,7 +57,7 @@ namespace NumberField.InfinitePlace
 
 instance {K : Type*} [Field K] : FunLike (InfinitePlace K) K ℝ where
   coe w x := w.1 x
-  coe_injective' _ _ h := Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)
+  coe_injective' _ _ h := Subtype.ext (AbsoluteValue.ext fun x => congr_fun h x)
 
 lemma coe_apply {K : Type*} [Field K] (v : InfinitePlace K) (x : K) : v x = v.1 x := rfl
 
