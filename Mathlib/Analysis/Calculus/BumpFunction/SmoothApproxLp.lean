@@ -38,14 +38,13 @@ theorem MeasureTheory.eLpNorm_sub_le_of_dist_bdd' (μ : Measure E := by volume_t
 namespace HasCompactSupport
 
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [BorelSpace E]
-variable [NormedSpace ℝ F]
+  [NormedSpace ℝ F]
+  (μ : Measure E := by volume_tac) [IsFiniteMeasureOnCompacts μ] [μ.IsOpenPosMeasure]
 
 /-- For every continuous compactly supported function `f`there exists a smooth compactly supported
 function `g` such that `f - g` is arbitrary small in the `Lp`-norm for `p < ∞`. -/
-theorem exist_eLpNorm_sub_le_of_continuous (μ : Measure E := by volume_tac)
-    [IsFiniteMeasureOnCompacts μ] [μ.IsOpenPosMeasure]
-    {p : ℝ≥0∞} (hp : p ≠ ⊤) {ε : ℝ} (hε : 0 < ε) {f : E → F} (h₁ : HasCompactSupport f)
-    (h₂ : Continuous f) :
+theorem exist_eLpNorm_sub_le_of_continuous {p : ℝ≥0∞} (hp : p ≠ ⊤) {ε : ℝ} (hε : 0 < ε) {f : E → F}
+    (h₁ : HasCompactSupport f) (h₂ : Continuous f) :
     ∃ (g : E → F), HasCompactSupport g ∧ ContDiff ℝ ∞ g ∧
     eLpNorm (f - g) p μ ≤ ENNReal.ofReal ε := by
   by_cases hf : f = 0
@@ -79,11 +78,18 @@ theorem exist_eLpNorm_sub_le_of_continuous (μ : Measure E := by volume_tac)
   rw [dist_comm]
   exact (hg₂ x).le
 
+end HasCompactSupport
+
+namespace MeasureTheory.MemLp
+
+variable [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E] [BorelSpace E]
+  [NormedSpace ℝ F]
+  {μ : Measure E} [IsFiniteMeasureOnCompacts μ] [μ.IsOpenPosMeasure]
+
 /-- Every `Lp` function can be approximated by a smooth compactly supported function provided that
 `p < ∞`. -/
-theorem _root_.MeasureTheory.MemLp.exist_eLpNorm_sub_le {μ : Measure E}
-    [IsFiniteMeasureOnCompacts μ] [μ.IsOpenPosMeasure] {p : ℝ≥0∞} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p)
-    {f : E → F} (hf : MemLp f p μ) {ε : ℝ} (hε : 0 < ε) :
+theorem exist_eLpNorm_sub_le {p : ℝ≥0∞} (hp : p ≠ ⊤) (hp₂ : 1 ≤ p) {f : E → F} (hf : MemLp f p μ)
+    {ε : ℝ} (hε : 0 < ε) :
     ∃ g, HasCompactSupport g ∧ ContDiff ℝ ∞ g ∧ eLpNorm (f - g) p μ ≤ ENNReal.ofReal ε := by
   -- We use a standard ε/2 argument to deduce the result from the approximation for
   -- continuous compactly supported functions.
@@ -97,4 +103,4 @@ theorem _root_.MeasureTheory.MemLp.exist_eLpNorm_sub_le {μ : Measure E}
     (hg'₂.continuous.aestronglyMeasurable.sub hg₄.aestronglyMeasurable) hp₂, hg₂,
     eLpNorm_sub_comm, hg'₃, ← ENNReal.ofReal_add hε₂.le hε₂.le, add_halves]
 
-end HasCompactSupport
+end MeasureTheory.MemLp
