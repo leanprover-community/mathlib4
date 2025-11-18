@@ -6578,7 +6578,7 @@ lemma eq8 : norm (ρᵣ h7 q hq0 h2mq) ≤ (h7.c₁₃) ^ (h7.r q hq0 h2mq : ℝ
     · exact c12_nonneg h7
 
 
-def c₁₄ : ℝ := h7.c₈^((h7.h-1)) * h7.c₁₃
+def c₁₄ : ℝ := (h7.c₈^((h7.h-1)) * h7.c₁₃)
 
 lemma c14_nonneg : 1 ≤ h7.c₁₄ := by
   unfold c₁₄
@@ -6811,9 +6811,7 @@ theorem gelfondSchneider (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgeb
   have h2mq : 2 * h7.m ∣ q ^ 2 := sorry
 
   have use5 := use5 h7 q hq0 h2mq
-  have hnr : h7.n q ≤ h7.r q hq0 h2mq := n_leq_r h7 q hq0 h2mq
-
-  nth_rw 1 [n] at hnr
+  have hnr : (h7.n q : ℝ) ≤ (h7.r q hq0 h2mq : ℝ) := by exact mod_cast n_leq_r h7 q hq0 h2mq
   --dsimp [q] at hnr
   have : h7.r q hq0 h2mq ^ (h7.r q hq0 h2mq : ℝ) <
       (h7.c₁₅^ (h7.r q hq0 h2mq : ℝ))^
@@ -6831,7 +6829,7 @@ theorem gelfondSchneider (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgeb
              _ ≤ (h7.r q hq0 h2mq :ℝ):= ?_
         · unfold n; unfold q
           sorry
-        · exact Nat.cast_le.mpr hnr
+        · exact hnr
     · simp only [inv_div]
       rw [← Real.rpow_mul]
       ring_nf
@@ -6858,7 +6856,9 @@ theorem gelfondSchneider (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgeb
   nth_rw 1 [mul_comm] at this
   rw [Real.rpow_mul] at this
   rw [Real.rpow_lt_rpow_iff] at this
-  · sorry
+  · have final : (h7.c₁₅)^
+       ((2 * (h7.r q hq0 h2mq): ℝ)/((h7.r q hq0 h2mq : ℝ) - 3* h7.h : ℝ)) < h7.n q := sorry
+    linarith
   · positivity
   · apply Real.rpow_nonneg
     · sorry
