@@ -268,21 +268,38 @@ theorem fixedPoints_top :
   convert IsGaloisGroup.fixedPoints_eq_bot G K L
   ext; simp
 
+/-- The Galois correspondence from intermediate fields to subgroups. -/
+noncomputable def intermediateFieldEquivSubgroup [Finite G] :
+    IntermediateField K L ≃o (Subgroup G)ᵒᵈ :=
+  have := isGalois G K L
+  have := finiteDimensional G K L
+  IsGalois.intermediateFieldEquivSubgroup.trans <| (mulEquivAlgEquiv G K L).comapSubgroup.dual
+
+@[simp] lemma intermediateFieldEquivSubgroup_apply [Finite G] {F} :
+    intermediateFieldEquivSubgroup G K L F = .toDual (fixingSubgroup G (F : Set L)) := rfl
+
+lemma ofDual_intermediateFieldEquivSubgroup_apply [Finite G] {F} :
+    (intermediateFieldEquivSubgroup G K L F).ofDual = fixingSubgroup G (F : Set L) := rfl
+
+@[simp] lemma intermediateFieldEquivSubgroup_symm_apply [Finite G] {H} :
+    (intermediateFieldEquivSubgroup G K L).symm H = FixedPoints.intermediateField H.ofDual := by
+  obtain ⟨H, rfl⟩ := OrderDual.toDual.surjective H
+  simp [IntermediateField.ext_iff, intermediateFieldEquivSubgroup,
+    (mulEquivAlgEquiv G K L).surjective.forall, -mulEquivAlgEquiv_symm_apply]
+
+lemma intermediateFieldEquivSubgroup_symm_apply_toDual [Finite G] {H} :
+    (intermediateFieldEquivSubgroup G K L).symm (.toDual H) = FixedPoints.intermediateField H :=
+  intermediateFieldEquivSubgroup_symm_apply ..
+
 theorem fixingSubgroup_fixedPoints [Finite G] :
     fixingSubgroup G ((FixedPoints.intermediateField H : IntermediateField K L) : Set L) = H := by
-  have : FiniteDimensional K L := hGKL.finiteDimensional
-  refine (Subgroup.eq_of_le_of_card_ge ?_ ?_).symm
-  · rw [← le_fixedPoints_iff_le_fixingSubgroup]
-  · rw [hGKL.card_subgroup_eq_finrank_fixedpoints, hGKL.card_subgroup_eq_finrank_fixedpoints]
-    apply IntermediateField.finrank_le_of_le_left
-    rw [le_fixedPoints_iff_le_fixingSubgroup]
+  rw [← intermediateFieldEquivSubgroup_symm_apply_toDual,
+    ← ofDual_intermediateFieldEquivSubgroup_apply, OrderIso.apply_symm_apply, OrderDual.ofDual_toDual]
 
 theorem fixedPoints_fixingSubgroup [Finite G] :
     FixedPoints.intermediateField (fixingSubgroup G (F : Set L)) = F := by
-  have : FiniteDimensional K L := hGKL.finiteDimensional
-  refine (IntermediateField.eq_of_le_of_finrank_eq' ?_ ?_).symm
-  · rw [le_fixedPoints_iff_le_fixingSubgroup]
-  · rw [← card_subgroup_eq_finrank_fixedpoints, card_fixingSubgroup_eq_finrank]
+  rw [← ofDual_intermediateFieldEquivSubgroup_apply, ← intermediateFieldEquivSubgroup_symm_apply,
+    OrderIso.symm_apply_apply]
 
 end IsGaloisGroup
 
