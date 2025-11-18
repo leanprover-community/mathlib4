@@ -125,4 +125,19 @@ theorem loc_compact_t2_tot_disc_iff_tot_sep :
 instance (priority := 100) [TotallyDisconnectedSpace H] : TotallySeparatedSpace H :=
   loc_compact_t2_tot_disc_iff_tot_sep.mp inferInstance
 
+/-- In a totally disconnected compact Hausdorff space `X`, if `Z ⊆ U` are subsets with `Z` closed
+and `U` open, there exists a clopen `C` with `Z ⊆ C ⊆ U`. -/
+lemma exists_clopen_of_closed_subset_open {X : Type u}
+    [TopologicalSpace X] [CompactSpace X] [T2Space X] [TotallyDisconnectedSpace X]
+    {Z U : Set X} (hZ : IsClosed Z) (hU : IsOpen U) (hZU : Z ⊆ U) :
+    ∃ C : Set X, IsClopen C ∧ Z ⊆ C ∧ C ⊆ U := by
+  -- every `z ∈ Z` has clopen neighborhood `V z ⊆ U`
+  choose V hV using fun (z : Z) ↦ compact_exists_isClopen_in_isOpen hU (hZU z.property)
+  -- the `V z` cover `Z`
+  have V_cover : Z ⊆ iUnion V := fun z hz ↦ mem_iUnion.mpr ⟨⟨z, hz⟩, (hV ⟨z, hz⟩).2.1⟩
+  -- choose a finite subcover
+  choose I hI using hZ.isCompact.elim_finite_subcover V (fun z ↦ (hV z).1.isOpen) V_cover
+  -- the union of this finite subcover does the job
+  exact ⟨⋃ (i ∈ I), V i, I.finite_toSet.isClopen_biUnion (fun i _ ↦ (hV i).1), hI, by simp_all⟩
+
 end LocallyCompact
