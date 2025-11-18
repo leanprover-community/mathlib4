@@ -67,7 +67,7 @@ the model fiber `F`.
 * `e.localFrame b`: the local frame on `V` induced by `e` and `b`.
   Use `e.localFrame b i` to access the i-th section in that frame.
 * `e.contMDiffOn_localFrame_baseSet`: each section `e.localFrame b i` is smooth on `e.baseSet`
-* `e.localFrame_coeff b i` describes the coefficient of sections of `V` w.r.t. `e.localFrame b`:
+* `e.localFrame_coeff b i` describes the `i`-th coefficient of sections of `V` w.r.t. `e.localFrame b`:
   `e.localFrame b i` is a linear map from sections of `V` to functions `M → 𝕜`.
 * `e.eventually_eq_localFrame_sum_coeff_smul b`: near `x`, we have
   `s = ∑ i, (e.localFrame_coeff b i s) • e.localFrame b i`
@@ -255,9 +255,7 @@ variable (hs : IsLocalFrameOn I F n s u) [VectorBundle 𝕜 F V]
 then `t` is `C^n` on `u`. -/
 lemma contMDiffOn_of_coeff [FiniteDimensional 𝕜 F] (h : ∀ i, CMDiff[u] n (hs.coeff i t)) :
     CMDiff[u] n (T% t) := by
-  by_cases hU : Nonempty u; swap
-  · simp [Set.not_nonempty_iff_eq_empty'.mp hU] -- future: could push replace the additional lemma?
-  obtain ⟨x, hx⟩ := hU
+  rcases u.eq_empty_or_nonempty with rfl | ⟨x, hx⟩; · simp
   have := fintype_of_finiteDimensional hs hx
   have this (i) : CMDiff[u] n (T% (hs.coeff i t • s i)) :=
     (h i).smul_section (hs.contMDiffOn i)
@@ -291,11 +289,7 @@ variable (hs : IsLocalFrameOn I F 1 s u)
 w.r.t. `s i`, then `t` is differentiable on `u`. -/
 lemma mdifferentiableOn_of_coeff [FiniteDimensional 𝕜 F] (h : ∀ i, MDiff[u] (hs.coeff i t)) :
     MDiff[u] (T% t) := by
-  by_cases hu : Nonempty u; swap
-  · -- future: could push replace the additional lemma?
-    -- TODO: why does `push_neg at hU` make `hU disappear from the local context?
-    simp [Set.not_nonempty_iff_eq_empty'.mp hu]
-  obtain ⟨x, hx⟩ := hu
+  rcases u.eq_empty_or_nonempty with rfl | ⟨x, hx⟩; · simp
   have := fintype_of_finiteDimensional hs hx
   have this (i) : MDiff[u] (T% (hs.coeff i t • s i)) :=
     (h i).smul_section ((hs.contMDiffOn i).mdifferentiableOn le_rfl)
@@ -381,7 +375,6 @@ lemma localFrame_apply_of_notMem {i : ι} (hx : x ∉ e.baseSet) : e.localFrame 
 
 variable [ContMDiffVectorBundle 1 F V I]
 
-open scoped Classical in
 variable (I) in
 /-- Coefficients of a section `s` of `V` w.r.t. the local frame `b.localFrame e i`.
 
