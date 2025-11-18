@@ -80,7 +80,7 @@ the model fiber `F`.
 * `e.contMDiffOn_iff_localFrame_coeff b`: a section `s` is `C^k` on an open set `t ⊆ e.baseSet`
   iff all of its frame coefficients are
 
-# TODO
+## TODO
 * `IsLocalFrameOn.contMDiffOn_coeff hs`: if `t` is a `C^k` section, each coefficient
   `hs.coeff i t` is `C^k` on `U`
 * `IsLocalFrameOn.contMDiffAt_iff_coeff hs`: a section `t` is `C^k` at `x ∈ U`

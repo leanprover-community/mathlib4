@@ -259,7 +259,7 @@ theorem card_parts [DecidableEq V] : #h.finpartition.parts = min (Fintype.card V
     exact exists_ne_map_eq_of_card_lt_of_maps_to (zc.symm ▸ l.2) fun a _ ↦
       fp.part_mem.2 (mem_univ a)
   use G ⊔ edge x y, inferInstance, cf.sup_edge x y
-  convert Nat.lt.base #G.edgeFinset
+  convert Nat.lt_add_one #G.edgeFinset
   convert G.card_edgeFinset_sup_edge _ hn
   rwa [h.not_adj_iff_part_eq]
 
