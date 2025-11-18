@@ -219,15 +219,12 @@ noncomputable def isColimitCocone (J : CardinalFilteredPoset κ) :
     · obtain rfl : x = y := by simpa using h
       exact ⟨j, 𝟙 _, rfl⟩)
 
-protected lemma isCardinalPresentable_iff (J : CardinalFilteredPoset κ) :
-    IsCardinalPresentable J κ ↔ HasCardinalLT J.obj κ := by
-  refine ⟨fun _ ↦ ?_, fun hJ ↦ ⟨fun A _ _ ↦ ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨?_⟩⟩⟩⟩⟩
-  · have : IsCardinalPresentable J.cocone.pt κ := by assumption
-    obtain ⟨X, f, hf⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ (isColimitCocone J) (𝟙 _)
-    have : IsSplitMono f := ⟨_, hf⟩
-    exact X.2.1.of_injective f
-      ((mono_iff_injective _).1 (inferInstanceAs (Mono ((forget _).map f))))
-  · have := isFiltered_of_isCardinalFiltered A κ
+lemma isCardinalPresentable_of_hasCardinalLT_of_le (J : CardinalFilteredPoset κ)
+    {κ' : Cardinal.{u}} [Fact κ'.IsRegular] (hJ : HasCardinalLT J.obj κ') (h : κ ≤ κ') :
+    IsCardinalPresentable J κ' where
+  preservesColimitOfShape A _ _ := ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨by
+  · have := isFiltered_of_isCardinalFiltered A κ'
+    have := IsCardinalFiltered.of_le A h
     replace hc := isColimitOfPreserves (forget _) hc
     refine Types.FilteredColimit.isColimitOf' _ _ (fun f ↦ ?_) (fun j f g h ↦ ?_)
     · dsimp at f
@@ -266,7 +263,16 @@ protected lemma isCardinalPresentable_iff (J : CardinalFilteredPoset κ) :
       simp only [ConcreteCategory.comp_apply]
       rw [← hl x]
       simp only [Functor.map_comp, ConcreteCategory.comp_apply]
-      exact congr_arg _ (hk x)
+      exact congr_arg _ (hk x)⟩⟩⟩
+
+protected lemma isCardinalPresentable_iff (J : CardinalFilteredPoset κ) :
+    IsCardinalPresentable J κ ↔ HasCardinalLT J.obj κ := by
+  refine ⟨fun _ ↦ ?_, fun hJ ↦ isCardinalPresentable_of_hasCardinalLT_of_le _ hJ (le_refl _)⟩
+  have : IsCardinalPresentable J.cocone.pt κ := by assumption
+  obtain ⟨X, f, hf⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ (isColimitCocone J) (𝟙 _)
+  have : IsSplitMono f := ⟨_, hf⟩
+  exact X.2.1.of_injective f
+    ((mono_iff_injective _).1 (inferInstanceAs (Mono ((forget _).map f))))
 
 variable (κ) in
 lemma isCardinalFilteredGenerator_hasCardinalLTWithTerminal :
