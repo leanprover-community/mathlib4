@@ -165,8 +165,8 @@ def regularOfIsPullbackSndOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h
     have z : m ≫ g = p ≫ g := w.trans hp₂.symm
     apply t.hom_ext
     apply (PullbackCone.mk f g comm).equalizer_ext
-    · erw [← cancel_mono h, Category.assoc, Category.assoc, comm]
-      simp only [← Category.assoc, eq_whisker z]
+    · simp only [PullbackCone.mk_π_app, ← cancel_mono h]
+      grind [Fork.ι_ofι]
     · exact z
 
 /-- The first leg of a pullback cone is a regular monomorphism if the left component is too.
