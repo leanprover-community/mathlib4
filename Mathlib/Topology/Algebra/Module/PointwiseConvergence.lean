@@ -66,7 +66,7 @@ instance [T2Space F] : T2Space (E →SLₚₜ[σ] F) :=
   UniformConvergenceCLM.t2Space _ _ _ Set.sUnion_finite_eq_univ
 
 instance continuousEvalConst : ContinuousEvalConst (E →SLₚₜ[σ] F) E F :=
-  UniformConvergenceCLM.continuousEvalConst _ _ _ sUnion_finite_eq_univ
+  UniformConvergenceCLM.continuousEvalConst _ _ _ Set.sUnion_finite_eq_univ
 
 protected theorem hasBasis_nhds_zero_of_basis
     {ι : Type*} {p : ι → Prop} {b : ι → Set F} (h : (𝓝 0 : Filter F).HasBasis p b) :
