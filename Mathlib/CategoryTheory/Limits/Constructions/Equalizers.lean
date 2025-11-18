@@ -66,7 +66,7 @@ def equalizerConeIsLimit (F : WalkingParallelPair ⥤ C) : IsLimit (equalizerCon
     have J0 := J WalkingParallelPair.zero; simp at J0
     apply pullback.hom_ext
     · rwa [limit.lift_π]
-    · erw [limit.lift_π, ← J0, pullbackFst_eq_pullback_snd]
+    · simp [← J0, pullbackFst_eq_pullback_snd]
 
 end HasEqualizersOfHasPullbacksAndBinaryProducts
 
