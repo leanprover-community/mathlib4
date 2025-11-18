@@ -21,7 +21,7 @@ which were not available in the import dependencies of `Data.Int.Cast.Basic`.
 * `castRingHom`: `cast` bundled as a `RingHom`.
 -/
 
-assert_not_exists RelIso OrderedCommMonoid Field
+assert_not_exists RelIso IsOrderedMonoid Field
 
 open Additive Function Multiplicative Nat
 
@@ -58,7 +58,7 @@ variable [CharZero α] {m n : ℤ}
 @[simp] lemma cast_eq_zero : (n : α) = 0 ↔ n = 0 where
   mp h := by
     cases n
-    · rw [ofNat_eq_coe, Int.cast_natCast] at h
+    · rw [ofNat_eq_natCast, Int.cast_natCast] at h
       exact congr_arg _ (Nat.cast_eq_zero.1 h)
     · rw [cast_negSucc, neg_eq_zero, Nat.cast_eq_zero] at h
       contradiction

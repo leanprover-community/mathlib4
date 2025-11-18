@@ -313,9 +313,9 @@ theorem Substructure.countable_fg_substructures_of_countable [Countable M] :
     fun S ↦ Exists.choose S.prop
   have g_inj : Function.Injective g := by
     intro S S' h
-    apply Subtype.eq
+    apply Subtype.ext
     rw [(Exists.choose_spec S.prop).symm, (Exists.choose_spec S'.prop).symm]
-    exact congr_arg ((closure L) ∘ Finset.toSet) h
+    exact congr_arg (closure L ∘ SetLike.coe) h
   exact Function.Embedding.countable ⟨g, g_inj⟩
 
 instance Substructure.instCountable_fg_substructures_of_countable [Countable M] :

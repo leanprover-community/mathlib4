@@ -6,6 +6,7 @@ Authors: Jeremy Avigad
 import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Data.Int.Basic
 import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Algebra.Ring.GrindInstances
 
@@ -31,8 +32,8 @@ instance instCommRing : CommRing ℤ where
   mul_one := Int.mul_one
   one_mul := Int.one_mul
   npow n x := x ^ n
-  npow_zero _ := rfl
-  npow_succ _ _ := rfl
+  npow_zero _ := by simp
+  npow_succ _ _ := by simp [Int.pow_succ]
   natCast := (·)
   natCast_zero := rfl
   natCast_succ _ := rfl
@@ -42,6 +43,8 @@ instance instCommRing : CommRing ℤ where
 
 instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero ℤ where
   mul_left_cancel_of_ne_zero ha _ _ := (mul_eq_mul_left_iff ha).1
+
+instance instIsDomain : IsDomain ℤ where
 
 instance instCharZero : CharZero ℤ where cast_injective _ _ := ofNat.inj
 

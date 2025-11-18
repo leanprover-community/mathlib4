@@ -42,33 +42,4 @@ protected lemma isStrictOrderedRing [IsStrictOrderedRing R] [Semiring S] [Partia
   mul_lt_mul_of_pos_right a ha b c hbc := by
     rw [← lt, mul, mul]; refine mul_lt_mul_of_pos_right (lt.2 hbc) ?_; rwa [← zero, lt]
 
-@[deprecated (since := "2025-04-10")]
-protected alias orderedSemiring := Function.Injective.isOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias orderedCommSemiring := Function.Injective.isOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias orderedRing := Function.Injective.isOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias orderedCommRing := Function.Injective.isOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias strictOrderedSemiring := Function.Injective.isStrictOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias strictOrderedCommSemiring := Function.Injective.isStrictOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias strictOrderedRing := Function.Injective.isStrictOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias strictOrderedCommRing := Function.Injective.isStrictOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias linearOrderedSemiring := Function.Injective.isStrictOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias linearOrderedCommSemiring := Function.Injective.isStrictOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias linearOrderedRing := Function.Injective.isStrictOrderedRing
-@[deprecated (since := "2025-04-10")]
-protected alias linearOrderedCommRing := Function.Injective.isStrictOrderedRing
-@[deprecated (since := "2025-04-10")]
-alias linearOrderedSemifield := Function.Injective.isStrictOrderedRing
-@[deprecated (since := "2025-04-10")]
-alias linearOrderedField := Function.Injective.isStrictOrderedRing
-
 end Function.Injective

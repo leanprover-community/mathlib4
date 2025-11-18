@@ -23,6 +23,7 @@ with respect to other language operations.
 ## Notation
 
 * `l + m`: union of languages `l` and `m`
+* `l - m`: difference of languages `l` and `m`
 * `l * m`: language of strings `x ++ y` such that `x ∈ l` and `y ∈ m`
 * `l ^ n`: language of strings consisting of `n` members of `l` concatenated together
 * `1`: language consisting of only the empty string. This is because it is the unit of the `*`
@@ -80,6 +81,10 @@ instance : Inhabited (Language α) := ⟨(∅ : Set _)⟩
 instance : Add (Language α) :=
   ⟨((· ∪ ·) : Set (List α) → Set (List α) → Set (List α))⟩
 
+/-- The subtraction of two languages is their difference. -/
+instance : Sub (Language α) where
+  sub := SDiff.sdiff
+
 /-- The product of two languages `l` and `m` is the language made of the strings `x ++ y` where
 `x ∈ l` and `y ∈ m`. -/
 instance : Mul (Language α) :=
@@ -92,6 +97,9 @@ theorem one_def : (1 : Language α) = ({[]} : Set (List α)) :=
   rfl
 
 theorem add_def (l m : Language α) : l + m = (l ∪ m : Set (List α)) :=
+  rfl
+
+theorem sub_def (l m : Language α) : l - m = (l \ m : Set (List α)) :=
   rfl
 
 theorem mul_def (l m : Language α) : l * m = image2 (· ++ ·) l m :=
@@ -123,6 +131,9 @@ theorem nil_mem_one : [] ∈ (1 : Language α) :=
 theorem mem_add (l m : Language α) (x : List α) : x ∈ l + m ↔ x ∈ l ∨ x ∈ m :=
   Iff.rfl
 
+theorem mem_sub (l m : Language α) (x : List α) : x ∈ l - m ↔ x ∈ l ∧ x ∉ m :=
+  Iff.rfl
+
 theorem mem_mul : x ∈ l * m ↔ ∃ a ∈ l, ∃ b ∈ m, a ++ b = x :=
   mem_image2
 
@@ -137,6 +148,9 @@ theorem join_mem_kstar {L : List (List α)} (h : ∀ y ∈ L, y ∈ l) : L.flatt
 
 theorem nil_mem_kstar (l : Language α) : [] ∈ l∗ :=
   ⟨[], rfl, fun _ h ↦ by contradiction⟩
+
+instance : OrderedSub (Language α) where
+  tsub_le_iff_right _ _ _ := sdiff_le_iff'
 
 instance instSemiring : Semiring (Language α) where
   add_assoc := union_assoc
@@ -192,13 +206,15 @@ theorem kstar_def_nonempty (l : Language α) :
 theorem le_iff (l m : Language α) : l ≤ m ↔ l + m = m :=
   sup_eq_right.symm
 
-theorem le_mul_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ * l₂ ≤ m₁ * m₂ := by
-  intro h₁ h₂ x hx
-  simp only [mul_def, mem_image2] at hx ⊢
-  tauto
+instance : MulLeftMono (Language α) where
+  elim _ _ _ := image2_subset_left
 
-theorem le_add_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ + l₂ ≤ m₁ + m₂ :=
-  sup_le_sup
+instance : MulRightMono (Language α) where
+  elim _ _ _ := image2_subset_right
+
+@[deprecated mul_le_mul' (since := "2025-10-26")]
+theorem le_mul_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ * l₂ ≤ m₁ * m₂ :=
+  mul_le_mul'
 
 theorem mem_iSup {ι : Sort v} {l : ι → Language α} {x : List α} : (x ∈ ⨆ i, l i) ↔ ∃ i, x ∈ l i :=
   mem_iUnion
@@ -218,6 +234,14 @@ theorem iSup_add {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Langu
 theorem add_iSup {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Language α) :
     (m + ⨆ i, l i) = ⨆ i, m + l i :=
   sup_iSup
+
+theorem iSup_sub {ι : Sort v} (l : ι → Language α) (m : Language α) :
+    (⨆ i, l i) - m = ⨆ i, l i - m :=
+  iUnion_diff _ _
+
+theorem sub_iSup {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Language α) :
+    (m - ⨆ i, l i) = ⨅ i, m - l i :=
+  diff_iUnion _ _
 
 theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
     x ∈ l ^ n ↔ ∃ S : List (List α), x = S.flatten ∧ S.length = n ∧ ∀ y ∈ S, y ∈ l := by
@@ -268,7 +292,7 @@ instance : KleeneAlgebra (Language α) :=
       | zero => simp
       | succ n ih =>
         rw [pow_succ, mul_assoc (l^n) l m]
-        exact le_trans (le_mul_congr le_rfl h) ih,
+        exact le_trans (mul_le_mul_left' h _) ih,
     mul_kstar_le_self := fun l m h ↦ by
       rw [kstar_eq_iSup_pow, mul_iSup]
       refine iSup_le (fun n ↦ ?_)
@@ -276,7 +300,11 @@ instance : KleeneAlgebra (Language α) :=
       | zero => simp
       | succ n ih =>
         rw [pow_succ, ← mul_assoc m (l^n) l]
-        exact le_trans (le_mul_congr ih le_rfl) h }
+        exact le_trans (mul_le_mul_right' ih _) h }
+
+@[deprecated add_le_add (since := "2025-10-26")]
+theorem le_add_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ + l₂ ≤ m₁ + m₂ :=
+  add_le_add
 
 /-- **Arden's lemma** -/
 theorem self_eq_mul_add_iff {l m n : Language α} (hm : [] ∉ m) : l = m * l + n ↔ l = m∗ * n where
@@ -316,7 +344,7 @@ lemma reverse_mem_reverse : a.reverse ∈ l.reverse ↔ a ∈ l := by
   rw [mem_reverse, List.reverse_reverse]
 
 lemma reverse_eq_image (l : Language α) : l.reverse = List.reverse '' l :=
-  ((List.reverse_involutive.toPerm _).image_eq_preimage _).symm
+  ((List.reverse_involutive.toPerm _).image_eq_preimage_symm _).symm
 
 @[simp]
 lemma reverse_zero : (0 : Language α).reverse = 0 := rfl

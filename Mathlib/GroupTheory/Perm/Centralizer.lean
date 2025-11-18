@@ -167,8 +167,7 @@ theorem coe_toPermHom (k : centralizer {g}) (c : g.cycleFactorsFinset) :
 The equality is proved by `Equiv.Perm.OnCycleFactors.range_toPermHom_eq_range_toPermHom'`. -/
 def range_toPermHom' : Subgroup (Perm g.cycleFactorsFinset) where
   carrier := {τ | ∀ c, #(τ c).val.support = #c.val.support}
-  one_mem' := by
-    simp only [Set.mem_setOf_eq, coe_one, id_eq, imp_true_iff]
+  one_mem' := by simp
   mul_mem' hσ hτ := by
     simp only [Subtype.forall, Set.mem_setOf_eq, coe_mul, Function.comp_apply]
     simp only [Subtype.forall, Set.mem_setOf_eq] at hσ hτ
@@ -177,9 +176,8 @@ def range_toPermHom' : Subgroup (Perm g.cycleFactorsFinset) where
   inv_mem' hσ := by
     simp only [Subtype.forall, Set.mem_setOf_eq] at hσ ⊢
     intro c hc
-    rw [← hσ]
-    · simp only [Finset.coe_mem, Subtype.coe_eta, apply_inv_self]
-    · simp only [Finset.coe_mem]
+    rw [← hσ _ (by simp)]
+    simp
 
 variable {g} in
 theorem mem_range_toPermHom'_iff {τ : Perm g.cycleFactorsFinset} :
@@ -470,10 +468,10 @@ theorem nat_card_range_toPermHom :
     simp only [Finset.mem_image, Finset.mem_attach,
         true_and, Subtype.exists, exists_prop, Multiset.mem_toFinset]
     simp only [cycleType_def, Function.comp_apply, Multiset.mem_map, Finset.mem_val]
-  simp only [← SetLike.coe_sort_coe, Fintype.card_eq_nat_card]
+  simp only [Fintype.card_eq_nat_card]
   congr
   ext
-  rw [SetLike.mem_coe, mem_range_toPermHom_iff', Set.mem_setOf_eq]
+  rw [mem_range_toPermHom_iff', Set.mem_setOf_eq]
 
 section Kernel
 /- Here, we describe the kernel of `g.OnCycleFactors.toPermHom` -/
@@ -603,7 +601,7 @@ theorem sign_kerParam_apply_apply :
 
 theorem cycleType_kerParam_apply_apply :
     cycleType (kerParam g ⟨k, v⟩) = cycleType k + ∑ c, (v c).val.cycleType := by
-  let U := (Finset.univ : Finset { x // x ∈ g.cycleFactorsFinset }).toSet
+  let U := SetLike.coe (Finset.univ : Finset { x // x ∈ g.cycleFactorsFinset })
   have hU : U.Pairwise fun i j ↦ (v i).val.Disjoint (v j).val := fun c _ d _ h ↦ by
     obtain ⟨m, hm⟩ := (v c).prop
     obtain ⟨n, hn⟩ := (v d).prop

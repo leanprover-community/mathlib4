@@ -297,7 +297,7 @@ def trunc : R[T;T⁻¹] →+ R[X] :=
 theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (monomial n.toNat r) 0 := by
   apply (toFinsuppIso R).injective
   simp only [← single_eq_C_mul_T, trunc, AddMonoidHom.coe_comp, Function.comp_apply,
-    RingHom.toAddMonoidHom_eq_coe, RingEquiv.toRingHom_eq_coe, Int.ofNat_eq_coe,
+    RingHom.toAddMonoidHom_eq_coe, RingEquiv.toRingHom_eq_coe, Int.ofNat_eq_natCast,
     AddMonoidHom.coe_coe, RingHom.coe_coe, RingEquiv.apply_symm_apply, toFinsuppIso_apply]
   -- We need `erw` to see through the identification of `Finsupp` with `LaurentSeries`.
   erw [comapDomain.addMonoidHom_apply Int.ofNat_injective]
@@ -308,7 +308,7 @@ theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (mon
   · rw [toFinsupp_inj]
     ext a
     have : a ≠ n := by omega
-    simp only [coeff_ofFinsupp, comapDomain_apply, Int.ofNat_eq_coe, coeff_zero,
+    simp only [coeff_ofFinsupp, comapDomain_apply, Int.ofNat_eq_natCast, coeff_zero,
       single_eq_of_ne this]
 
 @[simp]
@@ -558,10 +558,10 @@ theorem eval₂_T_neg_n (n : ℕ) : eval₂ f x (T (-n)) = x⁻¹ ^ n := by
 
 @[simp]
 theorem eval₂_T (n : ℤ) : eval₂ f x (T n) = (x ^ n).val := by
-  by_cases hn : 0 ≤ n
+  by_cases! hn : 0 ≤ n
   · lift n to ℕ using hn
     apply eval₂_T_n
-  · obtain ⟨m, rfl⟩ := Int.exists_eq_neg_ofNat (Int.le_of_not_le hn)
+  · obtain ⟨m, rfl⟩ := Int.exists_eq_neg_ofNat hn.le
     rw [eval₂_T_neg_n, zpow_neg, zpow_natCast, ← inv_pow, Units.val_pow_eq_pow_val]
 
 @[simp]
