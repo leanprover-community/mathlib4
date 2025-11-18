@@ -3,7 +3,7 @@ Copyright (c) 2025 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Yunzhou Xie, Sidharth Hariharan
 -/
-import Mathlib.Analysis.Normed.Ring.Basic
+-- import Mathlib.Analysis.Normed.Ring.Basic
 import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Analysis.Complex.Basic
 
@@ -24,6 +24,15 @@ namespace NormNumI
 structure ResultI (a : Q(ℂ)) where
   re : NormNum.Result q(RCLike.re $a)
   im : NormNum.Result q(RCLike.im $a)
+
+def ResultI.eqeq {a : Q(ℂ)} (r : ResultI a) : MetaM (Σ x y : Q(ℝ), Q($a = $x + Complex.I * $y)) := do
+  let re ← r.re.toSimpResult
+  trace[debug] "success re"
+  let ⟨(x : Q(ℝ)), pf1, _⟩ := re
+  trace[debug] "NormNumI.eqeq: re = {x} with proof {pf1}"
+  let ⟨(y : Q(ℝ)), pf2, _⟩ ← r.im.toSimpResult
+  trace[debug] "NormNumI.eqeq: re = {x} with proof {pf1}, im = {y} with proof {pf2}"
+  return ⟨x, y, ← mkSorry q($a = $x + Complex.I * $y) true⟩
 
 
 -- def ResultI.cast {a b : Q(ℂ)} (r : ResultI a) (h : Q($a = $b)): ResultI b :=
@@ -184,8 +193,15 @@ def ResultI.inv {z : Q(ℂ)} (hz : ResultI q($z)) :
 --         let ⟨_, _, hzm⟩ ← rec q($z) q($m) q(⟨rfl⟩) hz
 --         return ⟨_, _, q(have hzm' := $hzm; pow_bit_false $z $m ▸ IsComplex.mul hzm' hzm')⟩)
 
+def NormNum.Resultn (n : Q(ℕ)) : MetaM (NormNum.Result q(OfNat.ofNat (α := ℂ) $n)) := do
+  -- let n : Q(ℕ) ← whnf n
+  guard n.isRawNatLit
+  let ⟨a, (pa : Q($n = (OfNat.ofNat  (α := ℂ) $n)))⟩ ← NormNum.mkOfNat q(ℂ) q(inferInstance) n
+  return .isNat q(inferInstance) n q(NormNum.isNat_ofNat ℂ $pa)
+
 /-- Parsing all the basic calculation in complex. -/
 partial def parse (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
+  trace[debug] "NormNumI.parse: parsing {z}"
   match z with
   | ~q($z₁ + $z₂) =>
     let r1 ← parse z₁
@@ -236,9 +252,11 @@ partial def parse (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
     (NormNum.Result.isNat q(inferInstance) q(0) q(⟨rfl⟩))
     q(Nat.cast_zero (R := ℝ) ▸ RCLike.zero_re) q(Nat.cast_zero (R := ℝ) ▸ RCLike.zero_im)
   | ~q(1) =>
-  return ResultI.mk' (NormNum.Result.isNat q(inferInstance) q(1) q(⟨rfl⟩))
-    (NormNum.Result.isNat q(inferInstance) q(0) q(⟨rfl⟩))
-    q(Nat.cast_one (R := ℝ) ▸ RCLike.one_re) q(Nat.cast_zero (R := ℝ) ▸ RCLike.one_im)
+  trace[debug] "entering 1"
+  return sorry
+  -- return ResultI.mk' (NormNum.Result.isNat q(inferInstance) q(1) q(⟨rfl⟩))
+  --   (NormNum.Result.isNat q(inferInstance) q(0) q(⟨rfl⟩))
+  --   q(Nat.cast_one (R := ℝ) ▸ RCLike.one_re) q(Nat.cast_zero (R := ℝ) ▸ RCLike.one_im)
   | ~q(OfNat.ofNat $en (self := @instOfNatAtLeastTwo ℂ _ _ $inst)) =>
     return ResultI.mk' (NormNum.Result.isNat q(inferInstance) q($en) q(⟨rfl⟩))
       (NormNum.Result.isNat q(inferInstance) q(0) q(⟨rfl⟩))
@@ -248,33 +266,39 @@ partial def parse (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
   --   return ⟨_, _, q(.scientific _ _ _)⟩
   | _ => throwError "found the atom {z} which is not a numeral"
 
-/-- Using `norm_num` to normalise expressions -/
-noncomputable def normalize (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
-  -- let r ← parse z
-  let ra ← Mathlib.Meta.NormNum.derive (α := q(ℝ)) q(RCLike.re $z)
-  let rb ← Mathlib.Meta.NormNum.derive (α := q(ℝ)) q(RCLike.im $z)
-  -- let { expr := (a' : Q(ℝ)), proof? := (pf_a ) } ← ra.toSimpResult | unreachable!
-  -- let { expr := (b' : Q(ℝ)), proof? := (pf_b ) } ← rb.toSimpResult | unreachable!
-  -- return ⟨a', b', q(eq_eq $pf $pf_a $pf_b)⟩
-  return ResultI.mk' ra rb q(rfl) q(rfl)
+-- /-- Using `norm_num` to normalise expressions -/
+-- def normalize (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
+--   let r ← parse q($z)
+--   trace[debug] "successfully parsed "
+--   -- let ra ← Mathlib.Meta.NormNum.derive (α := q(ℝ)) q(RCLike.re $z)
+--   -- let rb ← Mathlib.Meta.NormNum.derive (α := q(ℝ)) q(RCLike.im $z)
+--   -- let { expr := (a' : Q(ℝ)), proof? := (pf_a ) } ← ra.toSimpResult | unreachable!
+--   -- let { expr := (b' : Q(ℝ)), proof? := (pf_b ) } ← rb.toSimpResult | unreachable!
+--   -- return ⟨a', b', q(eq_eq $pf $pf_a $pf_b)⟩
+--   return ResultI.mk' r.re r.im q(rfl) q(rfl)
   -- sorry
 
-#exit
 -- TODO: change to use `x + y*I` so that it's fine for `ℝ` too.
-theorem IsComplex.out {z : ℂ} {re im : ℝ} (h : IsComplex z re im) : z = ⟨re, im⟩ := by
-  obtain ⟨rfl, rfl⟩ := h
-  rfl
+-- theorem ResultI.out {z : ℂ} {re im : ℝ} (h : IsComplex z re im) : z = ⟨re, im⟩ := by
+--   obtain ⟨rfl, rfl⟩ := h
+--   rfl
 
 
 /-- Create the `NormNumI` tactic in `conv` mode. -/
 elab "norm_numI" : conv => do
   let z ← Conv.getLhs
   let ⟨1, ~q(ℂ), z⟩ ← inferTypeQ z | throwError "{z} is not a complex number"
-  let ⟨_, _, pf⟩ ← normalize z
-  let r : Simp.ResultQ q($z) := .mk _ <| .some q(($pf).out)
+  let r1 ← parse z
+  trace[debug] "successfully parsed "
+  let ⟨x, y, pf⟩ ← r1.eqeq
+  trace[debug] "NormNumI: parsed {z} as {x} + {y} * I"
+  trace[debug] "NormNumI: {z} = {x} + {y} * I"
+  let r : Simp.ResultQ q($z) := .mk _ <| .some q(($pf))
   Conv.applySimpResult r
 
 end NormNumI
+
+#exit
 namespace NormNum
 
 /-- The `norm_num` extension which identifies expressions of the form `(z : ℂ) = (w : ℂ)`,

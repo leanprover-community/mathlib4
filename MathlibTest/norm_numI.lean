@@ -1,11 +1,11 @@
-import Mathlib.Analysis.Normed.Ring.Basic
-import Mathlib.Data.Complex.Basic
 import Mathlib.Tactic.NormNum.NormNumI
-import Mathlib.Data.ZMod.Basic
 
 open Complex ComplexConjugate Real Qq
 
-example : (1:ℂ) = 1 + 0 * I := by norm_num1
+set_option trace.debug true in
+example : (1:ℂ) = 1 + 0 * I := by
+  conv_lhs => norm_numI
+#exit
 example : (I:ℂ) = 0 + 1 * I := by norm_num1
 example : (1.5:ℂ) = 3 / 2 + 0 * I := by norm_num1
 example : (1.0:ℂ) + 0 = 1 := by norm_num1

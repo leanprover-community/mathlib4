@@ -117,7 +117,9 @@ def mkOfNat (α : Q(Type u)) (_sα : Q(AddMonoidWithOne $α)) (lit : Q(ℕ)) :
     let a' : Q(ℚ) := q(OfNat.ofNat $lit : ℚ)
     pure ⟨a', (q(Eq.refl $a') : Expr)⟩
   else
+    trace[debug] "mkOfNat is about to fail for {lit}"
     let some n := lit.rawNatLit? | failure
+    trace[debug] "Or maybe it doesn't"
     match n with
     | 0 => pure ⟨q(0 : $α), (q(Nat.cast_zero (R := $α)) : Expr)⟩
     | 1 => pure ⟨q(1 : $α), (q(Nat.cast_one (R := $α)) : Expr)⟩
@@ -527,7 +529,9 @@ def Result.ofRawRat {α : Q(Type u)} (q : ℚ) (e : Q($α)) (hyp : Option Expr :
 def Result.toSimpResult {α : Q(Type u)} {e : Q($α)} : Result e → MetaM Simp.Result
   | r@(.isBool ..) => let ⟨expr, proof?⟩ := r.toRawEq; pure { expr, proof? }
   | .isNat sα lit p => do
+    trace[debug] "entering isNat"
     let ⟨a', pa'⟩ ← mkOfNat α sα lit
+    trace[debug] "isNat {a'}"
     return { expr := a', proof? := q(IsNat.to_eq $p $pa') }
   | .isNegNat _rα lit p => do
     let ⟨a', pa'⟩ ← mkOfNat α q(AddCommMonoidWithOne.toAddMonoidWithOne) lit
