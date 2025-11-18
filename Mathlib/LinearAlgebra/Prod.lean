@@ -828,6 +828,12 @@ theorem range_prod_eq {f : M →ₗ[R] M₂} {g : M →ₗ[R] M₃} (h : ker f �
   · rwa [add_sub_cancel_right]
   · simp [← eq_sub_iff_add_eq.1 H, map_add, mem_ker.mp hy']
 
+/-- Unlike `LinearMap.range_prod_eq`, this does not have any hypotheses on `f` and `g`. -/
+lemma range_prod' {f : M →ₗ[R] M₂} {g : M →ₗ[R] M₃} :
+    range (LinearMap.prod f g) = Set.range (fun x ↦ (f x, g x)) := by
+  ext x
+  simp
+
 end LinearMap
 
 namespace LinearMap

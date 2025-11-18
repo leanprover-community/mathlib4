@@ -239,6 +239,12 @@ theorem range_prod_eq {f : M →L[R] M₂} {g : M →L[R] M₃} (h : ker f ⊔ k
     range (f.prod g) = (range f).prod (range g) :=
   LinearMap.range_prod_eq h
 
+/-- Unlike `LinearMap.range_prod_eq`, this does not have any hypotheses on `f` and `g`. -/
+lemma range_prod_eq' {f : M →L[R] M₂} {g : M →L[R] M₃} :
+    range (f.prod g) = Set.range (fun x ↦ (f x, g x)) := by
+  ext x
+  simp
+
 theorem ker_prod_ker_le_ker_coprod (f : M →L[R] M₃) (g : M₂ →L[R] M₃) :
     (LinearMap.ker f).prod (LinearMap.ker g) ≤ LinearMap.ker (f.coprod g) :=
   LinearMap.ker_prod_ker_le_ker_coprod f.toLinearMap g.toLinearMap

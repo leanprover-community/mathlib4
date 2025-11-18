@@ -297,32 +297,9 @@ instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedSpace 𝕜 hf.smal
   infer_instance
 
 /-- If `f` is an immersion at `x`, then any complement used in this definition is
-isomorphic to the `smallComplement`. See `smallEquiv` for a `ContinuousLinearEquiv` version,
-assuming completeness of the domain and codomain. -/
-def smallEquivₗ (hf : IsImmersionAtOfComplement F I J n f x) : F ≃ₗ[𝕜] hf.smallComplement := by
-  letI A' : Submodule 𝕜 (E × F) := LinearMap.range (LinearMap.prod 0 .id)
-  letI φ : F ≃ₗ[𝕜] A' := LinearEquiv.ofInjective (LinearMap.prod 0 .id) (by intro x y hxy; simp_all)
-  exact φ.trans <| LinearEquiv.ofInjective _ (by simp_all [A'])
-
-lemma smallEquivₗ_coe (hf : IsImmersionAtOfComplement F I J n f x) :
-  letI B := Pi.prod (0 : F → E) (@id F)
-  (hf.smallEquivₗ : F → _) =
-    (Set.rangeFactorization ((range B).restrict hf.equiv)) ∘ (Set.rangeFactorization B) := by
-  rfl
-
-/-- Unlike `ContinuousLinearMap.range_prod_eq`, this does not have any hypotheses on `f` and `g`. -/
-lemma ContinuousLinearMap.range_prod' {f : E →L[𝕜] F} {g : E →L[𝕜] F'} :
-    range (ContinuousLinearMap.prod f g) = range (fun x ↦ (f x, g x)) := by
-  ext x
-  simp
-
-/-- Unlike `LinearMap.range_prod_eq`, this does not have any hypotheses on `f` and `g`. -/
-lemma LinearMap.range_prod' {f : E →ₗ[𝕜] F} {g : E →ₗ[𝕜] F'} :
-    range (LinearMap.prod f g) = range (fun x ↦ (f x, g x)) := by
-  ext x
-  simp
-
-/-- `ContinuousLinearEquiv` version of `smallEquivₗ` -/
+isomorphic to the `smallComplement`. -/
+-- Note: without completeness assumptions, one can still find a `LinearEquiv`:
+-- we don't provide this definition as it won't be used in practice.
 def smallEquiv [CompleteSpace E] [CompleteSpace E''] [CompleteSpace F]
     (hf : IsImmersionAtOfComplement F I J n f x) : F ≃L[𝕜] hf.smallComplement := by
   letI φ : F →L[𝕜] E × F := ContinuousLinearMap.prod (0 : F →L[𝕜] E) (.id _ _)
@@ -348,10 +325,12 @@ def smallEquiv [CompleteSpace E] [CompleteSpace E''] [CompleteSpace F]
     simpa
   apply (ContinuousLinearMap.equivRange h h2).trans (ContinuousLinearMap.equivRange h3 this)
 
--- This statement is weaker than `smallEquiv`, but is it still useful?
-lemma small (hf : IsImmersionAtOfComplement F I J n f x) : Small.{u} F := by
-  use hf.smallComplement
-  exact ⟨hf.smallEquivₗ⟩
+lemma smallEquiv_coe [CompleteSpace E] [CompleteSpace E''] [CompleteSpace F]
+  (hf : IsImmersionAtOfComplement F I J n f x) :
+  letI B := Pi.prod (0 : F → E) (@id F)
+  (hf.smallEquiv : F → _) =
+    (Set.rangeFactorization ((range B).restrict hf.equiv)) ∘ (Set.rangeFactorization B) := by
+  rfl
 
 lemma trans_F (h : IsImmersionAtOfComplement F I J n f x) (e : F ≃L[𝕜] F') :
     IsImmersionAtOfComplement F' I J n f x := by
