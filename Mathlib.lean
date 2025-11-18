@@ -1803,6 +1803,7 @@ import Mathlib.Analysis.LocallyConvex.Barrelled
 import Mathlib.Analysis.LocallyConvex.Basic
 import Mathlib.Analysis.LocallyConvex.Bounded
 import Mathlib.Analysis.LocallyConvex.ContinuousOfBounded
+import Mathlib.Analysis.LocallyConvex.PointwiseConvergence
 import Mathlib.Analysis.LocallyConvex.Polar
 import Mathlib.Analysis.LocallyConvex.SeparatingDual
 import Mathlib.Analysis.LocallyConvex.Separation
