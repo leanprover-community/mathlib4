@@ -258,7 +258,7 @@ private def delabFinsetArg (i : Ident) : DelabM FinsetResult := do
 /-- Delaborator for `Finset.prod`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the product is over `Finset.univ`. -/
 @[app_delab Finset.prod] def delabFinsetProd : Delab :=
-  whenPPOption getPPNotation <| withOverApp 5 <| do
+  whenPPOption getPPNotation <| withOverApp 5 do
   let #[_, _, _, _, f] := (← getExpr).getAppArgs | failure
   guard f.isLambda
   let ppDomain ← getPPOption getPPFunBinderTypes
@@ -289,7 +289,7 @@ to show the domain type when the product is over `Finset.univ`. -/
 /-- Delaborator for `Finset.sum`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the sum is over `Finset.univ`. -/
 @[app_delab Finset.sum] def delabFinsetSum : Delab :=
-  whenPPOption getPPNotation <| withOverApp 5 <| do
+  whenPPOption getPPNotation <| withOverApp 5 do
   let #[_, _, _, _, f] := (← getExpr).getAppArgs | failure
   guard f.isLambda
   let ppDomain ← getPPOption getPPFunBinderTypes

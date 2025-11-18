@@ -510,7 +510,7 @@ end PPrime
 noncomputable def finEquivPowers {x : G} (hx : IsOfFinOrder x) : Fin (orderOf x) ≃ powers x :=
   Equiv.ofBijective (fun n ↦ ⟨x ^ (n : ℕ), ⟨n, rfl⟩⟩) ⟨fun ⟨_, h₁⟩ ⟨_, h₂⟩ ij ↦
     Fin.ext (pow_injOn_Iio_orderOf h₁ h₂ (Subtype.mk_eq_mk.1 ij)), fun ⟨_, i, rfl⟩ ↦
-      ⟨⟨i % orderOf x, mod_lt _ hx.orderOf_pos⟩, Subtype.eq <| pow_mod_orderOf _ _⟩⟩
+      ⟨⟨i % orderOf x, mod_lt _ hx.orderOf_pos⟩, Subtype.ext <| pow_mod_orderOf _ _⟩⟩
 
 @[to_additive (attr := simp)]
 lemma finEquivPowers_apply {x : G} (hx : IsOfFinOrder x) {n : Fin (orderOf x)} :

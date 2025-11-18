@@ -389,7 +389,7 @@ end BaseChange
 
 /-- Given a pre-submersive presentation `P` and equivalences `ι' ≃ ι` and
 `σ' ≃ σ`, this is the induced pre-submersive presentation with variables indexed
-by `ι` and relations indexed by `κ -/
+by `ι` and relations indexed by `κ`. -/
 @[simps toPresentation, simps -isSimp map]
 noncomputable def reindex (P : PreSubmersivePresentation R S ι σ)
     {ι' σ' : Type*} (e : ι' ≃ ι) (f : σ' ≃ σ) :

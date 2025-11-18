@@ -438,7 +438,7 @@ theorem exists_maximal_linearIndepOn (v : ι → M) :
       rintro x hx
       refine (memJ.mp (supp_f hx)).resolve_left ?_
       rintro rfl
-      exact hIlinind (Finsupp.mem_support_iff.mp hx)
+      exact (Finsupp.mem_support_iff.mp hx) hIlinind
     use f i, hfi
     have hfi' : i ∈ f.support := Finsupp.mem_support_iff.mpr hfi
     rw [← Finset.insert_erase hfi', Finset.sum_insert (Finset.notMem_erase _ _),

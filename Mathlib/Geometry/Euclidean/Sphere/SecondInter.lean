@@ -87,6 +87,17 @@ theorem Sphere.eq_or_eq_secondInter_of_mem_mk'_span_singleton_iff_mem {s : Spher
     rw [← hp, dist_smul_vadd_eq_dist _ _ hv] at h
     rcases h with (h | h) <;> simp [h]
 
+/-- A point on a line through a point on a sphere and a second point equals that point or
+`secondInter`. -/
+lemma Sphere.eq_or_eq_secondInter_iff_mem_of_mem_affineSpan_pair {s : Sphere P} {p q : P}
+    (hp : p ∈ s) {p' : P} (hp' : p' ∈ line[ℝ, p, q]) :
+    p' = p ∨ p' = s.secondInter p (q -ᵥ p) ↔ p' ∈ s := by
+  convert s.eq_or_eq_secondInter_of_mem_mk'_span_singleton_iff_mem hp ?_
+  convert hp'
+  rw [AffineSubspace.eq_iff_direction_eq_of_mem (AffineSubspace.self_mem_mk' p _)
+    (left_mem_affineSpan_pair _ _ _)]
+  simp [direction_affineSpan, vectorSpan_pair_rev]
+
 /-- `secondInter` is unchanged by multiplying the vector by a nonzero real. -/
 @[simp]
 theorem Sphere.secondInter_smul (s : Sphere P) (p : P) (v : V) {r : ℝ} (hr : r ≠ 0) :

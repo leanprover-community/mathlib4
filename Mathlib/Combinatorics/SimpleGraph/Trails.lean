@@ -89,7 +89,7 @@ theorem IsEulerian.isTrail {u v : V} {p : G.Walk u v} (h : p.IsEulerian) : p.IsT
 theorem IsEulerian.mem_edges_iff {u v : V} {p : G.Walk u v} (h : p.IsEulerian) {e : Sym2 V} :
     e ∈ p.edges ↔ e ∈ G.edgeSet :=
   ⟨fun h => p.edges_subset_edgeSet h,
-   fun he => by simpa [Nat.succ_le] using (h e he).ge⟩
+   fun he => by simpa [Nat.succ_le_iff] using (h e he).ge⟩
 
 /-- The edge set of an Eulerian graph is finite. -/
 def IsEulerian.fintypeEdgeSet {u v : V} {p : G.Walk u v} (h : p.IsEulerian) :

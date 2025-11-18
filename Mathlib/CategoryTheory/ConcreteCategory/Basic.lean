@@ -23,10 +23,6 @@ has a functor `forget₂ C D : C ⥤ D` such that `(forget₂ C D) ⋙ (forget D
 `forget₂.map` agree with the equality above; then `forget₂` will satisfy the functor laws
 automatically, see `HasForget₂.mk'`.
 
-Two classes helping construct concrete categories in the two most
-common cases are provided in the files `BundledHom` and
-`UnbundledHom`, see their documentation for details.
-
 ## Implementation notes
 
 We are currently switching over from `HasForget` to a new class `ConcreteCategory`,

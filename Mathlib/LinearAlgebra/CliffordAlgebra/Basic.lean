@@ -187,7 +187,7 @@ theorem induction {C : CliffordAlgebra Q → Prop}
       algebraMap_mem' := algebraMap }
   let of : { f : M →ₗ[R] s // ∀ m, f m * f m = _root_.algebraMap _ _ (Q m) } :=
     ⟨(CliffordAlgebra.ι Q).codRestrict (Subalgebra.toSubmodule s) ι,
-      fun m => Subtype.eq <| ι_sq_scalar Q m⟩
+      fun m => Subtype.ext <| ι_sq_scalar Q m⟩
   -- the mapping through the subalgebra is the identity
   have of_id : s.val.comp (lift Q of) = AlgHom.id R (CliffordAlgebra Q) := by
     ext x

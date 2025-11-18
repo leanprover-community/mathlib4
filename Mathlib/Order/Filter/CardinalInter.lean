@@ -16,7 +16,7 @@ In this file we define `CardinalInterFilter l c` to be the class of filters with
 property: for any collection of sets `s ∈ l` with cardinality strictly less than `c`,
 their intersection belongs to `l` as well.
 
-# Main results
+## Main results
 * `Filter.cardinalInterFilter_aleph0` establishes that every filter `l` is a
     `CardinalInterFilter l ℵ₀`
 * `CardinalInterFilter.toCountableInterFilter` establishes that every `CardinalInterFilter l c` with

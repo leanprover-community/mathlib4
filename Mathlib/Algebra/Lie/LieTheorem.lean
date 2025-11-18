@@ -217,7 +217,6 @@ private lemma exists_forall_lie_eq_smul_of_isSolvable_of_finite
   exact exists_nontrivial_weightSpace_of_lieIdeal A hA χ'
 termination_by Module.finrank k L
 decreasing_by
-  simp_wf
   rw [← finrank_top k L]
   apply Submodule.finrank_lt_finrank_of_lt
   exact hA.lt_top

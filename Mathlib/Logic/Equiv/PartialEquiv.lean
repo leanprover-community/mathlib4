@@ -274,8 +274,8 @@ theorem copy_eq (e : PartialEquiv α β) (f : α → β) (hf : ⇑e = f) (g : β
 protected def toEquiv : e.source ≃ e.target where
   toFun x := ⟨e x, e.map_source x.mem⟩
   invFun y := ⟨e.symm y, e.map_target y.mem⟩
-  left_inv := fun ⟨_, hx⟩ => Subtype.eq <| e.left_inv hx
-  right_inv := fun ⟨_, hy⟩ => Subtype.eq <| e.right_inv hy
+  left_inv := fun ⟨_, hx⟩ => Subtype.ext <| e.left_inv hx
+  right_inv := fun ⟨_, hy⟩ => Subtype.ext <| e.right_inv hy
 
 @[simp, mfld_simps]
 theorem symm_source : e.symm.source = e.target :=

@@ -346,11 +346,12 @@ theorem liftPath_apply_one_eq_of_homotopicRel {γ₀ γ₁ : C(I, X)}
 /-- A covering map induces an injection on all Hom-sets of the fundamental groupoid,
   in particular on the fundamental group. -/
 lemma injective_path_homotopic_mapFn (e₀ e₁ : E) :
-    Function.Injective fun γ : Path.Homotopic.Quotient e₀ e₁ ↦ γ.mapFn ⟨p, cov.continuous⟩ := by
+    Function.Injective fun γ : Path.Homotopic.Quotient e₀ e₁ ↦ γ.map ⟨p, cov.continuous⟩ := by
   refine Quotient.ind₂ fun γ₀ γ₁ ↦ ?_
   dsimp only
-  simp_rw [← Path.Homotopic.map_lift]
-  iterate 2 rw [Quotient.eq]
+  simp only [Path.Homotopic.Quotient.mk''_eq_mk]
+  simp_rw [← Path.Homotopic.Quotient.mk_map]
+  iterate 2 rw [Path.Homotopic.Quotient.eq]
   exact (cov.homotopicRel_iff_comp ⟨0, .inl rfl, γ₀.source.trans γ₁.source.symm⟩).mpr
 
 /-- A map `f` from a simply-connected, locally path-connected space `A` to another space `X` lifts

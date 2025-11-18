@@ -73,6 +73,21 @@ theorem integralNormalization_coeff_ne_natDegree {i : ℕ} (hi : i ≠ natDegree
     coeff (integralNormalization p) i = coeff p i * p.leadingCoeff ^ (p.natDegree - 1 - i) :=
   integralNormalization_coeff_degree_ne (degree_ne_of_natDegree_ne hi.symm)
 
+@[simp]
+lemma degree_integralNormalization : p.integralNormalization.degree = p.degree := by
+  nontriviality R
+  by_cases hp : p = 0; · simp [hp]
+  rw [degree_eq_natDegree hp]
+  refine degree_eq_of_le_of_coeff_ne_zero ?_ (by simp [integralNormalization_coeff_natDegree, *])
+  exact (Finset.sup_le fun i h =>
+      WithBot.coe_le_coe.2 <| le_natDegree_of_mem_supp i <| support_integralNormalization_subset h)
+
+@[simp]
+lemma natDegree_integralNormalization : p.integralNormalization.natDegree = p.natDegree := by
+  nontriviality R
+  by_cases hp : p = 0; · simp [hp]
+  exact natDegree_eq_of_degree_eq p.degree_integralNormalization
+
 theorem monic_integralNormalization (hp : p ≠ 0) : Monic (integralNormalization p) :=
   monic_of_degree_le p.natDegree
     (Finset.sup_le fun i h =>
@@ -156,6 +171,12 @@ theorem integralNormalization_aeval_eq_zero [Algebra S A] {f : S[X]} {z : A} (hz
     aeval (algebraMap S A f.leadingCoeff * z) (integralNormalization f) = 0 :=
   integralNormalization_eval₂_eq_zero_of_commute (algebraMap S A) hz
     (Algebra.commute_algebraMap_left _ _) (.map (.all _ _) _) inj
+
+lemma integralNormalization_map (f : R →+* A) (p : R[X]) (H : f p.leadingCoeff ≠ 0) :
+    (p.map f).integralNormalization = p.integralNormalization.map f := by
+  ext i
+  simp [integralNormalization_coeff, degree_map_eq_of_leadingCoeff_ne_zero _ H, apply_ite f,
+    leadingCoeff_map_of_leadingCoeff_ne_zero _ H, natDegree_map_eq_iff.mpr (.inl H)]
 
 end Semiring
 

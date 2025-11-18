@@ -167,7 +167,7 @@ instance : CoeFun (CauSeq β abv) fun _ => ℕ → β :=
   ⟨Subtype.val⟩
 
 @[ext]
-theorem ext {f g : CauSeq β abv} (h : ∀ i, f i = g i) : f = g := Subtype.eq (funext h)
+theorem ext {f g : CauSeq β abv} (h : ∀ i, f i = g i) : f = g := Subtype.ext (funext h)
 
 theorem isCauSeq (f : CauSeq β abv) : IsCauSeq abv f :=
   f.2

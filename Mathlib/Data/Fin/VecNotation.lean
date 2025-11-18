@@ -311,7 +311,7 @@ theorem vecAppend_eq_ite {α : Type*} {o : ℕ} (ho : o = m + n) (u : Fin m → 
 @[simp]
 theorem vecAppend_apply_zero {α : Type*} {o : ℕ} (ho : o + 1 = m + 1 + n) (u : Fin (m + 1) → α)
     (v : Fin n → α) : vecAppend ho u v 0 = u 0 :=
-  dif_pos _
+  rfl
 
 @[simp]
 theorem empty_vecAppend (v : Fin n → α) : vecAppend n.zero_add.symm ![] v = v := by

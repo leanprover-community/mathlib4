@@ -299,7 +299,7 @@ protected theorem pow_mem {R : Type*} [Semiring R] (s : Subsemiring R) {x : R} (
 
 instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s where
   eq_zero_or_eq_zero_of_mul_eq_zero {_ _} h :=
-    (eq_zero_or_eq_zero_of_mul_eq_zero <| Subtype.ext_iff.mp h).imp Subtype.eq Subtype.eq
+    (eq_zero_or_eq_zero_of_mul_eq_zero <| Subtype.ext_iff.mp h).imp Subtype.ext Subtype.ext
 
 /-- A subsemiring of a `Semiring` is a `Semiring`. -/
 instance toSemiring {R} [Semiring R] (s : Subsemiring R) : Semiring s :=
@@ -311,7 +311,7 @@ theorem coe_pow {R} [Semiring R] (s : Subsemiring R) (x : s) (n : ℕ) :
 
 /-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
 instance toCommSemiring {R} [CommSemiring R] (s : Subsemiring R) : CommSemiring s :=
-  { s.toSemiring with mul_comm := fun _ _ => Subtype.eq <| mul_comm _ _ }
+  { s.toSemiring with mul_comm := fun _ _ => Subtype.ext <| mul_comm _ _ }
 
 /-- The natural ring hom from a subsemiring of semiring `R` to `R`. -/
 def subtype : s →+* R :=

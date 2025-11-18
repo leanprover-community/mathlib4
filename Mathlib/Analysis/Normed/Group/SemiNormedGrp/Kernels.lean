@@ -69,7 +69,7 @@ instance : HasCokernels SemiNormedGrp₁.{u} where
               change (f ≫ s.π) b = 0
               simp)
             fun _ _ w =>
-            SemiNormedGrp₁.hom_ext <| Subtype.eq
+            SemiNormedGrp₁.hom_ext <| Subtype.ext
               (NormedAddGroupHom.lift_unique f.1.range _ _ _
                 (congr_arg Subtype.val (congr_arg Hom.hom w))) }
 

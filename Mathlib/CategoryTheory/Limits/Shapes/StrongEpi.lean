@@ -86,14 +86,14 @@ section
 variable {R : C} (f : P ⟶ Q) (g : Q ⟶ R)
 
 /-- The composition of two strong epimorphisms is a strong epimorphism. -/
-theorem strongEpi_comp [StrongEpi f] [StrongEpi g] : StrongEpi (f ≫ g) :=
+instance strongEpi_comp [StrongEpi f] [StrongEpi g] : StrongEpi (f ≫ g) :=
   { epi := epi_comp _ _
     llp := by
       intros
       infer_instance }
 
 /-- The composition of two strong monomorphisms is a strong monomorphism. -/
-theorem strongMono_comp [StrongMono f] [StrongMono g] : StrongMono (f ≫ g) :=
+instance strongMono_comp [StrongMono f] [StrongMono g] : StrongMono (f ≫ g) :=
   { mono := mono_comp _ _
     rlp := by
       intros

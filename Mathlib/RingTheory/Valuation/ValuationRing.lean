@@ -175,7 +175,6 @@ instance commGroupWithZero :
       simp only [one_smul]
       apply (mul_inv_cancel₀ _).symm
       contrapose ha
-      simp only [Classical.not_not] at ha ⊢
       rw [ha]
       rfl }
 

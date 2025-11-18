@@ -133,14 +133,14 @@ theorem bodd_neg (n : ℤ) : bodd (-n) = bodd n := by
 theorem bodd_add (m n : ℤ) : bodd (m + n) = xor (bodd m) (bodd n) := by
   rcases m with m | m <;>
   rcases n with n | n <;>
-  simp only [ofNat_eq_coe, ofNat_add_negSucc, negSucc_add_ofNat,
+  simp only [ofNat_eq_natCast, ofNat_add_negSucc, negSucc_add_ofNat,
              negSucc_add_negSucc, bodd_subNatNat, ← Nat.cast_add] <;>
   simp [bodd, Bool.xor_comm]
 
 @[simp]
 theorem bodd_mul (m n : ℤ) : bodd (m * n) = (bodd m && bodd n) := by
   rcases m with m | m <;> rcases n with n | n <;>
-  simp only [ofNat_eq_coe, ofNat_mul_negSucc, negSucc_mul_ofNat, ofNat_mul_ofNat,
+  simp only [ofNat_eq_natCast, ofNat_mul_negSucc, negSucc_mul_ofNat, ofNat_mul_ofNat,
              negSucc_mul_negSucc] <;>
   simp only [negSucc_eq, ← Int.natCast_succ, bodd_neg, bodd_coe, Nat.bodd_mul]
 
@@ -270,7 +270,7 @@ theorem bitwise_xor : bitwise xor = Int.xor := by
 theorem bitwise_bit (f : Bool → Bool → Bool) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
   rcases m with m | m <;> rcases n with n | n <;>
-  simp [bitwise, ofNat_eq_coe, bit_coe_nat, natBitwise, Bool.not_false,
+  simp [bitwise, ofNat_eq_natCast, bit_coe_nat, natBitwise, Bool.not_false,
     bit_negSucc]
   · by_cases h : f false false <;> simp +decide [h]
   · by_cases h : f false true <;> simp +decide [h]

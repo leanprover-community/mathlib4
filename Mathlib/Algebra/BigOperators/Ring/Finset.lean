@@ -140,7 +140,7 @@ lemma prod_sum {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (f
       congr with ⟨v, hv⟩
       congr
       exact (Pi.cons_ne (by rintro rfl; exact ha hv)).symm
-    · exact fun _ _ _ _ => Subtype.eq ∘ Subtype.mk.inj
+    · exact fun _ _ _ _ => Subtype.ext ∘ Subtype.mk.inj
     · simpa only [mem_image, mem_attach, Subtype.mk.injEq, true_and,
         Subtype.exists, exists_prop, exists_eq_right] using ha
 

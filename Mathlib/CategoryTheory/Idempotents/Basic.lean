@@ -70,7 +70,7 @@ theorem isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent :
               intro s
               refine ⟨s.ι ≫ e, ?_⟩
               constructor
-              · erw [assoc, h₂, ← Limits.Fork.condition s, comp_id]
+              · simp [h₂, ← Limits.Fork.condition s]
               · intro m hm
                 rw [Fork.ι_ofι] at hm
                 rw [← hm]

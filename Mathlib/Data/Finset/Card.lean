@@ -322,7 +322,7 @@ theorem card_eq_of_bijective (f : ∀ i, i < n → α) (hf : ∀ a ∈ s, ∃ i,
     _ = n := card_range n
   apply card_image_of_injective
   intro ⟨i, hi⟩ ⟨j, hj⟩ eq
-  exact Subtype.eq <| f_inj i j (mem_range.1 hi) (mem_range.1 hj) eq
+  exact Subtype.ext <| f_inj i j (mem_range.1 hi) (mem_range.1 hj) eq
 
 variable {t : Finset β}
 

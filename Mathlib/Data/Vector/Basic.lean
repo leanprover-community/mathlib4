@@ -37,7 +37,7 @@ theorem toList_injective : Function.Injective (@toList α n) :=
 @[ext]
 theorem ext : ∀ {v w : Vector α n} (_ : ∀ m : Fin n, Vector.get v m = Vector.get w m), v = w
   | ⟨v, hv⟩, ⟨w, hw⟩, h =>
-    Subtype.eq (List.ext_get (by rw [hv, hw]) fun m hm _ => h ⟨m, hv ▸ hm⟩)
+    Subtype.ext (List.ext_get (by rw [hv, hw]) fun m hm _ => h ⟨m, hv ▸ hm⟩)
 
 /-- The empty `Vector` is a `Subsingleton`. -/
 instance zero_subsingleton : Subsingleton (Vector α 0) :=
@@ -367,7 +367,7 @@ theorem scanl_get (i : Fin n) :
     refine Fin.cases ?_ ?_ i
     · simp only [get_zero, scanl_head, Fin.castSucc_zero, head_cons]
     · intro i'
-      simp only [hn, Fin.castSucc_fin_succ, get_cons_succ]
+      simp only [hn, Fin.castSucc_succ, get_cons_succ]
 
 end Scan
 
@@ -536,7 +536,7 @@ theorem eraseIdx_val {i : Fin n} : ∀ {v : Vector α n}, (eraseIdx i v).val = v
 
 theorem eraseIdx_insertIdx_self {v : Vector α n} {i : Fin (n + 1)} :
     eraseIdx i (insertIdx a i v) = v :=
-  Subtype.eq (List.eraseIdx_insertIdx_self ..)
+  Subtype.ext (List.eraseIdx_insertIdx_self ..)
 
 @[deprecated (since := "2025-06-17")]
 alias eraseIdx_insertIdx := eraseIdx_insertIdx_self
@@ -548,7 +548,7 @@ theorem eraseIdx_insertIdx' {v : Vector α (n + 1)} :
   | ⟨i, hi⟩, ⟨j, hj⟩ => by
     dsimp [insertIdx, eraseIdx, Fin.succAbove, Fin.predAbove]
     rw [Subtype.mk_eq_mk]
-    simp only [Fin.lt_iff_val_lt_val]
+    simp only [Fin.lt_def]
     split_ifs with hij
     · rcases Nat.exists_eq_succ_of_ne_zero
         (Nat.pos_iff_ne_zero.1 (lt_of_le_of_lt (Nat.zero_le _) hij)) with ⟨j, rfl⟩
@@ -566,7 +566,7 @@ theorem insertIdx_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
     ∀ v : Vector α n,
       (v.insertIdx a i).insertIdx b j.succ = (v.insertIdx b j).insertIdx a (Fin.castSucc i)
   | ⟨l, hl⟩ => by
-    refine Subtype.eq ?_
+    refine Subtype.ext ?_
     simp only [insertIdx_val, Fin.val_succ, Fin.castSucc, Fin.coe_castAdd]
     apply List.insertIdx_comm
     · assumption

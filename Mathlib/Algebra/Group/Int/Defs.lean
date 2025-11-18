@@ -26,8 +26,8 @@ instance instCommMonoid : CommMonoid ℤ where
   mul_one := Int.mul_one
   one_mul := Int.one_mul
   npow n x := x ^ n
-  npow_zero _ := rfl
-  npow_succ _ _ := rfl
+  npow_zero _ := by simp [Int.pow_zero]
+  npow_succ _ _ := by simp [Int.pow_succ]
   mul_assoc := Int.mul_assoc
 
 instance instAddCommGroup : AddCommGroup ℤ where

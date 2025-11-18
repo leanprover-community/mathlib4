@@ -276,8 +276,8 @@ private lemma one_lt_re_one_add {x : ℝ} (hx : 0 < x) (y : ℝ) :
     ofReal_im, mul_zero, sub_self, add_zero, re_ofNat, im_ofNat, mul_one, mul_im, and_self]
 
 open scoped LSeries.notation in
-/-- For positive `x` and nonzero `y` and a Dirichlet character `χ` we have that
-`|L(χ^0, 1 + x)^3 L(χ, 1 + x + I * y)^4 L(χ^2, 1 + x + 2 * I * y)| ≥ 1. -/
+/-- For positive `x` and nonzero `y` and a Dirichlet character `χ` we have
+`|L(χ^0, 1 + x)^3 * L(χ, 1 + x + I * y)^4 * L(χ^2, 1 + x + 2 * I * y)| ≥ 1`. -/
 lemma norm_LSeries_product_ge_one {x : ℝ} (hx : 0 < x) (y : ℝ) :
     ‖L ↗(1 : DirichletCharacter ℂ N) (1 + x) ^ 3 * L ↗χ (1 + x + I * y) ^ 4 *
       L ↗(χ ^ 2 :) (1 + x + 2 * I * y)‖ ≥ 1 := by

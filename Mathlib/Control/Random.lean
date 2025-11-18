@@ -124,7 +124,7 @@ instance : BoundedRandom m Int where
     let ⟨z, _, h2⟩ ← randBound Nat 0 (Int.natAbs <| hi - lo) (Nat.zero_le _)
     pure ⟨
       z + lo,
-      Int.le_add_of_nonneg_left (Int.ofNat_zero_le z),
+      Int.le_add_of_nonneg_left (Int.natCast_nonneg z),
       Int.add_le_of_le_sub_right <| Int.le_trans
         (Int.ofNat_le.mpr h2)
         (le_of_eq <| Int.natAbs_of_nonneg <| Int.sub_nonneg_of_le h)⟩

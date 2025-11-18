@@ -14,12 +14,12 @@ import Batteries.Tactic.Alias
 
 namespace String
 
-lemma congr_append (a b : String) : a ++ b = String.mk (a.data ++ b.data) := by simp
+lemma congr_append (a b : String) : a ++ b = String.ofList (a.toList ++ b.toList) := by simp
 
 @[simp] lemma length_replicate (n : ℕ) (c : Char) : (replicate n c).length = n := by
-  simp only [← length_data, String.replicate, List.data_asString, List.length_replicate]
+  simp only [← length_toList, String.replicate, String.toList_ofList, List.length_replicate]
 
-lemma length_eq_list_length (l : List Char) : (String.mk l).length = l.length := by
+lemma length_eq_list_length (l : List Char) : (String.ofList l).length = l.length := by
   simp
 
 /-- The length of the String returned by `String.leftpad n a c` is equal

@@ -526,7 +526,7 @@ def NonUnitalSubsemiring.corner [NonUnitalSemiring R] : NonUnitalSubsemiring R w
   add_mem' := by rintro _ _ ⟨a, rfl⟩ ⟨b, rfl⟩; exact ⟨a + b, by simp_rw [mul_add, add_mul]⟩
   zero_mem' := ⟨0, by simp_rw [mul_zero, zero_mul]⟩
 
-/-- The corner associated to an element `e` in a ring without `
+/-- The corner associated to an element `e` in a ring without 1
 is the subring without 1 of all elements of the form `e * r * e`. -/
 def NonUnitalRing.corner [NonUnitalRing R] : NonUnitalSubring R where
   __ := NonUnitalSubsemiring.corner e

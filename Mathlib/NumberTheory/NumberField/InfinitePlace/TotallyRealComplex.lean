@@ -66,6 +66,13 @@ theorem IsTotallyReal.of_algebra [IsTotallyReal K] [Algebra F K] : IsTotallyReal
     obtain ⟨W, rfl⟩ : ∃ W : InfinitePlace K, W.comap (algebraMap F K) = w := comap_surjective w
     exact IsReal.comap _ (IsTotallyReal.isReal W)
 
+theorem isTotallyReal_iff_ofRingEquiv (f : F ≃+* K) : IsTotallyReal F ↔ IsTotallyReal K :=
+  ⟨fun _ ↦ .ofRingEquiv f, fun _ ↦ .ofRingEquiv f.symm⟩
+
+@[simp]
+theorem isTotallyReal_top_iff : IsTotallyReal (⊤ : Subfield K) ↔ IsTotallyReal K :=
+  isTotallyReal_iff_ofRingEquiv Subfield.topEquiv
+
 @[deprecated (since := "2025-05-19")] alias IsTotally.of_algebra := IsTotallyReal.of_algebra
 
 instance [IsTotallyReal K] (F : IntermediateField ℚ K) : IsTotallyReal F :=
@@ -140,6 +147,15 @@ instance isTotallyReal_sup {E F : Subfield K} [IsTotallyReal E] [IsTotallyReal F
 instance isTotallyReal_iSup {ι : Type*} {k : ι → Subfield K} [∀ i, IsTotallyReal (k i)] :
     IsTotallyReal (⨆ i, k i : Subfield K) := by
   simp_all [isTotallyReal_iff_le_maximalRealSubfield]
+
+@[simp]
+theorem IsTotallyReal.maximalRealSubfield_eq_top [IsTotallyReal K] : maximalRealSubfield K = ⊤ :=
+  top_unique <| NumberField.IsTotallyReal.le_maximalRealSubfield _
+
+theorem maximalRealSubfield_eq_top_iff_isTotallyReal :
+    maximalRealSubfield K = ⊤ ↔ IsTotallyReal K where
+  mp h := by rw [← isTotallyReal_top_iff, isTotallyReal_iff_le_maximalRealSubfield, h]
+  mpr _ := IsTotallyReal.maximalRealSubfield_eq_top
 
 end maximalRealSubfield
 

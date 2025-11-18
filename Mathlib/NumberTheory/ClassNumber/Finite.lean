@@ -39,7 +39,7 @@ variable {ι : Type*} [DecidableEq ι] [Fintype ι] (bS : Basis ι R S)
 
 /-- If `b` is an `R`-basis of `S` of cardinality `n`, then `normBound abv b` is an integer
 such that for every `R`-integral element `a : S` with coordinates `≤ y`,
-we have algebra.norm a ≤ norm_bound abv b * y ^ n`. (See also `norm_le` and `norm_lt`). -/
+we have `algebra.norm a ≤ normBound abv b * y ^ n`. (See also `norm_le` and `norm_lt`). -/
 noncomputable def normBound : ℤ :=
   let n := Fintype.card ι
   let i : ι := Nonempty.some bS.index_nonempty

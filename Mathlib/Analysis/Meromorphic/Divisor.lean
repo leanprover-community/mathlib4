@@ -305,4 +305,22 @@ theorem negPart_divisor_add_of_analyticNhdOn_left {f₁ f₂ : 𝕜 → E} (hf�
   rw [add_comm]
   exact negPart_divisor_add_of_analyticNhdOn_right hf₂ hf₁
 
+open WithTop in
+/-- The divisor of the function `z ↦ z - z₀` at `x` is `0` if `x ≠ z₀`. -/
+lemma divisor_sub_const_of_ne {U : Set 𝕜} {z₀ x : 𝕜} (hx : x ≠ z₀) : divisor (· - z₀) U x = 0 := by
+  by_cases hu : x ∈ U
+  · rw [divisor_apply (show MeromorphicOn (· - z₀) U from fun_sub id <| const z₀) hu,
+      ← untop₀_coe 0]
+    congr
+    exact (meromorphicOrderAt_eq_int_iff (by fun_prop)).mpr
+      ⟨(· - z₀), analyticAt_id.fun_sub analyticAt_const, by simp [sub_ne_zero_of_ne hx]⟩
+  · exact Function.locallyFinsuppWithin.apply_eq_zero_of_notMem _ hu
+
+open WithTop in
+/-- The divisor of the function `z ↦ z - z₀` at `z₀` is `1`. -/
+lemma divisor_sub_const_self {z₀ : 𝕜} {U : Set 𝕜} (h : z₀ ∈ U) : divisor (· - z₀) U z₀ = 1 := by
+  rw [divisor_apply (show MeromorphicOn (· - z₀) U from fun_sub id <| const z₀) h, ← untop₀_coe 1]
+  congr
+  exact (meromorphicOrderAt_eq_int_iff (by fun_prop)).mpr ⟨fun _ ↦ 1, analyticAt_const, by simp⟩
+
 end MeromorphicOn

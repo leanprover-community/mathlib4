@@ -23,6 +23,7 @@ with respect to other language operations.
 ## Notation
 
 * `l + m`: union of languages `l` and `m`
+* `l - m`: difference of languages `l` and `m`
 * `l * m`: language of strings `x ++ y` such that `x ∈ l` and `y ∈ m`
 * `l ^ n`: language of strings consisting of `n` members of `l` concatenated together
 * `1`: language consisting of only the empty string. This is because it is the unit of the `*`
@@ -80,6 +81,10 @@ instance : Inhabited (Language α) := ⟨(∅ : Set _)⟩
 instance : Add (Language α) :=
   ⟨((· ∪ ·) : Set (List α) → Set (List α) → Set (List α))⟩
 
+/-- The subtraction of two languages is their difference. -/
+instance : Sub (Language α) where
+  sub := SDiff.sdiff
+
 /-- The product of two languages `l` and `m` is the language made of the strings `x ++ y` where
 `x ∈ l` and `y ∈ m`. -/
 instance : Mul (Language α) :=
@@ -92,6 +97,9 @@ theorem one_def : (1 : Language α) = ({[]} : Set (List α)) :=
   rfl
 
 theorem add_def (l m : Language α) : l + m = (l ∪ m : Set (List α)) :=
+  rfl
+
+theorem sub_def (l m : Language α) : l - m = (l \ m : Set (List α)) :=
   rfl
 
 theorem mul_def (l m : Language α) : l * m = image2 (· ++ ·) l m :=
@@ -123,6 +131,9 @@ theorem nil_mem_one : [] ∈ (1 : Language α) :=
 theorem mem_add (l m : Language α) (x : List α) : x ∈ l + m ↔ x ∈ l ∨ x ∈ m :=
   Iff.rfl
 
+theorem mem_sub (l m : Language α) (x : List α) : x ∈ l - m ↔ x ∈ l ∧ x ∉ m :=
+  Iff.rfl
+
 theorem mem_mul : x ∈ l * m ↔ ∃ a ∈ l, ∃ b ∈ m, a ++ b = x :=
   mem_image2
 
@@ -137,6 +148,9 @@ theorem join_mem_kstar {L : List (List α)} (h : ∀ y ∈ L, y ∈ l) : L.flatt
 
 theorem nil_mem_kstar (l : Language α) : [] ∈ l∗ :=
   ⟨[], rfl, fun _ h ↦ by contradiction⟩
+
+instance : OrderedSub (Language α) where
+  tsub_le_iff_right _ _ _ := sdiff_le_iff'
 
 instance instSemiring : Semiring (Language α) where
   add_assoc := union_assoc
@@ -220,6 +234,14 @@ theorem iSup_add {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Langu
 theorem add_iSup {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Language α) :
     (m + ⨆ i, l i) = ⨆ i, m + l i :=
   sup_iSup
+
+theorem iSup_sub {ι : Sort v} (l : ι → Language α) (m : Language α) :
+    (⨆ i, l i) - m = ⨆ i, l i - m :=
+  iUnion_diff _ _
+
+theorem sub_iSup {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Language α) :
+    (m - ⨆ i, l i) = ⨅ i, m - l i :=
+  diff_iUnion _ _
 
 theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
     x ∈ l ^ n ↔ ∃ S : List (List α), x = S.flatten ∧ S.length = n ∧ ∀ y ∈ S, y ∈ l := by

@@ -69,15 +69,15 @@ def symm : I → I := fun t => ⟨1 - t, Icc.mem_iff_one_sub_mem.mp t.prop⟩
 @[inherit_doc]
 scoped notation "σ" => unitInterval.symm
 
-@[simp]
+@[simp, grind =]
 theorem symm_zero : σ 0 = 1 :=
   Subtype.ext <| by simp [symm]
 
-@[simp]
+@[simp, grind =]
 theorem symm_one : σ 1 = 0 :=
   Subtype.ext <| by simp [symm]
 
-@[simp]
+@[simp, grind =]
 theorem symm_symm (x : I) : σ (σ x) = x :=
   Subtype.ext <| by simp [symm]
 
@@ -85,7 +85,7 @@ theorem symm_involutive : Function.Involutive (symm : I → I) := symm_symm
 
 theorem symm_bijective : Function.Bijective (symm : I → I) := symm_involutive.bijective
 
-@[simp]
+@[simp, grind =]
 theorem coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=
   rfl
 

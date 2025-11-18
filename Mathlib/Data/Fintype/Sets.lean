@@ -114,6 +114,9 @@ theorem disjoint_toFinset [Fintype s] [Fintype t] :
 theorem toFinset_nontrivial [Fintype s] : s.toFinset.Nontrivial ↔ s.Nontrivial := by
   rw [Finset.Nontrivial, coe_toFinset]
 
+theorem subsingleton_toFinset_iff [Fintype s] : Subsingleton s.toFinset ↔ s.Subsingleton := by
+  simp
+
 section DecidableEq
 
 variable [DecidableEq α] (s t) [Fintype s] [Fintype t]

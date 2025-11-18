@@ -63,7 +63,7 @@ theorem natPred_succPNat (n : ℕ) : n.succPNat.natPred = n :=
 
 @[simp]
 theorem _root_.PNat.succPNat_natPred (n : ℕ+) : n.natPred.succPNat = n :=
-  Subtype.eq <| succ_pred_eq_of_pos n.2
+  Subtype.ext <| succ_pred_eq_of_pos n.2
 
 /-- Convert a natural number to a `PNat`. `n+1` is mapped to itself,
   and `0` becomes `1`. -/
@@ -108,7 +108,7 @@ theorem pos (n : ℕ+) : 0 < (n : ℕ) :=
   n.2
 
 theorem eq {m n : ℕ+} : (m : ℕ) = n → m = n :=
-  Subtype.eq
+  Subtype.ext
 
 theorem coe_injective : Function.Injective PNat.val :=
   Subtype.coe_injective

@@ -23,7 +23,7 @@ instance [ToLevel.{u}] : ToExpr PUnit.{u+1} where
   toTypeExpr := mkConst ``PUnit [toLevel.{u+1}]
 
 deriving instance ToExpr for String.Pos.Raw
-deriving instance ToExpr for Substring
+deriving instance ToExpr for Substring.Raw
 deriving instance ToExpr for SourceInfo
 deriving instance ToExpr for Syntax
 

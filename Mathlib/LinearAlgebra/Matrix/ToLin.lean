@@ -663,6 +663,10 @@ theorem LinearMap.toMatrix_mulVec_repr (f : M₁ →ₗ[R] M₂) (x : M₁) :
   congr
   exact v₁.equivFun.symm_apply_apply x
 
+theorem Matrix.repr_toLin (M : Matrix m n R) (x : M₁) :
+    v₂.repr (M.toLin v₁ v₂ x) = M.mulVec (v₁.repr x) := by
+  rw [← toMatrix_mulVec_repr v₁, toMatrix_toLin]
+
 @[simp]
 theorem LinearMap.toMatrix_basis_equiv [Fintype l] [DecidableEq l] (b : Basis l R M₁)
     (b' : Basis l R M₂) :

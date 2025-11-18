@@ -55,7 +55,7 @@ theorem factorization_factorial {p : ℕ} (hp : p.Prime) :
 the sum of base `p` digits of `n`. -/
 theorem sub_one_mul_factorization_factorial {n p : ℕ} (hp : p.Prime) :
     (p - 1) * (n)!.factorization p = n - (p.digits n).sum := by
-  simp only [factorization_factorial hp <| lt_succ_of_lt <| lt.base (log p n),
+  simp only [factorization_factorial hp <| lt_succ_of_lt <| Nat.lt_add_one (log p n),
     ← Finset.sum_Ico_add' _ 0 _ 1, Ico_zero_eq_range,
     ← sub_one_mul_sum_log_div_pow_eq_sub_sum_digits]
 

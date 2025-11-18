@@ -330,7 +330,7 @@ theorem convs_eq_convs' [Field K] [LinearOrder K] [IsStrictOrderedRing K]
     · have g'_eq_g : g' = g := squashGCF_eq_self_of_terminated terminatedAt_n
       rw [convs_stable_of_terminated n.le_succ terminatedAt_n, g'_eq_g, IH _]
       intro _ _ m_lt_n s_mth_eq
-      exact s_pos (Nat.lt.step m_lt_n) s_mth_eq
+      exact s_pos (Nat.lt_succ_of_lt m_lt_n) s_mth_eq
     · suffices g.convs (n + 1) = g'.convs n by
         -- invoke the IH for the squashed gcf
         rwa [← IH]
@@ -349,12 +349,12 @@ theorem convs_eq_convs' [Field K] [LinearOrder K] [IsStrictOrderedRing K]
               squashSeq_nth_of_not_terminated mth_s_eq s_succ_mth_eq
             grind
           have m_lt_n : m < m.succ := Nat.lt_succ_self m
-          refine ⟨(s_pos (Nat.lt.step m_lt_n) mth_s_eq).left, ?_⟩
-          refine add_pos (s_pos (Nat.lt.step m_lt_n) mth_s_eq).right ?_
+          refine ⟨(s_pos (Nat.lt_succ_of_lt m_lt_n) mth_s_eq).left, ?_⟩
+          refine add_pos (s_pos (Nat.lt_succ_of_lt m_lt_n) mth_s_eq).right ?_
           have : 0 < gp_succ_m.a ∧ 0 < gp_succ_m.b := s_pos (lt_add_one <| m + 1) s_succ_mth_eq
           exact div_pos this.left this.right
         · -- the easy case: before the squashed position, nothing changes
-          refine s_pos (Nat.lt.step <| Nat.lt.step succ_m_lt_n) ?_
+          refine s_pos (Nat.lt_succ_of_lt <| Nat.lt_succ_of_lt succ_m_lt_n) ?_
           exact Eq.trans (squashGCF_nth_of_lt succ_m_lt_n).symm s_mth_eq'
       -- now the result follows from the fact that the convergents coincide at the squashed position
       -- as established in `succ_nth_conv_eq_squashGCF_nth_conv`.

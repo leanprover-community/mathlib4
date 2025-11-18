@@ -84,7 +84,7 @@ def posToShiftedPos (lths : Array Nat) (diff : Nat) : Nat := Id.run do
 
 /-- `zoomString str centre offset` returns the substring of `str` consisting of the `offset`
 characters around the `centre`th character. -/
-def zoomString (str : String) (centre offset : Nat) : Substring :=
+def zoomString (str : String) (centre offset : Nat) : Substring.Raw :=
   { str := str, startPos := ⟨centre - offset⟩, stopPos := ⟨centre + offset⟩ }
 
 /-- `capSourceInfo s p` "shortens" all end-position information in the `SourceInfo` `s` to be

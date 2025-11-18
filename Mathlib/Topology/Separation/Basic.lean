@@ -751,7 +751,7 @@ theorem infinite_of_mem_nhds {X} [TopologicalSpace X] [T1Space X] (x : X) [hx : 
   exact isOpen_singleton_of_finite_mem_nhds x hs hsf
 
 instance Finite.instDiscreteTopology [T1Space X] [Finite X] : DiscreteTopology X :=
-  discreteTopology_iff_forall_isClosed.mpr (· |>.toFinite.isClosed)
+  discreteTopology_iff_forall_isClosed.mpr (·.toFinite.isClosed)
 
 theorem Set.Finite.continuousOn [T1Space X] [TopologicalSpace Y] {s : Set X} (hs : s.Finite)
     (f : X → Y) : ContinuousOn f s := by

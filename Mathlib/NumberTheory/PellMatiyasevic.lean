@@ -288,7 +288,7 @@ theorem eq_pellZd (b : ℤ√(d a1)) (b1 : 1 ≤ b) (hp : IsPell b) : ∃ n, b =
       rw [Zsqrtd.natCast_val]
       exact
         Zsqrtd.le_of_le_le (Int.ofNat_le_ofNat_of_le <| le_of_lt <| n_lt_xn _ _)
-          (Int.ofNat_zero_le _)
+          (Int.natCast_nonneg _)
 
 /-- Every solution to **Pell's equation** is recursively obtained from the initial solution
 `(1,0)` using the recursion `pell`. -/
@@ -297,7 +297,7 @@ theorem eq_pell {x y : ℕ} (hp : x * x - d a1 * y * y = 1) : ∃ n, x = xn a1 n
     match x, hp with
     | 0, (hp : 0 - _ = 1) => by rw [zero_tsub] at hp; contradiction
     | x + 1, _hp =>
-      Zsqrtd.le_of_le_le (Int.ofNat_le_ofNat_of_le <| Nat.succ_pos x) (Int.ofNat_zero_le _)
+      Zsqrtd.le_of_le_le (Int.ofNat_le_ofNat_of_le <| Nat.succ_pos x) (Int.natCast_nonneg _)
   let ⟨m, e⟩ := eq_pellZd a1 ⟨x, y⟩ this ((isPell_nat a1).2 hp)
   ⟨m,
     match x, y, e with
