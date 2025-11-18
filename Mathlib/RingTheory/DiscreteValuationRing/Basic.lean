@@ -29,7 +29,7 @@ Let R be an integral domain, assumed to be a principal ideal ring and a local ri
 
 ### Definitions
 
-* `addVal R : AddValuation R PartENat` : the additive valuation on a DVR.
+* `addVal R : AddValuation R ℕ∞` : the additive valuation on a DVR.
 * `toEuclideanDomain R : EuclideanDomain R` : a non-canonical structure of Euclidean domain on a
   DVR, where `x % y = 0` if `y ∣ x` and `x % y = x` otherwise. The GCD algorithm terminates in two
   steps.
@@ -132,9 +132,7 @@ theorem iff_pid_with_one_nonzero_prime (R : Type u) [CommRing R] [IsDomain R] :
     refine { not_a_field' := ?_ }
     rcases Punique with ⟨P, ⟨hP1, hP2⟩, _⟩
     have hPM : P ≤ maximalIdeal R := le_maximalIdeal hP2.1
-    intro h
-    rw [h, le_bot_iff] at hPM
-    exact hP1 hPM
+    order
 
 theorem associated_of_irreducible {a b : R} (ha : Irreducible a) (hb : Irreducible b) :
     Associated a b := by
