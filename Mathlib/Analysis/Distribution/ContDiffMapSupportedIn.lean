@@ -518,7 +518,7 @@ protected noncomputable def seminorm' (i : ℕ) : Seminorm 𝕜 𝓓^{n}_{K}(E, 
 protected theorem withSeminorms :
     WithSeminorms (ContDiffMapSupportedIn.seminorm 𝕜 E F n K) := by
   let p : SeminormFamily 𝕜 𝓓^{n}_{K}(E, F) ((_ : ℕ) × Fin 1) :=
-    SeminormFamily.sigma fun i ↦ fun _ ↦
+    SeminormFamily.sigma fun i _ ↦
       (normSeminorm 𝕜 (E →ᵇ (E [×i]→L[ℝ] F))).comp (structureMapLM 𝕜 n i)
   have : WithSeminorms p :=
     withSeminorms_iInf fun i ↦ LinearMap.withSeminorms_induced (norm_withSeminorms _ _) _
@@ -531,7 +531,7 @@ protected theorem withSeminorms' :
 variable {E F n K}
 
 -- TODO: Once we have `iteratedFDerivWithOrderCLM`, maybe we should restate this lemma
--- in terms of these? Same for the lemma below.
+-- in terms of these? Same for the lemmas below.
 -- TODO: Should this be `@[simp]` instead of the one below? I don't want `simp` to
 -- force `WithOrder` variants on people, but maybe this is not a good argument.
 protected theorem seminorm_apply_withOrder (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
@@ -544,6 +544,18 @@ protected theorem seminorm_apply (i : ℕ) (f : 𝓓^{⊤}_{K}(E, F)) :
     ContDiffMapSupportedIn.seminorm 𝕜 E F ⊤ K i f =
       ‖(iteratedFDerivLM 𝕜 i f : E →ᵇ (E [×i]→L[ℝ] F))‖ :=
   rfl
+
+protected theorem seminorm_le_iff {C : ℝ} (hC : 0 ≤ C) (i : ℕ) (f : 𝓓^{⊤}_{K}(E, F)) :
+    ContDiffMapSupportedIn.seminorm 𝕜 E F ⊤ K i f ≤ C ↔
+      ∀ x ∈ K, ‖iteratedFDeriv ℝ i f x‖ ≤ C := by
+  rw [ContDiffMapSupportedIn.seminorm_apply, BoundedContinuousFunction.norm_le hC]
+  congrm ∀ x, ?_
+  by_cases hx : x ∈ K
+  · simp [hx]
+  · have : iteratedFDeriv ℝ i f x = 0 := by
+      contrapose! hx
+      exact f.tsupport_subset (support_iteratedFDeriv_subset i hx)
+    simp [hx, this, hC]
 
 protected theorem seminorm_eq_bot_of_gt {i : ℕ} (hin : n < i) :
     ContDiffMapSupportedIn.seminorm 𝕜 E F n K i = ⊥ := by
@@ -559,13 +571,23 @@ theorem norm_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
 
 /-- The inclusion of the space `𝓓^{n}_{K}(E, F)` into the space `E →ᵇ F` of bounded continuous
 functions as a continuous `𝕜`-linear map. -/
-noncomputable def toBoundedContinuousFunctionCLM : 𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ F :=
-  { toLinearMap := toBoundedContinuousFunctionLM 𝕜
-    cont := show Continuous (toBoundedContinuousFunctionLM 𝕜) by
-      refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
-        (norm_withSeminorms 𝕜 _) _ (fun _ ↦ ⟨{0}, 1, fun f ↦ ?_⟩)
-      simp [norm_toBoundedContinuousFunction ℝ f,
-        ContDiffMapSupportedIn.seminorm_apply_withOrder] }
+noncomputable def toBoundedContinuousFunctionCLM : 𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ F where
+  toLinearMap := toBoundedContinuousFunctionLM 𝕜
+  cont := show Continuous (toBoundedContinuousFunctionLM 𝕜) by
+    refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
+      (norm_withSeminorms 𝕜 _) _ (fun _ ↦ ⟨{0}, 1, fun f ↦ ?_⟩)
+    simp [norm_toBoundedContinuousFunction ℝ f,
+      ContDiffMapSupportedIn.seminorm_apply_withOrder]
+
+@[simp]
+lemma toBoundedContinuousFunctionCLM_apply (f : 𝓓^{n}_{K}(E, F)) :
+    toBoundedContinuousFunctionCLM 𝕜 f = f :=
+  rfl
+
+lemma toBoundedContinuousFunctionCLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
+    [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}_{K}(E, F) → _) = toBoundedContinuousFunctionCLM 𝕜' :=
+  rfl
 
 variable {𝕜} in
 -- Note: generalizing this to a semilinear setting would require a semilinear version of
