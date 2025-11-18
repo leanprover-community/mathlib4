@@ -164,7 +164,7 @@ end AddCommMonoid
 section AddCancelCommMonoid
 variable [AddCancelCommMonoid α] [Preorder α] [AddLeftMono α]
 
-instance addCancelCommMonoid : AddCancelCommMonoid { x : α // 0 ≤ x } :=
+instance addCancelCommMonoid : AddCancelCommMonoid {x : α // 0 ≤ x} :=
   Subtype.coe_injective.addCancelCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) (fun _ _ => rfl)
 
 end AddCancelCommMonoid
