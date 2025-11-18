@@ -283,13 +283,6 @@ theorem intValuation_eq_one_iff {v : HeightOneSpectrum R} {x : R} :
   exact le_antisymm (v.intValuation_le_one x) <| by
     simp [← not_lt, (v.intValuation_lt_one_iff_mem _).not, h]
 
-@[simp]
-theorem intValuation_eq_one_iff {R : Type*} [CommRing R] [IsDedekindDomain R]
-    {v : HeightOneSpectrum R} {x : R} : v.intValuation x = 1 ↔ x ∉ v.asIdeal := by
-  refine ⟨fun h ↦ by simp [← (intValuation_lt_one_iff_mem _ _).not, h], fun h ↦ ?_⟩
-  exact le_antisymm (v.intValuation_le_one x) <| by
-    simp [← not_lt, (v.intValuation_lt_one_iff_mem _).not, h]
-
 /-! ### Adic valuations on the field of fractions `K` -/
 
 variable (K) in
@@ -658,3 +651,18 @@ theorem adicAbv_coe_eq_one_iff {b : NNReal} (hb : 1 < b) (r : R) :
 end AbsoluteValue
 
 end IsDedekindDomain.HeightOneSpectrum
+
+namespace Rat
+
+open IsDedekindDomain.HeightOneSpectrum
+
+variable {R : Type*} [CommRing R] [IsDedekindDomain R] [Algebra R ℚ] [IsFractionRing R ℚ]
+
+theorem valuation_le_one_iff_den {𝔭 : HeightOneSpectrum R} {x : ℚ} :
+    𝔭.valuation ℚ x ≤ 1 ↔ ↑x.den ∉ 𝔭.asIdeal := by
+  have : CharZero R := ⟨.of_comp (f := algebraMap R ℚ) (by simpa using Nat.cast_injective)⟩
+  have : (x.den : R) ≠ 0 := by simp
+  simp [x.num_div_den, ← 𝔭.valuation_div_le_one_iff ℚ x.num this
+    (Ideal.IsPrime.notMem_of_isCoprime_of_mem (mod_cast x.isCoprime_num_den.symm.intCast))]
+
+end Rat
