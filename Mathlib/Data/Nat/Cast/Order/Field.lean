@@ -12,11 +12,13 @@ This file concerns the canonical homomorphism `ℕ → F`, where `F` is a `Linea
 
 ## Main results
 
- * `Nat.cast_div_le`: in all cases, `↑(m / n) ≤ ↑m / ↑ n`
+* `Nat.cast_div_le`: in all cases, `↑(m / n) ≤ ↑m / ↑ n`
 -/
 
 
 namespace Nat
+
+section LinearOrderedSemifield
 
 variable {α : Type*} [Semifield α] [LinearOrder α] [IsStrictOrderedRing α]
 
@@ -56,5 +58,21 @@ theorem one_div_cast_nonneg (n : ℕ) : 0 ≤ 1 / (n : α) := one_div_nonneg.mpr
 
 theorem one_div_cast_ne_zero {n : ℕ} (hn : n ≠ 0) : 1 / (n : α) ≠ 0 :=
   _root_.ne_of_gt (one_div_cast_pos hn)
+
+end LinearOrderedSemifield
+
+section LinearOrderedField
+
+variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+
+theorem one_sub_one_div_cast_nonneg [AddRightMono α] (n : ℕ) : 0 ≤ 1 - 1 / (n : α) := by
+  rw [sub_nonneg, one_div]
+  exact cast_inv_le_one n
+
+theorem one_sub_one_div_cast_le_one [AddLeftMono α] (n : ℕ) : 1 - 1 / (n : α) ≤ 1 := by
+  rw [sub_le_self_iff]
+  exact one_div_cast_nonneg n
+
+end LinearOrderedField
 
 end Nat

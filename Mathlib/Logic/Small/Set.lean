@@ -30,11 +30,11 @@ instance small_setPi {β : α → Type u2} (s : (a : α) → Set (β a))
 
 instance small_range (f : α → β) [Small.{u} α] :
     Small.{u} (Set.range f) :=
-  small_of_surjective Set.surjective_onto_range
+  small_of_surjective Set.rangeFactorization_surjective
 
 instance small_image (f : α → β) (s : Set α) [Small.{u} s] :
     Small.{u} (f '' s) :=
-  small_of_surjective Set.surjective_onto_image
+  small_of_surjective Set.imageFactorization_surjective
 
 instance small_image2 (f : α → β → γ) (s : Set α) (t : Set β) [Small.{u} s] [Small.{u} t] :
     Small.{u} (Set.image2 f s t) := by

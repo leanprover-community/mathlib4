@@ -8,25 +8,25 @@ import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
 /-!
 # The bicategory of oplax functors between two bicategories
 
-Given bicategories `B` and `C`, we give a bicategory structure on `OplaxFunctor B C` whose
+Given bicategories `B` and `C`, we give a bicategory structure on `B ⥤ᵒᵖᴸ C` whose
 * objects are oplax functors,
 * 1-morphisms are oplax natural transformations, and
 * 2-morphisms are modifications.
 -/
 
 
-namespace CategoryTheory
+namespace CategoryTheory.Oplax
 
-open Category Bicategory Oplax
+open Category Bicategory
 
 open scoped Bicategory
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
-variable {F G H I : OplaxFunctor B C}
+variable {F G H I : B ⥤ᵒᵖᴸ C}
 
-namespace OplaxNatTrans
+namespace OplaxTrans
 
 /-- Left whiskering of an oplax natural transformation and a modification. -/
 @[simps]
@@ -61,20 +61,20 @@ def leftUnitor (η : F ⟶ G) : 𝟙 F ≫ η ≅ η :=
 def rightUnitor (η : F ⟶ G) : η ≫ 𝟙 G ≅ η :=
   ModificationIso.ofComponents (fun a => ρ_ (η.app a)) (by simp)
 
-end OplaxNatTrans
-
 variable (B C)
 
 /-- A bicategory structure on the oplax functors between bicategories. -/
 @[simps!]
-instance OplaxFunctor.bicategory : Bicategory (OplaxFunctor B C) where
-  whiskerLeft {_ _ _} η _ _ Γ := OplaxNatTrans.whiskerLeft η Γ
-  whiskerRight {_ _ _} _ _ Γ η := OplaxNatTrans.whiskerRight Γ η
-  associator {_ _ _} _ := OplaxNatTrans.associator
-  leftUnitor {_ _} := OplaxNatTrans.leftUnitor
-  rightUnitor {_ _} := OplaxNatTrans.rightUnitor
+scoped instance OplaxFunctor.bicategory : Bicategory (B ⥤ᵒᵖᴸ C) where
+  whiskerLeft {_ _ _} η _ _ Γ := whiskerLeft η Γ
+  whiskerRight {_ _ _} _ _ Γ η := whiskerRight Γ η
+  associator {_ _ _} _ := associator
+  leftUnitor {_ _} := leftUnitor
+  rightUnitor {_ _} := rightUnitor
   whisker_exchange {a b c f g h i} η θ := by
     ext
     exact whisker_exchange _ _
 
-end CategoryTheory
+end OplaxTrans
+
+end CategoryTheory.Oplax

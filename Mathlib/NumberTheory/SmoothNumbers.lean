@@ -51,10 +51,12 @@ lemma lt_of_mem_primesBelow {p n : ℕ} (h : p ∈ n.primesBelow) : p < n :=
 
 lemma primesBelow_succ (n : ℕ) :
     primesBelow (n + 1) = if n.Prime then insert n (primesBelow n) else primesBelow n := by
-  rw [primesBelow, primesBelow, Finset.range_succ, Finset.filter_insert]
+  rw [primesBelow, primesBelow, Finset.range_add_one, Finset.filter_insert]
 
-lemma not_mem_primesBelow (n : ℕ) : n ∉ primesBelow n :=
+lemma notMem_primesBelow (n : ℕ) : n ∉ primesBelow n :=
   fun hn ↦ (lt_of_mem_primesBelow hn).false
+
+@[deprecated (since := "2025-05-23")] alias not_mem_primesBelow := notMem_primesBelow
 
 
 /-!
@@ -132,7 +134,7 @@ lemma mem_factoredNumbers_iff_primeFactors_subset {s : Finset ℕ} {m : ℕ} :
 @[simp]
 lemma factoredNumbers_empty : factoredNumbers ∅ = {1} := by
   ext m
-  simp only [mem_factoredNumbers, Finset.not_mem_empty, ← List.eq_nil_iff_forall_not_mem,
+  simp only [mem_factoredNumbers, Finset.notMem_empty, ← List.eq_nil_iff_forall_not_mem,
     primeFactorsList_eq_nil, and_or_left, not_and_self_iff, ne_and_eq_iff_right zero_ne_one,
     false_or, Set.mem_singleton_iff]
 
@@ -174,7 +176,7 @@ lemma factoredNumbers_compl {N : ℕ} {s : Finset ℕ} (h : primesBelow N ≤ s)
     (factoredNumbers s)ᶜ \ {0} ⊆ {n | N ≤ n} := by
   intro n hn
   simp only [Set.mem_compl_iff, mem_factoredNumbers, Set.mem_diff, ne_eq, not_and, not_forall,
-    not_lt, exists_prop, Set.mem_singleton_iff] at hn
+    exists_prop, Set.mem_singleton_iff] at hn
   simp only [Set.mem_setOf_eq]
   obtain ⟨p, hp₁, hp₂⟩ := hn.1 hn.2
   have : N ≤ p := by
@@ -221,8 +223,7 @@ def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp : p.Prime) (hs : 
                             ⟨(m.primeFactorsList.filter (· ∈ s)).prod, prod_mem_factoredNumbers ..⟩)
   left_inv := by
     rintro ⟨e, m, hm₀, hm⟩
-    simp (config := { etaStruct := .all }) only
-      [Set.coe_setOf, Set.mem_setOf_eq, Prod.mk.injEq, Subtype.mk.injEq]
+    simp (etaStruct := .all) only [Prod.mk.injEq, Subtype.mk.injEq]
     constructor
     · rw [factorization_mul (pos_iff_ne_zero.mp <| Nat.pow_pos hp.pos) hm₀]
       simp only [factorization_pow, Finsupp.coe_add, Finsupp.coe_smul, nsmul_eq_mul,
@@ -238,12 +239,12 @@ def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp : p.Prime) (hs : 
           nil_append, filter_eq_self.mpr fun q hq ↦ by simp only [hm q hq, decide_true]]
   right_inv := by
     rintro ⟨m, hm₀, hm⟩
-    simp only [Set.coe_setOf, Set.mem_setOf_eq, Subtype.mk.injEq]
+    simp only [Subtype.mk.injEq]
     rw [← primeFactorsList_count_eq, ← prod_replicate, ← prod_append]
     nth_rewrite 3 [← prod_primeFactorsList hm₀]
-    have : m.primeFactorsList.filter (· = p) = m.primeFactorsList.filter (¬ · ∈ s) := by
+    have : m.primeFactorsList.filter (· = p) = m.primeFactorsList.filter (· ∉ s) := by
       refine (filter_congr fun q hq ↦ ?_).symm
-      simp only [decide_not, Bool.not_eq_true', decide_eq_false_iff_not, decide_eq_true_eq]
+      simp only [decide_not]
       rcases Finset.mem_insert.mp <| hm _ hq with h | h
       · simp only [h, hs, decide_false, Bool.not_false, decide_true]
       · simp only [h, decide_true, Bool.not_true, false_eq_decide_iff]
@@ -281,12 +282,15 @@ lemma smoothNumbers_eq_factoredNumbers (n : ℕ) :
     Finset.mem_range]
 
 /-- The `n`-smooth numbers agree with the `primesBelow n`-factored numbers. -/
-lemma smmoothNumbers_eq_factoredNumbers_primesBelow (n : ℕ) :
+lemma smoothNumbers_eq_factoredNumbers_primesBelow (n : ℕ) :
     smoothNumbers n = factoredNumbers n.primesBelow := by
   rw [smoothNumbers_eq_factoredNumbers]
   refine Set.Subset.antisymm (fun m hm ↦ ?_) <| factoredNumbers_mono Finset.mem_of_mem_filter
   simp_rw [mem_factoredNumbers'] at hm ⊢
   exact fun p hp hp' ↦ mem_primesBelow.mpr ⟨Finset.mem_range.mp <| hm p hp hp', hp⟩
+
+@[deprecated (since := "2025-07-08")]
+alias smmoothNumbers_eq_factoredNumbers_primesBelow := smoothNumbers_eq_factoredNumbers_primesBelow
 
 /-- Membership in `Nat.smoothNumbers n` is decidable. -/
 instance (n : ℕ) : DecidablePred (· ∈ smoothNumbers n) :=
@@ -313,7 +317,7 @@ of primes below `n`. -/
 lemma primeFactors_subset_of_mem_smoothNumbers {m n : ℕ} (hms : m ∈ n.smoothNumbers) :
     m.primeFactors ⊆ n.primesBelow :=
   primeFactors_subset_of_mem_factoredNumbers <|
-    smmoothNumbers_eq_factoredNumbers_primesBelow n ▸ hms
+    smoothNumbers_eq_factoredNumbers_primesBelow n ▸ hms
 
 /-- `m` is an `n`-smooth number if the `Finset` of its prime factors consists of numbers `< n`. -/
 lemma mem_smoothNumbers_of_primeFactors_subset {m n : ℕ} (hm : m ≠ 0)
@@ -348,7 +352,7 @@ lemma prod_mem_smoothNumbers (n N : ℕ) :
 /-- The sets of `N`-smooth and of `(N+1)`-smooth numbers are the same when `N` is not prime.
 See `Nat.equivProdNatSmoothNumbers` for when `N` is prime. -/
 lemma smoothNumbers_succ {N : ℕ} (hN : ¬ N.Prime) : (N + 1).smoothNumbers = N.smoothNumbers := by
-  simp only [smoothNumbers_eq_factoredNumbers, Finset.range_succ, factoredNumbers_insert _ hN]
+  simp only [smoothNumbers_eq_factoredNumbers, Finset.range_add_one, factoredNumbers_insert _ hN]
 
 @[simp] lemma smoothNumbers_one : smoothNumbers 1 = {1} := by
   simp +decide only [not_false_eq_true, smoothNumbers_succ, smoothNumbers_zero]
@@ -382,7 +386,7 @@ lemma pow_mul_mem_smoothNumbers {p n : ℕ} (hp : p ≠ 0) (e : ℕ) (hn : n ∈
 lemma Prime.smoothNumbers_coprime {p n : ℕ} (hp : p.Prime) (hn : n ∈ smoothNumbers p) :
     Nat.Coprime p n := by
   simp only [smoothNumbers_eq_factoredNumbers] at hn
-  exact hp.factoredNumbers_coprime Finset.not_mem_range_self hn
+  exact hp.factoredNumbers_coprime Finset.notMem_range_self hn
 
 /-- If `f : ℕ → F` is multiplicative on coprime arguments, `p` is a prime and `m` is `p`-smooth,
 then `f (p^e * m) = f (p^e) * f m`. -/
@@ -399,8 +403,8 @@ when `p` is not prime. -/
 def equivProdNatSmoothNumbers {p : ℕ} (hp : p.Prime) :
     ℕ × smoothNumbers p ≃ smoothNumbers (p + 1) :=
   ((prodCongrRight fun _ ↦ setCongr <| smoothNumbers_eq_factoredNumbers p).trans <|
-    equivProdNatFactoredNumbers hp Finset.not_mem_range_self).trans <|
-    setCongr <| (smoothNumbers_eq_factoredNumbers (p + 1)) ▸ Finset.range_succ ▸ rfl
+    equivProdNatFactoredNumbers hp Finset.notMem_range_self).trans <|
+    setCongr <| (smoothNumbers_eq_factoredNumbers (p + 1)) ▸ Finset.range_add_one ▸ rfl
 
 @[simp]
 lemma equivProdNatSmoothNumbers_apply {p e m : ℕ} (hp : p.Prime) (hm : m ∈ p.smoothNumbers) :
@@ -449,7 +453,7 @@ lemma eq_prod_primes_mul_sq_of_mem_smoothNumbers {n k : ℕ} (h : n ∈ smoothNu
     ∃ s ∈ k.primesBelow.powerset, ∃ m, n = m ^ 2 * (s.prod id) := by
   obtain ⟨l, m, H₁, H₂⟩ := sq_mul_squarefree n
   have hl : l ∈ smoothNumbers k := mem_smoothNumbers_of_dvd h (Dvd.intro_left (m ^ 2) H₁)
-  refine ⟨l.primeFactorsList.toFinset, ?_,  m, ?_⟩
+  refine ⟨l.primeFactorsList.toFinset, ?_, m, ?_⟩
   · simp only [toFinset_factors, Finset.mem_powerset]
     refine fun p hp ↦ mem_primesBelow.mpr ⟨?_, (mem_primeFactors.mp hp).1⟩
     rw [mem_primeFactors] at hp
@@ -467,7 +471,7 @@ lemma smoothNumbersUpTo_subset_image (N k : ℕ) :
   intro n hn
   obtain ⟨hn₁, hn₂⟩ := mem_smoothNumbersUpTo.mp hn
   obtain ⟨s, hs, m, hm⟩ := eq_prod_primes_mul_sq_of_mem_smoothNumbers hn₂
-  simp only [id_eq, Finset.mem_range, zero_lt_succ, not_true_eq_false, Finset.mem_image,
+  simp only [id_eq, Finset.mem_range, Finset.mem_image,
     Finset.mem_product, Finset.mem_powerset, Finset.mem_erase, Prod.exists]
   refine ⟨s, m, ⟨Finset.mem_powerset.mp hs, ?_, ?_⟩, hm.symm⟩
   · have := hm ▸ ne_zero_of_mem_smoothNumbers hn₂
@@ -476,8 +480,9 @@ lemma smoothNumbersUpTo_subset_image (N k : ℕ) :
   · rw [lt_succ, le_sqrt']
     refine LE.le.trans ?_ (hm ▸ hn₁)
     nth_rw 1 [← mul_one (m ^ 2)]
-    exact mul_le_mul_left' (Finset.one_le_prod' fun p hp ↦
-      (prime_of_mem_primesBelow <| Finset.mem_powerset.mp hs hp).one_lt.le) _
+    gcongr
+    exact Finset.one_le_prod' fun p hp ↦
+      (prime_of_mem_primesBelow <| Finset.mem_powerset.mp hs hp).one_le
 
 /-- The cardinality of the set of `k`-smooth numbers `≤ N` is bounded by `2^π(k-1) * √N`. -/
 lemma smoothNumbersUpTo_card_le (N k : ℕ) :
@@ -495,8 +500,8 @@ lemma roughNumbersUpTo_eq_biUnion (N k) :
         fun p ↦ {m ∈ Finset.range (N + 1) | m ≠ 0 ∧ p ∣ m} := by
   ext m
   simp only [roughNumbersUpTo, mem_smoothNumbers_iff_forall_le, not_and, not_forall,
-    not_lt, exists_prop, exists_and_left, Finset.mem_range, not_le, Finset.mem_filter,
-    Finset.filter_congr_decidable, Finset.mem_biUnion, Finset.mem_sdiff, mem_primesBelow,
+    not_lt, exists_prop, Finset.mem_range, Finset.mem_filter,
+    Finset.mem_biUnion, Finset.mem_sdiff, mem_primesBelow,
     show ∀ P Q : Prop, P ∧ (P → Q) ↔ P ∧ Q by tauto]
   simp_rw [← exists_and_left, ← not_lt]
   refine exists_congr fun p ↦ ?_
@@ -504,11 +509,7 @@ lemma roughNumbersUpTo_eq_biUnion (N k) :
     fun h₁ h₂ h₃ ↦ (le_of_dvd (Nat.pos_of_ne_zero h₁) h₂).trans_lt h₃
   have H₂ : m ≠ 0 → p ∣ m → ¬ m < p :=
     fun h₁ h₂ ↦ not_lt.mpr <| le_of_dvd (Nat.pos_of_ne_zero h₁) h₂
-  constructor
-  · rintro ⟨h₁, h₂, _, h₄, h₅, h₆⟩
-    exact ⟨⟨⟨H₁ h₂ h₅ h₁, h₄⟩, fun h _ ↦ h₆ h⟩, h₁, h₂, h₅⟩
-  · rintro ⟨⟨⟨_, h₂⟩, h₃⟩, h₄, h₅, h₆⟩
-    exact ⟨h₄, h₅, H₂ h₅ h₆, h₂, h₆, fun h ↦ h₃ h h₂⟩
+  grind
 
 /-- The cardinality of the set of `k`-rough numbers `≤ N` is bounded by the sum of `⌊N/p⌋`
 over the primes `k ≤ p ≤ N`. -/

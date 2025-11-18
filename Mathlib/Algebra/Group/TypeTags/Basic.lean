@@ -3,7 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Group.Torsion
+import Mathlib.Algebra.Notation.Pi.Basic
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Logic.Equiv.Defs
@@ -60,6 +61,8 @@ theorem ofMul_symm_eq : (@ofMul α).symm = toMul :=
 theorem toMul_symm_eq : (@toMul α).symm = ofMul :=
   rfl
 
+@[ext] lemma ext {a b : Additive α} (hab : a.toMul = b.toMul) : a = b := hab
+
 @[simp]
 protected lemma «forall» {p : Additive α → Prop} : (∀ a, p a) ↔ ∀ a, p (ofMul a) := Iff.rfl
 
@@ -89,6 +92,8 @@ theorem ofAdd_symm_eq : (@ofAdd α).symm = toAdd :=
 @[simp]
 theorem toAdd_symm_eq : (@toAdd α).symm = ofAdd :=
   rfl
+
+@[ext] lemma ext {a b : Multiplicative α} (hab : a.toAdd = b.toAdd) : a = b := hab
 
 @[simp]
 protected lemma «forall» {p : Multiplicative α → Prop} : (∀ a, p a) ↔ ∀ a, p (ofAdd a) := Iff.rfl
@@ -182,11 +187,11 @@ instance Multiplicative.isLeftCancelMul [Add α] [IsLeftCancelAdd α] :
   ⟨@add_left_cancel α _ _⟩
 
 instance Additive.isRightCancelAdd [Mul α] [IsRightCancelMul α] : IsRightCancelAdd (Additive α) :=
-  ⟨@mul_right_cancel α _ _⟩
+  ⟨fun _ _ _ ↦ mul_right_cancel (G := α)⟩
 
 instance Multiplicative.isRightCancelMul [Add α] [IsRightCancelAdd α] :
     IsRightCancelMul (Multiplicative α) :=
-  ⟨@add_right_cancel α _ _⟩
+  ⟨fun _ _ _ ↦ add_right_cancel (G := α)⟩
 
 instance Additive.isCancelAdd [Mul α] [IsCancelMul α] : IsCancelAdd (Additive α) :=
   ⟨⟩
@@ -248,14 +253,10 @@ lemma toAdd_eq_zero {α : Type*} [Zero α] {x : Multiplicative α} :
   Iff.rfl
 
 instance Additive.addZeroClass [MulOneClass α] : AddZeroClass (Additive α) where
-  zero := 0
-  add := (· + ·)
   zero_add := @one_mul α _
   add_zero := @mul_one α _
 
 instance Multiplicative.mulOneClass [AddZeroClass α] : MulOneClass (Multiplicative α) where
-  one := 1
-  mul := (· * ·)
   one_mul := @zero_add α _
   mul_one := @add_zero α _
 
@@ -306,6 +307,12 @@ instance Additive.addCommMonoid [CommMonoid α] : AddCommMonoid (Additive α) :=
 
 instance Multiplicative.commMonoid [AddCommMonoid α] : CommMonoid (Multiplicative α) :=
   { Multiplicative.monoid, Multiplicative.commSemigroup with }
+
+instance Additive.instAddCancelCommMonoid [CancelCommMonoid α] :
+    AddCancelCommMonoid (Additive α) where
+
+instance Multiplicative.instCancelCommMonoid [AddCancelCommMonoid α] :
+    CancelCommMonoid (Multiplicative α) where
 
 instance Additive.neg [Inv α] : Neg (Additive α) :=
   ⟨fun x => ofAdd x.toMul⁻¹⟩
@@ -419,6 +426,12 @@ instance Additive.addCommGroup [CommGroup α] : AddCommGroup (Additive α) :=
 instance Multiplicative.commGroup [AddCommGroup α] : CommGroup (Multiplicative α) :=
   { Multiplicative.group, Multiplicative.commMonoid with }
 
+instance [Monoid α] [IsMulTorsionFree α] : IsAddTorsionFree (Additive α) where
+  nsmul_right_injective _ := pow_left_injective (M := α)
+
+instance [AddMonoid α] [IsAddTorsionFree α] : IsMulTorsionFree (Multiplicative α) where
+  pow_left_injective _ := nsmul_right_injective (M := α)
+
 /-- If `α` has some multiplicative structure and coerces to a function,
 then `Additive α` should also coerce to the same function.
 
@@ -441,8 +454,7 @@ instance Multiplicative.coeToFun {α : Type*} {β : α → Sort*} [CoeFun α β]
 
 lemma Pi.mulSingle_multiplicativeOfAdd_eq {ι : Type*} [DecidableEq ι] {M : ι → Type*}
     [(i : ι) → AddMonoid (M i)] (i : ι) (a : M i) (j : ι) :
-    Pi.mulSingle (f := fun i ↦ Multiplicative (M i)) i (Multiplicative.ofAdd a) j =
-      Multiplicative.ofAdd ((Pi.single i a) j) := by
+    Pi.mulSingle (M := fun i ↦ Multiplicative (M i)) i (.ofAdd a) j = .ofAdd (Pi.single i a j) := by
   rcases eq_or_ne j i with rfl | h
   · simp only [mulSingle_eq_same, single_eq_same]
   · simp only [mulSingle, ne_eq, h, not_false_eq_true, Function.update_of_ne, one_apply, single,
@@ -450,8 +462,7 @@ lemma Pi.mulSingle_multiplicativeOfAdd_eq {ι : Type*} [DecidableEq ι] {M : ι 
 
 lemma Pi.single_additiveOfMul_eq {ι : Type*} [DecidableEq ι] {M : ι → Type*}
     [(i : ι) → Monoid (M i)] (i : ι) (a : M i) (j : ι) :
-    Pi.single (f := fun i ↦ Additive (M i)) i (Additive.ofMul a) j =
-      Additive.ofMul ((Pi.mulSingle i a) j) := by
+    Pi.single (M := fun i ↦ Additive (M i)) i (.ofMul a) j = .ofMul (Pi.mulSingle i a j) := by
   rcases eq_or_ne j i with rfl | h
   · simp only [mulSingle_eq_same, single_eq_same]
   · simp only [single, ne_eq, h, not_false_eq_true, Function.update_of_ne, zero_apply, mulSingle,

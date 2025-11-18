@@ -25,14 +25,24 @@ protected theorem SemiconjBy.map [MulHomClass F M N] (h : SemiconjBy a x y) (f :
 protected theorem Commute.map [MulHomClass F M N] (h : Commute x y) (f : F) : Commute (f x) (f y) :=
   SemiconjBy.map h f
 
-@[to_additive (attr := simp)]
-protected theorem SemiconjBy.of_map [MulHomClass F M N] (f : F) (hf : Function.Injective f)
+@[to_additive]
+protected theorem SemiconjBy.of_map [MulHomClass F M N] {f : F} (hf : Function.Injective f)
     (h : SemiconjBy (f a) (f x) (f y)) : SemiconjBy a x y :=
   hf (by simpa only [SemiconjBy, map_mul] using h)
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem Commute.of_map [MulHomClass F M N] {f : F} (hf : Function.Injective f)
     (h : Commute (f x) (f y)) : Commute x y :=
   hf (by simpa only [map_mul] using h.eq)
+
+@[to_additive]
+theorem semiconjBy_map_iff [MulHomClass F M N] {f : F} (hf : Function.Injective f) {x y : M} :
+    SemiconjBy (f a) (f x) (f y) ↔ SemiconjBy a x y :=
+  ⟨.of_map hf, (.map · f)⟩
+
+@[to_additive]
+theorem commute_map_iff [MulHomClass F M N] {f : F} (hf : Function.Injective f) {x y : M} :
+    Commute (f x) (f y) ↔ Commute x y :=
+  ⟨.of_map hf, (.map · f)⟩
 
 end Commute

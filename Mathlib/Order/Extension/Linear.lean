@@ -17,8 +17,7 @@ universe u
 
 open Set
 
-/-- Any partial order can be extended to a linear order.
--/
+/-- **Szpilrajn extension theorem**: any partial order can be extended to a linear order. -/
 theorem extend_partialOrder {α : Type u} (r : α → α → Prop) [IsPartialOrder α r] :
     ∃ s : α → α → Prop, IsLinearOrder α s ∧ r ≤ s := by
   let S := { s | IsPartialOrder α s }
@@ -82,7 +81,7 @@ noncomputable instance {α : Type u} [PartialOrder α] : LinearOrder (LinearExte
   toDecidableLE := Classical.decRel _
 
 /-- The embedding of `α` into `LinearExtension α` as an order homomorphism. -/
-def toLinearExtension {α : Type u} [PartialOrder α] : α →o LinearExtension α where
+noncomputable def toLinearExtension {α : Type u} [PartialOrder α] : α →o LinearExtension α where
   toFun x := x
   monotone' := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.2
 

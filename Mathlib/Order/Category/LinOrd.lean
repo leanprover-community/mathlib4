@@ -18,6 +18,8 @@ universe u
 
 /-- The category of linear orders. -/
 structure LinOrd where
+  /-- Construct a bundled `LinOrd` from the underlying type and typeclass. -/
+  of ::
   /-- The underlying linearly ordered type. -/
   (carrier : Type*)
   [str : LinearOrder carrier]
@@ -32,9 +34,6 @@ instance : CoeSort LinOrd (Type _) :=
   ⟨LinOrd.carrier⟩
 
 attribute [coe] LinOrd.carrier
-
-/-- Construct a bundled `LinOrd` from the underlying type and typeclass. -/
-abbrev of (X : Type*) [LinearOrder X] : LinOrd := ⟨X⟩
 
 /-- The type of morphisms in `LinOrd R`. -/
 @[ext]
@@ -108,8 +107,8 @@ lemma hom_ext {X Y : LinOrd} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
 @[simp]
-lemma hom_ofHom {X Y : Type u} [LinearOrder X] [LinearOrder Y] (f : X →o Y) :
-  (ofHom f).hom = f := rfl
+lemma hom_ofHom {X Y : Type u} [LinearOrder X] [LinearOrder Y] (f : X →o Y) : (ofHom f).hom = f :=
+  rfl
 
 @[simp]
 lemma ofHom_hom {X Y : LinOrd} (f : X ⟶ Y) :

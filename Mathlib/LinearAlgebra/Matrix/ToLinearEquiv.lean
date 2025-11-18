@@ -18,17 +18,19 @@ to linear equivs.
 
 ## Main definitions
 
- * `Matrix.toLinearEquiv`: a matrix with an invertible determinant forms a linear equiv
+* `Matrix.toLinearEquiv`: a matrix with an invertible determinant forms a linear equiv
 
 ## Main results
 
- * `Matrix.exists_mulVec_eq_zero_iff`: `M` maps some `v ≠ 0` to zero iff `det M = 0`
+* `Matrix.exists_mulVec_eq_zero_iff`: `M` maps some `v ≠ 0` to zero iff `det M = 0`
 
 ## Tags
 
 matrix, linear_equiv, determinant, inverse
 
 -/
+
+open Module
 
 variable {n : Type*} [Fintype n]
 
@@ -59,7 +61,7 @@ theorem toLinearEquiv'_apply (P : Matrix n n R) (h : Invertible P) :
 
 @[simp]
 theorem toLinearEquiv'_symm_apply (P : Matrix n n R) (h : Invertible P) :
-    (↑(P.toLinearEquiv' h).symm : Module.End R (n → R)) = Matrix.toLin' (⅟ P) :=
+    (↑(P.toLinearEquiv' h).symm : Module.End R (n → R)) = Matrix.toLin' (⅟P) :=
   rfl
 
 end ToLinearEquiv'
@@ -171,10 +173,34 @@ theorem nondegenerate_iff_det_ne_zero {A : Type*} [DecidableEq n] [CommRing A] [
   constructor
   · intro hM v hv hMv
     obtain ⟨w, hwMv⟩ := hM.exists_not_ortho_of_ne_zero hv
-    simp [dotProduct_mulVec, hMv, zero_dotProduct, ne_eq, not_true] at hwMv
-  · intro h v hv
+    simp [dotProduct_mulVec, hMv, zero_dotProduct, ne_eq] at hwMv
+  · rw [Matrix.nondegenerate_def]
+    intro h v hv
     refine not_imp_not.mp (h v) (funext fun i => ?_)
     simpa only [dotProduct_mulVec, dotProduct_single, mul_one] using hv (Pi.single i 1)
+
+theorem Nondegenerate.mul_iff_right {A : Type*} [CommRing A] [IsDomain A]
+    {M N : Matrix n n A} (h : N.Nondegenerate) :
+    (M * N).Nondegenerate ↔ M.Nondegenerate := by
+  classical
+  simp only [nondegenerate_iff_det_ne_zero, det_mul] at h ⊢
+  exact mul_ne_zero_iff_right h
+
+theorem Nondegenerate.mul_iff_left {A : Type*} [CommRing A] [IsDomain A]
+    {M N : Matrix n n A} (h : M.Nondegenerate) :
+    (M * N).Nondegenerate ↔ N.Nondegenerate := by
+  classical
+  simp only [nondegenerate_iff_det_ne_zero, det_mul] at h ⊢
+  exact mul_ne_zero_iff_left h
+
+omit [Fintype n] in
+theorem Nondegenerate.smul_iff [Finite n] {A : Type*} [CommRing A] [IsDomain A]
+    {M : Matrix n n A} {t : A} (h : t ≠ 0) :
+    (t • M).Nondegenerate ↔ M.Nondegenerate := by
+  simp_rw [Nondegenerate, smul_mulVec, dotProduct_smul]
+  refine ⟨fun hM v hv ↦ hM v fun w ↦ ?_, fun hM v hv ↦ hM v fun w ↦ ?_⟩
+  · simp [hv]
+  · exact (mul_eq_zero_iff_left h).mp <| hv w
 
 alias ⟨Nondegenerate.det_ne_zero, Nondegenerate.of_det_ne_zero⟩ := nondegenerate_iff_det_ne_zero
 
@@ -195,9 +221,8 @@ lemma det_ne_zero_of_sum_col_pos [DecidableEq n]
   · contrapose! h2
     obtain ⟨v, ⟨h_vnz, h_vA⟩⟩ := Matrix.exists_vecMul_eq_zero_iff.mpr h2
     wlog h_sup : 0 < Finset.sup' Finset.univ Finset.univ_nonempty v
-    · refine this h1 inferInstance h2 (-1 • v) ?_ ?_ ?_
-      · exact smul_ne_zero (by norm_num) h_vnz
-      · rw [Matrix.vecMul_smul, h_vA, smul_zero]
+    · refine this h1 inferInstance h2 (-1 • v) (by simp [*]) ?_ ?_
+      · rw [Matrix.smul_vecMul, h_vA, smul_zero]
       · obtain ⟨i, hi⟩ := Function.ne_iff.mp h_vnz
         simp_rw [Finset.lt_sup'_iff, Finset.mem_univ, true_and] at h_sup ⊢
         simp_rw [not_exists, not_lt] at h_sup
@@ -206,7 +231,7 @@ lemma det_ne_zero_of_sum_col_pos [DecidableEq n]
         exact Ne.lt_of_le hi (h_sup i)
     · obtain ⟨j₀, -, h_j₀⟩ := Finset.exists_mem_eq_sup' Finset.univ_nonempty v
       refine ⟨j₀, ?_⟩
-      rw [← mul_le_mul_left (h_j₀ ▸ h_sup), Finset.mul_sum, mul_zero]
+      rw [← mul_le_mul_iff_right₀ (h_j₀ ▸ h_sup), Finset.mul_sum, mul_zero]
       rw [show 0 = ∑ i, v i * A i j₀ from (congrFun h_vA j₀).symm]
       refine Finset.sum_le_sum (fun i hi => ?_)
       by_cases h : i = j₀

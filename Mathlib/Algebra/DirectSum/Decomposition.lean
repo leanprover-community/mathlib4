@@ -135,7 +135,7 @@ theorem decompose_of_mem_same {x : M} {i : ι} (hx : x ∈ ℳ i) : (decompose �
 
 theorem decompose_of_mem_ne {x : M} {i j : ι} (hx : x ∈ ℳ i) (hij : i ≠ j) :
     (decompose ℳ x j : M) = 0 := by
-  rw [decompose_of_mem _ hx, DirectSum.of_eq_of_ne _ _ _ hij, ZeroMemClass.coe_zero]
+  rw [decompose_of_mem _ hx, DirectSum.of_eq_of_ne _ _ _ hij.symm, ZeroMemClass.coe_zero]
 
 theorem degree_eq_of_mem_mem {x : M} {i j : ι} (hxi : x ∈ ℳ i) (hxj : x ∈ ℳ j) (hx : x ≠ 0) :
     i = j := by
@@ -189,6 +189,16 @@ theorem AddSubmonoidClass.IsHomogeneous.mem_iff
   refine ⟨fun hx i ↦ hp i hx, fun hx ↦ ?_⟩
   rw [← DirectSum.sum_support_decompose ℳ x]
   exact sum_mem (fun i _ ↦ hx i)
+
+theorem AddSubmonoidClass.IsHomogeneous.ext
+    {ℳ : ι → σ} [Decomposition ℳ] {P : Type*} [SetLike P M] [AddSubmonoidClass P M]
+    {p q : P} (hp : SetLike.IsHomogeneous ℳ p) (hq : SetLike.IsHomogeneous ℳ q)
+    (hpq : ∀ i, ∀ m ∈ ℳ i, m ∈ p ↔ m ∈ q) :
+    p = q := by
+  refine SetLike.ext fun m ↦ ?_
+  rw [AddSubmonoidClass.IsHomogeneous.mem_iff ℳ p hp,
+    AddSubmonoidClass.IsHomogeneous.mem_iff ℳ q hq]
+  exact forall_congr' fun i ↦ hpq i _ (decompose ℳ _ i).2
 
 end AddCommMonoid
 

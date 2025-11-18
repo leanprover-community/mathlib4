@@ -7,7 +7,6 @@ import Mathlib.Data.Part
 import Mathlib.Data.Nat.Find
 import Mathlib.Data.Nat.Upto
 import Mathlib.Data.Stream.Defs
-import Mathlib.Tactic.Common
 
 /-!
 # Fixed point
@@ -18,8 +17,8 @@ An instance is defined for `Part`.
 
 ## Main definition
 
- * class `Fix`
- * `Part.fix`
+* class `Fix`
+* `Part.fix`
 -/
 
 
@@ -95,9 +94,7 @@ protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
     ext : 1
     have hh : ¬(Fix.approx f z.val x).Dom := by
       apply Nat.find_min h'
-      rw [hk, Nat.succ_add_eq_add_succ]
-      apply Nat.lt_of_succ_le
-      apply Nat.le_add_left
+      omega
     rw [succ_add_eq_add_succ] at _this hk
     rw [assert_pos hh, n_ih (Upto.succ z hh) _this hk]
 

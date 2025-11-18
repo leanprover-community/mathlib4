@@ -72,7 +72,7 @@ theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli 
   rw [bernoulli, eval_finset_sum, sum_range_succ]
   have : ∑ x ∈ range n, _root_.bernoulli x * n.choose x * 0 ^ (n - x) = 0 := by
     apply sum_eq_zero fun x hx => _
-    intros x hx
+    intro x hx
     simp [tsub_eq_zero_iff_le, mem_range.1 hx]
   simp [this]
 
@@ -80,7 +80,7 @@ theorem bernoulli_eval_zero (n : ℕ) : (bernoulli n).eval 0 = _root_.bernoulli 
 theorem bernoulli_eval_one (n : ℕ) : (bernoulli n).eval 1 = bernoulli' n := by
   simp only [bernoulli, eval_finset_sum]
   simp only [← succ_eq_add_one, sum_range_succ, mul_one, cast_one, choose_self,
-    (_root_.bernoulli _).mul_comm, sum_bernoulli, one_pow, mul_one, eval_C, eval_monomial, one_mul]
+    (_root_.bernoulli _).mul_comm, sum_bernoulli, one_pow, mul_one, eval_monomial, one_mul]
   by_cases h : n = 1
   · norm_num [h]
   · simp [h, bernoulli_eq_bernoulli'_of_ne_one h]
@@ -91,7 +91,7 @@ theorem derivative_bernoulli_add_one (k : ℕ) :
     Polynomial.derivative (bernoulli (k + 1)) = (k + 1) * bernoulli k := by
   simp_rw [bernoulli, derivative_sum, derivative_monomial, Nat.sub_sub, Nat.add_sub_add_right]
   -- LHS sum has an extra term, but the coefficient is zero:
-  rw [range_add_one, sum_insert not_mem_range_self, tsub_self, cast_zero, mul_zero,
+  rw [range_add_one, sum_insert notMem_range_self, tsub_self, cast_zero, mul_zero,
     map_zero, zero_add, mul_sum]
   -- the rest of the sum is termwise equal:
   refine sum_congr (by rfl) fun m _ => ?_
@@ -127,13 +127,9 @@ nonrec theorem sum_bernoulli (n : ℕ) :
   rw [sum_range_succ_comm]
   simp only [add_eq_left, mul_one, cast_one, cast_add, add_tsub_cancel_left,
     choose_succ_self_right, one_smul, _root_.bernoulli_zero, sum_singleton, zero_add,
-    map_add, range_one, bernoulli_zero, mul_one, one_mul, add_zero, choose_self]
+    map_add, range_one, mul_one]
   apply sum_eq_zero fun x hx => _
-  have f : ∀ x ∈ range n, ¬n + 1 - x = 1 := by
-    rintro x H
-    rw [mem_range] at H
-    rw [eq_comm]
-    exact _root_.ne_of_lt (Nat.lt_of_lt_of_le one_lt_two (le_tsub_of_add_le_left (succ_le_succ H)))
+  have f : ∀ x ∈ range n, ¬n + 1 - x = 1 := by grind
   intro x hx
   rw [sum_bernoulli]
   have g : ite (n + 1 - x = 1) (1 : ℚ) 0 = 0 := by
@@ -235,9 +231,9 @@ theorem bernoulli_generating_function (t : A) :
   intro i hi
   -- deal with coefficients of e^X-1
   simp only [Nat.cast_choose ℚ (mem_range_le hi), coeff_mk, if_neg (mem_range_sub_ne_zero hi),
-    one_div, map_smul, PowerSeries.coeff_one, coeff_exp, sub_zero, LinearMap.map_sub,
-    Algebra.smul_mul_assoc, Algebra.smul_def, mul_right_comm _ ((aeval t) _), ← mul_assoc, ←
-    RingHom.map_mul, succ_eq_add_one, ← Polynomial.C_eq_algebraMap, Polynomial.aeval_mul,
+    one_div, PowerSeries.coeff_one, coeff_exp, sub_zero, LinearMap.map_sub,
+    Algebra.smul_def, mul_right_comm _ ((aeval t) _), ← mul_assoc, ←
+    RingHom.map_mul, ← Polynomial.C_eq_algebraMap, Polynomial.aeval_mul,
     Polynomial.aeval_C]
   -- finally cancel the Bernoulli polynomial and the algebra_map
   field_simp

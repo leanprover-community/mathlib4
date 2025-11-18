@@ -16,7 +16,7 @@ In this file we define `CardinalInterFilter l c` to be the class of filters with
 property: for any collection of sets `s ∈ l` with cardinality strictly less than `c`,
 their intersection belongs to `l` as well.
 
-# Main results
+## Main results
 * `Filter.cardinalInterFilter_aleph0` establishes that every filter `l` is a
     `CardinalInterFilter l ℵ₀`
 * `CardinalInterFilter.toCountableInterFilter` establishes that every `CardinalInterFilter l c` with
@@ -52,8 +52,8 @@ theorem cardinal_sInter_mem {S : Set (Set α)} [CardinalInterFilter l c] (hSc : 
 /-- Every filter is a CardinalInterFilter with c = ℵ₀ -/
 theorem _root_.Filter.cardinalInterFilter_aleph0 (l : Filter α) : CardinalInterFilter l ℵ₀ where
   cardinal_sInter_mem := by
-    simp_all only [aleph_zero, lt_aleph0_iff_subtype_finite, setOf_mem_eq, sInter_mem,
-      implies_true, forall_const]
+    simp_all only [lt_aleph0_iff_subtype_finite, setOf_mem_eq, sInter_mem,
+      implies_true]
 
 /-- Every CardinalInterFilter with c > ℵ₀ is a CountableInterFilter -/
 theorem CardinalInterFilter.toCountableInterFilter (l : Filter α) [CardinalInterFilter l c]

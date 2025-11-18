@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Ring.Unbundled.Rat
+import Mathlib.Algebra.Ring.Rat
 
 /-!
 # The rational numbers form a linear ordered field
@@ -26,9 +27,6 @@ namespace Rat
 
 instance instIsOrderedAddMonoid : IsOrderedAddMonoid ℚ where
   add_le_add_left := fun _ _ ab _ => Rat.add_le_add_left.2 ab
-
-instance instZeroLEOneClass : ZeroLEOneClass ℚ where
-  zero_le_one := by decide
 
 instance instIsStrictOrderedRing : IsStrictOrderedRing ℚ := .of_mul_pos fun _ _ ha hb ↦
   (Rat.mul_nonneg ha.le hb.le).lt_of_ne' (mul_ne_zero ha.ne' hb.ne')

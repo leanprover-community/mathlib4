@@ -41,7 +41,7 @@ open scoped InnerProductSpace
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 section Complex_Seminormed
 
@@ -56,7 +56,7 @@ theorem inner_map_polarization (T : V →ₗ[ℂ] V) (x y : V) :
         4 := by
   simp only [map_add, map_sub, inner_add_left, inner_add_right, LinearMap.map_smul, inner_smul_left,
     inner_smul_right, Complex.conj_I, ← pow_two, Complex.I_sq, inner_sub_left, inner_sub_right,
-    mul_add, ← mul_assoc, mul_neg, neg_neg, sub_neg_eq_add, one_mul, neg_one_mul, mul_sub, sub_sub]
+    mul_add, ← mul_assoc, mul_neg, neg_neg, one_mul, neg_one_mul, mul_sub, sub_sub]
   ring
 
 theorem inner_map_polarization' (T : V →ₗ[ℂ] V) (x y : V) :
@@ -67,7 +67,7 @@ theorem inner_map_polarization' (T : V →ₗ[ℂ] V) (x y : V) :
         4 := by
   simp only [map_add, map_sub, inner_add_left, inner_add_right, LinearMap.map_smul, inner_smul_left,
     inner_smul_right, Complex.conj_I, ← pow_two, Complex.I_sq, inner_sub_left, inner_sub_right,
-    mul_add, ← mul_assoc, mul_neg, neg_neg, sub_neg_eq_add, one_mul, neg_one_mul, mul_sub, sub_sub]
+    mul_add, ← mul_assoc, mul_neg, neg_neg, one_mul, neg_one_mul, mul_sub, sub_sub]
   ring
 
 end Complex_Seminormed
@@ -84,7 +84,7 @@ theorem inner_map_self_eq_zero (T : V →ₗ[ℂ] V) : (∀ x : V, ⟪T x, x⟫_
     ext x
     rw [LinearMap.zero_apply, ← @inner_self_eq_zero ℂ V, inner_map_polarization]
     simp only [hT]
-    norm_num
+    simp
   · rintro rfl x
     simp only [LinearMap.zero_apply, inner_zero_left]
 
@@ -162,11 +162,11 @@ def innerₛₗ : E →ₗ⋆[𝕜] E →ₗ[𝕜] 𝕜 :=
     inner_add_right fun _ _ _ => inner_smul_right _ _ _
 
 @[simp]
-theorem innerₛₗ_apply_coe (v : E) : ⇑(innerₛₗ 𝕜 v) = fun w => ⟪v, w⟫ :=
+theorem coe_innerₛₗ_apply (v : E) : ⇑(innerₛₗ 𝕜 v) = fun w => ⟪v, w⟫ :=
   rfl
 
 @[simp]
-theorem innerₛₗ_apply (v w : E) : innerₛₗ 𝕜 v w = ⟪v, w⟫ :=
+theorem innerₛₗ_apply_apply (v w : E) : innerₛₗ 𝕜 v w = ⟪v, w⟫ :=
   rfl
 
 variable (F)
@@ -179,21 +179,21 @@ def innerₗ : F →ₗ[ℝ] F →ₗ[ℝ] ℝ := innerₛₗ ℝ
 
 variable {F}
 
-@[simp] lemma innerₗ_apply (v w : F) : innerₗ F v w = ⟪v, w⟫_ℝ := rfl
+@[simp] lemma innerₗ_apply_apply (v w : F) : innerₗ F v w = ⟪v, w⟫_ℝ := rfl
 
 /-- The inner product as a continuous sesquilinear map. Note that `toDualMap` (resp. `toDual`)
 in `InnerProductSpace.Dual` is a version of this given as a linear isometry (resp. linear
 isometric equivalence). -/
 def innerSL : E →L⋆[𝕜] E →L[𝕜] 𝕜 :=
   LinearMap.mkContinuous₂ (innerₛₗ 𝕜) 1 fun x y => by
-    simp only [norm_inner_le_norm, one_mul, innerₛₗ_apply]
+    simp only [norm_inner_le_norm, one_mul, innerₛₗ_apply_apply]
 
 @[simp]
-theorem innerSL_apply_coe (v : E) : ⇑(innerSL 𝕜 v) = fun w => ⟪v, w⟫ :=
+theorem coe_innerSL_apply (v : E) : ⇑(innerSL 𝕜 v) = fun w => ⟪v, w⟫ :=
   rfl
 
 @[simp]
-theorem innerSL_apply (v w : E) : innerSL 𝕜 v w = ⟪v, w⟫ :=
+theorem innerSL_apply_apply (v w : E) : innerSL 𝕜 v w = ⟪v, w⟫ :=
   rfl
 
 /-- The inner product as a continuous sesquilinear map, with the two arguments flipped. -/
@@ -202,16 +202,21 @@ def innerSLFlip : E →L[𝕜] E →L⋆[𝕜] 𝕜 :=
     (innerSL 𝕜)
 
 @[simp]
-theorem innerSLFlip_apply (x y : E) : innerSLFlip 𝕜 x y = ⟪y, x⟫ :=
+theorem innerSLFlip_apply_apply (x y : E) : innerSLFlip 𝕜 x y = ⟪y, x⟫ :=
   rfl
 
-set_option linter.style.maxHeartbeats false in
--- This option was set before the `maxHeartbeats` linter existed and had no comment.
-set_option synthInstance.maxHeartbeats 40000 in
 variable (F) in
-@[simp] lemma innerSL_real_flip : (innerSL ℝ (E := F)).flip = innerSL ℝ (E := F) := by
+@[simp] lemma flip_innerSL_real : (innerSL ℝ (E := F)).flip = innerSL ℝ (E := F) := by
   ext v w
   exact real_inner_comm _ _
+
+@[deprecated (since := "2025-11-15")] alias innerₛₗ_apply_coe := coe_innerₛₗ_apply
+@[deprecated (since := "2025-11-15")] alias innerₛₗ_apply := innerₛₗ_apply_apply
+@[deprecated (since := "2025-11-15")] alias innerₗ_apply := innerₗ_apply_apply
+@[deprecated (since := "2025-11-15")] alias innerSL_apply_coe := coe_innerSL_apply
+@[deprecated (since := "2025-11-15")] alias innerSL_apply := innerSL_apply_apply
+@[deprecated (since := "2025-11-15")] alias innerSLFlip_apply := innerSLFlip_apply_apply
+@[deprecated (since := "2025-11-15")] alias innerSL_real_flip := flip_innerSL_real
 
 variable {𝕜}
 
@@ -249,9 +254,9 @@ variable (𝕜)
 theorem innerSL_apply_norm (x : E) : ‖innerSL 𝕜 x‖ = ‖x‖ := by
   refine
     le_antisymm ((innerSL 𝕜 x).opNorm_le_bound (norm_nonneg _) fun y => norm_inner_le_norm _ _) ?_
-  rcases (norm_nonneg x).eq_or_gt with (h | h)
+  rcases (norm_nonneg x).eq_or_lt' with (h | h)
   · simp [h]
-  · refine (mul_le_mul_right h).mp ?_
+  · refine (mul_le_mul_iff_left₀ h).mp ?_
     calc
       ‖x‖ * ‖x‖ = ‖(⟪x, x⟫ : 𝕜)‖ := by
         rw [← sq, inner_self_eq_norm_sq_to_K, norm_pow, norm_ofReal, abs_norm]
@@ -279,7 +284,7 @@ section ReApplyInnerSelf
 
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 /-- Extract a real bilinear form from an operator `T`,
 by taking the pairing `fun x ↦ re ⟪T x, x⟫`. -/
@@ -296,7 +301,7 @@ section ReApplyInnerSelf_Seminormed
 
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
+local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 theorem ContinuousLinearMap.reApplyInnerSelf_continuous (T : E →L[𝕜] E) :
     Continuous T.reApplyInnerSelf :=

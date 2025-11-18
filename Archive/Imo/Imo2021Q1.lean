@@ -14,7 +14,7 @@ Let `n ≥ 100` be an integer. Ivan writes the numbers `n, n+1, ..., 2*n` each o
 He then shuffles these `n+1` cards, and divides them into two piles. Prove that at least one
 of the piles contains two cards such that the sum of their numbers is a perfect square.
 
-# Solution
+## Solution
 
 We show there exists a triplet `a, b, c ∈ [n , 2n]` with `a < b < c` and each of the sums `(a + b)`,
 `(b + c)`, `(a + c)` being a perfect square. Specifically, we consider the linear system of
@@ -82,21 +82,13 @@ lemma exists_finset_3_le_card_with_pairs_summing_to_squares {n : ℕ} (hn : 100 
   obtain ⟨a, b, c, hna, hab, hbc, hcn, h₁, h₂, h₃⟩ := exists_triplet_summing_to_squares hn
   refine ⟨{a, b, c}, ?_, ?_, ?_⟩
   · suffices a ∉ {b, c} ∧ b ∉ {c} by
-      rw [Finset.card_insert_of_not_mem this.1, Finset.card_insert_of_not_mem this.2,
+      rw [Finset.card_insert_of_notMem this.1, Finset.card_insert_of_notMem this.2,
         Finset.card_singleton]
-    rw [Finset.mem_insert, Finset.mem_singleton, Finset.mem_singleton]
-    push_neg
-    exact ⟨⟨hab.ne, (hab.trans hbc).ne⟩, hbc.ne⟩
+    grind
   · intro x hx y hy hxy
     simp only [Finset.mem_insert, Finset.mem_singleton] at hx hy
-    rcases hx with (rfl | rfl | rfl) <;> rcases hy with (rfl | rfl | rfl)
-    all_goals
-      first
-      | contradiction
-      | assumption
-      | simpa only [add_comm x y]
-  · simp only [Finset.mem_insert, Finset.mem_singleton]
-    rintro d (rfl | rfl | rfl) <;> constructor <;> linarith only [hna, hab, hbc, hcn]
+    rcases hx with (rfl | rfl | rfl) <;> rcases hy with (rfl | rfl | rfl) <;> grind
+  · grind
 
 end Imo2021Q1
 

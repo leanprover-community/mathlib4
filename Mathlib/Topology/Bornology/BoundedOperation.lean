@@ -62,16 +62,9 @@ lemma boundedSub_of_lipschitzWith_sub [PseudoMetricSpace R] [Sub R] {K : NNReal}
   isBounded_sub {s t} s_bdd t_bdd := by
     have bdd : Bornology.IsBounded (s ×ˢ t) := Bornology.IsBounded.prod s_bdd t_bdd
     convert lip.isBounded_image bdd
-    ext p
-    simp only [Set.mem_image, Set.mem_prod, Prod.exists]
-    constructor
-    · intro ⟨a, a_in_s, b, b_in_t, eq_p⟩
-      exact ⟨a, b, ⟨a_in_s, b_in_t⟩, eq_p⟩
-    · intro ⟨a, b, ⟨a_in_s, b_in_t⟩, eq_p⟩
-      simpa [← eq_p] using Set.sub_mem_sub a_in_s b_in_t
+    simp
 
 end bounded_sub
-
 
 section bounded_mul
 /-!
@@ -163,6 +156,46 @@ lemma SeminormedAddCommGroup.lipschitzWith_sub :
   norm_num
 
 instance : BoundedSub R := boundedSub_of_lipschitzWith_sub SeminormedAddCommGroup.lipschitzWith_sub
+
+open Filter Pointwise Bornology
+
+/-
+TODO:
+* Generalize the following to bornologies and `BoundedFoo` classes.
+* Add `BoundedNeg`, `BoundedInv` and `BoundedDiv` in the process.
+-/
+
+@[simp]
+lemma tendsto_add_const_cobounded (x : R) :
+    Tendsto (· + x) (cobounded R) (cobounded R) := by
+  intro s hs
+  rw [mem_map]
+  rw [← isCobounded_def, ← isBounded_compl_iff] at hs ⊢
+  rw [← Set.preimage_compl]
+  convert isBounded_sub hs (t := {x}) isBounded_singleton using 1
+  ext y
+  simp [sub_eq_iff_eq_add]
+
+@[simp]
+lemma tendsto_const_add_cobounded (x : R) :
+    Tendsto (x + ·) (cobounded R) (cobounded R) := by
+  intro s hs
+  rw [mem_map]
+  rw [← isCobounded_def, ← isBounded_compl_iff] at hs ⊢
+  rw [← Set.preimage_compl]
+  convert isBounded_add isBounded_singleton (s := {-x}) hs using 1
+  ext y
+  simp
+
+@[simp]
+theorem tendsto_sub_const_cobounded (x : R) :
+    Tendsto (· - x) (cobounded R) (cobounded R) := by
+  simpa only [sub_eq_add_neg] using tendsto_add_const_cobounded (-x)
+
+@[simp]
+theorem tendsto_const_sub_cobounded (x : R) :
+    Tendsto (x - ·) (cobounded R) (cobounded R) := by
+  simpa only [sub_eq_add_neg] using (tendsto_const_add_cobounded x).comp tendsto_neg_cobounded
 
 end SeminormedAddCommGroup
 

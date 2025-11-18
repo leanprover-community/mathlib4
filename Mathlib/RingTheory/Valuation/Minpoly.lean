@@ -13,9 +13,10 @@ We prove some results about valuations of zero coefficients of minimal polynomia
 
 Let `K` be a field with a valuation `v` and let `L` be a field extension of `K`.
 
-# Main Results
+## Main statements
+
 * `coeff_zero_minpoly` : for `x ∈ K` the valuation of the zeroth coefficient of the minimal
-  polynomial of `algebra_map K L x` over `K` is equal to the valuation of `x`.
+  polynomial of `algebraMap K L x` over `K` is equal to the valuation of `x`.
 * `pow_coeff_zero_ne_zero_of_unit` : for any unit `x : Lˣ`, we prove that a certain power of the
   valuation of zeroth coefficient of the minimal polynomial of `x` over `K` is nonzero. This lemma
   is helpful for defining the valuation on `L` inducing `v`.
@@ -29,7 +30,7 @@ variable {K : Type*} [Field K] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero �
 namespace Valuation
 
 /-- For `x ∈ K` the valuation of the zeroth coefficient of the minimal polynomial
-of `algebra_map K L x` over `K` is equal to the valuation of `x`. -/
+of `algebraMap K L x` over `K` is equal to the valuation of `x`. -/
 @[simp]
 theorem coeff_zero_minpoly (x : K) : v ((minpoly K (algebraMap K L x)).coeff 0) = v x := by
   rw [minpoly.eq_X_sub_C, coeff_sub, coeff_X_zero, coeff_C_zero, zero_sub, Valuation.map_neg]
@@ -39,7 +40,7 @@ variable {L}
 /- For any unit `x : Lˣ`, we prove that a certain power of the valuation of zeroth coefficient of
 the minimal polynomial of `x` over `K` is nonzero. This lemma is helpful for defining the valuation
 on `L` inducing `v`. -/
-theorem pow_coeff_zero_ne_zero_of_unit [FiniteDimensional K L] (x : L) (hx : IsUnit x):
+theorem pow_coeff_zero_ne_zero_of_unit [FiniteDimensional K L] (x : L) (hx : IsUnit x) :
     v ((minpoly K x).coeff 0) ^ (finrank K L / (minpoly K x).natDegree) ≠ (0 : Γ₀) := by
   have h_alg : Algebra.IsAlgebraic K L := Algebra.IsAlgebraic.of_finite K L
   have hx₀ : IsIntegral K x := (Algebra.IsAlgebraic.isAlgebraic x).isIntegral

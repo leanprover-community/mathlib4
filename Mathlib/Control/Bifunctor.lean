@@ -11,7 +11,7 @@ import Mathlib.Tactic.Common
 
 This file defines bifunctors.
 
-A bifunctor is a function `F : Type* → Type* → Type*` along with a bimap which turns `F α β`into
+A bifunctor is a function `F : Type* → Type* → Type*` along with a bimap which turns `F α β` into
 `F α' β'` given two functions `α → α'` and `β → β'`. It further
 * respects the identity: `bimap id id = id`
 * composes in the obvious way: `(bimap f' g') ∘ (bimap f g) = bimap (f' ∘ f) (g' ∘ g)`
@@ -119,13 +119,12 @@ instance Sum.lawfulBifunctor : LawfulBifunctor Sum where
   id_bimap := by aesop
   bimap_bimap := by aesop
 
-open Bifunctor Functor
+open Bifunctor
 
 instance (priority := 10) Bifunctor.functor {α} : Functor (F α) where map f x := snd f x
 
 instance (priority := 10) Bifunctor.lawfulFunctor [LawfulBifunctor F] {α} :
     LawfulFunctor (F α) where
-  -- Porting note: `mapConst` is required to prove new theorem
   id_map := by simp [Functor.map, functor_norm]
   comp_map := by simp [Functor.map, functor_norm]
   map_const := by simp [mapConst, Functor.map]

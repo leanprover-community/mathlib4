@@ -167,8 +167,10 @@ theorem coe_iInf₂ (f : ∀ i, κ i → UpperSet α) :
     (↑(⨅ (i) (j), f i j) : Set α) = ⋃ (i) (j), f i j := by simp
 
 @[simp]
-theorem not_mem_top : a ∉ (⊤ : UpperSet α) :=
+theorem notMem_top : a ∉ (⊤ : UpperSet α) :=
   id
+
+@[deprecated (since := "2025-05-23")] alias not_mem_top := notMem_top
 
 @[simp]
 theorem mem_bot : a ∈ (⊥ : UpperSet α) :=
@@ -303,8 +305,10 @@ theorem mem_top : a ∈ (⊤ : LowerSet α) :=
   trivial
 
 @[simp]
-theorem not_mem_bot : a ∉ (⊥ : LowerSet α) :=
+theorem notMem_bot : a ∉ (⊥ : LowerSet α) :=
   id
+
+@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
 @[simp]
 theorem mem_sup_iff : a ∈ s ⊔ t ↔ a ∈ s ∨ a ∈ t :=
@@ -517,8 +521,8 @@ def map (f : α ≃o β) : UpperSet α ≃o UpperSet β where
   map_rel_iff' := image_subset_image_iff f.injective
 
 @[simp]
-theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm :=
-  DFunLike.ext _ _ fun s => ext <| by convert Set.preimage_equiv_eq_image_symm s f.toEquiv
+theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm := by
+ ext; simp [map, OrderIso.symm_apply_eq]
 
 @[simp]
 theorem mem_map : b ∈ map f s ↔ f.symm b ∈ s := by
@@ -556,8 +560,8 @@ def map (f : α ≃o β) : LowerSet α ≃o LowerSet β where
   map_rel_iff' := image_subset_image_iff f.injective
 
 @[simp]
-theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm :=
-  DFunLike.ext _ _ fun s => ext <| by convert Set.preimage_equiv_eq_image_symm s f.toEquiv
+theorem symm_map (f : α ≃o β) : (map f).symm = map f.symm := by
+  ext; simp [map, OrderIso.symm_apply_eq]
 
 @[simp]
 theorem mem_map {f : α ≃o β} {b : β} : b ∈ map f s ↔ f.symm b ∈ s := by

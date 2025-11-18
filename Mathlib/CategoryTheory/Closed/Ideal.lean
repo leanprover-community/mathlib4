@@ -16,12 +16,12 @@ import Mathlib.CategoryTheory.Subterminal
 /-!
 # Exponential ideals
 
-An exponential ideal of a cartesian closed category `C` is a subcategory `D ⊆ C` such that for any
-`B : D` and `A : C`, the exponential `A ⟹ B` is in `D`: resembling ring theoretic ideals. We
+An exponential ideal of a Cartesian closed category `C` is a subcategory `D ⊆ C` such that for any
+`B : D` and `A : C`, the exponential `A ⟹ B` is in `D`: resembling ring-theoretic ideals. We
 define the notion here for inclusion functors `i : D ⥤ C` rather than explicit subcategories to
 preserve the principle of equivalence.
 
-We additionally show that if `C` is cartesian closed and `i : D ⥤ C` is a reflective functor, the
+We additionally show that if `C` is Cartesian closed and `i : D ⥤ C` is a reflective functor, the
 following are equivalent.
 * The left adjoint to `i` preserves binary (equivalently, finite) products.
 * `i` is an exponential ideal.
@@ -39,7 +39,7 @@ open Category
 section Ideal
 
 variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₁} D] {i : D ⥤ C}
-variable (i) [ChosenFiniteProducts C] [CartesianClosed C]
+variable (i) [CartesianMonoidalCategory C] [CartesianClosed C]
 
 /-- The subcategory `D` of `C` expressed as an inclusion functor is an *exponential ideal* if
 `B ∈ D` implies `A ⟹ B ∈ D` for all `A`.
@@ -100,29 +100,41 @@ section
 variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₁} D]
 variable (i : D ⥤ C)
 
--- Porting note: this used to be used as a local instance,
--- now it can instead be used as a have when needed
--- we assume HasFiniteProducts D as a hypothesis below
+/- This cannot be a local instance since it has free variables,
+it can instead be used as a have when needed.
+We assume HasFiniteProducts D as a hypothesis below, to avoid making this a local instance.
+-/
 theorem reflective_products [Limits.HasFiniteProducts C] [Reflective i] :
     Limits.HasFiniteProducts D := ⟨fun _ => hasLimitsOfShape_of_reflective i⟩
 
-open CartesianClosed MonoidalCategory ChosenFiniteProducts
+open CartesianClosed MonoidalCategory CartesianMonoidalCategory
 
 open Limits in
 /-- Given a reflective subcategory `D` of a category with chosen finite products `C`, `D` admits
 finite chosen products. -/
--- Note: This is not an instance as one might already have a (different) `ChosenFiniteProducts`
+-- Note: This is not an instance as one might already have a (different) `CartesianMonoidalCategory`
 -- instance on `D` (as for example with sheaves).
-def reflectiveChosenFiniteProducts [ChosenFiniteProducts C] [Reflective i] :
-    ChosenFiniteProducts D where
-  product X Y :=
+-- See note [reducible non-instances]
+abbrev CartesianMonoidalCategory.ofReflective [CartesianMonoidalCategory C] [Reflective i] :
+    CartesianMonoidalCategory D :=
+  .ofChosenFiniteProducts
+    ({  cone := Limits.asEmptyCone <| (reflector i).obj (𝟙_ C)
+        isLimit := by
+          apply isLimitOfReflects i
+          apply isLimitChangeEmptyCone _ isTerminalTensorUnit
+          letI : IsIso ((reflectorAdjunction i).unit.app (𝟙_ C)) := by
+            have := reflective_products i
+            refine Functor.essImage.unit_isIso ⟨terminal D, ⟨PreservesTerminal.iso i |>.trans ?_⟩⟩
+            exact IsLimit.conePointUniqueUpToIso (limit.isLimit _) isTerminalTensorUnit
+          exact asIso ((reflectorAdjunction i).unit.app (𝟙_ C)) })
+  fun X Y ↦
     { cone := BinaryFan.mk
         ((reflector i).map (fst (i.obj X) (i.obj Y)) ≫ (reflectorAdjunction i).counit.app _)
         ((reflector i).map (snd (i.obj X) (i.obj Y)) ≫ (reflectorAdjunction i).counit.app _)
       isLimit := by
         apply isLimitOfReflects i
         apply IsLimit.equivOfNatIsoOfIso (pairComp X Y _) _ _ _|>.invFun
-          (product (i.obj X) (i.obj Y)).isLimit
+          (tensorProductIsBinaryProduct (i.obj X) (i.obj Y))
         fapply BinaryFan.ext
         · change (reflector i ⋙ i).obj (i.obj X ⊗ i.obj Y) ≅ (𝟭 C).obj (i.obj X ⊗ i.obj Y)
           letI : IsIso ((reflectorAdjunction i).unit.app (i.obj X ⊗ i.obj Y)) := by
@@ -132,28 +144,18 @@ def reflectiveChosenFiniteProducts [ChosenFiniteProducts C] [Reflective i] :
             constructor
             apply Limits.PreservesLimitPair.iso i _ _|>.trans
             refine Limits.IsLimit.conePointUniqueUpToIso (limit.isLimit (pair (i.obj X) (i.obj Y)))
-              (ChosenFiniteProducts.product _ _).isLimit
+              (tensorProductIsBinaryProduct _ _)
           exact asIso ((reflectorAdjunction i).unit.app (i.obj X ⊗ i.obj Y))|>.symm
         · simp only [BinaryFan.fst, Cones.postcompose, pairComp]
-          simp [← Functor.comp_map, ← NatTrans.naturality_assoc, fst]
+          simp [← Functor.comp_map, ← NatTrans.naturality_assoc]
         · simp only [BinaryFan.snd, Cones.postcompose, pairComp]
-          simp [← Functor.comp_map, ← NatTrans.naturality_assoc, snd] }
-  terminal :=
-    { cone := Limits.asEmptyCone <| (reflector i).obj (𝟙_ C)
-      isLimit := by
-        apply isLimitOfReflects i
-        apply isLimitChangeEmptyCone _ ChosenFiniteProducts.terminal.isLimit
-        letI : IsIso ((reflectorAdjunction i).unit.app (𝟙_ C)) := by
-          apply Functor.essImage.unit_isIso
-          haveI := reflective_products i
-          use Limits.terminal D
-          constructor
-          apply Limits.PreservesTerminal.iso i|>.trans
-          refine Limits.IsLimit.conePointUniqueUpToIso (limit.isLimit _)
-            (ChosenFiniteProducts.terminal).isLimit
-        exact asIso ((reflectorAdjunction i).unit.app (𝟙_ C)) }
+          simp [← Functor.comp_map, ← NatTrans.naturality_assoc] }
 
-variable [ChosenFiniteProducts C] [Reflective i] [CartesianClosed C] [ChosenFiniteProducts D]
+@[deprecated (since := "2025-05-15")]
+noncomputable alias reflectiveChosenFiniteProducts := CartesianMonoidalCategory.ofReflective
+
+variable [CartesianMonoidalCategory C] [Reflective i] [CartesianClosed C]
+  [CartesianMonoidalCategory D]
 
 /-- If the reflector preserves binary products, the subcategory is an exponential ideal.
 This is the converse of `preservesBinaryProductsOfExponentialIdeal`.
@@ -175,8 +177,7 @@ instance (priority := 10) exponentialIdeal_of_preservesBinaryProducts
     dsimp
     rw [← curry_natural_left, curry_eq_iff, uncurry_id_eq_ev, ← ir.homEquiv_naturality_left,
       ir.homEquiv_apply_eq, assoc, assoc, prodComparison_natural_whiskerLeft_assoc,
-      ← MonoidalCategory.whiskerLeft_comp_assoc,
-      ir.left_triangle_components, MonoidalCategory.whiskerLeft_id, id_comp]
+      ← whiskerLeft_comp_assoc, ir.left_triangle_components, whiskerLeft_id, id_comp]
     apply IsIso.hom_inv_id_assoc
   haveI : IsSplitMono (η.app (A ⟹ i.obj B)) := IsSplitMono.mk' ⟨_, this⟩
   apply mem_essImage_of_unit_isSplitMono
@@ -184,11 +185,18 @@ instance (priority := 10) exponentialIdeal_of_preservesBinaryProducts
 variable [ExponentialIdeal i]
 
 /-- If `i` witnesses that `D` is a reflective subcategory and an exponential ideal, then `D` is
-itself cartesian closed.
--/
-def cartesianClosedOfReflective : CartesianClosed D where
+itself Cartesian closed.
+
+To allow for better control of definitional equality, this construction
+takes in an explicit choice of lift of the essential image of `i` to `D`, in the form of a functor
+`l : i.EssImageSubcategory ⥤ D` and natural isomorphism `φ : l ⋙ i ≅ i.essImage.ι`. When
+`l ⋙ i` is defeq to `i.essImage.ι`, images of exponential objects in `D` under `i` will be defeq
+to the respective exponential objects in `C`. -/
+def cartesianClosedOfReflective' (l : i.EssImageSubcategory ⥤ D) (φ : l ⋙ i ≅ i.essImage.ι) :
+    CartesianClosed D where
   closed := fun B =>
-    { rightAdj := i ⋙ exp (i.obj B) ⋙ reflector i
+    { rightAdj := i.essImage.lift (i ⋙ exp (i.obj B))
+        (fun X ↦ ExponentialIdeal.exp_closed (i.obj_mem_essImage X) _) ⋙ l
       adj := by
         apply (exp.adjunction (i.obj B)).restrictFullyFaithful i.fullyFaithfulOfReflective
           i.fullyFaithfulOfReflective
@@ -199,11 +207,23 @@ def cartesianClosedOfReflective : CartesianClosed D where
             apply asIso (prodComparison i B X)
           · dsimp [asIso]
             rw [prodComparison_natural_whiskerLeft]
-        · apply (exponentialIdealReflective i _).symm }
+        · exact (i.essImage.liftCompιIso _ _).symm.trans <|
+            (Functor.isoWhiskerLeft _ φ.symm).trans (Functor.associator _ _ _).symm }
 
--- It's annoying that I need to do this.
-attribute [-instance] CategoryTheory.preservesLimit_of_createsLimit_and_hasLimit
-  CategoryTheory.preservesLimitOfShape_of_createsLimitsOfShape_and_hasLimitsOfShape
+/-- If `i` witnesses that `D` is a reflective subcategory and an exponential ideal, then `D` is
+itself Cartesian closed.
+
+Unlike `cartesianClosedOfReflective'` this construction lifts exponential objects in `C` to
+exponential objects in `D` by applying the reflector to them, even though they already lie in the
+essential image of `i`; if you need better control over definitional equality, use
+`cartesianClosedOfReflective'` instead. -/
+def cartesianClosedOfReflective : CartesianClosed D :=
+  cartesianClosedOfReflective' i (i.essImage.ι ⋙ reflector i)
+    (NatIso.ofComponents (fun X ↦
+      have := Functor.essImage.unit_isIso X.2
+      (asIso ((reflectorAdjunction i).unit.app X.obj)).symm))
+
+variable [BraidedCategory C]
 
 /-- We construct a bijection between morphisms `L(A ⊗ B) ⟶ X` and morphisms `LA ⊗ LB ⟶ X`.
 This bijection has two key properties:
@@ -239,18 +259,17 @@ noncomputable def bijection (A B : C) (X : D) :
 
 theorem bijection_symm_apply_id (A B : C) :
     (bijection i A B _).symm (𝟙 _) = prodComparison _ _ _ := by
-  dsimp [bijection]
+  simp only [bijection, Equiv.trans_def, curriedTensor_obj_obj, Equiv.symm_trans_apply,
+    Equiv.symm_symm, Functor.FullyFaithful.homEquiv_apply, Functor.map_id, Iso.homCongr_symm,
+    Iso.symm_symm_eq, Iso.refl_symm, Iso.homCongr_apply, Iso.refl_hom, comp_id,
+    unitCompPartialBijective_symm_apply, Functor.id_obj, Functor.comp_obj, Iso.symm_inv]
   -- Porting note: added
   erw [homEquiv_symm_apply_eq, homEquiv_symm_apply_eq, homEquiv_apply_eq, homEquiv_apply_eq]
-  rw [comp_id, comp_id, comp_id, i.map_id, comp_id, unitCompPartialBijective_symm_apply,
-    unitCompPartialBijective_symm_apply, uncurry_natural_left, uncurry_curry,
-    uncurry_natural_left, uncurry_curry, ← BraidedCategory.braiding_naturality_left_assoc]
-  erw [SymmetricCategory.symmetry_assoc, ← MonoidalCategory.whisker_exchange_assoc]
-  -- Porting note: added
-  dsimp only [Functor.comp_obj]
-  rw [← tensorHom_def'_assoc, Adjunction.homEquiv_symm_apply,
-    ← Adjunction.eq_unit_comp_map_iff, Iso.comp_inv_eq, assoc]
-  rw [prodComparisonIso_hom i ((reflector i).obj A) ((reflector i).obj B)]
+  rw [uncurry_natural_left, uncurry_curry, uncurry_natural_left, uncurry_curry,
+    ← BraidedCategory.braiding_naturality_left_assoc, SymmetricCategory.symmetry_assoc,
+    ← MonoidalCategory.whisker_exchange_assoc, ← tensorHom_def'_assoc,
+    Adjunction.homEquiv_symm_apply, ← Adjunction.eq_unit_comp_map_iff, Iso.comp_inv_eq, assoc,
+    prodComparisonIso_hom i ((reflector i).obj A) ((reflector i).obj B)]
   apply hom_ext
   · rw [tensorHom_fst, assoc, assoc, prodComparison_fst, ← i.map_comp,
     prodComparison_fst]

@@ -5,12 +5,13 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.Nat.Find
 import Mathlib.Data.Set.Basic
+import Mathlib.Tactic.ByContra
 
 /-!
 # Further lemmas about the natural numbers
 
-The distinction between this file and `Mathlib.Algebra.Order.Ring.Nat` is not particularly clear.
-They were separated for now to minimize the porting requirements for tactics
+The distinction between this file and `Mathlib/Algebra/Order/Ring/Nat.lean` is not particularly
+clear. They were separated for now to minimize the porting requirements for tactics
 during the transition to mathlib4. Please feel free to reorganize these two files.
 -/
 

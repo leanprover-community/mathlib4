@@ -220,7 +220,7 @@ alias Measurable.subtype_val := Measurable.subtype_coe
 @[measurability]
 theorem Measurable.subtype_mk {p : β → Prop} {f : α → β} (hf : Measurable f) {h : ∀ x, p (f x)} :
     Measurable fun x => (⟨f x, h x⟩ : Subtype p) := fun t ⟨s, hs⟩ =>
-  hs.2 ▸ by simp only [← preimage_comp, Function.comp_def, Subtype.coe_mk, hf hs.1]
+  hs.2 ▸ by simp only [← preimage_comp, Function.comp_def, hf hs.1]
 
 @[measurability]
 protected theorem Measurable.rangeFactorization {f : α → β} (hf : Measurable f) :
@@ -282,7 +282,7 @@ section Atoms
 
 variable [MeasurableSpace β]
 
-/-- The *measurable atom* of `x` is the intersection of all the measurable sets countaining `x`.
+/-- The *measurable atom* of `x` is the intersection of all the measurable sets containing `x`.
 It is measurable when the space is countable (or more generally when the measurable space is
 countably generated). -/
 def measurableAtom (x : β) : Set β :=
@@ -321,6 +321,35 @@ lemma MeasurableSet.measurableAtom_of_countable [Countable β] (x : β) :
       exact ⟨z, hz, (hs z hz).2.2⟩
   rw [this]
   exact MeasurableSet.biInter (to_countable (measurableAtom x)ᶜ) (fun i hi ↦ (hs i hi).2.1)
+
+/-- There is in fact equality: see `measurableAtom_eq_of_mem`. -/
+lemma measurableAtom_subset_of_mem {x y : β} (hx : x ∈ measurableAtom y) :
+    measurableAtom x ⊆ measurableAtom y := by
+  intro z hz
+  simp only [measurableAtom, mem_iInter] at hz hx ⊢
+  exact fun s hys hs ↦ hz s (hx s hys hs) hs
+
+lemma measurableAtom_eq_of_mem {x y : β} (hx : x ∈ measurableAtom y) :
+    measurableAtom x = measurableAtom y := by
+  refine subset_antisymm (measurableAtom_subset_of_mem hx) ?_
+  by_cases hy : y ∈ measurableAtom x
+  · exact measurableAtom_subset_of_mem hy
+  exfalso
+  simp only [measurableAtom, mem_iInter, not_forall] at hx hy ⊢
+  obtain ⟨s, hxs, hs, hys⟩ := hy
+  specialize hx sᶜ hys hs.compl
+  exact hx hxs
+
+lemma disjoint_measurableAtom_of_notMem {x y : β} (hx : x ∉ measurableAtom y) :
+    Disjoint (measurableAtom x) (measurableAtom y) := by
+  rw [Set.disjoint_iff_inter_eq_empty]
+  ext z
+  simp only [mem_inter_iff, mem_empty_iff_false, iff_false, not_and]
+  intro hzx hzy
+  have h1 := measurableAtom_eq_of_mem hzx
+  have h2 := measurableAtom_eq_of_mem hzy
+  rw [← h2, h1] at hx
+  exact hx (mem_measurableAtom_self x)
 
 end Atoms
 
@@ -372,28 +401,16 @@ theorem Measurable.prodMk {β γ} {_ : MeasurableSpace β} {_ : MeasurableSpace 
     {g : α → γ} (hf : Measurable f) (hg : Measurable g) : Measurable fun a : α => (f a, g a) :=
   Measurable.prod hf hg
 
-@[deprecated (since := "2025-03-05")]
-alias Measurable.prod_mk := Measurable.prodMk
-
 @[fun_prop]
 theorem Measurable.prodMap [MeasurableSpace δ] {f : α → β} {g : γ → δ} (hf : Measurable f)
     (hg : Measurable g) : Measurable (Prod.map f g) :=
   (hf.comp measurable_fst).prodMk (hg.comp measurable_snd)
 
-@[deprecated (since := "2025-03-05")]
-alias Measurable.prod_map := Measurable.prodMap
-
 theorem measurable_prodMk_left {x : α} : Measurable (@Prod.mk _ β x) :=
   measurable_const.prodMk measurable_id
 
-@[deprecated (since := "2025-03-05")]
-alias measurable_prod_mk_left := measurable_prodMk_left
-
 theorem measurable_prodMk_right {y : β} : Measurable fun x : α => (x, y) :=
   measurable_id.prodMk measurable_const
-
-@[deprecated (since := "2025-03-05")]
-alias measurable_prod_mk_right := measurable_prodMk_right
 
 theorem Measurable.of_uncurry_left {f : α → β → γ} (hf : Measurable (uncurry f)) {x : α} :
     Measurable (f x) :=
@@ -403,7 +420,7 @@ theorem Measurable.of_uncurry_right {f : α → β → γ} (hf : Measurable (unc
     Measurable fun x => f x y :=
   hf.comp measurable_prodMk_right
 
-theorem measurable_prod {f : α → β × γ} :
+theorem measurable_fun_prod {f : α → β × γ} :
     Measurable f ↔ (Measurable fun a => (f a).1) ∧ Measurable fun a => (f a).2 :=
   ⟨fun hf => ⟨measurable_fst.comp hf, measurable_snd.comp hf⟩, fun h => Measurable.prod h.1 h.2⟩
 
@@ -443,10 +460,11 @@ instance Prod.instMeasurableSingletonClass
     MeasurableSingletonClass (α × β) :=
   ⟨fun ⟨a, b⟩ => @singleton_prod_singleton _ _ a b ▸ .prod (.singleton a) (.singleton b)⟩
 
-theorem measurable_from_prod_countable' [Countable β]
-    {_ : MeasurableSpace γ} {f : α × β → γ} (hf : ∀ y, Measurable fun x => f (x, y))
-    (h'f : ∀ y y' x, y' ∈ measurableAtom y → f (x, y') = f (x, y)) :
-    Measurable f := fun s hs => by
+/-- See `measurable_from_prod_countable_left` for a version where we assume that singletons are
+measurable instead of reasoning about `measurableAtom`. -/
+theorem measurable_from_prod_countable_left' [Countable β] {f : α × β → γ}
+    (hf : ∀ y, Measurable fun x => f (x, y))
+    (h'f : ∀ y y' x, y' ∈ measurableAtom y → f (x, y') = f (x, y)) : Measurable f := fun s hs => by
   have : f ⁻¹' s = ⋃ y, ((fun x => f (x, y)) ⁻¹' s) ×ˢ (measurableAtom y : Set β) := by
     ext1 ⟨x, y⟩
     simp only [mem_preimage, mem_iUnion, mem_prod]
@@ -456,17 +474,35 @@ theorem measurable_from_prod_countable' [Countable β]
   rw [this]
   exact .iUnion (fun y ↦ (hf y hs).prod (.measurableAtom_of_countable y))
 
-theorem measurable_from_prod_countable [Countable β] [MeasurableSingletonClass β]
-    {_ : MeasurableSpace γ} {f : α × β → γ} (hf : ∀ y, Measurable fun x => f (x, y)) :
+/-- See `measurable_from_prod_countable_right` for a version where we assume that singletons are
+measurable instead of reasoning about `measurableAtom`. -/
+lemma measurable_from_prod_countable_right' [Countable α] {f : α × β → γ}
+    (hf : ∀ x, Measurable fun y => f (x, y))
+    (h'f : ∀ x x' y, x' ∈ measurableAtom x → f (x', y) = f (x, y)) : Measurable f := by
+  change Measurable ((fun p ↦ f (p.2, p.1)) ∘ Prod.swap)
+  exact (measurable_from_prod_countable_left' hf h'f).comp measurable_swap
+
+@[deprecated (since := "2025-08-17")]
+alias measurable_from_prod_countable' := measurable_from_prod_countable_left'
+
+/-- For the version where the first space in the product is countable,
+see `measurable_from_prod_countable_right`. -/
+theorem measurable_from_prod_countable_left [Countable β] [MeasurableSingletonClass β]
+    {f : α × β → γ} (hf : ∀ y, Measurable fun x => f (x, y)) :
     Measurable f :=
-  measurable_from_prod_countable' hf (by simp +contextual)
+  measurable_from_prod_countable_left' hf (by simp +contextual)
+
+/-- For the version where the second space in the product is countable,
+see `measurable_from_prod_countable_left`. -/
+lemma measurable_from_prod_countable_right [Countable α] [MeasurableSingletonClass α]
+    {f : α × β → γ} (hf : ∀ x, Measurable fun y => f (x, y)) : Measurable f :=
+  measurable_from_prod_countable_right' hf (by simp +contextual)
 
 /-- A piecewise function on countably many pieces is measurable if all the data is measurable. -/
-@[measurability]
 theorem Measurable.find {_ : MeasurableSpace α} {f : ℕ → α → β} {p : ℕ → α → Prop}
     [∀ n, DecidablePred (p n)] (hf : ∀ n, Measurable (f n)) (hp : ∀ n, MeasurableSet { x | p n x })
     (h : ∀ x, ∃ n, p n x) : Measurable fun x => f (Nat.find (h x)) x :=
-  have : Measurable fun p : α × ℕ => f p.2 p.1 := measurable_from_prod_countable fun n => hf n
+  have : Measurable fun p : α × ℕ => f p.2 p.1 := measurable_from_prod_countable_left fun n => hf n
   this.comp (Measurable.prodMk measurable_id (measurable_find h hp))
 
 /-- Let `t i` be a countable covering of a set `T` by measurable sets. Let `f i : t i → β` be a
@@ -531,23 +567,22 @@ theorem measurable_pi_iff {g : α → ∀ a, X a} : Measurable g ↔ ∀ a, Meas
   simp_rw [measurable_iff_comap_le, MeasurableSpace.pi, MeasurableSpace.comap_iSup,
     MeasurableSpace.comap_comp, Function.comp_def, iSup_le_iff]
 
-@[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
+@[fun_prop]
 theorem measurable_pi_apply (a : δ) : Measurable fun f : ∀ a, X a => f a :=
   measurable_pi_iff.1 measurable_id a
 
-@[aesop safe 100 apply (rule_sets := [Measurable])]
 theorem Measurable.eval {a : δ} {g : α → ∀ a, X a} (hg : Measurable g) :
     Measurable fun x => g x a :=
   (measurable_pi_apply a).comp hg
 
-@[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
+@[fun_prop]
 theorem measurable_pi_lambda (f : α → ∀ a, X a) (hf : ∀ a, Measurable fun c => f c a) :
     Measurable f :=
   measurable_pi_iff.mpr hf
 
 /-- The function `(f, x) ↦ update f a x : (Π a, X a) × X a → Π a, X a` is measurable. -/
 @[measurability, fun_prop]
-theorem measurable_update'  {a : δ} [DecidableEq δ] :
+theorem measurable_update' {a : δ} [DecidableEq δ] :
     Measurable (fun p : (∀ i, X i) × X a ↦ update p.1 a p.2) := by
   rw [measurable_pi_iff]
   intro j
@@ -712,9 +747,9 @@ open List
 variable {X : δ → Type*} [∀ i, MeasurableSpace (X i)]
 
 theorem measurable_tProd_mk (l : List δ) : Measurable (@TProd.mk δ X l) := by
-  induction' l with i l ih
-  · exact measurable_const
-  · exact (measurable_pi_apply i).prodMk ih
+  induction l with
+  | nil => exact measurable_const
+  | cons i l ih => exact (measurable_pi_apply i).prodMk ih
 
 theorem measurable_tProd_elim [DecidableEq δ] :
     ∀ {l : List δ} {i : δ} (hi : i ∈ l), Measurable fun v : TProd X l => v.elim hi
@@ -732,9 +767,9 @@ theorem measurable_tProd_elim' [DecidableEq δ] {l : List δ} (h : ∀ i, i ∈ 
 
 theorem MeasurableSet.tProd (l : List δ) {s : ∀ i, Set (X i)} (hs : ∀ i, MeasurableSet (s i)) :
     MeasurableSet (Set.tprod l s) := by
-  induction' l with i l ih
-  · exact MeasurableSet.univ
-  · exact (hs i).prod ih
+  induction l with
+  | nil => exact MeasurableSet.univ
+  | cons i l ih => exact (hs i).prod ih
 
 end TProd
 
@@ -758,7 +793,7 @@ theorem measurableSet_sum_iff {s : Set (α ⊕ β)} :
     MeasurableSet s ↔ MeasurableSet (Sum.inl ⁻¹' s) ∧ MeasurableSet (Sum.inr ⁻¹' s) :=
   Iff.rfl
 
-theorem measurable_sum {_ : MeasurableSpace γ} {f : α ⊕ β → γ} (hl : Measurable (f ∘ Sum.inl))
+theorem measurable_fun_sum {_ : MeasurableSpace γ} {f : α ⊕ β → γ} (hl : Measurable (f ∘ Sum.inl))
     (hr : Measurable (f ∘ Sum.inr)) : Measurable f :=
   Measurable.of_comap_le <|
     le_inf (MeasurableSpace.comap_le_iff_le_map.2 <| hl)
@@ -767,7 +802,7 @@ theorem measurable_sum {_ : MeasurableSpace γ} {f : α ⊕ β → γ} (hl : Mea
 @[measurability]
 theorem Measurable.sumElim {_ : MeasurableSpace γ} {f : α → γ} {g : β → γ} (hf : Measurable f)
     (hg : Measurable g) : Measurable (Sum.elim f g) :=
-  measurable_sum hf hg
+  measurable_fun_sum hf hg
 
 theorem Measurable.sumMap {_ : MeasurableSpace γ} {_ : MeasurableSpace δ} {f : α → β} {g : γ → δ}
     (hf : Measurable f) (hg : Measurable g) : Measurable (Sum.map f g) :=
@@ -814,18 +849,22 @@ alias ⟨_, Measurable.setOf⟩ := measurableSet_setOf
 
 alias ⟨_, MeasurableSet.mem⟩ := measurable_mem
 
+@[fun_prop]
 lemma Measurable.not (hp : Measurable p) : Measurable (¬ p ·) :=
   measurableSet_setOf.1 hp.setOf.compl
 
+@[fun_prop]
 lemma Measurable.and (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a ∧ q a :=
   measurableSet_setOf.1 <| hp.setOf.inter hq.setOf
 
+@[fun_prop]
 lemma Measurable.or (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a ∨ q a :=
   measurableSet_setOf.1 <| hp.setOf.union hq.setOf
 
 lemma Measurable.imp (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a → q a :=
   measurableSet_setOf.1 <| hp.setOf.himp hq.setOf
 
+@[fun_prop]
 lemma Measurable.iff (hp : Measurable p) (hq : Measurable q) : Measurable fun a ↦ p a ↔ q a :=
   measurableSet_setOf.1 <| by simp_rw [iff_iff_implies_and_implies]; exact hq.setOf.bihimp hp.setOf
 
@@ -833,6 +872,7 @@ lemma Measurable.forall [Countable ι] {p : ι → α → Prop} (hp : ∀ i, Mea
     Measurable fun a ↦ ∀ i, p i a :=
   measurableSet_setOf.1 <| by rw [setOf_forall]; exact MeasurableSet.iInter fun i ↦ (hp i).setOf
 
+@[fun_prop]
 lemma Measurable.exists [Countable ι] {p : ι → α → Prop} (hp : ∀ i, Measurable (p i)) :
     Measurable fun a ↦ ∃ i, p i a :=
   measurableSet_setOf.1 <| by rw [setOf_exists]; exact MeasurableSet.iUnion fun i ↦ (hp i).setOf
@@ -851,23 +891,27 @@ instance Set.instMeasurableSingletonClass [Countable α] : MeasurableSingletonCl
 
 lemma measurable_set_iff : Measurable g ↔ ∀ a, Measurable fun x ↦ a ∈ g x := measurable_pi_iff
 
-@[aesop safe 100 apply (rule_sets := [Measurable])]
+@[fun_prop]
 lemma measurable_set_mem (a : α) : Measurable fun s : Set α ↦ a ∈ s := measurable_pi_apply _
 
-@[aesop safe 100 apply (rule_sets := [Measurable])]
-lemma measurable_set_not_mem (a : α) : Measurable fun s : Set α ↦ a ∉ s :=
+@[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
+lemma measurable_set_notMem (a : α) : Measurable fun s : Set α ↦ a ∉ s :=
   (Measurable.of_discrete (f := Not)).comp <| measurable_set_mem a
+
+@[deprecated (since := "2025-05-23")] alias measurable_set_not_mem := measurable_set_notMem
 
 @[aesop safe 100 apply (rule_sets := [Measurable])]
 lemma measurableSet_mem (a : α) : MeasurableSet {s : Set α | a ∈ s} :=
   measurableSet_setOf.2 <| measurable_set_mem _
 
 @[aesop safe 100 apply (rule_sets := [Measurable])]
-lemma measurableSet_not_mem (a : α) : MeasurableSet {s : Set α | a ∉ s} :=
-  measurableSet_setOf.2 <| measurable_set_not_mem _
+lemma measurableSet_notMem (a : α) : MeasurableSet {s : Set α | a ∉ s} :=
+  measurableSet_setOf.2 <| measurable_set_notMem _
+
+@[deprecated (since := "2025-05-23")] alias measurableSet_not_mem := measurableSet_notMem
 
 lemma measurable_compl : Measurable ((·ᶜ) : Set α → Set α) :=
-  measurable_set_iff.2 fun _ ↦ measurable_set_not_mem _
+  measurable_set_iff.2 fun _ ↦ measurable_set_notMem _
 
 lemma MeasurableSet.setOf_finite [Countable α] : MeasurableSet {s : Set α | s.Finite} :=
   Countable.setOf_finite.measurableSet
@@ -884,3 +928,50 @@ lemma MeasurableSet.sep_infinite [Countable α] {S : Set (Set α)} (hS : Measura
   hS.inter .setOf_infinite
 
 end Set
+
+section curry
+
+variable {ι : Type*}
+
+section Function
+
+variable {κ X : Type*} [MeasurableSpace X]
+
+@[fun_prop, measurability]
+lemma measurable_curry : Measurable (@curry ι κ X) :=
+  measurable_pi_lambda _ fun _ ↦ measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+
+-- This cannot be tagged with `fun_prop` because `fun_prop` can see through `Function.uncurry`.
+lemma measurable_uncurry : Measurable (@uncurry ι κ X) := by fun_prop
+
+@[fun_prop, measurability]
+lemma measurable_equivCurry : Measurable (Equiv.curry ι κ X) := measurable_curry
+
+@[fun_prop, measurability]
+lemma measurable_equivCurry_symm : Measurable (Equiv.curry ι κ X).symm := measurable_uncurry
+
+end Function
+
+section Sigma
+
+variable {κ : ι → Type*} {X : (i : ι) → κ i → Type*} [∀ i j, MeasurableSpace (X i j)]
+
+@[fun_prop, measurability]
+lemma measurable_sigmaCurry : Measurable (Sigma.curry (γ := X)) :=
+    measurable_pi_lambda _ fun _ ↦ measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
+
+@[fun_prop, measurability]
+lemma measurable_sigmaUncurry : Measurable (Sigma.uncurry (γ := X)) := by
+  refine measurable_pi_lambda _ fun _ ↦ ?_
+  simp only [Sigma.uncurry]
+  fun_prop
+
+@[fun_prop, measurability]
+lemma measurable_piCurry : Measurable (Equiv.piCurry X) := measurable_sigmaCurry
+
+@[fun_prop, measurability]
+lemma measurable_piCurry_symm : Measurable (Equiv.piCurry X).symm := measurable_sigmaUncurry
+
+end Sigma
+
+end curry

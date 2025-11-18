@@ -3,8 +3,8 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Matroid.IndepAxioms
-import Mathlib.Data.Matroid.Rank.Cardinal
+import Mathlib.Combinatorics.Matroid.IndepAxioms
+import Mathlib.Combinatorics.Matroid.Rank.Cardinal
 import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
 import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 
@@ -132,6 +132,38 @@ theorem isTranscendenceBasis_iff_algebraicIndependent_isAlgebraic [Nontrivial R]
   ⟨fun h ↦ ⟨h.1, h.1.isTranscendenceBasis_iff_isAlgebraic.mp h⟩,
     fun ⟨ind, alg⟩ ↦ ind.isTranscendenceBasis_iff_isAlgebraic.mpr alg⟩
 
+lemma IsTranscendenceBasis.algebraMap_comp
+    [Nontrivial R] [NoZeroDivisors S] [Algebra.IsAlgebraic S A] [FaithfulSMul S A]
+    {x : ι → S} (hx : IsTranscendenceBasis R x) : IsTranscendenceBasis R (algebraMap S A ∘ x) := by
+  let f := IsScalarTower.toAlgHom R S A
+  refine hx.1.map (f := f) (FaithfulSMul.algebraMap_injective S A).injOn
+    |>.isTranscendenceBasis_iff_isAlgebraic.mpr ?_
+  rw [Set.range_comp, ← AlgHom.map_adjoin]
+  set Rx := adjoin R (range x)
+  let e := Rx.equivMapOfInjective f (FaithfulSMul.algebraMap_injective S A)
+  letI := e.toRingHom.toAlgebra
+  haveI : IsScalarTower Rx (Rx.map f) A := .of_algebraMap_eq fun x ↦ rfl
+  have : Algebra.IsAlgebraic Rx S := hx.isAlgebraic
+  have : Algebra.IsAlgebraic Rx A := .trans _ S _
+  exact .extendScalars e.injective
+
+lemma IsTranscendenceBasis.isAlgebraic_iff [IsDomain S] [NoZeroDivisors A]
+    {ι : Type*} {v : ι → A} (hv : IsTranscendenceBasis R v) :
+    Algebra.IsAlgebraic S A ↔ ∀ i, IsAlgebraic S (v i) := by
+  refine ⟨fun _ i ↦ Algebra.IsAlgebraic.isAlgebraic (v i), fun H ↦ ?_⟩
+  let Rv := adjoin R (range v)
+  let Sv := adjoin S (range v)
+  have : Algebra.IsAlgebraic S Sv := by
+    simpa [Sv, ← Subalgebra.isAlgebraic_iff, isAlgebraic_adjoin_iff]
+  have le : Rv ≤ Sv.restrictScalars R := by
+    rw [Subalgebra.restrictScalars_adjoin]; exact le_sup_right
+  letI : Algebra Rv Sv := (Subalgebra.inclusion le).toAlgebra
+  have : IsScalarTower Rv Sv A := .of_algebraMap_eq fun x ↦ rfl
+  have := (algebraMap R S).domain_nontrivial
+  have := hv.isAlgebraic
+  have : Algebra.IsAlgebraic Sv A := .extendScalars (Subalgebra.inclusion_injective le)
+  exact .trans _ Sv _
+
 variable (ι R)
 
 theorem IsTranscendenceBasis.mvPolynomial [Nontrivial R] :
@@ -139,7 +171,7 @@ theorem IsTranscendenceBasis.mvPolynomial [Nontrivial R] :
   refine isTranscendenceBasis_iff_algebraicIndependent_isAlgebraic.2 ⟨algebraicIndependent_X .., ?_⟩
   rw [adjoin_range_X]
   set A := MvPolynomial ι R
-  have := Algebra.isIntegral_of_surjective (R := (⊤ : Subalgebra R A)) (A := A) (⟨⟨·, ⟨⟩⟩, rfl⟩)
+  have := Algebra.isIntegral_of_surjective (R := (⊤ : Subalgebra R A)) (B := A) (⟨⟨·, ⟨⟩⟩, rfl⟩)
   infer_instance
 
 theorem IsTranscendenceBasis.mvPolynomial' [Nonempty ι] :
@@ -166,7 +198,7 @@ theorem IsTranscendenceBasis.sumElim_comp [NoZeroDivisors A] {x : ι → S} {y :
   let Rxy := adjoin Rx (range y)
   rw [show adjoin R (range <| Sum.elim y (algebraMap S A ∘ x)) = Rxy.restrictScalars R by
     rw [← adjoin_algebraMap_image_union_eq_adjoin_adjoin, Sum.elim_range, union_comm, range_comp]]
-  show Algebra.IsAlgebraic Rxy A
+  change Algebra.IsAlgebraic Rxy A
   have := hx.1.algebraMap_injective.nontrivial
   have := hy.1.algebraMap_injective.nontrivial
   have := hy.isAlgebraic
@@ -230,9 +262,9 @@ private def indepMatroid : IndepMatroid A where
     rw [← isTranscendenceBasis_iff_maximal] at B_base ⊢
     cases subsingleton_or_nontrivial R
     · rw [isTranscendenceBasis_iff_of_subsingleton] at B_base ⊢
-      contrapose! h
+      by_contra this
       have ⟨b, hb⟩ := B_base
-      exact ⟨b, ⟨hb, fun hbI ↦ h ⟨b, hbI⟩⟩, .of_subsingleton⟩
+      exact h b ⟨hb, fun hbI ↦ this ⟨b, hbI⟩⟩ .of_subsingleton
     apply I_ind.isTranscendenceBasis_iff_isAlgebraic.mpr
     replace B_base := B_base.isAlgebraic
     simp_rw [id_eq]
@@ -279,6 +311,7 @@ theorem matroid_isBasis_iff [IsDomain A] {s t : Set A} : (matroid R A).IsBasis s
     fun alg a ha h ↦ ((AlgebraicIndepOn.insert_iff ha).mp h.1).2 <| by
       rw [image_id]; exact alg _ <| h.2 <| mem_insert ..⟩
 
+open Subsingleton in
 theorem matroid_isBasis_iff_of_subsingleton [Subsingleton A] {s t : Set A} :
     (matroid R A).IsBasis s t ↔ s = t := by
   have := (FaithfulSMul.algebraMap_injective R A).subsingleton
@@ -316,6 +349,8 @@ theorem matroid_spanning_iff [IsDomain A] {s : Set A} :
     (matroid R A).Spanning s ↔ Algebra.IsAlgebraic (adjoin R s) A := by
   simp_rw [Matroid.spanning_iff, matroid_e, subset_univ, and_true, eq_univ_iff_forall,
     matroid_closure_eq, SetLike.mem_coe, mem_algebraicClosure, Algebra.isAlgebraic_def]
+
+open Subsingleton -- brings the Subsingleton.to_noZeroDivisors instance into scope
 
 theorem matroid_isFlat_of_subsingleton [Subsingleton A] (s : Set A) : (matroid R A).IsFlat s := by
   simp_rw [Matroid.isFlat_iff, matroid_e, subset_univ,
@@ -440,7 +475,7 @@ theorem isTranscendenceBasis_of_lift_le_trdeg_of_finite
     [Finite ι] [alg : Algebra.IsAlgebraic (adjoin R (range x)) A]
     (le : lift.{w} #ι ≤ lift.{u} (trdeg R A)) : IsTranscendenceBasis R x := by
   have ⟨_, h⟩ := lift_mk_le'.mp (le.trans <| lift_le.mpr <| trdeg_le_cardinalMk R (range x))
-  have := surjective_onto_range.bijective_of_nat_card_le (Nat.card_le_card_of_injective _ h)
+  have := rangeFactorization_surjective.bijective_of_nat_card_le (Nat.card_le_card_of_injective _ h)
   refine .of_subtype_range (fun _ _ ↦ (this.1 <| Subtype.ext ·)) ?_
   have := isDomain_of_adjoin_range R (range x)
   rw [← matroid_spanning_iff, ← matroid_cRank_eq] at *
@@ -484,7 +519,7 @@ theorem isTranscendenceBasis_of_trdeg_le {ι : Type w} {x : ι → A} (hx : Alge
 theorem isTranscendenceBasis_of_lift_trdeg_le_of_finite [Finite ι] (hx : AlgebraicIndependent R x)
     (le : lift.{u} (trdeg R A) ≤ lift.{w} #ι) : IsTranscendenceBasis R x :=
   isTranscendenceBasis_of_lift_trdeg_le hx
-    (lift_lt.mp <| le.trans_lt <| by simp [mk_lt_aleph0_iff]) le
+    (lift_lt.mp <| le.trans_lt <| by simp) le
 
 theorem isTranscendenceBasis_of_trdeg_le_of_finite {ι : Type w} [Finite ι] {x : ι → A}
     (hx : AlgebraicIndependent R x) (le : trdeg R A ≤ #ι) : IsTranscendenceBasis R x :=

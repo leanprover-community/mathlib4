@@ -69,7 +69,7 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
         | empty =>
           intro P he _hh
           simpa
-        | @insert a E _ha hh1 =>
+        | insert a E _ha hh1 =>
           intro hh2 hh3 hh4 hh5
           rw [Finset.set_biInter_insert]
           refine hh4 _ _ (hh5 _ (Finset.mem_insert_self _ _)) (hh1 _ hh3 hh4 ?_)
@@ -90,10 +90,7 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
       rw [Set.preimage_iInter]
       apply congrArg
       ext1 he
-      -- Porting note: needed more hand holding here
-      change (C.π.app e)⁻¹' U e =
-        (C.π.app j) ⁻¹' if h : e ∈ G then F.map (g e h) ⁻¹' U e else Set.univ
-      simp [he, ← Set.preimage_comp, ← coe_comp]
+      simp [Vs, dif_pos he, ← Set.preimage_comp, ← coe_comp]
 
 end CofilteredLimit
 

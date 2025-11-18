@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Data.Set.Subset
 import Mathlib.Topology.Clopen
+import Mathlib.Topology.Compactness.Compact
 import Mathlib.Topology.Connected.Basic
 
 /-!
@@ -25,7 +26,7 @@ open Set Function Topology TopologicalSpace Relation
 
 universe u v
 
-variable {α : Type u} {β : Type v} {ι : Type*} {π : ι → Type*} [TopologicalSpace α]
+variable {α : Type u} {β : Type v} {ι : Type*} {X : ι → Type*} [TopologicalSpace α]
   {s t u v : Set α}
 
 section Preconnected
@@ -35,7 +36,7 @@ theorem IsPreconnected.subset_isClopen {s t : Set α} (hs : IsPreconnected s) (h
     (hne : (s ∩ t).Nonempty) : s ⊆ t :=
   hs.subset_left_of_subset_union ht.isOpen ht.compl.isOpen disjoint_compl_right (by simp) hne
 
-theorem Sigma.isConnected_iff [∀ i, TopologicalSpace (π i)] {s : Set (Σ i, π i)} :
+theorem Sigma.isConnected_iff [∀ i, TopologicalSpace (X i)] {s : Set (Σ i, X i)} :
     IsConnected s ↔ ∃ i t, IsConnected t ∧ s = Sigma.mk i '' t := by
   refine ⟨fun hs => ?_, ?_⟩
   · obtain ⟨⟨i, x⟩, hx⟩ := hs.nonempty
@@ -46,8 +47,8 @@ theorem Sigma.isConnected_iff [∀ i, TopologicalSpace (π i)] {s : Set (Σ i, �
   · rintro ⟨i, t, ht, rfl⟩
     exact ht.image _ continuous_sigmaMk.continuousOn
 
-theorem Sigma.isPreconnected_iff [hι : Nonempty ι] [∀ i, TopologicalSpace (π i)]
-    {s : Set (Σ i, π i)} : IsPreconnected s ↔ ∃ i t, IsPreconnected t ∧ s = Sigma.mk i '' t := by
+theorem Sigma.isPreconnected_iff [hι : Nonempty ι] [∀ i, TopologicalSpace (X i)]
+    {s : Set (Σ i, X i)} : IsPreconnected s ↔ ∃ i t, IsPreconnected t ∧ s = Sigma.mk i '' t := by
   refine ⟨fun hs => ?_, ?_⟩
   · obtain rfl | h := s.eq_empty_or_nonempty
     · exact ⟨Classical.choice hι, ∅, isPreconnected_empty, (Set.image_empty _).symm⟩
@@ -88,12 +89,12 @@ theorem Sum.isPreconnected_iff [TopologicalSpace β] {s : Set (α ⊕ β)} :
     · exact ht.image _ continuous_inl.continuousOn
     · exact ht.image _ continuous_inr.continuousOn
 
-/-- A continuous map from a connected space to a disjoint union `Σ i, π i` can be lifted to one of
-the components `π i`. See also `ContinuousMap.exists_lift_sigma` for a version with bundled
+/-- A continuous map from a connected space to a disjoint union `Σ i, X i` can be lifted to one of
+the components `X i`. See also `ContinuousMap.exists_lift_sigma` for a version with bundled
 `ContinuousMap`s. -/
-theorem Continuous.exists_lift_sigma [ConnectedSpace α] [∀ i, TopologicalSpace (π i)]
-    {f : α → Σ i, π i} (hf : Continuous f) :
-    ∃ (i : ι) (g : α → π i), Continuous g ∧ f = Sigma.mk i ∘ g := by
+theorem Continuous.exists_lift_sigma [ConnectedSpace α] [∀ i, TopologicalSpace (X i)]
+    {f : α → Σ i, X i} (hf : Continuous f) :
+    ∃ (i : ι) (g : α → X i), Continuous g ∧ f = Sigma.mk i ∘ g := by
   obtain ⟨i, hi⟩ : ∃ i, range f ⊆ range (.mk i) := by
     rcases Sigma.isConnected_iff.1 (isConnected_range hf) with ⟨i, s, -, hs⟩
     exact ⟨i, hs.trans_subset (image_subset_range _ _)⟩
@@ -204,7 +205,7 @@ lemma PreconnectedSpace.induction₂' [PreconnectedSpace α] (P : α → α → 
     exact h' hz ht.1
   have C : u.Nonempty := ⟨x, (mem_of_mem_nhds (h x)).1⟩
   have D : u = Set.univ := IsClopen.eq_univ ⟨A, B⟩ C
-  show y ∈ u
+  change y ∈ u
   simp [D]
 
 /-- In a preconnected space, if a symmetric transitive relation `P x y` is true for `y` close
@@ -225,7 +226,7 @@ lemma IsPreconnected.induction₂' {s : Set α} (hs : IsPreconnected s) (P : α 
     (h' : ∀ x y z, x ∈ s → y ∈ s → z ∈ s → P x y → P y z → P x z)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) : P x y := by
   let Q : s → s → Prop := fun a b ↦ P a b
-  show Q ⟨x, hx⟩ ⟨y, hy⟩
+  change Q ⟨x, hx⟩ ⟨y, hy⟩
   have : PreconnectedSpace s := Subtype.preconnectedSpace hs
   apply PreconnectedSpace.induction₂'
   · rintro ⟨x, hx⟩
@@ -282,7 +283,7 @@ theorem isConnected_iff_sUnion_disjoint_open {s : Set α} :
   refine ⟨fun ⟨hne, h⟩ U hU hUo hsU => ?_, fun h => ⟨?_, fun u v hu hv hs hsuv => ?_⟩⟩
   · induction U using Finset.induction_on with
     | empty => exact absurd (by simpa using hsU) hne.not_subset_empty
-    | @insert u U uU IH =>
+    | insert u U uU IH =>
       simp only [← forall_cond_comm, Finset.forall_mem_insert, Finset.exists_mem_insert,
         Finset.coe_insert, sUnion_insert, implies_true, true_and] at *
       refine (h _ hUo.1 (⋃₀ ↑U) (isOpen_sUnion hUo.2) hsU ?_).imp_right ?_
@@ -458,16 +459,10 @@ theorem Topology.IsQuotientMap.preimage_connectedComponent (hf : IsQuotientMap f
       _).subset_connectedComponent mem_connectedComponent).antisymm
     (hf.continuous.mapsTo_connectedComponent a)
 
-@[deprecated (since := "2024-10-22")]
-alias QuotientMap.preimage_connectedComponent := IsQuotientMap.preimage_connectedComponent
-
 lemma Topology.IsQuotientMap.image_connectedComponent {f : α → β} (hf : IsQuotientMap f)
     (h_fibers : ∀ y : β, IsConnected (f ⁻¹' {y})) (a : α) :
     f '' connectedComponent a = connectedComponent (f a) := by
   rw [← hf.preimage_connectedComponent h_fibers, image_preimage_eq _ hf.surjective]
-
-@[deprecated (since := "2024-10-22")]
-alias QuotientMap.image_connectedComponent := IsQuotientMap.image_connectedComponent
 
 end Preconnected
 
@@ -512,9 +507,6 @@ theorem surjective_coe : Surjective (mk : α → ConnectedComponents α) :=
 theorem isQuotientMap_coe : IsQuotientMap (mk : α → ConnectedComponents α) :=
   isQuotientMap_quot_mk
 
-@[deprecated (since := "2024-10-22")]
-alias quotientMap_coe := isQuotientMap_coe
-
 @[continuity]
 theorem continuous_coe : Continuous (mk : α → ConnectedComponents α) :=
   isQuotientMap_coe.continuous
@@ -549,17 +541,32 @@ theorem isPreconnected_of_forall_constant {s : Set α}
   unfold IsPreconnected
   by_contra!
   rcases this with ⟨u, v, u_op, v_op, hsuv, ⟨x, x_in_s, x_in_u⟩, ⟨y, y_in_s, y_in_v⟩, H⟩
-  have hy : y ∉ u := fun y_in_u => eq_empty_iff_forall_not_mem.mp H y ⟨y_in_s, ⟨y_in_u, y_in_v⟩⟩
+  have hy : y ∉ u := fun y_in_u => eq_empty_iff_forall_notMem.mp H y ⟨y_in_s, ⟨y_in_u, y_in_v⟩⟩
   have : ContinuousOn u.boolIndicator s := by
     apply (continuousOn_boolIndicator_iff_isClopen _ _).mpr ⟨_, _⟩
     · rw [preimage_subtype_coe_eq_compl hsuv H]
       exact (v_op.preimage continuous_subtype_val).isClosed_compl
     · exact u_op.preimage continuous_subtype_val
-  simpa [(u.mem_iff_boolIndicator _).mp x_in_u, (u.not_mem_iff_boolIndicator _).mp hy] using
+  simpa [(u.mem_iff_boolIndicator _).mp x_in_u, (u.notMem_iff_boolIndicator _).mp hy] using
     hs _ this x x_in_s y y_in_s
 
 /-- A `PreconnectedSpace` version of `isPreconnected_of_forall_constant` -/
 theorem preconnectedSpace_of_forall_constant
     (hs : ∀ f : α → Bool, Continuous f → ∀ x y, f x = f y) : PreconnectedSpace α :=
   ⟨isPreconnected_of_forall_constant fun f hf x _ y _ =>
-      hs f (continuous_iff_continuousOn_univ.mpr hf) x y⟩
+      hs f (continuousOn_univ.mp hf) x y⟩
+
+theorem preconnectedSpace_iff_clopen :
+    PreconnectedSpace α ↔ ∀ s : Set α, IsClopen s → s = ∅ ∨ s = Set.univ := by
+  refine ⟨fun _ _ => isClopen_iff.mp, fun h ↦ ?_⟩
+  refine preconnectedSpace_of_forall_constant fun f hf x y ↦ ?_
+  have : f ⁻¹' {false} = (f ⁻¹' {true})ᶜ := by
+    rw [← Set.preimage_compl, Bool.compl_singleton, Bool.not_true]
+  obtain (h | h) := h _ ((isClopen_discrete {true}).preimage hf) <;> simp_all
+
+theorem connectedSpace_iff_clopen :
+    ConnectedSpace α ↔ Nonempty α ∧ ∀ s : Set α, IsClopen s → s = ∅ ∨ s = Set.univ := by
+  rw [connectedSpace_iff_univ, IsConnected, ← preconnectedSpace_iff_univ,
+    preconnectedSpace_iff_clopen, Set.nonempty_iff_univ_nonempty]
+
+instance [CompactSpace α] : CompactSpace <| ConnectedComponents α := Quotient.compactSpace

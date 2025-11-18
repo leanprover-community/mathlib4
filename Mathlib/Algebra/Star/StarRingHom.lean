@@ -22,7 +22,7 @@ As with `NonUnitalRingHom`, the multiplications are not assumed to be associativ
 
 ## Implementation
 
-This file is heavily inspired by `Mathlib.Algebra.Star.StarAlgHom`.
+This file is heavily inspired by `Mathlib/Algebra/Star/StarAlgHom.lean`.
 
 ## Tags
 
@@ -88,7 +88,7 @@ variable [NonUnitalNonAssocSemiring D] [Star D]
 
 instance : FunLike (A →⋆ₙ+* B) A B where
   coe f := f.toFun
-  coe_injective' := by rintro ⟨⟨⟨f, _⟩,  _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
+  coe_injective' := by rintro ⟨⟨⟨f, _⟩, _⟩, _⟩ ⟨⟨⟨g, _⟩, _⟩, _⟩ h; congr
 
 instance : NonUnitalRingHomClass (A →⋆ₙ+* B) A B where
   map_mul f := f.map_mul'
@@ -133,9 +133,7 @@ theorem copy_eq (f : A →⋆ₙ+* B) (f' : A → B) (h : f' = f) : f.copy f' h 
   DFunLike.ext' h
 
 @[simp]
-theorem coe_mk (f : A →ₙ+* B) (h) :
-    ((⟨f, h⟩ : A  →⋆ₙ+* B) : A → B) = f :=
-  rfl
+theorem coe_mk (f : A →ₙ+* B) (h) : ((⟨f, h⟩ : A →⋆ₙ+* B) : A → B) = f := rfl
 
 @[simp]
 theorem mk_coe (f : A →⋆ₙ+* B) (h₁ h₂ h₃ h₄) :
@@ -160,7 +158,7 @@ end
 /-- The composition of non-unital ⋆-ring homomorphisms, as a non-unital ⋆-ring homomorphism. -/
 def comp (f : B →⋆ₙ+* C) (g : A →⋆ₙ+* B) : A →⋆ₙ+* C :=
   { f.toNonUnitalRingHom.comp g.toNonUnitalRingHom with
-    map_star' := fun a => by simp [Function.comp_def, map_star, map_star] }
+    map_star' := fun a => by simp [map_star, map_star] }
 
 @[simp]
 theorem coe_comp (f : B →⋆ₙ+* C) (g : A →⋆ₙ+* B) : ⇑(comp f g) = f ∘ g :=
@@ -359,7 +357,7 @@ theorem symm_symm (e : A ≃⋆+* B) : e.symm.symm = e := rfl
 theorem symm_bijective : Function.Bijective (symm : (A ≃⋆+* B) → B ≃⋆+* A) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
-theorem coe_mk (e h₁) : ⇑(⟨e, h₁⟩ : A ≃⋆+* B) = e := rfl
+@[simp] theorem coe_mk (e h₁) : ⇑(⟨e, h₁⟩ : A ≃⋆+* B) = e := rfl
 
 @[simp]
 theorem mk_coe (e : A ≃⋆+* B) (e' h₁ h₂ h₃ h₄ h₅) :
@@ -383,7 +381,7 @@ theorem refl_symm : (StarRingEquiv.refl : A ≃⋆+* A).symm = StarRingEquiv.ref
 
 /-- Transitivity of `StarRingEquiv`. -/
 @[trans]
-def trans (e₁ : A≃⋆+* B) (e₂ : B ≃⋆+* C) : A ≃⋆+* C :=
+def trans (e₁ : A ≃⋆+* B) (e₂ : B ≃⋆+* C) : A ≃⋆+* C :=
   { e₁.toRingEquiv.trans e₂.toRingEquiv with
     map_star' := fun a =>
       show e₂.toFun (e₁.toFun (star a)) = star (e₂.toFun (e₁.toFun a)) by

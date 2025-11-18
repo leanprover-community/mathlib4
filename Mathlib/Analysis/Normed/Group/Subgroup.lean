@@ -32,15 +32,15 @@ variable [SeminormedGroup E] {s : Subgroup E}
 
 /-- A subgroup of a seminormed group is also a seminormed group,
 with the restriction of the norm. -/
-@[to_additive "A subgroup of a seminormed group is also a seminormed group, with the restriction of
-the norm."]
+@[to_additive /-- A subgroup of a seminormed group is also a seminormed group, with the restriction
+of the norm. -/]
 instance seminormedGroup : SeminormedGroup s :=
   SeminormedGroup.induced _ _ s.subtype
 
 /-- If `x` is an element of a subgroup `s` of a seminormed group `E`, its norm in `s` is equal to
 its norm in `E`. -/
-@[to_additive (attr := simp) "If `x` is an element of a subgroup `s` of a seminormed group `E`, its
-norm in `s` is equal to its norm in `E`."]
+@[to_additive (attr := simp) /-- If `x` is an element of a subgroup `s` of a seminormed group `E`,
+its norm in `s` is equal to its norm in `E`. -/]
 theorem coe_norm (x : s) : ‖x‖ = ‖(x : E)‖ :=
   rfl
 
@@ -48,10 +48,10 @@ theorem coe_norm (x : s) : ‖x‖ = ‖(x : E)‖ :=
 its norm in `E`.
 
 This is a reversed version of the `simp` lemma `Subgroup.coe_norm` for use by `norm_cast`. -/
-@[to_additive (attr := norm_cast) "If `x` is an element of a subgroup `s` of a seminormed group `E`,
-its norm in `s` is equal to its norm in `E`.
+@[to_additive (attr := norm_cast) /-- If `x` is an element of a subgroup `s` of a seminormed group
+`E`, its norm in `s` is equal to its norm in `E`.
 
-This is a reversed version of the `simp` lemma `AddSubgroup.coe_norm` for use by `norm_cast`."]
+This is a reversed version of the `simp` lemma `AddSubgroup.coe_norm` for use by `norm_cast`. -/]
 theorem norm_coe {s : Subgroup E} (x : s) : ‖(x : E)‖ = ‖x‖ :=
   rfl
 
@@ -82,15 +82,15 @@ variable [SeminormedGroup E] {S : Type*} [SetLike S E] [SubgroupClass S E] (s : 
 
 /-- A subgroup of a seminormed group is also a seminormed group,
 with the restriction of the norm. -/
-@[to_additive "A subgroup of a seminormed additive group is also a seminormed additive group, with
-the restriction of the norm."]
+@[to_additive /-- A subgroup of a seminormed additive group is also a seminormed additive group,
+with the restriction of the norm. -/]
 instance (priority := 75) seminormedGroup : SeminormedGroup s :=
   SeminormedGroup.induced _ _ (SubgroupClass.subtype s)
 
 /-- If `x` is an element of a subgroup `s` of a seminormed group `E`, its norm in `s` is equal to
 its norm in `E`. -/
-@[to_additive (attr := simp) "If `x` is an element of an additive subgroup `s` of a seminormed
-additive group `E`, its norm in `s` is equal to its norm in `E`."]
+@[to_additive (attr := simp) /-- If `x` is an element of an additive subgroup `s` of a seminormed
+additive group `E`, its norm in `s` is equal to its norm in `E`. -/]
 theorem coe_norm (x : s) : ‖x‖ = ‖(x : E)‖ :=
   rfl
 

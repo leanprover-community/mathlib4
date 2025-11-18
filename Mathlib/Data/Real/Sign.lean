@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Eric Wieser
 -/
 import Mathlib.Data.Real.Basic
-import Mathlib.Tactic.NormNum.Inv
 
 /-!
 # Real sign function
@@ -14,9 +13,9 @@ real numbers to -1, positive real numbers to 1, and 0 to 0.
 
 ## Main definitions
 
- * `Real.sign r` is $\begin{cases} -1 & \text{if } r < 0, \\
-                               ~~\, 0 & \text{if } r = 0, \\
-                               ~~\, 1 & \text{if } r > 0. \end{cases}$
+* `Real.sign r` is $\begin{cases} -1 & \text{if } r < 0, \\
+                              ~~\, 0 & \text{if } r = 0, \\
+                              ~~\, 1 & \text{if } r > 0. \end{cases}$
 
 ## Tags
 
@@ -33,14 +32,14 @@ noncomputable def sign (r : ℝ) : ℝ :=
 
 theorem sign_of_neg {r : ℝ} (hr : r < 0) : sign r = -1 := by rw [sign, if_pos hr]
 
-theorem sign_of_pos {r : ℝ} (hr : 0 < r) : sign r = 1 := by rw [sign, if_pos hr, if_neg hr.not_lt]
+theorem sign_of_pos {r : ℝ} (hr : 0 < r) : sign r = 1 := by rw [sign, if_pos hr, if_neg hr.not_gt]
 
 @[simp]
 theorem sign_zero : sign 0 = 0 := by rw [sign, if_neg (lt_irrefl _), if_neg (lt_irrefl _)]
 
 @[simp]
 theorem sign_one : sign 1 = 1 :=
-  sign_of_pos <| by norm_num
+  sign_of_pos <| by simp
 
 theorem sign_apply_eq (r : ℝ) : sign r = -1 ∨ sign r = 0 ∨ sign r = 1 := by
   obtain hn | rfl | hp := lt_trichotomy r (0 : ℝ)
@@ -50,7 +49,7 @@ theorem sign_apply_eq (r : ℝ) : sign r = -1 ∨ sign r = 0 ∨ sign r = 1 := b
 
 /-- This lemma is useful for working with `ℝˣ` -/
 theorem sign_apply_eq_of_ne_zero (r : ℝ) (h : r ≠ 0) : sign r = -1 ∨ sign r = 1 :=
-  h.lt_or_lt.imp sign_of_neg sign_of_pos
+  h.lt_or_gt.imp sign_of_neg sign_of_pos
 
 @[simp]
 theorem sign_eq_zero_iff {r : ℝ} : sign r = 0 ↔ r = 0 := by
@@ -78,7 +77,7 @@ theorem sign_neg {r : ℝ} : sign (-r) = -sign r := by
 theorem sign_mul_nonneg (r : ℝ) : 0 ≤ sign r * r := by
   obtain hn | rfl | hp := lt_trichotomy r (0 : ℝ)
   · rw [sign_of_neg hn]
-    exact mul_nonneg_of_nonpos_of_nonpos (by norm_num) hn.le
+    exact mul_nonneg_of_nonpos_of_nonpos (by simp) hn.le
   · rw [mul_zero]
   · rw [sign_of_pos hp, one_mul]
     exact hp.le
@@ -92,7 +91,7 @@ theorem sign_mul_pos_of_ne_zero (r : ℝ) (hr : r ≠ 0) : 0 < sign r * r := by
 theorem inv_sign (r : ℝ) : (sign r)⁻¹ = sign r := by
   obtain hn | hz | hp := sign_apply_eq r
   · rw [hn]
-    norm_num
+    simp
   · rw [hz]
     exact inv_zero
   · rw [hp]

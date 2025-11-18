@@ -60,9 +60,6 @@ lemma subtype_injective :
 protected theorem coe_subtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
   rfl
 
-@[deprecated (since := "2025-02-18")]
-protected alias coeSubtype := SMulMemClass.coe_subtype
-
 end SMulMemClass
 
 namespace Submodule
@@ -81,8 +78,8 @@ variable (p)
 /-- Embedding of a submodule `p` to the ambient space `M`. -/
 protected def subtype : p →ₗ[R] M where
   toFun := Subtype.val
-  map_add' := by simp [coe_smul]
-  map_smul' := by simp [coe_smul]
+  map_add' := by simp
+  map_smul' := by simp
 
 variable {p} in
 @[simp]
@@ -146,6 +143,9 @@ def domRestrict (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) : p →ₛ�
 theorem domRestrict_apply (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) (x : p) :
     f.domRestrict p x = f x :=
   rfl
+
+lemma coe_domRestrict (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) :
+    ⇑(f.domRestrict p) = Set.restrict p f := rfl
 
 /-- A linear map `f : M₂ → M` whose values lie in a submodule `p ⊆ M` can be restricted to a
 linear map M₂ → p.
@@ -236,9 +236,8 @@ lemma restrict_smul_one
 lemma restrict_commute {f g : M →ₗ[R] M} (h : Commute f g) {p : Submodule R M}
     (hf : MapsTo f p p) (hg : MapsTo g p p) :
     Commute (f.restrict hf) (g.restrict hg) := by
-  change _ * _ = _ * _
-  conv_lhs => rw [mul_eq_comp, ← restrict_comp]; congr; rw [← mul_eq_comp, h.eq]
-  rfl
+  change (f ∘ₗ g).restrict (hf.comp hg) = (g ∘ₗ f).restrict (hg.comp hf)
+  congr 1
 
 theorem subtype_comp_restrict {f : M →ₗ[R] M₁} {p : Submodule R M} {q : Submodule R M₁}
     (hf : ∀ x ∈ p, f x ∈ q) : q.subtype.comp (f.restrict hf) = f.domRestrict p :=
@@ -267,31 +266,31 @@ theorem coeFn_sum {ι : Type*} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂]
              map_zero' := rfl
              map_add' := fun _ _ => rfl }) _ _
 
-theorem submodule_pow_eq_zero_of_pow_eq_zero {N : Submodule R M} {g : Module.End R N}
-    {G : Module.End R M} (h : G.comp N.subtype = N.subtype.comp g) {k : ℕ} (hG : G ^ k = 0) :
-    g ^ k = 0 := by
+theorem _root_.Module.End.submodule_pow_eq_zero_of_pow_eq_zero {N : Submodule R M}
+    {g : Module.End R N} {G : Module.End R M} (h : G.comp N.subtype = N.subtype.comp g) {k : ℕ}
+    (hG : G ^ k = 0) : g ^ k = 0 := by
   ext m
   have hg : N.subtype.comp (g ^ k) m = 0 := by
-    rw [← commute_pow_left_of_commute h, hG, zero_comp, zero_apply]
+    rw [← Module.End.commute_pow_left_of_commute h, hG, zero_comp, zero_apply]
   simpa using hg
 
 section
 
 variable {f' : M →ₗ[R] M}
 
-theorem pow_apply_mem_of_forall_mem {p : Submodule R M} (n : ℕ) (h : ∀ x ∈ p, f' x ∈ p) (x : M)
-    (hx : x ∈ p) : (f' ^ n) x ∈ p := by
+theorem _root_.Module.End.pow_apply_mem_of_forall_mem {p : Submodule R M} (n : ℕ)
+    (h : ∀ x ∈ p, f' x ∈ p) (x : M) (hx : x ∈ p) : (f' ^ n) x ∈ p := by
   induction n generalizing x with
   | zero => simpa
   | succ n ih =>
     simpa only [iterate_succ, coe_comp, Function.comp_apply, restrict_apply] using ih _ (h _ hx)
 
-theorem pow_restrict {p : Submodule R M} (n : ℕ) (h : ∀ x ∈ p, f' x ∈ p)
-    (h' := pow_apply_mem_of_forall_mem n h) :
+theorem _root_.Module.End.pow_restrict {p : Submodule R M} (n : ℕ) (h : ∀ x ∈ p, f' x ∈ p)
+    (h' := Module.End.pow_apply_mem_of_forall_mem n h) :
     (f'.restrict h) ^ n = (f' ^ n).restrict h' := by
   ext x
   have : Semiconj (↑) (f'.restrict h) f' := fun _ ↦ restrict_coe_apply _ _ _
-  simp [coe_pow, this.iterate_right _ _]
+  simp [Module.End.coe_pow, this.iterate_right _ _]
 
 end
 
@@ -344,9 +343,7 @@ theorem inclusion_injective (h : p ≤ p') : Function.Injective (inclusion h) :=
 variable (p p')
 
 theorem subtype_comp_inclusion (p q : Submodule R M) (h : p ≤ q) :
-    q.subtype.comp (inclusion h) = p.subtype := by
-  ext ⟨b, hb⟩
-  rfl
+    q.subtype.comp (inclusion h) = p.subtype := rfl
 
 end AddCommMonoid
 

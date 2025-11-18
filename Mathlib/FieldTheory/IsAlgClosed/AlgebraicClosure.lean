@@ -201,3 +201,22 @@ instance {L : Type*} [Field k] [Field L] [Algebra k L] [Algebra.IsAlgebraic k L]
   isAlgClosed := inferInstance
 
 end AlgebraicClosure
+
+namespace IntermediateField
+
+variable {K L : Type*} [Field K] [Field L] [Algebra K L] (E : IntermediateField K L)
+
+instance [Algebra.IsAlgebraic K E] : IsAlgClosure K (AlgebraicClosure E) :=
+  ⟨AlgebraicClosure.isAlgClosed E, Algebra.IsAlgebraic.trans K E (AlgebraicClosure E)⟩
+
+theorem AdjoinSimple.normal_algebraicClosure {x : L} (hx : IsIntegral K x) :
+    Normal K (AlgebraicClosure K⟮x⟯) :=
+  have : Algebra.IsAlgebraic K K⟮x⟯ := isAlgebraic_adjoin_simple hx
+  IsAlgClosure.normal _ _
+
+theorem AdjoinDouble.normal_algebraicClosure {x y : L} (hx : IsIntegral K x)
+    (hy : IsIntegral K y) : Normal K (AlgebraicClosure K⟮x, y⟯) :=
+  have : Algebra.IsAlgebraic K K⟮x, y⟯ := isAlgebraic_adjoin_pair hx hy
+  IsAlgClosure.normal _ _
+
+end IntermediateField

@@ -15,8 +15,8 @@ This actions is available in the `Pointwise` locale.
 
 ## Implementation notes
 
-This file is almost identical to the files `Mathlib.Algebra.GroupWithZero.Submonoid.Pointwise` and
-`Mathlib.Algebra.Ring.Submonoid.Pointwise`. Where possible, try to keep them in sync.
+This file is almost identical to the files `Mathlib/Algebra/GroupWithZero/Submonoid/Pointwise.lean`
+and `Mathlib/Algebra/Ring/Submonoid/Pointwise.lean`. Where possible, try to keep them in sync.
 -/
 
 
@@ -47,7 +47,7 @@ theorem pointwise_smul_def {a : M} (S : Subsemiring R) :
     a • S = S.map (MulSemiringAction.toRingHom _ _ a) :=
   rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_pointwise_smul (m : M) (S : Subsemiring R) : ↑(m • S) = m • (S : Set R) :=
   rfl
 
@@ -60,7 +60,7 @@ theorem smul_mem_pointwise_smul (m : M) (r : R) (S : Subsemiring R) : r ∈ S �
   (Set.smul_mem_smul_set : _ → _ ∈ m • (S : Set R))
 
 instance : CovariantClass M (Subsemiring R) HSMul.hSMul LE.le :=
-  ⟨fun _ _ => image_subset _⟩
+  ⟨fun _ _ => image_mono⟩
 
 theorem mem_smul_pointwise_iff_exists (m : M) (r : R) (S : Subsemiring R) :
     r ∈ m • S ↔ ∃ s : R, s ∈ S ∧ m • s = r :=
