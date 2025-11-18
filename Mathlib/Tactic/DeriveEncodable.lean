@@ -368,3 +368,7 @@ def mkEncodableInstance (declNames : Array Name) : CommandElabM Bool := do
 initialize
   registerDerivingHandler ``Encodable mkEncodableInstance
   registerTraceClass `Mathlib.Deriving.Encodable
+
+end
+
+end Mathlib.Deriving.Encodable
