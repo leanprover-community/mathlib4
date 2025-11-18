@@ -405,15 +405,16 @@ def unifyMovements (data : Array (Expr × Bool × Syntax)) (tgt : Expr) :
 section parsing
 open Elab Parser Tactic
 
-/-- `parseArrows` parses an input of the form `[a, ← b, _ * (1 : ℤ)]`, consisting of a list of
+/--
+`parseArrows` parses an input of the form `[a, ← b, _ * (1 : ℤ)]`, consisting of a list of
 terms, each optionally preceded by the arrow `←`.
 It returns an array of triples consisting of
-* the `Expr`ession corresponding to the parsed term,
-* the `Bool`ean `true` if the arrow is present in front of the term,
-* the underlying `Syntax` of the given term.
+* the expression corresponding to the parsed term,
+* a Boolean flag indicating whether the arrow is present in front of the term,
+* the underlying syntax of the given term.
 
-E.g. convert `[a, ← b, _ * (1 : ℤ)]` to
-``[(a, false, `(a)), (b, true, `(b)), (_ * 1, false, `(_ * 1))]``.
+For example, the input `[a, ← b, _ * (1 : ℤ)]` produces
+`[(a, false, syntax for `a`), (b, true, syntax for `b`), (_ * 1, false, syntax for `_ * 1`)].`
 -/
 def parseArrows : TSyntax `Lean.Parser.Tactic.rwRuleSeq → TermElabM (Array (Expr × Bool × Syntax))
   | `(rwRuleSeq| [$rs,*]) => do

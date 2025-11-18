@@ -7,7 +7,7 @@ variable (n : Nat)
 -- but is allowed by `linter.style.nameCheck`.
 notation "_" n "," => Nat.succ n
 
-/-- info: `«term__,» : Lean.Name -/
+/-- info: the notation generates the name `«term__,» : Lean.Name`. -/
 #guard_msgs in
 #check `«term__,»
 

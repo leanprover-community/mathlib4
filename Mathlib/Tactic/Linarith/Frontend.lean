@@ -197,7 +197,7 @@ If `e` is a comparison `a R b` or the negation of a comparison `¬ a R b`, found
 `getContrLemma e` returns the name of a lemma that will change the goal to an
 implication, along with the type of `a` and `b`.
 
-For example, if `e` is `(a : ℕ) < b`, returns ``(`lt_of_not_ge, ℕ)``.
+For example, if `e` is `(a : ℕ) < b`, this returns `(lt_of_not_ge, ℕ)`.
 -/
 def getContrLemma (e : Expr) : MetaM (Name × Expr) := do
   match ← e.ineqOrNotIneq? with

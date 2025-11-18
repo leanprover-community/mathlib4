@@ -18,7 +18,7 @@ elab "mdata% " e:term : term => do
   return .mdata ({ : MData}.insert `abc "def") e
 
 open Lean Elab Meta Term in
-/-- Produce the projection ``.proj `Prod 0 e`` for testing.
+/-- Produce the projection `.proj ``Prod 0 e` for testing.
 Standard elaborators may represent projections as ordinary functions instead. -/
 elab "fst% " e:term : term => do
   let u ← mkFreshLevelMVar

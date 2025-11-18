@@ -31,7 +31,7 @@ def rflTac : TacticM Unit :=
 
 /-- If `e` is the form `@R .. x y`, where `R` is a reflexive
 relation, return `some (R, x, y)`.
-As a special case, if `e` is `@HEq α a β b`, return ``some (`HEq, a, b)``. -/
+As a special case, if `e` is `@HEq α a β b`, return `some (HEq, a, b)`. -/
 def _root_.Lean.Expr.relSidesIfRefl? (e : Expr) : MetaM (Option (Name × Expr × Expr)) := do
   if let some (_, lhs, rhs) := e.eq? then
     return (``Eq, lhs, rhs)

@@ -37,7 +37,7 @@ def eNatOne := mkApp (Expr.const ``Nat.succ []) eNatZero
 #guard_msgs in #eval Expr.reduceProjStruct? <|
   mkAppN (.const ``Prod.fst [levelOne, levelOne])
     #[eNat, eNat, mkAppN (.const ``Prod.mk [levelOne, levelOne]) #[eNat, eNat, eNatOne, eNatZero]]
-/-- info: some (Lean.Expr.const `Nat.zero []) -/
+/-- info: ``some (Lean.Expr.const `Nat.zero [])`` -/
 #guard_msgs in #eval Expr.reduceProjStruct? <|
   mkAppN (.const ``Prod.snd [levelOne, levelOne])
     #[eNat, eNat, mkAppN (.const ``Prod.mk [levelOne, levelOne]) #[eNat, eNat, eNatOne, eNatZero]]
@@ -106,10 +106,10 @@ Lean.Expr.app (Lean.Expr.const `Nat.succ []) (Lean.Expr.const `Nat.zero []))
 -/
 #guard_msgs in #eval do Expr.relSidesIfRefl? (← mkRel ``Eq eNatZero eNatOne)
 
-/-- info: some (`Iff, Lean.Expr.const `True [], Lean.Expr.const `False []) -/
+/-- info: ``some (`Iff, Lean.Expr.const `True [], Lean.Expr.const `False [])`` -/
 #guard_msgs in #eval do Expr.relSidesIfRefl? (← mkRel ``Iff eTrue eFalse)
 
-/-- info: some (`HEq, Lean.Expr.const `True [], Lean.Expr.const `False []) -/
+/-- info: ``some (`HEq, Lean.Expr.const `True [], Lean.Expr.const `False [])`` -/
 #guard_msgs in #eval do Expr.relSidesIfRefl? (← mkRel ``HEq eTrue eFalse)
 
 /-- info: none -/

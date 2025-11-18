@@ -50,7 +50,7 @@ with the value of `f n`. -/
   | num n' i => mkNum (mapPrefix f n') i
 
 /-- Build a name from components.
-For example, ``from_components [`foo, `bar]`` becomes ``` `foo.bar```.
+For example, if the components are the names `foo` and `bar`, this produces the name `foo.bar`.
 It is the inverse of `Name.components` on list of names that have single components. -/
 def fromComponents : List Name → Name := go .anonymous where
   /-- Auxiliary for `Name.fromComponents` -/
@@ -72,7 +72,8 @@ def lastComponentAsString : Name → String
 
 /-- `nm.splitAt n` splits a name `nm` in two parts, such that the *second* part has depth `n`,
 i.e. `(nm.splitAt n).2.getNumParts = n` (assuming `nm.getNumParts ≥ n`).
-Example: ``splitAt `foo.bar.baz.back.bat 1 = (`foo.bar.baz.back, `bat)``. -/
+For example, applying it to the name `foo.bar.baz.back.bat` with `n = 1` returns the pair
+`(foo.bar.baz.back, bat)`. -/
 def splitAt (nm : Name) (n : Nat) : Name × Name :=
   let (nm2, nm1) := nm.componentsRev.splitAt n
   (.fromComponents <| nm1.reverse, .fromComponents <| nm2.reverse)
