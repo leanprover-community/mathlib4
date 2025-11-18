@@ -216,7 +216,7 @@ theorem signBijAux_mem {n : ℕ} {f : Perm (Fin n)} :
 @[simp]
 theorem signAux_inv {n : ℕ} (f : Perm (Fin n)) : signAux f⁻¹ = signAux f :=
   prod_nbij (signBijAux f⁻¹) signBijAux_mem signBijAux_injOn signBijAux_surj fun ⟨a, b⟩ hab ↦ by
-    by_cases h : f⁻¹ b < f⁻¹ a
+    by_cases h : f.symm b < f.symm a
     · simp_all [signBijAux, (mem_finPairsLT.1 hab).not_ge]
     · simp_all [signBijAux, dif_neg h, (mem_finPairsLT.1 hab).le]
 

@@ -51,7 +51,7 @@ theorem cycleOf_inv (f : Perm α) [DecidableRel f.SameCycle] (x : α) :
     (cycleOf f x)⁻¹ = cycleOf f⁻¹ x :=
   Equiv.ext fun y => by
     rw [inv_eq_iff_eq, cycleOf_apply, cycleOf_apply]
-    split_ifs <;> simp_all [sameCycle_inv, sameCycle_inv_apply_right]
+    split_ifs <;> simp_all [sameCycle_inv, sameCycle_symm_apply_right]
 
 @[simp]
 theorem cycleOf_pow_apply_self (f : Perm α) [DecidableRel f.SameCycle] (x : α) :
@@ -385,7 +385,7 @@ where
           (by
             rw [hfg hx]
             intro y hy
-            simp [inv_eq_iff_eq, cycleOf_apply, eq_comm (a := g y)] at hy
+            simp [symm_apply_eq, cycleOf_apply, eq_comm (a := g y)] at hy
             rw [hfg (Ne.symm hy.right), ← mul_inv_eq_one (a := g.cycleOf y), cycleOf_inv]
             simp_rw [mul_inv_rev]
             rw [inv_inv, cycleOf_mul_of_apply_right_eq_self, ← cycleOf_inv, mul_inv_eq_one]
@@ -410,7 +410,7 @@ where
         refine hg'y <| (disjoint_prod_right _ this y).resolve_right ?_
         have hsc : SameCycle g⁻¹ x (g y) := by rwa [sameCycle_inv, sameCycle_apply_right]
         rw [disjoint_prod_perm hm₃ hg'm.symm, List.prod_cons, ← eq_inv_mul_iff_mul_eq] at hm₁
-        simpa [hm₁, cycleOf_inv, hsc.cycleOf_apply, Perm.eq_inv_iff_eq, eq_comm] using hg'y⟩
+        simpa [hm₁, cycleOf_inv, hsc.cycleOf_apply, eq_symm_apply, eq_comm] using hg'y⟩
 
 theorem mem_list_cycles_iff {α : Type*} [Finite α] {l : List (Perm α)}
     (h1 : ∀ σ : Perm α, σ ∈ l → σ.IsCycle) (h2 : l.Pairwise Disjoint) {σ : Perm α} :
@@ -681,7 +681,8 @@ theorem disjoint_mul_inv_of_mem_cycleFactorsFinset {f g : Perm α} (h : f ∈ cy
   intro x
   by_cases hx : f x = x
   · exact Or.inr hx
-  rw [mul_apply, ← h.right _ (by simpa [Perm.eq_inv_iff_eq])]
+  left
+  rw [mul_apply, ← h.right _ (by simpa [eq_symm_apply])]
   simp
 
 /-- If c is a cycle, a ∈ c.support and c is a cycle of f, then `c = f.cycleOf a` -/
@@ -738,7 +739,7 @@ theorem mem_cycleFactorsFinset_conj (g k c : Perm α) :
   intro hc a ha
   simp only [coe_mul, Function.comp_apply, EmbeddingLike.apply_eq_iff_eq]
   apply hc
-  simpa [inv_def, eq_symm_apply] using ha
+  simp_all
 
 /-- If a permutation commutes with every cycle of `g`, then it commutes with `g`
 
