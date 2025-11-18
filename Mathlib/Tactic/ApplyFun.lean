@@ -31,7 +31,7 @@ def applyFunHyp (f : Term) (using? : Option Term) (h : FVarId) (g : MVarId) :
     | (``Eq, #[_, lhs, rhs]) => do
       let (eq', gs) ←
         withCollectingNewGoalsFrom (parentTag := ← g.getTag) (tagSuffix := `apply_fun) <|
-        withoutRecover <| runTermElab <| do
+        withoutRecover <| runTermElab do
           let f ← Term.elabTerm f none
           let lhs' ← Term.elabAppArgs f #[] #[.expr lhs] none false false
           let rhs' ← Term.elabAppArgs f #[] #[.expr rhs] none false false
