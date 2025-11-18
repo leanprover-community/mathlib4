@@ -199,9 +199,21 @@ noncomputable def isColimitCocone (J : CardinalFilteredPoset κ) :
     · obtain rfl : x = y := by simpa using h
       exact ⟨j, 𝟙 _, rfl⟩)
 
+protected lemma isCardinalPresentable_iff (J : CardinalFilteredPoset κ) :
+    IsCardinalPresentable J κ ↔ HasCardinalLT J.obj κ := by
+  refine ⟨fun _ ↦ ?_, fun hJ ↦ ?_⟩
+  · have : IsCardinalPresentable J.cocone.pt κ := by assumption
+    obtain ⟨X, f, hf⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ (isColimitCocone J) (𝟙 _)
+    have : IsSplitMono f := ⟨_, hf⟩
+    exact X.2.1.of_injective f
+      ((mono_iff_injective _).1 (inferInstanceAs (Mono ((forget _).map f))))
+  · sorry
+
 lemma isCardinalFilteredGenerator_hasCardinalLTWithTerminal :
     (hasCardinalLTWithTerminal κ).IsCardinalFilteredGenerator κ where
-  le_isCardinalPresentable := sorry
+  le_isCardinalPresentable := by
+    rintro J ⟨_, _⟩
+    rwa [isCardinalPresentable_iff, J.isCardinalPresentable_iff]
   exists_colimitsOfShape J :=
     ⟨_, inferInstance, inferInstance, ⟨{
       diag := _
