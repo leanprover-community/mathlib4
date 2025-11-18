@@ -167,8 +167,7 @@ theorem coe_toPermHom (k : centralizer {g}) (c : g.cycleFactorsFinset) :
 The equality is proved by `Equiv.Perm.OnCycleFactors.range_toPermHom_eq_range_toPermHom'`. -/
 def range_toPermHom' : Subgroup (Perm g.cycleFactorsFinset) where
   carrier := {τ | ∀ c, #(τ c).val.support = #c.val.support}
-  one_mem' := by
-    simp only [Set.mem_setOf_eq, coe_one, id_eq, imp_true_iff]
+  one_mem' := by simp
   mul_mem' hσ hτ := by
     simp only [Subtype.forall, Set.mem_setOf_eq, coe_mul, Function.comp_apply]
     simp only [Subtype.forall, Set.mem_setOf_eq] at hσ hτ
@@ -177,9 +176,8 @@ def range_toPermHom' : Subgroup (Perm g.cycleFactorsFinset) where
   inv_mem' hσ := by
     simp only [Subtype.forall, Set.mem_setOf_eq] at hσ ⊢
     intro c hc
-    rw [← hσ]
-    · simp only [Finset.coe_mem, Subtype.coe_eta, apply_inv_self]
-    · simp only [Finset.coe_mem]
+    rw [← hσ _ (by simp)]
+    simp
 
 variable {g} in
 theorem mem_range_toPermHom'_iff {τ : Perm g.cycleFactorsFinset} :
