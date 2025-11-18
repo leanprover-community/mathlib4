@@ -16,6 +16,10 @@ We provide `Category` instances for these in
 (for categories with unbundled homs, e.g. topological spaces)
 and in `Mathlib/CategoryTheory/HasForget/BundledHom.lean`
 (for categories with bundled homs, e.g. monoids).
+
+Note: this structure will be deprecated in the future in favor of defining the category manually
+and then providing the `ConcreteCategory` instance on top of this. See `ConcreteCategory/Basic.lean`
+for more details.
 -/
 
 universe u v
