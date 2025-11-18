@@ -48,7 +48,7 @@ theorem discr_eq_basisMatrix_det_sq [DecidableEq (K →+* ℂ)] :
     Algebra.discr_reindex, eq_ratCast]
 
 open scoped ComplexConjugate ComplexOrder in
-theorem sign_discr_eq :
+theorem sign_discr :
     (discr K).sign = (-1) ^ nrComplexPlaces K := by
   classical
   have : 0 ≤ (discr K : ℂ) ↔ Even (nrComplexPlaces K) := by
