@@ -34,10 +34,9 @@ A structure for storing information about a parameter of some declaration, usual
 telescope. We use this for recording the expressions and index associated to a parameter which was
 unused in the remainder of the type.
 
-`m!"{param}"` displays as `` `[{param.type?.get}]` (#{param.idx + 1})`` (backticks included) if
-`type?` is `some _`, and as `parameter #{param.idx + 1}` as a failsafe if `type?` is `none`. (We
-always expect `type?` to be `some _`, but would like a fallback if there are unexpected issues in
-telescoping.)
+`m!"{param}"` displays as `[{param.type?.get}] (#{param.idx + 1})` if `type?` is `some _`, and as
+`parameter #{param.idx + 1}` as a failsafe if `type?` is `none`. (We always expect `type?` to be
+`some _`, but would like a fallback if there are unexpected issues in telescoping.)
 -/
 private structure Parameter where
   /- TODO: include syntax references to the binders here, and use the "real" fvars created during
@@ -52,22 +51,32 @@ private structure Parameter where
 instance : ToMessageData Parameter where
   toMessageData (param : Parameter) :=
     if let some type := param.type? then
-      m!"`[{type}]` (#{param.idx + 1})"
+      m!"[{type}] (#{param.idx + 1})"
     else
       m!"parameter #{param.idx + 1}"
 
 /--
 Given a (full, resolvable) declaration name `foo` and an array of parameters
 `#[p₁, p₂, ..., pₙ]`, constructs the message:
-> \`{foo}\` has the hypothes(is/es) {p₁}, {p₂}, ..., and {pₙ} which (is/are) not used in the
+> \`{foo}\` has the hypothes(is/es):
+>
+>   {p₁}
+>
+>   {p₂}
+>
+>    ⋮
+>
+>   {pₙ}
+>
+> which (is/are) not used in the
   remainder of the type.
 -/
 private def _root_.Lean.Name.unusedInstancesMsg (declName : Name)
     (unusedInstanceBinders : Array Parameter) : MessageData :=
   let unusedInstanceBinders := unusedInstanceBinders.map toMessageData
   m!"`{.ofConstName declName}` has the \
-  {if unusedInstanceBinders.size = 1 then "hypothesis" else "hypotheses"} \
-  {.andList unusedInstanceBinders.toList} which \
+  {if unusedInstanceBinders.size = 1 then "hypothesis" else "hypotheses"}:\
+  {(unusedInstanceBinders.map (m!"\n  • {·}") |>.foldl (init := .nil) .compose)}\nwhich \
   {if unusedInstanceBinders.size = 1 then "is" else "are"} not used in the remainder of the type."
 
 /--
@@ -194,7 +203,7 @@ def unusedDecidableInType : Linter where
       isDecidableVariant
       fun _ thm unusedParams => do
         logLint linter.unusedDecidableInType (← getRef) m!"\
-          {thm.name.unusedInstancesMsg unusedParams}\n\
+          {thm.name.unusedInstancesMsg unusedParams}\n\n\
           Consider removing these hypotheses and using `classical` in the proof instead. \
           For terms, consider using `open scoped Classical in` at the term level (not the command \
           level)."
