@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Order.PropInstances
-import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Lift
 import Mathlib.Tactic.Tauto
 import Mathlib.Util.Delaborators
@@ -160,7 +159,7 @@ theorem set_coe_cast :
   | _, _, rfl, _, _ => rfl
 
 theorem SetCoe.ext {s : Set α} {a b : s} : (a : α) = b → a = b :=
-  Subtype.eq
+  Subtype.ext
 
 theorem SetCoe.ext_iff {s : Set α} {a b : s} : (↑a : α) = ↑b ↔ a = b :=
   Iff.intro SetCoe.ext fun h => h ▸ rfl

@@ -218,10 +218,9 @@ that `Nat.nth s k < x` for all `k < n`, if this set is nonempty. We do not assum
 nonempty because we use the same "garbage value" `0` both for `sInf` on `ℕ` and for `Nat.nth s n`
 for `n ≥ #s`. -/
 theorem nth_eq_sInf (p : ℕ → Prop) (n : ℕ) : nth p n = sInf {x | p x ∧ ∀ k < n, nth p k < x} := by
-  by_cases hn : ∀ hf : (setOf p).Finite, n < #hf.toFinset
+  by_cases! hn : ∀ hf : (setOf p).Finite, n < #hf.toFinset
   · exact (isLeast_nth hn).csInf_eq.symm
-  · push_neg at hn
-    rcases hn with ⟨hf, hn⟩
+  · rcases hn with ⟨hf, hn⟩
     rw [nth_of_card_le _ hn]
     refine ((congr_arg sInf <| Set.eq_empty_of_forall_notMem fun k hk => ?_).trans sInf_empty).symm
     rcases exists_lt_card_nth_eq hk.1 with ⟨k, hlt, rfl⟩
@@ -316,7 +315,7 @@ lemma le_nth_of_monotoneOn_of_surjOn {p : ℕ → Prop} (f : ℕ → ℕ)
     rintro b ⟨hb, h⟩
     rcases hsurj hb with ⟨m, hm, rfl⟩
     apply hmono hn hm
-    rw [Nat.succ_le]
+    rw [Nat.succ_le_iff]
     apply hmono.reflect_lt <;> grind
 
 /-- `Nat.nth p` is the unique strictly monotone function whose image is `setOf p`. -/

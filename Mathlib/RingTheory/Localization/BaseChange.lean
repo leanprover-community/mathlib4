@@ -96,6 +96,21 @@ theorem tensorProduct_compatibleSMul : CompatibleSMul R A M₁ M₂ where
     simp_rw [algebraMap_smul, smul_tmul', ← smul_assoc, smul_tmul, ← smul_assoc, smul_mk'_self,
       algebraMap_smul, smul_tmul]
 
+instance [Module (Localization S) M₁] [Module (Localization S) M₂]
+    [IsScalarTower R (Localization S) M₁] [IsScalarTower R (Localization S) M₂] :
+    CompatibleSMul R (Localization S) M₁ M₂ :=
+  tensorProduct_compatibleSMul S ..
+
+instance (N N') [AddCommMonoid N] [Module R N] [AddCommMonoid N'] [Module R N'] (g : N →ₗ[R] N')
+    [IsLocalizedModule S f] [IsLocalizedModule S g] :
+    IsLocalizedModule S (TensorProduct.map f g) := by
+  let eM := IsLocalizedModule.linearEquiv S f (TensorProduct.mk R (Localization S) M 1)
+  let eN := IsLocalizedModule.linearEquiv S g (TensorProduct.mk R (Localization S) N 1)
+  convert IsLocalizedModule.of_linearEquiv S (TensorProduct.mk R (Localization S) (M ⊗[R] N) 1) <|
+    (AlgebraTensorModule.distribBaseChange R (Localization S) ..).restrictScalars R ≪≫ₗ
+    (congr eM eN ≪≫ₗ TensorProduct.equivOfCompatibleSMul ..).symm
+  ext; congrm(?_ ⊗ₜ ?_) <;> simp [LinearEquiv.eq_symm_apply, eM, eN]
+
 /-- If `A` is a localization of `R`, tensoring two `A`-modules over `A` is the same as
 tensoring them over `R`. -/
 noncomputable def moduleTensorEquiv : M₁ ⊗[A] M₂ ≃ₗ[A] M₁ ⊗[R] M₂ :=
@@ -139,14 +154,14 @@ lemma Algebra.isPushout_of_isLocalization [IsLocalization (Algebra.algebraMapSub
     Algebra.IsPushout R T A B :=
   (Algebra.isLocalization_iff_isPushout S _).mp inferInstance
 
+variable (R M) in
 open TensorProduct in
-instance (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
-    {α} (S : Submonoid R) {Mₛ} [AddCommGroup Mₛ] [Module R Mₛ] (f : M →ₗ[R] Mₛ)
-    [IsLocalizedModule S f] : IsLocalizedModule S (Finsupp.mapRange.linearMap (α := α) f) := by
+instance {α} [IsLocalizedModule S f] :
+    IsLocalizedModule S (Finsupp.mapRange.linearMap (α := α) f) := by
   classical
-  let e : Localization S ⊗[R] M ≃ₗ[R] Mₛ :=
+  let e : Localization S ⊗[R] M ≃ₗ[R] M' :=
     (LocalizedModule.equivTensorProduct S M).symm.restrictScalars R ≪≫ₗ IsLocalizedModule.iso S f
-  let e' : Localization S ⊗[R] (α →₀ M) ≃ₗ[R] (α →₀ Mₛ) :=
+  let e' : Localization S ⊗[R] (α →₀ M) ≃ₗ[R] (α →₀ M') :=
     finsuppRight R (Localization S) M α ≪≫ₗ Finsupp.mapRange.linearEquiv e
   suffices IsLocalizedModule S (e'.symm.toLinearMap ∘ₗ Finsupp.mapRange.linearMap f) by
     convert this.of_linearEquiv (e := e')
@@ -163,6 +178,13 @@ instance (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
   split_ifs with h
   · simp [e]
   · simp only [tmul_zero, map_zero]
+
+open Finsupp in
+theorem IsLocalizedModule.map_linearCombination {α : Type*} {v : α → M} [IsLocalizedModule S f] :
+    map S (mapRange.linearMap (Algebra.linearMap R A)) f (linearCombination R v) =
+      linearCombination A (f ∘ v) :=
+  linearMap_ext (S := S) (mapRange.linearMap (Algebra.linearMap R A)) f <| by
+    ext; simp [IsLocalizedModule.map_comp]
 
 section
 
