@@ -544,7 +544,7 @@ flag `k` as a type to not be translated.
 -/
 def getDontTranslates (given : List Ident) (type : Expr) : MetaM (List Nat) := do
   forallTelescope type fun xs _ => do
-    given.mapM fun id => withRef id.raw <| do
+    given.mapM fun id => withRef id.raw do
       let fvarId ← getFVarFromUserName id.getId
       return (xs.idxOf? fvarId).get!
 
@@ -1060,7 +1060,7 @@ partial def addTranslationAttr (t : TranslateData) (src : Name) (cfg : Config)
     (kind := AttributeKind.global) : AttrM (Array Name) := do
   if (kind != AttributeKind.global) then
     throwError "`{t.attrName}` can only be used as a global attribute"
-  withOptions (· |>.updateBool `trace.translate (cfg.trace || ·)) <| do
+  withOptions (·.updateBool `trace.translate (cfg.trace || ·)) do
   -- If `src` was already tagged, we allow the `(reorder := ...)` or `(relevant_arg := ...)` syntax
   -- for updating this information on constants that are already tagged.
   -- In particular, this is necessary for structure projections like `HPow.hPow`.

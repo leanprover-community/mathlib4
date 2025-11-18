@@ -163,7 +163,7 @@ abbrev foo22 {α} [Monoid α] (a : α) : ℕ → α
   | 0 => 1
   | _ => a
 
-run_cmd liftCoreM <| MetaM.run' <| do
+run_cmd liftCoreM <| MetaM.run' do
   -- make `abbrev` definition `reducible` automatically
   guard <| (← getReducibilityStatus `Test.bar22) == .reducible
   -- make `abbrev` definition `inline` automatically
