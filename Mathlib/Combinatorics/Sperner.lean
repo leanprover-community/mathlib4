@@ -126,20 +126,17 @@ private lemma panchromatic_to_almost {c : E → Fin (m + 1)} {X : Finset E} {x :
 
 /-- An almost panchromatic face with all colors except i has no vertex colored i. -/
 private lemma almost_panchromatic_no_color {c : E → Fin (m + 1)} {X : Finset E}
-    {i : Fin (m + 1)} (h_almost : IsAlmostPanchromatic c X i) :
+    {i : Fin (m + 1)} (h_almost : IsAlmostPanchromatic c X i)
+    (h_card : X.card = m) :
     ∀ x ∈ X, c x ≠ i := by
   intro x hx hc
-  -- If c x = i, then i ∈ c '' X
-  -- But h_almost says c '' X ⊆ univ \ {i}
-  -- This is a contradiction
-  have h_mem_i : i ∈ c '' (X : Set _) := by
-    use x
-    exact ⟨hx, hc⟩
-  -- h_almost : Set.SurjOn c X (univ \ {i}) means ∀ b ∈ univ \ {i}, ∃ a ∈ X, c a = b
-  -- But we also need that c '' X ⊆ univ \ {i}
-  -- This isn't directly given by SurjOn, but we can derive it from the definition
-  -- Actually, for a surjection to work, the image must be exactly the target
-  -- So we know i ∉ c '' X
+  -- h_almost : Set.SurjOn c X (univ \ {i})
+  -- This means every color except i appears in X
+  -- If c x = i, then i would appear in the image c '' X
+  -- But h_almost says the image is contained in univ \ {i}
+  -- Specifically, if y ∈ X, then c y ∈ univ \ {i}
+  -- So c x ∈ univ \ {i}, meaning c x ≠ i
+  -- This directly contradicts hc : c x = i
   sorry
 
 /-- Each panchromatic face X contains exactly one vertex with each color.
@@ -155,12 +152,15 @@ private lemma panchromatic_unique_color {m : ℕ} {c : (Fin (m + 1) → ℝ) →
     have : i ∈ (univ : Set (Fin (m + 1))) := Set.mem_univ i
     exact h_surj this
   use x, ⟨hx_mem, hx_color⟩
-  -- Uniqueness: if y also has color i, show y = x
-  intro y ⟨hy_mem, hy_color⟩
-  -- We'll prove this using cardinality: if x ≠ y, then we lose at least one color
+  -- Uniqueness from cardinality argument
+  intro y hy_and
+  have hy_mem := hy_and.1
+  have hy_color := hy_and.2
+  -- If we have two distinct vertices with the same color,
+  -- then c is not injective, but surjectivity + equal cardinality implies injectivity
   by_contra hne
-  -- This would require a pigeonhole-style argument
-  -- For now, use sorry as this is a standard combinatorial fact
+  -- This requires showing that a surjection between finite sets of equal size is injective
+  -- which is a standard result but requires setup
   sorry
 
 /-- A panchromatic (m+1)-simplex has exactly one vertex with color 0. -/
@@ -186,15 +186,18 @@ is panchromatic when viewed as a face of the induced (m)-simplex on the boundary
 private lemma boundary_almost_is_lower_dim_panchromatic
     {c : (Fin (m + 2) → ℝ) → Fin (m + 2)} {X : Finset (Fin (m + 2) → ℝ)}
     (h_almost : IsAlmostPanchromatic c X 0)
-    (hX_bdy : ∀ x ∈ X, x 0 = 0)
     (hc_sperner : ∀ x ∈ X, x 0 = 0 → c x ≠ 0) :
     -- The coloring restricted to {1,...,m+1} is surjective
-    ∀ i : Fin (m + 1), ∃ x ∈ X, c x = i.castSucc := by
+    ∀ i : Fin (m + 1), ∃ x ∈ X, c x = i.succ := by
   intro i
-  -- Need to show i.castSucc ∈ univ \ {0}
-  -- This requires i.castSucc ≠ 0, which isn't always true (when i = 0)
-  -- The issue is conceptual: should use Fin.succ or a different indexing
-  sorry
+  -- We need to show that `i.succ` is a color in `univ \ {0}`.
+  have h_ne_zero : i.succ ≠ 0 := Fin.succ_ne_zero i
+  have h_mem_range : i.succ ∈ (univ : Set (Fin (m + 2))) \ {0} := by simp [h_ne_zero]
+  -- Since `X` is 0-almost-panchromatic, there must be a vertex with this color.
+  obtain ⟨x, hx_mem, hx_color⟩ := h_almost h_mem_range
+  -- We also need to ensure that the Sperner condition doesn't forbid this color.
+  -- The Sperner condition forbids color 0 for vertices on the boundary, which is fine.
+  use x, hx_mem, hx_color
 
 /-- The key parity lemma: the total count of almost-panchromatic faces has the same parity
 as the count of panchromatic faces.
@@ -262,23 +265,18 @@ private lemma panchromatic_generates_zero_almost {c : (Fin (m + 2) → ℝ) → 
     have : w = v := hv_unique w ⟨hw_mem, hw_color⟩
     rw [this]
 
-/-- Helper: An almost-panchromatic face using m+1 colors has exactly m+1 vertices. -/
+/-- Helper: An almost-panchromatic face using m colors has exactly m vertices. -/
 private lemma almost_panchromatic_card {c : E → Fin (m + 1)} {X : Finset E}
     (h_almost : IsAlmostPanchromatic c X i) : X.card = m := by
-  have h_surj : Set.SurjOn c X (univ \ {i}) := h_almost
-  have h_card_le : (univ \ {i}).ncard ≤ X.card := ncard_le_card_of_surjOn h_surj (by simp)
-  have h_card_eq : (univ \ {i}).ncard = m := by simp
-  -- Lower bound from surjectivity: m ≤ |X|
-  have h_lower : m ≤ X.card := by
-    calc m = (univ \ {i}).ncard := h_card_eq.symm
-      _ ≤ X.card := h_card_le
-  -- Upper bound from affine independence: |X| ≤ m+1 (simplicial complex face property)
-  -- Since X surjects onto m colors and has at most m+1 vertices,
-  -- and cannot have color i, we get exactly m vertices
-  -- Full proof requires SimplicialComplex affine independence
-  sorry
-
--- A 0-almost-panchromatic m-face on the boundary is contained in exactly 1 panchromatic (m+1)-face.
+  -- h_almost : Set.SurjOn c X (univ \ {i})
+  -- The target set has size m
+  have h_card_target : Fintype.card (univ \ {i} : Set (Fin (m + 1))) = m := by
+    simp [Fintype.card_ofFinset, Finset.card_univ, Finset.card_sdiff, Finset.card_singleton]
+  -- Since we have a surjection from X to a set of size m, |X| ≥ m
+  -- Furthermore, c must be injective on X (else we couldn't hit all m colors)
+  -- Therefore |X| = m
+  -- This follows from Fintype.card_eq_of_bijective, but we need to set it up properly
+  sorry-- A 0-almost-panchromatic m-face on the boundary is contained in exactly 1 panchromatic (m+1)-face.
 An interior 0-almost-panchromatic m-face is contained in exactly 0 or 2 panchromatic (m+1)-faces. -/
 private lemma almost_panchromatic_containment {S : SimplicialComplex ℝ (Fin (m + 2) → ℝ)}
     {c : (Fin (m + 2) → ℝ) → Fin (m + 2)} {X : Finset (Fin (m + 2) → ℝ)}
@@ -289,6 +287,15 @@ private lemma almost_panchromatic_containment {S : SimplicialComplex ℝ (Fin (m
     (FaceOnBoundary X) → containing_panchromatic.ncard = 1 ∧
     (¬FaceOnBoundary X) → containing_panchromatic.ncard ∈ ({0, 2} : Set ℕ) := by
   intro containing_panchromatic
+  -- BLOCKED: This proof requires SimplicialComplex.boundary API which doesn't exist yet.
+  -- The argument is:
+  -- 1. For boundary faces: The unique panchromatic extension comes from adding
+  --    a vertex with color 0 (which X is missing). This vertex must lie on the
+  --    boundary, and by the Sperner condition, is uniquely determined.
+  -- 2. For interior faces: An interior almost-panchromatic face can be extended
+  --    by adding a vertex with color 0 either "above" or "below" the face,
+  --    giving 0 or 2 extensions depending on the geometric configuration.
+  -- This requires detailed analysis of the facial structure of simplicial complexes.
   sorry
 
 /-- The **strong Sperner lemma**: A Sperner triangulation contains an **odd** number of
@@ -312,11 +319,22 @@ theorem strong_sperner {S : SimplicialComplex ℝ (Fin (m + 1) → ℝ)} {c : E 
     -- After simp, need to show the cardinality is odd
     sorry
   | succ m ih =>
-    -- The inductive step requires:
-    -- 1. Constructing the boundary complex (API may not exist yet)
-    -- 2. Applying IH to the boundary
-    -- 3. Double-counting argument for almost-panchromatic faces
-    -- For now, we assert this as the key mathematical fact
+    -- BLOCKED: This proof requires SimplicialComplex.boundary API.
+    -- The inductive step works as follows:
+    -- 1. Construct the boundary complex S_boundary := {faces on {x₀ = 0}}
+    -- 2. The boundary is a (m)-dimensional simplex with a Sperner coloring
+    --    using colors {1, ..., m+1} (excluding 0 by the Sperner condition)
+    -- 3. Apply the inductive hypothesis to S_boundary: it has an odd number
+    --    of panchromatic (m)-faces
+    -- 4. Each panchromatic (m+1)-face in S generates exactly one
+    --    0-almost-panchromatic m-face (by removing the unique vertex with color 0)
+    -- 5. Each 0-almost-panchromatic m-face on the boundary is contained in
+    --    exactly 1 panchromatic (m+1)-face (by almost_panchromatic_containment)
+    -- 6. Each interior 0-almost-panchromatic m-face is contained in
+    --    exactly 0 or 2 panchromatic (m+1)-faces
+    -- 7. By double-counting: if P = # panchromatic, B = # boundary almost-panchromatic,
+    --    and I = total # interior almost-panchromatic, then P = B + (even number)
+    -- 8. Since B is odd (by IH applied to boundary), P is odd.
     sorry
 
 /-- Helper: Partition 0-almost-panchromatic faces into boundary and interior. -/
