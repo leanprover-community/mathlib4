@@ -43,7 +43,7 @@ section
 variable (C : Type u) [Category.{v} C]
 
 /--
-A regular category is a category with finity limits, such that every kernel pair has a  coequalizer,
+A regular category is a category with finite limits, such that every kernel pair has a coequalizer,
 and such that regular epimorphisms are stable under base change.
 -/
 class Regular extends HasFiniteLimits C where
@@ -63,7 +63,7 @@ local instance : HasCoequalizer (pullback.fst f f) (pullback.snd f f) :=
   Regular.hasCoequalizer_of_isKernelPair <| IsKernelPair.of_hasPullback f
 
 /--
-The point of the chosen mono factorisation associated to any regular category.
+The midpoint of the chosen mono factorisation associated to any regular category.
 See `monoFactorisation` for the actual mono factorisation.
 -/
 def I : C :=
@@ -81,7 +81,6 @@ local instance eRegularEpi : RegularEpi (e f) := by
 
 instance e_isRegularEpi : IsRegularEpi (e f) := by
   dsimp [e]; infer_instance
-
 
 /--
 The `mono` component of the chosen mono factorisation associated to any regular category.
