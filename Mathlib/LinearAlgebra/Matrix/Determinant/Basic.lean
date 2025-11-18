@@ -629,14 +629,14 @@ theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Mat
       exact (this k x).1
     · intro σ hσ
       rw [mem_preserving_snd] at hσ
-      have hσ' x : (σ⁻¹ x).snd = x.snd := by simpa [eq_comm] using hσ (σ⁻¹ x)
+      have hσ' x : (σ.symm x).snd = x.snd := by simpa [eq_comm] using hσ (σ.symm x)
       have mk_apply_eq : ∀ k x, ((σ (x, k)).fst, k) = σ (x, k) := by
         intro k x
         ext
         · simp only
         · simp only [hσ]
-      have mk_inv_apply_eq : ∀ k x, ((σ⁻¹ (x, k)).fst, k) = σ⁻¹ (x, k) := by grind
-      refine ⟨fun k _ => ⟨fun x => (σ (x, k)).fst, fun x => (σ⁻¹ (x, k)).fst, ?_, ?_⟩, ?_, ?_⟩
+      have mk_inv_apply_eq : ∀ k x, ((σ.symm (x, k)).fst, k) = σ.symm (x, k) := by grind
+      refine ⟨fun k _ => ⟨fun x => (σ (x, k)).fst, fun x => (σ.symm (x, k)).fst, ?_, ?_⟩, ?_, ?_⟩
       · intro x
         simp [mk_apply_eq]
       · intro x

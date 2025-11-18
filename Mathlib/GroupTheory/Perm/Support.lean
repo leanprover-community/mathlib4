@@ -228,8 +228,10 @@ section Set
 
 variable (p q : Perm α)
 
-theorem set_support_inv_eq : {x | p⁻¹ x ≠ x} = {x | p x ≠ x} := by
-  ext; simp [inv_def, eq_symm_apply, eq_comm]
+lemma set_support_symm_eq : {x | p.symm x ≠ x} = {x | p x ≠ x} := by
+  ext; simp [eq_symm_apply, eq_comm]
+
+@[deprecated (since := "2025-11-17")] alias set_support_inv_eq := set_support_symm_eq
 
 theorem set_support_apply_mem {p : Perm α} {a : α} :
     p a ∈ { x | p x ≠ x } ↔ a ∈ { x | p x ≠ x } := by simp

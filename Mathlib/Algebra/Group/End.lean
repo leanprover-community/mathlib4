@@ -98,11 +98,11 @@ theorem mul_apply (f g : Perm α) (x) : (f * g) x = f (g x) :=
 theorem one_apply (x) : (1 : Perm α) x = x :=
   rfl
 
-@[simp]
+@[deprecated symm_apply_apply (since := "2025-08-16")]
 theorem inv_apply_self (f : Perm α) (x) : f⁻¹ (f x) = x :=
   f.symm_apply_apply x
 
-@[simp]
+@[deprecated apply_symm_apply (since := "2025-08-16")]
 theorem apply_inv_self (f : Perm α) (x) : f (f⁻¹ x) = x :=
   f.apply_symm_apply x
 
@@ -114,6 +114,8 @@ theorem mul_def (f g : Perm α) : f * g = g.trans f :=
 
 theorem inv_def (f : Perm α) : f⁻¹ = f.symm :=
   rfl
+
+@[simp] lemma coe_inv (f : Perm α) : ⇑f⁻¹ = ⇑f.symm := rfl
 
 @[simp, norm_cast] lemma coe_one : ⇑(1 : Perm α) = id := rfl
 
@@ -519,7 +521,7 @@ theorem swap_mul_self (i j : α) : swap i j * swap i j = 1 :=
 
 theorem swap_mul_eq_mul_swap (f : Perm α) (x y : α) : swap x y * f = f * swap (f⁻¹ x) (f⁻¹ y) :=
   Equiv.ext fun z => by
-    simp only [Perm.mul_apply, swap_apply_def]; split_ifs <;> simp_all [Perm.eq_inv_iff_eq]
+    simp only [Perm.mul_apply, swap_apply_def]; split_ifs <;> simp_all [eq_symm_apply]
 
 theorem mul_swap_eq_swap_mul (f : Perm α) (x y : α) : f * swap x y = swap (f x) (f y) * f := by
   simp [swap_mul_eq_mul_swap]
