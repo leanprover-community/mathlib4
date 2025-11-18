@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Int.Init
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.SplitIfs
 
 /-!
 # Basic lemmas about semigroups, monoids, and groups
@@ -80,6 +79,11 @@ instance CommMagma.to_isCommutative [CommMagma G] : Std.Commutative (α := G) (�
 section MulOneClass
 
 variable [MulOneClass M]
+
+@[to_additive]
+instance Semigroup.to_isLawfulIdentity : Std.LawfulIdentity (α := M) (· * ·) 1 where
+  left_id := one_mul
+  right_id := mul_one
 
 @[to_additive]
 theorem ite_mul_one {P : Prop} [Decidable P] {a b : M} :

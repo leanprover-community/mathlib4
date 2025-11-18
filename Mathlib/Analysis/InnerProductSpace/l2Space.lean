@@ -115,7 +115,7 @@ instance instInnerProductSpace : InnerProductSpace 𝕜 (lp G 2) :=
         ‖f‖ ^ 2 = ‖f‖ ^ (2 : ℝ≥0∞).toReal := by norm_cast
         _ = ∑' i, ‖f i‖ ^ (2 : ℝ≥0∞).toReal := lp.norm_rpow_eq_tsum ?_ f
         _ = ∑' i, ‖f i‖ ^ (2 : ℕ) := by norm_cast
-        _ = ∑' i, re ⟪f i, f i⟫ := by simp [norm_sq_eq_re_inner (𝕜 := 𝕜)]
+        _ = ∑' i, re ⟪f i, f i⟫ := by simp
         _ = re (∑' i, ⟪f i, f i⟫) := (RCLike.reCLM.map_tsum ?_).symm
       · norm_num
       · exact summable_inner f f
@@ -457,7 +457,7 @@ protected theorem hasSum_inner_mul_inner (b : HilbertBasis ι 𝕜 E) (x y : E) 
     HasSum (fun i => ⟪x, b i⟫ * ⟪b i, y⟫) ⟪x, y⟫ := by
   convert (b.hasSum_repr y).mapL (innerSL 𝕜 x) using 1
   ext i
-  rw [innerSL_apply, b.repr_apply_apply, inner_smul_right, mul_comm]
+  rw [innerSL_apply_apply, b.repr_apply_apply, inner_smul_right, mul_comm]
 
 protected theorem summable_inner_mul_inner (b : HilbertBasis ι 𝕜 E) (x y : E) :
     Summable fun i => ⟪x, b i⟫ * ⟪b i, y⟫ :=

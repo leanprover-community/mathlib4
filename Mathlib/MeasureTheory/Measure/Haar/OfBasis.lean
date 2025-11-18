@@ -207,9 +207,9 @@ theorem parallelepiped_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
 
 theorem parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
     (b.map e).parallelepiped = b.parallelepiped.map e
-    (haveI := FiniteDimensional.of_fintype_basis b
+    (haveI := b.finiteDimensional_of_finite
     LinearMap.continuous_of_finiteDimensional e.toLinearMap)
-    (haveI := FiniteDimensional.of_fintype_basis (b.map e)
+    (haveI := (b.map e).finiteDimensional_of_finite
     LinearMap.isOpenMap_of_finiteDimensional _ e.surjective) :=
   PositiveCompacts.ext (image_parallelepiped e.toLinearMap _).symm
 
@@ -254,7 +254,7 @@ instance _root_.isAddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : IsAddHaarM
   rw [Basis.addHaar]; exact Measure.isAddHaarMeasure_addHaarMeasure _
 
 instance (b : Basis ι ℝ E) : SigmaFinite b.addHaar := by
-  have : FiniteDimensional ℝ E := FiniteDimensional.of_fintype_basis b
+  have : FiniteDimensional ℝ E := b.finiteDimensional_of_finite
   rw [Basis.addHaar_def]; exact sigmaFinite_addHaarMeasure
 
 /-- Let `μ` be a σ-finite left invariant measure on `E`. Then `μ` is equal to the Haar measure
@@ -277,8 +277,8 @@ variable [MeasurableSpace F] [BorelSpace F] [SecondCountableTopologyEither E F]
 
 theorem prod_addHaar (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
     (v.prod w).addHaar = v.addHaar.prod w.addHaar := by
-  have : FiniteDimensional ℝ E := FiniteDimensional.of_fintype_basis v
-  have : FiniteDimensional ℝ F := FiniteDimensional.of_fintype_basis w
+  have : FiniteDimensional ℝ E := v.finiteDimensional_of_finite
+  have : FiniteDimensional ℝ F := w.finiteDimensional_of_finite
   simp [(v.prod w).addHaar_eq_iff, Basis.prod_parallelepiped, Basis.addHaar_self]
 
 end Module.Basis

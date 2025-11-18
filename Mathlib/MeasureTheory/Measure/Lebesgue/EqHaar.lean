@@ -562,7 +562,7 @@ variable {ι G : Type*} [Fintype ι] [DecidableEq ι] [NormedAddCommGroup G] [No
 
 theorem addHaar_parallelepiped (b : Basis ι ℝ G) (v : ι → G) :
     b.addHaar (parallelepiped v) = ENNReal.ofReal |b.det v| := by
-  have : FiniteDimensional ℝ G := FiniteDimensional.of_fintype_basis b
+  have : FiniteDimensional ℝ G := b.finiteDimensional_of_finite
   have A : parallelepiped v = b.constr ℕ v '' parallelepiped b := by
     rw [image_parallelepiped]
     exact congr_arg _ <| funext fun i ↦ (b.constr_basis ℕ v i).symm
