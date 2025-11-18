@@ -367,8 +367,8 @@ variable {p : α → Prop} {f : Perm α}
 def subtypePerm (f : Perm α) (h : ∀ x, p (f x) ↔ p x) : Perm { x // p x } where
   toFun := fun x => ⟨f x, (h _).2 x.2⟩
   invFun := fun x => ⟨f⁻¹ x, (h (f⁻¹ x)).1 <| by simpa using x.2⟩
-  left_inv _ := by simp only [Perm.inv_apply_self, Subtype.coe_eta]
-  right_inv _ := by simp only [Perm.apply_inv_self, Subtype.coe_eta]
+  left_inv _ := by simp
+  right_inv _ := by simp
 
 @[simp]
 theorem subtypePerm_apply (f : Perm α) (h : ∀ x, p (f x) ↔ p x) (x : { x // p x }) :
@@ -386,7 +386,7 @@ theorem subtypePerm_mul (f g : Perm α) (hf hg) :
   rfl
 
 private theorem inv_aux : (∀ x, p (f x) ↔ p x) ↔ ∀ x, p (f⁻¹ x) ↔ p x :=
-  f⁻¹.surjective.forall.trans <| by simp_rw [f.apply_inv_self, Iff.comm]
+  f⁻¹.surjective.forall.trans <| by simp [Iff.comm]
 
 /-- See `Equiv.Perm.inv_subtypePerm`. -/
 theorem subtypePerm_inv (f : Perm α) (hf) :
@@ -519,12 +519,10 @@ theorem swap_mul_self (i j : α) : swap i j * swap i j = 1 :=
 
 theorem swap_mul_eq_mul_swap (f : Perm α) (x y : α) : swap x y * f = f * swap (f⁻¹ x) (f⁻¹ y) :=
   Equiv.ext fun z => by
-    simp only [Perm.mul_apply, swap_apply_def]
-    split_ifs <;>
-      simp_all only [Perm.apply_inv_self, Perm.eq_inv_iff_eq, not_true]
+    simp only [Perm.mul_apply, swap_apply_def]; split_ifs <;> simp_all [Perm.eq_inv_iff_eq]
 
 theorem mul_swap_eq_swap_mul (f : Perm α) (x y : α) : f * swap x y = swap (f x) (f y) * f := by
-  rw [swap_mul_eq_mul_swap, Perm.inv_apply_self, Perm.inv_apply_self]
+  simp [swap_mul_eq_mul_swap]
 
 theorem swap_apply_apply (f : Perm α) (x y : α) : swap (f x) (f y) = f * swap x y * f⁻¹ := by
   rw [mul_swap_eq_swap_mul, mul_inv_cancel_right]

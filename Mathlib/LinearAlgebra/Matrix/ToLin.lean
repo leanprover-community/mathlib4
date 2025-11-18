@@ -663,6 +663,10 @@ theorem LinearMap.toMatrix_mulVec_repr (f : M₁ →ₗ[R] M₂) (x : M₁) :
   congr
   exact v₁.equivFun.symm_apply_apply x
 
+theorem Matrix.repr_toLin (M : Matrix m n R) (x : M₁) :
+    v₂.repr (M.toLin v₁ v₂ x) = M.mulVec (v₁.repr x) := by
+  rw [← toMatrix_mulVec_repr v₁, toMatrix_toLin]
+
 @[simp]
 theorem LinearMap.toMatrix_basis_equiv [Fintype l] [DecidableEq l] (b : Basis l R M₁)
     (b' : Basis l R M₂) :
@@ -691,7 +695,7 @@ variable (v₁ : Basis n R M₁) (v₂ : Basis m R M₂)
 
 /-- The matrix of `toSpanSingleton R M₂ x` given by bases `v₁` and `v₂` is equal to
 `vecMulVec (v₂.repr x) v₁`. When `v₁ = Module.Basis.singleton`
-then this is the column matrix of `v₂.repr x`.` -/
+then this is the column matrix of `v₂.repr x`. -/
 theorem LinearMap.toMatrix_toSpanSingleton (v₁ : Basis n R R) (v₂ : Basis m R M₂) (x : M₂) :
     (toSpanSingleton R M₂ x).toMatrix v₁ v₂ = vecMulVec (v₂.repr x) v₁ := by
   ext; simp [toMatrix_apply, vecMulVec_apply, mul_comm]
