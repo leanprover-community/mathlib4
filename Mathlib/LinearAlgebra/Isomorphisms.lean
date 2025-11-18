@@ -76,7 +76,7 @@ theorem comap_leq_ker_subToSupQuotient (p p' : Submodule R M) :
 to `x + p'`, where `p` and `p'` are submodules of an ambient module.
 
 Note that in the following declaration the type of the domain is expressed using
-``comap p.subtype p ⊓ comap p.subtype p'`
+`comap p.subtype p ⊓ comap p.subtype p'`
 instead of
 `comap p.subtype (p ⊓ p')`
 because the former is the simp normal form (see also `Submodule.comap_inf`). -/
@@ -102,7 +102,7 @@ theorem quotientInfEquivSupQuotient_surjective (p p' : Submodule R M) :
 Second Isomorphism Law : the canonical map from `p/(p ∩ p')` to `(p+p')/p'` as a linear isomorphism.
 
 Note that in the following declaration the type of the domain is expressed using
-``comap p.subtype p ⊓ comap p.subtype p'`
+`comap p.subtype p ⊓ comap p.subtype p'`
 instead of
 `comap p.subtype (p ⊓ p')`
 because the former is the simp normal form (see also `Submodule.comap_inf`). -/
