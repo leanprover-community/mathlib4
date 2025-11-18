@@ -270,6 +270,16 @@ theorem toSubgraph_adj_iff {u v u' v'} (w : G.Walk u v) :
 lemma mem_support_of_adj_toSubgraph {u v u' v' : V} {p : G.Walk u v} (hp : p.toSubgraph.Adj u' v') :
     u' ∈ p.support := p.mem_verts_toSubgraph.mp (p.toSubgraph.edge_vert hp)
 
+lemma adj_toSubgraph_iff_mem_edges {u v u' v' : V} {p : G.Walk u v} :
+    p.toSubgraph.Adj u' v' ↔ s(u', v') ∈ p.edges := by
+  rw [← p.mem_edges_toSubgraph, Subgraph.mem_edgeSet]
+
+lemma toSubgraph_bypass_le_toSubgraph {u v : V} {p : G.Walk u v} [DecidableEq V] :
+    p.bypass.toSubgraph ≤ p.toSubgraph := by
+  constructor
+  · simpa using p.support_bypass_subset
+  · simpa [adj_toSubgraph_iff_mem_edges] using fun _ _ h ↦ p.edges_toPath_subset h
+
 namespace IsPath
 
 lemma neighborSet_toSubgraph_startpoint {u v} {p : G.Walk u v}
