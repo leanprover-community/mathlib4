@@ -17,7 +17,7 @@ In this file we define ergodic maps / measures together with quasi-ergodic maps 
 provide some basic API. Quasi-ergodicity is a weaker condition than ergodicity for which the measure
 preserving condition is relaxed to quasi-measure-preserving.
 
-# Main definitions:
+## Main definitions
 
 * `PreErgodic`: the ergodicity condition without the measure-preserving condition. This exists
   to share code between the `Ergodic` and `QuasiErgodic` definitions.
