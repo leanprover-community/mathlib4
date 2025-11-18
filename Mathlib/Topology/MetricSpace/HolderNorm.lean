@@ -129,29 +129,75 @@ section Monotonicity
 
 open Bornology
 
+/-- If a function is `(C₁, r)`-Hölder and `(C₂, s)`-Hölder,
+then it is `(C₁ ^ t * C_₂ ^ (1 - t), r * t + s * (1 - t)`-Hölder for `0 ≤ 1 ≤ t`. -/
+lemma HolderOnWith.interpolate {C₁ C₂ s t : ℝ≥0} {A : Set X}
+    (hf₁ : HolderOnWith C₁ r f A) (hf₂ : HolderOnWith C₂ s f A) (ht : t ≤ 1) :
+    HolderOnWith (C₁ ^ (t : ℝ) * C₂ ^ (1 - t : ℝ)) (r * t + s * (1 - t)) f A := by
+  intro x hx y hy
+  calc edist (f x) (f y)
+    = (edist (f x) (f y)) ^ (t : ℝ) * (edist (f x) (f y)) ^ (1 - t : ℝ) := by
+        rw [← ENNReal.rpow_add_of_nonneg _ _ (by simp) (by simpa)]
+        simp
+  _ ≤ (↑C₁ * (edist x y) ^ (r : ℝ)) ^ (t : ℝ) * (↑C₂ * (edist x y) ^ (s : ℝ)) ^ (1 - t : ℝ) := by
+        nth_grw 1 [hf₁ x hx y hy, hf₂ x hx y hy]
+        simpa
+  _ = ↑(C₁ ^ (t : ℝ) * C₂ ^ (1 - t : ℝ)) * (edist x y) ^ (↑(r * t + s * (1 - t)) : ℝ) := by
+        rw [ENNReal.mul_rpow_of_nonneg, ENNReal.mul_rpow_of_nonneg, NNReal.coe_add, NNReal.coe_mul,
+          NNReal.coe_mul, ENNReal.rpow_add_of_nonneg, ENNReal.rpow_mul, ENNReal.rpow_mul,
+          NNReal.coe_sub ht, NNReal.coe_one, ENNReal.coe_mul, ENNReal.coe_rpow_of_nonneg,
+          ENNReal.coe_rpow_of_nonneg]
+        · ring
+        any_goals positivity
+        all_goals simpa
+
+lemma HolderOnWith.holderOnWith_zero_of_bounded {C D : ℝ≥0} {s : Set X}
+    (hs : ∀ x ∈ s, ∀ y ∈ s, edist x y ≤ D) (hf : HolderOnWith C r f s) :
+    HolderOnWith (C * D ^ (r : ℝ)) 0 f s := by
+  intro x hx y hy
+  simp only [NNReal.coe_zero, ENNReal.rpow_zero, mul_one]
+  grw [hf x hx y hy, hs x hx y hy, ENNReal.coe_mul, ENNReal.coe_rpow_of_nonneg _ (by simp)]
+
+/-- If a function is `r`-Hölder over a bounded space, then it is also `s`-Hölder when `s ≤ r`. -/
+lemma HolderOnWith.mono' {C D t : ℝ≥0} {s : Set X}
+    (hs : ∀ x ∈ s, ∀ y ∈ s, edist x y ≤ D) (hf : HolderOnWith C r f s) (htr : t ≤ r) :
+    HolderOnWith (C * D ^ (r - t : ℝ)) t f s := by
+  obtain rfl | ht := eq_zero_or_pos t
+  · simpa using hf.holderOnWith_zero_of_bounded hs
+  have hr : 0 < r := ht.trans_le htr
+  convert hf.interpolate (hf.holderOnWith_zero_of_bounded hs) (t := t / r) ?_ using 1
+  · nth_rw 1 [NNReal.mul_rpow, ← NNReal.rpow_mul, ← mul_assoc, ← NNReal.rpow_add_of_nonneg,
+      ← NNReal.rpow_one C]
+    · congr
+      · simp
+      · rw [mul_sub, NNReal.coe_div, mul_div_cancel₀, mul_one]
+        exact NNReal.coe_ne_zero.2 hr.ne'
+    · exact NNReal.coe_nonneg _
+    · simpa only [sub_nonneg, coe_le_one, div_le_one hr]
+  · simp [mul_div_cancel₀ _ hr.ne']
+  · simpa only [sub_nonneg, coe_le_one, div_le_one hr]
+
+/-- If a function is `r`-Hölder over a bounded space, then it is also `s`-Hölder when `s ≤ r`. -/
+lemma HolderWith.mono' {C D t : ℝ≥0}
+    (hs : ∀ x y : X, edist x y ≤ D) (hf : HolderWith C r f) (htr : t ≤ r) :
+    HolderWith (C * D ^ (r - t : ℝ)) t f :=
+  holderOnWith_univ.1 ((holderOnWith_univ.2 hf).mono' (fun x _ y _ ↦ hs x y) htr)
+
 /-- If a function is `r`-Hölder over a bounded space, then it is also `s`-Hölder when `s ≤ r`. -/
 lemma MemHolder.mono {X : Type*} [PseudoMetricSpace X] [hX : BoundedSpace X]
     {f : X → Y} {s : ℝ≥0} (hf : MemHolder r f) (hs : s ≤ r) :
     MemHolder s f := by
   obtain ⟨C, hf⟩ := hf
-  obtain rfl | hr := eq_zero_or_pos r
-  · rw [nonpos_iff_eq_zero.1 hs]
-    exact ⟨C, hf⟩
-  obtain ⟨C', hC'⟩ := Metric.boundedSpace_iff_nndist.1 hX
-  refine ⟨C * C' ^ (r - s : ℝ), fun x y ↦ ?_⟩
-  obtain h | h := eq_or_ne (edist x y) 0
-  · have := hf x y
-    simp_all
-  nth_grw 1 [hf x y, ← sub_add_cancel r.toReal s, ENNReal.rpow_add _ _ h (edist_ne_top _ _),
-    edist_nndist, edist_nndist, edist_nndist, hC', ENNReal.coe_mul, mul_assoc,
-    ENNReal.coe_rpow_of_nonneg]
-  all_goals simpa
+  obtain ⟨C', hC'⟩ := Metric.boundedSpace_iff_edist.1 hX
+  exact ⟨C * C' ^ (r - s : ℝ),
+    holderOnWith_univ.1 <| (holderOnWith_univ.2 hf).mono' (D := C') (fun x _ y _ ↦ hC' x y) hs⟩
 
 /-- If a function is `r`-Hölder over a pseudoemetric space with bounded distance,
 then it is also `s`-Hölder when `s ≤ r`. -/
-lemma MemHolder.mono' {C s : ℝ≥0} (hf : MemHolder r f) (hs : s ≤ r)
-    (hX : ∀ x y : X, edist x y ≤ C) :
+lemma MemHolder.mono' {s : ℝ≥0} (hf : MemHolder r f) (hs : s ≤ r)
+    (hX : ∃ C : ℝ≥0, ∀ x y : X, edist x y ≤ C) :
     MemHolder s f := by
+  obtain ⟨C, hX⟩ := hX
   letI := PseudoEMetricSpace.toPseudoMetricSpace
     fun x y ↦ ne_top_of_le_ne_top ENNReal.coe_ne_top (hX x y)
   have := Metric.boundedSpace_iff_edist.2 ⟨C, hX⟩
