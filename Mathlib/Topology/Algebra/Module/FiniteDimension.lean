@@ -212,7 +212,7 @@ private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Fintype
     rw [Fintype.card_eq_zero_iff] at hn
     exact continuous_of_const fun x y => funext hn.elim
   | succ n IH =>
-    haveI : FiniteDimensional 𝕜 E := .of_fintype_basis ξ
+    haveI : FiniteDimensional 𝕜 E := ξ.finiteDimensional_of_finite
     -- first step: thanks to the induction hypothesis, any n-dimensional subspace is equivalent
     -- to a standard space of dimension n, hence it is complete and therefore closed.
     have H₁ : ∀ s : Submodule 𝕜 E, finrank 𝕜 s = n → IsClosed (s : Set E) := by
@@ -282,7 +282,7 @@ continuous (see `LinearMap.continuous_of_finiteDimensional`), which in turn impl
 norms are equivalent in finite dimensions. -/
 theorem continuous_equivFun_basis [T2Space E] {ι : Type*} [Finite ι] (ξ : Basis ι 𝕜 E) :
     Continuous ξ.equivFun :=
-  haveI : FiniteDimensional 𝕜 E := .of_fintype_basis ξ
+  haveI : FiniteDimensional 𝕜 E := ξ.finiteDimensional_of_finite
   ξ.equivFun.toLinearMap.continuous_of_finiteDimensional
 
 namespace LinearMap
@@ -430,7 +430,7 @@ variable {ι : Type*} [Finite ι] [T2Space E]
 
 /-- Construct a continuous linear map given the value at a finite basis. -/
 def constrL (v : Basis ι 𝕜 E) (f : ι → F) : E →L[𝕜] F :=
-  haveI : FiniteDimensional 𝕜 E := FiniteDimensional.of_fintype_basis v
+  haveI : FiniteDimensional 𝕜 E := v.finiteDimensional_of_finite
   LinearMap.toContinuousLinearMap (v.constr 𝕜 f)
 
 @[simp]
@@ -443,7 +443,7 @@ functions from its basis indexing type to `𝕜`. -/
 def equivFunL (v : Basis ι 𝕜 E) : E ≃L[𝕜] ι → 𝕜 :=
   { v.equivFun with
     continuous_toFun :=
-      haveI : FiniteDimensional 𝕜 E := FiniteDimensional.of_fintype_basis v
+      haveI : FiniteDimensional 𝕜 E := v.finiteDimensional_of_finite
       v.equivFun.toLinearMap.continuous_of_finiteDimensional
     continuous_invFun := by
       change Continuous v.equivFun.symm.toFun

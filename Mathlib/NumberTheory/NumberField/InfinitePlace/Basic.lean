@@ -57,7 +57,7 @@ namespace NumberField.InfinitePlace
 
 instance {K : Type*} [Field K] : FunLike (InfinitePlace K) K ℝ where
   coe w x := w.1 x
-  coe_injective' _ _ h := Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)
+  coe_injective' _ _ h := Subtype.ext (AbsoluteValue.ext fun x => congr_fun h x)
 
 lemma coe_apply {K : Type*} [Field K] (v : InfinitePlace K) (x : K) : v x = v.1 x := rfl
 
@@ -434,6 +434,18 @@ theorem card_add_two_mul_card_eq_rank :
   rw [← card_real_embeddings, ← card_complex_embeddings, Fintype.card_subtype_compl,
     ← Embeddings.card K ℂ, Nat.add_sub_of_le]
   exact Fintype.card_subtype_le _
+
+open scoped Classical in
+/--
+The signature of the permutation on the complex embeddings of `K` defined by sending an embedding
+to its conjugate has signature `(-1) ^ nrComplexPlaces K`.
+-/
+theorem ComplexEmbedding.conjugate_sign :
+    (ComplexEmbedding.involutive_conjugate K).toPerm.sign = (-1) ^ nrComplexPlaces K := by
+  rw [Equiv.Perm.sign_of_pow_two_eq_one, Embeddings.card, ← card_add_two_mul_card_eq_rank,
+    ← card_real_embeddings, Fintype.card, Fintype.card, Nat.add_sub_cancel_left,
+    Nat.mul_div_cancel_left _ zero_lt_two]
+  exact Equiv.ext (ComplexEmbedding.involutive_conjugate K).toPerm_involutive
 
 variable {K}
 
