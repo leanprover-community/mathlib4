@@ -36,7 +36,7 @@ abbrev equivReindex : (K →+* ℂ) ≃ ChooseBasisIndex ℤ (𝓞 K) :=
 abbrev basisMatrix : Matrix (K →+* ℂ) (K →+* ℂ) ℂ :=
   (Matrix.of fun i ↦ latticeBasis K (equivReindex K i))
 
-theorem basisMatrix_eq_embeddingsMatrixReindex [DecidableEq (K →+* ℂ)] :
+theorem basisMatrix_eq_embeddingsMatrixReindex :
     basisMatrix K = Algebra.embeddingsMatrixReindex ℚ ℂ
       (integralBasis K ∘ (equivReindex K)) RingHom.equivRatAlgHom := by
   ext; simp [Algebra.embeddingsMatrixReindex]
