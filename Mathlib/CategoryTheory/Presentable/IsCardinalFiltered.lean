@@ -329,4 +329,14 @@ lemma IsCardinalFiltered.of_final
       exact ⟨F.obj (IsFiltered.max j' k'), b ≫ F.map (IsFiltered.rightToMax _ _),
         a ≫ F.map (IsFiltered.leftToMax _ _), by simp⟩
 
+lemma Limits.IsTerminal.isCardinalFiltered {J : Type u} [Category.{v} J]
+    {X : J} (hX : IsTerminal X) (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+    IsCardinalFiltered J κ where
+  nonempty_cocone _ _ := ⟨{ pt := X, ι.app _ := hX.from _ }⟩
+
+lemma isCardinalFiltered_of_hasTerminal (J : Type u) [Category.{v} J]
+    [HasTerminal J] (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+    IsCardinalFiltered J κ :=
+  terminalIsTerminal.isCardinalFiltered _
+
 end CategoryTheory

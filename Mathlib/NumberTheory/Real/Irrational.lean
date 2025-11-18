@@ -57,14 +57,14 @@ theorem irrational_nrt_of_notint_nrt {x : ℝ} (n : ℕ) (m : ℤ) (hxr : x ^ n 
     rw [Int.cast_ne_zero, Int.natCast_ne_zero]
     exact P
   have c2 : ((D : ℤ) : ℝ) ^ n ≠ 0 := pow_ne_zero _ c1
-  rw [mk'_eq_divInt, cast_pow, cast_divInt, div_pow, div_eq_iff_mul_eq c2, ← Int.cast_pow,
+  rw [mk_eq_divInt, cast_pow, cast_divInt, div_pow, div_eq_iff_mul_eq c2, ← Int.cast_pow,
     ← Int.cast_pow, ← Int.cast_mul, Int.cast_inj] at hxr
   have hdivn : (D : ℤ) ^ n ∣ N ^ n := Dvd.intro_left m hxr
   rw [← Int.dvd_natAbs, ← Int.natCast_pow, Int.natCast_dvd_natCast, Int.natAbs_pow,
     Nat.pow_dvd_pow_iff hnpos.ne'] at hdivn
   obtain rfl : D = 1 := by rw [← Nat.gcd_eq_right hdivn, C.gcd_eq_one]
   refine hv ⟨N, ?_⟩
-  rw [mk'_eq_divInt, Int.ofNat_one, divInt_one, cast_intCast]
+  rw [mk_eq_divInt, Int.ofNat_one, divInt_one, cast_intCast]
 
 /-- If `x^n = m` is an integer and `n` does not divide the `multiplicity p m`, then `x`
 is irrational. -/
@@ -89,7 +89,7 @@ theorem irrational_sqrt_of_multiplicity_odd (m : ℤ) (hm : 0 < m) (p : ℕ) [hp
     (Hpv : multiplicity (p : ℤ) m % 2 = 1) :
     Irrational (√m) :=
   @irrational_nrt_of_n_not_dvd_multiplicity _ 2 _ (Ne.symm (ne_of_lt hm)) p hp
-    (sq_sqrt (Int.cast_nonneg.2 <| le_of_lt hm)) (by rw [Hpv]; exact one_ne_zero)
+    (sq_sqrt (Int.cast_nonneg hm.le)) (by rw [Hpv]; exact one_ne_zero)
 
 @[simp] theorem not_irrational_zero : ¬Irrational 0 := not_not_intro ⟨0, Rat.cast_zero⟩
 @[simp] theorem not_irrational_one : ¬Irrational 1 := not_not_intro ⟨1, Rat.cast_one⟩
@@ -118,7 +118,8 @@ theorem irrational_sqrt_intCast_iff_of_nonneg {z : ℤ} (hz : 0 ≤ z) :
 
 theorem irrational_sqrt_intCast_iff {z : ℤ} :
     Irrational (√z) ↔ ¬IsSquare z ∧ 0 ≤ z := by
-  rw [← Rat.cast_intCast, irrational_sqrt_ratCast_iff, Rat.isSquare_intCast_iff, Int.cast_nonneg]
+  rw [← Rat.cast_intCast, irrational_sqrt_ratCast_iff, Rat.isSquare_intCast_iff,
+    Int.cast_nonneg_iff]
 
 theorem irrational_sqrt_natCast_iff {n : ℕ} : Irrational (√n) ↔ ¬IsSquare n := by
   rw [← Rat.isSquare_natCast_iff, ← irrational_sqrt_ratCast_iff_of_nonneg n.cast_nonneg,

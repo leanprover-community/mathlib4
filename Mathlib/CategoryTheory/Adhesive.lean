@@ -93,10 +93,7 @@ theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
       · dsimp; simp only [Functor.map_id, Category.comp_id, Category.id_comp]
       exacts [hf.w, hg.w]
     · ext (_ | _ | _)
-      · dsimp
-        rw [PushoutCocone.condition_zero, Category.assoc]
-        erw [hh.w]
-        rw [hf.w_assoc]
+      · simp [hh.w, hf.w_assoc]
       exacts [hh.w.symm, hi.w.symm]
     · rintro i _ (_ | _ | _)
       · dsimp; simp_rw [Functor.map_id]
