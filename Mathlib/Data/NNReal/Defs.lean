@@ -52,7 +52,7 @@ open Function
 -- to ensure these instances are computable
 /-- Nonnegative real numbers, denoted as `ℝ≥0` within the NNReal namespace -/
 def NNReal := { r : ℝ // 0 ≤ r } deriving
-  Zero, One, Semiring, CommMonoidWithZero, CommSemiring,
+  Zero, One, Semiring, CommMonoidWithZero, CommSemiring, AddCancelCommMonoid,
   PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice,
   Nontrivial, Inhabited
 
