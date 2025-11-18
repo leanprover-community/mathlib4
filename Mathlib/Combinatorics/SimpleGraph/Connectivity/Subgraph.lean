@@ -278,8 +278,7 @@ lemma toSubgraph_bypass_le_toSubgraph {u v : V} {p : G.Walk u v} [DecidableEq V]
     p.bypass.toSubgraph ≤ p.toSubgraph := by
   constructor
   · simpa using p.support_bypass_subset
-  · simp only [adj_toSubgraph_iff_mem_edges]
-    exact fun _ _ h ↦ p.edges_toPath_subset h
+  · exact fun _ _ h ↦ adj_toSubgraph_toPath h
 
 namespace IsPath
 
