@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Filtered.Final
 import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.MorphismProperty.HasCardinalLT
 import Mathlib.CategoryTheory.ObjectProperty.HasCardinalLT
 import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered

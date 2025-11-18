@@ -168,13 +168,13 @@ jobs:
       id: get-branch-sha
       run: |
         # Check if the branch exists remotely
-        if git fetch origin "$BRANCH_NAME"; then
-          SHA=$(git rev-parse "origin/$BRANCH_NAME")
+        SHA=$(git ls-remote --heads origin "$BRANCH_NAME" | awk '{print $1}')
+        if [ -n "$SHA" ]; then
           echo "Branch '$BRANCH_NAME' exists with SHA: $SHA"
           echo "sha=$SHA" >> "${GITHUB_OUTPUT}"
         else
           echo "Branch '$BRANCH_NAME' does not exist"
-          echo "sha=" >>" ${GITHUB_OUTPUT}"
+          echo "sha=" >> "${GITHUB_OUTPUT}"
         fi
 
     - name: Get PR
