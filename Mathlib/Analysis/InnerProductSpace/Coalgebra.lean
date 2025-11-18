@@ -9,16 +9,13 @@ import Mathlib.RingTheory.Coalgebra.Basic
 /-!
 # Finite-dimensional inner product space with a (co)algebra structure
 
-This file proves that a finite-dimensional inner product space has an algebra
+This file proves that a finite-dimensional inner product space has a
+colagebra structure if it has an algebra structure, where
+`comul = adjoint (mul' 𝕜 A)` and `counit = adjoint (Algebra.linearMap 𝕜 A)`.
+
+And similarly, a finite-dimensional inner product space has an algebra
 structure if it has a coalgebra structure, where `x * y = (adjoint comul) (x ⊗ₜ y)`,
 `(1 : A) = (adjoint counit) (1 : 𝕜)` and `algebraMap = adjoint counit`.
-
-## TODO:
-
-* When `NormedAddCommGroup` becomes unbundled
-  (so that we can have `Ring` along with a `NormedAddCommGroup`),
-  prove that a finite-dimensional inner product space with an algebra structure gives rise
-  to a coalgebra, where `comul = adjoint (mul' 𝕜 A)` and `counit = adjoint (Algebra.linearMap 𝕜 A)`.
 -/
 
 variable {𝕜 A : Type*} [RCLike 𝕜] [NormedAddCommGroup A] [InnerProductSpace 𝕜 A]
@@ -33,6 +30,41 @@ theorem LinearIsometryEquiv.adjoint_toLinearMap_eq_symm {K : Type*}
   have := FiniteDimensional.complete 𝕜 K
   calc adjoint e.toLinearMap = (ContinuousLinearMap.adjoint ↑e).toLinearMap := rfl
     _ = e.symm.toLinearMap := congr($e.adjoint_eq_symm)
+
+section toCoalgebra
+variable {A : Type*} [NormedRing A] [InnerProductSpace 𝕜 A] [FiniteDimensional 𝕜 A]
+  [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
+
+private local instance : Algebra 𝕜 A :=
+  Algebra.ofModule smul_mul_assoc mul_smul_comm
+
+-- TODO: ease `NormedRing` to `Ring` and `NormedAddCommGroup`
+/-- A finite-dimensional inner product space with an algebra structure induces
+a coalgebra, where comultiplication is given by the adjoint of multiplication
+and the counit is given by the adjoint of the algebra map. -/
+noncomputable def Algebra.coalgebraOfFiniteDimensionalInnerProductSpace :
+    Coalgebra 𝕜 A where
+  comul := adjoint (mul' 𝕜 A)
+  counit := adjoint (Algebra.linearMap 𝕜 A)
+  coassoc := by
+    rw [← adjoint_lTensor, ← adjoint_rTensor,
+      (by rfl : (_root_.TensorProduct.assoc 𝕜 A A A).toLinearMap
+        = (assocIsometry 𝕜 A A A).symm.symm.toLinearMap),
+      ← LinearIsometryEquiv.adjoint_toLinearMap_eq_symm]
+    simp_rw [← adjoint_comp]
+    congr 1; ext; simp [mul_assoc]
+  rTensor_counit_comp_comul := by
+    rw [← adjoint_rTensor, ← adjoint_comp]
+    change _ = (lidIsometry 𝕜 A).symm.toLinearMap
+    rw [← LinearIsometryEquiv.adjoint_toLinearMap_eq_symm]
+    congr 1; ext; simp
+  lTensor_counit_comp_comul := by
+    rw [← adjoint_lTensor, ← adjoint_comp]
+    change _ = ((commIsometry 𝕜 𝕜 A).symm.trans (lidIsometry 𝕜 A)).symm.toLinearMap
+    rw [← LinearIsometryEquiv.adjoint_toLinearMap_eq_symm]
+    congr 1; ext; simp
+
+end toCoalgebra
 
 namespace Coalgebra
 variable [Coalgebra 𝕜 A]
