@@ -44,10 +44,9 @@ open Function Seminorm SeminormFamily Set TopologicalSpace UniformSpace
 open scoped BoundedContinuousFunction NNReal Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-variable [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
-variable {n : ℕ∞}
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+  {n : ℕ∞}
 
 variable (𝕜 Ω F n) in
 /-- The type of bundled `n`-times continuously differentiable maps with compact support -/

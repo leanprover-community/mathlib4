@@ -12,7 +12,7 @@ import Mathlib.Topology.Maps.Basic
 This file defines homeomorphisms between two topological spaces. They are bijections with both
 directions continuous. We denote homeomorphisms with the notation `≃ₜ`.
 
-# Main definitions and results
+## Main definitions and results
 
 * `Homeomorph X Y`: The type of homeomorphisms from `X` to `Y`.
   This type can be denoted using the following notation: `X ≃ₜ Y`.
@@ -397,6 +397,12 @@ theorem toHomeomorphOfContinuousClosed_apply (e : X ≃ Y) (h₁ : Continuous e)
 theorem toHomeomorphOfContinuousClosed_symm_apply
     (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsClosedMap e) :
     ⇑(e.toHomeomorphOfContinuousClosed h₁ h₂).symm = e.symm := rfl
+
+/-- Any bijection between discrete spaces is a homeomorphism. -/
+def toHomeomorphOfDiscrete
+    [TopologicalSpace X] [DiscreteTopology X]
+    [TopologicalSpace Y] [DiscreteTopology Y] (e : X ≃ Y) : X ≃ₜ Y :=
+  e.toHomeomorph (by simp)
 
 end Equiv
 
