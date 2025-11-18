@@ -53,7 +53,7 @@ theorem mapIdxMAux'_eq_mapIdxMGo {α} (f : ℕ → α → m PUnit) (as : List α
   induction as generalizing arr with
   | nil => simp only [mapIdxMAux', mapIdxM.go, seqRight_eq, map_pure, seq_pure]
   | cons head tail ih =>
-    simp only [mapIdxMAux', seqRight_eq, map_eq_pure_bind, seq_eq_bind, bind_pure_unit,
+    simp only [mapIdxMAux', seqRight_eq, map_eq_pure_bind, seq_eq_bind_map, bind_pure_unit,
       LawfulMonad.bind_assoc, pure_bind, mapIdxM.go]
     generalize (f (Array.size arr) head) = head
     have : (arr.push ⟨⟩).size = arr.size + 1 := Array.size_push _
