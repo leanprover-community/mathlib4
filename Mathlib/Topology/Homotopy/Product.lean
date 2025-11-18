@@ -116,7 +116,7 @@ def pi (γ : ∀ i, Path.Homotopic.Quotient (as i) (bs i)) : Path.Homotopic.Quot
 
 theorem pi_lift (γ : ∀ i, Path (as i) (bs i)) :
     (Path.Homotopic.pi fun i => (Quotient.mk (γ i))) = Quotient.mk (Path.pi γ) := by
-  simp_rw [← Quotient.mk'_eq_mk, Quotient.mk', Quotient.choice_eq, Quotient.map_mk]
+  simp_rw [← Quotient.mk'_eq_mk, Quotient.mk', pi, Quotient.choice_eq, Quotient.map_mk]
 
 /-- Composition and products commute.
   This is `Path.trans_pi_eq_pi_trans` descended to path homotopy classes. -/
