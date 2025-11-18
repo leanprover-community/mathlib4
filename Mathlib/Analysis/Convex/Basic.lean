@@ -117,6 +117,9 @@ theorem DirectedOn.convex_sUnion {c : Set (Set E)} (hdir : DirectedOn (· ⊆ ·
   rw [sUnion_eq_iUnion]
   exact (directedOn_iff_directed.1 hdir).convex_iUnion fun A => hc A.2
 
+theorem Convex.setOf_const_imp {P : Prop} (hs : Convex 𝕜 s) : Convex 𝕜 {x | P → x ∈ s} := by
+  by_cases hP : P <;> simp [hP, hs, convex_univ]
+
 end SMul
 
 section Module
