@@ -375,6 +375,8 @@ lemma _root_.contMDiffAt_localFrame_of_mem (i : ι) (hx : x ∈ e.baseSet) :
 
 variable [ContMDiffVectorBundle 1 F V I]
 
+-- use this! #check LinearMap.foo
+
 variable (I) in
 /-- Coefficients of a section `s` of `V` w.r.t. the local frame `b.localFrame e i`.
 
