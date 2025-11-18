@@ -53,16 +53,15 @@ universe t t'
 
 variable [HasDerivedCategory.{t} C] [HasDerivedCategory.{t'} D]
 
+instance : (F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
+    (ComplexShape.up ℤ)).functor.CommShift ℤ := F.commShiftMapCochainComplex
+
 lemma Functor.mapExt_eq_shiftedHom_map [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ)
     (e : Ext X Y n) : (F.mapExt X Y n e).hom =
     (F.mapDerivedCategorySingleFunctor 0).inv.app X ≫ e.hom.map F.mapDerivedCategory ≫
     ((F.mapDerivedCategorySingleFunctor 0).hom.app Y)⟦(n : ℤ)⟧' := by
   rw [← ShiftedHom.comp_mk₀ _ 0 rfl, ← ShiftedHom.mk₀_comp 0 rfl]
   simp only [Ext.hom, Ext.homEquiv, comp_obj]
-  let _ : (F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
-    (ComplexShape.up ℤ)).functor.CommShift ℤ := F.commShiftMapCochainComplex
-  let _ : NatTrans.CommShift F.mapDerivedCategoryFactors.symm.hom ℤ :=
-    NatTrans.CommShift.of_iso_inv F.mapDerivedCategoryFactors ℤ
   apply Eq.trans ((F.mapHomologicalComplexUpToQuasiIsoLocalizerMorphism
     (ComplexShape.up ℤ)).equiv_smallShiftedHomMap
     DerivedCategory.Q DerivedCategory.Q
@@ -124,7 +123,7 @@ lemma Functor.mapExtAddHom_coe [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ
 variable (R : Type*) [Ring R] [CategoryTheory.Linear R C] [CategoryTheory.Linear R D] [F.Linear R]
 
 lemma Functor.mapExtAddHom_linear [HasExt.{w} C] [HasExt.{w'} D] (X Y : C) (n : ℕ)
-    (r : R) (f : Ext.{w} X Y n) : F.mapExtAddHom X Y n (r • f) = r • (F.mapExtAddHom X Y n f) := by
+    (r : R) (f : Ext.{w} X Y n) : F.mapExt X Y n (r • f) = r • (F.mapExt X Y n f) := by
   let _ := HasDerivedCategory.standard C
   let _ := HasDerivedCategory.standard D
   ext

@@ -88,6 +88,9 @@ instance : NatTrans.CommShift F.mapDerivedCategoryFactors.hom ℤ :=
       simp only [id_comp, mapDerivedCategoryFactorsh_hom_app, assoc, comp_id,
         ← Functor.map_comp_assoc, Iso.inv_hom_id_app, map_id, comp_obj])
 
+instance : NatTrans.CommShift F.mapDerivedCategoryFactors.symm.hom ℤ :=
+  NatTrans.CommShift.of_iso_inv F.mapDerivedCategoryFactors ℤ
+
 instance : F.mapDerivedCategory.IsTriangulated :=
   Functor.isTriangulated_of_precomp_iso F.mapDerivedCategoryFactorsh
 
