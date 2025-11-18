@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
 import Mathlib.Analysis.Distribution.SchwartzSpace
-import Mathlib.Topology.Algebra.Module.PointwiseConvergence
+import Mathlib.Analysis.LocallyConvex.PointwiseConvergence
 
 /-!
 # TemperedDistribution
@@ -34,7 +34,7 @@ open MeasureTheory MeasureTheory.Measure
 
 open scoped Nat NNReal ContDiff
 
-variable {𝕜 𝕜' H D E F G V W R : Type*}
+variable {α 𝕜 𝕜' H D E F G V W R : Type*}
 
 variable [RCLike 𝕜] [NormedAddCommGroup D] [NormedAddCommGroup E] [NormedAddCommGroup F]
   [NormedAddCommGroup G] [NormedAddCommGroup H] [NormedAddCommGroup V] [NormedAddCommGroup W]
@@ -52,6 +52,24 @@ end definition
 
 namespace TemperedDistribution
 
+section Tendsto
+
+open Filter
+open scoped Topology
+
+variable [NormedSpace ℝ E] [NormedSpace ℝ F] [NormedSpace 𝕜 V] [NormedSpace 𝕜 F]
+
+theorem tendsto_nhds {f : Filter α} (u : α → 𝓢'(𝕜, E, F, V)) (y₀ : 𝓢'(𝕜, E, F, V)) :
+    Tendsto u f (𝓝 y₀) ↔ ∀ (x : 𝓢(E, F)) (ε : ℝ), 0 < ε → ∀ᶠ (k : α) in f, ‖u k x  - y₀ x‖ < ε :=
+  PointwiseConvergenceCLM.withSeminorms.tendsto_nhds _ _
+
+theorem tendsto_nhds_atTop [SemilatticeSup α] [Nonempty α] (u : α → 𝓢'(𝕜, E, F, V))
+    (y₀ : 𝓢'(𝕜, E, F, V)) :
+    Tendsto u atTop (𝓝 y₀) ↔ ∀ (x : 𝓢(E, F)) (ε : ℝ), 0 < ε → ∃ (k₀ : α), ∀ (k : α), k₀ ≤ k →
+    ‖u k x  - y₀ x‖ < ε :=
+  PointwiseConvergenceCLM.withSeminorms.tendsto_nhds_atTop _ _
+
+end Tendsto
 
 section Construction
 
