@@ -303,9 +303,21 @@ def smallEquiv (hf : IsImmersionAtOfComplement F I J n f x) : F ≃ₗ[𝕜] hf.
   letI φ : F ≃ₗ[𝕜] A' := LinearEquiv.ofInjective (LinearMap.prod 0 .id) (by intro x y hxy; simp_all)
   exact φ.trans <| LinearEquiv.ofInjective _ (by simp_all [A'])
 
--- seems to be missing!
-lemma ContinuousLinearMap.range_prod {f : E →L[𝕜] F} {g : E →L[𝕜] F'} :
+lemma smallEquiv_coe (hf : IsImmersionAtOfComplement F I J n f x) :
+  letI B := Pi.prod (0 : F → E) (@id F)
+  (hf.smallEquiv : F → _) =
+    (Set.rangeFactorization ((range B).restrict hf.equiv)) ∘ (Set.rangeFactorization B) := by
+  rfl
+
+/-- Unlike `ContinuousLinearMap.range_prod_eq`, this does not have any hypotheses on `f` and `g`. -/
+lemma ContinuousLinearMap.range_prod' {f : E →L[𝕜] F} {g : E →L[𝕜] F'} :
     range (ContinuousLinearMap.prod f g) = range (fun x ↦ (f x, g x)) := by
+  ext x
+  simp
+
+/-- Unlike `LinearMap.range_prod_eq`, this does not have any hypotheses on `f` and `g`. -/
+lemma LinearMap.range_prod' {f : E →ₗ[𝕜] F} {g : E →ₗ[𝕜] F'} :
+    range (LinearMap.prod f g) = range (fun x ↦ (f x, g x)) := by
   ext x
   simp
 
@@ -316,7 +328,7 @@ def smallEquivScifi [CompleteSpace E] [CompleteSpace E''] [CompleteSpace F]
   have h : Injective φ := by intro x y hxy; simp_all [φ]
   have h2 : IsClosed (range φ) := by
     have : (range (fun (x : F) ↦ ((0 : E), x))) = {0} ×ˢ univ := by grind
-    simpa [φ, ContinuousLinearMap.range_prod, this] using isClosed_singleton.prod isClosed_univ
+    simpa [φ, ContinuousLinearMap.range_prod', this] using isClosed_singleton.prod isClosed_univ
   have : CompleteSpace (LinearMap.range φ) := h2.completeSpace_coe
   letI ψ : _ →L[𝕜] E'' := .mk (hf.equiv.domRestrict (LinearMap.range φ))
     (Pi.continuous_restrict_apply _ hf.equiv.continuous)
