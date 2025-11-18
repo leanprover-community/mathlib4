@@ -61,7 +61,7 @@ def IsSpernerColoring (S : SimplicialComplex ℝ E) (c : E → Fin (m + 1)) : Pr
 
 /-- A finset is **panchromatic** (or **rainbow**) if the coloring is surjective onto all colors. -/
 def IsPanchromatic {α : Type*} (c : α → Fin (m + 1)) (X : Finset α) : Prop :=
-  Set.SurjOn c X .univ
+  Set.SurjOn c X univ
 
 /-- A finset is **almost panchromatic** if it uses all but exactly one color. -/
 def IsAlmostPanchromatic {α : Type*} (c : α → Fin (m + 1)) (X : Finset α) (missing : Fin (m + 1)) : Prop :=
@@ -175,7 +175,7 @@ private lemma boundary_sperner_coloring
     {S : SimplicialComplex ℝ (Fin (m + 2) → ℝ)}
     {c : (Fin (m + 2) → ℝ) → Fin (m + 2)}
     (hc : IsSpernerColoring S c) :
-    IsSpernerColoring (S.boundary m) (fun x ↦ (c x).castSucc) := by
+    IsSpernerColoring (SimplicialComplex.boundary S m) (fun x ↦ (c x).castSucc) := by
   sorry
 
 /-- On the boundary {x₀ = 0}, a 0-almost-panchromatic m-face is panchromatic for colors {1,...,m+1}.
@@ -276,7 +276,7 @@ theorem strong_sperner {S : SimplicialComplex ℝ (Fin (m + 1) → ℝ)} {c : E 
       ext X; simp [FaceOnBoundary, A₀, B₀, I₀]; tauto
 
     have hB₀_odd : Odd B₀.ncard := by
-      let S_bdy := S.boundary m
+      let S_bdy := SimplicialComplex.boundary S m
       let c_bdy := fun x ↦ (c x).castSucc
       have h_S_bdy_space : S_bdy.space = stdSimplex ℝ (Fin (m + 1)) := sorry
       have h_S_bdy_fin : S_bdy.faces.Finite := sorry
@@ -285,12 +285,13 @@ theorem strong_sperner {S : SimplicialComplex ℝ (Fin (m + 1) → ℝ)} {c : E 
       -- Need to show B₀.ncard = {s ∈ S_bdy.faces | IsPanchromatic c_bdy s}.ncard
       sorry
 
-    have h_count : P.ncard = B₀.ncard + 2 * (some_k : ℕ) := by
+    have h_count : ∃ k : ℕ, P.ncard = B₀.ncard + 2 * k := by
       -- This comes from the double counting argument using almost_panchromatic_containment
       sorry
 
-    rw [h_count]
-    exact Nat.Odd.add_even hB₀_odd (by simp)
+    obtain ⟨k, hk⟩ := h_count
+    rw [hk]
+    exact odd_of_odd_plus_even _ _ hB₀_odd ⟨k, rfl⟩
 
 /-- Helper: Partition 0-almost-panchromatic faces into boundary and interior. -/
 private lemma partition_almost_panchromatic {S : SimplicialComplex ℝ (Fin (m + 2) → ℝ)}
