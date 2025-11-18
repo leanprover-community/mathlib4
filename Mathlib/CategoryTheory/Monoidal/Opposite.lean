@@ -350,9 +350,9 @@ instance MonoidalOpposite.mopMopEquivalenceInverseMonoidal :
 
 instance : (mopMopEquivalence C).IsMonoidal where
   leftAdjoint_ε := by
-    simp [ε, η, Adjunction.homEquiv, mopMopEquivalence, Equivalence.trans, unmopEquiv, ε]
+    simp [ε, η, mopMopEquivalence, Equivalence.trans, unmopEquiv, ε]
   leftAdjoint_μ X Y := by
-    simp [μ, δ, Adjunction.homEquiv, mopMopEquivalence, Equivalence.trans, unmopEquiv, μ]
+    simp [μ, δ, mopMopEquivalence, Equivalence.trans, unmopEquiv, μ]
 
 /-- The identification `mop X ⊗ mop Y = mop (Y ⊗ X)` as a natural isomorphism. -/
 @[simps!]
@@ -434,7 +434,7 @@ instance : (opOpEquivalence C).inverse.Monoidal := monoidalOpOp
 @[deprecated (since := "2025-06-08")] alias unopUnop_δ := monoidalUnopUnop_δ
 
 instance : (opOpEquivalence C).IsMonoidal where
-  leftAdjoint_ε := by simp [Adjunction.homEquiv, opOpEquivalence]
-  leftAdjoint_μ := by simp [Adjunction.homEquiv, opOpEquivalence]
+  leftAdjoint_ε := by simp [opOpEquivalence]
+  leftAdjoint_μ := by simp [opOpEquivalence]
 
 end CategoryTheory
