@@ -217,9 +217,9 @@ theorem descPochhammer_smeval_eq_descFactorial (n k : ℕ) :
   | succ k ih =>
     rw [descPochhammer_succ_right, Nat.descFactorial_succ, smeval_mul, ih, mul_comm, Nat.cast_mul,
       smeval_sub, smeval_X, smeval_natCast, npow_one, npow_zero, nsmul_one]
-    by_cases h : n < k
+    by_cases! h : n < k
     · simp only [Nat.descFactorial_eq_zero_iff_lt.mpr h, Nat.cast_zero, zero_mul]
-    · rw [Nat.cast_sub <| not_lt.mp h]
+    · rw [Nat.cast_sub h]
 
 theorem ascPochhammer_smeval_neg_eq_descPochhammer (r : R) (k : ℕ) :
     (ascPochhammer ℕ k).smeval (-r) = Int.negOnePow k • (descPochhammer ℤ k).smeval r := by
@@ -258,7 +258,7 @@ instance Int.instBinomialRing : BinomialRing ℤ where
     rw [Int.multichoose.eq_def, nsmul_eq_mul]
     cases r with
     | ofNat n =>
-      simp only [Int.ofNat_eq_coe, Int.ofNat_mul_out]
+      simp only [Int.ofNat_eq_natCast, Int.ofNat_mul_ofNat]
       rw [← Nat.descFactorial_eq_factorial_mul_choose, smeval_at_natCast, ← eval_eq_smeval n,
         ascPochhammer_nat_eq_descFactorial]
     | negSucc n =>

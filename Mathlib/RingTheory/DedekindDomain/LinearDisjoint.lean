@@ -14,7 +14,7 @@ subrings such that `Frac R₁ ⊔ Frac R₂ = Frac B`, `Frac R₁` and `Frac R�
 over `Frac A`, and that `𝓓(R₁/A)` and `𝓓(R₂/A)` are coprime where `𝓓` denotes the different ideal
 and `Frac R` denotes the fraction field of a domain `R`.
 
-# Main results and definitions
+## Main results and definitions
 
 * `FractionalIdeal.differentIdeal_eq_map_differentIdeal`: `𝓓(B/R₁) = 𝓓(R₂/A)`
 * `FractionalIdeal.differentIdeal_eq_differentIdeal_mul_differentIdeal_of_isCoprime`:
