@@ -3,6 +3,7 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.Group.Subgroup.Actions
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Setoid.Basic
@@ -538,8 +539,7 @@ lemma smul_mem_fixedPoints_of_normal [hH : H.Normal]
     (g : G) {a : α} (ha : a ∈ MulAction.fixedPoints H α) :
     g • a ∈ MulAction.fixedPoints H α := by
   intro h
-  change (h : G) • g • a = g • a
-  rw [← inv_smul_eq_iff, ← mul_smul, ← mul_smul]
+  rw [Subgroup.smul_def, ← inv_smul_eq_iff, ← mul_smul, ← mul_smul]
   exact ha (⟨_, hH.conj_mem' _ (SetLike.coe_mem h) _⟩ : H)
 
 /-- The set of fixed points of a normal subgroup is stable under the group action. -/
