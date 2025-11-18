@@ -14,6 +14,7 @@ import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Monoid.TypeTags
 import Mathlib.Algebra.Group.WithOne.Map
+import Mathlib.Tactic.Tauto
 
 /-!
 # Linearly ordered commutative groups and monoids with a zero element adjoined
@@ -205,15 +206,15 @@ instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
   mul_zero := @add_top _ (_)
   zero_le_one := (le_top : (0 : α) ≤ ⊤)
 
-@[simp]
+@[deprecated "Use simp" (since := "2025-11-17")]
 theorem ofAdd_toDual_eq_zero_iff [LinearOrderedAddCommMonoidWithTop α]
     (x : α) : Multiplicative.ofAdd (OrderDual.toDual x) = 0 ↔ x = ⊤ := Iff.rfl
 
-@[simp]
+@[deprecated "Use simp" (since := "2025-11-17")]
 theorem ofDual_toAdd_eq_top_iff [LinearOrderedAddCommMonoidWithTop α]
     (x : Multiplicative αᵒᵈ) : OrderDual.ofDual x.toAdd = ⊤ ↔ x = 0 := Iff.rfl
 
-@[simp]
+@[deprecated bot_eq_zero'' (since := "2025-11-17")]
 theorem ofAdd_bot [LinearOrderedAddCommMonoidWithTop α] :
     Multiplicative.ofAdd ⊥ = (0 : Multiplicative αᵒᵈ) := rfl
 

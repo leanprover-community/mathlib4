@@ -373,9 +373,6 @@ abbrev Preorder.toCircularPreorder (α : Type*) [Preorder α] : CircularPreorder
       | refine .inr <| .inr ?_; constructor <;> order
   sbtw_iff_btw_not_btw {a b c} := by
     simp_rw [lt_iff_le_not_ge]
-    have h1 := le_trans a b c
-    have h2 := le_trans b c a
-    have h3 := le_trans c a b
     grind
 
 /-- The circular partial order obtained from "looping around" a partial order.
