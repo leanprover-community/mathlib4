@@ -184,6 +184,14 @@ theorem mulEquivCongr_apply_smul [IsGaloisGroup G K L] [Finite G] [IsGaloisGroup
     (g : G) (x : L) : mulEquivCongr G H K L g • x = g • x :=
   AlgEquiv.ext_iff.mp ((mulEquivAlgEquiv H K L).apply_symm_apply (mulEquivAlgEquiv G K L g)) x
 
+@[simp]
+theorem map_mulEquivAlgEquiv_fixingSubgroup
+    [IsGaloisGroup G K L] [Finite G] (F : IntermediateField K L) :
+    (fixingSubgroup G (F : Set L)).map (mulEquivAlgEquiv G K L) = F.fixingSubgroup := by
+  ext g
+  obtain ⟨g, rfl⟩ := (mulEquivAlgEquiv G K L).surjective g
+  simp [mem_fixingSubgroup_iff]
+
 variable (H H' : Subgroup G) (F F' : IntermediateField K L)
 
 instance to_subgroup [hGKL : IsGaloisGroup G K L] :
@@ -196,17 +204,25 @@ theorem card_subgroup_eq_finrank_fixedpoints [IsGaloisGroup G K L] :
     Nat.card H = Module.finrank (FixedPoints.intermediateField H : IntermediateField K L) L :=
   card_eq_finrank H (FixedPoints.intermediateField H) L
 
+variable {G K L} in
+theorem of_mulEquiv_algEquiv [IsGalois K L] (e : G ≃* Gal(L/K)) (he : ∀ g x, e g x = g • x) :
+    IsGaloisGroup G K L where
+  faithful := ⟨fun {g₁ g₂} h ↦ e.injective <| AlgEquiv.ext <| by simpa [he]⟩
+  commutes := ⟨by simp [← he]⟩
+  isInvariant := ⟨fun y hy ↦ (InfiniteGalois.mem_bot_iff_fixed y).mpr <|
+    e.surjective.forall.mpr <| by simpa [he]⟩
+
+instance of_fixed_field [Finite G] [FaithfulSMul G L] :
+    IsGaloisGroup G (FixedPoints.subfield G L) L :=
+  of_mulEquiv_algEquiv (FixedPoints.toAlgAutMulEquiv _ _) fun _ _ ↦ rfl
+
 instance to_intermediateField [Finite G] [hGKL : IsGaloisGroup G K L] :
-    IsGaloisGroup (fixingSubgroup G (F : Set L)) F L where
-  faithful := have := hGKL.faithful; inferInstance
-  commutes := ⟨fun g x y ↦ by
-    simp_rw [IntermediateField.smul_def, smul_eq_mul, smul_mul', Subgroup.smul_def, g.2 x]⟩
-  isInvariant := ⟨fun x h ↦ ⟨⟨x, by
-    have := hGKL.finiteDimensional
-    have := hGKL.isGalois
-    rw [← IsGalois.fixedField_fixingSubgroup F]
-    exact fun ⟨g, hg⟩ ↦ (mulEquivCongr_apply_smul _ G K L g x).symm.trans
-      (Subtype.forall.mp h _ (by simpa [mem_fixingSubgroup_iff] using hg))⟩, rfl⟩⟩
+    IsGaloisGroup (fixingSubgroup G (F : Set L)) F L :=
+  let e := ((mulEquivAlgEquiv G K L).subgroupMap (fixingSubgroup G (F : Set L))).trans <|
+    (MulEquiv.subgroupCongr (map_mulEquivAlgEquiv_fixingSubgroup ..)).trans <|
+    IntermediateField.fixingSubgroupEquiv F
+  have := hGKL.isGalois
+  .of_mulEquiv_algEquiv e fun _ _ ↦ rfl
 
 theorem card_fixingSubgroup_eq_finrank [Finite G] [IsGaloisGroup G K L] :
     Nat.card (fixingSubgroup G (F : Set L)) = Module.finrank F L :=
