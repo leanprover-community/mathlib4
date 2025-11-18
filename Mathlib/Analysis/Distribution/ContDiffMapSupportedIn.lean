@@ -74,9 +74,10 @@ distributions
 open TopologicalSpace SeminormFamily Set Function Seminorm UniformSpace
 open scoped BoundedContinuousFunction Topology NNReal ContDiff
 
-variable (𝕜 E F : Type*) [NontriviallyNormedField 𝕜]
+variable (𝕜 E F F' : Type*) [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+  [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F'] [SMulCommClass ℝ 𝕜 F']
   {n k : ℕ∞} {K : Compacts E}
 
 /-- The type of bundled `n`-times continuously differentiable maps which vanish outside of a fixed
@@ -136,7 +137,7 @@ instance toContDiffMapSupportedInClass :
   map_contDiff f := f.contDiff'
   map_zero_on_compl f := f.zero_on_compl'
 
-variable {E F}
+variable {E F F'}
 
 protected theorem contDiff (f : 𝓓^{n}_{K}(E, F)) : ContDiff ℝ n f := map_contDiff f
 protected theorem zero_on_compl (f : 𝓓^{n}_{K}(E, F)) : EqOn f 0 Kᶜ := map_zero_on_compl f
@@ -278,6 +279,22 @@ lemma toBoundedContinuousFunctionLM_apply (f : 𝓓^{n}_{K}(E, F)) :
 lemma toBoundedContinuousFunctionLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
     [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
     (toBoundedContinuousFunctionLM 𝕜 : 𝓓^{n}_{K}(E, F) → _) = toBoundedContinuousFunctionLM 𝕜' :=
+  rfl
+
+variable {𝕜} in
+-- Note: generalizing this to a semilinear setting would require a semilinear version of
+-- `CompatibleSMul`.
+noncomputable def postcompLM [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[𝕜] F') :
+    𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{n}_{K}(E, F') where
+  toFun f := ⟨T ∘ f, T.restrictScalars ℝ |>.contDiff.comp f.contDiff,
+    fun x hx ↦ by simp [f.zero_on_compl hx]⟩
+  map_add' f g := by ext x; exact map_add T (f x) (g x)
+  map_smul' c f := by ext x; exact map_smul T c (f x)
+
+@[simp]
+lemma postcompLM_apply [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[𝕜] F')
+    (f : 𝓓^{n}_{K}(E, F)) :
+    ContDiffMapSupportedIn.postcompLM T f = T ∘ f :=
   rfl
 
 variable (n k) in
@@ -549,6 +566,18 @@ noncomputable def toBoundedContinuousFunctionCLM : 𝓓^{n}_{K}(E, F) →L[𝕜]
         (norm_withSeminorms 𝕜 _) _ (fun _ ↦ ⟨{0}, 1, fun f ↦ ?_⟩)
       simp [norm_toBoundedContinuousFunction ℝ f,
         ContDiffMapSupportedIn.seminorm_apply_withOrder] }
+
+variable {𝕜} in
+-- Note: generalizing this to a semilinear setting would require a semilinear version of
+-- `CompatibleSMul`.
+noncomputable def postcompCLM [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[𝕜] F') :
+    𝓓^{n}_{K}(E, F) →L[𝕜] 𝓓^{n}_{K}(E, F') where
+  toLinearMap := postcompLM T
+  cont := show Continuous (postcompLM <| T.restrictScalars ℝ) by
+    refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
+      (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _) _ (fun i ↦ ⟨{0}, ‖T‖₊, fun f ↦ ?_⟩)
+    simp
+    sorry
 
 end Topology
 
