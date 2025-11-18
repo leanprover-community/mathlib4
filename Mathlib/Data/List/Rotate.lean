@@ -536,7 +536,7 @@ theorem head_cyclicPermutations (l : List α) :
 
 @[simp]
 theorem head?_cyclicPermutations (l : List α) : (cyclicPermutations l).head? = l := by
-  rw [head?_eq_head (cyclicPermutations_ne_nil l), head_cyclicPermutations]
+  rw [head?_eq_some_head (cyclicPermutations_ne_nil l), head_cyclicPermutations]
 
 theorem cyclicPermutations_injective : Function.Injective (@cyclicPermutations α) := fun l l' h ↦ by
   simpa using congr_arg head? h

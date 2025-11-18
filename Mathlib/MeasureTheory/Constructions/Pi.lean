@@ -292,6 +292,10 @@ theorem pi_pi [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i)) :
 nonrec theorem pi_univ [∀ i, SigmaFinite (μ i)] : Measure.pi μ univ = ∏ i, μ i univ := by
   rw [← pi_univ, pi_pi μ]
 
+@[simp] lemma pi_singleton [∀ i, SigmaFinite (μ i)] (f : ∀ i, α i) :
+    Measure.pi μ {f} = ∏ i, μ i {f i} := by
+  simpa [Set.univ_pi_singleton, -pi_pi] using pi_pi μ fun i ↦ {f i}
+
 instance pi.instIsFiniteMeasure [∀ i, IsFiniteMeasure (μ i)] :
     IsFiniteMeasure (Measure.pi μ) :=
   ⟨Measure.pi_univ μ ▸ ENNReal.prod_lt_top (fun i _ ↦ measure_lt_top (μ i) _)⟩
