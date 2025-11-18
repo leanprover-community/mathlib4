@@ -11,15 +11,13 @@ import Mathlib.Topology.Homeomorph.Lemmas
 /-!
 # Strongly locally contractible spaces
 
-This file defines `StronglyLocallyContractibleSpace`, a predicate class asserting that a
-topological space is strongly locally contractible, meaning each point has a neighborhood basis
-consisting of contractible sets.
+This file defines `LocallyContractibleSpace` and `StronglyLocallyContractibleSpace`.
 
 ## Main definitions
 
-* `LocallyContractibleSpace X`: classical local contractibility (null-homotopic inclusions)
+* `LocallyContractibleSpace X`: classical local contractibility (null-homotopic inclusions).
 * `StronglyLocallyContractibleSpace X`: a space where each point has a neighborhood basis
-  consisting of contractible subspaces
+  consisting of contractible sets (not necessarily open).
 
 ## Main results
 
@@ -51,6 +49,13 @@ contractible** (SLC).
 * "Basis of open contractible neighborhoods" (strongest)
 * "Basis of contractible neighborhoods" (this file, SLC)
 * "Null-homotopic inclusions" (classical LC, weakest)
+
+This naming is not used uniformly: according to https://ncatlab.org/nlab/show/locally+contractible+space
+the second and third notion here could also be called
+"locally contractible" and "semilocally contractible" respectively.
+We've enquired at
+https://math.stackexchange.com/questions/5109428/terminology-for-local-contractibility-locally-contractible-vs-strongly-local
+in the hope of gettting definitive naming advice.
 
 The Borsuk-Mazurkiewicz counterexample [borsuk_mazurkiewicz1934] shows that classical LC does not
 imply SLC. Moreover, from a contractible neighborhood `S` one generally cannot shrink to an open
