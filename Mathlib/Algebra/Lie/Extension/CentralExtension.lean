@@ -165,6 +165,7 @@ lemma bracket_sectionTwoCocycleRight (x y : M) :
   rw [← twoCochain_val_apply]
   have : (⁅x, y⁆, (c.val.val x) y) = (⁅x, y⁆, 0) + (0, (c.val.val x) y) := by simp
   rw [this, of_add, map_add, add_right_inj, ofTwoCocycle_incl_apply]
+  rfl
 
 /-- The left section of an extension attached to a 2-cocycle. -/
 def sectionTwoCocycleLeft : (ofTwoCocycle c).L →ₗ[R] N where
