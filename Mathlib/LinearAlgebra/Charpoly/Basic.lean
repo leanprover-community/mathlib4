@@ -103,7 +103,7 @@ theorem minpoly_dvd_charpoly {K : Type u} {M : Type v} [Field K] [AddCommGroup M
 /-- Any endomorphism polynomial `p` is equivalent under evaluation to `p %ₘ f.charpoly`; that is,
 `p` is equivalent to a polynomial with degree less than the dimension of the module. -/
 theorem aeval_eq_aeval_mod_charpoly (p : R[X]) : aeval f p = aeval f (p %ₘ f.charpoly) :=
-  (aeval_modByMonic_eq_self_of_root f.charpoly_monic f.aeval_self_charpoly).symm
+  (aeval_modByMonic_eq_self_of_root f.aeval_self_charpoly).symm
 
 /-- Any endomorphism power can be computed as the sum of endomorphism powers less than the
 dimension of the module. -/

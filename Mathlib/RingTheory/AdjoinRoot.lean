@@ -535,8 +535,7 @@ theorem modByMonicHom_mk (hg : g.Monic) (f : R[X]) : modByMonicHom hg (mk g f) =
 theorem mk_leftInverse (hg : g.Monic) : Function.LeftInverse (mk g) (modByMonicHom hg) := by
   intro f
   induction f using AdjoinRoot.induction_on
-  rw [modByMonicHom_mk hg, mk_eq_mk, modByMonic_eq_sub_mul_div _ hg, sub_sub_cancel_left,
-    dvd_neg]
+  rw [modByMonicHom_mk hg, mk_eq_mk, modByMonic_eq_sub_mul_div, sub_sub_cancel_left, dvd_neg]
   apply dvd_mul_right
 
 theorem mk_surjective : Function.Surjective (mk g) :=
@@ -555,7 +554,7 @@ def powerBasisAux' (hg : g.Monic) : Basis (Fin g.natDegree) R (AdjoinRoot g) :=
           simp only [(modByMonicHom hg).map_smul, coeff_smul, Pi.smul_apply, RingHom.id_apply]
       left_inv f := AdjoinRoot.induction_on _ f fun f => Eq.symm <| mk_eq_mk.mpr <| by
         simp only [modByMonicHom_mk, sum_modByMonic_coeff hg degree_le_natDegree]
-        rw [modByMonic_eq_sub_mul_div _ hg, sub_sub_cancel]
+        rw [modByMonic_eq_sub_mul_div, sub_sub_cancel]
         exact dvd_mul_right _ _
       right_inv := fun x =>
         funext fun i => by
