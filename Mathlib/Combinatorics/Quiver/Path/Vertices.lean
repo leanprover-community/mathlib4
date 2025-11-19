@@ -3,17 +3,20 @@ Copyright (c) 2025 Matteo Cipollina. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina
 -/
+module
 
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Combinatorics.Quiver.Path
-import Mathlib.Data.Set.Insert
-import Mathlib.Data.List.Basic
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Combinatorics.Quiver.Path
+public import Mathlib.Data.Set.Insert
+public import Mathlib.Data.List.Basic
 
 /-!
 # Path Vertices
 
 This file provides lemmas for reasoning about the vertices of a path.
 -/
+
+@[expose] public section
 
 namespace Quiver.Path
 
@@ -230,18 +233,7 @@ theorem exists_eq_comp_and_notMem_tail_of_mem_vertices {v : V} (hv : v ∈ p.ver
       intro hxPrev hxe_ne
       obtain ⟨q₁, q₂, h_prev, h_not_tail⟩ := ih hxPrev
       let q₂' : Path v (pPrev.cons e).end := q₂.cons e
-      have h_no_tail : v ∉ q₂'.vertices.tail := by
-        intro hmem
-        have hmem' : v ∈ (q₂.vertices ++ [(pPrev.cons e).end]).tail := by
-          simpa [q₂', vertices_cons, concat_eq_append] using hmem
-        cases hq2 : q₂.vertices with
-        | nil => simp [hq2] at hmem'
-        | cons y ys =>
-            have hx_in : v ∈ ys ++ [(pPrev.cons e).end] := by simpa [hq2] using hmem'
-            obtain (hx_ys | hx_last) := List.mem_append.mp hx_in
-            · exact h_not_tail <| by simpa [hq2]
-            · have : v = (pPrev.cons e).end := by simpa [List.mem_singleton] using hx_last
-              exact hxe_ne this
+      have h_no_tail : v ∉ q₂'.vertices.tail := by grind [vertices_cons, end_cons]
       exact ⟨q₁, q₂', by simp [q₂', h_prev], h_no_tail⟩
     cases hv' with
     | inl h_in_prefix =>

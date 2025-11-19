@@ -3,9 +3,11 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Analysis.Convex.Between
-import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.Analysis.Normed.Module.Convex
+module
+
+public import Mathlib.Analysis.Convex.Between
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Analysis.Normed.Module.Convex
 
 /-!
 # Sides of affine subspaces
@@ -24,6 +26,8 @@ This file defines notions of two points being on the same or opposite sides of a
   subspace `s`.
 
 -/
+
+@[expose] public section
 
 
 variable {R V V' P P' : Type*}
@@ -417,7 +421,7 @@ theorem wOppSide_iff_exists_left {s : AffineSubspace R P} {x y p₁ : P} (h : p�
     · refine Or.inr ⟨(-r₁ / r₂) • (p₁ -ᵥ p₁') +ᵥ p₂', s.smul_vsub_vadd_mem _ h hp₁' hp₂',
         Or.inr (Or.inr ⟨r₁, r₂, hr₁, hr₂, ?_⟩)⟩
       rw [vadd_vsub_assoc, ← vsub_sub_vsub_cancel_right x p₁ p₁']
-      linear_combination (norm := match_scalars <;> field_simp <;> ring) hr
+      linear_combination (norm := match_scalars <;> field) hr
   · rintro (h' | ⟨h₁, h₂, h₃⟩)
     · exact wOppSide_of_left_mem y h'
     · exact ⟨p₁, h, h₁, h₂, h₃⟩
@@ -589,7 +593,7 @@ theorem wOppSide_iff_exists_wbtw {s : AffineSubspace R P} {x y : P} :
     · have : (r₂ / (r₁ + r₂)) • (y -ᵥ p₂ + (p₂ -ᵥ p₁) - (x -ᵥ p₁)) + (x -ᵥ p₁) =
           (r₂ / (r₁ + r₂)) • (p₂ -ᵥ p₁) := by
         rw [← neg_vsub_eq_vsub_rev p₂ y]
-        linear_combination (norm := match_scalars <;> field_simp <;> ring) (r₁ + r₂)⁻¹ • h
+        linear_combination (norm := match_scalars <;> field) (r₁ + r₂)⁻¹ • h
       rw [lineMap_apply, ← vsub_vadd x p₁, ← vsub_vadd y p₂, vsub_vadd_eq_vsub_sub, vadd_vsub_assoc,
         ← vadd_assoc, vadd_eq_add, this]
       exact s.smul_vsub_vadd_mem (r₂ / (r₁ + r₂)) hp₂ hp₁ hp₁

@@ -3,9 +3,11 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Data.Finset.Sort
-import Mathlib.LinearAlgebra.AffineSpace.Independent
-import Mathlib.LinearAlgebra.AffineSpace.Restrict
+module
+
+public import Mathlib.Data.Finset.Sort
+public import Mathlib.LinearAlgebra.AffineSpace.Independent
+public import Mathlib.LinearAlgebra.AffineSpace.Restrict
 
 /-!
 # Simplex in affine space
@@ -26,6 +28,8 @@ This file defines n-dimensional simplices in affine space.
 * https://en.wikipedia.org/wiki/Simplex
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -68,6 +72,13 @@ instance [Inhabited P] : Inhabited (Simplex k P 0) :=
 
 instance nonempty : Nonempty (Simplex k P 0) :=
   ⟨mkOfPoint k <| AddTorsor.nonempty.some⟩
+
+-- Although `simp` can prove this, it is still useful as a `simp` lemma, since the `simp`-generated
+-- proof uses `range_eq_singleton_iff`, which does not apply when the LHS of this lemma appears
+-- as part of a more complicated expression.
+/-- The set of points in a simplex constructed with `mkOfPoint`. -/
+@[simp] lemma range_mkOfPoint_points (p : P) : Set.range (mkOfPoint k p).points = {p} := by
+  simp
 
 variable {k}
 
@@ -285,6 +296,12 @@ theorem restrict_map_subtype {n : ℕ} (s : Affine.Simplex k P n) :
     (s.restrict _ le_rfl).map (AffineSubspace.subtype _) Subtype.coe_injective = s :=
   rfl
 
+lemma restrict_reindex {m n : ℕ} (s : Affine.Simplex k P n) (e : Fin (n + 1) ≃ Fin (m + 1))
+    {S : AffineSubspace k P} (hS : affineSpan k (Set.range s.points) ≤ S) :
+    letI := Nonempty.map (AffineSubspace.inclusion hS) inferInstance
+    (s.reindex e).restrict S (s.reindex_range_points e ▸ hS) = (s.restrict S hS).reindex e :=
+  rfl
+
 end restrict
 
 end Simplex
@@ -298,8 +315,7 @@ namespace Simplex
 variable {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
 /-- The interior of a simplex is the set of points that can be expressed as an affine combination
-of the vertices with weights strictly between 0 and 1. This is equivalent to the intrinsic
-interior of the convex hull of the vertices. -/
+of the vertices with weights in a set `I`. -/
 protected def setInterior (I : Set k) {n : ℕ} (s : Simplex k P n) : Set P :=
   {p | ∃ w : Fin (n + 1) → k,
     (∑ i, w i = 1) ∧ (∀ i, w i ∈ I) ∧ Finset.univ.affineCombination k s.points w = p}
@@ -311,6 +327,27 @@ lemma affineCombination_mem_setInterior_iff {I : Set k} {n : ℕ} {s : Simplex k
   simp_rw [← (affineIndependent_iff_eq_of_fintype_affineCombination_eq k s.points).1
     s.independent w' w hw' hw hww']
   exact hw'01
+
+@[simp] lemma setInterior_reindex (I : Set k) {m n : ℕ} (s : Simplex k P n)
+    (e : Fin (n + 1) ≃ Fin (m + 1)) : (s.reindex e).setInterior I = s.setInterior I := by
+  ext p
+  refine ⟨fun ⟨w, hw, hwI, h⟩ ↦ ?_, fun ⟨w, hw, hwI, h⟩ ↦ ?_⟩
+  · subst h
+    simp_rw [reindex]
+    rw [← Function.comp_id w, ← e.self_comp_symm, ← Function.comp_assoc,
+      ← Equiv.coe_toEmbedding, ← Finset.univ.affineCombination_map e.symm.toEmbedding,
+      map_univ_equiv]
+    have hw' : ∑ i, (w ∘ e) i = 1 := by rwa [sum_comp_equiv, map_univ_equiv]
+    rw [affineCombination_mem_setInterior_iff hw']
+    exact fun i ↦ hwI (e i)
+  · subst h
+    rw [← Function.comp_id w, ← Function.comp_id s.points, ← e.symm_comp_self,
+      ← Function.comp_assoc, ← Function.comp_assoc, ← e.coe_toEmbedding,
+      ← Finset.univ.affineCombination_map e.toEmbedding, map_univ_equiv]
+    change Finset.univ.affineCombination k (s.reindex e).points _ ∈ _
+    have hw' : ∑ i, (w ∘ e.symm) i = 1 := by rwa [sum_comp_equiv, map_univ_equiv]
+    rw [affineCombination_mem_setInterior_iff hw']
+    exact fun i ↦ hwI (e.symm i)
 
 lemma setInterior_mono {I J : Set k} (hij : I ⊆ J) {n : ℕ} (s : Simplex k P n) :
     s.setInterior I ⊆ s.setInterior J :=
@@ -329,6 +366,10 @@ interior of the convex hull of the vertices. -/
 protected def interior {n : ℕ} (s : Simplex k P n) : Set P :=
   s.setInterior (Set.Ioo 0 1)
 
+@[simp] lemma interior_reindex {m n : ℕ} (s : Simplex k P n) (e : Fin (n + 1) ≃ Fin (m + 1)) :
+    (s.reindex e).interior = s.interior :=
+  s.setInterior_reindex _ _
+
 lemma affineCombination_mem_interior_iff {n : ℕ} {s : Simplex k P n} {w : Fin (n + 1) → k}
     (hw : ∑ i, w i = 1) :
     Finset.univ.affineCombination k s.points w ∈ s.interior ↔ ∀ i, w i ∈ Set.Ioo 0 1 :=
@@ -340,6 +381,10 @@ the vertices or the closure of the interior. -/
 protected def closedInterior {n : ℕ} (s : Simplex k P n) : Set P :=
   s.setInterior (Set.Icc 0 1)
 
+@[simp] lemma closedInterior_reindex {m n : ℕ} (s : Simplex k P n) (e : Fin (n + 1) ≃ Fin (m + 1)) :
+    (s.reindex e).closedInterior = s.closedInterior :=
+  s.setInterior_reindex _ _
+
 lemma affineCombination_mem_closedInterior_iff {n : ℕ} {s : Simplex k P n} {w : Fin (n + 1) → k}
     (hw : ∑ i, w i = 1) :
     Finset.univ.affineCombination k s.points w ∈ s.closedInterior ↔ ∀ i, w i ∈ Set.Icc 0 1 :=
@@ -348,6 +393,27 @@ lemma affineCombination_mem_closedInterior_iff {n : ℕ} {s : Simplex k P n} {w 
 lemma interior_subset_closedInterior {n : ℕ} (s : Simplex k P n) :
     s.interior ⊆ s.closedInterior :=
   fun _ ⟨w, hw, hw01, hww⟩ ↦ ⟨w, hw, fun i ↦ ⟨(hw01 i).1.le, (hw01 i).2.le⟩, hww⟩
+
+lemma point_notMem_interior {n : ℕ} (s : Simplex k P n) (i : Fin (n + 1)) :
+    s.points i ∉ s.interior := by
+  rw [← Finset.univ.affineCombination_affineCombinationSingleWeights k s.points
+    (Finset.mem_univ i), affineCombination_mem_interior_iff
+      (sum_affineCombinationSingleWeights _ _ (Finset.mem_univ i)), not_forall]
+  exact ⟨i, by simp⟩
+
+lemma point_mem_closedInterior [ZeroLEOneClass k] {n : ℕ} (s : Simplex k P n) (i : Fin (n + 1)) :
+    s.points i ∈ s.closedInterior := by
+  rw [← Finset.univ.affineCombination_affineCombinationSingleWeights k s.points
+    (Finset.mem_univ i), affineCombination_mem_closedInterior_iff
+      (sum_affineCombinationSingleWeights _ _ (Finset.mem_univ i))]
+  intro j
+  by_cases hj : j = i <;> simp [hj]
+
+lemma interior_ssubset_closedInterior [ZeroLEOneClass k] {n : ℕ} (s : Simplex k P n) :
+    s.interior ⊂ s.closedInterior := by
+  rw [Set.ssubset_iff_exists]
+  exact ⟨s.interior_subset_closedInterior, s.points 0, s.point_mem_closedInterior 0,
+    s.point_notMem_interior 0⟩
 
 lemma closedInterior_subset_affineSpan {n : ℕ} {s : Simplex k P n} :
     s.closedInterior ⊆ affineSpan k (Set.range s.points) := by

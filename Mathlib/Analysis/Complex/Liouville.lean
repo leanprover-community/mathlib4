@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Normed.Module.Completion
+module
+
+public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+public import Mathlib.Analysis.Normed.Module.Completion
 
 /-!
 # Liouville's theorem
@@ -19,6 +21,8 @@ are formalized in `Differentiable.apply_eq_apply_of_bounded`,
 The proof is based on the Cauchy integral formula for the derivative of an analytic function, see
 `Complex.deriv_eq_smul_circleIntegral`.
 -/
+
+@[expose] public section
 
 open TopologicalSpace Metric Set Filter Asymptotics Function MeasureTheory Bornology
 
@@ -68,7 +72,7 @@ private theorem norm_deriv_le_aux [CompleteSpace F] {c : ℂ} {R C : ℝ} {f : �
 open disc of radius `R > 0`, is continuous on its closure, and its values on the boundary circle
 of this disc are bounded from above by `C`, then the norm of its derivative at the center is at
 most `C / R`. Note that this theorem does not require the completeness of the codomain of `f`. In
-constrast, the completeness is needed for `norm_iteratedDeriv_le_of_forall_mem_sphere_norm_le`. -/
+contrast, the completeness is needed for `norm_iteratedDeriv_le_of_forall_mem_sphere_norm_le`. -/
 theorem norm_deriv_le_of_forall_mem_sphere_norm_le {c : ℂ} {R C : ℝ} {f : ℂ → F} (hR : 0 < R)
     (hd : DiffContOnCl ℂ f (ball c R)) (hC : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) :
     ‖deriv f c‖ ≤ C / R := by
