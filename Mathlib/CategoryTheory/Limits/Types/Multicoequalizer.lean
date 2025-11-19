@@ -116,7 +116,7 @@ noncomputable def isColimitOfMulticoequalizerDiagram' [LinearOrder ι]
 
 /-- A bicartesian square in the lattice `Set X` gives a pushout diagram in the
 category of types. -/
-def isColimitOfBicartSq {S₁ S₂ S₃ S₄ : Set X} (h : Lattice.BicartSq S₁ S₂ S₃ S₄) :
+lemma isPushout_of_bicartSq {S₁ S₂ S₃ S₄ : Set X} (h : Lattice.BicartSq S₁ S₂ S₃ S₄) :
     IsPushout (Set.functorToTypes.map (homOfLE h.le₁₂))
       (Set.functorToTypes.map (homOfLE h.le₁₃))
       (Set.functorToTypes.map (homOfLE h.le₂₄))
