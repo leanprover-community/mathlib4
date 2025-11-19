@@ -220,7 +220,7 @@ theorem X_dvd_sub_C : X ∣ p - C (p.coeff 0) := by
   simp [X_dvd_iff, coeff_C]
 
 theorem modByMonic_eq_sub_mul_div :
-    ∀ (p q : R[X]), p %ₘ q = p - q * (p /ₘ q)
+    ∀ p q : R[X], p %ₘ q = p - q * (p /ₘ q)
   | p, q =>
     letI := Classical.decEq R
     if hq : q.Monic then
@@ -269,7 +269,7 @@ theorem degree_add_divByMonic (hq : Monic q) (h : degree q ≤ degree p) :
   calc
     degree q + degree (p /ₘ q) = degree (q * (p /ₘ q)) := Eq.symm (degree_mul' hlc)
     _ = degree (p %ₘ q + q * (p /ₘ q)) := (degree_add_eq_right_of_degree_lt hmod).symm
-    _ = _ := congr_arg _ (modByMonic_add_div _ q)
+    _ = _ := congr_arg _ (modByMonic_add_div _ _)
 
 theorem degree_divByMonic_le (p q : R[X]) : degree (p /ₘ q) ≤ degree p :=
   letI := Classical.decEq R
@@ -354,7 +354,7 @@ theorem map_mod_divByMonic [Ring S] (f : R →+* S) (hq : Monic q) :
   haveI : Nontrivial R := f.domain_nontrivial
   have : map f p /ₘ map f q = map f (p /ₘ q) ∧ map f p %ₘ map f q = map f (p %ₘ q) :=
     div_modByMonic_unique ((p /ₘ q).map f) _ (hq.map f)
-      ⟨Eq.symm <| by rw [← Polynomial.map_mul, ← Polynomial.map_add, modByMonic_add_div _ q],
+      ⟨Eq.symm <| by rw [← Polynomial.map_mul, ← Polynomial.map_add, modByMonic_add_div],
         calc
           _ ≤ degree (p %ₘ q) := degree_map_le
           _ < degree q := degree_modByMonic_lt _ hq
@@ -377,7 +377,7 @@ theorem modByMonic_eq_zero_iff_dvd (hq : Monic q) : p %ₘ q = 0 ↔ q ∣ p :=
     nontriviality R
     obtain ⟨r, hr⟩ := exists_eq_mul_right_of_dvd h
     by_contra hpq0
-    have hmod : p %ₘ q = q * (r - p /ₘ q) := by rw [modByMonic_eq_sub_mul_div _ q, mul_sub, ← hr]
+    have hmod : p %ₘ q = q * (r - p /ₘ q) := by rw [modByMonic_eq_sub_mul_div, mul_sub, ← hr]
     have : degree (q * (r - p /ₘ q)) < degree q := hmod ▸ degree_modByMonic_lt _ hq
     have hrpq0 : leadingCoeff (r - p /ₘ q) ≠ 0 := fun h =>
       hpq0 <|
