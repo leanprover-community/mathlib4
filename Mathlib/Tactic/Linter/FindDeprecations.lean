@@ -77,7 +77,7 @@ after the imports of `fname`.
 def addAfterImports (fname s : String) : CommandElabM String := do
   let pos ← getPosAfterImports fname
   let file ← IO.FS.readFile fname
-  let fileSubstring := file.toSubstring
+  let fileSubstring := file.toRawSubstring
   return {fileSubstring with stopPos := pos}.toString ++ s ++
     {fileSubstring with startPos := pos}.toString
 
@@ -154,7 +154,7 @@ def deprecatedHashMap (oldDate newDate : String) :
 -/
 def removeRanges (file : String) (rgs : Array Lean.Syntax.Range) : String := Id.run do
   let mut curr : String.Pos.Raw := 0
-  let mut fileSubstring := file.toSubstring
+  let mut fileSubstring := file.toRawSubstring
   let mut tot := ""
   let last := fileSubstring.stopPos
   for next in rgs.push ⟨last, last⟩ do
@@ -219,7 +219,7 @@ def rewriteOneFile (fname : String) (rgs : Array (Name × Lean.Syntax.Range)) :
   -- corresponding position in the original file.
   -- Since we added the modification right after the imports, the command positions of the old file
   -- are always smaller than the command positions of the new file.
-  let offset := option.toSubstring.stopPos
+  let offset := option.toRawSubstring.stopPos
   let fileWithOptionAdded ← addAfterImports fname option
   let fname_with_option := fname.dropRight ".lean".length ++ "_with_option.lean"
   let file ← IO.FS.readFile fname
