@@ -4062,6 +4062,7 @@ import Mathlib.Geometry.Manifold.ContMDiffMap
 import Mathlib.Geometry.Manifold.DerivationBundle
 import Mathlib.Geometry.Manifold.Diffeomorph
 import Mathlib.Geometry.Manifold.GroupLieAlgebra
+import Mathlib.Geometry.Manifold.HasSmoothBoundary
 import Mathlib.Geometry.Manifold.Instances.Icc
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.Instances.Sphere
