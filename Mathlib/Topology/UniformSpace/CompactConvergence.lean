@@ -3,11 +3,13 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Yury Kudryashov
 -/
-import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.Compactness.CompactlyCoherentSpace
-import Mathlib.Topology.Maps.Proper.Basic
-import Mathlib.Topology.UniformSpace.Compact
-import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+module
+
+public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.Compactness.CompactlyCoherentSpace
+public import Mathlib.Topology.Maps.Proper.Basic
+public import Mathlib.Topology.UniformSpace.Compact
+public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
 /-!
 # Compact convergence (uniform convergence on compact sets)
@@ -84,6 +86,8 @@ so that the resulting instance uses the compact-open topology.
   and uniform limits of sequences `ι → γ → C(α, β)`.
 -/
 
+@[expose] public section
+
 open Filter Set Topology UniformSpace
 open scoped Uniformity UniformConvergence
 
@@ -126,7 +130,7 @@ theorem tendsto_iff_forall_isCompact_tendstoUniformlyOn
     -- Continuous maps `F i` in a neighbourhood of `f` map `s` to `ball (f x) V` as well.
     refine (h s hcomp _ (isOpen_ball _ hVo) hmaps).mono fun g hg y hy ↦ ?_
     -- Then for `y ∈ s` we have `(f y, f x) ∈ V` and `(f x, F i y) ∈ V`, thus `(f y, F i y) ∈ U`
-    exact hVU ⟨f x, hVsymm.mk_mem_comm.2 <| hmaps hy, hg hy⟩
+    exact hVU ⟨f x, SetRel.symm V <| hmaps hy, hg hy⟩
   · -- Now we prove that uniform convergence on compacts
     -- implies convergence in the compact-open topology
     -- Consider a compact set `K`, an open set `U`, and a continuous map `f` that maps `K` to `U`
@@ -427,9 +431,6 @@ instance instCompleteSpaceOfCompactlyCoherentSpace [CompactlyCoherentSpace α] :
 
 @[deprecated (since := "2025-06-03")]
 alias completeSpace_of_isCoherentWith := instCompleteSpaceOfCompactlyCoherentSpace
-
-@[deprecated (since := "2025-04-08")]
-alias completeSpace_of_restrictGenTopology := instCompleteSpaceOfCompactlyCoherentSpace
 
 end CompleteSpace
 

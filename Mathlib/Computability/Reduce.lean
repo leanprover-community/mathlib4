@@ -3,7 +3,9 @@ Copyright (c) 2019 Minchao Wu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Computability.Halting
+module
+
+public import Mathlib.Computability.Halting
 
 /-!
 # Strong reducibility and degrees.
@@ -24,6 +26,8 @@ This file uses the local notation `⊕'` for `Sum.elim` to denote the disjoint u
 
 computability, reducibility, reduction
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -372,7 +376,6 @@ private theorem le_trans {d₁ d₂ d₃ : ManyOneDegree} : d₁ ≤ d₂ → d�
   apply ManyOneReducible.trans
 
 instance instPartialOrder : PartialOrder ManyOneDegree where
-  le := (· ≤ ·)
   le_refl := le_refl
   le_trans _ _ _ := le_trans
   le_antisymm _ _ := le_antisymm

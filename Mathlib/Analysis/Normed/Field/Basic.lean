@@ -3,9 +3,11 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Algebra.Field.Subfield.Defs
-import Mathlib.Algebra.Order.Group.Pointwise.Interval
-import Mathlib.Analysis.Normed.Ring.Basic
+module
+
+public import Mathlib.Algebra.Field.Subfield.Defs
+public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+public import Mathlib.Analysis.Normed.Ring.Basic
 
 /-!
 # Normed division rings and fields
@@ -20,6 +22,8 @@ Methods for constructing a normed field instance from a given real absolute valu
 given in:
 * AbsoluteValue.toNormedField
 -/
+
+@[expose] public section
 
 -- Guard against import creep.
 assert_not_exists AddChar comap_norm_atTop DilationEquiv Finset.sup_mul_le_mul_sup_of_nonneg
@@ -242,9 +246,6 @@ theorem nhdsNE_neBot (x : α) : NeBot (𝓝[≠] x) := by
   rcases exists_norm_lt α ε0 with ⟨b, hb0, hbε⟩
   refine ⟨x + b, mt (Set.mem_singleton_iff.trans add_eq_left).1 <| norm_pos_iff.1 hb0, ?_⟩
   rwa [dist_comm, dist_eq_norm, add_sub_cancel_left]
-
-@[deprecated (since := "2025-03-02")]
-alias punctured_nhds_neBot := nhdsNE_neBot
 
 @[instance]
 theorem nhdsWithin_isUnit_neBot : NeBot (𝓝[{ x : α | IsUnit x }] 0) := by

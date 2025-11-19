@@ -3,10 +3,12 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.CharP.Algebra
-import Mathlib.FieldTheory.RatFunc.Defs
-import Mathlib.RingTheory.Polynomial.Content
-import Mathlib.RingTheory.Algebraic.Integral
+module
+
+public import Mathlib.Algebra.CharP.Algebra
+public import Mathlib.FieldTheory.RatFunc.Defs
+public import Mathlib.RingTheory.Polynomial.Content
+public import Mathlib.RingTheory.Algebraic.Integral
 
 /-!
 # The field structure of rational functions
@@ -44,6 +46,8 @@ with the same condition on retaining the non-zero-divisor property across the ma
   - `RatFunc.mapAlgHom` lifts `K[X] →ₐ[S] R[X]` when
     `[CommRing K] [IsDomain K] [CommRing R] [IsDomain R]`
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -772,6 +776,35 @@ theorem finrank_ratFunc_ratFunc : Module.finrank (RatFunc k) (RatFunc K) = Modul
 end rank
 
 end lift
+
+section IsScalarTower
+
+/-- Let `RatFunc A / A[X] / R / R₀` be a tower. If `A[X] / R / R₀` is a scalar tower
+then so is `RatFunc A / R / R₀`. -/
+instance (R₀ R A : Type*) [CommSemiring R₀] [CommSemiring R] [CommRing A] [IsDomain A]
+    [Algebra R₀ A[X]] [SMul R₀ R] [Algebra R A[X]] [IsScalarTower R₀ R A[X]] :
+    IsScalarTower R₀ R (RatFunc A) := IsScalarTower.to₁₂₄ _ _ A[X] _
+
+/-- Let `K / RatFunc A / A[X] / R` be a tower. If `K / A[X] / R` is a scalar tower
+then so is `K / RatFunc A / R`. -/
+instance (R A K : Type*) [CommRing A] [IsDomain A] [Field K] [Algebra A[X] K]
+    [FaithfulSMul A[X] K] [CommSemiring R] [Algebra R A[X]] [SMul R K] [IsScalarTower R A[X] K] :
+    IsScalarTower R (RatFunc A) K :=
+  IsScalarTower.to₁₃₄ _ A[X] _ _
+
+/-- Let `K / k / RatFunc A / A[X]` be a tower. If `K / k / A[X]` is a scalar tower
+then so is `K / k / RatFunc A`. -/
+instance (A k K : Type*) [CommRing A] [IsDomain A] [Field k] [Field K] [Algebra A[X] k]
+    [Algebra A[X] K] [SMul k K] [FaithfulSMul A[X] k] [FaithfulSMul A[X] K]
+    [IsScalarTower A[X] k K] : IsScalarTower (RatFunc A) k K where
+  smul_assoc a b c := by
+    induction a using RatFunc.induction_on with | f p q hq =>
+    rw [← smul_right_inj hq]
+    simp_rw [← smul_assoc, Algebra.smul_def q]
+    field_simp [hq]
+    simp
+
+end IsScalarTower
 
 end IsDomain
 

@@ -3,9 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
-import Mathlib.RingTheory.Spectrum.Prime.Basic
-import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.RingTheory.Spectrum.Prime.Basic
+public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Functoriality of the prime spectrum
@@ -18,6 +20,8 @@ In this file we define the induced map on prime spectra induced by a ring homomo
   continuous version is `PrimeSpectrum.comap` in `Mathlib/RingTheory/Spectrum/Prime/Topology.lean`.
 
 -/
+
+@[expose] public section
 
 universe u v
 

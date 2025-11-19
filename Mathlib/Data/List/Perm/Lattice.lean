@@ -3,16 +3,20 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.List.Forall2
-import Mathlib.Data.List.TakeDrop
-import Mathlib.Data.List.Lattice
-import Mathlib.Data.List.Nodup
+module
+
+public import Mathlib.Data.List.Forall2
+public import Mathlib.Data.List.TakeDrop
+public import Mathlib.Data.List.Lattice
+public import Mathlib.Data.List.Nodup
 
 /-!
 # List Permutations and list lattice operations.
 
 This file develops theory about the `List.Perm` relation and the lattice structure on lists.
 -/
+
+@[expose] public section
 
 -- Make sure we don't import algebra
 assert_not_exists Monoid
@@ -28,18 +32,7 @@ variable [DecidableEq α]
 
 theorem Perm.bagInter_right {l₁ l₂ : List α} (t : List α) (h : l₁ ~ l₂) :
     l₁.bagInter t ~ l₂.bagInter t := by
-  induction h generalizing t with
-  | nil => simp
-  | cons x => by_cases x ∈ t <;> simp [*]
-  | swap x y =>
-    by_cases h : x = y
-    · simp [h]
-    by_cases xt : x ∈ t <;> by_cases yt : y ∈ t
-    · simp [xt, yt, mem_erase_of_ne h, mem_erase_of_ne (Ne.symm h), erase_comm, swap]
-    · simp [xt, yt, mt mem_of_mem_erase]
-    · simp [xt, yt, mt mem_of_mem_erase]
-    · simp [xt, yt]
-  | trans _ _ ih_1 ih_2 => exact (ih_1 _).trans (ih_2 _)
+  induction h generalizing t with grind
 
 theorem Perm.bagInter_left (l : List α) {t₁ t₂ : List α} (p : t₁ ~ t₂) :
     l.bagInter t₁ = l.bagInter t₂ := by

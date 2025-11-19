@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Bool.Basic
-import Mathlib.Order.Monotone.Basic
-import Mathlib.Order.ULift
+module
+
+public import Mathlib.Data.Bool.Basic
+public import Mathlib.Order.Monotone.Basic
+public import Mathlib.Order.ULift
 
 /-!
 # (Semi-)lattices
@@ -47,6 +49,8 @@ of `sup` over `inf`, on the left or on the right.
 semilattice, lattice
 
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -651,19 +655,11 @@ theorem sup_ind (a b : α) {p : α → Prop} (ha : p a) (hb : p b) : p (a ⊔ b)
 
 @[simp]
 theorem le_sup_iff : a ≤ b ⊔ c ↔ a ≤ b ∨ a ≤ c := by
-  exact ⟨fun h =>
-    (le_total c b).imp
-      (fun bc => by rwa [sup_eq_left.2 bc] at h)
-      (fun bc => by rwa [sup_eq_right.2 bc] at h),
-    fun h => h.elim le_sup_of_le_left le_sup_of_le_right⟩
+  grind
 
 @[simp]
 theorem lt_sup_iff : a < b ⊔ c ↔ a < b ∨ a < c := by
-  exact ⟨fun h =>
-    (le_total c b).imp
-      (fun bc => by rwa [sup_eq_left.2 bc] at h)
-      (fun bc => by rwa [sup_eq_right.2 bc] at h),
-    fun h => h.elim lt_sup_of_lt_left lt_sup_of_lt_right⟩
+  grind
 
 @[simp]
 theorem sup_lt_iff : b ⊔ c < a ↔ b < a ∧ c < a :=

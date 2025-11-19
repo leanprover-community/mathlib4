@@ -3,11 +3,13 @@ Copyright (c) 2023 Andrew Yang, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.FieldTheory.KummerPolynomial
-import Mathlib.LinearAlgebra.Eigenspace.Minpoly
-import Mathlib.RingTheory.Norm.Basic
+module
+
+public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.FieldTheory.KummerPolynomial
+public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
+public import Mathlib.RingTheory.Norm.Basic
 
 /-!
 # Kummer Extensions
@@ -43,6 +45,8 @@ TODO: criteria for even `n`. See [serge_lang_algebra] VI,§9.
 
 TODO: relate Kummer extensions of degree 2 with the class `Algebra.IsQuadraticExtension`.
 -/
+
+@[expose] public section
 universe u
 
 variable {K : Type u} [Field K]
@@ -407,11 +411,10 @@ in `K`, then `Gal(L/K)` is isomorphic to `ZMod n`. -/
 noncomputable
 def autEquivZmod [NeZero n] {ζ : K} (hζ : IsPrimitiveRoot ζ n) :
     Gal(L/K) ≃* Multiplicative (ZMod n) :=
-  haveI hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
-  (autEquivRootsOfUnity ⟨ζ, (mem_primitiveRoots hn).mpr hζ⟩ H L).trans
-    ((MulEquiv.subgroupCongr (IsPrimitiveRoot.zpowers_eq
-      (hζ.isUnit_unit' hn.ne')).symm).trans
-        (hζ.isUnit_unit' hn.ne').zmodEquivZPowers.symm.toMultiplicativeRight)
+  haveI hn := ne_zero_of_irreducible_X_pow_sub_C H
+  (autEquivRootsOfUnity ⟨ζ, (mem_primitiveRoots <| Nat.pos_of_ne_zero hn).mpr hζ⟩ H L).trans
+    ((MulEquiv.subgroupCongr (IsPrimitiveRoot.zpowers_eq (hζ.isUnit_unit' hn)).symm).trans
+        (hζ.isUnit_unit' hn).zmodEquivZPowers.symm.toMultiplicativeRight)
 
 include hα in
 lemma autEquivZmod_symm_apply_intCast [NeZero n] {ζ : K} (hζ : IsPrimitiveRoot ζ n) (m : ℤ) :

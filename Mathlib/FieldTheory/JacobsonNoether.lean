@@ -3,12 +3,14 @@ Copyright (c) 2024 F. Nuccio, H. Zheng, W. He, S. Wu, Y. Yuan, W. Jiao. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio, Huanyu Zheng, Sihan Wu, Wanyi He, Weichen Jiao, Yi Yuan
 -/
-import Mathlib.Algebra.Central.Defs
-import Mathlib.Algebra.CharP.LinearMaps
-import Mathlib.Algebra.CharP.Subring
-import Mathlib.Algebra.GroupWithZero.Conj
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.FieldTheory.PurelyInseparable.Basic
+module
+
+public import Mathlib.Algebra.Central.Defs
+public import Mathlib.Algebra.CharP.LinearMaps
+public import Mathlib.Algebra.CharP.Subring
+public import Mathlib.Algebra.GroupWithZero.Conj
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.FieldTheory.PurelyInseparable.Basic
 
 /-!
 # The Jacobson-Noether theorem
@@ -45,6 +47,8 @@ separate variables constrained by certain relations.
 ## Reference
 * <https://ysharifi.wordpress.com/2011/09/30/the-jacobson-noether-theorem/>
 -/
+
+@[expose] public section
 
 namespace JacobsonNoether
 
@@ -125,12 +129,12 @@ theorem exists_separable_and_not_isCentral (H : k ≠ (⊤ : Subring D)) :
     classical
     refine ⟨Nat.find h_exist, ⟨(Nat.find_spec h_exist).1, ?_, (Nat.find_spec h_exist).2⟩⟩
     set t := (Nat.find h_exist - 1 : ℕ) with ht
-    by_cases h_pos : 0 < t
+    by_cases! h_pos : 0 < t
     · convert (ne_eq _ _) ▸ not_and.mp (Nat.find_min h_exist (m := t) (by cutsat)) h_pos
       cutsat
     · suffices h_find: Nat.find h_exist = 1 by
         rwa [h_find]
-      rw [not_lt, Nat.le_zero, ht, Nat.sub_eq_zero_iff_le] at h_pos
+      rw [Nat.le_zero, ht, Nat.sub_eq_zero_iff_le] at h_pos
       linarith [(Nat.find_spec h_exist).1]
   -- We define `c` to be the value that we proved above to be non-zero.
   set c := (ad k D a)^[n] b with hc_def

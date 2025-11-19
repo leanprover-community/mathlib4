@@ -3,11 +3,13 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Module.Torsion
-import Mathlib.RingTheory.FiniteLength
-import Mathlib.RingTheory.Noetherian.Nilpotent
-import Mathlib.RingTheory.Spectrum.Prime.Noetherian
-import Mathlib.RingTheory.KrullDimension.Zero
+module
+
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.RingTheory.FiniteLength
+public import Mathlib.RingTheory.Noetherian.Nilpotent
+public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
+public import Mathlib.RingTheory.KrullDimension.Zero
 
 /-!
 ## The Hopkins–Levitzki theorem
@@ -29,6 +31,8 @@ import Mathlib.RingTheory.KrullDimension.Zero
 
 * [F. Lorenz, *Algebra: Volume II: Fields with Structure, Algebras and Advanced Topics*][Lorenz2008]
 -/
+
+@[expose] public section
 
 universe u
 
@@ -102,6 +106,18 @@ theorem isNoetherian_iff_isArtinian : IsNoetherian R M ↔ IsArtinian R M :=
     (fun M _ _ _ _ _ _ ↦ IsSemisimpleModule.finite_tfae.out 1 2)
     fun M _ _ _ _ h h' ↦ let N : Submodule R M := Ring.jacobson R • ⊤; by
       simp_rw [isNoetherian_iff_submodule_quotient N, isArtinian_iff_submodule_quotient N, N, h, h']
+
+theorem isNoetherian_iff_finite_of_jacobson_fg (fg : (Ring.jacobson R).FG) :
+    IsNoetherian R M ↔ Module.Finite R M :=
+  ⟨fun _ ↦ inferInstance, IsSemiprimaryRing.induction R R M
+    (P := fun M ↦ Module.Finite R M → IsNoetherian R M)
+    (fun M _ _ _ _ _ _ ↦ (IsSemisimpleModule.finite_tfae.out 0 1).mp)
+    fun M _ _ _ _ hs hq fin ↦ (isNoetherian_iff_submodule_quotient (Ring.jacobson R • ⊤)).mpr
+      ⟨hs (Module.Finite.iff_fg.mpr (.smul fg fin.1)), hq inferInstance⟩⟩
+
+theorem isNoetherianRing_iff_jacobson_fg : IsNoetherianRing R ↔ (Ring.jacobson R).FG :=
+  ⟨fun _ ↦ IsNoetherian.noetherian .., fun fg ↦
+    (IsSemiprimaryRing.isNoetherian_iff_finite_of_jacobson_fg fg).mpr inferInstance⟩
 
 end IsSemiprimaryRing
 

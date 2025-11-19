@@ -3,15 +3,19 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
-import Mathlib.Control.Basic
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Order.Filter.Basic
+module
+
+public import Mathlib.Control.Basic
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Order.Filter.Basic
 
 /-!
 # Theorems about map and comap on filters.
 -/
 
-assert_not_exists OrderedSemiring Fintype
+@[expose] public section
+
+assert_not_exists IsOrderedRing Fintype
 
 open Function Set Order
 open scoped symmDiff
@@ -112,9 +116,6 @@ theorem mem_comap'' : s ∈ comap f l ↔ kernImage f s ∈ l :=
 lemma mem_comap_prodMk {x : α} {s : Set β} {F : Filter (α × β)} :
     s ∈ comap (Prod.mk x) F ↔ {p : α × β | p.fst = x → p.snd ∈ s} ∈ F := by
   simp_rw [mem_comap', Prod.ext_iff, and_imp, @forall_swap β (_ = _), forall_eq, eq_comm]
-
-@[deprecated (since := "2025-03-10")]
-alias mem_comap_prod_mk := mem_comap_prodMk
 
 @[simp]
 theorem eventually_comap : (∀ᶠ a in comap f l, p a) ↔ ∀ᶠ b in l, ∀ a, f a = b → p a :=
@@ -394,22 +395,13 @@ theorem map_le_iff_le_comap : map m f ≤ g ↔ f ≤ comap m g :=
 theorem gc_map_comap (m : α → β) : GaloisConnection (map m) (comap m) :=
   fun _ _ => map_le_iff_le_comap
 
-@[mono]
+@[gcongr, mono]
 theorem map_mono : Monotone (map m) :=
   (gc_map_comap m).monotone_l
 
-@[mono]
+@[gcongr, mono]
 theorem comap_mono : Monotone (comap m) :=
   (gc_map_comap m).monotone_u
-
-/-- Temporary lemma that we can tag with `gcongr` -/
-@[gcongr] theorem _root_.GCongr.Filter.map_le_map {F G : Filter α} (h : F ≤ G) :
-    map m F ≤ map m G := map_mono h
-
-/-- Temporary lemma that we can tag with `gcongr` -/
-@[gcongr]
-theorem _root_.GCongr.Filter.comap_le_comap {F G : Filter β} (h : F ≤ G) :
-    comap m F ≤ comap m G := comap_mono h
 
 @[simp] theorem map_bot : map m ⊥ = ⊥ := (gc_map_comap m).l_bot
 

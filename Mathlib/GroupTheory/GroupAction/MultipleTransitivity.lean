@@ -3,12 +3,13 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.GroupTheory.GroupAction.Primitive
-import Mathlib.GroupTheory.SpecificGroups.Alternating
-import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
-import Mathlib.SetTheory.Cardinal.Embedding
-import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.GroupTheory.GroupAction.Primitive
+public import Mathlib.GroupTheory.SpecificGroups.Alternating
+public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
+public import Mathlib.SetTheory.Cardinal.Embedding
+public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-! # Multiple transitivity
 
@@ -46,6 +47,8 @@ These results are results about actions on types `n ↪ α` induced by an action
 on `α`, and some results are developed in this context.
 
 -/
+
+@[expose] public section
 
 open MulAction MulActionHom Function.Embedding Fin Set Nat
 
@@ -453,7 +456,7 @@ theorem IsMultiplyPretransitive.index_of_fixingSubgroup_mul
       rw [← Nat.succ_inj, Nat.succ_eq_add_one, Nat.succ_eq_add_one, ← hs, hat', eq_comm]
       suffices ¬ a ∈ (Subtype.val '' t) by
         convert Set.ncard_insert_of_notMem this ?_
-        rw [Set.ncard_image_of_injective _ Subtype.coe_injective]
+        · rw [Set.ncard_image_of_injective _ Subtype.coe_injective]
         apply Set.toFinite
       intro h
       obtain ⟨⟨b, hb⟩, _, hb'⟩ := h
@@ -529,8 +532,8 @@ theorem isMultiplyPretransitive (n : ℕ) :
           apply this
           exact mem_range_self i
       · by_cases hb : b ∈ range x
-        obtain ⟨j, rfl⟩ := hb
-        · simp only [ψ, φ', x.injective.extend_apply] at hab
+        · obtain ⟨j, rfl⟩ := hb
+          simp only [ψ, φ', x.injective.extend_apply] at hab
           rw [Function.extend_apply' _ _ _ ha] at hab
           rw [← Set.mem_compl_iff] at ha
           rw [← Subtype.coe_mk a ha, Subtype.val_injective.extend_apply] at hab

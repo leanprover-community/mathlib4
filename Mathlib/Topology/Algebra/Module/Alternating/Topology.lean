@@ -3,8 +3,10 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.Module.Multilinear.Topology
-import Mathlib.Topology.Algebra.Module.Alternating.Basic
+module
+
+public import Mathlib.Topology.Algebra.Module.Multilinear.Topology
+public import Mathlib.Topology.Algebra.Module.Alternating.Basic
 
 /-!
 # Topology on continuous alternating maps
@@ -15,6 +17,8 @@ on the space of continuous alternating maps between topological vector spaces.
 The structures are induced by those on `ContinuousMultilinearMap`s,
 and most of the lemmas follow from the corresponding lemmas about `ContinuousMultilinearMap`s.
 -/
+
+@[expose] public section
 
 open Bornology Function Set Topology
 open scoped UniformConvergence Filter
@@ -130,7 +134,7 @@ variable [TopologicalSpace F] [IsTopologicalAddGroup F]
 
 lemma isEmbedding_toContinuousMultilinearMap :
     IsEmbedding (toContinuousMultilinearMap : (E [⋀^ι]→L[𝕜] F → _)) :=
-  letI := IsTopologicalAddGroup.toUniformSpace F
+  letI := IsTopologicalAddGroup.rightUniformSpace F
   haveI := isUniformAddGroup_of_addCommGroup (G := F)
   isUniformEmbedding_toContinuousMultilinearMap.isEmbedding
 
@@ -196,7 +200,7 @@ variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜' �
 
 theorem isEmbedding_restrictScalars :
     IsEmbedding (restrictScalars 𝕜' : E [⋀^ι]→L[𝕜] F → E [⋀^ι]→L[𝕜'] F) :=
-  letI : UniformSpace F := IsTopologicalAddGroup.toUniformSpace F
+  letI : UniformSpace F := IsTopologicalAddGroup.rightUniformSpace F
   haveI : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
   (isUniformEmbedding_restrictScalars _).isEmbedding
 
