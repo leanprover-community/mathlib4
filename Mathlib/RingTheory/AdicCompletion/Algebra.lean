@@ -3,9 +3,11 @@ Copyright (c) 2024 Judith Ludwig, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Christian Merten
 -/
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Module.Torsion.Basic
-import Mathlib.RingTheory.AdicCompletion.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.RingTheory.AdicCompletion.Basic
 
 /-!
 # Algebra instance on adic completion
@@ -21,6 +23,8 @@ since `I ^ n • ⊤` is not defeq to `I ^ n`. We try to work around most of the
 providing as much API as possible.
 
 -/
+
+@[expose] public section
 
 suppress_compilation
 

@@ -3,10 +3,12 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Gabin Kolly
 -/
-import Mathlib.ModelTheory.FinitelyGenerated
-import Mathlib.ModelTheory.PartialEquiv
-import Mathlib.ModelTheory.Bundled
-import Mathlib.Algebra.Order.Archimedean.Basic
+module
+
+public import Mathlib.ModelTheory.FinitelyGenerated
+public import Mathlib.ModelTheory.PartialEquiv
+public import Mathlib.ModelTheory.Bundled
+public import Mathlib.Algebra.Order.Archimedean.Basic
 
 /-!
 # Fraïssé Classes and Fraïssé Limits
@@ -65,6 +67,8 @@ Fraïssé limit - the countable ultrahomogeneous structure with that age.
 - Show existence of Fraïssé limits
 
 -/
+
+@[expose] public section
 
 
 universe u v w w'

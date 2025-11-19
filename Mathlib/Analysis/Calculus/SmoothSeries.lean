@@ -3,10 +3,12 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Analysis.Calculus.UniformLimitsDeriv
-import Mathlib.Topology.Algebra.InfiniteSum.Module
-import Mathlib.Analysis.Normed.Group.FunctionSeries
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Calculus.UniformLimitsDeriv
+public import Mathlib.Topology.Algebra.InfiniteSum.Module
+public import Mathlib.Analysis.Normed.Group.FunctionSeries
 
 /-!
 # Smoothness of series
@@ -20,6 +22,8 @@ More specifically,
 
 We also give versions of these statements which are localized to a set.
 -/
+
+@[expose] public section
 
 
 open Set Metric TopologicalSpace Function Asymptotics Filter

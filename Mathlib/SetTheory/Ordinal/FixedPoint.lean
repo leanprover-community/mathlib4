@@ -3,9 +3,11 @@ Copyright (c) 2018 Violeta Hernández Palacios, Mario Carneiro. All rights reser
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios, Mario Carneiro
 -/
-import Mathlib.Logic.Small.List
-import Mathlib.SetTheory.Ordinal.Enum
-import Mathlib.SetTheory.Ordinal.Exponential
+module
+
+public import Mathlib.Logic.Small.List
+public import Mathlib.SetTheory.Ordinal.Enum
+public import Mathlib.SetTheory.Ordinal.Exponential
 
 /-!
 # Fixed points of normal functions
@@ -25,6 +27,8 @@ Moreover, we prove some lemmas about the fixed points of specific normal functio
 * `deriv_add_eq_mul_omega0_add`: a characterization of the derivative of addition.
 * `deriv_mul_eq_opow_omega0_mul`: a characterization of the derivative of multiplication.
 -/
+
+@[expose] public section
 
 
 noncomputable section

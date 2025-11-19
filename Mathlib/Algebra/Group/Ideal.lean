@@ -3,7 +3,9 @@ Copyright (c) 2025 Dexin Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dexin Zhang
 -/
-import Mathlib.GroupTheory.GroupAction.SubMulAction.Closure
+module
+
+public import Mathlib.GroupTheory.GroupAction.SubMulAction.Closure
 
 /-!
 # Semigroup ideals
@@ -17,6 +19,8 @@ submonoid of the ring.
 
 * [Samuel Eilenberg and M. P. Schützenberger, *Rational Sets in Commutative Monoids*][eilenberg1969]
 -/
+
+@[expose] public section
 
 open Set Pointwise
 
