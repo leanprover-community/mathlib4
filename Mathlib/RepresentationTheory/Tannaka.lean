@@ -3,7 +3,9 @@ Copyright (c) 2025 Yacine Benmeuraiem. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yacine Benmeuraiem
 -/
-import Mathlib.RepresentationTheory.FDRep
+module
+
+public import Mathlib.RepresentationTheory.FDRep
 
 /-!
 # Tannaka duality for finite groups
@@ -11,7 +13,7 @@ import Mathlib.RepresentationTheory.FDRep
 In this file we prove Tannaka duality for finite groups.
 
 The theorem can be formulated as follows: for any integral domain `k`, a finite group `G` can be
-recovered from `FDRep k G`, the monoidal category of finite dimensional `k`-linear representations
+recovered from `FDRep k G`, the monoidal category of finite-dimensional `k`-linear representations
 of `G`, and the monoidal forgetful functor `forget : FDRep k G ⥤ FGModuleCat k`.
 
 The main result is the isomorphism `equiv : G ≃* Aut (forget k G)`.
@@ -20,6 +22,8 @@ The main result is the isomorphism `equiv : G ≃* Aut (forget k G)`.
 
 <https://math.leidenuniv.nl/scripties/1bachCommelin.pdf>
 -/
+
+@[expose] public section
 
 noncomputable section
 

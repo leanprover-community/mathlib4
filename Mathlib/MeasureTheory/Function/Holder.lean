@@ -3,7 +3,9 @@ Copyright (c) 2025 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
+module
+
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 /-! # Continuous bilinear maps on `MeasureTheory.Lp` spaces
 
@@ -21,6 +23,8 @@ natural map `ContinuousLinearMap.lpPairing : Lp E p μ →L[𝕜] Lp F q μ →L
 `fun f g ↦ ∫ x, B (f x) (g x) ∂μ`. When `B := (NormedSpace.inclusionInDoubleDual 𝕜 E).flip`, this
 is the natural map `Lp (StrongDual 𝕜 E) p μ →L[𝕜] StrongDual 𝕜 (Lp E q μ)`.
 -/
+
+@[expose] public section
 
 open ENNReal MeasureTheory Lp
 open scoped NNReal
@@ -40,13 +44,16 @@ variable {α 𝕜 E F G : Type*} {m : MeasurableSpace α} {μ : Measure α}
 namespace ContinuousLinearMap
 
 variable (r) in
+theorem memLp_of_bilin {f : α → E} {g : α → F} (hf : MemLp f p μ) (hg : MemLp g q μ) :
+    MemLp (fun x ↦ B (f x) (g x)) r μ :=
+  MeasureTheory.MemLp.of_bilin (r := r) (B · ·) ‖B‖₊ hf hg
+    (B.aestronglyMeasurable_comp₂ hf.1 hg.1) (.of_forall fun _ ↦ B.le_opNorm₂ _ _)
+
+variable (r) in
 /-- The map between `MeasureTheory.Lp` spaces satisfying `ENNReal.HolderTriple`
 induced by a continuous bilinear map on the underlying spaces. -/
 def holder (f : Lp E p μ) (g : Lp F q μ) : Lp G r μ :=
-  MemLp.toLp (fun x ↦ B (f x) (g x)) <| by
-    refine .of_bilin (B · ·) ‖B‖₊ (Lp.memLp f) (Lp.memLp g) ?_ <|
-      .of_forall fun _ ↦ B.le_opNorm₂ _ _
-    exact B.aestronglyMeasurable_comp₂ (Lp.memLp f).1 (Lp.memLp g).1
+  (B.memLp_of_bilin r (Lp.memLp f) (Lp.memLp g)).toLp
 
 lemma coeFn_holder (f : Lp E p μ) (g : Lp F q μ) :
     B.holder r f g =ᵐ[μ] fun x ↦ B (f x) (g x) := by
@@ -237,7 +244,7 @@ protected lemma smul_assoc [IsScalarTower 𝕜' 𝕜 E]
   simp only [smul_def, ← MemLp.toLp_const_smul]
   apply MemLp.toLp_congr
   filter_upwards [Lp.coeFn_smul c f] with x hx
-  simp [- smul_eq_mul, hx]
+  simp [-smul_eq_mul, hx]
 
 protected lemma smul_comm [SMulCommClass 𝕜' 𝕜 E]
     (c : 𝕜') (f : Lp 𝕜 p μ) (g : Lp E q μ) :

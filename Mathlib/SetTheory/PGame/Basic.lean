@@ -3,10 +3,11 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Yuyang Zhao
 -/
-import Mathlib.Data.Nat.Basic
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.Linter.DeprecatedModule
+module
+
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
 deprecated_module
   "This module is now at `CombinatorialGames.Game.IGame` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
@@ -67,6 +68,8 @@ An interested reader may like to formalise some of the material from
 * [Andreas Blass, *A game semantics for linear logic*][MR1167694]
 * [André Joyal, *Remarques sur la théorie des jeux à deux personnes*][joyal1977]
 -/
+
+@[expose] public section
 
 namespace SetTheory
 

@@ -3,10 +3,12 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Algebra.BigOperators.Group.List.Basic
-import Mathlib.Algebra.Group.Equiv.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Algebra.BigOperators.Group.List.Basic
+public import Mathlib.Algebra.Group.Equiv.Defs
 
 /-!
 # Free monoid over a given alphabet
@@ -19,6 +21,8 @@ import Mathlib.Algebra.Group.Equiv.Defs
 * `FreeMonoid.lift`: natural equivalence between `α → M` and `FreeMonoid α →* M`
 * `FreeMonoid.map`: embedding of `α → β` into `FreeMonoid α →* FreeMonoid β` given by `List.map`.
 -/
+
+@[expose] public section
 
 
 variable {α : Type*} {β : Type*} {γ : Type*} {M : Type*} [Monoid M] {N : Type*} [Monoid N]
@@ -231,7 +235,7 @@ end Mem
 /-- Recursor for `FreeMonoid` using `1` and `FreeMonoid.of x * xs` instead of `[]` and `x :: xs`. -/
 @[to_additive (attr := elab_as_elim, induction_eliminator)
   /-- Recursor for `FreeAddMonoid` using `0` and
-  FreeAddMonoid.of x + xs` instead of `[]` and `x :: xs`. -/]
+  `FreeAddMonoid.of x + xs` instead of `[]` and `x :: xs`. -/]
 -- Porting note: change from `List.recOn` to `List.rec` since only the latter is computable
 def recOn {C : FreeMonoid α → Sort*} (xs : FreeMonoid α) (h0 : C 1)
     (ih : ∀ x xs, C xs → C (of x * xs)) : C xs := List.rec h0 ih xs
@@ -422,24 +426,26 @@ theorem map_surjective {f : α → β} : Function.Surjective (map f) ↔ Functio
   constructor
   · intro fs d
     rcases fs (FreeMonoid.of d) with ⟨b, hb⟩
-    induction' b using FreeMonoid.inductionOn' with head _ _
-    · have H := congr_arg length hb
+    induction b using FreeMonoid.inductionOn' with
+    | one =>
+      have H := congr_arg length hb
       simp only [length_one, length_of, Nat.zero_ne_one, map_one] at H
-    simp only [map_mul, map_of] at hb
-    use head
-    have H := congr_arg length hb
-    simp only [length_mul, length_of, add_eq_left, length_eq_zero] at H
-    rw [H, mul_one] at hb
-    exact FreeMonoid.of_injective hb
+    | mul_of head _ _ =>
+      simp only [map_mul, map_of] at hb
+      use head
+      have H := congr_arg length hb
+      simp only [length_mul, length_of, add_eq_left, length_eq_zero] at H
+      rw [H, mul_one] at hb
+      exact FreeMonoid.of_injective hb
   intro fs d
-  induction' d using FreeMonoid.inductionOn' with head tail ih
-  · use 1
+  induction d using FreeMonoid.inductionOn' with
+  | one => use 1; rfl
+  | mul_of head tail ih =>
+    specialize fs head
+    rcases fs with ⟨a, rfl⟩
+    rcases ih with ⟨b, rfl⟩
+    use FreeMonoid.of a * b
     rfl
-  specialize fs head
-  rcases fs with ⟨a, rfl⟩
-  rcases ih with ⟨b, rfl⟩
-  use FreeMonoid.of a * b
-  rfl
 
 end Map
 

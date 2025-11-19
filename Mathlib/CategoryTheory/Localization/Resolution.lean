@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.LocalizerMorphism
+module
+
+public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 
 /-!
 # Resolutions for a morphism of localizers
@@ -32,6 +34,8 @@ Similar definitions are done for left resolutions.
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₂' u₁ u₂ u₂'
 
@@ -93,7 +97,7 @@ structure Hom (R R' : Φ.RightResolution X₂) where
 
 attribute [reassoc (attr := simp)] Hom.comm
 
-/-- The identity of a object in `Φ.RightResolution X₂`. -/
+/-- The identity of an object in `Φ.RightResolution X₂`. -/
 @[simps]
 def Hom.id (R : Φ.RightResolution X₂) : Hom R R where
   f := 𝟙 _
@@ -137,7 +141,7 @@ structure Hom (L L' : Φ.LeftResolution X₂) where
 
 attribute [reassoc (attr := simp)] Hom.comm
 
-/-- The identity of a object in `Φ.LeftResolution X₂`. -/
+/-- The identity of an object in `Φ.LeftResolution X₂`. -/
 @[simps]
 def Hom.id (L : Φ.LeftResolution X₂) : Hom L L where
   f := 𝟙 _

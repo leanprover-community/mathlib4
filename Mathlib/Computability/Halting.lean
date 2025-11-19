@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Computability.PartrecCode
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.Computability.PartrecCode
+public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Computability theory and the halting problem
@@ -15,6 +17,8 @@ A universal partial recursive function, Rice's theorem, and the halting problem.
 
 * [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
 -/
+
+@[expose] public section
 
 open List (Vector)
 open Encodable Denumerable
@@ -128,8 +132,6 @@ nonrec theorem sumCasesOn {f : α → β ⊕ γ} {g : α → β →. σ} {h : α
           (sumCasesOn_right hf (const Option.none).to₂ (option_some_iff.2 hh).to₂)).of_eq
       fun a => by cases f a <;> simp only [Bool.cond_true, Bool.cond_false]
 
-@[deprecated (since := "2025-02-21")] alias sum_casesOn := Partrec.sumCasesOn
-
 end Partrec
 
 /-- A computable predicate is one whose indicator function is computable. -/
@@ -164,13 +166,9 @@ end decide
 def REPred {α} [Primcodable α] (p : α → Prop) :=
   Partrec fun a => Part.assert (p a) fun _ => Part.some ()
 
-@[deprecated (since := "2025-02-06")] alias RePred := REPred
-
 theorem REPred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : REPred p) (H : ∀ a, p a ↔ q a) :
     REPred q :=
   (funext fun a => propext (H a) : p = q) ▸ hp
-
-@[deprecated (since := "2025-02-06")] alias RePred.of_eq := REPred.of_eq
 
 theorem Partrec.dom_re {α β} [Primcodable α] [Primcodable β] {f : α →. β} (h : Partrec f) :
     REPred fun a => (f a).Dom :=

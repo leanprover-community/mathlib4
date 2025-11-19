@@ -3,13 +3,15 @@ Copyright (c) 2022 Yaël Dillies, George Shakan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, George Shakan
 -/
-import Mathlib.Algebra.Order.Field.Rat
-import Mathlib.Combinatorics.Enumerative.DoubleCounting
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Ring
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+module
+
+public import Mathlib.Algebra.Order.Field.Rat
+public import Mathlib.Combinatorics.Enumerative.DoubleCounting
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.GCongr
+public import Mathlib.Tactic.Positivity
+public import Mathlib.Tactic.Ring
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # The Plünnecke-Ruzsa inequality
@@ -34,6 +36,8 @@ inequality.
 In general non-abelian groups, small doubling doesn't imply small powers anymore, but small tripling
 does. See `Mathlib/Combinatorics/Additive/SmallTripling.lean`.
 -/
+
+@[expose] public section
 
 open MulOpposite Nat
 open scoped Pointwise
@@ -135,8 +139,8 @@ theorem pluennecke_petridis_inequality_mul (C : Finset G)
     have h₃ : #(C' * A * B) ≤ #(C * A * B) + #(A * B) - #(A' * B) := by
       rw [h₁]
       refine (card_union_le _ _).trans_eq ?_
-      rw [card_sdiff h₂, ← add_tsub_assoc_of_le (card_le_card h₂), mul_assoc {_}, mul_assoc {_},
-        card_singleton_mul, card_singleton_mul]
+      rw [card_sdiff_of_subset h₂, ← add_tsub_assoc_of_le (card_le_card h₂), mul_assoc {_},
+        mul_assoc {_}, card_singleton_mul, card_singleton_mul]
     refine (mul_le_mul_right' h₃ _).trans ?_
     rw [tsub_mul, add_mul]
     refine (tsub_le_tsub (add_le_add_right ih _) <| hA _ inter_subset_left).trans_eq ?_

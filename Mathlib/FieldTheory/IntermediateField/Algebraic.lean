@@ -3,15 +3,19 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.FieldTheory.IntermediateField.Basic
-import Mathlib.FieldTheory.Minpoly.Basic
-import Mathlib.FieldTheory.Tower
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.RingTheory.Algebraic.Integral
+module
+
+public import Mathlib.FieldTheory.IntermediateField.Basic
+public import Mathlib.FieldTheory.Minpoly.Basic
+public import Mathlib.FieldTheory.Tower
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.RingTheory.Algebraic.Integral
 
 /-!
 # Results on finite dimensionality and algebraicity of intermediate fields.
 -/
+
+@[expose] public section
 
 open Module
 
@@ -104,7 +108,6 @@ theorem finrank_dvd_of_le_left (h : F ≤ E) : finrank E L ∣ finrank F L := by
 
 theorem finrank_dvd_of_le_right (h : F ≤ E) : finrank K F ∣ finrank K E := by
   let _ := (inclusion h).toRingHom.toAlgebra
-  have : IsScalarTower K F E := IsScalarTower.of_algebraMap_eq fun x ↦ rfl
   exact Dvd.intro (finrank F E) (finrank_mul_finrank K F E)
 
 theorem finrank_le_of_le_left [FiniteDimensional F L] (h : F ≤ E) : finrank E L ≤ finrank F L :=
@@ -113,7 +116,7 @@ theorem finrank_le_of_le_left [FiniteDimensional F L] (h : F ≤ E) : finrank E 
 theorem finrank_le_of_le_right [FiniteDimensional K E] (h : F ≤ E) : finrank K F ≤ finrank K E :=
   Nat.le_of_dvd Module.finrank_pos (finrank_dvd_of_le_right h)
 
-/-- Mapping a finite dimensional intermediate field along an algebra equivalence gives
+/-- Mapping a finite-dimensional intermediate field along an algebra equivalence gives
 a finite-dimensional intermediate field. -/
 instance finiteDimensional_map (f : L →ₐ[K] L) [FiniteDimensional K E] :
     FiniteDimensional K (E.map f) :=

@@ -3,9 +3,11 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Spectrum.Basic
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.Algebra.Unitization
+module
+
+public import Mathlib.Algebra.Algebra.Spectrum.Basic
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.Algebra.Unitization
 
 /-!
 # Quasiregularity and quasispectrum
@@ -56,9 +58,10 @@ In Mathlib, the quasispectrum is the domain of the continuous functions associat
 + `Unitization.isQuasiregular_inr_iff`: `a : A` is quasiregular if and only if it is quasiregular
   in `Unitization R A` (via the coercion `Unitization.inr`).
 + `Unitization.quasispectrum_eq_spectrum_inr`: the quasispectrum of `a` in a non-unital `R`-algebra
-  `A` is precisely the spectrum of `a` in the unitization.
-  in `Unitization R A` (via the coercion `Unitization.inr`).
+  `A` is precisely the spectrum of `a` in `Unitization R A` (via the coercion `Unitization.inr`).
 -/
+
+@[expose] public section
 
 /-- A type synonym for non-unital rings where an alternative monoid structure is introduced.
 If `R` is a non-unital semiring, then `PreQuasiregular R` is equipped with the monoid structure

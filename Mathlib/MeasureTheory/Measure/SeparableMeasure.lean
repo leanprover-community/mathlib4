@@ -3,8 +3,10 @@ Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
-import Mathlib.MeasureTheory.SetAlgebra
+module
+
+public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+public import Mathlib.MeasureTheory.SetAlgebra
 
 /-!
 # Separable measure
@@ -62,6 +64,8 @@ written `≠ ∞` rather than `< ∞`. See `Ne.lt_top` and `ne_of_lt` to switch 
 
 separable measure, measure-dense, Lp space, second-countable
 -/
+
+@[expose] public section
 
 open MeasurableSpace Set ENNReal TopologicalSpace symmDiff Real
 
@@ -150,10 +154,10 @@ theorem Measure.MeasureDense.indicatorConstLp_subset_closure (h𝒜 : μ.Measure
     calc
       ‖c‖ * μ.real (s ∆ t) ^ (1 / p.toReal)
         < ‖c‖ * (ENNReal.ofReal ((ε / ‖c‖) ^ p.toReal)).toReal ^ (1 / p.toReal) := by
-          rw [_root_.mul_lt_mul_left (norm_pos_iff.2 hc)]
-          refine Real.rpow_lt_rpow (by simp) ?_
-            (one_div_pos.2 <| toReal_pos p_pos.ne.symm p_ne_top.elim)
-          rwa [measureReal_def, toReal_lt_toReal (measure_symmDiff_ne_top hμs hμt) ofReal_ne_top]
+          have := toReal_pos p_pos.ne.symm p_ne_top.elim
+          rw [measureReal_def]
+          gcongr
+          exact ofReal_ne_top
       _ = ε := by
         rw [toReal_ofReal (rpow_nonneg (div_nonneg hε.le (norm_nonneg _)) _),
           one_div, Real.rpow_rpow_inv (div_nonneg hε.le (norm_nonneg _))

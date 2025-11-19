@@ -3,17 +3,19 @@ Copyright (c) 2024 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
-import Mathlib.Analysis.Calculus.Deriv.Pi
-import Mathlib.Analysis.InnerProductSpace.EuclideanDist
-import Mathlib.Analysis.InnerProductSpace.NormPow
-import Mathlib.Data.Finset.Interval
-import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Pi
+public import Mathlib.Analysis.InnerProductSpace.EuclideanDist
+public import Mathlib.Analysis.InnerProductSpace.NormPow
+public import Mathlib.Data.Finset.Interval
+public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 /-!
 # Gagliardo-Nirenberg-Sobolev inequality
 
 In this file we prove the Gagliardo-Nirenberg-Sobolev inequality.
-This states that for compactly supported `C¹`-functions between finite dimensional vector spaces,
+This states that for compactly supported `C¹`-functions between finite-dimensional vector spaces,
 we can bound the `L^p`-norm of `u` by the `L^q` norm of the derivative of `u`.
 The bound is up to a constant that is independent of the function `u`.
 Let `n` be the dimension of the domain.
@@ -48,6 +50,8 @@ Potentially also useful:
 * `MeasureTheory.eLpNorm_le_eLpNorm_fderiv_of_eq_inner`: in this version,
   the codomain is assumed to be a Hilbert space, without restrictions on its dimension.
 -/
+
+@[expose] public section
 
 open scoped ENNReal NNReal
 open Set Function Finset MeasureTheory Measure Filter
@@ -116,7 +120,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
   innermost integral. This is done in a single step with `MeasureTheory.lmarginal_insert'`,
   but in fact hides a repeated application of Fubini's theorem.
   The integrand is a product of `|s|+2` factors, in `|s|+1` of them we integrate over one
-  additional variable. We split of the factor that integrates over `xᵢ`,
+  additional variable. We split off the factor that integrates over `xᵢ`,
   and apply Hölder's inequality to the remaining factors (whose powers sum exactly to 1).
   After reordering factors, and combining two factors into one we obtain the right-hand side. -/
   calc T μ p f (insert i s)
@@ -381,8 +385,6 @@ theorem lintegral_pow_le_pow_lintegral_fderiv {u : E → F}
   have hιcard : #ι = finrank ℝ E := Fintype.card_fin (finrank ℝ E)
   have : finrank ℝ E = finrank ℝ (ι → ℝ) := by simp [hιcard]
   let e : E ≃L[ℝ] ι → ℝ := ContinuousLinearEquiv.ofFinrankEq this
-  have : IsAddHaarMeasure ((volume : Measure (ι → ℝ)).map e.symm) :=
-    (e.symm : (ι → ℝ) ≃+ E).isAddHaarMeasure_map _ e.symm.continuous e.symm.symm.continuous
   have hp : Real.HolderConjugate #ι p := by rwa [hιcard]
   have h0p : 0 ≤ p := hp.symm.nonneg
   let c := addHaarScalarFactor μ ((volume : Measure (ι → ℝ)).map e.symm)
@@ -544,9 +546,9 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
     _ = C * ∫⁻ x, ‖fderiv ℝ v x‖ₑ ∂μ := by rw [eLpNorm_one_eq_lintegral_enorm]
     _ ≤ C * γ * ∫⁻ x, ‖u x‖ₑ ^ ((γ : ℝ) - 1) * ‖fderiv ℝ u x‖ₑ ∂μ := by
       rw [mul_assoc, ← lintegral_const_mul γ]
-      gcongr
-      simp_rw [← mul_assoc]
-      exact enorm_fderiv_norm_rpow_le (hu.differentiable le_rfl) h1γ
+      · gcongr
+        simp_rw [← mul_assoc]
+        exact enorm_fderiv_norm_rpow_le (hu.differentiable le_rfl) h1γ
       dsimp [enorm]
       fun_prop
     _ ≤ C * γ * ((∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / q) *
@@ -591,7 +593,7 @@ with Haar measure, let `1 < p < n` and let `p'⁻¹ := p⁻¹ - n⁻¹`.
 Then the `Lᵖ'` norm of `u` is bounded above by a constant times the `Lᵖ` norm of
 the Fréchet derivative of `u`.
 
-This is the version where the codomain of `u` is a finite dimensional normed space.
+This is the version where the codomain of `u` is a finite-dimensional normed space.
 -/
 theorem eLpNorm_le_eLpNorm_fderiv_of_eq [FiniteDimensional ℝ F]
     {u : E → F} (hu : ContDiff ℝ 1 u) (h2u : HasCompactSupport u)
@@ -647,7 +649,7 @@ function `u` supported in a bounded set `s` in a normed space `E` of finite dime
 Then the `L^q` norm of `u` is bounded above by a constant times the `Lᵖ` norm of
 the Fréchet derivative of `u`.
 
-Note: The codomain of `u` needs to be a finite dimensional normed space.
+Note: The codomain of `u` needs to be a finite-dimensional normed space.
 -/
 theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
     {u : E → F} {s : Set E} (hu : ContDiff ℝ 1 u) (h2u : u.support ⊆ s)
@@ -699,7 +701,7 @@ function `u` supported in a bounded set `s` in a normed space `E` of finite dime
 Then the `Lᵖ` norm of `u` is bounded above by a constant times the `Lᵖ` norm of
 the Fréchet derivative of `u`.
 
-Note: The codomain of `u` needs to be a finite dimensional normed space.
+Note: The codomain of `u` needs to be a finite-dimensional normed space.
 -/
 theorem eLpNorm_le_eLpNorm_fderiv [FiniteDimensional ℝ F]
     {u : E → F} {s : Set E} (hu : ContDiff ℝ 1 u) (h2u : u.support ⊆ s)

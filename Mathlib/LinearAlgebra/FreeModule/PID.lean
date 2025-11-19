@@ -3,9 +3,11 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.LinearAlgebra.Matrix.ToLin
+module
+
+public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-! # Free modules over PID
 
@@ -45,6 +47,8 @@ free module, finitely generated module, rank, structure theorem
 
 -/
 
+@[expose] public section
+
 open Module
 
 universe u v
@@ -81,21 +85,11 @@ theorem eq_bot_of_generator_maximal_submoduleImage_eq_zero {N O : Submodule R M}
 
 end Ring
 
-section IsDomain
-
-variable {ι : Type*} {R : Type*} [CommRing R] [IsDomain R]
-variable {M : Type*} [AddCommGroup M] [Module R M] {b : ι → M}
-
-open Submodule.IsPrincipal Set Submodule
-
-theorem dvd_generator_iff {I : Ideal R} [I.IsPrincipal] {x : R} (hx : x ∈ I) :
-    x ∣ generator I ↔ I = Ideal.span {x} := by
-  conv_rhs => rw [← span_singleton_generator I]
-  rw [Ideal.submodule_span_eq, Ideal.span_singleton_eq_span_singleton, ← dvd_dvd_iff_associated,
-    ← mem_iff_generator_dvd]
-  exact ⟨fun h ↦ ⟨hx, h⟩, fun h ↦ h.2⟩
-
-end IsDomain
+open Submodule.IsPrincipal in
+theorem dvd_generator_iff {R : Type*} [CommSemiring R] {I : Ideal R} [I.IsPrincipal] {x : R}
+    (hx : x ∈ I) : x ∣ generator I ↔ I = Ideal.span {x} := by
+  simp_rw [le_antisymm_iff, I.span_singleton_le_iff_mem.2 hx, and_true, ← Ideal.mem_span_singleton]
+  conv_rhs => rw [← span_singleton_generator I, Submodule.span_singleton_le_iff_mem]
 
 section PrincipalIdealDomain
 
@@ -106,7 +100,7 @@ variable {M : Type*} [AddCommGroup M] [Module R M] {b : ι → M}
 
 section StrongRankCondition
 
-variable [IsDomain R] [IsPrincipalIdealRing R]
+variable [IsPrincipalIdealRing R]
 
 open Submodule.IsPrincipal
 
@@ -141,6 +135,8 @@ theorem generator_maximal_submoduleImage_dvd {N O : Submodule R M} (hNO : N ≤ 
     rw [← span_singleton_generator (ϕ.submoduleImage N)]
     exact Ideal.span_singleton_le_span_singleton.mpr d_dvd_left
   · exact subset_span (mem_insert _ _)
+
+variable [IsDomain R]
 
 /-- The induction hypothesis of `Submodule.basisOfPid` and `Submodule.smithNormalForm`.
 
@@ -187,7 +183,6 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
     contradiction
   -- We claim that `ϕ⁻¹ a = y` can be taken as basis element of `N`.
   obtain ⟨y, yN, ϕy_eq⟩ := (LinearMap.mem_submoduleImage_of_le N_le_M).mp a_mem
-  have _ϕy_ne_zero : ϕ ⟨y, N_le_M yN⟩ ≠ 0 := fun h ↦ a_zero (ϕy_eq.symm.trans h)
   -- Write `y` as `a • y'` for some `y'`.
   have hdvd : ∀ i, a ∣ b'M.coord i ⟨y, N_le_M yN⟩ := fun i ↦
     generator_maximal_submoduleImage_dvd N_le_M ϕ_max y yN ϕy_eq (b'M.coord i)

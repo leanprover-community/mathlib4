@@ -3,11 +3,13 @@ Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
-import Mathlib.Order.Filter.Cofinite
-import Mathlib.Order.Filter.CountableInter
-import Mathlib.Order.Filter.CardinalInter
-import Mathlib.SetTheory.Cardinal.Arithmetic
-import Mathlib.SetTheory.Cardinal.Cofinality
+module
+
+public import Mathlib.Order.Filter.Cofinite
+public import Mathlib.Order.Filter.CountableInter
+public import Mathlib.Order.Filter.CardinalInter
+public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.SetTheory.Cardinal.Cofinality
 
 /-!
 # The cocardinal filter
@@ -17,6 +19,8 @@ In this file we define `Filter.cocardinal hc`: the filter of sets with cardinali
   Such filters are `CardinalInterFilter` with cardinality `c`.
 
 -/
+
+@[expose] public section
 
 open Set Filter Cardinal
 
@@ -64,8 +68,8 @@ theorem hasBasis_cocardinal : HasBasis (cocardinal α hreg) {s : Set α | #s < c
       simp_all only [mem_cocardinal] ⟩⟩
 
 theorem frequently_cocardinal {p : α → Prop} :
-    (∃ᶠ x in cocardinal α hreg, p x) ↔ c ≤ # { x | p x } := by
-  simp only [Filter.Frequently, eventually_cocardinal, not_not,coe_setOf, not_lt]
+    (∃ᶠ x in cocardinal α hreg, p x) ↔ c ≤ #{ x | p x } := by
+  simp only [Filter.Frequently, eventually_cocardinal, not_not, coe_setOf, not_lt]
 
 lemma frequently_cocardinal_mem {s : Set α} :
     (∃ᶠ x in cocardinal α hreg, x ∈ s) ↔ c ≤ #s := frequently_cocardinal

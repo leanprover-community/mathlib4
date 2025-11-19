@@ -3,8 +3,10 @@ Copyright (c) 2020 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Order.Ideal
-import Mathlib.Data.Finset.Max
+module
+
+public import Mathlib.Order.Ideal
+public import Mathlib.Data.Finset.Max
 
 /-!
 # The back and forth method and countable dense linear orders
@@ -27,6 +29,8 @@ https://en.wikipedia.org/wiki/Back-and-forth_method
 
 back and forth, dense, countable, order
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -91,7 +95,7 @@ lemma exists_orderEmbedding_insert [DenselyOrdered β] [NoMinOrder β] [NoMaxOrd
         exact hb' _ (Finset.mem_image_of_mem _ (Finset.mem_filter.2 ⟨Finset.mem_attach _ _, hxy⟩))
       else simp only [Finset.eq_of_mem_insert_of_notMem hy hyS, lt_self_iff_false] at hxy
   · ext x
-    simp only [OrderEmbedding.coe_ofStrictMono, Finset.insert_val,
+    simp only [OrderEmbedding.coe_ofStrictMono,
       Function.comp_apply, Finset.coe_mem, ↓reduceDIte, Subtype.coe_eta]
 
 variable (α β)
@@ -153,11 +157,11 @@ protected def comm : PartialIso α β → PartialIso β α :=
     Eq.symm <|
       hf ((Equiv.prodComm α β).symm p)
         (by
-          rw [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage] at hp
+          rw [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage_symm] at hp
           rwa [← Finset.mem_coe])
         ((Equiv.prodComm α β).symm q)
         (by
-          rw [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage] at hq
+          rw [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage_symm] at hq
           rwa [← Finset.mem_coe])
 
 variable (β)
@@ -191,7 +195,7 @@ def definedAtRight [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α] [Nonempty
     rcases (definedAtLeft α b).isCofinal f.comm with ⟨f', ⟨a, ha⟩, hl⟩
     refine ⟨f'.comm, ⟨a, ?_⟩, ?_⟩
     · change (a, b) ∈ f'.val.image _
-      rwa [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage]
+      rwa [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage_symm]
     · change _ ⊆ f'.val.image _
       rwa [← Finset.coe_subset, Finset.coe_image, ← Equiv.symm_image_subset, ← Finset.coe_image,
         Finset.coe_subset]

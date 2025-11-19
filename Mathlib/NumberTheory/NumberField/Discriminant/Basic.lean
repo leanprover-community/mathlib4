@@ -3,12 +3,14 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Algebra.Module.ZLattice.Covolume
-import Mathlib.Analysis.Real.Pi.Bounds
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
-import Mathlib.NumberTheory.NumberField.Discriminant.Defs
-import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
-import Mathlib.Tactic.Rify
+module
+
+public import Mathlib.Algebra.Module.ZLattice.Covolume
+public import Mathlib.Analysis.Real.Pi.Bounds
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
+public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
+public import Mathlib.Tactic.Rify
 
 /-!
 # Number field discriminant
@@ -25,6 +27,8 @@ This file defines the discriminant of a number field.
 ## Tags
 number field, discriminant
 -/
+
+@[expose] public section
 
 -- TODO. Rewrite some of the FLT results on the discriminant using the definitions and results of
 -- this file
@@ -210,7 +214,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
       exact Nat.le_add_left _ _
   intro n hn
   induction n, hn using Nat.le_induction with
-  | base => exact le_of_eq <| by simp [a, Nat.factorial_two]; field_simp; ring
+  | base => exact le_of_eq <| by simp [a, Nat.factorial_two]; field
   | succ m _ h_m =>
       suffices (3 : ℝ) ≤ (1 + 1 / m : ℝ) ^ (2 * m) by
         convert_to _ ≤ (a m) * (1 + 1 / m : ℝ) ^ (2 * m) / (4 / π)
@@ -220,7 +224,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
           ring
         · rw [_root_.le_div_iff₀ (by positivity), pow_succ]
           convert (mul_le_mul h_m this (by positivity) (by positivity)) using 1
-          field_simp
+          field
       refine le_trans (le_of_eq (by simp [field]; norm_num)) (one_add_mul_le_pow ?_ (2 * m))
       exact le_trans (by norm_num : (-2 : ℝ) ≤ 0) (by positivity)
 
@@ -276,7 +280,7 @@ theorem finite_of_finite_generating_set {p : IntermediateField ℚ A → Prop}
   rw [← Set.finite_coe_iff] at hT
   refine Set.finite_coe_iff.mp <| Finite.of_injective
     (fun ⟨F, hF⟩ ↦ (⟨(h F hF).choose, (h F hF).choose_spec.1⟩ : T)) (fun _ _ h_eq ↦ ?_)
-  rw [Subtype.ext_iff_val, Subtype.ext_iff_val]
+  rw [Subtype.ext_iff, Subtype.ext_iff]
   convert congr_arg (ℚ⟮·⟯) (Subtype.mk_eq_mk.mp h_eq)
   all_goals exact (h _ (Subtype.mem _)).choose_spec.2
 
@@ -313,7 +317,7 @@ theorem rank_le_rankOfDiscrBdd :
       refine lt_of_le_of_lt ?_ (mul_lt_mul_of_pos_left
         (Real.rpow_lt_rpow_of_exponent_lt h₂ h) (by positivity : (0 : ℝ) < 4 / 9))
       rw [Real.rpow_logb (lt_trans zero_lt_one h₂) (ne_of_gt h₂) (by positivity), ← mul_assoc,
-            ← inv_div, inv_mul_cancel₀ (by norm_num), one_mul, Int.cast_natCast]
+            ← inv_div, inv_mul_cancel₀ (by simp), one_mul, Int.cast_natCast]
     · refine div_nonneg (Real.log_nonneg ?_) (Real.log_nonneg (le_of_lt h₂))
       rw [mul_comm, ← mul_div_assoc, _root_.le_div_iff₀ (by positivity), one_mul,
         ← _root_.div_le_iff₀ (by positivity)]
@@ -331,7 +335,7 @@ theorem minkowskiBound_lt_boundOfDiscBdd : minkowskiBound K ↑1 < boundOfDiscBd
     ENNReal.ofReal_one, one_mul, mixedEmbedding.finrank, volume_fundamentalDomain_latticeBasis,
     coe_mul, ENNReal.coe_pow, coe_ofNat, show sqrt N = (1 : ℝ≥0∞) * sqrt N by rw [one_mul]]
   gcongr
-  · exact pow_le_one₀ (by positivity) (by norm_num)
+  · exact pow_le_one₀ (by positivity) (by simp)
   · rwa [← NNReal.coe_le_coe, coe_nnnorm, Int.norm_eq_abs, ← Int.cast_abs,
       NNReal.coe_natCast, ← Int.cast_natCast, Int.cast_le]
   · exact one_le_two

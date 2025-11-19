@@ -3,8 +3,10 @@ Copyright (c) 2022 Joanna Choules. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joanna Choules
 -/
-import Mathlib.CategoryTheory.CofilteredSystem
-import Mathlib.Combinatorics.SimpleGraph.Subgraph
+module
+
+public import Mathlib.CategoryTheory.CofilteredSystem
+public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
 /-!
 # Homomorphisms from finite subgraphs
@@ -18,7 +20,7 @@ for homomorphisms to a finite codomain.
   infinite) graph `G` has a homomorphism to some finite graph `F`, then there is also a homomorphism
   `G →g F`.
 
-## Notations
+## Notation
 
 `→fg` is a module-local variant on `→g` where the domain is a finite subgraph of some supergraph
 `G`.
@@ -29,6 +31,8 @@ The proof here uses compactness as formulated in `nonempty_sections_of_finite_in
 finite subgraphs `G'' ≤ G'`, the inverse system `finsubgraphHomFunctor` restricts homomorphisms
 `G' →fg F` to domain `G''`.
 -/
+
+@[expose] public section
 
 
 open Set CategoryTheory

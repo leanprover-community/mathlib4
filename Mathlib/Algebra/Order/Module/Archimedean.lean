@@ -3,11 +3,12 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
+module
 
-import Mathlib.Algebra.Module.Submodule.Basic
-import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.Algebra.Order.Archimedean.Class
-import Mathlib.Algebra.Order.Module.Basic
+public import Mathlib.Algebra.Module.Submodule.Basic
+public import Mathlib.Algebra.Module.Submodule.Lattice
+public import Mathlib.Algebra.Order.Archimedean.Class
+public import Mathlib.Algebra.Order.Module.Basic
 
 /-!
 # Archimedean classes for ordered module
@@ -16,6 +17,8 @@ import Mathlib.Algebra.Order.Module.Basic
 * `ArchimedeanClass.ball` are `ArchimedeanClass.ballAddSubgroup` as a submodules.
 * `ArchimedeanClass.closedBall` are `ArchimedeanClass.closedBallAddSubgroup` as a submodules.
 -/
+
+@[expose] public section
 
 namespace ArchimedeanClass
 
@@ -52,10 +55,7 @@ def submodule (s : UpperSet (ArchimedeanClass M)) : Submodule K M where
   smul_mem' k {a} := by
     obtain rfl | hs := eq_or_ne s ⊤
     · aesop
-    change a ∈ addSubgroup s → k • a ∈ addSubgroup s
-    simp_rw [mem_addSubgroup_iff hs]
-    refine fun h ↦ s.upper ?_ h
-    apply mk_le_mk_smul
+    simpa [mem_addSubgroup_iff hs] using s.upper (mk_le_mk_smul a k)
 
 /-- An open ball defined by `ArchimedeanClass.submodule` of `UpperSet.Ioi c`.
 For `c = ⊤`, we assign the junk value `⊥`.
@@ -99,5 +99,11 @@ theorem closedBall_top : closedBall (M := M) K ⊤ = ⊥ :=
 theorem ball_antitone : Antitone (ball (M := M) K) := by
   intro _ _ h
   exact (Submodule.toAddSubgroup_le _ _).mp <| ballAddSubgroup_antitone h
+
+theorem ball_le_closedBall {c : ArchimedeanClass M} : ball K c ≤ closedBall K c := by
+  obtain rfl | hc := eq_or_ne c ⊤
+  · simp
+  intro a ha
+  simpa using ((mem_ball_iff K hc).mp ha).le
 
 end ArchimedeanClass

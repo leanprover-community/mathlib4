@@ -3,13 +3,17 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Data.Rat.NatSqrt.Defs
-import Mathlib.Data.Real.Sqrt
+module
+
+public import Mathlib.Data.Rat.NatSqrt.Defs
+public import Mathlib.Data.Real.Sqrt
 
 /-!
 Comparisons between rational approximations to the square root of a natural number
 and the real square root.
 -/
+
+@[expose] public section
 
 namespace Nat
 
@@ -35,8 +39,18 @@ theorem realSqrt_mem_Ico (x : ℕ) {prec : ℕ} (h : 0 < prec) :
     √x ∈ Set.Ico (ratSqrt x prec : ℝ) (ratSqrt x prec + 1 / prec : ℝ) := by
   grind [ratSqrt_le_realSqrt, realSqrt_lt_ratSqrt_add_inv_prec]
 
+#adaptation_note
+/--
+nightly-2025-09-11
+We're investigating changing the `grind` heuristics for selecting patterns.
+Under one heuristic, the next proof would fail if we just passed `realSqrt_lt_ratSqrt_add_inv_prec`
+to `grind` in the next proof.
+So for robustness I'm explicitly setting the pattern here.
+-/
+local grind_pattern realSqrt_lt_ratSqrt_add_inv_prec => (x.ratSqrt prec : ℝ)
+
 theorem ratSqrt_mem_Ioc (x : ℕ) {prec : ℕ} (h : 0 < prec) :
     (ratSqrt x prec : ℝ) ∈ Set.Ioc (√x - 1 / prec) √x := by
-  grind [ratSqrt_le_realSqrt, realSqrt_lt_ratSqrt_add_inv_prec]
+  grind [ratSqrt_le_realSqrt]
 
 end Nat

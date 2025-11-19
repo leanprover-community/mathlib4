@@ -3,7 +3,9 @@ Copyright (c) 2024 Ali Ramsey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ali Ramsey
 -/
-import Mathlib.RingTheory.Bialgebra.Basic
+module
+
+public import Mathlib.RingTheory.Bialgebra.Basic
 
 /-!
 # Hopf algebras
@@ -12,7 +14,7 @@ In this file we define `HopfAlgebra`, and provide instances for:
 
 * Commutative semirings: `CommSemiring.toHopfAlgebra`
 
-# Main definitions
+## Main definitions
 
 * `HopfAlgebra R A` : the Hopf algebra structure on an `R`-bialgebra `A`.
 * `HopfAlgebra.antipode` : The `R`-linear map `A →ₗ[R] A`.
@@ -29,7 +31,7 @@ In this file we define `HopfAlgebra`, and provide instances for:
   the identity.
 
 (Note that all three facts have been proved for Hopf bimonoids in an arbitrary braided category,
-so we could deduce the facts here from an equivalence `HopfAlgCat R ≌ Hopf_ (ModuleCat R)`.)
+so we could deduce the facts here from an equivalence `HopfAlgCat R ≌ Hopf (ModuleCat R)`.)
 
 ## References
 
@@ -39,6 +41,8 @@ so we could deduce the facts here from an equivalence `HopfAlgCat R ≌ Hopf_ (M
 
 
 -/
+
+@[expose] public section
 
 open Bialgebra
 

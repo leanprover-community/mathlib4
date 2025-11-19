@@ -3,7 +3,9 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.ElementarySubstructures
+module
+
+public import Mathlib.ModelTheory.ElementarySubstructures
 
 /-!
 # Skolem Functions and Downward Löwenheim–Skolem
@@ -23,6 +25,8 @@ import Mathlib.ModelTheory.ElementarySubstructures
 
 - Use `skolem₁` recursively to construct an actual Skolemization of a language.
 -/
+
+@[expose] public section
 
 
 universe u v w w'
@@ -48,7 +52,7 @@ theorem card_functions_sum_skolem₁ :
   simp only [card_functions_sum, skolem₁_Functions, mk_sigma, sum_add_distrib']
   conv_lhs => enter [2, 1, i]; rw [lift_id'.{u, v}]
   rw [add_comm, add_eq_max, max_eq_left]
-  · refine sum_le_sum _ _ fun n => ?_
+  · gcongr with n
     rw [← lift_le.{_, max u v}, lift_lift, lift_mk_le.{v}]
     refine ⟨⟨fun f => (func f default).bdEqual (func f default), fun f g h => ?_⟩⟩
     rcases h with ⟨rfl, ⟨rfl⟩⟩

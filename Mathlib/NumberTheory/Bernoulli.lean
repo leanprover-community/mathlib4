@@ -3,9 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kevin Buzzard
 -/
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.RingTheory.PowerSeries.Inverse
-import Mathlib.RingTheory.PowerSeries.WellKnown
+module
+
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.RingTheory.PowerSeries.Inverse
+public import Mathlib.RingTheory.PowerSeries.WellKnown
 
 /-!
 # Bernoulli numbers
@@ -48,6 +50,8 @@ then defined as `bernoulli := (-1)^n * bernoulli'`.
 
 `sum_bernoulli : ∑ k ∈ Finset.range n, (n.choose k : ℚ) * bernoulli k = if n = 1 then 1 else 0`
 -/
+
+@[expose] public section
 
 
 open Nat Finset Finset.Nat PowerSeries
@@ -92,7 +96,7 @@ section Examples
 @[simp]
 theorem bernoulli'_zero : bernoulli' 0 = 1 := by
   rw [bernoulli'_def]
-  norm_num
+  simp
 
 @[simp]
 theorem bernoulli'_one : bernoulli' 1 = 1 / 2 := by
@@ -279,7 +283,7 @@ theorem sum_range_pow (n p : ℕ) :
     intro m h
     simp only [exp_pow_eq_rescale_exp, rescale, RingHom.coe_mk]
     -- manipulate factorials and binomial coefficients
-    simp? at h says simp only [succ_eq_add_one, mem_range] at h
+    have h : m < q + 1 := by simpa using h
     rw [choose_eq_factorial_div_factorial h.le, eq_comm, div_eq_iff (hne q.succ), succ_eq_add_one,
       mul_assoc _ _ (q.succ ! : ℚ), mul_comm _ (q.succ ! : ℚ), ← mul_assoc, div_mul_eq_mul_div]
     simp only [MonoidHom.coe_mk, OneHom.coe_mk, coeff_exp, Algebra.algebraMap_self, one_div,

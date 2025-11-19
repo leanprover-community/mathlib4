@@ -3,9 +3,11 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-import Mathlib.MeasureTheory.Integral.Layercake
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
+public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+public import Mathlib.MeasureTheory.Integral.Layercake
 
 /-!
 # Japanese Bracket
@@ -21,6 +23,8 @@ than the dimension.
 * `integrable_jap` the Japanese bracket is integrable
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -78,7 +82,7 @@ theorem finite_integral_rpow_sub_one_pow_aux {r : ℝ} (n : ℕ) (hnr : (n : ℝ
         gcongr
         · rw [sub_nonneg]
           exact Real.one_le_rpow_of_pos_of_le_one_of_nonpos hx.1 hx.2 (by simpa using hr.le)
-        · norm_num
+        · simp
       _ = .ofReal (x ^ (-(r⁻¹ * n))) := by simp [rpow_mul hx.1.le, ← neg_mul]
   refine lt_of_le_of_lt (setLIntegral_mono' measurableSet_Ioc h_int) ?_
   refine IntegrableOn.setLIntegral_lt_top ?_

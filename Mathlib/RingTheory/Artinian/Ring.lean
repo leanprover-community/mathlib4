@@ -3,10 +3,12 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Junyan Xu, Jujian Zhang
 -/
-import Mathlib.Algebra.Field.Equiv
-import Mathlib.RingTheory.Artinian.Module
-import Mathlib.RingTheory.Localization.Defs
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+module
+
+public import Mathlib.Algebra.Field.Equiv
+public import Mathlib.RingTheory.Artinian.Module
+public import Mathlib.RingTheory.Localization.Defs
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 /-!
 # Artinian rings
@@ -42,6 +44,8 @@ Artinian, artinian, Artinian ring, artinian ring
 
 -/
 
+@[expose] public section
+
 open Set Submodule IsArtinian
 
 namespace IsArtinianRing
@@ -66,26 +70,6 @@ theorem isField_of_isReduced_of_isLocalRing [IsReduced R] [IsLocalRing R] : IsFi
   (IsArtinianRing.equivPi R).trans (RingEquiv.piUnique _) |>.toMulEquiv.isField
     (Ideal.Quotient.field _).toIsField
 
-section IsUnit
-
-open nonZeroDivisors
-
-/-- If an element of an Artinian ring is not a zero divisor then it is a unit. -/
-theorem isUnit_of_mem_nonZeroDivisors {a : R} (ha : a ∈ R⁰) : IsUnit a :=
-  IsUnit.isUnit_iff_mulLeft_bijective.mpr <|
-    IsArtinian.bijective_of_injective_endomorphism (LinearMap.mulLeft R a)
-      fun _ _ ↦ (mul_cancel_left_mem_nonZeroDivisors ha).mp
-
-/-- In an Artinian ring, an element is a unit iff it is a non-zero-divisor.
-See also `isUnit_iff_mem_nonZeroDivisors_of_finite`. -/
-theorem isUnit_iff_mem_nonZeroDivisors {a : R} : IsUnit a ↔ a ∈ R⁰ :=
-  ⟨IsUnit.mem_nonZeroDivisors, isUnit_of_mem_nonZeroDivisors⟩
-
-theorem isUnit_submonoid_eq : IsUnit.submonoid R = R⁰ := by
-  ext; simp [IsUnit.mem_submonoid_iff, isUnit_iff_mem_nonZeroDivisors]
-
-end IsUnit
-
 section Localization
 
 variable (S : Submonoid R) (L : Type*) [CommSemiring L] [Algebra R L] [IsLocalization S L]
@@ -94,7 +78,7 @@ include S
 /-- Localizing an Artinian ring can only reduce the amount of elements. -/
 theorem localization_surjective : Function.Surjective (algebraMap R L) := by
   intro r'
-  obtain ⟨r₁, s, rfl⟩ := IsLocalization.mk'_surjective S r'
+  obtain ⟨r₁, s, rfl⟩ := IsLocalization.exists_mk'_eq S r'
   rsuffices ⟨r₂, h⟩ : ∃ r : R, IsLocalization.mk' L 1 s = algebraMap R L r
   · exact ⟨r₁ * r₂, by rw [IsLocalization.mk'_eq_mul_mk'_one, map_mul, h]⟩
   obtain ⟨n, r, hr⟩ := IsArtinian.exists_pow_succ_smul_dvd (s : R) (1 : R)

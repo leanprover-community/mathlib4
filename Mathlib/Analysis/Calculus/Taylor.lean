@@ -3,14 +3,16 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Algebra.EuclideanDomain.Basic
-import Mathlib.Algebra.EuclideanDomain.Field
-import Mathlib.Algebra.Polynomial.Module.Basic
-import Mathlib.Analysis.Calculus.ContDiff.Basic
-import Mathlib.Analysis.Calculus.Deriv.Pow
-import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
-import Mathlib.Analysis.Calculus.MeanValue
-import Mathlib.Analysis.Calculus.Deriv.MeanValue
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Basic
+public import Mathlib.Algebra.EuclideanDomain.Field
+public import Mathlib.Algebra.Polynomial.Module.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Pow
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+public import Mathlib.Analysis.Calculus.MeanValue
+public import Mathlib.Analysis.Calculus.Deriv.MeanValue
 
 /-!
 # Taylor's theorem
@@ -32,7 +34,7 @@ which states that if `f` is sufficiently smooth, then
 * `taylor_mean_remainder`: Taylor's theorem with the general form of the remainder term
 * `taylor_mean_remainder_lagrange`: Taylor's theorem with the Lagrange remainder
 * `taylor_mean_remainder_cauchy`: Taylor's theorem with the Cauchy remainder
-* `exists_taylor_mean_remainder_bound`: Taylor's theorem for vector valued functions with a
+* `exists_taylor_mean_remainder_bound`: Taylor's theorem for vector-valued functions with a
   polynomial bound on the remainder
 
 ## TODO
@@ -44,6 +46,8 @@ which states that if `f` is sufficiently smooth, then
 
 Taylor polynomial, Taylor's theorem
 -/
+
+@[expose] public section
 
 
 open scoped Interval Topology Nat
@@ -154,12 +158,12 @@ theorem hasDerivWithinAt_taylor_coeff_within {f : ℝ → E} {x y : ℝ} {k : �
       (-((k ! : ℝ)⁻¹ * (x - y) ^ k)) t y := by
     -- Commuting the factors:
     have : -((k ! : ℝ)⁻¹ * (x - y) ^ k) = ((k + 1 : ℝ) * k !)⁻¹ * (-(k + 1) * (x - y) ^ k) := by
-      field_simp
+      field
     rw [this]
     exact (monomial_has_deriv_aux y x _).hasDerivWithinAt.const_mul _
   convert this.smul hf using 1
   field_simp
-  rw [neg_smul, sub_eq_add_neg]
+  module
 
 /-- Calculate the derivative of the Taylor polynomial with respect to `x₀`.
 
@@ -346,7 +350,7 @@ lemma taylor_mean_remainder_lagrange_iteratedDeriv {f : ℝ → ℝ} {x x₀ : �
   have hd : DifferentiableOn ℝ (iteratedDerivWithin n f (Icc x₀ x)) (Icc x₀ x) := by
     refine hf.differentiableOn_iteratedDerivWithin ?_ hu
     norm_cast
-    norm_num
+    simp
   obtain ⟨x', h1, h2⟩ := taylor_mean_remainder_lagrange hx hf.of_succ (hd.mono Ioo_subset_Icc_self)
   use x', h1
   rw [h2, iteratedDeriv_eq_iteratedFDeriv, iteratedDerivWithin_eq_iteratedFDerivWithin,
@@ -402,7 +406,7 @@ theorem taylor_mean_remainder_bound {f : ℝ → E} {a b C x : ℝ} {n : ℕ} (h
       exact sub_nonneg.2 hyx.le
     -- Estimate the iterated derivative by `C`
     · exact hC y ⟨hay, hyx.le.trans hx.2⟩
-  -- Apply the mean value theorem for vector valued functions:
+  -- Apply the mean value theorem for vector-valued functions:
   have A : ∀ t ∈ Icc a x, HasDerivWithinAt (fun y => taylorWithinEval f n (Icc a b) y x)
       (((↑n !)⁻¹ * (x - t) ^ n) • iteratedDerivWithin (n + 1) f (Icc a b) t) (Icc a x) t := by
     intro t ht

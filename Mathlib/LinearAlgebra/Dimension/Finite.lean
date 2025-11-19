@@ -3,11 +3,13 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison
 -/
-import Mathlib.LinearAlgebra.Dimension.Constructions
-import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-import Mathlib.LinearAlgebra.Dimension.Subsingleton
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.SetTheory.Cardinal.Cofinality
+module
+
+public import Mathlib.LinearAlgebra.Dimension.Constructions
+public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+public import Mathlib.LinearAlgebra.Dimension.Subsingleton
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.SetTheory.Cardinal.Cofinality
 
 /-!
 # Conditions for rank to be finite
@@ -15,6 +17,8 @@ import Mathlib.SetTheory.Cardinal.Cofinality
 Also contains characterization for when rank equals zero or rank equals one.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -351,7 +355,7 @@ section FinrankZero
 section
 variable [Nontrivial R]
 
-/-- A (finite dimensional) space that is a subsingleton has zero `finrank`. -/
+/-- A (finite-dimensional) space that is a subsingleton has zero `finrank`. -/
 @[nontriviality]
 theorem Module.finrank_zero_of_subsingleton [Subsingleton M] :
     finrank R M = 0 := by
@@ -363,11 +367,11 @@ lemma LinearIndependent.finrank_eq_zero_of_infinite {ι} [Infinite ι] {v : ι �
 section
 variable [NoZeroSMulDivisors R M]
 
-/-- A finite dimensional space is nontrivial if it has positive `finrank`. -/
+/-- A finite-dimensional space is nontrivial if it has positive `finrank`. -/
 theorem Module.nontrivial_of_finrank_pos (h : 0 < finrank R M) : Nontrivial M :=
   rank_pos_iff_nontrivial.mp (lt_rank_of_lt_finrank h)
 
-/-- A finite dimensional space is nontrivial if it has `finrank` equal to the successor of a
+/-- A finite-dimensional space is nontrivial if it has `finrank` equal to the successor of a
 natural number. -/
 theorem Module.nontrivial_of_finrank_eq_succ {n : ℕ}
     (hn : finrank R M = n.succ) : Nontrivial M :=
@@ -399,7 +403,7 @@ theorem Module.finrank_pos_iff [NoZeroSMulDivisors R M] :
   rw [← rank_pos_iff_nontrivial (R := R), ← finrank_eq_rank]
   norm_cast
 
-/-- A nontrivial finite dimensional space has positive `finrank`. -/
+/-- A nontrivial finite-dimensional space has positive `finrank`. -/
 theorem Module.finrank_pos [NoZeroSMulDivisors R M] [h : Nontrivial M] :
     0 < finrank R M :=
   finrank_pos_iff.mpr h
@@ -411,7 +415,7 @@ theorem Module.finrank_eq_zero_iff :
   rw [← rank_eq_zero_iff (R := R), ← finrank_eq_rank]
   norm_cast
 
-/-- A finite dimensional space has zero `finrank` iff it is a subsingleton.
+/-- A finite-dimensional space has zero `finrank` iff it is a subsingleton.
 This is the `finrank` version of `rank_zero_iff`. -/
 theorem Module.finrank_zero_iff [NoZeroSMulDivisors R M] :
     finrank R M = 0 ↔ Subsingleton M := by

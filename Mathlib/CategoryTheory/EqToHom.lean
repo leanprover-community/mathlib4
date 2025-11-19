@@ -3,7 +3,9 @@ Copyright (c) 2018 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Opposites
+module
+
+public import Mathlib.CategoryTheory.Opposites
 
 /-!
 # Morphisms from equations between objects.
@@ -24,25 +26,31 @@ This file introduces various `simp` lemmas which in favourable circumstances
 result in the various `eqToHom` morphisms to drop out at the appropriate moment!
 -/
 
+@[expose] public section
+
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 namespace CategoryTheory
 
 open Opposite
-
-variable {C : Type u₁} [Category.{v₁} C]
 
 /-- An equality `X = Y` gives us a morphism `X ⟶ Y`.
 
 It is typically better to use this, rather than rewriting by the equality then using `𝟙 _`
 which usually leads to dependent type theory hell.
 -/
-def eqToHom {X Y : C} (p : X = Y) : X ⟶ Y := by rw [p]; exact 𝟙 _
+def eqToHom {C : Type u₁} [CategoryStruct.{v₁} C] {X Y : C} (p : X = Y) :
+    X ⟶ Y := by
+  rw [p]
+  exact 𝟙 _
 
 @[simp]
-theorem eqToHom_refl (X : C) (p : X = X) : eqToHom p = 𝟙 X :=
+theorem eqToHom_refl {C : Type u₁} [CategoryStruct.{v₁} C] (X : C) (p : X = X) :
+    eqToHom p = 𝟙 X :=
   rfl
+
+variable {C : Type u₁} [Category.{v₁} C]
 
 @[reassoc (attr := simp)]
 theorem eqToHom_trans {X Y Z : C} (p : X = Y) (q : Y = Z) :

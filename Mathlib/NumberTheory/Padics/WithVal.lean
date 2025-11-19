@@ -3,11 +3,13 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.NumberTheory.Padics.PadicNumbers
-import Mathlib.Topology.Algebra.Valued.ValuedField
-import Mathlib.Topology.Algebra.Valued.WithVal
-import Mathlib.Topology.GDelta.MetrizableSpace
+module
+
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.NumberTheory.Padics.PadicNumbers
+public import Mathlib.Topology.Algebra.Valued.ValuedField
+public import Mathlib.Topology.Algebra.Valued.WithVal
+public import Mathlib.Topology.GDelta.MetrizableSpace
 
 /-!
 # Equivalence between `ℚ_[p]` and `(Rat.padicValuation p).Completion`
@@ -24,6 +26,8 @@ which is shorthand for `UniformSpace.Completion (WithVal (Rat.padicValuation p))
   `(Rat.padicValuation p).Completion` and `ℚ_[p]`
 
 -/
+
+@[expose] public section
 
 namespace Padic
 
@@ -48,10 +52,10 @@ lemma isUniformInducing_cast_withVal : IsUniformInducing ((Rat.castHom ℚ_[p]).
     intro x y h
     set x' : ℚ := (WithVal.equiv (Rat.padicValuation p)) x with hx
     set y' : ℚ := (WithVal.equiv (Rat.padicValuation p)) y with hy
-    rw [Valuation.map_sub_swap] at h
+    rw [Valuation.map_sub_swap, Units.val_mk0] at h
     change Rat.padicValuation p (x' - y') < exp _ at h
     rw [← Nat.cast_pow, ← Rat.cast_natCast, ← Rat.cast_inv_of_ne_zero, Rat.cast_le]
-    · change padicNorm p (x' - y') ≤ _
+    · rw [map_sub, ← hx, ← hy]
       simp only [Rat.padicValuation, Valuation.coe_mk, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk,
         padicNorm, zpow_neg, Nat.cast_pow] at h ⊢
       split_ifs with H

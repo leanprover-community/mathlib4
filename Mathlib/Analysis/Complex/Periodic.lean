@@ -3,9 +3,11 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.Complex.RemovableSingularity
-import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
-import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
+module
+
+public import Mathlib.Analysis.Complex.RemovableSingularity
+public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
+public import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 
 /-!
 # Periodic holomorphic functions
@@ -19,6 +21,8 @@ for all sufficiently large `im z`, then `F` extends to a holomorphic function on
 `0`. As a consequence, if `f` tends to zero as `im z → ∞`, then in fact it decays *exponentially*
 to zero. These results are important in the theory of modular forms.
 -/
+
+@[expose] public section
 
 open Complex Filter Asymptotics
 
@@ -75,13 +79,13 @@ lemma qParam_ne_zero (z : ℂ) : 𝕢 h z ≠ 0 := by
 
 @[fun_prop]
 lemma differentiable_qParam : Differentiable ℂ (𝕢 h) := by
-    unfold qParam
-    fun_prop
+  unfold qParam
+  fun_prop
 
 @[fun_prop]
 lemma contDiff_qParam (m : WithTop ℕ∞) : ContDiff ℂ m (𝕢 h) := by
-    unfold qParam
-    fun_prop
+  unfold qParam
+  fun_prop
 
 theorem qParam_tendsto (hh : 0 < h) : Tendsto (qParam h) I∞ (𝓝[≠] 0) := by
   refine tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ ?_

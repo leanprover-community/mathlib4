@@ -3,7 +3,9 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Order.Synonym
+module
+
+public import Mathlib.Order.Synonym
 
 /-!
 # Minimal/maximal and bottom/top elements
@@ -27,6 +29,8 @@ See also `isBot_iff_isMin` and `isTop_iff_isMax` for the equivalences in a (co)d
 * `NoMinOrder`: An order without minimal elements.
 * `NoMaxOrder`: An order without maximal elements.
 -/
+
+@[expose] public section
 
 
 open OrderDual
@@ -354,23 +358,11 @@ variable [Preorder α] [Preorder β] {a : α} {b : β} {x : α × β}
 
 theorem IsBot.prodMk (ha : IsBot a) (hb : IsBot b) : IsBot (a, b) := fun _ => ⟨ha _, hb _⟩
 
-@[deprecated (since := "2025-02-22")]
-alias IsBot.prod_mk := IsBot.prodMk
-
 theorem IsTop.prodMk (ha : IsTop a) (hb : IsTop b) : IsTop (a, b) := fun _ => ⟨ha _, hb _⟩
-
-@[deprecated (since := "2025-02-22")]
-alias IsTop.prod_mk := IsTop.prodMk
 
 theorem IsMin.prodMk (ha : IsMin a) (hb : IsMin b) : IsMin (a, b) := fun _ hc => ⟨ha hc.1, hb hc.2⟩
 
-@[deprecated (since := "2025-02-22")]
-alias IsMin.prod_mk := IsMin.prodMk
-
 theorem IsMax.prodMk (ha : IsMax a) (hb : IsMax b) : IsMax (a, b) := fun _ hc => ⟨ha hc.1, hb hc.2⟩
-
-@[deprecated (since := "2025-02-22")]
-alias IsMax.prod_mk := IsMax.prodMk
 
 theorem IsBot.fst (hx : IsBot x) : IsBot x.1 := fun c => (hx (c, x.2)).1
 

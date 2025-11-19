@@ -3,7 +3,9 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
-import Mathlib.MeasureTheory.Function.L1Space.Integrable
+module
+
+public import Mathlib.MeasureTheory.Function.L1Space.Integrable
 
 /-!
 # `L¹` space
@@ -24,6 +26,8 @@ classes of integrable functions, already defined as a special case of `L^p` spac
 function space, l1
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -51,7 +55,7 @@ theorem integrable_mk {f : α → ε} (hf : AEStronglyMeasurable f μ) :
   exact coeFn_mk f hf
 
 theorem integrable_coeFn {f : α →ₘ[μ] ε} : MeasureTheory.Integrable f μ ↔ Integrable f := by
-  rw [← integrable_mk, mk_coeFn]
+  rw [← integrable_mk f.aestronglyMeasurable, mk_coeFn]
 
 theorem integrable_zero : Integrable (0 : α →ₘ[μ] ε') :=
   (MeasureTheory.integrable_zero α ε' μ).congr (coeFn_mk _ _).symm

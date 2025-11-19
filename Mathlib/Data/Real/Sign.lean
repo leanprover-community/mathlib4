@@ -3,8 +3,9 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Eric Wieser
 -/
-import Mathlib.Data.Real.Basic
-import Mathlib.Tactic.NormNum.Inv
+module
+
+public import Mathlib.Data.Real.Basic
 
 /-!
 # Real sign function
@@ -22,6 +23,8 @@ real numbers to -1, positive real numbers to 1, and 0 to 0.
 
 sign function
 -/
+
+@[expose] public section
 
 
 namespace Real
@@ -92,7 +95,7 @@ theorem sign_mul_pos_of_ne_zero (r : ℝ) (hr : r ≠ 0) : 0 < sign r * r := by
 theorem inv_sign (r : ℝ) : (sign r)⁻¹ = sign r := by
   obtain hn | hz | hp := sign_apply_eq r
   · rw [hn]
-    norm_num
+    simp
   · rw [hz]
     exact inv_zero
   · rw [hp]

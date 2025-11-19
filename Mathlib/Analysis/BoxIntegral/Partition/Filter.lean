@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.BoxIntegral.Partition.SubboxInduction
-import Mathlib.Analysis.BoxIntegral.Partition.Split
+module
+
+public import Mathlib.Analysis.BoxIntegral.Partition.SubboxInduction
+public import Mathlib.Analysis.BoxIntegral.Partition.Split
 
 /-!
 # Filters used in box-based integrals
@@ -14,7 +16,7 @@ argument in the definition of `BoxIntegral.integral` in order to use the same de
 well-known definitions of integrals based on partitions of a rectangular box into subboxes (Riemann
 integral, Henstock-Kurzweil integral, and McShane integral).
 
-This structure holds three boolean values (see below), and encodes eight different sets of
+This structure holds three Boolean values (see below), and encodes eight different sets of
 parameters; only four of these values are used somewhere in `mathlib4`. Three of them correspond to
 the integration theories listed above, and one is a generalization of the one-dimensional
 Henstock-Kurzweil integral such that the divergence theorem works without additional integrability
@@ -30,7 +32,7 @@ the corresponding integral, or in the proofs of its properties. We equip
 
 ### Integration parameters
 
-The structure `BoxIntegral.IntegrationParams` has 3 boolean fields with the following meaning:
+The structure `BoxIntegral.IntegrationParams` has 3 Boolean fields with the following meaning:
 
 * `bRiemann`: the value `true` means that the filter corresponds to a Riemann-style integral, i.e.
   in the definition of integrability we require a constant upper estimate `r` on the size of boxes
@@ -163,6 +165,8 @@ prepartition (and consider the special case `π = ⊥` separately if needed).
 integral, rectangular box, partition, filter
 -/
 
+@[expose] public section
+
 open Set Function Filter Metric Finset Bool
 open scoped Topology Filter NNReal
 
@@ -174,7 +178,7 @@ variable {ι : Type*} [Fintype ι] {I J : Box ι} {c c₁ c₂ : ℝ≥0}
 
 open TaggedPrepartition
 
-/-- An `IntegrationParams` is a structure holding 3 boolean values used to define a filter to be
+/-- An `IntegrationParams` is a structure holding 3 Boolean values used to define a filter to be
 used in the definition of a box-integrable function.
 -/
 @[ext]

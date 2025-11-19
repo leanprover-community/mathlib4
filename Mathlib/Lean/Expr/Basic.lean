@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Simon Hudon, Kim Morrison, Keeley Hoek, Robert Y. Lewis,
 Floris van Doorn, Edward Ayers, Arthur Paulino
 -/
-import Mathlib.Init
-import Lean.Meta.Tactic.Rewrite
-import Batteries.Tactic.Alias
-import Lean.Elab.Binders
+module
+
+public import Mathlib.Init
+public import Lean.Meta.Tactic.Rewrite
+public import Batteries.Tactic.Alias
+public import Lean.Elab.Binders
 
 /-!
 # Additional operations on Expr and related types
@@ -16,6 +18,8 @@ This file defines basic operations on the types expr, name, declaration, level, 
 
 This file is mostly for non-tactics.
 -/
+
+public section
 
 namespace Lean
 
@@ -368,16 +372,6 @@ def mapForallBinderNames : Expr → (Name → Name) → Expr
   | .forallE n d b bi, f => .forallE (f n) d (mapForallBinderNames b f) bi
   | e, _ => e
 
-open Lean.Elab.Term
-/-- Annotates a `binderIdent` with the binder information from an `fvar`. -/
-def addLocalVarInfoForBinderIdent (fvar : Expr) (tk : TSyntax ``binderIdent) : MetaM Unit :=
-  -- the only TermElabM thing we do in `addLocalVarInfo` is check inPattern,
-  -- which we assume is always false for this function
-  discard <| TermElabM.run do
-    match tk with
-    | `(binderIdent| $n:ident) => Elab.Term.addLocalVarInfo n fvar
-    | tk => Elab.Term.addLocalVarInfo (Unhygienic.run `(_%$tk)) fvar
-
 /-- If `e` has a structure as type with field `fieldName`, `mkDirectProjection e fieldName` creates
 the projection expression `e.fieldName` -/
 def mkDirectProjection (e : Expr) (fieldName : Name) : MetaM Expr := do
@@ -426,28 +420,9 @@ def reduceProjStruct? (e : Expr) : MetaM (Option Expr) := do
     return none
 
 /-- Returns true if `e` contains a name `n` where `p n` is true. -/
+@[specialize]
 def containsConst (e : Expr) (p : Name → Bool) : Bool :=
   Option.isSome <| e.find? fun | .const n _ => p n | _ => false
-
-/--
-Rewrites `e` via some `eq`, producing a proof `e = e'` for some `e'`.
-
-Rewrites with a fresh metavariable as the ambient goal.
-Fails if the rewrite produces any subgoals.
--/
-def rewrite (e eq : Expr) : MetaM Expr := do
-  let ⟨_, eq', []⟩ ← (← mkFreshExprMVar none).mvarId!.rewrite e eq
-    | throwError "Expr.rewrite may not produce subgoals."
-  return eq'
-
-/--
-Rewrites the type of `e` via some `eq`, then moves `e` into the new type via `Eq.mp`.
-
-Rewrites with a fresh metavariable as the ambient goal.
-Fails if the rewrite produces any subgoals.
--/
-def rewriteType (e eq : Expr) : MetaM Expr := do
-  mkEqMP (← (← inferType e).rewrite eq) e
 
 /-- Given `(hNotEx : Not ex)` where `ex` is of the form `Exists x, p x`,
 return a `forall x, Not (p x)` and a proof for it.

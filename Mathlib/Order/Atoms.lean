@@ -3,13 +3,15 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.Set.Lattice
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Order.ModularLattice
-import Mathlib.Order.SuccPred.Basic
-import Mathlib.Order.WellFounded
-import Mathlib.Tactic.Nontriviality
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+module
+
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.ModularLattice
+public import Mathlib.Order.SuccPred.Basic
+public import Mathlib.Order.WellFounded
+public import Mathlib.Tactic.Nontriviality
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # Atoms, Coatoms, and Simple Lattices
@@ -51,6 +53,8 @@ which are lattices with only two elements, and related ideas.
 * `isAtomic_iff_isCoatomic`: A modular complemented lattice is atomic iff it is coatomic.
 
 -/
+
+@[expose] public section
 
 open Order
 
@@ -549,7 +553,7 @@ end BooleanAlgebra
 
 namespace CompleteBooleanAlgebra
 
-/-- Every atomic complete boolean algebra is completely atomic.
+/-- Every atomic complete Boolean algebra is completely atomic.
 
 This is not made an instance to avoid typeclass loops. -/
 -- See note [reducible non-instances]
@@ -740,7 +744,6 @@ instance OrderDual.instIsSimpleOrder {α} [LE α] [BoundedOrder α] [IsSimpleOrd
 /-- A simple `BoundedOrder` induces a preorder. This is not an instance to prevent loops. -/
 protected def IsSimpleOrder.preorder {α} [LE α] [BoundedOrder α] [IsSimpleOrder α] :
     Preorder α where
-  le := (· ≤ ·)
   le_refl a := by rcases eq_bot_or_eq_top a with (rfl | rfl) <;> simp
   le_trans a b c := by
     rcases eq_bot_or_eq_top a with (rfl | rfl)
@@ -754,7 +757,7 @@ This is not an instance to prevent loops. -/
 protected def IsSimpleOrder.linearOrder [DecidableEq α] : LinearOrder α :=
   { (inferInstance : PartialOrder α) with
     le_total := fun a b => by rcases eq_bot_or_eq_top a with (rfl | rfl) <;> simp
-    -- Note from #23976: do we want this inlined or should this be a separate definition?
+    -- Note from https://github.com/leanprover-community/mathlib4/issues/23976: do we want this inlined or should this be a separate definition?
     toDecidableLE := fun a b =>
       if ha : a = ⊥ then isTrue (ha.le.trans bot_le)
       else
@@ -1095,18 +1098,12 @@ theorem Lattice.isStronglyAtomic [OrderBot α] [IsUpperModularLattice α] [IsAto
         (hbot ▸ IsUpperModularLattice.covBy_sup_of_inf_covBy) (h x hx).bot_covBy
     rwa [inf_eq_left] at h_inf
 
-@[deprecated (since := "2025-03-13")] alias CompleteLattice.isStronglyAtomic :=
-  Lattice.isStronglyAtomic
-
 /-- A lower-modular lattice that is coatomistic is strongly coatomic.
 Not an instance to prevent loops. -/
 theorem Lattice.isStronglyCoatomic [OrderTop α] [IsLowerModularLattice α]
     [IsCoatomistic α] : IsStronglyCoatomic α := by
   rw [← isStronglyAtomic_dual_iff_is_stronglyCoatomic]
   exact Lattice.isStronglyAtomic
-
-@[deprecated (since := "2025-03-13")] alias CompleteLattice.isStronglyCoatomic :=
-  Lattice.isStronglyCoatomic
 
 end Lattice
 

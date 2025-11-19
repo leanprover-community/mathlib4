@@ -3,8 +3,10 @@ Copyright (c) 2024 Anatole Dedeker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Topology.Algebra.ProperAction.Basic
-import Mathlib.Topology.Maps.Proper.CompactlyGenerated
+module
+
+public import Mathlib.Topology.Algebra.ProperAction.Basic
+public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
 
 /-!
 # When a proper action is properly discontinuous
@@ -23,6 +25,8 @@ weakly locally compact.
 
 group action, proper action, properly discontinuous, compactly generated
 -/
+
+@[expose] public section
 
 variable {G X : Type*} [Group G] [MulAction G X] [TopologicalSpace G] [TopologicalSpace X]
 
@@ -90,8 +94,8 @@ theorem properlyDiscontinuousSMul_iff_properSMul [T2Space X] [DiscreteTopology G
     apply IsCompact.finite_of_discrete
     -- Now set `h : (g, x) ↦ (g⁻¹ • x, x)`, because `f` is proper by hypothesis, so is `h`.
     have : IsProperMap (fun gx : G × X ↦ (gx.1⁻¹ • gx.2, gx.2)) :=
-      (IsProperMap.prodMap (Homeomorph.isProperMap (Homeomorph.inv G)) isProperMap_id).comp <|
-        ProperSMul.isProperMap_smul_pair
+      ProperSMul.isProperMap_smul_pair.comp <|
+        (Homeomorph.inv G).isProperMap.prodMap isProperMap_id
     --But we also have that `{g | Set.Nonempty ((g • ·) '' K ∩ L)} = h ⁻¹ (K × L)`, which
     -- concludes the proof.
     have eq : {g | Set.Nonempty ((g • ·) '' K ∩ L)} =

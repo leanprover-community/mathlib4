@@ -3,11 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.ZMod
-import Mathlib.Data.Nat.Multiplicity
-import Mathlib.FieldTheory.Perfect
-import Mathlib.RingTheory.WittVector.Basic
-import Mathlib.RingTheory.WittVector.IsPoly
+module
+
+public import Mathlib.Algebra.Algebra.ZMod
+public import Mathlib.Data.Nat.Multiplicity
+public import Mathlib.FieldTheory.Perfect
+public import Mathlib.RingTheory.WittVector.Basic
+public import Mathlib.RingTheory.WittVector.IsPoly
 
 /-!
 ## The Frobenius operator
@@ -44,6 +46,8 @@ and bundle it into `WittVector.frobenius`.
 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
+
+@[expose] public section
 
 
 namespace WittVector
@@ -168,9 +172,8 @@ theorem map_frobeniusPoly (n : ℕ) :
   rw [Rat.natCast_div _ _ (map_frobeniusPoly.key₁ p (n - i) j hj)]
   push_cast
   linear_combination (norm := skip) -p / p ^ n / p ^ (n - i - v p (j + 1))
-    * (p ^ (n - i)).choose (j + 1) * congr((p:ℚ) ^ $(map_frobeniusPoly.key₂ p hi.le hj))
-  field_simp [hp.1.ne_zero]
-  ring
+    * (p ^ (n - i)).choose (j + 1) * congr((p : ℚ) ^ $(map_frobeniusPoly.key₂ p hi.le hj))
+  field [hp.1.ne_zero]
 
 theorem frobeniusPoly_zmod (n : ℕ) :
     MvPolynomial.map (Int.castRingHom (ZMod p)) (frobeniusPoly p n) = X n ^ p := by
@@ -219,17 +222,15 @@ The underlying function of this morphism is `WittVector.frobeniusFun`.
 def frobenius : 𝕎 R →+* 𝕎 R where
   toFun := frobeniusFun
   map_zero' := by
-    -- Porting note: removing the placeholders give an error
-    refine IsPoly.ext (@IsPoly.comp p _ _ (frobeniusFun_isPoly p) WittVector.zeroIsPoly)
-      (@IsPoly.comp p _ _ WittVector.zeroIsPoly
-      (frobeniusFun_isPoly p)) ?_ _ 0
+    refine IsPoly.ext (IsPoly.comp (hg := frobeniusFun_isPoly p) (hf := WittVector.zeroIsPoly))
+      (IsPoly.comp (hg := WittVector.zeroIsPoly) (hf := frobeniusFun_isPoly p))
+      ?_ _ 0
     simp only [Function.comp_apply, map_zero, forall_const]
     ghost_simp
   map_one' := by
     refine
-      -- Porting note: removing the placeholders give an error
-      IsPoly.ext (@IsPoly.comp p _ _ (frobeniusFun_isPoly p) WittVector.oneIsPoly)
-        (@IsPoly.comp p _ _ WittVector.oneIsPoly (frobeniusFun_isPoly p)) ?_ _ 0
+      IsPoly.ext (IsPoly.comp (hg := frobeniusFun_isPoly p) (hf := WittVector.oneIsPoly))
+        (IsPoly.comp (hg := WittVector.oneIsPoly) (hf := frobeniusFun_isPoly p)) ?_ _ 0
     simp only [Function.comp_apply, map_one, forall_const]
     ghost_simp
   map_add' := by ghost_calc _ _; ghost_simp

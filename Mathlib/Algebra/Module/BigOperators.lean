@@ -3,13 +3,17 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Data.Fintype.BigOperators
+module
+
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Data.Fintype.BigOperators
 
 /-!
 # Finite sums over modules over a ring
 -/
+
+@[expose] public section
 
 variable {ι κ α β R M : Type*}
 
@@ -25,9 +29,9 @@ theorem Multiset.sum_smul {l : Multiset R} {x : M} : l.sum • x = (l.map fun r 
 
 theorem Multiset.sum_smul_sum {s : Multiset R} {t : Multiset M} :
     s.sum • t.sum = ((s ×ˢ t).map fun p : R × M ↦ p.fst • p.snd).sum := by
-  induction' s using Multiset.induction with a s ih
-  · simp
-  · simp [add_smul, ih, ← Multiset.smul_sum]
+  induction s using Multiset.induction with
+  | empty => simp
+  | cons a s ih => simp [add_smul, ih, ← Multiset.smul_sum]
 
 theorem Finset.sum_smul {f : ι → R} {s : Finset ι} {x : M} :
     (∑ i ∈ s, f i) • x = ∑ i ∈ s, f i • x := map_sum ((smulAddHom R M).flip x) f s

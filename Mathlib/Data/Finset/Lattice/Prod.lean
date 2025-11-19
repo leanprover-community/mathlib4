@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Data.Finset.Prod
+module
+
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Data.Finset.Prod
 
 /-!
 # Lattice operations on finsets of products
@@ -12,7 +14,9 @@ import Mathlib.Data.Finset.Prod
 This file is concerned with folding binary lattice operations over finsets.
 -/
 
-assert_not_exists OrderedCommMonoid MonoidWithZero
+@[expose] public section
+
+assert_not_exists IsOrderedMonoid MonoidWithZero
 
 open Function Multiset OrderDual
 

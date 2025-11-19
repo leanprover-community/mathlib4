@@ -3,9 +3,10 @@ Copyright (c) 2024 Antoine Chambert-Loir & María-Inés de Frutos—Fernández. 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández
 -/
+module
 
-import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Tactic.Ring.RingNF
+public import Mathlib.Data.Nat.Choose.Basic
+public import Mathlib.Tactic.Ring.RingNF
 
 /-! # Two lemmas on choose
 
@@ -13,6 +14,8 @@ The proofs of these lemmas use the `ring` tactic
 and can't be given in `Mathlib/Data/Nat/Choose/Basic.lean`
 
 -/
+
+@[expose] public section
 
 namespace Nat
 
@@ -23,16 +26,16 @@ theorem choose_mul_add {m n : ℕ} (hn : n ≠ 0) :
   have hp : n = p + 1 := (succ_pred_eq_of_ne_zero hn).symm
   simp only [hp, add_succ_sub_one]
   calc
-    (m * (p + 1) + (p + 1)).choose (p + 1) * ((m * (p+1))! * (p+1)!)
-      = (m * (p + 1) + (p + 1)).choose (p + 1) * (m * (p+1))! * (p+1)! := by ring
-    _ = (m * (p+ 1) + (p + 1))! := by rw [add_choose_mul_factorial_mul_factorial]
-    _ = ((m * (p+ 1) + p) + 1)! := by ring_nf
+    (m * (p + 1) + (p + 1)).choose (p + 1) * ((m * (p + 1))! * (p + 1)!)
+      = (m * (p + 1) + (p + 1)).choose (p + 1) * (m * (p + 1))! * (p + 1)! := by ring
+    _ = (m * (p + 1) + (p + 1))! := by rw [add_choose_mul_factorial_mul_factorial]
+    _ = ((m * (p + 1) + p) + 1)! := by ring_nf
     _ = ((m * (p + 1) + p) + 1) * (m * (p + 1) + p)! := by rw [factorial_succ]
     _ = (m * (p + 1) + p)! * ((p + 1) * (m + 1)) := by ring
-    _ = ((m * (p + 1) + p).choose p * (m * (p+1))! * (p)!) * ((p + 1) * (m + 1)) := by
+    _ = ((m * (p + 1) + p).choose p * (m * (p + 1))! * (p)!) * ((p + 1) * (m + 1)) := by
       rw [add_choose_mul_factorial_mul_factorial]
-    _ = (m * (p + 1) + p).choose p * (m * (p+1))! * (((p + 1) * (p)!) * (m + 1)) := by ring
-    _ = (m * (p + 1) + p).choose p * (m * (p+1))! * ((p + 1)! * (m + 1)) := by rw [factorial_succ]
+    _ = (m * (p + 1) + p).choose p * (m * (p + 1))! * (((p + 1) * (p)!) * (m + 1)) := by ring
+    _ = (m * (p + 1) + p).choose p * (m * (p + 1))! * ((p + 1)! * (m + 1)) := by rw [factorial_succ]
     _ = (m + 1) * (m * (p + 1) + p).choose p * ((m * (p + 1))! * (p + 1)!) := by ring
 
 theorem choose_mul_right {m n : ℕ} (hn : n ≠ 0) :

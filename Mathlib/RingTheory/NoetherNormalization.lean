@@ -3,9 +3,11 @@ Copyright (c) 2025 Sihan Su. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Sihan Su, Wan Lin, Xiaoyang Su
 -/
-import Mathlib.Algebra.MvPolynomial.Monad
-import Mathlib.Data.List.Indexes
-import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
+module
+
+public import Mathlib.Algebra.MvPolynomial.Monad
+public import Mathlib.Data.List.Indexes
+public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 /-!
 # Noether normalization lemma
 This file contains a proof by Nagata of the Noether normalization lemma.
@@ -48,6 +50,8 @@ Composing `φ` and `g` we get the desired map since both `φ` and `g` are inject
 ## TODO
 * In the final theorems, consider setting `s` equal to the Krull dimension of `R`.
 -/
+
+@[expose] public section
 open Polynomial MvPolynomial Ideal BigOperators Nat RingHom List
 
 variable {k : Type*} [Field k] {n : ℕ} (f : MvPolynomial (Fin (n + 1)) k)
@@ -62,10 +66,7 @@ local notation3 "up" => 2 + f.totalDegree
 
 variable {f v} in
 private lemma lt_up (vlt : ∀ i, v i < up) : ∀ l ∈ ofFn v, l < up := by
-  intro l h
-  rw [mem_ofFn] at h
-  obtain ⟨y, rfl⟩ := h
-  exact vlt y
+  grind
 
 /-- `r` maps `(i : Fin (n + 1))` to `up ^ i`. -/
 local notation3 "r" => fun (i : Fin (n + 1)) ↦ up ^ i.1
@@ -116,7 +117,8 @@ private lemma degreeOf_t_neq_of_neq (hv : v ∈ f.support) (hw : w ∈ f.support
     (T f <| monomial w <| coeff w f).degreeOf 0 := by
   rw [degreeOf_zero_t _ _ <| mem_support_iff.mp hv, degreeOf_zero_t _ _ <| mem_support_iff.mp hw]
   refine sum_r_mul_neq f v w (fun i ↦ ?_) (fun i ↦ ?_) neq <;>
-  exact lt_of_le_of_lt ((monomial_le_degreeOf i ‹_›).trans (degreeOf_le_totalDegree f i)) (by omega)
+  exact lt_of_le_of_lt ((monomial_le_degreeOf i ‹_›).trans (degreeOf_le_totalDegree f i))
+    (by cutsat)
 
 private lemma leadingCoeff_finSuccEquiv_t :
     (finSuccEquiv k n ((T f) ((monomial v) (coeff v f)))).leadingCoeff =
@@ -258,7 +260,7 @@ theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) 
       have comp : (kerLiftAlg (hom2 f I)).comp (Quotient.mkₐ k <| ker <| hom2 f I) = (hom2 f I) :=
         AlgHom.ext fun a ↦ by
           simp only [AlgHom.coe_comp, Quotient.mkₐ_eq_mk, Function.comp_apply, kerLiftAlg_mk]
-      exact ⟨s, by omega, ϕ.comp g, (ϕ.coe_comp  g) ▸ (kerLiftAlg_injective _).comp injg,
+      exact ⟨s, by cutsat, ϕ.comp g, (ϕ.coe_comp  g) ▸ (kerLiftAlg_injective _).comp injg,
         intg.trans _ _ <| (comp ▸ hom2_isIntegral f I fne fi).tower_top _ _⟩
 
 variable (k R : Type*) [Field k] [CommRing R] [Nontrivial R] [a : Algebra k R]

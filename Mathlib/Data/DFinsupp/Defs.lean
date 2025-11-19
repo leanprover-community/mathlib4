@@ -3,12 +3,14 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Notation.Prod
-import Mathlib.Algebra.Group.Basic
+module
+
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Algebra.Group.InjSurj
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Notation.Prod
+public import Mathlib.Algebra.Group.Basic
 
 /-!
 # Dependent functions with finite support
@@ -42,6 +44,8 @@ the `Add` instance as noncomputable. This design difference is independent of th
 `DFinsupp` is dependently-typed and `Finsupp` is not; in future, we may want to align these two
 definitions, or introduce two more definitions for the other combinations of decisions.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset.prod Submonoid
 
@@ -534,10 +538,7 @@ theorem single_eq_of_sigma_eq {i j} {xi : β i} {xj : β j} (h : (⟨i, xi⟩ : 
 
 @[simp]
 theorem equivFunOnFintype_single [Fintype ι] (i : ι) (m : β i) :
-    (@DFinsupp.equivFunOnFintype ι β _ _) (DFinsupp.single i m) = Pi.single i m := by
-  ext x
-  dsimp [Pi.single, Function.update]
-  simp [@eq_comm _ i]
+    (@DFinsupp.equivFunOnFintype ι β _ _) (DFinsupp.single i m) = Pi.single i m := rfl
 
 @[simp]
 theorem equivFunOnFintype_symm_single [Fintype ι] (i : ι) (m : β i) :
@@ -740,12 +741,14 @@ theorem erase_add_single (i : ι) (f : Π₀ i, β i) : f.erase i + single i (f 
 protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (h0 : p 0)
     (ha : ∀ (i b) (f : Π₀ i, β i), f i = 0 → b ≠ 0 → p f → p (single i b + f)) : p f := by
   obtain ⟨f, s⟩ := f
-  induction' s using Trunc.induction_on with s
+  induction s using Trunc.induction_on with | _ s
   obtain ⟨s, H⟩ := s
-  induction' s using Multiset.induction_on with i s ih generalizing f
-  · have : f = 0 := funext fun i => (H i).resolve_left (Multiset.notMem_zero _)
+  induction s using Multiset.induction_on generalizing f with
+  | empty =>
+    have : f = 0 := funext fun i => (H i).resolve_left (Multiset.notMem_zero _)
     subst this
     exact h0
+  | cons i s ih => ?_
   have H2 : p (erase i ⟨f, Trunc.mk ⟨i ::ₘ s, H⟩⟩) := by
     dsimp only [erase, Trunc.map, Trunc.bind, Trunc.liftOn, Trunc.lift_mk,
       Function.comp, Subtype.coe_mk]
@@ -839,7 +842,7 @@ theorem support_mk'_subset {f : ∀ i, β i} {s : Multiset ι} {h} :
 @[simp]
 theorem mem_support_toFun (f : Π₀ i, β i) (i) : i ∈ f.support ↔ f i ≠ 0 := by
   obtain ⟨f, s⟩ := f
-  induction' s using Trunc.induction_on with s
+  induction s using Trunc.induction_on with | _ s
   dsimp only [support, Trunc.lift_mk]
   rw [Finset.mem_filter, Multiset.mem_toFinset, coe_mk']
   exact and_iff_right_of_imp (s.prop i).resolve_right
@@ -864,7 +867,7 @@ def subtypeSupportEqEquiv (s : Finset ι) :
     simpa using Eq.symm
   right_inv f := by
     ext1
-    simp; rfl
+    simp
 
 /-- Equivalence between all dependent finitely supported functions `f : Π₀ i, β i` and type
 of pairs `⟨s : Finset ι, f : ∀ i : s, {x : β i // x ≠ 0}⟩`. -/
@@ -1283,10 +1286,8 @@ theorem mapRange.addEquiv_refl :
 theorem mapRange.addEquiv_trans (f : ∀ i, β i ≃+ β₁ i) (f₂ : ∀ i, β₁ i ≃+ β₂ i) :
     (mapRange.addEquiv fun i => (f i).trans (f₂ i)) =
       (mapRange.addEquiv f).trans (mapRange.addEquiv f₂) := by
-  refine AddEquiv.ext <| mapRange_comp (fun i x => f₂ i x) (fun i x => f i x) ?_ ?_ ?_
-  · intros; apply map_zero
-  · intros; apply map_zero
-  · intros; dsimp; simp only [map_zero]
+  ext
+  simp
 
 @[simp]
 theorem mapRange.addEquiv_symm (e : ∀ i, β₁ i ≃+ β₂ i) :

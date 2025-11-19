@@ -3,8 +3,10 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.CharP.Reduced
-import Mathlib.RingTheory.IntegralDomain
+module
+
+public import Mathlib.Algebra.CharP.Reduced
+public import Mathlib.RingTheory.IntegralDomain
 -- TODO: remove Mathlib.Algebra.CharP.Reduced and move the last two lemmas to Lemmas
 
 /-!
@@ -33,6 +35,8 @@ assumption when we need `n` to be non-zero (which is the case for most interesti
 Note that `rootsOfUnity 0 M` is the top subgroup of `Mˣ` (as the condition `ζ^0 = 1` is
 satisfied for all units).
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -97,6 +101,18 @@ theorem map_rootsOfUnity (f : Mˣ →* Nˣ) (k : ℕ) : (rootsOfUnity k M).map f
   simp_all only [← map_pow, mem_rootsOfUnity, SetLike.mem_coe, MonoidHom.map_one]
 
 instance : Subsingleton (rootsOfUnity 1 M) := by simp [subsingleton_iff]
+
+lemma rootsOfUnity_inf_rootsOfUnity {m n : ℕ} :
+    (rootsOfUnity m M ⊓ rootsOfUnity n M) = rootsOfUnity (m.gcd n) M := by
+  refine le_antisymm ?_ ?_
+  · intro
+    simp +contextual [pow_gcd_eq_one]
+  · rw [le_inf_iff]
+    exact ⟨rootsOfUnity_le_of_dvd (m.gcd_dvd_left n), rootsOfUnity_le_of_dvd (m.gcd_dvd_right n)⟩
+
+lemma disjoint_rootsOfUnity_of_coprime {m n : ℕ} (h : m.Coprime n) :
+    Disjoint (rootsOfUnity m M) (rootsOfUnity n M) := by
+  simp [disjoint_iff_inf_le, rootsOfUnity_inf_rootsOfUnity, Nat.coprime_iff_gcd_eq_one.mp h]
 
 @[norm_cast]
 theorem rootsOfUnity.coe_pow [CommMonoid R] (ζ : rootsOfUnity k R) (m : ℕ) :
@@ -245,7 +261,7 @@ section Reduced
 
 variable (R) [CommRing R] [IsReduced R]
 
--- @[simp] -- Porting note: simp normal form is `mem_rootsOfUnity_prime_pow_mul_iff'`
+-- simp normal form is `mem_rootsOfUnity_prime_pow_mul_iff'`
 theorem mem_rootsOfUnity_prime_pow_mul_iff (p k : ℕ) (m : ℕ) [ExpChar R p] {ζ : Rˣ} :
     ζ ∈ rootsOfUnity (p ^ k * m) R ↔ ζ ∈ rootsOfUnity m R := by
   simp only [mem_rootsOfUnity', ExpChar.pow_prime_pow_mul_eq_one_iff]

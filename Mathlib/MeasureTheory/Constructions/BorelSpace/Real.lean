@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
-import Mathlib.MeasureTheory.MeasurableSpace.Prod
-import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
-import Mathlib.Topology.Instances.Real.Lemmas
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+public import Mathlib.MeasureTheory.MeasurableSpace.Prod
+public import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
+public import Mathlib.Topology.Instances.Real.Lemmas
 
 /-!
 # Borel (measurable) spaces ℝ, ℝ≥0, ℝ≥0∞
@@ -26,6 +28,8 @@ import Mathlib.Topology.Instances.Real.Lemmas
   (also similar results for a.e.-measurability);
 * `Measurable.ennreal*` : measurability of special cases for arithmetic operations on `ℝ≥0∞`.
 -/
+
+@[expose] public section
 
 open Set Filter MeasureTheory MeasurableSpace
 
@@ -267,7 +271,7 @@ instance : MeasurableSMul ℝ≥0 ℝ≥0∞ where
     simp_rw [ENNReal.smul_def]
     exact measurable_coe_nnreal_ennreal.mul_const _
 
-/-- A limit (over a general filter) of measurable `ℝ≥0∞` valued functions is measurable. -/
+/-- A limit (over a general filter) of measurable `ℝ≥0∞`-valued functions is measurable. -/
 theorem measurable_of_tendsto' {ι : Type*} {f : ι → α → ℝ≥0∞} {g : α → ℝ≥0∞} (u : Filter ι)
     [NeBot u] [IsCountablyGenerated u] (hf : ∀ i, Measurable (f i)) (lim : Tendsto f u (𝓝 g)) :
     Measurable g := by
@@ -280,12 +284,12 @@ theorem measurable_of_tendsto' {ι : Type*} {f : ι → α → ℝ≥0∞} {g : 
   change Measurable fun y => liminf (fun n => (f (x n) y : ℝ≥0∞)) atTop
   exact .liminf fun n => hf (x n)
 
-/-- A sequential limit of measurable `ℝ≥0∞` valued functions is measurable. -/
+/-- A sequential limit of measurable `ℝ≥0∞`-valued functions is measurable. -/
 theorem measurable_of_tendsto {f : ℕ → α → ℝ≥0∞} {g : α → ℝ≥0∞} (hf : ∀ i, Measurable (f i))
     (lim : Tendsto f atTop (𝓝 g)) : Measurable g :=
   measurable_of_tendsto' atTop hf lim
 
-/-- A limit (over a general filter) of a.e.-measurable `ℝ≥0∞` valued functions is
+/-- A limit (over a general filter) of a.e.-measurable `ℝ≥0∞`-valued functions is
 a.e.-measurable. -/
 lemma aemeasurable_of_tendsto' {ι : Type*} {f : ι → α → ℝ≥0∞} {g : α → ℝ≥0∞}
     {μ : Measure α} (u : Filter ι) [NeBot u] [IsCountablyGenerated u]
@@ -309,7 +313,7 @@ lemma aemeasurable_of_tendsto' {ι : Type*} {f : ι → α → ℝ≥0∞} {g : 
   · exact (ite_ae_eq_of_measure_compl_zero g (fun x ↦ (⟨f (v 0) x⟩ : Nonempty ℝ≥0∞).some)
       (aeSeqSet h'f p) (aeSeq.measure_compl_aeSeqSet_eq_zero h'f hp)).symm
 
-/-- A limit of a.e.-measurable `ℝ≥0∞` valued functions is a.e.-measurable. -/
+/-- A limit of a.e.-measurable `ℝ≥0∞`-valued functions is a.e.-measurable. -/
 lemma aemeasurable_of_tendsto {f : ℕ → α → ℝ≥0∞} {g : α → ℝ≥0∞} {μ : Measure α}
     (hf : ∀ i, AEMeasurable (f i) μ) (hlim : ∀ᵐ a ∂μ, Tendsto (fun i ↦ f i a) atTop (𝓝 (g a))) :
     AEMeasurable g μ :=
@@ -449,7 +453,7 @@ namespace NNReal
 instance : MeasurableSMul₂ ℝ≥0 ℝ≥0∞ where
   measurable_smul := show Measurable fun r : ℝ≥0 × ℝ≥0∞ ↦ (r.1 : ℝ≥0) * r.2 by fun_prop
 
-/-- A limit (over a general filter) of measurable `ℝ≥0` valued functions is measurable. -/
+/-- A limit (over a general filter) of measurable `ℝ≥0`-valued functions is measurable. -/
 theorem measurable_of_tendsto' {ι} {f : ι → α → ℝ≥0} {g : α → ℝ≥0} (u : Filter ι) [NeBot u]
     [IsCountablyGenerated u] (hf : ∀ i, Measurable (f i)) (lim : Tendsto f u (𝓝 g)) :
     Measurable g := by
@@ -458,7 +462,7 @@ theorem measurable_of_tendsto' {ι} {f : ι → α → ℝ≥0} {g : α → ℝ�
   rw [tendsto_pi_nhds] at lim ⊢
   exact fun x => (ENNReal.continuous_coe.tendsto (g x)).comp (lim x)
 
-/-- A sequential limit of measurable `ℝ≥0` valued functions is measurable. -/
+/-- A sequential limit of measurable `ℝ≥0`-valued functions is measurable. -/
 theorem measurable_of_tendsto {f : ℕ → α → ℝ≥0} {g : α → ℝ≥0} (hf : ∀ i, Measurable (f i))
     (lim : Tendsto f atTop (𝓝 g)) : Measurable g :=
   measurable_of_tendsto' atTop hf lim

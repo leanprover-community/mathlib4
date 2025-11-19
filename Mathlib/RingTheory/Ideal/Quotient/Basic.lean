@@ -3,12 +3,14 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
 -/
-import Mathlib.GroupTheory.QuotientGroup.Finite
-import Mathlib.LinearAlgebra.Quotient.Defs
-import Mathlib.RingTheory.Congruence.Basic
-import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.GroupTheory.QuotientGroup.Finite
+public import Mathlib.LinearAlgebra.Quotient.Defs
+public import Mathlib.RingTheory.Congruence.Basic
+public import Mathlib.RingTheory.Ideal.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.Tactic.FinCases
 
 /-!
 # Ideal quotients
@@ -24,17 +26,19 @@ See `Algebra.RingQuot` for quotients of semirings.
 
 -/
 
-
-universe u v w
-
-namespace Ideal
+@[expose] public section
 
 open Set
 
-variable {R : Type u} [Ring R] (I J : Ideal R) {a b : R}
-variable {S : Type v}
+variable {ι ι' R S : Type*} [Ring R] (I J : Ideal R) {a b : R}
 
-namespace Quotient
+namespace Ideal.Quotient
+
+@[simp]
+lemma mk_span_range (f : ι → R) [(span (range f)).IsTwoSided] (i : ι) :
+    mk (span (.range f)) (f i) = 0 := by
+  rw [Ideal.Quotient.eq_zero_iff_mem]
+  exact Ideal.subset_span ⟨i, rfl⟩
 
 variable {I} {x y : R}
 
@@ -168,8 +172,6 @@ end Quotient
 
 section Pi
 
-variable (ι : Type v)
-
 /-- `R^n/I^n` is a `R/I`-module. -/
 instance modulePi [I.IsTwoSided] : Module (R ⧸ I) ((ι → R) ⧸ pi fun _ ↦ I) where
   smul c m :=
@@ -186,6 +188,7 @@ instance modulePi [I.IsTwoSided] : Module (R ⧸ I) ((ι → R) ⧸ pi fun _ ↦
   add_smul := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; exact congr_arg _ (add_smul _ _ _)
   zero_smul := by rintro ⟨a⟩; exact congr_arg _ (zero_smul _ _)
 
+variable (ι) in
 /-- `R^n/I^n` is isomorphic to `(R/I)^n` as an `R/I`-module. -/
 noncomputable def piQuotEquiv [I.IsTwoSided] : ((ι → R) ⧸ pi fun _ ↦ I) ≃ₗ[R ⧸ I] ι → (R ⧸ I) where
   toFun x := Quotient.liftOn' x (fun f i ↦ Ideal.Quotient.mk I (f i)) fun _ _ hab ↦
@@ -200,7 +203,7 @@ noncomputable def piQuotEquiv [I.IsTwoSided] : ((ι → R) ⧸ pi fun _ ↦ I) �
 
 /-- If `f : R^n → R^m` is an `R`-linear map and `I ⊆ R` is an ideal, then the image of `I^n` is
     contained in `I^m`. -/
-theorem map_pi [I.IsTwoSided] {ι : Type*} [Finite ι] {ι' : Type w} (x : ι → R) (hi : ∀ i, x i ∈ I)
+theorem map_pi [I.IsTwoSided] [Finite ι] (x : ι → R) (hi : ∀ i, x i ∈ I)
     (f : (ι → R) →ₗ[R] ι' → R) (i : ι') : f x i ∈ I := by
   classical
     cases nonempty_fintype ι
@@ -215,8 +218,13 @@ open scoped Pointwise in
 lemma univ_eq_iUnion_image_add : (Set.univ (α := R)) = ⋃ x : R ⧸ I, x.out +ᵥ (I : Set R) :=
   QuotientAddGroup.univ_eq_iUnion_vadd I.toAddSubgroup
 
-variable {I} in
-lemma _root_.Finite.of_finite_quot_finite_ideal [hI : Finite I] [h : Finite (R ⧸ I)] : Finite R :=
-  @Finite.of_finite_quot_finite_addSubgroup _ _ _ hI h
-
 end Ideal
+
+lemma finite_iff_ideal_quotient (I : Ideal R) : Finite R ↔ Finite I ∧ Finite (R ⧸ I) :=
+  finite_iff_addSubgroup_quotient I.toAddSubgroup
+
+lemma Finite.of_ideal_quotient (I : Ideal R) [Finite I] [Finite (R ⧸ I)] : Finite R := by
+  rw [finite_iff_ideal_quotient]; constructor <;> assumption
+
+@[deprecated (since := "2025-11-11")]
+alias Finite.of_finite_quot_finite_ideal := Finite.of_ideal_quotient

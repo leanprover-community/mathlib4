@@ -3,7 +3,9 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Markus Himmel, Bhavik Mehta, Andrew Yang, Emily Riehl, Calle Sönne
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Cospan
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Cospan
 
 /-!
 # PullbackCone
@@ -11,7 +13,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Cospan
 This file provides API for interacting with cones (resp. cocones) in the case of pullbacks
 (resp. pushouts).
 
-# Main definitions
+## Main definitions
 
 * `PullbackCone f g`: Given morphisms `f : X ⟶ Z` and `g : Y ⟶ Z`, a term `t : PullbackCone f g`
   provides the data of a cone pictured as follows
@@ -62,6 +64,8 @@ Interaction with `IsLimit`:
 * [Stacks: Fibre products](https://stacks.math.columbia.edu/tag/001U)
 * [Stacks: Pushouts](https://stacks.math.columbia.edu/tag/0025)
 -/
+
+@[expose] public section
 
 noncomputable section
 

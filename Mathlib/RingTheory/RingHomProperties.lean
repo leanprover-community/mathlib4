@@ -3,12 +3,14 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.Algebra.Category.Ring.Colimits
-import Mathlib.CategoryTheory.Iso
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.IsTensorProduct
+module
+
+public import Mathlib.Algebra.Category.Ring.Constructions
+public import Mathlib.Algebra.Category.Ring.Colimits
+public import Mathlib.CategoryTheory.Iso
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.RingTheory.Localization.Away.Basic
+public import Mathlib.RingTheory.IsTensorProduct
 
 /-!
 # Properties of ring homomorphisms
@@ -23,6 +25,8 @@ The following meta-properties of predicates on ring homomorphisms are defined
   implies `P (X ⟶ X ⊗[S] Y)`.
 
 -/
+
+@[expose] public section
 
 
 universe u
@@ -83,9 +87,6 @@ theorem RespectsIso.isLocalization_away_iff (hP : RingHom.RespectsIso @P) {R S :
   ext1 x
   dsimp [e, e₁, e₂, IsLocalization.Away.map]
   simp only [IsLocalization.map_eq, id_apply, RingHomCompTriple.comp_apply]
-
-@[deprecated (since := "2025-03-01")]
-alias RespectsIso.is_localization_away_iff := RespectsIso.isLocalization_away_iff
 
 lemma RespectsIso.and (hP : RespectsIso P) (hQ : RespectsIso Q) :
     RespectsIso (fun f ↦ P f ∧ Q f) := by
@@ -149,9 +150,7 @@ theorem IsStableUnderBaseChange.mk (h₁ : RespectsIso @P)
   have hemul (x y : _) : e (x * y) = e x * e y := by simp_rw [hef, map_mul]
   convert h₁.1 _ { e with map_mul' := hemul } (h₂ H)
   ext x
-  change _ = e (x ⊗ₜ[R] 1)
-  -- Porting note: Had `dsimp only [e]` here, which didn't work anymore
-  rw [h.symm.1.equiv_tmul, Algebra.smul_def, AlgHom.toLinearMap_apply, map_one, mul_one]
+  simp [e, h.symm.1.equiv_tmul, Algebra.smul_def]
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra
 
@@ -229,7 +228,7 @@ variable (P) in
 /-- A property of ring homomorphisms `Q` codescends along `Q'` if whenever
 `R' →+* R' ⊗[R] S` satisfies `Q` and `R →+* R'` satisfies `Q'`, then `R →+* S` satisfies `Q`. -/
 def CodescendsAlong : Prop :=
-  ∀ (R S R' S' : Type u) [CommRing R] [CommRing S] [CommRing R'] [CommRing S'],
+  ∀ ⦃R S R' S' : Type u⦄ [CommRing R] [CommRing S] [CommRing R'] [CommRing S'],
   ∀ [Algebra R S] [Algebra R R'] [Algebra R S'] [Algebra S S'] [Algebra R' S'],
     ∀ [IsScalarTower R S S'] [IsScalarTower R R' S'],
       ∀ [Algebra.IsPushout R S R' S'],
@@ -253,13 +252,19 @@ lemma CodescendsAlong.algebraMap_tensorProduct (hPQ : CodescendsAlong P Q)
     (h : Q (algebraMap R S)) (H : P (algebraMap S (S ⊗[R] T))) :
     P (algebraMap R T) :=
   let _ : Algebra T (S ⊗[R] T) := Algebra.TensorProduct.rightAlgebra
-  hPQ R T S (S ⊗[R] T) h H
+  hPQ h H
 
 lemma CodescendsAlong.includeRight (hPQ : CodescendsAlong P Q) (h : Q (algebraMap R T))
     (H : P ((Algebra.TensorProduct.includeRight.toRingHom : T →+* S ⊗[R] T))) :
     P (algebraMap R S) := by
   let _ : Algebra T (S ⊗[R] T) := Algebra.TensorProduct.rightAlgebra
-  apply hPQ R S T (S ⊗[R] T) h H
+  apply hPQ h H
+
+variable {Q} {P' : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+
+lemma CodescendsAlong.and (hP : CodescendsAlong P Q) (hP' : CodescendsAlong P' Q) :
+    CodescendsAlong (fun f ↦ P f ∧ P' f) Q :=
+  fun _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ h₁ h₂ ↦ ⟨hP h₁ h₂.1, hP' h₁ h₂.2⟩
 
 end Descent
 

@@ -3,11 +3,13 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.MonoidAlgebra.Support
-import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.Algebra.Regular.Basic
-import Mathlib.Data.Nat.Choose.Sum
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.MonoidAlgebra.Support
+public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.Algebra.Regular.Basic
+public import Mathlib.Data.Nat.Choose.Sum
 
 /-!
 # Theory of univariate polynomials
@@ -16,6 +18,8 @@ The theorems include formulas for computing coefficients, such as
 `coeff_add`, `coeff_sum`, `coeff_mul`
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -48,7 +52,7 @@ theorem coeff_smul [SMulZeroClass S R] (r : S) (p : R[X]) (n : ℕ) :
 theorem support_smul [SMulZeroClass S R] (r : S) (p : R[X]) :
     support (r • p) ⊆ support p := by
   intro i hi
-  simp? [mem_support_iff] at hi ⊢ says simp only [mem_support_iff, coeff_smul, ne_eq] at hi ⊢
+  rw [mem_support_iff] at hi ⊢
   contrapose! hi
   simp [hi]
 
@@ -97,8 +101,7 @@ lemma coeff_list_sum_map {ι : Type*} (l : List ι) (f : ι → R[X]) (n : ℕ) 
 @[simp]
 theorem coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :
     coeff (p.sum f) n = p.sum fun a b => coeff (f a b) n := by
-  rcases p with ⟨⟩
-  simp [Polynomial.sum, support_ofFinsupp, coeff_ofFinsupp]
+  simp [Polynomial.sum]
 
 /-- Decomposes the coefficient of the product `p * q` as a sum
 over `antidiagonal`. A version which sums over `range (n + 1)` can be obtained
@@ -140,7 +143,6 @@ theorem coeff_X_mul_zero (p : R[X]) : coeff (X * p) 0 = 0 := by simp
 theorem coeff_C_mul_X_pow (x : R) (k n : ℕ) :
     coeff (C x * X ^ k : R[X]) n = if n = k then x else 0 := by
   rw [C_mul_X_pow_eq_monomial, coeff_monomial]
-  congr 1
   simp [eq_comm]
 
 theorem coeff_C_mul_X (x : R) (n : ℕ) : coeff (C x * X : R[X]) n = if n = 1 then x else 0 := by

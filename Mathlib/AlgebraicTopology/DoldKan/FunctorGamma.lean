@@ -3,8 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject.Split
-import Mathlib.AlgebraicTopology.DoldKan.PInfty
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialObject.Split
+public import Mathlib.AlgebraicTopology.DoldKan.PInfty
 
 /-!
 
@@ -27,6 +29,8 @@ which shall be an equivalence for any additive category `C`.
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -148,7 +152,7 @@ theorem mapMono_comp (i' : Δ'' ⟶ Δ') (i : Δ' ⟶ Δ) [Mono i'] [Mono i] :
     simp only [left_eq_add, h, add_eq_zero, and_false, reduceCtorEq] at eq
   · by_contra h
     simp only [h.1, add_right_inj] at eq
-    omega
+    cutsat
   -- in all cases, the LHS is also zero, either by definition, or because d ≫ d = 0
   by_cases h₃ : Isδ₀ i
   · by_cases h₄ : Isδ₀ i'

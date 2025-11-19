@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Set.Lattice
+module
+
+public import Mathlib.Data.Set.Lattice
 
 /-!
 # Pre-sets
@@ -23,6 +25,8 @@ quotient of pre-sets by extensional equality.
 * `PSet.Equiv`: Extensional equivalence of pre-sets. Defined inductively.
 * `PSet.omega`: The von Neumann ordinal `ω` as a `PSet`.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -430,7 +434,6 @@ theorem toSet_sUnion (x : PSet.{u}) : (⋃₀ x).toSet = ⋃₀ (toSet '' x.toSe
 def image (f : PSet.{u} → PSet.{u}) (x : PSet.{u}) : PSet :=
   ⟨x.Type, f ∘ x.Func⟩
 
--- Porting note: H arguments made explicit.
 theorem mem_image {f : PSet.{u} → PSet.{u}} (H : ∀ x y, Equiv x y → Equiv (f x) (f y)) :
     ∀ {x y : PSet.{u}}, y ∈ image f x ↔ ∃ z ∈ x, Equiv y (f z)
   | ⟨_, A⟩, _ =>

@@ -3,17 +3,22 @@ Copyright (c) 2016 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Set.Defs
-import Mathlib.Logic.Basic
-import Mathlib.Logic.ExistsUnique
-import Mathlib.Logic.Nonempty
-import Mathlib.Logic.Nontrivial.Defs
-import Batteries.Tactic.Init
-import Mathlib.Order.Defs.Unbundled
+module
+
+public import Mathlib.Data.Set.Defs
+public import Mathlib.Logic.Basic
+public import Mathlib.Logic.Function.Defs
+public import Mathlib.Logic.ExistsUnique
+public import Mathlib.Logic.Nonempty
+public import Mathlib.Logic.Nontrivial.Defs
+public import Batteries.Tactic.Init
+public import Mathlib.Order.Defs.Unbundled
 
 /-!
 # Miscellaneous function constructions and lemmas
 -/
+
+@[expose] public section
 
 open Function
 
@@ -52,9 +57,7 @@ lemma hfunext {α α' : Sort u} {β : α → Sort v} {β' : α' → Sort v} {f :
   have : ∀ a, f a ≍ f' a := fun a ↦ h a a (HEq.refl a)
   have : β = β' := by funext a; exact type_eq_of_heq (this a)
   subst this
-  apply heq_of_eq
-  funext a
-  exact eq_of_heq (this a)
+  grind
 
 theorem ne_iff {β : α → Sort*} {f₁ f₂ : ∀ a, β a} : f₁ ≠ f₂ ↔ ∃ a, f₁ a ≠ f₂ a :=
   funext_iff.not.trans not_forall
@@ -483,6 +486,7 @@ variable {α : Sort u} {β : α → Sort v} {α' : Sort w} [DecidableEq α]
 
 
 /-- Replacing the value of a function at a given point by a given value. -/
+@[grind]
 def update (f : ∀ a, β a) (a' : α) (v : β a') (a : α) : β a :=
   if h : a = a' then Eq.ndrec v h.symm else f a
 
@@ -1104,3 +1108,17 @@ instance {α β : Type*} {r : α → β → Prop} {x : α × β} [Decidable (r x
 instance {α β : Type*} {r : α × β → Prop} {a : α} {b : β} [Decidable (r (a, b))] :
     Decidable (curry r a b) :=
   ‹Decidable _›
+
+namespace Pi
+
+variable {ι : Type*}
+
+@[simp] theorem map_id {α : ι → Type*} : Pi.map (fun i => @id (α i)) = id := rfl
+
+@[simp] theorem map_id' {α : ι → Type*} : Pi.map (fun i (a : α i) => a) = fun x ↦ x := rfl
+
+theorem map_comp_map {α β γ : ι → Type*} (f : ∀ i, α i → β i) (g : ∀ i, β i → γ i) :
+    Pi.map g ∘ Pi.map f = Pi.map fun i => g i ∘ f i :=
+  rfl
+
+end Pi

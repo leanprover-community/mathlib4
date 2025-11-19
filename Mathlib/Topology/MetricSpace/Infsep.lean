@@ -3,7 +3,9 @@ Copyright (c) 2022 Wrenna Robson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wrenna Robson
 -/
-import Mathlib.Topology.MetricSpace.Basic
+module
+
+public import Mathlib.Topology.MetricSpace.Basic
 
 /-!
 # Infimum separation
@@ -24,6 +26,8 @@ All lemmas and definitions are in the `Set` namespace to give access to dot nota
 * `Set.infsep`: Infimum separation of a set (when in a pseudometric space).
 
 -/
+
+@[expose] public section
 
 
 variable {α β : Type*}
@@ -217,7 +221,6 @@ theorem einfsep_eq_top_iff : s.einfsep = ∞ ↔ s.Subsingleton :=
 
 theorem Nontrivial.einfsep_ne_top (hs : s.Nontrivial) : s.einfsep ≠ ∞ := by
   contrapose! hs
-  rw [not_nontrivial_iff]
   exact subsingleton_of_einfsep_eq_top hs
 
 theorem Nontrivial.einfsep_lt_top (hs : s.Nontrivial) : s.einfsep < ∞ := by

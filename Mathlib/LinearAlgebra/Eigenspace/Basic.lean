@@ -3,19 +3,21 @@ Copyright (c) 2020 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
-import Mathlib.Algebra.Algebra.Spectrum.Basic
-import Mathlib.Algebra.Module.LinearMap.Basic
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.LinearAlgebra.GeneralLinearGroup
-import Mathlib.RingTheory.Nilpotent.Basic
-import Mathlib.RingTheory.Nilpotent.Defs
-import Mathlib.RingTheory.Nilpotent.Lemmas
-import Mathlib.Tactic.Peel
+module
+
+public import Mathlib.Algebra.Algebra.Spectrum.Basic
+public import Mathlib.Algebra.Module.LinearMap.Basic
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.GeneralLinearGroup
+public import Mathlib.RingTheory.Nilpotent.Basic
+public import Mathlib.RingTheory.Nilpotent.Defs
+public import Mathlib.RingTheory.Nilpotent.Lemmas
+public import Mathlib.Tactic.Peel
 
 /-!
 # Eigenvectors and eigenvalues
 
-This file defines eigenspaces, eigenvalues, and eigenvalues, as well as their generalized
+This file defines eigenspaces, eigenvalues, and eigenvectors, as well as their generalized
 counterparts. We follow Axler's approach [axler2015] because it allows us to derive many properties
 without choosing a basis and without using matrices.
 
@@ -48,6 +50,8 @@ The existence of eigenvalues over an algebraically closed field
 
 eigenspace, eigenvector, eigenvalue, eigen
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -518,6 +522,10 @@ theorem maxGenEigenspace_eq [IsNoetherian R M] (f : End R M) (μ : R) :
     maxGenEigenspace f μ = f.genEigenspace μ (maxGenEigenspaceIndex f μ) :=
   genEigenspace_top_eq_maxUnifEigenspaceIndex _ _
 
+theorem maxGenEigenspace_eq_maxGenEigenspace_zero (f : End R M) (μ : R) :
+    maxGenEigenspace f μ = maxGenEigenspace (f - μ • 1) 0 := by
+  ext; simp
+
 /-- A generalized eigenvalue for some exponent `k` is also
 a generalized eigenvalue for exponents larger than `k`. -/
 theorem hasGenEigenvalue_of_hasGenEigenvalue_of_le {f : End R M} {μ : R} {k : ℕ}
@@ -601,9 +609,9 @@ lemma disjoint_genEigenspace [NoZeroSMulDivisors R M]
       (isNilpotent_restrict_of_le inf_le_right _)
       (isNilpotent_restrict_of_le inf_le_left _)
     · ext; simp [f₁, f₂, smul_sub, sub_sub, smul_comm μ₁, add_sub_left_comm]
-    apply mapsTo_genEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f _)
-    apply isNilpotent_restrict_genEigenspace_nat
-    apply mapsTo_genEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f _)
+    · apply mapsTo_genEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f _)
+    · apply isNilpotent_restrict_genEigenspace_nat
+    · apply mapsTo_genEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f _)
     apply isNilpotent_restrict_genEigenspace_nat
   have hf₁₂ : f₂ - f₁ = algebraMap R (End R p) (μ₁ - μ₂) := by ext; simp [f₁, f₂]
   rw [hf₁₂, IsNilpotent.map_iff (FaithfulSMul.algebraMap_injective R (End R p)),
@@ -669,7 +677,7 @@ theorem independent_maxGenEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
 any eigenspace has trivial intersection with the span of all the other eigenspaces. -/
 theorem eigenspaces_iSupIndep [NoZeroSMulDivisors R M] (f : End R M) :
     iSupIndep f.eigenspace :=
-  (f.independent_genEigenspace 1).mono fun _ ↦ le_rfl
+  f.independent_genEigenspace 1
 
 /-- Eigenvectors corresponding to distinct eigenvalues of a linear operator are linearly
 independent. -/
@@ -751,7 +759,7 @@ theorem generalized_eigenvec_disjoint_range_ker [FiniteDimensional K V] (f : End
       _ = f.genEigenspace μ (finrank K V + finrank K V : ℕ) := by
               simp_rw [← pow_add, genEigenspace_nat]; rfl
       _ = f.genEigenspace μ (finrank K V) := by
-              rw [genEigenspace_eq_genEigenspace_finrank_of_le]; omega
+              rw [genEigenspace_eq_genEigenspace_finrank_of_le]; cutsat
   rw [disjoint_iff_inf_le, genEigenrange_nat, LinearMap.range_eq_map,
     Submodule.map_inf_eq_map_inf_comap, top_inf_eq, h, genEigenspace_nat]
   apply Submodule.map_comap_le
@@ -813,7 +821,7 @@ lemma genEigenspace_inf_le_add
   suffices (((f₁ - μ₁ • 1) ^ i) * ((f₂ - μ₂ • 1) ^ j)) m = 0 by
     rw [LinearMap.smul_apply, this, smul_zero]
   rw [Finset.mem_antidiagonal] at hij
-  obtain hi|hj : l₁ ≤ i ∨ l₂ ≤ j := by omega
+  obtain hi|hj : l₁ ≤ i ∨ l₂ ≤ j := by cutsat
   · rw [(h.pow_pow i j).eq, Module.End.mul_apply, Module.End.pow_map_zero_of_le hi hl₁,
       LinearMap.map_zero]
   · rw [Module.End.mul_apply, Module.End.pow_map_zero_of_le hj hl₂, LinearMap.map_zero]

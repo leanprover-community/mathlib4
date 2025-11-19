@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Data.ENNReal.Real
+module
+
+public import Mathlib.Data.ENNReal.Real
 
 /-!
 # Properties of addition, multiplication and subtraction on extended non-negative real numbers
@@ -16,6 +18,8 @@ definitions and properties of which can be found in `Mathlib/Data/ENNReal/Inv.le
 Note: the definitions of the operations included in this file can be found in
 `Mathlib/Data/ENNReal/Basic.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -43,26 +47,23 @@ protected lemma pow_lt_pow_left_iff {n : ℕ} (hn : n ≠ 0) : a ^ n < b ^ n ↔
   pow_le_pow_left' h n
 @[mono, gcongr] protected alias ⟨_, pow_lt_pow_left⟩ := ENNReal.pow_lt_pow_left_iff
 
--- TODO: generalize to `WithTop`
-theorem mul_left_strictMono (h0 : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (a * ·) := by
-  lift a to ℝ≥0 using hinf
-  rw [coe_ne_zero] at h0
-  intro x y h
-  contrapose! h
-  simpa only [← mul_assoc, ← coe_mul, inv_mul_cancel₀ h0, coe_one, one_mul]
-    using mul_le_mul_left' h (↑a⁻¹)
+lemma mul_left_strictMono (h₀ : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (· * a) :=
+  WithTop.mul_left_strictMono (pos_iff_ne_zero.2 h₀) hinf
+
+lemma mul_right_strictMono (h₀ : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (a * ·) :=
+  WithTop.mul_right_strictMono (pos_iff_ne_zero.2 h₀) hinf
 
 @[gcongr] protected theorem mul_lt_mul_left' (h0 : a ≠ 0) (hinf : a ≠ ⊤) (bc : b < c) :
     a * b < a * c :=
-  ENNReal.mul_left_strictMono h0 hinf bc
+  ENNReal.mul_right_strictMono h0 hinf bc
 
 @[gcongr] protected theorem mul_lt_mul_right' (h0 : a ≠ 0) (hinf : a ≠ ⊤) (bc : b < c) :
     b * a < c * a :=
-  mul_comm b a ▸ mul_comm c a ▸ ENNReal.mul_left_strictMono h0 hinf bc
+  mul_comm b a ▸ mul_comm c a ▸ ENNReal.mul_right_strictMono h0 hinf bc
 
 -- TODO: generalize to `WithTop`
 protected theorem mul_right_inj (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b = a * c ↔ b = c :=
-  (mul_left_strictMono h0 hinf).injective.eq_iff
+  (mul_right_strictMono h0 hinf).injective.eq_iff
 
 -- TODO: generalize to `WithTop`
 protected theorem mul_left_inj (h0 : c ≠ 0) (hinf : c ≠ ∞) : a * c = b * c ↔ a = b :=
@@ -70,7 +71,7 @@ protected theorem mul_left_inj (h0 : c ≠ 0) (hinf : c ≠ ∞) : a * c = b * c
 
 -- TODO: generalize to `WithTop`
 theorem mul_le_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b ≤ a * c ↔ b ≤ c :=
-  (mul_left_strictMono h0 hinf).le_iff_le
+  (mul_right_strictMono h0 hinf).le_iff_le
 
 -- TODO: generalize to `WithTop`
 theorem mul_le_mul_right : c ≠ 0 → c ≠ ∞ → (a * c ≤ b * c ↔ a ≤ b) :=
@@ -78,7 +79,7 @@ theorem mul_le_mul_right : c ≠ 0 → c ≠ ∞ → (a * c ≤ b * c ↔ a ≤ 
 
 -- TODO: generalize to `WithTop`
 theorem mul_lt_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b < a * c ↔ b < c :=
-  (mul_left_strictMono h0 hinf).lt_iff_lt
+  (mul_right_strictMono h0 hinf).lt_iff_lt
 
 -- TODO: generalize to `WithTop`
 theorem mul_lt_mul_right : c ≠ 0 → c ≠ ∞ → (a * c < b * c ↔ a < b) :=
@@ -418,7 +419,7 @@ theorem sub_right_inj {a b c : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≤ a) (hc :
     (cancel_of_ne <| ne_top_of_le_ne_top ha hc) hb hc
 
 protected theorem sub_mul (h : 0 < b → b < a → c ≠ ∞) : (a - b) * c = a * c - b * c := by
-  rcases le_or_gt a b with hab | hab; · simp [hab, mul_right_mono hab, tsub_eq_zero_of_le]
+  rcases le_or_gt a b with hab | hab; · simp [hab, mul_left_mono hab, tsub_eq_zero_of_le]
   rcases eq_or_lt_of_le (zero_le b) with (rfl | hb); · simp
   exact (cancel_of_ne <| mul_ne_top hab.ne_top (h hb hab)).tsub_mul
 
@@ -451,6 +452,16 @@ theorem ofReal_sub (p : ℝ) {q : ℝ} (hq : 0 ≤ q) :
   · rw [ofReal_of_nonpos (sub_nonpos_of_le h), tsub_eq_zero_of_le (ofReal_le_ofReal h)]
   refine ENNReal.eq_sub_of_add_eq ofReal_ne_top ?_
   rw [← ofReal_add (sub_nonneg_of_le h) hq, sub_add_cancel]
+
+lemma sub_sub_sub_cancel_left (ha : a ≠ ∞) (h : b ≤ a) : a - c - (a - b) = b - c := by
+  have hb : b ≠ ∞ := ne_top_of_le_ne_top ha h
+  lift a to ℝ≥0 using ha
+  lift b to ℝ≥0 using hb
+  cases c
+  · simp
+  · norm_cast
+    rw [tsub_tsub_tsub_cancel_left]
+    exact mod_cast h
 
 end Sub
 
@@ -637,7 +648,7 @@ lemma iSup_natCast : ⨆ n : ℕ, (n : ℝ≥0∞) = ∞ :=
 lemma add_iSup [Nonempty ι] (f : ι → ℝ≥0∞) : a + ⨆ i, f i = ⨆ i, a + f i := by
   obtain rfl | ha := eq_or_ne a ∞
   · simp
-  refine le_antisymm ?_ <| iSup_le fun i ↦ add_le_add_left (le_iSup ..) _
+  refine le_antisymm ?_ <| iSup_le fun i ↦ by grw [← le_iSup]
   refine add_le_of_le_tsub_left_of_le (le_iSup_of_le (Classical.arbitrary _) le_self_add) ?_
   exact iSup_le fun i ↦ ENNReal.le_sub_of_add_le_left ha <| le_iSup (a + f ·) i
 

@@ -3,8 +3,10 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Num.Basic
-import Mathlib.Data.Vector.Basic
+module
+
+public import Mathlib.Data.Num.Basic
+public import Mathlib.Data.Vector.Basic
 
 /-!
 # Bitwise operations using binary representation of integers
@@ -15,6 +17,8 @@ import Mathlib.Data.Vector.Basic
 * `SNum`, a type that represents integers as a bit string with a sign bit at the end,
 * arithmetic operations for `SNum`.
 -/
+
+@[expose] public section
 
 open List (Vector)
 
@@ -281,7 +285,7 @@ def bit0 : NzsNum → NzsNum :=
 def bit1 : NzsNum → NzsNum :=
   bit true
 
-/-- The `head` of a `NzsNum` is the boolean value of its LSB. -/
+/-- The `head` of a `NzsNum` is the Boolean value of its LSB. -/
 def head : NzsNum → Bool
   | msb b => b
   | b :: _ => b
@@ -352,7 +356,7 @@ namespace SNum
 
 open NzsNum
 
-/-- The `head` of a `SNum` is the boolean value of its LSB. -/
+/-- The `head` of a `SNum` is the Boolean value of its LSB. -/
 def head : SNum → Bool
   | zero z => z
   | nz p => p.head

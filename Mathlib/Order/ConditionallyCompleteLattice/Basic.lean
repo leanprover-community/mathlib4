@@ -3,8 +3,10 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.ConditionallyCompleteLattice.Defs
+module
+
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Order.ConditionallyCompleteLattice.Defs
 
 /-!
 # Theory of conditionally complete lattices
@@ -24,6 +26,8 @@ For instance, `sInf_le` is a statement in complete lattices ensuring `sInf s ≤
 while `csInf_le` is the same statement in conditionally complete lattices
 with an additional assumption that `s` is bounded below.
 -/
+
+@[expose] public section
 
 -- Guard against import creep
 assert_not_exists Multiset
@@ -501,13 +505,13 @@ theorem csSup_eq_csSup_of_forall_exists_le {s t : Set α}
     rw [this]
   by_cases B : BddAbove s ∨ BddAbove t
   · have Bs : BddAbove s := by
-      rcases B with hB|⟨b, hb⟩
+      rcases B with hB | ⟨b, hb⟩
       · exact hB
       · refine ⟨b, fun x hx ↦ ?_⟩
         rcases hs x hx with ⟨y, hy, hxy⟩
         exact hxy.trans (hb hy)
     have Bt : BddAbove t := by
-      rcases B with ⟨b, hb⟩|hB
+      rcases B with ⟨b, hb⟩ | hB
       · refine ⟨b, fun y hy ↦ ?_⟩
         rcases ht y hy with ⟨x, hx, hyx⟩
         exact hyx.trans (hb hx)

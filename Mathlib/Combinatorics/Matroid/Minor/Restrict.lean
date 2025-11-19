@@ -3,7 +3,9 @@ Copyright (c) 2023 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Dual
+module
+
+public import Mathlib.Combinatorics.Matroid.Dual
 
 /-!
 # Matroid Restriction
@@ -63,6 +65,8 @@ We define the restriction order `≤r` to give a `PartialOrder` instance on the 
 `Matroidᵣ α` rather than `Matroid α` itself, because the `PartialOrder (Matroid α)` instance is
 reserved for the more mathematically important 'minor' order; see `Matroid.IsMinor`.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -218,12 +222,8 @@ variable {N : Matroid α}
 /-- `Restriction N M` means that `N = M ↾ R` for some subset `R` of `M.E` -/
 def IsRestriction (N M : Matroid α) : Prop := ∃ R ⊆ M.E, N = M ↾ R
 
-@[deprecated (since := "2025-02-14")] alias Restriction := IsRestriction
-
 /-- `IsStrictRestriction N M` means that `N = M ↾ R` for some strict subset `R` of `M.E` -/
 def IsStrictRestriction (N M : Matroid α) : Prop := IsRestriction N M ∧ ¬ IsRestriction M N
-
-@[deprecated (since := "2025-02-14")] alias StrictRestriction := IsStrictRestriction
 
 /-- `N ≤r M` means that `N` is a `Restriction` of `M`. -/
 scoped infix:50  " ≤r " => IsRestriction
@@ -241,8 +241,7 @@ instance {α : Type*} : CoeOut (Matroidᵣ α) (Matroid α) where
   coe := Matroidᵣ.toMatroid
 
 @[simp] theorem Matroidᵣ.coe_inj {M₁ M₂ : Matroidᵣ α} :
-    (M₁ : Matroid α) = (M₂ : Matroid α) ↔ M₁ = M₂ := by
-  cases M₁; cases M₂; simp
+    (M₁ : Matroid α) = (M₂ : Matroid α) ↔ M₁ = M₂ := Matroidᵣ.ext_iff.symm
 
 instance {α : Type*} : PartialOrder (Matroidᵣ α) where
   le := (· ≤r ·)

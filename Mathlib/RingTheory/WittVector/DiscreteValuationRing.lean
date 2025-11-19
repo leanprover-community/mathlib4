@@ -3,10 +3,12 @@ Copyright (c) 2022 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Heather Macbeth, Johan Commelin
 -/
-import Mathlib.RingTheory.WittVector.Domain
-import Mathlib.RingTheory.WittVector.MulCoeff
-import Mathlib.RingTheory.DiscreteValuationRing.Basic
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.RingTheory.WittVector.Domain
+public import Mathlib.RingTheory.WittVector.MulCoeff
+public import Mathlib.RingTheory.DiscreteValuationRing.Basic
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 
@@ -24,6 +26,8 @@ When `k` is also a field, this `b` can be chosen to be a unit of `𝕎 k`.
 * `WittVector.isDiscreteValuationRing`: `𝕎 k` is a discrete valuation ring if `k` is a perfect field
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -140,15 +144,9 @@ theorem exists_eq_pow_p_mul' (a : 𝕎 k) (ha : a ≠ 0) :
   have hb₀ : b.coeff 0 = b₀ := rfl
   exact ⟨m, mkUnit hb₀, h₂⟩
 
-/-
-Note: The following lemma should be an instance, but it seems to cause some
-exponential blowups in certain typeclass resolution problems.
-See the following Lean4 issue as well as the zulip discussion linked there:
-https://github.com/leanprover/lean4/issues/1102
--/
 /-- The ring of Witt Vectors of a perfect field of positive characteristic is a DVR.
 -/
-theorem isDiscreteValuationRing : IsDiscreteValuationRing (𝕎 k) :=
+instance isDiscreteValuationRing : IsDiscreteValuationRing (𝕎 k) :=
   IsDiscreteValuationRing.ofHasUnitMulPowIrreducibleFactorization (by
     refine ⟨p, irreducible p, fun {x} hx => ?_⟩
     obtain ⟨n, b, hb⟩ := exists_eq_pow_p_mul' x hx

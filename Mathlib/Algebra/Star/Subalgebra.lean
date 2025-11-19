@@ -3,10 +3,12 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.Star.Module
-import Mathlib.Algebra.Star.NonUnitalSubalgebra
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.Star.Module
+public import Mathlib.Algebra.Star.NonUnitalSubalgebra
 
 /-!
 # Star subalgebras
@@ -15,6 +17,8 @@ A *-subalgebra is a subalgebra of a *-algebra which is closed under *.
 
 The centralizer of a *-closed set is a *-subalgebra.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -140,7 +144,7 @@ protected def copy (S : StarSubalgebra R A) (s : Set A) (hs : s = ↑S) : StarSu
   toSubalgebra := Subalgebra.copy S.toSubalgebra s hs
   star_mem' {a} ha := hs ▸ S.star_mem' (by simpa [hs] using ha)
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_copy (S : StarSubalgebra R A) (s : Set A) (hs : s = ↑S) : (S.copy s hs : Set A) = s :=
   rfl
 
@@ -237,7 +241,7 @@ theorem map_toSubalgebra {S : StarSubalgebra R A} {f : A →⋆ₐ[R] B} :
     (S.map f).toSubalgebra = S.toSubalgebra.map f.toAlgHom :=
   SetLike.coe_injective rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_map (S : StarSubalgebra R A) (f : A →⋆ₐ[R] B) : (S.map f : Set B) = f '' S :=
   rfl
 
@@ -630,7 +634,7 @@ instance completeLattice : CompleteLattice (StarSubalgebra R A) where
 instance inhabited : Inhabited (StarSubalgebra R A) :=
   ⟨⊤⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_top : (↑(⊤ : StarSubalgebra R A) : Set A) = Set.univ :=
   rfl
 
@@ -709,7 +713,7 @@ theorem bot_toSubalgebra : (⊥ : StarSubalgebra R A).toSubalgebra = ⊥ := rfl
 
 theorem mem_bot {x : A} : x ∈ (⊥ : StarSubalgebra R A) ↔ x ∈ Set.range (algebraMap R A) := Iff.rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_bot : ((⊥ : StarSubalgebra R A) : Set A) = Set.range (algebraMap R A) := rfl
 
 theorem eq_top_iff {S : StarSubalgebra R A} : S = ⊤ ↔ ∀ x : A, x ∈ S :=
@@ -806,7 +810,7 @@ theorem subtype_comp_codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B)
 
 theorem injective_codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) (hf : ∀ x : A, f x ∈ S) :
     Function.Injective (StarAlgHom.codRestrict f S hf) ↔ Function.Injective f :=
-  ⟨fun H _x _y hxy => H <| Subtype.eq hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy :)⟩
+  ⟨fun H _x _y hxy => H <| Subtype.ext hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy :)⟩
 
 /-- Restriction of the codomain of a `StarAlgHom` to its range. -/
 def rangeRestrict (f : A →⋆ₐ[R] B) : A →⋆ₐ[R] f.range :=

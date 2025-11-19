@@ -3,9 +3,11 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Multilinear.TensorProduct
-import Mathlib.Tactic.AdaptationNote
-import Mathlib.LinearAlgebra.Multilinear.Curry
+module
+
+public import Mathlib.LinearAlgebra.Multilinear.TensorProduct
+public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.LinearAlgebra.Multilinear.Curry
 
 /-!
 # Tensor product of an indexed family of modules over commutative semirings
@@ -29,7 +31,7 @@ binary tensor product in `LinearAlgebra/TensorProduct.lean`.
 * `PiTensorProduct.tmulEquiv` equivalence between a `TensorProduct` of `PiTensorProduct`s and
   a single `PiTensorProduct`.
 
-## Notations
+## Notation
 
 * `⨂[R] i, s i` is defined as localized notation in scope `TensorProduct`.
 * `⨂ₜ[R] i, f i` with `f : ∀ i, s i` is defined globally as the tensor product of all the `f i`'s.
@@ -59,6 +61,8 @@ binary tensor product in `LinearAlgebra/TensorProduct.lean`.
 
 multilinear, tensor, tensor product
 -/
+
+@[expose] public section
 
 open Function
 
@@ -222,7 +226,6 @@ protected theorem smul_add (r : R₁) (x y : ⨂[R] i, s i) : r • (x + y) = r 
   AddMonoidHom.map_add _ _ _
 
 instance distribMulAction' : DistribMulAction R₁ (⨂[R] i, s i) where
-  smul := (· • ·)
   smul_add _ _ _ := AddMonoidHom.map_add _ _ _
   mul_smul r r' x :=
     PiTensorProduct.induction_on' x (fun {r'' f} ↦ by simp [smul_tprodCoeff', smul_smul])

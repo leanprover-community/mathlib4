@@ -3,9 +3,11 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes, Antoine Chambert-Loir
 -/
-import Mathlib.Data.Fin.Rev
-import Mathlib.Data.Nat.Find
-import Mathlib.Order.Fin.Basic
+module
+
+public import Mathlib.Data.Fin.Rev
+public import Mathlib.Data.Nat.Find
+public import Mathlib.Order.Fin.Basic
 
 /-!
 # Operation on tuples
@@ -75,6 +77,8 @@ For a **pivot** `p : Fin (n + 1)`,
 * `Fin.repeat n a` : repeat a tuple `n` times.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -295,7 +299,7 @@ theorem append_left (u : Fin m → α) (v : Fin n → α) (i : Fin m) :
 /-- Variant of `append_left` using `Fin.castLE` instead of `Fin.castAdd`. -/
 @[simp]
 theorem append_left' (u : Fin m → α) (v : Fin n → α) (i : Fin m) :
-    append u v (Fin.castLE (by omega) i) = u i :=
+    append u v (Fin.castLE (by cutsat) i) = u i :=
   addCases_left _
 
 @[simp]
@@ -519,10 +523,7 @@ theorem snoc_comp_castSucc {α : Sort*} {a : α} {f : Fin n → α} :
 theorem snoc_last : snoc p x (last n) = x := by simp [snoc]
 
 lemma snoc_zero {α : Sort*} (p : Fin 0 → α) (x : α) :
-    Fin.snoc p x = fun _ ↦ x := by
-  ext y
-  have : Subsingleton (Fin (0 + 1)) := Fin.subsingleton_one
-  simp only [Subsingleton.elim y (Fin.last 0), snoc_last]
+    Fin.snoc p x = fun _ ↦ x := rfl
 
 @[simp]
 theorem snoc_comp_natAdd {n m : ℕ} {α : Sort*} (f : Fin (m + n) → α) (a : α) :
@@ -674,7 +675,7 @@ theorem append_cons {α : Sort*} (a : α) (as : Fin n → α) (bs : Fin m → α
   · split_ifs with h
     · have : i < n := Nat.lt_of_succ_lt_succ h
       simp [addCases, this]
-    · have : ¬i < n := Nat.not_le.mpr <| Nat.lt_succ.mp <| Nat.not_le.mp h
+    · have : ¬i < n := Nat.not_le_of_gt <| Nat.le_of_lt_succ <| Nat.gt_of_not_le h
       simp [addCases, this]
 
 theorem append_snoc {α : Sort*} (as : Fin n → α) (bs : Fin m → α) (b : α) :
@@ -819,7 +820,7 @@ lemma exists_iff_succAbove {P : Fin (n + 1) → Prop} (p : Fin (n + 1)) :
     (∃ i, P i) ↔ P p ∨ ∃ i, P (p.succAbove i) where
   mp := by
     rintro ⟨i, hi⟩
-    induction' i using p.succAboveCases
+    induction i using p.succAboveCases
     · exact .inl hi
     · exact .inr ⟨_, hi⟩
   mpr := by rintro (h | ⟨i, hi⟩) <;> exact ⟨_, ‹_›⟩
@@ -1196,7 +1197,7 @@ theorem contractNth_apply_of_ne (j : Fin (n + 1)) (op : α → α → α) (g : F
     (hjk : (j : ℕ) ≠ k) : contractNth j op g k = g (j.succAbove k) := by
   rcases lt_trichotomy (k : ℕ) j with (h | h | h)
   · rwa [j.succAbove_of_castSucc_lt, contractNth_apply_of_lt]
-    · rwa [Fin.lt_iff_val_lt_val]
+    · rwa [Fin.lt_def]
   · exact False.elim (hjk h.symm)
   · rwa [j.succAbove_of_le_castSucc, contractNth_apply_of_gt]
     · exact Fin.le_iff_val_le_val.2 (le_of_lt h)
@@ -1205,7 +1206,7 @@ lemma comp_contractNth {β : Sort*} (opα : α → α → α) (opβ : β → β 
     (hf : ∀ x y, f (opα x y) = opβ (f x) (f y)) (j : Fin (n + 1)) (g : Fin (n + 1) → α) :
     f ∘ contractNth j opα g = contractNth j opβ (f ∘ g) := by
   ext x
-  rcases lt_trichotomy (x : ℕ) j with (h|h|h)
+  rcases lt_trichotomy (x : ℕ) j with (h | h | h)
   · simp only [Function.comp_apply, contractNth_apply_of_lt, h]
   · simp only [Function.comp_apply, contractNth_apply_of_eq, h, hf]
   · simp only [Function.comp_apply, contractNth_apply_of_gt, h]

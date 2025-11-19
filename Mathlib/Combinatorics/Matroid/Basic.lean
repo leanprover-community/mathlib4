@@ -3,11 +3,13 @@ Copyright (c) 2023 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Init
-import Mathlib.Data.Finite.Prod
-import Mathlib.Data.Set.Card
-import Mathlib.Data.Set.Finite.Powerset
-import Mathlib.Order.UpperLower.Closure
+module
+
+public import Mathlib.Combinatorics.Matroid.Init
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Data.Set.Card
+public import Mathlib.Data.Set.Finite.Powerset
+public import Mathlib.Order.UpperLower.Closure
 
 /-!
 # Matroids
@@ -160,6 +162,8 @@ There are a few design decisions worth discussing.
   Proc. Amer. Math. Soc. 144 (2016), 459-471][bowlerGeschke2015]
 -/
 
+@[expose] public section
+
 assert_not_exists Field
 
 open Set
@@ -291,7 +295,7 @@ theorem encard_diff_le_aux {B₁ B₂ : Set α}
   rw [insert_diff_of_mem _ hf.1, diff_diff_comm, ← union_singleton, ← diff_diff, diff_diff_right,
     inter_singleton_eq_empty.mpr he.2, union_empty] at hencard
   rw [← encard_diff_singleton_add_one he, ← encard_diff_singleton_add_one hf]
-  exact add_le_add_right hencard 1
+  gcongr
 termination_by (B₂ \ B₁).encard
 
 variable {B₁ B₂ : Set α}
@@ -455,8 +459,6 @@ theorem not_rankInfinite (M : Matroid α) [RankFinite M] : ¬ RankInfinite M := 
 theorem rankFinite_or_rankInfinite (M : Matroid α) : RankFinite M ∨ RankInfinite M :=
   let ⟨B, hB⟩ := M.exists_isBase
   B.finite_or_infinite.imp hB.rankFinite_of_finite hB.rankInfinite_of_infinite
-
-@[deprecated (since := "2025-03-27")] alias finite_or_rankInfinite := rankFinite_or_rankInfinite
 
 @[simp]
 theorem not_rankFinite_iff (M : Matroid α) : ¬ RankFinite M ↔ RankInfinite M :=

@@ -3,12 +3,14 @@ Copyright (c) 2020 Ashvni Narayanan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Algebra.Ring.Subring.Defs
-import Mathlib.Algebra.Ring.Subsemiring.Basic
-import Mathlib.RingTheory.NonUnitalSubring.Defs
-import Mathlib.Data.Set.Finite.Basic
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.Algebra.Ring.Subring.Defs
+public import Mathlib.Algebra.Ring.Subsemiring.Basic
+public import Mathlib.RingTheory.NonUnitalSubring.Defs
+public import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Subrings
@@ -58,7 +60,9 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 subring, subrings
 -/
 
-assert_not_exists OrderedRing
+@[expose] public section
+
+assert_not_exists IsOrderedRing
 
 universe u v w
 
@@ -69,32 +73,32 @@ variable [Ring S] [Ring T]
 namespace Subring
 variable {s t : Subring R}
 
-@[mono]
+@[gcongr, mono]
 theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : Subring R → Subsemiring R) :=
   fun _ _ => id
 
-@[mono]
+@[gcongr, mono]
 theorem toSubsemiring_mono : Monotone (toSubsemiring : Subring R → Subsemiring R) :=
   toSubsemiring_strictMono.monotone
 
-@[gcongr]
+@[deprecated toSubsemiring_strictMono (since := "2025-10-20")]
 lemma toSubsemiring_lt_toSubsemiring (hst : s < t) : s.toSubsemiring < t.toSubsemiring := hst
 
-@[gcongr]
+@[deprecated toSubsemiring_mono (since := "2025-10-20")]
 lemma toSubsemiring_le_toSubsemiring (hst : s ≤ t) : s.toSubsemiring ≤ t.toSubsemiring := hst
 
-@[mono]
+@[gcongr, mono]
 theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Subring R → AddSubgroup R) :=
   fun _ _ => id
 
-@[mono]
+@[gcongr, mono]
 theorem toAddSubgroup_mono : Monotone (toAddSubgroup : Subring R → AddSubgroup R) :=
   toAddSubgroup_strictMono.monotone
 
-@[gcongr]
+@[deprecated toAddSubgroup_strictMono (since := "2025-10-20")]
 lemma toAddSubgroup_lt_toAddSubgroup (hst : s < t) : s.toAddSubgroup < t.toAddSubgroup := hst
 
-@[gcongr]
+@[deprecated toAddSubgroup_mono (since := "2025-10-20")]
 lemma toAddSubgroup_le_toAddSubgroup (hst : s ≤ t) : s.toAddSubgroup ≤ t.toAddSubgroup := hst
 
 @[mono]
@@ -152,7 +156,7 @@ instance : Top (Subring R) :=
 theorem mem_top (x : R) : x ∈ (⊤ : Subring R) :=
   Set.mem_univ x
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_top : ((⊤ : Subring R) : Set R) = Set.univ :=
   rfl
 
@@ -277,6 +281,7 @@ instance : Bot (Subring R) :=
 instance : Inhabited (Subring R) :=
   ⟨⊥⟩
 
+@[norm_cast]
 theorem coe_bot : ((⊥ : Subring R) : Set R) = Set.range ((↑) : ℤ → R) :=
   RingHom.coe_range (Int.castRingHom R)
 
@@ -291,7 +296,7 @@ instance : Min (Subring R) :=
   ⟨fun s t =>
     { s.toSubmonoid ⊓ t.toSubmonoid, s.toAddSubgroup ⊓ t.toAddSubgroup with carrier := s ∩ t }⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_inf (p p' : Subring R) : ((p ⊓ p' : Subring R) : Set R) = (p : Set R) ∩ p' :=
   rfl
 
@@ -765,7 +770,7 @@ theorem mem_map_equiv {f : R ≃+* S} {K : Subring R} {x : S} :
 
 theorem map_equiv_eq_comap_symm (f : R ≃+* S) (K : Subring R) :
     K.map (f : R →+* S) = K.comap f.symm :=
-  SetLike.coe_injective (f.toEquiv.image_eq_preimage K)
+  SetLike.coe_injective (f.toEquiv.image_eq_preimage_symm K)
 
 theorem comap_equiv_eq_map_symm (f : R ≃+* S) (K : Subring S) :
     K.comap (f : R →+* S) = K.map f.symm :=
@@ -814,6 +819,9 @@ def eqLocus (f g : R →+* S) : Subring R :=
   { (f : R →* S).eqLocusM g, (f : R →+ S).eqLocus g with carrier := { x | f x = g x } }
 
 @[simp]
+theorem mem_eqLocus {f g : R →+* S} {x : R} : x ∈ f.eqLocus g ↔ f x = g x := Iff.rfl
+
+@[simp]
 theorem eqLocus_same (f : R →+* S) : f.eqLocus f = ⊤ :=
   SetLike.ext fun _ => eq_self_iff_true _
 
@@ -854,6 +862,10 @@ theorem mem_closure_image_of (f : R →+* S) {s : Set R} {x : R} (hx : x ∈ Sub
 /-- The ring homomorphism associated to an inclusion of subrings. -/
 def inclusion {S T : Subring R} (h : S ≤ T) : S →+* T :=
   S.subtype.codRestrict _ fun x => h x.2
+
+@[simp]
+theorem coe_inclusion {S T : Subring R} (h : S ≤ T) (x : S) :
+    (Subring.inclusion h x : R) = x := by simp [Subring.inclusion]
 
 @[simp]
 theorem range_subtype (s : Subring R) : s.subtype.range = s :=
@@ -926,8 +938,9 @@ protected theorem InClosure.recOn {C : R → Prop} {x : R} (hx : x ∈ closure s
   have h0 : C 0 := add_neg_cancel (1 : R) ▸ ha h1 hneg1
   rcases exists_list_of_mem_closure hx with ⟨L, HL, rfl⟩
   clear hx
-  induction' L with hd tl ih
-  · exact h0
+  induction L with
+  | nil => exact h0
+  | cons hd tl ih => ?_
   rw [List.forall_mem_cons] at HL
   suffices C (List.prod hd) by
     rw [List.map_cons, List.sum_cons]
@@ -938,20 +951,23 @@ protected theorem InClosure.recOn {C : R → Prop} {x : R} (hx : x ∈ closure s
     ∃ L : List R, (∀ x ∈ L, x ∈ s) ∧ (List.prod hd = List.prod L ∨ List.prod hd = -List.prod L)
   · rw [HP]
     clear HP HL hd
-    induction' L with hd tl ih
-    · exact h1
-    rw [List.forall_mem_cons] at HL'
-    rw [List.prod_cons]
-    exact hs _ HL'.1 _ (ih HL'.2)
+    induction L with
+    | nil => exact h1
+    | cons hd tl ih =>
+      rw [List.forall_mem_cons] at HL'
+      rw [List.prod_cons]
+      exact hs _ HL'.1 _ (ih HL'.2)
   · rw [HP]
     clear HP HL hd
-    induction' L with hd tl ih
-    · exact hneg1
-    rw [List.prod_cons, neg_mul_eq_mul_neg]
-    rw [List.forall_mem_cons] at HL'
-    exact hs _ HL'.1 _ (ih HL'.2)
-  induction' hd with hd tl ih
-  · exact ⟨[], List.forall_mem_nil _, Or.inl rfl⟩
+    induction L with
+    | nil => exact hneg1
+    | cons hd tl ih =>
+      rw [List.prod_cons, neg_mul_eq_mul_neg]
+      rw [List.forall_mem_cons] at HL'
+      exact hs _ HL'.1 _ (ih HL'.2)
+  induction hd with
+  | nil => exact ⟨[], List.forall_mem_nil _, Or.inl rfl⟩
+  | cons hd tl ih => ?_
   rw [List.forall_mem_cons] at HL
   rcases ih HL.2 with ⟨L, HL', HP | HP⟩ <;> rcases HL.1 with hhd | hhd
   · exact

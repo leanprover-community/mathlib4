@@ -3,9 +3,11 @@ Copyright (c) 2023 Ziyu Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ziyu Wang, Chenyi Li, Sébastien Gouëzel, Penghao Yu, Zhipeng Cao
 -/
-import Mathlib.Analysis.InnerProductSpace.Dual
-import Mathlib.Analysis.Calculus.FDeriv.Basic
-import Mathlib.Analysis.Calculus.Deriv.Basic
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Dual
+public import Mathlib.Analysis.Calculus.FDeriv.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Basic
 
 /-!
 # Gradient
@@ -24,18 +26,20 @@ is restricted to `s`. We also have
 
 ## Main results
 
-This file contains the following parts of gradient.
-* the definition of gradient.
-* the theorems translating between `HasGradientAtFilter` and `HasFDerivAtFilter`,
+This file develops the following aspects of the theory of gradients:
+* definitions of gradients, both within a set and on the whole space.
+* translating between `HasGradientAtFilter` and `HasFDerivAtFilter`,
   `HasGradientWithinAt` and `HasFDerivWithinAt`, `HasGradientAt` and `HasFDerivAt`,
-  `Gradient` and `fderiv`.
-* theorems the Uniqueness of Gradient.
-* the theorems translating between  `HasGradientAtFilter` and `HasDerivAtFilter`,
-  `HasGradientAt` and `HasDerivAt`, `Gradient` and `deriv` when `F = 𝕜`.
-* the theorems about the congruence of the gradient.
-* the theorems about the gradient of constant function.
-* the theorems about the continuity of a function admitting a gradient.
+  `gradient` and `fderiv`.
+* uniqueness of gradients.
+* translating between `HasGradientAtFilter` and `HasDerivAtFilter`,
+  `HasGradientAt` and `HasDerivAt`, `gradient` and `deriv` when `F = 𝕜`.
+* the congruence of the gradient.
+* the gradient of constant functions.
+* the continuity of a function admitting a gradient.
 -/
+
+@[expose] public section
 
 open Topology InnerProductSpace Function Set
 
@@ -156,9 +160,7 @@ variable {g : 𝕜 → 𝕜} {g' u : 𝕜} {L' : Filter 𝕜}
 
 theorem HasGradientAtFilter.hasDerivAtFilter (h : HasGradientAtFilter g g' u L') :
     HasDerivAtFilter g (starRingEnd 𝕜 g') u L' := by
-  have : ContinuousLinearMap.smulRight (1 : 𝕜 →L[𝕜] 𝕜) (starRingEnd 𝕜 g') = (toDual 𝕜 𝕜) g' := by
-    ext; simp
-  rwa [HasDerivAtFilter, this]
+  tauto
 
 theorem HasDerivAtFilter.hasGradientAtFilter (h : HasDerivAtFilter g g' u L') :
     HasGradientAtFilter g (starRingEnd 𝕜 g') u L' := by

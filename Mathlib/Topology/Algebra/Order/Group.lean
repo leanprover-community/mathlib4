@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Group.Basic
-import Mathlib.Topology.Algebra.Group.Defs
-import Mathlib.Topology.Order.LeftRightNhds
+module
+
+public import Mathlib.Algebra.Order.Group.Basic
+public import Mathlib.Topology.Algebra.Group.Defs
+public import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
 # Topology on a linear ordered commutative group
@@ -14,6 +16,8 @@ In this file we prove that a linear ordered commutative group with order topolog
 is a topological group.
 We also prove continuity of `abs : G → G` and provide convenience lemmas like `ContinuousAt.abs`.
 -/
+
+@[expose] public section
 
 
 open Set Filter Function
@@ -37,7 +41,7 @@ instance (priority := 100) LinearOrderedCommGroup.toIsTopologicalGroup :
       rintro ⟨c, d⟩ ⟨hc, hd⟩
       calc
         |c * d / (a * b)|ₘ = |(c / a) * (d / b)|ₘ := by rw [div_mul_div_comm]
-        _ ≤ |c / a|ₘ * |d / b|ₘ := mabs_mul ..
+        _ ≤ |c / a|ₘ * |d / b|ₘ := mabs_mul_le ..
         _ < δ * (ε / δ) := mul_lt_mul_of_lt_of_lt hc hd
         _ = ε := mul_div_cancel ..
     · have (x : G) : ∀ᶠ y in 𝓝 x, y = x :=
@@ -96,9 +100,6 @@ theorem tendsto_mabs_nhdsNE_one : Tendsto (mabs : G → G) (𝓝[≠] 1) (𝓝[>
   (continuous_mabs.tendsto' (1 : G) 1 mabs_one).inf <|
     tendsto_principal_principal.2 fun _x => one_lt_mabs.2
 
-@[deprecated (since := "2025-03-18")]
-alias tendsto_abs_nhdsWithin_zero := tendsto_abs_nhdsNE_zero
-
 /-- In a linearly ordered multiplicative group, the integer powers of an element are dense
 iff they are the whole group. -/
 @[to_additive /-- In a linearly ordered additive group, the integer multiples of an element are
@@ -122,7 +123,7 @@ theorem denseRange_zpow_iff_surjective {a : G} :
   suffices (Ioo (a ^ m) (a ^ (m + 1))).Nonempty by
     rcases h.exists_mem_open isOpen_Ioo this with ⟨l, hl⟩
     have : m < l ∧ l < m + 1 := by simpa [zpow_lt_zpow_iff_right ha₀] using hl
-    omega
+    cutsat
   rcases hne.lt_or_gt with hlt | hlt
   · refine ⟨b * a * a, hm', ?_⟩
     simpa only [zpow_add, zpow_sub, zpow_one, ← div_eq_mul_inv, lt_div_iff_mul_lt,
