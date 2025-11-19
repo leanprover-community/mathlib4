@@ -16,7 +16,7 @@ In this file, we study the relation between the (nonzero) prime ideals of `Sₚ`
 ideals of `S` above `p`. In particular, we prove that (under suitable conditions) they are in
 bijection.
 
-# Main definitions and results
+## Main definitions and results
 
 - `IsLocalization.AtPrime.mem_primesOver_of_isPrime`: The nonzero prime ideals of `Sₚ` are
   primes over the maximal ideal of `Rₚ`.

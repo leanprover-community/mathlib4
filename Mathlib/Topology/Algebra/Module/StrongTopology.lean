@@ -142,6 +142,24 @@ instance instAddCommGroup [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 :
     AddCommGroup (UniformConvergenceCLM σ F 𝔖) := ContinuousLinearMap.addCommGroup
 
 @[simp]
+theorem neg_apply [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E))
+    (f : UniformConvergenceCLM σ F 𝔖) (x : E) : (-f) x = -f x :=
+  rfl
+
+theorem add_apply [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E))
+    (f g : UniformConvergenceCLM σ F 𝔖) (x : E) : (f + g) x = f x + g x :=
+  rfl
+
+theorem sum_apply {ι : Type*} [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E))
+    (t : Finset ι) (f : ι → UniformConvergenceCLM σ F 𝔖) (x : E) :
+    (∑ d ∈ t, f d) x = ∑ d ∈ t, (f d) x :=
+  ContinuousLinearMap.sum_apply t f x
+
+theorem sub_apply [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E))
+    (f g : UniformConvergenceCLM σ F 𝔖) (x : E) : (f - g) x = f x - g x :=
+  rfl
+
+@[simp]
 theorem coe_zero [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
     ⇑(0 : UniformConvergenceCLM σ F 𝔖) = 0 :=
   rfl
@@ -177,6 +195,13 @@ theorem t2Space [TopologicalSpace F] [IsTopologicalAddGroup F] [T2Space F]
 instance instDistribMulAction (M : Type*) [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
     [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
     DistribMulAction M (UniformConvergenceCLM σ F 𝔖) := ContinuousLinearMap.distribMulAction
+
+@[simp]
+theorem smul_apply {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
+    [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul M F] (𝔖 : Set (Set E))
+    (c : M) (f : UniformConvergenceCLM σ F 𝔖) (x : E) :
+    (c • f) x = c • f x :=
+  rfl
 
 instance instModule (R : Type*) [Semiring R] [Module R F] [SMulCommClass 𝕜₂ R F]
     [TopologicalSpace F] [ContinuousConstSMul R F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
@@ -328,6 +353,29 @@ theorem topologicalSpace_mono [TopologicalSpace F] [IsTopologicalAddGroup F] (h 
   simp_rw [← uniformity_toTopologicalSpace_eq]
   exact UniformSpace.toTopologicalSpace_mono (uniformSpace_mono σ F h)
 
+section Equiv
+
+variable [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜₂ F] (𝔖 : Set (Set E))
+
+/-- The linear equivalence that maps a continuous linear map to the type copy endowed with the
+uniform convergence topology. -/
+def _root_.ContinuousLinearMap.toUniformConvergenceCLM :
+    (E →SL[σ] F) ≃ₗ[𝕜₂] UniformConvergenceCLM σ F 𝔖 where
+  __ := LinearEquiv.refl _ _
+
+variable {σ F 𝔖}
+
+@[simp]
+lemma _root_.ContinuousLinearMap.toUniformConvergenceCLM_apply {A : E →SL[σ] F} {x : E} :
+    ContinuousLinearMap.toUniformConvergenceCLM σ F 𝔖 A x = A x := rfl
+
+@[simp]
+lemma _root_.ContinuousLinearMap.toUniformConvergenceCLM_symm_apply
+    {A : UniformConvergenceCLM σ F 𝔖} {x : E} :
+    (ContinuousLinearMap.toUniformConvergenceCLM σ F 𝔖).symm A x = A x := rfl
+
+end Equiv
+
 end UniformConvergenceCLM
 
 end General
@@ -366,11 +414,11 @@ instance isUniformAddGroup [UniformSpace F] [IsUniformAddGroup F] :
 
 instance instContinuousEvalConst [TopologicalSpace F] [IsTopologicalAddGroup F]
     [ContinuousSMul 𝕜₁ E] : ContinuousEvalConst (E →SL[σ] F) E F :=
-  UniformConvergenceCLM.continuousEvalConst σ F _ Bornology.isVonNBounded_covers
+  UniformConvergenceCLM.continuousEvalConst σ F _ Bornology.sUnion_isVonNBounded_eq_univ
 
 instance instT2Space [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜₁ E]
     [T2Space F] : T2Space (E →SL[σ] F) :=
-  UniformConvergenceCLM.t2Space σ F _ Bornology.isVonNBounded_covers
+  UniformConvergenceCLM.t2Space σ F _ Bornology.sUnion_isVonNBounded_eq_univ
 
 protected theorem hasBasis_nhds_zero_of_basis [TopologicalSpace F] [IsTopologicalAddGroup F]
     {ι : Type*} {p : ι → Prop} {b : ι → Set F} (h : (𝓝 0 : Filter F).HasBasis p b) :
@@ -450,7 +498,7 @@ theorem isVonNBounded_iff {R : Type*} [NormedDivisionRing R]
 theorem completeSpace [UniformSpace F] [IsUniformAddGroup F] [ContinuousSMul 𝕜₂ F] [CompleteSpace F]
     [ContinuousSMul 𝕜₁ E] (h : IsCoherentWith {s : Set E | IsVonNBounded 𝕜₁ s}) :
     CompleteSpace (E →SL[σ] F) :=
-  UniformConvergenceCLM.completeSpace _ _ h isVonNBounded_covers
+  UniformConvergenceCLM.completeSpace _ _ h sUnion_isVonNBounded_eq_univ
 
 instance instCompleteSpace [IsTopologicalAddGroup E] [ContinuousSMul 𝕜₁ E] [SequentialSpace E]
     [UniformSpace F] [IsUniformAddGroup F] [ContinuousSMul 𝕜₂ F] [CompleteSpace F] :
@@ -495,6 +543,13 @@ def postcomp [IsTopologicalAddGroup F] [IsTopologicalAddGroup G] [ContinuousCons
     exact
       (UniformOnFun.postcomp_uniformContinuous L.uniformContinuous).continuous.comp
         (UniformConvergenceCLM.isEmbedding_coeFn _ _ _).continuous
+
+variable (σ F) {E} in
+lemma toUniformConvergenceCLM_continuous [IsTopologicalAddGroup F]
+    [ContinuousConstSMul 𝕜₂ F]
+    (𝔖 : Set (Set E)) (h : 𝔖 ⊆ {S | IsVonNBounded 𝕜₁ S}) :
+    Continuous (ContinuousLinearMap.toUniformConvergenceCLM σ F 𝔖) :=
+  continuous_id_of_le <| UniformConvergenceCLM.topologicalSpace_mono _ _ h
 
 end BoundedSets
 

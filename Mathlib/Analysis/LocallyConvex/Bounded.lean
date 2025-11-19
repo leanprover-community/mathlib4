@@ -263,7 +263,20 @@ theorem IsVonNBounded.extend_scalars [NontriviallyNormedField 𝕜]
 section NormedField
 
 variable [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-variable [TopologicalSpace E] [ContinuousSMul 𝕜 E]
+variable [TopologicalSpace E]
+
+/-- The closure of a bounded set is bounded. -/
+theorem IsVonNBounded.closure [T1Space E] [RegularSpace E] [ContinuousConstSMul 𝕜 E]
+    {a : Set E} (ha : IsVonNBounded 𝕜 a) : IsVonNBounded 𝕜 (closure a) := by
+  intro V hV
+  rcases exists_mem_nhds_isClosed_subset hV with ⟨W, hW₁, hW₂, hW₃⟩
+  specialize ha hW₁
+  filter_upwards [ha] with b ha'
+  grw [closure_mono ha', closure_smul₀ b]
+  apply smul_set_mono
+  grw [closure_subset_iff_isClosed.mpr hW₂, hW₃]
+
+variable [ContinuousSMul 𝕜 E]
 
 /-- Singletons are bounded. -/
 theorem isVonNBounded_singleton (x : E) : IsVonNBounded 𝕜 ({x} : Set E) := fun _ hV =>
@@ -343,9 +356,12 @@ theorem isVonNBounded_sub :
 end IsTopologicalAddGroup
 
 /-- The union of all bounded set is the whole space. -/
-theorem isVonNBounded_covers : ⋃₀ setOf (IsVonNBounded 𝕜) = (Set.univ : Set E) :=
+theorem sUnion_isVonNBounded_eq_univ : ⋃₀ setOf (IsVonNBounded 𝕜) = (Set.univ : Set E) :=
   Set.eq_univ_iff_forall.mpr fun x =>
     Set.mem_sUnion.mpr ⟨{x}, isVonNBounded_singleton _, Set.mem_singleton _⟩
+
+@[deprecated (since := "2025-11-14")]
+alias isVonNBounded_covers := sUnion_isVonNBounded_eq_univ
 
 variable (𝕜 E)
 
