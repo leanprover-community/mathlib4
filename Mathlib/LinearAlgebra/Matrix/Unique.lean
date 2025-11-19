@@ -3,8 +3,10 @@ Copyright (c) 2025 Yunzhou Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yunzhou Xie
 -/
-import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Data.Matrix.Mul
+module
+
+public import Mathlib.Algebra.Algebra.Equiv
+public import Mathlib.Data.Matrix.Mul
 
 /-!
 # One by one matrices
@@ -19,6 +21,8 @@ canonical map that sends a one by one matrix `!![a]` to `a`.
 ## Tags
 Matrix, Unique, AlgEquiv
 -/
+
+@[expose] public section
 
 namespace Matrix
 

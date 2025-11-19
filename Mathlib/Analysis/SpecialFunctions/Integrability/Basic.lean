@@ -3,9 +3,11 @@ Copyright (c) 2021 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson
 -/
-import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
-import Mathlib.Analysis.SpecialFunctions.NonIntegrable
-import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
+public import Mathlib.Analysis.SpecialFunctions.NonIntegrable
+public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
 # Integrability of Special Functions
@@ -13,6 +15,8 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 This file establishes basic facts about the interval integrability of special functions, including
 powers and the logarithm.
 -/
+
+@[expose] public section
 
 open Interval MeasureTheory Real Set
 

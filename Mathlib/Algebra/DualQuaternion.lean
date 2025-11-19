@@ -3,8 +3,10 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.DualNumber
-import Mathlib.Algebra.Quaternion
+module
+
+public import Mathlib.Algebra.DualNumber
+public import Mathlib.Algebra.Quaternion
 
 /-!
 # Dual quaternions
@@ -21,6 +23,8 @@ rigid motions in 3D space can be represented by dual quaternions of unit length.
 
 * <https://en.wikipedia.org/wiki/Dual_quaternion>
 -/
+
+@[expose] public section
 
 
 variable {R : Type*} [CommRing R]

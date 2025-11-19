@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.BoxIntegral.Partition.Additive
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+module
+
+public import Mathlib.Analysis.BoxIntegral.Partition.Additive
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
 /-!
 # Box-additive functions defined by measures
@@ -22,6 +24,8 @@ For the last statement, we both prove it as a proposition and define a bundled
 
 rectangular box, measure
 -/
+
+@[expose] public section
 
 open Set
 

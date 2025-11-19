@@ -3,11 +3,13 @@ Copyright (c) 2018 Ellen Arlt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu-Ming Zhang
 -/
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.BigOperators.RingEquiv
-import Mathlib.Data.Finite.Prod
-import Mathlib.Data.Matrix.Mul
-import Mathlib.LinearAlgebra.Pi
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.BigOperators.RingEquiv
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Data.Matrix.Mul
+public import Mathlib.LinearAlgebra.Pi
 
 /-!
 # Matrices
@@ -26,6 +28,8 @@ as having the right type. Instead, `Matrix.of` should be used.
 Under various conditions, multiplication of infinite matrices makes sense.
 These have not yet been implemented.
 -/
+
+@[expose] public section
 
 assert_not_exists TrivialStar
 

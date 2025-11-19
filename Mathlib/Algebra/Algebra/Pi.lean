@@ -3,7 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Equiv
+module
+
+public import Mathlib.Algebra.Algebra.Equiv
 
 /-!
 # The R-algebra structure on families of R-algebras
@@ -16,6 +18,8 @@ The R-algebra structure on `Π i : I, A i` when each `A i` is an R-algebra.
 * `Pi.evalAlgHom`
 * `Pi.constAlgHom`
 -/
+
+@[expose] public section
 
 namespace Pi
 

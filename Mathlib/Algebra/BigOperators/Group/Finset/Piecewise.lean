@@ -3,14 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Data.Finset.Piecewise
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Data.Finset.Piecewise
 
 /-!
 # Interaction of big operators with piecewise functions
 
 This file proves lemmas on the sum and product of piecewise functions, including `ite` and `dite`.
 -/
+
+@[expose] public section
 
 variable {ι κ M β γ : Type*} {s : Finset ι}
 

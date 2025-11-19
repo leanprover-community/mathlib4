@@ -3,10 +3,12 @@ Copyright (c) 2022 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Topology.Algebra.Module.WeakDual
-import Mathlib.Algebra.Algebra.Spectrum.Basic
-import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.Data.Set.Lattice
+module
+
+public import Mathlib.Topology.Algebra.Module.WeakDual
+public import Mathlib.Algebra.Algebra.Spectrum.Basic
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Data.Set.Lattice
 
 /-!
 # Character space of a topological algebra
@@ -31,6 +33,8 @@ which provides the element as a continuous linear map. (Even though `WeakDual �
 character space, Gelfand transform, functional calculus
 
 -/
+
+@[expose] public section
 
 
 namespace WeakDual
