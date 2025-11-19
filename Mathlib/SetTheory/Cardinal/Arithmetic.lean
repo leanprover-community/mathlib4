@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.SetTheory.Cardinal.Aleph
+module
+
+public import Mathlib.SetTheory.Cardinal.Aleph
 
 /-!
 # Cardinal arithmetic
@@ -22,6 +24,8 @@ ordinal numbers. This is done within this file.
 
 cardinal arithmetic (for infinite cardinals)
 -/
+
+@[expose] public section
 
 assert_not_exists Module Finsupp Ordinal.log
 
@@ -590,10 +594,9 @@ variable [Infinite α] {α β'}
 theorem mk_perm_eq_self_power : #(Equiv.Perm α) = #α ^ #α :=
   ((mk_equiv_le_embedding α α).trans (mk_embedding_le_arrow α α)).antisymm <| by
     suffices Nonempty ((α → Bool) ↪ Equiv.Perm (α × Bool)) by
-      obtain ⟨e⟩ : Nonempty (α ≃ α × Bool) := by
-        erw [← Cardinal.eq, mk_prod, lift_uzero, mk_bool,
-          lift_natCast, mul_two, add_eq_self (aleph0_le_mk α)]
-      erw [← le_def, mk_arrow, lift_uzero, mk_bool, lift_natCast 2] at this
+      obtain ⟨e⟩ : Nonempty (α ≃ α × Bool) := by simp [← Cardinal.eq, mul_two]
+      simp only [← le_def, mk_pi, mk_fintype, Fintype.card_bool, Nat.cast_ofNat,
+        prod_const, lift_ofNat, lift_uzero] at this
       rwa [← power_def, power_self_eq (aleph0_le_mk α), e.permCongr.cardinal_eq]
     refine ⟨⟨fun f ↦ Involutive.toPerm (fun x ↦ ⟨x.1, xor (f x.1) x.2⟩) fun x ↦ ?_, fun f g h ↦ ?_⟩⟩
     · simp_rw [← Bool.xor_assoc, Bool.xor_self, Bool.false_xor]
@@ -695,7 +698,7 @@ theorem mk_bounded_set_le_of_infinite (α : Type u) [Infinite α] (c : Cardinal)
   classical
   use fun y => if h : ∃ x : s, g x = y then Sum.inl (Classical.choose h).val
                else Sum.inr (ULift.up 0)
-  apply Subtype.eq; ext x
+  apply Subtype.ext; ext x
   constructor
   · rintro ⟨y, h⟩
     dsimp only at h
@@ -733,7 +736,7 @@ theorem mk_bounded_subset_le {α : Type u} (s : Set α) (c : Cardinal.{u}) :
   refine ⟨Embedding.codRestrict _ ?_ ?_⟩
   · use fun t => (↑) ⁻¹' t.1
     rintro ⟨t, ht1, ht2⟩ ⟨t', h1t', h2t'⟩ h
-    apply Subtype.eq
+    apply Subtype.ext
     dsimp only at h ⊢
     refine (preimage_eq_preimage' ?_ ?_).1 h <;> rw [Subtype.range_coe] <;> assumption
   rintro ⟨t, _, h2t⟩; exact (mk_preimage_of_injective _ _ Subtype.val_injective).trans h2t

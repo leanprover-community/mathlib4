@@ -3,11 +3,12 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+module
 
-import Mathlib.Topology.Order.Compact
-import Mathlib.Topology.MetricSpace.ProperSpace
-import Mathlib.Topology.Order.IntermediateValue
-import Mathlib.Topology.Order.LocalExtr
+public import Mathlib.Topology.Order.Compact
+public import Mathlib.Topology.MetricSpace.ProperSpace
+public import Mathlib.Topology.Order.IntermediateValue
+public import Mathlib.Topology.Order.LocalExtr
 
 /-!
 # Proper spaces
@@ -20,6 +21,8 @@ This file contains some more involved results about `ProperSpace`s.
 * `exists_lt_subset_ball`
 * `Metric.exists_isLocalMin_mem_ball`
 -/
+
+@[expose] public section
 
 open Set Metric
 

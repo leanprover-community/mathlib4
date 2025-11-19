@@ -3,8 +3,10 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Anatole Dedecker
 -/
-import Mathlib.Analysis.Calculus.LocalExtr.Basic
-import Mathlib.Topology.Order.Rolle
+module
+
+public import Mathlib.Analysis.Calculus.LocalExtr.Basic
+public import Mathlib.Topology.Order.Rolle
 
 /-!
 # Rolle's Theorem
@@ -39,6 +41,8 @@ We prove four versions of this theorem.
 
 local extremum, Rolle's Theorem
 -/
+
+@[expose] public section
 
 open Set Filter Topology
 

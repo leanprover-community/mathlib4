@@ -3,7 +3,9 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.MeanValue
+module
+
+public import Mathlib.Analysis.Calculus.MeanValue
 
 /-!
 # Extending differentiability to the boundary
@@ -17,6 +19,8 @@ the right endpoint of an interval, are given in `hasDerivWithinAt_Ici_of_tendsto
 `hasDerivWithinAt_Iic_of_tendsto_deriv`.  These versions are formulated in terms of the
 one-dimensional derivative `deriv ℝ f`.
 -/
+
+@[expose] public section
 
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {F : Type*} [NormedAddCommGroup F]
