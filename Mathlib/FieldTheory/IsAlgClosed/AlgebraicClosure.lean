@@ -3,10 +3,12 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.CharP.Algebra
-import Mathlib.Data.Multiset.Fintype
-import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.FieldTheory.SplittingField.Construction
+module
+
+public import Mathlib.Algebra.CharP.Algebra
+public import Mathlib.Data.Multiset.Fintype
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
+public import Mathlib.FieldTheory.SplittingField.Construction
 
 /-!
 # Algebraic Closure
@@ -26,6 +28,8 @@ In this file we construct the algebraic closure of a field
 
 algebraic closure, algebraically closed
 -/
+
+@[expose] public section
 
 universe u v w
 

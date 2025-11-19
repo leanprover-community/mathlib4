@@ -3,7 +3,9 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
+module
+
+public import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 
 /-!
 # Category instances for structures that use unbundled homs
@@ -13,6 +15,8 @@ categories using unbundled homs (see `class UnbundledHom`), and
 define forgetful functors between them (see
 `UnbundledHom.mkHasForget₂`).
 -/
+
+@[expose] public section
 
 
 universe v u

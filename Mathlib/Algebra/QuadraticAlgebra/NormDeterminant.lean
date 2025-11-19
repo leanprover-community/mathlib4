@@ -3,9 +3,10 @@ Copyright (c) 2025 Snir Broshi. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Snir Broshi
 -/
+module
 
-import Mathlib.Algebra.QuadraticAlgebra.Basic
-import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.Algebra.QuadraticAlgebra.Basic
+public import Mathlib.LinearAlgebra.Determinant
 
 /-!
 # Quadratic Algebra
@@ -13,6 +14,8 @@ import Mathlib.LinearAlgebra.Determinant
 We prove that the expression for the norm of an element in a quadratic algebra comes from looking at
 the endomorphism defined by left multiplication by that element and taking its determinant.
 -/
+
+@[expose] public section
 
 namespace QuadraticAlgebra
 
