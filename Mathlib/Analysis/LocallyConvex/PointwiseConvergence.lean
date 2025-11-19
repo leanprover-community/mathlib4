@@ -55,12 +55,12 @@ def inducingFn : (E →SLₚₜ[σ] F) →ₗ[𝕜₂] (E → F) where
   map_smul' _ _ := rfl
 
 variable (σ E F) in
-theorem inducingFn_isInducing : Topology.IsInducing (inducingFn σ E F) :=
+theorem isInducing_inducingFn : Topology.IsInducing (inducingFn σ E F) :=
   (PointwiseConvergenceCLM.isEmbedding_coeFn σ E F).isInducing
 
 lemma withSeminorms : WithSeminorms (PointwiseConvergenceCLM.seminormFamily σ E F) :=
   let e : E ≃ (Σ _ : E, Fin 1) := .symm <| .sigmaUnique _ _
-  (inducingFn_isInducing σ E F).withSeminorms <| withSeminorms_pi (fun _ ↦ norm_withSeminorms 𝕜₂ F)
+  (isInducing_inducingFn σ E F).withSeminorms <| withSeminorms_pi (fun _ ↦ norm_withSeminorms 𝕜₂ F)
     |>.congr_equiv e
 
 end NormedSpace
