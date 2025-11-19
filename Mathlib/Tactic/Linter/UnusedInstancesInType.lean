@@ -6,9 +6,9 @@ Authors: Thomas R. Murrills
 module
 
 public import Mathlib.Init
-public import Mathlib.Lean.Expr.Basic
-public import Mathlib.Lean.Environment
-public import Mathlib.Lean.Elab.InfoTree
+public meta import Mathlib.Lean.Expr.Basic
+public meta import Mathlib.Lean.Environment
+public meta import Mathlib.Lean.Elab.InfoTree
 import Lean.Elab.Command
 
 /-!
@@ -27,6 +27,8 @@ TODO: log on type signature instead of whole command
 TODO: add more linters!
 TODO: create Try This suggestions
 -/
+
+meta section
 
 open Lean Meta Elab Command Linter
 
