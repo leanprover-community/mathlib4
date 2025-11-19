@@ -3,8 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.Module.TransferInstance
-import Mathlib.RingTheory.Finiteness.Cardinality
+module
+
+public import Mathlib.Algebra.Module.TransferInstance
+public import Mathlib.RingTheory.Finiteness.Cardinality
 
 /-!
 
@@ -23,7 +25,7 @@ In this file we define the following property of rings:
 
 It's proved in the above papers that
 
-- a left Noetherian ring (not necessarily commutative) satisfies the `OrzechProperty`,
+- a left-Noetherian ring (not necessarily commutative) satisfies the `OrzechProperty`,
   which in particular includes the division ring case
   (see `Mathlib/RingTheory/Noetherian.lean`);
 - a commutative ring satisfies the `OrzechProperty`
@@ -41,6 +43,8 @@ It's proved in the above papers that
 free module, rank, Orzech property, (strong) rank condition, invariant basis number, IBN
 
 -/
+
+@[expose] public section
 
 universe u v w
 

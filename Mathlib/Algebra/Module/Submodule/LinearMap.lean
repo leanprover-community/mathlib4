@@ -3,10 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+module
 
-import Mathlib.Algebra.Module.LinearMap.End
-import Mathlib.Algebra.Module.Submodule.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Module.LinearMap.End
+public import Mathlib.Algebra.Module.Submodule.Defs
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 
@@ -27,6 +28,8 @@ In this file we define a number of linear maps involving submodules of a module.
 
 submodule, subspace, linear map
 -/
+
+@[expose] public section
 
 open Function Set
 
@@ -59,9 +62,6 @@ lemma subtype_injective :
 @[simp]
 protected theorem coe_subtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
   rfl
-
-@[deprecated (since := "2025-02-18")]
-protected alias coeSubtype := SMulMemClass.coe_subtype
 
 end SMulMemClass
 
@@ -146,6 +146,9 @@ def domRestrict (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) : p →ₛ�
 theorem domRestrict_apply (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) (x : p) :
     f.domRestrict p x = f x :=
   rfl
+
+lemma coe_domRestrict (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) :
+    ⇑(f.domRestrict p) = Set.restrict p f := rfl
 
 /-- A linear map `f : M₂ → M` whose values lie in a submodule `p ⊆ M` can be restricted to a
 linear map M₂ → p.
@@ -343,9 +346,7 @@ theorem inclusion_injective (h : p ≤ p') : Function.Injective (inclusion h) :=
 variable (p p')
 
 theorem subtype_comp_inclusion (p q : Submodule R M) (h : p ≤ q) :
-    q.subtype.comp (inclusion h) = p.subtype := by
-  ext ⟨b, hb⟩
-  rfl
+    q.subtype.comp (inclusion h) = p.subtype := rfl
 
 end AddCommMonoid
 

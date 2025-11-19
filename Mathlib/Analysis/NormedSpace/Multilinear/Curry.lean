@@ -3,8 +3,10 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.NormedSpace.Multilinear.Basic
-import Mathlib.LinearAlgebra.Multilinear.Curry
+module
+
+public import Mathlib.Analysis.NormedSpace.Multilinear.Basic
+public import Mathlib.LinearAlgebra.Multilinear.Curry
 
 /-!
 # Currying and uncurrying continuous multilinear maps
@@ -27,6 +29,8 @@ We also register continuous linear equiv versions of these correspondences, in
 * `ContinuousMultilinearMap.curryMid`, `ContinuousLinearMap.uncurryMid` and
   `ContinuousMultilinearMap.curryMidEquiv`
 -/
+
+@[expose] public section
 
 suppress_compilation
 
@@ -645,7 +649,7 @@ variable {F G : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 /-- Given a linear map into continuous multilinear maps
-`B : G →L[𝕜] ContinuousMultilinearMap 𝕜 E F`, one can not always uncurry it as `G` and `E` might
+`B : G →L[𝕜] ContinuousMultilinearMap 𝕜 E F`, one cannot always uncurry it as `G` and `E` might
 live in a different universe. However, one can always lift it to a continuous multilinear map
 on `(G × (Π i, E i)) ^ (1 + n)`, which maps `(v_0, ..., v_n)` to `B (g_0) (u_1, ..., u_n)` where
 `g_0` is the `G`-coordinate of `v_0` and `u_i` is the `E_i` coordinate of `v_i`. -/

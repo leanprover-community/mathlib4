@@ -3,8 +3,10 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Dynamics.Ergodic.AddCircle
-import Mathlib.MeasureTheory.Covering.LiminfLimsup
+module
+
+public import Mathlib.Dynamics.Ergodic.AddCircle
+public import Mathlib.MeasureTheory.Covering.LiminfLimsup
 
 /-!
 # Well-approximable numbers and Gallagher's ergodic theorem
@@ -57,6 +59,8 @@ Use `AddCircle.exists_norm_nsmul_le` to prove:
 (which is equivalent to `Real.infinite_rat_abs_sub_lt_one_div_den_sq_iff_irrational`).
 -/
 
+@[expose] public section
+
 
 open Set Filter Function Metric MeasureTheory
 
@@ -64,8 +68,8 @@ open scoped MeasureTheory Topology Pointwise
 
 /-- In a seminormed group `A`, given `n : ℕ` and `δ : ℝ`, `approxOrderOf A n δ` is the set of
 elements within a distance `δ` of a point of order `n`. -/
-@[to_additive "In a seminormed additive group `A`, given `n : ℕ` and `δ : ℝ`,
-`approxAddOrderOf A n δ` is the set of elements within a distance `δ` of a point of order `n`."]
+@[to_additive /-- In a seminormed additive group `A`, given `n : ℕ` and `δ : ℝ`,
+`approxAddOrderOf A n δ` is the set of elements within a distance `δ` of a point of order `n`. -/]
 def approxOrderOf (A : Type*) [SeminormedGroup A] (n : ℕ) (δ : ℝ) : Set A :=
   thickening δ {y | orderOf y = n}
 
@@ -77,10 +81,10 @@ theorem mem_approxOrderOf_iff {A : Type*} [SeminormedGroup A] {n : ℕ} {δ : �
 /-- In a seminormed group `A`, given a sequence of distances `δ₁, δ₂, ...`, `wellApproximable A δ`
 is the limsup as `n → ∞` of the sets `approxOrderOf A n δₙ`. Thus, it is the set of points that
 lie in infinitely many of the sets `approxOrderOf A n δₙ`. -/
-@[to_additive addWellApproximable "In a seminormed additive group `A`, given a sequence of
+@[to_additive addWellApproximable /-- In a seminormed additive group `A`, given a sequence of
 distances `δ₁, δ₂, ...`, `addWellApproximable A δ` is the limsup as `n → ∞` of the sets
 `approxAddOrderOf A n δₙ`. Thus, it is the set of points that lie in infinitely many of the sets
-`approxAddOrderOf A n δₙ`."]
+`approxAddOrderOf A n δₙ`. -/]
 def wellApproximable (A : Type*) [SeminormedGroup A] (δ : ℕ → ℝ) : Set A :=
   blimsup (fun n => approxOrderOf A n (δ n)) atTop fun n => 0 < n
 
@@ -292,7 +296,8 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
     rw [OrderIso.apply_blimsup e, ← hu₀ p]
     exact blimsup_congr (Eventually.of_forall fun n hn =>
       approxAddOrderOf.vadd_eq_of_mul_dvd (δ n) hn.1 hn.2)
-  by_cases h : ∀ p : Nat.Primes, A p =ᵐ[μ] (∅ : Set 𝕊) ∧ B p =ᵐ[μ] (∅ : Set 𝕊)
+  set_option push_neg.use_distrib true in
+  by_cases! h : ∀ p : Nat.Primes, A p =ᵐ[μ] (∅ : Set 𝕊) ∧ B p =ᵐ[μ] (∅ : Set 𝕊)
   · replace h : ∀ p : Nat.Primes, (u p +ᵥ E : Set _) =ᵐ[μ] E := by
       intro p
       replace hE₂ : E =ᵐ[μ] C p := hE₂ p (h p)
@@ -302,7 +307,6 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
       rw [hC]
     exact ae_empty_or_univ_of_forall_vadd_ae_eq_self hE₀ h hu
   · right
-    simp only [not_forall, not_and_or] at h
     obtain ⟨p, hp⟩ := h
     rw [hE₁ p]
     cases hp

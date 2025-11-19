@@ -3,9 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.Algebra.Module.Submodule.Defs
-import Mathlib.GroupTheory.QuotientGroup.Defs
+module
+
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Algebra.Module.Submodule.Defs
+public import Mathlib.GroupTheory.QuotientGroup.Defs
+public import Mathlib.Logic.Small.Basic
 
 /-!
 # Quotients by submodules
@@ -21,6 +24,8 @@ import Mathlib.GroupTheory.QuotientGroup.Defs
 * `Submodule.quotEquivOfEq`: if `p` and `p'` are equal, their quotients are equivalent
 
 -/
+
+@[expose] public section
 
 -- For most of this file we work over a noncommutative ring
 section Ring
@@ -197,6 +202,11 @@ theorem mk_surjective : Function.Surjective (@mk _ _ _ _ _ p) := by
   rintro ⟨x⟩
   exact ⟨x, rfl⟩
 
+universe u in
+instance {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] {N : Submodule R M} [Small.{u} M] :
+    Small.{u} (M ⧸ N) :=
+  small_of_surjective (Submodule.Quotient.mk_surjective _)
+
 end Quotient
 
 section
@@ -228,7 +238,7 @@ variable {R₂ M₂ : Type*} [Ring R₂] [AddCommGroup M₂] [Module R₂ M₂] 
 `submodule.mkQ` are equal.
 
 See note [partially-applied ext lemmas]. -/
-@[ext 1100] -- Porting note: increase priority so this applies before `LinearMap.ext`
+@[ext high] -- Increase priority so this applies before `LinearMap.ext`
 theorem linearMap_qext ⦃f g : M ⧸ p →ₛₗ[τ₁₂] M₂⦄ (h : f.comp p.mkQ = g.comp p.mkQ) : f = g :=
   LinearMap.ext fun x => Submodule.Quotient.induction_on _ x <| (LinearMap.congr_fun h :)
 

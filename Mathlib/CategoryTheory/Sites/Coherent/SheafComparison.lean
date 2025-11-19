@@ -3,12 +3,14 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Coherent.Comparison
-import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
-import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPrecoherent
-import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
-import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
-import Mathlib.CategoryTheory.Sites.Whiskering
+module
+
+public import Mathlib.CategoryTheory.Sites.Coherent.Comparison
+public import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
+public import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPrecoherent
+public import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
+public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
+public import Mathlib.CategoryTheory.Sites.Whiskering
 /-!
 
 # Categories of coherent sheaves
@@ -25,6 +27,8 @@ sheaves on either `CompHaus`, `Profinite` or `Stonean`. See the file `Condensed/
 We give the corresponding result for the regular topology as well (see
 `CategoryTheory.regularTopology.equivalence`).
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
@@ -44,7 +48,7 @@ instance : F.IsCoverDense (coherentTopology _) := by
   refine F.isCoverDense_of_generate_singleton_functor_π_mem _ fun B ↦ ⟨_, F.effectiveEpiOver B, ?_⟩
   apply Coverage.Saturate.of
   refine ⟨Unit, inferInstance, fun _ => F.effectiveEpiOverObj B,
-    fun _ => F.effectiveEpiOver B, ?_ , ?_⟩
+    fun _ => F.effectiveEpiOver B, ?_, ?_⟩
   · funext; ext -- Do we want `Presieve.ext`?
     refine ⟨fun ⟨⟩ ↦ ⟨()⟩, ?_⟩
     rintro ⟨⟩
@@ -67,7 +71,7 @@ theorem exists_effectiveEpiFamily_iff_mem_induced (X : C) (S : Sieve X) :
     let Z : α → C := fun a ↦ (Functor.EffectivelyEnough.presentation (F := F) (Y a)).some.p
     let g₀ : (a : α) → F.obj (Z a) ⟶ Y a := fun a ↦ F.effectiveEpiOver (Y a)
     have : EffectiveEpiFamily _ (fun a ↦ g₀ a ≫ π a) := inferInstance
-    refine ⟨Z , fun a ↦ F.preimage (g₀ a ≫ π a), ?_, fun a ↦ (?_ : S.arrows (F.preimage _))⟩
+    refine ⟨Z, fun a ↦ F.preimage (g₀ a ≫ π a), ?_, fun a ↦ (?_ : S.arrows (F.preimage _))⟩
     · refine F.finite_effectiveEpiFamily_of_map _ _ ?_
       simpa using this
     · obtain ⟨W, g₁, g₂, h₁, h₂⟩ := H₂ a

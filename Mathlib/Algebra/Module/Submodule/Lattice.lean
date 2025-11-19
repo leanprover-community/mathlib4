@@ -3,15 +3,17 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Subgroup.Lattice
-import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.Algebra.Module.Submodule.Defs
-import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.Algebra.Module.PUnit
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Lattice
+public import Mathlib.Algebra.Group.Submonoid.Membership
+public import Mathlib.Algebra.Group.Submonoid.BigOperators
+public import Mathlib.Algebra.Module.Submodule.Defs
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Algebra.Module.PUnit
+public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # The lattice structure on `Submodule`s
@@ -29,6 +31,8 @@ This structure should match the `AddSubmonoid.CompleteLattice` structure, and we
 to unify the APIs where possible.
 
 -/
+
+@[expose] public section
 
 universe v
 
@@ -76,7 +80,6 @@ instance uniqueBot : Unique (⊥ : Submodule R M) :=
   ⟨inferInstance, fun x ↦ Subtype.ext <| (mem_bot R).1 x.mem⟩
 
 instance : OrderBot (Submodule R M) where
-  bot := ⊥
   bot_le p x := by simp +contextual [zero_mem]
 
 protected theorem eq_bot_iff (p : Submodule R M) : p = ⊥ ↔ ∀ x ∈ p, x = (0 : M) :=
@@ -145,7 +148,6 @@ theorem mem_top {x : M} : x ∈ (⊤ : Submodule R M) :=
   trivial
 
 instance : OrderTop (Submodule R M) where
-  top := ⊤
   le_top _ _ _ := trivial
 
 theorem eq_top_iff' {p : Submodule R M} : p = ⊤ ↔ ∀ x, x ∈ p :=
@@ -203,29 +205,37 @@ instance completeLattice : CompleteLattice (Submodule R M) :=
     sInf_le := fun _ _ ↦ sInf_le' }
 
 @[simp]
-theorem inf_coe : ↑(p ⊓ q) = (p ∩ q : Set M) :=
+theorem coe_inf : ↑(p ⊓ q) = (p ∩ q : Set M) :=
   rfl
+
+@[deprecated (since := "2025-08-31")] alias inf_coe := coe_inf
 
 @[simp]
 theorem mem_inf {p q : Submodule R M} {x : M} : x ∈ p ⊓ q ↔ x ∈ p ∧ x ∈ q :=
   Iff.rfl
 
 @[simp]
-theorem sInf_coe (P : Set (Submodule R M)) : (↑(sInf P) : Set M) = ⋂ p ∈ P, ↑p :=
+theorem coe_sInf (P : Set (Submodule R M)) : (↑(sInf P) : Set M) = ⋂ p ∈ P, ↑p :=
   rfl
 
+@[deprecated (since := "2025-08-31")] alias sInf_coe := coe_sInf
+
 @[simp]
-theorem finset_inf_coe {ι} (s : Finset ι) (p : ι → Submodule R M) :
+theorem coe_finsetInf {ι} (s : Finset ι) (p : ι → Submodule R M) :
     (↑(s.inf p) : Set M) = ⋂ i ∈ s, ↑(p i) := by
   letI := Classical.decEq ι
   refine s.induction_on ?_ fun i s _ ih ↦ ?_
   · simp
-  · rw [Finset.inf_insert, inf_coe, ih]
+  · rw [Finset.inf_insert, coe_inf, ih]
     simp
 
+@[deprecated (since := "2025-08-31")] alias finset_inf_coe := coe_finsetInf
+
 @[simp]
-theorem iInf_coe {ι} (p : ι → Submodule R M) : (↑(⨅ i, p i) : Set M) = ⋂ i, ↑(p i) := by
-  rw [iInf, sInf_coe]; simp only [Set.mem_range, Set.iInter_exists, Set.iInter_iInter_eq']
+theorem coe_iInf {ι} (p : ι → Submodule R M) : (↑(⨅ i, p i) : Set M) = ⋂ i, ↑(p i) := by
+  rw [iInf, coe_sInf]; simp only [Set.mem_range, Set.iInter_exists, Set.iInter_iInter_eq']
+
+@[deprecated (since := "2025-08-31")] alias iInf_coe := coe_iInf
 
 @[simp]
 theorem mem_sInf {S : Set (Submodule R M)} {x : M} : x ∈ sInf S ↔ ∀ p ∈ S, x ∈ p :=
@@ -233,16 +243,18 @@ theorem mem_sInf {S : Set (Submodule R M)} {x : M} : x ∈ sInf S ↔ ∀ p ∈ 
 
 @[simp]
 theorem mem_iInf {ι} (p : ι → Submodule R M) {x} : (x ∈ ⨅ i, p i) ↔ ∀ i, x ∈ p i := by
-  rw [← SetLike.mem_coe, iInf_coe, Set.mem_iInter]; rfl
+  rw [← SetLike.mem_coe, coe_iInf, Set.mem_iInter]; rfl
 
 @[simp]
-theorem mem_finset_inf {ι} {s : Finset ι} {p : ι → Submodule R M} {x : M} :
+theorem mem_finsetInf {ι} {s : Finset ι} {p : ι → Submodule R M} {x : M} :
     x ∈ s.inf p ↔ ∀ i ∈ s, x ∈ p i := by
-  simp only [← SetLike.mem_coe, finset_inf_coe, Set.mem_iInter]
+  simp only [← SetLike.mem_coe, coe_finsetInf, Set.mem_iInter]
 
-lemma inf_iInf {ι : Type*} [Nonempty ι] {p : ι → Submodule R M} (q : Submodule R M) :
+@[deprecated (since := "2025-08-31")] alias mem_finset_inf := mem_finsetInf
+
+lemma inf_iInf {ι : Sort*} [Nonempty ι] {p : ι → Submodule R M} (q : Submodule R M) :
     q ⊓ ⨅ i, p i = ⨅ i, q ⊓ p i :=
-  SetLike.coe_injective <| by simpa only [inf_coe, iInf_coe] using Set.inter_iInter _ _
+  SetLike.coe_injective <| by simpa only [coe_inf, coe_iInf] using Set.inter_iInter _ _
 
 theorem mem_sup_left {S T : Submodule R M} : ∀ {x : M}, x ∈ S → x ∈ S ⊔ T := by
   have : S ≤ S ⊔ T := le_sup_left
@@ -298,8 +310,8 @@ theorem toAddSubmonoid_sSup (s : Set (Submodule R M)) :
           apply le_sSup
           rw [Subtype.range_coe_subtype]
           exact ⟨p, hp, rfl⟩
-        | one => simpa only [smul_zero] using zero_mem _
-        | mul _ _ _ _ mx my => revert mx my; simp_rw [smul_add]; exact add_mem }
+        | zero => simpa only [smul_zero] using zero_mem _
+        | add _ _ _ _ mx my => revert mx my; simp_rw [smul_add]; exact add_mem }
   refine le_antisymm (?_ : sSup s ≤ p) ?_
   · exact sSup_le fun q hq ↦ le_sSup <| Set.mem_image_of_mem toAddSubmonoid hq
   · exact sSup_le fun _ ⟨q, hq, hq'⟩ ↦ hq'.symm ▸ le_sSup hq

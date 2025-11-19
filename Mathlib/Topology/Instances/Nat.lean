@@ -3,13 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.Instances.Int
+module
+
+public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Topology.Instances.Int
 
 /-!
 # Topology on the natural numbers
 
 The structure of a metric space on `ℕ` is introduced in this file, induced from `ℝ`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -56,6 +61,8 @@ instance : ProperSpace ℕ :=
   ⟨fun x r => by
     rw [closedBall_eq_Icc]
     exact (Set.finite_Icc _ _).isCompact⟩
+
+instance : IsOrderBornology ℕ := .of_isCompactIcc 0 (by simp) (by simp [Nat.closedBall_eq_Icc])
 
 instance : NoncompactSpace ℕ :=
   noncompactSpace_of_neBot <| by simp only [Filter.cocompact_eq_cofinite, Filter.cofinite_neBot]

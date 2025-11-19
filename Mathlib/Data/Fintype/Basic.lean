@@ -3,19 +3,23 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finite.Defs
-import Mathlib.Data.Finset.BooleanAlgebra
-import Mathlib.Data.Finset.Image
-import Mathlib.Data.Fintype.Defs
-import Mathlib.Data.Fintype.OfMap
-import Mathlib.Data.Fintype.Sets
-import Mathlib.Data.List.FinRange
+module
+
+public import Mathlib.Data.Finite.Defs
+public import Mathlib.Data.Finset.BooleanAlgebra
+public import Mathlib.Data.Finset.Image
+public import Mathlib.Data.Fintype.Defs
+public import Mathlib.Data.Fintype.OfMap
+public import Mathlib.Data.Fintype.Sets
+public import Mathlib.Data.List.FinRange
 
 /-!
 # Instances for finite types
 
 This file is a collection of basic `Fintype` instances for types such as `Fin`, `Prod` and pi types.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -257,7 +261,7 @@ theorem exists_seq_of_forall_finset_exists {α : Type*} (P : α → Prop) (r : �
     set f := seqOfForallFinsetExistsAux P r h' with hf
     have A : ∀ n : ℕ, P (f n) := by
       intro n
-      induction' n using Nat.strong_induction_on with n IH
+      induction n using Nat.strong_induction_on with | _ n IH
       have IH' : ∀ x : Fin n, P (f x) := fun n => IH n.1 n.2
       rw [hf, seqOfForallFinsetExistsAux]
       exact

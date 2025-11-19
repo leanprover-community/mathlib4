@@ -3,9 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker, Johan Commelin
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Div
-import Mathlib.RingTheory.Coprime.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Div
+public import Mathlib.RingTheory.Coprime.Basic
 
 /-!
 # Theory of univariate polynomials
@@ -13,6 +15,8 @@ import Mathlib.RingTheory.Coprime.Basic
 We prove basic results about univariate polynomials.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Ideal.map
 
@@ -130,6 +134,14 @@ theorem mem_nonZeroDivisors_of_trailingCoeff {p : R[X]} (h : p.trailingCoeff ∈
 
 end nonZeroDivisors
 
+lemma _root_.Irreducible.aeval_ne_zero_of_natDegree_ne_one [IsDomain R] [Ring S] [Algebra R S]
+    [FaithfulSMul R S] {p : R[X]} (hp : Irreducible p) (hdeg : p.natDegree ≠ 1) {x : S}
+    (hx : x ∈ (algebraMap R S).range) : p.aeval x ≠ 0 := by
+  obtain ⟨_, rfl⟩ := hx
+  rw [aeval_algebraMap_apply_eq_algebraMap_eval]
+  exact fun heq ↦ hp.not_isRoot_of_natDegree_ne_one hdeg <|
+    FaithfulSMul.algebraMap_injective _ _ <| map_zero (algebraMap R S) ▸ heq
+
 theorem natDegree_pos_of_monic_of_aeval_eq_zero [Nontrivial R] [Semiring S] [Algebra R S]
     [FaithfulSMul R S] {p : R[X]} (hp : p.Monic) {x : S} (hx : aeval x p = 0) :
     0 < p.natDegree :=
@@ -156,7 +168,6 @@ theorem rootMultiplicity_X_sub_C_self [Nontrivial R] {x : R} :
     rootMultiplicity x (X - C x) = 1 :=
   pow_one (X - C x) ▸ rootMultiplicity_X_sub_C_pow x 1
 
--- Porting note: swapped instance argument order
 theorem rootMultiplicity_X_sub_C [Nontrivial R] [DecidableEq R] {x y : R} :
     rootMultiplicity x (X - C y) = if x = y then 1 else 0 := by
   split_ifs with hxy
@@ -281,7 +292,6 @@ theorem exists_multiset_roots [DecidableEq R] :
         rw [count_zero, rootMultiplicity_eq_zero (not_exists.mp h a)]⟩
 termination_by p => natDegree p
 decreasing_by {
-  simp_wf
   apply (Nat.cast_lt (α := WithBot ℕ)).mp
   simp only [degree_eq_natDegree hp, degree_eq_natDegree hd0] at wf
   assumption}

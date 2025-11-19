@@ -3,11 +3,13 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johannes Hölzl, Rémy Degenne
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
-import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Order.Filter.Cofinite
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Lemmas about `Is(Co)Bounded(Under)`
@@ -15,6 +17,8 @@ import Mathlib.Order.Filter.Cofinite
 This file proves several lemmas about
 `IsBounded`, `IsBoundedUnder`, `IsCobounded` and `IsCoboundedUnder`.
 -/
+
+@[expose] public section
 
 open Set Function
 
@@ -91,9 +95,7 @@ variable [Preorder α] {f : Filter β} {u : β → α} {s : Set β}
 
 lemma IsBoundedUnder.eventually_le (h : IsBoundedUnder (· ≤ ·) f u) :
     ∃ a, ∀ᶠ x in f, u x ≤ a := by
-  obtain ⟨a, ha⟩ := h
-  use a
-  exact eventually_map.1 ha
+  tauto
 
 lemma IsBoundedUnder.eventually_ge (h : IsBoundedUnder (· ≥ ·) f u) :
     ∃ a, ∀ᶠ x in f, a ≤ u x :=
@@ -373,7 +375,7 @@ end add_and_sum
 section add_and_sum
 
 variable {α : Type*} {R : Type*} [LinearOrder R] [Add R] {f : Filter α} [f.NeBot]
-  [CovariantClass R R (fun a b ↦ a + b) (· ≤ ·)] [CovariantClass R R (fun a b ↦ b + a) (· ≤ ·)]
+  [AddLeftMono R] [AddRightMono R]
   {u v : α → R}
 
 lemma isCoboundedUnder_ge_add (hu : f.IsBoundedUnder (· ≤ ·) u)

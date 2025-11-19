@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.List.Duplicate
-import Mathlib.Data.List.Sort
+module
+
+public import Mathlib.Data.List.Duplicate
+public import Mathlib.Data.List.Sort
 
 /-!
 # Equivalence between `Fin (length l)` and elements of a list
@@ -24,6 +26,8 @@ Given a list `l`,
   as an `OrderIso`.
 
 -/
+
+@[expose] public section
 
 
 namespace List
@@ -57,8 +61,7 @@ def getEquiv (l : List α) (H : Nodup l) : Fin (length l) ≃ { x // x ∈ l } w
 /-- If `l` lists all the elements of `α` without duplicates, then `List.get` defines
 an equivalence between `Fin l.length` and `α`.
 
-See `List.Nodup.getBijectionOfForallMemList` for a version without
-decidable equality. -/
+See `List.Nodup.getBijectionOfForallMemList` for a version without decidable equality. -/
 @[simps]
 def getEquivOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ l) :
     Fin l.length ≃ α where
@@ -68,6 +71,13 @@ def getEquivOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ 
   right_inv a := by simp
 
 end Nodup
+
+/-- Alternative phrasing of `List.Nodup.getEquivOfForallMemList` using `List.count`. -/
+@[simps!]
+def getEquivOfForallCountEqOne [DecidableEq α] (l : List α) (h : ∀ x, l.count x = 1) :
+    Fin l.length ≃ α :=
+  Nodup.getEquivOfForallMemList _ (List.nodup_iff_count_eq_one.mpr fun _ _ ↦ h _)
+    fun _ ↦ List.count_pos_iff.mp <| h _ ▸ Nat.one_pos
 
 namespace Sorted
 
@@ -105,8 +115,9 @@ then `Sublist l l'`.
 -/
 theorem sublist_of_orderEmbedding_getElem?_eq {l l' : List α} (f : ℕ ↪o ℕ)
     (hf : ∀ ix : ℕ, l[ix]? = l'[f ix]?) : l <+ l' := by
-  induction' l with hd tl IH generalizing l' f
-  · simp
+  induction l generalizing l' f with
+  | nil => simp
+  | cons hd tl IH => ?_
   have : some hd = l'[f 0]? := by simpa using hf 0
   rw [eq_comm, List.getElem?_eq_some_iff] at this
   obtain ⟨w, h⟩ := this
@@ -119,16 +130,13 @@ theorem sublist_of_orderEmbedding_getElem?_eq {l l' : List α} (f : ℕ ↪o ℕ
   have : ∀ ix, tl[ix]? = (l'.drop (f 0 + 1))[f' ix]? := by
     intro ix
     rw [List.getElem?_drop, OrderEmbedding.coe_ofMapLEIff, Nat.add_sub_cancel', ← hf]
-    simp only [getElem?_cons_succ]
+    · simp only [getElem?_cons_succ]
     rw [Nat.succ_le_iff, OrderEmbedding.lt_iff_lt]
     exact ix.succ_pos
   rw [← List.take_append_drop (f 0 + 1) l', ← List.singleton_append]
   apply List.Sublist.append _ (IH _ this)
   rw [List.singleton_sublist, ← h, l'.getElem_take' _ (Nat.lt_succ_self _)]
   exact List.getElem_mem _
-
-@[deprecated (since := "2025-02-15")] alias sublist_of_orderEmbedding_get?_eq :=
-sublist_of_orderEmbedding_getElem?_eq
 
 /-- A `l : List α` is `Sublist l l'` for `l' : List α` iff
 there is `f`, an order-preserving embedding of `ℕ` into `ℕ` such that
@@ -154,9 +162,6 @@ theorem sublist_iff_exists_orderEmbedding_getElem?_eq {l l' : List α} :
         · simpa using hf _
   · rintro ⟨f, hf⟩
     exact sublist_of_orderEmbedding_getElem?_eq f hf
-
-@[deprecated (since := "2025-02-15")] alias sublist_iff_exists_orderEmbedding_get?_eq :=
-sublist_iff_exists_orderEmbedding_getElem?_eq
 
 /-- A `l : List α` is `Sublist l l'` for `l' : List α` iff
 there is `f`, an order-preserving embedding of `Fin l.length` into `Fin l'.length` such that
@@ -189,7 +194,7 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
       dsimp only
       split_ifs with hi hj hj
       · rwa [Fin.val_fin_lt, f.lt_iff_lt]
-      · omega
+      · cutsat
       · exact absurd (h.trans hj) hi
       · simpa using h
     · intro i

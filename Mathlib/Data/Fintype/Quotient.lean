@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yuyang Zhao
 -/
-import Mathlib.Data.List.Pi
-import Mathlib.Data.Fintype.Defs
+module
+
+public import Mathlib.Data.List.Pi
+public import Mathlib.Data.Fintype.Defs
 
 /-!
 # Quotients of families indexed by a finite type
@@ -24,6 +26,8 @@ by a finite type.
   dependent version of `Quotient.finLiftOn`.
 
 -/
+
+@[expose] public section
 
 
 namespace Quotient
@@ -58,7 +62,7 @@ lemma list_ind {l : List ι} {C : (∀ i ∈ l, Quotient (S i)) → Prop}
   |     [] => cast (congr_arg _ (funext₂ nofun)) (f nofun)
   | i :: l => by
     rw [← List.Pi.cons_eta q]
-    induction' List.Pi.head q using Quotient.ind with a
+    induction List.Pi.head q using Quotient.ind with | _ a
     refine @list_ind _ (fun q ↦ C (List.Pi.cons _ _ ⟦a⟧ q)) ?_ (List.Pi.tail q)
     intro as
     rw [List.Pi.cons_map a as (fun i ↦ Quotient.mk (S i))]
@@ -165,7 +169,7 @@ def finRecOn {C : (∀ i, Quotient (S i)) → Sort*}
     (h : ∀ (a b : ∀ i, α i) (h : ∀ i, a i ≈ b i),
       Eq.ndrec (f a) (funext fun i ↦ Quotient.sound (h i)) = f b) :
     C q :=
-  finHRecOn q f (rec_heq_iff_heq.mp <| heq_of_eq <| h · · ·)
+  finHRecOn q f (eqRec_heq_iff_heq.mp <| heq_of_eq <| h · · ·)
 
 @[simp]
 lemma finHRecOn_mk {C : (∀ i, Quotient (S i)) → Sort*}

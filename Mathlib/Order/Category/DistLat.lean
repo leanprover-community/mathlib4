@@ -3,7 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Category.Lat
+module
+
+public import Mathlib.Order.Category.Lat
 
 /-!
 # The category of distributive lattices
@@ -14,6 +16,8 @@ Note that [`DistLat`](https://ncatlab.org/nlab/show/DistLat) in the literature d
 correspond to `DistLat` as we don't require bottom or top elements. Instead, this `DistLat`
 corresponds to `BddDistLat`.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -114,7 +118,8 @@ lemma hom_ext {X Y : DistLat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
 
 @[simp]
 lemma hom_ofHom {X Y : Type u} [DistribLattice X] [DistribLattice Y] (f : LatticeHom X Y) :
-  (ofHom f).hom = f := rfl
+    (ofHom f).hom = f :=
+  rfl
 
 @[simp]
 lemma ofHom_hom {X Y : DistLat} (f : X ⟶ Y) :

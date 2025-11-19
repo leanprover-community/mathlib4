@@ -3,18 +3,22 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Basic
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Basic
 
 /-!
 # The Fréchet derivative: congruence properties
 
-Lemmas about congruence properties of the Frechet derivative under change of function, set, etc.
+Lemmas about congruence properties of the Fréchet derivative under change of function, set, etc.
 
 ## Tags
 
 derivative, differentiable, Fréchet, calculus
 
 -/
+
+@[expose] public section
 
 open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
 

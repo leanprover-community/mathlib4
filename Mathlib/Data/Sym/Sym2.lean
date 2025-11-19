@@ -3,11 +3,13 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Data.Finset.Prod
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Data.Sym.Basic
-import Mathlib.Data.Sym.Sym2.Init
+module
+
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Data.Sym.Basic
+public import Mathlib.Data.Sym.Sym2.Init
 
 /-!
 # The symmetric square
@@ -42,6 +44,8 @@ The element `Sym2.mk (a, b)` can be written as `s(a, b)` for short.
 
 symmetric square, unordered pairs, symmetric powers
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -173,9 +177,7 @@ theorem eq_iff {x y z w : α} : s(x, y) = s(z, w) ↔ x = z ∧ y = w ∨ x = w 
   simp
 
 theorem mk_eq_mk_iff {p q : α × α} : Sym2.mk p = Sym2.mk q ↔ p = q ∨ p = q.swap := by
-  cases p
-  cases q
-  simp only [eq_iff, Prod.mk_inj, Prod.swap_prod_mk]
+  simp
 
 /-- The universal property of `Sym2`; symmetric functions of two arguments are equivalent to
 functions from `Sym2`. Note that when `β` is `Prop`, it can sometimes be more convenient to use
@@ -341,10 +343,7 @@ theorem out_snd_mem (e : Sym2 α) : e.out.2 ∈ e :=
   ⟨e.out.1, by rw [eq_swap, Sym2.mk, e.out_eq]⟩
 
 theorem ball {p : α → Prop} {a b : α} : (∀ c ∈ s(a, b), p c) ↔ p a ∧ p b := by
-  refine ⟨fun h => ⟨h _ <| mem_mk_left _ _, h _ <| mem_mk_right _ _⟩, fun h c hc => ?_⟩
-  obtain rfl | rfl := Sym2.mem_iff.1 hc
-  · exact h.1
-  · exact h.2
+  simp
 
 @[simp] lemma coe_mk {x y : α} : (s(x, y) : Set α) = {x, y} := by ext z; simp
 
@@ -527,7 +526,7 @@ section Relations
 /-! ### Declarations about symmetric relations -/
 
 
-variable {r : α → α → Prop}
+variable {r r₁ r₂ : α → α → Prop}
 
 /-- Symmetric relations define a set on `Sym2 α` by taking all those pairs
 of elements that are related.
@@ -541,6 +540,16 @@ theorem fromRel_proj_prop {sym : Symmetric r} {z : α × α} : Sym2.mk z ∈ fro
 
 theorem fromRel_prop {sym : Symmetric r} {a b : α} : s(a, b) ∈ fromRel sym ↔ r a b :=
   Iff.rfl
+
+theorem fromRel_mono_iff (sym₁ : Symmetric r₁) (sym₂ : Symmetric r₂) :
+    fromRel sym₁ ⊆ fromRel sym₂ ↔ r₁ ≤ r₂ :=
+  ⟨fun hle a b ↦ @hle s(a, b), fun hle ↦ Sym2.ind hle⟩
+
+alias ⟨_, fromRel_mono⟩ := fromRel_mono_iff
+
+/-- `fromRel` induces an order embedding from symmetric relations to `Sym2` sets. -/
+def fromRelOrderEmbedding : { r : α → α → Prop // Symmetric r } ↪o Set (Sym2 α) :=
+  OrderEmbedding.ofMapLEIff (fun r ↦ Sym2.fromRel r.prop) fun _ _ ↦ fromRel_mono_iff ..
 
 theorem fromRel_bot : fromRel (fun (_ _ : α) z => z : Symmetric ⊥) = ∅ := by
   apply Set.eq_empty_of_forall_notMem fun e => _
@@ -593,6 +602,64 @@ theorem fromRel_toRel (s : Set (Sym2 α)) : fromRel (toRel_symmetric s) = s :=
   Set.ext fun z => Sym2.ind (fun _ _ => Iff.rfl) z
 
 end Relations
+
+section ToMultiset
+
+/-- Map an unordered pair to an unordered list. -/
+def toMultiset {α : Type*} (z : Sym2 α) : Multiset α := by
+  refine Sym2.lift ?_ z
+  use (Multiset.ofList [·, ·])
+  simp [List.Perm.swap]
+
+/-- Mapping an unordered pair to an unordered list produces a multiset of size `2`. -/
+lemma card_toMultiset {α : Type*} (z : Sym2 α) : z.toMultiset.card = 2 := by
+  induction z
+  simp [Sym2.toMultiset]
+
+/-- The members of an unordered pair are members of the corresponding unordered list. -/
+@[simp]
+theorem mem_toMultiset {α : Type*} {x : α} {z : Sym2 α} :
+    x ∈ (z.toMultiset : Multiset α) ↔ x ∈ z := by
+  induction z
+  simp [Sym2.toMultiset]
+
+end ToMultiset
+
+section ToFinset
+
+variable [DecidableEq α]
+
+/-- Map an unordered pair to a finite set. -/
+def toFinset (z : Sym2 α) : Finset α := (z.toMultiset : Multiset α).toFinset
+
+/-- The members of an unordered pair are members of the corresponding finite set. -/
+@[simp]
+theorem mem_toFinset {x : α} {z : Sym2 α} : x ∈ z.toFinset ↔ x ∈ z := by
+  rw [← Sym2.mem_toMultiset, Sym2.toFinset, Multiset.mem_toFinset]
+
+lemma toFinset_mk_eq {x y : α} : s(x, y).toFinset = {x, y} := by
+  ext; simp [← Sym2.mem_toFinset, ← Sym2.mem_iff]
+
+/-- Mapping an unordered pair on the diagonal to a finite set produces a finset of size `1`. -/
+theorem card_toFinset_of_isDiag (z : Sym2 α) (h : z.IsDiag) : #(z : Sym2 α).toFinset = 1 := by
+  induction z
+  rw [Sym2.mk_isDiag_iff] at h
+  simp [Sym2.toFinset_mk_eq, h]
+
+/-- Mapping an unordered pair off the diagonal to a finite set produces a finset of size `2`. -/
+theorem card_toFinset_of_not_isDiag (z : Sym2 α) (h : ¬z.IsDiag) : #(z : Sym2 α).toFinset = 2 := by
+  induction z
+  rw [Sym2.mk_isDiag_iff] at h
+  simp [Sym2.toFinset_mk_eq, h]
+
+/-- Mapping an unordered pair to a finite set produces a finset of size `1` if the pair is on the
+diagonal, else of size `2` if the pair is off the diagonal. -/
+theorem card_toFinset (z : Sym2 α) : #(z : Sym2 α).toFinset = if z.IsDiag then 1 else 2 := by
+  by_cases h : z.IsDiag
+  · simp [card_toFinset_of_isDiag z h, h]
+  · simp [card_toFinset_of_not_isDiag z h, h]
+
+end ToFinset
 
 section SymEquiv
 
@@ -717,7 +784,6 @@ def Mem.other' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : α :=
 @[simp]
 theorem other_spec' [DecidableEq α] {a : α} {z : Sym2 α} (h : a ∈ z) : s(a, Mem.other' h) = z := by
   induction z
-  have h' := mem_iff.mp h
   aesop (add norm unfold [Sym2.rec, Quot.rec]) (rule_sets := [Sym2])
 
 @[simp]
@@ -787,13 +853,13 @@ lemma lift_smul_lift {α R N} [SMul R N] (f : { f : α → α → R // ∀ a₁ 
     (g : { g : α → α → N // ∀ a₁ a₂, g a₁ a₂ = g a₂ a₁ }) :
     lift f • lift g = lift ⟨f.val • g.val, fun _ _ => by
       rw [Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', f.prop, g.prop]⟩ := by
-  ext ⟨i,j⟩
+  ext ⟨i, j⟩
   simp_all only [Pi.smul_apply', lift_mk]
 
 /--
 Multiplication as a function from `Sym2`.
 -/
-@[to_additive "Addition as a function from `Sym2`."]
+@[to_additive /-- Addition as a function from `Sym2`. -/]
 def mul {M} [CommMagma M] : Sym2 M → M := lift ⟨(· * ·), mul_comm⟩
 
 @[to_additive (attr := simp)]

@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.MonoidAlgebra.Division
-import Mathlib.Algebra.MvPolynomial.Basic
+module
+
+public import Mathlib.Algebra.MonoidAlgebra.Division
+public import Mathlib.Algebra.MvPolynomial.Basic
 
 /-!
 # Division of `MvPolynomial` by monomials
@@ -26,6 +28,8 @@ Where possible, the results in this file should be first proved in the generalit
 `AddMonoidAlgebra`, and then the versions specialized to `MvPolynomial` proved in terms of these.
 
 -/
+
+@[expose] public section
 
 
 variable {σ R : Type*} [CommSemiring R]
@@ -189,14 +193,11 @@ theorem monomial_dvd_monomial {r s : R} {i j : σ →₀ ℕ} :
     have hj := hx j
     have hi := hx i
     classical
-      simp_rw [coeff_monomial, if_pos] at hj hi
-      simp_rw [coeff_monomial_mul'] at hi hj
-      split_ifs at hi hj with hi hi
-      · exact ⟨Or.inr hi, _, hj⟩
-      · exact ⟨Or.inl hj, hj.symm ▸ dvd_zero _⟩
-    -- Porting note: two goals remain at this point in Lean 4
-    · simp_all only [or_true, dvd_mul_right, and_self]
-    · simp_all only [ite_self, le_refl, ite_true, dvd_mul_right, or_false, and_self]
+    simp_rw [coeff_monomial, if_pos] at hj hi
+    simp_rw [coeff_monomial_mul'] at hi hj
+    split_ifs at hj with hi
+    · exact ⟨Or.inr hi, _, hj⟩
+    · exact ⟨Or.inl hj, hj.symm ▸ dvd_zero _⟩
   · rintro ⟨h | hij, d, rfl⟩
     · simp_rw [h, monomial_zero, dvd_zero]
     · refine ⟨monomial (j - i) d, ?_⟩

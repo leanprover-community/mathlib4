@@ -3,7 +3,9 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.SetTheory.Cardinal.Arithmetic
+module
+
+public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 # Cardinality of continuum
@@ -13,8 +15,10 @@ We also prove some `simp` lemmas about cardinal arithmetic involving `𝔠`.
 
 ## Notation
 
-- `𝔠` : notation for `Cardinal.continuum` in locale `Cardinal`.
+- `𝔠` : notation for `Cardinal.continuum` in scope `Cardinal`.
 -/
+
+@[expose] public section
 
 
 namespace Cardinal

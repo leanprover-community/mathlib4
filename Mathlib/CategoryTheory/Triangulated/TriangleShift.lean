@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.CategoryTheory.Triangulated.Rotate
-import Mathlib.Algebra.Ring.NegOnePow
+module
+
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.CategoryTheory.Triangulated.Rotate
+public import Mathlib.Algebra.Ring.NegOnePow
 
 /-!
 # The shift on the category of triangles
@@ -19,6 +21,8 @@ The shift on the category of triangles was also obtained by Adam Topaz,
 Johan Commelin and Andrew Yang during the Liquid Tensor Experiment.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -72,7 +76,7 @@ noncomputable def Triangle.shiftFunctorZero : Triangle.shiftFunctor C 0 ≅ 𝟭
         simp only [one_smul, assoc, shiftFunctorComm_zero_hom_app,
           ← Functor.map_comp, Iso.inv_hom_id_app, Functor.id_obj, Functor.map_id,
           comp_id, NatTrans.naturality, Functor.id_map]))
-    (by aesop_cat)
+    (by cat_disch)
 
 /-- The canonical isomorphism
 `Triangle.shiftFunctor C n ≅ Triangle.shiftFunctor C a ⋙ Triangle.shiftFunctor C b`
@@ -104,7 +108,7 @@ noncomputable def Triangle.shiftFunctorAdd' (a b n : ℤ) (h : a + b = n) :
         erw [← NatTrans.naturality_assoc]
         simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, Int.negOnePow_add,
           shiftFunctorComm_hom_app_comp_shift_shiftFunctorAdd_hom_app, add_comm a]))
-    (by aesop_cat)
+    (by cat_disch)
 
 /-- Rotating triangles three times identifies with the shift by `1`. -/
 noncomputable def rotateRotateRotateIso :
@@ -112,7 +116,7 @@ noncomputable def rotateRotateRotateIso :
   NatIso.ofComponents
     (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
       (by simp) (by simp) (by simp))
-    (by aesop_cat)
+    (by cat_disch)
 
 /-- Rotating triangles three times backwards identifies with the shift by `-1`. -/
 noncomputable def invRotateInvRotateInvRotateIso :
@@ -124,7 +128,7 @@ noncomputable def invRotateInvRotateInvRotateIso :
       (by
         dsimp [shiftFunctorCompIsoId]
         simp [shiftFunctorComm_eq C _ _ _ (add_neg_cancel (1 : ℤ))]))
-    (by aesop_cat)
+    (by cat_disch)
 
 /-- The inverse of the rotation of triangles can be expressed using a double
 rotation and the shift by `-1`. -/

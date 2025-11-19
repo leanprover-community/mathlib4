@@ -3,7 +3,9 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Andrew Yang
 -/
-import Mathlib.CategoryTheory.Monoidal.Functor
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Functor
 
 /-!
 # Endofunctors as a monoidal category.
@@ -16,6 +18,8 @@ and show that when `C` itself is monoidal, it embeds via a monoidal functor into
 Can we use this to show coherence results, e.g. a cheap proof that `λ_ (𝟙_ C) = ρ_ (𝟙_ C)`?
 I suspect this is harder than is usually made out.
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -73,22 +77,22 @@ attribute [local instance] endofunctorMonoidalCategory
     (α ▷ H).app X = H.map (α.app X) := rfl
 
 @[simp] theorem endofunctorMonoidalCategory_associator_hom_app (F G H : C ⥤ C) (X : C) :
-  (α_ F G H).hom.app X = 𝟙 _ := rfl
+    (α_ F G H).hom.app X = 𝟙 _ := rfl
 
 @[simp] theorem endofunctorMonoidalCategory_associator_inv_app (F G H : C ⥤ C) (X : C) :
-  (α_ F G H).inv.app X = 𝟙 _ := rfl
+    (α_ F G H).inv.app X = 𝟙 _ := rfl
 
 @[simp] theorem endofunctorMonoidalCategory_leftUnitor_hom_app (F : C ⥤ C) (X : C) :
-  (λ_ F).hom.app X = 𝟙 _ := rfl
+    (λ_ F).hom.app X = 𝟙 _ := rfl
 
 @[simp] theorem endofunctorMonoidalCategory_leftUnitor_inv_app (F : C ⥤ C) (X : C) :
-  (λ_ F).inv.app X = 𝟙 _ := rfl
+    (λ_ F).inv.app X = 𝟙 _ := rfl
 
 @[simp] theorem endofunctorMonoidalCategory_rightUnitor_hom_app (F : C ⥤ C) (X : C) :
-  (ρ_ F).hom.app X = 𝟙 _ := rfl
+    (ρ_ F).hom.app X = 𝟙 _ := rfl
 
 @[simp] theorem endofunctorMonoidalCategory_rightUnitor_inv_app (F : C ⥤ C) (X : C) :
-  (ρ_ F).inv.app X = 𝟙 _ := rfl
+    (ρ_ F).inv.app X = 𝟙 _ := rfl
 
 namespace MonoidalCategory
 

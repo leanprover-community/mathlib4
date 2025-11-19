@@ -1,24 +1,25 @@
 /-
-Copyright (c) 2018 Mario Carneiro. All rights reserved.
+Copyright (c) 2023 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen,
-Kim Morrison, Chris Hughes, Anne Baanen, Junyan Xu
+Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Field.Opposite
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.LinearAlgebra.Dimension.Constructions
-import Mathlib.SetTheory.Cardinal.Subfield
+module
+
+public import Mathlib.Algebra.Field.Opposite
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.LinearAlgebra.Dimension.Constructions
+public import Mathlib.SetTheory.Cardinal.Subfield
 
 /-!
 # Erdős-Kaplansky theorem
-
-For modules over a division ring, we have
 
 * `rank_dual_eq_card_dual_of_aleph0_le_rank`: The **Erdős-Kaplansky Theorem** which says that
   the dimension of an infinite-dimensional dual space over a division ring has dimension
   equal to its cardinality.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

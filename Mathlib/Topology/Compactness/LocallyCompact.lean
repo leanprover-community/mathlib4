@@ -3,12 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Topology.Compactness.Compact
+module
+
+public import Mathlib.Topology.Compactness.Compact
 /-!
 # Locally compact spaces
 
 This file contains basic results about locally compact spaces.
 -/
+
+@[expose] public section
 
 open Set Filter Topology TopologicalSpace
 
@@ -191,9 +195,6 @@ theorem Topology.IsInducing.locallyCompactSpace [LocallyCompactSpace Y] {f : X �
   refine .of_hasBasis this fun x s ⟨⟨_, hs⟩, hsU⟩ ↦ ?_
   rw [hf.isCompact_preimage_iff]
   exacts [hs.inter_right hZ, hUZ ▸ by gcongr]
-
-@[deprecated (since := "2024-10-28")]
-alias Inducing.locallyCompactSpace := IsInducing.locallyCompactSpace
 
 protected theorem Topology.IsClosedEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f : X → Y}
     (hf : IsClosedEmbedding f) : LocallyCompactSpace X :=

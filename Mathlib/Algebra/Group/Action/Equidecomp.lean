@@ -3,9 +3,11 @@ Copyright (c) 2024 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Logic.Equiv.PartialEquiv
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Logic.Equiv.PartialEquiv
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Equidecompositions
@@ -41,7 +43,7 @@ We take this as our definition as it is easier to work with. It is implemented a
 
 ## TODO
 
-* Prove that if two sets equidecompose into subsets of eachother, they are equidecomposable
+* Prove that if two sets equidecompose into subsets of each other, they are equidecomposable
   (Schroeder-Bernstein type theorem)
 * Define equidecomposability into subsets as a preorder on sets and
   prove that its induced equivalence relation is equidecomposability.
@@ -49,6 +51,8 @@ We take this as our definition as it is easier to work with. It is implemented a
   using partitions.
 
 -/
+
+@[expose] public section
 
 variable {X G : Type*} {A B C : Set X}
 

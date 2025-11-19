@@ -3,10 +3,12 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.CharP.Basic
-import Mathlib.Algebra.CharP.Reduced
-import Mathlib.FieldTheory.KummerPolynomial
-import Mathlib.FieldTheory.Separable
+module
+
+public import Mathlib.Algebra.CharP.Basic
+public import Mathlib.Algebra.CharP.Reduced
+public import Mathlib.FieldTheory.KummerPolynomial
+public import Mathlib.FieldTheory.Separable
 
 /-!
 
@@ -32,6 +34,8 @@ prime characteristic.
   and `L` is also a perfect field.
 
 -/
+
+@[expose] public section
 
 open Function Polynomial
 
@@ -151,8 +155,64 @@ theorem frobeniusEquiv_symm_comp_frobenius :
   ext; simp
 
 @[simp]
+theorem coe_frobenius_comp_coe_frobeniusEquiv_symm :
+    ⇑(frobenius R p) ∘ ⇑(frobeniusEquiv R p).symm = id := by
+  ext
+  simp
+
+@[simp]
+theorem coe_frobeniusEquiv_symm_comp_coe_frobenius :
+    ⇑(frobeniusEquiv R p).symm ∘ ⇑(frobenius R p) = id := by
+  ext
+  simp
+
+@[simp]
 theorem frobeniusEquiv_symm_pow_p (x : R) : ((frobeniusEquiv R p).symm x) ^ p = x :=
   frobenius_apply_frobeniusEquiv_symm R p x
+
+@[simp]
+theorem iterate_frobeniusEquiv_symm_pow_p_pow (x : R) (n : ℕ) :
+    ((frobeniusEquiv R p).symm ^[n]) x ^ (p ^ n) = x := by
+  induction n generalizing x with
+  | zero => simp
+  | succ n ih => simp [pow_succ, pow_mul, ih]
+
+section commute
+
+variable {R S : Type*} [CommSemiring R] [CommSemiring S] (p : ℕ)
+    [ExpChar R p] [PerfectRing R p] [ExpChar S p] [PerfectRing S p]
+
+/--
+The `(frobeniusEquiv R p).symm` version of `MonoidHom.map_frobenius`.
+`(frobeniusEquiv R p).symm` commute with any monoid homomorphisms.
+-/
+theorem MonoidHom.map_frobeniusEquiv_symm (f : R →* S) (x : R) :
+    f ((frobeniusEquiv R p).symm x) = (frobeniusEquiv S p).symm (f x) := by
+  apply_fun (frobeniusEquiv S p)
+  simp [← MonoidHom.map_frobenius]
+
+theorem RingHom.map_frobeniusEquiv_symm (f : R →+* S) (x : R) :
+    f ((frobeniusEquiv R p).symm x) = (frobeniusEquiv S p).symm (f x) := by
+  apply_fun (frobeniusEquiv S p)
+  simp [← RingHom.map_frobenius]
+
+theorem MonoidHom.map_iterate_frobeniusEquiv_symm (f : R →* S) (n : ℕ) (x : R) :
+    f (((frobeniusEquiv R p).symm ^[n]) x) = ((frobeniusEquiv S p).symm ^[n]) (f x) := by
+  apply_fun (frobeniusEquiv S p)^[n]
+  · simp only [coe_frobeniusEquiv, ← map_iterate_frobenius]
+    · rw [← Function.comp_apply (f := (⇑(frobenius R p))^[n]),
+          ← Function.comp_apply (f := (⇑(frobenius S p))^[n]),
+          ← Function.Commute.comp_iterate, ← Function.Commute.comp_iterate]
+      · simp
+      all_goals rw [← coe_frobeniusEquiv]; simp [Function.Commute, Function.Semiconj]
+  apply Function.Injective.iterate
+  simp
+
+theorem RingHom.map_iterate_frobeniusEquiv_symm (f : R →+* S) (n : ℕ) (x : R) :
+    f (((frobeniusEquiv R p).symm ^[n]) x) = ((frobeniusEquiv S p).symm ^[n]) (f x) :=
+  MonoidHom.map_iterate_frobeniusEquiv_symm p (f.toMonoidHom) n x
+
+end commute
 
 theorem injective_pow_p {x y : R} (h : x ^ p = y ^ p) : x = y := (frobeniusEquiv R p).injective h
 
@@ -358,7 +418,7 @@ a bijection from the set of roots of `Polynomial.expand R p f` to the set of roo
 It's given by `x ↦ x ^ p`, see `rootsExpandEquivRoots_apply`. -/
 noncomputable def rootsExpandEquivRoots : (expand R p f).roots.toFinset ≃ f.roots.toFinset :=
   ((frobeniusEquiv R p).image _).trans <| .setCongr <| show _ '' setOf (· ∈ _) = setOf (· ∈ _) by
-    classical simp_rw [← roots_expand_image_frobenius (p := p) (f := f), Finset.mem_val,
+    classical simp_rw [← roots_expand_image_frobenius (p := p) (f := f),
       Finset.setOf_mem, Finset.coe_image, RingEquiv.toEquiv_eq_coe, EquivLike.coe_coe,
       frobeniusEquiv_apply]
 
@@ -373,7 +433,7 @@ noncomputable def rootsExpandPowEquivRoots (n : ℕ) :
   ((iterateFrobeniusEquiv R p n).image _).trans <|
     .setCongr <| show _ '' (setOf (· ∈ _)) = setOf (· ∈ _) by
     classical simp_rw [← roots_expand_image_iterateFrobenius (p := p) (f := f) (n := n),
-      Finset.mem_val, Finset.setOf_mem, Finset.coe_image, RingEquiv.toEquiv_eq_coe,
+      Finset.setOf_mem, Finset.coe_image, RingEquiv.toEquiv_eq_coe,
       EquivLike.coe_coe, iterateFrobeniusEquiv_apply]
 
 @[simp]

@@ -3,9 +3,11 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
-import Mathlib.LinearAlgebra.QuadraticForm.Prod
+module
+
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
+public import Mathlib.LinearAlgebra.QuadraticForm.Prod
 
 /-!
 # Quadratic form structures related to `Module.Dual`
@@ -20,6 +22,8 @@ import Mathlib.LinearAlgebra.QuadraticForm.Prod
   from `(Q.prod <| -Q)` to `QuadraticForm.dualProd R M`.
 
 -/
+
+@[expose] public section
 
 
 variable (R M N : Type*)
@@ -37,7 +41,7 @@ def dualProd : LinearMap.BilinForm R (Module.Dual R M × M) :=
     (applyₗ.comp (snd R (Module.Dual R M) M)).compl₂ (fst R (Module.Dual R M) M) +
       ((applyₗ.comp (snd R (Module.Dual R M) M)).compl₂ (fst R (Module.Dual R M) M)).flip
 
-theorem isSymm_dualProd : (dualProd R M).IsSymm := fun _x _y => add_comm _ _
+theorem isSymm_dualProd : (dualProd R M).IsSymm := ⟨fun _x _y => add_comm _ _⟩
 
 end Semiring
 

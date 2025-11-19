@@ -4,19 +4,23 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.GroupWithZero.Action.Basic
-import Mathlib.Algebra.GroupWithZero.Action.Units
-import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.Algebra.Module.Hom
-import Mathlib.Algebra.Module.LinearMap.Basic
-import Mathlib.Algebra.Module.LinearMap.End
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Algebra.Module.Prod
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.GroupWithZero.Action.Basic
+public import Mathlib.Algebra.GroupWithZero.Action.Units
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Algebra.Module.Hom
+public import Mathlib.Algebra.Module.LinearMap.Basic
+public import Mathlib.Algebra.Module.LinearMap.End
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Algebra.Module.Prod
 
 /-!
 # Further results on (semi)linear equivalences.
 -/
+
+@[expose] public section
 
 open Function
 
@@ -91,6 +95,8 @@ lemma mul_eq_trans (f g : M ≃ₗ[R] M) : f * g = g.trans f := rfl
 
 @[simp]
 lemma coe_one : ↑(1 : M ≃ₗ[R] M) = id := rfl
+
+@[simp] lemma coe_inv (f : M ≃ₗ[R] M) : ⇑f⁻¹ = ⇑f.symm := rfl
 
 @[simp]
 lemma coe_toLinearMap_one : (↑(1 : M ≃ₗ[R] M) : M →ₗ[R] M) = LinearMap.id := rfl
@@ -659,8 +665,7 @@ theorem arrowCongr_trans
     (e₁ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₁' : M₁' ≃ₛₗ[σ₁'₂'] M₂')
     (e₂ : M₂ ≃ₛₗ[σ₂₃] M₃) (e₂' : M₂' ≃ₛₗ[σ₂'₃'] M₃') :
     ((arrowCongr e₁ e₁').trans (arrowCongr e₂ e₂' : (M₂ →ₛₗ[σ₂₂'] M₂') ≃ₛₗ[σ₂'₃'] _)) =
-      arrowCongr (e₁.trans e₂) (e₁'.trans e₂')
-      :=
+      arrowCongr (e₁.trans e₂) (e₁'.trans e₂') :=
   rfl
 
 /-- If `M` and `M₂` are linearly isomorphic then the two spaces of linear maps from `M` and `M₂` to
@@ -700,7 +705,6 @@ theorem conj_trans (e₁ : M₁' ≃ₛₗ[σ₁'₂'] M₂') (e₂ : M₂' ≃�
 
 @[simp]
 theorem conj_id (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') : e.conj LinearMap.id = LinearMap.id := by
-  ext
   simp [conj_apply]
 
 @[simp]

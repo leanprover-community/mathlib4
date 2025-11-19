@@ -3,16 +3,17 @@ Copyright (c) 2018 Guy Leroy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.GroupWithZero.Semiconj
-import Mathlib.Algebra.Group.Commute.Units
-import Mathlib.Data.Set.Operations
-import Mathlib.Order.Basic
-import Mathlib.Order.Bounds.Defs
-import Mathlib.Algebra.Group.Int.Defs
-import Mathlib.Data.Int.Basic
-import Batteries.Data.Nat.Gcd
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Nat.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Semiconj
+public import Mathlib.Algebra.Group.Commute.Units
+public import Mathlib.Data.Set.Operations
+public import Mathlib.Order.Basic
+public import Mathlib.Order.Bounds.Defs
+public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Data.Int.Basic
+public import Mathlib.Algebra.Divisibility.Basic
+public import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # Extended GCD and divisibility over ℤ
@@ -31,6 +32,8 @@ import Mathlib.Algebra.Group.Nat.Defs
 
 Bézout's lemma, Bezout's lemma
 -/
+
+@[expose] public section
 
 /-! ### Extended Euclidean algorithm -/
 
@@ -136,8 +139,8 @@ theorem exists_mul_emod_eq_gcd {k n : ℕ} (hk : gcd n k < k) : ∃ m, n * m % k
   simp only at key
   rw [Int.add_mul_emod_self_left, ← Int.natCast_mod, Int.toNat_natCast, mod_eq_of_lt hk] at key
   refine ⟨(n.gcdA k % k).toNat, Eq.trans (Int.ofNat.inj ?_) key.symm⟩
-  rw [Int.ofNat_eq_coe, Int.natCast_mod, Int.natCast_mul,
-    Int.toNat_of_nonneg (Int.emod_nonneg _ hk'), Int.ofNat_eq_coe,
+  rw [Int.ofNat_eq_natCast, Int.natCast_mod, Int.natCast_mul,
+    Int.toNat_of_nonneg (Int.emod_nonneg _ hk'), Int.ofNat_eq_natCast,
     Int.toNat_of_nonneg (Int.emod_nonneg _ hk'), Int.mul_emod, Int.emod_emod, ← Int.mul_emod]
 
 theorem exists_mul_emod_eq_one_of_coprime {k n : ℕ} (hkn : Coprime n k) (hk : 1 < k) :
@@ -179,13 +182,8 @@ theorem gcd_eq_gcd_ab : ∀ x y : ℤ, (gcd x y : ℤ) = x * gcdA x y + y * gcdB
 theorem lcm_def (i j : ℤ) : lcm i j = Nat.lcm (natAbs i) (natAbs j) :=
   rfl
 
-@[deprecated (since := "2025-04-04")] alias coe_nat_lcm := Int.lcm_natCast_natCast
-
 alias gcd_div := gcd_ediv
 alias gcd_div_gcd_div_gcd := gcd_ediv_gcd_ediv_gcd
-
-@[deprecated (since := "2025-04-04")] alias gcd_dvd_gcd_mul_left := gcd_dvd_gcd_mul_left_left
-@[deprecated (since := "2025-04-04")] alias gcd_dvd_gcd_mul_right := gcd_dvd_gcd_mul_right_left
 
 /-- If `gcd a (m * n) = 1`, then `gcd a m = 1`. -/
 theorem gcd_eq_one_of_gcd_mul_right_eq_one_left {a : ℤ} {m n : ℕ} (h : a.gcd (m * n) = 1) :
@@ -218,12 +216,12 @@ theorem gcd_dvd_iff {a b : ℤ} {n : ℕ} : gcd a b ∣ n ↔ ∃ x y : ℤ, ↑
     exact ⟨_, _, rfl⟩
   · rintro ⟨x, y, h⟩
     rw [← Int.natCast_dvd_natCast, h]
-    exact Int.dvd_add (dvd_mul_of_dvd_left (gcd_dvd_left ..) _)
-      (dvd_mul_of_dvd_left (gcd_dvd_right ..) y)
+    exact Int.dvd_add (dvd_mul_of_dvd_left (gcd_dvd_left ..))
+      (dvd_mul_of_dvd_left (gcd_dvd_right ..))
 
 theorem gcd_greatest {a b d : ℤ} (hd_pos : 0 ≤ d) (hda : d ∣ a) (hdb : d ∣ b)
     (hd : ∀ e : ℤ, e ∣ a → e ∣ b → e ∣ d) : d = gcd a b :=
-  dvd_antisymm hd_pos (ofNat_zero_le (gcd a b)) (dvd_coe_gcd hda hdb)
+  dvd_antisymm hd_pos (natCast_nonneg (gcd a b)) (dvd_coe_gcd hda hdb)
     (hd _ (gcd_dvd_left ..) (gcd_dvd_right ..))
 
 /-- Euclid's lemma: if `a ∣ b * c` and `gcd a c = 1` then `a ∣ b`.
@@ -235,7 +233,7 @@ theorem dvd_of_dvd_mul_left_of_gcd_one {a b c : ℤ} (habc : a ∣ b * c) (hab :
   simp only [hab, Int.ofNat_zero, Int.natCast_succ, zero_add] at this
   have : b * a * gcdA a c + b * c * gcdB a c = b := by simp [mul_assoc, ← Int.mul_add, ← this]
   rw [← this]
-  exact Int.dvd_add (dvd_mul_of_dvd_left (dvd_mul_left a b) _) (dvd_mul_of_dvd_left habc _)
+  exact Int.dvd_add (dvd_mul_of_dvd_left (dvd_mul_left a b)) (dvd_mul_of_dvd_left habc)
 
 /-- Euclid's lemma: if `a ∣ b * c` and `gcd a b = 1` then `a ∣ c`.
 Compare with `IsCoprime.dvd_of_dvd_mul_right` and
@@ -273,10 +271,10 @@ variable [GroupWithZero α] {a b : α} {m n : ℕ}
 protected lemma Commute.pow_eq_pow_iff_of_coprime (hab : Commute a b) (hmn : m.Coprime n) :
     a ^ m = b ^ n ↔ ∃ c, a = c ^ n ∧ b = c ^ m := by
   refine ⟨fun h ↦ ?_, by rintro ⟨c, rfl, rfl⟩; rw [← pow_mul, ← pow_mul']⟩
-  by_cases m = 0; · aesop
-  by_cases n = 0; · aesop
-  by_cases hb : b = 0; · exact ⟨0, by aesop⟩
-  by_cases ha : a = 0; · exact ⟨0, by have := h.symm; aesop⟩
+  by_cases m = 0; · simp_all
+  by_cases n = 0; · simp_all
+  by_cases hb : b = 0; · exact ⟨0, by simp_all⟩
+  by_cases ha : a = 0; · exact ⟨0, by have := h.symm; simp_all⟩
   refine ⟨a ^ Nat.gcdB m n * b ^ Nat.gcdA m n, ?_, ?_⟩ <;>
   · refine (pow_one _).symm.trans ?_
     conv_lhs => rw [← zpow_natCast, ← hmn, Nat.gcd_eq_gcd_ab]

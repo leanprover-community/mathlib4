@@ -3,8 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.End
-import Mathlib.Algebra.Ring.Equiv
+module
+
+public import Mathlib.Algebra.Group.End
+public import Mathlib.Algebra.Ring.Equiv
 
 /-!
 # Ring automorphisms
@@ -21,6 +23,8 @@ multiplication in `Equiv.Perm`, and multiplication in `CategoryTheory.End`, but 
 
 ring aut
 -/
+
+@[expose] public section
 
 variable (R : Type*) [Mul R] [Add R]
 
@@ -61,5 +65,30 @@ def toPerm : RingAut R →* Equiv.Perm R where
   toFun := RingEquiv.toEquiv
   map_one' := rfl
   map_mul' _ _ := rfl
+
+variable {R}
+
+theorem one_eq_refl : (1 : R ≃+* R) = RingEquiv.refl R := rfl
+
+@[simp]
+theorem one_apply (x : R) : (1 : R ≃+* R) x = x := rfl
+
+@[simp]
+theorem coe_one : ⇑(1 : R ≃+* R) = id := rfl
+
+@[simp]
+theorem mul_apply (f g : R ≃+* R) (x : R) : (f * g) x = f (g x) := rfl
+
+@[simp]
+theorem inv_apply (f : R ≃+* R) (x : R) : f⁻¹ x = f.symm x := rfl
+
+@[simp]
+theorem coe_pow (f : R ≃+* R) (n : ℕ) : ⇑(f ^ n) = f^[n] := by
+  induction n with
+  | zero =>
+    simp
+  | succ n ih =>
+    ext
+    simp [pow_succ, ih]
 
 end RingAut

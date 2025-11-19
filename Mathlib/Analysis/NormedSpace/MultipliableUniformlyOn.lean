@@ -3,17 +3,21 @@ Copyright (c) 2025 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.NormedSpace.FunctionSeries
-import Mathlib.Analysis.SpecialFunctions.Log.Summable
-import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
-import Mathlib.Topology.Algebra.IsUniformGroup.Order
+module
+
+public import Mathlib.Analysis.Normed.Group.FunctionSeries
+public import Mathlib.Analysis.SpecialFunctions.Log.Summable
+public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
+public import Mathlib.Topology.Algebra.IsUniformGroup.Order
 
 /-!
 # Uniform convergence of products of functions
 
 We gather some results about the uniform convergence of infinite products, in particular those of
-the form `∏' i, (1 + f i x)` for a sequence `f` of complex valued functions.
+the form `∏' i, (1 + f i x)` for a sequence `f` of complex-valued functions.
 -/
+
+@[expose] public section
 
 open Filter Function Complex Finset Topology
 
@@ -65,8 +69,7 @@ lemma hasProdUniformlyOn_of_clog (hf : SummableUniformlyOn (fun i x ↦ log (f i
   have h1 := hr.tsum_eqOn hK
   simp only [hasSumUniformlyOn_iff_tendstoUniformlyOn] at hr
   refine ((hr K hK).comp_cexp ?_).congr ?_
-  · simp +contextual [← h1 _]
-    exact hg K hK
+  · simpa +contextual [← h1 _] using hg K hK
   · filter_upwards with s i hi using by simp [exp_sum, fun y ↦ exp_log (hfn K hK i hi y)]
 
 lemma multipliableUniformlyOn_of_clog (hf : SummableUniformlyOn (fun i x ↦ log (f i x)) 𝔖)

@@ -3,7 +3,9 @@ Copyright (c) 2024 Lagrange Mathematics and Computing Research Center. All right
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anthony Bordg
 -/
-import Mathlib.Data.Rel
+module
+
+public import Mathlib.Data.Rel
 
 /-!
 # The Galois Connection Induced by a Relation
@@ -32,9 +34,11 @@ We define `R.leftFixedPoints` (resp. `R.rightFixedPoints`) as the set of fixed p
 relation, Galois connection, induced bijection, fixed points
 -/
 
-variable {α β : Type*} (R : Rel α β)
+@[expose] public section
 
-namespace Rel
+variable {α β : Type*} (R : SetRel α β)
+
+namespace SetRel
 
 /-! ### Pairs of adjoint maps defined by relations -/
 
@@ -97,4 +101,4 @@ theorem leftDual_rightDual_le_of_le {I I' : Set β} (h : I' ∈ R.rightFixedPoin
   apply R.gc_leftDual_rightDual.monotone_u
   exact h₁
 
-end Rel
+end SetRel

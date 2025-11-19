@@ -3,8 +3,10 @@ Copyright (c) 2022 María Inés de Frutos-Fernández, Yaël Dillies. All rights 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Yaël Dillies
 -/
-import Mathlib.Data.NNReal.Defs
-import Mathlib.Order.ConditionallyCompleteLattice.Group
+module
+
+public import Mathlib.Data.NNReal.Defs
+public import Mathlib.Order.ConditionallyCompleteLattice.Group
 
 /-!
 # Group seminorms
@@ -42,6 +44,8 @@ having a superfluous `add_le'` field in the resulting structure. The same applie
 
 norm, seminorm
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -276,8 +280,8 @@ instance semilatticeSup : SemilatticeSup (GroupSeminorm E) :=
   DFunLike.coe_injective.semilatticeSup _ coe_sup
 
 /-- Composition of a group seminorm with a monoid homomorphism as a group seminorm. -/
-@[to_additive "Composition of an additive group seminorm with an additive monoid homomorphism as an
-additive group seminorm."]
+@[to_additive /-- Composition of an additive group seminorm with an additive monoid homomorphism as
+an additive group seminorm. -/]
 def comp (p : GroupSeminorm E) (f : F →* E) : GroupSeminorm F where
   toFun x := p (f x)
   map_one' := by simp_rw [f.map_one, map_one_eq_zero p]

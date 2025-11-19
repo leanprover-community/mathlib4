@@ -3,10 +3,12 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.GroupTheory.Congruence.Defs
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.GroupTheory.Congruence.Defs
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Congruence relations on rings
@@ -28,6 +30,8 @@ Most of the time you likely want to use the `Ideal.Quotient` API that is built o
 * Copy across more API from `Con` and `AddCon` in `GroupTheory/Congruence.lean`.
 -/
 
+@[expose] public section
+
 
 /-- A congruence relation on a type with an addition and multiplication is an equivalence relation
 which preserves both. -/
@@ -42,7 +46,7 @@ add_decl_doc RingCon.toAddCon
 variable {R : Type*}
 
 /-- The inductively defined smallest ring congruence relation containing a given binary
-    relation. -/
+relation. -/
 inductive RingConGen.Rel [Add R] [Mul R] (r : R → R → Prop) : R → R → Prop
   | of : ∀ x y, r x y → RingConGen.Rel r x y
   | refl : ∀ x, RingConGen.Rel r x x
@@ -54,7 +58,7 @@ inductive RingConGen.Rel [Add R] [Mul R] (r : R → R → Prop) : R → R → Pr
       RingConGen.Rel r (w * y) (x * z)
 
 /-- The inductively defined smallest ring congruence relation containing a given binary
-    relation. -/
+relation. -/
 def ringConGen [Add R] [Mul R] (r : R → R → Prop) : RingCon R where
   r := RingConGen.Rel r
   iseqv := ⟨RingConGen.Rel.refl, @RingConGen.Rel.symm _ _ _ _, @RingConGen.Rel.trans _ _ _ _⟩

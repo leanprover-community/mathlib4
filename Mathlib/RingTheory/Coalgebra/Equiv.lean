@@ -3,7 +3,9 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.RingTheory.Coalgebra.Hom
+module
+
+public import Mathlib.RingTheory.Coalgebra.Hom
 
 /-!
 # Isomorphisms of `R`-coalgebras
@@ -15,10 +17,12 @@ This file defines bundled isomorphisms of `R`-coalgebras. We simply mimic the ea
 
 * `CoalgEquiv R A B`: the type of `R`-coalgebra isomorphisms between `A` and `B`.
 
-## Notations
+## Notation
 
 * `A ≃ₗc[R] B` : `R`-coalgebra equivalence from `A` to `B`.
 -/
+
+@[expose] public section
 
 universe u v w
 

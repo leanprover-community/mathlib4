@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Preadditive.FunctorCategory
-import Mathlib.CategoryTheory.Linear.Basic
-import Mathlib.CategoryTheory.Center.Basic
+module
+
+public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
+public import Mathlib.CategoryTheory.Linear.Basic
+public import Mathlib.CategoryTheory.Center.Basic
 
 /-!
 # Center of a linear category
@@ -15,6 +17,8 @@ and conversely, if `C` is a preadditive category, and `φ : R →+* CatCenter C`
 is a ring morphism, we define a `R`-linear structure on `C` attached to `φ`.
 
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -31,14 +35,14 @@ variable (R : Type w) [Ring R] (C : Type u) [Category.{v} C] [Preadditive C]
 def toCatCenter [Linear R C] : R →+* CatCenter C where
   toFun a :=
     { app := fun X => a • 𝟙 X }
-  map_one' := by aesop_cat
+  map_one' := by cat_disch
   map_mul' a b := by
     rw [mul_comm]
     ext X
     dsimp only [CatCenter.mul_app']
     rw [Linear.smul_comp, Linear.comp_smul, smul_smul]
     simp
-  map_zero' := by aesop_cat
+  map_zero' := by cat_disch
   map_add' a b := by
     ext X
     dsimp

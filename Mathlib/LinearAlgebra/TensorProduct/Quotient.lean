@@ -3,10 +3,12 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, Jujian Zhang
 -/
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Ideal.Quotient.Defs
+module
+
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
 
@@ -33,6 +35,10 @@ the following isomorphisms:
 Quotient, Tensor Product
 
 -/
+
+@[expose] public section
+
+assert_not_exists Cardinal
 
 namespace TensorProduct
 
@@ -104,7 +110,7 @@ noncomputable def quotientTensorEquiv (m : Submodule R M) :
     simp only [Submodule.map_sup]
     erw [Submodule.map_id, Submodule.map_id]
     simp only [sup_eq_left]
-    rw [map_range_eq_span_tmul, map_range_eq_span_tmul]
+    rw [range_map_eq_span_tmul, range_map_eq_span_tmul]
     simp)
 
 @[simp]
@@ -134,7 +140,7 @@ noncomputable def tensorQuotientEquiv (n : Submodule R N) :
     simp only [Submodule.map_sup]
     erw [Submodule.map_id, Submodule.map_id]
     simp only [sup_eq_right]
-    rw [map_range_eq_span_tmul, map_range_eq_span_tmul]
+    rw [range_map_eq_span_tmul, range_map_eq_span_tmul]
     simp)
 
 @[simp]

@@ -3,10 +3,14 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.GroupWithZero.Hom
+module
+
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.GroupWithZero.Hom
 
 /-! # Isomorphisms of monoids with zero -/
+
+@[expose] public section
 
 assert_not_exists Ring
 
@@ -53,7 +57,6 @@ lemma toMonoidWithZeroHom_bijective (f : G ≃* H) :
 
 @[simp] lemma toMonoidWithZeroHom_inj {f g : G ≃* H} :
     f.toMonoidWithZeroHom = g.toMonoidWithZeroHom ↔ f = g := by
-  rw [MonoidWithZeroHom.ext_iff, MulEquiv.ext_iff]
-  rfl
+  simp [MonoidWithZeroHom.ext_iff, MulEquiv.ext_iff]
 
 end MulEquiv

@@ -3,8 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Condensed.Discrete.Colimit
-import Mathlib.Condensed.Discrete.Module
+module
+
+public import Mathlib.Condensed.Discrete.Colimit
+public import Mathlib.Condensed.Discrete.Module
 /-!
 
 # Characterizing discrete condensed sets and `R`-modules.
@@ -28,6 +30,8 @@ The analogues for light condensed sets, condensed `R`-modules over any ring, and
 condensed `R`-modules are nearly identical (`CondensedMod.isDiscrete_tfae`,
 `LightCondSet.isDiscrete_tfae`, and `LightCondMod.isDiscrete_tfae`).
 -/
+
+@[expose] public section
 
 universe u
 
@@ -57,10 +61,6 @@ lemma mem_locallyConstant_essImage_of_isColimit_mapCocone (X : CondensedSet.{u})
   let i : (e.functor.obj X).val ≅ (e.functor.obj (LocallyConstant.functor.obj _)).val :=
     Condensed.isoLocallyConstantOfIsColimit _ h
   exact ⟨_, ⟨e.functor.preimageIso ((sheafToPresheaf _ _).preimageIso i.symm)⟩⟩
-
-@[deprecated (since := "2024-12-25")]
-alias mem_locallyContant_essImage_of_isColimit_mapCocone :=
-  mem_locallyConstant_essImage_of_isColimit_mapCocone
 
 /--
 `CondensedSet.LocallyConstant.functor` is left adjoint to the forgetful functor from condensed
@@ -184,10 +184,6 @@ lemma mem_locallyConstant_essImage_of_isColimit_mapCocone (X : LightCondSet.{u})
   let i : X.val ≅ (LightCondSet.LocallyConstant.functor.obj _).val :=
     LightCondensed.isoLocallyConstantOfIsColimit _ h
   exact ⟨_, ⟨((sheafToPresheaf _ _).preimageIso i.symm)⟩⟩
-
-@[deprecated (since := "2024-12-25")]
-alias mem_locallyContant_essImage_of_isColimit_mapCocone :=
-  mem_locallyConstant_essImage_of_isColimit_mapCocone
 
 /--
 `LightCondSet.LocallyConstant.functor` is left adjoint to the forgetful functor from light condensed

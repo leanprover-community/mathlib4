@@ -3,9 +3,11 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveTopology
-import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
-import Mathlib.CategoryTheory.Sites.LocallySurjective
+module
+
+public import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveTopology
+public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
+public import Mathlib.CategoryTheory.Sites.LocallySurjective
 /-!
 
 # Locally surjective morphisms of coherent sheaves
@@ -26,6 +28,8 @@ and extensive topologies.
 * `extensiveTopology.isLocallySurjective_iff` a morphism of sheaves for the extensive topology on a
   finitary extensive category is locally surjective iff it is objectwise surjective.
 -/
+
+@[expose] public section
 
 universe w
 
@@ -83,10 +87,6 @@ lemma extensiveTopology.surjective_of_isLocallySurjective_sheaf_of_types [Finita
   erw [IsLimit.map_π]
   rfl
 
-@[deprecated (since := "2024-11-26")]
-alias extensiveTopology.surjective_of_isLocallySurjective_sheafOfTypes :=
-  extensiveTopology.surjective_of_isLocallySurjective_sheaf_of_types
-
 lemma extensiveTopology.presheafIsLocallySurjective_iff [FinitaryPreExtensive C] {F G : Cᵒᵖ ⥤ D}
     (f : F ⟶ G) [PreservesFiniteProducts F] [PreservesFiniteProducts G]
       [PreservesFiniteProducts (forget D)] : Presheaf.IsLocallySurjective (extensiveTopology C) f ↔
@@ -140,9 +140,6 @@ lemma regularTopology.isLocallySurjective_sheaf_of_types [Preregular C] [Finitar
       simp only [types_comp_apply, inv_hom_id_apply, congrFun this x]
     · change G.map _ (G.map _ _) = _
       simp only [← FunctorToTypes.map_comp_apply, ← op_comp, Sigma.ι_desc]
-
-@[deprecated (since := "2024-11-26")] alias regularTopology.isLocallySurjective_sheafOfTypes :=
-regularTopology.isLocallySurjective_sheaf_of_types
 
 lemma coherentTopology.presheafIsLocallySurjective_iff {F G : Cᵒᵖ ⥤ D} (f : F ⟶ G)
     [Preregular C] [FinitaryPreExtensive C] [PreservesFiniteProducts F] [PreservesFiniteProducts G]

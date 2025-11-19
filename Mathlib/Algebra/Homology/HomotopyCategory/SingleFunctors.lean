@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomotopyCategory.Shift
-import Mathlib.CategoryTheory.Shift.SingleFunctors
+module
+
+public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
+public import Mathlib.CategoryTheory.Shift.SingleFunctors
 
 /-!
 # Single functors from the homotopy category
@@ -17,6 +19,8 @@ Similarly, we define
 `HomotopyCategory.singleFunctors C : SingleFunctors C (HomotopyCategory C (ComplexShape.up ℤ)) ℤ`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -63,6 +67,12 @@ instance (n : ℤ) : ((singleFunctors C).functor n).Additive := by
   dsimp only [singleFunctors]
   infer_instance
 
+instance (R : Type*) [Ring R] (n : ℤ) [Linear R C] :
+    Functor.Linear R ((singleFunctors C).functor n) where
+  map_smul f r := by
+    dsimp [CochainComplex.singleFunctors, HomologicalComplex.single]
+    aesop
+
 /-- The single functor `C ⥤ CochainComplex C ℤ` which sends `X` to the complex
 consisting of `X` in degree `n : ℤ` and zero otherwise.
 (This is definitionally equal to `HomologicalComplex.single C (up ℤ) n`,
@@ -93,6 +103,18 @@ noncomputable abbrev singleFunctor (n : ℤ) :
 instance (n : ℤ) : (singleFunctor C n).Additive := by
   dsimp only [singleFunctor, singleFunctors, SingleFunctors.postcomp]
   infer_instance
+
+-- The object level definitional equality underlying `singleFunctorsPostcompQuotientIso`.
+@[simp] theorem quotient_obj_singleFunctors_obj (n : ℤ) (X : C) :
+    (HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj
+      ((CochainComplex.singleFunctor C n).obj X) =
+        (HomotopyCategory.singleFunctor C n).obj X :=
+  rfl
+
+instance (R : Type*) [Ring R] [Linear R C] (n : ℤ) :
+    Functor.Linear R (HomotopyCategory.singleFunctor C n) :=
+  inferInstanceAs (Functor.Linear R (CochainComplex.singleFunctor C n ⋙
+    HomotopyCategory.quotient _ _))
 
 /-- The isomorphism given by the very definition of `singleFunctors C`. -/
 noncomputable def singleFunctorsPostcompQuotientIso :

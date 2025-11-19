@@ -3,10 +3,12 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Data.List.Chain
-import Mathlib.CategoryTheory.IsConnected
-import Mathlib.CategoryTheory.Sigma.Basic
-import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+module
+
+public import Mathlib.Data.List.Chain
+public import Mathlib.CategoryTheory.IsConnected
+public import Mathlib.CategoryTheory.Sigma.Basic
+public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
 /-!
 # Connected components of a category
@@ -19,6 +21,8 @@ We show every category can be expressed as a disjoint union of its connected com
 particular `Decomposed J` is the category (definitionally) given by the sigma-type of the connected
 components of `J`, and it is shown that this is equivalent to `J`.
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ u₁ u₂
 
@@ -91,9 +95,6 @@ abbrev ConnectedComponents.ι (j : ConnectedComponents J) : j.Component ⥤ J :=
 abbrev ConnectedComponents.mk (j : J) : ConnectedComponents J :=
   Quotient.mk'' j
 
-@[deprecated (since := "2025-03-04")] alias Component := ConnectedComponents.Component
-@[deprecated (since := "2025-03-04")] alias Component.ι := ConnectedComponents.ι
-
 /-- Each connected component of the category is nonempty. -/
 instance (j : ConnectedComponents J) : Nonempty j.Component := by
   induction j using Quotient.inductionOn'
@@ -110,23 +111,24 @@ instance (j : ConnectedComponents J) : IsConnected j.Component := by
   -- We know that the underlying objects j₁ j₂ have some zigzag between them in `J`
   have h₁₂ : Zigzag j₁ j₂ := Quotient.exact' hj₁
   -- Get an explicit zigzag as a list
-  rcases List.exists_chain_of_relationReflTransGen h₁₂ with ⟨l, hl₁, hl₂⟩
+  rcases List.exists_isChain_cons_of_relationReflTransGen h₁₂ with ⟨l, hl₁, hl₂⟩
   -- Everything which has a zigzag to j₂ can be lifted to the same component as `j₂`.
   let f : ∀ x, Zigzag x j₂ → (ConnectedComponents.mk j₂).Component :=
     fun x h => ⟨x, Quotient.sound' h⟩
   -- Everything in our chosen zigzag from `j₁` to `j₂` has a zigzag to `j₂`.
   have hf : ∀ a : J, a ∈ l → Zigzag a j₂ := by
     intro i hi
-    apply hl₁.backwards_induction (fun t => Zigzag t j₂) _ hl₂ _ _ _ (List.mem_of_mem_tail hi)
+    apply hl₁.backwards_cons_induction (fun t => Zigzag t j₂) _ hl₂ _ _ _ (List.mem_of_mem_tail hi)
     · intro j k
       apply Relation.ReflTransGen.head
     · apply Relation.ReflTransGen.refl
   -- Now lift the zigzag from `j₁` to `j₂` in `J` to the same thing in `j.Component`.
   refine ⟨l.pmap f hf, ?_, by grind⟩
-  refine @List.chain_pmap_of_chain _ _ _ _ _ f (fun x y _ _ h => ?_) _ _ hl₁ h₁₂ _
+  refine @List.isChain_cons_pmap_of_isChain_cons _ _ Zag _ _ f
+    (fun x y _ _ h => ?_) _ _ h₁₂ hl₁ _
   exact zag_of_zag_obj (ConnectedComponents.ι _) h
 
-/-- The disjoint union of `J`s connected components, written explicitly as a sigma-type with the
+/-- The disjoint union of `J`'s connected components, written explicitly as a sigma-type with the
 category structure.
 This category is equivalent to `J`.
 -/

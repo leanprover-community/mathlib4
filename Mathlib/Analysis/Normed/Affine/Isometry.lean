@@ -3,12 +3,15 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Analysis.Normed.Operator.LinearIsometry
-import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.LinearAlgebra.AffineSpace.Restrict
-import Mathlib.Tactic.FailIfNoProgress
+module
+
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Analysis.Normed.Operator.LinearIsometry
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
+public import Mathlib.LinearAlgebra.AffineSpace.Restrict
+public import Mathlib.Tactic.FailIfNoProgress
 
 /-!
 # Affine isometries
@@ -32,6 +35,8 @@ match the superscript "a" (note that in mathlib `→ᵃ` is an affine map, since
 algebra-homomorphisms.)
 
 -/
+
+@[expose] public section
 
 
 open Function Set
@@ -742,32 +747,6 @@ theorem pointReflection_midpoint_right (x y : P) : pointReflection ℝ (midpoint
 end Constructions
 
 end AffineIsometryEquiv
-
-/-- If `f` is an affine map, then its linear part is continuous iff `f` is continuous. -/
-theorem AffineMap.continuous_linear_iff {f : P →ᵃ[𝕜] P₂} : Continuous f.linear ↔ Continuous f := by
-  inhabit P
-  have :
-    (f.linear : V → V₂) =
-      (AffineIsometryEquiv.vaddConst 𝕜 <| f default).toHomeomorph.symm ∘
-        f ∘ (AffineIsometryEquiv.vaddConst 𝕜 default).toHomeomorph := by
-    ext v
-    simp
-  rw [this]
-  simp only [Homeomorph.comp_continuous_iff, Homeomorph.comp_continuous_iff']
-
-/-- If `f` is an affine map, then its linear part is an open map iff `f` is an open map. -/
-theorem AffineMap.isOpenMap_linear_iff {f : P →ᵃ[𝕜] P₂} : IsOpenMap f.linear ↔ IsOpenMap f := by
-  inhabit P
-  have :
-    (f.linear : V → V₂) =
-      (AffineIsometryEquiv.vaddConst 𝕜 <| f default).toHomeomorph.symm ∘
-        f ∘ (AffineIsometryEquiv.vaddConst 𝕜 default).toHomeomorph := by
-    ext v
-    simp
-  rw [this]
-  simp only [Homeomorph.comp_isOpenMap_iff, Homeomorph.comp_isOpenMap_iff']
-
-attribute [local instance] AffineSubspace.nonempty_map -- Porting note: removed `fails_quickly`
 
 namespace AffineSubspace
 

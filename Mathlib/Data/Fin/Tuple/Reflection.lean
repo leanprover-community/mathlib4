@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Algebra.BigOperators.Fin
+module
+
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Algebra.BigOperators.Fin
 
 /-!
 # Lemmas for tuples `Fin m → α`
@@ -26,6 +28,8 @@ corresponding `*_eq` lemmas to be used in a place where they are definitionally 
 * `FinVec.sum`
 * `FinVec.etaExpand`
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -148,11 +152,11 @@ example [CommMonoid α] (a : Fin 3 → α) : ∏ i, a i = a 0 * a 1 * a 2 :=
 ```
 -/
 @[to_additive (attr := simp)
-"This can be used to prove
+/-- This can be used to prove
 ```lean
 example [AddCommMonoid α] (a : Fin 3 → α) : ∑ i, a i = a 0 + a 1 + a 2 :=
   (sum_eq _).symm
-```"]
+``` -/]
 theorem prod_eq [CommMonoid α] : ∀ {m} (a : Fin m → α), prod a = ∏ i, a i
   | 0, _ => rfl
   | 1, a => (Fintype.prod_unique a).symm
@@ -169,7 +173,8 @@ open Lean Meta Qq
 
 /-- Produce a term of the form `f 0 * f 1 * ... * f (n - 1)` and an application of `FinVec.prod_eq`
 that shows it is equal to `∏ i, f i`. -/
-def mkProdEqQ {u : Level} {α : Q(Type u)} (inst : Q(CommMonoid $α)) (n : ℕ) (f : Q(Fin $n → $α)) :
+meta def mkProdEqQ {u : Level} {α : Q(Type u)}
+    (inst : Q(CommMonoid $α)) (n : ℕ) (f : Q(Fin $n → $α)) :
     MetaM <| (val : Q($α)) × Q(∏ i, $f i = $val) := do
   match n with
   | 0 => return ⟨q((1 : $α)), q(Fin.prod_univ_zero $f)⟩
@@ -191,7 +196,8 @@ where
 
 /-- Produce a term of the form `f 0 + f 1 + ... + f (n - 1)` and an application of `FinVec.sum_eq`
 that shows it is equal to `∑ i, f i`. -/
-def mkSumEqQ {u : Level} {α : Q(Type u)} (inst : Q(AddCommMonoid $α)) (n : ℕ) (f : Q(Fin $n → $α)) :
+meta def mkSumEqQ {u : Level} {α : Q(Type u)}
+    (inst : Q(AddCommMonoid $α)) (n : ℕ) (f : Q(Fin $n → $α)) :
     MetaM <| (val : Q($α)) × Q(∑ i, $f i = $val) := do
   match n with
   | 0 => return ⟨q((0 : $α)), q(Fin.sum_univ_zero $f)⟩
@@ -223,9 +229,9 @@ simproc_decl prod_univ_ofNat (∏ _ : Fin _, _) := .ofQ fun u _ e => do
   match u, e with
   | .succ _, ~q(@Finset.prod (Fin $n) _ $inst (@Finset.univ _ $instF) $f) => do
     match (generalizing := false) n.nat? with
-    | .none =>
+    | none =>
       return .continue
-    | .some nVal =>
+    | some nVal =>
       let ⟨res, pf⟩ ← mkProdEqQ inst nVal f
       let ⟨_⟩ ← assertDefEqQ q($instF) q(Fin.fintype _)
       have _ : $n =Q $nVal := ⟨⟩
@@ -237,9 +243,9 @@ simproc_decl sum_univ_ofNat (∑ _ : Fin _, _) := .ofQ fun u _ e => do
   match u, e with
   | .succ _, ~q(@Finset.sum (Fin $n) _ $inst (@Finset.univ _ $instF) $f) => do
     match n.nat? with
-    | .none =>
+    | none =>
       return .continue
-    | .some nVal =>
+    | some nVal =>
       let ⟨res, pf⟩ ← mkSumEqQ inst nVal f
       let ⟨_⟩ ← assertDefEqQ q($instF) q(Fin.fintype _)
       have _ : $n =Q $nVal := ⟨⟩

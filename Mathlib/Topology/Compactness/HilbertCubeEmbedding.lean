@@ -3,7 +3,9 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Topology.UnitInterval
+module
+
+public import Mathlib.Topology.UnitInterval
 
 /-!
 # Every compact metric space can be embedded into the Hilbert cube.
@@ -12,10 +14,12 @@ In this file we prove `exists_closed_embedding_to_hilbert`: every compact metric
 embedded into the Hilbert cube (`ℕ → unitInterval`).
 -/
 
+@[expose] public section
+
 /-- Every compact metric space can be embedded into the Hilbert cube. -/
 theorem exists_closed_embedding_to_hilbert_cube (X : Type*) [MetricSpace X] [CompactSpace X] :
     ∃ f : X → (ℕ → unitInterval), Topology.IsClosedEmbedding f := by
-  obtain _|_ := subsingleton_or_nontrivial X
+  obtain _ | _ := subsingleton_or_nontrivial X
   · use Function.const _ 0
     exact continuous_const.isClosedEmbedding <| Function.injective_of_subsingleton _
   let s := TopologicalSpace.denseSeq X

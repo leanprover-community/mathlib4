@@ -3,7 +3,9 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.UniformSpace.UniformConvergence
+module
+
+public import Mathlib.Topology.UniformSpace.UniformConvergence
 
 /-!
 # Locally uniform convergence
@@ -32,6 +34,8 @@ We also define variants for locally uniform convergence on a subset, called
 
 Uniform limit, uniform convergence, tends uniformly to
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -102,8 +106,8 @@ theorem tendstoLocallyUniformlyOn_iUnion {ι' : Sort*} {S : ι' → Set α} (hS 
 theorem tendstoLocallyUniformlyOn_biUnion {s : Set γ} {S : γ → Set α} (hS : ∀ i ∈ s, IsOpen (S i))
     (h : ∀ i ∈ s, TendstoLocallyUniformlyOn F f p (S i)) :
     TendstoLocallyUniformlyOn F f p (⋃ i ∈ s, S i) :=
-  tendstoLocallyUniformlyOn_iUnion (fun i => isOpen_iUnion (hS i)) fun i =>
-   tendstoLocallyUniformlyOn_iUnion (hS i) (h i)
+  tendstoLocallyUniformlyOn_iUnion (fun i => isOpen_iUnion (hS i))
+    fun i ↦ tendstoLocallyUniformlyOn_iUnion (hS i) (h i)
 
 theorem tendstoLocallyUniformlyOn_sUnion (S : Set (Set α)) (hS : ∀ s ∈ S, IsOpen s)
     (h : ∀ s ∈ S, TendstoLocallyUniformlyOn F f p s) : TendstoLocallyUniformlyOn F f p (⋃₀ S) := by

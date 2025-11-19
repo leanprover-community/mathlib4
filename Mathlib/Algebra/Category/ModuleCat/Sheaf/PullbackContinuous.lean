@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pullback
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
-import Mathlib.Algebra.Category.ModuleCat.Sheaf.PushforwardContinuous
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pullback
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PushforwardContinuous
 
 /-!
 # Pullback of sheaves of modules
@@ -22,6 +24,8 @@ under suitable assumptions, and prove that the pullback of (pre)sheaves of
 modules commutes with the sheafification.
 
 -/
+
+@[expose] public section
 
 universe v v₁ v₂ u₁ u₂ u
 
@@ -52,12 +56,15 @@ of sheaves of modules. -/
 noncomputable def pullbackPushforwardAdjunction : pullback.{v} φ ⊣ pushforward.{v} φ :=
   Adjunction.ofIsRightAdjoint (pushforward φ)
 
+instance : (pullback.{v} φ).IsLeftAdjoint :=
+  (pullbackPushforwardAdjunction φ).isLeftAdjoint
+
 end
 
 section
 
 variable [(PresheafOfModules.pushforward.{v} φ.val).IsRightAdjoint]
-  [HasWeakSheafify K AddCommGrp.{v}] [K.WEqualsLocallyBijective AddCommGrp.{v}]
+  [HasWeakSheafify K AddCommGrpCat.{v}] [K.WEqualsLocallyBijective AddCommGrpCat.{v}]
 
 namespace PullbackConstruction
 
@@ -99,7 +106,7 @@ noncomputable def pullbackIso :
 
 section
 
-variable [HasWeakSheafify J AddCommGrp.{v}] [J.WEqualsLocallyBijective AddCommGrp.{v}]
+variable [HasWeakSheafify J AddCommGrpCat.{v}] [J.WEqualsLocallyBijective AddCommGrpCat.{v}]
 
 /-- The pullback of (pre)sheaves of modules commutes with the sheafification. -/
 noncomputable def sheafificationCompPullback :

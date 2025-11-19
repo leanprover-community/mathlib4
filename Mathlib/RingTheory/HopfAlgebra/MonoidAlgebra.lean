@@ -3,8 +3,10 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.RingTheory.Bialgebra.MonoidAlgebra
-import Mathlib.RingTheory.HopfAlgebra.Basic
+module
+
+public import Mathlib.RingTheory.Bialgebra.MonoidAlgebra
+public import Mathlib.RingTheory.HopfAlgebra.Basic
 
 /-!
 # The Hopf algebra structure on group algebras
@@ -21,6 +23,8 @@ results about the `R`-Hopf algebra instance on `A[G]`, building upon results in
   `A[T;T⁻¹]` when `A` is an `R`-Hopf algebra. When `A = R` this corresponds to the fact that `𝔾ₘ/R`
   is a group scheme.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -44,12 +48,12 @@ open Coalgebra in
 instance instHopfAlgebra : HopfAlgebra R (MonoidAlgebra A G) where
   mul_antipode_rTensor_comul := by
     ext a b : 2
-    simpa [← (ℛ R b).eq, -sum_antipode_mul_eq] using congr(lsingle (R := R) (1 : G)
-      $(sum_antipode_mul_eq (Coalgebra.Repr.arbitrary R b)))
+    simpa [← (ℛ R b).eq] using congr(lsingle (R := R) (1 : G)
+      $(sum_antipode_mul_eq_algebraMap_counit (ℛ R b)))
   mul_antipode_lTensor_comul := by
     ext a b : 2
-    simpa [← (ℛ R b).eq, -sum_mul_antipode_eq] using congr(lsingle (R := R) (1 : G)
-      $(sum_mul_antipode_eq (Coalgebra.Repr.arbitrary R b)))
+    simpa [← (ℛ R b).eq] using congr(lsingle (R := R) (1 : G)
+      $(sum_mul_antipode_eq_algebraMap_counit (ℛ R b)))
 
 end MonoidAlgebra
 
@@ -71,12 +75,12 @@ open Coalgebra in
 instance instHopfAlgebra : HopfAlgebra R A[G] where
   mul_antipode_rTensor_comul := by
     ext a b : 2
-    simpa [← (ℛ R b).eq, single_mul_single, -sum_antipode_mul_eq] using
-      congr(lsingle (R := R) (0 : G) $(sum_antipode_mul_eq (Coalgebra.Repr.arbitrary R b)))
+    simpa [← (ℛ R b).eq, single_mul_single] using congr(lsingle (R := R) (0 : G)
+      $(sum_antipode_mul_eq_algebraMap_counit (ℛ R b)))
   mul_antipode_lTensor_comul := by
     ext a b : 2
-    simpa [← (ℛ R b).eq, single_mul_single, -sum_mul_antipode_eq] using
-      congr(lsingle (R := R) (0 : G) $(sum_mul_antipode_eq (Coalgebra.Repr.arbitrary R b)))
+    simpa [← (ℛ R b).eq, single_mul_single] using congr(lsingle (R := R) (0 : G)
+      $(sum_mul_antipode_eq_algebraMap_counit (ℛ R b)))
 
 end AddMonoidAlgebra
 

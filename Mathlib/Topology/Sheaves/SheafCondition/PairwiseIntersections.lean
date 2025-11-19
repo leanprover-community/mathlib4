@@ -3,11 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Category.Pairwise
-import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
+module
+
+public import Mathlib.CategoryTheory.Category.Pairwise
+public import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 
 /-!
 # Equivalent formulations of the sheaf condition
@@ -34,7 +36,9 @@ We show that this sheaf condition is equivalent to the `OpensLeCover` sheaf cond
 thereby also equivalent to the default sheaf condition.
 -/
 
-assert_not_exists OrderedCommMonoid
+@[expose] public section
+
+assert_not_exists IsOrderedMonoid
 
 noncomputable section
 
@@ -122,15 +126,15 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
                 right := pair i i'
                 hom := (le_inf a.le b.le).hom }, _], ?_, rfl⟩
         exact
-          List.Chain.cons
+          List.IsChain.cons_cons
             (Or.inr
               ⟨{  left := 𝟙 _
                   right := left i i' }⟩)
-            (List.Chain.cons
+            (List.IsChain.cons_cons
               (Or.inl
                 ⟨{  left := 𝟙 _
                     right := right i i' }⟩)
-              List.Chain.nil)
+              (List.IsChain.singleton _))
       · refine
           ⟨[{   left := ⟨⟨⟩⟩
                 right := pair i' i
@@ -139,19 +143,19 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
                 right := single i'
                 hom := (b.le.trans inf_le_left).hom }, _], ?_, rfl⟩
         exact
-          List.Chain.cons
+          List.IsChain.cons_cons
             (Or.inr
               ⟨{  left := 𝟙 _
                   right := right i' i }⟩)
-            (List.Chain.cons
+            (List.IsChain.cons_cons
               (Or.inl
                 ⟨{  left := 𝟙 _
                     right := left i' i }⟩)
-              (List.Chain.cons
+              (List.IsChain.cons_cons
                 (Or.inr
                   ⟨{  left := 𝟙 _
                       right := left i' j' }⟩)
-                List.Chain.nil))
+                (List.IsChain.singleton _)))
       · refine
           ⟨[{   left := ⟨⟨⟩⟩
                 right := single i
@@ -160,19 +164,19 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
                 right := pair i i'
                 hom := (le_inf (a.le.trans inf_le_left) b.le).hom }, _], ?_, rfl⟩
         exact
-          List.Chain.cons
+          List.IsChain.cons_cons
             (Or.inl
               ⟨{  left := 𝟙 _
                   right := left i j }⟩)
-            (List.Chain.cons
+            (List.IsChain.cons_cons
               (Or.inr
                 ⟨{  left := 𝟙 _
                     right := left i i' }⟩)
-              (List.Chain.cons
+              (List.IsChain.cons_cons
                 (Or.inl
                   ⟨{  left := 𝟙 _
                       right := right i i' }⟩)
-                List.Chain.nil))
+                (List.IsChain.singleton _)))
       · refine
           ⟨[{   left := ⟨⟨⟩⟩
                 right := single i
@@ -184,23 +188,23 @@ instance : Functor.Final (pairwiseToOpensLeCover U) :=
                 right := single i'
                 hom := (b.le.trans inf_le_left).hom }, _], ?_, rfl⟩
         exact
-          List.Chain.cons
+          List.IsChain.cons_cons
             (Or.inl
               ⟨{  left := 𝟙 _
                   right := left i j }⟩)
-            (List.Chain.cons
+            (List.IsChain.cons_cons
               (Or.inr
                 ⟨{  left := 𝟙 _
                     right := left i i' }⟩)
-              (List.Chain.cons
+              (List.IsChain.cons_cons
                 (Or.inl
                   ⟨{  left := 𝟙 _
                       right := right i i' }⟩)
-                (List.Chain.cons
+                (List.IsChain.cons_cons
                   (Or.inr
                     ⟨{  left := 𝟙 _
                         right := left i' j' }⟩)
-                  List.Chain.nil)))⟩
+                  (List.IsChain.singleton _))))⟩
 
 /-- The diagram in `Opens X` indexed by pairwise intersections from `U` is isomorphic
 (in fact, equal) to the diagram factored through `OpensLeCover U`.
@@ -219,7 +223,7 @@ def pairwiseCoconeIso :
     (Pairwise.cocone U).op ≅
       (Cones.postcomposeEquivalence (NatIso.op (pairwiseDiagramIso U :) :)).functor.obj
         ((opensLeCoverCocone U).op.whisker (pairwiseToOpensLeCover U).op) :=
-  Cones.ext (Iso.refl _) (by aesop_cat)
+  Cones.ext (Iso.refl _) (by cat_disch)
 
 end SheafCondition
 

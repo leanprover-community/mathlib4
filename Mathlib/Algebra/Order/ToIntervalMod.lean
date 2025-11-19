@@ -3,11 +3,13 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Algebra.ModEq
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Ring.Periodic
-import Mathlib.Data.Int.SuccPred
-import Mathlib.Order.Circular
+module
+
+public import Mathlib.Algebra.ModEq
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Algebra.Ring.Periodic
+public import Mathlib.Data.Int.SuccPred
+public import Mathlib.Order.Circular
 
 /-!
 # Reducing to an interval modulo its length
@@ -25,6 +27,8 @@ interval.
   subtracted from `b`, is in `Ioc a (a + p)`.
 * `toIocMod hp a b` (where `hp : 0 < p`): Reduce `b` to the interval `Ioc a (a + p)`.
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -570,7 +574,7 @@ end AddCommGroup
 
 open AddCommGroup
 
-/-- If `a` and `b` fall within the same cycle WRT `c`, then they are congruent modulo `p`. -/
+/-- If `a` and `b` fall within the same cycle w.r.t. `c`, then they are congruent modulo `p`. -/
 @[simp]
 theorem toIcoMod_inj {c : α} : toIcoMod hp c a = toIcoMod hp c b ↔ a ≡ b [PMOD p] :=
   toIcoMod_eq_toIcoMod _
@@ -881,7 +885,7 @@ theorem toIcoDiv_zero_one (b : α) : toIcoDiv (zero_lt_one' α) 0 b = ⌊b⌋ :=
 theorem toIcoMod_eq_add_fract_mul (a b : α) :
     toIcoMod hp a b = a + Int.fract ((b - a) / p) * p := by
   rw [toIcoMod, toIcoDiv_eq_floor, Int.fract]
-  field_simp
+  simp [field, -Int.self_sub_floor]
   ring
 
 theorem toIcoMod_eq_fract_mul (b : α) : toIcoMod hp 0 b = Int.fract (b / p) * p := by
@@ -890,7 +894,7 @@ theorem toIcoMod_eq_fract_mul (b : α) : toIcoMod hp 0 b = Int.fract (b / p) * p
 theorem toIocMod_eq_sub_fract_mul (a b : α) :
     toIocMod hp a b = a + p - Int.fract ((a + p - b) / p) * p := by
   rw [toIocMod, toIocDiv_eq_neg_floor, Int.fract]
-  field_simp
+  simp [field, -Int.self_sub_floor]
   ring
 
 theorem toIcoMod_zero_one (b : α) : toIcoMod (zero_lt_one' α) 0 b = Int.fract b := by

@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.CatCommSq
-import Mathlib.CategoryTheory.GuitartExact.Basic
+module
+
+public import Mathlib.CategoryTheory.CatCommSq
+public import Mathlib.CategoryTheory.GuitartExact.Basic
 
 /-!
 # Vertical composition of Guitart exact squares
@@ -13,6 +15,8 @@ In this file, we show that the vertical composition of Guitart exact squares
 is Guitart exact.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -134,7 +138,7 @@ lemma vComp_iff_of_equivalences (eL : C₂ ≌ C₃) (eR : D₂ ≌ D₃)
           Functor.whiskerLeft_app, Functor.associator_inv_app, comp_id, id_comp, vComp_app,
           Functor.map_comp, Equivalence.inv_fun_map, CatCommSq.vInv_iso_hom_app, Iso.trans_hom,
           Functor.isoWhiskerLeft_hom, Iso.symm_hom, Functor.associator_hom_app,
-          Functor.rightUnitor_hom_app, Iso.hom_inv_id_app_assoc, w'', this, α, β]
+          Functor.rightUnitor_hom_app, Iso.hom_inv_id_app_assoc, w'', α, β]
       simp only [hw', ← eR.inverse.map_comp_assoc]
       rw [Equivalence.counitInv_app_functor, ← Functor.comp_map, ← NatTrans.naturality_assoc]
       simp [← H₂.map_comp]

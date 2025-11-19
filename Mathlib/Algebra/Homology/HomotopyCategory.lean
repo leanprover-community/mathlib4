@@ -3,11 +3,13 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Homology.Homotopy
-import Mathlib.Algebra.Homology.Linear
-import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
-import Mathlib.CategoryTheory.Quotient.Linear
-import Mathlib.CategoryTheory.Quotient.Preadditive
+module
+
+public import Mathlib.Algebra.Homology.Homotopy
+public import Mathlib.Algebra.Homology.Linear
+public import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
+public import Mathlib.CategoryTheory.Quotient.Linear
+public import Mathlib.CategoryTheory.Quotient.Preadditive
 
 /-!
 # The homotopy category
@@ -15,6 +17,8 @@ import Mathlib.CategoryTheory.Quotient.Preadditive
 `HomotopyCategory V c` gives the category of chain complexes of shape `c` in `V`,
 with chain maps identified when they are homotopic.
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -95,8 +99,7 @@ lemma quotient_obj_surjective (X : HomotopyCategory V c) :
     ∃ (K : HomologicalComplex V c), (quotient _ _).obj K = X :=
   ⟨_, rfl⟩
 
--- Porting note: removed @[simp] attribute because it hinders the automatic application of the
--- more useful `quotient_map_out`
+-- Not `@[simp]` because it hinders the automatic application of the more useful `quotient_map_out`
 theorem quotient_obj_as (C : HomologicalComplex V c) : ((quotient V c).obj C).as = C :=
   rfl
 
@@ -104,7 +107,6 @@ theorem quotient_obj_as (C : HomologicalComplex V c) : ((quotient V c).obj C).as
 theorem quotient_map_out {C D : HomotopyCategory V c} (f : C ⟶ D) : (quotient V c).map f.out = f :=
   Quot.out_eq _
 
--- Porting note: added to ease the port
 theorem quot_mk_eq_quotient_map {C D : HomologicalComplex V c} (f : C ⟶ D) :
     Quot.mk _ f = (quotient V c).map f := rfl
 
@@ -205,7 +207,6 @@ namespace CategoryTheory
 
 variable {V} {W : Type*} [Category W] [Preadditive W]
 
--- Porting note: given a simpler definition of this functor
 /-- An additive functor induces a functor between homotopy categories. -/
 @[simps! obj]
 def Functor.mapHomotopyCategory (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) :
@@ -245,12 +246,12 @@ def NatTrans.mapHomotopyCategory {F G : V ⥤ W} [F.Additive] [G.Additive] (α :
 
 @[simp]
 theorem NatTrans.mapHomotopyCategory_id (c : ComplexShape ι) (F : V ⥤ W) [F.Additive] :
-    NatTrans.mapHomotopyCategory (𝟙 F) c = 𝟙 (F.mapHomotopyCategory c) := by aesop_cat
+    NatTrans.mapHomotopyCategory (𝟙 F) c = 𝟙 (F.mapHomotopyCategory c) := by cat_disch
 
 @[simp]
 theorem NatTrans.mapHomotopyCategory_comp (c : ComplexShape ι) {F G H : V ⥤ W} [F.Additive]
     [G.Additive] [H.Additive] (α : F ⟶ G) (β : G ⟶ H) :
     NatTrans.mapHomotopyCategory (α ≫ β) c =
-      NatTrans.mapHomotopyCategory α c ≫ NatTrans.mapHomotopyCategory β c := by aesop_cat
+      NatTrans.mapHomotopyCategory α c ≫ NatTrans.mapHomotopyCategory β c := by cat_disch
 
 end CategoryTheory

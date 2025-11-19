@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Iso
-import Mathlib.CategoryTheory.ObjectProperty.Basic
-import Mathlib.Order.Basic
+module
+
+public import Mathlib.CategoryTheory.Iso
+public import Mathlib.CategoryTheory.ObjectProperty.Basic
+public import Mathlib.Order.Basic
 
 /-! # Properties of objects which are closed under isomorphisms
 
@@ -13,6 +15,8 @@ Given a category `C` and `P : ObjectProperty C` (i.e. `P : C → Prop`),
 this file introduces the type class `P.IsClosedUnderIsomorphisms`.
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 
@@ -27,8 +31,6 @@ namespace ObjectProperty
 if whenever `P X`, then all the objects `Y` that are isomorphic to `X` also satisfy `P Y`. -/
 class IsClosedUnderIsomorphisms : Prop where
   of_iso {X Y : C} (_ : X ≅ Y) (_ : P X) : P Y
-
-@[deprecated (since := "2025-02-25")] alias ClosedUnderIsomorphisms := IsClosedUnderIsomorphisms
 
 lemma prop_of_iso [IsClosedUnderIsomorphisms P] {X Y : C} (e : X ≅ Y) (hX : P X) : P Y :=
   IsClosedUnderIsomorphisms.of_iso e hX
@@ -76,6 +78,10 @@ instance : IsClosedUnderIsomorphisms (isoClosure P) where
     rintro X Y e ⟨Z, hZ, ⟨f⟩⟩
     exact ⟨Z, hZ, ⟨e.symm.trans f⟩⟩
 
+lemma isClosedUnderIsomorphisms_iff_isoClosure_eq_self :
+    IsClosedUnderIsomorphisms P ↔ isoClosure P = P :=
+  ⟨fun _ ↦ isoClosure_eq_self _, fun h ↦ by rw [← h]; infer_instance⟩
+
 instance (F : C ⥤ D) : IsClosedUnderIsomorphisms (P.map F) where
   of_iso := by
     rintro _ _ e ⟨X, hX, ⟨e'⟩⟩
@@ -86,15 +92,5 @@ instance (F : D ⥤ C) [P.IsClosedUnderIsomorphisms] :
   of_iso e hX := P.prop_of_iso (F.mapIso e) hX
 
 end ObjectProperty
-
-open ObjectProperty
-
-@[deprecated (since := "2025-02-25")] alias mem_of_iso := prop_of_iso
-@[deprecated (since := "2025-02-25")] alias mem_iff_of_iso := prop_iff_of_iso
-@[deprecated (since := "2025-02-25")] alias mem_of_isIso := prop_of_isIso
-@[deprecated (since := "2025-02-25")] alias mem_iff_of_isIso := prop_iff_of_isIso
-@[deprecated (since := "2025-02-25")] alias isoClosure := isoClosure
-@[deprecated (since := "2025-02-25")] alias mem_isoClosure_iff := prop_isoClosure_iff
-@[deprecated (since := "2025-02-25")] alias mem_isoClosure := prop_isoClosure
 
 end CategoryTheory

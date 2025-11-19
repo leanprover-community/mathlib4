@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Equivalence
+module
+
+public import Mathlib.CategoryTheory.Equivalence
 
 /-!
 # 2-commutative squares of functors
@@ -18,6 +20,8 @@ Future work: using this notion in the development of the localization of categor
 (e.g. localization of adjunctions).
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -154,7 +158,6 @@ lemma vInv_vInv (h : CatCommSq T L.functor R.functor B) :
   rw [vInv_iso_inv_app]
   rw [← cancel_mono (B.map (L.functor.map (NatTrans.app L.unitIso.hom X)))]
   rw [← Functor.comp_map]
-  erw [← (iso T L.functor R.functor B).hom.naturality (L.unitIso.hom.app X)]
   dsimp
   simp only [Functor.map_comp, Equivalence.fun_inv_map, Functor.comp_obj,
     Functor.id_obj, assoc, Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app, comp_id]

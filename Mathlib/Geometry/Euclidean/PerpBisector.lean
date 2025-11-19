@@ -3,8 +3,10 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Joseph Myers
 -/
-import Mathlib.Analysis.InnerProductSpace.Orthogonal
-import Mathlib.Analysis.Normed.Group.AddTorsor
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Orthogonal
+public import Mathlib.Analysis.Normed.Group.AddTorsor
 
 /-!
 # Perpendicular bisector of a segment
@@ -18,6 +20,8 @@ define this subspace.
 
 euclidean geometry, perpendicular, perpendicular bisector, line segment bisector, equidistant
 -/
+
+@[expose] public section
 
 open Set
 open scoped RealInnerProductSpace
@@ -35,13 +39,13 @@ variable {c p₁ p₂ : P}
 def perpBisector (p₁ p₂ : P) : AffineSubspace ℝ P :=
   mk' (midpoint ℝ p₁ p₂) (LinearMap.ker (innerₛₗ ℝ (p₂ -ᵥ p₁)))
 
-/-- A point `c` belongs the perpendicular bisector of `[p₁, p₂] iff `p₂ -ᵥ p₁` is orthogonal to
+/-- A point `c` belongs the perpendicular bisector of `[p₁, p₂]` iff `p₂ -ᵥ p₁` is orthogonal to
 `c -ᵥ midpoint ℝ p₁ p₂`. -/
 theorem mem_perpBisector_iff_inner_eq_zero' :
     c ∈ perpBisector p₁ p₂ ↔ ⟪p₂ -ᵥ p₁, c -ᵥ midpoint ℝ p₁ p₂⟫ = 0 :=
   Iff.rfl
 
-/-- A point `c` belongs the perpendicular bisector of `[p₁, p₂] iff `c -ᵥ midpoint ℝ p₁ p₂` is
+/-- A point `c` belongs the perpendicular bisector of `[p₁, p₂]` iff `c -ᵥ midpoint ℝ p₁ p₂` is
 orthogonal to `p₂ -ᵥ p₁`. -/
 theorem mem_perpBisector_iff_inner_eq_zero :
     c ∈ perpBisector p₁ p₂ ↔ ⟪c -ᵥ midpoint ℝ p₁ p₂, p₂ -ᵥ p₁⟫ = 0 :=

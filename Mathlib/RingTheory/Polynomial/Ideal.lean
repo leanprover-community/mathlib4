@@ -3,13 +3,17 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Polynomial.RingDivision
-import Mathlib.RingTheory.Adjoin.Polynomial
-import Mathlib.RingTheory.Ideal.Maps
+module
+
+public import Mathlib.Algebra.Polynomial.RingDivision
+public import Mathlib.RingTheory.Adjoin.Polynomial
+public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # Ideals in polynomial rings
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -41,6 +45,12 @@ theorem ker_evalRingHom (x : R) : RingHom.ker (evalRingHom x) = Ideal.span {X - 
 theorem ker_modByMonicHom {q : R[X]} (hq : q.Monic) :
     LinearMap.ker (Polynomial.modByMonicHom q) = (Ideal.span {q}).restrictScalars R :=
   Submodule.ext fun _ => (mem_ker_modByMonic hq).trans Ideal.mem_span_singleton.symm
+
+@[simp]
+lemma ker_constantCoeff : RingHom.ker constantCoeff = .span {(X : R[X])} := by
+  refine le_antisymm (fun p hp ↦ ?_) (by simp [Ideal.span_le])
+  simp only [RingHom.mem_ker, constantCoeff_apply, ← Polynomial.X_dvd_iff] at hp
+  rwa [Ideal.mem_span_singleton]
 
 open Algebra in
 lemma _root_.Algebra.mem_ideal_map_adjoin {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]

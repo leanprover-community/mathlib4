@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
-import Mathlib.LinearAlgebra.LinearPMap
-import Mathlib.LinearAlgebra.Projection
+module
+
+public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
+public import Mathlib.LinearAlgebra.LinearPMap
+public import Mathlib.LinearAlgebra.Projection
 
 /-!
 # Bases in a vector space
@@ -28,7 +30,9 @@ basis, bases
 
 -/
 
-open Function Set Submodule
+@[expose] public section
+
+open Function Module Set Submodule
 
 variable {ι : Type*} {ι' : Type*} {K : Type*} {V : Type*} {V' : Type*}
 
@@ -39,7 +43,7 @@ variable {v : ι → V} {s t : Set V} {x y z : V}
 
 open Submodule
 
-namespace Basis
+namespace Module.Basis
 
 section ExistsBasis
 
@@ -173,7 +177,7 @@ end
 
 end ExistsBasis
 
-end Basis
+end Module.Basis
 
 open Fintype
 
@@ -248,7 +252,7 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
   have fb_eq : f b = hC ⟨f b, BC b.2⟩ := by
     change f b = Basis.extend this _
     simp_rw [Basis.extend_apply_self]
-  dsimp []
+  dsimp
   rw [Basis.ofVectorSpace_apply_self, fb_eq, hC.constr_basis]
   exact leftInverse_invFun (LinearMap.ker_eq_bot.1 hf_inj) _
 
@@ -286,6 +290,15 @@ theorem Submodule.exists_le_ker_of_notMem {p : Submodule K V} {v : V} (hv : v �
   rcases LinearMap.exists_extend_of_notMem (0 : p →ₗ[K] K) hv 1 with ⟨f, hpf, hfv⟩
   refine ⟨f, by simp [hfv], fun x hx ↦ ?_⟩
   simpa using congr($hpf ⟨x, hx⟩)
+
+/-- If `V` and `V'` are nontrivial vector spaces over a field `K`, the space of `K`-linear maps
+between them is nontrivial. -/
+instance [Nontrivial V] [Nontrivial V'] : Nontrivial (V →ₗ[K] V') := by
+  obtain ⟨v, hv⟩ := exists_ne (0 : V)
+  obtain ⟨w, hw⟩ := exists_ne (0 : V')
+  have : v ∉ (⊥ : Submodule K V) := by simp only [mem_bot, hv, not_false_eq_true]
+  obtain ⟨g, _, hg⟩ := LinearMap.exists_extend_of_notMem (K := K) 0 this w
+  exact ⟨g, 0, DFunLike.ne_iff.mpr ⟨v, by simp_all⟩⟩
 
 @[deprecated (since := "2025-05-23")]
 alias Submodule.exists_le_ker_of_not_mem := Submodule.exists_le_ker_of_notMem

@@ -3,10 +3,12 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.GroupWithZero.Indicator
-import Mathlib.LinearAlgebra.Pi
-import Mathlib.Topology.LocallyConstant.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.GroupWithZero.Indicator
+public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.Topology.LocallyConstant.Basic
 
 /-!
 # Algebraic structure on locally constant functions
@@ -15,6 +17,8 @@ This file puts algebraic structure (`Group`, `AddGroup`, etc)
 on the type of locally constant functions.
 
 -/
+
+@[expose] public section
 
 namespace LocallyConstant
 
@@ -59,14 +63,14 @@ instance [MulOneClass Y] : MulOneClass (LocallyConstant X Y) :=
   Function.Injective.mulOneClass DFunLike.coe DFunLike.coe_injective' rfl fun _ _ => rfl
 
 /-- `DFunLike.coe` as a `MonoidHom`. -/
-@[to_additive (attr := simps) "`DFunLike.coe` as an `AddMonoidHom`."]
+@[to_additive (attr := simps) /-- `DFunLike.coe` as an `AddMonoidHom`. -/]
 def coeFnMonoidHom [MulOneClass Y] : LocallyConstant X Y →* X → Y where
   toFun := DFunLike.coe
   map_one' := rfl
   map_mul' _ _ := rfl
 
 /-- The constant-function embedding, as a multiplicative monoid hom. -/
-@[to_additive (attr := simps) "The constant-function embedding, as an additive monoid hom."]
+@[to_additive (attr := simps) /-- The constant-function embedding, as an additive monoid hom. -/]
 def constMonoidHom [MulOneClass Y] : Y →* LocallyConstant X Y where
   toFun := const X
   map_one' := rfl
@@ -288,7 +292,7 @@ end coeFn
 section Eval
 
 /-- Evaluation as a `MonoidHom` -/
-@[to_additive (attr := simps!) "Evaluation as an `AddMonoidHom`"]
+@[to_additive (attr := simps!) /-- Evaluation as an `AddMonoidHom` -/]
 def evalMonoidHom [MulOneClass Y] (x : X) : LocallyConstant X Y →* Y :=
   (Pi.evalMonoidHom _ x).comp coeFnMonoidHom
 
@@ -314,7 +318,7 @@ section Comap
 variable [TopologicalSpace Y] {Z : Type*}
 
 /-- `LocallyConstant.comap` as a `MonoidHom`. -/
-@[to_additive (attr := simps) "`LocallyConstant.comap` as an `AddMonoidHom`."]
+@[to_additive (attr := simps) /-- `LocallyConstant.comap` as an `AddMonoidHom`. -/]
 def comapMonoidHom [MulOneClass Z] (f : C(X, Y)) :
     LocallyConstant Y Z →* LocallyConstant X Z where
   toFun := comap f
@@ -377,7 +381,7 @@ section Map
 variable {Z : Type*}
 
 /-- `LocallyConstant.map` as a `MonoidHom`. -/
-@[to_additive (attr := simps) "`LocallyConstant.map` as an `AddMonoidHom`."]
+@[to_additive (attr := simps) /-- `LocallyConstant.map` as an `AddMonoidHom`. -/]
 def mapMonoidHom [MulOneClass Y] [MulOneClass Z] (f : Y →* Z) :
     LocallyConstant X Y →* LocallyConstant X Z where
   toFun := map f

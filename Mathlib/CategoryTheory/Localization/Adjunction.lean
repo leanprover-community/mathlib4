@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.CatCommSq
-import Mathlib.CategoryTheory.Localization.Predicate
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+module
+
+public import Mathlib.CategoryTheory.CatCommSq
+public import Mathlib.CategoryTheory.Localization.Predicate
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 
 /-!
 # Localization of adjunctions
@@ -19,6 +21,8 @@ to morphism properties `W₁` and `W₂` respectively, and 2-commutative diagram
 induced adjunction `Adjunction.localization L₁ W₁ L₂ W₂ G' F' : G' ⊣ F'`.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -53,7 +57,7 @@ lemma ε_app (X₁ : C₁) :
   letI : Lifting L₁ W₁ ((G ⋙ F) ⋙ L₁) (G' ⋙ F') :=
     Lifting.mk (CatCommSq.hComp G F L₁ L₂ L₁ G' F').iso.symm
   simp only [ε, liftNatTrans_app, Lifting.iso, Iso.symm,
-    Functor.id_obj, Functor.comp_obj, Lifting.id_iso', Functor.rightUnitor_hom_app,
+    Functor.id_obj, Functor.comp_obj, Functor.rightUnitor_hom_app,
       whiskerRight_app, CatCommSq.hComp_iso_hom_app, id_comp]
 
 /-- Auxiliary definition of the counit morphism for the adjunction `Adjunction.localization` -/
@@ -70,7 +74,7 @@ lemma η_app (X₂ : C₂) :
   letI : Lifting L₂ W₂ ((F ⋙ G) ⋙ L₂) (F' ⋙ G') :=
     Lifting.mk (CatCommSq.hComp F G L₂ L₁ L₂ F' G').iso.symm
   simp only [η, liftNatTrans_app, Lifting.iso, Iso.symm, CatCommSq.hComp_iso_inv_app,
-    whiskerRight_app, Lifting.id_iso', Functor.rightUnitor_inv_app, comp_id, assoc]
+    whiskerRight_app, Functor.rightUnitor_inv_app, comp_id, assoc]
 
 end Localization
 

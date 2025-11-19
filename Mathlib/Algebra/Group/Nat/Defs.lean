@@ -3,7 +3,9 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Defs
+module
+
+public import Mathlib.Algebra.Group.Defs
 
 /-!
 # The natural numbers form a monoid
@@ -12,6 +14,8 @@ This file contains the additive and multiplicative monoid instances on the natur
 
 See note [foundational algebra order theory].
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
@@ -61,7 +65,10 @@ instance instCommSemigroup    : CommSemigroup ℕ    := by infer_instance
 instance instSemigroup        : Semigroup ℕ        := by infer_instance
 instance instAddCommSemigroup : AddCommSemigroup ℕ := by infer_instance
 instance instAddSemigroup     : AddSemigroup ℕ     := by infer_instance
-instance instOne : One ℕ := inferInstance
+instance instOne              : One ℕ              := inferInstance
+
+instance instIsAddTorsionFree : IsAddTorsionFree ℕ where
+  nsmul_right_injective _n hn _x _y hxy := Nat.mul_left_cancel (Nat.pos_of_ne_zero hn) hxy
 
 set_option linter.style.commandStart true
 

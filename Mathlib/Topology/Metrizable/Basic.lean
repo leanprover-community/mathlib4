@@ -3,7 +3,9 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.MetricSpace.Basic
+module
+
+public import Mathlib.Topology.MetricSpace.Basic
 
 /-!
 # Metrizability of a T₃ topological space with second countable topology
@@ -11,6 +13,8 @@ import Mathlib.Topology.MetricSpace.Basic
 In this file we define metrizable topological spaces, i.e., topological spaces for which there
 exists a metric space structure that generates the same topology.
 -/
+
+@[expose] public section
 
 open Filter Set Metric Topology
 
@@ -46,9 +50,6 @@ theorem _root_.Topology.IsInducing.pseudoMetrizableSpace [PseudoMetrizableSpace 
     (hf : IsInducing f) : PseudoMetrizableSpace X :=
   letI : PseudoMetricSpace Y := pseudoMetrizableSpacePseudoMetric Y
   ⟨⟨hf.comapPseudoMetricSpace, rfl⟩⟩
-
-@[deprecated (since := "2024-10-28")]
-alias _root_.Inducing.pseudoMetrizableSpace := IsInducing.pseudoMetrizableSpace
 
 /-- Every pseudo-metrizable space is first countable. -/
 instance (priority := 100) PseudoMetrizableSpace.firstCountableTopology
@@ -108,9 +109,6 @@ theorem _root_.Topology.IsEmbedding.metrizableSpace [MetrizableSpace Y] {f : X �
     (hf : IsEmbedding f) : MetrizableSpace X :=
   letI : MetricSpace Y := metrizableSpaceMetric Y
   ⟨⟨hf.comapMetricSpace f, rfl⟩⟩
-
-@[deprecated (since := "2024-10-26")]
-alias _root_.Embedding.metrizableSpace := IsEmbedding.metrizableSpace
 
 instance MetrizableSpace.subtype [MetrizableSpace X] (s : Set X) : MetrizableSpace s :=
   IsEmbedding.subtypeVal.metrizableSpace

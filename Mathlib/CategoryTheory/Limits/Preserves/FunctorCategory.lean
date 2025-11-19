@@ -3,11 +3,14 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Limits.Yoneda
-import Mathlib.CategoryTheory.Limits.Presheaf
+module
+
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+public import Mathlib.CategoryTheory.Limits.Presheaf
+public import Mathlib.CategoryTheory.Limits.Yoneda
 
 /-!
 # Preservation of (co)limits in the functor category
@@ -21,11 +24,13 @@ import Mathlib.CategoryTheory.Limits.Presheaf
 * Show that `F : C ⥤ D` preserves limits of a certain shape
   if `Lan F.op : Cᵒᵖ ⥤ Type*` preserves such limits.
 
-# References
+## References
 
 https://ncatlab.org/nlab/show/commutativity+of+limits+and+colimits#preservation_by_functor_categories_and_localizations
 
 -/
+
+@[expose] public section
 
 
 universe w w' v v₁ v₂ v₃ u u₁ u₂ u₃
@@ -118,7 +123,7 @@ instance whiskeringRight_preservesLimitsOfShape {C : Type*} [Category C] {D : Ty
       exact isLimitOfPreserves _ hc⟩⟩⟩
 
 /-- Whiskering right and then taking a limit is the same as taking the limit and applying the
-    functor. -/
+functor. -/
 def limitCompWhiskeringRightIsoLimitComp {C : Type*} [Category C] {D : Type*}
     [Category D] {E : Type*} [Category E] {J : Type*} [Category J]
     [HasLimitsOfShape J D] (F : D ⥤ E) [PreservesLimitsOfShape J F] (G : J ⥤ C ⥤ D) :
@@ -152,7 +157,7 @@ instance whiskeringRight_preservesColimitsOfShape {C : Type*} [Category C] {D : 
       exact isColimitOfPreserves _ hc⟩⟩⟩
 
 /-- Whiskering right and then taking a colimit is the same as taking the colimit and applying the
-    functor. -/
+functor. -/
 def colimitCompWhiskeringRightIsoColimitComp {C : Type*} [Category C] {D : Type*}
     [Category D] {E : Type*} [Category E] {J : Type*} [Category J]
     [HasColimitsOfShape J D] (F : D ⥤ E) [PreservesColimitsOfShape J F] (G : J ⥤ C ⥤ D) :
@@ -190,9 +195,10 @@ instance whiskeringRightPreservesColimits {C : Type*} [Category C] {D : Type*} [
 /-- If `Lan F.op : (Cᵒᵖ ⥤ Type*) ⥤ (Dᵒᵖ ⥤ Type*)` preserves limits of shape `J`, so will `F`. -/
 lemma preservesLimit_of_lan_preservesLimit {C D : Type u} [SmallCategory C]
     [SmallCategory D] (F : C ⥤ D) (J : Type u) [SmallCategory J]
-    [PreservesLimitsOfShape J (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u)] : PreservesLimitsOfShape J F := by
-  apply @preservesLimitsOfShape_of_reflects_of_preserves _ _ _ _ _ _ _ _ F yoneda ?_
-  exact preservesLimitsOfShape_of_natIso (Presheaf.compYonedaIsoYonedaCompLan F).symm
+    [PreservesLimitsOfShape J (F.op.lan : _ ⥤ Dᵒᵖ ⥤ Type u)] : PreservesLimitsOfShape J F :=
+  letI := preservesLimitsOfShape_of_natIso (J := J)
+    (Presheaf.compULiftYonedaIsoULiftYonedaCompLan.{u} F).symm
+  preservesLimitsOfShape_of_reflects_of_preserves F uliftYoneda.{u}
 
 /-- `F : C ⥤ D ⥤ E` preserves finite limits if it does for each `d : D`. -/
 lemma preservesFiniteLimits_of_evaluation {D : Type*} [Category D] {E : Type*} [Category E]

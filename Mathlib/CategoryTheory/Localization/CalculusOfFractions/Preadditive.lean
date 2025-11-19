@@ -3,10 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Group.TransferInstance
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Fractions
-import Mathlib.CategoryTheory.Localization.HasLocalization
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+module
+
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Fractions
+public import Mathlib.CategoryTheory.Localization.HasLocalization
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # The preadditive category structure on the localized category
@@ -30,6 +32,8 @@ of fractions, then the localized category can also be equipped with
 a preadditive structure, but only one of these two constructions can be made an instance!)
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -61,9 +65,7 @@ abbrev add : W.LeftFraction X Y where
 
 @[simp]
 lemma symm_add : φ.symm.add = φ.add := by
-  dsimp [add, symm]
-  congr 1
-  apply add_comm
+  grind
 
 @[simp]
 lemma map_add (F : C ⥤ D) (hF : W.IsInvertedBy F) [Preadditive D] [F.Additive] :
@@ -335,7 +337,7 @@ lemma functor_additive_iff {E : Type*} [Category E] [Preadditive E] [Preadditive
         ← comp_add, ← comp_add, ← add_comp, ← add_comp, Functor.map_comp, Functor.map_comp] at eq
       rw [← cancel_mono (G.map (L.objObjPreimageIso Y).inv),
         ← cancel_epi (G.map (L.objObjPreimageIso X).hom), eq]
-    intros X Y f g
+    intro X Y f g
     obtain ⟨φ, rfl, rfl⟩ := exists_leftFraction₂ L W f g
     have := Localization.inverts L W φ.s φ.hs
     rw [← φ.map_add L (inverts L W), ← cancel_mono (G.map (L.map φ.s)), ← G.map_comp,

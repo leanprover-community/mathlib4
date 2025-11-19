@@ -3,13 +3,16 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Data.Finset.Lattice.Prod
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Data.Setoid.Basic
-import Mathlib.Order.Atoms
-import Mathlib.Order.SupIndep
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Data.Finset.Lattice.Prod
+public import Mathlib.Data.Finset.Pairwise
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.Order.Atoms
+public import Mathlib.Order.SupIndep
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Finite partitions
@@ -58,6 +61,8 @@ the literature and turn the order around?
 
 The specialisation to `Finset α` could be generalised to atomistic orders.
 -/
+
+@[expose] public section
 
 
 open Finset Function
@@ -200,7 +205,7 @@ instance : Unique (Finpartition (⊥ : α)) :=
       ext a
       exact iff_of_false (fun h ↦ P.ne_bot h <| le_bot_iff.1 <| P.le h) (notMem_empty a) }
 
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 /-- There's a unique partition of an atom. -/
 abbrev _root_.IsAtom.uniqueFinpartition (ha : IsAtom a) : Unique (Finpartition a) where
   default := indiscrete ha.1
@@ -732,7 +737,7 @@ theorem mem_atomise :
 
 theorem atomise_empty (hs : s.Nonempty) : (atomise s ∅).parts = {s} := by
   simp only [atomise, powerset_empty, image_singleton, notMem_empty, IsEmpty.forall_iff,
-    imp_true_iff, filter_True]
+    imp_true_iff, filter_true]
   exact erase_eq_of_notMem (notMem_singleton.2 hs.ne_empty.symm)
 
 theorem card_atomise_le : #(atomise s F).parts ≤ 2 ^ #F :=

@@ -3,13 +3,17 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Kevin Buzzard
 -/
-import Mathlib.CategoryTheory.Preadditive.Projective.Basic
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 
 /-!
 # Injective objects and categories with enough injectives
 
 An object `J` is injective iff every morphism into `J` can be obtained by extending a monomorphism.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -29,6 +33,10 @@ class Injective (J : C) : Prop where
   factors : ∀ {X Y : C} (g : X ⟶ J) (f : X ⟶ Y) [Mono f], ∃ h : Y ⟶ J, f ≫ h = g
 
 attribute [inherit_doc Injective] Injective.factors
+
+variable (C) in
+/-- The `ObjectProperty C` corresponding to the notion of injective objects in `C`. -/
+abbrev isInjective : ObjectProperty C := Injective
 
 lemma Limits.IsZero.injective {X : C} (h : IsZero X) : Injective X where
   factors _ _ _ := ⟨h.from_ _, h.eq_of_tgt _ _⟩
@@ -112,10 +120,10 @@ instance Type.enoughInjectives : EnoughInjectives (Type u₁) where
     Nonempty.intro
       { J := WithBot X
         injective := inferInstance
-        f := Option.some
+        f := WithBot.some
         mono := by
           rw [mono_iff_injective]
-          exact Option.some_injective X }
+          exact WithBot.coe_injective }
 
 instance {P Q : C} [HasBinaryProduct P Q] [Injective P] [Injective Q] : Injective (P ⨯ Q) where
   factors g f mono := by
@@ -219,10 +227,7 @@ an arbitrarily chosen injective object under `cokernel f`.
 -/
 def syzygies : C :=
   under (cokernel f)
--- The `Injective` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance : Injective <| syzygies f := injective_under (cokernel f)
+deriving Injective
 
 /-- When `C` has enough injective,
 `Injective.d f : Y ⟶ syzygies f` is the composition

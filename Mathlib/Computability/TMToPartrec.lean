@@ -3,11 +3,13 @@ Copyright (c) 2020 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Computability.Halting
-import Mathlib.Computability.TuringMachine
-import Mathlib.Data.Num.Lemmas
-import Mathlib.Tactic.DeriveFintype
-import Mathlib.Computability.TMConfig
+module
+
+public import Mathlib.Computability.Halting
+public import Mathlib.Computability.TuringMachine
+public import Mathlib.Data.Num.Lemmas
+public import Mathlib.Tactic.DeriveFintype
+public import Mathlib.Computability.TMConfig
 
 /-!
 # Modelling partial recursive functions using Turing machines
@@ -19,9 +21,11 @@ Turing machine for evaluating these functions. This amounts to a constructive pr
 
 ## Main definitions
 
-* `PartrecToTM2.tr`: A TM2 turing machine which can evaluate `code` programs
+* `PartrecToTM2.tr`: A TM2 Turing machine which can evaluate `code` programs
 
 -/
+
+@[expose] public section
 
 open List (Vector)
 
@@ -157,6 +161,9 @@ inductive Γ'
   | bit0
   | bit1
   deriving DecidableEq, Inhabited, Fintype
+
+-- A proof below relies on the value of that `deriving Inhabited` picks here.
+@[simp] theorem default_Γ' : (default : Γ') = .consₗ := rfl
 
 /-- The four stacks used by the program. `main` is used to store the input value in `trNormal`
 mode and the output value in `Λ'.ret` mode, while `stack` is used to keep all the data for the
@@ -746,7 +753,7 @@ theorem succ_ok {q s n} {c d : List Γ'} :
         Reaches₁ (TM2.step tr) ⟨some q.succ, s, K'.elim (trPosNum a ++ [Γ'.cons]) l₁ c d⟩
           ⟨some (unrev q), s', K'.elim (l₂' ++ [Γ'.cons]) l₁' c d⟩ by
     obtain ⟨l₁', l₂', s', e, h⟩ := this []
-    simp? [List.reverseAux] at e says simp only [List.reverseAux, List.reverseAux_eq] at e
+    simp only [List.reverseAux] at e
     refine h.trans ?_
     convert unrev_ok using 2
     simp [e, List.reverseAux_eq]
@@ -1078,7 +1085,7 @@ theorem contSupp_comp (f k) : contSupp (Cont'.comp f k) = codeSupp f k :=
 
 theorem contSupp_fix (f k) : contSupp (Cont'.fix f k) = codeSupp f (Cont'.fix f k) := by
   simp +contextual [codeSupp, codeSupp', contSupp, Finset.union_assoc,
-    Finset.subset_iff]
+    Finset.subset_iff, -Finset.singleton_union, -Finset.union_singleton]
 
 @[simp]
 theorem contSupp_halt : contSupp Cont'.halt = ∅ :=

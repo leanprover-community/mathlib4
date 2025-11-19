@@ -3,9 +3,11 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Pi.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.Defs
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Group.Pi.Basic
 
 /-!
 # Pi instances for groups with zero
@@ -13,9 +15,9 @@ import Mathlib.Algebra.Group.Pi.Basic
 This file defines monoid with zero, group with zero, and related structure instances for pi types.
 -/
 
-assert_not_exists DenselyOrdered Ring
+@[expose] public section
 
-open Function Pi
+assert_not_exists DenselyOrdered Ring
 
 variable {ι : Type*} {α : ι → Type*}
 

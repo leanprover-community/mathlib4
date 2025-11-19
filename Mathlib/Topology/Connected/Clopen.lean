@@ -3,9 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Subset
-import Mathlib.Topology.Clopen
-import Mathlib.Topology.Connected.Basic
+module
+
+public import Mathlib.Data.Set.Subset
+public import Mathlib.Topology.Clopen
+public import Mathlib.Topology.Compactness.Compact
+public import Mathlib.Topology.Connected.Basic
 
 /-!
 # Connected subsets and their relation to clopen sets
@@ -20,6 +23,8 @@ to clopen sets.
 + `ConnectedComponents`: The connected components of a topological space, as a quotient type.
 
 -/
+
+@[expose] public section
 
 open Set Function Topology TopologicalSpace Relation
 
@@ -458,16 +463,10 @@ theorem Topology.IsQuotientMap.preimage_connectedComponent (hf : IsQuotientMap f
       _).subset_connectedComponent mem_connectedComponent).antisymm
     (hf.continuous.mapsTo_connectedComponent a)
 
-@[deprecated (since := "2024-10-22")]
-alias QuotientMap.preimage_connectedComponent := IsQuotientMap.preimage_connectedComponent
-
 lemma Topology.IsQuotientMap.image_connectedComponent {f : α → β} (hf : IsQuotientMap f)
     (h_fibers : ∀ y : β, IsConnected (f ⁻¹' {y})) (a : α) :
     f '' connectedComponent a = connectedComponent (f a) := by
   rw [← hf.preimage_connectedComponent h_fibers, image_preimage_eq _ hf.surjective]
-
-@[deprecated (since := "2024-10-22")]
-alias QuotientMap.image_connectedComponent := IsQuotientMap.image_connectedComponent
 
 end Preconnected
 
@@ -511,9 +510,6 @@ theorem surjective_coe : Surjective (mk : α → ConnectedComponents α) :=
 
 theorem isQuotientMap_coe : IsQuotientMap (mk : α → ConnectedComponents α) :=
   isQuotientMap_quot_mk
-
-@[deprecated (since := "2024-10-22")]
-alias quotientMap_coe := isQuotientMap_coe
 
 @[continuity]
 theorem continuous_coe : Continuous (mk : α → ConnectedComponents α) :=
@@ -576,3 +572,5 @@ theorem connectedSpace_iff_clopen :
     ConnectedSpace α ↔ Nonempty α ∧ ∀ s : Set α, IsClopen s → s = ∅ ∨ s = Set.univ := by
   rw [connectedSpace_iff_univ, IsConnected, ← preconnectedSpace_iff_univ,
     preconnectedSpace_iff_clopen, Set.nonempty_iff_univ_nonempty]
+
+instance [CompactSpace α] : CompactSpace <| ConnectedComponents α := Quotient.compactSpace

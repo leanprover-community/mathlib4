@@ -3,8 +3,9 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lucas Allen, Kim Morrison
 -/
+module
 
-import Mathlib.Tactic.Conv
+public meta import Mathlib.Tactic.Conv
 
 /-!
 ## Introduce the `apply_congr` conv mode tactic.
@@ -14,6 +15,8 @@ It is particularly useful when the automatically generated congruence lemmas
 are not of the optimal shape. An example, described in the doc-string is
 rewriting inside the operand of a `Finset.sum`.
 -/
+
+public meta section
 
 open Lean Expr Parser.Tactic Elab Command Elab.Tactic Meta Conv
 
@@ -25,16 +28,16 @@ Otherwise `apply_congr e` will apply the lemma `e`.
 
 Recall that a goal that appears as `∣ X` in `conv` mode
 represents a goal of `⊢ X = ?m`,
-i.e. an equation with a metavariable for the right hand side.
+i.e. an equation with a metavariable for the right-hand side.
 
 To successfully use `apply_congr e`, `e` will need to be an equation
 (possibly after function arguments),
 which can be unified with a goal of the form `X = ?m`.
-The right hand side of `e` will then determine the metavariable,
-and `conv` will subsequently replace `X` with that right hand side.
+The right-hand side of `e` will then determine the metavariable,
+and `conv` will subsequently replace `X` with that right-hand side.
 
 As usual, `apply_congr` can create new goals;
-any of these which are _not_ equations with a metavariable on the right hand side
+any of these which are _not_ equations with a metavariable on the right-hand side
 will be hard to deal with in `conv` mode.
 Thus `apply_congr` automatically calls `intros` on any new goals,
 and fails if they are not then equations.

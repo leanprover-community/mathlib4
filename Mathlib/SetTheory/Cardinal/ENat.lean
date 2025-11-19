@@ -3,9 +3,11 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Hom.Ring
-import Mathlib.Data.ENat.Basic
-import Mathlib.SetTheory.Cardinal.Basic
+module
+
+public import Mathlib.Algebra.Order.Hom.Ring
+public import Mathlib.Data.ENat.Basic
+public import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Conversion between `Cardinal` and `ℕ∞`
@@ -27,6 +29,8 @@ Since it is not registered as a coercion, the argument about delaboration does n
 
 set theory, cardinals, extended natural numbers
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -76,7 +80,7 @@ lemma ofENat_lt_aleph0 {m : ℕ∞} : (m : Cardinal) < ℵ₀ ↔ m < ⊤ :=
 @[simp] lemma one_lt_ofENat {m : ℕ∞} : 1 < (m : Cardinal) ↔ 1 < m := by norm_cast
 
 @[simp, norm_cast] lemma ofNat_lt_ofENat {m : ℕ} [m.AtLeastTwo] {n : ℕ∞} :
-  (ofNat(m) : Cardinal) < n ↔ OfNat.ofNat m < n := nat_lt_ofENat
+    (ofNat(m) : Cardinal) < n ↔ OfNat.ofNat m < n := nat_lt_ofENat
 
 lemma ofENat_mono : Monotone ofENat := ofENat_strictMono.monotone
 

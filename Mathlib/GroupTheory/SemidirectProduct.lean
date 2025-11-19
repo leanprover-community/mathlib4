@@ -3,7 +3,9 @@ Copyright (c) 2020 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.GroupTheory.Complement
+module
+
+public import Mathlib.GroupTheory.Complement
 
 /-!
 # Semidirect product
@@ -28,6 +30,8 @@ This file introduces the global notation `N ⋊[φ] G` for `SemidirectProduct N 
 group, semidirect product
 -/
 
+@[expose] public section
+
 open Subgroup
 
 variable (N : Type*) (G : Type*) {H : Type*} [Group N] [Group G] [Group H]
@@ -46,8 +50,7 @@ structure SemidirectProduct (φ : G →* MulAut N) where
   right : G
   deriving DecidableEq
 
--- Porting note: unknown attribute
--- attribute [pp_using_anonymous_constructor] SemidirectProduct
+attribute [pp_using_anonymous_constructor] SemidirectProduct
 
 @[inherit_doc]
 notation:35 N " ⋊[" φ:35 "] " G:35 => SemidirectProduct N G φ

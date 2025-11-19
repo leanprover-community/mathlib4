@@ -3,16 +3,20 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
-import Mathlib.CategoryTheory.Monoidal.Types.Basic
-import Mathlib.LinearAlgebra.DirectSum.Finsupp
-import Mathlib.CategoryTheory.Linear.LinearFunctor
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+public import Mathlib.CategoryTheory.Monoidal.Types.Basic
+public import Mathlib.LinearAlgebra.DirectSum.Finsupp
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
 The functor of forming finitely supported functions on a type with values in a `[Ring R]`
 is the left adjoint of
 the forgetful functor from `R`-modules to types.
 -/
+
+@[expose] public section
 
 
 assert_not_exists Cardinal
@@ -131,7 +135,7 @@ lemma εIso_inv_freeMk (x : PUnit) : (εIso R).inv (freeMk x) = 1 := by
 
 /-- The canonical isomorphism `(free R).obj X ⊗ (free R).obj Y ≅ (free R).obj (X ⊗ Y)`
 for two types `X` and `Y`.
-(This should not be used directly: it is is part of the implementation of the
+(This should not be used directly: it is part of the implementation of the
 monoidal structure on the functor `free R`.) -/
 def μIso (X Y : Type u) :
     (free R).obj X ⊗ (free R).obj Y ≅ (free R).obj (X ⊗ Y) :=
@@ -284,7 +288,7 @@ def embedding : C ⥤ Free R C where
   map {_ _} f := Finsupp.single f 1
   map_id _ := rfl
   map_comp {X Y Z} f g := by
-    -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10959): simp used to be able to close this goal
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10959): simp used to be able to close this goal
     rw [single_comp_single, one_mul]
 
 variable {C} {D : Type u} [Category.{v} D] [Preadditive D] [Linear R D]

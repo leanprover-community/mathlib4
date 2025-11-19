@@ -3,12 +3,16 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Util.Delaborators
+module
+
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Util.Delaborators
 
 /-! # Units in pi types -/
+
+@[expose] public section
 
 variable {ι : Type*} {M : ι → Type*} [∀ i, Monoid (M i)] {x : Π i, M i}
 
@@ -16,8 +20,8 @@ open Units in
 /-- The monoid equivalence between units of a product,
 and the product of the units of each monoid. -/
 @[to_additive (attr := simps)
-  "The additive-monoid equivalence between (additive) units of a product,
-  and the product of the (additive) units of each monoid."]
+  /-- The additive-monoid equivalence between (additive) units of a product,
+  and the product of the (additive) units of each monoid. -/]
 def MulEquiv.piUnits : (Π i, M i)ˣ ≃* Π i, (M i)ˣ where
   toFun f i := ⟨f.val i, f.inv i, congr_fun f.val_inv i, congr_fun f.inv_val i⟩
   invFun f := ⟨(val <| f ·), (inv <| f ·), funext (val_inv <| f ·), funext (inv_val <| f ·)⟩

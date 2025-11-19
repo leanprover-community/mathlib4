@@ -3,9 +3,11 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Module.Submodule.Range
-import Mathlib.LinearAlgebra.Finsupp.LSum
-import Mathlib.LinearAlgebra.Span.Defs
+module
+
+public import Mathlib.Algebra.Module.Submodule.Range
+public import Mathlib.LinearAlgebra.Finsupp.LSum
+public import Mathlib.LinearAlgebra.Span.Defs
 
 /-!
 # `Finsupp`s supported on a given submodule
@@ -22,6 +24,8 @@ import Mathlib.LinearAlgebra.Span.Defs
 
 function with finite support, module, linear algebra
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -56,7 +60,7 @@ theorem mem_supported {s : Set α} (p : α →₀ M) : p ∈ supported M R s ↔
 
 theorem mem_supported' {s : Set α} (p : α →₀ M) :
     p ∈ supported M R s ↔ ∀ x ∉ s, p x = 0 := by
-  haveI := Classical.decPred fun x : α => x ∈ s; simp [mem_supported, Set.subset_def, not_imp_comm]
+  simp [mem_supported, Set.subset_def, not_imp_comm]
 
 theorem mem_supported_support (p : α →₀ M) : p ∈ Finsupp.supported M R (p.support : Set α) := by
   rw [Finsupp.mem_supported]
@@ -77,7 +81,7 @@ theorem supported_eq_span_single (s : Set α) :
 
 theorem span_le_supported_biUnion_support (s : Set (α →₀ M)) :
     span R s ≤ supported M R (⋃ x ∈ s, x.support) :=
-  span_le.mpr fun _ h ↦ subset_biUnion_of_mem h (u := (·.support.toSet))
+  span_le.mpr fun _ h ↦ subset_biUnion_of_mem h (u := (SetLike.coe ·.support))
 
 variable (M)
 
@@ -167,6 +171,19 @@ theorem disjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
   rw [mem_bot, single_eq_zero] at this
   exact hy this
 
+lemma codisjoint_supported_supported {s t : Set α} (h : Codisjoint s t) :
+    Codisjoint (supported M R s) (supported M R t) := by
+  rw [codisjoint_iff, eq_top_iff, ← supported_union,
+    show s ∪ t = .univ from codisjoint_iff.mp h, supported_univ]
+
+lemma codisjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
+    Codisjoint (supported M R s) (supported M R t) ↔ Codisjoint s t := by
+  refine ⟨fun h ↦ codisjoint_iff.mpr (eq_top_iff.mpr fun a ↦ ?_), codisjoint_supported_supported⟩
+  obtain ⟨x, hx⟩ := exists_ne (0 : M)
+  rw [codisjoint_iff, eq_top_iff, ← supported_union] at h
+  have : Finsupp.single a x ∈ supported M R (s ∪ t) := h (show Finsupp.single a x ∈ _ from trivial)
+  simpa [Finsupp.mem_supported, Finsupp.support_single_ne_zero _ hx] using this
+
 /-- Interpret `Finsupp.restrictSupportEquiv` as a linear equivalence between
 `supported M R s` and `s →₀ M`. -/
 @[simps!] def supportedEquivFinsupp (s : Set α) : supported M R s ≃ₗ[R] s →₀ M := by
@@ -233,7 +250,7 @@ theorem lmapDomain_disjoint_ker (f : α → α') {s : Set α}
     rw [Finsupp.sum_apply, Finsupp.sum_eq_single x, single_eq_same] at this
     · simpa
     · intro y hy xy
-      simp only [SetLike.mem_coe, mem_supported, subset_def, Finset.mem_coe, mem_support_iff] at h₁
+      simp only [SetLike.mem_coe, mem_supported, subset_def, mem_support_iff] at h₁
       simp [mt (H _ (h₁ _ hy) _ xs) xy]
     · simp +contextual
   · by_contra h

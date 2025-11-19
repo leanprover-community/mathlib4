@@ -3,7 +3,9 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Function
+module
+
+public import Mathlib.Analysis.Convex.Function
 
 /-!
 # Quasiconvex and quasiconcave functions
@@ -26,6 +28,8 @@ quasiconcavity, and monotonicity implies quasilinearity.
 * https://en.wikipedia.org/wiki/Quasiconvex_function
 -/
 
+@[expose] public section
+
 
 open Function OrderDual Set
 
@@ -33,11 +37,7 @@ variable {𝕜 E β : Type*}
 
 section OrderedSemiring
 
-variable [Semiring 𝕜] [PartialOrder 𝕜]
-
-section AddCommMonoid_E
-
-variable [AddCommMonoid E]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E]
 
 section LE_β
 
@@ -138,10 +138,10 @@ theorem QuasiconcaveOn.convex_gt (hf : QuasiconcaveOn 𝕜 s f) (r : β) :
 
 end LinearOrder_β
 
-section OrderedSMul_β
+section PosSMulMono
 
 variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β]
-  [Module 𝕜 E] [Module 𝕜 β] [OrderedSMul 𝕜 β]
+  [Module 𝕜 E] [Module 𝕜 β] [PosSMulMono 𝕜 β]
   {s : Set E} {f : E → β}
 
 theorem ConvexOn.quasiconvexOn (hf : ConvexOn 𝕜 s f) : QuasiconvexOn 𝕜 s f :=
@@ -150,14 +150,11 @@ theorem ConvexOn.quasiconvexOn (hf : ConvexOn 𝕜 s f) : QuasiconvexOn 𝕜 s f
 theorem ConcaveOn.quasiconcaveOn (hf : ConcaveOn 𝕜 s f) : QuasiconcaveOn 𝕜 s f :=
   hf.convex_ge
 
-end OrderedSMul_β
+end PosSMulMono
 
-end AddCommMonoid_E
+section LinearOrder
 
-section LinearOrderedAddCommMonoid_E
-
-variable [AddCommMonoid E] [LinearOrder E] [IsOrderedAddMonoid E]
-  [PartialOrder β] [Module 𝕜 E] [OrderedSMul 𝕜 E]
+variable [LinearOrder E] [IsOrderedAddMonoid E] [PartialOrder β] [Module 𝕜 E] [PosSMulMono 𝕜 E]
   {s : Set E} {f : E → β}
 
 theorem MonotoneOn.quasiconvexOn (hf : MonotoneOn f s) (hs : Convex 𝕜 s) : QuasiconvexOn 𝕜 s f :=
@@ -196,8 +193,7 @@ theorem Antitone.quasiconcaveOn (hf : Antitone f) : QuasiconcaveOn 𝕜 univ f :
 theorem Antitone.quasilinearOn (hf : Antitone f) : QuasilinearOn 𝕜 univ f :=
   ⟨hf.quasiconvexOn, hf.quasiconcaveOn⟩
 
-end LinearOrderedAddCommMonoid_E
-
+end LinearOrder
 end OrderedSemiring
 
 section LinearOrderedField

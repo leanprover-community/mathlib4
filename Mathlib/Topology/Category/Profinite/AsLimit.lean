@@ -3,8 +3,10 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Adam Topaz
 -/
-import Mathlib.Topology.Category.Profinite.Basic
-import Mathlib.Topology.DiscreteQuotient
+module
+
+public import Mathlib.Topology.Category.Profinite.Basic
+public import Mathlib.Topology.DiscreteQuotient
 
 /-!
 # Profinite sets as limits of finite sets.
@@ -28,6 +30,8 @@ There are a handful of definitions in this file, given `X : Profinite`:
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -43,9 +47,9 @@ variable (X : Profinite.{u})
 def fintypeDiagram : DiscreteQuotient X ⥤ FintypeCat where
   obj S := @FintypeCat.of S (Fintype.ofFinite S)
   map f := DiscreteQuotient.ofLE f.le
-  -- Porting note: `map_comp` used to be proved by default by `aesop_cat`.
-  -- once `aesop_cat` can prove this again, remove the entire `map_comp` here.
-  map_comp _ _ := by funext; aesop_cat
+  -- Porting note: `map_comp` used to be proved by default by `cat_disch`.
+  -- once `cat_disch` can prove this again, remove the entire `map_comp` here.
+  map_comp _ _ := by funext; cat_disch
 
 /-- An abbreviation for `X.fintypeDiagram ⋙ FintypeCat.toProfinite`. -/
 abbrev diagram : DiscreteQuotient X ⥤ Profinite :=

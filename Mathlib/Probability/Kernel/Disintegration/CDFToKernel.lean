@@ -3,9 +3,11 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.AEEqOfIntegral
-import Mathlib.Probability.Kernel.Composition.CompProd
-import Mathlib.Probability.Kernel.Disintegration.MeasurableStieltjes
+module
+
+public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
+public import Mathlib.Probability.Kernel.Composition.CompProd
+public import Mathlib.Probability.Kernel.Disintegration.MeasurableStieltjes
 
 /-!
 # Building a Markov kernel from a conditional cumulative distribution function
@@ -45,6 +47,8 @@ Let `κ : Kernel α (β × ℝ)` and `ν : Kernel α β`.
 
 -/
 
+@[expose] public section
+
 open MeasureTheory Set Filter TopologicalSpace
 
 open scoped NNReal ENNReal MeasureTheory Topology ProbabilityTheory
@@ -61,7 +65,7 @@ variable {f : α × β → ℚ → ℝ}
 /-- a function `f : α × β → ℚ → ℝ` is called a rational conditional kernel CDF of `κ` with respect
 to `ν` if is measurable, if `fun b ↦ f (a, b) x` is `(ν a)`-integrable for all `a : α` and `x : ℝ`
 and for all measurable sets `s : Set β`, `∫ b in s, f (a, b) x ∂(ν a) = (κ a).real (s ×ˢ Iic x)`.
-Also the `ℚ → ℝ` function `f (a, b)` should satisfy the properties of a Sieltjes function for
+Also the `ℚ → ℝ` function `f (a, b)` should satisfy the properties of a Stieltjes function for
 `(ν a)`-almost all `b : β`. -/
 structure IsRatCondKernelCDF (f : α × β → ℚ → ℝ) (κ : Kernel α (β × ℝ)) (ν : Kernel α β) :
     Prop where

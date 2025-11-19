@@ -3,10 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Linear.Basic
-import Mathlib.Algebra.Homology.ComplexShapeSigns
-import Mathlib.Algebra.Homology.HomologicalBicomplex
-import Mathlib.Algebra.Module.Basic
+module
+
+public import Mathlib.CategoryTheory.Linear.Basic
+public import Mathlib.Algebra.Homology.ComplexShapeSigns
+public import Mathlib.Algebra.Homology.HomologicalBicomplex
+public import Mathlib.Algebra.Module.Basic
 
 /-!
 # The total complex of a bicomplex
@@ -24,6 +26,8 @@ differentials `(K.X p).X q ⟶ (K.X (p + 1)).X q` and `(-1) ^ p` times the verti
 differentials `(K.X p).X q ⟶ (K.X p).X (q + 1)`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -376,13 +380,13 @@ lemma d₂_mapMap (i₁ : I₁) (i₂ : I₂) (i₁₂ : I₁₂) :
 lemma mapMap_D₁ (i₁₂ i₁₂' : I₁₂) :
     GradedObject.mapMap (toGradedObjectMap φ) _ i₁₂ ≫ L.D₁ c₁₂ i₁₂ i₁₂' =
       K.D₁ c₁₂ i₁₂ i₁₂' ≫ GradedObject.mapMap (toGradedObjectMap φ) _ i₁₂' := by
-  aesop_cat
+  cat_disch
 
 @[reassoc]
 lemma mapMap_D₂ (i₁₂ i₁₂' : I₁₂) :
     GradedObject.mapMap (toGradedObjectMap φ) _ i₁₂ ≫ L.D₂ c₁₂ i₁₂ i₁₂' =
       K.D₂ c₁₂ i₁₂ i₁₂' ≫ GradedObject.mapMap (toGradedObjectMap φ) _ i₁₂' := by
-  aesop_cat
+  cat_disch
 
 end mapAux
 

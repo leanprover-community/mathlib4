@@ -3,8 +3,10 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Fintype.Sort
-import Mathlib.LinearAlgebra.Multilinear.Basic
+module
+
+public import Mathlib.Data.Fintype.Sort
+public import Mathlib.LinearAlgebra.Multilinear.Basic
 
 /-!
 # Currying of multilinear maps
@@ -19,6 +21,8 @@ in linear functions), called respectively `multilinearCurryLeftEquiv` and
 `multilinearCurryRightEquiv`.
 
 -/
+
+@[expose] public section
 
 open Fin Function Finset Set
 
@@ -84,9 +88,7 @@ theorem MultilinearMap.curryLeft_apply (f : MultilinearMap R M M₂) (x : M 0)
 @[simp]
 theorem LinearMap.curry_uncurryLeft (f : M 0 →ₗ[R] MultilinearMap R (fun i :
     Fin n => M i.succ) M₂) : f.uncurryLeft.curryLeft = f := by
-  ext m x
-  simp only [tail_cons, LinearMap.uncurryLeft_apply, MultilinearMap.curryLeft_apply]
-  rw [cons_zero]
+  rfl
 
 @[simp]
 theorem MultilinearMap.uncurry_curryLeft (f : MultilinearMap R M M₂) :

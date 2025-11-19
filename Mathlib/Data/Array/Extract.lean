@@ -3,12 +3,16 @@ Copyright (c) 2024 Jiecheng Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiecheng Zhao
 -/
-import Mathlib.Init
+module
+
+public import Mathlib.Init
 /-!
 # Lemmas about `Array.extract`
 
 Some useful lemmas about Array.extract
 -/
+
+@[expose] public section
 
 universe u
 variable {α : Type u} {i : Nat}
@@ -27,11 +31,7 @@ and should be upstreamed to replace that.
 -/
 theorem extract_append_left' {a b : Array α} {i j : Nat} (h : j ≤ a.size) :
     (a ++ b).extract i j = a.extract i j := by
-  apply ext
-  · simp only [size_extract, size_append]
-    omega
-  · intro h1 h2 h3
-    rw [getElem_extract, getElem_append_left, getElem_extract]
+  simp [h]
 
 /--
 This is a stronger version of `Array.extract_append_right`,
@@ -44,9 +44,9 @@ theorem extract_append_right' {a b : Array α} {i j : Nat} (h : a.size ≤ i) :
     omega
   · intro k hi h2
     rw [getElem_extract, getElem_extract,
-      getElem_append_right (show size a ≤ i + k by omega)]
+      getElem_append_right (by cutsat)]
     congr
-    omega
+    cutsat
 
 theorem extract_eq_of_size_le_end {l p : Nat} {a : Array α} (h : a.size ≤ l) :
     a.extract p l = a.extract p a.size := by

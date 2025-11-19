@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Group.Nat.Hom
-import Mathlib.Algebra.Polynomial.Basic
+module
+
+public import Mathlib.Algebra.Group.Nat.Hom
+public import Mathlib.Algebra.Polynomial.Basic
 
 /-!
 # Evaluating a polynomial
@@ -25,6 +27,8 @@ We also provide the following bundled versions:
 We include results on applying the definitions to `C`, `X` and ring operations.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -160,9 +164,10 @@ theorem eval₂_mul_C' (h : Commute (f a) x) : eval₂ f x (p * C a) = eval₂ f
 theorem eval₂_list_prod_noncomm (ps : List R[X])
     (hf : ∀ p ∈ ps, ∀ (k), Commute (f <| coeff p k) x) :
     eval₂ f x ps.prod = (ps.map (Polynomial.eval₂ f x)).prod := by
-  induction' ps using List.reverseRecOn with ps p ihp
-  · simp
-  · simp only [List.forall_mem_append, List.forall_mem_singleton] at hf
+  induction ps using List.reverseRecOn with
+  | nil => simp
+  | append_singleton ps p ihp =>
+    simp only [List.forall_mem_append, List.forall_mem_singleton] at hf
     simp [eval₂_mul_noncomm _ _ hf.2, ihp hf.1]
 
 /-- `eval₂` as a `RingHom` for noncommutative rings -/
@@ -214,6 +219,7 @@ theorem coe_eval₂RingHom (f : R →+* S) (x) : ⇑(eval₂RingHom f x) = eval�
 theorem eval₂_pow (n : ℕ) : (p ^ n).eval₂ f x = p.eval₂ f x ^ n :=
   (eval₂RingHom _ _).map_pow _ _
 
+@[gcongr]
 theorem eval₂_dvd : p ∣ q → eval₂ f x p ∣ eval₂ f x q :=
   map_dvd (eval₂RingHom f x)
 
@@ -233,8 +239,11 @@ section Eval
 variable {x : R}
 
 /-- `eval x p` is the evaluation of the polynomial `p` at `x` -/
-def eval : R → R[X] → R :=
-  eval₂ (RingHom.id _)
+def eval (x : R) (p : R[X]) : R :=
+  eval₂ (RingHom.id _) x p
+
+@[simp]
+theorem eval₂_id : eval₂ (RingHom.id _) x p = p.eval x := rfl
 
 theorem eval_eq_sum : p.eval x = p.sum fun e a => a * x ^ e := by
   rw [eval, eval₂_eq_sum]
@@ -305,18 +314,21 @@ theorem eval_natCast_mul {n : ℕ} : ((n : R[X]) * p).eval x = n * p.eval x := b
   rw [← C_eq_natCast, eval_C_mul]
 
 @[simp]
-theorem eval_mul_X : (p * X).eval x = p.eval x * x := by
-  induction p using Polynomial.induction_on' with
-  | add p q ph qh => simp only [add_mul, eval_add, ph, qh]
-  | monomial n a =>
-    simp only [← monomial_one_one_eq_X, monomial_mul_monomial, eval_monomial, mul_one, pow_succ,
-      mul_assoc]
+theorem eval_mul_X : (p * X).eval x = p.eval x * x := eval₂_mul_X ..
 
 @[simp]
 theorem eval_mul_X_pow {k : ℕ} : (p * X ^ k).eval x = p.eval x * x ^ k := by
   induction k with
   | zero => simp
   | succ k ih => simp [pow_succ, ← mul_assoc, ih]
+
+/-- Polynomial evaluation commutes with `List.sum`. -/
+theorem eval_listSum (l : List R[X]) (x : R) : eval x l.sum = (l.map (eval x)).sum :=
+  eval₂_list_sum ..
+
+/-- Polynomial evaluation commutes with `Multiset.sum`. -/
+theorem eval_multisetSum (s : Multiset R[X]) (x : R) : eval x s.sum = (s.map (eval x)).sum :=
+  eval₂_multiset_sum ..
 
 theorem eval_sum (p : R[X]) (f : ℕ → R → R[X]) (x : R) :
     (p.sum f).eval x = p.sum fun n a => (f n a).eval x :=
@@ -544,6 +556,9 @@ protected theorem map_pow (n : ℕ) : (p ^ n).map f = p.map f ^ n :=
 theorem eval_map (x : S) : (p.map f).eval x = p.eval₂ f x :=
   (eval₂_eq_eval_map f).symm
 
+@[simp] lemma eval_map_apply (x : R) : (p.map f).eval (f x) = f (p.eval x) :=
+  eval_map f _ ▸ eval₂_at_apply ..
+
 protected theorem map_sum {ι : Type*} (g : ι → R[X]) (s : Finset ι) :
     (∑ i ∈ s, g i).map f = ∑ i ∈ s, (g i).map f :=
   map_sum (mapRingHom f) _ _
@@ -584,6 +599,9 @@ theorem coe_evalRingHom (r : R) : (evalRingHom r : R[X] → R) = eval r :=
 @[simp]
 theorem eval_pow (n : ℕ) : (p ^ n).eval x = p.eval x ^ n :=
   eval₂_pow _ _ _
+
+theorem eval_X_pow (n : ℕ) : (X ^ n : R[X]).eval x = x ^ n := by
+  simp
 
 @[simp]
 theorem eval_comp : (p.comp q).eval x = p.eval (q.eval x) := by
@@ -651,6 +669,7 @@ theorem isRoot_prod {R} [CommSemiring R] [IsDomain R] {ι : Type*} (s : Finset �
     (x : R) : IsRoot (∏ j ∈ s, p j) x ↔ ∃ i ∈ s, IsRoot (p i) x := by
   simp only [IsRoot, eval_prod, Finset.prod_eq_zero_iff]
 
+@[gcongr]
 theorem eval_dvd : p ∣ q → eval x p ∣ eval x q :=
   eval₂_dvd _ _
 

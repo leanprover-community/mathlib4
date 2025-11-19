@@ -3,8 +3,10 @@ Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow, Kenny Lau
 -/
-import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Algebra.Ring.Opposite
+module
+
+public import Mathlib.Algebra.Ring.Equiv
+public import Mathlib.Algebra.Ring.Opposite
 
 /-!
 # Ring involutions
@@ -12,7 +14,7 @@ import Mathlib.Algebra.Ring.Opposite
 This file defines a ring involution as a structure extending `R ≃+* Rᵐᵒᵖ`,
 with the additional fact `f.involution : (f (f x).unop).unop = x`.
 
-## Notations
+## Notation
 
 We provide a coercion to a function `R → Rᵐᵒᵖ`.
 
@@ -24,6 +26,8 @@ We provide a coercion to a function `R → Rᵐᵒᵖ`.
 
 Ring involution
 -/
+
+@[expose] public section
 
 variable {F : Type*} (R : Type*)
 
@@ -87,7 +91,7 @@ def mk' (f : R →+* Rᵐᵒᵖ) (involution : ∀ r, (f (f r).unop).unop = r) :
 theorem involution (f : RingInvo R) (x : R) : (f (f x).unop).unop = x :=
   f.involution' x
 
--- Porting note: remove Coe instance, not needed
+-- We might want to restore the below instance if we remove `RingEquivClass.toRingEquiv`.
 -- instance hasCoeToRingEquiv : Coe (RingInvo R) (R ≃+* Rᵐᵒᵖ) :=
 --   ⟨RingInvo.toRingEquiv⟩
 

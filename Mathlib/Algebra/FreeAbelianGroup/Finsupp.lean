@@ -3,9 +3,11 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.BigOperators.Finsupp.Basic
-import Mathlib.Algebra.Module.End
-import Mathlib.GroupTheory.FreeAbelianGroup
+module
+
+public import Mathlib.Algebra.BigOperators.Finsupp.Basic
+public import Mathlib.Algebra.Module.End
+public import Mathlib.GroupTheory.FreeAbelianGroup
 
 /-!
 # Isomorphism between `FreeAbelianGroup X` and `X →₀ ℤ`
@@ -20,7 +22,9 @@ We use this to transport the notion of `support` from `Finsupp` to `FreeAbelianG
 - `FreeAbelianGroup.support`: the finset of `x : X` that occur in `a : FreeAbelianGroup X`
 -/
 
-assert_not_exists Basis
+@[expose] public section
+
+assert_not_exists Cardinal Module.Basis
 
 noncomputable section
 
@@ -51,16 +55,14 @@ theorem Finsupp.toFreeAbelianGroup_comp_singleAddHom (x : X) :
 @[simp]
 theorem FreeAbelianGroup.toFinsupp_comp_toFreeAbelianGroup :
     toFinsupp.comp toFreeAbelianGroup = AddMonoidHom.id (X →₀ ℤ) := by
-  ext x y; simp only [AddMonoidHom.id_comp]
-  rw [AddMonoidHom.comp_assoc, Finsupp.toFreeAbelianGroup_comp_singleAddHom]
-  simp only [toFinsupp, AddMonoidHom.coe_comp, Finsupp.singleAddHom_apply, Function.comp_apply,
-    one_smul, lift.of, AddMonoidHom.flip_apply, smulAddHom_apply]
+  ext
+  simp
 
 @[simp]
 theorem Finsupp.toFreeAbelianGroup_comp_toFinsupp :
     toFreeAbelianGroup.comp toFinsupp = AddMonoidHom.id (FreeAbelianGroup X) := by
   ext
-  rw [toFreeAbelianGroup, toFinsupp, AddMonoidHom.comp_apply, lift.of,
+  rw [toFreeAbelianGroup, toFinsupp, AddMonoidHom.comp_apply, lift_apply_of,
     liftAddHom_apply_single, AddMonoidHom.flip_apply, smulAddHom_apply, one_smul,
     AddMonoidHom.id_apply]
 

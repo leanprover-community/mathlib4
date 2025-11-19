@@ -3,9 +3,11 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Jireh Loreaux
 -/
-import Mathlib.Algebra.Group.Center
-import Mathlib.Algebra.Group.Subsemigroup.Basic
-import Mathlib.GroupTheory.Subsemigroup.Center
+module
+
+public import Mathlib.Algebra.Group.Center
+public import Mathlib.Algebra.Group.Subsemigroup.Basic
+public import Mathlib.GroupTheory.Subsemigroup.Center
 
 /-!
 # Centralizers in semigroups, as subsemigroups.
@@ -19,6 +21,8 @@ We provide `Monoid.centralizer`, `AddMonoid.centralizer`, `Subgroup.centralizer`
 `AddSubgroup.centralizer` in other files.
 -/
 
+@[expose] public section
+
 -- Guard against import creep
 assert_not_exists Finset
 
@@ -30,7 +34,7 @@ section
 variable [Semigroup M] (S)
 
 /-- The centralizer of a subset of a semigroup `M`. -/
-@[to_additive "The centralizer of a subset of an additive semigroup."]
+@[to_additive /-- The centralizer of a subset of an additive semigroup. -/]
 def centralizer : Subsemigroup M where
   carrier := S.centralizer
   mul_mem' := Set.mul_mem_centralizer
@@ -75,8 +79,8 @@ lemma closure_le_centralizer_centralizer (s : Set M) :
 
 /-- If all the elements of a set `s` commute, then `closure s` is a commutative semigroup. -/
 @[to_additive
-      "If all the elements of a set `s` commute, then `closure s` forms an additive
-      commutative semigroup."]
+      /-- If all the elements of a set `s` commute, then `closure s` forms an additive
+      commutative semigroup. -/]
 abbrev closureCommSemigroupOfComm {s : Set M} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
     CommSemigroup (closure s) :=
   { MulMemClass.toSemigroup (closure s) with

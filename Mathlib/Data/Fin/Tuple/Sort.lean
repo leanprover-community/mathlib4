@@ -3,11 +3,13 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.Group.End
-import Mathlib.Data.Finset.Sort
-import Mathlib.Data.Fintype.Sum
-import Mathlib.Data.Prod.Lex
-import Mathlib.Order.Interval.Finset.Fin
+module
+
+public import Mathlib.Algebra.Group.End
+public import Mathlib.Data.Finset.Sort
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Data.Prod.Lex
+public import Mathlib.Order.Interval.Finset.Fin
 
 /-!
 
@@ -24,6 +26,8 @@ This file provides an API for doing so, with the sorted `n`-tuple given by
 * `Tuple.monotone_sort`: `f ∘ Tuple.sort f` is `Monotone`
 
 -/
+
+@[expose] public section
 
 
 namespace Tuple
@@ -117,9 +121,7 @@ theorem lt_card_le_iff_apply_le_of_monotone [Preorder α] [DecidableLE α]
     apply hw.ne'
     have he := Fintype.card_congr <| Equiv.sumCompl <| q'
     have h4 := (Fintype.card_congr (@Equiv.subtypeSubtypeEquivSubtype _ p q (h1 _)))
-    have h_le : Fintype.card { i // f i ≤ a } ≤ m := by
-      conv_rhs => rw [← Fintype.card_fin m]
-      exact Fintype.card_subtype_le _
+    have h_le : Fintype.card { i // f i ≤ a } ≤ m := by omega
     rwa [Fintype.card_sum, h4, Fintype.card_fin_lt_of_le h_le, add_eq_left] at he
   intro _ h
   contrapose! h

@@ -3,11 +3,13 @@ Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.Algebra.FreeAlgebra
-import Mathlib.Algebra.RingQuot
-import Mathlib.Algebra.TrivSqZeroExt
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.LinearAlgebra.Multilinear.Basic
+module
+
+public import Mathlib.Algebra.FreeAlgebra
+public import Mathlib.Algebra.RingQuot
+public import Mathlib.Algebra.TrivSqZeroExt
+public import Mathlib.Algebra.Algebra.Operations
+public import Mathlib.LinearAlgebra.Multilinear.Basic
 
 /-!
 # Tensor Algebras
@@ -37,6 +39,8 @@ As noted above, the tensor algebra of `M` is constructed as the free `R`-algebra
 modulo the additional relations making the inclusion of `M` into an `R`-linear map.
 -/
 
+@[expose] public section
+
 
 variable (R : Type*) [CommSemiring R]
 variable (M : Type*) [AddCommMonoid M] [Module R M]
@@ -58,11 +62,7 @@ end TensorAlgebra
 -/
 def TensorAlgebra :=
   RingQuot (TensorAlgebra.Rel R M)
-
--- The `Inhabited, Semiring, Algebra` instances should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-instance : Inhabited (TensorAlgebra R M) := RingQuot.instInhabited _
-instance : Semiring (TensorAlgebra R M) := RingQuot.instSemiring _
+deriving Inhabited, Semiring
 
 -- `IsScalarTower` is not needed, but the instance isn't really canonical without it.
 @[nolint unusedArguments]

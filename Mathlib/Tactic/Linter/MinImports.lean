@@ -3,8 +3,10 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import ImportGraph.Imports
-import Mathlib.Tactic.MinImports
+module
+
+public meta import ImportGraph.Imports
+public meta import Mathlib.Tactic.MinImports
 
 /-! # The `minImports` linter
 
@@ -18,10 +20,12 @@ It also works incrementally, accumulating increasing import information.
 This is better suited, for instance, to split files.
 -/
 
+public meta section
+
 open Lean Elab Command Linter
 
 /-!
-#  The "minImports" linter
+### The "minImports" linter
 
 The "minImports" linter tracks information about minimal imports over several commands.
 -/
@@ -89,7 +93,7 @@ open Mathlib.Command.MinImports
 It returns the modules that are transitively imported by `ms`, using the data in `tc`.
 -/
 def importsBelow (tc : NameMap NameSet) (ms : NameSet) : NameSet :=
-  ms.fold (·.append <| tc.findD · default) ms
+  ms.foldl (·.append <| tc.getD · default) ms
 
 @[inherit_doc Mathlib.Linter.linter.minImports]
 macro "#import_bumps" : command => `(
@@ -120,9 +124,9 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- when the linter reaches the end of the file or `#exit`, it gives a report
     if #[``Parser.Command.eoi, ``Lean.Parser.Command.exit].contains stx.getKind then
       let explicitImportsInFile : NameSet :=
-        .fromArray ((env.imports.map (·.module)).erase `Init) Name.quickCmp
-      let newImps := importsSoFar.diff explicitImportsInFile
-      let currentlyUnneededImports := explicitImportsInFile.diff importsSoFar
+        .ofArray ((env.imports.map (·.module)).erase `Init)
+      let newImps := importsSoFar \ explicitImportsInFile
+      let currentlyUnneededImports := explicitImportsInFile \ importsSoFar
       -- we read the current file, to do a custom parsing of the imports:
       -- this is a hack to obtain some `Syntax` information for the `import X` commands
       let fname ← getFileName
@@ -144,7 +148,7 @@ def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let newImports := getIrredundantImports env (← getAllImports stx id)
     let tot := (newImports.append importsSoFar)
     let redundant := env.findRedundantImports tot.toArray
-    let currImports := tot.diff redundant
+    let currImports := tot \ redundant
     let currImpArray := currImports.toArray.qsort Name.lt
     if currImpArray != #[] &&
        currImpArray ≠ importsSoFar.toArray.qsort Name.lt then

@@ -3,8 +3,10 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.TensorAlgebra.Basic
-import Mathlib.LinearAlgebra.TensorPower.Basic
+module
+
+public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
+public import Mathlib.LinearAlgebra.TensorPower.Basic
 
 /-!
 # Tensor algebras as direct sums of tensor powers
@@ -12,6 +14,8 @@ import Mathlib.LinearAlgebra.TensorPower.Basic
 In this file we show that `TensorAlgebra R M` is isomorphic to a direct sum of tensor powers, as
 `TensorAlgebra.equivDirectSum`.
 -/
+
+@[expose] public section
 
 open scoped DirectSum TensorProduct
 
@@ -43,16 +47,13 @@ theorem toTensorAlgebra_gMul {i j} (a : (⨂[R]^i) M) (b : (⨂[R]^j) M) :
   refine LinearMap.congr_fun (LinearMap.congr_fun ?_ a) b
   clear! a b
   ext (a b)
-  -- Porting note: pulled the next two lines out of the long `simp only` below.
-  simp only [LinearMap.compMultilinearMap_apply]
-  rw [LinearMap.compr₂_apply, ← gMul_eq_coe_linearMap]
-  simp only [tprod_mul_tprod, toTensorAlgebra_tprod, TensorAlgebra.tprod_apply,
-    LinearMap.comp_apply, LinearMap.compl₂_apply, LinearMap.mul_apply']
+  simp only [LinearMap.compMultilinearMap_apply, LinearMap.compr₂_apply, ← gMul_def,
+    TensorProduct.mk_apply, LinearEquiv.coe_coe, tprod_mul_tprod, toTensorAlgebra_tprod,
+    TensorAlgebra.tprod_apply, LinearMap.comp_apply, LinearMap.compl₂_apply]
   refine Eq.trans ?_ List.prod_append
   congr
-  -- Porting note: `erw` for `Function.comp`
-  erw [← List.map_ofFn _ (TensorAlgebra.ι R), ← List.map_ofFn _ (TensorAlgebra.ι R), ←
-    List.map_ofFn _ (TensorAlgebra.ι R), ← List.map_append, List.ofFn_fin_append]
+  rw [List.ofFn_comp' _ (TensorAlgebra.ι R), List.ofFn_comp' _ (TensorAlgebra.ι R),
+    List.ofFn_comp' _ (TensorAlgebra.ι R), ← List.map_append, List.ofFn_fin_append]
 
 @[simp]
 theorem toTensorAlgebra_galgebra_toFun (r : R) :
@@ -123,7 +124,7 @@ theorem _root_.TensorPower.list_prod_gradedMonoid_mk_single (n : ℕ) (x : Fin n
   · rw [List.finRange_zero, List.map_nil, List.prod_nil]
     rfl
   · intro n x₀ x ih
-    rw [List.finRange_succ_eq_map, List.map_cons, List.prod_cons, List.map_map]
+    rw [List.finRange_succ, List.map_cons, List.prod_cons, List.map_map]
     simp_rw [Function.comp_def, Fin.cons_zero, Fin.cons_succ]
     rw [ih, GradedMonoid.mk_mul_mk, TensorPower.tprod_mul_tprod]
     refine TensorPower.gradedMonoid_eq_of_cast (add_comm _ _) ?_

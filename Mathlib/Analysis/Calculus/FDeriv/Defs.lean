@@ -3,7 +3,9 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Asymptotics.TVS
+module
+
+public import Mathlib.Analysis.Asymptotics.TVS
 
 /-!
 # The Fréchet derivative: definition
@@ -77,6 +79,8 @@ Generalize more results to topological vector spaces.
 derivative, differentiable, Fréchet, calculus
 
 -/
+
+@[expose] public section
 
 open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
 
@@ -182,11 +186,11 @@ end TVS
 
 section Normed
 /-!
-## Reformulations for normed spaces
+## Reformulations for seminormed spaces
 -/
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {f : E → F} {f' : E →L[𝕜] F} {x : E}
 
 theorem hasFDerivAtFilter_iff_isLittleO {L : Filter E} :

@@ -3,10 +3,12 @@ Copyright (c) 2022 Yaël Dillies, Ella Yu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Ella Yu
 -/
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Data.Finset.Prod
-import Mathlib.Data.Fintype.Prod
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Data.Fintype.Prod
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Additive energy
@@ -34,6 +36,8 @@ It's possibly interesting to have
 (whose `card` is `mulEnergy s t`) as a standalone definition.
 -/
 
+@[expose] public section
+
 open scoped Pointwise
 
 variable {α : Type*} [DecidableEq α]
@@ -46,10 +50,11 @@ variable [Mul α] {s s₁ s₂ t t₁ t₂ : Finset α}
 quadruples `(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ * b₁ = a₂ * b₂`.
 
 The notation `Eₘ[s, t]` is available in scope `Combinatorics.Additive`. -/
-@[to_additive "The additive energy `E[s, t]` of two finsets `s` and `t` in a group is the number of
-quadruples `(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ + b₁ = a₂ + b₂`.
+@[to_additive
+/-- The additive energy `E[s, t]` of two finsets `s` and `t` in a group is the number of quadruples
+`(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ + b₁ = a₂ + b₂`.
 
-The notation `E[s, t]` is available in scope `Combinatorics.Additive`."]
+The notation `E[s, t]` is available in scope `Combinatorics.Additive`. -/]
 def mulEnergy (s t : Finset α) : ℕ :=
   #{x ∈ ((s ×ˢ s) ×ˢ t ×ˢ t) | x.1.1 * x.2.1 = x.1.2 * x.2.2}
 

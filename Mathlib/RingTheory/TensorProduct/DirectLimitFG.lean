@@ -3,10 +3,11 @@ Copyright (c) 2025 Antoine Chambert-Loir and María-Inés de Frutos Fernández. 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María-Inés de Frutos Fernández
 -/
+module
 
-import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Adjoin.FG
+public import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.RingTheory.Adjoin.FG
 
 /-! # Tensor products and finitely generated submodules
 
@@ -18,30 +19,32 @@ tensor products of finitely-generated modules.
 * `Submodule.FG.directedSystem`, the directed system of finitely generated submodules of a module.
 
 * `Submodule.FG.directLimit` proves that a module is the direct limit
-of its finitely generated submodules, with respect to the inclusion maps
+  of its finitely generated submodules, with respect to the inclusion maps
 
 * `DirectedSystem.rTensor`, the directed system deduced from a directed system of modules
-by applying `rTensor`.
+  by applying `rTensor`.
 
 * `Submodule.FG.rTensor.directSystem`, the directed system of
-modules `P ⊗[R] N`, for all finitely generated
-submodules `P`, with respect to the maps deduced from the inclusions
+  modules `P ⊗[R] N`, for all finitely generated
+  submodules `P`, with respect to the maps deduced from the inclusions
 
 * `Submodule.FG.rTensor.directLimit` : a tensor product `M ⊗[R] N` is the direct limit
-of the modules `P ⊗[R] N`, where `P` ranges over all finitely generated submodules of `M`,
-as a linear equivalence.
+  of the modules `P ⊗[R] N`, where `P` ranges over all finitely generated submodules of `M`,
+  as a linear equivalence.
 
 * `DirectedSystem.lTensor`, the directed system deduced from a directed system of modules
-by applying `lTensor`.
+  by applying `lTensor`.
 
 * `Submodule.FG.lTensor.directSystem`, the directed system of
-modules `M ⊗[R] Q`, for all finitely generated
-submodules `Q`, with respect to the maps deduced from the inclusions
+  modules `M ⊗[R] Q`, for all finitely generated
+  submodules `Q`, with respect to the maps deduced from the inclusions
 
 * `Submodule.FG.lTensor.directLimit` : a tensor product `M ⊗[R] N` is the direct limit
-of the modules `M ⊗[R] Q`, where `Q` ranges over all finitely generated submodules of `N`,
-as a linear equivalence.
+  of the modules `M ⊗[R] Q`, where `Q` ranges over all finitely generated submodules of `N`,
+  as a linear equivalence.
 -/
+
+@[expose] public section
 
 open Submodule LinearMap
 
@@ -192,8 +195,9 @@ variable {R M N} (u : M ⊗[R] N)
     {P : Submodule R M} (hP : Submodule.FG P) {t : P ⊗[R] N}
     {P' : Submodule R M} (hP' : Submodule.FG P') {t' : P' ⊗[R] N}
 
-theorem TensorProduct.exists_of_fg [DecidableEq {P : Submodule R M // P.FG}] :
+theorem TensorProduct.exists_of_fg :
     ∃ (P : Submodule R M), P.FG ∧ u ∈ range (rTensor N P.subtype) := by
+  classical
   let ⟨P, t, ht⟩ := Module.DirectLimit.exists_of ((Submodule.FG.rTensor.directLimit R M N).symm u)
   use P.val, P.property, t
   rw [← Submodule.FG.rTensor.directLimit_apply, ht, LinearEquiv.apply_symm_apply]
@@ -239,7 +243,7 @@ variable {R S M N : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
   {A : Subalgebra R S} (hA : A.FG) {t t' : A ⊗[R] N}
   {A' : Subalgebra R S} (hA' : A'.FG)
 
-theorem TensorProduct.Algebra.exists_of_fg [DecidableEq {P : Submodule R S // P.FG}] :
+theorem TensorProduct.Algebra.exists_of_fg :
     ∃ (A : Subalgebra R S), Subalgebra.FG A ∧ u ∈ range (rTensor N A.val.toLinearMap) := by
   obtain ⟨P, ⟨s, hs⟩, hu⟩ := TensorProduct.exists_of_fg u
   use Algebra.adjoin R s, Subalgebra.fg_adjoin_finset _

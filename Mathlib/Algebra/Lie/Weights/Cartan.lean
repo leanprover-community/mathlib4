@@ -3,8 +3,10 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.CartanSubalgebra
-import Mathlib.Algebra.Lie.Weights.Basic
+module
+
+public import Mathlib.Algebra.Lie.CartanSubalgebra
+public import Mathlib.Algebra.Lie.Weights.Basic
 
 /-!
 # Weights and roots of Lie modules and Lie algebras with respect to Cartan subalgebras
@@ -25,6 +27,8 @@ Basic definitions and properties of the above ideas are provided in this file.
   * `LieAlgebra.zeroRootSubalgebra_eq_iff_is_cartan`
 
 -/
+
+@[expose] public section
 
 open Set
 
@@ -165,10 +169,7 @@ theorem toLieSubmodule_le_rootSpace_zero : H.toLieSubmodule ≤ rootSpace H 0 :=
   use k
   let f : Module.End R H := toEnd R H H y
   let g : Module.End R L := toEnd R H L y
-  have hfg : g.comp (H : Submodule R L).subtype = (H : Submodule R L).subtype.comp f := by
-    ext z
-    simp only [Submodule.subtype_apply, Function.comp_apply, LinearMap.coe_comp]
-    rfl
+  have hfg : g.comp (H : Submodule R L).subtype = (H : Submodule R L).subtype.comp f := rfl
   change (g ^ k).comp (H : Submodule R L).subtype ⟨x, hx⟩ = 0
   rw [Module.End.commute_pow_left_of_commute hfg k]
   have h := iterate_toEnd_mem_lowerCentralSeries R H H y ⟨x, hx⟩ k
@@ -272,7 +273,6 @@ lemma mem_corootSpace' {x : H} :
     x ∈ Submodule.span R ({⁅y, z⁆ | (y ∈ rootSpace H α) (z ∈ rootSpace H (-α))} : Set H) := by
   set s : Set H := ({⁅y, z⁆ | (y ∈ rootSpace H α) (z ∈ rootSpace H (-α))} : Set H)
   suffices H.subtype '' s = {⁅y, z⁆ | (y ∈ rootSpace H α) (z ∈ rootSpace H (-α))} by
-    obtain ⟨x, hx⟩ := x
     erw [← (H : Submodule R L).injective_subtype.mem_set_image (s := Submodule.span R s)]
     rw [mem_image]
     simp_rw [SetLike.mem_coe]

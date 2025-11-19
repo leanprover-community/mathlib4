@@ -3,10 +3,11 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
+module
 
-import Mathlib.RingTheory.MvPowerSeries.Basic
-import Mathlib.Data.Finsupp.Interval
-import Mathlib.Algebra.MvPolynomial.Eval
+public import Mathlib.RingTheory.MvPowerSeries.Basic
+public import Mathlib.Data.Finsupp.Interval
+public import Mathlib.Algebra.MvPolynomial.Eval
 
 /-!
 
@@ -49,6 +50,8 @@ import Mathlib.Algebra.MvPolynomial.Eval
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -66,10 +69,10 @@ variable [DecidableEq σ] [CommSemiring R] (n : σ →₀ ℕ)
 
 /-- Auxiliary definition for the truncation function. -/
 def truncFun (φ : MvPowerSeries σ R) : MvPolynomial σ R :=
-  ∑ m ∈ Finset.Iio n, MvPolynomial.monomial m (coeff R m φ)
+  ∑ m ∈ Finset.Iio n, MvPolynomial.monomial m (coeff m φ)
 
 theorem coeff_truncFun (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
-    (truncFun n φ).coeff m = if m < n then coeff R m φ else 0 := by
+    (truncFun n φ).coeff m = if m < n then coeff m φ else 0 := by
   classical
   simp [truncFun, MvPolynomial.coeff_sum]
 
@@ -79,7 +82,7 @@ variable (R) in
 If `f : MvPowerSeries σ R` and `n : σ →₀ ℕ` is a (finitely-supported) function from `σ`
 to the naturals, then `trunc' R n f` is the multivariable power series obtained from `f`
 by keeping only the monomials $c\prod_i X_i^{a_i}$ where `a i ≤ n i` for all `i`
-and $a i < n i` for some `i`. -/
+and `a i < n i` for some `i`. -/
 def trunc : MvPowerSeries σ R →+ MvPolynomial σ R where
   toFun := truncFun n
   map_zero' := by
@@ -88,12 +91,12 @@ def trunc : MvPowerSeries σ R →+ MvPolynomial σ R where
     simp [coeff_truncFun]
   map_add' := by
     classical
-    intros x y
+    intro x y
     ext m
     simp only [coeff_truncFun, MvPolynomial.coeff_add, ite_add_ite, ← map_add, add_zero]
 
 theorem coeff_trunc (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
-    (trunc R n φ).coeff m = if m < n then coeff R m φ else 0 := by
+    (trunc R n φ).coeff m = if m < n then coeff m φ else 0 := by
   classical simp [trunc, coeff_truncFun]
 
 @[simp]
@@ -115,7 +118,7 @@ theorem trunc_one (n : σ →₀ ℕ) (hnn : n ≠ 0) : trunc R n 1 = 1 :=
       exact Ne.bot_lt hnn
 
 @[simp]
-theorem trunc_C (n : σ →₀ ℕ) (hnn : n ≠ 0) (a : R) : trunc R n (C σ R a) = MvPolynomial.C a :=
+theorem trunc_C (n : σ →₀ ℕ) (hnn : n ≠ 0) (a : R) : trunc R n (C a) = MvPolynomial.C a :=
   MvPolynomial.ext _ _ fun m ↦ by
     classical
     rw [coeff_trunc, coeff_C, MvPolynomial.coeff_C]
@@ -124,12 +127,12 @@ theorem trunc_C (n : σ →₀ ℕ) (hnn : n ≠ 0) (a : R) : trunc R n (C σ R 
 
 @[simp]
 theorem trunc_C_mul (n : σ →₀ ℕ) (a : R) (p : MvPowerSeries σ R) :
-    trunc R n (C σ R a * p) = MvPolynomial.C a * trunc R n p := by
+    trunc R n (C a * p) = MvPolynomial.C a * trunc R n p := by
   ext m; simp [coeff_trunc]
 
 @[simp]
 theorem trunc_map [CommSemiring S] (n : σ →₀ ℕ) (f : R →+* S) (p : MvPowerSeries σ R) :
-    trunc S n (map σ f p) = MvPolynomial.map f (trunc R n p) := by
+    trunc S n (map f p) = MvPolynomial.map f (trunc R n p) := by
   ext m; simp [coeff_trunc, MvPolynomial.coeff_map, apply_ite f]
 
 end TruncLT
@@ -140,11 +143,11 @@ variable [DecidableEq σ] [CommSemiring R] (n : σ →₀ ℕ)
 
 /-- Auxiliary definition for the truncation function. -/
 def truncFun' (φ : MvPowerSeries σ R) : MvPolynomial σ R :=
-  ∑ m ∈ Finset.Iic n, MvPolynomial.monomial m (coeff R m φ)
+  ∑ m ∈ Finset.Iic n, MvPolynomial.monomial m (coeff m φ)
 
 /-- Coefficients of the truncated function. -/
 theorem coeff_truncFun' (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
-    (truncFun' n φ).coeff m = if m ≤ n then coeff R m φ else 0 := by
+    (truncFun' n φ).coeff m = if m ≤ n then coeff m φ else 0 := by
   classical
   simp [truncFun', MvPolynomial.coeff_sum]
 
@@ -167,7 +170,7 @@ def trunc' : MvPowerSeries σ R →+ MvPolynomial σ R where
 
 /-- Coefficients of the truncation of a multivariate power series. -/
 theorem coeff_trunc' (m : σ →₀ ℕ) (φ : MvPowerSeries σ R) :
-    (trunc' R n φ).coeff m = if m ≤ n then coeff R m φ else 0 :=
+    (trunc' R n φ).coeff m = if m ≤ n then coeff m φ else 0 :=
   coeff_truncFun' n m φ
 
 /-- Truncation of the multivariate power series `1` -/
@@ -185,7 +188,7 @@ theorem trunc'_one (n : σ →₀ ℕ) : trunc' R n 1 = 1 :=
 
 @[simp]
 theorem trunc'_C (n : σ →₀ ℕ) (a : R) :
-    trunc' R n (C σ R a) = MvPolynomial.C a :=
+    trunc' R n (C a) = MvPolynomial.C a :=
   MvPolynomial.ext _ _ fun m ↦ by
     classical
     rw [coeff_trunc', coeff_C, MvPolynomial.coeff_C]
@@ -195,7 +198,7 @@ theorem trunc'_C (n : σ →₀ ℕ) (a : R) :
 /-- Coefficients of the truncation of a product of two multivariate power series -/
 theorem coeff_mul_eq_coeff_trunc'_mul_trunc' (n : σ →₀ ℕ)
     (f g : MvPowerSeries σ R) {m : σ →₀ ℕ} (h : m ≤ n) :
-    coeff R m (f * g) = ((trunc' R n f) * (trunc' R n g)).coeff m := by
+    coeff m (f * g) = (trunc' R n f * trunc' R n g).coeff m := by
   classical
   simp only [MvPowerSeries.coeff_mul, MvPolynomial.coeff_mul]
   apply Finset.sum_congr rfl
@@ -209,12 +212,12 @@ theorem coeff_mul_eq_coeff_trunc'_mul_trunc' (n : σ →₀ ℕ)
 
 @[simp]
 theorem trunc'_C_mul (n : σ →₀ ℕ) (a : R) (p : MvPowerSeries σ R) :
-    trunc' R n (C σ R a * p) = MvPolynomial.C a * trunc' R n p := by
+    trunc' R n (C a * p) = MvPolynomial.C a * trunc' R n p := by
   ext m; simp [coeff_trunc']
 
 @[simp]
 theorem trunc'_map [CommSemiring S] (n : σ →₀ ℕ) (f : R →+* S) (p : MvPowerSeries σ R) :
-    trunc' S n (map σ f p) = MvPolynomial.map f (trunc' R n p) := by
+    trunc' S n (map f p) = MvPolynomial.map f (trunc' R n p) := by
   ext m; simp [coeff_trunc', MvPolynomial.coeff_map, apply_ite f]
 
 end TruncLE
