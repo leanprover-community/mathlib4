@@ -3,8 +3,10 @@ Copyright (c) 2022 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Archimedean.Hom
-import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Hom
+public import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 
 /-!
 # Conditionally complete linear ordered fields
@@ -40,6 +42,8 @@ archimedean. We also construct the natural map from a `LinearOrderedField` to su
 
 reals, conditionally complete, ordered field, uniqueness
 -/
+
+@[expose] public section
 
 variable {F α β γ : Type*}
 

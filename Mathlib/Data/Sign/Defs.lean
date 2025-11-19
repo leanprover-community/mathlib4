@@ -3,16 +3,23 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Tactic.DeriveFintype
+module
+
+public import Mathlib.Algebra.GroupWithZero.Defs
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Tactic.DeriveFintype
+public import Mathlib.Data.Multiset.Defs
+public import Mathlib.Data.Fintype.Defs
+public import Mathlib.Algebra.Group.Equiv.Defs
 
 /-!
 # Sign type
 
 This file defines the type of signs $\{-1, 0, 1\}$ and its basic arithmetic instances.
 -/
+
+@[expose] public section
 
 -- Don't generate unnecessary `sizeOf_spec` lemmas which the `simpNF` linter will complain about.
 set_option genSizeOfSpec false in
@@ -97,7 +104,6 @@ private lemma le_trans (a b c : SignType) (_ : a ≤ b) (_ : b ≤ c) : a ≤ c 
   cases a <;> cases b <;> cases c <;> tauto
 
 instance : LinearOrder SignType where
-  le := (· ≤ ·)
   le_refl a := by cases a <;> constructor
   le_total a b := by cases a <;> cases b <;> first | left; constructor | right; constructor
   le_antisymm := le_antisymm

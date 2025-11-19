@@ -3,9 +3,11 @@ Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
 -/
-import Mathlib.Topology.Homotopy.Equiv
-import Mathlib.CategoryTheory.Equivalence
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
+module
+
+public import Mathlib.Topology.Homotopy.Equiv
+public import Mathlib.CategoryTheory.Equivalence
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
 
 /-!
 # Homotopic maps induce naturally isomorphic functors
@@ -26,6 +28,8 @@ import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
   pairs of paths in I and X and the corresponding path after passing through a homotopy `H`.
   But `FundamentalGroupoidFunctor.prodToProdTop` requires two spaces in the same universe.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -84,8 +88,10 @@ include hfg
 /-- If `f(p(t) = g(q(t))` for two paths `p` and `q`, then the induced path homotopy classes
 `f(p)` and `g(p)` are the same as well, despite having a priori different types -/
 theorem heq_path_of_eq_image :
-    (πₘ (TopCat.ofHom f)).map ⟦p⟧ ≍ (πₘ (TopCat.ofHom g)).map ⟦q⟧ := by
-  simp only [map_eq, ← Path.Homotopic.map_lift]; apply Path.Homotopic.hpath_hext; exact hfg
+    (πₘ (TopCat.ofHom f)).map ⟦p⟧ ≍ (πₘ (TopCat.ofHom g)).map (Path.Homotopic.Quotient.mk q) := by
+  simp only [map_eq, ← Path.Homotopic.Quotient.mk_map]
+  apply Path.Homotopic.hpath_hext
+  exact hfg
 
 private theorem start_path : f x₀ = g x₂ := by convert hfg 0 <;> simp only [Path.source]
 

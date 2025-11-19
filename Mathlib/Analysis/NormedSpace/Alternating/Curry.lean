@@ -3,9 +3,11 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Alternating.Curry
-import Mathlib.Analysis.NormedSpace.Alternating.Basic
-import Mathlib.Analysis.NormedSpace.Multilinear.Curry
+module
+
+public import Mathlib.LinearAlgebra.Alternating.Curry
+public import Mathlib.Analysis.NormedSpace.Alternating.Basic
+public import Mathlib.Analysis.NormedSpace.Multilinear.Curry
 
 /-!
 # Currying continuous alternating forms
@@ -15,6 +17,8 @@ which interprets a continuous alternating map in `n + 1` variables
 as a continuous linear map in the 0th variable
 taking values in the continuous alternating maps in `n` variables.
 -/
+
+@[expose] public section
 
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E]

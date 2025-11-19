@@ -3,9 +3,11 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Bryan Gin-ge Chen
 -/
-import Mathlib.Logic.Relation
-import Mathlib.Order.CompleteLattice.Basic
-import Mathlib.Order.GaloisConnection.Defs
+module
+
+public import Mathlib.Logic.Relation
+public import Mathlib.Order.CompleteLattice.Basic
+public import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Equivalence relations
@@ -29,6 +31,8 @@ reason about them using the existing `Setoid` and its infrastructure.
 
 setoid, equivalence, iseqv, relation, equivalence relation
 -/
+
+@[expose] public section
 
 attribute [refl, simp] Setoid.refl
 attribute [symm] Setoid.symm
@@ -164,7 +168,6 @@ theorem sInf_def {s : Set (Setoid α)} : ⇑(sInf s) = sInf ((⇑) '' s) := by
   rfl
 
 instance : PartialOrder (Setoid α) where
-  le := (· ≤ ·)
   lt r s := r ≤ s ∧ ¬s ≤ r
   le_refl _ _ _ := id
   le_trans _ _ _ hr hs _ _ h := hs <| hr h
