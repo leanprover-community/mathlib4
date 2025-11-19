@@ -13,6 +13,8 @@ import Mathlib.RingTheory.Regular.RegularSequence
 # Categorical constructions for `IsSMulRegular`
 -/
 
+@[expose] public section
+
 universe u v w
 
 variable {R : Type u} [CommRing R] (M : ModuleCat.{v} R)

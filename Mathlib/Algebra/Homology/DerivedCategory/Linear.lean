@@ -3,15 +3,19 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.Basic
-import Mathlib.Algebra.Homology.Linear
-import Mathlib.CategoryTheory.Localization.Linear
-import Mathlib.CategoryTheory.Shift.Linear
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.Basic
+public import Mathlib.Algebra.Homology.Linear
+public import Mathlib.CategoryTheory.Localization.Linear
+public import Mathlib.CategoryTheory.Shift.Linear
 
 /-!
 # The derived category of a linear abelian category is linear
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits Pretriangulated ZeroObject Preadditive
 

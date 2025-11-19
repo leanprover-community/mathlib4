@@ -3,11 +3,13 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Data.Set.Defs
-import Mathlib.Tactic.ExtendDoc
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.SplitIfs
-import Mathlib.Tactic.TypeStar
+module
+
+public import Mathlib.Data.Set.Defs
+public import Mathlib.Tactic.ExtendDoc
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.SplitIfs
+public import Mathlib.Tactic.TypeStar
 
 /-!
 # Orders
@@ -15,6 +17,8 @@ import Mathlib.Tactic.TypeStar
 Defines classes for preorders, partial orders, and linear orders
 and proves some basic lemmas about them.
 -/
+
+@[expose] public section
 
 /-! ### Unbundled classes -/
 

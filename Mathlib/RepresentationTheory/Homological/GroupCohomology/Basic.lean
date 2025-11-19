@@ -3,10 +3,12 @@ Copyright (c) 2023 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Homology.Opposite
-import Mathlib.Algebra.Homology.ConcreteCategory
-import Mathlib.RepresentationTheory.Homological.Resolution
-import Mathlib.Tactic.CategoryTheory.Slice
+module
+
+public import Mathlib.Algebra.Homology.Opposite
+public import Mathlib.Algebra.Homology.ConcreteCategory
+public import Mathlib.RepresentationTheory.Homological.Resolution
+public import Mathlib.Tactic.CategoryTheory.Slice
 
 /-!
 # The group cohomology of a `k`-linear `G`-representation
@@ -62,6 +64,8 @@ Longer term:
 * The Hochschild-Serre spectral sequence (this is perhaps a good toy example for the theory of
   spectral sequences in general).
 -/
+
+@[expose] public section
 
 
 noncomputable section

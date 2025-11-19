@@ -3,8 +3,10 @@ Copyright (c) 2020 Johan Commelin, Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.Algebra.MvPolynomial.Basic
-import Mathlib.RingTheory.AlgebraTower
+module
+
+public import Mathlib.Algebra.MvPolynomial.Basic
+public import Mathlib.RingTheory.AlgebraTower
 
 /-!
 # Invertible polynomials
@@ -12,6 +14,8 @@ import Mathlib.RingTheory.AlgebraTower
 This file is a stub containing some basic facts about
 invertible elements in the ring of polynomials.
 -/
+
+@[expose] public section
 
 
 open MvPolynomial

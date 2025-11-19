@@ -3,12 +3,14 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying, Eric Wieser
 -/
-import Mathlib.Data.Finset.Sym
-import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
-import Mathlib.LinearAlgebra.Matrix.Symmetric
+module
+
+public import Mathlib.Data.Finset.Sym
+public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+public import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
+public import Mathlib.LinearAlgebra.Matrix.Symmetric
 
 /-!
 # Quadratic maps
@@ -74,6 +76,8 @@ has some further discussion.
 
 quadratic map, homogeneous polynomial, quadratic polynomial
 -/
+
+@[expose] public section
 
 universe u v w
 
