@@ -3,9 +3,11 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Tactic.Finiteness
-import Mathlib.Topology.Metrizable.Uniformity
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Tactic.Finiteness
+public import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
 # First Baire theorem
@@ -14,6 +16,8 @@ In this file we prove that a completely metrizable topological space is a Baire 
 Since `Mathlib` does not have the notion of a completely metrizable topological space yet,
 we state it for a complete uniform space with countably generated uniformity filter.
 -/
+
+@[expose] public section
 
 open Filter EMetric Set
 open scoped Topology Uniformity ENNReal

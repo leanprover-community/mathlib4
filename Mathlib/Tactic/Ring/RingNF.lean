@@ -3,12 +3,14 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Anne Baanen
 -/
-import Mathlib.Tactic.Ring.Basic
-import Mathlib.Tactic.TryThis
-import Mathlib.Tactic.Conv
-import Mathlib.Util.AtLocation
-import Mathlib.Util.AtomM.Recurse
-import Mathlib.Util.Qq
+module
+
+public meta import Mathlib.Tactic.Ring.Basic
+public meta import Mathlib.Tactic.TryThis
+public meta import Mathlib.Tactic.Conv
+public meta import Mathlib.Util.AtLocation
+public meta import Mathlib.Util.AtomM.Recurse
+public meta import Mathlib.Util.Qq
 
 /-!
 # `ring_nf` tactic
@@ -19,6 +21,8 @@ prove some equations that `ring` cannot because they involve ring reasoning insi
 such as `sin (x + y) + sin (y + x) = 2 * sin (x + y)`.
 
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 open Lean
@@ -243,4 +247,4 @@ end Mathlib.Tactic
 We register `ring` with the `hint` tactic.
 -/
 
-register_hint ring
+register_hint 1000 ring

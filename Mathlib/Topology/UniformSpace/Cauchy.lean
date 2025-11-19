@@ -3,14 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.Algebra.Constructions
-import Mathlib.Topology.Bases
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Topology.UniformSpace.DiscreteUniformity
+module
+
+public import Mathlib.Topology.Algebra.Constructions
+public import Mathlib.Topology.Bases
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Topology.UniformSpace.DiscreteUniformity
 
 /-!
 # Theory of Cauchy filters in uniform spaces. Complete uniform spaces. Totally bounded subsets.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -230,16 +234,10 @@ theorem CauchySeq.prodMap {γ δ} [UniformSpace β] [Preorder γ] [Preorder δ] 
     (hu : CauchySeq u) (hv : CauchySeq v) : CauchySeq (Prod.map u v) := by
   simpa only [CauchySeq, prod_map_map_eq', prod_atTop_atTop_eq] using hu.prod hv
 
-@[deprecated (since := "2025-03-10")]
-alias CauchySeq.prod_map := CauchySeq.prodMap
-
 theorem CauchySeq.prodMk {γ} [UniformSpace β] [Preorder γ] {u : γ → α} {v : γ → β}
     (hu : CauchySeq u) (hv : CauchySeq v) : CauchySeq fun x => (u x, v x) :=
   haveI := hu.1.of_map
   (Cauchy.prod hu hv).mono (tendsto_map.prodMk tendsto_map)
-
-@[deprecated (since := "2025-03-10")]
-alias CauchySeq.prod := CauchySeq.prodMk
 
 theorem CauchySeq.eventually_eventually [Preorder β] {u : β → α} (hu : CauchySeq u)
     {V : SetRel α α} (hV : V ∈ 𝓤 α) : ∀ᶠ k in atTop, ∀ᶠ l in atTop, (u k, u l) ∈ V :=
@@ -457,9 +455,6 @@ theorem eq_pure_of_cauchy {f : Filter α} (hf : Cauchy f) : ∃ x : α, f = pure
     (f_ne_bot.nonempty_of_mem hS) (f_ne_bot.nonempty_of_mem hT) H
   exact ⟨x, f_ne_bot.le_pure_iff.mp <| le_pure_iff.mpr hS⟩
 
-@[deprecated (since := "2025-03-23")]
-alias _root_.UniformSpace.DiscreteUnif.cauchy_le_pure := eq_pure_of_cauchy
-
 /-- The discrete uniformity makes a space complete. -/
 instance : CompleteSpace α where
   complete {f} hf := by
@@ -472,14 +467,8 @@ variable {X}
 noncomputable def cauchyConst {f : Filter α} (hf : Cauchy f) : α :=
   (eq_pure_of_cauchy hf).choose
 
-@[deprecated (since := "2025-03-23")]
-alias _root_.UniformSpace.DiscreteUnif.cauchyConst := cauchyConst
-
 theorem eq_pure_cauchyConst {f : Filter α} (hf : Cauchy f) : f = pure (cauchyConst hf) :=
   (eq_pure_of_cauchy hf).choose_spec
-
-@[deprecated (since := "2025-03-23")]
-alias _root_.UniformSpace.DiscreteUnif.eq_const_of_cauchy := eq_pure_cauchyConst
 
 end DiscreteUniformity
 

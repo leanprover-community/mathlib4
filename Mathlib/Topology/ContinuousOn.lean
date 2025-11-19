@@ -3,7 +3,9 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.NhdsWithin
+module
+
+public import Mathlib.Topology.NhdsWithin
 
 /-!
 # Neighborhoods and continuity relative to a subset
@@ -19,6 +21,8 @@ these restricted notions and the corresponding notions for the subtype
 equipped with the subspace topology.
 
 -/
+
+@[expose] public section
 
 open Set Filter Function Topology
 
@@ -286,7 +290,7 @@ theorem ContinuousWithinAt.diff_iff
     h.mono diff_subset⟩
 
 /-- See also `continuousWithinAt_diff_singleton` for the case of `s \ {y}`, but
-requiring `T1Space α. -/
+requiring `T1Space α`. -/
 @[simp]
 theorem continuousWithinAt_diff_self :
     ContinuousWithinAt f (s \ {x}) x ↔ ContinuousWithinAt f s x :=
@@ -307,6 +311,7 @@ theorem antitone_continuousOn {f : α → β} : Antitone (ContinuousOn f) := fun
 ## Relation between `ContinuousAt` and `ContinuousWithinAt`
 -/
 
+@[fun_prop]
 theorem ContinuousAt.continuousWithinAt (h : ContinuousAt f x) :
     ContinuousWithinAt f s x :=
   ContinuousWithinAt.mono ((continuousWithinAt_univ f x).2 h) (subset_univ _)
@@ -335,6 +340,7 @@ theorem Continuous.continuousOn (h : Continuous f) : ContinuousOn f s := by
   rw [← continuousOn_univ] at h
   exact h.mono (subset_univ _)
 
+@[fun_prop]
 theorem Continuous.continuousWithinAt (h : Continuous f) :
     ContinuousWithinAt f s x :=
   h.continuousAt.continuousWithinAt
@@ -568,16 +574,10 @@ theorem ContinuousWithinAt.prodMk {f : α → β} {g : α → γ} {s : Set α} {
     ContinuousWithinAt (fun x => (f x, g x)) s x :=
   hf.prodMk_nhds hg
 
-@[deprecated (since := "2025-03-10")]
-alias ContinuousWithinAt.prod := ContinuousWithinAt.prodMk
-
 @[fun_prop]
 theorem ContinuousOn.prodMk {f : α → β} {g : α → γ} {s : Set α} (hf : ContinuousOn f s)
     (hg : ContinuousOn g s) : ContinuousOn (fun x => (f x, g x)) s := fun x hx =>
   (hf x hx).prodMk (hg x hx)
-
-@[deprecated (since := "2025-03-10")]
-alias ContinuousOn.prod := ContinuousOn.prodMk
 
 theorem continuousOn_fst {s : Set (α × β)} : ContinuousOn Prod.fst s :=
   continuous_fst.continuousOn
@@ -620,15 +620,9 @@ theorem ContinuousWithinAt.prodMap {f : α → γ} {g : β → δ} {s : Set α} 
   .prodMk (hf.comp continuousWithinAt_fst mapsTo_fst_prod)
     (hg.comp continuousWithinAt_snd mapsTo_snd_prod)
 
-@[deprecated (since := "2025-03-10")]
-alias ContinuousWithinAt.prod_map := ContinuousWithinAt.prodMap
-
 theorem ContinuousOn.prodMap {f : α → γ} {g : β → δ} {s : Set α} {t : Set β} (hf : ContinuousOn f s)
     (hg : ContinuousOn g t) : ContinuousOn (Prod.map f g) (s ×ˢ t) := fun ⟨x, y⟩ ⟨hx, hy⟩ =>
   (hf x hx).prodMap (hg y hy)
-
-@[deprecated (since := "2025-03-10")]
-alias ContinuousOn.prod_map := ContinuousOn.prodMap
 
 theorem continuousWithinAt_prod_of_discrete_left [DiscreteTopology α]
     {f : α × β → γ} {s : Set (α × β)} {x : α × β} :
@@ -873,9 +867,6 @@ theorem ContinuousOn.union_of_isClosed {f : α → β} (hfs : ContinuousOn f s) 
     rwa [hs.closure_eq]
   · refine if hx : x ∈ t then hft x hx else continuousWithinAt_of_notMem_closure ?_
     rwa [ht.closure_eq]
-
-@[deprecated ContinuousOn.union_of_isClosed (since := "2025-04-10")]
-alias ContinuousOn.union_isClosed := ContinuousOn.union_of_isClosed
 
 /-- A function is continuous on two closed sets iff it is also continuous on their union. -/
 theorem continouousOn_union_iff_of_isClosed {f : α → β} (hs : IsClosed s) (ht : IsClosed t) :

@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patience Ablett, Kevin Buzzard, Harald Carlens, Wayne Ng Kwing King, Michael Schlößer,
   Justus Springer, Andrew Yang, Jujian Zhang
 -/
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Basic
-import Mathlib.AlgebraicGeometry.ValuativeCriterion
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Basic
+public import Mathlib.AlgebraicGeometry.ValuativeCriterion
 
 /-!
 # Properness of `Proj A`
@@ -17,6 +19,8 @@ We show that `Proj 𝒜` is proper over `Spec 𝒜₀`.
 This contribution was created as part of the Durham Computational Algebraic Geometry Workshop
 
 -/
+
+@[expose] public section
 
 namespace AlgebraicGeometry.Proj
 
@@ -308,11 +312,11 @@ lemma valuativeCriterion_existence [Algebra.FiniteType (𝒜 0) A] :
   rintro ⟨O, K, i₁, i₂, w⟩
   obtain ⟨x, hx, hx'⟩ := GradedAlgebra.exists_finset_adjoin_eq_top_and_homogeneous_ne_zero 𝒜
   choose d hd hxd using hx'
-  have : i₁.base (IsLocalRing.closedPoint K) ∈ (⊤ : (Proj 𝒜).Opens) := trivial
+  have : i₁ (IsLocalRing.closedPoint K) ∈ (⊤ : (Proj 𝒜).Opens) := trivial
   rw [← Proj.iSup_basicOpen_eq_top' 𝒜 (ι := x) (↑) (fun i ↦ ⟨_, hxd _ i.2⟩) (by simpa using hx),
     TopologicalSpace.Opens.mem_iSup] at this
   obtain ⟨i, hi⟩ := this
-  have : Set.range i₁.base ⊆ (Proj.awayι 𝒜 _ (hxd i i.2) (hd i i.2).bot_lt).opensRange := by
+  have : Set.range i₁ ⊆ (Proj.awayι 𝒜 _ (hxd i i.2) (hd i i.2).bot_lt).opensRange := by
     rw [Proj.opensRange_awayι]
     rintro _ ⟨x, rfl⟩
     obtain rfl := Subsingleton.elim x (IsLocalRing.closedPoint K)

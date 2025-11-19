@@ -3,10 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
-import Mathlib.Analysis.SpecialFunctions.Exp
-import Mathlib.Data.Nat.Factorization.Defs
-import Mathlib.Analysis.Normed.Module.RCLike.Real
-import Mathlib.Data.Rat.Cast.CharZero
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Exp
+public import Mathlib.Data.Nat.Factorization.Defs
+public import Mathlib.Analysis.Normed.Module.RCLike.Real
+public import Mathlib.Data.Rat.Cast.CharZero
 
 /-!
 # Real logarithm
@@ -21,6 +23,8 @@ We prove some basic properties of this function and show that it is continuous.
 
 logarithm, continuity
 -/
+
+@[expose] public section
 
 open Set Filter Function
 
@@ -275,7 +279,7 @@ theorem log_pow (x : ℝ) (n : ℕ) : log (x ^ n) = n * log x := by
 @[simp]
 theorem log_zpow (x : ℝ) (n : ℤ) : log (x ^ n) = n * log x := by
   cases n
-  · rw [Int.ofNat_eq_coe, zpow_natCast, log_pow, Int.cast_natCast]
+  · rw [Int.ofNat_eq_natCast, zpow_natCast, log_pow, Int.cast_natCast]
   · rw [zpow_negSucc, log_inv, log_pow, Int.cast_negSucc, Nat.cast_add_one, neg_mul_eq_neg_mul]
 
 theorem log_sqrt {x : ℝ} (hx : 0 ≤ x) : log (√x) = log x / 2 := by
@@ -322,20 +326,11 @@ theorem tendsto_log_atTop : Tendsto log atTop atTop :=
 lemma tendsto_log_nhdsGT_zero : Tendsto log (𝓝[>] 0) atBot := by
   simpa [← tendsto_comp_exp_atBot] using tendsto_id
 
-@[deprecated (since := "2025-03-18")]
-alias tendsto_log_nhdsWithin_zero_right := tendsto_log_nhdsGT_zero
-
 theorem tendsto_log_nhdsNE_zero : Tendsto log (𝓝[≠] 0) atBot := by
   simpa [comp_def] using tendsto_log_nhdsGT_zero.comp tendsto_abs_nhdsNE_zero
 
-@[deprecated (since := "2025-03-18")]
-alias tendsto_log_nhdsWithin_zero := tendsto_log_nhdsNE_zero
-
 lemma tendsto_log_nhdsLT_zero : Tendsto log (𝓝[<] 0) atBot :=
   tendsto_log_nhdsNE_zero.mono_left <| nhdsWithin_mono _ fun _ h ↦ ne_of_lt h
-
-@[deprecated (since := "2025-03-18")]
-alias tendsto_log_nhdsWithin_zero_left := tendsto_log_nhdsLT_zero
 
 theorem continuousOn_log : ContinuousOn log {0}ᶜ := by
   simp +unfoldPartialApp only [continuousOn_iff_continuous_restrict,
@@ -549,7 +544,7 @@ lemma log_nz_of_isRat_neg {n : ℤ} : (NormNum.IsRat e n d) → (decide (n / d <
 
 /-- Extension for the `positivity` tactic: `Real.log` of a natural number is always nonnegative. -/
 @[positivity Real.log (Nat.cast _)]
-def evalLogNatCast : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalLogNatCast : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.log (Nat.cast $a)) =>
     assertInstancesCommute
@@ -558,7 +553,7 @@ def evalLogNatCast : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for the `positivity` tactic: `Real.log` of an integer is always nonnegative. -/
 @[positivity Real.log (Int.cast _)]
-def evalLogIntCast : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalLogIntCast : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.log (Int.cast $a)) =>
     assertInstancesCommute
@@ -567,7 +562,7 @@ def evalLogIntCast : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for the `positivity` tactic: `Real.log` of a numeric literal. -/
 @[positivity Real.log _]
-def evalLogNatLit : PositivityExt where eval {u α} _ _ e := do
+meta def evalLogNatLit : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.log $a) =>
     match ← NormNum.derive a with

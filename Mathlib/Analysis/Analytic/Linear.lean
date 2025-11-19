@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Analytic.Basic
-import Mathlib.Analysis.Analytic.CPolynomialDef
+module
+
+public import Mathlib.Analysis.Analytic.Basic
+public import Mathlib.Analysis.Analytic.CPolynomialDef
 
 /-!
 # Linear functions are analytic
@@ -15,6 +17,8 @@ the formal power series `f x = f a + f (x - a)`. We also prove similar results f
 We deduce this fact from the stronger result that continuous linear maps are continuously
 polynomial, i.e., they admit a finite power series.
 -/
+
+@[expose] public section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*}
@@ -59,9 +63,6 @@ protected theorem analyticAt (f : E →L[𝕜] F) (x : E) : AnalyticAt 𝕜 f x 
 
 protected theorem cpolynomialOn (f : E →L[𝕜] F) (s : Set E) : CPolynomialOn 𝕜 f s :=
   fun x _ ↦ f.cpolynomialAt x
-
-@[deprecated (since := "2025-03-22")]
-protected alias colynomialOn := ContinuousLinearMap.cpolynomialOn
 
 protected theorem analyticOnNhd (f : E →L[𝕜] F) (s : Set E) : AnalyticOnNhd 𝕜 f s :=
   fun x _ ↦ f.analyticAt x

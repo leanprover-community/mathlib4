@@ -3,13 +3,16 @@ Copyright (c) 2024 Matthew Robert Ballard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matthew Robert Ballard, Damiano Testa
 -/
+module
 
-import Lean.Elab.Command
-import Mathlib.Init
+public meta import Lean.Elab.Command
+public import Mathlib.Init
 
 /-!
 # `#parse` -- a command to parse text and log outputs
 -/
+
+public meta section
 
 namespace Mathlib.GuardExceptions
 

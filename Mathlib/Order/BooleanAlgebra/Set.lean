@@ -3,8 +3,10 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Data.Set.Insert
-import Mathlib.Order.BooleanAlgebra.Basic
+module
+
+public import Mathlib.Data.Set.Insert
+public import Mathlib.Order.BooleanAlgebra.Basic
 
 /-!
 # Boolean algebra of sets
@@ -20,6 +22,8 @@ complement.
 
 set, sets, subset, subsets, complement
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 
@@ -435,8 +439,6 @@ lemma diff_singleton_eq_self (h : a ∉ s) : s \ {a} = s :=
   sdiff_eq_self_iff_disjoint.2 <| by simp [h]
 
 lemma diff_singleton_ssubset : s \ {a} ⊂ s ↔ a ∈ s := by simp
-
-@[deprecated (since := "2025-03-20")] alias diff_singleton_sSubset := diff_singleton_ssubset
 
 @[simp]
 lemma insert_diff_singleton : insert a (s \ {a}) = insert a s := by

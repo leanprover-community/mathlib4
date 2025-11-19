@@ -3,12 +3,13 @@ Copyright (c) 2024 Geoffrey Irving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving
 -/
+module
 
-import Aesop
-import Mathlib.Tactic.Bound.Attribute
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.Linarith.Frontend
-import Mathlib.Tactic.NormNum.Core
+public meta import Aesop
+public meta import Mathlib.Tactic.Bound.Attribute
+public meta import Mathlib.Tactic.Lemma
+public meta import Mathlib.Tactic.Linarith.Frontend
+public meta import Mathlib.Tactic.NormNum.Core
 
 /-!
 ## The `bound` tactic
@@ -85,6 +86,8 @@ Currently the two types of guessing rules are
 
 We close numerical goals with `norm_num` and `linarith`.
 -/
+
+public meta section
 
 open Lean Elab Meta Term Mathlib.Tactic Syntax
 open Lean.Elab.Tactic (liftMetaTactic liftMetaTactic' TacticM getMainGoal)
@@ -254,4 +257,4 @@ macro_rules
 We register `bound` with the `hint` tactic.
 -/
 
-register_hint bound
+register_hint 70 bound

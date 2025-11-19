@@ -3,12 +3,14 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.Topology.Compactness.Paracompact
-import Mathlib.Topology.ShrinkingLemma
-import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Topology.ContinuousMap.Ordered
+module
+
+public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Topology.Compactness.Paracompact
+public import Mathlib.Topology.ShrinkingLemma
+public import Mathlib.Topology.UrysohnsLemma
+public import Mathlib.Topology.ContinuousMap.Ordered
 
 /-!
 # Continuous partition of unity
@@ -72,6 +74,8 @@ We use `WellOrderingRel j i` instead of `j < i` in the definition of
 
 partition of unity, bump function, Urysohn's lemma, normal space, paracompact space
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -544,8 +548,7 @@ theorem exists_finset_toPOUFun_eventuallyEq (i : ι) (x : X) : ∃ t : Finset ι
   exact hf.mem_toFinset.2 ⟨y, ⟨hj, hyU⟩⟩
 
 theorem continuous_toPOUFun (i : ι) : Continuous (f.toPOUFun i) := by
-  refine (f i).continuous.mul <|
-    continuous_finprod_cond (fun j _ => continuous_const.sub (f j).continuous) ?_
+  refine (map_continuous <| f i).mul <| continuous_finprod_cond (fun j _ => by fun_prop) ?_
   simp only [mulSupport_one_sub]
   exact f.locallyFinite
 

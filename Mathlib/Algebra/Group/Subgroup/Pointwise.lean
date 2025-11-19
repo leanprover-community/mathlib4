@@ -3,11 +3,13 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Action.End
-import Mathlib.Algebra.Group.Pointwise.Set.Lattice
-import Mathlib.Algebra.Group.Subgroup.MulOppositeLemmas
-import Mathlib.Algebra.Group.Submonoid.Pointwise
-import Mathlib.GroupTheory.GroupAction.ConjAct
+module
+
+public import Mathlib.Algebra.Group.Action.End
+public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
+public import Mathlib.Algebra.Group.Subgroup.MulOppositeLemmas
+public import Mathlib.Algebra.Group.Submonoid.Pointwise
+public import Mathlib.GroupTheory.GroupAction.ConjAct
 
 /-! # Pointwise instances on `Subgroup` and `AddSubgroup`s
 
@@ -26,6 +28,8 @@ The pointwise section of this file is almost identical to
 the file `Mathlib/Algebra/Group/Submonoid/Pointwise.lean`.
 Where possible, try to keep them in sync.
 -/
+
+@[expose] public section
 
 assert_not_exists GroupWithZero
 
@@ -471,8 +475,6 @@ theorem Normal.conjAct {H : Subgroup G} (hH : H.Normal) (g : ConjAct G) : g • 
 @[simp]
 theorem Normal.conj_smul_eq_self (g : G) (H : Subgroup G) [h : Normal H] : MulAut.conj g • H = H :=
   h.conjAct g
-
-@[deprecated (since := "2025-03-01")] alias smul_normal := Normal.conj_smul_eq_self
 
 theorem Normal.of_conjugate_fixed {H : Subgroup G} (h : ∀ g : G, (MulAut.conj g) • H = H) :
     H.Normal := by
