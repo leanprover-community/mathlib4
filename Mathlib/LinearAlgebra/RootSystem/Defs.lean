@@ -3,8 +3,10 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Deepro Choudhury, Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.PerfectPairing.Basic
-import Mathlib.LinearAlgebra.Reflection
+module
+
+public import Mathlib.LinearAlgebra.PerfectPairing.Basic
+public import Mathlib.LinearAlgebra.Reflection
 
 /-!
 # Root data and root systems
@@ -56,6 +58,8 @@ coroots may not correspond. For this purpose, we define a map from `ι` to permu
 require that it is compatible with reflections and coreflections.
 
 -/
+
+@[expose] public section
 
 open Set Function
 open Module hiding reflection
@@ -620,11 +624,10 @@ lemma isOrthogonal_symm : IsOrthogonal P i j ↔ IsOrthogonal P j i := by
 
 lemma isOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.reflection j) := by
   rw [commute_iff_eq]
-  ext v
+  ext
   replace h : P.pairing i j = 0 ∧ P.pairing j i = 0 := by simpa [IsOrthogonal] using h
-  erw [Module.End.mul_apply, Module.End.mul_apply]
-  simp only [LinearEquiv.coe_coe, reflection_apply, LinearMap.flip_apply, map_sub, map_smul,
-    root_coroot_eq_pairing, h, zero_smul, sub_zero]
+  simp only [LinearEquiv.mul_apply, reflection_apply, LinearMap.flip_apply, map_sub,
+    map_smul, root_coroot_eq_pairing, h, zero_smul, sub_zero]
   abel
 
 variable {P i j}

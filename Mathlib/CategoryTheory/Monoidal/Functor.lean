@@ -3,9 +3,11 @@ Copyright (c) 2018 Michael Jendrusch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Jendrusch, Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Monoidal.Category
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-import Mathlib.CategoryTheory.Products.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Category
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+public import Mathlib.CategoryTheory.Products.Basic
 
 /-!
 # (Lax) monoidal functors
@@ -35,6 +37,8 @@ to monoid objects.
 
 See <https://stacks.math.columbia.edu/tag/0FFL>.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ v₃ v₁' u₁ u₂ u₃ u₁'
@@ -464,6 +468,21 @@ theorem map_associator_inv (X Y Z : C) :
     assoc, assoc, assoc, assoc, OplaxMonoidal.associativity_inv_assoc,
     whiskerRight_δ_μ_assoc, δ_μ, comp_id, LaxMonoidal.associativity_inv,
     Iso.hom_inv_id_assoc, whiskerRight_δ_μ_assoc, δ_μ]
+
+@[reassoc]
+theorem map_associator' (X Y Z : C) :
+    (α_ (F.obj X) (F.obj Y) (F.obj Z)).hom =
+      μ F X Y ▷ F.obj Z ≫ μ F (X ⊗ Y) Z ≫ F.map (α_ X Y Z).hom ≫
+        δ F X (Y ⊗ Z) ≫ F.obj X ◁ δ F Y Z := by
+  simp
+
+@[reassoc]
+theorem map_associator_inv' (X Y Z : C) :
+    (α_ (F.obj X) (F.obj Y) (F.obj Z)).inv =
+      F.obj X ◁ μ F Y Z ≫ μ F X (Y ⊗ Z) ≫ F.map (α_ X Y Z).inv ≫
+        δ F (X ⊗ Y) Z ≫ δ F X Y ▷ F.obj Z := by
+  rw [← cancel_epi (α_ (F.obj X) (F.obj Y) (F.obj Z)).hom, map_associator']
+  simp
 
 @[reassoc]
 theorem map_leftUnitor (X : C) :

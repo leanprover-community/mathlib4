@@ -3,7 +3,9 @@ Copyright (c) 2025 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Data.ENNReal.Inv
+module
+
+public import Mathlib.Data.ENNReal.Inv
 
 /-! # Hölder triples
 
@@ -20,6 +22,8 @@ to reprove them each time.
 For convenience we also define `ENNReal.HolderConjugate` (with arguments `p q`) as an
 abbreviation for `ENNReal.HolderTriple p q 1`.
 -/
+
+@[expose] public section
 
 namespace ENNReal
 

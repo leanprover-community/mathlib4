@@ -3,9 +3,11 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Topology.UniformSpace.Completion
-import Mathlib.Topology.UniformSpace.Ultra.Basic
-import Mathlib.Topology.UniformSpace.Ultra.Constructions
+module
+
+public import Mathlib.Topology.UniformSpace.Completion
+public import Mathlib.Topology.UniformSpace.Ultra.Basic
+public import Mathlib.Topology.UniformSpace.Ultra.Constructions
 
 /-!
 # Completions of ultrametric (nonarchimedean) uniform spaces
@@ -16,6 +18,8 @@ import Mathlib.Topology.UniformSpace.Ultra.Constructions
   iff the underlying space has a nonarchimedean uniformity.
 
 -/
+
+@[expose] public section
 
 variable {X Y : Type*} [UniformSpace X] [UniformSpace Y]
 

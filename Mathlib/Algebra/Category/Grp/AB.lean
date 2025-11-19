@@ -3,17 +3,21 @@ Copyright (c) 2023 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata, Moritz Firsching, Nikolas Kuhn, Amelia Livingston
 -/
-import Mathlib.Algebra.Category.Grp.Biproducts
-import Mathlib.Algebra.Category.Grp.FilteredColimits
-import Mathlib.Algebra.Homology.ShortComplex.Ab
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
-import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+module
+
+public import Mathlib.Algebra.Category.Grp.Biproducts
+public import Mathlib.Algebra.Category.Grp.FilteredColimits
+public import Mathlib.Algebra.Homology.ShortComplex.Ab
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 /-!
 # AB axioms for the category of abelian groups
 
 This file proves that the category of abelian groups satisfies Grothendieck's axioms AB5, AB4, and
 AB4*.
 -/
+
+@[expose] public section
 
 universe u
 

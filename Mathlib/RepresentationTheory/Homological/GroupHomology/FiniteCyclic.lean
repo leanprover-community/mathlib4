@@ -3,8 +3,10 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.RepresentationTheory.Homological.FiniteCyclic
-import Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
+module
+
+public import Mathlib.RepresentationTheory.Homological.FiniteCyclic
+public import Mathlib.RepresentationTheory.Homological.GroupHomology.LowDegree
 
 /-!
 # Group homology of a finite cyclic group
@@ -31,6 +33,8 @@ computes group homology.
   and the homology of `A --(ρ(g) - Id)--> A --N--> A` for all positive even `i`.
 
 -/
+
+@[expose] public section
 
 universe v u
 
