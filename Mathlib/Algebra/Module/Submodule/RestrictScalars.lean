@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Andrew Yang,
   Johannes Hölzl, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.Order.Hom.CompleteLattice
+module
+
+public import Mathlib.Algebra.Module.Submodule.Lattice
+public import Mathlib.Order.Hom.CompleteLattice
 
 /-!
 
@@ -19,6 +21,8 @@ this restriction of scalars for submodules.
 * `Submodule.restrictScalars`: regard an `R`-submodule as an `S`-submodule if `S` acts on `R`
 
 -/
+
+@[expose] public section
 
 namespace Submodule
 

@@ -3,8 +3,10 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Order.WellFounded
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Order.WellFounded
+public import Mathlib.Tactic.Common
 
 /-!
 # Lexicographic order on Pi types
@@ -29,6 +31,8 @@ Related files are:
 * `Data.PSigma.Order`: Lexicographic order on `Σₗ' i, α i`.
 * `Data.Prod.Lex`: Lexicographic order on `α × β`.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 

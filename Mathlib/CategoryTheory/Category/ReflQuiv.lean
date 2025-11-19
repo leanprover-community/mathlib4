@@ -3,9 +3,11 @@ Copyright (c) 2024 Mario Carneiro and Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl
 -/
-import Mathlib.Combinatorics.Quiver.ReflQuiver
-import Mathlib.CategoryTheory.Category.Cat
-import Mathlib.CategoryTheory.Category.Quiv
+module
+
+public import Mathlib.Combinatorics.Quiver.ReflQuiver
+public import Mathlib.CategoryTheory.Category.Cat
+public import Mathlib.CategoryTheory.Category.Quiv
 
 /-!
 # The category of refl quivers
@@ -13,6 +15,8 @@ import Mathlib.CategoryTheory.Category.Quiv
 The category `ReflQuiv` of (bundled) reflexive quivers, and the free/forgetful adjunction between
 `Cat` and `ReflQuiv`.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 universe v u v₁ v₂ u₁ u₂

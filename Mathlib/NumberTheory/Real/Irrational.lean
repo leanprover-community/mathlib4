@@ -3,12 +3,14 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Data.Nat.Prime.Int
-import Mathlib.Data.Rat.Sqrt
-import Mathlib.Data.Real.Sqrt
-import Mathlib.RingTheory.Algebraic.Basic
-import Mathlib.Tactic.IntervalCases
+module
+
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Data.Nat.Prime.Int
+public import Mathlib.Data.Rat.Sqrt
+public import Mathlib.Data.Real.Sqrt
+public import Mathlib.RingTheory.Algebraic.Basic
+public import Mathlib.Tactic.IntervalCases
 
 /-!
 # Irrational real numbers
@@ -23,6 +25,8 @@ With the `Decidable` instances in this file, is possible to prove `Irrational �
 when `n` is a numeric literal or cast;
 but this only works if you `unseal Nat.sqrt.iter in` before the theorem where you use this proof.
 -/
+
+@[expose] public section
 
 
 open Rat Real
@@ -57,14 +61,14 @@ theorem irrational_nrt_of_notint_nrt {x : ℝ} (n : ℕ) (m : ℤ) (hxr : x ^ n 
     rw [Int.cast_ne_zero, Int.natCast_ne_zero]
     exact P
   have c2 : ((D : ℤ) : ℝ) ^ n ≠ 0 := pow_ne_zero _ c1
-  rw [mk'_eq_divInt, cast_pow, cast_divInt, div_pow, div_eq_iff_mul_eq c2, ← Int.cast_pow,
+  rw [mk_eq_divInt, cast_pow, cast_divInt, div_pow, div_eq_iff_mul_eq c2, ← Int.cast_pow,
     ← Int.cast_pow, ← Int.cast_mul, Int.cast_inj] at hxr
   have hdivn : (D : ℤ) ^ n ∣ N ^ n := Dvd.intro_left m hxr
   rw [← Int.dvd_natAbs, ← Int.natCast_pow, Int.natCast_dvd_natCast, Int.natAbs_pow,
     Nat.pow_dvd_pow_iff hnpos.ne'] at hdivn
   obtain rfl : D = 1 := by rw [← Nat.gcd_eq_right hdivn, C.gcd_eq_one]
   refine hv ⟨N, ?_⟩
-  rw [mk'_eq_divInt, Int.ofNat_one, divInt_one, cast_intCast]
+  rw [mk_eq_divInt, Int.ofNat_one, divInt_one, cast_intCast]
 
 /-- If `x^n = m` is an integer and `n` does not divide the `multiplicity p m`, then `x`
 is irrational. -/
