@@ -3,15 +3,19 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau, Kim Morrison, Alex Keizer
 -/
-import Mathlib.Data.List.OfFn
-import Batteries.Data.List.Perm
-import Mathlib.Data.List.Nodup
+module
+
+public import Mathlib.Data.List.OfFn
+public import Batteries.Data.List.Perm
+public import Mathlib.Data.List.Nodup
 
 /-!
 # Lists of elements of `Fin n`
 
 This file develops some results on `finRange n`.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -24,14 +28,6 @@ variable {α : Type u}
 
 theorem finRange_eq_pmap_range (n : ℕ) : finRange n = (range n).pmap Fin.mk (by simp) := by
   apply List.ext_getElem <;> simp [finRange]
-
-@[simp]
-theorem mem_finRange {n : ℕ} (a : Fin n) : a ∈ finRange n := by
-  rw [finRange_eq_pmap_range]
-  exact mem_pmap.2
-    ⟨a.1, mem_range.2 a.2, by
-      cases a
-      rfl⟩
 
 theorem nodup_finRange (n : ℕ) : (finRange n).Nodup := by
   rw [finRange_eq_pmap_range]
@@ -82,7 +78,7 @@ theorem ofFn_eq_pmap {n} {f : Fin n → α} :
   grind
 
 theorem ofFn_id (n) : ofFn id = finRange n :=
-  rfl
+  (rfl)
 
 theorem ofFn_eq_map {n} {f : Fin n → α} : ofFn f = (finRange n).map f := by
   rw [← ofFn_id, map_ofFn, Function.comp_id]

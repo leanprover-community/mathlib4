@@ -3,15 +3,15 @@ Copyright (c) 2022 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer, Weijie Jiang
 -/
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.BigOperators.NatAntidiagonal
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Data.Finset.Basic
-import Mathlib.Data.Nat.Choose.Central
-import Mathlib.Tactic.Field
-import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Qify
+module
+
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.BigOperators.NatAntidiagonal
+public import Mathlib.Data.Nat.Choose.Central
+public import Mathlib.Tactic.Field
+public import Mathlib.Tactic.GCongr
+public import Mathlib.Tactic.Positivity
+import Mathlib.Data.Tree.Basic
 
 /-!
 # Catalan numbers
@@ -44,6 +44,8 @@ The proof of `catalan_eq_centralBinom_div` follows https://math.stackexchange.co
   Fuss-Catalan, etc.
 
 -/
+
+@[expose] public section
 
 
 open Finset

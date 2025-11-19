@@ -3,7 +3,9 @@ Copyright (c) 2023 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Etienne Marion
 -/
-import Mathlib.Topology.Homeomorph.Lemmas
+module
+
+public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Proper maps between topological spaces
@@ -57,6 +59,8 @@ so don't hesitate to have a look!
 * [N. Bourbaki, *General Topology*][bourbaki1966]
 * [Stacks: Characterizing proper maps](https://stacks.math.columbia.edu/tag/005M)
 -/
+
+@[expose] public section
 
 assert_not_exists StoneCech
 
