@@ -3,10 +3,12 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Analysis.Normed.Group.Continuity
-import Mathlib.Topology.Algebra.IsUniformGroup.Basic
-import Mathlib.Topology.MetricSpace.Algebra
-import Mathlib.Topology.MetricSpace.IsometricSMul
+module
+
+public import Mathlib.Analysis.Normed.Group.Continuity
+public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+public import Mathlib.Topology.MetricSpace.Algebra
+public import Mathlib.Topology.MetricSpace.IsometricSMul
 
 /-!
 # Normed groups are uniform groups
@@ -14,6 +16,8 @@ import Mathlib.Topology.MetricSpace.IsometricSMul
 This file proves lipschitzness of normed group operations and shows that normed groups are uniform
 groups.
 -/
+
+@[expose] public section
 
 variable {𝓕 E F : Type*}
 

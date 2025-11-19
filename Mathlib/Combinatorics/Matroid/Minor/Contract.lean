@@ -3,8 +3,10 @@ Copyright (c) 2025 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Minor.Delete
-import Mathlib.Tactic.TautoSet
+module
+
+public import Mathlib.Combinatorics.Matroid.Minor.Delete
+public import Mathlib.Tactic.TautoSet
 
 /-!
 # Matroid Contraction
@@ -39,6 +41,8 @@ the more verbose definition above.
 Mirroring the convention for deletion, we use the abbreviation `contractElem` in lemma names
 to refer to the contraction `M ／ {e}` of a single element `e : α` from `M : Matroid α`.
 -/
+
+@[expose] public section
 
 open Set
 

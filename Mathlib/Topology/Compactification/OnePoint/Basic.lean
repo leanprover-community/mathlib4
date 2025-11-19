@@ -3,9 +3,11 @@ Copyright (c) 2021 Yourong Zang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang, Yury Kudryashov
 -/
-import Mathlib.Data.Fintype.Option
-import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.Topology.Sets.Opens
+module
+
+public import Mathlib.Data.Fintype.Option
+public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Sets.Opens
 
 /-!
 # The OnePoint Compactification
@@ -32,6 +34,8 @@ topological space `X` and prove some properties inherited from `X`.
 
 one-point compactification, Alexandroff compactification, compactness
 -/
+
+@[expose] public section
 
 
 open Set Filter Topology

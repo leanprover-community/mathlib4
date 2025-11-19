@@ -3,16 +3,20 @@ Copyright (c) 2025 Christian Merten, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Andrew Yang
 -/
-import Mathlib.Algebra.Category.CommAlgCat.Basic
-import Mathlib.CategoryTheory.MorphismProperty.Comma
-import Mathlib.RingTheory.FinitePresentation
-import Mathlib.RingTheory.RingHomProperties
+module
+
+public import Mathlib.Algebra.Category.CommAlgCat.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.Comma
+public import Mathlib.RingTheory.FinitePresentation
+public import Mathlib.RingTheory.RingHomProperties
 
 /-!
 # The category of finitely generated `R`-algebras
 
 We define the category of finitely generated `R`-algebras and show it is essentially small.
 -/
+
+@[expose] public section
 
 universe w v u
 
