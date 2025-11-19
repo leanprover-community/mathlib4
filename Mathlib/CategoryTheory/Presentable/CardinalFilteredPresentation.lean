@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.ObjectProperty.Small
 import Mathlib.CategoryTheory.Presentable.Limits
+import Mathlib.CategoryTheory.Presentable.Retracts
 import Mathlib.CategoryTheory.Generator.StrongGenerator
 
 /-!
@@ -120,6 +121,24 @@ lemma isStrongGenerator : P.IsStrongGenerator :=
     obtain ⟨_, _, _, hX⟩ := h.exists_colimitsOfShape X
     exact ⟨_, _, hX⟩)
 
+include h in
+lemma isPresentable_eq_retractClosure :
+    isCardinalPresentable C κ = P.retractClosure := by
+  refine le_antisymm (fun X hX ↦ ?_) ?_
+  · rw [isCardinalPresentable_iff] at hX
+    obtain ⟨J, _, _, ⟨p⟩⟩ := h.exists_colimitsOfShape X
+    have := essentiallySmall_of_small_of_locallySmall.{w} J
+    obtain ⟨j, f, hf⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ p.isColimit (𝟙 X)
+    exact ⟨_, p.prop_diag_obj j, ⟨{ i := _, r := _, retract := hf}⟩⟩
+  · simpa only [ObjectProperty.retractClosure_le_iff] using h.le_isCardinalPresentable
+
+include h in
+lemma essentiallySmall_isPresentable
+    [ObjectProperty.EssentiallySmall.{w} P] [LocallySmall.{w} C] :
+    ObjectProperty.EssentiallySmall.{w} (isCardinalPresentable C κ) := by
+  rw [h.isPresentable_eq_retractClosure]
+  infer_instance
+
 end IsCardinalFilteredGenerator
 
 end ObjectProperty
@@ -147,6 +166,12 @@ lemma HasCardinalFilteredGenerator.exists_small_generator (C : Type u) [Category
   obtain ⟨P, _, hP⟩ := HasCardinalFilteredGenerator.exists_generator C κ
   obtain ⟨Q, _, h₁, h₂⟩ := ObjectProperty.EssentiallySmall.exists_small_le P
   exact ⟨Q, inferInstance, hP.of_le_isoClosure h₂ (h₁.trans hP.le_isCardinalPresentable)⟩
+
+instance (C : Type u) [Category.{v} C]
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] [HasCardinalFilteredGenerator C κ] :
+    ObjectProperty.EssentiallySmall.{w} (isCardinalPresentable C κ) := by
+  obtain ⟨P, _, hP⟩ := HasCardinalFilteredGenerator.exists_generator C κ
+  exact hP.essentiallySmall_isPresentable
 
 @[deprecated (since := "2025-10-12")] alias AreCardinalFilteredGenerators :=
   ObjectProperty.IsCardinalFilteredGenerator
