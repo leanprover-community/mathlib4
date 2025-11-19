@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Monoidal.ExternalProduct.KanExtension
-import Mathlib.CategoryTheory.Products.Associator
+module
+
+public import Mathlib.CategoryTheory.Monoidal.ExternalProduct.KanExtension
+public import Mathlib.CategoryTheory.Products.Associator
 
 /-!
 # Day convolution monoidal structure
@@ -41,6 +43,8 @@ a monoidal structure.
 - Case `V = Type u` and its universal property.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
@@ -814,7 +818,7 @@ lemma ι_map_associator_hom_eq_associator_hom (d d' d'')
   exact associator_hom_unit_unit V _ _ _ _ _ _
 
 /-- In a `LawfulDayConvolutionMonoidalCategoryStruct`, `ι.obj (𝟙_ D)`
-is a Day convolution unit`. -/
+is a Day convolution unit. -/
 def convolutionUnit : DayConvolutionUnit (ι C V D|>.obj <| 𝟙_ D) where
   can := unitUnit _ _ _
   isPointwiseLeftKanExtensionCan := isPointwiseLeftKanExtensionUnitUnit _ _ _

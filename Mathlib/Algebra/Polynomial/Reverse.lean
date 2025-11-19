@@ -3,8 +3,10 @@ Copyright (c) 2020 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Polynomial.Degree.TrailingDegree
-import Mathlib.Algebra.Polynomial.EraseLead
+module
+
+public import Mathlib.Algebra.Polynomial.Degree.TrailingDegree
+public import Mathlib.Algebra.Polynomial.EraseLead
 
 /-!
 # Reverse of a univariate polynomial
@@ -15,6 +17,8 @@ the polynomial with a reversed list of coefficients, equivalent to `X^f.natDegre
 The main result is that `reverse (f * g) = reverse f * reverse g`, provided the leading
 coefficients of `f` and `g` do not multiply to zero.
 -/
+
+@[expose] public section
 
 
 namespace Polynomial

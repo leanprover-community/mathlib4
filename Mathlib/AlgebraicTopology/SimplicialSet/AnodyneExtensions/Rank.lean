@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.PairingCore
-import Mathlib.Order.OrderIsoNat
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.PairingCore
+public import Mathlib.Order.OrderIsoNat
 
 /-!
 # Rank functions for pairings
@@ -26,6 +28,8 @@ then `P.RankFunction ℕ` is non empty (TODO @joelriou).
 * [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
 
 -/
+
+@[expose] public section
 
 universe v u
 
