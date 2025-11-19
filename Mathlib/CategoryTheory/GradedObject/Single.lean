@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GradedObject
+module
+
+public import Mathlib.CategoryTheory.GradedObject
 
 /-!
 # The graded object in a single degree
@@ -13,6 +15,8 @@ which sends an object `X : C` to the graded object which is `X` in degree `j` an
 the initial object of `C` in other degrees.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

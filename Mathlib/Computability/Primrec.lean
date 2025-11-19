@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Logic.Encodable.Pi
-import Mathlib.Logic.Function.Iterate
+module
+
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Logic.Encodable.Pi
+public import Mathlib.Logic.Function.Iterate
 
 /-!
 # The primitive recursive functions
@@ -40,6 +42,8 @@ other design choices in this formalization, see [carneiro2019].
 
 * [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
 -/
+
+@[expose] public section
 
 open List (Vector)
 open Denumerable Encodable Function

@@ -3,9 +3,11 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.InvariantForm
-import Mathlib.Algebra.Lie.Semisimple.Basic
-import Mathlib.Algebra.Lie.TraceForm
+module
+
+public import Mathlib.Algebra.Lie.InvariantForm
+public import Mathlib.Algebra.Lie.Semisimple.Basic
+public import Mathlib.Algebra.Lie.TraceForm
 
 /-!
 # Lie algebras with non-degenerate Killing forms.
@@ -37,6 +39,8 @@ This file contains basic definitions and results for such Lie algebras.
 * Prove that in characteristic zero, a semisimple Lie algebra has non-singular Killing form.
 
 -/
+
+@[expose] public section
 
 variable (R K L : Type*) [CommRing R] [Field K] [LieRing L] [LieAlgebra R L] [LieAlgebra K L]
 

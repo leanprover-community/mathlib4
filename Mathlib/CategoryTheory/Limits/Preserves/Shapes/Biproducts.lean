@@ -3,8 +3,10 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 
 /-!
 # Preservation of biproducts
@@ -19,6 +21,8 @@ classes `PreservesBiproduct` and `PreservesBinaryBiproduct`. We then
   in case that the biproduct is preserved.
 
 -/
+
+@[expose] public section
 
 
 universe w₁ w₂ v₁ v₂ u₁ u₂

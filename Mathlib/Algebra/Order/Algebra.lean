@@ -3,8 +3,10 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Order.Module.Defs
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Order.Module.Defs
 
 /-!
 # Ordered algebras
@@ -27,6 +29,8 @@ and `IsStrictOrderedModule` mixins.
 
 ordered algebra
 -/
+
+@[expose] public section
 
 section OrderedAlgebra
 

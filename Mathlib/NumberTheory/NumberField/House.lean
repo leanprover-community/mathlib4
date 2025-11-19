@@ -3,9 +3,11 @@ Copyright (c) 2024 Michail Karatarakis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michail Karatarakis
 -/
-import Mathlib.NumberTheory.SiegelsLemma
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
-import Mathlib.NumberTheory.NumberField.EquivReindex
+module
+
+public import Mathlib.NumberTheory.SiegelsLemma
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
+public import Mathlib.NumberTheory.NumberField.EquivReindex
 
 /-!
 
@@ -20,6 +22,8 @@ the largest of the modulus of its conjugates.
 ## Tags
 number field, algebraic number, house
 -/
+
+@[expose] public section
 
 variable {K : Type*} [Field K] [NumberField K]
 

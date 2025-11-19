@@ -3,9 +3,11 @@ Copyright (c) 2023 Gareth Ma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gareth Ma
 -/
-import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.Polynomial.Basic
+module
+
+public import Mathlib.Algebra.CharP.Lemmas
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 # Lucas's theorem
@@ -20,6 +22,8 @@ respectively.
 * `lucas_theorem`: the binomial coefficient `n choose k` is congruent to the product of `n_i choose
   k_i` modulo `p`, where `n_i` and `k_i` are the base-`p` digits of `n` and `k`, respectively.
 -/
+
+@[expose] public section
 
 open Finset hiding choose
 

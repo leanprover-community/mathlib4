@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GradedObject.Associator
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.Algebra.Homology.Bifunctor
+module
+
+public import Mathlib.CategoryTheory.GradedObject.Associator
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.Algebra.Homology.Bifunctor
 
 /-!
 # The associator for actions of bifunctors on homological complexes
@@ -33,6 +35,8 @@ The main application of these results shall be the construction of
 the associator for the monoidal category structure on homological complexes.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 

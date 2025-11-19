@@ -3,10 +3,12 @@ Copyright (c) 2020 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-import Mathlib.MeasureTheory.Function.EssSup
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
-import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+public import Mathlib.MeasureTheory.Function.EssSup
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 
 /-!
 # ℒp space
@@ -30,6 +32,8 @@ and is almost everywhere strongly measurable.
   finite `p`-seminorm for the measure `μ` (`eLpNorm f p μ < ∞`)
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

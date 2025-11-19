@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.TypeTags.Hom
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Algebra.Ring.Parity
+module
+
+public import Mathlib.Algebra.Group.TypeTags.Hom
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Algebra.Ring.Parity
 
 /-!
 # Cast of integers (additional theorems)
@@ -20,6 +22,8 @@ which were not available in the import dependencies of `Data.Int.Cast.Basic`.
 * `castAddHom`: `cast` bundled as an `AddMonoidHom`.
 * `castRingHom`: `cast` bundled as a `RingHom`.
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso IsOrderedMonoid Field
 
