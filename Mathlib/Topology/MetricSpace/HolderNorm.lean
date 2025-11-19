@@ -136,13 +136,13 @@ lemma HolderOnWith.interpolate {C₁ C₂ s t : ℝ≥0} {A : Set X}
     HolderOnWith (C₁ ^ (t : ℝ) * C₂ ^ (1 - t : ℝ)) (r * t + s * (1 - t)) f A := by
   intro x hx y hy
   calc edist (f x) (f y)
-    = (edist (f x) (f y)) ^ (t : ℝ) * (edist (f x) (f y)) ^ (1 - t : ℝ) := by
+      = (edist (f x) (f y)) ^ (t : ℝ) * (edist (f x) (f y)) ^ (1 - t : ℝ) := by
         rw [← ENNReal.rpow_add_of_nonneg _ _ (by simp) (by simpa)]
         simp
-  _ ≤ (↑C₁ * (edist x y) ^ (r : ℝ)) ^ (t : ℝ) * (↑C₂ * (edist x y) ^ (s : ℝ)) ^ (1 - t : ℝ) := by
+    _ ≤ (C₁ * (edist x y) ^ (r : ℝ)) ^ (t : ℝ) * (C₂ * (edist x y) ^ (s : ℝ)) ^ (1 - t : ℝ) := by
         nth_grw 1 [hf₁ x hx y hy, hf₂ x hx y hy]
         simpa
-  _ = ↑(C₁ ^ (t : ℝ) * C₂ ^ (1 - t : ℝ)) * (edist x y) ^ (↑(r * t + s * (1 - t)) : ℝ) := by
+    _ = ↑(C₁ ^ (t : ℝ) * C₂ ^ (1 - t : ℝ)) * (edist x y) ^ (↑(r * t + s * (1 - t)) : ℝ) := by
         rw [ENNReal.mul_rpow_of_nonneg, ENNReal.mul_rpow_of_nonneg, NNReal.coe_add, NNReal.coe_mul,
           NNReal.coe_mul, ENNReal.rpow_add_of_nonneg, ENNReal.rpow_mul, ENNReal.rpow_mul,
           NNReal.coe_sub ht, NNReal.coe_one, ENNReal.coe_mul, ENNReal.coe_rpow_of_nonneg,
@@ -190,7 +190,7 @@ lemma MemHolder.mono {X : Type*} [PseudoMetricSpace X] [hX : BoundedSpace X]
   obtain ⟨C, hf⟩ := hf
   obtain ⟨C', hC'⟩ := Metric.boundedSpace_iff_edist.1 hX
   exact ⟨C * C' ^ (r - s : ℝ),
-    holderOnWith_univ.1 <| (holderOnWith_univ.2 hf).mono' (D := C') (fun x _ y _ ↦ hC' x y) hs⟩
+    holderOnWith_univ.1 <| (holderOnWith_univ.2 hf).mono' (fun x _ y _ ↦ hC' x y) hs⟩
 
 /-- If a function is `r`-Hölder over a pseudoemetric space with bounded distance,
 then it is also `s`-Hölder when `s ≤ r`. -/
@@ -222,10 +222,12 @@ lemma HolderOnWith.mono_right' {C C' s : ℝ≥0} {t : Set X} (hf : HolderOnWith
   exact MemHolder.mono ⟨C, hf⟩ hs
 
 /-- If a function is `r`-Hölder and `t`-Hölder, then it is `s`-Hölder for `r ≤ s ≤ t`. -/
-lemma HolderWith.holderWith_of_le_of_le {C₁ C₂ s t : ℝ≥0}
-    (hf₁ : HolderWith C₁ r f) (hf₂ : HolderWith C₂ t f)
-    (hrs : r ≤ s) (hst : s ≤ t) : HolderWith (max C₁ C₂) s f := by
-  intro x y
+lemma MemHolder.memHolder_of_le_of_le {s t : ℝ≥0}
+    (hf₁ : MemHolder r f) (hf₂ : MemHolder t f)
+    (hrs : r ≤ s) (hst : s ≤ t) : MemHolder s f := by
+  obtain ⟨C₁, hf₁⟩ := hf₁
+  obtain ⟨C₂, hf₂⟩ := hf₂
+  refine ⟨max C₁ C₂, fun x y ↦ ?_⟩
   obtain h | h := le_total (edist x y) 1
   · grw [hf₂ x y]
     refine mul_le_mul ?_ (rpow_le_rpow_of_exponent_ge h (by norm_cast)) (by simp) (by simp)
@@ -238,11 +240,11 @@ lemma HolderWith.holderWith_of_le_of_le {C₁ C₂ s t : ℝ≥0}
 
 /-- If a function is locally `r`-Hölder and locally `t`-Hölder,
 then it is locally `s`-Hölder for `r ≤ s ≤ t`. -/
-lemma HolderOnWith.holderOnWith_of_le_of_le {C₁ C₂ s t : ℝ≥0} {u : Set X}
-    (hf₁ : HolderOnWith C₁ r f u) (hf₂ : HolderOnWith C₂ t f u)
-    (hrs : r ≤ s) (hst : s ≤ t) : HolderOnWith (max C₁ C₂) s f u := by
-  simp_rw [← HolderWith.restrict_iff] at *
-  exact hf₁.holderWith_of_le_of_le hf₂ hrs hst
+lemma HolderOnWith.exists_holderOnWith_of_le_of_le {s t : ℝ≥0} {u : Set X}
+    (hf₁ : ∃ C, HolderOnWith C r f u) (hf₂ : ∃ C, HolderOnWith C t f u)
+    (hrs : r ≤ s) (hst : s ≤ t) : ∃ C, HolderOnWith C s f u := by
+  simp_rw [← HolderWith.restrict_iff, ← MemHolder.eq_1] at *
+  exact hf₁.memHolder_of_le_of_le hf₂ hrs hst
 
 end Monotonicity
 
