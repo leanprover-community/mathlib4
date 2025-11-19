@@ -100,7 +100,7 @@ jobs:
           # Recall that on the `leanprover-community/mathlib4-nightly-testing` repository,
           # we don't maintain a `master` branch at all.
           # For PRs and pushes to this repository, we will use `nightly-testing` instead.
-          ref: modulize  # TODO
+          ref: master
           path: master-branch
 
       # Checkout the PR branch into a subdirectory
