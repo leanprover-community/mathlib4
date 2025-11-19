@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomologicalComplexBiprod
-import Mathlib.Algebra.Homology.Homotopy
-import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
+module
+
+public import Mathlib.Algebra.Homology.HomologicalComplexBiprod
+public import Mathlib.Algebra.Homology.Homotopy
+public import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
 
 /-! The homotopy cofiber of a morphism of homological complexes
 
@@ -33,6 +35,8 @@ which assert that if a functor inverts homotopy equivalences, then the image of
 two homotopic maps are equal.
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory Category Limits Preadditive

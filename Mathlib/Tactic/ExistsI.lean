@@ -3,13 +3,16 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Gabriel Ebner, Moritz Doll
 -/
+module
 
-import Mathlib.Init
+public import Mathlib.Init
 /-!
 # The `existsi` tactic
 This file defines the `existsi` tactic: its purpose is to instantiate existential quantifiers.
 Internally, it applies the `refine` tactic.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 

@@ -3,14 +3,18 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Functor
-import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Functor
+public import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
 
 /-!
 # Monoidal opposites
 
 We write `Cᵐᵒᵖ` for the monoidal opposite of a monoidal category `C`.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ u₁ u₂
