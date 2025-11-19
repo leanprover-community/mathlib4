@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2025 Luigi Massacci. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Luigi Massacci
+Authors: Luigi Massacci, Anatole Dedecker
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Distribution.ContDiffMapSupportedIn
+public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 
 /-!
@@ -28,6 +29,15 @@ distributions, or "weak solutions" to PDEs, on `Ω`.
 
 - `TestFunction Ω F n`: the type of bundled `n`-times continuously differentiable
   functions `E → F` with compact support contained in `Ω`.
+- `TestFunction.topologicalSpace`: the canonical LF topology on `𝓓^{n}(Ω, F)`. It is the
+  locally convex inductive limit of the topologies on each `𝓓_{K}^{n}(Ω, F)`.
+
+## Main statements
+
+- `TestFunction.continuous_iff_continuous_comp` a linear map from `𝓓^{n}(E, F)`
+  to a locally convex space is continuous iff its restriction to `𝓓^{n}_{K}(E, F)` is
+  continuous for each compact set `K`. We will later translate this concretely in terms
+  of seminorms.
 
 ## Notation
 
@@ -46,12 +56,12 @@ distributions, test function
 open Function Seminorm SeminormFamily Set TopologicalSpace UniformSpace
 open scoped BoundedContinuousFunction NNReal Topology
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 : Type*} [RCLike 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
   {n : ℕ∞}
 
-variable (𝕜 Ω F n) in
+variable (Ω F n) in
 /-- The type of bundled `n`-times continuously differentiable maps with compact support -/
 structure TestFunction : Type _ where
   /-- The underlying function. Use coercion instead. -/
@@ -195,5 +205,80 @@ instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstS
   DFunLike.coe_injective.module R (coeFnAddMonoidHom Ω F n) fun _ _ ↦ rfl
 
 end Module
+
+open ContDiffMapSupportedIn
+
+/-- The natural inclusion `𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)` when `K ⊆ Ω`. -/
+@[simps -fullyApplied]
+def ofSupportedIn {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) (f : 𝓓^{n}_{K}(E, F)) :
+    𝓓^{n}(Ω, F) :=
+  ⟨f, f.contDiff, f.compact_supp, f.tsupport_subset.trans K_sub_Ω⟩
+
+/-- The natural inclusion `𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)`, when `K ⊆ Ω`, as a linear map. -/
+@[simps]
+def ofSupportedInLM (R) [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F]
+    {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) :
+    𝓓^{n}_{K}(E, F) →ₗ[R] 𝓓^{n}(Ω, F) where
+  toFun f := ofSupportedIn K_sub_Ω f
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+section Topology
+
+variable {V : Type*} [AddCommGroup V] [Module ℝ V] [t : TopologicalSpace V]
+  [IsTopologicalAddGroup V] [ContinuousSMul ℝ V] [LocallyConvexSpace ℝ V]
+
+variable (Ω F n) in
+/-- The original topology on `𝓓^{n}(E, F)`, defined as the supremum over all compacts of the
+topologies from each `𝓓^{n}_{K}(E, F)`. -/
+noncomputable def originalTop : TopologicalSpace 𝓓^{n}(Ω, F) :=
+  ⨆ (K : Compacts E) (K_sub_Ω : (K : Set E) ⊆ Ω),
+    coinduced (ofSupportedIn K_sub_Ω) ContDiffMapSupportedIn.topologicalSpace
+
+variable (Ω F n) in
+noncomputable instance topologicalSpace : TopologicalSpace 𝓓^{n}(Ω, F) :=
+  sInf {t : TopologicalSpace 𝓓^{n}(Ω, F) | originalTop Ω F n ≤ t ∧
+    @IsTopologicalAddGroup 𝓓^{n}(Ω, F) t _ ∧
+    @ContinuousSMul ℝ 𝓓^{n}(Ω, F) _ _ t ∧
+    @LocallyConvexSpace ℝ 𝓓^{n}(Ω, F) _ _ _ _ t}
+
+noncomputable instance : IsTopologicalAddGroup 𝓓^{n}(Ω, F) := by
+  apply topologicalAddGroup_sInf
+  exact fun t ⟨_, ht, _, _⟩ ↦ ht
+
+--TODO: deduce for `RCLike` field `𝕜`
+noncomputable instance : ContinuousSMul ℝ 𝓓^{n}(Ω, F) := by
+  apply continuousSMul_sInf
+  exact fun t ⟨_, _, ht, _⟩ ↦ ht
+
+noncomputable instance : LocallyConvexSpace ℝ 𝓓^{n}(Ω, F) := by
+  apply LocallyConvexSpace.sInf
+  exact fun t ⟨_, _, _, ht⟩ ↦ ht
+
+theorem originalTop_le : originalTop Ω F n ≤ topologicalSpace Ω F n :=
+  le_sInf fun _t ⟨ht, _⟩ ↦ ht
+
+theorem topologicalSpace_le_iff {t : TopologicalSpace 𝓓^{n}(Ω, F)}
+    [@IsTopologicalAddGroup _ t _] [@ContinuousSMul ℝ _ _ _ t]
+    [@LocallyConvexSpace ℝ _ _ _ _ _ t] :
+    topologicalSpace Ω F n ≤ t ↔ originalTop Ω F n ≤ t :=
+  ⟨le_trans originalTop_le, fun H ↦ sInf_le ⟨H, inferInstance, inferInstance, inferInstance⟩⟩
+
+theorem continuous_ofSupportedIn {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) :
+    Continuous (ofSupportedIn K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)) := by
+  rw [continuous_iff_coinduced_le]
+  exact le_trans (le_iSup₂_of_le K K_sub_Ω le_rfl) originalTop_le
+
+protected theorem continuous_iff_continuous_comp (f : 𝓓^{n}(Ω, F) →ₗ[ℝ] V) :
+    Continuous f ↔ ∀ (K : Compacts E) (K_sub_Ω : (K : Set E) ⊆ Ω),
+      Continuous (f ∘ ofSupportedIn K_sub_Ω) := by
+  rw [continuous_iff_le_induced]
+  have : @IsTopologicalAddGroup _ (induced f t) _ := topologicalAddGroup_induced _
+  have : @ContinuousSMul ℝ _ _ _ (induced f t) := continuousSMul_induced _
+  have : @LocallyConvexSpace ℝ _ _ _ _ _ (induced f t) := .induced _
+  simp_rw [topologicalSpace_le_iff, originalTop, iSup₂_le_iff, ← continuous_iff_le_induced,
+    continuous_coinduced_dom]
+
+end Topology
 
 end TestFunction
