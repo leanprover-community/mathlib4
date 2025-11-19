@@ -3,10 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Limits.Types.Multicoequalizer
-import Mathlib.CategoryTheory.Limits.Types.Pushouts
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.Types.Multicoequalizer
+public import Mathlib.CategoryTheory.Limits.Types.Pushouts
 
 /-!
 # Colimits involving subcomplexes of a simplicial set
