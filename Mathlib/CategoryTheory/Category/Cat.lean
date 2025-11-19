@@ -160,15 +160,138 @@ def toCatHom {C D : Type u} [Category.{v} C] [Category.{v} D] (F : C ⥤ D) :
     Cat.of C ⟶ Cat.of D := F
 
 /-- Arrows in `Cat` define functors. -/
-def ofCatHom {C D : Type} [Category C] [Category D] (F : Cat.of C ⟶ Cat.of D) : C ⥤ D := F
+def ofCatHom {C D : Cat.{v, u}} (F : C ⟶ D) : C ⥤ D := F
 
-@[simp] theorem to_ofCatHom {C D : Type} [Category C] [Category D] (F : Cat.of C ⟶ Cat.of D) :
+@[simp] theorem to_ofCatHom {C D : Cat.{v, u}} (F : C ⟶ D) :
     (ofCatHom F).toCatHom = F := rfl
 
-@[simp] theorem of_toCatHom {C D : Type} [Category C] [Category D] (F : C ⥤ D) :
+@[simp] theorem of_toCatHom {C D : Type u} [Category.{v} C] [Category.{v} D] (F : C ⥤ D) :
     ofCatHom (F.toCatHom) = F := rfl
 
+@[simp]
+lemma _root_.CategoryTheory.Cat.id_of (C : Type u) [Category.{v} C] :
+    𝟙 (Cat.of C) = (Functor.id C).toCatHom := rfl
+
+lemma toCatHom_id (C : Type u) [Category.{v} C] :
+    (Functor.id C).toCatHom = 𝟙 (Cat.of C) := rfl
+
+@[simp]
+lemma toCatHom_comp_toCatHom {C D E : Type u} [Category.{v} C] [Category.{v} D]
+    [Category.{v} E] (F : C ⥤ D) (G : D ⥤ E) :
+    F.toCatHom ≫ G.toCatHom = (F ⋙ G).toCatHom := rfl
+
+@[simp]
+lemma toCatHom_congr {C D : Type u} [Category.{v} C] [Category.{v} D] (F G : C ⥤ D) :
+    F.toCatHom = G.toCatHom ↔ F = G where
+  mp := congrArg ofCatHom
+  mpr := congrArg toCatHom
+
 end Functor
+
+namespace NatTrans
+
+def toCatHom₂ {C D : Type u} [Category.{v} C] [Category.{v} D] {F G : C ⥤ D} (η : F ⟶ G) :
+    F.toCatHom ⟶ G.toCatHom := η
+
+def ofCatHom₂ {C D : Cat.{v, u}} {F G : C ⟶ D}
+  (η : F ⟶ G) : (ofCatHom F) ⟶ (ofCatHom G) := η
+
+@[simp]
+lemma of_toCatHom₂ {C D : Type u} [Category.{v} C] [Category.{v} D] {F G : C ⥤ D} (η : F ⟶ G) :
+  ofCatHom₂ (η.toCatHom₂) = η := rfl
+
+@[simp]
+lemma toCatHom₂_congr {C D : Type u} [Category.{v} C] [Category.{v} D] {F G : C ⥤ D}
+    (η₁ η₂ : F ⟶ G) : η₁.toCatHom₂ = η₂.toCatHom₂ ↔ η₁ = η₂ where
+  mp := congrArg ofCatHom₂
+  mpr := congrArg toCatHom₂
+
+@[simps]
+def toCatIso₂ {C D : Type u} [Category.{v} C] [Category.{v} D] {F G : C ⥤ D}
+    (η : F ≅ G) : F.toCatHom ≅ G.toCatHom where
+  hom := η.hom.toCatHom₂
+  inv := η.inv.toCatHom₂
+  hom_inv_id := congr(toCatHom₂ $η.hom_inv_id)
+  inv_hom_id := congr(toCatHom₂ $η.inv_hom_id)
+
+@[simps]
+def ofCatIso₂ {C D : Cat.{v, u}} {F G : C ⟶ D}
+    (η : F ≅ G) : (ofCatHom F) ≅ (ofCatHom G) where
+  hom := ofCatHom₂ η.hom
+  inv := ofCatHom₂ η.inv
+  hom_inv_id := congr(ofCatHom₂ $η.hom_inv_id)
+  inv_hom_id := congr(ofCatHom₂ $η.inv_hom_id)
+
+@[simp]
+lemma of_toCatIso₂ {C D : Type u} [Category.{v} C] [Category.{v} D] {F G : C ⥤ D}
+    (η : F ≅ G) : ofCatIso₂ (toCatIso₂ η) = η := rfl
+
+@[simp]
+lemma to_ofCatIso {C D : Cat.{v, u}} {F G : C ⟶ D} (η : F ≅ G) :
+    toCatIso₂ (ofCatIso₂ η) = η := rfl
+
+@[simp]
+lemma _root_.CategoryTheory.Cat.id_toCatHom {C D : Type u} [Category.{v} C] [Category.{v} D]
+  (F : C ⥤ D) : 𝟙 (F.toCatHom) = (𝟙 F : F ⟶ F).toCatHom₂ := rfl
+
+lemma toCatHom₂_id {C D : Type u} [Category.{v} C] [Category.{v} D]
+  (F : C ⥤ D) : (𝟙 F : F ⟶ F).toCatHom₂ = 𝟙 (F.toCatHom) := rfl
+
+@[simp]
+lemma toCatHom₂_comp_toCatHom₂ {C D : Type u} [Category.{v} C] [Category.{v} D]
+    {F G H : C ⥤ D} (η₁ : F ⟶ G) (η₂ : G ⟶ H) :
+    η₁.toCatHom₂ ≫ η₂.toCatHom₂ = (η₁ ≫ η₂).toCatHom₂ := rfl
+
+@[simp]
+lemma _root_.CategoryTheory.Cat.toCatHom_whiskerLeft_toCatHom₂ {C D E : Type u}
+    [Category.{v} C] [Category.{v} D] [Category.{v} E] (F : C ⥤ D) {G H : D ⥤ E}
+    (η : G ⟶ H) : F.toCatHom ◁ (η.toCatHom₂) = (F.whiskerLeft η).toCatHom₂ := rfl
+
+@[simp]
+lemma _root_.CategoryTheory.Cat.toCatHom₂_whiskerRight_toCatHom {C D E : Type u}
+    [Category.{v} C] [Category.{v} D] [Category.{v} E] {F G : C ⥤ D} (η : F ⟶ G)
+    (H : D ⥤ E) : (η.toCatHom₂) ▷ H.toCatHom = (Functor.whiskerRight η H).toCatHom₂ := rfl
+
+-- in the following section, we should decide which of these pairs should be simp.
+section
+
+lemma _root_.CategoryTheory.Cat.associator_toCatHom_hom {B C D E : Type u} [Category.{v} B]
+    [Category.{v} C] [Category.{v} D] [Category.{v} E] (F : B ⥤ C) (G : C ⥤ D) (H : D ⥤ E) :
+    (α_ (F.toCatHom) (G.toCatHom) (H.toCatHom)).hom =
+      (Functor.associator F G H).hom.toCatHom₂ := rfl
+
+lemma toCatHom₂_associator_hom {B C D E : Type u} [Category.{v} B] [Category.{v} C] [Category.{v} D]
+    [Category.{v} E] (F : B ⥤ C) (G : C ⥤ D) (H : D ⥤ E) :
+    (Functor.associator F G H).hom.toCatHom₂ = (α_ (F.toCatHom) (G.toCatHom) (H.toCatHom)).hom :=
+    rfl
+
+lemma _root_.CategoryTheory.Cat.associator_toCatHom_inv {B C D E : Type u} [Category.{v} B]
+    [Category.{v} C] [Category.{v} D] [Category.{v} E] (F : B ⥤ C) (G : C ⥤ D) (H : D ⥤ E) :
+    (α_ (F.toCatHom) (G.toCatHom) (H.toCatHom)).inv =
+      (Functor.associator F G H).inv.toCatHom₂ := rfl
+
+lemma toCatHom₂_associator_inv {B C D E : Type u} [Category.{v} B] [Category.{v} C] [Category.{v} D]
+    [Category.{v} E] (F : B ⥤ C) (G : C ⥤ D) (H : D ⥤ E) :
+    (Functor.associator F G H).inv.toCatHom₂ = (α_ (F.toCatHom) (G.toCatHom) (H.toCatHom)).inv :=
+  rfl
+
+lemma _root_.CategoryTheory.Cat.leftUnitor_toCatHom_hom {C D : Type u} [Category.{v} C]
+    [Category.{v} D] (F : C ⥤ D) : (λ_ F.toCatHom).hom = (Functor.leftUnitor F).hom.toCatHom₂ := rfl
+
+lemma _root_.CategoryTheory.Cat.leftUnitor_toCatHom_inv {C D : Type u} [Category.{v} C]
+    [Category.{v} D] (F : C ⥤ D) : (λ_ F.toCatHom).inv = (Functor.leftUnitor F).inv.toCatHom₂ := rfl
+
+lemma _root_.CategoryTheory.Cat.rightUnitor_toCatHom_hom {C D : Type u} [Category.{v} C]
+    [Category.{v} D] (F : C ⥤ D) : (ρ_ F.toCatHom).hom = (Functor.rightUnitor F).hom.toCatHom₂ :=
+  rfl
+
+lemma _root_.CategoryTheory.Cat.rightUnitor_toCatHom_inv {C D : Type u} [Category.{v} C]
+    [Category.{v} D] (F : C ⥤ D) : (ρ_ F.toCatHom).inv = (Functor.rightUnitor F).inv.toCatHom₂ :=
+  rfl
+
+end
+
+end NatTrans
 namespace Cat
 
 /-- Functor that gets the set of objects of a category. It is not
@@ -216,20 +339,29 @@ This ought to be modelled as a 2-functor!
 @[simps]
 def typeToCat : Type u ⥤ Cat where
   obj X := Cat.of (Discrete X)
-  map := fun f => Discrete.functor (Discrete.mk ∘ f)
+  map f := (Discrete.functor (Discrete.mk ∘ f)).toCatHom
   map_id X := by
-    apply Functor.ext
+    simp only [Cat.id_of, toCatHom_congr]
+    fapply Functor.ext
+    · simp
     · intro X Y f
       cases f
-      simp only [eqToHom_refl, Cat.id_map, Category.comp_id, Category.id_comp]
+      simp only [Discrete.functor_obj_eq_as, Function.comp_apply, types_id_apply, Discrete.mk_as,
+        id_obj, eqToHom_refl, Functor.id_map, Category.comp_id, Category.id_comp]
       apply ULift.ext
       cat_disch
-    · simp
-  map_comp f g := by apply Functor.ext; cat_disch
+  map_comp f g := by
+    simp only [toCatHom_comp_toCatHom, toCatHom_congr]
+    apply Functor.ext
+    cat_disch
 
 instance : Functor.Faithful typeToCat.{u} where
-  map_injective {_X} {_Y} _f _g h :=
-    funext fun x => congr_arg Discrete.as (Functor.congr_obj h ⟨x⟩)
+  map_injective {X} {Y} f g h := by
+    ext x
+    have := congrArg (Discrete.as) (Functor.congr_obj h ⟨x⟩)
+    simp only [typeToCat_obj, Cat.of_α, typeToCat_map] at this
+
+    exact this
 
 instance : Functor.Full typeToCat.{u} where
   map_surjective F := ⟨Discrete.as ∘ F.obj ∘ Discrete.mk, by
