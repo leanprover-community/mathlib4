@@ -307,9 +307,6 @@ scoped instance : CategoryStruct (B ⥤ᴸ C) where
 
 end OplaxTrans
 
-end Lax
-
-end CategoryTheory
 /-- A strong natural transformation between lax functors `F` and `G` is a natural transformation
 that is "natural up to 2-isomorphisms".
 
