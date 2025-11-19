@@ -3,8 +3,10 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.DFinsupp.Defs
-import Mathlib.Data.Finsupp.Notation
+module
+
+public import Mathlib.Data.DFinsupp.Defs
+public import Mathlib.Data.Finsupp.Notation
 
 /-!
 # Notation for `DFinsupp`
@@ -16,6 +18,8 @@ in the same way that `{a, b}` desugars to `insert` and `singleton`.
 Note that this syntax is for `Finsupp` by default, but works for `DFinsupp` if the expected type
 is correct.
 -/
+
+@[expose] public section
 
 namespace DFinsupp
 

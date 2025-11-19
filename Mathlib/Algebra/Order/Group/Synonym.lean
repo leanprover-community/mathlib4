@@ -3,14 +3,18 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Order.Synonym
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Order.Synonym
 
 /-!
 # Group structure on the order type synonyms
 
 Transfer algebraic instances from `α` to `αᵒᵈ`, `Lex α`, and `Colex α`.
 -/
+
+@[expose] public section
 
 
 open OrderDual

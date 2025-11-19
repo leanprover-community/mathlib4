@@ -3,13 +3,17 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Floris van Doorn
 -/
-import Mathlib.Init
-import Lean.Elab.DeclarationRange
+module
+
+public meta import Mathlib.Init
+public meta import Lean.Elab.DeclarationRange
 
 /-!
 # `addRelatedDecl`
 
 -/
+
+public meta section
 
 open Lean Meta Elab
 

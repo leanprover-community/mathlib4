@@ -3,8 +3,10 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Complex.ValueDistribution.CountingFunction
-import Mathlib.Analysis.Complex.ValueDistribution.ProximityFunction
+module
+
+public import Mathlib.Analysis.Complex.ValueDistribution.CountingFunction
+public import Mathlib.Analysis.Complex.ValueDistribution.ProximityFunction
 
 /-!
 # The Characteristic Function of Value Distribution Theory
@@ -28,6 +30,8 @@ Approximation*][MR3156076] for a detailed discussion.
   discussed in Theorem 2.6 on p. 170 of [Lang, *Introduction to Complex Hyperbolic
   Spaces*][MR886677].
 -/
+
+@[expose] public section
 
 open Metric Real Set
 

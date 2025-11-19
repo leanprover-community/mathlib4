@@ -3,9 +3,11 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Moritz Doll
 -/
-import Mathlib.Analysis.Distribution.SchwartzSpace
-import Mathlib.Analysis.Fourier.FourierTransformDeriv
-import Mathlib.Analysis.Fourier.Inversion
+module
+
+public import Mathlib.Analysis.Distribution.SchwartzSpace
+public import Mathlib.Analysis.Fourier.FourierTransformDeriv
+public import Mathlib.Analysis.Fourier.Inversion
 
 /-!
 # Fourier transform on Schwartz functions
@@ -14,6 +16,8 @@ This file constructs the Fourier transform as a continuous linear map acting on 
 functions, in `fourierTransformCLM`. It is also given as a continuous linear equiv, in
 `fourierTransformCLE`.
 -/
+
+@[expose] public section
 
 open Real MeasureTheory MeasureTheory.Measure
 open scoped FourierTransform ComplexInnerProductSpace

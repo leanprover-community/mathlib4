@@ -3,10 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kim Morrison
 -/
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.TryThis
-import Mathlib.Util.AtLocation
-import Mathlib.Util.AtomM.Recurse
+module
+
+public meta import Mathlib.Tactic.NormNum.Basic
+public meta import Mathlib.Tactic.TryThis
+public meta import Mathlib.Util.AtLocation
+public meta import Mathlib.Util.AtomM.Recurse
 
 /-!
 # The `abel` tactic
@@ -14,6 +16,8 @@ import Mathlib.Util.AtomM.Recurse
 Evaluate expressions in the language of additive, commutative monoids and groups.
 
 -/
+
+public meta section
 
 -- TODO: assert_not_exists NonUnitalNonAssociativeSemiring
 assert_not_exists IsOrderedMonoid TopologicalSpace PseudoMetricSpace

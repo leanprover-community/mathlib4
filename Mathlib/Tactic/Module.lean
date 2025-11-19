@@ -3,10 +3,12 @@ Copyright (c) 2024 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Tactic.Ring
-import Mathlib.Util.AtomM
+module
+
+public meta import Mathlib.Algebra.Algebra.Tower
+public meta import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public meta import Mathlib.Tactic.Ring
+public meta import Mathlib.Util.AtomM
 
 /-! # A tactic for normalization over modules
 
@@ -23,6 +25,8 @@ encountered.  However, to permit this, it is assumed that there is a "linear ord
 semirings which appear in the expression: for any two semirings `R` and `S` which occur, we have
 either `Algebra R S` or `Algebra S R`).
 -/
+
+public meta section
 
 open Lean hiding Module
 open Meta Elab Qq Mathlib.Tactic List

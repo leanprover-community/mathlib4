@@ -3,11 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Ring.WithTop
-import Mathlib.Algebra.Order.Sub.WithTop
-import Mathlib.Data.NNReal.Defs
-import Mathlib.Order.Interval.Set.WithBotTop
-import Mathlib.Tactic.Finiteness
+module
+
+public import Mathlib.Algebra.Order.Ring.WithTop
+public import Mathlib.Algebra.Order.Sub.WithTop
+public import Mathlib.Data.NNReal.Defs
+public import Mathlib.Order.Interval.Set.WithBotTop
+public import Mathlib.Tactic.Finiteness
 
 /-!
 # Extended non-negative reals
@@ -86,6 +88,8 @@ context, or if we have `(f : α → ℝ≥0∞) (hf : ∀ x, f x ≠ ∞)`.
 * `∞`: a localized notation in `ENNReal` for `⊤ : ℝ≥0∞`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 

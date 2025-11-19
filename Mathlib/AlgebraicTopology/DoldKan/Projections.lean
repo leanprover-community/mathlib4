@@ -3,8 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.Faces
-import Mathlib.CategoryTheory.Idempotents.Basic
+module
+
+public import Mathlib.AlgebraicTopology.DoldKan.Faces
+public import Mathlib.CategoryTheory.Idempotents.Basic
 
 /-!
 
@@ -26,6 +28,8 @@ in order to define `PInfty : K[X] ⟶ K[X]`.
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Preadditive

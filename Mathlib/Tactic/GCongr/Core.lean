@@ -3,11 +3,13 @@ Copyright (c) 2023 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
-import Lean
-import Batteries.Lean.Except
-import Batteries.Tactic.Exact
-import Mathlib.Tactic.GCongr.ForwardAttr
-import Mathlib.Order.Defs.Unbundled
+module
+
+public meta import Lean
+public meta import Batteries.Lean.Except
+public meta import Batteries.Tactic.Exact
+public meta import Mathlib.Tactic.GCongr.ForwardAttr
+public meta import Mathlib.Order.Defs.Unbundled
 
 /-!
 # The `gcongr` ("generalized congruence") tactic
@@ -132,6 +134,8 @@ indicate where the original `?_` holes were. The LHS is then replaced with this 
 `gcongr` can tell based on the LHS how far to continue recursively. We also keep track of when
 then LHS and RHS swap around, so that we know where to look for the metadata annotation.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.GCongr
 open Lean Meta

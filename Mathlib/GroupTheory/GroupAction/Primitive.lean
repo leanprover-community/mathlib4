@@ -3,11 +3,13 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Data.Nat.Prime.Basic
-import Mathlib.Data.Setoid.Partition.Card
-import Mathlib.GroupTheory.GroupAction.Blocks
-import Mathlib.GroupTheory.GroupAction.Transitive
+module
+
+public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.Data.Setoid.Partition.Card
+public import Mathlib.GroupTheory.GroupAction.Blocks
+public import Mathlib.GroupTheory.GroupAction.Transitive
 
 /-!
 # Primitive actions
@@ -65,6 +67,8 @@ import Mathlib.GroupTheory.GroupAction.Transitive
   which contains a given point and avoids another one.
 
 -/
+
+@[expose] public section
 
 open Pointwise
 

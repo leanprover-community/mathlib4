@@ -3,9 +3,11 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Module.TransferInstance
-import Mathlib.Data.ENNReal.Basic
-import Mathlib.RingTheory.Finiteness.Basic
+module
+
+public import Mathlib.Algebra.Module.TransferInstance
+public import Mathlib.Data.ENNReal.Basic
+public import Mathlib.RingTheory.Finiteness.Basic
 
 /-! # The `WithLp` type synonym
 
@@ -36,6 +38,8 @@ to be shared.
 TODO: is it safe to copy across the topology and uniform space structure too for all reasonable
 choices of `V`?
 -/
+
+@[expose] public section
 
 
 open scoped ENNReal

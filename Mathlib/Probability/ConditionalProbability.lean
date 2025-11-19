@@ -3,7 +3,9 @@ Copyright (c) 2022 Rishikesh Vaishnav. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rishikesh Vaishnav
 -/
-import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
+module
+
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 
 /-!
 # Conditional Probability
@@ -53,6 +55,8 @@ the conditioning set has non-zero measure should be named using the abbreviation
 
 conditional, conditioned, bayes
 -/
+
+@[expose] public section
 
 noncomputable section
 

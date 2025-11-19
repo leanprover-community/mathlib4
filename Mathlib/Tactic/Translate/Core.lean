@@ -4,19 +4,21 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster, Bryan Gin-ge Chen,
 Jovan Gerbscheid
 -/
-import Batteries.Tactic.Trans
-import Lean.Compiler.NoncomputableAttr
-import Lean.Elab.Tactic.Ext
-import Lean.Meta.Tactic.Rfl
-import Lean.Meta.Tactic.Symm
-import Mathlib.Data.Array.Defs
-import Mathlib.Data.Nat.Notation
-import Mathlib.Lean.Expr.ReplaceRec
-import Mathlib.Lean.Meta.Simp
-import Mathlib.Lean.Name
-import Mathlib.Tactic.Eqns -- just to copy the attribute
-import Mathlib.Tactic.Simps.Basic
-import Mathlib.Tactic.Translate.GuessName
+module
+
+public meta import Batteries.Tactic.Trans
+public meta import Lean.Compiler.NoncomputableAttr
+public meta import Lean.Elab.Tactic.Ext
+public meta import Lean.Meta.Tactic.Rfl
+public meta import Lean.Meta.Tactic.Symm
+public meta import Mathlib.Data.Array.Defs
+public meta import Mathlib.Data.Nat.Notation
+public meta import Mathlib.Lean.Expr.ReplaceRec
+public meta import Mathlib.Lean.Meta.Simp
+public meta import Mathlib.Lean.Name
+public meta import Mathlib.Tactic.Eqns -- just to copy the attribute
+public meta import Mathlib.Tactic.Simps.Basic
+public meta import Mathlib.Tactic.Translate.GuessName
 
 /-!
 # The translation attribute.
@@ -24,6 +26,8 @@ import Mathlib.Tactic.Translate.GuessName
 Implementation of the translation attribute. This is used for `@[to_additive]` and `@[to_dual]`.
 See the docstring of `to_additive` for more information
 -/
+
+public meta section
 
 open Lean Meta Elab Command Std
 

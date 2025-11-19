@@ -3,8 +3,10 @@ Copyright (c) 2022 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.LinearAlgebra.Matrix.Hermitian
+module
+
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.LinearAlgebra.Matrix.Hermitian
 
 /-!
 # Hermitian matrices over ℝ and ℂ
@@ -16,6 +18,8 @@ linear map is self-adjoint.
 
 self-adjoint matrix, hermitian matrix
 -/
+
+@[expose] public section
 
 -- TODO:
 -- assert_not_exists MonoidAlgebra

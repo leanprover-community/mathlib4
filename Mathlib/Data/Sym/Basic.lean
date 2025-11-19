@@ -3,11 +3,13 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.Order.Group.Multiset
-import Mathlib.Data.Setoid.Basic
-import Mathlib.Data.Vector.Basic
-import Mathlib.Logic.Nontrivial.Basic
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.Algebra.Order.Group.Multiset
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.Data.Vector.Basic
+public import Mathlib.Logic.Nontrivial.Basic
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Symmetric powers
@@ -27,6 +29,8 @@ needs a fleshed-out interface.
 symmetric powers
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 open List (Vector)

@@ -3,7 +3,9 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Eric Wieser
 -/
-import Mathlib.Data.Fin.Tuple.Basic
+module
+
+public import Mathlib.Data.Fin.Tuple.Basic
 
 /-!
 # Matrix and vector notation
@@ -33,6 +35,8 @@ The main new notation is `![a, b]`, which gets expanded to `vecCons a (vecCons b
 
 Examples of usage can be found in the `MathlibTest/matrix.lean` file.
 -/
+
+@[expose] public section
 
 
 namespace Matrix

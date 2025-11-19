@@ -3,9 +3,11 @@ Copyright (c) 2024 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Batteries.Data.List.Count
-import Mathlib.Combinatorics.Enumerative.Catalan
-import Mathlib.Tactic.Positivity
+module
+
+public import Batteries.Data.List.Count
+public import Mathlib.Combinatorics.Enumerative.Catalan
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Dyck words
@@ -40,6 +42,8 @@ one consequence being that the number of Dyck words with length `2 * n` is `cata
 While any two-valued type could have been used for `DyckStep`, a new enumerated type is used here
 to emphasise that the definition of a Dyck word does not depend on that underlying type.
 -/
+
+@[expose] public section
 
 open List
 

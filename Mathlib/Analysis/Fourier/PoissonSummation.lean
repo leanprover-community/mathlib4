@@ -3,12 +3,14 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.Fourier.AddCircle
-import Mathlib.Analysis.Fourier.FourierTransform
-import Mathlib.Analysis.PSeries
-import Mathlib.Analysis.Distribution.FourierSchwartz
-import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
-import Mathlib.Topology.ContinuousMap.Periodic
+module
+
+public import Mathlib.Analysis.Fourier.AddCircle
+public import Mathlib.Analysis.Fourier.FourierTransform
+public import Mathlib.Analysis.PSeries
+public import Mathlib.Analysis.Distribution.FourierSchwartz
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
+public import Mathlib.Topology.ContinuousMap.Periodic
 
 /-!
 # Poisson's summation formula
@@ -24,6 +26,8 @@ These hypotheses are potentially a little awkward to apply, so we also provide t
 easier-to-use result `Real.tsum_eq_tsum_fourierIntegral_of_rpow_decay`, in which we assume `f` and
 `𝓕 f` both decay as `|x| ^ (-b)` for some `b > 1`, and the even more specific result
 `SchwartzMap.tsum_eq_tsum_fourierIntegral`, where we assume that `f` is a Schwartz function. -/
+
+@[expose] public section
 
 
 noncomputable section

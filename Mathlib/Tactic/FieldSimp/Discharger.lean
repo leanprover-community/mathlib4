@@ -3,9 +3,10 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, David Renshaw
 -/
+module
 
-import Mathlib.Tactic.Positivity.Core
-import Mathlib.Util.DischargerAsTactic
+public meta import Mathlib.Tactic.Positivity.Core
+public meta import Mathlib.Util.DischargerAsTactic
 
 /-!
 # Discharger for `field_simp` tactic
@@ -34,6 +35,8 @@ fundamentally difficult.
 * `field_simp_discharge`: tactic syntax for the discharger (most useful for testing/debugging)
 
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.FieldSimp
 

@@ -3,12 +3,14 @@ Copyright (c) 2021 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Finsupp.SumProd
-import Mathlib.RingTheory.GradedAlgebra.Basic
-import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.RingTheory.Ideal.BigOperators
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Submodule
+module
+
+public import Mathlib.LinearAlgebra.Finsupp.SumProd
+public import Mathlib.RingTheory.GradedAlgebra.Basic
+public import Mathlib.RingTheory.Ideal.Basic
+public import Mathlib.RingTheory.Ideal.BigOperators
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Submodule
 
 /-!
 # Homogeneous ideals of a graded algebra
@@ -40,6 +42,8 @@ to `Ideal.IsHomogeneous.iff_exists` as quickly as possible.
 
 graded algebra, homogeneous
 -/
+
+@[expose] public section
 
 
 open SetLike DirectSum Set

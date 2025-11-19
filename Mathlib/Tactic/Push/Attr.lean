@@ -3,7 +3,9 @@ Copyright (c) 2025 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Mathlib.Lean.Expr.Basic
+module
+
+public meta import Mathlib.Lean.Expr.Basic
 
 /-!
 # The `@[push]` attribute for the `push`, `push_neg` and `pull` tactics
@@ -11,6 +13,8 @@ import Mathlib.Lean.Expr.Basic
 This file defines the `@[push]` attribute, so that it can be used without importing
 the tactic itself.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Push
 

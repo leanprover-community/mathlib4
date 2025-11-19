@@ -3,8 +3,10 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 -/
-import Mathlib.Tactic.TypeStar
-import Batteries.Tactic.Alias
+module
+
+public import Mathlib.Tactic.TypeStar
+public import Batteries.Tactic.Alias
 
 /-!
 # `ExistsUnique`
@@ -12,6 +14,8 @@ import Batteries.Tactic.Alias
 This file defines the `ExistsUnique` predicate, notated as `∃!`, and proves some of its
 basic properties.
 -/
+
+@[expose] public section
 
 variable {α : Sort*}
 

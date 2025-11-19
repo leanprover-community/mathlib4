@@ -3,7 +3,9 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Analysis.Complex.Norm
+module
+
+public import Mathlib.Analysis.Complex.Norm
 
 /-!
 # The partial order on the complex numbers
@@ -25,6 +27,8 @@ provided in `Mathlib/Analysis/RCLike/Basic.lean` as
 
 These are all only available with `open scoped ComplexOrder`.
 -/
+
+@[expose] public section
 
 namespace Complex
 

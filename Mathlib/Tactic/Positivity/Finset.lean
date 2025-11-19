@@ -3,10 +3,12 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Data.Finset.Density
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Tactic.Positivity.Core
+module
+
+public meta import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public meta import Mathlib.Data.Finset.Density
+public meta import Mathlib.Tactic.NormNum.Basic
+public meta import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Positivity extensions for finsets
@@ -15,6 +17,8 @@ This file provides a few `positivity` extensions that cannot be in either the fi
 they don't know about ordered fields) or in `Tactic.Positivity.Basic` (because it doesn't want to
 know about finiteness).
 -/
+
+public meta section
 
 namespace Mathlib.Meta.Positivity
 

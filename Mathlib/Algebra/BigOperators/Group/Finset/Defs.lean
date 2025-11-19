@@ -3,11 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Group.Equiv.Opposite
-import Mathlib.Algebra.Group.TypeTags.Basic
-import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
-import Mathlib.Data.Fintype.Sets
-import Mathlib.Data.Multiset.Bind
+module
+
+public import Mathlib.Algebra.Group.Equiv.Opposite
+public import Mathlib.Algebra.Group.TypeTags.Basic
+public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
+public import Mathlib.Data.Fintype.Sets
+public import Mathlib.Data.Multiset.Bind
 
 /-!
 # Big operators
@@ -39,6 +41,8 @@ operator. This is necessary for the heuristic in `@[to_additive]`.
 See the documentation of `to_additive.attr` for more information.
 
 -/
+
+@[expose] public section
 
 -- TODO
 -- assert_not_exists AddCommMonoidWithOne

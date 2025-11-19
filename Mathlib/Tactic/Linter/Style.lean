@@ -3,13 +3,14 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
+module
 
-import Lean.Elab.Command
-import Lean.Server.InfoUtils
+public meta import Lean.Elab.Command
+public meta import Lean.Server.InfoUtils
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
-import Mathlib.Tactic.DeclarationNames
+public meta import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.DeclarationNames
 
 /-!
 ## Style linters
@@ -40,6 +41,8 @@ This file defines the following linters:
 All of these linters are enabled in mathlib by default, but disabled globally
 since they enforce conventions which are inherently subjective.
 -/
+
+public meta section
 
 open Lean Parser Elab Command Meta Linter
 

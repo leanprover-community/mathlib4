@@ -3,7 +3,9 @@ Copyright (c) 2024 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine, Pietro Monticone
 -/
-import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
+module
+
+public import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
 
 /-!
 # Topological entropy of the image of a set under a semiconjugacy
@@ -50,6 +52,8 @@ the entropy of `φ '' F` is lower than the entropy of `F` if `φ` is uniformly c
 ## Tags
 entropy, semiconjugacy
 -/
+
+@[expose] public section
 
 open Function Prod Set Uniformity UniformSpace
 open scoped SetRel

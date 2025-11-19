@@ -3,14 +3,17 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
+module
 
-import Mathlib.Data.Nat.Basic
-import Mathlib.Tactic.Push
-import Batteries.WF
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Tactic.Push
+public import Batteries.WF
 
 /-!
 # `Nat.find` and `Nat.findGreatest`
 -/
+
+@[expose] public section
 
 variable {m n k : ℕ} {p q : ℕ → Prop}
 

@@ -3,12 +3,14 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.GroupWithZero.Invertible
-import Mathlib.Data.Sigma.Basic
-import Mathlib.Algebra.Ring.Nat
-import Mathlib.Data.Int.Cast.Basic
-import Qq.MetaM
+module
+
+public meta import Mathlib.Algebra.Field.Defs
+public meta import Mathlib.Algebra.GroupWithZero.Invertible
+public meta import Mathlib.Data.Sigma.Basic
+public meta import Mathlib.Algebra.Ring.Nat
+public meta import Mathlib.Data.Int.Cast.Basic
+public meta import Qq.MetaM
 
 /-!
 ## The `Result` type for `norm_num`
@@ -22,6 +24,8 @@ is equal to the coercion of an explicit natural number, integer, or rational num
 or is either `true` or `false`.
 
 -/
+
+public meta section
 
 universe u
 variable {α : Type u}

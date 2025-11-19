@@ -3,11 +3,12 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
+module
 
-import Mathlib.Init
-import Lean.Elab.Exception
-import Batteries.Lean.NameMapAttribute
-import Batteries.Tactic.Lint
+public meta import Mathlib.Init
+public meta import Lean.Elab.Exception
+public meta import Batteries.Lean.NameMapAttribute
+public meta import Batteries.Tactic.Lint
 
 /-!
 # `@[notation_class]` attribute for `@[simps]`
@@ -18,6 +19,8 @@ for `@[simps]`.
 We put this in a separate file so that we can already tag some declarations with this attribute
 in the file where we declare `@[simps]`. For further documentation, see `Tactic.Simps.Basic`.
 -/
+
+public meta section
 
 /-- The `@[notation_class]` attribute specifies that this is a notation class,
 and this notation should be used instead of projections by `@[simps]`.

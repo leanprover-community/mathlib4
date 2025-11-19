@@ -3,8 +3,10 @@ Copyright (c) 2024 Arend Mellendijk. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
-import Mathlib.Data.Real.Basic
-import Mathlib.NumberTheory.ArithmeticFunction
+module
+
+public import Mathlib.Data.Real.Basic
+public import Mathlib.NumberTheory.ArithmeticFunction
 
 /-!
 # The Selberg Sieve
@@ -27,6 +29,8 @@ minor notational difference is that we write $\nu(n)$ in place of $\frac{\omega(
 * [Koukoulopoulos, *The Distribution of Prime Numbers*][MR3971232]
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

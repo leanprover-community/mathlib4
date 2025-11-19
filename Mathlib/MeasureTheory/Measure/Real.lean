@@ -3,8 +3,10 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
-import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
+module
+
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
+public import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 
 /-!
 # Measures as real-valued functions
@@ -25,6 +27,8 @@ There are no lemmas on infinite sums, as summability issues are really
 more painful with reals than nonnegative extended reals. They should probably be added in the long
 run.
 -/
+
+@[expose] public section
 
 open MeasureTheory Measure Set
 open scoped ENNReal NNReal Function symmDiff
