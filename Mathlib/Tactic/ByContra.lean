@@ -17,7 +17,7 @@ The `by_contra!` tactic is a variant of the `by_contra` tactic, for proofs of co
 public meta section
 
 namespace Mathlib.Tactic.ByContra
-open Lean Lean.Parser Parser.Tactic Elab Command Elab.Tactic Meta
+open Lean Parser Tactic
 
 /--
 If the target of the main goal is a proposition `p`,
