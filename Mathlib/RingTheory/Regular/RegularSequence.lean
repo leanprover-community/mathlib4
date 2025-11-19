@@ -3,10 +3,12 @@ Copyright (c) 2024 Brendan Murphy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Brendan Murphy
 -/
-import Mathlib.RingTheory.Artinian.Module
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.Nakayama
-import Mathlib.RingTheory.Regular.IsSMulRegular
+module
+
+public import Mathlib.RingTheory.Artinian.Module
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.Nakayama
+public import Mathlib.RingTheory.Regular.IsSMulRegular
 
 /-!
 # Regular sequences and weakly regular sequences
@@ -22,6 +24,8 @@ TODO: Koszul regular sequences, H_1-regular sequences, quasi-regular sequences, 
 
 module, regular element, regular sequence, commutative algebra
 -/
+
+@[expose] public section
 
 universe u v
 

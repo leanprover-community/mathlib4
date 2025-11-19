@@ -3,9 +3,11 @@ Copyright (c) 2025 Yaël Dillies, Michał Mrugała, Andrew Yang. All rights rese
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Michał Mrugała, Andrew Yang
 -/
-import Mathlib.Algebra.Category.CommAlgCat.Monoidal
-import Mathlib.CategoryTheory.Monoidal.Mon_
-import Mathlib.RingTheory.Bialgebra.Equiv
+module
+
+public import Mathlib.Algebra.Category.CommAlgCat.Monoidal
+public import Mathlib.CategoryTheory.Monoidal.Mon_
+public import Mathlib.RingTheory.Bialgebra.Equiv
 
 /-!
 # The category of commutative bialgebras over a commutative ring
@@ -13,6 +15,8 @@ import Mathlib.RingTheory.Bialgebra.Equiv
 This file defines the bundled category `CommBialgCat R` of commutative bialgebras over a fixed
 commutative ring `R` along with the forgetful functor to `CommAlgCat`.
 -/
+
+@[expose] public section
 
 noncomputable section
 

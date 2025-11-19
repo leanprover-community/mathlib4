@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.LiftingProperties.Basic
-import Mathlib.CategoryTheory.Comma.Over.Basic
+module
+
+public import Mathlib.CategoryTheory.LiftingProperties.Basic
+public import Mathlib.CategoryTheory.Comma.Over.Basic
 
 /-!
 # Lifting properties in Over categories
@@ -18,6 +20,8 @@ property with respect to `p` when `i.left` has
 the left lifting property with respect to `p.left`.
 
 -/
+
+@[expose] public section
 
 universe v u
 

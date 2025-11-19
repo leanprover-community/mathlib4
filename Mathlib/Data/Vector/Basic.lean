@@ -3,18 +3,22 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Vector.Defs
-import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.OfFn
-import Mathlib.Control.Applicative
-import Mathlib.Control.Traversable.Basic
-import Mathlib.Algebra.BigOperators.Group.List.Basic
+module
+
+public import Mathlib.Data.Vector.Defs
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.List.OfFn
+public import Mathlib.Control.Applicative
+public import Mathlib.Control.Traversable.Basic
+public import Mathlib.Algebra.BigOperators.Group.List.Basic
 
 /-!
 # Additional theorems and definitions about the `Vector` type
 
 This file introduces the infix notation `::ᵥ` for `Vector.cons`.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -637,7 +641,7 @@ private def traverseAux {α β : Type u} (f : α → F β) : ∀ x : List α, F 
   | x :: xs => Vector.cons <$> f x <*> traverseAux f xs
 
 /-- Apply an applicative function to each component of a vector. -/
-protected def traverse {α β : Type u} (f : α → F β) : Vector α n → F (Vector β n)
+@[no_expose] protected def traverse {α β : Type u} (f : α → F β) : Vector α n → F (Vector β n)
   | ⟨v, Hv⟩ => cast (by rw [Hv]) <| traverseAux f v
 
 section

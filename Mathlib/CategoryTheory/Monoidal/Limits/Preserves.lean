@@ -3,13 +3,17 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 
 /-!
 # Miscellany about preservations of (co)limits in monoidal categories
 
 This file records some `PreservesColimits` instance on tensors products on monoidal categories. -/
+
+@[expose] public section
 
 namespace CategoryTheory.MonoidalCategory.Limits
 open _root_.CategoryTheory.Limits
