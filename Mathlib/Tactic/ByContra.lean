@@ -41,11 +41,11 @@ example : 1 < 2 := by
 syntax (name := byContra!) "by_contra!" optConfig (ppSpace colGt binderIdent)? Term.optType : tactic
 
 local elab "try_push_neg_at" cfg:optConfig h:ident : tactic => do
-  Push.push (.const ``Not) none (.targets #[h] false) (← Push.elabPushConfig cfg)
+  Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[h] false)
     (failIfUnchanged := false)
 
 local elab "try_push_neg" cfg:optConfig : tactic => do
-  Push.push (.const ``Not) none (.targets #[] true) (← Push.elabPushConfig cfg)
+  Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[] true)
     (failIfUnchanged := false)
 
 macro_rules

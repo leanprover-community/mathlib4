@@ -204,9 +204,8 @@ structure Config where
 /-- Function elaborating `Push.Config`. -/
 declare_config_elab elabPushConfig Config
 
-def push (head : Head) (disch? : Option Simp.Discharge) (loc : Location) (cfg : Config)
-    (failIfUnchanged : Bool := true) :
-    TacticM Unit := do
+def push (cfg : Config) (disch? : Option Simp.Discharge) (head : Head) (loc : Location)
+    (failIfUnchanged : Bool := true) : TacticM Unit := do
   (if cfg.distrib then withOptions (·.setBool `push_neg.use_distrib true) else id) <|
     transformAtLocation (pushCore head · disch?) "push" loc failIfUnchanged
 
@@ -231,7 +230,7 @@ elab (name := pushStx) "push" cfg:optConfig disch?:(discharger)? head:(ppSpace c
     loc:(location)? : tactic => do
   let disch? ← disch?.mapM elabDischarger
   let loc := (loc.map expandLocation).getD (.targets #[] true)
-  push (← elabHead head) disch? loc (← elabPushConfig cfg)
+  push (← elabPushConfig cfg) disch? (← elabHead head) loc
 
 /--
 Push negations into the conclusion or a hypothesis.
@@ -262,7 +261,7 @@ using say `push_neg at h h' ⊢`, as usual.
 -/
 elab (name := push_neg) "push_neg" cfg:optConfig loc:(location)? : tactic => do
   let loc := (loc.map expandLocation).getD (.targets #[] true)
-  push (.const ``Not) none loc (← elabPushConfig cfg)
+  push (← elabPushConfig cfg) none (.const ``Not) loc
 
 /--
 `pull` is the inverse tactic to `push`.
