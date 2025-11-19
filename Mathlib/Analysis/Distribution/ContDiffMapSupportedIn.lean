@@ -612,7 +612,7 @@ noncomputable def toBoundedContinuousFunctionCLM : 𝓓^{n}_{K}(E, F) →L[𝕜]
   cont := show Continuous (toBoundedContinuousFunctionLM 𝕜) by
     refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
       (norm_withSeminorms 𝕜 _) _ (fun _ ↦ ⟨{0}, 1, fun f ↦ ?_⟩)
-    simp [norm_toBoundedContinuousFunction 𝕜 f, ContDiffMapSupportedIn.seminorm_apply]
+    simp [norm_toBoundedContinuousFunction 𝕜 f]
 
 @[simp]
 lemma toBoundedContinuousFunctionCLM_apply (f : 𝓓^{n}_{K}(E, F)) :
