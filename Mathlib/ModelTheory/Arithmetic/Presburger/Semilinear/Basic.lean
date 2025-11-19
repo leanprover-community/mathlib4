@@ -3,18 +3,20 @@ Copyright (c) 2025 Dexin Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dexin Zhang
 -/
-import Mathlib.Algebra.Group.Submonoid.Finsupp
-import Mathlib.Algebra.Order.Group.Ideal
-import Mathlib.Algebra.Order.Pi
-import Mathlib.Algebra.Order.Sub.Prod
-import Mathlib.Algebra.Order.Sub.Unbundled.Hom
-import Mathlib.Data.Matrix.ColumnRowPartitioned
-import Mathlib.Data.Pi.Interval
-import Mathlib.Data.Rat.Floor
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Defs
-import Mathlib.RingTheory.Finiteness.Cardinality
-import Mathlib.RingTheory.Localization.Module
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Finsupp
+public import Mathlib.Algebra.Order.Group.Ideal
+public import Mathlib.Algebra.Order.Pi
+public import Mathlib.Algebra.Order.Sub.Prod
+public import Mathlib.Algebra.Order.Sub.Unbundled.Hom
+public import Mathlib.Data.Matrix.ColumnRowPartitioned
+public import Mathlib.Data.Pi.Interval
+public import Mathlib.Data.Rat.Floor
+public import Mathlib.LinearAlgebra.Matrix.ToLin
+public import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Defs
+public import Mathlib.RingTheory.Finiteness.Cardinality
+public import Mathlib.RingTheory.Localization.Module
 
 /-!
 # Semilinear sets are closed under intersection, set difference and complement
@@ -38,6 +40,8 @@ any commutative monoid.
 * [Seymour Ginsburg and Edwin H. Spanier, *Bounded ALGOL-Like Languages*][ginsburg1964]
 * [Samuel Eilenberg and M. P. Schützenberger, *Rational Sets in Commutative Monoids*][eilenberg1969]
 -/
+
+@[expose] public section
 
 open Set Pointwise AddSubmonoid Matrix
 
