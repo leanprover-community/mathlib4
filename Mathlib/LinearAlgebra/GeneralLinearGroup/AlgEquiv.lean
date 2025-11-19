@@ -3,11 +3,13 @@ Copyright (c) 2025 Monica Omar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
-import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Algebra.Ring.Action.ConjAct
-import Mathlib.LinearAlgebra.Dual.Defs
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.LinearAlgebra.GeneralLinearGroup
+module
+
+public import Mathlib.Algebra.Algebra.Equiv
+public import Mathlib.Algebra.Ring.Action.ConjAct
+public import Mathlib.LinearAlgebra.Dual.Defs
+public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.LinearAlgebra.GeneralLinearGroup
 
 /-!
 # Algebra automorphisms in `End K V` are inner
