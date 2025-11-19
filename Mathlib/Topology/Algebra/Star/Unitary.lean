@@ -3,16 +3,20 @@ Copyright (c) 2025 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux, Bhavik Mehta
 -/
-import Mathlib.Algebra.Star.Unitary
-import Mathlib.Topology.Algebra.Group.Defs
-import Mathlib.Topology.Algebra.Star
-import Mathlib.Topology.Algebra.Monoid
+module
+
+public import Mathlib.Algebra.Star.Unitary
+public import Mathlib.Topology.Algebra.Group.Defs
+public import Mathlib.Topology.Algebra.Star
+public import Mathlib.Topology.Algebra.Monoid
 
 /-! # Topological properties of the unitary (sub)group
 
 * In a topological star monoid `R`, `unitary R` is a topological group
 * In a topological star monoid `R` which is T1, `unitary R` is closed as a subset of `R`.
 -/
+
+@[expose] public section
 
 variable {R : Type*} [Monoid R] [StarMul R] [TopologicalSpace R]
 

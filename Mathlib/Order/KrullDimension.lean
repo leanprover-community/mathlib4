@@ -3,13 +3,14 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li, Joachim Breitner
 -/
+module
 
-import Mathlib.Algebra.Order.Group.Int
-import Mathlib.Algebra.Order.SuccPred.WithBot
-import Mathlib.Data.ENat.Lattice
-import Mathlib.Order.Atoms
-import Mathlib.Order.RelSeries
-import Mathlib.Tactic.FinCases
+public import Mathlib.Algebra.Order.Group.Int
+public import Mathlib.Algebra.Order.SuccPred.WithBot
+public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Order.Atoms
+public import Mathlib.Order.RelSeries
+public import Mathlib.Tactic.FinCases
 
 /-!
 # Krull dimension of a preordered set and height of an element
@@ -59,6 +60,8 @@ We could generalize the notion of Krull dimension to an arbitrary binary relatio
 in this file would generalize as well. But we don't think it would be useful, so we only define
 Krull dimension of a preorder.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -695,7 +698,7 @@ lemma le_krullDim_iff {n : ℕ} : n ≤ krullDim α ↔ ∃ l : LTSeries α, l.l
   cases finiteDimensionalOrder_or_infiniteDimensionalOrder α
   · rw [krullDim_eq_length_of_finiteDimensionalOrder, Nat.cast_le]
     constructor
-    · exact fun H ↦ ⟨(LTSeries.longestOf α).take ⟨_, Nat.lt_succ.mpr H⟩, rfl⟩
+    · exact fun H ↦ ⟨(LTSeries.longestOf α).take ⟨_, Nat.lt_succ_of_le H⟩, rfl⟩
     · exact fun ⟨l, hl⟩ ↦ hl ▸ l.longestOf_is_longest
   · simpa [krullDim_eq_top] using SetRel.InfiniteDimensional.exists_relSeries_with_length n
 
@@ -711,7 +714,7 @@ lemma krullDim_lt_coe_iff {n : ℕ} : krullDim α < n ↔ ∀ l : LTSeries α, l
   rcases n with - | n
   · rw [ENat.coe_zero, ← bot_eq_zero, WithBot.lt_coe_bot]
     simp
-  · simp [WithBot.lt_add_one_iff, WithBot.coe_natCast, Nat.lt_succ]
+  · simp [WithBot.lt_add_one_iff, WithBot.coe_natCast, Nat.lt_succ_iff]
 
 lemma krullDim_le_of_strictMono (f : α → β) (hf : StrictMono f) : krullDim α ≤ krullDim β :=
   iSup_le fun p ↦ le_sSup ⟨p.map f hf, rfl⟩

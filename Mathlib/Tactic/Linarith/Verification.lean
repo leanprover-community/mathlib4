@@ -3,9 +3,10 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
+module
 
-import Mathlib.Tactic.Linarith.Parsing
-import Mathlib.Util.Qq
+public meta import Mathlib.Tactic.Linarith.Parsing
+public meta import Mathlib.Util.Qq
 
 /-!
 # Deriving a proof of false
@@ -18,6 +19,8 @@ This file implements the reconstruction.
 
 The public facing declaration in this file is `proveFalseByLinarith`.
 -/
+
+public meta section
 
 open Lean Elab Tactic Meta
 

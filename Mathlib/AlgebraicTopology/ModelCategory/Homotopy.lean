@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.ModelCategory.BrownLemma
-import Mathlib.AlgebraicTopology.ModelCategory.LeftHomotopy
-import Mathlib.AlgebraicTopology.ModelCategory.RightHomotopy
+module
+
+public import Mathlib.AlgebraicTopology.ModelCategory.BrownLemma
+public import Mathlib.AlgebraicTopology.ModelCategory.LeftHomotopy
+public import Mathlib.AlgebraicTopology.ModelCategory.RightHomotopy
 
 /-!
 # Homotopies in model categories
@@ -24,6 +26,8 @@ then any weak equivalence `X ⟶ Y` is a homotopy equivalence.
 * [Daniel G. Quillen, Homotopical algebra, section I.1][Quillen1967]
 
 -/
+
+@[expose] public section
 
 universe v u
 

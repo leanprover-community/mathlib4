@@ -3,11 +3,13 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Module.Torsion.Basic
-import Mathlib.RingTheory.FiniteLength
-import Mathlib.RingTheory.Noetherian.Nilpotent
-import Mathlib.RingTheory.Spectrum.Prime.Noetherian
-import Mathlib.RingTheory.KrullDimension.Zero
+module
+
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.RingTheory.FiniteLength
+public import Mathlib.RingTheory.Noetherian.Nilpotent
+public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
+public import Mathlib.RingTheory.KrullDimension.Zero
 
 /-!
 ## The Hopkins–Levitzki theorem
@@ -29,6 +31,8 @@ import Mathlib.RingTheory.KrullDimension.Zero
 
 * [F. Lorenz, *Algebra: Volume II: Fields with Structure, Algebras and Advanced Topics*][Lorenz2008]
 -/
+
+@[expose] public section
 
 universe u
 
