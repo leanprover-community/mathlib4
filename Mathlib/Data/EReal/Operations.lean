@@ -822,6 +822,29 @@ lemma nsmul_eq_mul (n : ℕ) (x : EReal) : n • x = n * x := by
   | succ n ih =>
     rw [succ_nsmul, ih, Nat.cast_succ]
     convert (EReal.right_distrib_of_nonneg _ _).symm <;> simp
+/-! ### Multiplication and order -/
+theorem mul_lt_mul_of_pos_left {a : ℝ} {b c : EReal} (ha_pos : 0 < a) (hbc : b < c) :
+a.toEReal * b < a.toEReal * c :=by
+apply EReal.sub_pos.mp
+rw [sub_eq_add_neg]
+rw [← mul_neg]
+rw [← EReal.left_distrib_of_nonneg_of_ne_top]
+·have h1 : 0 < ↑a * ( c+ (-b)):=by
+  apply EReal.mul_pos_iff.mpr
+  left
+  constructor
+  ·apply EReal.coe_pos.mpr
+   apply ha_pos
+  ·apply sub_pos.mpr
+   apply hbc
+ apply h1
+·have h2 : 0 ≤ Real.toEReal a :=by
+  apply EReal.coe_nonneg.mpr
+  apply le_of_lt
+  apply ha_pos
+ apply h2
+·apply EReal.coe_ne_top
+
 
 end EReal
 
