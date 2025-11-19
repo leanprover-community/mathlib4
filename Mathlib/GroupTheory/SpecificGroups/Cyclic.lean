@@ -625,9 +625,18 @@ end CommGroup
 end IsSimpleGroup
 
 @[to_additive]
-theorem CommGroup.is_simple_iff_prime_card [Finite α] [CommGroup α] :
+theorem Group.is_simple_iff_prime_card [Finite α] [Group α] [IsMulCommutative α] :
     IsSimpleGroup α ↔ (Nat.card α).Prime :=
   ⟨fun h ↦ h.prime_card, fun h ↦ isSimpleGroup_of_prime_card (hp := ⟨h⟩) rfl⟩
+
+@[to_additive]
+theorem CommGroup.is_simple_iff_prime_card [Finite α] [CommGroup α] :
+    IsSimpleGroup α ↔ (Nat.card α).Prime :=
+  have : IsMulCommutative α := ⟨⟨mul_comm⟩⟩
+  Group.is_simple_iff_prime_card
+
+@[deprecated (since := "2025-11-19")]
+alias CommGroup.is_simple_iff_isCyclic_and_prime_card := CommGroup.is_simple_iff_prime_card
 
 section SpecificInstances
 
