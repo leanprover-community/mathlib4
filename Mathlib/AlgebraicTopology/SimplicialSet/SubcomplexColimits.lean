@@ -97,7 +97,7 @@ lemma BicartSq.isPushout {A₁ A₂ A₃ A₄ : X.Subcomplex} (sq : BicartSq A�
             min_eq := by
               rw [← sq.min_eq]
               rfl }
-        exact (Types.isColimitOfBicartSq h).isColimit))⟩
+        exact (Types.isPushout_of_bicartSq h).isColimit))⟩
 
 end Subcomplex
 

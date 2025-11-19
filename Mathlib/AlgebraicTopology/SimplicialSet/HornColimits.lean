@@ -24,20 +24,6 @@ open CategoryTheory Simplicial Opposite
 
 universe u
 
--- to be moved
-instance (n : SimplexCategory) (m : SimplexCategoryᵒᵖ) :
-    DecidableEq ((stdSimplex.{u}.obj n).obj m) :=
-  fun a b ↦ decidable_of_iff (stdSimplex.objEquiv a = stdSimplex.objEquiv b) (by simp)
-
-instance (X : SSet.{u}) (n : SimplexCategory) [DecidableEq (X.obj (op n))] :
-    DecidableEq (stdSimplex.obj n ⟶ X) :=
-  fun a b ↦ decidable_of_iff (yonedaEquiv a = yonedaEquiv b) (by simp)
-
-instance {X : SSet.{u}} (n : SimplexCategoryᵒᵖ) (A : X.Subcomplex)
-    [DecidableEq (X.obj n)] :
-    DecidableEq (A.toSSet.obj n) :=
-  inferInstanceAs (DecidableEq (A.obj n))
-
 namespace horn₂₀
 
 lemma sq : Subcomplex.BicartSq (stdSimplex.face {0}) (stdSimplex.face {0, 1})
@@ -55,23 +41,17 @@ lemma sq : Subcomplex.BicartSq (stdSimplex.face {0}) (stdSimplex.face {0, 1})
       · exact le_sup_left
   min_eq := by simp [stdSimplex.face_inter_face]
 
+/-- The inclusion `Δ[1] ⟶ horn 2 0` which avoids `2`. -/
 abbrev ι₀₁ : Δ[1] ⟶ horn.{u} 2 0 := horn.ι 0 2 (by simp)
 
+/-- The inclusion `Δ[1] ⟶ horn 2 0` which avoids `1`. -/
 abbrev ι₀₂ : Δ[1] ⟶ horn.{u} 2 0 := horn.ι 0 1 (by simp)
-
-@[reassoc (attr := simp)]
-lemma ι₀₁_ι : ι₀₁ ≫ (horn.{u} 2 0).ι = stdSimplex.δ 2 := rfl
-
-@[reassoc (attr := simp)]
-lemma ι₀₂_ι : ι₀₂ ≫ (horn.{u} 2 0).ι = stdSimplex.δ 1 := rfl
 
 lemma isPushout :
     IsPushout (stdSimplex.{u}.δ (1 : Fin 2))
       (stdSimplex.{u}.δ (1 : Fin 2)) ι₀₁ ι₀₂ := by
-  fapply sq.{u}.isPushout.of_iso'
-    (stdSimplex.faceSingletonIso _)
-    (stdSimplex.facePairIso _ _ (by simp))
-    (stdSimplex.facePairIso _ _ (by simp))
+  fapply sq.{u}.isPushout.of_iso' (stdSimplex.faceSingletonIso _)
+    (stdSimplex.facePairIso _ _ (by simp)) (stdSimplex.facePairIso _ _ (by simp))
     (Iso.refl _)
   all_goals decide
 
@@ -94,17 +74,17 @@ lemma sq : Subcomplex.BicartSq (stdSimplex.face {1}) (stdSimplex.face {0, 1})
       · exact le_sup_left
   min_eq := by simp [stdSimplex.face_inter_face]
 
+/-- The inclusion `Δ[1] ⟶ horn 2 1` which avoids `2`. -/
 abbrev ι₀₁ : Δ[1] ⟶ horn.{u} 2 1 := horn.ι 1 2 (by simp)
 
+/-- The inclusion `Δ[1] ⟶ horn 2 1` which avoids `0`. -/
 abbrev ι₁₂ : Δ[1] ⟶ horn.{u} 2 1 := horn.ι 1 0 (by simp)
 
 lemma isPushout :
     IsPushout (stdSimplex.{u}.δ (0 : Fin 2))
       (stdSimplex.{u}.δ (1 : Fin 2)) ι₀₁ ι₁₂ := by
-  apply sq.{u}.isPushout.of_iso'
-    (stdSimplex.faceSingletonIso _ )
-    (stdSimplex.facePairIso _ _ (by simp))
-    (stdSimplex.facePairIso _ _ (by simp))
+  apply sq.{u}.isPushout.of_iso' (stdSimplex.faceSingletonIso _ )
+    (stdSimplex.facePairIso _ _ (by simp)) (stdSimplex.facePairIso _ _ (by simp))
     (Iso.refl _)
   all_goals decide
 
@@ -127,17 +107,17 @@ lemma sq : Subcomplex.BicartSq (stdSimplex.face {2}) (stdSimplex.face {0, 2})
       · exact le_sup_left
   min_eq := by simp [stdSimplex.face_inter_face]
 
+/-- The inclusion `Δ[1] ⟶ horn 2 2` which avoids `1`. -/
 abbrev ι₀₂ : Δ[1] ⟶ horn.{u} 2 2 := horn.ι 2 1 (by simp)
 
+/-- The inclusion `Δ[1] ⟶ horn 2 2` which avoids `0`. -/
 abbrev ι₁₂ : Δ[1] ⟶ horn.{u} 2 2 := horn.ι 2 0 (by simp)
 
 lemma isPushout :
     IsPushout (stdSimplex.{u}.δ (0 : Fin 2))
       (stdSimplex.{u}.δ (0 : Fin 2)) ι₀₂ ι₁₂ := by
-  fapply sq.{u}.isPushout.of_iso'
-    (stdSimplex.faceSingletonIso _ )
-    (stdSimplex.facePairIso _ _ (by simp))
-    (stdSimplex.facePairIso _ _ (by simp))
+  fapply sq.{u}.isPushout.of_iso' (stdSimplex.faceSingletonIso _ )
+    (stdSimplex.facePairIso _ _ (by simp)) (stdSimplex.facePairIso _ _ (by simp))
     (Iso.refl _)
   all_goals decide
 
