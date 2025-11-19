@@ -3,10 +3,11 @@ Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 -/
+module
 
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Field.Defs
-import Mathlib.RingTheory.OreLocalization.NonZeroDivisors
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.RingTheory.OreLocalization.NonZeroDivisors
 
 /-!
 
@@ -16,6 +17,8 @@ The `Monoid` and `DistribMulAction` instances and additive versions are provided
 `Mathlib/RingTheory/OreLocalization/Basic.lean`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Subgroup
 
