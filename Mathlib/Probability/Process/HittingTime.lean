@@ -3,8 +3,10 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
 -/
-import Mathlib.Probability.Process.Stopping
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.Probability.Process.Stopping
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Hitting times
@@ -29,6 +31,8 @@ only proved it for the discrete case so far).
   stopping time
 
 -/
+
+@[expose] public section
 
 
 open Filter Order TopologicalSpace
@@ -309,7 +313,7 @@ theorem hittingBtwn_mono {m₁ m₂ : ι} (hm : m₁ ≤ m₂) :
     split_ifs with h'
     · obtain ⟨j, hj₁, hj₂⟩ := h'
       refine le_csInf ⟨j, hj₁, hj₂⟩ ?_
-      by_contra hneg; push_neg at hneg
+      by_contra! hneg
       obtain ⟨i, hi₁, hi₂⟩ := hneg
       exact h ⟨i, ⟨hi₁.1.1, hi₂.le⟩, hi₁.2⟩
     · exact hm
