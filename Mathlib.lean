@@ -5604,6 +5604,7 @@ import Mathlib.RepresentationTheory.Invariants
 import Mathlib.RepresentationTheory.Maschke
 import Mathlib.RepresentationTheory.Rep
 import Mathlib.RepresentationTheory.Submodule
+import Mathlib.RepresentationTheory.Subrepresentation
 import Mathlib.RepresentationTheory.Tannaka
 import Mathlib.RingTheory.AdicCompletion.Algebra
 import Mathlib.RingTheory.AdicCompletion.AsTensorProduct
