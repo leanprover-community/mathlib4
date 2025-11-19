@@ -63,7 +63,7 @@ projection `S →+* S ⧸ (I ^ n)` is `f n` .
 theorem mk_liftRingHom (n : ℕ) (x : R) :
     Ideal.Quotient.mk (I ^ n) (liftRingHom I f hf x) = f n x := by
   simp only [liftRingHom, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply]
-  rw [← evalₐ_of_apply I n]
+  rw [← evalₐ_of I n]
   simp
 
 @[simp]

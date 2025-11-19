@@ -140,7 +140,7 @@ theorem factor_eval_eq_evalₐ {n : ℕ} (x : AdicCompletion I R) (h : I ^ n •
 The composition map `R →+* AdicCompletion I R →+* R ⧸ I ^ n` equals to the natural quotient map.
 -/
 @[simp]
-theorem evalₐ_of_apply (n : ℕ) (x : R) :
+theorem evalₐ_of (n : ℕ) (x : R) :
     evalₐ I n (of I R x) = Ideal.Quotient.mk _ x := by
   simp [evalₐ]
 
@@ -324,16 +324,16 @@ def liftRingHom (f : (n : ℕ) → R →+* S ⧸ I ^ n)
     fun hkl ↦ by simp [transitionMap, Submodule.factorPow, ← hf hkl]⟩
   map_add' x y := by
     simp only [map_add]
-    rfl
+    ext; simp
   map_zero' := by
     simp only [map_zero]
-    rfl
+    ext; simp
   map_mul' x y := by
     simp only [mapQ_eq_factor, factor_eq_factor, map_mul]
-    rfl
+    ext; simp
   map_one' := by
     simp only [map_one]
-    rfl
+    ext; simp
 
 variable (f : (n : ℕ) → R →+* S ⧸ I ^ n)
   (hf : ∀ {m n : ℕ} (hle : m ≤ n), (Ideal.Quotient.factorPow I hle).comp (f n) = f m)
