@@ -3,12 +3,14 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Filtered.Final
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.MorphismProperty.HasCardinalLT
-import Mathlib.CategoryTheory.ObjectProperty.HasCardinalLT
-import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
-import Mathlib.CategoryTheory.Products.Unitor
+module
+
+public import Mathlib.CategoryTheory.Filtered.Final
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.MorphismProperty.HasCardinalLT
+public import Mathlib.CategoryTheory.ObjectProperty.HasCardinalLT
+public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
+public import Mathlib.CategoryTheory.Products.Unitor
 
 /-!
 # `κ`-filtered categories and `κ`-directed poset
@@ -32,6 +34,8 @@ have to be multiplicative.)
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
 -/
+
+@[expose] public section
 
 universe u v w
 
