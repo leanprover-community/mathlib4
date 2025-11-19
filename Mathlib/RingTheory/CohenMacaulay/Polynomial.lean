@@ -3,13 +3,19 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Yongle Hu
 -/
-import Mathlib.Algebra.Polynomial.FieldDivision
-import Mathlib.RingTheory.CohenMacaulay.Basic
-import Mathlib.RingTheory.KrullDimension.Polynomial
+module
+
+public import Mathlib.Algebra.Polynomial.FieldDivision
+public import Mathlib.RingTheory.CohenMacaulay.Basic
+public import Mathlib.RingTheory.KrullDimension.Polynomial
+
 /-!
+
 # Polynomial Ring Over CM ring is CM
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -85,7 +91,7 @@ lemma Polynomial.localization_at_comap_maximal_isCM_isCM [IsNoetherianRing R]
     have reg' : IsWeaklyRegular R[X] ((rs.map (algebraMap R R[X])) ++ [f]) := by
       refine ⟨fun i hi ↦ ?_⟩
       simp only [List.length_append, List.length_cons, List.length_nil, zero_add,
-        Nat.lt_succ] at hi
+        Nat.lt_succ_iff] at hi
       rw [List.take_append_of_le_length hi]
       rcases lt_or_eq_of_le hi with lt|eq
       · simpa only [← List.getElem_append_left' lt [f]] using reg''.1 i lt
@@ -135,7 +141,7 @@ theorem Polynomial.isCM_of_isCM [IsNoetherianRing R] [IsCohenMacaulayRing R] :
   have _ : IsLocalization pc S := {
     map_units x := by
       rcases x.2 with ⟨y, mem, eq⟩
-      apply isUnit_of_mul_eq_one _ (C (Localization.mk 1 ⟨y, mem⟩))
+      apply IsUnit.of_mul_eq_one (C (Localization.mk 1 ⟨y, mem⟩))
       simp [← eq, S, ← map_mul, ← Localization.mk_one_eq_algebraMap, Localization.mk_mul]
     surj z := by
       induction z using Polynomial.induction_on'
