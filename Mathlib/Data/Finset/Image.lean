@@ -529,7 +529,7 @@ theorem filterMap_val : (filterMap f s' f_inj).1 = s'.1.filterMap f := rfl
 @[simp]
 theorem filterMap_empty : (∅ : Finset α).filterMap f f_inj = ∅ := rfl
 
-@[simp, grind =]
+@[simp, grind =, push]
 theorem mem_filterMap {b : β} : b ∈ s.filterMap f f_inj ↔ ∃ a ∈ s, f a = some b :=
   s.val.mem_filterMap f
 

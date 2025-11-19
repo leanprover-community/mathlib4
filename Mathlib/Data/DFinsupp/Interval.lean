@@ -80,6 +80,7 @@ def singleton (f : Π₀ i, α i) : Π₀ i, Finset (α i) where
   toFun i := {f i}
   support' := f.support'.map fun s => ⟨s.1, fun i => (s.prop i).imp id (congr_arg _)⟩
 
+@[push]
 theorem mem_singleton_apply_iff : a ∈ f.singleton i ↔ a = f i :=
   mem_singleton
 

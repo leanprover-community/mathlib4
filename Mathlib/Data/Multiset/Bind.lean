@@ -56,7 +56,7 @@ theorem join_add (S T) : @join α (S + T) = join S + join T :=
 theorem singleton_join (a) : join ({a} : Multiset (Multiset α)) = a :=
   sum_singleton _
 
-@[simp]
+@[simp, push]
 theorem mem_join {a S} : a ∈ @join α S ↔ ∃ s ∈ S, a ∈ s :=
   Multiset.induction_on S (by simp) <| by
     simp +contextual [or_and_right, exists_or]
@@ -130,7 +130,7 @@ theorem bind_cons (f : α → β) (g : α → Multiset β) :
 theorem bind_singleton (f : α → β) : (s.bind fun x => ({f x} : Multiset β)) = map f s :=
   Multiset.induction_on s (by rw [zero_bind, map_zero]) (by simp [singleton_add])
 
-@[simp]
+@[simp, push]
 theorem mem_bind {b s} {f : α → Multiset β} : b ∈ bind s f ↔ ∃ a ∈ s, b ∈ f a := by
   simp [bind]
 
@@ -286,7 +286,7 @@ theorem card_product : card (s ×ˢ t) = card s * card t := by simp [SProd.sprod
 
 variable {s t}
 
-@[simp] lemma mem_product : ∀ {p : α × β}, p ∈ @product α β s t ↔ p.1 ∈ s ∧ p.2 ∈ t
+@[simp, push] lemma mem_product : ∀ {p : α × β}, p ∈ @product α β s t ↔ p.1 ∈ s ∧ p.2 ∈ t
   | (a, b) => by simp [product, and_left_comm]
 
 protected theorem Nodup.product : Nodup s → Nodup t → Nodup (s ×ˢ t) :=
@@ -342,7 +342,8 @@ theorem card_sigma : card (s.sigma t) = sum (map (fun a => card (t a)) s) := by
 
 variable {s t}
 
-@[simp] lemma mem_sigma : ∀ {p : Σ a, σ a}, p ∈ @Multiset.sigma α σ s t ↔ p.1 ∈ s ∧ p.2 ∈ t p.1
+@[simp, push] lemma mem_sigma :
+    ∀ {p : Σ a, σ a}, p ∈ @Multiset.sigma α σ s t ↔ p.1 ∈ s ∧ p.2 ∈ t p.1
   | ⟨a, b⟩ => by simp [Multiset.sigma, and_left_comm]
 
 protected theorem Nodup.sigma {σ : α → Type*} {t : ∀ a, Multiset (σ a)} :

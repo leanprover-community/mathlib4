@@ -50,7 +50,7 @@ def pi (s : Finset α) (t : ∀ a, Finset (β a)) : Finset (∀ a ∈ s, β a) :
 theorem pi_val (s : Finset α) (t : ∀ a, Finset (β a)) : (s.pi t).1 = s.1.pi fun a => (t a).1 :=
   rfl
 
-@[simp]
+@[simp, push]
 theorem mem_pi {s : Finset α} {t : ∀ a, Finset (β a)} {f : ∀ a ∈ s, β a} :
     f ∈ s.pi t ↔ ∀ (a) (h : a ∈ s), f a h ∈ t a :=
   Multiset.mem_pi _ _ _

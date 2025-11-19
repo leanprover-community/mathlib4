@@ -41,6 +41,7 @@ theorem card_disjSum : Multiset.card (s.disjSum t) = Multiset.card s + Multiset.
 
 variable {s t} {s₁ s₂ : Multiset α} {t₁ t₂ : Multiset β} {a : α} {b : β} {x : α ⊕ β}
 
+@[push]
 theorem mem_disjSum : x ∈ s.disjSum t ↔ (∃ a, a ∈ s ∧ inl a = x) ∨ ∃ b, b ∈ t ∧ inr b = x := by
   simp_rw [disjSum, mem_add, mem_map]
 

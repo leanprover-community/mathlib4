@@ -33,7 +33,7 @@ theorem coe_dedup (l : List α) : @dedup α _ l = l.dedup :=
 theorem dedup_zero : @dedup α _ 0 = 0 :=
   rfl
 
-@[simp]
+@[simp, push]
 theorem mem_dedup {a : α} {s : Multiset α} : a ∈ dedup s ↔ a ∈ s :=
   Quot.induction_on s fun _ => List.mem_dedup
 
