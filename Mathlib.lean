@@ -3453,6 +3453,7 @@ import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.FunLike.Embedding
 import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.FunLike.Fintype
+import Mathlib.Data.FunLike.GradedFunLike
 import Mathlib.Data.Holor
 import Mathlib.Data.Ineq
 import Mathlib.Data.Int.AbsoluteValue
@@ -5756,6 +5757,7 @@ import Mathlib.RingTheory.FreeCommRing
 import Mathlib.RingTheory.FreeRing
 import Mathlib.RingTheory.Frobenius
 import Mathlib.RingTheory.Generators
+import Mathlib.RingTheory.GradedAlgebra.AlgHom
 import Mathlib.RingTheory.GradedAlgebra.Basic
 import Mathlib.RingTheory.GradedAlgebra.FiniteType
 import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
@@ -5764,6 +5766,7 @@ import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Subsemiring
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
 import Mathlib.RingTheory.GradedAlgebra.Noetherian
 import Mathlib.RingTheory.GradedAlgebra.Radical
+import Mathlib.RingTheory.GradedAlgebra.RingHom
 import Mathlib.RingTheory.Grassmannian
 import Mathlib.RingTheory.HahnSeries.Addition
 import Mathlib.RingTheory.HahnSeries.Basic
