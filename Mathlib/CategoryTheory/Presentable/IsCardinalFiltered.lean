@@ -306,6 +306,10 @@ lemma IsCardinalFiltered.multicoequalizer
     (fun i ↦ IsFiltered.coeqHom (f₁ i) (f₂ i)) hι
   exact ⟨l, b, fun i ↦ by rw [← h i, IsFiltered.coeq_condition_assoc]⟩
 
+/-- If `F : J₁ ⥤ J₂` is final and `J₁` is `κ`-filtered, then
+`J₂` is also `κ`-filtered. See also `IsFiltered.of_final`
+(in `CategoryTheory.Limits.Final`) for the particular case of
+filtered categories (`κ = ℵ₀`). -/
 lemma IsCardinalFiltered.of_final
     {J₁ : Type u} [Category.{v} J₁] {J₂ : Type u'} [Category.{v'} J₂]
     (F : J₁ ⥤ J₂) [F.Final] (κ : Cardinal.{w}) [Fact κ.IsRegular]
