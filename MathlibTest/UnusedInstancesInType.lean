@@ -2,8 +2,6 @@ import Mathlib.Tactic.Linter.UnusedInstancesInType
 
 section decidable
 
-set_option linter.unusedDecidableInType true
-
 section unused
 
 /--
