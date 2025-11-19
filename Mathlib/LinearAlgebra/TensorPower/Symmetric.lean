@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 
-import Mathlib.LinearAlgebra.PiTensorProduct
+import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 
 /-!
 # Symmetric tensor power of a semimodule over a commutative semiring
