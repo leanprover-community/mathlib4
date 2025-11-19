@@ -17,7 +17,7 @@ for `CompleteLattice.MulticoequalizerDiagram`), we
 show that the simplicial sset corresponding to `A` is the multicoequalizer of
 the `U i` along the `V i j`.
 
-Similarly, bicartesian squares in the lattice `Subcomplex X` gives pushout
+Similarly, bicartesian squares in the lattice `Subcomplex X` give pushout
 squares in the category of simplicial sets.
 
 -/
