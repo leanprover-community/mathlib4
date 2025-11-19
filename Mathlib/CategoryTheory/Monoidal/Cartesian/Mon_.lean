@@ -3,9 +3,11 @@ Copyright (c) 2025 Markus Himmel, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Andrew Yang
 -/
-import Mathlib.Algebra.Category.MonCat.Limits
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
-import Mathlib.CategoryTheory.Monoidal.Mon_
+module
+
+public import Mathlib.Algebra.Category.MonCat.Limits
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+public import Mathlib.CategoryTheory.Monoidal.Mon_
 
 /-!
 # Yoneda embedding of `Mon C`
@@ -14,6 +16,8 @@ We show that monoid objects in Cartesian monoidal categories are exactly those w
 is a presheaf of monoids, by constructing the yoneda embedding `Mon C ⥤ Cᵒᵖ ⥤ MonCat.{v}` and
 showing that it is fully faithful and its (essential) image is the representable functors.
 -/
+
+@[expose] public section
 
 open CategoryTheory MonoidalCategory Limits Opposite CartesianMonoidalCategory MonObj
 

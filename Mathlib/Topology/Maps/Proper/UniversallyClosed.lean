@@ -3,13 +3,17 @@ Copyright (c) 2023 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Etienne Marion
 -/
-import Mathlib.Topology.Compactification.StoneCech
-import Mathlib.Topology.Filter
-import Mathlib.Topology.Maps.Proper.Basic
+module
+
+public import Mathlib.Topology.Compactification.StoneCech
+public import Mathlib.Topology.Filter
+public import Mathlib.Topology.Maps.Proper.Basic
 
 /-!
 # A map is proper iff it is continuous and universally closed
 -/
+
+@[expose] public section
 
 open Filter
 

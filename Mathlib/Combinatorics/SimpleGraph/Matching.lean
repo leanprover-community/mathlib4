@@ -3,13 +3,15 @@ Copyright (c) 2020 Alena Gusakov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alena Gusakov, Arthur Paulino, Kyle Miller, Pim Otte
 -/
-import Mathlib.Combinatorics.SimpleGraph.Clique
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
-import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-import Mathlib.Combinatorics.SimpleGraph.Operations
-import Mathlib.Data.Set.Card.Arithmetic
-import Mathlib.Data.Set.Functor
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Clique
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Subgraph
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
+public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+public import Mathlib.Combinatorics.SimpleGraph.Operations
+public import Mathlib.Data.Set.Card.Arithmetic
+public import Mathlib.Data.Set.Functor
 
 /-!
 # Matchings
@@ -46,6 +48,8 @@ one edge, and the edges of the subgraph represent the paired vertices.
 
 * Tutte's Theorem
 -/
+
+@[expose] public section
 
 assert_not_exists Field TwoSidedIdeal
 

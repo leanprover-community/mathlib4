@@ -3,10 +3,12 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Function.LpSeminorm.Prod
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.MeasureTheory.Measure.Prod
+module
+
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Prod
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Integration with respect to the product measure
@@ -32,6 +34,8 @@ In this file we prove Fubini's theorem.
 
 product measure, Fubini's theorem, Fubini-Tonelli theorem
 -/
+
+@[expose] public section
 
 
 noncomputable section

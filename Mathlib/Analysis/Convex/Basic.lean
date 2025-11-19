@@ -3,10 +3,12 @@ Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Algebra.Ring.Action.Pointwise.Set
-import Mathlib.Analysis.Convex.Star
-import Mathlib.Tactic.Field
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
+module
+
+public import Mathlib.Algebra.Ring.Action.Pointwise.Set
+public import Mathlib.Analysis.Convex.Star
+public import Mathlib.Tactic.Field
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
 
 /-!
 # Convex sets
@@ -20,6 +22,8 @@ We provide various equivalent versions, and prove that some specific sets are co
 
 Generalize all this file to affine spaces.
 -/
+
+@[expose] public section
 
 
 variable {𝕜 E F β : Type*}

@@ -3,8 +3,10 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Topology.Sets.Closeds
-import Mathlib.Topology.QuasiSeparated
+module
+
+public import Mathlib.Topology.Sets.Closeds
+public import Mathlib.Topology.QuasiSeparated
 
 /-!
 # Compact sets
@@ -20,6 +22,8 @@ For a topological space `α`,
 * `TopologicalSpace.CompactOpens α`: The type of compact open sets. This is a central object in the
   study of spectral spaces.
 -/
+
+@[expose] public section
 
 
 open Set

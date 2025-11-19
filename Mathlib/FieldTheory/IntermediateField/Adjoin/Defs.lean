@@ -3,7 +3,9 @@ Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
-import Mathlib.FieldTheory.IntermediateField.Basic
+module
+
+public import Mathlib.FieldTheory.IntermediateField.Basic
 
 /-!
 # Adjoining Elements to Fields
@@ -16,6 +18,8 @@ For example, `Algebra.adjoin K {x}` might not include `x⁻¹`.
 
 - `F⟮α⟯`: adjoin a single element `α` to `F` (in scope `IntermediateField`).
 -/
+
+@[expose] public section
 
 open Module Polynomial
 
@@ -503,7 +507,7 @@ end
 
 open Lean in
 /-- Supporting function for the `F⟮x₁,x₂,...,xₙ⟯` adjunction notation. -/
-private partial def mkInsertTerm {m : Type → Type} [Monad m] [MonadQuotation m]
+private meta def mkInsertTerm {m : Type → Type} [Monad m] [MonadQuotation m]
     (xs : TSyntaxArray `term) : m Term := run 0 where
   run (i : Nat) : m Term := do
     if h : i + 1 = xs.size then
@@ -519,7 +523,7 @@ scoped macro:max K:term "⟮" xs:term,* "⟯" : term => do ``(adjoin $K $(← mk
 
 open Lean PrettyPrinter.Delaborator SubExpr in
 @[app_delab IntermediateField.adjoin]
-partial def delabAdjoinNotation : Delab := whenPPOption getPPNotation do
+meta def delabAdjoinNotation : Delab := whenPPOption getPPNotation do
   let e ← getExpr
   guard <| e.isAppOfArity ``adjoin 6
   let F ← withNaryArg 0 delab

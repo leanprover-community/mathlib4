@@ -3,11 +3,13 @@ Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.NumberTheory.Cyclotomic.Discriminant
-import Mathlib.RingTheory.Ideal.Norm.AbsNorm
-import Mathlib.RingTheory.Norm.Transitivity
-import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
-import Mathlib.RingTheory.Prime
+module
+
+public import Mathlib.NumberTheory.Cyclotomic.Discriminant
+public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+public import Mathlib.RingTheory.Norm.Transitivity
+public import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
+public import Mathlib.RingTheory.Prime
 
 /-!
 # Ring of integers of `p ^ n`-th cyclotomic fields
@@ -23,6 +25,8 @@ integers of a `p ^ n`-th cyclotomic extension of `ℚ`.
 * `IsCyclotomicExtension.Rat.absdiscr_prime_pow` and related results: the absolute discriminant
   of cyclotomic fields.
 -/
+
+@[expose] public section
 
 universe u
 

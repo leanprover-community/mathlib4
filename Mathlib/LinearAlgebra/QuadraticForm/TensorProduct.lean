@@ -3,8 +3,10 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
-import Mathlib.LinearAlgebra.QuadraticForm.Basic
+module
+
+public import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
+public import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
 /-!
 # The quadratic form on a tensor product
@@ -15,6 +17,8 @@ import Mathlib.LinearAlgebra.QuadraticForm.Basic
   `Q₁` on `M₁` and `Q₂` on `M₂`. This construction is not available in characteristic two.
 
 -/
+
+@[expose] public section
 
 universe uR uA uM₁ uM₂ uN₁ uN₂
 

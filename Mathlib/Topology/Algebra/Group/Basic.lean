@@ -3,14 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.Algebra.Group.Submonoid.Units
-import Mathlib.Algebra.Group.Submonoid.MulOpposite
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Order.Filter.Bases.Finite
-import Mathlib.Topology.Algebra.Group.Defs
-import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Topology.Homeomorph.Lemmas
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Pointwise
+public import Mathlib.Algebra.Group.Submonoid.Units
+public import Mathlib.Algebra.Group.Submonoid.MulOpposite
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Order.Filter.Bases.Finite
+public import Mathlib.Topology.Algebra.Group.Defs
+public import Mathlib.Topology.Algebra.Monoid
+public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Topological groups
@@ -33,6 +35,8 @@ groups.
 
 topological space, group, topological group
 -/
+
+@[expose] public section
 
 open Set Filter TopologicalSpace Function Topology MulOpposite Pointwise
 

@@ -3,13 +3,15 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Tower
-import Mathlib.Algebra.MvPolynomial.Equiv
-import Mathlib.Algebra.MvPolynomial.Monad
-import Mathlib.Algebra.MvPolynomial.Supported
-import Mathlib.RingTheory.AlgebraicIndependent.Defs
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.MvPolynomial.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Tower
+public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.Algebra.MvPolynomial.Monad
+public import Mathlib.Algebra.MvPolynomial.Supported
+public import Mathlib.RingTheory.AlgebraicIndependent.Defs
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.MvPolynomial.Basic
 
 /-!
 # Algebraic Independence
@@ -24,6 +26,8 @@ This file contains basic results on algebraic independence of a family of elemen
 transcendence basis, transcendence degree, transcendence
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

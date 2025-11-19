@@ -3,9 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Data.List.Lattice
-import Mathlib.Data.Bool.Basic
-import Mathlib.Order.Lattice
+module
+
+public import Mathlib.Data.List.Lattice
+public import Mathlib.Data.Bool.Basic
+public import Mathlib.Order.Lattice
 
 /-!
 # Intervals in ℕ
@@ -20,6 +22,8 @@ and strictly less than `n`.
   `Set.Ico a b` is `[Finite]`, and 'locally finite total orders', for which there is a list model.
 - Once the above is done, get rid of `Int.range` (and maybe `List.range'`?).
 -/
+
+@[expose] public section
 
 
 open Nat

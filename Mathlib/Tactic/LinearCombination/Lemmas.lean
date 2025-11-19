@@ -3,15 +3,19 @@ Copyright (c) 2022 Abby J. Goldberg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Data.Ineq
+module
+
+public meta import Mathlib.Algebra.Field.Defs
+public meta import Mathlib.Algebra.Order.Module.Defs
+public meta import Mathlib.Data.Ineq
 
 /-!
 # Lemmas for the linear_combination tactic
 
 These should not be used directly in user code.
 -/
+
+public meta section
 
 open Lean
 

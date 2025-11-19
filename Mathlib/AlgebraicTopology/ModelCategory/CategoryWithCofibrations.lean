@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Basic
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # Categories with classes of fibrations, cofibrations, weak equivalences
@@ -13,6 +15,8 @@ We introduce typeclasses `CategoryWithFibrations`, `CategoryWithCofibrations` an
 classes of morphisms named "fibrations", "cofibrations" or "weak equivalences".
 
 -/
+
+@[expose] public section
 
 universe v u
 

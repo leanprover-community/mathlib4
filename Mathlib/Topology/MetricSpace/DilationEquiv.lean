@@ -3,7 +3,9 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.MetricSpace.Dilation
+module
+
+public import Mathlib.Topology.MetricSpace.Dilation
 
 /-!
 # Dilation equivalence
@@ -18,6 +20,8 @@ We also develop basic API about these equivalences.
 - Add missing lemmas (compare to other `*Equiv` structures).
 - [after-port] Add `DilationEquivInstance` for `IsometryEquiv`.
 -/
+
+@[expose] public section
 
 open scoped NNReal ENNReal
 open Function Set Filter Bornology

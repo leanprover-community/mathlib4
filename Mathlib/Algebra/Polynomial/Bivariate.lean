@@ -3,7 +3,9 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.RingTheory.AdjoinRoot
+module
+
+public import Mathlib.RingTheory.AdjoinRoot
 
 /-!
 # Bivariate polynomials
@@ -15,6 +17,8 @@ It also defines `Polynomial.evalEval` for the evaluation of a bivariate polynomi
 on the affine plane, which is a ring homomorphism (`Polynomial.evalEvalRingHom`), as well as
 the abbreviation `CC` to view a constant in the base ring `R` as a bivariate polynomial.
 -/
+
+@[expose] public section
 
 /-- The notation `Y` for `X` in the `Polynomial` scope. -/
 scoped[Polynomial.Bivariate] notation3:max "Y" => Polynomial.X (R := Polynomial _)

@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
 -/
-import Mathlib.Order.Filter.Map
-import Mathlib.Order.ZornAtoms
+module
+
+public import Mathlib.Order.Filter.Map
+public import Mathlib.Order.ZornAtoms
 
 /-!
 # Ultrafilters
@@ -17,6 +19,8 @@ In this file we define
 * `pure x : Ultrafilter α`: `pure x` as an `Ultrafilter`;
 * `Ultrafilter.map`, `Ultrafilter.bind`, `Ultrafilter.comap` : operations on ultrafilters;
 -/
+
+@[expose] public section
 
 assert_not_exists Set.Finite
 

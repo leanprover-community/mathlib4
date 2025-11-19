@@ -3,7 +3,9 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Andrew Zipperer, Haitao Zhang, Minchao Wu, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Image
+module
+
+public import Mathlib.Data.Set.Image
 
 /-!
 # Restrict the domain of a function to a set
@@ -13,6 +15,8 @@ import Mathlib.Data.Set.Image
 * `Set.restrict f s` : restrict the domain of `f` to the set `s`;
 * `Set.codRestrict f s h` : given `h : ∀ x, f x ∈ s`, restrict the codomain of `f` to the set `s`;
 -/
+
+@[expose] public section
 
 variable {α β γ δ : Type*} {ι : Sort*} {π : α → Type*}
 

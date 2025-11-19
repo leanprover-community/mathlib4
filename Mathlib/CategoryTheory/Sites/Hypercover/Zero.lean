@@ -3,7 +3,9 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Sites.Precoverage
+module
+
+public import Mathlib.CategoryTheory.Sites.Precoverage
 
 /-!
 # 0-hypercovers
@@ -15,6 +17,8 @@ of morphisms `X i ⟶ S` indexed by a type `I₀` such that the induced presieve
 We define this with respect to a coverage and not to a Grothendieck topology, because this
 yields more control over the components of the cover.
 -/
+
+@[expose] public section
 
 universe w'' w' w v u
 

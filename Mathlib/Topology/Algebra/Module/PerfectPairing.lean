@@ -3,8 +3,10 @@ Copyright (c) 2025 Yaël Dillies, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Andrew Yang
 -/
-import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.Topology.Algebra.Module.LinearMap
+module
+
+public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.Topology.Algebra.Module.LinearMap
 
 /-!
 # Continuous perfect pairings
@@ -24,6 +26,8 @@ not in general a homeomorphism.
 
 Adapt `PerfectPairing` to this Prop-valued typeclass paradigm
 -/
+
+@[expose] public section
 
 open Function
 

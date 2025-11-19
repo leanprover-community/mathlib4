@@ -3,11 +3,13 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Embedding
-import Mathlib.Algebra.Ring.CharZero
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Algebra.Order.Group.Unbundled.Int
-import Mathlib.Order.Interval.Finset.Basic
+module
+
+public import Mathlib.Algebra.Group.Embedding
+public import Mathlib.Algebra.Ring.CharZero
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Algebra.Order.Group.Unbundled.Int
+public import Mathlib.Order.Interval.Finset.Basic
 
 /-!
 # Finite intervals of integers
@@ -15,6 +17,8 @@ import Mathlib.Order.Interval.Finset.Basic
 This file proves that `ℤ` is a `LocallyFiniteOrder` and calculates the cardinality of its
 intervals as finsets and fintypes.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

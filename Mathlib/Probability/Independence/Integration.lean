@@ -3,9 +3,11 @@ Copyright (c) 2021 Martin Zinkevich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Zinkevich, Vincent Beffara, Etienne Marion
 -/
-import Mathlib.MeasureTheory.Integral.Pi
-import Mathlib.Probability.Independence.Integrable
-import Mathlib.Probability.Notation
+module
+
+public import Mathlib.MeasureTheory.Integral.Pi
+public import Mathlib.Probability.Independence.Integrable
+public import Mathlib.Probability.Notation
 
 /-!
 # Integration in Probability Theory
@@ -26,6 +28,8 @@ example [M1 : MeasurableSpace Ω] {M2 : MeasurableSpace Ω} {μ : Measure Ω} : 
 ```
 
 -/
+
+@[expose] public section
 
 
 open Set MeasureTheory

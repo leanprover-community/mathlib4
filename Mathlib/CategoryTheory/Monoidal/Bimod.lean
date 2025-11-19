@@ -3,13 +3,17 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Oleksandr Manzyuk
 -/
-import Mathlib.CategoryTheory.Bicategory.Basic
-import Mathlib.CategoryTheory.Monoidal.Mon_
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Basic
+public import Mathlib.CategoryTheory.Monoidal.Mon_
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
 
 /-!
 # The category of bimodule objects over a pair of monoid objects.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ u₁ u₂

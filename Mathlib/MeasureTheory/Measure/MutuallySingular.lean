@@ -3,7 +3,9 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Measure.Restrict
+module
+
+public import Mathlib.MeasureTheory.Measure.Restrict
 
 /-! # Mutually singular measures
 
@@ -20,6 +22,8 @@ facts about it.
 
 measure, mutually singular
 -/
+
+@[expose] public section
 
 
 open Set

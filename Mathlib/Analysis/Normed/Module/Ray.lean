@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.LinearAlgebra.Ray
-import Mathlib.Analysis.Normed.Module.RCLike.Real
-import Mathlib.Algebra.Ring.Regular
+module
+
+public import Mathlib.LinearAlgebra.Ray
+public import Mathlib.Analysis.Normed.Module.RCLike.Real
+public import Mathlib.Algebra.Ring.Regular
 
 /-!
 # Rays in a real normed vector space
@@ -14,6 +16,8 @@ In this file we prove some lemmas about the `SameRay` predicate in case of a rea
 this case, for two vectors `x y` in the same ray, the norm of their sum is equal to the sum of their
 norms and `‖y‖ • x = ‖x‖ • y`.
 -/
+
+@[expose] public section
 
 
 open Real

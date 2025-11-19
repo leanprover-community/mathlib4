@@ -3,8 +3,10 @@ Copyright (c) 2025 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Analysis.Normed.Field.WithAbs
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Analysis.Normed.Field.WithAbs
 
 /-!
 # Equivalence of real-valued absolute values
@@ -12,6 +14,8 @@ import Mathlib.Analysis.Normed.Field.WithAbs
 Two absolute values `v₁, v₂ : AbsoluteValue R ℝ` are *equivalent* if there exists a
 positive real number `c` such that `v₁ x ^ c = v₂ x` for all `x : R`.
 -/
+
+@[expose] public section
 
 namespace AbsoluteValue
 

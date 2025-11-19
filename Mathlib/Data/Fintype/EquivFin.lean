@@ -3,8 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fintype.Card
-import Mathlib.Data.List.NodupEquivFin
+module
+
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Data.List.NodupEquivFin
 
 /-!
 # Equivalences between `Fintype`, `Fin` and `Finite`
@@ -32,6 +34,8 @@ We provide `Infinite` instances for
 * type constructors: `Multiset α`, `List α`
 
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 

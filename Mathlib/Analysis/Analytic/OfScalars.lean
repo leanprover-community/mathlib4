@@ -3,7 +3,9 @@ Copyright (c) 2024 Edward Watine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edward Watine
 -/
-import Mathlib.Analysis.Analytic.ConvergenceRadius
+module
+
+public import Mathlib.Analysis.Analytic.ConvergenceRadius
 
 /-!
 # Scalar series
@@ -19,6 +21,8 @@ This file contains API for analytic functions `∑ cᵢ • xⁱ` defined in ter
 * `FormalMultilinearSeries.ofScalars_radius_eq_inv_of_tendsto_ENNReal`:
   the ratio test for an analytic function using `ENNReal` division for all values `ℝ≥0∞`.
 -/
+
+@[expose] public section
 
 namespace FormalMultilinearSeries
 

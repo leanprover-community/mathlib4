@@ -3,9 +3,10 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
+module
 
-import Mathlib.RingTheory.AdicCompletion.Basic
-import Mathlib.RingTheory.LocalRing.Defs
+public import Mathlib.RingTheory.AdicCompletion.Basic
+public import Mathlib.RingTheory.LocalRing.Defs
 
 /-!
 # Basic Properties of Complete Local Ring
@@ -14,6 +15,8 @@ In this file we prove that a ring that is adic complete with respect to a maxima
 ia a local ring (complete local ring).
 
 -/
+
+@[expose] public section
 
 variable {R : Type*} [CommRing R] (m : Ideal R) [hmax : m.IsMaximal]
 

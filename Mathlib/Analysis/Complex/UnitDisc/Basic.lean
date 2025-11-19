@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.Circle
-import Mathlib.Analysis.Normed.Module.Ball.Action
+module
+
+public import Mathlib.Analysis.Complex.Circle
+public import Mathlib.Analysis.Normed.Module.Ball.Action
 
 /-!
 # Poincaré disc
@@ -12,6 +14,8 @@ import Mathlib.Analysis.Normed.Module.Ball.Action
 In this file we define `Complex.UnitDisc` to be the unit disc in the complex plane. We also
 introduce some basic operations on this disc.
 -/
+
+@[expose] public section
 
 
 open Set Function Metric

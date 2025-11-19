@@ -3,13 +3,15 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.Ring.CharZero
-import Mathlib.Data.Fintype.Units
-import Mathlib.GroupTheory.IndexNormal
-import Mathlib.GroupTheory.Perm.Fin
-import Mathlib.GroupTheory.Subgroup.Simple
-import Mathlib.Logic.Equiv.Fin.Rotate
-import Mathlib.Tactic.IntervalCases
+module
+
+public import Mathlib.Algebra.Ring.CharZero
+public import Mathlib.Data.Fintype.Units
+public import Mathlib.GroupTheory.IndexNormal
+public import Mathlib.GroupTheory.Perm.Fin
+public import Mathlib.GroupTheory.Subgroup.Simple
+public import Mathlib.Logic.Equiv.Fin.Rotate
+public import Mathlib.Tactic.IntervalCases
 
 /-!
 # Alternating Groups
@@ -55,6 +57,8 @@ alternating group permutation simple characteristic index
 * Show that `alternatingGroup α` is simple if and only if `Fintype.card α ≠ 4`.
 
 -/
+
+@[expose] public section
 
 -- An example on how to determine the order of an element of a finite group.
 example : orderOf (-1 : ℤˣ) = 2 :=

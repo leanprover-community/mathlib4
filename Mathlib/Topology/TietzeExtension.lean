@@ -3,9 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Interval.Set.IsoIoo
-import Mathlib.Topology.ContinuousMap.Bounded.Normed
-import Mathlib.Topology.UrysohnsBounded
+module
+
+public import Mathlib.Order.Interval.Set.IsoIoo
+public import Mathlib.Topology.ContinuousMap.Bounded.Normed
+public import Mathlib.Topology.UrysohnsBounded
 
 /-!
 # Tietze extension theorem
@@ -36,6 +38,8 @@ topological space, then specialize them to the case `X = s : Set Y`, `e = (↑)`
 
 Tietze extension theorem, Urysohn's lemma, normal topological space
 -/
+
+@[expose] public section
 
 open Topology
 

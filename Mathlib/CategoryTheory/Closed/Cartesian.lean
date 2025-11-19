@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta, Edward Ayers, Thomas Read. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Edward Ayers, Thomas Read
 -/
-import Mathlib.CategoryTheory.Closed.Monoidal
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+module
+
+public import Mathlib.CategoryTheory.Closed.Monoidal
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 
 /-!
 # Cartesian closed categories
@@ -28,6 +30,8 @@ that a category that `hasFiniteProducts` is Cartesian closed, they should first 
 Some of the results here are true more generally for closed objects and
 for closed monoidal categories, and these could be generalised.
 -/
+
+@[expose] public section
 
 
 universe v v₂ u u₂
@@ -99,7 +103,7 @@ notation:20 A " ⟹ " B:19 => (exp A).obj B
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Delaborator for `Functor.obj` -/
 @[app_delab Functor.obj]
-def delabFunctorObjExp : Delab := whenPPOption getPPNotation <| withOverApp 6 do
+meta def delabFunctorObjExp : Delab := whenPPOption getPPNotation <| withOverApp 6 do
   let e ← getExpr
   guard <| e.isAppOfArity' ``Functor.obj 6
   let A ← withNaryArg 4 do

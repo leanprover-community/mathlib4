@@ -3,10 +3,12 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Yaël Dillies
 -/
-import Mathlib.Combinatorics.Colex
-import Mathlib.Combinatorics.SetFamily.Compression.UV
-import Mathlib.Combinatorics.SetFamily.Intersecting
-import Mathlib.Data.Finset.Fin
+module
+
+public import Mathlib.Combinatorics.Colex
+public import Mathlib.Combinatorics.SetFamily.Compression.UV
+public import Mathlib.Combinatorics.SetFamily.Intersecting
+public import Mathlib.Data.Finset.Fin
 
 /-!
 # Kruskal-Katona theorem
@@ -41,6 +43,8 @@ The key results proved here are:
 
 kruskal-katona, kruskal, katona, shadow, initial segments, intersecting
 -/
+
+@[expose] public section
 
 open Nat
 open scoped FinsetFamily

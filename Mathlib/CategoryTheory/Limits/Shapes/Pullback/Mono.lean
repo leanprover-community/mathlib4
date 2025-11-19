@@ -3,8 +3,9 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Andrew Yang
 -/
+module
 
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
 
 /-!
 # Pullbacks and monomorphisms
@@ -24,6 +25,8 @@ the dual statements between pushouts and epimorphisms.
 
 The dual notions for pushouts are also available.
 -/
+
+@[expose] public section
 
 noncomputable section
 

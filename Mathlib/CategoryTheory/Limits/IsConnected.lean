@@ -3,10 +3,12 @@ Copyright (c) 2024 Paul Reichert. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Reichert
 -/
-import Mathlib.CategoryTheory.Limits.Types.Colimits
-import Mathlib.CategoryTheory.IsConnected
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.HomCongr
+module
+
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.CategoryTheory.IsConnected
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.HomCongr
 
 /-!
 # Colimits of connected index categories
@@ -36,6 +38,8 @@ its codomain is connected.
 
 unit-valued, singleton, colimit
 -/
+
+@[expose] public section
 
 universe w v u
 

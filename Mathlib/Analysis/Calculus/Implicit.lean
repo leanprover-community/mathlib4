@@ -3,10 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
-import Mathlib.Analysis.Calculus.FDeriv.Add
-import Mathlib.Analysis.Calculus.FDeriv.Prod
-import Mathlib.Analysis.Normed.Module.Complemented
+module
+
+public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
+public import Mathlib.Analysis.Calculus.FDeriv.Add
+public import Mathlib.Analysis.Calculus.FDeriv.Prod
+public import Mathlib.Analysis.Normed.Module.Complemented
 
 /-!
 # Implicit function theorem
@@ -43,6 +45,8 @@ and `f'.range = ⊤`. This version is named `HasStrictFDerivAt.implicitFunction`
 
 implicit function, inverse function
 -/
+
+@[expose] public section
 
 
 noncomputable section

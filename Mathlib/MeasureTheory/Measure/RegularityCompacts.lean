@@ -3,10 +3,12 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.MeasureTheory.Measure.Regular
-import Mathlib.Topology.MetricSpace.Polish
-import Mathlib.Topology.UniformSpace.Cauchy
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.MeasureTheory.Measure.Regular
+public import Mathlib.Topology.MetricSpace.Polish
+public import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
 # Inner regularity of finite measures
@@ -21,6 +23,8 @@ Finite measures on Polish spaces are an important special case, which makes the 
 `MeasureTheory.PolishSpace.innerRegular_isCompact_isClosed_measurableSet` an important result in
 probability.
 -/
+
+@[expose] public section
 
 open Set MeasureTheory
 

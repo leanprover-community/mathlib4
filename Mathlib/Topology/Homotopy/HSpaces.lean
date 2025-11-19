@@ -3,9 +3,11 @@ Copyright (c) 2022 Filippo A. E. Nuccio Mortarino Majno di Capriglio. All rights
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio, Junyan Xu
 -/
-import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.Homotopy.Basic
-import Mathlib.Topology.Path
+module
+
+public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.Homotopy.Basic
+public import Mathlib.Topology.Path
 
 /-!
 # H-spaces
@@ -46,6 +48,8 @@ Some notable properties of `H-spaces` are
 * [J.-P. Serre, *Homologie singulière des espaces fibrés. Applications*,
   Ann. of Math (2) 1951, 54, 425–505][serre1951]
 -/
+
+@[expose] public section
 
 universe u v
 

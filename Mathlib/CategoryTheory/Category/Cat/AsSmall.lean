@@ -3,8 +3,10 @@ Copyright (c) 2024 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Category.Cat
-import Mathlib.CategoryTheory.Category.ULift
+module
+
+public import Mathlib.CategoryTheory.Category.Cat
+public import Mathlib.CategoryTheory.Category.ULift
 
 /-!
 # Functorially embedding `Cat` into the category of small categories
@@ -16,6 +18,8 @@ any larger category of small categories.
 
 Show that `asSmallFunctor` is faithful.
 -/
+
+@[expose] public section
 
 universe w v u
 

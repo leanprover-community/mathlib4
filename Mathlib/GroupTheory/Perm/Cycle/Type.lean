@@ -3,14 +3,16 @@ Copyright (c) 2020 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.GCDMonoid.Multiset
-import Mathlib.Algebra.GCDMonoid.Nat
-import Mathlib.Algebra.Group.TypeTags.Finite
-import Mathlib.Combinatorics.Enumerative.Partition.Basic
-import Mathlib.Data.List.Rotate
-import Mathlib.GroupTheory.Perm.Closure
-import Mathlib.GroupTheory.Perm.Cycle.Factors
-import Mathlib.Tactic.NormNum.GCD
+module
+
+public import Mathlib.Algebra.GCDMonoid.Multiset
+public import Mathlib.Algebra.GCDMonoid.Nat
+public import Mathlib.Algebra.Group.TypeTags.Finite
+public import Mathlib.Combinatorics.Enumerative.Partition.Basic
+public import Mathlib.Data.List.Rotate
+public import Mathlib.GroupTheory.Perm.Closure
+public import Mathlib.GroupTheory.Perm.Cycle.Factors
+public import Mathlib.Tactic.NormNum.GCD
 
 /-!
 # Cycle Types
@@ -31,6 +33,8 @@ In this file we define the cycle type of a permutation.
 - `exists_prime_orderOf_dvd_card`: For every prime `p` dividing the order of a finite group `G`
   there exists an element of order `p` in `G`. This is known as Cauchy's theorem.
 -/
+
+@[expose] public section
 
 open scoped Finset
 

@@ -3,10 +3,11 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+module
 
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
-import Mathlib.Topology.ContinuousMap.ContinuousSqrt
-import Mathlib.Topology.ContinuousMap.StoneWeierstrass
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
+public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
+public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 /-! # The positive (and negative) parts of a selfadjoint element in a C⋆-algebra
 
@@ -14,6 +15,8 @@ This file defines the positive and negative parts of a selfadjoint element in a 
 the continuous functional calculus and develops the basic API, including the uniqueness of the
 positive and negative parts.
 -/
+
+@[expose] public section
 
 open scoped NNReal
 

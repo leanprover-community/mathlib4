@@ -3,8 +3,10 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.MeasureTheory.Group.MeasurableEquiv
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.MeasureTheory.Group.MeasurableEquiv
 
 /-!
 # Regular measures
@@ -188,6 +190,8 @@ proofs or statements do not apply directly.
 
 [Bogachev, Measure Theory, volume 2, Theorem 7.11.1][bogachev2007]
 -/
+
+@[expose] public section
 
 open Set Filter ENNReal NNReal TopologicalSpace
 open scoped symmDiff Topology

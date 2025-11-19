@@ -3,8 +3,10 @@ Copyright (c) 2024 Lucas Whitfield. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lucas Whitfield, Johan Commelin
 -/
-import Mathlib.Algebra.Lie.Weights.Basic
-import Mathlib.RingTheory.Finiteness.Nilpotent
+module
+
+public import Mathlib.Algebra.Lie.Weights.Basic
+public import Mathlib.RingTheory.Finiteness.Nilpotent
 
 /-!
 # Lie's theorem for Solvable Lie algebras.
@@ -13,6 +15,8 @@ Lie's theorem asserts that Lie modules of solvable Lie algebras over fields of c
 have a common eigenvector for the action of all elements of the Lie algebra.
 This result is named `LieModule.exists_forall_lie_eq_smul_of_isSolvable`.
 -/
+
+@[expose] public section
 
 namespace LieModule
 

@@ -3,12 +3,14 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Lean.Meta.Tactic.TryThis
-import Batteries.Linter.UnreachableTactic
-import Batteries.Control.Nondet.Basic
-import Mathlib.Init
-import Mathlib.Lean.Elab.InfoTree
-import Mathlib.Tactic.Basic
+module
+
+public meta import Lean.Meta.Tactic.TryThis
+public meta import Batteries.Linter.UnreachableTactic
+public meta import Batteries.Control.Nondet.Basic
+public import Mathlib.Init
+public meta import Mathlib.Lean.Elab.InfoTree
+public meta import Mathlib.Tactic.Basic
 
 /-!
 # The `hint` tactic.
@@ -20,6 +22,8 @@ on the current goal, and reports which ones succeed.
 ## Future work
 It would be nice to run the tactics in parallel.
 -/
+
+public meta section
 
 open Lean Elab Tactic
 

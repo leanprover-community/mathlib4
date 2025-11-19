@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Christian Merten
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
 # Pseudofunctors to Cat
@@ -12,6 +14,8 @@ In this file, we state naturality properties of `mapId'` and `mapComp'`
 for pseudofunctors to `Cat`.
 
 -/
+
+@[expose] public section
 
 universe w v v' u u'
 

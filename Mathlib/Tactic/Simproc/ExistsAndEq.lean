@@ -3,8 +3,10 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Init
-import Qq
+module
+
+public import Mathlib.Init
+public meta import Qq
 
 /-!
 # Simproc for `∃ a', ... ∧ a' = a ∧ ...`
@@ -20,6 +22,8 @@ variables bound by existential quantifiers, those quantifiers are moved outside.
 
 For example, `∃ a, p a ∧ ∃ b, a = f b ∧ q b` will be rewritten as `∃ b, p (f b) ∧ q b`.
 -/
+
+public meta section
 
 open Lean Meta Qq
 

@@ -3,7 +3,9 @@ Copyright (c) 2023 Sebastian Zimmer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
-import Mathlib.Tactic.GCongr.Core
+module
+
+public meta import Mathlib.Tactic.GCongr.Core
 
 /-!
 
@@ -23,6 +25,8 @@ using `gcongr` lemmas. This is tricky due to the many different `gcongr` for eac
 With the current implementation, we can instead use `nth_grw`.
 
 -/
+
+public meta section
 
 open Lean Meta
 

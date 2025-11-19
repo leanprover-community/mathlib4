@@ -3,8 +3,10 @@ Copyright (c) 2019 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
-import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.Analysis.Normed.Operator.NormedSpace
+module
+
+public import Mathlib.Algebra.Algebra.Bilinear
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
 
 /-!
 # Results about operator norms in normed algebras
@@ -12,6 +14,8 @@ import Mathlib.Analysis.Normed.Operator.NormedSpace
 This file (split off from `OperatorNorm.lean`) contains results about the operator norm
 of multiplication and scalar-multiplication operations in normed algebras and normed modules.
 -/
+
+@[expose] public section
 
 suppress_compilation
 

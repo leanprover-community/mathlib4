@@ -3,12 +3,16 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Patrick Massot, Kyle Miller
 -/
-import Mathlib.Init
-import Lean.Meta.Tactic.Rewrite
+module
+
+public import Mathlib.Init
+public import Lean.Meta.Tactic.Rewrite
 
 /-!
 # Additional declarations for `Lean.Meta.Tactic.Rewrite`
 -/
+
+@[expose] public section
 
 namespace Lean.Expr
 

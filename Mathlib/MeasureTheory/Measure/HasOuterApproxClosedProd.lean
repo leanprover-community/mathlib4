@@ -3,8 +3,10 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
+module
+
+public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 
 /-!
 # Characterization of a finite measure by the integrals of products of bounded functions
@@ -50,6 +52,8 @@ We specialize these results to the cases where one of the families contains only
 
 bounded continuous function, product measure
 -/
+
+@[expose] public section
 
 open BoundedContinuousFunction MeasureTheory Topology Filter Set ENNReal NNReal MeasurableSpace
 open scoped Topology ENNReal NNReal

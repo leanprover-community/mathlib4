@@ -3,8 +3,10 @@ Copyright (c) 2024 Robert Maxton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Maxton
 -/
-import Mathlib.Algebra.DirectSum.Basic
-import Mathlib.LinearAlgebra.TensorAlgebra.ToTensorPower
+module
+
+public import Mathlib.Algebra.DirectSum.Basic
+public import Mathlib.LinearAlgebra.TensorAlgebra.ToTensorPower
 
 /-!
 # The free product of $R$-algebras
@@ -41,6 +43,8 @@ general $R$-algebras.
 - Induction principle for `FreeProduct`
 
 -/
+
+@[expose] public section
 universe u v w w'
 
 namespace DirectSum

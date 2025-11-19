@@ -3,13 +3,15 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.FunLike.Equiv
-import Mathlib.Data.Quot
-import Mathlib.Data.Subtype
-import Mathlib.Logic.Unique
-import Mathlib.Tactic.Conv
-import Mathlib.Tactic.Simps.Basic
-import Mathlib.Tactic.Substs
+module
+
+public import Mathlib.Data.FunLike.Equiv
+public import Mathlib.Data.Quot
+public import Mathlib.Data.Subtype
+public import Mathlib.Logic.Unique
+public import Mathlib.Tactic.Conv
+public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.Substs
 
 /-!
 # Equivalence between types
@@ -52,6 +54,8 @@ Many more such isomorphisms and operations are defined in `Mathlib/Logic/Equiv/B
 
 equivalence, congruence, bijective map
 -/
+
+@[expose] public section
 
 open Function
 

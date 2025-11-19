@@ -3,11 +3,15 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Mathlib.Init
+module
+
+public import Mathlib.Init
 
 /-!
 ## `funProp` missing function from standard library
 -/
+
+public meta section
 
 namespace Mathlib
 open Lean Meta

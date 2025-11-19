@@ -3,10 +3,11 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
+module
 
-import Mathlib.RingTheory.MvPowerSeries.Basic
-import Mathlib.Data.Finsupp.Interval
-import Mathlib.Algebra.MvPolynomial.Eval
+public import Mathlib.RingTheory.MvPowerSeries.Basic
+public import Mathlib.Data.Finsupp.Interval
+public import Mathlib.Algebra.MvPolynomial.Eval
 
 /-!
 
@@ -48,6 +49,8 @@ import Mathlib.Algebra.MvPolynomial.Eval
 * Unify both versions using a general purpose API
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

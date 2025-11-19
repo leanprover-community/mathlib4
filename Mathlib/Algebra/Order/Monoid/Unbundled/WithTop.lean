@@ -3,14 +3,18 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.CharZero.Defs
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Order.WithBot
+module
+
+public import Mathlib.Algebra.CharZero.Defs
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+public import Mathlib.Algebra.Order.ZeroLEOne
+public import Mathlib.Order.WithBot
 
 /-! # Adjoining top/bottom elements to ordered monoids.
 -/
+
+@[expose] public section
 
 universe u v
 

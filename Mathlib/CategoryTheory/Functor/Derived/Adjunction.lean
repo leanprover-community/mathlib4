@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.Derived.LeftDerived
-import Mathlib.CategoryTheory.Functor.Derived.RightDerived
+module
+
+public import Mathlib.CategoryTheory.Functor.Derived.LeftDerived
+public import Mathlib.CategoryTheory.Functor.Derived.RightDerived
 
 /-!
 # Derived adjunction
@@ -28,6 +30,8 @@ that `F' ⋙ G'` is the right derived functor of `F ⋙ L₁ ⋙ G'`).
 foncteurs dérivés, revisité*][Maltsiniotis2007]
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

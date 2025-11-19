@@ -3,10 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.HasLocalization
-import Mathlib.CategoryTheory.Center.Localization
-import Mathlib.CategoryTheory.Center.Linear
-import Mathlib.CategoryTheory.Linear.LinearFunctor
+module
+
+public import Mathlib.CategoryTheory.Localization.HasLocalization
+public import Mathlib.CategoryTheory.Center.Localization
+public import Mathlib.CategoryTheory.Center.Linear
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
 # Localization of linear categories
@@ -16,6 +18,8 @@ and `C` is `R`-linear, we show that `D` can also be equipped with a `R`-linear
 structure such that `L` is a `R`-linear functor.
 
 -/
+
+@[expose] public section
 
 universe w v₁ v₂ u₁ u₂
 

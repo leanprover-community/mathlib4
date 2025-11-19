@@ -3,9 +3,11 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
-import Mathlib.Analysis.Calculus.ContDiff.RestrictScalars
-import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Harmonic.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.RestrictScalars
+public import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 
 /-!
 # Construction of Harmonic Functions
@@ -15,6 +17,8 @@ This file constructs examples of harmonic functions.
 If `f : ℂ → F` is complex-differentiable, then `f` is harmonic. If `F = ℂ`, then so is its real
 part, imaginary part, and complex conjugate. If `f` has no zero, then `log ‖f‖` is harmonic.
 -/
+
+@[expose] public section
 
 open Complex ComplexConjugate InnerProductSpace Topology
 

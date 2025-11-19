@@ -3,11 +3,12 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou, Calle Sönne
 -/
+module
 
-import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
+public import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
 
 /-!
 # Pullback and pushout squares, and bi-Cartesian squares
@@ -38,6 +39,11 @@ but do restate the pasting lemmas.
 We define bi-Cartesian squares, and
 show that the pullback and pushout squares for a biproduct are bi-Cartesian.
 -/
+
+-- TODO: was pushed over the limit by module system adjustments
+set_option linter.style.longFile 1700
+
+@[expose] public section
 
 
 noncomputable section

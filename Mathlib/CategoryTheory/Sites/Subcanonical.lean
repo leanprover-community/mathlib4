@@ -3,9 +3,11 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-import Mathlib.CategoryTheory.Sites.Canonical
-import Mathlib.CategoryTheory.Sites.Whiskering
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+public import Mathlib.CategoryTheory.Sites.Canonical
+public import Mathlib.CategoryTheory.Sites.Whiskering
 /-!
 
 # Subcanonical Grothendieck topologies
@@ -13,6 +15,8 @@ import Mathlib.CategoryTheory.Sites.Whiskering
 This file provides some API for the Yoneda embedding into the category of sheaves for a
 subcanonical Grothendieck topology.
 -/
+
+@[expose] public section
 
 universe v' v u
 

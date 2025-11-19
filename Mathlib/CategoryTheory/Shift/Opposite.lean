@@ -3,8 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.Adjunction
-import Mathlib.CategoryTheory.Preadditive.Opposite
+module
+
+public import Mathlib.CategoryTheory.Shift.Adjunction
+public import Mathlib.CategoryTheory.Preadditive.Opposite
 
 /-!
 # The (naive) shift on the opposite category
@@ -45,6 +47,8 @@ We also prove that, if an adjunction `F ⊣ G` is compatible with `CommShift` st
 `CommShift` structures.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

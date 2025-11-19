@@ -3,14 +3,16 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.FreeAbelianGroup.Finsupp
-import Mathlib.Algebra.MonoidAlgebra.Defs
-import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.LinearAlgebra.Basis.Defs
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.LinearAlgebra.Finsupp.Span
-import Mathlib.LinearAlgebra.Projection
+module
+
+public import Mathlib.Algebra.FreeAbelianGroup.Finsupp
+public import Mathlib.Algebra.MonoidAlgebra.Defs
+public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.LinearAlgebra.Basis.Defs
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.LinearAlgebra.Finsupp.Span
+public import Mathlib.LinearAlgebra.Projection
 
 /-!
 # Linear structures on function with finite support `ι →₀ M`
@@ -19,6 +21,8 @@ This file contains results on the `R`-module structure on functions of finite su
 `ι` to an `R`-module `M`, in particular in the case that `R` is a field.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

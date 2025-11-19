@@ -3,14 +3,16 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Real.Basic
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Positivity.Finset
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Combinatorics.Additive.PluenneckeRuzsa
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Tactic.FinCases
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.NormNum
+public import Mathlib.Tactic.Positivity.Finset
+public import Mathlib.Tactic.Ring
 
 /-!
 # Small tripling implies small powers
@@ -22,6 +24,8 @@ This file shows that a set with small tripling has small powers, even in non-abe
 In abelian groups, the Plünnecke-Ruzsa inequality is the stronger statement that small doubling
 implies small powers. See `Mathlib/Combinatorics/Additive/PluenneckeRuzsa.lean`.
 -/
+
+@[expose] public section
 
 open Fin MulOpposite
 open List hiding tail

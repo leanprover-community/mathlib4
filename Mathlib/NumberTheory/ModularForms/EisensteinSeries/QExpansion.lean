@@ -3,12 +3,14 @@ Copyright (c) 2025 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.Complex.SummableUniformlyOn
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Cotangent
-import Mathlib.NumberTheory.LSeries.Dirichlet
-import Mathlib.NumberTheory.LSeries.HurwitzZetaValues
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
-import Mathlib.NumberTheory.TsumDivsorsAntidiagonal
+module
+
+public import Mathlib.Analysis.Complex.SummableUniformlyOn
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Cotangent
+public import Mathlib.NumberTheory.LSeries.Dirichlet
+public import Mathlib.NumberTheory.LSeries.HurwitzZetaValues
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
+public import Mathlib.NumberTheory.TsumDivsorsAntidiagonal
 
 /-!
 # Eisenstein series q-expansions
@@ -29,6 +31,8 @@ gives the q-expansion with a Riemann zeta factor, which we simplify using the fo
 `ζ(k)` in terms of Bernoulli numbers to get the final result.
 
 -/
+
+@[expose] public section
 
 open Set Metric TopologicalSpace Function Filter Complex ArithmeticFunction
   ModularForm EisensteinSeries

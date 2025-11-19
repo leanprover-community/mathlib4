@@ -3,8 +3,10 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Simon Hudon
 -/
-import Mathlib.Control.Functor.Multivariate
-import Mathlib.Data.PFunctor.Univariate.Basic
+module
+
+public import Mathlib.Control.Functor.Multivariate
+public import Mathlib.Data.PFunctor.Univariate.Basic
 
 /-!
 # Multivariate polynomial functors.
@@ -14,6 +16,8 @@ They map a type vector `α` to the type `Σ a : A, B a ⟹ α`, with `A : Type` 
 `B : A → TypeVec n`. They interact well with Lean's inductive definitions because
 they guarantee that occurrences of `α` are positive.
 -/
+
+@[expose] public section
 
 
 universe u v

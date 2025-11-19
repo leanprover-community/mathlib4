@@ -3,11 +3,13 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Jujian Zhang
 -/
-import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import Mathlib.Algebra.Homology.ShortComplex.Abelian
-import Mathlib.CategoryTheory.Preadditive.LeftExact
-import Mathlib.CategoryTheory.Abelian.Exact
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.Algebra.Homology.ShortComplex.Abelian
+public import Mathlib.CategoryTheory.Preadditive.LeftExact
+public import Mathlib.CategoryTheory.Abelian.Exact
 
 /-!
 # Exact functors
@@ -50,6 +52,8 @@ If we further assume that `C` and `D` are abelian categories, then we have:
   4. `F` preserves both finite limits and finite colimits.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

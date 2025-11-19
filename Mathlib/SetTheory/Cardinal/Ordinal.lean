@@ -3,14 +3,18 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Cardinal.Arithmetic
-import Mathlib.SetTheory.Ordinal.Principal
+module
+
+public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.SetTheory.Ordinal.Principal
 
 /-!
 # Ordinal arithmetic with cardinals
 
 This file collects results about the cardinality of different ordinal operations.
 -/
+
+@[expose] public section
 
 universe u v
 open Cardinal Ordinal Set

@@ -3,10 +3,12 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.Option.Defs
-import Mathlib.Data.Sigma.Basic
-import Mathlib.Logic.Equiv.Prod
-import Mathlib.Tactic.Coe
+module
+
+public import Mathlib.Data.Option.Defs
+public import Mathlib.Data.Sigma.Basic
+public import Mathlib.Logic.Equiv.Prod
+public import Mathlib.Tactic.Coe
 
 /-!
 # Equivalence between sum types
@@ -29,6 +31,8 @@ E.g., `Mathlib/Algebra/Equiv/TransferInstance.lean` does it for many algebraic t
 
 equivalence, congruence, bijective map
 -/
+
+@[expose] public section
 
 universe u v w z
 

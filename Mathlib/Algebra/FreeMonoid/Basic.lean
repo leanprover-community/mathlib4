@@ -3,10 +3,12 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Algebra.BigOperators.Group.List.Basic
-import Mathlib.Algebra.Group.Equiv.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Algebra.BigOperators.Group.List.Basic
+public import Mathlib.Algebra.Group.Equiv.Defs
 
 /-!
 # Free monoid over a given alphabet
@@ -19,6 +21,8 @@ import Mathlib.Algebra.Group.Equiv.Defs
 * `FreeMonoid.lift`: natural equivalence between `α → M` and `FreeMonoid α →* M`
 * `FreeMonoid.map`: embedding of `α → β` into `FreeMonoid α →* FreeMonoid β` given by `List.map`.
 -/
+
+@[expose] public section
 
 
 variable {α : Type*} {β : Type*} {γ : Type*} {M : Type*} [Monoid M] {N : Type*} [Monoid N]

@@ -3,13 +3,15 @@ Copyright (c) 2019 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Lu-Ming Zhang
 -/
-import Mathlib.Data.Matrix.Invertible
-import Mathlib.LinearAlgebra.FiniteDimensional.Basic
-import Mathlib.LinearAlgebra.Matrix.Adjugate
-import Mathlib.LinearAlgebra.Matrix.Kronecker
-import Mathlib.LinearAlgebra.Matrix.SemiringInverse
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.LinearAlgebra.Matrix.Trace
+module
+
+public import Mathlib.Data.Matrix.Invertible
+public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
+public import Mathlib.LinearAlgebra.Matrix.Adjugate
+public import Mathlib.LinearAlgebra.Matrix.Kronecker
+public import Mathlib.LinearAlgebra.Matrix.SemiringInverse
+public import Mathlib.LinearAlgebra.Matrix.ToLin
+public import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
 # Nonsingular inverses
@@ -51,6 +53,8 @@ The rest of the results in the file are then about `A⁻¹`
 
 matrix inverse, cramer, cramer's rule, adjugate
 -/
+
+@[expose] public section
 
 
 namespace Matrix

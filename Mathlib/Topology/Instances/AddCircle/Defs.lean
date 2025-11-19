@@ -3,14 +3,16 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Order.ToIntervalMod
-import Mathlib.Algebra.Ring.AddAut
-import Mathlib.Data.Nat.Totient
-import Mathlib.GroupTheory.Divisible
-import Mathlib.Topology.Algebra.IsUniformGroup.Basic
-import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Topology.IsLocalHomeomorph
-import Mathlib.Topology.Order.T5
+module
+
+public import Mathlib.Algebra.Order.ToIntervalMod
+public import Mathlib.Algebra.Ring.AddAut
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.GroupTheory.Divisible
+public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+public import Mathlib.Topology.Algebra.Order.Field
+public import Mathlib.Topology.IsLocalHomeomorph
+public import Mathlib.Topology.Order.T5
 
 /-!
 # The additive circle
@@ -47,6 +49,8 @@ the rational circle `AddCircle (1 : ℚ)`, and so we set things up more generall
 * Exponential equivalence to `Circle`
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

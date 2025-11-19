@@ -3,9 +3,11 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Filtered.Basic
-import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.Limits.Types.Yoneda
+module
+
+public import Mathlib.CategoryTheory.Filtered.Basic
+public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.Limits.Types.Yoneda
 
 /-!
 # Filtered categories and limits
@@ -15,6 +17,8 @@ finite category there is some `X : C` such that `lim Hom(F·, X)` is nonempty.
 
 Furthermore, we define the type classes `HasCofilteredLimitsOfSize` and `HasFilteredColimitsOfSize`.
 -/
+
+@[expose] public section
 
 
 universe w' w w₂' w₂ v u

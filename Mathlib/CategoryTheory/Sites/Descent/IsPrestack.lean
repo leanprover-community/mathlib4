@@ -3,11 +3,13 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Christian Merten
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Cat
-import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
-import Mathlib.CategoryTheory.Bicategory.Strict.Pseudofunctor
-import Mathlib.CategoryTheory.Sites.Sheaf
-import Mathlib.CategoryTheory.Sites.Over
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Cat
+public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
+public import Mathlib.CategoryTheory.Bicategory.Strict.Pseudofunctor
+public import Mathlib.CategoryTheory.Sites.Sheaf
+public import Mathlib.CategoryTheory.Sites.Over
 
 /-!
 # Prestacks: descent of morphisms
@@ -44,6 +46,8 @@ by saying that the functors mentioned above are essentially surjective.
 * [Gérard Laumon and Laurent Moret-Bailly, *Champs algébriques*][laumon-morel-bailly-2000]
 
 -/
+
+@[expose] public section
 
 universe v' v u' u
 

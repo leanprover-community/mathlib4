@@ -3,11 +3,13 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Uni Marx
 -/
-import Mathlib.CategoryTheory.EssentialImage
-import Mathlib.CategoryTheory.Iso
-import Mathlib.CategoryTheory.Opposites
-import Mathlib.CategoryTheory.Types.Basic
-import Mathlib.Data.Rel
+module
+
+public import Mathlib.CategoryTheory.EssentialImage
+public import Mathlib.CategoryTheory.Iso
+public import Mathlib.CategoryTheory.Opposites
+public import Mathlib.CategoryTheory.Types.Basic
+public import Mathlib.Data.Rel
 
 /-!
 # Basics on the category of relations
@@ -20,6 +22,8 @@ essentially surjective functor `graphFunctor` that also characterizes all isomor
 By flipping the arguments to a relation, we construct an equivalence `opEquivalence` between
 `RelCat` and its opposite.
 -/
+
+@[expose] public section
 
 open SetRel
 

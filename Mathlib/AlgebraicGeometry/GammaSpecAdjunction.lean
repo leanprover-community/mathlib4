@@ -3,10 +3,12 @@ Copyright (c) 2021 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.AlgebraicGeometry.Restrict
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Adjunction.Opposites
-import Mathlib.CategoryTheory.Adjunction.Reflective
+module
+
+public import Mathlib.AlgebraicGeometry.Restrict
+public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Adjunction.Opposites
+public import Mathlib.CategoryTheory.Adjunction.Reflective
 
 /-!
 # Adjunction between `Γ` and `Spec`
@@ -30,6 +32,8 @@ case the unit and the counit would switch to each other.
   `CommRingᵒᵖ` to `Scheme`.
 
 -/
+
+@[expose] public section
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 

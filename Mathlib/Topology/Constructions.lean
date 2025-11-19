@@ -3,13 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Algebra.Group.TypeTags.Basic
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Finset.Piecewise
-import Mathlib.Order.Filter.Cofinite
-import Mathlib.Order.Filter.Curry
-import Mathlib.Topology.Constructions.SumProd
-import Mathlib.Topology.NhdsSet
+module
+
+public import Mathlib.Algebra.Group.TypeTags.Basic
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.Finset.Piecewise
+public import Mathlib.Order.Filter.Cofinite
+public import Mathlib.Order.Filter.Curry
+public import Mathlib.Topology.Constructions.SumProd
+public import Mathlib.Topology.NhdsSet
 
 /-!
 # Constructions of new topological spaces from old ones
@@ -34,6 +36,8 @@ neighborhood filters and so on.
 product, subspace, quotient space
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

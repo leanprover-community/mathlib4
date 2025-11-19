@@ -4,11 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Patrick Massot, Simon Hudon, Alice Laroche, Frédéric Dupuis,
 Jireh Loreaux
 -/
-import Lean.Elab.Tactic.Location
-import Mathlib.Tactic.Push.Attr
-import Mathlib.Logic.Basic
-import Mathlib.Tactic.Conv
-import Mathlib.Util.AtLocation
+module
+
+public meta import Lean.Elab.Tactic.Location
+public meta import Mathlib.Tactic.Push.Attr
+public meta import Mathlib.Logic.Basic
+public meta import Mathlib.Tactic.Conv
+public meta import Mathlib.Util.AtLocation
 
 /-!
 # The `push`, `push_neg` and `pull` tactics
@@ -18,6 +20,8 @@ as local hypotheses and also works as a `conv` tactic. `push_neg` is a macro for
 
 The `pull` tactic does the reverse: it pulls the given constant towards the head of the expression.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Push
 

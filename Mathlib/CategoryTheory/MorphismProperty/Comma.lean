@@ -3,9 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Comma.Over.Basic
-import Mathlib.CategoryTheory.MorphismProperty.Composition
-import Mathlib.CategoryTheory.MorphismProperty.Factorization
+module
+
+public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
+public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
 /-!
 # Subcategories of comma categories defined by morphism properties
@@ -32,6 +34,8 @@ over a base `X`. Here `Q = ⊤`.
   is setup in the general case to allow for a later generalization if needed.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.MorphismProperty
 

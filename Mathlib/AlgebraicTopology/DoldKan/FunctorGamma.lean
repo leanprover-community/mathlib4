@@ -3,8 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject.Split
-import Mathlib.AlgebraicTopology.DoldKan.PInfty
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialObject.Split
+public import Mathlib.AlgebraicTopology.DoldKan.PInfty
 
 /-!
 
@@ -27,6 +29,8 @@ which shall be an equivalence for any additive category `C`.
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

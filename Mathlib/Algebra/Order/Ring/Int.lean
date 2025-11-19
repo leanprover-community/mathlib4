@@ -3,13 +3,15 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Emirhan Duysak, Adem Alp Gök, Junyan Xu
 -/
-import Mathlib.Algebra.Order.Group.Int
-import Mathlib.Algebra.Order.Group.Unbundled.Int
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Ring.Int.Parity
-import Mathlib.Data.Int.GCD
-import Mathlib.Data.Nat.Cast.Order.Basic
-import Mathlib.Order.BooleanAlgebra.Set
+module
+
+public import Mathlib.Algebra.Order.Group.Int
+public import Mathlib.Algebra.Order.Group.Unbundled.Int
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Ring.Int.Parity
+public import Mathlib.Data.Int.GCD
+public import Mathlib.Data.Nat.Cast.Order.Basic
+public import Mathlib.Order.BooleanAlgebra.Set
 
 /-!
 # The integers form a linear ordered ring
@@ -27,6 +29,8 @@ This file contains:
 * `Int.inductionOn'`: Simple growing induction for numbers greater than `b`, plus simple decreasing
   induction on numbers less than `b`.
 -/
+
+@[expose] public section
 
 -- We should need only a minimal development of sets in order to get here.
 assert_not_exists Set.Subsingleton

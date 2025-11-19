@@ -3,11 +3,13 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen, Antoine Labelle
 -/
-import Mathlib.LinearAlgebra.Contraction
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-import Mathlib.RingTheory.Finiteness.Prod
-import Mathlib.RingTheory.TensorProduct.Finite
-import Mathlib.RingTheory.TensorProduct.Free
+module
+
+public import Mathlib.LinearAlgebra.Contraction
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+public import Mathlib.RingTheory.Finiteness.Prod
+public import Mathlib.RingTheory.TensorProduct.Finite
+public import Mathlib.RingTheory.TensorProduct.Free
 
 /-!
 # Trace of a linear map
@@ -20,6 +22,8 @@ See also `LinearAlgebra/Matrix/Trace.lean` for the trace of a matrix.
 
 linear_map, trace, diagonal
 -/
+
+@[expose] public section
 
 noncomputable section
 

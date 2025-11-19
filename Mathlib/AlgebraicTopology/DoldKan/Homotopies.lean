@@ -3,8 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Homotopy
-import Mathlib.AlgebraicTopology.DoldKan.Notations
+module
+
+public import Mathlib.Algebra.Homology.Homotopy
+public import Mathlib.AlgebraicTopology.DoldKan.Notations
 
 /-!
 
@@ -54,6 +56,8 @@ compatible the application of additive functors (see `map_Hσ`).
 * [Paul G. Goerss, John F. Jardine, *Simplicial Homotopy Theory*][goerss-jardine-2009]
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Preadditive

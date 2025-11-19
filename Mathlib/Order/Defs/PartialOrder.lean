@@ -3,13 +3,15 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Batteries.Tactic.Alias
-import Batteries.Tactic.Trans
-import Mathlib.Tactic.ExtendDoc
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.SplitIfs
-import Mathlib.Tactic.TypeStar
-import Mathlib.Tactic.ToDual
+module
+
+public import Batteries.Tactic.Alias
+public import Batteries.Tactic.Trans
+public import Mathlib.Tactic.ExtendDoc
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.SplitIfs
+public import Mathlib.Tactic.TypeStar
+public import Mathlib.Tactic.ToDual
 
 /-!
 # Orders
@@ -28,6 +30,8 @@ in a preorder this is equivalent to `a ⋖ b ∨ (a ≤ b ∧ b ≤ a)`
 * `a ⋖ b` means that `b` covers `a`.
 * `a ⩿ b` means that `b` weakly covers `a`.
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 

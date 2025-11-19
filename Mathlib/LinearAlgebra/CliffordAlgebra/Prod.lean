@@ -3,9 +3,11 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
-import Mathlib.LinearAlgebra.TensorProduct.Graded.Internal
-import Mathlib.LinearAlgebra.QuadraticForm.Prod
+module
+
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
+public import Mathlib.LinearAlgebra.TensorProduct.Graded.Internal
+public import Mathlib.LinearAlgebra.QuadraticForm.Prod
 
 /-!
 # Clifford algebras of a direct sum of two vector spaces
@@ -23,6 +25,8 @@ Introduce morphisms and equivalences of graded algebras, and upgrade `CliffordAl
 to a graded algebra equivalence.
 
 -/
+
+@[expose] public section
 
 suppress_compilation
 

@@ -3,8 +3,10 @@ Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson, Maja Kądziołka
 -/
-import Mathlib.Computability.DFA
-import Mathlib.Data.Fintype.Powerset
+module
+
+public import Mathlib.Computability.DFA
+public import Mathlib.Data.Fintype.Powerset
 
 /-!
 # Nondeterministic Finite Automata
@@ -37,6 +39,8 @@ a `Fintype` instance must be supplied for true NFAs.
 * `NFA.pumping_lemma`: every sufficiently long string accepted by the NFA has a substring that can
   be repeated arbitrarily many times (and have the overall string still be accepted)
 -/
+
+@[expose] public section
 
 open Set
 

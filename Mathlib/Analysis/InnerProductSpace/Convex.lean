@@ -3,9 +3,10 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.Convex.Uniform
-import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.Convex.Uniform
+public import Mathlib.Analysis.InnerProductSpace.Basic
 
 /-!
 # Convexity properties of inner product spaces
@@ -19,6 +20,8 @@ import Mathlib.Analysis.InnerProductSpace.Basic
 inner product space, Hilbert space, norm
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

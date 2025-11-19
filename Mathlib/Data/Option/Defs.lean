@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.TypeStar
-import Batteries.Tactic.Alias
+module
+
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.TypeStar
+public import Batteries.Tactic.Alias
 
 /-!
 # Extra definitions on `Option`
@@ -14,6 +16,8 @@ This file defines more operations involving `Option α`. Lemmas about them are l
 files under `Mathlib/Data/Option.lean`.
 Other basic operations on `Option` are defined in the core library.
 -/
+
+@[expose] public section
 
 namespace Option
 

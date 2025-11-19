@@ -3,9 +3,11 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Tactic.Positivity.Core
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Ordered algebras
@@ -16,6 +18,8 @@ This file proves properties of algebras where both rings are ordered compatibly.
 
 `positivity` extension for `algebraMap`
 -/
+
+@[expose] public section
 
 variable {α β : Type*} [CommSemiring α] [PartialOrder α]
 
@@ -67,7 +71,7 @@ open Lean Meta Qq Function
 
 /-- Extension for `algebraMap`. -/
 @[positivity algebraMap _ _ _]
-def evalAlgebraMap : PositivityExt where eval {u β} _zβ _pβ e := do
+meta def evalAlgebraMap : PositivityExt where eval {u β} _zβ _pβ e := do
   let ~q(@algebraMap $α _ $instα $instβ $instαβ $a) := e | throwError "not `algebraMap`"
   let pα ← synthInstanceQ q(PartialOrder $α)
   match ← core q(inferInstance) pα a with

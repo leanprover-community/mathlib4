@@ -3,9 +3,11 @@ Copyright (c) 2025 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Matrix.Hadamard
-import Mathlib.LinearAlgebra.Matrix.Kronecker
-import Mathlib.LinearAlgebra.Matrix.Trace
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Hadamard
+public import Mathlib.LinearAlgebra.Matrix.Kronecker
+public import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-! # Vectorization of matrices
 
@@ -28,6 +30,8 @@ If you want this function, you can write `Matrix.vec Aᵀ` instead.
 
 * [Wikipedia](https://en.wikipedia.org/wiki/Vectorization_(mathematics))
 -/
+
+@[expose] public section
 namespace Matrix
 
 variable {ι l m n p R S}

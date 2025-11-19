@@ -3,8 +3,10 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
-import Mathlib.RingTheory.GradedAlgebra.Basic
+module
+
+public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
+public import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
 # Results about the grading structure of the exterior algebra
@@ -14,6 +16,8 @@ Many of these results are copied with minimal modification from the tensor algeb
 The main result is `ExteriorAlgebra.gradedAlgebra`, which says that the exterior algebra is a
 ℕ-graded algebra.
 -/
+
+@[expose] public section
 
 namespace ExteriorAlgebra
 

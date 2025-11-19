@@ -3,8 +3,10 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.Set.Finite.Lemmas
-import Mathlib.ModelTheory.Substructures
+module
+
+public import Mathlib.Data.Set.Finite.Lemmas
+public import Mathlib.ModelTheory.Substructures
 
 /-!
 # Finitely Generated First-Order Structures
@@ -26,6 +28,8 @@ Develop a more unified definition of finite generation using the theory of closu
 this definition of finite generation to define the others.
 
 -/
+
+@[expose] public section
 
 open FirstOrder Set
 

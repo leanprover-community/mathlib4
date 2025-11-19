@@ -3,9 +3,11 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Composition.MapComap
-import Mathlib.Probability.Martingale.Convergence
-import Mathlib.Probability.Process.PartitionFiltration
+module
+
+public import Mathlib.Probability.Kernel.Composition.MapComap
+public import Mathlib.Probability.Martingale.Convergence
+public import Mathlib.Probability.Process.PartitionFiltration
 
 /-!
 # Kernel density
@@ -74,6 +76,8 @@ The construction of the density process in this file follows the proof of Theore
 [O. Kallenberg, Foundations of modern probability][kallenberg2021], adapted to use a countably
 generated hypothesis instead of specializing to `ℝ`.
 -/
+
+@[expose] public section
 
 open MeasureTheory Set Filter MeasurableSpace
 

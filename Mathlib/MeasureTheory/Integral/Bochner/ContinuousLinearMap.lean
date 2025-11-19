@@ -3,9 +3,11 @@ Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Operator.CompleteCodomain
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.Topology.ContinuousMap.ContinuousMapZero
+module
+
+public import Mathlib.Analysis.Normed.Operator.CompleteCodomain
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 
 /-!
 # Continuous linear maps composed with integration
@@ -16,6 +18,8 @@ operations on the space `L¹`. Note that composition by a continuous linear map 
 the composition, as we are dealing with classes of functions, but it has already been defined
 as `ContinuousLinearMap.compLp`. We take advantage of this construction here.
 -/
+
+@[expose] public section
 
 open MeasureTheory RCLike
 open scoped ENNReal NNReal

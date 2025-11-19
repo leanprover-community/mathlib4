@@ -3,18 +3,22 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Fintype.Prod
-import Mathlib.Data.Fintype.Pi
-import Mathlib.Algebra.Order.Group.Multiset
-import Mathlib.Data.Vector.Basic
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Data.ULift
-import Mathlib.Data.Set.NAry
+module
+
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Fintype.Prod
+public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Algebra.Order.Group.Multiset
+public import Mathlib.Data.Vector.Basic
+public import Mathlib.Tactic.ApplyFun
+public import Mathlib.Data.ULift
+public import Mathlib.Data.Set.NAry
 
 /-!
 # Finiteness of products
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedRing MonoidWithZero
 

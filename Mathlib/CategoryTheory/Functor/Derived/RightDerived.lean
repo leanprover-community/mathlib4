@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.KanExtension.Basic
-import Mathlib.CategoryTheory.Localization.Predicate
+module
+
+public import Mathlib.CategoryTheory.Functor.KanExtension.Basic
+public import Mathlib.CategoryTheory.Localization.Predicate
 
 /-!
 # Right derived functors
@@ -33,6 +35,8 @@ structures, existence of derived functors from derivability structures.
 * https://ncatlab.org/nlab/show/derived+functor
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

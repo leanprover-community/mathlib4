@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Geometry.RingedSpace.PresheafedSpace
-import Mathlib.Topology.Category.TopCat.Limits.Basic
-import Mathlib.Topology.Sheaves.Limits
-import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+module
+
+public import Mathlib.Geometry.RingedSpace.PresheafedSpace
+public import Mathlib.Topology.Category.TopCat.Limits.Basic
+public import Mathlib.Topology.Sheaves.Limits
+public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 /-!
 # `PresheafedSpace C` has colimits.
@@ -30,6 +32,8 @@ because this is the way `PresheafedSpace C` is set up.)
 
 The limit of this diagram then constitutes the colimit presheaf.
 -/
+
+@[expose] public section
 
 
 noncomputable section

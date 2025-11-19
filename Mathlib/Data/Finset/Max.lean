@@ -3,12 +3,16 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Finset.Lattice.Fold
+module
+
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # Maximum and minimum of finite sets
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedMonoid MonoidWithZero
 

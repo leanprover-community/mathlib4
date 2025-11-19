@@ -3,9 +3,10 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
-import Mathlib.Analysis.Fourier.PoissonSummation
+public import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
+public import Mathlib.Analysis.Fourier.PoissonSummation
 
 /-!
 # Poisson summation applied to the Gaussian
@@ -18,6 +19,8 @@ to prove the identity
 for positive real `a`, or complex `a` with positive real part. (See also
 `NumberTheory.ModularForms.JacobiTheta`.)
 -/
+
+@[expose] public section
 
 open Real Set MeasureTheory Filter Asymptotics intervalIntegral
 

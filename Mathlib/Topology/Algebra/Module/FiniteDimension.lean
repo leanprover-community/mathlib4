@@ -3,14 +3,16 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Anatole Dedecker
 -/
-import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.RingTheory.LocalRing.Basic
-import Mathlib.Topology.Algebra.Module.Determinant
-import Mathlib.Topology.Algebra.Module.ModuleTopology
-import Mathlib.Topology.Algebra.Module.Simple
-import Mathlib.Topology.Algebra.SeparationQuotient.FiniteDimensional
+module
+
+public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.RingTheory.LocalRing.Basic
+public import Mathlib.Topology.Algebra.Module.Determinant
+public import Mathlib.Topology.Algebra.Module.ModuleTopology
+public import Mathlib.Topology.Algebra.Module.Simple
+public import Mathlib.Topology.Algebra.SeparationQuotient.FiniteDimensional
 
 /-!
 # Finite-dimensional topological vector spaces over complete fields
@@ -44,6 +46,8 @@ lemma, then we deduce `LinearMap.continuous_of_finiteDimensional` from it, and t
 result follows as `continuous_equivFun_basis`.
 
 -/
+
+@[expose] public section
 
 open Filter Module Set TopologicalSpace Topology
 

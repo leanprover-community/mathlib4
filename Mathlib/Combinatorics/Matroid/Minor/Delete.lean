@@ -3,7 +3,9 @@ Copyright (c) 2025 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Loop
+module
+
+public import Mathlib.Combinatorics.Matroid.Loop
 
 /-!
 # Matroid Deletion
@@ -31,6 +33,8 @@ This is often quite convenient.
 We use the abbreviation `deleteElem` in lemma names to refer to the deletion `M ＼ {e}`
 of a single element `e : α` from `M : Matroid α`.
 -/
+
+@[expose] public section
 
 open Set
 

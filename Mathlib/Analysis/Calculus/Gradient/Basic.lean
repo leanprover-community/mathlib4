@@ -3,9 +3,11 @@ Copyright (c) 2023 Ziyu Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ziyu Wang, Chenyi Li, Sébastien Gouëzel, Penghao Yu, Zhipeng Cao
 -/
-import Mathlib.Analysis.InnerProductSpace.Dual
-import Mathlib.Analysis.Calculus.FDeriv.Basic
-import Mathlib.Analysis.Calculus.Deriv.Basic
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Dual
+public import Mathlib.Analysis.Calculus.FDeriv.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Basic
 
 /-!
 # Gradient
@@ -36,6 +38,8 @@ This file develops the following aspects of the theory of gradients:
 * the gradient of constant functions.
 * the continuity of a function admitting a gradient.
 -/
+
+@[expose] public section
 
 open Topology InnerProductSpace Function Set
 

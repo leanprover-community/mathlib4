@@ -3,13 +3,15 @@ Copyright (c) 2024 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Monoidal.FunctorCategory
-import Mathlib.CategoryTheory.Monoidal.ExternalProduct.Basic
-import Mathlib.CategoryTheory.Closed.Types
-import Mathlib.CategoryTheory.Monoidal.Limits.Preserves
-import Mathlib.CategoryTheory.Limits.Preserves.Bifunctor
-import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
-import Mathlib.CategoryTheory.Limits.IsConnected
+module
+
+public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+public import Mathlib.CategoryTheory.Monoidal.ExternalProduct.Basic
+public import Mathlib.CategoryTheory.Closed.Types
+public import Mathlib.CategoryTheory.Monoidal.Limits.Preserves
+public import Mathlib.CategoryTheory.Limits.Preserves.Bifunctor
+public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+public import Mathlib.CategoryTheory.Limits.IsConnected
 /-!
 # Sifted categories
 
@@ -31,6 +33,8 @@ preserves finite products. We achieve this characterization in this file.
 - [nLab, *Sifted category*](https://ncatlab.org/nlab/show/sifted+category)
 - [*Algebraic Theories*, Chapter 2.][Adamek_Rosicky_Vitale_2010]
 -/
+
+@[expose] public section
 
 universe w v v₁ v₂ u u₁ u₂
 

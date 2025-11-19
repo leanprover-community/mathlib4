@@ -3,9 +3,11 @@ Copyright (c) 2020 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
-import Mathlib.LinearAlgebra.Eigenspace.Basic
-import Mathlib.FieldTheory.IsAlgClosed.Spectrum
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+module
+
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
 # Triangularizable linear endomorphisms
@@ -37,6 +39,8 @@ generalized eigenspaces span the whole space.
 
 eigenspace, eigenvector, eigenvalue, eigen
 -/
+
+@[expose] public section
 
 open Set Function Module Module
 

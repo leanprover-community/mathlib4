@@ -3,7 +3,9 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.EffectiveEpi.Basic
+module
+
+public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 /-!
 
 # Composition of effective epimorphisms
@@ -11,6 +13,8 @@ import Mathlib.CategoryTheory.EffectiveEpi.Basic
 This file provides `EffectiveEpi` instances for certain compositions.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

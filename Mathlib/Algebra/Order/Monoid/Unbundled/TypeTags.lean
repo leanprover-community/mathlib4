@@ -3,11 +3,15 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-import Mathlib.Algebra.Group.TypeTags.Basic
-import Mathlib.Order.BoundedOrder.Basic
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+public import Mathlib.Algebra.Group.TypeTags.Basic
+public import Mathlib.Order.BoundedOrder.Basic
 
 /-! # Ordered monoid structures on `Multiplicative α` and `Additive α`. -/
+
+@[expose] public section
 
 variable {α : Type*}
 

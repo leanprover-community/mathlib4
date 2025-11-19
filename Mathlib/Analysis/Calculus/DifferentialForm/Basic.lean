@@ -3,9 +3,11 @@ Copyright (c) 2025 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Sam Lindauer
 -/
-import Mathlib.Analysis.NormedSpace.Alternating.Uncurry.Fin
-import Mathlib.Analysis.Calculus.FDeriv.Symmetric
-import Mathlib.Analysis.Calculus.FDeriv.CompCLM
+module
+
+public import Mathlib.Analysis.NormedSpace.Alternating.Uncurry.Fin
+public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
+public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 
 /-!
 # Exterior derivative of a differential form on a normed space
@@ -41,6 +43,8 @@ where $$\widehat{v_i}$$ means that we omit this element of the tuple, see `extDe
   for `0`-forms (`constOfIsEmpty`) and `1`-forms (`ofSubsingleton`),
   sync with the API for `ContinuousMultilinearMap`.
 -/
+
+@[expose] public section
 
 open Filter ContinuousAlternatingMap Set
 open scoped Topology

@@ -3,9 +3,11 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Computability.PartrecCode
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.Computability.PartrecCode
+public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.Linarith
 
 /-!
 # Ackermann function
@@ -46,6 +48,8 @@ We then prove this by induction on `n`. Our proof crucially depends on `ack_pair
 applied twice, giving us a constant of `4 + 4`. The rest of the proof consists of simpler bounds
 which bump up our constant to `9`.
 -/
+
+@[expose] public section
 
 
 open Nat

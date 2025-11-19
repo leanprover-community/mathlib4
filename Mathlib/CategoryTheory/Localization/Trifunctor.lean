@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Bifunctor
-import Mathlib.CategoryTheory.Functor.CurryingThree
-import Mathlib.CategoryTheory.Products.Associator
+module
+
+public import Mathlib.CategoryTheory.Localization.Bifunctor
+public import Mathlib.CategoryTheory.Functor.CurryingThree
+public import Mathlib.CategoryTheory.Products.Associator
 
 /-!
 # Lifting of trifunctors
@@ -17,6 +19,8 @@ The main result in this file is that we can localize "associator" isomorphisms
 (see the definition `Localization.associator`).
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

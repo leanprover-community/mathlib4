@@ -3,7 +3,9 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.ContMDiff.Basic
+module
+
+public import Mathlib.Geometry.Manifold.ContMDiff.Basic
 
 /-!
 ## Smoothness of charts and local structomorphisms
@@ -11,6 +13,8 @@ import Mathlib.Geometry.Manifold.ContMDiff.Basic
 We show that the model with corners, charts, extended charts and their inverses are `C^n`,
 and that local structomorphisms are `C^n` with `C^n` inverses.
 -/
+
+@[expose] public section
 
 open Set ChartedSpace IsManifold
 open scoped Manifold ContDiff

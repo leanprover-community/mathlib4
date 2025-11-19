@@ -3,15 +3,19 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Mario Carneiro, Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.Topology.Algebra.Indicator
-import Mathlib.Topology.Bornology.BoundedOperation
-import Mathlib.Topology.ContinuousMap.Algebra
+module
+
+public import Mathlib.Topology.Algebra.Indicator
+public import Mathlib.Topology.Bornology.BoundedOperation
+public import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
 # Bounded continuous functions
 
 The type of bounded continuous functions taking values in a metric space, with the uniform distance.
 -/
+
+@[expose] public section
 
 assert_not_exists CStarRing
 

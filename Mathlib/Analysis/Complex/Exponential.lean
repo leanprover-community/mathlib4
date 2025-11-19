@@ -3,12 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Analysis.Complex.Norm
-import Mathlib.Algebra.Order.CauSeq.BigOperators
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Data.Complex.BigOperators
-import Mathlib.Data.Nat.Choose.Sum
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Analysis.Complex.Norm
+public import Mathlib.Algebra.Order.CauSeq.BigOperators
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Data.Complex.BigOperators
+public import Mathlib.Data.Nat.Choose.Sum
 
 /-!
 # Exponential Function
@@ -22,6 +24,8 @@ This file contains the definitions of the real and complex exponential function.
 * `Real.exp`: The real exponential function, defined as the real part of the complex exponential
 
 -/
+
+@[expose] public section
 
 open CauSeq Finset IsAbsoluteValue
 open scoped ComplexConjugate
@@ -667,7 +671,7 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `Real.exp` is always positive. -/
 @[positivity Real.exp _]
-def evalExp : PositivityExt where eval {u α} _ _ e := do
+meta def evalExp : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.exp $a) =>
     assertInstancesCommute

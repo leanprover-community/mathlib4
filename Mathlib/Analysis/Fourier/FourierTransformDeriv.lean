@@ -3,13 +3,15 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, David Loeffler, Heather Macbeth, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.ParametricIntegral
-import Mathlib.Analysis.Calculus.ContDiff.CPolynomial
-import Mathlib.Analysis.Fourier.AddCircle
-import Mathlib.Analysis.Fourier.FourierTransform
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
-import Mathlib.Analysis.Calculus.ContDiff.Bounds
+module
+
+public import Mathlib.Analysis.Calculus.ParametricIntegral
+public import Mathlib.Analysis.Calculus.ContDiff.CPolynomial
+public import Mathlib.Analysis.Fourier.AddCircle
+public import Mathlib.Analysis.Fourier.FourierTransform
+public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+public import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
+public import Mathlib.Analysis.Calculus.ContDiff.Bounds
 
 /-!
 # Derivatives of the Fourier transform
@@ -77,6 +79,8 @@ the namespace `Real` in the above statements.
 We also give specialized versions of the one-dimensional real derivative (and iterated derivative)
 in `Real.deriv_fourierIntegral` and `Real.iteratedDeriv_fourierIntegral`.
 -/
+
+@[expose] public section
 
 noncomputable section
 

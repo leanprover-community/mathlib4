@@ -3,7 +3,9 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Data.Set.Lattice
+module
+
+public import Mathlib.Data.Set.Lattice
 
 /-!
 # Accumulate
@@ -14,6 +16,8 @@ In large parts, this file is parallel to `Mathlib.Data.Set.Dissipate`, where
 `Dissipate s := ⋂ y ≤ x, s y` is defined.
 
 -/
+
+@[expose] public section
 
 
 variable {α β : Type*} {s : α → Set β}

@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Operations
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 
 /-!
 # Complete lattice structure of subalgebras
@@ -13,6 +15,8 @@ In this file we define `Algebra.adjoin` and the complete lattice structure on su
 
 More lemmas about `adjoin` can be found in `Mathlib/RingTheory/Adjoin/Basic.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists Polynomial
 

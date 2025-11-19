@@ -3,11 +3,13 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Nat.Basic
-import Mathlib.Data.Rat.Init
-import Mathlib.Order.Basic
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Data.Rat.Init
+public import Mathlib.Order.Basic
+public import Mathlib.Tactic.Common
 
 /-!
 # Basics for the Rational Numbers
@@ -27,6 +29,8 @@ once the `Field` class has been defined.
 - `/.` is infix notation for `Rat.divInt`.
 
 -/
+
+@[expose] public section
 
 -- TODO: If `Inv` was defined earlier than `Algebra.Group.Defs`, we could have
 -- assert_not_exists Monoid

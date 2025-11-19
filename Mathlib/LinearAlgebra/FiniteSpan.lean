@@ -3,15 +3,19 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Deepro Choudhury
 -/
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.LinearAlgebra.Span.Defs
-import Mathlib.Algebra.Module.Equiv.Basic
+module
+
+public import Mathlib.GroupTheory.OrderOfElement
+public import Mathlib.LinearAlgebra.Span.Defs
+public import Mathlib.Algebra.Module.Equiv.Basic
 
 /-!
 
 # Additional results about finite spanning sets in linear algebra
 
 -/
+
+@[expose] public section
 
 open Set Function
 open Submodule (span)

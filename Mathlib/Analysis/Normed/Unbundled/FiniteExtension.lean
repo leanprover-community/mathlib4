@@ -3,11 +3,13 @@ Copyright (c) 2025 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
-import Mathlib.Analysis.Normed.Unbundled.SeminormFromBounded
-import Mathlib.Analysis.Normed.Unbundled.SmoothingSeminorm
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+module
+
+public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
+public import Mathlib.Analysis.Normed.Unbundled.SeminormFromBounded
+public import Mathlib.Analysis.Normed.Unbundled.SmoothingSeminorm
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 
 
 /-!
@@ -37,6 +39,8 @@ at least one power-multiplicative `K`-algebra norm on `L` extending the norm on 
 
 Basis.norm, nonarchimedean
 -/
+
+@[expose] public section
 
 noncomputable section
 

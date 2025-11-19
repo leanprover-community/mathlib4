@@ -3,7 +3,9 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Analysis.Normed.Ring.Lemmas
+module
+
+public import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!
 # The integers as normed ring
@@ -15,6 +17,8 @@ This norm is always nonnegative, so we can bundle the norm together with this fa
 to obtain a term of type `NNReal` (the nonnegative real numbers).
 The resulting nonnegative real number is denoted by `‖n‖₊`.
 -/
+
+@[expose] public section
 
 
 namespace Int

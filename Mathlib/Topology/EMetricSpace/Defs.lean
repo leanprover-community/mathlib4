@@ -3,9 +3,11 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Data.ENNReal.Inv
-import Mathlib.Topology.UniformSpace.Basic
-import Mathlib.Topology.UniformSpace.OfFun
+module
+
+public import Mathlib.Data.ENNReal.Inv
+public import Mathlib.Topology.UniformSpace.Basic
+public import Mathlib.Topology.UniformSpace.OfFun
 
 /-!
 # Extended metric spaces
@@ -24,6 +26,8 @@ Since a lot of elementary properties don't require `eq_of_edist_eq_zero` we star
 theory of `PseudoEMetricSpace`, where we don't require `edist x y = 0 → x = y` and we specialize
 to `EMetricSpace` at the end.
 -/
+
+@[expose] public section
 
 
 assert_not_exists Nat.instLocallyFiniteOrder IsUniformEmbedding TendstoUniformlyOnFilter

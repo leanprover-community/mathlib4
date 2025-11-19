@@ -3,8 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Justus Springer
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.Filtered.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.Filtered.Basic
 
 /-!
 # Preservation of filtered colimits and cofiltered limits.
@@ -12,6 +14,8 @@ Typically forgetful functors from algebraic categories preserve filtered colimit
 (although not general colimits). See e.g. `Algebra/Category/MonCat/FilteredColimits`.
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory

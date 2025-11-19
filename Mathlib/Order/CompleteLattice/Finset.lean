@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Option
-import Mathlib.Data.Set.Lattice.Image
+module
+
+public import Mathlib.Data.Finset.Option
+public import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Lattice operations on finsets
@@ -14,6 +16,8 @@ This file is concerned with how big lattice or set operations behave when indexe
 See also `Mathlib/Data/Finset/Lattice.lean`, which is concerned with folding binary lattice
 operations over a finset.
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedMonoid MonoidWithZero
 

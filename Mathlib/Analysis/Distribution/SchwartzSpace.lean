@@ -3,16 +3,18 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
-import Mathlib.Analysis.Calculus.LineDeriv.Basic
-import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Analysis.Normed.Group.ZeroAtInfty
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Analysis.Distribution.TemperateGrowth
-import Mathlib.Topology.Algebra.UniformFilterBasis
-import Mathlib.MeasureTheory.Integral.IntegralEqImproper
-import Mathlib.Tactic.MoveAdd
-import Mathlib.MeasureTheory.Function.L2Space
+module
+
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+public import Mathlib.Analysis.Calculus.LineDeriv.Basic
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+public import Mathlib.Analysis.Normed.Group.ZeroAtInfty
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Analysis.Distribution.TemperateGrowth
+public import Mathlib.Topology.Algebra.UniformFilterBasis
+public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+public import Mathlib.Tactic.MoveAdd
+public import Mathlib.MeasureTheory.Function.L2Space
 
 /-!
 # Schwartz space
@@ -62,6 +64,8 @@ The implementation of the seminorms is taken almost literally from `ContinuousLi
 
 Schwartz space, tempered distributions
 -/
+
+@[expose] public section
 
 noncomputable section
 

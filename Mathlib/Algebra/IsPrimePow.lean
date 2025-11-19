@@ -3,17 +3,21 @@ Copyright (c) 2022 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Order.Nat
-import Mathlib.Data.Nat.Prime.Basic
-import Mathlib.Data.Nat.Log
-import Mathlib.Data.Nat.Prime.Pow
+module
+
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Order.Nat
+public import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.Data.Nat.Log
+public import Mathlib.Data.Nat.Prime.Pow
 
 /-!
 # Prime powers
 
 This file deals with prime powers: numbers which are positive integer powers of a single prime.
 -/
+
+@[expose] public section
 assert_not_exists Nat.divisors
 
 variable {R : Type*} [CommMonoidWithZero R] (n p : R) (k : ℕ)

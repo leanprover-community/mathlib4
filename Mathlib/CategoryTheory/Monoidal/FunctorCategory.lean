@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Functor.Const
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Functor.Category
+public import Mathlib.CategoryTheory.Functor.Const
 
 /-!
 # Monoidal structure on `C ⥤ D` when `D` is monoidal.
@@ -15,6 +17,8 @@ there is a natural "pointwise" monoidal structure on `C ⥤ D`.
 
 The initial intended application is tensor product of presheaves.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ u₁ u₂

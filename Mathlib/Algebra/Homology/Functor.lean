@@ -3,7 +3,9 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Homology.HomologicalComplex
+module
+
+public import Mathlib.Algebra.Homology.HomologicalComplex
 
 /-!
 # Complexes in functor categories
@@ -15,6 +17,8 @@ a functor from `T` to complexes valued in `V`.
 In fact this is an equivalence of categories.
 
 -/
+
+@[expose] public section
 
 
 universe v u

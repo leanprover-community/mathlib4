@@ -3,9 +3,11 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Order.GameAdd
-import Mathlib.Order.RelIso.Set
-import Mathlib.SetTheory.ZFC.Basic
+module
+
+public import Mathlib.Order.GameAdd
+public import Mathlib.Order.RelIso.Set
+public import Mathlib.SetTheory.ZFC.Basic
 
 /-!
 # Von Neumann ordinals
@@ -23,6 +25,8 @@ under `∈`.
 
 - Build correspondences between these set notions and those of the standard `Ordinal` type.
 -/
+
+@[expose] public section
 
 universe u
 

@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Andrew Yang
 -/
-import Mathlib.CategoryTheory.Sites.Hypercover.IsSheaf
+module
+
+public import Mathlib.CategoryTheory.Sites.Hypercover.IsSheaf
 
 /-!
 # Continuous functors between sites.
@@ -37,6 +39,8 @@ category).
 * https://stacks.math.columbia.edu/tag/00WU
 
 -/
+
+@[expose] public section
 
 universe w t v₁ v₂ v₃ u₁ u₂ u₃ u
 

@@ -3,11 +3,13 @@ Copyright (c) 2023 Hanneke Wiersema. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Hanneke Wiersema, Andrew Yang
 -/
-import Mathlib.Algebra.Ring.Aut
-import Mathlib.NumberTheory.Padics.RingHoms
-import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
-import Mathlib.RingTheory.RootsOfUnity.Minpoly
-import Mathlib.FieldTheory.KrullTopology
+module
+
+public import Mathlib.Algebra.Ring.Aut
+public import Mathlib.NumberTheory.Padics.RingHoms
+public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
+public import Mathlib.RingTheory.RootsOfUnity.Minpoly
+public import Mathlib.FieldTheory.KrullTopology
 
 /-!
 
@@ -62,6 +64,8 @@ where `d` is the number of `n`th roots of unity in `L`.
 
 cyclotomic character
 -/
+
+@[expose] public section
 
 universe u
 variable {L : Type u} [CommRing L] [IsDomain L]

@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Kim Morrison, Jakob von Raumer
 -/
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.LinearAlgebra.TensorProduct.Associator
-import Mathlib.CategoryTheory.Monoidal.Linear
-import Mathlib.CategoryTheory.Monoidal.Transport
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Associator
+public import Mathlib.CategoryTheory.Monoidal.Linear
+public import Mathlib.CategoryTheory.Monoidal.Transport
 
 /-!
 # The monoidal category structure on R-modules
@@ -27,6 +29,8 @@ We construct the monoidal closed structure on `ModuleCat R` in
 If you're happy using the bundled `ModuleCat R`, it may be possible to mostly
 use this as an interface and not need to interact much with the implementation details.
 -/
+
+@[expose] public section
 
 universe v w x u
 

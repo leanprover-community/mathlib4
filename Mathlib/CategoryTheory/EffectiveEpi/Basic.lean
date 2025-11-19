@@ -3,7 +3,9 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Products
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
 /-!
 
 # Effective epimorphisms
@@ -32,6 +34,8 @@ our notion of `EffectiveEpi` is often called "strict epi" in the literature.
 - [Stacks 00WP](https://stacks.math.columbia.edu/tag/00WP) for the standard definitions.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

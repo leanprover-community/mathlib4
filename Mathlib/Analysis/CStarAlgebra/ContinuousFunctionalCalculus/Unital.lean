@@ -3,12 +3,14 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
-import Mathlib.Algebra.Algebra.StrictPositivity
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.Topology.Algebra.Star.Real
-import Mathlib.Topology.ContinuousMap.StarOrdered
+module
+
+public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
+public import Mathlib.Algebra.Algebra.StrictPositivity
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
+public import Mathlib.Topology.Algebra.Polynomial
+public import Mathlib.Topology.Algebra.Star.Real
+public import Mathlib.Topology.ContinuousMap.StarOrdered
 
 /-!
 # The continuous functional calculus
@@ -137,6 +139,8 @@ the predicate `p`, it should be noted that these will only ever be of the form `
 `IsSelfAdjoint a` or `0 ≤ a`. For the moment we provide a rudimentary tactic to deal with these
 goals, but it can be modified to become more sophisticated as the need arises.
 -/
+
+@[expose] public section
 
 open Topology ContinuousMap
 

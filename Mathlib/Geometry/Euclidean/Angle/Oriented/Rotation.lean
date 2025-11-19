@@ -3,8 +3,10 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Heather Macbeth
 -/
-import Mathlib.Analysis.SpecialFunctions.Complex.Circle
-import Mathlib.Geometry.Euclidean.Angle.Oriented.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
+public import Mathlib.Geometry.Euclidean.Angle.Oriented.Basic
 
 /-!
 # Rotations by oriented angles.
@@ -16,6 +18,8 @@ This file defines rotations by oriented angles in real inner product spaces.
 * `Orientation.rotation` is the rotation by an oriented angle with respect to an orientation.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

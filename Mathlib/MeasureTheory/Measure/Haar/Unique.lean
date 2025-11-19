@@ -3,15 +3,17 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Function.LocallyIntegrable
-import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.MeasureTheory.Measure.EverywherePos
-import Mathlib.MeasureTheory.Measure.Haar.Basic
-import Mathlib.Topology.Metrizable.Urysohn
-import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Topology.ContinuousMap.Ordered
+module
+
+public import Mathlib.MeasureTheory.Function.LocallyIntegrable
+public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.MeasureTheory.Measure.EverywherePos
+public import Mathlib.MeasureTheory.Measure.Haar.Basic
+public import Mathlib.Topology.Metrizable.Urysohn
+public import Mathlib.Topology.UrysohnsLemma
+public import Mathlib.Topology.ContinuousMap.Ordered
 
 /-!
 # Uniqueness of Haar measure in locally compact groups
@@ -65,6 +67,8 @@ the measures but discarding the assumption that they are finite on compact sets.
 [Halmos, Measure Theory][halmos1950measure]
 [Fremlin, *Measure Theory* (volume 4)][fremlin_vol4]
 -/
+
+@[expose] public section
 
 open Filter Set TopologicalSpace Function MeasureTheory Measure
 open scoped Uniformity Topology ENNReal Pointwise NNReal

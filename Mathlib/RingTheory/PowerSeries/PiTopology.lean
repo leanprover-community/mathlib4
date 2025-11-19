@@ -3,12 +3,14 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
-import Mathlib.RingTheory.MvPowerSeries.PiTopology
-import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.RingTheory.PowerSeries.Order
-import Mathlib.RingTheory.PowerSeries.Trunc
-import Mathlib.LinearAlgebra.Finsupp.Pi
-import Mathlib.Topology.Algebra.InfiniteSum.Ring
+module
+
+public import Mathlib.RingTheory.MvPowerSeries.PiTopology
+public import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.RingTheory.PowerSeries.Order
+public import Mathlib.RingTheory.PowerSeries.Trunc
+public import Mathlib.LinearAlgebra.Finsupp.Pi
+public import Mathlib.Topology.Algebra.InfiniteSum.Ring
 
 /-! # Product topology on power series
 
@@ -47,6 +49,8 @@ TODO: add the similar result for the series of homogeneous components.
 - If `R` is complete, then so is `PowerSeries σ R`.
 
 -/
+
+@[expose] public section
 
 
 namespace PowerSeries

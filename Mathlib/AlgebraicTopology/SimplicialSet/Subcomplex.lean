@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Basic
-import Mathlib.CategoryTheory.Subpresheaf.OfSection
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
+public import Mathlib.CategoryTheory.Subpresheaf.OfSection
 
 /-!
 # Subcomplexes of a simplicial set
@@ -21,6 +23,8 @@ so that this morphism appears as a morphism in `SSet` instead of a morphism
 in the category of presheaves.
 
 -/
+
+@[expose] public section
 
 universe u
 

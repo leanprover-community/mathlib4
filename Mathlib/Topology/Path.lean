@@ -3,9 +3,11 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Topology.Order.ProjIcc
-import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.UnitInterval
+module
+
+public import Mathlib.Topology.Order.ProjIcc
+public import Mathlib.Topology.CompactOpen
+public import Mathlib.Topology.UnitInterval
 
 /-!
 # Paths in topological spaces
@@ -41,6 +43,8 @@ This is used to define `Path.extend` that turns `γ : Path x y` into a continuou
 `γ.extend : ℝ → X` whose restriction to `I` is the original `γ`, and is equal to `x`
 on `(-∞, 0]` and to `y` on `[1, +∞)`.
 -/
+
+@[expose] public section
 
 noncomputable section
 

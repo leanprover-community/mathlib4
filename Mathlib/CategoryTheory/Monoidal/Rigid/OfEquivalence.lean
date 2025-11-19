@@ -3,11 +3,15 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
 
 /-!
 # Transport rigid structures over a monoidal equivalence.
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory

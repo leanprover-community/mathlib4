@@ -3,11 +3,13 @@ Copyright (c) 2021 Luke Kershaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Kershaw
 -/
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.CategoryTheory.Shift.Basic
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.CategoryTheory.Shift.Basic
 
 /-!
 # Triangles
@@ -17,6 +19,8 @@ It also defines morphisms between these triangles.
 
 TODO: generalise this to n-angles in n-angulated categories as in https://arxiv.org/abs/1006.4592
 -/
+
+@[expose] public section
 
 
 noncomputable section

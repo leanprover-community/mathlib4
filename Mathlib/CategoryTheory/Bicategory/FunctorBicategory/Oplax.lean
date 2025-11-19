@@ -3,7 +3,9 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
 
 /-!
 # The bicategory of oplax functors between two bicategories
@@ -13,6 +15,8 @@ Given bicategories `B` and `C`, we give a bicategory structure on `B ⥤ᵒᵖ�
 * 1-morphisms are oplax natural transformations, and
 * 2-morphisms are modifications.
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory.Oplax

@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Logic.Nontrivial.Basic
+module
+
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.InjSurj
+public import Mathlib.Logic.Nontrivial.Basic
 
 /-!
 # `ULift` instances for groups and monoids
@@ -16,6 +18,8 @@ This file defines instances for group, monoid, semigroup and related structures 
 
 We also provide `MulEquiv.ulift : ULift R ≃* R` (and its additive analogue).
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 

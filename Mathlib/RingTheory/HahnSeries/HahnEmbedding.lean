@@ -3,12 +3,14 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
-import Mathlib.Algebra.Order.Module.HahnEmbedding
-import Mathlib.Algebra.Module.LinearMap.Rat
-import Mathlib.Algebra.Field.Rat
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Data.Real.Embedding
-import Mathlib.GroupTheory.DivisibleHull
+module
+
+public import Mathlib.Algebra.Order.Module.HahnEmbedding
+public import Mathlib.Algebra.Module.LinearMap.Rat
+public import Mathlib.Algebra.Field.Rat
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Data.Real.Embedding
+public import Mathlib.GroupTheory.DivisibleHull
 
 /-!
 
@@ -23,6 +25,8 @@ Archimedean classes of the group. The theorem is stated as `hahnEmbedding_isOrde
 * [A. H. Clifford, *Note on Hahn’s theorem on ordered Abelian groups.*][clifford1954]
 
 -/
+
+@[expose] public section
 
 open ArchimedeanClass
 

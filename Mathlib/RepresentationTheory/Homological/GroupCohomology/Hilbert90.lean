@@ -3,8 +3,10 @@ Copyright (c) 2023 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.FieldTheory.Fixed
-import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
+module
+
+public import Mathlib.FieldTheory.Fixed
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 
 /-!
 # Hilbert's Theorem 90
@@ -45,6 +47,8 @@ statement is clearer.
   for all $1 ≤ n.$
 
 -/
+
+@[expose] public section
 
 
 namespace groupCohomology

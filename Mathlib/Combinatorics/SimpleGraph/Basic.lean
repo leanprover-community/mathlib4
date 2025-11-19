@@ -3,12 +3,14 @@ Copyright (c) 2020 Aaron Anderson, Jalex Stark, Kyle Miller. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov, Hunter Monroe
 -/
-import Mathlib.Combinatorics.SimpleGraph.Init
-import Mathlib.Data.Finite.Prod
-import Mathlib.Data.Rel
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Sym.Sym2
-import Mathlib.Order.CompleteBooleanAlgebra
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Init
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Data.Rel
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Sym.Sym2
+public import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
 # Simple graphs
@@ -37,6 +39,8 @@ This module defines simple graphs on a vertex type `V` as an irreflexive symmetr
   We begin with simple graphs in order to start learning what the combinatorics hierarchy should
   look like.
 -/
+
+@[expose] public section
 
 attribute [aesop norm unfold (rule_sets := [SimpleGraph])] Symmetric
 attribute [aesop norm unfold (rule_sets := [SimpleGraph])] Irreflexive

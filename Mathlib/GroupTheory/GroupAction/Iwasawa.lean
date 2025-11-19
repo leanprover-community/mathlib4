@@ -3,10 +3,11 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Algebra.Group.Action.End
-import Mathlib.GroupTheory.GroupAction.Primitive
-import Mathlib.GroupTheory.Subgroup.Simple
+public import Mathlib.Algebra.Group.Action.End
+public import Mathlib.GroupTheory.GroupAction.Primitive
+public import Mathlib.GroupTheory.Subgroup.Simple
 
 /-! # Iwasawa criterion for simplicity
 
@@ -33,6 +34,8 @@ and `G` is nontrivial and perfect, then `G` is simple.
 Additivize. The issue is that it requires to additivize `commutator`
 (which, moreover, lives in the root namespace)
 -/
+
+@[expose] public section
 
 namespace MulAction
 

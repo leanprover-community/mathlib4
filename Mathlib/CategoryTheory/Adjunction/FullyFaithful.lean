@@ -3,9 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.MorphismProperty.Basic
-import Mathlib.CategoryTheory.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
+public import Mathlib.CategoryTheory.EpiMono
 
 /-!
 # Adjoints of fully faithful functors
@@ -28,6 +30,8 @@ an isomorphism `L ⋙ R ≅ 𝟭 C`, then the unit is an isomorphism, and simila
 See `CategoryTheory.Adjunction.isIso_unit_of_iso` and
 `CategoryTheory.Adjunction.isIso_counit_of_iso`.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory

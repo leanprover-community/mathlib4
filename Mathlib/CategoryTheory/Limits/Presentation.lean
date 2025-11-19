@@ -3,8 +3,10 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Limits.Connected
-import Mathlib.CategoryTheory.Limits.Final
+module
+
+public import Mathlib.CategoryTheory.Limits.Connected
+public import Mathlib.CategoryTheory.Limits.Final
 
 /-!
 # (Co)limit presentations
@@ -26,6 +28,8 @@ presentation of a colimit of objects that are equipped with presentations.)
 
 - Refactor `TransfiniteCompositionOfShape` so that it extends `ColimitPresentation`.
 -/
+
+@[expose] public section
 
 universe s t w v u
 

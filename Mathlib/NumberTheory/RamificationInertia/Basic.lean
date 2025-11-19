@@ -3,10 +3,12 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Dimension.DivisionRing
-import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
-import Mathlib.RingTheory.Finiteness.Quotient
-import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+module
+
+public import Mathlib.LinearAlgebra.Dimension.DivisionRing
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+public import Mathlib.RingTheory.Finiteness.Quotient
+public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 
 /-!
 # Ramification index and inertia degree
@@ -39,6 +41,8 @@ In this file, `e` stands for the ramification index and `f` for the inertia degr
 leaving `p` and `P` implicit.
 
 -/
+
+@[expose] public section
 
 
 namespace Ideal

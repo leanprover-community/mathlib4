@@ -3,21 +3,25 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Batteries.Classes.Order
-import Batteries.Tactic.Trans
-import Mathlib.Data.Ordering.Basic
-import Mathlib.Tactic.ExtendDoc
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.Push.Attr
-import Mathlib.Tactic.SplitIfs
-import Mathlib.Tactic.TypeStar
-import Mathlib.Order.Defs.PartialOrder
+module
+
+public import Batteries.Classes.Order
+public import Batteries.Tactic.Trans
+public import Mathlib.Data.Ordering.Basic
+public import Mathlib.Tactic.ExtendDoc
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.Push.Attr
+public import Mathlib.Tactic.SplitIfs
+public import Mathlib.Tactic.TypeStar
+public import Mathlib.Order.Defs.PartialOrder
 
 /-!
 # Orders
 
 Defines classes for linear orders and proves some basic lemmas about them.
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 

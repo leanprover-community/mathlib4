@@ -3,11 +3,13 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Reid Barton, Simon Hudon, Thomas Murrills, Mario Carneiro
 -/
-import Qq
-import Mathlib.Data.Nat.Notation
-import Mathlib.Util.AtomM
-import Mathlib.Data.List.TFAE
-import Mathlib.Tactic.ExtendDoc
+module
+
+public meta import Qq
+public meta import Mathlib.Data.Nat.Notation
+public meta import Mathlib.Util.AtomM
+public meta import Mathlib.Data.List.TFAE
+public meta import Mathlib.Tactic.ExtendDoc
 
 /-!
 # The Following Are Equivalent (TFAE)
@@ -15,6 +17,8 @@ import Mathlib.Tactic.ExtendDoc
 This file provides the tactics `tfae_have` and `tfae_finish` for proving goals of the form
 `TFAE [P₁, P₂, ...]`.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.TFAE
 

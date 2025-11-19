@@ -3,10 +3,12 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Algebra.Order.Floor.Semifield
-import Mathlib.Analysis.Normed.Group.FunctionSeries
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Tactic.Rify
+module
+
+public import Mathlib.Algebra.Order.Floor.Semifield
+public import Mathlib.Analysis.Normed.Group.FunctionSeries
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Tactic.Rify
 
 /-!
 # Representation of reals in positional system
@@ -24,6 +26,8 @@ representations of reals as sequences of digits in positional system.
 
 * `ofDigits_digits` states that `ofDigits (digits x b) = x`.
 -/
+
+@[expose] public section
 
 namespace Real
 

@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-import Mathlib.Topology.Order.ProjIcc
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+public import Mathlib.Topology.Order.ProjIcc
 
 /-!
 # Inverse trigonometric functions.
@@ -14,6 +16,8 @@ See also `Analysis.SpecialFunctions.Trigonometric.Arctan` for the inverse tan fu
 
 Basic inequalities on trigonometric functions.
 -/
+
+@[expose] public section
 
 
 noncomputable section

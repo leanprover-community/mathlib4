@@ -3,8 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Logic.Basic
+module
+
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Logic.Basic
 
 /-!
 # Irreducible elements in a monoid
@@ -16,6 +18,8 @@ We also define the additive variant (`AddIrreducible`).
 In decomposition monoids (e.g., `ℕ`, `ℤ`), this predicate is equivalent to `Prime`
 (see `irreducible_iff_prime`), however this is not true in general.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero IsOrderedMonoid Multiset
 

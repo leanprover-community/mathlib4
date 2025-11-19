@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Data.Fin.Basic
-import Mathlib.Logic.Equiv.Set
+module
+
+public import Mathlib.Data.Fin.Basic
+public import Mathlib.Logic.Equiv.Set
 
 /-!
 # Successors and predecessor operations of `Fin n`
@@ -19,6 +21,8 @@ related to `Fin.succ`, `Fin.pred`, and related operations on `Fin n`.
 * `Fin.predAbove` : the (partial) inverse of `Fin.succAbove`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid Finset
 

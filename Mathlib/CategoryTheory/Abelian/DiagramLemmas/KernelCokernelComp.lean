@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
 
 /-!
 # Long exact sequence for the kernel and cokernel of a composition
@@ -31,6 +33,8 @@ of the vertical maps: in order to get the expected long exact sequence, it suffi
 to obtain isomorphisms `ker φ ≅ ker (f ≫ g)` and `coker φ ≅ coker (f ⋙ g)`.
 
 -/
+
+@[expose] public section
 
 universe v u
 

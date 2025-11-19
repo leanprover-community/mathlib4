@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 
 /-!
 # Short complexes
@@ -15,6 +17,8 @@ Note: This structure `ShortComplex C` was first introduced in
 the Liquid Tensor Experiment.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

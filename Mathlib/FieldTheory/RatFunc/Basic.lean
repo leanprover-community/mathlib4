@@ -3,10 +3,12 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.CharP.Algebra
-import Mathlib.FieldTheory.RatFunc.Defs
-import Mathlib.RingTheory.Polynomial.Content
-import Mathlib.RingTheory.Algebraic.Integral
+module
+
+public import Mathlib.Algebra.CharP.Algebra
+public import Mathlib.FieldTheory.RatFunc.Defs
+public import Mathlib.RingTheory.Polynomial.Content
+public import Mathlib.RingTheory.Algebraic.Integral
 
 /-!
 # The field structure of rational functions
@@ -44,6 +46,8 @@ with the same condition on retaining the non-zero-divisor property across the ma
   - `RatFunc.mapAlgHom` lifts `K[X] →ₐ[S] R[X]` when
     `[CommRing K] [IsDomain K] [CommRing R] [IsDomain R]`
 -/
+
+@[expose] public section
 
 universe u v
 

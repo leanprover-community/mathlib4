@@ -3,9 +3,11 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.Combinatorics.Quiver.Prefunctor
-import Mathlib.Tactic.CategoryTheory.CheckCompositions
+module
+
+public import Mathlib.CategoryTheory.Category.Basic
+public import Mathlib.Combinatorics.Quiver.Prefunctor
+public import Mathlib.Tactic.CategoryTheory.CheckCompositions
 
 /-!
 # Functors
@@ -17,6 +19,8 @@ from `C` to `D`, `𝟭` for the identity functor and `⋙` for functor compositi
 
 TODO: Switch to using the `⇒` arrow.
 -/
+
+@[expose] public section
 
 set_option mathlib.tactic.category.grind true
 

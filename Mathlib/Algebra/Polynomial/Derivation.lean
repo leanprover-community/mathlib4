@@ -3,11 +3,13 @@ Copyright (c) 2023 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Richard M. Hill
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Algebra.Polynomial.Module.AEval
-import Mathlib.RingTheory.Adjoin.Polynomial
-import Mathlib.RingTheory.Derivation.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Derivative
+public import Mathlib.Algebra.Polynomial.Module.AEval
+public import Mathlib.RingTheory.Adjoin.Polynomial
+public import Mathlib.RingTheory.Derivation.Basic
 /-!
 # Derivations of univariate polynomials
 
@@ -16,6 +18,8 @@ We also provide a constructor `Polynomial.mkDerivation` that
 builds a derivation from its value on `X`, and a linear equivalence
 `Polynomial.mkDerivationEquiv` between `A` and `Derivation (Polynomial R) A`.
 -/
+
+@[expose] public section
 
 noncomputable section
 

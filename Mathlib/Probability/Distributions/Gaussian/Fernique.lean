@@ -3,8 +3,10 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Distributions.Fernique
-import Mathlib.Probability.Distributions.Gaussian.Basic
+module
+
+public import Mathlib.Probability.Distributions.Fernique
+public import Mathlib.Probability.Distributions.Gaussian.Basic
 
 /-!
 # Fernique's theorem for Gaussian measures
@@ -27,6 +29,8 @@ As a consequence, a Gaussian measure has finite moments of all orders.
 * [Martin Hairer, *An introduction to stochastic PDEs*][hairer2009introduction]
 
 -/
+
+@[expose] public section
 
 open MeasureTheory ProbabilityTheory Complex NormedSpace
 open scoped ENNReal NNReal Real Topology

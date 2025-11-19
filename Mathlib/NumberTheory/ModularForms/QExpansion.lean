@@ -3,11 +3,13 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.Complex.TaylorSeries
-import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
-import Mathlib.NumberTheory.ModularForms.Basic
-import Mathlib.NumberTheory.ModularForms.Identities
-import Mathlib.RingTheory.PowerSeries.Basic
+module
+
+public import Mathlib.Analysis.Complex.TaylorSeries
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
+public import Mathlib.NumberTheory.ModularForms.Basic
+public import Mathlib.NumberTheory.ModularForms.Identities
+public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
 # q-expansions of modular forms
@@ -36,6 +38,8 @@ We also define the `q`-expansion of a modular form, either as a power series or 
 * define the `q`-expansion map on modular form spaces as a linear map (or even a ring hom from
   the graded ring of all modular forms?)
 -/
+
+@[expose] public section
 
 open ModularForm Complex Filter UpperHalfPlane Function Matrix.SpecialLinearGroup
 

@@ -3,9 +3,11 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Limits.ExactFunctor
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.ExactFunctor
 
 /-!
 # The category of groups in a Cartesian monoidal category
@@ -17,6 +19,8 @@ morphisms of group objects commute with taking inverses.
 
 We show that a finite-product-preserving functor takes group objects to group objects.
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃ u
 

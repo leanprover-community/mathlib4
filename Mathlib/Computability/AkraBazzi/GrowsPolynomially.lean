@@ -3,11 +3,12 @@ Copyright (c) 2023 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Algebra.Order.ToIntervalMod
-import Mathlib.Analysis.SpecialFunctions.Log.Base
+public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Algebra.Order.ToIntervalMod
+public import Mathlib.Analysis.SpecialFunctions.Log.Base
 
 /-!
 # Akra-Bazzi theorem: the polynomial growth condition
@@ -25,6 +26,8 @@ make it harder to prove that a particular function grows polynomially, this issu
 arise in practice.
 
 -/
+
+@[expose] public section
 
 open Finset Real Filter Asymptotics
 open scoped Topology

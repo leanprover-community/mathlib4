@@ -3,11 +3,13 @@ Copyright (c) 2025 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Algebra.Ring.Pi
-import Mathlib.Algebra.Ring.Subring.Defs
-import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.Order.Filter.Cofinite -- for `Πʳ i, [R i, A i]` notation, confuses shake
-import Mathlib.Algebra.Module.Pi
+module
+
+public import Mathlib.Algebra.Ring.Pi
+public import Mathlib.Algebra.Ring.Subring.Defs
+public import Mathlib.GroupTheory.GroupAction.SubMulAction
+public import Mathlib.Order.Filter.Cofinite -- for `Πʳ i, [R i, A i]` notation, confuses shake
+public import Mathlib.Algebra.Module.Pi
 
 /-!
 # Restricted products of sets, groups and rings
@@ -52,6 +54,8 @@ puts the structure of a topological space on a restricted product of topological
 
 restricted product, adeles, ideles
 -/
+
+@[expose] public section
 
 open Set Filter
 

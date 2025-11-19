@@ -3,8 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Kaehler.Basic
-import Mathlib.RingTheory.Localization.BaseChange
+module
+
+public import Mathlib.RingTheory.Kaehler.Basic
+public import Mathlib.RingTheory.Localization.BaseChange
 
 /-!
 # Kähler differential module under base change
@@ -15,6 +17,8 @@ import Mathlib.RingTheory.Localization.BaseChange
   `Ω[Aₚ/Rₚ]` is the localization of `Ω[A/R]` at `p`.
 
 -/
+
+@[expose] public section
 
 variable (R S A B : Type*) [CommRing R] [CommRing S] [Algebra R S] [CommRing A] [CommRing B]
 variable [Algebra R A] [Algebra R B]

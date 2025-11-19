@@ -3,13 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+module
 
-import Mathlib.Topology.Separation.Regular
-import Mathlib.Topology.Connected.TotallyDisconnected
+public import Mathlib.Topology.Separation.Regular
+public import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
 # Separation properties: profinite spaces
 -/
+
+@[expose] public section
 
 open Function Set Filter Topology TopologicalSpace
 

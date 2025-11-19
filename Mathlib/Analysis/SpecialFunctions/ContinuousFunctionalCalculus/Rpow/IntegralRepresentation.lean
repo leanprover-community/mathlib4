@@ -3,10 +3,11 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
-import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
+public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Integral
+public import Mathlib.Analysis.CStarAlgebra.ApproximateUnit
 
 /-!
 # Integral representations of `rpow`
@@ -46,6 +47,8 @@ relevant in applications, and would needlessly complicate the proof.
 + [carlen2010] Eric A. Carlen, "Trace inequalities and quantum entropies: An introductory course"
   (see Lemma 2.8)
 -/
+
+@[expose] public section
 
 open MeasureTheory Set Filter
 open scoped NNReal Topology

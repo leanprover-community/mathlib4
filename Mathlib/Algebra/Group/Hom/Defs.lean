@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.Notation.Pi.Defs
-import Mathlib.Data.FunLike.Basic
-import Mathlib.Logic.Function.Iterate
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Notation.Pi.Defs
+public import Mathlib.Data.FunLike.Basic
+public import Mathlib.Logic.Function.Iterate
 
 /-!
 # Monoid and group homomorphisms
@@ -57,6 +59,8 @@ deprecated and moved to `Deprecated/Group`.
 MonoidHom, AddMonoidHom
 
 -/
+
+@[expose] public section
 
 open Function
 

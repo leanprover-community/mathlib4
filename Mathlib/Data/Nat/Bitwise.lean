@@ -3,16 +3,19 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Alex Keizer
 -/
-import Mathlib.Algebra.Group.Nat.Even
-import Mathlib.Algebra.NeZero
-import Mathlib.Algebra.Ring.Nat
-import Mathlib.Data.Bool.Basic
-import Mathlib.Data.List.GetD
-import Mathlib.Data.Nat.Bits
-import Mathlib.Order.Basic
-import Mathlib.Tactic.AdaptationNote
-import Mathlib.Tactic.Common
-import Batteries.Data.Nat.Bitwise
+module
+
+public import Mathlib.Algebra.Group.Nat.Even
+public import Mathlib.Algebra.NeZero
+public import Mathlib.Algebra.Ring.Nat
+public import Mathlib.Data.Bool.Basic
+public import Mathlib.Data.List.GetD
+public import Mathlib.Data.Nat.Bits
+public import Mathlib.Order.Basic
+public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Tactic.Common
+public import Batteries.Data.Nat.Bitwise
+import all Init.Data.Nat.Bitwise.Basic  -- for unfolding `bitwise`
 
 /-!
 # Bitwise operations on natural numbers
@@ -38,6 +41,8 @@ should be connected.
 
 bitwise, and, or, xor
 -/
+
+@[expose] public section
 
 open Function
 

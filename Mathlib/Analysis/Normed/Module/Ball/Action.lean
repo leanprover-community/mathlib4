@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.Analysis.Normed.Field.UnitBall
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.LinearAlgebra.Basis.VectorSpace
+module
+
+public import Mathlib.Analysis.Normed.Field.UnitBall
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # Multiplicative actions of/on balls and spheres
@@ -16,6 +18,8 @@ multiplicative actions.
 - The closed unit ball in `𝕜` acts on open balls and closed balls centered at `0` in `E`.
 - The unit sphere in `𝕜` acts on open balls, closed balls, and spheres centered at `0` in `E`.
 -/
+
+@[expose] public section
 
 
 open Metric Set

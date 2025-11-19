@@ -3,13 +3,14 @@ Copyright (c) 2024 Weihong Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Amelia Livingston, Sophie Morel, Jujian Zhang, Weihong Xu
 -/
+module
 
-import Mathlib.Algebra.Module.LocalizedModule.Basic
-import Mathlib.AlgebraicGeometry.StructureSheaf
-import Mathlib.AlgebraicGeometry.Modules.Sheaf
-import Mathlib.Algebra.Category.ModuleCat.Sheaf
-import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
-import Mathlib.CategoryTheory.Limits.ConcreteCategory.WithAlgebraicStructures
+public import Mathlib.Algebra.Module.LocalizedModule.Basic
+public import Mathlib.AlgebraicGeometry.StructureSheaf
+public import Mathlib.AlgebraicGeometry.Modules.Sheaf
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf
+public import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
+public import Mathlib.CategoryTheory.Limits.ConcreteCategory.WithAlgebraicStructures
 
 /-!
 
@@ -32,6 +33,8 @@ To get the `R`-module structure on the stalks on `M^~`, we had to define
 applying a forgetful functor to `ModuleCat.tilde M`.
 
 -/
+
+@[expose] public section
 
 universe u
 

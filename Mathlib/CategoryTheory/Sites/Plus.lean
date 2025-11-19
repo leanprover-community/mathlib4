@@ -3,7 +3,9 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Sites.Sheaf
+module
+
+public import Mathlib.CategoryTheory.Sites.Sheaf
 
 /-!
 
@@ -15,6 +17,8 @@ where `C` is endowed with a Grothendieck topology `J`.
 See <https://stacks.math.columbia.edu/tag/00W1> for details.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory.GrothendieckTopology

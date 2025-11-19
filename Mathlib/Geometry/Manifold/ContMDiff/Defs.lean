@@ -3,8 +3,10 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
-import Mathlib.Geometry.Manifold.LocalInvariantProperties
+module
+
+public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
+public import Mathlib.Geometry.Manifold.LocalInvariantProperties
 
 /-!
 # `C^n` functions between manifolds
@@ -42,6 +44,8 @@ For this to work, the definition of `ContMDiffWithinAt` and friends has to
 follow definitionally the setup of local invariant properties. Still, we recast the definition
 in terms of extended charts in `contMDiffOn_iff` and `contMDiff_iff`.
 -/
+
+@[expose] public section
 
 
 open Set Function Filter ChartedSpace IsManifold

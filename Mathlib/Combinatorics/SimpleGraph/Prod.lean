@@ -3,8 +3,10 @@ Copyright (c) 2022 George Peter Banyard, Yaël Dillies, Kyle Miller. All rights 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George Peter Banyard, Yaël Dillies, Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Paths
-import Mathlib.Combinatorics.SimpleGraph.Metric
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Paths
+public import Mathlib.Combinatorics.SimpleGraph.Metric
 
 /-!
 # Graph products
@@ -26,6 +28,8 @@ two edges is a square.
 
 Define all other graph products!
 -/
+
+@[expose] public section
 
 variable {α β γ : Type*}
 

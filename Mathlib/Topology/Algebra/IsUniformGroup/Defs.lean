@@ -3,8 +3,10 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Anatole Dedecker
 -/
-import Mathlib.Topology.UniformSpace.Basic
-import Mathlib.Topology.Algebra.Group.Basic
+module
+
+public import Mathlib.Topology.UniformSpace.Basic
+public import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 # Uniform structure on topological groups
@@ -41,6 +43,8 @@ did essentially all the theory under the assumption `IsUniformGroup G`.
 For this reason, you may find results stated under this assumption even though they may hold
 under either `IsRightUniformGroup G` or `IsLeftUniformGroup G`.
 -/
+
+@[expose] public section
 
 assert_not_exists Cauchy
 

@@ -3,11 +3,13 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Algebra.Order.Nonneg.Basic
-import Mathlib.Algebra.Order.Nonneg.Lattice
-import Mathlib.Algebra.Order.Ring.InjSurj
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Order.GroupWithZero.Canonical
+public import Mathlib.Algebra.Order.Nonneg.Basic
+public import Mathlib.Algebra.Order.Nonneg.Lattice
+public import Mathlib.Algebra.Order.Ring.InjSurj
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Bundled ordered algebra instance on the type of nonnegative elements
@@ -33,6 +35,8 @@ equal, this often confuses the elaborator. Similar problems arise when doing cas
 
 The disadvantage is that we have to duplicate some instances about `Set.Ici` to this subtype.
 -/
+
+@[expose] public section
 
 open Set
 

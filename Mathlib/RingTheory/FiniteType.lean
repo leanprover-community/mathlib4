@@ -3,11 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.FreeAlgebra
-import Mathlib.RingTheory.Adjoin.Polynomial
-import Mathlib.RingTheory.Adjoin.Tower
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.Noetherian.Orzech
+module
+
+public import Mathlib.Algebra.FreeAlgebra
+public import Mathlib.RingTheory.Adjoin.Polynomial
+public import Mathlib.RingTheory.Adjoin.Tower
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Noetherian.Orzech
 
 /-!
 # Finiteness conditions in commutative algebra
@@ -20,6 +22,8 @@ In this file we define a notion of finiteness that is common in commutative alge
   all of these express that some object is finitely generated *as algebra* over some base ring.
 
 -/
+
+@[expose] public section
 
 open Function (Surjective)
 

@@ -3,7 +3,9 @@ Copyright (c) 2025 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Algebra.Module.Equiv.Defs
+module
+
+public import Mathlib.Algebra.Module.Equiv.Defs
 
 /-! # Type classes for the Fourier transform
 
@@ -14,6 +16,8 @@ the inverse Fourier transform, respectively.
 Moreover, we provide type-classes that encode the linear structure and the Fourier inversion
 theorem.
 -/
+
+@[expose] public section
 
 universe u v w
 

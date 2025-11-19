@@ -3,9 +3,11 @@ Copyright (c) 2023 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
-import Mathlib.Topology.ContinuousMap.Bounded.Normed
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
+module
+
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.Topology.ContinuousMap.Bounded.Normed
+public import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
 /-!
 # Integration of bounded continuous functions
@@ -15,6 +17,8 @@ mostly specializations of results in general integration theory, but they are us
 specialized form in some other files, in particular in those related to the topology of weak
 convergence of probability measures and finite measures.
 -/
+
+@[expose] public section
 
 open MeasureTheory Filter
 open scoped ENNReal NNReal BoundedContinuousFunction Topology

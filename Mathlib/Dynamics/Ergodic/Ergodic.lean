@@ -3,8 +3,10 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Dynamics.Ergodic.MeasurePreserving
-import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
+module
+
+public import Mathlib.Dynamics.Ergodic.MeasurePreserving
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 
 /-!
 # Ergodic maps and measures
@@ -28,6 +30,8 @@ preserving condition is relaxed to quasi-measure-preserving.
   strict invariance condition to almost invariance in the ergodicity condition.
 
 -/
+
+@[expose] public section
 
 
 open Set Function Filter MeasureTheory MeasureTheory.Measure

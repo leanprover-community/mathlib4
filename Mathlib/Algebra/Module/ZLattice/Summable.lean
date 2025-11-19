@@ -3,9 +3,11 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Module.ZLattice.Basic
-import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
-import Mathlib.Analysis.PSeries
+module
+
+public import Mathlib.Algebra.Module.ZLattice.Basic
+public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
+public import Mathlib.Analysis.PSeries
 
 /-!
 # Convergence of `p`-series on lattices
@@ -20,6 +22,8 @@ We show that `∑ z ∈ L, ‖z - x‖ʳ` is convergent for `r < -d`.
   `∑ z ∈ L, ‖z‖ʳ ≤ Aʳ * ∑ k : ℕ, kᵈ⁺ʳ⁻¹` for some `A > 0` depending only on `L`.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

@@ -3,9 +3,11 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Monoidal.Transport
-import Mathlib.CategoryTheory.Skeletal
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Monoidal.Transport
+public import Mathlib.CategoryTheory.Skeletal
 
 /-!
 # The monoid on the skeleton of a monoidal category
@@ -18,6 +20,8 @@ The skeleton of a monoidal category is a monoid.
 * `Skeleton.instCommMonoid`, for braided monoidal categories.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory

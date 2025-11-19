@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject.Op
-import Mathlib.AlgebraicTopology.SimplicialSet.Basic
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialObject.Op
+public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 
 /-!
 # The covariant involution of the category of simplicial sets
@@ -24,6 +26,8 @@ this identification, the horn `horn n i` is sent to `horn n i.rev` (@joelriou)
 topological realization of `X` (@joelriou)
 
 -/
+
+@[expose] public section
 
 universe u
 

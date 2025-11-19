@@ -3,7 +3,9 @@ Copyright (c) 2025 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Monoidal.Functor
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Functor
 /-!
 
 # Constructing monoidal functors from natural transformations between multifunctors
@@ -17,6 +19,8 @@ and the unitality conditions are phrased as equalities of natural transformation
 Once we have more API for quadrifunctors, we can add constructors for monoidal category structures
 by phrasing the pentagon axiom as an equality of natural transformations between quadrifunctors.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

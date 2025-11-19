@@ -3,9 +3,11 @@ Copyright (c) 2023 Robin Böhne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Böhne, Wojciech Nawrocki, Patrick Massot
 -/
-import Mathlib.Tactic.Widget.SelectPanelUtils
-import Mathlib.Data.String.Defs
-import Batteries.Tactic.Lint
+module
+
+public meta import Mathlib.Tactic.Widget.SelectPanelUtils
+public meta import Mathlib.Data.String.Defs
+public meta import Batteries.Tactic.Lint
 
 /-! # Conv widget
 
@@ -13,6 +15,8 @@ This is a slightly improved version of one of the examples in the ProofWidget li
 It defines a `conv?` tactic that displays a widget panel allowing to generate
 a `conv` call zooming to the subexpression selected in the goal.
 -/
+
+public meta section
 
 
 open Lean Meta Server ProofWidgets

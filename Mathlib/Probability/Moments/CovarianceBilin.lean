@@ -3,11 +3,13 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Etienne Marion
 -/
-import Mathlib.Analysis.InnerProductSpace.Positive
-import Mathlib.Analysis.Normed.Lp.MeasurableSpace
-import Mathlib.MeasureTheory.SpecificCodomains.WithLp
-import Mathlib.Probability.Moments.Basic
-import Mathlib.Probability.Moments.CovarianceBilinDual
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Positive
+public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
+public import Mathlib.MeasureTheory.SpecificCodomains.WithLp
+public import Mathlib.Probability.Moments.Basic
+public import Mathlib.Probability.Moments.CovarianceBilinDual
 
 /-!
 # Covariance in Hilbert spaces
@@ -32,6 +34,8 @@ as the scalar product against some element of `E`. This motivates the definition
 
 covariance, Hilbert space, bilinear form
 -/
+
+@[expose] public section
 
 open MeasureTheory InnerProductSpace NormedSpace WithLp EuclideanSpace
 open scoped RealInnerProductSpace

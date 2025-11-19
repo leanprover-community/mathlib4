@@ -3,10 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Sheaf.Free
-import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Final.Type
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Free
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Final.Type
 
 /-!
 # Pullbacks of free sheaves of modules
@@ -25,6 +27,8 @@ More generally, the functor `pullback φ` sends the free sheaf
 of modules `free I` to `free I`, see `pullbackObjFreeIso` and
 `freeFunctorCompPullbackIso`.
 -/
+
+@[expose] public section
 
 universe v v₁ v₂ u₁ u₂ u
 
@@ -57,7 +61,7 @@ variable [J.HasSheafCompose (forget₂ RingCat.{u} AddCommGrpCat.{u})]
 
 /-- The canonical morphism `unit S ⟶ (pushforward.{u} φ).obj (unit R)`
 of sheaves of modules corresponding to a continuous map between ringed sites. -/
-def unitToPushforwardObjUnit : unit S ⟶ (pushforward.{u} φ).obj (unit R) where
+noncomputable def unitToPushforwardObjUnit : unit S ⟶ (pushforward.{u} φ).obj (unit R) where
   val.app X := ModuleCat.homMk ((forget₂ RingCat AddCommGrpCat).map (φ.val.app X)) (fun r ↦ by
     ext m
     exact ((φ.val.app X).hom.map_mul _ _).symm)

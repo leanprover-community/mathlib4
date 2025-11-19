@@ -3,10 +3,12 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.Calculus.SmoothSeries
-import Mathlib.Analysis.Normed.Operator.Prod
-import Mathlib.Analysis.SpecialFunctions.Gaussian.PoissonSummation
-import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+module
+
+public import Mathlib.Analysis.Calculus.SmoothSeries
+public import Mathlib.Analysis.Normed.Operator.Prod
+public import Mathlib.Analysis.SpecialFunctions.Gaussian.PoissonSummation
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
 /-!
 # The two-variable Jacobi theta function
@@ -25,6 +27,8 @@ $$\theta'(z, τ) = \sum_{n \in \mathbb{Z}} 2 \pi i n \exp (2 i \pi n z + i \pi n
 (Note that the Mellin transform of `θ` will give us functional equations for `L`-functions
 of even Dirichlet characters, and that of `θ'` will do the same for odd Dirichlet characters.)
 -/
+
+@[expose] public section
 
 open Complex Real Asymptotics Filter Topology
 

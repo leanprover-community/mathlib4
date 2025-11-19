@@ -3,11 +3,13 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Algebra.Algebra.NonUnitalHom
-import Mathlib.Algebra.Algebra.Prod
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Star.StarRingHom
+module
+
+public import Mathlib.Algebra.Algebra.Equiv
+public import Mathlib.Algebra.Algebra.NonUnitalHom
+public import Mathlib.Algebra.Algebra.Prod
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.Star.StarRingHom
 
 /-!
 # Morphisms of star algebras
@@ -39,6 +41,8 @@ of unital C⋆-algebras (with `StarAlgHom`s) and of C⋆-algebras (with `NonUnit
 
 non-unital, algebra, morphism, star
 -/
+
+@[expose] public section
 
 open EquivLike
 

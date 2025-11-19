@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
-import Mathlib.CategoryTheory.Triangulated.Yoneda
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
+public import Mathlib.CategoryTheory.Triangulated.Yoneda
 
 /-!
 # Long exact sequences of `Ext`-groups
@@ -16,6 +18,8 @@ Similarly, if `Y : C`, there is a contravariant long exact sequence :
 `Ext S.X₃ Y n₀ → Ext S.X₂ Y n₀ → Ext S.X₁ Y n₀ → Ext S.X₃ Y n₁ → Ext S.X₂ Y n₁ → Ext S.X₁ Y n₁`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 

@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Analysis.InnerProductSpace.Convex
-import Mathlib.Analysis.SpecialFunctions.Complex.Arg
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Convex
+public import Mathlib.Analysis.SpecialFunctions.Complex.Arg
 
 /-!
 # Rays in the complex numbers
@@ -20,6 +22,8 @@ the usual way this is considered.
   then the triangle inequality is an equality.
 
 -/
+
+@[expose] public section
 
 
 variable {x y : ℂ}

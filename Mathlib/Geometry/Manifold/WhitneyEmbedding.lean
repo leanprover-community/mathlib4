@@ -3,10 +3,12 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.FieldTheory.Finiteness
-import Mathlib.Geometry.Manifold.Diffeomorph
-import Mathlib.Geometry.Manifold.Instances.Real
-import Mathlib.Geometry.Manifold.PartitionOfUnity
+module
+
+public import Mathlib.FieldTheory.Finiteness
+public import Mathlib.Geometry.Manifold.Diffeomorph
+public import Mathlib.Geometry.Manifold.Instances.Real
+public import Mathlib.Geometry.Manifold.PartitionOfUnity
 
 /-!
 # Whitney embedding theorem
@@ -25,6 +27,8 @@ for sufficiently large `n` there exists a smooth embedding `M → ℝ^n`.
 
 partition of unity, smooth bump function, whitney theorem
 -/
+
+@[expose] public section
 
 universe uι uE uH uM
 

@@ -3,9 +3,11 @@ Copyright (c) 2025 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
-import Mathlib.Topology.Algebra.ContinuousAffineMap
-import Mathlib.Topology.Algebra.Group.AddTorsor
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
+public import Mathlib.Topology.Algebra.ContinuousAffineMap
+public import Mathlib.Topology.Algebra.Group.AddTorsor
 
 /-!
 # Topology of affine subspaces.
@@ -18,6 +20,8 @@ affine map.
 * `AffineSubspace.subtypeA` is `AffineSubspace.subtype` as a `ContinuousAffineMap`.
 
 -/
+
+@[expose] public section
 
 
 namespace AffineSubspace

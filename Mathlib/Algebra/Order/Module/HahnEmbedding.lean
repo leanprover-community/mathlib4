@@ -3,14 +3,16 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
-import Mathlib.Algebra.DirectSum.Decomposition
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Algebra.Module.Submodule.Order
-import Mathlib.Algebra.Order.Module.Archimedean
-import Mathlib.Algebra.Order.Module.Equiv
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.LinearAlgebra.LinearPMap
-import Mathlib.RingTheory.HahnSeries.Lex
+module
+
+public import Mathlib.Algebra.DirectSum.Decomposition
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Algebra.Module.Submodule.Order
+public import Mathlib.Algebra.Order.Module.Archimedean
+public import Mathlib.Algebra.Order.Module.Equiv
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.LinearAlgebra.LinearPMap
+public import Mathlib.RingTheory.HahnSeries.Lex
 
 /-!
 # Hahn embedding theorem on ordered modules
@@ -41,6 +43,8 @@ to a proof of the classic Hahn embedding theorem. (See `hahnEmbedding_isOrderedA
 
 * [M. Hausner, J.G. Wendel, *Ordered vector spaces*][hausnerwendel1952]
 -/
+
+@[expose] public section
 
 /-! ### Step 1: base embedding
 

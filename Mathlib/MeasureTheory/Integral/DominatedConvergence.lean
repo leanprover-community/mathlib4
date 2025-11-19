@@ -3,9 +3,11 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-import Mathlib.MeasureTheory.Measure.Real
-import Mathlib.Order.Filter.IndicatorFunction
+module
+
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+public import Mathlib.MeasureTheory.Measure.Real
+public import Mathlib.Order.Filter.IndicatorFunction
 
 /-!
 # The dominated convergence theorem
@@ -28,6 +30,8 @@ for the Bochner integral.
   measurable functions are continuous
 
 -/
+
+@[expose] public section
 
 open MeasureTheory Metric
 

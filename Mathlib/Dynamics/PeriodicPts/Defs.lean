@@ -3,12 +3,14 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Data.List.Cycle
-import Mathlib.Data.PNat.Notation
-import Mathlib.Dynamics.FixedPoints.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.Data.List.Cycle
+public import Mathlib.Data.PNat.Notation
+public import Mathlib.Dynamics.FixedPoints.Basic
 
 /-!
 # Periodic points
@@ -40,6 +42,8 @@ is a periodic point of `f` of period `n` if and only if `minimalPeriod f x | n`.
 * https://en.wikipedia.org/wiki/Periodic_point
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 

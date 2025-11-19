@@ -3,13 +3,15 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Complex.Order
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Data.Complex.BigOperators
-import Mathlib.LinearAlgebra.Complex.Module
-import Mathlib.Topology.Algebra.InfiniteSum.Module
-import Mathlib.Topology.Instances.RealVectorSpace
-import Mathlib.Topology.MetricSpace.ProperSpace.Real
+module
+
+public import Mathlib.Analysis.Complex.Order
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Data.Complex.BigOperators
+public import Mathlib.LinearAlgebra.Complex.Module
+public import Mathlib.Topology.Algebra.InfiniteSum.Module
+public import Mathlib.Topology.Instances.RealVectorSpace
+public import Mathlib.Topology.MetricSpace.ProperSpace.Real
 
 /-!
 
@@ -36,6 +38,8 @@ namespace `Complex`.
 We also register the fact that `ℂ` is an `RCLike` field.
 
 -/
+
+@[expose] public section
 
 
 assert_not_exists Absorbs

@@ -3,10 +3,11 @@ Copyright (c) 2025 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+module
 
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
-import Mathlib.Topology.MetricSpace.UniformConvergence
-import Mathlib.Topology.UniformSpace.CompactConvergence
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
+public import Mathlib.Topology.MetricSpace.UniformConvergence
+public import Mathlib.Topology.UniformSpace.CompactConvergence
 
 /-! # Continuity of the continuous functional calculus in each variable
 
@@ -60,6 +61,8 @@ results in the variable `a` come in two flavors: those for `RCLike 𝕜` and tho
 + Versions of all of the above for non-unital algebras, and versions over `ℝ≥0` as well.
 
 -/
+
+@[expose] public section
 
 open scoped UniformConvergence NNReal
 open Filter Topology

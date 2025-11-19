@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Data.Rel
-import Mathlib.Topology.Order
+module
+
+public import Mathlib.Data.Rel
+public import Mathlib.Topology.Order
 
 /-!
 # Uniform spaces
@@ -103,6 +105,8 @@ The formalization uses the books:
 
 But it makes a more systematic use of the filter library.
 -/
+
+@[expose] public section
 
 open Set Filter Topology
 

@@ -3,11 +3,13 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
-import Aesop
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Int.Init
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Tactic.SimpRw
+module
+
+public import Aesop
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Data.Int.Init
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Tactic.SimpRw
 
 /-!
 # Basic lemmas about semigroups, monoids, and groups
@@ -16,6 +18,8 @@ This file lists various basic lemmas about semigroups, monoids, and groups. Most
 one-liners from the corresponding axioms. For the definitions of semigroups, monoids and groups, see
 `Mathlib/Algebra/Group/Defs.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 

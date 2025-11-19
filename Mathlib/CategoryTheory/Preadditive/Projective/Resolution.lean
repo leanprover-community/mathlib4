@@ -3,9 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou
 -/
-import Mathlib.Algebra.Homology.QuasiIso
-import Mathlib.Algebra.Homology.SingleHomology
-import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
+module
+
+public import Mathlib.Algebra.Homology.QuasiIso
+public import Mathlib.Algebra.Homology.SingleHomology
+public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
 
 /-!
 # Projective resolutions
@@ -16,6 +18,8 @@ along with a quasi-isomorphism `P.π` from `C` to the chain complex consisting j
 of `Z` in degree zero.
 
 -/
+
+@[expose] public section
 
 
 universe v u v' u'

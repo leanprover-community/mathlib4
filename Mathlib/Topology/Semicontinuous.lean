@@ -3,9 +3,11 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Antoine Chambert-Loir, Anatole Dedecker
 -/
-import Mathlib.Algebra.GroupWithZero.Indicator
-import Mathlib.Topology.Piecewise
-import Mathlib.Topology.Instances.ENNReal.Lemmas
+module
+
+public import Mathlib.Algebra.GroupWithZero.Indicator
+public import Mathlib.Topology.Piecewise
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Semicontinuous maps
@@ -64,6 +66,8 @@ ones for lower semicontinuous functions using `OrderDual`.
 * <https://en.wikipedia.org/wiki/Semi-continuity>
 
 -/
+
+@[expose] public section
 
 
 open Topology ENNReal

@@ -3,8 +3,10 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Probability.Process.HittingTime
-import Mathlib.Probability.Martingale.Basic
+module
+
+public import Mathlib.Probability.Process.HittingTime
+public import Mathlib.Probability.Martingale.Basic
 
 /-! # Optional stopping theorem (fair game theorem)
 
@@ -23,6 +25,8 @@ This file also contains Doob's maximal inequality: given a non-negative submarti
 * `MeasureTheory.maximal_ineq`: Doob's maximal inequality.
 
 -/
+
+@[expose] public section
 
 
 open scoped NNReal ENNReal MeasureTheory ProbabilityTheory

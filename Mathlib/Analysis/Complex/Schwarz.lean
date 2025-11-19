@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.AbsMax
-import Mathlib.Analysis.Complex.RemovableSingularity
+module
+
+public import Mathlib.Analysis.Complex.AbsMax
+public import Mathlib.Analysis.Complex.RemovableSingularity
 
 /-!
 # Schwarz lemma
@@ -46,6 +48,8 @@ over complex numbers.
 
 Schwarz lemma
 -/
+
+@[expose] public section
 
 
 open Metric Set Function Filter TopologicalSpace

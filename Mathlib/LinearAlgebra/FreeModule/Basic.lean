@@ -3,11 +3,13 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Module.ULift
-import Mathlib.Data.Finsupp.Fintype
-import Mathlib.LinearAlgebra.Basis.Basic
-import Mathlib.Logic.Small.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Module.ULift
+public import Mathlib.Data.Finsupp.Fintype
+public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.Logic.Small.Basic
 
 /-!
 # Free modules
@@ -22,6 +24,8 @@ module.
 
 * `Module.Free R M` : the class of free `R`-modules.
 -/
+
+@[expose] public section
 
 assert_not_exists DirectSum Matrix TensorProduct
 

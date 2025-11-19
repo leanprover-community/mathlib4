@@ -3,8 +3,10 @@ Copyright (c) 2023 Ali Ramsey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ali Ramsey, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Finiteness
-import Mathlib.LinearAlgebra.TensorProduct.Associator
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+public import Mathlib.LinearAlgebra.TensorProduct.Associator
 
 /-!
 # Coalgebras
@@ -19,6 +21,8 @@ In this file we define `Coalgebra`, and provide instances for:
 
 * <https://en.wikipedia.org/wiki/Coalgebra>
 -/
+
+@[expose] public section
 
 universe u v w
 

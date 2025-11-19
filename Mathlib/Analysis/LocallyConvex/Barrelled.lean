@@ -3,9 +3,11 @@ Copyright (c) 2023 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Topology.Semicontinuous
-import Mathlib.Topology.Baire.Lemmas
+module
+
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+public import Mathlib.Topology.Semicontinuous
+public import Mathlib.Topology.Baire.Lemmas
 
 /-!
 # Barrelled spaces and the Banach-Steinhaus theorem / Uniform Boundedness Principle
@@ -70,6 +72,8 @@ with the seminorm characterization!
 
 banach-steinhaus, uniform boundedness, equicontinuity
 -/
+
+@[expose] public section
 
 open Filter Topology Set ContinuousLinearMap
 

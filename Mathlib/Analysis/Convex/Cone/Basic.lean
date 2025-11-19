@@ -3,11 +3,13 @@ Copyright (c) 2022 Apurva Nakade. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade, Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Cone.Closure
-import Mathlib.Geometry.Convex.Cone.Pointed
-import Mathlib.Topology.Algebra.Module.ClosedSubmodule
-import Mathlib.Topology.Algebra.Order.Module
-import Mathlib.Topology.Order.DenselyOrdered
+module
+
+public import Mathlib.Analysis.Convex.Cone.Closure
+public import Mathlib.Geometry.Convex.Cone.Pointed
+public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
+public import Mathlib.Topology.Algebra.Order.Module
+public import Mathlib.Topology.Order.DenselyOrdered
 
 /-!
 # Proper cones
@@ -39,6 +41,8 @@ The next steps are:
 - [B. Gartner and J. Matousek, Cone Programming][gartnerMatousek]
 
 -/
+
+@[expose] public section
 
 open ContinuousLinearMap Filter Function Set
 

@@ -3,11 +3,13 @@ Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
 -/
-import Mathlib.Algebra.Module.DedekindDomain
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.Algebra.Module.Projective
-import Mathlib.Algebra.Category.ModuleCat.Biproducts
-import Mathlib.RingTheory.SimpleModule.Basic
+module
+
+public import Mathlib.Algebra.Module.DedekindDomain
+public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.Algebra.Module.Projective
+public import Mathlib.Algebra.Category.ModuleCat.Biproducts
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Structure of finitely generated modules over a PID
@@ -44,6 +46,8 @@ Then we get the general result using that a torsion free module is free (which h
 
 Finitely generated module, principal ideal domain, classification, structure theorem
 -/
+
+@[expose] public section
 
 -- We shouldn't need to know about topology to prove
 -- the structure theorem for finitely generated modules over a PID.

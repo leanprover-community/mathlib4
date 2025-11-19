@@ -3,12 +3,14 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Equiv.Opposite
-import Mathlib.Algebra.GroupWithZero.Equiv
-import Mathlib.Algebra.GroupWithZero.InjSurj
-import Mathlib.Algebra.Notation.Prod
-import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Logic.Equiv.Set
+module
+
+public import Mathlib.Algebra.Group.Equiv.Opposite
+public import Mathlib.Algebra.GroupWithZero.Equiv
+public import Mathlib.Algebra.GroupWithZero.InjSurj
+public import Mathlib.Algebra.Notation.Prod
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Logic.Equiv.Set
 
 /-!
 # (Semi)ring equivs
@@ -36,6 +38,8 @@ multiplication in `Equiv.Perm`, and multiplication in `CategoryTheory.End`, not 
 
 Equiv, MulEquiv, AddEquiv, RingEquiv, MulAut, AddAut, RingAut
 -/
+
+@[expose] public section
 
 -- guard against import creep
 assert_not_exists Field Fintype

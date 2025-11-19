@@ -3,10 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.LinearAlgebra.AffineSpace.AffineMap
-import Mathlib.Tactic.Field
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Module
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
+public import Mathlib.Tactic.Field
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.Module
 
 /-!
 # Slope of a function
@@ -20,6 +22,8 @@ interval is convex on this interval.
 
 affine space, slope
 -/
+
+@[expose] public section
 
 open AffineMap
 

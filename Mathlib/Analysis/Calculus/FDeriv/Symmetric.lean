@@ -3,10 +3,12 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Analytic.IteratedFDeriv
-import Mathlib.Analysis.Calculus.Deriv.Pow
-import Mathlib.Analysis.Calculus.MeanValue
-import Mathlib.Analysis.Calculus.ContDiff.Basic
+module
+
+public import Mathlib.Analysis.Analytic.IteratedFDeriv
+public import Mathlib.Analysis.Calculus.Deriv.Pow
+public import Mathlib.Analysis.Calculus.MeanValue
+public import Mathlib.Analysis.Calculus.ContDiff.Basic
 
 /-!
 # Symmetry of the second derivative
@@ -59,6 +61,8 @@ in `Convex.isLittleO_alternate_sum_square`, but the argument is essentially the 
 when `v` and `w` both point towards the interior of `s`, to make sure that all the sides of the
 rectangle are contained in `s` by convexity. The general case follows by linearity, though.
 -/
+
+@[expose] public section
 
 
 open Asymptotics Set Filter

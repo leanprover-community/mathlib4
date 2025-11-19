@@ -3,14 +3,18 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Image
-import Mathlib.Data.Set.BooleanAlgebra
+module
+
+public import Mathlib.Data.Set.Image
+public import Mathlib.Data.Set.BooleanAlgebra
 
 /-!
 # Sets in sigma types
 
 This file defines `Set.sigma`, the indexed sum of sets.
 -/
+
+@[expose] public section
 
 namespace Set
 

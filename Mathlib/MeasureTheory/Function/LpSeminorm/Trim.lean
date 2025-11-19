@@ -3,7 +3,9 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
+module
+
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 
 /-!
 # Lp seminorm with respect to trimmed measure
@@ -11,6 +13,8 @@ import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 In this file we prove basic properties of the Lp-seminorm of a function
 with respect to the restriction of a measure to a sub-σ-algebra.
 -/
+
+@[expose] public section
 
 namespace MeasureTheory
 

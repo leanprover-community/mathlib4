@@ -3,8 +3,10 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Dynamics.BirkhoffSum.Average
+module
+
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Dynamics.BirkhoffSum.Average
 
 /-!
 # Birkhoff average in a normed space
@@ -16,6 +18,8 @@ At the time of writing, all lemmas in this file
 are motivated by the proof of the von Neumann Mean Ergodic Theorem,
 see `LinearIsometry.tendsto_birkhoffAverage_orthogonalProjection`.
 -/
+
+@[expose] public section
 
 open Function Set Filter
 open scoped Topology ENNReal Uniformity

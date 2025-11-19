@@ -3,12 +3,14 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Algebra.Lie.Weights.Killing
-import Mathlib.Algebra.Module.Torsion.Free
-import Mathlib.LinearAlgebra.RootSystem.Basic
-import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
-import Mathlib.LinearAlgebra.RootSystem.Reduced
+module
+
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Algebra.Lie.Weights.Killing
+public import Mathlib.Algebra.Module.Torsion.Free
+public import Mathlib.LinearAlgebra.RootSystem.Basic
+public import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
+public import Mathlib.LinearAlgebra.RootSystem.Reduced
 
 /-!
 # The root system associated with a Lie algebra
@@ -33,6 +35,8 @@ characteristic 0 form a root system. We achieve this by studying root chains.
   relative to a splitting Cartan subalgebra.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

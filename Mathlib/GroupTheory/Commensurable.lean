@@ -3,7 +3,9 @@ Copyright (c) 2021 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.GroupTheory.Index
+module
+
+public import Mathlib.GroupTheory.Index
 
 /-!
 # Commensurability for subgroups
@@ -32,6 +34,8 @@ We define `Commensurable` both for additive and multiplicative groups (in the `A
 interesting concept for abelian groups, and it would be unusual to write a non-abelian group
 additively.
 -/
+
+@[expose] public section
 
 open Pointwise
 

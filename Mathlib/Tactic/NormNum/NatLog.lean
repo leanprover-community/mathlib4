@@ -3,13 +3,17 @@ Copyright (c) 2024 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Andreas Gittis
 -/
-import Mathlib.Data.Nat.Log
-import Mathlib.Tactic.NormNum
+module
+
+public meta import Mathlib.Data.Nat.Log
+public meta import Mathlib.Tactic.NormNum
 
 /-! # `norm_num` extensions for `Nat.log` and `Nat.clog`
 
 This module defines `norm_num` extensions for `Nat.log` and `Nat.clog`.
 -/
+
+public meta section
 
 namespace Mathlib.Meta.NormNum
 

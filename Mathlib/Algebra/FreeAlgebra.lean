@@ -3,11 +3,13 @@ Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Adam Topaz, Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.FreeMonoid.UniqueProds
-import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.FreeMonoid.UniqueProds
+public import Mathlib.Algebra.MonoidAlgebra.Basic
+public import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 
 /-!
 # Free Algebras
@@ -47,6 +49,8 @@ inductively defined relation `FreeAlgebra.Rel`. Explicitly, the construction inv
 3. The free algebra `FreeAlgebra R X` is the quotient of `FreeAlgebra.Pre R X` by
   the relation `FreeAlgebra.Rel R X`.
 -/
+
+@[expose] public section
 
 
 variable (R : Type*) [CommSemiring R]

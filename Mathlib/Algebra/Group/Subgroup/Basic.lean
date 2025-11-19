@@ -3,10 +3,12 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Algebra.Group.Conj
-import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.Group.Subgroup.Ker
-import Mathlib.Algebra.Group.Torsion
+module
+
+public import Mathlib.Algebra.Group.Conj
+public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.Algebra.Group.Subgroup.Ker
+public import Mathlib.Algebra.Group.Torsion
 
 /-!
 # Basic results on subgroups
@@ -45,6 +47,8 @@ membership of a subgroup's underlying set.
 ## Tags
 subgroup, subgroups
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedMonoid Multiset Ring
 

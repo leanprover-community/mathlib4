@@ -3,7 +3,9 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Analysis.Complex.Norm
+module
+
+public import Mathlib.Analysis.Complex.Norm
 
 /-!
 # The partial order on the complex numbers
@@ -25,6 +27,8 @@ provided in `Mathlib/Analysis/RCLike/Basic.lean` as
 
 These are all only available with `open scoped ComplexOrder`.
 -/
+
+@[expose] public section
 
 namespace Complex
 
@@ -127,7 +131,7 @@ private alias ⟨_, ofReal_ne_zero_of_ne_zero⟩ := ofReal_ne_zero
 /-- Extension for the `positivity` tactic: `Complex.ofReal` is positive/nonnegative/nonzero if its
 input is. -/
 @[positivity Complex.ofReal _, Complex.ofReal _]
-def evalComplexOfReal : PositivityExt where eval {u α} _ _ e := do
+meta def evalComplexOfReal : PositivityExt where eval {u α} _ _ e := do
   -- TODO: Can we avoid duplicating the code?
   match u, α, e with
   | 0, ~q(ℂ), ~q(Complex.ofReal $a) =>

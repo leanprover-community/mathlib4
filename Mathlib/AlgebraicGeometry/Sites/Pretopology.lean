@@ -3,8 +3,10 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
-import Mathlib.AlgebraicGeometry.PullbackCarrier
+module
+
+public import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
+public import Mathlib.AlgebraicGeometry.PullbackCarrier
 
 /-!
 # Grothendieck topology defined by a morphism property
@@ -19,6 +21,8 @@ The pretopology is obtained from the precoverage `AlgebraicGeometry.Scheme.preco
 `Mathlib.AlgebraicGeometry.Sites.MorphismProperty`. The definition is postponed to this file,
 because the former does not have `HasPullbacks Scheme`.
 -/
+
+@[expose] public section
 
 universe v u
 

@@ -3,13 +3,17 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.RootSystem.Base
-import Mathlib.LinearAlgebra.RootSystem.Chain
-import Mathlib.LinearAlgebra.RootSystem.Finite.G2
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.Base
+public import Mathlib.LinearAlgebra.RootSystem.Chain
+public import Mathlib.LinearAlgebra.RootSystem.Finite.G2
 
 /-!
 # Supporting lemmas for Geck's construction of a Lie algebra associated to a root system
 -/
+
+@[expose] public section
 
 open Set
 open FaithfulSMul (algebraMap_injective)

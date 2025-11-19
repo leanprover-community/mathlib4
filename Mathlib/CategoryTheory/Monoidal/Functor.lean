@@ -3,9 +3,11 @@ Copyright (c) 2018 Michael Jendrusch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Jendrusch, Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Monoidal.Category
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-import Mathlib.CategoryTheory.Products.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Category
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+public import Mathlib.CategoryTheory.Products.Basic
 
 /-!
 # (Lax) monoidal functors
@@ -35,6 +37,8 @@ to monoid objects.
 
 See <https://stacks.math.columbia.edu/tag/0FFL>.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ v₃ v₁' u₁ u₂ u₃ u₁'

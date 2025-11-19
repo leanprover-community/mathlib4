@@ -3,9 +3,11 @@ Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Gabriel Ebner, Kyle Miller
 -/
-import Mathlib.Tactic.WithoutCDot
-import Lean.Meta.Tactic.Util
-import Lean.Elab.Tactic.Basic
+module
+
+public meta import Mathlib.Tactic.WithoutCDot
+public meta import Lean.Meta.Tactic.Util
+public meta import Lean.Elab.Tactic.Basic
 
 /-!
 # The `use` tactic
@@ -19,6 +21,8 @@ that more closely matches `use` from mathlib3.
 Note: The `use!` tactic is almost exactly the mathlib3 `use` except that it does not try
 applying `exists_prop`. See the failing test in `MathlibTest/Use.lean`.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 open Lean Meta Elab Tactic

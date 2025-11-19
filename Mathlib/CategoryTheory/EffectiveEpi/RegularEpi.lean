@@ -3,8 +3,10 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
-import Mathlib.CategoryTheory.EffectiveEpi.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 /-!
 
 # The relationship between effective and regular epimorphisms.
@@ -12,6 +14,8 @@ import Mathlib.CategoryTheory.EffectiveEpi.Basic
 This file proves that the notions of regular epi and effective epi are equivalent for morphisms with
 kernel pairs, and that regular epi implies effective epi in general.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

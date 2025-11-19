@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
 
 /-!
 # Smallness of Ext-groups from the existence of enough projectives
@@ -20,6 +22,8 @@ to specify the universe explicitly almost everywhere, which would be an inconven
 So we must be very selective regarding `HasExt` instances.
 
 -/
+
+@[expose] public section
 
 universe w v u
 

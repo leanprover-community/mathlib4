@@ -3,8 +3,10 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Limits.Presentation
-import Mathlib.CategoryTheory.Presentable.Finite
+module
+
+public import Mathlib.CategoryTheory.Limits.Presentation
+public import Mathlib.CategoryTheory.Presentable.Finite
 
 /-!
 # Presentation of a colimit of objects equipped with a presentation
@@ -14,6 +16,8 @@ import Mathlib.CategoryTheory.Presentable.Finite
   colimit presentations of the components, this is the colimit presentation over the sigma type.
 
 -/
+
+@[expose] public section
 
 universe s t w v u
 

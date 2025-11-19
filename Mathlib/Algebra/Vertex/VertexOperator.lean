@@ -3,8 +3,10 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Vertex.HVertexOperator
-import Mathlib.Data.Int.Interval
+module
+
+public import Mathlib.Algebra.Vertex.HVertexOperator
+public import Mathlib.Data.Int.Interval
 
 /-!
 # Vertex operators
@@ -24,6 +26,8 @@ In this file we introduce vertex operators as linear maps to Laurent series.
 * [A. Matsuo, K. Nagatomo, *On axioms for a vertex algebra and locality of quantum
   fields*][matsuo1997]
 -/
+
+@[expose] public section
 
 noncomputable section
 

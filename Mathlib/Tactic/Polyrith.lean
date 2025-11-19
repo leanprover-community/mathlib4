@@ -3,8 +3,10 @@ Copyright (c) 2022 Dhruv Bhatia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dhruv Bhatia, Eric Wieser, Mario Carneiro, Thomas Zhu
 -/
-import Lean.Elab.Tactic.Basic
-import Mathlib.Init
+module
+
+public meta import Lean.Elab.Tactic.Basic
+public import Mathlib.Init
 
 /-!
 
@@ -19,6 +21,8 @@ In the meantime, the `grobner` tactic (which calls into the Grobner basis module
 can close goals requiring polynomial reasoning,
 but is not able to give a "Try this:" suggestion based on `linear_combination`.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Polyrith
 

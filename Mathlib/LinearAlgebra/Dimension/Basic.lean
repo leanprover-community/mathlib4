@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison
 -/
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.LinearAlgebra.LinearIndependent.Basic
-import Mathlib.Data.Set.Card
+module
+
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.LinearAlgebra.LinearIndependent.Basic
+public import Mathlib.Data.Set.Card
 
 /-!
 # Dimension of modules and vector spaces
@@ -29,6 +31,8 @@ in different universes. They should be as general as they can be without
 inserting `lift`s. The types `M`, `M'`, ... all live in different universes,
 and `M₁`, `M₂`, ... all live in the same universe.
 -/
+
+@[expose] public section
 
 
 noncomputable section

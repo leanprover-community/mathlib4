@@ -3,12 +3,14 @@ Copyright (c) 2022 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.Algebra.Order.Ring.IsNonarchimedean
-import Mathlib.Data.Int.WithZero
-import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
-import Mathlib.RingTheory.Valuation.ExtendToLocalization
-import Mathlib.Topology.Algebra.Valued.ValuedField
-import Mathlib.Topology.Algebra.Valued.WithVal
+module
+
+public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
+public import Mathlib.Data.Int.WithZero
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+public import Mathlib.RingTheory.Valuation.ExtendToLocalization
+public import Mathlib.Topology.Algebra.Valued.ValuedField
+public import Mathlib.Topology.Algebra.Valued.WithVal
 
 /-!
 # Adic valuations on Dedekind domains
@@ -57,6 +59,8 @@ We are only interested in Dedekind domains with Krull dimension 1.
 ## Tags
 dedekind domain, dedekind ring, adic valuation
 -/
+
+@[expose] public section
 
 noncomputable section
 

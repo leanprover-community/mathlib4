@@ -3,7 +3,9 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Monoidal.DayConvolution
+module
+
+public import Mathlib.CategoryTheory.Monoidal.DayConvolution
 
 /-!
 # Braidings for Day convolution
@@ -17,6 +19,8 @@ prove that it satisfies the forward and reverse hexagon identities.
 Furthermore, we show that when both `C` and `V` are symmetric monoidal
 categories, then the Day convolution monoidal structure is symmetric as well.
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 

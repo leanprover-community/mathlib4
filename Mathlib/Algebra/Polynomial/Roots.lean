@@ -3,12 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker, Johan Commelin
 -/
-import Mathlib.Algebra.Polynomial.BigOperators
-import Mathlib.Algebra.Polynomial.RingDivision
-import Mathlib.Data.Set.Finite.Lemmas
-import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.SetTheory.Cardinal.Order
+module
+
+public import Mathlib.Algebra.Polynomial.BigOperators
+public import Mathlib.Algebra.Polynomial.RingDivision
+public import Mathlib.Data.Set.Finite.Lemmas
+public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Theory of univariate polynomials
@@ -28,6 +30,8 @@ We define the multiset of roots of a polynomial, and prove basic results about i
   ranges through its roots.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Ideal
 

@@ -3,7 +3,9 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Tactic.Order.CollectFacts
+module
+
+public meta import Mathlib.Tactic.Order.CollectFacts
 
 /-!
 # Graphs for the `order` tactic
@@ -11,6 +13,8 @@ import Mathlib.Tactic.Order.CollectFacts
 This module defines the `Graph` structure and basic operations on it. The `order` tactic uses
 `≤`-graphs, where the vertices represent atoms, and an edge `(x, y)` exists if `x ≤ y`.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Order
 

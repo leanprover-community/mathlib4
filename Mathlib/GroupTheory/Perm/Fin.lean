@@ -3,13 +3,17 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Yi Yuan
 -/
-import Mathlib.GroupTheory.Perm.Cycle.Type
-import Mathlib.GroupTheory.Perm.Option
-import Mathlib.Logic.Equiv.Fin.Rotate
+module
+
+public import Mathlib.GroupTheory.Perm.Cycle.Type
+public import Mathlib.GroupTheory.Perm.Option
+public import Mathlib.Logic.Equiv.Fin.Rotate
 
 /-!
 # Permutations of `Fin n`
 -/
+
+@[expose] public section
 
 assert_not_exists LinearMap
 

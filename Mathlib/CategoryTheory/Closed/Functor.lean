@@ -3,9 +3,11 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Closed.Cartesian
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+module
+
+public import Mathlib.CategoryTheory.Closed.Cartesian
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 
 /-!
 # Cartesian closed functors
@@ -28,6 +30,8 @@ https://ncatlab.org/nlab/show/Frobenius+reciprocity
 Frobenius reciprocity, Cartesian closed functor
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

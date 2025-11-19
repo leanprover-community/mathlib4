@@ -3,9 +3,11 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.RingTheory.DedekindDomain.AdicValuation
-import Mathlib.RingTheory.DedekindDomain.Factorization
-import Mathlib.Topology.Algebra.RestrictedProduct.TopologicalSpace
+module
+
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.RingTheory.DedekindDomain.Factorization
+public import Mathlib.Topology.Algebra.RestrictedProduct.TopologicalSpace
 
 /-!
 # The finite adèle ring of a Dedekind domain
@@ -25,6 +27,8 @@ field, its finite adèle ring is just defined to be the trivial ring.
 ## Tags
 finite adèle ring, dedekind domain
 -/
+
+@[expose] public section
 
 variable (R : Type*) [CommRing R] [IsDedekindDomain R] {K : Type*}
     [Field K] [Algebra R K] [IsFractionRing R K]

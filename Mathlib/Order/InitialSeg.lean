@@ -3,11 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
-import Mathlib.Data.Sum.Order
-import Mathlib.Order.Hom.Lex
-import Mathlib.Order.RelIso.Set
-import Mathlib.Order.UpperLower.Basic
-import Mathlib.Order.WellFounded
+module
+
+public import Mathlib.Data.Sum.Order
+public import Mathlib.Order.Hom.Lex
+public import Mathlib.Order.RelIso.Set
+public import Mathlib.Order.UpperLower.Basic
+public import Mathlib.Order.WellFounded
 
 /-!
 # Initial and principal segments
@@ -40,6 +42,8 @@ These notations belong to the `InitialSeg` locale.
 * `α ≤i β` is an abbreviation for `(· < ·) ≼i (· < ·)`.
 * `α <i β` is an abbreviation for `(· < ·) ≺i (· < ·)`.
 -/
+
+@[expose] public section
 
 /-! ### Initial segment embeddings -/
 

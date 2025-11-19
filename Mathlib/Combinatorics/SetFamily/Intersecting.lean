@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Fintype.Card
-import Mathlib.Order.UpperLower.Basic
+module
+
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Intersecting families
@@ -23,6 +25,8 @@ This file defines intersecting families and proves their basic properties.
 
 * [D. J. Kleitman, *Families of non-disjoint subsets*][kleitman1966]
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 

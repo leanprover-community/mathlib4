@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
-import Mathlib.CategoryTheory.Limits.Types.Colimits
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
 
 
 /-!
@@ -18,6 +20,8 @@ the particular case when `f` is injective (in the file
 are stable under cobase change in the category of types).
 
 -/
+
+@[expose] public section
 
 universe u
 

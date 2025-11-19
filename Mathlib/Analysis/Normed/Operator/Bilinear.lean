@@ -3,9 +3,11 @@ Copyright (c) 2019 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
-import Mathlib.Analysis.Normed.Operator.Basic
-import Mathlib.Analysis.Normed.Operator.LinearIsometry
-import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
+module
+
+public import Mathlib.Analysis.Normed.Operator.Basic
+public import Mathlib.Analysis.Normed.Operator.LinearIsometry
+public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 
 /-!
 # Operator norm: bilinear maps
@@ -14,6 +16,8 @@ This file contains lemmas concerning operator norm as applied to bilinear maps `
 interpreted as linear maps `E → F → G` as usual (and similarly for semilinear variants).
 
 -/
+
+@[expose] public section
 
 suppress_compilation
 

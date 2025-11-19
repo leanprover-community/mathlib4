@@ -3,9 +3,10 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Anne Baanen
 -/
+module
 
-import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+public import Mathlib.Algebra.Polynomial.Derivative
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 /-!
 # Resultant of two polynomials
@@ -33,6 +34,8 @@ This file contains basic facts about resultant of two polynomials over commutati
   are implemented.
 
 -/
+
+@[expose] public section
 
 open Set
 

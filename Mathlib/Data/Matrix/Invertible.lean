@@ -3,8 +3,10 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Ahmad Alkhalawi
 -/
-import Mathlib.LinearAlgebra.Matrix.ConjTranspose
-import Mathlib.Tactic.Abel
+module
+
+public import Mathlib.LinearAlgebra.Matrix.ConjTranspose
+public import Mathlib.Tactic.Abel
 
 /-! # Extra lemmas about invertible matrices
 
@@ -20,6 +22,8 @@ in `LinearAlgebra/Matrix/NonsingularInverse.lean`.
 * `Matrix.isUnit_conjTranspose`
 * `Matrix.isUnit_transpose`
 -/
+
+@[expose] public section
 
 
 open scoped Matrix

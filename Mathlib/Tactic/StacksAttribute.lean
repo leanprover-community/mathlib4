@@ -3,8 +3,10 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Lean.Elab.Command
-import Mathlib.Init
+module
+
+public meta import Lean.Elab.Command
+public import Mathlib.Init
 
 /-!
 # The `stacks` and `kerodon` attributes
@@ -16,6 +18,8 @@ tags from the [Stacks Project](https://stacks.math.columbia.edu/tags) and
 While the Stacks Project is the main focus, because the tag format at Kerodon is
 compatible, the attribute can be used to tag results with Kerodon tags as well.
 -/
+
+public meta section
 
 open Lean Elab
 

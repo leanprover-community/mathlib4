@@ -3,12 +3,14 @@ Copyright (c) 2020 Patrick Stevens. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Stevens, Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Associated
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Data.Nat.Choose.Dvd
-import Mathlib.Data.Nat.Prime.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Associated
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.Data.Nat.Choose.Dvd
+public import Mathlib.Data.Nat.Prime.Basic
 
 /-!
 # Primorial
@@ -21,6 +23,8 @@ and proves that `primorial n ≤ 4 ^ n`.
 We use the local notation `n#` for the primorial of `n`: that is, the product of the primes less
 than or equal to `n`.
 -/
+
+@[expose] public section
 
 
 open Finset

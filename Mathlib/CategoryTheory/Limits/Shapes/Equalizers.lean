@@ -3,8 +3,10 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Markus Himmel
 -/
-import Mathlib.CategoryTheory.EpiMono
-import Mathlib.CategoryTheory.Limits.HasLimits
+module
+
+public import Mathlib.CategoryTheory.EpiMono
+public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # Equalizers and coequalizers
@@ -42,6 +44,8 @@ general limits can be used.
 
 * [F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1]
 -/
+
+@[expose] public section
 
 section
 

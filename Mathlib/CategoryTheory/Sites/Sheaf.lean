@@ -3,13 +3,15 @@ Copyright (c) 2020 Kevin Buzzard, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Yoneda
-import Mathlib.CategoryTheory.Preadditive.FunctorCategory
-import Mathlib.CategoryTheory.Sites.SheafOfTypes
-import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Yoneda
+public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
+public import Mathlib.CategoryTheory.Sites.SheafOfTypes
+public import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
+public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 /-!
 # Sheaves taking values in a category
@@ -50,6 +52,8 @@ a category `A'` instead, whose morphism universe of `A'` is defined to be `max u
 inequalities this can be changed.
 
 -/
+
+@[expose] public section
 
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃

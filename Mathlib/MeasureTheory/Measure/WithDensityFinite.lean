@@ -3,9 +3,11 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
-import Mathlib.Probability.ConditionalProbability
+module
+
+public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
+public import Mathlib.Probability.ConditionalProbability
 
 /-!
 # s-finite measures can be written as `withDensity` of a finite measure
@@ -35,6 +37,8 @@ In this definition and the results below, `μ` is an s-finite measure (`SFinite 
 * `ae_toFinite`: `ae μ.toFinite = ae μ`.
 
 -/
+
+@[expose] public section
 
 open Set
 open scoped ENNReal ProbabilityTheory

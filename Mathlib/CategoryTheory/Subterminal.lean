@@ -3,9 +3,11 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.CategoryTheory.Subobject.MonoOver
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+public import Mathlib.CategoryTheory.Subobject.MonoOver
 
 /-!
 # Subterminal objects
@@ -25,6 +27,8 @@ We also construct the subcategory of subterminal objects.
   is Cartesian closed (equivalently, a Heyting algebra).
 
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ u₁ u₂

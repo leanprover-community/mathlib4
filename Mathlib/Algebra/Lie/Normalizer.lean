@@ -3,9 +3,11 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Abelian
-import Mathlib.Algebra.Lie.IdealOperations
-import Mathlib.Algebra.Lie.Quotient
+module
+
+public import Mathlib.Algebra.Lie.Abelian
+public import Mathlib.Algebra.Lie.IdealOperations
+public import Mathlib.Algebra.Lie.Quotient
 
 /-!
 # The normalizer of Lie submodules and subalgebras.
@@ -31,6 +33,8 @@ consider the normalizer. This turns out to be a Lie subalgebra.
 
 lie algebra, normalizer
 -/
+
+@[expose] public section
 
 
 variable {R L M M' : Type*}

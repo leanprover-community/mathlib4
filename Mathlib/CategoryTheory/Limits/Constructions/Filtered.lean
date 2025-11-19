@@ -3,9 +3,11 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
-import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Filtered
-import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
+module
+
+public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Filtered
+public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
 
 /-!
 # Constructing colimits from finite colimits and filtered colimits
@@ -19,6 +21,8 @@ diagram of all coproducts of finite subsets of `α`.
 
 We also deduce the dual statement by invoking the original statement in `Cᵒᵖ`.
 -/
+
+@[expose] public section
 
 
 universe w v u

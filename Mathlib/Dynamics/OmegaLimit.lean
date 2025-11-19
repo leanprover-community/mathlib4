@@ -3,8 +3,10 @@ Copyright (c) 2020 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo
 -/
-import Mathlib.Dynamics.Flow
-import Mathlib.Tactic.Monotonicity
+module
+
+public import Mathlib.Dynamics.Flow
+public import Mathlib.Tactic.Monotonicity
 
 /-!
 # ω-limits
@@ -29,6 +31,8 @@ The `omegaLimit` scope provides the localised notation `ω` for
 `omegaLimit atBot` respectively for when the acting monoid is
 endowed with an order.
 -/
+
+@[expose] public section
 
 
 open Set Function Filter Topology

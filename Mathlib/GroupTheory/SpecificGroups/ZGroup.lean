@@ -3,11 +3,13 @@ Copyright (c) 2024 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.GroupTheory.Abelianization.Finite
-import Mathlib.GroupTheory.Nilpotent
-import Mathlib.GroupTheory.SchurZassenhaus
-import Mathlib.GroupTheory.SemidirectProduct
+module
+
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.GroupTheory.Abelianization.Finite
+public import Mathlib.GroupTheory.Nilpotent
+public import Mathlib.GroupTheory.SchurZassenhaus
+public import Mathlib.GroupTheory.SemidirectProduct
 
 /-!
 # Z-Groups
@@ -28,6 +30,8 @@ A Z-group is a group whose Sylow subgroups are all cyclic.
   to a semidirect product of two cyclic subgroups of coprime order.
 
 -/
+
+@[expose] public section
 
 variable (G G' G'' : Type*) [Group G] [Group G'] [Group G''] (f : G →* G') (f' : G' →* G'')
 

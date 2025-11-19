@@ -3,10 +3,11 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.GroupTheory.SpecificGroups.Alternating.Centralizer
-import Mathlib.GroupTheory.SpecificGroups.KleinFour
-import Mathlib.GroupTheory.Sylow
+public import Mathlib.GroupTheory.SpecificGroups.Alternating.Centralizer
+public import Mathlib.GroupTheory.SpecificGroups.KleinFour
+public import Mathlib.GroupTheory.Sylow
 
 /-! # The Klein Four subgroup of an alternating group on 4 letters
 
@@ -49,6 +50,8 @@ Prove `alternatingGroup.kleinFour α = commutator (alternatingGroup α)`
 without any assumption on `Nat.card α`.
 
 -/
+
+@[expose] public section
 
 namespace alternatingGroup
 

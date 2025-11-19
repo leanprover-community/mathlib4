@@ -3,8 +3,10 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.BumpFunction.Convolution
-import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
+module
+
+public import Mathlib.Analysis.Calculus.BumpFunction.Convolution
+public import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
 
 /-!
 # Density of smooth functions in the space of continuous functions
@@ -18,6 +20,8 @@ The heavy part of the proof is done upstream in `ContDiffBump.dist_normed_convol
 and `HasCompactSupport.contDiff_convolution_left`.
 Here we wrap these results removing measure-related arguments from the assumptions.
 -/
+
+@[expose] public section
 
 variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F] {f : E → F} {ε : ℝ}

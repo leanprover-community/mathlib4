@@ -3,10 +3,12 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.Complex.LocallyUniformLimit
-import Mathlib.NumberTheory.LSeries.Convergence
-import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
-import Mathlib.Analysis.Complex.HalfPlane
+module
+
+public import Mathlib.Analysis.Complex.LocallyUniformLimit
+public import Mathlib.NumberTheory.LSeries.Convergence
+public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+public import Mathlib.Analysis.Complex.HalfPlane
 
 /-!
 # Differentiability and derivatives of L-series
@@ -27,6 +29,8 @@ import Mathlib.Analysis.Complex.HalfPlane
 We introduce `LSeries.logMul` as an abbreviation for the point-wise product `log * f`, to avoid
 the problem that this expression does not type-check.
 -/
+
+@[expose] public section
 
 open Complex LSeries
 

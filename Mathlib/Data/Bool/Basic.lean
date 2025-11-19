@@ -3,8 +3,10 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
-import Mathlib.Logic.Basic
-import Mathlib.Order.Defs.LinearOrder
+module
+
+public import Mathlib.Logic.Basic
+public import Mathlib.Order.Defs.LinearOrder
 
 /-!
 # Booleans
@@ -16,6 +18,8 @@ relation to decidable propositions.
 bool, boolean, Bool, De Morgan
 
 -/
+
+@[expose] public section
 
 namespace Bool
 

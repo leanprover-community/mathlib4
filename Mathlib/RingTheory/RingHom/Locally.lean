@@ -3,9 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.LocalProperties.Basic
-import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.RingTheory.Localization.Away.Lemmas
+module
+
+public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.RingTheory.Localization.Away.Lemmas
 
 /-!
 # Target local closure of ring homomorphism properties
@@ -39,6 +41,8 @@ composition, base change, etc., so is `Locally P`.
   `Locally P`.
 
 -/
+
+@[expose] public section
 
 universe u v
 

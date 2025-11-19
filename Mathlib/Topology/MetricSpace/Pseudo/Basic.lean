@@ -3,10 +3,12 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Data.ENNReal.Real
-import Mathlib.Tactic.Bound.Attribute
-import Mathlib.Topology.EMetricSpace.Basic
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
+module
+
+public import Mathlib.Data.ENNReal.Real
+public import Mathlib.Tactic.Bound.Attribute
+public import Mathlib.Topology.EMetricSpace.Basic
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
 /-!
 ## Pseudo-metric spaces
@@ -14,6 +16,8 @@ import Mathlib.Topology.MetricSpace.Pseudo.Defs
 Further results about pseudo-metric spaces.
 
 -/
+
+@[expose] public section
 
 open Set Filter TopologicalSpace Bornology
 open scoped ENNReal NNReal Uniformity Topology

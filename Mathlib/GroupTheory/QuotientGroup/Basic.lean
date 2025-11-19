@@ -4,13 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Patrick Massot
 -/
 -- This file is to a certain extent based on `quotient_module.lean` by Johannes Hölzl.
+module
 
-import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.GroupTheory.Congruence.Hom
-import Mathlib.GroupTheory.Coset.Basic
-import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Group.Subgroup.Pointwise
+public import Mathlib.Data.Int.Cast.Lemmas
+public import Mathlib.GroupTheory.Congruence.Hom
+public import Mathlib.GroupTheory.Coset.Basic
+public import Mathlib.GroupTheory.QuotientGroup.Defs
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Quotients of groups by normal subgroups
@@ -35,6 +36,8 @@ proves Noether's first and second isomorphism theorems.
 
 isomorphism theorems, quotient groups
 -/
+
+@[expose] public section
 
 open Function
 open scoped Pointwise

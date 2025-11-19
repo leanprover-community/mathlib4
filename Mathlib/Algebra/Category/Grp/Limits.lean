@@ -3,13 +3,15 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.Grp.ForgetCorepresentable
-import Mathlib.Algebra.Category.Grp.Preadditive
-import Mathlib.Algebra.Category.MonCat.ForgetCorepresentable
-import Mathlib.Algebra.Category.MonCat.Limits
-import Mathlib.Algebra.Group.Subgroup.Ker
-import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
-import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
+module
+
+public import Mathlib.Algebra.Category.Grp.ForgetCorepresentable
+public import Mathlib.Algebra.Category.Grp.Preadditive
+public import Mathlib.Algebra.Category.MonCat.ForgetCorepresentable
+public import Mathlib.Algebra.Category.MonCat.Limits
+public import Mathlib.Algebra.Group.Subgroup.Ker
+public import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
+public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 
 /-!
 # The category of (commutative) (additive) groups has all limits
@@ -18,6 +20,8 @@ Further, these limits are preserved by the forgetful functor --- that is,
 the underlying types are just the limits in the category of types.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory CategoryTheory.Limits
 

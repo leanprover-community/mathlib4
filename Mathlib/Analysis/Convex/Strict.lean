@@ -3,9 +3,11 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Basic
-import Mathlib.Topology.Algebra.Group.Pointwise
-import Mathlib.Topology.Order.Basic
+module
+
+public import Mathlib.Analysis.Convex.Basic
+public import Mathlib.Topology.Algebra.Group.Pointwise
+public import Mathlib.Topology.Order.Basic
 
 /-!
 # Strictly convex sets
@@ -14,6 +16,8 @@ This file defines strictly convex sets.
 
 A set is strictly convex if the open segment between any two distinct points lies in its interior.
 -/
+
+@[expose] public section
 
 
 open Set

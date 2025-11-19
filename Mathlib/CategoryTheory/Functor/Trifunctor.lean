@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.Category
+module
+
+public import Mathlib.CategoryTheory.Functor.Category
 /-!
 # Trifunctors obtained by composition of bifunctors
 
@@ -16,6 +18,8 @@ the trifunctor `bifunctorComp₂₃ F G₂₃ : C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄`
 objects `X₁ : C₁`, `X₂ : C₂` and `X₃ : C₃` to `(F.obj X₁).obj ((G₂₃.obj X₂).obj X₃)`.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

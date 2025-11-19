@@ -3,9 +3,10 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.Dual.Defs
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.LinearAlgebra.Dual.Defs
 
 /-!
 # Transvections in a module
@@ -17,6 +18,8 @@ import Mathlib.LinearAlgebra.Dual.Defs
   a linear equivalence.
 
 -/
+
+@[expose] public section
 
 namespace LinearMap
 

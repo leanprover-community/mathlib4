@@ -3,9 +3,11 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Logic.IsEmpty
-import Mathlib.Tactic.Inhabit
-import Mathlib.Tactic.Push.Attr
+module
+
+public import Mathlib.Logic.IsEmpty
+public import Mathlib.Tactic.Inhabit
+public import Mathlib.Tactic.Push.Attr
 
 /-!
 # Types with a unique term
@@ -39,6 +41,8 @@ rather than a `Prop`-valued predicate,
 for good definitional properties of the default term.
 
 -/
+
+@[expose] public section
 
 universe u v w
 

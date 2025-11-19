@@ -3,10 +3,12 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
-import Mathlib.Analysis.SpecialFunctions.PolarCoord
-import Mathlib.Analysis.Complex.Convex
-import Mathlib.Data.Nat.Factorial.DoubleFactorial
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
+public import Mathlib.Analysis.SpecialFunctions.PolarCoord
+public import Mathlib.Analysis.Complex.Convex
+public import Mathlib.Data.Nat.Factorial.DoubleFactorial
 
 /-!
 # Gaussian integral
@@ -18,6 +20,8 @@ We prove various versions of the formula for the Gaussian integral:
 * `integral_gaussian_Ioi` and `integral_gaussian_complex_Ioi`: variants for integrals over `Ioi 0`.
 * `Complex.Gamma_one_half_eq`: the formula `Γ (1 / 2) = √π`.
 -/
+
+@[expose] public section
 
 noncomputable section
 

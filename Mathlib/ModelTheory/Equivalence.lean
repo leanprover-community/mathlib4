@@ -3,7 +3,9 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.Satisfiability
+module
+
+public import Mathlib.ModelTheory.Satisfiability
 
 /-!
 # Equivalence of Formulas
@@ -17,6 +19,8 @@ import Mathlib.ModelTheory.Satisfiability
 - Define the quotient of `L.Formula α` modulo `⇔[T]` and its Boolean Algebra structure.
 
 -/
+
+@[expose] public section
 
 universe u v w w'
 

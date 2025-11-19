@@ -3,8 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
+public import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 
 /-!
 # The functor from `Set.Iic j` deduced from a cocone
@@ -14,6 +15,8 @@ an extension of `F` as a functor `Set.Iic j ⥤ C` for which
 the top element is mapped to `c.pt`.
 
 -/
+
+@[expose] public section
 
 universe u
 

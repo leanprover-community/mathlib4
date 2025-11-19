@@ -3,9 +3,11 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.RootSystem.Base
-import Mathlib.LinearAlgebra.RootSystem.Chain
-import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.Base
+public import Mathlib.LinearAlgebra.RootSystem.Chain
+public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 
 /-!
 # Properties of the `𝔤₂` root system.
@@ -41,6 +43,8 @@ Once sufficient API for `RootPairing.Base` has been developed:
 * Given `P` satisfying `[P.IsG2]`, distinct elements of a base must pair to `-3` (in one order).
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

@@ -3,8 +3,10 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Logic.Encodable.Pi
+module
+
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Logic.Encodable.Pi
 
 /-!
 # W types
@@ -25,6 +27,8 @@ mathlib.
 While the name `WType` is somewhat verbose, it is preferable to putting a single character
 identifier `W` in the root namespace.
 -/
+
+@[expose] public section
 
 -- For "W_type"
 

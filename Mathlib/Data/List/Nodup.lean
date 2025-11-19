@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 -/
-import Mathlib.Data.List.Forall2
-import Mathlib.Data.Nat.Basic
-import Mathlib.Order.Basic
+module
+
+public import Mathlib.Data.List.Forall2
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Order.Basic
 
 /-!
 # Lists with no duplicates
@@ -13,6 +15,8 @@ import Mathlib.Order.Basic
 `List.Nodup` is defined in `Data/List/Basic`. In this file we prove various properties of this
 predicate.
 -/
+
+@[expose] public section
 
 
 universe u v

@@ -3,9 +3,11 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Nat.Init
-import Mathlib.Tactic.SplitIfs
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Data.Nat.Init
+public import Mathlib.Tactic.SplitIfs
 
 /-!
 # Cast of natural numbers
@@ -22,6 +24,8 @@ Preferentially, the homomorphism is written as the coercion `Nat.cast`.
 * `AddMonoidWithOne`: Type class for which `Nat.cast` is a canonical monoid homomorphism from `ℕ`.
 * `Nat.cast`: Canonical homomorphism `ℕ → R`.
 -/
+
+@[expose] public section
 
 variable {R : Type*}
 

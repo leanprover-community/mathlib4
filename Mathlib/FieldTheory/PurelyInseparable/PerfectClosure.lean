@@ -3,9 +3,11 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.Algebra.CharP.IntermediateField
-import Mathlib.FieldTheory.PurelyInseparable.Basic
+module
+
+public import Mathlib.Algebra.CharP.Lemmas
+public import Mathlib.Algebra.CharP.IntermediateField
+public import Mathlib.FieldTheory.PurelyInseparable.Basic
 
 /-!
 
@@ -37,6 +39,8 @@ This file contains basic results about relative perfect closures.
 separable degree, degree, separable closure, purely inseparable
 
 -/
+
+@[expose] public section
 
 open IntermediateField Module
 

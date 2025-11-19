@@ -3,14 +3,16 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.FieldTheory.Minpoly.MinpolyDiv
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.FieldTheory.PurelyInseparable.Basic
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
-import Mathlib.LinearAlgebra.Vandermonde
-import Mathlib.RingTheory.Trace.Defs
+module
+
+public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.FieldTheory.Minpoly.MinpolyDiv
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.FieldTheory.PurelyInseparable.Basic
+public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
+public import Mathlib.LinearAlgebra.Vandermonde
+public import Mathlib.RingTheory.Trace.Defs
 
 /-!
 # Trace for (finite) ring extensions.
@@ -43,6 +45,8 @@ the roots of the minimal polynomial of `s` over `R`.
 * https://en.wikipedia.org/wiki/Field_trace
 
 -/
+
+@[expose] public section
 
 universe u v w z
 

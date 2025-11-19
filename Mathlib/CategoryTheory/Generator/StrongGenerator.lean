@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ExtremalEpi
-import Mathlib.CategoryTheory.Generator.Basic
-import Mathlib.CategoryTheory.Limits.Presentation
+module
+
+public import Mathlib.CategoryTheory.ExtremalEpi
+public import Mathlib.CategoryTheory.Generator.Basic
+public import Mathlib.CategoryTheory.Limits.Presentation
 
 /-!
 # Strong generators
@@ -28,6 +30,8 @@ then `S` is a strong generator.
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
 -/
+
+@[expose] public section
 
 universe w' w v u
 

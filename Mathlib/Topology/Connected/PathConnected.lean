@@ -3,7 +3,9 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Topology.Path
+module
+
+public import Mathlib.Topology.Path
 
 /-!
 # Path connectedness
@@ -44,6 +46,8 @@ path-connected, and that every path-connected set/space is also connected. (See
 `Counterexamples.TopologistsSineCurve` for an example of a set in `ℝ × ℝ` that is connected but not
 path-connected.)
 -/
+
+@[expose] public section
 
 noncomputable section
 

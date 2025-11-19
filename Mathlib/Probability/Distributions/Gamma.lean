@@ -3,9 +3,11 @@ Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
-import Mathlib.Probability.Notation
-import Mathlib.Probability.CDF
-import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
+module
+
+public import Mathlib.Probability.Notation
+public import Mathlib.Probability.CDF
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 
 /-! # Gamma distributions over ℝ
 
@@ -20,6 +22,8 @@ Define the gamma measure over the reals.
 * `gammaMeasure`: a gamma measure on `ℝ`, parametrized by its shape `a` and rate `r`.
 
 -/
+
+@[expose] public section
 
 open scoped ENNReal NNReal
 

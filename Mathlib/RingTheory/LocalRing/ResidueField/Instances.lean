@@ -3,10 +3,14 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
-import Mathlib.FieldTheory.Separable
+module
+
+public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
+public import Mathlib.FieldTheory.Separable
 
 /-! # Instances on residue fields -/
+
+@[expose] public section
 
 variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B] [Algebra R A] [Algebra A B]
     [Algebra R B] [IsScalarTower R A B]

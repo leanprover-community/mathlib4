@@ -3,8 +3,10 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Filippo A. E. Nuccio
 -/
-import Mathlib.RingTheory.Localization.Integer
-import Mathlib.RingTheory.Localization.Submodule
+module
+
+public import Mathlib.RingTheory.Localization.Integer
+public import Mathlib.RingTheory.Localization.Submodule
 
 /-!
 # Fractional ideals
@@ -52,6 +54,8 @@ making the localization a field.
 
 fractional ideal, fractional ideals, invertible ideal
 -/
+
+@[expose] public section
 
 
 open IsLocalization Pointwise nonZeroDivisors

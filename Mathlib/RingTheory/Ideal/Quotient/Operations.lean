@@ -3,10 +3,12 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Patrick Massot
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Operations
-import Mathlib.Algebra.Ring.Fin
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.RingTheory.Ideal.Quotient.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Operations
+public import Mathlib.Algebra.Ring.Fin
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.Basic
 
 /-!
 # More operations on modules and ideals related to quotients
@@ -24,6 +26,8 @@ import Mathlib.RingTheory.Ideal.Quotient.Basic
   ideals (see also `ZMod.prodEquivPi` in `Data.ZMod.Quotient` for elementary versions about
   `ZMod`).
 -/
+
+@[expose] public section
 
 universe u v w
 

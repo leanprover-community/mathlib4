@@ -3,7 +3,9 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Iso
+module
+
+public meta import Mathlib.CategoryTheory.Iso
 
 /-!
 # Extension of `reassoc` to isomorphisms.
@@ -19,6 +21,8 @@ but with the conclusions simplified using basic proportions in isomorphisms in a
 This is useful for generating lemmas which the simplifier can use even on expressions
 that are already right associated.
 -/
+
+public meta section
 
 open Lean Meta Elab Tactic
 open Mathlib.Tactic

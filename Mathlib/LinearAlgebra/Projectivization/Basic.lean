@@ -3,8 +3,10 @@ Copyright (c) 2022 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
-import Mathlib.LinearAlgebra.FiniteDimensional.Basic
+module
+
+public import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 
 /-!
 
@@ -31,6 +33,8 @@ We have three ways to construct terms of `ℙ K V`:
 - For `v : ℙ K V`, `v.rep : V` is a representative of `v`.
 
 -/
+
+@[expose] public section
 
 variable (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V]
 

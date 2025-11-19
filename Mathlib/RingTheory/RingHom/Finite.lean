@@ -3,9 +3,11 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.LocalProperties.Basic
-import Mathlib.RingTheory.Localization.Integer
-import Mathlib.RingTheory.TensorProduct.Finite
+module
+
+public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.RingTheory.Localization.Integer
+public import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 
@@ -21,6 +23,8 @@ Let `R` be a commutative ring, `S` is an `R`-algebra, `M` be a submonoid of `R`.
   a set `{ r }` that spans `R` such that `Sᵣ` is a finite `Rᵣ`-algebra.
 
 -/
+
+@[expose] public section
 
 
 namespace RingHom

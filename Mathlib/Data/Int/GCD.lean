@@ -3,15 +3,17 @@ Copyright (c) 2018 Guy Leroy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.GroupWithZero.Semiconj
-import Mathlib.Algebra.Group.Commute.Units
-import Mathlib.Data.Set.Operations
-import Mathlib.Order.Basic
-import Mathlib.Order.Bounds.Defs
-import Mathlib.Algebra.Group.Int.Defs
-import Mathlib.Data.Int.Basic
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Nat.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Semiconj
+public import Mathlib.Algebra.Group.Commute.Units
+public import Mathlib.Data.Set.Operations
+public import Mathlib.Order.Basic
+public import Mathlib.Order.Bounds.Defs
+public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Data.Int.Basic
+public import Mathlib.Algebra.Divisibility.Basic
+public import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # Extended GCD and divisibility over ℤ
@@ -30,6 +32,8 @@ import Mathlib.Algebra.Group.Nat.Defs
 
 Bézout's lemma, Bezout's lemma
 -/
+
+@[expose] public section
 
 /-! ### Extended Euclidean algorithm -/
 

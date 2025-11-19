@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+module
+
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 # Bases
@@ -55,6 +57,8 @@ ordered index type `ι`.
 basis, bases
 
 -/
+
+@[expose] public section
 
 assert_not_exists LinearMap.pi LinearIndependent Cardinal
 -- TODO: assert_not_exists Submodule

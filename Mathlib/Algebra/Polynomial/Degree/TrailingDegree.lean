@@ -3,8 +3,10 @@ Copyright (c) 2020 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Polynomial.Degree.Support
-import Mathlib.Data.ENat.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.Degree.Support
+public import Mathlib.Data.ENat.Basic
 
 /-!
 # Trailing degree of univariate polynomials
@@ -18,6 +20,8 @@ import Mathlib.Data.ENat.Basic
 Converts most results about `degree`, `natDegree` and `leadingCoeff` to results about the bottom
 end of a polynomial
 -/
+
+@[expose] public section
 
 
 noncomputable section

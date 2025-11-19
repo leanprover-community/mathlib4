@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Idempotents.Karoubi
+module
+
+public import Mathlib.CategoryTheory.Idempotents.Karoubi
 
 /-!
 # Idempotent completeness and functor categories
@@ -16,6 +18,8 @@ We also provide a fully faithful functor
 `J` and `C`.
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory

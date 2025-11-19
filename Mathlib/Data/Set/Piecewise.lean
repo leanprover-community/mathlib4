@@ -3,13 +3,17 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Andrew Zipperer, Haitao Zhang, Minchao Wu, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Function
+module
+
+public import Mathlib.Data.Set.Function
 
 /-!
 # Piecewise functions
 
 This file contains basic results on piecewise defined functions.
 -/
+
+@[expose] public section
 
 variable {α β γ δ : Type*} {ι : Sort*} {π : α → Type*}
 

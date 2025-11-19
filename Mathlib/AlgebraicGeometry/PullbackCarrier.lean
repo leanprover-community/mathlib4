@@ -3,8 +3,10 @@ Copyright (c) 2024 Qi Ge, Christian Merten, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Qi Ge, Christian Merten, Andrew Yang
 -/
-import Mathlib.Algebra.Category.Ring.LinearAlgebra
-import Mathlib.AlgebraicGeometry.ResidueField
+module
+
+public import Mathlib.Algebra.Category.Ring.LinearAlgebra
+public import Mathlib.AlgebraicGeometry.ResidueField
 
 /-!
 # Underlying topological space of fibre product of schemes
@@ -23,6 +25,8 @@ topological space of `pullback f g`, i.e. the fiber product `X ×[S] Y`.
 We also give the ranges of `pullback.fst`, `pullback.snd` and `pullback.map`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits TopologicalSpace IsLocalRing TensorProduct
 

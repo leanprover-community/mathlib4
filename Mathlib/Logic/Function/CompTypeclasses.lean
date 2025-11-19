@@ -3,8 +3,10 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Tactic.TypeStar
-import Mathlib.Tactic.Lemma
+module
+
+public import Mathlib.Tactic.TypeStar
+public import Mathlib.Tactic.Lemma
 
 /-!
 # Propositional typeclasses on several maps
@@ -20,6 +22,8 @@ TODO :
 * align with RingHomCompTriple
 
 -/
+
+@[expose] public section
 
 section CompTriple
 

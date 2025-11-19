@@ -3,10 +3,12 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.NonUnitalHom
-import Mathlib.Data.Set.UnionLift
-import Mathlib.LinearAlgebra.Span.Basic
-import Mathlib.RingTheory.NonUnitalSubring.Basic
+module
+
+public import Mathlib.Algebra.Algebra.NonUnitalHom
+public import Mathlib.Data.Set.UnionLift
+public import Mathlib.LinearAlgebra.Span.Basic
+public import Mathlib.RingTheory.NonUnitalSubring.Basic
 
 /-!
 # Non-unital Subalgebras over Commutative Semirings
@@ -18,6 +20,8 @@ In this file we define `NonUnitalSubalgebra`s and the usual operations on them (
 * once we have scalar actions by semigroups (as opposed to monoids), implement the action of a
   non-unital subalgebra on the larger algebra.
 -/
+
+@[expose] public section
 
 universe u u' v v' w w'
 

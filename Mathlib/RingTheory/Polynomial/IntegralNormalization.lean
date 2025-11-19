@@ -3,14 +3,18 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker, Andrew Yang, Yuyang Zhao
 -/
-import Mathlib.Algebra.Polynomial.Degree.Lemmas
-import Mathlib.RingTheory.Polynomial.ScaleRoots
+module
+
+public import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.RingTheory.Polynomial.ScaleRoots
 
 /-!
 # Theory of monic polynomials
 
 We define `integralNormalization`, which relate arbitrary polynomials to monic ones.
 -/
+
+@[expose] public section
 
 
 open Polynomial

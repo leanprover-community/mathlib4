@@ -3,10 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Connected
-import Mathlib.CategoryTheory.Limits.Types.Filtered
-import Mathlib.CategoryTheory.Limits.Types.Pushouts
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+module
+
+public import Mathlib.CategoryTheory.Limits.Connected
+public import Mathlib.CategoryTheory.Limits.Types.Filtered
+public import Mathlib.CategoryTheory.Limits.Types.Pushouts
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Stability properties of monomorphisms in `Type`
@@ -21,6 +23,8 @@ will also be inferred automatically.
 in the file `Mathlib/CategoryTheory/MorphismProperty/Retract.lean`.)
 
 -/
+
+@[expose] public section
 
 universe v' u' u
 

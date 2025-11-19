@@ -3,12 +3,13 @@ Copyright (c) 2025 Matthew Jasper. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matthew Jasper, Kevin Buzzard
 -/
+module
 
-import Mathlib.Algebra.Module.Torsion.Basic
-import Mathlib.RingTheory.DedekindDomain.Dvr
-import Mathlib.RingTheory.Flat.Localization
-import Mathlib.RingTheory.Flat.Tensor
-import Mathlib.RingTheory.Ideal.IsPrincipal
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.RingTheory.DedekindDomain.Dvr
+public import Mathlib.RingTheory.Flat.Localization
+public import Mathlib.RingTheory.Flat.Tensor
+public import Mathlib.RingTheory.Ideal.IsPrincipal
 
 /-!
 # Relationships between flatness and torsionfreeness.
@@ -26,6 +27,8 @@ domains and valuation rings.
   the complement of any maximal ideal is a valuation ring then `Torsion R M = ⊥` iff `M` is a
   flat `R`-module.
 -/
+
+@[expose] public section
 -- TODO: Add definition and properties of Prüfer domains.
 -- TODO: Use `IsTorsionFree`.
 

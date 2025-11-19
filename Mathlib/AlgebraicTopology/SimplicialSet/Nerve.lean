@@ -3,8 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Basic
-import Mathlib.CategoryTheory.ComposableArrows.Basic
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
+public import Mathlib.CategoryTheory.ComposableArrows.Basic
 
 /-!
 
@@ -19,6 +21,8 @@ which is the category `Fin (n + 1) ⥤ C`.
 * [Paul G. Goerss, John F. Jardine, *Simplicial Homotopy Theory*][goerss-jardine-2009]
 
 -/
+
+@[expose] public section
 
 open CategoryTheory.Category Simplicial
 

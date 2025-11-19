@@ -3,8 +3,9 @@ Copyright (c) 2025 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header
 
 /-!
 # The `commandStart` linter
@@ -13,6 +14,8 @@ The `commandStart` linter emits a warning if
 * either a command does not start at the beginning of a line;
 * or the "hypotheses segment" of a declaration does not coincide with its pretty-printed version.
 -/
+
+public meta section
 
 open Lean Elab Command Linter
 

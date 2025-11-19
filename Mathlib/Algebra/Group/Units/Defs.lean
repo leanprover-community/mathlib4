@@ -3,7 +3,9 @@ Copyright (c) 2017 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johannes Hölzl, Chris Hughes, Jens Wagemaker, Jon Eugster
 -/
-import Mathlib.Algebra.Group.Commute.Defs
+module
+
+public import Mathlib.Algebra.Group.Commute.Defs
 
 /-!
 # Units (i.e., invertible elements) of a monoid
@@ -27,6 +29,8 @@ resembling the notation $R^{\times}$ for the units of a ring, which is common in
 
 The results here should be used to golf the basic `Group` lemmas.
 -/
+
+@[expose] public section
 
 assert_not_exists Multiplicative MonoidWithZero DenselyOrdered
 

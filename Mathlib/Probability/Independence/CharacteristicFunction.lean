@@ -3,8 +3,10 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.Measure.CharacteristicFunction
-import Mathlib.Probability.Independence.Basic
+module
+
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction
+public import Mathlib.Probability.Independence.Basic
 
 /-!
 # Links between independence and characteristic function
@@ -14,6 +16,8 @@ to the product of the characteristic functions. More specifically, prove this in
 two variables and a finite family of variables. We prove the analoguous statemens in Banach spaces,
 with an arbitrary Lp norm, for the dual characteristic function.
 -/
+
+@[expose] public section
 
 namespace ProbabilityTheory
 

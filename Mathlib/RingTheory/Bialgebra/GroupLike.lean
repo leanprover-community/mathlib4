@@ -3,14 +3,18 @@ Copyright (c) 2025 Yaël Dillies, Michał Mrugała. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Michał Mrugała
 -/
-import Mathlib.RingTheory.Bialgebra.Basic
-import Mathlib.RingTheory.Coalgebra.GroupLike
+module
+
+public import Mathlib.RingTheory.Bialgebra.Basic
+public import Mathlib.RingTheory.Coalgebra.GroupLike
 
 /-!
 # Group-like elements in a bialgebra
 
 This file proves that group-like elements in a bialgebra form a monoid.
 -/
+
+@[expose] public section
 
 open Coalgebra Bialgebra
 

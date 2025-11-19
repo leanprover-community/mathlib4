@@ -3,8 +3,10 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Algebra.Field.ZMod
-import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+module
+
+public import Mathlib.Algebra.Field.ZMod
+public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 
 /-!
 # Ideal of `ℤ`
@@ -28,6 +30,8 @@ In particular, for `I` an ideal of a ring `R` extending `ℤ`, we prove several 
 * `Nat.absNorm_under_prime`: If `P` is a prime ideal, then `absNorm (under ℤ P)` is a prime number.
 
 -/
+
+@[expose] public section
 
 instance Int.ideal_span_isMaximal_of_prime (p : ℕ) [Fact (Nat.Prime p)] :
     (Ideal.span {(p : ℤ)}).IsMaximal :=

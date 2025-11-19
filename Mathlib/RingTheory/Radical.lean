@@ -3,14 +3,16 @@ Copyright (c) 2024 Jineon Baek, Seewoo Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jineon Baek, Seewoo Lee, Bhavik Mehta, Arend Mellendijk
 -/
-import Mathlib.Algebra.EuclideanDomain.Basic
-import Mathlib.Algebra.Order.Group.Finset
-import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
-import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
-import Mathlib.RingTheory.Nilpotent.Basic
-import Mathlib.Data.Nat.PrimeFin
-import Mathlib.Algebra.Squarefree.Basic
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Basic
+public import Mathlib.Algebra.Order.Group.Finset
+public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
+public import Mathlib.RingTheory.Nilpotent.Basic
+public import Mathlib.Data.Nat.PrimeFin
+public import Mathlib.Algebra.Squarefree.Basic
 
 /-!
 # Radical of an element of a unique factorization normalization monoid
@@ -53,6 +55,8 @@ This is different from the radical of an ideal.
 - Make a comparison with `Ideal.radical`. Especially, for principal ideal,
   `Ideal.radical (Ideal.span {a}) = Ideal.span {radical a}`.
 -/
+
+@[expose] public section
 
 noncomputable section
 

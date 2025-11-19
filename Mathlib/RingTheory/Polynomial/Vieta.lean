@@ -3,8 +3,10 @@ Copyright (c) 2020 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang
 -/
-import Mathlib.Algebra.Polynomial.Splits
-import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
+module
+
+public import Mathlib.Algebra.Polynomial.Splits
+public import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
 
 /-!
 # Vieta's Formula
@@ -21,6 +23,8 @@ For `R` be an integral domain (so that `p.roots` is defined for any `p : R[X]` a
 we derive `Polynomial.coeff_eq_esymm_roots_of_card`, the relationship between the coefficients and
 the roots of `p` for a polynomial `p` that splits (i.e. having as many roots as its degree).
 -/
+
+@[expose] public section
 
 open Finset Polynomial
 

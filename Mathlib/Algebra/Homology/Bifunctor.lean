@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.TotalComplex
-import Mathlib.CategoryTheory.GradedObject.Bifunctor
+module
+
+public import Mathlib.Algebra.Homology.TotalComplex
+public import Mathlib.CategoryTheory.GradedObject.Bifunctor
 
 /-!
 # The action of a bifunctor on homological complexes
@@ -20,6 +22,8 @@ a typeclass `HasMapBifunctor K₁ K₂ F c` which allows to define
 bicomplex `(((F.mapBifunctorHomologicalComplex c₁ c₂).obj K₁).obj K₂)`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 

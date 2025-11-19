@@ -3,7 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.RingTheory.Ideal.Lattice
+module
+
+public import Mathlib.RingTheory.Ideal.Lattice
 
 /-!
 
@@ -15,6 +17,8 @@ This file contains the definition of `Ideal.IsPrime` for prime ideals.
 
 Support right ideals, and two-sided ideals over non-commutative rings.
 -/
+
+@[expose] public section
 
 
 universe u v w

@@ -3,8 +3,10 @@ Copyright (c) 2022 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Eric Wieser, Jeremy Avigad, Johan Commelin
 -/
-import Mathlib.Data.Matrix.Invertible
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+module
+
+public import Mathlib.Data.Matrix.Invertible
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
 /-! # 2×2 block matrices and the Schur complement
 
@@ -27,6 +29,8 @@ Compare with `Matrix.invertibleOfFromBlocks₁₁Invertible`.
 * `Matrix.det_one_add_mul_comm`: the **Weinstein–Aronszajn identity**.
 
 -/
+
+@[expose] public section
 
 
 variable {l m n α : Type*}

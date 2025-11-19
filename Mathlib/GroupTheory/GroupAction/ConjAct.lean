@@ -3,10 +3,12 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
-import Mathlib.Data.Fintype.Card
-import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.GroupTheory.Subgroup.Centralizer
+module
+
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.GroupTheory.Subgroup.Centralizer
 
 /-!
 # Conjugation action of a group on itself
@@ -31,6 +33,8 @@ is that some theorems about the group actions will not apply when since this
 `MulAut.conj g • h` describes an action of `MulAut G` on `G`, and not an action of `G`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 

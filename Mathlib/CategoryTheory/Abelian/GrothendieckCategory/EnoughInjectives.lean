@@ -3,14 +3,16 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.CommSq
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ColimCoyoneda
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Monomorphisms
-import Mathlib.CategoryTheory.Abelian.Monomorphisms
-import Mathlib.CategoryTheory.Preadditive.Injective.LiftingProperties
-import Mathlib.CategoryTheory.SmallObject.Basic
-import Mathlib.CategoryTheory.Subobject.HasCardinalLT
-import Mathlib.Order.TransfiniteIteration
+module
+
+public import Mathlib.CategoryTheory.Abelian.CommSq
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ColimCoyoneda
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Monomorphisms
+public import Mathlib.CategoryTheory.Abelian.Monomorphisms
+public import Mathlib.CategoryTheory.Preadditive.Injective.LiftingProperties
+public import Mathlib.CategoryTheory.SmallObject.Basic
+public import Mathlib.CategoryTheory.Subobject.HasCardinalLT
+public import Mathlib.Order.TransfiniteIteration
 
 /-!
 # Grothendieck abelian categories have enough injectives
@@ -58,6 +60,8 @@ Here, we split the argument into two separate facts:
 - [Alexander Grothendieck, *Sur quelques points d'algèbre homologique*][grothendieck-1957]
 
 -/
+
+@[expose] public section
 
 universe w v u
 

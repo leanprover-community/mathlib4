@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Order.Filter.CountableInter
-import Mathlib.Order.LiminfLimsup
-import Mathlib.Topology.Order.Monotone
+module
+
+public import Mathlib.Order.Filter.CountableInter
+public import Mathlib.Order.LiminfLimsup
+public import Mathlib.Topology.Order.Monotone
 
 /-!
 # Lemmas about liminf and limsup in an order topology.
@@ -20,6 +22,8 @@ import Mathlib.Topology.Order.Monotone
 The same lemmas are true in `ℝ`, `ℝ × ℝ`, `ι → ℝ`, `EuclideanSpace ι ℝ`. To avoid code
 duplication, we provide an ad hoc axiomatisation of the properties we need.
 -/
+
+@[expose] public section
 
 open Filter TopologicalSpace
 open scoped Topology

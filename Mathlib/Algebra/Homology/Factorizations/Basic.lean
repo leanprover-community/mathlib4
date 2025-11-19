@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomologicalComplex
-import Mathlib.CategoryTheory.Abelian.EpiWithInjectiveKernel
+module
+
+public import Mathlib.Algebra.Homology.HomologicalComplex
+public import Mathlib.CategoryTheory.Abelian.EpiWithInjectiveKernel
 
 /-!
 # Basic definitions for factorizations lemmas
@@ -31,6 +33,8 @@ of complexes of injective objects in `C`. This will be used in the construction
 of total derived functors (and a refactor of the sequence of derived functors).
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory Abelian

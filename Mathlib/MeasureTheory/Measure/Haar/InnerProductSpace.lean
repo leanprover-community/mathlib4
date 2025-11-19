@@ -3,9 +3,11 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.InnerProductSpace.Orientation
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-import Mathlib.Analysis.Normed.Lp.MeasurableSpace
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Orientation
+public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 
 /-!
 # Volume forms and measures on inner product spaces
@@ -16,6 +18,8 @@ rise to a canonical volume form. We show that the measure coming from this volum
 measure `1` to the parallelepiped spanned by any orthonormal basis, and that it coincides with
 the canonical `volume` from the `MeasureSpace` instance.
 -/
+
+@[expose] public section
 
 open Module MeasureTheory MeasureTheory.Measure Set WithLp
 

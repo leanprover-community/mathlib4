@@ -3,9 +3,11 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Order.Interval.Set.LinearOrder
-import Mathlib.Order.MinMax
+module
+
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Order.Interval.Set.LinearOrder
+public import Mathlib.Order.MinMax
 
 /-!
 # Extra lemmas about intervals
@@ -16,6 +18,8 @@ from `Data.Set.Lattice`, including `Disjoint`.
 
 We consider various intersections and unions of half infinite intervals.
 -/
+
+@[expose] public section
 
 
 universe u v w

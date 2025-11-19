@@ -3,10 +3,11 @@ Copyright (c) 2023 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Luigi Massacci
 -/
+module
 
-import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Topology.ContinuousMap.Bounded.Normed
-import Mathlib.Topology.Sets.Compacts
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Topology.ContinuousMap.Bounded.Normed
+public import Mathlib.Topology.Sets.Compacts
 
 /-!
 # Continuously differentiable functions supported in a given compact set
@@ -70,6 +71,8 @@ larger space of test functions.
 
 distributions
 -/
+
+@[expose] public section
 
 open TopologicalSpace SeminormFamily Set Function Seminorm UniformSpace
 open scoped BoundedContinuousFunction Topology NNReal ContDiff

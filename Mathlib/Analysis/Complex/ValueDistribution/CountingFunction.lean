@@ -3,8 +3,10 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Meromorphic.Divisor
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
+module
+
+public import Mathlib.Analysis.Meromorphic.Divisor
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
 # The Counting Function of Value Distribution Theory
@@ -37,6 +39,8 @@ Approximation*][MR3156076] for a detailed discussion.
 - Discuss the counting function for rational functions, add a forward reference to the upcoming
   converse, formulated in terms of the Nevanlinna height.
 -/
+
+@[expose] public section
 
 open MeromorphicOn Metric Real Set
 

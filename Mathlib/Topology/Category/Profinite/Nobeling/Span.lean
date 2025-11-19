@@ -3,10 +3,12 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Data.Finset.Sort
-import Mathlib.Tactic.NoncommRing
-import Mathlib.Topology.Category.Profinite.CofilteredLimit
-import Mathlib.Topology.Category.Profinite.Nobeling.Basic
+module
+
+public import Mathlib.Data.Finset.Sort
+public import Mathlib.Tactic.NoncommRing
+public import Mathlib.Topology.Category.Profinite.CofilteredLimit
+public import Mathlib.Topology.Category.Profinite.Nobeling.Basic
 
 /-!
 # The good products span
@@ -27,6 +29,8 @@ For the overall proof outline see `Mathlib/Topology/Category/Profinite/Nobeling/
 
 - [scholze2019condensed], Theorem 5.4.
 -/
+
+@[expose] public section
 
 universe u
 

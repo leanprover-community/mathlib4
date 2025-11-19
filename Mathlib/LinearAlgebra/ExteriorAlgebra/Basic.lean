@@ -3,8 +3,10 @@ Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhangir Azerbayev, Adam Topaz, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
-import Mathlib.LinearAlgebra.Alternating.Curry
+module
+
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
+public import Mathlib.LinearAlgebra.Alternating.Curry
 
 /-!
 # Exterior Algebras
@@ -43,6 +45,8 @@ of the exterior algebra.
 The exterior algebra of `M` is constructed as simply `CliffordAlgebra (0 : QuadraticForm R M)`,
 as this avoids us having to duplicate API.
 -/
+
+@[expose] public section
 
 
 universe u1 u2 u3 u4 u5

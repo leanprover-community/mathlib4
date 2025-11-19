@@ -3,9 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Localization.HasLocalization
-import Mathlib.CategoryTheory.EssentiallySmall
+public import Mathlib.CategoryTheory.Localization.HasLocalization
+public import Mathlib.CategoryTheory.EssentiallySmall
 
 /-!
 # Locally small localizations
@@ -16,6 +17,8 @@ there exists (or for all) localization functors `L : C ⥤ D` for `W`,
 the category `D` is locally `w`-small.
 
 -/
+
+@[expose] public section
 
 universe w v₁ v₂ u₁ u₂
 

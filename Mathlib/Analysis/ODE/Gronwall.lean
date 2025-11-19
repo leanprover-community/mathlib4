@@ -3,7 +3,9 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+module
+
+public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 /-!
 # Grönwall's inequality
@@ -26,6 +28,8 @@ Sec. 4.5][HubbardWest-ode], where `norm_le_gronwallBound_of_norm_deriv_right_le`
   or more generally `liminf_{y→x+0} (f y - f x)/(y - x) ≤ K x * f x + ε` with any sign
   of `K x` and `f x`.
 -/
+
+@[expose] public section
 
 open Metric Set Asymptotics Filter Real
 open scoped Topology NNReal

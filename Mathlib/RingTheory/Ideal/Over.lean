@@ -3,10 +3,12 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Yongle Hu
 -/
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.Group.Subgroup.Actions
-import Mathlib.RingTheory.Ideal.Pointwise
-import Mathlib.RingTheory.Ideal.Quotient.Operations
+module
+
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.Group.Subgroup.Actions
+public import Mathlib.RingTheory.Ideal.Pointwise
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 /-!
 # Ideals over/under ideals
@@ -16,6 +18,8 @@ Let `f : R →+* S` be a ring homomorphism (typically a ring extension), `I` an 
 `J` an ideal of `S`. We say `J` lies over `I` (and `I` under `J`) if `I` is the `f`-preimage of `J`.
 This is expressed here by writing `I = J.comap f`.
 -/
+
+@[expose] public section
 
 -- for going-up results about integral extensions, see `Mathlib/RingTheory/Ideal/GoingUp.lean`
 assert_not_exists Algebra.IsIntegral

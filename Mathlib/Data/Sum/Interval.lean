@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Sum
-import Mathlib.Data.Sum.Order
-import Mathlib.Order.Interval.Finset.Defs
+module
+
+public import Mathlib.Data.Finset.Sum
+public import Mathlib.Data.Sum.Order
+public import Mathlib.Order.Interval.Finset.Defs
 
 /-!
 # Finite intervals in a disjoint union
@@ -13,6 +15,8 @@ import Mathlib.Order.Interval.Finset.Defs
 This file provides the `LocallyFiniteOrder` instance for the disjoint sum and linear sum of two
 orders and calculates the cardinality of their finite intervals.
 -/
+
+@[expose] public section
 
 
 open Function Sum

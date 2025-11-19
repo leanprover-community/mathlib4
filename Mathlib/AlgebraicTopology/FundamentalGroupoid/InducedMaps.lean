@@ -3,9 +3,11 @@ Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
 -/
-import Mathlib.Topology.Homotopy.Equiv
-import Mathlib.CategoryTheory.Equivalence
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
+module
+
+public import Mathlib.Topology.Homotopy.Equiv
+public import Mathlib.CategoryTheory.Equivalence
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
 
 /-!
 # Homotopic maps induce naturally isomorphic functors
@@ -26,6 +28,8 @@ import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
   pairs of paths in I and X and the corresponding path after passing through a homotopy `H`.
   But `FundamentalGroupoidFunctor.prodToProdTop` requires two spaces in the same universe.
 -/
+
+@[expose] public section
 
 
 noncomputable section

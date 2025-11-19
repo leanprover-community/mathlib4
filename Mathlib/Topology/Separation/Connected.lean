@@ -3,12 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.Separation.Basic
-import Mathlib.Topology.Connected.TotallyDisconnected
+module
+
+public import Mathlib.Topology.Separation.Basic
+public import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
 # Interaction of separation properties with connectedness properties
 -/
+
+@[expose] public section
 
 variable {X : Type*} [TopologicalSpace X]
 
