@@ -3,11 +3,13 @@ Copyright (c) 2025 Beibei Xiong. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Beibei Xiong
 -/
-import Mathlib.Algebra.Order.Ring.Star
-import Mathlib.Analysis.Normed.Ring.Lemmas
-import Mathlib.Combinatorics.Enumerative.Partition
-import Mathlib.Data.Int.Star
-import Mathlib.RingTheory.PowerSeries.Basic
+module
+
+public import Mathlib.Algebra.Order.Ring.Star
+public import Mathlib.Analysis.Normed.Ring.Lemmas
+public import Mathlib.Combinatorics.Enumerative.Partition
+public import Mathlib.Data.Int.Star
+public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
 # Pentagonal numbers, parity of strict partitions, and a finite product cut-off
