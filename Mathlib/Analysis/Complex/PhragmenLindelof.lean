@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.AbsMax
-import Mathlib.Analysis.Asymptotics.SuperpolynomialDecay
+module
+
+public import Mathlib.Analysis.Complex.AbsMax
+public import Mathlib.Analysis.Asymptotics.SuperpolynomialDecay
 
 /-!
 # Phragmen-Lindelöf principle
@@ -41,6 +43,8 @@ In the case of the right half-plane, we prove a version of the Phragmen-Lindelö
 useful for Ilyashenko's proof of the individual finiteness theorem (a polynomial vector field on the
 real plane has only finitely many limit cycles).
 -/
+
+@[expose] public section
 
 open Set Function Filter Asymptotics Metric Complex Bornology
 open scoped Topology Filter Real

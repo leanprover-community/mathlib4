@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pullback
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
-import Mathlib.Algebra.Category.ModuleCat.Sheaf.PushforwardContinuous
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pullback
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PushforwardContinuous
 
 /-!
 # Pullback of sheaves of modules
@@ -25,6 +27,8 @@ From the compatibility of `pushforward` with respect to composition, we deduce
 similar pseudofunctor-like properties of the `pullback` functors.
 
 -/
+
+@[expose] public section
 
 universe v v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄ u
 
