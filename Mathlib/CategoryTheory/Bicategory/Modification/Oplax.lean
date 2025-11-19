@@ -3,8 +3,9 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Calle Sönne
 -/
+module
 
-import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
+public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
 
 /-!
 # Modifications between transformations of oplax functors
@@ -34,6 +35,8 @@ Given two oplax functors `F` and `G`, we define:
   to access it.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Oplax
 
@@ -259,7 +262,6 @@ def isoMk (app : ∀ a, η.app a ≅ θ.app a)
         simpa using _ ◁ (app b).inv ≫= (naturality f).symm =≫ (app a).inv ▷ _ }
 
 @[deprecated (since := "2025-11-11")] alias ModificationIso.ofComponents := isoMk
-
 
 end StrongTrans
 

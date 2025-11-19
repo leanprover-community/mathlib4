@@ -3,11 +3,13 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Riccardo Brasca, Xavier Roblot
 -/
-import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
-import Mathlib.NumberTheory.ClassNumber.Finite
-import Mathlib.NumberTheory.NumberField.Discriminant.Basic
-import Mathlib.RingTheory.Ideal.IsPrincipal
-import Mathlib.NumberTheory.RamificationInertia.Galois
+module
+
+public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbs
+public import Mathlib.NumberTheory.ClassNumber.Finite
+public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
+public import Mathlib.RingTheory.Ideal.IsPrincipal
+public import Mathlib.NumberTheory.RamificationInertia.Galois
 
 /-!
 # Class numbers of number fields
@@ -37,6 +39,8 @@ cardinality of the class group of its ring of integers
   The way this theorem should be used is to first compute `⌊(M K)⌋₊` and then to use `fin_cases`
   to deal with the finite number of primes `p` in the interval.
 -/
+
+@[expose] public section
 
 open scoped nonZeroDivisors Real
 
@@ -199,7 +203,7 @@ theorem isPrincipalIdealRing_of_abs_discr_lt
   rw [← Real.sqrt_lt (by positivity) (by positivity), mul_assoc, ← inv_mul_lt_iff₀' (by positivity),
     mul_inv, ← inv_pow, inv_div, inv_div, mul_assoc, Int.cast_abs] at h
   refine isPrincipalIdealRing_of_isPrincipal_of_norm_le (fun I hI ↦ ?_)
-  rw [absNorm_eq_one_iff.mp <| le_antisymm (lt_succ.mp (cast_lt.mp
+  rw [absNorm_eq_one_iff.mp <| le_antisymm (Nat.lt_succ_iff.mp (cast_lt.mp
     (lt_of_le_of_lt hI h))) <| one_le_iff_ne_zero.mpr (absNorm_ne_zero_of_nonZeroDivisors I)]
   exact top_isPrincipal
 

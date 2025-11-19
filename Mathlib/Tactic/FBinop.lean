@@ -3,9 +3,11 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Lean.Elab.App
-import Lean.Elab.BuiltinNotation
-import Mathlib.Tactic.ToExpr
+module
+
+public meta import Lean.Elab.App
+public meta import Lean.Elab.BuiltinNotation
+public meta import Mathlib.Tactic.ToExpr
 
 /-! # Elaborator for functorial binary operators
 
@@ -26,6 +28,8 @@ with `S _`, which can help certain elaboration problems proceed (like for `{a,b,
 
 The main goal is to support generic set product notation and have it elaborate in a convenient way.
 -/
+
+public meta section
 
 namespace FBinopElab
 open Lean Elab Term Meta

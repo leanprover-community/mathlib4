@@ -3,14 +3,16 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Giulio Caflisch, David Loeffler
 -/
-import Mathlib.Algebra.Group.ForwardDiff
-import Mathlib.Analysis.Normed.Group.Ultra
-import Mathlib.NumberTheory.Padics.ProperSpace
-import Mathlib.RingTheory.Binomial
-import Mathlib.Topology.Algebra.InfiniteSum.Nonarchimedean
-import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.Topology.ContinuousMap.ZeroAtInfty
-import Mathlib.Topology.MetricSpace.Ultra.ContinuousMaps
+module
+
+public import Mathlib.Algebra.Group.ForwardDiff
+public import Mathlib.Analysis.Normed.Group.Ultra
+public import Mathlib.NumberTheory.Padics.ProperSpace
+public import Mathlib.RingTheory.Binomial
+public import Mathlib.Topology.Algebra.InfiniteSum.Nonarchimedean
+public import Mathlib.Topology.Algebra.Polynomial
+public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
+public import Mathlib.Topology.MetricSpace.Ultra.ContinuousMaps
 
 /-!
 # The Mahler basis of continuous functions
@@ -38,6 +40,8 @@ for his bachelor's thesis at ETH Zürich.
 
 Bojanic
 -/
+
+@[expose] public section
 
 open Finset IsUltrametricDist NNReal Filter
 
@@ -313,7 +317,7 @@ lemma fwdDiff_mahlerSeries (ha : Tendsto a atTop (𝓝 0)) (n) :
     simp only [fwdDiff_iter_eq_sum_shift, zero_add]
     refine Finset.sum_congr rfl fun j hj ↦ ?_
     rw [nsmul_one, nsmul_one,
-      mahlerSeries_apply_nat ha (Nat.lt_succ.mp <| Finset.mem_range.mp hj), Nat.cast_id]
+      mahlerSeries_apply_nat ha (Nat.lt_succ_iff.mp <| Finset.mem_range.mp hj), Nat.cast_id]
   -- bring `Δ_[1]` inside sum
   _ = ∑ j ∈ range (n + 1), Δ_[1]^[n] (fun k ↦ k.choose j • (a j)) 0 := by
     simp only [fwdDiff_iter_eq_sum_shift, smul_sum]
