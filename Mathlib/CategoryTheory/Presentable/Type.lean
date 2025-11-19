@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Presentable.Basic
-import Mathlib.CategoryTheory.Limits.Types.Filtered
-import Mathlib.CategoryTheory.Types.Set
+module
+
+public import Mathlib.CategoryTheory.Presentable.Basic
+public import Mathlib.CategoryTheory.Limits.Types.Filtered
+public import Mathlib.CategoryTheory.Types.Set
 
 /-!
 # Presentable objects in Type
@@ -15,6 +17,8 @@ then `X : Type u` is `κ`-presentable in the category of types iff
 `HasCardinalLT X κ` holds, i.e. the cardinal number of `X` is less than `κ`.
 
 -/
+
+@[expose] public section
 
 universe u
 
