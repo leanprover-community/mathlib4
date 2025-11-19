@@ -1107,6 +1107,11 @@ theorem lt_omega0 {o : Ordinal} : o < ω ↔ ∃ n : ℕ, o = n := by
 theorem nat_lt_omega0 (n : ℕ) : ↑n < ω :=
   lt_omega0.2 ⟨_, rfl⟩
 
+instance canLiftOrdinalNat : CanLift Ordinal ℕ (↑) fun x => x < ω :=
+  ⟨fun _ hx =>
+    let ⟨n, hn⟩ := lt_omega0.mp hx
+    ⟨n, hn.symm⟩⟩
+
 theorem eq_nat_or_omega0_le (o : Ordinal) : (∃ n : ℕ, o = n) ∨ ω ≤ o := by
   obtain ho | ho := lt_or_ge o ω
   · exact Or.inl <| lt_omega0.1 ho
