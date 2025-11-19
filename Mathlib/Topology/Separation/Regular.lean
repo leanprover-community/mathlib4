@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Tactic.StacksAttribute
-import Mathlib.Topology.Compactness.Lindelof
-import Mathlib.Topology.Separation.Hausdorff
-import Mathlib.Topology.Connected.Clopen
+module
+
+public import Mathlib.Tactic.StacksAttribute
+public import Mathlib.Topology.Compactness.Lindelof
+public import Mathlib.Topology.Separation.Hausdorff
+public import Mathlib.Topology.Connected.Clopen
 
 /-!
 # Regular, normal, T₃, T₄ and T₅ spaces
@@ -57,6 +59,8 @@ If the space is also Lindelöf:
 * [Willard's *General Topology*][zbMATH02107988]
 
 -/
+
+@[expose] public section
 
 assert_not_exists UniformSpace
 
@@ -127,6 +131,25 @@ theorem RegularSpace.of_exists_mem_nhds_isClosed_subset
 /-- A weakly locally compact R₁ space is regular. -/
 instance (priority := 100) [WeaklyLocallyCompactSpace X] [R1Space X] : RegularSpace X :=
   .of_hasBasis isCompact_isClosed_basis_nhds fun _ _ ⟨_, _, h⟩ ↦ h
+
+/-- Given a subbasis `s`, it is enough to check the condition of regularity for complements of sets
+in `s`. -/
+theorem regularSpace_generateFrom {s : Set (Set X)} (h : ‹_› = generateFrom s) :
+    RegularSpace X ↔ ∀ t ∈ s, ∀ a ∈ t, Disjoint (𝓝ˢ tᶜ) (𝓝 a) := by
+  refine ⟨fun _ t ht a ha => RegularSpace.regular
+    (h ▸ isOpen_generateFrom_of_mem ht).isClosed_compl
+    (Set.notMem_compl_iff.mpr ha), fun h' => ⟨fun {t a} ht ha => ?_⟩⟩
+  obtain ⟨t, rfl⟩ := compl_involutive.surjective t
+  rw [isClosed_compl_iff, h] at ht
+  rw [Set.notMem_compl_iff] at ha
+  induction ht with
+  | basic t ht => exact h' t ht a ha
+  | univ => simp
+  | inter t₁ t₂ _ _ ih₁ ih₂ => grind [compl_inter, nhdsSet_union, disjoint_sup_left]
+  | sUnion S _ ih =>
+    obtain ⟨t, ht, ha⟩ := ha
+    grw [compl_sUnion, sInter_image, iInter₂_subset t ht]
+    exact ih t ht ha
 
 section
 variable [RegularSpace X] {x : X} {s : Set X}

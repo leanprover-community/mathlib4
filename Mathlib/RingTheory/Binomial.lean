@@ -3,16 +3,18 @@ Copyright (c) 2023 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Algebra.Group.Torsion
-import Mathlib.Algebra.Module.Rat
-import Mathlib.Algebra.Polynomial.Smeval
-import Mathlib.Algebra.Ring.NegOnePow
-import Mathlib.Data.NNRat.Order
-import Mathlib.GroupTheory.GroupAction.Ring
-import Mathlib.RingTheory.Polynomial.Pochhammer
-import Mathlib.Tactic.Field
-import Mathlib.Tactic.Module
+module
+
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Algebra.Group.Torsion
+public import Mathlib.Algebra.Module.Rat
+public import Mathlib.Algebra.Polynomial.Smeval
+public import Mathlib.Algebra.Ring.NegOnePow
+public import Mathlib.Data.NNRat.Order
+public import Mathlib.GroupTheory.GroupAction.Ring
+public import Mathlib.RingTheory.Polynomial.Pochhammer
+public import Mathlib.Tactic.Field
+public import Mathlib.Tactic.Module
 
 /-!
 # Binomial rings
@@ -62,6 +64,8 @@ Further results in Elliot's paper:
   `1 + I`.
 
 -/
+
+@[expose] public section
 
 open Function Polynomial
 
@@ -258,7 +262,7 @@ instance Int.instBinomialRing : BinomialRing ℤ where
     rw [Int.multichoose.eq_def, nsmul_eq_mul]
     cases r with
     | ofNat n =>
-      simp only [Int.ofNat_eq_coe, Int.ofNat_mul_out]
+      simp only [Int.ofNat_eq_natCast, Int.ofNat_mul_ofNat]
       rw [← Nat.descFactorial_eq_factorial_mul_choose, smeval_at_natCast, ← eval_eq_smeval n,
         ascPochhammer_nat_eq_descFactorial]
     | negSucc n =>

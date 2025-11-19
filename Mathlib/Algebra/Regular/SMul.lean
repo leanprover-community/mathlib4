@@ -3,10 +3,12 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.Push
+module
+
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.Push
 
 /-!
 # Action of regular elements on a module
@@ -26,6 +28,8 @@ This property is the direct generalization to modules of the property `IsLeftReg
 `Algebra/Regular`.  Lemma `isLeftRegular_iff` shows that indeed the two notions
 coincide.
 -/
+
+@[expose] public section
 
 
 variable {R S : Type*} (M : Type*) {a b : R} {s : S}

@@ -3,8 +3,10 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Topology.Algebra.FilterBasis
-import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+module
+
+public import Mathlib.Topology.Algebra.FilterBasis
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 
 /-!
 # Uniform properties of neighborhood bases in topological algebra
@@ -15,6 +17,8 @@ of uniform spaces.
 The only result so far is a characterization of Cauchy filters in topological groups.
 
 -/
+
+@[expose] public section
 
 
 open uniformity Filter
@@ -28,7 +32,7 @@ variable {G : Type*} [AddCommGroup G] (B : AddGroupFilterBasis G)
 /-- The uniform space structure associated to an abelian group filter basis via the associated
 topological abelian group structure. -/
 protected def uniformSpace : UniformSpace G :=
-  @IsTopologicalAddGroup.toUniformSpace G _ B.topology B.isTopologicalAddGroup
+  @IsTopologicalAddGroup.rightUniformSpace G _ B.topology B.isTopologicalAddGroup
 
 /-- The uniform space structure associated to an abelian group filter basis via the associated
 topological abelian group structure is compatible with its group structure. -/

@@ -3,16 +3,20 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Yury Kudryashov
 -/
-import Mathlib.Analysis.Asymptotics.Defs
-import Mathlib.Analysis.Normed.Group.Bounded
-import Mathlib.Analysis.Normed.Group.InfiniteSum
-import Mathlib.Analysis.Normed.MulAction
-import Mathlib.Topology.OpenPartialHomeomorph
+module
+
+public import Mathlib.Analysis.Asymptotics.Defs
+public import Mathlib.Analysis.Normed.Group.Bounded
+public import Mathlib.Analysis.Normed.Group.InfiniteSum
+public import Mathlib.Analysis.Normed.MulAction
+public import Mathlib.Topology.OpenPartialHomeomorph
 
 /-!
 # Further basic lemmas about asymptotics
 
 -/
+
+@[expose] public section
 
 open Set Topology Filter NNReal
 
