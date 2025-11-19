@@ -5,10 +5,10 @@ Authors: Fabrizio Barroero
 -/
 module
 
-import Mathlib.Analysis.Analytic.Polynomial
-import Mathlib.Analysis.Complex.JensenFormula
-import Mathlib.Analysis.Complex.Polynomial.Basic
-import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
+public import Mathlib.Analysis.Analytic.Polynomial
+public import Mathlib.Analysis.Complex.JensenFormula
+public import Mathlib.Analysis.Complex.Polynomial.Basic
+public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 
 /-!
 # Mahler measure of complex polynomials
