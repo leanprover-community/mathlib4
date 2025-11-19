@@ -3,8 +3,10 @@ Copyright (c) 2020 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Yury Kudryashov
 -/
-import Mathlib.Topology.Instances.NNReal.Lemmas
-import Mathlib.Topology.Order.MonotoneContinuity
+module
+
+public import Mathlib.Topology.Instances.NNReal.Lemmas
+public import Mathlib.Topology.Order.MonotoneContinuity
 
 /-!
 # Square root of a real number
@@ -29,6 +31,8 @@ Then we define `Real.sqrt x` to be `NNReal.sqrt (Real.toNNReal x)`.
 
 square root
 -/
+
+@[expose] public section
 
 open Set Filter
 open scoped Filter NNReal Topology
@@ -288,7 +292,7 @@ open Lean Meta Qq Function
 /-- Extension for the `positivity` tactic: a square root of a strictly positive nonnegative real is
 positive. -/
 @[positivity NNReal.sqrt _]
-def evalNNRealSqrt : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalNNRealSqrt : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(NNReal), ~q(NNReal.sqrt $a) =>
     let ra ← core  q(inferInstance) q(inferInstance) a
@@ -301,7 +305,7 @@ def evalNNRealSqrt : PositivityExt where eval {u α} _zα _pα e := do
 /-- Extension for the `positivity` tactic: a square root is nonnegative, and is strictly positive if
 its input is. -/
 @[positivity √_]
-def evalSqrt : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalSqrt : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(√$a) =>
     let ra ← catchNone <| core q(inferInstance) q(inferInstance) a

@@ -3,7 +3,9 @@ Copyright (c) 2025 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Linear growth
@@ -25,6 +27,8 @@ Generalize statements from `EReal` to `ENNReal` (or others). This may need addit
 Lemma about coercion from `ENNReal` to `EReal`. This needs additional lemmas about
 `ENNReal.toEReal`.
 -/
+
+@[expose] public section
 
 namespace LinearGrowth
 

@@ -3,8 +3,10 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Topology.IsLocalHomeomorph
-import Mathlib.Topology.FiberBundle.Basic
+module
+
+public import Mathlib.Topology.IsLocalHomeomorph
+public import Mathlib.Topology.FiberBundle.Basic
 
 /-!
 # Covering Maps
@@ -21,6 +23,8 @@ This file defines covering maps.
   not connected, then the fibers `f ⁻¹' {x}` are not necessarily isomorphic. Also, `f` is not
   assumed to be surjective, so the fibers are even allowed to be empty.
 -/
+
+@[expose] public section
 
 open Bundle Topology
 
