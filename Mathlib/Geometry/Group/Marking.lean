@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Analysis.Normed.Group.Quotient
 public import Mathlib.GroupTheory.FreeGroup.Reduce
 
 /-!
@@ -19,7 +19,7 @@ This file defines group markings and induces a norm on marked groups.
   homomorphism `FreeGroup S →* G`.
 * `MarkedGroup`: If `m : GroupMarking G S`, then `MarkedGroup m` is a type synonym for `G`
   endowed with the metric coming from `m`.
-* `MarkedGroup.instNormedGroup`: A marked group is normed by its marking.
+* `MarkedGroup.instNormedGroup`: A marked group is normed by the word metric of the marking.
 -/
 
 open Function List Nat
@@ -119,6 +119,11 @@ lemma toMarkedGroup_smul (g : G) (x : α) [SMul G α] :
 @[to_additive (attr := simp)]
 lemma ofMarkedGroup_smul (g : MarkedGroup m) (x : α) [SMul G α] : ofMarkedGroup g • x = g • x := rfl
 
+/-- A marked group is equivalent to a quotient of the free group by a normal subgroup. -/
+@[simps! apply]
+noncomputable def quotientEquivMarkedGroup : FreeGroup S ⧸ m.toMonoidHom.ker ≃* MarkedGroup m :=
+  QuotientGroup.quotientKerEquivOfSurjective _ m.coe_surjective
+
 @[to_additive]
 private lemma mul_aux [DecidableEq S] (x : MarkedGroup m) :
     ∃ (n : _) (l : FreeGroup S), toMarkedGroup (m l) = x ∧ l.toWord.length ≤ n := by
@@ -143,42 +148,21 @@ private lemma find_mul_aux [DecidableEq S] (x : MarkedGroup m)
     (Nat.le_find_iff _ _).2 fun k hk ⟨l, hl, hlk⟩ => (Nat.lt_find_iff _ _).1 hk _ hlk ⟨l, hl, rfl⟩
 
 @[to_additive]
-noncomputable instance : NormedGroup (MarkedGroup m) :=
-  GroupNorm.toNormedGroup
-    { toFun := fun x => by classical exact (Nat.find (mul_aux x)).cast
-      map_one' := by
-        classical
-        exact cast_eq_zero.2 <| (find_eq_zero <| mul_aux _).2 ⟨1, by simp_rw [map_one], le_rfl⟩
-      mul_le' := fun x y => by
-        classical
-        dsimp
-        norm_cast
-        obtain ⟨a, rfl, ha⟩ := Nat.find_spec (mul_aux x)
-        obtain ⟨b, rfl, hb⟩ := Nat.find_spec (mul_aux y)
-        refine find_le ⟨a * b, by simp, (a.toWord_mul_sublist _).length_le.trans ?_⟩
-        rw [length_append]
-        gcongr
-      inv' := by
-        classical
-        suffices ∀ {x : MarkedGroup m}, Nat.find (mul_aux x⁻¹) ≤ Nat.find (mul_aux x) by
-          dsimp
-          refine fun _ => congr_arg Nat.cast (this.antisymm ?_)
-          convert this
-          simp_rw [inv_inv]
-        rintro x
-        refine find_mono fun nI => ?_
-        rintro ⟨l, hl, h⟩
-        exact ⟨l⁻¹, by simp [hl], h.trans_eq' <| by simp⟩
-      eq_one_of_map_eq_zero' := fun x hx => by
-        classical
-        obtain ⟨l, rfl, hl⟩ := (find_eq_zero <| mul_aux _).1 (cast_eq_zero.1 hx)
-        rw [le_zero_iff, length_eq_zero, ← FreeGroup.toWord_one] at hl
-        rw [FreeGroup.toWord_injective hl, map_one, map_one] }
+noncomputable instance : NormedGroup (MarkedGroup m) where
+  norm x := ‖quotientEquivMarkedGroup.symm x‖
 
 namespace MarkedGroup
 
-@[to_additive]
-lemma norm_def [DecidableEq S] (x : MarkedGroup m)
+@[to_additive add_norm_def]
+private lemma norm_def [DecidableEq S] (x : MarkedGroup m)
+    [DecidablePred fun n ↦ ∃ l, toMarkedGroup (m l) = x ∧ l.toWord.length = n] :
+    ‖x‖ = Nat.find (mul_aux' x) := by
+  convert congr_arg Nat.cast (find_mul_aux _)
+  classical
+  infer_instance
+
+@[to_additive add_norm_def]
+lemma norm_le_iff [DecidableEq S] (x : MarkedGroup m)
     [DecidablePred fun n ↦ ∃ l, toMarkedGroup (m l) = x ∧ l.toWord.length = n] :
     ‖x‖ = Nat.find (mul_aux' x) := by
   convert congr_arg Nat.cast (find_mul_aux _)
