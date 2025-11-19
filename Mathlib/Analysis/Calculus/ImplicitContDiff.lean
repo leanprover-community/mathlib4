@@ -35,8 +35,6 @@ variable
 
 namespace ImplicitFunctionData
 
-variable
-
 /-- The implicit function defined by a $C^n$ implicit equation is $C^n$. This applies to the general
 form of the implicit function theorem. -/
 theorem contDiff_implicitFunction {φ : ImplicitFunctionData 𝕜 E F G} {n : WithTop ℕ∞}
