@@ -3,7 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Module.LinearMap.Defs
+module
+
+public import Mathlib.Algebra.Module.LinearMap.Defs
 
 /-!
 # Algebras over commutative semirings
@@ -79,6 +81,8 @@ You should always use the first approach when working with associative unital al
 the second approach only when you need to weaken a condition on either `R` or `A`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Field Finset Module.End
 

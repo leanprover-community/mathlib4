@@ -3,9 +3,11 @@ Copyright (c) 2025 X. Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.FieldTheory.Galois.IsGaloisGroup
-import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
-import Mathlib.NumberTheory.NumberField.Units.Regulator
+module
+
+public import Mathlib.FieldTheory.Galois.IsGaloisGroup
+public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
+public import Mathlib.NumberTheory.NumberField.Units.Regulator
 
 /-!
 # CM-extension of number fields
@@ -49,6 +51,8 @@ results for the general case can be deduced for the CM case by using the isomorp
 `equivMaximalRealSubfield` between `F` and `K⁺` mentioned above.
 
 -/
+
+@[expose] public section
 
 open NumberField ComplexEmbedding InfinitePlace Algebra
 
@@ -315,7 +319,7 @@ theorem unitsMulComplexConjInv_apply (u : (𝓞 K)ˣ) :
 @[simp]
 theorem unitsMulComplexConjInv_apply_torsion (ζ : torsion K) :
     unitsMulComplexConjInv K ζ = ζ ^ 2 :=
-  Subtype.eq <| by simp [unitsMulComplexConjInv_apply, unitsComplexConj_torsion, pow_two]
+  Subtype.ext <| by simp [unitsMulComplexConjInv_apply, unitsComplexConj_torsion, pow_two]
 
 /--
 The action of `unitsMulComplexConjInv` of the torsion is the same as the 2-power map.
@@ -577,6 +581,10 @@ theorem _root_.IsCyclotomicExtension.Rat.isCMField (K : Type*) [Field K] [CharZe
     exact isTotallyComplex_of_algebra ℚ⟮ζ⟯ _
   have := IsCyclotomicExtension.isAbelianGalois S ℚ K
   exact IsCMField.of_isAbelianGalois K
+
+instance (K : Type*) [Field K] [CharZero K] [IsCyclotomicExtension ⊤ ℚ K] :
+    IsCMField K :=
+  IsCyclotomicExtension.Rat.isCMField K (S := ⊤) ⟨3, trivial, Nat.lt_succ_self 2⟩
 
 end CMExtension
 

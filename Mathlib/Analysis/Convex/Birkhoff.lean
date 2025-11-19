@@ -3,14 +3,15 @@ Copyright (c) 2024 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
+module
 
-import Mathlib.Analysis.Convex.Combination
-import Mathlib.Analysis.Convex.Extreme
-import Mathlib.Analysis.Convex.Jensen
-import Mathlib.Analysis.Normed.Module.Convex
-import Mathlib.Combinatorics.Hall.Basic
-import Mathlib.Analysis.Convex.DoublyStochasticMatrix
-import Mathlib.Tactic.Linarith
+public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.Analysis.Convex.Extreme
+public import Mathlib.Analysis.Convex.Jensen
+public import Mathlib.Analysis.Normed.Module.Convex
+public import Mathlib.Combinatorics.Hall.Basic
+public import Mathlib.Analysis.Convex.DoublyStochasticMatrix
+public import Mathlib.Tactic.Linarith
 
 /-!
 # Birkhoff's theorem
@@ -33,6 +34,8 @@ import Mathlib.Tactic.Linarith
 
 Doubly stochastic, Birkhoff's theorem, Birkhoff-von Neumann theorem
 -/
+
+@[expose] public section
 
 open Finset Function Matrix
 

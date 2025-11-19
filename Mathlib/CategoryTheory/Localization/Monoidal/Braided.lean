@@ -3,8 +3,10 @@ Copyright (c) 2025 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Localization.Monoidal.Basic
-import Mathlib.CategoryTheory.Monoidal.Braided.Multifunctor
+module
+
+public import Mathlib.CategoryTheory.Localization.Monoidal.Basic
+public import Mathlib.CategoryTheory.Monoidal.Braided.Multifunctor
 
 /-!
 
@@ -19,6 +21,8 @@ In this file we promote this monoidal structure to a braided structure in the ca
 braided, in such a way that the localization functor is braided. If `C` is symmetric monoidal, then
 the monoidal structure on `D` is also symmetric.
 -/
+
+@[expose] public section
 
 open CategoryTheory Category MonoidalCategory BraidedCategory Functor
 

@@ -3,14 +3,18 @@ Copyright (c) 2024 Artie Khovanov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Artie Khovanov
 -/
-import Mathlib.Algebra.Group.Even
-import Mathlib.Algebra.Group.Subgroup.Defs
+module
+
+public import Mathlib.Algebra.Group.Even
+public import Mathlib.Algebra.Group.Subgroup.Defs
 
 /-!
 # Squares and even elements
 
 This file defines the subgroup of squares / even elements in an abelian group.
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso MonoidWithZero
 
