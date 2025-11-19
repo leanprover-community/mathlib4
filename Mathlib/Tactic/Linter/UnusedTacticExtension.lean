@@ -15,7 +15,7 @@ This file defines the environment extension to keep track of which tactics are a
 the tactic state unchanged and not trigger the unused tactic linter.
 -/
 
-public meta section
+meta section
 
 open Lean Elab Command
 
@@ -25,7 +25,7 @@ namespace Mathlib.Linter.UnusedTactic
 Defines the `allowedUnusedTacticExt` extension for adding a `HashSet` of `allowedUnusedTactic`s
 to the environment.
 -/
-initialize allowedUnusedTacticExt :
+public initialize allowedUnusedTacticExt :
     SimplePersistentEnvExtension SyntaxNodeKind (Std.HashSet SyntaxNodeKind) ←
   registerSimplePersistentEnvExtension {
     addImportedFn := fun as => as.foldl Std.HashSet.insertMany {}
@@ -50,7 +50,7 @@ def addAllowedUnusedTactic {m : Type → Type} [Monad m] [MonadEnv m]
 /-- `Parser`s allowed to not change the tactic state.
 This can be increased dynamically, using `#allow_unused_tactic`.
 -/
-initialize allowedRef : IO.Ref (Std.HashSet SyntaxNodeKind) ←
+public initialize allowedRef : IO.Ref (Std.HashSet SyntaxNodeKind) ←
   IO.mkRef <| .ofArray #[
     `Mathlib.Tactic.Says.says,
     `Batteries.Tactic.«tacticOn_goal-_=>_»,
