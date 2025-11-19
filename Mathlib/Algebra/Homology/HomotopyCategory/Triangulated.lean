@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
-import Mathlib.CategoryTheory.Triangulated.Triangulated
-import Mathlib.CategoryTheory.ComposableArrows.Basic
+module
+
+public import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
+public import Mathlib.CategoryTheory.Triangulated.Triangulated
+public import Mathlib.CategoryTheory.ComposableArrows.Basic
 
 /-! The triangulated structure on the homotopy category of complexes
 
@@ -13,6 +15,8 @@ In this file, we show that for any additive category `C`,
 the pretriangulated category `HomotopyCategory C (ComplexShape.up ℤ)` is triangulated.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 

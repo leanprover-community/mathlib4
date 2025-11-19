@@ -3,7 +3,9 @@ Copyright (c) 2021 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
-import Mathlib.Init
+module
+
+public import Mathlib.Init
 
 /-!
 Defines a command wrapper that prints the changes the command makes to the
@@ -14,6 +16,8 @@ whatsnew in
 theorem foo : 42 = 6 * 7 := rfl
 ```
 -/
+
+public meta section
 
 open Lean Elab Command
 

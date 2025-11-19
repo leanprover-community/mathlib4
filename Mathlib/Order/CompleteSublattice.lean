@@ -3,9 +3,11 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Data.Set.Functor
-import Mathlib.Order.Sublattice
-import Mathlib.Order.Hom.CompleteLattice
+module
+
+public import Mathlib.Data.Set.Functor
+public import Mathlib.Order.Sublattice
+public import Mathlib.Order.Hom.CompleteLattice
 
 /-!
 # Complete Sublattices
@@ -23,6 +25,8 @@ invariant submodules of some module with respect to a linear map.
 * `CompleteSublattice.comap`: complete sublattices pull back under complete lattice morphisms.
 
 -/
+
+@[expose] public section
 
 open Function Set
 

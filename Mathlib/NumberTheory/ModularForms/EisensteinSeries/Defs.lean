@@ -3,10 +3,12 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, David Loeffler
 -/
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
-import Mathlib.RingTheory.EuclideanDomain
-import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
+public import Mathlib.RingTheory.EuclideanDomain
+public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 
 /-!
 # Eisenstein Series
@@ -24,6 +26,8 @@ import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 ## References
 * [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005]
 -/
+
+@[expose] public section
 
 noncomputable section
 

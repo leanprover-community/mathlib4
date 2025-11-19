@@ -3,12 +3,14 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
-import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.MorphismProperty.Basic
-import Mathlib.CategoryTheory.MorphismProperty.Composition
-import Mathlib.Lean.Expr.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+public import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
+public import Mathlib.Lean.Expr.Basic
 
 /-!
 # Definitions and basic properties of regular monomorphisms and epimorphisms.
@@ -33,6 +35,8 @@ every monomorphism or epimorphism is regular, and deduce that these categories a
 `StrongMonoCategory`s resp. `StrongEpiCategory`s.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

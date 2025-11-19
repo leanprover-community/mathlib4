@@ -3,13 +3,15 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Thomas Murrills
 -/
-import Mathlib.Algebra.GroupWithZero.Invertible
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Tactic.NormNum.Core
-import Mathlib.Tactic.HaveI
-import Mathlib.Tactic.ClearExclamation
+module
+
+public meta import Mathlib.Algebra.GroupWithZero.Invertible
+public meta import Mathlib.Algebra.Ring.Int.Defs
+public meta import Mathlib.Data.Nat.Cast.Basic
+public meta import Mathlib.Data.Nat.Cast.Commute
+public meta import Mathlib.Tactic.NormNum.Core
+public meta import Mathlib.Tactic.HaveI
+public meta import Mathlib.Tactic.ClearExclamation
 
 /-!
 # `norm_num` basic plugins
@@ -22,6 +24,8 @@ This file adds `norm_num` plugins for
 
 See other files in this directory for many more plugins.
 -/
+
+public meta section
 
 universe u
 

@@ -3,12 +3,14 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.GradedMonoid
-import Mathlib.Algebra.Group.Submonoid.Defs
-import Mathlib.Algebra.GradedMulAction
-import Mathlib.Algebra.Order.Ring.Unbundled.Basic
-import Mathlib.Algebra.Ring.Int.Defs
+module
+
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.GradedMonoid
+public import Mathlib.Algebra.Group.Submonoid.Defs
+public import Mathlib.Algebra.GradedMulAction
+public import Mathlib.Algebra.Order.Ring.Unbundled.Basic
+public import Mathlib.Algebra.Ring.Int.Defs
 /-!
 # The filtration on abelian groups and rings
 
@@ -30,6 +32,8 @@ In this file, we define the concept of filtration for abelian groups, rings, and
   is in `F (i +ᵥ j)`.
 
 -/
+
+@[expose] public section
 
 section GeneralFiltration
 

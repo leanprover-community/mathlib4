@@ -3,10 +3,12 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Topology.Category.CompHaus.Basic
-import Mathlib.Topology.Compactification.StoneCech
-import Mathlib.CategoryTheory.Preadditive.Projective.Basic
-import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+module
+
+public import Mathlib.Topology.Category.CompHaus.Basic
+public import Mathlib.Topology.Compactification.StoneCech
+public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 /-!
 # CompHaus has enough projectives
@@ -26,6 +28,8 @@ Let `X` be a compact Hausdorff space.
 See [miraglia2006introduction] Chapter 21 for a proof that `CompHaus` has enough projectives.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

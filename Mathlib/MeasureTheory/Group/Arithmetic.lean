@@ -3,7 +3,9 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Measure.AEMeasurable
+module
+
+public import Mathlib.MeasureTheory.Measure.AEMeasurable
 
 /-!
 # Typeclasses for measurability of operations
@@ -41,6 +43,8 @@ measurable function, arithmetic operator
 * This might require changing the definition (swapping the arguments in the function that is
   in the conclusion of `MeasurableSMul`.)
 -/
+
+@[expose] public section
 
 open MeasureTheory
 open scoped Pointwise
