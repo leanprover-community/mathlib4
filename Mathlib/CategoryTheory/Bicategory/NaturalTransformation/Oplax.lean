@@ -34,9 +34,9 @@ condition.
   `f : a ⟶ b`.
 
 Using these, we define three `CategoryStruct` (scoped) instances on `B ⥤ᵒᵖᴸ C`, in the
-`Oplax.LaxTrans` namespace, the `Oplax.OplaxTrans` namespace, and the `Oplax.StrongTrans`
-namespace. The arrows in these CategoryStruct's are given by lax transformations, oplax
-transformations, and strong transformations respectively.
+`Oplax.LaxTrans`, `Oplax.OplaxTrans`, and `Oplax.StrongTrans` namespaces. The arrows in these
+CategoryStruct's are given by lax transformations, oplax transformations, and strong
+transformations respectively.
 
 We also provide API for going between oplax transformations and strong transformations:
 * `Oplax.StrongCore F G`: a structure on an oplax transformation between oplax functors that

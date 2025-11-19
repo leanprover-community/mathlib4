@@ -29,7 +29,9 @@ condition.
 * `Lax.OplaxTrans F G`: oplax transformations between lax functors `F` and `G`. The naturality
   condition is given by a 2-morphism `F.map f ≫ app b ⟶ app a ≫ G.map f` for each 1-morphism
   `f : a ⟶ b`.
-* `Lax.StrongTrans F G`: Strong transformations between lax functors `F` and `G`.
+* `Lax.StrongTrans F G`: Strong transformations between lax functors `F` and `G`. The naturality
+  condition is given by a 2-morphism `app a ≫ G.map f ≅ F.map f ≫ app b` for each 1-morphism
+  `f : a ⟶ b`.
 
 Using these, we define three `CategoryStruct` (scoped) instances on `B ⥤ᴸ C`, in the
 `Lax.LaxTrans`, `Lax.Oplax`, and `Lax.StrongTrans` namespaces. The arrows in these
@@ -69,23 +71,26 @@ structure LaxTrans (F G : B ⥤ᴸ C) where
   app (a : B) : F.obj a ⟶ G.obj a
   /-- The 2-morphisms underlying the lax naturality constraint. -/
   naturality {a b : B} (f : a ⟶ b) : app a ≫ G.map f ⟶ F.map f ≫ app b
+  /-- Naturality of the lax naturality constraint. -/
   naturality_naturality {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
       naturality f ≫ F.map₂ η ▷ app b = app a ◁ G.map₂ η ≫ naturality g := by
     cat_disch
+  /-- Lax unity. -/
   naturality_id (a : B) :
       app a ◁ G.mapId a ≫ naturality (𝟙 a) =
-        (ρ_ (app a)).hom ≫ (λ_ (app a)).inv  ≫ F.mapId a ▷ app a := by
+        (ρ_ (app a)).hom ≫ (λ_ (app a)).inv ≫ F.mapId a ▷ app a := by
     cat_disch
+  /-- Lax functoriality. -/
   naturality_comp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
       app a ◁ G.mapComp f g ≫ naturality (f ≫ g) =
-        (α_ _ _ _).inv ≫ naturality f ▷ G.map g ≫
-          (α_ _ _ _).hom ≫  F.map f ◁ naturality g ≫
-            (α_ _ _ _).inv ≫ F.mapComp f g ▷ app c := by
+      (α_ _ _ _).inv ≫ naturality f ▷ G.map g ≫ (α_ _ _ _).hom ≫
+        F.map f ◁ naturality g ≫ (α_ _ _ _).inv ≫ F.mapComp f g ▷ app c := by
     cat_disch
 
-namespace LaxTrans
+attribute [reassoc (attr := simp)] LaxTrans.naturality_naturality LaxTrans.naturality_id
+  LaxTrans.naturality_comp
 
-attribute [reassoc (attr := simp)] naturality_naturality naturality_id naturality_comp
+namespace LaxTrans
 
 variable {F G H : B ⥤ᴸ C} (η : LaxTrans F G) (θ : LaxTrans G H)
 
@@ -319,7 +324,7 @@ structure StrongTrans (F G : B ⥤ᴸ C) where
   app (a : B) : F.obj a ⟶ G.obj a
   naturality {a b : B} (f : a ⟶ b) : app a ≫ G.map f ≅ F.map f ≫ app b
   naturality_naturality {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
-     (naturality f).hom ≫ F.map₂ η ▷ app b = app a ◁ G.map₂ η ≫ (naturality g).hom := by
+      (naturality f).hom ≫ F.map₂ η ▷ app b = app a ◁ G.map₂ η ≫ (naturality g).hom := by
     cat_disch
   /-- Lax unity. -/
   naturality_id (a : B) :
