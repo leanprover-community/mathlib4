@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies, Sara Rousta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Sara Rousta
 -/
-import Mathlib.Order.Interval.Set.OrdConnected
-import Mathlib.Order.Minimal
-import Mathlib.Order.UpperLower.Principal
+module
+
+public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Order.Minimal
+public import Mathlib.Order.UpperLower.Principal
 
 /-!
 # Upper and lower closures
@@ -19,6 +21,8 @@ they are equivalent to a union over principal upper (lower) sets, as shown in `c
 * `upperClosure`: The greatest upper set containing a set.
 * `lowerClosure`: The least lower set containing a set.
 -/
+
+@[expose] public section
 
 open OrderDual Set
 

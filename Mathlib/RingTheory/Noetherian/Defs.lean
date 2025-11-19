@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro, Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Buzzard
 -/
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.RingTheory.Finiteness.Basic
+module
+
+public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.RingTheory.Finiteness.Basic
 
 /-!
 # Noetherian rings and modules
@@ -46,6 +48,8 @@ is proved in `RingTheory.Polynomial`.
 Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noetherian module
 
 -/
+
+@[expose] public section
 
 assert_not_exists Finsupp.linearCombination Matrix Pi.basis
 

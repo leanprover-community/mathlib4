@@ -3,9 +3,11 @@ Copyright (c) 2023 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
-import Mathlib.RepresentationTheory.Invariants
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
+public import Mathlib.RepresentationTheory.Invariants
 
 /-!
 # The low-degree cohomology of a `k`-linear `G`-representation
@@ -49,6 +51,8 @@ the `cocyclesₙ` in this file, for `n = 0, 1, 2`.
 * Nonabelian group cohomology
 
 -/
+
+@[expose] public section
 
 universe v u
 
