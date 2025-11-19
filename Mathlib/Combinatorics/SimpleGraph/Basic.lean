@@ -368,13 +368,13 @@ instance Inf.adjDecidable : DecidableRel (G ⊓ H).Adj :=
 instance Sdiff.adjDecidable : DecidableRel (G \ H).Adj :=
   inferInstanceAs <| DecidableRel fun v w => G.Adj v w ∧ ¬H.Adj v w
 
-variable [DecidableEq V]
+variable (v w : V) [Decidable (v = w)]
 
-instance Top.adjDecidable : DecidableRel (⊤ : SimpleGraph V).Adj :=
-  inferInstanceAs <| DecidableRel fun v w => v ≠ w
+instance Top.adjDecidable : Decidable ((⊤ : SimpleGraph V).Adj v w) :=
+  inferInstanceAs <| Decidable (v ≠ w)
 
-instance Compl.adjDecidable : DecidableRel (Gᶜ.Adj) :=
-  inferInstanceAs <| DecidableRel fun v w => v ≠ w ∧ ¬G.Adj v w
+instance Compl.adjDecidable : Decidable (Gᶜ.Adj v w) :=
+  inferInstanceAs <| Decidable (v ≠ w ∧ ¬G.Adj v w)
 
 end Decidable
 
