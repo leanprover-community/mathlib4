@@ -3,9 +3,11 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Composition.MeasureComp
-import Mathlib.Probability.Kernel.CondDistrib
-import Mathlib.Probability.ConditionalProbability
+module
+
+public import Mathlib.Probability.Kernel.Composition.MeasureComp
+public import Mathlib.Probability.Kernel.CondDistrib
+public import Mathlib.Probability.ConditionalProbability
 
 /-!
 # Kernel associated with a conditional expectation
@@ -29,6 +31,8 @@ on `Ω` allows us to do so.
 * `condExp_ae_eq_integral_condExpKernel`: `μ[f | m] =ᵐ[μ] fun ω => ∫ y, f y ∂(condExpKernel μ m ω)`.
 
 -/
+
+@[expose] public section
 
 
 open MeasureTheory Set Filter TopologicalSpace

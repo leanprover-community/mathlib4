@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ComposableArrows.One
-import Mathlib.CategoryTheory.ComposableArrows.Two
-import Mathlib.CategoryTheory.Triangulated.Functor
+module
+
+public import Mathlib.CategoryTheory.ComposableArrows.One
+public import Mathlib.CategoryTheory.ComposableArrows.Two
+public import Mathlib.CategoryTheory.Triangulated.Functor
 
 /-!
 # Spectral objects in triangulated categories
@@ -25,6 +27,8 @@ triangulated category `C`, we obtain a spectral object in the abelian category `
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
