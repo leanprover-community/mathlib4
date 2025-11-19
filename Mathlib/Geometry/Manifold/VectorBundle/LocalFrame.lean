@@ -9,8 +9,6 @@ public import Mathlib.Geometry.Manifold.Algebra.Monoid
 public import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
-import Mathlib.Tactic.ByCases
-
 
 /-!
 # Local frames in a vector bundle
@@ -71,21 +69,6 @@ the model fiber `F`.
 * `e.contMDiffOn_localFrame_baseSet`: each section `e.localFrame b i` is smooth on `e.baseSet`
 
 # TODO
-In the following lemmas, let `e` be a compatible local trivialisation of `V`, and `b` a basis of
-the model fiber `F`.
-* `e.localFrame_coeff b i` describes the `i`-th coefficient of sections of `V` w.r.t.
-  `e.localFrame b`:
-  `e.localFrame b i` is a linear map from sections of `V` to functions `M → 𝕜`.
-* `e.eventually_eq_localFrame_sum_coeff_smul b`: near `x`, we have
-  `s = ∑ i, (e.localFrame_coeff b i s) • e.localFrame b i`
-* `e.localFrame_coeff_congr b`: the coefficient `e.localFrame_coeff b i` of `s` in the local frame
-  induced by `e` and `b` at `x` only depends on `s` at `x`.
-* `e.contMDiffOn_localFrame_coeff`: if `s` is a `C^k` section, each coefficient
-  `e.localFrame_coeff b i s` is `C^k` on `e.baseSet`
-* `e.contMDiffAt_iff_localFrame_coeff b`: a section `s` is `C^k` at `x ∈ e.baseSet`
-  iff all of its frame coefficients are
-* `e.contMDiffOn_iff_localFrame_coeff b`: a section `s` is `C^k` on an open set `t ⊆ e.baseSet`
-  iff all of its frame coefficients are
 
 Strengthen the proof of smoothness in terms of the local frame coefficients.
 * `IsLocalFrameOn.contMDiffOn_coeff hs`: if `t` is a `C^k` section, each coefficient
