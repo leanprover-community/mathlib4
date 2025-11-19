@@ -232,6 +232,13 @@ theorem pow_of_dvd (h : IsPrimitiveRoot ζ k) {p : ℕ} (hp : p ≠ 0) (hdiv : p
   rw [← orderOf_pow_of_dvd hp hdiv]
   exact IsPrimitiveRoot.orderOf _
 
+lemma pow_div_of_dvd {n m : ℕ} [NeZero n] (hζ : IsPrimitiveRoot ζ n) (h : m ∣ n) :
+    IsPrimitiveRoot (ζ ^ (n / m)) m := by
+  have hm0 : 0 < m := Nat.pos_of_dvd_of_pos h n.pos_of_neZero
+  obtain ⟨k, rfl⟩ := h
+  have hk0 : 0 < k := Nat.pos_of_dvd_of_pos (dvd_mul_left k m) (NeZero.pos _)
+  simpa [hm0, hk0] using hζ.pow_of_dvd hk0.ne' (dvd_mul_left _ _)
+
 protected theorem mem_rootsOfUnity {ζ : Mˣ} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
     ζ ∈ rootsOfUnity n M :=
   h.pow_eq_one
@@ -636,6 +643,28 @@ lemma _root_.card_rootsOfUnity_eq_iff_exists_isPrimitiveRoot {n : ℕ} [NeZero n
   rw [Nat.card_eq_fintype_card, h, ← IsPrimitiveRoot.iff_orderOf, ← coe_submonoidClass_iff,
     ← IsPrimitiveRoot.coe_units_iff] at hζ
   use ζ
+
+lemma _root_.card_rootsOfUnity_eq_self_iff_forall_dvd_card_eq_self {n : ℕ} [NeZero n] :
+    Nat.card (rootsOfUnity n R) = n ↔ ∀ m, m ∣ n → Nat.card (rootsOfUnity m R) = m := by
+  constructor
+  · intro h m hm
+    have hm0 : 0 < m := Nat.pos_of_dvd_of_pos hm n.pos_of_neZero
+    have : NeZero m := ⟨hm0.ne'⟩
+    rw [Nat.card_eq_fintype_card, card_rootsOfUnity_eq_iff_exists_isPrimitiveRoot] at h ⊢
+    obtain ⟨ζ, hζ⟩ := h
+    exact ⟨_, hζ.pow_div_of_dvd hm⟩
+  · intro h
+    exact h n (dvd_refl n)
+
+lemma _root_.rootsOfUnity_le_iff_dvd_of_card_eq {n k : ℕ} [NeZero n] [NeZero k]
+    (hn : Fintype.card (rootsOfUnity n R) = n) (hk : Fintype.card (rootsOfUnity k R) = k) :
+    rootsOfUnity k R ≤ rootsOfUnity n R ↔ k ∣ n := by
+  refine ⟨fun h ↦ ?_, rootsOfUnity_le_of_dvd⟩
+  obtain ⟨x, hx⟩ := card_rootsOfUnity_eq_iff_exists_isPrimitiveRoot.mp hn
+  obtain ⟨y, hy⟩ := card_rootsOfUnity_eq_iff_exists_isPrimitiveRoot.mp hk
+  rw [(hy.isUnit_unit NeZero.out).eq_orderOf, orderOf_dvd_iff_pow_eq_one, ← mem_rootsOfUnity]
+  apply h
+  simp [Units.ext_iff, hy.eq_orderOf]
 
 /-- The cardinality of the multiset `nthRoots ↑n (1 : R)` is `n`
 if there is a primitive root of unity in `R`. -/

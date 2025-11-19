@@ -98,6 +98,29 @@ theorem map_rootsOfUnity (f : Mˣ →* Nˣ) (k : ℕ) : (rootsOfUnity k M).map f
 
 instance : Subsingleton (rootsOfUnity 1 M) := by simp [subsingleton_iff]
 
+lemma rootsOfUnity_sup_rootsOfUnity (k l : ℕ) :
+    (rootsOfUnity k M) ⊔ (rootsOfUnity l M) = rootsOfUnity (Nat.lcm k l) M := by
+  refine le_antisymm ?_ ?_
+  · rw [sup_le_iff]
+    exact ⟨rootsOfUnity_le_of_dvd (Nat.dvd_lcm_left k l),
+      rootsOfUnity_le_of_dvd (Nat.dvd_lcm_right k l)⟩
+  · rcases eq_or_ne k 0 with rfl | hk
+    · simp
+    intro x
+    simp only [Subgroup.mem_sup, mem_rootsOfUnity, Nat.lcm_eq_mul_div]
+    intro hx
+    have : (k / k.gcd l).Coprime (l / k.gcd l) :=
+      Nat.gcd_div_gcd_div_gcd_of_pos_left (Nat.pos_of_ne_zero hk)
+    rw [← Nat.isCoprime_iff_coprime] at this
+    refine ⟨x ^ ((l / k.gcd l : ℕ) * Int.gcdB (k / k.gcd l : ℕ) (l / k.gcd l : ℕ)), ?_,
+      x ^ ((k / k.gcd l : ℕ) * Int.gcdA (k / k.gcd l : ℕ) (l / k.gcd l : ℕ)), ?_, ?_⟩
+    · rw [← zpow_natCast, ← zpow_mul, mul_comm, ← mul_assoc, ← Nat.cast_mul, zpow_mul, zpow_natCast,
+        ← Nat.mul_div_assoc _ (Nat.gcd_dvd_right _ _), hx, one_zpow]
+    · rw [← zpow_natCast, ← zpow_mul, mul_comm, ← mul_assoc, ← Nat.cast_mul, zpow_mul, zpow_natCast,
+        ← Nat.mul_div_assoc _ (Nat.gcd_dvd_left _ _), mul_comm, hx, one_zpow]
+    · rw [← zpow_add, add_comm, ← Int.gcd_eq_gcd_ab, Int.isCoprime_iff_gcd_eq_one.mp this]
+      simp
+
 lemma rootsOfUnity_inf_rootsOfUnity {m n : ℕ} :
     (rootsOfUnity m M ⊓ rootsOfUnity n M) = rootsOfUnity (m.gcd n) M := by
   refine le_antisymm ?_ ?_
@@ -231,14 +254,27 @@ instance rootsOfUnity.fintype : Fintype (rootsOfUnity k R) := by
 instance rootsOfUnity.isCyclic : IsCyclic (rootsOfUnity k R) :=
   isCyclic_of_subgroup_isDomain ((Units.coeHom R).comp (rootsOfUnity k R).subtype) coe_injective
 
-theorem card_rootsOfUnity : Fintype.card (rootsOfUnity k R) ≤ k := by
-  classical
-  calc
-    Fintype.card (rootsOfUnity k R) = Fintype.card { x // x ∈ nthRoots k (1 : R) } :=
-      Fintype.card_congr (rootsOfUnityEquivNthRoots R k)
-    _ ≤ Multiset.card (nthRoots k (1 : R)).attach := Multiset.card_le_card (Multiset.dedup_le _)
-    _ = Multiset.card (nthRoots k (1 : R)) := Multiset.card_attach
-    _ ≤ k := card_nthRoots k 1
+@[simp]
+lemma exponent_rootsOfUnity :
+    Monoid.exponent (rootsOfUnity k R) = Fintype.card (rootsOfUnity k R) := by
+  rw [IsCyclic.exponent_eq_card, Nat.card_eq_fintype_card]
+
+lemma card_rootsOfUnity_dvd : Fintype.card (rootsOfUnity k R) ∣ k := by
+  rw [← exponent_rootsOfUnity, Monoid.exponent_dvd]
+  simp [orderOf_dvd_iff_pow_eq_one, ← mem_rootsOfUnity]
+
+lemma rootsOfUnity_congr_of_eq_card {n : ℕ} (h : Fintype.card (rootsOfUnity k R) = n) :
+    rootsOfUnity k R = rootsOfUnity n R := by
+  refine le_antisymm ?_ (rootsOfUnity_le_of_dvd ?_)
+  · rw [← exponent_rootsOfUnity] at h
+    intro x hx
+    simpa [mem_rootsOfUnity, ← orderOf_dvd_iff_pow_eq_one] using
+      Monoid.exponent_dvd.mp (dvd_of_eq h) ⟨x, hx⟩
+  · rw [← h]
+    exact card_rootsOfUnity_dvd _ _
+
+theorem card_rootsOfUnity : Fintype.card (rootsOfUnity k R) ≤ k :=
+  Nat.le_of_dvd (NeZero.pos _) (card_rootsOfUnity_dvd _ _)
 
 variable {k R}
 
