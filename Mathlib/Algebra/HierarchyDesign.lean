@@ -3,8 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Eric Wieser
 -/
-import Mathlib.Init
-import Mathlib.Tactic.Basic
+module
+
+public import Mathlib.Init
+public import Mathlib.Tactic.Basic
 
 /-!
 # Documentation of the algebraic hierarchy
@@ -16,6 +18,8 @@ refer to files/types that currently only exist in mathlib3.
 TODO: Add sections about interactions with topological typeclasses, and order typeclasses.
 
 -/
+
+@[expose] public section
 
 
 library_note2 «the algebraic hierarchy» /-- # The algebraic hierarchy

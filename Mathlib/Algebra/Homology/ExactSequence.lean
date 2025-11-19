@@ -3,8 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Exact
-import Mathlib.CategoryTheory.ComposableArrows
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Exact
+public import Mathlib.CategoryTheory.ComposableArrows.Basic
 
 /-!
 # Exact sequences
@@ -24,6 +26,8 @@ This implementation is a refactor of `exact_seq` with appeared in the
 Liquid Tensor Experiment as a property of lists in `Arrow C`.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

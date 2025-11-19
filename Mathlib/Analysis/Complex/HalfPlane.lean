@@ -3,8 +3,10 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Topology.Instances.EReal.Lemmas
+module
+
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Topology.Instances.EReal.Lemmas
 
 /-!
 # Half-planes in ℂ are open
@@ -13,6 +15,8 @@ We state that open left, right, upper and lower half-planes in the complex numbe
 where the bounding value of the real or imaginary part is given by an `EReal` `x`.
 So this includes the full plane and the empty set for `x = ⊤`/`x = ⊥`.
 -/
+
+@[expose] public section
 
 namespace Complex
 

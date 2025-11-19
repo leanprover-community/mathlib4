@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Idempotents.Karoubi
+module
+
+public import Mathlib.CategoryTheory.Idempotents.Karoubi
 
 /-!
 # Extension of functors to the idempotent completion
@@ -19,6 +21,8 @@ when `D` is idempotent complete, we get equivalences
 and `karoubiUniversal C D : C ⥤ D ≌ Karoubi C ⥤ D`.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -242,6 +246,29 @@ theorem whiskeringLeft_obj_preimage_app {F G : Karoubi C ⥤ D}
   congr
 
 end IsIdempotentComplete
+
+variable {C D} in
+/-- The precomposition of functors with `toKaroubi C` is fully faithful. -/
+def whiskeringLeftObjToKaroubiFullyFaithful :
+    ((Functor.whiskeringLeft C (Karoubi C) D).obj (toKaroubi C)).FullyFaithful where
+  preimage {F G} τ :=
+    { app P := F.map P.decompId_i ≫ τ.app P.X ≫ G.map P.decompId_p
+      naturality X Y f := by
+        dsimp at τ ⊢
+        have h₁ : f ≫ Y.decompId_i = X.decompId_i ≫ (toKaroubi C).map f.f := by simp
+        have h₂ := τ.naturality f.f
+        have h₃ : X.decompId_p ≫ f = (toKaroubi C).map f.f ≫ Y.decompId_p := by simp
+        dsimp at h₂
+        rw [Category.assoc, Category.assoc, ← F.map_comp_assoc,
+          h₁, F.map_comp_assoc, reassoc_of% h₂, ← G.map_comp, ← h₃, G.map_comp] }
+  preimage_map {F G} τ := by ext X; exact (natTrans_eq _ _).symm
+  map_preimage {F G} τ := by
+    ext X
+    dsimp
+    rw [Karoubi.decompId_i_toKaroubi, Karoubi.decompId_p_toKaroubi,
+      Functor.map_id, Category.id_comp]
+    change _ ≫ G.map (𝟙 _) = _
+    simp
 
 end Idempotents
 

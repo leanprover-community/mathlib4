@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 
 /-!
 # Preservation of limits, as a property of objects in the functor category
@@ -15,6 +17,8 @@ it is stable under colimits of shape `K'` when they
 commute to limits of shape `K` (resp. to finite limits).
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

@@ -3,12 +3,14 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Kappelmann
 -/
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Floor.Semiring
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Field
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Positivity.Core
+module
+
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Algebra.Order.Floor.Semiring
+public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.Field
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Lemmas on `Int.floor`, `Int.ceil` and `Int.fract`
@@ -24,6 +26,8 @@ fractional part operator.
 
 rounding, floor, ceil
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -46,7 +50,7 @@ private theorem int_floor_nonneg_of_pos [Ring α] [LinearOrder α] [FloorRing α
 
 /-- Extension for the `positivity` tactic: `Int.floor` is nonnegative if its input is. -/
 @[positivity ⌊_⌋]
-def evalIntFloor : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalIntFloor : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℤ), ~q(@Int.floor $α' $ir $io $j $a) =>
     match ← core q(inferInstance) q(inferInstance) a with
@@ -65,7 +69,7 @@ private theorem nat_ceil_pos [Semiring α] [LinearOrder α] [FloorSemiring α] {
 
 /-- Extension for the `positivity` tactic: `Nat.ceil` is positive if its input is. -/
 @[positivity ⌈_⌉₊]
-def evalNatCeil : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalNatCeil : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(@Nat.ceil $α' $ir $io $j $a) =>
     let _i ← synthInstanceQ q(LinearOrder $α')
@@ -83,7 +87,7 @@ private theorem int_ceil_pos [Ring α] [LinearOrder α] [FloorRing α] {a : α} 
 
 /-- Extension for the `positivity` tactic: `Int.ceil` is positive/nonnegative if its input is. -/
 @[positivity ⌈_⌉]
-def evalIntCeil : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalIntCeil : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℤ), ~q(@Int.ceil $α' $ir $io $j $a) =>
     match ← core q(inferInstance) q(inferInstance) a with

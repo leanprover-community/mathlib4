@@ -3,7 +3,9 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Covering.Differentiation
+module
+
+public import Mathlib.MeasureTheory.Covering.Differentiation
 
 /-!
 # Besicovitch covering theorems
@@ -89,6 +91,8 @@ the remaining points, while remaining disjoint from the already chosen balls. Th
 balls is the desired almost everywhere covering.
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -134,7 +138,7 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `Besicovitch.SatelliteConfig.r`. -/
 @[positivity Besicovitch.SatelliteConfig.r _ _]
-def evalBesicovitchSatelliteConfigR : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalBesicovitchSatelliteConfigR : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Besicovitch.SatelliteConfig.r $β $inst $N $τ $self $i) =>
     assertInstancesCommute
