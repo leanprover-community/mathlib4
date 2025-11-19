@@ -3,8 +3,10 @@ Copyright (c) 2025 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Analysis.Normed.Field.WithAbs
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Analysis.Normed.Field.WithAbs
 
 /-!
 # Equivalence of real-valued absolute values
@@ -12,6 +14,8 @@ import Mathlib.Analysis.Normed.Field.WithAbs
 Two absolute values `v₁, v₂ : AbsoluteValue R ℝ` are *equivalent* if there exists a
 positive real number `c` such that `v₁ x ^ c = v₂ x` for all `x : R`.
 -/
+
+@[expose] public section
 
 namespace AbsoluteValue
 
@@ -356,7 +360,7 @@ theorem IsEquiv.isEmbedding_equivWithAbs (h : v.IsEquiv w) :
   refine IsInducing.isEmbedding <| isInducing_iff_nhds_zero.2 <| Filter.ext fun U ↦
     ⟨fun hU ↦ ?_, fun hU ↦ ?_⟩
   · exact ⟨WithAbs.equivWithAbs v w '' U, h.equivWithAbs_image_mem_nhds_zero hU,
-      by simp [RingEquiv.image_eq_preimage, Set.preimage_preimage]⟩
+      by simp [RingEquiv.image_eq_preimage_symm, Set.preimage_preimage]⟩
   · rw [← RingEquiv.coe_toEquiv, ← Filter.map_equiv_symm] at hU
     obtain ⟨s, hs, hss⟩ := Filter.mem_map_iff_exists_image.1 hU
     rw [← RingEquiv.coe_toEquiv_symm, WithAbs.equivWithAbs_symm] at hss

@@ -3,8 +3,10 @@ Copyright (c) 2018 Louis Carlin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Louis Carlin, Mario Carneiro
 -/
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Order.RelClasses
+module
+
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Order.RelClasses
 
 /-!
 # Euclidean domains
@@ -58,6 +60,8 @@ value of `j`.
 
 Euclidean domain, transfinite Euclidean domain, Bézout's lemma
 -/
+
+@[expose] public section
 
 universe u
 
