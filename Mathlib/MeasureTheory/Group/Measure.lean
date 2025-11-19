@@ -3,12 +3,16 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Card
-import Mathlib.MeasureTheory.Group.Action
-import Mathlib.MeasureTheory.Measure.Prod
-import Mathlib.Topology.Algebra.Module.Equiv
-import Mathlib.Topology.ContinuousMap.CocompactMap
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Set.Card
+public import Mathlib.GroupTheory.Complement
+public import Mathlib.MeasureTheory.Group.Action
+public import Mathlib.MeasureTheory.Group.Pointwise
+public import Mathlib.MeasureTheory.Measure.Prod
+public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.ContinuousMap.CocompactMap
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 
 /-!
 # Measures on Groups
@@ -23,6 +27,8 @@ We develop some properties of measures on (topological) groups
 
 We also give analogues of all these notions in the additive world.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -269,6 +275,18 @@ theorem eventually_div_right_iff (μ : Measure G) [IsMulRightInvariant μ] (t : 
     (∀ᵐ x ∂μ, p (x / t)) ↔ ∀ᵐ x ∂μ, p x := by
   conv_rhs => rw [Filter.Eventually, ← map_div_right_ae μ t]
   rfl
+
+@[to_additive AddSubgroup.index_mul_measure]
+lemma Subgroup.index_mul_measure (H : Subgroup G) [H.FiniteIndex] (hH : MeasurableSet (H : Set G))
+    (μ : Measure G) [IsMulLeftInvariant μ] : H.index * μ H = μ univ := by
+  obtain ⟨s, hs, -⟩ := H.exists_isComplement_left 1
+  have hs' : Finite s := hs.finite_left_iff.mpr inferInstance
+  calc
+    H.index * μ H = ∑' a : s, μ (a.val • H) := by simp [measure_smul, hs.encard_left]
+    _ = μ univ := by
+      rw [← measure_iUnion _ fun _ ↦ hH.const_smul _]
+      · simp [hs.mul_eq]
+      · exact fun a b hab ↦ hs.pairwiseDisjoint_smul a.2 b.2 (Subtype.val_injective.ne hab)
 
 end Group
 
@@ -862,7 +880,7 @@ instance _root_.ContinuousMulEquiv.isHaarMeasure_map [BorelSpace G] [IsTopologic
     [IsTopologicalGroup H] (e : G ≃ₜ* H) : (μ.map e).IsHaarMeasure :=
   e.toMulEquiv.isHaarMeasure_map μ e.continuous e.symm.continuous
 
-/-- A convenience wrapper for MeasureTheory.Measure.isAddHaarMeasure_map`. -/
+/-- A convenience wrapper for `MeasureTheory.Measure.isAddHaarMeasure_map`. -/
 instance _root_.ContinuousLinearEquiv.isAddHaarMeasure_map
     {E F R S : Type*} [Semiring R] [Semiring S]
     [AddCommGroup E] [Module R E] [AddCommGroup F] [Module S F]

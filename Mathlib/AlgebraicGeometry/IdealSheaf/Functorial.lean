@@ -3,8 +3,10 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
-import Mathlib.AlgebraicGeometry.PullbackCarrier
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
+public import Mathlib.AlgebraicGeometry.PullbackCarrier
 
 /-!
 # Functorial constructions of ideal sheaves
@@ -18,6 +20,8 @@ We define the pullback and pushforward of ideal sheaves in this file.
   The Galois connection between pullback and pushforward.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

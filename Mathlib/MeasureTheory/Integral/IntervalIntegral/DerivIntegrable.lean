@@ -3,9 +3,11 @@ Copyright (c) 2025 Yizheng Zhu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yizheng Zhu
 -/
-import Mathlib.Analysis.BoundedVariation
-import Mathlib.MeasureTheory.Function.AbsolutelyContinuous
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Slope
+module
+
+public import Mathlib.Analysis.BoundedVariation
+public import Mathlib.MeasureTheory.Function.AbsolutelyContinuous
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Slope
 
 /-!
 # `f'` is interval integrable for certain classes of functions `f`
@@ -23,6 +25,8 @@ then `f'` is interval integrable on `a..b`.
 ## Tags
 interval integrable, monotone, bounded variation, absolutely continuous
 -/
+
+@[expose] public section
 
 open MeasureTheory Set Filter
 
@@ -60,7 +64,7 @@ lemma MonotoneOn.exists_tendsto_deriv_liminf_lintegral_enorm_le
     rw [hfg (by grind [Icc_diff_both])]
     exact hx₁.hasDerivAt.tendsto_slope.comp <|
       tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
-      (by convert tendsto_const_nhds.add tendsto_inverse_atTop_nhds_zero_nat; simp)
+      (by convert tendsto_const_nhds.add (tendsto_inv_atTop_nhds_zero_nat (𝕜 := ℝ)); simp)
       (by simp [eventually_ne_atTop 0])
   · calc
       _ = liminf (fun (n : ℕ) ↦ ENNReal.ofReal (∫ (x : ℝ) in Icc a b, (G (n : ℝ)⁻¹) x)) atTop := by

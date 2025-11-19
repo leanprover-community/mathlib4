@@ -3,19 +3,23 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Data.ENNReal.BigOperators
-import Mathlib.Tactic.Bound
-import Mathlib.Topology.Order.LiminfLimsup
-import Mathlib.Topology.EMetricSpace.Lipschitz
-import Mathlib.Topology.Instances.NNReal.Lemmas
-import Mathlib.Topology.MetricSpace.Pseudo.Real
-import Mathlib.Topology.MetricSpace.ProperSpace.Real
-import Mathlib.Topology.Metrizable.Uniformity
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Data.ENNReal.BigOperators
+public import Mathlib.Tactic.Bound
+public import Mathlib.Topology.Order.LiminfLimsup
+public import Mathlib.Topology.EMetricSpace.Lipschitz
+public import Mathlib.Topology.Instances.NNReal.Lemmas
+public import Mathlib.Topology.MetricSpace.Pseudo.Real
+public import Mathlib.Topology.MetricSpace.ProperSpace.Real
+public import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
 # Topology on extended non-negative reals
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -92,7 +96,7 @@ theorem eventuallyEq_of_toReal_eventuallyEq {l : Filter α} {f g : α → ℝ≥
     (hfi : ∀ᶠ x in l, f x ≠ ∞) (hgi : ∀ᶠ x in l, g x ≠ ∞)
     (hfg : (fun x => (f x).toReal) =ᶠ[l] fun x => (g x).toReal) : f =ᶠ[l] g := by
   filter_upwards [hfi, hgi, hfg] with _ hfx hgx _
-  rwa [← ENNReal.toReal_eq_toReal hfx hgx]
+  rwa [← ENNReal.toReal_eq_toReal_iff' hfx hgx]
 
 theorem continuousOn_toNNReal : ContinuousOn ENNReal.toNNReal { a | a ≠ ∞ } := fun _a ha =>
   ContinuousAt.continuousWithinAt (tendsto_toNNReal ha)
@@ -832,6 +836,11 @@ theorem tendsto_toReal_iff {ι} {fi : Filter ι} {f : ι → ℝ≥0∞} (hf : �
   lift x to ℝ≥0 using hx
   simp [tendsto_coe]
 
+theorem tendsto_toReal_zero_iff {ι} {fi : Filter ι} {f : ι → ℝ≥0∞}
+    (hf : ∀ i, f i ≠ ∞ := by finiteness) :
+    Tendsto (fun n ↦ (f n).toReal) fi (𝓝 0) ↔ Tendsto f fi (𝓝 0) := by
+  rw [← ENNReal.toReal_zero, tendsto_toReal_iff hf ENNReal.zero_ne_top]
+
 theorem tsum_coe_ne_top_iff_summable_coe {f : α → ℝ≥0} :
     (∑' a, (f a : ℝ≥0∞)) ≠ ∞ ↔ Summable fun a => (f a : ℝ) := by
   rw [NNReal.summable_coe]
@@ -1296,7 +1305,7 @@ lemma truncateToReal_eq_toReal {t x : ℝ≥0∞} (t_ne_top : t ≠ ∞) (x_le :
   have x_lt_top : x < ∞ := lt_of_le_of_lt x_le t_ne_top.lt_top
   have obs : min t x ≠ ∞ := by
     simp_all only [ne_eq, min_eq_top, false_and, not_false_eq_true]
-  exact (ENNReal.toReal_eq_toReal obs x_lt_top.ne).mpr (min_eq_right x_le)
+  exact (ENNReal.toReal_eq_toReal_iff' obs x_lt_top.ne).mpr (min_eq_right x_le)
 
 lemma truncateToReal_le {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) {x : ℝ≥0∞} :
     truncateToReal t x ≤ t.toReal := by

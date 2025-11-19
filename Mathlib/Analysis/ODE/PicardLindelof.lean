@@ -3,9 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Winston Yin
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.Topology.Algebra.Order.Floor
-import Mathlib.Topology.MetricSpace.Contracting
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.Topology.Algebra.Order.Floor
+public import Mathlib.Topology.MetricSpace.Contracting
 
 /-!
 # Picard-Lindelöf (Cauchy-Lipschitz) Theorem
@@ -65,6 +67,8 @@ differential equation, dynamical system, initial value problem, Picard-Lindelöf
 Cauchy-Lipschitz theorem
 
 -/
+
+@[expose] public section
 
 open Function intervalIntegral MeasureTheory Metric Set
 open scoped Nat NNReal Topology
@@ -482,10 +486,10 @@ lemma hasDerivWithinAt_picard_Icc
     (continuousOn_comp hf hα hmem _ ht)
   apply ContinuousOn.intervalIntegrable
   apply continuousOn_comp hf hα hmem |>.mono
-  by_cases h : t < t₀
+  by_cases! h : t < t₀
   · rw [uIcc_of_gt h]
     exact Icc_subset_Icc ht.1 ht₀.2
-  · rw [uIcc_of_le (not_lt.mp h)]
+  · rw [uIcc_of_le h]
     exact Icc_subset_Icc ht₀.1 ht.2
 
 /-- Converse of `hasDerivWithinAt_picard_Icc`: if `f` is the derivative along `α`, then `α`
