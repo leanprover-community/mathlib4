@@ -28,14 +28,12 @@ variable {G : Type*} [AddCommGroup G] (B : AddGroupFilterBasis G)
 /-- The uniform space structure associated to an abelian group filter basis via the associated
 topological abelian group structure. -/
 protected def uniformSpace : UniformSpace G :=
-  @IsTopologicalAddGroup.toUniformSpace G _ B.topology B.isTopologicalAddGroup
+  @IsTopologicalAddGroup.rightUniformSpace G _ B.topology B.isTopologicalAddGroup
 
 /-- The uniform space structure associated to an abelian group filter basis via the associated
 topological abelian group structure is compatible with its group structure. -/
 protected theorem isUniformAddGroup : @IsUniformAddGroup G B.uniformSpace _ :=
   @isUniformAddGroup_of_addCommGroup G _ B.topology B.isTopologicalAddGroup
-
-@[deprecated (since := "2025-03-27")] alias uniformAddGroup := AddGroupFilterBasis.isUniformAddGroup
 
 theorem cauchy_iff {F : Filter G} :
     @Cauchy G B.uniformSpace F ↔

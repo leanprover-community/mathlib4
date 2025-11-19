@@ -72,18 +72,21 @@ def runTactic (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId) (x : MVarId �
     panic!"ContextInfo.runTactic: `goal` must be an element of `i.goalsBefore`"
   let mctx := i.mctxBefore
   let lctx := (mctx.decls.find! goal).2
-  ctx.runMetaMWithMessages lctx <| do
+  ctx.runMetaMWithMessages lctx do
     -- Make a fresh metavariable because the original goal is already assigned.
     let type ← goal.getType
     let goal ← Meta.mkFreshExprSyntheticOpaqueMVar type
     x goal.mvarId!
 
-/-- Run tactic code, given by a piece of syntax, in the context of an infotree node. -/
-def runTacticCode (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId) (code : Syntax) :
-    CommandElabM (List MVarId) := do
+/-- Run tactic code, given by a piece of syntax, in the context of an infotree node.
+The optional `MetaM` argument `m` performs postprocessing on the goals produced. -/
+def runTacticCode (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId) (code : Syntax)
+    (m : Σ α : Type, MVarId → MetaM α := ⟨MVarId, pure⟩) :
+    CommandElabM (List m.1) := do
   let termCtx ← liftTermElabM read
   let termState ← liftTermElabM get
-  ctx.runTactic i goal fun goal =>
-    Lean.Elab.runTactic' (ctx := termCtx) (s := termState) goal code
+  ctx.runTactic i goal fun goal => do
+    let newGoals ← Lean.Elab.runTactic' (ctx := termCtx) (s := termState) goal code
+    newGoals.mapM m.2
 
 end Lean.Elab.ContextInfo

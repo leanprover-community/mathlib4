@@ -22,7 +22,7 @@ namespace IsValuativeTopology
 
 section
 
-/-! # Alternate constructors -/
+/-! ### Alternate constructors -/
 
 variable {R : Type*} [CommRing R] [ValuativeRel R] [TopologicalSpace R]
 
@@ -121,7 +121,7 @@ instance (priority := low) isTopologicalAddGroup : IsTopologicalAddGroup R := by
   · simpa [ContinuousAt] using (cts_add.1 (-x₀)).continuousAt (x := x₀)
 
 instance (priority := low) : IsTopologicalRing R :=
-  letI := IsTopologicalAddGroup.toUniformSpace R
+  letI := IsTopologicalAddGroup.rightUniformSpace R
   letI := isUniformAddGroup_of_addCommGroup (G := R)
   inferInstance
 
@@ -224,9 +224,9 @@ namespace ValuativeRel
 scoped notation "𝒪[" R "]" => Valuation.integer (valuation R)
 
 @[inherit_doc]
-scoped notation "𝓂[" K "]" => IsLocalRing.maximalIdeal 𝒪[K]
+scoped notation "𝓂[" K "]" => IsLocalRing.maximalIdeal ↥𝒪[K]
 
 @[inherit_doc]
-scoped notation "𝓀[" K "]" => IsLocalRing.ResidueField 𝒪[K]
+scoped notation "𝓀[" K "]" => IsLocalRing.ResidueField ↥𝒪[K]
 
 end ValuativeRel

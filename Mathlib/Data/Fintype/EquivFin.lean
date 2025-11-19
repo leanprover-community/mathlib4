@@ -182,7 +182,7 @@ instance (priority := 100) Finite.of_subsingleton {α : Sort*} [Subsingleton α]
   Finite.of_injective (Function.const α ()) <| Function.injective_of_subsingleton _
 
 -- Higher priority for `Prop`s
-instance prop (p : Prop) : Finite p :=
+instance instFiniteProp (p : Prop) : Finite p :=
   Finite.of_subsingleton
 
 /-- This instance also provides `[Finite s]` for `s : Set α`. -/
@@ -479,7 +479,7 @@ instance [Nonempty α] : Infinite (List α) :=
   Infinite.of_surjective ((↑) : List α → Multiset α) Quot.mk_surjective
 
 instance String.infinite : Infinite String :=
-  Infinite.of_injective List.asString (fun _ _ => List.asString_injective)
+  Infinite.of_injective String.ofList (fun _ _ => String.ofList_injective)
 
 instance Infinite.set [Infinite α] : Infinite (Set α) :=
   Infinite.of_injective singleton Set.singleton_injective

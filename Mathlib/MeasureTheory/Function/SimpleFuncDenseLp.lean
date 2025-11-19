@@ -402,7 +402,7 @@ section Instances
 
 
 protected theorem eq' {f g : Lp.simpleFunc E p μ} : (f : α →ₘ[μ] E) = (g : α →ₘ[μ] E) → f = g :=
-  Subtype.eq ∘ Subtype.eq
+  Subtype.ext ∘ Subtype.ext
 
 /-! Implementation note:  If `Lp.simpleFunc E p μ` were defined as a `𝕜`-submodule of `Lp E p μ`,
 then the next few lemmas, putting a normed `𝕜`-group structure on `Lp.simpleFunc E p μ`, would be
@@ -447,8 +447,6 @@ attribute [local instance] simpleFunc.module
 instance as it is (as of writing) used only in the construction of the Bochner integral. -/
 protected theorem isBoundedSMul [Fact (1 ≤ p)] : IsBoundedSMul 𝕜 (Lp.simpleFunc E p μ) :=
   IsBoundedSMul.of_norm_smul_le fun r f => (norm_smul_le r (f : Lp E p μ) :)
-
-@[deprecated (since := "2025-03-10")] protected alias boundedSMul := simpleFunc.isBoundedSMul
 
 attribute [local instance] simpleFunc.isBoundedSMul
 
@@ -704,11 +702,6 @@ variable {G : Type*} [NormedAddCommGroup G]
 theorem coeFn_le [PartialOrder G] (f g : Lp.simpleFunc G p μ) : (f : α → G) ≤ᵐ[μ] g ↔ f ≤ g := by
   rw [← Subtype.coe_le_coe, ← Lp.coeFn_le]
 
-instance instAddLeftMono [PartialOrder G] [IsOrderedAddMonoid G] :
-    AddLeftMono (Lp.simpleFunc G p μ) := by
-  refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩
-  exact add_le_add_left hg₁₂ f
-
 variable (p μ G)
 
 theorem coeFn_zero : (0 : Lp.simpleFunc G p μ) =ᵐ[μ] (0 : α → G) :=
@@ -776,7 +769,7 @@ theorem denseRange_coeSimpleFuncNonnegToLpNonneg [hp : Fact (1 ≤ p)] (hp_ne_to
     · have hg_nonneg : (0 : α → G) ≤ᵐ[μ] g := (Lp.coeFn_nonneg _).mpr g.2
       refine hg_nonneg.mono fun a ha => subset_closure ?_
       simpa using ha
-    · simp_rw [sub_zero]; exact hg_memLp.eLpNorm_lt_top
+    · simp_rw [sub_zero]; finiteness
   refine
     ⟨fun n =>
       (coeSimpleFuncNonnegToLpNonneg p μ G) ⟨toLp (x n) (hx_memLp n), hx_nonneg_Lp n⟩,

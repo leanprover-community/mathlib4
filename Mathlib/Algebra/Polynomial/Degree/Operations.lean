@@ -199,9 +199,9 @@ theorem degree_add_C (hp : 0 < degree p) : degree (p + C a) = degree p :=
 @[simp] theorem natDegree_add_C {a : R} : (p + C a).natDegree = p.natDegree := by
   rcases eq_or_ne p 0 with rfl | hp
   · simp
-  by_cases hpd : p.degree ≤ 0
+  by_cases! hpd : p.degree ≤ 0
   · rw [eq_C_of_degree_le_zero hpd, ← C_add, natDegree_C, natDegree_C]
-  · rw [not_le, degree_eq_natDegree hp, Nat.cast_pos, ← natDegree_C a] at hpd
+  · rw [degree_eq_natDegree hp, Nat.cast_pos, ← natDegree_C a] at hpd
     exact natDegree_add_eq_left_of_natDegree_lt hpd
 
 @[simp] theorem natDegree_C_add {a : R} : (C a + p).natDegree = p.natDegree := by
@@ -490,6 +490,7 @@ theorem eq_one_of_monic_natDegree_zero (hf : p.Monic) (hfd : p.natDegree = 0) : 
   rw [Monic.def, leadingCoeff, hfd] at hf
   rw [eq_C_of_natDegree_eq_zero hfd, hf, map_one]
 
+@[simp]
 theorem Monic.natDegree_eq_zero (hf : p.Monic) : p.natDegree = 0 ↔ p = 1 :=
   ⟨eq_one_of_monic_natDegree_zero hf, by rintro rfl; simp⟩
 

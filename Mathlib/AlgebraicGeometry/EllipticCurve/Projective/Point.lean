@@ -108,8 +108,7 @@ lemma neg_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W'.neg P ≈ W'.neg Q := by
 
 lemma neg_of_Z_eq_zero [NoZeroDivisors R] {P : Fin 3 → R} (hP : W'.Equation P) (hPz : P z = 0) :
     W'.neg P = -P y • ![0, 1, 0] := by
-  erw [neg, X_eq_zero_of_Z_eq_zero hP hPz, negY_of_Z_eq_zero hP hPz, hPz, smul_fin3, mul_zero,
-    mul_one]
+  simp [neg, X_eq_zero_of_Z_eq_zero hP hPz, negY_of_Z_eq_zero hP hPz, hPz]
 
 lemma neg_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     W.neg P = P z • ![P x / P z, W.toAffine.negY (P x / P z) (P y / P z), 1] := by
@@ -389,8 +388,6 @@ lemma fromAffine_some [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y)
 lemma fromAffine_some_ne_zero [Nontrivial R] {X Y : R} (h : W'.toAffine.Nonsingular X Y) :
     fromAffine (.some h) ≠ 0 :=
   mk_ne_zero <| (nonsingularLift_some ..).mpr h
-
-@[deprecated (since := "2025-03-01")] alias fromAffine_ne_zero := fromAffine_some_ne_zero
 
 /-- The negation of a nonsingular projective point on a Weierstrass curve `W`.
 

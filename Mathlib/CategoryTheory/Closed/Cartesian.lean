@@ -99,7 +99,7 @@ notation:20 A " ⟹ " B:19 => (exp A).obj B
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Delaborator for `Functor.obj` -/
 @[app_delab Functor.obj]
-def delabFunctorObjExp : Delab := whenPPOption getPPNotation <| withOverApp 6 <| do
+def delabFunctorObjExp : Delab := whenPPOption getPPNotation <| withOverApp 6 do
   let e ← getExpr
   guard <| e.isAppOfArity' ``Functor.obj 6
   let A ← withNaryArg 4 do
@@ -124,6 +124,11 @@ theorem coev_ev : (coev A).app (A ⟹ B) ≫ (exp A).map ((ev A).app B) = 𝟙 (
   ihom.coev_ev A B
 
 end exp
+
+lemma CartesianMonoidalCategory.isLeftAdjoint_prod_functor
+    (A : C) [Closed A] :
+    (prod.functor.obj A).IsLeftAdjoint :=
+  Functor.isLeftAdjoint_of_iso (CartesianMonoidalCategory.tensorLeftIsoProd A)
 
 instance : PreservesColimits (tensorLeft A) :=
   (ihom.adjunction A).leftAdjoint_preservesColimits

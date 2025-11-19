@@ -55,7 +55,7 @@ theorem factorization_factorial {p : ℕ} (hp : p.Prime) :
 the sum of base `p` digits of `n`. -/
 theorem sub_one_mul_factorization_factorial {n p : ℕ} (hp : p.Prime) :
     (p - 1) * (n)!.factorization p = n - (p.digits n).sum := by
-  simp only [factorization_factorial hp <| lt_succ_of_lt <| lt.base (log p n),
+  simp only [factorization_factorial hp <| lt_succ_of_lt <| Nat.lt_add_one (log p n),
     ← Finset.sum_Ico_add' _ 0 _ 1, Ico_zero_eq_range,
     ← sub_one_mul_sum_log_div_pow_eq_sub_sum_digits]
 
@@ -243,9 +243,9 @@ theorem factorization_factorial_eq_zero_of_lt (h : n < p) : (factorial n).factor
       Pi.add_apply, hn (lt_of_succ_lt h), add_zero, factorization_eq_zero_of_lt h]
 
 theorem factorization_choose_eq_zero_of_lt (h : n < p) : (choose n k).factorization p = 0 := by
-  by_cases hnk : n < k; · simp [choose_eq_zero_of_lt hnk]
-  rw [choose_eq_factorial_div_factorial (le_of_not_gt hnk),
-    factorization_div (factorial_mul_factorial_dvd_factorial (le_of_not_gt hnk)), Finsupp.coe_tsub,
+  by_cases! hnk : n < k; · simp [choose_eq_zero_of_lt hnk]
+  rw [choose_eq_factorial_div_factorial hnk,
+    factorization_div (factorial_mul_factorial_dvd_factorial hnk), Finsupp.coe_tsub,
     Pi.sub_apply, factorization_factorial_eq_zero_of_lt h, zero_tsub]
 
 /-- If a prime `p` has positive multiplicity in the `n`th central binomial coefficient,

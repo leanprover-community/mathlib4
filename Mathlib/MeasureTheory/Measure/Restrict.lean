@@ -35,6 +35,7 @@ namespace Measure
 /-! ### Restricting a measure -/
 
 /-- Restrict a measure `μ` to a set `s` as an `ℝ≥0∞`-linear map. -/
+@[irreducible]
 noncomputable def restrictₗ {m0 : MeasurableSpace α} (s : Set α) : Measure α →ₗ[ℝ≥0∞] Measure α :=
   liftLinear (OuterMeasure.restrict s) fun μ s' hs' t => by
     suffices μ (s ∩ t) = μ (s ∩ t ∩ s') + μ ((s ∩ t) \ s') by
@@ -58,6 +59,7 @@ theorem restrict_toOuterMeasure_eq_toOuterMeasure_restrict (h : MeasurableSet s)
     toMeasure_toOuterMeasure, OuterMeasure.restrict_trim h, μ.trimmed]
 
 theorem restrict_apply₀ (ht : NullMeasurableSet t (μ.restrict s)) : μ.restrict s t = μ (t ∩ s) := by
+  rw [restrict, restrictₗ] at ht
   rw [← restrictₗ_apply, restrictₗ, liftLinear_apply₀ _ ht, OuterMeasure.restrict_apply,
     coe_toOuterMeasure]
 
@@ -889,7 +891,20 @@ theorem _root_.MeasurableEquiv.restrict_map (e : α ≃ᵐ β) (μ : Measure α)
     (μ.map e).restrict s = (μ.restrict <| e ⁻¹' s).map e :=
   e.measurableEmbedding.restrict_map _ _
 
+lemma _root_.MeasurableEquiv.comap_apply (e : α ≃ᵐ β) (μ : Measure β) (s : Set α) :
+    comap e μ s = μ (e.symm ⁻¹' s) := by
+  rw [e.measurableEmbedding.comap_apply, e.image_eq_preimage_symm]
+
 end MeasurableEmbedding
+
+lemma MeasureTheory.Measure.map_eq_comap {_ : MeasurableSpace α} {_ : MeasurableSpace β} {f : α → β}
+    {g : β → α} {μ : Measure α} (hf : Measurable f) (hg : MeasurableEmbedding g)
+    (hμg : ∀ᵐ a ∂μ, a ∈ Set.range g) (hfg : ∀ a, f (g a) = a) : μ.map f = μ.comap g := by
+  ext s hs
+  rw [map_apply hf hs, hg.comap_apply, ← measure_diff_null hμg]
+  congr
+  simp
+  grind
 
 section Subtype
 

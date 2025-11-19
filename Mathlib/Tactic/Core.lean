@@ -8,6 +8,7 @@ import Lean.Elab.Tactic.ElabTerm
 import Lean.Meta.Tactic.Intro
 import Mathlib.Lean.Expr.Basic
 import Batteries.Tactic.OpenPrivate
+import Batteries.Lean.Expr
 
 /-!
 # Generally useful tactics.
@@ -74,7 +75,7 @@ def MVarId.introsWithBinderIdents
     (g : MVarId) (ids : List (TSyntax ``binderIdent)) (maxIntros? : Option Nat := none) :
     MetaM (List (TSyntax ``binderIdent) × Array FVarId × MVarId) := do
   let type ← g.getType
-  let type ← instantiateMVars type
+  let type ← Lean.instantiateMVars type
   let n := getIntrosSize type
   let n := match maxIntros? with | none => n | some maxIntros => min n maxIntros
   if n == 0 then

@@ -35,7 +35,7 @@ Whenever you state a lemma about the coercion `ℚ≥0 → ℚ`, check that Lean
 `Subtype.val`. Else your lemma will never apply.
 -/
 
-assert_not_exists CompleteLattice OrderedCommMonoid
+assert_not_exists CompleteLattice IsOrderedMonoid
 
 library_note2 «specialised high priority simp lemma» /--
 It sometimes happens that a `@[simp]` lemma declared early in the library can be proved by `simp`
@@ -50,14 +50,12 @@ un``@[simp]``ed):
 
 open Function
 
-instance Rat.instZeroLEOneClass : ZeroLEOneClass ℚ where
-  zero_le_one := rfl
-
 instance Rat.instPosMulMono : PosMulMono ℚ where
   mul_le_mul_of_nonneg_left r hr p q hpq := by
     simpa [mul_sub, sub_nonneg] using Rat.mul_nonneg hr (sub_nonneg.2 hpq)
 
 deriving instance CommSemiring for NNRat
+deriving instance AddCancelCommMonoid for NNRat
 deriving instance LinearOrder for NNRat
 deriving instance Sub for NNRat
 deriving instance Inhabited for NNRat
@@ -350,14 +348,15 @@ theorem ext_num_den_iff : p = q ↔ p.num = q.num ∧ p.den = q.den :=
 
 See also `Rat.divInt` and `mkRat`. -/
 def divNat (n d : ℕ) : ℚ≥0 :=
-  ⟨.divInt n d, Rat.divInt_nonneg (Int.ofNat_zero_le n) (Int.ofNat_zero_le d)⟩
+  ⟨.divInt n d, Rat.divInt_nonneg (Int.natCast_nonneg n) (Int.natCast_nonneg d)⟩
 
 variable {n₁ n₂ d₁ d₂ : ℕ}
 
 @[simp, norm_cast] lemma coe_divNat (n d : ℕ) : (divNat n d : ℚ) = .divInt n d := rfl
 
 lemma mk_divInt (n d : ℕ) :
-    ⟨.divInt n d, Rat.divInt_nonneg (Int.ofNat_zero_le n) (Int.ofNat_zero_le d)⟩ = divNat n d := rfl
+    ⟨.divInt n d, Rat.divInt_nonneg (Int.natCast_nonneg n) (Int.natCast_nonneg d)⟩ =
+      divNat n d := rfl
 
 lemma divNat_inj (h₁ : d₁ ≠ 0) (h₂ : d₂ ≠ 0) : divNat n₁ d₁ = divNat n₂ d₂ ↔ n₁ * d₂ = n₂ * d₁ := by
   rw [← coe_inj]; simp [Rat.mkRat_eq_iff, h₁, h₂]; norm_cast

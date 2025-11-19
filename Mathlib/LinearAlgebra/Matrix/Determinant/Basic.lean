@@ -150,7 +150,7 @@ theorem det_mul (M N : Matrix n n R) : det (M * N) = det M * det N :=
         Fintype.sum_equiv (Equiv.mulRight σ⁻¹) _ _ fun τ => by
           have : (∏ j, M (τ j) (σ j)) = ∏ j, M ((τ * σ⁻¹) j) j := by
             rw [← (σ⁻¹ : _ ≃ _).prod_comp]
-            simp only [Equiv.Perm.coe_mul, apply_inv_self, Function.comp_apply]
+            simp
           have h : ε σ * ε (τ * σ⁻¹) = ε τ :=
             calc
               ε σ * ε (τ * σ⁻¹) = ε (τ * σ⁻¹ * σ) := by
@@ -557,11 +557,11 @@ theorem det_eq_of_forall_row_eq_smul_add_pred_aux {n : ℕ} (k : Fin (n + 1)) :
     by_cases hi : i = k.succ
     · simp [hi, hM', hsucc, updateRow_self]
     rw [updateRow_ne hi, hM', updateRow_ne hi]
-  have k_ne_succ : (Fin.castSucc k) ≠ k.succ := (Fin.castSucc_lt_succ k).ne
+  have k_ne_succ : (Fin.castSucc k) ≠ k.succ := Fin.castSucc_lt_succ.ne
   have M_k : M (Fin.castSucc k) = M' (Fin.castSucc k) := (updateRow_ne k_ne_succ).symm
   rw [hM, M_k, det_updateRow_add_smul_self M' k_ne_succ.symm, ih (Function.update c k 0)]
   · intro i hi
-    rw [Fin.lt_iff_val_lt_val, Fin.coe_castSucc, Fin.val_succ, Nat.lt_succ_iff] at hi
+    rw [Fin.lt_def, Fin.coe_castSucc, Fin.val_succ, Nat.lt_succ_iff] at hi
     rw [Function.update_apply]
     split_ifs with hik
     · rfl
@@ -576,7 +576,7 @@ theorem det_eq_of_forall_row_eq_smul_add_pred_aux {n : ℕ} (k : Fin (n + 1)) :
   · simp [hc i (Fin.succ_lt_succ_iff.mpr hik2)]
   rw [updateRow_ne]
   apply ne_of_lt
-  rwa [Fin.lt_iff_val_lt_val, Fin.coe_castSucc, Fin.val_succ, Nat.lt_succ_iff, ← not_lt]
+  rwa [Fin.lt_def, Fin.coe_castSucc, Fin.val_succ, Nat.lt_succ_iff, ← not_lt]
 
 /-- If you add multiples of previous rows to the next row, the determinant doesn't change. -/
 theorem det_eq_of_forall_row_eq_smul_add_pred {n : ℕ} {A B : Matrix (Fin (n + 1)) (Fin (n + 1)) R}
@@ -629,20 +629,18 @@ theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Mat
       exact (this k x).1
     · intro σ hσ
       rw [mem_preserving_snd] at hσ
-      have hσ' : ∀ x, (σ⁻¹ x).snd = x.snd := by
-        intro x
-        conv_rhs => rw [← Perm.apply_inv_self σ x, hσ]
+      have hσ' x : (σ.symm x).snd = x.snd := by simpa [eq_comm] using hσ (σ.symm x)
       have mk_apply_eq : ∀ k x, ((σ (x, k)).fst, k) = σ (x, k) := by
         intro k x
         ext
         · simp only
         · simp only [hσ]
-      have mk_inv_apply_eq : ∀ k x, ((σ⁻¹ (x, k)).fst, k) = σ⁻¹ (x, k) := by grind
-      refine ⟨fun k _ => ⟨fun x => (σ (x, k)).fst, fun x => (σ⁻¹ (x, k)).fst, ?_, ?_⟩, ?_, ?_⟩
+      have mk_inv_apply_eq : ∀ k x, ((σ.symm (x, k)).fst, k) = σ.symm (x, k) := by grind
+      refine ⟨fun k _ => ⟨fun x => (σ (x, k)).fst, fun x => (σ.symm (x, k)).fst, ?_, ?_⟩, ?_, ?_⟩
       · intro x
-        simp only [mk_apply_eq, inv_apply_self]
+        simp [mk_apply_eq]
       · intro x
-        simp only [mk_inv_apply_eq, apply_inv_self]
+        simp [mk_inv_apply_eq]
       · apply Finset.mem_univ
       · ext ⟨k, x⟩
         · simp only [coe_fn_mk, prodCongrLeft_apply]
