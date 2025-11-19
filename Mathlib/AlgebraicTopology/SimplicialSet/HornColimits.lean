@@ -126,17 +126,15 @@ end horn₂₂
 
 namespace horn
 
-section
-
 variable {n : ℕ} (i : Fin (n + 1))
 
 /-- The multicoequalizer diagram which expresses a `horn n i` as a gluing
 of all `1`-codimensional faces of the standard simplex but one
 along suitable `2`-codimensional faces. -/
 lemma multicoequalizerDiagram :
-  Subcomplex.MulticoequalizerDiagram (horn n i)
-    (ι := ({i}ᶜ : Set (Fin (n +1)))) (fun j ↦ stdSimplex.face {j.1}ᶜ)
-    (fun j k ↦ stdSimplex.face {j.1, k.1}ᶜ) where
+    Subcomplex.MulticoequalizerDiagram (horn n i)
+      (ι := ({i}ᶜ : Set (Fin (n +1)))) (fun j ↦ stdSimplex.face {j.1}ᶜ)
+      (fun j k ↦ stdSimplex.face {j.1, k.1}ᶜ) where
   iSup_eq := by rw [horn_eq_iSup]
   min_eq j k := by
     rw [stdSimplex.face_inter_face]
@@ -149,54 +147,6 @@ noncomputable def isColimit :
     IsColimit ((multicoequalizerDiagram i).multicofork.toLinearOrder.map
       Subcomplex.toSSetFunctor) :=
   (multicoequalizerDiagram i).isColimit'
-
-lemma exists_desc' {X : SSet.{u}}
-    (f : ∀ (j : ({i}ᶜ : Set _)), (stdSimplex.face {j.1}ᶜ : SSet) ⟶ X)
-    (hf : ∀ (j k : ({i}ᶜ : Set _)) (_ : j.1 < k.1),
-      Subcomplex.homOfLE (show stdSimplex.face {j.1, k.1}ᶜ ≤ _ by
-        simp [stdSimplex.face_le_face_iff]) ≫ f j =
-      Subcomplex.homOfLE (show stdSimplex.face {j.1, k.1}ᶜ ≤ _ by
-        simp [stdSimplex.face_le_face_iff]) ≫ f k) :
-    ∃ (φ : (Λ[n, i] : SSet) ⟶ X),
-      ∀ j, faceι i j.1 (by simpa only [Finset.mem_compl, Finset.mem_singleton] using j.2) ≫
-        φ = f j :=
-  ⟨(isColimit i).desc (Multicofork.ofπ _ _ f (fun s ↦ hf _ _ s.2)),
-    fun j ↦ (isColimit i).fac _ (.right j)⟩
-
-end
-
-open stdSimplex in
-lemma exists_desc {n : ℕ} {i : Fin (n + 3)} {X : SSet.{u}}
-    (f : ({i}ᶜ : Set _) → ((Δ[n + 1] : SSet) ⟶ X))
-    (hf : ∀ (j k : ({i}ᶜ : Set _)) (hjk : j.1 < k.1),
-      stdSimplex.δ (k.1.pred (Fin.ne_zero_of_lt hjk)) ≫ f j =
-        stdSimplex.δ (j.1.castPred (Fin.ne_last_of_lt hjk)) ≫ f k) :
-    ∃ (φ : (Λ[n + 2, i] : SSet) ⟶ X), ∀ j, ι i j.1 j.2 ≫ φ = f j := by
-  obtain ⟨φ, hφ⟩ := exists_desc' (i := i)
-    (f := fun j ↦
-      (faceSingletonComplIso j.1).inv ≫ f j) (fun j k hjk ↦ by
-        dsimp
-        sorry
-        --rw [homOfLE_faceSingletonComplIso_inv_eq_facePairComplIso_δ_pred_assoc _ _ hjk,
-        --  homOfLE_faceSingletonComplIso_inv_eq_facePairComplIso_δ_castPred_assoc _ _ hjk,
-        --  hf _ _ hjk]
-        )
-  exact ⟨φ, fun j ↦ by
-    rw [← cancel_epi (faceSingletonComplIso j.1).inv, ← hφ,
-      faceSingletonComplIso_inv_ι_assoc]⟩
-
-lemma hom_ext' {n : ℕ} {i : Fin (n + 2)} {X : SSet.{u}} {f g : (Λ[n + 1, i] : SSet) ⟶ X}
-    (h : ∀ (j : Fin (n + 2)) (hij : j ≠ i), horn.ι i j hij ≫ f = horn.ι i j hij ≫ g) :
-    f = g := by
-  sorry
-  /-
-  apply Multicofork.IsColimit.hom_ext
-    (Subcomplex.multicoforkIsColimit (multicoequalizerDiagram i))
-  intro ⟨j, hj⟩
-  dsimp [CompleteLattice.MulticoequalizerDiagram.multicofork, Multicofork.ofπ,
-    Multicofork.map, Multicofork.π]
-  rw [← cancel_epi (stdSimplex.faceSingletonComplIso j).hom]
-  exact h _ hj-/
 
 end horn
 
@@ -225,9 +175,8 @@ def desc.multicofork :
     | 0 => (stdSimplex.faceSingletonComplIso 0).inv ≫ f₀
     | 1 => by simp at hi
     | 2 => (stdSimplex.faceSingletonComplIso 2).inv ≫ f₂
-    | 3 => (stdSimplex.faceSingletonComplIso 3).inv ≫ f₃) (by
-      dsimp
-      intro x
+    | 3 => (stdSimplex.faceSingletonComplIso 3).inv ≫ f₃) (fun x ↦ by
+      dsimp at x ⊢
       fin_cases x
       · simp only [← cancel_epi (stdSimplex.facePairIso.{u} (n := 3) 1 3 (by simp)).hom,
           ← Category.assoc]
@@ -296,9 +245,8 @@ def desc.multicofork :
     | 0 => (stdSimplex.faceSingletonComplIso 0).inv ≫ f₀
     | 1 => (stdSimplex.faceSingletonComplIso 1).inv ≫ f₁
     | 2 => by simp at hi
-    | 3 => (stdSimplex.faceSingletonComplIso 3).inv ≫ f₃) (by
-      dsimp
-      intro x
+    | 3 => (stdSimplex.faceSingletonComplIso 3).inv ≫ f₃) (fun x ↦ by
+      dsimp at x ⊢
       fin_cases x
       · dsimp
         simp only [← cancel_epi (stdSimplex.facePairIso.{u} (n := 3) 2 3 (by simp)).hom,
