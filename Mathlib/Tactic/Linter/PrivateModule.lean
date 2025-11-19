@@ -22,10 +22,12 @@ meta section
 
 open Lean Elab Command Linter
 
+namespace Mathlib.Linter
+
 /-- The `privateModule` linter lints against nonempty modules that have only private declarations,
 and suggests adding `@[expose] public section` to the top. -/
 register_option linter.privateModule : Bool := {
-  defValue := true
+  defValue := false
   descr := "Enable the `privateModule` linter, which lints against nonempty modules that have only \
     private declarations."
 }
@@ -50,3 +52,5 @@ def privateModule : Linter where
               Consider adding `@[expose] public section` at the beginning of the module."
 
 initialize addLinter privateModule
+
+end Mathlib.Linter
