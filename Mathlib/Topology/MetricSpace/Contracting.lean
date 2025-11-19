@@ -3,10 +3,12 @@ Copyright (c) 2019 Rohan Mitta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Data.Setoid.Basic
-import Mathlib.Dynamics.FixedPoints.Topology
-import Mathlib.Topology.MetricSpace.Lipschitz
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.Dynamics.FixedPoints.Topology
+public import Mathlib.Topology.MetricSpace.Lipschitz
 
 /-!
 # Contracting maps
@@ -27,6 +29,8 @@ of convergence, and some properties of the map sending a contracting map to its 
 
 contracting map, fixed point, Banach fixed point theorem
 -/
+
+@[expose] public section
 
 open NNReal Topology ENNReal Filter Function
 
@@ -244,7 +248,7 @@ theorem dist_inequality (x y) : dist x y ≤ (dist x (f x) + dist y (f y)) / (1 
     rwa [le_div_iff₀ hf.one_sub_K_pos, mul_comm, _root_.sub_mul, one_mul, sub_le_iff_le_add]
   calc
     dist x y ≤ dist x (f x) + dist y (f y) + dist (f x) (f y) := dist_triangle4_right _ _ _ _
-    _ ≤ dist x (f x) + dist y (f y) + K * dist x y := add_le_add_left (hf.dist_le_mul _ _) _
+    _ ≤ dist x (f x) + dist y (f y) + K * dist x y := by grw [hf.dist_le_mul]
 
 theorem dist_le_of_fixedPoint (x) {y} (hy : IsFixedPt f y) : dist x y ≤ dist x (f x) / (1 - K) := by
   simpa only [hy.eq, dist_self, add_zero] using hf.dist_inequality x y

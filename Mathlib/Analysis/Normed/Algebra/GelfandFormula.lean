@@ -3,10 +3,12 @@ Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Analytic.RadiusLiminf
-import Mathlib.Analysis.Complex.Liouville
-import Mathlib.Analysis.Complex.Polynomial.Basic
-import Mathlib.Analysis.Normed.Algebra.Spectrum
+module
+
+public import Mathlib.Analysis.Analytic.RadiusLiminf
+public import Mathlib.Analysis.Complex.Liouville
+public import Mathlib.Analysis.Complex.Polynomial.Basic
+public import Mathlib.Analysis.Normed.Algebra.Spectrum
 
 /-!
 # Gelfand's formula and other results on the spectrum in complex Banach algebras
@@ -26,6 +28,8 @@ complex Banach algebra has nonempty spectrum.
   is given by selecting the (unique) element of `spectrum ℂ a`
 
 -/
+
+@[expose] public section
 
 variable {𝕜 A : Type*}
 
@@ -145,7 +149,7 @@ open Polynomial in
 to monic monomials. -/
 protected theorem map_pow (a : A) (n : ℕ) :
     spectrum ℂ (a ^ n) = (· ^ n) '' spectrum ℂ a := by
-  simpa only [aeval_X_pow, eval_pow, eval_X] using map_polynomial_aeval a (X ^ n)
+  simpa only [aeval_X_pow, eval_X_pow] using map_polynomial_aeval a (X ^ n)
 
 end Nontrivial
 

@@ -3,8 +3,10 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.NormedSpace.Alternating.Curry
-import Mathlib.LinearAlgebra.Alternating.Uncurry.Fin
+module
+
+public import Mathlib.Analysis.NormedSpace.Alternating.Curry
+public import Mathlib.LinearAlgebra.Alternating.Uncurry.Fin
 
 /-!
 # Uncurrying continuous alternating maps
@@ -40,6 +42,8 @@ not only a field of characteristic zero.
 The latter theorem will be used
 to prove that the second exterior derivative of a differential form is zero.
 -/
+
+@[expose] public section
 
 open Fin Function
 
@@ -154,6 +158,12 @@ theorem alternatizeUncurryFin_smul {S : Type*} [Monoid S] [DistribMulAction S F]
     alternatizeUncurryFin (c • f) = c • alternatizeUncurryFin f := by
   ext v
   simp [alternatizeUncurryFin_apply, smul_comm _ c, Finset.smul_sum]
+
+theorem alternatizeUncurryFin_constOfIsEmptyLIE_comp (f : E →L[𝕜] F) :
+    alternatizeUncurryFin (constOfIsEmptyLIE 𝕜 E F (Fin 0) ∘L f) =
+      ofSubsingleton _ _ _ (0 : Fin 1) f := by
+  ext
+  simp [alternatizeUncurryFin_apply]
 
 /-- If `f` is a symmetric continuous bilinear map
 taking values in the space of continuous alternating maps,

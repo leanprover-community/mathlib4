@@ -3,11 +3,13 @@ Copyright (c) 2020 Yury Kudryashov, Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Anne Baanen
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Fintype.Fin
-import Mathlib.Logic.Equiv.Fin.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Fintype.Fin
+public import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!
 # Big operators and `Fin`
@@ -22,6 +24,8 @@ constant function. These results have variants for sums instead of products.
 
 * `finFunctionFinEquiv`: An explicit equivalence between `Fin n → Fin m` and `Fin (m ^ n)`.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -85,22 +89,10 @@ theorem prod_univ_castSucc (f : Fin (n + 1) → M) :
 theorem prod_univ_getElem (l : List M) : ∏ i : Fin l.length, l[i.1] = l.prod := by
   simp [Finset.prod_eq_multiset_prod]
 
-@[deprecated (since := "2025-04-19")]
-alias sum_univ_get := sum_univ_getElem
-
-@[to_additive existing, deprecated (since := "2025-04-19")]
-alias prod_univ_get := prod_univ_getElem
-
 @[to_additive (attr := simp)]
 theorem prod_univ_fun_getElem (l : List ι) (f : ι → M) :
     ∏ i : Fin l.length, f l[i.1] = (l.map f).prod := by
   simp [Finset.prod_eq_multiset_prod]
-
-@[deprecated (since := "2025-04-19")]
-alias sum_univ_get' := sum_univ_fun_getElem
-
-@[to_additive existing, deprecated (since := "2025-04-19")]
-alias prod_univ_get' := prod_univ_fun_getElem
 
 @[to_additive (attr := simp)]
 theorem prod_cons (x : M) (f : Fin n → M) :
@@ -410,6 +402,40 @@ theorem prod_Ioi_zero (f : Fin (n + 1) → M) :
 
 end succ
 
+/-- The product of `g i j` over `i j : Fin (n + 1)`, `i ≠ j`,
+is equal to the product of `g i j * g j i` over `i < j`.
+
+The additive version of this lemma is useful for some proofs about differential forms.
+In this application, the function has the signature `f : Fin (n + 1) → Fin n → M`,
+where `f i j` means `g i (Fin.succAbove i j)` in the informal statements.
+
+Similarly, the product of `g i j * g j i` over `i < j`
+is written as `f (Fin.castSucc i) j * f (Fin.succ j) i` over `i j : Fin n`, `j ≥ i`.
+-/
+@[to_additive /-- The sum of `g i j` over `i j : Fin (n + 1)`, `i ≠ j`,
+is equal to the sum of `g i j + g j i` over `i < j`.
+
+This lemma is useful for some proofs about differential forms.
+In this application, the function has the signature `f : Fin (n + 1) → Fin n → M`,
+where `f i j` means `g i (Fin.succAbove i j)` in the informal statements.
+
+Similarly, the sum of `g i j + g j i` over `i < j`
+is written as `f (Fin.castSucc i) j + f (Fin.succ j) i` over `i j : Fin n`, `j ≥ i`.
+-/]
+theorem prod_prod_eq_prod_triangle_mul (f : Fin (n + 1) → Fin n → M) :
+    ∏ i, ∏ j, f i j = ∏ i : Fin n, ∏ j ≥ i, (f i.castSucc j * f j.succ i) := calc
+  _ = (∏ i, ∏ j with i ≤ j.castSucc, f i j) * ∏ i, ∏ j with j.castSucc < i, f i j := by
+    simp only [← Finset.prod_mul_distrib, ← not_le, Finset.prod_filter_mul_prod_filter_not]
+  _ = (∏ i, ∏ j ≥ i, f i.castSucc j) * ∏ i, ∏ j ≤ i, f i.succ j := by
+    rw [Fin.prod_univ_castSucc, Fin.prod_univ_succ]
+    simp [Finset.filter_le_eq_Ici, Finset.filter_ge_eq_Iic]
+  _ = (∏ i, ∏ j ≥ i, f i.castSucc j) * ∏ i, ∏ j ≥ i, f j.succ i := by
+    congr 1
+    apply Finset.prod_comm'
+    simp
+  _ = ∏ i : Fin n, ∏ j ≥ i, (f i.castSucc j * f j.succ i) := by
+    simp only [Finset.prod_mul_distrib]
+
 end CommMonoid
 
 theorem sum_pow_mul_eq_add_pow {n : ℕ} {R : Type*} [CommSemiring R] (a b : R) :
@@ -442,7 +468,7 @@ theorem partialProd_zero (f : Fin n → M) : partialProd f 0 = 1 := by simp [par
 @[to_additive]
 theorem partialProd_succ (f : Fin n → M) (j : Fin n) :
     partialProd f j.succ = partialProd f (Fin.castSucc j) * f j := by
-  simp [partialProd, List.take_succ]
+  simp [partialProd, List.take_add_one]
 
 @[to_additive]
 theorem partialProd_succ' (f : Fin (n + 1) → M) (j : Fin (n + 1)) :
@@ -483,11 +509,11 @@ lemma partialProd_contractNth {G : Type*} [Monoid G] {n : ℕ}
       simp only [lt_def, coe_castSucc, val_succ] <;>
       omega
     · rw [succAbove_of_castSucc_lt, contractNth_apply_of_eq _ _ _ _ h,
-        succAbove_of_le_castSucc, castSucc_fin_succ, partialProd_succ, mul_assoc] <;>
+        succAbove_of_le_castSucc, castSucc_succ, partialProd_succ, mul_assoc] <;>
       simp only [castSucc_lt_succ_iff, le_def, coe_castSucc] <;>
       omega
     · rw [succAbove_of_le_castSucc, succAbove_of_le_castSucc, contractNth_apply_of_gt _ _ _ _ h,
-        castSucc_fin_succ] <;>
+        castSucc_succ] <;>
       simp only [le_def, val_succ, coe_castSucc] <;>
       omega
 
@@ -513,13 +539,13 @@ theorem inv_partialProd_mul_eq_contractNth {G : Type*} [Group G] (g : Fin (n + 1
     · rw [castSucc_lt_iff_succ_le, succ_le_succ_iff, le_iff_val_le_val]
       exact le_of_lt h
   · rwa [succAbove_of_castSucc_lt, succAbove_of_le_castSucc, partialProd_succ,
-    castSucc_fin_succ, ← mul_assoc,
+    castSucc_succ, ← mul_assoc,
       partialProd_right_inv, contractNth_apply_of_eq]
     · simp [le_iff_val_le_val, ← h]
     · rw [castSucc_lt_iff_succ_le, succ_le_succ_iff, le_iff_val_le_val]
       exact le_of_eq h
   · rwa [succAbove_of_le_castSucc, succAbove_of_le_castSucc, partialProd_succ, partialProd_succ,
-      castSucc_fin_succ, partialProd_succ, inv_mul_cancel_left, contractNth_apply_of_gt]
+      castSucc_succ, partialProd_succ, inv_mul_cancel_left, contractNth_apply_of_gt]
     · exact le_iff_val_le_val.2 (le_of_lt h)
     · rw [le_iff_val_le_val, val_succ]
       exact Nat.succ_le_of_lt h

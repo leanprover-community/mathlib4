@@ -3,14 +3,17 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yaël Dillies
 -/
-import Mathlib.Data.Nat.Basic
-import Mathlib.Data.Int.Order.Basic
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Order.Compare
-import Mathlib.Order.Max
-import Mathlib.Order.Monotone.Defs
-import Mathlib.Order.RelClasses
-import Mathlib.Tactic.Choose
+module
+
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Data.Int.Order.Basic
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Order.Compare
+public import Mathlib.Order.Max
+public import Mathlib.Order.Monotone.Defs
+public import Mathlib.Order.RelClasses
+public import Mathlib.Tactic.Choose
+public import Mathlib.Tactic.Contrapose
 
 /-!
 # Monotonicity
@@ -47,6 +50,8 @@ and `IsSuccArchimedean α`.
 monotone, strictly monotone, antitone, strictly antitone, increasing, strictly increasing,
 decreasing, strictly decreasing
 -/
+
+@[expose] public section
 
 open Function OrderDual
 
@@ -253,12 +258,12 @@ theorem StrictAnti.isMin_of_apply (hf : StrictAnti f) (ha : IsMax (f a)) : IsMin
     let ⟨_, hb⟩ := not_isMin_iff.1 h
     (hf hb).not_isMax ha
 
-lemma StrictMono.add_le_nat {f : ℕ → ℕ} (hf : StrictMono f) (m n : ℕ) : m + f n ≤ f (m + n)  := by
+lemma StrictMono.add_le_nat {f : ℕ → ℕ} (hf : StrictMono f) (m n : ℕ) : m + f n ≤ f (m + n) := by
   rw [Nat.add_comm m, Nat.add_comm m]
   induction m with
   | zero => rw [Nat.add_zero, Nat.add_zero]
   | succ m ih =>
-    rw [← Nat.add_assoc, ← Nat.add_assoc, Nat.succ_le]
+    rw [← Nat.add_assoc, ← Nat.add_assoc, Nat.succ_le_iff]
     exact ih.trans_lt (hf (n + m).lt_succ_self)
 
 protected theorem StrictMono.ite' (hf : StrictMono f) (hg : StrictMono g) {p : α → Prop}
@@ -739,9 +744,9 @@ lemma converges_of_monotone_of_bounded {f : ℕ → ℕ} (mono_f : Monotone f)
   induction c with
   | zero => use 0, 0, fun n _ ↦ Nat.eq_zero_of_le_zero (hc n)
   | succ c ih =>
-    by_cases h : ∀ n, f n ≤ c
+    by_cases! h : ∀ n, f n ≤ c
     · exact ih h
-    · push_neg at h; obtain ⟨N, hN⟩ := h
+    · obtain ⟨N, hN⟩ := h
       replace hN : f N = c + 1 := by specialize hc N; omega
       use c + 1, N; intro n hn
       specialize mono_f hn; specialize hc n; cutsat

@@ -3,13 +3,17 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.GroupTheory.ArchimedeanDensely
-import Mathlib.RingTheory.Valuation.ValuationRing
+module
+
+public import Mathlib.GroupTheory.ArchimedeanDensely
+public import Mathlib.RingTheory.Valuation.ValuationRing
 
 /-!
 # Ring of integers under a given valuation in an multiplicatively archimedean codomain
 
 -/
+
+@[expose] public section
 
 section Field
 
@@ -27,7 +31,7 @@ instance MonoidWithZeroHom.instLinearOrderedCommGroupWithZeroMrange (v : F â†’*â
     simp only [Subtype.forall, MonoidHom.mem_mrange, forall_exists_index, Submonoid.mk_mul_mk,
       Subtype.mk_le_mk, forall_apply_eq_imp_iff]
     intro a b hab c
-    exact mul_le_mul_left' hab (v c)
+    gcongr
 
 instance Valuation.instLinearOrderedCommGroupWithZeroMrange :
     LinearOrderedCommGroupWithZero (MonoidHom.mrange v) :=

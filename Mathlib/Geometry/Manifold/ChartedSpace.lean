@@ -3,8 +3,10 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.OpenPartialHomeomorph
-import Mathlib.Topology.Connected.LocPathConnected
+module
+
+public import Mathlib.Topology.OpenPartialHomeomorph
+public import Mathlib.Topology.Connected.LocPathConnected
 
 /-!
 # Charted spaces
@@ -107,6 +109,8 @@ can be several model spaces for a given topological space. For instance, a compl
 In the scope `Manifold`, we denote the composition of open partial homeomorphisms with `≫ₕ`, and the
 composition of partial equivs with `≫`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -710,7 +714,7 @@ theorem ChartedSpace.t1Space [T1Space H] : T1Space M := by
 
 /-- A charted space over a discrete space is discrete. -/
 theorem ChartedSpace.discreteTopology [DiscreteTopology H] : DiscreteTopology M := by
-  apply singletons_open_iff_discrete.1 (fun x ↦ ?_)
+  apply discreteTopology_iff_isOpen_singleton.2 (fun x ↦ ?_)
   have : IsOpen ((chartAt H x).source ∩ (chartAt H x) ⁻¹' {chartAt H x x}) :=
     isOpen_inter_preimage _ (isOpen_discrete _)
   convert this
@@ -773,7 +777,7 @@ lemma chartedSpace_of_discreteTopology_chartAt [TopologicalSpace M] [Topological
 
 section Products
 
-library_note "Manifold type tags" /-- For technical reasons we introduce two type tags:
+library_note2 «Manifold type tags» /-- For technical reasons we introduce two type tags:
 
 * `ModelProd H H'` is the same as `H × H'`;
 * `ModelPi H` is the same as `∀ i, H i`, where `H : ι → Type*` and `ι` is a finite type.
@@ -916,9 +920,9 @@ def ChartedSpace.sum_of_nonempty [Nonempty H] : ChartedSpace H (M ⊕ M') where
       use ChartedSpace.chartAt x, cm'.chart_mem_atlas x
 
 open scoped Classical in
-instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') :=
-  if h : Nonempty H then ChartedSpace.sum_of_nonempty else by
-  push_neg at h
+instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') := by
+  by_cases! h : Nonempty H
+  · exact ChartedSpace.sum_of_nonempty
   have : IsEmpty M := isEmpty_of_chartedSpace H
   have : IsEmpty M' := isEmpty_of_chartedSpace H
   exact empty H (M ⊕ M')
@@ -1491,7 +1495,7 @@ def OpenPartialHomeomorph.toStructomorph {e : OpenPartialHomeomorph M H} (he : e
     let t : Opens H := { carrier := e.target, is_open' := e.open_target }
     Structomorph G s t := by
   intro s t
-  by_cases h : Nonempty e.source
+  by_cases! h : Nonempty e.source
   · exact { e.toHomeomorphSourceTarget with
       mem_groupoid :=
         -- The atlas of H on itself has only one chart, hence c' is the inclusion.
@@ -1500,8 +1504,7 @@ def OpenPartialHomeomorph.toStructomorph {e : OpenPartialHomeomorph M H} (he : e
         -- with `c'` yields a chart in the maximal atlas of `s`.
         fun c c' hc hc' ↦ G.compatible_of_mem_maximalAtlas (G.subset_maximalAtlas hc)
           (G.restriction_mem_maximalAtlas_subtype he h c' hc') }
-  · push_neg at h
-    have : IsEmpty t := isEmpty_coe_sort.mpr
+  · have : IsEmpty t := isEmpty_coe_sort.mpr
       (by convert e.image_source_eq_target ▸ image_eq_empty.mpr (isEmpty_coe_sort.mp h))
     exact { Homeomorph.empty with
       -- `c'` cannot exist: it would be the restriction of `chartAt H x` at some `x ∈ t`.

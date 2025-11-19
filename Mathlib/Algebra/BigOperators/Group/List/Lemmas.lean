@@ -3,17 +3,19 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
-import Mathlib.Algebra.BigOperators.Group.List.Basic
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Int.Units
-import Mathlib.Data.List.Dedup
-import Mathlib.Data.List.Flatten
-import Mathlib.Data.List.Pairwise
-import Mathlib.Data.List.Perm.Basic
-import Mathlib.Data.List.Range
-import Mathlib.Data.List.Rotate
-import Mathlib.Data.List.ProdSigma
-import Mathlib.Algebra.Group.Opposite
+module
+
+public import Mathlib.Algebra.BigOperators.Group.List.Basic
+public import Mathlib.Algebra.Divisibility.Basic
+public import Mathlib.Algebra.Group.Int.Units
+public import Mathlib.Data.List.Dedup
+public import Mathlib.Data.List.Flatten
+public import Mathlib.Data.List.Pairwise
+public import Mathlib.Data.List.Perm.Basic
+public import Mathlib.Data.List.Range
+public import Mathlib.Data.List.Rotate
+public import Mathlib.Data.List.ProdSigma
+public import Mathlib.Algebra.Group.Opposite
 
 /-!
 # Sums and products from lists
@@ -22,6 +24,8 @@ This file provides further results about `List.prod`, `List.sum`,
 which calculate the product and sum of elements of a list
 and `List.alternatingProd`, `List.alternatingSum`, their alternating counterparts.
 -/
+
+@[expose] public section
 assert_not_imported Mathlib.Algebra.Order.Group.Nat
 
 variable {ι α β M N P G : Type*}
@@ -138,7 +142,7 @@ lemma drop_take_succ_flatten_eq_getElem (L : List (List α)) (i : Nat) (h : i < 
   have : (L.map length).take i = ((L.take (i + 1)).map length).take i := by
     simp [map_take, take_take, Nat.min_eq_left]
   simp only [this, take_sum_flatten, drop_sum_flatten,
-    drop_take_succ_eq_cons_getElem, h, flatten, append_nil]
+    drop_take_succ_eq_cons_getElem, h, flatten_nil, flatten_cons, append_nil]
 
 end List
 

@@ -3,13 +3,17 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Semiconj.Defs
-import Mathlib.Algebra.Group.Basic
+module
+
+public import Mathlib.Algebra.Group.Semiconj.Defs
+public import Mathlib.Algebra.Group.Basic
 
 /-!
 # Lemmas about semiconjugate elements of a group
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
@@ -42,7 +46,7 @@ variable [Group G] {a x y : G}
 
 @[to_additive (attr := simp)] lemma zpow_right (h : SemiconjBy a x y) :
     ∀ m : ℤ, SemiconjBy a (x ^ m) (y ^ m)
-  | (n : ℕ)    => by simp [zpow_natCast, h.pow_right n]
+  | (n : ℕ) => by simp [zpow_natCast, h.pow_right n]
   | .negSucc n => by
     simp only [zpow_negSucc, inv_right_iff]
     apply pow_right h

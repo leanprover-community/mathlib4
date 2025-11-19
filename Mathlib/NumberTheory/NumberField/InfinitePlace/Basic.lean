@@ -3,10 +3,12 @@ Copyright (c) 2022 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
-import Mathlib.NumberTheory.NumberField.Norm
-import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-import Mathlib.Topology.Instances.Complex
+module
+
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
+public import Mathlib.NumberTheory.NumberField.Norm
+public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+public import Mathlib.Topology.Instances.Complex
 
 /-!
 # Infinite places of a number field
@@ -36,6 +38,8 @@ This file defines the infinite places of a number field.
 number field, infinite places
 -/
 
+@[expose] public section
+
 open scoped Finset
 
 open NumberField Fintype Module
@@ -57,7 +61,7 @@ namespace NumberField.InfinitePlace
 
 instance {K : Type*} [Field K] : FunLike (InfinitePlace K) K ℝ where
   coe w x := w.1 x
-  coe_injective' _ _ h := Subtype.eq (AbsoluteValue.ext fun x => congr_fun h x)
+  coe_injective' _ _ h := Subtype.ext (AbsoluteValue.ext fun x => congr_fun h x)
 
 lemma coe_apply {K : Type*} [Field K] (v : InfinitePlace K) (x : K) : v x = v.1 x := rfl
 
@@ -330,7 +334,7 @@ variable [NumberField K]
 theorem prod_eq_abs_norm (x : K) :
     ∏ w : InfinitePlace K, w x ^ mult w = abs (Algebra.norm ℚ x) := by
   classical
-  convert (congr_arg (‖·‖) (@Algebra.norm_eq_prod_embeddings ℚ _ _ _ _ ℂ _ _ _ _ _ x)).symm
+  convert (congr_arg (‖·‖) (Algebra.norm_eq_prod_embeddings ℚ ℂ x)).symm
   · rw [norm_prod, ← Fintype.prod_equiv RingHom.equivRatAlgHom (fun f => ‖f x‖)
       (fun φ => ‖φ x‖) fun _ => by simp [RingHom.equivRatAlgHom_apply]]
     rw [← Finset.prod_fiberwise Finset.univ mk (fun φ => ‖φ x‖)]

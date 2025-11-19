@@ -3,8 +3,10 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.LinearAlgebra.Span.Basic
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Tannaka duality for rings
@@ -13,6 +15,8 @@ A ring `R` is equivalent to
 the endomorphisms of the additive forgetful functor `Module R ⥤ AddCommGroup`.
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -23,10 +27,10 @@ A ring `R` is equivalent to
 the endomorphisms of the additive forgetful functor `Module R ⥤ AddCommGroup`.
 -/
 def ringEquivEndForget₂ (R : Type u) [Ring R] :
-    R ≃+* End (AdditiveFunctor.of (forget₂ (ModuleCat.{u} R) AddCommGrp.{u})) where
+    R ≃+* End (AdditiveFunctor.of (forget₂ (ModuleCat.{u} R) AddCommGrpCat.{u})) where
   toFun r :=
     { app := fun M =>
-        @AddCommGrp.ofHom M.carrier M.carrier _ _ (DistribMulAction.toAddMonoidHom M r) }
+        @AddCommGrpCat.ofHom M.carrier M.carrier _ _ (DistribMulAction.toAddMonoidHom M r) }
   invFun φ := φ.app (ModuleCat.of R R) (1 : R)
   left_inv := by
     intro r
@@ -43,12 +47,12 @@ def ringEquivEndForget₂ (R : Type u) [Ring R] :
     apply NatTrans.ext
     ext
     simp only [AdditiveFunctor.of_fst, ModuleCat.forget₂_obj, DistribMulAction.toAddMonoidHom_apply,
-      add_smul, AddCommGrp.hom_ofHom]
+      add_smul, AddCommGrpCat.hom_ofHom]
     rfl
   map_mul' := by
     intros
     apply NatTrans.ext
     ext
     simp only [AdditiveFunctor.of_fst, ModuleCat.forget₂_obj, DistribMulAction.toAddMonoidHom_apply,
-      mul_smul, AddCommGrp.hom_ofHom]
+      mul_smul, AddCommGrpCat.hom_ofHom]
     rfl

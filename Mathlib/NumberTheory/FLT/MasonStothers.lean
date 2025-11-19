@@ -3,7 +3,9 @@ Copyright (c) 2024 Jineon Baek and Seewoo Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jineon Baek, Seewoo Lee
 -/
-import Mathlib.RingTheory.Polynomial.Radical
+module
+
+public import Mathlib.RingTheory.Polynomial.Radical
 
 /-!
 # Mason-Stothers theorem
@@ -17,6 +19,8 @@ which is essentially based on Noah Snyder's paper "An Alternative Proof of Mason
 but slightly different.
 
 -/
+
+@[expose] public section
 
 open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain EuclideanDomain
 
@@ -51,9 +55,9 @@ private theorem abc_subcall {a b c w : k[X]} {hw : w ≠ 0} (wab : w = wronskian
 protected theorem Polynomial.abc
     {a b c : k[X]} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0)
     (hab : IsCoprime a b) (hsum : a + b + c = 0) :
-    ( natDegree a + 1 ≤ (radical (a * b * c)).natDegree ∧
+    (natDegree a + 1 ≤ (radical (a * b * c)).natDegree ∧
       natDegree b + 1 ≤ (radical (a * b * c)).natDegree ∧
-      natDegree c + 1 ≤ (radical (a * b * c)).natDegree ) ∨
+      natDegree c + 1 ≤ (radical (a * b * c)).natDegree) ∨
       derivative a = 0 ∧ derivative b = 0 ∧ derivative c = 0 := by
   set w := wronskian a b with wab
   have hbc : IsCoprime b c := by

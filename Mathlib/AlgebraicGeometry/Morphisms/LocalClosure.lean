@@ -3,7 +3,9 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Basic
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Basic
 
 /-!
 # Local closure of morphism properties
@@ -11,6 +13,8 @@ import Mathlib.AlgebraicGeometry.Morphisms.Basic
 We define the source local closure of a property `P` w.r.t. a morphism property `W` and show it
 inherits stability properties from `P`.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -68,13 +72,13 @@ instance [P.RespectsRight Q] : (sourceLocalClosure W P).RespectsRight Q := by
 instance [P.RespectsIso] : (sourceLocalClosure W P).RespectsIso where
 
 instance [P.RespectsIso] [P.RespectsLeft @IsOpenImmersion] :
-    IsLocalAtSource (sourceLocalClosure IsOpenImmersion P) where
-  iff_of_openCover' {X Y} f 𝒰 := by
-    refine ⟨fun ⟨𝒱, h⟩ ↦ fun i ↦ ⟨𝒱.pullback₁ (𝒰.f i), fun j ↦ ?_⟩, fun h ↦ ?_⟩
-    · simpa [pullback.condition_assoc] using
-        RespectsLeft.precomp (Q := @IsOpenImmersion) _ inferInstance _ (h j)
-    · choose 𝒱 h𝒱 using h
-      exact ⟨𝒰.bind 𝒱, fun i ↦ h𝒱 _ _⟩
+    IsZariskiLocalAtSource (sourceLocalClosure IsOpenImmersion P) := by
+  refine .mk_of_iff fun f 𝒰 ↦ ?_
+  refine ⟨fun ⟨𝒱, h⟩ ↦ fun i ↦ ⟨𝒱.pullback₁ (𝒰.f i), fun j ↦ ?_⟩, fun h ↦ ?_⟩
+  · simpa [pullback.condition_assoc] using
+      RespectsLeft.precomp (Q := @IsOpenImmersion) _ inferInstance _ (h j)
+  · choose 𝒱 h𝒱 using h
+    exact ⟨𝒰.bind 𝒱, fun i ↦ h𝒱 _ _⟩
 
 instance [P.IsStableUnderBaseChange] : (sourceLocalClosure W P).IsStableUnderBaseChange := by
   refine .mk' fun X Y S f g _ ⟨𝒰, hg⟩ ↦ ⟨𝒰.pullback₁ (pullback.snd f g), fun i ↦ ?_⟩

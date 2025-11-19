@@ -3,10 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison, Chris Hughes, Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.LinearAlgebra.Basis.Prod
-import Mathlib.LinearAlgebra.Dimension.Free
-import Mathlib.LinearAlgebra.TensorProduct.Basis
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.LinearAlgebra.Basis.Prod
+public import Mathlib.LinearAlgebra.Dimension.Free
+public import Mathlib.LinearAlgebra.TensorProduct.Basis
 
 /-!
 # Rank of various constructions
@@ -28,6 +30,8 @@ Lemmas for ranks of submodules and subalgebras are also provided.
 We have `finrank` variants for most lemmas as well.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -426,7 +430,7 @@ theorem rank_span_le (s : Set M) : Module.rank R (span R s) ≤ #s := by
   simp only [lift_lift, le_refl]
 
 theorem rank_span_finset_le (s : Finset M) : Module.rank R (span R (s : Set M)) ≤ s.card := by
-  simpa using rank_span_le s.toSet
+  simpa using rank_span_le (s : Set M)
 
 theorem rank_span_of_finset (s : Finset M) : Module.rank R (span R (s : Set M)) < ℵ₀ :=
   (rank_span_finset_le s).trans_lt (Cardinal.nat_lt_aleph0 _)
@@ -535,8 +539,8 @@ variable [StrongRankCondition F] [NoZeroSMulDivisors F E] [Nontrivial E]
 theorem Subalgebra.rank_bot : Module.rank F (⊥ : Subalgebra F E) = 1 :=
   (Subalgebra.toSubmoduleEquiv (⊥ : Subalgebra F E)).symm.rank_eq.trans <| by
     rw [Algebra.toSubmodule_bot, one_eq_span, rank_span_set, mk_singleton _]
-    letI := Module.nontrivial F E
-    exact LinearIndepOn.id_singleton _ one_ne_zero
+    have := Module.nontrivial F E
+    exact .singleton one_ne_zero
 
 @[simp]
 theorem Subalgebra.finrank_bot : finrank F (⊥ : Subalgebra F E) = 1 :=

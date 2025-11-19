@@ -3,14 +3,18 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.MkIffOfInductiveProp
+module
+
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Additional lemmas about sum types
 
 Most of the former contents of this file have been moved to Batteries.
 -/
+
+@[expose] public section
 
 
 universe u v w x
@@ -248,7 +252,7 @@ theorem elim_injective {γ : Sort*} {f : α → γ} {g : β → γ} :
 
 @[simp]
 theorem map_injective {f : α → γ} {g : β → δ} :
-    Injective (Sum.map f g) ↔ Injective f ∧ Injective g  where
+    Injective (Sum.map f g) ↔ Injective f ∧ Injective g where
   mp h := ⟨.of_comp <| h.comp inl_injective, .of_comp <| h.comp inr_injective⟩
   mpr | ⟨hf, hg⟩ => hf.sumMap hg
 

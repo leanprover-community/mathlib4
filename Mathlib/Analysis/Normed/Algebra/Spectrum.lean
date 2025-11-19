@@ -3,12 +3,16 @@ Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Normed.Algebra.Exponential
-import Mathlib.Analysis.Normed.Algebra.UnitizationL1
-import Mathlib.Analysis.Normed.Ring.Units
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.FieldTheory.IsAlgClosed.Spectrum
-import Mathlib.Topology.Algebra.Module.CharacterSpace
+module
+
+public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
+public import Mathlib.Analysis.Real.Spectrum
+public import Mathlib.Analysis.Normed.Algebra.Exponential
+public import Mathlib.Analysis.Normed.Algebra.UnitizationL1
+public import Mathlib.Analysis.Normed.Ring.Units
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
+public import Mathlib.Topology.Algebra.Module.CharacterSpace
 
 /-!
 # The spectrum of elements in a complete normed algebra
@@ -31,6 +35,8 @@ Theorems specific to *complex* Banach algebras, such as *Gelfand's formula* can 
 * `spectrum.spectralRadius_le_nnnorm`: the spectral radius is bounded above by the norm.
 
 -/
+
+@[expose] public section
 
 assert_not_exists ProbabilityTheory.cond
 assert_not_exists HasFDerivAt
@@ -268,7 +274,7 @@ theorem spectralRadius_le_liminf_pow_nnnorm_pow_one_div (a : A) :
   simp only [← add_assoc]
   refine (spectralRadius_le_pow_nnnorm_pow_one_div 𝕜 a (n + N)).trans ?_
   norm_cast
-  exact mul_le_mul_left' (hN (n + N + 1) (by cutsat)) _
+  grw [hN (n + N + 1) (by cutsat)]
 
 end SpectrumCompact
 
@@ -324,9 +330,7 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [HasSummableGeomSeries A] (a 
       rw [← norm_toNNReal, norm_mkPiRing, norm_toNNReal]
       rcases n with - | n
       · simp only [le_refl, mul_one, or_true, le_max_iff, pow_zero]
-      · refine
-          le_trans (le_trans (mul_le_mul_right' (nnnorm_pow_le' a n.succ_pos) (r ^ n.succ)) ?_)
-            (le_max_left _ _)
+      · grw [nnnorm_pow_le' a n.succ_pos, ← le_max_left]
         by_cases h : ‖a‖₊ = 0
         · simp only [h, zero_mul, zero_le', pow_succ']
         · rw [← coe_inv h, coe_lt_coe, NNReal.lt_inv_iff_mul_lt h] at hr
@@ -623,45 +627,6 @@ lemma spectralRadius_eq {𝕜₁ 𝕜₂ A : Type*} [NormedField 𝕜₁] [Norme
 
 variable {A : Type*} [Ring A]
 
-lemma nnreal_iff [Algebra ℝ A] {a : A} :
-    SpectrumRestricts a ContinuousMap.realToNNReal ↔ ∀ x ∈ spectrum ℝ a, 0 ≤ x := by
-  refine ⟨fun h x hx ↦ ?_, fun h ↦ ?_⟩
-  · obtain ⟨x, -, rfl⟩ := h.algebraMap_image.symm ▸ hx
-    exact coe_nonneg x
-  · exact .of_subset_range_algebraMap (fun _ ↦ Real.toNNReal_coe) fun x hx ↦ ⟨⟨x, h x hx⟩, rfl⟩
-
-lemma nnreal_of_nonneg {A : Type*} [Ring A] [PartialOrder A] [Algebra ℝ A]
-    [NonnegSpectrumClass ℝ A] {a : A} (ha : 0 ≤ a) :
-    SpectrumRestricts a ContinuousMap.realToNNReal :=
-  nnreal_iff.mpr <| spectrum_nonneg_of_nonneg ha
-
-lemma real_iff [Algebra ℂ A] {a : A} :
-    SpectrumRestricts a Complex.reCLM ↔ ∀ x ∈ spectrum ℂ a, x = x.re := by
-  refine ⟨fun h x hx ↦ ?_, fun h ↦ ?_⟩
-  · obtain ⟨x, -, rfl⟩ := h.algebraMap_image.symm ▸ hx
-    simp
-  · exact .of_subset_range_algebraMap Complex.ofReal_re fun x hx ↦ ⟨x.re, (h x hx).symm⟩
-
-lemma nnreal_le_iff [Algebra ℝ A] {a : A}
-    (ha : SpectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
-    (∀ x ∈ spectrum ℝ≥0 a, r ≤ x) ↔ ∀ x ∈ spectrum ℝ a, r ≤ x := by
-  simp [← ha.algebraMap_image]
-
-lemma nnreal_lt_iff [Algebra ℝ A] {a : A}
-    (ha : SpectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
-    (∀ x ∈ spectrum ℝ≥0 a, r < x) ↔ ∀ x ∈ spectrum ℝ a, r < x := by
-  simp [← ha.algebraMap_image]
-
-lemma le_nnreal_iff [Algebra ℝ A] {a : A}
-    (ha : SpectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
-    (∀ x ∈ spectrum ℝ≥0 a, x ≤ r) ↔ ∀ x ∈ spectrum ℝ a, x ≤ r := by
-  simp [← ha.algebraMap_image]
-
-lemma lt_nnreal_iff [Algebra ℝ A] {a : A}
-    (ha : SpectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
-    (∀ x ∈ spectrum ℝ≥0 a, x < r) ↔ ∀ x ∈ spectrum ℝ a, x < r := by
-  simp [← ha.algebraMap_image]
-
 lemma nnreal_iff_spectralRadius_le [Algebra ℝ A] {a : A} {t : ℝ≥0} (ht : spectralRadius ℝ a ≤ t) :
     SpectrumRestricts a ContinuousMap.realToNNReal ↔
       spectralRadius ℝ (algebraMap ℝ A t - a) ≤ t := by
@@ -722,39 +687,4 @@ lemma compactSpace {R S A : Type*} [Semifield R] [Field S] [NonUnitalRing A]
   rw [← isCompact_iff_compactSpace] at h_cpct ⊢
   exact h.image ▸ h_cpct.image (map_continuous f)
 
-variable {A : Type*} [NonUnitalRing A]
-
-lemma nnreal_iff [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {a : A} :
-    QuasispectrumRestricts a ContinuousMap.realToNNReal ↔ ∀ x ∈ σₙ ℝ a, 0 ≤ x := by
-  rw [quasispectrumRestricts_iff_spectrumRestricts_inr,
-    Unitization.quasispectrum_eq_spectrum_inr' _ ℝ, SpectrumRestricts.nnreal_iff]
-
-lemma nnreal_of_nonneg [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [PartialOrder A]
-    [NonnegSpectrumClass ℝ A] {a : A} (ha : 0 ≤ a) :
-    QuasispectrumRestricts a ContinuousMap.realToNNReal :=
-  nnreal_iff.mpr <| quasispectrum_nonneg_of_nonneg _ ha
-
-lemma real_iff [Module ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] {a : A} :
-    QuasispectrumRestricts a Complex.reCLM ↔ ∀ x ∈ σₙ ℂ a, x = x.re := by
-  rw [quasispectrumRestricts_iff_spectrumRestricts_inr,
-    Unitization.quasispectrum_eq_spectrum_inr' _ ℂ, SpectrumRestricts.real_iff]
-
-lemma le_nnreal_iff [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {a : A}
-    (ha : QuasispectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
-    (∀ x ∈ quasispectrum ℝ≥0 a, x ≤ r) ↔ ∀ x ∈ quasispectrum ℝ a, x ≤ r := by
-  simp [← ha.algebraMap_image]
-
-lemma lt_nnreal_iff [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] {a : A}
-    (ha : QuasispectrumRestricts a ContinuousMap.realToNNReal) {r : ℝ≥0} :
-    (∀ x ∈ quasispectrum ℝ≥0 a, x < r) ↔ ∀ x ∈ quasispectrum ℝ a, x < r := by
-  simp [← ha.algebraMap_image]
-
 end QuasispectrumRestricts
-
-variable {A : Type*} [Ring A] [PartialOrder A]
-
-lemma coe_mem_spectrum_real_of_nonneg [Algebra ℝ A] [NonnegSpectrumClass ℝ A] {a : A} {x : ℝ≥0}
-    (ha : 0 ≤ a := by cfc_tac) :
-    (x : ℝ) ∈ spectrum ℝ a ↔ x ∈ spectrum ℝ≥0 a := by
-  simp [← (SpectrumRestricts.nnreal_of_nonneg ha).algebraMap_image, Set.mem_image,
-    NNReal.algebraMap_eq_coe]

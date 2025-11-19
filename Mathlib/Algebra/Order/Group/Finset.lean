@@ -3,16 +3,20 @@ Copyright (c) 2024 Yaël Dillies, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Andrew Yang
 -/
-import Mathlib.Algebra.Order.Group.OrderIso
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-import Mathlib.Data.Finset.Lattice.Prod
+module
+
+public import Mathlib.Algebra.Order.Group.OrderIso
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+public import Mathlib.Data.Finset.Lattice.Prod
 
 /-!
 # `Finset.sup` in a group
 -/
+
+@[expose] public section
 
 open scoped Finset
 
@@ -32,7 +36,7 @@ lemma toFinset_eq_singleton_iff (s : Multiset α) (a : α) :
     s.toFinset = {a} ↔ card s ≠ 0 ∧ s = card s • {a} := by
   refine ⟨fun H ↦ ⟨fun h ↦ ?_, ext' fun x ↦ ?_⟩, fun H ↦ ?_⟩
   · rw [card_eq_zero.1 h, toFinset_zero] at H
-    exact Finset.singleton_ne_empty _ H.symm
+    exact Finset.empty_ne_singleton _ H
   · rw [count_nsmul, count_singleton]
     by_cases hx : x = a
     · simp_rw [hx, ite_true, mul_one, count_eq_card]
@@ -91,7 +95,7 @@ lemma sup'_add' (s : Finset ι) (f : ι → M) (a : M) (hs : s.Nonempty) :
   · apply add_le_of_le_tsub_right_of_le
     · exact Finset.le_sup'_of_le _ hs.choose_spec le_add_self
     · exact Finset.sup'_le _ _ fun i hi ↦ le_tsub_of_add_le_right (Finset.le_sup' (f · + a) hi)
-  · exact Finset.sup'_le _ _ fun i hi ↦ add_le_add_right (Finset.le_sup' _ hi) _
+  · exact Finset.sup'_le _ _ fun i hi ↦ by grw [← Finset.le_sup' _ hi]
 
 /-- Also see `Finset.add_sup'` that works for ordered groups. -/
 lemma add_sup'' (hs : s.Nonempty) (f : ι → M) (a : M) :

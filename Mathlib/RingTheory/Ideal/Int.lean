@@ -3,8 +3,10 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Algebra.Field.ZMod
-import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+module
+
+public import Mathlib.Algebra.Field.ZMod
+public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 
 /-!
 # Ideal of `ℤ`
@@ -28,6 +30,8 @@ In particular, for `I` an ideal of a ring `R` extending `ℤ`, we prove several 
 * `Nat.absNorm_under_prime`: If `P` is a prime ideal, then `absNorm (under ℤ P)` is a prime number.
 
 -/
+
+@[expose] public section
 
 instance Int.ideal_span_isMaximal_of_prime (p : ℕ) [Fact (Nat.Prime p)] :
     (Ideal.span {(p : ℤ)}).IsMaximal :=
@@ -79,7 +83,7 @@ theorem absNorm_under_eq_sInf :
 theorem absNorm_under_dvd_absNorm {S : Type*} [CommRing S] [IsDedekindDomain S] [Module.Free ℤ S]
     (I : Ideal S) :
     absNorm (under ℤ I) ∣ absNorm I := by
-  by_cases h : Finite (S ⧸ I)
+  cases finite_or_infinite (S ⧸ I)
   · have : Fintype (S ⧸ I) := Fintype.ofFinite (S ⧸ I)
     have h_main {d : ℕ} : (d : S) ∈ I ↔ ∀ (x : S ⧸ I), d • x = 0 := by
       simp_rw [nsmul_eq_mul, ← map_natCast (Ideal.Quotient.mk I), ← Quotient.eq_zero_iff_mem]
@@ -87,8 +91,7 @@ theorem absNorm_under_dvd_absNorm {S : Type*} [CommRing S] [IsDedekindDomain S] 
     rw [Ideal.absNorm_apply I, Submodule.cardQuot_apply, Nat.card_eq_fintype_card]
     simp_rw [absNorm_under_eq_sInf, h_main, ← AddMonoid.exponent_eq_sInf]
     exact AddGroup.exponent_dvd_card (G := S ⧸ I)
-  · push_neg at h
-    rw [show absNorm I = 0 by exact AddSubgroup.index_eq_zero_iff_infinite.mpr h]
+  · rw [absNorm_apply I, Submodule.cardQuot_apply, Nat.card_eq_zero_of_infinite]
     exact Nat.dvd_zero _
 
 end Ring

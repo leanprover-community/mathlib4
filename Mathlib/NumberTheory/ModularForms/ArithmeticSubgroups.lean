@@ -3,13 +3,12 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Data.Real.Basic
-import Mathlib.GroupTheory.Commensurable
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
-import Mathlib.Topology.Algebra.IsUniformGroup.Basic
-import Mathlib.Topology.Algebra.Ring.Real
-import Mathlib.Topology.Instances.Matrix
-import Mathlib.Topology.MetricSpace.Isometry
+module
+
+public import Mathlib.Topology.Algebra.IsUniformGroup.DiscreteSubgroup
+public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.Instances.Matrix
+public import Mathlib.Topology.MetricSpace.Isometry
 
 /-!
 # Arithmetic subgroups of `GL(2, ℝ)`
@@ -17,6 +16,8 @@ import Mathlib.Topology.MetricSpace.Isometry
 We define a subgroup of `GL (Fin 2) ℝ` to be *arithmetic* if it is commensurable with the image
 of `SL(2, ℤ)`.
 -/
+
+@[expose] public section
 
 open Matrix Matrix.SpecialLinearGroup
 
@@ -114,3 +115,9 @@ lemma isClosedEmbedding_mapGLInt : Topology.IsClosedEmbedding (mapGL ℝ : SL n 
   ⟨isEmbedding_mapGL (Isometry.isEmbedding fun _ _ ↦ rfl), (mapGL ℝ).range.isClosed_of_discrete⟩
 
 end Matrix.SpecialLinearGroup
+
+/-- Arithmetic subgroups of `GL(2, ℝ)` are discrete. -/
+instance Subgroup.IsArithmetic.discreteTopology {𝒢 : Subgroup (GL (Fin 2) ℝ)} [IsArithmetic 𝒢] :
+    DiscreteTopology 𝒢 := by
+  rw [is_commensurable.discreteTopology_iff]
+  infer_instance

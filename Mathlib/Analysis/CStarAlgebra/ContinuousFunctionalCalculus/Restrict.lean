@@ -3,15 +3,17 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Topology.Algebra.Algebra
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
+module
+
+public import Mathlib.Topology.Algebra.Algebra
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
 
 /-! # Restriction of the continuous functional calculus to a scalar subring
 
 The main declaration in this file is:
 
 + `SpectrumRestricts.cfc`: builds a continuous functional calculus over a subring of scalars.
-  This is use for automatically deriving the continuous functional calculi on selfadjoint or
+  This is used for automatically deriving the continuous functional calculi on selfadjoint or
   positive elements from the one for normal elements.
 
 This will allow us to take an instance of the
@@ -22,6 +24,8 @@ simply by proving:
 1. `IsSelfAdjoint x ↔ IsStarNormal x ∧ SpectrumRestricts Complex.re x`,
 2. `0 ≤ x ↔ IsSelfAdjoint x ∧ SpectrumRestricts Real.toNNReal x`.
 -/
+
+@[expose] public section
 
 open Set Topology
 
@@ -36,9 +40,6 @@ def homeomorph {R S A : Type*} [Semifield R] [Semifield S] [Ring A]
   invFun := MapsTo.restrict (algebraMap R S) _ _ (image_subset_iff.mp h.algebraMap_image.subset)
   left_inv x := Subtype.ext <| h.rightInvOn x.2
   right_inv x := Subtype.ext <| h.left_inv x
-  continuous_toFun := continuous_induced_rng.mpr <| f.continuous.comp continuous_induced_dom
-  continuous_invFun := continuous_induced_rng.mpr <|
-    continuous_algebraMap R S |>.comp continuous_induced_dom
 
 lemma compactSpace {R S A : Type*} [Semifield R] [Semifield S] [Ring A]
     [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] [TopologicalSpace R]
@@ -181,9 +182,6 @@ def homeomorph {R S A : Type*} [Semifield R] [Field S] [NonUnitalRing A]
   invFun := MapsTo.restrict (algebraMap R S) _ _ (image_subset_iff.mp h.algebraMap_image.subset)
   left_inv x := Subtype.ext <| h.rightInvOn x.2
   right_inv x := Subtype.ext <| h.left_inv x
-  continuous_toFun := continuous_induced_rng.mpr <| f.continuous.comp continuous_induced_dom
-  continuous_invFun := continuous_induced_rng.mpr <|
-    continuous_algebraMap R S |>.comp continuous_induced_dom
 
 universe u v w
 

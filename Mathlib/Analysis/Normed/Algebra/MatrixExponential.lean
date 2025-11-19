@@ -3,12 +3,14 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Analysis.Normed.Algebra.Exponential
-import Mathlib.Analysis.Matrix
-import Mathlib.LinearAlgebra.Matrix.ZPow
-import Mathlib.LinearAlgebra.Matrix.Hermitian
-import Mathlib.LinearAlgebra.Matrix.Symmetric
-import Mathlib.Topology.UniformSpace.Matrix
+module
+
+public import Mathlib.Analysis.Normed.Algebra.Exponential
+public import Mathlib.Analysis.Matrix.Normed
+public import Mathlib.LinearAlgebra.Matrix.ZPow
+public import Mathlib.LinearAlgebra.Matrix.Hermitian
+public import Mathlib.LinearAlgebra.Matrix.Symmetric
+public import Mathlib.Topology.UniformSpace.Matrix
 
 /-!
 # Lemmas about the matrix exponential
@@ -58,6 +60,8 @@ results for general rings are instead stated about `Ring.inverse`:
 
 * https://en.wikipedia.org/wiki/Matrix_exponential
 -/
+
+@[expose] public section
 
 open scoped Matrix
 

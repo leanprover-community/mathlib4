@@ -3,7 +3,9 @@ Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
-import Mathlib.FieldTheory.IntermediateField.Basic
+module
+
+public import Mathlib.FieldTheory.IntermediateField.Basic
 
 /-!
 # Adjoining Elements to Fields
@@ -16,6 +18,8 @@ For example, `Algebra.adjoin K {x}` might not include `x⁻¹`.
 
 - `F⟮α⟯`: adjoin a single element `α` to `F` (in scope `IntermediateField`).
 -/
+
+@[expose] public section
 
 open Module Polynomial
 
@@ -71,6 +75,12 @@ instance : CompleteLattice (IntermediateField F E) where
     { toSubalgebra := ⊥
       inv_mem' := by rintro x ⟨r, rfl⟩; exact ⟨r⁻¹, map_inv₀ _ _⟩ }
   bot_le x := (bot_le : ⊥ ≤ x.toSubalgebra)
+
+instance (K₁ K₂ : IntermediateField F E) : Algebra ↥(K₁ ⊓ K₂) K₁ :=
+  inferInstanceAs (Algebra ↑(K₁.toSubalgebra ⊓ K₂.toSubalgebra) K₁.toSubalgebra)
+
+instance (K₁ K₂ : IntermediateField F E) : Algebra ↥(K₁ ⊓ K₂) K₂ :=
+  inferInstanceAs (Algebra ↑(K₁.toSubalgebra ⊓ K₂.toSubalgebra) K₂.toSubalgebra)
 
 theorem sup_def (S T : IntermediateField F E) : S ⊔ T = adjoin F (S ∪ T : Set E) := rfl
 
@@ -239,6 +249,11 @@ variable {K : Type*} [Field K] [Algebra K E] [Algebra K F] [IsScalarTower K F E]
 theorem restrictScalars_top : (⊤ : IntermediateField F E).restrictScalars K = ⊤ :=
   rfl
 
+@[simp]
+theorem restrictScalars_eq_top_iff {L : IntermediateField F E} :
+    L.restrictScalars K = ⊤ ↔ L = ⊤ := by
+  simp [SetLike.ext_iff]
+
 variable (K)
 variable (L L' : IntermediateField F E)
 
@@ -400,6 +415,14 @@ theorem lift_bot (K : IntermediateField F E) :
 theorem lift_top (K : IntermediateField F E) :
     lift (F := K) ⊤ = K := by rw [lift, ← AlgHom.fieldRange_eq_map, fieldRange_val]
 
+theorem lift_sup (K : IntermediateField F E) (L L' : IntermediateField F K) :
+    lift (L ⊔ L') = lift L ⊔ lift L' := by
+  simp [lift, map_sup]
+
+theorem lift_inf (K : IntermediateField F E) (L L' : IntermediateField F K) :
+    lift (L ⊓ L') = lift L ⊓ lift L' := by
+  simp [lift, map_inf]
+
 @[simp]
 theorem adjoin_self (K : IntermediateField F E) :
     adjoin F K = K := le_antisymm (adjoin_le_iff.2 fun _ ↦ id) (subset_adjoin F _)
@@ -484,7 +507,7 @@ end
 
 open Lean in
 /-- Supporting function for the `F⟮x₁,x₂,...,xₙ⟯` adjunction notation. -/
-private partial def mkInsertTerm {m : Type → Type} [Monad m] [MonadQuotation m]
+private meta def mkInsertTerm {m : Type → Type} [Monad m] [MonadQuotation m]
     (xs : TSyntaxArray `term) : m Term := run 0 where
   run (i : Nat) : m Term := do
     if h : i + 1 = xs.size then
@@ -500,7 +523,7 @@ scoped macro:max K:term "⟮" xs:term,* "⟯" : term => do ``(adjoin $K $(← mk
 
 open Lean PrettyPrinter.Delaborator SubExpr in
 @[app_delab IntermediateField.adjoin]
-partial def delabAdjoinNotation : Delab := whenPPOption getPPNotation do
+meta def delabAdjoinNotation : Delab := whenPPOption getPPNotation do
   let e ← getExpr
   guard <| e.isAppOfArity ``adjoin 6
   let F ← withNaryArg 0 delab

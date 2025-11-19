@@ -3,12 +3,16 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Card
-import Mathlib.MeasureTheory.Group.Action
-import Mathlib.MeasureTheory.Measure.Prod
-import Mathlib.Topology.Algebra.Module.Equiv
-import Mathlib.Topology.ContinuousMap.CocompactMap
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Set.Card
+public import Mathlib.GroupTheory.Complement
+public import Mathlib.MeasureTheory.Group.Action
+public import Mathlib.MeasureTheory.Group.Pointwise
+public import Mathlib.MeasureTheory.Measure.Prod
+public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.ContinuousMap.CocompactMap
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 
 /-!
 # Measures on Groups
@@ -23,6 +27,8 @@ We develop some properties of measures on (topological) groups
 
 We also give analogues of all these notions in the additive world.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -270,6 +276,18 @@ theorem eventually_div_right_iff (μ : Measure G) [IsMulRightInvariant μ] (t : 
   conv_rhs => rw [Filter.Eventually, ← map_div_right_ae μ t]
   rfl
 
+@[to_additive AddSubgroup.index_mul_measure]
+lemma Subgroup.index_mul_measure (H : Subgroup G) [H.FiniteIndex] (hH : MeasurableSet (H : Set G))
+    (μ : Measure G) [IsMulLeftInvariant μ] : H.index * μ H = μ univ := by
+  obtain ⟨s, hs, -⟩ := H.exists_isComplement_left 1
+  have hs' : Finite s := hs.finite_left_iff.mpr inferInstance
+  calc
+    H.index * μ H = ∑' a : s, μ (a.val • H) := by simp [measure_smul, hs.encard_left]
+    _ = μ univ := by
+      rw [← measure_iUnion _ fun _ ↦ hH.const_smul _]
+      · simp [hs.mul_eq]
+      · exact fun a b hab ↦ hs.pairwiseDisjoint_smul a.2 b.2 (Subtype.val_injective.ne hab)
+
 end Group
 
 namespace Measure
@@ -413,6 +431,9 @@ instance : (count : Measure G).IsMulRightInvariant where
       count_apply (measurable_mul_const _ hs),
       encard_preimage_of_bijective (Group.mulRight_bijective _)]
 
+/- TODO: To avoid repeating the proofs, the following two lemmas should be consequences of
+a similar result about `SMulInvariantMeasure`. -/
+
 @[to_additive]
 protected theorem IsMulLeftInvariant.comap {H} [Group H] {mH : MeasurableSpace H} [MeasurableMul H]
     (μ : Measure H) [IsMulLeftInvariant μ] {f : G →* H} (hf : MeasurableEmbedding f) :
@@ -429,6 +450,24 @@ protected theorem IsMulLeftInvariant.comap {H} [Group H] {mH : MeasurableSpace H
       · intro ⟨y, yins, hy⟩
         exact ⟨g⁻¹ * y, by simp [yins], by simp [hy]⟩
     rw [this, ← map_apply (by fun_prop), IsMulLeftInvariant.map_mul_left_eq_self]
+    exact hf.measurableSet_image.mpr hs
+
+@[to_additive]
+protected theorem IsMulRightInvariant.comap {H} [Group H] {mH : MeasurableSpace H} [MeasurableMul H]
+    (μ : Measure H) [IsMulRightInvariant μ] {f : G →* H} (hf : MeasurableEmbedding f) :
+    (μ.comap f).IsMulRightInvariant where
+  map_mul_right_eq_self g := by
+    ext s hs
+    rw [map_apply (by fun_prop) hs]
+    repeat rw [hf.comap_apply]
+    have : f '' ((· * g) ⁻¹' s) = (· * f g) ⁻¹' (f '' s) := by
+      ext
+      constructor
+      · rintro ⟨y, hy, rfl⟩
+        exact ⟨y * g, hy, by simp⟩
+      · intro ⟨y, yins, hy⟩
+        exact ⟨y * g⁻¹, by simp [yins], by simp [hy]⟩
+    rw [this, ← map_apply (by fun_prop), IsMulRightInvariant.map_mul_right_eq_self]
     exact hf.measurableSet_image.mpr hs
 
 end MeasurableMul
@@ -828,7 +867,7 @@ nonrec theorem _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [ContinuousMul G
     [Group H] [TopologicalSpace H] [MeasurableSpace H] [BorelSpace H]
     [IsTopologicalGroup H] (e : G ≃* H) (he : Continuous e) (hesymm : Continuous e.symm) :
     IsHaarMeasure (Measure.map e μ) :=
-  let f : G ≃ₜ H := .mk e
+  let f : G ≃ₜ H := .mk e he hesymm
   -- We need to write `e.toMonoidHom` instead of just `e`, to avoid unification issues.
   isHaarMeasure_map μ e.toMonoidHom he e.surjective f.isClosedEmbedding.tendsto_cocompact
 
@@ -841,7 +880,7 @@ instance _root_.ContinuousMulEquiv.isHaarMeasure_map [BorelSpace G] [IsTopologic
     [IsTopologicalGroup H] (e : G ≃ₜ* H) : (μ.map e).IsHaarMeasure :=
   e.toMulEquiv.isHaarMeasure_map μ e.continuous e.symm.continuous
 
-/-- A convenience wrapper for MeasureTheory.Measure.isAddHaarMeasure_map`. -/
+/-- A convenience wrapper for `MeasureTheory.Measure.isAddHaarMeasure_map`. -/
 instance _root_.ContinuousLinearEquiv.isAddHaarMeasure_map
     {E F R S : Type*} [Semiring R] [Semiring S]
     [AddCommGroup E] [Module R E] [AddCommGroup F] [Module S F]

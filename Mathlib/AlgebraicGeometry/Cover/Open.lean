@@ -3,7 +3,9 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Cover.MorphismProperty
+module
+
+public import Mathlib.AlgebraicGeometry.Cover.MorphismProperty
 
 /-!
 # Open covers of schemes
@@ -17,6 +19,8 @@ This file provides the basic API for open covers of schemes.
 - `AlgebraicGeometry.Scheme.affineCover`: `X.affineCover` is a choice of an affine cover of `X`.
 - `AlgebraicGeometry.Scheme.AffineOpenCover`: The type of affine open covers of a scheme `X`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -77,10 +81,10 @@ lemma OpenCover.isOpenCover_opensRange {X : Scheme.{u}} (𝒰 : X.OpenCover) :
 def OpenCover.finiteSubcover {X : Scheme.{u}} (𝒰 : OpenCover X) [H : CompactSpace X] :
     OpenCover X := by
   have :=
-    @CompactSpace.elim_nhds_subcover _ _ H (fun x : X => Set.range (𝒰.f (𝒰.idx x)).base)
+    @CompactSpace.elim_nhds_subcover _ _ H (fun x : X => Set.range (𝒰.f (𝒰.idx x)))
       fun x => (IsOpenImmersion.isOpen_range (𝒰.f (𝒰.idx x))).mem_nhds (𝒰.covers x)
   let t := this.choose
-  have h : ∀ x : X, ∃ y : t, x ∈ Set.range (𝒰.f (𝒰.idx y)).base := by
+  have h : ∀ x : X, ∃ y : t, x ∈ Set.range (𝒰.f (𝒰.idx y)) := by
     intro x
     have h' : x ∈ (⊤ : Set X) := trivial
     rw [← Classical.choose_spec this, Set.mem_iUnion] at h'
@@ -259,11 +263,11 @@ section deprecated
 /-- The basic open sets form an affine open cover of `Spec R`. -/
 def affineBasisCoverOfAffine (R : CommRingCat.{u}) : OpenCover (Spec R) where
   I₀ := R
-  X r := Spec(Localization.Away r)
+  X r := Spec <| .of <| Localization.Away r
   f r := Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away r)))
   mem₀ := by
     rw [presieve₀_mem_precoverage_iff]
-    refine ⟨fun x ↦ ⟨1, ?_⟩, AlgebraicGeometry.Scheme.basic_open_isOpenImmersion⟩
+    refine ⟨fun x ↦ ⟨1, ?_⟩, AlgebraicGeometry.Scheme.isOpenImmersion_SpecMap_localizationAway⟩
     rw [Set.range_eq_univ.mpr ((TopCat.epi_iff_surjective _).mp _)]
     · exact trivial
     · infer_instance
@@ -283,26 +287,26 @@ theorem affineBasisCover_obj (X : Scheme.{u}) (i : X.affineBasisCover.I₀) :
 
 theorem affineBasisCover_map_range (X : Scheme.{u}) (x : X)
     (r : (X.local_affine x).choose_spec.choose) :
-    Set.range (X.affineBasisCover.f ⟨x, r⟩).base =
-      (X.affineCover.f x).base '' (PrimeSpectrum.basicOpen r).1 := by
-  simp only [affineBasisCover, Precoverage.ZeroHypercover.bind_toPreZeroHypercover,
-    PreZeroHypercover.bind_f, comp_coeBase, TopCat.hom_comp, ContinuousMap.coe_comp, Set.range_comp]
+    Set.range (X.affineBasisCover.f ⟨x, r⟩) =
+      (X.affineCover.f x) '' (PrimeSpectrum.basicOpen r).1 := by
+  simp only [affineBasisCover, Precoverage.ZeroHypercover.bind_toPreZeroHypercover, Set.range_comp,
+    PreZeroHypercover.bind_f, Hom.comp_base, TopCat.hom_comp, ContinuousMap.coe_comp]
   congr
   exact (PrimeSpectrum.localization_away_comap_range (Localization.Away r) r :)
 
 theorem affineBasisCover_is_basis (X : Scheme.{u}) :
     TopologicalSpace.IsTopologicalBasis
       {x : Set X |
-        ∃ a : X.affineBasisCover.I₀, x = Set.range (X.affineBasisCover.f a).base} := by
+        ∃ a : X.affineBasisCover.I₀, x = Set.range (X.affineBasisCover.f a)} := by
   apply TopologicalSpace.isTopologicalBasis_of_isOpen_of_nhds
   · rintro _ ⟨a, rfl⟩
     exact IsOpenImmersion.isOpen_range (X.affineBasisCover.f a)
   · rintro a U haU hU
     rcases X.affineCover.covers a with ⟨x, e⟩
-    let U' := (X.affineCover.f (X.affineCover.idx a)).base ⁻¹' U
+    let U' := (X.affineCover.f (X.affineCover.idx a)) ⁻¹' U
     have hxU' : x ∈ U' := by rw [← e] at haU; exact haU
     rcases PrimeSpectrum.isBasis_basic_opens.exists_subset_of_mem_open hxU'
-        ((X.affineCover.f (X.affineCover.idx a)).base.hom.continuous_toFun.isOpen_preimage _
+        ((X.affineCover.f (X.affineCover.idx a)).continuous.isOpen_preimage _
           hU) with
       ⟨_, ⟨_, ⟨s, rfl⟩, rfl⟩, hxV, hVU⟩
     refine ⟨_, ⟨⟨_, s⟩, rfl⟩, ?_, ?_⟩ <;> rw [affineBasisCover_map_range]

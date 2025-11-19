@@ -3,16 +3,20 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Countable.Defs
-import Mathlib.Data.Fin.Tuple.Basic
-import Mathlib.Data.ENat.Defs
-import Mathlib.Logic.Equiv.Nat
+module
+
+public import Mathlib.Data.Countable.Defs
+public import Mathlib.Data.Fin.Tuple.Basic
+public import Mathlib.Data.ENat.Defs
+public import Mathlib.Logic.Equiv.Nat
 
 /-!
 # Countable types
 
 In this file we provide basic instances of the `Countable` typeclass defined elsewhere.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -79,6 +83,8 @@ instance Option.instUncountable [Uncountable α] : Uncountable (Option α) :=
 
 instance WithTop.instUncountable [Uncountable α] : Uncountable (WithTop α) := Option.instUncountable
 instance WithBot.instUncountable [Uncountable α] : Uncountable (WithBot α) := Option.instUncountable
+
+@[simp] lemma untopD_coe_enat (d n : ℕ) : WithTop.untopD d (n : ℕ∞) = n := rfl
 
 instance [Countable α] [Countable β] : Countable (α × β) := by
   rcases exists_injective_nat α with ⟨f, hf⟩

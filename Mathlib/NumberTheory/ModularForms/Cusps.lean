@@ -3,12 +3,14 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.GroupTheory.Commensurable
-import Mathlib.RingTheory.Localization.NumDen
-import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
-import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.GroupTheory.Commensurable
+public import Mathlib.RingTheory.Localization.NumDen
+public import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
+public import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
 
 /-!
 # Cusps
@@ -16,7 +18,9 @@ import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
 We define the cusps of a subgroup of `GL(2, ℝ)` as the fixed points of parabolic elements.
 -/
 
-open Matrix SpecialLinearGroup Filter Polynomial OnePoint
+@[expose] public section
+
+open Matrix SpecialLinearGroup GeneralLinearGroup Filter Polynomial OnePoint
 
 open scoped MatrixGroups LinearAlgebra.Projectivization
 
@@ -36,6 +40,17 @@ lemma exists_mem_SL2 (A : Type*) [CommRing A] [IsDomain A] [Algebra A K] [IsFrac
     exact ⟨g, by simp [hg0, hg1, smul_infty_eq_ite]⟩
 
 end OnePoint
+
+namespace Subgroup.HasDetPlusMinusOne
+
+variable {K : Type*} [Field K] [LinearOrder K] [IsStrictOrderedRing K]
+  {𝒢 : Subgroup (GL (Fin 2) K)} [𝒢.HasDetPlusMinusOne]
+
+lemma isParabolic_iff_of_upperTriangular {g} (hg : g ∈ 𝒢) (hg10 : g 1 0 = 0) :
+    g.IsParabolic ↔ (∃ x ≠ 0, g = upperRightHom x) ∨ (∃ x ≠ 0, g = -upperRightHom x) :=
+  isParabolic_iff_of_upperTriangular_of_det (HasDetPlusMinusOne.det_eq hg) hg10
+
+end Subgroup.HasDetPlusMinusOne
 
 section IsCusp
 
@@ -92,7 +107,7 @@ lemma isCusp_SL2Z_iff {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ c ∈ Set.range 
     refine ⟨_, ⟨a * ModularGroup.T * a⁻¹, rfl⟩, ?_, ?_⟩
     · suffices (mapGL ℝ ModularGroup.T).IsParabolic by simpa
       refine ⟨fun ⟨a, ha⟩ ↦ zero_ne_one' ℝ (by simpa [ModularGroup.T] using congr_fun₂ ha 0 1), ?_⟩
-      simp [disc_fin_two, trace_fin_two, det_fin_two, ModularGroup.T]
+      simp [discr_fin_two, trace_fin_two, det_fin_two, ModularGroup.T]
       norm_num
     · rw [← Rat.coe_castHom, ← (Rat.castHom ℝ).algebraMap_toAlgebra]
       simp [OnePoint.map_smul, MulAction.mul_smul, smul_infty_eq_self_iff, ModularGroup.T]

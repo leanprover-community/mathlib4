@@ -3,7 +3,9 @@ Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
-import Mathlib.FieldTheory.Galois.Basic
+module
+
+public import Mathlib.FieldTheory.Galois.Basic
 
 /-!
 # Galois Groups of Polynomials
@@ -15,7 +17,7 @@ some results about some extension `E` above `p.SplittingField`.
 ## Main definitions
 
 - `Polynomial.Gal p`: the Galois group of a polynomial p.
-- `Polynomial.Gal.restrict p E`: the restriction homomorphism `(E ≃ₐ[F] E) → gal p`.
+- `Polynomial.Gal.restrict p E`: the restriction homomorphism `Gal(E/F) → gal p`.
 - `Polynomial.Gal.galAction p E`: the action of `gal p` on the roots of `p` in `E`.
 
 ## Main results
@@ -34,6 +36,8 @@ equals the number of real roots plus the number of roots not fixed by complex co
 (i.e. with some imaginary component).
 
 -/
+
+@[expose] public section
 
 assert_not_exists Real
 
@@ -110,7 +114,7 @@ instance [h : Fact (p.Splits (algebraMap F E))] : IsScalarTower F p.SplittingFie
 -- Since we don't really care about this definition, marking it as irreducible
 -- causes that unification to error out early.
 /-- Restrict from a superfield automorphism into a member of `gal p`. -/
-def restrict [Fact (p.Splits (algebraMap F E))] : (E ≃ₐ[F] E) →* p.Gal :=
+def restrict [Fact (p.Splits (algebraMap F E))] : Gal(E/F) →* p.Gal :=
   AlgEquiv.restrictNormalHom p.SplittingField
 
 theorem restrict_surjective [Fact (p.Splits (algebraMap F E))] [Normal F E] :
@@ -173,7 +177,7 @@ variable {p E}
 
 /-- `Polynomial.Gal.restrict p E` is compatible with `Polynomial.Gal.galAction p E`. -/
 @[simp]
-theorem restrict_smul [Fact (p.Splits (algebraMap F E))] (ϕ : E ≃ₐ[F] E) (x : rootSet p E) :
+theorem restrict_smul [Fact (p.Splits (algebraMap F E))] (ϕ : Gal(E/F)) (x : rootSet p E) :
     ↑(restrict p E ϕ • x) = ϕ x := by
   let ψ := AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F p.SplittingField E)
   change ↑(ψ (ψ.symm _)) = ϕ x
@@ -187,7 +191,7 @@ variable (p E)
 def galActionHom [Fact (p.Splits (algebraMap F E))] : p.Gal →* Equiv.Perm (rootSet p E) :=
   MulAction.toPermHom _ _
 
-theorem galActionHom_restrict [Fact (p.Splits (algebraMap F E))] (ϕ : E ≃ₐ[F] E) (x : rootSet p E) :
+theorem galActionHom_restrict [Fact (p.Splits (algebraMap F E))] (ϕ : Gal(E/F)) (x : rootSet p E) :
     ↑(galActionHom p E (restrict p E ϕ) x) = ϕ x :=
   restrict_smul ϕ x
 

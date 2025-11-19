@@ -3,16 +3,22 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.NNRat.Order
-import Mathlib.Topology.Algebra.Order.Archimedean
-import Mathlib.Topology.Algebra.Ring.Real
-import Mathlib.Topology.Instances.Nat
+module
+
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Algebra.Module.Rat
+public import Mathlib.Data.NNRat.Order
+public import Mathlib.Topology.Algebra.Order.Archimedean
+public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.Instances.Nat
 
 /-!
 # Topology on the rational numbers
 
 The structure of a metric space on `ℚ` is introduced in this file, induced from `ℝ`.
 -/
+
+@[expose] public section
 
 open Filter Metric Set Topology
 
@@ -122,5 +128,18 @@ instance : ContinuousSub ℚ≥0 :=
 
 instance : OrderTopology ℚ≥0 := orderTopology_of_ordConnected (t := Set.Ici 0)
 instance : ContinuousInv₀ ℚ≥0 := inferInstance
+
+-- Special case of `IsBoundedSMul.continuousSMul` but this shortcut instance reduces dependencies
+instance : ContinuousSMul ℚ ℝ where
+  continuous_smul := continuous_induced_dom.fst'.smul (M := ℝ) (X := ℝ) continuous_snd
+
+instance {R : Type*} [TopologicalSpace R] [MulAction ℚ R] [MulAction ℚ≥0 R] [IsScalarTower ℚ≥0 ℚ R]
+    [ContinuousSMul ℚ R] : ContinuousSMul ℚ≥0 R where
+  continuous_smul := by
+    conv in _ • _ => rw [← NNRat.cast_smul_eq_nnqsmul ℚ]
+    fun_prop
+
+instance : ContinuousSMul ℚ≥0 NNReal where
+  continuous_smul := Continuous.subtype_mk (by fun_prop) _
 
 end NNRat

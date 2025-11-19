@@ -3,8 +3,10 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.MeasureTheory.Integral.PeakFunction
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.MeasureTheory.Integral.PeakFunction
 
 /-! # Euler's infinite product for the sine function
 
@@ -17,6 +19,8 @@ for any real or complex `z`. Our proof closely follows the article
 is to prove a recurrence relation for the integrals `∫ x in 0..π/2, cos 2 z x * cos x ^ (2 * n)`,
 generalising the arguments used to prove Wallis' limit formula for `π`.
 -/
+
+@[expose] public section
 
 open scoped Real Topology
 
@@ -72,7 +76,7 @@ theorem integral_cos_mul_cos_pow_aux (hn : 2 ≤ n) (hz : z ≠ 0) :
       cos_pi_div_two, Complex.ofReal_zero, zero_pow (by positivity : n ≠ 0), zero_mul, zero_sub,
       ← integral_neg, ← integral_const_mul]
     refine integral_congr fun x _ => ?_
-    field_simp
+    ring
   · apply Continuous.intervalIntegrable
     exact
       (continuous_const.mul (Complex.continuous_ofReal.comp continuous_sin)).mul
@@ -152,7 +156,7 @@ theorem integral_cos_mul_cos_pow (hn : 2 ≤ n) (hz : z ≠ 0) :
   have := integral_cos_mul_cos_pow_aux hn hz
   rw [integral_sin_mul_sin_mul_cos_pow_eq hn hz, sub_eq_neg_add, mul_add, ← sub_eq_iff_eq_add]
     at this
-  convert congr_arg (fun u : ℂ => -u * (2 * z) ^ 2 / n ^ 2) this using 1 <;> field_simp; ring
+  convert congr_arg (fun u : ℂ => -u * (2 * z) ^ 2 / n ^ 2) this using 1 <;> field
 
 /-- Note this also holds for `z = 0`, but we do not need this case for `sin_pi_mul_eq`. -/
 theorem integral_cos_mul_cos_pow_even (n : ℕ) (hz : z ≠ 0) :
@@ -207,7 +211,7 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
       integral_one, sub_zero]
     rw [integral_cos_mul_complex (mul_ne_zero two_ne_zero hz), Complex.ofReal_zero,
       mul_zero, Complex.sin_zero, zero_div, sub_zero,
-      (by push_cast; field_simp : 2 * z * ↑(π / 2) = π * z)]
+      (by push_cast; ring : 2 * z * ↑(π / 2) = π * z)]
     simp [field]
   | succ n hn =>
     rw [hn, Finset.prod_range_succ]
@@ -233,9 +237,7 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
         π * z * A *
           (((1 : ℂ) - z ^ 2 / (n.succ : ℂ) ^ 2) *
             ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (2 * n.succ)) := by
-      nth_rw 2 [Nat.succ_eq_add_one]
-      rw [Nat.cast_add_one]
-      ring
+      grind
     rw [this]
     suffices
       (((1 : ℂ) - z ^ 2 / (n.succ : ℂ) ^ 2) *

@@ -3,10 +3,12 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Mario Carneiro, Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.Algebra.Module.MinimalAxioms
-import Mathlib.Analysis.Normed.Order.Lattice
-import Mathlib.Analysis.Normed.Operator.Basic
-import Mathlib.Topology.ContinuousMap.Bounded.Basic
+module
+
+public import Mathlib.Algebra.Module.MinimalAxioms
+public import Mathlib.Analysis.Normed.Order.Lattice
+public import Mathlib.Analysis.Normed.Operator.Basic
+public import Mathlib.Topology.ContinuousMap.Bounded.Basic
 
 /-!
 # Inheritance of normed algebraic structures by bounded continuous functions
@@ -15,6 +17,8 @@ For various types of normed algebraic structures `β`, we show in this file that
 bounded continuous functions from `α` to `β` inherits the same normed structure, by using
 pointwise operations and checking that they are compatible with the uniform distance.
 -/
+
+@[expose] public section
 
 assert_not_exists CStarRing
 
@@ -177,7 +181,7 @@ theorem mkOfCompact_sub [CompactSpace α] (f g : C(α, β)) :
 
 @[simp]
 theorem coe_zsmulRec : ∀ z, ⇑(zsmulRec (· • ·) z f) = z • ⇑f
-  | Int.ofNat n => by rw [zsmulRec, Int.ofNat_eq_coe, coe_nsmul, natCast_zsmul]
+  | Int.ofNat n => by rw [zsmulRec, Int.ofNat_eq_natCast, coe_nsmul, natCast_zsmul]
   | Int.negSucc n => by rw [zsmulRec, negSucc_zsmul, coe_neg, coe_nsmul]
 
 instance instSMulInt : SMul ℤ (α →ᵇ β) where
@@ -545,12 +549,8 @@ instance instHasSolidNorm : HasSolidNorm (α →ᵇ β) :=
       rw [norm_le (norm_nonneg _)]
       exact fun t => (i1 t).trans (norm_coe_le_norm g t) }
 
-instance instIsOrderedAddMonoid : IsOrderedAddMonoid (α →ᵇ β) :=
-  { add_le_add_left := by
-      intro f g h₁ h t
-      simp only [ContinuousMap.toFun_eq_coe, coe_toContinuousMap, coe_add, Pi.add_apply,
-        add_le_add_iff_left]
-      exact h₁ _ }
+instance instIsOrderedAddMonoid : IsOrderedAddMonoid (α →ᵇ β) where
+  add_le_add_left f g h₁ h t := by simpa using h₁ _
 
 end NormedLatticeOrderedGroup
 

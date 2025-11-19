@@ -3,8 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Cardinal.Arithmetic
-import Mathlib.SetTheory.Ordinal.FixedPoint
+module
+
+public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.SetTheory.Ordinal.FixedPoint
 
 /-!
 # Cofinality
@@ -27,6 +29,8 @@ This file contains the definition of cofinality of an order and an ordinal numbe
 * The cofinality is defined for ordinals.
   If `c` is a cardinal number, its cofinality is `c.ord.cof`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -510,11 +514,10 @@ theorem exists_fundamental_sequence (a : Ordinal.{u}) :
     suffices h : ∃ i' hi', f i ≤ bfamilyOfFamily' r' (fun i => f i) i' hi' by
       rcases h with ⟨i', hi', hfg⟩
       exact hfg.trans_lt (lt_blsub _ _ _)
-    by_cases h : ∀ j, r j i → f j < f i
+    by_cases! h : ∀ j, r j i → f j < f i
     · refine ⟨typein r' ⟨i, h⟩, typein_lt_type _ _, ?_⟩
       rw [bfamilyOfFamily'_typein]
-    · push_neg at h
-      obtain ⟨hji, hij⟩ := wo.wf.min_mem _ h
+    · obtain ⟨hji, hij⟩ := wo.wf.min_mem _ h
       refine ⟨typein r' ⟨_, fun k hkj => lt_of_lt_of_le ?_ hij⟩, typein_lt_type _ _, ?_⟩
       · by_contra! H
         exact (wo.wf.not_lt_min _ h ⟨IsTrans.trans _ _ _ hkj hji, H⟩) hkj
@@ -661,7 +664,7 @@ theorem mk_bounded_subset {α : Type*} (h : ∀ x < #α, 2 ^ x < #α) {r : α �
   apply le_antisymm
   · have : { s : Set α | Bounded r s } = ⋃ i, 𝒫{ j | r j i } := setOf_exists _
     rw [← coe_setOf, this]
-    refine mk_iUnion_le_sum_mk.trans ((sum_le_iSup (fun i => #(𝒫{ j | r j i }))).trans
+    refine mk_iUnion_le_sum_mk.trans ((sum_le_mk_mul_iSup (fun i => #(𝒫{ j | r j i }))).trans
       ((mul_le_max_of_aleph0_le_left ha).trans ?_))
     rw [max_eq_left]
     apply ciSup_le' _

@@ -3,11 +3,13 @@ Copyright (c) 2024 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Lie.Engel
-import Mathlib.Algebra.Lie.Normalizer
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Algebra.Lie.Subalgebra
-import Mathlib.Data.Finset.NatAntidiagonal
+module
+
+public import Mathlib.Algebra.Lie.Engel
+public import Mathlib.Algebra.Lie.Normalizer
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.Algebra.Lie.Subalgebra
+public import Mathlib.Data.Finset.NatAntidiagonal
 
 /-!
 # Engel subalgebras
@@ -29,6 +31,8 @@ and minimal ones are nilpotent (TODO), hence Cartan subalgebras.
   A Lie subalgebra of a Noetherian Lie algebra is nilpotent
   if it is contained in the Engel subalgebra of all its elements.
 -/
+
+@[expose] public section
 
 open LieAlgebra LieModule
 
@@ -71,7 +75,7 @@ lemma self_mem_engel (x : L) : x ∈ engel R x := by
 lemma engel_zero : engel R (0 : L) = ⊤ := by
   rw [eq_top_iff]
   rintro x -
-  rw [mem_engel_iff, LieHom.map_zero]
+  rw [mem_engel_iff, map_zero]
   use 1
   simp only [pow_one, LinearMap.zero_apply]
 

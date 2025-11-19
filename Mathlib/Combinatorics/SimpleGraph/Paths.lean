@@ -3,8 +3,10 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkDecomp
-import Mathlib.Combinatorics.SimpleGraph.Walk
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkDecomp
+public import Mathlib.Combinatorics.SimpleGraph.Walk
 
 /-!
 
@@ -42,6 +44,8 @@ counterparts in [Chou1994].
 ## Tags
 trails, paths, circuits, cycles
 -/
+
+@[expose] public section
 
 open Function
 
@@ -93,6 +97,10 @@ theorem IsPath.mk' {u v : V} {p : G.Walk u v} (h : p.support.Nodup) : p.IsPath :
 
 theorem isPath_def {u v : V} (p : G.Walk u v) : p.IsPath ↔ p.support.Nodup :=
   ⟨IsPath.support_nodup, IsPath.mk'⟩
+
+theorem isPath_iff_injective_get_support {u v : V} (p : G.Walk u v) :
+    p.IsPath ↔ (p.support.get ·).Injective :=
+  p.isPath_def.trans List.nodup_iff_injective_get
 
 @[simp]
 theorem isPath_copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') :
@@ -462,6 +470,10 @@ protected theorem IsPath.dropUntil {u v w : V} {p : G.Walk v w} (hc : p.IsPath)
     (h : u ∈ p.support) : (p.dropUntil u h).IsPath :=
   IsPath.of_append_right (p := p.takeUntil u h) (q := p.dropUntil u h)
     (by rwa [← take_spec _ h] at hc)
+
+lemma IsTrail.disjoint_edges_takeUntil_dropUntil {x : V} {w : G.Walk u v} (hw : w.IsTrail)
+    (hx : x ∈ w.support) : (w.takeUntil x hx).edges.Disjoint (w.dropUntil x hx).edges :=
+  List.disjoint_of_nodup_append <| by simpa [← edges_append] using hw.edges_nodup
 
 protected theorem IsTrail.rotate {u v : V} {c : G.Walk v v} (hc : c.IsTrail) (h : u ∈ c.support) :
     (c.rotate h).IsTrail := by

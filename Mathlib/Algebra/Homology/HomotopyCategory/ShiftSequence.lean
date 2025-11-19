@@ -3,21 +3,25 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.InducedShiftSequence
-import Mathlib.CategoryTheory.Shift.Localization
-import Mathlib.Algebra.Homology.HomotopyCategory.Shift
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-import Mathlib.Algebra.Homology.QuasiIso
+module
+
+public import Mathlib.CategoryTheory.Shift.InducedShiftSequence
+public import Mathlib.CategoryTheory.Shift.Localization
+public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+public import Mathlib.Algebra.Homology.QuasiIso
 
 /-! # Compatibilities of the homology functor with the shift
 
-This files studies how homology of cochain complexes behaves with respect to
+This file studies how homology of cochain complexes behaves with respect to
 the shift: there is a natural isomorphism `(K⟦n⟧).homology a ≅ K.homology a`
 when `n + a = a'`. This is summarized by instances
 `(homologyFunctor C (ComplexShape.up ℤ) 0).ShiftSequence ℤ` in the `CochainComplex`
 and `HomotopyCategory` namespaces.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -76,7 +80,7 @@ variable [CategoryWithHomology C]
 namespace ShiftSequence
 
 variable (C) in
-/-- The natural isomorphism `(K⟦n⟧).homology a ≅ K.homology a'`when `n + a = a`. -/
+/-- The natural isomorphism `(K⟦n⟧).homology a ≅ K.homology a'` when `n + a = a'`. -/
 noncomputable def shiftIso (n a a' : ℤ) (ha' : n + a = a') :
     (CategoryTheory.shiftFunctor _ n) ⋙ homologyFunctor C (ComplexShape.up ℤ) a ≅
       homologyFunctor C (ComplexShape.up ℤ) a' :=

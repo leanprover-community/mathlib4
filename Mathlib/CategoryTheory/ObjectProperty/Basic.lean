@@ -3,10 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.CategoryTheory.Functor.Basic
-import Mathlib.CategoryTheory.Iso
-import Mathlib.Order.Basic
+module
+
+public import Mathlib.CategoryTheory.Category.Basic
+public import Mathlib.CategoryTheory.Functor.Basic
+public import Mathlib.CategoryTheory.Iso
+public import Mathlib.Order.Basic
 
 /-!
 # Properties of objects in a category
@@ -23,20 +25,88 @@ for predicates `C → Prop`.
 
 -/
 
+@[expose] public section
+
 universe v v' u u'
 
 namespace CategoryTheory
 
 /-- A property of objects in a category `C` is a predicate `C → Prop`. -/
 @[nolint unusedArguments]
-abbrev ObjectProperty (C : Type u) [Category.{v} C] : Type u := C → Prop
+abbrev ObjectProperty (C : Type u) [CategoryStruct.{v} C] : Type u := C → Prop
 
 namespace ObjectProperty
 
-variable {C : Type u} {D : Type u'} [Category.{v} C] [Category.{v'} D]
+variable {C : Type u} {D : Type u'}
+
+section
+
+variable [CategoryStruct.{v} C] [CategoryStruct.{v'} D]
 
 lemma le_def {P Q : ObjectProperty C} :
     P ≤ Q ↔ ∀ (X : C), P X → Q X := Iff.rfl
+
+/-- The typeclass associated to `P : ObjectProperty C`. -/
+@[mk_iff]
+class Is (P : ObjectProperty C) (X : C) : Prop where
+  prop : P X
+
+lemma prop_of_is (P : ObjectProperty C) (X : C) [P.Is X] : P X := by rwa [← P.is_iff]
+
+lemma is_of_prop (P : ObjectProperty C) {X : C} (hX : P X) : P.Is X := by rwa [P.is_iff]
+
+section
+
+variable {ι : Type u'} (X : ι → C)
+
+/-- The property of objects that is satisfied by the `X i` for a family
+of objects `X : ι : C`. -/
+inductive ofObj : ObjectProperty C
+  | mk (i : ι) : ofObj (X i)
+
+@[simp]
+lemma ofObj_apply (i : ι) : ofObj X (X i) := ⟨i⟩
+
+lemma ofObj_iff (Y : C) : ofObj X Y ↔ ∃ i, X i = Y := by
+  constructor
+  · rintro ⟨i⟩
+    exact ⟨i, rfl⟩
+  · rintro ⟨i, rfl⟩
+    exact ⟨i⟩
+
+lemma ofObj_le_iff (P : ObjectProperty C) :
+    ofObj X ≤ P ↔ ∀ i, P (X i) :=
+  ⟨fun h i ↦ h _ (by simp), fun h ↦ by rintro _ ⟨i⟩; exact h i⟩
+
+end
+
+/-- The property of objects in a category that is satisfied by a single object `X : C`. -/
+abbrev singleton (X : C) : ObjectProperty C := ofObj (fun (_ : Unit) ↦ X)
+
+@[simp]
+lemma singleton_iff (X Y : C) : singleton X Y ↔ X = Y := by simp [ofObj_iff]
+
+@[simp]
+lemma singleton_le_iff {X : C} {P : ObjectProperty C} :
+    singleton X ≤ P ↔ P X := by
+  simp [ofObj_le_iff]
+
+/-- The property of objects in a category that is satisfied by `X : C` and `Y : C`. -/
+def pair (X Y : C) : ObjectProperty C :=
+  ofObj (Sum.elim (fun (_ : Unit) ↦ X) (fun (_ : Unit) ↦ Y))
+
+@[simp]
+lemma pair_iff (X Y Z : C) :
+    pair X Y Z ↔ X = Z ∨ Y = Z := by
+  constructor
+  · rintro ⟨_ | _⟩ <;> tauto
+  · rintro (rfl | rfl); exacts [⟨Sum.inl .unit⟩, ⟨Sum.inr .unit⟩]
+
+end
+
+section
+
+variable [Category.{v} C] [Category.{v'} D]
 
 /-- The inverse image of a property of objects by a functor. -/
 def inverseImage (P : ObjectProperty D) (F : C ⥤ D) : ObjectProperty C :=
@@ -57,14 +127,31 @@ lemma prop_map_obj (P : ObjectProperty C) (F : C ⥤ D) {X : C} (hX : P X) :
     P.map F (F.obj X) :=
   ⟨X, hX, ⟨Iso.refl _⟩⟩
 
-/-- The typeclass associated to `P : ObjectProperty C`. -/
-@[mk_iff]
-class Is (P : ObjectProperty C) (X : C) : Prop where
-  prop : P X
+/-- The strict image of a property of objects by a functor. -/
+inductive strictMap (P : ObjectProperty C) (F : C ⥤ D) : ObjectProperty D
+  | mk (X : C) (hX : P X) : strictMap P F (F.obj X)
 
-lemma prop_of_is (P : ObjectProperty C) (X : C) [P.Is X] : P X := by rwa [← P.is_iff]
+lemma strictMap_iff (P : ObjectProperty C) (F : C ⥤ D) (Y : D) :
+    P.strictMap F Y ↔ ∃ (X : C), P X ∧ F.obj X = Y :=
+  ⟨by rintro ⟨X, hX⟩; exact ⟨X, hX, rfl⟩, by rintro ⟨X, hX, rfl⟩; exact ⟨X, hX⟩⟩
 
-lemma is_of_prop (P : ObjectProperty C) {X : C} (hX : P X) : P.Is X := by rwa [P.is_iff]
+lemma strictMap_obj (P : ObjectProperty C) (F : C ⥤ D) {X : C} (hX : P X) :
+    P.strictMap F (F.obj X) :=
+  ⟨X, hX⟩
+
+@[simp]
+lemma strictMap_ofObj {ι : Type u'} (X : ι → C) (F : C ⥤ D) :
+    (ofObj X).strictMap F = ofObj (F.obj ∘ X) := by
+  ext Y
+  simp [ofObj_iff, strictMap_iff]
+
+@[simp high]
+lemma strictMap_singleton (X : C) (F : C ⥤ D) :
+    (singleton X).strictMap F = singleton (F.obj X) := by
+  ext
+  simp [strictMap_iff]
+
+end
 
 end ObjectProperty
 

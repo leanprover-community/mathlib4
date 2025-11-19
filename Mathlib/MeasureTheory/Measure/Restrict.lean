@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.Measure.Comap
-import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
-import Mathlib.Data.Set.Card
+module
+
+public import Mathlib.MeasureTheory.Measure.Comap
+public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
+public import Mathlib.Data.Set.Card
 
 /-!
 # Restricting a measure to a subset or a subtype
@@ -19,6 +21,8 @@ pullback), and on sets (inclusion, union, Union).
 We also study the relationship between the restriction of a measure to a subtype (given by the
 pullback under `Subtype.val`) and the restriction to a set as above.
 -/
+
+@[expose] public section
 
 open scoped ENNReal NNReal Topology
 open Set MeasureTheory Measure Filter MeasurableSpace ENNReal Function
@@ -35,6 +39,7 @@ namespace Measure
 /-! ### Restricting a measure -/
 
 /-- Restrict a measure `μ` to a set `s` as an `ℝ≥0∞`-linear map. -/
+@[irreducible]
 noncomputable def restrictₗ {m0 : MeasurableSpace α} (s : Set α) : Measure α →ₗ[ℝ≥0∞] Measure α :=
   liftLinear (OuterMeasure.restrict s) fun μ s' hs' t => by
     suffices μ (s ∩ t) = μ (s ∩ t ∩ s') + μ ((s ∩ t) \ s') by
@@ -58,6 +63,7 @@ theorem restrict_toOuterMeasure_eq_toOuterMeasure_restrict (h : MeasurableSet s)
     toMeasure_toOuterMeasure, OuterMeasure.restrict_trim h, μ.trimmed]
 
 theorem restrict_apply₀ (ht : NullMeasurableSet t (μ.restrict s)) : μ.restrict s t = μ (t ∩ s) := by
+  rw [restrict, restrictₗ] at ht
   rw [← restrictₗ_apply, restrictₗ, liftLinear_apply₀ _ ht, OuterMeasure.restrict_apply,
     coe_toOuterMeasure]
 
@@ -500,9 +506,9 @@ theorem restrict_biUnion {s : ι → Set α} {T : Set ι} (hT : Countable T)
   exact restrict_iUnion (fun i j hij ↦ hd i.coe_prop j.coe_prop (Subtype.coe_ne_coe.mpr hij)) (hm ·)
 
 theorem restrict_biUnion_finset {s : ι → Set α} {T : Finset ι}
-    (hd : T.toSet.Pairwise (Disjoint on s)) (hm : ∀ i, MeasurableSet (s i)) :
+    (hd : (T : Set ι).Pairwise (Disjoint on s)) (hm : ∀ i, MeasurableSet (s i)) :
     μ.restrict (⋃ i ∈ T, s i) = sum fun (i : T) => μ.restrict (s i) :=
-  restrict_biUnion (T := T.toSet) Finite.to_countable hd hm
+  restrict_biUnion (T := (T : Set ι)) Finite.to_countable hd hm
 
 theorem restrict_iUnion_le [Countable ι] {s : ι → Set α} :
     μ.restrict (⋃ i, s i) ≤ sum fun i => μ.restrict (s i) :=
@@ -889,7 +895,20 @@ theorem _root_.MeasurableEquiv.restrict_map (e : α ≃ᵐ β) (μ : Measure α)
     (μ.map e).restrict s = (μ.restrict <| e ⁻¹' s).map e :=
   e.measurableEmbedding.restrict_map _ _
 
+lemma _root_.MeasurableEquiv.comap_apply (e : α ≃ᵐ β) (μ : Measure β) (s : Set α) :
+    comap e μ s = μ (e.symm ⁻¹' s) := by
+  rw [e.measurableEmbedding.comap_apply, e.image_eq_preimage_symm]
+
 end MeasurableEmbedding
+
+lemma MeasureTheory.Measure.map_eq_comap {_ : MeasurableSpace α} {_ : MeasurableSpace β} {f : α → β}
+    {g : β → α} {μ : Measure α} (hf : Measurable f) (hg : MeasurableEmbedding g)
+    (hμg : ∀ᵐ a ∂μ, a ∈ Set.range g) (hfg : ∀ a, f (g a) = a) : μ.map f = μ.comap g := by
+  ext s hs
+  rw [map_apply hf hs, hg.comap_apply, ← measure_diff_null hμg]
+  congr
+  simp
+  grind
 
 section Subtype
 
@@ -1083,7 +1102,7 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
       rw [Summable.tsum_finsetSum (fun _ _ ↦ ENNReal.summable)]
       congr with i
       rw [tsum_subtype (G i) (fun C ↦ (μ.restrict (P C)) t)]
-    _ = ∑ C ∈ Cs, ∑ i ∈ F, C.toSet.indicator (fun _ ↦ (μ.restrict (P C)) t) i := by
+    _ = ∑ C ∈ Cs, ∑ i ∈ F, (C : Set ι).indicator (fun _ ↦ (μ.restrict (P C)) t) i := by
       rw [sum_eq_tsum_indicator]
       congr with C
       by_cases hC : C ∈ F.powerset <;> by_cases hC' : C = ∅ <;>
@@ -1093,12 +1112,12 @@ lemma MeasureTheory.Measure.sum_restrict_le {_ : MeasurableSpace α}
       refine sum_le_sum fun C hC ↦ ?_
       by_cases hPC : P C = ∅
       · simp [hPC]
-      have hCM : C.toSet.encard ≤ M :=
+      have hCM : (C : Set ι).encard ≤ M :=
         have ⟨x, hx⟩ := Set.nonempty_iff_ne_empty.mpr hPC
         (encard_mono (mem_iInter₂.mp hx.1)).trans (hs x)
       exact nsmul_le_nsmul_left (zero_le _) <| calc {a ∈ F | a ∈ C}.card
         _ ≤ C.card := card_mono <| fun i hi ↦ (F.mem_filter.mp hi).2
-        _ = C.toSet.ncard := (ncard_coe_finset C).symm
+        _ = (C : Set ι).ncard := (ncard_coe_finset C).symm
         _ ≤ M := ENat.toNat_le_of_le_coe hCM
     _ = M • (μ.restrict (⋃ C ∈ Cs, (P C)) t) := by
       rw [← smul_sum, ← Cs.tsum_subtype, μ.restrict_biUnion_finset _ P_meas, Measure.sum_apply _ ht]

@@ -3,11 +3,13 @@ Copyright (c) 2024 Colin Jones. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Colin Jones
 -/
-import Mathlib.Algebra.Ring.GeomSum
-import Mathlib.NumberTheory.Divisors
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.NormNum.Prime
+module
+
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.NumberTheory.Divisors
+public import Mathlib.Tactic.FinCases
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.NormNum.Prime
 
 /-!
 # Factorisation properties of natural numbers
@@ -44,6 +46,8 @@ relations with prime and perfect numbers.
 
 abundant, deficient, weird, pseudoperfect
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -151,7 +155,7 @@ theorem Prime.deficient_pow (h : Prime n) : Deficient (n ^ m) := by
           exact ⟨x, Nat.le_of_succ_le hx, rfl⟩
         · rw [← hy]
           exact (Nat.pow_lt_pow_iff_right (Prime.two_le h)).mpr hx
-    have h2 : ∑ i ∈ image (fun x => n ^ x) (range m), i = ∑ i ∈ range m, n^i := by
+    have h2 : ∑ i ∈ image (fun x => n ^ x) (range m), i = ∑ i ∈ range m, n ^ i := by
       rw [Finset.sum_image]
       rintro x _ y _
       apply pow_injective_of_not_isUnit h.not_isUnit <| Prime.ne_zero h

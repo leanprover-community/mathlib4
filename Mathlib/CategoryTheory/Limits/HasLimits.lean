@@ -3,11 +3,13 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Kim Morrison, Floris van Doorn
 -/
-import Mathlib.CategoryTheory.Limits.IsLimit
-import Mathlib.CategoryTheory.Category.ULift
-import Mathlib.CategoryTheory.EssentiallySmall
-import Mathlib.CategoryTheory.Functor.EpiMono
-import Mathlib.Logic.Equiv.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.IsLimit
+public import Mathlib.CategoryTheory.Category.ULift
+public import Mathlib.CategoryTheory.EssentiallySmall
+public import Mathlib.CategoryTheory.Functor.EpiMono
+public import Mathlib.Logic.Equiv.Basic
 
 /-!
 # Existence of limits and colimits
@@ -55,6 +57,8 @@ e.g. a `@[dualize]` attribute that behaves similarly to `@[to_additive]`.
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -62,7 +66,7 @@ open CategoryTheory CategoryTheory.Category CategoryTheory.Functor Opposite
 
 namespace CategoryTheory.Limits
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 universe v₁ u₁ v₂ u₂ v₃ u₃ v v' v'' u u' u''
 
 variable {J : Type u₁} [Category.{v₁} J] {K : Type u₂} [Category.{v₂} K]
@@ -281,8 +285,6 @@ theorem hasLimit_of_iso {F G : J ⥤ C} [HasLimit F] (α : F ≅ G) : HasLimit G
     { cone := (Cones.postcompose α.hom).obj (limit.cone F)
       isLimit := (IsLimit.postcomposeHomEquiv _ _).symm (limit.isLimit F) }
 
-@[deprecated (since := "2025-03-03")] alias hasLimitOfIso := hasLimit_of_iso
-
 theorem hasLimit_iff_of_iso {F G : J ⥤ C} (α : F ≅ G) : HasLimit F ↔ HasLimit G :=
   ⟨fun _ ↦ hasLimit_of_iso α, fun _ ↦ hasLimit_of_iso α.symm⟩
 
@@ -422,7 +424,7 @@ end Post
 
 theorem limit.pre_post {D : Type u'} [Category.{v'} D] (E : K ⥤ J) (F : J ⥤ C) (G : C ⥤ D)
     [HasLimit F] [HasLimit (E ⋙ F)] [HasLimit (F ⋙ G)]
-    [h : HasLimit ((E ⋙ F) ⋙ G)] :-- G (limit F) ⟶ G (limit (E ⋙ F)) ⟶ limit ((E ⋙ F) ⋙ G) vs
+    [h : HasLimit ((E ⋙ F) ⋙ G)] : -- G (limit F) ⟶ G (limit (E ⋙ F)) ⟶ limit ((E ⋙ F) ⋙ G) vs
             -- G (limit F) ⟶ limit F ⋙ G ⟶ limit (E ⋙ (F ⋙ G)) or
     haveI : HasLimit (E ⋙ F ⋙ G) := h
     G.map (limit.pre F E) ≫ limit.post (E ⋙ F) G = limit.post F G ≫ limit.pre (F ⋙ G) E := by
@@ -442,11 +444,6 @@ instance hasLimit_equivalence_comp (e : K ≌ J) [HasLimit F] : HasLimit (e.func
 theorem hasLimit_of_equivalence_comp (e : K ≌ J) [HasLimit (e.functor ⋙ F)] : HasLimit F := by
   haveI : HasLimit (e.inverse ⋙ e.functor ⋙ F) := Limits.hasLimit_equivalence_comp e.symm
   apply hasLimit_of_iso (e.invFunIdAssoc F)
-
-@[deprecated (since := "2025-03-02")] alias hasLimitEquivalenceComp :=
-  hasLimit_equivalence_comp
-@[deprecated (since := "2025-03-02")] alias hasLimitOfEquivalenceComp :=
-  hasLimit_of_equivalence_comp
 
 -- `hasLimitCompEquivalence` and `hasLimitOfCompEquivalence`
 -- are proved in `CategoryTheory/Adjunction/Limits.lean`.
@@ -571,7 +568,7 @@ variable (C)
 theorem hasLimitsOfSizeOfUnivLE [UnivLE.{v₂, v₁}] [UnivLE.{u₂, u₁}]
     [HasLimitsOfSize.{v₁, u₁} C] : HasLimitsOfSize.{v₂, u₂} C where
   has_limits_of_shape J {_} := hasLimitsOfShape_of_equivalence
-    ((ShrinkHoms.equivalence J).trans <| Shrink.equivalence _).symm
+    ((ShrinkHoms.equivalence.{v₁} J).trans <| Shrink.equivalence _).symm
 
 /-- `hasLimitsOfSizeShrink.{v u} C` tries to obtain `HasLimitsOfSize.{v u} C`
 from some other `HasLimitsOfSize C`.
@@ -658,7 +655,7 @@ def colimit.ι (F : J ⥤ C) [HasColimit F] (j : J) : F.obj j ⟶ colimit F :=
 
 @[reassoc]
 theorem colimit.eqToHom_comp_ι (F : J ⥤ C) [HasColimit F] {j j' : J} (hj : j = j') :
-    eqToHom (by subst hj; rfl) ≫ colimit.ι F j = colimit.ι F j'  := by
+    eqToHom (by subst hj; rfl) ≫ colimit.ι F j = colimit.ι F j' := by
   subst hj
   simp
 
@@ -797,7 +794,7 @@ def colimit.homIso' (F : J ⥤ C) [HasColimit F] (W : C) :
   (colimit.isColimit F).homIso' W
 
 theorem colimit.desc_extend (F : J ⥤ C) [HasColimit F] (c : Cocone F) {X : C} (f : c.pt ⟶ X) :
-    colimit.desc F (c.extend f) = colimit.desc F c ≫ f := by ext1; rw [← Category.assoc]; simp
+    colimit.desc F (c.extend f) = colimit.desc F c ≫ f := by ext; simp
 
 -- This has the isomorphism pointing in the opposite direction than in `has_limit_of_iso`.
 -- This is intentional; it seems to help with elaboration.
@@ -807,8 +804,6 @@ theorem hasColimit_of_iso {F G : J ⥤ C} [HasColimit F] (α : G ≅ F) : HasCol
   HasColimit.mk
     { cocone := (Cocones.precompose α.hom).obj (colimit.cocone F)
       isColimit := (IsColimit.precomposeHomEquiv _ _).symm (colimit.isColimit F) }
-
-@[deprecated (since := "2025-03-03")] alias hasColimitOfIso := hasColimit_of_iso
 
 theorem hasColimit_iff_of_iso {F G : J ⥤ C} (α : F ≅ G) : HasColimit F ↔ HasColimit G :=
   ⟨fun _ ↦ hasColimit_of_iso α.symm, fun _ ↦ hasColimit_of_iso α⟩
@@ -894,7 +889,8 @@ theorem colimit.ι_inv_pre [IsIso (pre F E)] (k : K) :
 @[reassoc (attr := simp)]
 theorem colimit.pre_desc (c : Cocone F) :
     colimit.pre F E ≫ colimit.desc F c = colimit.desc (E ⋙ F) (c.whisker E) := by
-  ext; rw [← assoc, colimit.ι_pre]; simp
+  ext
+  simp
 
 variable {L : Type u₃} [Category.{v₃} L]
 variable (D : L ⥤ K)
@@ -1086,7 +1082,7 @@ variable (C)
 theorem hasColimitsOfSizeOfUnivLE [UnivLE.{v₂, v₁}] [UnivLE.{u₂, u₁}]
     [HasColimitsOfSize.{v₁, u₁} C] : HasColimitsOfSize.{v₂, u₂} C where
   has_colimits_of_shape J {_} := hasColimitsOfShape_of_equivalence
-    ((ShrinkHoms.equivalence J).trans <| Shrink.equivalence _).symm
+    ((ShrinkHoms.equivalence.{v₁} J).trans <| Shrink.equivalence _).symm
 
 /-- `hasColimitsOfSizeShrink.{v u} C` tries to obtain `HasColimitsOfSize.{v u} C`
 from some other `HasColimitsOfSize C`.

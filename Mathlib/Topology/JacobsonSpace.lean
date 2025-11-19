@@ -3,9 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Topology.LocalAtTarget
-import Mathlib.Topology.Separation.Regular
-import Mathlib.Tactic.StacksAttribute
+module
+
+public import Mathlib.Topology.LocalAtTarget
+public import Mathlib.Topology.Separation.Regular
+public import Mathlib.Tactic.StacksAttribute
 
 /-!
 
@@ -23,6 +25,8 @@ import Mathlib.Tactic.StacksAttribute
 - https://stacks.math.columbia.edu/tag/005T
 
 -/
+
+@[expose] public section
 
 open Topology TopologicalSpace
 
@@ -135,7 +139,7 @@ lemma JacobsonSpace.discreteTopology [JacobsonSpace X]
       closure_subset_iff_isClosed, ← (closedPoints X).biUnion_of_singleton]
     exact h.isClosed_biUnion fun _ ↦ id
   have inst : Finite X := Set.finite_univ_iff.mp (this ▸ h)
-  rw [← forall_open_iff_discrete]
+  rw [discreteTopology_iff_forall_isOpen]
   intro s
   rw [← isClosed_compl_iff, ← sᶜ.biUnion_of_singleton]
   refine sᶜ.toFinite.isClosed_biUnion fun x _ ↦ ?_
