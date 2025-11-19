@@ -3,9 +3,11 @@ Copyright (c) 2025 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.MeasureTheory.Function.ContinuousMapDense
-import Mathlib.Geometry.Manifold.SmoothApprox
-import Mathlib.Tactic.MoveAdd
+module
+
+public import Mathlib.MeasureTheory.Function.ContinuousMapDense
+public import Mathlib.Geometry.Manifold.SmoothApprox
+public import Mathlib.Tactic.MoveAdd
 
 /-!
 
