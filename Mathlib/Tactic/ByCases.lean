@@ -31,7 +31,7 @@ open Lean.Parser.Tactic
 syntax (name := byCases!) "by_cases! " optConfig (atomic(ident " : "))? term : tactic
 
 local elab "try_push_neg_at" cfg:optConfig h:ident : tactic => do
-  Push.push (.const ``Not) none (.targets #[h] false) (← Push.elabPushConfig cfg)
+  Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[h] false)
     (failIfUnchanged := false)
 
 macro_rules
