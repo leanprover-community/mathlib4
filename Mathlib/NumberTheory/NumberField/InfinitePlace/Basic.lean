@@ -49,7 +49,7 @@ variable {k : Type*} [Field k] (K : Type*) [Field K] {F : Type*} [Field F]
 /-- An infinite place of a number field `K` is a place associated to a complex embedding. -/
 def NumberField.InfinitePlace := { w : AbsoluteValue K ℝ // ∃ φ : K →+* ℂ, place φ = w }
 
-instance [NumberField K] : Nonempty (NumberField.InfinitePlace K) := Set.instNonemptyRange _
+instance [Nonempty (K →+* ℂ)] : Nonempty (NumberField.InfinitePlace K) := Set.instNonemptyRange _
 
 variable {K}
 
