@@ -3,12 +3,16 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Prod
-import Mathlib.Data.Nat.Cast.Defs
+module
+
+public import Mathlib.Algebra.Group.Prod
+public import Mathlib.Data.Nat.Cast.Defs
 
 /-!
 # The product of two `AddMonoidWithOne`s.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 

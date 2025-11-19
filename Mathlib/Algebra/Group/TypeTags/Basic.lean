@@ -3,14 +3,16 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Torsion
-import Mathlib.Algebra.Notation.Pi.Basic
-import Mathlib.Data.FunLike.Basic
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.Set
-import Mathlib.Util.AssertExists
-import Mathlib.Logic.Nontrivial.Basic
+module
+
+public import Mathlib.Algebra.Group.Torsion
+public import Mathlib.Algebra.Notation.Pi.Basic
+public import Mathlib.Data.FunLike.Basic
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Tactic.Set
+public import Mathlib.Util.AssertExists
+public import Mathlib.Logic.Nontrivial.Basic
 
 /-!
 # Type tags that turn additive structures into multiplicative, and vice versa
@@ -29,6 +31,8 @@ We also define instances `Additive.*` and `Multiplicative.*` that actually trans
 This file is similar to `Order.Synonym`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered MonoidHom Finite
 

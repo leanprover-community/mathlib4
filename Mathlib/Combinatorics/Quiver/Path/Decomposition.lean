@@ -3,8 +3,10 @@ Copyright (c) 2025 Matteo Cipollina. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina
 -/
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Combinatorics.Quiver.Path
+module
+
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Combinatorics.Quiver.Path
 
 /-!
 # Path Decomposition and Boundary Crossing
@@ -12,6 +14,8 @@ import Mathlib.Combinatorics.Quiver.Path
 This section provides lemmas for decomposing non-empty paths and for reasoning about paths that
 cross the boundary of a given set of vertices `S`.
 -/
+
+@[expose] public section
 namespace Quiver.Path
 
 section BoundaryEdges

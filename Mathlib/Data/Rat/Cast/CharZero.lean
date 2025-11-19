@@ -3,12 +3,16 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Data.Rat.Cast.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+public import Mathlib.Data.Rat.Cast.Defs
 
 /-!
 # Casts of rational numbers into characteristic zero fields (or division rings).
 -/
+
+@[expose] public section
 
 open Function
 

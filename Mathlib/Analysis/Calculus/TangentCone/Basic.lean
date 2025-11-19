@@ -3,9 +3,11 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.TangentCone.Defs
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Analysis.Normed.Module.Basic
+module
+
+public import Mathlib.Analysis.Calculus.TangentCone.Defs
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
 # Basic properties of tangent cones and sets with unique differentiability property
@@ -13,6 +15,8 @@ import Mathlib.Analysis.Normed.Module.Basic
 In this file we prove basic lemmas about `tangentConeAt`, `UniqueDiffWithinAt`,
 and `UniqueDiffOn`.
 -/
+
+@[expose] public section
 
 open Filter Set Metric NormedField
 open scoped Topology Pointwise

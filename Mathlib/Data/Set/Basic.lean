@@ -3,10 +3,12 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Order.PropInstances
-import Mathlib.Tactic.Lift
-import Mathlib.Tactic.Tauto
-import Mathlib.Util.Delaborators
+module
+
+public import Mathlib.Order.PropInstances
+public import Mathlib.Tactic.Lift
+public import Mathlib.Tactic.Tauto
+public import Mathlib.Util.Delaborators
 
 /-!
 # Basic properties of sets
@@ -53,6 +55,8 @@ Definitions in the file:
 
 set, sets, subset, subsets, union, intersection, insert, singleton, powerset
 -/
+
+@[expose] public section
 
 assert_not_exists HeytingAlgebra RelIso
 

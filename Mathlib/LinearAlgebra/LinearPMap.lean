@@ -3,7 +3,9 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Moritz Doll
 -/
-import Mathlib.LinearAlgebra.Prod
+module
+
+public import Mathlib.LinearAlgebra.Prod
 
 /-!
 # Partially defined linear maps
@@ -27,6 +29,8 @@ is bounded above.
 They are also the basis for the theory of unbounded operators.
 
 -/
+
+@[expose] public section
 
 universe u v w
 
