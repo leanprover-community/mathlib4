@@ -6,6 +6,7 @@ Authors: Heather Macbeth
 import Mathlib.Analysis.InnerProductSpace.Rayleigh
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Algebra.DirectSum.Decomposition
+import Mathlib.LinearAlgebra.Eigenbasis
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 import Mathlib.Data.Fin.Tuple.Sort
 
@@ -245,6 +246,12 @@ theorem hasEigenvector_eigenvectorBasis (hT : T.IsSymmetric) (hn : Module.finran
     (i : Fin n) : HasEigenvector T (hT.eigenvalues hn i) (hT.eigenvectorBasis hn i) := by
   rw [eigenvalues_def, eigenvectorBasis_def, OrthonormalBasis.reindex_apply]
   apply hasEigenvector_eigenvectorBasis_helper
+
+/-- `LinearMap.Symmetric.eigenvectorBasis` as a `LinearMap.Eigenbasis`. -/
+noncomputable def eigenbasis (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) :
+    Eigenbasis (Fin n) T :=
+  .mk (b := (hT.eigenvectorBasis hn).toBasis) (μ := (↑) ∘ hT.eigenvalues hn) <| fun i ↦ by
+    simp [(hT.hasEigenvector_eigenvectorBasis hn i).apply_eq_smul]
 
 /-- Eigenvalues are sorted in decreasing order. -/
 theorem eigenvalues_antitone (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n) :
