@@ -4273,6 +4273,7 @@ public import Mathlib.Lean.Elab.Tactic.Basic
 public import Mathlib.Lean.Elab.Tactic.Meta
 public import Mathlib.Lean.Elab.Term
 public import Mathlib.Lean.EnvExtension
+public import Mathlib.Lean.Environment
 public import Mathlib.Lean.Exception
 public import Mathlib.Lean.Expr
 public import Mathlib.Lean.Expr.Basic
@@ -6435,6 +6436,7 @@ public import Mathlib.Tactic.Linter.OldObtain
 public import Mathlib.Tactic.Linter.PPRoundtrip
 public import Mathlib.Tactic.Linter.Style
 public import Mathlib.Tactic.Linter.TextBased
+public import Mathlib.Tactic.Linter.UnusedInstancesInType
 public import Mathlib.Tactic.Linter.UnusedTactic
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
 public import Mathlib.Tactic.Linter.UpstreamableDecl
