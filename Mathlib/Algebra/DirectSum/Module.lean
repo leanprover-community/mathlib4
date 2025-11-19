@@ -77,6 +77,8 @@ def lof : ∀ i : ι, M i →ₗ[R] ⨁ i, M i :=
 
 theorem lof_eq_of (i : ι) (b : M i) : lof R ι M i b = of M i b := rfl
 
+@[simp] theorem lof_toAddMonoidHom_eq_of (i : ι) : (lof R ι M i).toAddMonoidHom = of M i := rfl
+
 variable {ι M}
 
 theorem single_eq_lof (i : ι) (b : M i) : DFinsupp.single i b = lof R ι M i b := rfl
@@ -540,5 +542,68 @@ theorem IsInternal.addSubgroup_iSupIndep {G : Type*} [AddCommGroup G] {A : ι �
 end Ring
 
 end Submodule
+
+namespace mapRange
+
+section linearMap
+
+variable {ι : Type*} {α : ι → Type*} {β : ι → Type*} {R : Type*} [Semiring R]
+variable [∀ i, AddCommMonoid (α i)] [∀ i, AddCommMonoid (β i)]
+variable [∀ i, Module R (α i)] [∀ i, Module R (β i)]
+
+variable (f : ∀ (i : ι), α i →ₗ[R] β i)
+
+/-- create a linear map from `⨁ i, α i` to `⨁ i, β i` by giving the component-wise map `f`. -/
+def linearMap : (⨁ i, α i) →ₗ[R] ⨁ i, β i :=  DFinsupp.mapRange.linearMap f
+
+variable [DecidableEq ι]
+
+@[simp] lemma linearMap_of (i : ι) (x : α i) : (linearMap f) (of α i x) = of β i (f i x) := by
+  change DFinsupp.mapRange.linearMap f (DFinsupp.single i x) = DFinsupp.single i (f i x)
+  simp
+
+@[simp] lemma linearMap_apply (i : ι) (x : ⨁ i, α i) : (linearMap f) x i = f i (x i) := by
+  induction x using DirectSum.induction_on with
+  | zero => simp
+  | of j x =>
+    rw [linearMap_of, of_apply, of_apply]
+    obtain rfl | h := eq_or_ne j i
+    · simp
+    · simp [h]
+  | add _ _ hx hy => simp [hx, hy]
+
+@[simp] lemma linearMap_id :
+    (linearMap (fun i ↦ LinearMap.id (R := R) (M := α i))) = LinearMap.id := by
+  ext i x; simp
+
+@[simp] lemma linearMap_comp {γ : ι → Type*} [∀ i, AddCommMonoid (γ i)] [∀ i, Module R (γ i)]
+    (g : ∀ (i : ι), β i →ₗ[R] γ i) :
+    (linearMap (fun i ↦ (g i).comp (f i))) = (linearMap g).comp (linearMap f) := by
+  ext i x; simp
+
+lemma linearMap_surjective (h : ∀ i, Function.Surjective (f i)) :
+    Function.Surjective (linearMap f) := by
+  intro x
+  induction x using DirectSum.induction_on with
+  | zero => exact ⟨0, by simp⟩
+  | of i x =>
+    obtain ⟨y, rfl⟩ := h i x
+    exact ⟨of α i y, by simp⟩
+  | add x y hx hy =>
+    obtain ⟨u, rfl⟩ := hx
+    obtain ⟨v, rfl⟩ := hy
+    exact ⟨u + v, by simp⟩
+
+lemma linearMap_eq_iff (x y : ⨁ i, α i) :
+    linearMap f x = linearMap f y ↔ ∀ i, f i (x i) = f i (y i) := by
+  constructor
+  · intro h i
+    simpa using congr($h i)
+  · intro h; ext i
+    simpa using h i
+
+end linearMap
+
+end mapRange
 
 end DirectSum

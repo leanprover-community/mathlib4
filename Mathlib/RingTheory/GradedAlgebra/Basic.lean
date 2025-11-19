@@ -62,6 +62,18 @@ algebra structure `DirectSum.GAlgebra R (fun i ↦ ↥(𝒜 i))`, which in turn 
 -/
 class GradedRing (𝒜 : ι → σ) extends SetLike.GradedMonoid 𝒜, DirectSum.Decomposition 𝒜
 
+/-- The `GradedRing` version of `GradedAlgebra.ofAlgHom`. -/
+abbrev GradedRing.ofRingHom (𝒜 : ι → σ) [SetLike.GradedMonoid 𝒜] (decompose : A →+* ⨁ i, 𝒜 i)
+    (right_inv : (DirectSum.coeRingHom 𝒜).comp decompose = RingHom.id A)
+    (left_inv : ∀ i (x : 𝒜 i), decompose (x : A) = DirectSum.of (fun i => ↥(𝒜 i)) i x) :
+    GradedRing 𝒜 where
+  decompose' := decompose
+  left_inv := RingHom.congr_fun right_inv
+  right_inv := by
+    suffices decompose.comp (DirectSum.coeRingHom 𝒜) = RingHom.id _ from RingHom.congr_fun this
+    ext i x : 2
+    exact (decompose.congr_arg <| DirectSum.coeRingHom_of _ _ _).trans (left_inv i x)
+
 variable [GradedRing 𝒜]
 
 namespace DirectSum
@@ -72,6 +84,10 @@ def decomposeRingEquiv : A ≃+* ⨁ i, 𝒜 i :=
   RingEquiv.symm
     { (decomposeAddEquiv 𝒜).symm with
       map_mul' := (coeRingHom 𝒜).map_mul }
+
+@[simp]
+lemma decomposeRingEquiv_apply (a : A) :
+    decomposeRingEquiv 𝒜 a = decompose 𝒜 a := rfl
 
 @[simp]
 theorem decompose_one : decompose 𝒜 (1 : A) = 1 :=
@@ -341,6 +357,30 @@ namespace DirectSum.IsInternal
 
 variable {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
 variable {ι : Type*} [DecidableEq ι] [AddMonoid ι]
+
+section GradedRing
+
+variable {σ : Type*} [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ)
+variable {M : ι → σ} [SetLike.GradedMonoid M]
+
+/-- The canonical isomorphism of an internal direct sum with the ambient ring -/
+noncomputable def coeRingEquiv (hM : DirectSum.IsInternal M) :
+    (DirectSum ι fun i => ↥(M i)) ≃+* A := RingEquiv.ofBijective (DirectSum.coeRingHom M) hM
+
+/-- Given an `R`-algebra `A` and a family `ι → σ` of submonoids parameterized by an additive monoid
+ `ι` and satisfying `SetLike.GradedMonoid M` (essentially, is multiplicative), such that
+ `DirectSum.IsInternal M` (`A` is the direct sum of the `M i`), we endow `A` with the structure of a
+  graded ring. The submonoids are the *homogeneous* parts. -/
+noncomputable def gradedRing (hM : DirectSum.IsInternal M) : GradedRing M :=
+  { (inferInstance : SetLike.GradedMonoid M) with
+    decompose' := hM.coeRingEquiv.symm
+    left_inv := hM.coeRingEquiv.symm.left_inv
+    right_inv := hM.coeRingEquiv.left_inv }
+
+end GradedRing
+
+section GradedAlgebra
+
 variable {M : ι → Submodule R A} [SetLike.GradedMonoid M]
 
 -- The following lines were given on Zulip by Adam Topaz
@@ -360,5 +400,7 @@ noncomputable def gradedAlgebra (hM : DirectSum.IsInternal M) : GradedAlgebra M 
     decompose' := hM.coeAlgEquiv.symm
     left_inv := hM.coeAlgEquiv.symm.left_inv
     right_inv := hM.coeAlgEquiv.left_inv }
+
+end GradedAlgebra
 
 end DirectSum.IsInternal
