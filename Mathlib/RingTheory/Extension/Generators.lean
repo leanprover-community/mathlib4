@@ -3,11 +3,13 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Ideal.Cotangent
-import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.MvPolynomial.Tower
-import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.RingTheory.Extension.Basic
+module
+
+public import Mathlib.RingTheory.Ideal.Cotangent
+public import Mathlib.RingTheory.Localization.Away.Basic
+public import Mathlib.RingTheory.MvPolynomial.Tower
+public import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.RingTheory.Extension.Basic
 
 /-!
 
@@ -43,6 +45,8 @@ by unbundling the `vars` field or making the field globally reducible in constru
 unification hints.
 
 -/
+
+@[expose] public section
 
 universe w u v
 
@@ -670,6 +674,11 @@ lemma ker_comp_eq_sup (Q : Generators S T ι') (P : Generators R S ι) :
   rw [Generators.ker_eq_ker_aeval_val, RingHom.mem_ker,
     ← algebraMap_self_apply (MvPolynomial.aeval _ x)]
   rw [← Generators.Hom.algebraMap_toAlgHom (Q.ofComp P), hx, map_zero]
+
+lemma toAlgHom_ofComp_localizationAway (g : S) [IsLocalization.Away g T] :
+    ((localizationAway T g).ofComp P).toAlgHom
+      (rename Sum.inr (P.σ g) * X (Sum.inl ()) - 1) = C g * X () - 1 := by
+  simp [Generators.Hom.toAlgHom, Generators.ofComp, aeval_rename]
 
 end Hom
 

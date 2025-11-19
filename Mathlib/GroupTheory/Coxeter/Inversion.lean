@@ -3,9 +3,11 @@ Copyright (c) 2024 Mitchell Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Lee, Óscar Álvarez
 -/
-import Mathlib.GroupTheory.Coxeter.Length
-import Mathlib.Data.List.GetD
-import Mathlib.Tactic.Group
+module
+
+public import Mathlib.GroupTheory.Coxeter.Length
+public import Mathlib.Data.List.GetD
+public import Mathlib.Tactic.Group
 
 /-!
 # Reflections, inversions, and inversion sequences
@@ -42,6 +44,8 @@ inversions of $w$ in some order, but we do not prove that in this file.
 * [A. Björner and F. Brenti, *Combinatorics of Coxeter Groups*](bjorner2005)
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -346,7 +350,7 @@ theorem wordProd_mul_getD_rightInvSeq (ω : List B) (j : ℕ) :
     π ω * ((ris ω).getD j 1) = π (ω.eraseIdx j) := by
   rw [getD_rightInvSeq, eraseIdx_eq_take_drop_succ]
   nth_rw 1 [← take_append_drop (j + 1) ω]
-  rw [take_succ]
+  rw [take_add_one]
   obtain lt | le := lt_or_ge j ω.length
   · simp only [getElem?_eq_getElem lt, wordProd_append, mul_assoc]
     simp
@@ -357,7 +361,7 @@ theorem getD_leftInvSeq_mul_wordProd (ω : List B) (j : ℕ) :
     ((lis ω).getD j 1) * π ω = π (ω.eraseIdx j) := by
   rw [getD_leftInvSeq, eraseIdx_eq_take_drop_succ]
   nth_rw 4 [← take_append_drop (j + 1) ω]
-  rw [take_succ]
+  rw [take_add_one]
   obtain lt | le := lt_or_ge j ω.length
   · simp only [getElem?_eq_getElem lt, wordProd_append, mul_assoc]
     simp

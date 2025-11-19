@@ -3,9 +3,11 @@ Copyright (c) 2020 Vedant Gupta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vedant Gupta, Thomas Browning, Eric Wieser
 -/
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
-import Mathlib.LinearAlgebra.CrossProduct
+module
+
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
+public import Mathlib.LinearAlgebra.CrossProduct
 
 /-!
 # Norm of cross-products
@@ -13,6 +15,8 @@ import Mathlib.LinearAlgebra.CrossProduct
 This file proves `InnerProductGeometry.norm_withLpEquiv_crossProduct`, relating the norm of the
 cross-product of two real vectors with their individual norms.
 -/
+
+@[expose] public section
 
 open Matrix Real WithLp
 

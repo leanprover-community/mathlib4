@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Topology.Algebra.InfiniteSum.SummationFilter
-import Mathlib.Topology.Separation.Hausdorff
-import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
+module
+
+public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Topology.Algebra.InfiniteSum.SummationFilter
+public import Mathlib.Topology.Separation.Hausdorff
+public import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
 
 /-!
 # Infinite sum and product in a topological monoid
@@ -47,6 +49,8 @@ rather than in `ℝ`.
 * Bourbaki: General Topology (1995), Chapter 3 §5 (Infinite sums in commutative groups)
 
 -/
+
+@[expose] public section
 
 /- **NOTE**. This file is intended to be kept short, just enough to state the basic definitions and
 six key lemmas relating them together, namely `Summable.hasSum`, `Multipliable.hasProd`,

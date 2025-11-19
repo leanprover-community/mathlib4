@@ -3,10 +3,12 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.SpecificLimits.ArithmeticGeometric
-import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
-import Mathlib.MeasureTheory.Function.L1Space.Integrable
-import Mathlib.Topology.MetricSpace.Polish
+module
+
+public import Mathlib.Analysis.SpecificLimits.ArithmeticGeometric
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
+public import Mathlib.MeasureTheory.Function.L1Space.Integrable
+public import Mathlib.Topology.MetricSpace.Polish
 
 /-!
 # Fernique's theorem for rotation-invariant measures
@@ -72,6 +74,8 @@ we can deduce bounds on all the moments of the measure `μ` as function of power
 the first moment.
 
 -/
+
+@[expose] public section
 
 open MeasureTheory ProbabilityTheory Complex NormedSpace Filter
 open scoped ENNReal NNReal Real Topology
@@ -369,7 +373,7 @@ lemma lintegral_closedBall_diff_exp_logRatio_mul_sq_le [IsProbabilityMeasure μ]
     congr
     norm_cast
     simp only [Nat.cast_pow, Nat.cast_ofNat, ENNReal.toReal_div]
-    field
+    ring
 
 open Metric in
 lemma lintegral_exp_mul_sq_norm_le_mul [IsProbabilityMeasure μ]

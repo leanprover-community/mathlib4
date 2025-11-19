@@ -3,18 +3,20 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Julian Kuelshammer
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.Group.Commute.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Finite
-import Mathlib.Algebra.Group.Subgroup.Finite
-import Mathlib.Algebra.Module.NatInt
-import Mathlib.Algebra.Order.Group.Action
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Data.Int.ModEq
-import Mathlib.Dynamics.PeriodicPts.Lemmas
-import Mathlib.GroupTheory.Index
-import Mathlib.NumberTheory.Divisors
-import Mathlib.Order.Interval.Set.Infinite
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.Group.Commute.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Finite
+public import Mathlib.Algebra.Group.Subgroup.Finite
+public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.Algebra.Order.Group.Action
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Data.Int.ModEq
+public import Mathlib.Dynamics.PeriodicPts.Lemmas
+public import Mathlib.GroupTheory.Index
+public import Mathlib.NumberTheory.Divisors
+public import Mathlib.Order.Interval.Set.Infinite
 
 /-!
 # Order of an element
@@ -34,6 +36,8 @@ This file defines the order of an element of a finite group. For a finite group 
 ## Tags
 order of an element
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -510,7 +514,7 @@ end PPrime
 noncomputable def finEquivPowers {x : G} (hx : IsOfFinOrder x) : Fin (orderOf x) ≃ powers x :=
   Equiv.ofBijective (fun n ↦ ⟨x ^ (n : ℕ), ⟨n, rfl⟩⟩) ⟨fun ⟨_, h₁⟩ ⟨_, h₂⟩ ij ↦
     Fin.ext (pow_injOn_Iio_orderOf h₁ h₂ (Subtype.mk_eq_mk.1 ij)), fun ⟨_, i, rfl⟩ ↦
-      ⟨⟨i % orderOf x, mod_lt _ hx.orderOf_pos⟩, Subtype.eq <| pow_mod_orderOf _ _⟩⟩
+      ⟨⟨i % orderOf x, mod_lt _ hx.orderOf_pos⟩, Subtype.ext <| pow_mod_orderOf _ _⟩⟩
 
 @[to_additive (attr := simp)]
 lemma finEquivPowers_apply {x : G} (hx : IsOfFinOrder x) {n : Fin (orderOf x)} :
