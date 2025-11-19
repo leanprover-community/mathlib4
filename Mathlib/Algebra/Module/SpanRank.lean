@@ -5,11 +5,9 @@ Authors: Wanyi He, Jiedong Jiang, Xuchun Li, Christian Merten, Jingting Wang, An
 -/
 module
 
-public import Mathlib.Data.Set.Card
 public import Mathlib.Data.ENat.Lattice
-public import Mathlib.RingTheory.Finiteness.Defs
-public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+public import Mathlib.RingTheory.Finiteness.Ideal
 
 /-!
 # Minimum Cardinality of generating set of a submodule

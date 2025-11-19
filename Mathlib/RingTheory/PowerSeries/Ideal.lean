@@ -3,12 +3,13 @@ Copyright (c) 2025 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Anthony Fernandes, Marc Robin
 -/
+module
 
-import Mathlib.RingTheory.PowerSeries.Inverse
-import Mathlib.RingTheory.PowerSeries.Trunc
-import Mathlib.RingTheory.Finiteness.Ideal
-import Mathlib.RingTheory.Noetherian.OfPrime
-import Mathlib.Algebra.Module.SpanRank
+public import Mathlib.RingTheory.PowerSeries.Inverse
+public import Mathlib.RingTheory.PowerSeries.Trunc
+public import Mathlib.RingTheory.Finiteness.Ideal
+public import Mathlib.RingTheory.Noetherian.OfPrime
+public import Mathlib.Algebra.Module.SpanRank
 
 /-!
 # Ideals in power series.
