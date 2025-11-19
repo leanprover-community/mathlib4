@@ -3,10 +3,12 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Data.List.Chain
-import Mathlib.CategoryTheory.IsConnected
-import Mathlib.CategoryTheory.Sigma.Basic
-import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+module
+
+public import Mathlib.Data.List.Chain
+public import Mathlib.CategoryTheory.IsConnected
+public import Mathlib.CategoryTheory.Sigma.Basic
+public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
 /-!
 # Connected components of a category
@@ -19,6 +21,8 @@ We show every category can be expressed as a disjoint union of its connected com
 particular `Decomposed J` is the category (definitionally) given by the sigma-type of the connected
 components of `J`, and it is shown that this is equivalent to `J`.
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ u₁ u₂
 
@@ -90,9 +94,6 @@ abbrev ConnectedComponents.ι (j : ConnectedComponents J) : j.Component ⥤ J :=
 /-- The connected component of an object in a category. -/
 abbrev ConnectedComponents.mk (j : J) : ConnectedComponents J :=
   Quotient.mk'' j
-
-@[deprecated (since := "2025-03-04")] alias Component := ConnectedComponents.Component
-@[deprecated (since := "2025-03-04")] alias Component.ι := ConnectedComponents.ι
 
 /-- Each connected component of the category is nonempty. -/
 instance (j : ConnectedComponents J) : Nonempty j.Component := by

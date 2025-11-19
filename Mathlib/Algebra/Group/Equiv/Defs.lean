@@ -3,8 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Logic.Equiv.Defs
+module
+
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Multiplicative and additive equivs
@@ -30,6 +32,8 @@ notation when treating the isomorphisms as maps.
 
 Equiv, MulEquiv, AddEquiv
 -/
+
+@[expose] public section
 
 open Function
 
@@ -446,7 +450,7 @@ protected def cast {ι : Type*} {M : ι → Type*} [∀ i, Mul (M i)] {i j : ι}
   map_mul' _ _ := by cases h; rfl
 
 /-!
-## Monoids
+### Monoids
 -/
 
 section MulOneClass
@@ -522,7 +526,7 @@ theorem toMonoidHom_injective : Injective (toMonoidHom : M ≃* N → M →* N) 
 end MulOneClass
 
 /-!
-# Groups
+### Groups
 -/
 
 /-- A multiplicative equivalence of groups preserves inversion. -/

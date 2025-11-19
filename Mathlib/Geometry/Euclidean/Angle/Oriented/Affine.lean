@@ -3,9 +3,11 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Analysis.Convex.Side
-import Mathlib.Geometry.Euclidean.Angle.Oriented.Rotation
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
+module
+
+public import Mathlib.Analysis.Convex.Side
+public import Mathlib.Geometry.Euclidean.Angle.Oriented.Rotation
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 
 /-!
 # Oriented angles.
@@ -18,6 +20,8 @@ This file defines oriented angles in Euclidean affine spaces.
   points.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -177,6 +181,14 @@ theorem oangle_eq_zero_iff_oangle_rev_eq_zero {p₁ p₂ p₃ : P} : ∡ p₁ p�
 `π`. -/
 theorem oangle_eq_pi_iff_oangle_rev_eq_pi {p₁ p₂ p₃ : P} : ∡ p₁ p₂ p₃ = π ↔ ∡ p₃ p₂ p₁ = π :=
   o.oangle_eq_pi_iff_oangle_rev_eq_pi
+
+/-- A homothety with a nonzero scale factor preserves angles. -/
+@[simp] lemma oangle_homothety (p p₁ p₂ p₃ : P) {r : ℝ} (h : r ≠ 0) :
+    ∡ (AffineMap.homothety p r p₁) (AffineMap.homothety p r p₂) (AffineMap.homothety p r p₃) =
+      ∡ p₁ p₂ p₃ := by
+  simp_rw [oangle, ← AffineMap.linearMap_vsub, AffineMap.homothety_linear, LinearMap.smul_apply,
+    LinearMap.id_coe, id_eq]
+  rcases h.lt_or_gt with hlt | hlt <;> simp [hlt, -neg_vsub_eq_vsub_rev]
 
 /-- An oriented angle is not zero or `π` if and only if the three points are affinely
 independent. -/

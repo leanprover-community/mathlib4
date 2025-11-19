@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+module
+
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 
 /-!
 # Kan extensions
@@ -29,6 +31,8 @@ are obtained as `leftKanExtension L F` and `rightKanExtension L F`.
 * https://ncatlab.org/nlab/show/Kan+extension
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -98,6 +102,7 @@ lemma hom_ext_of_isRightKanExtension {G : D ⥤ H} (γ₁ γ₂ : G ⟶ F')
 
 /-- If `(F', α)` is a right Kan extension of `F` along `L`, then this
 is the induced bijection `(G ⟶ F') ≃ (L ⋙ G ⟶ F)` for all `G`. -/
+@[simps!]
 noncomputable def homEquivOfIsRightKanExtension (G : D ⥤ H) :
     (G ⟶ F') ≃ (L ⋙ G ⟶ F) where
   toFun β := whiskerLeft _ β ≫ α
