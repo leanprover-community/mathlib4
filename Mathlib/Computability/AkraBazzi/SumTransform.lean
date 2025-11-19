@@ -3,11 +3,12 @@ Copyright (c) 2023 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Computability.AkraBazzi.GrowsPolynomially
-import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+public import Mathlib.Computability.AkraBazzi.GrowsPolynomially
+public import Mathlib.Analysis.Calculus.Deriv.Inv
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 
 /-!
 # Akra-Bazzi theorem: the sum transform
@@ -37,6 +38,8 @@ We develop further preliminaries required for the theorem, up to the sum transfo
 * Manuel Eberl, Asymptotic reasoning in a proof assistant
 
 -/
+
+@[expose] public section
 
 open Finset Real Filter Asymptotics
 open scoped Topology

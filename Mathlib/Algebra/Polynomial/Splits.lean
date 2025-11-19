@@ -3,9 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Polynomial.Factors
-import Mathlib.Algebra.Polynomial.Lifts
-import Mathlib.RingTheory.Polynomial.Tower
+module
+
+public import Mathlib.Algebra.Polynomial.Factors
+public import Mathlib.Algebra.Polynomial.Lifts
+public import Mathlib.RingTheory.Polynomial.Tower
 
 /-!
 # Split polynomials
@@ -19,6 +21,8 @@ irreducible factors over `L` have degree `1`.
   field and a polynomial `f` saying that `f.map i` factors in `L`.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

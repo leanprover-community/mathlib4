@@ -3,7 +3,9 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Data.Set.Insert
+module
+
+public import Mathlib.Data.Set.Insert
 /-!
 
 This file defines the type `f.Fiber` of fibers of a function `f : Y → Z`, and provides some API
@@ -14,6 +16,8 @@ the functor which takes a set to the condensed set corresponding to locally cons
 set, and the forgetful functor from the category of condensed sets to the category of sets
 (see PR https://github.com/leanprover-community/mathlib4/pull/14027).
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 
