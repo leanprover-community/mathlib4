@@ -311,7 +311,7 @@ noncomputable def postcompLM [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →
 @[simp]
 lemma postcompLM_apply [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[𝕜] F')
     (f : 𝓓^{n}_{K}(E, F)) :
-    ContDiffMapSupportedIn.postcompLM T f = T ∘ f :=
+    postcompLM T f = T ∘ f :=
   rfl
 
 variable (n k) in
@@ -680,6 +680,12 @@ noncomputable def postcompCLM [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F �
     refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
       (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _) _ (fun i ↦ ⟨{i}, ‖T‖₊, fun f ↦ ?_⟩)
     simpa [NNReal.smul_def] using seminorm_postcompLM_le 𝕜 T f
+
+@[simp]
+lemma postcompCLM_apply [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[𝕜] F')
+    (f : 𝓓^{n}_{K}(E, F)) :
+    postcompCLM T f = T ∘ f :=
+  rfl
 
 end Topology
 
