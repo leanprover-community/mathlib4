@@ -3,8 +3,10 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
-import Mathlib.NumberTheory.GaussSum
+module
+
+public import Mathlib.NumberTheory.LegendreSymbol.QuadraticChar.Basic
+public import Mathlib.NumberTheory.GaussSum
 
 /-!
 # Quadratic characters of finite fields
@@ -12,6 +14,8 @@ import Mathlib.NumberTheory.GaussSum
 Further facts relying on Gauss sums.
 
 -/
+
+@[expose] public section
 
 
 /-!
@@ -100,15 +104,9 @@ theorem FiniteField.isSquare_odd_prime_iff (hF : ringChar F ≠ 2) {p : ℕ} [Fa
     (hp : p ≠ 2) :
     IsSquare (p : F) ↔ quadraticChar (ZMod p) (χ₄ (Fintype.card F) * Fintype.card F) ≠ -1 := by
   classical
-  by_cases hFp : ringChar F = p
-  · rw [show (p : F) = 0 by rw [← hFp]; exact ringChar.Nat.cast_ringChar]
-    simp only [IsSquare.zero, Ne, true_iff, map_mul]
-    obtain ⟨n, _, hc⟩ := FiniteField.card F (ringChar F)
-    have hchar : ringChar F = ringChar (ZMod p) := by rw [hFp]; exact (ringChar_zmod_n p).symm
-    conv => enter [1, 1, 2]; rw [hc, Nat.cast_pow, map_pow, hchar, map_ringChar]
-    simp only [zero_pow n.ne_zero, mul_zero, zero_eq_neg, one_ne_zero, not_false_iff]
-  · rw [← Iff.not_left (@quadraticChar_neg_one_iff_not_isSquare F _ _ _ _),
-      quadraticChar_odd_prime hF hp]
-    exact hFp
+  rcases eq_or_ne (ringChar F) p with rfl | hFp
+  · obtain ⟨q, hq, hq'⟩ := FiniteField.card F (ringChar F)
+    simp [hq']
+  · rwa [← Iff.not_left quadraticChar_neg_one_iff_not_isSquare, quadraticChar_odd_prime hF hp]
 
 end SpecialValues

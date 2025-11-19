@@ -3,12 +3,13 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+module
 
-import Mathlib.Data.Nat.Lattice
-import Mathlib.Logic.Denumerable
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Order.Hom.Basic
-import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Logic.Denumerable
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Relation embeddings from the naturals
@@ -24,6 +25,8 @@ defines the limit value of an eventually-constant sequence.
 * `monotonicSequenceLimitIndex`: The index of the first occurrence of `monotonicSequenceLimit`
   in the sequence.
 -/
+
+@[expose] public section
 
 
 variable {α : Type*}
@@ -108,7 +111,7 @@ def orderEmbeddingOfSet [DecidablePred (· ∈ s)] : ℕ ↪o ℕ :=
     (OrderEmbedding.subtype s)
 
 /-- `Nat.Subtype.ofNat` as an order isomorphism between `ℕ` and an infinite subset. See also
-`Nat.Nth` for a version where the subset may be finite. -/
+`Nat.nth` for a version where the subset may be finite. -/
 noncomputable def Subtype.orderIsoOfNat : ℕ ≃o s := by
   classical
   exact

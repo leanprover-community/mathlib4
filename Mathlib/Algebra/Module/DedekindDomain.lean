@@ -3,8 +3,10 @@ Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
 -/
-import Mathlib.Algebra.Module.Torsion
-import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+module
+
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 
 /-!
 # Modules over a Dedekind domain
@@ -14,6 +16,8 @@ submodules, where `I = ∏ i, p i ^ e i` is its unique decomposition in prime id
 Therefore, as any finitely generated torsion module is `I`-torsion for some `I`, it is an internal
 direct sum of its `p i ^ e i`-torsion submodules for some prime ideals `p i` and numbers `e i`.
 -/
+
+@[expose] public section
 
 
 universe u v

@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Bicategory.Adjunction.Mate
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Adjunction.Mate
+public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
 # The bicategory of adjunctions in a bicategory
@@ -26,6 +28,8 @@ both pullback and pushforward functors.
 * https://ncatlab.org/nlab/show/mate
 
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -177,7 +181,7 @@ instance : Bicategory (Adj B) where
 
 /-- The forget pseudofunctor from `Adj B` to `B`. -/
 @[simps]
-def forget₁ : Pseudofunctor (Adj B) B where
+def forget₁ : Adj B ⥤ᵖ B where
   obj a := a.obj
   map x := x.l
   map₂ α := α.τl

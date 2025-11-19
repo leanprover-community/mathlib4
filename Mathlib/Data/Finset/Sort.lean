@@ -3,14 +3,18 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Data.Multiset.Sort
-import Mathlib.Order.RelIso.Set
+module
+
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Data.Multiset.Sort
+public import Mathlib.Order.RelIso.Set
 
 /-!
 # Construct a sorted list from a finset.
 -/
+
+@[expose] public section
 
 namespace Finset
 

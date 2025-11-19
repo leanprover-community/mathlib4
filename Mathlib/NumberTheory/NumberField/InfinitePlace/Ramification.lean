@@ -3,8 +3,10 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Analysis.Normed.Ring.WithAbs
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
+module
+
+public import Mathlib.Analysis.Normed.Ring.WithAbs
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 
 /-!
 # Ramification of infinite places of a number field
@@ -29,6 +31,10 @@ This file studies the ramification of infinite places of a number field.
 
 number field, infinite places, ramification
 -/
+
+@[expose] public section
+
+@[expose] public section
 
 open NumberField Fintype Module ComplexEmbedding
 
@@ -358,15 +364,14 @@ lemma nat_card_stabilizer_eq_one_or_two :
     Nat.card (Stab w) = 1 ∨ Nat.card (Stab w) = 2 := by
   classical
   rw [← SetLike.coe_sort_coe, ← mk_embedding w]
-  by_cases h : ∃ σ, ComplexEmbedding.IsConj (k := k) (embedding w) σ
+  by_cases! h : ∃ σ, ComplexEmbedding.IsConj (k := k) (embedding w) σ
   · obtain ⟨σ, hσ⟩ := h
     simp only [hσ.coe_stabilizer_mk, Nat.card_eq_fintype_card, card_ofFinset,
       Set.toFinset_singleton]
     by_cases 1 = σ
     · left; simp [*]
     · right; simp [*]
-  · push_neg at h
-    left
+  · left
     trans Nat.card ({1} : Set Gal(K/k))
     · congr with x
       simp only [SetLike.mem_coe, mem_stabilizer_mk_iff, Set.mem_singleton_iff, or_iff_left_iff_imp,

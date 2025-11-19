@@ -3,9 +3,11 @@ Copyright (c) 2021 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best
 -/
-import Mathlib.Analysis.Convex.Body
-import Mathlib.Analysis.Convex.Measure
-import Mathlib.MeasureTheory.Group.FundamentalDomain
+module
+
+public import Mathlib.Analysis.Convex.Body
+public import Mathlib.Analysis.Convex.Measure
+public import Mathlib.MeasureTheory.Group.FundamentalDomain
 
 /-!
 # Geometry of numbers
@@ -32,6 +34,8 @@ Hermann Minkowski.
 
 * [Pete L. Clark, *Geometry of Numbers with Applications to Number Theory*][clark_gon] p.28
 -/
+
+@[expose] public section
 
 
 namespace MeasureTheory
@@ -121,7 +125,7 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddC
   · refine Set.inter_subset_inter_left _ (SetLike.coe_subset_coe.mpr ?_)
     refine ConvexBody.smul_le_of_le K h_zero ?_
     rw [add_le_add_iff_left]
-    exact le_of_lt <| (exists_seq_strictAnti_tendsto (0 : ℝ≥0)).choose_spec.1 (Nat.lt.base n)
+    exact le_of_lt <| (exists_seq_strictAnti_tendsto (0 : ℝ≥0)).choose_spec.1 (Nat.lt_add_one n)
   · suffices μ F * 2 ^ finrank ℝ E < μ (S n : Set E) by
       have h_symm' : ∀ x ∈ S n, -x ∈ S n := by
         rintro _ ⟨y, hy, rfl⟩

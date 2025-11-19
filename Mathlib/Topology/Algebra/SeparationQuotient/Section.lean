@@ -3,10 +3,12 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Module.Projective
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.Topology.Algebra.SeparationQuotient.Basic
-import Mathlib.Topology.Maps.OpenQuotient
+module
+
+public import Mathlib.Algebra.Module.Projective
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
+public import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
 # Algebraic operations on `SeparationQuotient`
@@ -14,6 +16,8 @@ import Mathlib.Topology.Maps.OpenQuotient
 In this file we construct a section of the quotient map `E → SeparationQuotient E` as a continuous
 linear map `SeparationQuotient E →L[K] E`.
 -/
+
+@[expose] public section
 
 open Topology
 

@@ -3,7 +3,9 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Homeomorph.Lemmas
+module
+
+public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Infinite Hausdorff topological spaces
@@ -15,6 +17,8 @@ In this file we prove several properties of infinite Hausdorff topological space
 - `exists_topology_isEmbedding_nat`: there exista a topological embedding of `ℕ` into the space;
 - `exists_infinite_discreteTopology`: there exists an infinite subset with discrete topology.
 -/
+
+@[expose] public section
 
 open Function Filter Set Topology
 

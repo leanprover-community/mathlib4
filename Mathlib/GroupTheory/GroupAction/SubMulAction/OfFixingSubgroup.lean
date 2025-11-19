@@ -3,13 +3,14 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Algebra.Group.Pointwise.Set.Card
-import Mathlib.GroupTheory.GroupAction.FixingSubgroup
-import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
-import Mathlib.GroupTheory.GroupAction.Transitive
-import Mathlib.GroupTheory.GroupAction.Primitive
-import Mathlib.Tactic.Group
+public import Mathlib.Algebra.Group.Pointwise.Set.Card
+public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
+public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfStabilizer
+public import Mathlib.GroupTheory.GroupAction.Transitive
+public import Mathlib.GroupTheory.GroupAction.Primitive
+public import Mathlib.Tactic.Group
 /-!
 # SubMulActions on complements of invariant subsets
 
@@ -24,7 +25,7 @@ and permit to manipulate them in a relatively smooth way:
   the identity map, when the set is the empty set.
 
   * `SubMulAction.fixingSubgroupInsertEquiv M a s` : the
-  multiplicative equivalence between `fixingSubgroup M (insert a s)``
+  multiplicative equivalence between `fixingSubgroup M (insert a s)`
   and `fixingSubgroup (stabilizer M a) s`
 
   * `SubMulAction.ofFixingSubgroup_insert_map` : the equivariant
@@ -60,6 +61,8 @@ and permit to manipulate them in a relatively smooth way:
   of an enumeration of `s`, as an equivariant map.
 
 -/
+
+@[expose] public section
 
 open scoped Pointwise
 
@@ -508,3 +511,20 @@ theorem IsPreprimitive.isPreprimitive_ofFixingSubgroup_inter
 end TwoCriteria
 
 end SubMulAction
+
+section Pointwise
+
+open MulAction Set
+
+variable (G : Type*) [Group G] {α : Type*} [MulAction G α]
+
+@[to_additive]
+theorem MulAction.fixingSubgroup_le_stabilizer (s : Set α) :
+    fixingSubgroup G s ≤ stabilizer G s := by
+  intro k hk
+  rw [mem_stabilizer_iff]
+  conv_rhs => rw [← Set.image_id s]
+  apply Set.image_congr
+  simpa only [mem_fixingSubgroup_iff, id] using hk
+
+end Pointwise

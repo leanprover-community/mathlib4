@@ -3,9 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Monad.Basic
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.Functor.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Monad.Basic
+public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
 # Eilenberg-Moore (co)algebras for a (co)monad
@@ -20,6 +22,8 @@ cofree functors, respectively from and to the original category.
 ## References
 * [Riehl, *Category theory in context*, Section 5.2.4][riehl2017]
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory

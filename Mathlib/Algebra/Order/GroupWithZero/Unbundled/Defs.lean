@@ -3,9 +3,11 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Yuyang Zhao
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
-import Mathlib.Tactic.MkIffOfInductiveProp
-import Mathlib.Util.Notation3
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
+public import Mathlib.Tactic.MkIffOfInductiveProp
+public import Mathlib.Util.Notation3
 
 /-!
 # (Strict) monotonicity of multiplication by nonnegative (positive) elements
@@ -70,6 +72,8 @@ See https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/notatio
 for a discussion about this notation, and whether to enable it globally (note that the notation is
 currently global but broken, hence actually only works locally).
 -/
+
+@[expose] public section
 
 assert_not_exists MulZeroClass
 
@@ -248,6 +252,33 @@ alias lt_of_mul_lt_mul_of_nonneg_left := lt_of_mul_lt_mul_left
 alias lt_of_mul_lt_mul_of_nonneg_right := lt_of_mul_lt_mul_right
 alias le_of_mul_le_mul_of_pos_left := le_of_mul_le_mul_left
 alias le_of_mul_le_mul_of_pos_right := le_of_mul_le_mul_right
+/-- Pullback `PosMulMono`. -/
+lemma Function.Injective.posMulMono [PosMulMono α] {β : Type*} [Zero β] [Mul β] [Preorder β]
+    (f : β → α) (zero : f 0 = 0) (mul : ∀ x y, f (x * y) = f x * f y)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) : PosMulMono β where
+  mul_le_mul_of_nonneg_left a ha b c hbc := by
+    rw [← le, mul, mul]; exact mul_le_mul_of_nonneg_left (le.2 hbc) (by rwa [← zero, le])
+
+/-- Pullback `MulPosMono`. -/
+lemma Function.Injective.mulPosMono [MulPosMono α] {β : Type*} [Zero β] [Mul β] [Preorder β]
+    (f : β → α) (zero : f 0 = 0) (mul : ∀ x y, f (x * y) = f x * f y)
+    (le : ∀ {x y}, f x ≤ f y ↔ x ≤ y) : MulPosMono β where
+  mul_le_mul_of_nonneg_right a ha b c hbc := by
+    rw [← le, mul, mul]; exact mul_le_mul_of_nonneg_right (le.2 hbc) (by rwa [← zero, le])
+
+/-- Pullback `PosMulStrictMono`. -/
+lemma Function.Injective.posMulStrictMono [PosMulStrictMono α] {β : Type*} [Zero β] [Mul β]
+    [Preorder β] (f : β → α) (zero : f 0 = 0) (mul : ∀ x y, f (x * y) = f x * f y)
+    (lt : ∀ {x y}, f x < f y ↔ x < y) : PosMulStrictMono β where
+  mul_lt_mul_of_pos_left a ha b c hbc := by
+    rw [← lt, mul, mul]; exact mul_lt_mul_of_pos_left (lt.2 hbc) (by rwa [← zero, lt])
+
+/-- Pullback `MulPosStrictMono`. -/
+lemma Function.Injective.mulPosStrictMono [MulPosStrictMono α] {β : Type*} [Zero β] [Mul β]
+    [Preorder β] (f : β → α) (zero : f 0 = 0) (mul : ∀ x y, f (x * y) = f x * f y)
+    (lt : ∀ {x y}, f x < f y ↔ x < y) : MulPosStrictMono β where
+  mul_lt_mul_of_pos_right a ha b c hbc := by
+    rw [← lt, mul, mul]; exact mul_lt_mul_of_pos_right (lt.2 hbc) (by rwa [← zero, lt])
 
 @[simp]
 theorem mul_lt_mul_iff_right₀ [PosMulStrictMono α] [PosMulReflectLT α] (a0 : 0 < a) :

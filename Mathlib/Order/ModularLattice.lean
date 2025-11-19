@@ -3,10 +3,12 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Yaël Dillies
 -/
-import Mathlib.Data.Set.Monotone
-import Mathlib.Order.Cover
-import Mathlib.Order.LatticeIntervals
-import Mathlib.Order.GaloisConnection.Defs
+module
+
+public import Mathlib.Data.Set.Monotone
+public import Mathlib.Order.Cover
+public import Mathlib.Order.LatticeIntervals
+public import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Modular Lattices
@@ -51,6 +53,8 @@ We define (semi)modularity typeclasses as Prop-valued mixins.
 
 - Relate atoms and coatoms in modular lattices
 -/
+
+@[expose] public section
 
 
 open Set
