@@ -50,7 +50,7 @@ could arise from this part and also flag that the file should contain a module d
 the `import` statements.
 -/
 
-public meta section
+meta section
 
 open Lean Elab Command Linter
 
@@ -76,8 +76,7 @@ It returns the array of all `import` identifiers in `s`. -/
 --   to Mathlib.Init (where this linter is imported)
 -- - that function does not return the Syntax corresponding to each import,
 --   which we use to log more precise warnings.
-partial
-def getImportIds (s : Syntax) : Array Syntax :=
+public partial def getImportIds (s : Syntax) : Array Syntax :=
   let rest : Array Syntax := (s.getArgs.map getImportIds).flatten
   if let `(Lean.Parser.Module.import| import $n) := s then
     rest.push n
@@ -269,7 +268,7 @@ It emits a warning if
 
 The linter allows `import`-only files and does not require a copyright statement in `Mathlib.Init`.
 -/
-register_option linter.style.header : Bool := {
+public register_option linter.style.header : Bool := {
   defValue := false
   descr := "enable the header style linter"
 }

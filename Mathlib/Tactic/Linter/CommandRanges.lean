@@ -20,7 +20,7 @@ This linter is strictly tied to the `#clear_deprecations` command in
 `Mathlib/Tactic/Linter/FindDeprecations.lean`.
 -/
 
-public meta section
+meta section
 
 open Lean Elab Linter
 
@@ -38,7 +38,7 @@ Thus, assuming that there has been no tampering with positions/synthetic syntax,
 if the current command is followed by another command, then `trailing` for the previous command
 coincides with `start` of the following.
 -/
-register_option linter.commandRanges : Bool := {
+public register_option linter.commandRanges : Bool := {
   defValue := false
   descr := "enable the commandRanges linter"
 }

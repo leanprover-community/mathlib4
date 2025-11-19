@@ -19,7 +19,7 @@ ending with `date₂`.
 See the doc-string for the command for more information.
 -/
 
-public meta section
+meta section
 
 open Lean Elab Command
 
