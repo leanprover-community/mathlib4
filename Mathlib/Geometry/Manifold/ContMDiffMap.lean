@@ -3,7 +3,9 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+module
+
+public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 
 /-!
 # `C^n` bundled maps
@@ -11,6 +13,8 @@ import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 In this file we define the type `ContMDiffMap` of `n` times continuously differentiable
 bundled maps.
 -/
+
+@[expose] public section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
