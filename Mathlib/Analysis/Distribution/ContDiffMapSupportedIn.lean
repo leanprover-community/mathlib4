@@ -280,8 +280,7 @@ protected theorem iteratedFDeriv_zero_on_compl (f : 𝓓^{n}_{K}(E, F)) {i : ℕ
 /-- Inclusion of `𝓓^{n}_{K}(E, F)` into the space `E →ᵇ F` of bounded continuous maps
 as a `𝕜`-linear map.
 
-This is subsumed by `toBoundedContinuousFunctionCLM` (not yet in Mathlib), which also bundles the
-continuity. -/
+This is subsumed by `toBoundedContinuousFunctionCLM`, which also bundles the continuity. -/
 noncomputable def toBoundedContinuousFunctionLM : 𝓓^{n}_{K}(E, F) →ₗ[𝕜] E →ᵇ F where
   toFun f := f
   map_add' _ _ := rfl
