@@ -219,4 +219,47 @@ initialize addLinter unusedDecidableInType
 
 end Decidable
 
+section Fintype
+
+/--
+The `unusedFintypeInType` linter checks if a theorem's hypotheses include `Fintype` instances
+which are not used in the remainder of the type. If so, it suggests modifying the instances to
+`Finite _` or removing them entirely.
+
+This linter fires only on theorems. (This includes `lemma`s and `instance`s of `Prop` classes.)
+-/
+register_option linter.unusedFintypeInType : Bool := {
+  defValue := false
+  descr := "enable the unused `Fintype` instance linter, which lints against `Fintype` \
+    instances in the hypotheses of theorems which are not used in the type, and can therefore be \
+    replaced by a hypothesis of `Finite` or removed entirely."
+}
+
+/-- Detects `Decidable*` instance hypotheses in the types of theorems which are not used in the
+remainder of the type, and suggests replacing them with a use of `classical` in the proof or
+`open scoped Classical in` at the term level. -/
+def unusedFintypeInType : Linter where
+  run := /- withSetOptionIn -/ fun cmd => do
+    /- `withSetOptionIn` currently breaks infotree searches, so do a cheap outermost check
+    until this is fixed: [Zulip](https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/bug.3A.20withSetOptionIn.20creates.20context-free.20info.20nodes/with/556896993) -/
+    if let `(command| set_option $opt:ident false in $_:command) := cmd then
+      if opt.getId == `linter.unusedFintypeInType then
+        return
+    unless getLinterValue linter.unusedFintypeInType (← getLinterOptions) do
+      return
+    cmd.logUnusedInstancesInTheoremsWhere
+      (·.isAppOrForallOfConst `Fintype)
+      fun _ thm unusedParams => do
+        logLint linter.unusedFintypeInType (← getRef) m!"\
+          {thm.name.unusedInstancesMsg unusedParams}\n\n\
+          Consider replacing \
+          {if unusedParams.size = 1 then "this hypothesis" else "these hypotheses"} with the \
+          corresponding {if unusedParams.size = 1 then "instance" else "instances"} of \
+          `{.ofConstName `Finite}` or removing \
+          {if unusedParams.size = 1 then "it" else "them"} entirely."
+
+initialize addLinter unusedFintypeInType
+
+end Fintype
+
 end Mathlib.Linter.UnusedInstancesInType
