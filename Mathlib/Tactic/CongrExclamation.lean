@@ -35,7 +35,7 @@ initialize registerTraceClass `congr!.synthesize
 /-- The configuration for the `congr!` tactic. -/
 structure Congr!.Config where
   /-- If `closePre := true`, then try to close goals before applying congruence lemmas
-  using tactics such as `rfl` and `assumption.  These tactics are applied with the
+  using tactics such as `rfl` and `assumption`. These tactics are applied with the
   transparency level specified by `preTransparency`, which is `.reducible` by default. -/
   closePre : Bool := true
   /-- If `closePost := true`, then try to close goals that remain after no more congruence
