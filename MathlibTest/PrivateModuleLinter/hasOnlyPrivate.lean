@@ -14,7 +14,7 @@ def bar : Bool := true
 -- Run the linter on artificial `eoi` syntax so that we can actually guard the messages
 open Mathlib.Linter Parser in
 /--
-warning: Module only contains private declarations.
+warning: The current module only contains private declarations.
 
 Consider adding `@[expose] public section` at the beginning of the module.
 
