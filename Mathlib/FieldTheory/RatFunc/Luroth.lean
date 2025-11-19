@@ -43,17 +43,35 @@ namespace Polynomial
 
 noncomputable section
 
-variable (p q : K[X]) (hp : p ≠ 0) (hq : q ≠ 0) (coprime : IsCoprime p q)
-include hp hq coprime
-
 local notation:10000 K"(X)" => FractionRing K[X]
 
 abbrev toRatFunc : K[X] →+* K(X) := algebraMap ..
 
+@[simp]
+theorem C_toRatFunc (a : K) : (C a).toRatFunc = algebraMap K K(X) a := rfl
+
 set_option quotPrecheck false
+
+variable (p q : K[X]) (coprime : IsCoprime p q)
+include coprime
 
 /- `f = p / q` -/
 local notation "f" => p.toRatFunc / q.toRatFunc
+
+/- Show that `K⟮f⟯ = K` iff both `p` and `q` are constant. -/
+theorem adjoin_p_dvd_q_eq_bot_iff : K⟮f⟯ = ⊥ ↔ p.natDegree = 0 ∧ q.natDegree = 0 := by
+  rw [IntermediateField.adjoin_simple_eq_bot_iff, IntermediateField.mem_bot]
+  constructor
+  · rintro ⟨x, hx⟩
+    /- Here, we need to show that if `p / q` is constant and `p` and `q` are coprime, then both
+    `p` qnd `q` are constant. -/
+    sorry
+  · rintro ⟨hp, hq⟩
+    rw [natDegree_eq_zero] at hp hq
+    obtain ⟨a, rfl⟩ := hp
+    obtain ⟨b, rfl⟩ := hq
+    use a / b
+    simp
 
 /- `X` considered as an element in K(X). -/
 local notation "rfX" => toRatFunc (K := K) X
@@ -68,11 +86,11 @@ the minimal polynomial of `X` (where `p` and `q` are considered as elements of K
 K[X], and `f` considered as an element of K(f)). First show that X is indeed a root of `p - f * q`,
 and therefore K(X) is algebraic over K(f): -/
 
-def minpolyDiv : K⟮f⟯[X] :=
+abbrev minpolyDiv : K⟮f⟯[X] :=
   p.map (algebraMap K K⟮f⟯) - C (AdjoinSimple.gen K f) * q.map (algebraMap K K⟮f⟯)
 
-omit hp coprime in
-theorem minpolyDiv_aeval : (minpolyDiv p q).aeval rfX = 0 := by
+omit coprime in
+theorem minpolyDiv_aeval (hq : q ≠ 0) : (minpolyDiv p q).aeval rfX = 0 := by
   have toRatFunc_ne_zero : q.toRatFunc ≠ 0 :=
     (map_ne_zero_iff _ <| IsFractionRing.injective _ _).mpr hq
   simp only [minpolyDiv, aeval_sub, aeval_map_algebraMap, map_mul, aeval_C,
@@ -81,17 +99,32 @@ theorem minpolyDiv_aeval : (minpolyDiv p q).aeval rfX = 0 := by
   exact sub_self ((algebraMap K[X] K(X)) p)
 
 -- Note: this needs f is not a constant, i.e. `max p.natDegree q.natDegree ≠ 0`.
-theorem isAlgebraic_div : IsAlgebraic K⟮f⟯ rfX := by
+theorem isAlgebraic_div (hq : 0 < q.natDegree) : IsAlgebraic K⟮f⟯ rfX := by
   use minpolyDiv p q
-  refine ⟨?_, minpolyDiv_aeval p q hq⟩
-  sorry
+  refine ⟨?_, minpolyDiv_aeval p q (ne_zero_of_natDegree_gt hq)⟩
+  intro H
+  refine hq.ne ((adjoin_p_dvd_q_eq_bot_iff p q coprime).mp ?_).2.symm
+  rw [IntermediateField.adjoin_simple_eq_bot_iff]
+  use p.coeff q.natDegree / q.leadingCoeff
+  have h_eq : (minpolyDiv p q).coeff q.natDegree = 0 := by
+    apply coeff_eq_zero_of_natDegree_lt
+    rw [H]
+    exact hq
+  simp only [coeff_sub, coeff_map, coeff_C_mul, coeff_natDegree] at h_eq
+  rw [sub_eq_zero] at h_eq
+  replace h_eq := congrArg Subtype.val h_eq
+  simp only [SubalgebraClass.coe_algebraMap, MulMemClass.coe_mul, AdjoinSimple.coe_gen] at h_eq
+  simp only [AlgHom.toRingHom_eq_coe, Algebra.toRingHom_ofId, map_div₀]
+  refine ((eq_div_iff ?_).mpr h_eq.symm).symm
+  simp only [ne_eq, map_eq_zero, leadingCoeff_eq_zero]
+  exact ne_zero_of_natDegree_gt hq
 
-theorem isAlgebraic_adjoin_div : Algebra.IsAlgebraic K⟮f⟯ K(X) := by
+theorem isAlgebraic_adjoin_div (hq : 0 < q.natDegree) : Algebra.IsAlgebraic K⟮f⟯ K(X) := by
   have : Algebra.IsAlgebraic K⟮f⟯ K⟮f⟯⟮rfX⟯ := by
     apply IntermediateField.isAlgebraic_adjoin_simple
     rw [←isAlgebraic_iff_isIntegral]
-    exact isAlgebraic_div p q hp hq coprime
-  exact ((IntermediateField.equivOfEq (adjoin_X_eq_top p q hp hq coprime)).trans
+    exact isAlgebraic_div p q coprime hq
+  exact ((IntermediateField.equivOfEq (adjoin_X_eq_top p q coprime)).trans
     IntermediateField.topEquiv).isAlgebraic
 
 /- Hints:
