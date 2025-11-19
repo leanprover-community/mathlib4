@@ -12,4 +12,5 @@ import Mathlib.Tactic.Linter.DeprecatedModule
 import Mathlib.Tactic.Linter.HaveLetLinter
 import Mathlib.Tactic.Linter.MinImports
 import Mathlib.Tactic.Linter.PPRoundtrip
+import Mathlib.Tactic.Linter.UnusedInstancesInType
 import Mathlib.Tactic.Linter.UpstreamableDecl
