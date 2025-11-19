@@ -3,7 +3,9 @@ Copyright (c) 2025 Ben Eltschig. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ben Eltschig
 -/
-import Mathlib.CategoryTheory.Sites.ConstantSheaf
+module
+
+public import Mathlib.CategoryTheory.Sites.ConstantSheaf
 
 /-!
 # Global sections of sheaves
@@ -41,6 +43,8 @@ on a terminal object and `Functor.sectionsFunctor`.
   `instHasSheafifyOfHasFiniteLimits`.
 
 -/
+
+@[expose] public section
 
 universe u v w u₂ v₂
 

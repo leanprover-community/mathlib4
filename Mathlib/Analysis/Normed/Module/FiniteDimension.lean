@@ -3,19 +3,21 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-import Mathlib.Analysis.Normed.Group.Lemmas
-import Mathlib.Analysis.Normed.Affine.Isometry
-import Mathlib.Analysis.Normed.Operator.NormedSpace
-import Mathlib.Analysis.NormedSpace.RieszLemma
-import Mathlib.Analysis.Normed.Module.Ball.Pointwise
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Logic.Encodable.Pi
-import Mathlib.Topology.Algebra.AffineSubspace
-import Mathlib.Topology.Algebra.Module.FiniteDimension
-import Mathlib.Topology.Algebra.InfiniteSum.Module
-import Mathlib.Topology.Instances.Matrix
-import Mathlib.LinearAlgebra.Dimension.LinearMap
+module
+
+public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+public import Mathlib.Analysis.Normed.Group.Lemmas
+public import Mathlib.Analysis.Normed.Affine.Isometry
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Analysis.NormedSpace.RieszLemma
+public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Logic.Encodable.Pi
+public import Mathlib.Topology.Algebra.AffineSubspace
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.Topology.Algebra.InfiniteSum.Module
+public import Mathlib.Topology.Instances.Matrix
+public import Mathlib.LinearAlgebra.Dimension.LinearMap
 
 
 /-!
@@ -47,6 +49,8 @@ finite-dimensional vector space `E` with a norm, and a copy `E'` of this type wi
 then the identities from `E` to `E'` and from `E'`to `E` are continuous thanks to
 `LinearMap.continuous_of_finiteDimensional`. This gives the desired norm equivalence.
 -/
+
+@[expose] public section
 
 universe u v w x
 

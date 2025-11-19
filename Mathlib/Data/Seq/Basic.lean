@@ -3,10 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Vasilii Nesterov
 -/
-import Mathlib.Data.Seq.Defs
-import Mathlib.Data.ENat.Basic
-import Mathlib.Tactic.ENatToNat
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.Data.Seq.Defs
+public import Mathlib.Data.ENat.Basic
+public import Mathlib.Tactic.ENatToNat
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Basic properties of sequences (possibly infinite lists)
@@ -14,6 +16,8 @@ import Mathlib.Tactic.ApplyFun
 This file provides some basic lemmas about possibly infinite lists represented by the
 type `Stream'.Seq`.
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -34,7 +38,7 @@ theorem length'_of_not_terminates {s : Seq α} (h : ¬ s.Terminates) :
   simp [length', h]
 
 @[simp]
-theorem length_nil : length (nil : Seq α) terminates_nil = 0 := rfl
+theorem length_nil : length (nil : Seq α) terminates_nil = 0 := by simp [length]; exact rfl
 
 @[simp]
 theorem length'_nil : length' (nil : Seq α) = 0 := by

@@ -3,11 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Set.Lattice
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Logic.Embedding.Set
+module
+
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Logic.Embedding.Set
 
 /-!
 # Lemmas on finiteness of sets
@@ -19,6 +21,8 @@ If your proof has as *result* `Set.Finite`, then it should go to a more specific
 
 finite sets
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedRing MonoidWithZero
 

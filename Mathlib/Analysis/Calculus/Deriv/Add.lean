@@ -3,8 +3,10 @@ Copyright (c) 2019 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Sébastien Gouëzel, Yury Kudryashov, Anatole Dedecker
 -/
-import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Calculus.FDeriv.Add
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Add
 
 /-!
 # One-dimensional derivatives of sums etc
@@ -19,6 +21,8 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 
 derivative
 -/
+
+@[expose] public section
 
 universe u v w
 

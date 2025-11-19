@@ -3,8 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Localization.AtPrime.Basic
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
+public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Ring Homomorphisms surjective on stalks
@@ -17,6 +19,8 @@ of primes `p = f⁻¹(q)`. We show that this property is stable under compositio
 that surjections and localizations satisfy this.
 
 -/
+
+@[expose] public section
 
 variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
 variable {T : Type*} [CommRing T]

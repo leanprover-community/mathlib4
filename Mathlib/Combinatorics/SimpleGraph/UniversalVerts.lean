@@ -3,9 +3,11 @@ Copyright (c) 2024 Pim Otte. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pim Otte
 -/
-import Mathlib.Combinatorics.SimpleGraph.Clique
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.Represents
-import Mathlib.Combinatorics.SimpleGraph.Matching
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Clique
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Represents
+public import Mathlib.Combinatorics.SimpleGraph.Matching
 
 /-!
 # Universal Vertices
@@ -20,6 +22,8 @@ in the proof of Tutte's Theorem.
 * `G.universalVerts` is the set of vertices that are connected to all other vertices.
 * `G.deleteUniversalVerts` is the subgraph of `G` with the universal vertices removed.
 -/
+
+@[expose] public section
 
 assert_not_exists Field TwoSidedIdeal
 
