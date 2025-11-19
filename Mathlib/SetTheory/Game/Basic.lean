@@ -3,10 +3,12 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Apurva Nakade, Yuyang Zhao
 -/
-import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.SetTheory.PGame.Algebra
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Linter.DeprecatedModule
+module
+
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.SetTheory.PGame.Algebra
+public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
 deprecated_module
   "This module is now at `CombinatorialGames.Game.Basic` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
@@ -24,6 +26,8 @@ about them. Multiplication is not well-behaved under equivalence of pre-games i.
 imply `x * z ≈ y * z`. Hence, multiplication is not a well-defined operation on games. Nevertheless,
 the abelian group structure on games allows us to simplify many proofs for pre-games.
 -/
+
+@[expose] public section
 
 -- Porting note: many definitions here are noncomputable as the compiler does not support PGame.rec
 noncomputable section

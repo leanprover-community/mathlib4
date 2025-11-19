@@ -3,10 +3,10 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Algebra.QuadraticAlgebra.Defs
-import Mathlib.Algebra.Star.Unitary
-import Mathlib.Tactic.FieldSimp
+public import Mathlib.Algebra.QuadraticAlgebra.Defs
+public import Mathlib.Algebra.Star.Unitary
 
 /-! # Quadratic algebras : involution and norm.
 
@@ -26,8 +26,9 @@ We prove :
   `w.norm` isn't a zero divisor in `R`.
 
 * If `R` is a field, and `∀ r, r ^ 2 ≠ a + b * r`, then `QuadraticAlgebra R a b` is a field.
-`
 -/
+
+@[expose] public section
 
 namespace QuadraticAlgebra
 

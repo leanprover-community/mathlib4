@@ -3,9 +3,10 @@ Copyright (c) 2023 Xavier Généreux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Généreux
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
-import Mathlib.Analysis.Complex.PhragmenLindelof
+public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+public import Mathlib.Analysis.Complex.PhragmenLindelof
 
 /-!
 # Hadamard three-lines Theorem
@@ -56,6 +57,8 @@ functions defined in this file.
 The proof follows from Phragmén-Lindelöf when both frontiers are not everywhere zero.
 We then use a limit argument to cover the case when either of the sides are `0`.
 -/
+
+@[expose] public section
 
 
 open Set Filter Function Complex Topology
@@ -405,7 +408,7 @@ lemma sSupNormIm_scale_right (f : ℂ → E) {l u : ℝ} (hul : l < u) :
   rw [this]
 
 /-- A technical lemma relating the bounds given by the three lines lemma on a general strip
-to the bounds for its scaled version on the strip ``re ⁻¹' [0, 1]`. -/
+to the bounds for its scaled version on the strip `re ⁻¹' [0, 1]`. -/
 lemma interpStrip_scale (f : ℂ → E) {l u : ℝ} (hul : l < u) (z : ℂ) : interpStrip (scale f l u)
     ((z - ↑l) / (↑u - ↑l)) = interpStrip' f l u z := by
   simp only [interpStrip, interpStrip']

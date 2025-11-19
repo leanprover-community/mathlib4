@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
-import Mathlib.Algebra.Category.AlgCat.Basic
-import Mathlib.CategoryTheory.Monoidal.Mon_
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
+public import Mathlib.Algebra.Category.AlgCat.Basic
+public import Mathlib.CategoryTheory.Monoidal.Mon_
 
 /-!
 # `Mon (ModuleCat R) ≌ AlgCat R`
@@ -15,6 +17,8 @@ is equivalent to the category of "native" bundled `R`-algebras.
 
 Moreover, this equivalence is compatible with the forgetful functors to `ModuleCat R`.
 -/
+
+@[expose] public section
 
 suppress_compilation
 

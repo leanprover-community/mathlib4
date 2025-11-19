@@ -3,9 +3,11 @@ Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.Normed.Group.InfiniteSum
-import Mathlib.Topology.Algebra.InfiniteSum.Real
-import Mathlib.Analysis.Normed.Ring.Lemmas
+module
+
+public import Mathlib.Analysis.Normed.Group.InfiniteSum
+public import Mathlib.Topology.Algebra.InfiniteSum.Real
+public import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-! # Multiplying two infinite sums in a normed ring
 
@@ -17,6 +19,8 @@ We first establish results about arbitrary index types, `ι` and `ι'`, and then
 `ι = ι' = ℕ` to prove the Cauchy product formula
 (see `tsum_mul_tsum_eq_tsum_sum_antidiagonal_of_summable_norm`).
 -/
+
+@[expose] public section
 
 
 variable {R : Type*} {ι : Type*} {ι' : Type*} [NormedRing R]
