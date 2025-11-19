@@ -3,7 +3,9 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Kexing Ying
 -/
-import Mathlib.Probability.Moments.Covariance
+module
+
+public import Mathlib.Probability.Moments.Covariance
 
 /-!
 # Variance of random variables
@@ -33,6 +35,8 @@ We define the variance of a real-valued random variable as `Var[X] = 𝔼[(X - �
 * `ProbabilityTheory.variance_le_sq_of_bounded`: the variance of a random variable `X` satisfying
   `a ≤ X ≤ b` almost everywhere is at most`((b - a) / 2) ^ 2`.
 -/
+
+@[expose] public section
 
 open MeasureTheory Filter Finset
 

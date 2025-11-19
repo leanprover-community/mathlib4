@@ -3,13 +3,15 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.CategoryTheory.EpiMono
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.SuppressCompilation
+module
+
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.Comma.Arrow
+public import Mathlib.CategoryTheory.EpiMono
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Tactic.FinCases
+public import Mathlib.Tactic.SuppressCompilation
 /-!
 # Composable arrows
 
@@ -37,6 +39,8 @@ TODO (@joelriou):
   up to `n = 7` in order to formalize spectral sequences following Verdier)
 
 -/
+
+@[expose] public section
 
 /-!
 New `simprocs` that run even in `dsimp` have caused breakages in this file.

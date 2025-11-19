@@ -3,7 +3,9 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Arithmetic-geometric sequences
@@ -27,6 +29,8 @@ An arithmetic-geometric sequence is a sequence defined by the recurrence relatio
   monotone.
 
 -/
+
+@[expose] public section
 
 open Filter Topology
 

@@ -3,9 +3,12 @@ Copyright (c) 2024 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.Data.Nat.EvenOddRec
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.Data.Nat.EvenOddRec
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.LinearCombination
+import Mathlib.Algebra.Group.Int.Even
 
 /-!
 # Elliptic divisibility sequences
@@ -64,6 +67,8 @@ M Ward, *Memoir on Elliptic Divisibility Sequences*
 
 elliptic, divisibility, sequence
 -/
+
+@[expose] public section
 
 universe u v
 

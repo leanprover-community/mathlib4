@@ -3,19 +3,21 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Sébastien Gouëzel, Yury Kudryashov, Dylan MacKenzie, Patrick Massot
 -/
-import Mathlib.Algebra.BigOperators.Module
-import Mathlib.Algebra.Order.Field.Power
-import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.Analysis.Asymptotics.Lemmas
-import Mathlib.Analysis.Normed.Ring.InfiniteSum
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Analysis.Normed.Order.Lattice
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Data.List.TFAE
-import Mathlib.Data.Nat.Choose.Bounds
-import Mathlib.Order.Filter.AtTopBot.ModEq
-import Mathlib.RingTheory.Polynomial.Pochhammer
-import Mathlib.Tactic.NoncommRing
+module
+
+public import Mathlib.Algebra.BigOperators.Module
+public import Mathlib.Algebra.Order.Field.Power
+public import Mathlib.Algebra.Polynomial.Monic
+public import Mathlib.Analysis.Asymptotics.Lemmas
+public import Mathlib.Analysis.Normed.Ring.InfiniteSum
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Order.Lattice
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Data.List.TFAE
+public import Mathlib.Data.Nat.Choose.Bounds
+public import Mathlib.Order.Filter.AtTopBot.ModEq
+public import Mathlib.RingTheory.Polynomial.Pochhammer
+public import Mathlib.Tactic.NoncommRing
 
 /-!
 # A collection of specific limit computations
@@ -23,6 +25,8 @@ import Mathlib.Tactic.NoncommRing
 This file contains important specific limit computations in (semi-)normed groups/rings/spaces, as
 well as such computations in `ℝ` when the natural proof passes through a fact about normed spaces.
 -/
+
+@[expose] public section
 
 noncomputable section
 

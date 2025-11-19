@@ -3,7 +3,9 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Reid Barton
 -/
-import Mathlib.CategoryTheory.Functor.FullyFaithful
+module
+
+public import Mathlib.CategoryTheory.Functor.FullyFaithful
 
 /-!
 # Induced categories and full subcategories
@@ -26,6 +28,8 @@ form of `D`. This is used to set up several algebraic categories like
   -- not `InducedCategory (Bundled Monoid) (Bundled.map @CommMonoid.toMonoid)`,
   -- even though `MonCat = Bundled Monoid`!
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory

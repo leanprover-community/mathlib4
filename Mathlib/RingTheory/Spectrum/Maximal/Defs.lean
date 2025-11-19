@@ -3,7 +3,9 @@ Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.RingTheory.Ideal.Maximal
+module
+
+public import Mathlib.RingTheory.Ideal.Maximal
 
 /-!
 # Maximal spectrum of a commutative (semi)ring
@@ -16,6 +18,8 @@ It is naturally a subset of the prime spectrum endowed with the subspace topolog
 * `MaximalSpectrum R`: The maximal spectrum of a commutative (semi)ring `R`,
   i.e., the set of all maximal ideals of `R`.
 -/
+
+@[expose] public section
 
 /-- The maximal spectrum of a commutative (semi)ring `R` is the type of all
 maximal ideals of `R`. -/

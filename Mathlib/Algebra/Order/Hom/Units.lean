@@ -3,13 +3,16 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+module
 
-import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.Algebra.Order.Hom.Monoid
-import Mathlib.Algebra.Order.Monoid.Units
+public import Mathlib.Algebra.Group.Units.Equiv
+public import Mathlib.Algebra.Order.Hom.Monoid
+public import Mathlib.Algebra.Order.Monoid.Units
 
 /-! # Isomorphism of ordered monoids descends to units
 -/
+
+@[expose] public section
 
 /-- An isomorphism of ordered monoids descends to their units. -/
 @[simps!]
