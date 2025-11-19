@@ -514,6 +514,7 @@ instance instFirstCountableTopology : FirstCountableTopology 𝓢(E, F) :=
 
 end Topology
 
+@[fun_prop]
 theorem hasTemperateGrowth (f : 𝓢(E, F)) : Function.HasTemperateGrowth f := by
   refine ⟨smooth f ⊤, fun n => ?_⟩
   rcases f.decay 0 n with ⟨C, Cpos, hC⟩
@@ -531,7 +532,7 @@ def _root_.HasCompactSupport.toSchwartzMap {f : E → F} (h₁ : HasCompactSuppo
     set g := fun x ↦ ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖
     have hg₁ : Continuous g := by
       apply Continuous.mul (by fun_prop)
-      exact (h₂.of_le (right_eq_inf.mp rfl)).continuous_iteratedFDeriv'.norm
+      exact (h₂.of_le (mod_cast le_top)).continuous_iteratedFDeriv'.norm
     have hg₂ : HasCompactSupport g := (h₁.iteratedFDeriv _).norm.mul_left
     obtain ⟨x₀, hx₀⟩ := hg₁.exists_forall_ge_of_hasCompactSupport hg₂
     exact ⟨g x₀, hx₀⟩

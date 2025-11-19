@@ -70,9 +70,9 @@ theorem fourierIntegral_half_period_translate {w : V} (hw : w ≠ 0) :
     ext1 v
     simp_rw [inner_add_left, hiw, Circle.smul_def, Real.fourierChar_apply, neg_add, mul_add,
       ofReal_add, add_mul, exp_add]
-    have : 2 * π * -(1 / 2) = -π := by field_simp
-    rw [this, ofReal_neg, neg_mul, exp_neg, exp_pi_mul_I, inv_neg, inv_one, mul_neg_one, neg_smul,
-      neg_neg]
+    match_scalars
+    have H : exp (- (π * I)) = (-1)⁻¹ := by rw [exp_neg, exp_pi_mul_I]
+    linear_combination (norm := ring_nf) cexp (-2 * π * ⟪v, w⟫ * I) * H
   rw [this, integral_add_right_eq_self (fun (x : V) ↦ -(𝐞 (-⟪x, w⟫) • f x))
         ((fun w ↦ (1 / (2 * ‖w‖ ^ (2 : ℕ))) • w) w)]
   simp only [integral_neg]
@@ -207,9 +207,13 @@ theorem Real.tendsto_integral_exp_smul_cocompact (f : ℝ → E) :
   simp_rw [mul_comm]
   exact tendsto_integral_exp_inner_smul_cocompact f
 
-/-- The Riemann-Lebesgue lemma for functions on `ℝ`, formulated via `Real.fourierIntegral`. -/
-theorem Real.zero_at_infty_fourierIntegral (f : ℝ → E) : Tendsto (𝓕 f) (cocompact ℝ) (𝓝 0) :=
+/-- The Riemann-Lebesgue lemma for functions on `ℝ`, formulated via
+`Real.instFourierTransform.fourier`. -/
+theorem Real.zero_at_infty_fourier (f : ℝ → E) : Tendsto (𝓕 f) (cocompact ℝ) (𝓝 0) :=
   tendsto_integral_exp_inner_smul_cocompact f
+
+@[deprecated (since := "2025-11-16")]
+alias Real.zero_at_infty_fourierIntegral := Real.zero_at_infty_fourier
 
 /-- Riemann-Lebesgue lemma for functions on a finite-dimensional inner-product space, formulated
 via dual space. **Do not use** -- it is only a stepping stone to

@@ -428,7 +428,7 @@ def ringEquivCongr {m n : ℕ} (h : m = n) : ZMod m ≃+* ZMod n := by
         map_mul' := fun a b => by
           dsimp [ZMod]
           ext
-          rw [Fin.coe_cast, Fin.coe_mul, Fin.coe_mul, Fin.coe_cast, Fin.coe_cast, ← h]
+          rw [Fin.coe_cast, Fin.val_mul, Fin.val_mul, Fin.coe_cast, Fin.coe_cast, ← h]
         map_add' := fun a b => by
           dsimp [ZMod]
           ext
@@ -993,13 +993,12 @@ theorem val_cast_of_lt {n : ℕ} {a : ℕ} (h : a < n) : (a : ZMod n).val = a :=
 theorem val_cast_zmod_lt {m : ℕ} [NeZero m] (n : ℕ) [NeZero n] (a : ZMod m) :
     (a.cast : ZMod n).val < m := by
   rcases m with (⟨⟩|⟨m⟩); · cases NeZero.ne 0 rfl
-  by_cases h : m < n
+  by_cases! h : m < n
   · rcases n with (⟨⟩|⟨n⟩); · simp at h
     rw [← natCast_val, val_cast_of_lt]
     · apply a.val_lt
     apply lt_of_le_of_lt (Nat.le_of_lt_succ (ZMod.val_lt a)) h
-  · rw [not_lt] at h
-    apply lt_of_lt_of_le (ZMod.val_lt _) (le_trans h (Nat.le_succ m))
+  · apply lt_of_lt_of_le (ZMod.val_lt _) (le_trans h (Nat.le_succ m))
 
 theorem neg_val' {n : ℕ} [NeZero n] (a : ZMod n) : (-a).val = (n - a.val) % n :=
   calc

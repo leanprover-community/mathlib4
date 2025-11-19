@@ -10,6 +10,7 @@ import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Data.Finsupp.Weight
 import Mathlib.RingTheory.GradedAlgebra.Basic
+import Mathlib.Tactic.Order
 
 /-!
 # Weighted homogeneous polynomials
@@ -489,7 +490,7 @@ variable [AddCommMonoid M] [PartialOrder M]
 /-- If `M` is a canonically `OrderedAddCommMonoid`, then the `weightedHomogeneousComponent`
   of weighted degree `0` of a polynomial is its constant coefficient. -/
 @[simp]
-theorem weightedHomogeneousComponent_zero [CanonicallyOrderedAdd M] [NoZeroSMulDivisors ℕ M]
+theorem weightedHomogeneousComponent_zero [CanonicallyOrderedAdd M] [IsAddTorsionFree M]
     (hw : ∀ i : σ, w i ≠ 0) :
     weightedHomogeneousComponent w 0 φ = C (coeff 0 φ) := by
   classical
@@ -509,7 +510,7 @@ def NonTorsionWeight (w : σ → M) :=
   ∀ n x, n • w x = (0 : M) → n = 0
 
 omit [PartialOrder M] in
-theorem nonTorsionWeight_of [NoZeroSMulDivisors ℕ M] (hw : ∀ i : σ, w i ≠ 0) :
+theorem nonTorsionWeight_of [IsAddTorsionFree M] (hw : ∀ i : σ, w i ≠ 0) :
     NonTorsionWeight w :=
   fun _ x hnx => (smul_eq_zero_iff_left (hw x)).mp hnx
 
@@ -528,8 +529,7 @@ theorem weightedDegree_eq_zero_iff [CanonicallyOrderedAdd M]
   · intro hx
     by_contra hx'
     exact absurd (hw _ _ (hx hx')) hx'
-  · intro hax _
-    simp only [hax, zero_smul]
+  · order
 
 end OrderedAddCommMonoid
 

@@ -292,6 +292,10 @@ theorem pi_pi [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i)) :
 nonrec theorem pi_univ [∀ i, SigmaFinite (μ i)] : Measure.pi μ univ = ∏ i, μ i univ := by
   rw [← pi_univ, pi_pi μ]
 
+@[simp] lemma pi_singleton [∀ i, SigmaFinite (μ i)] (f : ∀ i, α i) :
+    Measure.pi μ {f} = ∏ i, μ i {f i} := by
+  simpa [Set.univ_pi_singleton, -pi_pi] using pi_pi μ fun i ↦ {f i}
+
 instance pi.instIsFiniteMeasure [∀ i, IsFiniteMeasure (μ i)] :
     IsFiniteMeasure (Measure.pi μ) :=
   ⟨Measure.pi_univ μ ▸ ENNReal.prod_lt_top (fun i _ ↦ measure_lt_top (μ i) _)⟩
@@ -808,7 +812,7 @@ theorem measurePreserving_piUnique {X : ι → Type*} [Unique ι] {m : ∀ i, Me
     have : (piPremeasure fun i => (μ i).toOuterMeasure) = Measure.map e.symm (μ default) := by
       ext1 s
       rw [piPremeasure, Fintype.prod_unique, e.symm.map_apply, coe_toOuterMeasure]
-      congr 1; exact e.toEquiv.image_eq_preimage s
+      congr 1; exact e.toEquiv.image_eq_preimage_symm s
     simp_rw [Measure.pi, OuterMeasure.pi, this, ← coe_toOuterMeasure, boundedBy_eq_self,
       toOuterMeasure_toMeasure, MeasurableEquiv.map_map_symm]
 

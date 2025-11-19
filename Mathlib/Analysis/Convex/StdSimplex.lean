@@ -107,7 +107,7 @@ def stdSimplexEquivIcc : stdSimplex 𝕜 (Fin 2) ≃ Icc (0 : 𝕜) 1 where
   toFun f := ⟨f.1 1, f.2.1 _, f.2.2 ▸
     Finset.single_le_sum (fun i _ ↦ f.2.1 i) (Finset.mem_univ _)⟩
   invFun x := ⟨![1 - x, x], Fin.forall_fin_two.2 ⟨sub_nonneg.2 x.2.2, x.2.1⟩, by simp⟩
-  left_inv f := Subtype.eq <| funext <| Fin.forall_fin_two.2 <| by
+  left_inv f := Subtype.ext <| funext <| Fin.forall_fin_two.2 <| by
     simp [← (show f.1 0 + f.1 1 = 1 by simpa using f.2.2)]
 
 @[simp]
@@ -136,7 +136,7 @@ theorem convexHull_basis_eq_stdSimplex [DecidableEq ι] :
     exact Finset.univ.centerMass_mem_convexHull (fun i _ => hw₀ i) (hw₁.symm ▸ zero_lt_one)
       fun i _ => mem_range_self i
 
-/-- `stdSimplex 𝕜 ι` is the convex hull of the points `Pi.single i 1` for `i : `i`. -/
+/-- `stdSimplex 𝕜 ι` is the convex hull of the points `Pi.single i 1` for `i : ι`. -/
 theorem convexHull_rangle_single_eq_stdSimplex [DecidableEq ι] :
     convexHull R (range fun i : ι ↦ Pi.single i 1) = stdSimplex R ι := by
   convert convexHull_basis_eq_stdSimplex R ι

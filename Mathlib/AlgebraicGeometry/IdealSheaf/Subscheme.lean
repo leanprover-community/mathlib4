@@ -471,7 +471,7 @@ private lemma opensRange_glueData_ι_subschemeIso_inv (U : X.affineOpens) :
     (I.glueData.ι U ≫ I.subschemeIso.inv).opensRange = I.subschemeι ⁻¹ᵁ U := by
   ext1
   simp [Set.range_comp, I.range_glueData_ι, subschemeι_def, ← coe_homeoOfIso_symm,
-    ← homeoOfIso_symm, ← Homeomorph.coe_symm_toEquiv, ← Set.preimage_equiv_eq_image_symm]
+    ← homeoOfIso_symm, ← Homeomorph.coe_symm_toEquiv, Equiv.image_symm_eq_preimage]
 
 /-- The subscheme associated to an ideal sheaf `I` is covered by `Spec(Γ(X, U)/I(U))`. -/
 noncomputable

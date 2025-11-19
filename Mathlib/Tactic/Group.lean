@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2020. All rights reserved.
+Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Massot
 -/
@@ -92,4 +92,4 @@ end Mathlib.Tactic.Group
 We register `group` with the `hint` tactic.
 -/
 
-register_hint group
+register_hint 900 group
