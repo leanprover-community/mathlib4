@@ -57,9 +57,11 @@ jobs:
           # build command so build lines don't pollute `output` below
           lake build check_title_labels
 
+          set +e
           # Capture output and exit code
           output=$(lake exe check_title_labels --labels "$label_names" "$TITLE" 2>&1)
           exit_code=$?
+          set -e
 
           if [ $exit_code -eq 0 ]; then
             echo "Check passed"
