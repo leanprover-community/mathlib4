@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Pairing
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Pairing
 
 /-!
 # Helper structure in order to construct pairings
@@ -16,6 +18,8 @@ parametrize type (II) and (I) simplices in such a way that, *definitionally*,
 their dimensions are respectively `dim s` or `dim s + 1` for `s : ι`.
 
 -/
+
+@[expose] public section
 
 universe v u
 

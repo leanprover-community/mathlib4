@@ -3,13 +3,17 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro
 -/
-import Mathlib.Algebra.Algebra.Hom
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Hom
+public import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 /-!
 # Associators and unitors for tensor products of modules over a commutative ring.
 
 -/
+
+@[expose] public section
 
 variable {R : Type*} [CommSemiring R]
 variable {R' : Type*} [Monoid R']

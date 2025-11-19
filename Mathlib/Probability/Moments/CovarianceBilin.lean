@@ -3,11 +3,13 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Etienne Marion
 -/
-import Mathlib.Analysis.InnerProductSpace.Positive
-import Mathlib.Analysis.Normed.Lp.MeasurableSpace
-import Mathlib.MeasureTheory.SpecificCodomains.WithLp
-import Mathlib.Probability.Moments.Basic
-import Mathlib.Probability.Moments.CovarianceBilinDual
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Positive
+public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
+public import Mathlib.MeasureTheory.SpecificCodomains.WithLp
+public import Mathlib.Probability.Moments.Basic
+public import Mathlib.Probability.Moments.CovarianceBilinDual
 
 /-!
 # Covariance in Hilbert spaces
@@ -33,6 +35,8 @@ as the scalar product against some element of `E`. This motivates the definition
 covariance, Hilbert space, bilinear form
 -/
 
+@[expose] public section
+
 open MeasureTheory InnerProductSpace NormedSpace WithLp EuclideanSpace
 open scoped RealInnerProductSpace
 
@@ -56,17 +60,16 @@ lemma covarianceBilin_eq_covarianceBilinDual (x y : E) :
     covarianceBilin μ x y = covarianceBilinDual μ (toDualMap ℝ E x) (toDualMap ℝ E y) := rfl
 
 @[simp]
-lemma covarianceBilin_of_not_memLp [IsFiniteMeasure μ] (h : ¬MemLp id 2 μ) :
+lemma covarianceBilin_of_not_memLp (h : ¬MemLp id 2 μ) :
     covarianceBilin μ = 0 := by
   ext
   simp [covarianceBilin_eq_covarianceBilinDual, h]
 
 lemma covarianceBilin_apply [CompleteSpace E] [IsFiniteMeasure μ] (h : MemLp id 2 μ) (x y : E) :
     covarianceBilin μ x y = ∫ z, ⟪x, z - μ[id]⟫ * ⟪y, z - μ[id]⟫ ∂μ := by
-  simp_rw [covarianceBilin, ContinuousLinearMap.bilinearComp_apply, covarianceBilinDual_apply' h]
-  simp only [LinearIsometry.coe_toContinuousLinearMap, id_eq, toDualMap_apply]
+  simp [covarianceBilin, covarianceBilinDual_apply' h]
 
-lemma covarianceBilin_comm [IsFiniteMeasure μ] (x y : E) :
+lemma covarianceBilin_comm (x y : E) :
     covarianceBilin μ x y = covarianceBilin μ y x := by
   rw [covarianceBilin_eq_covarianceBilinDual, covarianceBilinDual_comm,
     covarianceBilin_eq_covarianceBilinDual]
@@ -95,11 +98,11 @@ lemma covarianceBilin_real_self {μ : Measure ℝ} [IsFiniteMeasure μ] (x : ℝ
   rw [covarianceBilin_real, pow_two]
 
 @[simp]
-lemma covarianceBilin_self_nonneg [IsFiniteMeasure μ] (x : E) :
+lemma covarianceBilin_self_nonneg (x : E) :
     0 ≤ covarianceBilin μ x x := by
   simp [covarianceBilin]
 
-lemma isPosSemidef_covarianceBilin [IsFiniteMeasure μ] :
+lemma isPosSemidef_covarianceBilin :
     (covarianceBilin μ).toBilinForm.IsPosSemidef where
   eq := covarianceBilin_comm
   nonneg := covarianceBilin_self_nonneg
@@ -203,10 +206,7 @@ lemma covarianceOperator_of_not_memLp (hμ : ¬MemLp id 2 μ) :
 
 lemma covarianceOperator_inner (hμ : MemLp id 2 μ) (x y : E) :
     ⟪covarianceOperator μ x, y⟫ = ∫ z, ⟪x, z⟫ * ⟪y, z⟫ ∂μ := by
-  simp only [covarianceOperator, continuousLinearMapOfBilin_apply,
-    ContinuousLinearMap.bilinearComp_apply, LinearIsometry.coe_toContinuousLinearMap]
-  rw [uncenteredCovarianceBilinDual_apply hμ]
-  simp_rw [toDualMap_apply]
+  simp [covarianceOperator, uncenteredCovarianceBilinDual_apply hμ]
 
 lemma covarianceOperator_apply (hμ : MemLp id 2 μ) (x : E) :
     covarianceOperator μ x = ∫ y, ⟪x, y⟫ • y ∂μ := by
