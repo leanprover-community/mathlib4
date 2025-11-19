@@ -1085,6 +1085,8 @@ group structure. These are meant to be used to put the desired instances on type
 of `Π i, α i`. See for instance `Matrix.frobeniusSeminormedAddCommGroup`.
 -/
 
+attribute [-instance] Pi.seminormedAddGroup
+
 variable [Fact (1 ≤ p)] [Fintype ι]
 
 /-- This definition allows to endow `Π i, α i` with the Lp distance with the uniformity and
@@ -1117,7 +1119,7 @@ lemma nnnorm_seminormedAddCommGroupToPi [∀ i, SeminormedAddCommGroup (α i)] (
     @NNNorm.nnnorm _ (seminormedAddCommGroupToPi p α).toSeminormedAddGroup.toNNNorm x =
     ‖toLp p x‖₊ := rfl
 
-instance isBoundedSMulSeminormedAddCommGroupToPi
+lemma isBoundedSMulSeminormedAddCommGroupToPi
     [∀ i, SeminormedAddCommGroup (α i)] {R : Type*} [SeminormedRing R]
     [∀ i, Module R (α i)] [∀ i, IsBoundedSMul R (α i)] :
     letI := pseudoMetricSpaceToPi p α
@@ -1127,7 +1129,7 @@ instance isBoundedSMulSeminormedAddCommGroupToPi
   · simpa [dist_pseudoMetricSpaceToPi] using dist_smul_pair x (toLp p y) (toLp p z)
   · simpa [dist_pseudoMetricSpaceToPi] using dist_pair_smul x y (toLp p z)
 
-instance normSMulClassSeminormedAddCommGroupToPi
+lemma normSMulClassSeminormedAddCommGroupToPi
     [∀ i, SeminormedAddCommGroup (α i)] {R : Type*} [SeminormedRing R]
     [∀ i, Module R (α i)] [∀ i, NormSMulClass R (α i)] :
     letI := seminormedAddCommGroupToPi p α
@@ -1136,7 +1138,7 @@ instance normSMulClassSeminormedAddCommGroupToPi
   refine ⟨fun x y ↦ ?_⟩
   simp [norm_seminormedAddCommGroupToPi, norm_smul]
 
-instance normedSpaceSeminormedAddCommGroupToPi
+abbrev normedSpaceSeminormedAddCommGroupToPi
     [∀ i, SeminormedAddCommGroup (α i)] {R : Type*} [NormedField R]
     [∀ i, NormedSpace R (α i)] :
     letI := seminormedAddCommGroupToPi p α
