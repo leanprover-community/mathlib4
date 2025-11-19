@@ -6,6 +6,7 @@ Authors: Kim Morrison
 import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
 import Mathlib.CategoryTheory.Monoidal.Center
 import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.Widget.StringDiagram
 
 /-!
 # Enriched categories
@@ -370,6 +371,22 @@ variable (W) (C) in
 def forgetId : (EnrichedFunctor.id W C).forget ≅ Functor.id _ :=
   NatIso.ofComponents (fun _ => Iso.refl _) (fun f => by simp [forget])
 
+variable {V} in
+/-- Any `W`-enriched functor `G` induces a `V`-enriched functor between the respective
+`V`-enriched `TransportEnrichment F` categories, for a lax monoidal functor `F : W ⥤ V`. -/
+@[simps]
+def transport (G : EnrichedFunctor W C D) (F : W ⥤ V) [F.LaxMonoidal] :
+    EnrichedFunctor V (TransportEnrichment F C) (TransportEnrichment F D) where
+  obj X := G.obj X
+  map X Y := F.map <| G.map X Y
+  map_id X := by
+    rw [TransportEnrichment.eId_eq, Category.assoc, ← F.map_comp, map_id,
+      ← TransportEnrichment.eId_eq]
+  map_comp X Y Z := by
+    rw [@TransportEnrichment.eComp_eq, Category.assoc, ← F.map_comp, map_comp,
+      F.map_comp, ← @Functor.LaxMonoidal.μ_natural_assoc]
+    congr
+
 end
 
 end EnrichedFunctor
@@ -470,6 +487,27 @@ a natural isomorphism between `F.forget` and `G.forget`. -/
 def isoMk {F G : EnrichedFunctor V C D} (h : F.forget ≅ G.forget) : F ≅ G where
   hom := ⟨h.hom⟩
   inv := ⟨h.inv⟩
+
+open Functor LaxMonoidal
+
+@[simps]
+def natTrans_transport
+    {W : Type v'} [Category.{w'} W] [MonoidalCategory W]
+    {G H : EnrichedFunctor V C D} (α : EnrichedNatTrans G H) (F : V ⥤ W) [F.LaxMonoidal] :
+    EnrichedNatTrans (transport G F) (transport H F) where
+  out := {
+    app X := ForgetEnrichment.homOf W (C := TransportEnrichment F D) <|
+      ε F ≫ F.map (ForgetEnrichment.homTo V (α.out.app X))
+    naturality X Y F' := by
+      with_panel_widgets [Mathlib.Tactic.Widget.StringDiagram]
+      simp
+      have := @α.out.naturality X Y
+      simp at this
+      rw [← ForgetEnrichment.homOf_comp, ← ForgetEnrichment.homOf_comp]
+      congr 2
+      simp
+      sorry }
+
 
 end EnrichedFunctor
 
