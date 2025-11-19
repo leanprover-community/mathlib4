@@ -355,6 +355,8 @@
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
   "Mathlib.Tactic.Algebraize": ["Mathlib.Algebra.Algebra.Tower"],
+  "Mathlib.Tactic.Algebra.Lemmas": ["Mathlib.Tactic.Ring.RingNF"],
+  "Mathlib.Tactic.Algebra": ["Mathlib.Tactic.Algebra.Lemmas"],
   "Mathlib.Std.Data.HashMap": ["Std.Data.HashMap.AdditionalOperations"],
   "Mathlib.RingTheory.SimpleModule.Basic": ["Mathlib.Data.Matrix.Mul"],
   "Mathlib.RingTheory.PowerSeries.Restricted": ["Mathlib.Tactic.Bound"],
