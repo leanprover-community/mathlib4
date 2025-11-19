@@ -1506,3 +1506,5 @@ theorem MemLp.exists_eLpNorm_indicator_compl_lt {β : Type*} [NormedAddCommGroup
 end UnifTight
 end Lp
 end MeasureTheory
+
+set_option linter.style.longFile 1700
