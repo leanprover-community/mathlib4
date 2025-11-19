@@ -310,6 +310,17 @@ end AddEquiv
 
 namespace LinearMap
 
+-- TODO: what's a good name for this?
+def foo {R M : Type*} {V : M → Type*}
+    [CommSemiring R] [∀ x, AddCommMonoid (V x)] [∀ x, Module R (V x)] :
+    (Π x : M, V x →ₗ[R] R) →ₗ[R] (Π x : M, V x) →ₗ[R] M → R where
+  toFun e :=
+    { toFun s x := e x (s x)
+      map_add' := by intros; ext; simp
+      map_smul' := by intros; ext; simp }
+  map_add' := by intros; ext; simp
+  map_smul' := by intros; ext; simp
+
 variable (R S M)
 variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
 
