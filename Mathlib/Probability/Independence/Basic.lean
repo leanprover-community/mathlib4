@@ -3,9 +3,11 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Independence.Kernel
-import Mathlib.MeasureTheory.Constructions.Pi
-import Mathlib.MeasureTheory.Group.Convolution
+module
+
+public import Mathlib.Probability.Independence.Kernel
+public import Mathlib.MeasureTheory.Constructions.Pi
+public import Mathlib.MeasureTheory.Group.Convolution
 
 /-!
 # Independence of sets of sets and measure spaces (σ-algebras)
@@ -72,6 +74,8 @@ when defining `μ` in the example above, the measurable space used is the last o
 * Williams, David. Probability with martingales. Cambridge university press, 1991.
   Part A, Chapter 4.
 -/
+
+@[expose] public section
 
 assert_not_exists MeasureTheory.Integrable
 
@@ -361,6 +365,13 @@ theorem indepSets_singleton_iff {s t : Set Ω} :
     IndepSets {s} {t} μ ↔ μ (s ∩ t) = μ s * μ t := by
   simp only [IndepSets, Kernel.indepSets_singleton_iff, ae_dirac_eq, Filter.eventually_pure,
     Kernel.const_apply]
+
+lemma indepSets_iff_singleton_indepSets {𝒜 ℬ : Set (Set Ω)} :
+    IndepSets 𝒜 ℬ μ ↔ ∀ A ∈ 𝒜, IndepSets {A} ℬ μ where
+  mp h A hA := indepSets_of_indepSets_of_le_left h (Set.singleton_subset_iff.2 hA)
+  mpr h := by
+    rw [← 𝒜.biUnion_of_singleton]
+    exact IndepSets.biUnion h
 
 end Indep
 

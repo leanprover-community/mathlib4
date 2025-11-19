@@ -3,15 +3,19 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Adam Topaz, Johan Commelin, Joël Riou
 -/
-import Mathlib.Algebra.Group.TransferInstance
-import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.Algebra.Module.Opposite
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+module
+
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Algebra.Module.Opposite
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # If `C` is preadditive, `Cᵒᵖ` has a natural preadditive structure.
 
 -/
+
+@[expose] public section
 
 
 open Opposite

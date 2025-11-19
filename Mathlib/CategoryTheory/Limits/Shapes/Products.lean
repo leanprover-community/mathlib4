@@ -3,8 +3,10 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.Discrete.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.Discrete.Basic
 
 /-!
 # Categorical (co)products
@@ -30,6 +32,8 @@ As with the other special shapes in the limits library, all the definitions here
 `abbreviation`s of the general statements for limits, so all the `simp` lemmas and theorems about
 general limits can be used.
 -/
+
+@[expose] public section
 
 noncomputable section
 

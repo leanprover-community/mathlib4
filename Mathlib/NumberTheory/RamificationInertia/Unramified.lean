@@ -3,9 +3,11 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.NumberTheory.RamificationInertia.Basic
-import Mathlib.RingTheory.Unramified.LocalRing
-import Mathlib.RingTheory.LocalRing.ResidueField.Instances
+module
+
+public import Mathlib.NumberTheory.RamificationInertia.Basic
+public import Mathlib.RingTheory.LocalRing.ResidueField.Instances
+public import Mathlib.RingTheory.Unramified.LocalRing
 
 /-!
 
@@ -19,6 +21,8 @@ We connect `Ideal.ramificationIdx` to the commutative algebra notion predicate o
   that is a finite `R`-algebra. Let `p` be a prime of `S`, then `p` is unramified iff `e(p) = 1`.
 
 -/
+
+@[expose] public section
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]

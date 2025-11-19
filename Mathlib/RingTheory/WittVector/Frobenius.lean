@@ -3,11 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.ZMod
-import Mathlib.Data.Nat.Multiplicity
-import Mathlib.FieldTheory.Perfect
-import Mathlib.RingTheory.WittVector.Basic
-import Mathlib.RingTheory.WittVector.IsPoly
+module
+
+public import Mathlib.Algebra.Algebra.ZMod
+public import Mathlib.Data.Nat.Multiplicity
+public import Mathlib.FieldTheory.Perfect
+public import Mathlib.RingTheory.WittVector.Basic
+public import Mathlib.RingTheory.WittVector.IsPoly
 
 /-!
 ## The Frobenius operator
@@ -44,6 +46,8 @@ and bundle it into `WittVector.frobenius`.
 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
+
+@[expose] public section
 
 
 namespace WittVector
@@ -169,8 +173,7 @@ theorem map_frobeniusPoly (n : ℕ) :
   push_cast
   linear_combination (norm := skip) -p / p ^ n / p ^ (n - i - v p (j + 1))
     * (p ^ (n - i)).choose (j + 1) * congr((p : ℚ) ^ $(map_frobeniusPoly.key₂ p hi.le hj))
-  field_simp [hp.1.ne_zero]
-  ring
+  field [hp.1.ne_zero]
 
 theorem frobeniusPoly_zmod (n : ℕ) :
     MvPolynomial.map (Int.castRingHom (ZMod p)) (frobeniusPoly p n) = X n ^ p := by

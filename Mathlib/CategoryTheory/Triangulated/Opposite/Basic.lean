@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
-import Mathlib.CategoryTheory.Shift.Opposite
-import Mathlib.CategoryTheory.Shift.Pullback
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+public import Mathlib.CategoryTheory.Shift.Opposite
+public import Mathlib.CategoryTheory.Shift.Pullback
 
 /-!
 # The shift on the opposite category of a pretriangulated category
@@ -31,6 +33,8 @@ functor is `shiftFunctor Cᵒᵖ n` and whose inverse functor is `(shiftFunctor 
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

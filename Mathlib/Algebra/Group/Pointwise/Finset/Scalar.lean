@@ -3,9 +3,11 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Data.Finset.NAry
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Finite
+module
+
+public import Mathlib.Data.Finset.NAry
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Finite
 
 /-!
 # Pointwise operations of finsets
@@ -41,6 +43,8 @@ instances reducible changes the behavior of `simp`.
 finset multiplication, finset addition, pointwise addition, pointwise multiplication,
 pointwise subtraction
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal Finset.dens MonoidWithZero MulAction IsOrderedMonoid
 

@@ -3,13 +3,15 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fangming Li, Jujian Zhang
 -/
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.Order.KrullDimension
-import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
-import Mathlib.RingTheory.Jacobson.Radical
-import Mathlib.RingTheory.Spectrum.Prime.Basic
+module
+
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.Order.KrullDimension
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
+public import Mathlib.RingTheory.Jacobson.Radical
+public import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
 # Krull dimensions of (commutative) rings
@@ -18,6 +20,8 @@ Given a commutative ring, its ring-theoretic Krull dimension is the order-theore
 of its prime spectrum. Unfolding this definition, it is the length of the longest sequence(s) of
 prime ideals ordered by strict inclusion.
 -/
+
+@[expose] public section
 
 open Order
 

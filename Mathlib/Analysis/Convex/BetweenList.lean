@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Analysis.Convex.Between
-import Mathlib.Data.List.Triplewise
+module
+
+public import Mathlib.Analysis.Convex.Between
+public import Mathlib.Data.List.Triplewise
 
 /-!
 # Betweenness for lists of points.
@@ -17,6 +19,8 @@ This file defines notions of lists of points in an affine space being in order o
 * `List.Sbtw R l`: The points in list `l` are strictly in order on a line.
 
 -/
+
+@[expose] public section
 
 
 variable (R : Type*) {V V' P P' : Type*}
