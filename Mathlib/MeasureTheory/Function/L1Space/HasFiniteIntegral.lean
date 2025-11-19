@@ -3,10 +3,12 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
-import Mathlib.MeasureTheory.Integral.Lebesgue.DominatedConvergence
-import Mathlib.MeasureTheory.Integral.Lebesgue.Norm
-import Mathlib.MeasureTheory.Measure.WithDensity
+module
+
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
+public import Mathlib.MeasureTheory.Integral.Lebesgue.DominatedConvergence
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Norm
+public import Mathlib.MeasureTheory.Measure.WithDensity
 
 /-!
 # Function with finite integral
@@ -24,6 +26,8 @@ predicate `Integrable` in the corresponding file.
 finite integral
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

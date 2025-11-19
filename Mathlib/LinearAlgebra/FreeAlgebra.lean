@@ -3,13 +3,15 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.FreeAlgebra
-import Mathlib.LinearAlgebra.Basis.Cardinality
-import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-import Mathlib.LinearAlgebra.Dimension.Subsingleton
-import Mathlib.LinearAlgebra.Finsupp.VectorSpace
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+module
+
+public import Mathlib.Algebra.FreeAlgebra
+public import Mathlib.LinearAlgebra.Basis.Cardinality
+public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+public import Mathlib.LinearAlgebra.Dimension.Subsingleton
+public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 # Linear algebra properties of `FreeAlgebra R X`
@@ -17,6 +19,8 @@ import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 This file provides a `FreeMonoid X` basis on the `FreeAlgebra R X`, and uses it to show the
 dimension of the algebra is the cardinality of `List X`
 -/
+
+@[expose] public section
 
 open Module
 
