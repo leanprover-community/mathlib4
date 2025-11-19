@@ -3,11 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Category.Pairwise
-import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
+module
+
+public import Mathlib.CategoryTheory.Category.Pairwise
+public import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 
 /-!
 # Equivalent formulations of the sheaf condition
@@ -33,6 +35,8 @@ We express this in two equivalent ways, as
 We show that this sheaf condition is equivalent to the `OpensLeCover` sheaf condition, and
 thereby also equivalent to the default sheaf condition.
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedMonoid
 

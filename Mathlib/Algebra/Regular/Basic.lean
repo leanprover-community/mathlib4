@@ -3,10 +3,12 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Algebra.Regular.Defs
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Commute.Defs
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Algebra.Regular.Defs
 
 /-!
 # Regular elements
@@ -22,6 +24,8 @@ by adding one further `0`.
 
 The final goal is to develop part of the API to prove, eventually, results about non-zero-divisors.
 -/
+
+@[expose] public section
 
 variable {R : Type*}
 
