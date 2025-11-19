@@ -3,7 +3,9 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.FieldTheory.Finite.Basic
+module
+
+public import Mathlib.FieldTheory.Finite.Basic
 
 /-!
 # Lagrange's four square theorem
@@ -15,6 +17,8 @@ a proof that every natural number is the sum of four square numbers.
 
 The proof used is close to Lagrange's original proof.
 -/
+
+@[expose] public section
 
 
 open Finset Polynomial FiniteField Equiv

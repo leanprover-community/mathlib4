@@ -3,12 +3,15 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.EpiMono
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.SuppressCompilation
+module
+
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.Comma.Arrow
+public import Mathlib.CategoryTheory.EpiMono
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Tactic.FinCases
+public import Mathlib.Tactic.SuppressCompilation
 /-!
 # Composable arrows
 
@@ -36,6 +39,8 @@ TODO (@joelriou):
   up to `n = 7` in order to formalize spectral sequences following Verdier)
 
 -/
+
+@[expose] public section
 
 /-!
 New `simprocs` that run even in `dsimp` have caused breakages in this file.
@@ -274,6 +279,14 @@ lemma ext₁ {F G : ComposableArrows C 1}
 
 lemma mk₁_surjective (X : ComposableArrows C 1) : ∃ (X₀ X₁ : C) (f : X₀ ⟶ X₁), X = mk₁ f :=
   ⟨_, _, X.map' 0 1, ext₁ rfl rfl (by simp)⟩
+
+/-- The bijection between `ComposableArrows C 1` and `Arrow C`. -/
+@[simps]
+def arrowEquiv : ComposableArrows C 1 ≃ Arrow C where
+  toFun F := Arrow.mk F.hom
+  invFun f := mk₁ f.hom
+  left_inv F := ComposableArrows.ext₁ rfl rfl (by simp)
+  right_inv _ := rfl
 
 variable (F)
 

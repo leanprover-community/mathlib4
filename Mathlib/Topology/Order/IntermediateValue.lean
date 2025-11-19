@@ -3,11 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Alistair Tucker, Wen Yang
 -/
-import Mathlib.Order.Interval.Set.Image
-import Mathlib.Order.CompleteLatticeIntervals
-import Mathlib.Topology.Order.DenselyOrdered
-import Mathlib.Topology.Order.Monotone
-import Mathlib.Topology.Connected.TotallyDisconnected
+module
+
+public import Mathlib.Order.Interval.Set.Image
+public import Mathlib.Order.CompleteLatticeIntervals
+public import Mathlib.Topology.Order.DenselyOrdered
+public import Mathlib.Topology.Order.Monotone
+public import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
 # Intermediate Value Theorem
@@ -41,6 +43,8 @@ on intervals.
 
 intermediate value theorem, connected space, connected set
 -/
+
+@[expose] public section
 
 
 open Filter OrderDual TopologicalSpace Function Set
@@ -657,16 +661,15 @@ theorem Continuous.strictMono_of_inj_boundedOrder [BoundedOrder α] {f : α → 
   intro a b hab
   by_contra! h
   have H : f b < f a := lt_of_le_of_ne h <| hf_i.ne hab.ne'
-  by_cases ha : f a ≤ f ⊥
+  by_cases! ha : f a ≤ f ⊥
   · obtain ⟨u, hu⟩ := intermediate_value_Ioc le_top hf_c.continuousOn ⟨H.trans_le ha, hf⟩
     have : u = ⊥ := hf_i hu.2
     simp_all
-  · by_cases hb : f ⊥ < f b
+  · by_cases! hb : f ⊥ < f b
     · obtain ⟨u, hu⟩ := intermediate_value_Ioo bot_le hf_c.continuousOn ⟨hb, H⟩
       rw [hf_i hu.2] at hu
       exact (hab.trans hu.1.2).false
-    · push_neg at ha hb
-      replace hb : f b < f ⊥ := lt_of_le_of_ne hb <| hf_i.ne (lt_of_lt_of_le' hab bot_le).ne'
+    · replace hb : f b < f ⊥ := lt_of_le_of_ne hb <| hf_i.ne (lt_of_lt_of_le' hab bot_le).ne'
       obtain ⟨u, hu⟩ := intermediate_value_Ioo' hab.le hf_c.continuousOn ⟨hb, ha⟩
       have : u = ⊥ := hf_i hu.2
       simp_all

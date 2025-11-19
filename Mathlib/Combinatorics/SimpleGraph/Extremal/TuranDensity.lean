@@ -3,11 +3,13 @@ Copyright (c) 2025 Mitchell Horner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Horner
 -/
-import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-import Mathlib.Combinatorics.Enumerative.DoubleCounting
-import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
-import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
-import Mathlib.Data.Nat.Choose.Cast
+module
+
+public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+public import Mathlib.Combinatorics.Enumerative.DoubleCounting
+public import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
+public import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
+public import Mathlib.Data.Nat.Choose.Cast
 
 /-!
 # Turán density
@@ -27,6 +29,8 @@ This file defines the **Turán density** of a simple graph.
 * `SimpleGraph.isContained_of_card_edgeFinset` is the proof that `n`-vertex simple graphs having
   at least `(turanDensity H + o(1)) * n ^ 2` edges contain `H`, for sufficently large `n`.
 -/
+
+@[expose] public section
 
 
 open Asymptotics Filter Finset Fintype Topology

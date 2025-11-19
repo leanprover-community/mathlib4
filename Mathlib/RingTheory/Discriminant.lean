@@ -3,9 +3,11 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
-import Mathlib.RingTheory.Norm.Transitivity
-import Mathlib.RingTheory.Trace.Basic
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Group.LocallyFinite
+public import Mathlib.RingTheory.Norm.Transitivity
+public import Mathlib.RingTheory.Trace.Basic
 
 /-!
 # Discriminant of a family of vectors
@@ -44,6 +46,8 @@ Given an `A`-algebra `B` and `b`, an `ι`-indexed family of elements of `B`, we 
 Our definition works for any `A`-algebra `B`, but note that if `B` is not free as an `A`-module,
 then `trace A B = 0` by definition, so `discr A b = 0` for any `b`.
 -/
+
+@[expose] public section
 
 
 universe u v w z
@@ -191,7 +195,7 @@ theorem discr_powerBasis_eq_prod'' [Algebra.IsSeparable K L] (e : Fin pb.dim ≃
     rw [← hn, Nat.one_le_iff_ne_zero, ← zero_lt_iff, Module.finrank_pos_iff]
     infer_instance
   rw [hn, Nat.cast_div h₂ hne, Nat.cast_mul, Nat.cast_sub hle]
-  field
+  ring
 
 /-- Formula for the discriminant of a power basis using the norm of the field extension. -/
 theorem discr_powerBasis_eq_norm [Algebra.IsSeparable K L] :

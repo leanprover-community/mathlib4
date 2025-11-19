@@ -3,8 +3,10 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Lp.lpSpace
-import Mathlib.Topology.Sets.Compacts
+module
+
+public import Mathlib.Analysis.Normed.Lp.lpSpace
+public import Mathlib.Topology.Sets.Compacts
 
 /-!
 # The Kuratowski embedding
@@ -13,6 +15,8 @@ Any separable metric space can be embedded isometrically in `ℓ^∞(ℕ, ℝ)`.
 Any partially defined Lipschitz map into `ℓ^∞` can be extended to the whole space.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
