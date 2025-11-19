@@ -3,7 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir
 -/
-import Mathlib.Analysis.Complex.Exponential
+module
+
+public import Mathlib.Analysis.Complex.Exponential
 
 /-!
 # Trigonometric and hyperbolic trigonometric functions
@@ -12,6 +14,8 @@ This file contains the definitions of the sine, cosine, tangent,
 hyperbolic sine, hyperbolic cosine, and hyperbolic tangent functions.
 
 -/
+
+@[expose] public section
 
 open CauSeq Finset IsAbsoluteValue
 open scoped ComplexConjugate
@@ -913,7 +917,7 @@ open Lean.Meta Qq
 
 /-- Extension for the `positivity` tactic: `Real.cosh` is always positive. -/
 @[positivity Real.cosh _]
-def evalCosh : PositivityExt where eval {u α} _ _ e := do
+meta def evalCosh : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.cosh $a) =>
     assertInstancesCommute

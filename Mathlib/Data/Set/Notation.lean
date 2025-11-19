@@ -3,8 +3,10 @@ Copyright (c) 2024 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Util.Notation3
-import Mathlib.Lean.Expr.ExtraRecognizers
+module
+
+public import Mathlib.Util.Notation3
+public meta import Mathlib.Lean.Expr.ExtraRecognizers
 
 /-!
 # Set Notation
@@ -21,6 +23,8 @@ These notations are developed further in `Data.Set.Functor` and `Data.Set.Subset
 They are defined here separately so that this file can be added as an exception to the shake linter
 and can thus be imported without a linting false positive when only the notation is desired.
 -/
+
+@[expose] public section
 
 namespace Set.Notation
 /--
@@ -41,7 +45,7 @@ If the `Set.Notation` namespace is open, sets of a subtype coerced to the ambien
 represented with `↑`.
 -/
 @[scoped delab app.Set.image]
-def delab_set_image_subtype : Delab := whenPPOption getPPCoercions do
+meta def delab_set_image_subtype : Delab := whenPPOption getPPCoercions do
   let #[α, _, f, _] := (← getExpr).getAppArgs | failure
   guard <| f.isAppOfArity ``Subtype.val 2
   let some _ := α.coeTypeSet? | failure

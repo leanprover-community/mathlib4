@@ -3,9 +3,11 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
-import Mathlib.NumberTheory.ModularForms.Cusps
-import Mathlib.NumberTheory.ModularForms.SlashActions
+module
+
+public import Mathlib.Analysis.Complex.UpperHalfPlane.FunctionsBoundedAtInfty
+public import Mathlib.NumberTheory.ModularForms.Cusps
+public import Mathlib.NumberTheory.ModularForms.SlashActions
 
 /-!
 # Boundedness and vanishing at cusps
@@ -13,6 +15,8 @@ import Mathlib.NumberTheory.ModularForms.SlashActions
 We define the notions of "bounded at c" and "vanishing at c" for functions on `ℍ`, where `c` is
 an element of `OnePoint ℝ`.
 -/
+
+@[expose] public section
 
 open Matrix SpecialLinearGroup UpperHalfPlane Filter Polynomial OnePoint
 

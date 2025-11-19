@@ -3,8 +3,10 @@ Copyright (c) 2025 Christian Krause. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chriara Cimino, Christian Krause
 -/
-import Mathlib.Order.Nucleus
-import Mathlib.Order.SupClosed
+module
+
+public import Mathlib.Order.Nucleus
+public import Mathlib.Order.SupClosed
 
 /-!
 # Sublocale
@@ -23,6 +25,8 @@ Create separate definitions for `sInf_mem` and `HImpClosed` (also useful for `Co
 * https://ncatlab.org/nlab/show/sublocale
 * https://ncatlab.org/nlab/show/nucleus
 -/
+
+@[expose] public section
 
 variable {X : Type*} [Order.Frame X]
 open Set
