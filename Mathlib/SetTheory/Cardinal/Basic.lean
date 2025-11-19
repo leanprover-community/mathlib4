@@ -3,14 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Data.Countable.Small
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Data.Nat.Cast.Order.Basic
-import Mathlib.Data.Set.Countable
-import Mathlib.Logic.Small.Set
-import Mathlib.Logic.UnivLE
-import Mathlib.SetTheory.Cardinal.Order
+module
+
+public import Mathlib.Data.Countable.Small
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.Nat.Cast.Order.Basic
+public import Mathlib.Data.Set.Countable
+public import Mathlib.Logic.Small.Set
+public import Mathlib.Logic.UnivLE
+public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Basic results on cardinal numbers
@@ -31,6 +33,8 @@ finite/countable/small types and sets.
 cardinal number, cardinal arithmetic, cardinal exponentiation, aleph,
 Cantor's theorem, König's theorem, Konig's theorem
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

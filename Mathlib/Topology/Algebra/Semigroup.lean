@@ -3,7 +3,9 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Topology.Separation.Hausdorff
+module
+
+public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Idempotents in topological semigroups
@@ -14,6 +16,8 @@ right-multiplication by constants is continuous.
 
 We also state a corresponding lemma guaranteeing that a subset of `M` contains an idempotent.
 -/
+
+@[expose] public section
 
 
 /-- Any nonempty compact Hausdorff semigroup where right-multiplication is continuous contains

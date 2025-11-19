@@ -3,7 +3,9 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Meromorphic.Order
+module
+
+public import Mathlib.Analysis.Meromorphic.Order
 
 /-!
 # The Trailing Coefficient of a Meromorphic Function
@@ -15,6 +17,8 @@ point `x`, the trailing coefficient is defined as the (unique!) value `g x` for 
 The lemma `MeromorphicAt.tendsto_nhds_meromorphicTrailingCoeffAt` expresses the trailing coefficient
 as a limit.
 -/
+
+@[expose] public section
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]

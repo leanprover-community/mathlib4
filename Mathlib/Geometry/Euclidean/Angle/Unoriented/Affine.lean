@@ -3,10 +3,12 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
 -/
-import Mathlib.Analysis.Convex.Between
-import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
-import Mathlib.Analysis.Normed.Affine.Isometry
+module
+
+public import Mathlib.Analysis.Convex.Between
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
+public import Mathlib.Analysis.Normed.Affine.Isometry
 
 /-!
 # Angles between points
@@ -22,6 +24,8 @@ This file defines unoriented angles in Euclidean affine spaces.
 
 Prove the triangle inequality for the angle.
 -/
+
+@[expose] public section
 
 
 noncomputable section

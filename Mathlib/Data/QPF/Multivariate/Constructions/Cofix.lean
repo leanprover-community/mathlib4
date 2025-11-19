@@ -3,10 +3,12 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Simon Hudon
 -/
-import Mathlib.Control.Functor.Multivariate
-import Mathlib.Data.PFunctor.Multivariate.Basic
-import Mathlib.Data.PFunctor.Multivariate.M
-import Mathlib.Data.QPF.Multivariate.Basic
+module
+
+public import Mathlib.Control.Functor.Multivariate
+public import Mathlib.Data.PFunctor.Multivariate.Basic
+public import Mathlib.Data.PFunctor.Multivariate.M
+public import Mathlib.Data.QPF.Multivariate.Basic
 
 /-!
 # The final co-algebra of a multivariate qpf is again a qpf.
@@ -37,6 +39,8 @@ We define the relation `Mcongr` and take its quotient as the definition of `Cofi
 * Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
   [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
 -/
+
+@[expose] public section
 
 
 universe u

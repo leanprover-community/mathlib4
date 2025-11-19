@@ -3,9 +3,10 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
-import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
+public import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
+public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 
 /-! # Multiply preprimitive actions
 
@@ -34,6 +35,8 @@ the action of `FixingSubgroup G s` on the complement of `s`
 is `m`-primitive.
 
 -/
+
+@[expose] public section
 
 open scoped BigOperators Pointwise Cardinal
 

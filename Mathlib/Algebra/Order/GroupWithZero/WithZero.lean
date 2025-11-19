@@ -3,8 +3,10 @@ Copyright (c) 2024 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+module
+
+public import Mathlib.Algebra.Order.GroupWithZero.Canonical
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
 /-!
 
 # Covariant instances on `WithZero`
@@ -24,6 +26,8 @@ The type `ℤᵐ⁰ := WithZero (Multiplicative ℤ)` is used a lot in mathlib's
 theory. These instances enable lemmas such as `mul_pos` to fire on `ℤᵐ⁰`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Ring
 

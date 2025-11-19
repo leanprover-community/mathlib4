@@ -3,13 +3,15 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Jujian Zhang, Yongle Hu
 -/
-import Mathlib.Algebra.Colimit.TensorProduct
-import Mathlib.Algebra.Module.Projective
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.RingTheory.Finiteness.Small
-import Mathlib.RingTheory.IsTensorProduct
-import Mathlib.RingTheory.TensorProduct.Finite
-import Mathlib.RingTheory.Adjoin.FGBaseChange
+module
+
+public import Mathlib.Algebra.Colimit.TensorProduct
+public import Mathlib.Algebra.Module.Projective
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.RingTheory.Finiteness.Small
+public import Mathlib.RingTheory.IsTensorProduct
+public import Mathlib.RingTheory.TensorProduct.Finite
+public import Mathlib.RingTheory.Adjoin.FGBaseChange
 
 /-!
 # Flat modules
@@ -57,6 +59,8 @@ the current `Module.Flat` to `Module.MonoFlat`.
 * Generalize flatness to noncommutative semirings.
 
 -/
+
+@[expose] public section
 
 assert_not_exists AddCircle
 

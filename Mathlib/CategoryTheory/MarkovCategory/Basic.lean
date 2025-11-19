@@ -3,8 +3,10 @@ Copyright (c) 2025 Jacob Reinhold. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jacob Reinhold
 -/
-import Mathlib.CategoryTheory.CopyDiscardCategory.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+module
+
+public import Mathlib.CategoryTheory.CopyDiscardCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 
 /-!
 # Markov Categories
@@ -38,6 +40,8 @@ morphism, a distinguishing feature of Markov categories in categorical probabili
 
 Markov category, probability, categorical probability
 -/
+
+@[expose] public section
 
 universe v u
 

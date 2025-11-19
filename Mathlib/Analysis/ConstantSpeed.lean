@@ -3,9 +3,11 @@ Copyright (c) 2023 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli
 -/
-import Mathlib.Data.Set.Function
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Topology.EMetricSpace.BoundedVariation
+module
+
+public import Mathlib.Data.Set.Function
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Topology.EMetricSpace.BoundedVariation
 
 /-!
 # Constant speed
@@ -37,6 +39,8 @@ as a composite `φ ∘ (variationOnFromTo f s a)`, where `φ` has unit speed and
 
 arc-length, parameterization
 -/
+
+@[expose] public section
 
 
 open scoped NNReal ENNReal

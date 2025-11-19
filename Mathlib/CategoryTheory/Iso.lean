@@ -3,7 +3,10 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
-import Mathlib.Tactic.CategoryTheory.Reassoc
+module
+
+public import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Isomorphisms
@@ -30,6 +33,8 @@ This file defines isomorphisms between objects of a category.
 
 category, category theory, isomorphism
 -/
+
+@[expose] public section
 
 set_option mathlib.tactic.category.grind true
 

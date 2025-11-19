@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
-import Mathlib.CategoryTheory.Functor.FunctorHom
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
+public import Mathlib.CategoryTheory.Functor.FunctorHom
 
 /-!
 # The category of simplicial objects is simplicial
@@ -18,6 +20,8 @@ is actually a simplicial category. In particular, the category of simplicial
 sets is a simplicial category.
 
 -/
+
+@[expose] public section
 
 universe v u
 

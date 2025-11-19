@@ -3,11 +3,15 @@ Copyright (c) 2025 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Regular.SMul
+module
+
+public import Mathlib.Algebra.Regular.SMul
 
 /-!
 # Results about `IsRegular` and pi types
 -/
+
+@[expose] public section
 
 variable {ι α : Type*} {R : ι → Type*}
 

@@ -3,11 +3,13 @@ Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Order.Filter.Finite
-import Mathlib.Order.Filter.CountableInter
-import Mathlib.SetTheory.Cardinal.Regular
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.Order.Filter.Tendsto
+public import Mathlib.Order.Filter.Finite
+public import Mathlib.Order.Filter.CountableInter
+public import Mathlib.SetTheory.Cardinal.Regular
+public import Mathlib.Tactic.Linarith
 
 /-!
 # Filters with a cardinal intersection property
@@ -29,6 +31,8 @@ their intersection belongs to `l` as well.
 ## Tags
 filter, cardinal
 -/
+
+@[expose] public section
 
 
 open Set Filter Cardinal

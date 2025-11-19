@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Abhimanyu Pallavi Sudhir
 -/
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Order.Filter.Germ.Basic
+module
+
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Order.Filter.Germ.Basic
 
 /-!
 # Ordered monoid instances on the space of germs of a function at a filter
@@ -19,6 +21,8 @@ For each of the following structures we prove that if `β` has this structure, t
 
 filter, germ
 -/
+
+@[expose] public section
 
 namespace Filter.Germ
 

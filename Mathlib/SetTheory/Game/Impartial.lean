@@ -3,9 +3,11 @@ Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson
 -/
-import Mathlib.SetTheory.Game.Basic
-import Mathlib.Tactic.NthRewrite
-import Mathlib.Tactic.Linter.DeprecatedModule
+module
+
+public import Mathlib.SetTheory.Game.Basic
+public import Mathlib.Tactic.NthRewrite
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
 deprecated_module
   "This module is now at `CombinatorialGames.Game.Impartial.Basic` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
@@ -19,6 +21,8 @@ Our definition differs slightly by saying that the game is always equivalent to 
 no matter what moves are played. This allows for games such as poker-nim to be classified as
 impartial.
 -/
+
+@[expose] public section
 
 
 universe u

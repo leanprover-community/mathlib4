@@ -3,10 +3,12 @@ Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson, Chris Wong
 -/
-import Mathlib.Computability.Language
-import Mathlib.Data.Countable.Small
-import Mathlib.Data.Fintype.Pigeonhole
-import Mathlib.Tactic.NormNum
+module
+
+public import Mathlib.Computability.Language
+public import Mathlib.Data.Countable.Small
+public import Mathlib.Data.Fintype.Pigeonhole
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Deterministic Finite Automata
@@ -43,6 +45,8 @@ Currently, there are two disjoint sets of simp lemmas: one for `DFA.eval`, and a
 - Should we unify these simp sets, such that `eval` is rewritten to `evalFrom` automatically?
 - Should `mem_accepts` and `mem_acceptsFrom` be marked `@[simp]`?
 -/
+
+@[expose] public section
 
 universe u v
 

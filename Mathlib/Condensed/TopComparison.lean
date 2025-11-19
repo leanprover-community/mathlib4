@@ -3,10 +3,12 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Opposites
-import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
-import Mathlib.Condensed.Basic
-import Mathlib.Topology.Category.TopCat.Yoneda
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Opposites
+public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
+public import Mathlib.Condensed.Basic
+public import Mathlib.Topology.Category.TopCat.Yoneda
 
 /-!
 
@@ -20,6 +22,8 @@ We apply this API to `CompHaus` and define the functor
 `topCatToCondensedSet : TopCat.{u+1} ⥤ CondensedSet.{u}`.
 
 -/
+
+@[expose] public section
 
 universe w w' v u
 

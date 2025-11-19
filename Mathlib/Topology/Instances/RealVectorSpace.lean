@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.Module.Equiv
-import Mathlib.Topology.Instances.Rat
-import Mathlib.Algebra.Module.Rat
+module
+
+public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Instances.Rat
+public import Mathlib.Algebra.Module.Rat
 
 /-!
 # Continuous additive maps are `ℝ`-linear
@@ -13,6 +15,8 @@ import Mathlib.Algebra.Module.Rat
 In this file we prove that a continuous map `f : E →+ F` between two topological vector spaces
 over `ℝ` is `ℝ`-linear
 -/
+
+@[expose] public section
 
 
 variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [ContinuousSMul ℝ E]

@@ -3,10 +3,12 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Group.Invertible.Defs
-import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.CategoryTheory.Preadditive.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Group.Invertible.Defs
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.CategoryTheory.Preadditive.Basic
 
 /-!
 # Linear categories
@@ -29,6 +31,8 @@ It would be nice to have a usable framework of enriched categories in which this
 a category enriched in `Module R`.
 
 -/
+
+@[expose] public section
 
 universe w v u
 

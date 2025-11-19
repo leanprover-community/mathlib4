@@ -3,7 +3,9 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Gaëtan Serré
 -/
-import Mathlib.MeasureTheory.Measure.Haar.Unique
+module
+
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # The canonical measure on the unit interval
@@ -13,6 +15,8 @@ and shows it is a probability measure with no atoms.
 
 It also contains some basic results on the volume of various interval sets.
 -/
+
+@[expose] public section
 
 open scoped unitInterval
 open MeasureTheory Measure Set

@@ -3,7 +3,9 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
 /-!
 # Measurability of `⌊x⌋` etc
@@ -11,6 +13,8 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 In this file we prove that `Int.floor`, `Int.ceil`, `Int.fract`, `Nat.floor`, and `Nat.ceil` are
 measurable under some assumptions on the (semi)ring.
 -/
+
+@[expose] public section
 
 
 open Set

@@ -3,9 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-import Mathlib.RingTheory.Localization.AtPrime.Basic
-import Mathlib.RingTheory.Localization.FractionRing
+module
+
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
+public import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # The residue field of a prime ideal
@@ -14,6 +16,8 @@ We define `Ideal.ResidueField I` to be the residue field of the local ring `Loca
 and provide an `IsFractionRing (R ⧸ I) I.ResidueField` instance.
 
 -/
+
+@[expose] public section
 
 variable {R A} [CommRing R] [CommRing A] [Algebra R A]
 variable (I : Ideal R) [I.IsPrime]

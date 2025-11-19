@@ -3,14 +3,18 @@ Copyright (c) 2025 Yaël Dillies, Michał Mrugała. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Michał Mrugała
 -/
-import Mathlib.RingTheory.HopfAlgebra.Basic
-import Mathlib.RingTheory.Bialgebra.GroupLike
+module
+
+public import Mathlib.RingTheory.HopfAlgebra.Basic
+public import Mathlib.RingTheory.Bialgebra.GroupLike
 
 /-!
 # Group-like elements in a Hopf algebra
 
 This file proves that group-like elements in a Hopf algebra form a group.
 -/
+
+@[expose] public section
 
 open HopfAlgebra
 

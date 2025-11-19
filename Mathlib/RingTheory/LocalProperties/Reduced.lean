@@ -3,8 +3,10 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.LocalProperties.Basic
-import Mathlib.RingTheory.Nilpotent.Defs
+module
+
+public import Mathlib.RingTheory.LocalProperties.Basic
+public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # `IsReduced` is a local property
@@ -19,6 +21,8 @@ Let `R` be a commutative ring, `M` be a submonoid of `R`.
 * `isReduced_ofLocalizationMaximal` : `R` is reduced if `Rₘ` is reduced for all maximal ideal `m`.
 
 -/
+
+@[expose] public section
 
 /-- `M⁻¹R` is reduced if `R` is reduced. -/
 theorem isReduced_localizationPreserves : LocalizationPreserves fun R _ => IsReduced R := by

@@ -3,12 +3,14 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-import Mathlib.Tactic.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.Sites.ConcreteSheafification
-import Mathlib.CategoryTheory.Subpresheaf.Image
-import Mathlib.CategoryTheory.Subpresheaf.Sieves
+module
+
+public import Mathlib.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+public import Mathlib.Tactic.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.Sites.ConcreteSheafification
+public import Mathlib.CategoryTheory.Subpresheaf.Image
+public import Mathlib.CategoryTheory.Subpresheaf.Sieves
 
 /-!
 
@@ -31,6 +33,8 @@ We define the sub(pre)sheaf of a type-valued presheaf.
 - `CategoryTheory.GrothendieckTopology.imageFactorization` : The image sheaf as a
   `Limits.imageFactorization`.
 -/
+
+@[expose] public section
 
 
 universe w v u

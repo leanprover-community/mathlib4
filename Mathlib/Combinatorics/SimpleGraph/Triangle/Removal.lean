@@ -3,11 +3,13 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-import Mathlib.Combinatorics.SimpleGraph.Regularity.Lemma
-import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
-import Mathlib.Combinatorics.SimpleGraph.Triangle.Counting
-import Mathlib.Data.Finset.CastCard
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+public import Mathlib.Combinatorics.SimpleGraph.Regularity.Lemma
+public import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
+public import Mathlib.Combinatorics.SimpleGraph.Triangle.Counting
+public import Mathlib.Data.Finset.CastCard
 
 /-!
 # Triangle removal lemma
@@ -18,6 +20,8 @@ In this file, we prove the triangle removal lemma.
 
 [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
+
+@[expose] public section
 
 open Finset Fintype Nat SzemerediRegularity
 
@@ -172,7 +176,7 @@ if `ε` is.
 
 This exploits the positivity of the junk value of `triangleRemovalBound ε` for `ε ≥ 1`. -/
 @[positivity triangleRemovalBound _]
-def evalTriangleRemovalBound : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalTriangleRemovalBound : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(triangleRemovalBound $ε) =>
     let .positive hε ← core q(inferInstance) q(inferInstance) ε | failure

@@ -3,10 +3,12 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Algebra.Group.Submonoid.Defs
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Algebra.Group.Submonoid.Defs
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Bundled non-unital subsemirings
@@ -14,6 +16,8 @@ import Mathlib.Tactic.FastInstance
 We define bundled non-unital subsemirings and some standard constructions:
 `subtype` and `inclusion` ring homomorphisms.
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 

@@ -3,11 +3,13 @@ Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 -/
-import Mathlib.GroupTheory.OreLocalization.OreSet
-import Mathlib.Tactic.Common
-import Mathlib.Algebra.Group.Submonoid.MulAction
-import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Algebra.Group.Basic
+module
+
+public import Mathlib.GroupTheory.OreLocalization.OreSet
+public import Mathlib.Tactic.Common
+public import Mathlib.Algebra.Group.Submonoid.MulAction
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Algebra.Group.Basic
 
 /-!
 
@@ -32,6 +34,8 @@ a denominator `s : S`.
 localization, Ore, non-commutative
 
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso MonoidWithZero
 

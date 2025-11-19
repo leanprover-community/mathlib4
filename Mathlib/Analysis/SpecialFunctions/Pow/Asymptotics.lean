@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébastien Gouëzel,
   Rémy Degenne, David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
 /-!
 # Limits and asymptotics of power functions at `+∞`
@@ -13,6 +15,8 @@ This file contains results about the limiting behaviour of power functions at `+
 some results on asymptotics as `x → 0` (those which are not just continuity statements) are also
 located here.
 -/
+
+@[expose] public section
 
 
 noncomputable section

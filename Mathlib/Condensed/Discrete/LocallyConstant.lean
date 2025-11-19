@@ -3,10 +3,12 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Condensed.Discrete.Basic
-import Mathlib.Condensed.TopComparison
-import Mathlib.Topology.Category.CompHausLike.SigmaComparison
-import Mathlib.Topology.FiberPartition
+module
+
+public import Mathlib.Condensed.Discrete.Basic
+public import Mathlib.Condensed.TopComparison
+public import Mathlib.Topology.Category.CompHausLike.SigmaComparison
+public import Mathlib.Topology.FiberPartition
 /-!
 
 # The sheaf of locally constant maps on `CompHausLike P`
@@ -64,6 +66,8 @@ naturality proofs in this file (both lemmas are in the `CompHausLike.LocallyCons
   to light condensed sets).
 
 -/
+
+@[expose] public section
 
 universe u w
 

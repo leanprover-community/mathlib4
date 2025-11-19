@@ -3,11 +3,13 @@ Copyright (c) 2025 Yaël Dillies, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Andrew Yang
 -/
-import Mathlib.Algebra.Order.SuccPred.WithBot
-import Mathlib.Algebra.Polynomial.CoeffMem
-import Mathlib.Data.DFinsupp.WellFounded
-import Mathlib.RingTheory.Spectrum.Prime.ConstructibleSet
-import Mathlib.RingTheory.Spectrum.Prime.Polynomial
+module
+
+public import Mathlib.Algebra.Order.SuccPred.WithBot
+public import Mathlib.Algebra.Polynomial.CoeffMem
+public import Mathlib.Data.DFinsupp.WellFounded
+public import Mathlib.RingTheory.Spectrum.Prime.ConstructibleSet
+public import Mathlib.RingTheory.Spectrum.Prime.Polynomial
 
 /-!
 # Chevalley's theorem with complexity bound
@@ -57,6 +59,8 @@ The structure of the proof follows https://stacks.math.columbia.edu/tag/00FE, al
 not give an explicit bound on the complexity.
 
 -/
+
+@[expose] public section
 
 variable {R₀ R S M A : Type*} [CommRing R₀] [CommRing R] [Algebra R₀ R] [CommRing S] [Algebra R₀ S]
 variable [AddCommGroup M] [Module R M] [CommRing A] [Algebra R A] {n : ℕ}

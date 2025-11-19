@@ -3,10 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Group.Unbundled.Int
-import Mathlib.Algebra.Ring.Nat
-import Mathlib.Data.Int.GCD
-import Mathlib.Data.Nat.GCD.Basic
+module
+
+public import Mathlib.Algebra.Order.Group.Unbundled.Int
+public import Mathlib.Algebra.Ring.Nat
+public import Mathlib.Data.Int.GCD
+public import Mathlib.Data.Nat.GCD.Basic
 
 /-!
 # Congruences modulo a natural number
@@ -23,6 +25,8 @@ and proves basic properties about it such as the Chinese Remainder Theorem
 
 ModEq, congruence, mod, MOD, modulo
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedMonoid Function.support
 

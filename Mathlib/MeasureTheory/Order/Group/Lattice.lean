@@ -3,9 +3,11 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Algebra.Order.Group.PosPart
-import Mathlib.MeasureTheory.Group.Arithmetic
-import Mathlib.MeasureTheory.Order.Lattice
+module
+
+public import Mathlib.Algebra.Order.Group.PosPart
+public import Mathlib.MeasureTheory.Group.Arithmetic
+public import Mathlib.MeasureTheory.Order.Lattice
 
 /-!
 # Measurability results on groups with a lattice structure.
@@ -14,6 +16,8 @@ import Mathlib.MeasureTheory.Order.Lattice
 
 measurable function, group, lattice operation
 -/
+
+@[expose] public section
 
 variable {α β : Type*} [Lattice α] [Group α] [MeasurableSpace α]
   [MeasurableSpace β] {f : β → α}

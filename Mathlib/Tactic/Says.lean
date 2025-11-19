@@ -3,12 +3,14 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Init
-import Lean.Meta.Tactic.TryThis
-import Batteries.Linter.UnreachableTactic
-import Qq.Match
-import Mathlib.Lean.Elab.InfoTree
-import Mathlib.Tactic.Basic
+module
+
+public import Mathlib.Init
+public meta import Lean.Meta.Tactic.TryThis
+public meta import Batteries.Linter.UnreachableTactic
+public meta import Qq.Match
+public meta import Mathlib.Lean.Elab.InfoTree
+public meta import Mathlib.Tactic.Basic
 
 /-!
 # The `says` tactic combinator.
@@ -26,6 +28,8 @@ simp? [X] says simp only [X, Y, Z]
 If you use `set_option says.verify true` (set automatically during CI) then `X says Y`
 runs `X` and verifies that it still prints "Try this: Y".
 -/
+
+public meta section
 
 open Lean Elab Tactic
 open Lean.Meta.Tactic.TryThis

@@ -3,7 +3,9 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Maps.Basic
+module
+
+public import Mathlib.Topology.Maps.Basic
 
 /-!
 # Open quotient maps
@@ -21,6 +23,8 @@ Many important quotient maps are open quotient maps, including
 Contrary to general quotient maps,
 the category of open quotient maps is closed under `Prod.map`.
 -/
+
+@[expose] public section
 
 open Filter Function Set Topology
 

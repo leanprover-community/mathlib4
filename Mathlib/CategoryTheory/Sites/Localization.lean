@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Bousfield
-import Mathlib.CategoryTheory.Sites.Sheafification
+module
+
+public import Mathlib.CategoryTheory.Localization.Bousfield
+public import Mathlib.CategoryTheory.Sites.Sheafification
 
 /-!
 # The sheaf category as a localized category
@@ -14,6 +16,8 @@ of the category `Presheaf J A` with respect to the class `J.W` of morphisms
 of presheaves which become isomorphisms after applying the sheafification functor.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

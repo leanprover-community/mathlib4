@@ -3,10 +3,12 @@ Copyright (c) 2025 Monica Omar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
-import Mathlib.Analysis.Matrix.HermitianFunctionalCalculus
-import Mathlib.Analysis.Matrix.PosDef
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
+module
+
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
+public import Mathlib.Analysis.Matrix.HermitianFunctionalCalculus
+public import Mathlib.Analysis.Matrix.PosDef
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 
 /-!
 # The partial order on matrices
@@ -27,6 +29,8 @@ positive semi-definite matrix `M`: `⟪x, y⟫ = (y * M * xᴴ).trace`.
 Note that the partial order instance is scoped to `MatrixOrder`.
 Please `open scoped MatrixOrder` to use this.
 -/
+
+@[expose] public section
 
 variable {𝕜 n : Type*} [RCLike 𝕜] [Fintype n]
 

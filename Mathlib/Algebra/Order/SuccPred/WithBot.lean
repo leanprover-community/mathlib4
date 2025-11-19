@@ -3,13 +3,17 @@ Copyright (c) 2024 Yaël Dillies, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Andrew Yang
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-import Mathlib.Algebra.Order.SuccPred
-import Mathlib.Order.SuccPred.WithBot
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+public import Mathlib.Algebra.Order.SuccPred
+public import Mathlib.Order.SuccPred.WithBot
 
 /-!
 # Algebraic properties of the successor function on `WithBot`
 -/
+
+@[expose] public section
 
 namespace WithBot
 variable {α : Type*} [Preorder α] [OrderBot α] [AddMonoidWithOne α] [SuccAddOrder α]

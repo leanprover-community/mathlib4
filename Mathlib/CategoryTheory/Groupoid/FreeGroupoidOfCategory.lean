@@ -3,10 +3,12 @@ Copyright (c) 2025 Joseph Hua. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Hua
 -/
-import Mathlib.CategoryTheory.Groupoid.FreeGroupoid
-import Mathlib.CategoryTheory.Category.Grpd
-import Mathlib.CategoryTheory.Adjunction.Reflective
-import Mathlib.CategoryTheory.Localization.Predicate
+module
+
+public import Mathlib.CategoryTheory.Groupoid.FreeGroupoid
+public import Mathlib.CategoryTheory.Category.Grpd
+public import Mathlib.CategoryTheory.Adjunction.Reflective
+public import Mathlib.CategoryTheory.Localization.Predicate
 
 /-!
 # Free groupoid on a category
@@ -37,6 +39,8 @@ on the underlying *quiver* of `C`. Then the free groupoid on the *category* `C` 
 the quotient of `G` by the relation that makes the inclusion prefunctor `C ⥤q G` a functor.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

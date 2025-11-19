@@ -3,8 +3,10 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.LocallyConvex.Bounded
-import Mathlib.Topology.Algebra.Module.Multilinear.Basic
+module
+
+public import Mathlib.Analysis.LocallyConvex.Bounded
+public import Mathlib.Topology.Algebra.Module.Multilinear.Basic
 
 /-!
 # Images of (von Neumann) bounded sets under continuous multilinear maps
@@ -24,6 +26,8 @@ the family `∀ i, E i` has to be essentially finite
 (more precisely, all but finitely many `E i` has to be trivial),
 proving theorems without a `[Finite ι]` assumption saves us some typeclass searches here and there.
 -/
+
+@[expose] public section
 
 open Bornology Filter Set Function
 open scoped Topology

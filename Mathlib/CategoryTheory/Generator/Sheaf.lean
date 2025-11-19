@@ -3,10 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Generator.Presheaf
-import Mathlib.CategoryTheory.Sites.Sheafification
-import Mathlib.CategoryTheory.Sites.Limits
+public import Mathlib.CategoryTheory.Generator.Presheaf
+public import Mathlib.CategoryTheory.Sites.Sheafification
+public import Mathlib.CategoryTheory.Sites.Limits
 
 /-!
 # Generators in the category of sheaves
@@ -15,6 +16,8 @@ In this file, we show that if `J : GrothendieckTopology C` and `A` is a preaddit
 category which has a separator (and suitable coproducts), then `Sheaf J A` has a separator.
 
 -/
+
+@[expose] public section
 
 universe w v' v u' u
 

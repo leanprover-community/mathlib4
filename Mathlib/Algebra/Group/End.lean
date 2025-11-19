@@ -3,12 +3,14 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Equiv.TypeTags
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.Data.Set.Basic
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Algebra.Group.Equiv.TypeTags
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.Prod
+public import Mathlib.Algebra.Group.Units.Equiv
+public import Mathlib.Data.Set.Basic
+public import Mathlib.Tactic.Common
 
 /-!
 # Monoids of endomorphisms, groups of automorphisms
@@ -29,6 +31,8 @@ function composition, and multiplication in `CategoryTheory.End`, but not with
 
 end monoid, aut group
 -/
+
+@[expose] public section
 
 assert_not_exists HeytingAlgebra MonoidWithZero MulAction RelIso
 

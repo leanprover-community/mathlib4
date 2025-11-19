@@ -3,10 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Data.ENat.Lattice
-import Mathlib.Data.Part
-import Mathlib.Tactic.NormNum
+module
+
+public import Mathlib.Algebra.Group.Equiv.Basic
+public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Data.Part
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Natural numbers with infinity
@@ -52,6 +54,8 @@ If `ENat` does not serve your purposes, please raise this on the community Zulip
 
 PartENat, ℕ∞
 -/
+
+@[expose] public section
 
 
 open Part hiding some

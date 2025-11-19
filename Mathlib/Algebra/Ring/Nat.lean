@@ -3,10 +3,12 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.CharZero.Defs
-import Mathlib.Algebra.GroupWithZero.Nat
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Data.Nat.Basic
+module
+
+public import Mathlib.Algebra.CharZero.Defs
+public import Mathlib.Algebra.GroupWithZero.Nat
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Data.Nat.Basic
 
 /-!
 # The natural numbers form a semiring
@@ -15,6 +17,8 @@ This file contains the commutative semiring instance on the natural numbers.
 
 See note [foundational algebra order theory].
 -/
+
+@[expose] public section
 
 namespace Nat
 

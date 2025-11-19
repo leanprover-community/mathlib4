@@ -6,12 +6,16 @@ Authors: Damiano Testa
 
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+module
+
+public meta import Mathlib.Tactic.Linter.Header
 
 /-!
 This file defines the environment extension to keep track of which tactics are allowed to leave
 the tactic state unchanged and not trigger the unused tactic linter.
 -/
+
+public meta section
 
 open Lean Elab Command
 

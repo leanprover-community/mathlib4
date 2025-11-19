@@ -3,14 +3,18 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Control.EquivFunctor
-import Mathlib.Data.Fintype.OfMap
+module
+
+public import Mathlib.Control.EquivFunctor
+public import Mathlib.Data.Fintype.OfMap
 
 /-!
 # `EquivFunctor` instances
 
 We derive some `EquivFunctor` instances, to enable `equiv_rw` to rewrite under these functions.
 -/
+
+@[expose] public section
 
 
 open Equiv

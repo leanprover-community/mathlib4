@@ -3,13 +3,16 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yury Kudryashov, Floris van Doorn, Jon Eugster
 -/
+module
 
-import Std.Data.TreeMap.Basic
-import Mathlib.Data.String.Defs
+public meta import Std.Data.TreeMap.Basic
+public meta import Mathlib.Data.String.Defs
 
 /-!
 # Name generation APIs for `to_additive`-like attributes
 -/
+
+public meta section
 
 open Std
 

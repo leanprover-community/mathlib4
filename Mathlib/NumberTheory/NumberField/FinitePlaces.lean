@@ -3,15 +3,17 @@ Copyright (c) 2024 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
-import Mathlib.Algebra.Order.Archimedean.Submonoid
-import Mathlib.Algebra.GroupWithZero.Range
-import Mathlib.Data.Int.WithZero
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
-import Mathlib.RingTheory.DedekindDomain.AdicValuation
-import Mathlib.RingTheory.DedekindDomain.Factorization
-import Mathlib.RingTheory.Ideal.Norm.AbsNorm
-import Mathlib.RingTheory.Valuation.Archimedean
-import Mathlib.Topology.Algebra.Valued.NormedValued
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Submonoid
+public import Mathlib.Algebra.GroupWithZero.Range
+public import Mathlib.Data.Int.WithZero
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.RingTheory.DedekindDomain.Factorization
+public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+public import Mathlib.RingTheory.Valuation.Archimedean
+public import Mathlib.Topology.Algebra.Valued.NormedValued
 
 /-!
 # Finite places of number fields
@@ -35,6 +37,8 @@ into a completion of `K` associated to a non-zero prime ideal of `𝓞 K`.
 ## Tags
 number field, places, finite places
 -/
+
+@[expose] public section
 
 open Ideal IsDedekindDomain HeightOneSpectrum WithZeroMulInt WithZero
 

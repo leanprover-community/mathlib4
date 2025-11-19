@@ -3,7 +3,9 @@ Copyright (c) 2025 Michal Staromiejski. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michal Staromiejski
 -/
-import Mathlib.FieldTheory.PurelyInseparable.Basic
+module
+
+public import Mathlib.FieldTheory.PurelyInseparable.Basic
 
 /-!
 
@@ -35,6 +37,8 @@ it gives cleaner API. To use the results in a context with `[ExpChar K p]`, cons
 purely inseparable
 
 -/
+
+@[expose] public section
 
 namespace IsPurelyInseparable
 

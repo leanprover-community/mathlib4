@@ -3,12 +3,15 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Ring.Prod
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Order.Interval.Basic
-import Mathlib.Tactic.Positivity.Core
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Algebra.Ring.Prod
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Ring.Canonical
+public import Mathlib.Order.Interval.Basic
+public import Mathlib.Tactic.Positivity.Core
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 
 /-!
 # Interval arithmetic
@@ -17,6 +20,8 @@ This file defines arithmetic operations on intervals and prove their correctness
 full precision operations. The essentials of float operations can be found
 in `Data.FP.Basic`. We have not yet integrated these with the rest of the library.
 -/
+
+@[expose] public section
 
 
 open Function Set
@@ -658,7 +663,7 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
 @[positivity NonemptyInterval.length _]
-def evalNonemptyIntervalLength : PositivityExt where
+meta def evalNonemptyIntervalLength : PositivityExt where
   eval {u α} _ _ e := do
     let ~q(@NonemptyInterval.length _ $ig $ipo $a) := e |
       throwError "not NonemptyInterval.length"
@@ -668,7 +673,7 @@ def evalNonemptyIntervalLength : PositivityExt where
 
 /-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
 @[positivity Interval.length _]
-def evalIntervalLength : PositivityExt where
+meta def evalIntervalLength : PositivityExt where
   eval {u α} _ _ e := do
     let ~q(@Interval.length _ $ig $ipo $a) := e | throwError "not Interval.length"
     let _i ← synthInstanceQ q(IsOrderedAddMonoid $α)

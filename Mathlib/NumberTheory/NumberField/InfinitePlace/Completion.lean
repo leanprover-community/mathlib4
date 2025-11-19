@@ -3,8 +3,10 @@ Copyright (c) 2024 Salvatore Mercuri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri
 -/
-import Mathlib.Analysis.Normed.Field.WithAbs
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
+module
+
+public import Mathlib.Analysis.Normed.Field.WithAbs
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 
 /-!
 # The completion of a number field at an infinite place
@@ -51,6 +53,8 @@ field at an infinite place is then derived in this file, as `InfinitePlace` is a
 ## Tags
 number field, embeddings, infinite places, completion, absolute value
 -/
+
+@[expose] public section
 noncomputable section
 
 namespace NumberField.InfinitePlace

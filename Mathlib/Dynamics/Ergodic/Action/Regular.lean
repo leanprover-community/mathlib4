@@ -3,14 +3,18 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Dynamics.Ergodic.Action.Basic
-import Mathlib.MeasureTheory.Group.Prod
+module
+
+public import Mathlib.Dynamics.Ergodic.Action.Basic
+public import Mathlib.MeasureTheory.Group.Prod
 
 /-!
 # Regular action of a group on itself is ergodic
 
 In this file we prove that the left and right actions of a group on itself are ergodic.
 -/
+
+@[expose] public section
 
 open MeasureTheory Measure Filter Set
 open scoped Pointwise

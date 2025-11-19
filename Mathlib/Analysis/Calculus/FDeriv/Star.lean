@@ -3,11 +3,13 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Linear
-import Mathlib.Analysis.Calculus.FDeriv.Comp
-import Mathlib.Analysis.Calculus.FDeriv.Equiv
-import Mathlib.Analysis.CStarAlgebra.Basic
-import Mathlib.Topology.Algebra.Module.Star
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Linear
+public import Mathlib.Analysis.Calculus.FDeriv.Comp
+public import Mathlib.Analysis.Calculus.FDeriv.Equiv
+public import Mathlib.Analysis.CStarAlgebra.Basic
+public import Mathlib.Topology.Algebra.Module.Star
 
 /-!
 # Star operations on derivatives
@@ -21,6 +23,8 @@ trivial star operation; which as should be expected rules out `𝕜 = ℂ`. The 
 `HasFDerivAt.star_star` and `DifferentiableAt.star_star`, showing that `star ∘ f ∘ star` is
 differentiable when `f` is (and giving a formula for its derivative).
 -/
+
+@[expose] public section
 
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [StarRing 𝕜]

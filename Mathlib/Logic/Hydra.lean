@@ -3,9 +3,11 @@ Copyright (c) 2022 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Data.Finsupp.Lex
-import Mathlib.Data.Finsupp.Multiset
-import Mathlib.Order.GameAdd
+module
+
+public import Mathlib.Data.Finsupp.Lex
+public import Mathlib.Data.Finsupp.Multiset
+public import Mathlib.Order.GameAdd
 
 /-!
 # Termination of a hydra game
@@ -29,6 +31,8 @@ We follow the proof by Peter LeFanu Lumsdaine at https://mathoverflow.net/a/2290
 TODO: formalize the relations corresponding to more powerful (e.g. Kirby–Paris and Buchholz)
 hydras, and prove their well-foundedness.
 -/
+
+@[expose] public section
 
 
 namespace Relation

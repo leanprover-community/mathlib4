@@ -3,7 +3,9 @@ Copyright (c) 2024 Nick Ward. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Emily Riehl, Nick Ward
 -/
-import Mathlib.AlgebraicTopology.Quasicategory.StrictSegal
+module
+
+public import Mathlib.AlgebraicTopology.Quasicategory.StrictSegal
 
 /-!
 # The nerve of a category is a quasicategory
@@ -16,6 +18,8 @@ category satisfies the strict Segal condition.
 In this file, we prove as a direct consequence that the nerve of a category is
 a quasicategory.
 -/
+
+@[expose] public section
 
 universe v u
 

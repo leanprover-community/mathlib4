@@ -3,8 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Sort
-import Mathlib.Data.Fintype.Basic
+module
+
+public import Mathlib.Data.Finset.Sort
+public import Mathlib.Data.Fintype.Basic
 
 /-!
 # Sorting a finite type
@@ -14,6 +16,8 @@ This file provides two equivalences for linearly ordered fintypes:
 * `finSumEquivOfFinset`: Equivalence between `α` and `Fin m ⊕ Fin n` where `m` and `n` are
   respectively the cardinalities of some `Finset α` and its complement.
 -/
+
+@[expose] public section
 
 
 open Finset

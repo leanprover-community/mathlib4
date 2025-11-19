@@ -3,9 +3,11 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Analysis.Calculus.BumpFunction.Basic
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+module
+
+public import Mathlib.Analysis.Calculus.BumpFunction.Basic
+public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 /-!
 # Normed bump function
@@ -13,6 +15,8 @@ import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 In this file we define `ContDiffBump.normed f μ` to be the bump function `f` normalized so that
 `∫ x, f.normed μ x ∂μ = 1` and prove some properties of this function.
 -/
+
+@[expose] public section
 
 noncomputable section
 

@@ -3,9 +3,11 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky, David Loeffler
 -/
-import Mathlib.Topology.Connected.TotallyDisconnected
-import Mathlib.Topology.MetricSpace.Defs
-import Mathlib.Topology.MetricSpace.Ultra.Basic
+module
+
+public import Mathlib.Topology.Connected.TotallyDisconnected
+public import Mathlib.Topology.MetricSpace.Defs
+public import Mathlib.Topology.MetricSpace.Ultra.Basic
 
 /-!
 # Ultrametric spaces are totally separated
@@ -16,6 +18,8 @@ In a metric space with an ultrametric, the space is totally separated, hence tot
 
 ultrametric, nonarchimedean, totally separated, totally disconnected
 -/
+
+@[expose] public section
 open Metric IsUltrametricDist
 
 instance {X : Type*} [MetricSpace X] [IsUltrametricDist X] : TotallySeparatedSpace X :=

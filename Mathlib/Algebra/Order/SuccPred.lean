@@ -3,12 +3,14 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Data.Int.Cast.Defs
-import Mathlib.Order.SuccPred.Limit
-import Mathlib.Order.SuccPred.WithBot
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Algebra.Order.ZeroLEOne
+public import Mathlib.Data.Int.Cast.Defs
+public import Mathlib.Order.SuccPred.Limit
+public import Mathlib.Order.SuccPred.WithBot
 
 /-!
 # Interaction between successors and arithmetic
@@ -23,6 +25,8 @@ In the future, we will make `x + 1` and `x - 1` the `simp`-normal forms for `suc
 respectively. This will require a refactor of `Ordinal` first, as the `simp`-normal form is
 currently set the other way around.
 -/
+
+@[expose] public section
 
 /-- A typeclass for `succ x = x + 1`. -/
 class SuccAddOrder (α : Type*) [Preorder α] [Add α] [One α] extends SuccOrder α where

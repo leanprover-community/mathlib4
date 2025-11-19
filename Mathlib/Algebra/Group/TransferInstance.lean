@@ -3,9 +3,11 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Data.Fintype.Basic
+module
+
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.InjSurj
+public import Mathlib.Data.Fintype.Basic
 
 /-!
 # Transfer algebraic structures across `Equiv`s
@@ -18,6 +20,8 @@ then `α` has a group structure, and similarly for monoids, semigroups and so on
 When adding new definitions that transfer type-classes across an equivalence, please use
 `abbrev`. See note [reducible non-instances].
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero MulAction
 

@@ -3,8 +3,10 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.RingTheory.TensorProduct.Maps
-import Mathlib.Algebra.Algebra.Opposite
+module
+
+public import Mathlib.RingTheory.TensorProduct.Maps
+public import Mathlib.Algebra.Algebra.Opposite
 
 /-! # `MulOpposite` distributes over `⊗`
 
@@ -12,6 +14,8 @@ The main result in this file is:
 
 * `Algebra.TensorProduct.opAlgEquiv R S A B : Aᵐᵒᵖ ⊗[R] Bᵐᵒᵖ ≃ₐ[S] (A ⊗[R] B)ᵐᵒᵖ`
 -/
+
+@[expose] public section
 
 open scoped TensorProduct
 

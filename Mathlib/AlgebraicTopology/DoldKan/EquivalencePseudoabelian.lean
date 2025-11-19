@@ -3,10 +3,12 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.EquivalenceAdditive
-import Mathlib.AlgebraicTopology.DoldKan.Compatibility
-import Mathlib.CategoryTheory.Idempotents.SimplicialObject
-import Mathlib.Tactic.SuppressCompilation
+module
+
+public import Mathlib.AlgebraicTopology.DoldKan.EquivalenceAdditive
+public import Mathlib.AlgebraicTopology.DoldKan.Compatibility
+public import Mathlib.CategoryTheory.Idempotents.SimplicialObject
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 
@@ -32,6 +34,8 @@ the composition of `N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)`
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
+
+@[expose] public section
 
 
 suppress_compilation

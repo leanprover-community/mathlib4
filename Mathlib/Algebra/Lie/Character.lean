@@ -3,9 +3,11 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Abelian
-import Mathlib.Algebra.Lie.Solvable
-import Mathlib.LinearAlgebra.Dual.Defs
+module
+
+public import Mathlib.Algebra.Lie.Abelian
+public import Mathlib.Algebra.Lie.Solvable
+public import Mathlib.LinearAlgebra.Dual.Defs
 
 /-!
 # Characters of Lie algebras
@@ -23,6 +25,8 @@ algebra (e.g., a Cartan subalgebra of a semisimple Lie algebra) a character is j
 
 lie algebra, lie character
 -/
+
+@[expose] public section
 
 
 universe u v w w₁

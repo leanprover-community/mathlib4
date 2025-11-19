@@ -3,8 +3,10 @@ Copyright (c) 2022 Henrik Böving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving
 -/
-import Mathlib.Control.ULiftable
-import Mathlib.Order.Fin.Basic
+module
+
+public import Mathlib.Control.ULiftable
+public import Mathlib.Order.Fin.Basic
 
 /-!
 # Rand Monad and Random Class
@@ -27,6 +29,8 @@ defining objects that can be created randomly.
 * Similar library in Haskell: https://hackage.haskell.org/package/MonadRandom
 
 -/
+
+@[expose] public section
 
 set_option autoImplicit true -- Note: this file uses `autoImplicit` pervasively
 

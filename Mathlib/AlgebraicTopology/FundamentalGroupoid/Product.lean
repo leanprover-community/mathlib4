@@ -3,10 +3,12 @@ Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
 -/
-import Mathlib.CategoryTheory.Groupoid
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
-import Mathlib.Topology.Category.TopCat.Limits.Products
-import Mathlib.Topology.Homotopy.Product
+module
+
+public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Basic
+public import Mathlib.Topology.Category.TopCat.Limits.Products
+public import Mathlib.Topology.Homotopy.Product
 
 /-!
 # Fundamental groupoid preserves products
@@ -23,6 +25,8 @@ In this file, we give the following definitions/theorems:
   - `FundamentalGroupoidFunctor.preservesProduct` A proof that the fundamental groupoid functor
     preserves all products.
 -/
+
+@[expose] public section
 
 
 noncomputable section

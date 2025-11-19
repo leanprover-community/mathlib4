@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
-import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
+module
+
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
 
 /-!
 # The universal property of the even subalgebra
@@ -31,6 +33,8 @@ between one recursor invocation and the next.
 For the universal property of the even subalgebra, we apply a variant of the first trick again by
 choosing `S` to itself be a submodule of morphisms.
 -/
+
+@[expose] public section
 
 
 namespace CliffordAlgebra

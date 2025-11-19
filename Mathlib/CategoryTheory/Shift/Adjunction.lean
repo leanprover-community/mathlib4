@@ -3,8 +3,10 @@ Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel, Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.CommShift
-import Mathlib.CategoryTheory.Adjunction.Mates
+module
+
+public import Mathlib.CategoryTheory.Shift.CommShift
+public import Mathlib.CategoryTheory.Adjunction.Mates
 
 /-!
 # Adjoints commute with shifts
@@ -42,6 +44,8 @@ Once we have established all this, the compatibility of the commutation isomorph
 statements for the commutation isomorphisms for `G`.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

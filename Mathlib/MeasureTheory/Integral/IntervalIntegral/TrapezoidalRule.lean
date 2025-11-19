@@ -3,8 +3,10 @@ Copyright (c) 2025 P. Michael Kielstra. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: P. Michael Kielstra
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.Tactic.Field
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.Tactic.Field
 
 /-!
 # The trapezoidal rule
@@ -19,6 +21,8 @@ an error bound in terms of a bound on the second derivative of the integrand.
 We follow the proof on (Wikipedia)[https://en.wikipedia.org/wiki/Trapezoidal_rule] for the error
 bound.
 -/
+
+@[expose] public section
 
 open MeasureTheory intervalIntegral Interval Finset HasDerivWithinAt Set
 

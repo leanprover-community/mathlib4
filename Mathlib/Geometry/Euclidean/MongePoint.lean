@@ -3,8 +3,10 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Altitude
-import Mathlib.Geometry.Euclidean.Circumcenter
+module
+
+public import Mathlib.Geometry.Euclidean.Altitude
+public import Mathlib.Geometry.Euclidean.Circumcenter
 
 /-!
 # Monge point and orthocenter
@@ -42,6 +44,8 @@ generalization, the Monge point of a simplex.
   n-Simplex](https://pdfs.semanticscholar.org/6f8b/0f623459c76dac2e49255737f8f0f4725d16.pdf)
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

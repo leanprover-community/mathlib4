@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.TypeTags.Basic
-import Mathlib.Topology.Bornology.Basic
+module
+
+public import Mathlib.Algebra.Group.TypeTags.Basic
+public import Mathlib.Topology.Bornology.Basic
 
 /-!
 # Bornology structure on products and subtypes
@@ -13,6 +15,8 @@ In this file we define `Bornology` and `BoundedSpace` instances on `α × β`, `
 `{x // p x}`. We also prove basic lemmas about `Bornology.cobounded` and `Bornology.IsBounded`
 on these types.
 -/
+
+@[expose] public section
 
 
 open Set Filter Bornology Function

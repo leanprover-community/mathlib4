@@ -3,7 +3,9 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Basic
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Basic
 
 /-!
 # Local closure of morphism properties
@@ -11,6 +13,8 @@ import Mathlib.AlgebraicGeometry.Morphisms.Basic
 We define the source local closure of a property `P` w.r.t. a morphism property `W` and show it
 inherits stability properties from `P`.
 -/
+
+@[expose] public section
 
 universe u
 

@@ -3,11 +3,13 @@ Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli, Junyan Xu
 -/
-import Mathlib.Algebra.Group.Subgroup.Defs
-import Mathlib.CategoryTheory.Groupoid.VertexGroup
-import Mathlib.CategoryTheory.Groupoid.Basic
-import Mathlib.CategoryTheory.Groupoid
-import Mathlib.Data.Set.Lattice
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Defs
+public import Mathlib.CategoryTheory.Groupoid.VertexGroup
+public import Mathlib.CategoryTheory.Groupoid.Basic
+public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.Data.Set.Lattice
 
 /-!
 # Subgroupoid
@@ -52,6 +54,8 @@ and `Mathlib/Combinatorics/SimpleGraph/Subgraph.lean`.
 
 category theory, groupoid, subgroupoid
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory

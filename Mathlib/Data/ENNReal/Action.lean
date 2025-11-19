@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Data.ENNReal.Operations
+module
+
+public import Mathlib.Data.ENNReal.Operations
 
 /-!
 # Scalar multiplication on `ℝ≥0∞`.
@@ -11,6 +13,8 @@ import Mathlib.Data.ENNReal.Operations
 This file defines basic scalar actions on extended nonnegative reals, showing that
 `MulAction`s, `DistribMulAction`s, `Module`s and `Algebra`s restrict from `ℝ≥0∞` to `ℝ≥0`.
 -/
+
+@[expose] public section
 
 open Set NNReal ENNReal
 

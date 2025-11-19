@@ -3,7 +3,9 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.BoxIntegral.Partition.Basic
+module
+
+public import Mathlib.Analysis.BoxIntegral.Partition.Basic
 
 /-!
 # Split a box along one or more hyperplanes
@@ -34,6 +36,8 @@ is available as `BoxIntegral.Prepartition.compl`.
 
 rectangular box, partition, hyperplane
 -/
+
+@[expose] public section
 
 noncomputable section
 

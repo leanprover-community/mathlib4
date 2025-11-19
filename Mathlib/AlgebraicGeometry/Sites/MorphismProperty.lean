@@ -3,10 +3,12 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Joël Riou, Adam Topaz
 -/
-import Mathlib.AlgebraicGeometry.OpenImmersion
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.CategoryTheory.Sites.JointlySurjective
-import Mathlib.CategoryTheory.Sites.MorphismProperty
+module
+
+public import Mathlib.AlgebraicGeometry.OpenImmersion
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.Sites.JointlySurjective
+public import Mathlib.CategoryTheory.Sites.MorphismProperty
 
 /-!
 
@@ -17,6 +19,8 @@ associated precoverage on the category of schemes, where coverings are given
 by jointly surjective families of morphisms satisfying `P`.
 
 -/
+
+@[expose] public section
 
 universe v u
 

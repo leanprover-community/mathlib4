@@ -3,11 +3,13 @@ Copyright (c) 2020 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Computability.Halting
-import Mathlib.Computability.TuringMachine
-import Mathlib.Data.Num.Lemmas
-import Mathlib.Tactic.DeriveFintype
-import Mathlib.Computability.TMConfig
+module
+
+public import Mathlib.Computability.Halting
+public import Mathlib.Computability.TuringMachine
+public import Mathlib.Data.Num.Lemmas
+public import Mathlib.Tactic.DeriveFintype
+public import Mathlib.Computability.TMConfig
 
 /-!
 # Modelling partial recursive functions using Turing machines
@@ -22,6 +24,8 @@ Turing machine for evaluating these functions. This amounts to a constructive pr
 * `PartrecToTM2.tr`: A TM2 Turing machine which can evaluate `code` programs
 
 -/
+
+@[expose] public section
 
 open List (Vector)
 

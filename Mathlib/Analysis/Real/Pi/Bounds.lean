@@ -3,7 +3,9 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 
 /-!
 # Pi
@@ -16,6 +18,8 @@ numerical bounds on `π` such as `pi_gt_d2` and `pi_lt_d2` (more precise version
 See also `Mathlib/Analysis/Real/Pi/Leibniz.lean` and `Mathlib/Analysis/Real/Pi/Wallis.lean` for
 infinite formulas for `π`.
 -/
+
+@[expose] public section
 
 open scoped Real
 

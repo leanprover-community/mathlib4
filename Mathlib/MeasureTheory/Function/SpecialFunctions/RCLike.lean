@@ -3,13 +3,17 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.RCLike.Lemmas
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
+module
+
+public import Mathlib.Analysis.RCLike.Lemmas
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 
 /-!
 # Measurability of the basic `RCLike` functions
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

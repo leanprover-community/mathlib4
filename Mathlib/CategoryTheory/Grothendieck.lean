@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Sina Hazratpour
 -/
-import Mathlib.CategoryTheory.Category.Cat.AsSmall
-import Mathlib.CategoryTheory.Elements
-import Mathlib.CategoryTheory.Comma.Over.Basic
+module
+
+public import Mathlib.CategoryTheory.Category.Cat.AsSmall
+public import Mathlib.CategoryTheory.Elements
+public import Mathlib.CategoryTheory.Comma.Over.Basic
 
 /-!
 # The Grothendieck construction
@@ -46,6 +48,8 @@ See also `CategoryTheory.Functor.Elements` for the category of elements of funct
 * https://ncatlab.org/nlab/show/Grothendieck+construction
 
 -/
+
+@[expose] public section
 
 
 universe w u v u₁ v₁ u₂ v₂

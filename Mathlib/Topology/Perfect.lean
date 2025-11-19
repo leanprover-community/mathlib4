@@ -3,8 +3,9 @@ Copyright (c) 2022 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 -/
+module
 
-import Mathlib.Topology.Separation.Regular
+public import Mathlib.Topology.Separation.Regular
 
 /-!
 # Perfect Sets
@@ -49,6 +50,8 @@ namely Polish spaces.
 accumulation point, perfect set, dense-in-itself, cantor-bendixson.
 
 -/
+
+@[expose] public section
 
 
 open Topology Filter Set TopologicalSpace

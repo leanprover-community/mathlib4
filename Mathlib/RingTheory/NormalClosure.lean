@@ -3,7 +3,9 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.RingTheory.DedekindDomain.IntegralClosure
+module
+
+public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 
 /-!
 # Normal closure of an extension of domains
@@ -25,6 +27,8 @@ construction of `T` and to prove some results about it. Therefore, these instanc
 does not cause timeouts in this file, it does slow down considerably its compilation and
 does trigger timeouts in applications.
 -/
+
+@[expose] public section
 
 namespace Ring
 

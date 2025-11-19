@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Concrete
-import Mathlib.CategoryTheory.Sites.LocallyBijective
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Concrete
+public import Mathlib.CategoryTheory.Sites.LocallyBijective
 
 /-!
 # Morphisms of sheaves factor as a locally surjective followed by a locally injective morphism
@@ -18,6 +20,8 @@ Moreover, if we assume that the category of sheaves `Sheaf J A` is balanced
 (see `Sites.LeftExact`), then epimorphisms are exactly locally surjective morphisms.
 
 -/
+
+@[expose] public section
 
 universe w v' u' v u
 

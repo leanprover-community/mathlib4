@@ -3,10 +3,12 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Data.Stream.Init
-import Mathlib.Topology.Algebra.Semigroup
-import Mathlib.Topology.Compactification.StoneCech
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Data.Stream.Init
+public import Mathlib.Topology.Algebra.Semigroup
+public import Mathlib.Topology.Compactification.StoneCech
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Hindman's theorem on finite sums
@@ -40,6 +42,8 @@ partition of a `U`-large set, one of the parts is `U`-large.
 Ramsey theory, ultrafilter
 
 -/
+
+@[expose] public section
 
 
 open Filter

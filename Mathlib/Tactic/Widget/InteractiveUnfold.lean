@@ -3,10 +3,12 @@ Copyright (c) 2023 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Mathlib.Tactic.NthRewrite
-import Mathlib.Tactic.Widget.SelectPanelUtils
-import Mathlib.Lean.GoalsLocation
-import Mathlib.Lean.Meta.KAbstractPositions
+module
+
+public meta import Mathlib.Tactic.NthRewrite
+public meta import Mathlib.Tactic.Widget.SelectPanelUtils
+public meta import Mathlib.Lean.GoalsLocation
+public meta import Mathlib.Lean.Meta.KAbstractPositions
 
 /-!
 
@@ -49,6 +51,8 @@ constants marked as `Name.isInternalDetail`. So all such results are filtered ou
 This is implemented with `isUserFriendly`.
 
 -/
+
+public meta section
 
 open Lean Meta Server Widget ProofWidgets Jsx
 

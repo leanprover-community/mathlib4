@@ -3,9 +3,11 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Condexp
-import Mathlib.Probability.Moments.MGFAnalytic
-import Mathlib.Probability.Moments.Tilted
+module
+
+public import Mathlib.Probability.Kernel.Condexp
+public import Mathlib.Probability.Moments.MGFAnalytic
+public import Mathlib.Probability.Moments.Tilted
 
 /-!
 # Sub-Gaussian random variables
@@ -117,6 +119,8 @@ a conditional expectation, `(μ.trim hm)`-almost surely:
   science*][vershynin2018high]
 
 -/
+
+@[expose] public section
 
 open MeasureTheory Real
 

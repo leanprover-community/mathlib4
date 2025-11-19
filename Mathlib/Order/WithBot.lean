@@ -3,14 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Nontrivial.Basic
-import Mathlib.Order.TypeTags
-import Mathlib.Data.Option.NAry
-import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.Lift
-import Mathlib.Data.Option.Basic
-import Mathlib.Order.Lattice
-import Mathlib.Order.BoundedOrder.Basic
+module
+
+public import Mathlib.Logic.Nontrivial.Basic
+public import Mathlib.Order.TypeTags
+public import Mathlib.Data.Option.NAry
+public import Mathlib.Tactic.Contrapose
+public import Mathlib.Tactic.Lift
+public import Mathlib.Data.Option.Basic
+public import Mathlib.Order.Lattice
+public import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # `WithBot`, `WithTop`
@@ -22,6 +24,8 @@ Adding a `bot` or a `top` to an order.
 * `With<Top/Bot> α`: Equips `Option α` with the order on `α` plus `none` as the top/bottom element.
 
 -/
+
+@[expose] public section
 
 variable {α β γ δ : Type*}
 

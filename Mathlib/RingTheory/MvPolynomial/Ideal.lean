@@ -3,8 +3,10 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.MonoidAlgebra.Ideal
-import Mathlib.Algebra.MvPolynomial.Division
+module
+
+public import Mathlib.Algebra.MonoidAlgebra.Ideal
+public import Mathlib.Algebra.MvPolynomial.Division
 
 /-!
 # Lemmas about ideals of `MvPolynomial`
@@ -16,6 +18,8 @@ Notably this contains results about monomial ideals.
 * `MvPolynomial.mem_ideal_span_monomial_image`
 * `MvPolynomial.mem_ideal_span_X_image`
 -/
+
+@[expose] public section
 
 
 variable {σ R : Type*}

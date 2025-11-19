@@ -3,7 +3,9 @@ Copyright (c) 2022 Siddhartha Gadgil. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Siddhartha Gadgil, Jannis Limperg
 -/
-import Mathlib.Init
+module
+
+public import Mathlib.Init
 
 /-!
 # The `recover` tactic modifier
@@ -13,6 +15,8 @@ are not closed correctly. `recover tacs` for a tactic (or tactic sequence) `tacs
 applies the tactics and then adds goals
 that are not closed, starting from the original goal.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 

@@ -3,10 +3,12 @@ Copyright (c) 2025 Ruben Van de Velde. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ruben Van de Velde, David Ledvinka
 -/
-import Mathlib.Algebra.Group.Pi.Units
-import Mathlib.Algebra.Group.Submonoid.Units
-import Mathlib.Topology.Algebra.Constructions
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
+module
+
+public import Mathlib.Algebra.Group.Pi.Units
+public import Mathlib.Algebra.Group.Submonoid.Units
+public import Mathlib.Topology.Algebra.Constructions
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 
 /-!
 # Topological properties of units
@@ -14,6 +16,8 @@ import Mathlib.Topology.Algebra.ContinuousMonoidHom
 This file contains lemmas about the topology of units in topological monoids,
 including results about submonoid units and units of product spaces.
 -/
+
+@[expose] public section
 
 open Units
 

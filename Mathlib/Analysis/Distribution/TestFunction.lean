@@ -3,9 +3,10 @@ Copyright (c) 2025 Luigi Massacci. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luigi Massacci
 -/
+module
 
-import Mathlib.Analysis.Calculus.ContDiff.Defs
-import Mathlib.Topology.ContinuousMap.Bounded.Normed
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
+public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 
 /-!
 # Continuously differentiable functions with compact support
@@ -39,6 +40,8 @@ distributions, or "weak solutions" to PDEs, on `Ω`.
 
 distributions, test function
 -/
+
+@[expose] public section
 
 open Function Seminorm SeminormFamily Set TopologicalSpace UniformSpace
 open scoped BoundedContinuousFunction NNReal Topology

@@ -3,7 +3,9 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Tactic.GCongr.Core
+module
+
+public meta import Mathlib.Tactic.GCongr.Core
 
 /-!
 # gcongr attributes for lemmas up in the import chain
@@ -11,6 +13,8 @@ import Mathlib.Tactic.GCongr.Core
 In this file we add `gcongr` attribute to lemmas in `Lean.Init`.
 We may add lemmas from other files imported by `Mathlib/Tactic/GCongr/Core` later.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.GCongr
 

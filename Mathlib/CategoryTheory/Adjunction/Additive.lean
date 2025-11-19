@@ -3,7 +3,9 @@ Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel, Joël Riou
 -/
-import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 
 /-!
 # Adjunctions between additive functors.
@@ -17,6 +19,8 @@ preadditive categories:
   functors (analogous to `Adjunction.compYonedaIso`), in `Adjunction.compPreadditiveYonedaIso`.
 
 -/
+
+@[expose] public section
 
 universe u₁ u₂ v₁ v₂
 

@@ -3,7 +3,9 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
 
 /-!
 
@@ -32,6 +34,8 @@ counterparts in [Chou1994].
 walks
 
 -/
+
+@[expose] public section
 
 -- TODO: split
 
@@ -1496,3 +1500,5 @@ lemma isSubwalk_antisymm {u v} {p₁ p₂ : G.Walk u v} (h₁ : p₁.IsSubwalk p
 end Walk
 
 end SimpleGraph
+
+set_option linter.style.longFile 1700

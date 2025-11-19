@@ -3,8 +3,10 @@ Copyright (c) 2024 Tom Kranz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tom Kranz
 -/
-import Mathlib.Data.FinEnum
-import Mathlib.Logic.Equiv.Fin.Basic
+module
+
+public import Mathlib.Data.FinEnum
+public import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!
 # FinEnum instance for Option
@@ -15,6 +17,8 @@ non-truncated data.
 ## TODO
 * recreate rest of `Mathlib/Data/Fintype/Option.lean`
 -/
+
+@[expose] public section
 
 namespace FinEnum
 universe u v

@@ -3,7 +3,9 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.Extension.Presentation.Basic
+module
+
+public import Mathlib.RingTheory.Extension.Presentation.Basic
 
 /-!
 # Presentations on subrings
@@ -19,6 +21,8 @@ If the presentation is finite, `R₀` may be chosen as a Noetherian ring. In thi
 this API can be used to remove Noetherian hypothesis in certain cases.
 
 -/
+
+@[expose] public section
 
 open TensorProduct
 

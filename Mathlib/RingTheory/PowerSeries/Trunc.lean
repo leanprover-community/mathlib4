@@ -3,9 +3,11 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
-import Mathlib.Algebra.Polynomial.Coeff
-import Mathlib.Algebra.Polynomial.Degree.Lemmas
-import Mathlib.RingTheory.PowerSeries.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.Coeff
+public import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
 
@@ -16,6 +18,8 @@ to the polynomial that has the same coefficients as `φ`, for all `m < n`,
 and `0` otherwise.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

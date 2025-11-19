@@ -3,9 +3,11 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.Complex.RemovableSingularity
-import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
-import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
+module
+
+public import Mathlib.Analysis.Complex.RemovableSingularity
+public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.Deriv
+public import Mathlib.Order.Filter.ZeroAndBoundedAtFilter
 
 /-!
 # Periodic holomorphic functions
@@ -19,6 +21,8 @@ for all sufficiently large `im z`, then `F` extends to a holomorphic function on
 `0`. As a consequence, if `f` tends to zero as `im z → ∞`, then in fact it decays *exponentially*
 to zero. These results are important in the theory of modular forms.
 -/
+
+@[expose] public section
 
 open Complex Filter Asymptotics
 

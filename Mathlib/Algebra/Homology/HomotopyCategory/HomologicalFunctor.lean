@@ -3,10 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomologicalComplexAbelian
-import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
-import Mathlib.Algebra.Homology.HomologySequence
-import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
+module
+
+public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
+public import Mathlib.Algebra.Homology.HomotopyCategory.DegreewiseSplit
+public import Mathlib.Algebra.Homology.HomologySequence
+public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 
 /-! The homological functor
 
@@ -18,6 +20,8 @@ short exact sequences of cochain complexes, this follows from the homology
 sequence associated to a short exact sequence of homological complexes.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 

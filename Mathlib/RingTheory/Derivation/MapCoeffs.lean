@@ -3,10 +3,12 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
-import Mathlib.RingTheory.Derivation.DifferentialRing
-import Mathlib.Algebra.Polynomial.Module.Basic
-import Mathlib.Algebra.Polynomial.Derivation
-import Mathlib.FieldTheory.Separable
+module
+
+public import Mathlib.RingTheory.Derivation.DifferentialRing
+public import Mathlib.Algebra.Polynomial.Module.Basic
+public import Mathlib.Algebra.Polynomial.Derivation
+public import Mathlib.FieldTheory.Separable
 
 /-!
 # Coefficient-wise derivation on polynomials
@@ -16,6 +18,8 @@ show this forms a derivation, and prove `apply_eval_eq`, which shows that for a 
 `D(p(x)) = (D.mapCoeffs p)(x) + D(x) * p'(x)`. `apply_aeval_eq` and `apply_aeval_eq'`
 are generalizations of that for algebras. We also have a special case for `DifferentialAlgebra`s.
 -/
+
+@[expose] public section
 
 noncomputable section
 

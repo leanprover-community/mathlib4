@@ -3,7 +3,9 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+module
+
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
 /-!
 # Strongly measurable and finitely strongly measurable functions
@@ -38,6 +40,8 @@ measurable functions, as a basis for the Bochner integral.
   Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
 
 -/
+
+@[expose] public section
 
 open MeasureTheory Filter TopologicalSpace Function Set MeasureTheory.Measure
 

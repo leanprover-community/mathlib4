@@ -3,14 +3,18 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Mathlib.Tactic.FunProp.FunctionData
-import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
+module
+
+public meta import Mathlib.Tactic.FunProp.FunctionData
+public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
 
 /-!
 ## `funProp`
 
 this file defines environment extension for `funProp`
 -/
+
+public meta section
 
 
 namespace Mathlib

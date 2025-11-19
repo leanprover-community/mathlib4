@@ -3,7 +3,9 @@ Copyright (c) 2023 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
 
 /-!
 # Construct a tripartite graph from its triangles
@@ -34,6 +36,8 @@ This construction shows up unrelatedly twice in the theory of Roth numbers:
   The explicit triangles are always edge-disjoint and there is no accidental triangle if `s` is
   corner-free.
 -/
+
+@[expose] public section
 
 open Finset Function Sum3
 

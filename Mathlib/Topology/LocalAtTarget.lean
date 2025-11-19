@@ -3,10 +3,12 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.Topology.Sets.OpenCover
-import Mathlib.Topology.LocallyClosed
-import Mathlib.Topology.Maps.Proper.Basic
+module
+
+public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Sets.OpenCover
+public import Mathlib.Topology.LocallyClosed
+public import Mathlib.Topology.Maps.Proper.Basic
 
 /-!
 # Properties of maps that are local at the target or at the source.
@@ -25,6 +27,8 @@ We show that the following properties of continuous maps are local at the source
 - `GeneralizingMap`
 
 -/
+
+@[expose] public section
 
 open Filter Set TopologicalSpace Topology
 

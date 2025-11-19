@@ -3,7 +3,9 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Group.Defs
+module
+
+public import Mathlib.Algebra.Group.Defs
 
 /-!
 # Invertible elements
@@ -72,6 +74,8 @@ See Zulip: [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topi
 invertible, inverse element, invOf, a half, one half, a third, one third, ½, ⅓
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 

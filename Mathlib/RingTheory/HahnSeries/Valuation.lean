@@ -3,8 +3,10 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.RingTheory.HahnSeries.Multiplication
-import Mathlib.RingTheory.Valuation.Basic
+module
+
+public import Mathlib.RingTheory.HahnSeries.Multiplication
+public import Mathlib.RingTheory.Valuation.Basic
 
 /-!
 # Valuations on Hahn Series rings
@@ -22,6 +24,8 @@ admits an additive valuation given by `orderTop`.
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
+
+@[expose] public section
 
 
 noncomputable section

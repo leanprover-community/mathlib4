@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.Algebra.Ring.NegOnePow
-import Mathlib.CategoryTheory.GradedObject.Trifunctor
+module
+
+public import Mathlib.Algebra.Homology.ComplexShape
+public import Mathlib.Algebra.Ring.NegOnePow
+public import Mathlib.CategoryTheory.GradedObject.Trifunctor
 
 /-! Signs in constructions on homological complexes
 
@@ -23,6 +25,8 @@ and `I` is an additive monoid equipped with a group homomorphism `ε' : Multipli
 satisfying certain properties (see `ComplexShape.TensorSigns`).
 
 -/
+
+@[expose] public section
 
 assert_not_exists Field TwoSidedIdeal
 

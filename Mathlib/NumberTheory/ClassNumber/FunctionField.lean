@@ -3,9 +3,11 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.NumberTheory.ClassNumber.AdmissibleCardPowDegree
-import Mathlib.NumberTheory.ClassNumber.Finite
-import Mathlib.NumberTheory.FunctionField
+module
+
+public import Mathlib.NumberTheory.ClassNumber.AdmissibleCardPowDegree
+public import Mathlib.NumberTheory.ClassNumber.Finite
+public import Mathlib.NumberTheory.FunctionField
 
 /-!
 # Class numbers of function fields
@@ -18,6 +20,8 @@ on the class number.
 - `FunctionField.classNumber`: the class number of a function field is the (finite)
 cardinality of the class group of its ring of integers
 -/
+
+@[expose] public section
 
 
 namespace FunctionField

@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Bousfield
-import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
-import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
+module
+
+public import Mathlib.CategoryTheory.Localization.Bousfield
+public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+public import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
 
 /-!
 # LeftBousfield.W is stable under transfinite compositions
@@ -14,6 +16,8 @@ If `P : ObjectProperty C`, then `Localization.LeftBousfield.W P : MorphismProper
 is stable under transfinite compositions.
 
 -/
+
+@[expose] public section
 
 universe w v u
 

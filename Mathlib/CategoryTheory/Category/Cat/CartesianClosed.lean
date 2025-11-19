@@ -3,9 +3,11 @@ Copyright (c) 2025 Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emily Riehl
 -/
-import Mathlib.CategoryTheory.Closed.Cartesian
-import Mathlib.CategoryTheory.Functor.Currying
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
+module
+
+public import Mathlib.CategoryTheory.Closed.Cartesian
+public import Mathlib.CategoryTheory.Functor.Currying
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Cat
 
 /-!
 # Cartesian closed structure on `Cat`
@@ -21,6 +23,8 @@ monoidal closed categories and precomposition with left whiskering. These may no
 definitional equalities but may have to be phrased using `eqToIso`.
 
 -/
+
+@[expose] public section
 
 universe v u v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 

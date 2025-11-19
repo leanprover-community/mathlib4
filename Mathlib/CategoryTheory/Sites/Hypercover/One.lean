@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Sites.Coverage
-import Mathlib.CategoryTheory.Sites.Sheaf
-import Mathlib.CategoryTheory.Sites.Hypercover.Zero
+module
+
+public import Mathlib.CategoryTheory.Sites.Coverage
+public import Mathlib.CategoryTheory.Sites.Sheaf
+public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
 
 /-!
 # 1-hypercovers
@@ -23,6 +25,8 @@ identifies to the multiequalizer of suitable maps
 `F.obj (op (E.X i)) ⟶ F.obj (op (E.Y j))`.
 
 -/
+
+@[expose] public section
 
 universe w'' w' w v u
 

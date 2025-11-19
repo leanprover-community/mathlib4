@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Notation.Indicator
-import Mathlib.Data.Int.Cast.Pi
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.MeasureTheory.MeasurableSpace.Defs
+module
+
+public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Data.Int.Cast.Pi
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.MeasureTheory.MeasurableSpace.Defs
 
 /-!
 # Measurable spaces and measurable functions
@@ -39,6 +41,8 @@ Galois connection induced by `f`.
 
 measurable space, σ-algebra, measurable function, dynkin system, π-λ theorem, π-system
 -/
+
+@[expose] public section
 
 open Set MeasureTheory
 

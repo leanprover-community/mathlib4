@@ -4,11 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl, Damiano Testa,
 Yuyang Zhao
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
-import Mathlib.Data.Ordering.Basic
-import Mathlib.Order.MinMax
-import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.Use
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
+public import Mathlib.Data.Ordering.Basic
+public import Mathlib.Order.MinMax
+public import Mathlib.Tactic.Contrapose
+public import Mathlib.Tactic.Use
 
 /-!
 # Ordered monoids
@@ -27,6 +29,8 @@ Almost no monoid is actually present in this file: most assumptions have been ge
 `Mul` or `MulOneClass`.
 
 -/
+
+@[expose] public section
 
 
 -- TODO: If possible, uniformize lemma names, taking special care of `'`,

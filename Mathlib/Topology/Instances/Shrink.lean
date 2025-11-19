@@ -3,13 +3,17 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Logic.Small.Defs
-import Mathlib.Topology.Defs.Induced
-import Mathlib.Topology.Homeomorph.Defs
+module
+
+public import Mathlib.Logic.Small.Defs
+public import Mathlib.Topology.Defs.Induced
+public import Mathlib.Topology.Homeomorph.Defs
 
 /-!
 # Topological space structure on `Shrink X`
 -/
+
+@[expose] public section
 
 universe v u
 

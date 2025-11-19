@@ -3,8 +3,10 @@ Copyright (c) 2024 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.PathCategory.Basic
-import Mathlib.CategoryTheory.MorphismProperty.Composition
+module
+
+public import Mathlib.CategoryTheory.PathCategory.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # Properties of morphisms in a path category.
@@ -12,6 +14,8 @@ import Mathlib.CategoryTheory.MorphismProperty.Composition
 We provide a formulation of induction principles for morphisms in a path category in terms of
 `MorphismProperty`. This file is separate from `CategoryTheory.PathCategory.Basic` in order to
 reduce transitive imports. -/
+
+@[expose] public section
 
 
 universe v₁ u₁

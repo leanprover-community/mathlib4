@@ -3,7 +3,9 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+module
+
+public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 /-!
 # Finiteness of divisors
@@ -12,6 +14,8 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 * `UniqueFactorizationMonoid.fintypeSubtypeDvd`: elements of a UFM with finitely many units have
   finitely many divisors.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

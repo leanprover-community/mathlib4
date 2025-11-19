@@ -3,8 +3,10 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Dimension.Subsingleton
-import Mathlib.SetTheory.Cardinal.ToNat
+module
+
+public import Mathlib.LinearAlgebra.Dimension.Subsingleton
+public import Mathlib.SetTheory.Cardinal.ToNat
 
 /-!
 # Finite dimension of vector spaces
@@ -29,6 +31,8 @@ in `Dimension.lean`. Not all results have been ported yet.
 
 You should not assume that there has been any effort to state lemmas as generally as possible.
 -/
+
+@[expose] public section
 
 
 universe u v w

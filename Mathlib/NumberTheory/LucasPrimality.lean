@@ -3,8 +3,10 @@ Copyright (c) 2020 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey
 -/
-import Mathlib.Algebra.Field.ZMod
-import Mathlib.RingTheory.IntegralDomain
+module
+
+public import Mathlib.Algebra.Field.ZMod
+public import Mathlib.RingTheory.IntegralDomain
 
 /-!
 # The Lucas test for primes
@@ -26,6 +28,8 @@ modulo `p`. Despite this, the theorem still holds vacuously for `p = 0` and `p =
 cases, we can take `q` to be any prime and see that `hd` does not hold, since `a^((p-1)/q)` reduces
 to `1`.
 -/
+
+@[expose] public section
 
 
 /-- If `a^(p-1) = 1 mod p`, but `a^((p-1)/q) ≠ 1 mod p` for all prime factors `q` of `p-1`, then `p`

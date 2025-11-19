@@ -3,14 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Finsupp.Single
+module
+
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Finsupp.Single
 
 /-!
 # Additive monoid structure on `ι →₀ M`
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 

@@ -3,12 +3,16 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.EnoughInjectives
-import Mathlib.CategoryTheory.Generator.Abelian
+module
+
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.EnoughInjectives
+public import Mathlib.CategoryTheory.Generator.Abelian
 
 /-!
 # Grothendieck categories have a coseparator
 -/
+
+@[expose] public section
 
 universe w v u
 

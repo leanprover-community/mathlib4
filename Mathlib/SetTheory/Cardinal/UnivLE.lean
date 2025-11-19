@@ -3,12 +3,16 @@ Copyright (c) 2023 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Logic.UnivLE
-import Mathlib.SetTheory.Ordinal.Basic
+module
+
+public import Mathlib.Logic.UnivLE
+public import Mathlib.SetTheory.Ordinal.Basic
 
 /-!
 # UnivLE and cardinals
 -/
+
+@[expose] public section
 
 noncomputable section
 

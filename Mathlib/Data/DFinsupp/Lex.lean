@@ -3,16 +3,20 @@ Copyright (c) 2022 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Junyan Xu
 -/
-import Mathlib.Algebra.Order.Group.PiLex
-import Mathlib.Data.DFinsupp.Order
-import Mathlib.Data.DFinsupp.NeLocus
-import Mathlib.Order.WellFoundedSet
+module
+
+public import Mathlib.Algebra.Order.Group.PiLex
+public import Mathlib.Data.DFinsupp.Order
+public import Mathlib.Data.DFinsupp.NeLocus
+public import Mathlib.Order.WellFoundedSet
 
 /-!
 # Lexicographic order on finitely supported dependent functions
 
 This file defines the lexicographic order on `DFinsupp`.
 -/
+
+@[expose] public section
 
 
 variable {ι : Type*} {α : ι → Type*}

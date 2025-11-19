@@ -3,9 +3,11 @@ Copyright (c) 2024 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu, Jiedong Jiang
 -/
-import Mathlib.FieldTheory.Normal.Closure
-import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.FieldTheory.IntermediateField.Algebraic
+module
+
+public import Mathlib.FieldTheory.Normal.Closure
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
+public import Mathlib.FieldTheory.IntermediateField.Algebraic
 
 /-!
 # Relative Algebraic Closure
@@ -18,6 +20,8 @@ In this file we construct the relative algebraic closure of a field extension.
   of the field extension `E / F`, which is defined to be the integral closure of `F` in `E`.
 
 -/
+
+@[expose] public section
 noncomputable section
 
 open Polynomial FiniteDimensional IntermediateField Field

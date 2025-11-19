@@ -3,10 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Vector.Basic
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Data.List.GetD
+module
+
+public import Mathlib.Data.Vector.Basic
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Tactic.ApplyFun
+public import Mathlib.Data.List.GetD
 
 /-!
 # Turing machine tapes
@@ -23,6 +25,8 @@ All but finitely many of the cells are required to hold the blank symbol `defaul
   `ListBlank Γ` instances, one for each direction, as well as a head symbol.
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 

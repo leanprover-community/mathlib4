@@ -3,9 +3,11 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Analysis.BoxIntegral.UnitPartition
-import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
-import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
+module
+
+public import Mathlib.Analysis.BoxIntegral.UnitPartition
+public import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
+public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 
 /-!
 # Covolume of ℤ-lattices
@@ -51,6 +53,8 @@ the same result in the `InnerProductSpace` case, we add a `prime`, for e.g.
 general case, we had two primes, e.g. `covolume.tendsto_card_div_pow''`.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

@@ -3,8 +3,10 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Data.Matrix.Diagonal
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Data.Matrix.Diagonal
 
 /-!
 # Matrices in prime characteristic
@@ -12,6 +14,8 @@ import Mathlib.Data.Matrix.Diagonal
 In this file we prove that matrices over a ring of characteristic `p`
 with nonempty index type have the same characteristic.
 -/
+
+@[expose] public section
 
 
 open Matrix

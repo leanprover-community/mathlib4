@@ -3,8 +3,10 @@ Copyright (c) 2025 Michał Mrugała. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michał Mrugała
 -/
-import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.RingTheory.IsTensorProduct
+module
+
+public import Mathlib.Algebra.MonoidAlgebra.Basic
+public import Mathlib.RingTheory.IsTensorProduct
 
 /-!
 # Monoid algebras commute with base change
@@ -15,6 +17,8 @@ In this file we show that monoid algebras are stable under pushout.
 
 Additivise
 -/
+
+@[expose] public section
 
 noncomputable section
 

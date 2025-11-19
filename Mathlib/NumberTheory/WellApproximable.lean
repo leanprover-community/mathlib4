@@ -3,8 +3,10 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Dynamics.Ergodic.AddCircle
-import Mathlib.MeasureTheory.Covering.LiminfLimsup
+module
+
+public import Mathlib.Dynamics.Ergodic.AddCircle
+public import Mathlib.MeasureTheory.Covering.LiminfLimsup
 
 /-!
 # Well-approximable numbers and Gallagher's ergodic theorem
@@ -56,6 +58,8 @@ Use `AddCircle.exists_norm_nsmul_le` to prove:
 `addWellApproximable 𝕊 (fun n ↦ 1 / n^2) = { ξ | ¬ IsOfFinAddOrder ξ }`
 (which is equivalent to `Real.infinite_rat_abs_sub_lt_one_div_den_sq_iff_irrational`).
 -/
+
+@[expose] public section
 
 
 open Set Filter Function Metric MeasureTheory

@@ -3,13 +3,17 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Embedding
-import Mathlib.Order.Restriction
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
+public import Mathlib.Order.Restriction
 
 /-! # Auxiliary maps for Ionescu-Tulcea theorem
 
 This file contains auxiliary maps which are used to prove the Ionescu-Tulcea theorem.
 -/
+
+@[expose] public section
 
 open Finset Preorder
 

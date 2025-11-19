@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.Algebra.Order.Group.Abs
-import Mathlib.Algebra.Ring.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Hom
+public import Mathlib.Algebra.Order.Group.Abs
+public import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Algebraic order homomorphism classes
@@ -44,6 +46,8 @@ multiplicative ring norms but outside of this use we only consider real-valued s
 
 Finitary versions of the current lemmas.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

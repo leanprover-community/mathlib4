@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Logic.Relation
-import Mathlib.Order.Hom.Basic
-import Mathlib.Tactic.Tauto
+module
+
+public import Mathlib.Logic.Relation
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Tactic.Tauto
 
 /-!
 # Turning a preorder into a partial order
@@ -22,6 +24,8 @@ such that `a ≤ b` and `b ≤ a`.
 * `Antisymmetrization α r`: The quotient of `α` by `AntisymmRel r`. Even when `r` is just a
   preorder, `Antisymmetrization α` is a partial order.
 -/
+
+@[expose] public section
 
 open Function OrderDual
 
@@ -92,11 +96,11 @@ lemma AntisymmRel.left (h : AntisymmRel r a b) : r a b := h.1
 lemma AntisymmRel.right (h : AntisymmRel r a b) : r b a := h.2
 
 /-- See if the term is `AntisymmRel r a b` and the goal is `r a b`. -/
-@[gcongr_forward] def exactAntisymmRelLeft : ForwardExt where
+@[gcongr_forward] meta def exactAntisymmRelLeft : ForwardExt where
   eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``AntisymmRel.left #[h])
 
 /-- See if the term is `AntisymmRel r a b` and the goal is `r b a`. -/
-@[gcongr_forward] def exactAntisymmRelRight : ForwardExt where
+@[gcongr_forward] meta def exactAntisymmRelRight : ForwardExt where
   eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``AntisymmRel.right #[h])
 
 end Mathlib.Tactic.GCongr

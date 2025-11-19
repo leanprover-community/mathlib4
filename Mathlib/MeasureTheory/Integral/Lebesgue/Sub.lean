@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Integral.Lebesgue.Add
+module
+
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 
 /-!
 # Subtraction of Lebesgue integrals
@@ -12,6 +14,8 @@ In this file we first show that Lebesgue integrals can be subtracted with the ex
 `∫⁻ f - ∫⁻ g ≤ ∫⁻ (f - g)`, with equality if `g ≤ f` almost everywhere. Then we prove variants of
 the monotone convergence theorem that use this subtraction in their proofs.
 -/
+
+@[expose] public section
 
 open Filter ENNReal Topology
 

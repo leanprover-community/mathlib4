@@ -3,10 +3,12 @@ Copyright (c) 2023 Vasily Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
-import Mathlib.Analysis.Convex.Combination
-import Mathlib.Data.Set.Card
-import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
-import Mathlib.Topology.Separation.Hausdorff
+module
+
+public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.Data.Set.Card
+public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Radon's theorem on convex sets
@@ -25,6 +27,8 @@ compactness of sets (see `helly_theorem_compact`).
 
 convex hull, affine independence, Radon, Helly
 -/
+
+@[expose] public section
 
 open Fintype Finset Set
 

@@ -3,13 +3,17 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Condensed.Light.Module
+module
+
+public import Mathlib.Condensed.Light.Module
 /-!
 
 # Limits in categories of light condensed objects
 
 This file adds some instances for limits in light condensed sets and modules.
 -/
+
+@[expose] public section
 
 universe u
 

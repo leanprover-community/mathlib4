@@ -3,7 +3,9 @@ Copyright (c) 2023 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Dual
+module
+
+public import Mathlib.Combinatorics.Matroid.Dual
 
 /-!
 # Matroid Restriction
@@ -63,6 +65,8 @@ We define the restriction order `≤r` to give a `PartialOrder` instance on the 
 `Matroidᵣ α` rather than `Matroid α` itself, because the `PartialOrder (Matroid α)` instance is
 reserved for the more mathematically important 'minor' order; see `Matroid.IsMinor`.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

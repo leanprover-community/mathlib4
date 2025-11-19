@@ -3,7 +3,9 @@ Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
-import Mathlib.FieldTheory.Galois.Basic
+module
+
+public import Mathlib.FieldTheory.Galois.Basic
 
 /-!
 # Galois Groups of Polynomials
@@ -34,6 +36,8 @@ equals the number of real roots plus the number of roots not fixed by complex co
 (i.e. with some imaginary component).
 
 -/
+
+@[expose] public section
 
 assert_not_exists Real
 

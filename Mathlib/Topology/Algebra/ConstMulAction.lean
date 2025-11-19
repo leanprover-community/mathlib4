@@ -3,12 +3,14 @@ Copyright (c) 2021 Alex Kontorovich, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Lattice
-import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
-import Mathlib.Algebra.Module.ULift
-import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.Topology.Algebra.Constructions
-import Mathlib.Topology.Algebra.Support
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
+public import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
+public import Mathlib.Algebra.Module.ULift
+public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.Topology.Algebra.Constructions
+public import Mathlib.Topology.Algebra.Support
 
 /-!
 # Monoid actions continuous in the second variable
@@ -41,6 +43,8 @@ In this file we define class `ContinuousConstSMul`. We say `ContinuousConstSMul 
 Hausdorff, discrete group, properly discontinuous, quotient space
 
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedRing
 

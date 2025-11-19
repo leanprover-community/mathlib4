@@ -3,11 +3,13 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.MeasureTheory.Measure.Regular
-import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
-import Mathlib.Topology.UrysohnsLemma
-import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
+module
+
+public import Mathlib.MeasureTheory.Measure.Regular
+public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
+public import Mathlib.Topology.UrysohnsLemma
+public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 /-!
 # Approximation in Lᵖ by continuous functions
@@ -56,6 +58,8 @@ order) of functions whose codomain is `ℝ≥0∞` or `ℝ`, by semicontinuous f
 See the Vitali-Carathéodory theorem,
 in the file `Mathlib/MeasureTheory/Integral/Bochner/VitaliCaratheodory.lean`.
 -/
+
+@[expose] public section
 
 open scoped ENNReal NNReal Topology BoundedContinuousFunction
 

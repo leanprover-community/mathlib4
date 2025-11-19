@@ -3,9 +3,11 @@ Copyright (c) 2024 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen, Joël Riou
 -/
-import Mathlib.CategoryTheory.Monoidal.FunctorCategory
-import Mathlib.CategoryTheory.Monoidal.Types.Basic
-import Mathlib.CategoryTheory.Enriched.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+public import Mathlib.CategoryTheory.Monoidal.Types.Basic
+public import Mathlib.CategoryTheory.Enriched.Basic
 
 /-!
 # Internal hom in functor categories
@@ -18,6 +20,8 @@ for showing that `C ⥤ Type max w v u` is monoidal closed.
 See `Mathlib/CategoryTheory/Closed/FunctorToTypes.lean`.
 
 -/
+
+@[expose] public section
 
 
 universe w v' v u u'

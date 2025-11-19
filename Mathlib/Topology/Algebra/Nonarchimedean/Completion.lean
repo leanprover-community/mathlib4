@@ -3,9 +3,11 @@ Copyright (c) 2024 Mitchell Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Lee
 -/
-import Mathlib.Topology.Algebra.Nonarchimedean.Basic
-import Mathlib.Topology.Algebra.GroupCompletion
-import Mathlib.Topology.Algebra.UniformRing
+module
+
+public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
+public import Mathlib.Topology.Algebra.GroupCompletion
+public import Mathlib.Topology.Algebra.UniformRing
 
 /-!
 # The completion of a nonarchimedean additive group
@@ -14,6 +16,8 @@ The completion of a nonarchimedean additive group is a nonarchimedean additive g
 
 The completion of a nonarchimedean ring is a nonarchimedean ring.
 -/
+
+@[expose] public section
 
 open UniformSpace UniformSpace.Completion AddSubgroup OpenAddSubgroup Topology
 

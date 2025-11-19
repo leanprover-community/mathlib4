@@ -3,10 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Kyle Miller
 -/
+module
 
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.Util.AddRelatedDecl
-import Batteries.Tactic.Lint
+public meta import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public meta import Mathlib.Util.AddRelatedDecl
+public meta import Batteries.Tactic.Lint
 
 /-!
 # Tools to reformulate category-theoretic lemmas in concrete categories
@@ -31,6 +32,8 @@ For more details, see the documentation attached to the `syntax` declaration.
 This closely follows the implementation of the `@[reassoc]` attribute, due to Simon Hudon and
 reimplemented by Kim Morrison in Lean 4.
 -/
+
+public meta section
 
 open Lean Meta Elab Tactic
 open Mathlib.Tactic

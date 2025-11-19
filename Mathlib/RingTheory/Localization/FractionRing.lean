@@ -3,13 +3,15 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.Algebra.Ring.Hom.InjSurj
-import Mathlib.Algebra.Field.Equiv
-import Mathlib.Algebra.Field.Subfield.Basic
-import Mathlib.Algebra.Order.GroupWithZero.Submonoid
-import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.RingTheory.Localization.Basic
-import Mathlib.RingTheory.SimpleRing.Basic
+module
+
+public import Mathlib.Algebra.Ring.Hom.InjSurj
+public import Mathlib.Algebra.Field.Equiv
+public import Mathlib.Algebra.Field.Subfield.Basic
+public import Mathlib.Algebra.Order.GroupWithZero.Submonoid
+public import Mathlib.Algebra.Order.Ring.Int
+public import Mathlib.RingTheory.Localization.Basic
+public import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Fraction ring / fraction field Frac(R) as localization
@@ -33,6 +35,8 @@ See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
+
+@[expose] public section
 
 assert_not_exists Ideal
 

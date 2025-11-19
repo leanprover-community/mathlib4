@@ -3,10 +3,12 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.PEmpty
-import Mathlib.CategoryTheory.Limits.IsLimit
-import Mathlib.CategoryTheory.EpiMono
-import Mathlib.CategoryTheory.Category.Preorder
+module
+
+public import Mathlib.CategoryTheory.PEmpty
+public import Mathlib.CategoryTheory.Limits.IsLimit
+public import Mathlib.CategoryTheory.EpiMono
+public import Mathlib.CategoryTheory.Category.Preorder
 
 /-!
 # Initial and terminal objects in a category.
@@ -20,6 +22,8 @@ objects are defined in `Terminal.lean`.
 ## References
 * [Stacks: Initial and final objects](https://stacks.math.columbia.edu/tag/002B)
 -/
+
+@[expose] public section
 
 assert_not_exists CategoryTheory.Limits.HasLimit
 

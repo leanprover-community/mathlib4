@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Resolution
-import Mathlib.CategoryTheory.Localization.Opposite
-import Mathlib.CategoryTheory.GuitartExact.Opposite
+module
+
+public import Mathlib.CategoryTheory.Localization.Resolution
+public import Mathlib.CategoryTheory.Localization.Opposite
+public import Mathlib.CategoryTheory.GuitartExact.Opposite
 
 /-!
 # Derivability structures
@@ -52,6 +54,8 @@ not depend of the choice of the localization functors.
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 
 -/
+
+@[expose] public section
 universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory

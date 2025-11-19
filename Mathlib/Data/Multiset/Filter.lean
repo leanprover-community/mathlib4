@@ -3,9 +3,11 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Multiset.MapFold
-import Mathlib.Data.Set.Function
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Data.Multiset.MapFold
+public import Mathlib.Data.Set.Function
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # Filtering multisets by a predicate
@@ -15,6 +17,8 @@ import Mathlib.Order.Hom.Basic
 * `Multiset.filter`: `filter p s` is the multiset of elements in `s` that satisfy `p`.
 * `Multiset.filterMap`: `filterMap f s` is the multiset of `b`s where `some b ∈ map f s`.
 -/
+
+@[expose] public section
 
 -- No algebra should be required
 assert_not_exists Monoid

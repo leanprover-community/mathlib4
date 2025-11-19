@@ -3,10 +3,12 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
-import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Slash actions
@@ -21,6 +23,8 @@ Scoped in the `ModularForm` namespace, this file defines
 
 * `f ∣[k] A`: the `k`th slash action by `A` on `f`
 -/
+
+@[expose] public section
 
 
 open Complex UpperHalfPlane ModularGroup

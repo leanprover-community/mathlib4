@@ -3,10 +3,12 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Topology.Homotopy.Contractible
-import Mathlib.Topology.Homotopy.Basic
-import Mathlib.Topology.Connected.LocPathConnected
-import Mathlib.Topology.Homeomorph.Lemmas
+module
+
+public import Mathlib.Topology.Homotopy.Contractible
+public import Mathlib.Topology.Homotopy.Basic
+public import Mathlib.Topology.Connected.LocPathConnected
+public import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Strongly locally contractible spaces
@@ -62,6 +64,8 @@ imply SLC. Moreover, from a contractible neighborhood `S` one generally cannot s
 `V ⊆ S` that remains contractible, so requiring neighborhoods to be open is potentially strictly
 stronger than SLC.
 -/
+
+@[expose] public section
 
 noncomputable section
 

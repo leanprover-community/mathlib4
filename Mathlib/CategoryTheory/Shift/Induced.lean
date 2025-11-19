@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.CommShift
+module
+
+public import Mathlib.CategoryTheory.Shift.CommShift
 
 /-!
 # Shift induced from a category to another
@@ -22,6 +24,8 @@ functors, the main construction `HasShift.induced` in this file shall be
 used for both quotient and localized shifts.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

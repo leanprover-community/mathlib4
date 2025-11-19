@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Endomorphism
+module
+
+public import Mathlib.CategoryTheory.Endomorphism
 
 /-!
 # The center of a category
@@ -16,6 +18,8 @@ type of endomorphisms of the identity functor of `C`.
 * https://ncatlab.org/nlab/show/center+of+a+category
 
 -/
+
+@[expose] public section
 universe v u
 
 namespace CategoryTheory

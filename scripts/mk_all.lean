@@ -44,6 +44,7 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
   let git := (args.flag? "git").isSome
   -- Check whether we only verify the files, or update them in-place.
   let check := (args.flag? "check").isSome
+  let useModule := (args.flag? "module").isSome
   -- Check whether the `--lib` flag was set. If so, build the file corresponding to the library
   -- passed to `--lib`. Else build all the libraries of the package.
   -- If the package is `mathlib`, then it removes the libraries `Cache` and `LongestPole` and it
@@ -53,12 +54,16 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
               | none => getLeanLibs
   let mut updates := 0
   for d in libs.reverse do  -- reverse to create `Mathlib/Tactic.lean` before `Mathlib.lean`
+    let useModule := useModule || d.startsWith "Mathlib"
     let fileName := addExtension d "lean"
     let mut allFiles ← getAllModulesSorted git d
     -- mathlib exception: manually import Std and Batteries in `Mathlib.lean`
     if d == "Mathlib" then
       allFiles := #["Std", "Batteries"] ++ allFiles
-    let fileContent := ("\n".intercalate (allFiles.map ("import " ++ ·)).toList).push '\n'
+    let fileContent := (if useModule then "module\n\n" else "") ++
+      ("\n".intercalate (allFiles.map ((if useModule then "public " else "") ++ "import " ++ ·)).toList) ++
+      (if d == "Mathlib" then "\n\nset_option linter.style.longLine false" else "") ++
+      "\n"
     if !(← pathExists fileName) then
       if check then
         IO.println s!"File '{fileName}' does not exist"
@@ -94,6 +99,7 @@ def mkAll : Cmd := `[Cli|
     lib : String; "Create a folder importing all Lean files from the specified library/subfolder."
     git;          "Use the folder content information from git."
     check;        "Only check if the files are up-to-date; print an error if not"
+    module;       "Generate `module` files with `public` imports."
 ]
 
 /-- The entrypoint to the `lake exe mk_all` command. -/

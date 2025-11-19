@@ -3,12 +3,16 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-! # Lemmas about coprimality with big products.
 
 These lemmas are kept separate from `Data.Nat.GCD.Basic` in order to minimize imports.
 -/
+
+@[expose] public section
 
 
 namespace Nat

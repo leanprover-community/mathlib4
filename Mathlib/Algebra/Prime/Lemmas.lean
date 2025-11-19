@@ -3,11 +3,13 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
-import Mathlib.Algebra.Divisibility.Hom
-import Mathlib.Algebra.Group.Irreducible.Lemmas
-import Mathlib.Algebra.GroupWithZero.Equiv
-import Mathlib.Algebra.Prime.Defs
-import Mathlib.Order.Monotone.Defs
+module
+
+public import Mathlib.Algebra.Divisibility.Hom
+public import Mathlib.Algebra.Group.Irreducible.Lemmas
+public import Mathlib.Algebra.GroupWithZero.Equiv
+public import Mathlib.Algebra.Prime.Defs
+public import Mathlib.Order.Monotone.Defs
 
 /-!
 # Associated, prime, and irreducible elements.
@@ -25,6 +27,8 @@ saying that two elements of a monoid differ by a multiplication by a unit.
 Then we show that the quotient type `Associates` is a monoid
 and prove basic properties of this quotient.
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedMonoid Multiset
 

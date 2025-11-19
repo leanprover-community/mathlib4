@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Function.Defs
-import Mathlib.Logic.Function.Basic
+module
+
+public import Mathlib.Logic.Function.Defs
+public import Mathlib.Logic.Function.Basic
 
 /-!
 # Sigma types
@@ -28,6 +30,8 @@ The definition of `Sigma` takes values in `Type*`. This effectively forbids `Pro
 types. To that effect, we have `PSigma`, which takes value in `Sort*` and carries a more
 complicated universe signature as a consequence.
 -/
+
+@[expose] public section
 
 open Function
 

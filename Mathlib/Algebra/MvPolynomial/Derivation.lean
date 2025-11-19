@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.MvPolynomial.Supported
-import Mathlib.RingTheory.Derivation.Basic
+module
+
+public import Mathlib.Algebra.MvPolynomial.Supported
+public import Mathlib.RingTheory.Derivation.Basic
 
 /-!
 # Derivations of multivariate polynomials
@@ -14,6 +16,8 @@ monomials `MvPolynomial.X i`. We also provide a constructor `MvPolynomial.mkDeri
 builds a derivation from its values on `X i`s and a linear equivalence
 `MvPolynomial.mkDerivationEquiv` between `σ → A` and `Derivation (MvPolynomial σ R) A`.
 -/
+
+@[expose] public section
 
 
 namespace MvPolynomial

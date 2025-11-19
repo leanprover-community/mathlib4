@@ -3,12 +3,13 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
+module
 
-import Mathlib.Algebra.Order.Antidiag.Finsupp
-import Mathlib.Data.Finsupp.Weight
-import Mathlib.Tactic.Linarith
-import Mathlib.LinearAlgebra.Pi
-import Mathlib.Algebra.MvPolynomial.Eval
+public import Mathlib.Algebra.Order.Antidiag.Finsupp
+public import Mathlib.Data.Finsupp.Weight
+public import Mathlib.Tactic.Linarith
+public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.Algebra.MvPolynomial.Eval
 
 /-!
 # Formal (multivariate) power series
@@ -72,6 +73,8 @@ that is needed to do this. Once I-adic completion (topological or algebraic) is 
 it should not be hard to fill in the details.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

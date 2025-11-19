@@ -3,10 +3,12 @@ Copyright (c) 2022 Cuma Kökmen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Cuma Kökmen, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Integral.CircleIntegral
-import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.Order.Fin.Tuple
-import Mathlib.Util.Superscript
+module
+
+public import Mathlib.MeasureTheory.Integral.CircleIntegral
+public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.Order.Fin.Tuple
+public import Mathlib.Util.Superscript
 
 /-!
 # Integral over a torus in `ℂⁿ`
@@ -54,6 +56,8 @@ We also define a predicate saying that `f ∘ torusMap c R` is integrable on the
 
 integral, torus
 -/
+
+@[expose] public section
 
 
 variable {n : ℕ}

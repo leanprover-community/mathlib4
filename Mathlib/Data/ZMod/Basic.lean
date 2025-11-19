@@ -3,12 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.CharP.Basic
-import Mathlib.Algebra.Ring.Prod
-import Mathlib.Data.Fintype.Units
-import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.Algebra.CharP.Basic
+public import Mathlib.Algebra.Ring.Prod
+public import Mathlib.Data.Fintype.Units
+public import Mathlib.GroupTheory.GroupAction.SubMulAction
+public import Mathlib.GroupTheory.OrderOfElement
+public import Mathlib.Tactic.FinCases
 
 /-!
 # Integers mod `n`
@@ -28,6 +30,8 @@ Definition of the integers mod n, and the field structure on the integers mod p.
   This is a ring hom if the ring has characteristic dividing `n`
 
 -/
+
+@[expose] public section
 
 assert_not_exists Field Submodule TwoSidedIdeal
 

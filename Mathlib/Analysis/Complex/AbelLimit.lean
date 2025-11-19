@@ -3,10 +3,12 @@ Copyright (c) 2024 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Tactic.Peel
-import Mathlib.Tactic.Positivity
+module
+
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Tactic.Peel
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Abel's limit theorem
@@ -27,6 +29,8 @@ left with angle less than `π`.
 * https://planetmath.org/proofofabelslimittheorem
 * https://en.wikipedia.org/wiki/Abel%27s_theorem
 -/
+
+@[expose] public section
 
 
 open Filter Finset

@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Sheaf.Generators
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Generators
 
 /-!
 # Quasicoherent sheaves
@@ -17,6 +19,8 @@ When these coproducts are finite, we say that the sheaf is of finite presentatio
 * https://stacks.math.columbia.edu/tag/01BD
 
 -/
+
+@[expose] public section
 
 universe u v' u'
 

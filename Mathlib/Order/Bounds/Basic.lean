@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Order.Bounds.Defs
-import Mathlib.Order.Directed
-import Mathlib.Order.BoundedOrder.Monotone
-import Mathlib.Order.Interval.Set.Basic
+module
+
+public import Mathlib.Order.Bounds.Defs
+public import Mathlib.Order.Directed
+public import Mathlib.Order.BoundedOrder.Monotone
+public import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Upper / lower bounds
@@ -15,6 +17,8 @@ In this file we prove various lemmas about upper/lower bounds of a set:
 monotonicity, behaviour under `∪`, `∩`, `insert`,
 and provide formulas for `∅`, `univ`, and intervals.
 -/
+
+@[expose] public section
 
 open Function Set
 

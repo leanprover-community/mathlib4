@@ -3,7 +3,9 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Devon Tuma
 -/
-import Mathlib.Algebra.Polynomial.Factors
+module
+
+public import Mathlib.Algebra.Polynomial.Factors
 
 /-!
 # Scaling the roots of a polynomial
@@ -11,6 +13,8 @@ import Mathlib.Algebra.Polynomial.Factors
 This file defines `scaleRoots p s` for a polynomial `p` in one variable and a ring element `s` to
 be the polynomial with root `r * s` for each root `r` of `p` and proves some basic results about it.
 -/
+
+@[expose] public section
 
 
 variable {R S A K : Type*}

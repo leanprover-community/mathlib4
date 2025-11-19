@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Fold
-import Mathlib.Data.Multiset.Bind
-import Mathlib.Order.SetNotation
+module
+
+public import Mathlib.Data.Finset.Fold
+public import Mathlib.Data.Multiset.Bind
+public import Mathlib.Order.SetNotation
 
 /-!
 # Unions of finite sets
@@ -25,6 +27,8 @@ This file defines the union of a family `t : α → Finset β` of finsets bounde
 
 Remove `Finset.biUnion` in favour of `Finset.sup`.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero MulAction
 

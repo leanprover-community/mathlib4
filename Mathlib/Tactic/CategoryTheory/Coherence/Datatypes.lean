@@ -3,8 +3,10 @@ Copyright (c) 2024 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Lean.Meta.Basic
-import Mathlib.Init
+module
+
+public meta import Lean.Meta.Basic
+public import Mathlib.Init
 
 /-!
 # Datatypes for bicategory like structures
@@ -33,6 +35,8 @@ For example, a monad `m` with `[MonadMor₂ m]` provides the operation
 composition `η ≫ θ` of 2-morphisms `η` and `θ` in the monad `m`.
 
 -/
+
+public meta section
 
 open Lean Meta
 

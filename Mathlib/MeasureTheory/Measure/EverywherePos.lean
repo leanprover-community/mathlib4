@@ -3,9 +3,11 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Group.Measure
-import Mathlib.Tactic.Group
-import Mathlib.Topology.UrysohnsLemma
+module
+
+public import Mathlib.MeasureTheory.Group.Measure
+public import Mathlib.Tactic.Group
+public import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Everywhere positive sets in measure spaces
@@ -35,6 +37,8 @@ assuming additionally that `s` has finite measure.
   compactly supported functions. This property is also known as completion-regularity of Haar
   measures.
 -/
+
+@[expose] public section
 
 open scoped Topology ENNReal NNReal
 open Set Filter

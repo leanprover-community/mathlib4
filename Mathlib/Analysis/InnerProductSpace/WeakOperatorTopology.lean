@@ -3,9 +3,10 @@ Copyright (c) 2024 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.InnerProductSpace.Dual
-import Mathlib.Analysis.LocallyConvex.WeakOperatorTopology
+public import Mathlib.Analysis.InnerProductSpace.Dual
+public import Mathlib.Analysis.LocallyConvex.WeakOperatorTopology
 
 /-!
 # The weak operator topology in Hilbert spaces
@@ -14,6 +15,8 @@ This file gives a few properties of the weak operator topology that are specific
 Hilbert spaces. This mostly involves using the Fréchet-Riesz representation to convert between
 applications of elements of the dual and inner products with vectors in the space.
 -/
+
+@[expose] public section
 
 open scoped Topology InnerProductSpace
 

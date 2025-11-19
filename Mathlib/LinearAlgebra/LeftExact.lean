@@ -3,8 +3,10 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.Algebra.Exact
-import Mathlib.LinearAlgebra.BilinearMap
+module
+
+public import Mathlib.Algebra.Exact
+public import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # The Left Exactness of Hom
@@ -18,6 +20,8 @@ the injectivity part is `LinearMap.lcomp_injective_of_surjective` in the file
 
 
 -/
+
+@[expose] public section
 
 namespace LinearMap
 

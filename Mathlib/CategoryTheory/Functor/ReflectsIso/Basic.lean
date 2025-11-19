@@ -3,9 +3,11 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Whiskering
-import Mathlib.CategoryTheory.Iso
-import Mathlib.CategoryTheory.Functor.FullyFaithful
+module
+
+public import Mathlib.CategoryTheory.Whiskering
+public import Mathlib.CategoryTheory.Iso
+public import Mathlib.CategoryTheory.Functor.FullyFaithful
 
 /-!
 # Functors which reflect isomorphisms
@@ -16,6 +18,8 @@ It is formalized as a `Prop`-valued typeclass `ReflectsIsomorphisms F`.
 
 Any fully faithful functor reflects isomorphisms.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

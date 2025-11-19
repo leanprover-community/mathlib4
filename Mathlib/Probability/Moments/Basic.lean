@@ -3,7 +3,9 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.IdentDistrib
+module
+
+public import Mathlib.Probability.IdentDistrib
 
 /-!
 # Moments and moment-generating function
@@ -34,6 +36,8 @@ import Mathlib.Probability.IdentDistrib
   `ProbabilityTheory.measure_le_le_exp_mul_mgf` for versions of these results using `mgf` instead
   of `cgf`.
 -/
+
+@[expose] public section
 
 
 open MeasureTheory Filter Finset Real

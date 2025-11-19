@@ -3,8 +3,9 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+module
 
-import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
+public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
 /-!
 # Grassmannians
@@ -47,6 +48,8 @@ to `G(n - k, V; F)` and also to `G(k, V →ₗ[F] F; F)`, where `n` is the dimen
 - Grassmannians for schemes and quasi-coherent sheaf of modules.
 - Representability of `Module.Grassmannian.functor R M k`.
 -/
+
+@[expose] public section
 
 universe u v w
 

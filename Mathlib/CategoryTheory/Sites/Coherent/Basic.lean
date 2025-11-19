@@ -3,9 +3,11 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
-import Mathlib.CategoryTheory.Extensive
-import Mathlib.CategoryTheory.Sites.Coverage
-import Mathlib.CategoryTheory.EffectiveEpi.Basic
+module
+
+public import Mathlib.CategoryTheory.Extensive
+public import Mathlib.CategoryTheory.Sites.Coverage
+public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 /-!
 
 # The Coherent, Regular and Extensive Grothendieck Topologies
@@ -38,6 +40,8 @@ from the coproduct to the target.
 - [nLab, *Coherent Coverage*](https://ncatlab.org/nlab/show/coherent+coverage)
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

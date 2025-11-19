@@ -3,17 +3,21 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Topology.Algebra.InfiniteSum.NatInt
-import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Topology.Order.MonotoneConvergence
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Topology.Algebra.InfiniteSum.NatInt
+public import Mathlib.Topology.Algebra.Order.Field
+public import Mathlib.Topology.Order.MonotoneConvergence
 
 /-!
 # Infinite sum or product in an order
 
 This file provides lemmas about the interaction of infinite sums and products and order operations.
 -/
+
+@[expose] public section
 
 open Finset Filter Function
 
@@ -358,7 +362,7 @@ attribute [local instance] monadLiftOptionMetaM in
 This extension only proves non-negativity, strict positivity is more delicate for infinite sums and
 requires more assumptions. -/
 @[positivity tsum _]
-def evalTsum : PositivityExt where eval {u α} zα pα e := do
+meta def evalTsum : PositivityExt where eval {u α} zα pα e := do
   match e with
   | ~q(@tsum _ $ι $instCommMonoid $instTopSpace $f $L) =>
     lambdaBoundedTelescope f 1 fun args (body : Q($α)) => do

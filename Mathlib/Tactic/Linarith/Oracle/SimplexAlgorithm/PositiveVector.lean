@@ -3,9 +3,11 @@ Copyright (c) 2024 Vasily Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
-import Lean.Meta.Basic
-import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.SimplexAlgorithm
-import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Gauss
+module
+
+public meta import Lean.Meta.Basic
+public meta import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.SimplexAlgorithm
+public meta import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Gauss
 
 /-!
 # `linarith` certificate search as an LP problem
@@ -32,6 +34,8 @@ The function `findPositiveVector` solves this problem.
   See the file `SimplexAlgorithm.lean`.
 
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Linarith.SimplexAlgorithm
 

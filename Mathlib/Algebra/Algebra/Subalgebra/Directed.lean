@@ -3,9 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Data.Set.UnionLift
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Data.Set.UnionLift
 
 /-!
 # Subalgebras and directed Unions of sets
@@ -16,6 +17,8 @@ import Mathlib.Data.Set.UnionLift
 * `Subalgebra.iSupLift`: define an algebra homomorphism on a directed supremum of subalgebras by
   defining it on each subalgebra, and proving that it agrees on the intersection of subalgebras.
 -/
+
+@[expose] public section
 
 namespace Subalgebra
 

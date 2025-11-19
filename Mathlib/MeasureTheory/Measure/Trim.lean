@@ -3,7 +3,9 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
+module
+
+public import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 
 /-!
 # Restriction of a measure to a sub-σ-algebra
@@ -14,6 +16,8 @@ import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 * `MeasureTheory.Measure.trim`: restriction of a measure to a sub-sigma algebra.
 
 -/
+
+@[expose] public section
 
 open scoped ENNReal
 

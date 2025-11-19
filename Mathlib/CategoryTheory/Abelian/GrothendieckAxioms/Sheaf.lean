@@ -3,11 +3,13 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.FunctorCategory
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
-import Mathlib.CategoryTheory.Generator.Sheaf
-import Mathlib.CategoryTheory.Sites.Abelian
-import Mathlib.CategoryTheory.Sites.Equivalence
+module
+
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.FunctorCategory
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
+public import Mathlib.CategoryTheory.Generator.Sheaf
+public import Mathlib.CategoryTheory.Sites.Abelian
+public import Mathlib.CategoryTheory.Sites.Equivalence
 
 /-!
 
@@ -18,6 +20,8 @@ and `A : Type u₁` (with `Category.{v} A`) is a Grothendieck abelian category,
 then `Sheaf J A` is a Grothendieck abelian category.
 
 -/
+
+@[expose] public section
 
 universe v v₁ v₂ u u₁ u₂
 

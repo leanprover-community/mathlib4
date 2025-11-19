@@ -3,8 +3,10 @@ Copyright (c) 2024 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.CategoryTheory.Subobject.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+module
+
+public import Mathlib.CategoryTheory.Subobject.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 # Dialectica category
@@ -35,6 +37,8 @@ in Set Theory, state in imperative programming, and others, see [Dialectica Cate
 [Dialectica Categories]: https://github.com/vcvpaiva/DialecticaCategories
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

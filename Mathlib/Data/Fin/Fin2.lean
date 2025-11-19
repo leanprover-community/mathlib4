@@ -3,10 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Image
-import Mathlib.Data.Fintype.Defs
-import Mathlib.Data.Nat.Notation
-import Mathlib.Logic.Function.Basic
+module
+
+public import Mathlib.Data.Finset.Image
+public import Mathlib.Data.Fintype.Defs
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Logic.Function.Basic
 
 /-!
 # Inductive type variant of `Fin`
@@ -28,6 +30,8 @@ equalities.
 * `Fin2.remapLeft f`: Function `Fin2 (m + k) → Fin2 (n + k)` by applying `f : Fin m → Fin n` to
   `0, ..., m - 1` and sending `m + i` to `n + i`.
 -/
+
+@[expose] public section
 
 open Nat
 

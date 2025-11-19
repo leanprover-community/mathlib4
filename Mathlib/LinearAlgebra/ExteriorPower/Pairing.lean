@@ -3,9 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Sophie Morel
 -/
+module
 
-import Mathlib.LinearAlgebra.ExteriorPower.Basic
-import Mathlib.LinearAlgebra.TensorPower.Pairing
+public import Mathlib.LinearAlgebra.ExteriorPower.Basic
+public import Mathlib.LinearAlgebra.TensorPower.Pairing
 
 /-!
 # The pairing between the exterior power of the dual and the exterior power
@@ -14,6 +15,8 @@ We construct the pairing
 `exteriorPower.pairingDual : ⋀[R]^n (Module.Dual R M) →ₗ[R] (Module.Dual R (⋀[R]^n M))`.
 
 -/
+
+@[expose] public section
 
 namespace exteriorPower
 

@@ -3,14 +3,16 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.SimpleGraph.Copy
-import Mathlib.Combinatorics.SimpleGraph.Operations
-import Mathlib.Combinatorics.SimpleGraph.Paths
-import Mathlib.Data.Finset.Pairwise
-import Mathlib.Data.Fintype.Pigeonhole
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Data.Nat.Lattice
-import Mathlib.SetTheory.Cardinal.Finite
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Copy
+public import Mathlib.Combinatorics.SimpleGraph.Operations
+public import Mathlib.Combinatorics.SimpleGraph.Paths
+public import Mathlib.Data.Finset.Pairwise
+public import Mathlib.Data.Fintype.Pigeonhole
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.Nat.Lattice
+public import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Graph cliques
@@ -25,6 +27,8 @@ A clique is a set of vertices that are pairwise adjacent.
 * `SimpleGraph.cliqueFinset`: Finset of `n`-cliques of a graph.
 * `SimpleGraph.CliqueFree`: Predicate for a graph to have no `n`-cliques.
 -/
+
+@[expose] public section
 
 open Finset Fintype Function SimpleGraph.Walk
 

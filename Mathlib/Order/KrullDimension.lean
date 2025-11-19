@@ -3,13 +3,14 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li, Joachim Breitner
 -/
+module
 
-import Mathlib.Algebra.Order.Group.Int
-import Mathlib.Algebra.Order.SuccPred.WithBot
-import Mathlib.Data.ENat.Lattice
-import Mathlib.Order.Atoms
-import Mathlib.Order.RelSeries
-import Mathlib.Tactic.FinCases
+public import Mathlib.Algebra.Order.Group.Int
+public import Mathlib.Algebra.Order.SuccPred.WithBot
+public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Order.Atoms
+public import Mathlib.Order.RelSeries
+public import Mathlib.Tactic.FinCases
 
 /-!
 # Krull dimension of a preordered set and height of an element
@@ -59,6 +60,8 @@ We could generalize the notion of Krull dimension to an arbitrary binary relatio
 in this file would generalize as well. But we don't think it would be useful, so we only define
 Krull dimension of a preorder.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

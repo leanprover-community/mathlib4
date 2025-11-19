@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Bicategory.Basic
+module
+
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Bicategory.Basic
 
 /-!
 # `eqToHom` in bicategories
@@ -31,6 +33,8 @@ well under `eqToHom`s.
 * Define `eqToEquiv` that puts the `eqToHom`s in an `Equivalence` between
   objects.
 -/
+
+@[expose] public section
 
 universe w v u
 

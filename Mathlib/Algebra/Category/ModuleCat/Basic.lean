@@ -3,10 +3,12 @@ Copyright (c) 2019 Robert A. Spencer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert A. Spencer, Markus Himmel
 -/
-import Mathlib.Algebra.Category.ModuleCat.Semi
-import Mathlib.Algebra.Category.Grp.Preadditive
-import Mathlib.CategoryTheory.Linear.Basic
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Semi
+public import Mathlib.Algebra.Category.Grp.Preadditive
+public import Mathlib.CategoryTheory.Linear.Basic
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # The category of `R`-modules
@@ -30,6 +32,8 @@ To go from linear maps to morphisms in `Module R`, use `ModuleCat.ofHom`.
 Similarly, given an isomorphism `f : M ≅ N` use `f.toLinearEquiv` and given a linear equiv
 `f : M ≃ₗ[R] N`, use `f.toModuleIso`.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory

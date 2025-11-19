@@ -3,7 +3,9 @@ Copyright (c) 2025 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine
 -/
-import Mathlib.Dynamics.TopologicalEntropy.NetEntropy
+module
+
+public import Mathlib.Dynamics.TopologicalEntropy.NetEntropy
 
 /-!
 # Topological entropy of subsets: monotonicity, closure, union
@@ -31,6 +33,8 @@ generalization of the lemmas on closures.
 
 closure, entropy, subset, union
 -/
+
+@[expose] public section
 
 namespace Dynamics
 

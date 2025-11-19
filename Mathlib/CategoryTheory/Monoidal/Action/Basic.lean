@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Monoidal.Category
-import Mathlib.CategoryTheory.Functor.Trifunctor
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Category
+public import Mathlib.CategoryTheory.Functor.Trifunctor
 
 /-!
 
@@ -35,6 +37,8 @@ on `d` is `d ⊙ᵣ c`, and the structure isomorphisms are of the form
   copower.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.MonoidalCategory
 

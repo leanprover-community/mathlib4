@@ -3,10 +3,12 @@ Copyright (c) 2025 Yunzhou Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yunzhou Xie, Jujian Zhang
 -/
-import Mathlib.Algebra.Category.AlgCat.Basic
-import Mathlib.Algebra.Central.Defs
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.LinearAlgebra.Matrix.Reindex
+module
+
+public import Mathlib.Algebra.Category.AlgCat.Basic
+public import Mathlib.Algebra.Central.Defs
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+public import Mathlib.LinearAlgebra.Matrix.Reindex
 
 /-!
 # Definition of Brauer group of a field K
@@ -28,6 +30,8 @@ that `Mₙ(A) ≃ₐ[K] Mₘ(B)`.
 ## Tags
 Brauer group, Central simple algebra, Galois Cohomology
 -/
+
+@[expose] public section
 
 universe u v
 

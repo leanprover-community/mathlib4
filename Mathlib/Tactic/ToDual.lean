@@ -3,12 +3,17 @@ Copyright (c) 2025 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Mathlib.Tactic.Translate.ToDual
+module
+
+public meta import Mathlib.Tactic.Translate.ToDual
+import all Init.Core  -- TODO: for accessing proofs
 
 
 /-!
 ## `@[to_dual]` attributes for basic types
 -/
+
+public meta section
 
 attribute [to_dual self (reorder := 3 4)] LE.le LT.lt GE.ge GT.gt
 

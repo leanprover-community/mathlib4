@@ -3,10 +3,13 @@ Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson, Martin Dvorak
 -/
-import Mathlib.Algebra.Order.Kleene
-import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Data.Set.Lattice
-import Mathlib.Tactic.DeriveFintype
+module
+
+public import Mathlib.Algebra.Order.Kleene
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Tactic.DeriveFintype
+import Mathlib.Data.Fintype.Sum
 
 /-!
 # Languages
@@ -45,6 +48,8 @@ with respect to other language operations.
   then `l` is the language `m∗ * n`
 
 -/
+
+@[expose] public section
 
 
 open List Set Computability

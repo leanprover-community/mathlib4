@@ -3,10 +3,11 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
+module
 
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.RingTheory.Multiplicity
-import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.RingTheory.Multiplicity
+public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-! # Formal power series (in one variable) - Order
 
@@ -24,6 +25,8 @@ dividing out the largest power of X that divides `f`, that is its order. This is
 proving that `R⟦X⟧` is a normalization monoid, which is done in `PowerSeries.Inverse`.
 
 -/
+
+@[expose] public section
 noncomputable section
 
 open Polynomial

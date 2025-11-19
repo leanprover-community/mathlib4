@@ -3,9 +3,11 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Topology.Algebra.Indicator
-import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.Topology.Separation.DisjointCover
+module
+
+public import Mathlib.Topology.Algebra.Indicator
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Topology.Separation.DisjointCover
 
 /-!
 # Uniform approximation by products
@@ -14,6 +16,8 @@ We show that if `X, Y` are compact Hausdorff spaces with `X` profinite, then any
 on `X × Y` valued in a ring (with a uniform structure) can be uniformly approximated by finite
 sums of functions of the form `f x * g y`.
 -/
+
+@[expose] public section
 
 open UniformSpace
 

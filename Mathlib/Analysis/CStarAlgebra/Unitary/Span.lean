@@ -3,9 +3,11 @@ Copyright (c) 2025 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unitary
-import Mathlib.Analysis.NormedSpace.Normalize
+module
+
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unitary
+public import Mathlib.Analysis.NormedSpace.Normalize
 
 /-! # Unitary elements span C⋆-algebras
 
@@ -15,6 +17,8 @@ import Mathlib.Analysis.NormedSpace.Normalize
   combination of four unitary elements, and the norm of each coefficient does not exceed `‖x‖ / 2`.
 + `CStarAlgebra.span_unitary`: a unital C⋆-algebra is spanned by its unitary elements.
 -/
+
+@[expose] public section
 
 variable {A : Type*} [CStarAlgebra A]
 

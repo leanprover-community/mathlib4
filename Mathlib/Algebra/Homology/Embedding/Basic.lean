@@ -3,10 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Tactic.ByContra
+module
+
+public import Mathlib.Algebra.Homology.ComplexShape
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Tactic.ByContra
 
 /-! # Embeddings of complex shapes
 
@@ -49,6 +51,8 @@ transformation `e.ιTruncLENatTrans : e.truncGEFunctor C ⟶ 𝟭 _` which is a 
 in degrees in the image of `e.f` (TODO);
 
 -/
+
+@[expose] public section
 
 assert_not_exists Nat.instAddMonoidWithOne Nat.instMulZeroClass
 

@@ -3,10 +3,12 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Algebra.Order.Group.Units
-import Mathlib.Topology.Algebra.Nonarchimedean.Bases
-import Mathlib.Topology.Algebra.UniformFilterBasis
-import Mathlib.RingTheory.Valuation.ValuationSubring
+module
+
+public import Mathlib.Algebra.Order.Group.Units
+public import Mathlib.Topology.Algebra.Nonarchimedean.Bases
+public import Mathlib.Topology.Algebra.UniformFilterBasis
+public import Mathlib.RingTheory.Valuation.ValuationSubring
 
 /-!
 # The topology on a valued ring
@@ -21,6 +23,8 @@ from `Mathlib.RingTheory.Valuation.ValuativeRel.Basic`. New developments on valu
 should take this into consideration.
 
 -/
+
+@[expose] public section
 
 open scoped Topology uniformity
 open Set Valuation

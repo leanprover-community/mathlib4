@@ -3,8 +3,10 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
-import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
+module
+
+public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
 
 /-!
 # Radon-Nikodym theorem
@@ -39,6 +41,8 @@ The file also contains properties of `rnDeriv` that use the Radon-Nikodym theore
 
 Radon-Nikodym theorem
 -/
+
+@[expose] public section
 
 assert_not_exists InnerProductSpace
 assert_not_exists MeasureTheory.VectorMeasure

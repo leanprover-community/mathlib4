@@ -3,9 +3,11 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.CompProdEqIff
-import Mathlib.Probability.Kernel.Composition.Lemmas
-import Mathlib.Probability.Kernel.Disintegration.StandardBorel
+module
+
+public import Mathlib.Probability.Kernel.CompProdEqIff
+public import Mathlib.Probability.Kernel.Composition.Lemmas
+public import Mathlib.Probability.Kernel.Disintegration.StandardBorel
 
 /-!
 
@@ -47,6 +49,8 @@ This notation emphasizes that the posterior is a kind of inverse of `κ`, which 
 denote `κ†`, but we have to also specify the measure `μ`.
 
 -/
+
+@[expose] public section
 
 open scoped ENNReal
 

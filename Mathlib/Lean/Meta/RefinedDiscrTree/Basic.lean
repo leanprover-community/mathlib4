@@ -3,7 +3,10 @@ Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Mathlib.Init
+module
+
+public import Mathlib.Init
+public import Lean.Meta
 
 /-!
 # Basic Definitions for `RefinedDiscrTree`
@@ -15,6 +18,8 @@ We define
   and stores an array of pending `LazyEntry`s
 * `RefinedDiscrTree`, the discrimination tree itself.
 -/
+
+@[expose] public section
 
 namespace Lean.Meta.RefinedDiscrTree
 

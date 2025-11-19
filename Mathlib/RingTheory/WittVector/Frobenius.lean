@@ -3,11 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.ZMod
-import Mathlib.Data.Nat.Multiplicity
-import Mathlib.FieldTheory.Perfect
-import Mathlib.RingTheory.WittVector.Basic
-import Mathlib.RingTheory.WittVector.IsPoly
+module
+
+public import Mathlib.Algebra.Algebra.ZMod
+public import Mathlib.Data.Nat.Multiplicity
+public import Mathlib.FieldTheory.Perfect
+public import Mathlib.RingTheory.WittVector.Basic
+public import Mathlib.RingTheory.WittVector.IsPoly
 
 /-!
 ## The Frobenius operator
@@ -44,6 +46,8 @@ and bundle it into `WittVector.frobenius`.
 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
+
+@[expose] public section
 
 
 namespace WittVector

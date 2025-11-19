@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Calle Sönne, Robin Carlier
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Lax
-import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Lax
+public import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
 
 /-!
 # Transformations between lax functors
@@ -44,6 +46,8 @@ This file could also include oplax transformations between lax functors.
 section 4.2.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Lax
 

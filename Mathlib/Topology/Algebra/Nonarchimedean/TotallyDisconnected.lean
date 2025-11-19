@@ -3,8 +3,9 @@ Copyright (c) 2024 Jou Glasheen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jou Glasheen, Kevin Buzzard, David Loeffler, Yongle Hu, Johan Commelin
 -/
+module
 
-import Mathlib.Topology.Algebra.Nonarchimedean.Basic
+public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 
 /-!
 # Total separatedness of nonarchimedean groups
@@ -27,6 +28,8 @@ is implied by the fact that a nonarchimedean group is totally separated.
 
 See Proposition 2.3.9 and Problem 63 in [F. Q. Gouvêa, *p-adic numbers*][gouvea1997].
 -/
+
+@[expose] public section
 
 open Pointwise TopologicalSpace
 

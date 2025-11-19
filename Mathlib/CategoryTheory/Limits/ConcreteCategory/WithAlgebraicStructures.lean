@@ -3,9 +3,11 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.Tactic.CategoryTheory.Elementwise
+module
+
+public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # Colimits in ModuleCat
@@ -30,6 +32,8 @@ For now, we specialize our results to `C = ModuleCat R`, which is the only place
 In the future they might be generalized by assuming a `HasForget₂ C (ModuleCat R)` instance,
 plus assertions that the module structures induced by `HasForget₂` coincide.
 -/
+
+@[expose] public section
 
 universe t w v u r
 

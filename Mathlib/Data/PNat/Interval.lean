@@ -3,8 +3,10 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Data.PNat.Defs
+module
+
+public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Data.PNat.Defs
 
 /-!
 # Finite intervals of positive naturals
@@ -12,6 +14,8 @@ import Mathlib.Data.PNat.Defs
 This file proves that `ℕ+` is a `LocallyFiniteOrder` and calculates the cardinality of its
 intervals as finsets and fintypes.
 -/
+
+@[expose] public section
 
 
 open Finset Function PNat

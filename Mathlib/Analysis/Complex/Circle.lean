@@ -3,8 +3,10 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-import Mathlib.Analysis.Normed.Field.UnitBall
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+public import Mathlib.Analysis.Normed.Field.UnitBall
 
 /-!
 # The circle
@@ -36,6 +38,8 @@ considered as a homomorphism from `ℂ` to `ℝ`, nor is it defeq to `{z : ℂ |
 is the kernel of the homomorphism `Complex.normSq` from `ℂ` to `ℝ`.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

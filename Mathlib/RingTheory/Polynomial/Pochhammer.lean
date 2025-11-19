@@ -3,11 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.Polynomial.Degree.Lemmas
-import Mathlib.Algebra.Polynomial.Eval.Algebra
-import Mathlib.Tactic.Abel
+module
+
+public import Mathlib.Algebra.Algebra.Basic
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.Algebra.Polynomial.Eval.Algebra
+public import Mathlib.Tactic.Abel
 
 /-!
 # The Pochhammer polynomials
@@ -32,6 +34,8 @@ In an integral domain `S`, we show that `ascPochhammer S n` is zero iff
 There is lots more in this direction:
 * q-factorials, q-binomials, q-Pochhammer.
 -/
+
+@[expose] public section
 
 
 universe u v

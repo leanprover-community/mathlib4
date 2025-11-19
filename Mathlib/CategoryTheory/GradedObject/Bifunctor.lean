@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GradedObject
+module
+
+public import Mathlib.CategoryTheory.GradedObject
 /-!
 # The action of bifunctors on graded objects
 
@@ -18,6 +20,8 @@ category `C`, these definitions shall be used in order to construct a monoidal s
 on `GradedObject I C` (TODO @joelriou).
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

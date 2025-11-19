@@ -3,9 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-import Mathlib.CategoryTheory.Elementwise
-import Mathlib.Topology.Sheaves.Presheaf
+module
+
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+public import Mathlib.CategoryTheory.Elementwise
+public import Mathlib.Topology.Sheaves.Presheaf
 
 /-!
 # Presheafed spaces
@@ -16,6 +18,8 @@ arbitrary target category `C`.)
 We further describe how to apply functors and natural transformations to the values of the
 presheaves.
 -/
+
+@[expose] public section
 
 
 open Opposite CategoryTheory CategoryTheory.Category CategoryTheory.Functor TopCat TopologicalSpace

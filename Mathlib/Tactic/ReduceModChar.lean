@@ -3,12 +3,15 @@ Copyright (c) 2023 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.Polynomial.Basic
-import Mathlib.Tactic.NormNum.DivMod
-import Mathlib.Tactic.NormNum.PowMod
-import Mathlib.Tactic.ReduceModChar.Ext
-import Mathlib.Util.AtLocation
+module
+
+public meta import Mathlib.Data.ZMod.Basic
+public meta import Mathlib.RingTheory.Polynomial.Basic
+public meta import Mathlib.Tactic.NormNum.DivMod
+public meta import Mathlib.Tactic.NormNum.PowMod
+public meta import Mathlib.Tactic.ReduceModChar.Ext
+public meta import Mathlib.Util.AtLocation
+import all Mathlib.Tactic.NormNum.DivMod  -- for accessing `evalIntMod.go`
 
 /-!
 # `reduce_mod_char` tactic
@@ -32,6 +35,8 @@ In addition to the main functionality, we call `normNeg` and `normNegCoeffMul` t
 with multiplication by `p - 1`, and simp lemmas tagged `@[reduce_mod_char]` to clean up the
 resulting expression: e.g. `1 * X + 0` becomes `X`.
 -/
+
+public meta section
 
 open Lean Meta Simp
 open Lean.Elab

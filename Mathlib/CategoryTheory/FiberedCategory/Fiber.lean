@@ -3,9 +3,10 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Paul Lezeau
 -/
+module
 
-import Mathlib.CategoryTheory.FiberedCategory.HomLift
-import Mathlib.CategoryTheory.Functor.Const
+public import Mathlib.CategoryTheory.FiberedCategory.HomLift
+public import Mathlib.CategoryTheory.Functor.Const
 
 /-!
 
@@ -19,6 +20,8 @@ In this file we define, for a functor `p : 𝒳 ⥤ 𝒴`, the fiber categories 
 For any category `C` equipped with a functor `F : C ⥤ 𝒳` such that `F ⋙ p` is constant at `S`,
 we define a functor `inducedFunctor : C ⥤ Fiber p S` that `F` factors through.
 -/
+
+@[expose] public section
 
 universe v₁ u₁ v₂ u₂ v₃ u₃
 

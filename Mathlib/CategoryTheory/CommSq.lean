@@ -3,7 +3,9 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou
 -/
-import Mathlib.CategoryTheory.Comma.Arrow
+module
+
+public import Mathlib.CategoryTheory.Comma.Arrow
 
 /-!
 # Commutative squares
@@ -21,6 +23,8 @@ as `IsPullback` and `IsPushout` in order to define pullback and pushout squares.
 Refactor `LiftStruct` from `Arrow.lean` and lifting properties using `CommSq.lean`.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory

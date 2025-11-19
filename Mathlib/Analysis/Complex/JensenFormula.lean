@@ -3,7 +3,9 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals.PosLogEqCircleAverage
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLogEqCircleAverage
 
 /-!
 # Jensen's Formula of Complex Analysis
@@ -19,6 +21,8 @@ the setting where `g` is merely meromorphic. In that case, the `circleAverage (l
 equals `log ‖meromorphicTrailingCoeffAt g c‖` plus a correction term that accounts for the zeros and
 poles of `g` within the ball.
 -/
+
+@[expose] public section
 
 open Filter MeromorphicAt MeromorphicOn Metric Real
 

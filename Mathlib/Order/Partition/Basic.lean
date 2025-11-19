@@ -3,8 +3,10 @@ Copyright (c) 2025 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Order.SupIndep
+module
+
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.SupIndep
 
 /-!
 # Partitions
@@ -28,6 +30,8 @@ where `s` is the set of all `x` for which `r x x`.
 * Give API lemmas for the specialization to the `Set` case.
 
 -/
+
+@[expose] public section
 variable {α : Type*} {s x y : α}
 
 open Set

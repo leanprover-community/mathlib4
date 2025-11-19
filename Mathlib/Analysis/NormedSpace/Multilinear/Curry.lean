@@ -3,8 +3,10 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.NormedSpace.Multilinear.Basic
-import Mathlib.LinearAlgebra.Multilinear.Curry
+module
+
+public import Mathlib.Analysis.NormedSpace.Multilinear.Basic
+public import Mathlib.LinearAlgebra.Multilinear.Curry
 
 /-!
 # Currying and uncurrying continuous multilinear maps
@@ -27,6 +29,8 @@ We also register continuous linear equiv versions of these correspondences, in
 * `ContinuousMultilinearMap.curryMid`, `ContinuousLinearMap.uncurryMid` and
   `ContinuousMultilinearMap.curryMidEquiv`
 -/
+
+@[expose] public section
 
 suppress_compilation
 

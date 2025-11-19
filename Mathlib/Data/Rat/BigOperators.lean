@@ -3,11 +3,15 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Rat.Cast.CharZero
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+module
+
+public import Mathlib.Data.Rat.Cast.CharZero
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-! # Casting lemmas for rational numbers involving sums and products
 -/
+
+@[expose] public section
 
 variable {ι α : Type*}
 

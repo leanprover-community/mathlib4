@@ -3,8 +3,10 @@ Copyright (c) 2023 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Geometry.Manifold.Sheaf.Smooth
-import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
+module
+
+public import Mathlib.Geometry.Manifold.Sheaf.Smooth
+public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 
 /-! # Smooth manifolds as locally ringed spaces
 
@@ -26,6 +28,8 @@ Characterize morphisms-of-locally-ringed-spaces (`AlgebraicGeometry.LocallyRinge
 smooth manifolds.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 universe u

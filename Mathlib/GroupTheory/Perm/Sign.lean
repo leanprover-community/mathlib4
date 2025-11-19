@@ -3,19 +3,21 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Conj
-import Mathlib.Algebra.Group.Subgroup.Lattice
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.Data.Finset.Fin
-import Mathlib.Data.Finset.Sort
-import Mathlib.Data.Fintype.Perm
-import Mathlib.Data.Fintype.Prod
-import Mathlib.Data.Fintype.Sum
-import Mathlib.Data.Int.Order.Units
-import Mathlib.GroupTheory.Perm.Support
-import Mathlib.Logic.Equiv.Fintype
-import Mathlib.Tactic.NormNum.Ineq
-import Mathlib.Data.Finset.Sigma
+module
+
+public import Mathlib.Algebra.Group.Conj
+public import Mathlib.Algebra.Group.Subgroup.Lattice
+public import Mathlib.Algebra.Group.Submonoid.BigOperators
+public import Mathlib.Data.Finset.Fin
+public import Mathlib.Data.Finset.Sort
+public import Mathlib.Data.Fintype.Perm
+public import Mathlib.Data.Fintype.Prod
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Data.Int.Order.Units
+public import Mathlib.GroupTheory.Perm.Support
+public import Mathlib.Logic.Equiv.Fintype
+public import Mathlib.Tactic.NormNum.Ineq
+public import Mathlib.Data.Finset.Sigma
 
 /-!
 # Sign of a permutation
@@ -26,6 +28,8 @@ associating a `ℤˣ` sign with a permutation.
 Other lemmas have been moved to `Mathlib/GroupTheory/Perm/Fintype.lean`
 
 -/
+
+@[expose] public section
 
 universe u v
 

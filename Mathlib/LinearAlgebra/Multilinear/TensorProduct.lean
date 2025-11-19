@@ -3,12 +3,16 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Basic
-import Mathlib.LinearAlgebra.Multilinear.Basic
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Basic
+public import Mathlib.LinearAlgebra.Multilinear.Basic
 
 /-!
 # Constructions relating multilinear maps and tensor products.
 -/
+
+@[expose] public section
 
 namespace MultilinearMap
 

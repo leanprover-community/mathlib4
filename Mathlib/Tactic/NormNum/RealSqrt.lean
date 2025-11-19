@@ -3,12 +3,16 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Data.Real.Sqrt
+module
+
+public meta import Mathlib.Data.Real.Sqrt
 
 /-! # `norm_num` extension for `Real.sqrt`
 
 This module defines a `norm_num` extension for `Real.sqrt` and `NNReal.sqrt`.
 -/
+
+public meta section
 
 namespace Tactic.NormNum
 

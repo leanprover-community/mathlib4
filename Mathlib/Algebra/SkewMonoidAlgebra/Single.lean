@@ -3,13 +3,17 @@ Copyright (c) 2025 Xavier Généreux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos Fernández, Xavier Généreux
 -/
-import Mathlib.Algebra.SkewMonoidAlgebra.Basic
+module
+
+public import Mathlib.Algebra.SkewMonoidAlgebra.Basic
 /-!
 # Modifying skew monoid algebra at exactly one point
 
 This file contains basic results on updating/erasing an element of a skew monoid algebras using
 one point of the domain.
 -/
+
+@[expose] public section
 
 noncomputable section
 

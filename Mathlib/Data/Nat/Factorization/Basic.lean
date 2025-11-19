@@ -3,13 +3,17 @@ Copyright (c) 2021 Stuart Presnell. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell
 -/
-import Mathlib.Algebra.Order.Interval.Finset.SuccPred
-import Mathlib.Data.Nat.Factorization.Defs
-import Mathlib.Order.Interval.Finset.Nat
+module
+
+public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
+public import Mathlib.Data.Nat.Factorization.Defs
+public import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Basic lemmas on prime factorizations
 -/
+
+@[expose] public section
 
 open Finset List Finsupp
 

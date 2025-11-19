@@ -3,8 +3,10 @@ Copyright (c) 2021 Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
 -/
-import Mathlib.Algebra.Category.Grp.FilteredColimits
-import Mathlib.Algebra.Category.ModuleCat.Colimits
+module
+
+public import Mathlib.Algebra.Category.Grp.FilteredColimits
+public import Mathlib.Algebra.Category.ModuleCat.Colimits
 
 /-!
 # The forgetful functor from `R`-modules preserves filtered colimits.
@@ -19,6 +21,8 @@ functor `forget₂ (ModuleCat R) AddCommGrpCat` preserves filtered colimits. In 
 implies that `forget (ModuleCat R)` preserves filtered colimits.
 
 -/
+
+@[expose] public section
 
 
 universe v u

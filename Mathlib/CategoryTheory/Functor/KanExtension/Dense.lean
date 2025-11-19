@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.KanExtension.DenseAt
-import Mathlib.CategoryTheory.Limits.Presheaf
-import Mathlib.CategoryTheory.Generator.StrongGenerator
+module
+
+public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAt
+public import Mathlib.CategoryTheory.Limits.Presheaf
+public import Mathlib.CategoryTheory.Generator.StrongGenerator
 
 /-!
 # Dense functors
@@ -27,6 +29,8 @@ generator (see `Functor.isStrongGenerator_of_isDense`).
 * https://ncatlab.org/nlab/show/dense+subcategory
 
 -/
+
+@[expose] public section
 
 universe w v₁ v₂ u₁ u₂
 

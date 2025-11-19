@@ -3,12 +3,16 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Submonoid.MulAction
-import Mathlib.Algebra.GroupWithZero.Action.Defs
+module
+
+public import Mathlib.Algebra.Group.Submonoid.MulAction
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
 
 /-!
 # Distributive actions by submonoids
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso Ring
 

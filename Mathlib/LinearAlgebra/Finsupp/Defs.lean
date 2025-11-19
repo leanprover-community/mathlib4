@@ -3,10 +3,12 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.Algebra.Module.LinearMap.End
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Data.Finsupp.SMul
+module
+
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Algebra.Module.LinearMap.End
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Data.Finsupp.SMul
 
 /-!
 # Properties of the module `α →₀ M`
@@ -27,6 +29,8 @@ In this file we define `LinearMap` versions of various maps:
 
 function with finite support, module, linear algebra
 -/
+
+@[expose] public section
 
 assert_not_exists Submodule
 

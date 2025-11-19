@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
-import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
+module
+
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 
 /-!
 # Dominated convergence theorem
@@ -13,6 +15,8 @@ Lebesgue's dominated convergence theorem states that the limit and Lebesgue inte
 a sequence of (almost everywhere) measurable functions can be swapped if the functions are
 pointwise dominated by a fixed function. This file provides a few variants of the result.
 -/
+
+@[expose] public section
 
 open Filter ENNReal Topology
 

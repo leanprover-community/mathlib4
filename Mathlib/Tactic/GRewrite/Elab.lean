@@ -3,7 +3,9 @@ Copyright (c) 2023 Sebastian Zimmer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Zimmer, Mario Carneiro, Heather Macbeth, Jovan Gerbscheid
 -/
-import Mathlib.Tactic.GRewrite.Core
+module
+
+public meta import Mathlib.Tactic.GRewrite.Core
 
 /-!
 
@@ -17,6 +19,8 @@ This file defines the tactics that use the backend defined in `Mathlib.Tactic.GR
 - `nth_grw`
 
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 

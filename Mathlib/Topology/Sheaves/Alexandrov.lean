@@ -3,10 +3,12 @@ Copyright (c) 2025 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justin Curry, Adam Topaz
 -/
-import Mathlib.Combinatorics.Quiver.ReflQuiver
-import Mathlib.Order.CompletePartialOrder
-import Mathlib.Topology.Order.UpperLowerSetTopology
-import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
+module
+
+public import Mathlib.Combinatorics.Quiver.ReflQuiver
+public import Mathlib.Order.CompletePartialOrder
+public import Mathlib.Topology.Order.UpperLowerSetTopology
+public import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 
 /-!
 
@@ -19,6 +21,8 @@ Alexandrov topology.
 This file proves that this presheaf is a sheaf.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

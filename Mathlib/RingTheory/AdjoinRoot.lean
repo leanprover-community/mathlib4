@@ -3,16 +3,18 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Chris Hughes
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Polynomial.FieldDivision
-import Mathlib.FieldTheory.Minpoly.Basic
-import Mathlib.RingTheory.Adjoin.Basic
-import Mathlib.RingTheory.FinitePresentation
-import Mathlib.RingTheory.FiniteType
-import Mathlib.RingTheory.Ideal.Quotient.Noetherian
-import Mathlib.RingTheory.PowerBasis
-import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.RingTheory.Polynomial.Quotient
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Polynomial.FieldDivision
+public import Mathlib.FieldTheory.Minpoly.Basic
+public import Mathlib.RingTheory.Adjoin.Basic
+public import Mathlib.RingTheory.FinitePresentation
+public import Mathlib.RingTheory.FiniteType
+public import Mathlib.RingTheory.Ideal.Quotient.Noetherian
+public import Mathlib.RingTheory.PowerBasis
+public import Mathlib.RingTheory.PrincipalIdealDomain
+public import Mathlib.RingTheory.Polynomial.Quotient
 
 /-!
 # Adjoining roots of polynomials
@@ -45,6 +47,8 @@ The main definitions are in the `AdjoinRoot` namespace.
   bijection between algebra homomorphisms from `AdjoinRoot` and roots of `f` in `S`
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

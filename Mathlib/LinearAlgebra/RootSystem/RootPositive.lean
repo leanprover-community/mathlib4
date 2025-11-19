@@ -3,7 +3,9 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.IsValuedIn
 
 /-!
 # Invariant and root-positive bilinear forms on root pairings
@@ -31,6 +33,8 @@ positive semi-definite on weight space and positive-definite on the span of root
   orthogonal.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

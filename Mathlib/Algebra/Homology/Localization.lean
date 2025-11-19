@@ -3,12 +3,13 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.Algebra.Homology.HomotopyCofiber
-import Mathlib.Algebra.Homology.HomotopyCategory
-import Mathlib.Algebra.Homology.QuasiIso
-import Mathlib.CategoryTheory.Localization.Composition
-import Mathlib.CategoryTheory.Localization.HasLocalization
+public import Mathlib.Algebra.Homology.HomotopyCofiber
+public import Mathlib.Algebra.Homology.HomotopyCategory
+public import Mathlib.Algebra.Homology.QuasiIso
+public import Mathlib.CategoryTheory.Localization.Composition
+public import Mathlib.CategoryTheory.Localization.HasLocalization
 
 /-! The category of homological complexes up to quasi-isomorphisms
 
@@ -24,6 +25,8 @@ is also the localized category of `HomotopyCategory C c` with respect to
 the class of quasi-isomorphisms.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits
 

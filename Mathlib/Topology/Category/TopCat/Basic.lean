@@ -3,8 +3,10 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kim Morrison, Mario Carneiro
 -/
-import Mathlib.CategoryTheory.Elementwise
-import Mathlib.Topology.ContinuousMap.Basic
+module
+
+public import Mathlib.CategoryTheory.Elementwise
+public import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # Category instance for topological spaces
@@ -15,6 +17,8 @@ with the corresponding discrete, resp. trivial, topology. For a proof that these
 resp. right adjoint to the forgetful functor, see
 `Mathlib/Topology/Category/TopCat/Adjunctions.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists Module
 
@@ -51,7 +55,7 @@ variable {X} in
 /-- The type of morphisms in `TopCat`. -/
 @[ext]
 structure Hom (X Y : TopCat.{u}) where
-  private mk ::
+  --private mk ::
   /-- The underlying `ContinuousMap`. -/
   hom' : C(X, Y)
 

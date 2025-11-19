@@ -3,9 +3,10 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Lezeau, Calle Sönne
 -/
+module
 
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.CommSq
+public import Mathlib.CategoryTheory.Functor.Category
+public import Mathlib.CategoryTheory.CommSq
 
 /-!
 
@@ -30,6 +31,8 @@ The class `IsHomLift` is defined as an inductive with the single constructor
 `.rfl (a : α) : Eq a a`.
 
 -/
+
+@[expose] public section
 
 universe u₁ v₁ u₂ v₂
 

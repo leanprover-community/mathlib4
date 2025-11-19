@@ -3,9 +3,11 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.RingTheory.Adjoin.Basic
-import Mathlib.RingTheory.PowerBasis
-import Mathlib.LinearAlgebra.Matrix.Basis
+module
+
+public import Mathlib.RingTheory.Adjoin.Basic
+public import Mathlib.RingTheory.PowerBasis
+public import Mathlib.LinearAlgebra.Matrix.Basis
 
 /-!
 # Power basis for `Algebra.adjoin R {x}`
@@ -13,6 +15,8 @@ import Mathlib.LinearAlgebra.Matrix.Basis
 This file defines the canonical power basis on `Algebra.adjoin R {x}`,
 where `x` is an integral element over `R`.
 -/
+
+@[expose] public section
 
 open Module Polynomial PowerBasis
 

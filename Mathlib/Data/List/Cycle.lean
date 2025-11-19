@@ -3,8 +3,10 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.Fintype.List
-import Mathlib.Data.Fintype.OfMap
+module
+
+public import Mathlib.Data.Fintype.List
+public import Mathlib.Data.Fintype.OfMap
 
 /-!
 # Cycles of a list
@@ -20,6 +22,8 @@ as `c[2, 1, 4, 3]`. Two equal cycles may be printed differently if their interna
 is different.
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 

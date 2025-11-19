@@ -3,9 +3,11 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Data.Fintype.Pigeonhole
-import Mathlib.GroupTheory.OreLocalization.Basic
-import Mathlib.SetTheory.Cardinal.Arithmetic
+module
+
+public import Mathlib.Data.Fintype.Pigeonhole
+public import Mathlib.GroupTheory.OreLocalization.Basic
+public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 
@@ -19,6 +21,8 @@ This file contains some results on cardinality of Ore localizations.
   with `Commute` assumption removed.
 
 -/
+
+@[expose] public section
 
 universe u v
 

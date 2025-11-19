@@ -3,10 +3,12 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.GCDMonoid.Finset
-import Mathlib.Algebra.Polynomial.CancelLeads
-import Mathlib.Algebra.Polynomial.EraseLead
-import Mathlib.Algebra.Polynomial.FieldDivision
+module
+
+public import Mathlib.Algebra.GCDMonoid.Finset
+public import Mathlib.Algebra.Polynomial.CancelLeads
+public import Mathlib.Algebra.Polynomial.EraseLead
+public import Mathlib.Algebra.Polynomial.FieldDivision
 
 /-!
 # GCD structures on polynomials
@@ -28,6 +30,8 @@ Let `p : R[X]`.
 This has nothing to do with minimal polynomials of primitive elements in finite fields.
 
 -/
+
+@[expose] public section
 
 
 namespace Polynomial

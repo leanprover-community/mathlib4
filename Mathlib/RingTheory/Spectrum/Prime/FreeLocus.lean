@@ -3,16 +3,18 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Flat.Stability
-import Mathlib.RingTheory.LocalProperties.Projective
-import Mathlib.RingTheory.LocalRing.Module
-import Mathlib.RingTheory.Localization.Free
-import Mathlib.RingTheory.Localization.LocalizationLocalization
-import Mathlib.RingTheory.Spectrum.Prime.Topology
-import Mathlib.Topology.LocallyConstant.Basic
-import Mathlib.RingTheory.TensorProduct.Free
-import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
-import Mathlib.RingTheory.Support
+module
+
+public import Mathlib.RingTheory.Flat.Stability
+public import Mathlib.RingTheory.LocalProperties.Projective
+public import Mathlib.RingTheory.LocalRing.Module
+public import Mathlib.RingTheory.Localization.Free
+public import Mathlib.RingTheory.Localization.LocalizationLocalization
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
+public import Mathlib.Topology.LocallyConstant.Basic
+public import Mathlib.RingTheory.TensorProduct.Free
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
+public import Mathlib.RingTheory.Support
 
 /-!
 
@@ -31,6 +33,8 @@ Let `M` be a finitely presented `R`-module.
   If `M` is flat over `R`, then `rankAtStalk` is locally constant.
 
 -/
+
+@[expose] public section
 
 universe uR uM
 

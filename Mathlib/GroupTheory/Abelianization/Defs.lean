@@ -3,7 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Michael Howes, Antoine Chambert-Loir
 -/
-import Mathlib.GroupTheory.Commutator.Basic
+module
+
+public import Mathlib.GroupTheory.Commutator.Basic
 
 /-!
 # The abelianization of a group
@@ -20,6 +22,8 @@ groups, which can be found in `Mathlib/Algebra/Category/GrpCat/Adjunctions.lean`
 * `MulEquiv.abelianizationCongr`: Equivalent groups have equivalent abelianizations
 
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal Field
 

@@ -3,11 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Alistair Tucker, Wen Yang
 -/
-import Mathlib.Order.Interval.Set.Image
-import Mathlib.Order.CompleteLatticeIntervals
-import Mathlib.Topology.Order.DenselyOrdered
-import Mathlib.Topology.Order.Monotone
-import Mathlib.Topology.Connected.TotallyDisconnected
+module
+
+public import Mathlib.Order.Interval.Set.Image
+public import Mathlib.Order.CompleteLatticeIntervals
+public import Mathlib.Topology.Order.DenselyOrdered
+public import Mathlib.Topology.Order.Monotone
+public import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
 # Intermediate Value Theorem
@@ -41,6 +43,8 @@ on intervals.
 
 intermediate value theorem, connected space, connected set
 -/
+
+@[expose] public section
 
 
 open Filter OrderDual TopologicalSpace Function Set

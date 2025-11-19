@@ -3,12 +3,13 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.Data.Nat.PrimeFin
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.FieldTheory.IsAlgClosed.Classification
-import Mathlib.ModelTheory.Algebra.Field.CharP
-import Mathlib.ModelTheory.Satisfiability
+public import Mathlib.Data.Nat.PrimeFin
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.FieldTheory.IsAlgClosed.Classification
+public import Mathlib.ModelTheory.Algebra.Field.CharP
+public import Mathlib.ModelTheory.Satisfiability
 
 /-!
 
@@ -42,6 +43,8 @@ the Ax-Grothendieck Theorem were first formalized in Lean 3 by Joseph Hua
 [here](https://github.com/Jlh18/ModelTheory8Report)
 
 -/
+
+@[expose] public section
 
 variable {K : Type*}
 

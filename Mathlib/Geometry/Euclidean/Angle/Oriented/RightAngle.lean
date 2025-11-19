@@ -3,8 +3,10 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
+module
+
+public import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
 
 /-!
 # Oriented angles in right-angled triangles.
@@ -13,6 +15,8 @@ This file proves basic geometric results about distances and oriented angles in 
 degenerate) right-angled triangles in real inner product spaces and Euclidean affine spaces.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

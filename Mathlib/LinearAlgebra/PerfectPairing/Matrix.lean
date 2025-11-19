@@ -3,9 +3,11 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.PerfectPairing.Basic
-import Mathlib.LinearAlgebra.Matrix.Dual
-import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
+module
+
+public import Mathlib.LinearAlgebra.PerfectPairing.Basic
+public import Mathlib.LinearAlgebra.Matrix.Dual
+public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 
 /-!
 # Perfect pairings and matrices
@@ -16,6 +18,8 @@ The file contains results connecting perfect pairings and matrices.
 * `Matrix.toPerfectPairing`: regard an invertible matrix as a perfect pairing.
 
 -/
+
+@[expose] public section
 
 namespace Matrix
 

@@ -3,9 +3,11 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Deriv.Add
-import Mathlib.LinearAlgebra.AffineSpace.Slope
-import Mathlib.Topology.Algebra.Module.PerfectSpace
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Add
+public import Mathlib.LinearAlgebra.AffineSpace.Slope
+public import Mathlib.Topology.Algebra.Module.PerfectSpace
 
 /-!
 # Derivative as the limit of the slope
@@ -24,6 +26,8 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 
 derivative, slope
 -/
+
+@[expose] public section
 
 universe u v
 

@@ -3,8 +3,10 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
-import Mathlib.MeasureTheory.Group.Measure
+module
+
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.MeasureTheory.Group.Measure
 
 /-!
 # Bochner Integration on Groups
@@ -12,6 +14,8 @@ import Mathlib.MeasureTheory.Group.Measure
 We develop properties of integrals with a group as domain.
 This file contains properties about integrability and Bochner integration.
 -/
+
+@[expose] public section
 
 namespace MeasureTheory
 

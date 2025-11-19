@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Simon Hudon, Kim Morrison, Keeley Hoek, Robert Y. Lewis,
 Floris van Doorn, Edward Ayers
 -/
-import Lean.Expr
-import Mathlib.Util.MemoFix
+module
+
+public import Lean.Expr
+public import Mathlib.Util.MemoFix
 
 /-!
 # ReplaceRec
@@ -13,6 +15,8 @@ import Mathlib.Util.MemoFix
 We define a more flexible version of `Expr.replace` where we can use recursive calls even when
 replacing a subexpression. We completely mimic the implementation of `Expr.replace`.
 -/
+
+@[expose] public section
 
 namespace Lean.Expr
 

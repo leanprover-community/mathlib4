@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplicesSubcomplex
-import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.IsUniquelyCodimOneFace
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplicesSubcomplex
+public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.IsUniquelyCodimOneFace
 
 /-!
 # Pairings
@@ -37,6 +39,8 @@ a strong anodyne extension (TODO @joelriou), and the converse is also true
 * [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
 
 -/
+
+@[expose] public section
 
 universe u
 

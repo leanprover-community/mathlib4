@@ -3,8 +3,10 @@ Copyright (c) 2023 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.FieldTheory.SeparableDegree
-import Mathlib.FieldTheory.IsSepClosed
+module
+
+public import Mathlib.FieldTheory.SeparableDegree
+public import Mathlib.FieldTheory.IsSepClosed
 
 /-!
 
@@ -58,6 +60,8 @@ This file contains basics about the (relative) separable closure of a field exte
 separable degree, degree, separable closure
 
 -/
+
+@[expose] public section
 
 open Module Polynomial IntermediateField Field
 

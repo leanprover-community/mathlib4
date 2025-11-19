@@ -3,12 +3,14 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
 -/
-import Mathlib.GroupTheory.QuotientGroup.Finite
-import Mathlib.LinearAlgebra.Quotient.Defs
-import Mathlib.RingTheory.Congruence.Basic
-import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.GroupTheory.QuotientGroup.Finite
+public import Mathlib.LinearAlgebra.Quotient.Defs
+public import Mathlib.RingTheory.Congruence.Basic
+public import Mathlib.RingTheory.Ideal.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.Tactic.FinCases
 
 /-!
 # Ideal quotients
@@ -23,6 +25,8 @@ See `Algebra.RingQuot` for quotients of semirings.
 - `Ideal.Quotient.Ring`: the quotient of a ring `R` by a two-sided ideal `I : Ideal R`
 
 -/
+
+@[expose] public section
 
 open Set
 

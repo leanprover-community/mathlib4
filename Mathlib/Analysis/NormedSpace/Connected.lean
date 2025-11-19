@@ -3,11 +3,13 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Convex.Contractible
-import Mathlib.Analysis.Convex.Topology
-import Mathlib.Analysis.Normed.Module.Convex
-import Mathlib.LinearAlgebra.Dimension.DivisionRing
-import Mathlib.Topology.Algebra.Module.Cardinality
+module
+
+public import Mathlib.Analysis.Convex.Contractible
+public import Mathlib.Analysis.Convex.Topology
+public import Mathlib.Analysis.Normed.Module.Convex
+public import Mathlib.LinearAlgebra.Dimension.DivisionRing
+public import Mathlib.Topology.Algebra.Module.Cardinality
 
 /-!
 # Connectedness of subsets of vector spaces
@@ -23,6 +25,8 @@ We show several results related to the (path)-connectedness of subsets of real v
 
 Statements with connectedness instead of path-connectedness are also given.
 -/
+
+@[expose] public section
 
 assert_not_exists Subgroup.index Nat.divisors
 -- TODO assert_not_exists Cardinal

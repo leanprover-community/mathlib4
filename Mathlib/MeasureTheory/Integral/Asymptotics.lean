@@ -3,8 +3,10 @@ Copyright (c) 2024 Lawrence Wu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lawrence Wu
 -/
-import Mathlib.MeasureTheory.Group.Measure
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+module
+
+public import Mathlib.MeasureTheory.Group.Measure
+public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 
 /-!
 # Bounding of integrals by asymptotics
@@ -24,6 +26,8 @@ We establish integrability of `f` from `f = O(g)`.
   If `f` is locally integrable, `‖f(-x)‖ = ‖f(x)‖`, and `f =O[atTop] g` for some
   `g` integrable `atTop`, then `f` is integrable.
 -/
+
+@[expose] public section
 
 open Asymptotics MeasureTheory Set Filter
 

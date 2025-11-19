@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Devon Tuma
 -/
-import Mathlib.Probability.ProbabilityMassFunction.Monad
-import Mathlib.Control.ULiftable
+module
+
+public import Mathlib.Probability.ProbabilityMassFunction.Monad
+public import Mathlib.Control.ULiftable
 
 /-!
 # Specific Constructions of Probability Mass Functions
@@ -23,6 +25,8 @@ and `filter` uses this to filter the support of a `PMF` and re-normalize the new
 `bernoulli` represents the Bernoulli distribution on `Bool`.
 
 -/
+
+@[expose] public section
 
 universe u v
 

@@ -3,14 +3,16 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Subtype
-import Mathlib.Order.Defs.LinearOrder
-import Mathlib.Order.Notation
-import Mathlib.Tactic.GRewrite
-import Mathlib.Tactic.Spread
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.Inhabit
-import Mathlib.Tactic.SimpRw
+module
+
+public import Mathlib.Data.Subtype
+public import Mathlib.Order.Defs.LinearOrder
+public import Mathlib.Order.Notation
+public import Mathlib.Tactic.GRewrite
+public import Mathlib.Tactic.Spread
+public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.Inhabit
+public import Mathlib.Tactic.SimpRw
 
 /-!
 # Basic definitions about `≤` and `<`
@@ -57,6 +59,8 @@ provide many aliases to dot notation-less lemmas. For example, `le_trans` is ali
 
 preorder, order, partial order, poset, linear order, chain
 -/
+
+@[expose] public section
 
 
 open Function
@@ -194,7 +198,7 @@ theorem forall_ge_iff_le : (∀ ⦃c⦄, a ≤ c → b ≤ c) ↔ b ≤ a :=
 namespace Mathlib.Tactic.GCongr
 
 /-- See if the term is `a < b` and the goal is `a ≤ b`. -/
-@[gcongr_forward] def exactLeOfLt : ForwardExt where
+@[gcongr_forward] meta def exactLeOfLt : ForwardExt where
   eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``le_of_lt #[h])
 
 end Mathlib.Tactic.GCongr

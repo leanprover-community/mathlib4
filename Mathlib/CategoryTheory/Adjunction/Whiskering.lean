@@ -3,8 +3,10 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Whiskering
-import Mathlib.CategoryTheory.Adjunction.Basic
+module
+
+public import Mathlib.CategoryTheory.Whiskering
+public import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
 
@@ -13,6 +15,8 @@ Given categories `C D E`, functors `F : D ⥤ E` and `G : E ⥤ D` with an adjun
 and the functor categories `E ⥤ C` and `D ⥤ C`.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory.Adjunction

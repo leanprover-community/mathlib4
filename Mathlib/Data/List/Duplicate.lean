@@ -3,7 +3,9 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky, Chris Hughes
 -/
-import Mathlib.Data.List.Nodup
+module
+
+public import Mathlib.Data.List.Nodup
 
 /-!
 # List duplicates
@@ -17,6 +19,8 @@ import Mathlib.Data.List.Nodup
 In this file, `x ∈+ l` notation is shorthand for `List.Duplicate x l`.
 
 -/
+
+@[expose] public section
 
 
 variable {α : Type*}

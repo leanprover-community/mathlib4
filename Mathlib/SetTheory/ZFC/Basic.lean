@@ -3,10 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Logic.Small.Basic
-import Mathlib.SetTheory.ZFC.PSet
+module
+
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Logic.Small.Basic
+public import Mathlib.SetTheory.ZFC.PSet
 
 /-!
 # A model of ZFC
@@ -34,6 +36,8 @@ The theory of classes is developed in `Mathlib/SetTheory/ZFC/Class.lean`.
 To avoid confusion between the Lean `Set` and the ZFC `Set`, docstrings in this file refer to them
 respectively as "`Set`" and "ZFC set".
 -/
+
+@[expose] public section
 
 
 universe u

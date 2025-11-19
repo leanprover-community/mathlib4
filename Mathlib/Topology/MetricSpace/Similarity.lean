@@ -3,7 +3,9 @@ Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Newell Jensen
 -/
-import Mathlib.Topology.MetricSpace.Congruence
+module
+
+public import Mathlib.Topology.MetricSpace.Congruence
 
 /-!
 # Similarities
@@ -22,6 +24,8 @@ Let `P₁` and `P₂` be metric spaces, let `ι` be an index set, and let `v₁ 
 
 * `(v₁ ∼ v₂ : Prop)` represents that `(v₁ : ι → P₁)` and `(v₂ : ι → P₂)` are similar.
 -/
+
+@[expose] public section
 
 open scoped NNReal
 

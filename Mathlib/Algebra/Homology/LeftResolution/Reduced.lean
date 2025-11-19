@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.LeftResolution.Transport
-import Mathlib.CategoryTheory.Idempotents.FunctorExtension
-import Mathlib.CategoryTheory.MorphismProperty.Retract
+module
+
+public import Mathlib.Algebra.Homology.LeftResolution.Transport
+public import Mathlib.CategoryTheory.Idempotents.FunctorExtension
+public import Mathlib.CategoryTheory.MorphismProperty.Retract
 
 /-!
 # Left resolutions which preserve the zero object
@@ -31,6 +33,8 @@ corresponding to the submodule spanned by the generator corresponding
 to `0 : M` (TODO).
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Abelian
 

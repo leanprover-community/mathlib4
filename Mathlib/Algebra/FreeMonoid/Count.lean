@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.FreeMonoid.Basic
-import Mathlib.Algebra.Group.TypeTags.Basic
+module
+
+public import Mathlib.Algebra.FreeMonoid.Basic
+public import Mathlib.Algebra.Group.TypeTags.Basic
 
 /-!
 # `List.count` as a bundled homomorphism
@@ -15,6 +17,8 @@ additive homomorphisms from `FreeMonoid` and `FreeAddMonoid`.
 
 We do not use `to_additive` too much because it can't map `Multiplicative ℕ` to `ℕ`.
 -/
+
+@[expose] public section
 
 variable {α : Type*} (p : α → Prop) [DecidablePred p]
 

@@ -3,7 +3,9 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Eric Wieser, Joachim Breitner
 -/
-import Mathlib.GroupTheory.FreeGroup.Basic
+module
+
+public import Mathlib.GroupTheory.FreeGroup.Basic
 
 /-!
 # Free groups structures on arbitrary types
@@ -36,6 +38,8 @@ For the explicit construction of free groups, see `GroupTheory/FreeGroup`.
   a free group basis.
 
 -/
+
+@[expose] public section
 
 
 universe u

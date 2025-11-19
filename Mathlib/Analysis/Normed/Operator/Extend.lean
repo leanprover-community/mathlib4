@@ -3,7 +3,9 @@ Copyright (c) 2025 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Zhouhang Zhou
 -/
-import Mathlib.Analysis.Normed.Operator.Basic
+module
+
+public import Mathlib.Analysis.Normed.Operator.Basic
 
 /-!
 
@@ -17,6 +19,8 @@ subspace to the entire Banach space.
 injection into the domain and using a norm estimate.
 
 -/
+
+@[expose] public section
 
 suppress_compilation
 

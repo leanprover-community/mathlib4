@@ -3,11 +3,13 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.Basic
-import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
-import Mathlib.CategoryTheory.ObjectProperty.EpiMono
-import Mathlib.CategoryTheory.ObjectProperty.Extensions
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+module
+
+public import Mathlib.CategoryTheory.Abelian.Basic
+public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
+public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
+public import Mathlib.CategoryTheory.ObjectProperty.Extensions
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
 /-!
 # Serre classes
@@ -26,6 +28,8 @@ and is closed under subobjects, quotients and extensions.
 * [Jean-Pierre Serre, *Groupes d'homotopie et classes de groupes abéliens*][serre1958]
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 

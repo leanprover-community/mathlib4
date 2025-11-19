@@ -3,8 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Condensed.Discrete.Colimit
-import Mathlib.Condensed.Discrete.Module
+module
+
+public import Mathlib.Condensed.Discrete.Colimit
+public import Mathlib.Condensed.Discrete.Module
 /-!
 
 # Characterizing discrete condensed sets and `R`-modules.
@@ -28,6 +30,8 @@ The analogues for light condensed sets, condensed `R`-modules over any ring, and
 condensed `R`-modules are nearly identical (`CondensedMod.isDiscrete_tfae`,
 `LightCondSet.isDiscrete_tfae`, and `LightCondMod.isDiscrete_tfae`).
 -/
+
+@[expose] public section
 
 universe u
 

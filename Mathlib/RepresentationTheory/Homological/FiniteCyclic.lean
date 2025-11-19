@@ -3,11 +3,13 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Homology.AlternatingConst
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.RepresentationTheory.Coinvariants
+module
+
+public import Mathlib.Algebra.Homology.AlternatingConst
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
+public import Mathlib.GroupTheory.OrderOfElement
+public import Mathlib.RepresentationTheory.Coinvariants
 
 /-!
 # Projective resolution of `k` as a trivial `k`-linear representation of a finite cyclic group
@@ -36,6 +38,8 @@ this resolution to compute the group homology of representations of finite cycli
 * Use this to analyse the group cohomology of representations of finite cyclic groups.
 
 -/
+
+@[expose] public section
 
 universe v u
 

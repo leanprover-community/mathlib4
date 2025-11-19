@@ -3,9 +3,11 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Normed.Order.Lattice
-import Mathlib.Topology.ContinuousMap.Ordered
-import Mathlib.Topology.UniformSpace.CompactConvergence
+module
+
+public import Mathlib.Analysis.Normed.Order.Lattice
+public import Mathlib.Topology.ContinuousMap.Ordered
+public import Mathlib.Topology.UniformSpace.CompactConvergence
 
 /-! # Dini's Theorem
 
@@ -29,6 +31,8 @@ basis is `nhds_basis_Ioo`. In the case of a normed lattice additive commutative 
 is `nhds_basis_ball`, and the fact that this basis satisfies the monotonicity criterion
 corresponds to `HasSolidNorm`.
 -/
+
+@[expose] public section
 
 open Filter Topology
 

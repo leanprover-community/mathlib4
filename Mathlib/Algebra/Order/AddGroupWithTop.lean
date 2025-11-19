@@ -3,10 +3,12 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Monoid.WithTop
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.CharZero.Defs
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+module
+
+public import Mathlib.Algebra.Order.Monoid.WithTop
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.CharZero.Defs
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-!
 # Linearly ordered commutative additive groups and monoids with a top element adjoined
@@ -22,6 +24,8 @@ The disadvantage is that a type such as `ENNReal` is not of that form,
 whereas it is a very common target for valuations.
 The solutions is to use a typeclass, and that is exactly what we do in this file.
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 

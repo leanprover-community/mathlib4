@@ -3,7 +3,9 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Symmetric
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 
 /-!
 # Vector fields in vector spaces
@@ -27,6 +29,8 @@ In addition to comprehensive API on these two notions, the main results are the 
   identity `[U, [V, W]] = [[U, V], W] + [V, [U, W]]`.
 
 -/
+
+@[expose] public section
 
 open Set
 open scoped Topology

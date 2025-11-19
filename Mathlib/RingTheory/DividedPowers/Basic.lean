@@ -3,11 +3,12 @@ Copyright (c) 2024 Antoine Chambert-Loir & María-Inés de Frutos—Fernández. 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández
 -/
+module
 
-import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.Combinatorics.Enumerative.Bell
-import Mathlib.Data.Nat.Choose.Multinomial
-import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.Combinatorics.Enumerative.Bell
+public import Mathlib.Data.Nat.Choose.Multinomial
+public import Mathlib.RingTheory.Ideal.Maps
 
 /-! # Divided powers
 
@@ -62,6 +63,8 @@ modules*][Roby-1963]
 * We do not provide any notation such as `a ^[n]` for `dpow a n`.
 
 -/
+
+@[expose] public section
 
 open Finset Nat Ideal
 

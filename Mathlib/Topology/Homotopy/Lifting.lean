@@ -3,11 +3,13 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
-import Mathlib.Topology.Connected.LocPathConnected
-import Mathlib.Topology.Covering
-import Mathlib.Topology.Homotopy.Path
-import Mathlib.Topology.UnitInterval
+module
+
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
+public import Mathlib.Topology.Connected.LocPathConnected
+public import Mathlib.Topology.Covering
+public import Mathlib.Topology.Homotopy.Path
+public import Mathlib.Topology.UnitInterval
 
 /-!
 # The homotopy lifting property for covering maps
@@ -22,6 +24,8 @@ import Mathlib.Topology.UnitInterval
   locally path-connected space lifts uniquely through a covering map (given a lift of an
   arbitrary point).
 -/
+
+@[expose] public section
 
 open Topology unitInterval
 

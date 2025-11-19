@@ -3,9 +3,11 @@ Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.RingTheory.Ideal.BigOperators
-import Mathlib.RingTheory.Polynomial.Eisenstein.Criterion
-import Mathlib.RingTheory.Polynomial.ScaleRoots
+module
+
+public import Mathlib.RingTheory.Ideal.BigOperators
+public import Mathlib.RingTheory.Polynomial.Eisenstein.Criterion
+public import Mathlib.RingTheory.Polynomial.ScaleRoots
 
 /-!
 # Eisenstein polynomials
@@ -26,6 +28,8 @@ We also define a notion `IsWeaklyEisensteinAt` requiring only that
 useful since it is sometimes better behaved (for example it is stable under `Polynomial.map`).
 
 -/
+
+@[expose] public section
 
 
 universe u v w z

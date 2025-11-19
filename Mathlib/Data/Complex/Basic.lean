@@ -3,12 +3,14 @@ Copyright (c) 2017 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Mario Carneiro
 -/
-import Mathlib.Algebra.Ring.CharZero
-import Mathlib.Algebra.Ring.Torsion
-import Mathlib.Algebra.Star.Basic
-import Mathlib.Data.Real.Basic
-import Mathlib.Order.Interval.Set.UnorderedInterval
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.Ring.CharZero
+public import Mathlib.Algebra.Ring.Torsion
+public import Mathlib.Algebra.Star.Basic
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Order.Interval.Set.UnorderedInterval
+public import Mathlib.Tactic.Ring
 
 /-!
 # The complex numbers
@@ -17,6 +19,8 @@ The complex numbers are modelled as ℝ^2 in the obvious way and it is shown tha
 of characteristic zero. For the result that the complex numbers are algebraically closed, see
 `Complex.isAlgClosed` in `Mathlib.Analysis.Complex.Polynomial.Basic`.
 -/
+
+@[expose] public section
 
 assert_not_exists Multiset Algebra
 

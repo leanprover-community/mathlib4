@@ -3,8 +3,10 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Composition.Lemmas
-import Mathlib.Probability.Kernel.Disintegration.Unique
+module
+
+public import Mathlib.Probability.Kernel.Composition.Lemmas
+public import Mathlib.Probability.Kernel.Disintegration.Unique
 
 /-!
 # Regular conditional probability distribution
@@ -39,6 +41,8 @@ to `m`.
   `∫ y, f (X a, y) ∂(condDistrib Y X μ (X a))`.
 
 -/
+
+@[expose] public section
 
 
 open MeasureTheory Set Filter TopologicalSpace

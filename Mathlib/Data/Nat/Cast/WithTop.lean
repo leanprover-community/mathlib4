@@ -3,8 +3,10 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Ring.Nat
-import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+module
+
+public import Mathlib.Algebra.Ring.Nat
+public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 
 /-!
 # Lemma about the coercion `ℕ → WithBot ℕ`.
@@ -12,6 +14,8 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 An orphaned lemma about casting from `ℕ` to `WithBot ℕ`,
 exiled here during the port to minimize imports of `Algebra.Order.Ring.Rat`.
 -/
+
+@[expose] public section
 
 instance : WellFoundedRelation (WithTop ℕ) where
   rel := (· < ·)

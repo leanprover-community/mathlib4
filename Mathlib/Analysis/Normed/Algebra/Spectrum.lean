@@ -3,14 +3,16 @@ Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
-import Mathlib.Analysis.Real.Spectrum
-import Mathlib.Analysis.Normed.Algebra.Exponential
-import Mathlib.Analysis.Normed.Algebra.UnitizationL1
-import Mathlib.Analysis.Normed.Ring.Units
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.FieldTheory.IsAlgClosed.Spectrum
-import Mathlib.Topology.Algebra.Module.CharacterSpace
+module
+
+public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
+public import Mathlib.Analysis.Real.Spectrum
+public import Mathlib.Analysis.Normed.Algebra.Exponential
+public import Mathlib.Analysis.Normed.Algebra.UnitizationL1
+public import Mathlib.Analysis.Normed.Ring.Units
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+public import Mathlib.FieldTheory.IsAlgClosed.Spectrum
+public import Mathlib.Topology.Algebra.Module.CharacterSpace
 
 /-!
 # The spectrum of elements in a complete normed algebra
@@ -33,6 +35,8 @@ Theorems specific to *complex* Banach algebras, such as *Gelfand's formula* can 
 * `spectrum.spectralRadius_le_nnnorm`: the spectral radius is bounded above by the norm.
 
 -/
+
+@[expose] public section
 
 assert_not_exists ProbabilityTheory.cond
 assert_not_exists HasFDerivAt

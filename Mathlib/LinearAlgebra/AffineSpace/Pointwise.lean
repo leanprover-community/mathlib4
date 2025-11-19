@@ -3,7 +3,9 @@ Copyright (c) 2022 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang
 -/
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 
 /-! # Pointwise instances on `AffineSubspace`s
 
@@ -11,6 +13,8 @@ This file provides the additive action `AffineSubspace.pointwiseAddAction` in th
 `Pointwise` locale.
 
 -/
+
+@[expose] public section
 
 
 open Affine Pointwise

@@ -3,10 +3,12 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Closed.Ideal
-import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
-import Mathlib.CategoryTheory.Sites.CartesianMonoidal
-import Mathlib.CategoryTheory.Sites.Sheafification
+module
+
+public import Mathlib.CategoryTheory.Closed.Ideal
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
+public import Mathlib.CategoryTheory.Sites.CartesianMonoidal
+public import Mathlib.CategoryTheory.Sites.Sheafification
 /-!
 
 # Sheaf categories are Cartesian closed
@@ -14,6 +16,8 @@ import Mathlib.CategoryTheory.Sites.Sheafification
 ...if the underlying presheaf category is Cartesian closed, the target category has
 (chosen) finite products, and there exists a sheafification functor.
 -/
+
+@[expose] public section
 
 noncomputable section
 

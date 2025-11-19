@@ -3,8 +3,10 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Topology.OpenPartialHomeomorph
-import Mathlib.Topology.SeparatedMap
+module
+
+public import Mathlib.Topology.OpenPartialHomeomorph
+public import Mathlib.Topology.SeparatedMap
 
 /-!
 # Local homeomorphisms
@@ -27,6 +29,8 @@ Note that `IsLocalHomeomorph` is a global condition. This is in contrast to
 * more!
 
 -/
+
+@[expose] public section
 
 
 open Topology

@@ -3,10 +3,12 @@ Copyright (c) 2023 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.NumberTheory.RamificationInertia.Unramified
-import Mathlib.RingTheory.Conductor
-import Mathlib.RingTheory.FractionalIdeal.Extended
-import Mathlib.RingTheory.Trace.Quotient
+module
+
+public import Mathlib.NumberTheory.RamificationInertia.Unramified
+public import Mathlib.RingTheory.Conductor
+public import Mathlib.RingTheory.FractionalIdeal.Extended
+public import Mathlib.RingTheory.Trace.Quotient
 
 /-!
 # The different ideal
@@ -30,6 +32,8 @@ import Mathlib.RingTheory.Trace.Quotient
 ## TODO
 - Show properties of the different ideal
 -/
+
+@[expose] public section
 
 open Module
 

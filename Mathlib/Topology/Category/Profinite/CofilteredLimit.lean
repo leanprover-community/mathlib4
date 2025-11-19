@@ -3,11 +3,13 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.Topology.Category.Profinite.Basic
-import Mathlib.Topology.LocallyConstant.Basic
-import Mathlib.Topology.DiscreteQuotient
-import Mathlib.Topology.Category.TopCat.Limits.Cofiltered
-import Mathlib.Topology.Category.TopCat.Limits.Konig
+module
+
+public import Mathlib.Topology.Category.Profinite.Basic
+public import Mathlib.Topology.LocallyConstant.Basic
+public import Mathlib.Topology.DiscreteQuotient
+public import Mathlib.Topology.Category.TopCat.Limits.Cofiltered
+public import Mathlib.Topology.Category.TopCat.Limits.Konig
 
 /-!
 # Cofiltered limits of profinite sets.
@@ -21,6 +23,8 @@ This file contains some theorems about cofiltered limits of profinite sets.
 - `exists_locally_constant` shows that any locally constant function from a cofiltered limit
   of profinite sets factors through one of the components.
 -/
+
+@[expose] public section
 
 namespace Profinite
 

@@ -3,12 +3,16 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.NumberTheory.DirichletCharacter.Basic
-import Mathlib.NumberTheory.GaussSum
+module
+
+public import Mathlib.NumberTheory.DirichletCharacter.Basic
+public import Mathlib.NumberTheory.GaussSum
 
 /-!
 # Gauss sums for Dirichlet characters
 -/
+
+@[expose] public section
 variable {N : ℕ} [NeZero N] {R : Type*} [CommRing R] (e : AddChar (ZMod N) R)
 
 open AddChar DirichletCharacter

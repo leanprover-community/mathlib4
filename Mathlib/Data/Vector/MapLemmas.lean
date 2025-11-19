@@ -3,12 +3,16 @@ Copyright (c) 2023 Alex Keizer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Keizer
 -/
-import Mathlib.Data.Vector.Basic
-import Mathlib.Data.Vector.Snoc
+module
+
+public import Mathlib.Data.Vector.Basic
+public import Mathlib.Data.Vector.Snoc
 
 /-!
   This file establishes a set of normalization lemmas for `map`/`mapAccumr` operations on vectors
 -/
+
+@[expose] public section
 
 variable {α β γ ζ σ σ₁ σ₂ φ : Type*} {n : ℕ} {s : σ} {s₁ : σ₁} {s₂ : σ₂}
 

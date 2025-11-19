@@ -3,7 +3,9 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Tactic.Order.Graph.Basic
+module
+
+public meta import Mathlib.Tactic.Order.Graph.Basic
 
 /-!
 # Tarjan's Algorithm
@@ -11,6 +13,8 @@ import Mathlib.Tactic.Order.Graph.Basic
 This file implements Tarjan's algorithm for finding the strongly connected components (SCCs) of
 a graph.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Order.Graph
 

@@ -3,8 +3,10 @@ Copyright (c) 2025 Yaël Dillies, Patrick Luo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Patrick Luo
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Tactic.MkIffOfInductiveProp
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Torsion-free monoids and groups
@@ -12,6 +14,8 @@ import Mathlib.Tactic.MkIffOfInductiveProp
 This file proves lemmas about torsion-free monoids.
 A monoid `M` is *torsion-free* if `n • · : M → M` is injective for all non-zero natural numbers `n`.
 -/
+
+@[expose] public section
 
 open Function
 

@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Tactic.Common
-import Mathlib.Data.Set.Insert
+module
+
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Tactic.Common
+public import Mathlib.Data.Set.Insert
 
 /-!
 # Set enumeration
@@ -13,6 +15,8 @@ This file allows enumeration of sets given a choice function.
 The definition does not assume `sel` actually is a choice function, i.e. `sel s ∈ s` and
 `sel s = none ↔ s = ∅`. These assumptions are added to the lemmas needing them.
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 

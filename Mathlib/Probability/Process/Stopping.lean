@@ -3,8 +3,10 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
 -/
-import Mathlib.Probability.Process.Adapted
-import Mathlib.MeasureTheory.Constructions.BorelSpace.WithTop
+module
+
+public import Mathlib.Probability.Process.Adapted
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.WithTop
 
 /-!
 # Stopping times, stopped processes and stopped values
@@ -49,6 +51,8 @@ property.
 stopping time, stochastic process
 
 -/
+
+@[expose] public section
 
 open Filter Order TopologicalSpace WithTop
 

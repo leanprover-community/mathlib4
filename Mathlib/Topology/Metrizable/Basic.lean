@@ -3,7 +3,9 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.MetricSpace.Basic
+module
+
+public import Mathlib.Topology.MetricSpace.Basic
 
 /-!
 # Metrizability of a T₃ topological space with second countable topology
@@ -11,6 +13,8 @@ import Mathlib.Topology.MetricSpace.Basic
 In this file we define metrizable topological spaces, i.e., topological spaces for which there
 exists a metric space structure that generates the same topology.
 -/
+
+@[expose] public section
 
 open Filter Set Metric Topology
 

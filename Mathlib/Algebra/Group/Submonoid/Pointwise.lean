@@ -3,10 +3,12 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.Order.BigOperators.Group.List
-import Mathlib.Order.WellFoundedSet
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Submonoid.Membership
+public import Mathlib.Algebra.Order.BigOperators.Group.List
+public import Mathlib.Order.WellFoundedSet
 
 /-!
 # Pointwise instances on `Submonoid`s and `AddSubmonoid`s
@@ -32,6 +34,8 @@ While the statements of these lemmas are defeq, we repeat them here due to them 
 syntactically equal. Before adding new lemmas here, consider if they would also apply to the action
 on `Set`s.
 -/
+
+@[expose] public section
 
 assert_not_exists GroupWithZero
 

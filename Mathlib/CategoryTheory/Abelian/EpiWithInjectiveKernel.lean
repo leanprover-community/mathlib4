@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-import Mathlib.CategoryTheory.MorphismProperty.Composition
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # Epimorphisms with an injective kernel
@@ -17,6 +19,8 @@ order to define morphisms of cochain complexes which satisfy this property
 degreewise.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

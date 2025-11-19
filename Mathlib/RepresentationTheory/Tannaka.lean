@@ -3,7 +3,9 @@ Copyright (c) 2025 Yacine Benmeuraiem. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yacine Benmeuraiem
 -/
-import Mathlib.RepresentationTheory.FDRep
+module
+
+public import Mathlib.RepresentationTheory.FDRep
 
 /-!
 # Tannaka duality for finite groups
@@ -20,6 +22,8 @@ The main result is the isomorphism `equiv : G ≃* Aut (forget k G)`.
 
 <https://math.leidenuniv.nl/scripties/1bachCommelin.pdf>
 -/
+
+@[expose] public section
 
 noncomputable section
 

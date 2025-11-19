@@ -4,14 +4,18 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Algebra.Module.LinearMap.Defs
-import Mathlib.Algebra.NoZeroSMulDivisors.Pi
-import Mathlib.Algebra.Ring.Opposite
-import Mathlib.GroupTheory.GroupAction.DomAct.Basic
+module
+
+public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Algebra.NoZeroSMulDivisors.Pi
+public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 /-!
 # Further results on (semi)linear maps
 -/
+
+@[expose] public section
 
 
 assert_not_exists Submonoid Finset TrivialStar

@@ -3,10 +3,11 @@ Copyright (c) 2025 Matteo Cipollina. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina
 -/
+module
 
-import Mathlib.Combinatorics.Quiver.ConnectedComponent
-import Mathlib.Combinatorics.Quiver.Path.Vertices
-import Mathlib.Data.Matrix.Mul
+public import Mathlib.Combinatorics.Quiver.ConnectedComponent
+public import Mathlib.Combinatorics.Quiver.Path.Vertices
+public import Mathlib.Data.Matrix.Mul
 
 /-!
 # Irreducibility and primitivity of nonnegative matrices
@@ -57,6 +58,8 @@ like `PosMulStrictMono R` or `Nontrivial R`. Some statements expand matrix power
 
 matrix, nonnegative, positive, power, quiver, graph, irreducible, primitive, perron-frobenius
 -/
+
+@[expose] public section
 namespace Matrix
 
 open Quiver Quiver.Path

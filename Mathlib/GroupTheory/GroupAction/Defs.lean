@@ -3,11 +3,13 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Scalar
-import Mathlib.Algebra.Group.Subgroup.Defs
-import Mathlib.Algebra.Group.Submonoid.MulAction
-import Mathlib.Data.Set.BooleanAlgebra
+module
+
+public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+public import Mathlib.Algebra.Group.Subgroup.Defs
+public import Mathlib.Algebra.Group.Submonoid.MulAction
+public import Mathlib.Data.Set.BooleanAlgebra
 
 /-!
 # Definition of `orbit`, `fixedPoints` and `stabilizer`
@@ -22,6 +24,8 @@ This file defines orbits, stabilizers, and other objects defined in terms of act
 * `MulAction.stabilizer`
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DistribMulAction
 

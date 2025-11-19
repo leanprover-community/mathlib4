@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Adjunction.Basic
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
 # Adjunctions with a parameter
@@ -32,6 +34,8 @@ left adjoints).
 * https://ncatlab.org/nlab/show/two-variable+adjunction
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 

@@ -3,9 +3,11 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yakov Pechersky
 -/
-import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.Infix
-import Mathlib.Data.Quot
+module
+
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.List.Infix
+public import Mathlib.Data.Quot
 
 /-!
 # List rotation
@@ -21,6 +23,8 @@ This file proves basic results about `List.rotate`, the list rotation.
 
 rotated, rotation, permutation, cycle
 -/
+
+@[expose] public section
 
 
 universe u

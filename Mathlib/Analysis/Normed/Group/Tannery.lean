@@ -3,9 +3,10 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Analysis.Normed.Group.InfiniteSum
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Analysis.Normed.Group.InfiniteSum
 
 /-!
 # Tannery's theorem
@@ -17,6 +18,8 @@ theorem (with the measure chosen to be the counting measure); but we give here a
 order to avoid some unnecessary hypotheses that appear when specialising the general
 measure-theoretic result.
 -/
+
+@[expose] public section
 
 open Filter Topology
 

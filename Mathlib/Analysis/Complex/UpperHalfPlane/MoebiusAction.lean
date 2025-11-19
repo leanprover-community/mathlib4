@@ -3,9 +3,11 @@ Copyright (c) 2021 Alex Kontorovich and Heather Macbeth and Marc Masdeu. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
 -/
-import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
-import Mathlib.Data.Fintype.Parity
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+module
+
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
+public import Mathlib.Data.Fintype.Parity
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 
 /-!
 # Group action on the upper half-plane
@@ -14,6 +16,8 @@ We equip the upper half-plane with the structure of a `GL (Fin 2) ℝ` action by
 transformations (composing with complex conjugation when needed to extend the action from the
 positive-determinant subgroup, so that `!![-1, 0; 0, 1]` acts as `z ↦ -conj z`.)
 -/
+
+@[expose] public section
 
 noncomputable section
 

@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.Lattice
-import Batteries.Data.List.Pairwise
+module
+
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.List.Lattice
+public import Batteries.Data.List.Pairwise
 
 /-!
 # Erasure of duplicates in a list
@@ -18,6 +20,8 @@ occurrence of each.
 
 duplicate, multiplicity, nodup, `nub`
 -/
+
+@[expose] public section
 
 
 universe u

@@ -3,8 +3,10 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Algebra.Lie.IdealOperations
+module
+
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.Algebra.Lie.IdealOperations
 
 /-!
 # Trivial Lie modules and Abelian Lie algebras
@@ -28,6 +30,8 @@ In this file we define these concepts and provide some related definitions and r
 
 lie algebra, abelian, commutative, center
 -/
+
+@[expose] public section
 
 
 universe u v w w₁ w₂

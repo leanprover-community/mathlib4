@@ -3,8 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Data.Nat.Prime.Basic
+module
+
+public meta import Mathlib.Tactic.NormNum.Basic
+public meta import Mathlib.Data.Nat.Prime.Basic
 
 /-!
 # `norm_num` extensions on natural numbers
@@ -23,6 +25,8 @@ generate a proof that has a smaller depth.
 Note: `evalMinFac.aux` does not raise a stack overflow, which can be checked by replacing the
 `prf'` in the recursive call by something like `(.sort .zero)`
 -/
+
+public meta section
 
 open Nat Qq Lean Meta
 

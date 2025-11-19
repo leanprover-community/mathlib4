@@ -3,8 +3,10 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Algebra.Order.AbsoluteValue.Basic
-import Mathlib.NumberTheory.Padics.PadicVal.Basic
+module
+
+public import Mathlib.Algebra.Order.AbsoluteValue.Basic
+public import Mathlib.NumberTheory.Padics.PadicVal.Basic
 
 /-!
 # p-adic norm
@@ -33,6 +35,8 @@ by taking `[Fact p.Prime]` as a type class argument.
 
 p-adic, p adic, padic, norm, valuation
 -/
+
+@[expose] public section
 
 
 /-- If `q ≠ 0`, the `p`-adic norm of a rational `q` is `p ^ (-padicValRat p q)`.

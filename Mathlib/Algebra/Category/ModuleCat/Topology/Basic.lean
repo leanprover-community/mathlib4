@@ -3,10 +3,12 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Richard Hill, Andrew Yang
 -/
-import Mathlib.Algebra.Category.ModuleCat.Colimits
-import Mathlib.Algebra.Category.ModuleCat.Limits
-import Mathlib.Topology.Algebra.Module.ModuleTopology
-import Mathlib.Topology.Category.TopCat.Limits.Basic
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Colimits
+public import Mathlib.Algebra.Category.ModuleCat.Limits
+public import Mathlib.Topology.Algebra.Module.ModuleTopology
+public import Mathlib.Topology.Category.TopCat.Limits.Basic
 
 /-!
 # The category `TopModuleCat R` of topological modules
@@ -25,6 +27,8 @@ We also provide various adjunctions:
 ## Future projects
 Show that the forgetful functor to `TopCat` preserves filtered colimits.
 -/
+
+@[expose] public section
 
 universe v u
 

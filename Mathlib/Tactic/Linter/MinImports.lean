@@ -3,8 +3,10 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import ImportGraph.Imports
-import Mathlib.Tactic.MinImports
+module
+
+public meta import ImportGraph.Imports
+public meta import Mathlib.Tactic.MinImports
 
 /-! # The `minImports` linter
 
@@ -17,6 +19,8 @@ information.
 It also works incrementally, accumulating increasing import information.
 This is better suited, for instance, to split files.
 -/
+
+public meta section
 
 open Lean Elab Command Linter
 

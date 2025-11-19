@@ -3,14 +3,16 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Group.TypeTags.Finite
-import Mathlib.Algebra.Order.Hom.TypeTags
-import Mathlib.Data.Nat.Totient
-import Mathlib.Data.ZMod.Aut
-import Mathlib.Data.ZMod.QuotientGroup
-import Mathlib.GroupTheory.Exponent
-import Mathlib.GroupTheory.Subgroup.Simple
-import Mathlib.Tactic.Group
+module
+
+public import Mathlib.Algebra.Group.TypeTags.Finite
+public import Mathlib.Algebra.Order.Hom.TypeTags
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.Data.ZMod.Aut
+public import Mathlib.Data.ZMod.QuotientGroup
+public import Mathlib.GroupTheory.Exponent
+public import Mathlib.GroupTheory.Subgroup.Simple
+public import Mathlib.Tactic.Group
 
 /-!
 # Cyclic groups
@@ -38,6 +40,8 @@ For the concrete cyclic group of order `n`, see `Data.ZMod.Basic`.
 
 cyclic group
 -/
+
+@[expose] public section
 
 assert_not_exists Ideal TwoSidedIdeal
 

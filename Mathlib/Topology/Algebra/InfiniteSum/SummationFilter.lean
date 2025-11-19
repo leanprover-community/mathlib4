@@ -3,10 +3,12 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Data.Finset.Preimage
-import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
-import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Order.LiminfLimsup
+module
+
+public import Mathlib.Data.Finset.Preimage
+public import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
+public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Order.LiminfLimsup
 
 
 /-!
@@ -18,6 +20,8 @@ limit along `L` of the sums over finsets (if this limit exists). This file only 
 machinery of summation filters - the key definitions `HasSum`, `tsum` and `summable` (and their
 product variants) are in the file `Mathlib.Topology.Algebra.InfiniteSum.Defs`.
 -/
+
+@[expose] public section
 
 open Set Filter Function
 

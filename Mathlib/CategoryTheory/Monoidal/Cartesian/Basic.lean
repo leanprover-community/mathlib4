@@ -3,10 +3,12 @@ Copyright (c) 2019 Kim Morrison, Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Simon Hudon, Adam Topaz, Robin Carlier
 -/
-import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
-import Mathlib.CategoryTheory.Limits.FullSubcategory
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
+public import Mathlib.CategoryTheory.Limits.FullSubcategory
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
 /-!
 # Categories with chosen finite products
@@ -38,6 +40,8 @@ instead turn on the corresponding `ofChosenFiniteProducts` declaration for that 
 - Construct chosen finite products in other categories appearing "in nature".
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

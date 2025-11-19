@@ -3,9 +3,11 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.Algebra.Module.LinearMapPiProd
-import Mathlib.LinearAlgebra.Multilinear.Basic
-import Mathlib.Algebra.BigOperators.Fin
+module
+
+public import Mathlib.Topology.Algebra.Module.LinearMapPiProd
+public import Mathlib.LinearAlgebra.Multilinear.Basic
+public import Mathlib.Algebra.BigOperators.Fin
 
 /-!
 # Continuous multilinear maps
@@ -31,6 +33,8 @@ We introduce the notation `M [×n]→L[R] M'` for the space of continuous `n`-mu
 types as the arguments of our continuous multilinear maps), but arguably the most important one,
 especially when defining iterated derivatives.
 -/
+
+@[expose] public section
 
 
 open Function Fin Set

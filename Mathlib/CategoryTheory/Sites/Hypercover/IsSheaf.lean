@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Sites.Hypercover.One
+module
+
+public import Mathlib.CategoryTheory.Sites.Hypercover.One
 
 /-!
 # Characterization of sheaves using 1-hypercovers
@@ -31,6 +33,8 @@ that if `C : Type u` and `Category.{v} C`, then
 * Refactor `DenseSubsite` using `1`-hypercovers.
 
 -/
+
+@[expose] public section
 
 universe w v v' u u'
 

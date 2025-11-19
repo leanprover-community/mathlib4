@@ -3,8 +3,10 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Dagur Asgeirsson
 -/
-import Mathlib.Topology.Category.CompHaus.Limits
-import Mathlib.Topology.Category.CompHausLike.EffectiveEpi
+module
+
+public import Mathlib.Topology.Category.CompHaus.Limits
+public import Mathlib.Topology.Category.CompHausLike.EffectiveEpi
 /-!
 
 # Effective epimorphisms in `CompHaus`
@@ -24,6 +26,8 @@ equivalent.
 - Define coherent categories, and show that `CompHaus` is actually coherent.
 
 -/
+
+@[expose] public section
 
 universe u
 

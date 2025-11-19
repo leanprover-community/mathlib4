@@ -3,8 +3,10 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.Ring.Parity
-import Mathlib.Combinatorics.SimpleGraph.Paths
+module
+
+public import Mathlib.Algebra.Ring.Parity
+public import Mathlib.Combinatorics.SimpleGraph.Paths
 
 /-!
 
@@ -33,6 +35,8 @@ as Eulerian circuits).
 Eulerian trails
 
 -/
+
+@[expose] public section
 
 
 namespace SimpleGraph

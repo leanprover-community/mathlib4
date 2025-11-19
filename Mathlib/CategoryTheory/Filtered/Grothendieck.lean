@@ -3,8 +3,10 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Filtered.Basic
-import Mathlib.CategoryTheory.Grothendieck
+module
+
+public import Mathlib.CategoryTheory.Filtered.Basic
+public import Mathlib.CategoryTheory.Grothendieck
 
 /-!
 # Filteredness of Grothendieck construction
@@ -12,6 +14,8 @@ import Mathlib.CategoryTheory.Grothendieck
 We show that if `F : C ⥤ Cat` is such that `C` is filtered and `F.obj c` is filtered for all
 `c : C`, then `Grothendieck F` is filtered.
 -/
+
+@[expose] public section
 
 universe v u
 

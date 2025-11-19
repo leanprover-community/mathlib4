@@ -3,8 +3,10 @@ Copyright (c) 2025 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Order.SuccPred.CompleteLinearOrder
-import Mathlib.Order.SuccPred.InitialSeg
+module
+
+public import Mathlib.Order.SuccPred.CompleteLinearOrder
+public import Mathlib.Order.SuccPred.InitialSeg
 
 /-!
 # Normal functions
@@ -21,6 +23,8 @@ bound of `f b` with `b < a`.
 * Prove the equivalence with the standard definition (in some other file).
 * Replace `Ordinal.IsNormal` by this more general notion.
 -/
+
+@[expose] public section
 
 open Order Set
 

@@ -3,8 +3,10 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Abelian.Images
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
+module
+
+public import Mathlib.CategoryTheory.Abelian.Images
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 
 /-!
 # Preservation of coimage-image comparisons
@@ -12,6 +14,8 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 If a functor preserves kernels and cokernels, then it preserves abelian images, abelian coimages
 and coimage-image comparisons.
 -/
+
+@[expose] public section
 
 noncomputable section
 

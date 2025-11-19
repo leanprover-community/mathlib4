@@ -3,9 +3,10 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+module
 
-import Mathlib.Algebra.Category.FGModuleCat.Basic
-import Mathlib.RingTheory.Finiteness.Cardinality
+public import Mathlib.Algebra.Category.FGModuleCat.Basic
+public import Mathlib.RingTheory.Finiteness.Cardinality
 
 /-!
 # The category of finitely generated modules over a ring is essentially small
@@ -15,6 +16,8 @@ is essentially small, by providing an explicit small model. However, for applica
 recommended to use the standard `CategoryTheory.SmallModel (FGModuleCat R)` instead.
 
 -/
+
+@[expose] public section
 
 universe v w u
 

@@ -3,7 +3,9 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Yaël Dillies
 -/
-import Mathlib.LinearAlgebra.Dual.Lemmas
+module
+
+public import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # Perfect pairings
@@ -19,6 +21,8 @@ A perfect pairing of two (left) modules may be defined either as:
 In this file we provide a definition `IsPerfPair` corresponding to 1 above, together with logic
 to connect 1 and 2.
 -/
+
+@[expose] public section
 
 open Function Module
 

@@ -3,8 +3,10 @@ Copyright (c) 2025 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson, Jun Kwon
 -/
-import Mathlib.Data.Set.Basic
-import Mathlib.Data.Sym.Sym2
+module
+
+public import Mathlib.Data.Set.Basic
+public import Mathlib.Data.Sym.Sym2
 
 /-!
 # Multigraphs
@@ -60,6 +62,8 @@ Reflecting written mathematics, we use the compact notations `V(G)` and `E(G)` t
 refer to the `vertexSet` and `edgeSet` of `G : Graph α β`.
 If `G.IsLink e x y` then we refer to `e` as `edge` and `x` and `y` as `left` and `right` in names.
 -/
+
+@[expose] public section
 
 variable {α β : Type*} {x y z u v w : α} {e f : β}
 

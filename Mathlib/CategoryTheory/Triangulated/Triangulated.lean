@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Triangulated.Pretriangulated
+module
+
+public import Mathlib.CategoryTheory.Triangulated.Pretriangulated
 
 /-!
 # Triangulated Categories
@@ -12,6 +14,8 @@ This file contains the definition of triangulated categories, which are
 pretriangulated categories which satisfy the octahedron axiom.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 

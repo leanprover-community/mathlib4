@@ -3,7 +3,9 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Tactic.Order.CollectFacts
+module
+
+public meta import Mathlib.Tactic.Order.CollectFacts
 
 /-!
 # Facts preprocessing for the `order` tactic
@@ -11,6 +13,8 @@ import Mathlib.Tactic.Order.CollectFacts
 In this file we implement the preprocessing procedure for the `order` tactic.
 See `Mathlib/Tactic/Order.lean` for details of preprocessing.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Order
 

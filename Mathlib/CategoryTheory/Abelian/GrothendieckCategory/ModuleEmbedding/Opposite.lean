@@ -3,9 +3,11 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Abelian.Yoneda
-import Mathlib.CategoryTheory.Generator.Abelian
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.EnoughInjectives
+module
+
+public import Mathlib.CategoryTheory.Abelian.Yoneda
+public import Mathlib.CategoryTheory.Generator.Abelian
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.EnoughInjectives
 
 /-!
 # Embedding opposites of Grothendieck categories
@@ -14,6 +16,8 @@ If `C` is Grothendieck abelian and `F : D ⥤ Cᵒᵖ` is a functor from a small
 an object `G : Cᵒᵖ` such that `preadditiveCoyonedaObj G : Cᵒᵖ ⥤ ModuleCat (End G)ᵐᵒᵖ` is faithful
 and exact and its precomposition with `F` is full if `F` is.
 -/
+
+@[expose] public section
 
 universe v u
 

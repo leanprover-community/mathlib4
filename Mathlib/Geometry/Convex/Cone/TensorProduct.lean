@@ -3,9 +3,11 @@ Copyright (c) 2025 Bjørn Solheim. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Solheim
 -/
-import Mathlib.Geometry.Convex.Cone.Dual
-import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+module
+
+public import Mathlib.Geometry.Convex.Cone.Dual
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 /-!
 # Tensor products of cones
@@ -41,6 +43,8 @@ We define the minimal and maximal tensor products of pointed cones:
 * [Aubrun et al. *Entangleability of cones*][aubrunEntangleabilityCones2021]
 
 -/
+
+@[expose] public section
 
 open TensorProduct Module
 

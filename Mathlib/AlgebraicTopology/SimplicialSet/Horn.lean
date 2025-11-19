@@ -3,8 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz, Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
-import Mathlib.CategoryTheory.Subpresheaf.Equalizer
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
+public import Mathlib.CategoryTheory.Subpresheaf.Equalizer
 
 /-!
 # Horns
@@ -12,6 +14,8 @@ import Mathlib.CategoryTheory.Subpresheaf.Equalizer
 This file introduces horns `Λ[n, i]`.
 
 -/
+
+@[expose] public section
 
 universe u
 

@@ -3,10 +3,12 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Felix Weilacher
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
-import Mathlib.Topology.MetricSpace.Perfect
-import Mathlib.Topology.Separation.CountableSeparatingOn
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+public import Mathlib.Topology.MetricSpace.Perfect
+public import Mathlib.Topology.Separation.CountableSeparatingOn
 
 /-!
 # The Borel sigma-algebra on Polish spaces
@@ -58,6 +60,8 @@ We use this to prove several versions of the Borel isomorphism theorem.
 * `PolishSpace.Equiv.measurableEquiv` : Any two standard Borel spaces of the same cardinality
   are Borel isomorphic.
 -/
+
+@[expose] public section
 
 
 open Set Function PolishSpace PiNat TopologicalSpace Bornology Metric Filter Topology MeasureTheory

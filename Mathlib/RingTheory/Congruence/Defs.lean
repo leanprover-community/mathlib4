@@ -3,10 +3,12 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.GroupTheory.Congruence.Defs
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.GroupTheory.Congruence.Defs
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Congruence relations on rings
@@ -27,6 +29,8 @@ Most of the time you likely want to use the `Ideal.Quotient` API that is built o
 * Use this for `RingQuot` too.
 * Copy across more API from `Con` and `AddCon` in `GroupTheory/Congruence.lean`.
 -/
+
+@[expose] public section
 
 
 /-- A congruence relation on a type with an addition and multiplication is an equivalence relation

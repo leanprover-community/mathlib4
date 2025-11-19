@@ -3,8 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.LiftingProperties.Basic
-import Mathlib.CategoryTheory.Adjunction.Basic
+module
+
+public import Mathlib.CategoryTheory.LiftingProperties.Basic
+public import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
 
@@ -17,6 +19,8 @@ property in `D` with respect to a morphism `p` if and only the morphism `i`
 has the left lifting property in `C` with respect to `F.map p`.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory

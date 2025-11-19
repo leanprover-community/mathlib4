@@ -3,8 +3,10 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.SpecificLimits.Basic
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # Existence of minimizers (Hilbert projection theorem)
@@ -13,6 +15,8 @@ This file shows the existence of minimizers (also known as the Hilbert projectio
 This is the key tool that is used to define `Submodule.orthogonalProjection` in
 `Mathlib/Analysis/InnerProductSpace/Projection/Basic.lean`.
 -/
+
+@[expose] public section
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]

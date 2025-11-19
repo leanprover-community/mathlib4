@@ -3,11 +3,13 @@ Copyright (c) 2021 Jordan Brown, Thomas Browning, Patrick Lutz. All rights reser
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 -/
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.GroupTheory.Abelianization.Defs
-import Mathlib.GroupTheory.Perm.ViaEmbedding
-import Mathlib.GroupTheory.Subgroup.Simple
-import Mathlib.SetTheory.Cardinal.Order
+module
+
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.GroupTheory.Abelianization.Defs
+public import Mathlib.GroupTheory.Perm.ViaEmbedding
+public import Mathlib.GroupTheory.Subgroup.Simple
+public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Solvable Groups
@@ -22,6 +24,8 @@ the derived series of a group.
     `general_commutator` starting with the top subgroup
 * `IsSolvable G` : the group `G` is solvable
 -/
+
+@[expose] public section
 
 open Subgroup
 

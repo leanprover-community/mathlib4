@@ -3,14 +3,18 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Basic
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Basic
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 
 /-! # Fundamental theorem of calculus for `C^1` functions
 
 We give versions of the second fundamental theorem of calculus under the strong assumption
 that the function is `C^1` on the interval. This is restrictive, but satisfied in many situations.
 -/
+
+@[expose] public section
 
 noncomputable section
 

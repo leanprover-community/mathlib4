@@ -3,10 +3,12 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Topology.Algebra.IsUniformGroup.DiscreteSubgroup
-import Mathlib.Topology.Algebra.Ring.Real
-import Mathlib.Topology.Instances.Matrix
-import Mathlib.Topology.MetricSpace.Isometry
+module
+
+public import Mathlib.Topology.Algebra.IsUniformGroup.DiscreteSubgroup
+public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.Instances.Matrix
+public import Mathlib.Topology.MetricSpace.Isometry
 
 /-!
 # Arithmetic subgroups of `GL(2, ℝ)`
@@ -14,6 +16,8 @@ import Mathlib.Topology.MetricSpace.Isometry
 We define a subgroup of `GL (Fin 2) ℝ` to be *arithmetic* if it is commensurable with the image
 of `SL(2, ℤ)`.
 -/
+
+@[expose] public section
 
 open Matrix Matrix.SpecialLinearGroup
 

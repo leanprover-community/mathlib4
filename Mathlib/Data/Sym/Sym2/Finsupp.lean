@@ -3,15 +3,19 @@ Copyright (c) 2025 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Algebra.GroupWithZero.Basic
-import Mathlib.Data.Finset.Sym
-import Mathlib.Data.Finsupp.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Basic
+public import Mathlib.Data.Finset.Sym
+public import Mathlib.Data.Finsupp.Defs
 
 /-!
 # Finitely supported functions from the symmetric square
 
 This file lifts functions `α →₀ M₀` to functions `Sym2 α →₀ M₀` by precomposing with multiplication.
 -/
+
+@[expose] public section
 
 open Sym2
 

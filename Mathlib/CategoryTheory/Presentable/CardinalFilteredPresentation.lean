@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.Small
-import Mathlib.CategoryTheory.Presentable.Limits
-import Mathlib.CategoryTheory.Generator.StrongGenerator
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.Small
+public import Mathlib.CategoryTheory.Presentable.Limits
+public import Mathlib.CategoryTheory.Generator.StrongGenerator
 
 /-!
 # Presentable generators
@@ -27,6 +29,8 @@ such that `P.IsCardinalFilteredGenerator κ` holds.
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
 -/
+
+@[expose] public section
 
 universe w v u
 

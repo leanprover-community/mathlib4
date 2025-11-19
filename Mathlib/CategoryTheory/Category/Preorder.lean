@@ -3,10 +3,12 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl, Reid Barton
 -/
-import Mathlib.CategoryTheory.Equivalence
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.Order.Hom.Basic
-import Mathlib.Data.ULift
+module
+
+public import Mathlib.CategoryTheory.Equivalence
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Data.ULift
 
 /-!
 
@@ -25,6 +27,8 @@ categories.
 * `Monotone.functor` is the functor associated to a monotone function.
 
 -/
+
+@[expose] public section
 
 
 universe u v

@@ -3,11 +3,13 @@ Copyright (c) 2025 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
-import Mathlib.Algebra.Category.FGModuleCat.Abelian
-import Mathlib.Algebra.Category.ModuleCat.Injective
-import Mathlib.RepresentationTheory.Character
-import Mathlib.RepresentationTheory.Maschke
-import Mathlib.RingTheory.SimpleModule.InjectiveProjective
+module
+
+public import Mathlib.Algebra.Category.FGModuleCat.Abelian
+public import Mathlib.Algebra.Category.ModuleCat.Injective
+public import Mathlib.RepresentationTheory.Character
+public import Mathlib.RepresentationTheory.Maschke
+public import Mathlib.RingTheory.SimpleModule.InjectiveProjective
 
 /-!
 # Applications of Maschke's theorem
@@ -26,6 +28,8 @@ space of dimension `1`.
 if and only if `∑ g : G, V.character g * V.character g⁻¹ = Fintype.card G`.
 
 -/
+
+@[expose] public section
 
 universe u
 

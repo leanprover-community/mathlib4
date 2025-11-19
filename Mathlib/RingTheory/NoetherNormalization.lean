@@ -3,9 +3,11 @@ Copyright (c) 2025 Sihan Su. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Sihan Su, Wan Lin, Xiaoyang Su
 -/
-import Mathlib.Algebra.MvPolynomial.Monad
-import Mathlib.Data.List.Indexes
-import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
+module
+
+public import Mathlib.Algebra.MvPolynomial.Monad
+public import Mathlib.Data.List.Indexes
+public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 /-!
 # Noether normalization lemma
 This file contains a proof by Nagata of the Noether normalization lemma.
@@ -48,6 +50,8 @@ Composing `φ` and `g` we get the desired map since both `φ` and `g` are inject
 ## TODO
 * In the final theorems, consider setting `s` equal to the Krull dimension of `R`.
 -/
+
+@[expose] public section
 open Polynomial MvPolynomial Ideal BigOperators Nat RingHom List
 
 variable {k : Type*} [Field k] {n : ℕ} (f : MvPolynomial (Fin (n + 1)) k)

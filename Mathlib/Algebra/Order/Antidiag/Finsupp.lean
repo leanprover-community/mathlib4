@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, Bhavik Mehta,
   Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Finsupp.Basic
-import Mathlib.Algebra.Order.Antidiag.Pi
+module
+
+public import Mathlib.Algebra.BigOperators.Finsupp.Basic
+public import Mathlib.Algebra.Order.Antidiag.Pi
 
 /-!
 # Antidiagonal of finitely supported functions as finsets
@@ -25,6 +27,8 @@ We define it using `Finset.piAntidiag s n`, the corresponding antidiagonal in `�
   contained in `s` and such that the sum of its values equals `n : μ`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

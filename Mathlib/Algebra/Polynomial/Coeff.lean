@@ -3,11 +3,13 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.MonoidAlgebra.Support
-import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.Algebra.Regular.Basic
-import Mathlib.Data.Nat.Choose.Sum
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.MonoidAlgebra.Support
+public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.Algebra.Regular.Basic
+public import Mathlib.Data.Nat.Choose.Sum
 
 /-!
 # Theory of univariate polynomials
@@ -16,6 +18,8 @@ The theorems include formulas for computing coefficients, such as
 `coeff_add`, `coeff_sum`, `coeff_mul`
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

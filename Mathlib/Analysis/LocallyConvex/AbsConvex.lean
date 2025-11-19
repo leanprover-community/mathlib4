@@ -3,9 +3,11 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
-import Mathlib.Analysis.Convex.TotallyBounded
-import Mathlib.Analysis.LocallyConvex.Bounded
+module
+
+public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
+public import Mathlib.Analysis.Convex.TotallyBounded
+public import Mathlib.Analysis.LocallyConvex.Bounded
 
 /-!
 # Absolutely convex sets
@@ -34,6 +36,8 @@ topological vector space has a basis consisting of absolutely convex sets.
 
 disks, convex, balanced
 -/
+
+@[expose] public section
 
 open NormedField Set
 

@@ -3,8 +3,10 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Calle Sönne
 -/
-import Mathlib.CategoryTheory.Discrete.Basic
-import Mathlib.CategoryTheory.Bicategory.Strict.Basic
+module
+
+public import Mathlib.CategoryTheory.Discrete.Basic
+public import Mathlib.CategoryTheory.Bicategory.Strict.Basic
 
 /-!
 # Locally discrete bicategories
@@ -15,6 +17,8 @@ in `C`, and the 2-morphisms in `LocallyDiscrete C` are the equalities between 1-
 other words, the category consisting of the 1-morphisms between each pair of objects `X` and `Y`
 in `LocallyDiscrete C` is defined as the discrete category associated with the type `X ⟶ Y`.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

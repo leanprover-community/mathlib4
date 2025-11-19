@@ -3,7 +3,9 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Martingale.Basic
+module
+
+public import Mathlib.Probability.Martingale.Basic
 
 /-!
 # Centering lemma for stochastic processes
@@ -27,6 +29,8 @@ From a process `f`, a filtration `ℱ` and a measure `μ`, we define two process
 * `MeasureTheory.martingale_martingalePart`: `martingalePart f ℱ μ` is a martingale.
 
 -/
+
+@[expose] public section
 
 
 open TopologicalSpace Filter

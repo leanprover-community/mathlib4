@@ -3,15 +3,17 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yaël Dillies
 -/
-import Mathlib.Data.Nat.Basic
-import Mathlib.Data.Int.Order.Basic
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Order.Compare
-import Mathlib.Order.Max
-import Mathlib.Order.Monotone.Defs
-import Mathlib.Order.RelClasses
-import Mathlib.Tactic.Choose
-import Mathlib.Tactic.Contrapose
+module
+
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Data.Int.Order.Basic
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Order.Compare
+public import Mathlib.Order.Max
+public import Mathlib.Order.Monotone.Defs
+public import Mathlib.Order.RelClasses
+public import Mathlib.Tactic.Choose
+public import Mathlib.Tactic.Contrapose
 
 /-!
 # Monotonicity
@@ -48,6 +50,8 @@ and `IsSuccArchimedean α`.
 monotone, strictly monotone, antitone, strictly antitone, increasing, strictly increasing,
 decreasing, strictly decreasing
 -/
+
+@[expose] public section
 
 open Function OrderDual
 
