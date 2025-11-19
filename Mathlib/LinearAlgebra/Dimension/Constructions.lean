@@ -3,10 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison, Chris Hughes, Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.LinearAlgebra.Basis.Prod
-import Mathlib.LinearAlgebra.Dimension.Free
-import Mathlib.LinearAlgebra.TensorProduct.Basis
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.LinearAlgebra.Basis.Prod
+public import Mathlib.LinearAlgebra.Dimension.Free
+public import Mathlib.LinearAlgebra.TensorProduct.Basis
 
 /-!
 # Rank of various constructions
@@ -28,6 +30,8 @@ Lemmas for ranks of submodules and subalgebras are also provided.
 We have `finrank` variants for most lemmas as well.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

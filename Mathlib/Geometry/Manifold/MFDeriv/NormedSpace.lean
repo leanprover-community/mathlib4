@@ -3,8 +3,10 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
-import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
+module
+
+public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 
 /-! ## Equivalence of manifold differentiability with the basic definition for functions between
 vector spaces
@@ -14,6 +16,8 @@ providing the same statements for higher smoothness. In this file, we do the sam
 differentiability.
 
 -/
+
+@[expose] public section
 
 open Set ChartedSpace IsManifold
 open scoped Topology Manifold

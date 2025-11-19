@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Products.Basic
+module
+
+public import Mathlib.CategoryTheory.Functor.Category
+public import Mathlib.CategoryTheory.Products.Basic
 
 /-!
 # Joins of categories
@@ -32,6 +34,8 @@ there is a unique morphism `c ⟶ d` in `C ⋆ D`.
 * [Kerodon: section 1.4.3.2](https://kerodon.net/tag/0160)
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
 

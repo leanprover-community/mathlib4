@@ -3,8 +3,9 @@ Copyright (c) 2023 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public meta import Mathlib.Algebra.Polynomial.Degree.Lemmas
 
 /-!
 
@@ -77,6 +78,8 @@ The leaves of the process are
 * numerals, `C a`, `X` and `monomial a n`, to which we assign degree `0`, `1` and `a` respectively;
 * `fvar`s `f`, to which we tautologically assign degree `natDegree f`.
 -/
+
+public meta section
 
 open Polynomial
 
