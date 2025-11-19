@@ -3,8 +3,10 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov, Heather Macbeth, Patrick Massot
 -/
-import Mathlib.Topology.Algebra.Module.Alternating.Topology
-import Mathlib.Analysis.NormedSpace.Multilinear.Basic
+module
+
+public import Mathlib.Topology.Algebra.Module.Alternating.Topology
+public import Mathlib.Analysis.NormedSpace.Multilinear.Basic
 
 /-!
 # Operator norm on the space of continuous alternating maps
@@ -16,6 +18,8 @@ and define bundled versions of some operations on continuous alternating maps.
 
 Most proofs just invoke the corresponding fact about continuous multilinear maps.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -35,7 +39,7 @@ We use the following type variables in this file:
 /-- Applying a continuous alternating map to a vector is continuous
 in the pair (map, vector).
 
-Continuity in in the vector holds by definition
+Continuity in the vector holds by definition
 and continuity in the map holds if both the domain and the codomain are topological vector spaces.
 However, continuity in the pair (map, vector) needs the domain to be a locally bounded TVS.
 We have no typeclass for a locally bounded TVS,

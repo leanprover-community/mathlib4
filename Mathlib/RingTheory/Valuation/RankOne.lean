@@ -3,11 +3,13 @@ Copyright (c) 2024 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.Algebra.Order.Group.Units
-import Mathlib.Algebra.Order.GroupWithZero.WithZero
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Data.Real.Embedding
-import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
+module
+
+public import Mathlib.Algebra.Order.Group.Units
+public import Mathlib.Algebra.Order.GroupWithZero.WithZero
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Data.Real.Embedding
+public import Mathlib.RingTheory.Valuation.ValuativeRel.Basic
 
 /-!
 # Rank one valuations
@@ -22,6 +24,8 @@ We define rank one valuations.
 
 valuation, rank one
 -/
+
+@[expose] public section
 
 noncomputable section
 

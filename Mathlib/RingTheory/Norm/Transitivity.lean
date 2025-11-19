@@ -3,15 +3,17 @@ Copyright (c) 2024 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.LinearAlgebra.Matrix.Block
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-import Mathlib.RingTheory.Norm.Defs
-import Mathlib.RingTheory.PolynomialAlgebra
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
-import Mathlib.FieldTheory.IntermediateField.Algebraic
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.RingTheory.Norm.Basic
-import Mathlib.FieldTheory.Galois.Basic
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Block
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+public import Mathlib.RingTheory.Norm.Defs
+public import Mathlib.RingTheory.PolynomialAlgebra
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
+public import Mathlib.FieldTheory.IntermediateField.Algebraic
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.RingTheory.Norm.Basic
+public import Mathlib.FieldTheory.Galois.Basic
 
 /-!
 # Transitivity of algebra norm
@@ -25,6 +27,8 @@ about the roots of the minimal polynomial of `s` over `R`.
 * [silvester2000] Silvester, *Determinants of Block Matrices*, The Mathematical Gazette (2000).
 
 -/
+
+@[expose] public section
 
 variable {R S A n m : Type*} [CommRing R] [CommRing S]
 variable (M : Matrix m m S) [DecidableEq m] [DecidableEq n] (k : m)
@@ -104,7 +108,7 @@ omit [Fintype m] in
 lemma polyToMatrix_cornerAddX :
     f.polyToMatrix (cornerAddX M k k k) = (-f (M k k)).charmatrix := by
   simp [cornerAddX, Matrix.add_apply, charmatrix,
-    RingHom.polyToMatrix, - AlgEquiv.symm_toRingEquiv, map_neg]
+    RingHom.polyToMatrix, -AlgEquiv.symm_toRingEquiv, map_neg]
 
 lemma eval_zero_det_det : eval 0 (f.polyToMatrix (cornerAddX M k).det).det = (f M.det).det := by
   rw [← coe_evalRingHom, RingHom.map_det, ← RingHom.comp_apply,
@@ -266,7 +270,7 @@ theorem norm_eq_prod_embeddings [Algebra.IsSeparable K L] [IsAlgClosed E]
     exact Algebra.IsSeparable.isSeparable K _
 
 theorem norm_eq_prod_automorphisms [IsGalois K L] (x : L) :
-    algebraMap K L (norm K x) = ∏ σ : L ≃ₐ[K] L, σ x := by
+    algebraMap K L (norm K x) = ∏ σ : Gal(L/K), σ x := by
   apply FaithfulSMul.algebraMap_injective L (AlgebraicClosure L)
   rw [map_prod (algebraMap L (AlgebraicClosure L))]
   rw [← Fintype.prod_equiv (Normal.algHomEquivAut K (AlgebraicClosure L) L)]

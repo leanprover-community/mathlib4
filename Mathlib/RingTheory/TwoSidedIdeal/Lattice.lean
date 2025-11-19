@@ -3,12 +3,15 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+module
 
-import Mathlib.RingTheory.TwoSidedIdeal.Basic
+public import Mathlib.RingTheory.TwoSidedIdeal.Basic
 
 /-!
 # The complete lattice structure on two-sided ideals
 -/
+
+@[expose] public section
 
 namespace TwoSidedIdeal
 
@@ -110,7 +113,7 @@ instance : Top (TwoSidedIdeal R) where
 lemma top_ringCon : (⊤ : TwoSidedIdeal R).ringCon = ⊤ := rfl
 
 @[simp]
-lemma mem_top {x : R} : x ∈ (⊤: TwoSidedIdeal R) := trivial
+lemma mem_top {x : R} : x ∈ (⊤ : TwoSidedIdeal R) := trivial
 
 instance : Bot (TwoSidedIdeal R) where
   bot := { ringCon := ⊥ }

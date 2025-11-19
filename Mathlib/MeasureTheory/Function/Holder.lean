@@ -3,7 +3,9 @@ Copyright (c) 2025 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
+module
+
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 /-! # Continuous bilinear maps on `MeasureTheory.Lp` spaces
 
@@ -21,6 +23,8 @@ natural map `ContinuousLinearMap.lpPairing : Lp E p μ →L[𝕜] Lp F q μ →L
 `fun f g ↦ ∫ x, B (f x) (g x) ∂μ`. When `B := (NormedSpace.inclusionInDoubleDual 𝕜 E).flip`, this
 is the natural map `Lp (StrongDual 𝕜 E) p μ →L[𝕜] StrongDual 𝕜 (Lp E q μ)`.
 -/
+
+@[expose] public section
 
 open ENNReal MeasureTheory Lp
 open scoped NNReal
@@ -240,7 +244,7 @@ protected lemma smul_assoc [IsScalarTower 𝕜' 𝕜 E]
   simp only [smul_def, ← MemLp.toLp_const_smul]
   apply MemLp.toLp_congr
   filter_upwards [Lp.coeFn_smul c f] with x hx
-  simp [- smul_eq_mul, hx]
+  simp [-smul_eq_mul, hx]
 
 protected lemma smul_comm [SMulCommClass 𝕜' 𝕜 E]
     (c : 𝕜') (f : Lp 𝕜 p μ) (g : Lp E q μ) :
