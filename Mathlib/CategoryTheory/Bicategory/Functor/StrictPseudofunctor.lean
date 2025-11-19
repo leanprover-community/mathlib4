@@ -23,6 +23,8 @@ Once the deprecated `Functor/Strict.lean` is removed we should rename this file 
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Bicategory
