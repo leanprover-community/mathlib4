@@ -226,20 +226,30 @@ lemma to_isOrderedModule (C : PointedCone R E) (h : ∀ x y : E, x ≤ y ↔ y -
 end OrderedAddCommGroup
 
 section Salient
-variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup E] [Module R E]
+variable [Semiring R] [PartialOrder R] [AddCommGroup E] [Module R E]
 open Pointwise
 
-/-- A pointed cone is salient iff an element `x` being a member of both the cone and its negative
-is equivalent to `x = 0`. -/
-lemma salient_iff_mem_neg_eq_zero (C : PointedCone R E) :
-    (C : ConvexCone R E).Salient ↔ ∀ x, (x ∈ C ∧ x ∈ -C) ↔ x = 0 := by
-  simp [ConvexCone.Salient, not_imp_not, iff_iff_implies_and_implies, forall_and]
+/-- A convex cone is salient iff an element `x` being a member of both the cone and its negative
+implies that `x = 0`. -/
+lemma salient_iff_mem_neg_eq_zero (C : ConvexCone R E) :
+    C.Salient ↔ ∀ x, (x ∈ C ∧ x ∈ -(C : Set E)) → x = 0 := by
+  simp [ConvexCone.Salient, not_imp_not]
 
+variable [IsOrderedRing R]
 /-- A pointed cone is salient iff the intersection of the cone with its negative
 is the set `{0}`. -/
 lemma salient_iff_inter_neg_eq_singleton (C : PointedCone R E) :
     (C : ConvexCone R E).Salient ↔ (C ∩ -C : Set E) = {0} := by
   simp [ConvexCone.Salient, Set.eq_singleton_iff_unique_mem, not_imp_not]
+
+/-- For a pointed salient cone, an element is in the intersection of the cone
+and its negative iff it is zero. -/
+@[simp]
+lemma ConvexCone.Salient.mem_inter_neg_iff {C : PointedCone R E}
+    (h : (C : ConvexCone R E).Salient) {x : E} :
+    x ∈ (C ∩ -C : Set E) ↔ x = 0 := by
+  rw [salient_iff_inter_neg_eq_singleton] at h
+  simp [h]
 
 end Salient
 end PointedCone
