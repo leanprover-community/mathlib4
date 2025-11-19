@@ -138,9 +138,9 @@ pluralizing as appropriate.
 -/
 @[nolint unusedArguments] -- TODO: we plan to use `_cmd` in future
 def _root_.Lean.Syntax.logUnusedInstancesInTheoremsWhere (_cmd : Syntax)
-    (declFilter : ConstantVal → Bool) (instanceTypeFilter : Expr → Bool)
-    (log : InfoTree → ConstantVal → Array Parameter → TermElabM Unit) :
-    CommandElabM Unit := do
+    (instanceTypeFilter : Expr → Bool)
+    (log : InfoTree → ConstantVal → Array Parameter → TermElabM Unit)
+    (declFilter : ConstantVal → Bool := fun _ => true) : CommandElabM Unit := do
   for t in ← getInfoTrees do
     let thms := t.getTheorems (← getEnv) |>.filter declFilter
     for thm in thms do
@@ -199,7 +199,7 @@ def unusedDecidableInType : Linter where
     unless getLinterValue linter.unusedDecidableInType (← getLinterOptions) do
       return
     cmd.logUnusedInstancesInTheoremsWhere
-      (!(`Decidable).isPrefixOf ·.name)
+      (declFilter := (!(`Decidable).isPrefixOf ·.name))
       isDecidableVariant
       fun _ thm unusedParams => do
         logLint linter.unusedDecidableInType (← getRef) m!"\
