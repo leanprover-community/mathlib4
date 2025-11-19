@@ -24,6 +24,8 @@ lifted to a ring homomorphism `R →+* S`.
   of `R` being `I`-adically complete.
 -/
 
+@[expose] public section
+
 open Ideal Quotient
 
 variable {R S : Type*} [NonAssocSemiring R] [CommRing S] (I : Ideal S)
