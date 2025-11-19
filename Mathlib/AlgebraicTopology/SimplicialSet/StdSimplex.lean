@@ -7,6 +7,8 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
 public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.Order.Fin.Finset
 public import Mathlib.Order.Fin.SuccAboveOrderIso
 
 /-!
@@ -311,6 +313,66 @@ def nonDegenerateEquiv {n d : ℕ} :
   invFun s := ⟨objEquiv.symm (.mk s.toOrderHom), by
     simpa [mem_nonDegenerate_iff_strictMono] using s.strictMono⟩
   left_inv _ := by aesop
+
+lemma face_singleton_compl {n : ℕ} (i : Fin (n + 2)) :
+    face.{u} {i}ᶜ =
+      Subcomplex.ofSimplex (objEquiv.symm (SimplexCategory.δ i)) := by
+  let e : Fin (n + 1) ≃o ({i}ᶜ : Finset _) :=
+    { toEquiv := (finSuccAboveEquiv (p := i)).trans
+        { toFun := fun ⟨x, hx⟩ ↦ ⟨x, by simpa using hx⟩
+          invFun := fun ⟨x, hx⟩ ↦ ⟨x, by simpa using hx⟩
+          left_inv _ := rfl
+          right_inv _ := rfl }
+      map_rel_iff' := (Fin.succAboveOrderEmb i).map_rel_iff }
+  exact face_eq_ofSimplex _ _ e
+
+/-- In `Δ[n + 1]`, the face corresponding to the complement of `{i}`
+for `i : Fin (n + 2)` is isomorphic to `Δ[n]`. -/
+def faceSingletonComplIso {n : ℕ} (i : Fin (n + 2)) :
+    Δ[n] ≅ (face {i}ᶜ : SSet.{u}) :=
+  isoOfRepresentableBy (faceRepresentableBy _ _
+    { toEquiv := (finSuccAboveEquiv (p := i)).trans
+        { toFun := fun ⟨x, hx⟩ ↦ ⟨x, by simpa using hx⟩
+          invFun := fun ⟨x, hx⟩ ↦ ⟨x, by simpa using hx⟩
+          left_inv _ := rfl
+          right_inv _ := rfl }
+      map_rel_iff' := (Fin.succAboveOrderEmb i).map_rel_iff })
+
+@[reassoc (attr := simp)]
+lemma faceSingletonComplIso_hom_ι {n : ℕ} (i : Fin (n + 2)) :
+    (faceSingletonComplIso.{u} i).hom ≫ (face {i}ᶜ).ι =
+      stdSimplex.δ i := rfl
+
+/-- Given `i : Fin (n + 1)`, this is the isomorphism from `Δ[0]` to the face
+of `Δ[n]` corresponding to `{i}`. -/
+noncomputable def faceSingletonIso {n : ℕ} (i : Fin (n + 1)) :
+    Δ[0] ≅ (face {i} : SSet.{u}) :=
+  stdSimplex.isoOfRepresentableBy
+      (stdSimplex.faceRepresentableBy.{u} _ _ (Fin.orderIsoSingleton i))
+
+@[reassoc]
+lemma faceSingletonIso_zero_hom_comp_ι_eq_δ :
+    (faceSingletonIso.{u} (0 : Fin 2)).hom ≫ (face {0}).ι = stdSimplex.δ 1 := by
+  apply yonedaEquiv.injective
+  ext i
+  fin_cases i
+  rfl
+
+@[reassoc]
+lemma faceSingletonIso_one_hom_comp_ι_eq_δ :
+    (faceSingletonIso.{u} (1 : Fin 2)).hom ≫ (face {1}).ι = stdSimplex.δ 0 := by
+  apply yonedaEquiv.injective
+  ext i
+  fin_cases i
+  rfl
+
+/-- Given `i` and `j` in `Fin (n + 1)` such that `i < j`,
+this is the isomorphism from `Δ[1]` to the face
+of `Δ[n]` corresponding to `{i, j}`. -/
+noncomputable def facePairIso {n : ℕ} (i j : Fin (n + 1)) (hij : i < j) :
+    Δ[1] ≅ (face {i, j} : SSet.{u}) :=
+  stdSimplex.isoOfRepresentableBy
+      (stdSimplex.faceRepresentableBy.{u} _ _ (Fin.orderIsoPair i j hij))
 
 end stdSimplex
 

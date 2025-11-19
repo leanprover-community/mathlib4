@@ -591,6 +591,23 @@ lemma of_iso (h : IsPushout f g inl inr)
           (IsColimit.ofIsoColimit h.isColimit
             (PushoutCocone.ext e₄ comminl comminr))⟩
 
+/-- Same as `IsPushout.of_iso`, but using the data and compatibilities involve
+the inverse isomorphisms instead. -/
+lemma of_iso' {Z X Y P : C} {f : Z ⟶ X} {g : Z ⟶ Y} {inl : X ⟶ P} {inr : Y ⟶ P}
+    (h : IsPushout f g inl inr)
+    {Z' X' Y' P' : C} {f' : Z' ⟶ X'} {g' : Z' ⟶ Y'} {inl' : X' ⟶ P'} {inr' : Y' ⟶ P'}
+    (e₁ : Z' ≅ Z) (e₂ : X' ≅ X) (e₃ : Y' ≅ Y) (e₄ : P' ≅ P)
+    (commf : e₁.hom ≫ f = f' ≫ e₂.hom)
+    (commg : e₁.hom ≫ g = g' ≫ e₃.hom)
+    (comminl : e₂.hom ≫ inl = inl' ≫ e₄.hom)
+    (comminr : e₃.hom ≫ inr = inr' ≫ e₄.hom) :
+    IsPushout f' g' inl' inr' := by
+  apply h.of_iso e₁.symm e₂.symm e₃.symm e₄.symm
+  · simp only [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← commf, Iso.inv_hom_id_assoc]
+  · simp only [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← commg, Iso.inv_hom_id_assoc]
+  · simp only [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← comminl, Iso.inv_hom_id_assoc]
+  · simp only [Iso.symm_hom, Iso.comp_inv_eq, Category.assoc, ← comminr, Iso.inv_hom_id_assoc]
+
 section
 
 variable {P X Y : C} {inl : X ⟶ P} {inr : X ⟶ P} {f : Y ⟶ X} [Epi f]

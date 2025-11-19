@@ -24,6 +24,8 @@ squares in the category of simplicial sets.
 
 -/
 
+@[expose] public section
+
 universe u
 
 open CategoryTheory Limits
