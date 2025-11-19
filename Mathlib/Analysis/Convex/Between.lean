@@ -757,6 +757,10 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
   have h3 : ∀ i : Fin 3, i = i₁ ∨ i = i₂ ∨ i = i₃ := by omega
   have hu : (Finset.univ : Finset (Fin 3)) = {i₁, i₂, i₃} := by
     clear h₁ h₂ h₁' h₂'
+    #adaptation_note /--
+    https://github.com/leanprover/lean4/issues/11009
+    -/
+    set_option synthInstance.maxSize 1000 in
     decide +revert
   have hp : p ∈ affineSpan R (Set.range t.points) := by
     have hle : line[R, t.points i₁, p₁] ≤ affineSpan R (Set.range t.points) := by

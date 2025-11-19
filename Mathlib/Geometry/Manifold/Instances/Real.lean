@@ -86,12 +86,12 @@ instance : Inhabited (EuclideanQuadrant n) :=
 
 @[ext]
 theorem EuclideanQuadrant.ext (x y : EuclideanQuadrant n) (h : x.1 = y.1) : x = y :=
-  Subtype.eq h
+  Subtype.ext h
 
 @[ext]
 theorem EuclideanHalfSpace.ext [NeZero n] (x y : EuclideanHalfSpace n)
     (h : x.1 = y.1) : x = y :=
-  Subtype.eq h
+  Subtype.ext h
 
 theorem EuclideanHalfSpace.convex [NeZero n] :
     Convex ℝ { x : EuclideanSpace ℝ (Fin n) | 0 ≤ x 0 } :=

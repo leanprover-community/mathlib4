@@ -222,7 +222,7 @@ TODO consider relocating these lemmas. -/
   injection h_group with h_group; injection h_group
   have : inst₁.toIntCast.intCast = inst₂.toIntCast.intCast := by
     funext n; cases n with
-    | ofNat n => rewrite [Int.ofNat_eq_coe, inst₁.intCast_ofNat, inst₂.intCast_ofNat]; congr
+    | ofNat n => rewrite [Int.ofNat_eq_natCast, inst₁.intCast_ofNat, inst₂.intCast_ofNat]; congr
     | negSucc n => rewrite [inst₁.intCast_negSucc, inst₂.intCast_negSucc]; congr
   rcases inst₁ with @⟨⟨⟩⟩; rcases inst₂ with @⟨⟨⟩⟩
   congr

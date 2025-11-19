@@ -63,12 +63,12 @@ variable (S : Subfield F)
 instance IsInvariantSubfield.toMulSemiringAction [IsInvariantSubfield M S] :
     MulSemiringAction M S where
   smul m x := ⟨m • x.1, IsInvariantSubfield.smul_mem m x.2⟩
-  one_smul s := Subtype.eq <| one_smul M s.1
-  mul_smul m₁ m₂ s := Subtype.eq <| mul_smul m₁ m₂ s.1
-  smul_add m s₁ s₂ := Subtype.eq <| smul_add m s₁.1 s₂.1
-  smul_zero m := Subtype.eq <| smul_zero m
-  smul_one m := Subtype.eq <| smul_one m
-  smul_mul m s₁ s₂ := Subtype.eq <| smul_mul' m s₁.1 s₂.1
+  one_smul s := Subtype.ext <| one_smul M s.1
+  mul_smul m₁ m₂ s := Subtype.ext <| mul_smul m₁ m₂ s.1
+  smul_add m s₁ s₂ := Subtype.ext <| smul_add m s₁.1 s₂.1
+  smul_zero m := Subtype.ext <| smul_zero m
+  smul_one m := Subtype.ext <| smul_one m
+  smul_mul m s₁ s₂ := Subtype.ext <| smul_mul' m s₁.1 s₂.1
 
 instance [IsInvariantSubfield M S] : IsInvariantSubring M S.toSubring where
   smul_mem := IsInvariantSubfield.smul_mem
@@ -96,7 +96,7 @@ instance smulCommClass' : SMulCommClass (FixedPoints.subfield M F) M F :=
 
 @[simp]
 theorem smul (m : M) (x : FixedPoints.subfield M F) : m • x = x :=
-  Subtype.eq <| x.2 m
+  Subtype.ext <| x.2 m
 
 -- Why is this so slow?
 @[simp]

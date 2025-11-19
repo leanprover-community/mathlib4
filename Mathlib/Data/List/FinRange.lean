@@ -25,14 +25,6 @@ variable {α : Type u}
 theorem finRange_eq_pmap_range (n : ℕ) : finRange n = (range n).pmap Fin.mk (by simp) := by
   apply List.ext_getElem <;> simp [finRange]
 
-@[simp]
-theorem mem_finRange {n : ℕ} (a : Fin n) : a ∈ finRange n := by
-  rw [finRange_eq_pmap_range]
-  exact mem_pmap.2
-    ⟨a.1, mem_range.2 a.2, by
-      cases a
-      rfl⟩
-
 theorem nodup_finRange (n : ℕ) : (finRange n).Nodup := by
   rw [finRange_eq_pmap_range]
   exact (Pairwise.pmap nodup_range _) fun _ _ _ _ => @Fin.ne_of_val_ne _ ⟨_, _⟩ ⟨_, _⟩

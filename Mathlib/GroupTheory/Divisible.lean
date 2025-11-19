@@ -208,7 +208,7 @@ def rootableByIntOfRootableByNat [RootableBy A ℕ] : RootableBy A ℤ where
   root_zero a := RootableBy.root_zero a
   root_cancel {n} a hn := by
     cases n
-    · rw [Int.ofNat_eq_coe, Nat.cast_ne_zero] at hn
+    · rw [Int.ofNat_eq_natCast, Nat.cast_ne_zero] at hn
       simp [RootableBy.root_cancel _ hn]
     · simp [RootableBy.root_cancel _ (Nat.add_one_ne_zero _)]
 

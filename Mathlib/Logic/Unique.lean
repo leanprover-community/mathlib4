@@ -78,7 +78,7 @@ abbrev uniqueOfSubsingleton {α : Sort*} [Subsingleton α] (a : α) : Unique α 
 
 instance PUnit.instUnique : Unique PUnit.{u} where
   default := PUnit.unit
-  uniq x := subsingleton x _
+  uniq x := ext x _
 
 @[simp]
 theorem PUnit.default_eq_unit : (default : PUnit) = PUnit.unit :=

@@ -82,7 +82,7 @@ lemma sign_eq_of_contra
       rw [mem_compl, mem_insert, mem_singleton, not_or] at mj
       exact swap_apply_of_ne_of_ne mj.1 mj.2
     rw [cg, add_sub_add_right_eq_sub,
-      sum_pair (castSucc_lt_succ _).ne, sum_pair (castSucc_lt_succ _).ne,
+      sum_pair castSucc_lt_succ.ne, sum_pair castSucc_lt_succ.ne,
       Perm.mul_apply, Perm.mul_apply, ← hi, swap_apply_left, swap_apply_right,
       add_comm, add_sub_add_comm, ← sub_mul, ← sub_mul,
       val_succ, coe_castSucc, Nat.cast_add, Nat.cast_one, add_sub_cancel_left, sub_add_cancel_left,

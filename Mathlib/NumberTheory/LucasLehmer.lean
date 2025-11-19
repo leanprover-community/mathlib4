@@ -594,7 +594,7 @@ theorem lucas_lehmer_sufficiency (p : ℕ) (w : 1 < p) : LucasLehmerTest p → (
   have h := lt_of_lt_of_le h₁ h₂
   exact not_lt_of_ge (Nat.sub_le _ _) h
 
-/-- If `2^p-1` is prime then the Lucas-Lehmer test holds, `s(p-2) % (2^p-1) = 0. -/
+/-- If `2^p - 1` is prime then the Lucas-Lehmer test holds, `s (p - 2) % (2^p - 1) = 0`. -/
 theorem lucas_lehmer_necessity (p : ℕ) (w : 3 ≤ p) (hp : (mersenne p).Prime) :
     LucasLehmerTest p := by
   have : Fact (mersenne p).Prime := ⟨‹_›⟩
@@ -700,7 +700,7 @@ lemma testTrueHelper (p : ℕ) (hp : Nat.blt 1 p = true) (h : sModNatTR (2 ^ p -
 lemma testFalseHelper (p : ℕ) (hp : Nat.blt 1 p = true)
     (h : Nat.ble 1 (sModNatTR (2 ^ p - 1) (p - 2))) : ¬ LucasLehmerTest p := by
   rw [Nat.blt_eq] at hp
-  rw [Nat.ble_eq, Nat.succ_le, Nat.pos_iff_ne_zero] at h
+  rw [Nat.ble_eq, Nat.succ_le_iff, Nat.pos_iff_ne_zero] at h
   rw [LucasLehmerTest, LucasLehmer.residue_eq_zero_iff_sMod_eq_zero p hp, ← sModNat_eq_sMod p _ hp,
     ← sModNatTR_eq_sModNat]
   simpa using h

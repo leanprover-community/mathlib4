@@ -5,8 +5,6 @@ def Uses (α : Sort u) (_ : α := by infer_instance) : Prop := True
 
 section decidable
 
-set_option linter.unusedDecidableInType true
-
 section unused
 
 /--

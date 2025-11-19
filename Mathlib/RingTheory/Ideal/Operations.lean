@@ -1016,6 +1016,11 @@ theorem IsPrime.inf_le' {s : Finset ι} {f : ι → Ideal R} {P : Ideal R} (hp :
     s.inf f ≤ P ↔ ∃ i ∈ s, f i ≤ P :=
   ⟨fun h ↦ hp.prod_le.1 <| prod_le_inf.trans h, fun ⟨_, his, hip⟩ ↦ (Finset.inf_le his).trans hip⟩
 
+theorem IsPrime.notMem_of_isCoprime_of_mem {I : Ideal R} [I.IsPrime] {x y : R} (h : IsCoprime x y)
+    (hx : x ∈ I) : y ∉ I := fun hy ↦
+  have ⟨a, b, e⟩ := h
+  Ideal.IsPrime.one_notMem ‹_› (e ▸ I.add_mem (I.mul_mem_left a hx) (I.mul_mem_left b hy))
+
 theorem subset_union {R : Type u} [Ring R] {I J K : Ideal R} :
     (I : Set R) ⊆ J ∪ K ↔ I ≤ J ∨ I ≤ K :=
   AddSubgroupClass.subset_union

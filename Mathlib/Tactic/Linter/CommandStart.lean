@@ -110,11 +110,11 @@ and as `String.Pos`.
 -/
 def mkFormatError (ls ms : String) (msg : String) (length : Nat := 1) : FormatError where
   srcNat := ls.length
-  srcEndPos := ls.endPos
+  srcEndPos := ls.rawEndPos
   fmtPos := ms.length
   msg := msg
   length := length
-  srcStartPos := ls.endPos
+  srcStartPos := ls.rawEndPos
 
 /--
 Add a new `FormatError` `f` to the array `fs`, trying, as much as possible, to merge the new
@@ -252,7 +252,7 @@ The linter uses this information to avoid emitting a warning for nodes with kind
 `unlintedNodes`.
 -/
 def getUnlintedRanges (a : Array SyntaxNodeKind) :
-    Std.HashSet String.Range → Syntax → Std.HashSet String.Range
+    Std.HashSet Lean.Syntax.Range → Syntax → Std.HashSet Lean.Syntax.Range
   | curr, s@(.node _ kind args) =>
     let new := args.foldl (init := curr) (·.union <| getUnlintedRanges a curr ·)
     if a.contains kind then
@@ -267,13 +267,13 @@ def getUnlintedRanges (a : Array SyntaxNodeKind) :
       curr
   | curr, _ => curr
 
-/-- Given a `HashSet` of `String.Range`s `rgs` and a further `String.Range` `rg`,
+/-- Given a `HashSet` of `Lean.Syntax.Range`s `rgs` and a further `Lean.Syntax.Range` `rg`,
 `isOutside rgs rg` returns `false` if and only if `rgs` contains a range that completely contains
 `rg`.
 
 The linter uses this to figure out which nodes should be ignored.
 -/
-def isOutside (rgs : Std.HashSet String.Range) (rg : String.Range) : Bool :=
+def isOutside (rgs : Std.HashSet Lean.Syntax.Range) (rg : Lean.Syntax.Range) : Bool :=
   rgs.all fun {start := a, stop := b} ↦ !(a ≤ rg.start && rg.stop ≤ b)
 
 /-- `mkWindow orig start ctx` extracts from `orig` a string that starts at the first
@@ -333,7 +333,8 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let forbidden := getUnlintedRanges unlintedNodes ∅ stx
     for s in scan do
       let center := origSubstring.stopPos.unoffsetBy s.srcEndPos
-      let rg : String.Range := ⟨center, center |>.offsetBy s.srcEndPos |>.unoffsetBy s.srcStartPos |>.increaseBy 1⟩
+      let rg : Lean.Syntax.Range :=
+        ⟨center, center |>.offsetBy s.srcEndPos |>.unoffsetBy s.srcStartPos |>.increaseBy 1⟩
       if s.msg.startsWith "Oh no" then
         Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg)
           m!"This should not have happened: please report this issue!"

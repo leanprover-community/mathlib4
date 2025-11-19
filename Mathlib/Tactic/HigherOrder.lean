@@ -73,7 +73,7 @@ def higherOrderGetParam (thm : Name) (stx : Syntax) : AttrM Name := do
         updatePrefix sname.getId thm.getPrefix
       else
         thm.appendAfter "\'"
-    MetaM.run' <| TermElabM.run' <| do
+    MetaM.run' <| TermElabM.run' do
       let lvl := (← getConstInfo thm).levelParams
       let typ ← instantiateMVars (← inferType <| .const thm (lvl.map mkLevelParam))
       let hot ← mkHigherOrderType typ

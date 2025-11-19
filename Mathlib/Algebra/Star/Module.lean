@@ -162,7 +162,7 @@ theorem IsSelfAdjoint.coe_selfAdjointPart_apply {x : A} (hx : IsSelfAdjoint x) :
 
 theorem IsSelfAdjoint.selfAdjointPart_apply {x : A} (hx : IsSelfAdjoint x) :
     selfAdjointPart R x = ⟨x, hx⟩ :=
-  Subtype.eq (hx.coe_selfAdjointPart_apply R)
+  Subtype.ext (hx.coe_selfAdjointPart_apply R)
 
 @[simp]
 theorem selfAdjointPart_comp_subtype_selfAdjoint :
@@ -170,7 +170,7 @@ theorem selfAdjointPart_comp_subtype_selfAdjoint :
   LinearMap.ext fun x ↦ x.2.selfAdjointPart_apply R
 
 theorem IsSelfAdjoint.skewAdjointPart_apply {x : A} (hx : IsSelfAdjoint x) :
-    skewAdjointPart R x = 0 := Subtype.eq <| by
+    skewAdjointPart R x = 0 := Subtype.ext <| by
   rw [skewAdjointPart_apply_coe, hx.star_eq, sub_self, smul_zero, ZeroMemClass.coe_zero]
 
 @[simp]
@@ -181,12 +181,12 @@ theorem skewAdjointPart_comp_subtype_selfAdjoint :
 @[simp]
 theorem selfAdjointPart_comp_subtype_skewAdjoint :
     (selfAdjointPart R).comp (skewAdjoint.submodule R A).subtype = 0 :=
-  LinearMap.ext fun ⟨x, (hx : _ = _)⟩ ↦ Subtype.eq <| by simp [hx]
+  LinearMap.ext fun ⟨x, (hx : _ = _)⟩ ↦ Subtype.ext <| by simp [hx]
 
 @[simp]
 theorem skewAdjointPart_comp_subtype_skewAdjoint :
     (skewAdjointPart R).comp (skewAdjoint.submodule R A).subtype = .id :=
-  LinearMap.ext fun ⟨x, (hx : _ = _)⟩ ↦ Subtype.eq <| by
+  LinearMap.ext fun ⟨x, (hx : _ = _)⟩ ↦ Subtype.ext <| by
     simp only [LinearMap.comp_apply, Submodule.subtype_apply, skewAdjointPart_apply_coe, hx,
       sub_neg_eq_add, smul_add, invOf_two_smul_add_invOf_two_smul]; rfl
 

@@ -37,6 +37,9 @@ to make the range of `encode` decidable even when the finiteness of `α` is not.
 
 assert_not_exists Monoid
 
+-- We want the theorems in this file to be constructive.
+set_option linter.unusedDecidableInType false
+
 open Option List Nat Function
 
 /-- Constructively countable type. Made from an explicit injection `encode : α → ℕ` and a partial
@@ -205,7 +208,7 @@ def equivRangeEncode (α : Type*) [Encodable α] : α ≃ Set.range (@encode α 
       (show isSome (decode₂ α n.1) by obtain ⟨x, hx⟩ := n.2; rw [← hx, encodek₂]; exact rfl)
   left_inv a := by dsimp; rw [← Option.some_inj, Option.some_get, encodek₂]
   right_inv := fun ⟨n, x, hx⟩ => by
-    apply Subtype.eq
+    apply Subtype.ext
     dsimp
     conv =>
       rhs

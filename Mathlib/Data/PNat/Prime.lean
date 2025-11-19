@@ -80,7 +80,7 @@ theorem lcm_dvd {m n k : ℕ+} (hm : m ∣ k) (hn : n ∣ k) : lcm m n ∣ k :=
   dvd_iff.2 (@Nat.lcm_dvd (m : ℕ) (n : ℕ) (k : ℕ) (dvd_iff.1 hm) (dvd_iff.1 hn))
 
 theorem gcd_mul_lcm (n m : ℕ+) : gcd n m * lcm n m = n * m :=
-  Subtype.eq (Nat.gcd_mul_lcm (n : ℕ) (m : ℕ))
+  Subtype.ext (Nat.gcd_mul_lcm (n : ℕ) (m : ℕ))
 
 theorem eq_one_of_lt_two {n : ℕ+} : n < 2 → n = 1 := by
   intro h; apply le_antisymm; swap

@@ -118,7 +118,7 @@ lemma lt_sub_iff {n : ℕ} {a b : Fin n} : a < a - b ↔ a < b := by
       Nat.mod_eq_of_lt, Nat.sub_add_cancel b.is_lt.le] using
         (le_trans (mod_le _ _) (le_add_left _ _))
   · intro h
-    rw [lt_iff_val_lt_val, sub_def]
+    rw [lt_def, sub_def]
     simp only
     obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt b.is_lt
     have : n + 1 - b = k + 1 := by
@@ -133,7 +133,7 @@ lemma sub_le_iff {n : ℕ} {a b : Fin n} : a - b ≤ a ↔ b ≤ a := by
 
 @[simp]
 lemma lt_one_iff {n : ℕ} (x : Fin (n + 2)) : x < 1 ↔ x = 0 := by
-  simp [lt_iff_val_lt_val]
+  simp [lt_def]
 
 lemma lt_sub_one_iff {k : Fin (n + 2)} : k < k - 1 ↔ k = 0 := by
   simp

@@ -26,9 +26,9 @@ def sort (s : Multiset α) (r : α → α → Prop := by exact fun a b => a ≤ 
     [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [IsTotal α r] : List α :=
   Quot.liftOn s (mergeSort · (r · ·)) fun _ _ h =>
     eq_of_perm_of_sorted ((mergeSort_perm _ _).trans <| h.trans (mergeSort_perm _ _).symm)
-      (sorted_mergeSort IsTrans.trans
+      (pairwise_mergeSort IsTrans.trans
         (fun a b => by simpa using IsTotal.total a b) _)
-      (sorted_mergeSort IsTrans.trans
+      (pairwise_mergeSort IsTrans.trans
         (fun a b => by simpa using IsTotal.total a b) _)
 
 section

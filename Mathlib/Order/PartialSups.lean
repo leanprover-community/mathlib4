@@ -279,6 +279,6 @@ lemma partialSups_eq_sUnion_image [DecidableEq (Set α)] (s : ℕ → Set α) (n
 
 lemma partialSups_eq_biUnion_range (s : ℕ → Set α) (n : ℕ) :
     partialSups s n = ⋃ i ∈ Finset.range (n + 1), s i := by
-  simp [partialSups_eq_biSup, Nat.lt_succ]
+  simp [partialSups_eq_biSup, Nat.lt_succ_iff]
 
 end Set

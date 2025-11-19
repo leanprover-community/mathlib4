@@ -38,7 +38,7 @@ theorem saturated_iff_zpow {H : Subgroup G} :
   · intro hH n g hgn
     cases n with
     | ofNat n =>
-      simp only [Int.natCast_eq_zero, Int.ofNat_eq_coe, zpow_natCast] at hgn ⊢
+      simp only [Int.natCast_eq_zero, Int.ofNat_eq_natCast, zpow_natCast] at hgn ⊢
       exact hH hgn
     | negSucc n =>
       suffices g ^ (n + 1) ∈ H by

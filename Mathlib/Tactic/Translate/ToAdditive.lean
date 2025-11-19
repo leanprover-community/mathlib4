@@ -258,28 +258,8 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
           | _ => throwUnsupportedSyntax
         return ids.toList }
 
-/-- An extension that stores all the declarations that need their arguments reordered when
-applying `@[to_additive]`. It is applied using the `to_additive (reorder := ...)` syntax. -/
-initialize reorderAttr : NameMapExtension (List (List Nat)) ←
-  registerNameMapExtension _
-
-/-- Linter to check that the `relevant_arg` attribute is not given manually -/
-register_option linter.toAdditiveRelevantArg : Bool := {
-  defValue := true
-  descr := "Linter to check that the `relevant_arg` attribute is not given manually." }
-
-@[inherit_doc to_additive_relevant_arg]
-initialize relevantArgAttr : NameMapExtension Nat ←
-  registerNameMapAttribute {
-    name := `to_additive_relevant_arg
-    descr := "Auxiliary attribute for `to_additive` stating \
-      which arguments are the types with a multiplicative structure."
-    add := fun
-    | _, stx@`(attr| to_additive_relevant_arg $id) => do
-      Linter.logLintIf linter.toAdditiveRelevantArg stx
-        m!"This attribute is deprecated. Use `@[to_additive (relevant_arg := ...)]` instead."
-      pure <| id.getNat.pred
-    | _, _ => throwUnsupportedSyntax }
+@[inherit_doc TranslateData.argInfoAttr]
+initialize argInfoAttr : NameMapExtension ArgInfo ← registerNameMapExtension _
 
 @[inherit_doc to_additive_dont_translate]
 initialize dontTranslateAttr : NameMapExtension Unit ←
@@ -389,11 +369,7 @@ def abbreviationDict : Std.HashMap String String := .ofList [
 
 /-- The bundle of environment extensions for `to_additive` -/
 def data : TranslateData where
-  ignoreArgsAttr := ignoreArgsAttr
-  reorderAttr := reorderAttr
-  relevantArgAttr := relevantArgAttr
-  dontTranslateAttr := dontTranslateAttr
-  translations := translations
+  ignoreArgsAttr; argInfoAttr; dontTranslateAttr; translations
   attrName := `to_additive
   changeNumeral := true
   isDual := false
@@ -412,6 +388,6 @@ initialize registerBuiltinAttribute {
 into the `to_additive` dictionary. This is useful for translating namespaces that don't (yet)
 have a corresponding translated declaration. -/
 elab "insert_to_additive_translation" src:ident tgt:ident : command => do
-  Command.liftCoreM <| insertTranslation data src.getId tgt.getId
+  translations.add src.getId tgt.getId
 
 end Mathlib.Tactic.ToAdditive

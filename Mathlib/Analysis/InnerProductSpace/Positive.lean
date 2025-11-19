@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
 import Mathlib.Analysis.InnerProductSpace.Spectrum
+import Mathlib.Analysis.Matrix.Hermitian
 import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-!

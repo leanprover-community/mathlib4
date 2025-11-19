@@ -194,6 +194,10 @@ protected theorem const (b : β) : LipschitzWith 0 fun _ : α => b := fun x y =>
 protected theorem const' (b : β) {K : ℝ≥0} : LipschitzWith K fun _ : α => b := fun x y => by
   simp only [edist_self, zero_le]
 
+@[simp]
+lemma zero_iff {β : Type*} [EMetricSpace β] (f : α → β) : LipschitzWith 0 f ↔ ∀ x y, f x = f y := by
+  simp [LipschitzWith]
+
 /-- The identity is 1-Lipschitz. -/
 protected theorem id : LipschitzWith 1 (@id α) :=
   LipschitzWith.of_edist_le fun _ _ => le_rfl
@@ -290,6 +294,11 @@ namespace LipschitzOnWith
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
 variable {K : ℝ≥0} {s : Set α} {f : α → β}
+
+@[simp]
+lemma zero_iff {β : Type*} [EMetricSpace β] (f : α → β) :
+    LipschitzOnWith 0 f s ↔ ∀ x ∈ s, ∀ y ∈ s, f x = f y := by
+  simp [LipschitzOnWith]
 
 protected theorem uniformContinuousOn (hf : LipschitzOnWith K f s) : UniformContinuousOn f s :=
   uniformContinuousOn_iff_restrict.mpr hf.to_restrict.uniformContinuous
