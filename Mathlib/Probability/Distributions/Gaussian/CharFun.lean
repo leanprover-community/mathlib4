@@ -34,6 +34,9 @@ We also specialize these statements in the case of Hilbert spaces, with
 Gaussian measure, characteristic function
 -/
 
+@[expose] public section
+
+
 open Complex MeasureTheory WithLp NormedSpace ContinuousLinearMap
 
 open scoped Matrix NNReal Real RealInnerProductSpace ProbabilityTheory
