@@ -50,8 +50,7 @@ def privateModule : Linter where
       unless getLinterValue linter.privateModule (← getLinterOptions) do
         return
       if (← getEnv).header.isModule then
-        -- Wait for everything (necessary?)
-        let _ := (← getEnv).checked.get
+        let _ := (← getEnv).checked.get -- Wait for everything
         unless (← getEnv).asyncConstsMap.public.revList.any
             (!(`_private).isPrefixOf ·.constInfo.name) do
           if (← getEnv).asyncConstsMap.private.size ≠ 0 then
