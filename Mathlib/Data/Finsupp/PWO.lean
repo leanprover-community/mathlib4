@@ -3,8 +3,10 @@ Copyright (c) 2022 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best
 -/
-import Mathlib.Order.Preorder.Finsupp
-import Mathlib.Order.WellFoundedSet
+module
+
+public import Mathlib.Order.Preorder.Finsupp
+public import Mathlib.Order.WellFoundedSet
 
 /-!
 # Partial well ordering on finsupps
@@ -23,6 +25,7 @@ It is in a separate file for now so as to not add imports to the file `Order.Wel
 Dickson, order, partial well order
 -/
 
+@[expose] public section
 /-- A version of **Dickson's lemma**: `σ →₀ α` is well-quasi-ordered when `σ` is `Finite` and `α` is
 well-quasi-ordered.
 This version uses finsupps on a finite type as it is intended for use with `MVPowerSeries`.

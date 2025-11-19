@@ -3,7 +3,9 @@ Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.RingTheory.DedekindDomain.AdicValuation
+module
+
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation
 
 /-!
 # `S`-integers and `S`-units of fraction fields of Dedekind domains
@@ -39,6 +41,8 @@ This file defines the subalgebra of `S`-integers of `K` and the subgroup of `S`-
 
 S integer, S-integer, S unit, S-unit
 -/
+
+@[expose] public section
 
 
 noncomputable section
