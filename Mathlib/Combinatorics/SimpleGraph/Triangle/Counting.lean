@@ -124,7 +124,7 @@ lemma triangle_counting'
     rw [Nat.cast_add]
     gcongr
   rintro a _ b _ t
-  rw [Function.onFun, disjoint_left]
+  rw [Function.onFun, Finset.disjoint_left]
   simp only [Prod.forall, mem_image, not_exists, Prod.mk_inj,
     exists_imp, and_imp, not_and]
   aesop
@@ -137,7 +137,7 @@ private lemma triple_eq_triple_of_mem (hst : Disjoint s t) (hsu : Disjoint s u) 
     (x₁, y₁, z₁) = (x₂, y₂, z₂) := by
   simp only [Finset.Subset.antisymm_iff, subset_iff, mem_insert, mem_singleton, forall_eq_or_imp,
     forall_eq] at h
-  grind [disjoint_left]
+  grind [Finset.disjoint_left]
 
 variable [Fintype α]
 
