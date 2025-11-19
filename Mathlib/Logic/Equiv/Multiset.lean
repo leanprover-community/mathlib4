@@ -3,12 +3,16 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Multiset.Sort
-import Mathlib.Logic.Equiv.List
+module
+
+public import Mathlib.Data.Multiset.Sort
+public import Mathlib.Logic.Equiv.List
 
 /-!
 # `Encodable` and `Denumerable` instances for `Multiset`
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 

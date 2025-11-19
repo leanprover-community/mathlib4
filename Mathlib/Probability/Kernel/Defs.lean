@@ -3,7 +3,9 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Measure.GiryMonad
+module
+
+public import Mathlib.MeasureTheory.Measure.GiryMonad
 
 /-!
 # Markov Kernels
@@ -35,6 +37,8 @@ Classes of kernels:
   functions `f` and all `a`, then the two kernels `κ` and `η` are equal.
 
 -/
+
+@[expose] public section
 
 assert_not_exists MeasureTheory.integral
 

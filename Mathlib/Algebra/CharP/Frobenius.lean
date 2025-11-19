@@ -3,8 +3,10 @@ Copyright (c) 2021 Jakob Scholbach. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Scholbach
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.CharP.Lemmas
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.CharP.Lemmas
 
 /-!
 ### The Frobenius endomorphism
@@ -19,6 +21,8 @@ The definitions of `frobenius` and `iterateFrobenius` ring homomorphisms are in
 `Mathlib/Algebra/CharP/Lemmas.lean` as they are needed for some results that in turn are used in
 files forbidding to import algebra-related definitions (see `Mathlib/Algebra/CharP/Two.lean`).
 -/
+
+@[expose] public section
 
 section CommSemiring
 

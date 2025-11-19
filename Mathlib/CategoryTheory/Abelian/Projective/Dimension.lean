@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Nailin Guan
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
-import Mathlib.CategoryTheory.Abelian.Exact
-import Mathlib.Data.ENat.Lattice
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
+public import Mathlib.CategoryTheory.Abelian.Exact
+public import Mathlib.Data.ENat.Lattice
 
 /-!
 # Projective dimension
@@ -23,6 +25,8 @@ We also define the projective dimension in `WithBot ℕ∞` as `projectiveDimens
 `projectiveDimension X = ⊥` iff `X` is zero and acts in common sense in the non-negative values.
 
 -/
+
+@[expose] public section
 
 universe w v u
 
