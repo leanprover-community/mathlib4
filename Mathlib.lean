@@ -3453,6 +3453,7 @@ import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.FunLike.Embedding
 import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.FunLike.Fintype
+import Mathlib.Data.FunLike.Graded
 import Mathlib.Data.Holor
 import Mathlib.Data.Ineq
 import Mathlib.Data.Int.AbsoluteValue
