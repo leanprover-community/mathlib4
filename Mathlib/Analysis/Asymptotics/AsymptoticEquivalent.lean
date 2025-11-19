@@ -3,7 +3,9 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.Asymptotics.Theta
+module
+
+public import Mathlib.Analysis.Asymptotics.Theta
 
 /-!
 # Asymptotic equivalence
@@ -52,6 +54,8 @@ Note that `IsEquivalent` takes the parameters `(l : Filter α) (u v : α → β)
 This is to enable `calc` support, as `calc` requires that the last two explicit arguments are `u v`.
 
 -/
+
+@[expose] public section
 
 
 namespace Asymptotics
@@ -246,8 +250,7 @@ theorem IsEquivalent.smul {α E 𝕜 : Type*} [NormedField 𝕜] [NormedAddCommG
     calc
       ‖φ x - 1‖ * ‖u x‖ ≤ c / 2 / C * ‖u x‖ := by gcongr
       _ ≤ c / 2 / C * (C * ‖v x‖) := by gcongr
-      _ = c / 2 * ‖v x‖ := by
-        field_simp
+      _ = c / 2 * ‖v x‖ := by field
   calc
     ‖((fun x : α ↦ φ x • u x) - v) x‖ = ‖(φ x - 1) • u x + (u x - v x)‖ := by
       simp [sub_smul, sub_add]

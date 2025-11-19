@@ -3,12 +3,14 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Frédéric Dupuis
 -/
-import Mathlib.Analysis.InnerProductSpace.Calculus
-import Mathlib.Analysis.InnerProductSpace.Dual
-import Mathlib.Analysis.InnerProductSpace.Adjoint
-import Mathlib.Analysis.Calculus.LagrangeMultipliers
-import Mathlib.LinearAlgebra.Eigenspace.Basic
-import Mathlib.Algebra.EuclideanDomain.Basic
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Analysis.InnerProductSpace.Dual
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
+public import Mathlib.Analysis.Calculus.LagrangeMultipliers
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.Algebra.EuclideanDomain.Basic
 
 /-!
 # The Rayleigh quotient
@@ -34,6 +36,8 @@ A slightly more elaborate corollary is that if `E` is complete and `T` is a comp
 `⨅ x, ⟪T x, x⟫ / ‖x‖ ^ 2` (not necessarily both).
 
 -/
+
+@[expose] public section
 
 
 variable {𝕜 : Type*} [RCLike 𝕜]
@@ -101,7 +105,7 @@ theorem _root_.LinearMap.IsSymmetric.hasStrictFDerivAt_reApplyInnerSelf {T : F �
   convert T.hasStrictFDerivAt.inner ℝ (hasStrictFDerivAt_id x₀) using 1
   ext y
   rw [ContinuousLinearMap.smul_apply, ContinuousLinearMap.comp_apply, fderivInnerCLM_apply,
-    ContinuousLinearMap.prod_apply, innerSL_apply, id, ContinuousLinearMap.id_apply,
+    ContinuousLinearMap.prod_apply, innerSL_apply_apply, id, ContinuousLinearMap.id_apply,
     hT.apply_clm x₀ y, real_inner_comm _ x₀, two_smul]
 
 variable [CompleteSpace F] {T : F →L[ℝ] F}
@@ -139,14 +143,12 @@ theorem eq_smul_self_of_isLocalExtrOn_real (hT : IsSelfAdjoint T) {x₀ : F}
     refine absurd ?_ hx₀
     apply smul_right_injective F this
     simpa [hb] using h₂
-  let c : ℝ := -b⁻¹ * a
-  have hc : T x₀ = c • x₀ := by
-    have : b * (b⁻¹ * a) = a := by field_simp
-    apply smul_right_injective F hb
-    simp [c, eq_neg_of_add_eq_zero_left h₂, ← mul_smul, this]
+  have hc : T x₀ = (-b⁻¹ * a) • x₀ := by
+    linear_combination (norm := match_scalars <;> field) b⁻¹ • h₂
+  set c : ℝ := -b⁻¹ * a
   convert hc
   have := congr_arg (fun x => ⟪x, x₀⟫_ℝ) hc
-  simp [field, inner_smul_left, real_inner_self_eq_norm_mul_norm, mul_comm a] at this ⊢
+  simp [field, inner_smul_left, mul_comm a] at this ⊢
   exact this
 
 end Real

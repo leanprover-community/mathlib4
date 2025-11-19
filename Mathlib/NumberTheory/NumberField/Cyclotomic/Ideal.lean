@@ -3,10 +3,12 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
-import Mathlib.NumberTheory.RamificationInertia.Galois
-import Mathlib.RingTheory.Ideal.Int
-import Mathlib.RingTheory.RootsOfUnity.CyclotomicUnits
+module
+
+public import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
+public import Mathlib.NumberTheory.RamificationInertia.Galois
+public import Mathlib.RingTheory.Ideal.Int
+public import Mathlib.RingTheory.RootsOfUnity.CyclotomicUnits
 
 /-!
 # Ideals in cyclotomic fields
@@ -24,6 +26,8 @@ In this file, we prove results about ideals in cyclotomic extensions of `ℚ`.
 * `IsCyclotomicExtension.Rat.ramificationIdx_eq_of_prime_pow`: the ramification index of the prime
   ideal above `p` in `ℚ(ζ_pᵏ)` is `p ^ (k - 1) * (p - 1)`.
 -/
+
+@[expose] public section
 
 namespace IsCyclotomicExtension.Rat
 
@@ -48,7 +52,7 @@ theorem associated_norm_zeta_sub_one : Associated (Algebra.norm ℤ (hζ.toInteg
       rw [h, zero_add, pow_one] at hK hζ
       rw [hζ.norm_toInteger_sub_one_of_eq_two, h, Int.ofNat_two, Associated.neg_left_iff]
     | succ n =>
-      rw [h, add_assoc, show 1 + 1 = 2 by rfl] at hK hζ
+      rw [h, add_assoc, one_add_one_eq_two] at hK hζ
       rw [hζ.norm_toInteger_sub_one_of_eq_two_pow, h, Int.ofNat_two]
   · rw [hζ.norm_toInteger_sub_one_of_prime_ne_two h]
 
@@ -109,13 +113,14 @@ theorem ncard_primesOver_of_prime_pow :
     (primesOver 𝒑 (𝓞 K)).ncard = 1 := by
   have : IsGalois ℚ K := isGalois {p ^ (k + 1)} ℚ K
   have : 𝒑 ≠ ⊥ := by simpa using hp.out.ne_zero
-  have h_main := ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn this (𝓞 K) ℚ K
+  have h_main := ncard_primesOver_mul_ramificationIdxIn_mul_inertiaDegIn this (𝓞 K) (K ≃ₐ[ℚ] K)
   have hζ := hK.zeta_spec
   have := liesOver_span_zeta_sub_one p k hζ
-  rwa [ramificationIdxIn_eq_ramificationIdx 𝒑 (span {hζ.toInteger - 1}) ℚ K,
-    inertiaDegIn_eq_inertiaDeg 𝒑 (span {hζ.toInteger - 1}) ℚ K, inertiaDeg_span_zeta_sub_one,
+  rwa [ramificationIdxIn_eq_ramificationIdx 𝒑 (span {hζ.toInteger - 1}) (K ≃ₐ[ℚ] K),
+    inertiaDegIn_eq_inertiaDeg 𝒑 (span {hζ.toInteger - 1}) (K ≃ₐ[ℚ] K),
+    inertiaDeg_span_zeta_sub_one,
     ramificationIdx_span_zeta_sub_one, mul_one, ← Nat.totient_prime_pow_succ hp.out,
-    ← finrank _ K, Nat.mul_eq_right] at h_main
+    ← finrank _ K, IsGaloisGroup.card_eq_finrank (K ≃ₐ[ℚ] K) ℚ K, Nat.mul_eq_right] at h_main
   exact Module.finrank_pos.ne'
 
 theorem eq_span_zeta_sub_one_of_liesOver (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver 𝒑] :

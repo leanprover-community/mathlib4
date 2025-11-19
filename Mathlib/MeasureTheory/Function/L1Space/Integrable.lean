@@ -3,9 +3,11 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
-import Mathlib.MeasureTheory.Function.L1Space.HasFiniteIntegral
-import Mathlib.MeasureTheory.Function.LpOrder
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
+module
+
+public import Mathlib.MeasureTheory.Function.L1Space.HasFiniteIntegral
+public import Mathlib.MeasureTheory.Function.LpOrder
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 
 /-!
 # Integrable functions
@@ -32,6 +34,8 @@ To prove something for an arbitrary integrable function, a useful theorem is
 integrable
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -313,7 +317,7 @@ open scoped Classical in
 theorem integrable_average [IsFiniteMeasure μ] {f : α → ε} :
     Integrable f ((μ univ)⁻¹ • μ) ↔ Integrable f μ :=
   (eq_or_ne μ 0).by_cases (fun h => by simp [h]) fun h =>
-    integrable_smul_measure (ENNReal.inv_ne_zero.2 <| measure_ne_top _ _)
+    integrable_smul_measure (ENNReal.inv_ne_zero.2 <| by finiteness)
       (ENNReal.inv_ne_top.2 <| mt Measure.measure_univ_eq_zero.1 h)
 
 end

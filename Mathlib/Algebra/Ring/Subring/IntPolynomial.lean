@@ -3,7 +3,9 @@ Copyright (c) 2024 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
 
 /-!
 # Polynomials over subrings.
@@ -13,10 +15,12 @@ with coefficients in `R` to `R[X]`. We provide several lemmas to deal with
 coefficients, degree, and evaluation of `Polynomial.int`.
 This is useful when dealing with integral elements in an extension of fields.
 
-# Main Definitions
+## Main Definitions
 * `Polynomial.int` : given a polynomial `P` in `K[X]` whose coefficients all belong to a subring `R`
   of the field `K`, `P.int R` is the corresponding polynomial in `R[X]`.
 -/
+
+@[expose] public section
 
 variable {K : Type*} [Field K] (R : Subring K)
 

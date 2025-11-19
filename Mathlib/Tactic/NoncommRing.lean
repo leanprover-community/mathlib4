@@ -3,8 +3,10 @@ Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux, Kim Morrison, Oliver Nash
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Tactic.Abel
+module
+
+public meta import Mathlib.Algebra.Group.Action.Defs
+public meta import Mathlib.Tactic.Abel
 
 /-! # The `noncomm_ring` tactic
 
@@ -17,6 +19,8 @@ maximum recursion depth.
 `noncomm_ring` is just a `simp only [some lemmas]` followed by `abel`. It automatically uses `abel1`
 to close the goal, and if that doesn't succeed, defaults to `abel_nf`.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.NoncommRing
 
@@ -76,4 +80,4 @@ end Mathlib.Tactic.NoncommRing
 We register `noncomm_ring` with the `hint` tactic.
 -/
 
-register_hint noncomm_ring
+register_hint 1000 noncomm_ring

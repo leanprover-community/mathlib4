@@ -3,7 +3,9 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Sébastien Gouëzel
 -/
-import Mathlib.Topology.Constructions
+module
+
+public import Mathlib.Topology.Constructions
 
 /-!
 # Neighborhoods relative to a subset
@@ -23,6 +25,8 @@ to develop relativ versions `ContinuousOn` and `ContinuousWithinAt` of `Continuo
 * `𝓝[s] x`: the filter `nhdsWithin x s` of neighborhoods of a point `x` within a set `s`.
 
 -/
+
+@[expose] public section
 
 open Set Filter Function Topology
 
@@ -109,6 +113,12 @@ theorem mem_nhdsWithin_iff_eventually {s t : Set α} {x : α} :
 theorem mem_nhdsWithin_iff_eventuallyEq {s t : Set α} {x : α} :
     t ∈ 𝓝[s] x ↔ s =ᶠ[𝓝 x] (s ∩ t : Set α) := by
   simp_rw [mem_nhdsWithin_iff_eventually, eventuallyEq_set, mem_inter_iff, iff_self_and]
+
+lemma mem_nhdsWithin_inter_self {s t : Set α} {x : α} : t ∈ 𝓝[s ∩ t] x :=
+  mem_nhdsWithin_iff_eventuallyEq.mpr <| by simp [inter_assoc]
+
+lemma mem_nhdsWithin_self_inter {s t : Set α} {x : α} : s ∈ 𝓝[s ∩ t] x :=
+  mem_nhdsWithin_iff_eventuallyEq.mpr <| by simp [inter_comm s t, inter_assoc]
 
 theorem nhdsWithin_eq_iff_eventuallyEq {s t : Set α} {x : α} : 𝓝[s] x = 𝓝[t] x ↔ s =ᶠ[𝓝 x] t :=
   set_eventuallyEq_iff_inf_principal.symm

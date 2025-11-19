@@ -3,10 +3,11 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
+module
 
-import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
-import Mathlib.Tactic.CategoryTheory.Slice
-import Mathlib.Tactic.CategoryTheory.ToApp
+public import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
+public import Mathlib.Tactic.CategoryTheory.Slice
+public import Mathlib.Tactic.CategoryTheory.ToApp
 
 /-!
 # Lax functors
@@ -21,7 +22,8 @@ A lax functor `F` between bicategories `B` and `C` consists of
 
 ## Main definitions
 
-* `CategoryTheory.LaxFunctor B C` : an lax functor between bicategories `B` and `C`
+* `CategoryTheory.LaxFunctor B C` : an lax functor between bicategories `B` and `C`, which we
+  denote by `B ⥤ᴸ C`.
 * `CategoryTheory.LaxFunctor.comp F G` : the composition of lax functors
 * `CategoryTheory.LaxFunctor.Pseudocore` : a structure on an Lax functor that promotes a
   Lax functor to a pseudofunctor
@@ -33,6 +35,8 @@ since lax functors had not yet been added (e.g `FunctorBicategory.lean`). A poss
 be to mirror these constructions for lax functors.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -81,6 +85,10 @@ structure LaxFunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂)
     ∀ {a b : B} (f : a ⟶ b),
       map₂ (ρ_ f).inv = (ρ_ (map f)).inv ≫ map f ◁ mapId b ≫ mapComp f (𝟙 b) := by cat_disch
 
+/-- Notation for a lax functor between bicategories. -/
+-- Given similar precedence as ⥤ (26).
+scoped[CategoryTheory.Bicategory] infixr:26 " ⥤ᴸ " => LaxFunctor -- type as \func\^L
+
 initialize_simps_projections LaxFunctor (+toPrelaxFunctor, -obj, -map, -map₂)
 
 namespace LaxFunctor
@@ -94,7 +102,7 @@ attribute [simp, reassoc, to_app] map₂_leftUnitor map₂_rightUnitor
 /-- The underlying prelax functor. -/
 add_decl_doc LaxFunctor.toPrelaxFunctor
 
-variable (F : LaxFunctor B C)
+variable (F : B ⥤ᴸ C)
 
 @[reassoc, to_app]
 lemma mapComp_assoc_left {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
@@ -124,12 +132,12 @@ lemma map₂_rightUnitor_hom {a b : B} (f : a ⟶ b) :
 
 /-- The identity lax functor. -/
 @[simps]
-def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : LaxFunctor B B where
+def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : B ⥤ᴸ B where
   toPrelaxFunctor := PrelaxFunctor.id B
   mapId := fun a => 𝟙 (𝟙 a)
   mapComp := fun f g => 𝟙 (f ≫ g)
 
-instance : Inhabited (LaxFunctor B B) :=
+instance : Inhabited (B ⥤ᴸ B) :=
   ⟨id B⟩
 
 /-- More flexible variant of `mapId`. (See the file `Bicategory.Functor.Strict`
@@ -155,8 +163,8 @@ lemma mapComp'_eq_mapComp {b₀ b₁ b₂ : B} (f : b₀ ⟶ b₁) (g : b₁ ⟶
 
 /-- Composition of lax functors. -/
 @[simps]
-def comp {D : Type u₃} [Bicategory.{w₃, v₃} D] (F : LaxFunctor B C) (G : LaxFunctor C D) :
-    LaxFunctor B D where
+def comp {D : Type u₃} [Bicategory.{w₃, v₃} D] (F : B ⥤ᴸ C) (G : C ⥤ᴸ D) :
+    B ⥤ᴸ D where
   toPrelaxFunctor := PrelaxFunctor.comp F.toPrelaxFunctor G.toPrelaxFunctor
   mapId := fun a => G.mapId (F.obj a) ≫ G.map₂ (F.mapId a)
   mapComp := fun f g => G.mapComp (F.map f) (F.map g) ≫ G.map₂ (F.mapComp f g)
@@ -187,7 +195,7 @@ def comp {D : Type u₃} [Bicategory.{w₃, v₃} D] (F : LaxFunctor B C) (G : L
 /-- A structure on an Lax functor that promotes an Lax functor to a pseudofunctor.
 
 See `Pseudofunctor.mkOfLax`. -/
-structure PseudoCore (F : LaxFunctor B C) where
+structure PseudoCore (F : B ⥤ᴸ C) where
   /-- The isomorphism giving rise to the lax unity constraint -/
   mapIdIso (a : B) : F.map (𝟙 a) ≅ 𝟙 (F.obj a)
   /-- The isomorphism giving rise to the lax functoriality constraint -/
