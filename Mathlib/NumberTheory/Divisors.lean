@@ -6,8 +6,8 @@ Authors: Aaron Anderson
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Interval.Finset.SuccPred
-import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Algebra.Ring.CharZero
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.Int.Interval
 import Mathlib.Data.Nat.Cast.Order.Ring
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Data.Nat.SuccPred
@@ -16,8 +16,8 @@ import Mathlib.Order.Interval.Finset.Nat
 /-!
 # Divisor Finsets
 
-This file defines sets of divisors of a natural number. This is particularly useful as background
-for defining Dirichlet convolution.
+This file defines sets of divisors of natural numbers and integers. This is particularly useful as
+background for defining Dirichlet convolution.
 
 ## Main Definitions
 Let `n : ℕ`. All of the following definitions are in the `Nat` namespace:
@@ -25,6 +25,10 @@ Let `n : ℕ`. All of the following definitions are in the `Nat` namespace:
 * `properDivisors n` is the `Finset` of natural numbers that divide `n`, other than `n`.
 * `divisorsAntidiagonal n` is the `Finset` of pairs `(x,y)` such that `x * y = n`.
 * `Perfect n` is true when `n` is positive and the sum of `properDivisors n` is `n`.
+
+Similarly let `z : ℤ`. All of the following definitions are in the `Int` namespace:
+* `divisors z` is the `Finset` of integers that divide `z`.
+* `divisorsAntidiag z` is the `Finset` of integer pairs `(x,y)` such that `x * y = z`.
 
 ## Conventions
 
@@ -590,6 +594,16 @@ local notation "natCast" => Nat.castEmbedding (R := ℤ)
 local notation "negNatCast" =>
   Function.Embedding.trans Nat.castEmbedding (Equiv.toEmbedding (Equiv.neg ℤ))
 
+/-- `divisors z` is the `Finset` of integer divisors of `z`. By convention, we set
+`divisors 0 = ∅`. -/
+def divisors (z : ℤ) : Finset ℤ :=
+    let s : Finset ℕ := z.natAbs.divisors
+    (s.map natCast).disjUnion (s.map negNatCast) <| by
+      simp +contextual only [disjoint_left, mem_map, Nat.castEmbedding_apply,
+        Function.Embedding.trans_apply, Equiv.coe_toEmbedding, Equiv.neg_apply, not_exists, not_and,
+        forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, Nat.neg_cast_eq_cast, s]
+      exact fun a ha b hb hb_ne_zero ha_zero ↦ by simp [ha_zero] at ha
+
 /-- Pairs of divisors of an integer as a finset.
 
 `z.divisorsAntidiag` is the finset of pairs `(a, b) : ℤ × ℤ` such that `a * b = z`.
@@ -605,6 +619,71 @@ def divisorsAntidiag : (z : ℤ) → Finset (ℤ × ℤ)
     let s : Finset (ℕ × ℕ) := (n + 1).divisorsAntidiagonal
     (s.map <| .prodMap natCast negNatCast).disjUnion (s.map <| .prodMap negNatCast natCast) <| by
       simp +contextual [s, disjoint_left, eq_comm, forall_swap (α := _ * _ = _)]
+
+@[simp]
+theorem mem_divisors {z x} : x ∈ divisors z ↔ x ∣ z ∧ z ≠ 0 := by
+  rw [ne_eq, ← natAbs_eq_zero (a := z), ← natAbs_dvd_natAbs, ← Nat.mem_divisors]
+  simp only [divisors, disjUnion_eq_union, mem_union]
+  obtain ⟨n, rfl | rfl⟩ := x.eq_nat_or_neg <;> simp
+
+@[simp]
+theorem divisors_zero : divisors 0 = ∅ := by
+  ext
+  simp
+
+@[simp]
+theorem divisors_neg : (-z).divisors = z.divisors := by
+  ext x
+  simp
+
+theorem neg_mem_divisors : -x ∈ z.divisors ↔ x ∈ z.divisors := by
+  simp
+
+theorem abs_le_abs_of_mem_divisors (h : x ∈ z.divisors) : |x| ≤ |z| := by
+  simp only [← natCast_natAbs]
+  rw [mem_divisors] at h
+  exact ofNat_le.mpr <| natAbs_le_of_dvd_ne_zero h.1 h.2
+
+theorem filter_dvd_eq_divisors (h : z ≠ 0) : {x ∈ Icc (-|z|) |z| | x ∣ z} = z.divisors := by
+  ext x
+  simpa [h, ← abs_le] using fun hxz ↦ abs_le_abs_of_mem_divisors (mem_divisors.mpr ⟨hxz, h⟩)
+
+theorem one_mem_divisors : 1 ∈ divisors z ↔ z ≠ 0 := by simp
+
+theorem neg_one_mem_divisors : -1 ∈ divisors z ↔ z ≠ 0 := by simp
+
+theorem mem_divisors_self (h : z ≠ 0) : z ∈ z.divisors := by simpa
+
+theorem neg_mem_divisors_self (h : z ≠ 0) : -z ∈ z.divisors := by simpa
+
+theorem dvd_of_mem_divisors (h : x ∈ z.divisors) : x ∣ z :=
+  (mem_divisors.mp h).left
+
+@[simp]
+lemma nonempty_divisors : z.divisors.Nonempty ↔ z ≠ 0 :=
+  ⟨fun ⟨m, hm⟩ hn ↦ by simp [hn] at hm, fun hn ↦ ⟨1, one_mem_divisors.2 hn⟩⟩
+
+@[simp]
+lemma divisors_eq_empty : divisors z = ∅ ↔ z = 0 :=
+  not_nonempty_iff_eq_empty.symm.trans nonempty_divisors.not_left
+
+theorem divisors_subset_of_dvd (hzero : z ≠ 0) (h : x ∣ z) : divisors x ⊆ divisors z :=
+  Finset.subset_iff.2 fun _y hy ↦ mem_divisors.mpr ⟨(mem_divisors.mp hy).1.trans h, hzero⟩
+
+theorem dvd_of_divisors_subset (hzero : x ≠ 0) (h : divisors x ⊆ divisors z) : x ∣ z :=
+  (mem_divisors.mp  <| Finset.mem_of_subset h <| mem_divisors_self hzero).left
+
+@[simp]
+theorem divisors_eq : x.divisors = y.divisors ↔ |x| = |y| := by
+  obtain rfl | hy := eq_or_ne y 0
+  · simp
+  · refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+    · rw [subset_antisymm_iff] at h
+      refine dvd_antisymm (abs_nonneg x) (abs_nonneg y)
+        ((abs_dvd_abs _ _).mpr <| dvd_of_divisors_subset ?_ h.left)
+        ((abs_dvd_abs _ _).mpr <| dvd_of_divisors_subset hy h.right)
+      exact nonempty_divisors.mp <| (nonempty_divisors.mpr hy).mono h.right
+    · obtain rfl | rfl := abs_eq_abs.mp h <;> simp
 
 @[simp]
 lemma mem_divisorsAntidiag :
@@ -710,6 +789,24 @@ lemma divisorsAntidiag_ofNat (n : ℕ) :
       (n.divisorsAntidiagonal.map <| .prodMap natCast natCast).disjUnion
         (n.divisorsAntidiagonal.map <| .prodMap negNatCast negNatCast) (by
           simp +contextual [disjoint_left, eq_comm]) := rfl
+
+theorem map_div_right_divisors :
+    z.divisors.map ⟨fun d ↦ (d, z / d), fun _ _ ↦ congr_arg Prod.fst⟩ = z.divisorsAntidiag := by
+  ext ⟨d, nd⟩
+  simp only [mem_map, mem_divisorsAntidiag, Function.Embedding.coeFn_mk, mem_divisors,
+    Prod.ext_iff, and_left_comm, exists_eq_left]
+  constructor
+  · rintro ⟨⟨⟨k, rfl⟩, hn⟩, rfl⟩
+    simp [mul_ediv_cancel_left _ (mul_ne_zero_iff.mp hn).left, hn]
+  · rintro ⟨rfl, hn⟩
+    exact ⟨⟨dvd_mul_right _ _, hn⟩, mul_ediv_cancel_left _ (mul_ne_zero_iff.mp hn).left⟩
+
+theorem map_div_left_divisors :
+    z.divisors.map ⟨fun d => (z / d, d), fun _ _ ↦ congr_arg Prod.snd⟩ = z.divisorsAntidiag := by
+  apply Finset.map_injective (Equiv.prodComm _ _).toEmbedding
+  ext
+  rw [map_prodComm_divisorsAntidiag, ← map_div_right_divisors, Finset.map_map]
+  simp
 
 /-- This lemma justifies its existence from its utility in crystallographic root system theory. -/
 lemma mul_mem_one_two_three_iff {a b : ℤ} :
