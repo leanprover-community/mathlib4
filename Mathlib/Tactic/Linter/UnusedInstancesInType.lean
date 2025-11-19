@@ -3,10 +3,13 @@ Copyright (c) 2025 Thomas R. Murrills. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas R. Murrills
 -/
-import Mathlib.Init
-import Mathlib.Lean.Expr.Basic
-import Mathlib.Lean.Environment
-import Mathlib.Lean.Elab.InfoTree
+module
+
+public import Mathlib.Init
+public import Mathlib.Lean.Expr.Basic
+public import Mathlib.Lean.Environment
+public import Mathlib.Lean.Elab.InfoTree
+import Lean.Elab.Command
 
 /-!
 # Linters for Unused Instances in Types
