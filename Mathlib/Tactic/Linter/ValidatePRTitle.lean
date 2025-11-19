@@ -69,7 +69,7 @@ Not all checks are implemented: for instance, no effort is made to verify if the
 are written in present imperative tense.
 Return all error messages for violations found.
 -/
-def validateTitle (title : String) : Array String := Id.run do
+public def validateTitle (title : String) : Array String := Id.run do
   -- The title should be of the form "abbrev: main title" or "abbrev(scope): main title".
   -- We use the parser above to extract abbrev and scope ignoring the main title,
   -- but give some custom errors in some easily detectable cases.

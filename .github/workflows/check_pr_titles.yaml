@@ -39,8 +39,11 @@ jobs:
           label_names=$(echo "${{ toJson(github.event.pull_request.labels) }}" | jq -r '.[].name')
           echo "$label_names"
 
+          # build command so build lines don't pollute `output` below
+          lake build check_title_labels
+
           # Capture output and exit code
-          if output=$(lake exe check-title-labels --labels "$label_names" "$TITLE" 2>&1); then
+          if output=$(lake exe check_title_labels --labels "$label_names" "$TITLE" 2>&1); then
             echo "Check passed"
           else
             exit_code="$?"
