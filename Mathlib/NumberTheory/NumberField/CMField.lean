@@ -494,6 +494,13 @@ theorem algebraMap_equivMaximalRealSubfield_symm_apply (x : maximalRealSubfield 
       algebraMap (maximalRealSubfield K) K x := by
   simpa using (equivMaximalRealSubfield_apply F K ((equivMaximalRealSubfield F K).symm x)).symm
 
+end CMExtension
+
+namespace IsCMField
+
+variable (F K : Type*) [Field F] [IsTotallyReal F] [Field K] [CharZero K] [Algebra.IsIntegral ℚ K]
+  [IsTotallyComplex K] [Algebra F K] [IsQuadraticExtension F K]
+
 include F in
 /--
 If `K/F` is a CM-extension then `K` is a CM-field.
@@ -524,7 +531,7 @@ theorem _root_.NumberField.IsCMField.of_forall_isConj [NumberField K] {σ : Gal(
 /--
 A totally complex abelian extension of `ℚ` is CM.
 -/
-instance of_isMulCommutative [NumberField K] [IsAbelianGalois ℚ K] :
+instance of_isAbelianGalois [NumberField K] [IsAbelianGalois ℚ K] :
     IsCMField K := by
   let φ : K →+* ℂ := Classical.choice (inferInstance : Nonempty _)
   obtain ⟨σ, hσ₁⟩ : ∃ σ : Gal(K/ℚ), ComplexEmbedding.IsConj φ σ :=
@@ -537,6 +544,9 @@ instance of_isMulCommutative [NumberField K] [IsAbelianGalois ℚ K] :
     exact hσ₁.comp _
   exact IsCMField.of_forall_isConj K hσ₂
 
-end CMExtension
+@[deprecated (since := "2025-11-19")] alias NumberField.CMExtension.of_isMulCommutative :=
+  NumberField.IsCMField.of_isAbelianGalois
+
+end IsCMField
 
 end NumberField
