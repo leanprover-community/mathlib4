@@ -6,7 +6,7 @@ Authors: Marc Huisinga
 module
 
 public import Mathlib.Init
-import Mathlib.Lean.Environment
+public import Mathlib.Lean.Environment
 public import Lean.Server.InfoUtils
 public import Lean.Meta.TryThis
 
