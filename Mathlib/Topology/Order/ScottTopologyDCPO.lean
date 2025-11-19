@@ -85,17 +85,6 @@ section CompletePartialOrder
 variable {α : Type*} [TopologicalSpace α] [CompletePartialOrder α]
   [IsScott α {d | DirectedOn (· ≤ ·) d}]
 
-lemma mem_iff_upSet_subset {e : α} {u : Opens α} : e ∈ u ↔ eᵘ ⊆ u := by
-  constructor
-  · intro e_in_u
-    have u_open := u.isOpen
-    rw [@isOpen_iff_isUpperSet_and_dirSupInaccOn α {d | DirectedOn (· ≤ ·) d }] at u_open
-    let ⟨u_Ici, _⟩ := u_open
-    intro a ha
-    exact u_Ici ha e_in_u
-  · intro h
-    exact h <| mem_Ici.2 (le_refl e)
-
 /-- The order from `CompletePartialOrder` and the specialization order induced by the Scott
 topology, correspond. Unfortunately Mathlib's specialization order `⤳` is opposite to `≤`
 Prop 3.5.2 in [reneta2025]. Prop 2.3.2(1) in [abramsky_gabbay_maibaum_1994] -/
@@ -181,10 +170,25 @@ def Opens.ofCompact (c : {c: α // Compact c}) : Opens α :=
 ᵘᵒ stand for upward open -/
 notation c:80"ᵘᵒ"  => Opens.ofCompact c -- Ici, open
 
+/-- A helper. This can be made more straightforward by replacing `{u : Opens α}` with
+`{u : UpperSet}` and applying the additional lemma `Topology.IsScott.isUpperSet_of_isOpen`
+at the point of usage. Having this lemma in this form helps inference of optional parameters. -/
+private lemma Opens.mem_iff_Ici_subset {e : α} {u : Opens α} : e ∈ u ↔ eᵘ ⊆ u := by
+  constructor
+  · intro e_in_u
+    have u_open := u.isOpen
+    rw [@isOpen_iff_isUpperSet_and_dirSupInaccOn α {d | DirectedOn (· ≤ ·) d }] at u_open
+    let ⟨u_Ici, _⟩ := u_open
+    intro a ha
+    exact u_Ici ha e_in_u
+  · intro h
+    exact h <| mem_Ici.2 (le_refl e)
+
 end CompletePartialOrder
 
 section AlgebraicDCPO
 variable {D : Type*} [TopologicalSpace D] [AlgebraicDCPO D] [IsScott D {d | DirectedOn (· ≤ ·) d}]
+open Opens
 
 /-- Given any point `x` in `D` in an open set `u`, there exists a basis within `u`
 which contains `x`.
@@ -275,9 +279,9 @@ lemma open_eq_open_of_basis' (u : Opens D) :
     use ⟨c', isOpen_of_basis hc'₀⟩
     constructor
     · obtain ⟨c, hc₀, c'_eq⟩ := hc'₀
-      simp only [Opens.ofCompact]
+      simp only [ofCompact]
       rw [← c'_eq] at hc'₁
-      use c; use hc₀; use mem_iff_upSet_subset.2 hc'₁
+      use c; use hc₀; use mem_iff_Ici_subset.2 hc'₁
       simp only [Opens.mk.injEq]
       exact id (Eq.symm c'_eq)
     · exact e_in_c'
@@ -285,8 +289,8 @@ lemma open_eq_open_of_basis' (u : Opens D) :
     simp only [Opens.mem_sSup] at he
     obtain ⟨c', hc'₀, he⟩ := he
     obtain ⟨c, hc₀, hc₁, hc'₁⟩ := hc'₀
-    rw [mem_iff_upSet_subset] at hc₁
-    rw [Opens.ofCompact] at hc'₁
+    rw [mem_iff_Ici_subset] at hc₁
+    rw [ofCompact] at hc'₁
     rw [hc'₁] at he
     exact Set.mem_of_mem_of_subset he hc₁
 
