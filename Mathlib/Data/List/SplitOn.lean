@@ -46,24 +46,6 @@ theorem splitOnP_cons (x : α) (xs : List α) :
       if p x then [] :: xs.splitOnP p else (xs.splitOnP p).modifyHead (cons x) := by
   rw [splitOnP, splitOnP.go]; split <;> [rfl; simp [splitOnP.go_acc]]
 
-theorem splitOnP_false (h : ∀ (x : α), x ∈ xs → p x = false) : List.splitOnP p xs = [xs] := by
-  induction xs with
-  | nil => rfl
-  | cons hd tl ih =>
-    simp_all
-
-/-- If a list is split by `splitOnP`,
-the result is the concatenation of `splitOnP` called on the portions of the input list
-from before and after the split -/
-@[simp]
-theorem splitOnP_append_cons (l1 l2 : List α) (a : α) (hPa : p a = true) :
-    List.splitOnP p (l1 ++ a :: l2) = List.splitOnP p l1 ++ List.splitOnP p l2 := by
-  induction l1 with
-  | nil => simp [hPa]
-  | cons hd tl ih =>
-    obtain ⟨hd1, tl1, h1'⟩ := List.exists_cons_of_ne_nil (List.splitOnP_ne_nil p tl)
-    by_cases hPh : p hd <;> simp [*]
-
 /-- The original list `L` can be recovered by flattening the lists produced by `splitOnP p L`,
 interspersed with the elements `L.filter p`. -/
 theorem splitOnP_spec (as : List α) :
@@ -93,6 +75,17 @@ theorem splitOnP_eq_single (h : ∀ x ∈ xs, ¬p x) : xs.splitOnP p = [xs] := b
   | cons hd tl ih =>
     simp only [splitOnP_cons, h hd mem_cons_self, if_false, Bool.false_eq_true,
       modifyHead_cons, ih <| forall_mem_of_forall_mem_cons h]
+
+/-- When a list of the form `[...xs, sep, ...as]` is split on `p`,
+the result is the concatenation of `splitOnP` called on `xs` and `as` -/
+@[simp]
+theorem splitOnP_append_cons (l1 l2 : List α) (a : α) (hPa : p a = true) :
+    List.splitOnP p (l1 ++ a :: l2) = List.splitOnP p l1 ++ List.splitOnP p l2 := by
+  induction l1 with
+  | nil => simp [hPa]
+  | cons hd tl ih =>
+    obtain ⟨hd1, tl1, h1'⟩ := List.exists_cons_of_ne_nil (List.splitOnP_ne_nil p tl)
+    by_cases hPh : p hd <;> simp [*]
 
 /-- When a list of the form `[...xs, sep, ...as]` is split on `p`, the first element is `xs`,
   assuming no element in `xs` satisfies `p` but `sep` does satisfy `p` -/
