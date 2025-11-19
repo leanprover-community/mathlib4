@@ -358,12 +358,17 @@ abbrev Sheaf.homEquiv {X Y : Sheaf J A} : (X ⟶ Y) ≃ (X.val ⟶ Y.val) :=
   (fullyFaithfulSheafToPresheaf J A).homEquiv
 
 /-- `Sheaf.homEquiv` as a natural isomorphism. -/
-def sheafToPresheafCompUliftYonedaCompWhiskeringLeftSheafToPresheaf :
+def sheafToPresheafCompYonedaCompWhiskeringLeftSheafToPresheaf :
     sheafToPresheaf J A ⋙ yoneda ⋙ (Functor.whiskeringLeft _ _ _).obj (sheafToPresheaf J A).op ≅
       yoneda :=
   Functor.isoWhiskerLeft _ (Functor.isoWhiskerRight uliftYonedaIsoYoneda.symm.{max u₁ v₂} _) ≪≫
     (fullyFaithfulSheafToPresheaf J A).compUliftYonedaCompWhiskeringLeft ≪≫
     uliftYonedaIsoYoneda
+
+lemma sheafToPresheafCompYonedaCompWhiskeringLeftSheafToPresheaf_app_app {X Y : Sheaf J A} :
+    (sheafToPresheafCompYonedaCompWhiskeringLeftSheafToPresheaf.app X).app (op Y) =
+      Sheaf.homEquiv.symm.toIso :=
+  rfl
 
 /-- `Sheaf.homEquiv` as a natural isomorphism, using coyoneda. -/
 def sheafToPresheafCompCoyonedaCompWhiskeringLeftSheafToPresheaf :
@@ -373,6 +378,11 @@ def sheafToPresheafCompCoyonedaCompWhiskeringLeftSheafToPresheaf :
   Functor.isoWhiskerLeft _ (Functor.isoWhiskerRight uliftCoyonedaIsoCoyoneda.symm.{max u₁ v₂} _) ≪≫
     (fullyFaithfulSheafToPresheaf J A).compUliftCoyonedaCompWhiskeringLeft ≪≫
     uliftCoyonedaIsoCoyoneda
+
+lemma sheafToPresheafCompCoyonedaCompWhiskeringLeftSheafToPresheaf_app_app {X Y : Sheaf J A} :
+    (sheafToPresheafCompCoyonedaCompWhiskeringLeftSheafToPresheaf.app (op X)).app Y =
+      Sheaf.homEquiv.symm.toIso :=
+  rfl
 
 end
 
