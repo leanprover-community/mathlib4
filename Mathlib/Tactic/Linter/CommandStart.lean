@@ -193,6 +193,7 @@ def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError 
       pushFormatError as (mkFormatError ls ms "Oh no! (Unreachable?)")
 
 @[inherit_doc parallelScanAux]
+public -- for use in unit tests only
 def parallelScan (src fmt : String) : Array FormatError :=
   parallelScanAux ∅ src fmt
 
@@ -289,7 +290,7 @@ to avoid cutting into "words".
 
 *Note*. `start` is the number of characters *from the right* where our focus is!
 -/
-def mkWindow (orig : String) (start ctx : Nat) : String :=
+public def mkWindow (orig : String) (start ctx : Nat) : String :=
   let head := orig.dropRight (start + 1) -- `orig`, up to one character before the discrepancy
   let middle := orig.takeRight (start + 1)
   let headCtx := head.takeRightWhile (!·.isWhitespace)

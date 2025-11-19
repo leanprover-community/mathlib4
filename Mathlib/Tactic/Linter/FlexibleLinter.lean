@@ -110,6 +110,7 @@ The prototypical flexible tactic is `simp`.
 The prototypical non-flexible tactic `rw`.
 `simp only` is also non-flexible. -/
 --  TODO: adding more entries here, allows to consider more tactics to be flexible
+public -- for testing
 def flexible? : Syntax → Bool
   | .node _ ``Lean.Parser.Tactic.simp #[_, _, _, only?, _, _] => only?[0].getAtomVal != "only"
   | .node _ ``Lean.Parser.Tactic.simpAll #[_, _, _, only?, _] => only?[0].getAtomVal != "only"
@@ -196,7 +197,7 @@ The function is used to extract "location" information about `stx`: either expli
 
 Whether or not what this function extracts really is a location will be determined by the linter
 using data embedded in the `InfoTree`s. -/
-partial
+public partial -- public for use in unit testing
 def toStained : Syntax → Std.HashSet Stained
   | .node _ _ arg => (arg.map toStained).foldl (.union) {}
   | .ident _ _ val _ => {.name val}
