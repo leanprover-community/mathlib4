@@ -3,12 +3,16 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Algebra.Group.Conj
-import Mathlib.Data.Fintype.Units
+module
+
+public import Mathlib.Algebra.Group.Conj
+public import Mathlib.Data.Fintype.Units
 
 /-!
 # Conjugacy of elements of finite groups
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

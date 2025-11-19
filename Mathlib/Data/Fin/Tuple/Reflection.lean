@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Algebra.BigOperators.Fin
+module
+
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Algebra.BigOperators.Fin
 
 /-!
 # Lemmas for tuples `Fin m → α`
@@ -26,6 +28,8 @@ corresponding `*_eq` lemmas to be used in a place where they are definitionally 
 * `FinVec.sum`
 * `FinVec.etaExpand`
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -169,7 +173,8 @@ open Lean Meta Qq
 
 /-- Produce a term of the form `f 0 * f 1 * ... * f (n - 1)` and an application of `FinVec.prod_eq`
 that shows it is equal to `∏ i, f i`. -/
-def mkProdEqQ {u : Level} {α : Q(Type u)} (inst : Q(CommMonoid $α)) (n : ℕ) (f : Q(Fin $n → $α)) :
+meta def mkProdEqQ {u : Level} {α : Q(Type u)}
+    (inst : Q(CommMonoid $α)) (n : ℕ) (f : Q(Fin $n → $α)) :
     MetaM <| (val : Q($α)) × Q(∏ i, $f i = $val) := do
   match n with
   | 0 => return ⟨q((1 : $α)), q(Fin.prod_univ_zero $f)⟩
@@ -191,7 +196,8 @@ where
 
 /-- Produce a term of the form `f 0 + f 1 + ... + f (n - 1)` and an application of `FinVec.sum_eq`
 that shows it is equal to `∑ i, f i`. -/
-def mkSumEqQ {u : Level} {α : Q(Type u)} (inst : Q(AddCommMonoid $α)) (n : ℕ) (f : Q(Fin $n → $α)) :
+meta def mkSumEqQ {u : Level} {α : Q(Type u)}
+    (inst : Q(AddCommMonoid $α)) (n : ℕ) (f : Q(Fin $n → $α)) :
     MetaM <| (val : Q($α)) × Q(∑ i, $f i = $val) := do
   match n with
   | 0 => return ⟨q((0 : $α)), q(Fin.sum_univ_zero $f)⟩
