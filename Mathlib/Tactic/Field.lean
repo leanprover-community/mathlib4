@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
 import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Ring.Basic
+import Mathlib.Tactic.Ring
 
 
 /-! # A tactic for proving algebraic goals in a field
@@ -75,6 +75,71 @@ elab (name := field) "field" d:(ppSpace discharger)? args:(ppSpace simpArgs)? : 
       throw e
 
 end Mathlib.Tactic.FieldSimp
+
+open Mathlib TacticAnalysis
+
+/-- Look for `field` invocations on which the (generally more lightweight) `ring` tactic suffices.
+-/
+register_option linter.tacticAnalysis.fieldToRing : Bool := {
+  defValue := true
+}
+
+@[tacticAnalysis linter.tacticAnalysis.fieldToRing, inherit_doc linter.tacticAnalysis.fieldToRing]
+def fieldToRing : TacticAnalysis.Config :=
+  terminalReplacement "field" "ring" ``Mathlib.Tactic.FieldSimp.field (fun _ _ _ => `(tactic| ring))
+    (reportFailure := false) (reportSuccess := true) (reportSlowdown := true)
+    (maxSlowdown := 1000)
+
+/-- Look for terminal `field_simp` invocations which can be replaced by the more compact `field`.
+-/
+register_option linter.tacticAnalysis.fieldSimpToField : Bool := {
+  defValue := true
+}
+
+@[tacticAnalysis linter.tacticAnalysis.fieldSimpToField,
+  inherit_doc linter.tacticAnalysis.fieldSimpToField]
+def fieldSimpToField : TacticAnalysis.Config :=
+  terminalReplacement "field_simp" "field" ``Mathlib.Tactic.FieldSimp.fieldSimp
+    (fun _ _ stx => do
+    match stx with
+    | `(tactic| field_simp $(disch)? $(args)? $(loc)?) =>
+      match loc with
+      | some loc =>
+        match Elab.Tactic.expandLocation loc with
+        | .targets #[] true => `(tactic| field $(disch)? $(args)?)
+        | _ => pure ⟨Syntax.missing⟩
+      | none => `(tactic| field $(disch)? $(args)?)
+    | _ => throwError "could not parse the field_simp")
+    (reportFailure := false) (reportSuccess := true) (reportSlowdown := true)
+    (maxSlowdown := 1000)
+
+/-- Look for `field_simp; ring` invocations which can be replaced by the more compact `field`.
+-/
+register_option linter.tacticAnalysis.fieldSimpRingToField : Bool := {
+  defValue := true
+}
+
+@[tacticAnalysis linter.tacticAnalysis.fieldSimpRingToField,
+  inherit_doc linter.tacticAnalysis.fieldSimpRingToField]
+def fieldSimpRingToField : TacticAnalysis.Config := .ofComplex {
+  out := Option (TSyntax `tactic)
+  ctx :=
+    Option (TSyntax `Lean.Parser.Tactic.discharger) × Option (TSyntax `Lean.Parser.Tactic.simpArgs)
+  trigger ctx stx :=
+    match stx with
+    | `(tactic| field_simp $(disch)? $(args)?) => .continue (disch, args)
+    | `(tactic| ring) => if let some zz := ctx then .accept zz else .skip
+    | _ => .skip
+  test ctxI i ctx goal := do
+    let (disch, args) := ctx
+    let tac ← `(tactic| field $(disch)? $(args)?)
+    try
+      let _ ← ctxI.runTacticCode i goal tac
+      return some tac
+    catch _e => -- if for whatever reason the replacement doesn't work
+      return none
+  tell _stx _old _oldHeartbeats new _newHeartbeats :=
+    pure <| if let some tac := new then m!"Try this: {tac}" else none}
 
 /-! We register `field` with the `hint` tactic. -/
 register_hint 850 field
