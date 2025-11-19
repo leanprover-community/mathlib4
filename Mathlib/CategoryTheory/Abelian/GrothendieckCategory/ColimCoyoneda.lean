@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Subobject
-import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+module
+
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Subobject
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Morphisms to a colimit in a Grothendieck abelian category
@@ -25,6 +27,8 @@ additional assumption that for any map `f : j ⟶ j'` in `J`,
 `IsGrothendieckAbelian.preservesColimit_coyoneda_obj_of_mono`.
 
 -/
+
+@[expose] public section
 
 universe w v u
 
