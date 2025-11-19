@@ -3,13 +3,15 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Ring.Divisibility.Lemmas
-import Mathlib.Algebra.Lie.Nilpotent
-import Mathlib.Algebra.Lie.Engel
-import Mathlib.LinearAlgebra.Eigenspace.Pi
-import Mathlib.RingTheory.Artinian.Module
-import Mathlib.LinearAlgebra.Trace
-import Mathlib.LinearAlgebra.FreeModule.PID
+module
+
+public import Mathlib.Algebra.Ring.Divisibility.Lemmas
+public import Mathlib.Algebra.Lie.Nilpotent
+public import Mathlib.Algebra.Lie.Engel
+public import Mathlib.LinearAlgebra.Eigenspace.Pi
+public import Mathlib.RingTheory.Artinian.Module
+public import Mathlib.LinearAlgebra.Trace
+public import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-!
 # Weight spaces of Lie modules of nilpotent Lie algebras
@@ -44,6 +46,8 @@ Basic definitions and properties of the above ideas are provided in this file.
 
 lie character, eigenvalue, eigenspace, weight, weight vector, root, root vector
 -/
+
+@[expose] public section
 
 variable {K R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
