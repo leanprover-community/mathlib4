@@ -48,7 +48,7 @@ def privateModule : Linter where
           if (← getEnv).asyncConstsMap.private.size ≠ 0 then
             let topOfFileRef := Syntax.atom (.synthetic ⟨0⟩ ⟨0⟩) ""
             logLint linter.privateModule topOfFileRef
-              "Module only contains private declarations.\n\n\
+              "The current module only contains private declarations.\n\n\
               Consider adding `@[expose] public section` at the beginning of the module."
 
 initialize addLinter privateModule
