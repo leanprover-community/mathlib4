@@ -219,4 +219,7 @@ theorem quotEquivOfEq_mk (h : I = J) (x : R) :
 theorem quotEquivOfEq_symm (h : I = J) :
     (Ideal.quotEquivOfEq h).symm = Ideal.quotEquivOfEq h.symm := by ext; rfl
 
+theorem quotEquivOfEq_eq_factor (h : I = J) (x : R ⧸ I) :
+    Ideal.quotEquivOfEq h x = Ideal.Quotient.factor (h ▸ le_refl I) x := rfl
+
 end Ideal
