@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Projection
-import Mathlib.Geometry.Euclidean.Sphere.Basic
+module
+
+public import Mathlib.Geometry.Euclidean.Projection
+public import Mathlib.Geometry.Euclidean.Sphere.Basic
 
 /-!
 # Tangency for spheres.
@@ -47,6 +49,8 @@ This file defines notions of spheres being tangent to affine subspaces and other
 * `EuclideanGeometry.Sphere.IsIntTangent`: the property of two spheres being internally tangent.
 
 -/
+
+@[expose] public section
 
 
 namespace EuclideanGeometry
@@ -342,10 +346,9 @@ lemma mem_commonExtTangents_iff {as : AffineSubspace ℝ P} {s₁ s₂ : Sphere 
   rw [Set.mem_union, mem_commonIntTangents_iff, mem_commonExtTangents_iff, ← and_or_left,
     and_iff_left_iff_imp]
   rintro -
-  by_cases h : ∃ p ∈ as, Wbtw ℝ s₁.center p s₂.center
+  by_cases! h : ∃ p ∈ as, Wbtw ℝ s₁.center p s₂.center
   · exact .inl h
   · refine .inr ?_
-    simp_rw [not_exists, not_and] at h
     rintro p hp
     exact mt Sbtw.wbtw (h p hp)
 
@@ -453,11 +456,11 @@ lemma isExtTangent_iff_dist_center {s₁ s₂ : Sphere P} : s₁.IsExtTangent s�
     · refine ⟨?_, ?_, ?_⟩
       · simp only [mem_sphere, dist_lineMap_left, norm_div, Real.norm_eq_abs, h, abs_of_nonneg h₁,
           abs_of_nonneg (add_nonneg h₁ h₂)]
-        field_simp
+        field
       · simp only [mem_sphere, dist_lineMap_right, Real.norm_eq_abs, h]
         rw [one_sub_div h0, add_sub_cancel_left, abs_div, abs_of_nonneg h₂,
           abs_of_nonneg (add_nonneg h₁ h₂)]
-        field_simp
+        field
       · simp only [wbtw_lineMap_iff]
         refine .inr ⟨?_, ?_⟩
         · positivity
@@ -488,10 +491,10 @@ lemma isIntTangent_iff_dist_center [Nontrivial V] {s₁ s₂ : Sphere P} : s₁.
               ?_, ?_, ?_⟩
       · simp only [mem_sphere, dist_lineMap_right, Real.norm_eq_abs, h, one_sub_div hr0, abs_div,
           sub_sub_cancel_left, abs_neg, abs_of_nonneg h₁, ha]
-        field_simp
+        field
       · simp only [mem_sphere, dist_lineMap_left, norm_div, Real.norm_eq_abs, h, ha,
           abs_of_nonneg h₂]
-        field_simp
+        field
       · rw [wbtw_iff_left_eq_or_right_mem_image_Ici]
         simp only [Ne.symm h0, Set.mem_image, Set.mem_Ici, AffineMap.lineMap_eq_lineMap_iff,
           false_or, exists_eq_right]

@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.Filter.Defs
+module
+
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Order.Filter.Defs
 
 /-!
 # Theory of filters on sets
@@ -59,7 +61,9 @@ we do *not* require. This gives `Filter X` better formal properties, in particul
 `[NeBot f]` in a number of lemmas and definitions.
 -/
 
-assert_not_exists OrderedSemiring Fintype
+@[expose] public section
+
+assert_not_exists IsOrderedRing Fintype
 
 open Function Set Order
 open scoped symmDiff
@@ -946,9 +950,6 @@ theorem EventuallyEq.prodMk {l} {f f' : α → β} (hf : f =ᶠ[l] f') {g g' : �
     hg.mono <| by
       intros
       simp only [*]
-
-@[deprecated (since := "2025-03-10")]
-alias EventuallyEq.prod_mk := EventuallyEq.prodMk
 
 -- See `EventuallyEq.comp_tendsto` further below for a similar statement w.r.t.
 -- composition on the right.

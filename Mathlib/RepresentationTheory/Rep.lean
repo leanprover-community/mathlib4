@@ -3,15 +3,17 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.ModuleCat.Adjunctions
-import Mathlib.Algebra.Category.ModuleCat.EpiMono
-import Mathlib.Algebra.Category.ModuleCat.Limits
-import Mathlib.Algebra.Category.ModuleCat.Colimits
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
-import Mathlib.Algebra.Category.ModuleCat.Projective
-import Mathlib.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.Action.Monoidal
-import Mathlib.RepresentationTheory.Basic
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Adjunctions
+public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.Algebra.Category.ModuleCat.Limits
+public import Mathlib.Algebra.Category.ModuleCat.Colimits
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
+public import Mathlib.Algebra.Category.ModuleCat.Projective
+public import Mathlib.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.Action.Monoidal
+public import Mathlib.RepresentationTheory.Basic
 
 /-!
 # `Rep k G` is the category of `k`-linear representations of `G`.
@@ -26,6 +28,8 @@ you can construct the bundled representation as `Rep.of ρ`.
 We construct the categorical equivalence `Rep k G ≌ ModuleCat (MonoidAlgebra k G)`.
 We verify that `Rep k G` is a `k`-linear abelian symmetric monoidal category with all (co)limits.
 -/
+
+@[expose] public section
 
 suppress_compilation
 
@@ -563,7 +567,7 @@ theorem diagonalSuccIsoTensorTrivial_hom_hom_single (f : Fin (n + 1) → G) (a :
     (diagonalSuccIsoTensorTrivial k G n).hom.hom.hom (single f a) =
       single (f 0) 1 ⊗ₜ single (fun i => (f (Fin.castSucc i))⁻¹ * f i.succ) a := by
   simp [diagonalSuccIsoTensorTrivial, whiskerLeft_def, tensorObj_carrier,
-    whiskerLeft_def, types_tensorObj_def, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul,
+    types_tensorObj_def, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul,
     ModuleCat.hom_id (M := .of _ _), Action.ofMulAction_V]
 
 theorem diagonalSuccIsoTensorTrivial_inv_hom_single_single (g : G) (f : Fin n → G) (a b : k) :
@@ -727,7 +731,7 @@ def homEquiv (A B C : Rep k G) : (A ⊗ B ⟶ C) ≃ (B ⟶ (Rep.ihom A).obj C) 
         simpa [tensorObj_carrier, ModuleCat.endRingEquiv] using
           hom_comm_apply f g (A.ρ g⁻¹ y ⊗ₜ[k] x) }
   invFun f :=
-    { hom := ModuleCat.ofHom <| TensorProduct.uncurry k _ _ _ f.hom.hom.flip
+    { hom := ModuleCat.ofHom <| TensorProduct.uncurry (.id k) _ _ _ f.hom.hom.flip
       comm g := ModuleCat.hom_ext <| TensorProduct.ext' fun x y => by
         simpa using LinearMap.ext_iff.1 (hom_comm_apply f g y) (A.ρ g x) }
   left_inv _ := Action.Hom.ext (ModuleCat.hom_ext <| TensorProduct.ext' fun _ _ => rfl)
@@ -755,7 +759,7 @@ theorem homEquiv_def (A B C : Rep k G) : (ihom.adjunction A).homEquiv B C = Rep.
 @[simp]
 theorem ihom_ev_app_hom (A B : Rep k G) :
     Action.Hom.hom ((ihom.ev A).app B) = ModuleCat.ofHom
-      (TensorProduct.uncurry k A (A →ₗ[k] B) B LinearMap.id.flip) := by
+      (TensorProduct.uncurry (.id k) A (A →ₗ[k] B) B LinearMap.id.flip) := by
   ext; rfl
 
 @[simp] theorem ihom_coev_app_hom (A B : Rep k G) :
@@ -792,13 +796,13 @@ theorem MonoidalClosed.linearHomEquivComm_hom (f : A ⊗ B ⟶ C) :
 
 theorem MonoidalClosed.linearHomEquiv_symm_hom (f : B ⟶ A ⟶[Rep k G] C) :
     ((MonoidalClosed.linearHomEquiv A B C).symm f).hom =
-      ModuleCat.ofHom (TensorProduct.uncurry k A B C f.hom.hom.flip) := by
+      ModuleCat.ofHom (TensorProduct.uncurry (.id k) A B C f.hom.hom.flip) := by
   simp [linearHomEquiv]
   rfl
 
 theorem MonoidalClosed.linearHomEquivComm_symm_hom (f : A ⟶ B ⟶[Rep k G] C) :
     ((MonoidalClosed.linearHomEquivComm A B C).symm f).hom =
-      ModuleCat.ofHom (TensorProduct.uncurry k A B C f.hom.hom) :=
+      ModuleCat.ofHom (TensorProduct.uncurry (.id k) A B C f.hom.hom) :=
   ModuleCat.hom_ext <| TensorProduct.ext' fun _ _ => rfl
 
 end MonoidalClosed
@@ -824,7 +828,7 @@ theorem repOfTprodIso_inv_apply (x : TensorProduct k V W) : (repOfTprodIso ρ τ
 end Representation
 
 /-!
-# The categorical equivalence `Rep k G ≌ Module.{u} (MonoidAlgebra k G)`.
+### The categorical equivalence `Rep k G ≌ Module.{u} (MonoidAlgebra k G)`.
 -/
 
 

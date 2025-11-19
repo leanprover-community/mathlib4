@@ -3,8 +3,10 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
 
 /-!
 # Angle between complex numbers
@@ -24,6 +26,8 @@ Prove the corresponding results for oriented angles.
 arc-length, arc-distance
 -/
 
+@[expose] public section
+
 open InnerProductGeometry Set
 open scoped Real
 
@@ -38,7 +42,7 @@ lemma angle_eq_abs_arg (hx : x ≠ 0) (hy : y ≠ 0) : angle x y = |(x / y).arg|
   refine Real.arccos_eq_of_eq_cos (abs_nonneg _) (abs_arg_le_pi _) ?_
   rw [Real.cos_abs, Complex.cos_arg (div_ne_zero hx hy)]
   simp [div_eq_mul_inv, Complex.normSq_eq_norm_sq]
-  field_simp
+  field
 
 lemma angle_one_left (hy : y ≠ 0) : angle 1 y = |y.arg| := by simp [angle_eq_abs_arg, hy]
 lemma angle_one_right (hx : x ≠ 0) : angle x 1 = |x.arg| := by simp [angle_eq_abs_arg, hx]
