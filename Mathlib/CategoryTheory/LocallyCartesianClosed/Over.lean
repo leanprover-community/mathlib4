@@ -7,8 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
 
-@[expose] public section
-
 /-!
 # Cartesian monoidal structure on slices induced by chosen pullbacks
 
@@ -43,6 +41,8 @@ public import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
   the cartesian monoidal structures on slices.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 
