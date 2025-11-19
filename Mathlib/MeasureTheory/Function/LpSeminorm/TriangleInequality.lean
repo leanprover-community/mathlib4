@@ -3,8 +3,10 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
-import Mathlib.MeasureTheory.Integral.MeanInequalities
+module
+
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
+public import Mathlib.MeasureTheory.Integral.MeanInequalities
 
 /-!
 # Triangle inequality for `Lp`-seminorm
@@ -12,6 +14,8 @@ import Mathlib.MeasureTheory.Integral.MeanInequalities
 In this file we prove several versions of the triangle inequality for the `Lp` seminorm,
 as well as simple corollaries.
 -/
+
+@[expose] public section
 
 open Filter
 open scoped ENNReal Topology

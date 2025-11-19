@@ -3,9 +3,11 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.MeasureTheory.Integral.CircleIntegral
-import Mathlib.MeasureTheory.Integral.IntervalAverage
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
+module
+
+public import Mathlib.MeasureTheory.Integral.CircleIntegral
+public import Mathlib.MeasureTheory.Integral.IntervalAverage
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 
 /-!
 # Circle Averages
@@ -26,6 +28,8 @@ property `circleAverage` is `CircleIntegrable`, as defined in
 Implementation Note: Like `circleMap`, `circleAverage`s are defined for negative radii. The theorem
 `circleAverage_congr_negRadius` shows that the average is independent of the radius' sign.
 -/
+
+@[expose] public section
 
 open Complex Filter Metric Real
 
@@ -53,7 +57,7 @@ noncomputable def circleAverage : E :=
 lemma circleAverage_def :
     circleAverage f c R = (2 * π)⁻¹ • ∫ θ in 0..2 * π, f (circleMap c R θ) := rfl
 
-/-- Expression of `circleAverage´ in terms of interval averages. -/
+/-- Expression of `circleAverage` in terms of interval averages. -/
 lemma circleAverage_eq_intervalAverage :
     circleAverage f c R = ⨍ θ in 0..2 * π, f (circleMap c R θ) := by
   simp [circleAverage, interval_average_eq]
@@ -68,7 +72,7 @@ lemma circleAverage_eq_intervalAverage :
     one_smul]
 
 /--
-Expression of `circleAverage´ with arbitrary center in terms of `circleAverage` with center zero.
+Expression of `circleAverage` with arbitrary center in terms of `circleAverage` with center zero.
 -/
 lemma circleAverage_fun_add :
     circleAverage (fun z ↦ f (z + c)) 0 R = circleAverage f c R := by

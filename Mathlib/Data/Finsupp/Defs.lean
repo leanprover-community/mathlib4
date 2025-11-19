@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
-import Mathlib.Algebra.Notation.Support
-import Mathlib.Data.Set.Finite.Basic
+module
+
+public import Mathlib.Algebra.Notation.Support
+public import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Type of functions with finite support
@@ -70,6 +72,8 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 * Expand the list of definitions and important lemmas to the module docstring.
 
 -/
+
+@[expose] public section
 
 assert_not_exists CompleteLattice Monoid
 

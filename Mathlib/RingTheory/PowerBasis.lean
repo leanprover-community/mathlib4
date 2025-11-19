@@ -3,9 +3,11 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.LinearAlgebra.SModEq.Basic
-import Mathlib.RingTheory.Ideal.BigOperators
+module
+
+public import Mathlib.FieldTheory.Minpoly.Field
+public import Mathlib.LinearAlgebra.SModEq.Basic
+public import Mathlib.RingTheory.Ideal.BigOperators
 
 /-!
 # Power basis
@@ -39,6 +41,8 @@ Throughout this file, `R`, `S`, `A`, `B` ... are `CommRing`s, and `K`, `L`, ... 
 power basis, powerbasis
 
 -/
+
+@[expose] public section
 
 open Finsupp Module Polynomial
 

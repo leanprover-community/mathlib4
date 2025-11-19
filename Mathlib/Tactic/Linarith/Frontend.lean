@@ -3,12 +3,14 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Control.Basic
-import Mathlib.Tactic.Linarith.Verification
-import Mathlib.Tactic.Linarith.Preprocessing
-import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
-import Mathlib.Tactic.Ring.Basic
-import Mathlib.Util.ElabWithoutMVars
+module
+
+public meta import Mathlib.Control.Basic
+public meta import Mathlib.Tactic.Linarith.Verification
+public meta import Mathlib.Tactic.Linarith.Preprocessing
+public meta import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
+public meta import Mathlib.Tactic.Ring.Basic
+public meta import Mathlib.Util.ElabWithoutMVars
 
 /-!
 # `linarith`: solving linear arithmetic goals
@@ -130,6 +132,8 @@ The components of `linarith` are spread between a number of files for the sake o
 
 linarith, nlinarith, lra, nra, Fourier-Motzkin, linear arithmetic, linear programming
 -/
+
+public meta section
 
 open Lean Elab Parser Tactic Meta
 open Batteries
