@@ -173,11 +173,11 @@ lemma isOpen_of_Ici_compact {u : Set α} (hu : u ∈ Ici '' 𝕂 α) : IsOpen u 
     · exact a_in_u
 
 /-- The upwards closure of a compact point which we know is open -/
-def open_of_Ici_Compact (c : {c: α // Compact c}) : Opens α :=
+def Opens.IciOfCompact (c : {c: α // Compact c}) : Opens α :=
   ⟨cᵘ, isOpen_of_Ici_compact <| Set.mem_image_of_mem Ici c.2⟩
 /-- The upwards closure of a compact point which we know is open.
 ᵘᵒ stand for upward open -/
-notation c:80"ᵘᵒ"  => open_of_Ici_Compact c -- Ici, open
+notation c:80"ᵘᵒ"  => Opens.IciOfCompact c -- Ici, open
 
 end CompletePartialOrder
 
@@ -229,7 +229,7 @@ lemma mem_Ici_Compact_of_mem_Open (x : D) (u : Set D) (x_in_u : x ∈ u) (hu : I
 
 /-- The upward closures of compact elements form a topological
 basis under the Scott Topology. Prop 3.5.2 in [reneta2025] -/
-theorem isTopologicalBasis_of_Ici_Compact : IsTopologicalBasis (Ici '' 𝕂 D) := by
+theorem isTopologicalBasis_Ici_image_compactSet : IsTopologicalBasis (Ici '' 𝕂 D) := by
   apply isTopologicalBasis_of_isOpen_of_nhds
   · -- every upper set of a compact element in the DCPO is a Scott open set
     -- This is the true by definition direction, as compactness corresponds to Scott-Hausdorrf open,
@@ -262,7 +262,7 @@ lemma open_eq_open_of_basis (u : Set D) (hu : IsOpen u) :
     The weaker version is still useful as it is easier to use when sufficient.
     I don't reuse the previous result to prove this, since the proof turns out just as long -/
 lemma open_eq_open_of_basis' (u : Opens D) :
-  u = sSup ({ o | ∃ (c: D) (hc: c ∈ 𝕂 D), c ∈ u ∧ (o = ⟨c,hc⟩ᵘᵒ) }) := by
+    u = sSup ({ o | ∃ (c : D) (hc : c ∈ 𝕂 D), c ∈ u ∧ (o = ⟨c, hc⟩ᵘᵒ) }) := by
   ext e
   simp only [SetLike.mem_coe]
   constructor
@@ -272,7 +272,7 @@ lemma open_eq_open_of_basis' (u : Opens D) :
     use ⟨c', isOpen_of_Ici_compact hc'₀⟩
     constructor
     · obtain ⟨c, hc₀, c'_eq⟩ := hc'₀
-      simp only [open_of_Ici_Compact]
+      simp only [Opens.IciOfCompact]
       rw [← c'_eq] at hc'₁
       use c; use hc₀; use mem_iff_upSet_subset.2 hc'₁
       simp only [Opens.mk.injEq]
@@ -283,7 +283,7 @@ lemma open_eq_open_of_basis' (u : Opens D) :
     obtain ⟨c', hc'₀, he⟩ := he
     obtain ⟨c, hc₀, hc₁, hc'₁⟩ := hc'₀
     rw [mem_iff_upSet_subset] at hc₁
-    rw [open_of_Ici_Compact] at hc'₁
+    rw [Opens.IciOfCompact] at hc'₁
     rw [hc'₁] at he
     exact Set.mem_of_mem_of_subset he hc₁
 
