@@ -111,3 +111,20 @@ info: Unfolds for fun x => id x:
 -/
 #guard_msgs in
 #unfold? fun x => id x
+
+-- We don't want to get the suggestion `inst✝.toMulOneClass.toMul.1 a a` because it isn't useful:
+variable {α : Type} [Group α] (a : α) in
+/-- info: No unfolds found for a * a -/
+#guard_msgs in
+#unfold? a * a
+
+-- The proof `aux._proof_1` is an implementation detail. It should not be a problem if
+-- that appears in the expression, as long as it appears inside an implicit argument.
+def aux {α : Type} [Semiring α] := (3 : α)
+/--
+info: Unfolds for 3 + 3:
+· Nat.add 3 3
+· 6
+-/
+#guard_msgs in
+#unfold? 3 + @OfNat.ofNat _ _ (@instOfNatAtLeastTwo Nat (nat_lit 3) inferInstance aux._proof_1)
