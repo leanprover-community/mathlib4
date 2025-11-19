@@ -3,9 +3,11 @@ Copyright (c) 2023 Apurva Nakade. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
-import Mathlib.Algebra.Order.Nonneg.Module
-import Mathlib.Geometry.Convex.Cone.Basic
-import Mathlib.Algebra.Module.Submodule.Pointwise
+module
+
+public import Mathlib.Algebra.Order.Nonneg.Module
+public import Mathlib.Geometry.Convex.Cone.Basic
+public import Mathlib.Algebra.Module.Submodule.Pointwise
 
 /-!
 # Pointed cones
