@@ -25,7 +25,7 @@ For more details, see the documentation attached to the `syntax` declaration.
 
 - The `@[elementwise]` attribute.
 
-- The ``elementwise_of% h` term elaborator.
+- The `elementwise_of% h` term elaborator.
 
 ## Implementation
 

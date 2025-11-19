@@ -116,7 +116,7 @@ namespace DeprecatedModule
 
 /--
 `IsLaterCommand` is an `IO.Ref` that starts out being `false`.
-As soon as a (non-import) command in a file is processed, the `deprecated.module` linter`
+As soon as a (non-import) command in a file is processed, the `deprecated.module` linter
 sets it to `true`.
 If it is `false`, then the `deprecated.module` linter will check for deprecated modules.
 
