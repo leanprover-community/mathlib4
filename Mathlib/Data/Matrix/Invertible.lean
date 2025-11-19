@@ -5,6 +5,7 @@ Authors: Eric Wieser, Ahmad Alkhalawi
 -/
 import Mathlib.LinearAlgebra.Matrix.ConjTranspose
 import Mathlib.Tactic.Abel
+import Mathlib.Data.Matrix.RowCol
 
 /-! # Extra lemmas about invertible matrices
 
@@ -194,6 +195,42 @@ theorem invOf_add_mul_mul [Invertible (A + U * C * V)] :
     ⅟(A + U * C * V) = ⅟A - ⅟A * U * ⅟(⅟C + V * ⅟A * U) * V * ⅟A := by
   letI := invertibleAddMulMul A U C V
   convert (rfl : ⅟(A + U * C * V) = _)
+
+variable (u v : n → α)
+
+theorem add_col_mul_row_mul_invOf_eq_one
+    [Invertible (1 + row m v * ⅟A * col m u)] :
+    (⅟A - (⅟A * col m u * ⅟(1 + row m v * ⅟A * col m u) * row m v * ⅟A)) *
+      (A + col m u * row m v) = 1 := by
+  haveI : Invertible (1 : Matrix m m α) := invertibleOne
+  haveI : Invertible (⅟ 1 + row m v * ⅟A * col m u) := by simpa
+  simpa using add_mul_mul_invOf_mul_eq_one' A (col m u) 1 (row m v)
+
+/-- Like `Matrix.add_col_mul_row_mul_invOf_eq_one`, but with multiplication reversed. -/
+theorem add_col_mul_row_mul_invOf_eq_one'
+    [Invertible (1 + row m v * ⅟A * col m u)] :
+    (A + col m u * row m v) *
+      (⅟A - (⅟A * col m u * ⅟(1 + row m v * ⅟A * col m u) * row m v * ⅟A)) = 1 := by
+  haveI : Invertible (1 : Matrix m m α) := invertibleOne
+  haveI : Invertible (⅟ 1 + row m v * ⅟A * col m u) := by simpa
+  simpa using add_mul_mul_invOf_mul_eq_one A (col m u) 1 (row m v)
+
+variable (m) in
+/-- If matrix `A` and the scalar `(1 + row m v * ⅟A * col m u)` are invertible,
+then so is (A + col m u * row m v) -/
+def invertibleAddColMulRow [Invertible (1 + row m v * ⅟A * col m u)] :
+    Invertible (A + col m u * row m v) where
+  invOf := (⅟A - (⅟A * col m u * ⅟(1 + row m v * ⅟A * col m u) * row m v * ⅟A))
+  invOf_mul_self := add_col_mul_row_mul_invOf_eq_one _ _ _
+  mul_invOf_self := add_col_mul_row_mul_invOf_eq_one' _ _ _
+
+/-- The **Sherman Morrison Rank-1 Update** (`⅟` version). -/
+theorem invOf_add_col_mul_row_mul [Invertible (1 + row m v * ⅟A * col m u)]
+    [Invertible (A + col m u * row m v)] :
+    ⅟(A + col m u * row m v) =
+      (⅟A - (⅟A * col m u * ⅟(1 + row m v * ⅟A * col m u) * row m v * ⅟A)) := by
+  letI := invertibleAddColMulRow m A u v
+  convert (rfl : ⅟(A + col m u * row m v) = _)
 
 end Woodbury
 
