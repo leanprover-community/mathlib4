@@ -57,7 +57,7 @@ inductive StyleError where
 deriving BEq
 
 /-- How to format style errors -/
-inductive ErrorFormat
+public inductive ErrorFormat
   /-- Produce style error output aimed at humans: no error code, clickable file name -/
   | humanReadable : ErrorFormat
   /-- Produce an entry in the style-exceptions file: mention the error code, slightly uglier
@@ -317,6 +317,7 @@ Return the number of files which had new style errors.
 `moduleNames` are the names of all the modules to lint,
 `mode` specifies what kind of output this script should produce,
 `fix` configures whether fixable errors should be corrected in-place. -/
+public
 def lintModules (opts : LinterOptions) (nolints : Array String) (moduleNames : Array Lean.Name)
     (style : ErrorFormat) (fix : Bool) : IO UInt32 := do
   let styleExceptions := parseStyleExceptions nolints
