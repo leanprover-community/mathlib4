@@ -3,8 +3,10 @@ Copyright (c) 2025 Tanner Duve. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tanner Duve, Elan Roth
 -/
-import Mathlib.Computability.Partrec
-import Mathlib.Order.Antisymmetrization
+module
+
+public import Mathlib.Computability.Partrec
+public import Mathlib.Order.Antisymmetrization
 
 /-!
 # Oracle computability and Turing degrees
@@ -43,6 +45,8 @@ and is closed under pairing, composition, primitive recursion, and μ-recursion.
 
 Computability, Oracle, Turing Degrees, Reducibility, Equivalence Relation
 -/
+
+@[expose] public section
 
 open Primrec Nat.Partrec Part
 

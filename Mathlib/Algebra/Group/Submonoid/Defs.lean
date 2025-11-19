@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Subsemigroup.Defs
-import Mathlib.Tactic.FastInstance
-import Mathlib.Data.Set.Insert
+module
+
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Group.Subsemigroup.Defs
+public import Mathlib.Tactic.FastInstance
+public import Mathlib.Data.Set.Insert
 
 /-!
 # Submonoids: definition
@@ -45,6 +47,8 @@ numbers. `Submonoid` is implemented by extending `Subsemigroup` requiring `one_m
 ## Tags
 submonoid, submonoids
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso CompleteLattice MonoidWithZero
 

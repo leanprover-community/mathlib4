@@ -3,8 +3,10 @@ Copyright (c) 2025 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.AlgebraicTopology.SimplexCategory.Basic
-import Mathlib.CategoryTheory.Limits.Final
+module
+
+public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Final
 
 /-! # Properties of the truncated simplex category
 
@@ -12,6 +14,8 @@ We prove that for `n > 0`, the inclusion functor from the `n`-truncated simplex 
 untruncated simplex category, and the inclusion functor from the `n`-truncated to the `m`-truncated
 simplex category, for `n ≤ m` are initial.
 -/
+
+@[expose] public section
 
 open Simplicial CategoryTheory
 

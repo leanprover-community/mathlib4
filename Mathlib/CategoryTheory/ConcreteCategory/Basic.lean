@@ -3,7 +3,9 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johannes Hölzl, Reid Barton, Sean Leather, Yury Kudryashov
 -/
-import Mathlib.CategoryTheory.Types.Basic
+module
+
+public import Mathlib.CategoryTheory.Types.Basic
 
 /-!
 # Concrete categories
@@ -22,10 +24,6 @@ has a functor `forget₂ C D : C ⥤ D` such that `(forget₂ C D) ⋙ (forget D
 `class HasForget₂`.  Due to `Faithful.div_comp`, it suffices to verify that `forget₂.obj` and
 `forget₂.map` agree with the equality above; then `forget₂` will satisfy the functor laws
 automatically, see `HasForget₂.mk'`.
-
-Two classes helping construct concrete categories in the two most
-common cases are provided in the files `BundledHom` and
-`UnbundledHom`, see their documentation for details.
 
 ## Implementation notes
 
@@ -54,6 +52,8 @@ have a `HasForget` instance.
 See [Ahrens and Lumsdaine, *Displayed Categories*][ahrens2017] for
 related work.
 -/
+
+@[expose] public section
 
 
 assert_not_exists CategoryTheory.CommSq CategoryTheory.Adjunction

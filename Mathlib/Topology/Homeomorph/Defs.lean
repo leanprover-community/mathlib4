@@ -3,8 +3,10 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton
 -/
-import Mathlib.Topology.ContinuousMap.Defs
-import Mathlib.Topology.Maps.Basic
+module
+
+public import Mathlib.Topology.ContinuousMap.Defs
+public import Mathlib.Topology.Maps.Basic
 
 /-!
 # Homeomorphisms
@@ -30,6 +32,8 @@ directions continuous. We denote homeomorphisms with the notation `≃ₜ`.
 * `IsHomeomorph`: the predicate that a function is a homeomorphism
 
 -/
+
+@[expose] public section
 
 open Set Topology Filter
 
@@ -397,6 +401,12 @@ theorem toHomeomorphOfContinuousClosed_apply (e : X ≃ Y) (h₁ : Continuous e)
 theorem toHomeomorphOfContinuousClosed_symm_apply
     (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsClosedMap e) :
     ⇑(e.toHomeomorphOfContinuousClosed h₁ h₂).symm = e.symm := rfl
+
+/-- Any bijection between discrete spaces is a homeomorphism. -/
+def toHomeomorphOfDiscrete
+    [TopologicalSpace X] [DiscreteTopology X]
+    [TopologicalSpace Y] [DiscreteTopology Y] (e : X ≃ Y) : X ≃ₜ Y :=
+  e.toHomeomorph (by simp)
 
 end Equiv
 

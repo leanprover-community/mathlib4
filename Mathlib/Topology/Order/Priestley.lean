@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.UpperLower.Basic
-import Mathlib.Topology.Connected.TotallyDisconnected
+module
+
+public import Mathlib.Order.UpperLower.Basic
+public import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
 # Priestley spaces
@@ -27,6 +29,8 @@ We do not include compactness in the definition, so a Priestley space is to be d
 * [Wikipedia, *Priestley space*](https://en.wikipedia.org/wiki/Priestley_space)
 * [Davey, Priestley *Introduction to Lattices and Order*][davey_priestley]
 -/
+
+@[expose] public section
 
 
 open Set
