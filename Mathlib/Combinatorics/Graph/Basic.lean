@@ -96,7 +96,7 @@ structure Graph (α β : Type*) where
 
 namespace Graph
 
-variable {G : Graph α β}
+variable {G H : Graph α β}
 
 /-- `V(G)` denotes the `vertexSet` of a graph `G`. -/
 scoped notation "V(" G ")" => Graph.vertexSet G
@@ -162,6 +162,19 @@ lemma IsLink.isLink_iff_sym2_eq (h : G.IsLink e x y) {x' y' : α} :
     G.IsLink e x' y' ↔ s(x, y) = s(x', y') := by
   rw [h.isLink_iff, Sym2.eq_iff]
 
+@[simp]
+lemma not_isLink_of_notMem_edgeSet (he : e ∉ E(G)) : ¬ G.IsLink e x y :=
+  mt IsLink.edge_mem he
+
+-- A graph G and H has the same IsLink iff there is a pair of vertices they agree on.
+lemma isLink_eq_isLink_iff_exists_isLink_of_mem_edgeSet (heG : e ∈ E(G)) :
+    G.IsLink e = H.IsLink e ↔ ∃ x y, G.IsLink e x y ∧ H.IsLink e x y := by
+  refine ⟨fun h ↦ ?_, fun ⟨x, y, hG, hH⟩ ↦ ?_⟩
+  · simp only [← h, and_self]
+    exact (G.edge_mem_iff_exists_isLink e).mp heG
+  · ext u v
+    rw [hG.isLink_iff_sym2_eq, hH.isLink_iff_sym2_eq]
+
 /-! ### Edge-vertex incidence -/
 
 /-- The unary incidence predicate of `G`. `G.Inc e x` means that the vertex `x`
@@ -224,6 +237,16 @@ lemma Inc.eq_or_eq_or_eq (hx : G.Inc e x) (hy : G.Inc e y) (hz : G.Inc e z) :
   obtain rfl := hz.eq_of_isLink_of_ne_left hx' hcon.2.1.symm
   exact hcon.2.2 rfl
 
+@[simp]
+lemma not_inc_of_notMem_edgeSet (he : e ∉ E(G)) : ¬ G.Inc e x :=
+  mt Inc.edge_mem he
+
+lemma inc_eq_inc_iff {G₁ G₂ : Graph α β} : G₁.Inc e = G₂.Inc f ↔ G₁.IsLink e = G₂.IsLink f := by
+  constructor <;> rintro h
+  · ext x y
+    rw [isLink_iff_inc, isLink_iff_inc, h]
+  · simp [funext_iff, Inc, h]
+
 /-- `G.IsLoopAt e x` means that both ends of the edge `e` are equal to the vertex `x`. -/
 def IsLoopAt (G : Graph α β) (e : β) (x : α) : Prop := G.IsLink e x x
 
@@ -284,6 +307,9 @@ def Adj (G : Graph α β) (x y : α) : Prop := ∃ e, G.IsLink e x y
 
 protected lemma Adj.symm (h : G.Adj x y) : G.Adj y x :=
   ⟨_, h.choose_spec.symm⟩
+
+instance : IsSymm _ G.Adj where
+  symm _ _ := Adj.symm
 
 lemma adj_comm (x y) : G.Adj x y ↔ G.Adj y x :=
   ⟨.symm, .symm⟩
