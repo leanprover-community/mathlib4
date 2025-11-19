@@ -183,8 +183,8 @@ S.unitsEquivUnitsType.trans unitsTypeEquivIsUnitSubmonoid
 
 end Units
 
-instance [IsSharpMonoid M] {S : Submonoid M} : IsSharpMonoid S :=
-   .of_isUnit fun _a ha ↦ Subtype.ext (ha.map S.subtype).eq_one
+instance instSubsingletonUnits [Subsingleton Mˣ] {S : Submonoid M} : Subsingleton Sˣ :=
+   .units_of_isUnit fun _a ha ↦ Subtype.ext (ha.map S.subtype).eq_one
 
 end Submonoid
 

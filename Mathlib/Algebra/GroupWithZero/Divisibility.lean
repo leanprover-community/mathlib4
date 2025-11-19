@@ -137,7 +137,7 @@ section CancelCommMonoidWithZero
 variable [CancelCommMonoidWithZero α] {a b : α} {m n : ℕ}
 
 section Subsingleton
-variable [IsSharpMonoid α]
+variable [Subsingleton αˣ]
 
 theorem dvd_antisymm : a ∣ b → b ∣ a → a = b := by
   rintro ⟨c, rfl⟩ ⟨d, hcd⟩

@@ -20,8 +20,6 @@ An element of a `Monoid` is a unit if it has a two-sided inverse.
 For both declarations, there is an additive counterpart: `AddUnits` and `IsAddUnit`.
 See also `Prime`, `Associated`, and `Irreducible` in `Mathlib/Algebra/Associated.lean`.
 
-We also define `IsSharpMonoid`, a predicate for a monoid whose only unit is `1`.
-
 ## Notation
 
 We provide `Mˣ` as notation for `Units M`,
@@ -426,15 +424,10 @@ lemma IsUnit.exists_left_inv {a : M} (h : IsUnit a) : ∃ b, b * a = 1 := by
 @[to_additive] lemma IsUnit.pow (n : ℕ) : IsUnit a → IsUnit (a ^ n) := by
   rintro ⟨u, rfl⟩; exact ⟨u ^ n, rfl⟩
 
-variable (M) in
-/-- A monoid is sharp iff its only unit is `1`. -/
-@[to_additive /-- An additive monoid is sharp iff its only unit is `0`. -/]
-abbrev IsSharpMonoid := Subsingleton Mˣ
+@[to_additive] lemma Subsingleton.units_of_isUnit (h : ∀ a : M, IsUnit a → a = 1) :
+    Subsingleton Mˣ := subsingleton_of_forall_eq 1 fun u ↦ Units.ext <| h u u.isUnit
 
-@[to_additive] lemma IsSharpMonoid.of_isUnit (h : ∀ a : M, IsUnit a → a = 1) : IsSharpMonoid M :=
-  subsingleton_of_forall_eq 1 fun u ↦ Units.ext <| h u u.isUnit
-
-variable [IsSharpMonoid M]
+variable [Subsingleton Mˣ]
 
 @[to_additive] lemma Units.eq_one (u : Mˣ) : u = 1 := Subsingleton.elim ..
 @[to_additive] lemma IsUnit.eq_one : IsUnit a → a = 1 := by rintro ⟨u, rfl⟩; simp [u.eq_one]

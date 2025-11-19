@@ -333,7 +333,7 @@ theorem emultiplicity_prime_eq_emultiplicity_image_by_factor_orderIso {m p : Ass
 
 end
 
-variable [IsSharpMonoid M] [IsSharpMonoid N]
+variable [Subsingleton Mˣ] [Subsingleton Nˣ]
 
 /-- The order isomorphism between the factors of `mk m` and the factors of `mk n` induced by a
   bijection between the factors of `m` and the factors of `n` that preserves `∣`. -/

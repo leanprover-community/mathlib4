@@ -606,9 +606,9 @@ lemma _root_.Prod.isUnit_iff {x : M × N} : IsUnit x ↔ IsUnit x.1 ∧ IsUnit x
   mpr h := (prodUnits.symm (h.1.unit, h.2.unit)).isUnit
 
 @[to_additive]
-instance _root_.Prod.instIsSharpMonoid [IsSharpMonoid M] [IsSharpMonoid N] :
-    IsSharpMonoid (M × N) :=
-  .of_isUnit <| by simp [Prod.isUnit_iff, Prod.ext_iff]
+instance _root_.Prod.instSubsingletonUnits [Subsingleton Mˣ] [Subsingleton Nˣ] :
+    Subsingleton (M × N)ˣ :=
+  .units_of_isUnit <| by simp [Prod.isUnit_iff, Prod.ext_iff]
 
 end
 
