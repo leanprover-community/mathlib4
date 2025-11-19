@@ -35,8 +35,6 @@ This linter is an incentive to discourage uses of such deprecated syntax, withou
 It is not inherently limited to tactics.
 -/
 
-public meta section
-
 open Lean Elab Linter
 
 namespace Mathlib.Linter.Style
@@ -49,7 +47,7 @@ differently. This means that they are not completely interchangeable, nor can on
 replace another. However, `refine` and `apply` are more readable and (heuristically) tend to be
 more efficient on average.
 -/
-register_option linter.style.refine : Bool := {
+public meta register_option linter.style.refine : Bool := {
   defValue := false
   descr := "enable the refine linter"
 }
@@ -59,7 +57,7 @@ the `cases'` tactic, which is a backward-compatible version of Lean 3's `cases` 
 Unlike `obtain`, `rcases` and Lean 4's `cases`, variables introduced by `cases'` are not
 required to be separated by case, which hinders readability.
 -/
-register_option linter.style.cases : Bool := {
+public meta register_option linter.style.cases : Bool := {
   defValue := false
   descr := "enable the cases linter"
 }
@@ -69,14 +67,14 @@ the `induction'` tactic, which is a backward-compatible version of Lean 3's `ind
 Unlike Lean 4's `induction`, variables introduced by `induction'` are not
 required to be separated by case, which hinders readability.
 -/
-register_option linter.style.induction : Bool := {
+public meta register_option linter.style.induction : Bool := {
   defValue := false
   descr := "enable the induction linter"
 }
 
 /-- The option `linter.style.admit` of the deprecated syntax linter flags usages of
 the `admit` tactic, which is a synonym for the much more common `sorry`. -/
-register_option linter.style.admit : Bool := {
+public meta register_option linter.style.admit : Bool := {
   defValue := false
   descr := "enable the admit linter"
 }
@@ -86,7 +84,7 @@ the `native_decide` tactic, which is disallowed in mathlib. -/
 -- Note: this linter is purely for user information. Running `lean4checker` in CI catches *any*
 -- additional axioms that are introduced (not just `ofReduceBool`): the point of this check is to
 -- alert the user quickly, not to be airtight.
-register_option linter.style.nativeDecide : Bool := {
+public meta register_option linter.style.nativeDecide : Bool := {
   defValue := false
   descr := "enable the nativeDecide linter"
 }
@@ -97,10 +95,12 @@ the reason for the modification of the `maxHeartbeats`.
 
 This includes `set_option maxHeartbeats n in` and `set_option synthInstance.maxHeartbeats n in`.
 -/
-register_option linter.style.maxHeartbeats : Bool := {
+public meta register_option linter.style.maxHeartbeats : Bool := {
   defValue := false
   descr := "enable the maxHeartbeats linter"
 }
+
+meta section
 
 /-- If the input syntax is of the form `set_option <option> num in <string> cmd`,
 where `<option>` contains `maxHeartbeats`, then it returns
@@ -233,5 +233,7 @@ def deprecatedSyntaxLinter : Linter where run stx := do
       | _ => continue) stx
 
 initialize addLinter deprecatedSyntaxLinter
+
+end
 
 end Mathlib.Linter.Style
