@@ -3862,6 +3862,7 @@ import Mathlib.Data.Sym.Sym2
 import Mathlib.Data.Sym.Sym2.Finsupp
 import Mathlib.Data.Sym.Sym2.Init
 import Mathlib.Data.Sym.Sym2.Order
+import Mathlib.Data.Sym.Sym2.Prod
 import Mathlib.Data.Tree.Basic
 import Mathlib.Data.Tree.Get
 import Mathlib.Data.Tree.RBMap
