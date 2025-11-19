@@ -3,11 +3,14 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.Algebra.Group.ULift
-import Mathlib.Algebra.GroupWithZero.Subgroup
-import Mathlib.Algebra.Module.NatInt
-import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.Tactic.NormNum.Eq
+module
+
+public import Mathlib.Algebra.Group.ULift
+public import Mathlib.Algebra.GroupWithZero.Subgroup
+public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.GroupTheory.QuotientGroup.Defs
+public import Mathlib.Tactic.NormNum.Eq
+public import Mathlib.Algebra.Field.Defs
 
 /-!
 # Divisible Group and rootable group
@@ -67,6 +70,8 @@ and their multiplicative counterparts:
 
 TODO: Show that divisibility implies injectivity in the category of `AddCommGroup`.
 -/
+
+@[expose] public section
 
 
 open Pointwise

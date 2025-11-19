@@ -3,7 +3,9 @@ Copyright (c) 2022 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Devon Tuma
 -/
-import Mathlib.Data.Vector.Basic
+module
+
+public import Mathlib.Data.Vector.Basic
 
 /-!
 # Theorems about membership of elements in vectors
@@ -14,6 +16,8 @@ Having the length available in the type allows some of the lemmas to be
 In particular we can avoid some assumptions about types being `Inhabited`,
   and make more general statements about `head` and `tail`.
 -/
+
+@[expose] public section
 
 namespace List
 

@@ -3,8 +3,10 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Fin.Basic
-import Mathlib.Order.Preorder.Chain
+module
+
+public import Mathlib.Order.Fin.Basic
+public import Mathlib.Order.Preorder.Chain
 
 /-!
 # Range of `f : Fin (n + 1) → α` as a `Flag`
@@ -17,6 +19,8 @@ Then the range of `f` is a maximal chain.
 
 We formulate this result in terms of `IsMaxChain` and `Flag`.
 -/
+
+@[expose] public section
 
 open Set
 

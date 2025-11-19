@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Set.Constructions
-import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
-import Mathlib.Topology.Constructions
-import Mathlib.Topology.NhdsWithin
+module
+
+public import Mathlib.Data.Set.Constructions
+public import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
+public import Mathlib.Topology.Constructions
+public import Mathlib.Topology.NhdsWithin
 
 /-!
 # Bases of topologies. Countability axioms.
@@ -51,6 +53,8 @@ concrete basis itself. This allows us to declare these type classes as `Prop` to
 More fine grained instances for `FirstCountableTopology`,
 `TopologicalSpace.SeparableSpace`, and more.
 -/
+
+@[expose] public section
 
 open Set Filter Function Topology
 

@@ -3,11 +3,13 @@ Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
-import Mathlib.CategoryTheory.Category.Grpd
-import Mathlib.CategoryTheory.Groupoid
-import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.Homotopy.Path
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.CategoryTheory.Category.Grpd
+public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.Topology.Homotopy.Path
+public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Fundamental groupoid of a space
@@ -17,6 +19,8 @@ objects being points of `X`, and morphisms `x ⟶ y` being paths from `x` to `y`
 homotopy equivalence. With this, the fundamental group of `X` based at `x` is just the automorphism
 group of `x`.
 -/
+
+@[expose] public section
 
 open CategoryTheory
 

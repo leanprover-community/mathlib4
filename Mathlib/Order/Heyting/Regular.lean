@@ -3,7 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.GaloisConnection.Basic
+module
+
+public import Mathlib.Order.GaloisConnection.Basic
 
 /-!
 # Heyting regular elements
@@ -24,6 +26,8 @@ by simply double-negating all propositions. This is practical for synthetic comp
 
 * [Francis Borceux, *Handbook of Categorical Algebra III*][borceux-vol3]
 -/
+
+@[expose] public section
 
 
 open Function
