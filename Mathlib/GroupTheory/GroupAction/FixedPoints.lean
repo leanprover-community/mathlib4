@@ -3,10 +3,12 @@ Copyright (c) 2024 Emilie Burgun. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emilie Burgun
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Commute.Basic
-import Mathlib.Dynamics.PeriodicPts.Defs
-import Mathlib.GroupTheory.GroupAction.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Commute.Basic
+public import Mathlib.Dynamics.PeriodicPts.Defs
+public import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
 # Properties of `fixedPoints` and `fixedBy`
@@ -42,6 +44,8 @@ To properly use theorems using `fixedBy (Set α) g`, you should `open Pointwise`
 `s ∈ fixedBy (Set α) g` is a weaker statement than `s ⊆ fixedBy α g`: the latter requires that
 all points in `s` are fixed by `g`, whereas the former only requires that `g • x ∈ s`.
 -/
+
+@[expose] public section
 
 namespace MulAction
 open Pointwise

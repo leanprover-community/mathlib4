@@ -3,8 +3,10 @@ Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.LinearAlgebra.Matrix.Integer
-import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Integer
+public import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
 
 /-!
 # Congruence subgroups
@@ -15,6 +17,8 @@ natural number.
 It also contains basic results about congruence subgroups.
 
 -/
+
+@[expose] public section
 
 open Matrix.SpecialLinearGroup Matrix
 

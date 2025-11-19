@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Kappelmann
 -/
-import Mathlib.Algebra.Order.Ring.Cast
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Tactic.HaveI
+module
+
+public import Mathlib.Algebra.Order.Ring.Cast
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Tactic.HaveI
 
 /-!
 # Floor and ceil
@@ -43,6 +45,8 @@ many lemmas.
 
 rounding, floor, ceil
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 

@@ -3,14 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Field.Periodic
-import Mathlib.Algebra.Field.Subfield.Basic
-import Mathlib.Topology.Algebra.Order.Archimedean
-import Mathlib.Topology.Algebra.Ring.Real
+module
+
+public import Mathlib.Algebra.Field.Periodic
+public import Mathlib.Algebra.Field.Subfield.Basic
+public import Mathlib.Topology.Algebra.Order.Archimedean
+public import Mathlib.Topology.Algebra.Ring.Real
 
 /-!
 # Topological properties of ℝ
 -/
+
+@[expose] public section
 
 assert_not_exists UniformOnFun
 
