@@ -51,8 +51,10 @@ def privateModule : Linter where
         return
       if (← getEnv).header.isModule then
         let _ := (← getEnv).checked.get -- Wait for everything
-        unless (← getEnv).asyncConstsMap.public.revList.any
-            (!(`_private).isPrefixOf ·.constInfo.name) do
+        -- Lint if every declaration is private:
+        if (← getEnv).asyncConstsMap.public.revList.all
+            ((`_private).isPrefixOf ·.constInfo.name) then
+          -- But don't lint an imports-only module:
           if (← getEnv).asyncConstsMap.private.size ≠ 0 then
             let topOfFileRef := Syntax.atom (.synthetic ⟨0⟩ ⟨0⟩) ""
             logLint linter.privateModule topOfFileRef
