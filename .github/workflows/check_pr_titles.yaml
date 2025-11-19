@@ -42,7 +42,7 @@ jobs:
         env:
           TITLE: ${{ github.event.pull_request.title }}
         run: |
-          set -eo pipefail
+          set -o pipefail
           echo "$TITLE"
 
           # Skip check if title starts with "[Merged by Bors] - "
@@ -57,12 +57,16 @@ jobs:
           # build command so build lines don't pollute `output` below
           lake build check_title_labels
 
-          # Capture output and exit code
-          if output=$(lake exe check_title_labels --labels "$label_names" "$TITLE" 2>&1); then
+          # Capture output and exit code (disable -e temporarily)
+          set +e
+          output=$(lake exe check_title_labels --labels "$label_names" "$TITLE" 2>&1)
+          exit_code=$?
+          set -e
+
+          if [ $exit_code -eq 0 ]; then
             echo "Check passed"
           else
-            exit_code="$?"
-            # Escape and set the output for use in subsequent steps
+            # Set the output for use in subsequent steps
             {
               echo "errors<<EOF"
               echo "$output"
