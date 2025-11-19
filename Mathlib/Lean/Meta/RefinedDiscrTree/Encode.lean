@@ -3,8 +3,12 @@ Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
-import Lean.Meta.DiscrTree
+module
+
+public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
+public import Lean.Meta.DiscrTree
+public import Lean.Meta.LazyDiscrTree
+import all Lean.Meta.DiscrTree
 
 /-!
 # Encoding an `Expr` as a sequence of `Key`s
@@ -26,6 +30,8 @@ To compute all the keys at once, we have
   This will be used for expressions that are looked up in a `RefinedDiscrTree` using `getMatch`.
 
 -/
+
+public section
 
 namespace Lean.Meta.RefinedDiscrTree
 
@@ -63,8 +69,6 @@ private def withLams (lambdas : List FVarId) (key : Key) : StateT LazyEntry Meta
     modify ({ · with computedKeys := tail.foldl (init := [key]) (fun _ => .lam :: ·) })
     return .lam
 
-open private toNatLit? from Lean.Meta.DiscrTree in
-
 @[inline]
 private def encodingStepAux (e : Expr) (lambdas : List FVarId) (root : Bool) : LazyM Key := do
   withLams lambdas (← go)
@@ -82,7 +86,7 @@ where
   match e.getAppFn with
   | .const n _ =>
     unless root do
-      if let some v := toNatLit? e then
+      if let some v := LazyDiscrTree.MatchClone.toNatLit? e then
         return .lit v
     if e.getAppNumArgs != 0 then
       setEAsPrevious
@@ -237,7 +241,7 @@ where
 
 /--
 If `entry.previous.isSome`, then replace it with `none`, and add the required entries
-to entry.stack`.
+to `entry.stack`.
 -/
 private def processPrevious (entry : LazyEntry) : MetaM LazyEntry := do
   let some { expr, bvars, lctx, localInsts, cfg } := entry.previous | return entry

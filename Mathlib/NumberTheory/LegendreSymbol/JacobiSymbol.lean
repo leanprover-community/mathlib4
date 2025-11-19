@@ -3,7 +3,9 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll, Thomas Zhu, Mario Carneiro
 -/
-import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
+module
+
+public import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
 
 /-!
 # The Jacobi Symbol
@@ -57,6 +59,8 @@ We define the notation `J(a | b)` for `jacobiSym a b`, localized to `NumberTheor
 ## Tags
 Jacobi symbol, quadratic reciprocity
 -/
+
+@[expose] public section
 
 
 section Jacobi

@@ -3,11 +3,13 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.LinearAlgebra.Prod
-import Mathlib.Algebra.Module.Submodule.Invariant
-import Mathlib.LinearAlgebra.GeneralLinearGroup
-import Mathlib.Algebra.Ring.Idempotent
+module
+
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.LinearAlgebra.Prod
+public import Mathlib.Algebra.Module.Submodule.Invariant
+public import Mathlib.LinearAlgebra.GeneralLinearGroup
+public import Mathlib.Algebra.Ring.Idempotent
 
 /-!
 # Projection to a subspace
@@ -25,6 +27,8 @@ We also provide some lemmas justifying correctness of our definitions.
 
 projection, complement subspace
 -/
+
+@[expose] public section
 
 noncomputable section Ring
 

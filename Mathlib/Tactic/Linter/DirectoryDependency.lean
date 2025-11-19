@@ -3,8 +3,11 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Lean.Elab.Command
-import Lean.Elab.ParseImportsFast
+module
+
+public meta import Lean.Elab.Command
+public meta import Lean.Elab.ParseImportsFast
+public meta import Lean.Linter.Basic
 -- This file is imported by the Header linter, hence has no mathlib imports.
 
 /-! # The `directoryDependency` linter
@@ -13,6 +16,8 @@ The `directoryDependency` linter detects imports between directories that are su
 independent. By specifying that one directory does not import from another, we can improve the
 modularity of Mathlib.
 -/
+
+public meta section
 
 -- XXX: is there a better long-time place for this
 /-- Parse all imports in a text file at `path` and return just their names:
@@ -91,7 +96,7 @@ prefixes `n₁'` of `n₁` and `n₂'` of `n₂` such that `n₁' R n₂'`.
 The current implementation is a `NameMap` of `NameSet`s, testing each prefix of `n₁` and `n₂` in
 turn. This can probably be optimized.
 -/
-def NamePrefixRel := NameMap NameSet
+@[expose] def NamePrefixRel := NameMap NameSet
 
 namespace NamePrefixRel
 
@@ -635,7 +640,7 @@ private def checkBlocklist (env : Environment) (mainModule : Name) (imports : Ar
 
 @[inherit_doc Mathlib.Linter.linter.directoryDependency]
 def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageData) := do
-  unless Linter.getLinterValue linter.directoryDependency (← getLinterOptions) do
+  unless Linter.getLinterValue linter.directoryDependency (← Linter.getLinterOptions) do
     return #[]
   let env ← getEnv
   let imports := env.allImportedModuleNames
