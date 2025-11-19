@@ -33,6 +33,7 @@ jobs:
         if: github.event.pull_request.draft == false && github.event.pull_request.base.ref == 'master'
         env:
           TITLE: ${{ github.event.pull_request.title }}
+          PR_LABELS: ${{ toJson(github.event.pull_request.labels) }}
         run: |
           set -o pipefail
           echo "$TITLE"
@@ -43,7 +44,7 @@ jobs:
             exit 0
           fi
 
-          label_names=$(echo "${{ toJson(github.event.pull_request.labels) }}" | jq -r '.[].name')
+          label_names=$(echo "$PR_LABELS" | jq -r '.[].name')
           echo "$label_names"
 
           # build command so build lines don't pollute `output` below
