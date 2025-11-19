@@ -5241,6 +5241,7 @@ import Mathlib.Order.CompleteLattice.SetLike
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Order.CompletePartialOrder
 import Mathlib.Order.CompleteSublattice
+import Mathlib.Order.Completion
 import Mathlib.Order.Concept
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Defs
