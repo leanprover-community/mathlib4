@@ -5,8 +5,7 @@ Authors: Stefan Kebekus
 -/
 module
 
-public import Mathlib.Analysis.Meromorphic.Divisor
-public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+public import Mathlib.Analysis.Complex.JensenFormula
 
 /-!
 # The Counting Function of Value Distribution Theory
@@ -35,14 +34,13 @@ Approximation*][MR3156076] for a detailed discussion.
 
 ## TODO
 
-- For `𝕜 = ℂ`, add the integral presentation of the logarithmic counting function
 - Discuss the counting function for rational functions, add a forward reference to the upcoming
   converse, formulated in terms of the Nevanlinna height.
 -/
 
 @[expose] public section
 
-open MeromorphicOn Metric Real Set
+open Function MeromorphicOn Metric Real Set
 
 /-!
 ## Supporting Notation
@@ -67,6 +65,11 @@ lemma toClosedBall_eval_within {r : ℝ} {z : E} (f : locallyFinsuppWithin (univ
     toClosedBall r f z = f z := by
   unfold toClosedBall
   simp_all [restrict_apply]
+
+@[simp]
+lemma toClosedBall_divisor {r : ℝ} {f : ℂ → ℂ} (h : MeromorphicOn f univ) :
+    (divisor f (closedBall 0 |r|)) = (locallyFinsuppWithin.toClosedBall r) (divisor f univ) := by
+  simp_all [locallyFinsuppWithin.toClosedBall]
 
 /-!
 ## The Logarithmic Counting Function of a Function with Locally Finite Support
@@ -177,6 +180,13 @@ noncomputable def logCounting : ℝ → ℝ := by
   by_cases h : a = ⊤
   · exact (divisor f univ)⁻.logCounting
   · exact (divisor (fun z ↦ f z - a.untop₀) univ)⁺.logCounting
+
+/--
+Relation between `ValueDistribution.logCounting` and `locallyFinsuppWithin.logCounting`.
+-/
+lemma _root_.locallyFinsuppWithin.logCounting_divisor {f : ℂ → ℂ} :
+    locallyFinsuppWithin.logCounting (divisor f ⊤) = logCounting f 0 - logCounting f ⊤ := by
+  simp [logCounting, ← locallyFinsuppWithin.logCounting.map_sub]
 
 /--
 For finite values `a₀`, the logarithmic counting function `logCounting f a₀` is the counting
@@ -343,3 +353,40 @@ counting function counting poles of `f`.
   simp [logCounting, divisor_pow hf n]
 
 end ValueDistribution
+
+/-!
+## Representation by Integrals
+
+For `𝕜 = ℂ`, the theorems below describe the logarithmic counting function in terms of circle
+averages.
+-/
+
+/--
+Over the complex numbers, present the logarithmic counting function attached to the divisor of a
+meromorphic function `f` as a circle average over `log ‖f ·‖`.
+
+This is a reformulation of Jensen's formula of complex analysis. See
+`MeromorphicOn.circleAverage_log_norm` for Jensen's formula in the original context.
+-/
+theorem Function.locallyFinsuppWithin.logCounting_divisor_eq_circleAverage_sub_const {R : ℝ}
+    {f : ℂ → ℂ} (h : MeromorphicOn f ⊤) (hR : R ≠ 0) :
+    locallyFinsuppWithin.logCounting (divisor f ⊤) R =
+      circleAverage (log ‖f ·‖) 0 R - log ‖meromorphicTrailingCoeffAt f 0‖ := by
+  have h₁f : MeromorphicOn f (closedBall 0 |R|) := by tauto
+  simp only [MeromorphicOn.circleAverage_log_norm hR h₁f, locallyFinsuppWithin.logCounting,
+    top_eq_univ, AddMonoidHom.coe_mk, ZeroHom.coe_mk, zero_sub, norm_neg, add_sub_cancel_right]
+  congr 1
+  · simp_all
+  · rw [divisor_apply, divisor_apply]
+    all_goals aesop
+
+/--
+Variant of `locallyFinsuppWithin.logCounting_divisor_eq_circleAverage_sub_const`, using
+`ValueDistribution.logCounting` instead of `locallyFinsuppWithin.logCounting`.
+-/
+theorem ValueDistribution.logCounting_zero_sub_logCounting_top_eq_circleAverage_sub_const {R : ℝ}
+    {f : ℂ → ℂ} (h : MeromorphicOn f ⊤) (hR : R ≠ 0) :
+    (logCounting f 0 - logCounting f ⊤) R =
+      circleAverage (log ‖f ·‖) 0 R - log ‖meromorphicTrailingCoeffAt f 0‖ := by
+  rw [← locallyFinsuppWithin.logCounting_divisor]
+  exact locallyFinsuppWithin.logCounting_divisor_eq_circleAverage_sub_const h hR
