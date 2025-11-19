@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Batteries.Data.List.Pairwise
-import Mathlib.Logic.Pairwise
-import Mathlib.Logic.Relation
+module
+
+public import Batteries.Data.List.Pairwise
+public import Mathlib.Logic.Pairwise
+public import Mathlib.Logic.Relation
 
 /-!
 # Pairwise relations on a list
@@ -23,6 +25,8 @@ the pairwiseness of the list we have so far. It thus yields `l'` a maximal subli
 
 sorted, nodup
 -/
+
+@[expose] public section
 
 
 open Nat Function

@@ -3,8 +3,10 @@ Copyright (c) 2024 Judith Ludwig, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Christian Merten
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.LinearAlgebra.Pi
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.LinearAlgebra.Pi
 
 /-!
 
@@ -25,6 +27,8 @@ and it is packaged as `TensorProduct.piRight`. Also a special case for when `M�
 See `Mathlib/LinearAlgebra/TensorProduct/Prod.lean` for binary products.
 
 -/
+
+@[expose] public section
 
 variable (R : Type*) [CommSemiring R]
 variable (S : Type*) [CommSemiring S] [Algebra R S]
@@ -105,6 +109,11 @@ lemma piRight_symm_single (x : N) (i : ι) (m : M i) :
     (piRight R S N M).symm (Pi.single i (x ⊗ₜ m)) = x ⊗ₜ Pi.single i m := by
   simp [piRight]
 
+/-- Tensor product commutes with finite products on the left.
+TODO: generalize to `S`-linear. -/
+@[simp] def piLeft : (∀ i, M i) ⊗[R] N ≃ₗ[R] ∀ i, M i ⊗[R] N :=
+  TensorProduct.comm .. ≪≫ₗ piRight .. ≪≫ₗ .piCongrRight fun _ ↦ TensorProduct.comm ..
+
 end
 
 private def piScalarRightHomBil : N →ₗ[S] (ι → R) →ₗ[R] (ι → N) where
@@ -163,5 +172,8 @@ lemma piScalarRight_apply (x : N ⊗[R] (ι → R)) :
 lemma piScalarRight_symm_single (x : N) (i : ι) :
     (piScalarRight R S N ι).symm (Pi.single i x) = x ⊗ₜ Pi.single i 1 := by
   simp [piScalarRight]
+
+-- See also `TensorProduct.piScalarRight_symm_algebraMap` in
+-- `Mathlib/RingTheory/TensorProduct/Pi.lean`.
 
 end TensorProduct

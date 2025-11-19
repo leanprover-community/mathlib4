@@ -3,6 +3,8 @@ Copyright (c) 2025 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+-- TODO: make a `module` -- requires fixing imports and deprecations first!
+
 import Mathlib.Tactic.Linter.Header
 
 /-!
@@ -18,6 +20,7 @@ open Lean Elab Linter
 def Substring.getRange : Substring → String.Range
   | {startPos := st, stopPos := en, ..} => ⟨st, en⟩
 
+#exit
 namespace Lean.Syntax
 /-!
 # `Syntax` filters

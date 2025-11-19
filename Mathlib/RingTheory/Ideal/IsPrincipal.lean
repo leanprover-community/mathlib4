@@ -3,7 +3,9 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.RingTheory.PrincipalIdealDomain
+module
+
+public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Principal Ideals
@@ -23,6 +25,8 @@ This file deals with the set of principal ideals of a `CommRing R`.
 * `Ideal.associatesNonZeroDivisorsMulEquivIsPrincipal`: the `MulEquiv` between the monoid of
   `Associates R⁰` and the submonoid of non-zero-divisors principal ideals of `R`.
 -/
+
+@[expose] public section
 
 variable {R : Type*} [CommRing R]
 

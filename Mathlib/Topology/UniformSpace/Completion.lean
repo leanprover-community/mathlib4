@@ -3,7 +3,9 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Topology.UniformSpace.AbstractCompletion
+module
+
+public import Mathlib.Topology.UniformSpace.AbstractCompletion
 
 /-!
 # Hausdorff completions of uniform spaces
@@ -39,6 +41,8 @@ This formalization is mostly based on
   I. M. James: Topologies and Uniformities
 From a slightly different perspective in order to reuse material in `Topology.UniformSpace.Basic`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -497,6 +501,16 @@ theorem extension_map [CompleteSpace γ] [T0Space γ] {f : β → γ} {g : α �
 theorem map_comp {g : β → γ} {f : α → β} (hg : UniformContinuous g) (hf : UniformContinuous f) :
     Completion.map g ∘ Completion.map f = Completion.map (g ∘ f) :=
   extension_map ((uniformContinuous_coe _).comp hg) hf
+
+/-- The uniform isomorphism between two completions of isomorphic uniform spaces. -/
+def mapEquiv (e : α ≃ᵤ β) : Completion α ≃ᵤ Completion β := cPkg.mapEquiv cPkg e
+
+@[simp]
+theorem mapEquiv_symm (e : α ≃ᵤ β) : (mapEquiv e).symm = mapEquiv e.symm :=
+  cPkg.mapEquiv_symm cPkg e
+
+@[simp]
+theorem mapEquiv_coe (e : α ≃ᵤ β) (a : α) : mapEquiv e a = (e a) := cPkg.mapEquiv_coe cPkg e a
 
 end Map
 

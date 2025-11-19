@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Data.Rel
-import Mathlib.Order.Filter.SmallSets
-import Mathlib.Topology.UniformSpace.Defs
-import Mathlib.Topology.ContinuousOn
+module
+
+public import Mathlib.Data.Rel
+public import Mathlib.Order.Filter.SmallSets
+public import Mathlib.Topology.UniformSpace.Defs
+public import Mathlib.Topology.ContinuousOn
 
 /-!
 # Basic results on uniform spaces
@@ -35,6 +37,8 @@ The formalization uses the books:
 But it makes a more systematic use of the filter library.
 -/
 
+@[expose] public section
+
 open Set Filter Topology
 open scoped SetRel Uniformity
 
@@ -52,6 +56,19 @@ lemma IsOpen.relComp [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpa
   conv =>
     arg 1; equals ⋃ b, (fun p => (p.1, b)) ⁻¹' s ∩ (fun p => (b, p.2)) ⁻¹' t => ext ⟨_, _⟩; simp
   exact isOpen_iUnion fun a ↦ hs.preimage (by fun_prop) |>.inter <| ht.preimage (by fun_prop)
+
+lemma IsOpen.relInv [TopologicalSpace α] [TopologicalSpace β]
+    {s : SetRel α β} (hs : IsOpen s) : IsOpen s.inv :=
+  hs.preimage continuous_swap
+
+lemma IsOpen.relImage [TopologicalSpace α] [TopologicalSpace β]
+    {s : SetRel α β} (hs : IsOpen s) {t : Set α} : IsOpen (s.image t) := by
+  simp_rw [SetRel.image, ← exists_prop, Set.setOf_exists]
+  exact isOpen_biUnion fun _ _ => hs.preimage <| .prodMk_right _
+
+lemma IsOpen.relPreimage [TopologicalSpace α] [TopologicalSpace β]
+    {s : SetRel α β} (hs : IsOpen s) {t : Set β} : IsOpen (s.preimage t) :=
+  hs.relInv.relImage
 
 section UniformSpace
 
@@ -333,26 +350,22 @@ instance : Min (UniformSpace α) :=
         rw [@nhds_inf _ u₁.toTopologicalSpace _, @nhds_eq_comap_uniformity _ u₁,
           @nhds_eq_comap_uniformity _ u₂, comap_inf] }⟩
 
-instance : CompleteLattice (UniformSpace α) :=
-  { inferInstanceAs (PartialOrder (UniformSpace α)) with
-    sup := fun a b => sInf { x | a ≤ x ∧ b ≤ x }
-    le_sup_left := fun _ _ => UniformSpace.le_sInf fun _ ⟨h, _⟩ => h
-    le_sup_right := fun _ _ => UniformSpace.le_sInf fun _ ⟨_, h⟩ => h
-    sup_le := fun _ _ _ h₁ h₂ => UniformSpace.sInf_le ⟨h₁, h₂⟩
-    inf := (· ⊓ ·)
-    le_inf := fun a _ _ h₁ h₂ => show a.uniformity ≤ _ from le_inf h₁ h₂
-    inf_le_left := fun a _ => show _ ≤ a.uniformity from inf_le_left
-    inf_le_right := fun _ b => show _ ≤ b.uniformity from inf_le_right
-    top := ⊤
-    le_top := fun a => show a.uniformity ≤ ⊤ from le_top
-    bot := ⊥
-    bot_le := fun u => u.toCore.refl
-    sSup := fun tt => sInf { t | ∀ t' ∈ tt, t' ≤ t }
-    le_sSup := fun _ _ h => UniformSpace.le_sInf fun _ h' => h' _ h
-    sSup_le := fun _ _ h => UniformSpace.sInf_le h
-    sInf := sInf
-    le_sInf := fun _ _ hs => UniformSpace.le_sInf hs
-    sInf_le := fun _ _ ha => UniformSpace.sInf_le ha }
+instance : CompleteLattice (UniformSpace α) where
+  sup a b := sInf { x | a ≤ x ∧ b ≤ x }
+  le_sup_left _ _ := UniformSpace.le_sInf fun _ ⟨h, _⟩ => h
+  le_sup_right _ _ := UniformSpace.le_sInf fun _ ⟨_, h⟩ => h
+  sup_le _ _ _ h₁ h₂ := UniformSpace.sInf_le ⟨h₁, h₂⟩
+  inf := (· ⊓ ·)
+  le_inf a _ _ h₁ h₂ := show a.uniformity ≤ _ from le_inf h₁ h₂
+  inf_le_left a _ := show _ ≤ a.uniformity from inf_le_left
+  inf_le_right _ b := show _ ≤ b.uniformity from inf_le_right
+  le_top a := show a.uniformity ≤ ⊤ from le_top
+  bot_le u := u.toCore.refl
+  sSup tt := sInf { t | ∀ t' ∈ tt, t' ≤ t }
+  le_sSup _ _ h := UniformSpace.le_sInf fun _ h' => h' _ h
+  sSup_le _ _ h := UniformSpace.sInf_le h
+  le_sInf _ _ hs := UniformSpace.le_sInf hs
+  sInf_le _ _ ha := UniformSpace.sInf_le ha
 
 theorem iInf_uniformity {ι : Sort*} {u : ι → UniformSpace α} : 𝓤[iInf u] = ⨅ i, 𝓤[u i] :=
   iInf_range
@@ -777,22 +790,13 @@ theorem UniformContinuous.prodMk {f₁ : α → β} {f₂ : α → γ} (h₁ : U
   rw [UniformContinuous, uniformity_prod]
   exact tendsto_inf.2 ⟨tendsto_comap_iff.2 h₁, tendsto_comap_iff.2 h₂⟩
 
-@[deprecated (since := "2025-03-10")]
-alias UniformContinuous.prod_mk := UniformContinuous.prodMk
-
 theorem UniformContinuous.prodMk_left {f : α × β → γ} (h : UniformContinuous f) (b) :
     UniformContinuous fun a => f (a, b) :=
   h.comp (uniformContinuous_id.prodMk uniformContinuous_const)
 
-@[deprecated (since := "2025-03-10")]
-alias UniformContinuous.prod_mk_left := UniformContinuous.prodMk_left
-
 theorem UniformContinuous.prodMk_right {f : α × β → γ} (h : UniformContinuous f) (a) :
     UniformContinuous fun b => f (a, b) :=
   h.comp (uniformContinuous_const.prodMk uniformContinuous_id)
-
-@[deprecated (since := "2025-03-10")]
-alias UniformContinuous.prod_mk_right := UniformContinuous.prodMk_right
 
 theorem UniformContinuous.prodMap [UniformSpace δ] {f : α → γ} {g : β → δ}
     (hf : UniformContinuous f) (hg : UniformContinuous g) : UniformContinuous (Prod.map f g) :=
