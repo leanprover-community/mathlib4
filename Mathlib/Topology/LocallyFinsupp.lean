@@ -469,5 +469,22 @@ noncomputable def restrictLatticeHom [AddCommGroup Y] [Lattice Y] {V : Set X} (h
 lemma restrictLatticeHom_apply [AddCommGroup Y] [Lattice Y] {V : Set X}
     (D : locallyFinsuppWithin U Y) (h : V ⊆ U) :
     restrictLatticeHom h D = D.restrict h := by rfl
+/--
+Restriction commutes with taking positive parts.
+-/
+lemma restrict_posPart {V : Set X} (D : locallyFinsuppWithin U ℤ) (h : V ⊆ U) :
+    D⁺.restrict h = (D.restrict h)⁺ := by
+  ext x
+  simp only [locallyFinsuppWithin.restrict_apply, locallyFinsuppWithin.posPart_apply]
+  aesop
+
+/--
+Restriction commutes with taking negative parts.
+-/
+lemma restrict_negPart {V : Set X} (D : locallyFinsuppWithin U ℤ) (h : V ⊆ U) :
+    D⁻.restrict h = (D.restrict h)⁻ := by
+  ext x
+  simp only [locallyFinsuppWithin.restrict_apply, locallyFinsuppWithin.negPart_apply]
+  aesop
 
 end Function.locallyFinsuppWithin
