@@ -3,14 +3,15 @@ Copyright (c) 2023 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Algebra.Order.ToIntervalMod
-import Mathlib.Analysis.SpecialFunctions.Log.Base
+public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Algebra.Order.ToIntervalMod
+public import Mathlib.Analysis.SpecialFunctions.Log.Base
 
 /-!
-# Akra-Bazzi theorem: The polynomial growth condition
+# Akra-Bazzi theorem: the polynomial growth condition
 
 This file defines and develops an API for the polynomial growth condition that appears in the
 statement of the Akra-Bazzi theorem: for the theorem to hold, the function `g` must
@@ -19,12 +20,14 @@ satisfy the condition that `c₁ g(n) ≤ g(u) ≤ c₂ g(n)`, for u between b*n
 
 ## Implementation notes
 
-Our definition requires that the condition must hold for any `b ∈ (0,1)`. This is equivalent to
-requiring it for `b = 1 / 2` (or any other particular value in `(0, 1)`). While this could, in
-principle, make it harder to prove that a particular function grows polynomially, this issue does
-not seem to arise in practice.
+Our definition requires that the condition hold for any `b ∈ (0,1)`. This is equivalent to requiring
+it only for `b = 1 / 2` (or any other particular value in `(0, 1)`). While this could, in principle,
+make it harder to prove that a particular function grows polynomially, this issue does not seem to
+arise in practice.
 
 -/
+
+@[expose] public section
 
 open Finset Real Filter Asymptotics
 open scoped Topology
@@ -235,12 +238,9 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
 
 lemma eventually_atTop_zero_or_pos_or_neg (hf : GrowsPolynomially f) :
     (∀ᶠ x in atTop, f x = 0) ∨ (∀ᶠ x in atTop, 0 < f x) ∨ (∀ᶠ x in atTop, f x < 0) := by
-  if h : ∃ᶠ x in atTop, f x = 0 then
-    exact Or.inl <| eventually_zero_of_frequently_zero hf h
-  else
-    rw [not_frequently] at h
-    push_neg at h
-    cases eventually_atTop_nonneg_or_nonpos hf with
+  by_cases! h : ∃ᶠ x in atTop, f x = 0
+  · exact Or.inl <| eventually_zero_of_frequently_zero hf h
+  · cases eventually_atTop_nonneg_or_nonpos hf with
     | inl h' =>
       refine Or.inr (Or.inl ?_)
       simp only [lt_iff_le_and_ne]
@@ -601,10 +601,10 @@ protected lemma GrowsPolynomially.rpow (p : ℝ) (hf : GrowsPolynomially f)
       refine ⟨?lb, ?ub⟩
       case lb => calc
         c₂^p * (f x)^p = (c₂ * f x)^p := by rw [mul_rpow (le_of_lt hc₂_mem) (le_of_lt hf_pos)]
-          _ ≤ _ := rpow_le_rpow_of_exponent_nonpos (hf_pos₂ u hu.1) (hf₁ u hu).2 (le_of_lt hp)
+          _ ≤ _ := rpow_le_rpow_of_nonpos (hf_pos₂ u hu.1) (hf₁ u hu).2 (le_of_lt hp)
       case ub => calc
         (f u)^p ≤ (c₁ * f x)^p := by
-              exact rpow_le_rpow_of_exponent_nonpos (by positivity) (hf₁ u hu).1 (le_of_lt hp)
+              exact rpow_le_rpow_of_nonpos (by positivity) (hf₁ u hu).1 (le_of_lt hp)
           _ = _ := by rw [← mul_rpow (le_of_lt hc₁_mem) (le_of_lt hf_pos)]
     | .inr (.inr hneg) => -- eventually negative (which is impossible)
       have : ∀ᶠ (_ : ℝ) in atTop, False := by
@@ -645,12 +645,7 @@ lemma growsPolynomially_log : GrowsPolynomially Real.log := by
   refine ⟨?lb, ?ub⟩
   case lb => calc
     1 / 2 * Real.log x = Real.log x + (-1 / 2) * Real.log x := by ring
-      _ ≤ Real.log x + Real.log b := by
-              gcongr
-              rw [neg_div, neg_mul, ← neg_le]
-              refine le_of_lt (hx x ?_)
-              calc b * x ≤ 1 * x := by gcongr; exact le_of_lt hb.2
-                       _ = x := by rw [one_mul]
+      _ ≤ Real.log x + Real.log b := by grind
       _ = Real.log (b * x) := by rw [← Real.log_mul (by positivity) (by positivity), mul_comm]
       _ ≤ Real.log u := by gcongr; exact hu.1
   case ub =>

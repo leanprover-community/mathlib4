@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Tactic.StacksAttribute
-import Mathlib.Topology.Compactness.Lindelof
-import Mathlib.Topology.Separation.Hausdorff
-import Mathlib.Topology.Connected.Clopen
+module
+
+public import Mathlib.Tactic.StacksAttribute
+public import Mathlib.Topology.Compactness.Lindelof
+public import Mathlib.Topology.Separation.Hausdorff
+public import Mathlib.Topology.Connected.Clopen
 
 /-!
 # Regular, normal, T₃, T₄ and T₅ spaces
@@ -57,6 +59,8 @@ If the space is also Lindelöf:
 * [Willard's *General Topology*][zbMATH02107988]
 
 -/
+
+@[expose] public section
 
 assert_not_exists UniformSpace
 
@@ -127,6 +131,25 @@ theorem RegularSpace.of_exists_mem_nhds_isClosed_subset
 /-- A weakly locally compact R₁ space is regular. -/
 instance (priority := 100) [WeaklyLocallyCompactSpace X] [R1Space X] : RegularSpace X :=
   .of_hasBasis isCompact_isClosed_basis_nhds fun _ _ ⟨_, _, h⟩ ↦ h
+
+/-- Given a subbasis `s`, it is enough to check the condition of regularity for complements of sets
+in `s`. -/
+theorem regularSpace_generateFrom {s : Set (Set X)} (h : ‹_› = generateFrom s) :
+    RegularSpace X ↔ ∀ t ∈ s, ∀ a ∈ t, Disjoint (𝓝ˢ tᶜ) (𝓝 a) := by
+  refine ⟨fun _ t ht a ha => RegularSpace.regular
+    (h ▸ isOpen_generateFrom_of_mem ht).isClosed_compl
+    (Set.notMem_compl_iff.mpr ha), fun h' => ⟨fun {t a} ht ha => ?_⟩⟩
+  obtain ⟨t, rfl⟩ := compl_involutive.surjective t
+  rw [isClosed_compl_iff, h] at ht
+  rw [Set.notMem_compl_iff] at ha
+  induction ht with
+  | basic t ht => exact h' t ht a ha
+  | univ => simp
+  | inter t₁ t₂ _ _ ih₁ ih₂ => grind [compl_inter, nhdsSet_union, disjoint_sup_left]
+  | sUnion S _ ih =>
+    obtain ⟨t, ht, ha⟩ := ha
+    grw [compl_sUnion, sInter_image, iInter₂_subset t ht]
+    exact ih t ht ha
 
 section
 variable [RegularSpace X] {x : X} {s : Set X}
@@ -267,6 +290,17 @@ lemma IsClosed.HasSeparatingCover {s t : Set X} [LindelofSpace X] [RegularSpace 
     u u_open (fun a ainh ↦ mem_iUnion.mpr ⟨a, u_nhds a ainh⟩)
   exact ⟨u ∘ f, f_cov, fun n ↦ ⟨u_open (f n), u_dis (f n)⟩⟩
 
+/-- Given two separable points `x` and `y`, we can find neighbourhoods
+`x ∈ V₁ ⊆ U₁` and `y ∈ V₂ ⊆ U₂`, with the `Vₖ` closed and the `Uₖ` open,
+such that the `Uₖ` are disjoint. -/
+theorem disjoint_nested_nhds_of_not_inseparable [RegularSpace X] {x y : X} (h : ¬Inseparable x y) :
+    ∃ U₁ ∈ 𝓝 x, ∃ V₁ ∈ 𝓝 x, ∃ U₂ ∈ 𝓝 y, ∃ V₂ ∈ 𝓝 y,
+      IsClosed V₁ ∧ IsClosed V₂ ∧ IsOpen U₁ ∧ IsOpen U₂ ∧ V₁ ⊆ U₁ ∧ V₂ ⊆ U₂ ∧ Disjoint U₁ U₂ := by
+  rcases r1_separation h with ⟨U₁, U₂, U₁_op, U₂_op, x_in, y_in, H⟩
+  rcases exists_mem_nhds_isClosed_subset (U₁_op.mem_nhds x_in) with ⟨V₁, V₁_in, V₁_closed, h₁⟩
+  rcases exists_mem_nhds_isClosed_subset (U₂_op.mem_nhds y_in) with ⟨V₂, V₂_in, V₂_closed, h₂⟩
+  exact ⟨U₁, mem_of_superset V₁_in h₁, V₁, V₁_in, U₂, mem_of_superset V₂_in h₂, V₂, V₂_in,
+    V₁_closed, V₂_closed, U₁_op, U₂_op, h₁, h₂, H⟩
 
 end RegularSpace
 
@@ -294,6 +328,17 @@ theorem exists_open_between_and_isCompact_closure [LocallyCompactSpace X] [Regul
     apply (closure_mono interior_subset).trans (le_of_eq L_closed.closure_eq)
   refine ⟨interior L, isOpen_interior, KL, A.trans LU, ?_⟩
   exact L_compact.closure_of_subset interior_subset
+
+lemma IsCompact.closure_eq_nhdsKer [RegularSpace X] {s : Set X} (hs : IsCompact s) :
+    closure s = nhdsKer s := by
+  apply subset_antisymm
+  · rw [nhdsKer, ← hs.lift'_closure_nhdsSet]
+    simp +contextual [Filter.lift', Filter.lift, closure_mono, subset_of_mem_nhdsSet]
+  · intro y hy
+    by_contra! hy'
+    rw [← _root_.disjoint_nhdsSet_nhds, Filter.disjoint_iff] at hy'
+    obtain ⟨t, hts, t', ht'y, H⟩ := hy'
+    exact Set.disjoint_iff.mp H ⟨hy t hts, mem_of_mem_nhds ht'y⟩
 
 end LocallyCompactRegularSpace
 
@@ -389,12 +434,8 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
 with the `Vₖ` closed and the `Uₖ` open, such that the `Uₖ` are disjoint. -/
 theorem disjoint_nested_nhds [T3Space X] {x y : X} (h : x ≠ y) :
     ∃ U₁ ∈ 𝓝 x, ∃ V₁ ∈ 𝓝 x, ∃ U₂ ∈ 𝓝 y, ∃ V₂ ∈ 𝓝 y,
-      IsClosed V₁ ∧ IsClosed V₂ ∧ IsOpen U₁ ∧ IsOpen U₂ ∧ V₁ ⊆ U₁ ∧ V₂ ⊆ U₂ ∧ Disjoint U₁ U₂ := by
-  rcases t2_separation h with ⟨U₁, U₂, U₁_op, U₂_op, x_in, y_in, H⟩
-  rcases exists_mem_nhds_isClosed_subset (U₁_op.mem_nhds x_in) with ⟨V₁, V₁_in, V₁_closed, h₁⟩
-  rcases exists_mem_nhds_isClosed_subset (U₂_op.mem_nhds y_in) with ⟨V₂, V₂_in, V₂_closed, h₂⟩
-  exact ⟨U₁, mem_of_superset V₁_in h₁, V₁, V₁_in, U₂, mem_of_superset V₂_in h₂, V₂, V₂_in,
-    V₁_closed, V₂_closed, U₁_op, U₂_op, h₁, h₂, H⟩
+      IsClosed V₁ ∧ IsClosed V₂ ∧ IsOpen U₁ ∧ IsOpen U₂ ∧ V₁ ⊆ U₁ ∧ V₂ ⊆ U₂ ∧ Disjoint U₁ U₂ :=
+  disjoint_nested_nhds_of_not_inseparable (mt Inseparable.eq h)
 
 open SeparationQuotient
 

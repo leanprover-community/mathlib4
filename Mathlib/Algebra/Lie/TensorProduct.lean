@@ -3,8 +3,10 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Abelian
-import Mathlib.LinearAlgebra.TensorProduct.Tower
+module
+
+public import Mathlib.Algebra.Lie.Abelian
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
 # Tensor products of Lie modules
@@ -15,6 +17,8 @@ Tensor products of Lie modules carry natural Lie module structures.
 
 lie module, tensor product, universal property
 -/
+
+@[expose] public section
 
 universe u v w w₁ w₂ w₃
 
@@ -81,7 +85,7 @@ variable (R L M N P Q)
 /-- The universal property for tensor product of modules of a Lie algebra: the `R`-linear
 tensor-hom adjunction is equivariant with respect to the `L` action. -/
 def lift : (M →ₗ[R] N →ₗ[R] P) ≃ₗ⁅R,L⁆ M ⊗[R] N →ₗ[R] P :=
-  { TensorProduct.lift.equiv R M N P with
+  { TensorProduct.lift.equiv (.id R) M N P with
     map_lie' := fun {x f} => by
       ext m n
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe,

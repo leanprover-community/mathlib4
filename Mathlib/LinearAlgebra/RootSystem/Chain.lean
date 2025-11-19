@@ -3,8 +3,10 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
-import Mathlib.Order.Interval.Set.OrdConnectedLinear
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
+public import Mathlib.Order.Interval.Set.OrdConnectedLinear
 
 /-!
 # Chains of roots
@@ -24,6 +26,8 @@ length, `p + q` is at most 3.
 * `RootPairing.chainBotCoeff_add_chainTopCoeff_le`: every chain has length at most three.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -48,7 +52,7 @@ lemma setOf_root_add_zsmul_eq_Icc_of_linearIndependent
     suffices Injective (fun z : S ↦ z.property.choose) from Finite.of_injective _ this
     intro ⟨z, hz⟩ ⟨z', hz'⟩ hzz
     have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-    have : NoZeroSMulDivisors ℤ M := .int_of_charZero R M
+    have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
     have : z • P.root i = z' • P.root i := by
       rwa [← add_right_inj (P.root j), ← hz.choose_spec, ← hz'.choose_spec, P.root.injective.eq_iff]
     exact Subtype.ext <| smul_left_injective ℤ (P.ne_zero i) this
@@ -177,7 +181,7 @@ lemma one_le_chainBotCoeff_of_root_add_mem [P.IsReduced] (h : P.root i - P.root 
 
 lemma root_add_zsmul_mem_range_iff {z : ℤ} :
     P.root j + z • P.root i ∈ range P.root ↔
-      z ∈ Icc (- P.chainBotCoeff i j : ℤ) (P.chainTopCoeff i j) := by
+      z ∈ Icc (-P.chainBotCoeff i j : ℤ) (P.chainTopCoeff i j) := by
   rcases z.eq_nat_or_neg with ⟨n, rfl | rfl⟩
   · simp [P.root_add_nsmul_mem_range_iff_le_chainTopCoeff h]
   · simp [P.root_sub_nsmul_mem_range_iff_le_chainBotCoeff h, ← sub_eq_add_neg]
@@ -427,7 +431,7 @@ lemma chainBotCoeff_sub_chainTopCoeff :
   omega
 
 lemma chainTopCoeff_sub_chainBotCoeff :
-    P.chainTopCoeff i j - P.chainBotCoeff i j = - P.pairingIn ℤ j i := by
+    P.chainTopCoeff i j - P.chainBotCoeff i j = -P.pairingIn ℤ j i := by
   rw [← chainBotCoeff_sub_chainTopCoeff h, neg_sub]
 
 omit h
@@ -446,9 +450,9 @@ lemma chainCoeff_chainTopIdx_aux :
   set S₂ : Set ℤ := {z | P.root (P.chainTopIdx i j) + z • P.root i ∈ range P.root} with S₂_def
   have hS₁₂ : S₂ = (fun z ↦ (-P.chainTopCoeff i j : ℤ) + z) '' S₁ := by
     ext; simp [S₁_def, S₂_def, root_chainTopIdx, add_smul, add_assoc, natCast_zsmul]
-  have hS₁ : S₁ = Icc (- P.chainBotCoeff i j : ℤ) (P.chainTopCoeff i j) := by
+  have hS₁ : S₁ = Icc (-P.chainBotCoeff i j : ℤ) (P.chainTopCoeff i j) := by
     ext; rw [S₁_def, mem_setOf_eq, root_add_zsmul_mem_range_iff h]
-  have hS₂ : S₂ = Icc (- P.chainBotCoeff i (P.chainTopIdx i j) : ℤ)
+  have hS₂ : S₂ = Icc (-P.chainBotCoeff i (P.chainTopIdx i j) : ℤ)
       (P.chainTopCoeff i (P.chainTopIdx i j)) := by
     ext; rw [S₂_def, mem_setOf_eq, root_add_zsmul_mem_range_iff h']
   rw [hS₁, hS₂, image_const_add_Icc, neg_add_cancel, Icc_eq_Icc_iff (by simp), neg_eq_iff_eq_neg,

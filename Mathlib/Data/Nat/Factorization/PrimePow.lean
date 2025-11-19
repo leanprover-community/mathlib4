@@ -3,16 +3,20 @@ Copyright (c) 2022 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Algebra.IsPrimePow
-import Mathlib.Data.Nat.Factorization.Basic
-import Mathlib.Data.Nat.Prime.Pow
-import Mathlib.NumberTheory.Divisors
+module
+
+public import Mathlib.Algebra.IsPrimePow
+public import Mathlib.Data.Nat.Factorization.Basic
+public import Mathlib.Data.Nat.Prime.Pow
+public import Mathlib.NumberTheory.Divisors
 
 /-!
 # Prime powers and factorizations
 
 This file deals with factorizations of prime powers.
 -/
+
+@[expose] public section
 
 
 theorem IsPrimePow.minFac_pow_factorization_eq {n : ℕ} (hn : IsPrimePow n) :
@@ -59,7 +63,7 @@ theorem IsPrimePow.exists_ordCompl_eq_one {n : ℕ} (h : IsPrimePow n) :
   rcases isPrimePow_iff_factorization_eq_single.mp h with ⟨p, k, hk0, h1⟩
   rcases em' p.Prime with (pp | pp)
   · refine absurd ?_ hk0.ne'
-    simp [← Nat.factorization_eq_zero_of_non_prime n pp, h1]
+    simp [← Nat.factorization_eq_zero_of_not_prime n pp, h1]
   refine ⟨p, pp, ?_⟩
   refine Nat.eq_of_factorization_eq (Nat.ordCompl_pos p hn0).ne' (by simp) fun q => ?_
   rw [Nat.factorization_ordCompl n p, h1]

@@ -3,13 +3,15 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Algebra.Star.Basic
-import Mathlib.Analysis.Normed.Group.Constructions
-import Mathlib.Analysis.Normed.Group.Submodule
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.LinearAlgebra.Basis.Defs
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.Topology.Algebra.Module.Equiv
+module
+
+public import Mathlib.Algebra.Star.Basic
+public import Mathlib.Analysis.Normed.Group.Constructions
+public import Mathlib.Analysis.Normed.Group.Submodule
+public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.LinearAlgebra.Basis.Defs
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 # (Semi-)linear isometries
@@ -25,6 +27,8 @@ We also prove some trivial lemmas and provide convenience constructors.
 Since a lot of elementary properties don't require `‖x‖ = 0 → x = 0` we start setting up the
 theory for `SeminormedAddCommGroup` and we specialize to `NormedAddCommGroup` when needed.
 -/
+
+@[expose] public section
 
 open Function Set Topology
 
@@ -893,8 +897,8 @@ protected theorem lipschitz : LipschitzWith 1 e :=
 protected theorem antilipschitz : AntilipschitzWith 1 e :=
   e.isometry.antilipschitz
 
-theorem image_eq_preimage (s : Set E) : e '' s = e.symm ⁻¹' s :=
-  e.toLinearEquiv.image_eq_preimage s
+theorem image_eq_preimage_symm (s : Set E) : e '' s = e.symm ⁻¹' s :=
+  e.toLinearEquiv.image_eq_preimage_symm s
 
 @[simp]
 theorem ediam_image (s : Set E) : EMetric.diam (e '' s) = EMetric.diam s :=
@@ -986,7 +990,18 @@ theorem coe_neg : (neg R : E → E) = fun x => -x :=
 theorem symm_neg : (neg R : E ≃ₗᵢ[R] E).symm = neg R :=
   rfl
 
-variable (R E E₂ E₃)
+variable (R E E₂)
+
+/-- The natural equivalence `E × E₂ ≃ E₂ × E` is a linear isometry. -/
+@[simps!]
+def prodComm [Module R E₂] : E × E₂ ≃ₗᵢ[R] E₂ × E :=
+  ⟨LinearEquiv.prodComm R E E₂, by intro; simp [norm, sup_comm]⟩
+
+@[simp]
+theorem symm_prodComm [Module R E₂] : (prodComm R E E₂).symm = prodComm R E₂ E :=
+  rfl
+
+variable (E₃)
 
 /-- The natural equivalence `(E × E₂) × E₃ ≃ E × (E₂ × E₃)` is a linear isometry. -/
 def prodAssoc [Module R E₂] [Module R E₃] : (E × E₂) × E₃ ≃ₗᵢ[R] E × E₂ × E₃ :=
@@ -1070,3 +1085,25 @@ noncomputable def LinearIsometry.equivRange {R S : Type*} [Semiring R] [Ring S] 
     [Module R F] {σ₁₂ : R →+* S} {σ₂₁ : S →+* R} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
     (f : F →ₛₗᵢ[σ₁₂] E) : F ≃ₛₗᵢ[σ₁₂] (LinearMap.range f.toLinearMap) :=
   { f with toLinearEquiv := LinearEquiv.ofInjective f.toLinearMap f.injective }
+
+namespace MulOpposite
+variable {R H : Type*} [Semiring R] [SeminormedAddCommGroup H] [Module R H]
+
+theorem isometry_opLinearEquiv : Isometry (opLinearEquiv R (M := H)) := fun _ _ => rfl
+
+variable (R H) in
+/-- The linear isometry equivalence version of the function `op`. -/
+@[simps!]
+def opLinearIsometryEquiv : H ≃ₗᵢ[R] Hᵐᵒᵖ where
+  toLinearEquiv := opLinearEquiv R
+  norm_map' _ := rfl
+
+@[simp]
+theorem toLinearEquiv_opLinearIsometryEquiv :
+    (opLinearIsometryEquiv R H).toLinearEquiv = opLinearEquiv R := rfl
+
+@[simp]
+theorem toContinuousLinearEquiv_opLinearIsometryEquiv :
+    (opLinearIsometryEquiv R H).toContinuousLinearEquiv = opContinuousLinearEquiv R := rfl
+
+end MulOpposite

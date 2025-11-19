@@ -3,8 +3,9 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+module
 
-import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
+public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
 /-!
 # Grassmannians
@@ -48,6 +49,8 @@ to `G(n - k, V; F)` and also to `G(k, V →ₗ[F] F; F)`, where `n` is the dimen
 - Representability of `Module.Grassmannian.functor R M k`.
 -/
 
+@[expose] public section
+
 universe u v w
 
 namespace Module
@@ -67,7 +70,7 @@ attribute [instance] Grassmannian.finite_quotient Grassmannian.projective_quotie
 
 namespace Grassmannian
 
-@[inherit_doc] scoped notation "G("k", "M"; "R")" => Grassmannian R M k
+@[inherit_doc] scoped notation "G(" k ", " M "; " R ")" => Grassmannian R M k
 
 variable {R M k}
 

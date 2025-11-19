@@ -3,12 +3,14 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Order.Ring.Rat
-import Mathlib.Data.Multiset.Sort
-import Mathlib.Data.PNat.Basic
-import Mathlib.Data.PNat.Interval
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.IntervalCases
+module
+
+public import Mathlib.Algebra.Order.Ring.Rat
+public import Mathlib.Data.Multiset.Sort
+public import Mathlib.Data.PNat.Basic
+public import Mathlib.Data.PNat.Interval
+public import Mathlib.Tactic.NormNum
+public import Mathlib.Tactic.IntervalCases
 
 /-!
 # The inequality `p⁻¹ + q⁻¹ + r⁻¹ > 1`
@@ -34,6 +36,8 @@ in the classification of Dynkin diagrams, root systems, and semisimple Lie algeb
 * `pqr.classification`, the classification of solutions to `p⁻¹ + q⁻¹ + r⁻¹ > 1`
 
 -/
+
+@[expose] public section
 
 
 namespace ADEInequality
@@ -229,9 +233,9 @@ theorem admissible_of_one_lt_sumInv_aux :
 theorem admissible_of_one_lt_sumInv {p q r : ℕ+} (H : 1 < sumInv {p, q, r}) :
     Admissible {p, q, r} := by
   simp only [Admissible]
-  let S := sort ((· ≤ ·) : ℕ+ → ℕ+ → Prop) {p, q, r}
+  let S := sort (α := ℕ+) {p, q, r}
   have hS : S.Sorted (· ≤ ·) := sort_sorted _ _
-  have hpqr : ({p, q, r} : Multiset ℕ+) = S := (sort_eq LE.le {p, q, r}).symm
+  have hpqr : ({p, q, r} : Multiset ℕ+) = S := (sort_eq {p, q, r} LE.le).symm
   rw [hpqr]
   rw [hpqr] at H
   apply admissible_of_one_lt_sumInv_aux hS _ H

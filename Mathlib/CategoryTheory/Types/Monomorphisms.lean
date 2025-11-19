@@ -3,23 +3,28 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Connected
-import Mathlib.CategoryTheory.Limits.Types.Filtered
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+module
+
+public import Mathlib.CategoryTheory.Limits.Connected
+public import Mathlib.CategoryTheory.Limits.Types.Filtered
+public import Mathlib.CategoryTheory.Limits.Types.Pushouts
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Stability properties of monomorphisms in `Type`
 
 In this file, we show that in the category `Type u`, monomorphisms
 are stable under cobase change, filtered colimits.
-After importing `CategoryTheory.MorphismProperty.TransfiniteComposition`,
+After importing `Mathlib/CategoryTheory/MorphismProperty/TransfiniteComposition.lean`,
 the fact that monomorphisms are stable under transfinite composition
 will also be inferred automatically.
 
 (The stability by retracts holds in any category: it is shown
-in the file `CategoryTheory.MorphismProperty.Retract`.)
+in the file `Mathlib/CategoryTheory/MorphismProperty/Retract.lean`.)
 
 -/
+
+@[expose] public section
 
 universe v' u' u
 

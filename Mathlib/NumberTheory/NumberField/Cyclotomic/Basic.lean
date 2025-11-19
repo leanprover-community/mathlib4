@@ -3,11 +3,13 @@ Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.NumberTheory.Cyclotomic.Discriminant
-import Mathlib.RingTheory.Ideal.Norm.AbsNorm
-import Mathlib.RingTheory.Norm.Transitivity
-import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
-import Mathlib.RingTheory.Prime
+module
+
+public import Mathlib.NumberTheory.Cyclotomic.Discriminant
+public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+public import Mathlib.RingTheory.Norm.Transitivity
+public import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
+public import Mathlib.RingTheory.Prime
 
 /-!
 # Ring of integers of `p ^ n`-th cyclotomic fields
@@ -24,6 +26,8 @@ integers of a `p ^ n`-th cyclotomic extension of `ℚ`.
   of cyclotomic fields.
 -/
 
+@[expose] public section
+
 universe u
 
 open Algebra IsCyclotomicExtension Polynomial NumberField
@@ -35,6 +39,10 @@ variable {p : ℕ} {k : ℕ} {K : Type u} [Field K] {ζ : K} [hp : Fact p.Prime]
 namespace IsCyclotomicExtension.Rat
 
 variable [CharZero K]
+
+variable (k K) in
+theorem finrank [NeZero k] [IsCyclotomicExtension {k} ℚ K] : Module.finrank ℚ K = k.totient :=
+  IsCyclotomicExtension.finrank K <| Polynomial.cyclotomic.irreducible_rat (NeZero.pos _)
 
 /-- The discriminant of the power basis given by `ζ - 1`. -/
 theorem discr_prime_pow_ne_two' [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
@@ -369,7 +377,7 @@ theorem norm_toInteger_sub_one_eq_one {n : ℕ} [IsCyclotomicExtension {n} ℚ K
     eval_one_cyclotomic_not_prime_pow h₂, Int.cast_one]
 
 /-- The norm, relative to `ℤ`, of `ζ ^ p ^ s - 1` in a `p ^ (k + 1)`-th cyclotomic extension of `ℚ`
-is p ^ p ^ s` if `s ≤ k` and `p ^ (k - s + 1) ≠ 2`. -/
+is `p ^ p ^ s` if `s ≤ k` and `p ^ (k - s + 1) ≠ 2`. -/
 lemma norm_toInteger_pow_sub_one_of_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ (p ^ (k + 1))) {s : ℕ} (hs : s ≤ k) (htwo : p ^ (k - s + 1) ≠ 2) :
     Algebra.norm ℤ (hζ.toInteger ^ p ^ s - 1) = p ^ p ^ s := by
@@ -602,7 +610,7 @@ theorem prime_dvd_of_dvd_norm_sub_one {n : ℕ} (hn : 2 ≤ n) {K : Type*}
   rsuffices ⟨q, hq, t, s, ht₁, ht₂, hs⟩ :
       ∃ q, q.Prime ∧ ∃ t s, t ≠ 0 ∧ n = q ^ t ∧ (p : ℤ) ∣ (q : ℤ) ^ s := by
     obtain hn | hn := lt_or_eq_of_le hn
-    · by_cases h : ∃ q, q.Prime ∧ ∃ t, q ^ t = n
+    · by_cases! h : ∃ q, q.Prime ∧ ∃ t, q ^ t = n
       · obtain ⟨q, hq, t, hn'⟩ := h
         have : Fact (Nat.Prime q) := ⟨hq⟩
         cases t with
@@ -622,8 +630,7 @@ theorem prime_dvd_of_dvd_norm_sub_one {n : ℕ} (hn : 2 ≤ n) {K : Type*}
       · rw [IsPrimitiveRoot.norm_toInteger_sub_one_eq_one hμ hn, one_pow,
           Int.natCast_dvd_ofNat, Nat.dvd_one] at hp
         · exact (Nat.Prime.ne_one hF.out hp).elim
-        · simp only [not_exists, not_and] at h
-          exact fun {p} a k ↦ h p a k
+        · exact fun {p} a k ↦ h p a k
     · rw [← hn] at hμ hC ⊢
       refine ⟨2, Nat.prime_two, 1, Module.finrank ℚ⟮ζ⟯ K, one_ne_zero, by rw [pow_one], ?_⟩
       rwa [hμ.norm_toInteger_sub_one_of_eq_two, neg_eq_neg_one_mul, mul_pow, IsUnit.dvd_mul_left

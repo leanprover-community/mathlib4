@@ -3,10 +3,12 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Reverse
-import Mathlib.Algebra.Polynomial.Inductions
-import Mathlib.RingTheory.Localization.Away.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Reverse
+public import Mathlib.Algebra.Polynomial.Inductions
+public import Mathlib.RingTheory.Localization.Away.Basic
 
 /-!  # Laurent polynomials
 
@@ -46,7 +48,7 @@ convenient.
 I made a *heavy* use of `simp` lemmas, aiming to bring Laurent polynomials to the form `C a * T n`.
 Any comments or suggestions for improvements is greatly appreciated!
 
-##  Future work
+## Future work
 Lots is missing!
 -- (Riccardo) add inclusion into Laurent series.
 -- A "better" definition of `trunc` would be as an `R`-linear map.  This works:
@@ -66,6 +68,8 @@ Lots is missing!
 --  `Polynomial.toFinsuppIso`.
 -- Add `degree, intDegree, intTrailingDegree, leadingCoeff, trailingCoeff,...`.
 -/
+
+@[expose] public section
 
 
 open Polynomial Function AddMonoidAlgebra Finsupp
@@ -297,7 +301,7 @@ def trunc : R[T;T⁻¹] →+ R[X] :=
 theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (monomial n.toNat r) 0 := by
   apply (toFinsuppIso R).injective
   simp only [← single_eq_C_mul_T, trunc, AddMonoidHom.coe_comp, Function.comp_apply,
-    RingHom.toAddMonoidHom_eq_coe, RingEquiv.toRingHom_eq_coe, Int.ofNat_eq_coe,
+    RingHom.toAddMonoidHom_eq_coe, RingEquiv.toRingHom_eq_coe, Int.ofNat_eq_natCast,
     AddMonoidHom.coe_coe, RingHom.coe_coe, RingEquiv.apply_symm_apply, toFinsuppIso_apply]
   -- We need `erw` to see through the identification of `Finsupp` with `LaurentSeries`.
   erw [comapDomain.addMonoidHom_apply Int.ofNat_injective]
@@ -308,7 +312,7 @@ theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (mon
   · rw [toFinsupp_inj]
     ext a
     have : a ≠ n := by omega
-    simp only [coeff_ofFinsupp, comapDomain_apply, Int.ofNat_eq_coe, coeff_zero,
+    simp only [coeff_ofFinsupp, comapDomain_apply, Int.ofNat_eq_natCast, coeff_zero,
       single_eq_of_ne this]
 
 @[simp]
@@ -515,13 +519,14 @@ instance isLocalization : IsLocalization.Away (X : R[X]) R[T;T⁻¹] :=
 theorem mk'_mul_T (p : R[X]) (n : ℕ) :
     IsLocalization.mk' R[T;T⁻¹] p (⟨X^n, n, rfl⟩ : Submonoid.powers (X : R[X])) * T n =
       toLaurent p := by
-  rw [←toLaurent_X_pow, ←algebraMap_eq_toLaurent, IsLocalization.mk'_spec, algebraMap_eq_toLaurent]
+  rw [← toLaurent_X_pow, ← algebraMap_eq_toLaurent, IsLocalization.mk'_spec,
+    algebraMap_eq_toLaurent]
 
 @[simp]
 theorem mk'_eq (p : R[X]) (n : ℕ) :
     IsLocalization.mk' R[T;T⁻¹] p (⟨X^n, n, rfl⟩ : Submonoid.powers (X : R[X])) =
       toLaurent p * T (-n) := by
-  rw [←IsUnit.mul_left_inj (isUnit_T n), mul_T_assoc, neg_add_cancel, T_zero, mul_one]
+  rw [← IsUnit.mul_left_inj (isUnit_T n), mul_T_assoc, neg_add_cancel, T_zero, mul_one]
   exact mk'_mul_T p n
 
 theorem mk'_one_X_pow (n : ℕ) :
@@ -544,23 +549,23 @@ def eval₂ : R[T;T⁻¹] →+* S :=
 @[simp]
 theorem eval₂_toLaurent (p : R[X]) : eval₂ f x (toLaurent p) = Polynomial.eval₂ f x p := by
   unfold eval₂
-  rw [←algebraMap_eq_toLaurent, IsLocalization.lift_eq, coe_eval₂RingHom]
+  rw [← algebraMap_eq_toLaurent, IsLocalization.lift_eq, coe_eval₂RingHom]
 
 theorem eval₂_T_n (n : ℕ) : eval₂ f x (T n) = x ^ n := by
-  rw [←Polynomial.toLaurent_X_pow, eval₂_toLaurent, eval₂_X_pow]
+  rw [← Polynomial.toLaurent_X_pow, eval₂_toLaurent, eval₂_X_pow]
 
 theorem eval₂_T_neg_n (n : ℕ) : eval₂ f x (T (-n)) = x⁻¹ ^ n := by
-  rw [←mk'_one_X_pow]
+  rw [← mk'_one_X_pow]
   unfold eval₂
-  rw [IsLocalization.lift_mk'_spec, map_one, coe_eval₂RingHom, eval₂_X_pow, ←mul_pow,
+  rw [IsLocalization.lift_mk'_spec, map_one, coe_eval₂RingHom, eval₂_X_pow, ← mul_pow,
     Units.mul_inv, one_pow]
 
 @[simp]
 theorem eval₂_T (n : ℤ) : eval₂ f x (T n) = (x ^ n).val := by
-  by_cases hn : 0 ≤ n
+  by_cases! hn : 0 ≤ n
   · lift n to ℕ using hn
     apply eval₂_T_n
-  · obtain ⟨m, rfl⟩ := Int.exists_eq_neg_ofNat (Int.le_of_not_le hn)
+  · obtain ⟨m, rfl⟩ := Int.exists_eq_neg_ofNat hn.le
     rw [eval₂_T_neg_n, zpow_neg, zpow_natCast, ← inv_pow, Units.val_pow_eq_pow_val]
 
 @[simp]
@@ -568,7 +573,7 @@ theorem eval₂_C (r : R) : eval₂ f x (C r) = f r := by
   rw [← toLaurent_C, eval₂_toLaurent, Polynomial.eval₂_C]
 
 theorem eval₂_C_mul_T_n (r : R) (n : ℕ) : eval₂ f x (C r * T n) = f r * x ^ n := by
-  rw [←Polynomial.toLaurent_C_mul_T, eval₂_toLaurent, eval₂_monomial]
+  rw [← Polynomial.toLaurent_C_mul_T, eval₂_toLaurent, eval₂_monomial]
 
 theorem eval₂_C_mul_T_neg_n (r : R) (n : ℕ) : eval₂ f x (C r * T (-n)) = f r * x⁻¹ ^ n := by
   rw [map_mul, eval₂_T_neg_n, eval₂_C]

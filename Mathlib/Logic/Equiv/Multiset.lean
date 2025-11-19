@@ -3,12 +3,16 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Multiset.Sort
-import Mathlib.Logic.Equiv.List
+module
+
+public import Mathlib.Data.Multiset.Sort
+public import Mathlib.Logic.Equiv.List
 
 /-!
 # `Encodable` and `Denumerable` instances for `Multiset`
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 
@@ -89,7 +93,7 @@ theorem raise_sorted (l n) : List.Sorted (· ≤ ·) (raise l n) := (isChain_rai
 in `Multiset.encodable`. -/
 instance multiset : Denumerable (Multiset α) :=
   mk'
-    ⟨fun s : Multiset α => encode <| lower ((s.map encode).sort (· ≤ ·)) 0,
+    ⟨fun s : Multiset α => encode <| lower (s.map encode).sort 0,
      fun n =>
       Multiset.map (ofNat α) (raise (ofNat (List ℕ) n) 0),
      fun s => by

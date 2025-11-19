@@ -3,9 +3,11 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Group.Defs
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+module
+
+public import Mathlib.Algebra.Order.Group.Defs
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 
 /-!
 # Absolute values in ordered groups
@@ -18,6 +20,8 @@ negation. This generalizes the usual absolute value on real numbers (`|x| = max 
 - `|a|`: The *absolute value* of an element `a` of an additive lattice ordered group
 - `|a|ₘ`: The *absolute value* of an element `a` of a multiplicative lattice ordered group
 -/
+
+@[expose] public section
 
 open Function
 
@@ -192,9 +196,6 @@ theorem mabs_mul_three (a b c : G) : |a * b * c|ₘ ≤ |a|ₘ * |b|ₘ * |c|ₘ
 theorem mabs_div_le_of_le_of_le {a b lb ub : G} (hal : lb ≤ a) (hau : a ≤ ub) (hbl : lb ≤ b)
     (hbu : b ≤ ub) : |a / b|ₘ ≤ ub / lb :=
   mabs_div_le_iff.2 ⟨div_le_div'' hau hbl, div_le_div'' hbu hal⟩
-
-@[deprecated (since := "2025-03-02")]
-alias dist_bdd_within_interval := abs_sub_le_of_le_of_le
 
 @[to_additive]
 theorem eq_of_mabs_div_le_one (h : |a / b|ₘ ≤ 1) : a = b :=

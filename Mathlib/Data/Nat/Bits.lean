@@ -3,12 +3,14 @@ Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
 -/
-import Mathlib.Data.Nat.BinaryRec
-import Mathlib.Data.List.Defs
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.GeneralizeProofs
-import Mathlib.Tactic.Says
-import Mathlib.Util.AssertExists
+module
+
+public import Batteries.Tactic.GeneralizeProofs
+public import Mathlib.Data.Nat.BinaryRec
+public import Mathlib.Data.List.Defs
+public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.Says
+public import Mathlib.Util.AssertExists
 
 /-!
 # Additional properties of binary recursion on `Nat`
@@ -21,6 +23,8 @@ For example, we can more easily work with `Nat.bits` and `Nat.size`.
 See also: `Nat.bitwise`, `Nat.pow` (for various lemmas about `size` and `shiftLeft`/`shiftRight`),
 and `Nat.digits`.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -131,7 +135,7 @@ def shiftLeft' (b : Bool) (m : ℕ) : ℕ → ℕ
 lemma shiftLeft'_false : ∀ n, shiftLeft' false m n = m <<< n
   | 0 => rfl
   | n + 1 => by
-    have : 2 * (m * 2^n) = 2^(n+1)*m := by
+    have : 2 * (m * 2 ^ n) = 2 ^ (n + 1) * m := by
       rw [Nat.mul_comm, Nat.mul_assoc, ← Nat.pow_succ]; simp
     simp [shiftLeft_eq, shiftLeft', bit_val, shiftLeft'_false, this]
 
@@ -252,7 +256,7 @@ lemma bit_le : ∀ (b : Bool) {m n : ℕ}, m ≤ n → bit b m ≤ bit b n
   | false, _, _, h => by dsimp [bit]; cutsat
 
 lemma bit_lt_bit (a b) (h : m < n) : bit a m < bit b n := calc
-  bit a m < 2 * n   := by cases a <;> dsimp [bit] <;> omega
+  bit a m < 2 * n := by cases a <;> dsimp [bit] <;> omega
         _ ≤ bit b n := by cases b <;> dsimp [bit] <;> omega
 
 @[simp]

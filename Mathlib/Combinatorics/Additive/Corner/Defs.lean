@@ -3,7 +3,9 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Combinatorics.Additive.FreimanHom
+module
+
+public import Mathlib.Combinatorics.Additive.FreimanHom
 
 /-!
 # Corners
@@ -16,6 +18,8 @@ property of being corner-free.
 * [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 * [Wikipedia, *Corners theorem*](https://en.wikipedia.org/wiki/Corners_theorem)
 -/
+
+@[expose] public section
 
 assert_not_exists Field Ideal TwoSidedIdeal
 

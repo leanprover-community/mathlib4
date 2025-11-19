@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.NonUnitalHom
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+module
+
+public import Mathlib.Algebra.Algebra.NonUnitalHom
+public import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 /-!
 # Facts about algebras involving bilinear maps and tensor products
@@ -14,18 +16,21 @@ in order to avoid importing `LinearAlgebra.BilinearMap` and
 `LinearAlgebra.TensorProduct` unnecessarily.
 -/
 
+@[expose] public section
+
 open TensorProduct Module
+
+variable {R A B : Type*}
 
 namespace LinearMap
 
 section NonUnitalNonAssoc
-variable (R A : Type*)
 
 section one_side
 variable [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
 
 section left
-variable {A} [SMulCommClass R A A]
+variable (R) [SMulCommClass R A A]
 
 /-- The multiplication on the left in an algebra is a linear map.
 
@@ -50,7 +55,7 @@ theorem mulLeft_zero_eq_zero : mulLeft R (0 : A) = 0 := ext fun _ => zero_mul _
 end left
 
 section right
-variable {A} [IsScalarTower R A A]
+variable (R) [IsScalarTower R A A]
 
 /-- The multiplication on the right in an algebra is a linear map.
 
@@ -77,7 +82,7 @@ end right
 
 end one_side
 
-variable [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
+variable (R A) [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
 variable [SMulCommClass R A A] [IsScalarTower R A A]
 
 /-- The multiplication in a non-unital non-associative algebra is a bilinear map.
@@ -91,6 +96,9 @@ def mul : A →ₗ[R] A →ₗ[R] A :=
 -- TODO: upgrade to A-linear map if A is a semiring.
 def mul' : A ⊗[R] A →ₗ[R] A :=
   TensorProduct.lift (mul R A)
+
+@[inherit_doc] scoped[RingTheory.LinearMap] notation "μ" => LinearMap.mul' _ _
+@[inherit_doc] scoped[RingTheory.LinearMap] notation "μ[" R "]" => LinearMap.mul' R _
 
 variable {A}
 
@@ -123,10 +131,9 @@ theorem lift_lsmul_mul_eq_lsmul_lift_lsmul {r : R} :
 end NonUnitalNonAssoc
 
 section NonUnital
-variable (R A B : Type*)
 
 section one_side
-variable [Semiring R] [NonUnitalSemiring A] [NonUnitalSemiring B] [Module R B] [Module R A]
+variable (R A) [Semiring R] [NonUnitalSemiring A] [NonUnitalSemiring B] [Module R B] [Module R A]
 
 @[simp]
 theorem mulLeft_mul [SMulCommClass R A A] (a b : A) :
@@ -146,6 +153,7 @@ variable [CommSemiring R] [NonUnitalSemiring A] [NonUnitalSemiring B] [Module R 
 variable [SMulCommClass R A A] [IsScalarTower R A A]
 variable [SMulCommClass R B B] [IsScalarTower R B B]
 
+variable (R A) in
 /-- The multiplication in a non-unital algebra is a bilinear map.
 
 A weaker version of this for non-unital non-associative algebras exists as `LinearMap.mul`. -/
@@ -153,8 +161,6 @@ def _root_.NonUnitalAlgHom.lmul : A →ₙₐ[R] End R A where
   __ := mul R A
   map_mul' := mulLeft_mul _ _
   map_zero' := mulLeft_zero_eq_zero _ _
-
-variable {R A B}
 
 @[simp]
 theorem _root_.NonUnitalAlgHom.coe_lmul_eq_mul : ⇑(NonUnitalAlgHom.lmul R A) = mul R A :=
@@ -191,7 +197,7 @@ end Injective
 
 section Semiring
 
-variable (R A : Type*)
+variable (R A)
 section one_side
 variable [Semiring R] [Semiring A]
 
@@ -263,4 +269,39 @@ theorem toSpanSingleton_eq_algebra_linearMap : toSpanSingleton R A 1 = Algebra.l
 
 end Semiring
 
+section CommSemiring
+-- TODO: Generalise to `NonUnitalNonAssocCommSemiring`. This can't currently be done
+-- because there is no instance **to** `NonUnitalNonAssocCommSemiring`.
+variable [CommSemiring R] [NonUnitalCommSemiring A]
+  [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
+
+@[simp] lemma flip_mul : (mul R A).flip = mul R A := by ext; simp [mul_comm]
+
+lemma mul'_comp_comm : mul' R A ∘ₗ TensorProduct.comm R A A = mul' R A := by
+  simp [mul', lift_comp_comm_eq]
+
+lemma mul'_comm (x : A ⊗[R] A) : mul' R A (TensorProduct.comm R A A x) = mul' R A x :=
+  congr($mul'_comp_comm _)
+
+end CommSemiring
 end LinearMap
+
+open scoped RingTheory.LinearMap
+
+namespace NonUnitalAlgHom
+variable [CommSemiring R]
+  [NonUnitalSemiring A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
+  [NonUnitalNonAssocSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
+
+lemma comp_mul' (f : A →ₙₐ[R] B) : (f : A →ₗ[R] B) ∘ₗ μ = μ[R] ∘ₗ (f ⊗ₘ f) :=
+  TensorProduct.ext' <| by simp
+
+end NonUnitalAlgHom
+
+namespace AlgHom
+variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+
+lemma comp_mul' (f : A →ₐ B) : f.toLinearMap ∘ₗ μ = μ[R] ∘ₗ (f.toLinearMap ⊗ₘ f.toLinearMap) :=
+  TensorProduct.ext' <| by simp
+
+end AlgHom

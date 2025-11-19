@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Data.ENNReal.Basic
+module
+
+public import Mathlib.Data.ENNReal.Basic
 
 /-!
 # Maps between real and extended non-negative real numbers
@@ -15,7 +17,7 @@ files.
 
 This file provides a `positivity` extension for `ENNReal.ofReal`.
 
-# Main theorems
+## Main statements
 
   - `trichotomy (p : ℝ≥0∞) : p = 0 ∨ p = ∞ ∨ 0 < p.toReal`: often used for `WithLp` and `lp`
   - `dichotomy (p : ℝ≥0∞) [Fact (1 ≤ p)] : p = ∞ ∨ 1 ≤ p.toReal`: often used for `WithLp` and `lp`
@@ -23,6 +25,8 @@ This file provides a `positivity` extension for `ENNReal.ofReal`.
     indexed or set infima and suprema in `ℝ`, `ℝ≥0` and `ℝ≥0∞`. This is especially useful because
     `ℝ≥0∞` is a complete lattice.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -146,6 +150,10 @@ theorem ofReal_le_ofReal_iff {p q : ℝ} (h : 0 ≤ q) :
 
 lemma ofReal_le_ofReal_iff' {p q : ℝ} : ENNReal.ofReal p ≤ .ofReal q ↔ p ≤ q ∨ p ≤ 0 :=
   coe_le_coe.trans Real.toNNReal_le_toNNReal_iff'
+
+@[simp, norm_cast]
+lemma ofReal_le_coe {a : ℝ} {b : ℝ≥0} : ENNReal.ofReal a ≤ b ↔ a ≤ b := by
+  simp [← ofReal_le_ofReal_iff]
 
 lemma ofReal_lt_ofReal_iff' {p q : ℝ} : ENNReal.ofReal p < .ofReal q ↔ p < q ∧ 0 < q :=
   coe_lt_coe.trans Real.toNNReal_lt_toNNReal_iff'
@@ -343,10 +351,7 @@ theorem toReal_top_mul (a : ℝ≥0∞) : ENNReal.toReal (∞ * a) = 0 := by
   rw [mul_comm]
   exact toReal_mul_top _
 
-theorem toReal_eq_toReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toReal = b.toReal ↔ a = b := by
-  lift a to ℝ≥0 using ha
-  lift b to ℝ≥0 using hb
-  simp only [coe_inj, NNReal.coe_inj, coe_toReal]
+@[deprecated (since := "2025-11-07")] alias toReal_eq_toReal := toReal_eq_toReal_iff'
 
 protected theorem trichotomy (p : ℝ≥0∞) : p = 0 ∨ p = ∞ ∨ 0 < p.toReal := by
   simpa only [or_iff_not_imp_left] using toReal_pos
@@ -378,6 +383,7 @@ theorem toReal_pos_iff_ne_top (p : ℝ≥0∞) [Fact (1 ≤ p)] : 0 < p.toReal �
 
 end Real
 
+@[deprecated max_eq_zero_iff (since := "2025-10-25")]
 theorem sup_eq_zero {a b : ℝ≥0∞} : a ⊔ b = 0 ↔ a = 0 ∧ b = 0 :=
   sup_eq_bot_iff
 
@@ -389,7 +395,7 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `ENNReal.ofReal`. -/
 @[positivity ENNReal.ofReal _]
-def evalENNRealOfReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalENNRealOfReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ≥0∞), ~q(ENNReal.ofReal $a) =>
     let ra ← core q(inferInstance) q(inferInstance) a

@@ -3,9 +3,12 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Robin Carlier
 -/
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
+module
+
+public import Mathlib.CategoryTheory.Limits.ConeCategory
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 
 /-!
 # Reflexive coequalizers
@@ -39,7 +42,7 @@ reflexive.
 * `hasReflexiveCoequalizers_iff`: A category has coequalizers of reflexive pairs if and only iff it
   has all colimits of shape `WalkingReflexivePair`.
 
-# TODO
+## TODO
 * If `C` has binary coproducts and reflexive coequalizers, then it has all coequalizers.
 * If `T` is a monad on cocomplete category `C`, then `Algebra T` is cocomplete iff it has reflexive
   coequalizers.
@@ -48,6 +51,8 @@ reflexive.
 * Bundle the reflexive pairs of kernel pairs and of adjunction as functors out of the walking
   reflexive pair.
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory

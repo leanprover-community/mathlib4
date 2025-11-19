@@ -3,12 +3,14 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Data.List.Cycle
-import Mathlib.Data.PNat.Notation
-import Mathlib.Dynamics.FixedPoints.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.Data.List.Cycle
+public import Mathlib.Data.PNat.Notation
+public import Mathlib.Dynamics.FixedPoints.Basic
 
 /-!
 # Periodic points
@@ -40,6 +42,8 @@ is a periodic point of `f` of period `n` if and only if `minimalPeriod f x | n`.
 * https://en.wikipedia.org/wiki/Periodic_point
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -511,9 +515,6 @@ theorem isFixedPt_prodMap (x : α × β) :
     IsFixedPt (Prod.map f g) x ↔ IsFixedPt f x.1 ∧ IsFixedPt g x.2 :=
   Prod.ext_iff
 
-@[deprecated (since := "2025-04-18")]
-alias isFixedPt_prod_map := isFixedPt_prodMap
-
 theorem IsFixedPt.prodMap (ha : IsFixedPt f a) (hb : IsFixedPt g b) :
     IsFixedPt (Prod.map f g) (a, b) :=
   (isFixedPt_prodMap _).mpr ⟨ha, hb⟩
@@ -522,9 +523,6 @@ theorem IsFixedPt.prodMap (ha : IsFixedPt f a) (hb : IsFixedPt g b) :
 theorem isPeriodicPt_prodMap (x : α × β) :
     IsPeriodicPt (Prod.map f g) n x ↔ IsPeriodicPt f n x.1 ∧ IsPeriodicPt g n x.2 := by
   simp [IsPeriodicPt]
-
-@[deprecated (since := "2025-04-18")]
-alias isPeriodicPt_prod_map := isPeriodicPt_prodMap
 
 theorem IsPeriodicPt.prodMap (ha : IsPeriodicPt f n a) (hb : IsPeriodicPt g n b) :
     IsPeriodicPt (Prod.map f g) n (a, b) :=

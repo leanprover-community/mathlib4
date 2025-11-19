@@ -3,11 +3,13 @@ Copyright (c) 2024 Salvatore Mercuri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri
 -/
-import Mathlib.Analysis.Normed.Field.Lemmas
-import Mathlib.Analysis.Normed.Ring.WithAbs
-import Mathlib.FieldTheory.Separable
-import Mathlib.Topology.Algebra.UniformField
-import Mathlib.Topology.MetricSpace.Completion
+module
+
+public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Analysis.Normed.Ring.WithAbs
+public import Mathlib.FieldTheory.Separable
+public import Mathlib.Topology.Algebra.UniformField
+public import Mathlib.Topology.MetricSpace.Completion
 
 /-!
 # WithAbs for fields
@@ -17,6 +19,8 @@ on an absolute value. This is useful when dealing with several absolute values o
 
 In particular this allows us to define the completion of a field at a given absolute value.
 -/
+
+@[expose] public section
 
 open Topology
 
@@ -59,7 +63,7 @@ theorem isometry_of_comp (h : ∀ x, ‖f x‖ = v x) : Isometry f :=
   AddMonoidHomClass.isometry_of_norm _ h
 
 /-- If the absolute value `v` factors through an embedding `f` into a normed field, then
-the pseudo metric space associated to the absolute value is the same as the pseudo metric space
+the pseudometric space associated to the absolute value is the same as the pseudometric space
 induced by `f`. -/
 @[deprecated "Use Isometry.dist_eq in combination with AddMonoidHomClass.isometry_of_norm"
   (since := "2025-09-25")]

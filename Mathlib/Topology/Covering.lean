@@ -3,8 +3,10 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Topology.IsLocalHomeomorph
-import Mathlib.Topology.FiberBundle.Basic
+module
+
+public import Mathlib.Topology.IsLocalHomeomorph
+public import Mathlib.Topology.FiberBundle.Basic
 
 /-!
 # Covering Maps
@@ -21,6 +23,8 @@ This file defines covering maps.
   not connected, then the fibers `f ⁻¹' {x}` are not necessarily isomorphic. Also, `f` is not
   assumed to be surjective, so the fibers are even allowed to be empty.
 -/
+
+@[expose] public section
 
 open Bundle Topology
 
@@ -130,7 +134,7 @@ variable (I) in
 theorem of_preimage_eq_empty [IsEmpty I] {x : X} {U : Set X} (hUx : U ∈ 𝓝 x) (hfU : f ⁻¹' U = ∅) :
     IsEvenlyCovered f x I :=
   have ⟨V, hVU, hV, hxV⟩ := mem_nhds_iff.mp hUx
-  have hfV : f⁻¹' V = ∅ := Set.eq_empty_of_subset_empty ((Set.preimage_mono hVU).trans hfU.le)
+  have hfV : f ⁻¹' V = ∅ := Set.eq_empty_of_subset_empty ((Set.preimage_mono hVU).trans hfU.le)
   have := Set.isEmpty_coe_sort.mpr hfV
   ⟨inferInstance, _, hxV, hV, hfV ▸ isOpen_empty, .empty, isEmptyElim⟩
 

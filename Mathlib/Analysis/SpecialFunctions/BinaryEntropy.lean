@@ -3,8 +3,10 @@ Copyright (c) 2023 Adomas Baliuka. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adomas Baliuka
 -/
-import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
-import Mathlib.Analysis.Convex.SpecificFunctions.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
+public import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 
 /-!
 # Properties of Shannon q-ary entropy and binary entropy functions
@@ -47,6 +49,8 @@ The functions are also defined outside the interval `Icc 0 1` due to `log x = lo
 
 entropy, Shannon, binary, nit, nepit
 -/
+
+@[expose] public section
 
 namespace Real
 variable {q : ℕ} {p : ℝ}
@@ -339,7 +343,7 @@ lemma deriv2_qaryEntropy :
           simp [field, sub_ne_zero_of_ne xne1.symm, this, d_oneminus]
           ring
       · apply DifferentiableAt.add
-        simp only [differentiableAt_const]
+        · simp only [differentiableAt_const]
         exact DifferentiableAt.log (by fun_prop) (sub_ne_zero.mpr xne1.symm)
     filter_upwards [eventually_ne_nhds xne0, eventually_ne_nhds xne1]
       with y xne0 h2 using deriv_qaryEntropy xne0 h2

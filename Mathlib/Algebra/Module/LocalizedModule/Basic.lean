@@ -3,9 +3,11 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Jujian Zhang
 -/
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.Module.TransferInstance
-import Mathlib.RingTheory.Localization.Defs
+module
+
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.Module.TransferInstance
+public import Mathlib.RingTheory.Localization.Defs
 
 /-!
 # Localized Module
@@ -34,6 +36,8 @@ localize `M` by `S`. This gives us a `Localization S`-module.
 
 * Redefine `Localization` for monoids and rings to coincide with `LocalizedModule`.
 -/
+
+@[expose] public section
 
 
 namespace LocalizedModule
@@ -188,9 +192,7 @@ private theorem nsmul_succ' (n : ℕ) (x : LocalizedModule S M) : n.succ • x =
   LocalizedModule.induction_on (fun _ _ => rfl) x
 
 instance : AddCommMonoid (LocalizedModule S M) where
-  add := (· + ·)
   add_assoc := add_assoc'
-  zero := 0
   zero_add := zero_add'
   add_zero := add_zero'
   nsmul := (· • ·)
@@ -371,7 +373,6 @@ private theorem zero_smul_aux (p : LocalizedModule S M) : (0 : T) • p = 0 := b
     mk'_smul_mk, zero_smul, zero_mk]
 
 noncomputable instance isModule : Module T (LocalizedModule S M) where
-  smul := (· • ·)
   one_smul := one_smul_aux
   mul_smul := mul_smul_aux
   smul_add := smul_add_aux
@@ -1292,8 +1293,7 @@ variable {R A M M' : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] (S :
   [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
   [IsLocalization S A]
 
-/-- If `M'` is the localization of `M` at `S` and `A = S⁻¹R`, then
-`M' is an `A`-module. -/
+/-- If `M'` is the localization of `M` at `S` and `A = S⁻¹R`, then `M'` is an `A`-module. -/
 @[reducible] noncomputable def module (f : M →ₗ[R] M') [IsLocalizedModule S f] : Module A M' :=
   (IsLocalizedModule.iso S f).symm.toAddEquiv.module A
 
@@ -1363,7 +1363,7 @@ theorem noZeroSMulDivisors (S : Submonoid R) [NoZeroSMulDivisors R M] [IsLocaliz
     [IsLocalizedModule S f] : NoZeroSMulDivisors A N := by
   rw [noZeroSMulDivisors_iff]
   intro c x hcx
-  obtain ⟨a, s, rfl⟩ := IsLocalization.mk'_surjective S c
+  obtain ⟨a, s, rfl⟩ := IsLocalization.exists_mk'_eq S c
   obtain ⟨⟨m, t⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S f x
   rw [Function.uncurry_apply_pair] at hcx ⊢
   rw [mk'_smul_mk', mk'_eq_zero, IsLocalizedModule.eq_zero_iff S] at hcx
