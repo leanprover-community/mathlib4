@@ -46,7 +46,7 @@ theorem splitOnP_cons (x : α) (xs : List α) :
       if p x then [] :: xs.splitOnP p else (xs.splitOnP p).modifyHead (cons x) := by
   rw [splitOnP, splitOnP.go]; split <;> [rfl; simp [splitOnP.go_acc]]
 
-lemma splitOnP_false (h : ∀ (x : α), x ∈ xs → p x = false) :
+theorem splitOnP_false (h : ∀ (x : α), x ∈ xs → p x = false) :
     List.splitOnP p xs = [xs] := by
   induction xs with
   | nil => rfl
@@ -57,7 +57,7 @@ lemma splitOnP_false (h : ∀ (x : α), x ∈ xs → p x = false) :
 the result is the concatenation of `splitOnP` called on the portions of the input list
 from before and after the split -/
 @[simp]
-lemma splitOnP_append_cons {α : Type} (l1 l2 : List α)
+theorem splitOnP_append_cons {α : Type} (l1 l2 : List α)
     (a : α) (P : α → Bool) (hPa : P a = true) :
     List.splitOnP P (l1 ++ a :: l2) = List.splitOnP P l1 ++ List.splitOnP P l2 := by
   induction l1 with
