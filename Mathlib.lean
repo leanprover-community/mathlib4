@@ -3308,6 +3308,7 @@ import Mathlib.Data.EReal.Inv
 import Mathlib.Data.EReal.Operations
 import Mathlib.Data.Erased
 import Mathlib.Data.FP.Basic
+import Mathlib.Data.Fiber
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Fin.Embedding
 import Mathlib.Data.Fin.Fin2
