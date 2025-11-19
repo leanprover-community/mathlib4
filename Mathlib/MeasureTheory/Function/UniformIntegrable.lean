@@ -451,22 +451,6 @@ theorem unifIntegrable_finite [Finite ι] (hp_one : 1 ≤ p) (hp_top : p ≠ ∞
 
 end
 
-theorem eLpNorm_indicator_sub_le_of_dist_bdd (μ : Measure α)
-    {p : ℝ≥0∞} (hp' : p ≠ ∞) {s : Set α} (hs : MeasurableSet[m] s)
-    {f g : α → β} {c : ℝ} (hc : 0 ≤ c) (hf : ∀ x ∈ s, dist (f x) (g x) ≤ c) :
-    eLpNorm (s.indicator (f - g)) p μ ≤ ENNReal.ofReal c * μ s ^ (1 / p.toReal) := by
-  by_cases hp : p = 0
-  · simp [hp]
-  have : ∀ x, ‖s.indicator (f - g) x‖ ≤ ‖s.indicator (fun _ => c) x‖ := by
-    intro x
-    by_cases hx : x ∈ s
-    · rw [Set.indicator_of_mem hx, Set.indicator_of_mem hx, Pi.sub_apply, ← dist_eq_norm,
-        Real.norm_eq_abs, abs_of_nonneg hc]
-      exact hf x hx
-    · simp [Set.indicator_of_notMem hx]
-  grw [eLpNorm_mono this, eLpNorm_indicator_const hs hp hp', ← ofReal_norm_eq_enorm,
-    Real.norm_eq_abs, abs_of_nonneg hc]
-
 @[deprecated (since := "2025-10-30")]
 alias eLpNorm_sub_le_of_dist_bdd := eLpNorm_indicator_sub_le_of_dist_bdd
 
