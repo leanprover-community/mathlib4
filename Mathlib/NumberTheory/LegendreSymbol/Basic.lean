@@ -192,6 +192,23 @@ theorem card_sqrts (hp : p ≠ 2) (a : ℤ) :
     ↑{x : ZMod p | x ^ 2 = a}.toFinset.card = legendreSym p a + 1 :=
   quadraticChar_card_sqrts ((ringChar_zmod_n p).substr hp) a
 
+/-- If `p` is an odd prime and `a ≠ 0 (mod p)`, then `legendreSym p a = a^((p - 1)/2`. -/
+theorem euler_criterion_traditional {p : ℕ} [Fact p.Prime] (hpne2 : p ≠ 2) {a : ℤ}
+    (ha : (a : ZMod p) ≠ 0) : (legendreSym p a = 1) ↔ (a : ZMod p) ^ ((p - 1) / 2) = 1 := by
+  have h₁ : (legendreSym p a = 1) ↔ (a : ZMod p) ^ (p / 2) = 1 :=
+    (eq_one_iff p ha).trans (ZMod.euler_criterion (ha := ha))
+  have h₂ {p : ℕ} [hp : Fact p.Prime] (hpne2 : p ≠ 2) : p / 2 = (p - 1) / 2 := by
+    rcases Nat.Prime.odd_of_ne_two hp.out hpne2 with ⟨k, rfl⟩
+    have h₁ : (2 * k) / 2 = k := by norm_num
+    have h₂ : (1 : ℕ) / 2 = 0 := rfl
+    rw [Nat.add_div, h₁, h₂]
+    · simp only [Nat.mul_mod_right, Nat.mod_one, zero_add]
+      have : (if 2 ≤ 1 % 2 then 1 else 0) = 0 := by decide
+      rw [this]
+      simp
+    · decide
+  simpa [h₂ hpne2] using h₁
+
 end legendreSym
 
 end Legendre
