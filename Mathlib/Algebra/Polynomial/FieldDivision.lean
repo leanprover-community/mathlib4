@@ -313,7 +313,7 @@ private theorem quotient_mul_add_remainder_eq_aux (p q : R[X]) : q * div p q + m
   · simp only [h, zero_mul, mod, modByMonic_zero, zero_add]
   · conv =>
       rhs
-      rw [← modByMonic_add_div p (monic_mul_leadingCoeff_inv h)]
+      rw [← modByMonic_add_div p (q * C q.leadingCoeff⁻¹)]
     rw [div, mod, add_comm, mul_assoc]
 
 private theorem remainder_lt_aux (p : R[X]) (hq : q ≠ 0) : degree (mod p q) < degree q := by
@@ -396,7 +396,7 @@ theorem degree_div_le (p q : R[X]) : degree (p / q) ≤ degree p := by
 theorem degree_div_lt (hp : p ≠ 0) (hq : 0 < degree q) : degree (p / q) < degree p := by
   have hq0 : q ≠ 0 := fun hq0 => by simp [hq0] at hq
   rw [div_def, mul_comm, degree_mul_leadingCoeff_inv _ hq0]
-  exact degree_divByMonic_lt _ (monic_mul_leadingCoeff_inv hq0) hp
+  exact degree_divByMonic_lt _ (q * C q.leadingCoeff⁻¹) hp
     (by rw [degree_mul_leadingCoeff_inv _ hq0]; exact hq)
 
 theorem isUnit_map [Field k] (f : R →+* k) : IsUnit (p.map f) ↔ IsUnit p := by
@@ -610,7 +610,6 @@ theorem degree_pos_of_irreducible (hp : Irreducible p) : 0 < p.degree :=
 theorem X_sub_C_mul_divByMonic_eq_sub_modByMonic {K : Type*} [Ring K] (f : K[X]) (a : K) :
     (X - C a) * (f /ₘ (X - C a)) = f - f %ₘ (X - C a) := by
   rw [eq_sub_iff_add_eq, ← eq_sub_iff_add_eq', modByMonic_eq_sub_mul_div]
-  exact monic_X_sub_C a
 
 theorem divByMonic_add_X_sub_C_mul_derivative_divByMonic_eq_derivative
     {K : Type*} [CommRing K] (f : K[X]) (a : K) :

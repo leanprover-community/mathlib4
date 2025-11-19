@@ -74,8 +74,8 @@ theorem div_eq_quo_add_rem_div_add_rem_div (f : R[X]) {g₁ g₂ : R[X]} (hg₁ 
   have hg₂' : (↑g₂ : K) ≠ 0 := by
     norm_cast
     exact hg₂.ne_zero
-  have hfc := modByMonic_add_div (f * c) hg₂
-  have hfd := modByMonic_add_div (f * d) hg₁
+  have hfc := modByMonic_add_div (f * c) g₂
+  have hfd := modByMonic_add_div (f * d) g₁
   field_simp
   norm_cast
   linear_combination -1 * f * hcd + -1 * g₁ * hfc + -1 * g₂ * hfd
