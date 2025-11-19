@@ -296,10 +296,6 @@ theorem le_coe_iff {n : ℕ∞} {k : ℕ} : n ≤ ↑k ↔ ∃ (n₀ : ℕ), n =
 lemma not_lt_zero (n : ℕ∞) : ¬ n < 0 := by
   cases n <;> simp
 
-theorem eq_zero_or_add_one (i : ℕ∞) : i = 0 ∨ ∃ k, i = k + 1 := by
-  refine or_iff_not_imp_left.mpr fun h ↦ ⟨i - 1, ?_⟩
-  rw [tsub_add_cancel_of_le (one_le_iff_ne_zero.mpr h)]
-
 @[simp]
 lemma coe_lt_top (n : ℕ) : (n : ℕ∞) < ⊤ :=
   WithTop.coe_lt_top n
