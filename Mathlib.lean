@@ -4597,6 +4597,7 @@ import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
 import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 import Mathlib.LinearAlgebra.TensorProduct.Graded.External
 import Mathlib.LinearAlgebra.TensorProduct.Graded.Internal
+import Mathlib.LinearAlgebra.TensorProduct.HomTensor
 import Mathlib.LinearAlgebra.TensorProduct.Matrix
 import Mathlib.LinearAlgebra.TensorProduct.Opposite
 import Mathlib.LinearAlgebra.TensorProduct.Pi
