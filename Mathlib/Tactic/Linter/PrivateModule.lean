@@ -26,7 +26,6 @@ prefix `_private` in the declaration's name. The code here should be robust to p
 changes that put public declarations only in `.public` and private ones only in `.private`.
 -/
 
--- TODO: `module` is not enabled in MathlibTest yet, so tests should be written for this once it is.
 
 meta section
 
