@@ -3,9 +3,11 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johannes Hölzl, Rémy Degenne
 -/
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-import Mathlib.Order.Filter.IsBounded
-import Mathlib.Order.Hom.CompleteLattice
+module
+
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+public import Mathlib.Order.Filter.IsBounded
+public import Mathlib.Order.Hom.CompleteLattice
 
 /-!
 # liminfs and limsups of functions and filters
@@ -34,6 +36,8 @@ the definitions of Limsup and Liminf.
 
 In complete lattices, however, it coincides with the `Inf Sup` definition.
 -/
+
+@[expose] public section
 
 open Filter Set Function
 
@@ -958,12 +962,11 @@ noncomputable def liminf_reparam
   let m : Set (Subtype p) := {j | BddBelow (range (fun (i : s j) ↦ f i))}
   let g : ℕ → Subtype p := (exists_surjective_nat _).choose
   have Z : ∃ n, g n ∈ m ∨ ∀ j, j ∉ m := by
-    by_cases H : ∃ j, j ∈ m
+    by_cases! H : ∃ j, j ∈ m
     · rcases H with ⟨j, hj⟩
       rcases (exists_surjective_nat (Subtype p)).choose_spec j with ⟨n, rfl⟩
       exact ⟨n, Or.inl hj⟩
-    · push_neg at H
-      exact ⟨0, Or.inr H⟩
+    · exact ⟨0, Or.inr H⟩
   if j ∈ m then j else g (Nat.find Z)
 
 /-- Writing a liminf as a supremum of infimum, in a (possibly non-complete) conditionally complete

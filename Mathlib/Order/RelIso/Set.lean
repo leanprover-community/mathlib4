@@ -3,10 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Order.Directed
-import Mathlib.Order.RelIso.Basic
-import Mathlib.Logic.Embedding.Set
-import Mathlib.Logic.Equiv.Set
+module
+
+public import Mathlib.Order.Directed
+public import Mathlib.Order.RelIso.Basic
+public import Mathlib.Logic.Embedding.Set
+public import Mathlib.Logic.Equiv.Set
 
 /-!
 # Interactions between relation homomorphisms and sets
@@ -14,6 +16,8 @@ import Mathlib.Logic.Equiv.Set
 It is likely that there are better homes for many of these statement,
 in files further down the import graph.
 -/
+
+@[expose] public section
 
 
 open Function
@@ -101,7 +105,7 @@ instance (r : α → α → Prop) [IsIrrefl α r] (p : α → Prop) : IsIrrefl _
   ⟨fun x => @IsIrrefl.irrefl α r _ x⟩
 
 instance (r : α → α → Prop) [IsTrichotomous α r] (p : α → Prop) : IsTrichotomous _ (Subrel r p) :=
-  ⟨fun x y => by rw [Subtype.eq_iff]; exact @IsTrichotomous.trichotomous α r _ x y⟩
+  ⟨fun x y => by rw [Subtype.ext_iff]; exact @IsTrichotomous.trichotomous α r _ x y⟩
 
 instance (r : α → α → Prop) [IsWellFounded α r] (p : α → Prop) : IsWellFounded _ (Subrel r p) :=
   (Subrel.relEmbedding r p).isWellFounded

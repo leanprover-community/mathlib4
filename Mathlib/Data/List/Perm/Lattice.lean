@@ -3,16 +3,20 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.List.Forall2
-import Mathlib.Data.List.TakeDrop
-import Mathlib.Data.List.Lattice
-import Mathlib.Data.List.Nodup
+module
+
+public import Mathlib.Data.List.Forall2
+public import Mathlib.Data.List.TakeDrop
+public import Mathlib.Data.List.Lattice
+public import Mathlib.Data.List.Nodup
 
 /-!
 # List Permutations and list lattice operations.
 
 This file develops theory about the `List.Perm` relation and the lattice structure on lists.
 -/
+
+@[expose] public section
 
 -- Make sure we don't import algebra
 assert_not_exists Monoid

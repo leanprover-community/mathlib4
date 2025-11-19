@@ -3,9 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kevin Buzzard
 -/
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.RingTheory.PowerSeries.Inverse
-import Mathlib.RingTheory.PowerSeries.WellKnown
+module
+
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.RingTheory.PowerSeries.Inverse
+public import Mathlib.RingTheory.PowerSeries.WellKnown
 
 /-!
 # Bernoulli numbers
@@ -48,6 +50,8 @@ then defined as `bernoulli := (-1)^n * bernoulli'`.
 
 `sum_bernoulli : ∑ k ∈ Finset.range n, (n.choose k : ℚ) * bernoulli k = if n = 1 then 1 else 0`
 -/
+
+@[expose] public section
 
 
 open Nat Finset Finset.Nat PowerSeries
