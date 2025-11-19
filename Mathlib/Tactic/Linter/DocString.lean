@@ -3,14 +3,17 @@ Copyright (c) 2025 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang, Damiano Testa
 -/
+module
 
-import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header
 
 /-!
 # The "DocString" style linter
 
 The "DocString" linter validates style conventions regarding doc-string formatting.
 -/
+
+public meta section
 
 open Lean Elab Linter
 
@@ -48,7 +51,7 @@ in the input string `docString`.
 If/when the `docString` linter expands, it may take on more string processing.
 -/
 def deindentString (currIndent : Nat) (docString : String) : String :=
-  let indent : String := ('\n' :: List.replicate currIndent ' ').asString
+  let indent : String := String.ofList ('\n' :: List.replicate currIndent ' ')
   docString.replace indent " "
 
 namespace Style

@@ -3,9 +3,11 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection.Minimal
-import Mathlib.Analysis.InnerProductSpace.Symmetric
-import Mathlib.Analysis.RCLike.Lemmas
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Projection.Minimal
+public import Mathlib.Analysis.InnerProductSpace.Symmetric
+public import Mathlib.Analysis.RCLike.Lemmas
 
 /-!
 # The orthogonal projection
@@ -29,6 +31,8 @@ The orthogonal projection construction is adapted from
 
 The Coq code is available at the following address: <http://www.lri.fr/~sboldo/elfic/index.html>
 -/
+
+@[expose] public section
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
@@ -243,7 +247,7 @@ theorem starProjection_orthogonal_val (u : E) :
 theorem orthogonalProjection_orthogonal (u : E) :
     Kᗮ.orthogonalProjection u =
       ⟨u - K.starProjection u, sub_starProjection_mem_orthogonal _⟩ :=
-  Subtype.eq <| starProjection_orthogonal_val _
+  Subtype.ext <| starProjection_orthogonal_val _
 
 lemma starProjection_orthogonal (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] :
     Uᗮ.starProjection = ContinuousLinearMap.id 𝕜 E - U.starProjection := by
@@ -314,7 +318,7 @@ lemma starProjection_top' : (⊤ : Submodule 𝕜 E).starProjection = 1 :=
 
 @[simp]
 theorem orthogonalProjection_eq_zero_iff {v : E} : K.orthogonalProjection v = 0 ↔ v ∈ Kᗮ := by
-  refine ⟨fun h ↦ ?_, fun h ↦ Subtype.eq <| eq_starProjection_of_mem_orthogonal
+  refine ⟨fun h ↦ ?_, fun h ↦ Subtype.ext <| eq_starProjection_of_mem_orthogonal
     (zero_mem _) ?_⟩
   · rw [← sub_zero v, ← coe_zero (p := K), ← h]
     exact sub_starProjection_mem_orthogonal (K := K) v

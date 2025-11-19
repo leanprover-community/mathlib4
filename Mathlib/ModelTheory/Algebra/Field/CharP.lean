@@ -3,10 +3,11 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.Algebra.CharP.Basic
-import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
-import Mathlib.ModelTheory.Algebra.Field.Basic
+public import Mathlib.Algebra.CharP.Basic
+public import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
+public import Mathlib.ModelTheory.Algebra.Field.Basic
 
 /-!
 # First-order theory of fields
@@ -19,6 +20,8 @@ language of rings
 - `FirstOrder.Language.Theory.fieldOfChar` : the first-order theory of fields of characteristic `p`
   as a theory over the language of rings
 -/
+
+@[expose] public section
 
 variable {p : ℕ} {K : Type*}
 
