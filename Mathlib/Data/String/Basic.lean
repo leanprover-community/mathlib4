@@ -140,7 +140,8 @@ theorem asString_nil : ofList [] = "" :=
 theorem asString_toList (s : String) : ofList s.toList = s :=
   ofList_toList
 
-theorem toList_nonempty : ∀ {s : String}, s ≠ "" → s.toList = s.head :: (s.drop 1).toList
+theorem toList_nonempty :
+    ∀ {s : String}, s ≠ "" → s.toList = s.head :: (String.Legacy.drop s 1).toList
   | s, h => by
     obtain ⟨l, rfl⟩ := s.exists_eq_ofList
     match l with
