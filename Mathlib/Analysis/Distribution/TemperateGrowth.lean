@@ -5,6 +5,7 @@ Authors: Moritz Doll, Anatole Dedecker, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
+import Mathlib.Analysis.InnerProductSpace.Calculus
 
 
 /-! # Functions and measures of temperate growth -/
@@ -15,7 +16,7 @@ open scoped Nat NNReal ContDiff
 
 open Asymptotics
 
-variable {𝕜 R D E F G : Type*}
+variable {𝕜 R D E F G H : Type*}
 
 namespace Function
 
@@ -174,6 +175,17 @@ theorem _root_.ContinuousLinearMap.bilinear_hasTemperateGrowth [NormedSpace 𝕜
   refine .const_mul_left (.mul (h1 i ?_).norm_left (h2 (n-i) ?_).norm_left) _ <;>
   grind
 
+lemma _root_.Function.HasTemperateGrowth.id : Function.HasTemperateGrowth (id : E → E) := by
+  apply Function.HasTemperateGrowth.of_fderiv (k := 1) (C := 1)
+  · convert Function.HasTemperateGrowth.const (ContinuousLinearMap.id ℝ E)
+    exact fderiv_id'
+  · apply differentiable_id
+  · simp
+
+@[fun_prop]
+lemma _root_.Function.HasTemperateGrowth.id' : Function.HasTemperateGrowth (fun (x : E) ↦ x) :=
+  Function.HasTemperateGrowth.id
+
 /-- The product of two functions of temperate growth is again of temperate growth.
 
 Version for scalar multiplication. -/
@@ -199,6 +211,19 @@ lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
   · have : fderiv ℝ f = fun _ ↦ f := by ext1 v; simp only [ContinuousLinearMap.fderiv]
     simpa [this] using .const _
   · exact (f.le_opNorm x).trans (by simp [mul_add])
+
+variable [NormedAddCommGroup H] [InnerProductSpace ℝ H]
+
+variable (H) in
+@[fun_prop]
+theorem hasTemperateGrowth_norm_sq : (fun (x : H) ↦ ‖x‖ ^ 2).HasTemperateGrowth := by
+  apply _root_.Function.HasTemperateGrowth.of_fderiv (C := 1) (k := 2)
+  · rw [fderiv_norm_sq]
+    convert (2 • (innerSL ℝ)).hasTemperateGrowth
+  · exact (contDiff_norm_sq ℝ (n := 1)).differentiable rfl.le
+  · intro x
+    rw [norm_pow, norm_norm, one_mul, add_pow_two]
+    exact le_add_of_nonneg_left (by positivity)
 
 end Function
 
