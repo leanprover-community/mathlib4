@@ -3,12 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Order.Group.Finset
-import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Algebra.Polynomial.Eval.SMul
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.RingTheory.EuclideanDomain
-import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+module
+
+public import Mathlib.Algebra.Order.Group.Finset
+public import Mathlib.Algebra.Polynomial.Derivative
+public import Mathlib.Algebra.Polynomial.Eval.SMul
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.RingTheory.EuclideanDomain
+public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 /-!
 # Theory of univariate polynomials
@@ -16,6 +18,8 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 This file starts looking like the ring theory of $R[X]$
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -651,7 +655,7 @@ theorem irreducible_iff_degree_lt (p : R[X]) (hp0 : p ≠ 0) (hpu : ¬ IsUnit p)
       (monic_mul_leadingCoeff_inv hp0).irreducible_iff_degree_lt]
   · simp [hp0, natDegree_mul_leadingCoeff_inv]
   · contrapose! hpu
-    exact isUnit_of_mul_eq_one _ _ hpu
+    exact .of_mul_eq_one _ hpu
 
 /-- To check a polynomial `p` over a field is irreducible, it suffices to check there are no
 divisors of degree `0 < d ≤ degree p / 2`.
@@ -662,7 +666,7 @@ theorem irreducible_iff_lt_natDegree_lt {p : R[X]} (hp0 : p ≠ 0) (hpu : ¬ IsU
     Irreducible p ↔ ∀ q, Monic q → natDegree q ∈ Finset.Ioc 0 (natDegree p / 2) → ¬ q ∣ p := by
   have : p * C (leadingCoeff p)⁻¹ ≠ 1 := by
     contrapose! hpu
-    exact isUnit_of_mul_eq_one _ _ hpu
+    exact .of_mul_eq_one _ hpu
   rw [← irreducible_mul_leadingCoeff_inv,
       (monic_mul_leadingCoeff_inv hp0).irreducible_iff_lt_natDegree_lt this,
       natDegree_mul_leadingCoeff_inv _ hp0]

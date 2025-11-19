@@ -3,9 +3,11 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.VectorBundle.Basic
-import Mathlib.Topology.VectorBundle.Hom
-import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
+module
+
+public import Mathlib.Geometry.Manifold.VectorBundle.Basic
+public import Mathlib.Topology.VectorBundle.Hom
+public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 
 /-! # Homs of `C^n` vector bundles over the same base space
 
@@ -17,6 +19,8 @@ Note that we only do this for bundles of linear maps, not for bundles of arbitra
 Indeed, semilinear maps are typically not smooth. For instance, complex conjugation is not
 `ℂ`-differentiable.
 -/
+
+@[expose] public section
 
 noncomputable section
 

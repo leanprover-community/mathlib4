@@ -3,9 +3,11 @@ Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
-import Mathlib.RingTheory.DedekindDomain.Dvr
-import Mathlib.NumberTheory.NumberField.Discriminant.Defs
+module
+
+public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
+public import Mathlib.RingTheory.DedekindDomain.Dvr
+public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
 
 /-!
 # Discriminant of cyclotomic fields
@@ -18,6 +20,8 @@ We compute the discriminant of a `p ^ n`-th cyclotomic extension.
   `hζ : IsPrimitiveRoot ζ p`.
 
 -/
+
+@[expose] public section
 
 
 universe u v

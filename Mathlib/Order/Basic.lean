@@ -3,14 +3,16 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Subtype
-import Mathlib.Order.Defs.LinearOrder
-import Mathlib.Order.Notation
-import Mathlib.Tactic.GRewrite
-import Mathlib.Tactic.Spread
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.Inhabit
-import Mathlib.Tactic.SimpRw
+module
+
+public import Mathlib.Data.Subtype
+public import Mathlib.Order.Defs.LinearOrder
+public import Mathlib.Order.Notation
+public import Mathlib.Tactic.GRewrite
+public import Mathlib.Tactic.Spread
+public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.Inhabit
+public import Mathlib.Tactic.SimpRw
 
 /-!
 # Basic definitions about `≤` and `<`
@@ -57,6 +59,8 @@ provide many aliases to dot notation-less lemmas. For example, `le_trans` is ali
 
 preorder, order, partial order, poset, linear order, chain
 -/
+
+@[expose] public section
 
 
 open Function
@@ -128,8 +132,6 @@ lemma not_lt_iff_le_imp_ge : ¬ a < b ↔ (a ≤ b → b ≤ a) := by
 
 @[deprecated (since := "2025-05-11")] alias not_lt_iff_le_imp_le := not_lt_iff_le_imp_ge
 
-lemma ge_of_eq (h : a = b) : b ≤ a := le_of_eq h.symm
-
 @[simp] lemma lt_self_iff_false (x : α) : x < x ↔ False := ⟨lt_irrefl x, False.elim⟩
 
 alias le_trans' := ge_trans
@@ -195,10 +197,8 @@ theorem forall_ge_iff_le : (∀ ⦃c⦄, a ≤ c → b ≤ c) ↔ b ≤ a :=
 
 namespace Mathlib.Tactic.GCongr
 
-@[gcongr] theorem gt_imp_gt (h₁ : a ≤ c) (h₂ : d ≤ b) : a > b → c > d := lt_imp_lt_of_le_of_le h₂ h₁
-
 /-- See if the term is `a < b` and the goal is `a ≤ b`. -/
-@[gcongr_forward] def exactLeOfLt : ForwardExt where
+@[gcongr_forward] meta def exactLeOfLt : ForwardExt where
   eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``le_of_lt #[h])
 
 end Mathlib.Tactic.GCongr
@@ -210,11 +210,6 @@ end Preorder
 section PartialOrder
 
 variable [PartialOrder α] {a b : α}
-
-theorem ge_antisymm : a ≤ b → b ≤ a → b = a :=
-  flip le_antisymm
-
-theorem lt_of_le_of_ne' : a ≤ b → b ≠ a → a < b := fun h₁ h₂ ↦ lt_of_le_of_ne h₁ h₂.symm
 
 theorem Ne.lt_of_le : a ≠ b → a ≤ b → a < b :=
   flip lt_of_le_of_ne
@@ -295,7 +290,6 @@ protected theorem Decidable.eq_or_lt_of_le [DecidableLE α] (h : a ≤ b) : a = 
 
 theorem eq_or_lt_of_le (h : a ≤ b) : a = b ∨ a < b := (lt_or_eq_of_le h).symm
 theorem eq_or_lt_of_le' (h : a ≤ b) : b = a ∨ a < b := (eq_or_lt_of_le h).imp Eq.symm id
-theorem lt_or_eq_of_le' (h : a ≤ b) : a < b ∨ b = a := (eq_or_lt_of_le' h).symm
 
 alias LE.le.lt_or_eq_dec := Decidable.lt_or_eq_of_le
 alias LE.le.eq_or_lt_dec := Decidable.eq_or_lt_of_le

@@ -3,7 +3,9 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrability.LogMeromorphic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Integrability.LogMeromorphic
 
 /-!
 # Integral of `log ∘ sin`
@@ -11,6 +13,8 @@ import Mathlib.Analysis.SpecialFunctions.Integrability.LogMeromorphic
 This file computes special values of the integral of `log ∘ sin`. Given that the indefinite integral
 involves the dilogarithm, this can be seen as computing special values of `Li₂`.
 -/
+
+@[expose] public section
 
 open Filter Interval Real
 
