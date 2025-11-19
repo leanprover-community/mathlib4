@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Tactic.Order
-import Mathlib.Topology.Order.IsLUB
+module
+
+public import Mathlib.Tactic.Order
+public import Mathlib.Topology.Order.IsLUB
 
 /-!
 # Monotone functions on an order topology
@@ -14,6 +16,8 @@ linearly-ordered sets (with the order topology). For example, we prove that a mo
 has left and right limits at any point (`Monotone.tendsto_nhdsLT`, `Monotone.tendsto_nhdsGT`).
 
 -/
+
+@[expose] public section
 
 open Set Filter TopologicalSpace Topology Function
 

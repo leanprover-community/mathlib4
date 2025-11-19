@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Data.Rel.Separated
-import Mathlib.Topology.EMetricSpace.Defs
+module
+
+public import Mathlib.Data.Rel.Separated
+public import Mathlib.Topology.EMetricSpace.Defs
 
 /-!
 # Metric separation
@@ -19,6 +21,8 @@ The second notion (`Metric.AreSeparated`) is qualitative and about two sets: Two
 are separated if the distance between `x ∈ s` and `y ∈ t` is bounded from below by a positive
 constant.
 -/
+
+@[expose] public section
 
 open EMetric Set
 open scoped ENNReal

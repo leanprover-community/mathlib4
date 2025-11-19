@@ -3,9 +3,11 @@ Copyright (c) 2025 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Topology.Algebra.Module.PointwiseConvergence
-import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Analysis.LocallyConvex.StrongTopology
+module
+
+public import Mathlib.Topology.Algebra.Module.PointwiseConvergence
+public import Mathlib.Analysis.LocallyConvex.WithSeminorms
+public import Mathlib.Analysis.LocallyConvex.StrongTopology
 
 /-!
 # The topology of pointwise convergence is locally convex
@@ -19,6 +21,8 @@ that it is locally convex in the topological sense
 * `PointwiseConvergenceCLM.instLocallyConvexSpace`: `E →SLₚₜ[σ] F` is locally convex.
 
 -/
+
+@[expose] public section
 
 variable {R 𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂]
   {σ : 𝕜₁ →+* 𝕜₂} {E F : Type*}

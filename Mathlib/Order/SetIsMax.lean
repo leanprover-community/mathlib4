@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Order.Max
-import Mathlib.Data.Set.CoeSort
+module
+
+public import Mathlib.Order.Max
+public import Mathlib.Data.Set.CoeSort
 
 /-!
 # Maximal elements of subsets
@@ -13,6 +15,8 @@ Let `S : Set J` and `m : S`. If `m` is not a maximal element of `S`,
 then `↑m : J` is not maximal in `J`.
 
 -/
+
+@[expose] public section
 
 universe u
 

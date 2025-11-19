@@ -3,11 +3,13 @@ Copyright (c) 2019 Kenny Lau, Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Jujian Zhang
 -/
-import Mathlib.Algebra.Colimit.DirectLimit
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Algebra.Module.Congruence.Defs
-import Mathlib.Data.Finset.Order
-import Mathlib.Tactic.SuppressCompilation
+module
+
+public import Mathlib.Algebra.Colimit.DirectLimit
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Algebra.Module.Congruence.Defs
+public import Mathlib.Data.Finset.Order
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Direct limit of modules and abelian groups
@@ -26,6 +28,8 @@ so as to make the operations (addition etc.) "computable".
 * `AddCommGroup.DirectLimit G f`
 
 -/
+
+@[expose] public section
 
 suppress_compilation
 

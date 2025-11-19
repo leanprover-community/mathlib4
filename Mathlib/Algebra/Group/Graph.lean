@@ -3,7 +3,9 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, David Loeffler
 -/
-import Mathlib.Algebra.Group.Subgroup.Ker
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Ker
 
 /-!
 # Vertical line test for group homs
@@ -22,6 +24,8 @@ We also prove specialised versions when `f` is the inclusion of a subgroup of th
 (The version for general homomorphisms can easily be reduced to this special case, but the
 homomorphism version is more flexible in applications.)
 -/
+
+@[expose] public section
 
 open Function Set
 
