@@ -4,11 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Algebra.Module.LinearMap.DivisionRing
-import Mathlib.LinearAlgebra.Projection
-import Mathlib.Topology.Algebra.ContinuousMonoidHom
-import Mathlib.Topology.Algebra.IsUniformGroup.Defs
-import Mathlib.Topology.Algebra.Module.Basic
+module
+
+public import Mathlib.Algebra.Module.LinearMap.DivisionRing
+public import Mathlib.LinearAlgebra.Projection
+public import Mathlib.Topology.Algebra.ContinuousMonoidHom
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+public import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # Continuous linear maps
@@ -18,6 +20,8 @@ modules which are continuous. The set of continuous semilinear maps between the 
 `R₁`-module `M` and `R₂`-module `M₂` with respect to the `RingHom` `σ` is denoted by `M →SL[σ] M₂`.
 Plain linear maps are denoted by `M →L[R] M₂` and star-linear maps by `M →L⋆[R] M₂`.
 -/
+
+@[expose] public section
 
 assert_not_exists TrivialStar
 

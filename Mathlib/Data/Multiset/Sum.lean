@@ -3,7 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Group.Multiset
+module
+
+public import Mathlib.Algebra.Order.Group.Multiset
 
 /-!
 # Disjoint sum of multisets
@@ -15,6 +17,8 @@ with the `Multiset.sum` operation which computes the additive sum.
 
 * `Multiset.disjSum`: `s.disjSum t` is the disjoint sum of `s` and `t`.
 -/
+
+@[expose] public section
 
 
 open Sum

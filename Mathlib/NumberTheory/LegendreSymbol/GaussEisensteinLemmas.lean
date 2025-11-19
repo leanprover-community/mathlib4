@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Nat.Prime.Factorial
-import Mathlib.NumberTheory.LegendreSymbol.Basic
+module
+
+public import Mathlib.Data.Nat.Prime.Factorial
+public import Mathlib.NumberTheory.LegendreSymbol.Basic
 
 /-!
 # Lemmas of Gauss and Eisenstein
@@ -12,6 +14,8 @@ import Mathlib.NumberTheory.LegendreSymbol.Basic
 This file contains the Lemmas of Gauss and Eisenstein on the Legendre symbol.
 The main results are `ZMod.gauss_lemma` and `ZMod.eisenstein_lemma`.
 -/
+
+@[expose] public section
 
 
 open Finset Nat

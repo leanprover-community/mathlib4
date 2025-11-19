@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel, Heather Macbeth
 -/
-import Mathlib.Analysis.Convex.Slope
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.Analysis.Convex.Slope
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # Collection of convex functions
@@ -30,6 +32,8 @@ theory.
 
 `Mathlib/Analysis/Convex/Mul.lean` for convexity of `x ↦ x ^ n`
 -/
+
+@[expose] public section
 
 open Real Set NNReal
 

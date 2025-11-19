@@ -3,13 +3,15 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.MonoidAlgebra.Module
-import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
-import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-import Mathlib.Algebra.Ring.Action.Rat
-import Mathlib.Data.Finset.Sort
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Algebra.MonoidAlgebra.Module
+public import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
+public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+public import Mathlib.Algebra.Ring.Action.Rat
+public import Mathlib.Data.Finset.Sort
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Theory of univariate polynomials
@@ -52,6 +54,8 @@ gives an element `q` of `R[ℕ]`, and conversely `⟨q⟩` gives back `p`). The
 equivalence is also registered as a ring equiv in `Polynomial.toFinsuppIso`. These should
 in general not be used once the basic API for polynomials is constructed.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -404,7 +408,7 @@ theorem monomial_zero_right (n : ℕ) : monomial n (0 : R) = 0 :=
 theorem monomial_zero_one : monomial 0 (1 : R) = 1 :=
   rfl
 
--- TODO: can't we just delete this one?
+@[deprecated map_add (since := "2025-11-15")]
 theorem monomial_add (n : ℕ) (r s : R) : monomial n (r + s) = monomial n r + monomial n s :=
   (monomial n).map_add _ _
 
@@ -1116,10 +1120,10 @@ theorem coeff_sub (p q : R[X]) (n : ℕ) : coeff (p - q) n = coeff p n - coeff q
 
 @[simp]
 theorem monomial_neg (n : ℕ) (a : R) : monomial n (-a) = -monomial n a := by
-  rw [eq_neg_iff_add_eq_zero, ← monomial_add, neg_add_cancel, monomial_zero_right]
+  rw [eq_neg_iff_add_eq_zero, ← map_add, neg_add_cancel, monomial_zero_right]
 
 theorem monomial_sub (n : ℕ) : monomial n (a - b) = monomial n a - monomial n b := by
-  rw [sub_eq_add_neg, monomial_add, monomial_neg, sub_eq_add_neg]
+  rw [sub_eq_add_neg, map_add, monomial_neg, sub_eq_add_neg]
 
 @[simp]
 theorem support_neg {p : R[X]} : (-p).support = p.support := by

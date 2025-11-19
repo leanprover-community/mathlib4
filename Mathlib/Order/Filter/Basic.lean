@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.Filter.Defs
+module
+
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Order.Filter.Defs
 
 /-!
 # Theory of filters on sets
@@ -58,6 +60,8 @@ we do *not* require. This gives `Filter X` better formal properties, in particul
 `⊥` for its lattice structure, at the cost of including the assumption
 `[NeBot f]` in a number of lemmas and definitions.
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedRing Fintype
 

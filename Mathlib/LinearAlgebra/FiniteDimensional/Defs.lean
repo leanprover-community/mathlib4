@@ -3,9 +3,11 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.LinearAlgebra.Dimension.Free
-import Mathlib.RingTheory.SimpleRing.Basic
+module
+
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.LinearAlgebra.Dimension.Free
+public import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Finite-dimensional vector spaces
@@ -58,6 +60,8 @@ You should not assume that there has been any effort to state lemmas as generall
 Plenty of the results hold for general fg modules or Noetherian modules, and they can be found in
 `Mathlib/LinearAlgebra/FreeModule/Finite/Rank.lean` and `Mathlib/RingTheory/Noetherian.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists Module.Projective Subalgebra
 
