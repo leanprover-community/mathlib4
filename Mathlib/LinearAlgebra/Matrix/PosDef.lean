@@ -3,13 +3,15 @@ Copyright (c) 2022 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Mohanad Ahmed
 -/
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Algebra.Order.Ring.Star
-import Mathlib.Data.Real.Star
-import Mathlib.LinearAlgebra.Matrix.DotProduct
-import Mathlib.LinearAlgebra.Matrix.Hermitian
-import Mathlib.LinearAlgebra.Matrix.Vec
-import Mathlib.LinearAlgebra.QuadraticForm.Basic
+module
+
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Algebra.Order.Ring.Star
+public import Mathlib.Data.Real.Star
+public import Mathlib.LinearAlgebra.Matrix.DotProduct
+public import Mathlib.LinearAlgebra.Matrix.Hermitian
+public import Mathlib.LinearAlgebra.Matrix.Vec
+public import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
 /-! # Positive Definite Matrices
 
@@ -24,8 +26,6 @@ order on matrices on `ℝ` or `ℂ`.
   and `xᴴMx` is nonnegative for all `x`.
 * `Matrix.PosDef` : a matrix `M : Matrix n n R` is positive definite if it is Hermitian and `xᴴMx`
   is greater than zero for all nonzero `x`.
-* `Matrix.InnerProductSpace.ofMatrix`: the inner product on `n → 𝕜` induced by a positive definite
-  matrix `M`, and is given by `⟪x, y⟫ = xᴴMy`.
 
 ## Main results
 
@@ -34,6 +34,8 @@ order on matrices on `ℝ` or `ℂ`.
   positive semidefinite.
 * `Matrix.PosDef.isUnit`: A positive definite matrix in a field is invertible.
 -/
+
+@[expose] public section
 
 -- TODO:
 -- assert_not_exists MonoidAlgebra

@@ -3,7 +3,9 @@ Copyright (c) 2022 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Analysis.Normed.Group.Uniform
+module
+
+public import Mathlib.Analysis.Normed.Group.Uniform
 
 /-!
 # Further lemmas about normed groups
@@ -16,6 +18,8 @@ This file contains further lemmas about normed groups, requiring heavier imports
 - Move lemmas from `Basic` to other places, including this file.
 
 -/
+
+@[expose] public section
 
 variable {E : Type*} [SeminormedAddCommGroup E]
 open NNReal Topology

@@ -3,12 +3,14 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Data.Nat.Cast.Order.Basic
+module
+
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+public import Mathlib.Algebra.Order.ZeroLEOne
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Data.Nat.Cast.Order.Basic
 
 /-!
 # The type of nonnegative elements
@@ -30,6 +32,8 @@ equal, this often confuses the elaborator. Similar problems arise when doing cas
 
 The disadvantage is that we have to duplicate some instances about `Set.Ici` to this subtype.
 -/
+
+@[expose] public section
 assert_not_exists GeneralizedHeytingAlgebra
 assert_not_exists IsOrderedMonoid
 -- TODO -- assert_not_exists PosMulMono
