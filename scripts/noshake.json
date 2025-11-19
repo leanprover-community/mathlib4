@@ -326,6 +326,8 @@
   ["Mathlib.CategoryTheory.Category.Cat"],
   "Mathlib.Tactic.CategoryTheory.Slice":
   ["Mathlib.CategoryTheory.Category.Basic"],
+  "Mathlib.Tactic.CategoryTheory.RotateIsos.Cancelable":
+  ["Mathlib.CategoryTheory.Iso"],
   "Mathlib.Tactic.CategoryTheory.Reassoc":
   ["Mathlib.CategoryTheory.Functor.Basic"],
   "Mathlib.Tactic.CategoryTheory.Monoidal":
