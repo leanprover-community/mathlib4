@@ -107,7 +107,7 @@ theorem tendsto_integral_mul_one_add_inv_smul_sq_pow (g : E →ᵇ ℝ) (hε : 0
       (div_nonneg (mul_nonneg (le_of_lt hε) (mul_self_nonneg (g x))) (le_of_lt hnpos)))⟩
     apply le_trans (by linarith) (sub_nonneg_of_le ((div_le_one hnpos).mpr _))
     apply le_trans (le_trans _ (le_of_lt hgN)) (Nat.cast_le.mpr hn)
-    apply mul_le_mul (Preorder.le_refl ε) _ (mul_self_nonneg (g x)) (le_of_lt hε)
+    apply mul_le_mul (le_refl ε) _ (mul_self_nonneg (g x)) (le_of_lt hε)
     rw [← abs_le_iff_mul_self_le, abs_norm]
     exact norm_coe_le_norm g x
   · apply Eventually.of_forall
