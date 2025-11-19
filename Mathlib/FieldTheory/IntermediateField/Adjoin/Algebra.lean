@@ -3,15 +3,19 @@ Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
-import Mathlib.FieldTheory.Finiteness
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
-import Mathlib.FieldTheory.IntermediateField.Algebraic
+module
+
+public import Mathlib.FieldTheory.Finiteness
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
+public import Mathlib.FieldTheory.IntermediateField.Algebraic
 
 /-!
 # Adjoining Elements to Fields
 
 This file relates `IntermediateField.adjoin` to `Algebra.adjoin`.
 -/
+
+@[expose] public section
 
 open Module Polynomial
 

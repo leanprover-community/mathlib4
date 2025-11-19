@@ -3,8 +3,10 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Logic.Encodable.Basic
-import Mathlib.Data.Rat.Init
+module
+
+public import Mathlib.Logic.Encodable.Basic
+public import Mathlib.Data.Rat.Init
 
 /-! # The rationals are `Encodable`.
 
@@ -12,6 +14,8 @@ As a consequence we also get the instance `Countable ℚ`.
 
 This is kept separate from `Data.Rat.Defs` in order to minimize imports.
 -/
+
+@[expose] public section
 
 
 namespace Rat

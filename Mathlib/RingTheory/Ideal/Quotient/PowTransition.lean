@@ -3,11 +3,13 @@ Copyright (c) 2025 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Jiedong Jiang
 -/
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.RingTheory.Ideal.Maps
+module
+
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.Algebra.Algebra.Operations
+public import Mathlib.RingTheory.Ideal.Operations
+public import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # The quotient map from `R ⧸ I ^ m` to `R ⧸ I ^ n` where `m ≥ n`
@@ -24,6 +26,8 @@ the natural inclusion `I ^ n • ⊤ → I ^ m • ⊤`.
 to `R ⧸ I ^ n` induced by the natural inclusion `I ^ n → I ^ m`.
 ## Main results
 -/
+
+@[expose] public section
 
 /- Since `Mathlib/LinearAlgebra/Quotient/Basic.lean` and
 `Mathlib/RingTheory/Ideal/Quotient/Defs.lean` do not import each other, and the first file that
@@ -164,10 +168,10 @@ lemma factorPowSucc.isUnit_of_isUnit_image {n : ℕ} (npos : n > 0) {a : R ⧸ I
   rw [factor_ker (pow_le_pow_right n.le_succ)] at hb
   rcases Ideal.mem_image_of_mem_map_of_surjective (Ideal.Quotient.mk (I ^ (n + 1)))
     Ideal.Quotient.mk_surjective hb with ⟨c, hc, eq⟩
-  apply isUnit_of_mul_eq_one _ (b' * (1 - ((Ideal.Quotient.mk (I ^ (n + 1))) c)))
+  refine .of_mul_eq_one (b' * (1 - Ideal.Quotient.mk (I ^ (n + 1)) c)) ?_
   calc
-    _ = (a * b' - 1) * (1 - ((Ideal.Quotient.mk (I ^ (n + 1))) c)) +
-        (1 - ((Ideal.Quotient.mk (I ^ (n + 1))) c)) := by ring
+    _ = (a * b' - 1) * (1 - Ideal.Quotient.mk (I ^ (n + 1)) c) +
+        (1 - Ideal.Quotient.mk (I ^ (n + 1)) c) := by ring
     _ = 1 := by
       rw [← eq, mul_sub, mul_one, sub_add_sub_cancel', sub_eq_self, ← map_mul,
         Ideal.Quotient.eq_zero_iff_mem, pow_add]

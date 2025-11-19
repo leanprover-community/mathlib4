@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.CochainComplex
-import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
-import Mathlib.Algebra.Homology.Factorizations.Basic
+module
+
+public import Mathlib.Algebra.Homology.Embedding.CochainComplex
+public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
+public import Mathlib.Algebra.Homology.Factorizations.Basic
 
 /-!
 # Factorization lemma
@@ -18,6 +20,8 @@ with a degreewise injective kernel. (This is part of the factorization axiom CM5
 for a model category structure on bounded below cochain complexes (TODO @joelriou).)
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits Abelian
 
