@@ -3,14 +3,17 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
+module
 
-import Batteries.Data.String.Matcher
-import Mathlib.Data.Nat.Notation
-import Lake.Util.Casing
+public meta import Batteries.Data.String.Matcher
+public meta import Mathlib.Data.Nat.Notation
+public meta import Lake.Util.Casing
 
 -- Don't warn about the lake import: the above file has almost no imports, and this PR has been
 -- benchmarked.
 set_option linter.style.header false
+
+public meta section
 
 /-!
 ## Text-based linters

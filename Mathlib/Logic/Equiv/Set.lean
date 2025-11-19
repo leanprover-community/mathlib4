@@ -3,9 +3,11 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.Set.Function
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.Says
+module
+
+public import Mathlib.Data.Set.Function
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Tactic.Says
 
 /-!
 # Equivalences and sets
@@ -21,6 +23,8 @@ Some notable definitions are:
 This file is separate from `Equiv/Basic` such that we do not require the full lattice structure
 on sets before defining what an equivalence is.
 -/
+
+@[expose] public section
 
 
 open Function Set

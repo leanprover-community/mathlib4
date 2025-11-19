@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.Continuous
-import Mathlib.Topology.Defs.Induced
+module
+
+public import Mathlib.Topology.Continuous
+public import Mathlib.Topology.Defs.Induced
 
 /-!
 # Ordering on topologies and (co)induced topologies
@@ -43,6 +45,8 @@ of sets in `α` (with the reversed inclusion ordering).
 
 finer, coarser, induced topology, coinduced topology
 -/
+
+@[expose] public section
 
 open Function Set Filter Topology
 

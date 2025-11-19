@@ -3,11 +3,13 @@ Copyright (c) 2024 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
-import Mathlib.Analysis.Calculus.Deriv.Pi
-import Mathlib.Analysis.InnerProductSpace.EuclideanDist
-import Mathlib.Analysis.InnerProductSpace.NormPow
-import Mathlib.Data.Finset.Interval
-import Mathlib.MeasureTheory.Integral.IntegralEqImproper
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Pi
+public import Mathlib.Analysis.InnerProductSpace.EuclideanDist
+public import Mathlib.Analysis.InnerProductSpace.NormPow
+public import Mathlib.Data.Finset.Interval
+public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 /-!
 # Gagliardo-Nirenberg-Sobolev inequality
@@ -48,6 +50,8 @@ Potentially also useful:
 * `MeasureTheory.eLpNorm_le_eLpNorm_fderiv_of_eq_inner`: in this version,
   the codomain is assumed to be a Hilbert space, without restrictions on its dimension.
 -/
+
+@[expose] public section
 
 open scoped ENNReal NNReal
 open Set Function Finset MeasureTheory Measure Filter

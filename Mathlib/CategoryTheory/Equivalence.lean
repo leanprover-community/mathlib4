@@ -3,11 +3,13 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
-import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
-import Mathlib.CategoryTheory.Whiskering
-import Mathlib.CategoryTheory.EssentialImage
-import Mathlib.Tactic.CategoryTheory.Slice
+module
+
+public import Mathlib.CategoryTheory.Functor.FullyFaithful
+public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+public import Mathlib.CategoryTheory.Whiskering
+public import Mathlib.CategoryTheory.EssentialImage
+public import Mathlib.Tactic.CategoryTheory.Slice
 /-!
 # Equivalence of categories
 
@@ -54,6 +56,8 @@ if it is full, faithful and essentially surjective.
 We write `C ≌ D` (`\backcong`, not to be confused with `≅`/`\cong`) for a bundled equivalence.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
