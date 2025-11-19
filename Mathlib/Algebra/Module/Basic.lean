@@ -3,18 +3,22 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Notation.Indicator
-import Mathlib.Algebra.GroupWithZero.Action.Units
-import Mathlib.Algebra.Module.NatInt
-import Mathlib.Algebra.NoZeroSMulDivisors.Defs
-import Mathlib.Algebra.Ring.Invertible
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Algebra.GroupWithZero.Action.Units
+public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+public import Mathlib.Algebra.Ring.Invertible
 
 /-!
 # Further basic results about modules.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Nonneg.inv Multiset
 

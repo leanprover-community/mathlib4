@@ -3,9 +3,11 @@ Copyright (c) 2025 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Analysis.Convex.StrictConvexSpace
-import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
+module
+
+public import Mathlib.Analysis.Convex.StrictConvexSpace
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 
 /-!
 # Convex combinations in strictly convex sets and spaces.
@@ -14,6 +16,8 @@ This file proves lemmas about convex combinations of points in strictly convex s
 convex spaces.
 
 -/
+
+@[expose] public section
 
 
 open Finset Metric

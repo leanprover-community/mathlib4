@@ -3,8 +3,10 @@ Copyright (c) 2021 Hunter Monroe. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hunter Monroe, Kyle Miller, Alena Gusakov
 -/
-import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
-import Mathlib.Data.Fintype.Powerset
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
+public import Mathlib.Data.Fintype.Powerset
 
 /-!
 # Subgraphs of a simple graph
@@ -44,6 +46,8 @@ sub-relation of the adjacency relation of the simple graph.
 * Images of graph homomorphisms as subgraphs.
 
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -369,6 +373,13 @@ theorem verts_top : (⊤ : G.Subgraph).verts = Set.univ :=
 @[simp]
 theorem verts_bot : (⊥ : G.Subgraph).verts = ∅ :=
   rfl
+
+theorem eq_bot_iff_verts_eq_empty (G' : G.Subgraph) : G' = ⊥ ↔ G'.verts = ∅ :=
+  ⟨(· ▸ verts_bot), fun h ↦ Subgraph.ext (h ▸ verts_bot (G := G)) <|
+    funext₂ fun _ _ ↦ propext ⟨fun h' ↦ (h ▸ h'.fst_mem :), False.elim⟩⟩
+
+theorem ne_bot_iff_nonempty_verts (G' : G.Subgraph) : G' ≠ ⊥ ↔ G'.verts.Nonempty :=
+  G'.eq_bot_iff_verts_eq_empty.not.trans <| Set.nonempty_iff_ne_empty.symm
 
 @[simp]
 theorem sSup_adj {s : Set G.Subgraph} : (sSup s).Adj a b ↔ ∃ G ∈ s, Adj G a b :=

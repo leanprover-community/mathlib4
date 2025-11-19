@@ -3,9 +3,11 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.Lie.Basic
-import Mathlib.Geometry.Manifold.Algebra.LieGroup
-import Mathlib.Geometry.Manifold.VectorField.LieBracket
+module
+
+public import Mathlib.Algebra.Lie.Basic
+public import Mathlib.Geometry.Manifold.Algebra.LieGroup
+public import Mathlib.Geometry.Manifold.VectorField.LieBracket
 
 /-!
 # The Lie algebra of a Lie group
@@ -31,6 +33,8 @@ should be favored when possible.
 The standing assumption in this file is that the group is `C^n` for `n = minSmoothness 𝕜 3`, i.e.,
 it is `C^3` over `ℝ` or `ℂ`, and analytic otherwise.
 -/
+
+@[expose] public section
 
 noncomputable section
 

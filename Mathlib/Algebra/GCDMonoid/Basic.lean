@@ -3,8 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
-import Mathlib.Algebra.Ring.Associated
-import Mathlib.Algebra.Ring.Regular
+module
+
+public import Mathlib.Algebra.Ring.Associated
+public import Mathlib.Algebra.Ring.Regular
 
 /-!
 # Monoids with normalization functions, `gcd`, and `lcm`
@@ -59,6 +61,8 @@ For the `NormalizedGCDMonoid` instances on `ℕ` and `ℤ`, see `Mathlib/Algebra
 
 divisibility, gcd, lcm, normalize
 -/
+
+@[expose] public section
 
 
 variable {α : Type*}
