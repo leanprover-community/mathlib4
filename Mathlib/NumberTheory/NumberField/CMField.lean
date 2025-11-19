@@ -540,4 +540,3 @@ instance of_isMulCommutative [NumberField K] [IsAbelianGalois ℚ K] :
 end CMExtension
 
 end NumberField
-
