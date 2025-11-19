@@ -3,12 +3,14 @@ Copyright (c) 2020 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
-import Mathlib.Data.Finite.Sum
-import Mathlib.Data.ZMod.Basic
-import Mathlib.GroupTheory.Exponent
-import Mathlib.GroupTheory.GroupAction.CardCommute
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
-import Mathlib.GroupTheory.SpecificGroups.KleinFour
+module
+
+public import Mathlib.Data.Finite.Sum
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.GroupTheory.Exponent
+public import Mathlib.GroupTheory.GroupAction.CardCommute
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
+public import Mathlib.GroupTheory.SpecificGroups.KleinFour
 
 /-!
 # Dihedral Groups
@@ -19,6 +21,8 @@ For `n ≠ 0`, `DihedralGroup n` represents the symmetry group of the regular `n
 represents the rotations of the `n`-gon by `2πi/n`, and `sr i` represents the reflections of the
 `n`-gon. `DihedralGroup 0` corresponds to the infinite dihedral group.
 -/
+
+@[expose] public section
 
 assert_not_exists Ideal TwoSidedIdeal
 

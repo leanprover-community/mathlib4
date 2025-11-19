@@ -3,14 +3,18 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.Probability.Kernel.Integral
+module
+
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.Probability.Kernel.Integral
 
 /-! # Integral against a kernel over a set
 
 This file contains lemmas about the integral against a kernel and over a set.
 
 -/
+
+@[expose] public section
 
 open MeasureTheory ProbabilityTheory
 

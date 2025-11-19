@@ -3,10 +3,12 @@ Copyright (c) 2025 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
-import Mathlib.Analysis.Calculus.UniformLimitsDeriv
-import Mathlib.Analysis.Normed.Group.FunctionSeries
-import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
+module
+
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+public import Mathlib.Analysis.Calculus.UniformLimitsDeriv
+public import Mathlib.Analysis.Normed.Group.FunctionSeries
+public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 
 /-!
 # Differentiability of sum of functions
@@ -19,6 +21,8 @@ is the sum of the derivatives, under suitable conditions we also prove an `itera
 version.
 
 -/
+
+@[expose] public section
 
 open Set Metric TopologicalSpace Function Filter
 

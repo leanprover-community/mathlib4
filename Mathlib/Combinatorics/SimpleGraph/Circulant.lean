@@ -3,9 +3,11 @@ Copyright (c) 2024 Iván Renison, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Iván Renison, Bhavik Mehta
 -/
-import Mathlib.Algebra.Group.Fin.Basic
-import Mathlib.Combinatorics.SimpleGraph.Hasse
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Algebra.Group.Fin.Basic
+public import Mathlib.Combinatorics.SimpleGraph.Hasse
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Definition of circulant graphs
@@ -19,6 +21,8 @@ are adjacent if and only if `u - v ∈ s` or `v - u ∈ s`. The elements of `s` 
 * `SimpleGraph.circulantGraph s`: the circulant graph over `G` with jumps `s`.
 * `SimpleGraph.cycleGraph n`: the cycle graph over `Fin n`.
 -/
+
+@[expose] public section
 
 namespace SimpleGraph
 
