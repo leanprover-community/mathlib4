@@ -3,11 +3,13 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Topology.Algebra.SeparationQuotient.Basic
-import Mathlib.Topology.Algebra.UniformMulAction
-import Mathlib.Topology.MetricSpace.Lipschitz
+module
+
+public import Mathlib.Topology.Algebra.MulAction
+public import Mathlib.Topology.Algebra.Order.Field
+public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
+public import Mathlib.Topology.Algebra.UniformMulAction
+public import Mathlib.Topology.MetricSpace.Lipschitz
 
 /-!
 # Compatibility of algebraic operations with metric space structures
@@ -24,6 +26,8 @@ be an intermediate typeclass for uniform spaces, but the algebraic hierarchy the
 `IsUniformGroup`) is structured differently.
 
 -/
+
+@[expose] public section
 
 
 open NNReal
@@ -116,8 +120,6 @@ search can only infer the latter from the former and not vice versa. -/
 class IsBoundedSMul : Prop where
   dist_smul_pair' : ∀ x : α, ∀ y₁ y₂ : β, dist (x • y₁) (x • y₂) ≤ dist x 0 * dist y₁ y₂
   dist_pair_smul' : ∀ x₁ x₂ : α, ∀ y : β, dist (x₁ • y) (x₂ • y) ≤ dist x₁ x₂ * dist y 0
-
-@[deprecated (since := "2025-03-10")] alias BoundedSMul := IsBoundedSMul
 
 variable {α β}
 variable [IsBoundedSMul α β]

@@ -3,9 +3,11 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Group.Even
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Order.Group.Lattice
+module
+
+public import Mathlib.Algebra.Group.Even
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Order.Group.Lattice
 
 /-!
 # Absolute values in ordered groups
@@ -18,6 +20,8 @@ negation. This generalizes the usual absolute value on real numbers (`|x| = max 
 - `|a|`: The *absolute value* of an element `a` of an additive lattice ordered group
 - `|a|ₘ`: The *absolute value* of an element `a` of a multiplicative lattice ordered group
 -/
+
+@[expose] public section
 
 open Function
 
@@ -42,7 +46,7 @@ macro:max atomic("|" noWs) a:term noWs "|" : term => `(abs $a)
 /-- Unexpander for the notation `|a|ₘ` for `mabs a`.
 Tries to add discretionary parentheses in unparsable cases. -/
 @[app_unexpander mabs]
-def mabs.unexpander : Lean.PrettyPrinter.Unexpander
+meta def mabs.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $a) =>
     match a with
     | `(|$_|) | `(|$_|ₘ) | `(-$_) => `(|($a)|ₘ)
@@ -52,7 +56,7 @@ def mabs.unexpander : Lean.PrettyPrinter.Unexpander
 /-- Unexpander for the notation `|a|` for `abs a`.
 Tries to add discretionary parentheses in unparsable cases. -/
 @[app_unexpander abs]
-def abs.unexpander : Lean.PrettyPrinter.Unexpander
+meta def abs.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $a) =>
     match a with
     | `(|$_|) | `(|$_|ₘ) | `(-$_) => `(|($a)|)

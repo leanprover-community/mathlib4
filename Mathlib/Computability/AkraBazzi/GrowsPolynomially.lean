@@ -3,14 +3,15 @@ Copyright (c) 2023 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Algebra.Order.ToIntervalMod
-import Mathlib.Analysis.SpecialFunctions.Log.Base
+public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Algebra.Order.ToIntervalMod
+public import Mathlib.Analysis.SpecialFunctions.Log.Base
 
 /-!
-# Akra-Bazzi theorem: The polynomial growth condition
+# Akra-Bazzi theorem: the polynomial growth condition
 
 This file defines and develops an API for the polynomial growth condition that appears in the
 statement of the Akra-Bazzi theorem: for the theorem to hold, the function `g` must
@@ -19,12 +20,14 @@ satisfy the condition that `c₁ g(n) ≤ g(u) ≤ c₂ g(n)`, for u between b*n
 
 ## Implementation notes
 
-Our definition requires that the condition must hold for any `b ∈ (0,1)`. This is equivalent to
-requiring it for `b = 1 / 2` (or any other particular value in `(0, 1)`). While this could, in
-principle, make it harder to prove that a particular function grows polynomially, this issue does
-not seem to arise in practice.
+Our definition requires that the condition hold for any `b ∈ (0,1)`. This is equivalent to requiring
+it only for `b = 1 / 2` (or any other particular value in `(0, 1)`). While this could, in principle,
+make it harder to prove that a particular function grows polynomially, this issue does not seem to
+arise in practice.
 
 -/
+
+@[expose] public section
 
 open Finset Real Filter Asymptotics
 open scoped Topology

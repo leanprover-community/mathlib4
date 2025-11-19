@@ -3,9 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
-import Mathlib.Topology.Spectral.Hom
-import Mathlib.AlgebraicGeometry.Limits
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
+public import Mathlib.Topology.Spectral.Hom
+public import Mathlib.AlgebraicGeometry.Limits
 
 /-!
 # Quasi-compact morphisms
@@ -17,6 +19,8 @@ It suffices to check that preimages of affine open sets are compact
 (`quasiCompact_iff_forall_isAffineOpen`).
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -332,13 +336,5 @@ lemma Scheme.zeroLocus_eq_univ_iff_subset_nilradical {X : Scheme.{u}}
     [CompactSpace X] (s : Set Γ(X, ⊤)) :
     X.zeroLocus s = Set.univ ↔ s ⊆ nilradical Γ(X, ⊤) :=
   zeroLocus_eq_univ_iff_subset_nilradical_of_isCompact (U := ⊤) (CompactSpace.isCompact_univ) s
-
-@[deprecated (since := "2025-04-05")]
-alias Scheme.zeroLocus_eq_top_iff_subset_nilradical_of_isCompact :=
-  Scheme.zeroLocus_eq_univ_iff_subset_nilradical_of_isCompact
-
-@[deprecated (since := "2025-04-05")]
-alias Scheme.zeroLocus_eq_top_iff_subset_nilradical :=
-  Scheme.zeroLocus_eq_univ_iff_subset_nilradical
 
 end AlgebraicGeometry

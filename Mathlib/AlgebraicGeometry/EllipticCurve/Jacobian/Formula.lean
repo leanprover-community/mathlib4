@@ -3,8 +3,10 @@ Copyright (c) 2025 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
-import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Basic
+module
+
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Jacobian.Basic
 
 /-!
 # Negation and addition formulae for nonsingular points in Jacobian coordinates
@@ -55,6 +57,8 @@ mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Projective/Formula.lean`.
 
 elliptic curve, Jacobian, negation, doubling, addition, group law
 -/
+
+@[expose] public section
 
 local notation3 "x" => (0 : Fin 3)
 
@@ -359,8 +363,8 @@ lemma dblXYZ_smul (P : Fin 3 → R) (u : R) : W'.dblXYZ (u • P) = u ^ 4 • W'
 
 lemma dblXYZ_of_Z_eq_zero {P : Fin 3 → R} (hP : W'.Equation P) (hPz : P z = 0) :
     W'.dblXYZ P = P x ^ 2 • ![1, 1, 0] := by
-  erw [dblXYZ, dblX_of_Z_eq_zero hP hPz, dblY_of_Z_eq_zero hP hPz, dblZ_of_Z_eq_zero hPz, smul_fin3,
-    mul_one, mul_one, mul_zero]
+  simp [dblXYZ, dblX_of_Z_eq_zero hP hPz, dblY_of_Z_eq_zero hP hPz, dblZ_of_Z_eq_zero hPz,
+    smul_fin3]
 
 lemma dblXYZ_of_Y_eq' [NoZeroDivisors R] {P Q : Fin 3 → R} (hQz : Q z ≠ 0)
     (hx : P x * Q z ^ 2 = Q x * P z ^ 2) (hy : P y * Q z ^ 3 = Q y * P z ^ 3)
@@ -371,7 +375,7 @@ lemma dblXYZ_of_Y_eq' [NoZeroDivisors R] {P Q : Fin 3 → R} (hQz : Q z ≠ 0)
 lemma dblXYZ_of_Y_eq {P Q : Fin 3 → F} (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 = Q x * P z ^ 2)
     (hy : P y * Q z ^ 3 = Q y * P z ^ 3) (hy' : P y * Q z ^ 3 = W.negY Q * P z ^ 3) :
     W.dblXYZ P = W.dblU P • ![1, 1, 0] := by
-  erw [dblXYZ_of_Y_eq' hQz hx hy hy', smul_fin3, mul_one, mul_one, mul_zero]
+  simp [dblXYZ_of_Y_eq' hQz hx hy hy', smul_fin3]
 
 lemma dblXYZ_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F}
     (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
@@ -686,8 +690,8 @@ lemma addXYZ_of_Z_eq_zero_right {P Q : Fin 3 → R} (hQ : W'.Equation Q) (hQz : 
 lemma addXYZ_of_X_eq {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
     (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 = Q x * P z ^ 2) :
     W.addXYZ P Q = addU P Q • ![1, 1, 0] := by
-  erw [addXYZ, addX_of_X_eq hP hQ hPz hQz hx, addY_of_X_eq hP hQ hPz hQz hx, addZ_of_X_eq hx,
-    smul_fin3, mul_one, mul_one, mul_zero]
+  simp [addXYZ, addX_of_X_eq hP hQ hPz hQz hx, addY_of_X_eq hP hQ hPz hQz hx, addZ_of_X_eq hx,
+    smul_fin3]
 
 lemma addXYZ_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ^ 2 ≠ Q x * P z ^ 2) : W.addXYZ P Q = addZ P Q •

@@ -3,9 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
-import Mathlib.AlgebraicGeometry.Morphisms.Separated
-import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
+public import Mathlib.AlgebraicGeometry.Morphisms.Separated
+public import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
 
 /-!
 
@@ -15,7 +17,7 @@ A morphism of schemes `f : X ⟶ Y` is an immersion if the underlying map of top
 is a locally closed embedding, and the induced morphisms of stalks are all surjective. This is true
 if and only if it can be factored into a closed immersion followed by an open immersion.
 
-# Main result
+## Main results
 - `isImmersion_iff_exists`:
   A morphism is a (locally-closed) immersion if and only if it can be factored into
   a closed immersion followed by a (dominant) open immersion.
@@ -24,6 +26,8 @@ if and only if it can be factored into a closed immersion followed by an open im
   an open immersion followed by a closed immersion.
 
 -/
+
+@[expose] public section
 
 universe v u
 

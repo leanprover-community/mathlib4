@@ -3,10 +3,12 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Analysis.Calculus.UniformLimitsDeriv
-import Mathlib.Topology.Algebra.InfiniteSum.Module
-import Mathlib.Analysis.Normed.Group.FunctionSeries
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Calculus.UniformLimitsDeriv
+public import Mathlib.Topology.Algebra.InfiniteSum.Module
+public import Mathlib.Analysis.Normed.Group.FunctionSeries
 
 /-!
 # Smoothness of series
@@ -20,6 +22,8 @@ More specifically,
 
 We also give versions of these statements which are localized to a set.
 -/
+
+@[expose] public section
 
 
 open Set Metric TopologicalSpace Function Asymptotics Filter
@@ -139,12 +143,11 @@ Note that our assumptions do not ensure the pointwise convergence, but if there 
 convergence then the series is zero everywhere so the result still holds. -/
 theorem differentiable_tsum (hu : Summable u) (hf : ∀ n x, HasFDerivAt (f n) (f' n x) x)
     (hf' : ∀ n x, ‖f' n x‖ ≤ u n) : Differentiable 𝕜 fun y => ∑' n, f n y := by
-  by_cases h : ∃ x₀, Summable fun n => f n x₀
+  by_cases! h : ∃ x₀, Summable fun n => f n x₀
   · rcases h with ⟨x₀, hf0⟩
     intro x
     exact (hasFDerivAt_tsum hu hf hf' hf0 x).differentiableAt
-  · push_neg at h
-    have : (fun x => ∑' n, f n x) = 0 := by ext1 x; exact tsum_eq_zero_of_not_summable (h x)
+  · have : (fun x => ∑' n, f n x) = 0 := by ext1 x; exact tsum_eq_zero_of_not_summable (h x)
     rw [this]
     exact differentiable_const 0
 
