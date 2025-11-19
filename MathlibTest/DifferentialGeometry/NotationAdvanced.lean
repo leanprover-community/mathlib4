@@ -1,5 +1,7 @@
 import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 import Mathlib.Geometry.Manifold.Instances.Real
+import Mathlib.Geometry.Manifold.Instances.Sphere
+import Mathlib.Geometry.Manifold.Instances.UnitsOfNormedAlgebra
 import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
@@ -167,7 +169,7 @@ error: failed to synthesize
 
 Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 ---
-trace: [Elab.DiffGeo.MDiff] Finding a model for: TotalSpace F (TangentSpace I)
+trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `TotalSpace F (TangentSpace I)`
 [Elab.DiffGeo.MDiff] ✅️ TotalSpace
   [Elab.DiffGeo.MDiff] ❌️ From base info
     [Elab.DiffGeo.MDiff] Failed with error:
@@ -176,7 +178,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: TotalSpace F (TangentSpace I)
     [Elab.DiffGeo.MDiff] `TangentSpace I` is the total space of the `TangentBundle` of `M`
     [Elab.DiffGeo.MDiff] Found model: `I.prod I.tangent`
   [Elab.DiffGeo.MDiff] Found model: `I.prod I.tangent`
-[Elab.DiffGeo.MDiff] Finding a model for: F
+[Elab.DiffGeo.MDiff] Finding a model with corners for: `F`
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `F` is not a `Bundle.TotalSpace`.
@@ -256,7 +258,7 @@ variable {f : M → E'' →SL[id'] E'''} in
 /--
 error: Could not find a model with corners for `E'' →SL[id'] E'''`
 ---
-trace: [Elab.DiffGeo.MDiff] Finding a model for: M
+trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `M`
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `M` is not a `Bundle.TotalSpace`.
@@ -270,7 +272,7 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: M
   [Elab.DiffGeo.MDiff] considering instance of type `ChartedSpace H M`
   [Elab.DiffGeo.MDiff] `M` is a charted space over `H` via `inst✝²²`
   [Elab.DiffGeo.MDiff] Found model: `I`
-[Elab.DiffGeo.MDiff] Finding a model for: E'' →SL[id'] E'''
+[Elab.DiffGeo.MDiff] Finding a model with corners for: `E'' →SL[id'] E'''`
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `E'' →SL[id'] E'''` is not a `Bundle.TotalSpace`.
@@ -288,15 +290,26 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: M
         E'''` among local instances, and `E'' →SL[id']
         E'''` is not the charted space of some type in the local context either.
 [Elab.DiffGeo.MDiff] ❌️ ContinuousLinearMap
-  [Elab.DiffGeo.MDiff] `E'' →SL[id'] E'''` is a space of continuous linear maps
   [Elab.DiffGeo.MDiff] Failed with error:
       Coefficients `ℝ` and `RealCopy` of `E'' →SL[id'] E'''` are not reducibly definitionally equal
 [Elab.DiffGeo.MDiff] ❌️ RealInterval
   [Elab.DiffGeo.MDiff] Failed with error:
       `E'' →SL[id'] E'''` is not a coercion of a set to a type
+[Elab.DiffGeo.MDiff] ❌️ EuclideanSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `E'' →SL[id'] E'''` is not a Euclidean space, half-space or quadrant
 [Elab.DiffGeo.MDiff] ❌️ UpperHalfPlane
   [Elab.DiffGeo.MDiff] Failed with error:
       `E'' →SL[id'] E'''` is not the complex upper half plane
+[Elab.DiffGeo.MDiff] ❌️ Units of algebra
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `E'' →SL[id'] E'''` is not the set of units of a normed algebra
+[Elab.DiffGeo.MDiff] ❌️ Complex unit circle
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `E'' →SL[id'] E'''` is not the complex unit circle
+[Elab.DiffGeo.MDiff] ❌️ Sphere
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `E'' →SL[id'] E'''` is not a coercion of a set to a type
 [Elab.DiffGeo.MDiff] ❌️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
       failed to synthesize
@@ -322,13 +335,28 @@ end
 end
 
 /-! Inferring a model with corners on a real interval -/
-section interval
+section RealInterval
 
 -- Make a new real manifold N with model J.
 -- TODO: change this line to modify M and E instead (thus testing if everything
 -- still works in the presence of two instances over different fields).
 variable {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace ℝ E''] {J : ModelWithCorners ℝ E'' H}
   {N : Type} [TopologicalSpace N] [ChartedSpace H N] [IsManifold J 2 N]
+
+variable {g : unitInterval → M} in
+/-- info: MDifferentiable (𝓡∂ 1) J g : Prop -/
+#guard_msgs in
+#check MDiff g
+
+variable {h : E'' → unitInterval} in
+/-- info: MDifferentiable 𝓘(ℝ, E'') (𝓡∂ 1) h : Prop -/
+#guard_msgs in
+#check MDiff h
+
+variable {k : unitInterval → ℝ} in
+/-- info: MDifferentiable (𝓡∂ 1) 𝓘(ℝ, ℝ) k : Prop -/
+#guard_msgs in
+#check MDiff k
 
 -- Types match, but no fact x < y can be inferred: mostly testing error messages.
 variable {x y : ℝ} {g : Set.Icc x y → N} {h : E'' → Set.Icc x y} {k : Set.Icc x y → ℝ}
@@ -440,7 +468,7 @@ set_option trace.Elab.DiffGeo.MDiff true in
 /--
 error: Could not find a model with corners for `↑(Set.Icc x y)`
 ---
-trace: [Elab.DiffGeo.MDiff] Finding a model for: ↑(Set.Icc x y)
+trace: [Elab.DiffGeo.MDiff] Finding a model with corners for: `↑(Set.Icc x y)`
 [Elab.DiffGeo.MDiff] ❌️ TotalSpace
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Set.Icc x y)` is not a `Bundle.TotalSpace`.
@@ -464,9 +492,21 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: ↑(Set.Icc x y)
 [Elab.DiffGeo.MDiff] ❌️ RealInterval
   [Elab.DiffGeo.MDiff] Failed with error:
       `Set.Icc x y` is a closed interval of type `RealCopy'`, which is not reducibly definitionally equal to ℝ
+[Elab.DiffGeo.MDiff] ❌️ EuclideanSpace
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `↑(Set.Icc x y)` is not a Euclidean space, half-space or quadrant
 [Elab.DiffGeo.MDiff] ❌️ UpperHalfPlane
   [Elab.DiffGeo.MDiff] Failed with error:
       `↑(Set.Icc x y)` is not the complex upper half plane
+[Elab.DiffGeo.MDiff] ❌️ Units of algebra
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `↑(Set.Icc x y)` is not the set of units of a normed algebra
+[Elab.DiffGeo.MDiff] ❌️ Complex unit circle
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `↑(Set.Icc x y)` is not the complex unit circle
+[Elab.DiffGeo.MDiff] ❌️ Sphere
+  [Elab.DiffGeo.MDiff] Failed with error:
+      `Set.Icc x y` is not a sphere in a real normed space
 [Elab.DiffGeo.MDiff] ❌️ NormedField
   [Elab.DiffGeo.MDiff] Failed with error:
       failed to synthesize
@@ -483,7 +523,196 @@ trace: [Elab.DiffGeo.MDiff] Finding a model for: ↑(Set.Icc x y)
 #guard_msgs in
 #check CMDiff 2 k
 
-end interval
+end RealInterval
+
+/-! Tests for inferring a model with corners on Euclidean space, half-spaces and quadrants -/
+section EuclideanSpace
+
+variable {n m n' m' : ℕ} [NeZero n] [NeZero m] [NeZero n'] [NeZero m']
+  {f : EuclideanSpace ℝ (Fin n) → ℝ} {g : EuclideanSpace ℝ (Fin n') → EuclideanSpace ℝ (Fin m')}
+  {a b : ℝ} [Fact (a < b)] {h : Set.Icc a b → EuclideanSpace ℝ (Fin m)}
+
+/-- info: MDifferentiable (𝓡 n) 𝓘(ℝ, ℝ) f : Prop -/
+#guard_msgs in
+#check MDiff f
+
+/-- info: MDifferentiableAt (𝓡 n') (𝓡 m') g : EuclideanSpace ℝ (Fin n') → Prop -/
+#guard_msgs in
+#check MDiffAt g
+
+/-- info: ContMDiff (𝓡∂ 1) (𝓡 m) 2 h : Prop -/
+#guard_msgs in
+#check CMDiff 2 h
+
+variable {f' : EuclideanHalfSpace 2 → ℝ} {x : EuclideanHalfSpace 2}
+  {g' : EuclideanHalfSpace n → EuclideanHalfSpace m} {y : EuclideanHalfSpace n}
+
+/-- info: ContMDiff (𝓡∂ 2) 𝓘(ℝ, ℝ) 2 f' : Prop -/
+#guard_msgs in
+#check CMDiff 2 f'
+
+/-- info: MDifferentiableAt (𝓡∂ 2) 𝓘(ℝ, ℝ) f' x : Prop -/
+#guard_msgs in
+#check MDiffAt f' x
+
+/-- info: MDifferentiableAt (𝓡∂ n) (𝓡∂ m) g' y : Prop -/
+#guard_msgs in
+#check MDiffAt g' y
+
+/-- info: ContMDiff (𝓡∂ n) (𝓡∂ m) 37 g' : Prop -/
+#guard_msgs in
+#check CMDiff 37 g'
+
+variable {f : EuclideanHalfSpace 2 → EuclideanSpace ℝ (Fin 37)} in
+/-- info: ContMDiff (𝓡∂ 2) (𝓡 37) 2 f : Prop -/
+#guard_msgs in
+#check CMDiff 2 f
+
+variable {f : EuclideanQuadrant 2 → EuclideanSpace ℝ (Fin 37)} in
+/-- info: ContMDiff (modelWithCornersEuclideanQuadrant 2) (𝓡 37) 2 f : Prop -/
+#guard_msgs in
+#check CMDiff 2 f
+
+variable {f : EuclideanSpace ℝ (Fin 37) → EuclideanQuadrant m'} in
+/-- info: MDifferentiable (𝓡 37) (modelWithCornersEuclideanQuadrant m') f : Prop -/
+#guard_msgs in
+#check MDiff f
+
+/-- info: ContMDiff ((𝓡 n).prod (𝓡 n')) (𝓘(ℝ, ℝ).prod (𝓡 m')) 37 (Prod.map f g) : Prop -/
+#guard_msgs in
+#check CMDiff 37 (Prod.map f g)
+/-- info: ContMDiff ((𝓡∂ 2).prod (𝓡∂ n)) (𝓘(ℝ, ℝ).prod (𝓡∂ m)) 37 (Prod.map f' g') : Prop -/
+#guard_msgs in
+#check CMDiff 37 (Prod.map f' g')
+
+end EuclideanSpace
+
+section sphere
+
+variable {E'' : Type*} [NormedAddCommGroup E''] [InnerProductSpace ℝ E''] {n : ℕ}
+  {f : (Metric.sphere (0 : E'') 1) → E''} {g : ℝ → (Metric.sphere (0 : E'') 1)}
+
+section
+
+open ContDiff Metric Module
+
+variable [Fact (Module.finrank ℝ E'' = n + 1)]
+
+-- TODO: this fails without this line, because we only have an `InnerProductSpace` instance
+variable [NormedSpace ℝ E''] in
+/-- info: ContMDiff (𝓡 n) 𝓘(ℝ, E'') 2 f : Prop -/
+#guard_msgs in
+#check CMDiff 2 f
+
+-- TODO: this fails without this line, because we only have an `InnerProductSpace` instance
+variable [NormedSpace ℝ E''] in
+/-- info: ContMDiff (𝓡 n) 𝓘(ℝ, E'') ω f : Prop -/
+#guard_msgs in
+#check CMDiff ω f
+
+/-- info: ContMDiff 𝓘(ℝ, ℝ) (𝓡 n) ∞ g : Prop -/
+#guard_msgs in
+#check CMDiff ∞ g
+
+/-- info: MDifferentiableAt 𝓘(ℝ, ℝ) (𝓡 n) g 2 : Prop -/
+#guard_msgs in
+#check MDiffAt g 2
+
+end
+
+section
+
+-- TODO: the next three tests fail without this line,
+-- because we only have an `InnerProductSpace` instance for `E''`
+variable [NormedSpace ℝ E'']
+
+-- TODO: these tests are still wrong, as somehow the math instance is not synthesised
+variable [Fact (Module.finrank ℝ E'' = 3)] in
+/--
+error: failed to synthesize
+  ChartedSpace (EuclideanSpace ℝ (Fin 2)) ↑(Metric.sphere 0 1)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#check MDifferentiable (𝓡 2) 𝓘(ℝ, E'') f
+
+variable [Fact (Module.finrank ℝ E'' = 2 + 1)] in
+/--
+error: failed to synthesize
+  ChartedSpace (EuclideanSpace ℝ (Fin 2)) ↑(Metric.sphere 0 1)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#check MDiff f
+
+variable [Fact (Module.finrank ℝ E'' = 4 + 1)] in
+/--
+error: failed to synthesize
+  ChartedSpace ℝ ↑(Metric.sphere 0 1)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#check MDifferentiable 𝓘(ℝ) (𝓡 4) f
+
+set_option trace.Elab.Diff true in
+variable [Fact (Module.finrank ℝ E'' = 4 + 1)] in
+/--
+error: failed to synthesize
+  ChartedSpace (EuclideanSpace ℝ (Fin 4)) ↑(Metric.sphere 0 1)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#check MDiff f
+
+-- Note: 3 and 2 + 1 are treated the same \o/
+-- (since our implementation uses qq matching, which does unification).
+variable [Fact (Module.finrank ℝ E'' = 3)] in
+/--
+error: failed to synthesize
+  ChartedSpace (EuclideanSpace ℝ (Fin 2)) ↑(Metric.sphere 0 1)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#check MDiff f
+
+variable [Fact (Module.finrank ℝ E'' = 2 + 4)] in -- should we infer 5 or 2 + 3?
+/--
+error: failed to synthesize
+  ChartedSpace (EuclideanSpace ℝ (Fin (2 + 3))) ↑(Metric.sphere 0 1)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#check MDiff f
+
+-- also fails, i.e. not due to our elaborators
+variable [Fact (Module.finrank ℝ E'' = 4 + 1)] in
+/--
+error: failed to synthesize
+  ChartedSpace ℝ ↑(Metric.sphere 0 1)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+-/
+#guard_msgs in
+#check MDifferentiable 𝓘(ℝ) (𝓡 4) f
+
+end
+
+-- TODO: it seems I'm missing support for recognising Euclidean space as a normed space...
+variable {f' : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 3)) 1) → E''}
+
+-- #check MDifferentiable (𝓡 2) 𝓘(ℝ, E'') f' passes
+
+/-- error: Could not find a model with corners for `↑(Metric.sphere 0 1)` -/
+#guard_msgs in
+#check MDiff f'
+
+end sphere
 
 section UpperHalfPlane
 
@@ -515,6 +744,50 @@ variable {g : ℍ → M} in
 #check MDiffAt k y
 
 end UpperHalfPlane
+
+section Circle
+
+-- Make a new real manifold N with model J.
+-- TODO: change this line to modify M and E instead (thus testing if everything
+-- still works in the presence of two instances over different fields).
+variable {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace ℝ E''] {J : ModelWithCorners ℝ E'' H}
+  {N : Type} [TopologicalSpace N] [ChartedSpace H N] [IsManifold J 2 N]
+
+variable {g : Circle → N} {h : E'' → Circle} {k : Circle → ℝ} {y : Circle}
+
+/-- info: ContMDiff (𝓡 1) J 2 g : Prop -/
+#guard_msgs in
+#check CMDiff 2 g
+
+/-- info: MDifferentiableAt 𝓘(ℝ, E'') (𝓡 1) h : E'' → Prop -/
+#guard_msgs in
+#check MDiffAt h
+
+/-- info: MDifferentiableAt (𝓡 1) 𝓘(ℝ, ℝ) k y : Prop -/
+#guard_msgs in
+#check MDiffAt k y
+
+end Circle
+
+section units
+
+variable {R : Type*} [NormedRing R] [CompleteSpace R] [NormedAlgebra 𝕜 R]
+
+variable {f : Rˣ → 𝕜} in
+/-- info: MDifferentiable 𝓘(𝕜, R) 𝓘(𝕜, 𝕜) f : Prop -/
+#guard_msgs in
+#check MDiff f
+
+variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace V]
+
+-- #check LieGroup 𝓘(𝕜, V →L[𝕜] V) 2 (V →L[𝕜] V)ˣ passes
+
+/-- info: MDifferentiable 𝓘(𝕜, V →L[𝕜] V) 𝓘(𝕜, 𝕜) f : Prop -/
+#guard_msgs in
+variable {f : (V →L[𝕜] V)ˣ → 𝕜} in
+#check MDiff f
+
+end units
 
 end differentiability
 
