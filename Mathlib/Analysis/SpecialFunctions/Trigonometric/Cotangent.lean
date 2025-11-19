@@ -3,15 +3,17 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.Calculus.IteratedDeriv.WithinZpow
-import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
-import Mathlib.Analysis.Complex.IntegerCompl
-import Mathlib.Analysis.Complex.LocallyUniformLimit
-import Mathlib.Analysis.PSeries
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
-import Mathlib.Analysis.NormedSpace.MultipliableUniformlyOn
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
-import Mathlib.Topology.Algebra.InfiniteSum.TsumUniformlyOn
+module
+
+public import Mathlib.Analysis.Calculus.IteratedDeriv.WithinZpow
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
+public import Mathlib.Analysis.Complex.IntegerCompl
+public import Mathlib.Analysis.Complex.LocallyUniformLimit
+public import Mathlib.Analysis.PSeries
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.EulerSineProd
+public import Mathlib.Analysis.NormedSpace.MultipliableUniformlyOn
+public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
+public import Mathlib.Topology.Algebra.InfiniteSum.TsumUniformlyOn
 
 /-!
 # Cotangent
@@ -22,6 +24,8 @@ In particular, we prove that
 as well as the infinite sum representation of cotangent (also known as the Mittag-Leffler
 expansion): `π * cot (π * z) = 1 / z + ∑' n : ℕ+, (1 / (z - n) + 1 / (z + n))`.
 -/
+
+@[expose] public section
 
 open Real Complex
 
