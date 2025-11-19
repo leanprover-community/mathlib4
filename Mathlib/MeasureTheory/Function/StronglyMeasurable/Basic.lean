@@ -3,8 +3,10 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.MeasureTheory.Function.SimpleFuncDense
+module
+
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.MeasureTheory.Function.SimpleFuncDense
 
 /-!
 # Strongly measurable and finitely strongly measurable functions
@@ -37,6 +39,8 @@ We provide a solid API for strongly measurable functions, as a basis for the Boc
   Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
 
 -/
+
+@[expose] public section
 
 -- Guard against import creep
 assert_not_exists InnerProductSpace

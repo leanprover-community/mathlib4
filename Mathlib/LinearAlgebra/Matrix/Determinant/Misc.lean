@@ -3,14 +3,18 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-import Mathlib.Algebra.Ring.NegOnePow
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+public import Mathlib.Algebra.Ring.NegOnePow
 
 /-!
 # Miscellaneous results about determinant
 
 In this file, we collect various formulas about determinant of matrices.
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
