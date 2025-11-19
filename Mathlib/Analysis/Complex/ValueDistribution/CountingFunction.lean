@@ -361,11 +361,11 @@ averages.
 Over the complex numbers, present the logarithmic counting function attached to the divisor of a
 meromorphic function `f` as a circle average over `log ‖f ·‖`.
 
-This is a reformulation of Jensen's formula of Complex Analysis. See
+This is a reformulation of Jensen's formula of complex analysis. See
 `MeromorphicOn.circleAverage_log_norm` for Jensen's formula in the original context.
 -/
 theorem Function.locallyFinsuppWithin.logCounting_divisor_eq_circleAverage_sub_const {R : ℝ}
-  {f : ℂ → ℂ} (h : MeromorphicOn f ⊤) (hR : R ≠ 0) :
+    {f : ℂ → ℂ} (h : MeromorphicOn f ⊤) (hR : R ≠ 0) :
     locallyFinsuppWithin.logCounting (divisor f ⊤) R =
       circleAverage (log ‖f ·‖) 0 R - log ‖meromorphicTrailingCoeffAt f 0‖ := by
   have h₁f : MeromorphicOn f (closedBall 0 |R|) := by tauto
@@ -381,7 +381,7 @@ Variant of `locallyFinsuppWithin.logCounting_divisor_eq_circleAverage_sub_const`
 `ValueDistribution.logCounting` instead of `locallyFinsuppWithin.logCounting`.
 -/
 theorem ValueDistribution.logCounting_zero_sub_logCounting_top_eq_circleAverage_sub_const {R : ℝ}
-  {f : ℂ → ℂ} (h : MeromorphicOn f ⊤) (hR : R ≠ 0) :
+    {f : ℂ → ℂ} (h : MeromorphicOn f ⊤) (hR : R ≠ 0) :
     (logCounting f 0 - logCounting f ⊤) R =
       circleAverage (log ‖f ·‖) 0 R - log ‖meromorphicTrailingCoeffAt f 0‖ := by
   rw [← locallyFinsuppWithin.logCounting_divisor]
