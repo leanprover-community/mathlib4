@@ -82,8 +82,7 @@ jobs:
           header: 'PR Title Check'
           message: |
             ### 🚨 PR Title Needs Formatting
-            Please update the title to match our
-            [commit style conventions](https://leanprover-community.github.io/contribute/commit.html).
+            Please update the title to match our [commit style conventions](https://leanprover-community.github.io/contribute/commit.html).
 
             Errors from script:
             ```
@@ -134,6 +133,5 @@ jobs:
           only_update: true
           message: |
             ### ✅ PR Title Formatted Correctly
-            The title of this PR has been updated to match our
-            [commit style conventions](https://leanprover-community.github.io/contribute/commit.html).
+            The title of this PR has been updated to match our [commit style conventions](https://leanprover-community.github.io/contribute/commit.html).
             Thank you!
