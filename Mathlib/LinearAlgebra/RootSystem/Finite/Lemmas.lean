@@ -89,6 +89,22 @@ lemma coxeterWeightIn_mem_set_of_isCrystallographic :
   norm_cast at this ⊢
   cutsat
 
+lemma pairingIn_of_neg_three' (h : P.pairingIn ℤ i j = -3) [NoZeroSMulDivisors ℤ M] :
+    P.pairingIn ℤ j i = -1 := by
+  have : Fintype ι := Fintype.ofFinite ι
+  have h0 : 0 ≤ P.coxeterWeightIn ℤ i j := by
+    simpa only [P.algebraMap_coxeterWeightIn] using P.coxeterWeight_nonneg (P.posRootForm ℤ) i j
+  have h4 : P.coxeterWeightIn ℤ i j ≤ 4 := P.coxeterWeightIn_le_four ℤ i j
+  rw [coxeterWeightIn, h] at h0 h4
+  have : P.pairingIn ℤ j i ≠ 0 := (pairingIn_eq_zero_iff' P i j).ne.mp (by omega)
+  omega
+
+lemma rootLength_of_neg_three [NoZeroSMulDivisors ℤ M] (h : P.pairingIn ℤ i j = -3)
+    (B : P.RootPositiveForm ℤ) :
+    B.rootLength i = 3 * B.rootLength j := by
+  have := B.pairingIn_mul_eq_pairingIn_mul_swap i j
+  simpa [P.pairingIn_of_neg_three' i j h, h] using this
+
 variable [IsDomain R]
 -- This makes an `IsAddTorsionFree R` instance available, which `grind` needs below.
 open scoped IsDomain
@@ -99,7 +115,29 @@ lemma pairingIn_pairingIn_mem_set_of_isCrystallographic :
         (-3, -1), (4, 1), (1, 4), (-4, -1), (-1, -4), (2, 2), (-2, -2)} : Set (ℤ × ℤ)) := by
   refine (Int.mul_mem_zero_one_two_three_four_iff ?_).mp
     (P.coxeterWeightIn_mem_set_of_isCrystallographic i j)
+  --exact P.pairingIn_eq_zero_iff' i j
   simpa [← P.algebraMap_pairingIn ℤ] using P.pairing_eq_zero_iff' (i := i) (j := j)
+
+lemma pairingIn_of_neg_three (h : P.pairingIn ℤ i j = -3) :
+    P.pairingIn ℤ j i = -1 := by
+  have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
+  aesop
+
+lemma rootLength_of_neg_three' (h : P.pairingIn ℤ i j = -3)
+    (B : P.RootPositiveForm ℤ) :
+    B.rootLength i = 3 * B.rootLength j := by
+  have := B.pairingIn_mul_eq_pairingIn_mul_swap i j
+  simpa [P.pairingIn_of_neg_three i j h, h] using this
+
+lemma pairingIn_of_neg_two (h : P.pairingIn ℤ i j = -2)
+    (hne' : α i ≠ -α j) :
+    P.pairingIn ℤ j i = -1 := by
+  have := Module.IsReflexive.of_isPerfPair P.toLinearMap
+  have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
+  have : P.pairingIn ℤ j i ≠ -2 := by
+    contrapose! hne'
+    exact (P.pairingIn_neg_two_neg_two_iff ℤ i j).mp ⟨h, hne'⟩
+  aesop
 
 lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed [P.IsReduced] :
     (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈
@@ -186,6 +224,7 @@ lemma coxeterWeightIn_eq_zero_iff :
     RootPairing.coxeterWeight_zero_iff_isOrthogonal, IsOrthogonal,
     P.pairing_eq_zero_iff' (i := j) (j := i), and_self, ← P.algebraMap_pairingIn ℤ,
     FaithfulSMul.algebraMap_eq_zero_iff] at h
+--#find_home! coxeterWeightIn_eq_zero_iff [Mathlib.LinearAlgebra.RootSystem.IsValuedIn]
 
 variable {i j}
 
