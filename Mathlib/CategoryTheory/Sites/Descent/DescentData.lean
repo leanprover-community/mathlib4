@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Christian Merten
 -/
-import Mathlib.CategoryTheory.Sites.Descent.IsPrestack
+module
+
+public import Mathlib.CategoryTheory.Sites.Descent.IsPrestack
 
 /-!
 # Descent data
@@ -20,6 +22,8 @@ equipped with a descent data relative to the morphisms `f i : X i ⟶ S`.
 when `F` also has a covariant functoriality, etc.).
 
 -/
+
+@[expose] public section
 
 universe t v' v u' u
 
