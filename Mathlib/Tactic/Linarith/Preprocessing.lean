@@ -57,7 +57,7 @@ partial def filterComparisons : Preprocessor where
     let tp ← instantiateMVars (← inferType h)
     try
       let (b, rel, _) ← tp.ineqOrNotIneq?
-      if b || rel != Ineq.eq then pure [h] else pure []
+      if b || rel != Mathlib.Ineq.eq then pure [h] else pure []
     catch _ => pure []
 
 section removeNegations
@@ -188,9 +188,9 @@ and similarly if `pf` proves a negated weak inequality.
 -/
 def mkNonstrictIntProof (pf : Expr) : MetaM (Option Expr) := do
   match ← (← inferType pf).ineqOrNotIneq? with
-  | (true, Ineq.lt, .const ``Int [], a, b) =>
+  | (true, .lt, .const ``Int [], a, b) =>
     return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]]) pf
-  | (false, Ineq.le, .const ``Int [], a, b) =>
+  | (false, .le, .const ``Int [], a, b) =>
     return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[b, a]])
       (← mkAppM ``lt_of_not_ge #[pf])
   | _ => return none
@@ -211,9 +211,9 @@ and turns it into a proof of a comparison `_ R 0`, where `R ∈ {=, ≤, <}`.
 -/
 partial def rearrangeComparison (e : Expr) : MetaM (Option Expr) := do
   match ← (← inferType e).ineq? with
-  | (Ineq.le, _) => try? <| mkAppM ``Linarith.sub_nonpos_of_le #[e]
-  | (Ineq.lt, _) => try? <| mkAppM ``Linarith.sub_neg_of_lt #[e]
-  | (Ineq.eq, _) => try? <| mkAppM ``sub_eq_zero_of_eq #[e]
+  | (.le, _) => try? <| mkAppM ``Linarith.sub_nonpos_of_le #[e]
+  | (.lt, _) => try? <| mkAppM ``Linarith.sub_neg_of_lt #[e]
+  | (.eq, _) => try? <| mkAppM ``sub_eq_zero_of_eq #[e]
 
 /--
 `compWithZero h` takes a proof `h` of an equality, inequality, or negation thereof,
@@ -315,27 +315,20 @@ amount of work for the linarith oracle.
 -/
 private def nlinarithGetProductsProofs (ls : List Expr) : MetaM (List Expr) :=
   withTraceNode `linarith (return m!"{exceptEmoji ·} adding product terms") do
-  let with_comps ← ls.mapM (fun e => do
-    let tp ← inferType e
-    try
-      let ⟨ine, _⟩ ← parseCompAndExpr tp
-      pure (ine, e)
-    catch _ => pure (Ineq.lt, e))
-  let products ← with_comps.mapDiagM fun (⟨posa, a⟩ : Ineq × Expr) ⟨posb, b⟩ =>
-    try
-      (some <$> match posa, posb with
-        | Ineq.eq, _ => mkAppM ``zero_mul_eq #[a, b]
-        | _, Ineq.eq => mkAppM ``mul_zero_eq #[a, b]
-        | Ineq.lt, Ineq.lt => mkAppM ``mul_pos_of_neg_of_neg #[a, b]
-        | Ineq.lt, Ineq.le => do
-            let a ← mkAppM ``le_of_lt #[a]
-            mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[a, b]
-        | Ineq.le, Ineq.lt => do
-            let b ← mkAppM ``le_of_lt #[b]
-            mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[a, b]
-        | Ineq.le, Ineq.le => mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[a, b])
-    catch _ => pure none
-  compWithZero.globalize.transform products.reduceOption
+  let with_comps ← ls.filterMapM (fun e => do
+    let ⟨0, _P, e⟩ ← inferTypeQ e | throwError "nlinarith preprocessor got a non-prop"
+    observing? <| parseCompAndExprQ q($e))
+  let products : List (Option <| (u : Level) × (α : Q(Type u)) × (inst : _) × IneqZeroResult α inst)
+    ← with_comps.mapDiagM fun ⟨ua, αa, ia, ha⟩ ⟨ub, αb, ib, hb⟩ => do
+      bif ua == ub then
+        have hu : ub =QL ua := ⟨⟩
+        withNewMCtxDepth do
+          let .defEq _hα := ← isDefEqQ q($αb) q($αa) | pure none
+          let .defEq _hi := ← isDefEqQ q($ib) q($ia) | pure none
+          return some ⟨ua, αa, ia, ← ha.mul <| hb.cast hu⟩
+      else
+        return none
+  return products.reduceOption.map fun ⟨_u, _α, _i, h⟩ => h.pf.raw
 
 /--
 `nlinarithExtras` is the preprocessor corresponding to the `nlinarith` tactic.
