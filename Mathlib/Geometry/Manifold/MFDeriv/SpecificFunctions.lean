@@ -468,6 +468,8 @@ theorem mdifferentiable_prod_module_iff (f : M → F₁ × F₂) :
 section prodMap
 
 variable {f : M → M'} {g : N → N'} {r : Set N} {y : N}
+  {f' : TangentSpace I x →L[𝕜] TangentSpace I' (f x)}
+  {g' : TangentSpace J y →L[𝕜] TangentSpace J' (g y)}
 
 /-- The product map of two `C^n` functions within a set at a point is `C^n`
 within the product set at the product point. -/
