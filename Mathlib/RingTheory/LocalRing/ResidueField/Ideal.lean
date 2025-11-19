@@ -3,9 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-import Mathlib.RingTheory.Localization.AtPrime.Basic
-import Mathlib.RingTheory.Localization.FractionRing
+module
+
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
+public import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # The residue field of a prime ideal
@@ -14,6 +16,8 @@ We define `Ideal.ResidueField I` to be the residue field of the local ring `Loca
 and provide an `IsFractionRing (R ⧸ I) I.ResidueField` instance.
 
 -/
+
+@[expose] public section
 
 variable {R A} [CommRing R] [CommRing A] [Algebra R A]
 variable (I : Ideal R) [I.IsPrime]
@@ -86,7 +90,7 @@ instance : IsFractionRing (R ⧸ I) I.ResidueField where
     (map_ne_zero_of_mem_nonZeroDivisors _ I.injective_algebraMap_quotient_residueField y.2)
   surj x := by
     obtain ⟨x, rfl⟩ := IsLocalRing.residue_surjective x
-    obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.mk'_surjective I.primeCompl x
+    obtain ⟨x, ⟨s, hs⟩, rfl⟩ := IsLocalization.exists_mk'_eq I.primeCompl x
     refine ⟨⟨Ideal.Quotient.mk _ x, ⟨Ideal.Quotient.mk _ s, ?_⟩⟩, ?_⟩
     · rwa [mem_nonZeroDivisors_iff_ne_zero, ne_eq, Ideal.Quotient.eq_zero_iff_mem]
     · simp [IsScalarTower.algebraMap_eq R (Localization.AtPrime I) I.ResidueField, ← map_mul]

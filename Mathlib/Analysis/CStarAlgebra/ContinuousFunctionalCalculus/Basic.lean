@@ -3,10 +3,12 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
-import Mathlib.Analysis.CStarAlgebra.GelfandDuality
-import Mathlib.Analysis.CStarAlgebra.Unitization
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
+module
+
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
+public import Mathlib.Analysis.CStarAlgebra.GelfandDuality
+public import Mathlib.Analysis.CStarAlgebra.Unitization
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
 
 /-! # Continuous functional calculus
 
@@ -48,6 +50,8 @@ relevant instances on C⋆-algebra can be found in the `Instances` file.
   `StarOrderedRing`, the spectrum of a nonnegative element is nonnegative.
 
 -/
+
+@[expose] public section
 
 
 open scoped Pointwise ENNReal NNReal ComplexOrder
@@ -284,7 +288,7 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
   rw [h_c_spec₁.mul_comm.eq_zero_of_neg (.star_mul_self c) h_c_spec₀, neg_zero, CFC.negPart_def,
     cfcₙ_eq_cfc (hf0 := by simp), ← cfc_pow _ _ (ha := ha), ← cfc_zero a (R := ℝ)] at h_eq_negPart_a
   have h_eqOn := eqOn_of_cfc_eq_cfc (ha := ha) h_eq_negPart_a
-  exact fun x hx ↦ negPart_eq_zero.mp <| pow_eq_zero (h_eqOn hx).symm
+  exact fun x hx ↦ negPart_eq_zero.mp <| eq_zero_of_pow_eq_zero (h_eqOn hx).symm
 
 lemma IsSelfAdjoint.coe_mem_spectrum_complex {A : Type*} [TopologicalSpace A] [Ring A]
     [StarRing A] [Algebra ℂ A] [ContinuousFunctionalCalculus ℂ A IsStarNormal]

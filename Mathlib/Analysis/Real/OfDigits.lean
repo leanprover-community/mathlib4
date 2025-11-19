@@ -3,9 +3,12 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Algebra.Order.Floor.Semifield
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Tactic.Rify
+module
+
+public import Mathlib.Algebra.Order.Floor.Semifield
+public import Mathlib.Analysis.Normed.Group.FunctionSeries
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Tactic.Rify
 
 /-!
 # Representation of reals in positional system
@@ -24,10 +27,12 @@ representations of reals as sequences of digits in positional system.
 * `ofDigits_digits` states that `ofDigits (digits x b) = x`.
 -/
 
+@[expose] public section
+
 namespace Real
 
 /-- `ofDigits` takes a sequence of digits `(d₀, d₁, ...)` in base `b` and returns the
-  real numnber `0.d₀d₁d₂... = ∑ᵢ(dᵢ/bⁱ)`. This auxiliary definition `ofDigitsTerm` sends the
+  real number `0.d₀d₁d₂... = ∑ᵢ(dᵢ/bⁱ)`. This auxiliary definition `ofDigitsTerm` sends the
   sequence to the function sending `i` to `dᵢ/bⁱ`. -/
 noncomputable def ofDigitsTerm {b : ℕ} (digits : ℕ → Fin b) : ℕ → ℝ :=
   fun i ↦ (digits i) * ((b : ℝ) ^ (i + 1))⁻¹
@@ -73,7 +78,7 @@ theorem ofDigits_le_one {b : ℕ} (digits : ℕ → Fin b) : ofDigits digits ≤
   · simp_rw [pow_succ', mul_inv, ← inv_pow, ← mul_assoc]
     rw [tsum_mul_left, tsum_geometric_of_lt_one (by positivity) (by simp [inv_lt_one_iff₀, hb])]
     have := sub_pos.mpr hb
-    field_simp
+    field
   · simp_rw [pow_succ', mul_inv, ← inv_pow, ← mul_assoc]
     refine Summable.mul_left _ (summable_geometric_of_lt_one (by positivity) ?_)
     simp [inv_lt_one_iff₀, hb]
@@ -116,7 +121,7 @@ theorem ofDigits_digits_sum_eq {x : ℝ} {b : ℕ} [NeZero b] (hx : x ∈ Set.Ic
       mul_left_comm, mul_inv_cancel₀ (by positivity), mul_one, mul_comm x, pow_succ', mul_assoc]
     set y := (b : ℝ) ^ n * x
     norm_cast
-    rw [← Nat.cast_mul_floor_div_cancel (a := y) (show b ≠ 0 by omega),
+    rw [← Nat.cast_mul_floor_div_cancel (a := y) (show b ≠ 0 by cutsat),
       Fin.val_ofNat, Nat.div_add_mod]
 
 theorem le_sum_ofDigitsTerm_digits {x : ℝ} {b : ℕ} [NeZero b] (hb : 1 < b)
@@ -153,5 +158,50 @@ theorem ofDigits_digits {b : ℕ} [NeZero b] {x : ℝ} (hb : 1 < b) (hx : x ∈ 
   rw [← Summable.hasSum_iff]
   · exact hasSum_ofDigitsTerm_digits x hb hx
   · exact summable_ofDigitsTerm
+
+/-- A generalization of the identity `0.(9) = 1` to arbitrary positional numeral systems. -/
+theorem ofDigits_const_last_eq_one {b : ℕ} (hb : 1 < b) :
+    ofDigits (fun _ ↦ (⟨b - 1, Nat.sub_one_lt_of_lt hb⟩ : Fin b)) = 1 := by
+  simp only [ofDigits, ofDigitsTerm, ← inv_pow]
+  rw [Summable.tsum_mul_left]
+  · rw [geom_series_succ _ (by simp [inv_lt_one_iff₀, hb]),
+      tsum_geometric_of_lt_one (by positivity) (by simp [inv_lt_one_iff₀, hb])]
+    push_cast [hb]
+    have : 0 < (b : ℝ) - 1 := by rify at hb; linarith
+    field_simp
+    ring
+  · rw [summable_nat_add_iff (f := fun n ↦ (b : ℝ)⁻¹ ^ n) 1]
+    apply summable_geometric_of_lt_one (by positivity) (by simp [inv_lt_one_iff₀, hb])
+
+theorem ofDigits_SurjOn {b : ℕ} (hb : 1 < b) :
+    Set.SurjOn (ofDigits (b := b)) Set.univ (Set.Icc 0 1) := by
+  have : NeZero b := ⟨by grind⟩
+  intro y hy
+  by_cases hy' : y ∈ Set.Ico 0 1
+  · use digits y b
+    simp [ofDigits_digits hb hy']
+  · simp only [Set.image_univ, show y = 1 by grind, Set.mem_range]
+    exact ⟨_, ofDigits_const_last_eq_one hb⟩
+
+theorem continuous_ofDigits {b : ℕ} : Continuous (@ofDigits b) := by
+  match b with
+  | 0 => fun_prop
+  | 1 => fun_prop
+  | n + 2 =>
+    obtain ⟨hb0, hb⟩ : 0 < n + 2 ∧ 1 < n + 2 := by grind
+    generalize n + 2 = b at hb
+    rify at hb0 hb
+    refine continuous_tsum (u := fun i ↦ (b : ℝ)⁻¹ ^ i) ?_ ?_ fun n x ↦ ?_
+    · simp only [ofDigitsTerm]
+      fun_prop
+    · exact summable_geometric_of_lt_one (by positivity) ((inv_lt_one_of_one_lt₀ hb))
+    · simp only [norm_eq_abs, abs_of_nonneg ofDigitsTerm_nonneg, inv_pow]
+      apply ofDigitsTerm_le.trans
+      calc
+        _ ≤ b * ((b : ℝ) ^ (n + 1))⁻¹ := by
+          gcongr
+          linarith
+        _ = _ := by
+          grind
 
 end Real

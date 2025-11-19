@@ -3,10 +3,11 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Polynomial.Content
-import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Polynomial.Content
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 /-! # The Eisenstein criterion
 
@@ -29,7 +30,7 @@ of application of this criterion.
 * `Polynomial.irreducible_of_eisenstein_criterion` : the classic Eisenstein criterion.
   It is the particular case where `q := X`.
 
-# TODO
+## TODO
 
 The case of a polynomial `q := X - a` is interesting,
 then the mod `P ^ 2` hypothesis can rephrased as saying
@@ -51,6 +52,8 @@ There are two obstructions, though :
   that symbolic power coincides with `P ^ 2`, but not in general.
 
 -/
+
+@[expose] public section
 
 namespace Polynomial
 
@@ -165,9 +168,9 @@ theorem generalizedEisenstein {q f : R[X]} {p : ℕ}
       exact (dvd_pow_self q hn).mul_left _
     · exact ((dvd_pow_self q hn).mul_left _).mul_left _
 
-/-- If `f` is a non constant polynomial with coefficients in `R`, and `P` is a prime ideal in `R`,
+/-- If `f` is a nonconstant polynomial with coefficients in `R`, and `P` is a prime ideal in `R`,
 then if every coefficient in `R` except the leading coefficient is in `P`, and
-the trailing coefficient is not in `P^2` and no non units in `R` divide `f`, then `f` is
+the trailing coefficient is not in `P^2` and no nonunits in `R` divide `f`, then `f` is
 irreducible. -/
 theorem irreducible_of_eisenstein_criterion {f : R[X]} {P : Ideal R} (hP : P.IsPrime)
     (hfl : f.leadingCoeff ∉ P)

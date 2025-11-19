@@ -3,13 +3,16 @@ Copyright (c) 2022 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Algebra.DirectSum.Decomposition
-import Mathlib.Algebra.GradedMonoid
-import Mathlib.Algebra.MvPolynomial.Basic
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Data.Finsupp.Weight
-import Mathlib.RingTheory.GradedAlgebra.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Algebra.DirectSum.Decomposition
+public import Mathlib.Algebra.GradedMonoid
+public import Mathlib.Algebra.MvPolynomial.Basic
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Data.Finsupp.Weight
+public import Mathlib.RingTheory.GradedAlgebra.Basic
+public import Mathlib.Tactic.Order
 
 /-!
 # Weighted homogeneous polynomials
@@ -42,6 +45,8 @@ occurring in `φ` have the same weighted degree `m`.
 * `sum_weightedHomogeneousComponent`: every polynomial is the sum of its weighted homogeneous
   components.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -272,7 +277,7 @@ theorem prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : �
     intro j hjs
     exact h j (Finset.mem_insert_of_mem hjs)
 
-/-- A non zero weighted homogeneous polynomial of weighted degree `n` has weighted total degree
+/-- A nonzero weighted-homogeneous polynomial of weighted degree `n` has weighted total degree
   `n`. -/
 theorem weighted_total_degree [SemilatticeSup M] {w : σ → M} (hφ : IsWeightedHomogeneous w φ n)
     (h : φ ≠ 0) : weightedTotalDegree' w φ = n := by
@@ -432,25 +437,13 @@ theorem weightedHomogeneousComponent_of_mem [DecidableEq M] {m n : M}
     · rfl
     · simp only [coeff_zero]
 
-theorem weightedHomogeneousComponent_of_isWeightedHomogeneous_same
-    {m : M} {p : MvPolynomial σ R} (hp : IsWeightedHomogeneous w p m) :
-    weightedHomogeneousComponent w m p = p := by
-  classical
-  ext x
-  rw [coeff_weightedHomogeneousComponent]
-  by_cases zero_coeff : coeff x p = 0
-  · simp [zero_coeff]
-  · rw [hp zero_coeff, if_pos rfl]
+@[deprecated (since := "2025-10-06")]
+alias weightedHomogeneousComponent_of_isWeightedHomogeneous_same :=
+  IsWeightedHomogeneous.weightedHomogeneousComponent_same
 
-theorem weightedHomogeneousComponent_of_isWeightedHomogeneous_ne
-    {m n : M} {p : MvPolynomial σ R} (hp : IsWeightedHomogeneous w p m) (hn : n ≠ m) :
-    weightedHomogeneousComponent w n p = 0 := by
-  classical
-  ext x
-  rw [coeff_weightedHomogeneousComponent]
-  by_cases zero_coeff : coeff x p = 0
-  · simp [zero_coeff]
-  · rw [if_neg (by simp only [hp zero_coeff, hn.symm, not_false_eq_true]), coeff_zero]
+@[deprecated (since := "2025-10-06")]
+alias weightedHomogeneousComponent_of_isWeightedHomogeneous_ne :=
+  IsWeightedHomogeneous.weightedHomogeneousComponent_ne
 
 variable (R w)
 
@@ -483,9 +476,9 @@ theorem weightedHomogeneousComponent_directSum [DecidableEq M]
   classical
   rw [DirectSum.coeLinearMap_eq_dfinsuppSum, DFinsupp.sum, map_sum]
   convert @Finset.sum_eq_single M (MvPolynomial σ R) _ (DFinsupp.support x) _ m _ _
-  · rw [weightedHomogeneousComponent_of_isWeightedHomogeneous_same (x m).prop]
+  · rw [IsWeightedHomogeneous.weightedHomogeneousComponent_same (x m).prop]
   · intro n _ hmn
-    rw [weightedHomogeneousComponent_of_isWeightedHomogeneous_ne (x n).prop hmn.symm]
+    exact IsWeightedHomogeneous.weightedHomogeneousComponent_ne m (x n).prop hmn.symm
   · rw [DFinsupp.notMem_support_iff]
     intro hm; rw [hm, Submodule.coe_zero, map_zero]
 
@@ -501,7 +494,7 @@ variable [AddCommMonoid M] [PartialOrder M]
 /-- If `M` is a canonically `OrderedAddCommMonoid`, then the `weightedHomogeneousComponent`
   of weighted degree `0` of a polynomial is its constant coefficient. -/
 @[simp]
-theorem weightedHomogeneousComponent_zero [CanonicallyOrderedAdd M] [NoZeroSMulDivisors ℕ M]
+theorem weightedHomogeneousComponent_zero [CanonicallyOrderedAdd M] [IsAddTorsionFree M]
     (hw : ∀ i : σ, w i ≠ 0) :
     weightedHomogeneousComponent w 0 φ = C (coeff 0 φ) := by
   classical
@@ -521,7 +514,7 @@ def NonTorsionWeight (w : σ → M) :=
   ∀ n x, n • w x = (0 : M) → n = 0
 
 omit [PartialOrder M] in
-theorem nonTorsionWeight_of [NoZeroSMulDivisors ℕ M] (hw : ∀ i : σ, w i ≠ 0) :
+theorem nonTorsionWeight_of [IsAddTorsionFree M] (hw : ∀ i : σ, w i ≠ 0) :
     NonTorsionWeight w :=
   fun _ x hnx => (smul_eq_zero_iff_left (hw x)).mp hnx
 
@@ -540,8 +533,7 @@ theorem weightedDegree_eq_zero_iff [CanonicallyOrderedAdd M]
   · intro hx
     by_contra hx'
     exact absurd (hw _ _ (hx hx')) hx'
-  · intro hax _
-    simp only [hax, zero_smul]
+  · order
 
 end OrderedAddCommMonoid
 

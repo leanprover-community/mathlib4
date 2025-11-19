@@ -3,12 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.CharP.Two
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Data.Nat.Cast.Field
-import Mathlib.Data.Nat.Factorization.Basic
-import Mathlib.Data.Nat.Factorization.Induction
-import Mathlib.Data.Nat.Periodic
+module
+
+public import Mathlib.Algebra.CharP.Two
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Data.Nat.Cast.Field
+public import Mathlib.Data.Nat.Factorization.Basic
+public import Mathlib.Data.Nat.Factorization.Induction
+public import Mathlib.Data.Nat.Periodic
 
 /-!
 # Euler's totient function
@@ -19,6 +21,8 @@ We prove the divisor sum formula, namely that `n` equals `φ` summed over the di
 `sum_totient`. We also prove two lemmas to help compute totients, namely `totient_mul` and
 `totient_prime_pow`.
 -/
+
+@[expose] public section
 
 assert_not_exists Algebra LinearMap
 
@@ -95,7 +99,7 @@ theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_ne_zero : a ≠ 0) :
     _ ≤ #{x ∈ Ico k (k + n % a + a * i) | a.Coprime x} + a.totient := by
       rw [filter_union, ← filter_coprime_Ico_eq_totient a (k + n % a + a * i)]
       apply card_union_le
-    _ ≤ a.totient * i + a.totient + a.totient := add_le_add_right ih (totient a)
+    _ ≤ a.totient * i + a.totient + a.totient := by grw [← mul_add_one, ih]
 
 open ZMod
 
@@ -220,7 +224,7 @@ theorem totient_eq_iff_prime {p : ℕ} (hp : 0 < p) : p.totient = p - 1 ↔ p.Pr
     ← Nat.card_Ico 1 p] at h
   refine
     p.prime_of_coprime hp fun n hn hnz => Finset.filter_card_eq h n <| Finset.mem_Ico.mpr ⟨?_, hn⟩
-  omega
+  cutsat
 
 theorem card_units_zmod_lt_sub_one {p : ℕ} (hp : 1 < p) [Fintype (ZMod p)ˣ] :
     Fintype.card (ZMod p)ˣ ≤ p - 1 := by
@@ -346,8 +350,7 @@ theorem totient_super_multiplicative (a b : ℕ) : φ a * φ b ≤ φ (a * b) :=
   · simp
   have hd0 : 0 < d := Nat.gcd_pos_of_pos_left _ ha0
   apply le_of_mul_le_mul_right _ hd0
-  rw [← totient_gcd_mul_totient_mul a b, mul_comm]
-  apply mul_le_mul_left' (Nat.totient_le d)
+  grw [← totient_gcd_mul_totient_mul a b, mul_comm, d.totient_le]
 
 @[gcongr]
 theorem totient_dvd_of_dvd {a b : ℕ} (h : a ∣ b) : φ a ∣ φ b := by
@@ -378,7 +381,7 @@ open Lean Meta Qq
 
 /-- Extension for `Nat.totient`. -/
 @[positivity Nat.totient _]
-def evalNatTotient : PositivityExt where eval {u α} z p e := do
+meta def evalNatTotient : PositivityExt where eval {u α} z p e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.totient $n) =>
     assumeInstancesCommute

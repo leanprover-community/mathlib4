@@ -3,19 +3,23 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Shing Tak Lam, Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Ring.List
-import Mathlib.Data.Int.ModEq
-import Mathlib.Data.Nat.Bits
-import Mathlib.Data.Nat.Log
-import Mathlib.Tactic.IntervalCases
-import Mathlib.Data.Nat.Digits.Defs
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Algebra.BigOperators.Ring.List
+public import Mathlib.Data.Int.ModEq
+public import Mathlib.Data.Nat.Bits
+public import Mathlib.Data.Nat.Log
+public import Mathlib.Tactic.IntervalCases
+public import Mathlib.Data.Nat.Digits.Defs
 
 /-!
 # Digits of a natural number
 
 This provides lemma about the digits of natural numbers.
 -/
+
+@[expose] public section
 
 namespace Nat
 
@@ -28,7 +32,7 @@ theorem ofDigits_eq_sum_mapIdx_aux (b : ℕ) (l : List ℕ) :
     l.zipWith (fun a i : ℕ => a * b ^ (i + 1)) (List.range l.length) =
       l.zipWith (fun a i=> b * (a * b ^ i)) (List.range l.length)
     by simp [this]
-  congr; ext; simp [pow_succ]; ring
+  congr; ext; ring
 
 theorem ofDigits_eq_sum_mapIdx (b : ℕ) (L : List ℕ) :
     ofDigits b L = (L.mapIdx fun i a => a * b ^ i).sum := by
@@ -61,9 +65,9 @@ theorem digits_len (b n : ℕ) (hb : 1 < b) (hn : n ≠ 0) : (b.digits n).length
 theorem digits_length_le_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
     (b.digits n).length ≤ k ↔ n < b ^ k  := by
   by_cases h : n = 0
-  · simp [h]
-    positivity
-  rw [digits_len b n hb h, lt_pow_iff_log_lt hb h]
+  · have : 0 < b ^ k := by positivity
+    simpa [h]
+  rw [digits_len b n hb h, ← log_lt_iff_lt_pow hb h]
   exact add_one_le_iff
 
 theorem lt_digits_length_iff {b k : ℕ} (hb : 1 < b) (n : ℕ) :
@@ -85,12 +89,12 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
   revert hm
   induction m using Nat.strongRecOn with | ind n IH => ?_
   intro hn
-  by_cases hnb : n < b + 2
+  by_cases! hnb : n < b + 2
   · simpa only [digits_of_lt (b + 2) n hn hnb]
   · rw [digits_getLast n (le_add_left 2 b)]
     refine IH _ (Nat.div_lt_self hn.bot_lt (one_lt_succ_succ b)) ?_
     rw [← pos_iff_ne_zero]
-    exact Nat.div_pos (le_of_not_gt hnb) (zero_lt_succ (succ b))
+    exact Nat.div_pos hnb (zero_lt_succ (succ b))
 
 theorem digits_append_digits {b m n : ℕ} (hb : 0 < b) :
     digits b n ++ digits b m = digits b (n + b ^ (digits b n).length * m) := by
@@ -257,7 +261,7 @@ theorem head!_digits {b n : ℕ} (h : b ≠ 1) : (Nat.digits b n).head! = n % b 
       rw [Nat.ofDigits_mod_eq_head! _ _]
       exact (Nat.mod_eq_of_lt (Nat.digits_lt_base hb <| List.head!_mem_self <|
           Nat.digits_ne_nil_iff_ne_zero.mpr <| Nat.succ_ne_zero n)).symm
-  · rcases n with _ | _ <;> simp_all [show b = 0 by omega]
+  · rcases n with _ | _ <;> simp_all [show b = 0 by cutsat]
 
 theorem ofDigits_zmodeq' (b b' : ℤ) (k : ℕ) (h : b ≡ b' [ZMOD k]) (L : List ℕ) :
     ofDigits b L ≡ ofDigits b' L [ZMOD k] := by

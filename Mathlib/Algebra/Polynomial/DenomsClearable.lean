@@ -3,9 +3,11 @@ Copyright (c) 2020 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Polynomial.EraseLead
+module
+
+public import Mathlib.Algebra.Algebra.Basic
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Algebra.Polynomial.EraseLead
 
 /-!
 # Denominators of evaluation of polynomials at ratios
@@ -15,6 +17,8 @@ Let `i : R → K` be a homomorphism of semirings.  Assume that `K` is commutativ
 `f ∈ R[X]` the "mathematical" expression `b ^ f.natDegree * f (a / b) ∈ K` is in
 the image of the homomorphism `i`.
 -/
+
+@[expose] public section
 
 
 open Polynomial Finset
@@ -96,5 +100,5 @@ theorem one_le_pow_mul_abs_eval_div {K : Type*} [Field K] [LinearOrder K] [IsStr
   refine Int.le_of_lt_add_one ((lt_add_iff_pos_left 1).mpr (abs_pos.mpr fun F0 => fab ?_))
   rw [eq_one_div_of_mul_eq_one_left bu, F0, one_div, eq_intCast, Int.cast_zero, zero_eq_mul] at hF
   rcases hF with hF | hF
-  · exact (not_le.mpr b0 (le_of_eq (Int.cast_eq_zero.mp (pow_eq_zero hF)))).elim
+  · exact (not_le.mpr b0 (le_of_eq (Int.cast_eq_zero.mp (eq_zero_of_pow_eq_zero hF)))).elim
   · rwa [div_eq_mul_inv]

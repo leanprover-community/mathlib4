@@ -3,14 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Mitchell Lee
 -/
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.Group.Submonoid.Basic
-import Mathlib.Algebra.Group.ULift
-import Mathlib.Order.Filter.Pointwise
-import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Topology.ContinuousMap.Defs
-import Mathlib.Topology.Algebra.Monoid.Defs
+module
+
+public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.Group.Submonoid.Basic
+public import Mathlib.Algebra.Group.ULift
+public import Mathlib.Order.Filter.Pointwise
+public import Mathlib.Topology.Algebra.MulAction
+public import Mathlib.Topology.ContinuousMap.Defs
+public import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
 # Theory of topological monoids
@@ -19,6 +21,8 @@ In this file we define mixin classes `ContinuousMul` and `ContinuousAdd`. While 
 applications the underlying type is a monoid (multiplicative or additive), we do not require this in
 the definitions.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -649,7 +653,7 @@ theorem tendsto_list_prod {f : ι → α → M} {x : Filter α} {a : ι → M} :
       (h f List.mem_cons_self).mul
         (tendsto_list_prod l fun c hc => h c (List.mem_cons_of_mem _ hc))
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem continuous_list_prod {f : ι → X → M} (l : List ι) (h : ∀ i ∈ l, Continuous (f i)) :
     Continuous fun a => (l.map fun i => f i a).prod :=
   continuous_iff_continuousAt.2 fun x =>
@@ -824,7 +828,7 @@ theorem tendsto_finset_prod {f : ι → α → M} {x : Filter α} {a : ι → M}
       Tendsto (fun b => ∏ c ∈ s, f c b) x (𝓝 (∏ c ∈ s, a c)) :=
   tendsto_multiset_prod _
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem continuous_multiset_prod {f : ι → X → M} (s : Multiset ι) :
     (∀ i ∈ s, Continuous (f i)) → Continuous fun a => (s.map fun i => f i a).prod := by
   rcases s with ⟨l⟩

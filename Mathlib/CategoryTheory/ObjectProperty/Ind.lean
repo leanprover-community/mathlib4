@@ -3,7 +3,9 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Limits.Presentation
+module
+
+public import Mathlib.CategoryTheory.Presentable.ColimitPresentation
 
 /-!
 # Ind and pro-properties
@@ -25,6 +27,8 @@ Given an object property `P`, we define an object property `ind P` that is satis
 
 - Dualise to obtain `CategoryTheory.ObjectProperty.pro`.
 -/
+
+@[expose] public section
 
 universe w v u
 

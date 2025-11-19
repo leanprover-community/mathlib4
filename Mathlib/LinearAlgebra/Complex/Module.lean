@@ -3,11 +3,13 @@ Copyright (c) 2020 Alexander Bentkamp, Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Sébastien Gouëzel, Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.RestrictScalars
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Data.Complex.Basic
-import Mathlib.Data.Real.Star
-import Mathlib.LinearAlgebra.Matrix.ToLin
+module
+
+public import Mathlib.Algebra.Algebra.RestrictScalars
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Data.Complex.Basic
+public import Mathlib.Data.Real.Star
+public import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 # Complex number as a vector space over `ℝ`
@@ -40,6 +42,8 @@ element of a `StarModule` over `ℂ`.
 * `ℜ` and `ℑ` for the `realPart` and `imaginaryPart`, respectively, in the locale
   `ComplexStarModule`.
 -/
+
+@[expose] public section
 
 assert_not_exists NNReal
 namespace Complex
@@ -93,7 +97,6 @@ instance (priority := 100) instModule [Semiring R] [Module R ℝ] : Module R ℂ
 -- priority manually adjusted in https://github.com/leanprover-community/mathlib4/pull/11980
 instance (priority := 95) instAlgebraOfReal [CommSemiring R] [Algebra R ℝ] : Algebra R ℂ where
   algebraMap := Complex.ofRealHom.comp (algebraMap R ℝ)
-  smul := (· • ·)
   smul_def' := fun r x => by ext <;> simp [smul_re, smul_im, Algebra.smul_def]
   commutes' := fun r ⟨xr, xi⟩ => by ext <;> simp [Algebra.commutes]
 
@@ -439,18 +442,22 @@ lemma imaginaryPart_comp_subtype_selfAdjoint :
     LinearMap.comp_zero]
 
 @[simp]
+lemma selfAdjoint.realPart_coe {x : selfAdjoint A} : ℜ (x : A) = x :=
+  Subtype.ext x.property.coe_realPart
+
+@[simp]
+lemma selfAdjoint.imaginaryPart_coe {x : selfAdjoint A} : ℑ (x : A) = 0 :=
+  x.property.imaginaryPart
+
 lemma imaginaryPart_realPart {x : A} : ℑ (ℜ x : A) = 0 :=
   (ℜ x).property.imaginaryPart
 
-@[simp]
 lemma imaginaryPart_imaginaryPart {x : A} : ℑ (ℑ x : A) = 0 :=
   (ℑ x).property.imaginaryPart
 
-@[simp]
 lemma realPart_idem {x : A} : ℜ (ℜ x : A) = ℜ x :=
   Subtype.ext <| (ℜ x).property.coe_realPart
 
-@[simp]
 lemma realPart_imaginaryPart {x : A} : ℜ (ℑ x : A) = ℑ x :=
   Subtype.ext <| (ℑ x).property.coe_realPart
 

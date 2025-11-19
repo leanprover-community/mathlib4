@@ -3,15 +3,17 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wanyi He, Jiedong Jiang, Jingting Wang, Andrew Yang, Shouxin Zhang
 -/
-import Mathlib.Algebra.Module.SpanRank
-import Mathlib.RingTheory.Spectrum.Prime.Noetherian
-import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
+module
+
+public import Mathlib.Algebra.Module.SpanRank
+public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
+public import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
 /-!
 # The Height of an Ideal
 
 In this file, we define the height of a prime ideal and the height of an ideal.
 
-# Main definitions
+## Main definitions
 
 * `Ideal.primeHeight` : The height of a prime ideal $\mathfrak{p}$. We define it as the supremum of
   the lengths of strictly decreasing chains of prime ideals below it. This definition is implemented
@@ -21,6 +23,8 @@ In this file, we define the height of a prime ideal and the height of an ideal.
   minimal prime ideals of I.
 
 -/
+
+@[expose] public section
 
 variable {R : Type*} [CommRing R] (I : Ideal R)
 
@@ -430,3 +434,24 @@ lemma Ideal.sup_primeHeight_of_maximal_eq_ringKrullDim [Nontrivial R] :
     · exact ⟨⊥, by grind [iSup_le_iff, Ideal.IsPrime.ne_top]⟩
     · obtain ⟨M, hM, hIM⟩ := exists_le_maximal I I_top
       exact ⟨M, iSup_mono' (fun hI ↦ ⟨hM, primeHeight_mono hIM⟩)⟩
+
+section isLocalization
+
+variable
+  (Rₚ : ∀ (P : Ideal R) [P.IsMaximal], Type*)
+  [∀ (P : Ideal R) [P.IsMaximal], CommRing (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], Algebra R (Rₚ P)]
+  [∀ (P : Ideal R) [P.IsMaximal], IsLocalization.AtPrime (Rₚ P) P]
+
+lemma Ring.krullDimLE_of_isLocalization_maximal {n : ℕ}
+    (h : ∀ (P : Ideal R) [P.IsMaximal], Ring.KrullDimLE n (Rₚ P)) :
+    Ring.KrullDimLE n R := by
+  simp_rw [Ring.krullDimLE_iff] at h ⊢
+  nontriviality R
+  rw [← Ideal.sup_primeHeight_of_maximal_eq_ringKrullDim]
+  refine (WithBot.coe_le_coe).mpr (iSup₂_le_iff.mpr fun P hP ↦ ?_)
+  rw [← Ideal.height_eq_primeHeight, ← WithBot.coe_le_coe]
+  rw [← IsLocalization.AtPrime.ringKrullDim_eq_height P (Rₚ P)]
+  exact h P
+
+end isLocalization

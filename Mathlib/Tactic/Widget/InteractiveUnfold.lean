@@ -3,11 +3,12 @@ Copyright (c) 2023 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Batteries.Lean.Position
-import Mathlib.Tactic.NthRewrite
-import Mathlib.Tactic.Widget.SelectPanelUtils
-import Mathlib.Lean.GoalsLocation
-import Mathlib.Lean.Meta.KAbstractPositions
+module
+
+public meta import Mathlib.Tactic.NthRewrite
+public meta import Mathlib.Tactic.Widget.SelectPanelUtils
+public meta import Mathlib.Lean.GoalsLocation
+public meta import Mathlib.Lean.Meta.KAbstractPositions
 
 /-!
 
@@ -50,6 +51,8 @@ constants marked as `Name.isInternalDetail`. So all such results are filtered ou
 This is implemented with `isUserFriendly`.
 
 -/
+
+public meta section
 
 open Lean Meta Server Widget ProofWidgets Jsx
 
@@ -213,7 +216,7 @@ This gives a list of rewrite suggestions for the selected expression.
 Click on a suggestion to replace `unfold?` by a tactic that performs this rewrite.
 -/
 elab stx:"unfold?" : tactic => do
-  let some range := (← getFileMap).rangeOfStx? stx | return
+  let some range := (← getFileMap).lspRangeOfStx? stx | return
   Widget.savePanelWidgetInfo (hash UnfoldComponent.javascript)
     (pure <| json% { replaceRange : $range }) stx
 

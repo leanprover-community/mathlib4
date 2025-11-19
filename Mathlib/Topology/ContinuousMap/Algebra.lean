@@ -3,13 +3,15 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Nicolò Cavalleri
 -/
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Topology.Algebra.InfiniteSum.Basic
-import Mathlib.Topology.Algebra.Module.LinearMap
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.UniformSpace.CompactConvergence
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Topology.Algebra.InfiniteSum.Basic
+public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.UniformSpace.CompactConvergence
 
 /-!
 # Algebraic structures over continuous functions
@@ -26,6 +28,8 @@ Note that, rather than using the derived algebraic structures on these subobject
 (for example, when `β` is a group, the derived group structure on `continuousSubgroup α β`),
 one should use `C(α, β)` with the appropriate instance of the structure.
 -/
+
+@[expose] public section
 
 assert_not_exists StoneCech
 
@@ -338,7 +342,7 @@ instance instCommGroupContinuousMap [CommGroup β] [IsTopologicalGroup β] : Com
 @[to_additive]
 instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) where
   continuous_mul := by
-    letI : UniformSpace β := IsTopologicalGroup.toUniformSpace β
+    letI : UniformSpace β := IsTopologicalGroup.rightUniformSpace β
     have : IsUniformGroup β := isUniformGroup_of_commGroup
     rw [continuous_iff_continuousAt]
     rintro ⟨f, g⟩
@@ -348,7 +352,7 @@ instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) w
         ((tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK).prodMk
           (tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK))
   continuous_inv := by
-    letI : UniformSpace β := IsTopologicalGroup.toUniformSpace β
+    letI : UniformSpace β := IsTopologicalGroup.rightUniformSpace β
     have : IsUniformGroup β := isUniformGroup_of_commGroup
     rw [continuous_iff_continuousAt]
     intro f
@@ -363,20 +367,20 @@ instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) w
   /-- If an infinite sum of functions in `C(α, β)` converges to `g` (for the compact-open topology),
 then the pointwise sum converges to `g x` for all `x ∈ α`. -/]
 theorem hasProd_apply {γ : Type*} [CommMonoid β] [ContinuousMul β]
-    {f : γ → C(α, β)} {g : C(α, β)} (hf : HasProd f g) (x : α) :
-    HasProd (fun i : γ => f i x) (g x) := by
+    {f : γ → C(α, β)} {g : C(α, β)} {L : SummationFilter γ} (hf : HasProd f g L) (x : α) :
+    HasProd (fun i : γ => f i x) (g x) L := by
   let ev : C(α, β) →* β := (Pi.evalMonoidHom _ x).comp coeFnMonoidHom
   exact hf.map ev (continuous_eval_const x)
 
 @[to_additive]
 theorem multipliable_apply [CommMonoid β] [ContinuousMul β] {γ : Type*} {f : γ → C(α, β)}
-    (hf : Multipliable f) (x : α) : Multipliable fun i : γ => f i x :=
+    {L : SummationFilter γ} (hf : Multipliable f L) (x : α) : Multipliable (fun i : γ ↦ f i x) L :=
   (hasProd_apply hf.hasProd x).multipliable
 
 @[to_additive]
 theorem tprod_apply [T2Space β] [CommMonoid β] [ContinuousMul β] {γ : Type*} {f : γ → C(α, β)}
-    (hf : Multipliable f) (x : α) :
-    ∏' i : γ, f i x = (∏' i : γ, f i) x :=
+    {L : SummationFilter γ} (hf : Multipliable f L) [L.NeBot] (x : α) :
+    ∏'[L] i : γ, f i x = (∏'[L] i : γ, f i) x :=
   (hasProd_apply hf.hasProd x).tprod_eq
 
 end ContinuousMap
@@ -819,7 +823,6 @@ lemma smul_apply' (f : C(α, R)) (g : C(α, M)) (x : α) :
 
 instance module' [IsTopologicalSemiring R] [ContinuousAdd M] :
     Module C(α, R) C(α, M) where
-  smul := (· • ·)
   smul_add c f g := by ext x; exact smul_add (c x) (f x) (g x)
   add_smul c₁ c₂ f := by ext x; exact add_smul (c₁ x) (c₂ x) (f x)
   mul_smul c₁ c₂ f := by ext x; exact mul_smul (c₁ x) (c₂ x) (f x)

@@ -3,11 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.Finite.Sum
-import Mathlib.RingTheory.FiniteType
-import Mathlib.RingTheory.Finiteness.Ideal
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.MvPolynomial.Tower
+module
+
+public import Mathlib.Data.Finite.Sum
+public import Mathlib.RingTheory.FiniteType
+public import Mathlib.RingTheory.Finiteness.Ideal
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.MvPolynomial.Tower
 
 /-!
 # Finiteness conditions in commutative algebra
@@ -24,6 +26,8 @@ In this file we define several notions of finiteness that are common in commutat
   all of these express that some object is finitely presented *as algebra* over some base ring.
 
 -/
+
+@[expose] public section
 
 open Function (Surjective)
 
@@ -91,7 +95,7 @@ theorem equiv [FinitePresentation R A] (e : A ≃ₐ[R] B) : FinitePresentation 
 variable (R)
 
 /-- The ring of polynomials in finitely many variables is finitely presented. -/
-protected instance mvPolynomial (ι : Type*) [Finite ι] :
+private lemma mvPolynomial_aux (ι : Type*) [Finite ι] :
     FinitePresentation R (MvPolynomial ι R) where
   out := by
     cases nonempty_fintype ι
@@ -99,15 +103,6 @@ protected instance mvPolynomial (ι : Type*) [Finite ι] :
     exact
       ⟨Fintype.card ι, eqv, eqv.surjective,
         ((RingHom.injective_iff_ker_eq_bot _).1 eqv.injective).symm ▸ Submodule.fg_bot⟩
-
-/-- `R` is finitely presented as `R`-algebra. -/
-instance self : FinitePresentation R R :=
-  equiv (MvPolynomial.isEmptyAlgEquiv R Empty)
-
-/-- `R[X]` is finitely presented as `R`-algebra. -/
-instance polynomial : FinitePresentation R R[X] :=
-  letI := FinitePresentation.mvPolynomial R Unit
-  equiv (MvPolynomial.pUnitAlgEquiv R)
 
 variable {R}
 
@@ -137,7 +132,7 @@ theorem iff :
   · rintro ⟨n, f, hf⟩
     exact ⟨n, RingHom.ker f.toRingHom, Ideal.quotientKerAlgEquivOfSurjective hf.1, hf.2⟩
   · rintro ⟨n, I, e, hfg⟩
-    letI := (FinitePresentation.mvPolynomial R _).quotient hfg
+    letI := (FinitePresentation.mvPolynomial_aux R _).quotient hfg
     exact equiv e
 
 /-- An algebra is finitely presented if and only if it is a quotient of a polynomial ring whose
@@ -191,6 +186,22 @@ theorem trans [Algebra A B] [IsScalarTower R A B] [FinitePresentation R A]
   letI : FinitePresentation R (MvPolynomial (Fin n) A ⧸ I) :=
     (mvPolynomial_of_finitePresentation _).quotient hfg
   exact equiv (e.restrictScalars R)
+
+/-- The ring of polynomials in finitely many variables is finitely presented. -/
+protected instance mvPolynomial [FinitePresentation R A] (ι : Type*) [Finite ι] :
+    FinitePresentation R (MvPolynomial ι A) :=
+  have := FinitePresentation.mvPolynomial_aux A ι; .trans _ A _
+
+/-- `R` is finitely presented as `R`-algebra. -/
+instance self : FinitePresentation R R :=
+  have := FinitePresentation.mvPolynomial_aux R Empty
+  equiv (MvPolynomial.isEmptyAlgEquiv R Empty)
+
+/-- `R[X]` is finitely presented as `R`-algebra. -/
+instance polynomial [FinitePresentation R A] : FinitePresentation R A[X] :=
+  letI := FinitePresentation.mvPolynomial R A Unit
+  have := equiv (MvPolynomial.pUnitAlgEquiv.{_, 0} A)
+  .trans _ A _
 
 open MvPolynomial
 

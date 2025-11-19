@@ -3,12 +3,14 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.SmallObject.Construction
-import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
-import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
-import Mathlib.CategoryTheory.MorphismProperty.IsSmall
-import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
-import Mathlib.SetTheory.Cardinal.Regular
+module
+
+public import Mathlib.CategoryTheory.SmallObject.Construction
+public import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
+public import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
+public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
+public import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
+public import Mathlib.SetTheory.Cardinal.Regular
 
 /-!
 # Cardinals that are suitable for the small object argument
@@ -53,6 +55,8 @@ pushouts of coproducts of morphisms in `I`.
 - https://ncatlab.org/nlab/show/small+object+argument
 
 -/
+
+@[expose] public section
 
 universe w v v' u u'
 
@@ -279,11 +283,11 @@ small object argument. -/
 noncomputable def obj : C := ((iteration I κ).obj (Arrow.mk f)).left
 
 /-- The "inclusion" morphism in the factorization given by
-the the small object argument. -/
+the small object argument. -/
 noncomputable def ιObj : X ⟶ obj I κ f := ((ιIteration I κ).app (Arrow.mk f)).left
 
 /-- The "projection" morphism in the factorization given by
-the the small object argument. -/
+the small object argument. -/
 noncomputable def πObj : obj I κ f ⟶ Y :=
   ((iteration I κ).obj (Arrow.mk f)).hom ≫ inv ((ιIteration I κ).app f).right
 
