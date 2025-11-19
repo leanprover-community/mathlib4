@@ -23,7 +23,7 @@ Most of them are noisy and get picked up anyway by CI, but even the quiet ones a
 outlive their in-development status.
 -/
 
-public meta section
+meta section
 
 namespace Mathlib.Linter
 
@@ -32,7 +32,7 @@ The linter emits a warning on any command beginning with `#` that itself emits n
 For example, `#guard true` and `#check_tactic True ~> True by skip` trigger a message.
 There is a list of silent `#`-command that are allowed.
 -/
-register_option linter.hashCommand : Bool := {
+public register_option linter.hashCommand : Bool := {
   defValue := false
   descr := "enable the `#`-command linter"
 }

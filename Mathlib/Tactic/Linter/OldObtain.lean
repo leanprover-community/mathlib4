@@ -50,7 +50,7 @@ case... but by now, the "old" syntax is not clearly better.)
 In the 30 replacements of the last PR, this occurred twice. In both cases, the `suffices` tactic
 could also be used, as was in fact clearer. -/
 
-public meta section
+meta section
 
 open Lean Elab Linter
 
@@ -65,7 +65,7 @@ def isObtainWithoutProof : Syntax → Bool
 
 /-- The `oldObtain` linter emits a warning upon uses of the "stream-of-consciousness" variants
 of the `obtain` tactic, i.e. with the proof postponed. -/
-register_option linter.oldObtain : Bool := {
+public register_option linter.oldObtain : Bool := {
   defValue := false
   descr := "enable the `oldObtain` linter"
 }

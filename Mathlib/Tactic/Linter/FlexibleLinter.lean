@@ -91,14 +91,14 @@ We then propagate all the `FVarId`s that were present in the "before" goals to t
 while leaving untouched the ones in the "inert" goals.
 -/
 
-public meta section
+meta section
 
 open Lean Elab Linter
 
 namespace Mathlib.Linter
 
 /-- The flexible linter makes sure that "rigid" tactics do not follow "flexible" tactics. -/
-register_option linter.flexible : Bool := {
+public register_option linter.flexible : Bool := {
   defValue := false
   descr := "enable the flexible linter"
 }
