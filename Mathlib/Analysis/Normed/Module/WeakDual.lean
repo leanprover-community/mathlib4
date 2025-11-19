@@ -259,7 +259,8 @@ theorem isCompact_closedBall [ProperSpace 𝕜] (x' : StrongDual 𝕜 E) (r : �
 variable (𝕜 V : Type*) [NontriviallyNormedField 𝕜] [SeminormedAddCommGroup V] [NormedSpace 𝕜 V]
 variable [TopologicalSpace.SeparableSpace V] (K : Set (WeakDual 𝕜 V))
 
-/- There exists a sequence of continuous functions that separates points on the weak dual. -/
+/-- In a separable normed space, there exists a sequence of continuous functions that
+separates points of the weak dual. -/
 lemma exists_continuous_separating : ∃ (gs : ℕ → (WeakDual 𝕜 V) → 𝕜),
     (∀ n, Continuous (gs n)) ∧ (∀ ⦃x y⦄, x≠y → ∃ n, gs n x ≠ gs n y) := by
   set vs := TopologicalSpace.denseSeq V
