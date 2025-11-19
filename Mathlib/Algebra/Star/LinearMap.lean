@@ -3,9 +3,11 @@ Copyright (c) 2025 Monica Omar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
-import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.Algebra.Star.SelfAdjoint
-import Mathlib.Algebra.Star.TensorProduct
+module
+
+public import Mathlib.Algebra.Algebra.Bilinear
+public import Mathlib.Algebra.Star.SelfAdjoint
+public import Mathlib.Algebra.Star.TensorProduct
 
 /-!
 # Intrinsic star operation on `E →ₗ[R] F`
@@ -21,6 +23,8 @@ is mathematically distinct from the global instance on `E →ₗ[𝕜] E` where
 `star := LinearMap.adjoint`.
 For that reason, the intrinsic star operation is scoped to `IntrinsicStar`.
 -/
+
+@[expose] public section
 
 namespace LinearMap
 variable {R E F : Type*} [Semiring R] [InvolutiveStar R]

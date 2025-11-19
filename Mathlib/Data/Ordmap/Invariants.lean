@@ -3,10 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Nat.Dist
-import Mathlib.Data.Ordmap.Ordnode
-import Mathlib.Tactic.Abel
+module
+
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Data.Nat.Dist
+public import Mathlib.Data.Ordmap.Ordnode
+public import Mathlib.Tactic.Abel
 
 /-!
 # Invariants for the verification of `Ordnode`
@@ -43,6 +45,8 @@ Contributors are encouraged to pick this up and finish the job, if it appeals to
 
 ordered map, ordered set, data structure, verified programming
 -/
+
+@[expose] public section
 
 
 variable {α : Type*}

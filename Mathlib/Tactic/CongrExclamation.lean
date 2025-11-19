@@ -3,12 +3,14 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Lean.Elab.Tactic.Config
-import Lean.Elab.Tactic.RCases
-import Lean.Meta.Tactic.Assumption
-import Lean.Meta.Tactic.Rfl
-import Mathlib.Lean.Meta.CongrTheorems
-import Mathlib.Logic.Basic
+module
+
+public meta import Lean.Elab.Tactic.Config
+public meta import Lean.Elab.Tactic.RCases
+public meta import Lean.Meta.Tactic.Assumption
+public meta import Lean.Meta.Tactic.Rfl
+public meta import Mathlib.Lean.Meta.CongrTheorems
+public meta import Mathlib.Logic.Basic
 
 /-!
 # The `congr!` tactic
@@ -20,6 +22,8 @@ The `congr!` tactic is used by the `convert` and `convert_to` tactics.
 
 See the syntax docstring for more details.
 -/
+
+public meta section
 
 universe u v
 

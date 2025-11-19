@@ -3,11 +3,13 @@ Copyright (c) 2020 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Jujian Zhang
 -/
-import Mathlib.Algebra.Polynomial.DenomsClearable
-import Mathlib.Analysis.Calculus.MeanValue
-import Mathlib.Analysis.Calculus.Deriv.Polynomial
-import Mathlib.NumberTheory.Real.Irrational
-import Mathlib.Topology.Algebra.Polynomial
+module
+
+public import Mathlib.Algebra.Polynomial.DenomsClearable
+public import Mathlib.Analysis.Calculus.MeanValue
+public import Mathlib.Analysis.Calculus.Deriv.Polynomial
+public import Mathlib.NumberTheory.Real.Irrational
+public import Mathlib.Topology.Algebra.Polynomial
 
 /-!
 
@@ -22,6 +24,8 @@ takes integer values at integers.  When evaluating at a rational number, we can 
 and obtain precise inequalities that ultimately allow us to prove transcendence of
 Liouville numbers.
 -/
+
+@[expose] public section
 
 
 /-- A Liouville number is a real number `x` such that for every natural number `n`, there exist

@@ -3,14 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johannes Hölzl, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Algebra.Field.GeomSum
-import Mathlib.Data.Nat.Factorial.BigOperators
-import Mathlib.Order.Filter.AtTopBot.Archimedean
-import Mathlib.Order.Iterate
-import Mathlib.Topology.Algebra.Algebra
-import Mathlib.Topology.Algebra.InfiniteSum.Real
-import Mathlib.Topology.Instances.EReal.Lemmas
-import Mathlib.Topology.Instances.Rat
+module
+
+public import Mathlib.Algebra.Field.GeomSum
+public import Mathlib.Data.Nat.Factorial.BigOperators
+public import Mathlib.Order.Filter.AtTopBot.Archimedean
+public import Mathlib.Order.Iterate
+public import Mathlib.Topology.Algebra.Algebra
+public import Mathlib.Topology.Algebra.InfiniteSum.Real
+public import Mathlib.Topology.Instances.EReal.Lemmas
+public import Mathlib.Topology.Instances.Rat
 
 /-!
 # A collection of specific limit computations
@@ -19,6 +21,8 @@ This file, by design, is independent of `NormedSpace` in the import hierarchy.  
 important specific limit computations in metric spaces, in ordered rings/fields, and in specific
 instances of these such as `ℝ`, `ℝ≥0` and `ℝ≥0∞`.
 -/
+
+@[expose] public section
 
 assert_not_exists Module.Basis NormedSpace
 

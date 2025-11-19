@@ -3,7 +3,9 @@ Copyright (c) 2024 James Sundstrom. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: James Sundstrom, Xavier Roblot
 -/
-import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+module
+
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 
 /-!
 # Extension of fractional ideals
@@ -30,6 +32,8 @@ This file defines the extension of a fractional ideal along a ring homomorphism.
 
 fractional ideal, fractional ideals, extended, extension
 -/
+
+@[expose] public section
 
 open IsLocalization FractionalIdeal Submodule
 

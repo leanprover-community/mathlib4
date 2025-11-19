@@ -3,11 +3,13 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Lean.Elab.Tactic.Simp
-import Lean.Elab.App
-import Mathlib.Tactic.Simps.NotationClass
-import Mathlib.Lean.Expr.Basic
-import Mathlib.Tactic.Basic
+module
+
+public meta import Lean.Elab.Tactic.Simp
+public meta import Lean.Elab.App
+public meta import Mathlib.Tactic.Simps.NotationClass
+public meta import Mathlib.Lean.Expr.Basic
+public meta import Mathlib.Tactic.Basic
 
 /-!
 # Simps attribute
@@ -51,6 +53,8 @@ There are some small changes in the attribute. None of them should have great ef
 
 structures, projections, simp, simplifier, generates declarations
 -/
+
+public meta section
 open Lean Elab Parser Command
 open Meta hiding Config
 open Elab.Term hiding mkConst
@@ -801,12 +805,12 @@ Optionally, this command accepts three optional arguments:
 def getRawProjections (stx : Syntax) (str : Name) (traceIfExists : Bool := false)
     (rules : Array ProjectionRule := #[]) (trc := false) :
     CoreM (List Name × Array ProjectionData) := do
-  withOptions (· |>.updateBool `trace.simps.verbose (trc || ·)) <| do
+  withOptions (·.updateBool `trace.simps.verbose (trc || ·)) do
   let env ← getEnv
   if let some data := (structureExt.getState env).find? str then
     -- We always print the projections when they already exists and are called by
     -- `initialize_simps_projections`.
-    withOptions (· |>.updateBool `trace.simps.verbose (traceIfExists || ·)) <| do
+    withOptions (·.updateBool `trace.simps.verbose (traceIfExists || ·)) do
       trace[simps.verbose]
         projectionsInfo data.2.toList "The projections for this structure have already been \
         initialized by a previous invocation of `initialize_simps_projections` or `@[simps]`.\n\
@@ -1193,8 +1197,9 @@ If `shortNm` is true, the generated names will only use the last projection name
 If `trc` is true, trace as if `trace.simps.verbose` is true. -/
 def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
     (todo : List (String × Syntax) := []) (trc := false) : AttrM (Array Name) :=
-  withOptions (· |>.updateBool `trace.simps.verbose (trc || ·)) <| do
-  let env ← getEnv
+  withOptions (·.updateBool `trace.simps.verbose (trc || ·)) do
+  -- We need access to theorem bodies
+  let env ← withoutExporting getEnv
   let some d := env.find? nm | throwError "Declaration {nm} doesn't exist."
   let lhs : Expr := mkConst d.name <| d.levelParams.map Level.param
   let todo := todo.eraseDups |>.map fun (proj, stx) ↦ (proj ++ "_", stx)
