@@ -877,6 +877,8 @@ class IsDiscrete where
 
 variable (R) in
 /-- The maximal element that is `< 1` in the value group of a discrete valuation. -/
+-- TODO: Link to `Valuation.IsUniformizer` once we connect `Valuation.IsRankOneDiscrete` with
+-- `ValuativeRel`.
 noncomputable
 def uniformizer [IsDiscrete R] : ValueGroupWithZero R :=
   IsDiscrete.has_maximal_element.choose
@@ -898,6 +900,13 @@ lemma uniformizer_pos [IsDiscrete R] [IsNontrivial R] :
 lemma uniformizer_ne_zero [IsDiscrete R] [IsNontrivial R] :
     uniformizer R ≠ 0 :=
   uniformizer_pos.ne'
+
+lemma uniformizer_inv_le_iff [IsDiscrete R] [IsNontrivial R] {a : ValueGroupWithZero R} :
+    (uniformizer R)⁻¹ ≤ a ↔ 1 < a := by
+  by_cases ha : a = 0
+  · simp [ha]
+  replace ha : 0 < a := bot_lt_iff_ne_bot.mpr ha
+  rw [inv_le_comm₀ uniformizer_pos ha, le_uniformizer_iff, inv_lt_one₀ ha]
 
 end ValuativeRel
 
