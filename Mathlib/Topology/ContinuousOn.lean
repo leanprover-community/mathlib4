@@ -3,7 +3,9 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.NhdsWithin
+module
+
+public import Mathlib.Topology.NhdsWithin
 
 /-!
 # Neighborhoods and continuity relative to a subset
@@ -19,6 +21,8 @@ these restricted notions and the corresponding notions for the subtype
 equipped with the subspace topology.
 
 -/
+
+@[expose] public section
 
 open Set Filter Function Topology
 

@@ -3,9 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Order.Disjoint
-import Mathlib.Order.RelIso.Basic
-import Mathlib.Tactic.Monotonicity.Attr
+module
+
+public import Mathlib.Order.Disjoint
+public import Mathlib.Order.RelIso.Basic
+public import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # Order homomorphisms
@@ -65,6 +67,8 @@ We also define two functions to convert other bundled maps to `α →o β`:
 
 monotone map, bundled morphism
 -/
+
+@[expose] public section
 
 -- Developments relating order homs and sets belong in `Order.Hom.Set` or later.
 assert_not_imported Mathlib.Data.Set.Basic
@@ -1103,6 +1107,17 @@ end StrictMono
 /-- An order isomorphism is also an order isomorphism between dual orders. -/
 protected def OrderIso.dual [LE α] [LE β] (f : α ≃o β) : αᵒᵈ ≃o βᵒᵈ :=
   ⟨f.toEquiv, f.map_rel_iff⟩
+
+section
+variable [LE α] [LE β] (f : α ≃o β)
+
+@[simp] lemma OrderIso.dual_apply (x) : f.dual x = .toDual (f x.ofDual) := rfl
+
+@[simp] lemma OrderIso.dual_symm_apply (x) : f.dual.symm x = .toDual (f.symm x.ofDual) := rfl
+
+@[simp] lemma OrderIso.symm_dual : f.symm.dual = f.dual.symm := rfl
+
+end
 
 section LatticeIsos
 

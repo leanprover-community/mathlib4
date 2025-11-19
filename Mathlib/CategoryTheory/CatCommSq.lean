@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Equivalence
+module
+
+public import Mathlib.CategoryTheory.Equivalence
 
 /-!
 # 2-commutative squares of functors
@@ -18,6 +20,8 @@ Future work: using this notion in the development of the localization of categor
 (e.g. localization of adjunctions).
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
