@@ -46,9 +46,8 @@ theorem splitOnP_cons (x : α) (xs : List α) :
       if p x then [] :: xs.splitOnP p else (xs.splitOnP p).modifyHead (cons x) := by
   rw [splitOnP, splitOnP.go]; split <;> [rfl; simp [splitOnP.go_acc]]
 
-@[simp]
 lemma splitOnP_false (h : ∀ (x : α), x ∈ xs → p x = false) :
-    List.splitOnP p (xs) = [xs] := by
+    List.splitOnP p xs = [xs] := by
   induction xs with
   | nil => rfl
   | cons hd tl ih =>
