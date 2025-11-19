@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
 import Mathlib.MeasureTheory.Function.ContinuousMapDense
-import Mathlib.MeasureTheory.Function.UniformIntegrable
 import Mathlib.Geometry.Manifold.SmoothApprox
 import Mathlib.Tactic.MoveAdd
 
@@ -17,7 +16,6 @@ functions for `p < ∞`.
 
 This result is recorded in `MeasureTheory.MemLp.exist_sub_eLpNorm_le`.
 -/
-
 
 variable {α β E F : Type*} [MeasurableSpace E] [NormedAddCommGroup F]
 
