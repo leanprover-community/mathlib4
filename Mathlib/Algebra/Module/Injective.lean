@@ -3,10 +3,12 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.Algebra.Module.Shrink
-import Mathlib.LinearAlgebra.LinearPMap
-import Mathlib.Logic.Small.Basic
-import Mathlib.RingTheory.Ideal.Defs
+module
+
+public import Mathlib.Algebra.Module.Shrink
+public import Mathlib.LinearAlgebra.LinearPMap
+public import Mathlib.Logic.Small.Basic
+public import Mathlib.RingTheory.Ideal.Defs
 
 /-!
 # Injective modules
@@ -31,6 +33,8 @@ import Mathlib.RingTheory.Ideal.Defs
 * `Module.Baer.injective`: an `R`-module is injective if it is Baer.
 
 -/
+
+@[expose] public section
 
 assert_not_exists ModuleCat
 
@@ -90,7 +94,6 @@ theorem ExtensionOf.ext {a b : ExtensionOf i f} (domain_eq : a.domain = b.domain
       a.toLinearPMap ⟨x, ha⟩ = b.toLinearPMap ⟨x, hb⟩) :
     a = b := by
   rcases a with ⟨a, a_le, e1⟩
-  rcases b with ⟨b, b_le, e2⟩
   congr
   exact LinearPMap.ext domain_eq to_fun_eq
 

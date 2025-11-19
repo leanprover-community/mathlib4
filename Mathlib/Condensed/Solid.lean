@@ -3,9 +3,11 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
-import Mathlib.Condensed.Functors
-import Mathlib.Condensed.Limits
+module
+
+public import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
+public import Mathlib.Condensed.Functors
+public import Mathlib.Condensed.Limits
 
 /-!
 
@@ -23,6 +25,8 @@ TODO (hard): prove that `((profiniteSolid ℤ).obj S).IsSolid` for `S : Profinit
 TODO (slightly easier): prove that `((profiniteSolid 𝔽ₚ).obj S).IsSolid` for `S : Profinite`.
 -/
 
+@[expose] public section
+
 universe u
 
 variable (R : Type (u + 1)) [Ring R]
@@ -33,15 +37,15 @@ noncomputable section
 
 namespace Condensed
 
-/-- The free condensed abelian group on a finite set. -/
+/-- The free condensed `R`-module on a finite set. -/
 abbrev finFree : FintypeCat.{u} ⥤ CondensedMod.{u} R :=
   FintypeCat.toProfinite ⋙ profiniteToCondensed ⋙ free R
 
-/-- The free condensed abelian group on a profinite space. -/
+/-- The free condensed `R`-module on a profinite space. -/
 abbrev profiniteFree : Profinite.{u} ⥤ CondensedMod.{u} R :=
   profiniteToCondensed ⋙ free R
 
-/-- The functor sending a profinite space `S` to the condensed abelian group `R[S]^\solid`. -/
+/-- The functor sending a profinite space `S` to the condensed `R`-module `R[S]^\solid`. -/
 def profiniteSolid : Profinite.{u} ⥤ CondensedMod.{u} R :=
   Functor.rightKanExtension FintypeCat.toProfinite (finFree R)
 
@@ -68,7 +72,15 @@ def profiniteSolidification : profiniteFree R ⟶ profiniteSolid.{u} R :=
 
 end Condensed
 
-/-- The predicate on condensed abelian groups describing the property of being solid. -/
+/--
+The predicate on condensed `R`-modules describing the property of being solid.
+
+TODO: This is not the correct definition of solid `R`-modules for a general `R`. The correct one is
+as follows: Use this to define solid modules over a finite type `ℤ`-algebra `R`. In particular this
+gives a definition of solid modules over `ℤ[X]` (polynomials in one variable). Then a solid
+`R`-module over a general ring `R` is the condition that for every `r ∈ R` and every ring
+homomorphism `ℤ[X] → R` such that `X` maps to `r`, the underlying `ℤ[X]`-module is solid.
+-/
 class CondensedMod.IsSolid (A : CondensedMod.{u} R) : Prop where
   isIso_solidification_map : ∀ X : Profinite.{u}, IsIso ((yoneda.obj A).map
     ((profiniteSolidification R).app X).op)

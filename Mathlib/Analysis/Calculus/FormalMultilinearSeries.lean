@@ -3,7 +3,9 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.NormedSpace.Multilinear.Curry
+module
+
+public import Mathlib.Analysis.NormedSpace.Multilinear.Curry
 
 /-!
 # Formal multilinear series
@@ -21,6 +23,8 @@ values in `F`. This is the space in which the `n`-th derivative of a function fr
 
 multilinear, formal series
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -196,7 +200,7 @@ def unshift (q : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)) (z : F) : Form
 theorem unshift_shift {p : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)} {z : F} :
     (p.unshift z).shift = p := by
   ext1 n
-  simp [shift, unshift]
+  simp only [shift, Nat.succ_eq_add_one, unshift]
   exact LinearIsometryEquiv.apply_symm_apply (continuousMultilinearCurryRightEquiv' 𝕜 n E F) (p n)
 
 end FormalMultilinearSeries

@@ -3,8 +3,10 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.Fourier.AddCircle
-import Mathlib.MeasureTheory.Integral.Pi
+module
+
+public import Mathlib.Analysis.Fourier.AddCircle
+public import Mathlib.MeasureTheory.Integral.Pi
 
 /-!
 # Multivariate Fourier series
@@ -13,6 +15,8 @@ In this file we define the Fourier series of an L² function on the `d`-dimensio
 show that it converges to the function in the L² norm. We also prove uniform convergence of the
 Fourier series if `f` is continuous and the sequence of its Fourier coefficients is summable.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -49,8 +53,7 @@ variable (n : d → ℤ)
 /-- Exponential monomials in `d` variables. -/
 def mFourier : C(UnitAddTorus d, ℂ) where
   toFun x := ∏ i : d, fourier (n i) (x i)
-  continuous_toFun := continuous_finset_prod _
-    fun i _ ↦ (fourier (n i)).continuous.comp (continuous_apply i)
+  continuous_toFun := by fun_prop
 
 variable {n} {x : UnitAddTorus d}
 

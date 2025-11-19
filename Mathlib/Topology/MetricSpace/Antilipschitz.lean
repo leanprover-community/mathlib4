@@ -3,10 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.UniformSpace.CompleteSeparated
-import Mathlib.Topology.EMetricSpace.Lipschitz
-import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.Topology.MetricSpace.Bounded
+module
+
+public import Mathlib.Topology.UniformSpace.CompleteSeparated
+public import Mathlib.Topology.EMetricSpace.Lipschitz
+public import Mathlib.Topology.MetricSpace.Basic
+public import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
 # Antilipschitz functions
@@ -21,6 +23,8 @@ The parameter `K` has type `ℝ≥0`. This way we avoid conjunction in the defin
 coercions both to `ℝ` and `ℝ≥0∞`. We do not require `0 < K` in the definition, mostly because
 we do not have a `posreal` type.
 -/
+
+@[expose] public section
 
 open Bornology Filter Set Topology
 open scoped NNReal ENNReal Uniformity
@@ -96,8 +100,7 @@ theorem mul_le_edist (hf : AntilipschitzWith K f) (x y : α) :
   exact ENNReal.div_le_of_le_mul' (hf x y)
 
 theorem ediam_preimage_le (hf : AntilipschitzWith K f) (s : Set β) : diam (f ⁻¹' s) ≤ K * diam s :=
-  diam_le fun x hx y hy => (hf x y).trans <|
-    mul_le_mul_left' (edist_le_diam_of_mem (mem_preimage.1 hx) hy) K
+  diam_le fun x hx y hy => by grw [hf x y, edist_le_diam_of_mem (mem_preimage.1 hx) hy]
 
 theorem le_mul_ediam_image (hf : AntilipschitzWith K f) (s : Set α) : diam s ≤ K * diam (f '' s) :=
   (diam_mono (subset_preimage_image _ _)).trans (hf.ediam_preimage_le (f '' s))

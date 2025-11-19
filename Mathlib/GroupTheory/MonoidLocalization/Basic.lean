@@ -3,11 +3,13 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.Regular.Basic
-import Mathlib.GroupTheory.Congruence.Hom
-import Mathlib.GroupTheory.OreLocalization.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Algebra.Regular.Basic
+public import Mathlib.GroupTheory.Congruence.Hom
+public import Mathlib.GroupTheory.OreLocalization.Basic
 
 /-!
 # Localizations of commutative monoids
@@ -72,6 +74,8 @@ localization, monoid localization, quotient monoid, congruence relation, charact
 commutative monoid, grothendieck group
 -/
 
+@[expose] public section
+
 assert_not_exists MonoidWithZero Ring
 
 open Function
@@ -114,8 +118,8 @@ end Submonoid
 
 namespace Localization
 
--- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20to_additive.2Emap_namespace
-run_cmd Lean.Elab.Command.liftCoreM <| ToAdditive.insertTranslation `Localization `AddLocalization
+/- Ensure that `@[to_additive]` uses the right namespace before the definition of `Localization`. -/
+insert_to_additive_translation Localization AddLocalization
 
 /-- The congruence relation on `M × S`, `M` a `CommMonoid` and `S` a submonoid of `M`, whose
 quotient is the localization of `M` at `S`, defined as the unique congruence relation on
@@ -417,7 +421,7 @@ such that `f z' / f d = z` and `f w' / f d = w`. -/
 /-- Given a localization map `f : M →+ N`, and `z w : N`, there exist `z' w' : M` and `d : S`
 such that `f z' - f d = z` and `f w' - f d = w`. -/]
 theorem surj₂ (f : LocalizationMap S N) (z w : N) : ∃ z' w' : M, ∃ d : S,
-    (z * f d = f z') ∧  (w * f d = f w') := by
+    (z * f d = f z') ∧ (w * f d = f w') := by
   let ⟨a, ha⟩ := surj f z
   let ⟨b, hb⟩ := surj f w
   refine ⟨a.1 * b.2, a.2 * b.1, a.2 * b.2, ?_, ?_⟩
@@ -802,10 +806,12 @@ theorem lift_of_comp (j : N →* P) : f.lift (f.isUnit_comp j) = j := by
   ext; simp_rw [lift_spec, j.comp_apply, ← map_mul, toMonoidHom_apply, sec_spec']
 
 @[to_additive]
-theorem epic_of_localizationMap {j k : N →* P}
-    (h : ∀ a, j.comp f.toMonoidHom a = k.comp f.toMonoidHom a) : j = k := by
-  rw [← f.lift_of_comp j, ← f.lift_of_comp k]
-  congr 1 with x; exact h x
+theorem epic_of_localizationMap {P : Type*} [Monoid P] {j k : N →* P}
+    (h : j.comp f.toMonoidHom = k.comp f.toMonoidHom) : j = k := by
+  ext n
+  obtain ⟨⟨m, s⟩, hn : n * f s = f m⟩ := f.surj n
+  replace h (a) : j (f a) = k (f a) := congr($h a)
+  exact ((f.map_units s).map j).mul_left_inj.mp <| by rw [← j.map_mul, h, ← k.map_mul, hn, h m]
 
 @[to_additive]
 theorem lift_unique {j : N →* P} (hj : ∀ x, j (f x) = g x) : f.lift hg = j := by

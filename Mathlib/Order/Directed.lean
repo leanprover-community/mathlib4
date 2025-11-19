@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Data.Set.Image
+module
+
+public import Mathlib.Data.Set.Image
 
 /-!
 # Directed indexed families and sets
@@ -26,6 +28,8 @@ Define connected orders (the transitive symmetric closure of `≤` is everything
 ## References
 * [Gierz et al, *A Compendium of Continuous Lattices*][GierzEtAl1980]
 -/
+
+@[expose] public section
 
 
 open Function
@@ -89,6 +93,13 @@ theorem Directed.mono_comp (r : α → α → Prop) {ι} {rb : β → β → Pro
 theorem DirectedOn.mono_comp {r : α → α → Prop} {rb : β → β → Prop} {g : α → β} {s : Set α}
     (hg : ∀ ⦃x y⦄, r x y → rb (g x) (g y)) (hf : DirectedOn r s) : DirectedOn rb (g '' s) :=
   directedOn_image.mpr (hf.mono hg)
+
+lemma directedOn_onFun_iff {r : α → α → Prop} {f : β → α} {s : Set β} :
+    DirectedOn (r on f) s ↔ DirectedOn r (f '' s) := by
+  refine ⟨DirectedOn.mono_comp (by simp), fun h x hx y hy ↦ ?_⟩
+  obtain ⟨_, ⟨z, hz, rfl⟩, hz'⟩ := h (f x) (Set.mem_image_of_mem f hx) (f y)
+    (Set.mem_image_of_mem f hy)
+  grind
 
 /-- A set stable by supremum is `≤`-directed. -/
 theorem directedOn_of_sup_mem [SemilatticeSup α] {S : Set α}

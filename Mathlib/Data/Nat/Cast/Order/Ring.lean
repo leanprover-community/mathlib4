@@ -3,15 +3,19 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Data.Nat.Cast.Order.Basic
+module
+
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.Data.Nat.Cast.Order.Basic
 
 /-!
 # Cast of natural numbers: lemmas about bundled ordered semirings
 
 -/
+
+@[expose] public section
 
 variable {R α : Type*}
 
@@ -125,9 +129,8 @@ lemma two_mul_sq_add_one_le_two_pow_two_mul (k : ℕ) : 2 * k ^ 2 + 1 ≤ 2 ^ (2
   induction k with
   | zero => simp
   | succ k hk =>
-    rw [add_pow_two, one_pow, mul_one, add_assoc, mul_add, add_right_comm]
-    refine (add_le_add_right hk _).trans ?_
-    rw [mul_add 2 k, pow_add, mul_one, pow_two, ← mul_assoc, mul_two, mul_two, add_assoc]
+    grw [add_pow_two, one_pow, mul_one, add_assoc, mul_add, add_right_comm, hk, mul_add 2 k,
+      pow_add, mul_one, pow_two, ← mul_assoc, mul_two, mul_two, add_assoc]
     gcongr
     rw [← two_mul, ← pow_succ']
     exact le_add_of_le_right (mul_le_pow (by simp) _)

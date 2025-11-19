@@ -3,10 +3,12 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.RingTheory.Nilpotent.Basic
-import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
-import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
+module
+
+public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.RingTheory.Nilpotent.Basic
+public import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 
 /-!
 # Squarefree elements of monoids
@@ -28,6 +30,8 @@ Results about squarefree natural numbers are proved in `Data.Nat.Squarefree`.
 squarefree, multiplicity
 
 -/
+
+@[expose] public section
 
 
 variable {R : Type*}
@@ -213,7 +217,7 @@ theorem squarefree_mul_iff : Squarefree (x * y) ↔ IsRelPrime x y ∧ Squarefre
 
 open scoped Function in
 theorem Finset.squarefree_prod_of_pairwise_isCoprime {ι : Type*} {s : Finset ι}
-    {f : ι → R} (hs : Set.Pairwise s.toSet (IsRelPrime on f)) (hs' : ∀ i ∈ s, Squarefree (f i)) :
+    {f : ι → R} (hs : Set.Pairwise s (IsRelPrime on f)) (hs' : ∀ i ∈ s, Squarefree (f i)) :
     Squarefree (∏ i ∈ s, f i) := by
   induction s using Finset.cons_induction with
   | empty => simp

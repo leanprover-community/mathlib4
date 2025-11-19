@@ -3,8 +3,10 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-import Mathlib.Analysis.Normed.Field.UnitBall
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+public import Mathlib.Analysis.Normed.Field.UnitBall
 
 /-!
 # The circle
@@ -36,6 +38,8 @@ considered as a homomorphism from `ℂ` to `ℝ`, nor is it defeq to `{z : ℂ |
 is the kernel of the homomorphism `Complex.normSq` from `ℂ` to `ℝ`.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -93,9 +97,7 @@ def toUnits : Circle →* Units ℂ := unitSphereToUnits ℂ
 instance : CompactSpace Circle := Metric.sphere.compactSpace _ _
 instance : IsTopologicalGroup Circle := Metric.sphere.instIsTopologicalGroup
 instance instUniformSpace : UniformSpace Circle := instUniformSpaceSubtype
-instance : IsUniformGroup Circle := by
-  convert topologicalGroup_is_uniform_of_compactSpace Circle
-  exact unique_uniformity_of_compact rfl rfl
+instance : IsUniformGroup Circle := inferInstance
 
 /-- If `z` is a nonzero complex number, then `conj z / z` belongs to the unit circle. -/
 @[simps]
@@ -199,7 +201,7 @@ theorem fourierChar_apply' (x : ℝ) : 𝐞 x = Circle.exp (2 * π * x) := rfl
 
 theorem fourierChar_apply (x : ℝ) : 𝐞 x = Complex.exp (↑(2 * π * x) * Complex.I) := rfl
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_fourierChar : Continuous 𝐞 := Circle.exp.continuous.comp (continuous_mul_left _)
 
 theorem fourierChar_ne_one : fourierChar ≠ 1 := by
@@ -220,8 +222,8 @@ theorem probChar_apply' (x : ℝ) : probChar x = Circle.exp x := rfl
 
 theorem probChar_apply (x : ℝ) : probChar x = Complex.exp (x * Complex.I) := rfl
 
-@[continuity]
-theorem continuous_probChar : Continuous probChar := Circle.exp.continuous
+@[continuity, fun_prop]
+theorem continuous_probChar : Continuous probChar := map_continuous Circle.exp
 
 theorem probChar_ne_one : probChar ≠ 1 := by
   rw [DFunLike.ne_iff]

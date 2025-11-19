@@ -3,11 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Exact
-import Mathlib.CategoryTheory.Shift.ShiftSequence
-import Mathlib.CategoryTheory.Triangulated.Functor
-import Mathlib.CategoryTheory.Triangulated.Subcategory
-import Mathlib.Algebra.Homology.ExactSequence
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Exact
+public import Mathlib.CategoryTheory.Shift.ShiftSequence
+public import Mathlib.CategoryTheory.Triangulated.Functor
+public import Mathlib.CategoryTheory.Triangulated.Subcategory
+public import Mathlib.Algebra.Homology.ExactSequence
 
 /-! # Homological functors
 
@@ -43,6 +45,8 @@ for "contravariant" functors (i.e. functors `Cᵒᵖ ⥤ A`).
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -219,16 +223,17 @@ lemma homologySequence_exact₃ :
     (ShortComplex.mk _ _ (F.comp_homologySequenceδ T hT _ _ h)).Exact := by
   refine ShortComplex.exact_of_iso ?_ (F.homologySequence_exact₂ _ (rot_of_distTriang _ hT) n₀)
   exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _)
-    ((F.shiftIso 1 n₀ n₁ (by omega)).app _) (by simp) (by simp [homologySequenceδ, shiftMap])
+    ((F.shiftIso 1 n₀ n₁ (by cutsat)).app _) (by simp) (by simp [homologySequenceδ, shiftMap])
 
 lemma homologySequence_exact₁ :
     (ShortComplex.mk _ _ (F.homologySequenceδ_comp T hT _ _ h)).Exact := by
   refine ShortComplex.exact_of_iso ?_ (F.homologySequence_exact₂ _ (inv_rot_of_distTriang _ hT) n₁)
-  refine ShortComplex.isoMk (-((F.shiftIso (-1) n₁ n₀ (by omega)).app _))
+  refine ShortComplex.isoMk (-((F.shiftIso (-1) n₁ n₀ (by cutsat)).app _))
     (Iso.refl _) (Iso.refl _) ?_ (by simp)
   dsimp
   simp only [homologySequenceδ, neg_comp, map_neg, comp_id,
-    F.shiftIso_hom_app_comp_shiftMap_of_add_eq_zero T.mor₃ (-1) (neg_add_cancel 1) n₀ n₁ (by omega)]
+    F.shiftIso_hom_app_comp_shiftMap_of_add_eq_zero T.mor₃ (-1) (neg_add_cancel 1) n₀ n₁
+      (by cutsat)]
 
 lemma homologySequence_epi_shift_map_mor₁_iff :
     Epi ((F.shift n₀).map T.mor₁) ↔ (F.shift n₀).map T.mor₂ = 0 :=

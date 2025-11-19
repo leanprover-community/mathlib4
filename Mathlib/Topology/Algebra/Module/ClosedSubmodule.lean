@@ -3,13 +3,15 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Topology.Algebra.Module.LinearMap
-import Mathlib.Topology.Sets.Closeds
+module
+
+public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Topology.Sets.Closeds
 
 /-!
 # Closed submodules of a topological module
 
-This files builds the frame of closed `R`-submodules of a topological module `M`.
+This file builds the frame of closed `R`-submodules of a topological module `M`.
 
 One can turn `s : Submodule R E` + `hs : IsClosed s` into `s : ClosedSubmodule R E` in a tactic
 block by doing `lift s to ClosedSubmodule R E using hs`.
@@ -18,6 +20,8 @@ block by doing `lift s to ClosedSubmodule R E using hs`.
 
 Actually provide the `Order.Frame (ClosedSubmodule R M)` instance.
 -/
+
+@[expose] public section
 
 open Function Order TopologicalSpace
 

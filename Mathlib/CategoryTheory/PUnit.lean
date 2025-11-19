@@ -3,8 +3,10 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Functor.Const
-import Mathlib.CategoryTheory.Discrete.Basic
+module
+
+public import Mathlib.CategoryTheory.Functor.Const
+public import Mathlib.CategoryTheory.Discrete.Basic
 
 /-!
 # The category `Discrete PUnit`
@@ -14,10 +16,12 @@ show that any two functors to `Discrete PUnit` are naturally isomorphic,
 and construct the equivalence `(Discrete PUnit ⥤ C) ≌ C`.
 -/
 
+@[expose] public section
+
 
 universe w v u
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 namespace CategoryTheory
 
 variable (C : Type u) [Category.{v} C]

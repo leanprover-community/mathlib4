@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Group.Indicator
-import Mathlib.MeasureTheory.OuterMeasure.Basic
+module
+
+public import Mathlib.Algebra.Order.Group.Indicator
+public import Mathlib.MeasureTheory.OuterMeasure.Basic
 
 /-!
 # Operations on outer measures
@@ -22,6 +24,8 @@ We also show that outer measures on a type `α` form a complete lattice.
 outer measure
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -138,6 +142,9 @@ instance instPartialOrder : PartialOrder (OuterMeasure α) where
   le_refl _ _ := le_rfl
   le_trans _ _ _ hab hbc s := le_trans (hab s) (hbc s)
   le_antisymm _ _ hab hba := ext fun s => le_antisymm (hab s) (hba s)
+
+instance instIsOrderedAddMonoid {α : Type*} : IsOrderedAddMonoid (OuterMeasure α) where
+  add_le_add_left _ _ h _ s := add_le_add_left (h s) _
 
 instance orderBot : OrderBot (OuterMeasure α) :=
   { bot := 0,

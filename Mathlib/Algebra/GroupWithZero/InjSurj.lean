@@ -3,13 +3,17 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Algebra.GroupWithZero.NeZero
+module
+
+public import Mathlib.Algebra.Group.InjSurj
+public import Mathlib.Algebra.GroupWithZero.NeZero
 
 /-!
 # Lifting groups with zero along injective/surjective maps
 
 -/
+
+@[expose] public section
 
 assert_not_exists DenselyOrdered Ring
 
@@ -26,8 +30,6 @@ See note [reducible non-instances]. -/
 protected abbrev Function.Injective.mulZeroClass [Mul M₀'] [Zero M₀'] (f : M₀' → M₀)
     (hf : Injective f) (zero : f 0 = 0) (mul : ∀ a b, f (a * b) = f a * f b) :
     MulZeroClass M₀' where
-  mul := (· * ·)
-  zero := 0
   zero_mul a := hf <| by simp only [mul, zero, zero_mul]
   mul_zero a := hf <| by simp only [mul, zero, mul_zero]
 
@@ -36,8 +38,6 @@ See note [reducible non-instances]. -/
 protected abbrev Function.Surjective.mulZeroClass [Mul M₀'] [Zero M₀'] (f : M₀ → M₀')
     (hf : Surjective f) (zero : f 0 = 0) (mul : ∀ a b, f (a * b) = f a * f b) :
     MulZeroClass M₀' where
-  mul := (· * ·)
-  zero := 0
   mul_zero := hf.forall.2 fun x => by simp only [← zero, ← mul, mul_zero]
   zero_mul := hf.forall.2 fun x => by simp only [← zero, ← mul, zero_mul]
 

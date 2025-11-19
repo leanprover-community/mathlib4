@@ -3,14 +3,18 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Cardinal.Arithmetic
-import Mathlib.SetTheory.Ordinal.Principal
+module
+
+public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.SetTheory.Ordinal.Principal
 
 /-!
 # Ordinal arithmetic with cardinals
 
 This file collects results about the cardinality of different ordinal operations.
 -/
+
+@[expose] public section
 
 universe u v
 open Cardinal Ordinal Set
@@ -67,7 +71,7 @@ theorem card_iSup_Iio_le_sum_card {o : Ordinal.{u}} (f : Iio o → Ordinal.{max 
 theorem card_iSup_Iio_le_card_mul_iSup {o : Ordinal.{u}} (f : Iio o → Ordinal.{max u v}) :
     (⨆ a : Iio o, f a).card ≤ Cardinal.lift.{v} o.card * ⨆ a : Iio o, (f a).card := by
   apply (card_iSup_Iio_le_sum_card f).trans
-  convert ← sum_le_iSup_lift _
+  convert ← sum_le_lift_mk_mul_iSup _
   · exact mk_toType o
   · exact (enumIsoToType o).symm.iSup_comp (g := fun x ↦ (f x).card)
 

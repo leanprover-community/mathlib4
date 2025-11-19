@@ -3,13 +3,17 @@ Copyright (c) 2024 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Andreas Gittis
 -/
-import Mathlib.Data.Nat.Log
-import Mathlib.Tactic.NormNum
+module
+
+public meta import Mathlib.Data.Nat.Log
+public meta import Mathlib.Tactic.NormNum
 
 /-! # `norm_num` extensions for `Nat.log` and `Nat.clog`
 
 This module defines `norm_num` extensions for `Nat.log` and `Nat.clog`.
 -/
+
+public meta section
 
 namespace Mathlib.Meta.NormNum
 
@@ -74,9 +78,9 @@ theorem nat_clog_helper {b m n : ℕ} (hb : Nat.blt 1 b = true)
     (h₁ : Nat.blt (b ^ m) n = true) (h₂ : Nat.ble n (b ^ (m + 1)) = true) :
     Nat.clog b n = m + 1 := by
   rw [Nat.blt_eq] at hb
-  rw [Nat.blt_eq, Nat.pow_lt_iff_lt_clog hb] at h₁
-  rw [Nat.ble_eq, Nat.le_pow_iff_clog_le hb] at h₂
-  omega
+  rw [Nat.blt_eq, ← Nat.lt_clog_iff_pow_lt hb] at h₁
+  rw [Nat.ble_eq, ← Nat.clog_le_iff_le_pow hb] at h₂
+  cutsat
 
 private theorem isNat_clog : {b nb n nn k : ℕ} → IsNat b nb → IsNat n nn →
     Nat.clog nb nn = k → IsNat (Nat.clog b n) k
@@ -99,7 +103,7 @@ def proveNatClog (eb en : Q(ℕ)) : (ek : Q(ℕ)) × Q(Nat.clog $eb $en = $ek) :
   else
     match h : Nat.clog b n with
     | 0 => False.elim <|
-      Nat.ne_of_gt (Nat.clog_pos (by omega) (by omega)) h
+      Nat.ne_of_gt (Nat.clog_pos (by cutsat) (by cutsat)) h
     | k + 1 =>
       have ek : Q(ℕ) := mkRawNatLit k
       have ek1 : Q(ℕ) := mkRawNatLit (k + 1)

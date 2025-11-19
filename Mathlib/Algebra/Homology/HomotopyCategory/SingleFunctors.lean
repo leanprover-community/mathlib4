@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomotopyCategory.Shift
-import Mathlib.CategoryTheory.Shift.SingleFunctors
+module
+
+public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
+public import Mathlib.CategoryTheory.Shift.SingleFunctors
 
 /-!
 # Single functors from the homotopy category
@@ -17,6 +19,8 @@ Similarly, we define
 `HomotopyCategory.singleFunctors C : SingleFunctors C (HomotopyCategory C (ComplexShape.up ℤ)) ℤ`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -99,6 +103,13 @@ noncomputable abbrev singleFunctor (n : ℤ) :
 instance (n : ℤ) : (singleFunctor C n).Additive := by
   dsimp only [singleFunctor, singleFunctors, SingleFunctors.postcomp]
   infer_instance
+
+-- The object level definitional equality underlying `singleFunctorsPostcompQuotientIso`.
+@[simp] theorem quotient_obj_singleFunctors_obj (n : ℤ) (X : C) :
+    (HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj
+      ((CochainComplex.singleFunctor C n).obj X) =
+        (HomotopyCategory.singleFunctor C n).obj X :=
+  rfl
 
 instance (R : Type*) [Ring R] [Linear R C] (n : ℤ) :
     Functor.Linear R (HomotopyCategory.singleFunctor C n) :=

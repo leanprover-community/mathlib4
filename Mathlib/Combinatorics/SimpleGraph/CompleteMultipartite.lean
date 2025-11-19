@@ -3,11 +3,13 @@ Copyright (c) 2024 John Talbot and Lian Bremner Tattersall. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: John Talbot, Lian Bremner Tattersall
 -/
-import Mathlib.Combinatorics.SimpleGraph.Coloring
-import Mathlib.Combinatorics.SimpleGraph.Copy
-import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-import Mathlib.Combinatorics.SimpleGraph.Extremal.Turan
-import Mathlib.Combinatorics.SimpleGraph.Hasse
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Coloring
+public import Mathlib.Combinatorics.SimpleGraph.Copy
+public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+public import Mathlib.Combinatorics.SimpleGraph.Extremal.Turan
+public import Mathlib.Combinatorics.SimpleGraph.Hasse
 
 /-!
 # Complete Multipartite Graphs
@@ -16,20 +18,20 @@ A graph is complete multipartite iff non-adjacency is transitive.
 
 ## Main declarations
 
-* `SimpleGraph.IsCompleteMultipartite`: predicate for a graph to be complete-multi-partite.
+* `SimpleGraph.IsCompleteMultipartite`: predicate for a graph to be complete multipartite.
 
 * `SimpleGraph.IsCompleteMultipartite.setoid`: the `Setoid` given by non-adjacency.
 
 * `SimpleGraph.IsCompleteMultipartite.iso`: the graph isomorphism from a graph that
   `IsCompleteMultipartite` to the corresponding `completeMultipartiteGraph`.
 
-* `SimpleGraph.IsPathGraph3Compl`: predicate for three vertices to be a witness to
-  non-complete-multi-partite-ness of a graph G. (The name refers to the fact that the three
+* `SimpleGraph.IsPathGraph3Compl`: predicate for three vertices to witness the
+  non-complete-multipartiteness of a graph `G`. (The name refers to the fact that the three
   vertices form the complement of `pathGraph 3`.)
 
-* See also: `Mathlib/Combinatorics/SimpleGraph/FiveWheelLike.lean`
-  `colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree` a maximally `r + 1`- cliquefree graph
-  is `r`-colorable iff it is complete-multipartite.
+* See also: `Mathlib/Combinatorics/SimpleGraph/FiveWheelLike.lean`.
+  The lemma `colorable_iff_isCompleteMultipartite_of_maximal_cliqueFree` states that a maximally
+  `r + 1`-cliquefree graph is `r`-colorable iff it is complete multipartite.
 
 * `SimpleGraph.completeEquipartiteGraph`: the **complete equipartite graph** in parts of *equal*
   size such that two vertices are adjacent if and only if they are in different parts.
@@ -48,6 +50,8 @@ See `completeEquipartiteGraph.completeMultipartiteGraph`, `completeEquipartiteGr
 for the isomorphisms between a `completeEquipartiteGraph` and a corresponding
 `completeMultipartiteGraph`, `turanGraph`.
 -/
+
+@[expose] public section
 
 open Finset Fintype
 
@@ -114,15 +118,15 @@ namespace IsPathGraph3Compl
 
 variable {v w₁ w₂ : α}
 
-@[grind]
+@[grind →]
 lemma ne_fst (h2 : G.IsPathGraph3Compl v w₁ w₂) : v ≠ w₁ :=
   fun h ↦ h2.not_adj_snd (h.symm ▸ h2.adj)
 
-@[grind]
+@[grind →]
 lemma ne_snd (h2 : G.IsPathGraph3Compl v w₁ w₂) : v ≠ w₂ :=
   fun h ↦ h2.not_adj_fst (h ▸ h2.adj.symm)
 
-@[grind]
+@[grind →]
 lemma fst_ne_snd (h2 : G.IsPathGraph3Compl v w₁ w₂) : w₁ ≠ w₂ := h2.adj.ne
 
 @[symm] lemma symm (h : G.IsPathGraph3Compl v w₁ w₂) : G.IsPathGraph3Compl v w₂ w₁ := by

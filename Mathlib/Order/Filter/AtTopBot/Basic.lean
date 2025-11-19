@@ -3,16 +3,20 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Order.Filter.Bases.Basic
-import Mathlib.Order.Filter.AtTopBot.Tendsto
-import Mathlib.Order.Nat
-import Mathlib.Tactic.Subsingleton
+module
+
+public import Mathlib.Order.Filter.Bases.Basic
+public import Mathlib.Order.Filter.AtTopBot.Tendsto
+public import Mathlib.Order.Nat
+public import Mathlib.Tactic.Subsingleton
 
 /-!
 # Basic results on `Filter.atTop` and `Filter.atBot` filters
 
 In this file we prove many lemmas like “if `f → +∞`, then `f ± c → +∞`”.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -127,9 +131,6 @@ end IsCodirected
 /-!
 ### Sequences
 -/
-
-@[deprecated (since := "2025-04-20")] alias extraction_of_frequently_atTop' :=
-  Nat.exists_strictMono_subsequence
 
 theorem extraction_of_frequently_atTop {P : ℕ → Prop} (h : ∃ᶠ n in atTop, P n) :
     ∃ φ : ℕ → ℕ, StrictMono φ ∧ ∀ n, P (φ n) := by
@@ -442,7 +443,7 @@ theorem tendsto_add_atTop_iff_nat {f : ℕ → α} {l : Filter α} (k : ℕ) :
 theorem map_div_atTop_eq_nat (k : ℕ) (hk : 0 < k) : map (fun a => a / k) atTop = atTop :=
   map_atTop_eq_of_gc (fun b => k * b + (k - 1)) 1 (fun _ _ h => Nat.div_le_div_right h)
     (fun a b _ => by rw [Nat.div_le_iff_le_mul_add_pred hk])
-    fun b _ => by rw [Nat.mul_add_div hk, Nat.div_eq_of_lt, Nat.add_zero]; omega
+    fun b _ => by rw [Nat.mul_add_div hk, Nat.div_eq_of_lt, Nat.add_zero]; cutsat
 
 section NeBot
 variable [Preorder β] {l : Filter α} [NeBot l] {f : α → β}

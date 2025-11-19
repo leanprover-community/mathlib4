@@ -3,9 +3,12 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.CategoryTheory.Sites.Pretopology
-import Mathlib.CategoryTheory.Sites.Coverage
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.Sites.Pretopology
+public import Mathlib.CategoryTheory.Sites.Coverage
+public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
 
 /-!
 # The site induced by a morphism property
@@ -18,6 +21,10 @@ Standard examples of pretopologies in algebraic geometry, such as the étale sit
 this construction by intersecting with the pretopology of surjective families.
 
 -/
+
+@[expose] public section
+
+universe w
 
 namespace CategoryTheory
 
@@ -51,6 +58,12 @@ instance [P.IsStableUnderComposition] : P.precoverage.IsStableUnderComposition w
   comp_mem_coverings {ι} S X f hf σ Y g hg Z p := by
     intro ⟨i⟩
     exact P.comp_mem _ _ (hg _ ⟨i.2⟩) (hf ⟨i.1⟩)
+
+instance : Precoverage.Small.{w} P.precoverage where
+  zeroHypercoverSmall E := by
+    constructor
+    use PEmpty, PEmpty.elim
+    simp
 
 lemma precoverage_monotone (hPQ : P ≤ Q) : precoverage P ≤ precoverage Q :=
   fun _ _ hR _ _ hg ↦ hPQ _ (hR hg)

@@ -3,13 +3,14 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
+module
 
-import Lean.Elab.Command
-import Lean.Server.InfoUtils
+public meta import Lean.Elab.Command
+public meta import Lean.Server.InfoUtils
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
-import Mathlib.Tactic.DeclarationNames
+public meta import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.DeclarationNames
 
 /-!
 ## Style linters
@@ -40,6 +41,8 @@ This file defines the following linters:
 All of these linters are enabled in mathlib by default, but disabled globally
 since they enforce conventions which are inherently subjective.
 -/
+
+public meta section
 
 open Lean Parser Elab Command Meta Linter
 
@@ -140,12 +143,16 @@ def missingEndLinter : Linter where run := withSetOptionIn fun stx ↦ do
       -- The last scope is always the "base scope", corresponding to no active `section`s or
       -- `namespace`s. We are interested in any *other* unclosed scopes.
       if sc.length == 1 then return
-      let ends := sc.dropLast.map fun s ↦ (s.header, s.isNoncomputable)
-      -- If the outermost scope corresponds to a `noncomputable section`, we ignore it.
-      let ends := if ends.getLast!.2 then ends.dropLast else ends
+      let ends := sc.dropLast
+      -- If the outermost scope(s) correspond to `public/meta/noncomputable section`, we ignore
+      -- them.
+      let ends := ends.reverse
+        |>.dropWhile (fun sc ↦ sc.currNamespace.isAnonymous &&
+          (sc.isMeta || sc.isPublic || sc.isNoncomputable))
+        |>.reverse
       -- If there are any further un-closed scopes, we emit a warning.
       if !ends.isEmpty then
-        let ending := (ends.map Prod.fst).foldl (init := "") fun a b ↦
+        let ending := (ends.map (·.header)).foldl (init := "") fun a b ↦
           a ++ s!"\n\nend{if b == "" then "" else " "}{b}"
         Linter.logLint linter.style.missingEnd stx
          m!"unclosed sections or namespaces; expected: '{ending}'"
@@ -155,7 +162,7 @@ initialize addLinter missingEndLinter
 end Style.missingEnd
 
 /-!
-# The `cdot` linter
+### The `cdot` linter
 
 The `cdot` linter is a syntax-linter that flags uses of the "cdot" `·` that are achieved
 by typing a character different from `·`.
@@ -224,7 +231,7 @@ initialize addLinter cdotLinter
 end Style
 
 /-!
-# The `dollarSyntax` linter
+### The `dollarSyntax` linter
 
 The `dollarSyntax` linter flags uses of `<|` that are achieved by typing `$`.
 These are disallowed by the mathlib style guide, as using `<|` pairs better with `|>`.
@@ -264,7 +271,7 @@ initialize addLinter dollarSyntaxLinter
 end Style.dollarSyntax
 
 /-!
-# The `lambdaSyntax` linter
+### The `lambdaSyntax` linter
 
 The `lambdaSyntax` linter is a syntax linter that flags uses of the symbol `λ` to define anonymous
 functions, as opposed to the `fun` keyword. These are syntactically equivalent; mathlib style
@@ -310,7 +317,7 @@ initialize addLinter lambdaSyntaxLinter
 end Style.lambdaSyntax
 
 /-!
-#  The "longFile" linter
+### The "longFile" linter
 
 The "longFile" linter emits a warning on files which are longer than a certain number of lines
 (1500 by default).
@@ -395,7 +402,7 @@ initialize addLinter longFileLinter
 
 end Style.longFile
 
-/-! # The "longLine linter" -/
+/-! ### The "longLine linter" -/
 
 /-- The "longLine" linter emits a warning on lines longer than 100 characters.
 We allow lines containing URLs to be longer, though. -/
@@ -481,7 +488,7 @@ initialize addLinter doubleUnderscore
 
 end Style.nameCheck
 
-/-! # The "openClassical" linter -/
+/-! ### The "openClassical" linter -/
 
 /-- The "openClassical" linter emits a warning on `open Classical` statements which are not
 scoped to a single declaration. A non-scoped `open Classical` can hide that some theorem statements
@@ -531,7 +538,7 @@ initialize addLinter openClassicalLinter
 
 end Style.openClassical
 
-/-! # The "show" linter -/
+/-! ### The "show" linter -/
 
 /--
 The "show" linter emits a warning if the `show` tactic changed the goal. `show` should only be used

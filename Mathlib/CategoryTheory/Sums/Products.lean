@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Sums.Associator
-import Mathlib.CategoryTheory.Products.Associator
+module
+
+public import Mathlib.CategoryTheory.Sums.Associator
+public import Mathlib.CategoryTheory.Products.Associator
 
 /-!
 # Functors out of sums of categories.
@@ -15,6 +17,8 @@ precompositions with the left and right inclusion as corresponding to the projec
 the product side.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -158,8 +162,8 @@ def associativityFunctorEquivNaturalityFunctorIso :
     ((sum.associativity A A' T).congrLeft.trans <| (Sum.functorEquiv A (A' ⊕ T) B).trans <|
       Equivalence.refl.prod <| Sum.functorEquiv _ _ B).functor ≅
         (Sum.functorEquiv (A ⊕ A') T B).trans
-          ((Sum.functorEquiv A A' B).prod Equivalence.refl)|>.trans
-            (prod.associativity _ _ _)|>.functor :=
+          ((Sum.functorEquiv A A' B).prod Equivalence.refl) |>.trans
+            (prod.associativity _ _ _) |>.functor :=
   NatIso.ofComponents (fun E ↦ Iso.prod
     ((Functor.associator _ _ _).symm ≪≫
       isoWhiskerRight (sum.inlCompInverseAssociator A A' T) E ≪≫ Functor.associator _ _ _)

@@ -3,16 +3,20 @@ Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli
 -/
-import Mathlib.Combinatorics.Quiver.Prefunctor
+module
+
+public import Mathlib.Combinatorics.Quiver.Prefunctor
 
 /-!
 
 # Pushing a quiver structure along a map
 
-Given a map `σ : V → W` and a `Quiver` instance on `V`, this files defines a `Quiver` instance
+Given a map `σ : V → W` and a `Quiver` instance on `V`, this file defines a `Quiver` instance
 on `W` by associating to each arrow `v ⟶ v'` in `V` an arrow `σ v ⟶ σ v'` in `W`.
 
 -/
+
+@[expose] public section
 
 namespace Quiver
 

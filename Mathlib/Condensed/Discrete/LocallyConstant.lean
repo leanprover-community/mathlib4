@@ -3,10 +3,12 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Condensed.Discrete.Basic
-import Mathlib.Condensed.TopComparison
-import Mathlib.Topology.Category.CompHausLike.SigmaComparison
-import Mathlib.Topology.FiberPartition
+module
+
+public import Mathlib.Condensed.Discrete.Basic
+public import Mathlib.Condensed.TopComparison
+public import Mathlib.Topology.Category.CompHausLike.SigmaComparison
+public import Mathlib.Topology.FiberPartition
 /-!
 
 # The sheaf of locally constant maps on `CompHausLike P`
@@ -23,7 +25,7 @@ the functor of sheaves of locally constant maps described above.
 
 The hard part of this adjunction is to define the counit. Its components are defined as follows:
 
-Let `S : CompHausLike P` and let `Y` be a finite-product preserving presheaf on `CompHausLike P`
+Let `S : CompHausLike P` and let `Y` be a finite-product-preserving presheaf on `CompHausLike P`
 (e.g. a sheaf for the coherent topology). We need to define a map `LocallyConstant S Y(*) ⟶ Y(S)`.
 Given a locally constant map `f : S → Y(*)`, let `S = S₁ ⊔ ⋯ ⊔ Sₙ` be the corresponding
 decomposition of `S` into the fibers. Let `yᵢ ∈ Y(*)` denote the value of `f` on `Sᵢ` and denote
@@ -64,6 +66,8 @@ naturality proofs in this file (both lemmas are in the `CompHausLike.LocallyCons
   to light condensed sets).
 
 -/
+
+@[expose] public section
 
 universe u w
 

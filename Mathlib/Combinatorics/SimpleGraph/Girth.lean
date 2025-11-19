@@ -3,8 +3,10 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Combinatorics.SimpleGraph.Acyclic
-import Mathlib.Data.ENat.Lattice
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Acyclic
+public import Mathlib.Data.ENat.Lattice
 
 /-!
 # Girth of a simple graph
@@ -18,6 +20,8 @@ cycle, they give `0` or `∞` respectively if the graph is acyclic.
   non-zero.
 
 -/
+
+@[expose] public section
 
 namespace SimpleGraph
 variable {α : Type*} {G : SimpleGraph α}
@@ -86,7 +90,7 @@ lemma three_le_girth (hG : ¬ G.IsAcyclic) : 3 ≤ G.girth :=
   ENat.toNat_le_toNat three_le_egirth <| egirth_eq_top.not.mpr hG
 
 lemma girth_eq_zero : G.girth = 0 ↔ G.IsAcyclic :=
-  ⟨fun h ↦ not_not.mp <| three_le_girth.mt <| by omega, fun h ↦ by simp [girth, h]⟩
+  ⟨fun h ↦ not_not.mp <| three_le_girth.mt <| by cutsat, fun h ↦ by simp [girth, h]⟩
 
 protected alias ⟨_, IsAcyclic.girth_eq_zero⟩ := girth_eq_zero
 

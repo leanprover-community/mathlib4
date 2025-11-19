@@ -3,7 +3,9 @@ Copyright (c) 2023 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
-import Mathlib.Analysis.Analytic.ChangeOrigin
+module
+
+public import Mathlib.Analysis.Analytic.ChangeOrigin
 
 /-! We specialize the theory of analytic functions to the case of functions that admit a
 development given by a *finite* formal multilinear series. We call them "continuously polynomial",
@@ -42,6 +44,8 @@ More API is available in the file `Mathlib/Analysis/Analytic/CPolynomial.lean`, 
 imports.
 -/
 
+@[expose] public section
+
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
@@ -71,7 +75,7 @@ theorem HasFiniteFPowerSeriesOnBall.mk' {f : E → F} {p : FormalMultilinearSeri
 
 /-- Given a function `f : E → F`, a formal multilinear series `p` and `n : ℕ`, we say that
 `f` has `p` as a finite power series around `x` if `f (x + y) = ∑' pₙ yⁿ` for all `y` in a
-neighborhood of `0`and `pₙ = 0` for `n ≤ m`. -/
+neighborhood of `0` and `pₙ = 0` for `n ≤ m`. -/
 def HasFiniteFPowerSeriesAt (f : E → F) (p : FormalMultilinearSeries 𝕜 E F) (x : E) (n : ℕ) :=
   ∃ r, HasFiniteFPowerSeriesOnBall f p x n r
 
@@ -376,8 +380,7 @@ theorem hasFiniteFPowerSeriesOnBall_changeOrigin (p : FormalMultilinearSeries �
     (k : ℕ) (hn : ∀ (m : ℕ), n + k ≤ m → p m = 0) :
     HasFiniteFPowerSeriesOnBall (p.changeOrigin · k) (p.changeOriginSeries k) 0 n ⊤ :=
   (p.changeOriginSeries k).hasFiniteFPowerSeriesOnBall_of_finite
-    (fun _ hm => p.changeOriginSeries_finite_of_finite hn k
-    (by rw [add_comm n k]; apply add_le_add_left hm))
+    fun _ hm => p.changeOriginSeries_finite_of_finite hn k <| by grw [hm, add_comm]
 
 theorem changeOrigin_eval_of_finite (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
     (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (x y : E) :

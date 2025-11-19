@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Kim Morrison
 -/
-import Mathlib.CategoryTheory.GradedObject.Unitor
-import Mathlib.Data.Fintype.Prod
+module
+
+public import Mathlib.CategoryTheory.GradedObject.Unitor
+public import Mathlib.Data.Fintype.Prod
 
 /-!
 # The monoidal category structures on graded objects
@@ -22,6 +24,8 @@ In particular, if `C` has finite coproducts to which the tensor
 product commutes, we obtain a monoidal category structure on `GradedObject ℕ C`.
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -600,13 +604,13 @@ section
 
 instance (n : ℕ) : Finite ((fun (i : ℕ × ℕ) => i.1 + i.2) ⁻¹' {n}) := by
   refine Finite.of_injective (fun ⟨⟨i₁, i₂⟩, (hi : i₁ + i₂ = n)⟩ =>
-    ((⟨i₁, by omega⟩, ⟨i₂, by omega⟩) : Fin (n + 1) × Fin (n + 1) )) ?_
+    ((⟨i₁, by cutsat⟩, ⟨i₂, by cutsat⟩) : Fin (n + 1) × Fin (n + 1) )) ?_
   rintro ⟨⟨_, _⟩, _⟩ ⟨⟨_, _⟩, _⟩ h
   simpa using h
 
 instance (n : ℕ) : Finite ({ i : (ℕ × ℕ × ℕ) | i.1 + i.2.1 + i.2.2 = n }) := by
   refine Finite.of_injective (fun ⟨⟨i₁, i₂, i₃⟩, (hi : i₁ + i₂ + i₃ = n)⟩ =>
-    (⟨⟨i₁, by omega⟩, ⟨i₂, by omega⟩, ⟨i₃, by omega⟩⟩ :
+    (⟨⟨i₁, by cutsat⟩, ⟨i₂, by cutsat⟩, ⟨i₃, by cutsat⟩⟩ :
       Fin (n + 1) × Fin (n + 1) × Fin (n + 1))) ?_
   rintro ⟨⟨_, _, _⟩, _⟩ ⟨⟨_, _, _⟩, _⟩ h
   simpa using h

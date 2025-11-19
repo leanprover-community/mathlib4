@@ -3,15 +3,17 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Giulio Caflisch, David Loeffler, Yu Shao, Weijie Jiang, BeiBei Xiong
 -/
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.Group.AddChar
-import Mathlib.Algebra.Module.Submodule.LinearMap
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Tactic.Abel
-import Mathlib.Algebra.GroupWithZero.Action.Pi
-import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.Algebra.Polynomial.Degree.Definitions
-import Mathlib.Algebra.Polynomial.Eval.Degree
+module
+
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.Group.AddChar
+public import Mathlib.Algebra.Module.Submodule.LinearMap
+public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.Tactic.Abel
+public import Mathlib.Algebra.GroupWithZero.Action.Pi
+public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.Algebra.Polynomial.Degree.Definitions
+public import Mathlib.Algebra.Polynomial.Eval.Degree
 
 /-!
 # Forward difference operators and Newton series
@@ -30,6 +32,8 @@ We prove two key formulae about this operator:
 We also prove some auxiliary results about iterated forward differences of the function
 `n ↦ n.choose k`.
 -/
+
+@[expose] public section
 
 open Finset Nat Function Polynomial
 
@@ -236,7 +240,7 @@ theorem fwdDiff_iter_pow_eq_zero_of_lt {j n : ℕ} (h : j < n) :
       simp [nsmul_eq_mul, fwdDiff, add_pow, sum_range_succ, mul_comm]
     rw [iterate_succ_apply, this, fwdDiff_iter_finset_sum]
     exact sum_eq_zero fun i hi ↦ by
-      rw [fwdDiff_iter_const_smul, ih (by have := mem_range.1 hi; omega), nsmul_zero]
+      rw [fwdDiff_iter_const_smul, ih (by have := mem_range.1 hi; cutsat), nsmul_zero]
 
 /--
 The `n`-th forward difference of `x ↦ x^n` is the constant function `n!`.
@@ -253,7 +257,7 @@ theorem fwdDiff_iter_eq_factorial {n : ℕ} :
     simp_rw [iterate_succ_apply, this, fwdDiff_iter_finset_sum, fwdDiff_iter_const_smul,
        sum_range_succ]
     simpa [IH, factorial_succ] using sum_eq_zero fun i hi ↦ by
-      rw [fwdDiff_iter_pow_eq_zero_of_lt (by have := mem_range.1 hi; omega), mul_zero]
+      rw [fwdDiff_iter_pow_eq_zero_of_lt (by have := mem_range.1 hi; cutsat), mul_zero]
 
 theorem Polynomial.fwdDiff_iter_degree_eq_factorial (P : R[X]) :
     Δ_[1]^[P.natDegree] P.eval = P.leadingCoeff • P.natDegree ! := funext fun x ↦ by

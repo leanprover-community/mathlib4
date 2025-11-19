@@ -3,26 +3,31 @@ Copyright (c) 2024 Mitchell Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Lee
 -/
-import Mathlib.Topology.Algebra.GroupCompletion
-import Mathlib.Topology.Algebra.InfiniteSum.Group
+module
+
+public import Mathlib.Topology.Algebra.GroupCompletion
+public import Mathlib.Topology.Algebra.InfiniteSum.Group
 
 /-!
 # Infinite sums in the completion of a topological group
 -/
 
+@[expose] public section
+
 open UniformSpace.Completion
 
 variable {α β : Type*} [AddCommGroup α] [UniformSpace α] [IsUniformAddGroup α]
+{L : SummationFilter β}
 
 /-- A function `f` has a sum in an uniform additive group `α` if and only if it has that sum in the
 completion of `α`. -/
 theorem hasSum_iff_hasSum_compl (f : β → α) (a : α) :
-    HasSum (toCompl ∘ f) a ↔ HasSum f a := (isDenseInducing_toCompl α).hasSum_iff f a
+    HasSum (toCompl ∘ f) a L ↔ HasSum f a L := (isDenseInducing_toCompl α).hasSum_iff f a
 
 /-- A function `f` is summable in a uniform additive group `α` if and only if it is summable in
 `Completion α` and its sum in `Completion α` lies in the range of `toCompl : α →+ Completion α`. -/
 theorem summable_iff_summable_compl_and_tsum_mem (f : β → α) :
-    Summable f ↔ Summable (toCompl ∘ f) ∧ ∑' i, toCompl (f i) ∈ Set.range toCompl :=
+    Summable f L ↔ Summable (toCompl ∘ f) L ∧ ∑'[L] i, toCompl (f i) ∈ Set.range toCompl :=
   (isDenseInducing_toCompl α).summable_iff_tsum_comp_mem_range f
 
 /-- A function `f` is summable in a uniform additive group `α` if and only if the net of its partial
@@ -46,5 +51,6 @@ theorem summable_iff_cauchySeq_finset_and_tsum_mem (f : β → α) :
 
 /-- If a function `f` is summable in a uniform additive group `α`, then its sum in `α` is the same
 as its sum in `Completion α`. -/
-theorem Summable.toCompl_tsum {f : β → α} (hf : Summable f) : ∑' i, toCompl (f i) = ∑' i, f i :=
+theorem Summable.toCompl_tsum [L.NeBot] {f : β → α} (hf : Summable f L) :
+    ∑'[L] i, toCompl (f i) = ∑'[L] i, f i :=
   (hf.map_tsum toCompl (continuous_coe α)).symm
