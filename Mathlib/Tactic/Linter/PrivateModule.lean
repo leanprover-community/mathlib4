@@ -28,7 +28,7 @@ changes that put public declarations only in `.public` and private ones only in 
 
 -- TODO: `module` is not enabled in MathlibTest yet, so tests should be written for this once it is.
 
-public meta section
+meta section
 
 open Lean Elab Command Linter
 
