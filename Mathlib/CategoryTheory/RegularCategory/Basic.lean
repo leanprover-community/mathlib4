@@ -3,9 +3,11 @@ Copyright (c) 2025 Fernando Chu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fernando Chu
 -/
+import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
 import Mathlib.CategoryTheory.ExtremalEpi
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
+import Mathlib.CategoryTheory.Sites.Coherent.Basic
 
 /-!
 # Regular categories
@@ -55,6 +57,15 @@ end
 
 variable {C : Type u} [Category.{v} C] [Regular C]
 variable {X Y : C} (f : X ⟶ Y)
+
+instance : Preregular C where
+  exists_fac f g :=
+    let : RegularEpi (pullback.snd g f) := by
+      have := Regular.regularEpiIsStableUnderBaseChange.of_isPullback
+        (IsPullback.of_hasPullback g f) ⟨inferInstance⟩
+      simp at this
+      exact regularEpiOfIsRegularEpi <| pullback.snd g f
+    ⟨pullback g f, pullback.snd g f, inferInstance, pullback.fst g f, pullback.condition⟩
 
 noncomputable section
 namespace Regular.StrongEpiMonoFactorisation
