@@ -57,7 +57,7 @@ theorem sign_discr :
       Function.Involutive.toPerm_symm, det_permute', mul_eq_right₀,
       ComplexEmbedding.conjugate_sign]
     · simp only [Units.val_pow_eq_pow_val, Units.val_neg, Units.val_one, Int.reduceNeg,
-      Int.cast_pow, Int.cast_neg, Int.cast_one]
+        Int.cast_pow, Int.cast_neg, Int.cast_one]
       rw [neg_one_pow_eq_one_iff_even (by norm_num)]
     · exact det_of_basisMatrix_non_zero K
   obtain h | h | h := Int.lt_trichotomy 0 (discr K)
