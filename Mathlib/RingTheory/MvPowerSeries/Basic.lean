@@ -40,7 +40,7 @@ the coefficients of a `MvPowerSeries`, its constant coefficient
 - `MvPowerSeries.coeff_eq_zero_of_constantCoeff_nilpotent`: if the constant coefficient
 of a `MvPowerSeries` is nilpotent, then some coefficients of its powers are automatically zero
 
-- `MvPowerSeries.map`: apply a `RingHom` to the coefficients of a `MvPowerSeries` (as a `RingHom)
+- `MvPowerSeries.map`: apply a `RingHom` to the coefficients of a `MvPowerSeries` (as a `RingHom`).
 
 - `MvPowerSeries.X_pow_dvd_iff`, `MvPowerSeries.X_dvd_iff`: equivalent
 conditions for (a power of) an indeterminate to divide a `MvPowerSeries`
@@ -678,7 +678,7 @@ theorem coeff_pow [DecidableEq σ] (f : MvPowerSeries σ R) {n : ℕ} (d : σ �
     rw [this, coeff_prod]
   rw [Finset.prod_const, card_range]
 
-theorem monmial_pow (m : σ →₀ ℕ) (a : R) (n : ℕ) :
+theorem monomial_pow (m : σ →₀ ℕ) (a : R) (n : ℕ) :
     (monomial m a) ^ n = monomial (n • m) (a ^ n) := by
   rw [Finset.pow_eq_prod_const, prod_monomial, ← Finset.nsmul_eq_sum_const,
     ← Finset.pow_eq_prod_const]

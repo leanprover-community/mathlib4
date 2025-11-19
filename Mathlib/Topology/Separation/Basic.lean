@@ -751,7 +751,7 @@ theorem infinite_of_mem_nhds {X} [TopologicalSpace X] [T1Space X] (x : X) [hx : 
   exact isOpen_singleton_of_finite_mem_nhds x hs hsf
 
 instance Finite.instDiscreteTopology [T1Space X] [Finite X] : DiscreteTopology X :=
-  discreteTopology_iff_forall_isClosed.mpr (· |>.toFinite.isClosed)
+  discreteTopology_iff_forall_isClosed.mpr (·.toFinite.isClosed)
 
 theorem Set.Finite.continuousOn [T1Space X] [TopologicalSpace Y] {s : Set X} (hs : s.Finite)
     (f : X → Y) : ContinuousOn f s := by
@@ -1019,10 +1019,10 @@ protected theorem R1Space.sInf {X : Type*} {T : Set (TopologicalSpace X)}
   let _ := sInf T
   refine ⟨fun x y ↦ ?_⟩
   simp only [Specializes, nhds_sInf]
-  rcases em (∃ t ∈ T, Disjoint (@nhds X t x) (@nhds X t y)) with ⟨t, htT, htd⟩ | hTd
-  · exact .inr <| htd.mono (iInf₂_le t htT) (iInf₂_le t htT)
-  · push_neg at hTd
-    exact .inl <| iInf₂_mono fun t ht ↦ ((hT t ht).1 x y).resolve_right (hTd t ht)
+  by_cases! hTd : ∃ t ∈ T, Disjoint (@nhds X t x) (@nhds X t y)
+  · rcases hTd with ⟨t, htT, htd⟩
+    exact .inr <| htd.mono (iInf₂_le t htT) (iInf₂_le t htT)
+  · exact .inl <| iInf₂_mono fun t ht ↦ ((hT t ht).1 x y).resolve_right (hTd t ht)
 
 protected theorem R1Space.iInf {ι X : Type*} {t : ι → TopologicalSpace X}
     (ht : ∀ i, @R1Space X (t i)) : @R1Space X (iInf t) :=
