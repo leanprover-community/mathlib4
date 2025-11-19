@@ -3,14 +3,18 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Order.Ring.InjSurj
-import Mathlib.Algebra.Ring.Subsemiring.Defs
-import Mathlib.Order.Interval.Set.Defs
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Order.Ring.InjSurj
+public import Mathlib.Algebra.Ring.Subsemiring.Defs
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # `Order`ed instances for `SubsemiringClass` and `Subsemiring`.
 -/
+
+@[expose] public section
 
 namespace SubsemiringClass
 variable {R S : Type*} [SetLike S R] (s : S)

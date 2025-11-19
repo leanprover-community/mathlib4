@@ -3,14 +3,16 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Nat.Units
-import Mathlib.Algebra.Order.AddGroupWithTop
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Algebra.Order.Ring.WithTop
-import Mathlib.Algebra.Order.Sub.WithTop
-import Mathlib.Data.ENat.Defs
-import Mathlib.Data.Nat.Cast.Order.Basic
-import Mathlib.Data.Nat.SuccPred
+module
+
+public import Mathlib.Algebra.Group.Nat.Units
+public import Mathlib.Algebra.Order.AddGroupWithTop
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Algebra.Order.Ring.WithTop
+public import Mathlib.Algebra.Order.Sub.WithTop
+public import Mathlib.Data.ENat.Defs
+public import Mathlib.Data.Nat.Cast.Order.Basic
+public import Mathlib.Data.Nat.SuccPred
 
 /-!
 # Definition and basic properties of extended natural numbers
@@ -33,6 +35,8 @@ of `ENat` and `ENNReal` we are using is that all `a` are either absorbing for ad
 for all `b`), or that it's order-cancellable (`a + b ≤ a + c → b ≤ c` for all `b`, `c`), and
 similarly for multiplication.
 -/
+
+@[expose] public section
 
 open Function
 

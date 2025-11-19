@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Set.Constructions
-import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
-import Mathlib.Topology.Constructions
-import Mathlib.Topology.NhdsWithin
+module
+
+public import Mathlib.Data.Set.Constructions
+public import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
+public import Mathlib.Topology.Constructions
+public import Mathlib.Topology.NhdsWithin
 
 /-!
 # Bases of topologies. Countability axioms.
@@ -51,6 +53,8 @@ concrete basis itself. This allows us to declare these type classes as `Prop` to
 More fine grained instances for `FirstCountableTopology`,
 `TopologicalSpace.SeparableSpace`, and more.
 -/
+
+@[expose] public section
 
 open Set Filter Function Topology
 
@@ -353,6 +357,19 @@ protected theorem _root_.DenseRange.separableSpace [SeparableSpace α] [Topologi
 theorem _root_.Topology.IsQuotientMap.separableSpace [SeparableSpace α] [TopologicalSpace β]
     {f : α → β} (hf : IsQuotientMap f) : SeparableSpace β :=
   hf.surjective.denseRange.separableSpace hf.continuous
+
+theorem _root_.IsOpenMap.separableSpace_of_isInducing [TopologicalSpace β] [SeparableSpace β]
+    {f : α → β} (h : IsOpenMap f) (h' : IsInducing f) : SeparableSpace α := by
+  cases isEmpty_or_nonempty α
+  · infer_instance
+  obtain ⟨s, s_cnt, s_dense⟩ := exists_countable_dense β
+  refine ⟨f.invFun '' s, s_cnt.image _, ?_⟩
+  simp_rw [h'.dense_iff, mem_closure_iff]
+  intro x U hU hx
+  obtain ⟨-, ⟨hx'U, x', rfl⟩, hx's⟩ :=
+    s_dense.inter_open_nonempty (U ∩ range f) (hU.inter h.isOpen_range) ⟨f x, hx, mem_range_self _⟩
+  refine ⟨f <| f.invFun <| f x', ?_, mem_image_of_mem _ <| mem_image_of_mem _ hx's⟩
+  rwa [Function.apply_invFun_apply (f := f)]
 
 theorem _root_.IsOpenMap.separableSpace_of_injective [TopologicalSpace β] [SeparableSpace β]
     {f : α → β} (h : IsOpenMap f) (h' : Function.Injective f) : SeparableSpace α :=

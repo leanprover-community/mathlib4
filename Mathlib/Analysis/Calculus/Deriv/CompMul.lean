@@ -3,8 +3,10 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Equiv
-import Mathlib.Analysis.Calculus.Deriv.Mul
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Equiv
+public import Mathlib.Analysis.Calculus.Deriv.Mul
 
 /-!
 # Derivative of `x ↦ f (cx)`
@@ -16,6 +18,8 @@ Since Mathlib uses `0` as the fallback value for the derivatives whenever they a
 the theorems in this file require neither differentiability of `f`,
 nor assumptions like `UniqueDiffWithinAt 𝕜 s x`.
 -/
+
+@[expose] public section
 
 open Set
 open scoped Pointwise

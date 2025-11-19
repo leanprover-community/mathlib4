@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Fin.Tuple.Reflection
-import Mathlib.LinearAlgebra.Matrix.Notation
+module
+
+public import Mathlib.Data.Fin.Tuple.Reflection
+public import Mathlib.LinearAlgebra.Matrix.Notation
 
 /-!
 # Lemmas for concrete matrices `Matrix (Fin m) (Fin n) α`
@@ -29,6 +31,8 @@ corresponding `*_eq` lemmas to be used in a place where they are definitionally 
 * `Matrix.etaExpand`
 
 -/
+
+@[expose] public section
 
 
 open Matrix

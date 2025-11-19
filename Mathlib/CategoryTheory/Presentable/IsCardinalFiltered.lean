@@ -3,12 +3,14 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Filtered.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
-import Mathlib.CategoryTheory.Comma.CardinalArrow
-import Mathlib.SetTheory.Cardinal.Cofinality
-import Mathlib.SetTheory.Cardinal.HasCardinalLT
-import Mathlib.SetTheory.Cardinal.Arithmetic
+module
+
+public import Mathlib.CategoryTheory.Filtered.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
+public import Mathlib.CategoryTheory.Comma.CardinalArrow
+public import Mathlib.SetTheory.Cardinal.Cofinality
+public import Mathlib.SetTheory.Cardinal.HasCardinalLT
+public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-! # κ-filtered category
 
@@ -26,6 +28,8 @@ if any subset of `J` of cardinality `< κ` has an upper bound.
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
 -/
+
+@[expose] public section
 
 universe w v' v u' u
 
@@ -301,5 +305,15 @@ lemma IsCardinalFiltered.multicoequalizer
   obtain ⟨l, a, b, h⟩ := IsCardinalFiltered.wideSpan
     (fun i ↦ IsFiltered.coeqHom (f₁ i) (f₂ i)) hι
   exact ⟨l, b, fun i ↦ by rw [← h i, IsFiltered.coeq_condition_assoc]⟩
+
+lemma Limits.IsTerminal.isCardinalFiltered {J : Type u} [Category.{v} J]
+    {X : J} (hX : IsTerminal X) (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+    IsCardinalFiltered J κ where
+  nonempty_cocone _ _ := ⟨{ pt := X, ι.app _ := hX.from _ }⟩
+
+lemma isCardinalFiltered_of_hasTerminal (J : Type u) [Category.{v} J]
+    [HasTerminal J] (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+    IsCardinalFiltered J κ :=
+  terminalIsTerminal.isCardinalFiltered _
 
 end CategoryTheory

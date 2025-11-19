@@ -3,7 +3,9 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.CompactOpen
+module
+
+public import Mathlib.Topology.CompactOpen
 
 /-!
 # Second countable topology on `C(X, Y)`
@@ -13,6 +15,8 @@ In this file we prove that `C(X, Y)` with compact-open topology has second count
 - both `X` and `Y` have second countable topology;
 - `X` is a locally compact space;
 -/
+
+@[expose] public section
 
 open scoped Topology
 open Set Function Filter TopologicalSpace

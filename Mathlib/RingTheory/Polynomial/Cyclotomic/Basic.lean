@@ -3,10 +3,12 @@ Copyright (c) 2020 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Algebra.Polynomial.Splits
-import Mathlib.FieldTheory.RatFunc.AsPolynomial
-import Mathlib.NumberTheory.ArithmeticFunction
-import Mathlib.RingTheory.RootsOfUnity.Complex
+module
+
+public import Mathlib.Algebra.Polynomial.Splits
+public import Mathlib.FieldTheory.RatFunc.AsPolynomial
+public import Mathlib.NumberTheory.ArithmeticFunction
+public import Mathlib.RingTheory.RootsOfUnity.Complex
 
 /-!
 # Cyclotomic polynomials.
@@ -39,6 +41,8 @@ not the standard one unless there is a primitive `n`th root of unity in `R`. For
 To get the standard cyclotomic polynomials, we use `unique_int_coeff_of_cycl`, with `R = ℂ`,
 to get a polynomial with integer coefficients and then we map it to `R[X]`, for any ring `R`.
 -/
+
+@[expose] public section
 
 
 open scoped Polynomial

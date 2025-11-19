@@ -3,8 +3,10 @@ Copyright (c) 2024 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
-import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
-import Mathlib.RingTheory.Valuation.ValuationSubring
+module
+
+public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
+public import Mathlib.RingTheory.Valuation.ValuationSubring
 
 /-!
 # Algebra instances
@@ -21,6 +23,8 @@ of a field with a valuation, as well as their unit balls.
 * `integralClosure_algebraMap_injective` : the unit ball of a field `K` with respect to a
   valuation injects into its integral closure in a field extension `L` of `K`.
 -/
+
+@[expose] public section
 
 open Function Valuation
 open scoped WithZero

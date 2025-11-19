@@ -3,8 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Topology.Category.TopCat.Opens
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.Topology.Category.TopCat.Opens
+public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # The category of open neighborhoods of a point
@@ -24,6 +26,8 @@ Besides `OpenNhds`, the main constructions here are:
 * `adjunctionNhds`: An open map `f : X ⟶ Y` induces an adjunction between `OpenNhds x` and
                     `OpenNhds (f x)`.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory TopologicalSpace Opposite Topology

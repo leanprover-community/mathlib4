@@ -3,8 +3,10 @@ Copyright (c) 2025 Dion Leijnse. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dion Leijnse
 -/
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.RingTheory.Flat.Basic
+module
+
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.RingTheory.Flat.Basic
 
 /-!
 # Geometrically reduced algebras
@@ -28,6 +30,8 @@ if the tensor product `AlgebraicClosure k ⊗[k] A` is reduced.
   `k` the `K`-algebra `K ⊗[k] A` is reduced.
 
 -/
+
+@[expose] public section
 
 open TensorProduct
 
