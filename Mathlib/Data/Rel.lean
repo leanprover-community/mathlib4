@@ -3,9 +3,11 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.Set.Prod
-import Mathlib.Order.RelIso.Basic
-import Mathlib.Order.SetNotation
+module
+
+public import Mathlib.Data.Set.Prod
+public import Mathlib.Order.RelIso.Basic
+public import Mathlib.Order.SetNotation
 
 /-!
 # Relations as sets of pairs
@@ -67,6 +69,8 @@ This extra level of indirection guides automation correctly and prevents (some k
 Simultaneously, uniform spaces need a theory of relations on a type `α` as elements of
 `Set (α × α)`, and the new definition of `SetRel` fulfills this role quite well.
 -/
+
+@[expose] public section
 
 variable {α β γ δ : Type*} {ι : Sort*}
 

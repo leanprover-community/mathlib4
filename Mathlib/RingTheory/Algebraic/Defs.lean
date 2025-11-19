@@ -3,7 +3,9 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
 
 /-!
 # Algebraic elements and algebraic extensions
@@ -25,6 +27,8 @@ An R-algebra is algebraic over R if and only if all its elements are algebraic o
   only the zero polynomial evaluates to 0 at `x`.
 * `Subalgebra.isAlgebraic_iff`: a subalgebra is algebraic iff it is algebraic as an algebra.
 -/
+
+@[expose] public section
 
 assert_not_exists IsIntegralClosure LinearIndependent IsLocalRing MvPolynomial
 

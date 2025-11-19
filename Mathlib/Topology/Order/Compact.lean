@@ -3,10 +3,12 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.Support
-import Mathlib.Topology.Order.IntermediateValue
-import Mathlib.Topology.Order.IsLUB
-import Mathlib.Topology.Order.LocalExtr
+module
+
+public import Mathlib.Topology.Algebra.Support
+public import Mathlib.Topology.Order.IntermediateValue
+public import Mathlib.Topology.Order.IsLUB
+public import Mathlib.Topology.Order.LocalExtr
 
 /-!
 # Compactness of a closed interval
@@ -25,6 +27,8 @@ We also prove that the image of a closed interval under a continuous map is a cl
 
 compact, extreme value theorem
 -/
+
+@[expose] public section
 
 open Filter OrderDual TopologicalSpace Function Set
 

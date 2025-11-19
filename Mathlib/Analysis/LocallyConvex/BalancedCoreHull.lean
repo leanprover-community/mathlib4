@@ -3,7 +3,9 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.LocallyConvex.Basic
+module
+
+public import Mathlib.Analysis.LocallyConvex.Basic
 
 /-!
 # Balanced Core and Balanced Hull
@@ -35,6 +37,8 @@ this is `balancedCore_eq_iInter`.
 
 balanced
 -/
+
+@[expose] public section
 
 
 open Set Pointwise Topology Filter
