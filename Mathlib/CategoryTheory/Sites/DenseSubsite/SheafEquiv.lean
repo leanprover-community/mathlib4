@@ -49,8 +49,7 @@ lemma isIso_ranCounit_app_of_isDenseSubsite (Y : Sheaf J A) (U X) :
     simp only [comp_obj, yoneda_map_app, Category.assoc, comp_map,
       ← NatTrans.naturality, op_obj, op_map, Quiver.Hom.unop_op, ← map_comp_assoc,
       ← op_comp, ← e'] at this ⊢
-    erw [← NatTrans.naturality] at this
-    exact this
+    simpa [← NatTrans.naturality] using this
   · intro f
     have (X Y Z) (f : X ⟶ Y) (g : G.obj Y ⟶ G.obj Z) (hf : G.imageSieve g f) : Exists _ := hf
     choose l hl using this

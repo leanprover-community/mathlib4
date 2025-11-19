@@ -32,8 +32,8 @@ instance instCommRing : CommRing ℤ where
   mul_one := Int.mul_one
   one_mul := Int.one_mul
   npow n x := x ^ n
-  npow_zero _ := rfl
-  npow_succ _ _ := rfl
+  npow_zero _ := by simp
+  npow_succ _ _ := by simp [Int.pow_succ]
   natCast := (·)
   natCast_zero := rfl
   natCast_succ _ := rfl

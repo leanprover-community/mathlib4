@@ -258,7 +258,7 @@ private def delabFinsetArg (i : Ident) : DelabM FinsetResult := do
 /-- Delaborator for `Finset.prod`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the product is over `Finset.univ`. -/
 @[app_delab Finset.prod] def delabFinsetProd : Delab :=
-  whenPPOption getPPNotation <| withOverApp 5 <| do
+  whenPPOption getPPNotation <| withOverApp 5 do
   let #[_, _, _, _, f] := (← getExpr).getAppArgs | failure
   guard f.isLambda
   let ppDomain ← getPPOption getPPFunBinderTypes
@@ -289,7 +289,7 @@ to show the domain type when the product is over `Finset.univ`. -/
 /-- Delaborator for `Finset.sum`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the sum is over `Finset.univ`. -/
 @[app_delab Finset.sum] def delabFinsetSum : Delab :=
-  whenPPOption getPPNotation <| withOverApp 5 <| do
+  whenPPOption getPPNotation <| withOverApp 5 do
   let #[_, _, _, _, f] := (← getExpr).getAppArgs | failure
   guard f.isLambda
   let ppDomain ← getPPOption getPPFunBinderTypes
@@ -508,7 +508,7 @@ lemma prod_nbij' (i : ι → κ) (j : κ → ι) (hi : ∀ a ∈ s, i a ∈ t) (
 /-- Specialization of `Finset.prod_nbij'` that automatically fills in most arguments.
 
 See `Fintype.prod_equiv` for the version where `s` and `t` are `univ`. -/
-@[to_additive /-- `Specialization of `Finset.sum_nbij'` that automatically fills in most arguments.
+@[to_additive /-- Specialization of `Finset.sum_nbij'` that automatically fills in most arguments.
 
 See `Fintype.sum_equiv` for the version where `s` and `t` are `univ`. -/]
 lemma prod_equiv (e : ι ≃ κ) (hst : ∀ i, i ∈ s ↔ e i ∈ t) (hfg : ∀ i ∈ s, f i = g (e i)) :
@@ -517,7 +517,7 @@ lemma prod_equiv (e : ι ≃ κ) (hst : ∀ i, i ∈ s ↔ e i ∈ t) (hfg : ∀
 /-- Specialization of `Finset.prod_bij` that automatically fills in most arguments.
 
 See `Fintype.prod_bijective` for the version where `s` and `t` are `univ`. -/
-@[to_additive /-- `Specialization of `Finset.sum_bij` that automatically fills in most arguments.
+@[to_additive /-- Specialization of `Finset.sum_bij` that automatically fills in most arguments.
 
 See `Fintype.sum_bijective` for the version where `s` and `t` are `univ`. -/]
 lemma prod_bijective (e : ι → κ) (he : e.Bijective) (hst : ∀ i, i ∈ s ↔ e i ∈ t)
