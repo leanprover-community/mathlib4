@@ -3,8 +3,10 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
-import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
-import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
+module
+
+public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
+public import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
 
 /-!
 # Modifications between transformations of pseudofunctors
