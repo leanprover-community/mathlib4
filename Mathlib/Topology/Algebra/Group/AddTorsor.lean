@@ -3,9 +3,11 @@ Copyright (c) 2025 Attila Gáspár. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Attila Gáspár
 -/
-import Mathlib.Algebra.AddTorsor.Basic
-import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Topology.Algebra.Group.Defs
+module
+
+public import Mathlib.Algebra.AddTorsor.Basic
+public import Mathlib.Topology.Algebra.Monoid
+public import Mathlib.Topology.Algebra.Group.Defs
 
 /-!
 # Topological torsors of additive groups
@@ -13,6 +15,8 @@ import Mathlib.Topology.Algebra.Group.Defs
 This file defines topological torsors of additive groups, that is, torsors where `+ᵥ` and `-ᵥ` are
 continuous.
 -/
+
+@[expose] public section
 
 open Topology
 

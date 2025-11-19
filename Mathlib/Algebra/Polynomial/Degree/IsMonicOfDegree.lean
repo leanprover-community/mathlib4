@@ -3,8 +3,10 @@ Copyright (c) 2025 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Monic
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Monic
 
 /-!
 # Monic polynomials of given degree
@@ -14,6 +16,8 @@ the polynomial `p` is monic and has degree `n` (i.e., `p.natDegree = n`.)
 
 We also provide some basic API.
 -/
+
+@[expose] public section
 
 namespace Polynomial
 

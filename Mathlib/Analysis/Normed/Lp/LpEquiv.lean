@@ -3,9 +3,11 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Normed.Lp.PiLp
-import Mathlib.Analysis.Normed.Lp.lpSpace
-import Mathlib.Topology.ContinuousMap.Bounded.Normed
+module
+
+public import Mathlib.Analysis.Normed.Lp.PiLp
+public import Mathlib.Analysis.Normed.Lp.lpSpace
+public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 
 /-!
 # Equivalences among $L^p$ spaces
@@ -34,6 +36,8 @@ the subtype of `PreLp` satisfying `Memℓp`.
   pi-types) and the counting measure on `α`
 
 -/
+
+@[expose] public section
 
 open WithLp
 

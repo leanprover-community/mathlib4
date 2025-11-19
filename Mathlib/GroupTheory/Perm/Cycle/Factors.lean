@@ -3,12 +3,13 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yaël Dillies
 -/
+module
 
-import Mathlib.Data.List.Iterate
-import Mathlib.Data.Set.Pairwise.List
-import Mathlib.GroupTheory.Perm.Cycle.Basic
-import Mathlib.GroupTheory.NoncommPiCoprod
-import Mathlib.Tactic.Group
+public import Mathlib.Data.List.Iterate
+public import Mathlib.Data.Set.Pairwise.List
+public import Mathlib.GroupTheory.Perm.Cycle.Basic
+public import Mathlib.GroupTheory.NoncommPiCoprod
+public import Mathlib.Tactic.Group
 
 /-!
 # Cycle factors of a permutation
@@ -19,6 +20,8 @@ Let `β` be a `Fintype` and `f : Equiv.Perm β`.
 * `Equiv.Perm.cycleFactors`: `f.cycleFactors` is a list of disjoint cyclic permutations
   that multiply to `f`.
 -/
+
+@[expose] public section
 
 open Equiv Function Finset
 

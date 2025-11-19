@@ -3,12 +3,14 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Control.Basic
-import Mathlib.Lean.Meta.Tactic.Rewrite
-import Mathlib.Tactic.CancelDenoms.Core
-import Mathlib.Tactic.Linarith.Datatypes
-import Mathlib.Tactic.Zify
-import Mathlib.Util.AtomM
+module
+
+public meta import Mathlib.Control.Basic
+public meta import Mathlib.Lean.Meta.Tactic.Rewrite
+public meta import Mathlib.Tactic.CancelDenoms.Core
+public meta import Mathlib.Tactic.Linarith.Datatypes
+public meta import Mathlib.Tactic.Zify
+public meta import Mathlib.Util.AtomM
 
 /-!
 # Linarith preprocessing
@@ -25,6 +27,8 @@ A `GlobalPreprocessor` is a function `List Expr → TacticM (List Expr)`. Users 
 preprocessing steps by adding them to the `LinarithConfig` object. `Linarith.defaultPreprocessors`
 is the main list, and generally none of these should be skipped unless you know what you're doing.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Linarith
 

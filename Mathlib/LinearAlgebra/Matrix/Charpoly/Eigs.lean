@@ -3,9 +3,11 @@ Copyright (c) 2023 Mohanad Ahmed. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mohanad Ahmed
 -/
-import Mathlib.Algebra.Algebra.Spectrum.Basic
-import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.FieldTheory.IsAlgClosed.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Spectrum.Basic
+public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 /-!
 # Eigenvalues are characteristic polynomial roots.
@@ -47,6 +49,8 @@ dependencies are not general enough to unify them. We should refactor
 `Polynomial.nextCoeff_eq_neg_sum_roots_of_monic_of_splits` to assume splitting over an
 arbitrary map.
 -/
+
+@[expose] public section
 
 
 variable {n : Type*} [Fintype n] [DecidableEq n]

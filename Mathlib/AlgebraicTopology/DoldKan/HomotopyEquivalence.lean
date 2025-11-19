@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.Normalized
+module
+
+public import Mathlib.AlgebraicTopology.DoldKan.Normalized
 
 /-!
 
@@ -14,6 +16,8 @@ In this file, when the category `A` is abelian, we obtain the homotopy equivalen
 normalized Moore complex and the alternating face map complex of a simplicial object in `A`.
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
