@@ -94,6 +94,17 @@ protected theorem comp {g : β → γ} {f : α → β} (hg : MeasurePreserving g
     (hf : MeasurePreserving f μa μb) : MeasurePreserving (g ∘ f) μa μc :=
   ⟨hg.1.comp hf.1, by rw [← map_map hg.1 hf.1, hf.2, hg.2]⟩
 
+protected theorem map_of_comp {f : α → β} {g : β → γ} (hgf : MeasurePreserving (g ∘ f) μa μc)
+    (hg : Measurable g) (hf : Measurable f) :
+    MeasurePreserving g (μa.map f) μc :=
+  ⟨hg, (map_map hg hf).trans hgf.map_eq⟩
+
+protected theorem of_semiconj {f : α → β} {ga : α → α} {gb : β → β}
+    (hfm : MeasurePreserving f μa μb) (hga : MeasurePreserving ga μa μa) (hf : Semiconj f ga gb)
+    (hgb : Measurable gb) : MeasurePreserving gb μb μb := by
+  have := hf.comp_eq ▸ hfm.comp hga |>.map_of_comp hgb hfm.measurable
+  rwa [hfm.map_eq] at this
+
 /-- An alias of `MeasureTheory.MeasurePreserving.comp` with a convenient defeq and argument order
 for `MeasurableEquiv` -/
 protected theorem trans {e : α ≃ᵐ β} {e' : β ≃ᵐ γ}
