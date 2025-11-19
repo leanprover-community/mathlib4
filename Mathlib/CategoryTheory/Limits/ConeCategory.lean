@@ -3,15 +3,17 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Adjunction.Comma
-import Mathlib.CategoryTheory.Comma.Over.Basic
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
-import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Comma
+public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
+public import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
 
 /-!
 # Limits and the category of (co)cones
 
-This files contains results that stem from the limit API. For the definition and the category
+This file contains results that stem from the limit API. For the definition and the category
 instance of `Cone`, please refer to `CategoryTheory/Limits/Cones.lean`.
 
 ## Main results
@@ -21,6 +23,8 @@ instance of `Cone`, please refer to `CategoryTheory/Limits/Cones.lean`.
   categories of cones preserves limiting properties.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory.Limits

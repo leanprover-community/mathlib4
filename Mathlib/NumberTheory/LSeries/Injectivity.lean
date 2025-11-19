@@ -3,9 +3,11 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.Normed.Group.Tannery
-import Mathlib.NumberTheory.LSeries.Convergence
-import Mathlib.NumberTheory.LSeries.Linearity
+module
+
+public import Mathlib.Analysis.Normed.Group.Tannery
+public import Mathlib.NumberTheory.LSeries.Convergence
+public import Mathlib.NumberTheory.LSeries.Linearity
 
 /-!
 # A converging L-series determines its coefficients
@@ -14,6 +16,8 @@ We show that two functions `f` and `g : ℕ → ℂ` whose L-series agree and bo
 must agree on all nonzero arguments. See `LSeries_eq_iff_of_abscissaOfAbsConv_lt_top`
 and `LSeries_injOn`.
 -/
+
+@[expose] public section
 
 open LSeries Complex
 
@@ -82,9 +86,9 @@ lemma LSeries.tendsto_cpow_mul_atTop {f : ℕ → ℂ} {n : ℕ} (h : ∀ m ≤ 
   -- get the prerequisites for applying dominated convergence
   have hys : Summable (F y) := by
     refine ((hs le_rfl).indicator {m | n + 1 < m}).congr fun m ↦ ?_
-    by_cases hm : n + 1 < m
+    by_cases! hm : n + 1 < m
     · simp [hF, hm, hm.ne']
-    · simp [hm, hF₀ _ (le_of_not_gt hm)]
+    · simp [hm, hF₀ _ hm]
   have hc (k : ℕ) : Tendsto (F · k) atTop (nhds 0) := by
     rcases lt_or_ge (n + 1) k with H | H
     · have H₀ : (0 : ℝ) ≤ k / (n + 1) := by positivity

@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.LinearAlgebra.AffineSpace.AffineMap
-import Mathlib.LinearAlgebra.GeneralLinearGroup
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
+public import Mathlib.LinearAlgebra.GeneralLinearGroup
 
 /-!
 # Affine equivalences
@@ -30,6 +32,8 @@ composition in `AffineEquiv.group`.
 
 affine space, affine equivalence
 -/
+
+@[expose] public section
 
 open Function Set
 
@@ -231,7 +235,7 @@ theorem apply_eq_iff_eq (e : P₁ ≃ᵃ[k] P₂) {p₁ p₂ : P₁} : e p₁ = 
 
 @[simp]
 theorem image_symm (f : P₁ ≃ᵃ[k] P₂) (s : Set P₂) : f.symm '' s = f ⁻¹' s :=
-  f.symm.toEquiv.image_eq_preimage _
+  f.symm.toEquiv.image_eq_preimage_symm _
 
 @[simp]
 theorem preimage_symm (f : P₁ ≃ᵃ[k] P₂) (s : Set P₁) : f.symm ⁻¹' s = f '' s :=
@@ -576,6 +580,48 @@ theorem coe_toAffineEquiv (e : V₁ ≃ₗ[k] V₂) : ⇑e.toAffineEquiv = e :=
   rfl
 
 end LinearEquiv
+
+namespace AffineEquiv
+
+section ofLinearEquiv
+
+variable {k V P : Type*}
+variable [Ring k] [AddCommGroup V] [Module k V] [AddTorsor V P]
+
+/-- Construct an affine equivalence from a linear equivalence and two base points.
+
+Given a linear equivalence `A : V ≃ₗ[k] V` and base points `p₀ p₁ : P`, this constructs
+the affine equivalence `T x = A (x -ᵥ p₀) +ᵥ p₁`. This is the standard way to convert
+a linear automorphism into an affine automorphism with specified base point mapping. -/
+def ofLinearEquiv (A : V ≃ₗ[k] V) (p₀ p₁ : P) : P ≃ᵃ[k] P :=
+  (vaddConst k p₀).symm.trans (A.toAffineEquiv.trans (vaddConst k p₁))
+
+@[simp]
+theorem ofLinearEquiv_apply (A : V ≃ₗ[k] V) (p₀ p₁ : P) (x : P) :
+    ofLinearEquiv A p₀ p₁ x = A (x -ᵥ p₀) +ᵥ p₁ :=
+  rfl
+
+@[simp]
+theorem linear_ofLinearEquiv (A : V ≃ₗ[k] V) (p₀ p₁ : P) :
+    (ofLinearEquiv A p₀ p₁).linear = A :=
+  rfl
+
+@[simp]
+theorem ofLinearEquiv_refl (p : P) :
+    ofLinearEquiv (.refl k V) p p = .refl k P := by
+  ext x
+  simp [ofLinearEquiv_apply]
+
+@[simp]
+theorem ofLinearEquiv_trans_ofLinearEquiv (A B : V ≃ₗ[k] V) (p₀ p₁ p₂ : P) :
+    (ofLinearEquiv A p₀ p₁).trans (ofLinearEquiv B p₁ p₂) =
+      ofLinearEquiv (A.trans B) p₀ p₂ := by
+  ext x
+  simp
+
+end ofLinearEquiv
+
+end AffineEquiv
 
 namespace AffineMap
 

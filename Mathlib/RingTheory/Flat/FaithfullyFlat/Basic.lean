@@ -3,8 +3,10 @@ Copyright (c) 2024 Judith Ludwig, Florent Schaffhauser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Florent Schaffhauser, Yunzhou Xie, Jujian Zhang
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Quotient
-import Mathlib.RingTheory.Flat.Stability
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Quotient
+public import Mathlib.RingTheory.Flat.Stability
 
 /-!
 # Faithfully flat modules
@@ -42,6 +44,8 @@ A module `M` over a commutative ring `R` is *faithfully flat* if it is flat and 
 - `Module.FaithfullyFlat.self`: the `R`-module `R` is faithfully flat.
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -115,8 +119,7 @@ instance lTensor_nontrivial
 lemma rTensor_reflects_triviality
     [FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N]
     [h : Subsingleton (N ⊗[R] M)] : Subsingleton N := by
-  revert h; change _ → _; contrapose
-  simp only [not_subsingleton_iff_nontrivial]
+  revert h; change _ → _; contrapose!
   intro h
   infer_instance
 

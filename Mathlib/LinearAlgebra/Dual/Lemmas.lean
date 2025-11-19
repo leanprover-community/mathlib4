@@ -3,19 +3,21 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Fabian Glöckle, Kyle Miller
 -/
-import Mathlib.Algebra.Module.LinearMap.DivisionRing
-import Mathlib.LinearAlgebra.Basis.Basic
-import Mathlib.LinearAlgebra.Dimension.ErdosKaplansky
-import Mathlib.LinearAlgebra.Dual.Basis
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
-import Mathlib.LinearAlgebra.Projection
-import Mathlib.LinearAlgebra.SesquilinearForm
-import Mathlib.RingTheory.Finiteness.Projective
-import Mathlib.RingTheory.LocalRing.Basic
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.Algebra.Module.LinearMap.DivisionRing
+public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.LinearAlgebra.Dimension.ErdosKaplansky
+public import Mathlib.LinearAlgebra.Dual.Basis
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
+public import Mathlib.LinearAlgebra.Projection
+public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
+public import Mathlib.RingTheory.Finiteness.Projective
+public import Mathlib.RingTheory.LocalRing.Basic
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Dual vector spaces
@@ -69,6 +71,8 @@ This file contains basic results on dual vector spaces.
     `Dual K (V₁ ⧸ W) ≃ₗ[K] Dual K V₁ ⧸ W.dualLift.range` from an arbitrary choice of
     splitting of `V₁`.
 -/
+
+@[expose] public section
 
 open Module Submodule
 
@@ -147,10 +151,6 @@ instance dual_finite [Projective R M] : Module.Finite R (Dual R M) :=
   .of_surjective _ (surjective_of_comp_eq_id f.dualMap g.dualMap <| congr_arg dualMap hfg)
 
 end Module
-
-@[deprecated (since := "2025-04-11")] alias Basis.dual_free := Module.dual_free
-@[deprecated (since := "2025-04-11")] alias Basis.dual_projective := Module.dual_projective
-@[deprecated (since := "2025-04-11")] alias Basis.dual_finite := Module.dual_finite
 
 end CommSemiring
 
@@ -1004,8 +1004,7 @@ theorem span_flip_eq_top_iff_linearIndependent {ι α F} [Finite ι] [Field F] {
   congr!
   rw [SetLike.ext'_iff, map_span, Submodule.coe_dualCoannihilator_span, ← Set.range_comp]
   ext
-  simp [funext_iff, Finsupp.linearCombination, Finsupp.sum, Finset.sum_apply]
-  rfl
+  simp [funext_iff, Finsupp.linearCombination, Finsupp.sum, Finset.sum_apply, flip]
 
 namespace TensorProduct
 
@@ -1032,7 +1031,7 @@ sending `f ⊗ g` to the composition of `TensorProduct.map f g` with
 the natural isomorphism `R ⊗ R ≃ R`.
 -/
 def dualDistrib : Dual R M ⊗[R] Dual R N →ₗ[R] Dual R (M ⊗[R] N) :=
-  compRight _ (TensorProduct.lid R R) ∘ₗ homTensorHomMap R M N R R
+  compRight _ (TensorProduct.lid R R) ∘ₗ homTensorHomMap (.id R) M N R R
 
 variable {R M N}
 
@@ -1070,7 +1069,7 @@ noncomputable def dualDistribInvOfBasis (b : Basis ι R M) (c : Basis κ R N) :
     Dual R (M ⊗[R] N) →ₗ[R] Dual R M ⊗[R] Dual R N :=
   ∑ i, ∑ j,
     (ringLmapEquivSelf R ℕ _).symm (b.dualBasis i ⊗ₜ c.dualBasis j) ∘ₗ
-      applyₗ (c j) ∘ₗ applyₗ (b i) ∘ₗ lcurry R M N R
+      applyₗ (c j) ∘ₗ applyₗ (b i) ∘ₗ lcurry (.id R) M N R
 
 @[simp]
 theorem dualDistribInvOfBasis_apply (b : Basis ι R M) (c : Basis κ R N) (f : Dual R (M ⊗[R] N)) :

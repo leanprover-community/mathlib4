@@ -3,7 +3,9 @@ Copyright (c) 2022 Abby J. Goldberg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro
 -/
-import Mathlib.Tactic.Ring
+module
+
+public meta import Mathlib.Tactic.Ring
 
 /-!
 # linear_combination' Tactic
@@ -34,6 +36,8 @@ implementation, but this version is provided for backward-compatibility.
 * <https://leanprover.zulipchat.com/#narrow/stream/239415-metaprogramming-.2F.20tactics/topic/Linear.20algebra.20tactic/near/213928196>
 
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.LinearCombination'
 open Lean
@@ -128,7 +132,7 @@ theorem eq_of_add [AddGroup α] (p : (a : α) = b) (H : (a' - b') - (a - b) = 0)
 
 theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a : α) = b)
     (H : (a' - b') ^ n - (a - b) = 0) : a' = b' := by
-  rw [← sub_eq_zero] at p ⊢; apply pow_eq_zero (n := n); rwa [sub_eq_zero, p] at H
+  rw [← sub_eq_zero] at p ⊢; apply eq_zero_of_pow_eq_zero (n := n); rwa [sub_eq_zero, p] at H
 
 /-- Implementation of `linear_combination'` and `linear_combination2`. -/
 def elabLinearCombination' (tk : Syntax)

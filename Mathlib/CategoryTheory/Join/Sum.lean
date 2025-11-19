@@ -3,17 +3,21 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Join.Basic
-import Mathlib.CategoryTheory.Sums.Basic
+module
+
+public import Mathlib.CategoryTheory.Join.Basic
+public import Mathlib.CategoryTheory.Sums.Basic
 
 /-!
 # Embedding of `C ⊕ D` into `C ⋆ D`
 
-This file constructs a canonical functor `Join.fromSum` from `C ⊕ D` to `C ⋆ D` and give
+This file constructs a canonical functor `Join.fromSum` from `C ⊕ D` to `C ⋆ D` and gives
 its characterization in terms of the canonical inclusions.
 We also provide `Faithful` and `EssSurj` instances on this functor.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Join
 

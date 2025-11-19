@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Logic.Relation
-import Mathlib.Order.Hom.Basic
-import Mathlib.Tactic.Tauto
+module
+
+public import Mathlib.Logic.Relation
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Tactic.Tauto
 
 /-!
 # Turning a preorder into a partial order
@@ -22,6 +24,8 @@ such that `a ≤ b` and `b ≤ a`.
 * `Antisymmetrization α r`: The quotient of `α` by `AntisymmRel r`. Even when `r` is just a
   preorder, `Antisymmetrization α` is a partial order.
 -/
+
+@[expose] public section
 
 open Function OrderDual
 
@@ -92,11 +96,11 @@ lemma AntisymmRel.left (h : AntisymmRel r a b) : r a b := h.1
 lemma AntisymmRel.right (h : AntisymmRel r a b) : r b a := h.2
 
 /-- See if the term is `AntisymmRel r a b` and the goal is `r a b`. -/
-@[gcongr_forward] def exactAntisymmRelLeft : ForwardExt where
+@[gcongr_forward] meta def exactAntisymmRelLeft : ForwardExt where
   eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``AntisymmRel.left #[h])
 
 /-- See if the term is `AntisymmRel r a b` and the goal is `r b a`. -/
-@[gcongr_forward] def exactAntisymmRelRight : ForwardExt where
+@[gcongr_forward] meta def exactAntisymmRelRight : ForwardExt where
   eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``AntisymmRel.right #[h])
 
 end Mathlib.Tactic.GCongr
@@ -167,11 +171,16 @@ theorem le_iff_lt_or_antisymmRel : a ≤ b ↔ a < b ∨ AntisymmRel (· ≤ ·)
   rw [lt_iff_le_not_ge, AntisymmRel]
   tauto
 
+alias ⟨LE.le.lt_or_antisymmRel, _⟩ := le_iff_lt_or_antisymmRel
+
 theorem le_of_le_of_antisymmRel (h₁ : a ≤ b) (h₂ : AntisymmRel (· ≤ ·) b c) : a ≤ c :=
   h₁.trans h₂.le
 
 theorem le_of_antisymmRel_of_le (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : b ≤ c) : a ≤ c :=
   h₁.le.trans h₂
+
+alias LE.le.trans_antisymmRel := le_of_le_of_antisymmRel
+alias AntisymmRel.trans_le := le_of_antisymmRel_of_le
 
 theorem lt_of_lt_of_antisymmRel (h₁ : a < b) (h₂ : AntisymmRel (· ≤ ·) b c) : a < c :=
   h₁.trans_le h₂.le
@@ -179,11 +188,26 @@ theorem lt_of_lt_of_antisymmRel (h₁ : a < b) (h₂ : AntisymmRel (· ≤ ·) b
 theorem lt_of_antisymmRel_of_lt (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : b < c) : a < c :=
   h₁.le.trans_lt h₂
 
-alias ⟨LE.le.lt_or_antisymmRel, _⟩ := le_iff_lt_or_antisymmRel
-alias LE.le.trans_antisymmRel := le_of_le_of_antisymmRel
-alias AntisymmRel.trans_le := le_of_antisymmRel_of_le
 alias LT.lt.trans_antisymmRel := lt_of_lt_of_antisymmRel
 alias AntisymmRel.trans_lt := lt_of_antisymmRel_of_lt
+
+theorem not_lt_of_antisymmRel (h : AntisymmRel (· ≤ ·) a b) : ¬ a < b :=
+  h.ge.not_gt
+
+theorem not_gt_of_antisymmRel (h : AntisymmRel (· ≤ ·) a b) : ¬ b < a :=
+  h.le.not_gt
+
+alias AntisymmRel.not_lt := not_lt_of_antisymmRel
+alias AntisymmRel.not_gt := not_gt_of_antisymmRel
+
+theorem not_antisymmRel_of_lt : a < b → ¬ AntisymmRel (· ≤ ·) a b :=
+  imp_not_comm.1 not_lt_of_antisymmRel
+
+theorem not_antisymmRel_of_gt : b < a → ¬ AntisymmRel (· ≤ ·) a b :=
+  imp_not_comm.1 not_gt_of_antisymmRel
+
+alias LT.lt.not_antisymmRel := not_antisymmRel_of_lt
+alias LT.lt.not_antisymmRel_symm := not_antisymmRel_of_gt
 
 instance : @Trans α α α (· ≤ ·) (AntisymmRel (· ≤ ·)) (· ≤ ·) where
   trans := le_of_le_of_antisymmRel

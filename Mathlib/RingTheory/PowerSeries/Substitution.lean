@@ -3,9 +3,10 @@ Copyright (c) 2025 Antoine Chambert-Loir, María Inés de Frutos Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
 -/
+module
 
-import Mathlib.RingTheory.MvPowerSeries.Substitution
-import Mathlib.RingTheory.PowerSeries.Evaluation
+public import Mathlib.RingTheory.MvPowerSeries.Substitution
+public import Mathlib.RingTheory.PowerSeries.Evaluation
 
 /-! # Substitutions in power series
 
@@ -19,6 +20,8 @@ Because of the special API for `PowerSeries`, some results for `MvPowerSeries`
 do not immediately apply and a “primed” version is provided here.
 
 -/
+
+@[expose] public section
 
 namespace PowerSeries
 
@@ -50,10 +53,7 @@ theorem hasSubst_iff_hasEval_of_discreteTopology
     Function.const_def]
 
 theorem HasSubst.hasEval [TopologicalSpace S] {a : MvPowerSeries τ S} (ha : HasSubst a) :
-    HasEval a := by
-  rw [hasEval_iff]
-  apply MvPowerSeries.HasSubst.hasEval
-  simpa [hasSubst_iff] using ha
+    HasEval a := isTopologicallyNilpotent_of_constantCoeff_isNilpotent ha
 
 theorem HasSubst.of_constantCoeff_zero {a : MvPowerSeries τ S}
     (ha : MvPowerSeries.constantCoeff a = 0) : HasSubst a := by

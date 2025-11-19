@@ -3,9 +3,11 @@ Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Anand Rao
 -/
-import Mathlib.Lean.Meta.RefinedDiscrTree
-import Mathlib.Tactic.Widget.InteractiveUnfold
-import ProofWidgets.Component.FilterDetails
+module
+
+public meta import Mathlib.Lean.Meta.RefinedDiscrTree
+public meta import Mathlib.Tactic.Widget.InteractiveUnfold
+public meta import ProofWidgets.Component.FilterDetails
 
 /-!
 # Point & click library rewriting
@@ -54,6 +56,8 @@ Ways to extend `rw??`:
   just point & click.
 
 -/
+
+public meta section
 
 /-! ### Caching -/
 
@@ -527,7 +531,7 @@ are filtered out, as well as rewrites that have new metavariables in the replace
 To see all suggestions, click on the filter button (▼) in the top right.
 -/
 elab stx:"rw??" : tactic => do
-  let some range := (← getFileMap).rangeOfStx? stx | return
+  let some range := (← getFileMap).lspRangeOfStx? stx | return
   Widget.savePanelWidgetInfo (hash LibraryRewriteComponent.javascript)
     (pure <| json% { replaceRange : $range }) stx
 

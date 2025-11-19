@@ -3,8 +3,10 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Mario Carneiro, Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.Topology.ContinuousMap.Bounded.Basic
-import Mathlib.Topology.MetricSpace.Equicontinuity
+module
+
+public import Mathlib.Topology.ContinuousMap.Bounded.Basic
+public import Mathlib.Topology.MetricSpace.Equicontinuity
 
 /-!
 # The Arzelà–Ascoli theorem for bounded continuous functions
@@ -13,6 +15,8 @@ Arzelà–Ascoli asserts that, on a compact space, a set of functions sharing a 
 continuity and taking values in a compact set forms a compact subset for the topology of
 uniform convergence. This file proves the theorem and several useful variations around it.
 -/
+
+@[expose] public section
 
 open Set Metric
 
@@ -51,7 +55,7 @@ theorem arzela_ascoli₁ [CompactSpace β] (A : Set (α →ᵇ β)) (closed : Is
     isCompact_univ.elim_finite_subcover_image (fun x _ => (hU x).2.1) fun x _ =>
       mem_biUnion (mem_univ _) (hU x).1
   rcases hfin.nonempty_fintype with ⟨_⟩
-  obtain ⟨tβ : Set β, _, hfin, htβ : univ ⊆ ⋃y ∈ tβ, ball y ε₂⟩ :=
+  obtain ⟨tβ : Set β, _, hfin, htβ : univ ⊆ ⋃ y ∈ tβ, ball y ε₂⟩ :=
     @finite_cover_balls_of_compact β _ _ isCompact_univ _ ε₂0
   rcases hfin.nonempty_fintype with ⟨_⟩
   -- Associate to every point `y` in the space a nearby point `F y` in `tβ`

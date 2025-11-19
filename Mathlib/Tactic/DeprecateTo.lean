@@ -3,13 +3,16 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Lean.Meta.Tactic.TryThis
-import Mathlib.Lean.Expr.Basic
-import Mathlib.Tactic.Lemma
-import Std.Time.Format
+module
+
+public meta import Batteries.Tactic.Alias
+public meta import Lean.Meta.Tactic.TryThis
+public meta import Mathlib.Lean.Expr.Basic
+public meta import Mathlib.Tactic.Lemma
+public meta import Std.Time.Format
 
 /-!
-#  `deprecate to` -- a deprecation tool
+# `deprecate to` -- a deprecation tool
 
 Writing
 ```lean
@@ -36,6 +39,8 @@ TODO:
   inside a `namespace X`, it would be better to remove the `X` prefix from them;
 * preserve formatting of existing command?
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.DeprecateTo
 

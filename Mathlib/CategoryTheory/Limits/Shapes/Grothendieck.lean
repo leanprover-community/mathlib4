@@ -3,8 +3,10 @@ Copyright (c) 2024 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Grothendieck
-import Mathlib.CategoryTheory.Limits.HasLimits
+module
+
+public import Mathlib.CategoryTheory.Grothendieck
+public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # (Co)limits on the (strict) Grothendieck Construction
@@ -19,6 +21,8 @@ import Mathlib.CategoryTheory.Limits.HasLimits
   on each fiber shape `F.obj X` and on the base category `C`.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 

@@ -3,8 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
-import Mathlib.Algebra.Ring.Associated
-import Mathlib.Algebra.Ring.Regular
+module
+
+public import Mathlib.Algebra.Ring.Associated
+public import Mathlib.Algebra.Ring.Regular
 
 /-!
 # Monoids with normalization functions, `gcd`, and `lcm`
@@ -59,6 +61,8 @@ For the `NormalizedGCDMonoid` instances on `ℕ` and `ℤ`, see `Mathlib/Algebra
 
 divisibility, gcd, lcm, normalize
 -/
+
+@[expose] public section
 
 
 variable {α : Type*}
@@ -125,6 +129,7 @@ theorem normalize_one : normalize (1 : α) = 1 :=
 
 theorem normalize_coe_units (u : αˣ) : normalize (u : α) = 1 := by simp [normalize_apply]
 
+@[simp]
 theorem normalize_eq_zero {x : α} : normalize x = 0 ↔ x = 0 :=
   ⟨fun hx => (associated_zero_iff_eq_zero x).1 <| hx ▸ associated_normalize _, by
     rintro rfl; exact normalize_zero⟩
@@ -223,6 +228,13 @@ theorem mk_out (a : Associates α) : Associates.mk a.out = a :=
 
 theorem out_injective : Function.Injective (Associates.out : _ → α) :=
   Function.LeftInverse.injective mk_out
+
+@[simp]
+theorem out_eq_zero_iff {a : Associates α} : a.out = 0 ↔ a = 0 :=
+  Quotient.inductionOn a (by simp)
+
+theorem out_zero : (0 : Associates α).out = 0 := by
+  simp
 
 end Associates
 

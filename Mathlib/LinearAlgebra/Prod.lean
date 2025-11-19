@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Prod
-import Mathlib.Algebra.Group.Graph
-import Mathlib.LinearAlgebra.Span.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Prod
+public import Mathlib.Algebra.Group.Graph
+public import Mathlib.LinearAlgebra.Span.Basic
 
 /-! ### Products of modules
 
@@ -33,6 +35,8 @@ It contains theorems relating these to each other, as well as to `Submodule.prod
   - `LinearEquiv.prodUnique`
   - `LinearEquiv.uniqueProd`
 -/
+
+@[expose] public section
 
 
 universe u v w x y z u' v' w' y'
@@ -733,25 +737,17 @@ protected def prodCongr : (M × M₃) ≃ₗ[R] M₂ × M₄ :=
   { e₁.toAddEquiv.prodCongr e₂.toAddEquiv with
     map_smul' := fun c _x => Prod.ext (e₁.map_smulₛₗ c _) (e₂.map_smulₛₗ c _) }
 
-@[deprecated (since := "2025-04-17")] alias prod := LinearEquiv.prodCongr
-
 theorem prodCongr_symm : (e₁.prodCongr e₂).symm = e₁.symm.prodCongr e₂.symm :=
   rfl
-
-@[deprecated (since := "2025-04-17")] alias prod_symm := prodCongr_symm
 
 @[simp]
 theorem prodCongr_apply (p) : e₁.prodCongr e₂ p = (e₁ p.1, e₂ p.2) :=
   rfl
 
-@[deprecated (since := "2025-04-17")] alias prod_apply := prodCongr_apply
-
 @[simp, norm_cast]
 theorem coe_prodCongr :
     (e₁.prodCongr e₂ : M × M₃ →ₗ[R] M₂ × M₄) = (e₁ : M →ₗ[R] M₂).prodMap (e₂ : M₃ →ₗ[R] M₄) :=
   rfl
-
-@[deprecated (since := "2025-04-17")] alias coe_prod := coe_prodCongr
 
 end
 

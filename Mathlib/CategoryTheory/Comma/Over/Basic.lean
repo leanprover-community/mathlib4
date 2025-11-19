@@ -3,8 +3,10 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-import Mathlib.CategoryTheory.Category.Cat
+module
+
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+public import Mathlib.CategoryTheory.Category.Cat
 
 /-!
 # Over and under categories
@@ -20,12 +22,14 @@ Over (and under) categories are special cases of comma categories.
 Comma, Slice, Coslice, Over, Under
 -/
 
+@[expose] public section
+
 
 namespace CategoryTheory
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 variable {T : Type u₁} [Category.{v₁} T]
 variable {D : Type u₂} [Category.{v₂} D]
 
@@ -210,8 +214,8 @@ theorem mapId_eq (Y : T) : map (𝟙 Y) = 𝟭 _ := by
 
 /-- The natural isomorphism arising from `mapForget_eq`. -/
 @[simps!]
-def mapId (Y : T) : map (𝟙 Y) ≅ 𝟭 _ := eqToIso (mapId_eq Y)
---  NatIso.ofComponents fun X => isoMk (Iso.refl _)
+def mapId (Y : T) : map (𝟙 Y) ≅ 𝟭 _ :=
+  NatIso.ofComponents (fun _ ↦ isoMk (Iso.refl _))
 
 /-- Mapping by `f` and then forgetting is the same as forgetting. -/
 theorem mapForget_eq {X Y : T} (f : X ⟶ Y) :
@@ -238,13 +242,18 @@ theorem mapComp_eq {X Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) :
 /-- The natural isomorphism arising from `mapComp_eq`. -/
 @[simps!]
 def mapComp {X Y Z : T} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    map (f ≫ g) ≅ (map f) ⋙ (map g) := eqToIso (mapComp_eq f g)
+    map (f ≫ g) ≅ map f ⋙ map g :=
+  NatIso.ofComponents (fun _ ↦ isoMk (Iso.refl _))
 
 /-- If `f = g`, then `map f` is naturally isomorphic to `map g`. -/
 @[simps!]
 def mapCongr {X Y : T} (f g : X ⟶ Y) (h : f = g) :
     map f ≅ map g :=
-  NatIso.ofComponents (fun A ↦ eqToIso (by rw [h]))
+  NatIso.ofComponents (fun _ ↦ isoMk (Iso.refl _))
+
+@[simp]
+lemma mapCongr_rfl {X Y : T} (f : X ⟶ Y) :
+    mapCongr f f rfl = Iso.refl _ := rfl
 
 variable (T) in
 /-- The functor defined by the over categories -/
@@ -544,7 +553,7 @@ lemma homMk_eta {U V : Under X} (f : U ⟶ V) (h) :
 
 /-- This is useful when `homMk (· ≫ ·)` appears under `Functor.map` or a natural equivalence. -/
 lemma homMk_comp {U V W : Under X} (f : U.right ⟶ V.right) (g : V.right ⟶ W.right) (w_f w_g) :
-    homMk (f ≫ g) (by simp only [reassoc_of% w_f, w_g])  = homMk f w_f ≫ homMk g w_g := by
+    homMk (f ≫ g) (by simp only [reassoc_of% w_f, w_g]) = homMk f w_f ≫ homMk g w_g := by
   ext
   simp
 
@@ -691,7 +700,7 @@ def mapCongr {X Y : T} (f g : X ⟶ Y) (h : f = g) :
 
 variable (T) in
 /-- The functor defined by the under categories -/
-@[simps] def mapFunctor : Tᵒᵖ  ⥤ Cat where
+@[simps] def mapFunctor : Tᵒᵖ ⥤ Cat where
   obj X := Cat.of (Under X.unop)
   map f := map f.unop
   map_id X := mapId_eq X.unop
@@ -1183,22 +1192,6 @@ def Under.opEquivOpOver : Under (op X) ≌ (Over X)ᵒᵖ where
   inverse.map {Z Y} f := Under.homMk f.unop.left.op <| by dsimp; rw [← Over.w f.unop, op_comp]
   unitIso := Iso.refl _
   counitIso := Iso.refl _
-
-/-- The canonical functor by reversing structure arrows. -/
-@[deprecated Over.opEquivOpUnder (since := "2025-04-08")]
-def Over.opToOpUnder : Over (op X) ⥤ (Under X)ᵒᵖ := (Over.opEquivOpUnder X).functor
-
-/-- The canonical functor by reversing structure arrows. -/
-@[deprecated Over.opEquivOpUnder (since := "2025-04-08")]
-def Under.opToOverOp : (Under X)ᵒᵖ ⥤ Over (op X) := (Over.opEquivOpUnder X).inverse
-
-/-- The canonical functor by reversing structure arrows. -/
-@[deprecated Under.opEquivOpOver (since := "2025-04-08")]
-def Under.opToOpOver : Under (op X) ⥤ (Over X)ᵒᵖ := (Under.opEquivOpOver X).functor
-
-/-- The canonical functor by reversing structure arrows. -/
-@[deprecated Under.opEquivOpOver (since := "2025-04-08")]
-def Over.opToUnderOp : (Over X)ᵒᵖ ⥤ Under (op X) := (Under.opEquivOpOver X).inverse
 
 end Opposite
 

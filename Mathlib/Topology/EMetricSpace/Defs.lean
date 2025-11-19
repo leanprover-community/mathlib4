@@ -1,11 +1,13 @@
 /-
-Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
+Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Data.ENNReal.Inv
-import Mathlib.Topology.UniformSpace.Basic
-import Mathlib.Topology.UniformSpace.OfFun
+module
+
+public import Mathlib.Data.ENNReal.Inv
+public import Mathlib.Topology.UniformSpace.Basic
+public import Mathlib.Topology.UniformSpace.OfFun
 
 /-!
 # Extended metric spaces
@@ -24,6 +26,8 @@ Since a lot of elementary properties don't require `eq_of_edist_eq_zero` we star
 theory of `PseudoEMetricSpace`, where we don't require `edist x y = 0 → x = y` and we specialize
 to `EMetricSpace` at the end.
 -/
+
+@[expose] public section
 
 
 assert_not_exists Nat.instLocallyFiniteOrder IsUniformEmbedding TendstoUniformlyOnFilter
@@ -141,10 +145,8 @@ theorem edist_congr {w x y z : α} (hl : edist w x = 0) (hr : edist y z = 0) :
     edist w y = edist x z :=
   (edist_congr_right hl).trans (edist_congr_left hr)
 
-theorem edist_triangle4 (x y z t : α) : edist x t ≤ edist x y + edist y z + edist z t :=
-  calc
-    edist x t ≤ edist x z + edist z t := edist_triangle x z t
-    _ ≤ edist x y + edist y z + edist z t := add_le_add_right (edist_triangle x y z) _
+theorem edist_triangle4 (x y z t : α) : edist x t ≤ edist x y + edist y z + edist z t := by
+  grw [edist_triangle _ z, edist_triangle]
 
 /-- Reformulation of the uniform structure in terms of the extended distance -/
 theorem uniformity_pseudoedist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | edist p.1 p.2 < ε } :=

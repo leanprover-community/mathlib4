@@ -3,8 +3,10 @@ Copyright (c) 2020 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
-import Mathlib.RingTheory.RootsOfUnity.Minpoly
+module
+
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Basic
+public import Mathlib.RingTheory.RootsOfUnity.Minpoly
 
 /-!
 # Roots of cyclotomic polynomials.
@@ -30,6 +32,8 @@ To prove `Polynomial.cyclotomic.irreducible`, the irreducibility of `cyclotomic 
 primitive root of unity `μ : K`, where `K` is a field of characteristic `0`.
 -/
 
+@[expose] public section
+
 
 namespace Polynomial
 
@@ -40,7 +44,7 @@ theorem isRoot_of_unity_of_root_cyclotomic {ζ : R} {i : ℕ} (hi : i ∈ n.divi
   rcases n.eq_zero_or_pos with (rfl | hn)
   · exact pow_zero _
   have := congr_arg (eval ζ) (prod_cyclotomic_eq_X_pow_sub_one hn R).symm
-  rw [eval_sub, eval_pow, eval_X, eval_one] at this
+  rw [eval_sub, eval_X_pow, eval_one] at this
   convert eq_add_of_sub_eq' this
   convert (add_zero (M := R) _).symm
   apply eval_eq_zero_of_dvd_of_eval_eq_zero _ h

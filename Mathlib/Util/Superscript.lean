@@ -3,8 +3,10 @@ Copyright (c) 2023 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init
-import Batteries.Tactic.Lint
+module
+
+public import Mathlib.Init
+public import Batteries.Tactic.Lint
 
 /-!
 # A parser for superscripts and subscripts
@@ -24,6 +26,8 @@ However, note that Unicode has a rather restricted character set for superscript
 (see `Mapping.superscript` and `Mapping.subscript` in this file), so you should not use this
 parser for complex expressions.
 -/
+
+public meta section
 
 universe u
 
@@ -71,7 +75,7 @@ otherwise it will parse only 1. If successful, it passes the result to `k` as an
 where `a..b` is a token and `b..c` is whitespace.
 -/
 partial def satisfyTokensFn (p : Char → Bool) (errorMsg : String) (many := true)
-    (k : Array (String.Pos × String.Pos × String.Pos) → ParserState → ParserState) :
+    (k : Array (String.Pos.Raw × String.Pos.Raw × String.Pos.Raw) → ParserState → ParserState) :
     ParserFn := fun c s =>
   let start := s.pos
   let s := takeWhile1Fn p errorMsg c s
@@ -105,7 +109,6 @@ def partitionPoint (lo := 0) (hi := as.size) : Nat :=
     else
       partitionPoint lo m
   else lo
-  termination_by hi - lo
 
 /-- The core function for super/subscript parsing. It consists of three stages:
 
@@ -124,7 +127,7 @@ partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
     let mut newStr := ""
     -- This consists of a sorted array of `(from, to)` pairs, where indexes `from+i` in `newStr`
     -- such that `from+i < from'` for the next element of the array, are mapped to `to+i`.
-    let mut aligns := #[((0 : String.Pos), start)]
+    let mut aligns := #[((0 : String.Pos.Raw), start)]
     for (start, stopTk, stopWs) in toks do
       let mut pos := start
       while pos < stopTk do
@@ -133,22 +136,22 @@ partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
         newStr := newStr.push ch'
         pos := pos + ch
         if ch.utf8Size != ch'.utf8Size then
-          aligns := aligns.push (newStr.endPos, pos)
+          aligns := aligns.push (newStr.rawEndPos, pos)
       newStr := newStr.push ' '
       if stopWs.1 - stopTk.1 != 1 then
-        aligns := aligns.push (newStr.endPos, stopWs)
+        aligns := aligns.push (newStr.rawEndPos, stopWs)
     let ictx := mkInputContext newStr "<superscript>"
     let s' := p.run ictx c.toParserModuleContext c.tokens (mkParserState newStr)
     let rec /-- Applies the alignment mapping to a position. -/
-    align (pos : String.Pos) :=
+    align (pos : String.Pos.Raw) :=
       let i := partitionPoint aligns (·.1 ≤ pos)
       let (a, b) := aligns[i - 1]!
-      pos - a + b
+      pos.unoffsetBy a |>.offsetBy b
     let s := { s with pos := align s'.pos, errorMsg := s'.errorMsg }
     if s.hasError then return s
     let rec
     /-- Applies the alignment mapping to a `Substring`. -/
-    alignSubstr : Substring → Substring
+    alignSubstr : Substring.Raw → Substring.Raw
       | ⟨_newStr, start, stop⟩ => c.substring (align start) (align stop),
     /-- Applies the alignment mapping to a `SourceInfo`. -/
     alignInfo : SourceInfo → SourceInfo
@@ -216,7 +219,7 @@ def scriptParser.formatter (name : String) (m : Mapping) (k : SyntaxNodeKind) (p
   let st ← get
   let transformed : Except String _ := st.stack.mapM (·.mapStringsM fun s => do
     let some s := s.toList.mapM (m.toSpecial.insert ' ' ' ').get? | .error s
-    .ok ⟨s⟩)
+    .ok (String.ofList s))
   match transformed with
   | .error err =>
     -- TODO: this only appears if the caller explicitly calls the pretty-printer

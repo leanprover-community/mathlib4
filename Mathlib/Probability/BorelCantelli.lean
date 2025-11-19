@@ -3,9 +3,11 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Probability.Martingale.BorelCantelli
-import Mathlib.Probability.ConditionalExpectation
-import Mathlib.Probability.Independence.Basic
+module
+
+public import Mathlib.Probability.Martingale.BorelCantelli
+public import Mathlib.Probability.ConditionalExpectation
+public import Mathlib.Probability.Independence.Basic
 
 /-!
 
@@ -23,6 +25,8 @@ filtration.
 **Note**: for the *first Borel-Cantelli lemma*, which holds in general measure spaces (not only
 in probability spaces), see `MeasureTheory.measure_limsup_atTop_eq_zero`.
 -/
+
+@[expose] public section
 
 open scoped ENNReal Topology
 open MeasureTheory
@@ -54,7 +58,7 @@ theorem iIndepSet.condExp_indicator_filtrationOfSet_ae_eq (hsm : ∀ n, Measurab
     (hs : iIndepSet s μ) (hij : i < j) :
     μ[(s j).indicator (fun _ => 1 : Ω → ℝ)|filtrationOfSet hsm i] =ᵐ[μ]
     fun _ => μ.real (s j) := by
-  rw [Filtration.filtrationOfSet_eq_natural (β := ℝ) hsm]
+  rw [Filtration.filtrationOfSet_eq_natural (β := fun _ ↦ ℝ) hsm]
   refine (iIndepFun.condExp_natural_ae_eq_of_lt _ hs.iIndepFun_indicator hij).trans ?_
   simp only [integral_indicator_const _ (hsm _), Algebra.id.smul_eq_mul, mul_one]; rfl
 

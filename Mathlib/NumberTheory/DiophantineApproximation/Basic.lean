@@ -3,10 +3,12 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Geißer, Michael Stoll
 -/
-import Mathlib.Data.Real.Irrational
-import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.RingTheory.Int.Basic
-import Mathlib.Tactic.Basic
+module
+
+public import Mathlib.NumberTheory.Real.Irrational
+public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.RingTheory.Int.Basic
+public import Mathlib.Tactic.Basic
 
 /-!
 # Diophantine Approximation
@@ -68,6 +70,8 @@ fractions is much more extensive than the English one.)
 Diophantine approximation, Dirichlet's approximation theorem, continued fraction
 -/
 
+@[expose] public section
+
 
 namespace Real
 
@@ -95,7 +99,7 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
   have hfu := fun m : ℤ => mul_lt_of_lt_one_left hn <| fract_lt_one (ξ * ↑m)
   conv in |_| ≤ _ => rw [mul_comm, le_div_iff₀ hn, ← abs_of_pos hn, ← abs_mul]
   let D := Icc (0 : ℤ) n
-  by_cases H : ∃ m ∈ D, f m = n
+  by_cases! H : ∃ m ∈ D, f m = n
   · obtain ⟨m, hm, hf⟩ := H
     have hf' : ((n : ℤ) : ℝ) ≤ fract (ξ * m) * (n + 1) := hf ▸ floor_le (fract (ξ * m) * (n + 1))
     have hm₀ : 0 < m := by
@@ -108,8 +112,7 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     refine
       ⟨le_sub_iff_add_le.mpr ?_, sub_le_iff_le_add.mpr <| le_of_lt <| (hfu m).trans <| lt_one_add _⟩
     simpa only [neg_add_cancel_comm_assoc] using hf'
-  · simp_rw [not_exists, not_and] at H
-    have hD : #(Ico (0 : ℤ) n) < #D := by rw [card_Icc, card_Ico]; exact lt_add_one n
+  · have hD : #(Ico (0 : ℤ) n) < #D := by rw [card_Icc, card_Ico]; exact lt_add_one n
     have hfu' : ∀ m, f m ≤ n := fun m => lt_add_one_iff.mp (floor_lt.mpr (mod_cast hfu m))
     have hwd : ∀ m : ℤ, m ∈ D → f m ∈ Ico (0 : ℤ) n := fun x hx =>
       mem_Ico.mpr
@@ -387,7 +390,7 @@ private theorem aux₁ : 0 < fract ξ := by
   rw [hf] at h
   have H : (2 * v - 1 : ℝ) < 1 := by
     refine (mul_lt_iff_lt_one_right hv₀).1 ((inv_lt_inv₀ hv₀ (mul_pos hv₁ hv₂)).1 (h.trans_le' ?_))
-    have h' : (⌊ξ⌋ : ℝ) - u / v = (⌊ξ⌋ * v - u) / v := by field_simp
+    have h' : (⌊ξ⌋ : ℝ) - u / v = (⌊ξ⌋ * v - u) / v := by field
     rw [h', abs_div, abs_of_pos hv₀, ← one_div, div_le_div_iff_of_pos_right hv₀]
     norm_cast
     rw [← zero_add (1 : ℤ), add_one_le_iff, abs_pos, sub_ne_zero]
@@ -448,7 +451,7 @@ private theorem aux₃ :
   have H : (2 * u' - 1 : ℝ) ≤ (2 * v - 1) * fract ξ := by
     replace h := (abs_lt.mp h).1
     have : (2 * (v : ℝ) - 1) * (-((v : ℝ) * (2 * v - 1))⁻¹ + u' / v) = 2 * u' - (1 + u') / v := by
-      field_simp; ring
+      field
     rw [hu'ℝ, add_div, mul_div_cancel_right₀ _ Hv.ne', ← sub_sub, sub_right_comm, self_sub_floor,
       lt_sub_iff_add_lt, ← mul_lt_mul_iff_right₀ Hv', this] at h
     refine LE.le.trans ?_ h.le
@@ -456,10 +459,10 @@ private theorem aux₃ :
     exact mod_cast huv
   calc
     |(fract ξ)⁻¹ - v / u'| = |(fract ξ - u' / v) * (v / u' / fract ξ)| := by
-      rw [abs_sub_comm]; congr 1; field_simp
+      rw [abs_sub_comm]; congr 1; field
     _ = |fract ξ - u' / v| * (v / u' / fract ξ) := by rw [abs_mul, abs_of_pos H₁]
     _ < ((v : ℝ) * (2 * v - 1))⁻¹ * (v / u' / fract ξ) := by gcongr
-    _ = (u' * ((2 * v - 1) * fract ξ))⁻¹ := by field_simp
+    _ = (u' * ((2 * v - 1) * fract ξ))⁻¹ := by field
     _ ≤ (u' * (2 * u' - 1) : ℝ)⁻¹ := by gcongr
 
 -- The conditions `ass ξ u v` persist in the inductive step.
