@@ -3,14 +3,16 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
-import Mathlib.Algebra.GroupWithZero.Subgroup
-import Mathlib.Data.Finite.Card
-import Mathlib.Data.Finite.Prod
-import Mathlib.Data.Set.Card
-import Mathlib.GroupTheory.Coset.Card
-import Mathlib.GroupTheory.GroupAction.Quotient
-import Mathlib.GroupTheory.QuotientGroup.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
+public import Mathlib.Algebra.GroupWithZero.Subgroup
+public import Mathlib.Data.Finite.Card
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Data.Set.Card
+public import Mathlib.GroupTheory.Coset.Card
+public import Mathlib.GroupTheory.GroupAction.Quotient
+public import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!
 # Index of a Subgroup
@@ -35,6 +37,8 @@ Several theorems proved in this file are known as Lagrange's theorem.
 - `relIndex_mul_relIndex` : `relIndex` is multiplicative in towers
 - `MulAction.index_stabilizer`: the index of the stabilizer is the cardinality of the orbit
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

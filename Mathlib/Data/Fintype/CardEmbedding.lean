@@ -3,16 +3,20 @@ Copyright (c) 2021 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Set.Finite.Range
-import Mathlib.Logic.Equiv.Embedding
+module
+
+public import Mathlib.Data.Nat.Factorial.Basic
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.Logic.Equiv.Embedding
 
 /-!
 # Number of embeddings
 
 This file establishes the cardinality of `α ↪ β` in full generality.
 -/
+
+@[expose] public section
 
 
 local notation "|" x "|" => Finset.card x
