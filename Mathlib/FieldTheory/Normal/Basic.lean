@@ -3,10 +3,12 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Thomas Browning, Patrick Lutz
 -/
-import Mathlib.FieldTheory.Extension
-import Mathlib.FieldTheory.Normal.Defs
-import Mathlib.GroupTheory.Solvable
-import Mathlib.FieldTheory.SplittingField.Construction
+module
+
+public import Mathlib.FieldTheory.Extension
+public import Mathlib.FieldTheory.Normal.Defs
+public import Mathlib.GroupTheory.Solvable
+public import Mathlib.FieldTheory.SplittingField.Construction
 
 /-!
 # Normal field extensions
@@ -21,6 +23,8 @@ is the same as being a splitting field (`Normal.of_isSplittingField` and
   `Algebra.IsQuadraticExtension`, is normal.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -289,6 +293,3 @@ instance Algebra.IsQuadraticExtension.normal (F K : Type*) [Field F] [Field K] [
     obtain h | h := le_iff_lt_or_eq.mp (finrank_eq_two F K ▸ minpoly.natDegree_le x)
     · exact splits_of_natDegree_le_one _ (by rwa [Nat.le_iff_lt_add_one])
     · exact splits_of_natDegree_eq_two _ h (minpoly.aeval F x)
-
-@[deprecated (since := "2025-04-17")] alias normal_of_finrank_eq_two :=
-  Algebra.IsQuadraticExtension.normal

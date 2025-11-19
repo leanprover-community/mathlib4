@@ -3,8 +3,10 @@ Copyright (c) 2025 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Jonas van der Schaaf
 -/
-import Mathlib.CategoryTheory.Closed.Monoidal
-import Mathlib.CategoryTheory.ObjectProperty.Retract
+module
+
+public import Mathlib.CategoryTheory.Closed.Monoidal
+public import Mathlib.CategoryTheory.ObjectProperty.Retract
 
 /-!
 
@@ -19,6 +21,8 @@ This property is important in the setting of light condensed abelian groups, whe
 the solid theory (see the lecture series on analytic stacks:
 https://www.youtube.com/playlist?list=PLx5f8IelFRgGmu6gmL-Kf_Rl_6Mm7juZO).
 -/
+
+@[expose] public section
 
 noncomputable section
 

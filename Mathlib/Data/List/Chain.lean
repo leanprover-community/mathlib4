@@ -3,11 +3,13 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Data.List.Forall2
-import Mathlib.Data.List.Induction
-import Mathlib.Data.List.Lex
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Logic.Relation
+module
+
+public import Mathlib.Data.List.Forall2
+public import Mathlib.Data.List.Induction
+public import Mathlib.Data.List.Lex
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Logic.Relation
 
 /-!
 # Relation chain
@@ -18,6 +20,8 @@ and `r a₂ a₃` and ... and `r aₙ₋₁ aₙ`. We write it `IsChain r [a₁,
 A graph-specialized version is in development and will hopefully be added under `combinatorics.`
 sometime soon.
 -/
+
+@[expose] public section
 
 assert_not_imported Mathlib.Algebra.Order.Group.Nat
 
@@ -304,7 +308,7 @@ lemma IsChain.cons_of_ne_nil {x : α} {l : List α} (l_ne_nil : l ≠ [])
     (hl : IsChain R l) (h : R x (l.head l_ne_nil)) : IsChain R (x :: l) := by
   refine hl.cons fun y hy ↦ ?_
   convert h
-  simpa [l.head?_eq_head l_ne_nil] using hy.symm
+  simpa [l.head?_eq_some_head l_ne_nil] using hy.symm
 
 @[deprecated (since := "2025-09-24")] alias Chain'.cons_of_ne_nil := IsChain.cons_of_ne_nil
 
@@ -425,9 +429,9 @@ lemma isChain_flatten : ∀ {L : List (List α)}, [] ∉ L →
 | [l], _ => by simp [flatten]
 | (l₁ :: l₂ :: L), hL => by
     rw [mem_cons, not_or, ← Ne] at hL
-    rw [flatten, isChain_append, isChain_flatten hL.2, forall_mem_cons, isChain_cons_cons]
+    rw [flatten_cons, isChain_append, isChain_flatten hL.2, forall_mem_cons, isChain_cons_cons]
     rw [mem_cons, not_or, ← Ne] at hL
-    simp only [forall_mem_cons, and_assoc, flatten, head?_append_of_ne_nil _ hL.2.1.symm]
+    simp only [forall_mem_cons, and_assoc, flatten_cons, head?_append_of_ne_nil _ hL.2.1.symm]
     exact Iff.rfl.and (Iff.rfl.and <| Iff.rfl.and and_comm)
 
 @[deprecated (since := "2025-09-24")] alias chain'_flatten := isChain_flatten
@@ -476,7 +480,7 @@ alias exists_chain_of_relationReflTransGen := exists_isChain_cons_of_relationRef
 -/
 theorem exists_isChain_ne_nil_of_relationReflTransGen (h : Relation.ReflTransGen r a b) :
     ∃ l, ∃ (hl : l ≠ []), IsChain r l ∧ l.head hl = a ∧ getLast l hl = b := by
-  rcases exists_isChain_cons_of_relationReflTransGen h with ⟨l, _⟩; use (a :: l); grind
+  rcases exists_isChain_cons_of_relationReflTransGen h with ⟨l, _⟩; grind
 
 /-- Given a chain `l`, such that a predicate `p` holds for its head if it is nonempty,
 and if `r x y → p x → p y`, then the predicate is true everywhere in the chain.
@@ -485,11 +489,7 @@ That is, we can propagate the predicate down the chain.
 theorem IsChain.induction (p : α → Prop) (l : List α) (h : IsChain r l)
     (carries : ∀ ⦃x y : α⦄, r x y → p x → p y) (initial : (lne : l ≠ []) → p (l.head lne)) :
     ∀ i ∈ l, p i := by
-  induction l using twoStepInduction with
-  | nil => grind [not_mem_nil]
-  | singleton => grind
-  | cons_cons a b l IH IH2 =>
-    grind
+  induction l using twoStepInduction with grind
 
 @[deprecated (since := "2025-09-24")] alias Chain'.induction := IsChain.induction
 

@@ -3,12 +3,14 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yaël Dillies
 -/
-import Mathlib.Data.Nat.BinaryRec
-import Mathlib.Order.Interval.Set.Defs
-import Mathlib.Order.Monotone.Basic
-import Mathlib.Tactic.Bound.Attribute
-import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.Monotonicity.Attr
+module
+
+public import Mathlib.Data.Nat.BinaryRec
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Order.Monotone.Basic
+public import Mathlib.Tactic.Bound.Attribute
+public import Mathlib.Tactic.Contrapose
+public import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # Natural number logarithms
@@ -20,6 +22,8 @@ This file defines two `ℕ`-valued analogs of the logarithm of `n` with base `b`
 These are interesting because, for `1 < b`, `Nat.log b` and `Nat.clog b` are respectively right and
 left adjoints of `Nat.pow b`. See `pow_le_iff_le_log` and `le_pow_iff_clog_le`.
 -/
+
+@[expose] public section
 
 assert_not_exists OrderTop
 
@@ -200,7 +204,7 @@ theorem log_eq_log_succ_iff {b n : ℕ} (hb : 1 < b) (hn : n ≠ 0) :
     log b n = log b (n + 1) ↔ b ^ log b (n + 1) ≠ n + 1 := by
   rw [ne_eq, ← log_lt_log_succ_iff hb hn, not_lt]
   simp only [le_antisymm_iff, and_iff_right_iff_imp]
-  exact fun  _ ↦ log_monotone (le_add_right n 1)
+  exact fun _ ↦ log_monotone (le_add_right n 1)
 
 theorem log_anti_left {b c n : ℕ} (hc : 1 < c) (hb : c ≤ b) : log b n ≤ log c n := by
   rcases eq_or_ne n 0 with (rfl | hn); · rw [log_zero_right, log_zero_right]

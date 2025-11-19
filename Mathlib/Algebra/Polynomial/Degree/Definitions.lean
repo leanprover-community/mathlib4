@@ -3,12 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.MonoidAlgebra.Degree
-import Mathlib.Algebra.Order.Ring.WithTop
-import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.Data.Nat.Cast.WithTop
-import Mathlib.Data.Nat.SuccPred
-import Mathlib.Order.SuccPred.WithBot
+module
+
+public import Mathlib.Algebra.MonoidAlgebra.Degree
+public import Mathlib.Algebra.Order.Ring.WithTop
+public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.Data.Nat.Cast.WithTop
+public import Mathlib.Data.Nat.SuccPred
+public import Mathlib.Order.SuccPred.WithBot
 
 /-!
 # Degree of univariate polynomials
@@ -25,6 +27,8 @@ import Mathlib.Order.SuccPred.WithBot
 
 * `Polynomial.degree_eq_natDegree`: the degree and natDegree coincide for nonzero polynomials
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -479,9 +483,7 @@ natDegree_mul_le.trans <| add_le_add ‹_› ‹_›
 theorem natDegree_pow_le {p : R[X]} {n : ℕ} : (p ^ n).natDegree ≤ n * p.natDegree := by
   induction n with
   | zero => simp
-  | succ i hi =>
-    rw [pow_succ, Nat.succ_mul]
-    apply le_trans natDegree_mul_le (add_le_add_right hi _)
+  | succ n ih => grw [pow_succ, Nat.succ_mul, natDegree_mul_le, ih]
 
 theorem natDegree_pow_le_of_le (n : ℕ) (hp : natDegree p ≤ m) :
     natDegree (p ^ n) ≤ n * m :=

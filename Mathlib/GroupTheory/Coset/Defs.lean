@@ -3,11 +3,13 @@ Copyright (c) 2018 Mitchell Rowett. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Rowett, Kim Morrison
 -/
-import Mathlib.Algebra.Quotient
-import Mathlib.Algebra.Group.Action.Opposite
-import Mathlib.Algebra.Group.Subgroup.MulOpposite
-import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Algebra.Quotient
+public import Mathlib.Algebra.Group.Action.Opposite
+public import Mathlib.Algebra.Group.Subgroup.MulOpposite
+public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Cosets
@@ -38,6 +40,8 @@ If instead `G` is an additive group, we can write (with  `open scoped Pointwise`
 Properly merge with pointwise actions on sets, by renaming and deduplicating lemmas as appropriate.
 -/
 
+@[expose] public section
+
 assert_not_exists Cardinal
 
 open Function Set
@@ -45,8 +49,8 @@ open scoped Pointwise
 
 variable {α : Type*}
 
--- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20to_additive.2Emap_namespace
-run_cmd Lean.Elab.Command.liftCoreM <| ToAdditive.insertTranslation `QuotientGroup `QuotientAddGroup
+/- Ensure that `@[to_additive]` uses the right namespace. -/
+insert_to_additive_translation QuotientGroup QuotientAddGroup
 
 namespace QuotientGroup
 

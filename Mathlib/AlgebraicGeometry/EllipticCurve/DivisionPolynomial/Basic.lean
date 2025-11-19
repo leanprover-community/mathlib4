@@ -3,8 +3,10 @@ Copyright (c) 2024 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
-import Mathlib.NumberTheory.EllipticDivisibilitySequence
+module
+
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
+public import Mathlib.NumberTheory.EllipticDivisibilitySequence
 
 /-!
 # Division polynomials of Weierstrass curves
@@ -88,6 +90,8 @@ TODO: implementation notes for the definition of `ωₙ`.
 
 elliptic curve, division polynomial, torsion point
 -/
+
+@[expose] public section
 
 open Polynomial
 open scoped Polynomial.Bivariate
