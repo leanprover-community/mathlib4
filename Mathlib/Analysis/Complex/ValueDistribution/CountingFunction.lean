@@ -282,7 +282,7 @@ For `1 ≤ r`, the counting function of `f + g` at `⊤` is less than or equal t
 the sum of the counting functions of `f` and `g`, respectively.
 -/
 theorem counting_top_add_le {f₁ f₂ : 𝕜 → E} {r : ℝ} (h₁f₁ : MeromorphicOn f₁ Set.univ)
-  (h₁f₂ : MeromorphicOn f₂ Set.univ) (hr : 1 ≤ r) :
+    (h₁f₂ : MeromorphicOn f₂ Set.univ) (hr : 1 ≤ r) :
     logCounting (f₁ + f₂) ⊤ r ≤ ((logCounting f₁ ⊤) + (logCounting f₂ ⊤)) r := by
   simp only [logCounting, ↓reduceDIte]
   rw [← Function.locallyFinsuppWithin.logCounting.map_add]
@@ -293,17 +293,17 @@ Asymptotically, the counting function of `f + g` at `⊤` is less than or equal 
 counting functions of `f` and `g`, respectively.
 -/
 theorem counting_top_add_eventually_le {f₁ f₂ : 𝕜 → E} (h₁f₁ : MeromorphicOn f₁ Set.univ)
-  (h₁f₂ : MeromorphicOn f₂ Set.univ) :
+    (h₁f₂ : MeromorphicOn f₂ Set.univ) :
     logCounting (f₁ + f₂) ⊤ ≤ᶠ[Filter.atTop] (logCounting f₁ ⊤) + (logCounting f₂ ⊤) := by
   filter_upwards [Filter.eventually_ge_atTop 1]
   exact fun _ hr ↦ counting_top_add_le h₁f₁ h₁f₂ hr
 
 /--
-For `1 ≤ r`, the counting function of a sum `∑ a, f a` at `⊤` is less than or
+For `1 ≤ r`, the counting function of a sum `∑ a ∈ s, f a` at `⊤` is less than or
 equal to the sum of the counting functions of `f ·`.
 -/
 theorem counting_top_sum_le {α : Type*} (s : Finset α) (f : α → 𝕜 → E) {r : ℝ}
-  (h₁f : ∀ a, MeromorphicOn (f a) Set.univ) (hr : 1 ≤ r) :
+    (h₁f : ∀ a, MeromorphicOn (f a) Set.univ) (hr : 1 ≤ r) :
     logCounting (∑ a ∈ s, f a) ⊤ r ≤ (∑ a ∈ s, (logCounting (f a) ⊤)) r := by
   classical
   induction s using Finset.induction with
