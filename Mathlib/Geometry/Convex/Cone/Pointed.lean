@@ -244,14 +244,5 @@ lemma salient_iff_inter_neg_eq_singleton (C : PointedCone R E) :
     (C : ConvexCone R E).Salient ↔ (C ∩ -C : Set E) = {0} := by
   simp [ConvexCone.Salient, Set.eq_singleton_iff_unique_mem, not_imp_not]
 
-/-- For a pointed salient cone, an element is in the intersection of the cone
-and its negative iff it is zero. -/
-@[simp]
-lemma ConvexCone.Salient.mem_inter_neg_iff {C : PointedCone R E}
-    (h : (C : ConvexCone R E).Salient) {x : E} :
-    x ∈ (C ∩ -C : Set E) ↔ x = 0 := by
-  rw [salient_iff_inter_neg_eq_singleton] at h
-  simp [h]
-
 end Salient
 end PointedCone
