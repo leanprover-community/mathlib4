@@ -142,6 +142,24 @@ instance instAddCommGroup [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 :
     AddCommGroup (UniformConvergenceCLM σ F 𝔖) := ContinuousLinearMap.addCommGroup
 
 @[simp]
+theorem neg_apply [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E))
+    (f : UniformConvergenceCLM σ F 𝔖) (x : E) : (-f) x = -f x :=
+  rfl
+
+theorem add_apply [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E))
+    (f g : UniformConvergenceCLM σ F 𝔖) (x : E) : (f + g) x = f x + g x :=
+  rfl
+
+theorem sum_apply {ι : Type*} [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E))
+    (t : Finset ι) (f : ι → UniformConvergenceCLM σ F 𝔖) (x : E) :
+    (∑ d ∈ t, f d) x = ∑ d ∈ t, (f d) x :=
+  ContinuousLinearMap.sum_apply t f x
+
+theorem sub_apply [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E))
+    (f g : UniformConvergenceCLM σ F 𝔖) (x : E) : (f - g) x = f x - g x :=
+  rfl
+
+@[simp]
 theorem coe_zero [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
     ⇑(0 : UniformConvergenceCLM σ F 𝔖) = 0 :=
   rfl
@@ -177,6 +195,13 @@ theorem t2Space [TopologicalSpace F] [IsTopologicalAddGroup F] [T2Space F]
 instance instDistribMulAction (M : Type*) [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
     [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
     DistribMulAction M (UniformConvergenceCLM σ F 𝔖) := ContinuousLinearMap.distribMulAction
+
+@[simp]
+theorem smul_apply {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
+    [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul M F] (𝔖 : Set (Set E))
+    (c : M) (f : UniformConvergenceCLM σ F 𝔖) (x : E) :
+    (c • f) x = c • f x :=
+  rfl
 
 instance instModule (R : Type*) [Semiring R] [Module R F] [SMulCommClass 𝕜₂ R F]
     [TopologicalSpace F] [ContinuousConstSMul R F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
