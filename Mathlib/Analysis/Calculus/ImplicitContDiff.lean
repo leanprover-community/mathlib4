@@ -27,17 +27,20 @@ that `φ a = b`, and `f x (φ x) = f a b` holds for all `x` in a neighbourhood o
 implicit function, inverse function
 -/
 
+variable
+  {𝕜 : Type*} [RCLike 𝕜]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E]
+  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
+  {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] [CompleteSpace G]
+
 namespace ImplicitFunctionData
 
-variable {𝕜 : Type*} [RCLike 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] [CompleteSpace E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  [CompleteSpace F] {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] [CompleteSpace G]
-  {φ : ImplicitFunctionData 𝕜 E F G} {n : WithTop ℕ∞}
+variable
 
 /-- The implicit function defined by a $C^n$ implicit equation is $C^n$. This applies to the general
 form of the implicit function theorem. -/
-theorem contDiff_implicitFunction (hl : ContDiffAt 𝕜 n φ.leftFun φ.pt)
-    (hr : ContDiffAt 𝕜 n φ.rightFun φ.pt) (hn : 1 ≤ n) :
+theorem contDiff_implicitFunction {φ : ImplicitFunctionData 𝕜 E F G} {n : WithTop ℕ∞}
+    (hl : ContDiffAt 𝕜 n φ.leftFun φ.pt) (hr : ContDiffAt 𝕜 n φ.rightFun φ.pt) (hn : 1 ≤ n) :
     ContDiffAt 𝕜 n φ.implicitFunction.uncurry (φ.prodFun φ.pt) := by
   rw [implicitFunction, Function.uncurry_curry, toOpenPartialHomeomorph,
     ← HasStrictFDerivAt.localInverse_def]
@@ -53,11 +56,8 @@ open scoped Topology
 
 /-- A predicate stating the sufficient conditions on an implicit equation `f : E × F → F` that will
 lead to a $C^n$ implicit function `φ : E → F`. -/
-structure IsContDiffImplicitAt {𝕜 : Type*} [RCLike 𝕜]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E]
-    {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
-    {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] [CompleteSpace G]
-    (n : WithTop ℕ∞) (f : E × F → G) (f' : E × F →L[𝕜] G) (a : E × F) : Prop where
+structure IsContDiffImplicitAt (n : WithTop ℕ∞) (f : E × F → G) (f' : E × F →L[𝕜] G) (a : E × F) :
+    Prop where
   hasFDerivAt : HasFDerivAt f f' a
   contDiffAt : ContDiffAt 𝕜 n f a
   bijective : Function.Bijective (f'.comp (ContinuousLinearMap.inr 𝕜 E F))
@@ -66,10 +66,6 @@ structure IsContDiffImplicitAt {𝕜 : Type*} [RCLike 𝕜]
 namespace IsContDiffImplicitAt
 
 variable
-  {𝕜 : Type*} [RCLike 𝕜]
-  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E]
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace F]
-  {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G] [CompleteSpace G]
   {n : WithTop ℕ∞} {f : E × F → G} {f' : E × F →L[𝕜] G} {a : E × F}
 
 /-- We record the parameters of our specific case in order to apply the general implicit function
