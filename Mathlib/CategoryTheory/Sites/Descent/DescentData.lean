@@ -40,7 +40,7 @@ variable {C : Type u} [Category.{v} C] (F : Pseudofunctor (LocallyDiscrete Cᵒ�
 
 /-- Given a pseudofunctor `F` from `LocallyDiscrete Cᵒᵖ` to `Cat`, and a family of
 morphisms `f i : X i ⟶ S`, the objects of the category of descent data for
-the `X i` relative to the morphisms `f i` consists in families of
+the `X i` relative to the morphisms `f i` consist of families of
 objects `obj i` in `F.obj (.mk (op (X i)))` together with morphisms `hom`
 between the pullbacks of `obj i₁` and `obj i₂` over any object `Y` which maps
 to both `X i₁` and `X i₂` (in a way that is compatible with the morphisms to `S`).
