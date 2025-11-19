@@ -3,8 +3,10 @@ Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson, Maja Kądziołka
 -/
-import Mathlib.Computability.DFA
-import Mathlib.Data.Fintype.Powerset
+module
+
+public import Mathlib.Computability.DFA
+public import Mathlib.Data.Fintype.Powerset
 
 /-!
 # Nondeterministic Finite Automata
@@ -37,6 +39,8 @@ a `Fintype` instance must be supplied for true NFAs.
 * `NFA.pumping_lemma`: every sufficiently long string accepted by the NFA has a substring that can
   be repeated arbitrarily many times (and have the overall string still be accepted)
 -/
+
+@[expose] public section
 
 open Set
 
@@ -290,7 +294,7 @@ theorem disjoint_evalFrom_reverse_iff {x : List α} {S S' : Set σ} :
 
 @[simp]
 theorem mem_accepts_reverse {x : List α} : x ∈ M.reverse.accepts ↔ x.reverse ∈ M.accepts := by
-  simp [mem_accepts, ← Set.not_disjoint_iff, not_iff_not, disjoint_evalFrom_reverse_iff]
+  simp [mem_accepts, ← Set.not_disjoint_iff, disjoint_evalFrom_reverse_iff]
 
 end NFA
 

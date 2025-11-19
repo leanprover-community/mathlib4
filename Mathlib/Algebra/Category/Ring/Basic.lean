@@ -3,10 +3,12 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Category.Grp.Basic
-import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Algebra.Ring.PUnit
-import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
+module
+
+public import Mathlib.Algebra.Category.Grp.Basic
+public import Mathlib.Algebra.Ring.Equiv
+public import Mathlib.Algebra.Ring.PUnit
+public import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 
 /-!
 # Category instances for `Semiring`, `Ring`, `CommSemiring`, and `CommRing`.
@@ -20,13 +22,17 @@ We introduce the bundled categories:
 along with the relevant forgetful functors between them.
 -/
 
+@[expose] public section
+
 universe u v
 
 open CategoryTheory
 
 /-- The category of semirings. -/
 structure SemiRingCat where
-  private mk ::
+  /-- The object in the category of semirings associated to a type equipped with the appropriate
+  typeclasses. -/
+  of ::
   /-- The underlying type. -/
   carrier : Type u
   [semiring : Semiring carrier]
@@ -41,11 +47,6 @@ instance : CoeSort (SemiRingCat) (Type u) :=
   ⟨SemiRingCat.carrier⟩
 
 attribute [coe] SemiRingCat.carrier
-
-/-- The object in the category of R-algebras associated to a type equipped with the appropriate
-typeclasses. This is the preferred way to construct a term of `SemiRingCat`. -/
-abbrev of (R : Type u) [Semiring R] : SemiRingCat :=
-  ⟨R⟩
 
 lemma coe_of (R : Type u) [Semiring R] : (of R : Type u) = R :=
   rfl
@@ -158,7 +159,7 @@ instance hasForgetToAddCommMonCat : HasForget₂ SemiRingCat AddCommMonCat where
     { obj := fun R ↦ AddCommMonCat.of R
       map := fun f ↦ AddCommMonCat.ofHom f.hom.toAddMonoidHom }
 
-/-- Ring equivalence are isomorphisms in category of semirings -/
+/-- Ring equivalences are isomorphisms in category of semirings -/
 @[simps]
 def _root_.RingEquiv.toSemiRingCatIso {R S : Type u} [Semiring R] [Semiring S] (e : R ≃+* S) :
     of R ≅ of S where
@@ -176,7 +177,9 @@ end SemiRingCat
 
 /-- The category of rings. -/
 structure RingCat where
-  private mk ::
+  /-- The object in the category of rings associated to a type equipped with the appropriate
+  typeclasses. -/
+  of ::
   /-- The underlying type. -/
   carrier : Type u
   [ring : Ring carrier]
@@ -191,11 +194,6 @@ instance : CoeSort (RingCat) (Type u) :=
   ⟨RingCat.carrier⟩
 
 attribute [coe] RingCat.carrier
-
-/-- The object in the category of R-algebras associated to a type equipped with the appropriate
-typeclasses. This is the preferred way to construct a term of `RingCat`. -/
-abbrev of (R : Type u) [Ring R] : RingCat :=
-  ⟨R⟩
 
 lemma coe_of (R : Type u) [Ring R] : (of R : Type u) = R :=
   rfl
@@ -307,12 +305,20 @@ instance hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat where
     { obj := fun R ↦ SemiRingCat.of R
       map := fun f ↦ SemiRingCat.ofHom f.hom }
 
-instance hasForgetToAddCommGrp : HasForget₂ RingCat AddCommGrp where
-  forget₂ :=
-    { obj := fun R ↦ AddCommGrp.of R
-      map := fun f ↦ AddCommGrp.ofHom f.hom.toAddMonoidHom }
+/-- The forgetful functor from `RingCat` to `SemiRingCat` is fully faithful. -/
+def fullyFaithfulForget₂ToSemiRingCat :
+    (forget₂ RingCat SemiRingCat).FullyFaithful where
+  preimage f := ofHom f.hom
 
-/-- Ring equivalence are isomorphisms in category of semirings -/
+instance : (forget₂ RingCat SemiRingCat).Full :=
+  fullyFaithfulForget₂ToSemiRingCat.full
+
+instance hasForgetToAddCommGrp : HasForget₂ RingCat AddCommGrpCat where
+  forget₂ :=
+    { obj := fun R ↦ AddCommGrpCat.of R
+      map := fun f ↦ AddCommGrpCat.ofHom f.hom.toAddMonoidHom }
+
+/-- Ring equivalences are isomorphisms in category of rings -/
 @[simps]
 def _root_.RingEquiv.toRingCatIso {R S : Type u} [Ring R] [Ring S] (e : R ≃+* S) :
     of R ≅ of S where
@@ -330,7 +336,9 @@ end RingCat
 
 /-- The category of commutative semirings. -/
 structure CommSemiRingCat where
-  private mk ::
+  /-- The object in the category of commutative semirings associated to a type equipped with the
+  appropriate typeclasses. -/
+  of ::
   /-- The underlying type. -/
   carrier : Type u
   [commSemiring : CommSemiring carrier]
@@ -345,11 +353,6 @@ instance : CoeSort (CommSemiRingCat) (Type u) :=
   ⟨CommSemiRingCat.carrier⟩
 
 attribute [coe] CommSemiRingCat.carrier
-
-/-- The object in the category of R-algebras associated to a type equipped with the appropriate
-typeclasses. This is the preferred way to construct a term of `CommSemiRingCat`. -/
-abbrev of (R : Type u) [CommSemiring R] : CommSemiRingCat :=
-  ⟨R⟩
 
 lemma coe_of (R : Type u) [CommSemiring R] : (of R : Type u) = R :=
   rfl
@@ -412,7 +415,7 @@ lemma hom_ext {R S : CommSemiRingCat} {f g : R ⟶ S} (hf : f.hom = g.hom) : f =
 
 @[simp]
 lemma hom_ofHom {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) :
-  (ofHom f).hom = f := rfl
+    (ofHom f).hom = f := rfl
 
 @[simp]
 lemma ofHom_hom {R S : CommSemiRingCat} (f : R ⟶ S) :
@@ -458,13 +461,21 @@ instance hasForgetToSemiRingCat : HasForget₂ CommSemiRingCat SemiRingCat where
     { obj := fun R ↦ ⟨R⟩
       map := fun f ↦ ⟨f.hom⟩ }
 
+/-- The forgetful functor from `CommSemiRingCat` to `SemiRingCat` is fully faithful. -/
+def fullyFaithfulForget₂ToSemiRingCat :
+    (forget₂ CommSemiRingCat SemiRingCat).FullyFaithful where
+  preimage f := ofHom f.hom
+
+instance : (forget₂ CommSemiRingCat SemiRingCat).Full :=
+  fullyFaithfulForget₂ToSemiRingCat.full
+
 /-- The forgetful functor from commutative rings to (multiplicative) commutative monoids. -/
 instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat where
   forget₂ :=
     { obj := fun R ↦ CommMonCat.of R
       map := fun f ↦ CommMonCat.ofHom f.hom.toMonoidHom }
 
-/-- Ring equivalence are isomorphisms in category of semirings -/
+/-- Ring equivalences are isomorphisms in category of commutative semirings -/
 @[simps]
 def _root_.RingEquiv.toCommSemiRingCatIso
     {R S : Type u} [CommSemiring R] [CommSemiring S] (e : R ≃+* S) :
@@ -483,7 +494,9 @@ end CommSemiRingCat
 
 /-- The category of commutative rings. -/
 structure CommRingCat where
-  private mk ::
+  /-- The object in the category of commutative rings associated to a type equipped with the
+  appropriate typeclasses. -/
+  of ::
   /-- The underlying type. -/
   carrier : Type u
   [commRing : CommRing carrier]
@@ -498,11 +511,6 @@ instance : CoeSort (CommRingCat) (Type u) :=
   ⟨CommRingCat.carrier⟩
 
 attribute [coe] CommRingCat.carrier
-
-/-- The object in the category of R-algebras associated to a type equipped with the appropriate
-typeclasses. This is the preferred way to construct a term of `CommRingCat`. -/
-abbrev of (R : Type u) [CommRing R] : CommRingCat :=
-  ⟨R⟩
 
 lemma coe_of (R : Type u) [CommRing R] : (of R : Type u) = R :=
   rfl
@@ -564,8 +572,7 @@ lemma hom_ext {R S : CommRingCat} {f g : R ⟶ S} (hf : f.hom = g.hom) : f = g :
   Hom.ext hf
 
 @[simp]
-lemma hom_ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) :
-  (ofHom f).hom = f := rfl
+lemma hom_ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : (ofHom f).hom = f := rfl
 
 @[simp]
 lemma ofHom_hom {R S : CommRingCat} (f : R ⟶ S) :
@@ -614,6 +621,14 @@ instance hasForgetToRingCat : HasForget₂ CommRingCat RingCat where
     { obj := fun R ↦ RingCat.of R
       map := fun f ↦ RingCat.ofHom f.hom }
 
+/-- The forgetful functor from `CommRingCat` to `RingCat` is fully faithful. -/
+def fullyFaithfulForget₂ToRingCat :
+    (forget₂ CommRingCat RingCat).FullyFaithful where
+  preimage f := ofHom f.hom
+
+instance : (forget₂ CommRingCat RingCat).Full :=
+  fullyFaithfulForget₂ToRingCat.full
+
 @[simp] lemma forgetToRingCat_map_hom {R S : CommRingCat} (f : R ⟶ S) :
     ((forget₂ CommRingCat RingCat).map f).hom = f.hom :=
   rfl
@@ -632,7 +647,7 @@ instance : HasForget₂ CommRingCat CommMonCat where
   forget₂ := { obj M := .of M, map f := CommMonCat.ofHom f.hom }
   forget_comp := rfl
 
-/-- Ring equivalence are isomorphisms in category of semirings -/
+/-- Ring equivalences are isomorphisms in category of commutative rings -/
 @[simps]
 def _root_.RingEquiv.toCommRingCatIso
     {R S : Type u} [CommRing R] [CommRing S] (e : R ≃+* S) :
@@ -668,16 +683,16 @@ def commRingCatIsoToRingEquiv {R S : CommRingCat.{u}} (e : R ≅ S) : R ≃+* S 
   RingEquiv.ofHomInv e.hom.hom e.inv.hom (by ext; simp) (by ext; simp)
 
 @[simp] lemma semiRingCatIsoToRingEquiv_toRingHom {R S : SemiRingCat.{u}} (e : R ≅ S) :
-  (e.semiRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
+    (e.semiRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
 
 @[simp] lemma ringCatIsoToRingEquiv_toRingHom {R S : RingCat.{u}} (e : R ≅ S) :
-  (e.ringCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
+    (e.ringCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
 
 @[simp] lemma commSemiRingCatIsoToRingEquiv_toRingHom {R S : CommSemiRingCat.{u}} (e : R ≅ S) :
-  (e.commSemiRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
+    (e.commSemiRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
 
 @[simp] lemma commRingCatIsoToRingEquiv_toRingHom {R S : CommRingCat.{u}} (e : R ≅ S) :
-  (e.commRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
+    (e.commRingCatIsoToRingEquiv : R →+* S) = e.hom.hom := rfl
 
 end CategoryTheory.Iso
 

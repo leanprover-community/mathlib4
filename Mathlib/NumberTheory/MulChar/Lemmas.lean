@@ -3,12 +3,16 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.NumberTheory.MulChar.Basic
-import Mathlib.RingTheory.RootsOfUnity.Complex
+module
+
+public import Mathlib.NumberTheory.MulChar.Basic
+public import Mathlib.RingTheory.RootsOfUnity.Complex
 
 /-!
 # Further Results on multiplicative characters
 -/
+
+@[expose] public section
 
 namespace MulChar
 
@@ -132,7 +136,7 @@ lemma exists_mulChar_orderOf {n : ℕ} (h : n ∣ Fintype.card F - 1) {ζ : R}
     simp only [hn, zero_dvd_iff, Nat.sub_eq_zero_iff_le] at h
     exact (Fintype.one_lt_card.trans_le h).false
   let e := MulChar.equiv_rootsOfUnity F R
-  let ζ' : Rˣ := (hζ.isUnit hn₀).unit
+  let ζ' : Rˣ := (hζ.isUnit hn₀.ne').unit
   have h' : ζ' ^ (Fintype.card Fˣ : ℕ) = 1 :=
     Units.ext_iff.mpr <| (hζ.pow_eq_one_iff_dvd _).mpr <| Fintype.card_units (α := F) ▸ h
   use e.symm ⟨ζ', (mem_rootsOfUnity (Fintype.card Fˣ) ζ').mpr h'⟩

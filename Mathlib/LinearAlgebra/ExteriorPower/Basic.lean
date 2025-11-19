@@ -3,8 +3,10 @@ Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel, Joël Riou
 -/
-import Mathlib.Algebra.Module.Presentation.Basic
-import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
+module
+
+public import Mathlib.Algebra.Module.Presentation.Basic
+public import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
 
 /-!
 # Exterior powers
@@ -30,6 +32,8 @@ We study the exterior powers of a module `M` over a commutative ring `R`.
   alternating maps and linear maps from the exterior power.
 
 -/
+
+@[expose] public section
 
 open scoped TensorProduct
 
@@ -62,7 +66,7 @@ noncomputable def ιMulti_family {I : Type*} [LinearOrder I] (v : I → M)
   ιMulti R n fun i ↦ v <| Finset.orderIsoOfFin s.val s.property i
 
 @[simp] lemma ιMulti_family_apply_coe {I : Type*} [LinearOrder I] (v : I → M)
-  (s : {s : Finset I // Finset.card s = n}) :
+    (s : {s : Finset I // Finset.card s = n}) :
     ιMulti_family R n v s = ExteriorAlgebra.ιMulti_family R n v s := rfl
 
 variable (M)
@@ -137,8 +141,6 @@ noncomputable def relationsSolutionEquiv {ι : Type*} [DecidableEq ι] {M : Type
         · simp
         · simp
         · simpa using f.map_eq_zero_of_eq v hm hij }
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 /-- The universal property of the exterior power. -/
 noncomputable def isPresentationCore :
@@ -244,7 +246,7 @@ lemma map_comp_ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) (f : M �
 
 @[simp]
 lemma map_apply_ιMulti_family {I : Type*} [LinearOrder I] (v : I → M) (f : M →ₗ[R] N)
-  (s : {s : Finset I // s.card = n}) :
+    (s : {s : Finset I // s.card = n}) :
     (map n f) (ιMulti_family R n v s) = ιMulti_family R n (f ∘ v) s := by
   simp only [ιMulti_family, map, alternatingMapLinearEquiv_apply_ιMulti]
   rfl

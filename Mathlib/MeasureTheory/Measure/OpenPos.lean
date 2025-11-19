@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
-import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 
 /-!
 # Measures positive on nonempty opens
@@ -16,6 +18,8 @@ measures that have positive density with respect to a Haar measure. We also prov
 about these measures.
 
 -/
+
+@[expose] public section
 
 
 open Topology ENNReal MeasureTheory
@@ -111,7 +115,7 @@ equal on this set. -/
 theorem eqOn_open_of_ae_eq {f g : X → Y} (h : f =ᵐ[μ.restrict U] g) (hU : IsOpen U)
     (hf : ContinuousOn f U) (hg : ContinuousOn g U) : EqOn f g U := by
   replace h := ae_imp_of_ae_restrict h
-  simp only [EventuallyEq, ae_iff, Classical.not_imp] at h
+  simp only [ae_iff, Classical.not_imp] at h
   have : IsOpen (U ∩ { a | f a ≠ g a }) := by
     refine isOpen_iff_mem_nhds.mpr fun a ha => inter_mem (hU.mem_nhds ha.1) ?_
     rcases ha with ⟨ha : a ∈ U, ha' : (f a, g a) ∈ (diagonal Y)ᶜ⟩

@@ -26,7 +26,10 @@ example (h : 42 = y) : ∃ x : Nat, x = y := by use 42, h
 example (h : 42 = y) : ∃ x : Nat, x = y := by use 42
 
 -- Check that `use` inserts a coercion:
-/-- info: Try this: Exists.intro (↑n) (Eq.refl ↑n) -/
+/--
+info: Try this:
+  [apply] Exists.intro (↑n) (Eq.refl ↑n)
+-/
 #guard_msgs (info) in
 example (n : Fin 3) : ∃ x : Nat, x = x := show_term by use n
 
@@ -39,7 +42,7 @@ numerals are polymorphic in Lean, but the numeral `42` cannot be used in a conte
   Nat × Nat
 due to the absence of the instance above
 
-Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
 example : ∃ p : Nat × Nat, p.1 = p.2 := by use 42; sorry
@@ -96,7 +99,7 @@ numerals are polymorphic in Lean, but the numeral `1` cannot be used in a contex
   Option Nat
 due to the absence of the instance above
 
-Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
 example : Option Nat := by use 1
@@ -108,7 +111,7 @@ numerals are polymorphic in Lean, but the numeral `1` cannot be used in a contex
   Nat → Nat
 due to the absence of the instance above
 
-Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
 example : Nat → Nat := by use 1
@@ -122,7 +125,10 @@ example : foo := by
 example : foo := by
   use! 100, true, 4, 3
 
-/-- info: Try this: foo.mk 100 (true, 4) 3 -/
+/--
+info: Try this:
+  [apply] foo.mk 100 (true, 4) 3
+-/
 #guard_msgs in
 -- `use` puts placeholders after the current goal
 example : foo := show_term by
@@ -131,7 +137,10 @@ example : foo := show_term by
   exact (100 : Nat)
   exact true
 
-/-- info: Try this: foo.mk 100 (true, 4) 3 -/
+/--
+info: Try this:
+  [apply] foo.mk 100 (true, 4) 3
+-/
 #guard_msgs in
 -- `use` puts placeholders after the current goal
 example : foo := show_term by
@@ -160,12 +169,13 @@ example : Baz 0 3 := by use 4
 
 -- Could not apply constructor due to defeq check
 /--
-error: type mismatch
+error: Type mismatch
   3
 has type
-  Nat : Type
-but is expected to have type
-  Baz 1 3 : Prop
+  Nat
+of sort `Type` but is expected to have type
+  Baz 1 3
+of sort `Prop`
 -/
 #guard_msgs in
 example : Baz 1 3 := by use (3 : Nat)

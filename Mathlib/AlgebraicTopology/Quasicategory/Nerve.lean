@@ -3,7 +3,9 @@ Copyright (c) 2024 Nick Ward. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Emily Riehl, Nick Ward
 -/
-import Mathlib.AlgebraicTopology.Quasicategory.StrictSegal
+module
+
+public import Mathlib.AlgebraicTopology.Quasicategory.StrictSegal
 
 /-!
 # The nerve of a category is a quasicategory
@@ -17,6 +19,8 @@ In this file, we prove as a direct consequence that the nerve of a category is
 a quasicategory.
 -/
 
+@[expose] public section
+
 universe v u
 
 open SSet
@@ -25,7 +29,6 @@ namespace CategoryTheory.Nerve
 
 /-- By virtue of satisfying the `StrictSegal` condition, the nerve of a
 category is a `Quasicategory`. -/
-instance quasicategory {C : Type u} [Category.{v} C] :
-  Quasicategory (nerve C) := inferInstance
+instance quasicategory {C : Type u} [Category.{v} C] : Quasicategory (nerve C) := inferInstance
 
 end CategoryTheory.Nerve

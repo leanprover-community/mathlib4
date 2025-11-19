@@ -3,8 +3,10 @@ Copyright (c) 2024 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine, Pietro Monticone, Rémy Degenne, Lorenzo Luccioli
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-import Mathlib.Data.EReal.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+public import Mathlib.Data.EReal.Basic
 
 /-!
 # Extended Nonnegative Real Logarithm
@@ -27,6 +29,8 @@ the identities `log (x * y) = log x + log y` and `log (x ^ y) = y * log x`
 ## Tags
 ENNReal, EReal, logarithm
 -/
+
+@[expose] public section
 namespace ENNReal
 
 open scoped NNReal
@@ -50,8 +54,8 @@ noncomputable def log (x : ℝ≥0∞) : EReal :=
 
 @[simp]
 lemma log_ofReal (x : ℝ) : log (ENNReal.ofReal x) = if x ≤ 0 then ⊥ else ↑(Real.log x) := by
-  simp only [log, ENNReal.none_eq_top, ENNReal.ofReal_ne_top, IsEmpty.forall_iff,
-    ENNReal.ofReal_eq_zero, EReal.coe_ennreal_ofReal, if_false]
+  simp only [log, ENNReal.ofReal_ne_top,
+    ENNReal.ofReal_eq_zero, if_false]
   split_ifs with h_nonpos
   · rfl
   · rw [ENNReal.toReal_ofReal (not_le.mp h_nonpos).le]

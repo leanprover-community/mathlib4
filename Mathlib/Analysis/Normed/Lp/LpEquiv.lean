@@ -3,9 +3,11 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Normed.Lp.PiLp
-import Mathlib.Analysis.Normed.Lp.lpSpace
-import Mathlib.Topology.ContinuousMap.Bounded.Normed
+module
+
+public import Mathlib.Analysis.Normed.Lp.PiLp
+public import Mathlib.Analysis.Normed.Lp.lpSpace
+public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 
 /-!
 # Equivalences among $L^p$ spaces
@@ -35,6 +37,9 @@ the subtype of `PreLp` satisfying `Memℓp`.
 
 -/
 
+@[expose] public section
+
+open WithLp
 
 open scoped ENNReal
 
@@ -56,10 +61,8 @@ theorem Memℓp.all (f : ∀ i, E i) : Memℓp f p := by
 
 /-- The canonical `Equiv` between `lp E p ≃ PiLp p E` when `E : α → Type u` with `[Finite α]`. -/
 def Equiv.lpPiLp : lp E p ≃ PiLp p E where
-  toFun f := ⇑f
-  invFun f := ⟨f, Memℓp.all f⟩
-  left_inv _f := rfl
-  right_inv _f := rfl
+  toFun f := toLp p ⇑f
+  invFun f := ⟨ofLp f, Memℓp.all f⟩
 
 theorem coe_equiv_lpPiLp (f : lp E p) : Equiv.lpPiLp f = ⇑f :=
   rfl
@@ -129,8 +132,6 @@ section NormedAddCommGroup
 noncomputable def AddEquiv.lpBCF : lp (fun _ : α ↦ E) ∞ ≃+ (α →ᵇ E) where
   toFun f := ofNormedAddCommGroupDiscrete f ‖f‖ <| le_ciSup (memℓp_infty_iff.mp f.prop)
   invFun f := ⟨⇑f, f.bddAbove_range_norm_comp⟩
-  left_inv _f := lp.ext rfl
-  right_inv _f := rfl
   map_add' _f _g := rfl
 
 

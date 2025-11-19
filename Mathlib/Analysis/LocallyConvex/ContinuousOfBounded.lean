@@ -3,13 +3,15 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.LocallyConvex.Bounded
-import Mathlib.Analysis.RCLike.Basic
+module
+
+public import Mathlib.Analysis.LocallyConvex.Bounded
+public import Mathlib.Analysis.RCLike.Basic
 
 /-!
 # Continuity and Von Neumann boundedness
 
-This files proves that for `E` and `F` two topological vector spaces over `ℝ` or `ℂ`,
+This file proves that for two topological vector spaces `E` and `F` over `ℝ` or `ℂ`,
 if `E` is first countable, then every locally bounded linear map `E →ₛₗ[σ] F` is continuous
 (this is `LinearMap.continuous_of_locally_bounded`).
 
@@ -23,6 +25,8 @@ continuous linear maps will require importing `Analysis/LocallyConvex/Bounded` i
 * [Bourbaki, *Topological Vector Spaces*][bourbaki1987]
 
 -/
+
+@[expose] public section
 
 
 open TopologicalSpace Bornology Filter Topology Pointwise
@@ -115,7 +119,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     -- The converse direction follows from continuity of the scalar multiplication
     have hcont : ContinuousAt (fun x : E => (n : 𝕜) • x) 0 :=
       (continuous_const_smul (n : 𝕜)).continuousAt
-    simp only [ContinuousAt, map_zero, smul_zero] at hcont
+    simp only [ContinuousAt, smul_zero] at hcont
     rw [bE.1.tendsto_left_iff] at hcont
     rcases hcont (b n) (bE1 n).1 with ⟨i, _, hi⟩
     refine ⟨i, trivial, fun x hx => ⟨(n : 𝕜) • x, hi hx, ?_⟩⟩
@@ -123,7 +127,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
   rw [ContinuousAt, map_zero, bE'.tendsto_iff (nhds_basis_balanced 𝕜' F)] at h
   push_neg at h
   rcases h with ⟨V, ⟨hV, -⟩, h⟩
-  simp only [_root_.id, forall_true_left] at h
+  simp only [_root_.id] at h
   -- There exists `u : ℕ → E` such that for all `n : ℕ` we have `u n ∈ n⁻¹ • b n` and `f (u n) ∉ V`
   choose! u hu hu' using h
   -- The sequence `(fun n ↦ n • u n)` converges to `0`

@@ -3,20 +3,24 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Richard Hill, Andrew Yang
 -/
-import Mathlib.Algebra.Category.ModuleCat.Abelian
-import Mathlib.Algebra.Category.ModuleCat.Topology.Basic
-import Mathlib.Algebra.Homology.ShortComplex.Abelian
-import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Abelian
+public import Mathlib.Algebra.Category.ModuleCat.Topology.Basic
+public import Mathlib.Algebra.Homology.ShortComplex.Abelian
+public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 
 /-!
 
 # `TopModuleCat` is a `CategoryWithHomology`
 
 `TopModuleCat R`, the category of topological `R`-modules, is not an abelian category.
-But since the topology on subquotients are well-defined, we can still talk about homology in this
+But since the topology on subquotients is well-defined, we can still talk about homology in this
 category. See the `CategoryWithHomology (TopModuleCat R)` instance in this file.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -94,7 +98,7 @@ instance : CategoryWithHomology (TopModuleCat R) := by
   let F := ShortComplex.leftRightHomologyComparison' D₁ D₂
   suffices IsIso F from ⟨⟨.ofIsIsoLeftRightHomologyComparison' D₁ D₂⟩⟩
   have hF : Function.Bijective F := by
-    show Function.Bijective ((forget₂ _ (ModuleCat R)).map F)
+    change Function.Bijective ((forget₂ _ (ModuleCat R)).map F)
     rw [← ConcreteCategory.isIso_iff_bijective, ShortComplex.map_leftRightHomologyComparison']
     infer_instance
   have hF' : Topology.IsEmbedding F := by

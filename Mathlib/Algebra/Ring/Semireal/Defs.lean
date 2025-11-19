@@ -3,7 +3,9 @@ Copyright (c) 2024 Florent Schaffhauser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Florent Schaffhauser, Artie Khovanov
 -/
-import Mathlib.Algebra.Ring.SumsOfSquares
+module
+
+public import Mathlib.Algebra.Ring.SumsOfSquares
 
 /-!
 # Semireal rings
@@ -23,6 +25,8 @@ not.
 [lam_1984](https://doi.org/10.1216/RMJ-1984-14-4-767)
 -/
 
+@[expose] public section
+
 variable {R : Type*}
 
 variable (R) in
@@ -36,7 +40,7 @@ class IsSemireal [Add R] [Mul R] [One R] [Zero R] : Prop where
   one_add_ne_zero {s : R} (hs : IsSumSq s) : 1 + s ≠ 0
 
 /-- In a semireal ring, `-1` is not a sum of squares. -/
-theorem IsSemireal.not_isSumSq_neg_one [AddGroup R] [One R] [Mul R] [IsSemireal R]:
+theorem IsSemireal.not_isSumSq_neg_one [AddGroup R] [One R] [Mul R] [IsSemireal R] :
     ¬ IsSumSq (-1 : R) := (by simpa using one_add_ne_zero ·)
 
 /--

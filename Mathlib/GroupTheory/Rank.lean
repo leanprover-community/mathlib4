@@ -3,8 +3,10 @@ Copyright (c) 2025 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.GroupTheory.Finiteness
-import Mathlib.SetTheory.Cardinal.Finite
+module
+
+public import Mathlib.GroupTheory.Finiteness
+public import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Rank of a group
@@ -17,6 +19,8 @@ Should we define `erank G : ℕ∞` the rank of a not necessarily finitely gener
 then redefine `rank G` as `(erank G).toNat`? Maybe a `Cardinal`-valued version too?
 -/
 
+@[expose] public section
+
 open Function Group
 
 variable {G H : Type*} [Group G] [Group H]
@@ -25,7 +29,7 @@ namespace Group
 
 variable (G) in
 /-- The minimum number of generators of a group. -/
-@[to_additive "The minimum number of generators of an additive group."]
+@[to_additive /-- The minimum number of generators of an additive group. -/]
 noncomputable def rank [h : FG G] : ℕ := @Nat.find _ (Classical.decPred _) (fg_iff'.mp h)
 
 variable (G) in

@@ -3,9 +3,11 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Measure.Haar.Basic
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.MeasureTheory.Measure.Haar.Unique
+module
+
+public import Mathlib.MeasureTheory.Measure.Haar.Basic
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # Pushing a Haar measure by a linear map
@@ -22,6 +24,8 @@ TODO: this holds more generally in any locally compact group, see
 [Fremlin, *Measure Theory* (volume 4, 443Q)][fremlin_vol4]
 -/
 
+@[expose] public section
+
 open MeasureTheory Measure Set
 
 open scoped ENNReal
@@ -35,10 +39,6 @@ variable {𝕜 E F : Type*}
 
 variable [LocallyCompactSpace E]
 variable (L μ ν)
-
--- Instances with keys using `Submodule`
-instance (T : Submodule 𝕜 E) : BorelSpace T := Subtype.borelSpace _
-instance (T : Submodule 𝕜 E) : OpensMeasurableSpace T := Subtype.opensMeasurableSpace _
 
 /-- The image of an additive Haar measure under a surjective linear map is proportional to a given
 additive Haar measure. The proportionality factor will be infinite if the linear map has a

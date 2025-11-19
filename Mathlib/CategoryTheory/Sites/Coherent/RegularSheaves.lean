@@ -3,12 +3,14 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
-import Mathlib.CategoryTheory.EffectiveEpi.Preserves
-import Mathlib.CategoryTheory.Limits.Final.ParallelPair
-import Mathlib.CategoryTheory.Preadditive.Projective.Basic
-import Mathlib.CategoryTheory.Sites.Canonical
-import Mathlib.CategoryTheory.Sites.Coherent.Basic
-import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
+module
+
+public import Mathlib.CategoryTheory.EffectiveEpi.Preserves
+public import Mathlib.CategoryTheory.Limits.Final.ParallelPair
+public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
+public import Mathlib.CategoryTheory.Sites.Canonical
+public import Mathlib.CategoryTheory.Sites.Coherent.Basic
+public import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 /-!
 
 # Sheaves for the regular topology
@@ -24,6 +26,8 @@ This file characterises sheaves for the regular topology.
 * `isSheaf_of_projective`: In a preregular category in which every object is projective, every
   presheaf is a sheaf for the regular topology.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -236,7 +240,7 @@ theorem isSheaf_of_projective (F : Cᵒᵖ ⥤ D) [Preregular C] [∀ (X : C), P
     isSheafFor_regular_of_projective _ _
 
 /-- Every Yoneda-presheaf is a sheaf for the regular topology. -/
-lemma isSheaf_yoneda_obj [Preregular C] (W : C)  :
+lemma isSheaf_yoneda_obj [Preregular C] (W : C) :
     Presieve.IsSheaf (regularTopology C) (yoneda.obj W) := by
   rw [regularTopology, isSheaf_coverage]
   intro X S ⟨_, hS⟩

@@ -3,13 +3,17 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Part
-import Mathlib.Order.Hom.Basic
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Data.Part
+public import Mathlib.Order.Hom.Basic
+public import Mathlib.Tactic.Common
 
 /-!
 # Monotonicity of monadic operations on `Part`
 -/
+
+@[expose] public section
 
 open Part
 
@@ -21,13 +25,13 @@ variable {f : α → Part β} {g : α → β → Part γ}
 lemma Monotone.partBind (hf : Monotone f) (hg : Monotone g) :
     Monotone fun x ↦ (f x).bind (g x) := by
   rintro x y h a
-  simp only [and_imp, exists_prop, Part.bind_eq_bind, Part.mem_bind_iff, exists_imp]
+  simp only [and_imp, Part.mem_bind_iff, exists_imp]
   exact fun b hb ha ↦ ⟨b, hf h _ hb, hg h _ _ ha⟩
 
 lemma Antitone.partBind (hf : Antitone f) (hg : Antitone g) :
     Antitone fun x ↦ (f x).bind (g x) := by
   rintro x y h a
-  simp only [and_imp, exists_prop, Part.bind_eq_bind, Part.mem_bind_iff, exists_imp]
+  simp only [and_imp, Part.mem_bind_iff, exists_imp]
   exact fun b hb ha ↦ ⟨b, hf h _ hb, hg h _ _ ha⟩
 
 end bind

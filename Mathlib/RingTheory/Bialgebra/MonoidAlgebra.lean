@@ -3,8 +3,10 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Yaël Dillies, Michał Mrugała
 -/
-import Mathlib.RingTheory.Bialgebra.Hom
-import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
+module
+
+public import Mathlib.RingTheory.Bialgebra.Hom
+public import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
 
 /-!
 # The bialgebra structure on monoid algebras
@@ -22,7 +24,9 @@ coalgebra structure.
   `A[T;T⁻¹]` when `A` is an `R`-bialgebra.
 -/
 
-suppress_compilation
+@[expose] public section
+
+noncomputable section
 
 open Bialgebra
 

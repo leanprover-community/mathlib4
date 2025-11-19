@@ -3,10 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Single
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+module
+
+public import Mathlib.Algebra.Homology.Single
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 /-!
 # Limits and colimits in the category of homological complexes
@@ -17,6 +19,8 @@ and the evaluation functors `eval C c i : HomologicalComplex C c ⥤ C`
 commute to these.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits
 
@@ -87,13 +91,13 @@ end
 instance [HasLimitsOfShape J C] : HasLimitsOfShape J (HomologicalComplex C c) := ⟨inferInstance⟩
 
 noncomputable instance [HasLimitsOfShape J C] (n : ι) :
-  PreservesLimitsOfShape J (eval C c n) := ⟨inferInstance⟩
+    PreservesLimitsOfShape J (eval C c n) := ⟨inferInstance⟩
 
 instance [HasFiniteLimits C] : HasFiniteLimits (HomologicalComplex C c) :=
   ⟨fun _ _ => inferInstance⟩
 
-noncomputable instance [HasFiniteLimits C] (n : ι) :
-  PreservesFiniteLimits (eval C c n) := ⟨fun _ _ _ => inferInstance⟩
+noncomputable instance [HasFiniteLimits C] (n : ι) : PreservesFiniteLimits (eval C c n) :=
+  ⟨fun _ _ _ => inferInstance⟩
 
 instance [HasFiniteLimits C] {K L : HomologicalComplex C c} (φ : K ⟶ L) [Mono φ] (n : ι) :
     Mono (φ.f n) := by
@@ -115,7 +119,7 @@ def isColimitOfEval (s : Cocone F)
         intro j
         have eq := fun k => (hs k).fac ((eval C c k).mapCocone t)
         simp only [Functor.mapCocone_ι_app, eval_map] at eq
-        simp only [Functor.mapCocone_ι_app, eval_map, assoc]
+        simp only [Functor.mapCocone_ι_app, eval_map]
         rw [reassoc_of% (eq i), Hom.comm_assoc, eq i', Hom.comm] }
   fac t j := by
     ext i
@@ -165,13 +169,13 @@ end
 instance [HasColimitsOfShape J C] : HasColimitsOfShape J (HomologicalComplex C c) := ⟨inferInstance⟩
 
 noncomputable instance [HasColimitsOfShape J C] (n : ι) :
-  PreservesColimitsOfShape J (eval C c n) := ⟨inferInstance⟩
+    PreservesColimitsOfShape J (eval C c n) := ⟨inferInstance⟩
 
 instance [HasFiniteColimits C] : HasFiniteColimits (HomologicalComplex C c) :=
   ⟨fun _ _ => inferInstance⟩
 
 noncomputable instance [HasFiniteColimits C] (n : ι) :
-  PreservesFiniteColimits (eval C c n) := ⟨fun _ _ _ => inferInstance⟩
+    PreservesFiniteColimits (eval C c n) := ⟨fun _ _ _ => inferInstance⟩
 
 instance [HasFiniteColimits C] {K L : HomologicalComplex C c} (φ : K ⟶ L) [Epi φ] (n : ι) :
     Epi (φ.f n) := by

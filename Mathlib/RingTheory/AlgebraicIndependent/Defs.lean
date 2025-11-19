@@ -3,7 +3,9 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.MvPolynomial.CommRing
+module
+
+public import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!
 # Algebraic Independence
@@ -35,6 +37,8 @@ We show that algebraic independence is preserved under injective maps of the ind
 * [Stacks: Transcendence](https://stacks.math.columbia.edu/tag/030D)
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -128,7 +132,7 @@ def aevalEquiv : MvPolynomial ι R ≃ₐ[R] Algebra.adjoin R (range x) :=
   (AlgEquiv.ofInjective (aeval x) (algebraicIndependent_iff_injective_aeval.1 hx)).trans
     (Subalgebra.equivOfEq _ _ (Algebra.adjoin_range_eq_range_aeval R x).symm)
 
---@[simp] Porting note: removing simp because the linter complains about deterministic timeout
+@[simp]
 theorem algebraMap_aevalEquiv (p : MvPolynomial ι R) :
     algebraMap (Algebra.adjoin R (range x)) A (hx.aevalEquiv p) = aeval x p :=
   rfl

@@ -3,7 +3,9 @@ Copyright (c) 2018 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.LinearAlgebra.BilinearForm.Properties
+module
+
+public import Mathlib.LinearAlgebra.BilinearForm.Properties
 
 /-!
 
@@ -17,7 +19,10 @@ import Mathlib.LinearAlgebra.BilinearForm.Properties
 Properly develop the material in the context of lattices.
 -/
 
+@[expose] public section
+
 open LinearMap (BilinForm)
+open Module
 
 variable {R S M} [CommRing R] [Field S] [AddCommGroup M]
 variable [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
@@ -43,7 +48,7 @@ lemma mem_dualSubmodule {N : Submodule R M} {x} :
 
 lemma le_flip_dualSubmodule {N₁ N₂ : Submodule R M} :
     N₁ ≤ B.flip.dualSubmodule N₂ ↔ N₂ ≤ B.dualSubmodule N₁ := by
-  show (∀ (x : M), x ∈ N₁ → _) ↔ ∀ (x : M), x ∈ N₂ → _
+  change (∀ (x : M), x ∈ N₁ → _) ↔ ∀ (x : M), x ∈ N₂ → _
   simp only [mem_dualSubmodule, Submodule.mem_one, flip_apply]
   exact forall₂_swap
 
@@ -95,13 +100,13 @@ lemma dualSubmodule_span_of_basis {ι} [Finite ι] [DecidableEq ι]
     apply sum_mem
     rintro i -
     obtain ⟨r, hr⟩ := Submodule.mem_one.mp <| hx (b i) (Submodule.subset_span ⟨_, rfl⟩)
-    simp only [dualBasis_repr_apply, ← hr, Algebra.linearMap_apply, algebraMap_smul]
+    simp only [dualBasis_repr_apply, ← hr, algebraMap_smul]
     apply Submodule.smul_mem
     exact Submodule.subset_span ⟨_, rfl⟩
   · rw [Submodule.span_le]
     rintro _ ⟨i, rfl⟩ y hy
     obtain ⟨f, rfl⟩ := (Submodule.mem_span_range_iff_exists_fun _).mp hy
-    simp only [map_sum, map_smul]
+    simp only [map_sum]
     apply sum_mem
     rintro j -
     rw [← IsScalarTower.algebraMap_smul S (f j), map_smul]
@@ -114,27 +119,27 @@ lemma dualSubmodule_dualSubmodule_flip_of_basis {ι : Type*} [Finite ι]
     B.dualSubmodule (B.flip.dualSubmodule (Submodule.span R (Set.range b))) =
       Submodule.span R (Set.range b) := by
   classical
-  letI := FiniteDimensional.of_fintype_basis b
+  letI := b.finiteDimensional_of_finite
   rw [dualSubmodule_span_of_basis _ hB.flip, dualSubmodule_span_of_basis B hB,
-    dualBasis_dualBasis_flip B hB]
+    dualBasis_dualBasis_flip hB]
 
 lemma dualSubmodule_flip_dualSubmodule_of_basis {ι : Type*} [Finite ι]
     (hB : B.Nondegenerate) (b : Basis ι S M) :
     B.flip.dualSubmodule (B.dualSubmodule (Submodule.span R (Set.range b))) =
       Submodule.span R (Set.range b) := by
   classical
-  letI := FiniteDimensional.of_fintype_basis b
+  letI := b.finiteDimensional_of_finite
   rw [dualSubmodule_span_of_basis B hB, dualSubmodule_span_of_basis _ hB.flip,
-    dualBasis_flip_dualBasis B hB]
+    dualBasis_flip_dualBasis hB]
 
 lemma dualSubmodule_dualSubmodule_of_basis
     {ι} [Finite ι] (hB : B.Nondegenerate) (hB' : B.IsSymm) (b : Basis ι S M) :
     B.dualSubmodule (B.dualSubmodule (Submodule.span R (Set.range b))) =
       Submodule.span R (Set.range b) := by
   classical
-  letI := FiniteDimensional.of_fintype_basis b
+  letI := b.finiteDimensional_of_finite
   rw [dualSubmodule_span_of_basis B hB, dualSubmodule_span_of_basis B hB,
-    dualBasis_dualBasis B hB hB']
+    dualBasis_dualBasis hB hB']
 
 end BilinForm
 

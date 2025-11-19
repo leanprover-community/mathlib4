@@ -3,11 +3,13 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.GCDMonoid.Finset
-import Mathlib.Algebra.GCDMonoid.Nat
-import Mathlib.Data.Matrix.Mul
-import Mathlib.Data.Rat.Cast.CharZero
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.GCDMonoid.Finset
+public import Mathlib.Algebra.GCDMonoid.Nat
+public import Mathlib.Data.Matrix.Mul
+public import Mathlib.Data.Rat.Cast.CharZero
 
 /-!
 # Lemmas on integer matrices
@@ -23,6 +25,8 @@ Here we collect some results about matrices over `ℚ` and `ℤ`.
 
 Consider generalizing these constructions to matrices over localizations of rings (or semirings).
 -/
+
+@[expose] public section
 
 namespace Matrix
 
@@ -40,7 +44,7 @@ lemma map_mul_natCast {α : Type*} [NonAssocSemiring α] (A B : Matrix n n ℕ) 
     map (A * B) ((↑) : ℕ → α) = map A (↑) * map B (↑) :=
   Matrix.map_mul (f := Nat.castRingHom α)
 
-lemma map_mul_intCast {α : Type*} [NonAssocRing α]  (A B : Matrix n n ℤ) :
+lemma map_mul_intCast {α : Type*} [NonAssocRing α] (A B : Matrix n n ℤ) :
     map (A * B) ((↑) : ℤ → α) = map A (↑) * map B (↑) :=
   Matrix.map_mul (f := Int.castRingHom α)
 
@@ -89,7 +93,7 @@ lemma den_neg (A : Matrix m n ℚ) : (-A).den = A.den :=
 @[simp]
 lemma num_neg (A : Matrix m n ℚ) : (-A).num = -A.num := by
   ext
-  simp [Matrix.num, map_neg]
+  simp [Matrix.num]
 
 @[simp] lemma den_transpose (A : Matrix m n ℚ) : (Aᵀ).den = A.den :=
   eq_of_forall_dvd fun _ ↦ by simpa [den_dvd_iff] using forall_comm

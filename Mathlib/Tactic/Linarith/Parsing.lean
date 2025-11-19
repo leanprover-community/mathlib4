@@ -3,7 +3,9 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Tactic.Linarith.Datatypes
+module
+
+public meta import Mathlib.Tactic.Linarith.Datatypes
 
 /-!
 # Parsing input expressions into linear form
@@ -27,7 +29,8 @@ This is ultimately converted into a `Linexp` in the obvious way.
 `linearFormsAndMaxVar` is the main entry point into this file. Everything else is contained.
 -/
 
-open Mathlib.Ineq Batteries
+public meta section
+
 open Std (TreeMap)
 
 namespace Std.TreeMap
@@ -78,7 +81,7 @@ local instance {α β : Type*} {c : α → α → Ordering} [Add β] [Zero β] [
     Add (TreeMap α β c) where
   add := fun f g => (f.mergeWith (fun _ b b' => b + b') g).filter (fun _ b => b ≠ 0)
 
-namespace Linarith
+namespace Mathlib.Tactic.Linarith
 
 /-- A local abbreviation for `TreeMap` so we don't need to write `Ord.compare` each time. -/
 abbrev Map (α β) [Ord α] := TreeMap α β Ord.compare
@@ -180,10 +183,11 @@ and forces some functions that call it into `MetaM` as well.
 -/
 
 partial def linearFormOfExpr (red : TransparencyMode) (m : ExprMap) (e : Expr) :
-    MetaM (ExprMap × Sum) :=
+    MetaM (ExprMap × Sum) := do
+  let e ← whnfR e
   match e.numeral? with
   | some 0 => return ⟨m, TreeMap.empty⟩
-  | some (n+1) => return ⟨m, scalar (n+1)⟩
+  | some (n + 1) => return ⟨m, scalar (n + 1)⟩
   | none =>
   match e.getAppFnArgs with
   | (``HMul.hMul, #[_, _, _, _, e1, e2]) => do
@@ -267,4 +271,4 @@ def linearFormsAndMaxVar (red : TransparencyMode) (pfs : List Expr) :
   trace[linarith.detail] "monomial map: {map.toList.map fun ⟨k,v⟩ => (k.toList, v)}"
   return (l, map.size - 1)
 
-end Linarith
+end Mathlib.Tactic.Linarith

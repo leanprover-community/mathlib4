@@ -3,8 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Riccardo Brasca, Adam Topaz, Jujian Zhang, Joël Riou
 -/
-import Mathlib.Algebra.Homology.Additive
-import Mathlib.CategoryTheory.Abelian.Projective.Resolution
+module
+
+public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.CategoryTheory.Abelian.Projective.Resolution
 
 /-!
 # Left-derived functors
@@ -45,6 +47,8 @@ and show how to compute the components.
   and `F.leftDerived` shall be redefined using `F.leftDerivedFunctorMinus`.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -169,7 +173,7 @@ a natural transformation `F ⟶ G` between additive functors. -/
 noncomputable def NatTrans.leftDerivedToHomotopyCategory
     {F G : C ⥤ D} [F.Additive] [G.Additive] (α : F ⟶ G) :
     F.leftDerivedToHomotopyCategory ⟶ G.leftDerivedToHomotopyCategory :=
-  whiskerLeft _ (NatTrans.mapHomotopyCategory α (ComplexShape.down ℕ))
+  Functor.whiskerLeft _ (NatTrans.mapHomotopyCategory α (ComplexShape.down ℕ))
 
 lemma ProjectiveResolution.leftDerivedToHomotopyCategory_app_eq
     {F G : C ⥤ D} [F.Additive] [G.Additive] (α : F ⟶ G) {X : C} (P : ProjectiveResolution X) :
@@ -205,13 +209,13 @@ lemma NatTrans.leftDerivedToHomotopyCategory_comp {F G H : C ⥤ D} (α : F ⟶ 
 noncomputable def NatTrans.leftDerived
     {F G : C ⥤ D} [F.Additive] [G.Additive] (α : F ⟶ G) (n : ℕ) :
     F.leftDerived n ⟶ G.leftDerived n :=
-  whiskerRight (NatTrans.leftDerivedToHomotopyCategory α) _
+  Functor.whiskerRight (NatTrans.leftDerivedToHomotopyCategory α) _
 
 @[simp]
 theorem NatTrans.leftDerived_id (F : C ⥤ D) [F.Additive] (n : ℕ) :
     NatTrans.leftDerived (𝟙 F) n = 𝟙 (F.leftDerived n) := by
   dsimp only [leftDerived]
-  simp only [leftDerivedToHomotopyCategory_id, whiskerRight_id']
+  simp only [leftDerivedToHomotopyCategory_id, Functor.whiskerRight_id']
   rfl
 
 @[simp, reassoc]

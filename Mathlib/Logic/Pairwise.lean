@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Function.Basic
-import Mathlib.Data.Set.Defs
+module
+
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Data.Set.Defs
 
 /-!
 # Relations holding pairwise
@@ -17,8 +19,9 @@ This file defines pairwise relations.
 * `Set.Pairwise`: `s.Pairwise r` states that `r i j` for all `i ≠ j` with `i, j ∈ s`.
 -/
 
+@[expose] public section
 
-open Set Function
+open Function
 
 variable {α β ι : Type*} {r p : α → α → Prop}
 

@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.Algebra.DirectSum.Module
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.Algebra.DirectSum.Module
 /-!
 # Tensor products of direct sums
 
@@ -17,7 +19,7 @@ This file shows that taking `TensorProduct`s commutes with taking `DirectSum`s i
 * `TensorProduct.directSumRight`
 -/
 
-suppress_compilation
+@[expose] public section
 
 universe u v₁ v₂ w₁ w₁' w₂ w₂'
 
@@ -70,13 +72,13 @@ def directSumLeft : (⨁ i₁, M₁ i₁) ⊗[R] M₂' ≃ₗ[R] ⨁ i, M₁ i �
     (DirectSum.linearMap_ext R fun i =>
       TensorProduct.ext <|
         LinearMap.ext₂ fun m₁ m₂ => by
-          dsimp only [comp_apply, compr₂_apply, id_apply, mk_apply]
+          dsimp only [comp_apply, compr₂ₛₗ_apply, id_apply, mk_apply]
           simp_rw [DirectSum.toModule_lof, rTensor_tmul, lift.tmul, DirectSum.toModule_lof,
             compr₂_apply, mk_apply])
     (TensorProduct.ext <|
       DirectSum.linearMap_ext R fun i =>
         LinearMap.ext₂ fun m₁ m₂ => by
-          dsimp only [comp_apply, compr₂_apply, id_apply, mk_apply]
+          dsimp only [comp_apply, compr₂ₛₗ_apply, id_apply, mk_apply]
           simp_rw [lift.tmul, DirectSum.toModule_lof, compr₂_apply,
             mk_apply, DirectSum.toModule_lof, rTensor_tmul])
 
@@ -128,7 +130,7 @@ theorem directSumRight_symm_lof_tmul (x : M₁') (i : ι₂) (y : M₂ i) :
       x ⊗ₜ[R] DirectSum.lof R _ _ i y := by
   rw [LinearEquiv.symm_apply_eq, directSumRight_tmul_lof]
 
-lemma directSumRight_comp_rTensor (f : M₁' →ₗ[R] M₂'):
+lemma directSumRight_comp_rTensor (f : M₁' →ₗ[R] M₂') :
     (directSumRight R M₂' M₁).toLinearMap ∘ₗ f.rTensor _ =
       (lmap fun _ ↦ f.rTensor _) ∘ₗ directSumRight R M₁' M₁ := by
   ext; simp

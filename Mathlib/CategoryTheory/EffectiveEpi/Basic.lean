@@ -3,7 +3,9 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Products
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
 /-!
 
 # Effective epimorphisms
@@ -32,6 +34,8 @@ our notion of `EffectiveEpi` is often called "strict epi" in the literature.
 - [Stacks 00WP](https://stacks.math.columbia.edu/tag/00WP) for the standard definitions.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -110,7 +114,7 @@ structure EffectiveEpiFamilyStruct {B : C} {α : Type*}
   `X ⟶ W`...
   -/
   desc : ∀ {W} (e : (a : α) → (X a ⟶ W)),
-          (∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
+      (∀ {Z : C} (a₁ a₂ : α) (g₁ : Z ⟶ X a₁) (g₂ : Z ⟶ X a₂),
       g₁ ≫ π _ = g₂ ≫ π _ → g₁ ≫ e _ = g₂ ≫ e _) → (B ⟶ W)
   /-- ...factorizing the components of `e` through the components of `π`... -/
   fac : ∀ {W} (e : (a : α) → (X a ⟶ W))

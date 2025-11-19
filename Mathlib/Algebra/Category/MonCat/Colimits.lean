@@ -3,9 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+module
+
+public import Mathlib.Algebra.Category.MonCat.Basic
+public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 
 /-!
 # The category of monoids has all colimits.
@@ -45,6 +47,8 @@ Monoid.mk : {M : Type u} →
               autoParam (∀ (n : ℕ) (x : M), npow (n + 1) x = x * npow n x) _auto✝¹ → Monoid M
 ```
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -206,9 +210,7 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt :=
     map_mul' x y := by
       induction x using Quot.inductionOn
       induction y using Quot.inductionOn
-      dsimp [descFun]
-      rw [← quot_mul]
-      simp only [descFunLift] }
+      solve_by_elim }
 
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitIsColimit : IsColimit (colimitCocone F) where
@@ -226,8 +228,7 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
       rfl
     | mul x y hx hy =>
       rw [quot_mul, map_mul, hx, hy]
-      dsimp [descMorphism, DFunLike.coe, descFun]
-      simp only [← quot_mul, descFunLift]
+      solve_by_elim
 
 instance hasColimits_monCat : HasColimits MonCat where
   has_colimits_of_shape _ _ :=

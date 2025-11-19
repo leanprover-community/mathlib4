@@ -3,10 +3,12 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Control.Applicative
-import Mathlib.Control.Traversable.Basic
-import Mathlib.Data.List.Forall2
-import Mathlib.Data.Set.Functor
+module
+
+public import Mathlib.Control.Applicative
+public import Mathlib.Control.Traversable.Basic
+public import Mathlib.Data.List.Forall2
+public import Mathlib.Data.Set.Functor
 
 /-!
 # LawfulTraversable instances
@@ -14,6 +16,8 @@ import Mathlib.Data.Set.Functor
 This file provides instances of `LawfulTraversable` for types from the core library: `Option`,
 `List` and `Sum`.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -41,10 +45,7 @@ variable (η : ApplicativeTransformation F G)
 
 theorem Option.naturality [LawfulApplicative F] {α β} (f : α → F β) (x : Option α) :
     η (Option.traverse f x) = Option.traverse (@η _ ∘ f) x := by
-  -- Porting note: added `ApplicativeTransformation` theorems
-  rcases x with - | x <;> simp! [*, functor_norm, ApplicativeTransformation.preserves_map,
-    ApplicativeTransformation.preserves_seq, ApplicativeTransformation.preserves_pure,
-    Option.traverse]
+  rcases x with - | x <;> simp! [*, functor_norm, Option.traverse]
 
 end Option
 
@@ -82,9 +83,7 @@ variable [LawfulApplicative F] (η : ApplicativeTransformation F G)
 
 protected theorem naturality {α β} (f : α → F β) (x : List α) :
     η (List.traverse f x) = List.traverse (@η _ ∘ f) x := by
-  -- Porting note: added `ApplicativeTransformation` theorems
-  induction x <;> simp! [*, functor_norm, ApplicativeTransformation.preserves_map,
-    ApplicativeTransformation.preserves_seq, ApplicativeTransformation.preserves_pure]
+  induction x <;> simp! [*, functor_norm]
 
 instance : LawfulTraversable.{u} List :=
   { show LawfulMonad List from inferInstance with
@@ -139,7 +138,7 @@ open Applicative Functor
 
 protected theorem traverse_map {α β γ : Type u} (g : α → β) (f : β → G γ) (x : σ ⊕ α) :
     Sum.traverse f (g <$> x) = Sum.traverse (f ∘ g) x := by
-  cases x <;> simp [Sum.traverse, id_map, functor_norm] <;> rfl
+  cases x <;> simp [Sum.traverse, functor_norm] <;> rfl
 
 protected theorem id_traverse {σ α} (x : σ ⊕ α) :
     Sum.traverse (pure : α → Id α) x = x := by cases x <;> rfl
@@ -157,15 +156,13 @@ protected theorem traverse_eq_map_id {α β} (f : α → β) (x : σ ⊕ α) :
 
 protected theorem map_traverse {α β γ} (g : α → G β) (f : β → γ) (x : σ ⊕ α) :
     (f <$> ·) <$> Sum.traverse g x = Sum.traverse (f <$> g ·) x := by
-  cases x <;> simp [Sum.traverse, id_map, functor_norm] <;> congr
+  cases x <;> simp [Sum.traverse, functor_norm] <;> congr
 
 variable [LawfulApplicative F] (η : ApplicativeTransformation F G)
 
 protected theorem naturality {α β} (f : α → F β) (x : σ ⊕ α) :
     η (Sum.traverse f x) = Sum.traverse (@η _ ∘ f) x := by
-  -- Porting note: added `ApplicativeTransformation` theorems
-  cases x <;> simp! [Sum.traverse, functor_norm, ApplicativeTransformation.preserves_map,
-    ApplicativeTransformation.preserves_seq, ApplicativeTransformation.preserves_pure]
+  cases x <;> simp! [Sum.traverse, functor_norm]
 
 end Traverse
 

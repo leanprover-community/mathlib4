@@ -3,9 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.Algebra.Ring.Action.Submonoid
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.Algebra.Ring.Action.Submonoid
 
 /-!
 # More operations on subalgebras
@@ -15,6 +17,8 @@ The contents of this file are somewhat random since both
 `Mathlib/Algebra/Algebra/Subalgebra/Basic.lean` and `Mathlib/RingTheory/Ideal/Operations.lean` are
 somewhat of a grab-bag of definitions, and this is whatever ends up in the intersection.
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal
 
@@ -31,7 +35,7 @@ namespace Subalgebra
 
 open Algebra
 
-variable {R S : Type*} [CommSemiring R] [CommRing S] [Algebra R S]
+variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
 variable (S' : Subalgebra R S)
 
 /-- Suppose we are given `∑ i, lᵢ * sᵢ = 1` ∈ `S`, and `S'` a subalgebra of `S` that contains
@@ -49,12 +53,12 @@ theorem mem_of_finset_sum_eq_one_of_pow_smul_mem
   let l' : ι → S' := fun x => ⟨l x, hl x⟩
   have e' : ∑ i ∈ ι', l' i * s' i = 1 := by
     ext
-    show S'.subtype (∑ i ∈ ι', l' i * s' i) = 1
+    change S'.subtype (∑ i ∈ ι', l' i * s' i) = 1
     simpa only [map_sum, map_mul] using e
   have : Ideal.span (s' '' ι') = ⊤ := by
     rw [Ideal.eq_top_iff_one, ← e']
     apply sum_mem
-    intros i hi
+    intro i hi
     exact Ideal.mul_mem_left _ _ <| Ideal.subset_span <| Set.mem_image_of_mem s' hi
   let N := ι'.sup n
   have hN := Ideal.span_pow_eq_top _ this N
@@ -75,7 +79,7 @@ end Subalgebra
 
 section MulSemiringAction
 
-variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
+variable (A B : Type*) [CommSemiring A] [Ring B] [Algebra A B]
 variable (G : Type*) [Monoid G] [MulSemiringAction G B] [SMulCommClass G A B]
 
 /-- The set of fixed points under a group action, as a subring. -/

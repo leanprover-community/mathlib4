@@ -3,7 +3,9 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.AddConstMap.Basic
+module
+
+public import Mathlib.Algebra.AddConstMap.Basic
 
 /-!
 # Equivalences conjugating `(· + a)` to `(· + b)`
@@ -13,6 +15,8 @@ to be the type of equivalences such that `∀ x, f (x + a) = f x + b`.
 
 We also define the corresponding typeclass and prove some basic properties.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -31,7 +35,7 @@ add_decl_doc AddConstEquiv.toEquiv
 add_decl_doc AddConstEquiv.toAddConstMap
 
 @[inherit_doc]
-scoped [AddConstMap] notation:25 G " ≃+c[" a ", " b "] " H => AddConstEquiv G H a b
+scoped[AddConstMap] notation:25 G " ≃+c[" a ", " b "] " H => AddConstEquiv G H a b
 
 namespace AddConstEquiv
 
@@ -144,8 +148,6 @@ def equivUnits : (G ≃+c[a, a] G) ≃* (G →+c[a, a] G)ˣ where
   invFun u :=
     { toEquiv := Equiv.Perm.equivUnitsEnd.symm <| Units.map AddConstMap.toEnd u
       map_add_const' := u.1.2 }
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_mul' _ _ := rfl
 
 end AddConstEquiv

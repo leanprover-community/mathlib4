@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Idempotents.Karoubi
+module
+
+public import Mathlib.CategoryTheory.Idempotents.Karoubi
 
 /-!
 
@@ -18,6 +20,8 @@ is a canonical isomorphism `P ⊞ P.complement ≅ (toKaroubi C).obj P.X` in the
 the idempotent endomorphism `𝟙 P.X - P.p`.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -64,7 +68,7 @@ def bicone [HasFiniteBiproducts C] {J : Type} [Finite J] (F : J → Karoubi C) :
         id_f, hom_ext_iff, comp_f, assoc, bicone_ι_π_self_assoc, idem]
     · dsimp
       simp only [biproduct.ι_map, biproduct.map_π, hom_ext_iff, comp_f,
-        assoc, biproduct.ι_π_ne_assoc _ h, zero_comp, comp_zero, zero_def]
+        assoc, biproduct.ι_π_ne_assoc _ h, zero_comp, comp_zero]
 
 end Biproducts
 

@@ -3,12 +3,16 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Data.ZMod.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Data.ZMod.Basic
 
 /-!
 # The `ZMod n`-algebra structure on rings whose characteristic divides `n`
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -31,7 +35,7 @@ abbrev algebra' (h : m ∣ n) : Algebra (ZMod n) R where
   commutes' := fun a r =>
     show (cast a * r : R) = r * cast a by
       rcases ZMod.intCast_surjective a with ⟨k, rfl⟩
-      show ZMod.castHom h R k * r = r * ZMod.castHom h R k
+      change ZMod.castHom h R k * r = r * ZMod.castHom h R k
       rw [map_intCast, Int.cast_comm]
   smul_def' := fun _ _ => rfl
 

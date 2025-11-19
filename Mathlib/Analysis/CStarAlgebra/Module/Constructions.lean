@@ -3,9 +3,11 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.Module.Defs
-import Mathlib.Analysis.CStarAlgebra.Module.Synonym
-import Mathlib.Topology.MetricSpace.Bilipschitz
+module
+
+public import Mathlib.Analysis.CStarAlgebra.Module.Defs
+public import Mathlib.Analysis.CStarAlgebra.Module.Synonym
+public import Mathlib.Topology.MetricSpace.Bilipschitz
 
 /-! # Constructions of Hilbert C⋆-modules
 
@@ -55,6 +57,8 @@ the above cases, it is necessary to temporarily instantiate `C⋆ᵐᵒᵈ(A, E)
 and then replace the uniformity and bornology with the correct ones.
 
 -/
+
+@[expose] public section
 
 open CStarModule CStarRing
 
@@ -119,7 +123,7 @@ noncomputable instance : CStarModule A C⋆ᵐᵒᵈ(A, E × F) where
   inner_add_right {x y z} := by simpa using add_add_add_comm ..
   inner_self_nonneg := add_nonneg CStarModule.inner_self_nonneg CStarModule.inner_self_nonneg
   inner_self {x} := by
-    refine ⟨fun h ↦ ?_, fun h ↦ by simp [h, CStarModule.inner_zero_left]⟩
+    refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
     apply equiv A (E × F) |>.injective
     ext
     · refine inner_self.mp <| le_antisymm ?_ (inner_self_nonneg (A := A))
@@ -135,8 +139,8 @@ lemma prod_inner (x y : C⋆ᵐᵒᵈ(A, E × F)) : ⟪x, y⟫_A = ⟪x.1, y.1�
 
 lemma max_le_prod_norm (x : C⋆ᵐᵒᵈ(A, E × F)) : max ‖x.1‖ ‖x.2‖ ≤ ‖x‖ := by
   rw [prod_norm]
-  simp only [equiv_fst, norm_eq_sqrt_norm_inner_self (A := A) (E := E),
-    norm_eq_sqrt_norm_inner_self (A := A) (E := F), equiv_snd, max_le_iff, norm_nonneg,
+  simp only [norm_eq_sqrt_norm_inner_self (A := A) (E := E),
+    norm_eq_sqrt_norm_inner_self (A := A) (E := F), max_le_iff, norm_nonneg,
     Real.sqrt_le_sqrt_iff]
   constructor
   all_goals
@@ -224,10 +228,10 @@ variable [StarOrderedRing A]
 open Finset in
 noncomputable instance : CStarModule A C⋆ᵐᵒᵈ(A, Π i, E i) where
   inner x y := ∑ i, ⟪x i, y i⟫_A
-  inner_add_right {x y z} := by simp [inner_sum_right, sum_add_distrib]
+  inner_add_right {x y z} := by simp [sum_add_distrib]
   inner_self_nonneg := sum_nonneg <| fun _ _ ↦ CStarModule.inner_self_nonneg
   inner_self {x} := by
-    refine ⟨fun h ↦ ?_, fun h ↦ by simp [h, CStarModule.inner_zero_left]⟩
+    refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
     ext i
     refine inner_self.mp <| le_antisymm (le_of_le_of_eq ?_ h) inner_self_nonneg
     exact single_le_sum (fun i _ ↦ CStarModule.inner_self_nonneg (A := A) (x := x i)) (mem_univ _)
@@ -340,7 +344,7 @@ instance instCStarModuleComplex : CStarModule ℂ E where
     rw [← inner_self_ofReal_re, RCLike.ofReal_nonneg]
     exact inner_self_nonneg
   inner_self := by simp
-  inner_op_smul_right := by simp [inner_smul_right, mul_comm]
+  inner_op_smul_right := by simp [inner_smul_right]
   inner_smul_right_complex := by simp [inner_smul_right, smul_eq_mul]
   star_inner _ _ := by simp
   norm_eq_sqrt_norm_inner_self {x} := by

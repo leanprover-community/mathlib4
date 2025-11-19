@@ -3,14 +3,16 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Eric Wieser
 -/
-import Mathlib.Algebra.DirectSum.Internal
-import Mathlib.Algebra.GradedMonoid
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Algebra.MvPolynomial.Equiv
-import Mathlib.Algebra.MvPolynomial.Variables
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
-import Mathlib.SetTheory.Cardinal.Basic
+module
+
+public import Mathlib.Algebra.DirectSum.Internal
+public import Mathlib.Algebra.GradedMonoid
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.Algebra.MvPolynomial.Variables
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
+public import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # Homogeneous polynomials
@@ -27,6 +29,8 @@ if all monomials occurring in `φ` have degree `n`.
 * `sum_homogeneousComponent`: every polynomial is the sum of its homogeneous components.
 
 -/
+
+@[expose] public section
 
 
 namespace MvPolynomial
@@ -180,9 +184,8 @@ theorem prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : �
     simp only [isHomogeneous_one, Finset.sum_empty, Finset.prod_empty]
   · intro i s his IH h
     simp only [his, Finset.prod_insert, Finset.sum_insert, not_false_iff]
-    apply (h i (Finset.mem_insert_self _ _)).mul (IH _)
-    intro j hjs
-    exact h j (Finset.mem_insert_of_mem hjs)
+    apply (h i (by grind)).mul (IH _)
+    grind
 
 lemma C_mul (hφ : φ.IsHomogeneous m) (r : R) :
     (C r * φ).IsHomogeneous m := by
@@ -276,7 +279,7 @@ theorem rename_isHomogeneous_iff {f : σ → τ} (hf : f.Injective) :
     exact Finsupp.sum_mapDomain_index_inj (h := fun _ ↦ id) hf
   · rwa [coeff_rename_mapDomain f hf]
 
-lemma finSuccEquiv_coeff_isHomogeneous {N : ℕ} {φ : MvPolynomial (Fin (N+1)) R} {n : ℕ}
+lemma finSuccEquiv_coeff_isHomogeneous {N : ℕ} {φ : MvPolynomial (Fin (N + 1)) R} {n : ℕ}
     (hφ : φ.IsHomogeneous n) (i j : ℕ) (h : i + j = n) :
     ((finSuccEquiv _ _ φ).coeff i).IsHomogeneous j := by
   intro d hd
@@ -319,7 +322,7 @@ lemma exists_eval_ne_zero_of_coeff_finSuccEquiv_ne_zero_aux
   have aux : ∀ i ∈ Finset.range n, constantCoeff ((finSuccEquiv R N F).coeff i) = 0 := by
     intro i hi
     rw [Finset.mem_range] at hi
-    apply (hF.finSuccEquiv_coeff_isHomogeneous i (n-i) (by omega)).coeff_eq_zero
+    apply (hF.finSuccEquiv_coeff_isHomogeneous i (n-i) (by cutsat)).coeff_eq_zero
     simp only [Finsupp.degree_zero]
     rw [← Nat.sub_ne_zero_iff_lt] at hi
     exact hi.symm
@@ -369,9 +372,9 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux {N : ℕ} {F : MvPolynomial
     obtain hFn | hFn := ne_or_eq ((finSuccEquiv R N F).coeff n) 0
     · exact hF.exists_eval_ne_zero_of_coeff_finSuccEquiv_ne_zero_aux hFn
     have hin : i < n := hin.lt_or_eq.elim id <| by aesop
-    obtain ⟨j, hj⟩ : ∃ j, i + (j + 1) = n := (Nat.exists_eq_add_of_lt hin).imp <| by omega
+    obtain ⟨j, hj⟩ : ∃ j, i + (j + 1) = n := (Nat.exists_eq_add_of_lt hin).imp <| by cutsat
     obtain ⟨r, hr⟩ : ∃ r, (eval r) (Polynomial.coeff ((finSuccEquiv R N) F) i) ≠ 0 :=
-      IH (hF.finSuccEquiv_coeff_isHomogeneous _ _ hj) hi (.trans (by norm_cast; omega) hnR)
+      IH (hF.finSuccEquiv_coeff_isHomogeneous _ _ hj) hi (.trans (by norm_cast; cutsat) hnR)
     set φ : R[X] := Polynomial.map (eval r) (finSuccEquiv _ _ F) with hφ
     have hφ₀ : φ ≠ 0 := fun hφ₀ ↦ hr <| by
       rw [← coeff_eval_eq_eval_coeff, ← hφ, hφ₀, Polynomial.coeff_zero]
@@ -379,7 +382,7 @@ lemma exists_eval_ne_zero_of_totalDegree_le_card_aux {N : ℕ} {F : MvPolynomial
       refine lt_of_lt_of_le ?_ hnR
       norm_cast
       refine lt_of_le_of_lt natDegree_map_le ?_
-      suffices (finSuccEquiv _ _ F).natDegree ≠ n by omega
+      suffices (finSuccEquiv _ _ F).natDegree ≠ n by cutsat
       rintro rfl
       refine leadingCoeff_ne_zero.mpr ?_ hFn
       simpa using (finSuccEquiv R N).injective.ne hF₀

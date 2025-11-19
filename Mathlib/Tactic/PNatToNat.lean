@@ -3,7 +3,11 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Data.PNat.Basic
+module
+
+public meta import Mathlib.Data.PNat.Basic
+import all Lean.Elab.Tactic.Induction
+
 
 /-!
 # `pnat_to_nat`
@@ -17,9 +21,9 @@ The implementation follows these steps:
 
 -/
 
-namespace Mathlib.Tactic.PNatToNat
+public meta section
 
-open private getElimNameInfo generalizeTargets generalizeVars from Lean.Elab.Tactic.Induction
+namespace Mathlib.Tactic.PNatToNat
 
 open Lean Meta Elab Tactic Qq
 
@@ -32,9 +36,9 @@ elab "pnat_positivity" : tactic => withMainContext do
     let ctx ← getLCtx
     let alreadyDeclared := Option.isSome <| ← ctx.findDeclM? fun ldecl => do
       if ← isDefEq ldecl.type q(0 < PNat.val $declExpr) then
-        pure <| .some ()
+        pure <| some ()
       else
-        pure .none
+        pure none
     if alreadyDeclared then
       return g
     let (_, mvarIdNew) ← (← g.assert .anonymous q(0 < PNat.val $declExpr) pf).intro1P

@@ -3,9 +3,11 @@ Copyright (c) 2023 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
-import Mathlib.FieldTheory.PrimitiveElement
-import Mathlib.FieldTheory.IsAlgClosed.Basic
+module
+
+public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
+public import Mathlib.FieldTheory.PrimitiveElement
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
 
 /-!
 # Results about `minpoly R x / (X - C x)`
@@ -19,6 +21,8 @@ See `traceForm_dualBasis_powerBasis_eq`.
 ## Main results
 - `span_coeff_minpolyDiv`: The coefficients of `minpolyDiv` spans `R<x>`.
 -/
+
+@[expose] public section
 
 open Polynomial Module
 
@@ -91,9 +95,7 @@ lemma coeff_minpolyDiv_mem_adjoin (x : S) (i) :
   apply this (natDegree (minpolyDiv R x) + 1)
   rw [coeff_eq_zero_of_natDegree_lt]
   · exact zero_mem _
-  · refine (Nat.le_add_left _ i).trans_lt ?_
-    rw [← add_assoc]
-    exact Nat.lt_succ_self _
+  · cutsat
 
 section IsIntegral
 variable (hx : IsIntegral R x)
@@ -203,15 +205,15 @@ lemma sum_smul_minpolyDiv_eq_X_pow (E) [Field E] [Algebra K E] [IsAlgClosed E]
   · intro σ
     simp only [Polynomial.map_smul, map_div₀, map_pow, RingHom.coe_coe, eval_sub, eval_finset_sum,
       eval_smul, eval_map, eval₂_minpolyDiv_self, this.eq_iff, smul_eq_mul, mul_ite, mul_zero,
-      Finset.sum_ite_eq', Finset.mem_univ, ite_true, eval_pow, eval_X]
+      Finset.sum_ite_eq', Finset.mem_univ, ite_true, eval_X_pow]
     rw [sub_eq_zero, div_mul_cancel₀]
     rw [ne_eq, map_eq_zero_iff σ σ.toRingHom.injective]
     exact (Algebra.IsSeparable.isSeparable _ _).aeval_derivative_ne_zero (minpoly.aeval _ _)
   · refine (Polynomial.natDegree_sub_le _ _).trans_lt
       (max_lt ((Polynomial.natDegree_sum_le _ _).trans_lt ?_) ?_)
-    · simp only [AlgEquiv.toAlgHom_eq_coe, Polynomial.map_smul,
-        map_div₀, map_pow, RingHom.coe_coe, AlgHom.coe_coe, Function.comp_apply,
-        Finset.mem_univ, forall_true_left, true_and, Finset.fold_max_lt, AlgHom.card]
+    · simp only [Polynomial.map_smul,
+        map_div₀, map_pow, RingHom.coe_coe, Function.comp_apply,
+        Finset.mem_univ, forall_true_left, Finset.fold_max_lt, AlgHom.card]
       refine ⟨finrank_pos, ?_⟩
       intro σ
       exact ((Polynomial.natDegree_smul_le _ _).trans natDegree_map_le).trans_lt

@@ -3,14 +3,16 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Ideal.IsPrimary
-import Mathlib.Order.Minimal
+module
+
+public import Mathlib.RingTheory.Ideal.IsPrimary
+public import Mathlib.Order.Minimal
 
 /-!
 
 # Minimal primes
 
-We provide various results concerning the minimal primes above an ideal
+We provide various results concerning the minimal primes above an ideal.
 
 ## Main results
 - `Ideal.minimalPrimes`: `I.minimalPrimes` is the set of ideals that are minimal primes over `I`.
@@ -24,6 +26,8 @@ Further results that need the theory of localizations can be found in
 `RingTheory/Ideal/Minimal/Localization.lean`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Localization -- See `RingTheory/Ideal/Minimal/Localization.lean`
 
@@ -83,10 +87,10 @@ theorem Ideal.radical_minimalPrimes : I.radical.minimalPrimes = I.minimalPrimes 
   ext p
   refine ⟨?_, ?_⟩ <;> rintro ⟨⟨a, ha⟩, b⟩
   · refine ⟨⟨a, a.radical_le_iff.1 ha⟩, ?_⟩
-    simp only [Set.mem_setOf_eq, and_imp] at *
+    simp only [and_imp] at *
     exact fun _ h2 h3 h4 => b h2 (h2.radical_le_iff.2 h3) h4
   · refine ⟨⟨a, a.radical_le_iff.2 ha⟩, ?_⟩
-    simp only [Set.mem_setOf_eq, and_imp] at *
+    simp only [and_imp] at *
     exact fun _ h2 h3 h4 => b h2 (h2.radical_le_iff.1 h3) h4
 
 @[simp]

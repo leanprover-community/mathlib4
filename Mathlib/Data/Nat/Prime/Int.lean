@@ -3,16 +3,20 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Data.Nat.Prime.Basic
-import Mathlib.Algebra.Group.Int.Units
-import Mathlib.Data.Int.Basic
+module
+
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Data.Nat.Prime.Basic
+public import Mathlib.Algebra.Group.Int.Units
+public import Mathlib.Data.Int.Basic
 
 /-!
 # Prime numbers in the naturals and the integers
 
 TODO: This file can probably be merged with `Mathlib/Data/Int/NatPrime.lean`.
 -/
+
+@[expose] public section
 
 
 namespace Nat
@@ -25,7 +29,7 @@ theorem prime_iff_prime_int {p : ℕ} : p.Prime ↔ _root_.Prime (p : ℤ) :=
     fun hp =>
     Nat.prime_iff.2
       ⟨Int.natCast_ne_zero.1 hp.1,
-        (mt Nat.isUnit_iff.1) fun h => by simp [h, not_prime_one] at hp, fun a b => by
+        (mt Nat.isUnit_iff.1) fun h => by simp [h] at hp, fun a b => by
         simpa only [Int.natCast_dvd_natCast, (Int.natCast_mul _ _).symm] using hp.2.2 a b⟩⟩
 
 /-- Two prime powers with positive exponents are equal only when the primes and the

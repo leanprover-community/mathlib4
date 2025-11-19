@@ -3,8 +3,10 @@ Copyright (c) 2024 Yaël Dillies, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Andrew Yang
 -/
-import Mathlib.Order.SuccPred.WithBot
-import Mathlib.RingTheory.Spectrum.Prime.Topology
+module
+
+public import Mathlib.Order.SuccPred.WithBot
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
 # Constructible sets in the prime spectrum
@@ -12,6 +14,8 @@ import Mathlib.RingTheory.Spectrum.Prime.Topology
 This file provides tooling for manipulating constructible sets in the prime spectrum of a ring.
 
 -/
+
+@[expose] public section
 
 open Finset Topology
 open scoped Polynomial
@@ -48,7 +52,7 @@ noncomputable def map (φ : R →+* S) (C : BasicConstructibleSetData R) :
 @[simp] lemma map_id' : map (.id R) = id := by ext : 1; simp
 
 lemma map_comp (φ : S →+* T) (ψ : R →+* S) (C : BasicConstructibleSetData R) :
-    C.map (φ.comp ψ) = (C.map ψ).map φ := by simp [map, image_image, Function.comp_def]
+    C.map (φ.comp ψ) = (C.map ψ).map φ := by simp [map, Function.comp_def]
 
 lemma map_comp' (φ : S →+* T) (ψ : R →+* S) : map (φ.comp ψ) = map φ ∘ map ψ := by
   ext : 1; simp [map_comp]
@@ -94,7 +98,7 @@ lemma toSet_map (f : R →+* S) (s : ConstructibleSetData R) :
     (s.map f).toSet = comap f ⁻¹' s.toSet := by
   unfold toSet map
   rw [set_biUnion_finset_image]
-  simp [← Set.range_comp]
+  simp
 
 /-- The degree bound on a constructible set for Chevalley's theorem for the inclusion `R ↪ R[X]`. -/
 def degBound (S : ConstructibleSetData R[X]) : ℕ := S.sup fun C ↦ ∑ i, (C.g i).degree.succ
@@ -119,13 +123,13 @@ lemma exists_constructibleSetData_iff {s : Set (PrimeSpectrum R)} :
   | isCompact_basis i => exact isCompact_basicOpen _
   | sdiff i s hs =>
     have : Finite s := hs
-    refine ⟨{⟨i, Nat.card s, fun i ↦ ((Finite.equivFinOfCardEq rfl).symm i).1⟩}, ?_⟩
+    refine ⟨{⟨i, Nat.card s, fun i ↦ ((Finite.equivFin s).symm i).1⟩}, ?_⟩
     simp only [ConstructibleSetData.toSet, Finset.mem_singleton, BasicConstructibleSetData.toSet,
       Set.iUnion_iUnion_eq_left, basicOpen_eq_zeroLocus_compl, ← Set.compl_iInter₂,
         compl_sdiff_compl, ← zeroLocus_iUnion₂, Set.biUnion_of_singleton]
     congr! 2
     ext
-    simp [← (Finite.equivFinOfCardEq rfl).exists_congr_right]
+    simp [← (Finite.equivFin s).exists_congr_right, - Nat.card_coe_set_eq]
   | union s hs t ht Hs Ht =>
     obtain ⟨S, rfl⟩ := Hs
     obtain ⟨T, rfl⟩ := Ht

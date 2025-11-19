@@ -3,7 +3,9 @@ Copyright (c) 2023 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Order.OmegaCompletePartialOrder
+module
+
+public import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
 # Complete Partial Orders
@@ -30,6 +32,8 @@ These are partial orders for which every directed set has a least upper bound.
 complete partial order, directedly complete partial order
 -/
 
+@[expose] public section
+
 variable {ι : Sort*} {α β : Type*}
 
 section CompletePartialOrder
@@ -55,7 +59,7 @@ hd.isLUB_sSup.2 ha
 protected lemma Directed.le_iSup (hf : Directed (· ≤ ·) f) (i : ι) : f i ≤ ⨆ j, f j :=
 hf.directedOn_range.le_sSup <| Set.mem_range_self _
 
-protected lemma Directed.iSup_le (hf : Directed (· ≤ ·) f) (ha : ∀ i, f i ≤ a) :  ⨆ i, f i ≤ a :=
+protected lemma Directed.iSup_le (hf : Directed (· ≤ ·) f) (ha : ∀ i, f i ≤ a) : ⨆ i, f i ≤ a :=
 hf.directedOn_range.sSup_le <| Set.forall_mem_range.2 ha
 
 --TODO: We could mimic more `sSup`/`iSup` lemmas

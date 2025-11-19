@@ -3,8 +3,10 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-import Mathlib.CategoryTheory.Limits.FunctorToTypes
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+public import Mathlib.CategoryTheory.Limits.FunctorToTypes
 
 /-!
 # Yoneda preserves certain colimits
@@ -27,11 +29,13 @@ There is also a relative version of this statement where `F : J ⥤ Over A` for 
 
 -/
 
+@[expose] public section
+
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open CategoryTheory.Limits Opposite
+open CategoryTheory.Limits Opposite Functor
 
 variable {C : Type u₁} [Category.{v₁} C]
 
@@ -56,7 +60,7 @@ theorem yonedaYonedaColimit_app_inv {X : C} : ((yonedaYonedaColimit F).app (op X
     (colimitObjIsoColimitCompEvaluation _ _).hom ≫
       (colimit.post F (coyoneda.obj (op (yoneda.obj X)))) := by
   dsimp [yonedaYonedaColimit]
-  simp only [Category.id_comp, Iso.cancel_iso_hom_left]
+  simp only [Iso.cancel_iso_hom_left]
   apply colimit.hom_ext
   intro j
   rw [colimit.ι_post, ι_colimMap_assoc]

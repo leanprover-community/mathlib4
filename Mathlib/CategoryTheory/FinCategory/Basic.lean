@@ -3,10 +3,12 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Data.Fintype.Basic
-import Mathlib.CategoryTheory.Discrete.Basic
-import Mathlib.CategoryTheory.Opposites
-import Mathlib.CategoryTheory.Category.ULift
+module
+
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.CategoryTheory.Discrete.Basic
+public import Mathlib.CategoryTheory.Opposites
+public import Mathlib.CategoryTheory.Category.ULift
 
 /-!
 # Finite categories
@@ -19,6 +21,8 @@ This does not seem to have had any practical payoff (i.e. making some definition
 so we have removed these requirements to avoid
 having to supply instances or delay with non-defeq conflicts between instances.
 -/
+
+@[expose] public section
 
 
 universe w v u
@@ -51,6 +55,7 @@ instance finCategoryOpposite {J : Type v} [SmallCategory J] [FinCategory J] : Fi
   fintypeObj := Fintype.ofEquiv _ equivToOpposite
   fintypeHom j j' := Fintype.ofEquiv _ (opEquiv j j').symm
 
+attribute [local instance] uliftCategory in
 /-- Applying `ULift` to morphisms and objects of a category preserves finiteness. -/
 instance finCategoryUlift {J : Type v} [SmallCategory J] [FinCategory J] :
     FinCategory.{max w v} (ULiftHom.{w, max w v} (ULift.{w, v} J)) where

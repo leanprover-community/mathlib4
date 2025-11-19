@@ -3,17 +3,21 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Indicator
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-import Mathlib.Algebra.Order.Group.Synonym
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+module
+
+public import Mathlib.Algebra.Group.Indicator
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+public import Mathlib.Algebra.Order.Group.Synonym
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-!
 # Support of a function in an order
 
 This file relates the support of a function to order constructions.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -170,12 +174,9 @@ variable [Nonempty ι]
 lemma mulIndicator_iInter_apply (h1 : (⊥ : M) = 1) (s : ι → Set α) (f : α → M) (x : α) :
     mulIndicator (⋂ i, s i) f x = ⨅ i, mulIndicator (s i) f x := by
   by_cases hx : x ∈ ⋂ i, s i
-  · rw [mulIndicator_of_mem hx]
-    rw [mem_iInter] at hx
-    refine le_antisymm ?_ (by simp only [mulIndicator_of_mem (hx _), ciInf_const, le_refl])
-    exact le_iInf (fun j ↦ by simp only [mulIndicator_of_mem (hx j), le_refl])
+  · simp_all
   · rw [mulIndicator_of_notMem hx]
-    simp only [mem_iInter, not_exists, not_forall] at hx
+    simp only [mem_iInter, not_forall] at hx
     rcases hx with ⟨j, hj⟩
     refine le_antisymm (by simp only [← h1, le_iInf_iff, bot_le, forall_const]) ?_
     simpa [mulIndicator_of_notMem hj] using (iInf_le (fun i ↦ (s i).mulIndicator f) j) x

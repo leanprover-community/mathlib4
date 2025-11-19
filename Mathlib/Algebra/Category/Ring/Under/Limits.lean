@@ -3,12 +3,14 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Category.Ring.Under.Basic
-import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
-import Mathlib.CategoryTheory.Limits.Over
-import Mathlib.RingTheory.TensorProduct.Pi
-import Mathlib.RingTheory.RingHom.Flat
-import Mathlib.RingTheory.Flat.Equalizer
+module
+
+public import Mathlib.Algebra.Category.Ring.Under.Basic
+public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
+public import Mathlib.CategoryTheory.Limits.Over
+public import Mathlib.RingTheory.TensorProduct.Pi
+public import Mathlib.RingTheory.RingHom.Flat
+public import Mathlib.RingTheory.Flat.Equalizer
 
 /-!
 # Limits in `Under R` for a commutative ring `R`
@@ -17,6 +19,8 @@ We show that `Under.pushout f` is left-exact, i.e. preserves finite limits, if `
 flat.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -68,8 +72,7 @@ def tensorProductFanIso [Fintype ι] [DecidableEq ι] :
     apply CommRingCat.mkUnder_ext
     intro c
     induction c
-    · simp only [AlgHom.toUnder_right, map_zero, Under.comp_right, comp_apply,
-        AlgEquiv.toUnder_hom_right_apply, Pi.evalAlgHom_apply, Pi.zero_apply]
+    · simp only [map_zero, Under.comp_right]
     · simp only [AlgHom.toUnder_right, Algebra.TensorProduct.map_tmul, AlgHom.coe_id, id_eq,
         Pi.evalAlgHom_apply, Under.comp_right, comp_apply, AlgEquiv.toUnder_hom_right_apply,
         Algebra.TensorProduct.piRight_tmul]

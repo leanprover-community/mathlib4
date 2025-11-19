@@ -3,10 +3,12 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Order.Irreducible
-import Mathlib.RingTheory.Ideal.Colon
-import Mathlib.RingTheory.Ideal.IsPrimary
-import Mathlib.RingTheory.Noetherian.Defs
+module
+
+public import Mathlib.Order.Irreducible
+public import Mathlib.RingTheory.Ideal.Colon
+public import Mathlib.RingTheory.Ideal.IsPrimary
+public import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
 # Lasker ring
@@ -28,6 +30,8 @@ Also, one needs to prove that the radicals of minimal decompositions are indepen
 
 -/
 
+@[expose] public section
+
 section IsLasker
 
 variable (R : Type*) [CommSemiring R]
@@ -44,16 +48,15 @@ namespace Ideal
 lemma decomposition_erase_inf [DecidableEq (Ideal R)] {I : Ideal R}
     {s : Finset (Ideal R)} (hs : s.inf id = I) :
     ∃ t : Finset (Ideal R), t ⊆ s ∧ t.inf id = I ∧ (∀ ⦃J⦄, J ∈ t → ¬ (t.erase J).inf id ≤ J) := by
-  induction s using Finset.strongInductionOn
-  rename_i _ s IH
-  by_cases H : ∀ J ∈ s, ¬ (s.erase J).inf id ≤ J
-  · exact ⟨s, Finset.Subset.rfl, hs, H⟩
-  push_neg at H
-  obtain ⟨J, hJ, hJ'⟩ := H
-  refine (IH (s.erase J) (Finset.erase_ssubset hJ) ?_).imp
-    fun t ↦ And.imp_left (fun ht ↦ ht.trans (Finset.erase_subset _ _))
-  rw [← Finset.insert_erase hJ] at hs
-  simp [← hs, hJ']
+  induction s using Finset.eraseInduction with
+  | H s IH =>
+    by_cases! H : ∀ J ∈ s, ¬ (s.erase J).inf id ≤ J
+    · exact ⟨s, Finset.Subset.rfl, hs, H⟩
+    obtain ⟨J, hJ, hJ'⟩ := H
+    refine (IH _ hJ ?_).imp
+      fun t ↦ And.imp_left (fun ht ↦ ht.trans (Finset.erase_subset _ _))
+    rw [← Finset.insert_erase hJ] at hs
+    simp [← hs, hJ']
 
 open scoped Function -- required for scoped `on` notation
 
@@ -64,16 +67,8 @@ lemma isPrimary_decomposition_pairwise_ne_radical {I : Ideal R}
   classical
   refine ⟨(s.image (fun J ↦ {I ∈ s | I.radical = J.radical})).image fun t ↦ t.inf id,
     ?_, ?_, ?_⟩
-  · rw [← hs]
-    refine le_antisymm ?_ ?_ <;> intro x hx
-    · simp only [Finset.inf_image, CompTriple.comp_eq, Submodule.mem_finset_inf,
-      Function.comp_apply, Finset.mem_filter, id_eq, and_imp] at hx ⊢
-      intro J hJ
-      exact hx J hJ J hJ rfl
-    · simp only [Submodule.mem_finset_inf, id_eq, Finset.inf_image, CompTriple.comp_eq,
-      Function.comp_apply, Finset.mem_filter, and_imp] at hx ⊢
-      intro J _ K hK _
-      exact hx K hK
+  · ext
+    grind [Finset.inf_image, Submodule.mem_finsetInf]
   · simp only [Finset.mem_image, exists_exists_and_eq_and, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂]
     intro J hJ
@@ -143,9 +138,9 @@ lemma _root_.InfIrred.isPrimary {I : Ideal R} (h : InfIrred I) : I.IsPrimary := 
            ← Ideal.add_mem_iff_left _ (Ideal.mul_mem_right _ _ hs)]
     · simpa only [mem_colon_singleton] using mul_mem_right _ _
     · simp
-  rcases h with (h|h)
+  rcases h with (h | h)
   · replace h : I = I.colon (span {b}) := by
-      rcases eq_or_ne n 0 with rfl|hn'
+      rcases eq_or_ne n 0 with rfl | hn'
       · simpa [f] using hn 1 zero_le_one
       refine le_antisymm ?_ (h.le.trans' (Submodule.colon_mono le_rfl ?_))
       · intro

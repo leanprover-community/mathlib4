@@ -3,8 +3,11 @@ Copyright (c) 2023 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
-import Mathlib.Topology.ContinuousMap.Bounded.Normed
+module
+
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.Topology.ContinuousMap.Bounded.Normed
+public import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
 /-!
 # Integration of bounded continuous functions
@@ -14,6 +17,8 @@ mostly specializations of results in general integration theory, but they are us
 specialized form in some other files, in particular in those related to the topology of weak
 convergence of probability measures and finite measures.
 -/
+
+@[expose] public section
 
 open MeasureTheory Filter
 open scoped ENNReal NNReal BoundedContinuousFunction Topology
@@ -140,7 +145,7 @@ lemma tendsto_integral_of_forall_limsup_integral_le_integral {ι : Type*} {L : F
     (h : ∀ f : X →ᵇ ℝ, 0 ≤ f → L.limsup (fun i ↦ ∫ x, f x ∂ (μs i)) ≤ ∫ x, f x ∂μ)
     (f : X →ᵇ ℝ) :
     Tendsto (fun i ↦ ∫ x, f x ∂ (μs i)) L (𝓝 (∫ x, f x ∂μ)) := by
-  rcases eq_or_neBot L with rfl|hL
+  rcases eq_or_neBot L with rfl | hL
   · simp only [tendsto_bot]
   have obs := BoundedContinuousFunction.isBounded_range_integral μs f
   have bdd_above := BddAbove.isBoundedUnder L.univ_mem (by simpa using obs.bddAbove)
@@ -162,7 +167,7 @@ lemma tendsto_integral_of_forall_integral_le_liminf_integral {ι : Type*} {L : F
     (h : ∀ f : X →ᵇ ℝ, 0 ≤ f → ∫ x, f x ∂μ ≤ L.liminf (fun i ↦ ∫ x, f x ∂ (μs i)))
     (f : X →ᵇ ℝ) :
     Tendsto (fun i ↦ ∫ x, f x ∂ (μs i)) L (𝓝 (∫ x, f x ∂μ)) := by
-  rcases eq_or_neBot L with rfl|hL
+  rcases eq_or_neBot L with rfl | hL
   · simp only [tendsto_bot]
   have obs := BoundedContinuousFunction.isBounded_range_integral μs f
   have bdd_above := BddAbove.isBoundedUnder L.univ_mem (by simpa using obs.bddAbove)

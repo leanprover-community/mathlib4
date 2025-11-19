@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Presheaf
-import Mathlib.AlgebraicGeometry.Scheme
-import Mathlib.CategoryTheory.Sites.Whiskering
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf
+public import Mathlib.AlgebraicGeometry.Scheme
+public import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-!
 # The category of presheaves of modules over a scheme
@@ -18,6 +20,8 @@ of rings of `X`.
 
 -/
 
+@[expose] public section
+
 universe u
 
 open CategoryTheory
@@ -28,7 +32,7 @@ variable (X : Scheme.{u})
 
 /-- The underlying sheaf of rings of a scheme. -/
 abbrev ringCatSheaf : TopCat.Sheaf RingCat.{u} X :=
-  (sheafCompose _ (forget₂ CommRingCat RingCat)).obj X.sheaf
+  (sheafCompose _ (forget₂ CommRingCat RingCat.{u})).obj X.sheaf
 
 /-- The category of presheaves of modules over a scheme. -/
 nonrec abbrev PresheafOfModules := PresheafOfModules.{u} X.ringCatSheaf.val

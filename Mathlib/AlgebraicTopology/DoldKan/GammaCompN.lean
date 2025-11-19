@@ -3,10 +3,12 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.FunctorGamma
-import Mathlib.AlgebraicTopology.DoldKan.SplitSimplicialObject
-import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
-import Mathlib.Tactic.SuppressCompilation
+module
+
+public import Mathlib.AlgebraicTopology.DoldKan.FunctorGamma
+public import Mathlib.AlgebraicTopology.DoldKan.SplitSimplicialObject
+public import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
+public import Mathlib.Tactic.SuppressCompilation
 
 /-! The counit isomorphism of the Dold-Kan equivalence
 
@@ -18,11 +20,13 @@ and `N₂Γ₂ : Γ₂ ⋙ N₂ ≅ 𝟭 (Karoubi (ChainComplex C ℕ))`.
 
 -/
 
+@[expose] public section
+
 suppress_compilation
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
+open CategoryTheory CategoryTheory.Category CategoryTheory.Functor CategoryTheory.Limits
   CategoryTheory.Idempotents Opposite SimplicialObject Simplicial
 
 namespace AlgebraicTopology
@@ -48,13 +52,13 @@ def Γ₀NondegComplexIso (K : ChainComplex C ℕ) : (Γ₀.splitting K).nondegC
         rw [comp_id]
       · intro i hi
         dsimp
-        simp only [Preadditive.zsmul_comp, Preadditive.comp_zsmul, assoc]
+        simp only [Preadditive.zsmul_comp, Preadditive.comp_zsmul]
         rw [δ, Γ₀.Obj.mapMono_on_summand_id_assoc, Γ₀.Obj.Termwise.mapMono_eq_zero, zero_comp,
           zsmul_zero]
         · intro h
           replace h := congr_arg SimplexCategory.len h
           change n + 1 = n at h
-          omega
+          cutsat
         · simpa only [Isδ₀.iff] using hi)
 
 /-- The natural isomorphism `(Γ₀.splitting K).nondegComplex ≅ K` for `K : ChainComplex C ℕ`. -/
@@ -156,8 +160,7 @@ theorem N₂Γ₂_inv_app_f_f (X : Karoubi (ChainComplex C ℕ)) (n : ℕ) :
   simp only [whiskeringLeft_obj_preimage_app, NatTrans.comp_app, Functor.comp_map,
     Karoubi.comp_f, N₂Γ₂ToKaroubiIso_inv_app, HomologicalComplex.comp_f,
     N₁Γ₀_inv_app_f_f, toKaroubi_obj_X, Splitting.toKaroubiNondegComplexIsoN₁_hom_f_f,
-    Γ₀.obj_obj, PInfty_on_Γ₀_splitting_summand_eq_self, N₂_map_f_f,
-    Γ₂_map_f_app, unop_op, Karoubi.decompId_p_f, PInfty_f_idem_assoc,
+    PInfty_on_Γ₀_splitting_summand_eq_self, N₂_map_f_f, Γ₂_map_f_app, unop_op, Karoubi.decompId_p_f,
     PInfty_on_Γ₀_splitting_summand_eq_self_assoc, Splitting.IndexSet.id_fst, SimplexCategory.len_mk,
     Splitting.ι_desc]
   apply Karoubi.HomologicalComplex.p_idem_assoc

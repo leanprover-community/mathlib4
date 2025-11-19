@@ -3,7 +3,9 @@ Copyright (c) 2024 Michail Karatarakis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michail Karatarakis
 -/
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
+module
+
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 
 /-!
 
@@ -15,6 +17,8 @@ index set of the chosen basis of the ring of integers of `K`.
 
 house, number field, algebraic number
 -/
+
+@[expose] public section
 
 variable (K : Type*) [Field K] [NumberField K]
 
@@ -41,7 +45,7 @@ theorem det_of_basisMatrix_non_zero [DecidableEq (K →+* ℂ)] : (basisMatrix K
   let N := Algebra.embeddingsMatrixReindex ℚ ℂ (fun i => integralBasis K (e i))
     RingHom.equivRatAlgHom
   rw [show (basisMatrix K) = N by
-    ext:2; simp only [N, transpose_apply, latticeBasis_apply, integralBasis_apply,
+    ext : 2; simp only [N, latticeBasis_apply, integralBasis_apply,
     of_apply, apply_at]; rfl, ← pow_ne_zero_iff two_ne_zero]
   convert (map_ne_zero_iff _ (algebraMap ℚ ℂ).injective).mpr
     (Algebra.discr_not_zero_of_basis ℚ (integralBasis K))

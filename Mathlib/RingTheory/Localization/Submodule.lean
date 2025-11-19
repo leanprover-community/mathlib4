@@ -3,10 +3,12 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.Localization.Ideal
-import Mathlib.RingTheory.Noetherian.Defs
-import Mathlib.RingTheory.EssentialFiniteness
+module
+
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.RingTheory.Localization.Ideal
+public import Mathlib.RingTheory.Noetherian.Defs
+public import Mathlib.RingTheory.EssentialFiniteness
 
 /-!
 # Submodules in localizations of commutative rings
@@ -19,6 +21,8 @@ See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
+
+@[expose] public section
 
 
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
@@ -144,7 +148,7 @@ theorem mem_span_iff {N : Type*} [AddCommMonoid N] [Module R N] [Module S N] [Is
       · rw [← mul_one (1 : R), mk'_mul, mul_assoc, mk'_spec, map_one, mul_one, mul_one]
       · rw [← mul_one (1 : R), mk'_mul, mul_right_comm, mk'_spec, map_one, mul_one, one_mul]
     · rintro a _ _ ⟨y, hy, z, rfl⟩
-      obtain ⟨y', z', rfl⟩ := mk'_surjective M a
+      obtain ⟨y', z', rfl⟩ := exists_mk'_eq M a
       refine ⟨y' • y, Submodule.smul_mem _ _ hy, z' * z, ?_⟩
       rw [← IsScalarTower.algebraMap_smul S y', smul_smul, ← mk'_mul, smul_smul,
         mul_comm (mk' S _ _), mul_mk'_eq_mk'_of_mul]

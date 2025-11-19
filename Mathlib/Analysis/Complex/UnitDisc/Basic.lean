@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.Circle
-import Mathlib.Analysis.NormedSpace.BallAction
+module
+
+public import Mathlib.Analysis.Complex.Circle
+public import Mathlib.Analysis.Normed.Module.Ball.Action
 
 /-!
 # Poincaré disc
@@ -12,6 +14,8 @@ import Mathlib.Analysis.NormedSpace.BallAction
 In this file we define `Complex.UnitDisc` to be the unit disc in the complex plane. We also
 introduce some basic operations on this disc.
 -/
+
+@[expose] public section
 
 
 open Set Function Metric
@@ -51,9 +55,6 @@ theorem norm_lt_one (z : 𝔻) : ‖(z : ℂ)‖ < 1 :=
 
 theorem norm_ne_one (z : 𝔻) : ‖(z : ℂ)‖ ≠ 1 :=
   z.norm_lt_one.ne
-
-@[deprecated (since := "2025-02-16")] alias abs_lt_one := norm_lt_one
-@[deprecated (since := "2025-02-16")] alias abs_ne_one := norm_ne_one
 
 theorem normSq_lt_one (z : 𝔻) : normSq z < 1 := by
   convert (Real.sqrt_lt' one_pos).1 z.norm_lt_one

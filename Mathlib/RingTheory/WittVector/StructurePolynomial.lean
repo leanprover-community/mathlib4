@@ -3,9 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.FieldTheory.Finite.Polynomial
-import Mathlib.NumberTheory.Basic
-import Mathlib.RingTheory.WittVector.WittPolynomial
+module
+
+public import Mathlib.FieldTheory.Finite.Polynomial
+public import Mathlib.NumberTheory.Basic
+public import Mathlib.RingTheory.WittVector.WittPolynomial
 
 /-!
 # Witt structure polynomials
@@ -82,6 +84,8 @@ dvd_sub_pow_of_dvd_sub {R : Type*} [CommRing R] {p : ℕ} {a b : R} :
 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
+
+@[expose] public section
 
 
 open MvPolynomial Set
@@ -228,7 +232,7 @@ theorem C_p_pow_dvd_bind₁_rename_wittPolynomial_sub_sum (Φ : MvPolynomial idx
       bind₁ (fun b : idx => rename (fun i => (b, i)) (wittPolynomial p ℤ n)) Φ -
         ∑ i ∈ range n, C ((p : ℤ) ^ i) * wittStructureInt p Φ i ^ p ^ (n - i) := by
   rcases n with - | n
-  · simp only [isUnit_one, Int.ofNat_zero, Int.natCast_succ, zero_add, pow_zero, C_1, IsUnit.dvd,
+  · simp only [isUnit_one, pow_zero, C_1, IsUnit.dvd,
       Nat.cast_one]
   -- prepare a useful equation for rewriting
   have key := bind₁_rename_expand_wittPolynomial Φ n IH
@@ -373,8 +377,7 @@ theorem wittStructureRat_vars [Fintype idx] (Φ : MvPolynomial idx ℚ) (n : ℕ
   obtain ⟨j, hj, rfl⟩ := mem_vars_rename _ _ hx''
   rw [wittPolynomial_vars, Finset.mem_range] at hj
   replace hk := xInTermsOfW_vars_subset p _ hk
-  rw [Finset.mem_range] at hk
-  exact lt_of_lt_of_le hj hk
+  grind
 
 -- we could relax the fintype on `idx`, but then we need to cast from finset to set.
 -- for our applications `idx` is always finite.

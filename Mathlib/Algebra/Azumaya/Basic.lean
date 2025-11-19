@@ -3,10 +3,13 @@ Copyright (c) 2025 Yunzhou Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yunzhou Xie, Jujian Zhang
 -/
-import Mathlib.Algebra.Azumaya.Defs
-import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.GroupTheory.GroupAction.Hom
+module
+
+public import Mathlib.Algebra.Azumaya.Defs
+public import Mathlib.LinearAlgebra.Matrix.ToLin
+public import Mathlib.RingTheory.Finiteness.Basic
+public import Mathlib.GroupTheory.GroupAction.Hom
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Basic properties of Azumaya algebras
@@ -26,6 +29,8 @@ Noncommutative algebra, Azumaya algebra, Brauer Group
 
 -/
 
+@[expose] public section
+
 open scoped TensorProduct
 
 open MulOpposite
@@ -39,8 +44,8 @@ lemma AlgHom.mulLeftRight_bij [h : IsAzumaya R A] :
 
 /-- The "canonical" isomorphism between `R ⊗ Rᵒᵖ` and `End R R` which is equal
   to `AlgHom.mulLeftRight R R`. -/
-noncomputable abbrev tensorEquivEnd : R ⊗[R] Rᵐᵒᵖ ≃ₐ[R] Module.End R R :=
-  Algebra.TensorProduct.lid R Rᵐᵒᵖ|>.trans <| .moduleEndSelf R
+abbrev tensorEquivEnd : R ⊗[R] Rᵐᵒᵖ ≃ₐ[R] Module.End R R :=
+  Algebra.TensorProduct.lid R Rᵐᵒᵖ |>.trans <| .moduleEndSelf R
 
 lemma coe_tensorEquivEnd : tensorEquivEnd R = AlgHom.mulLeftRight R R := by
   ext; simp
@@ -65,13 +70,7 @@ End R A   ------------> End R B
 lemma mulLeftRight_comp_congr (e : A ≃ₐ[R] B) :
     (AlgHom.mulLeftRight R B).comp (Algebra.TensorProduct.congr e e.op).toAlgHom =
     (e.toLinearEquiv.algConj R).toAlgHom.comp (AlgHom.mulLeftRight R A) := by
-  apply AlgHom.ext
-  intro a
-  induction a using TensorProduct.induction_on with
-  | zero => simp
-  | tmul a a' =>
-    ext; simp [AlgHom.mulLeftRight_apply, LinearEquiv.algConj, LinearEquiv.conj]
-  | add _ _ _ _ => simp_all [map_add]
+  ext <;> simp
 
 theorem of_AlgEquiv (e : A ≃ₐ[R] B) [IsAzumaya R A] : IsAzumaya R B :=
   let _ : Module.Projective R B := .of_equiv e.toLinearEquiv

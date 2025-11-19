@@ -3,8 +3,10 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Data.Sym.Sym2
+module
+
+public import Mathlib.Data.Nat.Choose.Basic
+public import Mathlib.Data.Sym.Sym2
 
 /-! # Unordered tuples of elements of a list
 
@@ -24,6 +26,8 @@ from a given list. These are list versions of `Nat.multichoose`.
   and lift the result to `Multiset` and `Finset`.
 
 -/
+
+@[expose] public section
 
 namespace List
 
@@ -97,6 +101,10 @@ theorem mem_sym2_iff {xs : List α} {z : Sym2 α} :
   refine z.ind (fun a b => ?_)
   simp [mk_mem_sym2_iff]
 
+lemma setOf_mem_sym2 {xs : List α} :
+    {z : Sym2 α | z ∈ xs.sym2} = {x : α | x ∈ xs}.sym2 :=
+  Set.ext fun z ↦ z.ind fun a b => by simp [mk_mem_sym2_iff]
+
 protected theorem Nodup.sym2 {xs : List α} (h : xs.Nodup) : xs.sym2.Nodup := by
   induction xs with
   | nil => simp only [List.sym2, nodup_nil]
@@ -157,7 +165,8 @@ theorem map_mk_disjoint_sym2 (x : α) (xs : List α) (h : x ∉ xs) :
       rw [List.mem_map] at hx hy
       obtain ⟨a, hx, rfl⟩ := hx
       obtain ⟨b, hy, hx⟩ := hy
-      simp [Sym2.mk_eq_mk_iff, Ne.symm h.1] at hx
+      simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Ne.symm h.1, false_and, Prod.swap_prod_mk,
+        false_or] at hx
       obtain ⟨rfl, rfl⟩ := hx
       exact h.2 hy
     · exact ih h.2
@@ -188,12 +197,12 @@ protected theorem Perm.sym2 {xs ys : List α} (h : xs ~ ys) :
     exact (h.map _).append ih
   | swap x y xs =>
     simp only [List.sym2, map_cons, cons_append]
-    conv => enter [1,2,1]; rw [Sym2.eq_swap]
+    conv => enter [1, 2, 1]; rw [Sym2.eq_swap]
     -- Explicit permutation to speed up simps that follow.
     refine Perm.trans (Perm.swap ..) (Perm.trans (Perm.cons _ ?_) (Perm.swap ..))
     simp only [← Multiset.coe_eq_coe, ← Multiset.cons_coe,
       ← Multiset.coe_add, ← Multiset.singleton_add]
-    simp only [add_assoc, add_left_comm]
+    simp only [add_left_comm]
   | trans _ _ ih1 ih2 => exact ih1.trans ih2
 
 protected theorem Sublist.sym2 {xs ys : List α} (h : xs <+ ys) : xs.sym2 <+ ys.sym2 := by

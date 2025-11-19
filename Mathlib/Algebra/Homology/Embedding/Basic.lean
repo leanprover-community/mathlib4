@@ -3,10 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.Algebra.Ring.Int.Defs
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Tactic.ByContra
+module
+
+public import Mathlib.Algebra.Homology.ComplexShape
+public import Mathlib.Algebra.Ring.Int.Defs
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Tactic.ByContra
 
 /-! # Embeddings of complex shapes
 
@@ -49,6 +51,8 @@ transformation `e.ιTruncLENatTrans : e.truncGEFunctor C ⟶ 𝟭 _` which is a 
 in degrees in the image of `e.f` (TODO);
 
 -/
+
+@[expose] public section
 
 assert_not_exists Nat.instAddMonoidWithOne Nat.instMulZeroClass
 
@@ -166,12 +170,43 @@ lemma f_eq_of_r_eq_some {i : ι} {i' : ι'} (hi : e.r i' = some i) :
 
 end Embedding
 
+section
+
+variable {A : Type*} [AddCommSemigroup A] [IsRightCancelAdd A] [One A]
+
+/-- The embedding from `up' a` to itself via (· + b). -/
+@[simps!]
+def embeddingUp'Add (a b : A) : Embedding (up' a) (up' a) :=
+  Embedding.mk' _ _ (· + b)
+    (fun _ _ h => by simpa using h)
+    (by dsimp; simp_rw [add_right_comm _ b a, add_right_cancel_iff, implies_true])
+
+instance (a b : A) : (embeddingUp'Add a b).IsRelIff := by dsimp [embeddingUp'Add]; infer_instance
+
+instance (a b : A) : (embeddingUp'Add a b).IsTruncGE where
+  mem_next {j _} h := ⟨j + a, (add_right_comm _ _ _).trans h⟩
+
+/-- The embedding from `down' a` to itself via (· + b). -/
+@[simps!]
+def embeddingDown'Add (a b : A) : Embedding (down' a) (down' a) :=
+  Embedding.mk' _ _ (· + b)
+    (fun _ _ h => by simpa using h)
+    (by dsimp; simp_rw [add_right_comm _ b a, add_right_cancel_iff, implies_true])
+
+instance (a b : A) : (embeddingDown'Add a b).IsRelIff := by
+  dsimp [embeddingDown'Add]; infer_instance
+
+instance (a b : A) : (embeddingDown'Add a b).IsTruncLE where
+  mem_prev {_ x} h := ⟨x + a, (add_right_comm _ _ _).trans h⟩
+
+end
+
 /-- The obvious embedding from `up ℕ` to `up ℤ`. -/
 @[simps!]
 def embeddingUpNat : Embedding (up ℕ) (up ℤ) :=
   Embedding.mk' _ _ (fun n => n)
     (fun _ _ h => by simpa using h)
-    (by dsimp; omega)
+    (by dsimp; cutsat)
 
 instance : embeddingUpNat.IsRelIff := by dsimp [embeddingUpNat]; infer_instance
 
@@ -183,7 +218,7 @@ instance : embeddingUpNat.IsTruncGE where
 def embeddingDownNat : Embedding (down ℕ) (up ℤ) :=
   Embedding.mk' _ _ (fun n => -n)
     (fun _ _ h => by simpa using h)
-    (by dsimp; omega)
+    (by dsimp; cutsat)
 
 instance : embeddingDownNat.IsRelIff := by dsimp [embeddingDownNat]; infer_instance
 
@@ -196,8 +231,8 @@ variable (p : ℤ)
 @[simps!]
 def embeddingUpIntGE : Embedding (up ℕ) (up ℤ) :=
   Embedding.mk' _ _ (fun n => p + n)
-    (fun _ _ h => by dsimp at h; omega)
-    (by dsimp; omega)
+    (fun _ _ h => by dsimp at h; cutsat)
+    (by dsimp; cutsat)
 
 instance : (embeddingUpIntGE p).IsRelIff := by dsimp [embeddingUpIntGE]; infer_instance
 
@@ -208,8 +243,8 @@ instance : (embeddingUpIntGE p).IsTruncGE where
 @[simps!]
 def embeddingUpIntLE : Embedding (down ℕ) (up ℤ) :=
   Embedding.mk' _ _ (fun n => p - n)
-    (fun _ _ h => by dsimp at h; omega)
-    (by dsimp; omega)
+    (fun _ _ h => by dsimp at h; cutsat)
+    (by dsimp; cutsat)
 
 instance : (embeddingUpIntLE p).IsRelIff := by dsimp [embeddingUpIntLE]; infer_instance
 
@@ -221,10 +256,10 @@ lemma notMem_range_embeddingUpIntLE_iff (n : ℤ) :
   constructor
   · intro h
     by_contra!
-    exact h (p - n).natAbs (by simp; omega)
+    exact h (p - n).natAbs (by simp; cutsat)
   · intros
     dsimp
-    omega
+    cutsat
 
 @[deprecated (since := "2025-05-23")]
 alias not_mem_range_embeddingUpIntLE_iff := notMem_range_embeddingUpIntLE_iff
@@ -234,10 +269,10 @@ lemma notMem_range_embeddingUpIntGE_iff (n : ℤ) :
   constructor
   · intro h
     by_contra!
-    exact h (n - p).natAbs (by simp; omega)
+    exact h (n - p).natAbs (by simp; cutsat)
   · intros
     dsimp
-    omega
+    cutsat
 
 @[deprecated (since := "2025-05-23")]
 alias not_mem_range_embeddingUpIntGE_iff := notMem_range_embeddingUpIntGE_iff

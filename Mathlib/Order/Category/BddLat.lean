@@ -3,11 +3,13 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.CategoryTheory.Adjunction.Unique
-import Mathlib.Order.Category.BddOrd
-import Mathlib.Order.Category.Lat
-import Mathlib.Order.Category.Semilat
-import Mathlib.Order.Hom.WithTopBot
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Unique
+public import Mathlib.Order.Category.BddOrd
+public import Mathlib.Order.Category.Lat
+public import Mathlib.Order.Category.Semilat
+public import Mathlib.Order.Hom.WithTopBot
 
 /-!
 # The category of bounded lattices
@@ -17,6 +19,8 @@ This file defines `BddLat`, the category of bounded lattices.
 In literature, this is sometimes called `Lat`, the category of lattices, because being a lattice is
 understood to entail having a bottom and a top element.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -215,8 +219,7 @@ def latToBddLatForgetAdjunction : latToBddLat.{u} ⊣ forget₂ BddLat Lat :=
               match a with
               | none => f.hom.map_top'.symm
               | some none => f.hom.map_bot'.symm
-              | some (some _) => rfl
-          right_inv := fun _ => Lat.ext fun _ => rfl }
+              | some (some _) => rfl }
       homEquiv_naturality_left_symm := fun _ _ =>
         BddLat.ext fun a =>
           match a with

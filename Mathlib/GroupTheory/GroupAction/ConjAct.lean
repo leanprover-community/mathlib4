@@ -3,10 +3,12 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
-import Mathlib.Data.Fintype.Card
-import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.GroupTheory.Subgroup.Centralizer
+module
+
+public import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.GroupTheory.Subgroup.Centralizer
 
 /-!
 # Conjugation action of a group on itself
@@ -31,6 +33,8 @@ is that some theorems about the group actions will not apply when since this
 `MulAut.conj g • h` describes an action of `MulAut G` on `G`, and not an action of `G`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -67,8 +71,6 @@ instance : Inhabited (ConjAct G) :=
 def ofConjAct : ConjAct G ≃* G where
   toFun := id
   invFun := id
-  left_inv := fun _ => rfl
-  right_inv := fun _ => rfl
   map_mul' := fun _ _ => rfl
 
 /-- Reinterpret `g : G` as an element of `ConjAct G`. -/
@@ -215,7 +217,7 @@ theorem _root_.Subgroup.centralizer_eq_comap_stabilizer (g : G) :
   ext k
 -- NOTE: `Subgroup.mem_centralizer_iff` should probably be stated
 -- with the equality in the other direction
-  simp only [mem_centralizer_iff, Set.mem_singleton_iff, forall_eq, ConjAct.toConjAct_smul]
+  simp only [mem_centralizer_iff, Set.mem_singleton_iff, forall_eq]
   rw [eq_comm]
   exact Iff.symm mul_inv_eq_iff_eq_mul
 
@@ -287,8 +289,6 @@ def unitsCentralizerEquiv (x : Mˣ) :
       change _ • _ = _
       simp only [ConjAct.smul_def, ConjAct.ofConjAct_toConjAct, mul_inv_eq_iff_eq_mul]
       exact Units.ext <| (u.1.2 x <| Set.mem_singleton _).symm⟩
-    left_inv := fun _ ↦ by ext; rfl
-    right_inv := fun _ ↦ by ext; rfl
     map_mul' := map_mul _ }
 
 end Units

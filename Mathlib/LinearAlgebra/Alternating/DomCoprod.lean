@@ -3,11 +3,14 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Subgroup.Finite
-import Mathlib.GroupTheory.GroupAction.Quotient
-import Mathlib.GroupTheory.Perm.Basic
-import Mathlib.LinearAlgebra.Alternating.Basic
-import Mathlib.LinearAlgebra.Multilinear.TensorProduct
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Finite
+public import Mathlib.GroupTheory.Coset.Card
+public import Mathlib.GroupTheory.GroupAction.Quotient
+public import Mathlib.GroupTheory.Perm.Basic
+public import Mathlib.LinearAlgebra.Alternating.Basic
+public import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 
 /-!
 # Exterior product of alternating maps
@@ -17,7 +20,7 @@ to be the exterior product of two alternating maps,
 taking values in the tensor product of the codomains of the original maps.
 -/
 
-suppress_compilation
+@[expose] public section
 
 open TensorProduct
 
@@ -77,7 +80,7 @@ theorem domCoprod.summand_add_swap_smul_eq_zero (a : Mᵢ [⋀^ιa]→ₗ[R'] N�
   dsimp only [Quotient.liftOn'_mk'', Quotient.map'_mk'', MulAction.Quotient.smul_mk,
     domCoprod.summand]
   rw [smul_eq_mul, Perm.sign_mul, Perm.sign_swap hij]
-  simp only [one_mul, neg_mul, Function.comp_apply, Units.neg_smul, Perm.coe_mul, Units.val_neg,
+  simp only [one_mul, neg_mul, Function.comp_apply, Units.neg_smul, Perm.coe_mul,
     MultilinearMap.smul_apply, MultilinearMap.neg_apply, MultilinearMap.domDomCongr_apply,
     MultilinearMap.domCoprod_apply]
   convert add_neg_cancel (G := N₁ ⊗[R'] N₂) _ using 6 <;>

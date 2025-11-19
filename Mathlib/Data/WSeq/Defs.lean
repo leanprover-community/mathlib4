@@ -3,8 +3,10 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Batteries.Data.DList.Basic
-import Mathlib.Data.WSeq.Basic
+module
+
+public import Batteries.Data.DList.Basic
+public import Mathlib.Data.WSeq.Basic
 
 /-!
 # Miscellaneous definitions concerning weak sequences
@@ -12,6 +14,8 @@ import Mathlib.Data.WSeq.Basic
 These definitions, as well as those in `Mathlib/Data/WSeq/Productive.lean`, are not needed for the
 development of `Mathlib/Data/Seq/Parallel.lean`.
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -234,8 +238,9 @@ theorem length_eq_map (s : WSeq α) : length s = Computation.map List.length (to
               | some (some a, s') => Sum.inr (a::l, s')) (l, s)))
       ?_ ⟨[], s, rfl, rfl⟩
   intro s1 s2 h; rcases h with ⟨l, s, h⟩; rw [h.left, h.right]
-  induction' s using WSeq.recOn with a s s <;> simp [toList, nil, cons, think, length]
-  · refine ⟨a::l, s, ?_, ?_⟩ <;> simp
-  · refine ⟨l, s, ?_, ?_⟩ <;> simp
+  induction s using WSeq.recOn with
+  | nil => simp [nil]
+  | cons a s => simpa using ⟨a::l, s, by simp, by simp⟩
+  | think s => simpa using ⟨l, s, by simp, by simp⟩
 
 end Stream'.WSeq
