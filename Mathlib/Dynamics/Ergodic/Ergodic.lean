@@ -94,17 +94,25 @@ namespace MeasureTheory.MeasurePreserving
 
 variable {β : Type*} {m' : MeasurableSpace β} {μ' : Measure β} {g : α → β}
 
-theorem preErgodic_of_preErgodic_conjugate (hg : MeasurePreserving g μ μ') (hf : PreErgodic f μ)
+theorem preErgodic_of_preErgodic_semiconj (hg : MeasurePreserving g μ μ') (hf : PreErgodic f μ)
     {f' : β → β} (h_comm : Semiconj g f f') : PreErgodic f' μ' where
   aeconst_set s hs₀ hs₁ := by
     rw [← hg.aeconst_preimage hs₀.nullMeasurableSet]
     apply hf.aeconst_set (hg.measurable hs₀)
     rw [← preimage_comp, h_comm.comp_eq, preimage_comp, hs₁]
 
+@[deprecated (since := "2025-11-19")]
+alias preErgodic_of_preErgodic_conjugate := preErgodic_of_preErgodic_semiconj
+
+theorem ergodic_of_ergodic_semiconj (hg : MeasurePreserving g μ μ') (hf : Ergodic f μ)
+    {f' : β → β} (hf' : Measurable f') (h_comm : Semiconj g f f') : Ergodic f' μ' :=
+  ⟨hg.of_semiconj hf.toMeasurePreserving h_comm hf',
+   hg.preErgodic_of_preErgodic_semiconj hf.toPreErgodic h_comm⟩
+
 theorem preErgodic_conjugate_iff {e : α ≃ᵐ β} (h : MeasurePreserving e μ μ') :
     PreErgodic (e ∘ f ∘ e.symm) μ' ↔ PreErgodic f μ := by
-  refine ⟨fun hf => preErgodic_of_preErgodic_conjugate (h.symm e) hf ?_,
-      fun hf => preErgodic_of_preErgodic_conjugate h hf ?_⟩
+  refine ⟨fun hf => preErgodic_of_preErgodic_semiconj (h.symm e) hf ?_,
+      fun hf => preErgodic_of_preErgodic_semiconj h hf ?_⟩
   · simp [Semiconj]
   · simp [Semiconj]
 
