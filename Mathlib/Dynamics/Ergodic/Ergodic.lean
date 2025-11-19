@@ -97,7 +97,7 @@ theorem preErgodic_of_preErgodic_conjugate (hg : MeasurePreserving g μ μ') (hf
     apply hf.aeconst_set (hg.measurable hs₀)
     rw [← preimage_comp, h_comm.comp_eq, preimage_comp, hs₁]
 
-theorem ergodic_of_semiconj_ergodic (hg : MeasurePreserving g μ μ') (hf : Ergodic f μ)
+theorem ergodic_of_ergodic_semiconj (hg : MeasurePreserving g μ μ') (hf : Ergodic f μ)
     {f' : β → β} (hf' : Measurable f') (h_comm : Semiconj g f f') : Ergodic f' μ' :=
   ⟨hg.of_semiconj hf.toMeasurePreserving h_comm hf',
    hg.preErgodic_of_preErgodic_conjugate hf.toPreErgodic h_comm⟩
