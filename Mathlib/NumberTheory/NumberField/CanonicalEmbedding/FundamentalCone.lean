@@ -3,9 +3,11 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.RingTheory.Ideal.IsPrincipal
-import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
-import Mathlib.RingTheory.ClassGroup
+module
+
+public import Mathlib.RingTheory.Ideal.IsPrincipal
+public import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
+public import Mathlib.RingTheory.ClassGroup
 
 /-!
 # Fundamental Cone
@@ -36,6 +38,8 @@ mixed space that is a fundamental domain for the action of `(𝓞 K)ˣ` modulo t
 
 number field, canonical embedding, units, principal ideals
 -/
+
+@[expose] public section
 
 variable (K : Type*) [Field K]
 

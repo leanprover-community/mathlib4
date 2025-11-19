@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
+module
+
+public import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
 
 /-!
 # Truncations for a t-structure
@@ -18,6 +20,8 @@ part of a distinguished triangle
 with `(t.truncLT n).obj X < n` and `(t.truncGE n).obj X ≥ n`.
 
 -/
+
+@[expose] public section
 
 universe v u
 
