@@ -7,10 +7,12 @@ module
 
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.BigOperators.NatAntidiagonal
+public import Mathlib.Algebra.BigOperators.Intervals
 public import Mathlib.Data.Nat.Choose.Central
 public import Mathlib.Tactic.Field
 public import Mathlib.Tactic.GCongr
 public import Mathlib.Tactic.Positivity
+public import Mathlib.Tactic.Qify
 import Mathlib.Data.Tree.Basic
 
 /-!
@@ -234,8 +236,8 @@ theorem largeSchroder_succ (n : ℕ) :
     ∑ i ∈ Iic n, largeSchroder i * largeSchroder (n - i) := by
   rw [largeSchroder, Iic_eq_Icc]
   simp only [succ_eq_add_one, Nat.bot_eq_zero, Nat.add_left_cancel_iff]
-  rw [Icc_eq_range', ← Ico_eq_range', sum_Ico_eq_sum_range]
-  simp only [tsub_zero, zero_add, sum_range]
+  rw [Icc_eq_range', ← Ico_eq_range']
+  simp [sum_range]
 
 theorem largeSchroder_succ_range (n : ℕ) :
   largeSchroder (n + 1) = largeSchroder n +
@@ -243,8 +245,8 @@ theorem largeSchroder_succ_range (n : ℕ) :
   rw [largeSchroder_succ]
   rw [Iic_eq_Icc]
   simp only [Nat.bot_eq_zero, Nat.add_left_cancel_iff]
-  rw [Icc_eq_range', ← Ico_eq_range', sum_Ico_eq_sum_range]
-  simp only [tsub_zero, zero_add]
+  rw [Icc_eq_range', ← Ico_eq_range']
+  simp [sum_range]
 
 /-- The small Schroder number is equal to : `largeSchroder n = 2 * smallSchroder (n + 1), n ≥ 1` -/
 def smallSchroder (n : ℕ) : ℚ :=
