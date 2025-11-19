@@ -180,8 +180,6 @@ open LieModule Matrix
 
 local notation "H" => cartanSubalgebra' b
 
-set_option maxHeartbeats 210000 in
--- This declaration was already right at the heartbeats limit
 private lemma instIsIrreducible_aux₀ {U : LieSubmodule K H (b.support ⊕ ι → K)}
     (χ : H → K) (hχ : χ ≠ 0) (hχ' : genWeightSpace U χ ≠ ⊥) :
     ∃ i, v b i ∈ (genWeightSpace U χ).map U.incl := by
