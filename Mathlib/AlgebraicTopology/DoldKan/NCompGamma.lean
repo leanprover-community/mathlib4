@@ -3,8 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.GammaCompN
-import Mathlib.AlgebraicTopology.DoldKan.NReflectsIso
+module
+
+public import Mathlib.AlgebraicTopology.DoldKan.GammaCompN
+public import Mathlib.AlgebraicTopology.DoldKan.NReflectsIso
 
 /-! The unit isomorphism of the Dold-Kan equivalence
 
@@ -20,6 +22,8 @@ which reflects isomorphisms.
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

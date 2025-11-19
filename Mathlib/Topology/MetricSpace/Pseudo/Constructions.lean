@@ -3,9 +3,11 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.Bornology.Constructions
-import Mathlib.Topology.MetricSpace.Pseudo.Defs
-import Mathlib.Topology.UniformSpace.UniformEmbedding
+module
+
+public import Mathlib.Topology.Bornology.Constructions
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
+public import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!
 # Products of pseudometric spaces and other constructions
@@ -13,6 +15,8 @@ import Mathlib.Topology.UniformSpace.UniformEmbedding
 This file constructs the supremum distance on binary products of pseudometric spaces and provides
 instances for type synonyms.
 -/
+
+@[expose] public section
 
 open Bornology Filter Metric Set Topology
 open scoped NNReal

@@ -3,7 +3,9 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.SupClosed
+module
+
+public import Mathlib.Order.SupClosed
 
 /-!
 # Sublattices
@@ -18,6 +20,8 @@ Subsemilattices, if people care about them.
 
 sublattice
 -/
+
+@[expose] public section
 
 open Function Set
 

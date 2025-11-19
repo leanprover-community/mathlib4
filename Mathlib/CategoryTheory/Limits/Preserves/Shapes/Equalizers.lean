@@ -3,9 +3,11 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.SplitCoequalizer
-import Mathlib.CategoryTheory.Limits.Shapes.SplitEqualizer
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.SplitCoequalizer
+public import Mathlib.CategoryTheory.Limits.Shapes.SplitEqualizer
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Preserving (co)equalizers
@@ -16,6 +18,8 @@ to concrete (co)forks.
 In particular, we show that `equalizerComparison f g G` is an isomorphism iff `G` preserves
 the limit of the parallel pair `f,g`, as well as the dual result.
 -/
+
+@[expose] public section
 
 
 noncomputable section
