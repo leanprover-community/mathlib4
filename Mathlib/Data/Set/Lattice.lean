@@ -3,8 +3,10 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Logic.Pairwise
-import Mathlib.Data.Set.BooleanAlgebra
+module
+
+public import Mathlib.Logic.Pairwise
+public import Mathlib.Data.Set.BooleanAlgebra
 
 /-!
 # The set lattice
@@ -40,6 +42,8 @@ In lemma names,
 * `⋃₀`: `Set.sUnion`
 * `⋂₀`: `Set.sInter`
 -/
+
+@[expose] public section
 
 open Function Set
 
@@ -1296,7 +1300,7 @@ theorem sigmaToiUnion_injective (h : Pairwise (Disjoint on t)) :
       by_contradiction fun ne =>
         have : b₁ ∈ t a₁ ∩ t a₂ := ⟨h₁, b_eq.symm ▸ h₂⟩
         (h ne).le_bot this
-    Sigma.eq a_eq <| Subtype.eq <| by subst b_eq; subst a_eq; rfl
+    Sigma.eq a_eq <| Subtype.ext <| by subst b_eq; subst a_eq; rfl
 
 theorem sigmaToiUnion_bijective (h : Pairwise (Disjoint on t)) :
     Bijective (sigmaToiUnion t) :=

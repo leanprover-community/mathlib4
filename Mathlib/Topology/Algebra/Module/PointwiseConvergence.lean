@@ -3,8 +3,10 @@ Copyright (c) 2024 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Topology.Algebra.Module.StrongTopology
-import Mathlib.Topology.Algebra.Module.WeakDual
+module
+
+public import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.Topology.Algebra.Module.WeakDual
 
 /-!
 # Topology of pointwise convergence on continous linear maps
@@ -34,16 +36,19 @@ continuous if for every `x : E` the evaluation `g · x` is continuous.
 
 -/
 
+@[expose] public section
+
 /-! ### Topology of pointwise convergence -/
 
 variable {α ι : Type*} [TopologicalSpace α]
 variable {𝕜 𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜] [NormedField 𝕜₁] [NormedField 𝕜₂]
 variable {σ : 𝕜₁ →+* 𝕜₂}
-variable {E F : Type*} [AddCommGroup E] [TopologicalSpace E]
+variable {E F Fᵤ : Type*} [AddCommGroup E] [TopologicalSpace E]
   [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F]
-  [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜₁ E] [Module 𝕜₂ F]
+  [AddCommGroup Fᵤ] [UniformSpace Fᵤ] [IsUniformAddGroup Fᵤ]
+  [Module 𝕜 E] [Module 𝕜 F] [Module 𝕜 Fᵤ] [Module 𝕜₁ E] [Module 𝕜₂ F] [Module 𝕜₂ Fᵤ]
 
-open Topology
+open Set Topology
 
 variable (σ E F) in
 /-- The space of continuous linear maps equipped with the topology of pointwise convergence,
@@ -61,6 +66,12 @@ notation:25 E " →Lₚₜ[" R "] " F => PointwiseConvergenceCLM (RingHom.id R) 
 
 namespace PointwiseConvergenceCLM
 
+instance [T2Space F] : T2Space (E →SLₚₜ[σ] F) :=
+  UniformConvergenceCLM.t2Space _ _ _ Set.sUnion_finite_eq_univ
+
+instance continuousEvalConst : ContinuousEvalConst (E →SLₚₜ[σ] F) E F :=
+  UniformConvergenceCLM.continuousEvalConst _ _ _ Set.sUnion_finite_eq_univ
+
 protected theorem hasBasis_nhds_zero_of_basis
     {ι : Type*} {p : ι → Prop} {b : ι → Set F} (h : (𝓝 0 : Filter F).HasBasis p b) :
     (𝓝 (0 : E →SLₚₜ[σ] F)).HasBasis (fun Si : Set E × ι => Finite Si.1 ∧ p Si.2)
@@ -74,11 +85,17 @@ protected theorem hasBasis_nhds_zero :
       fun SV => { f : E →SLₚₜ[σ] F | ∀ x ∈ SV.1, f x ∈ SV.2 } :=
   PointwiseConvergenceCLM.hasBasis_nhds_zero_of_basis (𝓝 0).basis_sets
 
+variable (σ E Fᵤ) in
+protected theorem isUniformEmbedding_coeFn :
+    IsUniformEmbedding ((↑) : (E →SLₚₜ[σ] Fᵤ) → (E → Fᵤ)) :=
+  (UniformOnFun.isUniformEmbedding_toFun_finite E Fᵤ).comp
+    (UniformConvergenceCLM.isUniformEmbedding_coeFn σ Fᵤ _)
+
 variable (σ E F) in
 protected theorem isEmbedding_coeFn : IsEmbedding ((↑) : (E →SLₚₜ[σ] F) → (E → F)) :=
   let _: UniformSpace F := IsTopologicalAddGroup.rightUniformSpace F
   have _ : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
-  (UniformOnFun.isEmbedding_toFun_finite E F).comp (UniformConvergenceCLM.isEmbedding_coeFn σ F _)
+  PointwiseConvergenceCLM.isUniformEmbedding_coeFn σ E F |>.isEmbedding
 
 /-- In the topology of pointwise convergence, `a` converges to `a₀` iff for every `x : E` the map
 `a · x` converges to `a₀ x`. -/
@@ -102,13 +119,7 @@ variable (σ F) in
 @[simps!]
 def evalCLM [ContinuousConstSMul 𝕜₂ F] (a : E) : (E →SLₚₜ[σ] F) →L[𝕜₂] F where
   toLinearMap := (coeLMₛₗ σ E F).flip a
-  cont := by
-    apply continuous_of_continuousAt_zero (f := (coeLMₛₗ σ E F).flip a)
-    simp only [ContinuousAt, map_zero]
-    rw [PointwiseConvergenceCLM.hasBasis_nhds_zero.tendsto_left_iff]
-    intro s hs
-    use ({a}, s)
-    simpa [hs] using ⟨Set.finite_singleton _, fun _ hy ↦ by rwa [Set.mem_setOf_eq] at hy⟩
+  cont := continuous_eval_const a
 
 /-- A map to `E →SLₚₜ[σ] F` is continuous if for every `x : E` the evaluation `g · x` is
 continuous. -/
@@ -121,15 +132,15 @@ variable (𝕜₂ σ E F) in
 @[simps!]
 def _root_.ContinuousLinearMap.toPointwiseConvergenceCLM [ContinuousSMul 𝕜₁ E]
     [ContinuousConstSMul 𝕜₂ F] : (E →SL[σ] F) →L[𝕜₂] (E →SLₚₜ[σ] F) where
-  toLinearMap := LinearMap.id
-  cont := continuous_id_of_le
-    (UniformConvergenceCLM.topologicalSpace_mono _ _ fun _ ↦ Set.Finite.isVonNBounded)
+  __ := LinearMap.id
+  cont := _root_.ContinuousLinearMap.toUniformConvergenceCLM_continuous σ F _
+    (fun _ ↦ Set.Finite.isVonNBounded)
 
 variable (𝕜 E) in
 /-- The topology of pointwise convergence on `E →Lₚₜ[𝕜] 𝕜` coincides with the weak-* topology. -/
 @[simps!]
 def equivWeakDual : (E →Lₚₜ[𝕜] 𝕜) ≃L[𝕜] WeakDual 𝕜 E where
-  toLinearEquiv := LinearEquiv.refl 𝕜 (E →L[𝕜] 𝕜)
+  __ := LinearEquiv.refl 𝕜 (E →L[𝕜] 𝕜)
   continuous_toFun :=
     WeakDual.continuous_of_continuous_eval (fun y ↦ (evalCLM _ 𝕜 y).continuous)
   continuous_invFun := continuous_of_continuous_eval (WeakBilin.eval_continuous _)

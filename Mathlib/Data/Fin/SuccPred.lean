@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Data.Fin.Basic
-import Mathlib.Logic.Equiv.Set
+module
+
+public import Mathlib.Data.Fin.Basic
+public import Mathlib.Logic.Equiv.Set
 
 /-!
 # Successors and predecessor operations of `Fin n`
@@ -19,6 +21,8 @@ related to `Fin.succ`, `Fin.pred`, and related operations on `Fin n`.
 * `Fin.predAbove` : the (partial) inverse of `Fin.succAbove`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid Finset
 
@@ -244,7 +248,7 @@ open Fin.NatCast in
 @[norm_cast, simp]
 theorem coe_eq_castSucc {a : Fin n} : ((a : Nat) : Fin (n + 1)) = castSucc a := by
   ext
-  exact val_cast_of_lt (Nat.lt.step a.is_lt)
+  exact val_cast_of_lt (Nat.lt_succ_of_lt a.is_lt)
 
 open Fin.NatCast in
 theorem coe_succ_lt_iff_lt {n : ℕ} {j k : Fin n} : (j : Fin (n + 1)) < k ↔ j < k := by

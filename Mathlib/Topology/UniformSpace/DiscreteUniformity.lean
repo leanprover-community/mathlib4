@@ -3,7 +3,9 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Antoine Chambert-Loir, María Inés de Frutos Fernández
 -/
-import Mathlib.Topology.UniformSpace.Basic
+module
+
+public import Mathlib.Topology.UniformSpace.Basic
 
 /-! # Discrete uniformity
 
@@ -15,6 +17,8 @@ It induces the discrete topology.
 It is complete.
 
 -/
+
+@[expose] public section
 
 open Filter UniformSpace
 

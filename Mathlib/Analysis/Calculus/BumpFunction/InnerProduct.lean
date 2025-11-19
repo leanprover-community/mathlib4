@@ -3,9 +3,11 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.BumpFunction.Basic
-import Mathlib.Analysis.InnerProductSpace.Calculus
-import Mathlib.Analysis.SpecialFunctions.SmoothTransition
+module
+
+public import Mathlib.Analysis.Calculus.BumpFunction.Basic
+public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Analysis.SpecialFunctions.SmoothTransition
 
 /-!
 # Smooth bump functions in inner product spaces
@@ -17,6 +19,8 @@ see `hasContDiffBump_of_innerProductSpace`.
 
 smooth function, bump function, inner product space
 -/
+
+@[expose] public section
 
 open Function Real
 open scoped Topology

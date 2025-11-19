@@ -3,14 +3,16 @@ Copyright (c) 2024 Madison Crim. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Madison Crim
 -/
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.Divisibility.Prod
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.RingTheory.Localization.Basic
-import Mathlib.Algebra.Group.Pi.Units
-import Mathlib.RingTheory.KrullDimension.Zero
+module
+
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.Divisibility.Prod
+public import Mathlib.Algebra.Group.Submonoid.BigOperators
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.RingTheory.Localization.Basic
+public import Mathlib.Algebra.Group.Pi.Units
+public import Mathlib.RingTheory.KrullDimension.Zero
 
 /-!
 # Localizing a product of commutative rings
@@ -28,6 +30,8 @@ See `Mathlib/RingTheory/Localization/Defs.lean` for a design overview.
 ## Tags
 localization, commutative ring
 -/
+
+@[expose] public section
 
 namespace IsLocalization
 
