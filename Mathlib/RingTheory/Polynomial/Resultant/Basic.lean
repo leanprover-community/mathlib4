@@ -200,7 +200,7 @@ private lemma resultant_add_mul_monomial_right (hk : k + m ≤ n) (hf : f.natDeg
       congr 1
       ext j₁ j₂
       simp only [Matrix.of_apply, lt_add_iff_pos_right, zero_lt_one, ↓reduceIte, add_assoc,
-        add_lt_add_iff_left, Nat.lt_one_iff, Nat.add_eq_zero, hm, and_false, smul_eq_mul,
+        add_lt_add_iff_left, Nat.lt_one_iff, Nat.add_eq_zero_iff, hm, and_false, smul_eq_mul,
         Matrix.updateCol_apply, Fin.ext_iff, M, M₂, neg_mul, ← sub_eq_add_neg]
       obtain rfl | h := eq_or_ne ↑j₂ i
       · simp only [↓reduceIte, sylvester, Set.mem_Icc, coeff_add, Fin.eta, Matrix.of_apply,
@@ -312,11 +312,11 @@ lemma resultant_succ_left_deg (hf : f.natDegree ≤ m) :
       induction j using Fin.addCases with
       | left j =>
         have : ((Fin.last m).castAdd (n + 1)).succAbove ((j.castAdd (n + 1)).cast (by grind)) =
-          j.castSucc.castAdd (n + 1) := by ext; simp [Fin.succAbove, Fin.lt_iff_val_lt_val]
+          j.castSucc.castAdd (n + 1) := by ext; simp [Fin.succAbove, Fin.lt_def]
         simp [this]
       | right j =>
         have : ((Fin.last m).castAdd (n + 1)).succAbove ((j.natAdd m).cast (by grind)) =
-          j.natAdd _ := by ext; simp [Fin.succAbove, Fin.lt_iff_val_lt_val, add_right_comm]
+          j.natAdd _ := by ext; simp [Fin.succAbove, Fin.lt_def, add_right_comm]
         simp only [ite_and, this, Fin.addCases_right]
         split_ifs with h₁ h₂ h₃ h₃ <;> try first | omega | rfl
         exact coeff_eq_zero_of_natDegree_lt (by omega)
