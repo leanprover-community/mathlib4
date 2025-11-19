@@ -275,10 +275,9 @@ theorem ofScalars_radius_eq_zero_of_tendsto [NormOneClass E]
   refine not_summable_of_ratio_norm_eventually_ge (r := 2) (by simp) ?_ ?_
   · contrapose! hc
     apply not_tendsto_atTop_of_tendsto_nhds (a:=0)
-    rw [not_frequently] at hc
     apply Tendsto.congr' ?_ tendsto_const_nhds
     filter_upwards [hc] with n hc'
-    rw [ofScalars_norm, norm_mul, norm_norm, not_ne_iff, mul_eq_zero] at hc'
+    rw [ofScalars_norm, norm_mul, norm_norm, mul_eq_zero] at hc'
     cases hc' <;> aesop
   · filter_upwards [hc.eventually_ge_atTop (2*r⁻¹), eventually_ne_atTop 0] with n hc hn
     simp only [ofScalars_norm, norm_mul, norm_norm, norm_pow, NNReal.norm_eq]

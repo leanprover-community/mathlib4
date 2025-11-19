@@ -360,12 +360,12 @@ variable {γ : Type*} [CompleteLinearOrder γ]
 theorem lowerSemicontinuousWithinAt_iff_le_liminf {f : α → γ} :
     LowerSemicontinuousWithinAt f s x ↔ f x ≤ liminf f (𝓝[s] x) := by
   constructor
-  · intro hf; unfold LowerSemicontinuousWithinAt at hf
-    contrapose! hf
-    obtain ⟨z, ltz, y, ylt, h₁⟩ := hf.exists_disjoint_Iio_Ioi; use y
-    exact ⟨ylt, fun h => ltz.not_ge
-      (le_liminf_of_le (by isBoundedDefault) (h.mono fun _ h₂ =>
-        le_of_not_gt fun h₃ => (h₁ _ h₃ _ h₂).false))⟩
+  · intro h; unfold LowerSemicontinuousWithinAt at h
+    by_contra! hf
+    obtain ⟨z, ltz, y, ylt, h₁⟩ := hf.exists_disjoint_Iio_Ioi
+    exact ltz.not_ge
+      (le_liminf_of_le (by isBoundedDefault) ((h y ylt).mono fun _ h₂ =>
+        le_of_not_gt fun h₃ => (h₁ _ h₃ _ h₂).false))
   exact fun hf y ylt => eventually_lt_of_lt_liminf (ylt.trans_le hf)
 
 alias ⟨LowerSemicontinuousWithinAt.le_liminf, _⟩ := lowerSemicontinuousWithinAt_iff_le_liminf
