@@ -458,6 +458,10 @@ end Localization
 
 open IsLocalization
 
+theorem Field.isLocalization_self {K : Type*} [Field K] {M : Submonoid K} (hM : 0 ∉ M) :
+    IsLocalization M K :=
+  .at_units _ (fun x _ => IsUnit.mk0 _ (by rintro rfl; contradiction))
+
 /-- If `R` is a field, then localizing at a submonoid not containing `0` adds no new elements. -/
 theorem IsField.localization_map_bijective {R Rₘ : Type*} [CommRing R] [CommRing Rₘ]
     {M : Submonoid R} (hM : (0 : R) ∉ M) (hR : IsField R) [Algebra R Rₘ] [IsLocalization M Rₘ] :
