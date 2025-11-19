@@ -34,9 +34,15 @@ variable [IsFiltered C] [LocallySmall.{w} C] [FinallySmall.{w} C]
 
 lemma exists_of_isFiltered :
     ∃ (D : Type w) (_ : SmallCategory D) (_ : IsFiltered D) (F : D ⥤ C), F.Final := by
+  /- First, under the assumption `Category.{w}` (instead of `LocallySmall.{w}`),
+  we get most of the conclusion but instead of `D : Type w`,
+  we only get a `w`-small `D : Type u`. -/
   have (C₀ : Type u) [Category.{w} C₀] [IsFiltered C₀] [FinallySmall.{w} C₀] :
       ∃ (D : Type u) (_ : Small.{w} D) (_ : Category.{w} D) (_ : IsFiltered D) (F : D ⥤ C₀),
         F.Final := by
+    /- For `D`, we can choose the full subcategory of `C₀` which is the strict image
+    of the final functor `fromFinalModel.{w} C₀ : FinalModel.{w} C₀ ⥤ C₀`,
+    where `FinalModel.{w} C₀` is a `w`-small category. -/
     let P : ObjectProperty C₀ := ObjectProperty.strictMap ⊤ (fromFinalModel.{w} C₀)
     have hP (X : C₀) : ∃ (Y : C₀) (hY : P Y), Nonempty (X ⟶ Y) := by
       let f : StructuredArrow X (fromFinalModel.{w} C₀) := Classical.arbitrary _
@@ -61,13 +67,17 @@ lemma exists_of_isFiltered :
     exact ⟨P.FullSubcategory, small_of_surjective (f := G.obj)
       (by rintro ⟨_, Y, _, rfl⟩; exact ⟨Y, rfl⟩), inferInstance, inferInstance, P.ι,
       Functor.final_of_comp_full_faithful' G P.ι ⟩
+  /- We get the conclusion under the assumption `Category.{w}`
+  (instead of `LocallySmall.{w}`). -/
   have (C₀ : Type u) [Category.{w} C₀] (_ : IsFiltered C₀) (_ : FinallySmall.{w} C₀) :
       ∃ (D : Type w) (_ : SmallCategory D) (_ : IsFiltered D) (F : D ⥤ C₀), F.Final := by
     obtain ⟨D, _, _, _, F, _⟩ := this C₀
     let e := equivSmallModel.{w} D
     exact ⟨_, _, of_equivalence e, e.inverse ⋙ F, inferInstance⟩
+  /- To get the conclusion for the given category `C`, it suffices to apply
+  the previous result to the category `ShrinkHoms C`. -/
   let e := ShrinkHoms.equivalence.{w} C
-  obtain ⟨D, _, _, F, _⟩ := this (ShrinkHoms.{u} C)
+  obtain ⟨D, _, _, F, _⟩ := this (ShrinkHoms C)
     (of_equivalence e) (finallySmall_of_final_of_finallySmall e.functor)
   exact ⟨D, inferInstance, inferInstance, F ⋙ e.inverse, inferInstance⟩
 
