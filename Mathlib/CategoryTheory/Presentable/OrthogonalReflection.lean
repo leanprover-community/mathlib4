@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.CategoryTheory.Presentable.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Localization.Bousfield
+import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 
 /-!
@@ -44,13 +46,33 @@ suitable assumptions (TODO).
 
 -/
 
-universe w v u
+universe w v' u' v u
 
 namespace CategoryTheory
 
 open Limits Localization
 
 variable {C : Type u} [Category.{v} C] (W : MorphismProperty C)
+
+lemma MorphismProperty.isClosedUnderColimitsOfShape_isLocal
+    (J : Type u') [Category.{v'} J] [EssentiallySmall.{w} J]
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalFiltered J κ]
+    (hW : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f → IsCardinalPresentable X κ ∧ IsCardinalPresentable Y κ) :
+    W.isLocal.IsClosedUnderColimitsOfShape J where
+  colimitsOfShape_le := fun Z ⟨p⟩ X Y f hf ↦ by
+    obtain ⟨_, _⟩ := hW f hf
+    refine ⟨fun g₁ g₂ h ↦ ?_, fun g ↦ ?_⟩
+    · obtain ⟨j₁, g₁, rfl⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ p.isColimit g₁
+      obtain ⟨j₂, g₂, rfl⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ p.isColimit g₂
+      dsimp at h ⊢
+      obtain ⟨j₃, u, v, huv⟩ :=
+        IsCardinalPresentable.exists_eq_of_isColimit κ p.isColimit (f ≫ g₁) (f ≫ g₂)
+          (by simpa)
+      simp only [Category.assoc] at huv
+      rw [← p.w u, ← p.w v, reassoc_of% ((p.prop_diag_obj j₃ _ hf).1 huv)]
+    · obtain ⟨j, g, rfl⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ p.isColimit g
+      obtain ⟨g, rfl⟩ := (p.prop_diag_obj j _ hf).2 g
+      exact ⟨g ≫ p.ι.app j, by simp⟩
 
 namespace OrthogonalReflection
 
