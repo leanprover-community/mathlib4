@@ -3,14 +3,18 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Tactic.NormNum.Eq
-import Mathlib.Algebra.Order.Invertible
-import Mathlib.Algebra.Order.Monoid.WithTop
-import Mathlib.Algebra.Order.Ring.Cast
+module
+
+public meta import Mathlib.Tactic.NormNum.Eq
+public meta import Mathlib.Algebra.Order.Invertible
+public meta import Mathlib.Algebra.Order.Monoid.WithTop
+public meta import Mathlib.Algebra.Order.Ring.Cast
 
 /-!
 # `norm_num` extensions for inequalities.
 -/
+
+public meta section
 
 open Lean Meta Qq
 

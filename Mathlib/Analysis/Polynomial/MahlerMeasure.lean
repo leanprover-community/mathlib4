@@ -3,10 +3,11 @@ Copyright (c) 2025 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
+module
 
-import Mathlib.Analysis.Analytic.Polynomial
-import Mathlib.Analysis.Complex.JensenFormula
-import Mathlib.Analysis.Complex.Polynomial.Basic
+public import Mathlib.Analysis.Analytic.Polynomial
+public import Mathlib.Analysis.Complex.JensenFormula
+public import Mathlib.Analysis.Complex.Polynomial.Basic
 
 /-!
 # Mahler measure of complex polynomials
@@ -29,6 +30,8 @@ properties.
   value of its leading coefficient times the product of the absolute values of its roots lying
   outside the unit disk.
 -/
+
+@[expose] public section
 
 namespace Polynomial
 

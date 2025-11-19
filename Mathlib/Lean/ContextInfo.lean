@@ -3,17 +3,20 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+module
 
-import Mathlib.Lean.Elab.Tactic.Meta
+public meta import Mathlib.Lean.Elab.Tactic.Meta
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+public import Mathlib.Tactic.Linter.Header
 
 /-! # Executing actions using the infotree
 
 This file contains helper functions for running `CoreM`, `MetaM` and tactic actions
 in the context of an infotree node.
 -/
+
+@[expose] public meta section
 
 open Lean Elab Term Command Linter
 
