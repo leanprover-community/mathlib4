@@ -3,10 +3,12 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Creates.Pullbacks
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Sites.Sieves
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Creates.Pullbacks
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Sites.Sieves
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 
@@ -31,6 +33,8 @@ These two are defined in later files. For precoverages, we define stability cond
   presieves yields a covering presieve.
 
 -/
+
+@[expose] public section
 
 universe w w' v u
 

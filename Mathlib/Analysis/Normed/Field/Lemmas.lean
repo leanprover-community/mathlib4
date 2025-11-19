@@ -3,10 +3,12 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Analysis.Normed.Group.Rat
-import Mathlib.Analysis.Normed.Ring.Lemmas
-import Mathlib.Topology.MetricSpace.DilationEquiv
+module
+
+public import Mathlib.Analysis.Normed.Field.Basic
+public import Mathlib.Analysis.Normed.Group.Rat
+public import Mathlib.Analysis.Normed.Ring.Lemmas
+public import Mathlib.Topology.MetricSpace.DilationEquiv
 
 /-!
 # Normed fields
@@ -18,6 +20,8 @@ Some useful results that relate the topology of the normed field to the discrete
 * `discreteTopology_of_bddAbove_range_norm`
 
 -/
+
+@[expose] public section
 
 -- Guard against import creep.
 assert_not_exists RestrictScalars
@@ -102,7 +106,7 @@ instance (priority := 100) NormedDivisionRing.to_continuousInv₀ : ContinuousIn
       ‖e⁻¹ - r⁻¹‖ = ‖r‖⁻¹ * ‖r - e‖ * ‖e‖⁻¹ := by
         rw [← norm_inv, ← norm_inv, ← norm_mul, ← norm_mul, mul_sub, sub_mul,
           mul_assoc _ e, inv_mul_cancel₀ r0, mul_inv_cancel₀ e0, one_mul, mul_one]
-      _ = ‖r - e‖ / ‖r‖ / ‖e‖ := by field
+      _ = ‖r - e‖ / ‖r‖ / ‖e‖ := by ring
       _ ≤ ‖r - e‖ / ‖r‖ / ε := by gcongr
   refine squeeze_zero' (Eventually.of_forall fun _ => norm_nonneg _) this ?_
   refine (((continuous_const.sub continuous_id).norm.div_const _).div_const _).tendsto' _ _ ?_

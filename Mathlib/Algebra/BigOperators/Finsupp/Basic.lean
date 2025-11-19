@@ -3,18 +3,22 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.Data.Finsupp.Ext
-import Mathlib.Data.Finsupp.Indicator
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Group.Submonoid.BigOperators
+public import Mathlib.Data.Finsupp.Ext
+public import Mathlib.Data.Finsupp.Indicator
 
 /-!
 # Big operators for finsupps
 
 This file contains theorems relevant to big operators in finitely supported functions.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -80,6 +84,10 @@ theorem prod_comm (f : α →₀ M) (g : β →₀ M') (h : α → M → β → 
     (f.prod fun x v => g.prod fun x' v' => h x v x' v') =
       g.prod fun x' v' => f.prod fun x v => h x v x' v' :=
   Finset.prod_comm
+
+@[to_additive]
+theorem prod_finsetProd_comm {s : Finset β} (f : α →₀ M) (h : α → M → β → N) :
+    (f.prod fun a m => ∏ b ∈ s, h a m b) = ∏ b ∈ s, f.prod fun a m => h a m b := Finset.prod_comm
 
 @[to_additive (attr := simp)]
 theorem prod_ite_eq [DecidableEq α] (f : α →₀ M) (a : α) (b : α → M → N) :
@@ -402,6 +410,12 @@ theorem univ_sum_single_apply' [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
   simp_rw [single, coe_mk]
   classical rw [Finset.sum_pi_single]
   simp
+
+lemma sum_single_add_single (f₁ f₂ : ι) (g₁ g₂ : A) (F : ι → A → B) (H : f₁ ≠ f₂)
+    (HF : ∀ f, F f 0 = 0) :
+    sum (single f₁ g₁ + single f₂ g₂) F = F f₁ g₁ + F f₂ g₂ := by
+  classical
+  simp [sum_of_support_subset _ support_single_add_single_subset, single_apply, H, HF, H.symm]
 
 theorem equivFunOnFinite_symm_eq_sum [Fintype α] [AddCommMonoid M] (f : α → M) :
     equivFunOnFinite.symm f = ∑ a, single a (f a) :=
