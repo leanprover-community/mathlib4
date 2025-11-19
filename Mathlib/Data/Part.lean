@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 -/
-import Mathlib.Algebra.Notation.Defs
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Logic.Equiv.Defs
+module
+
+public import Mathlib.Algebra.Notation.Defs
+public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Partial values of a type
@@ -39,6 +41,8 @@ Other:
 For `a : α`, `o : Part α`, `a ∈ o` means that `o` is defined and equal to `a`. Formally, it means
 `o.Dom` and `o.get _ = a`.
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 

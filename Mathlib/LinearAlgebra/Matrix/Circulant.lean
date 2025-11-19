@@ -3,9 +3,11 @@ Copyright (c) 2021 Lu-Ming Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lu-Ming Zhang
 -/
-import Mathlib.Algebra.Group.Fin.Basic
-import Mathlib.LinearAlgebra.Matrix.Symmetric
-import Mathlib.Tactic.Abel
+module
+
+public import Mathlib.Algebra.Group.Fin.Basic
+public import Mathlib.LinearAlgebra.Matrix.Symmetric
+public import Mathlib.Tactic.Abel
 
 /-!
 # Circulant matrices
@@ -30,6 +32,8 @@ Namely, the index type of the circulant matrices in discussion is `Fin n`.
 
 circulant, matrix
 -/
+
+@[expose] public section
 
 
 variable {α β n R : Type*}
