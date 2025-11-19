@@ -229,12 +229,10 @@ theorem modByMonic_eq_sub_mul_div :
         have ih := modByMonic_eq_sub_mul_div
           (p - q * (C (leadingCoeff p) * X ^ (natDegree p - natDegree q))) q
         unfold modByMonic divByMonic divModByMonicAux
-        dsimp
-        rw [dif_pos hq, if_pos h]
+        rw [dif_pos hq, dif_pos h]
         rw [modByMonic, dif_pos hq] at ih
         refine ih.trans ?_
-        unfold divByMonic
-        rw [dif_pos hq, dif_pos hq, if_pos h, mul_add, sub_add_eq_sub_sub]
+        rw [divByMonic, dif_pos hq, dif_pos hq, dif_pos h, mul_add, sub_add_eq_sub_sub]
       else by
         unfold modByMonic divByMonic divModByMonicAux
         dsimp
