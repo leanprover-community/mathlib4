@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Data.Set.Finite.Lemmas
-import Mathlib.Order.Filter.Bases.Finite
-import Mathlib.Order.Filter.AtTopBot.Basic
+module
+
+public import Mathlib.Data.Set.Finite.Lemmas
+public import Mathlib.Order.Filter.Bases.Finite
+public import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # Finiteness and `Filter.atTop` and `Filter.atBot` filters
@@ -13,6 +15,8 @@ import Mathlib.Order.Filter.AtTopBot.Basic
 This file contains results on `Filter.atTop` and `Filter.atBot` that depend on
 the finiteness theory developed in Mathlib.
 -/
+
+@[expose] public section
 
 variable {ι ι' α β γ : Type*}
 

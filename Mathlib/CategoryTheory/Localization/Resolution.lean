@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.LocalizerMorphism
+module
+
+public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 
 /-!
 # Resolutions for a morphism of localizers
@@ -32,6 +34,8 @@ Similar definitions are done for left resolutions.
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₂' u₁ u₂ u₂'
 

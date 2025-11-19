@@ -3,10 +3,14 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+module
+
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-! # Equip `ℂ` with the Borel sigma-algebra -/
+
+@[expose] public section
 
 
 noncomputable section
