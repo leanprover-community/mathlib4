@@ -33,6 +33,9 @@ We specialize this statement to the cases where `B` is scalar multiplication and
 conditional expectation, pull-out, bilinear map
 -/
 
+@[expose] public section
+
+
 open TopologicalSpace MeasureTheory.Lp Filter ContinuousLinearMap
 
 open scoped NNReal ENNReal Topology MeasureTheory
