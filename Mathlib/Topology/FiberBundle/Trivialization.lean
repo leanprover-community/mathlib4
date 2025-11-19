@@ -18,17 +18,17 @@ public import Mathlib.Topology.Order.Basic
 
 ### Basic definitions
 
-* `Trivialization F p` : structure extending open partial homeomorphisms, defining a local
+* `Bundle.Trivialization F p` : structure extending open partial homeomorphisms, defining a local
   trivialization of a topological space `Z` with projection `p` and fiber `F`.
 
-* `Pretrivialization F proj` : trivialization as a partial equivalence, mainly used when the
+* `Bundle.Pretrivialization F proj` : trivialization as a partial equivalence, mainly used when the
   topology on the total space has not yet been defined.
 
 ### Operations on bundles
 
 We provide the following operations on `Trivialization`s.
 
-* `Trivialization.compHomeomorph`: given a local trivialization `e` of a fiber bundle
+* `Bundle.Trivialization.compHomeomorph`: given a local trivialization `e` of a fiber bundle
   `p : Z → B` and a homeomorphism `h : Z' ≃ₜ Z`, returns a local trivialization of the fiber bundle
   `p ∘ h`.
 
@@ -36,8 +36,8 @@ We provide the following operations on `Trivialization`s.
 
 Previously, in mathlib, there was a structure `topological_vector_bundle.trivialization` which
 extended another structure `topological_fiber_bundle.trivialization` by a linearity hypothesis. As
-of PR https://github.com/leanprover-community/mathlib3/pull/17359, we have changed this to a single structure
-`Trivialization` (no namespace), together with a mixin class `Trivialization.IsLinear`.
+of PR https://github.com/leanprover-community/mathlib3/pull/17359, we have changed this to a single
+structure `Bundle.Trivialization`, together with a mixin class `Bundle.Trivialization.IsLinear`.
 
 This permits all the *data* of a vector bundle to be held at the level of fiber bundles, so that the
 same trivializations can underlie an object's structure as (say) a vector bundle over `ℂ` and as a
@@ -63,7 +63,7 @@ below as `Trivialization F proj`) if the total space has not been given a topolo
 have a topology on both the fiber and the base space. Through the construction
 `topological_fiber_prebundle F proj` it will be possible to promote a
 `Pretrivialization F proj` to a `Trivialization F proj`. -/
-structure Pretrivialization (proj : Z → B) extends PartialEquiv Z (B × F) where
+structure Bundle.Pretrivialization (proj : Z → B) extends PartialEquiv Z (B × F) where
   open_target : IsOpen target
   /-- The domain of the local trivialisation (i.e., a subset of the bundle `Z`'s base):
   outside of it, the pretrivialisation returns a junk value -/
@@ -73,7 +73,7 @@ structure Pretrivialization (proj : Z → B) extends PartialEquiv Z (B × F) whe
   target_eq : target = baseSet ×ˢ univ
   proj_toFun : ∀ p ∈ source, (toFun p).1 = proj p
 
-namespace Pretrivialization
+namespace Bundle.Pretrivialization
 
 variable {F}
 variable (e : Pretrivialization F proj) {x : Z}
@@ -822,4 +822,4 @@ theorem proj_clift : proj (T.clift (e, γ) i) = γ i := by
 
 end Lift
 
-end Trivialization
+end Bundle.Trivialization
