@@ -3,8 +3,10 @@ Copyright (c) 2025 Junqi Liu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junqi Liu, Jinzhao Pan
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Derivative
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Derivative
 
 /-!
 # shifted Legendre Polynomials
@@ -25,6 +27,8 @@ polynomial in `ℤ[X]`. We prove some basic properties of the Legendre polynomia
 
 shifted Legendre polynomials, derivative
 -/
+
+@[expose] public section
 
 open Nat BigOperators Finset
 

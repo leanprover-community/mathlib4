@@ -3,11 +3,13 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Patrick Massot
 -/
-import Mathlib.Algebra.GroupWithZero.Indicator
-import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Topology.Homeomorph.Defs
-import Mathlib.Topology.Separation.Hausdorff
+module
+
+public import Mathlib.Algebra.GroupWithZero.Indicator
+public import Mathlib.Algebra.Module.Basic
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Topology.Homeomorph.Defs
+public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # The topological support of a function
@@ -28,6 +30,8 @@ The definitions have been put in the root namespace following many other topolog
 like `Embedding`. Since then, `Embedding` was renamed to `Topology.IsEmbedding`, so it might be
 worth reconsidering namespacing the definitions here.
 -/
+
+@[expose] public section
 
 
 open Function Set Filter Topology

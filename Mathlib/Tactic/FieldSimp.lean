@@ -3,19 +3,23 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, David Renshaw, Heather Macbeth, Arend Mellendijk, Michael Rothgang
 -/
-import Mathlib.Data.Ineq
-import Mathlib.Tactic.FieldSimp.Attr
-import Mathlib.Tactic.FieldSimp.Discharger
-import Mathlib.Tactic.FieldSimp.Lemmas
-import Mathlib.Util.AtLocation
-import Mathlib.Util.AtomM.Recurse
-import Mathlib.Util.SynthesizeUsing
+module
+
+public meta import Mathlib.Data.Ineq
+public meta import Mathlib.Tactic.FieldSimp.Attr
+public meta import Mathlib.Tactic.FieldSimp.Discharger
+public meta import Mathlib.Tactic.FieldSimp.Lemmas
+public meta import Mathlib.Util.AtLocation
+public meta import Mathlib.Util.AtomM.Recurse
+public meta import Mathlib.Util.SynthesizeUsing
 
 /-!
 # `field_simp` tactic
 
 Tactic to clear denominators in algebraic expressions.
 -/
+
+public meta section
 
 open Lean Meta Qq
 
@@ -255,7 +259,7 @@ namespace DenomCondition
 
 /-- Given a field-simp-normal-form expression `L` (a product of powers of atoms), a proof (according
 to the value of `DenomCondition`) of that expression's nonzeroness, strict positivity, etc. -/
-def proof {iM : Q(GroupWithZero $M)} (L : qNF M) : DenomCondition iM → Type
+@[expose] def proof {iM : Q(GroupWithZero $M)} (L : qNF M) : DenomCondition iM → Type
   | .none => Unit
   | .nonzero => Q(NF.eval $(qNF.toNF L) ≠ 0)
   | .positive _ _ _ _ => Q(0 < NF.eval $(qNF.toNF L))

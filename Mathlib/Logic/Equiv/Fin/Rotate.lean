@@ -3,8 +3,10 @@ Copyright (c) 2025 Paul Lezeau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Lezeau, Lawrence Wu, Jeremy Tan
 -/
-import Mathlib.Algebra.Group.Fin.Basic
-import Mathlib.Logic.Equiv.Fin.Basic
+module
+
+public import Mathlib.Algebra.Group.Fin.Basic
+public import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!
 # Cyclic permutations on `Fin n`
@@ -14,6 +16,8 @@ This file defines
 * `finCycle`, the permutation that adds a fixed number to each element of `Fin n`
 and proves various lemmas about them.
 -/
+
+@[expose] public section
 
 open Nat
 

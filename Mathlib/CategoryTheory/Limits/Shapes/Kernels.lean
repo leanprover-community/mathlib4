@@ -3,7 +3,9 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 
 /-!
 # Kernels and cokernels
@@ -44,6 +46,8 @@ general limits can be used.
 
 * [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
 -/
+
+@[expose] public section
 
 
 noncomputable section

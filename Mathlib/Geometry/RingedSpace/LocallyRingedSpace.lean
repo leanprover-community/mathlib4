@@ -3,10 +3,12 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.Geometry.RingedSpace.Basic
-import Mathlib.Geometry.RingedSpace.Stalks
-import Mathlib.RingTheory.Nilpotent.Defs
+module
+
+public import Mathlib.Algebra.Category.Ring.Constructions
+public import Mathlib.Geometry.RingedSpace.Basic
+public import Mathlib.Geometry.RingedSpace.Stalks
+public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # The category of locally ringed spaces
@@ -15,6 +17,8 @@ We define (bundled) locally ringed spaces (as `SheafedSpace CommRing` along with
 stalks are local rings), and morphisms between these (morphisms in `SheafedSpace` with
 `IsLocalHom` on the stalk maps).
 -/
+
+@[expose] public section
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 

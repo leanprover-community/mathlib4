@@ -3,11 +3,13 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Data.List.Forall2
-import Mathlib.Data.List.Induction
-import Mathlib.Data.List.Lex
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Logic.Relation
+module
+
+public import Mathlib.Data.List.Forall2
+public import Mathlib.Data.List.Induction
+public import Mathlib.Data.List.Lex
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Logic.Relation
 
 /-!
 # Relation chain
@@ -18,6 +20,8 @@ and `r a₂ a₃` and ... and `r aₙ₋₁ aₙ`. We write it `IsChain r [a₁,
 A graph-specialized version is in development and will hopefully be added under `combinatorics.`
 sometime soon.
 -/
+
+@[expose] public section
 
 assert_not_imported Mathlib.Algebra.Order.Group.Nat
 

@@ -3,8 +3,10 @@ Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli
 -/
-import Mathlib.CategoryTheory.Groupoid
-import Mathlib.CategoryTheory.PathCategory.Basic
+module
+
+public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.CategoryTheory.PathCategory.Basic
 
 /-!
 # Free groupoid on a quiver
@@ -29,6 +31,8 @@ The free groupoid is first defined by symmetrifying the quiver, taking the induc
 and finally quotienting by the reducibility relation.
 
 -/
+
+@[expose] public section
 
 open Set Function
 

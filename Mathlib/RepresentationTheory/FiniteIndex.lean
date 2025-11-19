@@ -3,9 +3,11 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.GroupTheory.Index
-import Mathlib.RepresentationTheory.Coinduced
-import Mathlib.RepresentationTheory.Induced
+module
+
+public import Mathlib.GroupTheory.Index
+public import Mathlib.RepresentationTheory.Coinduced
+public import Mathlib.RepresentationTheory.Induced
 
 /-!
 # (Co)induced representations of a finite index subgroup
@@ -23,6 +25,8 @@ and which is 0 elsewhere. Meanwhile, the inverse sends `f : G → A` to `∑ᵢ 
 * `Rep.indCoindNatIso k S`: A natural isomorphism between the functors `Ind_S^G` and `Coind_S^G`.
 
 -/
+
+@[expose] public section
 
 universe u
 
