@@ -3,10 +3,12 @@ Copyright (c) 2024 Judith Ludwig, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Christian Merten
 -/
-import Mathlib.RingTheory.AdicCompletion.Basic
-import Mathlib.RingTheory.AdicCompletion.Algebra
-import Mathlib.Algebra.DirectSum.Basic
-import Mathlib.LinearAlgebra.SModEq.Pointwise
+module
+
+public import Mathlib.Algebra.DirectSum.Basic
+public import Mathlib.LinearAlgebra.SModEq.Pointwise
+public import Mathlib.RingTheory.AdicCompletion.Basic
+public import Mathlib.RingTheory.AdicCompletion.Algebra
 
 /-!
 # Functoriality of adic completions
@@ -24,6 +26,8 @@ In this file we establish functorial properties of the adic completion.
 - `piEquivOfFintype`: adic completion commutes with finite products
 
 -/
+
+@[expose] public section
 
 suppress_compilation
 

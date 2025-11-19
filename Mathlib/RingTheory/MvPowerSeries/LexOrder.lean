@@ -3,9 +3,10 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.RingTheory.MvPowerSeries.Basic
-import Mathlib.Data.Finsupp.WellFounded
+public import Mathlib.RingTheory.MvPowerSeries.Basic
+public import Mathlib.Data.Finsupp.WellFounded
 
 /-! LexOrder of multivariate power series
 
@@ -15,6 +16,8 @@ which can be used to define a natural valuation `lexOrder` on the ring `MvPowerS
 the smallest exponent in the support.
 
 -/
+
+@[expose] public section
 
 namespace MvPowerSeries
 

@@ -3,9 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro, Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Quotient.Defs
-import Mathlib.RingTheory.Congruence.Defs
-import Mathlib.RingTheory.Ideal.Defs
+module
+
+public import Mathlib.LinearAlgebra.Quotient.Defs
+public import Mathlib.RingTheory.Congruence.Defs
+public import Mathlib.RingTheory.Ideal.Defs
 
 /-!
 # Ideal quotients
@@ -23,6 +25,8 @@ See `Algebra.RingQuot` for quotients of non-commutative rings.
 - `Ideal.Quotient.lift`: turn a map `R → S` into a map `R ⧸ I → S`
 - `Ideal.quotEquivOfEq`: quotienting by equal ideals gives isomorphic rings
 -/
+
+@[expose] public section
 
 
 universe u v w

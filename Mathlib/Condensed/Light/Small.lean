@@ -3,13 +3,17 @@ Copyright (c) 2025 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Equivalence
-import Mathlib.Condensed.Light.Basic
+module
+
+public import Mathlib.CategoryTheory.Sites.Equivalence
+public import Mathlib.Condensed.Light.Basic
 
 /-!
 
 # Equivalence of light condensed objects with sheaves on a small site
 -/
+
+@[expose] public section
 
 universe u v w
 

@@ -3,7 +3,9 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Christian Merten
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
 /-!
 # Pullbacks in the category of types
@@ -12,6 +14,8 @@ In `Type*`, the pullback of `f : X ⟶ Z` and `g : Y ⟶ Z` is the
 subtype `{ p : X × Y // f p.1 = g p.2 }` of the product.
 We show some additional lemmas for pullbacks in the category of types.
 -/
+
+@[expose] public section
 
 universe v u
 
