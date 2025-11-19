@@ -289,6 +289,9 @@ theorem card_eq_top_of_infinite [Infinite α] : card α = ⊤ := by
 
 @[simp] theorem card_lt_top : card α < ⊤ ↔ Finite α := by simp [card, lt_aleph0_iff_finite]
 
+lemma card_lt_top_iff_finite : card α < ⊤ ↔ Finite α := by
+  simp [← not_iff_not]
+
 @[simp]
 theorem card_sum (α β : Type*) :
     card (α ⊕ β) = card α + card β := by
