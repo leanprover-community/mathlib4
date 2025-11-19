@@ -3,9 +3,11 @@ Copyright (c) 2025 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
-import Mathlib.Geometry.Euclidean.Projection
-import Mathlib.Geometry.Euclidean.Sphere.Basic
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
+public import Mathlib.Geometry.Euclidean.Projection
+public import Mathlib.Geometry.Euclidean.Sphere.Basic
 
 /-!
 # Tangency for spheres.
@@ -48,6 +50,8 @@ This file defines notions of spheres being tangent to affine subspaces and other
 * `EuclideanGeometry.Sphere.IsIntTangent`: the property of two spheres being internally tangent.
 
 -/
+
+@[expose] public section
 
 
 namespace EuclideanGeometry

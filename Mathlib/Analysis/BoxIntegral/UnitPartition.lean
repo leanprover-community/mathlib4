@@ -3,10 +3,12 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Algebra.Module.ZLattice.Basic
-import Mathlib.Analysis.BoxIntegral.Integrability
-import Mathlib.Analysis.BoxIntegral.Partition.Measure
-import Mathlib.Analysis.BoxIntegral.Partition.Tagged
+module
+
+public import Mathlib.Algebra.Module.ZLattice.Basic
+public import Mathlib.Analysis.BoxIntegral.Integrability
+public import Mathlib.Analysis.BoxIntegral.Partition.Measure
+public import Mathlib.Analysis.BoxIntegral.Partition.Tagged
 
 /-!
 # Unit Partition
@@ -51,6 +53,8 @@ is its vertices are in `ι → ℤ`, then the corresponding prepartition is actu
   `card (s ∩ x⁻¹ • (ι → ℤ)) / x ^ card ι → volume s` but the limit is over a real variable `x`.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

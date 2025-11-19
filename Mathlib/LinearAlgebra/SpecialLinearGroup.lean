@@ -3,12 +3,13 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.LinearAlgebra.Dual.Basis
-import Mathlib.LinearAlgebra.Matrix.Dual
-import Mathlib.LinearAlgebra.GeneralLinearGroup
-import Mathlib.LinearAlgebra.Charpoly.BaseChange
+public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.LinearAlgebra.Dual.Basis
+public import Mathlib.LinearAlgebra.Matrix.Dual
+public import Mathlib.LinearAlgebra.GeneralLinearGroup
+public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 
 /-!
 # The special linear group of a module
@@ -38,6 +39,8 @@ from `Matrix.SpecialLinearGroup n R` to `SpecialLinearGroup R V`,
 associated with a finite basis of `V`.
 
 -/
+
+@[expose] public section
 
 variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
 
