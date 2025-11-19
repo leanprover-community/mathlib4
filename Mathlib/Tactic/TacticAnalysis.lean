@@ -3,11 +3,13 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+module
 
-import Lean.Util.Heartbeats
-import Lean.Server.InfoUtils
-import Mathlib.Lean.ContextInfo
-import Mathlib.Lean.Elab.Tactic.Meta
+public meta import Lean.Util.Heartbeats
+public meta import Lean.Server.InfoUtils
+public meta import Mathlib.Lean.ContextInfo
+public meta import Mathlib.Lean.Elab.Tactic.Meta
+public meta import Lean.Compiler.IR.CompilerM
 
 /-! # Tactic analysis framework
 
@@ -32,6 +34,8 @@ make a definition of type `Mathlib.TacticAnalysis.Config` and give the `Config` 
 The `ComplexConfig` interface doesn't feel quite intuitive and flexible yet and should be changed
 in the future. Please do not rely on this interface being stable.
 -/
+
+public meta section
 
 open Lean Elab Term Command Linter
 
@@ -196,7 +200,7 @@ def findTacticSeqs (tree : InfoTree) : CommandElabM (Array (Array TacticNode)) :
           let childSequences :=
             -- This tactic accepts the failure of its children.
             if stx.getKind ∈ [``Lean.Parser.Tactic.tacticTry_, ``Lean.Parser.Tactic.anyGoals] then
-              childSequences.map (· |>.map fun i => { i with mayFail := true })
+              childSequences.map (·.map fun i => { i with mayFail := true })
             else
               childSequences
           return (some ⟨ctx, i, false⟩, childSequences)
@@ -288,7 +292,7 @@ structure ComplexConfig where
   -/
   trigger (context : Option ctx) (currentTactic : Syntax) : TriggerCondition ctx
   /-- Code to run in the context of the tactic, for example an alternative tactic. -/
-  test (context : ctx) (goal : MVarId) : MetaM out
+  test (ctxI : ContextInfo) (i : TacticInfo) (context : ctx) (goal : MVarId) : CommandElabM out
   /-- Decides what to report to the user. -/
   tell (stx : Syntax) (originalSubgoals : List MVarId) (originalHeartbeats : Nat)
     (new : out) (newHeartbeats : Nat) : CommandElabM (Option MessageData)
@@ -311,7 +315,7 @@ def testTacticSeq (config : ComplexConfig) (tacticSeq : Array (TSyntax `tactic))
           if !i.mayFail then
             logWarning m!"original tactic '{stx}' failed: {e.toMessageData}"
           return [goal]
-      let (new, newHeartbeats) ← withHeartbeats <| i.ctxI.runTactic i.tacI goal <| config.test ctx
+      let (new, newHeartbeats) ← withHeartbeats <| config.test i.ctxI i.tacI ctx goal
       if let some msg ← config.tell stx oldGoals oldHeartbeats new newHeartbeats  then
         logWarning msg
 
@@ -354,3 +358,8 @@ def Config.ofComplex (config : ComplexConfig) : Config where
 end ComplexConfig
 
 end Mathlib.TacticAnalysis
+
+/-- A dummy option for testing the tactic analysis framework -/
+register_option linter.tacticAnalysis.dummy : Bool := {
+  defValue := false
+}

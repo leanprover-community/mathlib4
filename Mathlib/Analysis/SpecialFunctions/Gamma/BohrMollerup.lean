@@ -3,8 +3,10 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.Gamma.Deriv
-import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Deriv
+public import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
 
 /-! # Convexity properties of the Gamma function
 
@@ -35,6 +37,8 @@ TODO: This argument can be extended to prove the general `k`-multiplication form
 to a constant, and it should be possible to deduce the value of this constant using Stirling's
 formula).
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -68,7 +72,7 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
     intro c x hc u hx
     dsimp only [f]
     rw [mul_rpow (exp_pos _).le ((rpow_nonneg hx.le) _), ← exp_mul, ← rpow_mul hx.le]
-    congr 2 <;> field_simp
+    congr 2 <;> field
   -- show `f c u` is in `ℒp` for `p = 1/c`:
   have f_mem_Lp :
     ∀ {c u : ℝ} (hc : 0 < c) (hu : 0 < u),
@@ -344,9 +348,13 @@ theorem Gamma_three_div_two_lt_one : Gamma (3 / 2) < 1 := by
       exp_log] <;>
     norm_num
 
+theorem Gamma_strictAntiOn_Ioc : StrictAntiOn Gamma (Ioc 0 1) :=
+  convexOn_Gamma.strictAntiOn (by simp) (by norm_num) <|
+    Gamma_one.symm ▸ Gamma_three_div_two_lt_one
+
 theorem Gamma_strictMonoOn_Ici : StrictMonoOn Gamma (Ici 2) := by
   convert
-    convexOn_Gamma.strict_mono_of_lt (by simp : (0 : ℝ) < 3 / 2)
+    convexOn_Gamma.strictMonoOn (by simp : (0 : ℝ) < 3 / 2)
       (by norm_num : (3 / 2 : ℝ) < 2) (Gamma_two.symm ▸ Gamma_three_div_two_lt_one)
   symm
   rw [inter_eq_right]
@@ -431,7 +439,7 @@ theorem Gamma_mul_Gamma_add_half_of_pos {s : ℝ} (hs : 0 < s) :
   rw [← doublingGamma_eq_Gamma (mul_pos two_pos hs), doublingGamma,
     mul_div_cancel_left₀ _ (two_ne_zero' ℝ), (by abel : 1 - 2 * s = -(2 * s - 1)),
     rpow_neg zero_le_two]
-  field_simp
+  field
 
 end Doubling
 

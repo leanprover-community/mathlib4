@@ -3,9 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Separated
-import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
-import Mathlib.RingTheory.RingHom.Integral
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Separated
+public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
+public import Mathlib.RingTheory.RingHom.Integral
 
 /-!
 
@@ -18,6 +20,8 @@ It is equivalent to ask only that `Y` is covered by affine opens whose preimage 
 and the induced ring map is integral.
 
 -/
+
+@[expose] public section
 
 universe v u
 

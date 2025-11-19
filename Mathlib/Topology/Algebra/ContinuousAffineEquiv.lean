@@ -3,9 +3,11 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
-import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
-import Mathlib.Topology.Algebra.Module.Equiv
-import Mathlib.Topology.Algebra.ContinuousAffineMap
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
+public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.ContinuousAffineMap
 
 /-!
 # Continuous affine equivalences
@@ -31,6 +33,8 @@ which are continuous with continuous inverse.
 with multiplication corresponding to composition in `AffineEquiv.group`.
 
 -/
+
+@[expose] public section
 
 open Function
 
@@ -223,7 +227,7 @@ theorem eq_symm_apply (e : P₁ ≃ᴬ[k] P₂) {x y} : y = e.symm x ↔ e y = x
 
 @[simp]
 theorem image_symm (f : P₁ ≃ᴬ[k] P₂) (s : Set P₂) : f.symm '' s = f ⁻¹' s :=
-  f.symm.toEquiv.image_eq_preimage _
+  f.symm.toEquiv.image_eq_preimage_symm _
 
 @[simp]
 theorem preimage_symm (f : P₁ ≃ᴬ[k] P₂) (s : Set P₁) : f.symm ⁻¹' s = f '' s :=
@@ -238,12 +242,12 @@ protected theorem surjective (e : P₁ ≃ᴬ[k] P₂) : Surjective e :=
 protected theorem injective (e : P₁ ≃ᴬ[k] P₂) : Injective e :=
   e.toEquiv.injective
 
-protected theorem image_eq_preimage (e : P₁ ≃ᴬ[k] P₂) (s : Set P₁) : e '' s = e.symm ⁻¹' s :=
-  e.toEquiv.image_eq_preimage s
+protected theorem image_eq_preimage_symm (e : P₁ ≃ᴬ[k] P₂) (s : Set P₁) : e '' s = e.symm ⁻¹' s :=
+  e.toEquiv.image_eq_preimage_symm s
 
 protected theorem image_symm_eq_preimage (e : P₁ ≃ᴬ[k] P₂) (s : Set P₂) :
     e.symm '' s = e ⁻¹' s := by
-  rw [e.symm.image_eq_preimage, e.symm_symm]
+  rw [e.symm.image_eq_preimage_symm, e.symm_symm]
 
 @[simp]
 theorem image_preimage (e : P₁ ≃ᴬ[k] P₂) (s : Set P₂) : e '' (e ⁻¹' s) = s :=

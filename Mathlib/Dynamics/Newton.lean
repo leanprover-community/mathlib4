@@ -3,10 +3,12 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, Oliver Nash
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Identities
-import Mathlib.RingTheory.Nilpotent.Lemmas
-import Mathlib.RingTheory.Polynomial.Nilpotent
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Identities
+public import Mathlib.RingTheory.Nilpotent.Lemmas
+public import Mathlib.RingTheory.Polynomial.Nilpotent
 
 /-!
 # Newton-Raphson method
@@ -29,6 +31,8 @@ such as Hensel's lemma and Jordan-Chevalley decomposition.
   Jordan-Chevalley decomposition of linear endomorphims.
 
 -/
+
+@[expose] public section
 
 open Set Function
 

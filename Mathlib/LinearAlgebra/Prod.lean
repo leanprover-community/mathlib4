@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Prod
-import Mathlib.Algebra.Group.Graph
-import Mathlib.LinearAlgebra.Span.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Prod
+public import Mathlib.Algebra.Group.Graph
+public import Mathlib.LinearAlgebra.Span.Basic
 
 /-! ### Products of modules
 
@@ -33,6 +35,8 @@ It contains theorems relating these to each other, as well as to `Submodule.prod
   - `LinearEquiv.prodUnique`
   - `LinearEquiv.uniqueProd`
 -/
+
+@[expose] public section
 
 
 universe u v w x y z u' v' w' y'
