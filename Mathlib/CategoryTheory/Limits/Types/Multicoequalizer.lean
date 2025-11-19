@@ -94,7 +94,7 @@ noncomputable def isColimitOfMulticoequalizerDiagram
     obtain ⟨i, hi⟩ := hx
     exact ⟨i, ⟨x, hi⟩, rfl⟩
 
-/-- Given `X : Type u`, `A : Set X`, `U : ι → Set X` and `V : ι → ι → Set X` such
+/-- Let `X : Type u`, `A : Set X`, `U : ι → Set X` and `V : ι → ι → Set X` such
 that `MulticoequalizerDiagram A U V` holds, then in the category of types,
 `A` is the multicoequalizer of the `U i`s along the `V i j`s. In this version,
 we assume `ι` has a linear order, which allows to consider only the `V i j`
