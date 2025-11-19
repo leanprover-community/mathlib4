@@ -213,6 +213,13 @@ instance (priority := 70) (R : Type*) [e : EuclideanDomain R] : NoZeroDivisors R
 instance (priority := 70) (R : Type*) [e : EuclideanDomain R] : IsDomain R :=
   { e, NoZeroDivisors.to_isDomain R with }
 
+theorem div_pow {R : Type*} [EuclideanDomain R] {a b : R} {n : ℕ} (hab : b ∣ a) :
+    (a / b) ^ n = a ^ n / b ^ n := by
+  obtain ⟨c, rfl⟩ := hab
+  obtain rfl | hb := eq_or_ne b 0
+  · obtain rfl | hn := eq_or_ne n 0 <;> simp [*]
+  · simp [hb, mul_pow]
+
 end GCD
 
 section LCM
