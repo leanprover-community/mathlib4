@@ -3,9 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Module.LocalizedModule.Int
-import Mathlib.RingTheory.Localization.Algebra
-import Mathlib.RingTheory.RingHom.Finite
+module
+
+public import Mathlib.Algebra.Module.LocalizedModule.Int
+public import Mathlib.RingTheory.Localization.Algebra
+public import Mathlib.RingTheory.RingHom.Finite
 
 /-!
 
@@ -24,6 +26,8 @@ In this file we establish behaviour of `Module.Finite` under localizations.
   `Mᵣ` is a finite `Rᵣ`-module for each `r`, then `M` is a finite `R`-module.
 
 -/
+
+@[expose] public section
 
 universe u v w t
 

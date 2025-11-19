@@ -3,9 +3,11 @@ Copyright (c) 2024 Jon Bannon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Bannon, Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
-import Mathlib.Analysis.Matrix.Spectrum
-import Mathlib.Topology.ContinuousMap.Units
+module
+
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
+public import Mathlib.Analysis.Matrix.Spectrum
+public import Mathlib.Topology.ContinuousMap.Units
 
 /-!
 # Continuous Functional Calculus for Hermitian Matrices
@@ -28,6 +30,8 @@ This file defines an instance of the continuous functional calculus for Hermitia
 
 spectral theorem, diagonalization theorem, continuous functional calculus
 -/
+
+@[expose] public section
 
 open Topology Unitary
 

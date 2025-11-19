@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.EventuallyMeasurable
-import Mathlib.MeasureTheory.MeasurableSpace.Basic
-import Mathlib.MeasureTheory.Measure.AEDisjoint
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.EventuallyMeasurable
+public import Mathlib.MeasureTheory.MeasurableSpace.Basic
+public import Mathlib.MeasureTheory.Measure.AEDisjoint
 
 /-!
 # Null measurable sets and complete measures
@@ -54,6 +56,8 @@ the output type.
 
 measurable, measure, null measurable, completion
 -/
+
+@[expose] public section
 
 open Filter Set Encodable
 open scoped ENNReal

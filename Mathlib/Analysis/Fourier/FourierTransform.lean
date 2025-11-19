@@ -3,14 +3,16 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Algebra.Group.AddChar
-import Mathlib.Analysis.Complex.Circle
-import Mathlib.Analysis.Fourier.Notation
-import Mathlib.MeasureTheory.Group.Integral
-import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
-import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+module
+
+public import Mathlib.Algebra.Group.AddChar
+public import Mathlib.Analysis.Complex.Circle
+public import Mathlib.Analysis.Fourier.Notation
+public import Mathlib.MeasureTheory.Group.Integral
+public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 /-!
 # The Fourier transform
@@ -52,6 +54,8 @@ in particular sense for `V = W = ℝ`.
 At present the only nontrivial lemma we prove is `fourierIntegral_continuous`, stating that the
 Fourier transform of an integrable function is continuous (under mild assumptions).
 -/
+
+@[expose] public section
 
 
 noncomputable section

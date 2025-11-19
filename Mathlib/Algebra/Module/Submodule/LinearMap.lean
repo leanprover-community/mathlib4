@@ -3,10 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+module
 
-import Mathlib.Algebra.Module.LinearMap.End
-import Mathlib.Algebra.Module.Submodule.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Module.LinearMap.End
+public import Mathlib.Algebra.Module.Submodule.Defs
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 
@@ -27,6 +28,8 @@ In this file we define a number of linear maps involving submodules of a module.
 
 submodule, subspace, linear map
 -/
+
+@[expose] public section
 
 open Function Set
 

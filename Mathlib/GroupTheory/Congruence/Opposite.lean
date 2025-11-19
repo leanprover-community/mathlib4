@@ -3,9 +3,10 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
+module
 
-import Mathlib.Algebra.Opposites
-import Mathlib.GroupTheory.Congruence.Defs
+public import Mathlib.Algebra.Opposites
+public import Mathlib.GroupTheory.Congruence.Defs
 
 /-!
 # Congruences on the opposite of a group
@@ -13,6 +14,8 @@ import Mathlib.GroupTheory.Congruence.Defs
 This file defines the order isomorphism between the congruences on a group `G` and the congruences
 on the opposite group `Gᵒᵖ`.
 -/
+
+@[expose] public section
 
 
 variable {M : Type*} [Mul M]

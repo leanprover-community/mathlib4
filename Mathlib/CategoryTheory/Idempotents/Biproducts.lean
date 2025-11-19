@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Idempotents.Karoubi
+module
+
+public import Mathlib.CategoryTheory.Idempotents.Karoubi
 
 /-!
 
@@ -18,6 +20,8 @@ is a canonical isomorphism `P ⊞ P.complement ≅ (toKaroubi C).obj P.X` in the
 the idempotent endomorphism `𝟙 P.X - P.p`.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

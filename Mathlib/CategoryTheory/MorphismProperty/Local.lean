@@ -3,8 +3,10 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Andrew Yang
 -/
-import Mathlib.CategoryTheory.Sites.Hypercover.Zero
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+module
+
+public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Locality conditions on morphism properties
@@ -28,6 +30,8 @@ The covers appearing in the definitions have index type in the morphism universe
 
 - Define source and target local closure of a morphism property.
 -/
+
+@[expose] public section
 
 universe w v u
 

@@ -3,8 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
+public import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 
 /-!
 # Extension of a functor from `Set.Iic j` to `Set.Iic (Order.succ j)`
@@ -15,6 +16,8 @@ functor `Set.Iic (Order.succ j) ⥤ C` when an object `X : C` and a morphism
 `τ : F.obj ⟨j, _⟩ ⟶ X` is given.
 
 -/
+
+@[expose] public section
 
 universe u
 

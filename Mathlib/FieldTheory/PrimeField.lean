@@ -3,9 +3,11 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot, Kenny Lau
 -/
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Algebra.CharP.IntermediateField
-import Mathlib.Algebra.Field.ZMod
+module
+
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Algebra.CharP.IntermediateField
+public import Mathlib.Algebra.Field.ZMod
 
 /-!
 # Prime fields
@@ -24,6 +26,8 @@ contains a unique prime field: it is the smallest field contained in `K`.
   image of) `ZMod p`.
 
 -/
+
+@[expose] public section
 
 instance : Subsingleton (Subfield ℚ) := subsingleton_of_top_le_bot fun x _ ↦
   have h := Subsingleton.elim ((⊥ : Subfield ℚ).subtype.comp (Rat.castHom _)) (.id _ : ℚ →+* ℚ)

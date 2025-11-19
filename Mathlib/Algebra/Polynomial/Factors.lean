@@ -3,7 +3,9 @@ Copyright (c) 2025 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.Polynomial.FieldDivision
+module
+
+public import Mathlib.Algebra.Polynomial.FieldDivision
 
 /-!
 # Split polynomials
@@ -20,6 +22,8 @@ A polynomial `f : R[X]` factors if it is a product of constant and monic linear 
 - Redefine `Splits` in terms of `Factors` and then deprecate `Splits`.
 
 -/
+
+@[expose] public section
 
 variable {R : Type*}
 

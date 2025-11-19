@@ -3,7 +3,9 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Nat.Choose.Factorization
+module
+
+public import Mathlib.Data.Nat.Choose.Factorization
 
 /-!
 # Natural number multiplicity
@@ -42,6 +44,8 @@ Derive results from the corresponding ones `Mathlib.Data.Nat.Factorization.Multi
 
 Legendre, p-adic
 -/
+
+@[expose] public section
 
 open Finset
 
