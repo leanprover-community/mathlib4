@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Types.Limits
-import Mathlib.Tactic.CategoryTheory.Elementwise
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Types.Limits
+public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # Equalizers in Type
@@ -13,6 +15,8 @@ import Mathlib.Tactic.CategoryTheory.Elementwise
 The equalizer of a pair of maps `(g, h)` from `X` to `Y` is the subtype `{x : Y // g x = h x}`.
 
 -/
+
+@[expose] public section
 
 universe v u
 

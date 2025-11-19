@@ -3,9 +3,11 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Analysis.Normed.Algebra.Exponential
-import Mathlib.Analysis.Normed.Lp.ProdLp
-import Mathlib.Topology.Instances.TrivSqZeroExt
+module
+
+public import Mathlib.Analysis.Normed.Algebra.Exponential
+public import Mathlib.Analysis.Normed.Lp.ProdLp
+public import Mathlib.Topology.Instances.TrivSqZeroExt
 
 /-!
 # Results on `TrivSqZeroExt R M` related to the norm
@@ -46,6 +48,8 @@ we could keep the collection of instances behind an `open scoped`.
   https://link.springer.com/chapter/10.1007/978-3-540-44953-9_2).
 
 -/
+
+@[expose] public section
 
 
 variable (𝕜 : Type*) {S R M : Type*}
