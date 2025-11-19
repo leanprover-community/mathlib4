@@ -12,6 +12,7 @@ import Mathlib.Tactic.Push
 The `by_contra!` tactic is a variant of the `by_contra` tactic, for proofs of contradiction.
 -/
 
+namespace Mathlib.Tactic.ByContra
 open Lean Lean.Parser Parser.Tactic Elab Command Elab.Tactic Meta
 
 /--
@@ -39,16 +40,26 @@ example : 1 < 2 := by
 -/
 syntax (name := byContra!) "by_contra!" optConfig (ppSpace colGt binderIdent)? Term.optType : tactic
 
+local elab "try_push_neg_at" cfg:optConfig h:ident : tactic => do
+  Push.push (.const ``Not) none (.targets #[h] false) (← Push.elabPushConfig cfg)
+    (failIfUnchanged := false)
+
+local elab "try_push_neg" cfg:optConfig : tactic => do
+  Push.push (.const ``Not) none (.targets #[] true) (← Push.elabPushConfig cfg)
+    (failIfUnchanged := false)
+
 macro_rules
   | `(tactic| by_contra! $cfg $[: $ty]?) =>
     `(tactic| by_contra! $cfg $(mkIdent `this):ident $[: $ty]?)
   | `(tactic| by_contra! $cfg _%$under $[: $ty]?) =>
     `(tactic| by_contra! $cfg $(mkIdentFrom under `this):ident $[: $ty]?)
   | `(tactic| by_contra! $cfg $e:ident) =>
-    `(tactic| by_contra $e:ident; push_neg $[$(getConfigItems cfg)]* -failIfUnchanged at $e:ident)
+    `(tactic| (by_contra $e:ident; try_push_neg_at $cfg $e:ident))
   | `(tactic| by_contra! $cfg $e:ident : $y) => `(tactic|
        (by_contra! $cfg h
         -- if the below `exact` call fails then this tactic should fail with the message
         -- tactic failed: <goal type> and <type of h> are not definitionally equal
-        have $e:ident : $y := by { push_neg $[$(getConfigItems cfg)]* -failIfUnchanged; exact h }
+        have $e:ident : $y := by { try_push_neg $cfg; exact h }
         clear h))
+
+end Mathlib.Tactic.ByContra

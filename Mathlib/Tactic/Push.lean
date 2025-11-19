@@ -204,7 +204,7 @@ structure Config where
 /-- Function elaborating `Push.Config`. -/
 declare_config_elab elabPushConfig Config
 
-def pushTactic (head : Head) (disch? : Option Simp.Discharge) (loc : Location) (cfg : Config)
+def push (head : Head) (disch? : Option Simp.Discharge) (loc : Location) (cfg : Config)
     (failIfUnchanged : Bool := true) :
     TacticM Unit := do
   (if cfg.distrib then withOptions (·.setBool `push_neg.use_distrib true) else id) <|
@@ -227,11 +227,11 @@ To instead move a constant closer to the head of the expression, use the `pull` 
 
 To push a constant at a hypothesis, use the `push ... at h` or `push ... at *` syntax.
 -/
-elab (name := push) "push" cfg:optConfig disch?:(discharger)? head:(ppSpace colGt term)
+elab (name := pushStx) "push" cfg:optConfig disch?:(discharger)? head:(ppSpace colGt term)
     loc:(location)? : tactic => do
   let disch? ← disch?.mapM elabDischarger
   let loc := (loc.map expandLocation).getD (.targets #[] true)
-  pushTactic (← elabHead head) disch? loc (← elabPushConfig cfg)
+  push (← elabHead head) disch? loc (← elabPushConfig cfg)
 
 /--
 Push negations into the conclusion or a hypothesis.
@@ -260,8 +260,9 @@ using the relevant lemmas. One can use this tactic at the goal using `push_neg`,
 at every hypothesis and the goal using `push_neg at *` or at selected hypotheses and the goal
 using say `push_neg at h h' ⊢`, as usual.
 -/
-macro (name := push_neg) "push_neg" cfg:optConfig loc:(location)? : tactic =>
-  `(tactic| push $cfg Not $[$loc]?)
+elab (name := push_neg) "push_neg" cfg:optConfig loc:(location)? : tactic => do
+  let loc := (loc.map expandLocation).getD (.targets #[] true)
+  push (.const ``Not) none loc (← elabPushConfig cfg)
 
 /--
 `pull` is the inverse tactic to `push`.
@@ -294,7 +295,7 @@ simproc_decl _root_.pullFun (_) := pullStep .lambda
 
 section Conv
 
-@[inherit_doc push]
+@[inherit_doc pushStx]
 elab "push" cfg:optConfig disch?:(discharger)? head:(ppSpace colGt term) : conv =>
   withMainContext do
   let cfg ← elabPushConfig cfg
