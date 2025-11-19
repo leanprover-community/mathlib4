@@ -3,8 +3,10 @@ Copyright (c) 2025 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Michael Rothgang, Thomas Murrills
 -/
-import Mathlib.Geometry.Manifold.ContMDiff.Defs
-import Mathlib.Geometry.Manifold.MFDeriv.Defs
+module
+
+public import Mathlib.Geometry.Manifold.ContMDiff.Defs
+public import Mathlib.Geometry.Manifold.MFDeriv.Defs
 
 /-!
 # Elaborators for differential geometry
@@ -83,6 +85,8 @@ the following.
 - add delaborators for these elaborators
 
 -/
+
+public meta section
 
 open scoped Bundle Manifold ContDiff
 

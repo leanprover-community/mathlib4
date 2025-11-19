@@ -3,8 +3,10 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ModuleEmbedding.Opposite
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Indization
+module
+
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.ModuleEmbedding.Opposite
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Indization
 
 /-!
 # The Freyd-Mitchell embedding theorem
@@ -71,6 +73,8 @@ small category, then this does not change anything.
 * https://stacks.math.columbia.edu/tag/05PL
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Section 9.6
 -/
+
+@[expose] public section
 
 universe v u
 

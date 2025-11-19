@@ -3,14 +3,16 @@ Copyright (c) 2024 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Module.Pi
-import Mathlib.Data.Finset.Density
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Data.Finset.Density
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Average over a finset
@@ -42,6 +44,8 @@ combination operator.
 * Connect `Finset.expect` with the expectation over `s` in the probability theory sense.
 * Give a formulation of Jensen's inequality in this language.
 -/
+
+@[expose] public section
 
 open Finset Function
 open Fintype (card)
@@ -85,7 +89,7 @@ open Batteries.ExtendedBinder
 
 /-- Delaborator for `Finset.expect`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the expect is over `Finset.univ`. -/
-@[scoped app_delab Finset.expect] def delabFinsetExpect : Delab :=
+@[scoped app_delab Finset.expect] meta def delabFinsetExpect : Delab :=
   whenPPOption getPPNotation <| withOverApp 6 <| do
   let #[_, _, _, _, s, f] := (← getExpr).getAppArgs | failure
   guard <| f.isLambda
