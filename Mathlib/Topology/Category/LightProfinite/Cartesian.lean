@@ -16,6 +16,8 @@ product.
 
 -/
 
+@[expose] public section
+
 universe u
 
 open CategoryTheory Limits CompHausLike

@@ -16,6 +16,8 @@ then `CompHausLike P` is a cartesian monoidal category.
 
 -/
 
+@[expose] public section
+
 universe u
 
 open CategoryTheory Limits
