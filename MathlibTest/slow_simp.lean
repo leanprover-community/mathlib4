@@ -6,7 +6,7 @@ This test file serves as a sentinel against bad simp lemmas.
 
 When this test file was first setup,
 the final declaration of this file took 12,000 heartbeats
-with the minimal import of `Mathlib.Topology.Category.TopCat.Basic`,
+with the minimal import of `Mathlib/Topology/Category/TopCat/Basic.lean`,
 but took over 260,000 heartbeats with `import Mathlib`.
 
 After deleting some bad simp lemmas that were being tried everywhere

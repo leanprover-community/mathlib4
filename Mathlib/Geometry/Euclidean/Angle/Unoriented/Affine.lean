@@ -3,10 +3,12 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
 -/
-import Mathlib.Analysis.Convex.Between
-import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
-import Mathlib.Analysis.Normed.Affine.Isometry
+module
+
+public import Mathlib.Analysis.Convex.Between
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
+public import Mathlib.Analysis.Normed.Affine.Isometry
 
 /-!
 # Angles between points
@@ -22,6 +24,8 @@ This file defines unoriented angles in Euclidean affine spaces.
 
 Prove the triangle inequality for the angle.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -63,6 +67,14 @@ theorem _root_.AffineSubspace.angle_coe {s : AffineSubspace ℝ P} (p₁ p₂ p�
     ∠ (p₁ : P) (p₂ : P) (p₃ : P) = ∠ p₁ p₂ p₃ :=
   haveI : Nonempty s := ⟨p₁⟩
   s.subtypeₐᵢ.angle_map p₁ p₂ p₃
+
+/-- A homothety with a nonzero scale factor preserves angles. -/
+@[simp] lemma angle_homothety (p p₁ p₂ p₃ : P) {r : ℝ} (h : r ≠ 0) :
+    ∠ (AffineMap.homothety p r p₁) (AffineMap.homothety p r p₂) (AffineMap.homothety p r p₃) =
+      ∠ p₁ p₂ p₃ := by
+  simp_rw [angle, ← AffineMap.linearMap_vsub, AffineMap.homothety_linear, LinearMap.smul_apply,
+    LinearMap.id_coe, id_eq]
+  rcases h.lt_or_gt with hlt | hlt <;> simp [hlt, -neg_vsub_eq_vsub_rev]
 
 /-- Angles are translation invariant -/
 @[simp]
@@ -281,8 +293,7 @@ theorem angle_eq_pi_iff_sbtw {p₁ p₂ p₃ : P} : ∠ p₁ p₂ p₃ = π ↔ 
     rw [AffineMap.lineMap_apply, hp₃p₂, vadd_vsub_assoc, ← neg_vsub_eq_vsub_rev p₂ p₁, smul_neg, ←
       neg_smul, smul_add, smul_smul, ← add_smul, eq_comm, eq_vadd_iff_vsub_eq]
     convert (one_smul ℝ (p₂ -ᵥ p₁)).symm
-    field_simp [(sub_pos.2 (hr.trans zero_lt_one)).ne.symm]
-    ring
+    field [(sub_pos.2 (hr.trans zero_lt_one)).ne.symm]
   · rw [ne_comm, ← @vsub_ne_zero V, hp₃p₂, smul_ne_zero_iff]
     exact ⟨hr.ne, hp₁p₂⟩
 
@@ -344,7 +355,7 @@ theorem angle_eq_zero_iff_ne_and_wbtw {p₁ p₂ p₃ : P} :
   constructor
   · rw [angle, angle_eq_zero_iff]
     rintro ⟨hp₁p₂, r, hr0, hp₃p₂⟩
-    rcases le_or_lt 1 r with (hr1 | hr1)
+    rcases le_or_gt 1 r with (hr1 | hr1)
     · refine Or.inl ⟨vsub_ne_zero.1 hp₁p₂, r⁻¹, ⟨(inv_pos.2 hr0).le, inv_le_one_of_one_le₀ hr1⟩, ?_⟩
       rw [AffineMap.lineMap_apply, hp₃p₂, smul_smul, inv_mul_cancel₀ hr0.ne.symm, one_smul,
         vsub_vadd]

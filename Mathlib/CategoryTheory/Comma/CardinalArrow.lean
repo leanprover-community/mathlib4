@@ -3,12 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.CategoryTheory.FinCategory.Basic
-import Mathlib.CategoryTheory.EssentiallySmall
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.SetTheory.Cardinal.HasCardinalLT
+public import Mathlib.CategoryTheory.Comma.Arrow
+public import Mathlib.CategoryTheory.FinCategory.Basic
+public import Mathlib.CategoryTheory.EssentiallySmall
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
 /-!
 # Cardinal of Arrow
@@ -17,6 +18,8 @@ We obtain various results about the cardinality of `Arrow C`. For example,
 If `A` is a (small) category, `Arrow C` is finite iff `FinCategory C` holds.
 
 -/
+
+@[expose] public section
 
 universe w w' v u
 
@@ -48,8 +51,6 @@ instance Arrow.finite {C : Type u} [SmallCategory C] [FinCategory C] :
 def Arrow.opEquiv (C : Type u) [Category.{v} C] : Arrow Cᵒᵖ ≃ Arrow C where
   toFun f := Arrow.mk f.hom.unop
   invFun g := Arrow.mk g.hom.op
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 @[simp]
 lemma hasCardinalLT_arrow_op_iff (C : Type u) [Category.{v} C] (κ : Cardinal.{w}) :

@@ -3,8 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
-import Mathlib.Algebra.Ring.Action.Group
-import Mathlib.Algebra.Ring.Aut
+module
+
+public import Mathlib.Algebra.Ring.Action.Group
+public import Mathlib.Algebra.Ring.Aut
 
 /-!
 # Ring automorphisms
@@ -17,13 +19,16 @@ The definition of multiplication in the automorphism group agrees with function 
 multiplication in `Equiv.Perm`, and multiplication in `CategoryTheory.End`, but not with
 `CategoryTheory.comp`.
 
-This file is kept separate from `Mathlib/Algebra/Ring/Equiv.lean` so that `Mathlib.GroupTheory.Perm`
-is free to use equivalences (and other files that use them) before the group structure is defined.
+This file is kept separate from `Mathlib/Algebra/Ring/Equiv.lean` so that
+`Mathlib/GroupTheory/Perm.lean` is free to use equivalences (and other files that use them) before
+the group structure is defined.
 
 ## Tags
 
 ring aut
 -/
+
+@[expose] public section
 
 namespace RingAut
 variable {G R : Type*} [Group G] [Semiring R]

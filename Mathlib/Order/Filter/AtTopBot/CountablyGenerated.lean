@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Order.Filter.AtTopBot.Finite
-import Mathlib.Order.Filter.AtTopBot.Prod
-import Mathlib.Order.Filter.CountablyGenerated
+module
+
+public import Mathlib.Order.Filter.AtTopBot.Finite
+public import Mathlib.Order.Filter.AtTopBot.Prod
+public import Mathlib.Order.Filter.CountablyGenerated
 
 /-!
 # Convergence to infinity and countably generated filters
@@ -18,6 +20,8 @@ In this file we prove that
 - `Filter.tendsto_iff_seq_tendsto`: convergence along a countably generated filter
   is equivalent to convergence along all sequences that converge to this filter.
 -/
+
+@[expose] public section
 
 open Set
 
@@ -98,8 +102,8 @@ theorem tendsto_iff_seq_tendsto {f : α → β} {k : Filter α} {l : Filter β} 
   rcases (k ⊓ 𝓟 (f ⁻¹' sᶜ)).exists_seq_tendsto with ⟨x, hx⟩
   rw [tendsto_inf, tendsto_principal] at hx
   refine ⟨x, hx.1, fun h => ?_⟩
-  rcases (hx.2.and (h hs)).exists with ⟨N, hnmem, hmem⟩
-  exact hnmem hmem
+  rcases (hx.2.and (h hs)).exists with ⟨N, hnotMem, hmem⟩
+  exact hnotMem hmem
 
 theorem tendsto_of_seq_tendsto {f : α → β} {k : Filter α} {l : Filter β} [k.IsCountablyGenerated] :
     (∀ x : ℕ → α, Tendsto x atTop k → Tendsto (f ∘ x) atTop l) → Tendsto f k l :=
@@ -138,7 +142,7 @@ theorem tendsto_of_subseq_tendsto {ι : Type*} {x : ι → α} {f : Filter α} {
     Tendsto x l f := by
   contrapose! hxy
   obtain ⟨s, hs, hfreq⟩ : ∃ s ∈ f, ∃ᶠ n in l, x n ∉ s := by
-    rwa [not_tendsto_iff_exists_frequently_nmem] at hxy
+    rwa [not_tendsto_iff_exists_frequently_notMem] at hxy
   obtain ⟨y, hy_tendsto, hy_freq⟩ := exists_seq_forall_of_frequently hfreq
   refine ⟨y, hy_tendsto, fun ms hms_tendsto ↦ ?_⟩
   rcases (hms_tendsto.eventually_mem hs).exists with ⟨n, hn⟩

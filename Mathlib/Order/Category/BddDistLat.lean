@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Category.BddLat
-import Mathlib.Order.Category.DistLat
+module
+
+public import Mathlib.Order.Category.BddLat
+public import Mathlib.Order.Category.DistLat
 
 /-!
 # The category of bounded distributive lattices
@@ -14,6 +16,8 @@ This defines `BddDistLat`, the category of bounded distributive lattices.
 Note that this category is sometimes called [`DistLat`](https://ncatlab.org/nlab/show/DistLat) when
 being a lattice is understood to entail having a bottom and a top element.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -116,8 +120,9 @@ lemma hom_ext {X Y : BddDistLat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
 
 @[simp]
 lemma hom_ofHom {X Y : Type u} [DistribLattice X] [BoundedOrder X] [DistribLattice Y]
-    [BoundedOrder Y](f : BoundedLatticeHom X Y) :
-  (ofHom f).hom = f := rfl
+    [BoundedOrder Y] (f : BoundedLatticeHom X Y) :
+    (ofHom f).hom = f :=
+  rfl
 
 @[simp]
 lemma ofHom_hom {X Y : BddDistLat} (f : X ⟶ Y) :

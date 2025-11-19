@@ -3,8 +3,10 @@ Copyright (c) 2023 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.FieldTheory.SeparableDegree
-import Mathlib.FieldTheory.IsSepClosed
+module
+
+public import Mathlib.FieldTheory.SeparableDegree
+public import Mathlib.FieldTheory.IsSepClosed
 
 /-!
 
@@ -58,6 +60,8 @@ This file contains basics about the (relative) separable closure of a field exte
 separable degree, degree, separable closure
 
 -/
+
+@[expose] public section
 
 open Module Polynomial IntermediateField Field
 
@@ -207,6 +211,9 @@ algebraic closure. It is indeed a separable closure (`IsSepClosure`) by
 or `IsSepClosure.isGalois`, and every separable extension embeds into it (`IsSepClosed.lift`). -/
 abbrev SeparableClosure : Type _ := separableClosure F (AlgebraicClosure F)
 
+instance SeparableClosure.isSepClosed : IsSepClosed (SeparableClosure F) :=
+  (inferInstanceAs (IsSepClosure F (SeparableClosure F))).sep_closed
+
 /-- `F(S) / F` is a separable extension if and only if all elements of `S` are
 separable elements. -/
 theorem IntermediateField.isSeparable_adjoin_iff_isSeparable {S : Set E} :
@@ -296,6 +303,12 @@ to the (infinite) field extension degree. -/
 theorem sepDegree_mul_insepDegree : sepDegree F E * insepDegree F E = Module.rank F E :=
   rank_mul_rank F (separableClosure F E) E
 
+theorem sepDegree_le_rank : sepDegree F E ≤ Module.rank F E :=
+  Module.rank_bot_le_rank_of_isScalarTower _ _ _
+
+theorem insepDegree_le_rank : insepDegree F E ≤ Module.rank F E :=
+  Module.rank_top_le_rank_of_isScalarTower _ _ _
+
 /-- If `E` and `K` are isomorphic as `F`-algebras, then they have the same
 inseparable degree over `F`. -/
 theorem lift_insepDegree_eq_of_equiv (i : E ≃ₐ[F] K) :
@@ -384,6 +397,38 @@ theorem sepDegree_bot' : sepDegree F (⊥ : IntermediateField E K) = sepDegree F
 @[simp]
 theorem insepDegree_bot' : insepDegree F (⊥ : IntermediateField E K) = insepDegree F E :=
   insepDegree_eq_of_equiv _ _ _ ((botEquiv E K).restrictScalars F)
+
+variable (F) in
+lemma _root_.Field.insepDegree_top_le_insepDegree_of_isScalarTower :
+    insepDegree E K ≤ insepDegree F K := by
+  letI := (IntermediateField.inclusion (separableClosure.le_restrictScalars F E K)).toAlgebra
+  have : IsScalarTower (separableClosure F K) ((separableClosure E K).restrictScalars F) K :=
+    .of_algebraMap_eq' rfl
+  exact Module.rank_top_le_rank_of_isScalarTower
+    (separableClosure F K) ((separableClosure E K).restrictScalars F) K
+
+variable {K} in
+lemma _root_.Field.insepDegree_le_of_left_le {E₁ E₂ : IntermediateField F K} (H : E₁ ≤ E₂) :
+    insepDegree E₂ K ≤ insepDegree E₁ K := by
+  letI := (IntermediateField.inclusion H).toAlgebra
+  have : IsScalarTower E₁ E₂ K := .of_algebraMap_eq' rfl
+  exact insepDegree_top_le_insepDegree_of_isScalarTower _ _ _
+
+variable (F) in
+lemma _root_.Field.finInsepDegree_top_le_finInsepDegree_of_isScalarTower [Module.Finite F K] :
+    finInsepDegree E K ≤ finInsepDegree F K := by
+  letI := (IntermediateField.inclusion (separableClosure.le_restrictScalars F E K)).toAlgebra
+  have : IsScalarTower (separableClosure F K) ((separableClosure E K).restrictScalars F) K :=
+    .of_algebraMap_eq' rfl
+  exact Module.finrank_top_le_finrank_of_isScalarTower
+    (separableClosure F K) ((separableClosure E K).restrictScalars F) K
+
+variable {K} in
+lemma finInsepDegree_le_of_left_le {E₁ E₂ : IntermediateField F K} (H : E₁ ≤ E₂)
+    [Module.Finite E₁ K] : finInsepDegree E₂ K ≤ finInsepDegree E₁ K := by
+  letI := (IntermediateField.inclusion H).toAlgebra
+  have : IsScalarTower E₁ E₂ K := .of_algebraMap_eq' rfl
+  exact finInsepDegree_top_le_finInsepDegree_of_isScalarTower _ _ _
 
 end Tower
 

@@ -3,8 +3,10 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Comma.Final
-import Mathlib.CategoryTheory.Limits.Indization.IndObject
+module
+
+public import Mathlib.CategoryTheory.Comma.Final
+public import Mathlib.CategoryTheory.Limits.Indization.IndObject
 
 /-!
 # Parallel pairs of natural transformations between ind-objects
@@ -19,11 +21,13 @@ commonly presented by diagrams and natural transformations in `I ⥤ C`.
   our proof is more direct).
 -/
 
+@[expose] public section
+
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open Limits
+open Limits Functor
 
 variable {C : Type u₁} [Category.{v₁} C]
 

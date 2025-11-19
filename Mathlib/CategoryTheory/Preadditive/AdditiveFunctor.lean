@@ -3,10 +3,12 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Limits.ExactFunctor
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Preadditive.Biproducts
-import Mathlib.CategoryTheory.Preadditive.FunctorCategory
+module
+
+public import Mathlib.CategoryTheory.Limits.ExactFunctor
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Preadditive.Biproducts
+public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 
 /-!
 # Additive Functors
@@ -21,12 +23,14 @@ biproducts, and if `F` preserves binary biproducts, then `F` is additive.
 
 We also define the category of bundled additive functors.
 
-# Implementation details
+## Implementation details
 
 `Functor.Additive` is a `Prop`-valued class, defined by saying that for every two objects `X` and
 `Y`, the map `F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)` is a morphism of abelian groups.
 
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ u₁ u₂
@@ -34,10 +38,11 @@ universe v₁ v₂ u₁ u₂
 namespace CategoryTheory
 
 /-- A functor `F` is additive provided `F.map` is an additive homomorphism. -/
+@[stacks 00ZY]
 class Functor.Additive {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
   (F : C ⥤ D) : Prop where
   /-- the addition of two morphisms is mapped to the sum of their images -/
-  map_add : ∀ {X Y : C} {f g : X ⟶ Y}, F.map (f + g) = F.map f + F.map g := by aesop_cat
+  map_add : ∀ {X Y : C} {f g : X ⟶ Y}, F.map (f + g) = F.map f + F.map g := by cat_disch
 
 section Preadditive
 
@@ -153,12 +158,21 @@ open CategoryTheory.Preadditive
 
 instance (priority := 100) preservesFiniteBiproductsOfAdditive [Additive F] :
     PreservesFiniteBiproducts F where
-  preserves :=
+  preserves := fun {J} _ =>
+    let ⟨_⟩ := nonempty_fintype J
     { preserves :=
       { preserves := fun hb =>
           ⟨isBilimitOfTotal _ (by
             simp_rw [F.mapBicone_π, F.mapBicone_ι, ← F.map_comp]
             erw [← F.map_sum, ← F.map_id, IsBilimit.total hb])⟩ } }
+
+instance (priority := 100) preservesFiniteCoproductsOfAdditive [Additive F] :
+    PreservesFiniteCoproducts F where
+  preserves _ := preservesCoproductsOfShape_of_preservesBiproductsOfShape F
+
+instance (priority := 100) preservesFiniteProductsOfAdditive [Additive F] :
+    PreservesFiniteProducts F where
+  preserves _ := preservesProductsOfShape_of_preservesBiproductsOfShape F
 
 theorem additive_of_preservesBinaryBiproducts [HasBinaryBiproducts C] [PreservesZeroMorphisms F]
     [PreservesBinaryBiproducts F] : Additive F where

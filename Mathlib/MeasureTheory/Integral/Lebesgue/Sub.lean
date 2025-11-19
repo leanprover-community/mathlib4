@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Integral.Lebesgue.Add
+module
+
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 
 /-!
 # Subtraction of Lebesgue integrals
@@ -12,6 +14,8 @@ In this file we first show that Lebesgue integrals can be subtracted with the ex
 `∫⁻ f - ∫⁻ g ≤ ∫⁻ (f - g)`, with equality if `g ≤ f` almost everywhere. Then we prove variants of
 the monotone convergence theorem that use this subtraction in their proofs.
 -/
+
+@[expose] public section
 
 open Filter ENNReal Topology
 
@@ -65,9 +69,9 @@ theorem lintegral_iInf_ae {f : ℕ → α → ℝ≥0∞} (h_meas : ∀ n, Measu
           (have h_mono : ∀ᵐ a ∂μ, ∀ n : ℕ, f n.succ a ≤ f n a := ae_all_iff.2 h_mono
           have h_mono : ∀ n, ∀ᵐ a ∂μ, f n a ≤ f 0 a := fun n =>
             h_mono.mono fun a h => by
-              induction' n with n ih
-              · exact le_rfl
-              · exact le_trans (h n) ih
+              induction n with
+              | zero => rfl
+              | succ n ih => exact (h n).trans ih
           congr_arg iSup <|
             funext fun n =>
               lintegral_sub (h_meas _) (ne_top_of_le_ne_top h_fin <| lintegral_mono_ae <| h_mono n)
@@ -167,7 +171,7 @@ theorem exists_setLIntegral_compl_lt {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a
   calc
     ∫⁻ a in (support g)ᶜ, f a ∂μ
       = ∫⁻ a in (support g)ᶜ, f a - g a ∂μ := setLIntegral_congr_fun
-      (measurableSet_support hg_meas).compl <| ae_of_all _ <| by intro; simp_all
+      (measurableSet_support hg_meas).compl <| by intro; simp_all
     _ ≤ ∫⁻ a, f a - g a ∂μ := setLIntegral_le_lintegral _ _
     _ = ∫⁻ a, f a ∂μ - ∫⁻ a, g a ∂μ :=
       lintegral_sub hg_meas (ne_top_of_le_ne_top hf <| lintegral_mono hgf) (ae_of_all _ hgf)

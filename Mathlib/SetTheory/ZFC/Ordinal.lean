@@ -3,9 +3,11 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Order.GameAdd
-import Mathlib.Order.RelIso.Set
-import Mathlib.SetTheory.ZFC.Basic
+module
+
+public import Mathlib.Order.GameAdd
+public import Mathlib.Order.RelIso.Set
+public import Mathlib.SetTheory.ZFC.Basic
 
 /-!
 # Von Neumann ordinals
@@ -21,9 +23,10 @@ under `∈`.
 
 ## TODO
 
-- Define the von Neumann hierarchy.
 - Build correspondences between these set notions and those of the standard `Ordinal` type.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -40,7 +43,7 @@ def IsTransitive (x : ZFSet) : Prop :=
   ∀ y ∈ x, y ⊆ x
 
 @[simp]
-theorem isTransitive_empty : IsTransitive ∅ := fun y hy => (not_mem_empty y hy).elim
+theorem isTransitive_empty : IsTransitive ∅ := fun y hy => (notMem_empty y hy).elim
 
 theorem IsTransitive.subset_of_mem (h : x.IsTransitive) : y ∈ x → y ⊆ x := h y
 
@@ -65,6 +68,10 @@ theorem IsTransitive.sUnion' (H : ∀ y ∈ x, IsTransitive y) :
     (⋃₀ x : ZFSet).IsTransitive := fun y hy z hz => by
   rcases mem_sUnion.1 hy with ⟨w, hw, hw'⟩
   exact mem_sUnion_of_mem ((H w hw).mem_trans hz hw') hw
+
+protected theorem IsTransitive.iUnion {α : Type*} [Small.{u} α] {f : α → ZFSet.{u}}
+    (hf : ∀ i, (f i).IsTransitive) : (⋃ i, f i).IsTransitive :=
+  sUnion' (by simpa)
 
 protected theorem IsTransitive.union (hx : x.IsTransitive) (hy : y.IsTransitive) :
     (x ∪ y).IsTransitive := by
@@ -162,7 +169,7 @@ theorem subset_iff_eq_or_mem (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ⊆ y ↔
         exact hm' _ ⟨hy.mem_trans hzm hmy, hzx⟩ hzm
       obtain rfl | H := IH m x (Sym2.GameAdd.fst_snd hmy) (hy.mem hmy) hx hmx
       · exact Or.inr hmy
-      · cases Set.not_mem_of_mem_diff hm H
+      · cases Set.notMem_of_mem_diff hm H
   · rintro (rfl | h)
     · rfl
     · exact hy.subset_of_mem h
@@ -175,19 +182,21 @@ theorem mem_of_subset_of_mem (h : x.IsOrdinal) (hz : z.IsOrdinal) (hx : x ⊆ y)
   · exact hy
   · exact hz.mem_trans hx hy
 
-theorem not_mem_iff_subset (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ∉ y ↔ y ⊆ x := by
+theorem notMem_iff_subset (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ∉ y ↔ y ⊆ x := by
   refine ⟨?_, fun hxy hyx ↦ mem_irrefl _ (hxy hyx)⟩
   revert hx hy
   apply Sym2.GameAdd.induction mem_wf _ x y
-  intros x y IH hx hy hyx z hzy
+  intro x y IH hx hy hyx z hzy
   by_contra hzx
   exact hyx (mem_of_subset_of_mem hx hy (IH z x (Sym2.GameAdd.fst_snd hzy) (hy.mem hzy) hx hzx) hzy)
 
+@[deprecated (since := "2025-05-23")] alias not_mem_iff_subset := notMem_iff_subset
+
 theorem not_subset_iff_mem (hx : x.IsOrdinal) (hy : y.IsOrdinal) : ¬ x ⊆ y ↔ y ∈ x := by
-  rw [not_iff_comm, not_mem_iff_subset hy hx]
+  rw [not_iff_comm, notMem_iff_subset hy hx]
 
 theorem mem_or_subset (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ∈ y ∨ y ⊆ x := by
-  rw [or_iff_not_imp_left, not_mem_iff_subset hx hy]
+  rw [or_iff_not_imp_left, notMem_iff_subset hx hy]
   exact id
 
 theorem subset_total (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ⊆ y ∨ y ⊆ x := by
@@ -232,6 +241,6 @@ end IsOrdinal
 
 @[simp]
 theorem isOrdinal_empty : IsOrdinal ∅ :=
-  ⟨isTransitive_empty, fun _ _ H ↦ (not_mem_empty _ H).elim⟩
+  ⟨isTransitive_empty, fun _ _ H ↦ (notMem_empty _ H).elim⟩
 
 end ZFSet

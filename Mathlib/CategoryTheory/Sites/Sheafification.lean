@@ -3,10 +3,12 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Adjunction.Unique
-import Mathlib.CategoryTheory.Adjunction.Reflective
-import Mathlib.CategoryTheory.Sites.Sheaf
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Unique
+public import Mathlib.CategoryTheory.Adjunction.Reflective
+public import Mathlib.CategoryTheory.Sites.Sheaf
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 /-!
 
 # Sheafification
@@ -15,8 +17,10 @@ Given a site `(C, J)` we define a typeclass `HasSheafify J A` saying that the in
 `A`-valued sheaves on `C` to presheaves admits a left exact left adjoint (sheafification).
 
 Note: to access the `HasSheafify` instance for suitable concrete categories, import the file
-`Mathlib.CategoryTheory.Sites.LeftExact`.
+`Mathlib/CategoryTheory/Sites/LeftExact.lean`.
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 
@@ -34,9 +38,9 @@ abbrev HasWeakSheafify : Prop := (sheafToPresheaf J A).IsRightAdjoint
 
 /--
 `HasSheafify` means that the inclusion functor from sheaves to presheaves admits a left exact
-left adjiont (sheafification).
+left adjoint (sheafification).
 
-Given a finite limit preserving functor `F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A` and an adjunction
+Given a functor, preserving finite limits, `F : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A` and an adjunction
 `adj : F ⊣ sheafToPresheaf J A`, use `HasSheafify.mk'` to construct a `HasSheafify` instance.
 -/
 class HasSheafify : Prop where
@@ -233,6 +237,6 @@ variable (J D)
 @[simps!]
 noncomputable def sheafificationNatIso :
     𝟭 (Sheaf J D) ≅ sheafToPresheaf J D ⋙ presheafToSheaf J D :=
-  NatIso.ofComponents (fun P => sheafificationIso P) (by aesop_cat)
+  NatIso.ofComponents (fun P => sheafificationIso P) (by cat_disch)
 
 end CategoryTheory

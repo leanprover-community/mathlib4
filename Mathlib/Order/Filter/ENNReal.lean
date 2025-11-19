@@ -3,14 +3,18 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
-import Mathlib.Topology.Metrizable.Real
+module
+
+public import Mathlib.Topology.Order.LiminfLimsup
+public import Mathlib.Topology.Metrizable.Real
 
 /-!
 # Limsup and liminf of reals
 
 This file compiles filter-related results about `ℝ`, `ℝ≥0` and `ℝ≥0∞`.
 -/
+
+@[expose] public section
 
 
 open Filter ENNReal
@@ -26,7 +30,7 @@ lemma limsSup_of_not_isCobounded {f : Filter ℝ} (hf : ¬ f.IsCobounded (· ≤
 lemma limsSup_of_not_isBounded {f : Filter ℝ} (hf : ¬ f.IsBounded (· ≤ ·)) : limsSup f = 0 := by
   rw [limsSup]
   convert sInf_empty
-  simpa [Set.eq_empty_iff_forall_not_mem, IsBounded] using hf
+  simpa [Set.eq_empty_iff_forall_notMem, IsBounded] using hf
 
 @[simp]
 lemma limsInf_of_not_isCobounded {f : Filter ℝ} (hf : ¬ f.IsCobounded (· ≥ ·)) :
@@ -36,7 +40,7 @@ lemma limsInf_of_not_isCobounded {f : Filter ℝ} (hf : ¬ f.IsCobounded (· ≥
 lemma limsInf_of_not_isBounded {f : Filter ℝ} (hf : ¬ f.IsBounded (· ≥ ·)) : limsInf f = 0 := by
   rw [limsInf]
   convert sSup_empty
-  simpa [Set.eq_empty_iff_forall_not_mem, IsBounded] using hf
+  simpa [Set.eq_empty_iff_forall_notMem, IsBounded] using hf
 
 @[simp]
 lemma limsup_of_not_isCoboundedUnder (hf : ¬ f.IsCoboundedUnder (· ≤ ·) u) : limsup u f = 0 :=
@@ -104,7 +108,7 @@ variable {ι : Type*} {f : Filter ι} {u : ι → ℝ≥0}
 lemma limsSup_of_not_isBounded {f : Filter ℝ≥0} (hf : ¬ f.IsBounded (· ≤ ·)) : limsSup f = 0 := by
   rw [limsSup, ← bot_eq_zero]
   convert sInf_empty
-  simpa [Set.eq_empty_iff_forall_not_mem, IsBounded] using hf
+  simpa [Set.eq_empty_iff_forall_notMem, IsBounded] using hf
 
 @[simp]
 lemma limsInf_of_not_isCobounded {f : Filter ℝ≥0} (hf : ¬ f.IsCobounded (· ≥ ·)) :
@@ -127,12 +131,12 @@ lemma toReal_liminf : liminf (fun i ↦ (u i : ℝ)) f = liminf u f := by
   simp only [← coe_lt_coe, Real.coe_toNNReal', lt_sup_iff, or_imp, isEmpty_Prop, not_lt,
     zero_le_coe, IsEmpty.forall_iff, and_true, NNReal.forall, coe_mk, forall_swap (α := _ ≤ _)]
   refine forall₂_congr fun r hr ↦ ?_
-  simpa using (le_or_lt 0 r).imp_right fun hr ↦ .of_forall fun i ↦ hr.trans_le (by simp)
+  simpa using (le_or_gt 0 r).imp_right fun hr ↦ .of_forall fun i ↦ hr.trans_le (by simp)
 
 @[simp, norm_cast]
 lemma toReal_limsup : limsup (fun i ↦ (u i : ℝ)) f = limsup u f := by
   obtain rfl | hf := f.eq_or_neBot
-  · simp [limsup, limsSup, Real.sInf_of_not_bddBelow]
+  · simp [limsup, limsSup]
   by_cases hf : f.IsBoundedUnder (· ≤ ·) u; swap
   · simp [*]
   have : f.IsCoboundedUnder (· ≤ ·) u := by isBoundedDefault
@@ -141,7 +145,7 @@ lemma toReal_limsup : limsup (fun i ↦ (u i : ℝ)) f = limsup u f := by
   simp only [← coe_lt_coe, Real.coe_toNNReal', lt_sup_iff, or_imp, isEmpty_Prop, not_lt,
     zero_le_coe, IsEmpty.forall_iff, and_true, NNReal.forall, coe_mk, forall_swap (α := _ ≤ _)]
   refine forall₂_congr fun r hr ↦ ?_
-  simpa using (le_or_lt 0 r).imp_right fun hr ↦ .of_forall fun i ↦ hr.trans_le (by simp)
+  simpa using (le_or_gt 0 r).imp_right fun hr ↦ .of_forall fun i ↦ hr.trans_le (by simp)
 
 end NNReal
 
@@ -175,9 +179,8 @@ theorem limsup_const_mul_of_ne_top {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_
 
 theorem limsup_const_mul [CountableInterFilter f] {u : α → ℝ≥0∞} {a : ℝ≥0∞} :
     f.limsup (a * u ·) = a * f.limsup u := by
-  by_cases ha_top : a ≠ ⊤
+  by_cases! ha_top : a ≠ ⊤
   · exact limsup_const_mul_of_ne_top ha_top
-  push_neg at ha_top
   by_cases hu : u =ᶠ[f] 0
   · have hau : (a * u ·) =ᶠ[f] 0 := hu.mono fun x hx => by simp [hx]
     simp only [limsup_congr hu, limsup_congr hau, Pi.zero_def, ← ENNReal.bot_eq_zero,

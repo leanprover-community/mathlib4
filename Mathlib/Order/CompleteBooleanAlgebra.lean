@@ -3,10 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Logic.Equiv.Set
-import Mathlib.Order.CompleteLattice.Lemmas
-import Mathlib.Order.Directed
-import Mathlib.Order.GaloisConnection.Basic
+module
+
+public import Mathlib.Logic.Equiv.Set
+public import Mathlib.Logic.Pairwise
+public import Mathlib.Order.CompleteLattice.Lemmas
+public import Mathlib.Order.Directed
+public import Mathlib.Order.GaloisConnection.Basic
 
 /-!
 # Frames, completely distributive lattices and complete Boolean algebras
@@ -48,6 +51,8 @@ distributive lattice.
 * [Wikipedia, *Complete Heyting algebra*](https://en.wikipedia.org/wiki/Complete_Heyting_algebra)
 * [Francis Borceux, *Handbook of Categorical Algebra III*][borceux-vol3]
 -/
+
+@[expose] public section
 
 open Function Set
 
@@ -161,7 +166,7 @@ end MinimalAxioms
 /-- Construct a frame instance using the minimal amount of work needed.
 
 This sets `a ⇨ b := sSup {c | c ⊓ a ≤ b}` and `aᶜ := a ⇨ ⊥`. -/
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 abbrev ofMinimalAxioms (minAx : MinimalAxioms α) : Frame α where
   __ := minAx
   compl a := sSup {c | c ⊓ a ≤ ⊥}
@@ -200,7 +205,7 @@ end MinimalAxioms
 /-- Construct a coframe instance using the minimal amount of work needed.
 
 This sets `a \ b := sInf {c | a ≤ b ⊔ c}` and `￢a := ⊤ \ a`. -/
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 abbrev ofMinimalAxioms (minAx : MinimalAxioms α) : Coframe α where
   __ := minAx
   hnot a := sInf {c | ⊤ ≤ a ⊔ c}
@@ -233,7 +238,7 @@ end MinimalAxioms
 
 This sets `a ⇨ b := sSup {c | c ⊓ a ≤ b}`, `aᶜ := a ⇨ ⊥`, `a \ b := sInf {c | a ≤ b ⊔ c}` and
 `￢a := ⊤ \ a`. -/
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 abbrev ofMinimalAxioms (minAx : MinimalAxioms α) : CompleteDistribLattice α where
   __ := Frame.ofMinimalAxioms minAx.toFrame
   __ := Coframe.ofMinimalAxioms minAx.toCoframe
@@ -264,8 +269,8 @@ lemma iSup_iInf_eq (f : ∀ i, κ i → α) :
   refine le_antisymm iSup_iInf_le ?_
   rw [minAx.iInf_iSup_eq']
   refine iSup_le fun g => ?_
-  have ⟨a, ha⟩ : ∃ a, ∀ b, ∃ f, ∃ h : a = g f, h ▸ b = f (g f) := of_not_not fun h => by
-    push_neg at h
+  have ⟨a, ha⟩ : ∃ a, ∀ b, ∃ f, ∃ h : a = g f, h ▸ b = f (g f) := by
+    by_contra! h
     choose h hh using h
     have := hh _ h rfl
     contradiction
@@ -308,7 +313,7 @@ end MinimalAxioms
 
 This sets `a ⇨ b := sSup {c | c ⊓ a ≤ b}`, `aᶜ := a ⇨ ⊥`, `a \ b := sInf {c | a ≤ b ⊔ c}` and
 `￢a := ⊤ \ a`. -/
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 abbrev ofMinimalAxioms (minAx : MinimalAxioms α) : CompletelyDistribLattice α where
   __ := minAx
   __ := CompleteDistribLattice.ofMinimalAxioms minAx.toCompleteDistribLattice
@@ -322,6 +327,23 @@ theorem iInf_iSup_eq [CompletelyDistribLattice α] {f : ∀ a, κ a → α} :
 theorem iSup_iInf_eq [CompletelyDistribLattice α] {f : ∀ a, κ a → α} :
     (⨆ a, ⨅ b, f a b) = ⨅ g : ∀ a, κ a, ⨆ a, f a (g a) :=
   CompletelyDistribLattice.MinimalAxioms.of.iSup_iInf_eq _
+
+theorem biSup_iInter_of_pairwise_disjoint [CompletelyDistribLattice α] {ι κ : Type*}
+    [hκ : Nonempty κ] {f : ι → α} (h : Pairwise (Disjoint on f)) (s : κ → Set ι) :
+    (⨆ i ∈ (⋂ j, s j), f i) = ⨅ j, (⨆ i ∈ s j, f i) := by
+  rcases hκ with ⟨j⟩
+  simp_rw [iInf_iSup_eq, mem_iInter]
+  refine le_antisymm
+    (iSup₂_le fun i hi ↦ le_iSup₂_of_le (fun _ ↦ i) hi (le_iInf fun _ ↦ le_rfl))
+    (iSup₂_le fun I hI ↦ ?_)
+  by_cases H : ∀ k, I k = I j
+  · exact le_iSup₂_of_le (I j) (fun k ↦ (H k) ▸ (hI k)) (iInf_le _ _)
+  · push_neg at H
+    rcases H with ⟨k, hk⟩
+    calc ⨅ l, f (I l)
+    _ ≤ f (I k) ⊓ f (I j) := le_inf (iInf_le _ _) (iInf_le _ _)
+    _ = ⊥ := (h hk).eq_bot
+    _ ≤ _ := bot_le
 
 instance (priority := 100) CompletelyDistribLattice.toCompleteDistribLattice
     [CompletelyDistribLattice α] : CompleteDistribLattice α where
@@ -339,13 +361,13 @@ instance (priority := 100) CompleteLinearOrder.toCompletelyDistribLattice [Compl
       rcases h with ⟨x, hr, hl⟩
       suffices rhs ≥ x from nomatch not_lt.2 this hr
       have : ∀ a, ∃ b, x < g a b := fun a =>
-        lt_iSup_iff.1 <| lt_of_not_le fun h =>
+        lt_iSup_iff.1 <| lt_of_not_ge fun h =>
             lt_irrefl x (lt_of_lt_of_le hl (le_trans (iInf_le _ a) h))
       choose f hf using this
       refine le_trans ?_ (le_iSup _ f)
       exact le_iInf fun a => le_of_lt (hf a)
     else
-      refine le_of_not_lt fun hrl : rhs < lhs => not_le_of_lt hrl ?_
+      refine le_of_not_gt fun hrl : rhs < lhs => not_le_of_gt hrl ?_
       replace h : ∀ x, x ≤ rhs ∨ lhs ≤ x := by
         simpa only [not_exists, not_and_or, not_or, not_lt] using h
       have : ∀ a, ∃ b, rhs < g a b := fun a =>
@@ -392,6 +414,17 @@ theorem biSup_inf_biSup {ι ι' : Type*} {f : ι → α} {g : ι' → α} {s : S
 
 theorem sSup_inf_sSup : sSup s ⊓ sSup t = ⨆ p ∈ s ×ˢ t, (p : α × α).1 ⊓ p.2 := by
   simp only [sSup_eq_iSup, biSup_inf_biSup]
+
+theorem biSup_inter_of_pairwise_disjoint {ι : Type*} {f : ι → α}
+    (h : Pairwise (Disjoint on f)) (s t : Set ι) :
+    (⨆ i ∈ (s ∩ t), f i) = (⨆ i ∈ s, f i) ⊓ (⨆ i ∈ t, f i) := by
+  rw [biSup_inf_biSup]
+  refine le_antisymm
+    (iSup₂_le fun i ⟨his, hit⟩ ↦ le_iSup₂_of_le ⟨i, i⟩ ⟨his, hit⟩ (le_inf le_rfl le_rfl))
+    (iSup₂_le fun ⟨i, j⟩ ⟨his, hjs⟩ ↦ ?_)
+  by_cases hij : i = j
+  · exact le_iSup₂_of_le i ⟨his, hij ▸ hjs⟩ inf_le_left
+  · simp [h hij |>.eq_bot]
 
 theorem iSup_disjoint_iff {f : ι → α} : Disjoint (⨆ i, f i) a ↔ ∀ i, Disjoint (f i) a := by
   simp only [disjoint_iff, iSup_inf_eq, iSup_eq_bot]
@@ -563,11 +596,7 @@ A complete Boolean algebra is a Boolean algebra that is also a complete distribu
 It is only completely distributive if it is also atomic.
 -/
 -- We do not directly extend `CompleteDistribLattice` to avoid having the `hnot` field
-class CompleteBooleanAlgebra (α) extends CompleteLattice α, BooleanAlgebra α where
-  /-- `⊓` distributes over `⨆`. -/
-  inf_sSup_le_iSup_inf (a : α) (s : Set α) : a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b
-  /-- `⊔` distributes over `⨅`. -/
-  iInf_sup_le_sup_sInf (a : α) (s : Set α) : ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s
+class CompleteBooleanAlgebra (α) extends CompleteLattice α, BooleanAlgebra α
 
 -- See note [lower instance priority]
 instance (priority := 100) CompleteBooleanAlgebra.toCompleteDistribLattice
@@ -579,26 +608,28 @@ instance Prod.instCompleteBooleanAlgebra [CompleteBooleanAlgebra α] [CompleteBo
     CompleteBooleanAlgebra (α × β) where
   __ := instBooleanAlgebra
   __ := instCompleteDistribLattice
-  inf_sSup_le_iSup_inf _ _ := inf_sSup_eq.le
-  iInf_sup_le_sup_sInf _ _ := sup_sInf_eq.ge
 
 instance Pi.instCompleteBooleanAlgebra {ι : Type*} {π : ι → Type*}
     [∀ i, CompleteBooleanAlgebra (π i)] : CompleteBooleanAlgebra (∀ i, π i) where
   __ := instBooleanAlgebra
   __ := instCompleteDistribLattice
-  inf_sSup_le_iSup_inf _ _ := inf_sSup_eq.le
-  iInf_sup_le_sup_sInf _ _ := sup_sInf_eq.ge
 
 instance OrderDual.instCompleteBooleanAlgebra [CompleteBooleanAlgebra α] :
     CompleteBooleanAlgebra αᵒᵈ where
   __ := instBooleanAlgebra
   __ := instCompleteDistribLattice
-  inf_sSup_le_iSup_inf _ _ := inf_sSup_eq.le
-  iInf_sup_le_sup_sInf _ _ := sup_sInf_eq.ge
 
 section CompleteBooleanAlgebra
 
 variable [CompleteBooleanAlgebra α] {s : Set α} {f : ι → α}
+
+@[deprecated "use `inf_sSup_eq.le` instead" (since := "2025-06-15")]
+theorem inf_sSup_le_iSup_inf (a : α) (s : Set α) : a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b :=
+  gc_inf_himp.l_sSup.le
+
+@[deprecated "use `sup_sInf_eq.ge` instead" (since := "2025-06-15")]
+theorem iInf_sup_le_sup_sInf (a : α) (s : Set α) : ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s :=
+  gc_sdiff_sup.u_sInf.ge
 
 theorem compl_iInf : (iInf f)ᶜ = ⨆ i, (f i)ᶜ :=
   le_antisymm
@@ -631,7 +662,7 @@ open scoped symmDiff in
 theorem biSup_symmDiff_biSup_le {p : ι → Prop} {f g : (i : ι) → p i → α} :
     (⨆ i, ⨆ (h : p i), f i h) ∆ (⨆ i, ⨆ (h : p i), g i h) ≤
     ⨆ i, ⨆ (h : p i), ((f i h) ∆ (g i h)) :=
-  le_trans iSup_symmDiff_iSup_le <|iSup_mono fun _ ↦ iSup_symmDiff_iSup_le
+  le_trans iSup_symmDiff_iSup_le <| iSup_mono fun _ ↦ iSup_symmDiff_iSup_le
 
 end CompleteBooleanAlgebra
 
@@ -643,9 +674,7 @@ We take iSup_iInf_eq as the definition here,
 and prove later on that this implies atomicity.
 -/
 -- We do not directly extend `CompletelyDistribLattice` to avoid having the `hnot` field
--- We do not directly extend `CompleteBooleanAlgebra` to avoid having the `inf_sSup_le_iSup_inf` and
--- `iInf_sup_le_sup_sInf` fields
-class CompleteAtomicBooleanAlgebra (α : Type u) extends CompleteLattice α, BooleanAlgebra α where
+class CompleteAtomicBooleanAlgebra (α : Type u) extends CompleteBooleanAlgebra α where
   protected iInf_iSup_eq {ι : Type u} {κ : ι → Type u} (f : ∀ a, κ a → α) :
     (⨅ a, ⨆ b, f a b) = ⨆ g : ∀ a, κ a, ⨅ a, f a (g a)
 
@@ -654,14 +683,6 @@ instance (priority := 100) CompleteAtomicBooleanAlgebra.toCompletelyDistribLatti
     [CompleteAtomicBooleanAlgebra α] : CompletelyDistribLattice α where
   __ := ‹CompleteAtomicBooleanAlgebra α›
   __ := BooleanAlgebra.toBiheytingAlgebra
-
--- See note [lower instance priority]
-instance (priority := 100) CompleteAtomicBooleanAlgebra.toCompleteBooleanAlgebra
-    [CompleteAtomicBooleanAlgebra α] : CompleteBooleanAlgebra α where
-  __ := CompletelyDistribLattice.toCompleteDistribLattice
-  __ := ‹CompleteAtomicBooleanAlgebra α›
-  inf_sSup_le_iSup_inf _ _ := inf_sSup_eq.le
-  iInf_sup_le_sup_sInf _ _ := sup_sInf_eq.ge
 
 instance Prod.instCompleteAtomicBooleanAlgebra [CompleteAtomicBooleanAlgebra α]
     [CompleteAtomicBooleanAlgebra β] : CompleteAtomicBooleanAlgebra (α × β) where
@@ -813,16 +834,6 @@ protected abbrev Function.Injective.completeBooleanAlgebra [Max α] [Min α] [Su
     CompleteBooleanAlgebra α where
   __ := hf.completeLattice f map_sup map_inf map_sSup map_sInf map_top map_bot
   __ := hf.booleanAlgebra f map_sup map_inf map_top map_bot map_compl map_sdiff map_himp
-  inf_sSup_le_iSup_inf a s := by
-    change f (a ⊓ sSup s) ≤ f _
-    rw [← sSup_image, map_inf, map_sSup s, inf_iSup₂_eq]
-    simp_rw [← map_inf]
-    exact ((map_sSup _).trans iSup_image).ge
-  iInf_sup_le_sup_sInf a s := by
-    change f _ ≤ f (a ⊔ sInf s)
-    rw [← sInf_image, map_sup, map_sInf s, sup_iInf₂_eq]
-    simp_rw [← map_sup]
-    exact ((map_sInf _).trans iInf_image).le
 
 -- See note [reducible non-instances]
 /-- Pullback a `CompleteAtomicBooleanAlgebra` along an injection. -/

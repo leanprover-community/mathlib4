@@ -3,7 +3,9 @@ Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Newell Jensen
 -/
-import Mathlib.Topology.MetricSpace.Congruence
+module
+
+public import Mathlib.Topology.MetricSpace.Congruence
 
 /-!
 # Similarities
@@ -23,6 +25,8 @@ Let `P₁` and `P₂` be metric spaces, let `ι` be an index set, and let `v₁ 
 * `(v₁ ∼ v₂ : Prop)` represents that `(v₁ : ι → P₁)` and `(v₂ : ι → P₂)` are similar.
 -/
 
+@[expose] public section
+
 open scoped NNReal
 
 variable {ι ι' : Type*} {P₁ P₂ P₃ : Type*} {v₁ : ι → P₁} {v₂ : ι → P₂} {v₃ : ι → P₃}
@@ -33,7 +37,6 @@ variable [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] [PseudoEMetricSpace
 
 /-- Similarity between indexed sets of vertices v₁ and v₂.
 Use `open scoped Similar` to access the `v₁ ∼ v₂` notation. -/
-
 def Similar (v₁ : ι → P₁) (v₂ : ι → P₂) : Prop :=
   ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (edist (v₁ i₁) (v₁ i₂) = r * edist (v₂ i₁) (v₂ i₂))
 

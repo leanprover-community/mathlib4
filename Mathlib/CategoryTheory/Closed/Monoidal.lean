@@ -3,10 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta, Daniel Carranza, Joël Riou
 -/
-import Mathlib.CategoryTheory.Monoidal.Functor
-import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Adjunction.Mates
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Functor
+public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
+public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Adjunction.Mates
+public import Mathlib.CategoryTheory.Adjunction.Parametrized
 
 /-!
 # Closed monoidal categories
@@ -14,9 +17,11 @@ import Mathlib.CategoryTheory.Adjunction.Mates
 Define (right) closed objects and (right) closed monoidal categories.
 
 ## TODO
-Some of the theorems proved about cartesian closed categories
+Some of the theorems proved about Cartesian closed categories
 should be generalised and moved to this file.
 -/
+
+@[expose] public section
 
 
 universe v u u₂ v₂
@@ -268,6 +273,13 @@ def internalHom [MonoidalClosed C] : Cᵒᵖ ⥤ C ⥤ C where
   obj X := ihom X.unop
   map f := pre f.unop
 
+/-- The parametrized adjunction between `curriedTensor C : C ⥤ C ⥤ C`
+and `internalHom : Cᵒᵖ ⥤ C ⥤ C` -/
+@[simps!]
+def internalHomAdjunction₂ [MonoidalClosed C] :
+    curriedTensor C ⊣₂ internalHom where
+  adj _ := ihom.adjunction _
+
 section OfEquiv
 
 variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
@@ -402,12 +414,11 @@ lemma assoc (w x y z : C) [Closed w] [Closed x] [Closed y] :
     (α_ _ _ _).inv ≫ comp w x y ▷ _ ≫ comp w y z = _ ◁ comp x y z ≫ comp w x z := by
   apply uncurry_injective
   simp only [uncurry_natural_left, comp_eq]
-  rw [uncurry_curry, uncurry_curry]; simp only [compTranspose_eq, Category.assoc]
+  rw [uncurry_curry, uncurry_curry]; simp only [compTranspose_eq]
   rw [associator_inv_naturality_middle_assoc, ← comp_whiskerRight_assoc]; dsimp
   rw [← uncurry_eq, uncurry_curry, associator_inv_naturality_right_assoc, whisker_exchange_assoc,
     ← uncurry_eq, uncurry_curry]
-  simp only [comp_whiskerRight, tensorLeft_obj, Category.assoc, pentagon_inv_assoc,
-    whiskerRight_tensor, Iso.hom_inv_id_assoc]
+  simp
 
 end Enriched
 
@@ -489,7 +500,7 @@ lemma curry'_ihom_map {X Y Z : C} [Closed X] (f : X ⟶ Y) (g : Y ⟶ Z) :
   simp only [curry', ← curry_natural_right, Category.assoc]
 
 lemma curry'_comp {X Y Z : C} [Closed X] [Closed Y] (f : X ⟶ Y) (g : Y ⟶ Z) :
-    curry' (f ≫ g) = (λ_ (𝟙_ C)).inv ≫ (curry' f ⊗ curry' g) ≫ comp X Y Z := by
+    curry' (f ≫ g) = (λ_ (𝟙_ C)).inv ≫ (curry' f ⊗ₘ curry' g) ≫ comp X Y Z := by
   rw [tensorHom_def_assoc, whiskerLeft_curry'_comp, MonoidalCategory.whiskerRight_id,
     Category.assoc, Category.assoc, Iso.inv_hom_id_assoc, ← unitors_equal,
     Iso.inv_hom_id_assoc, curry'_ihom_map]

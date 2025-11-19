@@ -3,8 +3,10 @@ Copyright (c) 2020 Johan Commelin, Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.RingTheory.WittVector.Basic
-import Mathlib.RingTheory.WittVector.IsPoly
+module
+
+public import Mathlib.RingTheory.WittVector.Basic
+public import Mathlib.RingTheory.WittVector.IsPoly
 
 /-!
 
@@ -32,6 +34,8 @@ and shows how that polynomial interacts with `MvPolynomial.bind₁`.
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 
 -/
+
+@[expose] public section
 
 
 variable {p : ℕ} (n : ℕ) {R : Type*} [CommRing R]
@@ -68,11 +72,8 @@ def selectPoly (n : ℕ) : MvPolynomial ℕ ℤ :=
 theorem coeff_select (x : 𝕎 R) (n : ℕ) :
     (select P x).coeff n = aeval x.coeff (selectPoly P n) := by
   dsimp [select, selectPoly]
-  split_ifs with hi
-  · rw [aeval_X, mk]; simp only [hi, if_true]
-  · rw [map_zero, mk]; simp only [hi, if_false]
+  split_ifs with hi <;> simp
 
--- Porting note: replaced `@[is_poly]` with `instance`. Made the argument `P` implicit in doing so.
 instance select_isPoly {P : ℕ → Prop} : IsPoly p fun _ _ x => select P x := by
   use selectPoly P
   rintro R _Rcr x
@@ -181,14 +182,9 @@ elab_rules : tactic
         hk, if_true]
     ))
 
--- Porting note: `by init_ring` should suffice; this patches over an issue with `split_ifs`.
--- See zulip: [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.60split_ifs.60.20boxes.20itself.20into.20a.20corner]
 @[simp]
 theorem init_init (x : 𝕎 R) (n : ℕ) : init n (init n x) = init n x := by
-  rw [WittVector.ext_iff]
-  intro i
-  simp only [WittVector.init, WittVector.select, WittVector.coeff_mk]
-  by_cases hi : i < n <;> simp [hi]
+  init_ring
 
 section
 variable [Fact p.Prime]

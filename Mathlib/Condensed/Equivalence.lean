@@ -3,10 +3,12 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Nikolas Kuhn, Dagur Asgeirsson
 -/
-import Mathlib.Topology.Category.Profinite.EffectiveEpi
-import Mathlib.Topology.Category.Stonean.EffectiveEpi
-import Mathlib.Condensed.Basic
-import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
+module
+
+public import Mathlib.Topology.Category.Profinite.EffectiveEpi
+public import Mathlib.Topology.Category.Stonean.EffectiveEpi
+public import Mathlib.Condensed.Basic
+public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
 /-!
 
 # Sheaves on CompHaus are equivalent to sheaves on Stonean
@@ -19,8 +21,8 @@ between sheaves on these two sites. With the terminology of nLab, `Stonean` is a
 Since Stonean spaces are the projective objects in `CompHaus`, which has enough projectives,
 and the notions of effective epimorphism, epimorphism and surjective continuous map are equivalent
 in `CompHaus` and `Stonean`, we can use the general setup in
-`Mathlib.CategoryTheory.Sites.Coherent.SheafComparison` to deduce the equivalence of categories.
-We give the corresponding statements for `Profinite` as well.
+`Mathlib/CategoryTheory/Sites/Coherent/SheafComparison.lean` to deduce the equivalence of
+categories. We give the corresponding statements for `Profinite` as well.
 
 ## Main results
 
@@ -31,6 +33,8 @@ We give the corresponding statements for `Profinite` as well.
 * `Condensed.ProfiniteCompHaus.equivalence`: the equivalence from coherent sheaves on `Profinite` to
   coherent sheaves on `CompHaus` (i.e. condensed sets).
 -/
+
+@[expose] public section
 
 universe u
 
@@ -84,7 +88,7 @@ end StoneanProfinite
 namespace ProfiniteCompHaus
 
 /-- The equivalence from coherent sheaves on `Profinite` to coherent sheaves on `CompHaus`
-    (i.e. condensed sets). -/
+(i.e. condensed sets). -/
 noncomputable
 def equivalence (A : Type*) [Category A]
     [∀ X, HasLimitsOfShape (StructuredArrow X profiniteToCompHaus.op) A] :

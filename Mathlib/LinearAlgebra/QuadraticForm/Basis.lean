@@ -3,10 +3,12 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.BigOperators.Sym
-import Mathlib.Data.Finsupp.Pointwise
-import Mathlib.Data.Sym.Sym2.Finsupp
-import Mathlib.LinearAlgebra.QuadraticForm.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Sym
+public import Mathlib.Data.Finsupp.Pointwise
+public import Mathlib.Data.Sym.Sym2.Finsupp
+public import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
 /-!
 # Constructing a bilinear map from a quadratic map, given a basis
@@ -16,7 +18,10 @@ does not require `Invertible (2 : R)`. Unlike that definition, this only works i
 a basis.
 -/
 
+@[expose] public section
+
 open LinearMap (BilinMap)
+open Module
 
 namespace QuadraticMap
 variable {ι R M N : Type*}
@@ -121,7 +126,7 @@ lemma add_toBilin (bm : Basis ι R M) (Q₁ Q₂ : QuadraticMap R M N) :
   obtain h | rfl | h := lt_trichotomy i j
   · simp [h.ne, h, toBilin_apply, polar_add]
   · simp [toBilin_apply]
-  · simp [h.ne', h.not_lt, toBilin_apply, polar_add]
+  · simp [h.ne', h.not_gt, toBilin_apply]
 
 variable (S) [CommSemiring S] [Algebra S R]
 variable [Module S N] [IsScalarTower S R N]
@@ -133,7 +138,7 @@ lemma smul_toBilin (bm : Basis ι R M) (s : S) (Q : QuadraticMap R M N) :
   obtain h | rfl | h := lt_trichotomy i j
   · simp [h.ne, h, toBilin_apply, polar_smul]
   · simp [toBilin_apply]
-  · simp [h.ne', h.not_lt, toBilin_apply]
+  · simp [h.ne', h.not_gt, toBilin_apply]
 
 /-- `QuadraticMap.toBilin` as an S-linear map -/
 @[simps]

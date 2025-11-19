@@ -170,6 +170,8 @@ for index, entry in thousand.items():
             print(f"For key {index} ({title}): did you mean `decl` instead of `decls`?")
             errors += 1
         thousand_decls = thousand_decls + [(f"{index} {title}", d) for d in entry["decls"]]
+    elif "statement" in entry:
+        thousand_decls.append((f"{index} {title}", entry["statement"]))
 
 overview_decls = tiered_extract(overview)
 assert all(len(n) >= 3 for n, _ in overview_decls), "Expected more nesting"

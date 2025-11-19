@@ -3,8 +3,10 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.RingTheory.Polynomial.Basic
-import Mathlib.RingTheory.Spectrum.Prime.Topology
+module
+
+public import Mathlib.RingTheory.Polynomial.Basic
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
 The morphism `Spec R[x] --> Spec R` induced by the natural inclusion `R --> R[x]` is an open map.
@@ -13,6 +15,8 @@ The main result is the first part of the statement of Lemma 00FB in the Stacks P
 
 https://stacks.math.columbia.edu/tag/00FB
 -/
+
+@[expose] public section
 
 
 open Ideal Polynomial PrimeSpectrum Set
@@ -37,11 +41,11 @@ theorem isOpen_imageOfDf : IsOpen (imageOfDf f) := by
 
 /-- If a point of `Spec R[x]` is not contained in the vanishing set of `f`, then its image in
 `Spec R` is contained in the open set where at least one of the coefficients of `f` is non-zero.
-This lemma is a reformulation of `exists_C_coeff_not_mem`. -/
+This lemma is a reformulation of `exists_C_coeff_notMem`. -/
 theorem comap_C_mem_imageOfDf {I : PrimeSpectrum R[X]}
     (H : I ∈ (zeroLocus {f} : Set (PrimeSpectrum R[X]))ᶜ) :
     PrimeSpectrum.comap (Polynomial.C : R →+* R[X]) I ∈ imageOfDf f :=
-  exists_C_coeff_not_mem (mem_compl_zeroLocus_iff_not_mem.mp H)
+  exists_C_coeff_notMem (mem_compl_zeroLocus_iff_notMem.mp H)
 
 /-- The open set `imageOfDf f` coincides with the image of `basicOpen f` under the
 morphism `C⁺ : Spec R[x] → Spec R`. -/

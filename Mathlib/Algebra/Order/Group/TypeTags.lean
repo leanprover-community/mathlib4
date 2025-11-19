@@ -3,10 +3,10 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Group.Defs
-import Mathlib.Algebra.Order.Monoid.TypeTags
+module
 
-/-! # Ordered group structures on `Multiplicative α` and `Additive α`.
+public import Mathlib.Algebra.Order.Group.Defs
+public import Mathlib.Algebra.Order.Monoid.TypeTags
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
-TODO: delete this file, all the instances we need are in `Mathlib.Algebra.Order.Monoid.TypeTags``
--/
+deprecated_module (since := "2025-04-16")

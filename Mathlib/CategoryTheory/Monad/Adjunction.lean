@@ -3,8 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Adjunction.Reflective
-import Mathlib.CategoryTheory.Monad.Algebra
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Reflective
+public import Mathlib.CategoryTheory.Monad.Algebra
 
 /-!
 # Adjunctions and (co)monads
@@ -24,10 +26,12 @@ Finally we prove that reflective functors are `MonadicRightAdjoint` and coreflec
 `ComonadicLeftAdjoint`.
 -/
 
+@[expose] public section
+
 
 namespace CategoryTheory
 
-open Category
+open Category Functor
 
 universe v₁ v₂ u₁ u₂
 
@@ -40,7 +44,6 @@ namespace Adjunction
 /-- For a pair of functors `L : C ⥤ D`, `R : D ⥤ C`, an adjunction `h : L ⊣ R` induces a monad on
 the category `C`.
 -/
--- Porting note: Specifying simps projections manually to match mathlib3 behavior.
 @[simps! coe η μ]
 def toMonad (h : L ⊣ R) : Monad C where
   toFunctor := L ⋙ R
@@ -58,7 +61,6 @@ def toMonad (h : L ⊣ R) : Monad C where
 /-- For a pair of functors `L : C ⥤ D`, `R : D ⥤ C`, an adjunction `h : L ⊣ R` induces a comonad on
 the category `D`.
 -/
--- Porting note: Specifying simps projections manually to match mathlib3 behavior.
 @[simps coe ε δ]
 def toComonad (h : L ⊣ R) : Comonad D where
   toFunctor := R ⋙ L
@@ -316,8 +318,8 @@ instance [Reflective R] (X : (reflectorAdjunction R).toMonad.Algebra) :
         rw [← (reflectorAdjunction R).unit_naturality]
         dsimp only [Functor.comp_obj, Adjunction.toMonad_coe]
         rw [unit_obj_eq_map_unit, ← Functor.map_comp, ← Functor.map_comp]
-        erw [X.unit]
-        simp⟩⟩⟩
+        dsimp [X.unit]
+        simpa using congrArg (fun t ↦ R.map ((reflector R).map t)) X.unit ⟩⟩⟩
 
 instance comparison_essSurj [Reflective R] :
     (Monad.comparison (reflectorAdjunction R)).EssSurj := by
@@ -335,7 +337,7 @@ instance comparison_essSurj [Reflective R] :
 
 lemma comparison_full [R.Full] {L : C ⥤ D} (adj : L ⊣ R) :
     (Monad.comparison adj).Full where
-  map_surjective f := ⟨R.preimage f.f, by aesop_cat⟩
+  map_surjective f := ⟨R.preimage f.f, by cat_disch⟩
 
 end Reflective
 
@@ -349,8 +351,7 @@ instance [Coreflective R] (X : (coreflectorAdjunction R).toComonad.Coalgebra) :
         rw [← (coreflectorAdjunction R).counit_naturality]
         dsimp only [Functor.comp_obj, Adjunction.toMonad_coe]
         rw [counit_obj_eq_map_counit, ← Functor.map_comp, ← Functor.map_comp]
-        erw [X.counit]
-        simp, X.counit⟩⟩⟩
+        simpa using congrArg (fun t ↦ R.map ((coreflector R).map t)) X.counit, X.counit⟩⟩⟩
 
 instance comparison_essSurj [Coreflective R] :
     (Comonad.comparison (coreflectorAdjunction R)).EssSurj := by
@@ -358,14 +359,13 @@ instance comparison_essSurj [Coreflective R] :
   refine Comonad.Coalgebra.isoMk ?_ ?_
   · exact (asIso ((coreflectorAdjunction R).counit.app X.A))
   rw [← cancel_mono ((coreflectorAdjunction R).counit.app X.A)]
-  simp only [Adjunction.counit_naturality, Functor.comp_obj, Functor.id_obj,
-    Adjunction.left_triangle_components_assoc, assoc]
-  erw [X.counit]
-  simp
+  simp only [Functor.comp_obj, Functor.id_obj,
+    assoc]
+  simpa using (coreflectorAdjunction R).counit.app X.A ≫= X.counit.symm
 
 lemma comparison_full [R.Full] {L : C ⥤ D} (adj : R ⊣ L) :
     (Comonad.comparison adj).Full where
-  map_surjective f := ⟨R.preimage f.f, by aesop_cat⟩
+  map_surjective f := ⟨R.preimage f.f, by cat_disch⟩
 
 end Coreflective
 
@@ -373,7 +373,7 @@ end Coreflective
 -- just the existence of an inverse on each object.
 -- see Note [lower instance priority]
 /-- Any reflective inclusion has a monadic right adjoint.
-    cf Prop 5.3.3 of [Riehl][riehl2017] -/
+cf Prop 5.3.3 of [Riehl][riehl2017] -/
 instance (priority := 100) monadicOfReflective [Reflective R] :
     MonadicRightAdjoint R where
   L := reflector R
@@ -381,7 +381,7 @@ instance (priority := 100) monadicOfReflective [Reflective R] :
   eqv := { full := Reflective.comparison_full _ }
 
 /-- Any coreflective inclusion has a comonadic left adjoint.
-    cf Dual statement of Prop 5.3.3 of [Riehl][riehl2017] -/
+cf Dual statement of Prop 5.3.3 of [Riehl][riehl2017] -/
 instance (priority := 100) comonadicOfCoreflective [Coreflective R] :
     ComonadicLeftAdjoint R where
   R := coreflector R

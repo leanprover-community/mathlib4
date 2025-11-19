@@ -3,10 +3,12 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Module.LinearMap.End
-import Mathlib.Data.Matrix.Mul
-import Mathlib.Data.Matrix.Basis
-import Mathlib.Algebra.Algebra.Bilinear
+module
+
+public import Mathlib.Algebra.Module.LinearMap.End
+public import Mathlib.Data.Matrix.Mul
+public import Mathlib.Data.Matrix.Basis
+public import Mathlib.Algebra.Algebra.Bilinear
 
 /-!
 # Bundled versions of multiplication for matrices
@@ -14,6 +16,8 @@ import Mathlib.Algebra.Algebra.Bilinear
 This file provides versions of `LinearMap.mulLeft` and `LinearMap.mulRight` which work for the
 heterogeneous multiplication of matrices.
 -/
+
+@[expose] public section
 
 variable {l m n o : Type*} {R A : Type*}
 
@@ -36,12 +40,12 @@ def mulLeftLinearMap (X : Matrix l m A) :
 
 /-- On square matrices, `Matrix.mulLeftLinearMap` and `LinearMap.mulLeft` coincide. -/
 theorem mulLeftLinearMap_eq_mulLeft :
-  mulLeftLinearMap m R = LinearMap.mulLeft R (A := Matrix m m A) := rfl
+    mulLeftLinearMap m R = LinearMap.mulLeft R (A := Matrix m m A) := rfl
 
 /-- A version of `LinearMap.mulLeft_zero_eq_zero` for matrix multiplication. -/
 @[simp]
-theorem mulLeftLinearMap_zero_eq_zero :
-  mulLeftLinearMap n R (0 : Matrix l m A) = 0 := LinearMap.ext fun _ => Matrix.zero_mul _
+theorem mulLeftLinearMap_zero_eq_zero : mulLeftLinearMap n R (0 : Matrix l m A) = 0 :=
+  LinearMap.ext fun _ => Matrix.zero_mul _
 
 end left
 
@@ -58,12 +62,12 @@ def mulRightLinearMap (Y : Matrix m n A) :
 
 /-- On square matrices, `Matrix.mulRightLinearMap` and `LinearMap.mulRight` coincide. -/
 theorem mulRightLinearMap_eq_mulRight :
-  mulRightLinearMap m R = LinearMap.mulRight R (A := Matrix m m A) := rfl
+    mulRightLinearMap m R = LinearMap.mulRight R (A := Matrix m m A) := rfl
 
 /-- A version of `LinearMap.mulLeft_zero_eq_zero` for matrix multiplication. -/
 @[simp]
-theorem mulRightLinearMap_zero_eq_zero :
-  mulRightLinearMap l R (0 : Matrix m n A) = 0 := LinearMap.ext fun _ => Matrix.mul_zero _
+theorem mulRightLinearMap_zero_eq_zero : mulRightLinearMap l R (0 : Matrix m n A) = 0 :=
+  LinearMap.ext fun _ => Matrix.mul_zero _
 
 end right
 
@@ -81,7 +85,7 @@ def mulLinearMap : Matrix l m A →ₗ[R] Matrix m n A →ₗ[R] Matrix l n A wh
 
 /-- On square matrices, `Matrix.mulLinearMap` and `LinearMap.mul` coincide. -/
 theorem mulLinearMap_eq_mul :
-  mulLinearMap R = LinearMap.mul R (A := Matrix m m A) := rfl
+    mulLinearMap R = LinearMap.mul R (A := Matrix m m A) := rfl
 
 end NonUnitalNonAssocSemiring
 
@@ -131,6 +135,7 @@ variable [Module R A] [SMulCommClass R A A]
 theorem mulLeftLinearMap_one : mulLeftLinearMap n R (1 : Matrix m m A) = LinearMap.id :=
   LinearMap.ext fun _ => Matrix.one_mul _
 
+omit [DecidableEq m] in
 /-- A version of `LinearMap.mulLeft_eq_zero_iff` for matrix multiplication. -/
 @[simp]
 theorem mulLeftLinearMap_eq_zero_iff [Nonempty n] (a : Matrix l m A) :
@@ -139,7 +144,7 @@ theorem mulLeftLinearMap_eq_zero_iff [Nonempty n] (a : Matrix l m A) :
   · inhabit n
     ext i j
     classical
-    replace h := DFunLike.congr_fun h (Matrix.stdBasisMatrix j (default : n) 1)
+    replace h := DFunLike.congr_fun h (Matrix.single j (default : n) 1)
     simpa using Matrix.ext_iff.2 h i default
   · rw [h]
     exact mulLeftLinearMap_zero_eq_zero _ _
@@ -149,9 +154,9 @@ theorem mulLeftLinearMap_eq_zero_iff [Nonempty n] (a : Matrix l m A) :
 theorem pow_mulLeftLinearMap (a : Matrix m m A) (k : ℕ) :
     mulLeftLinearMap n R a ^ k = mulLeftLinearMap n R (a ^ k) :=
   match k with
-  | 0 => by rw [pow_zero, pow_zero, mulLeftLinearMap_one, LinearMap.one_eq_id]
+  | 0 => by rw [pow_zero, pow_zero, mulLeftLinearMap_one, Module.End.one_eq_id]
   | (n + 1) => by
-    rw [pow_succ, pow_succ, mulLeftLinearMap_mul, LinearMap.mul_eq_comp, pow_mulLeftLinearMap]
+    rw [pow_succ, pow_succ, mulLeftLinearMap_mul, Module.End.mul_eq_comp, pow_mulLeftLinearMap]
 
 end left
 
@@ -163,6 +168,7 @@ variable [Module R A] [IsScalarTower R A A]
 theorem mulRightLinearMap_one : mulRightLinearMap l R (1 : Matrix m m A) = LinearMap.id :=
   LinearMap.ext fun _ => Matrix.mul_one _
 
+omit [DecidableEq m] in
 /-- A version of `LinearMap.mulRight_eq_zero_iff` for matrix multiplication. -/
 @[simp]
 theorem mulRightLinearMap_eq_zero_iff (a : Matrix m n A) [Nonempty l] :
@@ -171,7 +177,7 @@ theorem mulRightLinearMap_eq_zero_iff (a : Matrix m n A) [Nonempty l] :
   · inhabit l
     ext i j
     classical
-    replace h := DFunLike.congr_fun h (Matrix.stdBasisMatrix (default : l) i 1)
+    replace h := DFunLike.congr_fun h (Matrix.single (default : l) i 1)
     simpa using Matrix.ext_iff.2 h default j
   · rw [h]
     exact mulRightLinearMap_zero_eq_zero _ _
@@ -181,9 +187,9 @@ theorem mulRightLinearMap_eq_zero_iff (a : Matrix m n A) [Nonempty l] :
 theorem pow_mulRightLinearMap (a : Matrix m m A) (k : ℕ) :
     mulRightLinearMap l R a ^ k = mulRightLinearMap l R (a ^ k) :=
   match k with
-  | 0 => by rw [pow_zero, pow_zero, mulRightLinearMap_one, LinearMap.one_eq_id]
+  | 0 => by rw [pow_zero, pow_zero, mulRightLinearMap_one, Module.End.one_eq_id]
   | (n + 1) => by
-    rw [pow_succ, pow_succ', mulRightLinearMap_mul, LinearMap.mul_eq_comp, pow_mulRightLinearMap]
+    rw [pow_succ, pow_succ', mulRightLinearMap_mul, Module.End.mul_eq_comp, pow_mulRightLinearMap]
 
 end right
 

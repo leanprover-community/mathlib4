@@ -3,7 +3,9 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Ordinal.Family
+module
+
+public import Mathlib.SetTheory.Ordinal.Family
 
 /-!
 # Enumerating sets of ordinals by ordinals
@@ -17,6 +19,8 @@ We define this correspondence as `enumOrd`, and use it to then define an order i
 
 This can be thought of as an ordinal analog of `Nat.nth`.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -93,7 +97,7 @@ theorem range_enumOrd (hs : ¬ BddAbove s) : range (enumOrd s) = s := by
     refine ⟨sInf t, (enumOrd_le_of_forall_lt ha ?_).antisymm ?_⟩
     · intro b hb
       by_contra! hb'
-      exact hb.not_le (csInf_le' hb')
+      exact hb.not_ge (csInf_le' hb')
     · exact csInf_mem (s := t) ⟨a, (enumOrd_strictMono hs).id_le a⟩
 
 theorem enumOrd_surjective (hs : ¬ BddAbove s) {b : Ordinal} (hb : b ∈ s) :
@@ -104,9 +108,8 @@ theorem enumOrd_le_of_subset {t : Set Ordinal} (hs : ¬ BddAbove s) (hst : s ⊆
     enumOrd t ≤ enumOrd s := by
   intro a
   rw [enumOrd, enumOrd]
-  apply csInf_le_csInf' (enumOrd_nonempty hs a) (inter_subset_inter hst _)
-  intro b hb c hc
-  exact (enumOrd_le_of_subset hs hst c).trans_lt <| hb c hc
+  gcongr with b c
+  exacts [enumOrd_nonempty hs a, enumOrd_le_of_subset hs hst c]
 termination_by a => a
 
 /-- A characterization of `enumOrd`: it is the unique strict monotonic function with range `s`. -/
@@ -128,7 +131,7 @@ theorem isNormal_enumOrd (H : ∀ t ⊆ s, t.Nonempty → BddAbove t → sSup t 
   refine (isNormal_iff_strictMono_limit _).2 ⟨enumOrd_strictMono hs, fun o ho a ha ↦ ?_⟩
   trans ⨆ b : Iio o, enumOrd s b
   · refine enumOrd_le_of_forall_lt ?_ (fun b hb ↦ (enumOrd_strictMono hs (lt_succ b)).trans_le ?_)
-    · have : Nonempty (Iio o) := ⟨0, ho.pos⟩
+    · have : Nonempty (Iio o) := ⟨0, ho.bot_lt⟩
       apply H _ _ (range_nonempty _) (bddAbove_of_small _)
       rintro _ ⟨c, rfl⟩
       exact enumOrd_mem hs c
@@ -149,6 +152,6 @@ theorem enumOrd_zero : enumOrd s 0 = sInf s := by
 noncomputable def enumOrdOrderIso (s : Set Ordinal) (hs : ¬ BddAbove s) : Ordinal ≃o s :=
   StrictMono.orderIsoOfSurjective (fun o => ⟨_, enumOrd_mem hs o⟩) (enumOrd_strictMono hs) fun s =>
     let ⟨a, ha⟩ := enumOrd_surjective hs s.prop
-    ⟨a, Subtype.eq ha⟩
+    ⟨a, Subtype.ext ha⟩
 
 end Ordinal

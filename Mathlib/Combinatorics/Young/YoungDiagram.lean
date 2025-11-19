@@ -3,10 +3,12 @@ Copyright (c) 2022 Jake Levinson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jake Levinson
 -/
-import Mathlib.Data.Finset.Preimage
-import Mathlib.Data.Finset.Prod
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Order.UpperLower.Basic
+module
+
+public import Mathlib.Data.Finset.Preimage
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Young diagrams
@@ -49,6 +51,8 @@ Young diagram
 
 -/
 
+@[expose] public section
+
 
 open Function
 
@@ -68,7 +72,6 @@ structure YoungDiagram where
 namespace YoungDiagram
 
 instance : SetLike YoungDiagram (ℕ × ℕ) where
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: figure out how to do this correctly
   coe y := y.cells
   coe_injective' μ ν h := by rwa [YoungDiagram.ext_iff, ← Finset.coe_inj]
 
@@ -85,7 +88,7 @@ instance decidableMem (μ : YoungDiagram) : DecidablePred (· ∈ μ) :=
   inferInstanceAs (DecidablePred (· ∈ μ.cells))
 
 /-- In "English notation", a Young diagram is drawn so that (i1, j1) ≤ (i2, j2)
-    means (i1, j1) is weakly up-and-left of (i2, j2). -/
+means (i1, j1) is weakly up-and-left of (i2, j2). -/
 theorem up_left_mem (μ : YoungDiagram) {i1 i2 j1 j2 : ℕ} (hi : i1 ≤ i2) (hj : j1 ≤ j2)
     (hcell : (i2, j2) ∈ μ) : (i1, j1) ∈ μ :=
   μ.isLowerSet (Prod.mk_le_mk.mpr ⟨hi, hj⟩) hcell
@@ -143,20 +146,22 @@ instance : OrderBot YoungDiagram where
   bot :=
     { cells := ∅
       isLowerSet := by
-        intros a b _ h
+        intro a b _ h
         simp only [Finset.coe_empty, Set.mem_empty_iff_false]
         simp only [Finset.coe_empty, Set.mem_empty_iff_false] at h }
   bot_le _ _ := by
     intro y
-    simp only [mem_mk, Finset.not_mem_empty] at y
+    simp only [mem_mk, Finset.notMem_empty] at y
 
 @[simp]
 theorem cells_bot : (⊥ : YoungDiagram).cells = ∅ :=
   rfl
 
 @[simp]
-theorem not_mem_bot (x : ℕ × ℕ) : x ∉ (⊥ : YoungDiagram) :=
-  Finset.not_mem_empty x
+theorem notMem_bot (x : ℕ × ℕ) : x ∉ (⊥ : YoungDiagram) :=
+  Finset.notMem_empty x
+
+@[deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
 
 @[norm_cast]
 theorem coe_bot : (⊥ : YoungDiagram) = (∅ : Set (ℕ × ℕ)) := by
@@ -254,18 +259,21 @@ theorem mem_row_iff {μ : YoungDiagram} {i : ℕ} {c : ℕ × ℕ} : c ∈ μ.ro
 
 theorem mk_mem_row_iff {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ.row i ↔ (i, j) ∈ μ := by simp [row]
 
-protected theorem exists_not_mem_row (μ : YoungDiagram) (i : ℕ) : ∃ j, (i, j) ∉ μ := by
+protected theorem exists_notMem_row (μ : YoungDiagram) (i : ℕ) : ∃ j, (i, j) ∉ μ := by
   obtain ⟨j, hj⟩ :=
-    Infinite.exists_not_mem_finset
+    Infinite.exists_notMem_finset
       (μ.cells.preimage (Prod.mk i) fun _ _ _ _ h => by
         cases h
         rfl)
   rw [Finset.mem_preimage] at hj
   exact ⟨j, hj⟩
 
+@[deprecated (since := "2025-05-23")]
+protected alias exists_not_mem_row := YoungDiagram.exists_notMem_row
+
 /-- Length of a row of a Young diagram -/
 def rowLen (μ : YoungDiagram) (i : ℕ) : ℕ :=
-  Nat.find <| μ.exists_not_mem_row i
+  Nat.find <| μ.exists_notMem_row i
 
 theorem mem_iff_lt_rowLen {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ ↔ j < μ.rowLen i := by
   rw [rowLen, Nat.lt_find_iff]
@@ -307,13 +315,16 @@ theorem mem_col_iff {μ : YoungDiagram} {j : ℕ} {c : ℕ × ℕ} : c ∈ μ.co
 
 theorem mk_mem_col_iff {μ : YoungDiagram} {i j : ℕ} : (i, j) ∈ μ.col j ↔ (i, j) ∈ μ := by simp [col]
 
-protected theorem exists_not_mem_col (μ : YoungDiagram) (j : ℕ) : ∃ i, (i, j) ∉ μ.cells := by
-  convert μ.transpose.exists_not_mem_row j using 1
+protected theorem exists_notMem_col (μ : YoungDiagram) (j : ℕ) : ∃ i, (i, j) ∉ μ.cells := by
+  convert μ.transpose.exists_notMem_row j using 1
   simp
+
+@[deprecated (since := "2025-05-23")]
+protected alias exists_not_mem_col := YoungDiagram.exists_notMem_col
 
 /-- Length of a column of a Young diagram -/
 def colLen (μ : YoungDiagram) (j : ℕ) : ℕ :=
-  Nat.find <| μ.exists_not_mem_col j
+  Nat.find <| μ.exists_notMem_col j
 
 @[simp]
 theorem colLen_transpose (μ : YoungDiagram) (j : ℕ) : μ.transpose.colLen j = μ.rowLen j := by
@@ -401,7 +412,7 @@ protected def cellsOfRowLens : List ℕ → Finset (ℕ × ℕ)
 protected theorem mem_cellsOfRowLens {w : List ℕ} {c : ℕ × ℕ} :
     c ∈ YoungDiagram.cellsOfRowLens w ↔ ∃ h : c.fst < w.length, c.snd < w[c.fst] := by
   induction w generalizing c <;> rw [YoungDiagram.cellsOfRowLens]
-  · simp [YoungDiagram.cellsOfRowLens]
+  · simp
   · rcases c with ⟨⟨_, _⟩, _⟩ <;> simp_all
 
 /-- Young diagram from a sorted list -/

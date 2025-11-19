@@ -3,9 +3,16 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Apurva Nakade, Yuyang Zhao
 -/
-import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.SetTheory.PGame.Algebra
-import Mathlib.Tactic.Abel
+module
+
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.SetTheory.PGame.Algebra
+public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Game.Basic` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Combinatorial games.
@@ -19,6 +26,8 @@ about them. Multiplication is not well-behaved under equivalence of pre-games i.
 imply `x * z ≈ y * z`. Hence, multiplication is not a well-defined operation on games. Nevertheless,
 the abelian group structure on games allows us to simplify many proofs for pre-games.
 -/
+
+@[expose] public section
 
 -- Porting note: many definitions here are noncomputable as the compiler does not support PGame.rec
 noncomputable section
@@ -91,9 +100,9 @@ instance instPartialOrderGame : PartialOrder Game where
     apply Quot.sound
     exact ⟨h₁, h₂⟩
   lt := Quotient.lift₂ (· < ·) fun _ _ _ _ hx hy => propext (lt_congr hx hy)
-  lt_iff_le_not_le := by
+  lt_iff_le_not_ge := by
     rintro ⟨x⟩ ⟨y⟩
-    exact @lt_iff_le_not_le _ _ x y
+    exact @lt_iff_le_not_ge _ _ x y
 
 /-- The less or fuzzy relation on games.
 
@@ -515,16 +524,16 @@ theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * 
           -- Porting note: we've increased `maxDepth` here from `5` to `6`.
           -- Likely this sort of off-by-one error is just a change in the implementation
           -- of `solve_by_elim`.
-          solve_by_elim (config := { maxDepth := 6 }) [Sum.inl, Sum.inr, Prod.mk]
+          solve_by_elim (maxDepth := 6) [Sum.inl, Sum.inr, Prod.mk]
       · rintro (⟨⟨_, _⟩ | ⟨_, _⟩⟩ | ⟨_, _⟩ | ⟨_, _⟩) <;>
-          solve_by_elim (config := { maxDepth := 6 }) [Sum.inl, Sum.inr, Prod.mk]
+          solve_by_elim (maxDepth := 6) [Sum.inl, Sum.inr, Prod.mk]
       · rintro (⟨_, _ | _⟩ | ⟨_, _ | _⟩) <;> rfl
       · rintro (⟨⟨_, _⟩ | ⟨_, _⟩⟩ | ⟨_, _⟩ | ⟨_, _⟩) <;> rfl
     · fconstructor
       · rintro (⟨_, _ | _⟩ | ⟨_, _ | _⟩) <;>
-          solve_by_elim (config := { maxDepth := 6 }) [Sum.inl, Sum.inr, Prod.mk]
+          solve_by_elim (maxDepth := 6) [Sum.inl, Sum.inr, Prod.mk]
       · rintro (⟨⟨_, _⟩ | ⟨_, _⟩⟩ | ⟨_, _⟩ | ⟨_, _⟩) <;>
-          solve_by_elim (config := { maxDepth := 6 }) [Sum.inl, Sum.inr, Prod.mk]
+          solve_by_elim (maxDepth := 6) [Sum.inl, Sum.inr, Prod.mk]
       · rintro (⟨_, _ | _⟩ | ⟨_, _ | _⟩) <;> rfl
       · rintro (⟨⟨_, _⟩ | ⟨_, _⟩⟩ | ⟨_, _⟩ | ⟨_, _⟩) <;> rfl
     -- Porting note: explicitly wrote out arguments to each recursive
@@ -625,7 +634,7 @@ theorem quot_right_distrib_sub (x y z : PGame) : (⟦(y - z) * x⟧ : Game) = �
 def mulOneRelabelling : ∀ x : PGame.{u}, x * 1 ≡r x
   | ⟨xl, xr, xL, xR⟩ => by
     -- Porting note: the next four lines were just `unfold has_one.one,`
-    show _ * One.one ≡r _
+    change _ * One.one ≡r _
     unfold One.one
     unfold instOnePGame
     change mk _ _ _ _ * mk _ _ _ _ ≡r _
@@ -680,16 +689,16 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
     · fconstructor
       · rintro (⟨⟨_, _⟩ | ⟨_, _⟩, _⟩ | ⟨⟨_, _⟩ | ⟨_, _⟩, _⟩) <;>
           -- Porting note: as above, increased the `maxDepth` here by 1.
-          solve_by_elim (config := { maxDepth := 8 }) [Sum.inl, Sum.inr, Prod.mk]
+          solve_by_elim (maxDepth := 8) [Sum.inl, Sum.inr, Prod.mk]
       · rintro (⟨_, ⟨_, _⟩ | ⟨_, _⟩⟩ | ⟨_, ⟨_, _⟩ | ⟨_, _⟩⟩) <;>
-          solve_by_elim (config := { maxDepth := 8 }) [Sum.inl, Sum.inr, Prod.mk]
+          solve_by_elim (maxDepth := 8) [Sum.inl, Sum.inr, Prod.mk]
       · rintro (⟨⟨_, _⟩ | ⟨_, _⟩, _⟩ | ⟨⟨_, _⟩ | ⟨_, _⟩, _⟩) <;> rfl
       · rintro (⟨_, ⟨_, _⟩ | ⟨_, _⟩⟩ | ⟨_, ⟨_, _⟩ | ⟨_, _⟩⟩) <;> rfl
     · fconstructor
       · rintro (⟨⟨_, _⟩ | ⟨_, _⟩, _⟩ | ⟨⟨_, _⟩ | ⟨_, _⟩, _⟩) <;>
-          solve_by_elim (config := { maxDepth := 8 }) [Sum.inl, Sum.inr, Prod.mk]
+          solve_by_elim (maxDepth := 8) [Sum.inl, Sum.inr, Prod.mk]
       · rintro (⟨_, ⟨_, _⟩ | ⟨_, _⟩⟩ | ⟨_, ⟨_, _⟩ | ⟨_, _⟩⟩) <;>
-          solve_by_elim (config := { maxDepth := 8 }) [Sum.inl, Sum.inr, Prod.mk]
+          solve_by_elim (maxDepth := 8) [Sum.inl, Sum.inr, Prod.mk]
       · rintro (⟨⟨_, _⟩ | ⟨_, _⟩, _⟩ | ⟨⟨_, _⟩ | ⟨_, _⟩, _⟩) <;> rfl
       · rintro (⟨_, ⟨_, _⟩ | ⟨_, _⟩⟩ | ⟨_, ⟨_, _⟩ | ⟨_, _⟩⟩) <;> rfl
     -- Porting note: explicitly wrote out arguments to each recursive
@@ -850,7 +859,7 @@ lemma leftMoves_mul_iff {x y : PGame} (P : Game → Prop) :
   cases x; cases y
   constructor <;> intro h
   on_goal 1 =>
-    constructor <;> intros i j
+    constructor <;> intro i j
     · exact h (Sum.inl (i, j))
     convert h (Sum.inr (i, j)) using 1
   on_goal 2 =>
@@ -872,7 +881,7 @@ lemma rightMoves_mul_iff {x y : PGame} (P : Game → Prop) :
   cases x; cases y
   constructor <;> intro h
   on_goal 1 =>
-    constructor <;> intros i j
+    constructor <;> intro i j
     on_goal 1 => convert h (Sum.inl (i, j))
   on_goal 2 => convert h (Sum.inr (i, j))
   on_goal 3 =>

@@ -3,8 +3,10 @@ Copyright (c) 2023 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Data.Finset.Pi
-import Mathlib.Logic.Function.DependsOn
+module
+
+public import Mathlib.Data.Finset.Pi
+public import Mathlib.Logic.Function.DependsOn
 
 /-!
 # Update a function on a set of values
@@ -15,6 +17,8 @@ This file defines `Function.updateFinset`, the operation that updates a function
 This is a very specific function used for `MeasureTheory.marginal`, and possibly not that useful
 for other purposes.
 -/
+
+@[expose] public section
 variable {ι : Sort _} {π : ι → Sort _} {x : ∀ i, π i} [DecidableEq ι]
 
 namespace Function
@@ -72,7 +76,7 @@ theorem updateFinset_updateFinset {s t : Finset ι} (hst : Disjoint s t)
     updateFinset (updateFinset x s y) t z =
     updateFinset x (s ∪ t) (Equiv.piFinsetUnion π hst ⟨y, z⟩) := by
   set e := Equiv.Finset.union s t hst
-  congr with i
+  ext i
   by_cases his : i ∈ s <;> by_cases hit : i ∈ t <;>
     simp only [updateFinset, his, hit, dif_pos, dif_neg, Finset.mem_union, false_or, not_false_iff]
   · exfalso; exact Finset.disjoint_left.mp hst his hit

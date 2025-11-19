@@ -3,19 +3,24 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Vector.Basic
-import Mathlib.Logic.Equiv.List
+module
+
+public import Mathlib.Data.Vector.Basic
+public import Mathlib.Logic.Equiv.List
 
 /-!
 # Equivalences involving `Array`
 -/
 
+@[expose] public section
+
 
 namespace Equiv
 
 /-- The natural equivalence between arrays and lists. -/
-def arrayEquivList (α : Type*) : Array α ≃ List α :=
-  ⟨Array.toList, Array.mk, fun _ => rfl, fun _ => rfl⟩
+def arrayEquivList (α : Type*) : Array α ≃ List α where
+  toFun := Array.toList
+  invFun := Array.mk
 
 end Equiv
 
@@ -26,7 +31,7 @@ end Equiv
 traversal of some other type transported along an equivalence to `Array α` (as the traversable
 instance for `array` was)
 
-2. belong in `Mathlib.Control.Traversable.Instances` instead of this file. -/
+2. belong in `Mathlib/Control/Traversable/Instances.lean` instead of this file. -/
 
 -- namespace Array'
 

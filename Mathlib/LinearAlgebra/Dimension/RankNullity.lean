@@ -3,10 +3,12 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.LinearAlgebra.Dimension.Constructions
-import Mathlib.LinearAlgebra.Dimension.Finite
-import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.Logic.Equiv.Fin.Rotate
+module
+
+public import Mathlib.LinearAlgebra.Dimension.Constructions
+public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.Logic.Equiv.Fin.Rotate
 
 /-!
 
@@ -24,6 +26,8 @@ The following instances are provided in mathlib:
 TODO: prove the rank-nullity theorem for `[Ring R] [IsDomain R] [StrongRankCondition R]`.
 See `nonempty_oreSet_of_strongRankCondition` for a start.
 -/
+
+@[expose] public section
 universe u v
 
 open Function Set Cardinal Submodule LinearMap
@@ -109,9 +113,6 @@ theorem exists_linearIndepOn_of_lt_rank [StrongRankCondition R]
     rwa [linearIndepOn_iff_image (hsec'.symm ▸ injective_id).injOn.image_of_comp,
       ← image_comp, hsec', image_id]
 
-@[deprecated (since := "2025-02-17")] alias
-    exists_linearIndependent_of_lt_rank := exists_linearIndepOn_of_lt_rank
-
 /-- Given a family of `n` linearly independent vectors in a space of dimension `> n`, one may extend
 the family by another vector while retaining linear independence. -/
 theorem exists_linearIndependent_cons_of_lt_rank [StrongRankCondition R] {n : ℕ} {v : Fin n → M}
@@ -140,12 +141,12 @@ independent of the first one. -/
 theorem exists_linearIndependent_pair_of_one_lt_rank [StrongRankCondition R]
     [NoZeroSMulDivisors R M] (h : 1 < Module.rank R M) {x : M} (hx : x ≠ 0) :
     ∃ y, LinearIndependent R ![x, y] := by
-  obtain ⟨y, hy⟩ := exists_linearIndependent_snoc_of_lt_rank (linearIndependent_unique ![x] hx) h
+  obtain ⟨y, hy⟩ := exists_linearIndependent_snoc_of_lt_rank (.of_subsingleton (v := ![x]) 0 hx) h
   have : Fin.snoc ![x] y = ![x, y] := by simp [Fin.snoc, ← List.ofFn_inj]
   rw [this] at hy
   exact ⟨y, hy⟩
 
-theorem Submodule.exists_smul_not_mem_of_rank_lt {N : Submodule R M}
+theorem Submodule.exists_smul_notMem_of_rank_lt {N : Submodule R M}
     (h : Module.rank R N < Module.rank R M) : ∃ m : M, ∀ r : R, r ≠ 0 → r • m ∉ N := by
   have : Module.rank R (M ⧸ N) ≠ 0 := by
     intro e
@@ -155,6 +156,9 @@ theorem Submodule.exists_smul_not_mem_of_rank_lt {N : Submodule R M}
   push_neg at this
   simp_rw [← N.mkQ_apply, ← map_smul, N.mkQ_apply, ne_eq, Submodule.Quotient.mk_eq_zero] at this
   exact this
+
+@[deprecated (since := "2025-05-23")]
+alias Submodule.exists_smul_not_mem_of_rank_lt := Submodule.exists_smul_notMem_of_rank_lt
 
 open Cardinal Basis Submodule Function Set LinearMap
 

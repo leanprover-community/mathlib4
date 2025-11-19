@@ -3,9 +3,11 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.GroupWithZero.Action.End
-import Mathlib.Algebra.Ring.Hom.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.GroupWithZero.Action.End
+public import Mathlib.Algebra.Ring.Hom.Defs
 
 /-!
 # Group action on rings
@@ -32,16 +34,23 @@ group action
 
 -/
 
+@[expose] public section
+
 assert_not_exists Equiv.Perm.equivUnitsEnd Prod.fst_mul
 
 universe u v
 
 /-- Typeclass for multiplicative actions by monoids on semirings.
 
-This combines `DistribMulAction` with `MulDistribMulAction`. -/
+This combines `DistribMulAction` with `MulDistribMulAction`: it expresses
+the interplay between the action and both addition and multiplication on the target.
+Two key axioms are `g • (x + y) = (g • x) + (g • y)` and `g • (x * y) = (g • x) * (g • y)`.
+
+A typical use case is the action of a Galois group $Gal(L/K)$ on the field `L`.
+-/
 class MulSemiringAction (M : Type u) (R : Type v) [Monoid M] [Semiring R] extends
   DistribMulAction M R where
-  /-- Multipliying `1` by a scalar gives `1` -/
+  /-- Multiplying `1` by a scalar gives `1` -/
   smul_one : ∀ g : M, (g • (1 : R) : R) = 1
   /-- Scalar multiplication distributes across multiplication -/
   smul_mul : ∀ (g : M) (x y : R), g • (x * y) = g • x * g • y

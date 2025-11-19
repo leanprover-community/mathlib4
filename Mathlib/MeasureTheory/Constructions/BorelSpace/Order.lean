@@ -3,11 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Kexing Ying
 -/
-import Mathlib.Topology.Semicontinuous
-import Mathlib.MeasureTheory.Function.AEMeasurableSequence
-import Mathlib.MeasureTheory.Order.Lattice
-import Mathlib.Topology.Order.Lattice
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+module
+
+public import Mathlib.Topology.Semicontinuous
+public import Mathlib.MeasureTheory.Function.AEMeasurableSequence
+public import Mathlib.MeasureTheory.Order.Lattice
+public import Mathlib.Topology.Order.Lattice
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Borel sigma algebras on spaces with orders
@@ -35,6 +37,8 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
   are measurable.
 
 -/
+
+@[expose] public section
 
 open Set Filter MeasureTheory MeasurableSpace TopologicalSpace
 
@@ -168,7 +172,7 @@ section LinearOrder
 
 variable [LinearOrder α] [OrderClosedTopology α] {a b x : α} {μ : Measure α}
 
--- we open this locale only here to avoid issues with list being treated as intervals above
+-- we open this scope only here to avoid issues with list being treated as intervals above
 open Interval
 
 @[simp, measurability]
@@ -269,7 +273,7 @@ theorem Dense.borel_eq_generateFrom_Ico_mem_aux {α : Type*} [TopologicalSpace �
   rw [borel_eq_generateFrom_Iio]
   refine generateFrom_le (forall_mem_range.2 fun a => ?_)
   rcases hd.exists_countable_dense_subset_bot_top with ⟨t, hts, hc, htd, htb, -⟩
-  by_cases ha : ∀ b < a, (Ioo b a).Nonempty
+  by_cases! ha : ∀ b < a, (Ioo b a).Nonempty
   · convert_to MeasurableSet (⋃ (l ∈ t) (u ∈ t) (_ : l < u) (_ : u ≤ a), Ico l u)
     · ext y
       simp only [mem_iUnion, mem_Iio, mem_Ico]
@@ -283,8 +287,7 @@ theorem Dense.borel_eq_generateFrom_Ico_mem_aux {α : Type*} [TopologicalSpace �
     · refine MeasurableSet.biUnion hc fun a ha => MeasurableSet.biUnion hc fun b hb => ?_
       refine MeasurableSet.iUnion fun hab => MeasurableSet.iUnion fun _ => ?_
       exact .basic _ ⟨a, hts ha, b, hts hb, hab, mem_singleton _⟩
-  · simp only [not_forall, not_nonempty_iff_eq_empty] at ha
-    replace ha : a ∈ s := hIoo ha.choose a ha.choose_spec.fst ha.choose_spec.snd
+  · replace ha : a ∈ s := hIoo ha.choose a ha.choose_spec.1 ha.choose_spec.2
     convert_to MeasurableSet (⋃ (l ∈ t) (_ : l < a), Ico l a)
     · symm
       simp only [← Ici_inter_Iio, ← iUnion_inter, inter_eq_right, subset_def, mem_iUnion,
@@ -425,8 +428,8 @@ theorem ext_of_Iic {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
   rw [← Iic_diff_Iic, measure_diff (Iic_subset_Iic.2 hlt.le) nullMeasurableSet_Iic,
     measure_diff (Iic_subset_Iic.2 hlt.le) nullMeasurableSet_Iic, h a, h b]
   · rw [← h a]
-    exact measure_ne_top μ _
-  · exact measure_ne_top μ _
+    finiteness
+  · finiteness
 
 /-- Two finite measures on a Borel space are equal if they agree on all left-closed right-infinite
 intervals. -/
@@ -553,8 +556,8 @@ theorem Measurable.isLUB_of_mem {ι} [Countable ι] {f : ι → δ → α} {g g'
     {s : Set δ} (hs : MeasurableSet s) (hg : ∀ b ∈ s, IsLUB { a | ∃ i, f i b = a } (g b))
     (hg' : EqOn g g' sᶜ) (g'_meas : Measurable g') : Measurable g := by
   classical
-  rcases isEmpty_or_nonempty ι with hι|⟨⟨i⟩⟩
-  · rcases eq_empty_or_nonempty s with rfl|⟨x, hx⟩
+  rcases isEmpty_or_nonempty ι with hι | ⟨⟨i⟩⟩
+  · rcases eq_empty_or_nonempty s with rfl | ⟨x, hx⟩
     · convert g'_meas
       rwa [compl_empty, eqOn_univ] at hg'
     · have A : ∀ b ∈ s, IsBot (g b) := by simpa using hg
@@ -668,9 +671,6 @@ theorem MeasurableSet.of_mem_nhdsGT_aux {s : Set α} (h : ∀ x ∈ s, s ∈ �
       exact False.elim (hx.2 this)
   exact B.countable_of_Ioo fun x hx => hy x hx.1
 
-@[deprecated (since := "2024-12-22")]
-alias measurableSet_of_mem_nhdsWithin_Ioi_aux := MeasurableSet.of_mem_nhdsGT_aux
-
 /-- If a set is a right-neighborhood of all of its points, then it is measurable. -/
 theorem MeasurableSet.of_mem_nhdsGT {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x) : MeasurableSet s := by
   by_cases H : ∃ x ∈ s, IsTop x
@@ -688,9 +688,6 @@ theorem MeasurableSet.of_mem_nhdsGT {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>]
     simp only [IsTop] at H
     push_neg at H
     exact H
-
-@[deprecated (since := "2024-12-22")]
-alias measurableSet_of_mem_nhdsWithin_Ioi := MeasurableSet.of_mem_nhdsGT
 
 lemma measurableSet_bddAbove_range {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
     MeasurableSet {b | BddAbove (range (fun i ↦ f i b))} := by
@@ -758,14 +755,12 @@ protected theorem Measurable.iSup {ι} [Countable ι] {f : ι → δ → α} (hf
     measurableSet_bddAbove_range hf
   have : Measurable (fun (_b : δ) ↦ sSup (∅ : Set α)) := measurable_const
   apply Measurable.isLUB_of_mem hf A _ _ this
-  · rintro b ⟨c, hc⟩
+  · intro b hb
     apply isLUB_ciSup
-    refine ⟨c, ?_⟩
-    rintro d ⟨i, rfl⟩
-    exact hc (mem_range_self i)
+    simpa
   · intro b hb
     apply csSup_of_not_bddAbove
-    exact hb
+    simpa
 
 -- TODO: Why does this error?
 -- /-- Compositional version of `Measurable.iSup` for use by `fun_prop`. -/
@@ -873,12 +868,11 @@ theorem Measurable.liminf' {ι ι'} {f : ι → δ → α} {v : Filter ι} (hf :
   let g : ℕ → Subtype p := Classical.choose (exists_surjective_nat (Subtype p))
   have Z : ∀ x, ∃ n, x ∈ m (g n) ∨ ∀ k, x ∉ m k := by
     intro x
-    by_cases H : ∃ k, x ∈ m k
+    by_cases! H : ∃ k, x ∈ m k
     · rcases H with ⟨k, hk⟩
       rcases Classical.choose_spec (exists_surjective_nat (Subtype p)) k with ⟨n, rfl⟩
       exact ⟨n, Or.inl hk⟩
-    · push_neg at H
-      exact ⟨0, Or.inr H⟩
+    · exact ⟨0, Or.inr H⟩
   have : F1 = fun x ↦ if x ∈ m j then F0 j x else F0 (g (Nat.find (Z x))) x := by
     ext x
     have A : reparam x j = if x ∈ m j then j else g (Nat.find (Z x)) := rfl
@@ -915,17 +909,8 @@ theorem Measurable.limsup {f : ℕ → δ → α} (hf : ∀ i, Measurable (f i))
 
 end ConditionallyCompleteLinearOrder
 
-/-- Convert a `Homeomorph` to a `MeasurableEquiv`. -/
-def Homemorph.toMeasurableEquiv (h : α ≃ₜ β) : α ≃ᵐ β where
-  toEquiv := h.toEquiv
-  measurable_toFun := h.continuous_toFun.measurable
-  measurable_invFun := h.continuous_invFun.measurable
-
-protected theorem IsFiniteMeasureOnCompacts.map (μ : Measure α) [IsFiniteMeasureOnCompacts μ]
-    (f : α ≃ₜ β) : IsFiniteMeasureOnCompacts (Measure.map f μ) := by
-  refine ⟨fun K hK ↦ ?_⟩
-  rw [← Homeomorph.toMeasurableEquiv_coe, MeasurableEquiv.map_apply]
-  exact IsCompact.measure_lt_top (f.isCompact_preimage.2 hK)
+@[deprecated (since := "2025-05-30")]
+alias Homemorph.toMeasurableEquiv := Homeomorph.toMeasurableEquiv
 
 end BorelSpace
 
@@ -944,7 +929,7 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow {α : Type*} {mα 
     rw [← measure_union]
     · rw [← inter_union_distrib_left, ← preimage_union, singleton_union, Ioi_insert,
         ← _root_.bot_eq_zero, Ici_bot, preimage_univ, inter_univ]
-    · exact disjoint_singleton_left.mpr not_mem_Ioi_self
+    · exact disjoint_singleton_left.mpr notMem_Ioi_self
         |>.preimage f |>.inter_right' s |>.inter_left' s
     · exact hs.inter (hf measurableSet_Ioi)
   have B : μ (s ∩ f ⁻¹' Ioi 0) = μ (s ∩ f ⁻¹' {∞}) + μ (s ∩ f ⁻¹' Ioo 0 ∞) := by
@@ -954,7 +939,7 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow {α : Type*} {mα 
       ext x
       simp only [mem_singleton_iff, mem_union, mem_Ioo, mem_Ioi, mem_preimage]
       obtain (H | H) : f x = ∞ ∨ f x < ∞ := eq_or_lt_of_le le_top
-      · simp only [H, eq_self_iff_true, or_false, ENNReal.zero_lt_top, not_top_lt, and_false]
+      · simp only [H, or_false, ENNReal.zero_lt_top, not_top_lt, and_false]
       · simp only [H, H.ne, and_true, false_or]
     · refine disjoint_left.2 fun x hx h'x => ?_
       have : f x < ∞ := h'x.2.2
@@ -967,7 +952,7 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow {α : Type*} {mα 
       preimage_iUnion, inter_iUnion]
     · intro i j hij
       wlog h : i < j generalizing i j
-      · exact (this hij.symm (hij.lt_or_lt.resolve_left h)).symm
+      · exact (this hij.symm (hij.lt_or_gt.resolve_left h)).symm
       refine disjoint_left.2 fun x hx h'x => lt_irrefl (f x) ?_
       calc
         f x < (t : ℝ≥0∞) ^ (i + 1) := hx.2.2

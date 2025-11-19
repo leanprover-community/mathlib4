@@ -3,11 +3,13 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
-import Mathlib.CategoryTheory.Sites.Coherent.LocallySurjective
-import Mathlib.CategoryTheory.Sites.EpiMono
-import Mathlib.Condensed.Equivalence
-import Mathlib.Condensed.Module
+module
+
+public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+public import Mathlib.CategoryTheory.Sites.Coherent.LocallySurjective
+public import Mathlib.CategoryTheory.Sites.EpiMono
+public import Mathlib.Condensed.Equivalence
+public import Mathlib.Condensed.Module
 /-!
 
 # Epimorphisms of condensed objects
@@ -17,6 +19,8 @@ as those morphisms which are objectwise surjective on `Stonean` (see
 `CondensedSet.epi_iff_surjective_on_stonean` and `CondensedMod.epi_iff_surjective_on_stonean`).
 -/
 
+@[expose] public section
+
 universe v u w u' v'
 
 open CategoryTheory Sheaf Opposite Limits Condensed ConcreteCategory
@@ -25,7 +29,6 @@ namespace Condensed
 
 variable (A : Type u') [Category.{v'} A] {FA : A → A → Type*} {CA : A → Type v'}
 variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory.{v'} A FA]
-
   [HasFunctorialSurjectiveInjectiveFactorization A]
 
 variable {X Y : Condensed.{u} A} (f : X ⟶ Y)

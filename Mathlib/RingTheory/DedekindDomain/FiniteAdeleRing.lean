@@ -3,9 +3,11 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.RingTheory.DedekindDomain.AdicValuation
-import Mathlib.RingTheory.DedekindDomain.Factorization
-import Mathlib.Topology.Algebra.RestrictedProduct
+module
+
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.RingTheory.DedekindDomain.Factorization
+public import Mathlib.Topology.Algebra.RestrictedProduct.TopologicalSpace
 
 /-!
 # The finite adèle ring of a Dedekind domain
@@ -25,6 +27,8 @@ field, its finite adèle ring is just defined to be the trivial ring.
 ## Tags
 finite adèle ring, dedekind domain
 -/
+
+@[expose] public section
 
 variable (R : Type*) [CommRing R] [IsDedekindDomain R] {K : Type*}
     [Field K] [Algebra R K] [IsFractionRing R K]
@@ -54,10 +58,10 @@ lemma HeightOneSpectrum.Support.finite (k : K) : (Support R k).Finite := by
     rw [Set.mem_setOf_eq, valuation_of_algebraMap]
     have := intValuation_le_one v n
     contrapose! this
-    rw [← intValuation_apply, ← hk, mul_comm]
+    rw [← hk, mul_comm]
     exact (lt_mul_of_one_lt_right (by simp) hv).trans_le <|
       mul_le_mul_of_nonneg_right this (by simp)
-  simp_rw [valuation_of_algebraMap, intValuation_apply, intValuation_lt_one_iff_dvd]
+  simp_rw [valuation_lt_one_iff_dvd]
   apply Ideal.finite_factors
   simpa only [Submodule.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot]
 
@@ -102,10 +106,10 @@ protected def algebraMap : K →+* FiniteAdeleRing R K where
      adicCompletion, Valued.valuedCompletion_apply, not_le]
     exact HeightOneSpectrum.Support.finite R k⟩
   map_one' := rfl
-  map_mul' x y := Subtype.eq <| funext (fun v ↦
+  map_mul' x y := Subtype.ext <| funext (fun v ↦
     UniformSpace.Completion.coe_mul ((WithVal.equiv (valuation K v)).symm x) y)
   map_zero' := rfl
-  map_add' x y := Subtype.eq <| funext (fun v ↦
+  map_add' x y := Subtype.ext <| funext (fun v ↦
     UniformSpace.Completion.coe_add ((WithVal.equiv (valuation K v)).symm x) y)
 
 instance : Algebra K (FiniteAdeleRing R K) := (FiniteAdeleRing.algebraMap R K).toAlgebra
@@ -127,10 +131,10 @@ instance : DFunLike (FiniteAdeleRing R K) (HeightOneSpectrum R) (adicCompletion 
 section Topology
 
 instance : IsTopologicalRing (FiniteAdeleRing R K) :=
-    haveI : Fact (∀ (v : HeightOneSpectrum R),
+  haveI : Fact (∀ v : HeightOneSpectrum R,
       IsOpen (v.adicCompletionIntegers K : Set (v.adicCompletion K))) :=
-    ⟨fun _ ↦ Valued.valuationSubring_isOpen _⟩
-    RestrictedProduct.isTopologicalRing (fun (v : HeightOneSpectrum R) ↦ v.adicCompletion K)
+    ⟨fun _ ↦ Valued.isOpen_valuationSubring _⟩
+  RestrictedProduct.isTopologicalRing (fun (v : HeightOneSpectrum R) ↦ v.adicCompletion K)
 
 end Topology
 

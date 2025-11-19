@@ -3,18 +3,22 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fin.Fin2
-import Mathlib.Util.Notation3
-import Mathlib.Tactic.TypeStar
+module
+
+public import Mathlib.Data.Fin.Fin2
+public import Mathlib.Util.Notation3
+public import Mathlib.Tactic.TypeStar
 
 /-!
 # Alternate definition of `Vector` in terms of `Fin2`
 
-This file provides a locale `Vector3` which overrides the `[a, b, c]` notation to create a `Vector3`
+This file provides a scope `Vector3` which overrides the `[a, b, c]` notation to create a `Vector3`
 instead of a `List`.
 
 The `::` notation is also overloaded by this file to mean `Vector3.cons`.
 -/
+
+@[expose] public section
 
 open Fin2 Nat
 
@@ -50,12 +54,12 @@ scoped macro_rules | `([$l,*]) => `(expand_foldr% (h t => cons h t) nil [$(.ofEl
 
 -- this is copied from `src/Init/NotationExtra.lean`
 /-- Unexpander for `Vector3.nil` -/
-@[app_unexpander Vector3.nil] def unexpandNil : Lean.PrettyPrinter.Unexpander
+@[app_unexpander Vector3.nil] meta def unexpandNil : Lean.PrettyPrinter.Unexpander
   | `($(_)) => `([])
 
 -- this is copied from `src/Init/NotationExtra.lean`
 /-- Unexpander for `Vector3.cons` -/
-@[app_unexpander Vector3.cons] def unexpandCons : Lean.PrettyPrinter.Unexpander
+@[app_unexpander Vector3.cons] meta def unexpandCons : Lean.PrettyPrinter.Unexpander
   | `($(_) $x [])      => `([$x])
   | `($(_) $x [$xs,*]) => `([$x, $xs,*])
   | _                  => throw ()
@@ -167,8 +171,9 @@ theorem insert_fz (a : α) (v : Vector3 α n) : insert a v fz = a :: v := by
 theorem insert_fs (a : α) (b : α) (v : Vector3 α n) (i : Fin2 (n + 1)) :
     insert a (b :: v) (fs i) = b :: insert a v i :=
   funext fun j => by
-    refine j.cases' ?_ fun j => ?_ <;> simp [insert, insertPerm]
-    refine Fin2.cases' ?_ ?_ (insertPerm i j) <;> simp [insertPerm]
+    refine j.cases' (by simp [insert, insertPerm]) fun j => ?_
+    simp only [insert, insertPerm, succ_eq_add_one, cons_fs]
+    refine Fin2.cases' ?_ ?_ (insertPerm i j) <;> simp
 
 theorem append_insert (a : α) (t : Vector3 α m) (v : Vector3 α n) (i : Fin2 (n + 1))
     (e : (n + 1) + m = (n + m) + 1) :

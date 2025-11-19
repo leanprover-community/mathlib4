@@ -3,9 +3,11 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Monoidal.Transport
-import Mathlib.CategoryTheory.Skeletal
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Monoidal.Transport
+public import Mathlib.CategoryTheory.Skeletal
 
 /-!
 # The monoid on the skeleton of a monoidal category
@@ -18,6 +20,8 @@ The skeleton of a monoidal category is a monoid.
 * `Skeleton.instCommMonoid`, for braided monoidal categories.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -59,14 +63,13 @@ theorem mul_eq (X Y : Skeleton C) : X * Y = toSkeleton (X.out ⊗ Y.out) := rfl
 theorem one_eq : (1 : Skeleton C) = toSkeleton (𝟙_ C) := rfl
 
 theorem toSkeleton_tensorObj (X Y : C) : toSkeleton (X ⊗ Y) = toSkeleton X * toSkeleton Y :=
-  let φ := (skeletonEquivalence C).symm.unitIso.app; Quotient.sound ⟨φ X ⊗ φ Y⟩
+  let φ := (skeletonEquivalence C).symm.unitIso.app; Quotient.sound ⟨φ X ⊗ᵢ φ Y⟩
 
 /-- The skeleton of a braided monoidal category has a braided monoidal structure itself, induced by
 the equivalence. -/
-noncomputable instance instBraidedCategory [BraidedCategory C] : BraidedCategory (Skeleton C) := by
-  letI := braidedCategoryOfFullyFaithful
-    (Monoidal.equivalenceTransported (skeletonEquivalence C).symm).inverse
-  exact this
+noncomputable instance instBraidedCategory [BraidedCategory C] : BraidedCategory (Skeleton C) :=
+  (BraidedCategory.ofFullyFaithful
+    (Monoidal.equivalenceTransported (skeletonEquivalence C).symm).inverse:)
 
 /--
 The skeleton of a braided monoidal category can be viewed as a commutative monoid, where the

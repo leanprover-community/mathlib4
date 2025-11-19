@@ -3,11 +3,12 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Algebra.Prod
-import Mathlib.Algebra.Group.Pi.Units
+public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.Algebra.Algebra.Prod
+public import Mathlib.Algebra.Group.Pi.Units
 
 /-!
 # Spectrum and quasispectrum of products
@@ -29,6 +30,8 @@ union of the (quasi)spectra.
 
 -/
 
+@[expose] public section
+
 variable {ι A B R : Type*} {κ : ι → Type*}
 
 section quasiregular
@@ -40,8 +43,6 @@ def PreQuasiregular.toPi [∀ i, NonUnitalSemiring (κ i)] :
     PreQuasiregular (∀ i, κ i) ≃* ∀ i, PreQuasiregular (κ i) where
   toFun := fun x i => .mk <| x.val i
   invFun := fun x => .mk <| fun i => (x i).val
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_mul' _ _ := rfl
 
 variable (A B) in
@@ -51,8 +52,6 @@ def PreQuasiregular.toProd [NonUnitalSemiring A] [NonUnitalSemiring B] :
     PreQuasiregular (A × B) ≃* PreQuasiregular A × PreQuasiregular B where
   toFun := fun p => ⟨.mk p.val.1, .mk p.val.2⟩
   invFun := fun ⟨a, b⟩ => .mk ⟨a.val, b.val⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
   map_mul' _ _ := rfl
 
 lemma isQuasiregular_pi_iff [∀ i, NonUnitalSemiring (κ i)] (x : ∀ i, κ i) :
@@ -89,10 +88,8 @@ lemma Prod.spectrum_eq [CommSemiring R] [Ring A] [Ring B] [Algebra R A] [Algebra
 lemma Pi.quasispectrum_eq [Nonempty ι] [CommSemiring R] [∀ i, NonUnitalRing (κ i)]
     [∀ i, Module R (κ i)] (a : ∀ i, κ i) :
     quasispectrum R a = ⋃ i, quasispectrum R (a i) := by
-  apply compl_injective
   ext r
-  simp only [quasispectrum, Set.mem_compl_iff, Set.mem_setOf_eq, not_forall,
-    not_not, Set.mem_iUnion, not_exists]
+  simp only [quasispectrum, Set.mem_setOf_eq, Set.mem_iUnion]
   by_cases hr : IsUnit r
   · lift r to Rˣ using hr with r' hr'
     simp [isQuasiregular_pi_iff]
@@ -103,8 +100,7 @@ lemma Prod.quasispectrum_eq [CommSemiring R] [NonUnitalRing A] [NonUnitalRing B]
     quasispectrum R (⟨a, b⟩ : A × B) = quasispectrum R a ∪ quasispectrum R b := by
   apply compl_injective
   ext r
-  simp only [quasispectrum, Set.mem_compl_iff, Set.mem_setOf_eq, not_forall,
-    not_not, Set.mem_union, not_exists]
+  simp only [quasispectrum, Set.mem_compl_iff, Set.mem_setOf_eq, not_forall, not_not, Set.mem_union]
   by_cases hr : IsUnit r
   · lift r to Rˣ using hr with r' hr'
     simp [isQuasiregular_prod_iff]

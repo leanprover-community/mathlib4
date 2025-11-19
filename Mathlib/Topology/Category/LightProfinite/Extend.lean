@@ -3,8 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Category.LightProfinite.AsLimit
-import Mathlib.Topology.Category.Profinite.Extend
+module
+
+public import Mathlib.Topology.Category.LightProfinite.AsLimit
+public import Mathlib.Topology.Category.Profinite.Extend
 
 /-!
 
@@ -20,9 +22,11 @@ We also provide the dual result for a functor of the form `G : LightProfiniteᵒ
 
 We apply this to define `LightProfinite.diagram'`, `LightProfinite.asLimitCone'`, and
 `LightProfinite.asLimit'`, analogues to their unprimed versions in
-`Mathlib.Topology.Category.LightProfinite.AsLimit`, in which the
+`Mathlib/Topology/Category/LightProfinite/AsLimit.lean`, in which the
 indexing category is `StructuredArrow S toLightProfinite` instead of `ℕᵒᵖ`.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -63,7 +67,7 @@ example : functorOp c ⋙ CostructuredArrow.proj toLightProfinite.op ⟨c.pt⟩ 
 -- We check that `Profinite.Extend.functor` factors through `LightProfinite.Extend.functor`,
 -- via the equivalence `StructuredArrow.post _ _ lightToProfinite`.
 example : functor c ⋙ (StructuredArrow.post _ _ lightToProfinite) =
-  Profinite.Extend.functor (lightToProfinite.mapCone c) := rfl
+    Profinite.Extend.functor (lightToProfinite.mapCone c) := rfl
 
 /--
 If the projection maps in the cone are epimorphic and the cone is limiting, then
@@ -148,7 +152,7 @@ def cocone (S : LightProfinite) :
         CostructuredArrow.proj_map, op_map, ← map_comp, this, const_obj_map, Category.comp_id]) }
 
 example : G.mapCocone c.op = (cocone G c.pt).whisker
-  ((opOpEquivalence ℕ).functor ⋙ functorOp c) := rfl
+    ((opOpEquivalence ℕ).functor ⋙ functorOp c) := rfl
 
 /--
 If `c` is a limit cone, `G.mapCocone c.op` is a colimit cone and the projection maps in `c`

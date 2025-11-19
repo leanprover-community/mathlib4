@@ -3,10 +3,12 @@ Copyright (c) 2024 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Lean.Meta.Transform
-import Lean.Meta.Inductive
-import Lean.Elab.Deriving.Basic
-import Lean.Elab.Deriving.Util
+module
+
+public meta import Lean.Meta.Transform
+public meta import Lean.Meta.Inductive
+public meta import Lean.Elab.Deriving.Basic
+public meta import Lean.Elab.Deriving.Util
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Data.Nat.Pairing
 
@@ -18,6 +20,8 @@ Adds a deriving handler for the `Encodable` class.
 The resulting `Encodable` instance should be considered to be opaque.
 The specific encoding used is an implementation detail.
 -/
+
+public section
 
 namespace Mathlib.Deriving.Encodable
 open Lean Parser.Term Elab Deriving Meta
@@ -93,7 +97,7 @@ private def S.decode (n : ℕ) : S :=
     S.nat p.2
   else
     have : p.1 ≤ n := Nat.unpair_left_le n
-    have := Nat.unpair_lt (by omega : 1 ≤ n)
+    have := Nat.unpair_lt (by cutsat : 1 ≤ n)
     have := nat_unpair_lt_2 h
     S.cons (S.decode (p.1 - 1)) (S.decode p.2)
 
@@ -126,7 +130,9 @@ private def S_equiv : S ≃ ℕ where
         · have := Nat.unpair_lt (by omega : 1 ≤ n' + 1)
           omega
 
-instance : Encodable S := Encodable.ofEquiv ℕ S_equiv
+private instance : Encodable S := Encodable.ofEquiv ℕ S_equiv
+
+public meta section
 
 /-!
 ### Implementation
@@ -320,7 +326,7 @@ private def mkEncodableInstanceCmds (ctx : Deriving.Context) (typeNames : Array 
 
 private def mkEncodableCmds (indVal : InductiveVal) (declNames : Array Name) :
     TermElabM (Array Syntax) := do
-  let ctx ← mkContext "encodable" indVal.name
+  let ctx ← mkContext ``Encodable "encodable" indVal.name
   let toSFunNames : Array Name ← ctx.auxFunNames.mapM fun name => do
     let .str n' s := name.eraseMacroScopes | unreachable!
     mkFreshUserName <| .str n' (s ++ "_toS")
@@ -362,5 +368,7 @@ def mkEncodableInstance (declNames : Array Name) : CommandElabM Bool := do
 initialize
   registerDerivingHandler ``Encodable mkEncodableInstance
   registerTraceClass `Mathlib.Deriving.Encodable
+
+end
 
 end Mathlib.Deriving.Encodable

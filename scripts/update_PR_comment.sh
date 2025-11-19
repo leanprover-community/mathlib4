@@ -33,7 +33,7 @@ method="POST"
 if [[ -f "$messageFile" ]]; then
     url="${baseURL}/${PR}/comments"
     printf 'Base url: %s\n' "${url}"
-    headers="Authorization: token ${GITHUB_TOKEN}"
+    headers="Authorization: token ${GH_TOKEN}"
     comment_id=$(curl -s -S -H "Content-Type: application/json" -H "$headers" "$url" |
       jq --arg cID "${comment_init}" -r '.[] | select(.body | startswith($cID)) | .id' | head -1)
     echo "Comment id: '${comment_id}'"

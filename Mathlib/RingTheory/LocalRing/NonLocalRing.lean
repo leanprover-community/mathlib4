@@ -3,10 +3,12 @@ Copyright (c) 2025 Michal Staromiejski. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michal Staromiejski
 -/
-import Mathlib.Algebra.Ring.Pi
-import Mathlib.Algebra.Ring.Prod
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.Spectrum.Maximal.Basic
+module
+
+public import Mathlib.Algebra.Ring.Pi
+public import Mathlib.Algebra.Ring.Prod
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.Spectrum.Maximal.Basic
 
 /-!
 
@@ -30,6 +32,8 @@ This file gathers some results about non-local rings.
 
 -/
 
+@[expose] public section
+
 namespace IsLocalRing
 
 /-- If two non-units sum to 1 in a (semi)ring `R` then `R` is not local. -/
@@ -39,14 +43,15 @@ theorem not_isLocalRing_def {R : Type*} [Semiring R] {a b : R} (ha : ¬IsUnit a)
 
 /-- For an index type `ι` with at least two elements and an indexed family of (semi)rings
 `R : ι → Type*`, the indexed product (semi)ring `Π i, R i` is not local. -/
-theorem not_isLocalRing_of_nontrivial_pi {ι : Type*} [Nontrivial ι] [DecidableEq ι] (R : ι → Type*)
-    [∀ i, Semiring (R i)] [∀ i, Nontrivial (R i)] : ¬IsLocalRing (Π i, R i) :=
+theorem not_isLocalRing_of_nontrivial_pi {ι : Type*} [Nontrivial ι] (R : ι → Type*)
+    [∀ i, Semiring (R i)] [∀ i, Nontrivial (R i)] : ¬IsLocalRing (Π i, R i) := by
+  classical
   let ⟨i₁, i₂, hi⟩ := exists_pair_ne ι
   have ha : ¬IsUnit (fun i ↦ if i = i₁ then 0 else 1 : Π i, R i) :=
     fun h ↦ not_isUnit_zero (M₀ := R i₁) (by simpa using h.map (Pi.evalRingHom R i₁))
   have hb : ¬IsUnit (fun i ↦ if i = i₁ then 1 else 0 : Π i, R i) :=
     fun h ↦ not_isUnit_zero (M₀ := R i₂) (by simpa [hi.symm] using h.map (Pi.evalRingHom R i₂))
-  not_isLocalRing_def ha hb (by ext; dsimp; split <;> simp)
+  exact not_isLocalRing_def ha hb (by ext; dsimp; split <;> simp)
 
 /-- The product of two nontrivial (semi)rings is not local. -/
 theorem not_isLocalRing_of_prod_of_nontrivial (R₁ R₂ : Type*) [Semiring R₁] [Semiring R₂]
@@ -58,9 +63,9 @@ theorem not_isLocalRing_of_prod_of_nontrivial (R₁ R₂ : Type*) [Semiring R₁
   not_isLocalRing_def ha hb (by simp)
 
 /-- The following conditions are equivalent for a commutative (semi)ring `R`:
-    * `R` is not local,
-    * the maximal spectrum of `R` is nontrivial,
-    * `R` has two distinct maximal ideals.
+* `R` is not local,
+* the maximal spectrum of `R` is nontrivial,
+* `R` has two distinct maximal ideals.
 -/
 theorem not_isLocalRing_tfae {R : Type*} [CommSemiring R] [Nontrivial R] :
     List.TFAE [

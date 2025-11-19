@@ -3,13 +3,17 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Module.Submodule.Invariant
-import Mathlib.RepresentationTheory.Basic
+module
+
+public import Mathlib.Algebra.Module.Submodule.Invariant
+public import Mathlib.RepresentationTheory.Basic
 
 /-!
 # Invariant submodules of a group representation
 
 -/
+
+@[expose] public section
 
 variable {k G V : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
   (ρ : Representation k G V)
@@ -44,7 +48,6 @@ instance : BoundedOrder ρ.invtSubmodule where
 protected lemma nontrivial_iff : Nontrivial ρ.invtSubmodule ↔ Nontrivial V := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · contrapose! h
-    rw [not_nontrivial_iff_subsingleton] at h ⊢
     infer_instance
   · refine ⟨⊥, ⊤, ?_⟩
     rw [← Subtype.coe_ne_coe, invtSubmodule.coe_top, invtSubmodule.coe_bot]
@@ -61,7 +64,7 @@ lemma asAlgebraHom_mem_of_forall_mem (p : Submodule k V) (hp : ∀ g, ∀ v ∈ 
   apply x.induction_on <;> aesop
 
 /-- The natural order isomorphism between the two ways to represent invariant submodules. -/
-def mapSubmodule :
+noncomputable def mapSubmodule :
     ρ.invtSubmodule ≃o Submodule (MonoidAlgebra k G) ρ.asModule where
   toFun p :=
     { toAddSubmonoid := (p : Submodule k V).toAddSubmonoid.map ρ.asModuleEquiv.symm

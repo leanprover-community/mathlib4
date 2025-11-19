@@ -3,9 +3,11 @@ Copyright (c) 2020 Thomas Browning and Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
-import Mathlib.GroupTheory.Solvable
-import Mathlib.FieldTheory.PolynomialGaloisGroup
-import Mathlib.RingTheory.RootsOfUnity.Basic
+module
+
+public import Mathlib.GroupTheory.Solvable
+public import Mathlib.FieldTheory.PolynomialGaloisGroup
+public import Mathlib.RingTheory.RootsOfUnity.Basic
 
 /-!
 # The Abel-Ruffini Theorem
@@ -20,12 +22,14 @@ by radicals, then its minimal polynomial has solvable Galois group.
 ## Main results
 
 * the Abel-Ruffini Theorem `solvableByRad.isSolvable'` : An irreducible polynomial with a root
-that is solvable by radicals has a solvable Galois group.
+  that is solvable by radicals has a solvable Galois group.
 -/
+
+@[expose] public section
 
 noncomputable section
 
-open Polynomial IntermediateField
+open Polynomial
 
 section AbelRuffini
 
@@ -67,11 +71,11 @@ theorem gal_isSolvable_tower (p q : F[X]) (hpq : p.Splits (algebraMap F q.Splitt
   let K := p.SplittingField
   let L := q.SplittingField
   haveI : Fact (p.Splits (algebraMap F L)) := ⟨hpq⟩
-  let ϕ : (L ≃ₐ[K] L) ≃* (q.map (algebraMap F K)).Gal :=
+  let ϕ : Gal(L/K) ≃* (q.map (algebraMap F K)).Gal :=
     (IsSplittingField.algEquiv L (q.map (algebraMap F K))).autCongr
   have ϕ_inj : Function.Injective ϕ.toMonoidHom := ϕ.injective
-  haveI : IsSolvable (K ≃ₐ[F] K) := hp
-  haveI : IsSolvable (L ≃ₐ[K] L) := solvable_of_solvable_injective ϕ_inj
+  haveI : IsSolvable Gal(K/F) := hp
+  haveI : IsSolvable Gal(L/K) := solvable_of_solvable_injective ϕ_inj
   exact isSolvable_of_isScalarTower F p.SplittingField q.SplittingField
 
 section GalXPowSubC
@@ -295,6 +299,8 @@ theorem induction3 {α : solvableByRad F E} {n : ℕ} (hn : n ≠ 0) (hα : P (�
       rw [sub_comp, X_comp, C_comp]
       exact gal_X_pow_sub_C_isSolvable n q
 
+open IntermediateField
+
 /-- An auxiliary induction lemma, which is generalized by `solvableByRad.isSolvable`. -/
 theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (hα : P α) (hβ : P β) : P γ := by
   let p := minpoly F α
@@ -312,15 +318,10 @@ theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (
   have key : minpoly F γ = minpoly F (f ⟨γ, hγ⟩) := by
     refine minpoly.eq_of_irreducible_of_monic
       (minpoly.irreducible (isIntegral γ)) ?_ (minpoly.monic (isIntegral γ))
-    suffices aeval (⟨γ, hγ⟩ : F⟮α, β⟯) (minpoly F γ) = 0 by
-      rw [aeval_algHom_apply, this, map_zero]
+    rw [aeval_algHom_apply, map_eq_zero]
     apply (algebraMap (↥F⟮α, β⟯) (solvableByRad F E)).injective
-    simp only [map_zero, _root_.map_eq_zero]
-    -- Porting note: end of the proof was `exact minpoly.aeval F γ`.
-    apply Subtype.val_injective
-    dsimp only [← coe_type_toSubalgebra]
-    rw [Polynomial.aeval_subalgebra_coe (minpoly F γ)]
-    simp
+    simp only [map_zero, ← aeval_algebraMap_apply]
+    exact minpoly.aeval F γ
   rw [P, key]
   refine gal_isSolvable_of_splits ⟨Normal.splits ?_ (f ⟨γ, hγ⟩)⟩ (gal_mul_isSolvable hα hβ)
   apply SplittingField.instNormal

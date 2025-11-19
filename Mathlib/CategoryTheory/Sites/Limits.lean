@@ -3,9 +3,11 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Sites.Sheafification
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+module
+
+public import Mathlib.CategoryTheory.Limits.Creates
+public import Mathlib.CategoryTheory.Sites.Sheafification
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 
@@ -26,6 +28,8 @@ we show that the cocone obtained by sheafifying the cocone point is a colimit co
 This allows us to show that `Sheaf J D` has colimits (of a certain shape) as soon as `D` does.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -81,7 +85,7 @@ def multiforkEvaluationCone (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshe
           Category.assoc, Presheaf.IsSheaf.amalgamate_map]
         dsimp [Multifork.ofι]
         erw [Category.assoc, ← E.w f]
-        aesop_cat }
+        cat_disch }
 
 variable [HasLimitsOfShape K D]
 
@@ -139,9 +143,7 @@ instance (F : K ⥤ Sheaf J D) : CreatesLimit F (sheafToPresheaf J D) :=
   createsLimitOfReflectsIso fun E hE =>
     { liftedCone := ⟨⟨E.pt, isSheaf_of_isLimit _ _ hE⟩,
         ⟨fun _ => ⟨E.π.app _⟩, fun _ _ _ => Sheaf.Hom.ext <| E.π.naturality _⟩⟩
-      validLift := Cones.ext (eqToIso rfl) fun j => by
-        dsimp
-        simp
+      validLift := Cones.ext (eqToIso rfl) fun j => by simp
       makesLimit :=
         { lift := fun S => ⟨hE.lift ((sheafToPresheaf J D).mapCone S)⟩
           fac := fun S j => by
@@ -190,7 +192,7 @@ In `isColimitSheafifyCocone`, we show that this is a colimit cocone when `E` is 
 noncomputable def sheafifyCocone {F : K ⥤ Sheaf J D}
     (E : Cocone (F ⋙ sheafToPresheaf J D)) : Cocone F :=
   (Cocones.precompose
-    (isoWhiskerLeft F (asIso (sheafificationAdjunction J D).counit).symm).hom).obj
+    (Functor.isoWhiskerLeft F (asIso (sheafificationAdjunction J D).counit).symm).hom).obj
     ((presheafToSheaf J D).mapCocone E)
 
 /-- If `E` is a colimit cocone of presheaves, over a diagram factoring through sheaves,
@@ -215,10 +217,10 @@ instance [HasColimitsOfSize.{u₁, u₂} D] : HasColimitsOfSize.{u₁, u₂} (Sh
 
 /--
 If every cocone on a diagram of sheaves which is a colimit on the level of presheaves satisfies
-the condition that the cocone point is a sheaf, then the functor from sheaves to preseheaves
+the condition that the cocone point is a sheaf, then the functor from sheaves to presheaves
 creates colimits of the diagram.
 Note: this almost never holds in sheaf categories in general, but it does for the extensive
-topology (see `Mathlib.CategoryTheory.Sites.Coherent.ExtensiveColimits`).
+topology (see `Mathlib/CategoryTheory/Sites/Coherent/ExtensiveColimits.lean`).
 -/
 def createsColimitOfIsSheaf (F : K ⥤ Sheaf J D)
     (h : ∀ (c : Cocone (F ⋙ sheafToPresheaf J D)) (_ : IsColimit c), Presheaf.IsSheaf J c.pt) :

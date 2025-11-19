@@ -3,8 +3,10 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
-import Mathlib.Algebra.Module.Opposite
+module
+
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
+public import Mathlib.Algebra.Module.Opposite
 
 /-!
 # Conjugations
@@ -29,6 +31,8 @@ https://en.wikipedia.org/wiki/Clifford_algebra#Antiautomorphisms
 * `CliffordAlgebra.reverse_mem_evenOdd_iff`
 
 -/
+
+@[expose] public section
 
 
 variable {R : Type*} [CommRing R]
@@ -196,13 +200,14 @@ theorem submodule_map_involute_eq_comap (p : Submodule R (CliffordAlgebra Q)) :
 
 @[simp]
 theorem ι_range_map_involute :
-    (ι Q).range.map (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q).toLinearMap =
+    (LinearMap.range (ι Q)).map (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q).toLinearMap =
       LinearMap.range (ι Q) :=
   (ι_range_map_lift _ _).trans (LinearMap.range_neg _)
 
 @[simp]
 theorem ι_range_comap_involute :
-    (ι Q).range.comap (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q).toLinearMap =
+    (LinearMap.range (ι Q)).comap
+      (involute : CliffordAlgebra Q →ₐ[R] CliffordAlgebra Q).toLinearMap =
       LinearMap.range (ι Q) := by
   rw [← submodule_map_involute_eq_comap, ι_range_map_involute]
 
@@ -229,7 +234,7 @@ theorem submodule_map_reverse_eq_comap (p : Submodule R (CliffordAlgebra Q)) :
 
 @[simp]
 theorem ι_range_map_reverse :
-    (ι Q).range.map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q)
+    (LinearMap.range (ι Q)).map (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q)
       = LinearMap.range (ι Q) := by
   rw [reverse, reverseOp, Submodule.map_comp, ι_range_map_lift, LinearMap.range_comp,
     ← Submodule.map_comp]
@@ -237,7 +242,7 @@ theorem ι_range_map_reverse :
 
 @[simp]
 theorem ι_range_comap_reverse :
-    (ι Q).range.comap (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q)
+    (LinearMap.range (ι Q)).comap (reverse : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q)
       = LinearMap.range (ι Q) := by
   rw [← submodule_map_reverse_eq_comap, ι_range_map_reverse]
 

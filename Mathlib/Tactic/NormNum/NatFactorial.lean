@@ -3,8 +3,10 @@ Copyright (c) 2023 Sebastian Zimmer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sebastian Zimmer
 -/
-import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Tactic.NormNum
+module
+
+public meta import Mathlib.Data.Nat.Factorial.Basic
+public meta import Mathlib.Tactic.NormNum
 
 /-! # `norm_num` extensions for factorials
 
@@ -15,9 +17,11 @@ conquer strategy that improves performance and avoids exceeding the recursion de
 
 -/
 
+public meta section
+
 namespace Mathlib.Meta.NormNum
 
-open Nat Qq Lean Elab.Tactic Qq Meta
+open Nat Qq Lean Elab.Tactic Meta
 
 lemma asc_factorial_aux (n l m a b : ℕ) (h₁ : n.ascFactorial l = a)
     (h₂ : (n + l).ascFactorial m = b) : n.ascFactorial (l + m) = a * b := by
@@ -87,8 +91,7 @@ def evalNatAscFactorial : NormNumExt where eval {u α} e := do
 lemma isNat_descFactorial {n x l y : ℕ} (z : ℕ) (h₁ : IsNat n x) (h₂ : IsNat l y)
     (h₃ : x = z + y) (a : ℕ) (p : (z + 1).ascFactorial y = a) : IsNat (n.descFactorial l) a := by
   constructor
-  simp [h₁.out, h₂.out, ← p, h₃]
-  apply Nat.add_descFactorial_eq_ascFactorial
+  simpa [h₁.out, h₂.out, ← p, h₃] using Nat.add_descFactorial_eq_ascFactorial _ _
 
 lemma isNat_descFactorial_zero {n x l y : ℕ} (z : ℕ) (h₁ : IsNat n x) (h₂ : IsNat l y)
     (h₃ : y = z + x + 1) : IsNat (n.descFactorial l) 0 := by

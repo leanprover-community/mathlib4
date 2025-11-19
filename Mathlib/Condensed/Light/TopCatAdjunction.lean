@@ -3,9 +3,11 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Condensed.Light.TopComparison
-import Mathlib.Topology.Category.Sequential
-import Mathlib.Topology.Category.LightProfinite.Sequence
+module
+
+public import Mathlib.Condensed.Light.TopComparison
+public import Mathlib.Topology.Category.Sequential
+public import Mathlib.Topology.Category.LightProfinite.Sequence
 /-!
 
 # The adjunction between light condensed sets and topological spaces
@@ -17,6 +19,8 @@ is bijective (but not in general an isomorphism) and conclude that the right adj
 The counit is an isomorphism for sequential spaces, and we conclude that the functor
 `topCatToLightCondSet` is fully faithful when restricted to sequential spaces.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -73,7 +77,7 @@ def _root_.lightCondSetToTopCat : LightCondSet.{u} ⥤ TopCat.{u} where
   map f := toTopCatMap f
 
 /-- The counit of the adjunction `lightCondSetToTopCat ⊣ topCatToLightCondSet` -/
-def topCatAdjunctionCounit (X : TopCat.{u}) : X.toLightCondSet.toTopCat ⟶ X :=
+noncomputable def topCatAdjunctionCounit (X : TopCat.{u}) : X.toLightCondSet.toTopCat ⟶ X :=
   TopCat.ofHom
   { toFun x := x.1 PUnit.unit
     continuous_toFun := by
@@ -83,11 +87,9 @@ def topCatAdjunctionCounit (X : TopCat.{u}) : X.toLightCondSet.toTopCat ⟶ X :=
 /-- The counit of the adjunction `lightCondSetToTopCat ⊣ topCatToLightCondSet` is always bijective,
 but not an isomorphism in general (the inverse isn't continuous unless `X` is sequential).
 -/
-def topCatAdjunctionCounitEquiv (X : TopCat.{u}) : X.toLightCondSet.toTopCat ≃ X where
+noncomputable def topCatAdjunctionCounitEquiv (X : TopCat.{u}) : X.toLightCondSet.toTopCat ≃ X where
   toFun := topCatAdjunctionCounit X
   invFun x := ContinuousMap.const _ x
-  left_inv _ := rfl
-  right_inv _ := rfl
 
 lemma topCatAdjunctionCounit_bijective (X : TopCat.{u}) :
     Function.Bijective (topCatAdjunctionCounit X) :=
@@ -95,7 +97,7 @@ lemma topCatAdjunctionCounit_bijective (X : TopCat.{u}) :
 
 /-- The unit of the adjunction `lightCondSetToTopCat ⊣ topCatToLightCondSet` -/
 @[simps val_app val_app_apply]
-def topCatAdjunctionUnit (X : LightCondSet.{u}) : X ⟶ X.toTopCat.toLightCondSet where
+noncomputable def topCatAdjunctionUnit (X : LightCondSet.{u}) : X ⟶ X.toTopCat.toLightCondSet where
   val := {
     app := fun S x ↦ {
       toFun := fun s ↦ X.val.map ((of PUnit.{u+1}).const s).op x
@@ -162,10 +164,9 @@ is a homeomorphism.
 Note: for now, we only have `ℕ∪{∞}` as a light profinite set at universe level 0, which is why we
 can only prove this for `X : TopCat.{0}`.
 -/
-def sequentialAdjunctionHomeo (X : TopCat.{0}) [SequentialSpace X] :
+noncomputable def sequentialAdjunctionHomeo (X : TopCat.{0}) [SequentialSpace X] :
     X.toLightCondSet.toTopCat ≃ₜ X where
   toEquiv := topCatAdjunctionCounitEquiv X
-  continuous_toFun := (topCatAdjunctionCounit X).hom.continuous
   continuous_invFun := by
     apply SeqContinuous.continuous
     unfold SeqContinuous

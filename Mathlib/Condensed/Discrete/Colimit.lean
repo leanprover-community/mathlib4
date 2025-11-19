@@ -3,9 +3,11 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Condensed.Discrete.LocallyConstant
-import Mathlib.Condensed.Equivalence
-import Mathlib.Topology.Category.LightProfinite.Extend
+module
+
+public import Mathlib.Condensed.Discrete.LocallyConstant
+public import Mathlib.Condensed.Equivalence
+public import Mathlib.Topology.Category.LightProfinite.Extend
 /-!
 
 # The condensed set given by left Kan extension from `FintypeCat` to `Profinite`.
@@ -14,6 +16,8 @@ This file provides the necessary API to prove that a condensed set `X` is discre
 for every profinite set `S = limᵢSᵢ`, `X(S) ≅ colimᵢX(Sᵢ)`, and the analogous result for light
 condensed sets.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -224,7 +228,7 @@ lemma isoFinYonedaComponents_inv_comp {X Y : Profinite.{u}} [Finite X] [Finite Y
     ← isoFinYonedaComponents_hom_apply, CategoryTheory.inv_hom_id_apply, Function.comp_apply]
 
 /--
-The restriction of a finite product preserving presheaf `F` on `Profinite` to the category of
+The restriction of a finite-product-preserving presheaf `F` on `Profinite` to the category of
 finite sets is isomorphic to `finYoneda F`.
 -/
 @[simps!]
@@ -258,24 +262,18 @@ lemma isoLocallyConstantOfIsColimit_inv (X : Profinite.{u}ᵒᵖ ⥤ Type (u + 1
   ext S : 2
   apply colimit.hom_ext
   intro ⟨Y, _, g⟩
-  simp? [locallyConstantIsoFinYoneda, isoFinYoneda, counitApp] says
-    simp only [comp_obj, CostructuredArrow.proj_obj, op_obj, functorToPresheaves_obj_obj,
-      isoFinYoneda, locallyConstantIsoFinYoneda, finYoneda_obj, LocallyConstant.toFun_eq_coe,
-      NatTrans.comp_app, pointwiseLeftKanExtension_obj, lanPresheafExt_inv, Iso.trans_inv,
-      Iso.symm_inv, whiskerLeft_comp, lanPresheafNatIso_hom_app, Opposite.op_unop, colimit.map_desc,
-      id_eq, Functor.comp_map, op_map, colimit.ι_desc, Cocones.precompose_obj_pt,
-      Profinite.Extend.cocone_pt, Cocones.precompose_obj_ι, Category.assoc, const_obj_obj,
-      whiskerLeft_app, NatIso.ofComponents_hom_app, NatIso.ofComponents_inv_app,
-      Profinite.Extend.cocone_ι_app, counitApp, colimit.ι_desc_assoc]
+  suffices _ ≫ (isoFinYonedaComponents _ _).inv ≫ X.map g =
+    (locallyConstantPresheaf _).map g ≫ counitAppApp (Opposite.unop S) X by
+      simpa [locallyConstantIsoFinYoneda, isoFinYoneda, counitApp]
   erw [(counitApp.{u, u + 1} X).naturality]
-  simp only [← Category.assoc]
+  simp only [← Category.assoc, op_obj, functorToPresheaves_obj_obj]
   congr
   ext f
-  simp only [types_comp_apply, isoFinYoneda_inv_app, counitApp_app]
+  simp only [types_comp_apply, counitApp_app]
   apply presheaf_ext.{u, u + 1} (X := X) (Y := X) (f := f)
   intro x
   rw [incl_of_counitAppApp]
-  simp only [counitAppAppImage, CompHausLike.coe_of]
+  simp only [counitAppAppImage]
   letI : Fintype (fiber.{u, u + 1} f x) :=
     Fintype.ofInjective (sigmaIncl.{u, u + 1} f x).1 Subtype.val_injective
   apply injective_of_mono (isoFinYonedaComponents X (fiber.{u, u + 1} f x)).hom
@@ -379,7 +377,7 @@ lemma lanPresheafExt_hom {F G : LightProfinite.{u}ᵒᵖ ⥤ Type u} (S : LightP
   aesop
 
 @[simp]
-lemma lanPresheafExt_inv  {F G : LightProfinite.{u}ᵒᵖ ⥤ Type u} (S : LightProfinite.{u}ᵒᵖ)
+lemma lanPresheafExt_inv {F G : LightProfinite.{u}ᵒᵖ ⥤ Type u} (S : LightProfinite.{u}ᵒᵖ)
     (i : toLightProfinite.op ⋙ F ≅ toLightProfinite.op ⋙ G) : (lanPresheafExt i).inv.app S =
       colimMap (whiskerLeft (CostructuredArrow.proj toLightProfinite.op S) i.inv) := by
   simp only [lanPresheaf, pointwiseLeftKanExtension_obj, lanPresheafExt,
@@ -496,7 +494,7 @@ lemma isoFinYonedaComponents_inv_comp {X Y : LightProfinite.{u}} [Finite X] [Fin
     ← isoFinYonedaComponents_hom_apply, CategoryTheory.inv_hom_id_apply, Function.comp_apply]
 
 /--
-The restriction of a finite product preserving presheaf `F` on `Profinite` to the category of
+The restriction of a finite-product-preserving presheaf `F` on `Profinite` to the category of
 finite sets is isomorphic to `finYoneda F`.
 -/
 @[simps!]
@@ -505,8 +503,8 @@ def isoFinYoneda : toLightProfinite.op ⋙ F ≅ finYoneda F :=
     simp only [comp_obj, op_obj, finYoneda_obj, Functor.comp_map, op_map]
     ext
     simp only [types_comp_apply, isoFinYonedaComponents_hom_apply, finYoneda_map, op_obj,
-      Function.comp_apply, Types.productLimitCone, const_obj_obj, fintypeCatAsCofan, Cofan.mk_pt,
-      cofan_mk_inj, Fan.mk_pt, Fan.mk_π_app, ← FunctorToTypes.map_comp_apply]
+      Function.comp_apply,
+      ← FunctorToTypes.map_comp_apply]
     rfl
 
 /--
@@ -532,24 +530,18 @@ lemma isoLocallyConstantOfIsColimit_inv (X : LightProfinite.{u}ᵒᵖ ⥤ Type u
   ext S : 2
   apply colimit.hom_ext
   intro ⟨Y, _, g⟩
-  simp? [locallyConstantIsoFinYoneda, isoFinYoneda, counitApp] says
-    simp only [comp_obj, CostructuredArrow.proj_obj, op_obj, functorToPresheaves_obj_obj,
-      isoFinYoneda, locallyConstantIsoFinYoneda, finYoneda_obj, LocallyConstant.toFun_eq_coe,
-      NatTrans.comp_app, pointwiseLeftKanExtension_obj, lanPresheafExt_inv, Iso.trans_inv,
-      Iso.symm_inv, whiskerLeft_comp, lanPresheafNatIso_hom_app, Opposite.op_unop, colimit.map_desc,
-      id_eq, Functor.comp_map, op_map, colimit.ι_desc, Cocones.precompose_obj_pt,
-      LightProfinite.Extend.cocone_pt, Cocones.precompose_obj_ι, Category.assoc, const_obj_obj,
-      whiskerLeft_app, NatIso.ofComponents_hom_app, NatIso.ofComponents_inv_app,
-      LightProfinite.Extend.cocone_ι_app, counitApp, colimit.ι_desc_assoc]
+  suffices _ ≫ (isoFinYonedaComponents _ _).inv ≫ X.map g =
+    (locallyConstantPresheaf _).map g ≫ counitAppApp (Opposite.unop S) X by
+      simpa [locallyConstantIsoFinYoneda, isoFinYoneda, counitApp]
   erw [(counitApp.{u, u} X).naturality]
-  simp only [← Category.assoc]
+  simp only [← Category.assoc, op_obj, functorToPresheaves_obj_obj]
   congr
   ext f
-  simp only [types_comp_apply, isoFinYoneda_inv_app, counitApp_app]
+  simp only [types_comp_apply, counitApp_app]
   apply presheaf_ext.{u, u} (X := X) (Y := X) (f := f)
   intro x
   rw [incl_of_counitAppApp]
-  simp only [counitAppAppImage, CompHausLike.coe_of]
+  simp only [counitAppAppImage]
   letI : Fintype (fiber.{u, u} f x) :=
     Fintype.ofInjective (sigmaIncl.{u, u} f x).1 Subtype.val_injective
   apply injective_of_mono (isoFinYonedaComponents X (fiber.{u, u} f x)).hom

@@ -3,8 +3,11 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Init
-import Lean.Meta.Tactic.TryThis
+module
+
+public import Mathlib.Init
+public meta import Lean.Meta.Tactic.TryThis
+public meta import Lean.Linter.UnusedVariables
 
 /-!
 # The `variable?` command
@@ -18,6 +21,8 @@ An inherent limitation with this command is that variables are recorded in the s
 *syntax*. This means that `variable?` needs to pretty print the expressions we get
 from typeclass synthesis errors, and these might fail to round trip.
 -/
+
+public meta section
 
 namespace Mathlib.Command.Variable
 open Lean Elab Command Parser.Term Meta
@@ -115,7 +120,7 @@ def pendingActionableSynthMVar (binder : TSyntax ``bracketedBinder) :
       if !ty.hasExprMVar then
         return mvarId
     | _ => pure ()
-  throwErrorAt binder "Can not satisfy requirements for {binder} due to metavariables."
+  throwErrorAt binder "Cannot satisfy requirements for {binder} due to metavariables."
 
 /-- Try elaborating `ty`. Returns `none` if it doesn't need any additional typeclasses,
 or it returns a new binder that needs to come first. Does not add info unless it throws
@@ -305,7 +310,7 @@ where
 
 /-- Hint for the unused variables linter. Copies the one for `variable`. -/
 @[unused_variables_ignore_fn]
-def ignorevariable? : Lean.Linter.IgnoreFunction := fun _ stack _ =>
+def ignorevariable? : Linter.IgnoreFunction := fun _ stack _ =>
   stack.matches [`null, none, `null, ``Mathlib.Command.Variable.variable?]
   || stack.matches [`null, none, `null, `null, ``Mathlib.Command.Variable.variable?]
 

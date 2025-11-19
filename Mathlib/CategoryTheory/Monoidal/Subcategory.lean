@@ -3,12 +3,14 @@ Copyright (c) 2022 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Monoidal.Linear
-import Mathlib.CategoryTheory.Monoidal.Transport
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.CategoryTheory.Closed.Monoidal
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Monoidal.Linear
+public import Mathlib.CategoryTheory.Monoidal.Transport
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.CategoryTheory.Closed.Monoidal
 
 /-!
 # Full monoidal subcategories
@@ -16,7 +18,7 @@ import Mathlib.CategoryTheory.Closed.Monoidal
 Given a monoidal category `C` and a property of objects `P : ObjectProperty C`
 that is monoidal (i.e. it holds for the unit and is stable by `⊗`),
 we can put a monoidal structure on `P.FullSubcategory` (the category
-structure is defined in `Mathlib.CategoryTheory.ObjectProperty.FullSubcategory`).
+structure is defined in `Mathlib/CategoryTheory/ObjectProperty/FullSubcategory.lean`).
 
 When `C` is also braided/symmetric, the full monoidal subcategory also inherits the
 braided/symmetric structure.
@@ -24,6 +26,8 @@ braided/symmetric structure.
 ## TODO
 * Add monoidal/braided versions of `ObjectProperty.Lift`
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -63,7 +67,7 @@ class IsMonoidal (P : ObjectProperty C) : Prop extends
 /-- A property of objects is a monoidal closed if it is closed under taking internal homs
 -/
 class IsMonoidalClosed (P : ObjectProperty C) [MonoidalClosed C] : Prop where
-  prop_ihom (X Y : C) : P X → P Y → P ((ihom X).obj Y) := by aesop_cat
+  prop_ihom (X Y : C) : P X → P Y → P ((ihom X).obj Y) := by cat_disch
 
 lemma prop_ihom (P : ObjectProperty C) [MonoidalClosed C] [P.IsMonoidalClosed]
     {X Y : C} (hX : P X) (hY : P Y) : P ((ihom X).obj Y) :=
@@ -76,7 +80,7 @@ instance : MonoidalCategoryStruct P.FullSubcategory where
   tensorObj X Y := ⟨X.1 ⊗ Y.1, prop_tensor X.2 Y.2⟩
   whiskerLeft X _ _ f := X.1 ◁ f
   whiskerRight {X₁ X₂} (f : X₁.1 ⟶ X₂.1) Y := (f ▷ Y.1 :)
-  tensorHom f g := f ⊗ g
+  tensorHom f g := f ⊗ₘ g
   tensorUnit := ⟨𝟙_ C, P.prop_unit⟩
   associator X Y Z := P.isoMk (α_ X.1 Y.1 Z.1)
   leftUnitor X :=  P.isoMk (λ_ X.1)
@@ -116,7 +120,7 @@ instance [MonoidalPreadditive C] : MonoidalPreadditive P.FullSubcategory :=
 variable (R : Type*) [Ring R] [Linear R C]
 
 instance [MonoidalPreadditive C] [MonoidalLinear R C] : MonoidalLinear R P.FullSubcategory :=
-  monoidalLinearOfFaithful R P.ι
+  .ofFaithful R P.ι
 
 end
 
@@ -126,7 +130,7 @@ variable {P} {P' : ObjectProperty C} [P'.IsMonoidal] (h : P ≤ P')
 
 /-- An inequality `P ≤ P'` between monoidal properties of objects induces
 a monoidal functor between full monoidal subcategories. -/
-instance  : (ιOfLE h).Monoidal :=
+instance : (ιOfLE h).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
       μIso := fun _ _ ↦ Iso.refl _ }
@@ -145,7 +149,7 @@ variable [BraidedCategory C]
 /-- The braided structure on a full subcategory inherited by the braided structure on `C`.
 -/
 instance fullBraidedSubcategory : BraidedCategory (FullSubcategory P) :=
-  braidedCategoryOfFaithful P.ι (fun X Y => P.isoMk (β_ X.1 Y.1)) (by aesop_cat)
+  .ofFaithful P.ι fun X Y ↦ P.isoMk (β_ X.1 Y.1)
 
 /-- The forgetful braided functor from a full braided subcategory into the original category
 ("forgetting" the condition).
@@ -166,7 +170,7 @@ section Symmetric
 variable [SymmetricCategory C]
 
 instance fullSymmetricSubcategory : SymmetricCategory P.FullSubcategory :=
-  symmetricCategoryOfFaithful P.ι
+  .ofFaithful P.ι
 
 end Symmetric
 
@@ -196,15 +200,12 @@ theorem ihom_obj (X Y : P.FullSubcategory) :
   rfl
 
 @[simp]
-theorem ihom_map (X : P.FullSubcategory ) {Y Z : P.FullSubcategory}
+theorem ihom_map (X : P.FullSubcategory) {Y Z : P.FullSubcategory}
     (f : Y ⟶ Z) : (ihom X).map f = (ihom X.obj).map f :=
   rfl
 
 end Closed
 
 end ObjectProperty
-
-@[deprecated (since := "2025-03-05")]
-alias MonoidalCategory.MonoidalPredicate := ObjectProperty.IsMonoidal
 
 end CategoryTheory

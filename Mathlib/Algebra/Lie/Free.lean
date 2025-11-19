@@ -3,10 +3,12 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.FreeNonUnitalNonAssocAlgebra
-import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
-import Mathlib.Algebra.Lie.UniversalEnveloping
-import Mathlib.GroupTheory.GroupAction.Ring
+module
+
+public import Mathlib.Algebra.FreeNonUnitalNonAssocAlgebra
+public import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
+public import Mathlib.Algebra.Lie.UniversalEnveloping
+public import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Free Lie algebras
@@ -47,6 +49,8 @@ A related MathOverflow question is [this one](https://mathoverflow.net/questions
 lie algebra, free algebra, non-unital, non-associative, universal property, forgetful functor,
 adjoint functor
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -223,7 +227,7 @@ def lift : (X → L) ≃ (FreeLieAlgebra R X →ₗ⁅R⁆ L) where
   invFun F := F ∘ of R
   left_inv f := by
     ext x
-    simp only [liftAux, of, Quot.liftOn_mk, LieHom.coe_mk, Function.comp_apply, lib.lift_of_apply]
+    simp only [liftAux, of, LieHom.coe_mk, Function.comp_apply, lib.lift_of_apply]
   right_inv F := by
     ext ⟨a⟩
     let F' := F.toNonUnitalAlgHom.comp (mk R)

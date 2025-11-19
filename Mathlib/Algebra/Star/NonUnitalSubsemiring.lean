@@ -3,10 +3,12 @@ Copyright (c) 2024 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Algebra.Group.Subsemigroup.Basic
-import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
-import Mathlib.Algebra.Star.Center
+module
+
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Algebra.Group.Subsemigroup.Basic
+public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+public import Mathlib.Algebra.Star.Center
 
 /-!
 # Non-unital Star Subsemirings
@@ -15,9 +17,11 @@ In this file we define `NonUnitalStarSubsemiring`s and the usual operations on t
 
 ## Implementation
 
-This file is heavily inspired by `Mathlib.Algebra.Star.NonUnitalSubalgebra`.
+This file is heavily inspired by `Mathlib/Algebra/Star/NonUnitalSubalgebra.lean`.
 
 -/
+
+@[expose] public section
 
 universe v w w'
 
@@ -96,11 +100,11 @@ protected def copy (S : NonUnitalStarSubsemiring R) (s : Set R) (hs : s = ↑S) 
     NonUnitalStarSubsemiring R :=
   { S.toNonUnitalSubsemiring.copy s hs with
     star_mem' := fun {x} (hx : x ∈ s) => by
-      show star x ∈ s
+      change star x ∈ s
       rw [hs] at hx ⊢
       exact S.star_mem' hx }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_copy (S : NonUnitalStarSubsemiring R) (s : Set R) (hs : s = ↑S) :
     (S.copy s hs : Set R) = s :=
   rfl

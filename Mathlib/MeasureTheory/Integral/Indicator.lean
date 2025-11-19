@@ -3,18 +3,20 @@ Copyright (c) 2023 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
-import Mathlib.MeasureTheory.Integral.Lebesgue.DominatedConvergence
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
+public import Mathlib.MeasureTheory.Integral.Lebesgue.DominatedConvergence
 
 /-!
 # Results about indicator functions, their integrals, and measures
 
-This file has a few measure theoretic or integration-related results on indicator functions.
+This file has a few measure-theoretic or integration-related results on indicator functions.
 
 ## Implementation notes
 
-This file exists to avoid importing `Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable`
-in `Mathlib.MeasureTheory.Integral.Lebesgue.Basic`.
+This file exists to avoid importing `Mathlib/MeasureTheory/Constructions/BorelSpace/Metrizable.lean`
+in `Mathlib/MeasureTheory/Integral/Lebesgue/Basic.lean`.
 
 ## TODO
 
@@ -22,9 +24,11 @@ The result `MeasureTheory.tendsto_measure_of_tendsto_indicator` here could be pr
 integration, if we had convergence of measures results for countably generated filters. Ideally,
 the present file would then become unnecessary: lemmas such as
 `MeasureTheory.tendsto_measure_of_ae_tendsto_indicator` would not need integration so could be
-moved out of `Mathlib.MeasureTheory.Integral.Lebesgue.Basic`, and the lemmas in this file could be
-moved to, e.g., `Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable`.
+moved out of `Mathlib/MeasureTheory/Integral/Lebesgue/Basic.lean`, and the lemmas in this file could
+be moved to, e.g., `Mathlib/MeasureTheory/Constructions/BorelSpace/Metrizable.lean`.
 -/
+
+@[expose] public section
 
 namespace MeasureTheory
 
@@ -61,7 +65,7 @@ lemma tendsto_measure_of_ae_tendsto_indicator_of_isFiniteMeasure
     (As_mble : ∀ i, MeasurableSet (As i)) (h_lim : ∀ᵐ x ∂μ, ∀ᶠ i in L, x ∈ As i ↔ x ∈ A) :
     Tendsto (fun i ↦ μ (As i)) L (𝓝 (μ A)) :=
   tendsto_measure_of_ae_tendsto_indicator L A_mble As_mble MeasurableSet.univ
-    (measure_ne_top μ univ) (Eventually.of_forall (fun i ↦ subset_univ (As i))) h_lim
+    (by finiteness) (Eventually.of_forall (fun i ↦ subset_univ (As i))) h_lim
 
 /-- If the indicators of measurable sets `Aᵢ` tend pointwise to the indicator of a set `A`
 and we eventually have `Aᵢ ⊆ B` for some set `B` of finite measure, then the measures of `Aᵢ`

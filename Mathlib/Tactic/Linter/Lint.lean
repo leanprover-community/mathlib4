@@ -3,8 +3,10 @@ Copyright (c) 2023 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Batteries.Tactic.Lint
-import Mathlib.Tactic.DeclarationNames
+module
+
+public meta import Batteries.Tactic.Lint
+public meta import Mathlib.Tactic.DeclarationNames
 
 /-!
 # Linters for Mathlib
@@ -14,6 +16,8 @@ which concern the *behaviour* of the linted code, and not issues of code style o
 
 Perhaps these should be moved to Batteries in the future.
 -/
+
+public meta section
 
 namespace Batteries.Tactic.Lint
 open Lean Meta
@@ -52,7 +56,7 @@ end Batteries.Tactic.Lint
 namespace Mathlib.Linter
 
 /-!
-#  `dupNamespace` linter
+### `dupNamespace` linter
 
 The `dupNamespace` linter produces a warning when a declaration contains the same namespace
 at least twice consecutively.
@@ -77,17 +81,17 @@ register_option linter.dupNamespace : Bool := {
 
 namespace DupNamespaceLinter
 
-open Lean Parser Elab Command Meta
+open Lean Parser Elab Command Meta Linter
 
 @[inherit_doc linter.dupNamespace]
 def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
-  if Linter.getLinterValue linter.dupNamespace (← getOptions) then
+  if getLinterValue linter.dupNamespace (← getLinterOptions) then
     let mut aliases := #[]
     if let some exp := stx.find? (·.isOfKind `Lean.Parser.Command.export) then
       aliases ← getAliasSyntax exp
     for id in (← getNamesFrom (stx.getPos?.getD default)) ++ aliases do
       let declName := id.getId
-      if declName.hasMacroScopes then continue
+      if declName.hasMacroScopes || isPrivateName declName then continue
       let nm := declName.components
       let some (dup, _) := nm.zip (nm.tailD []) |>.find? fun (x, y) ↦ x == y
         | continue

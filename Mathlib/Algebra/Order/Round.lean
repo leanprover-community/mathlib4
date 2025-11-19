@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Kappelmann
 -/
-import Mathlib.Algebra.Order.Floor.Ring
-import Mathlib.Algebra.Order.Interval.Set.Group
+module
+
+public import Mathlib.Algebra.Order.Floor.Ring
+public import Mathlib.Algebra.Order.Interval.Set.Group
 
 /-!
 # Rounding
@@ -20,6 +22,8 @@ to the nearest integer.
 
 rounding
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -62,9 +66,6 @@ theorem round_add_intCast (x : α) (y : ℤ) : round (x + y) = round x + y := by
   rw [round, round, Int.fract_add_intCast, Int.floor_add_intCast, Int.ceil_add_intCast,
     ← apply_ite₂, ite_self]
 
-@[deprecated (since := "2025-03-23")]
-alias round_add_int := round_add_intCast
-
 @[simp]
 theorem round_add_one (a : α) : round (a + 1) = round a + 1 := by
   rw [← round_add_intCast a 1, cast_one]
@@ -75,9 +76,6 @@ theorem round_sub_intCast (x : α) (y : ℤ) : round (x - y) = round x - y := by
   norm_cast
   rw [round_add_intCast, sub_eq_add_neg]
 
-@[deprecated (since := "2025-03-23")]
-alias round_sub_int := round_sub_intCast
-
 @[simp]
 theorem round_sub_one (a : α) : round (a - 1) = round a - 1 := by
   rw [← round_sub_intCast a 1, cast_one]
@@ -85,9 +83,6 @@ theorem round_sub_one (a : α) : round (a - 1) = round a - 1 := by
 @[simp]
 theorem round_add_natCast (x : α) (y : ℕ) : round (x + y) = round x + y :=
   mod_cast round_add_intCast x y
-
-@[deprecated (since := "2025-03-23")]
-alias round_add_nat := round_add_natCast
 
 @[simp]
 theorem round_add_ofNat (x : α) (n : ℕ) [n.AtLeastTwo] :
@@ -98,9 +93,6 @@ theorem round_add_ofNat (x : α) (n : ℕ) [n.AtLeastTwo] :
 theorem round_sub_natCast (x : α) (y : ℕ) : round (x - y) = round x - y :=
   mod_cast round_sub_intCast x y
 
-@[deprecated (since := "2025-03-23")]
-alias round_sub_nat := round_sub_natCast
-
 @[simp]
 theorem round_sub_ofNat (x : α) (n : ℕ) [n.AtLeastTwo] :
     round (x - ofNat(n)) = round x - ofNat(n) :=
@@ -110,15 +102,9 @@ theorem round_sub_ofNat (x : α) (n : ℕ) [n.AtLeastTwo] :
 theorem round_intCast_add (x : α) (y : ℤ) : round ((y : α) + x) = y + round x := by
   rw [add_comm, round_add_intCast, add_comm]
 
-@[deprecated (since := "2025-03-23")]
-alias round_int_add := round_intCast_add
-
 @[simp]
 theorem round_natCast_add (x : α) (y : ℕ) : round ((y : α) + x) = y + round x := by
   rw [add_comm, round_add_natCast, add_comm]
-
-@[deprecated (since := "2025-03-23")]
-alias round_nat_add := round_natCast_add
 
 @[simp]
 theorem round_ofNat_add (n : ℕ) [n.AtLeastTwo] (x : α) :
@@ -137,7 +123,7 @@ theorem abs_sub_round_eq_min (x : α) : |x - round x| = min (fract x) (1 - fract
 
 theorem round_le (x : α) (z : ℤ) : |x - round x| ≤ |x - z| := by
   rw [abs_sub_round_eq_min, min_le_iff]
-  rcases le_or_lt (z : α) x with (hx | hx) <;> [left; right]
+  rcases le_or_gt (z : α) x with (hx | hx) <;> [left; right]
   · conv_rhs => rw [abs_eq_self.mpr (sub_nonneg.mpr hx), ← fract_add_floor x, add_sub_assoc]
     simpa only [le_add_iff_nonneg_right, sub_nonneg, cast_le] using le_floor.mpr hx
   · rw [abs_eq_neg_self.mpr (sub_neg.mpr hx).le]
@@ -155,7 +141,7 @@ variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
 
 theorem round_eq (x : α) : round x = ⌊x + 1 / 2⌋ := by
   simp_rw [round, (by simp only [lt_div_iff₀', two_pos] : 2 * fract x < 1 ↔ fract x < 1 / 2)]
-  rcases lt_or_le (fract x) (1 / 2) with hx | hx
+  rcases lt_or_ge (fract x) (1 / 2) with hx | hx
   · conv_rhs => rw [← fract_add_floor x, add_assoc, add_left_comm, floor_intCast_add]
     rw [if_pos hx, left_eq_add, floor_eq_iff, cast_zero, zero_add]
     constructor

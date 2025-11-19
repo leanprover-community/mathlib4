@@ -3,12 +3,14 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.CategoryTheory.Endomorphism
-import Mathlib.CategoryTheory.FinCategory.Basic
-import Mathlib.CategoryTheory.Category.Cat
-import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Combinatorics.Quiver.SingleObj
-import Mathlib.Algebra.Group.Units.Equiv
+module
+
+public import Mathlib.CategoryTheory.Endomorphism
+public import Mathlib.CategoryTheory.FinCategory.Basic
+public import Mathlib.CategoryTheory.Category.Cat
+public import Mathlib.Algebra.Category.MonCat.Basic
+public import Mathlib.Combinatorics.Quiver.SingleObj
+public import Mathlib.Algebra.Group.Units.Equiv
 
 /-!
 # Single-object category
@@ -36,6 +38,8 @@ An element `x : M` can be reinterpreted as an element of `End (SingleObj.star M)
 - By default, Lean puts instances into `CategoryTheory` namespace instead of
   `CategoryTheory.SingleObj`, so we give all names explicitly.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -93,7 +97,7 @@ abbrev star : SingleObj M :=
   Quiver.SingleObj.star M
 
 /-- The endomorphisms monoid of the only object in `SingleObj M` is equivalent to the original
-     monoid M. -/
+monoid `M`. -/
 def toEnd : M ≃* End (SingleObj.star M) :=
   { Equiv.refl M with map_mul' := fun _ _ => rfl }
 
@@ -115,8 +119,8 @@ def mapHom : (M →* N) ≃ SingleObj M ⥤ SingleObj N where
     { toFun := fun x => f.map ((toEnd M) x)
       map_one' := f.map_id _
       map_mul' := fun x y => f.map_comp y x }
-  left_inv := by aesop_cat
-  right_inv := by aesop_cat
+  left_inv := by cat_disch
+  right_inv := by cat_disch
 
 theorem mapHom_id : mapHom M M (MonoidHom.id M) = 𝟭 _ :=
   rfl
@@ -130,7 +134,7 @@ theorem mapHom_comp (f : M →* N) {P : Type w} [Monoid P] (g : N →* P) :
 variable {C : Type v} [Category.{w} C]
 
 /-- Given a function `f : C → G` from a category to a group, we get a functor
-    `C ⥤ G` sending any morphism `x ⟶ y` to `f y * (f x)⁻¹`. -/
+`C ⥤ G` sending any morphism `x ⟶ y` to `f y * (f x)⁻¹`. -/
 @[simps]
 def differenceFunctor (f : C → G) : C ⥤ SingleObj G where
   obj _ := ()

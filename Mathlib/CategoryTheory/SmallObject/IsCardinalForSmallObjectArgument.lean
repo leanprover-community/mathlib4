@@ -3,12 +3,14 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.SmallObject.Construction
-import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
-import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
-import Mathlib.CategoryTheory.MorphismProperty.IsSmall
-import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
-import Mathlib.SetTheory.Cardinal.Regular
+module
+
+public import Mathlib.CategoryTheory.SmallObject.Construction
+public import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
+public import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
+public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
+public import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
+public import Mathlib.SetTheory.Cardinal.Regular
 
 /-!
 # Cardinals that are suitable for the small object argument
@@ -24,13 +26,13 @@ to `κ.ord`), and the technical assumption that if `A` is the
 a morphism in `I`, then the functor `Hom(A, _)` should commute
 with the filtering colimits corresponding to relative
 `I`-cell complexes. (This last condition shall hold when `κ`
-is the successor of an infinite cardinal `c` such that all
-these objects `A` are `c`-presentable, see the file `Mathlib.CategoryTheory.Presentable.Basic`.)
+is the successor of an infinite cardinal `c` such that all these objects `A` are `c`-presentable,
+see `Mathlib/CategoryTheory/Presentable/Basic.lean`.)
 
 Given `I : MorphismProperty C`, we shall say that `I` permits
 the small object argument if there exists `κ` such that
 `IsCardinalForSmallObjectArgument I κ` holds. See the file
-`Mathlib.CategoryTheory.SmallObject.Basic` for the definition of this typeclass
+`Mathlib/CategoryTheory/SmallObject/Basic.lean` for the definition of this typeclass
 `HasSmallObjectArgument` and an outline of the proof.
 
 ## Main results
@@ -41,7 +43,7 @@ is a relative `I`-cell complex (see `SmallObject.relativeCellComplexιObj`)
 and that `πObj I κ f` has the right lifting property with respect to `I`
 (see `SmallObject.rlp_πObj`). This construction is obtained by
 iterating to the power `κ.ord.toType` the functor `Arrow C ⥤ Arrow C` defined
-in the file `Mathlib.CategoryTheory.SmallObject.Construction`.
+in the file `Mathlib/CategoryTheory/SmallObject/Construction.lean`.
 This factorization is functorial in `f`
 and gives the property `HasFunctorialFactorization I.rlp.llp I.rlp`.
 Finally, the lemma `llp_rlp_of_isCardinalForSmallObjectArgument`
@@ -53,6 +55,8 @@ pushouts of coproducts of morphisms in `I`.
 - https://ncatlab.org/nlab/show/small+object+argument
 
 -/
+
+@[expose] public section
 
 universe w v v' u u'
 
@@ -67,7 +71,7 @@ namespace MorphismProperty
 /-- Given `I : MorphismProperty C` and a regular cardinal `κ : Cardinal.{w}`,
 this property asserts the technical conditions which allow to proceed
 to the small object argument by doing a construction by transfinite
-induction indexed by the well ordered type `κ.ord.toType`. -/
+induction indexed by the well-ordered type `κ.ord.toType`. -/
 class IsCardinalForSmallObjectArgument (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [OrderBot κ.ord.toType] : Prop where
   isSmall : IsSmall.{w} I := by infer_instance
@@ -159,8 +163,7 @@ lemma succStruct_prop_le_propArrow :
   constructor
   · nth_rw 1 [← I.ofHoms_homFamily]
     apply pushouts_mk _ (functorObj_isPushout I.homFamily (F.obj f).hom)
-    exact coproducts_of_small _ _
-      (colimitsOfShape_colimMap _ _ (by rintro ⟨j⟩; constructor))
+    exact coproducts_of_small _ _ (colimitsOfShape_colimMap _ (by rintro ⟨j⟩; constructor))
   · rw [MorphismProperty.isomorphisms.iff]
     dsimp [succStruct]
     infer_instance
@@ -280,11 +283,11 @@ small object argument. -/
 noncomputable def obj : C := ((iteration I κ).obj (Arrow.mk f)).left
 
 /-- The "inclusion" morphism in the factorization given by
-the the small object argument. -/
+the small object argument. -/
 noncomputable def ιObj : X ⟶ obj I κ f := ((ιIteration I κ).app (Arrow.mk f)).left
 
 /-- The "projection" morphism in the factorization given by
-the the small object argument. -/
+the small object argument. -/
 noncomputable def πObj : obj I κ f ⟶ Y :=
   ((iteration I κ).obj (Arrow.mk f)).hom ≫ inv ((ιIteration I κ).app f).right
 
@@ -421,7 +424,7 @@ lemma πObj_naturality {f g : Arrow C} (φ : f ⟶ g) :
   change _ ≫ _ ≫ e₂.inv = (_ ≫ e₁.inv) ≫ _
   have h₁ := ((iteration I κ).map φ).w =≫ e₂.inv
   have h₂ : φ.right ≫ e₂.hom = e₁.hom ≫ ((iteration I κ).map φ).right :=
-    ((whiskerRight (ιIteration I κ) Arrow.rightFunc).naturality φ)
+    ((Functor.whiskerRight (ιIteration I κ) Arrow.rightFunc).naturality φ)
   dsimp at h₁
   rw [assoc] at h₁
   apply h₁.trans

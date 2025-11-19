@@ -21,7 +21,7 @@ example (n : ℤ) (hn : 0 ≤ n) : 0 ≤ n + 1 := by
 example (n : ℤ) (hn : 0 ≤ n) : 0 ≤ n + 1 := by
   lift n to ℕ using hn
   guard_target =ₛ 0 ≤ (n : Int) + 1
-  exact Int.le_add_one (Int.ofNat_zero_le _)
+  exact Int.le_add_one (Int.natCast_nonneg _)
 
 example (n : ℤ) (hn : 0 ≤ n) : 0 ≤ n + 1 := by
   have hn' := hn
@@ -222,8 +222,7 @@ example (n : ℤ) (hn : 0 < n) : True := by
 
 -- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Bug.20in.20.60lift.60.20tactic.3F/near/508521400
 /--
-info: case intro
-x : WithTop ℕ
+trace: x : WithTop ℕ
 P : WithTop ℕ → Prop
 u : ℕ
 hu : ↑u = x
@@ -235,3 +234,12 @@ example {x : WithTop ℕ} (hx : x ≠ ⊤) (P : WithTop ℕ → Prop) (h : P x) 
   lift x to ℕ using hx with u hu
   trace_state
   exact h
+
+/-! Test that the `h` in `using h` is not cleared if the goal depends on it. -/
+
+set_option linter.unusedVariables false in
+def foo (n : Int) (hn : 0 ≤ n) : Int := n
+
+example (n : Int) (hn : 0 ≤ n) : foo n hn = n := by
+  lift n to Nat using hn
+  rfl

@@ -3,18 +3,22 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Kim Morrison
 -/
-import Mathlib.LinearAlgebra.Basis.Defs
-import Mathlib.LinearAlgebra.LinearIndependent.Defs
-import Mathlib.LinearAlgebra.Span.Basic
-import Mathlib.SetTheory.Cardinal.Pigeonhole
+module
+
+public import Mathlib.LinearAlgebra.Basis.Defs
+public import Mathlib.LinearAlgebra.LinearIndependent.Defs
+public import Mathlib.LinearAlgebra.Span.Basic
+public import Mathlib.SetTheory.Cardinal.Pigeonhole
 
 /-!
 # Results relating bases and cardinality.
 -/
 
+@[expose] public section
+
 section Finite
 
-open Basis Cardinal Set Submodule Finsupp
+open Module Basis Cardinal Set Submodule Finsupp
 
 universe u v w w'
 
@@ -26,7 +30,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M]
 
 lemma finite_of_span_finite_eq_top_finsupp [Nontrivial M] {ι : Type*} {s : Set (ι →₀ M)}
     (hs : s.Finite) (hsspan : span R s = ⊤) : Finite ι :=
-  suffices ⋃ i ∈ s, i.support.toSet = .univ from
+  suffices ⋃ i ∈ s, i.support = .univ from
     .of_finite_univ (this ▸ hs.biUnion fun _ _ ↦ by simp)
   have ⟨x, hx⟩ := exists_ne (0 : M)
   eq_univ_of_forall fun j ↦ (top_unique (hsspan.ge.trans (span_le_supported_biUnion_support R s)) ▸
@@ -69,7 +73,7 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
     ⋃ k, ((b.repr (v k)).support : Set ι) = Set.univ := by
   -- If that's not the case,
   by_contra h
-  simp only [← Ne.eq_def, ne_univ_iff_exists_not_mem, mem_iUnion, not_exists_not,
+  simp only [← Ne.eq_def, ne_univ_iff_exists_notMem, mem_iUnion, not_exists_not,
     Finsupp.mem_support_iff, Finset.mem_coe] at h
   -- We have some basis element `b i` which is not in the support of any of the `v k`.
   obtain ⟨i, w⟩ := h
@@ -86,7 +90,7 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
     apply LinearIndependent.linearIndepOn_id
     rw [linearIndependent_iffₛ]
     intro l l' z
-    simp_rw [linearCombination_option, v', Option.elim'] at z
+    simp_rw [linearCombination_option, v', Option.elim] at z
     change _ + linearCombination R v l.some = _ + linearCombination R v l'.some at z
     -- We have some equality between linear combinations of `b i` and the `v k`,
     -- and want to show the coefficients are equal.

@@ -3,9 +3,11 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Yury Kudryashov
 -/
-import Mathlib.Data.Finset.Fin
-import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Order.Interval.Set.Fin
+module
+
+public import Mathlib.Data.Finset.Fin
+public import Mathlib.Order.Interval.Finset.Nat
+public import Mathlib.Order.Interval.Set.Fin
 
 /-!
 # Finite intervals in `Fin n`
@@ -13,6 +15,8 @@ import Mathlib.Order.Interval.Set.Fin
 This file proves that `Fin n` is a `LocallyFiniteOrder` and calculates the cardinality of its
 intervals as Finsets and Fintypes.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -23,7 +27,7 @@ namespace Fin
 variable (n : ℕ)
 
 /-!
-### Locally finite order etc instances
+### Locally finite order etc. instances
 -/
 
 instance instLocallyFiniteOrder (n : ℕ) : LocallyFiniteOrder (Fin n) where
@@ -90,42 +94,6 @@ theorem attachFin_Iio : attachFin (Iio a) (fun _x hx ↦ (mem_Iio.mp hx).trans a
 
 section deprecated
 
-set_option linter.deprecated false in
-@[deprecated attachFin_Icc (since := "2025-04-06")]
-theorem Icc_eq_finset_subtype : Icc a b = (Icc (a : ℕ) b).fin n := attachFin_eq_fin _
-
-set_option linter.deprecated false in
-@[deprecated attachFin_Ico (since := "2025-04-06")]
-theorem Ico_eq_finset_subtype : Ico a b = (Ico (a : ℕ) b).fin n := attachFin_eq_fin _
-
-set_option linter.deprecated false in
-@[deprecated attachFin_Ioc (since := "2025-04-06")]
-theorem Ioc_eq_finset_subtype : Ioc a b = (Ioc (a : ℕ) b).fin n := attachFin_eq_fin _
-
-set_option linter.deprecated false in
-@[deprecated attachFin_Ioo (since := "2025-04-06")]
-theorem Ioo_eq_finset_subtype : Ioo a b = (Ioo (a : ℕ) b).fin n := attachFin_eq_fin _
-
-set_option linter.deprecated false in
-@[deprecated attachFin_uIcc (since := "2025-04-06")]
-theorem uIcc_eq_finset_subtype : uIcc a b = (uIcc (a : ℕ) b).fin n := Icc_eq_finset_subtype _ _
-
-set_option linter.deprecated false in
-@[deprecated attachFin_Ico_eq_Ici (since := "2025-04-06")]
-theorem Ici_eq_finset_subtype : Ici a = (Ico (a : ℕ) n).fin n := by ext; simp
-
-set_option linter.deprecated false in
-@[deprecated attachFin_Ioo_eq_Ioi (since := "2025-04-06")]
-theorem Ioi_eq_finset_subtype : Ioi a = (Ioo (a : ℕ) n).fin n := by ext; simp
-
-set_option linter.deprecated false in
-@[deprecated attachFin_Iic (since := "2025-04-06")]
-theorem Iic_eq_finset_subtype : Iic b = (Iic (b : ℕ)).fin n := by ext; simp
-
-set_option linter.deprecated false in
-@[deprecated attachFin_Iio (since := "2025-04-06")]
-theorem Iio_eq_finset_subtype : Iio b = (Iio (b : ℕ)).fin n := by ext; simp
-
 end deprecated
 
 section val
@@ -189,9 +157,6 @@ theorem map_valEmbedding_Ioo : (Ioo a b).map Fin.valEmbedding = Ioo (a : ℕ) b 
 @[simp]
 theorem map_valEmbedding_uIcc : (uIcc a b).map valEmbedding = uIcc (a : ℕ) b :=
   map_valEmbedding_Icc _ _
-
-@[deprecated (since := "2025-04-08")]
-alias map_subtype_embedding_uIcc := map_valEmbedding_uIcc
 
 @[simp]
 theorem map_valEmbedding_Ici : (Ici a).map Fin.valEmbedding = Ico (a : ℕ) n := by
@@ -334,45 +299,45 @@ theorem finsetImage_castAdd_Iio (m) (i : Fin n) : (Iio i).image (castAdd m) = Ii
 
 @[simp]
 theorem map_castAddEmb_Icc (m) (i j : Fin n) :
-    (Icc i j).map (castAddEmb m) = Icc (castAddEmb m i) (castAddEmb m j) :=
+    (Icc i j).map (castAddEmb m) = Icc (castAdd m i) (castAdd m j) :=
   map_castLEEmb_Icc ..
 
 @[simp]
 theorem map_castAddEmb_Ico (m) (i j : Fin n) :
-    (Ico i j).map (castAddEmb m) = Ico (castAddEmb m i) (castAddEmb m j) :=
+    (Ico i j).map (castAddEmb m) = Ico (castAdd m i) (castAdd m j) :=
   map_castLEEmb_Ico ..
 
 @[simp]
 theorem map_castAddEmb_Ioc (m) (i j : Fin n) :
-    (Ioc i j).map (castAddEmb m) = Ioc (castAddEmb m i) (castAddEmb m j) :=
+    (Ioc i j).map (castAddEmb m) = Ioc (castAdd m i) (castAdd m j) :=
   map_castLEEmb_Ioc ..
 
 @[simp]
 theorem map_castAddEmb_Ioo (m) (i j : Fin n) :
-    (Ioo i j).map (castAddEmb m) = Ioo (castAddEmb m i) (castAddEmb m j) :=
+    (Ioo i j).map (castAddEmb m) = Ioo (castAdd m i) (castAdd m j) :=
   map_castLEEmb_Ioo ..
 
 @[simp]
 theorem map_castAddEmb_uIcc (m) (i j : Fin n) :
-    (uIcc i j).map (castAddEmb m) = uIcc (castAddEmb m i) (castAddEmb m j) :=
+    (uIcc i j).map (castAddEmb m) = uIcc (castAdd m i) (castAdd m j) :=
   map_castLEEmb_uIcc ..
 
 @[simp]
 theorem map_castAddEmb_Ici (m) [NeZero m] (i : Fin n) :
-    (Ici i).map (castAddEmb m) = Ico (castAddEmb m i) (natAdd n 0) := by
+    (Ici i).map (castAddEmb m) = Ico (castAdd m i) (natAdd n 0) := by
   simp [map_eq_image]
 
 @[simp]
 theorem map_castAddEmb_Ioi (m) [NeZero m] (i : Fin n) :
-    (Ioi i).map (castAddEmb m) = Ioo (castAddEmb m i) (natAdd n 0) := by
+    (Ioi i).map (castAddEmb m) = Ioo (castAdd m i) (natAdd n 0) := by
   simp [← coe_inj]
 
 @[simp]
-theorem map_castAddEmb_Iic (m) (i : Fin n) : (Iic i).map (castAddEmb m) = Iic (castAddEmb m i) :=
+theorem map_castAddEmb_Iic (m) (i : Fin n) : (Iic i).map (castAddEmb m) = Iic (castAdd m i) :=
   map_castLEEmb_Iic i _
 
 @[simp]
-theorem map_castAddEmb_Iio (m) (i : Fin n) : (Iio i).map (castAddEmb m) = Iio (castAddEmb m i) :=
+theorem map_castAddEmb_Iio (m) (i : Fin n) : (Iio i).map (castAddEmb m) = Iio (castAdd m i) :=
   map_castLEEmb_Iio ..
 
 end castAdd
@@ -928,33 +893,6 @@ theorem card_Iic : #(Iic b) = b + 1 := by rw [← Nat.card_Iic b, ← map_valEmb
 
 @[simp]
 theorem card_Iio : #(Iio b) = b := by rw [← Nat.card_Iio b, ← map_valEmbedding_Iio, card_map]
-
-@[deprecated Fintype.card_Icc (since := "2025-03-28")]
-theorem card_fintypeIcc : Fintype.card (Set.Icc a b) = b + 1 - a := by simp
-
-@[deprecated Fintype.card_Ico (since := "2025-03-28")]
-theorem card_fintypeIco : Fintype.card (Set.Ico a b) = b - a := by simp
-
-@[deprecated Fintype.card_Ioc (since := "2025-03-28")]
-theorem card_fintypeIoc : Fintype.card (Set.Ioc a b) = b - a := by simp
-
-@[deprecated Fintype.card_Ioo (since := "2025-03-28")]
-theorem card_fintypeIoo : Fintype.card (Set.Ioo a b) = b - a - 1 := by simp
-
-@[deprecated Fintype.card_uIcc (since := "2025-03-28")]
-theorem card_fintype_uIcc : Fintype.card (Set.uIcc a b) = (b - a : ℤ).natAbs + 1 := by simp
-
-@[deprecated Fintype.card_Ici (since := "2025-03-28")]
-theorem card_fintypeIci : Fintype.card (Set.Ici a) = n - a := by simp
-
-@[deprecated Fintype.card_Ioi (since := "2025-03-28")]
-theorem card_fintypeIoi : Fintype.card (Set.Ioi a) = n - 1 - a := by simp
-
-@[deprecated Fintype.card_Iic (since := "2025-03-28")]
-theorem card_fintypeIic : Fintype.card (Set.Iic b) = b + 1 := by simp
-
-@[deprecated Fintype.card_Iio (since := "2025-03-28")]
-theorem card_fintypeIio : Fintype.card (Set.Iio b) = b := by simp
 
 end card
 

@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.LinearAlgebra.AffineSpace.Independent
+module
+
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 
 /-!
 # Simplices in torsors over normed spaces.
@@ -18,6 +20,8 @@ This file defines properties of simplices in a `NormedAddTorsor`.
 * `Affine.Simplex.Regular`
 
 -/
+
+@[expose] public section
 
 
 namespace Affine
@@ -40,7 +44,7 @@ lemma Scalene.dist_ne {s : Simplex R P n} (hs : s.Scalene) {i₁ i₂ i₃ i₄ 
     (h₁₂ : i₁ ≠ i₂) (h₃₄ : i₃ ≠ i₄) (h₁₂₃₄ : ¬(i₁ = i₃ ∧ i₂ = i₄)) (h₁₂₄₃ : ¬(i₁ = i₄ ∧ i₂ = i₃)) :
     dist (s.points i₁) (s.points i₂) ≠ dist (s.points i₃) (s.points i₄) := by
   rw [Classical.not_and_iff_not_or_not] at h₁₂₃₄ h₁₂₄₃
-  rcases h₁₂.lt_or_lt with h₁₂lt | h₂₁lt <;> rcases h₃₄.lt_or_lt with h₃₄lt | h₄₃lt
+  rcases h₁₂.lt_or_gt with h₁₂lt | h₂₁lt <;> rcases h₃₄.lt_or_gt with h₃₄lt | h₄₃lt
   · apply hs.ne (a₁ := ⟨(i₁, i₂), h₁₂lt⟩) (a₂ := ⟨(i₃, i₄), h₃₄lt⟩)
     cases h₁₂₃₄ <;> simp [*]
   · nth_rw 2 [dist_comm]
@@ -128,14 +132,14 @@ lemma Regular.equilateral {s : Simplex R P n} (hr : s.Regular) : s.Equilateral :
     simp_rw [← Function.comp_apply (f := x), ← hx]
     simp only [comp_apply, Equiv.swap_apply_left]
     convert rfl
-    rw [Equiv.swap_apply_of_ne_of_ne (by norm_num [hn]) (by omega)]
+    rw [Equiv.swap_apply_of_ne_of_ne (by simp [hn]) (by cutsat)]
   · rcases hr ((Equiv.swap 0 i).trans (Equiv.swap 1 j)) with ⟨x, hx⟩
     nth_rw 2 [← x.dist_eq]
     simp_rw [← Function.comp_apply (f := x), ← hx]
     simp only [Equiv.coe_trans, comp_apply, Equiv.swap_apply_left]
     convert rfl
     · exact Equiv.swap_apply_of_ne_of_ne hi hij
-    · rw [Equiv.swap_apply_of_ne_of_ne (by norm_num [hn]) (Ne.symm hi)]
+    · rw [Equiv.swap_apply_of_ne_of_ne (by simp [hn]) (Ne.symm hi)]
       simp
 
 end Simplex
@@ -169,6 +173,10 @@ lemma equilateral_iff_dist_eq_and_dist_eq {t : Triangle R P} {i₁ i₂ i₃ : F
     have hi : (i = i₁ ∧ j = i₂) ∨ (i = i₂ ∧ j = i₁) ∨ (i = i₁ ∧ j = i₃) ∨
       (i = i₃ ∧ j = i₁) ∨ (i = i₂ ∧ j = i₃) ∨ (i = i₃ ∧ j = i₂) := by
       clear h
+      #adaptation_note /--
+      https://github.com/leanprover/lean4/issues/11009
+      -/
+      set_option synthInstance.maxSize 1000 in
       decide +revert
     rcases h with ⟨h₁, h₂⟩
     rcases hi with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩| ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩

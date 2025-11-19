@@ -3,10 +3,12 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.CharP.Algebra
-import Mathlib.Data.Multiset.Fintype
-import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.FieldTheory.SplittingField.Construction
+module
+
+public import Mathlib.Algebra.CharP.Algebra
+public import Mathlib.Data.Multiset.Fintype
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
+public import Mathlib.FieldTheory.SplittingField.Construction
 
 /-!
 # Algebraic Closure
@@ -26,6 +28,8 @@ In this file we construct the algebraic closure of a field
 
 algebraic closure, algebraically closed
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -201,3 +205,22 @@ instance {L : Type*} [Field k] [Field L] [Algebra k L] [Algebra.IsAlgebraic k L]
   isAlgClosed := inferInstance
 
 end AlgebraicClosure
+
+namespace IntermediateField
+
+variable {K L : Type*} [Field K] [Field L] [Algebra K L] (E : IntermediateField K L)
+
+instance [Algebra.IsAlgebraic K E] : IsAlgClosure K (AlgebraicClosure E) :=
+  ⟨AlgebraicClosure.isAlgClosed E, Algebra.IsAlgebraic.trans K E (AlgebraicClosure E)⟩
+
+theorem AdjoinSimple.normal_algebraicClosure {x : L} (hx : IsIntegral K x) :
+    Normal K (AlgebraicClosure K⟮x⟯) :=
+  have : Algebra.IsAlgebraic K K⟮x⟯ := isAlgebraic_adjoin_simple hx
+  IsAlgClosure.normal _ _
+
+theorem AdjoinDouble.normal_algebraicClosure {x y : L} (hx : IsIntegral K x)
+    (hy : IsIntegral K y) : Normal K (AlgebraicClosure K⟮x, y⟯) :=
+  have : Algebra.IsAlgebraic K K⟮x, y⟯ := isAlgebraic_adjoin_pair hx hy
+  IsAlgClosure.normal _ _
+
+end IntermediateField

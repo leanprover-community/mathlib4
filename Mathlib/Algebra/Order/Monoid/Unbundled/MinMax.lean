@@ -3,11 +3,15 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 
 /-!
 # Lemmas about `min` and `max` in an ordered monoid.
 -/
+
+@[expose] public section
 
 
 open Function
@@ -22,11 +26,11 @@ variable [LinearOrder α] [CommSemigroup β]
 
 @[to_additive]
 lemma fn_min_mul_fn_max (f : α → β) (a b : α) : f (min a b) * f (max a b) = f a * f b := by
-  obtain h | h := le_total a b <;> simp [h, mul_comm]
+  grind
 
 @[to_additive]
 lemma fn_max_mul_fn_min (f : α → β) (a b : α) : f (max a b) * f (min a b) = f a * f b := by
-  obtain h | h := le_total a b <;> simp [h, mul_comm]
+  grind
 
 variable [CommSemigroup α]
 

@@ -3,9 +3,11 @@ Copyright (c) 2022 Iván Renison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Iván Renison
 -/
-import Mathlib.Combinatorics.SimpleGraph.Basic
-import Mathlib.Combinatorics.SimpleGraph.Coloring
-import Mathlib.Combinatorics.SimpleGraph.Maps
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Basic
+public import Mathlib.Combinatorics.SimpleGraph.Coloring
+public import Mathlib.Combinatorics.SimpleGraph.Maps
 
 /-!
 # Disjoint sum of graphs
@@ -22,6 +24,8 @@ both in `G` and adjacent in `G`, or they are both in `H` and adjacent in `H`.
 
 * `G ⊕g H`: The disjoint sum of `G` and `H`.
 -/
+
+@[expose] public section
 
 variable {α β γ : Type*}
 
@@ -96,7 +100,6 @@ def Coloring.sumEquiv : (G ⊕g H).Coloring γ ≃ G.Coloring γ × H.Coloring �
   toFun c := ⟨c.sumLeft, c.sumRight⟩
   invFun p := p.1.sum p.2
   left_inv c := by simp [sum_sumLeft_sumRight c]
-  right_inv p := rfl
 
 /-- Color `G ⊕g H` with `Fin (n + m)` given a coloring of `G` with `Fin n` and a coloring of `H`
 with `Fin m` -/

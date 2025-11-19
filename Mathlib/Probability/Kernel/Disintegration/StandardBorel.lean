@@ -3,12 +3,14 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Composition.MeasureCompProd
-import Mathlib.Probability.Kernel.Disintegration.Basic
-import Mathlib.Probability.Kernel.Disintegration.CondCDF
-import Mathlib.Probability.Kernel.Disintegration.Density
-import Mathlib.Probability.Kernel.Disintegration.CDFToKernel
-import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
+module
+
+public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
+public import Mathlib.Probability.Kernel.Disintegration.Basic
+public import Mathlib.Probability.Kernel.Disintegration.CondCDF
+public import Mathlib.Probability.Kernel.Disintegration.Density
+public import Mathlib.Probability.Kernel.Disintegration.CDFToKernel
+public import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
 
 /-!
 # Existence of disintegration of measures and kernels for standard Borel spaces
@@ -62,6 +64,8 @@ The conditional kernel is unique (almost everywhere w.r.t. `fst κ`): this is pr
 * `MeasureTheory.Measure.compProd_fst_condKernel`: `ρ.fst ⊗ₘ ρ.condKernel = ρ`
 -/
 
+@[expose] public section
+
 open MeasureTheory Set Filter MeasurableSpace
 
 open scoped ENNReal MeasureTheory Topology ProbabilityTheory
@@ -70,7 +74,7 @@ namespace ProbabilityTheory.Kernel
 
 variable {α β γ Ω : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
   {mγ : MeasurableSpace γ} [MeasurableSpace.CountablyGenerated γ]
-  [MeasurableSpace Ω] [StandardBorelSpace Ω] [Nonempty Ω]
+  {mΩ : MeasurableSpace Ω} [StandardBorelSpace Ω] [Nonempty Ω]
 
 section Real
 
@@ -102,7 +106,7 @@ lemma isRatCondKernelCDFAux_density_Iic (κ : Kernel α (γ × ℝ)) [IsFiniteKe
       a s' ?_ ?_ (fun _ ↦ measurableSet_Iic)
     · exact fun i j hij ↦ Iic_subset_Iic.mpr (by exact mod_cast hs_mono hij)
     · ext x
-      simp only [mem_iUnion, mem_Iic, mem_univ, iff_true]
+      simp only [mem_iUnion, mem_univ, iff_true]
       rw [tendsto_atTop_atTop] at hs_tendsto
       have ⟨q, hq⟩ := exists_rat_gt x
       obtain ⟨i, hi⟩ := hs_tendsto q
@@ -392,7 +396,6 @@ section CountableOrCountablyGenerated
 variable [h : CountableOrCountablyGenerated α β] (κ : Kernel α (β × Ω)) [IsFiniteKernel κ]
 
 open Classical in
-
 /-- Conditional kernel of a kernel `κ : Kernel α (β × Ω)`: a Markov kernel such that
 `fst κ ⊗ₖ condKernel κ = κ` (see `MeasureTheory.Measure.compProd_fst_condKernel`).
 It exists whenever `Ω` is standard Borel and either `α` is countable

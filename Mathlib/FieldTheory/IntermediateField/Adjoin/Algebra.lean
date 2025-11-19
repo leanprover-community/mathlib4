@@ -3,15 +3,19 @@ Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
-import Mathlib.FieldTheory.Finiteness
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
-import Mathlib.FieldTheory.IntermediateField.Algebraic
+module
+
+public import Mathlib.FieldTheory.Finiteness
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
+public import Mathlib.FieldTheory.IntermediateField.Algebraic
 
 /-!
 # Adjoining Elements to Fields
 
 This file relates `IntermediateField.adjoin` to `Algebra.adjoin`.
 -/
+
+@[expose] public section
 
 open Module Polynomial
 
@@ -86,10 +90,27 @@ theorem adjoin_algebraic_toSubalgebra {S : Set E} (hS : ∀ x ∈ S, IsAlgebraic
     (Algebra.IsIntegral.adjoin fun x hx ↦ (hS x hx).isIntegral).inv_mem
 
 theorem adjoin_simple_toSubalgebra_of_integral (hα : IsIntegral F α) :
-    F⟮α⟯.toSubalgebra = Algebra.adjoin F {α} := by
-  apply adjoin_algebraic_toSubalgebra
-  rintro x (rfl : x = α)
-  rwa [isAlgebraic_iff_isIntegral]
+    F⟮α⟯.toSubalgebra = Algebra.adjoin F {α} :=
+  adjoin_algebraic_toSubalgebra <| by simpa [isAlgebraic_iff_isIntegral]
+
+lemma _root_.Algebra.adjoin_eq_top_of_intermediateField {S : Set E} (hS : ∀ x ∈ S, IsAlgebraic F x)
+    (hS₂ : IntermediateField.adjoin F S = ⊤) : Algebra.adjoin F S = ⊤ := by
+  simp [*, ← IntermediateField.adjoin_algebraic_toSubalgebra hS]
+
+lemma _root_.Algebra.adjoin_eq_top_of_primitive_element {α : E} (hα : IsIntegral F α)
+    (hα₂ : F⟮α⟯ = ⊤) : Algebra.adjoin F {α} = ⊤ :=
+  Algebra.adjoin_eq_top_of_intermediateField (by simpa [isAlgebraic_iff_isIntegral]) hα₂
+
+lemma finite_of_fg_of_isAlgebraic
+    (h : IntermediateField.FG (⊤ : IntermediateField F E)) [Algebra.IsAlgebraic F E] :
+    Module.Finite F E := by
+  obtain ⟨s, hs⟩ := h
+  have : Algebra.FiniteType F E := by
+    use s
+    rw [← IntermediateField.adjoin_algebraic_toSubalgebra
+      (fun x hx ↦ Algebra.IsAlgebraic.isAlgebraic x)]
+    simpa [← IntermediateField.toSubalgebra_inj] using hs
+  exact Algebra.IsIntegral.finite
 
 section Supremum
 
@@ -179,8 +200,6 @@ variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
 theorem fg_of_fg_toSubalgebra (S : IntermediateField F E) (h : S.toSubalgebra.FG) : S.FG := by
   obtain ⟨t, ht⟩ := h
   exact ⟨t, (eq_adjoin_of_eq_algebra_adjoin _ _ _ ht.symm).symm⟩
-
-@[deprecated (since := "2024-10-28")] alias fG_of_fG_toSubalgebra := fg_of_fg_toSubalgebra
 
 theorem fg_of_noetherian (S : IntermediateField F E) [IsNoetherian F E] : S.FG :=
   S.fg_of_fg_toSubalgebra S.toSubalgebra.fg_of_noetherian

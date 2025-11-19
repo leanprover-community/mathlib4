@@ -3,8 +3,10 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.Grp.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
+module
+
+public import Mathlib.Algebra.Category.Grp.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 
 /-!
 # The category of (commutative) (additive) groups has a zero object.
@@ -13,6 +15,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 rather than from the existence of a zero object.
 -/
 
+@[expose] public section
+
 
 open CategoryTheory
 
@@ -20,10 +24,10 @@ open CategoryTheory.Limits
 
 universe u
 
-namespace Grp
+namespace GrpCat
 
 @[to_additive]
-theorem isZero_of_subsingleton (G : Grp) [Subsingleton G] : IsZero G := by
+theorem isZero_of_subsingleton (G : GrpCat) [Subsingleton G] : IsZero G := by
   refine ⟨fun X => ⟨⟨⟨1⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨1⟩, fun f => ?_⟩⟩⟩
   · ext x
     have : x = 1 := Subsingleton.elim _ _
@@ -31,16 +35,16 @@ theorem isZero_of_subsingleton (G : Grp) [Subsingleton G] : IsZero G := by
   · ext
     subsingleton
 
-@[to_additive AddGrp.hasZeroObject]
-instance : HasZeroObject Grp :=
+@[to_additive AddGrpCat.hasZeroObject]
+instance : HasZeroObject GrpCat :=
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
 
-end Grp
+end GrpCat
 
-namespace CommGrp
+namespace CommGrpCat
 
 @[to_additive]
-theorem isZero_of_subsingleton (G : CommGrp) [Subsingleton G] : IsZero G := by
+theorem isZero_of_subsingleton (G : CommGrpCat) [Subsingleton G] : IsZero G := by
   refine ⟨fun X => ⟨⟨⟨1⟩, fun f => ?_⟩⟩, fun X => ⟨⟨⟨1⟩, fun f => ?_⟩⟩⟩
   · ext x
     have : x = 1 := Subsingleton.elim _ _
@@ -48,8 +52,8 @@ theorem isZero_of_subsingleton (G : CommGrp) [Subsingleton G] : IsZero G := by
   · ext
     subsingleton
 
-@[to_additive AddCommGrp.hasZeroObject]
-instance : HasZeroObject CommGrp :=
+@[to_additive AddCommGrpCat.hasZeroObject]
+instance : HasZeroObject CommGrpCat :=
   ⟨⟨of PUnit, isZero_of_subsingleton _⟩⟩
 
-end CommGrp
+end CommGrpCat

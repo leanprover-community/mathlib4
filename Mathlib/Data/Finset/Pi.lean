@@ -3,18 +3,22 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Finset.Union
-import Mathlib.Data.Multiset.Pi
-import Mathlib.Logic.Function.DependsOn
+module
+
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Finset.Union
+public import Mathlib.Data.Multiset.Pi
+public import Mathlib.Logic.Function.DependsOn
 
 /-!
-# The cartesian product of finsets
+# The Cartesian product of finsets
 
 ## Main definitions
 
 * `Finset.pi`: Cartesian product of finsets indexed by a finset.
 -/
+
+@[expose] public section
 
 open Function
 
@@ -112,7 +116,7 @@ theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, F
                 dedup <|
                   (Multiset.pi s.1 fun a : α => (t a).val).map fun f a' h' =>
                     Multiset.Pi.cons s.1 a b f a' (h ▸ h'))))
-      _ (insert_val_of_not_mem ha)
+      _ (insert_val_of_notMem ha)
   subst s'; rw [pi_cons]
   congr; funext b
   exact ((pi s t).nodup.map <| Multiset.Pi.cons_injective ha).dedup.symm
@@ -168,10 +172,10 @@ theorem restrict_def (s : Finset ι) : s.restrict (π := π) = fun f x ↦ f x :
 variable {s t u : Finset ι}
 
 theorem _root_.Set.piCongrLeft_comp_restrict :
-    (s.equivToSet.symm.piCongrLeft (fun i : s.toSet ↦ π i)) ∘ s.toSet.restrict = s.restrict := rfl
+    (s.equivToSet.symm.piCongrLeft (fun i : s ↦ π i)) ∘ (s : Set ι).restrict = s.restrict := rfl
 
 theorem piCongrLeft_comp_restrict :
-    (s.equivToSet.piCongrLeft (fun i : s ↦ π i)) ∘ s.restrict = s.toSet.restrict := rfl
+    (s.equivToSet.piCongrLeft (fun i : s ↦ π i)) ∘ s.restrict = (s : Set ι).restrict := rfl
 
 /-- If a function `f` is restricted to a finite set `t`, and `s ⊆ t`,
 this is the restriction to `s`. -/

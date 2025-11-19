@@ -3,10 +3,12 @@ Copyright (c) 2024 Andrew Yang, Yaël Dillies, Javier López-Contreras. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Yaël Dillies, Javier López-Contreras
 -/
-import Mathlib.RingTheory.Ideal.GoingUp
-import Mathlib.RingTheory.LocalRing.LocalSubring
-import Mathlib.RingTheory.Polynomial.Ideal
-import Mathlib.RingTheory.Valuation.ValuationSubring
+module
+
+public import Mathlib.RingTheory.Ideal.GoingUp
+public import Mathlib.RingTheory.LocalRing.LocalSubring
+public import Mathlib.RingTheory.Polynomial.Ideal
+public import Mathlib.RingTheory.Valuation.ValuationSubring
 
 /-!
 
@@ -16,6 +18,8 @@ See `LocalSubring.isMax_iff`.
 Note that the order on local subrings is not merely inclusion but domination.
 
 -/
+
+@[expose] public section
 
 open IsLocalRing
 
@@ -89,7 +93,7 @@ lemma LocalSubring.exists_valuationRing_of_isMax {R : LocalSubring K} (hR : IsMa
     ∃ R' : ValuationSubring K, R'.toLocalSubring = R := by
   suffices ∀ x ∉ R.toSubring, x⁻¹ ∈ R.toSubring from
     ⟨⟨R.toSubring, fun x ↦ or_iff_not_imp_left.mpr (this x)⟩, rfl⟩
-  intros x hx
+  intro x hx
   have hx0 : x ≠ 0 := fun e ↦ hx (e ▸ zero_mem _)
   apply mem_of_isMax_of_isIntegral hR
   let S := Algebra.adjoin R.toSubring {x}
@@ -110,7 +114,7 @@ lemma LocalSubring.exists_valuationRing_of_isMax {R : LocalSubring K} (hR : IsMa
   · have : (p - 1).natTrailingDegree = 0 := by
       simp only [Polynomial.natTrailingDegree_eq_zero,
         Polynomial.coeff_sub, Polynomial.coeff_one_zero, ne_eq, sub_eq_zero]
-      exact .inr fun h ↦ (IsLocalRing.not_mem_maximalIdeal.mpr isUnit_one (h ▸ hp 0))
+      exact .inr fun h ↦ (IsLocalRing.notMem_maximalIdeal.mpr isUnit_one (h ▸ hp 0))
     rw [Polynomial.Monic.def, Polynomial.leadingCoeff_mul', Polynomial.reverse_leadingCoeff,
       Polynomial.trailingCoeff, this]
     · simp

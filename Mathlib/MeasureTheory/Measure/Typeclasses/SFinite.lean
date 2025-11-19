@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
+module
+
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 
 /-!
 # Classes for s-finite measures
@@ -14,6 +16,8 @@ We introduce the following typeclasses for measures:
 * `SigmaFinite μ`: there exists a countable collection of sets that cover `univ`
   where `μ` is finite.
 -/
+
+@[expose] public section
 
 namespace MeasureTheory
 
@@ -89,7 +93,7 @@ theorem exists_isFiniteMeasure_absolutelyContinuous [SFinite μ] :
 end SFinite
 
 /-- A measure `μ` is called σ-finite if there is a countable collection of sets
- `{ A i | i ∈ ℕ }` such that `μ (A i) < ∞` and `⋃ i, A i = s`. -/
+`{ A i | i ∈ ℕ }` such that `μ (A i) < ∞` and `⋃ i, A i = s`. -/
 class SigmaFinite {m0 : MeasurableSpace α} (μ : Measure α) : Prop where
   out' : Nonempty (μ.FiniteSpanningSetsIn univ)
 
@@ -541,10 +545,7 @@ lemma Measure.sigmaFinite_iff_measure_singleton_lt_top [Countable α] :
       exact ⟨⟨⟨fun n ↦ {f n}, by simp, by simpa [hf.forall] using hμ, by simp [hf.range_eq]⟩⟩⟩
 
 theorem sigmaFinite_bot_iff (μ : @Measure α ⊥) : SigmaFinite μ ↔ IsFiniteMeasure μ := by
-  refine
-    ⟨fun h => ⟨?_⟩, fun h => by
-      haveI := h
-      infer_instance⟩
+  refine ⟨fun h => ⟨?_⟩, fun h => by infer_instance⟩
   haveI : SigmaFinite μ := h
   let s := spanningSets μ
   have hs_univ : ⋃ i, s i = Set.univ := iUnion_spanningSets μ

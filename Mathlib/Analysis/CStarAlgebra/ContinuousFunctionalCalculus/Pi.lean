@@ -3,10 +3,11 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
-import Mathlib.Algebra.Algebra.Spectrum.Pi
-import Mathlib.Algebra.Star.StarAlgHom
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
+public import Mathlib.Algebra.Algebra.Spectrum.Pi
+public import Mathlib.Algebra.Star.StarAlgHom
 
 /-! # The continuous functional calculus on product types
 
@@ -19,6 +20,8 @@ This file contains results about the continuous functional calculus on (indexed)
 + `cfc_map_prod` and `cfcₙ_map_prod`: given `a : A` and `b : B`, then
   `cfc f (a, b) = (cfc f a, cfc f b)` (and likewise for the non-unital version)
 -/
+
+@[expose] public section
 
 section nonunital_pi
 
@@ -80,7 +83,7 @@ lemma cfcₙ_map_prod (f : R → R) (a : A) (b : B)
       let φ := NonUnitalStarAlgHom.snd S A B
       exact φ.map_cfcₙ f (a, b) (by rwa [Prod.quasispectrum_eq]) hf₀ continuous_snd hab hb
   case neg =>
-    simp [cfcₙ_apply_of_not_map_zero _ hf₀]
+    simpa [cfcₙ_apply_of_not_map_zero _ hf₀] using Prod.mk_zero_zero.symm
 
 end nonunital_prod
 
