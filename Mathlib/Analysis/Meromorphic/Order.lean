@@ -3,9 +3,11 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler, Stefan Kebekus
 -/
-import Mathlib.Algebra.Order.WithTop.Untop0
-import Mathlib.Analysis.Analytic.Order
-import Mathlib.Analysis.Meromorphic.Basic
+module
+
+public import Mathlib.Algebra.Order.WithTop.Untop0
+public import Mathlib.Analysis.Analytic.Order
+public import Mathlib.Analysis.Meromorphic.Basic
 
 /-!
 # Orders of Meromorphic Functions
@@ -20,6 +22,8 @@ to infinity, resp. a nonzero constant, resp. zero.
 
 Uniformize API between analytic and meromorphic functions
 -/
+
+@[expose] public section
 
 open Filter Set WithTop.LinearOrderedAddCommGroup
 open scoped Topology

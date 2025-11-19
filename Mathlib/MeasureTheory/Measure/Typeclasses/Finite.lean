@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.Measure.Restrict
+module
+
+public import Mathlib.MeasureTheory.Measure.Restrict
 
 /-!
 # Classes for finite measures
@@ -13,6 +15,8 @@ We introduce the following typeclasses for measures:
 * `IsFiniteMeasure μ`: `μ univ < ∞`;
 * `IsLocallyFiniteMeasure μ` : `∀ x, ∃ s ∈ 𝓝 x, μ s < ∞`.
 -/
+
+@[expose] public section
 
 open scoped NNReal Topology
 open Set MeasureTheory Measure Filter Function MeasurableSpace ENNReal

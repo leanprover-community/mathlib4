@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.Algebra.Ring.BooleanRing
-import Mathlib.Order.Category.BoolAlg
+module
+
+public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.Algebra.Ring.BooleanRing
+public import Mathlib.Order.Category.BoolAlg
 
 /-!
 # The category of Boolean rings
@@ -17,6 +19,8 @@ This file defines `BoolRing`, the category of Boolean rings.
 Finish the equivalence with `BoolAlg`.
 -/
 
+@[expose] public section
+
 
 universe u
 
@@ -24,7 +28,8 @@ open CategoryTheory Order
 
 /-- The category of Boolean rings. -/
 structure BoolRing where
-  private mk ::
+  /-- Construct a bundled `BoolRing` from a `BooleanRing`. -/
+  of ::
   /-- The underlying type. -/
   carrier : Type u
   [booleanRing : BooleanRing carrier]
@@ -39,10 +44,6 @@ instance : CoeSort BoolRing Type* :=
 attribute [coe] carrier
 
 attribute [instance] booleanRing
-
-/-- Construct a bundled `BoolRing` from a `BooleanRing`. -/
-abbrev of (α : Type*) [BooleanRing α] : BoolRing :=
-  ⟨α⟩
 
 theorem coe_of (α : Type*) [BooleanRing α] : ↥(of α) = α :=
   rfl

@@ -3,17 +3,21 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Group.TransferInstance
-import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Data.Fintype.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.Algebra.Group.InjSurj
+public import Mathlib.Data.Fintype.Basic
 
 /-!
 # Transfer algebraic structures across `Equiv`s
 
 This continues the pattern set in `Mathlib/Algebra/Group/TransferInstance.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 

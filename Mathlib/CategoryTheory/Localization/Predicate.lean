@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Construction
+module
+
+public import Mathlib.CategoryTheory.Localization.Construction
 
 /-!
 
@@ -29,6 +31,8 @@ datum that is part of the class `Lifting L W F F'`. The functions
 and natural isomorphisms between functors.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -199,7 +203,7 @@ theorem essSurj (W) [L.IsLocalization W] : L.EssSurj :=
           (equivalenceFromModel L W).counitIso.app X)⟩⟩
 
 /-- The functor `(D ⥤ E) ⥤ W.functors_inverting E` induced by the composition
-with a localization functor `L : C ⥤ D` with respect to `W : morphism_property C`. -/
+with a localization functor `L : C ⥤ D` with respect to `W : MorphismProperty C`. -/
 def whiskeringLeftFunctor : (D ⥤ E) ⥤ W.FunctorsInverting E :=
   ObjectProperty.lift _ ((whiskeringLeft _ _ E).obj L)
     (MorphismProperty.IsInvertedBy.of_comp W L (inverts L W))
@@ -451,6 +455,39 @@ def isoUniqFunctor (F : D₁ ⥤ D₂) (e : L₁ ⋙ F ≅ L₂) :
     F ≅ (uniq L₁ L₂ W').functor :=
   letI : Lifting L₁ W' L₂ F := ⟨e⟩
   liftNatIso L₁ W' L₂ L₂ F (uniq L₁ L₂ W').functor (Iso.refl L₂)
+
+lemma morphismProperty_eq_top [L.IsLocalization W] (P : MorphismProperty D) [P.RespectsIso]
+    [P.IsMultiplicative] (h₁ : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), P (L.map f))
+    (h₂ : ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (hf : W f), P (isoOfHom L W f hf).inv) :
+    P = ⊤ := by
+  let e := compUniqFunctor W.Q L W
+  have hP : P.inverseImage (uniq W.Q L W).functor = ⊤ :=
+    Construction.morphismProperty_eq_top _
+      (fun _ _ f ↦ (P.arrow_mk_iso_iff
+        (((Functor.mapArrowFunctor _ _).mapIso e).app (Arrow.mk f))).2 (h₁ f))
+      (fun X Y f hf ↦ by
+        refine (P.arrow_mk_iso_iff (Arrow.isoMk (e.app _) (e.app _) ?_)).2 (h₂ f hf)
+        dsimp
+        rw [Construction.wInv_eq_isoOfHom_inv, ← cancel_mono (isoOfHom L W f hf).hom,
+          assoc, assoc, Iso.inv_hom_id, comp_id, isoOfHom_hom, ← NatTrans.naturality,
+          Functor.comp_map, ← Functor.map_comp_assoc,
+          isoOfHom_inv_hom_id, map_id, id_comp])
+  rw [← P.map_inverseImage_eq_of_isEquivalence (uniq W.Q L W).functor, hP,
+    MorphismProperty.map_top_eq_top_of_essSurj_of_full]
+
+lemma isGroupoid [L.IsLocalization ⊤] :
+    IsGroupoid D := by
+  rw [isGroupoid_iff_isomorphisms_eq_top]
+  exact morphismProperty_eq_top L ⊤ _
+    (fun _ _ f ↦ inverts L ⊤ _ (by simp))
+    (fun _ _ f hf ↦ Iso.isIso_inv _)
+
+instance : IsGroupoid (⊤ : MorphismProperty C).Localization :=
+  isGroupoid <| MorphismProperty.Q ⊤
+
+/-- Localization of a category with respect to all morphisms results in a groupoid. -/
+def groupoid : Groupoid (⊤ : MorphismProperty C).Localization :=
+  Groupoid.ofIsGroupoid
 
 end Localization
 
