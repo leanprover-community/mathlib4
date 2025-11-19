@@ -49,7 +49,7 @@ example (b l : ℕ) (hb : 1 < b) :
   · intro L hL
     dsimp
     refine ⟨?_, ?_⟩
-    
+
     sorry
   · intro x hx
     simp
