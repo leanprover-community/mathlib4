@@ -522,6 +522,15 @@ theorem ne_bot_iff_exists_adj : G ≠ ⊥ ↔ ∃ a b : V, G.Adj a b := by
 theorem ne_top_iff_exists_not_adj : G ≠ ⊤ ↔ ∃ a b : V, a ≠ b ∧ ¬G.Adj a b := by
   simp [← top_le_iff, le_iff_adj]
 
+lemma card_toFinset_of_mem_edgeSet [DecidableEq V] (e : Sym2 V) (he : e ∈ G.edgeSet) :
+    (e : Finset V).card = 2 :=
+  Sym2.card_toFinset_of_not_isDiag (not_isDiag_of_mem_edgeSet _ he)
+
+lemma card_filter_mem_of_mem_edgeSet [DecidableEq V] [Fintype V] (e : Sym2 V) (he : e ∈ G.edgeSet) :
+    Finset.card {v | v ∈ e} = 2 := by
+  rw [← SimpleGraph.card_toFinset_of_mem_edgeSet _ he]
+  congr; ext; simp
+
 variable (G G₁ G₂)
 
 theorem edge_other_ne {e : Sym2 V} (he : e ∈ G.edgeSet) {v : V} (h : v ∈ e) :
