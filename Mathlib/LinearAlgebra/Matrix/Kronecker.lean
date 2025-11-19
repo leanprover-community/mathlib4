@@ -3,13 +3,15 @@ Copyright (c) 2021 Filippo A. E. Nuccio. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio, Eric Wieser
 -/
-import Mathlib.Data.Matrix.Basic
-import Mathlib.Data.Matrix.Block
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-import Mathlib.LinearAlgebra.Matrix.Trace
-import Mathlib.LinearAlgebra.TensorProduct.Basic
-import Mathlib.LinearAlgebra.TensorProduct.Associator
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.Data.Matrix.Basic
+public import Mathlib.Data.Matrix.Block
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+public import Mathlib.LinearAlgebra.Matrix.Trace
+public import Mathlib.LinearAlgebra.TensorProduct.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Associator
+public import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Kronecker product of matrices
@@ -41,6 +43,8 @@ These require `open Kronecker`:
   Lemmas about this notation use the token `kroneckerTMul`.
 
 -/
+
+@[expose] public section
 
 
 namespace Matrix

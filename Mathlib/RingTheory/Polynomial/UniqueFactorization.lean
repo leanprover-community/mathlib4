@@ -3,11 +3,13 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.RingTheory.Polynomial.Basic
-import Mathlib.RingTheory.Polynomial.Content
-import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
-import Mathlib.RingTheory.UniqueFactorizationDomain.Finite
-import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
+module
+
+public import Mathlib.RingTheory.Polynomial.Basic
+public import Mathlib.RingTheory.Polynomial.Content
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Finite
+public import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 
 /-!
 # Unique factorization for univariate and multivariate polynomials
@@ -19,6 +21,8 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
   If an integral domain is a `UniqueFactorizationMonoid`, then so is its polynomial ring (of any
   number of variables).
 -/
+
+@[expose] public section
 
 noncomputable section
 

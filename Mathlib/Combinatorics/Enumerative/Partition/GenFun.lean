@@ -3,8 +3,10 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
-import Mathlib.Combinatorics.Enumerative.Partition.Basic
-import Mathlib.RingTheory.PowerSeries.PiTopology
+module
+
+public import Mathlib.Combinatorics.Enumerative.Partition.Basic
+public import Mathlib.RingTheory.PowerSeries.PiTopology
 
 /-!
 # Generating functions for partitions
@@ -32,6 +34,8 @@ can be interpreted as assuming $f(i, 0) = 1$ and $f(0, c) = 0$ for $c \ne 0$. In
 respect the actual value of $f(0, c)$ and $f(i, 0)$, but it makes the otherwise finite sum and
 product potentially infinite.
 -/
+
+@[expose] public section
 
 open Finset PowerSeries
 open scoped PowerSeries.WithPiTopology
