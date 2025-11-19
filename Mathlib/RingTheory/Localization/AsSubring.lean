@@ -3,9 +3,11 @@ Copyright (c) 2022 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Junyan Xu
 -/
-import Mathlib.RingTheory.Localization.LocalizationLocalization
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.Algebra.Algebra.Subalgebra.Tower
+module
+
+public import Mathlib.RingTheory.Localization.LocalizationLocalization
+public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.Algebra.Algebra.Subalgebra.Tower
 
 /-!
 
@@ -16,6 +18,8 @@ does not contain zero, this file constructs the localization of `A` at `S`
 as a subalgebra of the field `K` over `A`.
 
 -/
+
+@[expose] public section
 
 
 namespace Localization
