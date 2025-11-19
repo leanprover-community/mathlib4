@@ -1092,6 +1092,7 @@ import Mathlib.Algebra.Prime.Lemmas
 import Mathlib.Algebra.QuadraticAlgebra
 import Mathlib.Algebra.QuadraticAlgebra.Basic
 import Mathlib.Algebra.QuadraticAlgebra.Defs
+import Mathlib.Algebra.QuadraticAlgebra.NormDeterminant
 import Mathlib.Algebra.QuadraticDiscriminant
 import Mathlib.Algebra.Quandle
 import Mathlib.Algebra.Quaternion
@@ -1733,6 +1734,7 @@ import Mathlib.Analysis.Distribution.ContDiffMapSupportedIn
 import Mathlib.Analysis.Distribution.FourierSchwartz
 import Mathlib.Analysis.Distribution.SchwartzSpace
 import Mathlib.Analysis.Distribution.TemperateGrowth
+import Mathlib.Analysis.Distribution.TestFunction
 import Mathlib.Analysis.Fourier.AddCircle
 import Mathlib.Analysis.Fourier.AddCircleMulti
 import Mathlib.Analysis.Fourier.BoundedContinuousFunctionChar
@@ -1813,7 +1815,9 @@ import Mathlib.Analysis.LocallyConvex.WeakOperatorTopology
 import Mathlib.Analysis.LocallyConvex.WeakSpace
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.Matrix
+import Mathlib.Analysis.Matrix.Hermitian
 import Mathlib.Analysis.Matrix.HermitianFunctionalCalculus
+import Mathlib.Analysis.Matrix.LDL
 import Mathlib.Analysis.Matrix.Normed
 import Mathlib.Analysis.Matrix.Order
 import Mathlib.Analysis.Matrix.PosDef
@@ -2206,6 +2210,7 @@ import Mathlib.CategoryTheory.Bicategory.Kan.IsKan
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
 import Mathlib.CategoryTheory.Bicategory.Monad.Basic
+import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Lax
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Pseudo
 import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Strong
@@ -2650,6 +2655,7 @@ import Mathlib.CategoryTheory.Localization.LocallySmall
 import Mathlib.CategoryTheory.Localization.Monoidal
 import Mathlib.CategoryTheory.Localization.Monoidal.Basic
 import Mathlib.CategoryTheory.Localization.Monoidal.Braided
+import Mathlib.CategoryTheory.Localization.Monoidal.Functor
 import Mathlib.CategoryTheory.Localization.Opposite
 import Mathlib.CategoryTheory.Localization.Pi
 import Mathlib.CategoryTheory.Localization.Preadditive
@@ -4472,7 +4478,6 @@ import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
 import Mathlib.LinearAlgebra.Matrix.Irreducible.Defs
 import Mathlib.LinearAlgebra.Matrix.IsDiag
 import Mathlib.LinearAlgebra.Matrix.Kronecker
-import Mathlib.LinearAlgebra.Matrix.LDL
 import Mathlib.LinearAlgebra.Matrix.MvPolynomial
 import Mathlib.LinearAlgebra.Matrix.Nondegenerate
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
@@ -5995,6 +6000,7 @@ import Mathlib.RingTheory.Polynomial.HilbertPoly
 import Mathlib.RingTheory.Polynomial.Ideal
 import Mathlib.RingTheory.Polynomial.IntegralNormalization
 import Mathlib.RingTheory.Polynomial.IrreducibleRing
+import Mathlib.RingTheory.Polynomial.IsIntegral
 import Mathlib.RingTheory.Polynomial.Nilpotent
 import Mathlib.RingTheory.Polynomial.Opposites
 import Mathlib.RingTheory.Polynomial.Pochhammer
@@ -6906,6 +6912,7 @@ import Mathlib.Topology.Homotopy.Equiv
 import Mathlib.Topology.Homotopy.HSpaces
 import Mathlib.Topology.Homotopy.HomotopyGroup
 import Mathlib.Topology.Homotopy.Lifting
+import Mathlib.Topology.Homotopy.LocallyContractible
 import Mathlib.Topology.Homotopy.Path
 import Mathlib.Topology.Homotopy.Product
 import Mathlib.Topology.IndicatorConstPointwise
