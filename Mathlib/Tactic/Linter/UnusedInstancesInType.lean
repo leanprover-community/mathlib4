@@ -204,7 +204,9 @@ def unusedDecidableInType : Linter where
       fun _ thm unusedParams => do
         logLint linter.unusedDecidableInType (← getRef) m!"\
           {thm.name.unusedInstancesMsg unusedParams}\n\n\
-          Consider removing these hypotheses and using `classical` in the proof instead. \
+          Consider removing \
+          {if unusedParams.size = 1 then "this hypothesis" else "these hypotheses"} \
+          and using `classical` in the proof instead. \
           For terms, consider using `open scoped Classical in` at the term level (not the command \
           level)."
 
