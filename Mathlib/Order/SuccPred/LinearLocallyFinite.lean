@@ -353,6 +353,34 @@ theorem toZ_iterate_pred [NoMinOrder ι] (n : ℕ) : toZ i0 (pred^[n] i0) = -n :
 theorem injective_toZ : Function.Injective (toZ i0) :=
   fun _ _ h ↦ le_antisymm (le_of_toZ_le h.le) (le_of_toZ_le h.symm.le)
 
+theorem toZ_lt_iff (i j : ι) : toZ i0 i < toZ i0 j ↔ i < j := by
+  rw [lt_iff_le_and_ne, lt_iff_le_and_ne, toZ_le_iff]
+  simp only [ne_eq, and_congr_right_iff]
+  intro
+  exact ⟨fun h h_eq ↦ h (by rw [h_eq]), fun h h_eq ↦ h (injective_toZ h_eq)⟩
+
+theorem toZ_iterate_succ_add_one_of_not_isMax (n : ℕ) (hn : ¬IsMax (succ^[n] i0)) :
+    toZ i0 (succ^[n + 1] i0) = n + 1 := by
+  refine le_antisymm ?_ ?_
+  · exact toZ_iterate_succ_le (n + 1)
+  · rw [Int.add_one_le_iff, ← toZ_iterate_succ_of_not_isMax n hn, toZ_lt_iff]
+    refine lt_of_le_of_ne ?_ ?_
+    · apply succ_mono.monotone_iterate_of_le_map (le_succ _)
+      simp
+    · refine fun h_contra ↦ hn ?_
+      exact isMax_iterate_succ_of_eq_of_ne h_contra (by simp)
+
+lemma toZ_succ_of_not_isMax (i : ι) (hi_ge : i0 ≤ i) (hi : ¬ IsMax i) :
+    toZ i0 (succ i) = toZ i0 i + 1 := by
+  rw [← iterate_succ_toZ i hi_ge]
+  obtain ⟨n, rfl⟩ := exists_succ_iterate_of_le hi_ge
+  rw [toZ_iterate_succ_of_not_isMax _ hi]
+  simp only [Int.toNat_natCast]
+  calc toZ i0 (succ (succ^[n] i0))
+  _ = toZ i0 (succ^[n+1] i0) := by rw [Function.iterate_succ']; simp
+  _ = n + 1 := toZ_iterate_succ_add_one_of_not_isMax n hi
+  _ = toZ i0 (succ^[n] i0) + 1 := by rw [toZ_iterate_succ_of_not_isMax n hi]
+
 end toZ
 
 section OrderIso
@@ -434,6 +462,84 @@ def orderIsoRangeOfLinearSuccPredArch [OrderBot ι] [OrderTop ι] :
     intro i j
     simp only [Equiv.coe_fn_mk, Subtype.mk_le_mk, Int.toNat_le]
     rw [← @toZ_le_iff ι _ _ _ _ ⊥, Int.toNat_of_nonneg (toZ_nonneg bot_le)]
+
+/-- If the order has a bot, `toZ` defines an `OrderEmbedding` between `ι` and `ℕ`. -/
+def orderEmbeddingNat [OrderBot ι] : ι ↪o ℕ where
+  toFun i := (toZ ⊥ i).toNat
+  inj' i j hij := by
+    simp only at hij
+    refine injective_toZ (i0 := ⊥) ?_
+    rw [← Int.toNat_of_nonneg (toZ_nonneg bot_le),
+      ← Int.toNat_of_nonneg (toZ_nonneg (i := j) bot_le), hij]
+  map_rel_iff' := by
+    intro i j
+    simp only [Function.Embedding.coeFn_mk, Int.toNat_le, Int.ofNat_toNat, le_sup_iff]
+    rw [← @toZ_le_iff ι _ _ _ _ ⊥]
+    simp only [or_iff_left_iff_imp]
+    intro h_le_zero
+    have h_eq_zero : toZ ⊥ i = 0 := le_antisymm h_le_zero (toZ_nonneg bot_le)
+    rw [h_eq_zero]
+    exact toZ_nonneg bot_le
+
+@[simp]
+lemma orderEmbeddingNat_apply [OrderBot ι] (n : ι) :
+    orderEmbeddingNat n = (toZ ⊥ n).toNat := by
+  simp [orderEmbeddingNat]
+
+@[simp]
+lemma orderEmbeddingNat_bot [OrderBot ι] : orderEmbeddingNat (ι := ι) ⊥ = 0 := by
+  simp [orderEmbeddingNat]
+
+lemma orderEmbeddingNat_succ_of_not_isMax [OrderBot ι] (n : ι) (hn : ¬ IsMax n) :
+    orderEmbeddingNat (succ n) = orderEmbeddingNat n + 1 := by
+  simp [orderEmbeddingNat]
+  rw [toZ_succ_of_not_isMax n bot_le hn, Int.toNat_add (toZ_nonneg bot_le) (by simp)]
+  simp
+
+noncomputable
+def orderIsoRangeNat [OrderBot ι] : ι ≃o Set.range (orderEmbeddingNat (ι := ι)) :=
+  OrderEmbedding.orderIso
+
+@[simp]
+lemma orderIsoRangeNat_apply [OrderBot ι] (n : ι) :
+    orderIsoRangeNat n = ⟨(toZ ⊥ n).toNat, Set.mem_range.2 ⟨n, rfl⟩⟩ := by
+  simp [orderIsoRangeNat, OrderEmbedding.orderIso, orderEmbeddingNat_apply]
+
+lemma todo [OrderBot ι] {m : ι} {P : (n : ι) → m ≤ n → Prop} (base : P m le_rfl)
+    (succ : ∀ (n : ι) (hmn : m ≤ n), P n hmn → P (succ n) (hmn.trans (le_succ n)))
+    (n : ι) (hmn : m ≤ n) :
+    P n hmn := by
+  let e := orderIsoRangeNat (ι := ι)
+  let range_e := Set.range (orderEmbeddingNat (ι := ι))
+  sorry
+
+lemma todo' [OrderBot ι] {P : (n : ι) → Prop}
+    (base : P ⊥) (hsucc : ∀ (n : ι), P n → P (succ n)) (n : ι) :
+    P n := by
+  let e := orderIsoRangeNat (ι := ι)
+  let range_e := Set.range (orderEmbeddingNat (ι := ι))
+  revert n
+  suffices H : ∀ (n : ℕ) (hn : n ∈ range_e), P (e.symm ⟨n, hn⟩) by
+    intro n
+    have : n = e.symm (e n) := by simp
+    rw [this]
+    exact H (e n) _
+  intro n
+  induction n with
+  | zero =>
+    intro h_mem
+    suffices e.symm ⟨0, h_mem⟩ = ⊥ by rwa [this]
+    suffices e ⊥ = ⟨0, h_mem⟩ by simp [← this]
+    simp [e]
+  | succ n hn =>
+    intro h_add_one_mem
+    have h_n_mem : n ∈ range_e := by
+      sorry
+    have h_eq : e.symm ⟨n + 1, h_add_one_mem⟩ = succ (e.symm ⟨n, h_n_mem⟩) := by
+      suffices ⟨n + 1, h_add_one_mem⟩ = e (succ (e.symm ⟨n, h_n_mem⟩)) by simp [this]
+      sorry
+    rw [h_eq]
+    exact hsucc (e.symm ⟨n, h_n_mem⟩) (hn h_n_mem)
 
 end OrderIso
 

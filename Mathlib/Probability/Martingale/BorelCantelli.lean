@@ -246,7 +246,8 @@ theorem adapted_process (hs : ∀ n, MeasurableSet[ℱ n] (s n)) : Adapted ℱ (
 theorem martingalePart_process_ae_eq (ℱ : Filtration ℕ m0) (μ : Measure Ω) (s : ℕ → Set Ω) (n : ℕ) :
     martingalePart (process s) ℱ μ n =
       ∑ k ∈ Finset.range n, ((s (k + 1)).indicator 1 - μ[(s (k + 1)).indicator 1|ℱ k]) := by
-  simp only [martingalePart_eq_sum, process_zero, zero_add]
+  simp only [martingalePart_eq_sum, Nat.bot_eq_zero, process_zero, Nat.Iio_eq_range,
+    Nat.succ_eq_succ, Nat.succ_eq_add_one, zero_add]
   refine Finset.sum_congr rfl fun k _ => ?_
   simp only [process, Finset.sum_range_succ_sub_sum]
 
@@ -292,7 +293,7 @@ theorem tendsto_sum_indicator_atTop_iff [IsFiniteMeasure μ]
   constructor <;> intro ht
   · refine tendsto_atTop_atTop_of_monotone' ?_ ?_
     · intro n m hnm
-      simp only [predictablePart, Finset.sum_apply]
+      simp only [predictablePart, Finset.sum_apply, Nat.Iio_eq_range]
       exact Finset.sum_mono_set_of_nonneg hω₃ (Finset.range_mono hnm)
     rintro ⟨b, hbdd⟩
     rw [← tendsto_neg_atBot_iff] at ht
