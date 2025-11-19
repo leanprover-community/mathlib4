@@ -3,8 +3,10 @@ Copyright (c) 2020 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou
 -/
-import Mathlib.Algebra.Notation.Support
-import Mathlib.Data.Set.Piecewise
+module
+
+public import Mathlib.Algebra.Notation.Support
+public import Mathlib.Data.Set.Piecewise
 
 /-!
 # Indicator function
@@ -33,6 +35,8 @@ arguments. This is in contrast with the design of `Pi.single` or `Set.piecewise`
 
 indicator, characteristic
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 

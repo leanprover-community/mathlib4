@@ -3,11 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz, Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
-import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
-import Mathlib.CategoryTheory.Limits.Types.Shapes
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Order.Fin.SuccAboveOrderIso
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Order.Fin.SuccAboveOrderIso
 
 /-!
 # The standard simplex
@@ -18,6 +18,8 @@ for their boundaries`∂Δ[n]` and horns `Λ[n, i]`.
 (The notations are available via `open Simplicial`.)
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -244,10 +246,8 @@ def faceRepresentableBy {n : ℕ} (S : Finset (Fin (n + 1)))
 corresponding isomorphism `Δ[m] ≅ X`. -/
 def isoOfRepresentableBy {X : SSet.{u}} {m : ℕ} (h : X.RepresentableBy ⦋m⦌) :
     Δ[m] ≅ X :=
-  NatIso.ofComponents (fun n ↦ Equiv.toIso (objEquiv.trans h.homEquiv)) (by
-    intros
-    ext
-    apply h.homEquiv_comp)
+  NatIso.ofComponents (fun n ↦ Equiv.toIso (objEquiv.trans h.homEquiv))
+    (fun _ ↦ by ext; apply h.homEquiv_comp)
 
 lemma ofSimplex_yonedaEquiv_δ {n : ℕ} (i : Fin (n + 2)) :
     Subcomplex.ofSimplex (yonedaEquiv (stdSimplex.δ i)) = face.{u} {i}ᶜ :=

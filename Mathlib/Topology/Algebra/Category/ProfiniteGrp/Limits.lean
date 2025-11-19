@@ -3,9 +3,11 @@ Copyright (c) 2024 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Youle Fang, Jujian Zhang, Yuyang Zhao
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
-import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
-import Mathlib.Topology.Algebra.ClopenNhdofOne
+module
+
+public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+public import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Basic
+public import Mathlib.Topology.Algebra.ClopenNhdofOne
 
 /-!
 # A profinite group is the projective limit of finite groups
@@ -30,6 +32,8 @@ its quotients by open normal subgroups.
   open normal subgroup contained in it.
 
 -/
+
+@[expose] public section
 
 universe u
 

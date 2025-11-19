@@ -3,7 +3,9 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.SuccPred.Basic
+module
+
+public import Mathlib.Order.SuccPred.Basic
 
 /-!
 # Archimedean successor and predecessor
@@ -13,6 +15,8 @@ import Mathlib.Order.SuccPred.Basic
 * `IsPredArchimedean`: `PredOrder` where `pred` iterated to an element gives all the smaller
   ones.
 -/
+
+@[expose] public section
 
 variable {α β : Type*}
 

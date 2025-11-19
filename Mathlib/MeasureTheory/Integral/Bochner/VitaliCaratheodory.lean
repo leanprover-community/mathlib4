@@ -3,10 +3,12 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Measure.Regular
-import Mathlib.Topology.Semicontinuous
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
-import Mathlib.Topology.Instances.EReal.Lemmas
+module
+
+public import Mathlib.MeasureTheory.Measure.Regular
+public import Mathlib.Topology.Semicontinuous
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.Topology.Instances.EReal.Lemmas
 
 /-!
 # Vitali-Carathéodory theorem
@@ -68,6 +70,8 @@ See result `MeasureTheory.Lp.boundedContinuousFunction_dense`, in the file
 [Rudin, *Real and Complex Analysis* (Theorem 2.24)][rudin2006real]
 
 -/
+
+@[expose] public section
 
 
 open scoped ENNReal NNReal

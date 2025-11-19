@@ -3,8 +3,10 @@ Copyright (c) 2022 George Peter Banyard, Yaël Dillies, Kyle Miller. All rights 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George Peter Banyard, Yaël Dillies, Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Paths
-import Mathlib.Combinatorics.SimpleGraph.Metric
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Paths
+public import Mathlib.Combinatorics.SimpleGraph.Metric
 
 /-!
 # Graph products
@@ -26,6 +28,8 @@ two edges is a square.
 
 Define all other graph products!
 -/
+
+@[expose] public section
 
 variable {α β γ : Type*}
 
@@ -143,9 +147,6 @@ theorem ofBoxProdRight_boxProdRight [DecidableEq α] [DecidableRel G.Adj] {a b�
       Walk.boxProdRight]
     · simp [ofBoxProdRight_boxProdRight]
     · exact ⟨h, rfl⟩
-
-@[deprecated (since := "2025-03-30")]
-alias ofBoxProdLeft_boxProdRight := ofBoxProdRight_boxProdRight
 
 lemma length_boxProd {a₁ a₂ : α} {b₁ b₂ : β} [DecidableEq α] [DecidableEq β]
     [DecidableRel G.Adj] [DecidableRel H.Adj] (w : (G □ H).Walk (a₁, b₁) (a₂, b₂)) :

@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Preserving binary products
@@ -15,6 +17,8 @@ to concrete binary fans.
 In particular, we show that `ProdComparison G X Y` is an isomorphism iff `G` preserves
 the product of `X` and `Y`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -63,6 +67,10 @@ morphisms of the binary product cone is a limit.
 def isLimitOfHasBinaryProductOfPreservesLimit [PreservesLimit (pair X Y) G] :
     IsLimit (BinaryFan.mk (G.map (Limits.prod.fst : X ⨯ Y ⟶ X)) (G.map Limits.prod.snd)) :=
   mapIsLimitOfPreservesOfIsLimit G _ _ (prodIsProd X Y)
+
+instance [PreservesLimit (pair X Y) G] :
+    HasBinaryProduct (G.obj X) (G.obj Y) :=
+  ⟨_, isLimitOfHasBinaryProductOfPreservesLimit G X Y⟩
 
 variable [HasBinaryProduct (G.obj X) (G.obj Y)]
 
