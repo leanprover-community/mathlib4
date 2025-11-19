@@ -396,6 +396,18 @@ lemma castLE_natCast {m n : ℕ} [NeZero m] (h : m ≤ n) (a : ℕ) :
 
 end OfNatCoe
 
+section hAdd
+
+/-- Add two Fin's of different ranges, growing the range appropriately. -/
+def hAdd (x : Fin n) (y : Fin m) : Fin (n+m-1) :=
+  ⟨x.val + y.val, Nat.lt_sub_of_add_lt (add_succ_lt_add x.2 y.2)⟩
+
+@[simp]
+theorem val_hAdd (x : Fin n) (y : Fin m) : (x.hAdd y).val = x.val + y.val :=
+  rfl
+
+end hAdd
+
 end Add
 
 section DivMod
