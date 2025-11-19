@@ -3,9 +3,10 @@ Copyright (c) 2025 Weijie Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weijie Jiang
 -/
+module
 
-import Mathlib.Combinatorics.Enumerative.Catalan
-import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.Combinatorics.Enumerative.Catalan
+public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
 # Schröder Numbers Power Series
@@ -25,6 +26,8 @@ This file defines lemmas and theorems about the power series for large and small
 * Prove the functional equation for the small Schröder numbers power series.
 
 -/
+
+@[expose] public section
 
 open Finset BigOperators
 
