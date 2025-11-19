@@ -3,8 +3,10 @@ Copyright (c) 2025 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.MonoidAlgebra.Defs
-import Mathlib.Data.Set.SMulAntidiagonal
+module
+
+public import Mathlib.Algebra.MonoidAlgebra.Defs
+public import Mathlib.Data.Set.SMulAntidiagonal
 
 /-!
 # Scalar multiplication by finitely supported functions.
@@ -20,6 +22,8 @@ space of 'V'-valued functions on `P`, when `V` is an `R`-module.
 * Finsupp.vaddAntidiagonal : The finset of pairs that vector-add to a given element.
 
 -/
+
+@[expose] public section
 
 open Finset Function
 

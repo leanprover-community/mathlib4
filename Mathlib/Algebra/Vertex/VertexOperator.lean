@@ -3,8 +3,10 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Vertex.HVertexOperator
-import Mathlib.RingTheory.LaurentSeries
+module
+
+public import Mathlib.Algebra.Vertex.HVertexOperator
+public import Mathlib.RingTheory.LaurentSeries
 
 /-!
 # Vertex operators
@@ -34,6 +36,8 @@ In this file we introduce vertex operators as linear maps to Laurent series.
   fields*][matsuo1997]
 * H. Li's paper on local systems?
 -/
+
+@[expose] public section
 
 noncomputable section
 

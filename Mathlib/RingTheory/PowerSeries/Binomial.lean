@@ -3,9 +3,10 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
---import Mathlib.RingTheory.PowerSeries.Evaluation
-import Mathlib.RingTheory.PowerSeries.WellKnown
-import Mathlib.RingTheory.Binomial
+module
+
+public import Mathlib.RingTheory.Binomial
+public import Mathlib.RingTheory.PowerSeries.WellKnown
 
 /-!
 # Binomial Power Series
@@ -32,10 +33,9 @@ commutative binomial ring `R`.
 
 -/
 
-open Finset Function
-open BigOperators Pointwise
+@[expose] public section
 
-suppress_compilation
+open Finset BigOperators
 
 variable {Γ R A : Type*}
 

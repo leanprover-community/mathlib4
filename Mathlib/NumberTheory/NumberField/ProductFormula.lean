@@ -3,8 +3,10 @@ Copyright (c) 2024 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
-import Mathlib.NumberTheory.NumberField.FinitePlaces
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
+module
+
+public import Mathlib.NumberTheory.NumberField.FinitePlaces
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 
 /-!
 # The Product Formula for number fields
@@ -28,6 +30,8 @@ ideal of `𝓞 K` raised to the power of the `v`-adic valuation of `x`.
 ## Tags
 number field, embeddings, places, infinite places, finite places, product formula
 -/
+
+@[expose] public section
 
 namespace NumberField
 

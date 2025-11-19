@@ -3,14 +3,18 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init
-import Lean.Elab.Tactic.Conv.Pattern
+module
+
+public import Mathlib.Init
+public meta import Lean.Elab.Tactic.Conv.Pattern
 
 /-!
 # `casesm`, `cases_type`, `constructorm` tactics
 
 These tactics implement repeated `cases` / `constructor` on anything satisfying a predicate.
 -/
+
+public meta section
 
 namespace Lean.MVarId
 

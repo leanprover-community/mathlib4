@@ -3,8 +3,10 @@ Copyright (c) 2023 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.Additive.ETransform
-import Mathlib.GroupTheory.Order.Min
+module
+
+public import Mathlib.Combinatorics.Additive.ETransform
+public import Mathlib.GroupTheory.Order.Min
 
 /-!
 # The Cauchy-Davenport theorem
@@ -48,6 +50,8 @@ Version for `circle`.
 
 additive combinatorics, number theory, sumset, cauchy-davenport
 -/
+
+@[expose] public section
 
 open Finset Function Monoid MulOpposite Subgroup
 open scoped Pointwise

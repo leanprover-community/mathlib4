@@ -3,8 +3,10 @@ Copyright (c) 2024 Judith Ludwig, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Christian Merten
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.LinearAlgebra.Pi
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.LinearAlgebra.Pi
 
 /-!
 
@@ -25,6 +27,8 @@ and it is packaged as `TensorProduct.piRight`. Also a special case for when `Máµ
 See `Mathlib/LinearAlgebra/TensorProduct/Prod.lean` for binary products.
 
 -/
+
+@[expose] public section
 
 variable (R : Type*) [CommSemiring R]
 variable (S : Type*) [CommSemiring S] [Algebra R S]

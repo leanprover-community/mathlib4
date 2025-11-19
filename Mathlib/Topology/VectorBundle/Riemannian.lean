@@ -3,9 +3,11 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.InnerProductSpace.LinearMap
-import Mathlib.Topology.VectorBundle.Constructions
-import Mathlib.Topology.VectorBundle.Hom
+module
+
+public import Mathlib.Analysis.InnerProductSpace.LinearMap
+public import Mathlib.Topology.VectorBundle.Constructions
+public import Mathlib.Topology.VectorBundle.Hom
 
 /-! # Riemannian vector bundles
 
@@ -35,6 +37,8 @@ to the `Bundle` namespace.
 ## Keywords
 Vector bundle, Riemannian metric
 -/
+
+@[expose] public section
 
 open Bundle ContinuousLinearMap Filter
 open scoped Topology
@@ -376,7 +380,7 @@ structure RiemannianMetric where
   continuousAt (b : B) : ContinuousAt (fun (v : E b) ↦ inner b v v) 0
   isVonNBounded (b : B) : IsVonNBounded ℝ {v : E b | inner b v v < 1}
 
-/-- `Core structure associated to a family of inner products on the fibers of a fiber bundle. This
+/-- `Core` structure associated to a family of inner products on the fibers of a fiber bundle. This
 is an auxiliary construction to endow the fibers with an inner product space structure without
 creating diamonds.
 

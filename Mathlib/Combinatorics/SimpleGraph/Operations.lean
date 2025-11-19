@@ -3,9 +3,11 @@ Copyright (c) 2023 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Combinatorics.SimpleGraph.Finite
-import Mathlib.Combinatorics.SimpleGraph.Maps
-import Mathlib.Combinatorics.SimpleGraph.Subgraph
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Finite
+public import Mathlib.Combinatorics.SimpleGraph.Maps
+public import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
 /-!
 # Local graph operations
@@ -21,6 +23,8 @@ we also prove theorems about the number of edges in the modified graphs.
 * `edge s t` is the graph with a single `s-t` edge. Adding this edge to a graph `G` is then
   `G ⊔ edge s t`.
 -/
+
+@[expose] public section
 
 
 open Finset

@@ -3,16 +3,18 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Scott Carnahan
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.GroupWithZero.Regular
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.Data.Finset.MulAntidiagonal
-import Mathlib.Data.Finset.SMulAntidiagonal
-import Mathlib.Data.Finsupp.PointwiseSMul
-import Mathlib.GroupTheory.GroupAction.Ring
-import Mathlib.RingTheory.HahnSeries.Addition
-import Mathlib.RingTheory.Nilpotent.Defs
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.GroupWithZero.Regular
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.Algebra.MonoidAlgebra.Basic
+public import Mathlib.Data.Finset.MulAntidiagonal
+public import Mathlib.Data.Finset.SMulAntidiagonal
+public import Mathlib.Data.Finsupp.PointwiseSMul
+public import Mathlib.GroupTheory.GroupAction.Ring
+public import Mathlib.RingTheory.HahnSeries.Addition
+public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # Multiplicative properties of Hahn series
@@ -47,6 +49,8 @@ The following may be useful for composing vertex operators, but they seem to tak
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
+
+@[expose] public section
 
 open Finset Function Pointwise
 

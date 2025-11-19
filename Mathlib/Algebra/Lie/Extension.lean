@@ -3,9 +3,11 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Exact
-import Mathlib.Algebra.Lie.Cochain
-import Mathlib.Algebra.Module.TransferInstance
+module
+
+public import Mathlib.Algebra.Exact
+public import Mathlib.Algebra.Lie.Cochain
+public import Mathlib.Algebra.Module.TransferInstance
 
 /-!
 # Extensions of Lie algebras
@@ -36,7 +38,7 @@ change of signs in the "action" part of the Lie bracket.
 
 -/
 
-suppress_compilation
+@[expose] public section
 
 namespace LieAlgebra
 
