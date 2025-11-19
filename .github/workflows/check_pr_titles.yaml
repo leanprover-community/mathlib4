@@ -69,7 +69,7 @@ jobs:
               echo "errors<<EOF"
               echo "$output"
               echo "EOF"
-            } tee -a "$GITHUB_OUTPUT"
+            } | tee -a "$GITHUB_OUTPUT"
             exit "$exit_code"
           fi
 
