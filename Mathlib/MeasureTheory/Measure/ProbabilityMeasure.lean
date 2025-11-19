@@ -3,9 +3,11 @@ Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Measure.FiniteMeasure
-import Mathlib.MeasureTheory.Integral.Average
-import Mathlib.MeasureTheory.Measure.Prod
+module
+
+public import Mathlib.MeasureTheory.Measure.FiniteMeasure
+public import Mathlib.MeasureTheory.Integral.Average
+public import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Probability measures
@@ -71,6 +73,8 @@ composition `ENNReal.toNNReal` and the coercion to function of `MeasureTheory.Me
 convergence in distribution, convergence in law, weak convergence of measures, probability measure
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -309,7 +313,7 @@ theorem toFiniteMeasure_isEmbedding (Ω : Type*) [MeasurableSpace Ω] [Topologic
     [OpensMeasurableSpace Ω] :
     IsEmbedding (toFiniteMeasure : ProbabilityMeasure Ω → FiniteMeasure Ω) where
   eq_induced := rfl
-  injective _μ _ν h := Subtype.eq <| congr_arg FiniteMeasure.toMeasure h
+  injective _μ _ν h := Subtype.ext <| congr_arg FiniteMeasure.toMeasure h
 
 theorem tendsto_nhds_iff_toFiniteMeasure_tendsto_nhds {δ : Type*} (F : Filter δ)
     {μs : δ → ProbabilityMeasure Ω} {μ₀ : ProbabilityMeasure Ω} :

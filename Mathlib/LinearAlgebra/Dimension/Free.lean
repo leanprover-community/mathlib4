@@ -3,10 +3,12 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.RingTheory.AlgebraTower
-import Mathlib.SetTheory.Cardinal.Finsupp
+module
+
+public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.RingTheory.AlgebraTower
+public import Mathlib.SetTheory.Cardinal.Finsupp
 
 /-!
 # Rank of free modules
@@ -18,6 +20,8 @@ import Mathlib.SetTheory.Cardinal.Finsupp
   An arbitrary basis of a finite free module indexed by `Fin n` given `finrank R M = n`.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

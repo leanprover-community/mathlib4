@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
-import Mathlib.Algebra.Homology.HomotopyCategory.Shift
-import Mathlib.Algebra.Module.Equiv.Basic
+module
+
+public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
+public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
+public import Mathlib.Algebra.Module.Equiv.Basic
 
 /-! Shifting cochains
 
@@ -27,6 +29,8 @@ appearing in the introduction of
 * [Brian Conrad, Grothendieck duality and base change][conrad2000]
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 

@@ -3,11 +3,13 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
-import Mathlib.RingTheory.KrullDimension.Basic
-import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
-import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.RingTheory.Spectrum.Prime.RingHom
+module
+
+public import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
+public import Mathlib.RingTheory.KrullDimension.Basic
+public import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
+public import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.RingTheory.Spectrum.Prime.RingHom
 
 /-!
 
@@ -19,6 +21,8 @@ import Mathlib.RingTheory.Spectrum.Prime.RingHom
 - `ringKrullDim_succ_le_ringKrullDim_polynomial`: `dim R + 1 ≤ dim R[X]`.
 - `ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial`: `dim R + #σ ≤ dim R[σ]`.
 -/
+
+@[expose] public section
 
 open scoped nonZeroDivisors
 
