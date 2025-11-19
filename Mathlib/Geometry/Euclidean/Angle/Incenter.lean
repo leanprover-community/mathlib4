@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Angle.Bisector
-import Mathlib.Geometry.Euclidean.Incenter
+module
+
+public import Mathlib.Geometry.Euclidean.Angle.Bisector
+public import Mathlib.Geometry.Euclidean.Incenter
 
 /-!
 # Angles and incenters and excenters.
@@ -12,6 +14,8 @@ import Mathlib.Geometry.Euclidean.Incenter
 This file proves lemmas relating incenters and excenters of a simplex to angle bisection.
 
 -/
+
+@[expose] public section
 
 
 open EuclideanGeometry Module
