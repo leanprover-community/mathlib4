@@ -3,12 +3,13 @@ Copyright (c) 2018 Ellen Arlt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu-Ming Zhang
 -/
+module
 
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Regular.Basic
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.Matrix.Diagonal
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Regular.Basic
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Data.Matrix.Diagonal
 
 /-!
 # Matrix multiplication
@@ -47,6 +48,8 @@ as having the right type. Instead, `Matrix.of` should be used.
 Under various conditions, multiplication of infinite matrices makes sense.
 These have not yet been implemented.
 -/
+
+@[expose] public section
 
 assert_not_exists Algebra Field TrivialStar
 
@@ -912,7 +915,25 @@ lemma ext_of_single_vecMul [DecidableEq m] [Fintype m] {M N : Matrix m n α}
   simp_rw [single_one_vecMul] at h
   exact congrFun (h i) j
 
-variable [Fintype m] [Fintype n] [DecidableEq m]
+theorem mulVec_injective [Fintype n] : (mulVec : Matrix m n α → _).Injective := by
+  intro A B h
+  ext i j
+  classical
+  simpa using congrFun₂ h (Pi.single j 1) i
+
+theorem ext_iff_mulVec [Fintype n] {A B : Matrix m n α} : A = B ↔ ∀ v, A *ᵥ v = B *ᵥ v :=
+  mulVec_injective.eq_iff.symm.trans funext_iff
+
+theorem vecMul_injective [Fintype m] : (·.vecMul : Matrix m n α → _).Injective := by
+  intro A B h
+  ext i j
+  classical
+  simpa using congrFun₂ h (Pi.single i 1) j
+
+theorem ext_iff_vecMul [Fintype m] {A B : Matrix m n α} : A = B ↔ ∀ v, v ᵥ* A = v ᵥ* B :=
+  vecMul_injective.eq_iff.symm.trans funext_iff
+
+variable [Fintype m] [DecidableEq m]
 
 @[simp]
 theorem one_mulVec (v : m → α) : 1 *ᵥ v = v := by

@@ -3,17 +3,21 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Control.Basic
-import Mathlib.Data.Option.Basic
-import Mathlib.Data.List.Defs
-import Mathlib.Data.List.Monad
-import Mathlib.Logic.OpClass
-import Mathlib.Logic.Unique
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Control.Basic
+public import Mathlib.Data.Option.Basic
+public import Mathlib.Data.List.Defs
+public import Mathlib.Data.List.Monad
+public import Mathlib.Logic.OpClass
+public import Mathlib.Logic.Unique
+public import Mathlib.Tactic.Common
 
 /-!
 # Basic properties of lists
 -/
+
+@[expose] public section
 
 assert_not_exists Lattice
 assert_not_exists Monoid
@@ -441,9 +445,17 @@ theorem exists_mem_iff_getElem {l : List α} {p : α → Prop} :
   simp only [mem_iff_getElem]
   exact ⟨fun ⟨_x, ⟨i, hi, hix⟩, hxp⟩ ↦ ⟨i, hi, hix ▸ hxp⟩, fun ⟨i, hi, hp⟩ ↦ ⟨_, ⟨i, hi, rfl⟩, hp⟩⟩
 
+theorem exists_mem_iff_get {l : List α} {p : α → Prop} :
+    (∃ x ∈ l, p x) ↔ ∃ (i : Fin l.length), p (l.get i) :=
+  exists_mem_iff_getElem.trans ⟨fun ⟨i, hi, h⟩ ↦ ⟨⟨i, hi⟩, h⟩, fun ⟨i, h⟩ ↦ ⟨i, i.isLt, h⟩⟩
+
 theorem forall_mem_iff_getElem {l : List α} {p : α → Prop} :
     (∀ x ∈ l, p x) ↔ ∀ (i : ℕ) (_ : i < l.length), p l[i] := by
   simp [mem_iff_getElem, @forall_swap α]
+
+theorem forall_mem_iff_get {l : List α} {p : α → Prop} :
+    (∀ x ∈ l, p x) ↔ ∀ (i : Fin l.length), p (l.get i) :=
+  forall_mem_iff_getElem.trans ⟨fun h i ↦ h i i.isLt, fun h i hi ↦ h ⟨i, hi⟩⟩
 
 @[simp]
 theorem get_surjective_iff {l : List α} : l.get.Surjective ↔ (∀ x, x ∈ l) :=

@@ -3,9 +3,11 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.DirectSum.Algebra
-import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.Data.Finsupp.ToDFinsupp
+module
+
+public import Mathlib.Algebra.DirectSum.Algebra
+public import Mathlib.Algebra.MonoidAlgebra.Basic
+public import Mathlib.Data.Finsupp.ToDFinsupp
 
 /-!
 # Conversion between `AddMonoidAlgebra` and homogeneous `DirectSum`
@@ -53,6 +55,8 @@ proofs. Recall that `AddMonoidAlgebra M ι` is defeq to `ι →₀ M` and `⨁ i
 Note that there is no `AddMonoidAlgebra` equivalent to `Finsupp.single`, so many statements
 still involve this definition.
 -/
+
+@[expose] public section
 
 
 variable {ι : Type*} {R : Type*} {M : Type*} {A : Type*}
