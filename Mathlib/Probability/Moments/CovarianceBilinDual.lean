@@ -3,10 +3,12 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.LocallyConvex.ContinuousOfBounded
-import Mathlib.LinearAlgebra.BilinearForm.Properties
-import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
-import Mathlib.Probability.Moments.Variance
+module
+
+public import Mathlib.Analysis.LocallyConvex.ContinuousOfBounded
+public import Mathlib.LinearAlgebra.BilinearForm.Properties
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
+public import Mathlib.Probability.Moments.Variance
 
 /-!
 # Covariance in Banach spaces
@@ -36,6 +38,8 @@ Let `μ` be a finite measure on a normed space `E` with the Borel σ-algebra. We
 The hypothesis that `μ` has a second moment is written as `MemLp id 2 μ` in the code.
 
 -/
+
+@[expose] public section
 
 
 open MeasureTheory ProbabilityTheory Complex NormedSpace

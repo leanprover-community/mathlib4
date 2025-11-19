@@ -3,9 +3,11 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Star.Subalgebra
-import Mathlib.Topology.Algebra.Algebra
-import Mathlib.Topology.Algebra.Star
+module
+
+public import Mathlib.Algebra.Star.Subalgebra
+public import Mathlib.Topology.Algebra.Algebra
+public import Mathlib.Topology.Algebra.Star
 
 /-!
 # Topological star (sub)algebras
@@ -21,6 +23,8 @@ This is just a minimal stub for now!
 The topological closure of a star subalgebra is still a star subalgebra,
 which as a star algebra is a topological star algebra.
 -/
+
+@[expose] public section
 
 open Topology
 namespace StarSubalgebra

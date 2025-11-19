@@ -3,10 +3,12 @@ Copyright (c) 2022 Vincent Beffara. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Beffara
 -/
-import Mathlib.Analysis.Analytic.IsolatedZeros
-import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Analysis.Complex.AbsMax
-import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
+module
+
+public import Mathlib.Analysis.Analytic.IsolatedZeros
+public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.Analysis.Complex.AbsMax
+public import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
 /-!
 # The open mapping theorem for holomorphic functions
@@ -29,6 +31,8 @@ That second step is implemented in `DiffContOnCl.ball_subset_image_closedBall`.
   theorem around a point;
 * `AnalyticOnNhd.is_constant_or_isOpen` is the open mapping theorem on a connected open set.
 -/
+
+@[expose] public section
 
 
 open Set Filter Metric Complex
