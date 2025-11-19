@@ -32,12 +32,91 @@ section IsUniformGroup
 
 open Filter Set
 
-variable {α : Type*} {β : Type*}
+variable {α αᵣ αₗ α' : Type*} {β : Type*}
 
 variable [UniformSpace α] [Group α] [IsUniformGroup α]
+variable [UniformSpace αᵣ] [Group αᵣ] [IsRightUniformGroup αᵣ]
+variable [UniformSpace αₗ] [Group αₗ] [IsLeftUniformGroup αₗ]
+variable [UniformSpace α'] [Group α'] [IsLeftOrRightUniformGroup α']
 
 @[to_additive]
-theorem isUniformEmbedding_translate_mul (a : α) : IsUniformEmbedding fun x : α => x * a :=
+lemma IsUniformInducing.isRightUniformGroup {γ : Type*} [Group γ] [UniformSpace γ]
+    [IsRightUniformGroup γ] [Group β] [UniformSpace β] {F : Type*} [FunLike F β γ]
+    [MonoidHomClass F β γ] (f : F) (hf : IsUniformInducing f) :
+    IsRightUniformGroup β where
+  toIsTopologicalGroup := hf.isInducing.topologicalGroup
+  uniformity_eq := by
+    simp_rw [← hf.comap_uniformity, hf.isInducing.nhds_eq_comap,
+      uniformity_eq_comap_mul_inv_nhds_one, comap_comap,
+      Function.comp_def, ← map_inv, ← map_mul, map_one]
+
+@[to_additive]
+lemma IsUniformInducing.isLeftUniformGroup {γ : Type*} [Group γ] [UniformSpace γ]
+    [IsLeftUniformGroup γ] [Group β] [UniformSpace β] {F : Type*} [FunLike F β γ]
+    [MonoidHomClass F β γ] (f : F) (hf : IsUniformInducing f) :
+    IsLeftUniformGroup β where
+  toIsTopologicalGroup := hf.isInducing.topologicalGroup
+  uniformity_eq := by
+    simp_rw [← hf.comap_uniformity, hf.isInducing.nhds_eq_comap,
+      uniformity_eq_comap_inv_mul_nhds_one, comap_comap,
+      Function.comp_def, ← map_inv, ← map_mul, map_one]
+
+@[to_additive]
+lemma IsUniformInducing.isUniformGroup {γ : Type*} [Group γ] [UniformSpace γ]
+    [IsUniformGroup γ] [Group β] [UniformSpace β] {F : Type*} [FunLike F β γ]
+    [MonoidHomClass F β γ] (f : F) (hf : IsUniformInducing f) :
+    IsUniformGroup β where
+  uniformContinuous_div := by
+    simp_rw [hf.uniformContinuous_iff, Function.comp_def, map_div]
+    exact uniformContinuous_div.comp (hf.uniformContinuous.prodMap hf.uniformContinuous)
+
+@[to_additive]
+lemma IsUniformInducing.isLeftOrRightUniformGroup {γ : Type*} [Group γ] [UniformSpace γ]
+    [IsLeftOrRightUniformGroup γ] [Group β] [UniformSpace β] {F : Type*} [FunLike F β γ]
+    [MonoidHomClass F β γ] (f : F) (hf : IsUniformInducing f) :
+    IsLeftOrRightUniformGroup β := by
+  rcases ‹IsLeftOrRightUniformGroup γ›
+  · exact @IsLeftOrRightUniformGroup.right _ _ _ (hf.isRightUniformGroup _)
+  · exact @IsLeftOrRightUniformGroup.left _ _ _ (hf.isLeftUniformGroup _)
+
+@[to_additive]
+lemma IsRightUniformGroup.comap {γ : Type*} [Group γ] {u : UniformSpace γ}
+    [IsRightUniformGroup γ] [Group β] {F : Type*} [FunLike F β γ] [MonoidHomClass F β γ] (f : F) :
+    @IsRightUniformGroup β (.comap f u) _ :=
+  letI : UniformSpace β := u.comap f; IsUniformInducing.isRightUniformGroup f ⟨rfl⟩
+
+@[to_additive]
+lemma IsLeftUniformGroup.comap {γ : Type*} [Group γ] {u : UniformSpace γ}
+    [IsLeftUniformGroup γ] [Group β] {F : Type*} [FunLike F β γ] [MonoidHomClass F β γ] (f : F) :
+    @IsLeftUniformGroup β (.comap f u) _ :=
+  letI : UniformSpace β := u.comap f; IsUniformInducing.isLeftUniformGroup f ⟨rfl⟩
+
+@[to_additive]
+lemma IsUniformGroup.comap {γ : Type*} [Group γ] {u : UniformSpace γ}
+    [IsUniformGroup γ] [Group β] {F : Type*} [FunLike F β γ] [MonoidHomClass F β γ] (f : F) :
+    @IsUniformGroup β (.comap f u) _ :=
+  letI : UniformSpace β := u.comap f; IsUniformInducing.isUniformGroup f ⟨rfl⟩
+
+@[to_additive]
+lemma IsLeftOrRightUniformGroup.comap {γ : Type*} [Group γ] {u : UniformSpace γ}
+    [IsLeftOrRightUniformGroup γ] [Group β] {F : Type*} [FunLike F β γ] [MonoidHomClass F β γ]
+    (f : F) : @IsLeftOrRightUniformGroup β (.comap f u) _ :=
+  letI : UniformSpace β := u.comap f; IsUniformInducing.isLeftOrRightUniformGroup f ⟨rfl⟩
+
+@[to_additive]
+instance Pi.instIsRightUniformGroup {ι : Type*} {G : ι → Type*} [∀ i, UniformSpace (G i)]
+    [∀ i, Group (G i)] [∀ i, IsRightUniformGroup (G i)] : IsRightUniformGroup (∀ i, G i) := by
+  rw [Pi.uniformSpace_eq]
+  exact isRightUniformGroup_iInf fun i ↦ .comap (Pi.evalMonoidHom G i)
+
+@[to_additive]
+instance Pi.instIsLeftUniformGroup {ι : Type*} {G : ι → Type*} [∀ i, UniformSpace (G i)]
+    [∀ i, Group (G i)] [∀ i, IsLeftUniformGroup (G i)] : IsLeftUniformGroup (∀ i, G i) := by
+  rw [Pi.uniformSpace_eq]
+  exact isLeftUniformGroup_iInf fun i ↦ .comap (Pi.evalMonoidHom G i)
+
+@[to_additive]
+theorem isUniformEmbedding_translate_mul (a : α') : IsUniformEmbedding fun x : α' => x * a :=
   { comap_uniformity := by
       nth_rw 1 [← uniformity_translate_mul a, comap_map]
       rintro ⟨p₁, p₂⟩ ⟨q₁, q₂⟩
@@ -48,25 +127,67 @@ section Cauchy
 
 namespace IsUniformGroup
 
-variable {ι G : Type*} [Group G] [UniformSpace G] [IsUniformGroup G]
+variable {ι Gᵣ Gₗ : Type*}
+variable [Group Gᵣ] [UniformSpace Gᵣ] [IsRightUniformGroup Gᵣ]
+variable [Group Gₗ] [UniformSpace Gₗ] [IsLeftUniformGroup Gₗ]
 
 @[to_additive]
-lemma cauchy_iff_tendsto (𝓕 : Filter G) :
+lemma cauchy_iff_mul_inv_tendsto (𝓕 : Filter Gᵣ) :
+    Cauchy 𝓕 ↔ NeBot 𝓕 ∧ Tendsto (fun p ↦ p.1 * p.2⁻¹) (𝓕 ×ˢ 𝓕) (𝓝 1) := by
+  simp [Cauchy, uniformity_eq_comap_mul_inv_nhds_one_swapped, ← tendsto_iff_comap]
+
+@[to_additive]
+lemma cauchy_iff_inv_mul_tendsto (𝓕 : Filter Gₗ) :
+    Cauchy 𝓕 ↔ NeBot 𝓕 ∧ Tendsto (fun p ↦ p.2⁻¹ * p.1) (𝓕 ×ˢ 𝓕) (𝓝 1) := by
+  simp [Cauchy, uniformity_eq_comap_inv_mul_nhds_one_swapped, ← tendsto_iff_comap]
+
+@[to_additive]
+lemma cauchy_iff_tendsto (𝓕 : Filter Gᵣ) :
     Cauchy 𝓕 ↔ NeBot 𝓕 ∧ Tendsto (fun p ↦ p.1 / p.2) (𝓕 ×ˢ 𝓕) (𝓝 1) := by
   simp [Cauchy, uniformity_eq_comap_nhds_one_swapped, ← tendsto_iff_comap]
 
 @[to_additive]
-lemma cauchy_iff_tendsto_swapped (𝓕 : Filter G) :
+lemma cauchy_iff_mul_inv_tendsto_swapped (𝓕 : Filter Gᵣ) :
+    Cauchy 𝓕 ↔ NeBot 𝓕 ∧ Tendsto (fun p ↦ p.2 * p.1⁻¹) (𝓕 ×ˢ 𝓕) (𝓝 1) := by
+  simp [Cauchy, uniformity_eq_comap_mul_inv_nhds_one, ← tendsto_iff_comap]
+
+@[to_additive]
+lemma cauchy_iff_inv_mul_tendsto_swapped (𝓕 : Filter Gₗ) :
+    Cauchy 𝓕 ↔ NeBot 𝓕 ∧ Tendsto (fun p ↦ p.1⁻¹ * p.2) (𝓕 ×ˢ 𝓕) (𝓝 1) := by
+  simp [Cauchy, uniformity_eq_comap_inv_mul_nhds_one, ← tendsto_iff_comap]
+
+@[to_additive]
+lemma cauchy_iff_tendsto_swapped (𝓕 : Filter Gᵣ) :
     Cauchy 𝓕 ↔ NeBot 𝓕 ∧ Tendsto (fun p ↦ p.2 / p.1) (𝓕 ×ˢ 𝓕) (𝓝 1) := by
   simp [Cauchy, uniformity_eq_comap_nhds_one, ← tendsto_iff_comap]
 
 @[to_additive]
-lemma cauchy_map_iff_tendsto (𝓕 : Filter ι) (f : ι → G) :
+lemma cauchy_map_iff_mul_inv_tendsto (𝓕 : Filter ι) (f : ι → Gᵣ) :
+    Cauchy (map f 𝓕) ↔ NeBot 𝓕 ∧ Tendsto (fun p ↦ f p.1 * (f p.2)⁻¹) (𝓕 ×ˢ 𝓕) (𝓝 1) := by
+  simp [cauchy_map_iff, uniformity_eq_comap_mul_inv_nhds_one_swapped, Function.comp_def]
+
+@[to_additive]
+lemma cauchy_map_iff_inv_mul_tendsto (𝓕 : Filter ι) (f : ι → Gₗ) :
+    Cauchy (map f 𝓕) ↔ NeBot 𝓕 ∧ Tendsto (fun p ↦ (f p.2)⁻¹ * f p.1) (𝓕 ×ˢ 𝓕) (𝓝 1) := by
+  simp [cauchy_map_iff, uniformity_eq_comap_inv_mul_nhds_one_swapped, Function.comp_def]
+
+@[to_additive]
+lemma cauchy_map_iff_tendsto (𝓕 : Filter ι) (f : ι → Gᵣ) :
     Cauchy (map f 𝓕) ↔ NeBot 𝓕 ∧ Tendsto (fun p ↦ f p.1 / f p.2) (𝓕 ×ˢ 𝓕) (𝓝 1) := by
   simp [cauchy_map_iff, uniformity_eq_comap_nhds_one_swapped, Function.comp_def]
 
 @[to_additive]
-lemma cauchy_map_iff_tendsto_swapped (𝓕 : Filter ι) (f : ι → G) :
+lemma cauchy_map_iff_mul_inv_tendsto_swapped (𝓕 : Filter ι) (f : ι → Gᵣ) :
+    Cauchy (map f 𝓕) ↔ NeBot 𝓕 ∧ Tendsto (fun p ↦ f p.2 * (f p.1)⁻¹) (𝓕 ×ˢ 𝓕) (𝓝 1) := by
+  simp [cauchy_map_iff, uniformity_eq_comap_mul_inv_nhds_one, Function.comp_def]
+
+@[to_additive]
+lemma cauchy_map_iff_inv_mul_tendsto_swapped (𝓕 : Filter ι) (f : ι → Gₗ) :
+    Cauchy (map f 𝓕) ↔ NeBot 𝓕 ∧ Tendsto (fun p ↦ (f p.1)⁻¹ * f p.2) (𝓕 ×ˢ 𝓕) (𝓝 1) := by
+  simp [cauchy_map_iff, uniformity_eq_comap_inv_mul_nhds_one, Function.comp_def]
+
+@[to_additive]
+lemma cauchy_map_iff_tendsto_swapped (𝓕 : Filter ι) (f : ι → Gᵣ) :
     Cauchy (map f 𝓕) ↔ NeBot 𝓕 ∧ Tendsto (fun p ↦ f p.2 / f p.1) (𝓕 ×ˢ 𝓕) (𝓝 1) := by
   simp [cauchy_map_iff, uniformity_eq_comap_nhds_one, Function.comp_def]
 
@@ -74,10 +195,31 @@ end IsUniformGroup
 
 end Cauchy
 
+section LatticeOps
+
+variable [Group β]
+
+@[deprecated (since := "2025-03-30")]
+alias IsUniformInducing.uniformAddGroup := IsUniformInducing.isUniformAddGroup
+@[to_additive existing, deprecated (since := "2025-03-30")]
+alias IsUniformInducing.uniformGroup := IsUniformInducing.isUniformGroup
+
+end LatticeOps
+
 namespace Subgroup
 
 @[to_additive]
+instance isRightUniformGroup (S : Subgroup αᵣ) : IsRightUniformGroup S := .comap S.subtype
+
+@[to_additive]
+instance isLeftUniformGroup (S : Subgroup αₗ) : IsLeftUniformGroup S := .comap S.subtype
+
+@[to_additive]
 instance isUniformGroup (S : Subgroup α) : IsUniformGroup S := .comap S.subtype
+
+@[to_additive]
+instance isLeftOrRightUniformGroup (S : Subgroup α') : IsLeftOrRightUniformGroup S :=
+  .comap S.subtype
 
 end Subgroup
 
@@ -87,14 +229,14 @@ theorem CauchySeq.mul {ι : Type*} [Preorder ι] {u v : ι → α} (hu : CauchyS
   uniformContinuous_mul.comp_cauchySeq (hu.prodMk hv)
 
 @[to_additive]
-theorem CauchySeq.mul_const {ι : Type*} [Preorder ι] {u : ι → α} {x : α} (hu : CauchySeq u) :
+theorem CauchySeq.mul_const {ι : Type*} [Preorder ι] {u : ι → α'} {x : α'} (hu : CauchySeq u) :
     CauchySeq fun n => u n * x :=
-  (uniformContinuous_id.mul uniformContinuous_const).comp_cauchySeq hu
+  (uniformContinuous_id.mul_const _).comp_cauchySeq hu
 
 @[to_additive]
-theorem CauchySeq.const_mul {ι : Type*} [Preorder ι] {u : ι → α} {x : α} (hu : CauchySeq u) :
+theorem CauchySeq.const_mul {ι : Type*} [Preorder ι] {u : ι → α'} {x : α'} (hu : CauchySeq u) :
     CauchySeq fun n => x * u n :=
-  (uniformContinuous_const.mul uniformContinuous_id).comp_cauchySeq hu
+  (uniformContinuous_id.const_mul _).comp_cauchySeq hu
 
 @[to_additive]
 theorem CauchySeq.inv {ι : Type*} [Preorder ι] {u : ι → α} (h : CauchySeq u) :
@@ -102,9 +244,9 @@ theorem CauchySeq.inv {ι : Type*} [Preorder ι] {u : ι → α} (h : CauchySeq 
   uniformContinuous_inv.comp_cauchySeq h
 
 @[to_additive]
-theorem totallyBounded_iff_subset_finite_iUnion_nhds_one {s : Set α} :
-    TotallyBounded s ↔ ∀ U ∈ 𝓝 (1 : α), ∃ t : Set α, t.Finite ∧ s ⊆ ⋃ y ∈ t, y • U :=
-  (𝓝 (1 : α)).basis_sets.uniformity_of_nhds_one_inv_mul_swapped.totallyBounded_iff.trans <| by
+theorem totallyBounded_iff_subset_finite_iUnion_nhds_one {s : Set αₗ} :
+    TotallyBounded s ↔ ∀ U ∈ 𝓝 (1 : αₗ), ∃ t : Set αₗ, t.Finite ∧ s ⊆ ⋃ y ∈ t, y • U :=
+  (𝓝 (1 : αₗ)).basis_sets.uniformity_of_nhds_one_inv_mul_swapped.totallyBounded_iff.trans <| by
     simp [← preimage_smul_inv, preimage]
 
 @[to_additive]
@@ -183,26 +325,19 @@ theorem topologicalGroup_is_uniform_of_compactSpace [CompactSpace G] : IsUniform
 variable {G}
 
 @[to_additive]
-instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTopology H] :
+instance Subgroup.isClosed_of_discrete [T0Space G] {H : Subgroup G} [DiscreteTopology H] :
     IsClosed (H : Set G) := by
-  obtain ⟨V, V_in, VH⟩ : ∃ (V : Set G), V ∈ 𝓝 (1 : G) ∧ V ∩ (H : Set G) = {1} :=
-    nhds_inter_eq_singleton_of_mem_discrete H.one_mem
-  have : (fun p : G × G => p.2 / p.1) ⁻¹' V ∈ 𝓤 G := preimage_mem_comap V_in
-  apply isClosed_of_spaced_out this
-  intro h h_in h' h'_in
-  contrapose!
-  simp only [Set.mem_preimage]
-  rintro (hyp : h' / h ∈ V)
-  have : h' / h ∈ ({1} : Set G) := VH ▸ Set.mem_inter hyp (H.div_mem h'_in h_in)
-  exact (eq_of_div_eq_one this).symm
+  refine IsComplete.isClosed <| completeSpace_coe_iff_isComplete.mp ?_
+  suffices DiscreteUniformity H from inferInstance
+  infer_instance
 
 @[to_additive]
-lemma Subgroup.tendsto_coe_cofinite_of_discrete [T2Space G] (H : Subgroup G) [DiscreteTopology H] :
+lemma Subgroup.tendsto_coe_cofinite_of_discrete [T0Space G] (H : Subgroup G) [DiscreteTopology H] :
     Tendsto ((↑) : H → G) cofinite (cocompact _) :=
   IsClosed.tendsto_coe_cofinite_of_discreteTopology inferInstance inferInstance
 
 @[to_additive]
-lemma MonoidHom.tendsto_coe_cofinite_of_discrete [T2Space G] {H : Type*} [Group H] {f : H →* G}
+lemma MonoidHom.tendsto_coe_cofinite_of_discrete [T0Space G] {H : Type*} [Group H] {f : H →* G}
     (hf : Function.Injective f) (hf' : DiscreteTopology f.range) :
     Tendsto f cofinite (cocompact _) := by
   replace hf : Function.Injective f.rangeRestrict := by simpa
@@ -210,9 +345,27 @@ lemma MonoidHom.tendsto_coe_cofinite_of_discrete [T2Space G] {H : Type*} [Group 
 
 end IsTopologicalGroup
 
-namespace IsTopologicalGroup
+namespace IsUniformGroup
 
-variable {ι α G : Type*} [Group G] [u : UniformSpace G] [IsTopologicalGroup G]
+variable {ι α Gᵣ Gₗ : Type*}
+variable [Group Gᵣ] [UniformSpace Gᵣ] [IsRightUniformGroup Gᵣ]
+variable [Group Gₗ] [UniformSpace Gₗ] [IsLeftUniformGroup Gₗ]
+
+@[to_additive]
+theorem tendstoUniformlyOnFilter_iff_mul_inv (F : ι → α → Gᵣ) (f : α → Gᵣ) (p : Filter ι)
+    (p' : Filter α) :
+    TendstoUniformlyOnFilter F f p p' ↔
+      ∀ u ∈ 𝓝 1, ∀ᶠ ia in p ×ˢ p', F ia.1 ia.2 * (f ia.2)⁻¹ ∈ u := by
+  rw [(basis_sets (𝓝 1)).uniformity_of_nhds_one_mul_inv.tendstoUniformlyOnFilter_iff_of_uniformity]
+  rfl
+
+@[to_additive]
+theorem tendstoUniformlyOnFilter_iff_inv_mul (F : ι → α → Gₗ) (f : α → Gₗ) (p : Filter ι)
+    (p' : Filter α) :
+    TendstoUniformlyOnFilter F f p p' ↔
+      ∀ u ∈ 𝓝 1, ∀ᶠ ia in p ×ˢ p', (f ia.2)⁻¹ * F ia.1 ia.2 ∈ u := by
+  rw [(basis_sets (𝓝 1)).uniformity_of_nhds_one_inv_mul.tendstoUniformlyOnFilter_iff_of_uniformity]
+  rfl
 
 @[to_additive]
 theorem tendstoUniformly_iff (F : ι → α → G) (f : α → G) (p : Filter ι)
@@ -228,6 +381,52 @@ theorem tendstoUniformlyOn_iff (F : ι → α → G) (f : α → G) (p : Filter 
   hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩,
     fun h _ ⟨u, hu, hv⟩ => mem_of_superset (h u hu) fun _ hi a ha => hv (hi a ha)⟩
 
+@[to_additive]
+theorem tendstoUniformlyOnFilter_iff (F : ι → α → Gᵣ) (f : α → Gᵣ) (p : Filter ι)
+    (p' : Filter α) :
+    TendstoUniformlyOnFilter F f p p' ↔
+      ∀ u ∈ 𝓝 1, ∀ᶠ ia in p ×ˢ p', F ia.1 ia.2 / f ia.2 ∈ u := by
+  rw [(basis_sets (𝓝 1)).uniformity_of_nhds_one.tendstoUniformlyOnFilter_iff_of_uniformity]
+  rfl
+
+@[to_additive]
+theorem tendstoUniformly_iff_mul_inv (F : ι → α → Gᵣ) (f : α → Gᵣ) (p : Filter ι) :
+    TendstoUniformly F f p ↔ ∀ u ∈ 𝓝 1, ∀ᶠ i in p, ∀ a, F i a * (f a)⁻¹ ∈ u := by
+  rw [(basis_sets (𝓝 1)).uniformity_of_nhds_one_mul_inv.tendstoUniformly_iff_of_uniformity]
+  rfl
+
+@[to_additive]
+theorem tendstoUniformly_iff_inv_mul (F : ι → α → Gₗ) (f : α → Gₗ) (p : Filter ι) :
+    TendstoUniformly F f p ↔ ∀ u ∈ 𝓝 1, ∀ᶠ i in p, ∀ a, (f a)⁻¹ * F i a ∈ u := by
+  rw [(basis_sets (𝓝 1)).uniformity_of_nhds_one_inv_mul.tendstoUniformly_iff_of_uniformity]
+  rfl
+
+@[to_additive]
+theorem tendstoUniformly_iff (F : ι → α → Gᵣ) (f : α → Gᵣ) (p : Filter ι) :
+    TendstoUniformly F f p ↔ ∀ u ∈ 𝓝 (1 : Gᵣ), ∀ᶠ i in p, ∀ a, F i a / f a ∈ u := by
+  rw [(basis_sets (𝓝 1)).uniformity_of_nhds_one.tendstoUniformly_iff_of_uniformity]
+  rfl
+
+@[to_additive]
+theorem tendstoUniformlyOn_iff_mul_inv (F : ι → α → Gᵣ) (f : α → Gᵣ) (p : Filter ι) (s : Set α) :
+    TendstoUniformlyOn F f p s ↔ ∀ u ∈ 𝓝 1, ∀ᶠ i in p, ∀ a ∈ s, F i a * (f a)⁻¹ ∈ u := by
+  rw [(basis_sets (𝓝 1)).uniformity_of_nhds_one_mul_inv.tendstoUniformlyOn_iff_of_uniformity]
+  rfl
+
+@[to_additive]
+theorem tendstoUniformlyOn_iff_inv_mul (F : ι → α → Gₗ) (f : α → Gₗ) (p : Filter ι) (s : Set α) :
+    TendstoUniformlyOn F f p s ↔ ∀ u ∈ 𝓝 1, ∀ᶠ i in p, ∀ a ∈ s, (f a)⁻¹ * F i a ∈ u := by
+  rw [(basis_sets (𝓝 1)).uniformity_of_nhds_one_inv_mul.tendstoUniformlyOn_iff_of_uniformity]
+  rfl
+
+@[to_additive]
+theorem tendstoUniformlyOn_iff (F : ι → α → Gᵣ) (f : α → Gᵣ) (p : Filter ι) (s : Set α) :
+    TendstoUniformlyOn F f p s ↔ ∀ u ∈ 𝓝 1, ∀ᶠ i in p, ∀ a ∈ s, F i a / f a ∈ u := by
+  rw [(basis_sets (𝓝 1)).uniformity_of_nhds_one.tendstoUniformlyOn_iff_of_uniformity]
+  rfl
+
+-- Missing basis statements......
+/-
 @[to_additive]
 theorem tendstoLocallyUniformly_iff [TopologicalSpace α] (F : ι → α → G) (f : α → G)
     (p : Filter ι) (hu : IsTopologicalGroup.rightUniformSpace G = u) :
@@ -245,8 +444,9 @@ theorem tendstoLocallyUniformlyOn_iff [TopologicalSpace α] (F : ι → α → G
   hu ▸ ⟨fun h u hu => h _ ⟨u, hu, fun _ => id⟩, fun h _ ⟨u, hu, hv⟩ x =>
     (Exists.imp fun _ ⟨h, hp⟩ => ⟨h, mem_of_superset hp fun _ hi a ha => hv (hi a ha)⟩) ∘
       h u hu x⟩
+-/
 
-end IsTopologicalGroup
+end IsUniformGroup
 
 open Filter Set Function
 
@@ -440,7 +640,7 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
   have key₀ : ∀ i j : ℕ, ∃ M : ℕ, j < M ∧ ∀ a b : ℕ, M ≤ a → M ≤ b →
       ∀ g : G, x b = g → ∃ g' : G, g / g' ∈ u i ∧ x a = g' := by
     have h𝓤GN : (𝓤 (G ⧸ N)).HasBasis (fun _ ↦ True) fun i ↦ { x | x.snd / x.fst ∈ (↑) '' u i } := by
-      simpa [uniformity_eq_comap_nhds_one'] using hv.comap _
+      simpa [uniformity_eq_comap_nhds_one] using hv.comap _
     rw [h𝓤GN.cauchySeq_iff] at hx
     simp only [mem_setOf_eq, forall_true_left, mem_image] at hx
     intro i j
@@ -479,7 +679,7 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
     is to show by decreasing induction that `x' m / x' n ∈ u m` if `m ≤ n`. -/
   have x'_cauchy : CauchySeq fun n => (x' n).fst := by
     have h𝓤G : (𝓤 G).HasBasis (fun _ => True) fun i => { x | x.snd / x.fst ∈ u i } := by
-      simpa [uniformity_eq_comap_nhds_one'] using hu.toHasBasis.comap _
+      simpa [uniformity_eq_comap_nhds_one] using hu.toHasBasis.comap _
     rw [h𝓤G.cauchySeq_iff']
     simp only [mem_setOf_eq, forall_true_left]
     exact fun m =>
@@ -518,10 +718,11 @@ uniform structure, so it is still provided manually via `IsTopologicalAddGroup.r
 In the most common use case ─ quotients of normed additive commutative groups by subgroups ─
 significant care was taken so that the uniform structure inherent in that setting coincides
 (definitionally) with the uniform structure provided here. -/]
-instance QuotientGroup.completeSpace (G : Type u) [Group G] [us : UniformSpace G] [IsUniformGroup G]
+instance QuotientGroup.completeSpace (G : Type u) [Group G] [us : UniformSpace G]
+    [IsRightUniformGroup G]
     [FirstCountableTopology G] (N : Subgroup G) [N.Normal] [hG : CompleteSpace G] :
     @CompleteSpace (G ⧸ N) (IsTopologicalGroup.rightUniformSpace (G ⧸ N)) := by
-  rw [← @IsUniformGroup.rightUniformSpace_eq _ us _ _] at hG
+  rw [← @IsRightUniformGroup.rightUniformSpace_eq _ us _ _] at hG
   infer_instance
 
 end CompleteQuotient
