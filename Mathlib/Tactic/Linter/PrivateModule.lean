@@ -17,7 +17,7 @@ This linter lints against nonempty modules that have only private declarations, 
 
 ## Implementation notes
 
-All new declarations, whether added synchronously with `addDecl` or otherwise,  get added to
+All new declarations, whether added synchronously with `addDecl` or otherwise, get added to
 `asyncConstsMap`.
 
 `asyncConstsMap.public` and `asyncConstsMap.private` seem to contain exactly the same declarations.
