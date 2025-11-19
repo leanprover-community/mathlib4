@@ -3,12 +3,14 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Probability.IdentDistrib
-import Mathlib.Probability.Independence.Integrable
-import Mathlib.MeasureTheory.Integral.DominatedConvergence
-import Mathlib.Analysis.SpecificLimits.FloorPow
-import Mathlib.Analysis.PSeries
-import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+module
+
+public import Mathlib.Probability.IdentDistrib
+public import Mathlib.Probability.Independence.Integrable
+public import Mathlib.MeasureTheory.Integral.DominatedConvergence
+public import Mathlib.Analysis.SpecificLimits.FloorPow
+public import Mathlib.Analysis.PSeries
+public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 
 /-!
 # The strong law of large numbers
@@ -52,6 +54,8 @@ random variables. Let `Yₙ` be the truncation of `Xₙ` up to `n`. We claim tha
 * To generalize it to all indices, we use the fact that `∑_{i=0}^{n-1} Xᵢ` is nondecreasing and
   that, if `c` is close enough to `1`, the gap between `c^k` and `c^(k+1)` is small.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -565,7 +569,7 @@ theorem strong_law_aux6 {c : ℝ} (c_one : 1 < c) :
     ext1 n
     simp only [Function.comp_apply, sub_sub_sub_cancel_left]
   convert L.mul_isBigO (isBigO_refl (fun n : ℕ => (⌊c ^ n⌋₊ : ℝ)⁻¹) atTop) using 1 <;>
-  (ext1 n; field_simp [(H n).ne'])
+  (ext1 n; field [(H n).ne'])
 
 include hint hindep hident hnonneg in
 /-- `Xᵢ` satisfies the strong law of large numbers along all integers. This follows from the
