@@ -3,7 +3,6 @@ Copyright (c) 2024 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-
 import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
 
@@ -58,6 +57,5 @@ theorem nrComplexPlaces_eq_totient_div_two [h : IsCyclotomicExtension {n} ℚ K]
     rw [this]
     apply nrComplexPlaces_eq_zero_of_finrank_eq_one
     rw [IsCyclotomicExtension.finrank K (cyclotomic.irreducible_rat (NeZero.pos n)), this]
-
 
 end IsCyclotomicExtension.Rat
