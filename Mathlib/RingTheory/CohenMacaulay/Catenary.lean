@@ -3,14 +3,17 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
+module
 
-import Mathlib.RingTheory.CohenMacaulay.Basic
+public import Mathlib.RingTheory.CohenMacaulay.Basic
 
 /-!
 
 # CM Local Ring is Catenary
 
 -/
+
+@[expose] public section
 
 universe u
 
