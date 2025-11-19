@@ -3,7 +3,9 @@ Copyright (c) 2022 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov, Kevin H. Wilson, Heather Macbeth
 -/
-import Mathlib.Order.Filter.Tendsto
+module
+
+public import Mathlib.Order.Filter.Tendsto
 
 /-!
 # Product and coproduct filters
@@ -33,6 +35,8 @@ As product filter we want to have `F` as result.
 * `f ×ˢ g` : `Filter.prod f g`, localized in `Filter`.
 
 -/
+
+@[expose] public section
 
 open Set
 
