@@ -288,6 +288,12 @@ theorem of_f {i j : ι} {hij : i ≤ j} {x : G i} : of L ι G f j (f i j hij x) 
   refine Setoid.symm ⟨j, hij, refl j, ?_⟩
   simp only [DirectedSystem.map_self]
 
+@[simp]
+theorem of_comp_f {i j : ι} {hij : i ≤ j} : (of L ι G f j).comp (f i j hij) =
+    of L ι G f i := by
+  ext
+  exact of_f
+
 /-- Every element of the direct limit corresponds to some element in
 some component of the directed system. -/
 theorem exists_of (z : DirectLimit G f) : ∃ i x, of L ι G f i x = z :=
