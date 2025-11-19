@@ -54,12 +54,12 @@ distributions, test function
 @[expose] public section
 
 open Function Seminorm SeminormFamily Set TopologicalSpace UniformSpace
-open scoped BoundedContinuousFunction NNReal Topology
+open scoped BoundedContinuousFunction NNReal Topology ContDiff
 
-variable {𝕜 : Type*} [RCLike 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {Ω : Opens E}
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
-  {n : ℕ∞}
+  {n k : ℕ∞}
 
 variable (Ω F n) in
 /-- The type of bundled `n`-times continuously differentiable maps with compact support -/
@@ -158,6 +158,12 @@ theorem copy_eq (f : 𝓓^{n}(Ω, F)) (f' : E → F) (h : f' = f) : f.copy f' h 
 theorem coe_toBoundedContinuousFunction (f : 𝓓^{n}(Ω, F)) :
     (f : BoundedContinuousFunction E F) = (f : E → F) := rfl
 
+@[simp]
+theorem coe_mk {f : E → F} {contDiff : ContDiff ℝ n f} {hasCompactSupport : HasCompactSupport f}
+    {tsupport_subset : tsupport f ⊆ Ω} :
+    TestFunction.mk f contDiff hasCompactSupport tsupport_subset = f :=
+  rfl
+
 section AddCommGroup
 
 @[simps -fullyApplied]
@@ -214,17 +220,103 @@ def ofSupportedIn {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) (f : 𝓓^{n}
     𝓓^{n}(Ω, F) :=
   ⟨f, f.contDiff, f.compact_supp, f.tsupport_subset.trans K_sub_Ω⟩
 
+variable (𝕜) in
 /-- The natural inclusion `𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)`, when `K ⊆ Ω`, as a linear map. -/
-def ofSupportedInLM (R) [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F]
-    {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) :
-    𝓓^{n}_{K}(E, F) →ₗ[R] 𝓓^{n}(Ω, F) where
+def ofSupportedInLM {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) :
+    𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{n}(Ω, F) where
   toFun f := ofSupportedIn K_sub_Ω f
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-@[simp] theorem ofSupportedInLM_apply (R) [Semiring R] [Module R F] [SMulCommClass ℝ R F]
-    [ContinuousConstSMul R F] {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) (f : 𝓓^{n}_{K}(E, F)) :
-    ofSupportedInLM R K_sub_Ω f = ofSupportedIn K_sub_Ω f :=
+variable (𝕜) in
+@[simp] theorem ofSupportedInLM_apply {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω)
+    (f : 𝓓^{n}_{K}(E, F)) : ofSupportedInLM 𝕜 K_sub_Ω f = ofSupportedIn K_sub_Ω f :=
+  rfl
+
+variable (𝕜 n k) in
+noncomputable def fderivWithOrderLM :
+    𝓓^{n}(Ω, F) →ₗ[𝕜] 𝓓^{k}(Ω, E →L[ℝ] F) where
+  toFun f :=
+    if hk : k + 1 ≤ n then
+      ⟨fderiv ℝ f, f.contDiff.fderiv_right (mod_cast hk),
+        f.hasCompactSupport.fderiv ℝ, tsupport_fderiv_subset ℝ |>.trans f.tsupport_subset⟩
+    else 0
+  map_add' f g := by
+    split_ifs with hk
+    · have hk' : 1 ≤ (n : WithTop ℕ∞) := mod_cast (le_of_add_le_right hk)
+      ext
+      simp [fderiv_add (f.contDiff.differentiable hk').differentiableAt
+                       (g.contDiff.differentiable hk').differentiableAt]
+    · simp
+  map_smul' c f := by
+    split_ifs with hk
+    · have hk' : 1 ≤ (n : WithTop ℕ∞) := mod_cast (le_of_add_le_right hk)
+      ext
+      simp [fderiv_const_smul (f.contDiff.differentiable hk').differentiableAt]
+    · simp
+
+@[simp]
+lemma fderivWithOrderLM_apply (f : 𝓓^{n}(Ω, F)) :
+    fderivWithOrderLM 𝕜 n k f = if k + 1 ≤ n then fderiv ℝ f else 0 := by
+  rw [fderivWithOrderLM]
+  split_ifs <;> rfl
+
+lemma fderivWithOrderLM_apply_of_le (f : 𝓓^{n}(Ω, F)) (hk : k + 1 ≤ n) :
+    fderivWithOrderLM 𝕜 n k f = fderiv ℝ f := by
+  simp [hk]
+
+lemma fderivWithOrderLM_apply_of_gt (f : 𝓓^{n}(Ω, F)) (hk : ¬ (k + 1 ≤ n)) :
+    fderivWithOrderLM 𝕜 n k f = 0 := by
+  ext : 1
+  simp [hk]
+
+lemma fderivWithOrderLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
+    [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (fderivWithOrderLM 𝕜 n k : 𝓓^{n}(Ω, F) → _) = fderivWithOrderLM 𝕜' n k :=
+  rfl
+
+lemma fderivWithOrderLM_ofSupportedIn {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω)
+    (f : 𝓓^{n}_{K}(E, F)) :
+    fderivWithOrderLM 𝕜 n k (ofSupportedIn K_sub_Ω f) =
+      ofSupportedIn K_sub_Ω (ContDiffMapSupportedIn.fderivWithOrderLM 𝕜 n k f) :=
+  sorry
+
+variable (𝕜) in
+/-- `fderivLM 𝕜` is the `𝕜`-linear-map sending `f : 𝓓_{K}(E, F)` to
+its derivative as an element of `𝓓_{K}(E, E →L[ℝ] F)`.
+
+See also `fderivWithOrderLM` if you need more control on the regularities.
+
+This is subsumed by `fderivCLM`, which also bundles the continuity. -/
+noncomputable def fderivLM :
+    𝓓(Ω, F) →ₗ[𝕜] 𝓓(Ω, E →L[ℝ] F) where
+  toFun f := ⟨fderiv ℝ f, f.contDiff.fderiv_right le_rfl, f.hasCompactSupport.fderiv ℝ,
+      tsupport_fderiv_subset ℝ |>.trans f.tsupport_subset⟩
+  map_add' f g := by
+    have h : 1 ≤ ∞ := mod_cast le_top
+    ext
+    simp [fderiv_add (f.contDiff.differentiable h).differentiableAt
+                     (g.contDiff.differentiable h).differentiableAt]
+  map_smul' c f := by
+    have h : 1 ≤ ∞ := mod_cast le_top
+    ext
+    simp [fderiv_const_smul (f.contDiff.differentiable h).differentiableAt]
+
+@[simp]
+lemma fderivLM_apply (f : 𝓓(Ω, F)) :
+    fderivLM 𝕜 f = fderiv ℝ f :=
+  rfl
+
+/-- Note: this turns out to be a definitional equality thanks to decidablity of the order
+on `ℕ∞`. This means we could have *defined* `fderivLM` this way, but we avoid it
+to make sure that `if`s won't appear in the smooth case. -/
+lemma fderivLM_eq_withOrder :
+    (fderivLM 𝕜 : 𝓓(Ω, F) →ₗ[𝕜] _) = fderivWithOrderLM 𝕜 ⊤ ⊤ :=
+  rfl
+
+lemma fderivLM_eq_of_scalars (R' : Type*) [Semiring R']
+    [Module R' F] [SMulCommClass ℝ R' F] [ContinuousConstSMul R' F] :
+    (fderivLM 𝕜 : 𝓓(Ω, F) → _) = fderivLM 𝕜 :=
   rfl
 
 section Topology
@@ -304,5 +396,19 @@ protected theorem continuous_iff_continuous_comp (f : 𝓓^{n}(Ω, F) →ₗ[ℝ
     continuous_coinduced_dom]
 
 end Topology
+
+section FDerivCLM
+
+-- TODO : allow `𝕜`
+variable (n k) in
+noncomputable def fderivWithOrderCLM :
+    𝓓^{n}(Ω, F) →L[ℝ] 𝓓^{k}(Ω, E →L[ℝ] F) where
+  toLinearMap := fderivWithOrderLM ℝ n k
+  cont := show Continuous (fderivWithOrderLM ℝ n k) by
+    rw [TestFunction.continuous_iff_continuous_comp]
+    intro K K_sub_Ω
+    sorry
+
+end FDerivCLM
 
 end TestFunction
