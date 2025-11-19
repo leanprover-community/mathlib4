@@ -81,8 +81,8 @@ Q179208:
 Q179467:
   title: Fourier theorem
   decls:
-    - MeasureTheory.Integrable.fourier_inversion
-    - Continuous.fourier_inversion
+    - MeasureTheory.Integrable.fourierInv_fourier_eq
+    - Continuous.fourierInv_fourier_eq
   authors: Sébastien Gouezel
   date: 2024
   comment: "The wikipedia page is really vague; it's not clear what is meant here. While mathlib has some material already, there is space for more advanced results."
@@ -2567,7 +2567,7 @@ Q3984052:
 
 Q3984053:
   title: Fourier inversion theorem
-  decl: Continuous.fourier_inversion
+  decl: Continuous.fourierInv_fourier_eq
   authors: Sébastien Gouëzel
   date: 2024
 

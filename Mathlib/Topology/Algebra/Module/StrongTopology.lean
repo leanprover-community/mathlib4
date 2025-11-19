@@ -150,6 +150,11 @@ theorem add_apply [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Se
     (f g : UniformConvergenceCLM σ F 𝔖) (x : E) : (f + g) x = f x + g x :=
   rfl
 
+theorem sum_apply {ι : Type*} [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E))
+    (t : Finset ι) (f : ι → UniformConvergenceCLM σ F 𝔖) (x : E) :
+    (∑ d ∈ t, f d) x = ∑ d ∈ t, (f d) x :=
+  ContinuousLinearMap.sum_apply t f x
+
 theorem sub_apply [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E))
     (f g : UniformConvergenceCLM σ F 𝔖) (x : E) : (f - g) x = f x - g x :=
   rfl
@@ -352,6 +357,8 @@ section Equiv
 
 variable [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜₂ F] (𝔖 : Set (Set E))
 
+/-- The linear equivalence that maps a continuous linear map to the type copy endowed with the
+uniform convergence topology. -/
 def _root_.ContinuousLinearMap.toUniformConvergenceCLM :
     (E →SL[σ] F) ≃ₗ[𝕜₂] UniformConvergenceCLM σ F 𝔖 where
   __ := LinearEquiv.refl _ _
@@ -536,6 +543,13 @@ def postcomp [IsTopologicalAddGroup F] [IsTopologicalAddGroup G] [ContinuousCons
     exact
       (UniformOnFun.postcomp_uniformContinuous L.uniformContinuous).continuous.comp
         (UniformConvergenceCLM.isEmbedding_coeFn _ _ _).continuous
+
+variable (σ F) {E} in
+lemma toUniformConvergenceCLM_continuous [IsTopologicalAddGroup F]
+    [ContinuousConstSMul 𝕜₂ F]
+    (𝔖 : Set (Set E)) (h : 𝔖 ⊆ {S | IsVonNBounded 𝕜₁ S}) :
+    Continuous (ContinuousLinearMap.toUniformConvergenceCLM σ F 𝔖) :=
+  continuous_id_of_le <| UniformConvergenceCLM.topologicalSpace_mono _ _ h
 
 end BoundedSets
 
