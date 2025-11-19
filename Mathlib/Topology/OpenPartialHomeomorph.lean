@@ -3,9 +3,11 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Logic.Equiv.PartialEquiv
-import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.Topology.Sets.Opens
+module
+
+public import Mathlib.Logic.Equiv.PartialEquiv
+public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Sets.Opens
 
 /-!
 # Partial homeomorphisms
@@ -54,6 +56,8 @@ For design notes, see `PartialEquiv.lean`.
 If a lemma deals with the intersection of a set with either source or target of a `PartialEquiv`,
 then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or `t ∩ e.target`.
 -/
+
+@[expose] public section
 
 open Function Set Filter Topology
 
@@ -1161,7 +1165,7 @@ def homeomorphOfImageSubsetSource {s : Set X} {t : Set Y} (hs : s ⊆ e.source) 
   { toFun := MapsTo.restrict e s t h₁
     invFun := MapsTo.restrict e.symm t s h₃
     left_inv := fun a => Subtype.ext (e.left_inv (hs a.2))
-    right_inv := fun b => Subtype.eq <| e.right_inv (h₂ b.2)
+    right_inv := fun b => Subtype.ext <| e.right_inv (h₂ b.2)
     continuous_toFun := (e.continuousOn.mono hs).mapsToRestrict h₁
     continuous_invFun := (e.continuousOn_symm.mono h₂).mapsToRestrict h₃ }
 

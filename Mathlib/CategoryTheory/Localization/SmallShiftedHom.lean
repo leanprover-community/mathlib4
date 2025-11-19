@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.SmallHom
-import Mathlib.CategoryTheory.Shift.ShiftedHom
-import Mathlib.CategoryTheory.Shift.Localization
+module
+
+public import Mathlib.CategoryTheory.Localization.SmallHom
+public import Mathlib.CategoryTheory.Shift.ShiftedHom
+public import Mathlib.CategoryTheory.Shift.Localization
 
 /-!
 # Shrinking morphisms in localized categories equipped with shifts
@@ -21,6 +23,8 @@ on the types `ShiftedHom (L.obj X) (L.obj Y) m` when `L : C ⥤ D` is
 any localization functor for `W`.
 
 -/
+
+@[expose] public section
 
 universe w'' w w' v₁ v₂ v₁' v₂' u₁ u₂ u₁' u₂'
 

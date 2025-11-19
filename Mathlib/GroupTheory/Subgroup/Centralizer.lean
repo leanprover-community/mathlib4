@@ -3,13 +3,17 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Algebra.Group.Action.End
-import Mathlib.GroupTheory.Subgroup.Center
-import Mathlib.GroupTheory.Submonoid.Centralizer
+module
+
+public import Mathlib.Algebra.Group.Action.End
+public import Mathlib.GroupTheory.Subgroup.Center
+public import Mathlib.GroupTheory.Submonoid.Centralizer
 
 /-!
 # Centralizers of subgroups
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 

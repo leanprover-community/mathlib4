@@ -3,10 +3,12 @@ Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Algebra.Ring.Action.Pointwise.Set
-import Mathlib.Analysis.Convex.Star
-import Mathlib.Tactic.Field
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
+module
+
+public import Mathlib.Algebra.Ring.Action.Pointwise.Set
+public import Mathlib.Analysis.Convex.Star
+public import Mathlib.Tactic.Field
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
 
 /-!
 # Convex sets
@@ -20,6 +22,8 @@ We provide various equivalent versions, and prove that some specific sets are co
 
 Generalize all this file to affine spaces.
 -/
+
+@[expose] public section
 
 
 variable {𝕜 E F β : Type*}
@@ -116,6 +120,9 @@ theorem DirectedOn.convex_sUnion {c : Set (Set E)} (hdir : DirectedOn (· ⊆ ·
     (hc : ∀ ⦃A : Set E⦄, A ∈ c → Convex 𝕜 A) : Convex 𝕜 (⋃₀ c) := by
   rw [sUnion_eq_iUnion]
   exact (directedOn_iff_directed.1 hdir).convex_iUnion fun A => hc A.2
+
+theorem Convex.setOf_const_imp {P : Prop} (hs : Convex 𝕜 s) : Convex 𝕜 {x | P → x ∈ s} := by
+  by_cases hP : P <;> simp [hP, hs, convex_univ]
 
 end SMul
 
