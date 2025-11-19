@@ -3,8 +3,10 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Balanced
-import Mathlib.CategoryTheory.LiftingProperties.Basic
+module
+
+public import Mathlib.CategoryTheory.Balanced
+public import Mathlib.CategoryTheory.LiftingProperties.Basic
 
 /-!
 # Strong epimorphisms
@@ -32,6 +34,8 @@ Show that the dual of a strong epimorphism is a strong monomorphism, and vice ve
 
 * [F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1]
 -/
+
+@[expose] public section
 
 
 universe v u

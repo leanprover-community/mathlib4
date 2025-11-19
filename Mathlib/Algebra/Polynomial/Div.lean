@@ -3,12 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Field.IsField
-import Mathlib.Algebra.Polynomial.Inductions
-import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.Algebra.Ring.Regular
-import Mathlib.RingTheory.Multiplicity
-import Mathlib.Data.Nat.Lattice
+module
+
+public import Mathlib.Algebra.Field.IsField
+public import Mathlib.Algebra.Polynomial.Inductions
+public import Mathlib.Algebra.Polynomial.Monic
+public import Mathlib.Algebra.Ring.Regular
+public import Mathlib.RingTheory.Multiplicity
+public import Mathlib.Data.Nat.Lattice
 
 /-!
 # Division of univariate polynomials
@@ -17,6 +19,8 @@ The main defs are `divByMonic` and `modByMonic`.
 The compatibility between these is given by `modByMonic_add_div`.
 We also define `rootMultiplicity`.
 -/
+
+@[expose] public section
 
 noncomputable section
 

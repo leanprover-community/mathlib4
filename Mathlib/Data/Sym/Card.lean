@@ -3,10 +3,12 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta, Huỳnh Trần Khanh, Stuart Presnell
 -/
-import Mathlib.Data.Finset.Sym
-import Mathlib.Data.Fintype.Sum
-import Mathlib.Data.Fintype.Prod
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Data.Finset.Sym
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Data.Fintype.Prod
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Stars and bars
@@ -50,6 +52,8 @@ while the "stars and bars" technique gives
 
 stars and bars, multichoose
 -/
+
+@[expose] public section
 
 
 open Finset Fintype Function Sum Nat

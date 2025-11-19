@@ -3,10 +3,12 @@ Copyright (c) 2020 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Devon Tuma
 -/
-import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.Ideal.GoingUp
-import Mathlib.RingTheory.Jacobson.Polynomial
-import Mathlib.RingTheory.Artinian.Module
+module
+
+public import Mathlib.RingTheory.Localization.Away.Basic
+public import Mathlib.RingTheory.Ideal.GoingUp
+public import Mathlib.RingTheory.Jacobson.Polynomial
+public import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Jacobson Rings
@@ -36,6 +38,8 @@ Let `R` be a commutative ring. Jacobson rings are defined using the first of the
 ## Tags
 Jacobson, Jacobson Ring
 -/
+
+@[expose] public section
 
 universe u
 
