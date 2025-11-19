@@ -26,7 +26,6 @@ semantics for regular logic.
 ## Future work
 * Show Frobenius reciprocity
 * Show that every topos is regular
-* Define the regular topology on regular categories
 * Show that regular logic has an interpretation in regular categories
 
 ## References
