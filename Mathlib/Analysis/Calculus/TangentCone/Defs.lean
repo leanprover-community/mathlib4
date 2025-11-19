@@ -3,7 +3,9 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Field.Basic
+module
+
+public import Mathlib.Analysis.Normed.Field.Basic
 
 /-!
 # Tangent cone
@@ -28,6 +30,8 @@ are not defined yet. The property of uniqueness of the derivative is therefore p
 `Mathlib/Analysis/Calculus/FDeriv/Basic.lean`, but based on the properties of the tangent cone we
 prove here.
 -/
+
+@[expose] public section
 
 open Filter Set Metric
 open scoped Topology Pointwise

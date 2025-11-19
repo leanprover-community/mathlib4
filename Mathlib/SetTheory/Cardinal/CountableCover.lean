@@ -3,9 +3,11 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.SetTheory.Cardinal.Arithmetic
-import Mathlib.Order.Filter.Finite
-import Mathlib.Order.Filter.Map
+module
+
+public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.Order.Filter.Finite
+public import Mathlib.Order.Filter.Map
 
 /-!
 # Cardinality of a set with a countable cover
@@ -16,6 +18,8 @@ cardinality `≤ a`. Then `t` itself has cardinality at most `a`. This is proved
 
 Versions are also given when `t = univ`, and with `= a` instead of `≤ a`.
 -/
+
+@[expose] public section
 
 open Set Order Filter
 open scoped Cardinal

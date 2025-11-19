@@ -3,9 +3,11 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Jeremy Tan
 -/
-import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.Algebra.GroupWithZero.Nat
-import Mathlib.Algebra.Ring.Int.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Hom
+public import Mathlib.Algebra.GroupWithZero.Nat
+public import Mathlib.Algebra.Ring.Int.Defs
 
 /-!
 # Lemmas about `Int.natAbs`
@@ -17,6 +19,8 @@ natural number.
 
 * `Int.natAbsHom`: `Int.natAbs` bundled as a `MonoidWithZeroHom`.
 -/
+
+@[expose] public section
 
 namespace Int
 

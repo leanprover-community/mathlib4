@@ -3,7 +3,9 @@ Copyright (c) 2025 Alex J. Best, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
 -/
-import Mathlib.GroupTheory.MonoidLocalization.Basic
+module
+
+public import Mathlib.GroupTheory.MonoidLocalization.Basic
 
 /-!
 # Grothendieck group
@@ -19,6 +21,8 @@ obtained by formally making the last term of each short exact sequence invertibl
 
 * [*Grothendieck group*, Wikipedia](https://en.wikipedia.org/wiki/Grothendieck_group#Grothendieck_group_of_a_commutative_monoid)
 -/
+
+@[expose] public section
 
 open Function Localization
 

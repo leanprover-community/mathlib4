@@ -3,10 +3,12 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.RingTheory.Norm.Defs
-import Mathlib.FieldTheory.PrimitiveElement
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
-import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
+module
+
+public import Mathlib.RingTheory.Norm.Defs
+public import Mathlib.FieldTheory.PrimitiveElement
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
+public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 
 /-!
 # Norm for (finite) ring extensions
@@ -34,6 +36,8 @@ See also `Algebra.trace`, which is defined similarly as the trace of
 * https://en.wikipedia.org/wiki/Field_norm
 
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -135,7 +139,7 @@ theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_one {x : L} (hx : ¬Is
   contrapose! hx
   obtain ⟨s, ⟨b⟩⟩ := hx
   refine .of_mem_of_fg K⟮x⟯.toSubalgebra ?_ x ?_
-  · exact (Submodule.fg_iff_finiteDimensional _).mpr (.of_fintype_basis b)
+  · exact (Submodule.fg_iff_finiteDimensional _).mpr (b.finiteDimensional_of_finite)
   · exact IntermediateField.subset_adjoin K _ (Set.mem_singleton x)
 
 theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots (x : L)

@@ -3,17 +3,19 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
-import Mathlib.Algebra.Module.FinitePresentation
-import Mathlib.Algebra.Module.LocalizedModule.Submodule
-import Mathlib.CategoryTheory.Monoidal.Skeleton
-import Mathlib.LinearAlgebra.Contraction
-import Mathlib.LinearAlgebra.TensorProduct.Finiteness
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.LinearAlgebra.TensorProduct.Submodule
-import Mathlib.RingTheory.Flat.Localization
-import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.RingTheory.LocalRing.Module
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
+public import Mathlib.Algebra.Module.FinitePresentation
+public import Mathlib.Algebra.Module.LocalizedModule.Submodule
+public import Mathlib.CategoryTheory.Monoidal.Skeleton
+public import Mathlib.LinearAlgebra.Contraction
+public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.LinearAlgebra.TensorProduct.Submodule
+public import Mathlib.RingTheory.Flat.Localization
+public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.RingTheory.LocalRing.Module
 
 /-!
 # The Picard group of a commutative ring
@@ -57,6 +59,8 @@ Show:
   constant finite rank to locally free sheaves on `Spec R`.
 - Exhibit isomorphism with sheaf cohomology `H¹(Spec R, 𝓞ˣ)`.
 -/
+
+@[expose] public section
 
 open TensorProduct
 
@@ -357,6 +361,9 @@ theorem of_isLocalization (S : Submonoid R) [IsLocalization S A]
     Module.Invertible A N :=
   .congr (IsLocalizedModule.isBaseChange S A f).equiv
 
+instance (S : Submonoid R) : Module.Invertible (Localization S) (LocalizedModule S M) :=
+  of_isLocalization S (LocalizedModule.mkLinearMap S M)
+
 instance (L) [AddCommMonoid L] [Module R L] [Module A L] [IsScalarTower R A L]
     [Module.Invertible A L] : Module.Invertible A (L ⊗[R] M) :=
   .congr (AlgebraTensorModule.cancelBaseChange R A A L M)
@@ -508,6 +515,34 @@ end CommRing.Pic
 end CommRing
 
 end PicardGroup
+
+namespace Module.Invertible
+
+variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] [Module.Invertible R M]
+
+-- TODO: generalize to CommSemiring by generalizing `CommRing.Pic.instSubsingletonOfIsLocalRing`
+theorem tensorProductComm_eq_refl : TensorProduct.comm R M M = .refl .. := by
+  let f (P : Ideal R) [P.IsMaximal] := LocalizedModule.mkLinearMap P.primeCompl M
+  let ff (P : Ideal R) [P.IsMaximal] := TensorProduct.map (f P) (f P)
+  refine LinearEquiv.toLinearMap_injective <| LinearMap.eq_of_localization_maximal _ ff _ ff _ _
+    fun P _ ↦ .trans (b := (TensorProduct.comm ..).toLinearMap) ?_ ?_
+  · apply IsLocalizedModule.linearMap_ext P.primeCompl (ff P) (ff P)
+    ext; dsimp
+    apply IsLocalizedModule.map_apply
+  let Rp := Localization P.primeCompl
+  have ⟨e⟩ := free_iff_linearEquiv.mp (inferInstance : Free Rp (LocalizedModule P.primeCompl M))
+  have e := e.restrictScalars R
+  ext x y
+  refine (congr e e ≪≫ₗ equivOfCompatibleSMul Rp ..).injective ?_
+  suffices e y ⊗ₜ[Rp] e x = e x ⊗ₜ e y by simpa [equivOfCompatibleSMul]
+  conv_lhs => rw [← mul_one (e y), ← smul_eq_mul, smul_tmul, smul_eq_mul,
+    mul_comm, ← smul_eq_mul, ← smul_tmul, smul_eq_mul, mul_one]
+
+variable {R M} in
+theorem tmul_comm {m₁ m₂ : M} : m₁ ⊗ₜ[R] m₂ = m₂ ⊗ₜ m₁ :=
+  DFunLike.congr_fun (tensorProductComm_eq_refl ..) (m₂ ⊗ₜ m₁)
+
+end Module.Invertible
 
 namespace Submodule
 

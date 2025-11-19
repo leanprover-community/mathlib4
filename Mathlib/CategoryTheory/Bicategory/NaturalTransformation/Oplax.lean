@@ -3,8 +3,10 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Calle Sönne
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
-import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
+public import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
 
 /-!
 # Transformations between oplax functors
@@ -46,6 +48,8 @@ We also provide API for going between oplax transformations and strong transform
 * [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055)
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Oplax
 
