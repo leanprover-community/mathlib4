@@ -3,8 +3,10 @@ Copyright (c) 2025 Attila Gáspár. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Attila Gáspár
 -/
-import Mathlib.Topology.Sets.Compacts
-import Mathlib.Topology.UniformSpace.UniformEmbedding
+module
+
+public import Mathlib.Topology.Sets.Compacts
+public import Mathlib.Topology.UniformSpace.UniformEmbedding
 
 /-!
 # Hausdorff uniformity
@@ -13,6 +15,8 @@ This file defines the Hausdorff uniformity on the types of closed subsets, compa
 and nonempty compact subsets of a uniform space. This is the generalization of the uniformity
 induced by the Hausdorff metric to hyperspaces of uniform spaces.
 -/
+
+@[expose] public section
 
 open Topology
 open scoped Uniformity
