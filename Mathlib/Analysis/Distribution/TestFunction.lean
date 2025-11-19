@@ -268,6 +268,8 @@ theorem topologicalSpace_le_iff {t : TopologicalSpace 𝓓^{n}(Ω, F)}
     topologicalSpace Ω F n ≤ t ↔ originalTop Ω F n ≤ t :=
   ⟨le_trans originalTop_le, fun H ↦ sInf_le ⟨H, inferInstance, inferInstance, inferInstance⟩⟩
 
+/-- For every compact `K ⊆ Ω`, the inclusion map `𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)` is
+continuous. We will show later that it is in fact a topological embedding. -/
 theorem continuous_ofSupportedIn {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) :
     Continuous (ofSupportedIn K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)) := by
   rw [continuous_iff_coinduced_le]
