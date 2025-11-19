@@ -3,10 +3,12 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Group.End
-import Mathlib.Logic.Equiv.Set
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Group.End
+public import Mathlib.Logic.Equiv.Set
+public import Mathlib.Tactic.Common
 
 /-!
 # Extra lemmas about permutations
@@ -22,6 +24,8 @@ It would be good to merge the remaining lemmas with other files, e.g.
 the algebra and non-algebra parts).
 -/
 
+@[expose] public section
+
 
 universe u v
 
@@ -31,10 +35,12 @@ variable {α : Type u} {β : Type v}
 
 namespace Perm
 
-@[simp] lemma image_inv (f : Perm α) (s : Set α) : ↑f⁻¹ '' s = f ⁻¹' s := f⁻¹.image_eq_preimage _
+@[deprecated Equiv.image_symm_eq_preimage (since := "2025-08-16")]
+lemma image_inv (f : Perm α) (s : Set α) : ↑f⁻¹ '' s = f ⁻¹' s := f.image_symm_eq_preimage _
 
-@[simp] lemma preimage_inv (f : Perm α) (s : Set α) : ↑f⁻¹ ⁻¹' s = f '' s :=
-  (f.image_eq_preimage _).symm
+@[deprecated Equiv.image_eq_preimage_symm (since := "2025-08-16")]
+lemma preimage_inv (f : Perm α) (s : Set α) : ↑f⁻¹ ⁻¹' s = f '' s :=
+  (f.image_eq_preimage_symm _).symm
 
 end Perm
 

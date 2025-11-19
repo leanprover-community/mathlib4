@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Preservation of Kan extensions
@@ -19,6 +21,8 @@ diagrams.
 We introduce the dual typeclass `G.PreservesRightKanExtension`.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Functor
 

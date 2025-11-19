@@ -3,12 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Morenikeji Neri
 -/
-import Mathlib.Algebra.EuclideanDomain.Basic
-import Mathlib.Algebra.EuclideanDomain.Field
-import Mathlib.Algebra.GCDMonoid.Basic
-import Mathlib.RingTheory.Ideal.Prod
-import Mathlib.RingTheory.Ideal.Nonunits
-import Mathlib.RingTheory.Noetherian.UniqueFactorizationDomain
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Basic
+public import Mathlib.Algebra.EuclideanDomain.Field
+public import Mathlib.Algebra.GCDMonoid.Basic
+public import Mathlib.RingTheory.Ideal.Prod
+public import Mathlib.RingTheory.Ideal.Nonunits
+public import Mathlib.RingTheory.Noetherian.UniqueFactorizationDomain
 
 /-!
 # Principal ideal rings, principal ideal domains, and Bézout rings
@@ -35,6 +37,8 @@ Theorems about PID's are in the `PrincipalIdealRing` namespace.
 - `IsBezout.nonemptyGCDMonoid`: Every Bézout domain is a GCD domain.
 
 -/
+
+@[expose] public section
 
 
 universe u v

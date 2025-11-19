@@ -3,13 +3,15 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.Ring.CharZero
-import Mathlib.Data.Fintype.Units
-import Mathlib.GroupTheory.IndexNormal
-import Mathlib.GroupTheory.Perm.Fin
-import Mathlib.GroupTheory.Subgroup.Simple
-import Mathlib.Logic.Equiv.Fin.Rotate
-import Mathlib.Tactic.IntervalCases
+module
+
+public import Mathlib.Algebra.Ring.CharZero
+public import Mathlib.Data.Fintype.Units
+public import Mathlib.GroupTheory.IndexNormal
+public import Mathlib.GroupTheory.Perm.Fin
+public import Mathlib.GroupTheory.Subgroup.Simple
+public import Mathlib.Logic.Equiv.Fin.Rotate
+public import Mathlib.Tactic.IntervalCases
 
 /-!
 # Alternating Groups
@@ -56,6 +58,8 @@ alternating group permutation simple characteristic index
 
 -/
 
+@[expose] public section
+
 -- An example on how to determine the order of an element of a finite group.
 example : orderOf (-1 : ℤˣ) = 2 :=
   orderOf_eq_prime (Int.units_sq _) (by decide)
@@ -73,7 +77,7 @@ instance alternatingGroup.instFintype : Fintype (alternatingGroup α) :=
   @Subtype.fintype _ _ sign.decidableMemKer _
 
 instance [Subsingleton α] : Unique (alternatingGroup α) :=
-  ⟨⟨1⟩, fun ⟨p, _⟩ => Subtype.eq (Subsingleton.elim p _)⟩
+  ⟨⟨1⟩, fun ⟨p, _⟩ => Subtype.ext (Subsingleton.elim p _)⟩
 
 variable {α}
 
@@ -162,8 +166,7 @@ theorem isConj_of {σ τ : alternatingGroup α} (hc : IsConj (σ : Perm α) (τ 
         rw [disjoint_iff_disjoint_support, support_swap ab, Finset.disjoint_insert_left,
           Finset.disjoint_singleton_left]
         exact ⟨Finset.mem_compl.1 ha, Finset.mem_compl.1 hb⟩
-      rw [mul_assoc π _ σ, hd.commute.eq, coe_inv, coe_mk]
-      simp [mul_assoc]
+      simp [mul_assoc, hd.commute.eq]
 
 theorem isThreeCycle_isConj (h5 : 5 ≤ Fintype.card α) {σ τ : alternatingGroup α}
     (hσ : IsThreeCycle (σ : Perm α)) (hτ : IsThreeCycle (τ : Perm α)) : IsConj σ τ :=
