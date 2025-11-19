@@ -3,9 +3,11 @@ Copyright (c) 2024 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Topology.MetricSpace.ProperSpace.Real
-import Mathlib.Analysis.Normed.Ring.Lemmas
+module
+
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Topology.MetricSpace.ProperSpace.Real
+public import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!
 # Bounded operations
@@ -22,6 +24,8 @@ we can equip bounded continuous functions with the corresponding operations.
 * `BoundedMul R`: a class guaranteeing boundedness of multiplication.
 
 -/
+
+@[expose] public section
 
 open scoped NNReal
 

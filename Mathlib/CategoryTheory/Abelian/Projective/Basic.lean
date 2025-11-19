@@ -3,11 +3,13 @@ Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Abelian.Exact
-import Mathlib.CategoryTheory.Preadditive.Yoneda.Projective
-import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
-import Mathlib.Algebra.Category.ModuleCat.EpiMono
-import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
+module
+
+public import Mathlib.CategoryTheory.Abelian.Exact
+public import Mathlib.CategoryTheory.Preadditive.Yoneda.Projective
+public import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
+public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 
 /-!
 # Projective objects in abelian categories
@@ -16,6 +18,8 @@ In an abelian category, an object `P` is projective iff the functor
 `preadditiveCoyonedaObj (op P)` preserves finite colimits.
 
 -/
+
+@[expose] public section
 
 universe v u
 

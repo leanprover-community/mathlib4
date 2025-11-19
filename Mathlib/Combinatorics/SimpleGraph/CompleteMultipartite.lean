@@ -3,11 +3,13 @@ Copyright (c) 2024 John Talbot and Lian Bremner Tattersall. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: John Talbot, Lian Bremner Tattersall
 -/
-import Mathlib.Combinatorics.SimpleGraph.Coloring
-import Mathlib.Combinatorics.SimpleGraph.Copy
-import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-import Mathlib.Combinatorics.SimpleGraph.Extremal.Turan
-import Mathlib.Combinatorics.SimpleGraph.Hasse
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Coloring
+public import Mathlib.Combinatorics.SimpleGraph.Copy
+public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+public import Mathlib.Combinatorics.SimpleGraph.Extremal.Turan
+public import Mathlib.Combinatorics.SimpleGraph.Hasse
 
 /-!
 # Complete Multipartite Graphs
@@ -48,6 +50,8 @@ See `completeEquipartiteGraph.completeMultipartiteGraph`, `completeEquipartiteGr
 for the isomorphisms between a `completeEquipartiteGraph` and a corresponding
 `completeMultipartiteGraph`, `turanGraph`.
 -/
+
+@[expose] public section
 
 open Finset Fintype
 

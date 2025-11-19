@@ -3,7 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Basic
 
 /-!
 # Homomorphisms of `R`-algebras
@@ -19,6 +21,8 @@ This file defines bundled homomorphisms of `R`-algebras.
 
 * `A →ₐ[R] B` : `R`-algebra homomorphism from `A` to `B`.
 -/
+
+@[expose] public section
 
 universe u v w u₁ v₁
 
