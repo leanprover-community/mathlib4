@@ -10,7 +10,7 @@ public import Mathlib.Topology.MetricSpace.Dilation
 /-!
 # Dilation equivalence
 
-In this file we define `DilationEquiv X Y`, a type of bundled equivalences between `X` and Y` such
+In this file we define `DilationEquiv X Y`, a type of bundled equivalences between `X` and `Y` such
 that `edist (f x) (f y) = r * edist x y` for some `r : ℝ≥0`, `r ≠ 0`.
 
 We also develop basic API about these equivalences.

@@ -249,7 +249,7 @@ def CofiniteTopology (X : Type*) := X
 
 namespace CofiniteTopology
 
-/-- The identity equivalence between `` and `CofiniteTopology `. -/
+/-- The identity equivalence between `X` and `CofiniteTopology X`. -/
 def of : X ≃ CofiniteTopology X :=
   Equiv.refl X
 
