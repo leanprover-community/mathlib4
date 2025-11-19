@@ -3,7 +3,9 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.LinearAlgebra.Matrix.PosDef
+module
+
+public import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-!
 # Sesquilinear forms over a star ring
@@ -11,6 +13,8 @@ import Mathlib.LinearAlgebra.Matrix.PosDef
 This file provides some properties about sesquilinear forms `M →ₗ⋆[R] M →ₗ[R] R` when `R` is a
 `StarRing`.
 -/
+
+@[expose] public section
 
 open Module LinearMap
 

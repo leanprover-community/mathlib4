@@ -3,7 +3,9 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Mathlib.Data.Nat.Notation
+module
+
+public import Mathlib.Data.Nat.Notation
 
 /-!
 # Definition of `Stream'` and functions on streams
@@ -12,6 +14,8 @@ A stream `Stream' α` is an infinite sequence of elements of `α`. One can also 
 infinite list. In this file we define `Stream'` and some functions that take and/or return streams.
 Note that we already have `Stream` to represent a similar object, hence the awkward naming.
 -/
+
+@[expose] public section
 
 universe u v w
 variable {α : Type u} {β : Type v} {δ : Type w}

@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomologicalComplexBiprod
-import Mathlib.Algebra.Homology.Homotopy
-import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
+module
+
+public import Mathlib.Algebra.Homology.HomologicalComplexBiprod
+public import Mathlib.Algebra.Homology.Homotopy
+public import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
 
 /-! The homotopy cofiber of a morphism of homological complexes
 
@@ -33,6 +35,8 @@ which assert that if a functor inverts homotopy equivalences, then the image of
 two homotopic maps are equal.
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory Category Limits Preadditive
@@ -456,15 +460,14 @@ lemma inlX_nullHomotopy_f (i j : ι) (hij : c.Rel j i) :
     inlX K i j hij ≫ (nullHomotopicMap K).f j =
       inlX K i j hij ≫ (π K ≫ ι₀ K - 𝟙 _).f j := by
   dsimp [nullHomotopicMap]
-  by_cases hj : ∃ (k : ι), c.Rel k j
+  by_cases! hj : ∃ (k : ι), c.Rel k j
   · obtain ⟨k, hjk⟩ := hj
     simp only [assoc, Homotopy.nullHomotopicMap'_f hjk hij, homotopyCofiber_X, homotopyCofiber_d,
       homotopyCofiber.d_sndX_assoc _ _ _ hij, add_comp, comp_add, homotopyCofiber.inlX_fstX_assoc,
       homotopyCofiber.inlX_sndX_assoc, zero_comp, add_zero, comp_sub, inlX_π_assoc, comp_id,
       zero_sub, ← HomologicalComplex.comp_f_assoc, biprod.lift_snd, neg_f_apply, id_f,
       neg_comp, id_comp]
-  · simp only [not_exists] at hj
-    simp only [Homotopy.nullHomotopicMap'_f_of_not_rel_right hij hj,
+  · simp only [Homotopy.nullHomotopicMap'_f_of_not_rel_right hij hj,
       homotopyCofiber_X, homotopyCofiber_d, assoc, comp_sub, comp_id,
       homotopyCofiber.d_sndX_assoc _ _ _ hij, add_comp, comp_add, zero_comp, add_zero,
       homotopyCofiber.inlX_fstX_assoc, homotopyCofiber.inlX_sndX_assoc,

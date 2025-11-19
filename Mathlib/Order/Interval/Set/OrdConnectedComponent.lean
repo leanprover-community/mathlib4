@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Interval.Set.OrdConnected
-import Mathlib.Data.Set.Lattice.Image
+module
+
+public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Order connected components of a set
@@ -14,6 +16,8 @@ In this file we define `Set.ordConnectedComponent s x` to be the set of `y` such
 this construction is used only to prove that any linear order with order topology is a T₅ space,
 so we only add API needed for this lemma.
 -/
+
+@[expose] public section
 
 
 open Interval Function OrderDual

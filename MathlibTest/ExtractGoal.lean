@@ -164,7 +164,7 @@ example : ∀ n, n < n + 1 := by
 
 -- Throwing metavariables into the terms
 /--
-info: theorem _example.extracted_1 (m : ℕ) (this : m < m.succ.succ) : m < m + 1 := sorry
+info: theorem _example.extracted_1 (m : ℕ) (this : m < (m + 1).succ) : m < m + 1 := sorry
 ---
 warning: declaration uses 'sorry'
 -/
@@ -172,6 +172,6 @@ warning: declaration uses 'sorry'
 example : ∀ n, n < n + 1 := by
   intro m
   show _
-  have : m < _ := Nat.lt.step (Nat.lt.base m)
+  have : m < _ := Nat.lt_succ_of_lt (Nat.lt_add_one m)
   extract_goal
   sorry

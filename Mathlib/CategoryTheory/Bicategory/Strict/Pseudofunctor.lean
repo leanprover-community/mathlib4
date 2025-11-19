@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Christian Merten
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
-import Mathlib.CategoryTheory.CommSq
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+public import Mathlib.CategoryTheory.CommSq
 
 /-!
 # Pseudofunctors from strict bicategory
@@ -22,6 +24,8 @@ isomorphism `F.map t ≫ F.map r ≅ F.map l ≫ F.map b`
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
@@ -31,7 +35,7 @@ open Bicategory
 namespace Pseudofunctor
 
 variable {B : Type u₁} {C : Type u₂} [Bicategory.{w₁, v₁} B]
-  [Strict B] [Bicategory.{w₂, v₂} C] (F : Pseudofunctor B C)
+  [Strict B] [Bicategory.{w₂, v₂} C] (F : B ⥤ᵖ C)
 
 lemma mapComp'_comp_id {b₀ b₁ : B} (f : b₀ ⟶ b₁) :
     F.mapComp' f (𝟙 b₁) f = (ρ_ _).symm ≪≫ whiskerLeftIso _ (F.mapId b₁).symm := by
@@ -221,7 +225,7 @@ end Pseudofunctor
 namespace LaxFunctor
 
 variable {B : Type u₁} {C : Type u₂} [Bicategory.{w₁, v₁} B]
-  [Strict B] [Bicategory.{w₂, v₂} C] (F : LaxFunctor B C)
+  [Strict B] [Bicategory.{w₂, v₂} C] (F : B ⥤ᴸ C)
 
 section associativity
 
@@ -254,7 +258,7 @@ end LaxFunctor
 namespace OplaxFunctor
 
 variable {B : Type u₁} {C : Type u₂} [Bicategory.{w₁, v₁} B]
-  [Strict B] [Bicategory.{w₂, v₂} C] (F : OplaxFunctor B C)
+  [Strict B] [Bicategory.{w₂, v₂} C] (F : B ⥤ᵒᵖᴸ C)
 
 section associativity
 
