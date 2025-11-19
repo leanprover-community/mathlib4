@@ -230,7 +230,8 @@ theorem fib_le_of_contsAux_b :
           mt (terminated_stable (n - 1).pred_le) not_terminatedAt_pred_n
         -- use the IH to get the inequalities for `pconts` and `ppconts`
         have ppred_nth_fib_le_ppconts_B : (fib n : K) ≤ ppconts.b :=
-          IH n (lt_trans (Nat.lt.base n) <| Nat.lt.base <| n + 1) (Or.inr not_terminatedAt_ppred_n)
+          IH n (lt_trans (Nat.lt_add_one n) <| Nat.lt_add_one <| n + 1)
+            (Or.inr not_terminatedAt_ppred_n)
         suffices (fib (n + 1) : K) ≤ gp.b * pconts.b by gcongr
         -- finally use the fact that `1 ≤ gp.b` to solve the goal
         suffices 1 * (fib (n + 1) : K) ≤ gp.b * pconts.b by rwa [one_mul] at this

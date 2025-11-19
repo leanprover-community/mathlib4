@@ -466,6 +466,21 @@ theorem map_associator_inv (X Y Z : C) :
     Iso.hom_inv_id_assoc, whiskerRight_δ_μ_assoc, δ_μ]
 
 @[reassoc]
+theorem map_associator' (X Y Z : C) :
+    (α_ (F.obj X) (F.obj Y) (F.obj Z)).hom =
+      μ F X Y ▷ F.obj Z ≫ μ F (X ⊗ Y) Z ≫ F.map (α_ X Y Z).hom ≫
+        δ F X (Y ⊗ Z) ≫ F.obj X ◁ δ F Y Z := by
+  simp
+
+@[reassoc]
+theorem map_associator_inv' (X Y Z : C) :
+    (α_ (F.obj X) (F.obj Y) (F.obj Z)).inv =
+      F.obj X ◁ μ F Y Z ≫ μ F X (Y ⊗ Z) ≫ F.map (α_ X Y Z).inv ≫
+        δ F (X ⊗ Y) Z ≫ δ F X Y ▷ F.obj Z := by
+  rw [← cancel_epi (α_ (F.obj X) (F.obj Y) (F.obj Z)).hom, map_associator']
+  simp
+
+@[reassoc]
 theorem map_leftUnitor (X : C) :
     F.map (λ_ X).hom = δ F (𝟙_ C) X ≫ η F ▷ F.obj X ≫ (λ_ (F.obj X)).hom := by simp
 
@@ -1219,5 +1234,45 @@ lemma transport_δ {F G : C ⥤ D} [F.Monoidal] (i : F ≅ G) (X Y : C) : letI :
   coreMonoidalTransport_μIso_inv _ _ _
 
 end Functor.Monoidal
+
+namespace Equivalence
+
+variable {C D}
+
+/--
+Given a functor `F` and an equivalence of categories `e` such that `e.inverse` and `e.functor ⋙ F`
+are monoidal functors, `F` is monoidal as well.
+-/
+def monoidalOfPrecompFunctor (e : C ≌ D) (F : D ⥤ E) {F' : C ⥤ E} (i : e.functor ⋙ F ≅ F')
+    [e.inverse.Monoidal] [F'.Monoidal] : F.Monoidal :=
+  letI : (e.functor ⋙ F).Monoidal := .transport i.symm
+  .transport (e.invFunIdAssoc F)
+
+/--
+Given a functor `F` and an equivalence of categories `e` such that `e.functor` and `e.inverse ⋙ F`
+are monoidal functors, `F` is monoidal as well.
+-/
+def monoidalOfPrecompInverse (e : C ≌ D) (F : C ⥤ E) {F' : D ⥤ E} (i : e.inverse ⋙ F ≅ F')
+    [e.functor.Monoidal] [F'.Monoidal] : F.Monoidal :=
+  e.symm.monoidalOfPrecompFunctor F i
+
+/--
+Given a functor `F` and an equivalence of categories `e` such that `e.functor` and `F ⋙ e.inverse`
+are monoidal functors, `F` is monoidal as well.
+-/
+def monoidalOfPostcompInverse (e : C ≌ D) (F : E ⥤ D) {F' : E ⥤ C} (i : F ⋙ e.inverse ≅ F')
+    [e.functor.Monoidal] [F'.Monoidal] : F.Monoidal :=
+  .transport (Functor.isoWhiskerRight i.symm e.functor ≪≫ Functor.associator _ _ _ ≪≫
+    Functor.isoWhiskerLeft _ e.counitIso ≪≫ F.rightUnitor)
+
+/--
+Given a functor `F` and an equivalence of categories `e` such that `e.inverse` and `F ⋙ e.functor`
+are monoidal functors, `F` is monoidal as well.
+-/
+def monoidalOfPostcompFunctor (e : C ≌ D) (F : E ⥤ C) {F' : E ⥤ D} (i : F ⋙ e.functor ≅ F')
+    [e.inverse.Monoidal] [F'.Monoidal] : F.Monoidal :=
+  e.symm.monoidalOfPostcompInverse _ i
+
+end Equivalence
 
 end CategoryTheory

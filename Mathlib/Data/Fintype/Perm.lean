@@ -113,8 +113,8 @@ theorem nodup_permsOfList : ∀ {l : List α}, l.Nodup → (permsOfList l).Nodup
     · intro f hf₁ hf₂
       let ⟨x, hx, hx'⟩ := List.mem_flatMap.1 hf₂
       let ⟨g, hg⟩ := List.mem_map.1 hx'
-      obtain rfl : g⁻¹ x = a := f.injective <| by rw [hmeml hf₁, ← hg.2]; simp
-      have hxa : x ≠ g⁻¹ x := fun h => (List.nodup_cons.1 hl).1 (h ▸ hx)
+      obtain rfl : g.symm x = a := f.injective <| by rw [hmeml hf₁, ← hg.2]; simp
+      have hxa : x ≠ g.symm x := fun h => (List.nodup_cons.1 hl).1 (h ▸ hx)
       exact (List.nodup_cons.1 hl).1 <| mem_of_mem_permsOfList hg.1 (by simpa using hxa)
 
 /-- Given a finset, produce the finset of all permutations of its elements. -/

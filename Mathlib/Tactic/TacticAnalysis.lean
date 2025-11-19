@@ -196,7 +196,7 @@ def findTacticSeqs (tree : InfoTree) : CommandElabM (Array (Array TacticNode)) :
           let childSequences :=
             -- This tactic accepts the failure of its children.
             if stx.getKind ∈ [``Lean.Parser.Tactic.tacticTry_, ``Lean.Parser.Tactic.anyGoals] then
-              childSequences.map (· |>.map fun i => { i with mayFail := true })
+              childSequences.map (·.map fun i => { i with mayFail := true })
             else
               childSequences
           return (some ⟨ctx, i, false⟩, childSequences)
