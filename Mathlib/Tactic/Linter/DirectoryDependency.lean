@@ -17,9 +17,9 @@ independent. By specifying that one directory does not import from another, we c
 modularity of Mathlib.
 -/
 
-public meta section
+meta section
 
--- XXX: is there a better long-time place for this
+-- XXX: is there a better long-time place for this?
 /-- Parse all imports in a text file at `path` and return just their names:
 this is just a thin wrapper around `Lean.parseImports'`.
 Omit `Init` (which is part of the prelude). -/
@@ -61,6 +61,7 @@ current module.
 
 The path only contains the intermediate steps: it excludes `imported` and the current module.
 -/
+public
 def Lean.Environment.importPath (env : Environment) (imported : Name) : Array Name := Id.run do
   let mut result := #[]
   let modData := env.header.moduleData
@@ -81,7 +82,7 @@ open Lean Elab Command Linter
 The `directoryDependency` linter detects imports between directories that are supposed to be
 independent. If this is the case, it emits a warning.
 -/
-register_option linter.directoryDependency : Bool := {
+public register_option linter.directoryDependency : Bool := {
   defValue := true
   descr := "enable the directoryDependency linter"
 }
@@ -96,7 +97,8 @@ prefixes `n₁'` of `n₁` and `n₂'` of `n₂` such that `n₁' R n₂'`.
 The current implementation is a `NameMap` of `NameSet`s, testing each prefix of `n₁` and `n₂` in
 turn. This can probably be optimized.
 -/
-@[expose] def NamePrefixRel := NameMap NameSet
+--@[expose]
+def NamePrefixRel := NameMap NameSet
 
 namespace NamePrefixRel
 
@@ -639,7 +641,7 @@ private def checkBlocklist (env : Environment) (mainModule : Name) (imports : Ar
   | none => none
 
 @[inherit_doc Mathlib.Linter.linter.directoryDependency]
-def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageData) := do
+public def directoryDependencyCheck (mainModule : Name) : CommandElabM (Array MessageData) := do
   unless Linter.getLinterValue linter.directoryDependency (← Linter.getLinterOptions) do
     return #[]
   let env ← getEnv
