@@ -3,14 +3,18 @@ Copyright (c) 2025 Marc Huisinga. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Marc Huisinga
 -/
-import Mathlib.Init
+module
+
+public import Mathlib.Init
 import Mathlib.Lean.Environment
-import Lean.Server.InfoUtils
-import Lean.Meta.TryThis
+public import Lean.Server.InfoUtils
+public import Lean.Meta.TryThis
 
 /-!
 # Additions to `Lean.Elab.InfoTree.Main`
 -/
+
+@[expose] public section
 
 namespace Lean.Elab
 

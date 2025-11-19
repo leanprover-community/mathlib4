@@ -3,12 +3,14 @@ Copyright (c) 2020 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
-import Mathlib.RingTheory.AdicCompletion.Basic
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
-import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
-import Mathlib.RingTheory.Valuation.PrimeMultiplicity
-import Mathlib.RingTheory.Valuation.ValuationRing
+module
+
+public import Mathlib.RingTheory.AdicCompletion.Basic
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.LocalRing.RingHom.Basic
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
+public import Mathlib.RingTheory.Valuation.PrimeMultiplicity
+public import Mathlib.RingTheory.Valuation.ValuationRing
 
 /-!
 # Discrete valuation rings
@@ -43,6 +45,8 @@ We do not hence define `Uniformizer` at all, because we can use `Irreducible` in
 
 discrete valuation ring
 -/
+
+@[expose] public section
 
 universe u
 

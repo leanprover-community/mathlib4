@@ -3,9 +3,11 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
-import Mathlib.Data.Finsupp.Antidiagonal
-import Mathlib.Data.Finsupp.Order
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+module
+
+public import Mathlib.Data.Finsupp.Antidiagonal
+public import Mathlib.Data.Finsupp.Order
+public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-! # weights of Finsupp functions
 
@@ -61,6 +63,8 @@ as well as a function `w : σ → M`. (The important case is `R = ℕ`.)
   both `AddMonoidHom` or both functions.
 
 -/
+
+@[expose] public section
 
 variable {σ M R : Type*} [Semiring R] (w : σ → M)
 
