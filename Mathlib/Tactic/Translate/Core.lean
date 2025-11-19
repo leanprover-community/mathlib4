@@ -893,7 +893,7 @@ def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
           throwErrorAt opt "cannot specify `relevant_arg` multiple times"
         else
           if let `($_:hole) := n then
-            relevantArg? := 1000000 -- set `relevantArg?` to be out of bounds
+            relevantArg? := some 1000000 -- set `relevantArg?` to be out of bounds
           else
             relevantArg? ← elabArgStx declName argNames xs ⟨n.raw⟩
       | `(bracketedOption| (dont_translate := $[$types]*)) =>
