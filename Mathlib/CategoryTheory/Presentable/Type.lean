@@ -123,10 +123,9 @@ lemma isCardinalPresentable_iff (κ : Cardinal.{u}) [Fact κ.IsRegular] :
   obtain rfl : A = .univ := by
     ext x
     have := congr_fun hf x
-    dsimp at f hf this
-    simp only [Set.mem_univ, iff_true]
+    dsimp at this
     rw [← this]
-    exact (f x).2
+    simp
   exact (hasCardinalLT_iff_of_equiv (Equiv.Set.univ X) _).1 hA
 
 instance (X : Type u) : IsPresentable.{u} X := by
