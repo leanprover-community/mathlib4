@@ -3,14 +3,18 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
+module
 
-import Mathlib.RingTheory.CohenMacaulay.Catenary
+public import Mathlib.RingTheory.CohenMacaulay.Catenary
 
 /-!
 
 # A Noetherian Ring is CM iff the Unmixed Theorem holds
 
 -/
+
+@[expose] public section
+
 
 universe u
 
@@ -87,7 +91,8 @@ lemma isCohenMacaulayRing_of_unmixed
       simp only [List.concat_eq_append, List.mem_append, List.mem_cons, List.not_mem_nil, or_false,
         List.length_append, len, List.length_cons, List.length_nil, zero_add, and_true]
       refine ⟨fun s ↦ or_imp.mpr ⟨fun h ↦ mem s h, fun eq ↦ by simpa [eq]⟩, ⟨fun i hi ↦ ?_⟩⟩
-      simp only [List.length_append, List.length_cons, List.length_nil, zero_add, Nat.lt_succ] at hi
+      simp only [List.length_append, List.length_cons, List.length_nil, zero_add,
+        Nat.lt_succ_iff] at hi
       rw [List.take_append_of_le_length hi]
       rcases lt_or_eq_of_le hi with lt|eq
       · simpa [← List.getElem_append_left' lt [r]] using reg.1 i lt
