@@ -3,7 +3,9 @@ Copyright (c) 2023 Kyle Miller, Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Rémi Bottinelli
 -/
-import Mathlib.Combinatorics.SimpleGraph.Acyclic
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Acyclic
 
 /-!
 # Connectivity of subgraphs and induced graphs
@@ -14,6 +16,8 @@ import Mathlib.Combinatorics.SimpleGraph.Acyclic
   connectivity predicates via `SimpleGraph.subgraph.coe`.
 
 -/
+
+@[expose] public section
 
 namespace SimpleGraph
 

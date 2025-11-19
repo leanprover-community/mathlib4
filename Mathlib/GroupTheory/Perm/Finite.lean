@@ -3,10 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Finite.Sum
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.GroupTheory.Perm.Support
-import Mathlib.Logic.Equiv.Fintype
+module
+
+public import Mathlib.Data.Finite.Sum
+public import Mathlib.GroupTheory.OrderOfElement
+public import Mathlib.GroupTheory.Perm.Support
+public import Mathlib.Logic.Equiv.Fintype
 
 /-!
 # Permutations on `Fintype`s
@@ -14,6 +16,8 @@ import Mathlib.Logic.Equiv.Fintype
 This file contains miscellaneous lemmas about `Equiv.Perm` and `Equiv.swap`, building on top
 of those in `Mathlib/Logic/Equiv/Basic.lean` and other files in `Mathlib/GroupTheory/Perm/*`.
 -/
+
+@[expose] public section
 
 universe u v
 

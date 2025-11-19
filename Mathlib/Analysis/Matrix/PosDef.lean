@@ -3,8 +3,10 @@ Copyright (c) 2022 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Mohanad Ahmed
 -/
-import Mathlib.Analysis.Matrix.Spectrum
-import Mathlib.LinearAlgebra.Matrix.PosDef
+module
+
+public import Mathlib.Analysis.Matrix.Spectrum
+public import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-!
 # Spectrum of positive (semi)definite matrices
@@ -17,6 +19,8 @@ This file proves that eigenvalues of positive (semi)definite matrices are (nonne
   positive semi-definite matrix `M`, and is given by `⟪x, y⟫ = xᴴMy`.
 
 -/
+
+@[expose] public section
 
 open WithLp Matrix Unitary
 open scoped ComplexOrder

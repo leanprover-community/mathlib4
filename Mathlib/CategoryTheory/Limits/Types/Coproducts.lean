@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Types.Colimits
-import Mathlib.Tactic.CategoryTheory.Elementwise
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # Coproducts in `Type`
@@ -17,6 +19,8 @@ Similarly, the binary coproduct of two types `X` and `Y` identifies to
 `X ⊕ Y`, and the initial object of `Type u` if `PEmpty`.
 
 -/
+
+@[expose] public section
 
 universe v u
 

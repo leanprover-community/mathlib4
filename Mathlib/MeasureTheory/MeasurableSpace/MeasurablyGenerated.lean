@@ -3,12 +3,14 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Constructions
-import Mathlib.Order.Filter.AtTopBot.CompleteLattice
-import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
-import Mathlib.Order.Filter.SmallSets
-import Mathlib.Order.LiminfLimsup
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
+public import Mathlib.Order.Filter.AtTopBot.CompleteLattice
+public import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
+public import Mathlib.Order.Filter.SmallSets
+public import Mathlib.Order.LiminfLimsup
+public import Mathlib.Tactic.FinCases
 
 /-!
 # Measurably generated filters
@@ -16,6 +18,8 @@ import Mathlib.Tactic.FinCases
 We say that a filter `f` is measurably generated if every set `s ∈ f` includes a measurable
 set `t ∈ f`. This property is useful, e.g., to extract a measurable witness of `Filter.Eventually`.
 -/
+
+@[expose] public section
 
 open Set Filter
 

@@ -3,11 +3,13 @@ Copyright (c) 2025 Alex Meiburg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Meiburg
 -/
-import Mathlib.Algebra.Polynomial.CoeffList
-import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.Data.List.Destutter
-import Mathlib.Data.Sign.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.CoeffList
+public import Mathlib.Algebra.Polynomial.Monic
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Data.List.Destutter
+public import Mathlib.Data.Sign.Basic
 
 /-!
 
@@ -35,6 +37,8 @@ coefficient, or vice versa, with any number of zero coefficients in between.
 
 [Wikipedia: Descartes' Rule of Signs](https://en.wikipedia.org/wiki/Descartes%27_rule_of_signs)
 -/
+
+@[expose] public section
 
 namespace Polynomial
 

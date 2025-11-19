@@ -3,11 +3,13 @@ Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.Star.Pointwise
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Ideal.Nonunits
-import Mathlib.Tactic.NoncommRing
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.Algebra.Star.Pointwise
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Ideal.Nonunits
+public import Mathlib.Tactic.NoncommRing
 
 /-!
 # Spectrum of an element in an algebra
@@ -37,6 +39,8 @@ This theory will serve as the foundation for spectral theory in Banach algebras.
 
 * `σ a` : `spectrum R a` of `a : A`
 -/
+
+@[expose] public section
 
 
 open Set
