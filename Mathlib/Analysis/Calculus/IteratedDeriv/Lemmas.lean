@@ -34,6 +34,18 @@ theorem iteratedDerivWithin_congr (hfg : Set.EqOn f g s) :
     rw [iteratedDerivWithin_succ, iteratedDerivWithin_succ]
     exact derivWithin_congr (IH hfg) (IH hfg hy)
 
+theorem iteratedDerivWithin_eq_iteratedDeriv
+    (hf : ContDiff 𝕜 n f) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
+    iteratedDerivWithin n f s x = iteratedDeriv n f x := by
+  induction n generalizing x with
+  | zero => simp
+  | succ n hn =>
+    have : ∀ x ∈ s, iteratedDerivWithin n f s x = iteratedDeriv n f x :=
+      fun _ hy => hn (ContDiff.of_le hf (by norm_cast; simp)) hy
+    rw [iteratedDerivWithin_succ, iteratedDeriv_succ, derivWithin, deriv,
+      fderivWithin_congr this (this _ hx), fderivWithin_eq_fderiv (hs.uniqueDiffWithinAt hx)]
+    apply (hf.differentiable_iteratedDeriv n (by norm_cast; simp)).differentiableAt
+
 include h hx in
 theorem iteratedDerivWithin_add
     (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g s x) :
