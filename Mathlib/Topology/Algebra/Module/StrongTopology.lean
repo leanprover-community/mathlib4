@@ -512,7 +512,7 @@ variable (G) [TopologicalSpace F] [TopologicalSpace G] (𝔖 : Set (Set E)) (�
 convergence topology. -/
 @[simps]
 def precomp_uniformConvergenceCLM [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G]
-    [RingHomIsometric σ] {L : E →SL[σ] F} (hL : MapsTo (fun s ↦ L '' s) 𝔖 𝔗) :
+    {L : E →SL[σ] F} (hL : MapsTo (fun s ↦ L '' s) 𝔖 𝔗) :
     (UniformConvergenceCLM τ G 𝔗) →L[𝕜₃] UniformConvergenceCLM ρ G 𝔖 where
   toFun f := f.comp L
   map_add' f g := add_comp f g L
