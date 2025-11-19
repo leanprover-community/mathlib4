@@ -52,8 +52,8 @@ theorem Subgroup.Normal.eq_bot_or_eq_top [IsSimpleGroup G] {H : Subgroup G} (Hn 
 
 @[to_additive]
 protected lemma Subgroup.isSimpleGroup_iff {H : Subgroup G} :
-    IsSimpleGroup ↥H ↔ H ≠ ⊥ ∧ ∀ H' ≤ H, (H'.subgroupOf H).Normal → H' = ⊥ ∨ H' = H := by
-  rw [isSimpleGroup_iff, H.nontrivial_iff_ne_bot, Subgroup.forall]
+    IsSimpleGroup ↥H ↔ Nontrivial ↥H ∧ ∀ H' ≤ H, (H'.subgroupOf H).Normal → H' = ⊥ ∨ H' = H := by
+  rw [isSimpleGroup_iff, Subgroup.forall]
   simp +contextual [disjoint_of_le_iff_left_eq_bot, LE.le.ge_iff_eq]
 
 namespace IsSimpleGroup
