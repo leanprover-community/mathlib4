@@ -108,6 +108,12 @@ theorem ClusterPt.of_inf_right {f g : Filter X} (H : ClusterPt x <| f ⊓ g) :
     ClusterPt x g :=
   H.mono inf_le_right
 
+@[simp]
+theorem clusterPt_nhds_inf {F : Filter X} : ClusterPt x (𝓝 x ⊓ F) ↔ ClusterPt x F := by
+  simp [ClusterPt]
+
+alias ⟨_, ClusterPt.nhds_inf⟩ := clusterPt_nhds_inf
+
 section MapClusterPt
 
 variable {F : Filter α} {u : α → X} {x : X}

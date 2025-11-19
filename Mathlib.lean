@@ -6960,6 +6960,7 @@ import Mathlib.Topology.Maps.OpenQuotient
 import Mathlib.Topology.Maps.Proper.Basic
 import Mathlib.Topology.Maps.Proper.CompactlyGenerated
 import Mathlib.Topology.Maps.Proper.UniversallyClosed
+import Mathlib.Topology.Maps.PullbackQuotient
 import Mathlib.Topology.MetricSpace.Algebra
 import Mathlib.Topology.MetricSpace.Antilipschitz
 import Mathlib.Topology.MetricSpace.Basic
