@@ -39,7 +39,6 @@ We define bi-Cartesian squares, and
 show that the pullback and pushout squares for a biproduct are bi-Cartesian.
 -/
 
-
 noncomputable section
 
 open CategoryTheory
@@ -373,6 +372,48 @@ lemma of_iso (h : IsPullback fst snd f g)
               rw [← reassoc_of% commfst, e₂.hom_inv_id, Category.comp_id]
             · change snd = e₁.hom ≫ snd' ≫ e₃.inv
               rw [← reassoc_of% commsnd, e₃.hom_inv_id, Category.comp_id]))⟩
+
+/-- Pullbacks over isomorphic cospans have isomorphic apexes. -/
+def isoIsPullback_congr
+      {P' X' Y' Z' : C}
+      (iX : X ≅ X') (iY : Y ≅ Y') (iZ : Z ≅ Z')
+      {fst' : P' ⟶ X'} {snd' : P' ⟶ Y'}
+      {f' : X' ⟶ Z'} {g' : Y' ⟶ Z'}
+      (hf : iX.inv ≫ f ≫ iZ.hom = f') (hg : iY.inv ≫ g ≫ iZ.hom = g')
+      (pb : IsPullback fst snd f g)
+      (pb' : IsPullback fst' snd' f' g') :
+    P ≅ P' :=
+  have h_trans : IsPullback (fst ≫ iX.hom) (snd ≫ iY.hom)
+      (iX.inv ≫ f ≫ iZ.hom) (iY.inv ≫ g ≫ iZ.hom) :=
+    IsPullback.of_iso pb
+      (Iso.refl P) (iX) (iY) (iZ)
+      (by simp) (by simp) (by simp) (by simp)
+  IsPullback.isoIsPullback X' Y' h_trans (by simpa [hf, hg] using pb')
+
+@[reassoc (attr := simp)]
+lemma isoIsPullback_congr_hom_fst
+      {X' Y' Z' P' : C}
+      (iX : X ≅ X') (iY : Y ≅ Y') (iZ : Z ≅ Z')
+      {fst' : P' ⟶ X'} {snd' : P' ⟶ Y'}
+      {f' : X' ⟶ Z'} {g' : Y' ⟶ Z'}
+      (hf : iX.inv ≫ f ≫ iZ.hom = f') (hg : iY.inv ≫ g ≫ iZ.hom = g')
+      (pb : IsPullback fst snd f g)
+      (pb' : IsPullback fst' snd' f' g') :
+    (isoIsPullback_congr iX iY iZ hf hg pb pb').hom ≫ fst' = fst ≫ iX.hom := by
+  unfold isoIsPullback_congr; simp
+
+@[reassoc (attr := simp)]
+lemma isoIsPullback_congr_hom_snd
+      {X' Y' Z' P' : C}
+      (iX : X ≅ X') (iY : Y ≅ Y') (iZ : Z ≅ Z')
+      {fst' : P' ⟶ X'} {snd' : P' ⟶ Y'}
+      {f' : X' ⟶ Z'} {g' : Y' ⟶ Z'}
+      (hf : iX.inv ≫ f ≫ iZ.hom = f') (hg : iY.inv ≫ g ≫ iZ.hom = g')
+      (pb : IsPullback fst snd f g)
+      (pb' : IsPullback fst' snd' f' g') :
+    (isoIsPullback_congr iX iY iZ hf hg pb pb').hom ≫ snd' = snd ≫ iY.hom := by
+  unfold isoIsPullback_congr; simp
+
 section
 
 variable {P X Y : C} {fst : P ⟶ X} {snd : P ⟶ X} {f : X ⟶ Y} [Mono f]
@@ -1496,3 +1537,5 @@ theorem IsPushout.map_iff {D : Type*} [Category D] (F : C ⥤ D) [PreservesColim
 end Functor
 
 end CategoryTheory
+
+set_option linter.style.longFile 1700

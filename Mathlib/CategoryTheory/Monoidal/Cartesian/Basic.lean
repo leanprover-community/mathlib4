@@ -234,6 +234,10 @@ Constructs a morphism to the product given its two components.
 def lift {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) : T ⟶ X ⊗ Y :=
   (BinaryFan.IsLimit.lift' (tensorProductIsBinaryProduct X Y) f g).1
 
+@[simp]
+lemma lift_eq {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) :
+  (tensorProductIsBinaryProduct X Y).lift (BinaryFan.mk f g) = lift f g := rfl
+
 @[reassoc (attr := simp)]
 lemma lift_fst {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) : lift f g ≫ fst _ _ = f :=
   (BinaryFan.IsLimit.lift' (tensorProductIsBinaryProduct X Y) f g).2.1
@@ -286,6 +290,14 @@ lemma whiskerRight_fst {X Y : C} (f : X ⟶ Y) (Z : C) : f ▷ Z ≫ fst _ _ = f
 @[reassoc (attr := simp)]
 lemma whiskerRight_snd {X Y : C} (f : X ⟶ Y) (Z : C) : f ▷ Z ≫ snd _ _ = snd _ _ := by
   simp [snd_def, ← comp_whiskerRight_assoc]
+
+@[simp]
+lemma whiskerLeft_eq_lift {X Y Z : C} (f : Y ⟶ Z) :
+    (lift (fst X Y) (snd X Y ≫ f)) = X ◁ f := by aesop_cat
+
+@[simp]
+lemma whiskerRight_eq_lift {X Y Z : C} (f : X ⟶ Z) :
+    (lift (fst X Y ≫ f) (snd X Y)) = f ▷ Y := by aesop_cat
 
 @[reassoc (attr := simp)]
 lemma tensorHom_fst {X₁ X₂ Y₁ Y₂ : C} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) :
