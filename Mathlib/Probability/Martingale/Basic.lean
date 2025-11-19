@@ -231,9 +231,7 @@ theorem sub_martingale [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ
     (hg : Martingale g ℱ μ) : Submartingale (f - g) ℱ μ :=
   hf.sub_supermartingale hg.supermartingale
 
-protected theorem sup [LinearOrder E] [ContinuousSup E] [HasSolidNorm E] [IsOrderedAddMonoid E]
-    [IsOrderedModule ℝ E] {f g : ι → Ω → E} (hf : Submartingale f ℱ μ)
-    (hg : Submartingale g ℱ μ) :
+protected theorem sup {f g : ι → Ω → ℝ} (hf : Submartingale f ℱ μ) (hg : Submartingale g ℱ μ) :
     Submartingale (f ⊔ g) ℱ μ := by
   refine ⟨fun i => @StronglyMeasurable.sup _ _ _ _ (ℱ i) _ _ _ (hf.adapted i) (hg.adapted i),
     fun i j hij => ?_, fun i => Integrable.sup (hf.integrable _) (hg.integrable _)⟩
@@ -245,9 +243,7 @@ protected theorem sup [LinearOrder E] [ContinuousSup E] [HasSolidNorm E] [IsOrde
       (condExp_mono (hg.integrable _) (Integrable.sup (hf.integrable j) (hg.integrable j))
         (Eventually.of_forall fun x => le_max_right _ _))
 
-protected theorem pos [LinearOrder E] [ContinuousSup E] [HasSolidNorm E] [IsOrderedAddMonoid E]
-    [IsOrderedModule ℝ E] {f : ι → Ω → E} (hf : Submartingale f ℱ μ) :
-    Submartingale (f⁺) ℱ μ :=
+protected theorem pos {f : ι → Ω → ℝ} (hf : Submartingale f ℱ μ) : Submartingale (f⁺) ℱ μ :=
   hf.sup (martingale_zero _ _ _).submartingale
 
 end Submartingale
