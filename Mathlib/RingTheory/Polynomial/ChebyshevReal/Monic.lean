@@ -3,9 +3,11 @@ Copyright (c) 2020 Yuval Filmus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuval Filmus
 -/
-import Mathlib.RingTheory.Polynomial.ChebyshevReal.Basic
-import Mathlib.LinearAlgebra.Lagrange
-import Mathlib.Topology.Algebra.Polynomial
+module
+
+public import Mathlib.RingTheory.Polynomial.ChebyshevReal.Basic
+public import Mathlib.LinearAlgebra.Lagrange
+public import Mathlib.Topology.Algebra.Polynomial
 
 /-!
 # Chebyshev polynomials over the reals: leading coefficient
@@ -21,16 +23,15 @@ import Mathlib.Topology.Algebra.Polynomial
 
 namespace Polynomial.Chebyshev
 
-open Polynomial
-open Real
+open Polynomial Real
 
-private lemma node_in_range {n j : ℕ} (hn : n ≠ 0) (hj : j ≤ n) : j * π / n ∈ Set.Icc 0 π := by
+lemma node_in_range {n j : ℕ} (hn : n ≠ 0) (hj : j ≤ n) : j * π / n ∈ Set.Icc 0 π := by
   constructor
   · positivity
   · calc j * π / n ≤ n * π / n := by gcongr
     _ = π := by rw [mul_div_assoc, mul_div_cancel₀]; convert hn; exact Nat.cast_eq_zero
 
-private lemma node_product_positive {n : ℕ} {i : ℕ} (hi : i ∈ Finset.Icc 0 n) :
+lemma node_product_positive {n : ℕ} {i : ℕ} (hi : i ∈ Finset.Icc 0 n) :
     (-1)^i * ∏ j ∈ (Finset.Icc 0 n).erase i, (cos (i * π / n) - cos (j * π / n)) > 0 := by
   by_cases n = 0
   case pos hn =>
@@ -86,7 +87,7 @@ private lemma node_product_positive {n : ℕ} {i : ℕ} (hi : i ∈ Finset.Icc 0
   replace hj₂ := Finset.mem_Ioc.mp hj₂
   linarith
 
-private lemma convex_combination {n : ℕ} (hn : n ≠ 0) {P : ℝ[X]} (hP : P.degree = n) :
+lemma convex_combination {n : ℕ} (hn : n ≠ 0) {P : ℝ[X]} (hP : P.degree = n) :
     ∃ (c : ℕ → ℝ),
       (∀ i ∈ Finset.Icc 0 n, 0 < c i) ∧
       (∑ i ∈ Finset.Icc 0 n, c i = 2^(n - 1)) ∧
@@ -129,7 +130,7 @@ theorem bddAbove_poly_interval (P : ℝ[X]) : BddAbove { abs (P.eval x) | x ∈ 
   change BddAbove ((fun x => abs (P.eval x)) '' Set.Icc (-1) 1)
   exact IsCompact.bddAbove_image hK hcont
 
-private lemma pointwise_bound (P : ℝ[X]) (n i : ℕ) :
+lemma pointwise_bound (P : ℝ[X]) (n i : ℕ) :
     (-1)^i * P.eval (cos (i * π / n)) ≤ sSup { abs (P.eval x) | x ∈ Set.Icc (-1) 1 } := by
   suffices abs (P.eval (cos (i * π / n))) ≤ sSup { abs (P.eval x) | x ∈ Set.Icc (-1) 1 } by
     cases neg_one_pow_eq_or ℝ i with
@@ -143,6 +144,13 @@ private lemma pointwise_bound (P : ℝ[X]) (n i : ℕ) :
     apply abs_le.mp
     exact abs_cos_le_one _
   rfl
+end Polynomial.Chebyshev
+
+@[expose] public section
+
+namespace Polynomial.Chebyshev
+
+open Polynomial Real
 
 theorem min_abs_of_monic {n : ℕ} (hn : n ≠ 0) (P : ℝ[X]) (Pdeg : P.degree = n) (Pmonic : P.Monic) :
     1/2^(n - 1) ≤ sSup { abs (P.eval x) | x ∈ Set.Icc (-1) 1 } := by

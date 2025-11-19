@@ -3,16 +3,18 @@ Copyright (c) 2020 Yuval Filmus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuval Filmus
 -/
-import Mathlib.RingTheory.Polynomial.Chebyshev
-import Mathlib.Data.Real.Basic
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev
-import Mathlib.Analysis.SpecialFunctions.Arsinh
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
+module
+
+public import Mathlib.RingTheory.Polynomial.Chebyshev
+public import Mathlib.Data.Real.Basic
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev
+public import Mathlib.Analysis.SpecialFunctions.Arsinh
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
 # Chebyshev polynomials over the reals
@@ -28,6 +30,8 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 * Prove orthogonality with respect to appropriate inner product.
 * Prove more minimax properties of Chebyshev polynomials.
 -/
+
+@[expose] public section
 
 namespace Polynomial.Chebyshev
 
@@ -358,7 +362,7 @@ theorem T_extrema_eq_natCast {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
       use r
       left
       field_simp
-      rw [k_eq, ← hl', Int.natAbs_cast]
+      rw [k_eq, ← hl', Int.natAbs_natCast]
       push_cast
       ring
     case neg =>
@@ -371,7 +375,7 @@ theorem T_extrema_eq_natCast {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
       right
       field_simp
       rw [k_eq, ← hl', Nat.cast_sub (by omega)]
-      rw [Int.natAbs_cast]
+      rw [Int.natAbs_natCast]
       push_cast
       ring
   · intro h
