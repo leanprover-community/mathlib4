@@ -3,9 +3,11 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Analysis.Calculus.ContDiff.CPolynomial
-import Mathlib.Data.Fintype.Perm
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Calculus.ContDiff.CPolynomial
+public import Mathlib.Data.Fintype.Perm
 
 /-!
 # The iterated derivative of an analytic function
@@ -43,6 +45,8 @@ is not complete). This makes it possible to avoid all completeness assumptions i
 statements. When needed, we give versions of some statements assuming completeness and dropping
 analyticity, for ease of use.
 -/
+
+@[expose] public section
 
 open scoped ENNReal Topology ContDiff
 open Equiv Set

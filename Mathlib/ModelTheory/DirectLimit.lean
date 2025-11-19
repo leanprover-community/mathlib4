@@ -3,11 +3,13 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Gabin Kolly
 -/
-import Mathlib.Data.Finite.Sum
-import Mathlib.Data.Fintype.Order
-import Mathlib.ModelTheory.FinitelyGenerated
-import Mathlib.ModelTheory.Quotients
-import Mathlib.Order.DirectedInverseSystem
+module
+
+public import Mathlib.Data.Finite.Sum
+public import Mathlib.Data.Fintype.Order
+public import Mathlib.ModelTheory.FinitelyGenerated
+public import Mathlib.ModelTheory.Quotients
+public import Mathlib.Order.DirectedInverseSystem
 
 /-!
 # Direct Limits of First-Order Structures
@@ -24,6 +26,8 @@ This file constructs the direct limit of a directed system of first-order embedd
 - `FirstOrder.Language.DirectLimit.equiv_lift` is the equivalence between limits of
   isomorphic direct systems.
 -/
+
+@[expose] public section
 
 
 universe v w w' u₁ u₂
@@ -58,9 +62,7 @@ theorem coe_natLERec (m n : ℕ) (h : m ≤ n) :
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
   ext x
   induction k with
-  | zero =>
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    erw [natLERec, Nat.leRecOn_self, Embedding.refl_apply, Nat.leRecOn_self]
+  | zero => simp [natLERec, Nat.leRecOn_self]
   | succ k ih =>
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [Nat.leRecOn_succ le_self_add, natLERec, Nat.leRecOn_succ le_self_add, ← natLERec,

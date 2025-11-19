@@ -3,8 +3,10 @@ Copyright (c) 2024 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen
 -/
-import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.CategoryTheory.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Comma.Arrow
+public import Mathlib.CategoryTheory.EpiMono
 
 /-!
 # Retracts
@@ -12,6 +14,8 @@ import Mathlib.CategoryTheory.EpiMono
 Defines retracts of objects and morphisms.
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 
@@ -128,6 +132,12 @@ instance : IsSplitMono h.i.left := ⟨⟨h.left.splitMono⟩⟩
 
 instance : IsSplitMono h.i.right := ⟨⟨h.right.splitMono⟩⟩
 
+/-- If a morphism `f` is a retract of `g`,
+then `F.map f` is a retract of `F.map g` for any functor `F`. -/
+@[simps!]
+def map (F : C ⥤ D) : RetractArrow (F.map f) (F.map g) :=
+  Retract.map h F.mapArrow
+
 /-- If a morphism `f` is a retract of `g`, then `f.op` is a retract of `g.op`. -/
 @[simps]
 def op : RetractArrow f.op g.op where
@@ -163,5 +173,14 @@ def retract {X Y : C} (e : X ≅ Y) : Retract X Y where
   r := e.inv
 
 end Iso
+
+/-- If `X` is a retract of `Y`, then for any natural transformation `τ`,
+the natural transformation `τ.app X` is a retract of `τ.app Y`. -/
+@[simps]
+def NatTrans.retractArrowApp {F G : C ⥤ D}
+    (τ : F ⟶ G) {X Y : C} (h : Retract X Y) : RetractArrow (τ.app X) (τ.app Y) where
+  i := Arrow.homMk (F.map h.i) (G.map h.i) (by simp)
+  r := Arrow.homMk (F.map h.r) (G.map h.r) (by simp)
+  retract := by ext <;> simp [← Functor.map_comp]
 
 end CategoryTheory
