@@ -841,3 +841,54 @@ lemma coe_evalLatticeHom (i : ι) : ⇑(evalLatticeHom (α := α) i) = Function.
 lemma evalLatticeHom_apply (i : ι) (f : ∀ i, α i) : evalLatticeHom i f = f i := rfl
 
 end Pi
+
+/-- Left sup by an element of a (semi)lattice is a `SupHom`
+c.f. `AddMonoidHom.mulLeft`
+-/
+def supLeft [SemilatticeSup α] (a : α) : SupHom α α where
+  toFun := (a ⊔ ·)
+  map_sup' := sup_sup_distrib_left a
+
+/-- sup of an element of a (semi)ring is a `SupHom` in both arguments. -/
+def sup [SemilatticeSup α] : SupHom α (SupHom α α) where
+  toFun := supLeft
+  map_sup' _ _:= by
+    ext
+    simp [supLeft, sup_sup_distrib_right]
+
+lemma sup_injective [SemilatticeSup α] : Injective sup (α := α) := by
+  intro x y hxy
+  simp [sup] at hxy
+  have e1 : supLeft x y = y := by
+    rw [hxy]
+    simp [supLeft]
+  have e2 : supLeft y x = x := by
+    rw [← hxy]
+    simp [supLeft]
+  have e3 : supLeft x y = supLeft y x := by
+    simp [supLeft, sup_comm]
+  rw [← e2, ← e3, e1]
+
+/-- Right sup by an element of a (semi)lattice is a `SupHom`
+c.f. `AddMonoidHom.mulRight`
+-/
+def supRight [SemilatticeSup α] (a : α) : SupHom α α where
+  toFun x := x ⊔ a
+  map_sup' _ _ := sup_sup_distrib_right _ _ a
+
+/-- Left inf by an element of a (semi)lattice is an `InfHom` -/
+def infLeft [SemilatticeInf α] (a : α) : InfHom α α where
+  toFun := (a ⊓ ·)
+  map_inf' := inf_inf_distrib_left a
+
+/-- Right inf by an element of a (semi)lattice is an `InfHom` -/
+def infRight [SemilatticeInf α] (a : α) : InfHom α α where
+  toFun x := x ⊓ a
+  map_inf' _ _ := inf_inf_distrib_right _ _ a
+
+/-- inf of an element of a (semi)ring is a `SupHom` in both arguments. -/
+def inf [SemilatticeInf α] : InfHom α (InfHom α α) where
+  toFun := infLeft
+  map_inf' _ _:= by
+    ext
+    simp [infLeft, inf_inf_distrib_right]
