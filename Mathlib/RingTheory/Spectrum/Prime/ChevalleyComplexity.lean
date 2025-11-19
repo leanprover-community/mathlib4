@@ -465,7 +465,7 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
     obtain ⟨S, hS, hS'⟩ := H (R₀ := R₀) f
     refine ⟨S, Eq.trans ?_ hS, ?_⟩
     · rw [← zeroLocus_span (Set.range _), ← zeroLocus_span (Set.range _),
-        idealSpan_range_update_divByMonic hne _ hi]
+        idealSpan_range_update_divByMonic hne _]
     · intro C hC
       let c' : InductionObj _ _ := ⟨update c.val j (c.val j %ₘ c.val i)⟩
       have deg_bound₁ : c'.degBound ≤ c.degBound := by
