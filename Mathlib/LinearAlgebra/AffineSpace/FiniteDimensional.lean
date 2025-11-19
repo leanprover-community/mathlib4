@@ -3,10 +3,12 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.FieldTheory.Finiteness
-import Mathlib.LinearAlgebra.AffineSpace.Basis
-import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+module
+
+public import Mathlib.FieldTheory.Finiteness
+public import Mathlib.LinearAlgebra.AffineSpace.Basis
+public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
 /-!
 # Finite-dimensional subspaces of affine spaces.
@@ -20,6 +22,8 @@ subspaces of affine spaces.
   subspace of dimension at most 1.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -627,6 +631,21 @@ theorem collinear_triple_of_mem_affineSpan_pair {p₁ p₂ p₃ p₄ p₅ : P} (
     Collinear k ({p₁, p₂, p₃} : Set P) := by
   refine (collinear_insert_insert_insert_left_of_mem_affineSpan_pair h₁ h₂ h₃).subset ?_
   gcongr; simp
+
+/-- Replacing a point in an affine independent triple with a collinear point preserves affine
+independence. -/
+theorem affineIndependent_of_affineIndependent_collinear_ne {p₁ p₂ p₃ p : P}
+    (ha : AffineIndependent k ![p₁, p₂, p₃]) (hcol : Collinear k {p₂, p₃, p}) (hne : p₂ ≠ p) :
+    AffineIndependent k ![p₁, p₂, p] := by
+  rw [affineIndependent_iff_not_collinear_set]
+  by_contra h
+  have h1: Collinear k {p₁, p₃, p₂, p} := by
+    apply collinear_insert_insert_of_mem_affineSpan_pair
+    · apply Collinear.mem_affineSpan_of_mem_of_ne h (by simp) (by simp) (by simp) hne
+    · apply Collinear.mem_affineSpan_of_mem_of_ne hcol (by simp) (by simp) (by simp) hne
+  have h2 : Collinear k {p₁, p₂, p₃} := h1.subset (by grind)
+  rw [affineIndependent_iff_not_collinear_set] at ha
+  exact ha h2
 
 variable (k) in
 /-- A set of points is coplanar if their `vectorSpan` has dimension at most `2`. -/

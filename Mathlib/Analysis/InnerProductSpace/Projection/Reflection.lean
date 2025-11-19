@@ -3,7 +3,9 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection.Basic
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 
 /-!
 # Reflection
@@ -11,6 +13,8 @@ import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 A linear isometry equivalence `K.reflection : E ≃ₗᵢ[𝕜] E` in constructed, by choosing
 for each `u : E`, `K.reflection u = 2 • K.starProjection u - u`.
 -/
+
+@[expose] public section
 
 noncomputable section
 

@@ -3,11 +3,13 @@ Copyright (c) 2024 Alvaro Belmonte. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alvaro Belmonte, Joël Riou
 -/
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Pi.Basic
-import Mathlib.Data.ULift
-import Mathlib.CategoryTheory.Category.Cat
-import Mathlib.CategoryTheory.Adjunction.Basic
+module
+
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Pi.Basic
+public import Mathlib.Data.ULift
+public import Mathlib.CategoryTheory.Category.Cat
+public import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
 # Codiscrete categories
@@ -25,6 +27,8 @@ or `I`-indexed families of isomorphisms to natural transformations or natural is
 We define `functorToCat : Type u ⥤ Cat.{0,u}` which sends a type to the codiscrete category and show
 it is right adjoint to `Cat.objects.`
 -/
+
+@[expose] public section
 namespace CategoryTheory
 
 universe u v w

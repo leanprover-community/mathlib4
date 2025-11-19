@@ -3,11 +3,15 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Homology.Single
+module
+
+public import Mathlib.Algebra.Homology.Single
 
 /-!
 # Augmentation and truncation of `ℕ`-indexed (co)chain complexes.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -58,7 +62,7 @@ def augment (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ 
     | _ + 2, 0, _ => rfl
     | 0, _, _ => rfl
     | i + 1, j + 1, h => by
-      simp only; exact C.shape i j (Nat.succ_ne_succ.1 h)
+      simp only; exact C.shape i j (Nat.succ_ne_succ_iff.1 h)
   d_comp_d'
     | _, _, 0, rfl, rfl => w
     | _, _, k + 1, rfl, rfl => C.d_comp_d _ _ _

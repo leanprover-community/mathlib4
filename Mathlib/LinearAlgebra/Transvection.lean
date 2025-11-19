@@ -3,12 +3,13 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.LinearAlgebra.Charpoly.BaseChange
-import Mathlib.LinearAlgebra.Dual.BaseChange
-import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
+public import Mathlib.LinearAlgebra.Charpoly.BaseChange
+public import Mathlib.LinearAlgebra.Dual.BaseChange
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
+public import Mathlib.LinearAlgebra.DFinsupp
 
 /-!
 # Transvections in a module
@@ -26,6 +27,8 @@ import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
 * `LinearEquiv.transvection.det` shows that it has determinant `1`.
 
 -/
+
+@[expose] public section
 
 namespace LinearMap
 

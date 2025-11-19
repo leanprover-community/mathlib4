@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
-import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Tactic.Nontriviality
+module
+
+public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Tactic.Nontriviality
 
 /-!
 # Finite sets
@@ -37,6 +39,8 @@ instances since they do not compute anything.
 
 finite sets
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 

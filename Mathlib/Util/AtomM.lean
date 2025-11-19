@@ -3,9 +3,11 @@ Copyright (c) 2023 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init
-import Lean.Meta.Tactic.Simp.Types
-import Qq
+module
+
+public import Mathlib.Init
+public meta import Lean.Meta.Tactic.Simp.Types
+public meta import Qq
 
 /-!
 # A monad for tracking and deduplicating atoms
@@ -18,6 +20,8 @@ For performance reasons, consider whether `Lean.Meta.Canonicalizer.canon` can be
 After canonicalizing, a `HashMap Expr Nat` suffices to keep track of previously seen atoms,
 and is much faster as it uses `Expr` equality rather than `isDefEq`.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 open Lean Meta

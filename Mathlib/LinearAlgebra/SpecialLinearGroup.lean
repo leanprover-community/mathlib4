@@ -3,12 +3,13 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.LinearAlgebra.Dual.Basis
-import Mathlib.LinearAlgebra.Matrix.Dual
-import Mathlib.LinearAlgebra.GeneralLinearGroup
-import Mathlib.LinearAlgebra.Charpoly.BaseChange
+public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.LinearAlgebra.Dual.Basis
+public import Mathlib.LinearAlgebra.Matrix.Dual
+public import Mathlib.LinearAlgebra.GeneralLinearGroup
+public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 
 /-!
 # The special linear group of a module
@@ -68,6 +69,7 @@ theorem Module.finrank_pos_iff_of_free {R M : Type*} [CommRing R] [Nontrivial R]
   rw [← not_subsingleton_iff_nontrivial, ← iff_not_comm]
   simp [Module.finrank_eq_zero_iff_of_free]
 
+@[expose] public section
 
 variable {R V : Type*} [CommRing R] [AddCommGroup V] [Module R V]
 
