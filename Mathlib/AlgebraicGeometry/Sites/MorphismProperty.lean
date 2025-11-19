@@ -81,6 +81,12 @@ lemma ofArrows_mem_precoverage_iff {S : Scheme.{u}} {ι : Type*} {X : ι → Sch
     ← Presieve.ofArrows_mem_comap_jointlySurjectivePrecoverage_iff]
   exact ⟨fun hmem ↦ ⟨hmem.1, fun i ↦ hmem.2 ⟨i⟩⟩, fun h ↦ ⟨h.1, fun {Y} g ⟨i⟩ ↦ h.2 i⟩⟩
 
+@[simp]
+lemma singleton_mem_precoverage_iff {X S : Scheme.{u}} (f : X ⟶ S) :
+    Presieve.singleton f ∈ precoverage P S ↔ Function.Surjective f.base ∧ P f := by
+  rw [← Presieve.ofArrows_pUnit.{_, _, 0}, ofArrows_mem_precoverage_iff]
+  aesop
+
 instance [P.IsStableUnderComposition] : (precoverage P).IsStableUnderComposition := by
   dsimp only [precoverage]; infer_instance
 
