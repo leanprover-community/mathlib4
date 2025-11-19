@@ -13,7 +13,7 @@ import Mathlib.Topology.Sets.Opens
 Properties of Scott topologies over (Directed) `CompletePartialOrder`, and Algberaic DCPOs.
 
 ## Main Definitions
-- `compact` - The element x is compact if for any directed subset A ⊆ D, whenever `x ≤ sSup A`,
+- `Compact` - The element x is compact if for any directed subset A ⊆ D, whenever `x ≤ sSup A`,
 there is some a ∈ A s.t. x ≤ a already.
 - `AlgebraicDCPO` - an extension of `CompletePartialOrder` which is additionally "algebraic".
 Algebraicity has a correspondence with axioms of a Scott topology
@@ -132,7 +132,9 @@ lemma specialization_iff_ge {x y : α} : x ≤ y ↔ y ⤳ x := by
     -- in other words x ≤ y as required
     exact h_specialize
 
-lemma isOpen_of_Ici_compact {u : Set α} (hu : u ∈ Ici '' 𝕂 α) : IsOpen u := by
+/-- Anticipating the construction of basis proved in `isTopologicalBasis_Ici_image_compactSet`
+We use the name `basis` instead of `Ici_image_compactSet` here -/
+lemma isOpen_of_basis {u : Set α} (hu : u ∈ Ici '' 𝕂 α) : IsOpen u := by
   rw [@isOpen_iff_isUpperSet_and_dirSupInaccOn α {d | DirectedOn (· ≤ ·) d }]
   constructor
   · -- u is an upper set
@@ -173,18 +175,21 @@ lemma isOpen_of_Ici_compact {u : Set α} (hu : u ∈ Ici '' 𝕂 α) : IsOpen u 
     · exact a_in_u
 
 /-- The upwards closure of a compact point which we know is open -/
-def open_of_Ici_Compact (c : {c: α // Compact c}) : Opens α :=
-  ⟨cᵘ, isOpen_of_Ici_compact <| Set.mem_image_of_mem Ici c.2⟩
+def Opens.ofCompact (c : {c: α // Compact c}) : Opens α :=
+  ⟨cᵘ, isOpen_of_basis <| Set.mem_image_of_mem Ici c.2⟩
 /-- The upwards closure of a compact point which we know is open.
 ᵘᵒ stand for upward open -/
-notation c:80"ᵘᵒ"  => open_of_Ici_Compact c -- Ici, open
+notation c:80"ᵘᵒ"  => Opens.ofCompact c -- Ici, open
 
 end CompletePartialOrder
 
 section AlgebraicDCPO
 variable {D : Type*} [TopologicalSpace D] [AlgebraicDCPO D] [IsScott D {d | DirectedOn (· ≤ ·) d}]
 
-lemma mem_Ici_Compact_of_mem_Open (x : D) (u : Set D) (x_in_u : x ∈ u) (hu : IsOpen u)
+/-- Given any point `x` in `D` in an open set `u`, there exists a basis within `u`
+which contains `x`.
+In anticipation of `isTopologicalBasis_Ici_image_compactSet` we already use the word `basis` -/
+lemma exists_basis_mem_basis (x : D) (u : Set D) (x_in_u : x ∈ u) (hu : IsOpen u)
     : ∃ v ∈ Ici '' 𝕂 D, x ∈ v ∧ v ⊆ u := by
   rw [@isOpen_iff_isUpperSet_and_dirSupInaccOn D {d | DirectedOn (· ≤ ·) d }] at hu
 
@@ -229,27 +234,25 @@ lemma mem_Ici_Compact_of_mem_Open (x : D) (u : Set D) (x_in_u : x ∈ u) (hu : I
 
 /-- The upward closures of compact elements form a topological
 basis under the Scott Topology. Prop 3.5.2 in [reneta2025] -/
-theorem isTopologicalBasis_of_Ici_Compact : IsTopologicalBasis (Ici '' 𝕂 D) := by
+theorem isTopologicalBasis_Ici_image_compactSet : IsTopologicalBasis (Ici '' 𝕂 D) := by
   apply isTopologicalBasis_of_isOpen_of_nhds
   · -- every upper set of a compact element in the DCPO is a Scott open set
     -- This is the true by definition direction, as compactness corresponds to Scott-Hausdorrf open,
     -- and upper set corresponds to Upper set open
-    apply isOpen_of_Ici_compact
+    apply isOpen_of_basis
   · -- If an element `x` is in an open set `u`, we can find it in a set in the basis (`Ici c`)
-    apply mem_Ici_Compact_of_mem_Open
+    apply exists_basis_mem_basis
 
 /-- Any open set, `u`, can be constructed as a union of sets from the basis.
     The basis consists of the upward closures of those compact elements in `u`
-    This is the weaker version of the lemma using `Set`s instead of `Opens`.
-    Note on naming: we now use basis instead of `Ici_Compact` after showing in
-    `isTopologicalBasis_of_Ici_Compact` that `Ici_Compact` is a basis -/
+    This is the weaker version of the lemma using `Set`s instead of `Opens`. -/
 lemma open_eq_open_of_basis (u : Set D) (hu : IsOpen u) :
   u = ⋃₀ (Ici '' { c ∈ 𝕂 D | cᵘ ⊆ u}) := by
   ext e
   simp only [sUnion_image, mem_setOf_eq, mem_iUnion, exists_prop]
   constructor
   · intro e_in_u
-    choose c' hc'₀ e_in_c' hc'₁ using mem_Ici_Compact_of_mem_Open e u e_in_u hu
+    choose c' hc'₀ e_in_c' hc'₁ using exists_basis_mem_basis e u e_in_u hu
     obtain ⟨c, hc₀, c'_eq⟩ := hc'₀
     use c
     simp_all only [and_self]
@@ -260,19 +263,19 @@ lemma open_eq_open_of_basis (u : Set D) (hu : IsOpen u) :
 /-- See `open_eq_open_of_basis`
     This is the stronger version of the lemma using `Opens` instead of `Set`s.
     The weaker version is still useful as it is easier to use when sufficient.
-    I don't reuse the previous result to prove this, since the proof turns out just as long -/
+    We don't reuse the previous result to prove this, since the proof turns out just as long -/
 lemma open_eq_open_of_basis' (u : Opens D) :
-  u = sSup ({ o | ∃ (c: D) (hc: c ∈ 𝕂 D), c ∈ u ∧ (o = ⟨c,hc⟩ᵘᵒ) }) := by
+    u = sSup ({ o | ∃ (c : D) (hc : c ∈ 𝕂 D), c ∈ u ∧ (o = ⟨c, hc⟩ᵘᵒ) }) := by
   ext e
   simp only [SetLike.mem_coe]
   constructor
   · intro e_in_u
-    choose c' hc'₀ e_in_c' hc'₁ using mem_Ici_Compact_of_mem_Open e u e_in_u u.isOpen
+    choose c' hc'₀ e_in_c' hc'₁ using exists_basis_mem_basis e u e_in_u u.isOpen
     simp only [Opens.mem_sSup]
-    use ⟨c', isOpen_of_Ici_compact hc'₀⟩
+    use ⟨c', isOpen_of_basis hc'₀⟩
     constructor
     · obtain ⟨c, hc₀, c'_eq⟩ := hc'₀
-      simp only [open_of_Ici_Compact]
+      simp only [Opens.ofCompact]
       rw [← c'_eq] at hc'₁
       use c; use hc₀; use mem_iff_upSet_subset.2 hc'₁
       simp only [Opens.mk.injEq]
@@ -283,7 +286,7 @@ lemma open_eq_open_of_basis' (u : Opens D) :
     obtain ⟨c', hc'₀, he⟩ := he
     obtain ⟨c, hc₀, hc₁, hc'₁⟩ := hc'₀
     rw [mem_iff_upSet_subset] at hc₁
-    rw [open_of_Ici_Compact] at hc'₁
+    rw [Opens.ofCompact] at hc'₁
     rw [hc'₁] at he
     exact Set.mem_of_mem_of_subset he hc₁
 
