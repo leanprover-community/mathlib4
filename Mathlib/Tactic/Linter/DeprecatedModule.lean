@@ -3,8 +3,10 @@ Copyright (c) 2025 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Std.Time.Format
-import Mathlib.Init
+module
+
+public meta import Std.Time.Format
+public import Mathlib.Init
 
 /-!
 # The `deprecated.module` linter
@@ -24,6 +26,8 @@ in module `A` with the expectation that `A` contains nothing else.
 This triggers the `deprecated.module` linter to notify every file with `import A`
 to instead import the *direct imports* of `A`, that is `B, ..., Z`.
 -/
+
+public meta section
 
 open Lean Elab Command Linter
 

@@ -3,12 +3,13 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
-import Aesop
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Int.Init
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.SplitIfs
+module
+
+public import Aesop
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Data.Int.Init
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Tactic.SimpRw
 
 /-!
 # Basic lemmas about semigroups, monoids, and groups
@@ -17,6 +18,8 @@ This file lists various basic lemmas about semigroups, monoids, and groups. Most
 one-liners from the corresponding axioms. For the definitions of semigroups, monoids and groups, see
 `Mathlib/Algebra/Group/Defs.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
@@ -82,6 +85,11 @@ section MulOneClass
 variable [MulOneClass M]
 
 @[to_additive]
+instance Semigroup.to_isLawfulIdentity : Std.LawfulIdentity (α := M) (· * ·) 1 where
+  left_id := one_mul
+  right_id := mul_one
+
+@[to_additive]
 theorem ite_mul_one {P : Prop} [Decidable P] {a b : M} :
     ite P (a * b) 1 = ite P a 1 * ite P b 1 := by
   by_cases h : P <;> simp [h]
@@ -120,6 +128,10 @@ theorem mul_right_comm (a b c : G) : a * b * c = a * c * b := by
 @[to_additive]
 theorem mul_mul_mul_comm (a b c d : G) : a * b * (c * d) = a * c * (b * d) := by
   simp only [mul_left_comm, mul_assoc]
+
+@[to_additive]
+theorem mul_mul_mul_comm' (a b c d : G) : a * b * c * d = a * c * b * d := by
+  grind
 
 @[to_additive]
 theorem mul_rotate (a b c : G) : a * b * c = b * c * a := by
@@ -1030,7 +1042,7 @@ lemma hom_coe_pow {F : Type*} [Monoid F] (c : F → M → M) (h1 : c 1 = id)
   | n + 1 => by rw [pow_succ, iterate_succ, hmul, hom_coe_pow c h1 hmul f n]
 
 /-!
-# Instances for `grind`.
+### Instances for `grind`.
 -/
 
 open Lean

@@ -3,9 +3,10 @@ Copyright (c) 2024 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 -/
+module
 
-import Mathlib.MeasureTheory.MeasurableSpace.Defs
-import Mathlib.Order.Filter.CountableInter
+public import Mathlib.MeasureTheory.MeasurableSpace.Defs
+public import Mathlib.Order.Filter.CountableInter
 
 /-!
 # Measurability modulo a filter
@@ -30,6 +31,8 @@ TODO: Implement the latter.
   `eventuallyMeasurableSpace` on the domain.
 
 -/
+
+@[expose] public section
 
 open Filter Set MeasurableSpace
 

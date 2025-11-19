@@ -3,11 +3,13 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomotopyCategory
-import Mathlib.Algebra.Ring.NegOnePow
-import Mathlib.CategoryTheory.Shift.Quotient
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.Tactic.Linarith
+module
+
+public import Mathlib.Algebra.Homology.HomotopyCategory
+public import Mathlib.Algebra.Ring.NegOnePow
+public import Mathlib.CategoryTheory.Shift.Quotient
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.Tactic.Linarith
 
 /-!
 # The shift on cochain complexes and on the homotopy category
@@ -21,6 +23,8 @@ We also show that if `F : C ⥤ D` is an additive functor, then the functors
 `F.mapHomotopyCategory (ComplexShape.up ℤ)` commute with the shift by `ℤ`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -231,14 +235,14 @@ def mapCochainComplexShiftIso (n : ℤ) :
 
 instance commShiftMapCochainComplex :
     (F.mapHomologicalComplex (ComplexShape.up ℤ)).CommShift ℤ where
-  iso := F.mapCochainComplexShiftIso
-  zero := by
+  commShiftIso := F.mapCochainComplexShiftIso
+  commShiftIso_zero := by
     ext
     rw [CommShift.isoZero_hom_app]
     dsimp
     simp only [CochainComplex.shiftFunctorZero_inv_app_f, CochainComplex.shiftFunctorZero_hom_app_f,
        HomologicalComplex.XIsoOfEq, eqToIso, eqToHom_map, eqToHom_trans, eqToHom_refl]
-  add := fun a b => by
+  commShiftIso_add := fun a b => by
     ext
     rw [CommShift.isoAdd_hom_app]
     dsimp

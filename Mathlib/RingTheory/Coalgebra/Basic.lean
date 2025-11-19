@@ -3,8 +3,10 @@ Copyright (c) 2023 Ali Ramsey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ali Ramsey, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Finiteness
-import Mathlib.LinearAlgebra.TensorProduct.Associator
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+public import Mathlib.LinearAlgebra.TensorProduct.Associator
 
 /-!
 # Coalgebras
@@ -20,6 +22,8 @@ In this file we define `Coalgebra`, and provide instances for:
 * <https://en.wikipedia.org/wiki/Coalgebra>
 -/
 
+@[expose] public section
+
 universe u v w
 
 open scoped TensorProduct
@@ -33,6 +37,9 @@ class CoalgebraStruct (R : Type u) (A : Type v)
   comul : A →ₗ[R] A ⊗[R] A
   /-- The counit of the coalgebra -/
   counit : A →ₗ[R] R
+
+@[inherit_doc] scoped[RingTheory.LinearMap] notation "ε" => CoalgebraStruct.counit
+@[inherit_doc] scoped[RingTheory.LinearMap] notation "δ" => CoalgebraStruct.comul
 
 /--
 A representation of an element `a` of a coalgebra `A` is a finite sum of pure tensors `∑ xᵢ ⊗ yᵢ`

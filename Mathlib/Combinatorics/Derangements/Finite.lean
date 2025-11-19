@@ -3,17 +3,19 @@ Copyright (c) 2021 Henry Swanson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henry Swanson
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Combinatorics.Derangements.Basic
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Combinatorics.Derangements.Basic
+public import Mathlib.Data.Fintype.BigOperators
+public import Mathlib.Tactic.Ring
 
 /-!
 # Derangements on fintypes
 
 This file contains lemmas that describe the cardinality of `derangements α` when `α` is a fintype.
 
-# Main definitions
+## Main definitions
 
 * `card_derangements_invariant`: A lemma stating that the number of derangements on a type `α`
     depends only on the cardinality of `α`.
@@ -24,6 +26,8 @@ This file contains lemmas that describe the cardinality of `derangements α` whe
 * `numDerangements_sum`: A lemma giving an expression for `numDerangements n` in terms of
     factorials.
 -/
+
+@[expose] public section
 
 
 open derangements Equiv Fintype

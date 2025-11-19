@@ -3,10 +3,12 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
-import Mathlib.RingTheory.RingHom.Surjective
-import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
-import Mathlib.Topology.LocalAtTarget
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
+public import Mathlib.RingTheory.RingHom.Surjective
+public import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
+public import Mathlib.Topology.LocalAtTarget
 
 /-!
 # Morphisms surjective on stalks
@@ -18,6 +20,8 @@ We also show that (`AlgebraicGeometry.SurjectiveOnStalks.isEmbedding_pullback`)
 if `Y ⟶ S` is surjective on stalks, then for every `X ⟶ S`, `X ×ₛ Y` is a subset of
 `X × Y` (Cartesian product as topological spaces) with the induced topology.
 -/
+
+@[expose] public section
 
 open CategoryTheory CategoryTheory.Limits Topology
 
