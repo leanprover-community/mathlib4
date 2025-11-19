@@ -1145,7 +1145,7 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
   cases p <;> simp
 
 lemma getVert_mem_tail_support {u v : V} {p : G.Walk u v} (hp : ¬p.Nil) :
-    ∀ {i : ℕ} (hi : i ≠ 0), p.getVert i ∈ p.support.tail
+    ∀ {i : ℕ}, i ≠ 0 → p.getVert i ∈ p.support.tail
   | i + 1, _ => by
     rw [← getVert_tail, ← p.support_tail_of_not_nil hp]
     exact getVert_mem_support ..
