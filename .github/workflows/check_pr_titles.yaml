@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   check_title:
-    if: github.repository == 'bryangingechen/mathlib4' && (github.event.action == 'opened' || (github.event.action == 'edited' && github.event.changes.title))
+    if: github.repository == 'leanprover-community/mathlib4' && (github.event.action == 'opened' || (github.event.action == 'edited' && github.event.changes.title))
     runs-on: ubuntu-latest
     steps:
       - name: Debug event data
