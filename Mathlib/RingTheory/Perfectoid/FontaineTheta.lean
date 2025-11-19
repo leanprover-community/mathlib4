@@ -3,10 +3,12 @@ Copyright (c) 2025 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang
 -/
-import Mathlib.RingTheory.AdicCompletion.Functoriality
-import Mathlib.RingTheory.AdicCompletion.RingHom
-import Mathlib.RingTheory.Perfectoid.Untilt
-import Mathlib.RingTheory.WittVector.TeichmullerSeries
+module
+
+public import Mathlib.RingTheory.AdicCompletion.Functoriality
+public import Mathlib.RingTheory.AdicCompletion.RingHom
+public import Mathlib.RingTheory.Perfectoid.Untilt
+public import Mathlib.RingTheory.WittVector.TeichmullerSeries
 
 /-!
 # Fontaine's θ map
