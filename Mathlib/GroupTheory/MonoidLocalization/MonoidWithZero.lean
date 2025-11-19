@@ -3,16 +3,20 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.GroupTheory.MonoidLocalization.Basic
-import Mathlib.RingTheory.OreLocalization.Basic
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+module
+
+public import Mathlib.Algebra.GroupWithZero.Hom
+public import Mathlib.GroupTheory.MonoidLocalization.Basic
+public import Mathlib.RingTheory.OreLocalization.Basic
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 
 /-!
 # Localizations of commutative monoids with zeroes
 
 -/
+
+@[expose] public section
 
 open Function
 

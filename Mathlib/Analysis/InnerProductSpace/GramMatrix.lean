@@ -3,8 +3,10 @@ Copyright (c) 2025 Peter Pfaffelhuber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Pfaffelhuber
 -/
+module
 
-import Mathlib.LinearAlgebra.Matrix.PosDef
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-! # Gram Matrices
 
@@ -22,6 +24,8 @@ Results require `RCLike 𝕜`.
 * `Matrix.posDef_gram_iff_linearIndependent`: Linear independence of `v` is
   equivalent to positive definiteness of `gram 𝕜 v`.
 -/
+
+@[expose] public section
 
 open RCLike Real Matrix
 
@@ -78,7 +82,7 @@ theorem posSemidef_gram (v : n → E) :
     PosSemidef (gram 𝕜 v) := by
   refine ⟨isHermitian_gram _ _, fun x ↦ ?_⟩
   rw [star_dotProduct_gram_mulVec, le_iff_re_im]
-  simp [inner_self_nonneg]
+  simp
 
 /-- In a normed space, positive definiteness of `gram 𝕜 v` implies linear independence of `v`. -/
 theorem linearIndependent_of_posDef_gram {v : n → E} (h_gram : PosDef (gram 𝕜 v)) :

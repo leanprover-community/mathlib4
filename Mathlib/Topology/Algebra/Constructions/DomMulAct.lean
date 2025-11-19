@@ -3,8 +3,10 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.GroupTheory.GroupAction.DomAct.Basic
+module
+
+public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 /-!
 # Topological space structure on `Mᵈᵐᵃ` and `Mᵈᵃᵃ`
@@ -19,6 +21,8 @@ since the types aren't definitionally equal.
 
 topological space, group action, domain action
 -/
+
+@[expose] public section
 
 open Filter TopologicalSpace Topology
 

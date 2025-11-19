@@ -3,10 +3,11 @@ Copyright (c) 2023 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Luigi Massacci
 -/
+module
 
-import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Topology.ContinuousMap.Bounded.Normed
-import Mathlib.Topology.Sets.Compacts
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Topology.ContinuousMap.Bounded.Normed
+public import Mathlib.Topology.Sets.Compacts
 
 /-!
 # Continuously differentiable functions supported in a given compact set
@@ -49,10 +50,14 @@ larger space of test functions.
 
 ## Notation
 
-- `𝓓^{n}_{K}(E, F)`:  the space of `n`-times continuously differentiable functions `E → F`
-  which vanish outside of `K`.
-- `𝓓_{K}(E, F)`:  the space of smooth (infinitely differentiable) functions `E → F`
-  which vanish outside of `K`, i.e. `𝓓^{⊤}_{K}(E, F)`.
+- `𝓓^{n}_{K}(E, F)`: the space of `n`-times continuously differentiable functions `E → F`
+  which vanish outside of `K`. Scoped in `Distributions`.
+- `𝓓_{K}(E, F)`: the space of smooth (infinitely differentiable) functions `E → F`
+  which vanish outside of `K`, i.e. `𝓓^{⊤}_{K}(E, F)`. Scoped in `Distributions`.
+- `N[𝕜; F]_{K, n, i}` (or simply `N[𝕜]_{K, n, i}`): the `𝕜`-seminorm on `𝓓^{n}_{K}(E, F)`
+  given by the sup-norm of the `i`-th derivative. Scoped in `Distributions.Seminorm`.
+- `N[𝕜; F]_{K, i}` (or simply `N[𝕜]_{K, i}`): the `𝕜`-seminorm on `𝓓_{K}(E, F)`
+  given by the sup-norm of the `i`-th derivative. Scoped in `Distributions.Seminorm`.
 
 ## Implementation details
 
@@ -71,12 +76,15 @@ larger space of test functions.
 distributions
 -/
 
+@[expose] public section
+
 open TopologicalSpace SeminormFamily Set Function Seminorm UniformSpace
 open scoped BoundedContinuousFunction Topology NNReal ContDiff
 
-variable (𝕜 E F : Type*) [NontriviallyNormedField 𝕜]
+variable (𝕜 E F F' : Type*) [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+  [NormedAddCommGroup F'] [NormedSpace ℝ F'] [NormedSpace 𝕜 F'] [SMulCommClass ℝ 𝕜 F']
   {n k : ℕ∞} {K : Compacts E}
 
 /-- The type of bundled `n`-times continuously differentiable maps which vanish outside of a fixed
@@ -110,6 +118,8 @@ class ContDiffMapSupportedInClass (B : Type*) (E F : outParam <| Type*)
 
 open ContDiffMapSupportedInClass
 
+namespace ContDiffMapSupportedInClass
+
 instance (B : Type*) (E F : outParam <| Type*)
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ E] [NormedSpace ℝ F]
     (n : outParam ℕ∞) (K : outParam <| Compacts E)
@@ -127,6 +137,8 @@ instance (B : Type*) (E F : outParam <| Type*)
     rcases (map_continuous f).bounded_above_of_compact_support this with ⟨C, hC⟩
     exact map_bounded (BoundedContinuousFunction.ofNormedAddCommGroup f (map_continuous f) C hC)
 
+end ContDiffMapSupportedInClass
+
 namespace ContDiffMapSupportedIn
 
 instance toContDiffMapSupportedInClass :
@@ -136,7 +148,7 @@ instance toContDiffMapSupportedInClass :
   map_contDiff f := f.contDiff'
   map_zero_on_compl f := f.zero_on_compl'
 
-variable {E F}
+variable {E F F'}
 
 protected theorem contDiff (f : 𝓓^{n}_{K}(E, F)) : ContDiff ℝ n f := map_contDiff f
 protected theorem zero_on_compl (f : 𝓓^{n}_{K}(E, F)) : EqOn f 0 Kᶜ := map_zero_on_compl f
@@ -260,6 +272,12 @@ protected theorem bounded_iteratedFDeriv (f : 𝓓^{n}_{K}(E, F)) {i : ℕ} (hi 
     (f.contDiff.continuous_iteratedFDeriv <| (WithTop.le_coe rfl).mpr hi)
     (f.hasCompactSupport.iteratedFDeriv i)
 
+protected theorem iteratedFDeriv_zero_on_compl (f : 𝓓^{n}_{K}(E, F)) {i : ℕ} :
+    EqOn (iteratedFDeriv ℝ i f) 0 Kᶜ := by
+  intro x (hx : x ∉ K)
+  contrapose! hx
+  exact f.tsupport_subset (support_iteratedFDeriv_subset i hx)
+
 /-- Inclusion of `𝓓^{n}_{K}(E, F)` into the space `E →ᵇ F` of bounded continuous maps
 as a `𝕜`-linear map.
 
@@ -278,6 +296,22 @@ lemma toBoundedContinuousFunctionLM_apply (f : 𝓓^{n}_{K}(E, F)) :
 lemma toBoundedContinuousFunctionLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
     [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
     (toBoundedContinuousFunctionLM 𝕜 : 𝓓^{n}_{K}(E, F) → _) = toBoundedContinuousFunctionLM 𝕜' :=
+  rfl
+
+variable {𝕜} in
+-- Note: generalizing this to a semilinear setting would require a semilinear version of
+-- `CompatibleSMul`.
+noncomputable def postcompLM [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[𝕜] F') :
+    𝓓^{n}_{K}(E, F) →ₗ[𝕜] 𝓓^{n}_{K}(E, F') where
+  toFun f := ⟨T ∘ f, T.restrictScalars ℝ |>.contDiff.comp f.contDiff,
+    fun x hx ↦ by simp [f.zero_on_compl hx]⟩
+  map_add' f g := by ext x; exact map_add T (f x) (g x)
+  map_smul' c f := by ext x; exact map_smul T c (f x)
+
+@[simp]
+lemma postcompLM_apply [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[𝕜] F')
+    (f : 𝓓^{n}_{K}(E, F)) :
+    postcompLM T f = T ∘ f :=
   rfl
 
 variable (n k) in
@@ -302,18 +336,18 @@ noncomputable def iteratedFDerivWithOrderLM (i : ℕ) :
   toFun f :=
     if hi : k + i ≤ n then
       .of_support_subset
-        (f.contDiff.iteratedFDeriv_right <| by exact_mod_cast hi)
+        (f.contDiff.iteratedFDeriv_right <| mod_cast hi)
         ((support_iteratedFDeriv_subset i).trans f.tsupport_subset)
     else 0
   map_add' f g := by
     split_ifs with hi
-    · have hi' : (i : WithTop ℕ∞) ≤ n := by exact_mod_cast le_of_add_le_right hi
+    · have hi' : (i : WithTop ℕ∞) ≤ n := mod_cast (le_of_add_le_right hi)
       ext
       simp [iteratedFDeriv_add (f.contDiff.of_le hi') (g.contDiff.of_le hi')]
     · simp
   map_smul' c f := by
     split_ifs with hi
-    · have hi' : (i : WithTop ℕ∞) ≤ n := by exact_mod_cast le_of_add_le_right hi
+    · have hi' : (i : WithTop ℕ∞) ≤ n := mod_cast (le_of_add_le_right hi)
       ext
       simp [iteratedFDeriv_const_smul_apply (f.contDiff.of_le hi').contDiffAt]
     · simp
@@ -352,11 +386,11 @@ noncomputable def iteratedFDerivLM (i : ℕ) :
     (f.contDiff.iteratedFDeriv_right le_rfl)
     ((support_iteratedFDeriv_subset i).trans f.tsupport_subset)
   map_add' f g := by
-    have hi : (i : WithTop ℕ∞) ≤ ∞ := by exact_mod_cast le_top
+    have hi : (i : WithTop ℕ∞) ≤ ∞ := mod_cast le_top
     ext
     simp [iteratedFDeriv_add (f.contDiff.of_le hi) (g.contDiff.of_le hi)]
   map_smul' c f := by
-    have hi : (i : WithTop ℕ∞) ≤ ∞ := by exact_mod_cast le_top
+    have hi : (i : WithTop ℕ∞) ≤ ∞ := mod_cast le_top
     ext
     simp [iteratedFDeriv_const_smul_apply (f.contDiff.of_le hi).contDiffAt]
 
@@ -423,18 +457,15 @@ protected theorem uniformSpace_eq_iInf : (uniformSpace : UniformSpace 𝓓^{n}_{
     ⨅ (i : ℕ), UniformSpace.comap (structureMapLM ℝ n i) inferInstance :=
   UniformSpace.replaceTopology_eq _ toTopologicalSpace_iInf.symm
 
-instance isTopologicalAddGroup : IsTopologicalAddGroup 𝓓^{n}_{K}(E, F) := by
-  refine topologicalAddGroup_iInf (fun i ↦ ?_)
-  exact topologicalAddGroup_induced _
+instance isTopologicalAddGroup : IsTopologicalAddGroup 𝓓^{n}_{K}(E, F) :=
+  topologicalAddGroup_iInf fun _ ↦ topologicalAddGroup_induced _
 
 instance isUniformAddGroup : IsUniformAddGroup 𝓓^{n}_{K}(E, F) := by
   rw [ContDiffMapSupportedIn.uniformSpace_eq_iInf]
-  refine isUniformAddGroup_iInf (fun i ↦ ?_)
-  exact IsUniformAddGroup.comap _
+  exact isUniformAddGroup_iInf fun _ ↦ IsUniformAddGroup.comap _
 
-instance continuousSMul : ContinuousSMul 𝕜 𝓓^{n}_{K}(E, F) := by
-  refine continuousSMul_iInf
-    (fun i ↦ continuousSMul_induced (structureMapLM 𝕜 n i))
+instance continuousSMul : ContinuousSMul 𝕜 𝓓^{n}_{K}(E, F) :=
+  continuousSMul_iInf fun i ↦ continuousSMul_induced (structureMapLM 𝕜 n i)
 
 instance locallyConvexSpace : LocallyConvexSpace ℝ 𝓓^{n}_{K}(E, F) :=
   LocallyConvexSpace.iInf fun _ ↦ LocallyConvexSpace.induced _
@@ -450,10 +481,13 @@ noncomputable def structureMapCLM (i : ℕ) :
   toLinearMap := structureMapLM 𝕜 n i
   cont := continuous_iInf_dom continuous_induced_dom
 
+-- TODO: Should this be `@[simp]` instead of the one below? I don't want `simp` to
+-- force `WithOrder` variants on people, but maybe this is not a good argument.
 lemma structureMapCLM_apply_withOrder {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
     structureMapCLM 𝕜 n i f = if i ≤ n then iteratedFDeriv ℝ i f else 0 := by
   simp [structureMapCLM, structureMapLM_apply_withOrder]
 
+@[simp]
 lemma structureMapCLM_apply {i : ℕ} (f : 𝓓_{K}(E, F)) :
     structureMapCLM 𝕜 ⊤ i f = iteratedFDeriv ℝ i f := by
   simp [structureMapCLM, structureMapLM_apply]
@@ -468,20 +502,18 @@ is continuous if and only if its composition with each structure map
 `structureMapCLM ℝ n i : 𝓓^{n}_{K}(E, F) → (E →ᵇ (E [×i]→L[ℝ] F))` is continuous.
 
 Since `structureMapCLM ℝ n i` is zero whenever `i > n`, it suffices to check it for `i ≤ n`,
-as proven by `continuous_iff_comp_with_order`. -/
--- Note: if needed, we could allow an extra parameter `𝕜` in case the use wants to use
+as proven by `continuous_iff_comp_withOrder`. -/
+-- Note: if needed, we could allow an extra parameter `𝕜` in case the user wants to use
 -- `structureMapCLM 𝕜 n i`.
 theorem continuous_iff_comp {X} [TopologicalSpace X] (φ : X → 𝓓^{n}_{K}(E, F)) :
     Continuous φ ↔ ∀ i, Continuous (structureMapCLM ℝ n i ∘ φ) := by
-  simp_rw [continuous_iInf_rng, continuous_induced_rng]
-  rfl
+  simp [continuous_iInf_rng, continuous_induced_rng, structureMapCLM]
 
 /-- The **universal property** of the topology on `𝓓^{n}_{K}(E, F)`: a map to `𝓓^{n}_{K}(E, F)`
 is continuous if and only if its composition with the structure map
-`structureMapCLM ℝ n i : 𝓓^{n}_{K}(E, F) → (E →ᵇ (E [×i]→L[ℝ] F))` is continuous for each `i ≤ n`.
-Since `structureMapCLM ℝ n i` is zero whenever `i > n`, it suffices to check it for `i ≤ n`,
-as proven by `continuous_iff_comp_of_le`. -/
--- Note: if needed, we could allow an extra parameter `𝕜` in case the use wants to use
+`structureMapCLM ℝ n i : 𝓓^{n}_{K}(E, F) → (E →ᵇ (E [×i]→L[ℝ] F))` is continuous for each
+`i ≤ n`. -/
+-- Note: if needed, we could allow an extra parameter `𝕜` in case the user wants to use
 -- `structureMapCLM 𝕜 n i`.
 theorem continuous_iff_comp_withOrder {X : Type*} [TopologicalSpace X] (φ : X → 𝓓^{n}_{K}(E, F)) :
     Continuous φ ↔ ∀ (i : ℕ), i ≤ n → Continuous (structureMapCLM ℝ n i ∘ φ) := by
@@ -494,9 +526,29 @@ theorem continuous_iff_comp_withOrder {X : Type*} [TopologicalSpace X] (φ : X �
 
 variable (E F n K)
 
-/-- The seminorms on the space `𝓓^{n}_{K}(E, F)` given by sup norm on the `i`-th derivative. -/
+/-- The seminorms on the space `𝓓^{n}_{K}(E, F)` given by the sup norm of the iterated derivatives.
+In the scope `Distributions.Seminorm`, we denote them by `N[𝕜; F]_{K, n, i}`
+(or `N[𝕜]_{K, n, i}`), or simply by `N[𝕜; F]_{K, i}` (or `N[𝕜; F]_{K, i}`) when `n = ∞`. -/
 protected noncomputable def seminorm (i : ℕ) : Seminorm 𝕜 𝓓^{n}_{K}(E, F) :=
   (normSeminorm 𝕜 (E →ᵇ (E [×i]→L[ℝ] F))).comp (structureMapLM 𝕜 n i)
+
+@[inherit_doc ContDiffMapSupportedIn.seminorm]
+scoped[Distributions.Seminorm] notation "N["𝕜"]_{"K","n","i"}" =>
+  ContDiffMapSupportedIn.seminorm 𝕜 _ _ n K i
+
+@[inherit_doc ContDiffMapSupportedIn.seminorm]
+scoped[Distributions.Seminorm] notation "N["𝕜"]_{"K","i"}" =>
+  ContDiffMapSupportedIn.seminorm 𝕜 _ _ ⊤ K i
+
+@[inherit_doc ContDiffMapSupportedIn.seminorm]
+scoped[Distributions.Seminorm] notation "N["𝕜";"F"]_{"K","n","i"}" =>
+  ContDiffMapSupportedIn.seminorm 𝕜 _ F n K i
+
+@[inherit_doc ContDiffMapSupportedIn.seminorm]
+scoped[Distributions.Seminorm] notation "N["𝕜";"F"]_{"K","i"}" =>
+  ContDiffMapSupportedIn.seminorm 𝕜 _ F ⊤ K i
+
+open scoped Distributions.Seminorm
 
 /-- The seminorms on the space `𝓓^{n}_{K}(E, F)` given by sup of the
 `ContDiffMapSupportedIn.seminorm k`for `k ≤ i`. -/
@@ -506,7 +558,7 @@ protected noncomputable def seminorm' (i : ℕ) : Seminorm 𝕜 𝓓^{n}_{K}(E, 
 protected theorem withSeminorms :
     WithSeminorms (ContDiffMapSupportedIn.seminorm 𝕜 E F n K) := by
   let p : SeminormFamily 𝕜 𝓓^{n}_{K}(E, F) ((_ : ℕ) × Fin 1) :=
-    SeminormFamily.sigma fun i ↦ fun _ ↦
+    SeminormFamily.sigma fun i _ ↦
       (normSeminorm 𝕜 (E →ᵇ (E [×i]→L[ℝ] F))).comp (structureMapLM 𝕜 n i)
   have : WithSeminorms p :=
     withSeminorms_iInf fun i ↦ LinearMap.withSeminorms_induced (norm_withSeminorms _ _) _
@@ -518,42 +570,122 @@ protected theorem withSeminorms' :
 
 variable {E F n K}
 
--- TODO: Once we have `iteratedFDerivWithOrderCLM`, maybe we should restate this lemma
--- in terms of these? Same for the lemma below.
--- TODO: Should this be `@[simp]` instead of the one below? I don't want `simp` to
--- force `WithOrder` variants on people, but maybe this is not a good argument.
-protected theorem seminorm_apply_withOrder (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
-    ContDiffMapSupportedIn.seminorm 𝕜 E F n K i f =
-      ‖(iteratedFDerivWithOrderLM 𝕜 n 0 i f : E →ᵇ (E [×i]→L[ℝ] F))‖ :=
-  rfl
-
-@[simp]
-protected theorem seminorm_apply (i : ℕ) (f : 𝓓^{⊤}_{K}(E, F)) :
-    ContDiffMapSupportedIn.seminorm 𝕜 E F ⊤ K i f =
-      ‖(iteratedFDerivLM 𝕜 i f : E →ᵇ (E [×i]→L[ℝ] F))‖ :=
+protected theorem seminorm_apply (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
+    N[𝕜]_{K, n, i} f = ‖structureMapCLM 𝕜 n i f‖ :=
   rfl
 
 protected theorem seminorm_eq_bot_of_gt {i : ℕ} (hin : n < i) :
-    ContDiffMapSupportedIn.seminorm 𝕜 E F n K i = ⊥ := by
+    N[𝕜; F]_{K, n, i} = ⊥ := by
   have : ¬(i ≤ n) := by simpa using hin
   ext f
-  simp [ContDiffMapSupportedIn.seminorm_apply_withOrder, BoundedContinuousFunction.ext_iff,
-    this]
+  simp [ContDiffMapSupportedIn.seminorm_apply, BoundedContinuousFunction.ext_iff,
+    structureMapCLM_apply_withOrder, this]
+
+protected theorem seminorm_le_iff_withOrder {C : ℝ} (hC : 0 ≤ C) (i : ℕ) (f : 𝓓^{n}_{K}(E, F)) :
+    N[𝕜]_{K, n, i} f ≤ C ↔ (i ≤ n → ∀ x ∈ K, ‖iteratedFDeriv ℝ i f x‖ ≤ C) := by
+  have : (∀ x, ‖iteratedFDeriv ℝ i f x‖ ≤ C) ↔ (∀ x ∈ K, ‖iteratedFDeriv ℝ i f x‖ ≤ C) := by
+    congrm ∀ x, ?_
+    by_cases hx : x ∈ K
+    · simp [hx]
+    · simp [hx, f.iteratedFDeriv_zero_on_compl hx, hC]
+  by_cases hi : i ≤ n
+  · simp [hi, forall_const, ContDiffMapSupportedIn.seminorm_apply, structureMapCLM_apply_withOrder,
+      BoundedContinuousFunction.norm_le hC, this]
+  · push_neg at hi
+    simp [hi, ContDiffMapSupportedIn.seminorm_eq_bot_of_gt _ hi, hC]
+
+protected theorem seminorm_le_iff {C : ℝ} (hC : 0 ≤ C) (i : ℕ) (f : 𝓓_{K}(E, F)) :
+    N[𝕜]_{K, i} f ≤ C ↔ ∀ x ∈ K, ‖iteratedFDeriv ℝ i f x‖ ≤ C := by
+  simp_rw [ContDiffMapSupportedIn.seminorm_le_iff_withOrder 𝕜 hC, le_top, forall_const]
+
+theorem norm_iteratedFDeriv_apply_le_seminorm_withOrder {i : ℕ} (hin : i ≤ n)
+    {f : 𝓓^{n}_{K}(E, F)} {x : E} :
+    ‖iteratedFDeriv ℝ i f x‖ ≤ N[𝕜]_{K, n, i} f :=
+  calc
+      ‖iteratedFDeriv ℝ i f x‖
+  _ = ‖structureMapLM ℝ n i f x‖ := by simp [structureMapLM_apply_withOrder, hin]
+  _ ≤ ‖structureMapLM ℝ n i f‖ := BoundedContinuousFunction.norm_coe_le_norm _ _
+  _ = N[𝕜]_{K, n, i} f := rfl
+
+theorem norm_iteratedFDeriv_apply_le_seminorm {i : ℕ}
+    {f : 𝓓_{K}(E, F)} {x : E} :
+    ‖iteratedFDeriv ℝ i f x‖ ≤ N[𝕜]_{K, i} f :=
+  norm_iteratedFDeriv_apply_le_seminorm_withOrder 𝕜 (mod_cast le_top)
+
+theorem norm_apply_le_seminorm {f : 𝓓^{n}_{K}(E, F)} {x : E} :
+    ‖f x‖ ≤ N[𝕜]_{K, n, 0} f := by
+  rw [← norm_iteratedFDeriv_zero (𝕜 := ℝ) (f := f) (x := x)]
+  exact norm_iteratedFDeriv_apply_le_seminorm_withOrder 𝕜 (zero_le _)
+
+theorem norm_iteratedFDeriv_apply_le_withOrder {i : ℕ} (hin : i ≤ n)
+    {f : 𝓓^{n}_{K}(E, F)} {x : E} :
+    ‖iteratedFDeriv ℝ i f x‖ ≤ N[𝕜]_{K, n, i} f :=
+  calc
+      ‖iteratedFDeriv ℝ i f x‖
+  _ = ‖structureMapLM ℝ n i f x‖ := by simp [structureMapLM_apply_withOrder, hin]
+  _ ≤ ‖structureMapLM ℝ n i f‖ := BoundedContinuousFunction.norm_coe_le_norm _ _
+  _ = N[𝕜]_{K, n, i} f := rfl
+
+theorem norm_iteratedFDeriv_apply_le {i : ℕ}
+    {f : 𝓓_{K}(E, F)} {x : E} :
+    ‖iteratedFDeriv ℝ i f x‖ ≤ N[𝕜]_{K, i} f :=
+  norm_iteratedFDeriv_apply_le_withOrder 𝕜 (mod_cast le_top)
 
 theorem norm_toBoundedContinuousFunction (f : 𝓓^{n}_{K}(E, F)) :
-    ‖(f : E →ᵇ F)‖ = ContDiffMapSupportedIn.seminorm 𝕜 E F n K 0 f := by
+    ‖(f : E →ᵇ F)‖ = N[𝕜]_{K, n, 0} f := by
   simp [BoundedContinuousFunction.norm_eq_iSup_norm,
-    ContDiffMapSupportedIn.seminorm_apply_withOrder]
+    ContDiffMapSupportedIn.seminorm_apply, structureMapCLM_apply_withOrder]
 
 /-- The inclusion of the space `𝓓^{n}_{K}(E, F)` into the space `E →ᵇ F` of bounded continuous
 functions as a continuous `𝕜`-linear map. -/
-noncomputable def toBoundedContinuousFunctionCLM : 𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ F :=
-  { toLinearMap := toBoundedContinuousFunctionLM 𝕜
-    cont := show Continuous (toBoundedContinuousFunctionLM 𝕜) by
-      refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
-        (norm_withSeminorms 𝕜 _) _ (fun _ ↦ ⟨{0}, 1, fun f ↦ ?_⟩)
-      simp [norm_toBoundedContinuousFunction ℝ f,
-        ContDiffMapSupportedIn.seminorm_apply_withOrder] }
+noncomputable def toBoundedContinuousFunctionCLM : 𝓓^{n}_{K}(E, F) →L[𝕜] E →ᵇ F where
+  toLinearMap := toBoundedContinuousFunctionLM 𝕜
+  cont := show Continuous (toBoundedContinuousFunctionLM 𝕜) by
+    refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
+      (norm_withSeminorms 𝕜 _) _ (fun _ ↦ ⟨{0}, 1, fun f ↦ ?_⟩)
+    simp [norm_toBoundedContinuousFunction 𝕜 f, ContDiffMapSupportedIn.seminorm_apply]
+
+@[simp]
+lemma toBoundedContinuousFunctionCLM_apply (f : 𝓓^{n}_{K}(E, F)) :
+    toBoundedContinuousFunctionCLM 𝕜 f = f :=
+  rfl
+
+lemma toBoundedContinuousFunctionCLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
+    [NormedSpace 𝕜' F] [SMulCommClass ℝ 𝕜' F] :
+    (toBoundedContinuousFunctionCLM 𝕜 : 𝓓^{n}_{K}(E, F) → _) = toBoundedContinuousFunctionCLM 𝕜' :=
+  rfl
+
+theorem seminorm_postcompLM_le [LinearMap.CompatibleSMul F F' ℝ 𝕜] {i : ℕ} (T : F →L[𝕜] F')
+    (f : 𝓓^{n}_{K}(E, F)) :
+    N[𝕜]_{K, n, i} (postcompLM T f) ≤ ‖T‖ * N[𝕜]_{K, n, i} f := by
+  set T' := T.restrictScalars ℝ
+  change N[ℝ]_{K, n, i} (postcompLM T' f) ≤ ‖T'‖ * N[ℝ]_{K, n, i} f
+  rw [ContDiffMapSupportedIn.seminorm_le_iff_withOrder ℝ (by positivity)]
+  intro hi x hx
+  rw [postcompLM_apply]
+  calc
+      ‖iteratedFDeriv ℝ i (T' ∘ f) x‖
+  _ = ‖T'.compContinuousMultilinearMap (iteratedFDeriv ℝ i f x)‖ := by
+        rw [T'.iteratedFDeriv_comp_left f.contDiff.contDiffAt (mod_cast hi)]
+  _ ≤ ‖T'‖ * ‖iteratedFDeriv ℝ i f x‖ := T'.norm_compContinuousMultilinearMap_le _
+  _ ≤ ‖T'‖ * N[ℝ]_{K, n, i} f := by grw [norm_iteratedFDeriv_apply_le_withOrder ℝ hi]
+
+variable {𝕜} in
+-- Note: generalizing this to a semilinear setting would require a semilinear version of
+-- `CompatibleSMul`.
+noncomputable def postcompCLM [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[𝕜] F') :
+    𝓓^{n}_{K}(E, F) →L[𝕜] 𝓓^{n}_{K}(E, F') where
+  toLinearMap := postcompLM T
+  cont := show Continuous (postcompLM T) by
+    refine continuous_from_bounded (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _)
+      (ContDiffMapSupportedIn.withSeminorms _ _ _ _ _) _ (fun i ↦ ⟨{i}, ‖T‖₊, fun f ↦ ?_⟩)
+    simpa [NNReal.smul_def] using seminorm_postcompLM_le 𝕜 T f
+
+@[simp]
+lemma postcompCLM_apply [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[𝕜] F')
+    (f : 𝓓^{n}_{K}(E, F)) :
+    postcompCLM T f = T ∘ f :=
+  rfl
 
 end Topology
 
