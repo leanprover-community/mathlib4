@@ -64,11 +64,11 @@ theorem coe_zero : ↑(0 : Icc (0 : R) 1) = (0 : R) :=
 theorem coe_one : ↑(1 : Icc (0 : R) 1) = (1 : R) :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem mk_zero (h : (0 : R) ∈ Icc (0 : R) 1) : (⟨0, h⟩ : Icc (0 : R) 1) = 0 :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem mk_one (h : (1 : R) ∈ Icc (0 : R) 1) : (⟨1, h⟩ : Icc (0 : R) 1) = 1 :=
   rfl
 
@@ -169,7 +169,7 @@ instance instZero [Nontrivial R] : Zero (Ico (0 : R) 1) where zero := ⟨0, by s
 theorem coe_zero [Nontrivial R] : ↑(0 : Ico (0 : R) 1) = (0 : R) :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem mk_zero [Nontrivial R] (h : (0 : R) ∈ Ico (0 : R) 1) : (⟨0, h⟩ : Ico (0 : R) 1) = 0 :=
   rfl
 
@@ -225,7 +225,7 @@ instance instOne : One (Ioc (0 : R) 1) where one := ⟨1, ⟨zero_lt_one, le_ref
 theorem coe_one : ↑(1 : Ioc (0 : R) 1) = (1 : R) :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem mk_one (h : (1 : R) ∈ Ioc (0 : R) 1) : (⟨1, h⟩ : Ioc (0 : R) 1) = 1 :=
   rfl
 
