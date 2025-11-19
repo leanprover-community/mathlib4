@@ -239,6 +239,7 @@ import Mathlib.Algebra.CharZero.AddMonoidHom
 import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Algebra.CharZero.Quotient
+import Mathlib.Algebra.Clone.Defs
 import Mathlib.Algebra.Colimit.DirectLimit
 import Mathlib.Algebra.Colimit.Finiteness
 import Mathlib.Algebra.Colimit.Module
