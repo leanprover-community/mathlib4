@@ -129,10 +129,10 @@ There are some exceptions to this heuristic:
 * Identifiers that have the `@[to_additive]` attribute are ignored.
   For example, multiplication in `↥Semigroup` is replaced by addition in `↥AddSemigroup`.
   You can turn this behavior off by *also* adding the `@[to_additive_dont_translate]` attribute.
-* If an identifier `d` has attribute `@[to_additive (relevant_arg := n)]` then the argument
-  in position `n` is checked for a fixed type, instead of checking the first argument.
-  `@[to_additive]` will automatically add the attribute `(relevant_arg := n)` to a
-  declaration when the first argument has no multiplicative type-class, but argument `n` does.
+* If an identifier `d` has attribute `@[to_additive (relevant_arg := α)]` then the argument
+  `α` is checked for a fixed type, instead of checking the first argument.
+  `@[to_additive]` will automatically add the attribute `(relevant_arg := α)` to a
+  declaration when the first argument has no multiplicative type-class, but argument `α` does.
 * If an identifier has attribute `@[to_additive_ignore_args n1 n2 ...]` then all the arguments in
   positions `n1`, `n2`, ... will not be checked for unapplied identifiers (start counting from 1).
   For example, `ContMDiffMap` has attribute `@[to_additive_ignore_args 21]`, which means
@@ -164,7 +164,7 @@ mismatch error.
     attribute `[to_additive_ignore_args k]` to `d`.
     Example: `ContMDiffMap` ignores the argument `(n : WithTop ℕ)`
   * If none of the arguments have a multiplicative structure, then the heuristic should not apply at
-    all. This can be achieved by setting `relevant_arg` out of bounds, e.g. `(relevant_arg := 100)`.
+    all. This can be achieved with the option `(relevant_arg := _)`.
 * Option 2: It additivized a declaration `d` that should remain multiplicative. Solution:
   * Make sure the first argument of `d` is a type with a multiplicative structure. If not, can you
     reorder the (implicit) arguments of `d` so that the first argument becomes a type with a
@@ -383,7 +383,7 @@ initialize registerBuiltinAttribute {
     name := `to_additive
     descr := "Transport multiplicative to additive"
     add := fun src stx kind ↦ discard do
-      addTranslationAttr data src (← elabTranslationAttr stx) kind
+      addTranslationAttr data src (← elabTranslationAttr src stx) kind
     -- we (presumably) need to run after compilation to properly add the `simp` attribute
     applicationTime := .afterCompilation
   }
