@@ -6,7 +6,7 @@ import Lean.Elab.Command
 
 open Lean
 
-set_option linter.privateModule true
+set_option linter.mathlibStandardSet true
 
 theorem foo : True := trivial
 
