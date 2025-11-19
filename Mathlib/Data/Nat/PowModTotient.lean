@@ -1,3 +1,5 @@
-import Mathlib.NumberTheory.PowModTotient
+module
+
+public import Mathlib.NumberTheory.PowModTotient
 
 deprecated_module (since := "2025-09-19")

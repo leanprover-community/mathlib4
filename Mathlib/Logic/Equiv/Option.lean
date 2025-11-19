@@ -3,10 +3,12 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Control.EquivFunctor
-import Mathlib.Data.Option.Basic
-import Mathlib.Data.Subtype
-import Mathlib.Logic.Equiv.Defs
+module
+
+public import Mathlib.Control.EquivFunctor
+public import Mathlib.Data.Option.Basic
+public import Mathlib.Data.Subtype
+public import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Equivalences for `Option α`
@@ -18,6 +20,8 @@ We define
 * `Equiv.removeNone`: the `α ≃ β` constructed from `Option α ≃ Option β` by removing `none` from
   both sides.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -276,7 +280,7 @@ theorem optionEquivSumPUnit_symm_inr {α} (a) : (optionEquivSumPUnit α).symm (S
 def optionIsSomeEquiv (α) : { x : Option α // x.isSome } ≃ α where
   toFun o := Option.get _ o.2
   invFun x := ⟨some x, rfl⟩
-  left_inv _ := Subtype.eq <| Option.some_get _
+  left_inv _ := Subtype.ext <| Option.some_get _
   right_inv _ := Option.get_some _ _
 
 end Equiv

@@ -3,15 +3,19 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
-import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Order.CompleteLattice.Finset
-import Mathlib.Order.Filter.Basic
+module
+
+public import Mathlib.Data.Set.Finite.Lattice
+public import Mathlib.Order.CompleteLattice.Finset
+public import Mathlib.Order.Filter.Basic
 
 /-!
 # Results relating filters to finiteness
 
 This file proves that finitely many conditions eventually hold if each of them eventually holds.
 -/
+
+@[expose] public section
 
 open Function Set Order
 open scoped symmDiff
@@ -258,7 +262,7 @@ theorem iInf_principal_finite {ι : Type w} {s : Set ι} (hs : s.Finite) (f : ι
 
 end Lattice
 
-/-! ### Eventually -/
+/-! ### Eventually and Frequently -/
 
 @[simp]
 theorem eventually_all {ι : Sort*} [Finite ι] {l} {p : ι → α → Prop} :
@@ -277,6 +281,26 @@ protected alias _root_.Set.Finite.eventually_all := eventually_all_finite
   I.finite_toSet.eventually_all
 
 protected alias _root_.Finset.eventually_all := eventually_all_finset
+
+@[simp]
+theorem frequently_exists {ι : Sort*} [Finite ι] {l} {p : ι → α → Prop} :
+    (∃ᶠ x in l, ∃ i, p i x) ↔ ∃ i, ∃ᶠ x in l, p i x := by
+  rw [← not_iff_not]
+  simp
+
+@[simp]
+theorem frequently_exists_finite {ι} {I : Set ι} (hI : I.Finite) {l} {p : ι → α → Prop} :
+    (∃ᶠ x in l, ∃ i ∈ I, p i x) ↔ ∃ i ∈ I, ∃ᶠ x in l, p i x := by
+  rw [← not_iff_not]
+  simp [hI]
+
+protected alias _root_.Set.Finite.frequently_exists := frequently_exists_finite
+
+@[simp] theorem frequently_exists_finset {ι} (I : Finset ι) {l} {p : ι → α → Prop} :
+    (∃ᶠ x in l, ∃ i ∈ I, p i x) ↔ ∃ i ∈ I, ∃ᶠ x in l, p i x :=
+  I.finite_toSet.frequently_exists
+
+protected alias _root_.Finset.frequently_exists := frequently_exists_finset
 
 lemma eventually_subset_of_finite {ι : Type*} {f : Filter ι} {s : ι → Set α} {t : Set α}
     (ht : t.Finite) (hs : ∀ a ∈ t, ∀ᶠ i in f, a ∈ s i) : ∀ᶠ i in f, t ⊆ s i := by

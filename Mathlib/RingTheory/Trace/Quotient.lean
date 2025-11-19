@@ -3,9 +3,11 @@ Copyright (c) 2024 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Riccardo Brasca
 -/
-import Mathlib.RingTheory.DedekindDomain.Dvr
-import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
-import Mathlib.RingTheory.LocalRing.Quotient
+module
+
+public import Mathlib.RingTheory.DedekindDomain.Dvr
+public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
+public import Mathlib.RingTheory.LocalRing.Quotient
 
 /-!
 
@@ -18,6 +20,8 @@ quotients and localizations.
   trace map on `B⧸pB → A⧸p`.
 
 -/
+
+@[expose] public section
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
