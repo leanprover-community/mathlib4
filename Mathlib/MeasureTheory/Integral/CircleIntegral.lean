@@ -207,7 +207,7 @@ protected theorem sum {ι : Type*} (s : Finset ι) {f : ι → ℂ → E}
 
 /-- Sums of circle integrable functions are circle integrable. -/
 theorem fun_sum {c : ℂ} {R : ℝ} {ι : Type*} (s : Finset ι) {f : ι → ℂ → E}
-  (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
+    (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
     CircleIntegrable (fun z ↦ ∑ i ∈ s, f i z) c R := by
   convert CircleIntegrable.sum s h
   simp

@@ -118,7 +118,7 @@ theorem proximity_sub_proximity_inv_eq_circleAverage {f : ℂ → ℂ} (h₁f : 
 The proximity function of `f + g` at `⊤` is less than or equal to the sum of the
 proximity functions of `f` and `g`, plus `log 2`.
 -/
-theorem proximity_top_add_le [NormedSpace ℂ E] {f₁ f₂ : ℂ → E} (h₁f₁ : MeromorphicOn f₁ Set.univ)
+theorem proximity_add_top_le [NormedSpace ℂ E] {f₁ f₂ : ℂ → E} (h₁f₁ : MeromorphicOn f₁ Set.univ)
     (h₁f₂ : MeromorphicOn f₂ Set.univ) :
     proximity (f₁ + f₂) ⊤ ≤ (proximity f₁ ⊤) + (proximity f₂ ⊤) + (fun _ ↦ log 2) := by
   simp only [proximity, reduceDIte, Pi.add_apply]
@@ -144,8 +144,8 @@ The proximity function of a sum of functions at `⊤` is less than or equal to t
 sum of the proximity functions of the summand, plus `log` of the number of
 summands.
 -/
-theorem proximity_top_sum_le [NormedSpace ℂ E] {α : Type*} (s : Finset α) (f : α → ℂ → E)
-  (hf : ∀ a, MeromorphicOn (f a) Set.univ) :
+theorem proximity_sum_top_le [NormedSpace ℂ E] {α : Type*} (s : Finset α) (f : α → ℂ → E)
+    (hf : ∀ a, MeromorphicOn (f a) Set.univ) :
     proximity (∑ a ∈ s, f a) ⊤ ≤ ∑ a ∈ s, (proximity (f a) ⊤) + (fun _ ↦ log s.card) := by
   simp only [proximity, reduceDIte, Finset.sum_apply]
   intro r
