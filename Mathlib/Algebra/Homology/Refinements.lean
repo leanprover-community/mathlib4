@@ -3,9 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Abelian.Refinements
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+public import Mathlib.CategoryTheory.Abelian.Refinements
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 /-!
 # Refinements
@@ -16,6 +17,8 @@ lemmas about refinements and the case of `ShortComplex` appear
 in the file `CategoryTheory.Abelian.Refinements`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory
 

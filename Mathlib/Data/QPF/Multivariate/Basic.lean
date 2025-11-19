@@ -3,7 +3,9 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Simon Hudon
 -/
-import Mathlib.Data.PFunctor.Multivariate.Basic
+module
+
+public import Mathlib.Data.PFunctor.Multivariate.Basic
 
 /-!
 # Multivariate quotients of polynomial functors.
@@ -68,6 +70,8 @@ matched because they preserve the properties of QPF. The latter example,
 
 each proves that some operations on functors preserves the QPF structure
 -/
+
+@[expose] public section
 
 set_option linter.style.longLine false in
 /-!

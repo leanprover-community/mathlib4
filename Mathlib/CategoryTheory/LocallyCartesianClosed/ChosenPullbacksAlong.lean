@@ -3,10 +3,12 @@ Copyright (c) 2025 Sina Hazratpour. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour
 -/
-import Mathlib.CategoryTheory.Comma.Over.Pullback
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
-import Mathlib.CategoryTheory.Adjunction.Unique
+module
+
+public import Mathlib.CategoryTheory.Comma.Over.Pullback
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+public import Mathlib.CategoryTheory.Adjunction.Unique
 
 /-!
 # Chosen pullbacks along a morphism
@@ -32,6 +34,8 @@ import Mathlib.CategoryTheory.Adjunction.Unique
   the product projections have chosen pullbacks.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 

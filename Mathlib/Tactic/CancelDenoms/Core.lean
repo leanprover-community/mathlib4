@@ -3,13 +3,15 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Data.Tree.Basic
-import Mathlib.Logic.Basic
-import Mathlib.Tactic.NormNum.Core
-import Mathlib.Util.SynthesizeUsing
-import Mathlib.Util.Qq
+module
+
+public meta import Mathlib.Algebra.Field.Basic
+public meta import Mathlib.Algebra.Order.Ring.Defs
+public meta import Mathlib.Data.Tree.Basic
+public meta import Mathlib.Logic.Basic
+public meta import Mathlib.Tactic.NormNum.Core
+public meta import Mathlib.Util.SynthesizeUsing
+public meta import Mathlib.Util.Qq
 
 /-!
 # A tactic for canceling numeric denominators
@@ -27,6 +29,8 @@ There are likely some rough edges to it.
 
 Improving this tactic would be a good project for someone interested in learning tactic programming.
 -/
+
+public meta section
 
 open Lean Parser Tactic Mathlib Meta NormNum Qq
 

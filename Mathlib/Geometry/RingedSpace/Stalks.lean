@@ -3,9 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Geometry.RingedSpace.PresheafedSpace
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.Topology.Sheaves.Stalks
+module
+
+public import Mathlib.Geometry.RingedSpace.PresheafedSpace
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.Topology.Sheaves.Stalks
 
 /-!
 # Stalks for presheafed spaces
@@ -14,6 +16,8 @@ This file lifts constructions of stalks and pushforwards of stalks to work with
 the category of presheafed spaces. Additionally, we prove that restriction of
 presheafed spaces does not change the stalks.
 -/
+
+@[expose] public section
 
 
 noncomputable section

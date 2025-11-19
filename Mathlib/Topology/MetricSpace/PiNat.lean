@@ -3,9 +3,11 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Group.FunctionSeries
-import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
-import Mathlib.Topology.MetricSpace.HausdorffDistance
+module
+
+public import Mathlib.Analysis.Normed.Group.FunctionSeries
+public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
+public import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
 # Topological study of spaces `Π (n : ℕ), E n`
@@ -52,6 +54,8 @@ in general), and `ι` is countable.
   continuous functions to metric spaces, can be embedded inside their product.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -665,7 +669,7 @@ theorem exists_retraction_subtype_of_isClosed {s : Set (∀ n, E n)} (hs : IsClo
   obtain ⟨f, fs, rfl, f_cont⟩ :
     ∃ f : (∀ n, E n) → ∀ n, E n, (∀ x ∈ s, f x = x) ∧ range f = s ∧ Continuous f :=
     exists_retraction_of_isClosed hs hne
-  have A : ∀ x : range f, rangeFactorization f x = x := fun x ↦ Subtype.eq <| fs x x.2
+  have A : ∀ x : range f, rangeFactorization f x = x := fun x ↦ Subtype.ext <| fs x x.2
   exact ⟨rangeFactorization f, A, fun x => ⟨x, A x⟩, f_cont.subtype_mk _⟩
 
 end PiNat
@@ -933,7 +937,7 @@ variable [∀ i, MetricSpace (F i)]
 /-- Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`.
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
-The distance we use here is edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
+The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
 protected def metricSpace : MetricSpace (∀ i, F i) :=
   EMetricSpace.toMetricSpaceOfDist dist (by simp) (by simp [edist_dist])
 

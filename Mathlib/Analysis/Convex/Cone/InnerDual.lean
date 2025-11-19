@@ -3,8 +3,10 @@ Copyright (c) 2021 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Cone.Dual
-import Mathlib.Analysis.InnerProductSpace.Adjoint
+module
+
+public import Mathlib.Analysis.Convex.Cone.Dual
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
 
 /-!
 # Inner dual cone of a set
@@ -32,6 +34,8 @@ the inner dual cone of any set is always closed and contains `0`, i.e. is a prop
 Furthermore, the strict version `{y | ∀ x ∈ s, 0 < ⟪x, y⟫}` is a candidate to the name
 `ConvexCone.innerDual`.
 -/
+
+@[expose] public section
 
 open Set LinearMap Pointwise
 open scoped RealInnerProductSpace
