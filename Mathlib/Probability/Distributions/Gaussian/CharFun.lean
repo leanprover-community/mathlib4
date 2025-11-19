@@ -3,8 +3,10 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Probability.Distributions.Gaussian.Fernique
-import Mathlib.Probability.Moments.CovarianceBilin
+module
+
+public import Mathlib.Probability.Distributions.Gaussian.Fernique
+public import Mathlib.Probability.Moments.CovarianceBilin
 
 /-!
 # Facts about Gaussian characteristic function
@@ -151,7 +153,7 @@ lemma isGaussian_iff_gaussian_charFun [IsFiniteMeasure μ] :
     ⟨⟨fun x y ↦ ?_⟩, ⟨fun x ↦ ?_⟩⟩, ?_⟩⟩
   any_goals simpa using hf.eq ..
   any_goals simpa using hf.nonneg _
-  · simp [charFun_eq_charFunDual_toDualMap, h]
+  · simp [charFun_eq_charFunDual_toDualMap, h, -InnerProductSpace.toContinuousLinearMap_toDualMap]
   · simp [← charFun_toDual_symm_eq_charFunDual, h]
 
 /-- If the characteristic function of `μ` takes the form of a gaussian characteristic function,
@@ -169,7 +171,8 @@ lemma gaussian_charFun_congr [IsFiniteMeasure μ] (m : E) (f : E →L[ℝ] E →
   have := gaussian_charFunDual_congr hg this
   refine ⟨this.1, ?_⟩
   ext
-  simp [covarianceBilin, ← this.2, g, ← InnerProductSpace.toDual_apply_eq_toDualMap_apply]
+  simp [covarianceBilin, ← this.2, g, ← InnerProductSpace.toDual_apply_eq_toDualMap_apply,
+    -InnerProductSpace.toContinuousLinearMap_toDualMap]
 
 /-- Two Gaussian measures are equal if they have same mean and same covariance. This is
 `IsGaussian.ext_covarianceBilinDual` specialized to Hilbert spaces. -/
