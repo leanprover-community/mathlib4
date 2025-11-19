@@ -3,18 +3,22 @@ Copyright (c) 2016 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Set.Defs
-import Mathlib.Logic.Basic
-import Mathlib.Logic.Function.Defs
-import Mathlib.Logic.ExistsUnique
-import Mathlib.Logic.Nonempty
-import Mathlib.Logic.Nontrivial.Defs
-import Batteries.Tactic.Init
-import Mathlib.Order.Defs.Unbundled
+module
+
+public import Mathlib.Data.Set.Defs
+public import Mathlib.Logic.Basic
+public import Mathlib.Logic.Function.Defs
+public import Mathlib.Logic.ExistsUnique
+public import Mathlib.Logic.Nonempty
+public import Mathlib.Logic.Nontrivial.Defs
+public import Batteries.Tactic.Init
+public import Mathlib.Order.Defs.Unbundled
 
 /-!
 # Miscellaneous function constructions and lemmas
 -/
+
+@[expose] public section
 
 open Function
 
@@ -482,6 +486,7 @@ variable {α : Sort u} {β : α → Sort v} {α' : Sort w} [DecidableEq α]
 
 
 /-- Replacing the value of a function at a given point by a given value. -/
+@[grind]
 def update (f : ∀ a, β a) (a' : α) (v : β a') (a : α) : β a :=
   if h : a = a' then Eq.ndrec v h.symm else f a
 

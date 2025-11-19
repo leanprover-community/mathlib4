@@ -3,12 +3,14 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Category.Ring.Colimits
-import Mathlib.Algebra.Category.Ring.Instances
-import Mathlib.Algebra.Category.Ring.Limits
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
-import Mathlib.RingTheory.Localization.BaseChange
+module
+
+public import Mathlib.Algebra.Category.Ring.Colimits
+public import Mathlib.Algebra.Category.Ring.Instances
+public import Mathlib.Algebra.Category.Ring.Limits
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
+public import Mathlib.RingTheory.Localization.BaseChange
 
 /-!
 # Constructions of (co)limits in `CommRingCat`
@@ -23,6 +25,8 @@ In this file we provide the explicit (co)cones for various (co)limits in `CommRi
 * `RingHom.eqLocus` is the equalizer
 
 -/
+
+@[expose] public section
 
 universe u u'
 
@@ -355,7 +359,7 @@ instance : IsLocalHom (equalizerFork f g).ι.hom := by
     conv_rhs => rw [h₁]
     rw [← f.hom.map_mul, ← g.hom.map_mul, h₄, f.hom.map_one, g.hom.map_one]
   rw [isUnit_iff_exists_inv]
-  exact ⟨⟨y, this⟩, Subtype.eq h₃⟩
+  exact ⟨⟨y, this⟩, Subtype.ext h₃⟩
 
 @[instance]
 theorem equalizer_ι_isLocalHom (F : WalkingParallelPair ⥤ CommRingCat.{u}) :

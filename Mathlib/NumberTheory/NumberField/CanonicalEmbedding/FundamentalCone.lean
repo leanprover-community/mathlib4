@@ -3,9 +3,11 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.RingTheory.Ideal.IsPrincipal
-import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
-import Mathlib.RingTheory.ClassGroup
+module
+
+public import Mathlib.RingTheory.Ideal.IsPrincipal
+public import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
+public import Mathlib.RingTheory.ClassGroup
 
 /-!
 # Fundamental Cone
@@ -36,6 +38,8 @@ mixed space that is a fundamental domain for the action of `(𝓞 K)ˣ` modulo t
 
 number field, canonical embedding, units, principal ideals
 -/
+
+@[expose] public section
 
 variable (K : Type*) [Field K]
 
@@ -121,10 +125,12 @@ theorem logMap_mul (hx : mixedEmbedding.norm x ≠ 0) (hy : mixedEmbedding.norm 
   · exact mixedEmbedding.norm_ne_zero_iff.mp hx w
   · exact mixedEmbedding.norm_ne_zero_iff.mp hy w
 
-theorem logMap_apply_of_norm_one (hx : mixedEmbedding.norm x = 1)
+theorem logMap_apply_of_norm_eq_one (hx : mixedEmbedding.norm x = 1)
     (w : {w : InfinitePlace K // w ≠ w₀}) :
     logMap x w = mult w.val * Real.log (normAtPlace w x) := by
   rw [logMap_apply, hx, Real.log_one, zero_mul, sub_zero]
+
+@[deprecated (since := "2025-11-15")] alias logMap_apply_of_norm_one := logMap_apply_of_norm_eq_one
 
 @[simp]
 theorem logMap_eq_logEmbedding (u : (𝓞 K)ˣ) :
@@ -335,7 +341,7 @@ def intNorm (a : integerSet K) : ℕ := (Algebra.norm ℤ (preimageOfMemIntegerS
 @[simp]
 theorem intNorm_coe (a : integerSet K) :
     (intNorm a : ℝ) = mixedEmbedding.norm (a : mixedSpace K) := by
-  rw [intNorm, Int.cast_natAbs, ← Rat.cast_intCast, Int.cast_abs, Algebra.coe_norm_int,
+  rw [intNorm, Nat.cast_natAbs, ← Rat.cast_intCast, Int.cast_abs, Algebra.coe_norm_int,
     ← norm_eq_norm, mixedEmbedding_preimageOfMemIntegerSet]
 
 /-- The norm `intNorm` lifts to a function on `integerSet K` modulo `torsion K`. -/
@@ -391,11 +397,10 @@ def integerSetQuotEquivAssociates :
   Equiv.ofBijective
     (Quotient.lift (integerSetToAssociates K)
       fun _ _ h ↦ ((integerSetToAssociates_eq_iff _ _).mpr h).symm)
-    ⟨by convert Setoid.ker_lift_injective (integerSetToAssociates K)
-        all_goals
-        · ext a b
-          rw [Setoid.ker_def, eq_comm, integerSetToAssociates_eq_iff b a,
-            MulAction.orbitRel_apply, MulAction.mem_orbit_iff],
+    ⟨Setoid.lift_injective_iff_ker_eq_of_le _ |>.mpr <| by
+        ext a b
+        rw [Setoid.ker_def, eq_comm, integerSetToAssociates_eq_iff b a,
+          MulAction.orbitRel_apply, MulAction.mem_orbit_iff],
         (Quot.surjective_lift _).mpr (integerSetToAssociates_surjective K)⟩
 
 @[simp]

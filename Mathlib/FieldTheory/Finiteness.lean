@@ -3,14 +3,18 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.LinearAlgebra.Dimension.Constructions
-import Mathlib.LinearAlgebra.Dimension.Finite
+module
+
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.LinearAlgebra.Dimension.Constructions
+public import Mathlib.LinearAlgebra.Dimension.Finite
 
 /-!
 # A module over a division ring is Noetherian if and only if it is finite.
 
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -88,8 +92,6 @@ theorem _root_.Module.card_eq_pow_finrank [Fintype K] [Fintype V] :
     Fintype.card V = Fintype.card K ^ Module.finrank K V := by
   let b := IsNoetherian.finsetBasis K V
   rw [Module.card_fintype b, ← Module.finrank_eq_card_basis b]
-
-@[deprecated (since := "2025-03-14")] alias _root_.card_eq_pow_finrank := Module.card_eq_pow_finrank
 
 theorem _root_.Module.natCard_eq_pow_finrank [Module.Finite K V] :
     Nat.card V = Nat.card K ^ finrank K V := by

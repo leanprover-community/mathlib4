@@ -3,13 +3,15 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Analysis.Convolution
-import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
-import Mathlib.Analysis.Calculus.BumpFunction.Normed
-import Mathlib.MeasureTheory.Integral.Average
-import Mathlib.MeasureTheory.Covering.Differentiation
-import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
-import Mathlib.MeasureTheory.Measure.Haar.Unique
+module
+
+public import Mathlib.Analysis.Convolution
+public import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
+public import Mathlib.Analysis.Calculus.BumpFunction.Normed
+public import Mathlib.MeasureTheory.Integral.Average
+public import Mathlib.MeasureTheory.Covering.Differentiation
+public import Mathlib.MeasureTheory.Covering.BesicovitchVectorSpace
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
 
 /-!
 # Convolution with a bump function
@@ -36,6 +38,8 @@ We also provide estimates in the case if `g x` is close to `g x₀` on this ball
 
 convolution, smooth function, bump function
 -/
+
+@[expose] public section
 
 universe uG uE'
 

@@ -3,9 +3,11 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.FundamentalCone
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.PolarCoord
-import Mathlib.NumberTheory.NumberField.Units.Regulator
+module
+
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.FundamentalCone
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.PolarCoord
+public import Mathlib.NumberTheory.NumberField.Units.Regulator
 
 /-!
 # Fundamental Cone: set of elements of norm ≤ 1
@@ -119,6 +121,8 @@ identify `realSpace K` with its image in `mixedSpace K`).
   by `w (ηᵢ)` and `ηᵢ` denote the units in `fundSystem K`.
 
 -/
+
+@[expose] public section
 
 variable (K : Type*) [Field K]
 
@@ -256,7 +260,7 @@ theorem expMap_target :
 
 theorem injective_expMap :
     Function.Injective (expMap : realSpace K → realSpace K) :=
-  Set.injective_iff_injOn_univ.mpr ((expMap_source K) ▸ expMap.injOn)
+  Set.injOn_univ.1 (expMap_source K ▸ expMap.injOn)
 
 theorem continuous_expMap :
     Continuous (expMap : realSpace K → realSpace K) :=

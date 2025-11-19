@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.TypeStar
-import Batteries.Tactic.Alias
+module
+
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.TypeStar
+public import Batteries.Tactic.Alias
 
 /-!
 # Extra definitions on `Option`
@@ -14,6 +16,8 @@ This file defines more operations involving `Option α`. Lemmas about them are l
 files under `Mathlib/Data/Option.lean`.
 Other basic operations on `Option` are defined in the core library.
 -/
+
+@[expose] public section
 
 namespace Option
 
@@ -65,13 +69,5 @@ theorem merge_isIdempotent (f : α → α → α) [Std.IdempotentOp f] :
 
 @[deprecated lawfulIdentity_merge (since := "2025-06-03")]
 theorem merge_isId (f : α → α → α) : Std.LawfulIdentity (merge f) none := lawfulIdentity_merge f
-
-@[deprecated (since := "2025-04-04")] alias liftOrGet_isCommutative :=
-  merge_isCommutative
-@[deprecated (since := "2025-04-04")] alias liftOrGet_isAssociative :=
-  merge_isAssociative
-@[deprecated (since := "2025-04-04")] alias liftOrGet_isIdempotent :=
-  merge_isIdempotent
-@[deprecated (since := "2025-04-04")] alias liftOrGet_isId := merge_isId
 
 end Option

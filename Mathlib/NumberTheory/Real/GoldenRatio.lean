@@ -3,13 +3,15 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Alexey Soloyev, Junyan Xu, Kamila Szewczyk
 -/
-import Mathlib.Algebra.EuclideanDomain.Basic
-import Mathlib.Algebra.LinearRecurrence
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Nat.Fib.Basic
-import Mathlib.NumberTheory.Real.Irrational
-import Mathlib.Tactic.NormNum.NatFib
-import Mathlib.Tactic.NormNum.Prime
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Basic
+public import Mathlib.Algebra.LinearRecurrence
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.Nat.Fib.Basic
+public import Mathlib.NumberTheory.Real.Irrational
+public import Mathlib.Tactic.NormNum.NatFib
+public import Mathlib.Tactic.NormNum.Prime
 
 /-!
 # The golden ratio and its conjugate
@@ -21,6 +23,8 @@ Along with various computational facts about them, we prove their
 irrationality, and we link them to the Fibonacci sequence by proving
 Binet's formula.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -154,8 +158,8 @@ theorem goldenRatio_irrational : Irrational φ := by
   have := Nat.Prime.irrational_sqrt (show Nat.Prime 5 by norm_num)
   have := this.ratCast_add 1
   convert this.ratCast_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
-  norm_num
-  field_simp
+  simp
+  ring
 
 @[deprecated (since := "2025-08-23")] alias _root_.gold_irrational := goldenRatio_irrational
 
@@ -164,8 +168,8 @@ theorem goldenConj_irrational : Irrational ψ := by
   have := Nat.Prime.irrational_sqrt (show Nat.Prime 5 by norm_num)
   have := this.ratCast_sub 1
   convert this.ratCast_mul (show (0.5 : ℚ) ≠ 0 by norm_num)
-  norm_num
-  field_simp
+  simp
+  ring
 
 @[deprecated (since := "2025-08-23")] alias _root_.goldConj_irrational := goldenConj_irrational
 

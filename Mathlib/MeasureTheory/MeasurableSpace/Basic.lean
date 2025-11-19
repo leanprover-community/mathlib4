@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Notation.Indicator
-import Mathlib.Data.Int.Cast.Pi
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.MeasureTheory.MeasurableSpace.Defs
+module
+
+public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Data.Int.Cast.Pi
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.MeasureTheory.MeasurableSpace.Defs
 
 /-!
 # Measurable spaces and measurable functions
@@ -39,6 +41,8 @@ Galois connection induced by `f`.
 
 measurable space, σ-algebra, measurable function, dynkin system, π-λ theorem, π-system
 -/
+
+@[expose] public section
 
 open Set MeasureTheory
 
@@ -178,6 +182,10 @@ alias ⟨Measurable.comap_le, Measurable.of_comap_le⟩ := measurable_iff_comap_
 
 theorem comap_measurable {m : MeasurableSpace β} (f : α → β) : Measurable[m.comap f] f :=
   fun s hs => ⟨s, hs, rfl⟩
+
+lemma measurable_comap_iff {mα : MeasurableSpace α} {mγ : MeasurableSpace γ}
+    {f : α → β} {g : β → γ} : Measurable[mα, mγ.comap g] f ↔ Measurable (g ∘ f) := by
+  simp [measurable_iff_comap_le]
 
 theorem Measurable.mono {ma ma' : MeasurableSpace α} {mb mb' : MeasurableSpace β} {f : α → β}
     (hf : @Measurable α β ma mb f) (ha : ma ≤ ma') (hb : mb' ≤ mb) : @Measurable α β ma' mb' f :=

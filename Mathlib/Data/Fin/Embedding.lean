@@ -3,8 +3,10 @@ Copyright (c) 2017 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
-import Mathlib.Data.Fin.SuccPred
-import Mathlib.Logic.Embedding.Basic
+module
+
+public import Mathlib.Data.Fin.SuccPred
+public import Mathlib.Logic.Embedding.Basic
 
 /-!
 # Embeddings of `Fin n`
@@ -24,6 +26,8 @@ This file defines embeddings between `Fin n` and other types,
 * `Fin.natAddEmb n i` : `Fin.natAdd` as an `Embedding`, adds `n` on `i` on the left;
 
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid Finset
 
@@ -65,9 +69,6 @@ def succEmb (n : ℕ) : Fin n ↪ Fin (n + 1) where
 @[simp]
 theorem coe_succEmb : ⇑(succEmb n) = Fin.succ :=
   rfl
-
-@[deprecated (since := "2025-04-12")]
-alias val_succEmb := coe_succEmb
 
 attribute [simp] castSucc_inj
 

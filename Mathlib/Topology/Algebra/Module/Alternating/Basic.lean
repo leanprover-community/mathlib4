@@ -3,10 +3,12 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Heather Macbeth, Sébastien Gouëzel
 -/
-import Mathlib.LinearAlgebra.Alternating.Basic
-import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.Topology.Algebra.Module.Equiv
-import Mathlib.Topology.Algebra.Module.Multilinear.Basic
+module
+
+public import Mathlib.LinearAlgebra.Alternating.Basic
+public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Multilinear.Basic
 
 /-!
 # Continuous alternating multilinear maps
@@ -23,6 +25,8 @@ are indexed by `i : ι`.
 
 multilinear map, alternating map, continuous
 -/
+
+@[expose] public section
 
 open Function Matrix
 
@@ -342,10 +346,6 @@ def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrLeftEquiv (e : M �
   left_inv f := by ext; simp [Function.comp_def]
   right_inv f := by ext; simp [Function.comp_def]
 
-@[deprecated (since := "2025-04-16")]
-alias _root_.ContinuousLinearEquiv.continuousAlternatingMapComp :=
-  ContinuousLinearEquiv.continuousAlternatingMapCongrLeftEquiv
-
 /-- A continuous linear equivalence of codomains
 defines an equivalence between continuous alternating maps. -/
 @[simps -fullyApplied apply]
@@ -356,14 +356,10 @@ def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrRightEquiv (e : N 
   left_inv f := by ext; simp [(· ∘ ·)]
   right_inv f := by ext; simp [(· ∘ ·)]
 
-@[deprecated (since := "2025-04-16")]
-alias _root_.ContinuousLinearEquiv.compContinuousAlternatingMap :=
-  ContinuousLinearEquiv.continuousAlternatingMapCongrRightEquiv
-
-set_option linter.deprecated false in
 @[simp]
 theorem _root_.ContinuousLinearEquiv.compContinuousAlternatingMap_coe
-    (e : N ≃L[R] N') (f : M [⋀^ι]→L[R] N) : ⇑(e.compContinuousAlternatingMap f) = e ∘ f :=
+    (e : N ≃L[R] N') (f : M [⋀^ι]→L[R] N) :
+    ⇑(e.continuousAlternatingMapCongrRightEquiv f) = e ∘ f :=
   rfl
 
 /-- Continuous linear equivalences between domains and codomains

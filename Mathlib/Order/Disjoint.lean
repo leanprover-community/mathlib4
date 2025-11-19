@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Aesop
-import Mathlib.Order.BoundedOrder.Lattice
+module
+
+public import Aesop
+public import Mathlib.Order.BoundedOrder.Lattice
 
 /-!
 # Disjointness and complements
@@ -20,6 +22,8 @@ This file defines `Disjoint`, `Codisjoint`, and the `IsCompl` predicate.
 * `ComplementedLattice α`: Typeclass stating that any element of a lattice has a complement.
 
 -/
+
+@[expose] public section
 
 open Function
 
@@ -200,7 +204,7 @@ variable [PartialOrder α] [OrderTop α] {a b c d : α}
 /-- Two elements of a lattice are codisjoint if their sup is the top element.
 
 Note that we define this without reference to `⊔`, as this allows us to talk about orders where
-the supremum is not unique, or where implement `Sup` would require additional `Decidable`
+the supremum is not unique, or where implementing `Sup` would require additional `Decidable`
 arguments. -/
 def Codisjoint (a b : α) : Prop :=
   ∀ ⦃x⦄, a ≤ x → b ≤ x → ⊤ ≤ x
@@ -268,8 +272,9 @@ theorem bot_codisjoint : Codisjoint ⊥ a ↔ a = ⊤ :=
 lemma Codisjoint.ne_bot_of_ne_top (h : Codisjoint a b) (ha : a ≠ ⊤) : b ≠ ⊥ := by
   rintro rfl; exact ha <| by simpa using h
 
-lemma Codisjoint.ne_bot_of_ne_top' (h : Codisjoint a b) (hb : b ≠ ⊤) : a ≠ ⊥ := by
-  rintro rfl; exact hb <| by simpa using h
+@[deprecated ne_bot_of_ne_top (since := "2025-11-07")]
+lemma Codisjoint.ne_bot_of_ne_top' (h : Codisjoint a b) (hb : b ≠ ⊤) : a ≠ ⊥ :=
+  ne_bot_of_ne_top h.symm hb
 
 end PartialBoundedOrder
 

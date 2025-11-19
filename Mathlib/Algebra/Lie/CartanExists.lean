@@ -3,9 +3,10 @@ Copyright (c) 2024 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+module
 
-import Mathlib.Algebra.Lie.CartanSubalgebra
-import Mathlib.Algebra.Lie.Rank
+public import Mathlib.Algebra.Lie.CartanSubalgebra
+public import Mathlib.Algebra.Lie.Rank
 
 /-!
 # Existence of Cartan subalgebras
@@ -26,6 +27,8 @@ following [barnes1967].
 * [barnes1967]: "On Cartan subalgebras of Lie algebras" by D.W. Barnes.
 
 -/
+
+@[expose] public section
 
 namespace LieAlgebra
 
@@ -68,7 +71,7 @@ open LieModule LinearMap
 
 local notation "φ" => LieModule.toEnd R L M
 
-/-- Let `x` and `y` be elements of a Lie `R`-algebra `L`, and `M` a Lie module over `M`.
+/-- Let `x` and `y` be elements of a Lie `R`-algebra `L`, and `M` a Lie module over `L`.
 Then the characteristic polynomials of the family of endomorphisms `⁅r • y + x, _⁆` of `M`
 have coefficients that are polynomial in `r : R`.
 In other words, we obtain a polynomial over `R[X]`
