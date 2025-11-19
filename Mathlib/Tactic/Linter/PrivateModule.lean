@@ -26,7 +26,6 @@ prefix `_private` in the declaration's name. The code here should be robust to p
 changes that put public declarations only in `.public` and private ones only in `.private`.
 -/
 
-
 meta section
 
 open Lean Elab Command Linter
