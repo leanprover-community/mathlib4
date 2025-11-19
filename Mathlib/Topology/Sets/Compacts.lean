@@ -389,6 +389,42 @@ instance [Nontrivial α] : Nontrivial (NonemptyCompacts α) :=
 theorem nontrivial_iff : Nontrivial (NonemptyCompacts α) ↔ Nontrivial α := by
   simp_rw [← not_subsingleton_iff_nontrivial, subsingleton_iff]
 
+/-- The image of a nonempty compact set under a continuous function. -/
+@[simps! toCompacts]
+protected def map (f : α → β) (hf : Continuous f) (K : NonemptyCompacts α) : NonemptyCompacts β :=
+  ⟨K.toCompacts.map f hf, K.nonempty.image f⟩
+
+@[simp, norm_cast]
+theorem coe_map {f : α → β} (hf : Continuous f) (s : NonemptyCompacts α) :
+    (s.map f hf : Set β) = f '' s :=
+  rfl
+
+@[simp]
+theorem map_id (K : NonemptyCompacts α) : K.map id continuous_id = K := by
+  ext
+  simp
+
+theorem map_comp (f : β → γ) (g : α → β) (hf : Continuous f) (hg : Continuous g)
+    (K : NonemptyCompacts α) : K.map (f ∘ g) (hf.comp hg) = (K.map g hg).map f hf := by
+  ext
+  simp
+
+@[simp]
+theorem map_singleton {f : α → β} (hf : Continuous f) (x : α) :
+    NonemptyCompacts.map f hf {x} = {f x} := by
+  ext
+  simp
+
+theorem map_injective {f : α → β} (hf : Continuous f) (hf' : Function.Injective f) :
+    Function.Injective (NonemptyCompacts.map f hf) :=
+  .of_comp (f := SetLike.coe) <| hf'.image_injective.comp SetLike.coe_injective
+
+@[simp]
+theorem map_injective_iff {f : α → β} (hf : Continuous f) :
+    Function.Injective (NonemptyCompacts.map f hf) ↔ Function.Injective f :=
+  ⟨fun h => .of_comp (f := ({·} : β → NonemptyCompacts β)) fun _ _ _ ↦
+    singleton_injective (h (by simp_all)), map_injective hf⟩
+
 instance toCompactSpace {s : NonemptyCompacts α} : CompactSpace s :=
   isCompact_iff_compactSpace.1 s.isCompact
 
