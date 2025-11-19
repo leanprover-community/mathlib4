@@ -3,8 +3,10 @@ Copyright (c) 2025 Xavier Généreux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Généreux, María Inés de Frutos Fernández
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.SkewMonoidAlgebra.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.SkewMonoidAlgebra.Basic
 /-!
 # Univariate skew polynomials
 
@@ -65,6 +67,8 @@ multiplication is determined by  $Xa = \varphi (a)X + δ (a)$, where `ϕ` is as 
 `δ` is a derivation.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -135,7 +139,7 @@ lemma φ_iterate_apply (n : ℕ) (a : R) : (φ^[n] a) = ((ofAdd n) • a) := by
   induction n with
   | zero => simp
   | succ n hn =>
-      simp_all [MulSemiringAction.toRingHom_apply, Function.iterate_succ', -Function.iterate_succ,
+    simp_all [MulSemiringAction.toRingHom_apply, Function.iterate_succ', -Function.iterate_succ,
       ← mul_smul, mul_comm]
 
 end phi
@@ -145,8 +149,8 @@ def monomial (n : ℕ) : R →ₗ[R] SkewPolynomial R := lsingle (ofAdd n)
 
 lemma monomial_zero_right (n : ℕ) : monomial n (0 : R) = 0 := single_zero _
 
-lemma monomial_zero_one [MulSemiringAction (Multiplicative ℕ) R] :
-  monomial (0 : ℕ) (1 : R) = 1 := by rfl
+lemma monomial_zero_one [MulSemiringAction (Multiplicative ℕ) R] : monomial (0 : ℕ) (1 : R) = 1 :=
+  rfl
 
 lemma monomial_def (n : ℕ) (a : R) : monomial n a = single (ofAdd n) a := rfl
 

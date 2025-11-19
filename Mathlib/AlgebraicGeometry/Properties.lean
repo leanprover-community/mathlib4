@@ -3,8 +3,10 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.AffineScheme
-import Mathlib.RingTheory.LocalProperties.Reduced
+module
+
+public import Mathlib.AlgebraicGeometry.AffineScheme
+public import Mathlib.RingTheory.LocalProperties.Reduced
 
 /-!
 # Basic properties of schemes
@@ -17,6 +19,8 @@ We provide some basic properties of schemes
 * `AlgebraicGeometry.IsReduced`: A scheme is reduced if all the components of the structure sheaf
   are reduced.
 -/
+
+@[expose] public section
 
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737

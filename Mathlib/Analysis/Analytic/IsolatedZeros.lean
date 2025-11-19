@@ -3,12 +3,14 @@ Copyright (c) 2022 Vincent Beffara. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Beffara, Stefan Kebekus
 -/
-import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Analysis.Calculus.DSlope
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Analytic.Uniqueness
-import Mathlib.Order.Filter.EventuallyConst
-import Mathlib.Topology.Perfect
+module
+
+public import Mathlib.Analysis.Analytic.Constructions
+public import Mathlib.Analysis.Calculus.DSlope
+public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+public import Mathlib.Analysis.Analytic.Uniqueness
+public import Mathlib.Order.Filter.EventuallyConst
+public import Mathlib.Topology.Perfect
 
 /-!
 # Principle of isolated zeros
@@ -36,6 +38,8 @@ in this setup.
   within `f '' U` is codiscrete within `U`.
 -/
 
+@[expose] public section
+
 open Filter Function Nat FormalMultilinearSeries EMetric Set
 
 open scoped Topology
@@ -57,7 +61,7 @@ theorem exists_hasSum_smul_of_apply_eq_zero (hs : HasSum (fun m => z ^ m • a m
   by_cases h : z = 0
   · have : s = 0 := hs.unique (by simpa [ha 0 hn, h] using hasSum_at_zero a)
     exact ⟨a n, by simp [h, hn.ne', this], by simpa [h] using hasSum_at_zero fun m => a (m + n)⟩
-  · refine ⟨(z ^ n)⁻¹ • s, by match_scalars; field_simp, ?_⟩
+  · refine ⟨(z ^ n)⁻¹ • s, by match_scalars; field, ?_⟩
     have h1 : ∑ i ∈ Finset.range n, z ^ i • a i = 0 :=
       Finset.sum_eq_zero fun k hk => by simp [ha k (Finset.mem_range.mp hk)]
     have h2 : HasSum (fun m => z ^ (m + n) • a (m + n)) s := by

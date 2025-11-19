@@ -3,8 +3,10 @@ Copyright (c) 2024 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen, Mitchell Lee
 -/
-import Mathlib.LinearAlgebra.Matrix.Notation
-import Mathlib.LinearAlgebra.Matrix.Symmetric
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Notation
+public import Mathlib.LinearAlgebra.Matrix.Symmetric
 
 /-!
 # Coxeter matrices
@@ -58,6 +60,8 @@ a Coxeter matrix and the standard geometric representation of a Coxeter group.
 * [J. Baez, *Coxeter and Dynkin Diagrams*](https://math.ucr.edu/home/baez/twf_dynkin.pdf)
 
 -/
+
+@[expose] public section
 
 /-- A *Coxeter matrix* is a symmetric matrix of natural numbers whose diagonal entries are equal to
 1 and whose off-diagonal entries are not equal to 1. -/

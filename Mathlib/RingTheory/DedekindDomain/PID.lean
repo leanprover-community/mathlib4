@@ -3,9 +3,11 @@ Copyright (c) 2023 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kenny Lau
 -/
-import Mathlib.RingTheory.DedekindDomain.Dvr
-import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
-import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
+module
+
+public import Mathlib.RingTheory.DedekindDomain.Dvr
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+public import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 
 /-!
 # Criteria under which a Dedekind domain is a PID
@@ -22,6 +24,8 @@ principal.
 * `IsPrincipalIdealRing.of_isDedekindDomain_of_uniqueFactorizationMonoid`: a Dedekind domain
   that is a unique factorisation domain, is also a principal ideal domain.
 -/
+
+@[expose] public section
 
 
 variable {R : Type*} [CommRing R]
@@ -178,7 +182,7 @@ theorem IsPrincipalIdealRing.of_finite_maximals [IsDedekindDomain R]
     obtain rfl | hI := eq_or_ne I ⊥
     · exact bot_isPrincipal
     apply Ideal.IsPrincipal.of_finite_maximals_of_isUnit h
-    exact isUnit_of_mul_eq_one _ _ (FractionalIdeal.coe_ideal_mul_inv I hI)⟩
+    exact .of_mul_eq_one _ (FractionalIdeal.coe_ideal_mul_inv I hI)⟩
 
 /-- A Dedekind domain is a PID if its set of primes is finite. -/
 theorem IsPrincipalIdealRing.of_finite_primes [IsDedekindDomain R]

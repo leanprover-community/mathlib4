@@ -3,8 +3,10 @@ Copyright (c) 2025 Antoine Chambert-Loir & María-Inés de Frutos-Fernández. Al
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir & María-Inés de Frutos-Fernández
 -/
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.TensorProduct.Associator
+module
+
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.LinearAlgebra.TensorProduct.Associator
 
 /-! # Polynomial laws on modules
 
@@ -41,6 +43,8 @@ only assumes `R` is a commutative semiring.
 Annales scientifiques de l’École Normale Supérieure 80 (3): 213‑348](Roby-1963)
 
 -/
+
+@[expose] public section
 
 universe u
 

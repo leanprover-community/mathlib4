@@ -3,11 +3,13 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Data.Finset.Prod
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Data.Sym.Basic
-import Mathlib.Data.Sym.Sym2.Init
+module
+
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Data.Sym.Basic
+public import Mathlib.Data.Sym.Sym2.Init
 
 /-!
 # The symmetric square
@@ -42,6 +44,8 @@ The element `Sym2.mk (a, b)` can be written as `s(a, b)` for short.
 
 symmetric square, unordered pairs, symmetric powers
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -522,7 +526,7 @@ section Relations
 /-! ### Declarations about symmetric relations -/
 
 
-variable {r : α → α → Prop}
+variable {r r₁ r₂ : α → α → Prop}
 
 /-- Symmetric relations define a set on `Sym2 α` by taking all those pairs
 of elements that are related.
@@ -536,6 +540,16 @@ theorem fromRel_proj_prop {sym : Symmetric r} {z : α × α} : Sym2.mk z ∈ fro
 
 theorem fromRel_prop {sym : Symmetric r} {a b : α} : s(a, b) ∈ fromRel sym ↔ r a b :=
   Iff.rfl
+
+theorem fromRel_mono_iff (sym₁ : Symmetric r₁) (sym₂ : Symmetric r₂) :
+    fromRel sym₁ ⊆ fromRel sym₂ ↔ r₁ ≤ r₂ :=
+  ⟨fun hle a b ↦ @hle s(a, b), fun hle ↦ Sym2.ind hle⟩
+
+alias ⟨_, fromRel_mono⟩ := fromRel_mono_iff
+
+/-- `fromRel` induces an order embedding from symmetric relations to `Sym2` sets. -/
+def fromRelOrderEmbedding : { r : α → α → Prop // Symmetric r } ↪o Set (Sym2 α) :=
+  OrderEmbedding.ofMapLEIff (fun r ↦ Sym2.fromRel r.prop) fun _ _ ↦ fromRel_mono_iff ..
 
 theorem fromRel_bot : fromRel (fun (_ _ : α) z => z : Symmetric ⊥) = ∅ := by
   apply Set.eq_empty_of_forall_notMem fun e => _
