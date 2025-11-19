@@ -3,8 +3,10 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Ben Eltschig
 -/
-import Mathlib.Topology.Connected.PathConnected
-import Mathlib.Topology.AlexandrovDiscrete
+module
+
+public import Mathlib.Topology.Connected.PathConnected
+public import Mathlib.Topology.AlexandrovDiscrete
 
 /-!
 # Locally path-connected spaces
@@ -37,6 +39,8 @@ In the definition of `LocPathConnectedSpace X` we require neighbourhoods in the 
 path-connected, but not necessarily open; that they can also be required to be open is shown as
 a theorem in `isOpen_isPathConnected_basis`.
 -/
+
+@[expose] public section
 
 noncomputable section
 

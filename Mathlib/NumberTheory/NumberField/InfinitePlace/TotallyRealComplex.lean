@@ -3,7 +3,9 @@ Copyright (c) 2022 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Xavier Roblot
 -/
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
+module
+
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
 
 /-!
 # Totally real and totally complex number fields
@@ -24,6 +26,8 @@ This file defines the type of totally real and totally complex number fields.
 
 number field, infinite places, totally real, totally complex
 -/
+
+@[expose] public section
 
 namespace NumberField
 
@@ -65,6 +69,13 @@ theorem IsTotallyReal.of_algebra [IsTotallyReal K] [Algebra F K] : IsTotallyReal
   isReal w := by
     obtain ⟨W, rfl⟩ : ∃ W : InfinitePlace K, W.comap (algebraMap F K) = w := comap_surjective w
     exact IsReal.comap _ (IsTotallyReal.isReal W)
+
+theorem isTotallyReal_iff_ofRingEquiv (f : F ≃+* K) : IsTotallyReal F ↔ IsTotallyReal K :=
+  ⟨fun _ ↦ .ofRingEquiv f, fun _ ↦ .ofRingEquiv f.symm⟩
+
+@[simp]
+theorem isTotallyReal_top_iff : IsTotallyReal (⊤ : Subfield K) ↔ IsTotallyReal K :=
+  isTotallyReal_iff_ofRingEquiv Subfield.topEquiv
 
 @[deprecated (since := "2025-05-19")] alias IsTotally.of_algebra := IsTotallyReal.of_algebra
 
@@ -140,6 +151,15 @@ instance isTotallyReal_sup {E F : Subfield K} [IsTotallyReal E] [IsTotallyReal F
 instance isTotallyReal_iSup {ι : Type*} {k : ι → Subfield K} [∀ i, IsTotallyReal (k i)] :
     IsTotallyReal (⨆ i, k i : Subfield K) := by
   simp_all [isTotallyReal_iff_le_maximalRealSubfield]
+
+@[simp]
+theorem IsTotallyReal.maximalRealSubfield_eq_top [IsTotallyReal K] : maximalRealSubfield K = ⊤ :=
+  top_unique <| NumberField.IsTotallyReal.le_maximalRealSubfield _
+
+theorem maximalRealSubfield_eq_top_iff_isTotallyReal :
+    maximalRealSubfield K = ⊤ ↔ IsTotallyReal K where
+  mp h := by rw [← isTotallyReal_top_iff, isTotallyReal_iff_le_maximalRealSubfield, h]
+  mpr _ := IsTotallyReal.maximalRealSubfield_eq_top
 
 end maximalRealSubfield
 

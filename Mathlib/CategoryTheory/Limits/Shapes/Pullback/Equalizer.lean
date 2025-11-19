@@ -3,7 +3,9 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
 /-!
 # Equalizers as pullbacks of products
@@ -11,6 +13,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 Also see `CategoryTheory.Limits.Constructions.Equalizers` for very similar results.
 
 -/
+
+@[expose] public section
 
 universe v u
 

@@ -3,10 +3,12 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van Doorn, Bhavik Mehta
 -/
-import Mathlib.Order.Antisymmetrization
-import Mathlib.Order.Hom.WithTopBot
-import Mathlib.Order.Interval.Set.OrdConnected
-import Mathlib.Order.Interval.Set.WithBotTop
+module
+
+public import Mathlib.Order.Antisymmetrization
+public import Mathlib.Order.Hom.WithTopBot
+public import Mathlib.Order.Interval.Set.OrdConnected
+public import Mathlib.Order.Interval.Set.WithBotTop
 
 /-!
 # The covering relation
@@ -22,6 +24,8 @@ in a preorder this is equivalent to `a ⋖ b ∨ (a ≤ b ∧ b ≤ a)`
 * `a ⋖ b` means that `b` covers `a`.
 * `a ⩿ b` means that `b` weakly covers `a`.
 -/
+
+@[expose] public section
 
 
 open Set OrderDual

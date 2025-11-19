@@ -3,15 +3,19 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Embedding
-import Mathlib.Algebra.Order.Interval.Set.Monoid
-import Mathlib.Order.Interval.Finset.Defs
+module
+
+public import Mathlib.Algebra.Group.Embedding
+public import Mathlib.Algebra.Order.Interval.Set.Monoid
+public import Mathlib.Order.Interval.Finset.Defs
 
 /-!
 # Algebraic properties of finset intervals
 
 This file provides results about the interaction of algebra with `Finset.Ixx`.
 -/
+
+@[expose] public section
 
 open Function OrderDual
 
