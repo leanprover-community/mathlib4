@@ -24,11 +24,9 @@ namespace CategoryTheory
 
 open Limits
 
-variable (K K' J C K' : Type*) [Category K] [Category K'] [Category J] [Category C]
+variable {J C : Type*} (K K' : Type*) [Category K] [Category K'] [Category J] [Category C]
 
 namespace ObjectProperty
-
-variable {J C}
 
 /-- The property of objects in the functor category `J ⥤ C`
 which preserves limits of shape `K`. -/
