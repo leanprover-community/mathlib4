@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.SmallRepresentatives
 In this file, given `P : ObjectProperty C` and `κ : Cardinal.{w}`,
 we introduce the closure `P.colimitsCardinalClosure κ`
 of `P` under colimits of shapes given by categories `J` such
-that `HasCardinalLT (Arrow J) κ` holds.
+that `Arrow J` is of cardinality `< κ`.
 
 If `C` is locally `w`-small and `P` is essentially `w`-small,
 we show that this closure `P.colimitsCardinalClosure κ` is
@@ -32,7 +32,7 @@ variable {C : Type u} [Category.{v} C] (P : ObjectProperty C) (κ : Cardinal.{w}
 
 /-- Given `P : ObjectProperty C` and `κ : Cardinal.{w}`, this is the closure
 of `P` under colimits of shape given by categories `J` such that
-`HasCardinalLT (Arrow J) κ` holds. -/
+`Arrow J` is of cardinality `< κ`. -/
 def colimitsCardinalClosure : ObjectProperty C :=
   P.colimitsClosure (SmallCategoryCardinalLT.categoryFamily κ)
 
