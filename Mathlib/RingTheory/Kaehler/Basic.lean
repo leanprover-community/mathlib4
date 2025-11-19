@@ -370,7 +370,7 @@ local instance instR : Module R (KaehlerDifferential.ideal R S).cotangentIdeal :
 /-- Derivations into `Ω[S⁄R]` is equivalent to derivations
 into `(KaehlerDifferential.ideal R S).cotangentIdeal`. -/
 noncomputable def KaehlerDifferential.endEquivDerivation' :
-    Derivation R S Ω[S⁄R] ≃ₗ[R] Derivation R S (ideal R S).cotangentIdeal :=
+    Derivation R S Ω[S⁄R] ≃ₗ[S] Derivation R S (ideal R S).cotangentIdeal :=
   LinearEquiv.compDer ((KaehlerDifferential.ideal R S).cotangentEquivIdeal.restrictScalars S)
 
 /-- (Implementation) An `Equiv` version of `KaehlerDifferential.End_equiv_aux`.
