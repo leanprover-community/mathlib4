@@ -69,7 +69,7 @@ def addRelatedDecl (src : Name) (suffix : String) (ref : Syntax)
     setEnv <| addProtected (← getEnv) tgt
   inferDefEqAttr tgt
   let attrs := match attrs? with | some attrs => attrs | none => #[]
-  _ ← Term.TermElabM.run' <| do
+  _ ← Term.TermElabM.run' do
     let attrs ← elabAttrs attrs
     Term.applyAttributes src attrs
     Term.applyAttributes tgt attrs
