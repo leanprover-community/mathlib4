@@ -5134,6 +5134,7 @@ import Mathlib.NumberTheory.Ostrowski
 import Mathlib.NumberTheory.Padics.AddChar
 import Mathlib.NumberTheory.Padics.Complex
 import Mathlib.NumberTheory.Padics.Hensel
+import Mathlib.NumberTheory.Padics.LinearTopology
 import Mathlib.NumberTheory.Padics.MahlerBasis
 import Mathlib.NumberTheory.Padics.PadicIntegers
 import Mathlib.NumberTheory.Padics.PadicNorm
@@ -6719,6 +6720,7 @@ import Mathlib.Topology.Algebra.UniformField
 import Mathlib.Topology.Algebra.UniformFilterBasis
 import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.Algebra.UniformRing
+import Mathlib.Topology.Algebra.Valued.LinearTopology
 import Mathlib.Topology.Algebra.Valued.LocallyCompact
 import Mathlib.Topology.Algebra.Valued.NormedValued
 import Mathlib.Topology.Algebra.Valued.ValuationTopology
