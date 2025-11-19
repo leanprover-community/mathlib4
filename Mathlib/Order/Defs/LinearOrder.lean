@@ -76,7 +76,6 @@ class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α w
     compareOfLessAndEq_rfl
 
 attribute [to_dual existing] LinearOrder.toMax
-attribute [to_dual self (reorder := a b)] LinearOrder.le_total
 
 variable [LinearOrder α] {a b c : α}
 
