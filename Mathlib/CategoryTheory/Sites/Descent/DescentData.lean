@@ -48,7 +48,9 @@ The compatibilities these morphisms satisfy imply that the morphisms `hom` are i
 structure DescentData where
   /-- The objects over `X i` for all `i` -/
   obj (i : ι) : F.obj (.mk (op (X i)))
-  /-- The compatibility (iso)morphisms after pullbacks. -/
+  /-- The compatibility morphisms after pullbacks. It follows from the conditions 
+  `hom_self` and `hom_comp` that these are isomorphisms, see
+  `CategoryTheory.Pseudofunctor.DescentData.iso` below. -/
   hom ⦃Y : C⦄ (q : Y ⟶ S) ⦃i₁ i₂ : ι⦄ (f₁ : Y ⟶ X i₁) (f₂ : Y ⟶ X i₂)
     (_hf₁ : f₁ ≫ f i₁ = q := by cat_disch) (_hf₂ : f₂ ≫ f i₂ = q := by cat_disch) :
       (F.map f₁.op.toLoc).obj (obj i₁) ⟶ (F.map f₂.op.toLoc).obj (obj i₂)
