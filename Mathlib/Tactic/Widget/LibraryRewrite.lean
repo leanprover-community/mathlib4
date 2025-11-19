@@ -144,8 +144,7 @@ def addRewriteEntry (name : Name) (cinfo : ConstantInfo) :
 
 /-- Try adding the local hypothesis to the `RefinedDiscrTree`. -/
 def addLocalRewriteEntry (decl : LocalDecl) :
-    MetaM (List ((FVarId × Bool) × List (Key × LazyEntry))) :=
-  withReducible do
+    MetaM (List ((FVarId × Bool) × List (Key × LazyEntry))) := do
   let (_, _, eqn) ← forallMetaTelescopeReducing decl.type
   let some (lhs, rhs) := eqOrIff? (← whnf eqn) | return []
   let result := ((decl.fvarId, false), ← initializeLazyEntryWithEta lhs)
@@ -263,7 +262,8 @@ def getModuleRewrites (e : Expr) : MetaM (Array (Array (Rewrite × Name))) := do
 /-! ### Rewriting by hypotheses -/
 
 /-- Construct the `RefinedDiscrTree` of all local hypotheses. -/
-def getHypotheses (except : Option FVarId) : MetaM (RefinedDiscrTree (FVarId × Bool)) := do
+def getHypotheses (except : Option FVarId) : MetaM (RefinedDiscrTree (FVarId × Bool)) :=
+  withReducible do
   let mut tree : PreDiscrTree (FVarId × Bool) := {}
   for decl in ← getLCtx do
     if !decl.isImplementationDetail && except.all (· != decl.fvarId) then
