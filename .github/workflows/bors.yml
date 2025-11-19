@@ -498,11 +498,13 @@ jobs:
           action: add # In order to be able to run a multiline script, we need to add/remove the problem matcher before and after.
           linters: gcc
 
-      - name: check for unused imports
-        id: shake
-        run: |
-          cd pr-branch
-          env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
+      # With the arrival of the module system, the old `shake` is no longer functional.
+      # This will be replaced soon.
+      # - name: check for unused imports
+      #   id: shake
+      #   run: |
+      #     cd pr-branch
+      #     env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
 
       - name: lint mathlib
         if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
