@@ -3,7 +3,9 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Data.ZMod.Basic
+module
+
+public import Mathlib.Data.ZMod.Basic
 
 /-!
 # `ZMod n` and quotient groups / rings
@@ -21,6 +23,8 @@ This file relates `ZMod n` to the quotient group `ℤ / AddSubgroup.zmultiples (
 
 zmod, quotient group
 -/
+
+@[expose] public section
 
 assert_not_exists Ideal TwoSidedIdeal
 

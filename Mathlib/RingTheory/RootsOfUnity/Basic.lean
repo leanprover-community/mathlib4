@@ -3,8 +3,10 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.CharP.Reduced
-import Mathlib.RingTheory.IntegralDomain
+module
+
+public import Mathlib.Algebra.CharP.Reduced
+public import Mathlib.RingTheory.IntegralDomain
 -- TODO: remove Mathlib.Algebra.CharP.Reduced and move the last two lemmas to Lemmas
 
 /-!
@@ -33,6 +35,8 @@ assumption when we need `n` to be non-zero (which is the case for most interesti
 Note that `rootsOfUnity 0 M` is the top subgroup of `Mˣ` (as the condition `ζ^0 = 1` is
 satisfied for all units).
 -/
+
+@[expose] public section
 
 noncomputable section
 

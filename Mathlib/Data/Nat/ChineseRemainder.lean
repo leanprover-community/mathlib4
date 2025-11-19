@@ -3,9 +3,11 @@ Copyright (c) 2023 Shogo Saito. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shogo Saito. Adapted for mathlib by Hunter Monroe
 -/
-import Mathlib.Algebra.BigOperators.Ring.List
-import Mathlib.Data.Nat.ModEq
-import Mathlib.Data.Nat.GCD.BigOperators
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.List
+public import Mathlib.Data.Nat.ModEq
+public import Mathlib.Data.Nat.GCD.BigOperators
 
 /-!
 # Chinese Remainder Theorem
@@ -21,6 +23,8 @@ Gödel's Beta function, which is used in proving Gödel's incompleteness theorem
 
 Chinese Remainder Theorem, Gödel, beta function
 -/
+
+@[expose] public section
 
 open scoped Function -- required for scoped `on` notation
 namespace Nat

@@ -3,11 +3,13 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+module
 
-import Lean.Util.Heartbeats
-import Lean.Server.InfoUtils
-import Mathlib.Lean.ContextInfo
-import Mathlib.Lean.Elab.Tactic.Meta
+public meta import Lean.Util.Heartbeats
+public meta import Lean.Server.InfoUtils
+public meta import Mathlib.Lean.ContextInfo
+public meta import Mathlib.Lean.Elab.Tactic.Meta
+public meta import Lean.Compiler.IR.CompilerM
 
 /-! # Tactic analysis framework
 
@@ -32,6 +34,8 @@ make a definition of type `Mathlib.TacticAnalysis.Config` and give the `Config` 
 The `ComplexConfig` interface doesn't feel quite intuitive and flexible yet and should be changed
 in the future. Please do not rely on this interface being stable.
 -/
+
+public meta section
 
 open Lean Elab Term Command Linter
 

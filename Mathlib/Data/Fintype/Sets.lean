@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.BooleanAlgebra
-import Mathlib.Data.Finset.SymmDiff
-import Mathlib.Data.Fintype.OfMap
+module
+
+public import Mathlib.Data.Finset.BooleanAlgebra
+public import Mathlib.Data.Finset.SymmDiff
+public import Mathlib.Data.Fintype.OfMap
 
 /-!
 # Subsets of finite types
@@ -18,6 +20,8 @@ In a `Fintype`, all `Set`s are automatically `Finset`s, and there are only finit
 * `Finset.fintypeCoeSort`: `((s : Finset α) : Type*)` is a finite type
 * `Fintype.finsetEquivSet`: `Finset α` and `Set α` are equivalent if `α` is a `Fintype`
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -321,6 +325,6 @@ elab (name := finsetStx) "finset% " t:term : term => do
 
 open Lean.Elab.Term.Quotation in
 /-- `quot_precheck` for the `finset%` syntax. -/
-@[quot_precheck finsetStx] def precheckFinsetStx : Precheck
+@[quot_precheck finsetStx] meta def precheckFinsetStx : Precheck
   | `(finset% $t) => precheck t
   | _ => Elab.throwUnsupportedSyntax

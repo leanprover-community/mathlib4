@@ -3,13 +3,17 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Order.Category.Lat
+module
+
+public import Mathlib.Order.Category.Lat
 
 /-!
 # Category of linear orders
 
 This defines `LinOrd`, the category of linear orders with monotone maps.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory

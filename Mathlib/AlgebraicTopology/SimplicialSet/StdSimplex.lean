@@ -3,9 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz, Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Order.Fin.SuccAboveOrderIso
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.NerveNondegenerate
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Order.Fin.SuccAboveOrderIso
 
 /-!
 # The standard simplex
@@ -16,6 +18,8 @@ for their boundaries`∂Δ[n]` and horns `Λ[n, i]`.
 (The notations are available via `open Simplicial`.)
 
 -/
+
+@[expose] public section
 
 universe u
 

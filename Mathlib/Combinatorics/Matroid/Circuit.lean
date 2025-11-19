@@ -3,7 +3,9 @@ Copyright (c) 2025 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Closure
+module
+
+public import Mathlib.Combinatorics.Matroid.Closure
 
 /-!
 # Matroid IsCircuits
@@ -46,6 +48,8 @@ The definition is chosen so that the junk values satisfy
 `M.fundCircuit e I = insert e I` if `e ∈ M.E \ M.closure I`.
 These make the useful statement `e ∈ M.fundCircuit e I ⊆ insert e I` true unconditionally.
 -/
+
+@[expose] public section
 
 variable {α : Type*} {M : Matroid α} {C C' I X Y R : Set α} {e f x y : α}
 

@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.MetricSpace.Lipschitz
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+module
+
+public import Mathlib.Topology.MetricSpace.Lipschitz
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 /-!
 # Hölder continuous functions
@@ -31,6 +33,8 @@ for `r` to ensure that `d ^ r` is monotone in `d`. It might be a good idea to us
 Hölder continuity, Lipschitz continuity
 
 -/
+
+@[expose] public section
 
 
 variable {X Y Z : Type*}

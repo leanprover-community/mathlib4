@@ -3,9 +3,11 @@ Copyright (c) 2024 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Combinatorics.SimpleGraph.Clique
-import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-import Mathlib.Order.Partition.Equipartition
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Clique
+public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+public import Mathlib.Order.Partition.Equipartition
 
 /-!
 # Turán's theorem
@@ -38,6 +40,8 @@ the property through `turanGraph n r` using the isomorphism provided by the forw
 
 * https://en.wikipedia.org/wiki/Turán%27s_theorem
 -/
+
+@[expose] public section
 
 open Finset
 

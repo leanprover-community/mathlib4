@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
-import Mathlib.Algebra.BigOperators.Finsupp.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
-import Mathlib.Algebra.Group.Indicator
-import Mathlib.Data.Rat.BigOperators
+module
+
+public import Mathlib.Algebra.BigOperators.Finsupp.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
+public import Mathlib.Algebra.Group.Indicator
+public import Mathlib.Data.Rat.BigOperators
 
 /-!
 # Miscellaneous definitions, lemmas, and constructions using finsupp
@@ -32,6 +34,8 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 * Expand the list of definitions and important lemmas to the module docstring.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

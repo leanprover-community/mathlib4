@@ -3,10 +3,12 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Group.Embedding
-import Mathlib.Algebra.Group.Finsupp
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Data.List.GetD
+module
+
+public import Mathlib.Algebra.Group.Embedding
+public import Mathlib.Algebra.Group.Finsupp
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Data.List.GetD
 
 /-!
 
@@ -32,6 +34,8 @@ bounds of a list. For concretely defined lists that are made up of elements of d
 this holds. More work will be needed to support lists over non-dec-eq types like `ℝ`, where the
 elements are beyond the dec-eq terms of casted values from `ℕ, ℤ, ℚ`.
 -/
+
+@[expose] public section
 
 namespace List
 

@@ -3,8 +3,10 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.LocalExtr.Basic
-import Mathlib.Analysis.Calculus.LineDeriv.Basic
+module
+
+public import Mathlib.Analysis.Calculus.LocalExtr.Basic
+public import Mathlib.Analysis.Calculus.LineDeriv.Basic
 
 /-!
 # Local extremum and line derivatives
@@ -12,6 +14,8 @@ import Mathlib.Analysis.Calculus.LineDeriv.Basic
 If `f` has a local extremum at a point, then the derivative at this point is zero.
 In this file we prove several versions of this fact for line derivatives.
 -/
+
+@[expose] public section
 
 open Function Set Filter
 open scoped Topology

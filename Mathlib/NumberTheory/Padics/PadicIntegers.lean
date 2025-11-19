@@ -3,8 +3,10 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Mario Carneiro, Johan Commelin
 -/
-import Mathlib.NumberTheory.Padics.PadicNumbers
-import Mathlib.RingTheory.DiscreteValuationRing.Basic
+module
+
+public import Mathlib.NumberTheory.Padics.PadicNumbers
+public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 
 /-!
 # p-adic integers
@@ -44,6 +46,8 @@ Coercions into `ℤ_[p]` are set up to work with the `norm_cast` tactic.
 
 p-adic, p adic, padic, p-adic integer
 -/
+
+@[expose] public section
 
 
 open Padic Metric IsLocalRing

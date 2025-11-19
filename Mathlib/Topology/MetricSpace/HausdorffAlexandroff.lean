@@ -3,9 +3,11 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Topology.Compactness.HilbertCubeEmbedding
-import Mathlib.Topology.Instances.CantorSet
-import Mathlib.Topology.MetricSpace.PiNat
+module
+
+public import Mathlib.Topology.Compactness.HilbertCubeEmbedding
+public import Mathlib.Topology.Instances.CantorSet
+public import Mathlib.Topology.MetricSpace.PiNat
 
 /-!
 # Hausdorff–Alexandroff Theorem
@@ -33,6 +35,8 @@ The proof consists of three steps. Let `X` be a compact metric space.
 3. Taking the preimage of `X` under this surjection, it remains to prove that any closed
    subset of the Cantor space is the continuous image of the Cantor space.
 -/
+
+@[expose] public section
 
 namespace Real
 

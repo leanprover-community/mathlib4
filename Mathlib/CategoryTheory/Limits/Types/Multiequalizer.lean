@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
-import Mathlib.CategoryTheory.Limits.Types.Limits
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+public import Mathlib.CategoryTheory.Limits.Types.Limits
 
 /-!
 # Multiequalizers in Type
@@ -15,6 +17,8 @@ that `c` is a limit iff the canonical map
 `c.toSections : c.pt → I.sections` is a bijection.
 
 -/
+
+@[expose] public section
 
 universe v u
 

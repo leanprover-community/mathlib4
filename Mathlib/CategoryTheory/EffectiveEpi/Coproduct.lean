@@ -3,9 +3,11 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.EffectiveEpi.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.CategoryTheory.EffectiveEpi.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+public import Mathlib.Tactic.ApplyFun
 /-!
 
 # Effective epimorphic families and coproducts
@@ -14,6 +16,8 @@ This file proves that an effective epimorphic family induces an effective epi fr
 the coproduct exists, and the converse under some more conditions on the coproduct (that it
 interacts well with pullbacks).
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

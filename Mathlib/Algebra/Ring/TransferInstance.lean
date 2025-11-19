@@ -3,16 +3,20 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.Group.TransferInstance
-import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Algebra.Ring.Hom.InjSurj
-import Mathlib.Algebra.Ring.InjSurj
+module
+
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.Algebra.Ring.Equiv
+public import Mathlib.Algebra.Ring.Hom.InjSurj
+public import Mathlib.Algebra.Ring.InjSurj
 
 /-!
 # Transfer algebraic structures across `Equiv`s
 
 This continues the pattern set in `Mathlib/Algebra/Group/TransferInstance.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists Field Module
 

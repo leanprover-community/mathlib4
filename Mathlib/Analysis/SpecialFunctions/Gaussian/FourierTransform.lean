@@ -3,10 +3,12 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
-import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.MeasureTheory.Integral.Pi
-import Mathlib.Analysis.Fourier.FourierTransform
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
+public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.MeasureTheory.Integral.Pi
+public import Mathlib.Analysis.Fourier.FourierTransform
 
 /-!
 # Fourier transform of the Gaussian
@@ -23,6 +25,8 @@ We also give versions of these formulas in finite-dimensional inner product spac
 `integral_cexp_neg_mul_sq_norm_add` and `fourierIntegral_gaussian_innerProductSpace`.
 
 -/
+
+@[expose] public section
 
 /-!
 ## Fourier integral of Gaussian functions

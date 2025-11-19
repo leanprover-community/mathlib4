@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Basic
-import Mathlib.AlgebraicTopology.SimplexCategory.Truncated
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
+public import Mathlib.AlgebraicTopology.SimplexCategory.Truncated
 
 /-!
 # Edges and "triangles" in truncated simplicial sets
@@ -18,6 +20,8 @@ data of a `2`-simplex with faces `e₁₂`, `e₀₂` and `e₀₁` respectively
 will allow to obtain relations in the homotopy category of `X`.
 
 -/
+
+@[expose] public section
 
 universe v u
 

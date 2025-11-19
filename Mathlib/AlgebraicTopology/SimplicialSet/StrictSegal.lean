@@ -3,8 +3,10 @@ Copyright (c) 2024 Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl, Joël Riou, Johan Commelin, Nick Ward
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
-import Mathlib.AlgebraicTopology.SimplicialSet.Path
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
+public import Mathlib.AlgebraicTopology.SimplicialSet.Path
 
 /-!
 # Strict Segal simplicial sets
@@ -22,6 +24,8 @@ the nerve of its homotopy category.
 in `Mathlib/AlgebraicTopology/SimplicialSet/Coskeletal.lean`.
 
 -/
+
+@[expose] public section
 
 universe v u
 

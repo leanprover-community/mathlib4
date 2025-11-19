@@ -3,10 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.CategoryTheory.Functor.Basic
-import Mathlib.CategoryTheory.Iso
-import Mathlib.Order.Basic
+module
+
+public import Mathlib.CategoryTheory.Category.Basic
+public import Mathlib.CategoryTheory.Functor.Basic
+public import Mathlib.CategoryTheory.Iso
+public import Mathlib.Order.Basic
 
 /-!
 # Properties of objects in a category
@@ -22,6 +24,8 @@ for predicates `C → Prop`.
   regarding terms in `ObjectProperty C` when `C` is pretriangulated
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 

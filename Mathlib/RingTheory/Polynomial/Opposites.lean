@@ -3,14 +3,18 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Polynomial.Degree.Support
-import Mathlib.Tactic.NoncommRing
+module
+
+public import Mathlib.Algebra.Polynomial.Degree.Support
+public import Mathlib.Tactic.NoncommRing
 
 /-! # Interactions between `R[X]` and `Rᵐᵒᵖ[X]`
 
 This file contains the basic API for "pushing through" the isomorphism
 `opRingEquiv : R[X]ᵐᵒᵖ ≃+* Rᵐᵒᵖ[X]`.  It allows going back and forth between a polynomial ring
 over a semiring and the polynomial ring over the opposite semiring. -/
+
+@[expose] public section
 
 
 open Polynomial

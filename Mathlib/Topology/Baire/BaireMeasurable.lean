@@ -3,9 +3,11 @@ Copyright (c) 2024 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 -/
-import Mathlib.Topology.LocallyClosed
-import Mathlib.MeasureTheory.MeasurableSpace.EventuallyMeasurable
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+module
+
+public import Mathlib.Topology.LocallyClosed
+public import Mathlib.MeasureTheory.MeasurableSpace.EventuallyMeasurable
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 /-!
 # Baire category and Baire measurable sets
@@ -24,6 +26,8 @@ A set `s` in a topological space `α` is called a `BaireMeasurableSet` or said t
 * There is an *open* set `u` such that `s =ᵇ u`. (See `BaireMeasurableSet.residual_eq_open`)
 
 -/
+
+@[expose] public section
 
 variable (α : Type*) {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 

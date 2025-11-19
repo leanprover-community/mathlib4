@@ -3,7 +3,9 @@ Copyright (c) 2024 Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl, Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Horn
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 
 /-!
 # Paths in simplicial sets
@@ -18,6 +20,8 @@ path in a simplicial set `X` is then defined as a 1-truncated path in the
 An `n`-simplex has a maximal path, the `spine` of the simplex, which is a path
 of length `n`.
 -/
+
+@[expose] public section
 
 universe v u
 

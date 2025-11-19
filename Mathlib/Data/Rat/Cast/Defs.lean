@@ -3,13 +3,15 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Field.Rat
-import Mathlib.Algebra.Group.Commute.Basic
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Data.Rat.Lemmas
-import Mathlib.Order.Nat
+module
+
+public import Mathlib.Algebra.Field.Basic
+public import Mathlib.Algebra.Field.Rat
+public import Mathlib.Algebra.Group.Commute.Basic
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+public import Mathlib.Data.Int.Cast.Lemmas
+public import Mathlib.Data.Rat.Lemmas
+public import Mathlib.Order.Nat
 
 /-!
 # Casts for Rational Numbers
@@ -23,6 +25,8 @@ casting lemmas showing the well-behavedness of this injection.
 
 rat, rationals, field, ℚ, numerator, denominator, num, denom, cast, coercion, casting
 -/
+
+@[expose] public section
 
 assert_not_exists MulAction IsOrderedMonoid
 

@@ -3,7 +3,9 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johan Commelin
 -/
-import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+module
+
+public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 
 /-!
 # Minimal polynomials
@@ -13,6 +15,8 @@ under the assumption that x is integral over `A`, and derives some basic propert
 such as irreducibility under the assumption `B` is a domain.
 
 -/
+
+@[expose] public section
 
 
 open Polynomial Set Function

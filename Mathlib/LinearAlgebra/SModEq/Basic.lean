@@ -3,13 +3,17 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Module.Submodule.Map
-import Mathlib.Algebra.Polynomial.Eval.Defs
-import Mathlib.RingTheory.Ideal.Quotient.Defs
+module
+
+public import Mathlib.Algebra.Module.Submodule.Map
+public import Mathlib.Algebra.Polynomial.Eval.Defs
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
 # modular equivalence for submodule
 -/
+
+@[expose] public section
 
 
 open Submodule

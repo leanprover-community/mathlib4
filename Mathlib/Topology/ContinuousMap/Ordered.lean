@@ -3,14 +3,18 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Shing Tak Lam
 -/
-import Mathlib.Topology.Order.Lattice
-import Mathlib.Topology.Order.ProjIcc
-import Mathlib.Topology.ContinuousMap.Defs
+module
+
+public import Mathlib.Topology.Order.Lattice
+public import Mathlib.Topology.Order.ProjIcc
+public import Mathlib.Topology.ContinuousMap.Defs
 
 /-!
 # Bundled continuous maps into orders, with order-compatible topology
 
 -/
+
+@[expose] public section
 
 
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]

@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Monad.Adjunction
-import Mathlib.CategoryTheory.Monad.Coequalizer
+module
+
+public import Mathlib.CategoryTheory.Monad.Adjunction
+public import Mathlib.CategoryTheory.Monad.Coequalizer
 
 /-!
 # Adjoint lifting
@@ -54,6 +56,8 @@ Please try to keep them in sync.
 * Adjoint Lifting Theorems for Categories of Algebras (PT Johnstone, 1975)
 * A unified approach to the lifting of adjoints (AJ Power, 1988)
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory

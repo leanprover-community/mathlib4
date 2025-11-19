@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Adjunctions
-import Mathlib.Algebra.Category.ModuleCat.EpiMono
-import Mathlib.Algebra.Homology.LeftResolution.Basic
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Adjunctions
+public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.Algebra.Homology.LeftResolution.Basic
 
 /-!
 # Functorial projective resolutions of modules
@@ -17,6 +19,8 @@ we may obtain a functor `(projectiveResolution R).chainComplexFunctor` which
 sends `M : ModuleCat R` to a projective resolution.
 
 -/
+
+@[expose] public section
 
 universe u
 

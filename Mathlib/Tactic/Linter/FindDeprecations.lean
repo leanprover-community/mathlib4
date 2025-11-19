@@ -3,8 +3,9 @@ Copyright (c) 2025 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Mathlib.Init -- `import ImportGraph.Imports` is enough
+public import Mathlib.Init -- `import ImportGraph.Imports` is enough
 
 /-!
 # The `#clear_deprecations` command
@@ -17,6 +18,8 @@ ending with `date₂`.
 
 See the doc-string for the command for more information.
 -/
+
+public meta section
 
 open Lean Elab Command
 

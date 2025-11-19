@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure.PointwiseRightDerived
+module
+
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.PointwiseRightDerived
 
 /-!
 # Deriving functors using a derivability structure
@@ -24,6 +26,8 @@ transformation `α : F ⟶ L₂ ⋙ RF` is the right derived functor of `F` iff
 for any `X₁ : C₁`, the map `α.app (Φ.functor.obj X₁)` is an isomorphism.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 

@@ -3,10 +3,12 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Elementwise
-import Mathlib.Topology.Sequences
-import Mathlib.Topology.Instances.Discrete
-import Mathlib.Topology.Category.TopCat.Basic
+module
+
+public import Mathlib.CategoryTheory.Elementwise
+public import Mathlib.Topology.Sequences
+public import Mathlib.Topology.Instances.Discrete
+public import Mathlib.Topology.Category.TopCat.Basic
 /-!
 
 # The category of sequential topological spaces
@@ -15,6 +17,8 @@ We define the category `Sequential` of sequential topological spaces. We follow 
 for defining categories of topological spaces, by giving it the induced category structure from
 `TopCat`.
 -/
+
+@[expose] public section
 
 open CategoryTheory
 

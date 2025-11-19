@@ -3,8 +3,10 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
-import Mathlib.Analysis.InnerProductSpace.Subspace
-import Mathlib.LinearAlgebra.SesquilinearForm.Basic
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Subspace
+public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 
 /-!
 # Orthogonal complements of submodules
@@ -22,6 +24,8 @@ The orthogonal complement of a submodule `K` is denoted by `Kᗮ`.
 The proposition that two submodules are orthogonal, `Submodule.IsOrtho`, is denoted by `U ⟂ V`.
 Note this is not the same unicode symbol as `⊥` (`Bot`).
 -/
+
+@[expose] public section
 
 variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]

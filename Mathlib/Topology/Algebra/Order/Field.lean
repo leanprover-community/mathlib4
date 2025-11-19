@@ -3,10 +3,12 @@ Copyright (c) 2022 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson, Devon Tuma, Eric Rodriguez, Oliver Nash
 -/
-import Mathlib.Algebra.Order.Group.Pointwise.Interval
-import Mathlib.Order.Filter.AtTopBot.Field
-import Mathlib.Topology.Algebra.Field
-import Mathlib.Topology.Algebra.Order.Group
+module
+
+public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+public import Mathlib.Order.Filter.AtTopBot.Field
+public import Mathlib.Topology.Algebra.Field
+public import Mathlib.Topology.Algebra.Order.Group
 
 /-!
 # Topologies on linear ordered fields
@@ -16,6 +18,8 @@ and division (apart from zero in the denominator). We also prove theorems like
 `Filter.Tendsto.mul_atTop`: if `f` tends to a positive number and `g` tends to positive infinity,
 then `f * g` tends to positive infinity.
 -/
+
+@[expose] public section
 
 
 open Set Filter TopologicalSpace Function

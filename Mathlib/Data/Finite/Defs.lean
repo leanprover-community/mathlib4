@@ -3,10 +3,12 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Data.Set.CoeSort
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.Set
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Data.Set.CoeSort
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Tactic.Set
+public import Mathlib.Util.AssertExists
 
 /-!
 # Definition of the `Finite` typeclass
@@ -57,6 +59,8 @@ instances since they do not compute anything.
 
 finite, fintype, finite sets
 -/
+
+@[expose] public section
 
 assert_not_exists Finset MonoidWithZero IsOrderedRing
 

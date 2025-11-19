@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.Restriction
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+module
+
+public import Mathlib.Algebra.Homology.Embedding.Restriction
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 /-! # The homology of a restriction
 
@@ -15,6 +17,8 @@ is an embedding of complex shapes. See `restriction.sc'Iso`
 and `restriction.hasHomology`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits ZeroObject
 

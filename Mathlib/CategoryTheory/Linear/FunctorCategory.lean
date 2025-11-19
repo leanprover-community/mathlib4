@@ -3,8 +3,10 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Preadditive.FunctorCategory
-import Mathlib.CategoryTheory.Linear.Basic
+module
+
+public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
+public import Mathlib.CategoryTheory.Linear.Basic
 
 /-!
 # Linear structure on functor categories
@@ -13,6 +15,8 @@ If `C` and `D` are categories and `D` is `R`-linear,
 then `C ⥤ D` is also `R`-linear.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

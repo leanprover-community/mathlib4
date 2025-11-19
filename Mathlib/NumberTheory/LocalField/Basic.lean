@@ -3,9 +3,11 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
-import Mathlib.Topology.Algebra.Valued.LocallyCompact
-import Mathlib.Topology.Algebra.Valued.ValuativeRel
+module
+
+public import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
+public import Mathlib.Topology.Algebra.Valued.LocallyCompact
+public import Mathlib.Topology.Algebra.Valued.ValuativeRel
 
 /-!
 
@@ -16,6 +18,8 @@ we say that it is a non-archimedean local field if the topology comes from the g
 and it is locally compact and non-discrete.
 
 -/
+
+@[expose] public section
 
 /--
 Given a topological field `K` equipped with an equivalence class of valuations (a `ValuativeRel`),

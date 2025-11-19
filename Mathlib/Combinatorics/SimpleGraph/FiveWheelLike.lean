@@ -3,11 +3,13 @@ Copyright (c) 2024 John Talbot and Lian Bremner Tattersall. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: John Talbot, Lian Bremner Tattersall
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Ring
 /-!
 # Five-wheel like graphs
 
@@ -79,6 +81,8 @@ We will need to refer to this consistently and choose the following formulation:
 * [S. Brandt **On the structure of graphs with bounded clique number**
   https://doi.org/10.1007/s00493-003-0042-z][brandt2003]
 -/
+
+@[expose] public section
 
 local notation "‖" x "‖" => Fintype.card x
 
@@ -421,6 +425,7 @@ theorem colorable_of_cliqueFree_lt_minDegree [Fintype α] [DecidableRel G.Adj]
   match r with
   | 0 | 1 => aesop
   | r + 2 =>
+    classical
     -- There is an edge maximal `Kᵣ₊₃`-free supergraph `H` of `G`
     obtain ⟨H, hle, hmcf⟩ := @Finite.exists_le_maximal _ _ _ (fun H ↦ H.CliqueFree (r + 3)) G hf
     -- If `H` is `r + 2`-colorable then so is `G`

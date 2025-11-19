@@ -3,7 +3,9 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Algebra.Group.Defs
+module
+
+public import Mathlib.Algebra.Group.Defs
 
 /-!
 # The integers form a group
@@ -12,6 +14,8 @@ This file contains the additive group and multiplicative monoid instances on the
 
 See note [foundational algebra order theory].
 -/
+
+@[expose] public section
 
 assert_not_exists Ring DenselyOrdered
 

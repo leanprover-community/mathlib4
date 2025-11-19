@@ -3,13 +3,17 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Data.Rat.Cast.CharZero
-import Mathlib.Algebra.Field.Basic
+module
+
+public meta import Mathlib.Tactic.NormNum.Basic
+public meta import Mathlib.Data.Rat.Cast.CharZero
+public meta import Mathlib.Algebra.Field.Basic
 
 /-!
 # `norm_num` plugins for `Rat.cast` and `⁻¹`.
 -/
+
+public meta section
 
 variable {u : Lean.Level}
 

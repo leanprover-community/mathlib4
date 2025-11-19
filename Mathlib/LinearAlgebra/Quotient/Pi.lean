@@ -3,8 +3,10 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Alex J. Best
 -/
-import Mathlib.LinearAlgebra.Pi
-import Mathlib.LinearAlgebra.Quotient.Basic
+module
+
+public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!
 # Submodule quotients and direct sums
@@ -19,6 +21,8 @@ and the direct sum of quotients of modules by submodules.
 * `Submodule.quotientPi`: the quotient of a direct sum is the direct sum of quotients.
 
 -/
+
+@[expose] public section
 
 
 namespace Submodule

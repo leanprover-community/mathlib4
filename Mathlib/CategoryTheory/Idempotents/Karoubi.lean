@@ -3,9 +3,11 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Idempotents.Basic
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Equivalence
+module
+
+public import Mathlib.CategoryTheory.Idempotents.Basic
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.CategoryTheory.Equivalence
 
 /-!
 # The Karoubi envelope of a category
@@ -20,6 +22,8 @@ complete category. It is also preadditive when `C` is preadditive.
 (`toKaroubiIsEquivalence`) when `C` is idempotent complete.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

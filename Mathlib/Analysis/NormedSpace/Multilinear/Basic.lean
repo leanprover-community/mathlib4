@@ -3,11 +3,13 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Sophie Morel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Operator.NormedSpace
-import Mathlib.Logic.Embedding.Basic
-import Mathlib.Data.Fintype.CardEmbedding
-import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
-import Mathlib.Topology.Algebra.Module.Multilinear.Topology
+module
+
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Logic.Embedding.Basic
+public import Mathlib.Data.Fintype.CardEmbedding
+public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
+public import Mathlib.Topology.Algebra.Module.Multilinear.Topology
 
 /-!
 # Operator norm on the space of continuous multilinear maps
@@ -43,6 +45,8 @@ is only well defined when there is an order on the variables (for instance on `F
 the final result is independent of the order. While everything could be done following this
 approach, it turns out that direct proofs are easier and more efficient.
 -/
+
+@[expose] public section
 
 suppress_compilation
 

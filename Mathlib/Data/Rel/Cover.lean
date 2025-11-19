@@ -3,7 +3,9 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Rel.Separated
+module
+
+public import Mathlib.Data.Rel.Separated
 
 /-!
 # Covers in a uniform space
@@ -22,6 +24,8 @@ The concept of uniform covers can be used to define two further notions of cover
 
 [R. Vershynin, *High Dimensional Probability*][vershynin2018high], Section 4.2.
 -/
+
+@[expose] public section
 
 open Set
 

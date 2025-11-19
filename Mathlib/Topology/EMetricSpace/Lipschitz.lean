@@ -3,9 +3,11 @@ Copyright (c) 2018 Rohan Mitta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudryashov, Winston Yin
 -/
-import Mathlib.Algebra.Group.End
-import Mathlib.Tactic.Finiteness
-import Mathlib.Topology.EMetricSpace.Diam
+module
+
+public import Mathlib.Algebra.Group.End
+public import Mathlib.Tactic.Finiteness
+public import Mathlib.Topology.EMetricSpace.Diam
 
 /-!
 # Lipschitz continuous functions
@@ -39,6 +41,8 @@ The parameter `K` has type `ℝ≥0`. This way we avoid conjunction in the defin
 coercions both to `ℝ` and `ℝ≥0∞`. Constructors whose names end with `'` take `K : ℝ` as an
 argument, and return `LipschitzWith (Real.toNNReal K) f`.
 -/
+
+@[expose] public section
 
 universe u v w x
 

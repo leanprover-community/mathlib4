@@ -3,9 +3,11 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Jujian Zhang
 -/
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.Module.TransferInstance
-import Mathlib.RingTheory.Localization.Defs
+module
+
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.Module.TransferInstance
+public import Mathlib.RingTheory.Localization.Defs
 
 /-!
 # Localized Module
@@ -34,6 +36,8 @@ localize `M` by `S`. This gives us a `Localization S`-module.
 
 * Redefine `Localization` for monoids and rings to coincide with `LocalizedModule`.
 -/
+
+@[expose] public section
 
 
 namespace LocalizedModule

@@ -1,9 +1,11 @@
-import Mathlib.Analysis.Calculus.TangentCone.Basic
-import Mathlib.Analysis.Calculus.TangentCone.Defs
-import Mathlib.Analysis.Calculus.TangentCone.DimOne
-import Mathlib.Analysis.Calculus.TangentCone.Pi
-import Mathlib.Analysis.Calculus.TangentCone.Prod
-import Mathlib.Analysis.Calculus.TangentCone.ProperSpace
-import Mathlib.Analysis.Calculus.TangentCone.Real
+module
+
+public import Mathlib.Analysis.Calculus.TangentCone.Basic
+public import Mathlib.Analysis.Calculus.TangentCone.Defs
+public import Mathlib.Analysis.Calculus.TangentCone.DimOne
+public import Mathlib.Analysis.Calculus.TangentCone.Pi
+public import Mathlib.Analysis.Calculus.TangentCone.Prod
+public import Mathlib.Analysis.Calculus.TangentCone.ProperSpace
+public import Mathlib.Analysis.Calculus.TangentCone.Real
 
 deprecated_module (since := "2025-11-06")

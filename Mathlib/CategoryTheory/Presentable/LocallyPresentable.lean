@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Presentable.CardinalFilteredPresentation
+module
+
+public import Mathlib.CategoryTheory.Presentable.CardinalFilteredPresentation
 
 /-!
 # Locally presentable and accessible categories
@@ -20,6 +22,8 @@ accessible category, any object is presentable.
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
 -/
+
+@[expose] public section
 
 universe w v u
 

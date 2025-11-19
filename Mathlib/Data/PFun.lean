@@ -3,10 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 -/
-import Batteries.WF
-import Batteries.Tactic.GeneralizeProofs
-import Mathlib.Data.Part
-import Mathlib.Data.Rel
+module
+
+public import Batteries.WF
+public import Batteries.Tactic.GeneralizeProofs
+public import Mathlib.Data.Part
+public import Mathlib.Data.Rel
 
 /-!
 # Partial functions
@@ -50,6 +52,8 @@ Monad operations:
 * `PFun.bind`: The monad `bind` function, pointwise `Part.bind`
 * `PFun.map`: The monad `map` function, pointwise `Part.map`.
 -/
+
+@[expose] public section
 
 open Function
 

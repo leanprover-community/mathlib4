@@ -3,9 +3,11 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Calle Sönne
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
-import Mathlib.CategoryTheory.Bicategory.Functor.Lax
-import Mathlib.Tactic.CategoryTheory.ToApp
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
+public import Mathlib.CategoryTheory.Bicategory.Functor.Lax
+public import Mathlib.Tactic.CategoryTheory.ToApp
 
 /-!
 # Pseudofunctors
@@ -30,6 +32,8 @@ We provide several constructors for pseudofunctors:
 * `CategoryTheory.Pseudofunctor.comp F G` : the composition of pseudofunctors
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

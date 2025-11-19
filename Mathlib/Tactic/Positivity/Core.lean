@@ -3,13 +3,15 @@ Copyright (c) 2022 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
-import Mathlib.Tactic.NormNum.Core
-import Mathlib.Tactic.HaveI
-import Mathlib.Algebra.Order.Invertible
-import Mathlib.Algebra.Order.Ring.Cast
-import Mathlib.Control.Basic
-import Mathlib.Data.Nat.Cast.Basic
-import Qq
+module
+
+public meta import Mathlib.Tactic.NormNum.Core
+public meta import Mathlib.Tactic.HaveI
+public meta import Mathlib.Algebra.Order.Invertible
+public meta import Mathlib.Algebra.Order.Ring.Cast
+public meta import Mathlib.Control.Basic
+public meta import Mathlib.Data.Nat.Cast.Basic
+public meta import Qq
 
 /-!
 ## `positivity` core functionality
@@ -19,6 +21,8 @@ which allow for plugging in new positivity functionality around a positivity-bas
 The actual behavior is in `@[positivity]`-tagged definitions in `Tactic.Positivity.Basic`
 and elsewhere.
 -/
+
+public meta section
 
 open Lean
 open Lean.Meta Qq Lean.Elab Term
@@ -102,6 +106,7 @@ initialize registerBuiltinAttribute {
   applicationTime := .afterCompilation
   add := fun declName stx kind => match stx with
     | `(attr| positivity $es,*) => do
+      ensureAttrDeclIsMeta `positivity declName kind
       unless kind == AttributeKind.global do
         throwError "invalid attribute 'positivity', must be global"
       let env ← getEnv

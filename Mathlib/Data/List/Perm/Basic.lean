@@ -3,11 +3,13 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Batteries.Data.List.Perm
-import Mathlib.Logic.Relation
-import Mathlib.Order.RelClasses
-import Mathlib.Data.List.Forall2
-import Mathlib.Data.List.InsertIdx
+module
+
+public import Batteries.Data.List.Perm
+public import Mathlib.Logic.Relation
+public import Mathlib.Order.RelClasses
+public import Mathlib.Data.List.Forall2
+public import Mathlib.Data.List.InsertIdx
 
 /-!
 # List Permutations
@@ -18,6 +20,8 @@ This file develops theory about the `List.Perm` relation.
 
 The notation `~` is used for permutation equivalence.
 -/
+
+@[expose] public section
 
 -- Make sure we don't import algebra
 assert_not_exists Monoid

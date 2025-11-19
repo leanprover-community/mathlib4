@@ -3,14 +3,18 @@ Copyright (c) 2014 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn, Sabbir Rahman
 -/
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Algebra.Order.Ring.Pow
-import Mathlib.Algebra.Ring.CharZero
-import Mathlib.Tactic.Positivity.Core
+module
+
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Algebra.Order.Ring.Pow
+public import Mathlib.Algebra.Ring.CharZero
+public import Mathlib.Tactic.Positivity.Core
 
 /-!
 # Lemmas about powers in ordered fields.
 -/
+
+@[expose] public section
 
 
 variable {α : Type*}
@@ -113,7 +117,7 @@ open Lean Meta Qq
 /-- The `positivity` extension which identifies expressions of the form `a ^ (b : ℤ)`,
 such that `positivity` successfully recognises both `a` and `b`. -/
 @[positivity _ ^ (_ : ℤ), Pow.pow _ (_ : ℤ)]
-def evalZPow : PositivityExt where eval {u α} zα pα e := do
+meta def evalZPow : PositivityExt where eval {u α} zα pα e := do
   let .app (.app _ (a : Q($α))) (b : Q(ℤ)) ← withReducible (whnf e) | throwError "not ^"
   let result ← catchNone do
     let _a ← synthInstanceQ q(Field $α)

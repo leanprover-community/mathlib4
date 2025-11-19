@@ -3,8 +3,10 @@ Copyright (c) 2025 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li
 -/
-import Mathlib.Algebra.DirectSum.Decomposition
-import Mathlib.RingTheory.GradedAlgebra.Basic
+module
+
+public import Mathlib.Algebra.DirectSum.Decomposition
+public import Mathlib.RingTheory.GradedAlgebra.Basic
 
 /-!
 # Homogeneous subsemirings of a graded semiring
@@ -15,6 +17,8 @@ This file defines homogeneous subsemirings of a graded semiring, as well as oper
 
 * `HomogeneousSubsemiring 𝒜`: The type of subsemirings which satisfy `SetLike.IsHomogeneous`.
 -/
+
+@[expose] public section
 
 open DirectSum Set SetLike
 

@@ -3,12 +3,14 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.DirectSum.LinearMap
-import Mathlib.Algebra.Lie.Weights.Cartan
-import Mathlib.Algebra.Order.Group.Pointwise.Interval
-import Mathlib.RingTheory.Finiteness.Nilpotent
-import Mathlib.Data.Int.Interval
-import Mathlib.Order.Filter.Cofinite
+module
+
+public import Mathlib.Algebra.DirectSum.LinearMap
+public import Mathlib.Algebra.Lie.Weights.Cartan
+public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+public import Mathlib.RingTheory.Finiteness.Nilpotent
+public import Mathlib.Data.Int.Interval
+public import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Chains of roots and weights
@@ -52,6 +54,8 @@ It should be possible to unify some of the definitions here such as `LieModule.c
   Bourbaki Ch. VIII §2.2 Lemma 1 (page 80 of English translation, 88 of English PDF).)
 
 -/
+
+@[expose] public section
 
 open Module Function Set
 

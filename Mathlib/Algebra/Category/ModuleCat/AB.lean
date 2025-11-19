@@ -3,10 +3,12 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Algebra.Category.Grp.AB
-import Mathlib.Algebra.Category.ModuleCat.Colimits
-import Mathlib.Algebra.Module.Shrink
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
+module
+
+public import Mathlib.Algebra.Category.Grp.AB
+public import Mathlib.Algebra.Category.ModuleCat.Colimits
+public import Mathlib.Algebra.Module.Shrink
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
 /-!
 
 # AB axioms in module categories
@@ -15,6 +17,8 @@ This file proves that the category of modules over a ring satisfies Grothendieck
 and AB4*. Further, it proves that `R` is a separator in the category of modules over `R`, and
 concludes that this category is Grothendieck abelian.
 -/
+
+@[expose] public section
 
 universe u v
 

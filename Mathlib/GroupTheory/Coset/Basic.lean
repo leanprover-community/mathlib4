@@ -3,10 +3,12 @@ Copyright (c) 2018 Mitchell Rowett. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Rowett, Kim Morrison
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Data.Setoid.Basic
-import Mathlib.GroupTheory.Coset.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.GroupTheory.Coset.Defs
 
 /-!
 # Cosets
@@ -34,6 +36,8 @@ If instead `G` is an additive group, we can write (with  `open scoped Pointwise`
 
 Properly merge with pointwise actions on sets, by renaming and deduplicating lemmas as appropriate.
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal Multiset
 

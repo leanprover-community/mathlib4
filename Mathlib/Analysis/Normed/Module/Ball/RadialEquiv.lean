@@ -3,8 +3,10 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.LinearAlgebra.Basis.VectorSpace
+module
+
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # Homeomorphism between a normed space and sphere times `(0, +∞)`
@@ -13,6 +15,8 @@ In this file we define a homeomorphism between nonzero elements of a normed spac
 and `Metric.sphere (0 : E) 1 × Set.Ioi (0 : ℝ)`.
 One may think about it as generalization of polar coordinates to any normed space.
 -/
+
+@[expose] public section
 
 variable (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E]
 

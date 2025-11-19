@@ -3,10 +3,12 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton
 -/
-import Mathlib.Logic.Equiv.Fin.Basic
-import Mathlib.Topology.Connected.LocallyConnected
-import Mathlib.Topology.DenseEmbedding
-import Mathlib.Topology.Connected.TotallyDisconnected
+module
+
+public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.Topology.Connected.LocallyConnected
+public import Mathlib.Topology.DenseEmbedding
+public import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
 # Further properties of homeomorphisms
@@ -15,6 +17,8 @@ This file proves further properties of homeomorphisms between topological spaces
 Pretty much every topological property is preserved under homeomorphisms.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Module MonoidWithZero
 

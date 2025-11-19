@@ -3,9 +3,11 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Functor.Const
-import Mathlib.CategoryTheory.Opposites
-import Mathlib.Data.Prod.Basic
+module
+
+public import Mathlib.CategoryTheory.Functor.Const
+public import Mathlib.CategoryTheory.Opposites
+public import Mathlib.Data.Prod.Basic
 
 /-!
 # Cartesian products of categories
@@ -23,6 +25,8 @@ We define:
 We further define `evaluation : C ⥤ (C ⥤ D) ⥤ D` and `evaluationUncurried : C × (C ⥤ D) ⥤ D`,
 and products of functors and natural transformations, written `F.prod G` and `α.prod β`.
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory

@@ -3,9 +3,11 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Data.Setoid.Basic
-import Mathlib.GroupTheory.Congruence.Hom
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.GroupTheory.Congruence.Hom
 
 /-!
 # Congruence relations
@@ -27,6 +29,8 @@ used, since this perspective adds more layers of definitional unfolding.
 congruence, congruence relation, quotient, quotient by congruence relation, monoid,
 quotient monoid, isomorphism theorems
 -/
+
+@[expose] public section
 
 
 variable (M : Type*) {N : Type*} {P : Type*}

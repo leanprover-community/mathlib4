@@ -3,9 +3,11 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.DirectSum.Finsupp
-import Mathlib.LinearAlgebra.DirectSum.TensorProduct
-import Mathlib.LinearAlgebra.Finsupp.SumProd
+module
+
+public import Mathlib.Algebra.DirectSum.Finsupp
+public import Mathlib.LinearAlgebra.DirectSum.TensorProduct
+public import Mathlib.LinearAlgebra.Finsupp.SumProd
 
 /-!
 # Results on finitely supported functions.
@@ -58,6 +60,8 @@ This belongs to a companion PR.
 
 * reprove `TensorProduct.finsuppLeft'` using existing heterobasic version of `TensorProduct.congr`
 -/
+
+@[expose] public section
 
 
 noncomputable section

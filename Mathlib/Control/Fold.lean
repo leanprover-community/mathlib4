@@ -3,14 +3,16 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Sean Leather
 -/
-import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.FreeMonoid.Basic
-import Mathlib.CategoryTheory.Category.KleisliCat
-import Mathlib.CategoryTheory.Endomorphism
-import Mathlib.CategoryTheory.Types.Basic
-import Mathlib.Control.Traversable.Instances
-import Mathlib.Control.Traversable.Lemmas
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.Algebra.Group.Opposite
+public import Mathlib.Algebra.FreeMonoid.Basic
+public import Mathlib.CategoryTheory.Category.KleisliCat
+public import Mathlib.CategoryTheory.Endomorphism
+public import Mathlib.CategoryTheory.Types.Basic
+public import Mathlib.Control.Traversable.Instances
+public import Mathlib.Control.Traversable.Lemmas
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 
@@ -51,6 +53,8 @@ A special class could be defined for `foldable`, similarly to Haskell,
 but the author cannot think of instances of `foldable` that are not also
 `Traversable`.
 -/
+
+@[expose] public section
 
 
 universe u v

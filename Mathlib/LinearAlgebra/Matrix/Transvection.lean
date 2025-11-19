@@ -3,11 +3,13 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Matrix.Basis
-import Mathlib.Data.Matrix.DMatrix
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-import Mathlib.LinearAlgebra.Matrix.Reindex
-import Mathlib.Tactic.Field
+module
+
+public import Mathlib.Data.Matrix.Basis
+public import Mathlib.Data.Matrix.DMatrix
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+public import Mathlib.LinearAlgebra.Matrix.Reindex
+public import Mathlib.Tactic.Field
 
 /-!
 # Transvections
@@ -57,6 +59,8 @@ block matrices.
 
 To proceed with the induction, we reindex our matrices to reduce to the above situation.
 -/
+
+@[expose] public section
 
 
 universe u₁ u₂

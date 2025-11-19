@@ -3,9 +3,11 @@ Copyright (c) 2023 Claus Clausen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Claus Clausen, Patrick Massot
 -/
-import Mathlib.Probability.Notation
-import Mathlib.Probability.CDF
-import Mathlib.Probability.Distributions.Gamma
+module
+
+public import Mathlib.Probability.Notation
+public import Mathlib.Probability.CDF
+public import Mathlib.Probability.Distributions.Gamma
 
 /-! # Exponential distributions over ℝ
 
@@ -23,6 +25,8 @@ Define the Exponential measure over the reals.
 * `cdf_expMeasure_eq`: Proof that the CDF of the exponential measure equals the
   known function given as `r x ↦ 1 - exp (- (r * x))` for `0 ≤ x` or `0` else.
 -/
+
+@[expose] public section
 
 open scoped ENNReal NNReal
 

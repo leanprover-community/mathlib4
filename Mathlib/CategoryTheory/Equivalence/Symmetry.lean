@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Equivalence
-import Mathlib.CategoryTheory.Adjunction.Mates
+module
+
+public import Mathlib.CategoryTheory.Equivalence
+public import Mathlib.CategoryTheory.Adjunction.Mates
 
 /-!
 # Functoriality of the symmetry of equivalences
@@ -22,6 +24,8 @@ and provides the definition of the functor that takes an equivalence to its inve
   `Equivalence.congrLeft` on objects, and whiskers left by `conjugateEquiv` on maps.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

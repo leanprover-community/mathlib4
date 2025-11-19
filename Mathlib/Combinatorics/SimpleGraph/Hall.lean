@@ -3,9 +3,11 @@ Copyright (c) 2025 Vlad Tsyrklevich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vlad Tsyrklevich
 -/
-import Mathlib.Combinatorics.Hall.Basic
-import Mathlib.Combinatorics.SimpleGraph.Bipartite
-import Mathlib.Combinatorics.SimpleGraph.Matching
+module
+
+public import Mathlib.Combinatorics.Hall.Basic
+public import Mathlib.Combinatorics.SimpleGraph.Bipartite
+public import Mathlib.Combinatorics.SimpleGraph.Matching
 
 /-!
 # Hall's Marriage Theorem
@@ -24,6 +26,8 @@ This file derives Hall's Marriage Theorem for bipartite graphs from the combinat
 
 Hall's Marriage Theorem
 -/
+
+@[expose] public section
 
 open Function
 

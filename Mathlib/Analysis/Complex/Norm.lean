@@ -3,13 +3,17 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Data.Complex.Basic
-import Mathlib.Data.Real.Sqrt
+module
+
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Data.Complex.Basic
+public import Mathlib.Data.Real.Sqrt
 
 /-!
   # Norm on the complex numbers
 -/
+
+@[expose] public section
 
 noncomputable section
 

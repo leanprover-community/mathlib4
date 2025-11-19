@@ -3,7 +3,9 @@ Copyright (c) 2025 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Closure
+module
+
+public import Mathlib.Combinatorics.Matroid.Closure
 
 /-!
 # Finite-rank sets
@@ -18,6 +20,8 @@ integer arithmetic involving the rank function.
 Unlike most set predicates on matroids, a set `X` with `M.IsRkFinite X` need not satisfy `X ⊆ M.E`,
 so may contain junk elements. This seems to be what makes the definition easiest to use.
 -/
+
+@[expose] public section
 
 variable {α : Type*} {M : Matroid α} {X Y I : Set α} {e : α}
 

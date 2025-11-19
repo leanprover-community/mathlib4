@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Aesop
-import Mathlib.Order.BoundedOrder.Lattice
+module
+
+public import Aesop
+public import Mathlib.Order.BoundedOrder.Lattice
 
 /-!
 # Disjointness and complements
@@ -20,6 +22,8 @@ This file defines `Disjoint`, `Codisjoint`, and the `IsCompl` predicate.
 * `ComplementedLattice α`: Typeclass stating that any element of a lattice has a complement.
 
 -/
+
+@[expose] public section
 
 open Function
 

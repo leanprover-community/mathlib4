@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Sébastien Gouëzel,
   Rémy Degenne, David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Power function on `ℝ≥0` and `ℝ≥0∞`
@@ -15,6 +17,8 @@ We construct the power functions `x ^ y` where
 
 We also prove basic properties of these functions.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -1076,7 +1080,7 @@ open Lean Meta Qq
 the base is nonnegative and positive when the base is positive.
 This is the `NNReal` analogue of `evalRpow` for `Real`. -/
 @[positivity (_ : ℝ≥0) ^ (_ : ℝ)]
-def evalNNRealRpow : PositivityExt where eval {u α} _ _ e := do
+meta def evalNNRealRpow : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ≥0), ~q($a ^ (0 : ℝ)) =>
     assertInstancesCommute
@@ -1090,7 +1094,7 @@ def evalNNRealRpow : PositivityExt where eval {u α} _ _ e := do
     | _ => pure (.nonnegative q(zero_le $e))
   | _, _, _ => throwError "not NNReal.rpow"
 
-private def isFiniteM? (x : Q(ℝ≥0∞)) : MetaM (Option Q($x ≠ (⊤ : ℝ≥0∞))) := do
+private meta def isFiniteM? (x : Q(ℝ≥0∞)) : MetaM (Option Q($x ≠ (⊤ : ℝ≥0∞))) := do
   let mvar ← mkFreshExprMVar q($x ≠ (⊤ : ℝ≥0∞))
   let save ← saveState
   let (goals, _) ← Elab.runTactic mvar.mvarId! <|← `(tactic| finiteness)
@@ -1104,7 +1108,7 @@ private def isFiniteM? (x : Q(ℝ≥0∞)) : MetaM (Option Q($x ≠ (⊤ : ℝ�
 the base is nonnegative and positive when the base is positive.
 This is the `ENNReal` analogue of `evalRpow` for `Real`. -/
 @[positivity (_ : ℝ≥0∞) ^ (_ : ℝ)]
-def evalENNRealRpow : PositivityExt where eval {u α} _ _ e := do
+meta def evalENNRealRpow : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ≥0∞), ~q($a ^ (0 : ℝ)) =>
     assertInstancesCommute

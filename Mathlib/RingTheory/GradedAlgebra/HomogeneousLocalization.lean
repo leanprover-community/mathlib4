@@ -3,12 +3,14 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
 -/
-import Mathlib.Algebra.Group.Submonoid.Finsupp
-import Mathlib.Order.Filter.AtTopBot.Defs
-import Mathlib.RingTheory.Adjoin.Basic
-import Mathlib.RingTheory.GradedAlgebra.FiniteType
-import Mathlib.RingTheory.Localization.AtPrime.Basic
-import Mathlib.RingTheory.Localization.Away.Basic
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Finsupp
+public import Mathlib.Order.Filter.AtTopBot.Defs
+public import Mathlib.RingTheory.Adjoin.Basic
+public import Mathlib.RingTheory.GradedAlgebra.FiniteType
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
+public import Mathlib.RingTheory.Localization.Away.Basic
 
 /-!
 # Homogeneous Localization
@@ -68,6 +70,8 @@ circumvent this, we quotient `NumDenSameDeg 𝒜 x` by the kernel of `c ↦ c.nu
 
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

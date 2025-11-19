@@ -3,13 +3,15 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Order.Group.Unbundled.Int
-import Mathlib.Algebra.Order.Nonneg.Basic
-import Mathlib.Algebra.Order.Ring.Unbundled.Rat
-import Mathlib.Algebra.Ring.Rat
-import Mathlib.Data.Set.Operations
-import Mathlib.Order.Bounds.Defs
-import Mathlib.Order.GaloisConnection.Defs
+module
+
+public import Mathlib.Algebra.Order.Group.Unbundled.Int
+public import Mathlib.Algebra.Order.Nonneg.Basic
+public import Mathlib.Algebra.Order.Ring.Unbundled.Rat
+public import Mathlib.Algebra.Ring.Rat
+public import Mathlib.Data.Set.Operations
+public import Mathlib.Order.Bounds.Defs
+public import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Nonnegative rationals
@@ -34,6 +36,8 @@ of `x` with `↑x`. This tactic also works for a function `f : α → ℚ` with 
 Whenever you state a lemma about the coercion `ℚ≥0 → ℚ`, check that Lean inserts `NNRat.cast`, not
 `Subtype.val`. Else your lemma will never apply.
 -/
+
+@[expose] public section
 
 assert_not_exists CompleteLattice IsOrderedMonoid
 

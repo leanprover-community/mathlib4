@@ -3,8 +3,10 @@ Copyright (c) 2023 Igor Khavkine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Igor Khavkine
 -/
-import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
-import Mathlib.MeasureTheory.Function.UniformIntegrable
+module
+
+public import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
+public import Mathlib.MeasureTheory.Function.UniformIntegrable
 
 /-!
 # Uniform tightness
@@ -35,6 +37,8 @@ is also proved later in the file.
 
 uniform integrable, uniformly tight, Vitali convergence theorem
 -/
+
+@[expose] public section
 
 namespace MeasureTheory
 

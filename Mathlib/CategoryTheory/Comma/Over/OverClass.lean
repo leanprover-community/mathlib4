@@ -3,8 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.CategoryTheory.Comma.Over.Basic
+module
+
+public import Mathlib.Tactic.CategoryTheory.Reassoc
+public import Mathlib.CategoryTheory.Comma.Over.Basic
 
 /-!
 # Typeclasses for `S`-objects and `S`-morphisms
@@ -24,6 +26,8 @@ For other applications use unbundled arrows or `CategoryTheory.Over`.
   `HomIsOver f S` asserts that `f` commutes with the structure morphisms.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

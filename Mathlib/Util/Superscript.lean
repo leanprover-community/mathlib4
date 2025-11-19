@@ -3,8 +3,10 @@ Copyright (c) 2023 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init
-import Batteries.Tactic.Lint
+module
+
+public import Mathlib.Init
+public import Batteries.Tactic.Lint
 
 /-!
 # A parser for superscripts and subscripts
@@ -24,6 +26,8 @@ However, note that Unicode has a rather restricted character set for superscript
 (see `Mapping.superscript` and `Mapping.subscript` in this file), so you should not use this
 parser for complex expressions.
 -/
+
+public meta section
 
 universe u
 
@@ -105,7 +109,6 @@ def partitionPoint (lo := 0) (hi := as.size) : Nat :=
     else
       partitionPoint lo m
   else lo
-  termination_by hi - lo
 
 /-- The core function for super/subscript parsing. It consists of three stages:
 

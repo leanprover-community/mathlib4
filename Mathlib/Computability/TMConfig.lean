@@ -3,9 +3,11 @@ Copyright (c) 2020 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Computability.Halting
-import Mathlib.Computability.PostTuringMachine
-import Mathlib.Tactic.DeriveFintype
+module
+
+public import Mathlib.Computability.Halting
+public import Mathlib.Computability.PostTuringMachine
+public import Mathlib.Tactic.DeriveFintype
 
 /-!
 # Modelling partial recursive functions using Turing machines
@@ -21,6 +23,8 @@ Turing machine for evaluating these functions. This amounts to a constructive pr
   `List ℕ →. List ℕ`.
   * `ToPartrec.Code.eval`: semantics for a `ToPartrec.Code` program
 -/
+
+@[expose] public section
 
 open List (Vector)
 

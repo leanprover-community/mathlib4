@@ -5,12 +5,14 @@ Authors: Artur Szafarczyk, Suraj Krishna M S, Jean-Baptiste Stiegler, Isabelle D
 Tomáš Jakl, Lorenzo Zanichelli, Alina Yan, Emilie Uthaiwat, Jana Göken,
 Filippo A. E. Nuccio
 -/
-import Mathlib.Analysis.Real.OfDigits
-import Mathlib.Data.Stream.Init
-import Mathlib.Topology.Algebra.GroupWithZero
-import Mathlib.Topology.Algebra.Ring.Real
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.Field
+module
+
+public import Mathlib.Analysis.Real.OfDigits
+public import Mathlib.Data.Stream.Init
+public import Mathlib.Topology.Algebra.GroupWithZero
+public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Tactic.FinCases
+public import Mathlib.Tactic.Field
 
 /-!
 # Ternary Cantor Set
@@ -30,6 +32,8 @@ This file defines the Cantor ternary set and proves a few properties.
   in the Cantor set.
 * `ofDigits_zero_two_sequence_unique`: such a representation is unique.
 -/
+
+@[expose] public section
 
 /-- The order `n` pre-Cantor set, defined starting from `[0, 1]` and successively removing the
 middle third of each interval. Formally, the order `n + 1` pre-Cantor set is the
@@ -254,7 +258,7 @@ theorem ofDigits_bool_to_fin_three_mem_cantorSet (f : ℕ → Bool) :
   ofDigits_zero_two_sequence_mem_cantorSet (by grind)
 
 theorem cantorToTernary_ne_one {x : ℝ} {n : ℕ} : (cantorToTernary x).get n ≠ 1 := by
-  grind [cantorToTernary, Fin.isValue, Stream'.get_map]
+  grind [cantorToTernary, Stream'.get_map]
 
 theorem cantorSequence_get_succ (x : ℝ) (n : ℕ) :
     (cantorSequence x).get (n + 1) =

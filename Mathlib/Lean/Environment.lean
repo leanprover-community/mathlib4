@@ -3,8 +3,10 @@ Copyright (c) 2025 Thomas R. Murrills. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas R. Murrills
 -/
-import Mathlib.Init
-import Lean.Environment
+module
+
+public import Mathlib.Init
+public import Lean.Environment
 
 /-!
 # Additional utilities for `Lean.Environment`
@@ -12,7 +14,7 @@ import Lean.Environment
 
 namespace Lean.Environment
 
-section constKind
+public section constKind
 
 /- The following declarations account for the fact that the `ConstantKind` of a declaration is
 accessible when getting its `ConstantVal`, but is not recorded in said `ConstantVal`. -/

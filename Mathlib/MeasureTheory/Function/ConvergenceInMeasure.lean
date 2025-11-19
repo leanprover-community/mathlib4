@@ -3,8 +3,10 @@ Copyright (c) 2022 Rémy Degenne, Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Kexing Ying
 -/
-import Mathlib.MeasureTheory.Function.Egorov
-import Mathlib.MeasureTheory.Function.LpSpace.Complete
+module
+
+public import Mathlib.MeasureTheory.Function.Egorov
+public import Mathlib.MeasureTheory.Function.LpSpace.Complete
 
 /-!
 # Convergence in measure
@@ -37,6 +39,8 @@ convergence in measure and other notions of convergence.
 * `MeasureTheory.tendstoInMeasure_of_tendsto_eLpNorm`: convergence in Lp implies convergence
   in measure.
 -/
+
+@[expose] public section
 
 
 open TopologicalSpace Filter
@@ -331,19 +335,16 @@ theorem exists_seq_tendstoInMeasure_atTop_iff [IsFiniteMeasure μ]
     TendstoInMeasure μ f atTop g ↔
       ∀ ns : ℕ → ℕ, StrictMono ns → ∃ ns' : ℕ → ℕ, StrictMono ns' ∧
         ∀ᵐ (ω : α) ∂μ, Tendsto (fun i ↦ f (ns (ns' i)) ω) atTop (𝓝 (g ω)) := by
-  refine ⟨fun hfg _ hns ↦ (hfg.comp hns.tendsto_atTop).exists_seq_tendsto_ae,
-    not_imp_not.mp (fun h1 ↦ ?_)⟩
-  rw [tendstoInMeasure_iff_tendsto_toNNReal] at h1
-  push_neg at *
-  obtain ⟨ε, hε, h2⟩ := h1
+  refine ⟨fun hfg _ hns ↦ (hfg.comp hns.tendsto_atTop).exists_seq_tendsto_ae, fun h1 ↦ ?_⟩
+  rw [tendstoInMeasure_iff_tendsto_toNNReal]
+  by_contra! h; rcases h with ⟨ε, hε, h2⟩
   obtain ⟨δ, ns, hδ, hns, h3⟩ : ∃ (δ : ℝ≥0) (ns : ℕ → ℕ), 0 < δ ∧ StrictMono ns ∧
       ∀ n, δ ≤ (μ {x | ε ≤ edist (f (ns n) x) (g x)}).toNNReal := by
     obtain ⟨s, hs, h4⟩ := not_tendsto_iff_exists_frequently_notMem.1 h2
     obtain ⟨δ, hδ, h5⟩ := NNReal.nhds_zero_basis.mem_iff.1 hs
     obtain ⟨ns, hns, h6⟩ := extraction_of_frequently_atTop h4
     exact ⟨δ, ns, hδ, hns, fun n ↦ Set.notMem_Iio.1 (Set.notMem_subset h5 (h6 n))⟩
-  refine ⟨ns, hns, fun ns' _ ↦ ?_⟩
-  by_contra h6
+  obtain ⟨ns', _, h6⟩ := h1 ns hns
   have h7 := tendstoInMeasure_iff_tendsto_toNNReal.mp <|
     tendstoInMeasure_of_tendsto_ae (fun n ↦ hf _) h6
   exact lt_irrefl _ (lt_of_le_of_lt (ge_of_tendsto' (h7 ε hε) (fun n ↦ h3 _)) hδ)

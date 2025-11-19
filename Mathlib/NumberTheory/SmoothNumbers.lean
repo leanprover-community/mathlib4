@@ -3,8 +3,10 @@ Copyright (c) 2023 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll, Ralf Stephan
 -/
-import Mathlib.Data.Nat.Factorization.Defs
-import Mathlib.Data.Nat.Squarefree
+module
+
+public import Mathlib.Data.Nat.Factorization.Defs
+public import Mathlib.Data.Nat.Squarefree
 
 /-!
 # Smooth numbers
@@ -29,6 +31,8 @@ up to and including `N`, and similarly `Nat.roughNumbersUpTo` for its complement
 and we provide some API, in particular bounds for their cardinalities; see
 `Nat.smoothNumbersUpTo_card_le` and `Nat.roughNumbersUpTo_card_le`.
 -/
+
+@[expose] public section
 
 open scoped Finset
 namespace Nat

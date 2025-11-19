@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Subset
-import Mathlib.Topology.Clopen
-import Mathlib.Topology.Compactness.Compact
-import Mathlib.Topology.Connected.Basic
+module
+
+public import Mathlib.Data.Set.Subset
+public import Mathlib.Topology.Clopen
+public import Mathlib.Topology.Compactness.Compact
+public import Mathlib.Topology.Connected.Basic
 
 /-!
 # Connected subsets and their relation to clopen sets
@@ -21,6 +23,8 @@ to clopen sets.
 + `ConnectedComponents`: The connected components of a topological space, as a quotient type.
 
 -/
+
+@[expose] public section
 
 open Set Function Topology TopologicalSpace Relation
 

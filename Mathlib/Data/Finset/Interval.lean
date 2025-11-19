@@ -3,9 +3,11 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Yury Kudryashov
 -/
-import Mathlib.Data.Finset.Grade
-import Mathlib.Data.Finset.Powerset
-import Mathlib.Order.Interval.Finset.Basic
+module
+
+public import Mathlib.Data.Finset.Grade
+public import Mathlib.Data.Finset.Powerset
+public import Mathlib.Order.Interval.Finset.Basic
 
 /-!
 # Intervals of finsets as finsets
@@ -22,6 +24,8 @@ and
 In addition, this file gives characterizations of monotone and strictly monotone functions
 out of `Finset α` in terms of `Finset.insert`
 -/
+
+@[expose] public section
 
 
 variable {α β : Type*}

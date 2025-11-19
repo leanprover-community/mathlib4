@@ -3,13 +3,15 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.MvPolynomial.Equiv
-import Mathlib.Algebra.Polynomial.Degree.Definitions
-import Mathlib.Data.Finsupp.MonomialOrder.DegLex
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.MvPolynomial.Groebner
-import Mathlib.RingTheory.MvPolynomial.Homogeneous
-import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
+module
+
+public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.Algebra.Polynomial.Degree.Definitions
+public import Mathlib.Data.Finsupp.MonomialOrder.DegLex
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.MvPolynomial.Groebner
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
+public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
 
 /-! # Alon's Combinatorial Nullstellensatz
 
@@ -48,6 +50,8 @@ the vanishing of `f` at any `x : σ → R` such that `x s ∈ S s` for all `s`.
   Nullstellensatz Lemma*][Rote_2023]
 
 -/
+
+@[expose] public section
 
 open Finsupp
 

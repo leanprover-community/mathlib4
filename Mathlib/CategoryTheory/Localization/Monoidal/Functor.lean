@@ -3,10 +3,12 @@ Copyright (c) 2025 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Localization.Trifunctor
-import Mathlib.CategoryTheory.Monoidal.Multifunctor
-import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
-import Mathlib.Tactic.CategoryTheory.Coherence
+module
+
+public import Mathlib.CategoryTheory.Localization.Trifunctor
+public import Mathlib.CategoryTheory.Monoidal.Multifunctor
+public import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
+public import Mathlib.Tactic.CategoryTheory.Coherence
 
 /-!
 
@@ -16,6 +18,8 @@ This file proves that, given a monoidal localization functor `L : C ⥤ D`, and 
 `F : D ⥤ E` to a monoidal category, such that `F` lifts along `L` to a monoidal functor `G`,
 then `F` is monoidal. See `CategoryTheory.Localization.Monoidal.functorMonoidalOfComp`.
 -/
+
+@[expose] public section
 
 universe u
 

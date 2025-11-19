@@ -3,8 +3,10 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Fintype.Sort
-import Mathlib.LinearAlgebra.Multilinear.Basic
+module
+
+public import Mathlib.Data.Fintype.Sort
+public import Mathlib.LinearAlgebra.Multilinear.Basic
 
 /-!
 # Currying of multilinear maps
@@ -19,6 +21,8 @@ in linear functions), called respectively `multilinearCurryLeftEquiv` and
 `multilinearCurryRightEquiv`.
 
 -/
+
+@[expose] public section
 
 open Fin Function Finset Set
 

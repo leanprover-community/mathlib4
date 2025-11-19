@@ -3,9 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Option.NAry
-import Mathlib.Data.Seq.Computation
-import Mathlib.Data.ENat.Defs
+module
+
+public import Mathlib.Data.Option.NAry
+public import Mathlib.Data.Seq.Computation
+public import Mathlib.Data.ENat.Defs
+import Batteries.Data.MLList.Basic
 
 /-!
 # Possibly infinite lists
@@ -37,6 +40,8 @@ sequences by cases (`nil` and `cons`).
 
 * `eq_of_bisim`: Bisimulation principle for sequences.
 -/
+
+@[expose] public section
 
 namespace Stream'
 

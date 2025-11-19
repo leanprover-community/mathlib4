@@ -3,8 +3,9 @@ Copyright (c) 2023 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+module
 
-import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
+public import Mathlib.AlgebraicTopology.SimplicialSet.KanComplex
 
 /-!
 # Quasicategories
@@ -23,6 +24,8 @@ we show that the nerve of a category is a quasicategory.
   `Mathlib/AlgebraicTopology/SimplicialSet/KanComplex.lean`.
 
 -/
+
+@[expose] public section
 
 namespace SSet
 

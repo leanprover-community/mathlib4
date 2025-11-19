@@ -3,11 +3,15 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Data.NNReal.Star
-import Mathlib.Data.Real.Sqrt
+module
+
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Data.NNReal.Star
+public import Mathlib.Data.Real.Sqrt
 
 /-! # `ℝ` and `ℝ≥0` are *-ordered rings. -/
+
+@[expose] public section
 
 open scoped NNReal
 

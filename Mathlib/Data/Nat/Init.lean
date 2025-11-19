@@ -3,15 +3,17 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Batteries.Tactic.Alias
-import Batteries.Tactic.Init
-import Mathlib.Init
-import Mathlib.Data.Int.Notation
-import Mathlib.Data.Nat.Notation
-import Mathlib.Tactic.Basic
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.TypeStar
-import Mathlib.Util.AssertExists
+module
+
+public import Batteries.Tactic.Alias
+public import Batteries.Tactic.Init
+public import Mathlib.Init
+public import Mathlib.Data.Int.Notation
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Tactic.Basic
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.TypeStar
+public import Mathlib.Util.AssertExists
 
 /-!
 # Basic operations on the natural numbers
@@ -30,6 +32,8 @@ upstreamed to Batteries or the Lean standard library easily.
 
 See note [foundational algebra order theory].
 -/
+
+@[expose] public section
 
 library_note2 «foundational algebra order theory» /--
 Batteries has a home-baked development of the algebraic and order-theoretic theory of `ℕ` and `ℤ`

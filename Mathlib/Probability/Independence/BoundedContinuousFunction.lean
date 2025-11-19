@@ -3,9 +3,11 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.Measure.HasOuterApproxClosedProd
-import Mathlib.Probability.Independence.Process
-import Mathlib.Probability.Notation
+module
+
+public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosedProd
+public import Mathlib.Probability.Independence.Process
+public import Mathlib.Probability.Notation
 
 /-!
 # Characterizing independence via bounded continuous functions
@@ -59,6 +61,8 @@ to `bcf`.
 
 independence, bounded continuous functions
 -/
+
+@[expose] public section
 
 open MeasureTheory Measure ProbabilityTheory ENNReal
 open scoped BoundedContinuousFunction

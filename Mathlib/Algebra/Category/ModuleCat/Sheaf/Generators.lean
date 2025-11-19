@@ -3,10 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.Algebra.Category.ModuleCat.Sheaf.Free
-import Mathlib.Algebra.Category.ModuleCat.Sheaf.PushforwardContinuous
-import Mathlib.CategoryTheory.Sites.CoversTop
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Free
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PushforwardContinuous
+public import Mathlib.CategoryTheory.Sites.CoversTop
 
 /-!
 # Generating sections of sheaves of modules
@@ -25,6 +26,8 @@ define sheaves of modules of finite type.
 * https://stacks.math.columbia.edu/tag/01B4
 
 -/
+
+@[expose] public section
 
 universe u v' u'
 

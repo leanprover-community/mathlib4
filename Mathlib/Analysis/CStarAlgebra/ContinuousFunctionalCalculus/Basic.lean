@@ -3,10 +3,12 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
-import Mathlib.Analysis.CStarAlgebra.GelfandDuality
-import Mathlib.Analysis.CStarAlgebra.Unitization
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
+module
+
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
+public import Mathlib.Analysis.CStarAlgebra.GelfandDuality
+public import Mathlib.Analysis.CStarAlgebra.Unitization
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
 
 /-! # Continuous functional calculus
 
@@ -48,6 +50,8 @@ relevant instances on C⋆-algebra can be found in the `Instances` file.
   `StarOrderedRing`, the spectrum of a nonnegative element is nonnegative.
 
 -/
+
+@[expose] public section
 
 
 open scoped Pointwise ENNReal NNReal ComplexOrder

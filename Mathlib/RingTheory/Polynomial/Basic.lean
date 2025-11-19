@@ -3,12 +3,14 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Algebra.MvPolynomial.Equiv
-import Mathlib.Algebra.Polynomial.BigOperators
-import Mathlib.Algebra.Ring.GeomSum
-import Mathlib.RingTheory.Noetherian.Basic
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.Algebra.Polynomial.BigOperators
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Ring-theoretic supplement of Algebra.Polynomial.
@@ -19,6 +21,8 @@ import Mathlib.RingTheory.Noetherian.Basic
 * `Polynomial.isNoetherianRing`:
   Hilbert basis theorem, that if a ring is Noetherian then so is its polynomial ring.
 -/
+
+@[expose] public section
 
 noncomputable section
 

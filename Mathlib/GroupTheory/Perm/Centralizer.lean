@@ -3,13 +3,15 @@ Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.GroupTheory.NoncommCoprod
-import Mathlib.GroupTheory.Perm.ConjAct
-import Mathlib.GroupTheory.Perm.Cycle.PossibleTypes
-import Mathlib.GroupTheory.Perm.DomMulAct
-import Mathlib.GroupTheory.Rank
+module
+
+public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.GroupTheory.NoncommCoprod
+public import Mathlib.GroupTheory.Perm.ConjAct
+public import Mathlib.GroupTheory.Perm.Cycle.PossibleTypes
+public import Mathlib.GroupTheory.Perm.DomMulAct
+public import Mathlib.GroupTheory.Rank
 
 /-!
 # Centralizer of a permutation and cardinality of conjugacy classes in the symmetric groups
@@ -95,6 +97,8 @@ injectivity `Equiv.Perm.OnCycleFactors.kerParam_injective`, its range
   compute this cardinality.
 
 -/
+
+@[expose] public section
 
 open scoped Finset Pointwise
 

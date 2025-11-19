@@ -3,9 +3,11 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Combinatorics.Quiver.Path
-import Mathlib.Combinatorics.Quiver.Subquiver
-import Mathlib.Order.WellFounded
+module
+
+public import Mathlib.Combinatorics.Quiver.Path
+public import Mathlib.Combinatorics.Quiver.Subquiver
+public import Mathlib.Order.WellFounded
 
 /-!
 # Arborescences
@@ -25,6 +27,8 @@ just enough edges to include a shortest path from `r` to `b` for every `b`.
 subtree is an arborescence. This proves the directed analogue of 'every connected graph has a
 spanning tree'. This proof avoids the use of Zorn's lemma.
 -/
+
+@[expose] public section
 
 
 open Opposite

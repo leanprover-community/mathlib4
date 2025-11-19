@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Group.Basic
-import Mathlib.Topology.Algebra.Group.Defs
-import Mathlib.Topology.Order.LeftRightNhds
+module
+
+public import Mathlib.Algebra.Order.Group.Basic
+public import Mathlib.Topology.Algebra.Group.Defs
+public import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
 # Topology on a linear ordered commutative group
@@ -14,6 +16,8 @@ In this file we prove that a linear ordered commutative group with order topolog
 is a topological group.
 We also prove continuity of `abs : G → G` and provide convenience lemmas like `ContinuousAt.abs`.
 -/
+
+@[expose] public section
 
 
 open Set Filter Function

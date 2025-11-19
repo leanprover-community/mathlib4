@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Normed.Module.Completion
+module
+
+public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+public import Mathlib.Analysis.Normed.Module.Completion
 
 /-!
 # Liouville's theorem
@@ -19,6 +21,8 @@ are formalized in `Differentiable.apply_eq_apply_of_bounded`,
 The proof is based on the Cauchy integral formula for the derivative of an analytic function, see
 `Complex.deriv_eq_smul_circleIntegral`.
 -/
+
+@[expose] public section
 
 open TopologicalSpace Metric Set Filter Asymptotics Function MeasureTheory Bornology
 

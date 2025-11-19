@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Logic.Denumerable
+module
+
+public import Mathlib.Logic.Denumerable
 
 /-!
 # Equivalences involving `List`-like types
@@ -11,6 +13,8 @@ import Mathlib.Logic.Denumerable
 This file defines some additional constructive equivalences using `Encodable` and the pairing
 function on `ℕ`.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid Multiset.sort
 

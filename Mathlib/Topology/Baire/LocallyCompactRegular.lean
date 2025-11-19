@@ -3,13 +3,17 @@ Copyright (c) 2022 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine
 -/
-import Mathlib.Topology.Sets.Compacts
+module
+
+public import Mathlib.Topology.Sets.Compacts
 
 /-!
 # Second Baire theorem
 
 In this file we prove that a locally compact regular topological space has Baire property.
 -/
+
+@[expose] public section
 
 open TopologicalSpace Set
 

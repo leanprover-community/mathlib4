@@ -3,11 +3,13 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.RingTheory.FiniteLength
-import Mathlib.RingTheory.SimpleModule.Isotypic
-import Mathlib.RingTheory.SimpleRing.Congr
-import Mathlib.RingTheory.SimpleRing.Matrix
+module
+
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.RingTheory.FiniteLength
+public import Mathlib.RingTheory.SimpleModule.Isotypic
+public import Mathlib.RingTheory.SimpleRing.Congr
+public import Mathlib.RingTheory.SimpleRing.Matrix
 
 /-!
 # Wedderburn–Artin Theorem
@@ -38,6 +40,8 @@ import Mathlib.RingTheory.SimpleRing.Matrix
   `IsSemisimpleRing.exists_algEquiv_pi_matrix_of_isAlgClosed` (in a later file).
 
 -/
+
+@[expose] public section
 
 universe u
 variable (R₀ : Type*) {R : Type u} [CommSemiring R₀] [Ring R] [Algebra R₀ R]

@@ -3,17 +3,19 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.BigOperators.Group.List.Defs
-import Mathlib.Order.RelClasses
-import Mathlib.Data.List.TakeDrop
-import Mathlib.Data.List.Forall2
-import Mathlib.Data.List.Perm.Basic
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Algebra.Group.Nat.Defs
-import Mathlib.Algebra.Group.Int.Defs
+module
+
+public import Mathlib.Algebra.Divisibility.Basic
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.BigOperators.Group.List.Defs
+public import Mathlib.Order.RelClasses
+public import Mathlib.Data.List.TakeDrop
+public import Mathlib.Data.List.Forall2
+public import Mathlib.Data.List.Perm.Basic
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Commute.Defs
+public import Mathlib.Algebra.Group.Nat.Defs
+public import Mathlib.Algebra.Group.Int.Defs
 
 /-!
 # Sums and products from lists
@@ -22,6 +24,8 @@ This file provides basic results about `List.prod`, `List.sum`, which calculate 
 of elements of a list and `List.alternatingProd`, `List.alternatingSum`, their alternating
 counterparts.
 -/
+
+@[expose] public section
 assert_not_imported Mathlib.Algebra.Order.Group.Nat
 
 variable {ι α β M N P G : Type*}

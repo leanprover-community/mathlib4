@@ -3,7 +3,9 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Distributions.Gaussian.Real
+module
+
+public import Mathlib.Probability.Distributions.Gaussian.Real
 
 /-!
 # Gaussian distributions in Banach spaces
@@ -30,6 +32,8 @@ For Gaussian distributions in `ℝ`, see the file `Mathlib.Probability.Distribut
 * [Martin Hairer, *An introduction to stochastic PDEs*][hairer2009introduction]
 
 -/
+
+@[expose] public section
 
 open MeasureTheory Complex NormedSpace
 open scoped ENNReal NNReal

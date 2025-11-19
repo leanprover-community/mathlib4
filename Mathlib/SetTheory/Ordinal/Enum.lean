@@ -3,7 +3,9 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Ordinal.Family
+module
+
+public import Mathlib.SetTheory.Ordinal.Family
 
 /-!
 # Enumerating sets of ordinals by ordinals
@@ -17,6 +19,8 @@ We define this correspondence as `enumOrd`, and use it to then define an order i
 
 This can be thought of as an ordinal analog of `Nat.nth`.
 -/
+
+@[expose] public section
 
 universe u
 

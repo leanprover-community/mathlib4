@@ -3,9 +3,10 @@ Copyright (c) 2025 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
+module
 
-import Mathlib.CategoryTheory.Bicategory.Basic
-import Mathlib.CategoryTheory.Opposites
+public import Mathlib.CategoryTheory.Bicategory.Basic
+public import Mathlib.CategoryTheory.Opposites
 
 /-!
 # Opposite bicategories
@@ -31,6 +32,8 @@ There are multiple notions of opposite categories for bicategories.
 Note: `Cᶜᵒᵒᵖ` is WIP by Christian Merten.
 
 -/
+
+@[expose] public section
 
 universe w v u
 

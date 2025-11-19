@@ -3,8 +3,10 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.NatIso
-import Mathlib.Logic.Equiv.Defs
+module
+
+public import Mathlib.CategoryTheory.NatIso
+public import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Full and faithful functors
@@ -25,6 +27,8 @@ See `CategoryTheory.Equivalence.of_fullyFaithful_ess_surj` for the fact that a f
 equivalence if and only if it is fully faithful and essentially surjective.
 
 -/
+
+@[expose] public section
 
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation

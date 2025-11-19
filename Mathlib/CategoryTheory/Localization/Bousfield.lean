@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.Local
-import Mathlib.CategoryTheory.MorphismProperty.Composition
-import Mathlib.CategoryTheory.Localization.Adjunction
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.Local
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
+public import Mathlib.CategoryTheory.Localization.Adjunction
 
 /-!
 # Bousfield localization
@@ -29,6 +31,8 @@ isomorphisms in `C`.
 * https://ncatlab.org/nlab/show/left+Bousfield+localization+of+model+categories
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

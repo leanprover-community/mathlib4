@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
-import Mathlib.CategoryTheory.Sites.Over
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
+public import Mathlib.CategoryTheory.Sites.Over
 
 /-!
 # Sheaves on Over categories, as a pseudofunctor
@@ -16,6 +18,8 @@ which sends `X : C` to the category of sheaves on `Over X`
 with values in `A`.
 
 -/
+
+@[expose] public section
 
 universe v' v u' u
 

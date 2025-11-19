@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Data.ENNReal.Operations
+module
+
+public import Mathlib.Data.ENNReal.Operations
 
 /-!
 # Results about division in extended non-negative reals
@@ -29,6 +31,8 @@ A few order isomorphisms are worthy of mention:
     the extended nonnegative real numbers and the unit interval. This is `orderIsoIicOneBirational`
     composed with the identity order isomorphism between `Iic (1 : ℝ≥0∞)` and `Icc (0 : ℝ) 1`.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 

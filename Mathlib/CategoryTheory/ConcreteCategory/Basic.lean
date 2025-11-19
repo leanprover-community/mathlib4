@@ -3,7 +3,9 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johannes Hölzl, Reid Barton, Sean Leather, Yury Kudryashov
 -/
-import Mathlib.CategoryTheory.Types.Basic
+module
+
+public import Mathlib.CategoryTheory.Types.Basic
 
 /-!
 # Concrete categories
@@ -50,6 +52,8 @@ have a `HasForget` instance.
 See [Ahrens and Lumsdaine, *Displayed Categories*][ahrens2017] for
 related work.
 -/
+
+@[expose] public section
 
 
 assert_not_exists CategoryTheory.CommSq CategoryTheory.Adjunction

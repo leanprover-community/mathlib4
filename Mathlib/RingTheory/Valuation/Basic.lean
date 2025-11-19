@@ -3,11 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 -/
-import Mathlib.Algebra.GroupWithZero.Submonoid.Instances
-import Mathlib.Algebra.Order.Hom.Monoid
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.Tactic.TFAE
+module
+
+public import Mathlib.Algebra.GroupWithZero.Submonoid.Instances
+public import Mathlib.Algebra.Order.Hom.Monoid
+public import Mathlib.Algebra.Order.Ring.Basic
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.Tactic.TFAE
 
 /-!
 
@@ -57,6 +59,8 @@ In the `WithZero` locale, `Mᵐ⁰` is a shorthand for `WithZero (Multiplicative
 If ever someone extends `Valuation`, we should fully comply to the `DFunLike` by migrating the
 boilerplate lemmas to `ValuationClass`.
 -/
+
+@[expose] public section
 
 open Function Ideal
 

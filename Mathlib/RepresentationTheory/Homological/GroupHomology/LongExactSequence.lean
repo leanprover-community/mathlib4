@@ -3,9 +3,11 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Homology.ConcreteCategory
-import Mathlib.Algebra.Homology.HomologicalComplexAbelian
-import Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
+module
+
+public import Mathlib.Algebra.Homology.ConcreteCategory
+public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
+public import Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
 
 /-!
 # Long exact sequence in group homology
@@ -24,6 +26,8 @@ to specialize API about long exact sequences to group homology.
   to an exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` of representations.
 
 -/
+
+@[expose] public section
 
 universe v u
 

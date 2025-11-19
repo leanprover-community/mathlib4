@@ -3,10 +3,12 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.Combinatorics.Additive.CovBySMul
-import Mathlib.Combinatorics.Additive.RuzsaCovering
-import Mathlib.Combinatorics.Additive.SmallTripling
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Pointwise
+public import Mathlib.Combinatorics.Additive.CovBySMul
+public import Mathlib.Combinatorics.Additive.RuzsaCovering
+public import Mathlib.Combinatorics.Additive.SmallTripling
 
 /-!
 # Approximate subgroups
@@ -33,6 +35,8 @@ combinatorics:
 It can be readily confirmed that approximate subgroups are a weakening of subgroups:
 * `isApproximateSubgroup_one`: A 1-approximate subgroup is the same thing as a subgroup.
 -/
+
+@[expose] public section
 
 open scoped Finset Pointwise
 

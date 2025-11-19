@@ -3,8 +3,9 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+module
 
-import Mathlib.Tactic.Push
+public meta import Mathlib.Tactic.Push
 
 /-! # Contrapose
 
@@ -18,6 +19,8 @@ implication or an iff. It also avoids creating a double negation if there alread
 * `contrapose h with new_h` uses the name `new_h` for the introduced hypothesis
 
 -/
+
+public meta section
 namespace Mathlib.Tactic.Contrapose
 
 /-- An option to turn off the feature that `contrapose` negates both sides of `↔` goals.

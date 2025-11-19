@@ -3,7 +3,9 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Subobject.Limits
+module
+
+public import Mathlib.CategoryTheory.Subobject.Limits
 
 /-!
 # Image-to-kernel comparison maps
@@ -15,6 +17,8 @@ we have `image_le_kernel f g w : imageSubobject f ≤ kernelSubobject g`
 `imageToKernel f g w` is the corresponding morphism between objects in `C`.
 
 -/
+
+@[expose] public section
 
 universe v u w
 

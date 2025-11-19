@@ -3,10 +3,12 @@ Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Adam Topaz
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.Endomorphism
-import Mathlib.CategoryTheory.Skeletal
-import Mathlib.Data.Finite.Prod
+module
+
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.Endomorphism
+public import Mathlib.CategoryTheory.Skeletal
+public import Mathlib.Data.Finite.Prod
 
 /-!
 # The category of finite types.
@@ -20,6 +22,8 @@ are `Fin n` for `n : ℕ`. We prove that the obvious inclusion functor
 `FintypeCat.Skeleton.equivalence`.
 We prove that `FintypeCat.Skeleton` is a skeleton of `FintypeCat` in `FintypeCat.isSkeleton`.
 -/
+
+@[expose] public section
 
 open CategoryTheory
 
