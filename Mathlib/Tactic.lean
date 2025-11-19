@@ -154,6 +154,7 @@ import Mathlib.Tactic.Linter
 import Mathlib.Tactic.Linter.CommandRanges
 import Mathlib.Tactic.Linter.CommandStart
 import Mathlib.Tactic.Linter.DeprecatedModule
+import Mathlib.Tactic.Linter.DeprecatedSimpLemma
 import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 import Mathlib.Tactic.Linter.DirectoryDependency
 import Mathlib.Tactic.Linter.DocPrime
