@@ -421,7 +421,6 @@ is `2`-colorable.
 theorem colorable_of_cliqueFree_lt_minDegree [Fintype α] [DecidableRel G.Adj]
     (hf : G.CliqueFree (r + 1)) (hd : (3 * r - 4) * ‖α‖ / (3 * r - 1) < G.minDegree) :
     G.Colorable r := by
-  classical
   match r with
   | 0 | 1 => aesop
   | r + 2 =>
