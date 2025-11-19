@@ -3,8 +3,10 @@ Copyright (c) 2024 Nick Ward. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Emily Riehl, Nick Ward
 -/
-import Mathlib.AlgebraicTopology.Quasicategory.Basic
-import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
+module
+
+public import Mathlib.AlgebraicTopology.Quasicategory.Basic
+public import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
 
 /-!
 # Strict Segal simplicial sets are quasicategories
@@ -16,6 +18,8 @@ simplices are uniquely determined by their spine.
 In this file, we prove that any simplicial set satisfying the strict Segal
 condition is a quasicategory.
 -/
+
+@[expose] public section
 
 universe u
 

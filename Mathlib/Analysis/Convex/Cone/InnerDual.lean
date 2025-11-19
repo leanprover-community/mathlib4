@@ -3,8 +3,10 @@ Copyright (c) 2021 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Cone.Dual
-import Mathlib.Analysis.InnerProductSpace.Adjoint
+module
+
+public import Mathlib.Analysis.Convex.Cone.Dual
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
 
 /-!
 # Inner dual cone of a set
@@ -33,6 +35,8 @@ Furthermore, the strict version `{y | ∀ x ∈ s, 0 < ⟪x, y⟫}` is a candida
 `ConvexCone.innerDual`.
 -/
 
+@[expose] public section
+
 open Set LinearMap Pointwise
 open scoped RealInnerProductSpace
 
@@ -60,7 +64,7 @@ def innerDual (s : Set E) : ProperCone ℝ E := .dual (innerₗ E) s
 /-- Dual cone of the total space is the convex cone `{0}`. -/
 @[simp]
 lemma innerDual_univ : innerDual (univ : Set E) = ⊥ :=
-  le_antisymm (fun x hx ↦ by simpa [← real_inner_self_nonpos] using hx (mem_univ (-x))) (by simp)
+  le_antisymm (fun x hx ↦ by simpa using hx (mem_univ (-x))) (by simp)
 
 @[gcongr] lemma innerDual_le_innerDual (h : t ⊆ s) : innerDual s ≤ innerDual t :=
   fun _y hy _x hx ↦ hy (h hx)
@@ -179,7 +183,7 @@ theorem innerDualCone_univ : (univ : Set H).innerDualCone = 0 := by
   suffices ∀ x : H, x ∈ (univ : Set H).innerDualCone → x = 0 by
     apply SetLike.coe_injective
     exact eq_singleton_iff_unique_mem.mpr ⟨fun x _ => (inner_zero_right _).ge, this⟩
-  exact fun x hx => by simpa [← real_inner_self_nonpos] using hx (-x) (mem_univ _)
+  exact fun x hx => by simpa using hx (-x) (mem_univ _)
 
 variable {s t} in
 set_option linter.deprecated false in

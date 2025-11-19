@@ -3,9 +3,11 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Kexing Ying
 -/
-import Mathlib.Probability.Notation
-import Mathlib.Probability.Process.Stopping
-import Mathlib.Probability.Process.Predictable
+module
+
+public import Mathlib.Probability.Notation
+public import Mathlib.Probability.Process.Stopping
+public import Mathlib.Probability.Process.Predictable
 
 /-!
 # Martingales
@@ -35,6 +37,8 @@ The definitions of filtration and adapted can be found in `Probability.Process.S
   martingale with respect to `ℱ` and `μ`.
 
 -/
+
+@[expose] public section
 
 
 open TopologicalSpace Filter

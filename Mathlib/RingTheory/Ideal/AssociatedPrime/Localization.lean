@@ -3,9 +3,11 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.Algebra.Module.LocalizedModule.AtPrime
-import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
-import Mathlib.RingTheory.Support
+module
+
+public import Mathlib.Algebra.Module.LocalizedModule.AtPrime
+public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
+public import Mathlib.RingTheory.Support
 
 /-!
 
@@ -13,13 +15,15 @@ import Mathlib.RingTheory.Support
 
 This file mainly proves the relation between `Ass(S⁻¹M)` and `Ass(M)`
 
-# Main Results
+## Main Results
 
 * `associatedPrimes.mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule` :
   for an `R` module `M`, if `p` is a prime ideal of `S⁻¹R` and `p ∩ R ∈ Ass(M)` then
   `p ∈ Ass (S⁻¹M)`.
 
 -/
+
+@[expose] public section
 
 variable {R : Type*} [CommRing R] (S : Submonoid R) {R' : Type*} [CommRing R'] [Algebra R R']
   [IsLocalization S R']

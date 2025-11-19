@@ -3,9 +3,11 @@ Copyright (c) 2024 Salvatore Mercuri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri
 -/
-import Mathlib.Analysis.Normed.Module.Completion
-import Mathlib.Analysis.Normed.Ring.WithAbs
-import Mathlib.FieldTheory.Separable
+module
+
+public import Mathlib.Analysis.Normed.Module.Completion
+public import Mathlib.Analysis.Normed.Ring.WithAbs
+public import Mathlib.FieldTheory.Separable
 
 /-!
 # WithAbs for fields
@@ -15,6 +17,8 @@ on an absolute value. This is useful when dealing with several absolute values o
 
 In particular this allows us to define the completion of a field at a given absolute value.
 -/
+
+@[expose] public section
 
 open Topology
 

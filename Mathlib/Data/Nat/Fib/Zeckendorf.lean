@@ -3,7 +3,9 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Nat.Fib.Basic
+module
+
+public import Mathlib.Data.Nat.Fib.Basic
 
 /-!
 # Zeckendorf's Theorem
@@ -29,6 +31,8 @@ the lexicographic order.
 
 fibonacci, zeckendorf, digit
 -/
+
+@[expose] public section
 
 open List Nat
 
