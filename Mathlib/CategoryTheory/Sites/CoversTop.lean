@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Sites.Sheaf
+module
+
+public import Mathlib.CategoryTheory.Sites.Sheaf
 
 /-! Objects which cover the terminal object
 
@@ -20,6 +22,8 @@ family of elements on objects `Y` which cover the final object extends as
 a section of this presheaf.
 
 -/
+
+@[expose] public section
 
 universe w v' v u' u
 

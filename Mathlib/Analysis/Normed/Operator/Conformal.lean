@@ -3,9 +3,11 @@ Copyright (c) 2021 Yourong Zang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang
 -/
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Analysis.Normed.Operator.LinearIsometry
-import Mathlib.LinearAlgebra.Basis.VectorSpace
+module
+
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Operator.LinearIsometry
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # Conformal Linear Maps
@@ -37,11 +39,12 @@ conformal
 The definition of conformality in this file does NOT require the maps to be orientation-preserving.
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
 open Function LinearIsometry ContinuousLinearMap
-
 
 /-- A continuous linear map `f'` is said to be conformal if it's
 a nonzero multiple of a linear isometry. -/
@@ -53,7 +56,7 @@ variable {R M N G M' : Type*} [NormedField R] [SeminormedAddCommGroup M] [Semino
   [SeminormedAddCommGroup G] [NormedSpace R M] [NormedSpace R N] [NormedSpace R G]
   [NormedAddCommGroup M'] [NormedSpace R M'] {f : M →L[R] N} {g : N →L[R] G} {c : R}
 
-theorem isConformalMap_id : IsConformalMap (id R M) :=
+theorem isConformalMap_id : IsConformalMap (.id R M) :=
   ⟨1, one_ne_zero, id, by simp⟩
 
 theorem IsConformalMap.smul (hf : IsConformalMap f) {c : R} (hc : c ≠ 0) :
@@ -61,7 +64,7 @@ theorem IsConformalMap.smul (hf : IsConformalMap f) {c : R} (hc : c ≠ 0) :
   rcases hf with ⟨c', hc', li, rfl⟩
   exact ⟨c * c', mul_ne_zero hc hc', li, smul_smul _ _ _⟩
 
-theorem isConformalMap_const_smul (hc : c ≠ 0) : IsConformalMap (c • id R M) :=
+theorem isConformalMap_const_smul (hc : c ≠ 0) : IsConformalMap (c • .id R M) :=
   isConformalMap_id.smul hc
 
 protected theorem LinearIsometry.isConformalMap (f' : M →ₗᵢ[R] N) :

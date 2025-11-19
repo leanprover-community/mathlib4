@@ -3,11 +3,13 @@ Copyright (c) 2024 John Talbot and Lian Bremner Tattersall. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: John Talbot, Lian Bremner Tattersall
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Ring
 /-!
 # Five-wheel like graphs
 
@@ -80,6 +82,8 @@ We will need to refer to this consistently and choose the following formulation:
   https://doi.org/10.1007/s00493-003-0042-z][brandt2003]
 -/
 
+@[expose] public section
+
 local notation "‖" x "‖" => Fintype.card x
 
 open Finset SimpleGraph
@@ -110,8 +114,8 @@ private lemma IsNClique.insert_insert_erase (hs : G.IsNClique r (insert a s)) (h
 An `IsFiveWheelLike r k v w₁ w₂ s t` structure in `G` consists of vertices `v w₁ w₂` and `r`-sets
 `s` and `t` such that `{v, w₁, w₂}` induces the single edge `w₁w₂` (i.e. they form an
 `IsPathGraph3Compl`), `v, w₁, w₂ ∉ s ∪ t`, `s ∪ {v}, t ∪ {v}, s ∪ {w₁}, t ∪ {w₂}` are all
-`(r + 1)`- cliques and `#(s ∩ t) = k`. (If `G` is maximally `(r + 2)`-cliquefree and not complete
-multipartite then `G` will contain such a structure : see
+`(r + 1)`-cliques and `#(s ∩ t) = k`. (If `G` is maximally `(r + 2)`-cliquefree and not complete
+multipartite then `G` will contain such a structure: see
 `exists_isFiveWheelLike_of_maximal_cliqueFree_not_isCompleteMultipartite`.)
 -/
 @[grind]
@@ -151,12 +155,12 @@ include hw
   let ⟨p2, d1, d2, d3, d4, c1, c2, c3, c4, hk⟩ := hw
   ⟨p2.symm, d2, d1, d4, d3, c3, c4, c1, c2, by rwa [inter_comm]⟩
 
-@[grind]
+@[grind →]
 lemma fst_notMem_right : w₁ ∉ t :=
   fun h ↦ hw.isPathGraph3Compl.not_adj_fst <| hw.isNClique_right.1 (mem_insert_self ..)
     (mem_insert_of_mem h) hw.isPathGraph3Compl.ne_fst
 
-@[grind]
+@[grind →]
 lemma snd_notMem_left : w₂ ∉ s := hw.symm.fst_notMem_right
 
 /--
@@ -186,11 +190,11 @@ lemma not_colorable_succ : ¬ G.Colorable (r + 1) := by
     apply (C.valid _ hcx.symm).elim
     exact hw.isNClique_left.1 (by simp) (by simp [hx]) fun h ↦ hw.notMem_left (h ▸ hx)
 
-@[grind]
+@[grind →]
 lemma card_left : s.card = r := by
   simp [← Nat.succ_inj, ← hw.isNClique_left.2, hw.notMem_left]
 
-@[grind]
+@[grind →]
 lemma card_right : t.card = r := hw.symm.card_left
 
 lemma card_inter_lt_of_cliqueFree (h : G.CliqueFree (r + 2)) : k < r := by
@@ -342,6 +346,13 @@ lemma exists_isFiveWheelLike_succ_of_not_adj_le_two (hW : ∀ ⦃y⦄, y ∈ s �
         notMem_mono inter_subset_left hbs, erase_eq_of_notMem <| notMem_mono inter_subset_right hat,
         card_insert_of_notMem (fun h ↦ G.irrefl (hW h)), hw.card_inter]
 
+#adaptation_note
+/--
+Due to a change in `grind` between `nightly-2025-10-31` and `nightly-2025-11-02`,
+this proof is no longer working. I've temporarily commented it out to get a build of
+`nightly-testing`.
+-/
+/-
 /--
 If `G` is a `Kᵣ₊₂`-free graph with `n` vertices containing a `Wᵣ,ₖ` but no `Wᵣ,ₖ₊₁`
 then `G.minDegree ≤ (2 * r + k) * n / (2 * r + k + 3)`
@@ -357,7 +368,7 @@ lemma minDegree_le_of_cliqueFree_fiveWheelLikeFree_succ [Fintype α]
     obtain ⟨_, _, hW⟩ := hw.exists_isFiveWheelLike_succ_of_not_adj_le_two hcf
       (by simpa [X] using hx) <| Nat.le_of_succ_le_succ h
     exact hm hW
-  -- Since `G` is `Kᵣ₊₂`- free and contains a `Wᵣ,ₖ` every vertex is not adjacent to at least one
+  -- Since `G` is `Kᵣ₊₂`-free and contains a `Wᵣ,ₖ`, every vertex is not adjacent to at least one
   -- wheel vertex.
   have one_le (x : α) : 1 ≤ #{z ∈ {v} ∪ ({w₁} ∪ ({w₂} ∪ (s ∪ t))) | ¬ G.Adj x z} :=
     let ⟨_, hz⟩ := hw.isNClique_fst_left.exists_not_adj_of_cliqueFree_succ hcf x
@@ -388,7 +399,8 @@ lemma minDegree_le_of_cliqueFree_fiveWheelLikeFree_succ [Fintype α]
       simp_rw [add_assoc, add_comm k, ← add_assoc, ← Wc, add_assoc, ← two_mul, mul_add,
                ← hw.card_inter, card_eq_sum_ones, ← mul_assoc, mul_sum, mul_one, mul_comm 2]
       gcongr with i <;> exact minDegree_le_degree ..
-    _ ≤ #X * (#W - 3 + 2 * k) + #Xᶜ * ((#W - 1) + 2 * (k - 1)) := by grind
+    _ ≤ (#X * (#W - 3) + #Xᶜ * (#W - 1)) + 2 * (#X * #(s ∩ t) + #Xᶜ * (#(s ∩ t) - 1)) := by gcongr
+    _ = #X * (#W - 3 + 2 * k) + #Xᶜ * ((#W - 1) + 2 * (k - 1)) := by grind
     _ ≤ _ := by
         by_cases hk : k = 0 -- so `s ∩ t = ∅` and hence `Xᶜ = ∅`
         · have Xu : X = univ := by
@@ -403,11 +415,16 @@ lemma minDegree_le_of_cliqueFree_fiveWheelLikeFree_succ [Fintype α]
         rw [hap, ← add_mul, card_add_card_compl, mul_comm, two_mul, ← add_assoc]
         gcongr
         cutsat
-
+-/
 end IsFiveWheelLike
 
 variable [DecidableEq α]
 
+#adaptation_note
+/--
+I've temporarily commented it out to get a build of `nightly-testing`. See the note above.
+-/
+/-
 /-- **Andrasfái-Erdős-Sós** theorem
 
 If `G` is a `Kᵣ₊₁`-free graph with `n` vertices and `(3 * r - 4) * n / (3 * r - 1) < G.minDegree`
@@ -442,6 +459,6 @@ theorem colorable_of_cliqueFree_lt_minDegree [Fintype α] [DecidableRel G.Adj]
       apply (Nat.mul_le_mul_right _ (Nat.div_mul_le_self ..)).trans
       nlinarith
     exact (hd.trans_le <| minDegree_le_minDegree hle).not_ge <| hD.trans <| this
-
+-/
 end AES
 end SimpleGraph

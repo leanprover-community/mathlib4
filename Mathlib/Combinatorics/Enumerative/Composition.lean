@@ -3,9 +3,11 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Data.Finset.Sort
+module
+
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Data.Finset.Sort
 
 /-!
 # Compositions
@@ -85,6 +87,8 @@ Composition, partition
 
 <https://en.wikipedia.org/wiki/Composition_(combinatorics)>
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -318,9 +322,8 @@ theorem lt_sizeUpTo_index_succ (j : Fin n) : (j : ℕ) < c.sizeUpTo (c.index j).
   (Nat.find_spec (c.index_exists j.2)).1
 
 theorem sizeUpTo_index_le (j : Fin n) : c.sizeUpTo (c.index j) ≤ j := by
-  by_contra H
+  by_contra! H
   set i := c.index j
-  push_neg at H
   have i_pos : (0 : ℕ) < i := by
     by_contra! i_pos
     revert H
@@ -837,11 +840,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
   right_inv := by
     intro s
     ext i
-    have : (i : ℕ) + 1 ≠ n := by
-      apply ne_of_lt
-      convert add_lt_add_right i.is_lt 1
-      apply (Nat.succ_pred_eq_of_pos _).symm
-      exact Nat.lt_of_lt_pred (Fin.pos i)
+    have : (i : ℕ) + 1 ≠ n := by cutsat
     simp_rw [add_comm, Fin.ext_iff, Fin.val_zero, Fin.val_last, exists_prop, Set.toFinset_setOf,
       Finset.mem_filter_univ, reduceCtorEq, this, false_or, add_left_inj, ← Fin.ext_iff,
       exists_eq_right']

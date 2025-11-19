@@ -3,8 +3,10 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Order.WellFounded
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Order.WellFounded
+public import Mathlib.Tactic.Common
 
 /-!
 # Lexicographic order on Pi types
@@ -30,6 +32,8 @@ Related files are:
 * `Data.Prod.Lex`: Lexicographic order on `α × β`.
 -/
 
+@[expose] public section
+
 assert_not_exists Monoid
 
 variable {ι : Type*} {β : ι → Type*} (r : ι → ι → Prop) (s : ∀ {i}, β i → β i → Prop)
@@ -47,15 +51,7 @@ protected def Lex (x y : ∀ i, β i) : Prop :=
 /- This unfortunately results in a type that isn't delta-reduced, so we keep the notation out of the
 basic API, just in case -/
 /-- The notation `Πₗ i, α i` refers to a pi type equipped with the lexicographic order. -/
-notation3 (prettyPrint := false) "Πₗ "(...)", "r:(scoped p => Lex (∀ i, p i)) => r
-
-@[simp]
-theorem toLex_apply (x : ∀ i, β i) (i : ι) : toLex x i = x i :=
-  rfl
-
-@[simp]
-theorem ofLex_apply (x : Lex (∀ i, β i)) (i : ι) : ofLex x i = x i :=
-  rfl
+notation3 (prettyPrint := false) "Πₗ " (...) ", " r:(scoped p => Lex (∀ i, p i)) => r
 
 theorem lex_lt_of_lt_of_preorder [∀ i, Preorder (β i)] {r} (hwf : WellFounded r) {x y : ∀ i, β i}
     (hlt : x < y) : ∃ i, (∀ j, r j i → x j ≤ y j ∧ y j ≤ x j) ∧ x i < y i :=
@@ -89,6 +85,16 @@ instance [LT ι] [∀ a, LT (β a)] : LT (Lex (∀ i, β i)) :=
 
 instance [LT ι] [∀ a, LT (β a)] : LT (Colex (∀ i, β i)) :=
   ⟨Pi.Lex (· > ·) (· < ·)⟩
+
+-- If `Lex` and `Colex` are ever made into one-field structures, we need a `CoeFun` instance.
+-- This will make `x i` syntactically equal to `ofLex x i` for `x : Πₗ i, α i`, thus making
+-- the following theorems redundant.
+
+@[simp] theorem toLex_apply (x : ∀ i, β i) (i : ι) : toLex x i = x i := rfl
+@[simp] theorem ofLex_apply (x : Lex (∀ i, β i)) (i : ι) : ofLex x i = x i := rfl
+
+@[simp] theorem toColex_apply (x : ∀ i, β i) (i : ι) : toColex x i = x i := rfl
+@[simp] theorem ofColex_apply (x : Colex (∀ i, β i)) (i : ι) : ofColex x i = x i := rfl
 
 instance Lex.isStrictOrder [LinearOrder ι] [∀ a, PartialOrder (β a)] :
     IsStrictOrder (Lex (∀ i, β i)) (· < ·) where

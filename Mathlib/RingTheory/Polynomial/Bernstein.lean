@@ -3,13 +3,15 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.MvPolynomial.PDeriv
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Algebra.Polynomial.Eval.SMul
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
-import Mathlib.RingTheory.Polynomial.Pochhammer
+module
+
+public import Mathlib.Algebra.MvPolynomial.PDeriv
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Derivative
+public import Mathlib.Algebra.Polynomial.Eval.SMul
+public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
+public import Mathlib.RingTheory.Polynomial.Pochhammer
 
 /-!
 # Bernstein polynomials
@@ -32,6 +34,8 @@ See also `Mathlib/Analysis/SpecialFunctions/Bernstein.lean`, which defines the B
 approximations of a continuous function `f : C([0,1], ℝ)`, and shows that these converge uniformly
 to `f`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -160,7 +164,7 @@ open Polynomial
 theorem iterate_derivative_at_0 (n ν : ℕ) :
     (Polynomial.derivative^[ν] (bernsteinPolynomial R n ν)).eval 0 =
       (ascPochhammer R ν).eval ((n - (ν - 1) : ℕ) : R) := by
-  by_cases h : ν ≤ n
+  by_cases! h : ν ≤ n
   · induction ν generalizing n with
     | zero => simp [eval_at_0]
     | succ ν ih =>
@@ -174,8 +178,7 @@ theorem iterate_derivative_at_0 (n ν : ℕ) :
       · have : n - 1 - (ν - 1) = n - ν := by omega
         rw [this, ascPochhammer_eval_succ]
         rw_mod_cast [tsub_add_cancel_of_le (h'.trans n.pred_le)]
-  · simp only [not_le] at h
-    rw [tsub_eq_zero_iff_le.mpr (Nat.le_sub_one_of_lt h), eq_zero_of_lt R h]
+  · rw [tsub_eq_zero_iff_le.mpr (Nat.le_sub_one_of_lt h), eq_zero_of_lt R h]
     simp [pos_iff_ne_zero.mp (pos_of_gt h)]
 
 theorem iterate_derivative_at_0_ne_zero [CharZero R] (n ν : ℕ) (h : ν ≤ n) :

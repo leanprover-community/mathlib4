@@ -3,11 +3,13 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll, David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
-import Mathlib.NumberTheory.Harmonic.ZetaAsymp
-import Mathlib.NumberTheory.LSeries.Dirichlet
-import Mathlib.NumberTheory.LSeries.DirichletContinuation
-import Mathlib.NumberTheory.LSeries.Positivity
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
+public import Mathlib.NumberTheory.Harmonic.ZetaAsymp
+public import Mathlib.NumberTheory.LSeries.Dirichlet
+public import Mathlib.NumberTheory.LSeries.DirichletContinuation
+public import Mathlib.NumberTheory.LSeries.Positivity
 
 /-!
 # The L-function of a Dirichlet character does not vanish on Re(s) ≥ 1
@@ -37,6 +39,8 @@ The second case is dealt with using the product
 we show has absolute value `≥ 1` for all positive `x` and real `y`; if `L(χ, 1 + I * y) = 0` then
 this product would have to tend to 0 as `x → 0`, which is a contradiction.
 -/
+
+@[expose] public section
 
 /- NB: Many lemmas (and some defs) in this file are private, since they concern properties of
 hypothetical objects which we eventually deduce cannot exist. We have only made public the lemmas
@@ -276,8 +280,8 @@ private lemma one_lt_re_one_add {x : ℝ} (hx : 0 < x) (y : ℝ) :
     ofReal_im, mul_zero, sub_self, add_zero, re_ofNat, im_ofNat, mul_one, mul_im, and_self]
 
 open scoped LSeries.notation in
-/-- For positive `x` and nonzero `y` and a Dirichlet character `χ` we have that
-`|L(χ^0, 1 + x)^3 L(χ, 1 + x + I * y)^4 L(χ^2, 1 + x + 2 * I * y)| ≥ 1. -/
+/-- For positive `x` and nonzero `y` and a Dirichlet character `χ` we have
+`|L(χ^0, 1 + x)^3 * L(χ, 1 + x + I * y)^4 * L(χ^2, 1 + x + 2 * I * y)| ≥ 1`. -/
 lemma norm_LSeries_product_ge_one {x : ℝ} (hx : 0 < x) (y : ℝ) :
     ‖L ↗(1 : DirichletCharacter ℂ N) (1 + x) ^ 3 * L ↗χ (1 + x + I * y) ^ 4 *
       L ↗(χ ^ 2 :) (1 + x + 2 * I * y)‖ ≥ 1 := by

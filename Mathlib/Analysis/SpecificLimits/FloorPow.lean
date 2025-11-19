@@ -3,9 +3,11 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.Order.Field.GeomSum
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
+module
+
+public import Mathlib.Algebra.Order.Field.GeomSum
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Results on discretized exponentials
@@ -17,6 +19,8 @@ We state several auxiliary results pertaining to sequences of the form `⌊c^n�
 * `sum_div_nat_floor_pow_sq_le_div_sq`: The sum of `1/⌊c^i⌋₊^2` above a threshold `j` is comparable
   to `1/j^2`, up to a multiplicative constant.
 -/
+
+@[expose] public section
 
 open Filter Finset
 
@@ -52,7 +56,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       filter_upwards [clim εpos, ctop (Ioi_mem_atTop 0)] with n hn cnpos'
       have cnpos : 0 < c n := cnpos'
       calc
-        u (c n) - c n * l = (u (c n) / c n - l) * c n := by field_simp
+        u (c n) - c n * l = (u (c n) / c n - l) * c n := by field
         _ ≤ ε * c n := by
           gcongr
           refine (le_abs_self _).trans ?_
@@ -105,7 +109,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       filter_upwards [clim εpos, ctop (Ioi_mem_atTop 0)] with n hn cnpos'
       have cnpos : 0 < c n := cnpos'
       calc
-        (c n : ℝ) * l - u (c n) = -(u (c n) / c n - l) * c n := by field_simp; ring
+        (c n : ℝ) * l - u (c n) = -(u (c n) / c n - l) * c n := by field
         _ ≤ ε * c n := by
           gcongr
           refine le_trans (neg_le_abs _) ?_
@@ -175,7 +179,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
     filter_upwards [A ε εpos, Ioi_mem_atTop 0] with n hn (npos : 0 < n)
     calc
       u n / n ≤ (n * l + ε * (1 + ε + l) * n) / n := by gcongr; linarith only [hn]
-      _ = (l + ε * (1 + ε + l)) := by field_simp
+      _ = (l + ε * (1 + ε + l)) := by field
       _ < d := hε
 
 /-- If a monotone sequence `u` is such that `u ⌊c^n⌋₊ / ⌊c^n⌋₊` converges to a limit `l` for all
@@ -207,8 +211,7 @@ theorem tendsto_div_of_monotone_of_tendsto_div_floor_pow (u : ℕ → ℝ) (l : 
     simp only [one_mul, div_one] at A
     convert A using 1
     ext1 n
-    field_simp [(zero_lt_one.trans (cone k)).ne']
-    ring
+    field [(zero_lt_one.trans (cone k)).ne']
   filter_upwards [(tendsto_order.1 B).2 a hk] with n hn
   exact (div_le_iff₀ (H n)).1 hn.le
 
@@ -253,7 +256,7 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
         · rw [Set.mem_Ioi]; positivity
         rw [Real.log_rpow A]
         simp only [one_div, Real.log_inv, Real.log_pow, mul_neg, neg_inj]
-        field_simp [(Real.log_pos hc).ne']
+        field [(Real.log_pos hc).ne']
       rw [Real.rpow_sub A, I]
       simp
       ring
@@ -280,8 +283,7 @@ theorem sum_div_nat_floor_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c :
   calc
     (∑ i ∈ range N with j < ⌊c ^ i⌋₊, (1 : ℝ) / (⌊c ^ i⌋₊ : ℝ) ^ 2) ≤
         ∑ i ∈ range N with j < c ^ i, (1 : ℝ) / (⌊c ^ i⌋₊ : ℝ) ^ 2 := by
-      gcongr
-      exact fun k hk ↦ hk.trans_le <| Nat.floor_le (by positivity)
+      gcongr with k hk; exact Nat.floor_le (by positivity)
     _ ≤ ∑ i ∈ range N with j < c ^ i, (1 - c⁻¹)⁻¹ ^ 2 * ((1 : ℝ) / (c ^ i) ^ 2) := by
       gcongr with i
       rw [mul_div_assoc', mul_one, div_le_div_iff₀]; rotate_left
@@ -299,4 +301,4 @@ theorem sum_div_nat_floor_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c :
       exact sum_div_pow_sq_le_div_sq N hj hc
     _ = c ^ 5 * (c - 1)⁻¹ ^ 3 / j ^ 2 := by
       congr 1
-      field_simp
+      field

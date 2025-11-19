@@ -3,16 +3,20 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yaël Dillies
 -/
-import Mathlib.Algebra.Field.GeomSum
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.CauSeq.Basic
+module
+
+public import Mathlib.Algebra.Field.GeomSum
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.CauSeq.Basic
 
 /-!
 # Cauchy sequences and big operators
 
 This file proves some more lemmas about basic Cauchy sequences that involve finite sums.
 -/
+
+@[expose] public section
 
 open Finset IsAbsoluteValue
 
@@ -170,7 +174,7 @@ lemma of_decreasing_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥
         rhs
         rw [← Nat.succ_pred_eq_of_pos (Nat.pos_of_ne_zero hl0), succ_nsmul, sub_add,
           add_sub_cancel_right]
-    _ < f j + ε := add_lt_add_right (hl j (le_trans hi.1 hj)) _
+    _ < f j + ε := by gcongr; exact hl _ <| hi.1.trans hj
 
 lemma of_mono_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥ m, |f n| ≤ a)
     (hnm : ∀ n ≥ m, f n ≤ f n.succ) : IsCauSeq abs f :=

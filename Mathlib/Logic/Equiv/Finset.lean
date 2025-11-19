@@ -3,12 +3,16 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Sort
-import Mathlib.Logic.Equiv.Multiset
+module
+
+public import Mathlib.Data.Finset.Sort
+public import Mathlib.Logic.Equiv.Multiset
 
 /-!
 # `Encodable` and `Denumerable` instances for `Finset`
 -/
+
+@[expose] public section
 
 variable {α}
 
@@ -106,7 +110,7 @@ def raise'Finset (l : List ℕ) (n : ℕ) : Finset ℕ :=
 in `Finset.encodable`. -/
 instance finset : Denumerable (Finset α) :=
   mk'
-    ⟨fun s : Finset α => encode <| lower' ((s.map (eqv α).toEmbedding).sort (· ≤ ·)) 0, fun n =>
+    ⟨fun s : Finset α => encode <| lower' (s.map (eqv α).toEmbedding).sort 0, fun n =>
       Finset.map (eqv α).symm.toEmbedding (raise'Finset (ofNat (List ℕ) n) 0), fun s =>
       Finset.eq_of_veq <| by
         simp [-Multiset.map_coe, raise'Finset,

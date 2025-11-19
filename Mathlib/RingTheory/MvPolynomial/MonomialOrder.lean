@@ -3,12 +3,14 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Data.Finsupp.Lex
-import Mathlib.Data.Finsupp.MonomialOrder
-import Mathlib.Data.Finsupp.WellFounded
-import Mathlib.Data.List.TFAE
-import Mathlib.RingTheory.MvPolynomial.Homogeneous
-import Mathlib.RingTheory.Nilpotent.Defs
+module
+
+public import Mathlib.Data.Finsupp.Lex
+public import Mathlib.Data.Finsupp.MonomialOrder
+public import Mathlib.Data.Finsupp.WellFounded
+public import Mathlib.Data.List.TFAE
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
+public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-! # Degree and leading coefficient of polynomials with respect to a monomial order
 
@@ -54,7 +56,7 @@ and a monomial order `m : MonomialOrder σ`.
   is nonzero, then the leading coefficient is that product.
 
 * `m.degree_mul_of_isRegular_left`, `m.degree_mul_of_isRegular_right` and `m.degree_mul`
-  assert the  equality when the leading coefficient of `f` or `g` is regular,
+  assert the equality when the leading coefficient of `f` or `g` is regular,
   or when `R` is a domain and `f` and `g` are nonzero.
 
 * `m.leadingCoeff_mul_of_isRegular_left`, `m.leadingCoeff_mul_of_isRegular_right`
@@ -79,6 +81,8 @@ and a monomial order `m : MonomialOrder σ`.
 [Becker-Weispfenning1993]
 
 -/
+
+@[expose] public section
 
 namespace MonomialOrder
 
@@ -369,10 +373,8 @@ theorem degree_mul_le {f g : MvPolynomial σ R} :
       rw [m.coeff_eq_zero_of_lt this, mul_zero]
     simp only [not_lt] at hd
     apply lt_of_add_lt_add_left (a := m.toSyn d)
-    simp only [← map_add, hde]
-    apply lt_of_le_of_lt _ hc
-    simp only [map_add]
-    exact add_le_add_right hd _
+    grw [← map_add _ _ e, hd, ← map_add, hde]
+    exact hc
 
 /-- Multiplicativity of leading coefficients -/
 theorem coeff_mul_of_add_of_degree_le {f g : MvPolynomial σ R} {a b : σ →₀ ℕ}

@@ -3,13 +3,16 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.NumberTheory.Divisors
-import Mathlib.Data.Nat.Squarefree
-import Mathlib.Data.Nat.GCD.BigOperators
-import Mathlib.Data.Nat.Factorization.Induction
-import Mathlib.Tactic.ArithMult
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.NumberTheory.Divisors
+public import Mathlib.Data.Nat.Squarefree
+public import Mathlib.Data.Nat.GCD.BigOperators
+public import Mathlib.Data.Nat.Factorization.Induction
+public import Mathlib.Data.Nat.Factorization.PrimePow
+public import Mathlib.Tactic.ArithMult
 
 /-!
 # Arithmetic Functions and Dirichlet Convolution
@@ -49,14 +52,11 @@ to form the Dirichlet ring.
 
 ## Notation
 
-All notation is localized in the namespace `ArithmeticFunction`.
-
 The arithmetic functions `ζ`, `σ`, `ω`, `Ω` and `μ` have Greek letter names.
-
-In addition, there are separate locales `ArithmeticFunction.zeta` for `ζ`,
+This notation is scpoed to the separate locales `ArithmeticFunction.zeta` for `ζ`,
 `ArithmeticFunction.sigma` for `σ`, `ArithmeticFunction.omega` for `ω`,
 `ArithmeticFunction.Omega` for `Ω`, and `ArithmeticFunction.Moebius` for `μ`,
-to allow for selective access to these notations.
+to allow for selective access.
 
 The arithmetic function $$n \mapsto \prod_{p \mid n} f(p)$$ is given custom notation
 `∏ᵖ p ∣ n, f p` when applied to `n`.
@@ -66,6 +66,8 @@ The arithmetic function $$n \mapsto \prod_{p \mid n} f(p)$$ is given custom nota
 arithmetic functions, dirichlet convolution, divisors
 
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -306,24 +308,22 @@ section Semiring
 
 variable [Semiring R]
 
-instance instMonoid : Monoid (ArithmeticFunction R) :=
-  { one := One.one
-    mul := Mul.mul
-    one_mul := one_smul'
-    mul_one := fun f => by
-      ext x
-      rw [mul_apply]
-      by_cases x0 : x = 0
-      · simp [x0]
-      have h : {(x, 1)} ⊆ divisorsAntidiagonal x := by simp [x0]
-      rw [← sum_subset h]
-      · simp
-      intro ⟨y₁, y₂⟩ ymem ynotMem
-      have y2ne : y₂ ≠ 1 := by
-        intro con
-        simp_all
-      simp [y2ne]
-    mul_assoc := mul_smul' }
+instance instMonoid : Monoid (ArithmeticFunction R) where
+  one_mul := one_smul'
+  mul_one := fun f => by
+    ext x
+    rw [mul_apply]
+    by_cases x0 : x = 0
+    · simp [x0]
+    have h : {(x, 1)} ⊆ divisorsAntidiagonal x := by simp [x0]
+    rw [← sum_subset h]
+    · simp
+    intro ⟨y₁, y₂⟩ ymem ynotMem
+    have y2ne : y₂ ≠ 1 := by
+      intro con
+      simp_all
+    simp [y2ne]
+  mul_assoc := mul_smul'
 
 instance instSemiring : Semiring (ArithmeticFunction R) :=
   { ArithmeticFunction.instAddMonoidWithOne,
@@ -381,10 +381,9 @@ def zeta : ArithmeticFunction ℕ :=
   ⟨fun x => ite (x = 0) 0 1, rfl⟩
 
 @[inherit_doc]
-scoped[ArithmeticFunction] notation "ζ" => ArithmeticFunction.zeta
-
-@[inherit_doc]
 scoped[ArithmeticFunction.zeta] notation "ζ" => ArithmeticFunction.zeta
+
+open scoped zeta
 
 @[simp]
 theorem zeta_apply {x : ℕ} : ζ x = if x = 0 then 0 else 1 :=
@@ -469,6 +468,8 @@ section NonAssocSemiring
 
 variable [NonAssocSemiring R]
 
+open scoped zeta
+
 @[simp]
 theorem pmul_zeta (f : ArithmeticFunction R) : f.pmul ↑ζ = f := by
   ext x
@@ -483,6 +484,8 @@ end NonAssocSemiring
 
 variable [Semiring R]
 
+open scoped zeta
+
 /-- This is the pointwise power of `ArithmeticFunction`s. -/
 def ppow (f : ArithmeticFunction R) (k : ℕ) : ArithmeticFunction R :=
   if h0 : k = 0 then ζ else ⟨fun x ↦ f x ^ k, by simp_rw [map_zero, zero_pow h0]⟩
@@ -492,8 +495,7 @@ theorem ppow_zero {f : ArithmeticFunction R} : f.ppow 0 = ζ := by rw [ppow, dif
 
 @[simp]
 theorem ppow_one {f : ArithmeticFunction R} : f.ppow 1 = f := by
-  simp only [ppow, pow_one]
-  rfl
+  ext; simp [ppow]
 
 @[simp]
 theorem ppow_apply {f : ArithmeticFunction R} {k x : ℕ} (kpos : 0 < k) : f.ppow k x = f x ^ k := by
@@ -803,6 +805,8 @@ end IsMultiplicative
 
 section SpecialFunctions
 
+open scoped zeta
+
 /-- The identity on `ℕ` as an `ArithmeticFunction`. -/
 def id : ArithmeticFunction ℕ :=
   ⟨_root_.id, rfl⟩
@@ -832,10 +836,9 @@ def sigma (k : ℕ) : ArithmeticFunction ℕ :=
   ⟨fun n => ∑ d ∈ divisors n, d ^ k, by simp⟩
 
 @[inherit_doc]
-scoped[ArithmeticFunction] notation "σ" => ArithmeticFunction.sigma
-
-@[inherit_doc]
 scoped[ArithmeticFunction.sigma] notation "σ" => ArithmeticFunction.sigma
+
+open scoped sigma
 
 theorem sigma_apply {k n : ℕ} : σ k n = ∑ d ∈ divisors n, d ^ k :=
   rfl
@@ -975,10 +978,9 @@ def cardFactors : ArithmeticFunction ℕ :=
   ⟨fun n => n.primeFactorsList.length, by simp⟩
 
 @[inherit_doc]
-scoped[ArithmeticFunction] notation "Ω" => ArithmeticFunction.cardFactors
-
-@[inherit_doc]
 scoped[ArithmeticFunction.Omega] notation "Ω" => ArithmeticFunction.cardFactors
+
+open scoped Omega
 
 theorem cardFactors_apply {n : ℕ} : Ω n = n.primeFactorsList.length :=
   rfl
@@ -1042,10 +1044,9 @@ def cardDistinctFactors : ArithmeticFunction ℕ :=
   ⟨fun n => n.primeFactorsList.dedup.length, by simp⟩
 
 @[inherit_doc]
-scoped[ArithmeticFunction] notation "ω" => ArithmeticFunction.cardDistinctFactors
-
-@[inherit_doc]
 scoped[ArithmeticFunction.omega] notation "ω" => ArithmeticFunction.cardDistinctFactors
+
+open scoped omega
 
 theorem cardDistinctFactors_zero : ω 0 = 0 := by simp
 
@@ -1070,15 +1071,33 @@ theorem cardDistinctFactors_eq_cardFactors_iff_squarefree {n : ℕ} (h0 : n ≠ 
     apply List.nodup_dedup
   · simp [h.dedup, cardFactors]
 
+theorem cardDistinctFactors_eq_one_iff {n : ℕ} : ω n = 1 ↔ IsPrimePow n := by
+  rw [ArithmeticFunction.cardDistinctFactors_apply, isPrimePow_iff_card_primeFactors_eq_one,
+    ← Nat.toFinset_factors, List.card_toFinset]
+
 @[simp]
 theorem cardDistinctFactors_apply_prime_pow {p k : ℕ} (hp : p.Prime) (hk : k ≠ 0) :
-    ω (p ^ k) = 1 := by
-  rw [cardDistinctFactors_apply, hp.primeFactorsList_pow, List.replicate_dedup hk,
-    List.length_singleton]
+    ω (p ^ k) = 1 :=
+  cardDistinctFactors_eq_one_iff.mpr <| hp.isPrimePow.pow hk
 
 @[simp]
 theorem cardDistinctFactors_apply_prime {p : ℕ} (hp : p.Prime) : ω p = 1 := by
   rw [← pow_one p, cardDistinctFactors_apply_prime_pow hp one_ne_zero]
+
+theorem cardDistinctFactors_mul {m n : ℕ} (h : m.Coprime n) : ω (m * n) = ω m + ω n := by
+  simp [cardDistinctFactors_apply, Nat.perm_primeFactorsList_mul_of_coprime h |>.dedup |>.length_eq,
+    Nat.coprime_primeFactorsList_disjoint h |>.dedup_append]
+
+open scoped Function in
+theorem cardDistinctFactors_prod {ι : Type*} {s : Finset ι} {f : ι → ℕ}
+    (h : (s : Set ι).Pairwise (Nat.Coprime on f)) : ω (∏ i ∈ s, f i) = ∑ i ∈ s, ω (f i) := by
+  induction s using Finset.cons_induction_on with
+  | empty => simp
+  | cons a s ha ih =>
+    rw [prod_cons, sum_cons, cardDistinctFactors_mul, ih]
+    · exact fun {x} hx {y} hy hxy => h (by simp [hx]) (by simp [hy]) hxy
+    · exact Coprime.prod_right fun i hi =>
+        h (by simp) (by simp [hi]) (ne_of_mem_of_not_mem hi ha).symm
 
 /-- `μ` is the Möbius function. If `n` is squarefree with an even number of distinct prime factors,
   `μ n = 1`. If `n` is squarefree with an odd number of distinct prime factors, `μ n = -1`.
@@ -1087,10 +1106,9 @@ def moebius : ArithmeticFunction ℤ :=
   ⟨fun n => if Squarefree n then (-1) ^ cardFactors n else 0, by simp⟩
 
 @[inherit_doc]
-scoped[ArithmeticFunction] notation "μ" => ArithmeticFunction.moebius
-
-@[inherit_doc]
 scoped[ArithmeticFunction.Moebius] notation "μ" => ArithmeticFunction.moebius
+
+open scoped Moebius
 
 @[simp]
 theorem moebius_apply_of_squarefree {n : ℕ} (h : Squarefree n) : μ n = (-1) ^ cardFactors n :=
@@ -1429,7 +1447,7 @@ open Lean Meta Qq
 
 /-- Extension for `ArithmeticFunction.sigma`. -/
 @[positivity ArithmeticFunction.sigma _ _]
-def evalArithmeticFunctionSigma : PositivityExt where eval {u α} z p e := do
+meta def evalArithmeticFunctionSigma : PositivityExt where eval {u α} z p e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(ArithmeticFunction.sigma $k $n) =>
     let rn ← core z p n
@@ -1441,7 +1459,7 @@ def evalArithmeticFunctionSigma : PositivityExt where eval {u α} z p e := do
 
 /-- Extension for `ArithmeticFunction.zeta`. -/
 @[positivity ArithmeticFunction.zeta _]
-def evalArithmeticFunctionZeta : PositivityExt where eval {u α} z p e := do
+meta def evalArithmeticFunctionZeta : PositivityExt where eval {u α} z p e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(ArithmeticFunction.zeta $n) =>
     let rn ← core z p n

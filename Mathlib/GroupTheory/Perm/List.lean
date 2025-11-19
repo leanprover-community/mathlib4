@@ -3,9 +3,11 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.List.Rotate
-import Mathlib.GroupTheory.Perm.Support
+module
+
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Data.List.Rotate
+public import Mathlib.GroupTheory.Perm.Support
 
 /-!
 # Permutations from a list
@@ -26,6 +28,8 @@ the resulting permutation is cyclic (if `l` has at least two elements).
 The presence of duplicates in a particular placement can lead `List.formPerm` to produce a
 nontrivial permutation that is noncyclic.
 -/
+
+@[expose] public section
 
 
 namespace List
@@ -159,7 +163,7 @@ theorem formPerm_eq_head_iff_eq_getLast (x y : α) :
   Iff.trans (by rw [formPerm_apply_getLast]) (formPerm (y :: l)).injective.eq_iff
 
 theorem formPerm_apply_lt_getElem (xs : List α) (h : Nodup xs) (n : ℕ) (hn : n + 1 < xs.length) :
-    formPerm xs xs[n] = xs[n+1] := by
+    formPerm xs xs[n] = xs[n + 1] := by
   induction n generalizing xs with
   | zero => simpa using formPerm_apply_getElem_zero _ h _
   | succ n IH =>

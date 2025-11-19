@@ -3,13 +3,15 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Anatole Dedecker
 -/
-import Mathlib.Analysis.LocallyConvex.Bounded
-import Mathlib.Analysis.Seminorm
-import Mathlib.Data.Real.Sqrt
-import Mathlib.Topology.Algebra.Equicontinuity
-import Mathlib.Topology.MetricSpace.Equicontinuity
-import Mathlib.Topology.Algebra.FilterBasis
-import Mathlib.Topology.Algebra.Module.LocallyConvex
+module
+
+public import Mathlib.Analysis.LocallyConvex.Bounded
+public import Mathlib.Analysis.Seminorm
+public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Topology.Algebra.Equicontinuity
+public import Mathlib.Topology.MetricSpace.Equicontinuity
+public import Mathlib.Topology.Algebra.FilterBasis
+public import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 /-!
 # Topology induced by a family of seminorms
@@ -25,7 +27,7 @@ import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 * `WithSeminorms.toLocallyConvexSpace`: A space equipped with a family of seminorms is locally
   convex.
-* `WithSeminorms.firstCountable`: A space is first countable if it's topology is induced by a
+* `WithSeminorms.firstCountable`: A space is first countable if its topology is induced by a
   countable family of seminorms.
 
 ## Continuity of semilinear maps
@@ -47,6 +49,8 @@ Neumann boundedness in terms of that seminorm family. Together with
 
 seminorm, locally convex
 -/
+
+@[expose] public section
 
 
 open NormedField Set Seminorm TopologicalSpace Filter List Bornology
@@ -136,11 +140,11 @@ theorem basisSets_smul_right (v : E) (U : Set E) (hU : U ∈ p.basisSets) :
   rcases p.basisSets_iff.mp hU with ⟨s, r, hr, hU⟩
   rw [hU, Filter.eventually_iff]
   simp_rw [(s.sup p).mem_ball_zero, map_smul_eq_mul]
-  by_cases h : 0 < (s.sup p) v
+  by_cases! h : 0 < (s.sup p) v
   · simp_rw [(lt_div_iff₀ h).symm]
     rw [← _root_.ball_zero_eq]
     exact Metric.ball_mem_nhds 0 (div_pos hr h)
-  simp_rw [le_antisymm (not_lt.mp h) (apply_nonneg _ v), mul_zero, hr]
+  simp_rw [le_antisymm h (apply_nonneg _ v), mul_zero, hr]
   exact IsOpen.mem_nhds isOpen_univ (mem_univ 0)
 
 theorem basisSets_smul (U) (hU : U ∈ p.basisSets) :
@@ -288,7 +292,7 @@ theorem WithSeminorms.hasBasis_zero_ball (hp : WithSeminorms p) :
     (𝓝 (0 : E)).HasBasis
     (fun sr : Finset ι × ℝ => 0 < sr.2) fun sr => (sr.1.sup p).ball 0 sr.2 := by
   refine ⟨fun V => ?_⟩
-  simp only [hp.hasBasis.mem_iff, SeminormFamily.basisSets_iff, Prod.exists]
+  simp only [hp.hasBasis.mem_iff, SeminormFamily.basisSets_iff, Prod.exists, id_eq]
   grind
 
 theorem WithSeminorms.hasBasis_ball (hp : WithSeminorms p) {x : E} :
@@ -771,10 +775,12 @@ variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
   {p : SeminormFamily 𝕜 E ι}
 
 /-- In a semi-`NormedSpace`, a continuous seminorm is zero on elements of norm `0`. -/
-lemma map_eq_zero_of_norm_zero (q : Seminorm 𝕜 F)
+lemma map_eq_zero_of_norm_eq_zero (q : Seminorm 𝕜 F)
     (hq : Continuous q) {x : F} (hx : ‖x‖ = 0) : q x = 0 :=
   (map_zero q) ▸
     ((specializes_iff_mem_closure.mpr <| mem_closure_zero_iff_norm.mpr hx).map hq).eq.symm
+
+@[deprecated (since := "2025-11-15")] alias map_eq_zero_of_norm_zero := map_eq_zero_of_norm_eq_zero
 
 /-- Let `F` be a semi-`NormedSpace` over a `NontriviallyNormedField`, and let `q` be a
 seminorm on `F`. If `q` is continuous, then it is uniformly controlled by the norm, that is there
@@ -792,7 +798,7 @@ lemma bound_of_continuous_normedSpace (q : Seminorm 𝕜 F)
   refine ⟨‖c‖ / ε, this, fun x ↦ ?_⟩
   by_cases hx : ‖x‖ = 0
   · rw [hx, mul_zero]
-    exact le_of_eq (map_eq_zero_of_norm_zero q hq hx)
+    exact le_of_eq (map_eq_zero_of_norm_eq_zero q hq hx)
   · refine (normSeminorm 𝕜 F).bound_of_shell q ε_pos hc (fun x hle hlt ↦ ?_) hx
     refine (le_of_lt <| show q x < _ from hε hlt).trans ?_
     rwa [← div_le_iff₀' this, one_div_div]
@@ -940,7 +946,7 @@ is first countable. -/
 theorem WithSeminorms.firstCountableTopology (hp : WithSeminorms p) :
     FirstCountableTopology E := by
   have := hp.topologicalAddGroup
-  let _ : UniformSpace E := IsTopologicalAddGroup.toUniformSpace E
+  let _ : UniformSpace E := IsTopologicalAddGroup.rightUniformSpace E
   have : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   have : (𝓝 (0 : E)).IsCountablyGenerated := by
     rw [p.withSeminorms_iff_nhds_eq_iInf.mp hp]

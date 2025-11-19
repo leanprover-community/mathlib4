@@ -3,12 +3,12 @@ Copyright (c) 2019 Robert A. Spencer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert A. Spencer, Markus Himmel
 -/
-import Mathlib.Algebra.Category.Grp.Preadditive
-import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.Algebra.Module.PUnit
-import Mathlib.CategoryTheory.Conj
-import Mathlib.CategoryTheory.Linear.Basic
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Semi
+public import Mathlib.Algebra.Category.Grp.Preadditive
+public import Mathlib.CategoryTheory.Linear.Basic
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # The category of `R`-modules
@@ -32,6 +32,8 @@ To go from linear maps to morphisms in `Module R`, use `ModuleCat.ofHom`.
 Similarly, given an isomorphism `f : M ≅ N` use `f.toLinearEquiv` and given a linear equiv
 `f : M ≃ₗ[R] N`, use `f.toModuleIso`.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -86,7 +88,7 @@ structure Hom (M N : ModuleCat.{v} R) where
   /-- The underlying linear map. -/
   hom' : M →ₗ[R] N
 
-instance moduleCategory : Category.{v, max (v+1) u} (ModuleCat.{v} R) where
+instance moduleCategory : Category.{v, max (v + 1) u} (ModuleCat.{v} R) where
   Hom M N := Hom M N
   id _ := ⟨LinearMap.id⟩
   comp f g := ⟨g.hom'.comp f.hom'⟩
@@ -184,6 +186,20 @@ def homEquiv {M N : ModuleCat.{v} R} : (M ⟶ N) ≃ (M →ₗ[R] N) where
   toFun := Hom.hom
   invFun := ofHom
 
+/-- The categorical equivalence between `ModuleCat` and `SemimoduleCat`.
+
+In the inverse direction, data (such as the negation operation) is created which may lead to
+diamonds when applied to semi-modules that already have an existing additive group structure. -/
+def equivalenceSemimoduleCat : ModuleCat.{v} R ≌ SemimoduleCat.{v} R where
+  functor :=
+  { obj M := .of R M
+    map f := SemimoduleCat.ofHom f.hom' }
+  inverse := letI := Module.addCommMonoidToAddCommGroup
+  { obj M := of R M
+    map {M N} f := ofHom f.hom }
+  unitIso := NatIso.ofComponents fun _ ↦ { hom := ⟨.id⟩, inv := ⟨.id⟩ }
+  counitIso := NatIso.ofComponents fun _ ↦ { hom := ⟨.id⟩, inv := ⟨.id⟩ }
+
 end
 
 /- Not a `@[simp]` lemma since it will rewrite the (co)domain of maps and cause
@@ -262,10 +278,15 @@ def LinearEquiv.toModuleIso {g₁ : AddCommGroup X₁} {g₂ : AddCommGroup X₂
   inv_hom_id := by ext; apply e.right_inv
 
 namespace CategoryTheory.Iso
+variable {X Y : ModuleCat R}
 
 /-- Build a `LinearEquiv` from an isomorphism in the category `ModuleCat R`. -/
-def toLinearEquiv {X Y : ModuleCat R} (i : X ≅ Y) : X ≃ₗ[R] Y :=
-  LinearEquiv.ofLinear i.hom.hom i.inv.hom (by aesop) (by aesop)
+def toLinearEquiv (i : X ≅ Y) : X ≃ₗ[R] Y :=
+  .ofLinear i.hom.hom i.inv.hom (by aesop) (by aesop)
+
+@[simp] lemma toLinearEquiv_apply (i : X ≅ Y) (x : X) : i.toLinearEquiv x = i.hom x := rfl
+@[simp] lemma toLinearEquiv_symm (i : X ≅ Y) : i.toLinearEquiv.symm = i.symm.toLinearEquiv := rfl
+@[simp] lemma toLinearMap_toLinearEquiv (i : X ≅ Y) : i.toLinearEquiv = i.hom.hom := rfl
 
 end CategoryTheory.Iso
 

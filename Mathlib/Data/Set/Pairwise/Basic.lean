@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Set.Function
-import Mathlib.Logic.Pairwise
-import Mathlib.Logic.Relation
+module
+
+public import Mathlib.Data.Set.Function
+public import Mathlib.Logic.Pairwise
+public import Mathlib.Logic.Relation
 
 /-!
 # Relations holding pairwise
@@ -26,6 +28,8 @@ to hold many of these basic facts.
 The spelling `s.PairwiseDisjoint id` is preferred over `s.Pairwise Disjoint` to permit dot notation
 on `Set.PairwiseDisjoint`, even though the latter unfolds to something nicer.
 -/
+
+@[expose] public section
 
 
 open Function Order Set
@@ -170,11 +174,6 @@ alias pairwise_insert_of_symmetric_of_not_mem := pairwise_insert_of_symmetric_of
 theorem Pairwise.insert_of_symmetric (hs : s.Pairwise r) (hr : Symmetric r)
     (h : ∀ b ∈ s, a ≠ b → r a b) : (insert a s).Pairwise r :=
   (pairwise_insert_of_symmetric hr).2 ⟨hs, h⟩
-
-@[deprecated Pairwise.insert_of_symmetric (since := "2025-03-19")]
-theorem Pairwise.insert_of_symmetric_of_notMem (hs : s.Pairwise r) (hr : Symmetric r) (ha : a ∉ s)
-    (h : ∀ b ∈ s, r a b) : (insert a s).Pairwise r :=
-  (pairwise_insert_of_symmetric_of_notMem hr ha).2 ⟨hs, h⟩
 
 @[deprecated (since := "2025-05-23")]
 alias Pairwise.insert_of_symmetric_of_not_mem := Pairwise.insert_of_symmetric

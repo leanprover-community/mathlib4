@@ -3,12 +3,14 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.NumberTheory.DirichletCharacter.Bounds
-import Mathlib.NumberTheory.LSeries.Convolution
-import Mathlib.NumberTheory.LSeries.Deriv
-import Mathlib.NumberTheory.LSeries.RiemannZeta
-import Mathlib.NumberTheory.SumPrimeReciprocals
-import Mathlib.NumberTheory.VonMangoldt
+module
+
+public import Mathlib.NumberTheory.DirichletCharacter.Bounds
+public import Mathlib.NumberTheory.LSeries.Convolution
+public import Mathlib.NumberTheory.LSeries.Deriv
+public import Mathlib.NumberTheory.LSeries.RiemannZeta
+public import Mathlib.NumberTheory.SumPrimeReciprocals
+public import Mathlib.NumberTheory.VonMangoldt
 
 /-!
 # L-series of Dirichlet characters and arithmetic functions
@@ -31,6 +33,8 @@ as special cases.
 Dirichlet L-series, Möbius function, von Mangoldt function, Riemann zeta function
 -/
 
+@[expose] public section
+
 open scoped LSeries.notation
 
 /-- `δ` is the function underlying the arithmetic function `1`. -/
@@ -48,6 +52,9 @@ We show that `L μ s` converges absolutely if and only if `re s > 1`.
 -/
 
 namespace ArithmeticFunction
+
+-- access notation `μ`
+open scoped Moebius
 
 open LSeries Nat Complex
 
@@ -133,6 +140,7 @@ lemma delta_mul {n : ℕ} (χ : DirichletCharacter ℂ n) : δ * ↗χ = δ :=
   mul_comm δ _ ▸ mul_delta ..
 
 open ArithmeticFunction in
+open scoped Moebius in -- access notation `μ`
 /-- The convolution of a Dirichlet character `χ` with the twist `χ * μ` is `δ`,
 the indicator function of `{1}`. -/
 lemma convolution_mul_moebius {n : ℕ} (χ : DirichletCharacter ℂ n) : ↗χ ⍟ (↗χ * ↗μ) = δ := by
@@ -246,6 +254,9 @@ theorem LSeriesSummable_one_iff {s : ℂ} : LSeriesSummable 1 s ↔ 1 < s.re :=
 
 namespace ArithmeticFunction
 
+-- access notation `ζ` and `μ`
+open scoped zeta Moebius
+
 /-- The `LSeries` of the arithmetic function `ζ` is the same as the `LSeries` associated
 to the constant sequence `1`. -/
 lemma LSeries_zeta_eq : L ↗ζ = L 1 := by
@@ -300,6 +311,7 @@ domain of convergence `1 < re s`. -/
 lemma LSeriesHasSum_one {s : ℂ} (hs : 1 < s.re) : LSeriesHasSum 1 s (riemannZeta s) :=
   LSeries_one_eq_riemannZeta hs ▸ (LSeriesSummable_one_iff.mpr hs).LSeriesHasSum
 
+open scoped Moebius in -- access notation `μ`
 /-- The L-series of the constant sequence `1` and of the Möbius function are inverses. -/
 lemma LSeries_one_mul_Lseries_moebius {s : ℂ} (hs : 1 < s.re) : L 1 s * L ↗μ s = 1 :=
   LSeries_zeta_eq ▸ LSeries_zeta_mul_Lseries_moebius hs
@@ -325,6 +337,9 @@ section vonMangoldt
 open LSeries Nat Complex ArithmeticFunction
 
 namespace ArithmeticFunction
+
+-- access notation `ζ`
+open scoped zeta
 
 /-- A translation of the relation `Λ * ↑ζ = log` of (real-valued) arithmetic functions
 to an equality of complex sequences. -/

@@ -3,13 +3,15 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.FunLike.Equiv
-import Mathlib.Data.Quot
-import Mathlib.Data.Subtype
-import Mathlib.Logic.Unique
-import Mathlib.Tactic.Conv
-import Mathlib.Tactic.Simps.Basic
-import Mathlib.Tactic.Substs
+module
+
+public import Mathlib.Data.FunLike.Equiv
+public import Mathlib.Data.Quot
+public import Mathlib.Data.Subtype
+public import Mathlib.Logic.Unique
+public import Mathlib.Tactic.Conv
+public import Mathlib.Tactic.Simps.Basic
+public import Mathlib.Tactic.Substs
 
 /-!
 # Equivalence between types
@@ -53,6 +55,8 @@ Many more such isomorphisms and operations are defined in `Mathlib/Logic/Equiv/B
 equivalence, congruence, bijective map
 -/
 
+@[expose] public section
+
 open Function
 
 universe u v w z
@@ -70,7 +74,7 @@ structure Equiv (α : Sort*) (β : Sort _) where
   Do NOT use `e.invFun` directly. Use the coercion of `e.symm` instead. -/
   protected invFun : β → α
   protected left_inv : LeftInverse invFun toFun := by intro; first | rfl | ext <;> rfl
-  protected right_inv : RightInverse invFun toFun := by intro; first |  rfl | ext <;> rfl
+  protected right_inv : RightInverse invFun toFun := by intro; first | rfl | ext <;> rfl
 
 @[inherit_doc]
 infixl:25 " ≃ " => Equiv
@@ -210,7 +214,7 @@ theorem nontrivial_congr {α β} (e : α ≃ β) : Nontrivial α ↔ Nontrivial 
   ⟨fun _ ↦ e.symm.nontrivial, fun _ ↦ e.nontrivial⟩
 
 /-- Transfer `DecidableEq` across an equivalence. -/
-protected def decidableEq (e : α ≃ β) [DecidableEq β] : DecidableEq α :=
+protected abbrev decidableEq (e : α ≃ β) [DecidableEq β] : DecidableEq α :=
   e.injective.decidableEq
 
 theorem nonempty_congr (e : α ≃ β) : Nonempty α ↔ Nonempty β := Nonempty.congr e e.symm
@@ -218,10 +222,10 @@ theorem nonempty_congr (e : α ≃ β) : Nonempty α ↔ Nonempty β := Nonempty
 protected theorem nonempty (e : α ≃ β) [Nonempty β] : Nonempty α := e.nonempty_congr.mpr ‹_›
 
 /-- If `α ≃ β` and `β` is inhabited, then so is `α`. -/
-protected def inhabited [Inhabited β] (e : α ≃ β) : Inhabited α := ⟨e.symm default⟩
+protected abbrev inhabited [Inhabited β] (e : α ≃ β) : Inhabited α := ⟨e.symm default⟩
 
 /-- If `α ≃ β` and `β` is a singleton type, then so is `α`. -/
-protected def unique [Unique β] (e : α ≃ β) : Unique α := e.symm.surjective.unique
+protected abbrev unique [Unique β] (e : α ≃ β) : Unique α := e.symm.surjective.unique
 
 /-- Equivalence between equal types. -/
 protected def cast {α β : Sort _} (h : α = β) : α ≃ β where

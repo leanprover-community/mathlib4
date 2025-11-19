@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
-import Mathlib.Algebra.MonoidAlgebra.Degree
-import Mathlib.Algebra.MvPolynomial.Rename
+module
+
+public import Mathlib.Algebra.MonoidAlgebra.Degree
+public import Mathlib.Algebra.MvPolynomial.Rename
 
 /-!
 # Degrees of polynomials
@@ -46,6 +48,8 @@ This will give rise to a monomial in `MvPolynomial σ R` which mathematicians mi
 + `p : MvPolynomial σ R`
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -402,7 +406,7 @@ theorem totalDegree_add_eq_right_of_totalDegree_lt {p q : MvPolynomial σ R}
 
 theorem totalDegree_mul (a b : MvPolynomial σ R) :
     (a * b).totalDegree ≤ a.totalDegree + b.totalDegree :=
-  sup_support_mul_le (by exact (Finsupp.sum_add_index' (fun _ => rfl) (fun _ _ _ => rfl)).le) _ _
+  sup_support_mul_le (fun _ _ ↦ (Finsupp.sum_add_index' (fun _ => rfl) (fun _ _ _ => rfl)).le) _ _
 
 theorem totalDegree_smul_le [CommSemiring S] [DistribMulAction R S] (a : R) (f : MvPolynomial σ S) :
     (a • f).totalDegree ≤ f.totalDegree :=
@@ -430,23 +434,17 @@ theorem totalDegree_monomial_le (s : σ →₀ ℕ) (c : R) :
 theorem totalDegree_X_pow [Nontrivial R] (s : σ) (n : ℕ) :
     (X s ^ n : MvPolynomial σ R).totalDegree = n := by simp [X_pow_eq_monomial, one_ne_zero]
 
-theorem totalDegree_list_prod :
-    ∀ s : List (MvPolynomial σ R), s.prod.totalDegree ≤ (s.map MvPolynomial.totalDegree).sum
-  | [] => by rw [List.prod_nil, totalDegree_one, List.map_nil, List.sum_nil]
-  | p::ps => by
-    rw [List.prod_cons, List.map, List.sum_cons]
-    exact le_trans (totalDegree_mul _ _) (add_le_add_left (totalDegree_list_prod ps) _)
+theorem totalDegree_list_prod (l : List (MvPolynomial σ R)) :
+    l.prod.totalDegree ≤ (l.map MvPolynomial.totalDegree).sum :=
+  l.apply_prod_le_sum_map _ totalDegree_one.le totalDegree_mul
 
 theorem totalDegree_multiset_prod (s : Multiset (MvPolynomial σ R)) :
-    s.prod.totalDegree ≤ (s.map MvPolynomial.totalDegree).sum := by
-  refine Quotient.inductionOn s fun l => ?_
-  rw [Multiset.quot_mk_to_coe, Multiset.prod_coe, Multiset.map_coe, Multiset.sum_coe]
-  exact totalDegree_list_prod l
+    s.prod.totalDegree ≤ (s.map MvPolynomial.totalDegree).sum :=
+  s.apply_prod_le_sum_map _ totalDegree_one.le totalDegree_mul
 
 theorem totalDegree_finset_prod {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R) :
-    (s.prod f).totalDegree ≤ ∑ i ∈ s, (f i).totalDegree := by
-  refine le_trans (totalDegree_multiset_prod _) ?_
-  simp only [Multiset.map_map, comp_apply, Finset.sum_map_val, le_refl]
+    (s.prod f).totalDegree ≤ ∑ i ∈ s, (f i).totalDegree :=
+  s.apply_prod_le_sum_apply _ totalDegree_one.le totalDegree_mul
 
 theorem totalDegree_finset_sum {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R) :
     (s.sum f).totalDegree ≤ Finset.sup s fun i => (f i).totalDegree := by

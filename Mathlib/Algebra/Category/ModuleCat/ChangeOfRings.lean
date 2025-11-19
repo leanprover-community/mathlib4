@@ -3,13 +3,15 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.Algebra.Category.ModuleCat.EpiMono
-import Mathlib.Algebra.Category.ModuleCat.Colimits
-import Mathlib.Algebra.Category.ModuleCat.Limits
-import Mathlib.Algebra.Algebra.RestrictScalars
-import Mathlib.CategoryTheory.Adjunction.Mates
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.LinearAlgebra.TensorProduct.Tower
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.EpiMono
+public import Mathlib.Algebra.Category.ModuleCat.Colimits
+public import Mathlib.Algebra.Category.ModuleCat.Limits
+public import Mathlib.Algebra.Algebra.RestrictScalars
+public import Mathlib.CategoryTheory.Adjunction.Mates
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
 # Change Of Rings
@@ -42,6 +44,8 @@ Let `R, S` be rings and `f : R →+* S`
 * if `M` is an `R`-module, `s : S` and `m : M`, then `s ⊗ₜ[R, f] m` is the pure tensor
   `s ⊗ m : S ⊗[R, f] M`.
 -/
+
+@[expose] public section
 
 suppress_compilation
 
@@ -325,7 +329,7 @@ theorem map'_comp {M₁ M₂ M₃ : ModuleCat.{v} R} (l₁₂ : M₁ ⟶ M₂) (
   induction x using TensorProduct.induction_on with
   | zero => rfl
   | tmul => rfl
-  | add _ _ ihx ihy => rw [map_add, map_add, ihx, ihy]
+  | add _ _ ihx ihy => grind
 
 end ExtendScalars
 
@@ -590,7 +594,7 @@ end RestrictionCoextensionAdj
 /-- Restriction of scalars is left adjoint to coextension of scalars. -/
 -- @[simps] Porting note: not in normal form and not used
 def restrictCoextendScalarsAdj {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
-    restrictScalars.{max v u₂,u₁,u₂} f ⊣ coextendScalars f :=
+    restrictScalars.{max v u₂, u₁, u₂} f ⊣ coextendScalars f :=
   Adjunction.mk' {
     homEquiv := fun X Y ↦
       { toFun := RestrictionCoextensionAdj.HomEquiv.fromRestriction.{u₁,u₂,v} f
@@ -609,11 +613,11 @@ def restrictCoextendScalarsAdj {R : Type u₁} {S : Type u₂} [Ring R] [Ring S]
       simp [RestrictionCoextensionAdj.counit'] }
 
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
-    (restrictScalars.{max u₂ w} f).IsLeftAdjoint  :=
+    (restrictScalars.{max u₂ w} f).IsLeftAdjoint :=
   (restrictCoextendScalarsAdj f).isLeftAdjoint
 
 instance {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
-    (coextendScalars.{u₁, u₂, max u₂ w} f).IsRightAdjoint  :=
+    (coextendScalars.{u₁, u₂, max u₂ w} f).IsRightAdjoint :=
   (restrictCoextendScalarsAdj f).isRightAdjoint
 
 namespace ExtendRestrictScalarsAdj
@@ -660,7 +664,7 @@ def HomEquiv.evalAt {X : ModuleCat R} {Y : ModuleCat S} (s : S)
     (by
       intro r x
       rw [AddHom.toFun_eq_coe, AddHom.coe_mk, RingHom.id_apply,
-        LinearMap.map_smul, smul_comm r s (g x : Y)] )
+        LinearMap.map_smul, smul_comm r s (g x : Y)])
 
 /--
 Given `R`-module X and `S`-module Y and a map `X ⟶ (restrictScalars f).obj Y`, i.e `R`-linear map
@@ -699,7 +703,7 @@ bijectively correspond to `R`-linear maps `X ⟶ (restrictScalars f).obj Y`.
 -/
 @[simps symm_apply]
 def homEquiv {X Y} :
-    ((extendScalars f).obj X ⟶ Y) ≃ (X ⟶ (restrictScalars.{max v u₂,u₁,u₂} f).obj Y) where
+    ((extendScalars f).obj X ⟶ Y) ≃ (X ⟶ (restrictScalars.{max v u₂, u₁, u₂} f).obj Y) where
   toFun := HomEquiv.toRestrictScalars.{u₁,u₂,v} f
   invFun := HomEquiv.fromExtendScalars.{u₁,u₂,v} f
   left_inv g := by
@@ -745,7 +749,7 @@ The natural transformation from identity functor on `R`-module to the compositio
 restriction of scalars.
 -/
 @[simps]
-def unit : 𝟭 (ModuleCat R) ⟶ extendScalars f ⋙ restrictScalars.{max v u₂,u₁,u₂} f where
+def unit : 𝟭 (ModuleCat R) ⟶ extendScalars f ⋙ restrictScalars.{max v u₂, u₁, u₂} f where
   app _ := Unit.map.{u₁,u₂,v} f
 
 /-- For any `S`-module Y, there is a natural `R`-linear map from `S ⨂ Y` to `Y` by
@@ -789,7 +793,7 @@ def Counit.map {Y} : (restrictScalars f ⋙ extendScalars f).obj Y ⟶ Y :=
 identity functor on `S`-module.
 -/
 @[simps app]
-def counit : restrictScalars.{max v u₂,u₁,u₂} f ⋙ extendScalars f ⟶ 𝟭 (ModuleCat S) where
+def counit : restrictScalars.{max v u₂, u₁, u₂} f ⋙ extendScalars f ⟶ 𝟭 (ModuleCat S) where
   app _ := Counit.map.{u₁,u₂,v} f
   naturality Y Y' g := by
     -- Porting note: this is very annoying; fix instances in concrete categories
@@ -814,7 +818,7 @@ end ExtendRestrictScalarsAdj
 scalars by `f` are adjoint to each other.
 -/
 def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
-    extendScalars.{u₁,u₂,max v u₂} f ⊣ restrictScalars.{max v u₂,u₁,u₂} f :=
+    extendScalars.{u₁, u₂, max v u₂} f ⊣ restrictScalars.{max v u₂, u₁, u₂} f :=
   Adjunction.mk' {
     homEquiv := fun _ _ ↦ ExtendRestrictScalarsAdj.homEquiv.{v,u₁,u₂} f
     unit := ExtendRestrictScalarsAdj.unit.{v,u₁,u₂} f

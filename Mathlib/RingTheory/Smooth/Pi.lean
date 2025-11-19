@@ -3,8 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Idempotents
-import Mathlib.RingTheory.Smooth.Basic
+module
+
+public import Mathlib.RingTheory.Idempotents
+public import Mathlib.RingTheory.Smooth.Basic
 
 /-!
 
@@ -17,11 +19,11 @@ import Mathlib.RingTheory.Smooth.Basic
 
 -/
 
-universe u v
+@[expose] public section
 
 namespace Algebra.FormallySmooth
 
-variable {R : Type (max u v)} {I : Type u} (A : I → Type (max u v))
+variable {R : Type*} {I : Type*} (A : I → Type*)
 variable [CommRing R] [∀ i, CommRing (A i)] [∀ i, Algebra R (A i)]
 
 theorem of_pi [FormallySmooth R (Π i, A i)] (i) :
@@ -50,9 +52,7 @@ theorem pi_iff [Finite I] :
   cases nonempty_fintype I
   constructor
   · exact fun _ ↦ of_pi A
-  · intro H
-    constructor
-    intro B _ _ J hJ g
+  · refine fun H ↦ .of_comp_surjective fun B _ _ J hJ g ↦ ?_
     have hJ' (x) (hx : x ∈ RingHom.ker (Ideal.Quotient.mk J)) : IsNilpotent x := by
       refine ⟨2, show x ^ 2 ∈ (⊥ : Ideal B) from ?_⟩
       rw [← hJ]
@@ -83,7 +83,7 @@ theorem pi_iff [Finite I] :
           rw [← (Ideal.Quotient.mk _).map_one, eq_comm, Ideal.Quotient.mk_eq_mk_iff_sub_mem,
             Ideal.mem_span_singleton]
         · intro x y; simp [Pi.single_mul]
-      obtain ⟨a, ha⟩ := FormallySmooth.comp_surjective (I := J' i)
+      obtain ⟨a, ha⟩ := FormallySmooth.comp_surjective _ _ (I := J' i)
         (by rw [← Ideal.map_pow, hJ, Ideal.map_bot]) g'
       exact ⟨a, AlgHom.congr_fun ha⟩
     choose a ha using this

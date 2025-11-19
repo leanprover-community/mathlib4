@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.Thin
+module
+
+public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.Thin
 
 /-!
 # Wide pullbacks
@@ -23,6 +25,8 @@ Namely, if `C` has wide pullbacks then `C/B` has limits for any object `B` in `C
 Typeclasses `HasWidePullbacks` and `HasFiniteWidePullbacks` assert the existence of wide
 pullbacks and finite wide pullbacks.
 -/
+
+@[expose] public section
 
 universe w w' v u
 
@@ -78,7 +82,7 @@ aesop rule directing on `WidePushoutOut` and it didn't take for some reason -/
 def evalCasesBash : TacticM Unit := do
   evalTactic
     (← `(tactic| casesm* WidePullbackShape _,
-      (_ : WidePullbackShape _) ⟶ (_ : WidePullbackShape _) ))
+      (_ : WidePullbackShape _) ⟶ (_ : WidePullbackShape _)))
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] evalCasesBash
 
@@ -178,7 +182,7 @@ open Lean Elab Tactic
 def evalCasesBash' : TacticM Unit := do
   evalTactic
     (← `(tactic| casesm* WidePushoutShape _,
-      (_ : WidePushoutShape _) ⟶ (_ : WidePushoutShape _) ))
+      (_ : WidePushoutShape _) ⟶ (_ : WidePushoutShape _)))
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] evalCasesBash'
 

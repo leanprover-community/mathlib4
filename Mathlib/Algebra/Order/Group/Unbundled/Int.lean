@@ -3,9 +3,11 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Algebra.Group.Int.Defs
-import Mathlib.Data.Int.Basic
+module
+
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Data.Int.Basic
 
 /-!
 # Facts about `ℤ` as an (unbundled) ordered group
@@ -22,6 +24,8 @@ See note [foundational algebra order theory].
   induction on numbers less than `b`.
 -/
 
+@[expose] public section
+
 -- We should need only a minimal development of sets in order to get here.
 assert_not_exists Set.Subsingleton Ring
 
@@ -34,7 +38,7 @@ theorem natCast_strictMono : StrictMono (· : ℕ → ℤ) := fun _ _ ↦ Int.of
 /-! ### Miscellaneous lemmas -/
 
 theorem abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a
-  | (n : ℕ) => abs_of_nonneg <| ofNat_zero_le _
+  | (n : ℕ) => abs_of_nonneg <| natCast_nonneg _
   | -[_+1] => abs_of_nonpos <| le_of_lt <| negSucc_lt_zero _
 
 @[norm_cast] lemma natCast_natAbs (n : ℤ) : (n.natAbs : ℤ) = |n| := n.abs_eq_natAbs.symm
@@ -132,8 +136,6 @@ alias abs_sign_of_nonzero := abs_sign_of_ne_zero
 protected theorem sign_eq_ediv_abs' (a : ℤ) : sign a = a / |a| :=
   if az : a = 0 then by simp [az]
   else (Int.ediv_eq_of_eq_mul_left (mt abs_eq_zero.1 az) (sign_mul_abs _).symm).symm
-
-@[deprecated (since := "2025-03-10")] alias sign_eq_ediv_abs := Int.sign_eq_ediv_abs'
 
 protected theorem sign_eq_abs_ediv (a : ℤ) : sign a = |a| / a :=
   if az : a = 0 then by simp [az]

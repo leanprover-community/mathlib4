@@ -3,15 +3,19 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Mario Carneiro, Martin Dvorak
 -/
-import Mathlib.Tactic.GCongr.Core
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Tactic.GCongr.Core
+public import Mathlib.Util.AssertExists
 
 /-!
 # Join of a list of lists
 
 This file proves basic properties of `List.flatten`, which concatenates a list of lists. It is
-defined in `Init.Data.List.Basic`.
+defined in `Init.Prelude`.
 -/
+
+@[expose] public section
 
 -- Make sure we don't import algebra
 assert_not_exists Monoid
