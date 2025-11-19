@@ -3,11 +3,13 @@ Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.NumberTheory.Cyclotomic.Discriminant
-import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
-import Mathlib.NumberTheory.NumberField.Discriminant.Different
-import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
-import Mathlib.RingTheory.Prime
+module
+
+public import Mathlib.NumberTheory.Cyclotomic.Discriminant
+public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
+public import Mathlib.NumberTheory.NumberField.Discriminant.Different
+public import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
+public import Mathlib.RingTheory.Prime
 
 /-!
 # Ring of integers of `p ^ n`-th cyclotomic fields
@@ -23,6 +25,8 @@ integers of a `p ^ n`-th cyclotomic extension of `ℚ`.
 * `IsCyclotomicExtension.Rat.discr` and related results: the absolute discriminant
   of cyclotomic fields.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -673,7 +677,6 @@ theorem discr_prime_pow [IsCyclotomicExtension {p ^ k} ℚ K] :
     convert ← ((IsPrimitiveRoot.powerBasis ℚ hζ).basis_eq_pow i).symm using 1
   · simp_rw [algebraMap_int_eq, map_mul, map_pow, map_neg, map_one, map_natCast]
 
-
 open Nat in
 /-- We compute the absolute discriminant of a `p ^ (k + 1)`-th cyclotomic field.
   Beware that in the case `p ^ k = 2` the formula uses `1 / 2 = 0`. See also the results below. -/
@@ -697,36 +700,7 @@ theorem discr_prime [IsCyclotomicExtension {p} ℚ K] :
 
 @[deprecated (since := "2025-11-19")] alias absdiscr_prime := discr_prime
 
-theorem natAbs_discr_aux₁ (hk : 0 < k) :
-    p ^ (p ^ (k - 1) * ((p - 1) * k - 1)) =
-      (p ^ k : ℕ) ^ φ (p ^ k) /
-        ∏ q ∈ (p ^ k).primeFactors, q ^ (φ (p ^ k) / (q - 1)) := by
-  replace hp : p.Prime := hp.out
-  have h :  p ^ (k - 1) ≤ k * (p ^ (k - 1) * (p - 1)) := by
-    rw [mul_left_comm]
-    refine le_mul_of_one_le_right (Nat.zero_le _) ?_
-    exact Right.one_le_mul hk <| Nat.le_sub_one_of_lt <| hp.one_lt
-  simp_rw [Nat.totient_prime_pow hp hk, Nat.primeFactors_prime_pow hk.ne' hp, Finset.prod_singleton,
-    Nat.mul_div_left _ (Nat.sub_pos_of_lt hp.one_lt), ← pow_mul]
-  rw [Nat.pow_div h hp.pos]
-  simp_rw [Nat.sub_mul, one_mul, Nat.mul_sub, mul_one]
-  ring_nf
-
-theorem natAbs_discr_aux₂ {n : ℕ} (hn : 0 < n) :
-    ∏ p ∈ n.primeFactors, p ^ (φ n / (p - 1)) ∣ n ^ φ n := by
-  have := Nat.prod_primeFactors_dvd n
-  rw [← Nat.pow_dvd_pow_iff (Nat.totient_pos.mpr hn).ne', ← Finset.prod_pow] at this
-  refine dvd_trans (Finset.prod_dvd_prod_of_dvd _ _ fun p hp ↦ ?_) this
-  exact Nat.pow_dvd_pow p <| Nat.div_le_self _ _
-
-theorem natAbs_discr_aux₃ {n₁ n₂ : ℕ} (hn₁ : 0 < n₁) (hn₂ : 0 < n₂) (h : n₁.Coprime n₂) :
-    (n₁ ^ φ n₁ / ∏ p ∈ n₁.primeFactors, p ^ (φ n₁ / (p - 1))).Coprime
-      (n₂ ^ φ n₂ / ∏ p ∈ n₂.primeFactors, p ^ (φ n₂ / (p - 1))) := by
-  refine Nat.Coprime.coprime_div_left ?_ (natAbs_discr_aux₂ hn₁)
-  refine Nat.Coprime.coprime_div_right ?_ (natAbs_discr_aux₂ hn₂)
-  exact Nat.Coprime.pow_left _ (Nat.Coprime.pow_right _ h)
-
-open Algebra IntermediateField in
+open Algebra IntermediateField Nat in
 theorem discr (n : ℕ) [hn : NeZero n] [hK : IsCyclotomicExtension {n} ℚ K] :
     haveI : NumberField K := IsCyclotomicExtension.numberField {n} ℚ K
     discr K = (-1) ^ (φ n / 2) * (n ^ φ n / ∏ p ∈ n.primeFactors, p ^ (φ n / (p - 1))) := by
@@ -743,7 +717,7 @@ theorem discr (n : ℕ) [hn : NeZero n] [hK : IsCyclotomicExtension {n} ℚ K] :
     | succ k =>
       simpa only [Int.reduceNeg, add_tsub_cancel_right, Int.natAbs_mul, Int.natAbs_pow,
         IsUnit.neg_iff, isUnit_one, Int.natAbs_of_isUnit, one_pow, Int.natAbs_natCast, one_mul]
-        using natAbs_discr_aux₁ p (k + 1) k.zero_lt_succ
+        using (Nat.prime_pow_pow_totient_ediv_prod hp k.zero_lt_succ).symm
   | coprime n₁ n₂ hn₁ hn₂ h hK₁ hK₂ =>
     have : NeZero n₁ := NeZero.of_gt hn₁
     have : NeZero n₂ := NeZero.of_gt hn₂
@@ -769,20 +743,22 @@ theorem discr (n : ℕ) [hn : NeZero n] [hK : IsCyclotomicExtension {n} ℚ K] :
       exact isCyclotomicExtension_eq {n₁ * n₂} ℚ K _ _
     have h_cpr : IsCoprime (discr ℚ⟮ζ ^ n₂⟯) (discr ℚ⟮ζ ^ n₁⟯) := by
       rw [Int.isCoprime_iff_nat_coprime, hK₁, hK₂]
-      exact natAbs_discr_aux₃ n₁.pos_of_neZero n₂.pos_of_neZero h
+      refine Coprime.coprime_div_left ?_ (prod_primeFactors_pow_totient_ediv_dvd (NeZero.pos _))
+      refine Coprime.coprime_div_right ?_ (prod_primeFactors_pow_totient_ediv_dvd (NeZero.pos _))
+      exact Coprime.pow_left _ (Coprime.pow_right _ h)
     have h_dsj : ℚ⟮ζ ^ n₂⟯.LinearDisjoint ℚ⟮ζ ^ n₁⟯ :=
       linearDisjoint_of_isGalois_isCoprime_discr _ _ _ h_cpr
-    have h_div₁ := natAbs_discr_aux₂ n₁.pos_of_neZero
-    have h_div₂ := natAbs_discr_aux₂ n₂.pos_of_neZero
+    have h_div₁ := prod_primeFactors_pow_totient_ediv_dvd n₁.pos_of_neZero
+    have h_div₂ := prod_primeFactors_pow_totient_ediv_dvd n₂.pos_of_neZero
     rw [natAbs_discr_eq_natAbs_discr_pow_mul_natAbs_discr_pow K ℚ⟮ζ ^ n₂⟯ ℚ⟮ζ ^ n₁⟯ h_dsj h_top
       (isCoprime_differentIdeal_of_isCoprime_discr _ h_cpr), hK₁, hK₂,
       finrank n₁ ℚ⟮ζ ^ n₂⟯, finrank n₂ ℚ⟮ζ ^ n₁⟯, Nat.div_pow h_div₁, Nat.div_pow h_div₂,
       ← Nat.mul_div_mul_comm (pow_dvd_pow_of_dvd h_div₁ n₂.totient)
-      (pow_dvd_pow_of_dvd h_div₂ n₁.totient), Nat.primeFactors_mul (NeZero.ne _) (NeZero.ne _),
+      (pow_dvd_pow_of_dvd h_div₂ n₁.totient), primeFactors_mul (NeZero.ne _) (NeZero.ne _),
       Finset.prod_union h.disjoint_primeFactors, ← Finset.prod_pow, ← Finset.prod_pow]
     have {n p : ℕ} (hp : p ∈ n.primeFactors) : p - 1 ∣ n.totient :=
-      p.totient_prime (Nat.prime_of_mem_primeFactors hp) ▸ Nat.totient_dvd_of_dvd (b := n)
-        <| Nat.dvd_of_mem_primeFactors hp
+      p.totient_prime (prime_of_mem_primeFactors hp) ▸ totient_dvd_of_dvd (b := n)
+        <| dvd_of_mem_primeFactors hp
     simp_rw +contextual [← pow_mul, Nat.div_mul_right_comm (this _), Nat.totient_mul h]
     rw [mul_pow, mul_comm n₂.totient]
 

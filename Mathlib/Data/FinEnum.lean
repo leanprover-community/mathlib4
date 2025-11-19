@@ -3,16 +3,20 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Data.List.ProdSigma
-import Mathlib.Data.List.Pi
+module
+
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Data.List.ProdSigma
+public import Mathlib.Data.List.Pi
 
 /-!
 Type class for finitely enumerable types. The property is stronger
 than `Fintype` in that it assigns each element a rank in a finite
 enumeration.
 -/
+
+@[expose] public section
 
 
 universe u v

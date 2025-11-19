@@ -3,7 +3,9 @@ Copyright (c) 2024 Michail Karatarakis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michail Karatarakis
 -/
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
+module
+
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 
 /-!
 
@@ -15,6 +17,8 @@ index set of the chosen basis of the ring of integers of `K`.
 
 house, number field, algebraic number
 -/
+
+@[expose] public section
 
 variable (K : Type*) [Field K] [NumberField K]
 
