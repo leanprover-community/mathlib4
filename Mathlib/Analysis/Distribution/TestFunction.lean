@@ -215,13 +215,17 @@ def ofSupportedIn {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) (f : 𝓓^{n}
   ⟨f, f.contDiff, f.compact_supp, f.tsupport_subset.trans K_sub_Ω⟩
 
 /-- The natural inclusion `𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)`, when `K ⊆ Ω`, as a linear map. -/
-@[simps]
 def ofSupportedInLM (R) [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F]
     {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) :
     𝓓^{n}_{K}(E, F) →ₗ[R] 𝓓^{n}(Ω, F) where
   toFun f := ofSupportedIn K_sub_Ω f
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
+
+@[simp] theorem ofSupportedInLM_apply (R) [Semiring R] [Module R F] [SMulCommClass ℝ R F]
+    [ContinuousConstSMul R F] {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) (f : 𝓓^{n}_{K}(E, F)) :
+    ofSupportedInLM R K_sub_Ω f = ofSupportedIn K_sub_Ω f :=
+  rfl
 
 section Topology
 
@@ -269,6 +273,24 @@ theorem continuous_ofSupportedIn {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω
   rw [continuous_iff_coinduced_le]
   exact le_trans (le_iSup₂_of_le K K_sub_Ω le_rfl) originalTop_le
 
+/-- The natural inclusion `𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)`, when `K ⊆ Ω`, as a continuous
+linear map. -/
+def ofSupportedInCLM (R) [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F]
+    {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) :
+    𝓓^{n}_{K}(E, F) →L[R] 𝓓^{n}(Ω, F) where
+  toLinearMap := ofSupportedInLM R K_sub_Ω
+  cont := continuous_ofSupportedIn K_sub_Ω
+
+@[simp] theorem ofSupportedInCLM_apply (R) [Semiring R] [Module R F] [SMulCommClass ℝ R F]
+    [ContinuousConstSMul R F] {K : Compacts E} (K_sub_Ω : (K : Set E) ⊆ Ω) (f : 𝓓^{n}_{K}(E, F)) :
+    ofSupportedInCLM R K_sub_Ω f = ofSupportedIn K_sub_Ω f :=
+  rfl
+
+-- TODO: Should we spell it using `∘ₗ`?
+/-- The **universal property** of the topology on `𝓓^{n}(Ω, F)`: a **linear** map from
+`𝓓^{n}(Ω, F)` to a locally convex topological vector space is continuous if and only if its
+precomposition with the inclusion `ofSupportedIn K_sub_Ω : 𝓓^{n}_{K}(E, F) → 𝓓^{n}(Ω, F)` is
+continuous for every compact `K ⊆ Ω`. -/
 protected theorem continuous_iff_continuous_comp (f : 𝓓^{n}(Ω, F) →ₗ[ℝ] V) :
     Continuous f ↔ ∀ (K : Compacts E) (K_sub_Ω : (K : Set E) ⊆ Ω),
       Continuous (f ∘ ofSupportedIn K_sub_Ω) := by
