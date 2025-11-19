@@ -1573,6 +1573,7 @@ import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 import Mathlib.Analysis.Calculus.FDeriv.WithLp
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.Calculus.Gradient.Basic
+import Mathlib.Analysis.Calculus.Gradient.Lemmas
 import Mathlib.Analysis.Calculus.Implicit
 import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ApproximatesLinearOn
 import Mathlib.Analysis.Calculus.InverseFunctionTheorem.ContDiff
