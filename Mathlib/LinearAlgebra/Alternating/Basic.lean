@@ -304,6 +304,9 @@ theorem mk_zero :
 instance instInhabited : Inhabited (M [⋀^ι]→ₗ[R] N) :=
   ⟨0⟩
 
+instance instAddMonoid : AddMonoid (M [⋀^ι]→ₗ[R] N) := fast_instance%
+  coe_injective.addMonoid _ rfl (fun _ _ => rfl) fun _ _ => coeFn_smul _ _
+
 instance instAddCommMonoid : AddCommMonoid (M [⋀^ι]→ₗ[R] N) := fast_instance%
   coe_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => coeFn_smul _ _
 
@@ -333,6 +336,10 @@ theorem sub_apply (m : ι → M) : (g - g₂) m = g m - g₂ m :=
 @[norm_cast]
 theorem coe_sub : (↑(g - g₂) : MultilinearMap R (fun _ : ι => M) N') = g - g₂ :=
   rfl
+
+instance instAddGroup : AddGroup (M [⋀^ι]→ₗ[R] N') := fast_instance%
+  coe_injective.addGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => coeFn_smul _ _) fun _ _ => coeFn_smul _ _
 
 instance instAddCommGroup : AddCommGroup (M [⋀^ι]→ₗ[R] N') := fast_instance%
   coe_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
