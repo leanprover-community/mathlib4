@@ -3,10 +3,12 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Algebra.Category.ModuleCat.Free
-import Mathlib.Topology.Category.Profinite.Nobeling.Span
-import Mathlib.Topology.Category.Profinite.Nobeling.Successor
-import Mathlib.Topology.Category.Profinite.Nobeling.ZeroLimit
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Free
+public import Mathlib.Topology.Category.Profinite.Nobeling.Span
+public import Mathlib.Topology.Category.Profinite.Nobeling.Successor
+public import Mathlib.Topology.Category.Profinite.Nobeling.ZeroLimit
 
 /-!
 # Nöbeling's theorem
@@ -23,6 +25,8 @@ This file proves Nöbeling's theorem. For the overall proof outline see
 
 - [scholze2019condensed], Theorem 5.4.
 -/
+
+@[expose] public section
 
 open Module Topology
 

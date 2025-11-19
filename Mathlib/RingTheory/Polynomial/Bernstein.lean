@@ -3,13 +3,15 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.MvPolynomial.PDeriv
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Algebra.Polynomial.Eval.SMul
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
-import Mathlib.RingTheory.Polynomial.Pochhammer
+module
+
+public import Mathlib.Algebra.MvPolynomial.PDeriv
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Derivative
+public import Mathlib.Algebra.Polynomial.Eval.SMul
+public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
+public import Mathlib.RingTheory.Polynomial.Pochhammer
 
 /-!
 # Bernstein polynomials
@@ -32,6 +34,8 @@ See also `Mathlib/Analysis/SpecialFunctions/Bernstein.lean`, which defines the B
 approximations of a continuous function `f : C([0,1], ℝ)`, and shows that these converge uniformly
 to `f`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
