@@ -3,15 +3,19 @@ Copyright (c) 2024 Miyahara Kō. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Miyahara Kō
 -/
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.List.Defs
-import Mathlib.Data.Set.Function
+module
+
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Data.List.Defs
+public import Mathlib.Data.Set.Function
 
 /-!
 # iterate
 
 Proves various lemmas about `List.iterate`.
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 

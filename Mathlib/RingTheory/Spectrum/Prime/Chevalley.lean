@@ -3,8 +3,10 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Ideal.GoingDown
-import Mathlib.RingTheory.Spectrum.Prime.ChevalleyComplexity
+module
+
+public import Mathlib.RingTheory.Ideal.GoingDown
+public import Mathlib.RingTheory.Spectrum.Prime.ChevalleyComplexity
 
 /-!
 # Chevalley's theorem
@@ -12,6 +14,8 @@ import Mathlib.RingTheory.Spectrum.Prime.ChevalleyComplexity
 In this file we provide the usual (algebraic) version of Chevalley's theorem.
 For the proof see `Mathlib/RingTheory/Spectrum/Prime/ChevalleyComplexity.lean`.
 -/
+
+@[expose] public section
 
 variable {R S : Type*} [CommRing R] [CommRing S]
 

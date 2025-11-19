@@ -3,13 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Notation.Support
-import Mathlib.Topology.Inseparable
-import Mathlib.Topology.Piecewise
-import Mathlib.Topology.Separation.SeparatedNhds
-import Mathlib.Topology.Compactness.LocallyCompact
-import Mathlib.Topology.Bases
-import Mathlib.Tactic.StacksAttribute
+module
+
+public import Mathlib.Algebra.Notation.Support
+public import Mathlib.Topology.Inseparable
+public import Mathlib.Topology.Piecewise
+public import Mathlib.Topology.Separation.SeparatedNhds
+public import Mathlib.Topology.Compactness.LocallyCompact
+public import Mathlib.Topology.Bases
+public import Mathlib.Tactic.StacksAttribute
 
 /-!
 # Separation properties of topological spaces
@@ -57,6 +59,8 @@ occasionally the literature swaps definitions for e.g. T₃ and regular.
 * <https://en.wikipedia.org/wiki/Separation_axiom>
 * [Willard's *General Topology*][zbMATH02107988]
 -/
+
+@[expose] public section
 
 open Function Set Filter Topology TopologicalSpace
 
@@ -751,7 +755,7 @@ theorem infinite_of_mem_nhds {X} [TopologicalSpace X] [T1Space X] (x : X) [hx : 
   exact isOpen_singleton_of_finite_mem_nhds x hs hsf
 
 instance Finite.instDiscreteTopology [T1Space X] [Finite X] : DiscreteTopology X :=
-  discreteTopology_iff_forall_isClosed.mpr (· |>.toFinite.isClosed)
+  discreteTopology_iff_forall_isClosed.mpr (·.toFinite.isClosed)
 
 theorem Set.Finite.continuousOn [T1Space X] [TopologicalSpace Y] {s : Set X} (hs : s.Finite)
     (f : X → Y) : ContinuousOn f s := by

@@ -3,7 +3,9 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Topology.UniformSpace.AbstractCompletion
+module
+
+public import Mathlib.Topology.UniformSpace.AbstractCompletion
 
 /-!
 # Hausdorff completions of uniform spaces
@@ -39,6 +41,8 @@ This formalization is mostly based on
   I. M. James: Topologies and Uniformities
 From a slightly different perspective in order to reuse material in `Topology.UniformSpace.Basic`.
 -/
+
+@[expose] public section
 
 noncomputable section
 

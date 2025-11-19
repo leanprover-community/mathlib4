@@ -3,7 +3,9 @@ Copyright (c) 2025 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Closure
+module
+
+public import Mathlib.Combinatorics.Matroid.Closure
 
 /-!
 # Matroid IsCircuits
@@ -13,7 +15,7 @@ A matroid is determined by its set of circuits, and often the circuits
 offer a more compact description of a matroid than the collection of independent sets or bases.
 In matroids arising from graphs, circuits correspond to graphical cycles.
 
-# Main Declarations
+## Main Declarations
 
 * `Matroid.IsCircuit M C` means that `C` is minimally dependent in `M`.
 * For an `Indep`endent set `I` whose closure contains an element `e ∉ I`,
@@ -36,7 +38,7 @@ In matroids arising from graphs, circuits correspond to graphical cycles.
 * `Matroid.IsBase.mem_fundCocircuit_iff_mem_fundCircuit` : `e` is in the fundamental circuit
   for `B` and `f` iff `f` is in the fundamental cocircuit for `B` and `e`.
 
-# Implementation Details
+## Implementation Details
 
 Since `Matroid.fundCircuit M e I` is only sensible if `I` is independent and `e ∈ M.closure I \ I`,
 to avoid hypotheses being explicitly included in the definition,
@@ -46,6 +48,8 @@ The definition is chosen so that the junk values satisfy
 `M.fundCircuit e I = insert e I` if `e ∈ M.E \ M.closure I`.
 These make the useful statement `e ∈ M.fundCircuit e I ⊆ insert e I` true unconditionally.
 -/
+
+@[expose] public section
 
 variable {α : Type*} {M : Matroid α} {C C' I X Y R : Set α} {e f x y : α}
 
