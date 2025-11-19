@@ -14,6 +14,16 @@ import all Lean.Environment
 
 This linter lints against nonempty modules that have only private declarations, and suggests adding
 `@[expose] public section` to the top.
+
+## Implementation notes
+
+All new declarations, whether added synchronously with `addDecl` or otherwise,  get added to
+`asyncConstsMap`.
+
+`asyncConstsMap.public` and `asyncConstsMap.private` seem to contain exactly the same declarations.
+The difference between public and private declarations is encoded via the presence of the name
+prefix `_private` in the declaration's name. The code here should be robust to potential future
+changes that put public declarations only in `.public` and private ones only in `.private`.
 -/
 
 -- TODO: `module` is not enabled in MathlibTest yet, so tests should be written for this once it is.
@@ -40,9 +50,6 @@ def privateModule : Linter where
       if (← getEnv).header.isModule then
         -- Wait for everything (necessary?)
         let _ := (← getEnv).checked.get
-        -- TODO: why doesn't this work?
-        -- if (← getEnv).asyncConstsMap.public.size = 0 then
-        --   if (← getEnv).asyncConstsMap.private.size ≠ 0 then
         unless (← getEnv).asyncConstsMap.public.revList.any
             (!(`_private).isPrefixOf ·.constInfo.name) do
           if (← getEnv).asyncConstsMap.private.size ≠ 0 then
