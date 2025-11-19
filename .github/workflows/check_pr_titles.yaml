@@ -19,10 +19,12 @@ jobs:
     steps:
       - name: Debug event data
         run: |
-          echo "Action: ${{ github.event.action }}"
-          echo "Changes: ${{ toJson(github.event.changes) }}"
-          echo "Has title change: ${{ github.event.changes.title != null }}"
-          echo "pull_request object: ${{ toJson(github.event.pull_request) }}"
+          # do nothing
+        env:
+          action: ${{ github.event.action }}
+          Changes: ${{ toJson(github.event.changes) }}
+          has_title_change: ${{ github.event.changes.title != null }}
+          pull_request: ${{ toJson(github.event.pull_request) }}
       - name: Checkout
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
@@ -36,7 +38,7 @@ jobs:
 
       - name: check the PR title format
         id: pr-title-check
-        if: github.event.pull_request.draft == false && github.event.pull_request.base == 'master'
+        if: github.event.pull_request.draft == false && github.event.pull_request.base.ref == 'master'
         env:
           TITLE: ${{ github.event.pull_request.title }}
         run: |
