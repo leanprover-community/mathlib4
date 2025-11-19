@@ -2807,6 +2807,8 @@ import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.PathCategory.Basic
 import Mathlib.CategoryTheory.PathCategory.MorphismProperty
 import Mathlib.CategoryTheory.Pi.Basic
+import Mathlib.CategoryTheory.Pi.Monoidal
+import Mathlib.CategoryTheory.Pi.MonoidalClosed
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.CategoryTheory.Preadditive.Biproducts
