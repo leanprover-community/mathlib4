@@ -3,8 +3,10 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.NumberTheory.LSeries.HurwitzZeta
-import Mathlib.Analysis.PSeriesComplex
+module
+
+public import Mathlib.NumberTheory.LSeries.HurwitzZeta
+public import Mathlib.Analysis.PSeriesComplex
 
 /-!
 # Definition of the Riemann zeta function
@@ -41,6 +43,8 @@ see `Mathlib/NumberTheory/LSeries/HurwitzZetaValues.lean`. For computation of th
 These results are mostly special cases of more general results for even Hurwitz zeta functions
 proved in `Mathlib/NumberTheory/LSeries/HurwitzZetaEven.lean`.
 -/
+
+@[expose] public section
 
 
 open CharZero Set Filter HurwitzZeta

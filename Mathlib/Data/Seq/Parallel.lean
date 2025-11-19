@@ -3,7 +3,9 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.WSeq.Relation
+module
+
+public import Mathlib.Data.WSeq.Relation
 
 /-!
 # Parallel computation
@@ -15,6 +17,8 @@ terminates_parallel and exists_of_mem_parallel.
 (This operation is nondeterministic in the sense that it does not
 honor sequence equivalence (irrelevance of computation time).)
 -/
+
+@[expose] public section
 
 universe u v
 

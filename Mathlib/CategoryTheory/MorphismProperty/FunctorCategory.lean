@@ -3,10 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-import Mathlib.CategoryTheory.MorphismProperty.Retract
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+module
+
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+public import Mathlib.CategoryTheory.MorphismProperty.Retract
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 
 /-!
 # Stability properties of morphism properties on functor categories
@@ -19,6 +21,8 @@ in `C` are stable under transfinite compositions, then the same
 holds in the category `J ⥤ C`.
 
 -/
+
+@[expose] public section
 
 universe v v' v'' u u' u''
 
@@ -33,7 +37,7 @@ variable {C : Type u} [Category.{v} C] (W : MorphismProperty C)
 instance [W.IsStableUnderRetracts] (J : Type u'') [Category.{v''} J] :
     (W.functorCategory J).IsStableUnderRetracts where
   of_retract hfg hg j :=
-    W.of_retract (hfg.map ((evaluation _ _).obj j).mapArrow) (hg j)
+    W.of_retract (hfg.map ((evaluation _ _).obj j)) (hg j)
 
 variable {W}
 

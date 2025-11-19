@@ -3,12 +3,14 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.Grp.Abelian
-import Mathlib.Algebra.Category.Grp.EpiMono
-import Mathlib.Algebra.Category.Grp.Zero
-import Mathlib.Algebra.Homology.ShortComplex.Ab
-import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
-import Mathlib.Data.Finite.Prod
+module
+
+public import Mathlib.Algebra.Category.Grp.Abelian
+public import Mathlib.Algebra.Category.Grp.EpiMono
+public import Mathlib.Algebra.Category.Grp.Zero
+public import Mathlib.Algebra.Homology.ShortComplex.Ab
+public import Mathlib.CategoryTheory.Abelian.SerreClass.Basic
+public import Mathlib.Data.Finite.Prod
 
 /-!
 # The Serre class of finite abelian groups
@@ -17,6 +19,8 @@ In this file, we define `isFinite : ObjectProperty AddCommGrpCat` and show
 that it is a Serre class.
 
 -/
+
+@[expose] public section
 
 universe u
 

@@ -3,10 +3,11 @@ Copyright (c) 2024 Jon Bannon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Bannon, Jireh Loreaux
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Commute
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Commute
 
 
 /-!
@@ -20,6 +21,8 @@ and provides basic API.
 + `CFC.abs`: The absolute value as `abs a := CFC.sqrt (star a * a)`.
 
 -/
+
+@[expose] public section
 
 variable {𝕜 A : Type*}
 

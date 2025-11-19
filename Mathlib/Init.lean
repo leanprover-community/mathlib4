@@ -1,26 +1,28 @@
-import Lean.Linter.Sets -- for the definition of linter sets
-import Mathlib.Tactic.Linter.CommandStart
-import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
-import Mathlib.Tactic.Linter.DirectoryDependency
-import Mathlib.Tactic.Linter.DocPrime
-import Mathlib.Tactic.Linter.DocString
-import Mathlib.Tactic.Linter.GlobalAttributeIn
-import Mathlib.Tactic.Linter.HashCommandLinter
-import Mathlib.Tactic.Linter.Header
+module
+
+public import Lean.Linter.Sets -- for the definition of linter sets
+public import Mathlib.Tactic.Linter.CommandStart
+public import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
+public import Mathlib.Tactic.Linter.DirectoryDependency
+public import Mathlib.Tactic.Linter.DocPrime
+public import Mathlib.Tactic.Linter.DocString
+public import Mathlib.Tactic.Linter.GlobalAttributeIn
+public import Mathlib.Tactic.Linter.HashCommandLinter
+public import Mathlib.Tactic.Linter.Header
 -- This linter is disabled by default, but downstream projects may want to enable it:
 -- to facilitate this, we import the linter here.
-import Mathlib.Tactic.Linter.FlexibleLinter
+public import Mathlib.Tactic.Linter.FlexibleLinter
 -- This file imports Batteries.Tactic.Lint, where the `env_linter` attribute is defined.
-import Mathlib.Tactic.Linter.Lint
-import Mathlib.Tactic.Linter.Multigoal
-import Mathlib.Tactic.Linter.OldObtain
+public import Mathlib.Tactic.Linter.Lint
+public import Mathlib.Tactic.Linter.Multigoal
+public import Mathlib.Tactic.Linter.OldObtain
 -- The following import contains the environment extension for the unused tactic linter.
-import Mathlib.Tactic.Linter.UnusedTacticExtension
-import Mathlib.Tactic.Linter.UnusedTactic
-import Mathlib.Tactic.Linter.Style
+public import Mathlib.Tactic.Linter.UnusedTacticExtension
+public import Mathlib.Tactic.Linter.UnusedTactic
+public import Mathlib.Tactic.Linter.Style
 -- This import makes the `#min_imports` command available globally.
-import Mathlib.Tactic.MinImports
-import Mathlib.Tactic.TacticAnalysis.Declarations
+public import Mathlib.Tactic.MinImports
+public import Mathlib.Tactic.TacticAnalysis.Declarations
 
 /-!
 This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.
@@ -52,6 +54,8 @@ All linters imported here have no bulk imports;
 - the `upstreamableDecls` linter, as it is also mostly informational
 
 -/
+
+@[expose] public section
 
 /-- Define a linter set of all mathlib syntax linters which are enabled by default.
 

@@ -3,9 +3,10 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yunzhou Xie, Kenny Lau, Jiayang Hong
 -/
+module
 
-import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 /-!
 
@@ -24,6 +25,8 @@ and define some algebraic structures on it.
 Quadratic algebra, quadratic extension
 
 -/
+
+@[expose] public section
 
 universe u
 
