@@ -3,7 +3,9 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Ordinal.FixedPoint
+module
+
+public import Mathlib.SetTheory.Ordinal.FixedPoint
 
 /-!
 # Veblen hierarchy
@@ -36,6 +38,8 @@ The following notation is scoped to the `Ordinal` namespace.
 
 * [Larry W. Miller, Normal functions and constructive ordinal notations][Miller_1976]
 -/
+
+@[expose] public section
 
 noncomputable section
 

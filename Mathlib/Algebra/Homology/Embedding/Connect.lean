@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
+module
+
+public import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
 
 /-!
 # Connecting a chain complex and a cochain complex
@@ -37,6 +39,8 @@ Now say `h : ConnectData K L`.
 * Computation of `h.cochainComplex.homology k` when `k = 0` or `k = -1`.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -100,7 +104,7 @@ lemma shape (n m : ℤ) (hnm : n + 1 ≠ m) : h.d n m = 0 :=
     · obtain _ | m := m
       · simp at hnm
       · rfl
-    · rfl
+    · simp only [d]
 
 @[reassoc (attr := simp)]
 lemma d_comp_d (n m p : ℤ) : h.d n m ≫ h.d m p = 0 := by
@@ -111,7 +115,7 @@ lemma d_comp_d (n m p : ℤ) : h.d n m ≫ h.d m p = 0 := by
   obtain n | (_ | _ | n) := n
   · obtain rfl : m = .ofNat (n + 1) := by simp [← hnm]
     obtain rfl : p = .ofNat (n + 2) := by simp [← hmp]; cutsat
-    simp only [Int.ofNat_eq_coe, X_ofNat, d_ofNat, HomologicalComplex.d_comp_d]
+    simp only [Int.ofNat_eq_natCast, X_ofNat, d_ofNat, HomologicalComplex.d_comp_d]
   · obtain rfl : m = 0 := by cutsat
     obtain rfl : p = 1 := by cutsat
     simp

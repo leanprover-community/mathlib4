@@ -3,7 +3,9 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Galois.Action
+module
+
+public import Mathlib.CategoryTheory.Galois.Action
 
 /-!
 
@@ -25,6 +27,8 @@ preserves connectedness, which translates to the fact that `Aut F` acts transiti
 the fibers of connected objects.
 
 -/
+
+@[expose] public section
 
 universe u
 

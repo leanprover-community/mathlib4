@@ -3,12 +3,16 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ComposableArrows.Basic
+module
+
+public import Mathlib.CategoryTheory.ComposableArrows.Basic
 
 /-!
 # Functors to `ComposableArrows C 1`
 
 -/
+
+@[expose] public section
 
 universe v u
 
