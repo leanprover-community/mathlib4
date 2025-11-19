@@ -23,10 +23,11 @@ meta section
 /-- Parse all imports in a text file at `path` and return just their names:
 this is just a thin wrapper around `Lean.parseImports'`.
 Omit `Init` (which is part of the prelude). -/
-def findImports (path : System.FilePath) : IO (Array Lean.Name) := do
+public def findImports (path : System.FilePath) : IO (Array Lean.Name) := do
   return (← Lean.parseImports' (← IO.FS.readFile path) path.toString).imports
     |>.map (fun imp ↦ imp.module) |>.erase `Init
 
+-- XXX: is there a better location for these?
 /-- Find the longest prefix of `n` such that `f` returns `some` (or return `none` otherwise). -/
 def Lean.Name.findPrefix {α} (f : Name → Option α) (n : Name) : Option α := do
   f n <|> match n with
