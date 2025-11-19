@@ -238,12 +238,9 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
 
 lemma eventually_atTop_zero_or_pos_or_neg (hf : GrowsPolynomially f) :
     (∀ᶠ x in atTop, f x = 0) ∨ (∀ᶠ x in atTop, 0 < f x) ∨ (∀ᶠ x in atTop, f x < 0) := by
-  if h : ∃ᶠ x in atTop, f x = 0 then
-    exact Or.inl <| eventually_zero_of_frequently_zero hf h
-  else
-    rw [not_frequently] at h
-    push_neg at h
-    cases eventually_atTop_nonneg_or_nonpos hf with
+  by_cases! h : ∃ᶠ x in atTop, f x = 0
+  · exact Or.inl <| eventually_zero_of_frequently_zero hf h
+  · cases eventually_atTop_nonneg_or_nonpos hf with
     | inl h' =>
       refine Or.inr (Or.inl ?_)
       simp only [lt_iff_le_and_ne]
