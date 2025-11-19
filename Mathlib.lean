@@ -3168,6 +3168,17 @@ import Mathlib.Combinatorics.SimpleGraph.Turan
 import Mathlib.Combinatorics.SimpleGraph.Tutte
 import Mathlib.Combinatorics.SimpleGraph.UniversalVerts
 import Mathlib.Combinatorics.SimpleGraph.Walk
+import Mathlib.Combinatorics.SimplicialComplex.Basic
+import Mathlib.Combinatorics.SimplicialComplex.Category
+import Mathlib.Combinatorics.SimplicialComplex.FacePoset
+import Mathlib.Combinatorics.SimplicialComplex.Hom
+import Mathlib.Combinatorics.SimplicialComplex.Topology.GeomReal.Basic
+import Mathlib.Combinatorics.SimplicialComplex.Topology.GeomReal.Colimit
+import Mathlib.Combinatorics.SimplicialComplex.Topology.GeomReal.Diagram
+import Mathlib.Combinatorics.SimplicialComplex.Topology.GeomReal.Functor
+import Mathlib.Combinatorics.SimplicialComplex.Topology.GeomReal.Map
+import Mathlib.Combinatorics.SimplicialComplex.Topology.Simplex
+import Mathlib.Combinatorics.SimplicialComplex.Topology.SimplexMap
 import Mathlib.Combinatorics.Young.SemistandardTableau
 import Mathlib.Combinatorics.Young.YoungDiagram
 import Mathlib.Computability.Ackermann
