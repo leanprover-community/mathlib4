@@ -121,13 +121,13 @@ theorem coe_sqrt {x : ℝ≥0} : (NNReal.sqrt x : ℝ) = √(x : ℝ) := by
 
 @[continuity]
 theorem continuous_sqrt : Continuous (√· : ℝ → ℝ) := by
-  simp only [sqrt]
+  unfold sqrt
   exact NNReal.continuous_coe.comp <| NNReal.continuous_sqrt.comp continuous_real_toNNReal
 
 theorem sqrt_eq_zero_of_nonpos (h : x ≤ 0) : sqrt x = 0 := by simp [sqrt, Real.toNNReal_eq_zero.2 h]
 
 @[simp] theorem sqrt_nonneg (x : ℝ) : 0 ≤ √x := by
-  simp only [sqrt]
+  unfold sqrt
   exact NNReal.coe_nonneg _
 
 @[simp]
