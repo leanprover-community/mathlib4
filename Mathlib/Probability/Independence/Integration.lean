@@ -3,9 +3,11 @@ Copyright (c) 2021 Martin Zinkevich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Zinkevich, Vincent Beffara, Etienne Marion
 -/
-import Mathlib.MeasureTheory.Integral.Pi
-import Mathlib.Probability.Independence.Integrable
-import Mathlib.Probability.Notation
+module
+
+public import Mathlib.MeasureTheory.Integral.Pi
+public import Mathlib.Probability.Independence.Integrable
+public import Mathlib.Probability.Notation
 
 /-!
 # Integration in Probability Theory
@@ -26,6 +28,8 @@ example [M1 : MeasurableSpace Ω] {M2 : MeasurableSpace Ω} {μ : Measure Ω} : 
 ```
 
 -/
+
+@[expose] public section
 
 
 open Set MeasureTheory
@@ -279,7 +283,7 @@ theorem indepFun_iff_integral_comp_mul [IsFiniteMeasure μ] {β β' : Type*} {m�
     h (measurable_one.indicator hA) (measurable_one.indicator hB)
       ((integrable_const 1).indicator (hfm.comp measurable_id hA))
       ((integrable_const 1).indicator (hgm.comp measurable_id hB))
-  rwa [← ENNReal.toReal_eq_toReal (measure_ne_top μ _), ENNReal.toReal_mul, ← measureReal_def,
+  rwa [← ENNReal.toReal_eq_toReal_iff' (measure_ne_top μ _), ENNReal.toReal_mul, ← measureReal_def,
     ← measureReal_def, ← measureReal_def, ← integral_indicator_one ((hfm hA).inter (hgm hB)),
     ← integral_indicator_one (hfm hA), ← integral_indicator_one (hgm hB), Set.inter_indicator_one]
   exact ENNReal.mul_ne_top (measure_ne_top μ _) (measure_ne_top μ _)

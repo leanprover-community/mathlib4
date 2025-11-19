@@ -3,9 +3,11 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.HomCongr
-import Mathlib.CategoryTheory.Comma.Over.Basic
-import Mathlib.Tactic.CategoryTheory.Elementwise
+module
+
+public import Mathlib.CategoryTheory.HomCongr
+public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.Tactic.CategoryTheory.Elementwise
 
 /-!
 # Computation of `Over A` for a presheaf `A`
@@ -62,6 +64,8 @@ possible.
 presheaf, over category, coyoneda
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

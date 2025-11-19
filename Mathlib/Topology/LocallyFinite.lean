@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Filter.SmallSets
-import Mathlib.Topology.ContinuousOn
+module
+
+public import Mathlib.Order.Filter.SmallSets
+public import Mathlib.Topology.ContinuousOn
 
 /-!
 ### Locally finite families of sets
@@ -14,6 +16,8 @@ there is a neighborhood of `x` which meets only finitely many sets in the family
 
 In this file we give the definition and prove basic properties of locally finite families of sets.
 -/
+
+@[expose] public section
 
 -- locally finite family [General Topology (Bourbaki, 1995)]
 open Set Function Filter Topology
@@ -47,6 +51,13 @@ theorem comp_injOn {g : ι' → ι} (hf : LocallyFinite f) (hg : InjOn g { i | (
 theorem comp_injective {g : ι' → ι} (hf : LocallyFinite f) (hg : Injective g) :
     LocallyFinite (f ∘ g) :=
   hf.comp_injOn hg.injOn
+
+theorem of_comp_surjective {g : ι' → ι} (hg : Surjective g) (hfg : LocallyFinite (f ∘ g)) :
+    LocallyFinite f := by
+  simpa only [comp_def, surjInv_eq hg] using hfg.comp_injective (injective_surjInv hg)
+
+theorem on_range (hf : LocallyFinite f) : LocallyFinite ((↑) : range f → Set X) :=
+  of_comp_surjective rangeFactorization_surjective hf
 
 theorem _root_.locallyFinite_iff_smallSets :
     LocallyFinite f ↔ ∀ x, ∀ᶠ s in (𝓝 x).smallSets, { i | (f i ∩ s).Nonempty }.Finite :=

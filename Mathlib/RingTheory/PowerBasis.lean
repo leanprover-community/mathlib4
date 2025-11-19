@@ -3,9 +3,11 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.LinearAlgebra.SModEq
-import Mathlib.RingTheory.Ideal.BigOperators
+module
+
+public import Mathlib.FieldTheory.Minpoly.Field
+public import Mathlib.LinearAlgebra.SModEq.Basic
+public import Mathlib.RingTheory.Ideal.BigOperators
 
 /-!
 # Power basis
@@ -39,6 +41,8 @@ Throughout this file, `R`, `S`, `A`, `B` ... are `CommRing`s, and `K`, `L`, ... 
 power basis, powerbasis
 
 -/
+
+@[expose] public section
 
 open Finsupp Module Polynomial
 
@@ -108,13 +112,12 @@ theorem mem_span_pow {x y : S} {d : ℕ} (hd : d ≠ 0) :
       ∃ f : R[X], f.natDegree < d ∧ y = aeval x f := by
   rw [mem_span_pow']
   constructor <;>
-    · rintro ⟨f, h, hy⟩
-      refine ⟨f, ?_, hy⟩
-      by_cases hf : f = 0
-      · simp only [hf, natDegree_zero, degree_zero] at h ⊢
-        first | exact lt_of_le_of_ne (Nat.zero_le d) hd.symm | exact WithBot.bot_lt_coe d
-      simp_all only [degree_eq_natDegree hf]
-      · exact WithBot.coe_lt_coe.1 h
+  · rintro ⟨f, h, hy⟩
+    refine ⟨f, ?_, hy⟩
+    by_cases hf : f = 0
+    · simp only [hf, natDegree_zero, degree_zero] at h ⊢
+      first | exact lt_of_le_of_ne (Nat.zero_le d) hd.symm | exact WithBot.bot_lt_coe d
+    simpa [degree_eq_natDegree hf] using h
 
 theorem dim_ne_zero [Nontrivial S] (pb : PowerBasis R S) : pb.dim ≠ 0 := fun h =>
   not_nonempty_iff.mpr (h.symm ▸ Fin.isEmpty : IsEmpty (Fin pb.dim)) pb.basis.index_nonempty

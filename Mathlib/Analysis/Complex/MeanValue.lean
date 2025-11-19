@@ -3,12 +3,16 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.MeasureTheory.Integral.CircleAverage
+module
+
+public import Mathlib.Analysis.Complex.CauchyIntegral
+public import Mathlib.MeasureTheory.Integral.CircleAverage
 
 /-!
 # The Mean Value Property of Complex Differentiable Functions
 -/
+
+@[expose] public section
 
 open Complex Metric Real
 

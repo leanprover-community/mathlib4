@@ -3,8 +3,10 @@ Copyright (c) 2024 Vasily Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
-import Mathlib.Tactic.Linarith.Datatypes
-import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.PositiveVector
+module
+
+public meta import Mathlib.Tactic.Linarith.Datatypes
+public meta import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.PositiveVector
 
 /-!
 # The oracle based on Simplex Algorithm
@@ -13,6 +15,8 @@ This file contains hooks to enable the use of the Simplex Algorithm in `linarith
 The algorithm's entry point is the function `Linarith.SimplexAlgorithm.findPositiveVector`.
 See the file `PositiveVector.lean` for details of how the procedure works.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Linarith.SimplexAlgorithm
 

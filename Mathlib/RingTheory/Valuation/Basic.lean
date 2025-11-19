@@ -3,11 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Patrick Massot
 -/
-import Mathlib.Algebra.GroupWithZero.Submonoid.Instances
-import Mathlib.Algebra.Order.Hom.Monoid
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.Tactic.TFAE
+module
+
+public import Mathlib.Algebra.GroupWithZero.Submonoid.Instances
+public import Mathlib.Algebra.Order.Hom.Monoid
+public import Mathlib.Algebra.Order.Ring.Basic
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.Tactic.TFAE
 
 /-!
 
@@ -57,6 +59,8 @@ In the `WithZero` locale, `Mᵐ⁰` is a shorthand for `WithZero (Multiplicative
 If ever someone extends `Valuation`, we should fully comply to the `DFunLike` by migrating the
 boilerplate lemmas to `ValuationClass`.
 -/
+
+@[expose] public section
 
 open Function Ideal
 
@@ -305,10 +309,11 @@ theorem map_sub_eq_of_lt_right (h : v x < v y) : v (x - y) = v y := by
   rw [sub_eq_add_neg, map_add_eq_of_lt_right, map_neg]
   rwa [map_neg]
 
-open scoped Classical in
-theorem map_sum_eq_of_lt {ι : Type*} {s : Finset ι} {f : ι → R} {j : ι}
-    (hj : j ∈ s) (h0 : v (f j) ≠ 0) (hf : ∀ i ∈ s \ {j}, v (f i) < v (f j)) :
+theorem map_sum_eq_of_lt {ι : Type*} [DecidableEq ι] {s : Finset ι} {f : ι → R} {j : ι}
+    (hj : j ∈ s) (hf : ∀ i ∈ s \ {j}, v (f i) < v (f j)) :
     v (∑ i ∈ s, f i) = v (f j) := by
+  rcases eq_or_ne (v (f j)) 0 with h0 | h0
+  · aesop
   rw [Finset.sum_eq_add_sum_diff_singleton hj]
   exact map_add_eq_of_lt_left _ (map_sum_lt _ h0 hf)
 

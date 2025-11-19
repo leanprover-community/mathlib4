@@ -3,8 +3,10 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Group.InfiniteSum
-import Mathlib.Topology.Instances.ENNReal.Lemmas
+module
+
+public import Mathlib.Analysis.Normed.Group.InfiniteSum
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Continuity of series of functions
@@ -17,6 +19,8 @@ For smoothness of series of functions, see the file `Analysis.Calculus.SmoothSer
 TODO: update this to use `SummableUniformlyOn`.
 
 -/
+
+@[expose] public section
 
 open Set Metric TopologicalSpace Function Filter
 
