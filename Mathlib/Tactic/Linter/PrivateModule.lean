@@ -18,7 +18,7 @@ This linter lints against nonempty modules that have only private declarations, 
 
 -- TODO: `module` is not enabled in MathlibTest yet, so tests should be written for this once it is.
 
-meta section
+public meta section
 
 open Lean Elab Command Linter
 
