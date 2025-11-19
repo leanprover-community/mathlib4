@@ -4911,6 +4911,7 @@ import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.MeasureTheory.Measure.Sub
 import Mathlib.MeasureTheory.Measure.Support
 import Mathlib.MeasureTheory.Measure.Tight
+import Mathlib.MeasureTheory.Measure.TightCharFun
 import Mathlib.MeasureTheory.Measure.TightNormed
 import Mathlib.MeasureTheory.Measure.Tilted
 import Mathlib.MeasureTheory.Measure.Trim
