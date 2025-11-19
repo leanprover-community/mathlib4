@@ -3,8 +3,10 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Analysis.Convex.Hull
-import Mathlib.LinearAlgebra.AffineSpace.Independent
+module
+
+public import Mathlib.Analysis.Convex.Hull
+public import Mathlib.LinearAlgebra.AffineSpace.Independent
 
 /-!
 # Simplicial complexes
@@ -39,6 +41,8 @@ vertices.
 
 Simplicial complexes can be generalized to affine spaces once `ConvexHull` has been ported.
 -/
+
+@[expose] public section
 
 
 open Finset Set

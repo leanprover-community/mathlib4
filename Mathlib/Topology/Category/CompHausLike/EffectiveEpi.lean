@@ -3,8 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Coherent.Comparison
-import Mathlib.Topology.Category.CompHausLike.Limits
+module
+
+public import Mathlib.CategoryTheory.Sites.Coherent.Comparison
+public import Mathlib.Topology.Category.CompHausLike.Limits
 /-!
 
 # Effective epimorphisms in `CompHausLike`
@@ -16,6 +18,8 @@ preregular.
 
 If furthermore explicit finite coproducts exist, then `CompHausLike P` is precoherent.
 -/
+
+@[expose] public section
 
 universe u
 

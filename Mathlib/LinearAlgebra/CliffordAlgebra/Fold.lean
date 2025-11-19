@@ -3,7 +3,9 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
+module
+
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 
 /-!
 # Recursive computation rules for the Clifford algebra
@@ -27,6 +29,8 @@ For convenience, this file also provides `CliffordAlgebra.foldl`, implemented vi
 * `CliffordAlgebra.right_induction`: an induction rule that adds generators from the right.
 * `CliffordAlgebra.left_induction`: an induction rule that adds generators from the left.
 -/
+
+@[expose] public section
 
 
 universe u1 u2 u3

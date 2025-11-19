@@ -3,8 +3,10 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yuyang Zhao
 -/
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.Polynomial.AlgebraMap
+module
+
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.Polynomial.AlgebraMap
 
 /-!
 # Algebra towers for polynomial
@@ -16,6 +18,8 @@ This structure itself is provided elsewhere as `Polynomial.isScalarTower`
 When you update this file, you can also try to make a corresponding update in
 `RingTheory.MvPolynomial.Tower`.
 -/
+
+@[expose] public section
 
 
 open Polynomial
