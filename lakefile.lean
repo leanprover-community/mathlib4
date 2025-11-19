@@ -29,7 +29,6 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.mathlibStandardSet, true⟩,
   ⟨`linter.checkInitImports, true⟩,
   ⟨`linter.allScriptsDocumented, true⟩,
-  ⟨`linter.privateModule, true⟩,
   ⟨`linter.pythonStyle, true⟩,
   ⟨`linter.style.longFile, .ofNat 1500⟩,
   -- ⟨`linter.nightlyRegressionSet, true⟩,

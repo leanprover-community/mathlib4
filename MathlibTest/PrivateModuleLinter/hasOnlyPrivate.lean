@@ -1,6 +1,7 @@
 module
 
-import Mathlib.Tactic.Linter.PrivateModule
+import Mathlib.Init
+import all Mathlib.Tactic.Linter.PrivateModule
 import Lean.Elab.Command
 
 open Lean
@@ -11,7 +12,7 @@ theorem foo : True := trivial
 
 def bar : Bool := true
 
--- Run the linter on artificial `eoi` syntax so that we can actually guard the messages
+-- Run the linter on artificial `eoi` syntax so that we can actually
 open Mathlib.Linter Parser in
 /--
 warning: The current module only contains private declarations.
