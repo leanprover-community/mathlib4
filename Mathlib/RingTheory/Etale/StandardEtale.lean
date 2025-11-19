@@ -3,9 +3,11 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Polynomial.Bivariate
-import Mathlib.Algebra.Polynomial.Taylor
-import Mathlib.RingTheory.Etale.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.Bivariate
+public import Mathlib.Algebra.Polynomial.Taylor
+public import Mathlib.RingTheory.Etale.Basic
 
 /-!
 
@@ -24,6 +26,8 @@ import Mathlib.RingTheory.Etale.Basic
 - We also provide the instance that `P.Ring` is etale over `R`.
 
 -/
+
+@[expose] public section
 
 universe u
 

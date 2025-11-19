@@ -5,9 +5,9 @@ Authors: Junyan Xu
 -/
 module
 
-import Mathlib.RingTheory.AdjoinRoot
-import Mathlib.Algebra.MvPolynomial.PDeriv
-import Mathlib.RingTheory.Derivation.MapCoeffs
+public import Mathlib.RingTheory.AdjoinRoot
+public import Mathlib.Algebra.MvPolynomial.PDeriv
+public import Mathlib.RingTheory.Derivation.MapCoeffs
 
 /-!
 # Bivariate polynomials
