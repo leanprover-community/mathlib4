@@ -3,9 +3,11 @@ Copyright (c) 2025 Monica Omar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
-import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.Algebra.Star.SelfAdjoint
-import Mathlib.Algebra.Star.TensorProduct
+module
+
+public import Mathlib.Algebra.Algebra.Bilinear
+public import Mathlib.Algebra.Star.SelfAdjoint
+public import Mathlib.Algebra.Star.TensorProduct
 
 /-!
 # Intrinsic star operation on `E →ₗ[R] F`
@@ -27,6 +29,8 @@ If the lemma doesn't contain the word star but uses the operation, for example, 
 then please add a comment mentioning that is the "intrinsic star".
 
 -/
+
+@[expose] public section
 
 namespace LinearMap
 variable {R E F : Type*} [Semiring R] [InvolutiveStar R]

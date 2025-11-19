@@ -3,9 +3,11 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.RootSystem.Base
-import Mathlib.LinearAlgebra.RootSystem.Chain
-import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.Base
+public import Mathlib.LinearAlgebra.RootSystem.Chain
+public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 
 /-!
 # Properties of the `𝔤₂` root system.
@@ -41,6 +43,8 @@ Once sufficient API for `RootPairing.Base` has been developed:
 * Given `P` satisfying `[P.IsG2]`, distinct elements of a base must pair to `-3` (in one order).
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -364,13 +368,7 @@ variable (i : ι)
 
 @[simp] lemma pairingIn_shortAddLong_left :
     P.pairingIn ℤ (shortAddLong P) i = P.pairingIn ℤ (short P) i + P.pairingIn ℤ (long P) i := by
-  suffices P.pairing (shortAddLong P) i = P.pairing (short P) i + P.pairing (long P) i from
-    algebraMap_injective ℤ R <| by simpa only [algebraMap_pairingIn, map_add]
-  have : Fintype ι := Fintype.ofFinite ι
-  have B := (P.posRootForm ℤ).toInvariantForm
-  apply mul_right_cancel₀ (B.ne_zero i)
-  rw [← B.two_mul_apply_root_root]
-  simp [shortAddLongRoot_eq, mul_add, add_mul, B.two_mul_apply_root_root]
+  rw [pairingIn_eq_add_of_root_eq_add (shortAddLongRoot_eq P)]
 
 @[simp] lemma pairingIn_shortAddLong_right :
     P.pairingIn ℤ i (shortAddLong P) =
@@ -395,14 +393,10 @@ variable (i : ι)
 @[simp] lemma pairingIn_twoShortAddLong_left :
     P.pairingIn ℤ (twoShortAddLong P) i =
       2 * P.pairingIn ℤ (short P) i + P.pairingIn ℤ (long P) i := by
-  suffices P.pairing (twoShortAddLong P) i = 2 * P.pairing (short P) i + P.pairing (long P) i from
-    algebraMap_injective ℤ R <| by simpa only [algebraMap_pairingIn, map_add, map_mul, map_ofNat]
-  have : Fintype ι := Fintype.ofFinite ι
-  have B := (P.posRootForm ℤ).toInvariantForm
-  apply mul_right_cancel₀ (B.ne_zero i)
-  rw [← B.two_mul_apply_root_root]
-  simp [twoShortAddLongRoot_eq, mul_add, add_mul, B.two_mul_apply_root_root]
-  ring
+  rw [pairingIn_eq_add_of_root_eq_smul_add_smul (x := 2) (y := 1) (i := short P) (l := long P)]
+  · simp
+  · simp only [twoShortAddLongRoot_eq, one_smul, add_left_inj]
+    norm_cast
 
 @[simp] lemma pairingIn_twoShortAddLong_right :
     P.pairingIn ℤ i (twoShortAddLong P) =
@@ -425,18 +419,14 @@ variable (i : ι)
   · rw [B.two_mul_apply_root_root, B.two_mul_apply_root_root, mul_assoc]
   · rw [long_eq_three_mul_short, twoShortAddLongRoot_shortRoot]; ring
 
+omit [Finite ι] [IsDomain R] in
 @[simp] lemma pairingIn_threeShortAddLong_left :
     P.pairingIn ℤ (threeShortAddLong P) i =
       3 * P.pairingIn ℤ (short P) i + P.pairingIn ℤ (long P) i := by
-  suffices P.pairing (threeShortAddLong P) i =
-      3 * P.pairing (short P) i + P.pairing (long P) i from
-    algebraMap_injective ℤ R <| by simpa only [algebraMap_pairingIn, map_add, map_mul, map_ofNat]
-  have : Fintype ι := Fintype.ofFinite ι
-  have B := (P.posRootForm ℤ).toInvariantForm
-  apply mul_right_cancel₀ (B.ne_zero i)
-  rw [← B.two_mul_apply_root_root]
-  simp [threeShortAddLongRoot_eq, mul_add, B.two_mul_apply_root_root, mul_left_comm (2 : R) (3 : R)]
-  ring
+  rw [pairingIn_eq_add_of_root_eq_smul_add_smul (x := 3) (y := 1) (i := short P) (l := long P)]
+  · simp
+  · simp only [threeShortAddLongRoot_eq, one_smul, add_left_inj]
+    norm_cast
 
 @[simp] lemma pairingIn_threeShortAddLong_right :
     P.pairingIn ℤ i (threeShortAddLong P) =
@@ -463,15 +453,10 @@ variable (i : ι)
 @[simp] lemma pairingIn_threeShortAddTwoLong_left :
     P.pairingIn ℤ (threeShortAddTwoLong P) i =
       3 * P.pairingIn ℤ (short P) i + 2 * P.pairingIn ℤ (long P) i := by
-  suffices P.pairing (threeShortAddTwoLong P) i =
-      3 * P.pairing (short P) i + 2 * P.pairing (long P) i from
-    algebraMap_injective ℤ R <| by simpa only [algebraMap_pairingIn, map_add, map_mul, map_ofNat]
-  have : Fintype ι := Fintype.ofFinite ι
-  have B := (P.posRootForm ℤ).toInvariantForm
-  apply mul_right_cancel₀ (B.ne_zero i)
-  rw [← B.two_mul_apply_root_root]
-  simp [threeShortAddTwoLongRoot_eq, mul_add, B.two_mul_apply_root_root, mul_left_comm _ (3 : R)]
-  ring
+  rw [pairingIn_eq_add_of_root_eq_smul_add_smul (x := 3) (y := 2) (i := short P) (l := long P)]
+  · simp
+  · simp only [threeShortAddTwoLongRoot_eq]
+    norm_cast
 
 @[simp] lemma pairingIn_threeShortAddTwoLong_right :
     P.pairingIn ℤ i (threeShortAddTwoLong P) =
