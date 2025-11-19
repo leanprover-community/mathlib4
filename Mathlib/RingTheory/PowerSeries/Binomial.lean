@@ -3,8 +3,10 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.RingTheory.Binomial
-import Mathlib.RingTheory.PowerSeries.WellKnown
+module
+
+public import Mathlib.RingTheory.Binomial
+public import Mathlib.RingTheory.PowerSeries.WellKnown
 
 /-!
 # Binomial Power Series
@@ -26,6 +28,8 @@ commutative binomial ring `R`.
   `1 + XA[[X]]` into an `R`-module.
 
 -/
+
+@[expose] public section
 
 open Finset BigOperators
 

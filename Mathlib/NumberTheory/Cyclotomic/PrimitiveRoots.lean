@@ -3,15 +3,17 @@ Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Riccardo Brasca, Eric Rodriguez
 -/
-import Mathlib.Data.Nat.Factorization.LCM
-import Mathlib.Data.Nat.Factorization.PrimePow
-import Mathlib.Data.PNat.Prime
-import Mathlib.NumberTheory.Cyclotomic.Basic
-import Mathlib.RingTheory.Adjoin.PowerBasis
-import Mathlib.RingTheory.Norm.Transitivity
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
-import Mathlib.RingTheory.SimpleModule.Basic
+module
+
+public import Mathlib.Data.Nat.Factorization.LCM
+public import Mathlib.Data.Nat.Factorization.PrimePow
+public import Mathlib.Data.PNat.Prime
+public import Mathlib.NumberTheory.Cyclotomic.Basic
+public import Mathlib.RingTheory.Adjoin.PowerBasis
+public import Mathlib.RingTheory.Norm.Transitivity
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Primitive roots in cyclotomic fields
@@ -61,6 +63,8 @@ these two are equal. Therefore, whenever possible, we prove our results for any 
 and only at the "final step", when we need to provide an "explicit" primitive root, we use `zeta`.
 
 -/
+
+@[expose] public section
 
 
 open Polynomial Algebra Finset Module IsCyclotomicExtension Nat PNat Set

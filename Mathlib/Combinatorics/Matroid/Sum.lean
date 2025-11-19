@@ -3,8 +3,10 @@ Copyright (c) 2024 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Map
-import Mathlib.Logic.Embedding.Set
+module
+
+public import Mathlib.Combinatorics.Matroid.Map
+public import Mathlib.Logic.Embedding.Set
 
 /-!
 # Sums of matroids
@@ -39,6 +41,8 @@ To this end, we define five separate versions of the sum construction.
 We only directly define a matroid for `Matroid.sigma`. All other versions of sum are
 defined indirectly, using `Matroid.sigma` and the API in `Matroid.map`.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

@@ -3,7 +3,9 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.ElementaryMaps
+module
+
+public import Mathlib.ModelTheory.ElementaryMaps
 
 /-!
 # Elementary Substructures
@@ -19,6 +21,8 @@ import Mathlib.ModelTheory.ElementaryMaps
   `FirstOrder.Language.Substructure.isElementary_of_exists` gives a simple criterion for a
   substructure to be elementary.
 -/
+
+@[expose] public section
 
 
 open FirstOrder

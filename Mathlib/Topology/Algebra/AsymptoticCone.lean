@@ -3,9 +3,11 @@ Copyright (c) 2025 Attila Gáspár. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Attila Gáspár
 -/
-import Mathlib.Analysis.Convex.Between
-import Mathlib.Analysis.Convex.Topology
-import Mathlib.Topology.Algebra.Group.AddTorsor
+module
+
+public import Mathlib.Analysis.Convex.Between
+public import Mathlib.Analysis.Convex.Topology
+public import Mathlib.Topology.Algebra.Group.AddTorsor
 
 /-!
 # Asymptotic cone of a set
@@ -32,6 +34,8 @@ closed convex set `s`, then every ray of direction `v` starting from `s` is cont
 convex set `s`, then every ray of direction `v` starting from the interior of `s` is contained in
 `s`.
 -/
+
+@[expose] public section
 
 open scoped Pointwise Topology
 open Filter

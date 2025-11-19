@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Function.SimpleFunc
+module
+
+public import Mathlib.MeasureTheory.Function.SimpleFunc
 
 /-!
 # Lower Lebesgue integral for `ℝ≥0∞`-valued functions
@@ -22,6 +24,8 @@ We introduce the following notation for the lower Lebesgue integral of a functio
 * `∫⁻ x in s, f x`: integral of a function `f : α → ℝ≥0∞` over a set `s` with respect
   to the canonical measure `volume`, defined as `∫⁻ x, f x ∂(volume.restrict s)`.
 -/
+
+@[expose] public section
 
 assert_not_exists Module.Basis Norm MeasureTheory.MeasurePreserving MeasureTheory.Measure.dirac
 

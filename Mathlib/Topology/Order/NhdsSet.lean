@@ -3,7 +3,9 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Order.Basic
+module
+
+public import Mathlib.Topology.Order.Basic
 
 /-!
 # Set neighborhoods of intervals
@@ -17,6 +19,8 @@ Then we prove lemmas about `s ∈ 𝓝ˢ t`, where both `s` and `t` are interval
 Finally, we prove a few lemmas about filter bases of `𝓝ˢ (Iic a)` and `𝓝ˢ (Ici a)`.
 -/
 
+@[expose] public section
+
 
 open Set Filter OrderDual
 open scoped Topology
@@ -26,7 +30,7 @@ section OrderClosedTopology
 variable {α : Type*} [LinearOrder α] [TopologicalSpace α] [OrderClosedTopology α] {a b c d : α}
 
 /-!
-# Formulae for `𝓝ˢ` of intervals
+### Formulae for `𝓝ˢ` of intervals
 -/
 
 @[simp] theorem nhdsSet_Ioi : 𝓝ˢ (Ioi a) = 𝓟 (Ioi a) := isOpen_Ioi.nhdsSet_eq

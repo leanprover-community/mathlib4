@@ -3,9 +3,11 @@ Copyright (c) 2022 Vincent Beffara. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Beffara
 -/
-import Mathlib.Analysis.Complex.RemovableSingularity
-import Mathlib.Analysis.Calculus.UniformLimitsDeriv
-import Mathlib.Analysis.Normed.Group.FunctionSeries
+module
+
+public import Mathlib.Analysis.Complex.RemovableSingularity
+public import Mathlib.Analysis.Calculus.UniformLimitsDeriv
+public import Mathlib.Analysis.Normed.Group.FunctionSeries
 
 /-!
 # Locally uniform limits of holomorphic functions
@@ -20,6 +22,8 @@ subset of the complex plane.
 * `TendstoLocallyUniformlyOn.deriv`: Locally uniform convergence implies locally uniform
   convergence of the derivatives to the derivative of the limit.
 -/
+
+@[expose] public section
 
 
 open Set Metric MeasureTheory Filter Complex intervalIntegral

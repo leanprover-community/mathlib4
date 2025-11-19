@@ -3,10 +3,12 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Data.Set.NAry
+module
+
+public import Mathlib.Algebra.Group.Equiv.Basic
+public import Mathlib.Algebra.Group.Prod
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+public import Mathlib.Data.Set.NAry
 
 /-!
 # Pointwise operations of sets
@@ -46,6 +48,8 @@ Appropriate definitions and results are also transported to the additive theory 
 set multiplication, set addition, pointwise addition, pointwise multiplication,
 pointwise subtraction
 -/
+
+@[expose] public section
 
 assert_not_exists Set.iUnion MulAction MonoidWithZero IsOrderedMonoid
 
