@@ -5,6 +5,8 @@ Authors: Moritz Doll
 -/
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Basis.Defs
+import Mathlib.Data.Finsupp.Pointwise
+--import Mathlib.Data.Finset.Lattice.Basic
 
 /-!
 # Lemmas about bilinear maps with a basis over each argument
@@ -45,6 +47,42 @@ theorem sum_repr_mul_repr_mulₛₗ {B : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁
   conv_rhs => rw [← b₁.linearCombination_repr x, ← b₂.linearCombination_repr y]
   simp_rw [Finsupp.linearCombination_apply, Finsupp.sum, map_sum₂, map_sum, LinearMap.map_smulₛₗ₂,
     LinearMap.map_smulₛₗ]
+
+variable {ι : Type*}
+
+open Finsupp in
+theorem BilinearMap.map_finsuppSum (B : Mₗ →ₗ[Rₗ] Nₗ →ₗ[Rₗ] Pₗ) (f₁ : ι →₀ R) (g₁ : ι → R → Mₗ)
+    (f₂ : ι →₀ R) (g₂ : ι → R → Nₗ) : B (f₁.sum g₁) (f₂.sum g₂) =
+      f₁.sum (fun i r => f₂.sum (fun i₂ r₂ => B (g₁ i r) (g₂ i₂ r₂))) := by
+  rw [Finsupp.sum, LinearMap.map_sum₂, Finsupp.sum]
+  simp_rw [map_sum]
+  rw [Finsupp.sum]
+  simp_rw [Finsupp.sum]
+
+variable [DecidableEq ι]
+
+open Finsupp in
+theorem apply_linearCombination (B : Mₗ →ₗ[Rₗ] Nₗ →ₗ[Rₗ] Pₗ) {g₁ : ι → Mₗ} (l₁ : ι →₀ Rₗ)
+    {g₂ : ι → Nₗ} (l₂ : ι →₀ Rₗ) :
+    B (linearCombination Rₗ g₁ l₁) (linearCombination Rₗ g₂ l₂) =
+      linearCombination Rₗ (fun i => B (g₁ i) (g₂ i)) (l₂ * l₁) := by
+  simp_rw [linearCombination_apply]
+  simp_rw [BilinearMap.map_finsuppSum]
+  simp_rw [map_smul]
+  --rw [Finsupp.sum]
+  have hs : support (l₂ * l₁) ⊆ l₂.support ∩ l₁.support := support_mul
+  rw [Finsupp.sum_of_support_subset (l₂ * l₁) hs (fun i a => a • (B (g₁ i) (g₂ i)))
+    (fun _ _=> zero_smul Rₗ _)]
+  simp_all only [smul_apply, Finsupp.mul_apply]
+  simp only [←smul_eq_mul]
+  simp only [smul_assoc]
+
+
+  sorry
+
+  --, map_finsuppSum, polar_smul_left, polar_smul_right, map_smul,
+--    mul_smul,
+
 
 /-- Write out `B x y` as a sum over `B (b i) (b j)` if `b` is a basis.
 
