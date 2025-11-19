@@ -3,7 +3,9 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Logic.Function.Conjugate
+module
+
+public import Mathlib.Logic.Function.Conjugate
 
 /-!
 # Iterations of a function
@@ -26,6 +28,8 @@ In this file we prove simple properties of `Nat.iterate f n` a.k.a. `f^[n]`:
   if `f` fixes a point (resp., semiconjugates unary/binary operations), then so does `f^[n]`.
 
 -/
+
+@[expose] public section
 
 
 universe u v

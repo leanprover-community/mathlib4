@@ -3,10 +3,12 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Galois.Basic
-import Mathlib.CategoryTheory.Galois.Topology
-import Mathlib.CategoryTheory.Galois.Prorepresentability
-import Mathlib.Topology.Algebra.OpenSubgroup
+module
+
+public import Mathlib.CategoryTheory.Galois.Basic
+public import Mathlib.CategoryTheory.Galois.Topology
+public import Mathlib.CategoryTheory.Galois.Prorepresentability
+public import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-!
 
@@ -45,6 +47,8 @@ Given this data, we define `toAut F G : G →* Aut F` in the natural way.
   `G` being a `T2Space`.
 
 -/
+
+@[expose] public section
 universe u₁ u₂ w
 
 namespace CategoryTheory

@@ -3,9 +3,11 @@ Copyright (c) 2022 Floris van Doorn, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
-import Mathlib.Geometry.Manifold.ContMDiff.Atlas
-import Mathlib.Geometry.Manifold.VectorBundle.FiberwiseLinear
-import Mathlib.Topology.VectorBundle.Constructions
+module
+
+public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
+public import Mathlib.Geometry.Manifold.VectorBundle.FiberwiseLinear
+public import Mathlib.Topology.VectorBundle.Constructions
 
 /-! # `C^n` vector bundles
 
@@ -56,6 +58,8 @@ fields, etc.
 * `Bundle.Prod.contMDiffVectorBundle`: The direct sum of two `C^n` vector bundles is a `C^n`
   vector bundle.
 -/
+
+@[expose] public section
 
 assert_not_exists mfderiv
 

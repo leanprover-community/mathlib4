@@ -3,8 +3,10 @@ Copyright (c) 2024 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
-import Mathlib.RingTheory.Valuation.Basic
+module
+
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
+public import Mathlib.RingTheory.Valuation.Basic
 
 /-!
 # Minimal polynomials.
@@ -21,6 +23,8 @@ Let `K` be a field with a valuation `v` and let `L` be a field extension of `K`.
   valuation of zeroth coefficient of the minimal polynomial of `x` over `K` is nonzero. This lemma
   is helpful for defining the valuation on `L` inducing `v`.
 -/
+
+@[expose] public section
 
 open Module minpoly Polynomial
 

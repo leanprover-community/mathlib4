@@ -3,14 +3,17 @@ Copyright (c) 2024 Lean FRO. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+module
 
-import Batteries.Tactic.Alias
-import Mathlib.Init
+public import Batteries.Tactic.Alias
+public import Mathlib.Init
 
 /-!
 # Basic lemmas about division and modulo for integers
 
 -/
+
+@[expose] public section
 
 namespace Int
 

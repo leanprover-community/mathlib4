@@ -3,11 +3,12 @@ Copyright (c) 2022 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 -/
+module
 
-import Mathlib.Topology.Perfect
-import Mathlib.Topology.MetricSpace.Polish
-import Mathlib.Topology.MetricSpace.CantorScheme
-import Mathlib.Topology.Metrizable.Real
+public import Mathlib.Topology.Perfect
+public import Mathlib.Topology.MetricSpace.Polish
+public import Mathlib.Topology.MetricSpace.CantorScheme
+public import Mathlib.Topology.Metrizable.Real
 
 /-!
 # Perfect Sets
@@ -28,6 +29,8 @@ including a version of the Cantor-Bendixson Theorem.
 
 accumulation point, perfect set, cantor-bendixson.
 -/
+
+@[expose] public section
 
 open Set Filter
 

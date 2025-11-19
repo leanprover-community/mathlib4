@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Devon Tuma
 -/
-import Mathlib.Topology.Instances.ENNReal.Lemmas
-import Mathlib.MeasureTheory.Measure.Dirac
+module
+
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
+public import Mathlib.MeasureTheory.Measure.Dirac
 
 /-!
 # Probability mass functions
@@ -28,6 +30,8 @@ to be the measure of the singleton set `{x}`.
 
 probability mass function, discrete probability measure
 -/
+
+@[expose] public section
 
 
 noncomputable section
