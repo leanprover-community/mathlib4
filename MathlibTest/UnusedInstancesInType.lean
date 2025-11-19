@@ -11,7 +11,7 @@ warning: `foo` has the hypothesis:
   • [DecidableEq α] (#2)
 which is not used in the remainder of the type.
 
-Consider removing these hypotheses and using `classical` in the proof instead. For terms, consider using `open scoped Classical in` at the term level (not the command level).
+Consider removing this hypothesis and using `classical` in the proof instead. For terms, consider using `open scoped Classical in` at the term level (not the command level).
 
 Note: This linter can be disabled with `set_option linter.unusedDecidableInType false`
 -/
@@ -28,7 +28,7 @@ warning: `foo₂` has the hypothesis:
   • [(α : Type) → Decidable (Nonempty α)] (#2)
 which is not used in the remainder of the type.
 
-Consider removing these hypotheses and using `classical` in the proof instead. For terms, consider using `open scoped Classical in` at the term level (not the command level).
+Consider removing this hypothesis and using `classical` in the proof instead. For terms, consider using `open scoped Classical in` at the term level (not the command level).
 
 Note: This linter can be disabled with `set_option linter.unusedDecidableInType false`
 -/
@@ -56,7 +56,7 @@ warning: `foo₄` has the hypothesis:
   • [DecidableEq β] (#2)
 which is not used in the remainder of the type.
 
-Consider removing these hypotheses and using `classical` in the proof instead. For terms, consider using `open scoped Classical in` at the term level (not the command level).
+Consider removing this hypothesis and using `classical` in the proof instead. For terms, consider using `open scoped Classical in` at the term level (not the command level).
 
 Note: This linter can be disabled with `set_option linter.unusedDecidableInType false`
 -/
@@ -89,7 +89,7 @@ warning: `fooUsing₂` has the hypothesis:
   • [DecidablePred Nonempty] (#1)
 which is not used in the remainder of the type.
 
-Consider removing these hypotheses and using `classical` in the proof instead. For terms, consider using `open scoped Classical in` at the term level (not the command level).
+Consider removing this hypothesis and using `classical` in the proof instead. For terms, consider using `open scoped Classical in` at the term level (not the command level).
 
 Note: This linter can be disabled with `set_option linter.unusedDecidableInType false`
 -/
