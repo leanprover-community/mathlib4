@@ -3,7 +3,9 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Complex.JensenFormula
+module
+
+public import Mathlib.Analysis.Complex.JensenFormula
 
 /-!
 # The Counting Function of Value Distribution Theory
@@ -35,6 +37,8 @@ Approximation*][MR3156076] for a detailed discussion.
 - Discuss the counting function for rational functions, add a forward reference to the upcoming
   converse, formulated in terms of the Nevanlinna height.
 -/
+
+@[expose] public section
 
 open Function MeromorphicOn Metric Real Set
 
