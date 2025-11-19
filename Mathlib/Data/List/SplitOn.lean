@@ -76,24 +76,22 @@ theorem splitOnP_eq_single (h : ∀ x ∈ xs, ¬p x) : xs.splitOnP p = [xs] := b
     simp only [splitOnP_cons, h hd mem_cons_self, if_false, Bool.false_eq_true,
       modifyHead_cons, ih <| forall_mem_of_forall_mem_cons h]
 
-/-- When a list of the form `[...xs, sep, ...as]` is split on `p`,
+/-- When a list of the form `[...xs, sep, ...as]` is split at the `sep` element satisfying `p`,
 the result is the concatenation of `splitOnP` called on `xs` and `as` -/
-@[simp]
-theorem splitOnP_append_cons (l1 l2 : List α) (a : α) (hPa : p a = true) :
-    List.splitOnP p (l1 ++ a :: l2) = List.splitOnP p l1 ++ List.splitOnP p l2 := by
-  induction l1 with
-  | nil => simp [hPa]
+theorem splitOnP_append_cons (xs as : List α) (sep : α) (hsep : p sep) :
+    (xs ++ sep :: as).splitOnP p = List.splitOnP p xs ++ List.splitOnP p as := by
+  induction xs with
+  | nil => simp [hsep]
   | cons hd tl ih =>
     obtain ⟨hd1, tl1, h1'⟩ := List.exists_cons_of_ne_nil (List.splitOnP_ne_nil p tl)
     by_cases hPh : p hd <;> simp [*]
 
 /-- When a list of the form `[...xs, sep, ...as]` is split on `p`, the first element is `xs`,
   assuming no element in `xs` satisfies `p` but `sep` does satisfy `p` -/
-theorem splitOnP_first (h : ∀ x ∈ xs, ¬p x) (sep : α) (hsep : p sep) (as : List α) :
+theorem splitOnP_first (h : ∀ x ∈ xs, ¬p x) (sep : α) (hsep : p sep = true) (as : List α) :
     (xs ++ sep :: as).splitOnP p = xs :: as.splitOnP p := by
-  induction xs with
-  | nil => simp [hsep]
-  | cons hd tl ih => simp [h hd _, ih <| forall_mem_of_forall_mem_cons h]
+  rw [splitOnP_append_cons p xs as sep hsep, splitOnP_eq_single p xs h]
+  rfl
 
 /-- `intercalate [x]` is the left inverse of `splitOn x` -/
 theorem intercalate_splitOn (x : α) [DecidableEq α] : [x].intercalate (xs.splitOn x) = xs := by
