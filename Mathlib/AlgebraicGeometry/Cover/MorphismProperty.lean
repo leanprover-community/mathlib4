@@ -3,8 +3,10 @@ Copyright (c) 2024 Christian Merten, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+module
+
+public import Mathlib.AlgebraicGeometry.Sites.MorphismProperty
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Covers of schemes
@@ -22,6 +24,8 @@ know that these assumptions are satisfied for open immersions and hence the cove
 immersions can be used to deduce these assumptions in the general case.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

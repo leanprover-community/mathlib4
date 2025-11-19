@@ -3,11 +3,13 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Sébastien Gouëzel, Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
-import Mathlib.Analysis.Normed.Lp.PiLp
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.LinearAlgebra.UnitaryGroup
-import Mathlib.Util.Superscript
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
+public import Mathlib.Analysis.Normed.Lp.PiLp
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.UnitaryGroup
+public import Mathlib.Util.Superscript
 
 /-!
 # `L²` inner product space structure on finite products of inner product spaces
@@ -52,6 +54,8 @@ For consequences in infinite dimension (Hilbert bases, etc.), see the file
 `Analysis.InnerProductSpace.L2Space`.
 
 -/
+
+@[expose] public section
 
 
 open Module Real Set Filter RCLike Submodule Function Uniformity Topology NNReal ENNReal
@@ -119,7 +123,7 @@ macro_rules | `(!$p:subscript[$e:term,*]) => do
 
 /-- Unexpander for the `!₂[x, y, ...]` notation. -/
 @[app_delab WithLp.toLp]
-def EuclideanSpace.delabVecNotation : Delab :=
+meta def EuclideanSpace.delabVecNotation : Delab :=
   whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <| withOverApp 3 do
     -- check that the `WithLp.toLp _` is present
     let p : Term ← withNaryArg 0 <| delab

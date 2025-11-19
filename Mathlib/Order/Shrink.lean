@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Order.SuccPred.Basic
-import Mathlib.Logic.Small.Defs
+module
+
+public import Mathlib.Order.SuccPred.Basic
+public import Mathlib.Logic.Small.Defs
 
 /-!
 # Order instances on Shrink
@@ -13,6 +15,8 @@ If `α : Type v` is `u`-small, we transport various order related
 instances on `α` to `Shrink.{u} α`.
 
 -/
+
+@[expose] public section
 
 universe u v
 

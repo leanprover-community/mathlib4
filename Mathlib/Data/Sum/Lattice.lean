@@ -3,8 +3,10 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Sum.Order
-import Mathlib.Order.Hom.Lattice
+module
+
+public import Mathlib.Data.Sum.Order
+public import Mathlib.Order.Hom.Lattice
 
 /-!
 # Lexicographic sum of lattices
@@ -12,6 +14,8 @@ import Mathlib.Order.Hom.Lattice
 This file proves that we can combine two lattices `α` and `β` into a lattice `α ⊕ₗ β` where
 everything in `α` is declared smaller than everything in `β`.
 -/
+
+@[expose] public section
 
 open OrderDual
 

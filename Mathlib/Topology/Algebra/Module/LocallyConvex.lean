@@ -3,9 +3,11 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.Convex.Topology
-import Mathlib.Topology.Connected.LocPathConnected
-import Mathlib.Analysis.Convex.PathConnected
+module
+
+public import Mathlib.Analysis.Convex.Topology
+public import Mathlib.Topology.Connected.LocPathConnected
+public import Mathlib.Analysis.Convex.PathConnected
 
 /-!
 # Locally convex topological modules
@@ -31,6 +33,8 @@ In a module, this is equivalent to `0` satisfying such properties.
   bases generating a locally convex topology
 
 -/
+
+@[expose] public section
 
 assert_not_exists NormedSpace
 
