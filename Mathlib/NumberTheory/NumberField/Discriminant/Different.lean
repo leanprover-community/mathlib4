@@ -3,9 +3,11 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.NumberTheory.NumberField.Discriminant.Basic
-import Mathlib.RingTheory.DedekindDomain.LinearDisjoint
-import Mathlib.RingTheory.Ideal.Norm.RelNorm
+module
+
+public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
+public import Mathlib.RingTheory.DedekindDomain.LinearDisjoint
+public import Mathlib.RingTheory.Ideal.Norm.RelNorm
 
 /-!
 
@@ -22,6 +24,8 @@ import Mathlib.RingTheory.Ideal.Norm.RelNorm
   `|discr K₁| ^ [K₂ : ℚ] * |discr K₂| ^ [K₁ : ℚ]`.
 
 -/
+
+@[expose] public section
 
 namespace NumberField
 
@@ -135,8 +139,6 @@ theorem linearDisjoint_of_isGalois_isCoprime_discr (K₁ K₂ : IntermediateFiel
       refine Nat.one_lt_iff_ne_zero_and_ne_one.mpr ⟨Module.finrank_pos.ne', ?_⟩
       rwa [ne_eq, ← IntermediateField.finrank_eq_one_iff] at this
     exact Int.isUnit_iff_abs_eq.not.mpr <| by linarith [abs_discr_gt_two this]
-  let _ : Algebra ↥(K₁ ⊓ K₂) K₁ := RingHom.toAlgebra (inclusion inf_le_left).toRingHom
-  let _ : Algebra ↥(K₁ ⊓ K₂) K₂ := RingHom.toAlgebra (inclusion inf_le_right).toRingHom
   exact h.isUnit_of_dvd' (NumberField.discr_dvd_discr _ _) (NumberField.discr_dvd_discr _ _)
 
 open IntermediateField IsDedekindDomain

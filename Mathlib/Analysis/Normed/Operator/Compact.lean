@@ -3,8 +3,10 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.LocallyConvex.Bounded
-import Mathlib.Topology.Algebra.Module.StrongTopology
+module
+
+public import Mathlib.Analysis.LocallyConvex.Bounded
+public import Mathlib.Topology.Algebra.Module.StrongTopology
 
 /-!
 # Compact operators
@@ -46,6 +48,8 @@ coercing from continuous linear maps to linear maps often needs type ascriptions
 
 Compact operator
 -/
+
+@[expose] public section
 
 
 open Function Set Filter Bornology Metric Pointwise Topology
@@ -304,7 +308,7 @@ variable {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁] [Nontrivial
 @[continuity]
 theorem IsCompactOperator.continuous {f : M₁ →ₛₗ[σ₁₂] M₂} (hf : IsCompactOperator f) :
     Continuous f := by
-  letI : UniformSpace M₂ := IsTopologicalAddGroup.toUniformSpace _
+  letI : UniformSpace M₂ := IsTopologicalAddGroup.rightUniformSpace _
   haveI : IsUniformAddGroup M₂ := isUniformAddGroup_of_addCommGroup
   -- Since `f` is linear, we only need to show that it is continuous at zero.
   -- Let `U` be a neighborhood of `0` in `M₂`.

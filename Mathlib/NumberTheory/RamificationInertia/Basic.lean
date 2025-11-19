@@ -3,10 +3,12 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Dimension.DivisionRing
-import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
-import Mathlib.RingTheory.Finiteness.Quotient
-import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+module
+
+public import Mathlib.LinearAlgebra.Dimension.DivisionRing
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+public import Mathlib.RingTheory.Finiteness.Quotient
+public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 
 /-!
 # Ramification index and inertia degree
@@ -39,6 +41,8 @@ In this file, `e` stands for the ramification index and `f` for the inertia degr
 leaving `p` and `P` implicit.
 
 -/
+
+@[expose] public section
 
 
 namespace Ideal
@@ -162,7 +166,7 @@ lemma ramificationIdx_ne_one_iff (hp : map f p ≤ P) :
     have := Nat.find_min H (m := 1) (by omega)
     push_neg at this
     obtain ⟨k, hk, h1k⟩ := this
-    exact hk.trans (Ideal.pow_le_pow_right (Nat.succ_le.mpr h1k))
+    exact hk.trans (Ideal.pow_le_pow_right (Nat.succ_le_iff.mpr h1k))
   · intro he
     have := Nat.find_spec H 2 he
     omega
@@ -311,6 +315,15 @@ lemma inertiaDeg_map_eq [p.IsMaximal] (P : Ideal S)
     inertiaDeg p (P.map e) = inertiaDeg p P := by
   rw [show P.map e = _ from map_comap_of_equiv (e : S ≃+* S₁)]
   exact p.inertiaDeg_comap_eq (e : S ≃ₐ[R] S₁).symm P
+
+theorem inertiaDeg_bot [Nontrivial R] [IsDomain S] [Algebra.IsIntegral R S]
+    [hP : P.LiesOver (⊥ : Ideal R)] :
+    (⊥ : Ideal R).inertiaDeg P = finrank R S := by
+  rw [inertiaDeg, dif_pos (over_def P (⊥ : Ideal R)).symm]
+  replace hP : P = ⊥ := eq_bot_of_liesOver_bot _ P (h := hP)
+  rw [Algebra.finrank_eq_of_equiv_equiv (RingEquiv.quotientBot R).symm
+    ((quotEquivOfEq hP).trans (RingEquiv.quotientBot S)).symm]
+  rfl
 
 end DecEq
 
@@ -903,8 +916,8 @@ theorem sum_ramification_inertia {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥) :
       algebraMap_injective_of_field_isFractionRing R S K L, le_bot_iff]
   · exact finrank_quotient_map p K L
 
-theorem inertiaDeg_le_finrank [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsMaximal] (hp0 : p ≠ ⊥)
-    (P : Ideal S) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver p] :
+theorem inertiaDeg_le_finrank [NoZeroSMulDivisors R S] {p : Ideal R} [p.IsMaximal]
+    (P : Ideal S) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver p] (hp0 : p ≠ ⊥) :
     p.inertiaDeg P ≤ Module.finrank K L := by
   classical
   have hP : P ∈ primesOverFinset p S := (mem_primesOverFinset_iff hp0 _).mpr ⟨hP₁, hP₂⟩

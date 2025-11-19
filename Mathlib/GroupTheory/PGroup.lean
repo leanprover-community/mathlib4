@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
 -/
-import Mathlib.GroupTheory.Perm.Cycle.Type
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
+module
+
+public import Mathlib.GroupTheory.Perm.Cycle.Type
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 /-!
 # p-groups
@@ -13,6 +15,8 @@ This file contains a proof that if `G` is a `p`-group acting on a finite set `α
 then the number of fixed points of the action is congruent mod `p` to the cardinality of `α`.
 It also contains proofs of some corollaries of this lemma about existence of fixed points.
 -/
+
+@[expose] public section
 
 open Fintype MulAction
 
@@ -172,7 +176,7 @@ theorem card_modEq_card_fixedPoints : Nat.card α ≡ Nat.card (fixedPoints G α
       Eq.symm
         (Finset.sum_bij_ne_zero (fun a _ _ => Quotient.mk'' a.1) (fun _ _ _ => Finset.mem_univ _)
           (fun a₁ _ _ a₂ _ _ h =>
-            Subtype.eq (mem_fixedPoints'.mp a₂.2 a₁.1 (Quotient.exact' h)))
+            Subtype.ext (mem_fixedPoints'.mp a₂.2 a₁.1 (Quotient.exact' h)))
           (fun b => Quotient.inductionOn' b fun b _ hb => ?_) fun a ha _ => by
           rw [key, mem_fixedPoints_iff_card_orbit_eq_one.mp a.2])
     obtain ⟨k, hk⟩ := hG.card_orbit b

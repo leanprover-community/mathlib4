@@ -3,10 +3,12 @@ Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.NumberTheory.Cyclotomic.Discriminant
-import Mathlib.NumberTheory.NumberField.Discriminant.Different
-import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
-import Mathlib.RingTheory.Prime
+module
+
+public import Mathlib.NumberTheory.Cyclotomic.Discriminant
+public import Mathlib.NumberTheory.NumberField.Discriminant.Different
+public import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
+public import Mathlib.RingTheory.Prime
 
 /-!
 # Ring of integers of `p ^ n`-th cyclotomic fields
@@ -22,6 +24,8 @@ integers of a `p ^ n`-th cyclotomic extension of `ℚ`.
 * `IsCyclotomicExtension.Rat.absdiscr_prime_pow` and related results: the absolute discriminant
   of cyclotomic fields.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -361,7 +365,7 @@ theorem norm_toInteger_sub_one_eq_one {n : ℕ} [IsCyclotomicExtension {n} ℚ K
     eval_one_cyclotomic_not_prime_pow h₂, Int.cast_one]
 
 /-- The norm, relative to `ℤ`, of `ζ ^ p ^ s - 1` in a `p ^ (k + 1)`-th cyclotomic extension of `ℚ`
-is p ^ p ^ s` if `s ≤ k` and `p ^ (k - s + 1) ≠ 2`. -/
+is `p ^ p ^ s` if `s ≤ k` and `p ^ (k - s + 1) ≠ 2`. -/
 lemma norm_toInteger_pow_sub_one_of_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ (p ^ (k + 1))) {s : ℕ} (hs : s ≤ k) (htwo : p ^ (k - s + 1) ≠ 2) :
     Algebra.norm ℤ (hζ.toInteger ^ p ^ s - 1) = p ^ p ^ s := by
@@ -723,7 +727,7 @@ theorem natAbs_absdiscr [hn : NeZero n] [hK : IsCyclotomicExtension {n} ℚ K] :
     | zero => simp
     | succ k =>
       simpa only [Int.reduceNeg, add_tsub_cancel_right, Int.natAbs_mul, Int.natAbs_pow,
-        IsUnit.neg_iff, isUnit_one, Int.natAbs_of_isUnit, one_pow, Int.natAbs_cast, one_mul]
+        IsUnit.neg_iff, isUnit_one, Int.natAbs_of_isUnit, one_pow, Int.natAbs_natCast, one_mul]
         using natAbs_absdiscr_aux₁ p (k + 1) k.zero_lt_succ
   | coprime n₁ n₂ hn₁ hn₂ h hK₁ hK₂ =>
     have : NeZero n₁ := NeZero.of_gt hn₁

@@ -3,10 +3,12 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
-import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Factorization
-import Mathlib.RingTheory.RootsOfUnity.CyclotomicUnits
+module
+
+public import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
+public import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Factorization
+public import Mathlib.RingTheory.RootsOfUnity.CyclotomicUnits
 
 /-!
 # Ideals in cyclotomic fields
@@ -37,6 +39,8 @@ In this file, we prove results about ideals in cyclotomic extensions of `ℚ`.
   `p` does not divide `m`, then the ramification index of `p` in `ℚ(ζₙ)` is `p ^ (k - 1) * (p - 1)`.
 
 -/
+
+@[expose] public section
 
 namespace IsCyclotomicExtension.Rat
 

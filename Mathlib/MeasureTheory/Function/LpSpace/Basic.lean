@@ -3,10 +3,12 @@ Copyright (c) 2020 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Operator.NNNorm
-import Mathlib.MeasureTheory.Function.LpSeminorm.ChebyshevMarkov
-import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
-import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
+module
+
+public import Mathlib.Analysis.Normed.Operator.NNNorm
+public import Mathlib.MeasureTheory.Function.LpSeminorm.ChebyshevMarkov
+public import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
+public import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
 
 /-!
 # Lp space
@@ -53,6 +55,8 @@ The lemma `coeFn_add` states that the coercion of `f + g` coincides almost every
 of the coercions of `f` and `g`. All such lemmas use `coeFn` in their name, to distinguish the
 function coercion from the coercion to almost everywhere defined functions.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -288,7 +292,7 @@ theorem nnnorm_eq_zero_iff {f : Lp E p μ} (hp : 0 < p) : ‖f‖₊ = 0 ↔ f =
   cases hf with
   | inl hf =>
     rw [eLpNorm_eq_zero_iff (Lp.aestronglyMeasurable f) hp.ne.symm] at hf
-    exact Subtype.eq (AEEqFun.ext (hf.trans AEEqFun.coeFn_zero.symm))
+    exact Subtype.ext (AEEqFun.ext (hf.trans AEEqFun.coeFn_zero.symm))
   | inr hf =>
     exact absurd hf (eLpNorm_ne_top f)
 
