@@ -3,10 +3,12 @@ Copyright (c) 2022 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Patrick Stevens, Thomas Browning
 -/
-import Mathlib.Algebra.Order.Ring.GeomSum
-import Mathlib.Data.Nat.Choose.Central
-import Mathlib.Data.Nat.Digits.Lemmas
-import Mathlib.Data.Nat.Factorization.Basic
+module
+
+public import Mathlib.Algebra.Order.Ring.GeomSum
+public import Mathlib.Data.Nat.Choose.Central
+public import Mathlib.Data.Nat.Digits.Lemmas
+public import Mathlib.Data.Nat.Factorization.Basic
 
 /-!
 # Factorization of Binomial Coefficients
@@ -25,6 +27,8 @@ bounds in binomial coefficients. These include:
 
 These results appear in the [Erdős proof of Bertrand's postulate](aigner1999proofs).
 -/
+
+@[expose] public section
 
 open Finset List Finsupp
 

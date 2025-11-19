@@ -3,11 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Order.Max
-import Mathlib.Order.ULift
-import Mathlib.Tactic.ByCases
-import Mathlib.Tactic.Finiteness.Attr
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Order.Max
+public import Mathlib.Order.ULift
+public import Mathlib.Tactic.ByCases
+public import Mathlib.Tactic.Finiteness.Attr
+public import Mathlib.Util.AssertExists
 
 /-!
 # ⊤ and ⊥, bounded lattices and variants
@@ -23,6 +25,8 @@ instances for `Prop` and `fun`.
 * `BoundedOrder α`: Order with a top and bottom element.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Monotone
 
@@ -227,21 +231,15 @@ instance instOrderBot [LE α] [OrderTop α] : OrderBot αᵒᵈ where
   __ := inferInstanceAs (Bot αᵒᵈ)
   bot_le := @le_top α _ _
 
-@[simp]
-theorem ofDual_bot [Top α] : ofDual ⊥ = (⊤ : α) :=
-  rfl
+@[simp] lemma ofDual_bot [Top α] : ofDual ⊥ = (⊤ : α) := rfl
+@[simp] lemma ofDual_top [Bot α] : ofDual ⊤ = (⊥ : α) := rfl
+@[simp] lemma toDual_bot [Bot α] : toDual (⊥ : α) = ⊤ := rfl
+@[simp] lemma toDual_top [Top α] : toDual (⊤ : α) = ⊥ := rfl
 
-@[simp]
-theorem ofDual_top [Bot α] : ofDual ⊤ = (⊥ : α) :=
-  rfl
-
-@[simp]
-theorem toDual_bot [Bot α] : toDual (⊥ : α) = ⊤ :=
-  rfl
-
-@[simp]
-theorem toDual_top [Top α] : toDual (⊤ : α) = ⊥ :=
-  rfl
+@[simp] lemma ofDual_eq_bot [Bot α] {a : αᵒᵈ} : ofDual a = ⊥ ↔ a = ⊤ := .rfl
+@[simp] lemma ofDual_eq_top [Top α] {a : αᵒᵈ} : ofDual a = ⊤ ↔ a = ⊥ := .rfl
+@[simp] lemma toDual_eq_bot [Top α] {a : α} : toDual a = ⊥ ↔ a = ⊤ := .rfl
+@[simp] lemma toDual_eq_top [Bot α] {a : α} : toDual a = ⊤ ↔ a = ⊥ := .rfl
 
 end OrderDual
 

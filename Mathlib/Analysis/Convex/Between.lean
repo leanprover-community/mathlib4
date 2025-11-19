@@ -3,12 +3,14 @@ Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Algebra.Order.Interval.Set.Group
-import Mathlib.Analysis.Convex.Basic
-import Mathlib.Analysis.Convex.Segment
-import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Algebra.Order.Interval.Set.Group
+public import Mathlib.Analysis.Convex.Basic
+public import Mathlib.Analysis.Convex.Segment
+public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+public import Mathlib.Tactic.FieldSimp
 
 /-!
 # Betweenness in affine spaces
@@ -22,6 +24,8 @@ This file defines notions of a point in an affine space being between two given 
 * `Sbtw R x y z`: The point `y` is strictly between `x` and `z`.
 
 -/
+
+@[expose] public section
 
 
 variable (R : Type*) {V V' P P' : Type*}

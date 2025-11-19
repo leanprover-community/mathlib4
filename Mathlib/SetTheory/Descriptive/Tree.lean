@@ -3,7 +3,9 @@ Copyright (c) 2024 Sven Manthe. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sven Manthe
 -/
-import Mathlib.Order.CompleteLattice.SetLike
+module
+
+public import Mathlib.Order.CompleteLattice.SetLike
 
 /-!
 # Trees in the sense of descriptive set theory
@@ -15,6 +17,8 @@ sequences that are stable under taking prefixes.
 
 * `tree A`: a (possibly infinite) tree of depth at most `ω` with nodes in `A`
 -/
+
+@[expose] public section
 
 namespace Descriptive
 

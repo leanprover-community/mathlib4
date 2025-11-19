@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.SetTheory.Cardinal.HasCardinalLT
-import Mathlib.CategoryTheory.MorphismProperty.Basic
+module
+
+public import Mathlib.SetTheory.Cardinal.HasCardinalLT
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # Properties of morphisms that are bounded by a cardinal
@@ -14,6 +16,7 @@ Given `P : MorphismProperty C` and `κ : Cardinal`, we introduce a predicate
 
 -/
 
+@[expose] public section
 
 universe w v u
 
