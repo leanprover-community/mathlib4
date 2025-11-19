@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Data.Nat.SuccPred
-import Mathlib.Order.SuccPred.InitialSeg
-import Mathlib.SetTheory.Ordinal.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Data.Nat.SuccPred
+public import Mathlib.Order.SuccPred.InitialSeg
+public import Mathlib.SetTheory.Ordinal.Basic
 
 /-!
 # Ordinal arithmetic
@@ -44,6 +46,8 @@ Some properties of the operations are also used to discuss general tools on ordi
 
 Various other basic arithmetic results are given in `Principal.lean` instead.
 -/
+
+@[expose] public section
 
 assert_not_exists Field Module
 
@@ -728,7 +732,7 @@ theorem lt_mul_iff_of_isSuccLimit {a b c : Ordinal} (h : IsSuccLimit c) :
 alias lt_mul_of_limit := lt_mul_iff_of_isSuccLimit
 
 instance : PosMulStrictMono Ordinal where
-  elim a _b _c h := (isNormal_mul_right a.2).strictMono h
+  mul_lt_mul_of_pos_left _a ha := (isNormal_mul_right ha).strictMono
 
 @[deprecated mul_lt_mul_iff_right₀ (since := "2025-08-26")]
 theorem mul_lt_mul_iff_left {a b c : Ordinal} (a0 : 0 < a) : a * b < a * c ↔ b < c :=

@@ -3,10 +3,12 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Computability.Encoding
-import Mathlib.Logic.Small.List
-import Mathlib.ModelTheory.Syntax
-import Mathlib.SetTheory.Cardinal.Arithmetic
+module
+
+public import Mathlib.Computability.Encoding
+public import Mathlib.Logic.Small.List
+public import Mathlib.ModelTheory.Syntax
+public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 # Encodings and Cardinality of First-Order Syntax
@@ -31,6 +33,8 @@ import Mathlib.SetTheory.Cardinal.Arithmetic
   incompleteness
 
 -/
+
+@[expose] public section
 
 
 universe u v w u'
@@ -109,7 +113,7 @@ theorem card_le : #(L.Term α) ≤ max ℵ₀ #(α ⊕ (Σ i, L.Functions i)) :=
 theorem card_sigma : #(Σ n, L.Term (α ⊕ (Fin n))) = max ℵ₀ #(α ⊕ (Σ i, L.Functions i)) := by
   refine le_antisymm ?_ ?_
   · rw [mk_sigma]
-    refine (sum_le_iSup_lift _).trans ?_
+    refine (sum_le_lift_mk_mul_iSup _).trans ?_
     rw [mk_nat, lift_aleph0, mul_eq_max_of_aleph0_le_left le_rfl, max_le_iff,
       ciSup_le_iff' (bddAbove_range _)]
     · refine ⟨le_max_left _ _, fun i => card_le.trans ?_⟩

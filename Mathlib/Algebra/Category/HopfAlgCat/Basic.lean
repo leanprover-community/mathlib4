@@ -3,8 +3,10 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Category.BialgCat.Basic
-import Mathlib.RingTheory.HopfAlgebra.Basic
+module
+
+public import Mathlib.Algebra.Category.BialgCat.Basic
+public import Mathlib.RingTheory.HopfAlgebra.Basic
 
 /-!
 # The category of Hopf algebras over a commutative ring
@@ -16,6 +18,8 @@ This file mimics `Mathlib/LinearAlgebra/QuadraticForm/QuadraticModuleCat.lean`.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory
 
 universe v u
@@ -24,6 +28,7 @@ variable (R : Type u) [CommRing R]
 
 /-- The category of `R`-Hopf algebras. -/
 structure HopfAlgCat where
+  private mk ::
   /-- The underlying type. -/
   carrier : Type v
   [instRing : Ring carrier]
