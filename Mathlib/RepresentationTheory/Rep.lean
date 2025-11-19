@@ -59,6 +59,18 @@ instance (V : Rep k G) : Module k V := by
   change Module k ((forget₂ (Rep k G) (ModuleCat k)).obj V)
   infer_instance
 
+instance (V : Rep k G) : MulAction G V := Action.instMulAction V
+
+instance (V : Rep k G) : DistribMulAction G V where
+  smul_zero _ := map_zero _
+  smul_add _ := map_add _
+
+def Hom.toDistribMulActionHom {V W : Rep k G} (f : V ⟶ W) : V →+[G] W where
+  __ := f.hom.hom.toAddMonoidHom
+  map_smul' g x := congr($(f.comm g) x)
+
+instance {V W : Rep k G} : Coe (V ⟶ W) (V →+[G] W) := ⟨Hom.toDistribMulActionHom⟩
+
 /-- Specialize the existing `Action.ρ`, changing the type to `Representation k G V`.
 -/
 def ρ (V : Rep k G) : Representation k G V :=

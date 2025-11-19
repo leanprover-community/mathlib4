@@ -67,6 +67,7 @@ instance centerCharacteristic : (center G).Characteristic := by
   rw [← ϕ.injective.eq_iff, map_mul, map_mul]
   exact (hg.comm (ϕ h)).symm
 
+@[to_additive]
 theorem _root_.CommGroup.center_eq_top {G : Type*} [CommGroup G] : center G = ⊤ := by
   rw [eq_top_iff']
   intro x
@@ -75,6 +76,7 @@ theorem _root_.CommGroup.center_eq_top {G : Type*} [CommGroup G] : center G = �
   exact mul_comm y x
 
 /-- A group is commutative if the center is the whole group -/
+@[to_additive]
 def _root_.Group.commGroupOfCenterEqTop (h : center G = ⊤) : CommGroup G :=
   { ‹Group G› with
     mul_comm := by
