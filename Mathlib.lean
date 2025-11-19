@@ -12822,6 +12822,7 @@ public import Mathlib.RingTheory.AdicCompletion.Exactness
 public import Mathlib.RingTheory.AdicCompletion.Functoriality
 public import Mathlib.RingTheory.AdicCompletion.LocalRing
 public import Mathlib.RingTheory.AdicCompletion.Noetherian
+public import Mathlib.RingTheory.AdicCompletion.RingHom
 public import Mathlib.RingTheory.AdicCompletion.Topology
 public import Mathlib.RingTheory.Adjoin.Basic
 public import Mathlib.RingTheory.Adjoin.Dimension
