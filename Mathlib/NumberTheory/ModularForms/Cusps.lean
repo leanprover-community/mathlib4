@@ -3,18 +3,22 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
-import Mathlib.RingTheory.Localization.NumDen
-import Mathlib.Topology.Algebra.Order.ArchimedeanDiscrete
-import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
+public import Mathlib.RingTheory.Localization.NumDen
+public import Mathlib.Topology.Algebra.Order.ArchimedeanDiscrete
+public import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
 
 /-!
 # Cusps
 
 We define the cusps of a subgroup of `GL(2, ℝ)` as the fixed points of parabolic elements.
 -/
+
+@[expose] public section
 
 open Matrix SpecialLinearGroup GeneralLinearGroup Filter Polynomial OnePoint
 
