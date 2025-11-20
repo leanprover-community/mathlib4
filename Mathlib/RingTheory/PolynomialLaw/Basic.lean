@@ -9,8 +9,8 @@ public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.RingTheory.Congruence.Hom
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.TensorProduct.DirectLimitFG
--- public import Mathlib.LinearAlgebra.DFinsupp
--- public import Mathlib.LinearAlgebra.TensorProduct.Associator
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.LinearAlgebra.TensorProduct.Associator
 
 /-! # Polynomial laws on modules
 
@@ -50,7 +50,7 @@ Annales scientifiques de l’École Normale Supérieure 80 (3): 213‑348](Roby-
 
 @[expose] public section
 
-universe u
+universe u v w
 
 noncomputable section PolynomialLaw
 
@@ -282,14 +282,14 @@ variable {R S T : Type*} [CommSemiring R]
 theorem AlgHom.factor (φ : S →ₐ[R] T) :
     φ = φ.range.val.comp
       ((RingCon.quotientKerEquivRangeₐ φ).toAlgHom.comp
-        ((RingCon.ker φ).mk'ₐ (S := R))) := by aesop
+        ((RingCon.ker φ.toRingHom).mkₐ R)) := by aesop
 
 theorem AlgHom.comp_rangeRestrict :
     (Subalgebra.val _).comp φ.rangeRestrict = φ := by aesop
 
 theorem RingCon.quotientKerEquivRangeₐ_mk :
     (RingCon.quotientKerEquivRangeₐ φ).toAlgHom.comp
-      (RingCon.mk'ₐ R (RingCon.ker φ)) = φ.rangeRestrict := by
+      (RingCon.mkₐ R (RingCon.ker φ.toRingHom)) = φ.rangeRestrict := by
     aesop
 
 theorem RingCon.kerLiftₐ_eq_val_comp_Equiv :
@@ -435,11 +435,13 @@ theorem toFunLifted_factorsThrough_π :
   set u := rTensor M (φ R s).rangeRestrict.toLinearMap p with hu
   have uFG : Subalgebra.FG (R := R) (φ R s).range := by
     rw [← Algebra.map_top]
-    exact Subalgebra.FG.map _ (Algebra.FiniteType.mvPolynomial R (Fin s.card)).out
+    exact Subalgebra.FG.map _ Algebra.FiniteType.out
+    -- (Algebra.FiniteType.mvPolynomial R (Fin s.card)).out
   set u' := rTensor M (φ R s').rangeRestrict.toLinearMap p' with hu'
   have u'FG : Subalgebra.FG (R := R) (φ R s').range := by
     rw [← Algebra.map_top]
-    exact Subalgebra.FG.map _ (Algebra.FiniteType.mvPolynomial R (Fin s'.card)).out
+    exact Subalgebra.FG.map _ Algebra.FiniteType.out
+    -- (Algebra.FiniteType.mvPolynomial R (Fin s'.card)).out
   have huu' : rTensor M (Subalgebra.val _).toLinearMap u =
     rTensor M (Subalgebra.val _).toLinearMap u' := by
     simp only [π] at h
