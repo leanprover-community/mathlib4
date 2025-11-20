@@ -3,15 +3,16 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.RingTheory.Congruence.Basic
-import Mathlib.Algebra.Ring.Subsemiring.Basic
-import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.Algebra.RingQuot
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.RingTheory.Congruence.Basic
+public import Mathlib.Algebra.Ring.Subsemiring.Basic
+public import Mathlib.Algebra.Ring.Subring.Basic
+public import Mathlib.Algebra.RingQuot
 
 /-!
 # Congruence relations and ring homomorphisms
@@ -45,6 +46,7 @@ congruence, congruence relation, quotient, quotient by congruence relation, ring
 quotient ring
 -/
 
+@[expose] public section
 
 variable {M : Type*} {N : Type*} {P : Type*}
 
