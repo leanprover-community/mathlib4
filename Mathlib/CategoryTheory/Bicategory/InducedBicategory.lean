@@ -47,6 +47,7 @@ instance hasCoeToSort {α : Sort*} [CoeSort C α] : CoeSort (InducedBicategory C
 /-- `InducedBicategory.Hom X Y` is the type of morphisms between `X` and `Y` viewed as objects of
 the bicategory `B`. This is given a `CategoryStruct` instance below, where the identity and
 composition is induced from `C`. -/
+@[ext]
 structure Hom (X Y : InducedBicategory C F) where
   /-- Construct a morphism in `InducedBicategory C F` from a morhism in `C`. -/
   mkHom ::
@@ -59,27 +60,50 @@ instance categoryStruct : CategoryStruct (InducedBicategory C F) where
   id X := ⟨𝟙 (F X)⟩
   comp u v := ⟨u.hom ≫ v.hom⟩
 
+@[ext]
+lemma hom_ext {X Y : InducedBicategory C F} {f g : X ⟶ Y} (h : f.hom = g.hom) : f = g :=
+  Hom.ext h
+
+/-- `InducedBicategory.Hom X Y` is the type of morphisms between `X` and `Y` viewed as objects of
+the bicategory `B`. This is given a `CategoryStruct` instance below, where the identity and
+composition is induced from `C`. -/
+@[ext]
+structure Hom₂ {X Y : InducedBicategory C F} (f g : X ⟶ Y) where
+  /-- The 2-morphism in `C` underlying the 2-morphism in `InducedBicategory C F`. -/
+  hom : f.hom ⟶ g.hom
+
 @[simps!]
 instance Hom.category (X Y : InducedBicategory C F) : Category (X ⟶ Y) where
-  Hom f g := f.hom ⟶ g.hom
-  id f := 𝟙 f.hom
-  comp u v := u ≫ v
+  Hom f g := Hom₂ f g
+  id f := ⟨𝟙 f.hom⟩
+  comp u v := ⟨u.hom ≫ v.hom⟩
+
+@[ext]
+lemma hom₂_ext {X Y : InducedBicategory C F} {f g : X ⟶ Y} {η θ : f ⟶ g} (h : η.hom = θ.hom) :
+    η = θ :=
+  Hom₂.ext h
+
+/-- Synonym for constructor of `Hom2` where the 1-morphisms `f` and `g` lie in `B` and not `Bᵒᵖ`. -/
+@[simps]
+def mkHom₂ {a b : InducedBicategory C F} {f g : a ⟶ b} (η : f.hom ⟶ g.hom) : f ⟶ g :=
+  ⟨η⟩
 
 /-- Constructor for 2-isomorphisms in the induced bicategory. -/
 @[simps!]
 def isoMk {X Y : InducedBicategory C F} {f g : X ⟶ Y} (φ : f.hom ≅ g.hom) : f ≅ g where
-  hom := φ.hom
-  inv := φ.inv
+  hom := mkHom₂ φ.hom
+  inv := mkHom₂ φ.inv
 
 @[simps!]
 instance bicategory : Bicategory (InducedBicategory C F) where
   __ := categoryStruct
-  whiskerLeft {_ _ _} h {_ _} η := h.hom ◁ η
-  whiskerRight {_ _ _} {_ _} η h := η ▷ h.hom
+  whiskerLeft {_ _ _} h {_ _} η := mkHom₂ <| h.hom ◁ Hom₂.hom η
+  whiskerRight {_ _ _} {_ _} η h := mkHom₂ <| (Hom₂.hom η) ▷ h.hom
   associator x y z := isoMk (α_ x.hom y.hom z.hom)
   leftUnitor x := isoMk (λ_ x.hom)
   rightUnitor x := isoMk (ρ_ x.hom)
-  whisker_exchange := whisker_exchange
+  -- TODO: could whisker_exchange be added to aesop (or grind) in a non loop-y way?
+  whisker_exchange {_ _ _ _ _ _ _} η θ := by ext; simp; exact whisker_exchange _ _
 
 attribute [-simp] bicategory_comp_hom bicategory_Hom
 
@@ -93,7 +117,7 @@ def inducedPseudofunctor : StrictPseudofunctor (InducedBicategory C F) C :=
   StrictPseudofunctor.mk' {
     obj X := F X
     map f := f.hom
-    map₂ η := η }
+    map₂ η := η.hom }
 
 end
 
