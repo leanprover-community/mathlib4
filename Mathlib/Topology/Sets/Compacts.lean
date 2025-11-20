@@ -231,18 +231,23 @@ theorem coe_equiv_apply_eq_preimage (f : α ≃ₜ β) (K : Compacts α) :
 
 /-- The product of two `TopologicalSpace.Compacts`, as a `TopologicalSpace.Compacts` in the product
 space. -/
-protected def prod (K : Compacts α) (L : Compacts β) : Compacts (α × β) where
-  carrier := K ×ˢ L
-  isCompact' := IsCompact.prod K.2 L.2
+instance : SProd (Compacts α) (Compacts β) (Compacts (α × β)) where
+  sprod K L := { carrier := K ×ˢ L, isCompact' := IsCompact.prod K.2 L.2 }
+
+/-- The product of two `TopologicalSpace.Compacts`, as a `TopologicalSpace.Compacts` in the product
+space. -/
+@[deprecated "Use `K ×ˢ L` instead" (since := "2025-11-15")]
+protected abbrev prod (K : Compacts α) (L : Compacts β) : Compacts (α × β) :=
+  K ×ˢ L
 
 @[simp]
 theorem coe_prod (K : Compacts α) (L : Compacts β) :
-    (K.prod L : Set (α × β)) = (K : Set α) ×ˢ (L : Set β) :=
+    (K ×ˢ L : Compacts (α × β)) = (K : Set α) ×ˢ (L : Set β) :=
   rfl
 
 @[simp]
 theorem singleton_prod_singleton (x : α) (y : β) :
-    Compacts.prod {x} {y} = {(x, y)} :=
+    ({x} ×ˢ {y} : Compacts (α × β)) = {(x, y)} :=
   Compacts.ext Set.singleton_prod_singleton
 
 -- todo: add `pi`
@@ -389,6 +394,42 @@ instance [Nontrivial α] : Nontrivial (NonemptyCompacts α) :=
 theorem nontrivial_iff : Nontrivial (NonemptyCompacts α) ↔ Nontrivial α := by
   simp_rw [← not_subsingleton_iff_nontrivial, subsingleton_iff]
 
+/-- The image of a nonempty compact set under a continuous function. -/
+@[simps! toCompacts]
+protected def map (f : α → β) (hf : Continuous f) (K : NonemptyCompacts α) : NonemptyCompacts β :=
+  ⟨K.toCompacts.map f hf, K.nonempty.image f⟩
+
+@[simp, norm_cast]
+theorem coe_map {f : α → β} (hf : Continuous f) (s : NonemptyCompacts α) :
+    (s.map f hf : Set β) = f '' s :=
+  rfl
+
+@[simp]
+theorem map_id (K : NonemptyCompacts α) : K.map id continuous_id = K := by
+  ext
+  simp
+
+theorem map_comp (f : β → γ) (g : α → β) (hf : Continuous f) (hg : Continuous g)
+    (K : NonemptyCompacts α) : K.map (f ∘ g) (hf.comp hg) = (K.map g hg).map f hf := by
+  ext
+  simp
+
+@[simp]
+theorem map_singleton {f : α → β} (hf : Continuous f) (x : α) :
+    NonemptyCompacts.map f hf {x} = {f x} := by
+  ext
+  simp
+
+theorem map_injective {f : α → β} (hf : Continuous f) (hf' : Function.Injective f) :
+    Function.Injective (NonemptyCompacts.map f hf) :=
+  .of_comp (f := SetLike.coe) <| hf'.image_injective.comp SetLike.coe_injective
+
+@[simp]
+theorem map_injective_iff {f : α → β} (hf : Continuous f) :
+    Function.Injective (NonemptyCompacts.map f hf) ↔ Function.Injective f :=
+  ⟨fun h => .of_comp (f := ({·} : β → NonemptyCompacts β)) fun _ _ _ ↦
+    singleton_injective (h (by simp_all)), map_injective hf⟩
+
 instance toCompactSpace {s : NonemptyCompacts α} : CompactSpace s :=
   isCompact_iff_compactSpace.1 s.isCompact
 
@@ -397,17 +438,24 @@ instance toNonempty {s : NonemptyCompacts α} : Nonempty s :=
 
 /-- The product of two `TopologicalSpace.NonemptyCompacts`, as a `TopologicalSpace.NonemptyCompacts`
 in the product space. -/
-protected def prod (K : NonemptyCompacts α) (L : NonemptyCompacts β) : NonemptyCompacts (α × β) :=
-  { K.toCompacts.prod L.toCompacts with nonempty' := K.nonempty.prod L.nonempty }
+instance : SProd (NonemptyCompacts α) (NonemptyCompacts β) (NonemptyCompacts (α × β)) where
+  sprod K L := { K.toCompacts ×ˢ L.toCompacts with nonempty' := K.nonempty.prod L.nonempty }
+
+/-- The product of two `TopologicalSpace.NonemptyCompacts`, as a `TopologicalSpace.NonemptyCompacts`
+in the product space. -/
+@[deprecated "Use `K ×ˢ L` instead" (since := "2025-11-15")]
+protected abbrev prod (K : NonemptyCompacts α) (L : NonemptyCompacts β) :
+    NonemptyCompacts (α × β) :=
+  K ×ˢ L
 
 @[simp]
 theorem coe_prod (K : NonemptyCompacts α) (L : NonemptyCompacts β) :
-    (K.prod L : Set (α × β)) = (K : Set α) ×ˢ (L : Set β) :=
+    (K ×ˢ L : NonemptyCompacts (α × β)) = (K : Set α) ×ˢ (L : Set β) :=
   rfl
 
 @[simp]
 theorem singleton_prod_singleton (x : α) (y : β) :
-    NonemptyCompacts.prod {x} {y} = {(x, y)} :=
+    ({x} ×ˢ {y} : NonemptyCompacts (α × β)) = {(x, y)} :=
   NonemptyCompacts.ext Set.singleton_prod_singleton
 
 end NonemptyCompacts
@@ -526,16 +574,23 @@ instance nonempty' [WeaklyLocallyCompactSpace α] [Nonempty α] : Nonempty (Posi
 
 /-- The product of two `TopologicalSpace.PositiveCompacts`, as a `TopologicalSpace.PositiveCompacts`
 in the product space. -/
-protected def prod (K : PositiveCompacts α) (L : PositiveCompacts β) :
-    PositiveCompacts (α × β) where
-  toCompacts := K.toCompacts.prod L.toCompacts
-  interior_nonempty' := by
-    simp only [Compacts.carrier_eq_coe, Compacts.coe_prod, interior_prod_eq]
-    exact K.interior_nonempty.prod L.interior_nonempty
+instance : SProd (PositiveCompacts α) (PositiveCompacts β) (PositiveCompacts (α × β)) where
+  sprod K L :=
+    { toCompacts := K.toCompacts ×ˢ L.toCompacts
+      interior_nonempty' := by
+        simp only [Compacts.carrier_eq_coe, Compacts.coe_prod, interior_prod_eq]
+        exact K.interior_nonempty.prod L.interior_nonempty }
+
+/-- The product of two `TopologicalSpace.PositiveCompacts`, as a `TopologicalSpace.PositiveCompacts`
+in the product space. -/
+@[deprecated "Use `K ×ˢ L` instead" (since := "2025-11-15")]
+protected abbrev prod (K : PositiveCompacts α) (L : PositiveCompacts β) :
+    PositiveCompacts (α × β) :=
+  K ×ˢ L
 
 @[simp]
 theorem coe_prod (K : PositiveCompacts α) (L : PositiveCompacts β) :
-    (K.prod L : Set (α × β)) = (K : Set α) ×ˢ (L : Set β) :=
+    (K ×ˢ L : PositiveCompacts (α × β)) = (K : Set α) ×ˢ (L : Set β) :=
   rfl
 
 end PositiveCompacts
@@ -682,12 +737,19 @@ theorem map_comp (f : β → γ) (g : α → β) (hf : Continuous f) (hg : Conti
 
 /-- The product of two `TopologicalSpace.CompactOpens`, as a `TopologicalSpace.CompactOpens` in the
 product space. -/
-protected def prod (K : CompactOpens α) (L : CompactOpens β) : CompactOpens (α × β) :=
-  { K.toCompacts.prod L.toCompacts with isOpen' := K.isOpen.prod L.isOpen }
+instance : SProd (CompactOpens α) (CompactOpens β) (CompactOpens (α × β)) where
+  sprod K L := { K.toCompacts ×ˢ L.toCompacts with isOpen' := K.isOpen.prod L.isOpen }
+
+/-- The product of two `TopologicalSpace.CompactOpens`, as a `TopologicalSpace.CompactOpens` in the
+product space. -/
+@[deprecated "Use `K ×ˢ L` instead" (since := "2025-11-15")]
+protected abbrev prod (K : CompactOpens α) (L : CompactOpens β) :
+    CompactOpens (α × β) :=
+  K ×ˢ L
 
 @[simp]
 theorem coe_prod (K : CompactOpens α) (L : CompactOpens β) :
-    (K.prod L : Set (α × β)) = (K : Set α) ×ˢ (L : Set β) :=
+    (K ×ˢ L : CompactOpens (α × β)) = (K : Set α) ×ˢ (L : Set β) :=
   rfl
 
 end CompactOpens
