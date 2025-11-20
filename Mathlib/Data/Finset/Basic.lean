@@ -121,9 +121,7 @@ protected lemma Nontrivial.erase_nonempty (hs : s.Nontrivial) : (s.erase a).None
 
 @[simp] lemma erase_nonempty (ha : a ∈ s) : (s.erase a).Nonempty ↔ s.Nontrivial := by
   simp only [Finset.Nonempty, mem_erase, and_comm (b := _ ∈ _)]
-  refine ⟨?_, fun hs ↦ hs.exists_ne a⟩
-  rintro ⟨b, hb, hba⟩
-  exact ⟨_, hb, _, ha, hba⟩
+  exact ⟨fun ⟨b, hb, hba⟩ ↦ ⟨_, hb, _, ha, hba⟩, fun hs ↦ hs.exists_ne a⟩
 
 @[simp]
 theorem erase_singleton (a : α) : ({a} : Finset α).erase a = ∅ := by grind
@@ -154,18 +152,17 @@ theorem ssubset_iff_exists_subset_erase {s t : Finset α} : s ⊂ t ↔ ∃ a �
   grind
 
 theorem erase_ssubset_insert (s : Finset α) (a : α) : s.erase a ⊂ insert a s :=
-  ssubset_iff_exists_subset_erase.2 <| by
-    exact ⟨a, mem_insert_self _ _, by grw [← subset_insert]⟩
+  ssubset_iff_exists_subset_erase.2 ⟨a, mem_insert_self _ _, by grw [← subset_insert]⟩
 
 theorem erase_cons {s : Finset α} {a : α} (h : a ∉ s) : (s.cons a h).erase a = s := by grind
 
 theorem subset_insert_iff {a : α} {s t : Finset α} : s ⊆ insert a t ↔ erase s a ⊆ t := by grind
 
 theorem erase_insert_subset (a : α) (s : Finset α) : erase (insert a s) a ⊆ s :=
-  subset_insert_iff.1 <| Subset.rfl
+  subset_insert_iff.1 Subset.rfl
 
 theorem insert_erase_subset (a : α) (s : Finset α) : s ⊆ insert a (erase s a) :=
-  subset_insert_iff.2 <| Subset.rfl
+  subset_insert_iff.2 Subset.rfl
 
 theorem subset_insert_iff_of_notMem (h : a ∉ s) : s ⊆ insert a t ↔ s ⊆ t := by
   rw [subset_insert_iff, erase_eq_of_notMem h]
@@ -186,8 +183,7 @@ lemma Nontrivial.exists_cons_eq {s : Finset α} (hs : s.Nontrivial) :
   classical
   obtain ⟨a, ha, b, hb, hab⟩ := hs
   have : b ∈ s.erase a := mem_erase.2 ⟨hab.symm, hb⟩
-  refine ⟨(s.erase a).erase b, a, ?_, b, ?_, ?_, ?_⟩ <;>
-    simp [insert_erase this, insert_erase ha, *]
+  refine ⟨(s.erase a).erase b, a, ?_, b, ?_, ?_, ?_⟩ <;> simp [insert_erase ha, *]
 
 /-! ### sdiff -/
 
