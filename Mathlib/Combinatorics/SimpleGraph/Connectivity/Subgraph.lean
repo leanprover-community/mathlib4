@@ -606,11 +606,10 @@ lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.N
 
 end induced_subgraphs
 
-protected lemma Connected.toSubgraph {H : SimpleGraph V} (h : H ≤ G) (hconn : H.Connected) :
-    (toSubgraph H h).Connected := by
-  obtain ⟨hpreconn, _⟩ := hconn
-  simp_all only [Subgraph.connected_iff_forall_exists_walk_subgraph, toSubgraph_verts,
-    Set.univ_nonempty, Set.mem_univ, forall_const, true_and]
+protected lemma Preconnected.toSubgraph {H : SimpleGraph V} (h : H ≤ G)
+    (hpreconn : H.Preconnected) : (toSubgraph H h).Preconnected := by
+  simp_all only [Subgraph.preconnected_iff_forall_exists_walk_subgraph, toSubgraph_verts,
+    Set.mem_univ, forall_const]
   intro u v
   obtain ⟨p, _⟩ := hpreconn.set_univ_walk_nonempty u v
   use p.transfer G (fun e he ↦ edgeSet_subset_edgeSet.mpr h (p.edges_subset_edgeSet he))
@@ -619,6 +618,12 @@ protected lemma Connected.toSubgraph {H : SimpleGraph V} (h : H ≤ G) (hconn : 
   · intro x y hxy
     rw [Walk.adj_toSubgraph_iff_mem_edges, Walk.edges_transfer] at hxy
     exact p.edges_subset_edgeSet hxy
+
+protected lemma Connected.toSubgraph {H : SimpleGraph V} (h : H ≤ G) (hconn : H.Connected) :
+    (toSubgraph H h).Connected := by
+  obtain ⟨hpreconn, _⟩ := hconn
+  refine Subgraph.connected_iff.mpr ⟨hpreconn.toSubgraph h, ?_⟩
+  simp_all only [toSubgraph_verts, Set.univ_nonempty]
 
 namespace Subgraph
 
