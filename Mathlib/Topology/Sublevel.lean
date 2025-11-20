@@ -3,8 +3,9 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, Anatole Dedecker
 -/
+module
 
-import Mathlib.Topology.Semicontinuous
+public import Mathlib.Topology.Semicontinuous
 
 /-! # Sublevel sets
 
@@ -39,6 +40,8 @@ import Mathlib.Topology.Semicontinuous
   a finite sub-intersection is already empty.
 
 -/
+
+@[expose] public section
 
 open Function
 
