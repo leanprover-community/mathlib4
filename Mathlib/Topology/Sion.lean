@@ -3,11 +3,12 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, Anatole Dedecker
 -/
+module
 
-import Mathlib.Analysis.Convex.Quasiconvex
-import Mathlib.Analysis.Convex.SaddlePoint
-import Mathlib.Topology.Instances.EReal.Lemmas
-import Mathlib.Topology.Sublevel
+public import Mathlib.Analysis.Convex.Quasiconvex
+public import Mathlib.Analysis.Convex.SaddlePoint
+public import Mathlib.Topology.Instances.EReal.Lemmas
+public import Mathlib.Topology.Sublevel
 
 /-! # Formalization of the von Neumann Sion theorem
 
@@ -56,6 +57,8 @@ Explicit the classical particular cases (in particular, von Neumann)
   “Elementary Proof for Sion’s Minimax Theorem”. *Kodai Mathematical Journal* 11 (1).]
 
 -/
+
+@[expose] public section
 
 open Set Filter
 
