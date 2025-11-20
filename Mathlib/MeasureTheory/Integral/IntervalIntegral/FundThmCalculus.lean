@@ -1178,6 +1178,11 @@ theorem integral_eq_sub_of_hasDerivAt_of_tendsto (hab : a < b) {fa fb}
       filter_upwards [Ioo_mem_nhdsLT hab] with _ hz using (update_of_ne hz.1.ne' _ _).symm
   simpa [F, hab.ne, hab.ne'] using integral_eq_sub_of_hasDerivAt_of_le hab.le hcont Fderiv hint
 
+theorem integral_derivWithin_eq_sub (hderiv : DifferentiableOn ℝ f (uIcc a b))
+    (hint : IntervalIntegrable (derivWithin f (uIcc a b)) volume a b) :
+    ∫ y in a..b, derivWithin f (uIcc a b) y = f b - f a :=
+  integral_eq_sub_of_hasDerivWithinAt (fun x hx => (hderiv x hx).hasDerivWithinAt) hint
+
 /-- Fundamental theorem of calculus-2: If `f : ℝ → E` is differentiable on `[a, b]` and
 its derivative is integrable on `[a, b]`, then `∫ y in a..b, deriv f y` equals `f b - f a`.
 
@@ -1191,8 +1196,7 @@ theorem integral_deriv_eq_sub (hderiv : DifferentiableOn ℝ f (uIcc a b))
     refine fun x hx => ((hderiv x (uIoo_subset_uIcc_self hx)).hasDerivWithinAt.hasDerivAt ?_).deriv
     exact Icc_mem_nhds hx.1 hx.2
   rw [intervalIntegral.integral_congr_ae_restrict ae_eq]
-  exact integral_eq_sub_of_hasDerivWithinAt (fun x hx => (hderiv x hx).hasDerivWithinAt)
-    (hint.congr_ae ae_eq)
+  exact integral_derivWithin_eq_sub hderiv (hint.congr_ae ae_eq)
 
 theorem integral_deriv_eq_sub' (f) (hderiv : deriv f = f') (hdiff : DifferentiableOn ℝ f (uIcc a b))
     (hcont : ContinuousOn f' (uIcc a b)) : ∫ y in a..b, f' y = f b - f a := by
