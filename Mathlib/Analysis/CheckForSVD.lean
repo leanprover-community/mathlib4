@@ -463,7 +463,8 @@ theorem UhU_diag_core {A : Matrix (Fin m) (Fin n) ℂ} (σ : Fin n → ℝ)
             simp [Matrix.mul_assoc, Matrix.conjTranspose_mul, hSigmainv_star]
     _ = SigmaPinvOf σ * (SigmaOf σ * SigmaOf σ) * SigmaPinvOf σ := by
       simpa [Matrix.mul_assoc] using congrArg (fun X => (SigmaPinvOf σ) * X * (SigmaPinvOf σ)) hBHB
-    _ = (SigmaPinvOf σ * SigmaOf σ) * (SigmaOf σ * SigmaPinvOf σ) := by simp [Matrix.mul_assoc]
+    _ = (SigmaPinvOf σ * SigmaOf σ) * (SigmaOf σ * SigmaPinvOf σ) := by
+      simp [Matrix.mul_assoc]
     _ = diagonal (fun i => if 0 < σ i then (1 : ℂ) else 0) := by
       -- reduce to the product of two identical diagonal idempotents
       have h1 := SigmaPinv_mul_Sigma_diag σ
@@ -489,8 +490,6 @@ theorem UhU_diag_core {A : Matrix (Fin m) (Fin n) ℂ} (σ : Fin n → ℝ)
 
 /-! ### Rectangular SVD - extend to full unitary U and rectangular Σ -/
 
-
-
 theorem exists_rectSVD (A : Matrix (Fin m) (Fin n) ℂ) {h : n ≤ m} :
     ∃ (U : Matrix (Fin m) (Fin m) ℂ) (σ : Fin n → ℝ)
       (V : Matrix (Fin n) (Fin n) ℂ),
@@ -509,7 +508,8 @@ theorem exists_rectSVD (A : Matrix (Fin m) (Fin n) ℂ) {h : n ≤ m} :
   have hVVh : V * Vᴴ = (1 : Matrix (Fin n) (Fin n) ℂ) := by
     have : V ∈ Matrix.unitaryGroup (Fin n) ℂ := Uunit.property
     exact (Matrix.mem_unitaryGroup_iff).1 this
-  let Sev : Matrix (Fin n) (Fin n) ℂ := diagonal (fun i => Complex.ofReal (hHherm.eigenvalues i))
+  let Sev : Matrix (Fin n) (Fin n) ℂ :=
+    diagonal (fun i => Complex.ofReal (hHherm.eigenvalues i))
   have hH_spec : Aᴴ * A = V * Sev * Vᴴ :=
     hHherm.spectral_theorem
   have h_eval_nonneg : ∀ i : Fin n,
@@ -517,7 +517,8 @@ theorem exists_rectSVD (A : Matrix (Fin m) (Fin n) ℂ) {h : n ≤ m} :
     have hpsd : (Aᴴ * A).PosSemidef := Matrix.posSemidef_conjTranspose_mul_self A
     intro i
     exact Matrix.PosSemidef.eigenvalues_nonneg (n := Fin n) (A := Aᴴ * A) hpsd i
-  let σ : Fin n → ℝ := fun i => Real.sqrt ((Matrix.IsHermitian.eigenvalues (A := Aᴴ * A) hHherm) i)
+  let σ : Fin n → ℝ :=
+    fun i => Real.sqrt ((Matrix.IsHermitian.eigenvalues (A := Aᴴ * A) hHherm) i)
   have hσ_nonneg : ∀ j : Fin n, 0 ≤ σ j := by
     intro j
     exact Real.sqrt_nonneg _
@@ -544,12 +545,14 @@ theorem exists_rectSVD (A : Matrix (Fin m) (Fin n) ℂ) {h : n ≤ m} :
       _ = 1 * Sev * 1 := by simp [hVhV]
       _ = Sev := by simp
   -- compute the pseudofactorization A = (A V Σ⁺) Σ Vᴴ as in the thin case
-  have hD_diag : (SigmaPinvOf σ * Sσ) = diagonal (fun i : Fin n => if 0 < σ i then (1 : ℂ) else 0) := by
+  have hD_diag : (SigmaPinvOf σ * Sσ)
+      = diagonal (fun i : Fin n => if 0 < σ i then (1 : ℂ) else 0) := by
     simp [Sσ, SigmaPinv_mul_Sigma_diag (n := n) σ]
   have hB_eq_BD : B = B * (SigmaPinvOf σ * Sσ) := by
     classical
     ext i j
-    have hMul : (B * (SigmaPinvOf σ * Sσ)) i j = B i j * (if 0 < σ j then (1 : ℂ) else 0) := by
+    have hMul : (B * (SigmaPinvOf σ * Sσ)) i j
+        = B i j * (if 0 < σ j then (1 : ℂ) else 0) := by
       simp [Matrix.mul_apply, Matrix.diagonal, hD_diag]
     by_cases hpos : 0 < σ j
     · simp [hpos, hMul]
@@ -565,7 +568,8 @@ theorem exists_rectSVD (A : Matrix (Fin m) (Fin n) ℂ) {h : n ≤ m} :
       have hBB0 : (Bᴴ * B) j j = 0 := by simpa [hBHB] using hSev0
       have hsum : (Bᴴ * B) j j = dotProduct (star (fun i => B i j)) (fun i => B i j) := by
         simp [Matrix.mul_apply, Matrix.conjTranspose_apply, dotProduct]
-      have hz : dotProduct (star (fun i => B i j)) (fun i => B i j) = 0 := by simpa [hsum] using hBB0
+      have hz : dotProduct (star (fun i => B i j)) (fun i => B i j) = 0 := by
+        simpa [hsum] using hBB0
       have hcol0 : (fun i => B i j) = 0 := dotProduct_star_self_eq_zero.mp hz
       have hbij : B i j = 0 := congrArg (fun f => f i) hcol0
       simp [hMul, hσ0', hbij]
@@ -580,14 +584,15 @@ theorem exists_rectSVD (A : Matrix (Fin m) (Fin n) ℂ) {h : n ≤ m} :
   have hUdiag := UhU_diag_core σ V (hBHB.trans (Eq.symm hSσ_sq_Sev))
   have hUdiag' : Uthinᴴ * Uthin = diagonal (fun i => if 0 < σ i then (1 : ℂ) else 0) := by
     simpa [Uthin] using hUdiag
-  -- define family f : Fin m → EuclideanSpace ℂ (Fin m) placing Uthin's columns at positions `Fin.castLE h j`
+  -- define family f : Fin m → EuclideanSpace ℂ (Fin m)
+  -- placing Uthin's columns at positions `Fin.castLE h j`
   let f : Fin m → EuclideanSpace ℂ (Fin m) := fun i =>
     if hmem : ∃ j : Fin n, i = Fin.castLE h j then
       (WithLp.equiv 2 (Fin m → ℂ)).symm (fun k => Uthin k (Classical.choose hmem))
     else (0 : EuclideanSpace ℂ (Fin m))
   have hf_castLE (j : Fin n) :
       f (Fin.castLE h j) =
-        (WithLp.equiv 2 (Fin m → ℂ)).symm (fun k => Uthin k j) := by
+      (WithLp.equiv 2 (Fin m → ℂ)).symm (fun k => Uthin k j) := by
     classical
     -- simplify the definition of f at i = Fin.castLE h j
     simp [f]
@@ -610,7 +615,8 @@ theorem exists_rectSVD (A : Matrix (Fin m) (Fin n) ℂ) {h : n ≤ m} :
           classical
           simp [Matrix.mul_apply, Matrix.conjTranspose_apply, dotProduct, mul_comm]
         have hdiag0 : (Uthinᴴ * Uthin) ai bj = 0 := by
-          have : (Uthinᴴ * Uthin) ai bj = (diagonal (fun i => if 0 < σ i then (1 : ℂ) else 0) : Matrix _ _ _) ai bj := by
+          have : (Uthinᴴ * Uthin) ai bj =
+            (diagonal (fun i => if 0 < σ i then (1 : ℂ) else 0) : Matrix _ _ _) ai bj := by
             simpa using congrArg (fun M => M ai bj) hUdiag'
           simp [Matrix.diagonal_apply_ne _ hneq] at this
           exact this
@@ -631,7 +637,9 @@ theorem exists_rectSVD (A : Matrix (Fin m) (Fin n) ℂ) {h : n ≤ m} :
     exact h₁.trans h₂
   let b := gramSchmidtOrthonormalBasis (𝕜 := ℂ) (h := hfinrank) f
   -- for indices coming from `Fin.castLE h j` with σ j > 0, `b` equals the corresponding column
-  have hb_spec' : ∀ j : Fin n, 0 < σ j → b (Fin.castLE h j) = (WithLp.equiv 2 (Fin m → ℂ)).symm (fun k => Uthin k j) := by
+  have hb_spec' : ∀ j : Fin n, 0 < σ j →
+      b (Fin.castLE h j) =
+        (WithLp.equiv 2 (Fin m → ℂ)).symm (fun k => Uthin k j) := by
     intro j hj
     classical
     have hf_orth : Pairwise (fun i k => ⟪f i, f k⟫ = (0 : ℂ)) := hf_pairwise
@@ -765,7 +773,8 @@ theorem exists_rectSVD (A : Matrix (Fin m) (Fin n) ℂ) {h : n ≤ m} :
         have hR : (Umat * SigmaRect) i j = (b (Fin.castLE h j)) i * (σ j : ℂ) := by
           simp [Matrix.mul_apply, SigmaRect, rectDiagonal, Umat]
         by_cases hpos : 0 < σ j
-        · have hb_eq : b (Fin.castLE h j) = (WithLp.equiv 2 (Fin m → ℂ)).symm (fun k => Uthin k j) :=
+        · have hb_eq : b (Fin.castLE h j) =
+              (WithLp.equiv 2 (Fin m → ℂ)).symm (fun k => Uthin k j) :=
             hb_spec' j hpos
           -- Positive singular value case: use hb_eq to identify the column and cancel σ j
           rw [hL, hR, hb_eq]
