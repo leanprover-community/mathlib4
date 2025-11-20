@@ -3,7 +3,9 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.List.Nodup
+module
+
+public import Mathlib.Data.List.Nodup
 
 /-!
 # Antidiagonals in ℕ × ℕ as lists
@@ -17,6 +19,8 @@ generally for sums going from `0` to `n`.
 Files `Data.Multiset.NatAntidiagonal` and `Data.Finset.NatAntidiagonal` successively turn the
 `List` definition we have here into `Multiset` and `Finset`.
 -/
+
+@[expose] public section
 
 open Function
 

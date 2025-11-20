@@ -3,9 +3,11 @@ Copyright (c) 2024 Frédéric Marbach. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Marbach
 -/
-import Mathlib.Algebra.Lie.Abelian
-import Mathlib.Algebra.Lie.Derivation.Basic
-import Mathlib.Algebra.Lie.OfAssociative
+module
+
+public import Mathlib.Algebra.Lie.Abelian
+public import Mathlib.Algebra.Lie.Derivation.Basic
+public import Mathlib.Algebra.Lie.OfAssociative
 
 /-!
 # Adjoint action of a Lie algebra on itself
@@ -27,6 +29,8 @@ values in the endormophisms of `L`.
 - `LieDerivation.ad_isIdealMorphism`: the range of the adjoint action is an ideal of the
 derivations.
 -/
+
+@[expose] public section
 
 namespace LieDerivation
 

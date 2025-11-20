@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Robert Y. Lewis
 -/
-import Mathlib.Algebra.Order.CauSeq.Basic
-import Mathlib.Algebra.Ring.Action.Rat
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Order.CauSeq.Basic
+public import Mathlib.Algebra.Ring.Action.Rat
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Cauchy completion
@@ -13,6 +15,8 @@ import Mathlib.Tactic.FastInstance
 This file generalizes the Cauchy completion of `(ℚ, abs)` to the completion of a ring
 with absolute value.
 -/
+
+@[expose] public section
 
 
 namespace CauSeq.Completion
@@ -349,6 +353,9 @@ theorem lim_neg (f : CauSeq β abv) : lim (-f) = -lim f :=
     (show LimZero (-f - const abv (-lim f)) by
       rw [const_neg, sub_neg_eq_add, add_comm, ← sub_eq_add_neg]
       exact Setoid.symm (equiv_lim f))
+
+theorem lim_sub (f g : CauSeq β abv) : lim f - lim g = lim (f - g) := by
+  rw [sub_eq_add_neg, sub_eq_add_neg, ← lim_neg, lim_add f (-g)]
 
 theorem lim_eq_zero_iff (f : CauSeq β abv) : lim f = 0 ↔ LimZero f :=
   ⟨fun h => by

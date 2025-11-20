@@ -3,8 +3,10 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.MeasureTheory.Group.MeasurableEquiv
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.MeasureTheory.Group.MeasurableEquiv
 
 /-!
 # Regular measures
@@ -189,6 +191,8 @@ proofs or statements do not apply directly.
 [Bogachev, Measure Theory, volume 2, Theorem 7.11.1][bogachev2007]
 -/
 
+@[expose] public section
+
 open Set Filter ENNReal NNReal TopologicalSpace
 open scoped symmDiff Topology
 
@@ -215,6 +219,13 @@ theorem measure_eq_iSup (H : InnerRegularWRT μ p q) (hU : q U) :
   refine
     le_antisymm (le_of_forall_lt fun r hr => ?_) (iSup₂_le fun K hK => iSup_le fun _ => μ.mono hK)
   simpa only [lt_iSup_iff, exists_prop] using H hU r hr
+
+theorem eq_of_innerRegularWRT_of_forall_eq {ν : Measure α} (hμ : μ.InnerRegularWRT p q)
+    (hν : ν.InnerRegularWRT p q) (hμν : ∀ U, p U → μ U = ν U)
+    {U : Set α} (hU : q U) : μ U = ν U := by
+  rw [hμ.measure_eq_iSup hU, hν.measure_eq_iSup hU]
+  congr! 4 with t _ ht2
+  exact hμν t ht2
 
 theorem exists_subset_lt_add (H : InnerRegularWRT μ p q) (h0 : p ∅) (hU : q U) (hμU : μ U ≠ ∞)
     (hε : ε ≠ 0) : ∃ K, K ⊆ U ∧ p K ∧ μ U < μ K + ε := by
@@ -461,6 +472,14 @@ lemma measure_closure_eq_of_isCompact [R1Space α] [OuterRegular μ]
   intro u ku u_open
   exact measure_mono (hk.closure_subset_of_isOpen u_open ku)
 
+/-- Outer regular measures are determined by values on open sets. -/
+theorem ext_isOpen {ν : Measure α} [OuterRegular μ] [OuterRegular ν]
+    (hμν : ∀ U, IsOpen U → μ U = ν U) : μ = ν := by
+  ext s ms
+  rw [Set.measure_eq_iInf_isOpen, Set.measure_eq_iInf_isOpen]
+  congr! 4 with t _ ht2
+  exact hμν t ht2
+
 end OuterRegular
 
 /-- If a measure `μ` admits finite spanning open sets such that the restriction of `μ` to each set
@@ -565,7 +584,7 @@ theorem measurableSet_of_isOpen [OuterRegular μ] (H : InnerRegularWRT μ p IsOp
   calc
     μ s ≤ μ U := μ.mono hsU
     _ < μ K + ε := hKr
-    _ ≤ μ (K \ U') + μ U' + ε := add_le_add_right (tsub_le_iff_right.1 le_measure_diff) _
+    _ ≤ μ (K \ U') + μ U' + ε := by grw [tsub_le_iff_right.1 le_measure_diff]
     _ ≤ μ (K \ U') + ε + ε := by gcongr
     _ = μ (K \ U') + (ε + ε) := add_assoc _ _ _
 
@@ -634,7 +653,7 @@ theorem weaklyRegular_of_finite [BorelSpace α] (μ : Measure α) [IsFiniteMeasu
         μ (⋃ n, U n) ≤ ∑' n, μ (U n) := measure_iUnion_le _
         _ ≤ ∑' n, (μ (s n) + δ n) := ENNReal.tsum_le_tsum hU
         _ = μ (⋃ n, s n) + ∑' n, δ n := by rw [measure_iUnion hsd hsm, ENNReal.tsum_add]
-        _ ≤ μ (⋃ n, s n) + ε := add_le_add_left (hδε.le.trans ENNReal.half_le_self) _
+        _ ≤ μ (⋃ n, s n) + ε := by grw [hδε, ENNReal.half_le_self]
 
 /-- In a metrizable space (or even a pseudo metrizable space), an open set can be approximated from
 inside by closed sets. -/

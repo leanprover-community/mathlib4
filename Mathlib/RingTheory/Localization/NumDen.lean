@@ -3,9 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.Localization.Integer
-import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
+module
+
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.RingTheory.Localization.Integer
+public import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 
 /-!
 # Numerator and denominator in a localization
@@ -18,6 +20,8 @@ See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
+
+@[expose] public section
 
 
 namespace IsFractionRing
@@ -84,11 +88,7 @@ theorem eq_zero_of_num_eq_zero {x : K} (h : num A x = 0) : x = 0 :=
 lemma num_zero : IsFractionRing.num A (0 : K) = 0 := by
   have := mk'_num_den' A (0 : K)
   simp only [div_eq_zero_iff] at this
-  rcases this with h | h
-  · exact FaithfulSMul.algebraMap_injective A K (by convert h; simp)
-  · replace h : algebraMap A K (den A (0 : K)) = algebraMap A K 0 := by convert h; simp
-    absurd FaithfulSMul.algebraMap_injective A K h
-    apply nonZeroDivisors.coe_ne_zero
+  simp_all
 
 @[simp]
 lemma num_eq_zero (x : K) : IsFractionRing.num A x = 0 ↔ x = 0 :=

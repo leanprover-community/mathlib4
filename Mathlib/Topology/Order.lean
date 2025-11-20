@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Topology.Continuous
-import Mathlib.Topology.Defs.Induced
+module
+
+public import Mathlib.Topology.Continuous
+public import Mathlib.Topology.Defs.Induced
 
 /-!
 # Ordering on topologies and (co)induced topologies
@@ -43,6 +45,8 @@ of sets in `α` (with the reversed inclusion ordering).
 
 finer, coarser, induced topology, coinduced topology
 -/
+
+@[expose] public section
 
 open Function Set Filter Topology
 
@@ -459,7 +463,7 @@ theorem Equiv.induced_symm {α β : Type*} (e : α ≃ β) :
     TopologicalSpace.induced e.symm = TopologicalSpace.coinduced e := by
   ext t U
   rw [isOpen_induced_iff, isOpen_coinduced]
-  simp only [e.symm.preimage_eq_iff_eq_image, exists_eq_right, ← preimage_equiv_eq_image_symm]
+  simp only [e.symm.preimage_eq_iff_eq_image, exists_eq_right, Equiv.image_symm_eq_preimage]
 
 theorem Equiv.coinduced_symm {α β : Type*} (e : α ≃ β) :
     TopologicalSpace.coinduced e.symm = TopologicalSpace.induced e :=

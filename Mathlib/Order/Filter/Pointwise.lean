@@ -3,16 +3,18 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Algebra.Order.Group.OrderIso
-import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Order.Filter.AtTopBot.Map
-import Mathlib.Order.Filter.Finite
-import Mathlib.Order.Filter.NAry
-import Mathlib.Order.Filter.Ultrafilter.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.Algebra.Order.Group.OrderIso
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Order.Filter.AtTopBot.Map
+public import Mathlib.Order.Filter.Finite
+public import Mathlib.Order.Filter.NAry
+public import Mathlib.Order.Filter.Ultrafilter.Defs
 
 /-!
 # Pointwise operations on filters
@@ -58,6 +60,8 @@ instances reducible changes the behavior of `simp`).
 
 filter multiplication, filter addition, pointwise addition, pointwise multiplication,
 -/
+
+@[expose] public section
 
 
 open Function Set Filter Pointwise
@@ -163,8 +167,10 @@ variable [Inv α] {f g : Filter α} {s : Set α} {a : α}
 
 /-- The inverse of a filter is the pointwise preimage under `⁻¹` of its sets. -/
 @[to_additive /-- The negation of a filter is the pointwise preimage under `-` of its sets. -/]
-instance instInv : Inv (Filter α) :=
+def instInv : Inv (Filter α) :=
   ⟨map Inv.inv⟩
+
+scoped[Pointwise] attribute [instance] instInv instNeg
 
 @[to_additive (attr := simp)]
 protected theorem map_inv : f.map Inv.inv = f⁻¹ :=
@@ -211,6 +217,11 @@ protected lemma comap_inv : comap Inv.inv f = f⁻¹ :=
 @[to_additive]
 theorem inv_mem_inv (hs : s ∈ f) : s⁻¹ ∈ f⁻¹ := by rwa [mem_inv, inv_preimage, inv_inv]
 
+@[to_additive]
+protected theorem HasBasis.inv {ι : Sort*} {p : ι → Prop} {s : ι → Set α}
+    (h : f.HasBasis p s) : f⁻¹.HasBasis p fun i ↦ (s i)⁻¹ := by
+  simpa using h.map Inv.inv
+
 /-- Inversion is involutive on `Filter α` if it is on `α`. -/
 @[to_additive /-- Negation is involutive on `Filter α` if it is on `α`. -/]
 protected def instInvolutiveInv : InvolutiveInv (Filter α) :=
@@ -252,6 +263,12 @@ protected def instMul : Mul (Filter α) :=
   fun f g => { map₂ (· * ·) f g with sets := { s | ∃ t₁ ∈ f, ∃ t₂ ∈ g, t₁ * t₂ ⊆ s } }⟩
 
 scoped[Pointwise] attribute [instance] Filter.instMul Filter.instAdd
+
+@[to_additive]
+theorem HasBasis.mul {ιf ιg : Type*} {pf : ιf → Prop} {sf : ιf → Set α}
+    {pg : ιg → Prop} {sg : ιg → Set α} (hf : f.HasBasis pf sf) (hg : g.HasBasis pg sg) :
+    (f * g).HasBasis (fun i : ιf × ιg ↦ pf i.1 ∧ pg i.2) fun i ↦ sf i.1 * sg i.2 :=
+  hf.map₂ (· * ·) hg
 
 @[to_additive (attr := simp)]
 theorem map₂_mul : map₂ (· * ·) f g = f * g :=
@@ -356,6 +373,12 @@ protected def instDiv : Div (Filter α) :=
   fun f g => { map₂ (· / ·) f g with sets := { s | ∃ t₁ ∈ f, ∃ t₂ ∈ g, t₁ / t₂ ⊆ s } }⟩
 
 scoped[Pointwise] attribute [instance] Filter.instDiv Filter.instSub
+
+@[to_additive]
+theorem HasBasis.div {ιf ιg : Type*} {pf : ιf → Prop} {sf : ιf → Set α}
+    {pg : ιg → Prop} {sg : ιg → Set α} (hf : f.HasBasis pf sf) (hg : g.HasBasis pg sg) :
+    (f / g).HasBasis (fun i : ιf × ιg ↦ pf i.1 ∧ pg i.2) fun i ↦ sf i.1 / sg i.2 :=
+  hf.map₂ (· / ·) hg
 
 @[to_additive (attr := simp)]
 theorem map₂_div : map₂ (· / ·) f g = f / g :=
@@ -467,7 +490,6 @@ scoped[Pointwise] attribute [instance] Filter.instNSMul Filter.instNPow
 /-- `Filter α` is a `Semigroup` under pointwise operations if `α` is. -/
 @[to_additive /-- `Filter α` is an `AddSemigroup` under pointwise operations if `α` is. -/]
 protected def semigroup [Semigroup α] : Semigroup (Filter α) where
-  mul := (· * ·)
   mul_assoc _ _ _ := map₂_assoc mul_assoc
 
 /-- `Filter α` is a `CommSemigroup` under pointwise operations if `α` is. -/
@@ -482,8 +504,6 @@ variable [MulOneClass α] [MulOneClass β]
 /-- `Filter α` is a `MulOneClass` under pointwise operations if `α` is. -/
 @[to_additive /-- `Filter α` is an `AddZeroClass` under pointwise operations if `α` is. -/]
 protected def mulOneClass : MulOneClass (Filter α) where
-  one := 1
-  mul := (· * ·)
   one_mul := map₂_left_identity one_mul
   mul_one := map₂_right_identity mul_one
 
@@ -764,6 +784,12 @@ protected def instSMul : SMul (Filter α) (Filter β) :=
   fun f g => { map₂ (· • ·) f g with sets := { s | ∃ t₁ ∈ f, ∃ t₂ ∈ g, t₁ • t₂ ⊆ s } }⟩
 
 scoped[Pointwise] attribute [instance] Filter.instSMul Filter.instVAdd
+
+@[to_additive]
+theorem HasBasis.smul {ιf ιg : Type*} {pf : ιf → Prop} {sf : ιf → Set α}
+    {pg : ιg → Prop} {sg : ιg → Set β} (hf : f.HasBasis pf sf) (hg : g.HasBasis pg sg) :
+    (f • g).HasBasis (fun i : ιf × ιg ↦ pf i.1 ∧ pg i.2) fun i ↦ sf i.1 • sg i.2 :=
+  hf.map₂ (· • ·) hg
 
 @[to_additive (attr := simp)]
 theorem map₂_smul : map₂ (· • ·) f g = f • g :=

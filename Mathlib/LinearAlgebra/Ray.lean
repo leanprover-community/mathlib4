@@ -3,13 +3,15 @@ Copyright (c) 2021 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.Order.Module.Algebra
-import Mathlib.Algebra.Ring.Subring.Units
-import Mathlib.LinearAlgebra.LinearIndependent.Defs
-import Mathlib.Tactic.LinearCombination
-import Mathlib.Tactic.Module
-import Mathlib.Tactic.Positivity.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Fin
+public import Mathlib.Algebra.Order.Module.Algebra
+public import Mathlib.Algebra.Ring.Subring.Units
+public import Mathlib.LinearAlgebra.LinearIndependent.Defs
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Tactic.Module
+public import Mathlib.Tactic.Positivity.Basic
 
 /-!
 # Rays in modules
@@ -24,6 +26,8 @@ This file defines rays in modules.
 * `Module.Ray` is a type for the equivalence class of nonzero vectors in a module with some
   common positive multiple.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -377,7 +381,6 @@ theorem coe_neg {R : Type*} (v : RayVector R M) : ↑(-v) = -(v : M) :=
 
 /-- Negating a nonzero vector twice produces the original vector. -/
 instance {R : Type*} : InvolutiveNeg (RayVector R M) where
-  neg := Neg.neg
   neg_neg v := by rw [Subtype.ext_iff, coe_neg, coe_neg, neg_neg]
 
 /-- If two nonzero vectors are equivalent, so are their negations. -/
@@ -405,7 +408,6 @@ variable {R}
 
 /-- Negating a ray twice produces the original ray. -/
 instance : InvolutiveNeg (Module.Ray R M) where
-  neg := Neg.neg
   neg_neg x := by apply ind R (by simp) x
   -- Quotient.ind (fun a => congr_arg Quotient.mk' <| neg_neg _) x
 
