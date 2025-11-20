@@ -19,8 +19,6 @@ public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
 public import Mathlib.Tactic.Common
 
-@[expose] public section
-
 /-!
 # Singular Value Decomposition (SVD)
 
@@ -37,6 +35,8 @@ This file proves the existence of the Singular Value Decomposition (SVD) for com
 
 SVD, singular value decomposition, matrix factorization, spectral theorem
 -/
+
+@[expose] public section
 
 open Matrix
 open InnerProductSpace
