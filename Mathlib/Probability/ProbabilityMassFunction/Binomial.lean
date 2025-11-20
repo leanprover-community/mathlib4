@@ -3,9 +3,11 @@ Copyright (c) 2023 Joachim Breitner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joachim Breitner
 -/
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.Probability.ProbabilityMassFunction.Constructions
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.Probability.ProbabilityMassFunction.Constructions
+public import Mathlib.Tactic.FinCases
 
 /-!
 # The binomial distribution
@@ -17,6 +19,8 @@ This file defines the probability mass function of the binomial distribution.
 * `binomial_one_eq_bernoulli`: For `n = 1`, it is equal to `PMF.bernoulli`.
 -/
 
+@[expose] public section
+
 namespace PMF
 
 open ENNReal NNReal
@@ -27,7 +31,7 @@ def binomial (p : ℝ≥0) (h : p ≤ 1) (n : ℕ) : PMF (Fin (n + 1)) :=
       ↑(p ^ (i : ℕ) * (1 - p) ^ ((Fin.last n - i) : ℕ) * (n.choose i : ℕ))) (by
     dsimp only
     norm_cast
-    convert (add_pow p (1-p) n).symm
+    convert (add_pow p (1 - p) n).symm
     · rw [Finset.sum_fin_eq_sum_range]
       apply Finset.sum_congr rfl
       intro i hi

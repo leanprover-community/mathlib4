@@ -3,12 +3,14 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Data.Finsupp.Lex
-import Mathlib.Data.Finsupp.MonomialOrder
-import Mathlib.Data.Finsupp.WellFounded
-import Mathlib.Data.List.TFAE
-import Mathlib.RingTheory.MvPolynomial.Homogeneous
-import Mathlib.RingTheory.Nilpotent.Defs
+module
+
+public import Mathlib.Data.Finsupp.Lex
+public import Mathlib.Data.Finsupp.MonomialOrder
+public import Mathlib.Data.Finsupp.WellFounded
+public import Mathlib.Data.List.TFAE
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
+public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-! # Degree, leading coefficient and leading term of polynomials with respect to a monomial order
 
@@ -58,7 +60,7 @@ and a monomial order `m : MonomialOrder σ`.
   is nonzero, then the leading coefficient is that product.
 
 * `m.degree_mul_of_isRegular_left`, `m.degree_mul_of_isRegular_right` and `m.degree_mul`
-  assert the  equality when the leading coefficient of `f` or `g` is regular,
+  assert the equality when the leading coefficient of `f` or `g` is regular,
   or when `R` is a domain and `f` and `g` are nonzero.
 
 * `m.leadingCoeff_mul_of_isRegular_left`, `m.leadingCoeff_mul_of_isRegular_right`
@@ -78,12 +80,6 @@ and a monomial order `m : MonomialOrder σ`.
 
 * `m.Monic.prod` : a product of monic polynomials is monic.
 
-* `m.degree_sub_leadingTerm` : the degree of `f - m.leadingTerm f` is smaller than
-  the degree of `f` unless `f - m.leadingTerm f = 0`.
-
-* `m.degree_sub_leadingTerm_lt_degree` : if `f - m.leadingTerm f ≠ 0`, the degree of
-  `f - m.leadingTerm f` is smaller than the degree of `f`.
-
 * `m.degree_sub_leadingTerm_lt_iff` : the degree of `f - m.leadingTerm f` is smaller than the
   degree of `f` if and only if `m.degree f ≠ 0`.
 
@@ -92,6 +88,8 @@ and a monomial order `m : MonomialOrder σ`.
 [Becker-Weispfenning1993]
 
 -/
+
+@[expose] public section
 
 namespace MonomialOrder
 
@@ -121,9 +119,16 @@ if its leading coefficient (for that monomial order) is 1. -/
 def Monic (f : MvPolynomial σ R) : Prop :=
   m.leadingCoeff f = 1
 
+variable (m) in
 /-- The leading term of of a multivariate polynomial with respect to a monomial ordering. -/
 noncomputable def leadingTerm (f : MvPolynomial σ R) : MvPolynomial σ R :=
   monomial (m.degree f) (m.leadingCoeff f)
+
+@[simp]
+lemma C_mul_leadingCoeff_monomial_degree (p : MvPolynomial σ R) :
+    MvPolynomial.C (m.leadingCoeff p : R) * MvPolynomial.monomial (m.degree p) (1 : R) =
+      m.leadingTerm p := by
+  rw [MvPolynomial.C_mul_monomial, mul_one, leadingTerm]
 
 @[nontriviality] theorem Monic.of_subsingleton [Subsingleton R] {f : MvPolynomial σ R} :
     m.Monic f :=
@@ -292,6 +297,10 @@ theorem degree_eq_zero_iff_totalDegree_eq_zero {f : MvPolynomial σ R} :
 theorem degree_C (r : R) :
     m.degree (C r) = 0 := by
   rw [degree_eq_zero_iff_totalDegree_eq_zero, totalDegree_C]
+
+@[simp]
+theorem leadingCoeff_C (c : R) : m.leadingCoeff (C c) = c := by
+  simp [leadingCoeff]
 
 theorem eq_C_of_degree_eq_zero {f : MvPolynomial σ R} (hf : m.degree f = 0) :
     f = C (m.leadingCoeff f) := by
@@ -643,16 +652,16 @@ lemma leadingTerm_zero : m.leadingTerm (0 : MvPolynomial σ R) = 0 := by
   rw [leadingTerm_eq_zero_iff]
 
 /--
-The leading terms of non-zero polynomials within a set `B` is equal to the leading terms
-of all polynomials in B, excluding zero.
+The set of leading terms of non-zero polynomials within a set `B` is equal to the set of
+leading terms of all polynomials within `B`, excluding zero.
 -/
 lemma image_leadingTerm_sdiff_singleton_zero (B : Set (MvPolynomial σ R)) :
     m.leadingTerm '' (B \ {0}) = (m.leadingTerm '' B) \ {0} := by
   aesop
 
 /--
-The leading terms of a Set `B` inserted zero polynomial equal to leading terms of `B`
-inserted zero polynomial
+The set of leading terms of zero and polynomials within a set `B` is equal to the set of
+zero and leading terms of polynomials within `B`.
 -/
 lemma image_leadingTerm_insert_zero (B : Set (MvPolynomial σ R)) :
     m.leadingTerm '' (insert (0 : MvPolynomial σ R) B) = insert 0 (m.leadingTerm '' B) := by
@@ -663,7 +672,6 @@ lemma image_leadingTerm_insert_zero (B : Set (MvPolynomial σ R)) :
 lemma degree_leadingTerm (f : MvPolynomial σ R) :
     m.degree (m.leadingTerm f) = m.degree f := by
   classical
-  -- simp? [leadingTerm, degree_monomial]
   simp only [leadingTerm, degree_monomial, leadingCoeff_eq_zero_iff, ite_eq_right_iff]
   simp_intro h
 
@@ -671,6 +679,16 @@ lemma degree_leadingTerm (f : MvPolynomial σ R) :
 lemma leadingCoeff_leadingTerm (f : MvPolynomial σ R) :
     m.leadingCoeff (m.leadingTerm f) = m.leadingCoeff f := by
   simp [leadingTerm, leadingCoeff_monomial]
+
+@[simp]
+lemma leadingTerm_leadingTerm (f : MvPolynomial σ R) :
+    m.leadingTerm (m.leadingTerm f) = m.leadingTerm f := by
+  classical
+  by_cases h : f = 0 <;> simp [leadingTerm, h, degree_monomial]
+
+@[simp]
+lemma leadingTerm_C (c : R) : m.leadingTerm (C c) = C c := by
+  simp [leadingTerm, leadingCoeff_C]
 
 end Semiring
 
@@ -683,6 +701,11 @@ variable (m) in
 noncomputable def sPolynomial (f g : MvPolynomial σ R) : MvPolynomial σ R :=
   monomial (m.degree g - m.degree f) (m.leadingCoeff g) * f -
   monomial (m.degree f - m.degree g) (m.leadingCoeff f) * g
+
+lemma degree_ne_zero_of_sub_leadingTerm_ne_zero {f : MvPolynomial σ R}
+    (h : f - m.leadingTerm f ≠ 0) : m.degree f ≠ 0 := by
+  contrapose! h
+  rw [m.degree_eq_zero_iff.mp h, leadingTerm_C, sub_eq_zero]
 
 @[simp]
 theorem degree_neg {f : MvPolynomial σ R} :
@@ -718,32 +741,24 @@ theorem degree_sub_leadingTerm_le (f : MvPolynomial σ R) :
   apply le_trans degree_sub_le
   simp [degree_leadingTerm]
 
-theorem degree_sub_leadingTerm (f : MvPolynomial σ R) :
-    m.degree (f - m.leadingTerm f) ≺[m] m.degree f ∨ f - m.leadingTerm f = 0 := by
+theorem degree_sub_leadingTerm_lt_degree {f : MvPolynomial σ R} (h : m.degree f ≠ 0) :
+    m.degree (f - m.leadingTerm f) ≺[m] m.degree f := by
   classical
-  rw [or_iff_not_imp_right]
-  intro h
-  apply lt_of_le_of_ne (m.degree_sub_leadingTerm_le f) ?_
-  simp_intro h'
-  apply m.degree_mem_support at h
-  rw [h', mem_support_iff] at h
-  simp [leadingTerm, leadingCoeff] at h
-
-theorem degree_sub_leadingTerm_lt_degree {f : MvPolynomial σ R} (h : f - m.leadingTerm f ≠ 0) :
-    m.degree (f - m.leadingTerm f) ≺[m] m.degree f :=
-  (or_iff_left h).mp <| m.degree_sub_leadingTerm f
+  by_cases hl : f - m.leadingTerm f = 0
+  · simpa [hl, toSyn_lt_iff_ne_zero]
+  · apply lt_of_le_of_ne (m.degree_sub_leadingTerm_le f)
+    by_contra! h'
+    simp only [EmbeddingLike.apply_eq_iff_eq] at h'
+    apply m.degree_mem_support at hl
+    rw [h', mem_support_iff] at hl
+    simp [leadingTerm, leadingCoeff] at hl
 
 theorem degree_sub_leadingTerm_lt_iff {f : MvPolynomial σ R} :
     m.degree (f - m.leadingTerm f) ≺[m] m.degree f ↔ m.degree f ≠ 0 := by
-  constructor
-  · intro h h'
-    -- simp? [h'] at h
-    simp only [h', map_zero] at h
-    exact not_lt_bot h
-  · intro h
-    by_cases hl : f - m.leadingTerm f = 0
-    · simpa [hl, toSyn_lt_iff_ne_zero]
-    · exact m.degree_sub_leadingTerm_lt_degree hl
+  refine ⟨?_, degree_sub_leadingTerm_lt_degree⟩
+  intro h h'
+  simp only [h', map_zero] at h
+  exact not_lt_bot h
 
 lemma sPolynomial_antisymm (f g : MvPolynomial σ R) :
     m.sPolynomial f g = - m.sPolynomial g f :=

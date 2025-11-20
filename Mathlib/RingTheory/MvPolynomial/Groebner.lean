@@ -3,14 +3,16 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, Junyu Guo, Hao Shen
 -/
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Data.Finsupp.Lex
-import Mathlib.Data.Finsupp.MonomialOrder
-import Mathlib.Data.Finsupp.WellFounded
-import Mathlib.Data.List.TFAE
-import Mathlib.RingTheory.MvPolynomial.Homogeneous
-import Mathlib.RingTheory.MvPolynomial.MonomialOrder
-import Mathlib.RingTheory.MvPolynomial.Ideal
+module
+
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.Data.Finsupp.Lex
+public import Mathlib.Data.Finsupp.MonomialOrder
+public import Mathlib.Data.Finsupp.WellFounded
+public import Mathlib.Data.List.TFAE
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
+public import Mathlib.RingTheory.MvPolynomial.MonomialOrder
+public import Mathlib.RingTheory.MvPolynomial.Ideal
 
 /-! # Gröbner Basis Theory
 
@@ -113,6 +115,8 @@ noetherian multivariate polynomial ring.
 
 -/
 
+@[expose] public section
+
 namespace MonomialOrder
 
 open MvPolynomial
@@ -177,7 +181,7 @@ theorem isRemainder_def' (p : MvPolynomial σ R) (B : Set (MvPolynomial σ R))
         simp [Finsupp.linearCombination_apply, Finsupp.sum]
         apply Finset.sum_nbij (↑·)
         · simp_intro ..
-        · simp_intro b _ b₁ _ h [Subtype.eq_iff]
+        · simp_intro b _ b₁ _ h [Subtype.ext_iff]
         · simp_intro b hb
           exact Set.mem_of_subset_of_mem hg <| Finsupp.mem_support_iff.mpr hb
         · simp [DFunLike.coe]
@@ -374,7 +378,7 @@ theorem isRemainder_range {ι : Type*} (f : MvPolynomial σ R)
           refine Finset.sum_congr rfl fun i hi ↦ ?_
           rw [Finset.mem_filter] at hi
           congr
-          exact Subtype.eq_iff.mp hi.2.symm
+          exact Subtype.ext_iff.mp hi.2.symm
         rw [sum_eq]
         have degree_le : ∀ i ∈ g.support.filter (fun i => b' i = b1),
             m.degree (b i * g i) ≼[m] m.degree f := by
@@ -467,8 +471,7 @@ theorem isRemainder_zero {r : MvPolynomial σ R} (hB : ∀ b ∈ B, IsRegular (m
   simp at h0sumg
   suffices ∀ b : B, g b * ↑b = 0 by simp [this, hr.symm]
   intro b
-  suffices g b = 0 ∨ b.1 = 0 by by_cases h : g b = 0; simp [h]; simp [this.resolve_left h]
-  rw [or_iff_not_imp_right]
+  suffices ¬b.1 = 0 → g b = 0 by by_cases h : g b = 0 <;> aesop
   intro hb
   specialize hg b
   specialize h0sumg b b.2 hb
@@ -848,7 +851,7 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
       f = Finsupp.linearCombination _ b g + r ∧
         (∀ i, m.degree (b i * (g i)) ≼[m] m.degree f) ∧
         (∀ c ∈ r.support, ∀ i, ¬ (m.degree (b i) ≤ c)) := by
-  by_cases hb' : ∃ i, m.degree (b i) = 0
+  by_cases! hb' : ∃ i, m.degree (b i) = 0
   · obtain ⟨i, hb0⟩ := hb'
     use Finsupp.single i ((hb i).unit⁻¹ • f), 0
     constructor
@@ -867,13 +870,12 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
       · simp only [Finsupp.single_eq_of_ne hj, mul_zero, degree_zero, map_zero]
         apply bot_le
     · simp
-  push_neg at hb'
   by_cases hf0 : f = 0
   · refine ⟨0, 0, by simp [hf0], ?_, by simp⟩
     intro b
     simp only [Finsupp.coe_zero, Pi.zero_apply, mul_zero, degree_zero, map_zero]
     exact bot_le
-  by_cases hf : ∃ i, m.degree (b i) ≤ m.degree f
+  by_cases! hf : ∃ i, m.degree (b i) ≤ m.degree f
   · obtain ⟨i, hf⟩ := hf
     have deg_reduce : m.degree (m.reduce (hb i) f) ≺[m] m.degree f := by
       apply degree_reduce_lt (hb i) hf
@@ -903,8 +905,7 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
         · simp only [mul_zero, degree_zero, map_zero]
           exact bot_le
     · exact H'.2.2
-  · push_neg at hf
-    suffices ∃ (g' : ι →₀ MvPolynomial σ R), ∃ r',
+  · suffices ∃ (g' : ι →₀ MvPolynomial σ R), ∃ r',
         (m.subLTerm f = Finsupp.linearCombination (MvPolynomial σ R) b g' + r') ∧
         (∀ i, m.degree ((b  i) * (g' i)) ≼[m] m.degree (m.subLTerm f)) ∧
         (∀ c ∈ r'.support, ∀ i, ¬ m.degree (b i) ≤ c) by
@@ -1452,7 +1453,8 @@ theorem isGroebnerBasis_iff_isRemainder_sPolynomial_zero (G : Set (MvPolynomial 
             refine lt_of_lt_of_le ?_ (hg₂ g' hg')
             rw [degree_mul h hg'₂, degree_mul hg'₂ hg'₃, add_comm,
               AddEquiv.map_add, AddEquiv.map_add, add_lt_add_iff_left]
-            exact m.degree_sub_leadingTerm_lt_degree h
+            exact m.degree_sub_leadingTerm_lt_degree <|
+              m.degree_ne_zero_of_sub_leadingTerm_ne_zero h
           · simp [hg'₄]
             apply lt_of_le_of_ne (mul_comm (g g') g' ▸ hg₂ g' hg')
             exact hg'₄
@@ -1496,10 +1498,9 @@ theorem isGroebnerBasis_iff_isRemainder_sPolynomial_zero (G : Set (MvPolynomial 
       convert_to
         p = _ + ∑ g' ∈ G'',
           (if g' ∈ G' then
-            if gg'deg g' = a then g g' - leadingTerm (g g') else g g'
+            if gg'deg g' = a then g g' - m.leadingTerm (g g') else g g'
           else 0) * g' using 2 at hp
       · simp [G'']
-        rfl
       simp_rw [← Finset.sum_add_distrib, ← add_mul] at hp
       letI g₂ := (?_ : MvPolynomial σ k → MvPolynomial σ k)
       replace hp : p = ∑ g' ∈ G'', g₂ g' * g' := by exact hp
@@ -1575,7 +1576,8 @@ theorem isGroebnerBasis_iff_isRemainder_sPolynomial_zero (G : Set (MvPolynomial 
             m.ne_zero_of_degree_ne_zero a_gt_zero
           rw [degree_mul hLTgg' g_ne_zero, AddEquiv.map_add,
             degree_mul gg'_ne_zero g_ne_zero, AddEquiv.map_add]
-          simp [m.degree_sub_leadingTerm_lt_degree hLTgg']
+          simp [m.degree_sub_leadingTerm_lt_degree
+            (m.degree_ne_zero_of_sub_leadingTerm_ne_zero hLTgg')]
       · simp [G'', hG', hq'₁]
       · intro g'
         rw [mul_comm]

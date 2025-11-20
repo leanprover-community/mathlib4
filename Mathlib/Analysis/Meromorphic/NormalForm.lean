@@ -3,7 +3,9 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Meromorphic.Divisor
+module
+
+public import Mathlib.Analysis.Meromorphic.Divisor
 
 /-!
 # Normal form of meromorphic functions and continuous extension
@@ -21,6 +23,8 @@ The relevant notions are `MeromorphicNFAt` and `MeromorphicNFOn`; these guarante
 form at a single point and along a set, respectively.
 -/
 
+@[expose] public section
+
 open Topology WithTop
 
 variable
@@ -31,9 +35,9 @@ variable
   {U : Set 𝕜}
 
 /-!
-# Normal form of meromorphic functions at a given point
+## Normal form of meromorphic functions at a given point
 
-## Definition and characterizations
+### Definition and characterizations
 -/
 
 variable (f x) in
@@ -59,14 +63,14 @@ theorem meromorphicNFAt_iff_analyticAt_or :
         rw [meromorphicOrderAt_eq_int_iff hf]
         use g, h₁g, h₂g
         exact eventually_nhdsWithin_of_eventually_nhds h₃g
-      by_cases hn : 0 ≤ n
+      by_cases! hn : 0 ≤ n
       · left
         rw [analyticAt_congr h₃g]
         apply (AnalyticAt.zpow_nonneg (by fun_prop) hn).smul h₁g
       · right
         use hf
-        simp [this, WithTop.coe_lt_zero.2 (not_le.1 hn), h₃g.eq_of_nhds,
-          zero_zpow n (ne_of_not_le hn).symm]
+        simp [this, WithTop.coe_lt_zero.2 hn, h₃g.eq_of_nhds,
+          zero_zpow n hn.ne]
   · rintro (h | ⟨h₁, h₂, h₃⟩)
     · by_cases h₂f : analyticOrderAt f x = ⊤
       · rw [analyticOrderAt_eq_top] at h₂f
@@ -93,7 +97,7 @@ theorem meromorphicNFAt_iff_analyticAt_or :
       · exact hz h₁z
 
 /-!
-## Relation to other properties of functions
+### Relation to other properties of functions
 -/
 
 /-- If a function is meromorphic in normal form at `x`, then it is meromorphic at `x`. -/
@@ -135,7 +139,7 @@ theorem MeromorphicOn.meromorphicNFAt_mem_codiscreteWithin {U : Set 𝕜}
   exact ha.meromorphicNFAt
 
 /-!
-## Vanishing and order
+### Vanishing and order
 -/
 
 /-- If `f` is meromorphic in normal form at `x`, then `f` has order zero iff it does not vanish at
@@ -167,7 +171,7 @@ theorem MeromorphicNFAt.meromorphicOrderAt_eq_zero_iff (hf : MeromorphicNFAt f x
 @[deprecated (since := "2025-05-22")] alias MeromorphicNFAt.order_eq_zero_iff :=
   MeromorphicNFAt.meromorphicOrderAt_eq_zero_iff
 /-!
-## Local nature of the definition and local identity theorem
+### Local nature of the definition and local identity theorem
 -/
 
 /-- **Local identity theorem**: two meromorphic functions in normal form agree in a
@@ -212,7 +216,7 @@ theorem meromorphicNFAt_congr {g : 𝕜 → E} (hfg : f =ᶠ[𝓝 x] g) :
     · exact .inr ⟨n, h, h₁h, h₂h, hfg.trans h₃h⟩
 
 /-!
-## Criteria to guarantee normal form
+### Criteria to guarantee normal form
 -/
 
 /-- Helper lemma for `meromorphicNFAt_iff_meromorphicNFAt_of_smul_analytic`: if
@@ -266,7 +270,7 @@ theorem meromorphicNFAt_mul_iff_left {f : 𝕜 → 𝕜} (h₁g : AnalyticAt �
   exact meromorphicNFAt_smul_iff_right_of_analyticAt h₁g h₂g
 
 /-!
-## Continuous extension and conversion to normal form
+### Continuous extension and conversion to normal form
 -/
 
 variable (f x) in
@@ -408,9 +412,9 @@ A function to 𝕜 is meromorphic in normal form at a point iff its inverse is.
   mpr hf := by simpa using hf.inv
 
 /-!
-# Normal form of meromorphic functions on a given set
+## Normal form of meromorphic functions on a given set
 
-## Definition
+### Definition
 -/
 
 /--
@@ -420,7 +424,7 @@ point of `U`.
 def MeromorphicNFOn (f : 𝕜 → E) (U : Set 𝕜) := ∀ ⦃z⦄, z ∈ U → MeromorphicNFAt f z
 
 /-!
-## Relation to other properties of functions
+### Relation to other properties of functions
 -/
 
 /--
@@ -455,7 +459,7 @@ theorem AnalyticOnNhd.meromorphicNFOn (h₁f : AnalyticOnNhd 𝕜 f U) :
     MeromorphicNFOn f U := fun z hz ↦ (h₁f z hz).meromorphicNFAt
 
 /-!
-## Divisors and zeros of meromorphic functions in normal form.
+### Divisors and zeros of meromorphic functions in normal form.
 -/
 
 /--
@@ -482,7 +486,7 @@ theorem MeromorphicNFOn.zero_set_eq_divisor_support (h₁f : MeromorphicNFOn f U
       simp_all [hu.1]
 
 /-!
-## Criteria to guarantee normal form
+### Criteria to guarantee normal form
 -/
 
 /--
@@ -530,7 +534,7 @@ theorem meromorphicNFOn_inv {f : 𝕜 → 𝕜} :
   mpr h _ hx := meromorphicNFAt_inv.2 (h hx)
 
 /-!
-## Continuous extension and conversion to normal form
+### Continuous extension and conversion to normal form
 -/
 
 variable (f U) in
@@ -548,7 +552,7 @@ noncomputable def toMeromorphicNFOn :
   · exact 0
 
 /--
-If `f` is not meromorphic on `U`, conversion to normal form  maps the function
+If `f` is not meromorphic on `U`, conversion to normal form maps the function
 to `0`.
 -/
 @[simp] lemma toMeromorphicNFOn_of_not_meromorphicOn (hf : ¬MeromorphicOn f U) :

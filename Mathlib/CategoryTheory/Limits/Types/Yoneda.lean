@@ -3,7 +3,9 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Reid Barton
 -/
-import Mathlib.CategoryTheory.Limits.Types.Limits
+module
+
+public import Mathlib.CategoryTheory.Limits.Types.Limits
 
 /-!
 # Cones and limits
@@ -13,6 +15,8 @@ In this file, we give the natural isomorphism between cones on `F` with cone poi
 and the type `lim Hom(F·, X)`.
 
 -/
+
+@[expose] public section
 
 universe v u
 

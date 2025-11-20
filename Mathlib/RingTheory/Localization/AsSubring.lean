@@ -3,9 +3,11 @@ Copyright (c) 2022 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Junyan Xu
 -/
-import Mathlib.RingTheory.Localization.LocalizationLocalization
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.Algebra.Algebra.Subalgebra.Tower
+module
+
+public import Mathlib.RingTheory.Localization.LocalizationLocalization
+public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.Algebra.Algebra.Subalgebra.Tower
 
 /-!
 
@@ -16,6 +18,8 @@ does not contain zero, this file constructs the localization of `A` at `S`
 as a subalgebra of the field `K` over `A`.
 
 -/
+
+@[expose] public section
 
 
 namespace Localization
@@ -49,7 +53,7 @@ theorem mem_range_mapToFractionRing_iff (B : Type*) [CommRing B] [Algebra A B] [
       ∃ (a s : A) (hs : s ∈ S), x = IsLocalization.mk' K a ⟨s, hS hs⟩ :=
   ⟨by
     rintro ⟨x, rfl⟩
-    obtain ⟨a, s, rfl⟩ := IsLocalization.mk'_surjective S x
+    obtain ⟨a, s, rfl⟩ := IsLocalization.exists_mk'_eq S x
     use a, s, s.2
     apply IsLocalization.lift_mk', by
     rintro ⟨a, s, hs, rfl⟩

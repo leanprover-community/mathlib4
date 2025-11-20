@@ -3,16 +3,21 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Aurélien Saue, Mario Carneiro
 -/
-import Lean.Elab.PreDefinition.Basic
-import Lean.Elab.Tactic.ElabTerm
-import Lean.Meta.Tactic.Intro
-import Mathlib.Lean.Expr.Basic
-import Batteries.Tactic.OpenPrivate
+module
+
+public meta import Lean.Elab.PreDefinition.Basic
+public meta import Lean.Elab.Tactic.ElabTerm
+public meta import Lean.Meta.Tactic.Intro
+public meta import Mathlib.Lean.Expr.Basic
+public meta import Batteries.Tactic.OpenPrivate
+public meta import Batteries.Lean.Expr
 
 /-!
 # Generally useful tactics.
 
 -/
+
+public meta section
 
 open Lean.Elab.Tactic
 
@@ -74,7 +79,7 @@ def MVarId.introsWithBinderIdents
     (g : MVarId) (ids : List (TSyntax ``binderIdent)) (maxIntros? : Option Nat := none) :
     MetaM (List (TSyntax ``binderIdent) × Array FVarId × MVarId) := do
   let type ← g.getType
-  let type ← instantiateMVars type
+  let type ← Lean.instantiateMVars type
   let n := getIntrosSize type
   let n := match maxIntros? with | none => n | some maxIntros => min n maxIntros
   if n == 0 then

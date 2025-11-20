@@ -3,9 +3,11 @@ Copyright (c) 2021 Aaron Anderson, Jesse Michael Han, Floris van Doorn. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
-import Mathlib.Data.Finset.Basic
-import Mathlib.ModelTheory.Syntax
-import Mathlib.Data.List.ProdSigma
+module
+
+public import Mathlib.Data.Finset.Basic
+public import Mathlib.ModelTheory.Syntax
+public import Mathlib.Data.List.ProdSigma
 
 /-!
 # Basics on First-Order Semantics
@@ -45,6 +47,8 @@ For the Flypitch project:
 - [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
   the continuum hypothesis*][flypitch_itp]
 -/
+
+@[expose] public section
 
 
 universe u v w u' v'
@@ -434,7 +438,7 @@ theorem realize_restrictFreeVar [DecidableEq α] {n : ℕ} {φ : L.BoundedFormul
     rw [realize_restrictVarLeft v' (by simp [hv']), realize_restrictVarLeft v' (by simp [hv'])]
     simp
   | rel =>
-    simp only [Realize, freeVarFinset.eq_3, Finset.biUnion_val, restrictFreeVar]
+    simp only [Realize, freeVarFinset.eq_3, restrictFreeVar]
     congr!
     rw [realize_restrictVarLeft v' (by simp [hv'])]
     simp

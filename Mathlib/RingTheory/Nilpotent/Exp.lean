@@ -3,16 +3,18 @@ Copyright (c) 2025 Janos Wolosz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Janos Wolosz
 -/
-import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Algebra.Module.Rat
-import Mathlib.Data.Nat.Cast.Field
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Nilpotent.Basic
-import Mathlib.RingTheory.TensorProduct.Basic
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.Algebra.Algebra.Basic
+public import Mathlib.Algebra.Algebra.Bilinear
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.Algebra.Module.Rat
+public import Mathlib.Data.Nat.Cast.Field
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.RingTheory.Nilpotent.Basic
+public import Mathlib.RingTheory.TensorProduct.Maps
+public import Mathlib.Tactic.FieldSimp
 
 /-!
 # Exponential map on algebras
@@ -38,6 +40,8 @@ over a characteristic zero field.
 
 algebra, exponential map, nilpotent
 -/
+
+@[expose] public section
 
 namespace IsNilpotent
 
@@ -182,9 +186,6 @@ theorem isUnit_exp {a : A} (h : IsNilpotent a) : IsUnit (exp a) := by
   apply isUnit_iff_exists.2
   use exp (-a)
   exact ⟨exp_mul_exp_neg_self h, exp_neg_mul_exp_self h⟩
-
-@[deprecated (since := "2025-03-11")]
-alias exp_of_nilpotent_is_unit := isUnit_exp
 
 theorem map_exp {B F : Type*} [Ring B] [FunLike F A B] [RingHomClass F A B] [Module ℚ B]
     {a : A} (ha : IsNilpotent a) (f : F) :
