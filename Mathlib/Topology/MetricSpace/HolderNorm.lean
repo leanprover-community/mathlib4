@@ -130,7 +130,7 @@ section Monotonicity
 open Bornology
 
 /-- If a function is `(C₁, r)`-Hölder and `(C₂, s)`-Hölder,
-then it is `(C₁ ^ t * C_₂ ^ (1 - t), r * t + s * (1 - t)`-Hölder for `0 ≤ 1 ≤ t`. -/
+then it is `(C₁ ^ t * C_₂ ^ (1 - t), r * t + s * (1 - t))`-Hölder for `0 ≤ t ≤ 1`. -/
 lemma HolderOnWith.interpolate {C₁ C₂ s t : ℝ≥0} {A : Set X}
     (hf₁ : HolderOnWith C₁ r f A) (hf₂ : HolderOnWith C₂ s f A) (ht : t ≤ 1) :
     HolderOnWith (C₁ ^ (t : ℝ) * C₂ ^ (1 - t : ℝ)) (r * t + s * (1 - t)) f A := by
@@ -151,6 +151,7 @@ lemma HolderOnWith.interpolate {C₁ C₂ s t : ℝ≥0} {A : Set X}
         any_goals positivity
         all_goals simpa
 
+/-- If a function is Hölder over a bounded set, then it is bounded. -/
 lemma HolderOnWith.holderOnWith_zero_of_bounded {C D : ℝ≥0} {s : Set X}
     (hs : ∀ x ∈ s, ∀ y ∈ s, edist x y ≤ D) (hf : HolderOnWith C r f s) :
     HolderOnWith (C * D ^ (r : ℝ)) 0 f s := by
@@ -158,8 +159,8 @@ lemma HolderOnWith.holderOnWith_zero_of_bounded {C D : ℝ≥0} {s : Set X}
   simp only [NNReal.coe_zero, ENNReal.rpow_zero, mul_one]
   grw [hf x hx y hy, hs x hx y hy, ENNReal.coe_mul, ENNReal.coe_rpow_of_nonneg _ (by simp)]
 
-/-- If a function is `r`-Hölder over a bounded space, then it is also `s`-Hölder when `s ≤ r`. -/
-lemma HolderOnWith.mono' {C D t : ℝ≥0} {s : Set X}
+/-- If a function is `r`-Hölder over a bounded set, then it is also `t`-Hölder when `t ≤ r`. -/
+lemma HolderOnWith.of_le {C D t : ℝ≥0} {s : Set X}
     (hs : ∀ x ∈ s, ∀ y ∈ s, edist x y ≤ D) (hf : HolderOnWith C r f s) (htr : t ≤ r) :
     HolderOnWith (C * D ^ (r - t : ℝ)) t f s := by
   obtain rfl | ht := eq_zero_or_pos t
@@ -177,53 +178,58 @@ lemma HolderOnWith.mono' {C D t : ℝ≥0} {s : Set X}
   · simp [mul_div_cancel₀ _ hr.ne']
   · simpa only [sub_nonneg, coe_le_one, div_le_one hr]
 
-/-- If a function is `r`-Hölder over a bounded space, then it is also `s`-Hölder when `s ≤ r`. -/
-lemma HolderWith.mono' {C D t : ℝ≥0}
+/-- If a function is `r`-Hölder over a bounded space, then it is also `t`-Hölder when `t ≤ r`. -/
+lemma HolderWith.of_le {C D t : ℝ≥0}
     (hs : ∀ x y : X, edist x y ≤ D) (hf : HolderWith C r f) (htr : t ≤ r) :
     HolderWith (C * D ^ (r - t : ℝ)) t f :=
-  holderOnWith_univ.1 ((holderOnWith_univ.2 hf).mono' (fun x _ y _ ↦ hs x y) htr)
+  holderOnWith_univ.1 ((holderOnWith_univ.2 hf).of_le (fun x _ y _ ↦ hs x y) htr)
 
-/-- If a function is `r`-Hölder over a bounded space, then it is also `s`-Hölder when `s ≤ r`. -/
-lemma MemHolder.mono {X : Type*} [PseudoMetricSpace X] [hX : BoundedSpace X]
+/-- If a function is `r`-Hölder over a bounded space, then it is also `s`-Hölder when `s ≤ r`.
+See `MemHolder.of_le'` for the version in a pseudoemetric space. -/
+lemma MemHolder.of_le {X : Type*} [PseudoMetricSpace X] [hX : BoundedSpace X]
     {f : X → Y} {s : ℝ≥0} (hf : MemHolder r f) (hs : s ≤ r) :
     MemHolder s f := by
   obtain ⟨C, hf⟩ := hf
   obtain ⟨C', hC'⟩ := Metric.boundedSpace_iff_edist.1 hX
   exact ⟨C * C' ^ (r - s : ℝ),
-    holderOnWith_univ.1 <| (holderOnWith_univ.2 hf).mono' (fun x _ y _ ↦ hC' x y) hs⟩
+    holderOnWith_univ.1 <| (holderOnWith_univ.2 hf).of_le (fun x _ y _ ↦ hC' x y) hs⟩
 
-/-- If a function is `r`-Hölder over a pseudoemetric space with bounded distance,
-then it is also `s`-Hölder when `s ≤ r`. -/
-lemma MemHolder.mono' {s : ℝ≥0} (hf : MemHolder r f) (hs : s ≤ r)
+/-- If a function is `r`-Hölder over a bounded space, then it is also `s`-Hölder when `s ≤ r`.
+See `MemHolder.of_le` for the version in a pseudometric space. -/
+lemma MemHolder.of_le' {s : ℝ≥0} (hf : MemHolder r f) (hs : s ≤ r)
     (hX : ∃ C : ℝ≥0, ∀ x y : X, edist x y ≤ C) :
     MemHolder s f := by
   obtain ⟨C, hX⟩ := hX
   letI := PseudoEMetricSpace.toPseudoMetricSpace
     fun x y ↦ ne_top_of_le_ne_top ENNReal.coe_ne_top (hX x y)
   have := Metric.boundedSpace_iff_edist.2 ⟨C, hX⟩
-  exact hf.mono hs
+  exact hf.of_le hs
 
-/-- If a function is locally `r`-Hölder over a bounded set,
-then it is also locally `s`-Hölder over this set when `s ≤ r`. -/
-lemma HolderOnWith.mono_right {X : Type*} [PseudoMetricSpace X]
-    {f : X → Y} {C s : ℝ≥0} {t : Set X} (hf : HolderOnWith C r f t) (hs : s ≤ r)
-    (ht : IsBounded t) : ∃ C', HolderOnWith C' s f t := by
+/-- If a function is `r`-Hölder over a bounded set, then it is also `s`-Hölder over this set
+when `s ≤ r`. See `HolderOnWith.exists_holderOnWith_of_le'`
+for the version in a pseudoemetric space. -/
+lemma HolderOnWith.exists_holderOnWith_of_le {X : Type*} [PseudoMetricSpace X]
+    {f : X → Y} {s : ℝ≥0} {t : Set X} (hf : ∃ C, HolderOnWith C r f t) (hs : s ≤ r)
+    (ht : IsBounded t) : ∃ C, HolderOnWith C s f t := by
   simp_rw [← HolderWith.restrict_iff] at *
   have : BoundedSpace t := boundedSpace_val_set_iff.2 ht
-  exact MemHolder.mono ⟨C, hf⟩ hs
+  exact MemHolder.of_le hf hs
 
-lemma HolderOnWith.mono_right' {C C' s : ℝ≥0} {t : Set X} (hf : HolderOnWith C r f t) (hs : s ≤ r)
-    (ht : ∀ ⦃x⦄, x ∈ t → ∀ ⦃y⦄, y ∈ t → edist x y ≤ C') :
-    ∃ C'', HolderOnWith C'' s f t := by
+/-- If a function is `r`-Hölder over a bounded set,
+then it is also `s`-Hölder over this set when `s ≤ r`. See `HolderOnWith.exists_holderOnWith_of_le`
+for the version in a pseudometric space. -/
+lemma HolderOnWith.exists_holderOnWith_of_le' {D s : ℝ≥0} {t : Set X}
+    (hf : ∃ C, HolderOnWith C r f t) (hs : s ≤ r)
+    (ht : ∀ ⦃x⦄, x ∈ t → ∀ ⦃y⦄, y ∈ t → edist x y ≤ D) :
+    ∃ C, HolderOnWith C s f t := by
   simp_rw [← HolderWith.restrict_iff] at *
   letI := PseudoEMetricSpace.toPseudoMetricSpace
     fun x y : t ↦ ne_top_of_le_ne_top ENNReal.coe_ne_top (ht x.2 y.2)
-  have : BoundedSpace t := Metric.boundedSpace_iff_edist.2 ⟨C', fun x y ↦ ht x.2 y.2⟩
-  exact MemHolder.mono ⟨C, hf⟩ hs
+  have : BoundedSpace t := Metric.boundedSpace_iff_edist.2 ⟨D, fun x y ↦ ht x.2 y.2⟩
+  exact MemHolder.of_le hf hs
 
 /-- If a function is `r`-Hölder and `t`-Hölder, then it is `s`-Hölder for `r ≤ s ≤ t`. -/
-lemma MemHolder.memHolder_of_le_of_le {s t : ℝ≥0}
-    (hf₁ : MemHolder r f) (hf₂ : MemHolder t f)
+lemma MemHolder.memHolder_of_le_of_le {s t : ℝ≥0} (hf₁ : MemHolder r f) (hf₂ : MemHolder t f)
     (hrs : r ≤ s) (hst : s ≤ t) : MemHolder s f := by
   obtain ⟨C₁, hf₁⟩ := hf₁
   obtain ⟨C₂, hf₂⟩ := hf₂
