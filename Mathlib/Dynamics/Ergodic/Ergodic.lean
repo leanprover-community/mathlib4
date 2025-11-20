@@ -73,7 +73,7 @@ theorem ae_mem_or_ae_notMem (hf : PreErgodic f μ) (hsm : MeasurableSet s) (hs :
 
 @[deprecated (since := "2025-05-24")] alias ae_mem_or_ae_nmem := ae_mem_or_ae_notMem
 
-/-- On a probability space, the (pre)ergodicity condition is a zero one law. -/
+/-- On a probability space, the (pre)ergodicity condition is a zero-one law. -/
 theorem prob_eq_zero_or_one [IsProbabilityMeasure μ] (hf : PreErgodic f μ) (hs : MeasurableSet s)
     (hs' : f ⁻¹' s = s) : μ s = 0 ∨ μ s = 1 := by
   simpa [hs] using hf.measure_self_or_compl_eq_zero hs hs'
@@ -140,8 +140,7 @@ theorem ae_empty_or_univ₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet s 
     s =ᵐ[μ] (∅ : Set α) ∨ s =ᵐ[μ] univ :=
   eventuallyConst_set'.mp <| hf.aeconst_set₀ hsm hs
 
-/-- For a quasi-ergodic map, sets that are almost invariant (rather than strictly invariant) are
-still either almost empty or full. -/
+/-- For a quasi-ergodic map, almost invariant sets have almost everywhere constant membership. -/
 theorem ae_mem_or_ae_notMem₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet s μ)
     (hs : f ⁻¹' s =ᵐ[μ] s) :
     (∀ᵐ x ∂μ, x ∈ s) ∨ ∀ᵐ x ∂μ, x ∉ s :=
