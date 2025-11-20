@@ -373,17 +373,17 @@ noncomputable def monodromy {x y : X} (γ : Path.Homotopic.Quotient x y) :
       (congr_fun (cov.liftPath_lifts ..) 1).trans γ.target⟩)
     fun _ _ h ↦ Subtype.ext (cov.liftPath_apply_one_eq_of_homotopicRel h ..)
 
-theorem monodromy_mapFn {x y : E} (γ : Path.Homotopic.Quotient x y) :
-    cov.monodromy (γ.mapFn ⟨p, cov.continuous⟩) ⟨x, rfl⟩ = ⟨y, rfl⟩ := Subtype.ext <| by
+theorem monodromy_map {x y : E} (γ : Path.Homotopic.Quotient x y) :
+    cov.monodromy (γ.map ⟨p, cov.continuous⟩) ⟨x, rfl⟩ = ⟨y, rfl⟩ := Subtype.ext <| by
   obtain ⟨γ⟩ := γ
   exact (DFunLike.congr_fun ((cov.eq_liftPath_iff' _).mpr ⟨rfl, γ.source⟩).symm 1).trans γ.target
 
-theorem monodromy_refl {x : X} : cov.monodromy ⟦Path.refl x⟧ = id :=
+theorem monodromy_refl {x : X} : cov.monodromy (.refl x) = id :=
   funext fun e ↦ Subtype.ext <| DFunLike.congr_fun (cov.liftPath_const e.2.symm) 1
 
-theorem monodromy_comp_apply {x y z : X}
+theorem monodromy_trans_apply {x y z : X}
     (γ : Path.Homotopic.Quotient x y) (γ' : Path.Homotopic.Quotient y z) (e) :
-    cov.monodromy (γ.comp γ') e = cov.monodromy γ' (cov.monodromy γ e) := by
+    cov.monodromy (γ.trans γ') e = cov.monodromy γ' (cov.monodromy γ e) := by
   obtain ⟨γ⟩ := γ; obtain ⟨γ'⟩ := γ'
   exact Subtype.ext ((DFunLike.congr_fun (cov.liftPath_trans e.2.symm ..) 1).trans (Path.target _))
 
@@ -395,7 +395,7 @@ https://ncatlab.org/nlab/show/monodromy. -/
   obj x := p ⁻¹' {x.as}
   map := cov.monodromy
   map_id _ := cov.monodromy_refl
-  map_comp _ _ := funext (cov.monodromy_comp_apply _ _)
+  map_comp _ _ := funext (cov.monodromy_trans_apply _ _)
 
 theorem monodromy_bijective {x y : X} (γ : Path.Homotopic.Quotient x y) :
     (cov.monodromy γ).Bijective :=
@@ -403,7 +403,7 @@ theorem monodromy_bijective {x y : X} (γ : Path.Homotopic.Quotient x y) :
 
 /-- A covering map induces an injection on all Hom-sets of the fundamental groupoid,
   in particular on the fundamental group. The first part of Proposition 1.31 of [hatcher02]. -/
-lemma injective_path_homotopic_mapFn (e₀ e₁ : E) :
+lemma injective_path_homotopic_map (e₀ e₁ : E) :
     Function.Injective fun γ : Path.Homotopic.Quotient e₀ e₁ ↦ γ.map ⟨p, cov.continuous⟩ := by
   refine Quotient.ind₂ fun γ₀ γ₁ ↦ ?_
   dsimp only
@@ -411,6 +411,9 @@ lemma injective_path_homotopic_mapFn (e₀ e₁ : E) :
   simp_rw [← Path.Homotopic.Quotient.mk_map]
   iterate 2 rw [Path.Homotopic.Quotient.eq]
   exact (cov.homotopicRel_iff_comp ⟨0, .inl rfl, γ₀.source.trans γ₁.source.symm⟩).mpr
+
+@[deprecated (since := "2025-11-20")]
+alias injective_path_homotopic_mapFn := injective_path_homotopic_map
 
 /-- A continuous map `f` from a simply-connected, locally path-connected space `A` to another
   space `X` lifts uniquely through a covering map `p : E → X`, after specifying any lift
@@ -445,18 +448,19 @@ theorem existsUnique_continuousMap_lifts_of_range_le
     (cov.eq_liftPath_iff' <| by simp [γ'_0, he]).mpr ⟨Γ'_lifts, Γ'_0⟩]
   let pγ : Path a₀ (γ 1) := ⟨γ, γ_0, rfl⟩
   let pγ' : Path a₀ (γ 1) := ⟨γ', γ'_0, γγ'1.symm⟩
-  change (cov.monodromy ⟦pγ.map f.continuous⟧ ⟨e₀, he⟩).1 =
-    (cov.monodromy ⟦pγ'.map f.continuous⟧ ⟨e₀, he⟩).1
+  change (cov.monodromy (.mk <| pγ.map f.continuous) ⟨e₀, he⟩).1 =
+    (cov.monodromy (.mk <| pγ'.map f.continuous) ⟨e₀, he⟩).1
   rw [← Subtype.ext_iff]
-  apply (cov.monodromy_bijective ⟦(pγ'.map f.continuous).symm⟧).1
-  simp_rw [← monodromy_comp_apply, ← Path.Homotopic.comp_lift]
-  conv_rhs => rw [← Quotient.eq.2 (Nonempty.intro <| Path.Homotopy.reflTransSymm _), monodromy_refl]
+  apply (cov.monodromy_bijective <| .mk (pγ'.map f.continuous).symm).1
+  simp_rw [← monodromy_trans_apply, ← Path.Homotopic.Quotient.mk_trans]
+  conv_rhs => rw [← Path.Homotopic.Quotient.eq.2 (Nonempty.intro <| Path.Homotopy.reflTransSymm _),
+    Path.Homotopic.Quotient.mk_refl, monodromy_refl]
   rw [Path.map_symm, ← Path.map_trans]
   set pγγ' : Path a₀ a₀ := pγ.trans pγ'.symm
-  obtain ⟨⟨pΓΓ'⟩, eq⟩ := le ⟨fromPath ⟦pγγ'⟧, rfl⟩
-  rw [← show _ = ⟦pγγ'.map _⟧ from eq]
+  obtain ⟨⟨pΓΓ'⟩, eq⟩ := le ⟨fromPath (.mk pγγ'), rfl⟩
+  rw [← show _ = Path.Homotopic.Quotient.mk (pγγ'.map _) from eq]
   erw [mapOfEq_apply]
-  exact Subtype.ext (congr_arg (·.1) (cov.monodromy_mapFn ⟦pΓΓ'⟧))
+  exact Subtype.ext (congr_arg (·.1) (cov.monodromy_map (.mk pΓΓ')))
 
 end homotopy_lifting
 
