@@ -432,8 +432,7 @@ noncomputable abbrev inrX (i : ι) : (K ⊞ K).X i ⟶ K.cylinder.X i :=
 @[reassoc (attr := simp)]
 lemma inlX_π (i j : ι) (hij : c.Rel j i) :
     inlX K i j hij ≫ (π K).f j = 0 := by
-  erw [homotopyCofiber.inlX_desc_f]
-  simp [Homotopy.equivSubZero]
+  simp [HomologicalComplex.cylinder.π, HomologicalComplex.cylinder.desc, Homotopy.equivSubZero]
 
 @[reassoc (attr := simp)]
 lemma inrX_π (i : ι) :
