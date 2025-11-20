@@ -19,6 +19,8 @@ Definition of the sequence: `F₀ = 0`, `F₁ = 1`, and `Fₙ₊₂ = Fₙ₊₁
 
 -/
 
+@[expose] public section
+
 namespace Int
 
 /-- The Fibonacci sequence for integers. This satisfies `fib 0 = 0`, `fib 1 = 1`,
