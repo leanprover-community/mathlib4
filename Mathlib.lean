@@ -6265,7 +6265,6 @@ public import Mathlib.SetTheory.ZFC.PSet
 public import Mathlib.SetTheory.ZFC.Rank
 public import Mathlib.SetTheory.ZFC.VonNeumann
 public import Mathlib.Std.Data.HashMap
-public import Mathlib.StiefelSpectral
 public import Mathlib.Tactic
 public import Mathlib.Tactic.Abel
 public import Mathlib.Tactic.AdaptationNote
