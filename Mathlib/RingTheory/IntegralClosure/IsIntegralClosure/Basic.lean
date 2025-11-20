@@ -3,13 +3,15 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.RingTheory.FiniteType
-import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
-import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
-import Mathlib.RingTheory.Polynomial.IntegralNormalization
-import Mathlib.RingTheory.Polynomial.ScaleRoots
-import Mathlib.RingTheory.TensorProduct.MvPolynomial
+module
+
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.RingTheory.FiniteType
+public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
+public import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
+public import Mathlib.RingTheory.Polynomial.IntegralNormalization
+public import Mathlib.RingTheory.Polynomial.ScaleRoots
+public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!
 # # Integral closure as a characteristic predicate
@@ -17,6 +19,8 @@ import Mathlib.RingTheory.TensorProduct.MvPolynomial
 We prove basic properties of `IsIntegralClosure`.
 
 -/
+
+@[expose] public section
 
 open Polynomial Submodule
 
@@ -185,7 +189,7 @@ theorem AlgEquiv.coe_mapIntegralClosure [Algebra R S] (f : A ≃ₐ[R] S)
 theorem integralClosure.isIntegral (x : integralClosure R A) : IsIntegral R x :=
   let ⟨p, hpm, hpx⟩ := x.2
   ⟨p, hpm,
-    Subtype.eq <| by
+    Subtype.ext <| by
       rwa [← aeval_def, ← Subalgebra.val_apply, aeval_algHom_apply] at hpx⟩
 
 instance integralClosure.AlgebraIsIntegral : Algebra.IsIntegral R (integralClosure R A) :=
@@ -594,7 +598,7 @@ theorem RingHom.IsIntegral.isLocalHom {f : R →+* S} (hf : f.IsIntegral)
     obtain ⟨p, p_monic, hp⟩ := hf (ha.unit⁻¹ : _)
     -- and `q` be `p` with coefficients reversed (so `q(a) = q'(a) * a + 1`).
     -- We have `q(a) = 0`, so `-q'(a)` is the inverse of `a`.
-    refine isUnit_of_mul_eq_one _ (-p.reverse.divX.eval a) ?_
+    refine .of_mul_eq_one (-p.reverse.divX.eval a) ?_
     nth_rewrite 1 [mul_neg, ← eval_X (x := a), ← eval_mul, ← p_monic, ← coeff_zero_reverse,
       ← add_eq_zero_iff_neg_eq, ← eval_C (a := p.reverse.coeff 0), ← eval_add, X_mul_divX_add,
       ← (injective_iff_map_eq_zero' _).mp inj, ← eval₂_hom]

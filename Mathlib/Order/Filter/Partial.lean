@@ -3,8 +3,10 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Data.PFun
+module
+
+public import Mathlib.Order.Filter.Tendsto
+public import Mathlib.Data.PFun
 
 /-!
 # `Tendsto` for relations and partial functions
@@ -38,6 +40,8 @@ get two generalizations each.
 We first take care of relations. Then the definitions for partial functions are taken as special
 cases of the definitions for relations.
 -/
+
+@[expose] public section
 
 
 universe u v w
