@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
-import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
-import Mathlib.GroupTheory.GroupAction.Embedding
-import Mathlib.GroupTheory.GroupAction.Basic
+module
+
+public import Mathlib.GroupTheory.GroupAction.SubMulAction
+public import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
+public import Mathlib.GroupTheory.GroupAction.Embedding
+public import Mathlib.GroupTheory.GroupAction.Basic
 
 /-! # Combinations
 
