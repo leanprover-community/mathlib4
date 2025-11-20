@@ -27,6 +27,9 @@ require "leanprover-community" / "plausible" @ git "main"
 `lake build` uses them, as well as `Archive` and `Counterexamples`. -/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.mathlibStandardSet, true⟩,
+  -- Explicitly enable the header linter, since the standard set is defined in `Mathlib.Init`
+  -- but we want to run this linter in files imported by `Mathlib.Init`.
+  ⟨`linter.style.header, true⟩,
   ⟨`linter.checkInitImports, true⟩,
   ⟨`linter.allScriptsDocumented, true⟩,
   ⟨`linter.pythonStyle, true⟩,
