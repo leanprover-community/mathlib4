@@ -3,11 +3,13 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Module.ZLattice.Summable
-import Mathlib.Analysis.Complex.LocallyUniformLimit
-import Mathlib.LinearAlgebra.Complex.FiniteDimensional
-import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
-import Mathlib.Tactic.Field
+module
+
+public import Mathlib.Algebra.Module.ZLattice.Summable
+public import Mathlib.Analysis.Complex.LocallyUniformLimit
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
+public import Mathlib.Tactic.Field
 
 /-!
 
@@ -21,6 +23,8 @@ import Mathlib.Tactic.Field
 Weierstrass p-functions, Weierstrass p functions
 
 -/
+
+@[expose] public section
 
 open Module
 
