@@ -349,6 +349,9 @@ theorem vadd_mem_mk' {v : V} (p : P) {direction : Submodule k V} (hv : v ∈ dir
 theorem mk'_nonempty (p : P) (direction : Submodule k V) : (mk' p direction : Set P).Nonempty :=
   ⟨p, self_mem_mk' p direction⟩
 
+instance (p : P) (direction : Submodule k V) : Nonempty (mk' p direction) :=
+  ⟨⟨p, self_mem_mk' p direction⟩⟩
+
 /-- The direction of an affine subspace constructed from a point and a direction. -/
 @[simp]
 theorem direction_mk' (p : P) (direction : Submodule k V) :
