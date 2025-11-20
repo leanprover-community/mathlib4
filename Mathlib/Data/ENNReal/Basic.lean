@@ -3,13 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Ring.WithTop
-import Mathlib.Algebra.Order.Sub.WithTop
-import Mathlib.Data.NNReal.Defs
-import Mathlib.Order.Interval.Set.WithBotTop
-import Mathlib.Order.WithBot.BooleanAlgebra
-import Mathlib.Tactic.Finiteness
-import Mathlib.Logic.Equiv.WithBot
+module
+
+public import Mathlib.Algebra.Order.Ring.WithTop
+public import Mathlib.Algebra.Order.Sub.WithTop
+public import Mathlib.Data.NNReal.Defs
+public import Mathlib.Order.Interval.Set.WithBotTop
+public import Mathlib.Order.WithBot.BooleanAlgebra
+public import Mathlib.Tactic.Finiteness
+public import Mathlib.Logic.Equiv.WithBot
 
 /-!
 # Extended non-negative reals
@@ -88,6 +90,8 @@ context, or if we have `(f : α → ℝ≥0∞) (hf : ∀ x, f x ≠ ∞)`.
 * `∞`: a localized notation in `ENNReal` for `⊤ : ℝ≥0∞`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -432,7 +436,7 @@ instance _root_.fact_one_le_top_ennreal : Fact ((1 : ℝ≥0∞) ≤ ∞) :=
 def neTopEquivNNReal : { a | a ≠ ∞ } ≃ ℝ≥0 where
   toFun x := ENNReal.toNNReal x
   invFun x := ⟨x, coe_ne_top⟩
-  left_inv := fun x => Subtype.eq <| coe_toNNReal x.2
+  left_inv := fun x => Subtype.ext <| coe_toNNReal x.2
   right_inv := toNNReal_coe
 
 theorem cinfi_ne_top [InfSet α] (f : ℝ≥0∞ → α) : ⨅ x : { x // x ≠ ∞ }, f x = ⨅ x : ℝ≥0, f x :=
@@ -746,7 +750,7 @@ open Lean Meta Qq
 
 /-- Extension for the `positivity` tactic: `ENNReal.toReal`. -/
 @[positivity ENNReal.toReal _]
-def evalENNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalENNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(ENNReal.toReal $a) =>
     assertInstancesCommute
@@ -755,7 +759,7 @@ def evalENNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
 
 /-- Extension for the `positivity` tactic: `ENNReal.ofNNReal`. -/
 @[positivity ENNReal.ofNNReal _]
-def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα _pα e := do
+meta def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ≥0∞), ~q(ENNReal.ofNNReal $a) =>
     let ra ← core q(inferInstance) q(inferInstance) a

@@ -3,11 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Rel
-import Mathlib.Order.Filter.Tendsto
-import Mathlib.Tactic.Monotonicity.Basic
-import Mathlib.Topology.Order
+module
+
+public import Mathlib.Data.Rel
+public import Mathlib.Topology.Order
 
 /-!
 # Uniform spaces
@@ -81,8 +80,10 @@ operations on filters, without directly manipulating entourages.
 
 ## Notation
 
-Localized in `Uniformity`, we have the notation `𝓤 X` for the uniformity on a uniform space `X`,
-and `○` for composition of relations, seen as terms with type `Set (X × X)`.
+Localized in `Uniformity`, we have the notation `𝓤 X` for the uniformity on a uniform space `X`.
+This file also uses a lot the notation `○` for composition of relations, seen as terms with
+type `SetRel X X`. This notation (defined in the file `Mathlib/Data/Rel.lean`) is
+localized in `SetRel`.
 
 ## Implementation notes
 
@@ -104,6 +105,8 @@ The formalization uses the books:
 
 But it makes a more systematic use of the filter library.
 -/
+
+@[expose] public section
 
 open Set Filter Topology
 

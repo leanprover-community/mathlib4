@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
-import Mathlib.MeasureTheory.MeasurableSpace.Prod
-import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
-import Mathlib.Topology.Instances.Real.Lemmas
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+public import Mathlib.MeasureTheory.MeasurableSpace.Prod
+public import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
+public import Mathlib.Topology.Instances.Real.Lemmas
 
 /-!
 # Borel (measurable) spaces ℝ, ℝ≥0, ℝ≥0∞
@@ -27,11 +29,15 @@ import Mathlib.Topology.Instances.Real.Lemmas
 * `Measurable.ennreal*` : measurability of special cases for arithmetic operations on `ℝ≥0∞`.
 -/
 
+<<<<<<< HEAD
 /-- `Option α` is equivalent to `α ⊕ PUnit` -/
 def Equiv.withTopEquivSumPUnit.{v, w} (α : Type w) : WithTop α ≃ α ⊕ PUnit.{v+1} :=
   ⟨fun o => o.mapD (.inr PUnit.unit) .inl, fun s => s.elim (↑) fun _ => ⊤,
     fun o => by cases o <;> rfl,
     fun s => by rcases s with (_ | ⟨⟨⟩⟩) <;> rfl⟩
+=======
+@[expose] public section
+>>>>>>> master
 
 open Set Filter MeasureTheory MeasurableSpace
 

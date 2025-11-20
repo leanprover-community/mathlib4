@@ -3,9 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.BoxIntegral.Box.SubboxInduction
-import Mathlib.Analysis.BoxIntegral.Partition.Tagged
-import Mathlib.Data.Finset.Lattice.Fold
+module
+
+public import Mathlib.Analysis.BoxIntegral.Box.SubboxInduction
+public import Mathlib.Analysis.BoxIntegral.Partition.Tagged
+public import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # Induction on subboxes
@@ -26,6 +28,8 @@ integral is well-defined.
 
 partition, tagged partition, Henstock integral
 -/
+
+@[expose] public section
 
 
 namespace BoxIntegral
