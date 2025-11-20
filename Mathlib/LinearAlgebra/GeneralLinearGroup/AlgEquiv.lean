@@ -20,6 +20,8 @@ In other words, the map `MulSemiringAction.toAlgEquiv` from `GeneralLinearGroup 
 `End K V ≃ₐ End K V` is surjective.
 -/
 
+@[expose] public section
+
 namespace Module.End
 variable {R K V : Type*} [CommSemiring R] [Semifield K] [AddCommMonoid V] [Module R V] [Module K V]
 
