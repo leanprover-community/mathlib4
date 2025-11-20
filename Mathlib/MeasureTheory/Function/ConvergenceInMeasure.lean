@@ -366,7 +366,15 @@ end TendstoInMeasureUnique
 
 section AEMeasurableOf
 
-variable [MeasurableSpace E] [SeminormedAddCommGroup E] [BorelSpace E]
+variable [PseudoEMetricSpace E]
+
+theorem TendstoInMeasure.aestronglyMeasurable {u : Filter ι} [NeBot u] [IsCountablyGenerated u]
+    {f : ι → α → E} {g : α → E} (hf : ∀ n, AEStronglyMeasurable (f n) μ)
+    (h_tendsto : TendstoInMeasure μ f u g) : AEStronglyMeasurable g μ := by
+  obtain ⟨ns, -, hns⟩ := h_tendsto.exists_seq_tendsto_ae'
+  exact aestronglyMeasurable_of_tendsto_ae atTop (fun n => hf (ns n)) hns
+
+variable [MeasurableSpace E] [BorelSpace E]
 
 theorem TendstoInMeasure.aemeasurable {u : Filter ι} [NeBot u] [IsCountablyGenerated u]
     {f : ι → α → E} {g : α → E} (hf : ∀ n, AEMeasurable (f n) μ)
