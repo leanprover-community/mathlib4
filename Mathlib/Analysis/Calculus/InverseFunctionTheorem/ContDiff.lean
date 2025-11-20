@@ -3,15 +3,19 @@ Copyright (c) 2020 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Analysis.Calculus.ContDiff.RCLike
-import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Calculus.ContDiff.RCLike
+public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
 
 /-!
 # Inverse function theorem, `C^r` case
 
 In this file we specialize the inverse function theorem to `C^r`-smooth functions.
 -/
+
+@[expose] public section
 
 noncomputable section
 

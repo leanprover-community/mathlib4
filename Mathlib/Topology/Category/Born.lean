@@ -3,14 +3,18 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.Topology.Bornology.Hom
+module
+
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.Topology.Bornology.Hom
 
 /-!
 # The category of bornologies
 
 This defines `Born`, the category of bornologies.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -19,6 +23,8 @@ open CategoryTheory
 
 /-- The category of bornologies. -/
 structure Born where
+  /-- Construct a bundled `Born` from a `Bornology`. -/
+  of ::
   /-- The underlying bornology. -/
   carrier : Type*
   [str : Bornology carrier]
@@ -29,10 +35,6 @@ namespace Born
 
 instance : CoeSort Born Type* :=
   ⟨carrier⟩
-
-/-- Construct a bundled `Born` from a `Bornology`. -/
-abbrev of (α : Type*) [Bornology α] : Born where
-  carrier := α
 
 instance : Inhabited Born :=
   ⟨of PUnit⟩

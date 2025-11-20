@@ -3,8 +3,10 @@ Copyright (c) 2025 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Mathlib.Tactic.Push
-import Batteries.Tactic.PermuteGoals
+module
+
+public meta import Mathlib.Tactic.Push
+public meta import Batteries.Tactic.PermuteGoals
 
 /-!
 # The `by_cases!` tactic
@@ -12,6 +14,8 @@ import Batteries.Tactic.PermuteGoals
 The `by_cases!` tactic is a variant of the `by_cases` tactic that also calls `push_neg`
 on the generated hypothesis that is a negation.
 -/
+
+public meta section
 
 /--
 `by_cases! h : p` runs the `by_cases h : p` tactic, followed by

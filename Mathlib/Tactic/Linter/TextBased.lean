@@ -3,14 +3,17 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
+module
 
-import Batteries.Data.String.Matcher
-import Mathlib.Data.Nat.Notation
-import Lake.Util.Casing
+public meta import Batteries.Data.String.Matcher
+public meta import Mathlib.Data.Nat.Notation
+public meta import Lake.Util.Casing
 
 -- Don't warn about the lake import: the above file has almost no imports, and this PR has been
 -- benchmarked.
 set_option linter.style.header false
+
+public meta section
 
 /-!
 ## Text-based linters
@@ -38,15 +41,6 @@ An executable running all these linters is defined in `scripts/lint-style.lean`.
 open Lean.Linter System
 
 namespace Mathlib.Linter.TextBased
-
-/-- Different kinds of "broad imports" that are linted against. -/
-inductive BroadImports
-  /-- Importing the entire "Mathlib.Tactic" folder -/
-  | TacticFolder
-  /-- Importing any module in `Lake`, unless carefully measured
-  This has caused unexpected regressions in the past. -/
-  | Lake
-deriving BEq
 
 /-- Possible errors that text-based linters can report. -/
 -- We collect these in one inductive type to centralise error reporting.
@@ -247,10 +241,10 @@ def semicolonLinter : TextbasedLinter := fun opts lines ↦ Id.run do
     let line := lines[idx]
     let pos := line.find (· == ';')
     -- Future: also lint for a semicolon *not* followed by a space or ⟩.
-    if pos != line.endPos && (pos.prev line).get line == ' ' then
+    if pos != line.rawEndPos && (pos.prev line).get line == ' ' then
       errors := errors.push (StyleError.semicolon, idx + 1)
       -- We spell the bad string pattern this way to avoid the linter firing on itself.
-      fixedLines := fixedLines.set! idx (line.replace [' ', ';'].asString ";")
+      fixedLines := fixedLines.set! idx (line.replace (String.ofList [' ', ';']) ";")
   return (errors, if errors.size > 0 then some fixedLines else none)
 
 
