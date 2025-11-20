@@ -3,8 +3,10 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Tactic.TypeStar
-import Mathlib.Tactic.ToAdditive
+module
+
+public import Mathlib.Tactic.TypeStar
+public import Mathlib.Tactic.ToAdditive
 
 /-!
 # Notations for operations involving order and algebraic structure
@@ -16,6 +18,8 @@ import Mathlib.Tactic.ToAdditive
 * `a⁺ = a ⊔ 0`: *Positive component* of an element `a` of a lattice ordered group
 * `a⁻ = (-a) ⊔ 0`: *Negative component* of an element `a` of a lattice ordered group
 -/
+
+@[expose] public section
 
 /-- A notation class for the *positive part* function: `a⁺`. -/
 class PosPart (α : Type*) where

@@ -3,13 +3,17 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Basic
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Basic
 
 /-!
 # Collapsing covers
 
 We define the endofunctor on `Scheme.Cover P` that collapses a cover to a single object cover.
 -/
+
+@[expose] public section
 
 universe v u
 

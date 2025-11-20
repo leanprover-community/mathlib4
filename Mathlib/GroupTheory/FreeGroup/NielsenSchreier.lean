@@ -3,10 +3,12 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.CategoryTheory.Action
-import Mathlib.Combinatorics.Quiver.Arborescence
-import Mathlib.Combinatorics.Quiver.ConnectedComponent
-import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
+module
+
+public import Mathlib.CategoryTheory.Action
+public import Mathlib.Combinatorics.Quiver.Arborescence
+public import Mathlib.Combinatorics.Quiver.ConnectedComponent
+public import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 
 /-!
 # The Nielsen-Schreier theorem
@@ -46,6 +48,8 @@ https://ncatlab.org/nlab/show/Nielsen-Schreier+theorem
 free group, free groupoid, Nielsen-Schreier
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

@@ -3,12 +3,14 @@ Copyright (c) 2024 Yaël Dillies, Patrick Luo, Bhavik Mehta. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Patrick Luo, Bhavik Mehta
 -/
-import Mathlib.Algebra.Pointwise.Stabilizer
-import Mathlib.Combinatorics.Additive.Convolution
-import Mathlib.NumberTheory.Real.GoldenRatio
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Qify
+module
+
+public import Mathlib.Algebra.Pointwise.Stabilizer
+public import Mathlib.Combinatorics.Additive.Convolution
+public import Mathlib.NumberTheory.Real.GoldenRatio
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Positivity
+public import Mathlib.Tactic.Qify
 
 /-!
 # Sets with very small doubling
@@ -33,6 +35,8 @@ For a finset `A` in a group, its *doubling* is `#(A * A) / #A`. This file charac
 * [*An elementary non-commutative Freiman theorem*, Terence Tao](https://terrytao.wordpress.com/2009/11/10/an-elementary-non-commutative-freiman-theorem)
 * [*Introduction to approximate groups*, Matthew Tointon][tointon2020]
 -/
+
+@[expose] public section
 
 open MulOpposite MulAction
 open scoped Pointwise RightActions
@@ -625,9 +629,9 @@ private lemma exists_nonempty_isFragment (hK : K < 1) (hS : S.Nonempty) :
     rw [Nat.lt_iff_add_one_le] at hA
     calc
           κ + 1
-      _ = (κ + 1) / ((κ + 1) / (1 - K)) * ((κ + 1) / (1 - K)) := by field_simp
+      _ = (κ + 1) / ((κ + 1) / (1 - K)) * ((κ + 1) / (1 - K)) := by field
       _ < (κ + 1) / ((κ + 1) / (1 - K)) * (t + 1) := by gcongr; exact Nat.lt_floor_add_one _
-      _ = (1 - K) * (t + 1) := by field_simp
+      _ = (1 - K) * (t + 1) := by field
       _ ≤ (1 - K) * #A      := by norm_cast; gcongr
       _ ≤ ex A              := mul_card_le_expansion hS
   -- On the other hand, we essentially show that there are only finitely many possible values for
@@ -751,25 +755,25 @@ theorem card_mul_finset_lt_two {ε : ℝ} (hε₀ : 0 < ε) (hε₁ : ε ≤ 1) 
         _ = (1 - K) * #(H : Set G).toFinset := by ring
         _ ≤ ex (Set.toFinset H)             := mul_card_le_expansion hS
         _ ≤ (1 - ε / 2) * #S                := calc₁
-        _ = ε / 2 * ((2 / ε - 1) * #S)      := by field_simp
+        _ = ε / 2 * ((2 / ε - 1) * #S)      := by field
   -- To show the bound on `#Z`, we note that `#Z = #(HS) / #H` and show `#(HS) ≤ (2 / ε - 1) * #H`.
   case cardZ =>
     calc
           (#Z : ℝ)
-      _ = #(H : Set G).toFinset * #Z / #(H : Set G).toFinset          := by field_simp
+      _ = #(H : Set G).toFinset * #Z / #(H : Set G).toFinset          := by field
       _ = #(Set.toFinset H * Z) / #(H : Set G).toFinset               := by
         simp [← card_mul_eq_mul_card_of_injOn_opSMul hZinj, Nat.cast_mul]
       _ = #(Set.toFinset H * S) / #(H : Set G).toFinset               := by
         congr 3; simpa using congr(($hHZS).toFinset)
       _ ≤ (2 / ε - 1) * #(H : Set G).toFinset / #(H : Set G).toFinset := ?_
-      _ = 2 / ε - 1                                                   := by field_simp
+      _ = 2 / ε - 1                                                   := by field
     gcongr
     -- Finally, to show `#(HS) ≤ (2 / ε - 1) * #H`, we multiply both sides by `1 - K = ε / 2` and
     -- show `#(HS) = K * #H + ex H ≤ K * #H + (1 - ε / 2) * #S ≤ K * #H + (1 - ε / 2) * #(HS)`,
     -- where we used `calc₁` again.
     rw [← mul_le_mul_iff_right₀ (show 0 < 1 - K by linarith [hK])]
     suffices (1 - K) * #(Set.toFinset H * S) ≤ (1 - ε / 2) * #(H : Set G).toFinset by
-      apply le_of_eq_of_le' _ this; simp [K]; field_simp
+      apply le_of_eq_of_le' _ this; simp [K]; field
     rw [sub_mul, one_mul, sub_le_iff_le_add]
     calc
           (#(Set.toFinset H * S) : ℝ)

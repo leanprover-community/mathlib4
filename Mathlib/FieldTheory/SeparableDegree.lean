@@ -3,14 +3,16 @@ Copyright (c) 2023 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.FieldTheory.SplittingField.Construction
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.FieldTheory.Separable
-import Mathlib.FieldTheory.Normal.Closure
-import Mathlib.RingTheory.AlgebraicIndependent.Adjoin
-import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
-import Mathlib.RingTheory.Polynomial.SeparableDegree
-import Mathlib.RingTheory.Polynomial.UniqueFactorization
+module
+
+public import Mathlib.FieldTheory.SplittingField.Construction
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.FieldTheory.Separable
+public import Mathlib.FieldTheory.Normal.Closure
+public import Mathlib.RingTheory.AlgebraicIndependent.Adjoin
+public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
+public import Mathlib.RingTheory.Polynomial.SeparableDegree
+public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 /-!
 
@@ -117,6 +119,8 @@ This file contains basics about the separable degree of a field extension.
 separable degree, degree, polynomial
 
 -/
+
+@[expose] public section
 
 open Module Polynomial IntermediateField Field
 
