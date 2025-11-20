@@ -259,9 +259,41 @@ def check_update_action(repo: Dict[str, str]) -> bool:
     return (check_workflow_uses_action(repo, 'update', 'leanprover-community/lean-update', silent=True) or
             check_workflow_uses_action(repo, 'update', 'leanprover-community/mathlib-update-action', silent=True))
 
+def fetch_license(repo: Dict[str, str]) -> Optional[str]:
+    """Fetch LICENSE file contents, checking both with and without path prefix.
+
+    If the repo has a 'path' field, this will check:
+    1. LICENSE in the subdirectory (e.g., analysis/LICENSE)
+    2. LICENSE at the repository root (e.g., LICENSE)
+
+    Returns the license contents if found, None otherwise.
+    """
+    # First try with the path prefix (if present)
+    license = fetch_file_contents(repo, 'LICENSE')
+    if license is not None:
+        return license
+
+    # If not found and repo has a path field, try at repository root
+    if 'path' in repo:
+        github_url = repo['github']
+        repo_name = github_url.replace('https://github.com/', '')
+        try:
+            result = subprocess.run(
+                ['gh', 'api', f'repos/{repo_name}/contents/LICENSE'],
+                capture_output=True,
+                text=True
+            )
+            if result.returncode == 0:
+                content = json.loads(result.stdout)
+                return base64.b64decode(content['content']).decode('utf-8')
+        except Exception:
+            pass
+
+    return None
+
 def check_license(repo: Dict[str, str]) -> bool:
     """Check if repo has a LICENSE file. Returns True if present."""
-    return fetch_file_contents(repo, 'LICENSE') is not None
+    return fetch_license(repo) is not None
 
 def check_lint_driver(repo: Dict[str, str]) -> bool:
     """Check if repo has lint driver configured. Returns True if present."""
@@ -401,7 +433,7 @@ f"""  {FAIL} No toolchain tags found.
                 # Report failure for mathlib-update-action, since that has more features.
                 success = check_workflow_uses_action(repo, 'update', 'leanprover-community/mathlib-update-action') and success
 
-            license = fetch_file_contents(repo, 'LICENSE')
+            license = fetch_license(repo)
             if license is not None:
                 first_line = license.split('\n')[0].strip()
                 print(f"  {PASS} License: {first_line}")
