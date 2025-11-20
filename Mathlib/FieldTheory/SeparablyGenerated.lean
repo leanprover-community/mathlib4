@@ -3,13 +3,15 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.MvPolynomial.Nilpotent
-import Mathlib.Algebra.Order.Ring.Finset
-import Mathlib.Data.Set.Subset
-import Mathlib.FieldTheory.SeparableClosure
-import Mathlib.RingTheory.AlgebraicIndependent.AlgebraicClosure
-import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
-import Mathlib.RingTheory.Polynomial.GaussLemma
+module
+
+public import Mathlib.Algebra.MvPolynomial.Nilpotent
+public import Mathlib.Algebra.Order.Ring.Finset
+public import Mathlib.Data.Set.Subset
+public import Mathlib.FieldTheory.SeparableClosure
+public import Mathlib.RingTheory.AlgebraicIndependent.AlgebraicClosure
+public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
+public import Mathlib.RingTheory.Polynomial.GaussLemma
 
 /-!
 
