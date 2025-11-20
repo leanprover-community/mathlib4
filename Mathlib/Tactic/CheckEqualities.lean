@@ -76,6 +76,6 @@ reporting discrepancies between the implicit type argument of the equality,
 and the inferred types of the left and right hand sides,
 at "instances and reducible" transparency.
 -/
-elab "#check_equalities" : tactic => checkEqualitiesTac
+elab "check_equalities" : tactic => checkEqualitiesTac
 
 end Mathlib.Tactic.CheckEqualities
