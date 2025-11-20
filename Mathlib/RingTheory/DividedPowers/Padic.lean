@@ -3,9 +3,10 @@ Copyright (c) 2025 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
+module
 
-import Mathlib.NumberTheory.Padics.PadicIntegers
-import Mathlib.RingTheory.DividedPowers.RatAlgebra
+public import Mathlib.NumberTheory.Padics.PadicIntegers
+public import Mathlib.RingTheory.DividedPowers.RatAlgebra
 
 /-! # Divided powers on ℤ_[p]
 
@@ -22,6 +23,8 @@ TODO: If `K` is a `p`-adic local field with ring of integers `R` and uniformizer
 `e ≤ p - 1`.
 
 -/
+
+@[expose] public section
 
 namespace PadicInt
 

@@ -3,8 +3,10 @@ Copyright (c) 2025 Julian Berman. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Hill, Julian Berman, Austin Letson, Matej Penciak
 -/
-import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.LinearAlgebra.Basis.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.Monic
+public import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
 
@@ -28,6 +30,8 @@ Generalize linear independence to:
   * just require coefficients are regular
   * arbitrary sets of polynomials which are pairwise different degree.
 -/
+
+@[expose] public section
 
 open Module Submodule
 open scoped Function
@@ -124,15 +128,7 @@ protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.r
       ← degree_eq_natDegree p_ne_zero, hp] at head_degree_eq
     -- and that this degree is also their `natDegree`
     have head_degree_eq_natDegree : head.degree = head.natDegree := degree_eq_natDegree <| by
-      by_cases n_eq_zero : n = 0
-      · dsimp [head]
-        rw [n_eq_zero, ← coeff_natDegree, natDegree_eq] at rightinv
-        rwa [n_eq_zero, eq_C_of_natDegree_eq_zero <| S.natDegree_eq 0,
-          smul_C, smul_eq_mul, map_mul, ← C_mul, rightinv, smul_C, smul_eq_mul,
-          mul_one, C_eq_zero, leadingCoeff_eq_zero]
-      · apply head.ne_zero_of_degree_gt (n := 0)
-        rw [← head_degree_eq]
-        exact natDegree_pos_iff_degree_pos.mp (by cutsat)
+      grind [degree_eq_bot]
     -- and that they have matching leading coefficients
     have hPhead : P.leadingCoeff = head.leadingCoeff := by
       rw [degree_eq_natDegree p_ne_zero, head_degree_eq_natDegree] at head_degree_eq

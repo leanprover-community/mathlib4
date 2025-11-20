@@ -3,9 +3,11 @@ Copyright (c) 2021 Alena Gusakov, Bhavik Mehta, Kyle Miller. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alena Gusakov, Bhavik Mehta, Kyle Miller
 -/
-import Mathlib.Combinatorics.Hall.Finite
-import Mathlib.CategoryTheory.CofilteredSystem
-import Mathlib.Data.Rel
+module
+
+public import Mathlib.Combinatorics.Hall.Finite
+public import Mathlib.CategoryTheory.CofilteredSystem
+public import Mathlib.Data.Rel
 
 /-!
 # Hall's Marriage Theorem
@@ -41,14 +43,12 @@ The core of this module is constructing the inverse system: for every finite sub
   `r : α → β → Prop` on finite types, with the Hall condition given in terms of
   `finset.univ.filter`.
 
-## TODO
-
-* The statement of the theorem in terms of bipartite graphs is in preparation.
-
 ## Tags
 
 Hall's Marriage Theorem, indexed families
 -/
+
+@[expose] public section
 
 open Finset Function CategoryTheory
 open scoped SetRel

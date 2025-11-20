@@ -3,8 +3,10 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Integral.FinMeasAdditive
-import Mathlib.Analysis.Normed.Operator.Extend
+module
+
+public import Mathlib.MeasureTheory.Integral.FinMeasAdditive
+public import Mathlib.Analysis.Normed.Operator.Extend
 
 /-!
 # Extension of a linear function from indicators to L1
@@ -56,6 +58,8 @@ If the space is also an ordered additive group with an order closed topology and
 - `setToFun_nonneg (hf : 0 ≤ᵐ[μ] f) : 0 ≤ setToFun μ T hT f`
 - `setToFun_mono (hfg : f ≤ᵐ[μ] g) : setToFun μ T hT f ≤ setToFun μ T hT g`
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -633,9 +637,6 @@ theorem setToFun_undef (hT : DominatedFinMeasAdditive μ T C) (hf : ¬Integrable
 theorem setToFun_non_aestronglyMeasurable (hT : DominatedFinMeasAdditive μ T C)
     (hf : ¬AEStronglyMeasurable f μ) : setToFun μ T hT f = 0 :=
   setToFun_undef hT (not_and_of_not_left _ hf)
-
-@[deprecated (since := "2025-04-09")]
-alias setToFun_non_aEStronglyMeasurable := setToFun_non_aestronglyMeasurable
 
 theorem setToFun_congr_left (hT : DominatedFinMeasAdditive μ T C)
     (hT' : DominatedFinMeasAdditive μ T' C') (h : T = T') (f : α → E) :
