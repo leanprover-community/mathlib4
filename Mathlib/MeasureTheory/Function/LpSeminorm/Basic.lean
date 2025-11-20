@@ -17,6 +17,8 @@ public import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 # Basic theorems about ℒp space
 -/
 
+set_option linter.style.longFile 1700
+
 @[expose] public section
 noncomputable section
 
