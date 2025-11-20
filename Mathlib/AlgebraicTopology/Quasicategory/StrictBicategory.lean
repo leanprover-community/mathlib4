@@ -29,7 +29,7 @@ This strict bicategory serves as a setting to develop the formal category theory
 
 -/
 
-@[expose] public_section
+@[expose] public section
 
 universe u
 
@@ -53,7 +53,7 @@ instance QCat.SimplicialCat : SimplicialCategory QCat := inferInstance
 hom objects in its `SSet`-enriched ordinary structure. -/
 noncomputable instance QCat.CatEnrichedOrdinaryCat : EnrichedOrdinaryCategory Cat QCat :=
   TransportEnrichment.enrichedOrdinaryCategory QCat hoFunctor
-    hoFunctor.proNormalMonoidalEquiv hoFunctor.proNormalMonoidalEquiv_eq
+    hoFunctor.unitHomEquiv hoFunctor.unitHomEquiv_eq
 
 /-- The underlying category of the `Cat`-enriched ordinary category of quasicategories is
 equivalent to `QCat`. -/
