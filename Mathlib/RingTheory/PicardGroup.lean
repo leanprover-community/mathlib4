@@ -503,11 +503,6 @@ theorem subsingleton_iff {R : Type u} [CommRing R] : Subsingleton (Pic R) ↔
   subsingleton_iffₛ.trans
     ⟨fun h M ↦ h M, fun h M ↦ let _ := @Module.addCommMonoidToAddCommGroup R; h M⟩
 
-theorem subsingleton_iff {R : Type u} [CommRing R] : Subsingleton (Pic R) ↔
-    ∀ (M : Type u) [AddCommGroup M] [Module R M], Module.Invertible R M → Free R M :=
-  subsingleton_iffₛ.trans
-    ⟨fun h M ↦ h M, fun h M ↦ let _ := @Module.addCommMonoidToAddCommGroup R; h M⟩
-
 instance [Subsingleton (Pic R)] : Free R M :=
   have := subsingleton_iffₛ.mp ‹_› (Finite.reprₛ R M) inferInstance
   .of_equiv (Finite.reprEquivₛ R M)
@@ -769,7 +764,7 @@ theorem Submodule.range_unitsToPic : (unitsToPic R A).range = relPic R A := by
   apply_fun (⊤ * ·) at this
   simp_rw [← mul_assoc, top_mul_submoduleAlgebra] at this
   obtain ⟨a, -, eq⟩ := mem_mul_span_singleton.mp (this ▸ mem_top (x := 1))
-  exact (isUnit_of_mul_eq_one_right _ _ eq).map (spanSingleton R)
+  exact .map (spanSingleton R) (.of_mul_eq_one_right _ eq)
 
 open QuotientGroup in
 /-- If `A` is a faithful `R`-algebra, the relative Picard group Pic(A/R) is isomorphic to
