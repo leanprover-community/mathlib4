@@ -23,7 +23,7 @@ private def funPropHelpString : String :=
 "`fun_prop` tactic to prove function properties like `Continuous`, `Differentiable`, `IsLinearMap`"
 
 /-- Initialization of `funProp` attribute -/
-initialize funPropAttr : Unit ←
+initialize
   registerBuiltinAttribute {
     name  := `fun_prop
     descr := funPropHelpString

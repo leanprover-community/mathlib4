@@ -31,6 +31,4 @@ universe u
 
 variable {α : Type u}
 
-open Batteries (RBNode)
-
 end Tree
