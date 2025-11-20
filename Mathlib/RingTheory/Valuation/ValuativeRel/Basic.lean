@@ -820,6 +820,13 @@ variable (R) in
 class IsNontrivial where
   condition : ∃ γ : ValueGroupWithZero R, γ ≠ 0 ∧ γ ≠ 1
 
+lemma IsNontrivial.exists_lt_one [IsNontrivial R] :
+    ∃ γ : ValueGroupWithZero R, 0 < γ ∧ γ < 1 := by
+  obtain ⟨γ, h0, h1⟩ := IsNontrivial.condition (R := R)
+  obtain h1 | h1 := lt_or_lt_iff_ne.mpr h1
+  · exact ⟨γ, zero_lt_iff.mpr h0, h1⟩
+  · exact ⟨γ⁻¹, by simpa [zero_lt_iff], by simp [inv_lt_one_iff₀, h0, h1]⟩
+
 lemma isNontrivial_iff_nontrivial_units :
     IsNontrivial R ↔ Nontrivial (ValueGroupWithZero R)ˣ := by
   constructor
@@ -882,6 +889,39 @@ has a maximal element `< 1`. -/
 class IsDiscrete where
   has_maximal_element :
     ∃ γ : ValueGroupWithZero R, γ < 1 ∧ (∀ δ : ValueGroupWithZero R, δ < 1 → δ ≤ γ)
+
+variable (R) in
+/-- The maximal element that is `< 1` in the value group of a discrete valuation. -/
+-- TODO: Link to `Valuation.IsUniformizer` once we connect `Valuation.IsRankOneDiscrete` with
+-- `ValuativeRel`.
+noncomputable
+def uniformizer [IsDiscrete R] : ValueGroupWithZero R :=
+  IsDiscrete.has_maximal_element.choose
+
+lemma uniformizer_lt_one [IsDiscrete R] :
+    uniformizer R < 1 := IsDiscrete.has_maximal_element.choose_spec.1
+
+lemma le_uniformizer_iff [IsDiscrete R] {a : ValueGroupWithZero R} :
+    a ≤ uniformizer R ↔ a < 1 :=
+  ⟨fun h ↦ h.trans_lt uniformizer_lt_one,
+    IsDiscrete.has_maximal_element.choose_spec.2 a⟩
+
+lemma uniformizer_pos [IsDiscrete R] [IsNontrivial R] :
+    0 < uniformizer R := by
+  obtain ⟨γ, hγ, hγ'⟩ := IsNontrivial.exists_lt_one (R := R)
+  exact hγ.trans_le (le_uniformizer_iff.mpr hγ')
+
+@[simp]
+lemma uniformizer_ne_zero [IsDiscrete R] [IsNontrivial R] :
+    uniformizer R ≠ 0 :=
+  uniformizer_pos.ne'
+
+lemma uniformizer_inv_le_iff [IsDiscrete R] [IsNontrivial R] {a : ValueGroupWithZero R} :
+    (uniformizer R)⁻¹ ≤ a ↔ 1 < a := by
+  by_cases ha : a = 0
+  · simp [ha]
+  replace ha : 0 < a := bot_lt_iff_ne_bot.mpr ha
+  rw [inv_le_comm₀ uniformizer_pos ha, le_uniformizer_iff, inv_lt_one₀ ha]
 
 end ValuativeRel
 
