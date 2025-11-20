@@ -133,8 +133,8 @@ variable (p) in
 with constant `c` whose underlying set is in `𝒜` is dense in the set of constant indicators
 which are in `Lp E p μ` when `1 ≤ p < ∞`. -/
 theorem Measure.MeasureDense.indicatorConstLp_subset_closure (h𝒜 : μ.MeasureDense 𝒜) (c : E) :
-    {indicatorConstLp p hs hμs c | (s : Set X) (hs : MeasurableSet s) (hμs : μ s ≠ ∞)} ⊆
-    closure {indicatorConstLp p (h𝒜.measurable s hs) hμs c |
+    {indicatorConstLp p hs (.inr hμs) c | (s : Set X) (hs : MeasurableSet s) (hμs : μ s ≠ ∞)} ⊆
+    closure {indicatorConstLp p (h𝒜.measurable s hs) (.inr hμs) c |
       (s : Set X) (hs : s ∈ 𝒜) (hμs : μ s ≠ ∞)} := by
   obtain rfl | hc := eq_or_ne c 0
   · refine Subset.trans ?_ subset_closure
@@ -148,7 +148,7 @@ theorem Measure.MeasureDense.indicatorConstLp_subset_closure (h𝒜 : μ.Measure
     refine Metric.mem_closure_iff.2 fun ε hε ↦ ?_
     have aux : 0 < (ε / ‖c‖) ^ p.toReal := rpow_pos_of_pos (div_pos hε (norm_pos_iff.2 hc)) _
     obtain ⟨t, ht, hμt, hμst⟩ := h𝒜.fin_meas_approx ms hμs ((ε / ‖c‖) ^ p.toReal) aux
-    refine ⟨indicatorConstLp p (h𝒜.measurable t ht) hμt c,
+    refine ⟨indicatorConstLp p (h𝒜.measurable t ht) (.inr hμt) c,
       ⟨t, ht, hμt, rfl⟩, ?_⟩
     rw [dist_indicatorConstLp_eq_norm, norm_indicatorConstLp p_pos.ne.symm p_ne_top.elim]
     calc
@@ -442,7 +442,7 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
   -- we define the function `key` which given an integer `n` and two families of `n` elements
   -- in `u` and `𝒜₀` associates the corresponding sum.
   let key (n : ℕ) (d : Fin n → u) (s : Fin n → 𝒜₀) : (Lp E p μ) :=
-    ∑ i, indicatorConstLp p (h𝒜₀.measurable (s i) (Subtype.mem (s i))) (s i).2.2 (d i : E)
+    ∑ i, indicatorConstLp p (h𝒜₀.measurable (s i) (Subtype.mem (s i))) (.inr (s i).2.2) (d i : E)
   let D := {s : Lp E p μ | ∃ n d t, s = key n d t}
   refine ⟨D, ?_, ?_⟩
   · -- Countability directly follows from countability of `u` and `𝒜₀`. The function `f` below
