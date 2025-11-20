@@ -1712,6 +1712,7 @@ public import Mathlib.Analysis.Convex.PathConnected
 public import Mathlib.Analysis.Convex.Piecewise
 public import Mathlib.Analysis.Convex.Quasiconvex
 public import Mathlib.Analysis.Convex.Radon
+public import Mathlib.Analysis.Convex.SaddlePoint
 public import Mathlib.Analysis.Convex.Segment
 public import Mathlib.Analysis.Convex.Side
 public import Mathlib.Analysis.Convex.SimplicialComplex.Basic
