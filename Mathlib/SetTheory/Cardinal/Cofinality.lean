@@ -3,8 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Cardinal.Arithmetic
-import Mathlib.SetTheory.Ordinal.FixedPoint
+module
+
+public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.SetTheory.Ordinal.FixedPoint
 
 /-!
 # Cofinality
@@ -27,6 +29,8 @@ This file contains the definition of cofinality of an order and an ordinal numbe
 * The cofinality is defined for ordinals.
   If `c` is a cardinal number, its cofinality is `c.ord.cof`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
