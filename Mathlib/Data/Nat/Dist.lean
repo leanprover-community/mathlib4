@@ -3,14 +3,18 @@ Copyright (c) 2014 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Jeremy Avigad
 -/
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Order.Ring.Canonical
+module
+
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Ring.Canonical
 
 /-!
-#  Distance function on ℕ
+# Distance function on ℕ
 
 This file defines a simple distance function on naturals from truncated subtraction.
 -/
+
+@[expose] public section
 
 
 namespace Nat

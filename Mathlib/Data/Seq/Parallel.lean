@@ -3,7 +3,9 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.WSeq.Relation
+module
+
+public import Mathlib.Data.WSeq.Relation
 
 /-!
 # Parallel computation
@@ -15,6 +17,8 @@ terminates_parallel and exists_of_mem_parallel.
 (This operation is nondeterministic in the sense that it does not
 honor sequence equivalence (irrelevance of computation time).)
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -156,14 +160,7 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
         apply IH _ _ _ (Or.inr _) T
         rw [a, Seq.get?_tail]
       rcases e : Seq.get? S 0 with - | o
-      · have D : Seq.destruct S = none := by
-          dsimp [Seq.destruct]
-          rw [e]
-          rfl
-        rw [D]
-        simp only
-        have TT := TT l'
-        rwa [Seq.destruct_eq_none D, Seq.tail_nil] at TT
+      · grind [Seq.get?_zero_eq_none, Seq.get?_nil]
       · have D : Seq.destruct S = some (o, S.tail) := by
           dsimp [Seq.destruct]
           rw [e]

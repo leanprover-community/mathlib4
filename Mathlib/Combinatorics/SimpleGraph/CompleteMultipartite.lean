@@ -3,11 +3,13 @@ Copyright (c) 2024 John Talbot and Lian Bremner Tattersall. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: John Talbot, Lian Bremner Tattersall
 -/
-import Mathlib.Combinatorics.SimpleGraph.Coloring
-import Mathlib.Combinatorics.SimpleGraph.Copy
-import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-import Mathlib.Combinatorics.SimpleGraph.Extremal.Turan
-import Mathlib.Combinatorics.SimpleGraph.Hasse
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Coloring
+public import Mathlib.Combinatorics.SimpleGraph.Copy
+public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+public import Mathlib.Combinatorics.SimpleGraph.Extremal.Turan
+public import Mathlib.Combinatorics.SimpleGraph.Hasse
 
 /-!
 # Complete Multipartite Graphs
@@ -48,6 +50,8 @@ See `completeEquipartiteGraph.completeMultipartiteGraph`, `completeEquipartiteGr
 for the isomorphisms between a `completeEquipartiteGraph` and a corresponding
 `completeMultipartiteGraph`, `turanGraph`.
 -/
+
+@[expose] public section
 
 open Finset Fintype
 
@@ -114,15 +118,15 @@ namespace IsPathGraph3Compl
 
 variable {v w₁ w₂ : α}
 
-@[grind]
+@[grind →]
 lemma ne_fst (h2 : G.IsPathGraph3Compl v w₁ w₂) : v ≠ w₁ :=
   fun h ↦ h2.not_adj_snd (h.symm ▸ h2.adj)
 
-@[grind]
+@[grind →]
 lemma ne_snd (h2 : G.IsPathGraph3Compl v w₁ w₂) : v ≠ w₂ :=
   fun h ↦ h2.not_adj_fst (h ▸ h2.adj.symm)
 
-@[grind]
+@[grind →]
 lemma fst_ne_snd (h2 : G.IsPathGraph3Compl v w₁ w₂) : w₁ ≠ w₂ := h2.adj.ne
 
 @[symm] lemma symm (h : G.IsPathGraph3Compl v w₁ w₂) : G.IsPathGraph3Compl v w₂ w₁ := by

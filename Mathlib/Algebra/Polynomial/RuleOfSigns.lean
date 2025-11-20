@@ -3,11 +3,13 @@ Copyright (c) 2025 Alex Meiburg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Meiburg
 -/
-import Mathlib.Algebra.Polynomial.CoeffList
-import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.Data.List.Destutter
-import Mathlib.Data.Sign.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.CoeffList
+public import Mathlib.Algebra.Polynomial.Monic
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Data.List.Destutter
+public import Mathlib.Data.Sign.Basic
 
 /-!
 
@@ -35,6 +37,8 @@ coefficient, or vice versa, with any number of zero coefficients in between.
 
 [Wikipedia: Descartes' Rule of Signs](https://en.wikipedia.org/wiki/Descartes%27_rule_of_signs)
 -/
+
+@[expose] public section
 
 namespace Polynomial
 
@@ -244,6 +248,12 @@ private lemma exists_cons_of_leadingCoeff_pos (η) (h₁ : 0 < leadingCoeff P) (
     by_cases h₉ : ((X - C η) * P).nextCoeff = 0
     · suffices ((X - C η) * P).eraseLead = ((X - C η) * P.eraseLead).eraseLead by
         have := coeffList_eraseLead (mul_ne_zero (X_sub_C_ne_zero η) h₃)
+        #adaptation_note
+        /--
+        Moving from `nightly-2025-10-13` to `nightly-2025-10-19`
+        we now need to provide an intermediate step.
+        -/
+        have : ((X - C η) * P).natDegree - ((X - C η) * P).eraseLead.degree.succ = n + 1 := by grind
         grind [leadingCoeff_mul, leadingCoeff_X_sub_C]
       suffices C η * monomial P.natDegree P.leadingCoeff = monomial P.natDegree P.nextCoeff by
         grind [X_mul_monomial, sub_mul, mul_sub, self_sub_monomial_natDegree_leadingCoeff]
@@ -256,11 +266,10 @@ private lemma exists_cons_of_leadingCoeff_pos (η) (h₁ : 0 < leadingCoeff P) (
         grind [leadingCoeff_eraseLead_eq_nextCoeff]
       suffices monomial P.natDegree ((X - C η) * P).nextCoeff =
           monomial P.natDegree P.nextCoeff - C η * monomial P.natDegree P.leadingCoeff by
-        rw [← self_sub_monomial_natDegree_leadingCoeff]
         grind [X_mul_monomial, sub_mul, mul_sub, self_sub_monomial_natDegree_leadingCoeff,
           natDegree_eraseLead_add_one, leadingCoeff_eraseLead_eq_nextCoeff]
       rw [nextCoeff_of_natDegree_pos (h₇ ▸ P.natDegree.succ_pos), h₇] at h₉
-      grind [coeff_X_sub_C_mul, map_sub, C_mul_monomial, nextCoeff_of_natDegree_pos, leadingCoeff]
+      grind [coeff_X_sub_C_mul, C_mul_monomial, nextCoeff_of_natDegree_pos, leadingCoeff]
   · rw [h_cons, leadingCoeff_mul, leadingCoeff_X_sub_C, one_mul, h₂]
 
 /-- If a polynomial starts with two positive coefficients, then the sign changes in the product
@@ -291,8 +300,7 @@ theorem succ_signVariations_le_X_sub_C_mul (hη : 0 < η) (hP : P ≠ 0) :
     signVariations P + 1 ≤ signVariations ((X - C η) * P) := by
   -- do induction on the degree
   generalize hd : P.natDegree = d
-  induction d using Nat.strong_induction_on generalizing P
-  rename_i d ih
+  induction d using Nat.strong_induction_on generalizing P with | _ d ih =>
 
   -- can assume it starts positive, otherwise negate P
   wlog h_lC : 0 < leadingCoeff P generalizing P with H

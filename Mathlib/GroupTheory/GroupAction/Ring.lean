@@ -3,8 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.Ring.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Commutativity and associativity of action of integers on rings
@@ -16,6 +18,8 @@ This file proves that `ℕ` and `ℤ` act commutatively and associatively on (se
 Those instances are in their own file only because they require much less imports than any existing
 file they could go to. This is unfortunate and should be fixed by reorganising files.
 -/
+
+@[expose] public section
 
 open scoped Int
 

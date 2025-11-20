@@ -3,12 +3,14 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
-import Mathlib.Topology.Connected.LocPathConnected
-import Mathlib.Topology.Covering
-import Mathlib.Topology.Homotopy.Path
-import Mathlib.Topology.UnitInterval
+module
+
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
+public import Mathlib.Topology.Connected.LocPathConnected
+public import Mathlib.Topology.Covering
+public import Mathlib.Topology.Homotopy.Path
+public import Mathlib.Topology.UnitInterval
 
 /-!
 # The homotopy lifting property for covering maps
@@ -23,6 +25,8 @@ import Mathlib.Topology.UnitInterval
   locally path-connected space lifts uniquely through a covering map (given a lift of an
   arbitrary point).
 -/
+
+@[expose] public section
 
 open Topology unitInterval
 
@@ -400,11 +404,12 @@ theorem monodromy_bijective {x y : X} (γ : Path.Homotopic.Quotient x y) :
 /-- A covering map induces an injection on all Hom-sets of the fundamental groupoid,
   in particular on the fundamental group. The first part of Proposition 1.31 of [hatcher02]. -/
 lemma injective_path_homotopic_mapFn (e₀ e₁ : E) :
-    Function.Injective fun γ : Path.Homotopic.Quotient e₀ e₁ ↦ γ.mapFn ⟨p, cov.continuous⟩ := by
+    Function.Injective fun γ : Path.Homotopic.Quotient e₀ e₁ ↦ γ.map ⟨p, cov.continuous⟩ := by
   refine Quotient.ind₂ fun γ₀ γ₁ ↦ ?_
   dsimp only
-  simp_rw [← Path.Homotopic.map_lift]
-  iterate 2 rw [Quotient.eq]
+  simp only [Path.Homotopic.Quotient.mk''_eq_mk]
+  simp_rw [← Path.Homotopic.Quotient.mk_map]
+  iterate 2 rw [Path.Homotopic.Quotient.eq]
   exact (cov.homotopicRel_iff_comp ⟨0, .inl rfl, γ₀.source.trans γ₁.source.symm⟩).mpr
 
 /-- A continuous map `f` from a simply-connected, locally path-connected space `A` to another
