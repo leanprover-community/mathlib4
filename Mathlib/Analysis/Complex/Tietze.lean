@@ -96,6 +96,10 @@ theorem Metric.instTietzeExtensionClosedBall (𝕜 : Type v) [RCLike 𝕜] {E : 
       RCLike.norm_ofReal, abs_of_nonneg hr.le]
     exact (mul_le_iff_le_one_right hr).symm
 
+instance unitInterval.instTietzeExtension : TietzeExtension unitInterval := by
+  rw [unitInterval.eq_closedBall]
+  exact Metric.instTietzeExtensionClosedBall ℝ _ (by norm_num)
+
 variable {X : Type u} [TopologicalSpace X] [NormalSpace X] {s : Set X} (hs : IsClosed s)
 variable (𝕜 : Type v) [RCLike 𝕜]
 variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E]
