@@ -298,9 +298,8 @@ variable {x : ℝ}
 exists a numerator `a` such that `x ≠ a / b` and `|x - a / b| < 1 / b ^ n`. -/
 theorem frequently_exists_num (hx : Liouville x) (n : ℕ) :
     ∃ᶠ b : ℕ in atTop, ∃ a : ℤ, x ≠ a / b ∧ |x - a / b| < 1 / (b : ℝ) ^ n := by
-  refine Classical.not_not.1 fun H => ?_
-  simp only [not_exists, not_frequently, not_and, not_lt,
-    eventually_atTop] at H
+  by_contra! H
+  simp only [eventually_atTop] at H
   rcases H with ⟨N, hN⟩
   have : ∀ b > (1 : ℕ), ∀ᶠ m : ℕ in atTop, ∀ a : ℤ, 1 / (b : ℝ) ^ m ≤ |x - a / b| := by
     intro b hb
