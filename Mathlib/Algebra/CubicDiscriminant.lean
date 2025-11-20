@@ -413,14 +413,14 @@ variable {P : Cubic F} [Field F] [Field K] {φ : F →+* K} {x y z : K}
 section Split
 
 theorem splits_iff_card_roots (ha : P.a ≠ 0) :
-    Splits φ P.toPoly ↔ Multiset.card (map φ P).roots = 3 := by
+    Splits (P.toPoly.map φ) ↔ Multiset.card (map φ P).roots = 3 := by
   replace ha : (map φ P).a ≠ 0 := (_root_.map_ne_zero φ).mpr ha
   nth_rw 1 [← RingHom.id_comp φ]
   rw [roots, ← splits_map_iff, ← map_toPoly, Polynomial.splits_iff_card_roots,
     ← ((degree_eq_iff_natDegree_eq <| ne_zero_of_a_ne_zero ha).1 <| degree_of_a_ne_zero ha : _ = 3)]
 
 theorem splits_iff_roots_eq_three (ha : P.a ≠ 0) :
-    Splits φ P.toPoly ↔ ∃ x y z : K, (map φ P).roots = {x, y, z} := by
+    Splits (P.toPoly.map φ) ↔ ∃ x y z : K, (map φ P).roots = {x, y, z} := by
   rw [splits_iff_card_roots ha, card_eq_three]
 
 theorem eq_prod_three_roots (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z}) :

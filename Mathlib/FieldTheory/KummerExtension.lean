@@ -57,11 +57,10 @@ section Splits
 
 theorem X_pow_sub_C_splits_of_isPrimitiveRoot
     {n : ℕ} {ζ : K} (hζ : IsPrimitiveRoot ζ n) {α a : K} (e : α ^ n = a) :
-    (X ^ n - C a).Splits (RingHom.id _) := by
+    ((X ^ n - C a).map (RingHom.id _)).Splits := by
   cases n.eq_zero_or_pos with
   | inl hn =>
-    rw [hn, pow_zero, ← C.map_one, ← map_sub]
-    exact splits_C _ _
+    simp only [hn, pow_zero, ← C.map_one, ← map_sub, map_C, splits_C]
   | inr hn =>
     rw [splits_iff_card_roots, ← nthRoots, hζ.card_nthRoots, natDegree_X_pow_sub_C, if_pos ⟨α, e⟩]
 

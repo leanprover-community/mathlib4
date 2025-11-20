@@ -483,7 +483,7 @@ theorem spectralNorm_eq_iSup_of_finiteDimensional_normal
     norm_root_le_spectralValue hf_pm hf_na
       (minpoly.monic (hn.isIntegral x)) (minpoly.aeval_algHom _ σ.toAlgHom _))
   · set p := minpoly K x
-    have hp_sp : Splits (algebraMap K L) (minpoly K x) := hn.splits x
+    have hp_sp : Splits ((minpoly K x).map (algebraMap K L)) := hn.splits x
     obtain ⟨s, hs⟩ := (splits_iff_exists_multiset _).mp hp_sp
     have h_lc : (algebraMap K L) (minpoly K x).leadingCoeff = 1 := by
       rw [minpoly.monic (hn.isIntegral x), map_one]
@@ -953,7 +953,7 @@ theorem spectralNorm_pow_natDegree_eq_prod_roots (x : L) {E : Type*} [Field E] [
 theorem spectralNorm_eq_norm_coeff_zero_rpow (x : L) :
     spectralNorm K L x = ‖(minpoly K x).coeff 0‖ ^ (1 / (minpoly K x).natDegree : ℝ) := by
   set E := (mapAlg K L (minpoly K x)).SplittingField
-  have hspl : Splits (RingHom.id E) (mapAlg K E (minpoly K x)) :=
+  have hspl : Splits ((mapAlg K E (minpoly K x)).map (RingHom.id E)) :=
     IsSplittingField.IsScalarTower.splits (K := L) E (minpoly K x)
   have : Algebra.IsAlgebraic L E :=
     IsSplittingField.IsScalarTower.isAlgebraic E (mapAlg K L (minpoly K x))

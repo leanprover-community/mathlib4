@@ -449,14 +449,14 @@ theorem X_pow_sub_one_separable_iff {n : ℕ} : (X ^ n - 1 : F[X]).Separable ↔
 section Splits
 
 theorem card_rootSet_eq_natDegree [Algebra F K] {p : F[X]} (hsep : p.Separable)
-    (hsplit : Splits (algebraMap F K) p) : Fintype.card (p.rootSet K) = p.natDegree := by
+    (hsplit : Splits (p.map (algebraMap F K))) : Fintype.card (p.rootSet K) = p.natDegree := by
   classical
   simp_rw [rootSet_def, Finset.coe_sort_coe, Fintype.card_coe]
   rw [Multiset.toFinset_card_of_nodup (nodup_roots hsep.map), ← natDegree_eq_card_roots hsplit]
 
 /-- If a non-zero polynomial splits, then it has no repeated roots on that field
 if and only if it is separable. -/
-theorem nodup_roots_iff_of_splits {f : F[X]} (hf : f ≠ 0) (h : f.Splits (RingHom.id F)) :
+theorem nodup_roots_iff_of_splits {f : F[X]} (hf : f ≠ 0) (h : (f.map (RingHom.id F)).Splits) :
     f.roots.Nodup ↔ f.Separable := by
   classical
   refine ⟨(fun hnsep ↦ ?_).mtr, nodup_roots⟩
@@ -470,12 +470,13 @@ theorem nodup_roots_iff_of_splits {f : F[X]} (hf : f ≠ 0) (h : f.Splits (RingH
 if and only if it is separable. -/
 @[stacks 09H3 "Here we only require `f` splits instead of `K` is algebraically closed."]
 theorem nodup_aroots_iff_of_splits [Algebra F K] {f : F[X]} (hf : f ≠ 0)
-    (h : f.Splits (algebraMap F K)) : (f.aroots K).Nodup ↔ f.Separable := by
+    (h : (f.map (algebraMap F K)).Splits) : (f.aroots K).Nodup ↔ f.Separable := by
   rw [← (algebraMap F K).id_comp, ← splits_map_iff] at h
   rw [nodup_roots_iff_of_splits (map_ne_zero hf) h, separable_map]
 
 theorem card_rootSet_eq_natDegree_iff_of_splits [Algebra F K] {f : F[X]} (hf : f ≠ 0)
-    (h : f.Splits (algebraMap F K)) : Fintype.card (f.rootSet K) = f.natDegree ↔ f.Separable := by
+    (h : (f.map (algebraMap F K)).Splits) :
+    Fintype.card (f.rootSet K) = f.natDegree ↔ f.Separable := by
   classical
   simp_rw [rootSet_def, Finset.coe_sort_coe, Fintype.card_coe, natDegree_eq_card_roots h,
     Multiset.toFinset_card_eq_card_iff_nodup, nodup_aroots_iff_of_splits hf h]
@@ -483,8 +484,8 @@ theorem card_rootSet_eq_natDegree_iff_of_splits [Algebra F K] {f : F[X]} (hf : f
 variable {i : F →+* K}
 
 theorem eq_X_sub_C_of_separable_of_root_eq {x : F} {h : F[X]} (h_sep : h.Separable)
-    (h_root : h.eval x = 0) (h_splits : Splits i h) (h_roots : ∀ y ∈ (h.map i).roots, y = i x) :
-    h = C (leadingCoeff h) * (X - C x) := by
+    (h_root : h.eval x = 0) (h_splits : Splits (h.map i))
+    (h_roots : ∀ y ∈ (h.map i).roots, y = i x) : h = C (leadingCoeff h) * (X - C x) := by
   have h_ne_zero : h ≠ 0 := by
     rintro rfl
     exact not_separable_zero h_sep
@@ -500,7 +501,8 @@ theorem eq_X_sub_C_of_separable_of_root_eq {x : F} {h : F[X]} (h_sep : h.Separab
       · exact nodup_roots (Separable.map h_sep)
     · exact h_roots
 
-theorem exists_finset_of_splits (i : F →+* K) {f : F[X]} (sep : Separable f) (sp : Splits i f) :
+theorem exists_finset_of_splits (i : F →+* K) {f : F[X]} (sep : Separable f)
+    (sp : Splits (f.map i)) :
     ∃ s : Finset K, f.map i = C (i f.leadingCoeff) * s.prod fun a : K => X - C a := by
   classical
   obtain ⟨s, h⟩ := (splits_iff_exists_multiset _).1 sp
@@ -754,7 +756,7 @@ variable {K L F : Type*} [Field K] [Field L] [Field F]
 variable [Algebra K S] [Algebra K L]
 
 theorem AlgHom.natCard_of_powerBasis (pb : PowerBasis K S) (h_sep : IsSeparable K pb.gen)
-    (h_splits : (minpoly K pb.gen).Splits (algebraMap K L)) :
+    (h_splits : ((minpoly K pb.gen).map (algebraMap K L)).Splits) :
     Nat.card (S →ₐ[K] L) = pb.dim := by
   classical
   rw [Nat.card_congr pb.liftEquiv', Nat.subtype_card _ (fun x => Multiset.mem_toFinset),
@@ -762,7 +764,7 @@ theorem AlgHom.natCard_of_powerBasis (pb : PowerBasis K S) (h_sep : IsSeparable 
   exact nodup_roots ((separable_map (algebraMap K L)).mpr h_sep)
 
 theorem AlgHom.card_of_powerBasis (pb : PowerBasis K S) (h_sep : IsSeparable K pb.gen)
-    (h_splits : (minpoly K pb.gen).Splits (algebraMap K L)) :
+    (h_splits : ((minpoly K pb.gen).map (algebraMap K L)).Splits) :
     @Fintype.card (S →ₐ[K] L) (PowerBasis.AlgHom.fintype pb) = pb.dim := by
   classical
   rw [Fintype.card_eq_nat_card, AlgHom.natCard_of_powerBasis pb h_sep h_splits]
