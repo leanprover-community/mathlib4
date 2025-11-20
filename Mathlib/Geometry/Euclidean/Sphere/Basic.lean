@@ -3,10 +3,12 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Analysis.Convex.StrictConvexBetween
-import Mathlib.Analysis.InnerProductSpace.Convex
-import Mathlib.Analysis.Normed.Affine.Convex
-import Mathlib.Geometry.Euclidean.Basic
+module
+
+public import Mathlib.Analysis.Convex.StrictConvexBetween
+public import Mathlib.Analysis.InnerProductSpace.Convex
+public import Mathlib.Analysis.Normed.Affine.Convex
+public import Mathlib.Geometry.Euclidean.Basic
 
 /-!
 # Spheres
@@ -30,6 +32,8 @@ Euclidean affine spaces.
   coplanar.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

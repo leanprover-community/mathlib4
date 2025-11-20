@@ -3,8 +3,10 @@ Copyright (c) 2022 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Floris van Doorn, Yury Kudryashov
 -/
-import Mathlib.Order.Filter.Lift
-import Mathlib.Order.Filter.AtTopBot.Basic
+module
+
+public import Mathlib.Order.Filter.Lift
+public import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # The filter of small sets
@@ -18,6 +20,8 @@ An example usage is that if `f : ι → E → ℝ` is a family of nonnegative fu
 then saying that `fun i ↦ support (f i)` tendsto `(𝓝 0).smallSets` is a way of saying that
 `f` tends to the Dirac delta distribution.
 -/
+
+@[expose] public section
 
 
 open Filter

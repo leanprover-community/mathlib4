@@ -4,15 +4,17 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.Module.Prod
-import Mathlib.Algebra.Module.Submodule.EqLocus
-import Mathlib.Algebra.Module.Submodule.Equiv
-import Mathlib.Algebra.Module.Submodule.RestrictScalars
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-import Mathlib.LinearAlgebra.Span.Defs
-import Mathlib.Order.CompactlyGenerated.Basic
-import Mathlib.Order.OmegaCompletePartialOrder
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Module.Prod
+public import Mathlib.Algebra.Module.Submodule.EqLocus
+public import Mathlib.Algebra.Module.Submodule.Equiv
+public import Mathlib.Algebra.Module.Submodule.RestrictScalars
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+public import Mathlib.LinearAlgebra.Span.Defs
+public import Mathlib.Order.CompactlyGenerated.Basic
+public import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
 # The span of a set of vectors, as a submodule
@@ -25,6 +27,8 @@ import Mathlib.Order.OmegaCompletePartialOrder
   `\span`, not the same as the scalar multiplication `•`/`\bub`.
 
 -/
+
+@[expose] public section
 
 variable {R R₂ K M M₂ V S : Type*}
 
