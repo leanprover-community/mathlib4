@@ -383,6 +383,7 @@ theorem mk_pow_limitₐ (n : ℕ) (x : AdicCompletion I S) :
     Ideal.Quotient.mk (I ^ n) (limitₐ I x) = evalₐ I n x := by
   simp [← Ideal.Quotient.factor_mk (show I ^ n • ⊤ ≤ I ^ n by simp), evalₐ]
 
+@[simp]
 theorem mk_pow_limit (n : ℕ) (x : AdicCompletion I S) :
     Ideal.Quotient.mk (I ^ n) (limit I S x) = evalₐ I n x := mk_pow_limitₐ I n x
 
