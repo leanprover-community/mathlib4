@@ -35,7 +35,7 @@ namespace Rep
 open CategoryTheory Finsupp TensorProduct Representation
 
 variable {k G : Type u} [CommRing k] [Group G] {S : Subgroup G}
-  [inst : DecidableRel (QuotientGroup.rightRel S)] (A : Rep k S)
+  [DecidableRel (QuotientGroup.rightRel S)] (A : Rep k S)
 
 /-- Let `S ≤ G` be a subgroup and `(A, ρ)` a `k`-linear `S`-representation. Then given `g : G` and
 `a : A`, this is the function `G → A` sending `sg` to `ρ(s)(a)` for all `s : S` and everything else
