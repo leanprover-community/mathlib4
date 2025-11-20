@@ -3,17 +3,22 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.Algebra.Category.ModuleCat.Injective
-import Mathlib.Algebra.Category.ModuleCat.Projective
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.CategoryTheory.Linear.LinearFunctor
-import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
-import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Injective
+public import Mathlib.Algebra.Category.ModuleCat.Projective
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
+public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
+
 /-!
 
 # Ulift Functor of ModuleCat
 
 -/
+
+@[expose] public section
 
 universe v' v u
 
