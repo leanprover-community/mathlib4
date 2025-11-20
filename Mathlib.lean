@@ -6207,8 +6207,6 @@ public import Mathlib.RingTheory.WittVector.WittPolynomial
 public import Mathlib.RingTheory.ZMod
 public import Mathlib.RingTheory.ZMod.Torsion
 public import Mathlib.RingTheory.ZMod.UnitsCyclic
-public import Mathlib.Sandbox.TestEnv
-public import Mathlib.Sandbox.TestTestEnv
 public import Mathlib.SetTheory.Cardinal.Aleph
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 public import Mathlib.SetTheory.Cardinal.Basic
@@ -7216,7 +7214,5 @@ public import Mathlib.Util.TermReduce
 public import Mathlib.Util.TransImports
 public import Mathlib.Util.WhatsNew
 public import Mathlib.Util.WithWeakNamespace
-public import Mathlib.sandbox8
-public import Mathlib.sandbox9
 
 set_option linter.style.longLine false
