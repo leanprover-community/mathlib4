@@ -377,11 +377,13 @@ theorem of_limitₐ (x : AdicCompletion I S) : of I S (limitₐ I x) = x := by s
 theorem limitₐ_of (x : S) : limitₐ I (of I S x) = x := by simp
 
 theorem mk_smul_top_limitₐ (n : ℕ) (x : AdicCompletion I S) :
-    Ideal.Quotient.mk (I ^ n • ⊤) (limitₐ I x) = eval I S n x := by simp
+    Ideal.Quotient.mk (I ^ n • ⊤) (limitₐ I x) = eval I S n x := by
+  simp [smul_eq_mul, eval]
 
 theorem mk_pow_limitₐ (n : ℕ) (x : AdicCompletion I S) :
     Ideal.Quotient.mk (I ^ n) (limitₐ I x) = evalₐ I n x := by
-  simp [← Ideal.Quotient.factor_mk (show I ^ n • ⊤ ≤ I ^ n by simp), evalₐ]
+  rw [← Ideal.Quotient.factor_mk (show I ^ n • ⊤ ≤ I ^ n by simp), mk_smul_top_limitₐ]
+  simp [evalₐ]
 
 @[simp]
 theorem mk_pow_limit (n : ℕ) (x : AdicCompletion I S) :
