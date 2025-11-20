@@ -52,7 +52,7 @@ instance final_toCostructuredArrow
     exact ⟨j, ⟨CostructuredArrow.homMk g⟩⟩
   · obtain ⟨k, a, h⟩ := IsCardinalPresentable.exists_eq_of_isColimit' κ p.isColimit g₁.left g₂.left
       ((CostructuredArrow.w g₁).trans (CostructuredArrow.w g₂).symm)
-    exact ⟨k, a, by aesop⟩
+    exact ⟨k, a, by cat_disch⟩
 
 instance [IsCardinalAccessibleCategory C κ] :
     (isCardinalPresentable C κ).ι.IsDense where
