@@ -3,7 +3,9 @@ Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
-import Mathlib.Topology.Homotopy.Basic
+module
+
+public import Mathlib.Topology.Homotopy.Basic
 
 /-!
 
@@ -23,6 +25,8 @@ We introduce the notation `X ≃ₕ Y` for `ContinuousMap.HomotopyEquiv X Y` in 
 locale.
 
 -/
+
+@[expose] public section
 
 universe u v w x
 

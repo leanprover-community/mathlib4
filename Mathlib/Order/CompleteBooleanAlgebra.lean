@@ -3,11 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Logic.Equiv.Set
-import Mathlib.Logic.Pairwise
-import Mathlib.Order.CompleteLattice.Lemmas
-import Mathlib.Order.Directed
-import Mathlib.Order.GaloisConnection.Basic
+module
+
+public import Mathlib.Logic.Equiv.Set
+public import Mathlib.Logic.Pairwise
+public import Mathlib.Order.CompleteLattice.Lemmas
+public import Mathlib.Order.Directed
+public import Mathlib.Order.GaloisConnection.Basic
 
 /-!
 # Frames, completely distributive lattices and complete Boolean algebras
@@ -49,6 +51,8 @@ distributive lattice.
 * [Wikipedia, *Complete Heyting algebra*](https://en.wikipedia.org/wiki/Complete_Heyting_algebra)
 * [Francis Borceux, *Handbook of Categorical Algebra III*][borceux-vol3]
 -/
+
+@[expose] public section
 
 open Function Set
 
@@ -265,8 +269,8 @@ lemma iSup_iInf_eq (f : ∀ i, κ i → α) :
   refine le_antisymm iSup_iInf_le ?_
   rw [minAx.iInf_iSup_eq']
   refine iSup_le fun g => ?_
-  have ⟨a, ha⟩ : ∃ a, ∀ b, ∃ f, ∃ h : a = g f, h ▸ b = f (g f) := of_not_not fun h => by
-    push_neg at h
+  have ⟨a, ha⟩ : ∃ a, ∀ b, ∃ f, ∃ h : a = g f, h ▸ b = f (g f) := by
+    by_contra! h
     choose h hh using h
     have := hh _ h rfl
     contradiction
