@@ -42,8 +42,8 @@ This file defines `LocallyContractibleSpace` and `StronglyLocallyContractibleSpa
 ## Notes
 
 **Terminology:** The classical definition of *locally contractible* (LC) requires that for every
-point `x` and neighborhood `U ∋ x`, there exists a neighborhood `V ∋ x` with `V ⊆ U` such that the
-inclusion `V ↪ U` is null-homotopic. The definition here is **strictly stronger**: we require
+point `x` and neighborhood `U ∋ x`, there exists a neighborhood `V ∋ x` with `V ⊆ U` such that
+the inclusion `V ↪ U` is null-homotopic. The definition here is **strictly stronger**: we require
 contractible neighborhoods to form a neighborhood basis. This is often called **strongly locally
 contractible** (SLC).
 
@@ -52,12 +52,13 @@ contractible** (SLC).
 * "Basis of contractible neighborhoods" (this file, SLC)
 * "Null-homotopic inclusions" (classical LC, weakest)
 
-This naming is not used uniformly: according to https://ncatlab.org/nlab/show/locally+contractible+space
-the second and third notion here could also be called
+This naming is not used uniformly: according to
+https://ncatlab.org/nlab/show/locally+contractible+space the second and third notion here could
+also be called
 "locally contractible" and "semilocally contractible" respectively.
 We've enquired at
-https://math.stackexchange.com/questions/5109428/terminology-for-local-contractibility-locally-contractible-vs-strongly-local
-in the hope of gettting definitive naming advice.
+https://math.stackexchange.com/questions/5109428/terminology-for-local-contractibility
+-locally-contractible-vs-strongly-local in the hope of gettting definitive naming advice.
 
 The Borsuk-Mazurkiewicz counterexample [borsuk_mazurkiewicz1934] shows that classical LC does not
 imply SLC. Moreover, from a contractible neighborhood `S` one generally cannot shrink to an open
@@ -121,8 +122,8 @@ theorem contractible_subset_basis {U : Set X} (h : IsOpen U) (hx : x ∈ U) :
 /-- Strongly locally contractible spaces are locally path-connected. -/
 instance (priority := 100) instLocPathConnectedSpace : LocPathConnectedSpace X where
   path_connected_basis x := by
-    refine contractible_basis x |>.to_hasBasis' (fun s ⟨hs, hs'⟩ ↦ ⟨s, ⟨hs, ?_⟩, le_rfl⟩)
-      (fun s hs ↦ hs.1)
+    refine contractible_basis x |>.to_hasBasis'
+      (fun s ⟨hs, hs'⟩ ↦ ⟨s, ⟨hs, ?_⟩, le_rfl⟩) (fun s hs ↦ hs.1)
     rw [isPathConnected_iff_pathConnectedSpace]
     infer_instance
 
@@ -130,7 +131,8 @@ instance (priority := 100) instLocPathConnectedSpace : LocPathConnectedSpace X w
 and `e : Y → X` is an open embedding, then `Y` is strongly locally contractible. -/
 theorem Topology.IsOpenEmbedding.stronglyLocallyContractibleSpace {e : Y → X}
     (he : IsOpenEmbedding e) : StronglyLocallyContractibleSpace Y :=
-  .of_bases (fun _ ↦ he.basis_nhds <| contractible_subset_basis he.isOpen_range (mem_range_self _))
+  .of_bases
+    (fun _ ↦ he.basis_nhds <| contractible_subset_basis he.isOpen_range (mem_range_self _))
     fun _ _ ⟨_, hs, hse⟩ ↦
       (he.toIsEmbedding.homeomorphOfSubsetRange hse).contractibleSpace_iff.mpr hs
 
