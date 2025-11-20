@@ -226,6 +226,7 @@ Verifying that delaborator does not match the exact `Inhabited` instance.
 Instead, it matches that it's an application of `Inhabited.default` whose first argument is `Nat`.
 -/
 /--
+```
 trace: [notation3] syntax declaration has name Test.termδNat
 ---
 trace: [notation3] Generating matcher for pattern default
@@ -235,6 +236,7 @@ trace: [notation3] Generating matcher for pattern default
           pure✝ >=>
         pure✝
 [notation3] Creating delaborator for key Mathlib.Notation3.DelabKey.app (some `Inhabited.default) 2
+```
 -/
 #guard_msgs in
 set_option trace.notation3 true in

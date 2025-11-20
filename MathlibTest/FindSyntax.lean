@@ -65,7 +65,7 @@ In `Std.Tactic.Do.Syntax`:
   Lean.Parser.Tactic.«mrefinePat⌜_⌝»: '⌜ _ ⌝'
   Lean.Parser.Tactic.«mrefinePat□_»: '□'
   Lean.Parser.Tactic.«mrefinePat⟨_⟩»: '⟨ _ ⟩'
-  Lean.Parser.Tactic.mrefinePat.quot: '`(mrefinePat|  _ )'
+  Lean.Parser.Tactic.mrefinePat.quot: '``(mrefinePat|  _ )``'
 -/
 #guard_msgs in
 #find_syntax "refine" approx  -- a `nonReservedSymbol`

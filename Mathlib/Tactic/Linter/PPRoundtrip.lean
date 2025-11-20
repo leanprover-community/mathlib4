@@ -34,21 +34,22 @@ register_option linter.ppRoundtrip : Bool := {
   descr := "enable the ppRoundtrip linter"
 }
 
-/-- `polishPP s` takes as input a `String` `s`, assuming that it is the output of
-pretty-printing a lean command.
+/-- `polishPP s` takes as input a string `s`, assuming that it is the output of
+pretty-printing a Lean command.
 The main intent is to convert `s` to a reasonable candidate for a desirable source code format.
-The function first replaces consecutive whitespace sequences into a single space (` `), in an
+The function first replaces consecutive whitespace sequences with a single space `" "`, in an
 attempt to side-step line-break differences.
 After that, it applies some pre-emptive changes:
 * doc-module beginnings tend to have some whitespace following them, so we add a space back in;
-* name quotations such as ``` ``Nat``` get pretty-printed as ``` `` Nat```, so we remove a space
-  after double back-ticks, but take care of adding one more for triple (or more) back-ticks;
-* `notation3` is not followed by a pretty-printer space, so we add it here (https://github.com/leanprover-community/mathlib4/pull/15515).
+* name quotations such as `` `Nat`` get pretty-printed with an extra space (`` ` Nat``), so we
+  remove it, while still inserting the appropriate spacing when three or more backticks occur;
+* `notation3` is not followed by a pretty-printer space, so we add it here
+  (https://github.com/leanprover-community/mathlib4/pull/15515).
 -/
 def polishPP (s : String) : String :=
   let s := s.splitToList (·.isWhitespace)
   (" ".intercalate (s.filter (!·.isEmpty)))
-    |>.replace "/-!" "/-! "
+    |>.replace ("/" ++ "-!") ("/" ++ "-! ")
     |>.replace "``` " "```  " -- avoid losing an existing space after the triple back-ticks
                               -- as a consequence of the following replacement
     |>.replace "`` " "``" -- weird pp ```#eval ``«Nat»``` pretty-prints as ```#eval `` «Nat»```

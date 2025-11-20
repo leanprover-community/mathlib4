@@ -115,7 +115,7 @@ structure Shape : Type where
 
   For example, `List.Chain.nil` has type
   ```lean
-    ∀ {α : Type u_1} {R : α → α → Prop} {a : α}, List.Chain R a []`
+    ∀ {α : Type u_1} {R : α → α → Prop} {a : α}, List.Chain R a []
   ```
   and the first two variables `α` and `R` are "params", while the `a : α` gets
   eliminated in a `compactRelation`, so `variablesKept = [false]`.

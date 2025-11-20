@@ -76,19 +76,17 @@ The tactic must solve for all goals, in contrast to `synthesizeUsingTactic`.
 
 If you need to insert expressions into a tactic proof, then you might use `synthesizeUsing'`
 directly, since the `TacticM` monad has access to the `TermElabM` monad. For example, here
-is a term elaborator that wraps the `simp at ...` tactic:
-```
+is a term elaborator that wraps the `simp at ...` tactic. The implementation subsequently adds an
+explicit type hint to ensure that the resulting term has the expected simplified type.
+-/
 def simpTerm (e : Expr) : MetaM Expr := do
   let mvar ← Meta.mkFreshTypeMVar
   let e' ← synthesizeUsing' mvar
     (do evalTactic (← `(tactic| have h := $(← Term.exprToSyntax e); simp at h; exact h)))
   -- Note: `simp` does not always insert type hints, so to ensure that we get a term
-  -- with the simplified type (as opposed to one that is merely defeq), we should add
-  -- a type hint ourselves.
+  -- with the simplified type (as opposed to one that is merely defeq), we add a type hint.
   Meta.mkExpectedTypeHint e' mvar
 
 elab "simpTerm% " t:term : term => do simpTerm (← Term.elabTerm t none)
-```
--/
 def synthesizeUsingTactic' {u : Level} (type : Q(Sort u)) (tac : Syntax) : MetaM Q($type) := do
   synthesizeUsing' type (do evalTactic tac)

@@ -327,9 +327,8 @@ partial def nestedTraverse (f v t : Expr) : TermElabM Expr := do
   else throwError "type {t} is not traversable with respect to variable {v}"
 
 /--
-For a sum type `inductive Foo (α : Type) | foo1 : List α → ℕ → Foo α | ...`
-``traverseField `Foo f `α `(x : List α)`` synthesizes
-`traverse f x` as part of traversing `foo1`. -/
+For a sum type `inductive Foo (α : Type) | foo1 : List α → ℕ → Foo α | ...`,
+`traverseField Foo f α (x : List α)` synthesizes `traverse f x` as part of traversing `foo1`. -/
 def traverseField (n : Name) (cl f v e : Expr) : TermElabM (Bool × Expr) := do
   let t ← whnf (← inferType e)
   if t.getAppFn.constName = some n then

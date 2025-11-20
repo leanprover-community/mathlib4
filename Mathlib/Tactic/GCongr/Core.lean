@@ -143,9 +143,9 @@ open Lean Meta
 
 /-- `GCongrKey` is the key used in the hashmap for looking up `gcongr` lemmas. -/
 structure GCongrKey where
-  /-- The name of the relation. For example, `a + b ≤ a + c` has ``relName := `LE.le``. -/
+  /-- The name of the relation. For example, for `a + b ≤ a + c` we have `relName` equal to ``LE.le``. -/
   relName : Name
-  /-- The name of the head function. For example, `a + b ≤ a + c` has ``head := `HAdd.hAdd``. -/
+  /-- The name of the head function. For example, for `a + b ≤ a + c` we have `head` equal to ``HAdd.hAdd``. -/
   head : Name
   /-- The number of arguments that `head` is applied to.
   For example, `a + b ≤ a + c` has `arity := 6`, because `HAdd.hAdd` has 6 arguments. -/

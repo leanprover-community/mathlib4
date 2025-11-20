@@ -112,8 +112,8 @@ def getAttrNames (stx : Syntax) : NameSet :=
     | none => {}
     | some stx => getIds stx
 
-/-- `getAttrs env stx` returns all attribute declaration names contained in `stx` and registered
-in the `Environment `env`. -/
+/-- `getAttrs env stx` returns all attribute declaration names contained in `stx`
+and registered in the environment `env`. -/
 def getAttrs (env : Environment) (stx : Syntax) : NameSet :=
   Id.run do
   let mut new : NameSet := {}

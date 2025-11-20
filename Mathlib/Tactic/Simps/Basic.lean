@@ -491,9 +491,10 @@ def projectionsInfo (l : List ProjectionData) (pref : String) (str : Name) : Mes
   let toPrint := MessageData.joinSep toPrint ("\n" : MessageData)
   m!"{pref} {str}:\n{toPrint}"
 
-/-- Find the indices of the projections that need to be applied to elaborate `$e.$projName`.
-Example: If `e : α ≃+ β` and ``projName = `invFun`` then this returns `[0, 1]`, because the first
-projection of `MulEquiv` is `toEquiv` and the second projection of `Equiv` is `invFun`. -/
+/-- Find the indices of the projections that need to be applied to elaborate an expression of the
+form `$e.$projName`. Example: if `e : α ≃+ β` and `projName = invFun` then this returns `[0, 1]`,
+because the first projection of `MulEquiv` is `toEquiv` and the second projection of `Equiv`
+is `invFun`. -/
 def findProjectionIndices (strName projName : Name) : MetaM (List Nat) := do
   let env ← getEnv
   let some baseStr := findField? env strName projName |
@@ -771,16 +772,16 @@ is given to `str`. If `str` already has this attribute, the information is read 
 extension instead. See the documentation for this extension for the data this tactic returns.
 
 The returned universe levels are the universe levels of the structure. For the projections there
-are three cases
+are three cases:
 * If the declaration `{StructureName}.Simps.{projectionName}` has been declared, then the value
   of this declaration is used (after checking that it is definitionally equal to the actual
-  projection. If you rename the projection name, the declaration should have the *new* projection
+  projection). If you rename the projection name, the declaration should have the *new* projection
   name.
 * You can also declare a custom projection that is a composite of multiple projections.
 * Otherwise, for every class with the `notation_class` attribute, and the structure has an
-  instance of that notation class, then the projection of that notation class is used for the
+  instance of that notation class, the projection of that notation class is used for the
   projection that is definitionally equal to it (if there is such a projection).
-  This means in practice that coercions to function types and sorts will be used instead of
+  This means in practice that coercions to function types and sorts are used instead of
   a projection, if this coercion is definitionally equal to a projection. Furthermore, for
   notation classes like `Mul` and `Zero` those projections are used instead of the
   corresponding projection.
@@ -788,19 +789,19 @@ are three cases
   composites of multiple projections (for example when you use `extend` without the
   `oldStructureCmd` (does this exist?)).
 * Otherwise, the projection of the structure is chosen.
-  For example: ``getRawProjections env `Prod`` gives the default projections.
+  For example, `getRawProjections env Prod` gives the default projections:
 ```
-  ([u, v], [(`fst, `(Prod.fst.{u v}), [0], true, false),
-     (`snd, `(@Prod.snd.{u v}), [1], true, false)])
+([u, v], [(fst, Prod.fst.{u v}, [0], true, false),
+          (snd, @Prod.snd.{u v}, [1], true, false)])
 ```
 
 Optionally, this command accepts three optional arguments:
-* If `traceIfExists` the command will always generate a trace message when the structure already
+* If `traceIfExists` the command always generates a trace message when the structure already
   has an entry in `structureExt`.
 * The `rules` argument specifies whether projections should be added, renamed, used as prefix, and
   not used by default.
-* if `trc` is true, this tactic will trace information just as if
-  `set_option trace.simps.verbose true` was set.
+* If `trc` is true, this tactic traces information just as if
+  `set_option trace.simps.verbose true` were set.
 -/
 def getRawProjections (stx : Syntax) (str : Name) (traceIfExists : Bool := false)
     (rules : Array ProjectionRule := #[]) (trc := false) :
