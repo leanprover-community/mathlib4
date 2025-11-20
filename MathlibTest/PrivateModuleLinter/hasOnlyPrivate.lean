@@ -12,7 +12,7 @@ theorem foo : True := trivial
 
 def bar : Bool := true
 
--- Run the linter on artificial `eoi` syntax so that we can actually
+-- Run the linter on artificial `eoi` syntax so that we can actually guard the message
 open Mathlib.Linter Parser in
 /--
 warning: The current module only contains private declarations.
