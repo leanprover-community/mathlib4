@@ -405,6 +405,14 @@ lemma aux_computation2 :
   rw [this, ContinuousLinearMap.inverse_id]
   exact rfl
 
+omit [IsManifold I 2 M] [CompleteSpace E] in
+lemma _root_.MDifferentiableWithinAt.differentiableWithinAt_comp_extChartAt_symm
+    {f : M → 𝕜} (hf : MDifferentiableWithinAt I 𝓘(𝕜) f s x) :
+    letI φ := extChartAt I x
+    DifferentiableWithinAt 𝕜 (f ∘ φ.symm) (φ.symm ⁻¹' s ∩ range I) (φ x) := by
+  obtain ⟨_, hf⟩ := mdifferentiableWithinAt_iff.mp hf
+  rwa [extChartAt_self_eq] at hf
+
 /--
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
 `f : M → 𝕜`, we have `[V, f • W] = (df V) • W + f • [V, W]`. Version within a set.
@@ -425,10 +433,6 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
     (mfderivWithin I 𝓘(𝕜, 𝕜) f s x) (V x) • W x +
     f x • mpullback I 𝓘(𝕜, E) ((extChartAt I x)) (lieBracketWithin 𝕜 V' W' s') x
   -- Step 1: rewrite using lieBracketWithin_smul_right
-  have hf' : DifferentiableWithinAt 𝕜 f' s' ((extChartAt I x) x) := by
-    -- Is this worth a separate lemma?
-    obtain ⟨_, hf⟩ := mdifferentiableWithinAt_iff.mp hf
-    rwa [extChartAt_self_eq] at hf
   -- We need the coercion since on the nose `B` is a map `E → E`,
   -- whereas we need a map between tangent spaces.
   let A (x₀) := (fderivWithin 𝕜 f' s' x₀) (V' x₀) • W' x₀
@@ -436,7 +440,7 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
   trans mpullback I 𝓘(𝕜, E) ((extChartAt I x)) (fun y ↦ A y + B y) x
   · simp only [mpullback_apply, ]
     congr
-    apply lieBracketWithin_smul_right (V := V') hf'
+    apply lieBracketWithin_smul_right (V := V') hf.differentiableWithinAt_comp_extChartAt_symm
       hW.differentiableWithinAt_mpullbackWithin_vectorField hs
   -- We prove the equality of each summand separately.
   rw [← Pi.add_def, mpullback_add_apply]; congr; swap
