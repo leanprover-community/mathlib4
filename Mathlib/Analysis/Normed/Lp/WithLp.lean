@@ -241,22 +241,22 @@ lemma toLp_sum [AddCommGroup V] {ι : Type*} (s : Finset ι) (f : ι → V) :
   map_sum (WithLp.addEquiv _ _).symm _ _
 
 @[simp]
-lemma ofLp_sum_list [AddCommGroup V] (l : List (WithLp p V)) :
+lemma ofLp_listSum [AddCommGroup V] (l : List (WithLp p V)) :
     l.sum.ofLp = (l.map ofLp).sum :=
   map_list_sum (WithLp.addEquiv _ _) _
 
 @[simp]
-lemma toLp_sum_list [AddCommGroup V] (l : List V) :
+lemma toLp_listSum [AddCommGroup V] (l : List V) :
     toLp p l.sum = (l.map (toLp p)).sum :=
   map_list_sum (WithLp.addEquiv _ _).symm _
 
 @[simp]
-lemma ofLp_sum_multiset [AddCommGroup V] (s : Multiset (WithLp p V)) :
+lemma ofLp_multisetSum [AddCommGroup V] (s : Multiset (WithLp p V)) :
     s.sum.ofLp = (s.map ofLp).sum :=
   map_multiset_sum (WithLp.addEquiv _ _) _
 
 @[simp]
-lemma toLp_sum_multiset [AddCommGroup V] (s : Multiset V) :
+lemma toLp_multisetSum [AddCommGroup V] (s : Multiset V) :
     toLp p s.sum = (s.map (toLp p)).sum :=
   map_multiset_sum (WithLp.addEquiv _ _).symm _
 
