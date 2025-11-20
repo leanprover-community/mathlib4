@@ -3,11 +3,12 @@ Copyright (c) 2025 Zihui Bai. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zihui Bai, Zhengfeng Yang
 -/
+module
 
-import Mathlib.Data.Fintype.Basic
-import Mathlib.GroupTheory.GroupAction.Basic
-import Mathlib.GroupTheory.GroupAction.Quotient
-import Mathlib.GroupTheory.Perm.Cycle.Basic
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.GroupTheory.GroupAction.Basic
+public import Mathlib.GroupTheory.GroupAction.Quotient
+public import Mathlib.GroupTheory.Perm.Cycle.Basic
 
 /-!
 ## Main definitions and results
@@ -23,6 +24,8 @@ We model a coloring as a function `X → Y`, where `X` is a finite set of object
 and `Y` is a finite set of colors.
 The permutation group `Equiv.Perm X` acts on colorings by precomposition.
 -/
+
+@[expose] public section
 
 open scoped BigOperators
 open MulAction Finset Equiv
