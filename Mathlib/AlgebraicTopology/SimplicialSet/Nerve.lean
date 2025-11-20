@@ -211,8 +211,8 @@ lemma σ_zero_nerveEquiv_symm (x : C) :
 @[simp]
 lemma homEquiv_edgeMk_map_nerveMap {D : Type u} [Category.{v} D] {x y : C}
     (f : x ⟶ y) (F : C ⥤ D) :
-  homEquiv ((edgeMk f).map (nerveMap F)) = F.map f := by
-simp [homEquiv, nerveMap_app]
+    homEquiv ((edgeMk f).map (nerveMap F)) = F.map f := by
+  simp [homEquiv, nerveMap_app]
 
 end
 
