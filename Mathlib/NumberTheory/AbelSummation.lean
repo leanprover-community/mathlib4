@@ -187,7 +187,8 @@ section specialversions
 
 /-- Specialized version of `sum_mul_eq_sub_sub_integral_mul` for the case `a = 0` -/
 theorem sum_mul_eq_sub_integral_mul {b : ℝ} (hb : 0 ≤ b)
-    (hf_diff : DifferentiableOn ℝ f (Set.Icc 0 b)) (hf_int : IntegrableOn (deriv f) (Set.Icc 0 b)) :
+    (hf_diff : DifferentiableOn ℝ f (Set.Icc 0 b))
+    (hf_int : IntegrableOn (deriv f) (Set.Icc 0 b)) :
     ∑ k ∈ Icc 0 ⌊b⌋₊, f k * c k =
       f b * (∑ k ∈ Icc 0 ⌊b⌋₊, c k) - ∫ t in Set.Ioc 0 b, deriv f t * ∑ k ∈ Icc 0 ⌊t⌋₊, c k := by
   nth_rewrite 1 [Icc_eq_cons_Ioc (Nat.zero_le _)]

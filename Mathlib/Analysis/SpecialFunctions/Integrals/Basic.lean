@@ -210,10 +210,8 @@ theorem integral_const_on_unit_interval : ∫ _ in a..a + 1, b = b := by simp
 @[simp]
 theorem integral_inv (h : (0 : ℝ) ∉ [[a, b]]) : ∫ x in a..b, x⁻¹ = log (b / a) := by
   have h' := fun x (hx : x ∈ [[a, b]]) => ne_of_mem_of_not_mem hx h
-  rw [integral_deriv_eq_sub' _ deriv_log'
-      (fun x hx => differentiableAt_log (h' x hx) |>.differentiableWithinAt)
-      (continuousOn_inv₀.mono <| subset_compl_singleton_iff.mpr h),
-    log_div (h' b right_mem_uIcc) (h' a left_mem_uIcc)]
+  rw [integral_deriv_eq_sub' _ deriv_log' (differentiableOn_log.mono h')
+    (continuousOn_inv₀.mono h'), log_div (h' b right_mem_uIcc) (h' a left_mem_uIcc)]
 
 @[simp]
 theorem integral_inv_of_pos (ha : 0 < a) (hb : 0 < b) : ∫ x in a..b, x⁻¹ = log (b / a) :=
