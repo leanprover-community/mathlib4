@@ -3,10 +3,12 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Analysis.SpecialFunctions.Log.RpowTendsto
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.ExpLog.Basic
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.IntegralRepresentation
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Continuity
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Log.RpowTendsto
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.ExpLog.Basic
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.IntegralRepresentation
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Continuity
 
 /-!
 # Order properties of the operator logarithm
@@ -23,6 +25,8 @@ the strictly positive elements of a unital C⋆-algebra.
 * Show that the log is operator concave
 * Show that `x => x * log x` is operator convex
 -/
+
+@[expose] public section
 
 open scoped Topology
 

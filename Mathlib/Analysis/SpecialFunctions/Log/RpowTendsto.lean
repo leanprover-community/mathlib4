@@ -3,7 +3,9 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # The logarithm as a limit of powers
@@ -18,6 +20,8 @@ This file shows that the logarithm can be expressed as a limit of powers, namely
 * `tendsto_rpow_sub_one_log`: `p⁻¹ * (x ^ p - 1)`: the analogous statement for pointwise
   convergence.
 -/
+
+@[expose] public section
 
 open scoped Topology
 open Real Filter
