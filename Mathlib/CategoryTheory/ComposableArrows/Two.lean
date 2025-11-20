@@ -31,7 +31,7 @@ variable {C : Type u} [Category.{v} C]
 /-- The morphism `mk₁ f ⟶ mk₁ fg` when `f ≫ g = fg` for some morphism `g`. -/
 def twoδ₂Toδ₁ :
     mk₁ f ⟶ mk₁ fg :=
-  homMk₁ (𝟙 _) g (by simpa using h)
+  homMk₁ (𝟙 _) g
 
 @[simp]
 lemma twoδ₂Toδ₁_app_zero :
