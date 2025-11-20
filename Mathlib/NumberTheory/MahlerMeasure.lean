@@ -98,7 +98,7 @@ theorem card_mahlerMeasure_le_prod (n : ℕ) (B : ℝ≥0) :
   · gcongr with p hp
     intro hB d
     rw [show ‖p.coeff d‖ = ‖(p.map (Int.castRingHom ℂ)).coeff d‖ by aesop]
-    apply le_trans <| (p.map (Int.castRingHom ℂ)).norm_coeff_le_binom_mahlerMeasure d
+    apply le_trans <| (p.map (Int.castRingHom ℂ)).norm_coeff_le_choose_mul_mahlerMeasure d
     gcongr
     · exact mahlerMeasure_nonneg (map (Int.castRingHom ℂ) p)
     · rw [p.degree_map_int_castRingHom]
