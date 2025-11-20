@@ -3,9 +3,11 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.RingTheory.TensorProduct.Maps
+module
+
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Algebra.Polynomial.Monic
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 
@@ -22,6 +24,8 @@ We construct the universal ring of the following functors on `R-Alg`:
 
 -/
 
+@[expose] public section
+
 open scoped Polynomial TensorProduct
 
 open RingHomClass (toRingHom)
@@ -31,12 +35,14 @@ variable (n m k : ℕ) (hn : n = m + k)
 
 noncomputable section
 
+namespace Polynomial
+
 /-- The free monic polynomial of degree `n`, as a polynomial in `R[X₁,...,Xₙ][X]`. -/
-def MvPolynomial.freeMonic : (MvPolynomial (Fin n) R)[X] :=
+def freeMonic : (MvPolynomial (Fin n) R)[X] :=
   .X ^ n + ∑ i : Fin n, .C (.X i) * .X ^ (i : ℕ)
 
-lemma MvPolynomial.coeff_freeMonic :
-    (freeMonic R n).coeff k = (if h : k < n then .X ⟨k, h⟩ else if k = n then 1 else 0) := by
+lemma coeff_freeMonic :
+    (freeMonic R n).coeff k = if h : k < n then .X ⟨k, h⟩ else if k = n then 1 else 0 := by
   simp only [freeMonic, Polynomial.coeff_add, Polynomial.coeff_X_pow, Polynomial.finset_sum_coeff,
     Polynomial.coeff_C_mul, mul_ite, mul_one, mul_zero]
   by_cases h : k < n
@@ -44,35 +50,39 @@ lemma MvPolynomial.coeff_freeMonic :
       Fin.ext_iff, @eq_comm _ k, h, h.ne']
   ·rw [Finset.sum_eq_zero fun x _ ↦ if_neg (by cases x; omega), add_zero, dif_neg h]
 
-lemma MvPolynomial.degree_freeMonic [Nontrivial R] : (freeMonic R n).degree = n :=
+lemma degree_freeMonic [Nontrivial R] : (freeMonic R n).degree = n :=
   Polynomial.degree_eq_of_le_of_coeff_ne_zero ((Polynomial.degree_le_iff_coeff_zero _ _).mpr
     (by simp +contextual [coeff_freeMonic, LT.lt.not_gt, LT.lt.ne']))
-    (by simp [MvPolynomial.coeff_freeMonic])
+    (by simp [coeff_freeMonic])
 
-lemma MvPolynomial.natDegree_freeMonic [Nontrivial R] : (freeMonic R n).natDegree = n :=
-  Polynomial.natDegree_eq_of_degree_eq_some (degree_freeMonic R n)
+lemma natDegree_freeMonic [Nontrivial R] : (freeMonic R n).natDegree = n :=
+  natDegree_eq_of_degree_eq_some (degree_freeMonic R n)
 
-lemma MvPolynomial.monic_freeMonic : (freeMonic R n).Monic := by
+lemma monic_freeMonic : (freeMonic R n).Monic := by
   nontriviality R
   simp [Polynomial.Monic, ← Polynomial.coeff_natDegree, natDegree_freeMonic, coeff_freeMonic]
 
 omit [Algebra R S] in
-lemma MvPolynomial.map_map_freeMonic (f : R →+* S) :
-    (freeMonic R n).map (map f) = freeMonic S n := by
+lemma map_map_freeMonic (f : R →+* S) :
+    (freeMonic R n).map (MvPolynomial.map f) = freeMonic S n := by
   simp [freeMonic, Polynomial.map_sum]
 
 open Polynomial (MonicDegreeEq)
 
 /-- The free monic polynomial of degree `n`, as a `MonicDegreeEq` in `R[X₁,...,Xₙ][X]`. -/
 @[simps]
-def Polynomial.MonicDegreeEq.freeMonic : MonicDegreeEq (MvPolynomial (Fin n) R) n :=
-  ⟨MvPolynomial.freeMonic R n, by simp +contextual [MvPolynomial.coeff_freeMonic,
-    not_lt_of_gt, LT.lt.ne']⟩
+def MonicDegreeEq.freeMonic : MonicDegreeEq (MvPolynomial (Fin n) R) n :=
+  ⟨.freeMonic R n, by simp +contextual [coeff_freeMonic, not_lt_of_gt, LT.lt.ne']⟩
+
+end Polynomial
+
+namespace MvPolynomial
+
+open Polynomial
 
 /-- `MonicDegreeEq · n` is representable by `R[X₁,...,Xₙ]`,
 with the universal element being `freeMonic`. -/
-def MvPolynomial.mapEquivMonic :
-    (MvPolynomial (Fin n) R →ₐ[R] S) ≃ MonicDegreeEq S n where
+def mapEquivMonic : (MvPolynomial (Fin n) R →ₐ[R] S) ≃ MonicDegreeEq S n where
   toFun f := .map (.freeMonic _ _) f.toRingHom
   invFun p := aeval (p.1.coeff ·)
   left_inv f := by ext i; simp [coeff_freeMonic]
@@ -85,26 +95,23 @@ def MvPolynomial.mapEquivMonic :
     · simp [p.2.2 _ (hi.lt_of_ne' hi')]
 
 variable {R S T} in
-lemma MvPolynomial.coe_mapEquivMonic_comp
-    (f : MvPolynomial (Fin n) R →ₐ[R] S) (g : S →ₐ[R] T) :
+lemma coe_mapEquivMonic_comp (f : MvPolynomial (Fin n) R →ₐ[R] S) (g : S →ₐ[R] T) :
     (mapEquivMonic R T n (g.comp f)).1 = (mapEquivMonic R S n f).1.map g :=
   (Polynomial.map_map ..).symm
 
 variable {R S T} in
-lemma MvPolynomial.coe_mapEquivMonic_comp'
-    (f : MvPolynomial (Fin n) R →ₐ[R] S) (g : S →ₐ[R] T) :
+lemma coe_mapEquivMonic_comp' (f : MvPolynomial (Fin n) R →ₐ[R] S) (g : S →ₐ[R] T) :
     mapEquivMonic R T n (g.comp f) = (mapEquivMonic R S n f).map g :=
   Subtype.ext (coe_mapEquivMonic_comp ..)
 
 variable {R S T} in
-lemma MvPolynomial.mapEquivMonic_symm_map
-    (p : MonicDegreeEq S n) (g : S →ₐ[R] T) :
+lemma mapEquivMonic_symm_map (p : MonicDegreeEq S n) (g : S →ₐ[R] T) :
     (mapEquivMonic R T n).symm (p.map g) = g.comp ((mapEquivMonic R S n).symm p) := by
   obtain ⟨f, rfl⟩ := (mapEquivMonic R S n).surjective p
   exact (mapEquivMonic R T n).symm_apply_eq.mpr (by simp [coe_mapEquivMonic_comp'])
 
 variable {R S T} in
-lemma MvPolynomial.mapEquivMonic_symm_map_algebraMap
+lemma mapEquivMonic_symm_map_algebraMap
     (p : MonicDegreeEq S n) [Algebra S T] [IsScalarTower R S T] :
     (mapEquivMonic R T n).symm (p.map (algebraMap S T)) =
       (IsScalarTower.toAlgHom R S T).comp ((mapEquivMonic R S n).symm p) := by
@@ -113,7 +120,7 @@ lemma MvPolynomial.mapEquivMonic_symm_map_algebraMap
 /-- In light of the fact that `MonicDegreeEq · n` is representable by `R[X₁,...,Xₙ]`,
 this is the map `R[X₁,...,Xₘ₊ₖ] → R[X₁,...,Xₘ] ⊗ R[X₁,...,Xₖ]` corresponding to the multiplication
 `MonicDegreeEq · m × MonicDegreeEq · k → MonicDegreeEq · (m + k)`. -/
-def MvPolynomial.universalFactorizationMap (hn : n = m + k) :
+def universalFactorizationMap (hn : n = m + k) :
     MvPolynomial (Fin n) R →ₐ[R] MvPolynomial (Fin m) R ⊗[R] MvPolynomial (Fin k) R :=
   (mapEquivMonic R _ n).symm
   ⟨(mapEquivMonic R _ m Algebra.TensorProduct.includeLeft).1 *
@@ -126,7 +133,7 @@ def MvPolynomial.universalFactorizationMap (hn : n = m + k) :
     rw [((monic_freeMonic R m).map _).natDegree_mul ((monic_freeMonic R k).map _)]
     simp_rw [(monic_freeMonic R _).natDegree_map, natDegree_freeMonic, hn]⟩
 
-lemma MvPolynomial.universalFactorizationMap_freeMonic :
+lemma universalFactorizationMap_freeMonic :
     (freeMonic R n).map (toRingHom <| universalFactorizationMap R n m k hn) =
       (freeMonic R m).map (algebraMap _ _) *
         (freeMonic R k).map (toRingHom <| Algebra.TensorProduct.includeRight) := by
@@ -134,7 +141,7 @@ lemma MvPolynomial.universalFactorizationMap_freeMonic :
   simp [universalFactorizationMap]
   rfl
 
-lemma MvPolynomial.universalFactorizationMap_comp_map :
+lemma universalFactorizationMap_comp_map :
     (universalFactorizationMap S n m k hn).toRingHom.comp (map (algebraMap R S)) =
     .comp (Algebra.TensorProduct.lift (S := R)
       (Algebra.TensorProduct.includeLeft.comp (mapAlgHom (Algebra.ofId R S)))
@@ -145,12 +152,12 @@ lemma MvPolynomial.universalFactorizationMap_comp_map :
   · simp
   · dsimp [universalFactorizationMap, mapEquivMonic]
     simp only [map_X, aeval_X, ← AlgHom.coe_toRingHom, ← Polynomial.coeff_map, Polynomial.map_mul,
-      Polynomial.map_map, ← MvPolynomial.map_map_freeMonic (f := algebraMap R S)]
+      Polynomial.map_map, ← map_map_freeMonic (f := algebraMap R S)]
     congr <;> ext <;> simp [← algebraMap_apply]
 
 /-- Lifts along `universalFactorizationMap` corresponds to factorization of `p` into
 monic polynomials with fixed degrees. -/
-def MvPolynomial.universalFactorizationMapLiftEquiv (p : MonicDegreeEq S n) :
+def universalFactorizationMapLiftEquiv (p : MonicDegreeEq S n) :
     { f // AlgHom.comp f (universalFactorizationMap R n m k hn) =
         (mapEquivMonic _ _ n).symm p } ≃
     { q : MonicDegreeEq S m × MonicDegreeEq S k // q.1.1 * q.2.1 = p } where
@@ -166,3 +173,5 @@ def MvPolynomial.universalFactorizationMapLiftEquiv (p : MonicDegreeEq S n) :
     simp [← coe_mapEquivMonic_comp, ← q.2]⟩
   left_inv f := by ext <;> simp
   right_inv q := by ext <;> simp
+
+end MvPolynomial
