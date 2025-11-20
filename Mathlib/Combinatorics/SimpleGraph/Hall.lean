@@ -53,14 +53,15 @@ abbrev hall_subgraph {p : Set V} [DecidablePred (· ∈ p)] (f : p → V) (h₁ 
   edge_vert {v w} := by grind
   symm {x y} := by grind
 
-variable [DecidableEq V] [G.LocallyFinite] {p₁ p₂ : Set V}
+variable [G.LocallyFinite] {p₁ p₂ : Set V}
 
 /-- This is the version of **Hall's marriage theorem** for bipartite graphs that finds a matching
 for a single partition given that the neighborhood-condition only holds for elements of that
 partition. -/
-theorem exists_isMatching_of_forall_ncard_le [DecidablePred (· ∈ p₁)] (h₁ : G.IsBipartiteWith p₁ p₂)
+theorem exists_isMatching_of_forall_ncard_le (h₁ : G.IsBipartiteWith p₁ p₂)
     (h₂ : ∀ s ⊆ p₁, s.ncard ≤ (⋃ x ∈ s, G.neighborSet x).ncard) :
     ∃ M : Subgraph G, p₁ ⊆ M.verts ∧ M.IsMatching := by
+  classical
   obtain ⟨f, hf₁, hf₂⟩ := Finset.all_card_le_biUnion_card_iff_exists_injective
       (fun (x : p₁) ↦ G.neighborFinset x) |>.mp fun s ↦ by
     have := h₂ (s.image Subtype.val) (by simp)
@@ -80,6 +81,7 @@ theorem exists_isMatching_of_forall_ncard_le [DecidablePred (· ∈ p₁)] (h₁
 
 lemma union_eq_univ_of_forall_ncard_le (h₁ : G.IsBipartiteWith p₁ p₂)
     (h₂ : ∀ s : Set V, s.ncard ≤ (⋃ x ∈ s, G.neighborSet x).ncard) : p₁ ∪ p₂ = Set.univ := by
+  classical
   obtain ⟨f, _, hf₂⟩ := Finset.all_card_le_biUnion_card_iff_exists_injective
       (fun x ↦ G.neighborFinset x) |>.mp fun s ↦ by
     have := h₂ s
@@ -91,6 +93,7 @@ lemma union_eq_univ_of_forall_ncard_le (h₁ : G.IsBipartiteWith p₁ p₂)
 lemma exists_bijective_of_forall_ncard_le (h₁ : G.IsBipartiteWith p₁ p₂)
     (h₂ : ∀ s : Set V, s.ncard ≤ (⋃ x ∈ s, G.neighborSet x).ncard) :
     ∃ (h : p₁ → p₂), Function.Bijective h ∧ ∀ (a : p₁), G.Adj a (h a) := by
+  classical
   obtain ⟨f, hf₁, hf₂⟩ := Finset.all_card_le_biUnion_card_iff_exists_injective
       (fun x ↦ G.neighborFinset x) |>.mp fun s ↦ by
     have := h₂ s
@@ -111,9 +114,10 @@ lemma exists_bijective_of_forall_ncard_le (h₁ : G.IsBipartiteWith p₁ p₂)
 
 /-- This is the version of **Hall's marriage theorem** for bipartite graphs that finds a perfect
 matching given that the neighborhood-condition holds globally. -/
-theorem exists_isPerfectMatching_of_forall_ncard_le [DecidablePred (· ∈ p₁)]
+theorem exists_isPerfectMatching_of_forall_ncard_le
     (h₁ : G.IsBipartiteWith p₁ p₂) (h₂ : ∀ s : Set V, s.ncard ≤ (⋃ x ∈ s, G.neighborSet x).ncard) :
     ∃ M : Subgraph G, M.IsPerfectMatching := by
+  classical
   obtain ⟨b, hb₁, hb₂⟩ := exists_bijective_of_forall_ncard_le h₁ h₂
   use hall_subgraph (fun v ↦ b v) (fun v ↦ h₁.disjoint.notMem_of_mem_right (b v).property) hb₂
   have : p₁ ∪ Set.range (fun v ↦ (b v).1) = Set.univ := by

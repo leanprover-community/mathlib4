@@ -97,11 +97,11 @@ theorem coeff_indicator (s : Set ℕ) [Semiring α] (n : ℕ) [Decidable (n ∈ 
     coeff n (indicatorSeries α s) = if n ∈ s then 1 else 0 := by
   convert coeff_mk _ _
 
-theorem coeff_indicator_pos (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∈ s) [Decidable (n ∈ s)] :
-    coeff n (indicatorSeries α s) = 1 := by rw [coeff_indicator, if_pos h]
+theorem coeff_indicator_pos (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∈ s) :
+    coeff n (indicatorSeries α s) = 1 := by classical rw [coeff_indicator, if_pos h]
 
-theorem coeff_indicator_neg (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∉ s) [Decidable (n ∈ s)] :
-    coeff n (indicatorSeries α s) = 0 := by rw [coeff_indicator, if_neg h]
+theorem coeff_indicator_neg (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∉ s) :
+    coeff n (indicatorSeries α s) = 0 := by classical rw [coeff_indicator, if_neg h]
 
 theorem constantCoeff_indicator (s : Set ℕ) [Semiring α] [Decidable (0 ∈ s)] :
     constantCoeff (indicatorSeries α s) = if 0 ∈ s then 1 else 0 := by

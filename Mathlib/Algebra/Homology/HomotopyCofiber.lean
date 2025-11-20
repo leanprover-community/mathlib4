@@ -340,6 +340,7 @@ lemma eq_desc (f : homotopyCofiber φ ⟶ K) (hc : ∀ j, ∃ i, c.Rel i j) :
 
 end
 
+omit [DecidableRel c.Rel] in
 lemma descSigma_ext_iff {φ : F ⟶ G} {K : HomologicalComplex C c}
     (x y : Σ (α : G ⟶ K), Homotopy (φ ≫ α) 0) :
     x = y ↔ x.1 = y.1 ∧ (∀ (i j : ι) (_ : c.Rel j i), x.2.hom i j = y.2.hom i j) := by
@@ -543,6 +544,7 @@ end
 
 end cylinder
 
+omit [DecidableRel c.Rel] in
 /-- If a functor inverts homotopy equivalences, it sends homotopic maps to the same map. -/
 lemma _root_.Homotopy.map_eq_of_inverts_homotopyEquivalences
     {φ₀ φ₁ : F ⟶ G} (h : Homotopy φ₀ φ₁) (hc : ∀ j, ∃ i, c.Rel i j)
@@ -551,6 +553,7 @@ lemma _root_.Homotopy.map_eq_of_inverts_homotopyEquivalences
     {D : Type*} [Category D] (H : HomologicalComplex C c ⥤ D)
     (hH : (homotopyEquivalences C c).IsInvertedBy H) :
     H.map φ₀ = H.map φ₁ := by
+  classical
   simp only [← cylinder.ι₀_desc _ _ h, ← cylinder.ι₁_desc _ _ h, H.map_comp,
     cylinder.map_ι₀_eq_map_ι₁ _ hc _ hH]
 
