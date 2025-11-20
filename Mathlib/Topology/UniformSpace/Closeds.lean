@@ -21,7 +21,7 @@ induced by the Hausdorff metric to hyperspaces of uniform spaces.
 open Topology
 open scoped Uniformity
 
-variable {α : Type*}
+variable {α β : Type*}
 
 section hausdorffEntourage
 
@@ -85,7 +85,7 @@ theorem singleton_mem_hausdorffEntourage (U : SetRel α α) (x y : α) :
 
 end hausdorffEntourage
 
-variable [UniformSpace α]
+variable [UniformSpace α] [UniformSpace β]
 
 variable (α) in
 /-- The Hausdorff uniformity on the powerset of a uniform space. Used for defining the uniformities
@@ -167,6 +167,29 @@ theorem isClosedEmbedding_singleton [T0Space α] :
     rintro _ ⟨hzU, hzV⟩ ⟨z, rfl⟩
     rw [Set.mem_setOf, Set.singleton_inter_nonempty] at hzU hzV
     exact hUV.notMem_of_mem_left hzU hzV
+
+theorem uniformContinuous_image {f : α → β} (hf : UniformContinuous f) :
+    UniformContinuous (f '' ·) := by
+  refine Filter.tendsto_lift'.mpr fun U hU => ?_
+  filter_upwards [Filter.mem_lift' (hf hU)] with ⟨s, t⟩ ⟨h₁, h₂⟩
+  simp_rw [mem_hausdorffEntourage, Set.image_subset_iff]
+  exact ⟨h₁.trans fun x ⟨y, hy, hxy⟩ => ⟨f y, Set.mem_image_of_mem f hy, hxy⟩,
+    h₂.trans fun x ⟨y, hy, hxy⟩ => ⟨f y, Set.mem_image_of_mem f hy, hxy⟩⟩
+
+theorem isUniformInducing_image {f : α → β} (hf : IsUniformInducing f) :
+    IsUniformInducing (f '' ·) := by
+  constructor
+  change Filter.comap _ (Filter.lift' _ _) = Filter.lift' _ _
+  rw [Filter.comap_lift'_eq, ← hf.comap_uniformity,
+    Filter.comap_lift'_eq2 monotone_hausdorffEntourage]
+  congr with U ⟨s, t⟩
+  simp only [Function.comp, hausdorffEntourage, SetRel.preimage, SetRel.image, Set.preimage,
+    Set.mem_setOf, Set.image_subset_iff, Set.exists_mem_image]
+
+theorem isUniformEmbedding_image {f : α → β} (hf : IsUniformEmbedding f) :
+    IsUniformEmbedding (f '' ·) where
+  __ := isUniformInducing_image hf.isUniformInducing
+  injective := hf.injective.image_injective
 
 end UniformSpace.hausdorff
 
@@ -310,6 +333,22 @@ theorem isUniformEmbedding_singleton : IsUniformEmbedding ({·} : α → Compact
 theorem uniformContinuous_singleton : UniformContinuous ({·} : α → Compacts α) :=
   isUniformEmbedding_singleton.uniformContinuous
 
+theorem uniformContinuous_map {f : α → β} (hf : UniformContinuous f) :
+    UniformContinuous (Compacts.map f hf.continuous) :=
+  isUniformEmbedding_coe.uniformContinuous_iff.mpr <|
+    (UniformSpace.hausdorff.uniformContinuous_image hf).comp uniformContinuous_coe
+
+theorem isUniformInducing_map {f : α → β} (hf : IsUniformInducing f) :
+    IsUniformInducing (Compacts.map f hf.uniformContinuous.continuous) :=
+  .of_comp (uniformContinuous_map hf.uniformContinuous) uniformContinuous_coe <|
+    (UniformSpace.hausdorff.isUniformInducing_image hf).comp
+      isUniformEmbedding_coe.isUniformInducing
+
+theorem isUniformEmbedding_map {f : α → β} (hf : IsUniformEmbedding f) :
+    IsUniformEmbedding (Compacts.map f hf.uniformContinuous.continuous) where
+  __ := isUniformInducing_map hf.isUniformInducing
+  injective := map_injective hf.uniformContinuous.continuous hf.injective
+
 end TopologicalSpace.Compacts
 
 namespace TopologicalSpace.NonemptyCompacts
@@ -381,5 +420,21 @@ theorem isUniformEmbedding_singleton : IsUniformEmbedding ({·} : α → Nonempt
 
 theorem uniformContinuous_singleton : UniformContinuous ({·} : α → NonemptyCompacts α) :=
   isUniformEmbedding_singleton.uniformContinuous
+
+theorem uniformContinuous_map {f : α → β} (hf : UniformContinuous f) :
+    UniformContinuous (NonemptyCompacts.map f hf.continuous) :=
+  isUniformEmbedding_coe.uniformContinuous_iff.mpr <|
+    (UniformSpace.hausdorff.uniformContinuous_image hf).comp uniformContinuous_coe
+
+theorem isUniformInducing_map {f : α → β} (hf : IsUniformInducing f) :
+    IsUniformInducing (NonemptyCompacts.map f hf.uniformContinuous.continuous) :=
+  .of_comp (uniformContinuous_map hf.uniformContinuous) uniformContinuous_coe <|
+    (UniformSpace.hausdorff.isUniformInducing_image hf).comp
+      isUniformEmbedding_coe.isUniformInducing
+
+theorem isUniformEmbedding_map {f : α → β} (hf : IsUniformEmbedding f) :
+    IsUniformEmbedding (NonemptyCompacts.map f hf.uniformContinuous.continuous) where
+  __ := isUniformInducing_map hf.isUniformInducing
+  injective := map_injective hf.uniformContinuous.continuous hf.injective
 
 end TopologicalSpace.NonemptyCompacts
