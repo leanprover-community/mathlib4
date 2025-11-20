@@ -360,6 +360,8 @@ def main():
             for repo in missing_repos:
                 print(f"{FAIL} {repo['name']}")
                 print(f"    {repo['github']}")
+                if 'zulip-contact' in repo:
+                    print(f"    Contact: @**{repo['zulip-contact']}**")
             print(f"\nSee {action_url} for installation instructions.")
             sys.exit(1)
         else:
@@ -373,6 +375,8 @@ def main():
         success = True
         for repo in repos:
             print(f"\nRepository {repo['name']}")
+            if 'zulip-contact' in repo:
+                print(f"  Contact: @**{repo['zulip-contact']}**")
 
             # Check toolchain versions.
             latest = get_latest_version(repo)
