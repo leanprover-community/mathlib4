@@ -3,9 +3,11 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Measure.Real
-import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
-import Mathlib.Topology.Algebra.InfiniteSum.Module
+module
+
+public import Mathlib.MeasureTheory.Measure.Real
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
+public import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
 
@@ -41,6 +43,8 @@ since this provides summability.
 
 vector measure, signed measure, complex measure
 -/
+
+@[expose] public section
 
 
 noncomputable section

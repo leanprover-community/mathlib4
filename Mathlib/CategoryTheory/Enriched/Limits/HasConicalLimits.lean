@@ -3,8 +3,10 @@ Copyright (c) 2025 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster, Dagur Asgeirsson, Emily Riehl
 -/
-import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
-import Mathlib.CategoryTheory.Limits.Final
+module
+
+public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
+public import Mathlib.CategoryTheory.Limits.Final
 
 /-!
 # Existence of conical limits
@@ -32,6 +34,8 @@ inference prefers this. Otherwise it failed with
 However, it is not fully clear yet whether this could lead to potential issues, for example
 if there are multiple `MonoidalCategory _` instances in scope.
 -/
+
+@[expose] public section
 
 universe v₁ u₁ v₂ u₂ w v' v u u'
 

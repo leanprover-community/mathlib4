@@ -3,12 +3,14 @@ Copyright (c) 2020 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Analysis.LocallyConvex.Polar
-import Mathlib.Analysis.Normed.Module.HahnBanach
-import Mathlib.Analysis.Normed.Module.RCLike.Basic
-import Mathlib.Data.Set.Finite.Lemmas
-import Mathlib.Analysis.LocallyConvex.AbsConvex
-import Mathlib.Analysis.Normed.Module.Convex
+module
+
+public import Mathlib.Analysis.LocallyConvex.Polar
+public import Mathlib.Analysis.Normed.Module.HahnBanach
+public import Mathlib.Analysis.Normed.Module.RCLike.Basic
+public import Mathlib.Data.Set.Finite.Lemmas
+public import Mathlib.Analysis.LocallyConvex.AbsConvex
+public import Mathlib.Analysis.Normed.Module.Convex
 
 /-!
 # The strong dual of a normed space
@@ -39,6 +41,8 @@ theory for `SeminormedAddCommGroup` and we specialize to `NormedAddCommGroup` wh
 
 strong dual, polar
 -/
+
+@[expose] public section
 
 noncomputable section
 

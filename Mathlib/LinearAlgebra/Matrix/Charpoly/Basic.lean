@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Polynomial.Eval.SMul
-import Mathlib.LinearAlgebra.Matrix.Adjugate
-import Mathlib.LinearAlgebra.Matrix.Block
-import Mathlib.RingTheory.MatrixPolynomialAlgebra
+module
+
+public import Mathlib.Algebra.Polynomial.Eval.SMul
+public import Mathlib.LinearAlgebra.Matrix.Adjugate
+public import Mathlib.LinearAlgebra.Matrix.Block
+public import Mathlib.RingTheory.MatrixPolynomialAlgebra
 
 /-!
 # Characteristic polynomials and the Cayley-Hamilton theorem
@@ -24,6 +26,8 @@ See the file `Mathlib/LinearAlgebra/Matrix/Charpoly/Coeff.lean` for corollaries 
 
 We follow a nice proof from http://drorbn.net/AcademicPensieve/2015-12/CayleyHamilton.pdf
 -/
+
+@[expose] public section
 
 noncomputable section
 

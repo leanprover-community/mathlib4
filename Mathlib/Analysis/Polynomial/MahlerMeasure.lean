@@ -3,11 +3,12 @@ Copyright (c) 2025 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
+module
 
-import Mathlib.Analysis.Analytic.Polynomial
-import Mathlib.Analysis.Complex.JensenFormula
-import Mathlib.Analysis.Complex.Polynomial.Basic
-import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
+public import Mathlib.Analysis.Analytic.Polynomial
+public import Mathlib.Analysis.Complex.JensenFormula
+public import Mathlib.Analysis.Complex.Polynomial.Basic
+public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
 
 /-!
 # Mahler measure of complex polynomials
@@ -30,6 +31,8 @@ properties.
   value of its leading coefficient times the product of the absolute values of its roots lying
   outside the unit disk.
 -/
+
+@[expose] public section
 
 namespace Polynomial
 
@@ -263,13 +266,15 @@ lemma one_le_prod_max_one_norm_roots (p : ℂ[X]) : 1 ≤ (p.roots.map (fun a �
   grind [Multiset.one_le_prod, Multiset.mem_map]
 
 lemma leading_coeff_le_mahlerMeasure (p : ℂ[X]) : ‖p.leadingCoeff‖ ≤ p.mahlerMeasure := by
-  rw [mahlerMeasure_eq_leadingCoeff_mul_prod_roots]
-  exact le_mul_of_one_le_right (norm_nonneg p.leadingCoeff) (one_le_prod_max_one_norm_roots p)
+  rw [← mul_one ‖_‖, mahlerMeasure_eq_leadingCoeff_mul_prod_roots]
+  gcongr
+  exact one_le_prod_max_one_norm_roots p
 
 lemma prod_max_one_norm_roots_le_mahlerMeasure_of_one_le_leadingCoeff {p : ℂ[X]}
     (hlc : 1 ≤ ‖p.leadingCoeff‖) : (p.roots.map (fun a ↦ max 1 ‖a‖)).prod ≤ p.mahlerMeasure := by
-  rw [mahlerMeasure_eq_leadingCoeff_mul_prod_roots]
-  exact le_mul_of_one_le_left (le_trans zero_le_one (one_le_prod_max_one_norm_roots p)) hlc
+  rw [← one_mul (Multiset.prod _), mahlerMeasure_eq_leadingCoeff_mul_prod_roots]
+  gcongr
+  exact zero_le_one.trans <| one_le_prod_max_one_norm_roots p
 
 open Filter MeasureTheory Set in
 /-- The Mahler measure of a polynomial is bounded above by the sum of the norms of its coefficients.
@@ -283,20 +288,15 @@ theorem mahlerMeasure_le_sum_norm_coeff (p : ℂ[X]) : p.mahlerMeasure ≤ p.sum
     by simp [circleAverage_def, mul_assoc, exp_log this], mahlerMeasure_def_of_ne_zero hp,
     circleAverage_def, smul_eq_mul]
   gcongr
-  apply intervalIntegral.integral_mono_ae_restrict (le_of_lt two_pi_pos)
+  apply intervalIntegral.integral_mono_ae_restrict (by positivity)
     p.intervalIntegrable_mahlerMeasure (by simp)
   rw [EventuallyLE, eventually_iff_exists_mem]
   use {x : ℝ | eval (circleMap 0 1 x) p ≠ 0}
   constructor
-  · rw [mem_ae_iff, compl_def, Measure.restrict_apply' (by simp),
-      show {x | x ∉ {x | eval (circleMap 0 1 x) p ≠ 0}} ∩ Icc 0 (2 * π) =
-      {a | eval (circleMap 0 1 a) p = 0 ∧ a ∈ Icc 0 (2 * π)} by aesop]
+  · rw [mem_ae_iff, compl_def, Measure.restrict_apply' (by simp)]
     apply (Finite.of_diff _ <| finite_singleton (2 * π)).measure_zero
-    have : {a | eval (circleMap 0 1 a) p = 0 ∧ a ∈ Icc 0 (2 * π)} \ {2 * π}
-        = {a | a ∈ Ico 0 (2 * π) ∧ eval (circleMap 0 1 a) p = 0} := by
-      ext
-      grind
-    rw [this]
+    simp only [ne_eq, mem_setOf_eq, Decidable.not_not, inter_diff_assoc, Icc_diff_right]
+    rw [setOf_inter_eq_sep]
     apply Finite.of_finite_image (f := circleMap 0 1) ((Multiset.finite_toSet p.roots).subset _)
       <| fun _ h _ k l ↦ injOn_circleMap_of_abs_sub_le' one_ne_zero (by linarith) h.1 k.1 l
     simp [hp]
@@ -307,7 +307,7 @@ theorem mahlerMeasure_le_sum_norm_coeff (p : ℂ[X]) : p.mahlerMeasure ≤ p.sum
     simp
 
 open Multiset in
-theorem norm_coeff_le_binom_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
+theorem norm_coeff_le_choose_mul_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
     ‖p.coeff n‖ ≤ (p.natDegree).choose n * p.mahlerMeasure := by
   by_cases hp : p = 0
   · simp [hp]
@@ -321,13 +321,10 @@ theorem norm_coeff_le_binom_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
   apply le_trans <| norm_sum_le _ _
   simp_rw [nsmul_eq_mul, norm_mul, _root_.norm_natCast]
   let S := powersetCard (p.natDegree - n) p.roots
-  calc
-  ∑ x ∈ S.toFinset, count x S * ‖x.prod‖
-     ≤ ∑ x ∈ S.toFinset, count x S * ((p.roots).map (fun a ↦ max 1 ‖a‖)).prod := by
-    gcongr with x hx
+  --to be used later in the calc block:
+  have (x : Multiset ℂ) (hx : x ∈ S.toFinset) : ∏ x_1 ∈ x.toFinset, ‖x_1‖ ^ count x_1 x
+      ≤ ∏ m ∈ p.roots.toFinset, max 1 ‖m‖ ^ count m p.roots := by
     rw [mem_toFinset, mem_powersetCard] at hx
-    rw [Finset.prod_multiset_map_count, Finset.prod_multiset_count, norm_prod]
-    simp_rw [norm_pow]
     calc
     ∏ z ∈ x.toFinset, ‖z‖ ^ count z x
       ≤ ∏ z ∈ x.toFinset, (1 ⊔ ‖z‖) ^ count z x := by
@@ -342,6 +339,14 @@ theorem norm_coeff_le_binom_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
       gcongr with a
       · exact le_max_left 1 ‖a‖
       · exact hx.1
+  --final calc block:
+  calc
+  ∑ x ∈ S.toFinset, count x S * ‖x.prod‖
+     ≤ ∑ x ∈ S.toFinset, count x S * ((p.roots).map (fun a ↦ max 1 ‖a‖)).prod := by
+    gcongr with x hx
+    rw [Finset.prod_multiset_map_count, Finset.prod_multiset_count, norm_prod]
+    simp_rw [norm_pow]
+    exact this x hx
   _  = p.natDegree.choose n * (p.roots.map (fun a ↦ 1 ⊔ ‖a‖)).prod := by
     rw [← Finset.sum_mul]
     congr
