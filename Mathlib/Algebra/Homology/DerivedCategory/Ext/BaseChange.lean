@@ -3,19 +3,22 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.Algebra.Category.Grp.Zero
-import Mathlib.Algebra.Category.ModuleCat.Projective
-import Mathlib.Algebra.FiveLemma
-import Mathlib.Algebra.Module.FinitePresentation
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.Map
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.GroupTheory.MonoidLocalization.Basic
-import Mathlib.LinearAlgebra.Dimension.Finite
-import Mathlib.LinearAlgebra.TensorProduct.Pi
-import Mathlib.RingTheory.Flat.Basic
-import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.RingTheory.Flat.Localization
+module
+
+public import Mathlib.Algebra.Category.Grp.Zero
+public import Mathlib.Algebra.Category.ModuleCat.Projective
+public import Mathlib.Algebra.FiveLemma
+public import Mathlib.Algebra.Module.FinitePresentation
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Map
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.GroupTheory.MonoidLocalization.Basic
+public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.LinearAlgebra.TensorProduct.Pi
+public import Mathlib.RingTheory.Flat.Basic
+public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.RingTheory.Flat.Localization
+
 /-!
 
 # Ext Commute with Flat Base Change
@@ -24,6 +27,8 @@ The `Ext` functor over `R`-module commute with flat base change if `R` is Noethr
 are finitely generated.
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 
