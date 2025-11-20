@@ -28,8 +28,6 @@ cautious here.
 
 @[expose] public section
 
-@[expose] public section
-
 set_option linter.style.emptyLine false in
 -- these theorems are fragile, so do them first
 set_option hygiene false in
