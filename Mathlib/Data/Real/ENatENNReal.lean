@@ -3,14 +3,18 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.ENat.Basic
-import Mathlib.Data.ENNReal.Basic
+module
+
+public import Mathlib.Data.ENat.Basic
+public import Mathlib.Data.ENNReal.Basic
 
 /-!
 # Coercion from `ℕ∞` to `ℝ≥0∞`
 
 In this file we define a coercion from `ℕ∞` to `ℝ≥0∞` and prove some basic lemmas about this map.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 

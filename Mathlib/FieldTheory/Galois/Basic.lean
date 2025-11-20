@@ -3,10 +3,12 @@ Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz, Yongle Hu, Jingting Wang
 -/
-import Mathlib.FieldTheory.Fixed
-import Mathlib.FieldTheory.Normal.Closure
-import Mathlib.FieldTheory.PrimitiveElement
-import Mathlib.GroupTheory.GroupAction.FixingSubgroup
+module
+
+public import Mathlib.FieldTheory.Fixed
+public import Mathlib.FieldTheory.Normal.Closure
+public import Mathlib.FieldTheory.PrimitiveElement
+public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 
 /-!
 # Galois Extensions
@@ -37,6 +39,8 @@ Together, these two results prove the Galois correspondence.
   with cyclic and thus abelian Galois group.
 
 -/
+
+@[expose] public section
 
 
 open scoped Polynomial IntermediateField

@@ -3,14 +3,16 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Polynomial.Expand
-import Mathlib.Algebra.Polynomial.Splits
-import Mathlib.Algebra.Squarefree.Basic
-import Mathlib.FieldTheory.IntermediateField.Basic
-import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.RingTheory.Polynomial.Content
-import Mathlib.RingTheory.PowerBasis
-import Mathlib.Data.ENat.Lattice
+module
+
+public import Mathlib.Algebra.Polynomial.Expand
+public import Mathlib.Algebra.Polynomial.Splits
+public import Mathlib.Algebra.Squarefree.Basic
+public import Mathlib.FieldTheory.IntermediateField.Basic
+public import Mathlib.FieldTheory.Minpoly.Field
+public import Mathlib.RingTheory.Polynomial.Content
+public import Mathlib.RingTheory.PowerBasis
+public import Mathlib.Data.ENat.Lattice
 
 /-!
 
@@ -28,6 +30,8 @@ properties about separable polynomials here.
   over `K`.
 
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -334,7 +338,7 @@ theorem separable_prod_X_sub_C_iff' {ι : Sort _} {f : ι → F} {s : Finset ι}
       separable_prod'
         (fun x _hx y _hy hxy =>
           @pairwise_coprime_X_sub_C _ _ { x // x ∈ s } (fun x => f x)
-            (fun x y hxy => Subtype.eq <| H x.1 x.2 y.1 y.2 hxy) _ _ hxy)
+            (fun x y hxy => Subtype.ext <| H x.1 x.2 y.1 y.2 hxy) _ _ hxy)
         fun _ _ => separable_X_sub_C⟩
 
 theorem separable_prod_X_sub_C_iff {ι : Sort _} [Fintype ι] {f : ι → F} :

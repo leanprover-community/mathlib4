@@ -3,7 +3,9 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.RingTheory.Valuation.Basic
+module
+
+public import Mathlib.RingTheory.Valuation.Basic
 
 /-!
 # Ring of integers under a given valuation
@@ -12,6 +14,8 @@ The elements with valuation less than or equal to 1.
 
 TODO: Define characteristic predicate.
 -/
+
+@[expose] public section
 
 open Set
 

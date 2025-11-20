@@ -3,10 +3,12 @@ Copyright (c) 2021 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Ines Wright, Joachim Breitner
 -/
-import Mathlib.GroupTheory.Solvable
-import Mathlib.GroupTheory.Sylow
-import Mathlib.Algebra.Group.Subgroup.Order
-import Mathlib.GroupTheory.Commutator.Finite
+module
+
+public import Mathlib.GroupTheory.Solvable
+public import Mathlib.GroupTheory.Sylow
+public import Mathlib.Algebra.Group.Subgroup.Order
+public import Mathlib.GroupTheory.Commutator.Finite
 
 /-!
 
@@ -73,6 +75,8 @@ are actually central series. Note that the fact that the upper and lower central
 are not central series if `G` is not nilpotent is a standard abuse of notation.
 
 -/
+
+@[expose] public section
 
 
 open Subgroup

@@ -3,13 +3,15 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.MonoidAlgebra.Module
-import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
-import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-import Mathlib.Algebra.Ring.Action.Rat
-import Mathlib.Data.Finset.Sort
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Algebra.MonoidAlgebra.Module
+public import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
+public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+public import Mathlib.Algebra.Ring.Action.Rat
+public import Mathlib.Data.Finset.Sort
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Theory of univariate polynomials
@@ -52,6 +54,8 @@ gives an element `q` of `R[ℕ]`, and conversely `⟨q⟩` gives back `p`). The
 equivalence is also registered as a ring equiv in `Polynomial.toFinsuppIso`. These should
 in general not be used once the basic API for polynomials is constructed.
 -/
+
+@[expose] public section
 
 noncomputable section
 

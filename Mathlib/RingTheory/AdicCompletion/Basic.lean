@@ -3,10 +3,12 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Judith Ludwig, Christian Merten, Jiedong Jiang
 -/
-import Mathlib.Algebra.Ring.GeomSum
-import Mathlib.LinearAlgebra.SModEq.Basic
-import Mathlib.RingTheory.Ideal.Quotient.PowTransition
-import Mathlib.RingTheory.Jacobson.Ideal
+module
+
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.LinearAlgebra.SModEq.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.PowTransition
+public import Mathlib.RingTheory.Jacobson.Ideal
 
 /-!
 # Completion of a module with respect to an ideal.
@@ -28,6 +30,8 @@ with respect to an ideal `I`:
   Together with `mk_lift_apply` and `eq_lift`, it gives the universal property of being
   `I`-adically complete.
 -/
+
+@[expose] public section
 
 suppress_compilation
 
@@ -66,6 +70,49 @@ theorem IsHausdorff.eq_iff_smodEq [IsHausdorff I M] {x y : M} :
   rw [← sub_eq_zero]
   apply IsHausdorff.haus' (I := I) (x - y)
   simpa [SModEq.sub_mem] using h
+
+variable (I) in
+theorem IsHausdorff.funext {M : Type*} [IsHausdorff I N] {f g : M → N}
+    (h : ∀ n m, Submodule.Quotient.mk (p := (I ^ n • ⊤ : Submodule R N)) (f m) =
+    Submodule.Quotient.mk (g m)) :
+    f = g := by
+  ext m
+  rw [IsHausdorff.eq_iff_smodEq (I := I)]
+  intro n
+  exact h n m
+
+variable (I) in
+theorem IsHausdorff.StrictMono.funext {M : Type*} [IsHausdorff I N] {f g : M → N} {a : ℕ → ℕ}
+    (ha : StrictMono a) (h : ∀ n m, Submodule.Quotient.mk (p := (I ^ a n • ⊤ : Submodule R N))
+    (f m) = Submodule.Quotient.mk (g m)) : f = g := by
+  ext m
+  rw [IsHausdorff.eq_iff_smodEq (I := I)]
+  intro n
+  apply SModEq.mono (Submodule.pow_smul_top_le I N ha.le_apply)
+  exact h n m
+
+/--
+A variant of `IsHausdorff.funext`, where the target is a ring instead of a module.
+-/
+theorem IsHausdorff.funext' {R S : Type*} [CommRing S] (I : Ideal S) [IsHausdorff I S]
+    {f g : R → S} (h : ∀ n r, Ideal.Quotient.mk (I ^ n) (f r) = Ideal.Quotient.mk (I ^ n) (g r)) :
+    f = g := by
+  ext r
+  rw [IsHausdorff.eq_iff_smodEq (I := I)]
+  intro n
+  simpa using h n r
+
+/--
+A variant of `IsHausdorff.StrictMono.funext`, where the target is a ring instead of a module.
+-/
+theorem IsHausdorff.StrictMono.funext' {R S : Type*} [CommRing S] (I : Ideal S) [IsHausdorff I S]
+    {f g : R → S} {a : ℕ → ℕ} (ha : StrictMono a) (h : ∀ n r, Ideal.Quotient.mk (I ^ a n) (f r) =
+    Ideal.Quotient.mk (I ^ a n) (g r)) : f = g := by
+  ext m
+  rw [IsHausdorff.eq_iff_smodEq (I := I)]
+  intro n
+  apply SModEq.mono (Submodule.pow_smul_top_le I S ha.le_apply)
+  simpa using h n m
 
 theorem IsPrecomplete.prec (_ : IsPrecomplete I M) {f : ℕ → M} :
     (∀ {m n}, m ≤ n → f m ≡ f n [SMOD (I ^ m • ⊤ : Submodule R M)]) →
@@ -236,7 +283,7 @@ lemma val_smul_apply [SMul S R] [SMul S M] [IsScalarTower S R M] (s : S) (f : Ad
     (n : ℕ) : (s • f).val n = s • f.val n := rfl
 
 @[ext]
-lemma ext {x y : AdicCompletion I M} (h : ∀ n, x.val n = y.val n) : x = y := Subtype.eq <| funext h
+lemma ext {x y : AdicCompletion I M} (h : ∀ n, x.val n = y.val n) : x = y := Subtype.ext <| funext h
 
 variable (I M)
 
@@ -423,7 +470,7 @@ theorem smul_apply (n : ℕ) (r : R) (f : AdicCauchySequence I M) : (r • f) n 
 
 @[ext]
 theorem ext {x y : AdicCauchySequence I M} (h : ∀ n, x n = y n) : x = y :=
-  Subtype.eq <| funext h
+  Subtype.ext <| funext h
 
 /-- The defining property of an adic Cauchy sequence unwrapped. -/
 theorem mk_eq_mk {m n : ℕ} (hmn : m ≤ n) (f : AdicCauchySequence I M) :
@@ -672,10 +719,10 @@ Then it is the map `IsAdicComplete.lift`.
 theorem eq_lift {f : (n : ℕ) → M →ₗ[R] N ⧸ (I ^ n • ⊤)}
     (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) {F : M →ₗ[R] N}
     (hF : ∀ n, mkQ _ ∘ₗ F = f n) : F = lift I f h := by
-  ext s
-  rw [IsHausdorff.eq_iff_smodEq (I := I)]
-  intro n
-  simp [SModEq, ← hF n]
+  apply DFunLike.coe_injective
+  apply IsHausdorff.funext I
+  intro n m
+  simp [← hF n]
 
 end lift
 
@@ -753,11 +800,10 @@ theorem mkQ_comp_lift {n : ℕ} :
 
 theorem eq_lift {F : M →ₗ[R] N}
     (hF : ∀ n, mkQ _ ∘ₗ F = f n) : F = lift I ha f hf := by
-  ext s
-  rw [IsHausdorff.eq_iff_smodEq (I := I)]
-  intro n
-  apply SModEq.mono (smul_mono_left (Ideal.pow_le_pow_right (ha.id_le n)))
-  simp [SModEq, ← hF n, mk_lift I ha f hf]
+  apply DFunLike.coe_injective
+  apply IsHausdorff.StrictMono.funext I ha
+  intro n m
+  simp [← hF n]
 
 end StrictMono
 

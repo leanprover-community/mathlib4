@@ -3,10 +3,12 @@ Copyright (c) 2019 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-import Mathlib.Analysis.Normed.Group.AddCircle
-import Mathlib.Algebra.CharZero.Quotient
-import Mathlib.Topology.Instances.Sign
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
+public import Mathlib.Analysis.Normed.Group.AddCircle
+public import Mathlib.Algebra.CharZero.Quotient
+public import Mathlib.Topology.Instances.Sign
 
 /-!
 # The type of angles
@@ -14,6 +16,8 @@ import Mathlib.Topology.Instances.Sign
 In this file we define `Real.Angle` to be the quotient group `ℝ/2πℤ` and prove a few simple lemmas
 about trigonometric functions and angles.
 -/
+
+@[expose] public section
 
 
 open Real

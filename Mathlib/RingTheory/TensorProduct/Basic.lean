@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.Algebra.Star.TensorProduct
-import Mathlib.LinearAlgebra.TensorProduct.Tower
+module
+
+public import Mathlib.Algebra.Algebra.Operations
+public import Mathlib.Algebra.Star.TensorProduct
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
 # The tensor product of R-algebras
@@ -25,6 +27,8 @@ multiplication is characterized by `(a₁ ⊗ₜ b₁) * (a₂ ⊗ₜ b₂) = (a
 * [C. Kassel, *Quantum Groups* (§II.4)][Kassel1995]
 
 -/
+
+@[expose] public section
 
 assert_not_exists Equiv.Perm.cycleType
 

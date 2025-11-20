@@ -3,7 +3,9 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Interval.Finset.Basic
+module
+
+public import Mathlib.Order.Interval.Finset.Basic
 
 /-!
 # Intervals as multisets
@@ -30,6 +32,8 @@ In a `LocallyFiniteOrderBot`,
 
 Do we really need this file at all? (March 2024)
 -/
+
+@[expose] public section
 
 
 variable {α : Type*}

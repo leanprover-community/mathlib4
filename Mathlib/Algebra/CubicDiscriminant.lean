@@ -3,8 +3,10 @@ Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.Algebra.Polynomial.Splits
-import Mathlib.Tactic.IntervalCases
+module
+
+public import Mathlib.Algebra.Polynomial.Splits
+public import Mathlib.Tactic.IntervalCases
 
 /-!
 # Cubics and discriminants
@@ -30,6 +32,8 @@ This file defines cubic polynomials over a semiring and their discriminants over
 
 cubic, discriminant, polynomial, root
 -/
+
+@[expose] public section
 
 
 noncomputable section

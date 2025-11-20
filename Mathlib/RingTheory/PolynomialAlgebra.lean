@@ -3,14 +3,18 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.RingTheory.IsTensorProduct
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.RingTheory.IsTensorProduct
 
 /-!
 # Base change of polynomial algebras
 
 Given `[CommSemiring R] [Semiring A] [Algebra R A]` we show `A[X] ≃ₐ[R] (A ⊗[R] R[X])`.
 -/
+
+@[expose] public section
 
 -- This file should not become entangled with `RingTheory/MatrixAlgebra`.
 assert_not_exists Matrix

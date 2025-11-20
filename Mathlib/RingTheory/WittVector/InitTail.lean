@@ -3,8 +3,10 @@ Copyright (c) 2020 Johan Commelin, Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.RingTheory.WittVector.Basic
-import Mathlib.RingTheory.WittVector.IsPoly
+module
+
+public import Mathlib.RingTheory.WittVector.Basic
+public import Mathlib.RingTheory.WittVector.IsPoly
 
 /-!
 
@@ -32,6 +34,8 @@ and shows how that polynomial interacts with `MvPolynomial.bind₁`.
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 
 -/
+
+@[expose] public section
 
 
 variable {p : ℕ} (n : ℕ) {R : Type*} [CommRing R]

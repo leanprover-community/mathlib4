@@ -3,8 +3,10 @@ Copyright (c) 2021 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Dual
-import Mathlib.Analysis.InnerProductSpace.PiL2
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Dual
+public import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
 # Adjoint of operators on Hilbert spaces
@@ -37,6 +39,8 @@ finite-dimensional spaces.
 adjoint
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

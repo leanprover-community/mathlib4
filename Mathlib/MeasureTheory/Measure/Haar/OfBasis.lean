@@ -3,8 +3,10 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Measure.Haar.Basic
-import Mathlib.Analysis.InnerProductSpace.PiL2
+module
+
+public import Mathlib.MeasureTheory.Measure.Haar.Basic
+public import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
 # Additive Haar measure constructed from a basis
@@ -24,6 +26,8 @@ In particular, we declare a `MeasureSpace` instance on any finite-dimensional in
 by using the Lebesgue measure associated to some orthonormal basis (which is in fact independent
 of the basis).
 -/
+
+@[expose] public section
 
 
 open Set TopologicalSpace MeasureTheory MeasureTheory.Measure Module

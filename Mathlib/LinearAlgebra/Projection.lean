@@ -3,11 +3,13 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.LinearAlgebra.Prod
-import Mathlib.Algebra.Module.Submodule.Invariant
-import Mathlib.LinearAlgebra.GeneralLinearGroup
-import Mathlib.Algebra.Ring.Idempotent
+module
+
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.LinearAlgebra.Prod
+public import Mathlib.Algebra.Module.Submodule.Invariant
+public import Mathlib.LinearAlgebra.GeneralLinearGroup
+public import Mathlib.Algebra.Ring.Idempotent
 
 /-!
 # Projection to a subspace
@@ -25,6 +27,8 @@ We also provide some lemmas justifying correctness of our definitions.
 
 projection, complement subspace
 -/
+
+@[expose] public section
 
 noncomputable section Ring
 
@@ -451,7 +455,7 @@ def isComplEquivProj : { q // IsCompl p q } ≃ { f : E →ₗ[R] p // ∀ x : p
   toFun q := ⟨linearProjOfIsCompl p q q.2, linearProjOfIsCompl_apply_left q.2⟩
   invFun f := ⟨ker (f : E →ₗ[R] p), isCompl_of_proj f.2⟩
   left_inv := fun ⟨q, hq⟩ => by simp only [linearProjOfIsCompl_ker]
-  right_inv := fun ⟨f, hf⟩ => Subtype.eq <| f.linearProjOfIsCompl_of_proj hf
+  right_inv := fun ⟨f, hf⟩ => Subtype.ext <| f.linearProjOfIsCompl_of_proj hf
 
 @[simp]
 theorem coe_isComplEquivProj_apply (q : { q // IsCompl p q }) :
