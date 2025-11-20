@@ -3,10 +3,12 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.Module.Equiv
-import Mathlib.Topology.Algebra.Module.UniformConvergence
-import Mathlib.Topology.Algebra.SeparationQuotient.Section
-import Mathlib.Topology.Hom.ContinuousEvalConst
+module
+
+public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.UniformConvergence
+public import Mathlib.Topology.Algebra.SeparationQuotient.Section
+public import Mathlib.Topology.Hom.ContinuousEvalConst
 
 /-!
 # Strong topologies on the space of continuous linear maps
@@ -55,6 +57,8 @@ sets).
 
 uniform convergence, bounded convergence
 -/
+
+@[expose] public section
 
 open Bornology Filter Function Set Topology
 open scoped UniformConvergence Uniformity

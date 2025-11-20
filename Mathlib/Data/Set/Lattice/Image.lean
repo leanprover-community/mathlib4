@@ -3,8 +3,10 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Set.Lattice
-import Mathlib.Tactic.Monotonicity.Attr
+module
+
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # The set lattice and (pre)images of functions
@@ -34,6 +36,8 @@ In lemma names,
 * `⋃₀`: `Set.sUnion`
 * `⋂₀`: `Set.sInter`
 -/
+
+@[expose] public section
 
 open Function Set
 

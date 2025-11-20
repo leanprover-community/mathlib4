@@ -3,12 +3,14 @@ Copyright (c) 2024 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.Algebra.Order.GroupWithZero.Bounds
-import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.Topology.MetricSpace.Sequences
-import Mathlib.Topology.UnitInterval
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
+module
+
+public import Mathlib.Algebra.Order.GroupWithZero.Bounds
+public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+public import Mathlib.Topology.MetricSpace.Sequences
+public import Mathlib.Topology.UnitInterval
+public import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
 /-!
 # smoothingSeminorm
@@ -39,6 +41,8 @@ seminorm on `R`.
 
 smoothingSeminorm, seminorm, nonarchimedean
 -/
+
+@[expose] public section
 
 noncomputable section
 

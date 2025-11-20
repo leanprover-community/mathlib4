@@ -3,7 +3,9 @@ Copyright (c) 2023 Andrea Laretto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrea Laretto, Fernando Chu
 -/
-import Mathlib.CategoryTheory.Opposites
+module
+
+public import Mathlib.CategoryTheory.Opposites
 
 /-!
 # Dinatural transformations
@@ -20,6 +22,8 @@ ordinary natural transformations.
 ## References
 * <https://ncatlab.org/nlab/show/dinatural+transformation>
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

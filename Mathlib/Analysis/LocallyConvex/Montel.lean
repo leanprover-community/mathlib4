@@ -3,8 +3,10 @@ Copyright (c) 2025 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Topology.Algebra.Module.StrongTopology
-import Mathlib.Analysis.Normed.Module.FiniteDimension
+module
+
+public import Mathlib.Topology.Algebra.Module.StrongTopology
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
 /-!
 # Montel spaces
 
@@ -24,6 +26,8 @@ space would be `[MontelSpace 𝕜 E] [BarrelledSpace 𝕜 E]`.
 * [F. Trèves, *Topological vector spaces, distributions and kernels*][treves1967]
 
 -/
+
+@[expose] public section
 
 open Filter Topology Set ContinuousLinearMap Bornology
 
