@@ -3,13 +3,17 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Data.Nat.Multiplicity
-import Mathlib.Data.Nat.Choose.Sum
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Data.Nat.Multiplicity
+public import Mathlib.Data.Nat.Choose.Sum
 
 /-!
 # Characteristic of semirings
 -/
+
+@[expose] public section
 
 assert_not_exists Algebra LinearMap orderOf
 
@@ -22,32 +26,51 @@ namespace Commute
 variable [Semiring R] {p : ℕ} (hp : p.Prime) {x y : R}
 include hp
 
-protected theorem add_pow_prime_pow_eq (h : Commute x y) (n : ℕ) :
+protected lemma add_pow_prime_pow_eq' (h : Commute x y) (n : ℕ) :
     (x + y) ^ p ^ n =
       x ^ p ^ n + y ^ p ^ n +
-        p * ∑ k ∈ Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * ↑((p ^ n).choose k / p) := by
-  trans x ^ p ^ n + y ^ p ^ n + ∑ k ∈ Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * (p ^ n).choose k
-  · simp_rw [h.add_pow, ← Nat.Ico_zero_eq_range, Ico_add_one_right_eq_Icc,
-      Icc_eq_cons_Ico (zero_le _), Finset.sum_cons, Ico_eq_cons_Ioo (pow_pos hp.pos _),
-      Finset.sum_cons, tsub_self, tsub_zero, pow_zero, Nat.choose_zero_right, Nat.choose_self,
-      Nat.cast_one, mul_one, one_mul, ← add_assoc]
-  · congr 1
-    simp_rw [Finset.mul_sum, Nat.cast_comm, mul_assoc _ _ (p : R), ← Nat.cast_mul]
-    refine Finset.sum_congr rfl fun i hi => ?_
-    rw [mem_Ioo] at hi
-    rw [Nat.div_mul_cancel (hp.dvd_choose_pow hi.1.ne' hi.2.ne)]
+        p * ∑ k ∈ Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * ↑((p ^ n).choose k / p) := calc
+  _ = ∑ k ∈ Icc 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * (p ^ n).choose k := by
+    rw [h.add_pow, ← Nat.Ico_zero_eq_range, Ico_add_one_right_eq_Icc]
+  _ = x ^ p ^ n + y ^ p ^ n + ∑ k ∈ Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * (p ^ n).choose k := by
+    simp_rw [Icc_eq_cons_Ico (zero_le _), Ico_eq_cons_Ioo (pow_pos hp.pos _)]
+    simp [-cons_eq_insert, add_assoc]
+  _ = _ := by
+    simp_rw [mul_sum]
+    congr! 2 with k hk
+    obtain ⟨hk₀, hk⟩ := mem_Ioo.1 hk
+    -- The maths is over now. We just commute things to their place.
+    rw [Nat.cast_comm, mul_assoc (_ * _)]
+    norm_cast
+    rw [Nat.div_mul_cancel (hp.dvd_choose_pow _ _)] <;> omega
 
-protected theorem add_pow_prime_eq (h : Commute x y) :
+protected lemma add_pow_prime_pow_eq (h : Commute x y) (n : ℕ) :
+    (x + y) ^ p ^ n =
+      x ^ p ^ n + y ^ p ^ n +
+        p * x * y *
+          ∑ k ∈ Ioo 0 (p ^ n), x ^ (k - 1) * y ^ (p ^ n - k - 1) * ↑((p ^ n).choose k / p) := by
+  rw [h.add_pow_prime_pow_eq' hp, mul_assoc _ x, mul_assoc, mul_sum _ _ (_ * _)]
+  congr! 3 with k hk
+  obtain ⟨hk₀, hk⟩ := mem_Ioo.1 hk
+  rw [← mul_pow_sub_one (by omega), ← mul_pow_sub_one (n := p ^ n - k) (by omega)]
+  rw [(h.pow_left _).mul_mul_mul_comm, mul_assoc (x * y)]
+
+protected lemma add_pow_prime_eq' (h : Commute x y) :
+    (x + y) ^ p = x ^ p + y ^ p + p * ∑ k ∈ Ioo 0 p, x ^ k * y ^ (p - k) * ↑(p.choose k / p) := by
+  simpa using h.add_pow_prime_pow_eq' hp 1
+
+protected lemma add_pow_prime_eq (h : Commute x y) :
     (x + y) ^ p =
-      x ^ p + y ^ p + p * ∑ k ∈ Finset.Ioo 0 p, x ^ k * y ^ (p - k) * ↑(p.choose k / p) := by
+      x ^ p + y ^ p + p * x * y *
+        ∑ k ∈ Ioo 0 p, x ^ (k - 1) * y ^ (p - k - 1) * ↑(p.choose k / p) := by
   simpa using h.add_pow_prime_pow_eq hp 1
 
 protected theorem exists_add_pow_prime_pow_eq (h : Commute x y) (n : ℕ) :
-    ∃ r, (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n + p * r :=
+    ∃ r, (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n + p * x * y * r :=
   ⟨_, h.add_pow_prime_pow_eq hp n⟩
 
 protected theorem exists_add_pow_prime_eq (h : Commute x y) :
-    ∃ r, (x + y) ^ p = x ^ p + y ^ p + p * r :=
+    ∃ r, (x + y) ^ p = x ^ p + y ^ p + p * x * y * r :=
   ⟨_, h.add_pow_prime_eq hp⟩
 
 end Commute
@@ -57,23 +80,34 @@ section CommSemiring
 variable [CommSemiring R] {p : ℕ} (hp : p.Prime) (x y : R) (n : ℕ)
 include hp
 
-theorem add_pow_prime_pow_eq :
+lemma add_pow_prime_pow_eq' :
     (x + y) ^ p ^ n =
       x ^ p ^ n + y ^ p ^ n +
-        p * ∑ k ∈ Finset.Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * ↑((p ^ n).choose k / p) :=
+        p * ∑ k ∈ Ioo 0 (p ^ n), x ^ k * y ^ (p ^ n - k) * ↑((p ^ n).choose k / p) :=
+  (Commute.all x y).add_pow_prime_pow_eq' hp n
+
+lemma add_pow_prime_pow_eq :
+    (x + y) ^ p ^ n =
+      x ^ p ^ n + y ^ p ^ n +
+        p * x * y *
+          ∑ k ∈ Ioo 0 (p ^ n), x ^ (k - 1) * y ^ (p ^ n - k - 1) * ↑((p ^ n).choose k / p) :=
   (Commute.all x y).add_pow_prime_pow_eq hp n
+
+lemma add_pow_prime_eq' :
+    (x + y) ^ p = x ^ p + y ^ p + p * ∑ k ∈ Ioo 0 p, x ^ k * y ^ (p - k) * ↑(p.choose k / p) :=
+  (Commute.all x y).add_pow_prime_eq' hp
 
 theorem add_pow_prime_eq :
     (x + y) ^ p =
-      x ^ p + y ^ p + p * ∑ k ∈ Finset.Ioo 0 p, x ^ k * y ^ (p - k) * ↑(p.choose k / p) :=
+      x ^ p + y ^ p + p * x * y *
+        ∑ k ∈ Ioo 0 p, x ^ (k - 1) * y ^ (p - k - 1) * ↑(p.choose k / p) :=
   (Commute.all x y).add_pow_prime_eq hp
 
 theorem exists_add_pow_prime_pow_eq :
-    ∃ r, (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n + p * r :=
+    ∃ r, (x + y) ^ p ^ n = x ^ p ^ n + y ^ p ^ n + p * x * y * r :=
   (Commute.all x y).exists_add_pow_prime_pow_eq hp n
 
-theorem exists_add_pow_prime_eq :
-    ∃ r, (x + y) ^ p = x ^ p + y ^ p + p * r :=
+theorem exists_add_pow_prime_eq : ∃ r, (x + y) ^ p = x ^ p + y ^ p + p * x * y * r :=
   (Commute.all x y).exists_add_pow_prime_eq hp
 
 end CommSemiring
@@ -237,10 +271,7 @@ end CharP
 lemma Nat.Prime.dvd_add_pow_sub_pow_of_dvd (hpri : p.Prime) {r : R} (h₁ : r ∣ x ^ p)
     (h₂ : r ∣ p * x) : r ∣ (x + y) ^ p - y ^ p := by
   rw [add_pow_prime_eq hpri, add_right_comm, add_assoc, add_sub_assoc, add_sub_cancel_right]
-  apply dvd_add h₁ (h₂.trans <| mul_dvd_mul_left _ <| Finset.dvd_sum _)
-  simp only [Finset.mem_Ioo, and_imp, mul_assoc]
-  intro i hi0 _
-  exact dvd_mul_of_dvd_left (dvd_rfl.pow hi0.ne') _
+  exact dvd_add h₁ (h₂.trans <| (dvd_mul_right ..).trans <| dvd_mul_right ..)
 
 end CommRing
 

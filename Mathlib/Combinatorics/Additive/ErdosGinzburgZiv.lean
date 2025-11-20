@@ -3,9 +3,11 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Data.Multiset.Fintype
-import Mathlib.FieldTheory.ChevalleyWarning
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Data.Multiset.Fintype
+public import Mathlib.FieldTheory.ChevalleyWarning
 
 /-!
 # The Erdős–Ginzburg–Ziv theorem
@@ -19,6 +21,8 @@ elements of sum zero.
 * `Int.erdos_ginzburg_ziv`: The Erdős–Ginzburg–Ziv theorem stated using sequences in `ℤ`
 * `ZMod.erdos_ginzburg_ziv`: The Erdős–Ginzburg–Ziv theorem stated using sequences in `ZMod n`
 -/
+
+@[expose] public section
 
 open Finset MvPolynomial
 

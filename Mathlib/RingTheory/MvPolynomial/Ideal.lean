@@ -20,6 +20,8 @@ Notably this contains results about monomial ideals.
 * `MvPolynomial.mem_ideal_span_X_image`
 -/
 
+@[expose] public section
+
 
 variable {σ R : Type*}
 

@@ -3,12 +3,14 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Notation.Prod
-import Mathlib.Algebra.Group.Basic
+module
+
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Algebra.Group.InjSurj
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Notation.Prod
+public import Mathlib.Algebra.Group.Basic
 
 /-!
 # Dependent functions with finite support
@@ -42,6 +44,8 @@ the `Add` instance as noncomputable. This design difference is independent of th
 `DFinsupp` is dependently-typed and `Finsupp` is not; in future, we may want to align these two
 definitions, or introduce two more definitions for the other combinations of decisions.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset.prod Submonoid
 
@@ -1282,10 +1286,8 @@ theorem mapRange.addEquiv_refl :
 theorem mapRange.addEquiv_trans (f : ∀ i, β i ≃+ β₁ i) (f₂ : ∀ i, β₁ i ≃+ β₂ i) :
     (mapRange.addEquiv fun i => (f i).trans (f₂ i)) =
       (mapRange.addEquiv f).trans (mapRange.addEquiv f₂) := by
-  refine AddEquiv.ext <| mapRange_comp (fun i x => f₂ i x) (fun i x => f i x) ?_ ?_ ?_
-  · intros; apply map_zero
-  · intros; apply map_zero
-  · intros; dsimp; simp only [map_zero]
+  ext
+  simp
 
 @[simp]
 theorem mapRange.addEquiv_symm (e : ∀ i, β₁ i ≃+ β₂ i) :
