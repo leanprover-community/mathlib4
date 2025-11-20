@@ -373,18 +373,12 @@ lemma _root_.mfderivWithin_range_extChartAt_symm :
   rw [extChartAt_to_inv x, ← extChartAt_coe]
   have eq_nhd : (φ ∘ φ.symm) =ᶠ[𝓝[range I] (φ x)] id := by
     rw [← map_extChartAt_nhds x, eventuallyEq_map, id_comp]
-    rw [EventuallyEq, Filter.Eventually, mem_nhds_iff]
-    use φ.source
-    constructor
-    · intro y hy
-      have : ((φ ∘ φ.symm) ∘ φ) y = φ y := by
-        rw [comp_apply, comp_apply, φ.right_inv]
-        exact φ.map_source hy
-      exact this
-    · exact ⟨isOpen_extChartAt_source x, mem_extChartAt_source x⟩
+    apply eventuallyEq_of_mem (s := φ.source)
+      ((isOpen_extChartAt_source x).mem_nhds (mem_extChartAt_source x))
+    intro y hy
+    rw [comp_apply, comp_apply, φ.right_inv (φ.map_source hy)]
   have hx : (φ ∘ φ.symm) (φ x) = id (φ x) := by
-    rw [comp_apply, φ.right_inv, id]
-    exact φ.map_source (mem_extChartAt_source x)
+    rw [comp_apply, φ.right_inv (φ.map_source (mem_extChartAt_source x)), id]
   rw [eq_nhd.fderivWithin_eq hx]
   exact fderivWithin_id <| I.uniqueDiffOn.uniqueDiffWithinAt (mem_range_self _)
 
