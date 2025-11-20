@@ -3,6 +3,7 @@ Copyright (c) 2025 Justus Springer and Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer, Junyan Xu
 -/
+import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
 import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
 import Mathlib.AlgebraicGeometry.ValuativeCriterion
 import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
@@ -44,15 +45,28 @@ instance : SMulMemClass (Place R K) R K where
 
 instance : SubringClass (Place R K) K := sorry
 
-instance (v : Place R K) : HasMemOrInvMem v where
+variable (v : Place R K)
+
+instance : HasMemOrInvMem v where
   mem_or_inv_mem := v.mem_or_inv_mem'
 
-variable {k K} in
-theorem Place.integralClosure_le (v : Place k K) : integralClosure k K ≤ v.toSubalgebra := by
-  intro z hz
-  by_contra hzv
-  have : z⁻¹ ∈ v.toSubalgebra := (v.toValuationSubring.mem_or_inv_mem z).resolve_left hzv
-  exact hzv (IsIntegral.mem_of_inv_mem hz this)
+instance : Algebra v K := inferInstanceAs (Algebra v.toSubalgebra K)
+instance : IsScalarTower R v K := inferInstanceAs (IsScalarTower R v.toSubalgebra K)
+instance : IsFractionRing v K :=
+  inferInstanceAs (IsFractionRing v.toValuationSubring K)
+instance : ValuationRing v := inferInstanceAs (ValuationRing v.toValuationSubring)
+
+variable {R K} in
+theorem Place.integralClosure_le (v : Place R K) : integralClosure R K ≤ v.toSubalgebra :=
+  fun x hx ↦ by
+    obtain ⟨x, rfl⟩ := (IsIntegrallyClosed.integralClosure_eq_bot v K).le hx.tower_top
+    exact x.2
+  /- before golfing: by
+  have hv := IsIntegrallyClosed.integralClosure_eq_bot v K
+  intro x hx
+  have hx := hx.tower_top (A := v)
+  obtain ⟨x', rfl⟩ := hv.le hx
+  exact x'.2 -/
 
 instance : TopologicalSpace (Place R K) :=
   -- subbasis consists of sets of all places containing a particular element
@@ -67,15 +81,26 @@ def basicOpen (s : Finset K) : Opens (Place R K) where
   carrier := {v | (s : Set K) ⊆ v}
   is_open' := by
     convert isOpen_biInter_finset (s := s) (f := fun k => {v : Place R K | k ∈ v}) <|
-      fun f _ => isOpen_generateFrom_of_mem ⟨f, rfl⟩
+      fun f _ ↦ isOpen_generateFrom_of_mem ⟨f, rfl⟩
     ext x
-    refine ⟨?_, fun hx f hf => Set.mem_iInter.mp (Set.mem_iInter.mp hx f) hf⟩
+    refine ⟨?_, fun hx f hf ↦ Set.mem_iInter.mp (Set.mem_iInter.mp hx f) hf⟩
     rintro hx U ⟨i, rfl⟩ j ⟨z, rfl⟩
     exact hx z
 
 theorem basicOpen_eq_top_iff {s : Finset K} :
     basicOpen R s = ⊤ ↔ (s : Set K) ⊆ integralClosure R K := by
   sorry
+
+-- the global sections of the sheaf on `Place R K`
+-- follows from `basicOpen_eq_top_iff`
+theorem iInf_eq_integralClosure :
+    (⨅ v : Place R K, v.toSubalgebra) = integralClosure R K := by
+  sorry
+
+theorem iInf_eq_integralClosure_adjoin (s : Finset K) :
+    (⨅ v : basicOpen k s, v.1.toSubalgebra) =
+    (integralClosure (Algebra.adjoin k (s : Set K)) K).restrictScalars k := by
+  sorry -- use induction?
 
 theorem basicOpen_union [DecidableEq K] {s t : Finset K} :
     basicOpen R (s ∪ t) = basicOpen R s ⊓ basicOpen R t := by
@@ -210,7 +235,6 @@ def Place.locallyRingedSpace : LocallyRingedSpace where
 
 -- show all sections are domains with k-algebra structure (easy)
 -- mathlib doesn't have definition of integral scheme?
--- compute global sections = integral (algebraic) closure of k in K
 
 end Algebra
 
@@ -221,6 +245,10 @@ namespace Algebra
 class Is1DFunctionField : Prop where
   trdeg_eq_one : Algebra.trdeg k K = 1
   fg : (⊤ : IntermediateField k K).FG
+
+theorem Is1DFunctionField.finiteDimensional_of_transcendental (ff : Is1DFunctionField k K)
+    (x : K) (hx : Transcendental k x) : FiniteDimensional k⟮x⟯ K := by
+  sorry
 
 theorem Is1DFunctionField.iff_exists_transcendental_finiteDimensional :
     Is1DFunctionField k K ↔ ∃ x : K, Transcendental k x ∧ FiniteDimensional k⟮x⟯ K := by
