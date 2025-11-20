@@ -5,7 +5,7 @@ Authors: Luigi Massacci
 -/
 module
 
-public import Mathlib.Analysis.Calculus.ContDiff.Defs
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
 public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 
 /-!
@@ -147,5 +147,53 @@ theorem copy_eq (f : 𝓓^{n}(Ω, F)) (f' : E → F) (h : f' = f) : f.copy f' h 
 @[simp]
 theorem coe_toBoundedContinuousFunction (f : 𝓓^{n}(Ω, F)) :
     (f : BoundedContinuousFunction E F) = (f : E → F) := rfl
+
+section AddCommGroup
+
+@[simps -fullyApplied]
+instance : Zero 𝓓^{n}(Ω, F) where
+  zero := ⟨0, contDiff_zero_fun, .zero, by simp only [tsupport_zero, empty_subset]⟩
+
+@[simps -fullyApplied]
+instance : Add 𝓓^{n}(Ω, F) where
+  add f g := ⟨f + g, f.contDiff.add g.contDiff, f.hasCompactSupport.add g.hasCompactSupport,
+    tsupport_add f g |>.trans <| union_subset f.tsupport_subset g.tsupport_subset⟩
+
+@[simps -fullyApplied]
+instance : Neg 𝓓^{n}(Ω, F) where
+  neg f := ⟨-f, f.contDiff.neg, f.hasCompactSupport.neg, tsupport_neg f ▸ f.tsupport_subset⟩
+
+@[simps -fullyApplied]
+instance : Sub 𝓓^{n}(Ω, F) where
+  sub f g := ⟨f - g, f.contDiff.sub g.contDiff, f.hasCompactSupport.sub g.hasCompactSupport,
+    tsupport_sub f g |>.trans <| union_subset f.tsupport_subset g.tsupport_subset⟩
+
+@[simps -fullyApplied]
+instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
+    SMul R 𝓓^{n}(Ω, F) where
+  smul c f := ⟨c • f, f.contDiff.const_smul c, f.hasCompactSupport.smul_left,
+    tsupport_smul_subset_right _ _ |>.trans f.tsupport_subset⟩
+
+instance : AddCommGroup 𝓓^{n}(Ω, F) := fast_instance%
+  DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
+variable (Ω F n) in
+/-- Coercion as an additive homomorphism. -/
+@[simps -fullyApplied]
+def coeFnAddMonoidHom : 𝓓^{n}(Ω, F) →+ E → F where
+  toFun f := f
+  map_zero' := coe_zero
+  map_add' _ _ := rfl
+
+end AddCommGroup
+
+section Module
+
+instance {R} [Semiring R] [Module R F] [SMulCommClass ℝ R F] [ContinuousConstSMul R F] :
+    Module R 𝓓^{n}(Ω, F) := fast_instance%
+  DFunLike.coe_injective.module R (coeFnAddMonoidHom Ω F n) fun _ _ ↦ rfl
+
+end Module
 
 end TestFunction
