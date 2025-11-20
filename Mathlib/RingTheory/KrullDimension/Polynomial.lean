@@ -3,9 +3,11 @@ Copyright (c) 2025 Jingting Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jingting Wang
 -/
-import Mathlib.Algebra.Polynomial.FieldDivision
-import Mathlib.RingTheory.KrullDimension.PID
-import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
+module
+
+public import Mathlib.Algebra.Polynomial.FieldDivision
+public import Mathlib.RingTheory.KrullDimension.PID
+public import Mathlib.RingTheory.LocalRing.ResidueField.Fiber
 
 /-!
 # Krull dimension of polynomial ring
@@ -17,6 +19,8 @@ This file proves properties of the krull dimension of the polynomial ring over a
 * `Polynomial.ringKrullDim_le`: the krull dimension of the polynomial ring over a commutative ring
   `R` is less than `2 * (ringKrullDim R) + 1`.
 -/
+
+@[expose] public section
 
 theorem Polynomial.ringKrullDim_le {R : Type*} [CommRing R] :
     ringKrullDim (Polynomial R) ≤ 2 * (ringKrullDim R) + 1 := by

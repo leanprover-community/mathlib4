@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies, Sara Rousta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.Order.UpperLower.Principal
+module
+
+public import Mathlib.Order.Hom.CompleteLattice
+public import Mathlib.Order.UpperLower.Principal
 
 /-!
 # `UpperSet.Ici` etc. as `Sup`/`sSup`/`Inf`/`sInf`-homomorphisms
@@ -12,6 +14,8 @@ import Mathlib.Order.UpperLower.Principal
 In this file we define `UpperSet.iciSupHom` etc. These functions are `UpperSet.Ici` and
 `LowerSet.Iic` bundled as `SupHom`s, `InfHom`s, `sSupHom`s, or `sInfHom`s.
 -/
+
+@[expose] public section
 
 
 variable {α : Type*}
