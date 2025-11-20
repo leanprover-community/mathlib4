@@ -160,7 +160,7 @@ lemma resultant_comm : resultant f g m n = (-1) ^ (m * n) * resultant g f n m :=
     Int.reduceNeg, Int.cast_prod, Int.cast_one, Int.cast_neg]
   simp_rw [← finSumFinEquiv.prod_comp, ← Finset.prod_map_equiv finSumFinEquiv.symm]
   simp only [Equiv.symm_apply_apply, ← Fin.val_fin_lt, Equiv.symm_symm, Function.comp_apply,
-    Finset.prod_eq_prod_ite_mem (Finset.map _ _), Finset.mem_map_equiv, Finset.mem_Ioi,
+    ← Finset.prod_ite_mem_eq (Finset.map _ _), Finset.mem_map_equiv, Finset.mem_Ioi,
     Fintype.prod_sum_type, finSumFinEquiv_apply_left, Fin.coe_castAdd, Sum.swap_inl,
     finSumFinEquiv_apply_right, Fin.coe_natAdd, Sum.swap_inr, add_lt_add_iff_left,
     ← ite_not (α := R) (p := _ < _) (y := 1), ← ite_and, and_not_self]
