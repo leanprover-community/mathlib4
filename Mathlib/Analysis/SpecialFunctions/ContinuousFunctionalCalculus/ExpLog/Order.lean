@@ -50,7 +50,7 @@ open Classical Real in
 lemma CFC.log_monotoneOn : MonotoneOn log {a : A | IsStrictlyPositive a} := by
   /- We have that `log x = lim_{p → 0} p⁻¹ * (x ^ p - 1)` with uniform convergence on the spectrum of
   any positive definite operator, which means that `CFC.log a = lim_{p → 0} p⁻¹ * (a ^ p - 1)` by the
-  continuity of the continuous functional calculus (`tendsto_cfc_fun`). Then, we use the 
+  continuity of the continuous functional calculus (`tendsto_cfc_fun`). Then, we use the
   fact that `x^p` is monotone for `p ∈ [0,1]` (`CFC.monotone_nnrpow`) and that the set of
   monotone functions is closed (`isClosed_monotoneOn`) to conclude the proof. -/
   let s := {a : A | IsStrictlyPositive a}
