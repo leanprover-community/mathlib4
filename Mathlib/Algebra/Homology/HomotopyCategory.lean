@@ -3,11 +3,13 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Homology.Homotopy
-import Mathlib.Algebra.Homology.Linear
-import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
-import Mathlib.CategoryTheory.Quotient.Linear
-import Mathlib.CategoryTheory.Quotient.Preadditive
+module
+
+public import Mathlib.Algebra.Homology.Homotopy
+public import Mathlib.Algebra.Homology.Linear
+public import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
+public import Mathlib.CategoryTheory.Quotient.Linear
+public import Mathlib.CategoryTheory.Quotient.Preadditive
 
 /-!
 # The homotopy category
@@ -15,6 +17,8 @@ import Mathlib.CategoryTheory.Quotient.Preadditive
 `HomotopyCategory V c` gives the category of chain complexes of shape `c` in `V`,
 with chain maps identified when they are homotopic.
 -/
+
+@[expose] public section
 
 universe v u
 

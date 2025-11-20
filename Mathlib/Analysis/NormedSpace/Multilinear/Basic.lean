@@ -3,11 +3,13 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Sophie Morel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Operator.NormedSpace
-import Mathlib.Logic.Embedding.Basic
-import Mathlib.Data.Fintype.CardEmbedding
-import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
-import Mathlib.Topology.Algebra.Module.Multilinear.Topology
+module
+
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Logic.Embedding.Basic
+public import Mathlib.Data.Fintype.CardEmbedding
+public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
+public import Mathlib.Topology.Algebra.Module.Multilinear.Topology
 
 /-!
 # Operator norm on the space of continuous multilinear maps
@@ -44,6 +46,8 @@ the final result is independent of the order. While everything could be done fol
 approach, it turns out that direct proofs are easier and more efficient.
 -/
 
+@[expose] public section
+
 suppress_compilation
 
 noncomputable section
@@ -76,7 +80,7 @@ instance ContinuousMultilinearMap.instContinuousEval :
     ContinuousEval (ContinuousMultilinearMap 𝕜 E F) (Π i, E i) F where
   continuous_eval := by
     cases nonempty_fintype ι
-    let _ := IsTopologicalAddGroup.toUniformSpace F
+    let _ := IsTopologicalAddGroup.rightUniformSpace F
     have := isUniformAddGroup_of_addCommGroup (G := F)
     refine (UniformOnFun.continuousOn_eval₂ fun m ↦ ?_).comp_continuous
       (isEmbedding_toUniformOnFun.continuous.prodMap continuous_id) fun (f, x) ↦ f.cont.continuousAt
