@@ -3,9 +3,11 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Yongle Hu
 -/
-import Mathlib.RingTheory.KrullDimension.Regular
-import Mathlib.RingTheory.Regular.Flat
-import Mathlib.RingTheory.Regular.Ischebeck
+module
+
+public import Mathlib.RingTheory.KrullDimension.Regular
+public import Mathlib.RingTheory.Regular.Flat
+public import Mathlib.RingTheory.Regular.Ischebeck
 
 /-!
 
@@ -37,6 +39,8 @@ a commutative ring is Cohen Macaulay if its localization at every prime `IsCohen
   every maximal ideal `IsCohenMacaulayLocalRing`
 
 -/
+
+@[expose] public section
 
 universe v' v u' u
 

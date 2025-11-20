@@ -3,15 +3,20 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.Algebra.Category.ModuleCat.Projective
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.Order.CompletePartialOrder
-import Mathlib.RingTheory.Regular.RegularSequence
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Projective
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.Order.CompletePartialOrder
+public import Mathlib.RingTheory.Regular.RegularSequence
+
 /-!
 # Categorical constructions for `IsSMulRegular`
 -/
+
+@[expose] public section
 
 universe u v w
 

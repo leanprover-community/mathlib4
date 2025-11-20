@@ -3,15 +3,20 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.RingTheory.Regular.Depth
-import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
-import Mathlib.RingTheory.KrullDimension.Field
-import Mathlib.RingTheory.KrullDimension.Module
+module
+
+public import Mathlib.RingTheory.Regular.Depth
+public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
+public import Mathlib.RingTheory.KrullDimension.Field
+public import Mathlib.RingTheory.KrullDimension.Module
+
 /-!
 
 # The Ischebeck theorem and its corollary
 
 -/
+
+@[expose] public section
 
 open IsLocalRing LinearMap ModuleCat Pointwise
 open RingTheory.Sequence Ideal CategoryTheory Abelian Limits
