@@ -29,6 +29,8 @@ This strict bicategory serves as a setting to develop the formal category theory
 
 -/
 
+@[expose] public_section
+
 universe u
 
 namespace SSet
