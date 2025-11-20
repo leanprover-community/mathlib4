@@ -233,8 +233,8 @@ theorem changeFormAux_changeFormAux (B : BilinForm R M) (v : M) (x : CliffordAlg
 variable {Q}
 variable {Q' Q'' : QuadraticForm R M} {B B' : BilinForm R M}
 
-/-- Convert between two algebras of different quadratic forms, sending vectors to vectors, scalars to
-scalars, and adjusting products by a contraction term.
+/-- Convert between two algebras of different quadratic forms, sending vectors to vectors, scalars
+to scalars, and adjusting products by a contraction term.
 
 This is $\lambda_B$ from [bourbaki2007][] §9 Lemma 2. -/
 def changeForm (h : B.toQuadraticMap = Q' - Q) : CliffordAlgebra Q →ₗ[R] CliffordAlgebra Q' :=
