@@ -4,13 +4,11 @@
 #
 # Optional fields:
 #   path: subdirectory containing the Lean project (if not at repository root)
+#   zulip-contact: Zulip username of the primary maintainer/contact for this project
 
 - github: https://github.com/leanprover/cslib
   default_branch: main
   name: Computer Science Library
-  workflows:
-    build: lean_action_ci.yml
-    docs: docs.yml
 - github: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
   default_branch: main
   name: Prime Number Theorem and ...
@@ -43,15 +41,9 @@
 - github: https://github.com/google-deepmind/formal-conjectures
   default_branch: main
   name: Formal Conjectures
-  workflows:
-    build: build-and-docs.yml
-    docs: build-and-docs.yml
-    release-tag: lean-release-tag.yml
 - github: https://github.com/girving/series
   default_branch: main
   name: Power Series Arithmetic
-  workflows:
-    build: lean.yml
 - github: https://github.com/james18lpc/GibbsMeasure
   default_branch: main
   name: Gibbs Measures
@@ -81,10 +73,6 @@
 - github: https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean
   default_branch: main
   name: Sphere Packing in Dimension 8
-  workflows:
-    build: build.yml
-    release-tag: create-release.yml
-    update: update.yml
 - github: https://github.com/Paul-Lez/PersistentDecomp
   default_branch: master
   name: Decomposition of Persistence Modules
@@ -103,28 +91,16 @@
 - github: https://github.com/HEPLean/PhysLean
   default_branch: master
   name: PhysLean - Physics Formalization
-  workflows:
-    build: build.yml
-    update: update.yml
 - github: https://github.com/lecopivo/SciLean
   default_branch: master
   name: SciLean - Scientific Computing
-  workflows:
-    build: main.yml
 - github: https://github.com/teorth/analysis
   default_branch: main
   name: Tao's Analysis I
   path: analysis
-  workflows:
-    build: build_book.yml
 - github: https://github.com/teorth/equational_theories
   default_branch: main
   name: Equational Theories Project
-  workflows:
-    build: lint.yml
-    docs: blueprint-paper.yml
-    release-tag: create-release.yml
-    update: update-dependencies.yml
 - github: https://github.com/teorth/pfr
   default_branch: master
   name: The Polynomial Freiman-Ruzsa Conjecture
@@ -202,12 +178,6 @@
 - github: https://github.com/YijunYuan/HarderNarasimhan
   default_branch: master
   name: Harder-Narasimhan Theory
-  workflows:
-    build: lean_action_ci.yml
 - github: https://github.com/Ivan-Sergeyev/seymour
   default_branch: main
   name: Seymour's Decomposition for Regular Matroids
-  workflows:
-    build: build-project.yml
-    docs: blueprint.yml
-    update: update.yml
