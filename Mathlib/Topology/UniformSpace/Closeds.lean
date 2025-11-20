@@ -44,7 +44,7 @@ theorem hausdorffEntourage_mono {U V : SetRel α α} (h : U ⊆ V) :
 theorem monotone_hausdorffEntourage : Monotone (hausdorffEntourage (α := α)) :=
   fun _ _ => hausdorffEntourage_mono
 
-instance isRefl_hausdorffEntourage (U : SetRel α α) [hU : U.IsRefl] :
+instance isRefl_hausdorffEntourage (U : SetRel α α) [U.IsRefl] :
     (hausdorffEntourage U).IsRefl :=
   ⟨fun _ => ⟨U.self_subset_preimage _, U.self_subset_image _⟩⟩
 
@@ -74,7 +74,7 @@ theorem hausdorffEntourage_comp (U V : SetRel α α) :
     grw [mem_hausdorffEntourage, preimage_comp, ← h₂₃, ← h₁₂, image_comp, ← h₂₁, ← h₃₂]
     exact ⟨subset_rfl, subset_rfl⟩
 
-instance isTrans_hausdorffEntourage (U : SetRel α α) [hU : U.IsTrans] :
+instance isTrans_hausdorffEntourage (U : SetRel α α) [U.IsTrans] :
     (hausdorffEntourage U).IsTrans := by
   grw [isTrans_iff_comp_subset_self, ← hausdorffEntourage_comp, comp_subset_self]
 
