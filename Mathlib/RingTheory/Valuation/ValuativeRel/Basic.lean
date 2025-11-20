@@ -184,7 +184,7 @@ def posSubmonoid : Submonoid R where
   mul_mem' := zero_srel_mul
   one_mem' := zero_srel_one
 
-@[simp] lemma zero_srel_posSubmonoid_def (x : posSubmonoid R) : 0 <ᵥ x.val := x.prop
+@[simp] lemma zero_srel_coe_posSubmonoid (x : posSubmonoid R) : 0 <ᵥ x.val := x.prop
 
 @[simp]
 lemma posSubmonoid_def (x : R) : x ∈ posSubmonoid R ↔ 0 <ᵥ x := Iff.rfl
