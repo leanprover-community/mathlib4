@@ -5,12 +5,10 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.Algebra.GroupCompletion
 public import Mathlib.Topology.Algebra.Ring.Real
+public import Mathlib.Topology.Algebra.UniformRing
 public import Mathlib.Topology.MetricSpace.Algebra
 public import Mathlib.Topology.MetricSpace.Isometry
-public import Mathlib.Topology.MetricSpace.Lipschitz
-public import Mathlib.Topology.UniformSpace.Completion
 
 /-!
 # The completion of a metric space
@@ -22,7 +20,6 @@ it defines the same uniformity as the already defined uniform structure on the c
 -/
 
 @[expose] public section
-
 
 open Set Filter UniformSpace Metric
 
