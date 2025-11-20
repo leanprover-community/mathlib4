@@ -817,7 +817,7 @@ lemma eq_mul_leadingCoeff_of_monic_of_dvd_of_natDegree_le {R} [Semiring R] {p q 
 
 lemma eq_leadingCoeff_mul_of_monic_of_dvd_of_natDegree_le {R} [CommSemiring R] {p q : R[X]}
     (hp : p.Monic) (hdiv : p ∣ q) (hdeg : q.natDegree ≤ p.natDegree) :
-    q =  C q.leadingCoeff * p := by
+    q = C q.leadingCoeff * p := by
   rw [mul_comm]
   exact eq_mul_leadingCoeff_of_monic_of_dvd_of_natDegree_le hp hdiv hdeg
 
