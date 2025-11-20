@@ -804,25 +804,27 @@ lemma associated_of_dvd_of_degree_eq {K} [Field K] {p q : K[X]} (hpq : p ∣ q)
   (Classical.em (q = 0)).elim (fun hq ↦ (show p = q by simpa [hq] using h₁) ▸ Associated.refl p)
     (associated_of_dvd_of_natDegree_le hpq · (natDegree_le_natDegree h₁.ge))
 
+lemma eq_mul_leadingCoeff_of_monic_of_dvd_of_natDegree_le {R} [Semiring R] {p q : R[X]}
+    (hp : p.Monic) (hdiv : p ∣ q) (hdeg : q.natDegree ≤ p.natDegree) :
+    q = p * C q.leadingCoeff := by
+  obtain ⟨r, rfl⟩ := hdiv
+  obtain rfl | hr := eq_or_ne r 0; · simp
+  have : r.natDegree = 0 := by
+    rw [natDegree_mul' (by simp [*])] at hdeg
+    omega
+  rw [eq_C_of_natDegree_eq_zero this]
+  simp [leadingCoeff_monic_mul hp]
+
 lemma eq_leadingCoeff_mul_of_monic_of_dvd_of_natDegree_le {R} [CommSemiring R] {p q : R[X]}
     (hp : p.Monic) (hdiv : p ∣ q) (hdeg : q.natDegree ≤ p.natDegree) :
-    q = C q.leadingCoeff * p := by
-  obtain ⟨r, hr⟩ := hdiv
-  obtain rfl | hq := eq_or_ne q 0; · simp
-  have rzero : r ≠ 0 := fun h => by simp [h, hq] at hr
-  rw [hr, natDegree_mul'] at hdeg; swap
-  · rw [hp.leadingCoeff, one_mul, leadingCoeff_ne_zero]
-    exact rzero
-  rw [mul_comm, @eq_C_of_natDegree_eq_zero _ _ r] at hr
-  · convert hr
-    convert leadingCoeff_C (coeff r 0) using 1
-    rw [hr, leadingCoeff_mul_monic hp]
-  · exact (add_right_inj _).1 (le_antisymm hdeg <| Nat.le.intro rfl)
+    q =  C q.leadingCoeff * p := by
+  rw [mul_comm]
+  exact eq_mul_leadingCoeff_of_monic_of_dvd_of_natDegree_le hp hdiv hdeg
 
-lemma eq_of_monic_of_dvd_of_natDegree_le {R} [CommSemiring R] {p q : R[X]} (hp : p.Monic)
+lemma eq_of_monic_of_dvd_of_natDegree_le {R} [Semiring R] {p q : R[X]} (hp : p.Monic)
     (hq : q.Monic) (hdiv : p ∣ q) (hdeg : q.natDegree ≤ p.natDegree) : q = p := by
-  convert eq_leadingCoeff_mul_of_monic_of_dvd_of_natDegree_le hp hdiv hdeg
-  rw [hq.leadingCoeff, C_1, one_mul]
+  rw [eq_mul_leadingCoeff_of_monic_of_dvd_of_natDegree_le hp hdiv hdeg]
+  simp [hq]
 
 end CommRing
 
