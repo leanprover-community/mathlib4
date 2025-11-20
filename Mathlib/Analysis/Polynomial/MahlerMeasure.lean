@@ -266,13 +266,15 @@ lemma one_le_prod_max_one_norm_roots (p : ℂ[X]) : 1 ≤ (p.roots.map (fun a �
   grind [Multiset.one_le_prod, Multiset.mem_map]
 
 lemma leading_coeff_le_mahlerMeasure (p : ℂ[X]) : ‖p.leadingCoeff‖ ≤ p.mahlerMeasure := by
-  rw [mahlerMeasure_eq_leadingCoeff_mul_prod_roots]
-  exact le_mul_of_one_le_right (norm_nonneg p.leadingCoeff) (one_le_prod_max_one_norm_roots p)
+  rw [← mul_one ‖_‖, mahlerMeasure_eq_leadingCoeff_mul_prod_roots]
+  gcongr
+  exact one_le_prod_max_one_norm_roots p
 
 lemma prod_max_one_norm_roots_le_mahlerMeasure_of_one_le_leadingCoeff {p : ℂ[X]}
     (hlc : 1 ≤ ‖p.leadingCoeff‖) : (p.roots.map (fun a ↦ max 1 ‖a‖)).prod ≤ p.mahlerMeasure := by
-  rw [mahlerMeasure_eq_leadingCoeff_mul_prod_roots]
-  exact le_mul_of_one_le_left (le_trans zero_le_one (one_le_prod_max_one_norm_roots p)) hlc
+  rw [← one_mul (Multiset.prod _), mahlerMeasure_eq_leadingCoeff_mul_prod_roots]
+  gcongr
+  exact zero_le_one.trans <| one_le_prod_max_one_norm_roots p
 
 open Filter MeasureTheory Set in
 /-- The Mahler measure of a polynomial is bounded above by the sum of the norms of its coefficients.
@@ -286,20 +288,15 @@ theorem mahlerMeasure_le_sum_norm_coeff (p : ℂ[X]) : p.mahlerMeasure ≤ p.sum
     by simp [circleAverage_def, mul_assoc, exp_log this], mahlerMeasure_def_of_ne_zero hp,
     circleAverage_def, smul_eq_mul]
   gcongr
-  apply intervalIntegral.integral_mono_ae_restrict (le_of_lt two_pi_pos)
+  apply intervalIntegral.integral_mono_ae_restrict (by positivity)
     p.intervalIntegrable_mahlerMeasure (by simp)
   rw [EventuallyLE, eventually_iff_exists_mem]
   use {x : ℝ | eval (circleMap 0 1 x) p ≠ 0}
   constructor
-  · rw [mem_ae_iff, compl_def, Measure.restrict_apply' (by simp),
-      show {x | x ∉ {x | eval (circleMap 0 1 x) p ≠ 0}} ∩ Icc 0 (2 * π) =
-      {a | eval (circleMap 0 1 a) p = 0 ∧ a ∈ Icc 0 (2 * π)} by aesop]
+  · rw [mem_ae_iff, compl_def, Measure.restrict_apply' (by simp)]
     apply (Finite.of_diff _ <| finite_singleton (2 * π)).measure_zero
-    have : {a | eval (circleMap 0 1 a) p = 0 ∧ a ∈ Icc 0 (2 * π)} \ {2 * π}
-        = {a | a ∈ Ico 0 (2 * π) ∧ eval (circleMap 0 1 a) p = 0} := by
-      ext
-      grind
-    rw [this]
+    simp only [ne_eq, mem_setOf_eq, Decidable.not_not, inter_diff_assoc, Icc_diff_right]
+    rw [setOf_inter_eq_sep]
     apply Finite.of_finite_image (f := circleMap 0 1) ((Multiset.finite_toSet p.roots).subset _)
       <| fun _ h _ k l ↦ injOn_circleMap_of_abs_sub_le' one_ne_zero (by linarith) h.1 k.1 l
     simp [hp]
@@ -310,7 +307,7 @@ theorem mahlerMeasure_le_sum_norm_coeff (p : ℂ[X]) : p.mahlerMeasure ≤ p.sum
     simp
 
 open Multiset in
-theorem norm_coeff_le_binom_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
+theorem norm_coeff_le_choose_mul_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
     ‖p.coeff n‖ ≤ (p.natDegree).choose n * p.mahlerMeasure := by
   by_cases hp : p = 0
   · simp [hp]
