@@ -665,8 +665,12 @@ variable {M}
       x.val n :=
   congr($(of_limit I x).val n)
 
-@[simp] theorem mk_limit' [IsAdicComplete I R] (x : AdicCompletion I R) (n : ℕ) :
+theorem mk_smul_top_limit [IsAdicComplete I R] (x : AdicCompletion I R) (n : ℕ) :
     Ideal.Quotient.mk (I ^ n • (⊤ : Ideal R)) (limit I R x) = x.val n :=
+  mk_limit I x n
+
+@[simp] theorem mk_mul_top_limit [IsAdicComplete I R] (x : AdicCompletion I R) (n : ℕ) :
+    Ideal.Quotient.mk (I ^ n * (⊤ : Ideal R)) (limit I R x) = x.val n :=
   mk_limit I x n
 
 lemma limit_mk_sModEq {x : AdicCauchySequence I M} {n : ℕ} :
