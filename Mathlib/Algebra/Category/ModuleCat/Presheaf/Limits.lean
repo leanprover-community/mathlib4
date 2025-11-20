@@ -149,11 +149,17 @@ instance hasLimitsOfShape : HasLimitsOfShape J (PresheafOfModules.{v} R) where
 
 instance hasLimitsOfSize : HasLimitsOfSize.{v, v} (PresheafOfModules.{v} R) where
 
-noncomputable instance evaluation_preservesLimitsOfShape (X : Cᵒᵖ) :
+instance evaluation_preservesLimitsOfShape (X : Cᵒᵖ) :
     PreservesLimitsOfShape J (evaluation R X : PresheafOfModules.{v} R ⥤ _) where
 
-noncomputable instance toPresheaf_preservesLimitsOfShape :
+instance toPresheaf_preservesLimitsOfShape :
     PreservesLimitsOfShape J (toPresheaf.{v} R) where
+
+instance evaluation_preservesLimitsOfSize (X : Cᵒᵖ) :
+    PreservesLimitsOfSize.{v, v} (evaluation R X : PresheafOfModules.{v} R ⥤ _) where
+
+instance toPresheaf_preservesLimitsOfSize :
+    PreservesLimitsOfSize.{v, v} (toPresheaf.{v} R) where
 
 end Small
 

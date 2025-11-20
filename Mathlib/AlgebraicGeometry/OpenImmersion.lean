@@ -100,6 +100,10 @@ lemma opensFunctor_map_homOfLE {U V : X.Opens} (e : U ≤ V) :
     (Scheme.Hom.opensFunctor f).map (homOfLE e) = homOfLE (f.image_mono e) :=
   rfl
 
+instance : f.opensFunctor.IsContinuous
+    (Opens.grothendieckTopology X) (Opens.grothendieckTopology Y) :=
+  f.isOpenEmbedding.functor_isContinuous
+
 @[simp]
 lemma image_top_eq_opensRange : f ''ᵁ ⊤ = f.opensRange := by
   apply Opens.ext
@@ -243,6 +247,11 @@ lemma appIso_inv_appLE {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] {U V
   simp only [appLE, appIso_inv_app_assoc, eqToHom_op]
   rw [← Functor.map_comp]
   rfl
+
+lemma appIso_inv_app_presheafMap (U : X.Opens) :
+    (f.appIso U).inv ≫ f.app _ ≫
+      X.presheaf.map (eqToHom (f.preimage_image_eq U).symm).op = 𝟙 _ := by
+  rw [Scheme.Hom.appIso_inv_app_assoc, ← Functor.map_comp, ← X.presheaf.map_id]; rfl
 
 end Scheme.Hom
 

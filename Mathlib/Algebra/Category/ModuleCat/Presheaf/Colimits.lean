@@ -156,4 +156,18 @@ noncomputable instance toPresheaf_preservesFiniteColimits :
 
 end Finite
 
+section HasColimitsOfSize
+
+variable [HasColimitsOfSize.{v₂, u₂} AddCommGrpCat.{v}]
+
+instance hasColimitsOfSize : HasColimitsOfSize.{v₂, u₂} (PresheafOfModules.{v} R) where
+
+noncomputable instance evaluation_preservesColimitsOfSize (X : Cᵒᵖ) :
+    PreservesColimitsOfSize.{v₂, u₂} (evaluation R X : PresheafOfModules.{v} R ⥤ _) where
+
+noncomputable instance toPresheaf_preservesColimitsOfSize :
+    PreservesColimitsOfSize.{v₂, u₂} (toPresheaf.{v} R) where
+
+end HasColimitsOfSize
+
 end PresheafOfModules
