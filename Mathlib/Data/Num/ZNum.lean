@@ -3,15 +3,19 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Ring.Cast
-import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Data.Num.Lemmas
+module
+
+public import Mathlib.Algebra.Order.Ring.Cast
+public import Mathlib.Data.Int.Cast.Lemmas
+public import Mathlib.Data.Num.Lemmas
 
 /-!
 # Properties of the `ZNum` representation of integers
 
 This file was split from `Mathlib/Data/Num/Lemmas.lean` to keep the former under 1500 lines.
 -/
+
+@[expose] public section
 
 open Int
 
@@ -383,12 +387,10 @@ scoped macro (name := transfer) "transfer" : tactic => `(tactic|
     (intros; transfer_rw; try simp [add_comm, add_left_comm, mul_comm, mul_left_comm]))
 
 instance linearOrder : LinearOrder ZNum where
-  lt := (· < ·)
   lt_iff_le_not_ge := by
     intro a b
     transfer_rw
     apply lt_iff_le_not_ge
-  le := (· ≤ ·)
   le_refl := by transfer
   le_trans := by
     intro a b c
