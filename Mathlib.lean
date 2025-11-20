@@ -5712,6 +5712,7 @@ public import Mathlib.RingTheory.Etale.Basic
 public import Mathlib.RingTheory.Etale.Field
 public import Mathlib.RingTheory.Etale.Kaehler
 public import Mathlib.RingTheory.Etale.Pi
+public import Mathlib.RingTheory.Etale.StandardEtale
 public import Mathlib.RingTheory.EuclideanDomain
 public import Mathlib.RingTheory.Extension
 public import Mathlib.RingTheory.Extension.Basic
