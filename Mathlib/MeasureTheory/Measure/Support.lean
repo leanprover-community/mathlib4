@@ -3,8 +3,9 @@ Copyright (c) 2025 Jon Bannon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Bannon, Jireh Loreaux
 -/
+module
 
-import Mathlib.MeasureTheory.Measure.OpenPos
+public import Mathlib.MeasureTheory.Measure.OpenPos
 
 /-!
 # Support of a Measure
@@ -35,6 +36,8 @@ and various descriptions of the complement of the support are provided.
 
 measure, support, Lindelöf
 -/
+
+@[expose] public section
 
 section Support
 

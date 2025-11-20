@@ -3,14 +3,18 @@ Copyright (c) 2025 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.ObjectProperty.Basic
-import Mathlib.CategoryTheory.Retract
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.Basic
+public import Mathlib.CategoryTheory.Retract
 
 /-! # Properties of objects which are stable under retracts
 
 Given a category `C` and `P : ObjectProperty C` (i.e. `P : C → Prop`),
 this file introduces the type class `P.IsStableUnderRetracts`.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.ObjectProperty
 
