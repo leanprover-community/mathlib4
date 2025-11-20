@@ -6880,11 +6880,7 @@ theorem gelfondSchneider (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgeb
 
 
 
-  --simp only at use5
 
-  -- apply absurd main
-  -- simp only [ge_iff_le, not_le]
-  --exact use5
 
 
 end GelfondSchneiderSetup
