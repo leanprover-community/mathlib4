@@ -21,13 +21,12 @@ This linter lints against nonempty modules that have only private declarations, 
 
 ## Implementation notes
 
-All new declarations, whether added synchronously with `addDecl` or otherwise, get added to
-`asyncConstsMap`.
+`env.constants.map₂` contains all locally-defined constants, and accessing this waits until all
+declarations are added. By linting the `eoi` token, we can capture all constants defined in the
+file.
 
-`asyncConstsMap.public` and `asyncConstsMap.private` seem to contain exactly the same declarations.
-The difference between public and private declarations is encoded via the presence of the name
-prefix `_private` in the declaration's name. The code here should be robust to potential future
-changes that put public declarations only in `.public` and private ones only in `.private`.
+Note that private declarations are exactly those which satisfy `isPrivateName`, whether private due
+to an explicit `private` or due to not being made `public`.
 -/
 
 meta section
@@ -50,16 +49,16 @@ def privateModule : Linter where
       unless getLinterValue linter.privateModule (← getLinterOptions) do
         return
       if (← getEnv).header.isModule then
-        let _ := (← getEnv).checked.get -- Wait for everything
-        -- Lint if every declaration is private:
-        if (← getEnv).asyncConstsMap.public.revList.all
-            ((`_private).isPrefixOf ·.constInfo.name) then
-          -- But don't lint an imports-only module:
-          if (← getEnv).asyncConstsMap.private.size ≠ 0 then
-            let topOfFileRef := Syntax.atom (.synthetic ⟨0⟩ ⟨0⟩) ""
-            logLint linter.privateModule topOfFileRef
-              "The current module only contains private declarations.\n\n\
-              Consider adding `@[expose] public section` at the beginning of the module."
+        -- Don't lint an imports-only module:
+        if !(← getEnv).constants.map₂.isEmpty then
+          -- Exit if any declaration is public:
+          for (decl, _) in (← getEnv).constants.map₂ do
+            if !isPrivateName decl then return
+          -- Lint if all names are private:
+          let topOfFileRef := Syntax.atom (.synthetic ⟨0⟩ ⟨0⟩) ""
+          logLint linter.privateModule topOfFileRef
+            "The current module only contains private declarations.\n\n\
+            Consider adding `@[expose] public section` at the beginning of the module."
 
 initialize addLinter privateModule
 
