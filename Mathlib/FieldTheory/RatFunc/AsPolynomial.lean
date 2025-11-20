@@ -45,7 +45,7 @@ open RatFunc
 
 section Domain
 
-variable [CommRing K] [IsDomain K]
+variable [CommRing K]
 
 /-- `RatFunc.C a` is the constant rational function `a`. -/
 def C : K →+* RatFunc K := algebraMap _ _
@@ -196,7 +196,7 @@ end Eval
 
 section Algebra
 
-variable [CommRing K] [IsDomain K]
+variable [CommRing K]
 
 lemma transcendental_X : Transcendental K (X : RatFunc K) := by
   rw [← RatFunc.algebraMap_X, transcendental_algebraMap_iff (algebraMap_injective K)]
