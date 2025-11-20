@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Rank
-import Mathlib.Data.Finite.Sigma
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Rank
+public import Mathlib.Data.Finite.Sigma
 
 /-!
 # Existence of a rank function to natural numbers
@@ -14,6 +16,8 @@ a regular pairing of subcomplex `A` of a simplicial set `X`,
 then there exists a rank function for `P` with value in `ℕ`.
 
 -/
+
+@[expose] public section
 
 universe u
 

@@ -3,11 +3,13 @@ Copyright (c) 2024 John Talbot and Lian Bremner Tattersall. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: John Talbot, Lian Bremner Tattersall
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Ring
 /-!
 # Five-wheel like graphs
 
@@ -79,6 +81,8 @@ We will need to refer to this consistently and choose the following formulation:
 * [S. Brandt **On the structure of graphs with bounded clique number**
   https://doi.org/10.1007/s00493-003-0042-z][brandt2003]
 -/
+
+@[expose] public section
 
 local notation "‖" x "‖" => Fintype.card x
 
@@ -388,7 +392,8 @@ lemma minDegree_le_of_cliqueFree_fiveWheelLikeFree_succ [Fintype α]
       simp_rw [add_assoc, add_comm k, ← add_assoc, ← Wc, add_assoc, ← two_mul, mul_add,
                ← hw.card_inter, card_eq_sum_ones, ← mul_assoc, mul_sum, mul_one, mul_comm 2]
       gcongr with i <;> exact minDegree_le_degree ..
-    _ ≤ #X * (#W - 3 + 2 * k) + #Xᶜ * ((#W - 1) + 2 * (k - 1)) := by grind
+    _ ≤ (#X * (#W - 3) + #Xᶜ * (#W - 1)) + 2 * (#X * #(s ∩ t) + #Xᶜ * (#(s ∩ t) - 1)) := by gcongr
+    _ = #X * (#W - 3 + 2 * k) + #Xᶜ * ((#W - 1) + 2 * (k - 1)) := by grind
     _ ≤ _ := by
         by_cases hk : k = 0 -- so `s ∩ t = ∅` and hence `Xᶜ = ∅`
         · have Xu : X = univ := by
