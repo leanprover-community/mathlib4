@@ -4346,6 +4346,7 @@ public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 public import Mathlib.LinearAlgebra.Charpoly.Basic
 public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
+public import Mathlib.LinearAlgebra.CheckForSVD
 public import Mathlib.LinearAlgebra.CliffordAlgebra.BaseChange
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 public import Mathlib.LinearAlgebra.CliffordAlgebra.CategoryTheory
@@ -4614,7 +4615,6 @@ public import Mathlib.LinearAlgebra.Trace
 public import Mathlib.LinearAlgebra.Transvection
 public import Mathlib.LinearAlgebra.UnitaryGroup
 public import Mathlib.LinearAlgebra.Vandermonde
-public import Mathlib.LinearAlgebra.check_for_SVD
 public import Mathlib.Logic.Basic
 public import Mathlib.Logic.Denumerable
 public import Mathlib.Logic.Embedding.Basic
