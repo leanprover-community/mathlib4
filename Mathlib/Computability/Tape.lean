@@ -556,7 +556,7 @@ theorem Tape.write_nth {Γ} [Inhabited Γ] (b : Γ) :
 
 @[simp]
 theorem Tape.write_mk {Γ} [Inhabited Γ] (a b : Γ) (L R : ListBlank Γ) :
-    (Tape.mk a L R).write b = Tape.mk b L R := by rfl
+    (Tape.mk a L R).write b = Tape.mk b L R := rfl
 
 @[simp]
 theorem Tape.write_mk' {Γ} [Inhabited Γ] (b : Γ) (L R : ListBlank Γ) :
