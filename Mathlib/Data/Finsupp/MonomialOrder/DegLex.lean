@@ -3,10 +3,11 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Algebra.Group.TransferInstance
-import Mathlib.Data.Finsupp.MonomialOrder
-import Mathlib.Data.Finsupp.Weight
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.Data.Finsupp.MonomialOrder
+public import Mathlib.Data.Finsupp.Weight
 
 /-! Homogeneous lexicographic monomial ordering
 
@@ -23,6 +24,8 @@ and `MonomialOrder.degLex_lt_iff` rewrite the ordering as comparisons in the typ
 * [Becker and Weispfenning, *Gröbner bases*][Becker-Weispfenning1993]
 
 -/
+
+@[expose] public section
 
 /-- A type synonym to equip a type with its lexicographic order sorted by degrees. -/
 def DegLex (α : Type*) := α

@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Closed.Enrichment
-import Mathlib.CategoryTheory.Enriched.FunctorCategory
+module
+
+public import Mathlib.CategoryTheory.Closed.Enrichment
+public import Mathlib.CategoryTheory.Enriched.FunctorCategory
 
 /-!
 # Functor categories are monoidal closed
@@ -14,6 +16,8 @@ we obtain that the category `J ⥤ C` is monoidal closed if `C` has suitable
 limits.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 

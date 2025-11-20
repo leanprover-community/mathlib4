@@ -3,13 +3,17 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.DFinsupp.Defs
-import Mathlib.Logic.Encodable.Pi
+module
+
+public import Mathlib.Data.DFinsupp.Defs
+public import Mathlib.Logic.Encodable.Pi
 /-!
 # `Encodable` and `Countable` instances for `Π₀ i, α i`
 
 In this file we provide instances for `Encodable (Π₀ i, α i)` and `Countable (Π₀ i, α i)`.
 -/
+
+@[expose] public section
 
 variable {ι : Type*} {α : ι → Type*} [∀ i, Zero (α i)]
 
