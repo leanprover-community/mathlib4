@@ -38,6 +38,7 @@ walks
 @[expose] public section
 
 -- TODO: split
+set_option linter.style.longFile 1700
 
 open Function
 
@@ -1285,6 +1286,11 @@ theorem map_injective_of_injective {f : G →g G'} (hinj : Function.Injective f)
       simp only [map_cons, cons.injEq] at h
       cases hinj h.1
       grind
+
+@[simp] lemma getVert_map (i : ℕ) : (p.map f).getVert i = f (p.getVert i) := by
+  revert u; induction i with
+  | zero => simp
+  | succ => intro _ p; cases p <;> simp [*]
 
 section mapLe
 
