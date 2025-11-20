@@ -67,7 +67,7 @@ variable {J} (Φ : Point.{w} J) {A : Type u'} [Category.{v'} A]
   [HasColimitsOfSize.{w, w} A]
 
 instance : HasColimitsOfShape Φ.fiber.Elementsᵒᵖ A :=
-    hasColimitsOfShape_of_finallySmall _ _
+  hasColimitsOfShape_of_finallySmall _ _
 
 instance [LocallySmall.{w} C] [AB5OfSize.{w, w} A] [HasFiniteLimits A] :
     HasExactColimitsOfShape Φ.fiber.Elementsᵒᵖ A :=
