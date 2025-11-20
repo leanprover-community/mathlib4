@@ -3,9 +3,11 @@ Copyright (c) 2023 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Batteries.Tactic.Lint
-import Mathlib.Lean.Linter
-import Mathlib.Tactic.DeclarationNames
+module
+
+public meta import Batteries.Tactic.Lint
+public meta import Mathlib.Lean.Linter
+public meta import Mathlib.Tactic.DeclarationNames
 
 /-!
 # Linters for Mathlib

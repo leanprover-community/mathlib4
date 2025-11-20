@@ -5,8 +5,8 @@ Authors: Damiano Testa
 -/
 module
 
-import Mathlib.Lean.Linter
-import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Lean.Linter
+public meta import Mathlib.Tactic.Linter.Header
 
 /-!
 # The `commandStart` linter

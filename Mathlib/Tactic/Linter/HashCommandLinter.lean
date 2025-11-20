@@ -5,8 +5,8 @@ Authors: Damiano Testa
 -/
 module
 
-import Lean.Elab.Command
-import Mathlib.Lean.Linter
+public meta import Lean.Elab.Command
+public meta import Mathlib.Lean.Linter
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header

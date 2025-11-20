@@ -3,9 +3,11 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Lean.Elab.Command
-import Mathlib.Lean.Linter
-import Mathlib.Tactic.Linter.Header
+module
+
+public meta import Lean.Elab.Command
+public meta import Mathlib.Lean.Linter
+public meta import Mathlib.Tactic.Linter.Header
 
 /-!
 # The "flexible" linter
