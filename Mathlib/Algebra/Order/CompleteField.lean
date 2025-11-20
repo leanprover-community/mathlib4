@@ -263,8 +263,8 @@ def inducedOrderRingHom : α →+*o β :=
         obtain h | rfl | h := lt_trichotomy x 0
         · convert this (-x) (neg_pos.2 h) using 1
           · rw [neg_mul, mul_neg, neg_neg]
-          · simp_rw [AddMonoidHom.map_neg, neg_mul, mul_neg, neg_neg]
-        · simp only [mul_zero, AddMonoidHom.map_zero]
+          · simp_rw [map_neg, neg_mul, mul_neg, neg_neg]
+        · simp only [mul_zero, map_zero]
         · exact this x h
         -- prove that the (Sup of rationals less than x) ^ 2 is the Sup of the set of rationals less
         -- than (x ^ 2) by showing it is an upper bound and any smaller number is not an upper bound

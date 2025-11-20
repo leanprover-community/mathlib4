@@ -384,7 +384,7 @@ theorem appr_lt (x : ℤ_[p]) (n : ℕ) : x.appr n < p ^ n := by
   induction n generalizing x with
   | zero => simp only [appr, _root_.pow_zero, zero_lt_one]
   | succ n ih =>
-    simp only [appr, map_natCast, ZMod.natCast_self, RingHom.map_pow, Int.natAbs, RingHom.map_mul]
+    simp only [appr, map_natCast, ZMod.natCast_self, map_pow, Int.natAbs, map_mul]
     have hp : p ^ n < p ^ (n + 1) := by apply Nat.pow_lt_pow_right hp_prime.1.one_lt n.lt_add_one
     split_ifs with h
     · apply lt_trans (ih _) hp
@@ -433,7 +433,7 @@ theorem appr_spec (n : ℕ) : ∀ x : ℤ_[p], x - appr x n ∈ Ideal.span {(p :
     push_cast
     rw [sub_add_eq_sub_sub]
     obtain ⟨c, hc⟩ := ih x
-    simp only [map_natCast, ZMod.natCast_self, RingHom.map_pow, RingHom.map_mul, ZMod.natCast_val]
+    simp only [map_natCast, ZMod.natCast_self, map_pow, map_mul, ZMod.natCast_val]
     have hc' : c ≠ 0 := by
       rintro rfl
       simp only [mul_zero] at hc
@@ -615,7 +615,7 @@ theorem nthHomSeq_add (r s : R) :
   rw [← Int.cast_add, ← Int.cast_sub, ← padicNorm.dvd_iff_norm_le, ←
     ZMod.intCast_zmod_eq_zero_iff_dvd]
   dsimp [nthHom]
-  simp only [ZMod.natCast_val, RingHom.map_add, Int.cast_sub, ZMod.intCast_cast, Int.cast_add]
+  simp only [ZMod.natCast_val, map_add, Int.cast_sub, ZMod.intCast_cast, Int.cast_add]
   rw [ZMod.cast_add (show p ^ n ∣ p ^ j from pow_dvd_pow _ hj)]
   simp only [sub_self]
 
@@ -630,7 +630,7 @@ theorem nthHomSeq_mul (r s : R) :
   rw [← Int.cast_mul, ← Int.cast_sub, ← padicNorm.dvd_iff_norm_le, ←
     ZMod.intCast_zmod_eq_zero_iff_dvd]
   dsimp [nthHom]
-  simp only [ZMod.natCast_val, RingHom.map_mul, Int.cast_sub, ZMod.intCast_cast, Int.cast_mul]
+  simp only [ZMod.natCast_val, map_mul, Int.cast_sub, ZMod.intCast_cast, Int.cast_mul]
   rw [ZMod.cast_mul (show p ^ n ∣ p ^ j from pow_dvd_pow _ hj), sub_self]
 
 /--
@@ -699,7 +699,7 @@ See also `PadicInt.lift_unique`.
 theorem lift_spec (n : ℕ) : (toZModPow n).comp (lift f_compat) = f n := by
   ext r
   rw [RingHom.comp_apply, ← ZMod.natCast_zmod_val (f n r), ← map_natCast <| toZModPow n, ←
-    sub_eq_zero, ← RingHom.map_sub, ← RingHom.mem_ker, ker_toZModPow]
+    sub_eq_zero, ← map_sub, ← RingHom.mem_ker, ker_toZModPow]
   apply lift_sub_val_mem_span
 
 /-- One part of the universal property of `ℤ_[p]` as a projective limit.
@@ -713,7 +713,7 @@ theorem lift_unique (g : R →+* ℤ_[p]) (hg : ∀ n, (toZModPow n).comp g = f 
   obtain ⟨n, hn⟩ := exists_pow_neg_lt p hε
   apply le_trans _ (le_of_lt hn)
   rw [dist_eq_norm, norm_le_pow_iff_mem_span_pow, ← ker_toZModPow, RingHom.mem_ker,
-    RingHom.map_sub, ← RingHom.comp_apply, ← RingHom.comp_apply, lift_spec, hg, sub_self]
+    map_sub, ← RingHom.comp_apply, ← RingHom.comp_apply, lift_spec, hg, sub_self]
 
 end
 

@@ -373,7 +373,7 @@ def orthogonalBilin (N : Submodule R₁ M₁) (B : M₁ →ₛₗ[I₁] M₁ →
     rw [LinearMap.IsOrtho, map_add, show B n _ = 0 from hx n hn, show B n _ = 0 from hy n hn,
       zero_add]
   smul_mem' c x hx n hn := by
-    rw [LinearMap.IsOrtho, LinearMap.map_smulₛₗ, show B n x = 0 from hx n hn, smul_zero]
+    rw [LinearMap.IsOrtho, map_smulₛₗ, show B n x = 0 from hx n hn, smul_zero]
 
 variable {N L : Submodule R₁ M₁}
 

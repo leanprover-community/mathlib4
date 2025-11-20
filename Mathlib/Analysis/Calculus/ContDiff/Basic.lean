@@ -363,7 +363,7 @@ theorem HasFTaylorSeriesUpToOn.compContinuousLinearMap
   · intro x hx
     simp only [(hf.zero_eq (g x) hx).symm, Function.comp_apply]
     change (p (g x) 0 fun _ : Fin 0 => g 0) = p (g x) 0 0
-    rw [ContinuousLinearMap.map_zero]
+    rw [map_zero]
     rfl
   · intro m hm x hx
     convert (hA m).hasFDerivAt.comp_hasFDerivWithinAt x

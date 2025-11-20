@@ -386,7 +386,7 @@ noncomputable def mapLMonoidHom : (Π i, E i →L[𝕜] E i) →* ((⨂[𝕜] i,
 
 @[simp]
 protected theorem mapL_pow (f : Π i, E i →L[𝕜] E i) (n : ℕ) :
-    mapL (f ^ n) = mapL f ^ n := MonoidHom.map_pow mapLMonoidHom f n
+    mapL (f ^ n) = mapL f ^ n := map_pow mapLMonoidHom f n
 
 -- We redeclare `ι` here, and later dependent arguments,
 -- to avoid the `[Fintype ι]` assumption present throughout the rest of the file.

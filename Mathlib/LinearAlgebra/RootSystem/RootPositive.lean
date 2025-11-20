@@ -66,7 +66,7 @@ lemma two_mul_apply_root_root :
   rw [two_mul, ← eq_sub_iff_add_eq]
   nth_rw 1 [← B.isOrthogonal_reflection j]
   rw [reflection_apply, reflection_apply_self, root_coroot'_eq_pairing, LinearMap.map_sub₂,
-    LinearMap.map_smul₂, smul_eq_mul, LinearMap.map_neg, LinearMap.map_neg, mul_neg, neg_sub_neg]
+    LinearMap.map_smul₂, smul_eq_mul, map_neg, map_neg, mul_neg, neg_sub_neg]
 
 lemma pairing_mul_eq_pairing_mul_swap :
     P.pairing j i * B.form (P.root i) (P.root i) =

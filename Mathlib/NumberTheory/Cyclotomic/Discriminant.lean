@@ -102,7 +102,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
       by_cases hp : p = 2
       · exact mod_cast hζ.norm_pow_sub_one_eq_prime_pow_of_ne_zero hirr le_rfl (hp2 hp)
       · exact mod_cast hζ.norm_pow_sub_one_of_prime_ne_two hirr le_rfl hp
-    rw [MonoidHom.map_mul, hnorm, MonoidHom.map_mul, ← map_natCast (algebraMap K L),
+    rw [map_mul, hnorm, map_mul, ← map_natCast (algebraMap K L),
       Algebra.norm_algebraMap, finrank L hirr, ← succ_eq_add_one,
       totient_prime_pow hp.out (succ_pos k), Nat.sub_one, Nat.pred_succ] at H
     rw [← hζ.minpoly_eq_cyclotomic_of_irreducible hirr, map_pow, hζ.norm_eq_one hk hirr, one_pow,

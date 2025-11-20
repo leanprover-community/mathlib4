@@ -221,7 +221,7 @@ def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
     apply (notMem_prime_iff_unit_in_stalk _ _ _).mpr
     rw [← toStalk_stalkMap_toΓSpec, CommRingCat.comp_apply]
     erw [← he]
-    rw [RingHom.map_mul]
+    rw [map_mul]
     exact ht.mul <| (IsLocalization.map_units (R := Γ.obj (op X)) S s).map _
 
 /-- On a locally ringed space `X`, the preimage of the zero locus of the prime spectrum

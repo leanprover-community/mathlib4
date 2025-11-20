@@ -153,7 +153,7 @@ theorem fwdDiff_iter_eq_sum_shift (f : M → G) (n : ℕ) (y : M) :
     congr 1 with k
     have : ((-1) ^ (n - k) * n.choose k : Module.End ℤ (M → G))
               = ↑((-1) ^ (n - k) * n.choose k : ℤ) := by norm_cast
-    rw [mul_assoc, Module.End.mul_apply, this, Module.End.intCast_apply, LinearMap.map_smul,
+    rw [mul_assoc, Module.End.mul_apply, this, Module.End.intCast_apply, map_smul,
       Pi.smul_apply, shiftₗ_pow_apply]
 
 lemma fwdDiff_iter_comp_add (f : M → G) (m : M) (n : ℕ) (y : M) :

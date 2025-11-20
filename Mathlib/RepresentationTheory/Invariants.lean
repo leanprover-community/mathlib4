@@ -77,7 +77,7 @@ def invariants : Submodule k V where
   carrier := setOf fun v => ∀ g : G, ρ g v = v
   zero_mem' g := by simp only [map_zero]
   add_mem' hv hw g := by simp only [hv g, hw g, map_add]
-  smul_mem' r v hv g := by simp only [hv g, LinearMap.map_smulₛₗ, RingHom.id_apply]
+  smul_mem' r v hv g := by simp only [hv g, map_smulₛₗ, RingHom.id_apply]
 
 @[simp]
 theorem mem_invariants (v : V) : v ∈ invariants ρ ↔ ∀ g : G, ρ g v = v := by rfl

@@ -223,7 +223,7 @@ lemma l2_opNNNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) : ‖A * B‖�
 identification with (continuous) linear endmorphisms of `EuclideanSpace 𝕜 n`. -/
 def instL2OpNormedSpace : NormedSpace 𝕜 (Matrix m n 𝕜) where
   norm_smul_le r x := by
-    rw [l2_opNorm_def, LinearEquiv.map_smul]
+    rw [l2_opNorm_def, map_smul]
     exact norm_smul_le r ((toEuclideanLin (𝕜 := 𝕜) (m := m) (n := n)).trans toContinuousLinearMap x)
 
 scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instL2OpNormedSpace

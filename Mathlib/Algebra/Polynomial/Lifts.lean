@@ -125,7 +125,7 @@ theorem erase_mem_lifts {p : S[X]} (n : ℕ) (h : p ∈ lifts f) : p.erase n ∈
   intro k
   by_cases hk : k = n
   · use 0
-    simp only [hk, RingHom.map_zero, erase_same]
+    simp only [hk, map_zero, erase_same]
   obtain ⟨i, hi⟩ := h k
   use i
   simp only [hi, hk, erase_ne, Ne, not_false_iff]
