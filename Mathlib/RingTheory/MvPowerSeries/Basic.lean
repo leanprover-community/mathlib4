@@ -3,12 +3,13 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
+module
 
-import Mathlib.Algebra.Order.Antidiag.Finsupp
-import Mathlib.Data.Finsupp.Weight
-import Mathlib.Tactic.Linarith
-import Mathlib.LinearAlgebra.Pi
-import Mathlib.Algebra.MvPolynomial.Eval
+public import Mathlib.Algebra.Order.Antidiag.Finsupp
+public import Mathlib.Data.Finsupp.Weight
+public import Mathlib.Tactic.Linarith
+public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.Algebra.MvPolynomial.Eval
 
 /-!
 # Formal (multivariate) power series
@@ -40,7 +41,7 @@ the coefficients of a `MvPowerSeries`, its constant coefficient
 - `MvPowerSeries.coeff_eq_zero_of_constantCoeff_nilpotent`: if the constant coefficient
 of a `MvPowerSeries` is nilpotent, then some coefficients of its powers are automatically zero
 
-- `MvPowerSeries.map`: apply a `RingHom` to the coefficients of a `MvPowerSeries` (as a `RingHom)
+- `MvPowerSeries.map`: apply a `RingHom` to the coefficients of a `MvPowerSeries` (as a `RingHom`).
 
 - `MvPowerSeries.X_pow_dvd_iff`, `MvPowerSeries.X_dvd_iff`: equivalent
 conditions for (a power of) an indeterminate to divide a `MvPowerSeries`
@@ -72,6 +73,8 @@ that is needed to do this. Once I-adic completion (topological or algebraic) is 
 it should not be hard to fill in the details.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

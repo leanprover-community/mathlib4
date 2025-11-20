@@ -3,10 +3,11 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+module
 
-import Mathlib.Tactic.Core
-import Mathlib.Tactic.FunProp
-import Aesop
+public meta import Mathlib.Tactic.Core
+public meta import Mathlib.Tactic.FunProp
+public meta import Aesop
 
 /-!
 
@@ -14,6 +15,8 @@ import Aesop
 
 At the moment, these tactics are just wrappers, but potentially they could be more sophisticated.
 -/
+
+public meta section
 
 declare_aesop_rule_sets [CStarAlgebra]
 
