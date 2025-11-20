@@ -2788,6 +2788,7 @@ public import Mathlib.CategoryTheory.NatTrans
 public import Mathlib.CategoryTheory.Noetherian
 public import Mathlib.CategoryTheory.ObjectProperty.Basic
 public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+public import Mathlib.CategoryTheory.ObjectProperty.ColimitsCardinalClosure
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsClosure
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
