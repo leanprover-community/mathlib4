@@ -3,13 +3,16 @@ Copyright (c) 2023 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
+module
 
-import Mathlib.Tactic.Continuity.Init
+public meta import Mathlib.Tactic.Continuity.Init
 
 /-!
 # Continuity
 
 We define the `continuity` tactic using `aesop`. -/
+
+public meta section
 
 attribute [aesop (rule_sets := [Continuous]) unfold norm] Function.comp
 

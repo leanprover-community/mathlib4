@@ -3,18 +3,22 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Action.End
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.CategoryTheory.Action.Basic
-import Mathlib.CategoryTheory.FintypeCat
-import Mathlib.GroupTheory.GroupAction.Quotient
-import Mathlib.GroupTheory.QuotientGroup.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.End
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.CategoryTheory.Action.Basic
+public import Mathlib.CategoryTheory.FintypeCat
+public import Mathlib.GroupTheory.GroupAction.Quotient
+public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
 # Constructors for `Action V G` for some concrete categories
 
 We construct `Action (Type*) G` from a `[MulAction G X]` instance and give some applications.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

@@ -3,11 +3,13 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Sophie Morel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Operator.NormedSpace
-import Mathlib.Logic.Embedding.Basic
-import Mathlib.Data.Fintype.CardEmbedding
-import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
-import Mathlib.Topology.Algebra.Module.Multilinear.Topology
+module
+
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Logic.Embedding.Basic
+public import Mathlib.Data.Fintype.CardEmbedding
+public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
+public import Mathlib.Topology.Algebra.Module.Multilinear.Topology
 
 /-!
 # Operator norm on the space of continuous multilinear maps
@@ -44,6 +46,8 @@ the final result is independent of the order. While everything could be done fol
 approach, it turns out that direct proofs are easier and more efficient.
 -/
 
+@[expose] public section
+
 suppress_compilation
 
 noncomputable section
@@ -76,7 +80,7 @@ instance ContinuousMultilinearMap.instContinuousEval :
     ContinuousEval (ContinuousMultilinearMap 𝕜 E F) (Π i, E i) F where
   continuous_eval := by
     cases nonempty_fintype ι
-    let _ := IsTopologicalAddGroup.toUniformSpace F
+    let _ := IsTopologicalAddGroup.rightUniformSpace F
     have := isUniformAddGroup_of_addCommGroup (G := F)
     refine (UniformOnFun.continuousOn_eval₂ fun m ↦ ?_).comp_continuous
       (isEmbedding_toUniformOnFun.continuous.prodMap continuous_id) fun (f, x) ↦ f.cont.continuousAt
@@ -155,9 +159,9 @@ theorem bound_of_shell_of_norm_map_coord_zero (f : MultilinearMap 𝕜 E G)
     {ε : ι → ℝ} {C : ℝ} (hε : ∀ i, 0 < ε i) {c : ι → 𝕜} (hc : ∀ i, 1 < ‖c i‖)
     (hf : ∀ m : ∀ i, E i, (∀ i, ε i / ‖c i‖ ≤ ‖m i‖) → (∀ i, ‖m i‖ < ε i) → ‖f m‖ ≤ C * ∏ i, ‖m i‖)
     (m : ∀ i, E i) : ‖f m‖ ≤ C * ∏ i, ‖m i‖ := by
-  rcases em (∃ i, ‖m i‖ = 0) with (⟨i, hi⟩ | hm)
-  · rw [hf₀ hi, prod_eq_zero (mem_univ i) hi, mul_zero]
-  push_neg at hm
+  by_cases! hm : ∃ i, ‖m i‖ = 0
+  · rcases hm with ⟨i, hi⟩
+    rw [hf₀ hi, prod_eq_zero (mem_univ i) hi, mul_zero]
   choose δ hδ0 hδm_lt hle_δm _ using fun i => rescale_to_shell_semi_normed (hc i) (hε i) (hm i)
   have hδ0 : 0 < ∏ i, ‖δ i‖ := prod_pos fun i _ => norm_pos_iff.2 (hδ0 i)
   simpa [map_smul_univ, norm_smul, prod_mul_distrib, mul_left_comm C, hδ0] using
@@ -941,18 +945,10 @@ def _root_.ContinuousLinearEquiv.continuousMultilinearMapCongrRight (g : G ≃L[
     continuous_invFun :=
       (compContinuousMultilinearMapL 𝕜 E G' G g.symm.toContinuousLinearMap).continuous }
 
-@[deprecated (since := "2025-04-19")]
-alias _root_.ContinuousLinearEquiv.compContinuousMultilinearMapL :=
-  ContinuousLinearEquiv.continuousMultilinearMapCongrRight
-
 @[simp]
 theorem _root_.ContinuousLinearEquiv.continuousMultilinearMapCongrRight_symm (g : G ≃L[𝕜] G') :
     (g.continuousMultilinearMapCongrRight E).symm = g.symm.continuousMultilinearMapCongrRight E :=
   rfl
-
-@[deprecated (since := "2025-04-19")]
-alias _root_.ContinuousLinearEquiv.compContinuousMultilinearMapL_symm :=
-  ContinuousLinearEquiv.continuousMultilinearMapCongrRight_symm
 
 variable {E}
 
@@ -961,10 +957,6 @@ theorem _root_.ContinuousLinearEquiv.continuousMultilinearMapCongrRight_apply (g
     (f : ContinuousMultilinearMap 𝕜 E G) :
     g.continuousMultilinearMapCongrRight E f = (g : G →L[𝕜] G').compContinuousMultilinearMap f :=
   rfl
-
-@[deprecated (since := "2025-04-19")]
-alias _root_.ContinuousLinearEquiv.compContinuousMultilinearMapL_apply :=
-  ContinuousLinearEquiv.continuousMultilinearMapCongrRight_apply
 
 /-- Flip arguments in `f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G'` to get
 `ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G')` -/
@@ -1181,6 +1173,7 @@ noncomputable def compContinuousLinearMapMultilinear :
 `ContinuousMultilinearMap.compContinuousLinearMap`
 sending a continuous multilinear map `g` to `g (f₁ ·, ..., fₙ ·)` is continuous-linear in `g` and
 continuous-multilinear in `f₁, ..., fₙ`. -/
+@[simps! apply_apply]
 noncomputable def compContinuousLinearMapContinuousMultilinear :
     ContinuousMultilinearMap 𝕜 (fun i ↦ E i →L[𝕜] E₁ i)
       ((ContinuousMultilinearMap 𝕜 E₁ G) →L[𝕜] ContinuousMultilinearMap 𝕜 E G) :=
@@ -1190,7 +1183,25 @@ noncomputable def compContinuousLinearMapContinuousMultilinear :
       rw [one_mul]
       apply norm_compContinuousLinearMapL_le
 
-variable {𝕜 E E₁}
+variable {𝕜 E E₁ G}
+
+/-- Fréchet derivative of `compContinuousLinearMap f g` with respect to `g`.
+The derivative with respect to `f` is given by `compContinuousLinearMapL`. -/
+noncomputable def fderivCompContinuousLinearMap [DecidableEq ι]
+    (f : ContinuousMultilinearMap 𝕜 E₁ G) (g : ∀ i, E i →L[𝕜] E₁ i) :
+    (∀ i, E i →L[𝕜] E₁ i) →L[𝕜] ContinuousMultilinearMap 𝕜 E G :=
+  ContinuousLinearMap.apply _ _ f
+    |>.compContinuousMultilinearMap (compContinuousLinearMapContinuousMultilinear 𝕜 _ _ _)
+    |>.linearDeriv g
+
+@[simp]
+lemma fderivCompContinuousLinearMap_apply [DecidableEq ι]
+    (f : ContinuousMultilinearMap 𝕜 E₁ G) (g : ∀ i, E i →L[𝕜] E₁ i)
+    (dg : ∀ i, E i →L[𝕜] E₁ i) (v : ∀ i, E i) :
+    f.fderivCompContinuousLinearMap g dg v = ∑ i, f fun j ↦ (update g i (dg i) j) (v j) := by
+  simp [fderivCompContinuousLinearMap]
+
+variable (G)
 
 /-- `ContinuousMultilinearMap.compContinuousLinearMap` as a bundled continuous linear equiv,
 given `f : Π i, E i ≃L[𝕜] E₁ i`. -/
@@ -1214,19 +1225,12 @@ def _root_.ContinuousLinearEquiv.continuousMultilinearMapCongrLeft (f : ∀ i, E
         ContinuousLinearMap.coe_coe, compContinuousLinearMap_apply, ContinuousLinearEquiv.coe_coe,
         ContinuousLinearEquiv.symm_apply_apply] }
 
-@[deprecated (since := "2025-04-19")]
-alias compContinuousLinearMapEquivL := ContinuousLinearEquiv.continuousMultilinearMapCongrLeft
-
 @[simp]
 theorem _root_.ContinuousLinearEquiv.continuousMultilinearMapCongrLeft_symm
     (f : ∀ i, E i ≃L[𝕜] E₁ i) :
     (ContinuousLinearEquiv.continuousMultilinearMapCongrLeft G f).symm =
       .continuousMultilinearMapCongrLeft G fun i : ι => (f i).symm :=
   rfl
-
-@[deprecated (since := "2025-04-19")]
-alias compContinuousLinearMapEquivL_symm :=
-  ContinuousLinearEquiv.continuousMultilinearMapCongrLeft_symm
 
 variable {G}
 
@@ -1236,10 +1240,6 @@ theorem _root_.ContinuousLinearEquiv.continuousMultilinearMapCongrLeft_apply
     ContinuousLinearEquiv.continuousMultilinearMapCongrLeft G f g =
       g.compContinuousLinearMap fun i => (f i : E i →L[𝕜] E₁ i) :=
   rfl
-
-@[deprecated (since := "2025-04-19")]
-alias compContinuousLinearMapEquivL_apply :=
-  ContinuousLinearEquiv.continuousMultilinearMapCongrLeft_apply
 
 /-- One of the components of the iterated derivative of a continuous multilinear map. Given a
 bijection `e` between a type `α` (typically `Fin k`) and a subset `s` of `ι`, this component is a

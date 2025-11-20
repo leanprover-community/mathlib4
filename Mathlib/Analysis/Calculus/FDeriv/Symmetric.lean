@@ -3,10 +3,12 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Analytic.IteratedFDeriv
-import Mathlib.Analysis.Calculus.Deriv.Pow
-import Mathlib.Analysis.Calculus.MeanValue
-import Mathlib.Analysis.Calculus.ContDiff.Basic
+module
+
+public import Mathlib.Analysis.Analytic.IteratedFDeriv
+public import Mathlib.Analysis.Calculus.Deriv.Pow
+public import Mathlib.Analysis.Calculus.MeanValue
+public import Mathlib.Analysis.Calculus.ContDiff.Basic
 
 /-!
 # Symmetry of the second derivative
@@ -59,6 +61,8 @@ in `Convex.isLittleO_alternate_sum_square`, but the argument is essentially the 
 when `v` and `w` both point towards the interior of `s`, to make sure that all the sides of the
 rectangle are contained in `s` by convexity. The general case follows by linearity, though.
 -/
+
+@[expose] public section
 
 
 open Asymptotics Set Filter
@@ -379,7 +383,7 @@ theorem Convex.second_derivative_within_at_symmetric_of_mem_interior {v w : E}
     apply C.congr' _ _
     · filter_upwards [self_mem_nhdsWithin]
       intro h (hpos : 0 < h)
-      match_scalars <;> field_simp
+      match_scalars <;> field
     · filter_upwards [self_mem_nhdsWithin] with h (hpos : 0 < h)
       simp [field]
   simpa only [sub_eq_zero] using isLittleO_const_const_iff.1 B
