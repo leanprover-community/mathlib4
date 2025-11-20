@@ -177,14 +177,22 @@ instance topologicalRing : IsTopologicalRing (Completion α) where
 def mapRingHom (hf : Continuous f) : Completion α →+* Completion β :=
   extensionHom (coeRingHom.comp f) (continuous_coeRingHom.comp hf)
 
-theorem mapRingHom_apply {x : UniformSpace.Completion α} :
-    UniformSpace.Completion.mapRingHom f hf x = UniformSpace.Completion.map f x := rfl
+theorem mapRingHom_apply {x : Completion α} : mapRingHom f hf x = .map f x := rfl
+theorem coe_mapRingHom : mapRingHom f hf = Completion.map f := rfl
 
 variable {f}
 
-theorem mapRingHom_coe (hf : UniformContinuous f) (a : α) :
-    mapRingHom f hf.continuous a = f a := by
+theorem mapRingHom_coe (hf : UniformContinuous f) (a : α) : mapRingHom f hf.continuous a = f a := by
   rw [mapRingHom_apply, map_coe hf]
+
+def mapRingEquiv (f : α ≃+* β) (hf : UniformContinuous f) (hf' : UniformContinuous f.symm) :
+    Completion α ≃+* Completion β where
+  __ := mapRingHom f hf.continuous
+  invFun := mapRingHom f.symm hf'.continuous
+  left_inv := Function.leftInverse_iff_comp.2 <| by
+    simp [coe_mapRingHom, map_comp hf' hf, show f.symm ∘ f = id by ext; simp]
+  right_inv := Function.rightInverse_iff_comp.2 <| by
+    simp [coe_mapRingHom, map_comp hf hf', show f ∘ f.symm = id by ext; simp]
 
 section Algebra
 
