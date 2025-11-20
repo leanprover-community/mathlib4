@@ -13,7 +13,7 @@ If `adj : F ⊣ G` and `G` is `κ`-accessible for a regular cardinal `κ`,
 then `F` preserves `κ`-presentable objects.
 
 Moreover, if `G : D ⥤ C` is fully faithful, then `D` is locally `κ`-presentable
-(resp `κ`-accessible) if `D` is.
+(resp `κ`-accessible) if `C` is.
 
 -/
 
