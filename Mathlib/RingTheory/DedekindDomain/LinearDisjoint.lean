@@ -3,8 +3,10 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.FieldTheory.LinearDisjoint
-import Mathlib.RingTheory.DedekindDomain.Different
+module
+
+public import Mathlib.FieldTheory.LinearDisjoint
+public import Mathlib.RingTheory.DedekindDomain.Different
 
 /-!
 # Disjoint extensions with coprime different ideals
@@ -25,6 +27,8 @@ and `Frac R` denotes the fraction field of a domain `R`.
   (as an `A`-algebra) by `R₁` and `R₂`.
 
 -/
+
+@[expose] public section
 
 open FractionalIdeal nonZeroDivisors IntermediateField Algebra Module Submodule
 

@@ -3,7 +3,9 @@ Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Data.PFunctor.Univariate.Basic
+module
+
+public import Mathlib.Data.PFunctor.Univariate.Basic
 
 /-!
 # M-types
@@ -11,6 +13,8 @@ import Mathlib.Data.PFunctor.Univariate.Basic
 M types are potentially infinite tree-like structures. They are defined
 as the greatest fixpoint of a polynomial functor.
 -/
+
+@[expose] public section
 
 
 universe u uA uB v w
