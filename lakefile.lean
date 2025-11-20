@@ -80,6 +80,7 @@ lean_lib LongestPole
 
 lean_lib MathlibTest where
   globs := #[.submodules `MathlibTest]
+  leanOptions := #[⟨`experimental.module, true⟩]
 
 lean_lib Archive where
   leanOptions := mathlibLeanOptions
