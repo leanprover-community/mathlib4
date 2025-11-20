@@ -80,6 +80,7 @@ lean_lib LongestPole
 
 lean_lib MathlibTest where
   globs := #[.submodules `MathlibTest]
+  leanOptions := #[⟨`experimental.module, true⟩]
 
 lean_lib Archive where
   leanOptions := mathlibLeanOptions
@@ -127,6 +128,11 @@ lean_exe «lint-style» where
   supportInterpreter := true
   -- Executables which import `Lake` must set `-lLake`.
   weakLinkArgs := #["-lLake"]
+
+/-- `lake exe check-title-labels` checks if a PR title obeys some basic formatting requirements.
+Currently, these checks are quite lenient, but could be made stricter in the future. -/
+lean_exe «check_title_labels» where
+  srcDir := "scripts"
 
 /--
 `lake exe pole` queries the Mathlib speedcenter for build times for the current commit,
