@@ -3,16 +3,20 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.EssentiallySmall
-import Mathlib.CategoryTheory.FinCategory.Basic
-import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Data.Countable.Small
+module
+
+public import Mathlib.CategoryTheory.EssentiallySmall
+public import Mathlib.CategoryTheory.FinCategory.Basic
+public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Data.Countable.Small
 /-!
 # Countable categories
 
 A category is countable in this sense if it has countably many objects and countably many morphisms.
 
 -/
+
+@[expose] public section
 
 universe w v u
 

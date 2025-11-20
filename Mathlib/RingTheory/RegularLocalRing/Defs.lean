@@ -3,8 +3,11 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.RingTheory.Ideal.Cotangent
-import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
+module
+
+public import Mathlib.RingTheory.Ideal.Cotangent
+public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
+
 /-!
 # Define Regular Local Ring
 
@@ -23,6 +26,8 @@ the dimension of the cotangent space over the residue field being equal to `ring
   `Module.finrank (ResidueField R) (CotangentSpace R) = ringKrullDim R`
 
 -/
+
+@[expose] public section
 
 open IsLocalRing
 

@@ -3,7 +3,9 @@ Copyright (c) 2022 Vincent Beffara. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Beffara, Stefan Kebekus
 -/
-import Mathlib.Analysis.Analytic.IsolatedZeros
+module
+
+public import Mathlib.Analysis.Analytic.IsolatedZeros
 
 /-!
 # Vanishing Order of Analytic Functions
@@ -15,6 +17,8 @@ of `ℕ∞`.
 
 Uniformize API between analytic and meromorphic functions
 -/
+
+@[expose] public section
 
 open Filter  Set
 open scoped Topology

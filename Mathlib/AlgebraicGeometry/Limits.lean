@@ -3,9 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
-import Mathlib.AlgebraicGeometry.Pullbacks
-import Mathlib.AlgebraicGeometry.AffineScheme
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
+public import Mathlib.AlgebraicGeometry.Pullbacks
+public import Mathlib.AlgebraicGeometry.AffineScheme
 
 /-!
 # (Co)Limits of Schemes
@@ -24,6 +26,8 @@ We construct various limits and colimits in the category of schemes.
 * Spec preserves finite coproducts.
 
 -/
+
+@[expose] public section
 
 suppress_compilation
 
