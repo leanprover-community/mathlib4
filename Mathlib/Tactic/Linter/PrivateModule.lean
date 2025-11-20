@@ -21,8 +21,8 @@ This linter lints against nonempty modules that have only private declarations, 
 ## Implementation notes
 
 `env.constants.map₂` contains all locally-defined constants, and accessing this waits until all
-declarations are added. By linting the `eoi` token, we can capture all constants defined in the
-file.
+declarations are added. By linting (only) the `eoi` token, we can capture all constants defined in
+the file.
 
 Note that private declarations are exactly those which satisfy `isPrivateName`, whether private due
 to an explicit `private` or due to not being made `public`.
@@ -42,6 +42,13 @@ public register_option linter.privateModule : Bool := {
     private declarations."
 }
 
+/--
+The `privateModule` linter lints against nonempty modules that have only private declarations,
+and suggests adding `@[expose] public section` to the top.
+
+This linter only acts on the end-of-input `Parser.Command.eoi` token, and ignores all other syntax.
+It logs its message at the top of the file.
+-/
 def privateModule : Linter where
   run stx := do
     if stx.isOfKind ``Parser.Command.eoi then
