@@ -3,9 +3,11 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.Measure.HasOuterApproxClosedProd
-import Mathlib.Probability.Independence.Process
-import Mathlib.Probability.Notation
+module
+
+public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosedProd
+public import Mathlib.Probability.Independence.Process
+public import Mathlib.Probability.Notation
 
 /-!
 # Characterizing independence via bounded continuous functions
@@ -43,22 +45,24 @@ function `f : (Π s : I, E s) → ℝ`, we have `∫ ω in A, f (X · ω) ∂P =
 This again is formulated with different versions. We also provide versions in terms of
 `IndepSets` instead of `Indep`.
 
-# Main statement
+## Main statement
 
 * `indep_comap_process_of_bcf`: A `σ`-algebra `m` is independent from a stochastic process `X`
   if for any `A` such that `MeasurableSet[m] A`, any `I : Finset S`, and any bounded continuous
   function `f : (Π s : I, E s) → ℝ`, we have
   `∫ ω in A, f (X · ω) ∂P = P.real A * ∫ ω, f (X · ω) ∂P`.
 
-# Notations
+## Notations
 
 to avoid writing `boundedContinuousFunction` in the names, which is quite lengthy, we abbreviate it
 to `bcf`.
 
-# Tags
+## Tags
 
 independence, bounded continuous functions
 -/
+
+@[expose] public section
 
 open MeasureTheory Measure ProbabilityTheory ENNReal
 open scoped BoundedContinuousFunction

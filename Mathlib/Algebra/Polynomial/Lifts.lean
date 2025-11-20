@@ -3,9 +3,11 @@ Copyright (c) 2020 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Eval.Subring
-import Mathlib.Algebra.Polynomial.Monic
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Eval.Subring
+public import Mathlib.Algebra.Polynomial.Monic
 
 /-!
 # Polynomials that lift
@@ -38,6 +40,8 @@ Since we do not assume `R` to be commutative, we cannot say in general that the 
 that lift is a subalgebra. (By `lift_iff` this is true if `R` is commutative.)
 
 -/
+
+@[expose] public section
 
 
 open Polynomial
