@@ -14,6 +14,8 @@ public import Mathlib.LinearAlgebra.FreeModule.Basic
 
 -/
 
+@[expose] public section
+
 open Module
 
 variable {K V : Type*} [Semifield K] [AddCommMonoid V] [Module K V] [Free K V]
