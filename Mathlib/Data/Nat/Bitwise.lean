@@ -5,9 +5,9 @@ Authors: Markus Himmel, Alex Keizer
 -/
 module
 
-public import Mathlib.Algebra.Group.Nat.Even
 public import Mathlib.Algebra.NeZero
 public import Mathlib.Algebra.Ring.Nat
+public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Data.Bool.Basic
 public import Mathlib.Data.List.GetD
 public import Mathlib.Data.Nat.Bits
@@ -358,10 +358,10 @@ theorem xor_one_of_even {n : ℕ} (h : Even n) : n ^^^ 1 = n + 1 := by
     simp [HXor.hXor, instXorOp, xor, bitwise, even_iff.mp h, ← mul_two, div_two_mul_two_of_even h]
 
 @[simp]
-theorem xor_one_of_not_even {n : ℕ} (h : ¬Even n) : n ^^^ 1 = n - 1 := by
+theorem xor_one_of_odd {n : ℕ} (h : Odd n) : n ^^^ 1 = n - 1 := by
   cases n with
   | zero =>
-    exact (h <| even_iff.mpr rfl).elim
+    exact not_odd_zero h |>.elim
   | succ n =>
     simp only [HXor.hXor, instXorOp, xor, bitwise, reduceDiv, bitwise_zero_right]
     grind
