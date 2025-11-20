@@ -3,10 +3,12 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Emily Riehl, Joël Riou
 -/
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.Functor.TwoSquare
-import Mathlib.CategoryTheory.HomCongr
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Functor.TwoSquare
+public import Mathlib.CategoryTheory.HomCongr
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Mate of natural transformations
@@ -39,6 +41,8 @@ https://ncatlab.org/nlab/show/Frobenius+reciprocity#InCategoryTheory.
 This also relates to Grothendieck's yoga of six operations, though this is not spelled out in
 mathlib: https://ncatlab.org/nlab/show/six+operations.
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ v₅ v₆ v₇ v₈ v₉ u₁ u₂ u₃ u₄ u₅ u₆ u₇ u₈ u₉
 namespace CategoryTheory
