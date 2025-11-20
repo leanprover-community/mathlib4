@@ -3,15 +3,16 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.Algebra.Category.Grp.Zero
-import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
-import Mathlib.Algebra.Category.ModuleCat.Projective
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.Algebra.Module.LocalizedModule.Exact
-import Mathlib.CategoryTheory.Abelian.Projective.Dimension
-import Mathlib.LinearAlgebra.Dimension.Finite
-import Mathlib.RingTheory.LocalProperties.Projective
+module
+
+public import Mathlib.Algebra.Category.Grp.Zero
+public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
+public import Mathlib.Algebra.Category.ModuleCat.Projective
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+
 /-!
 # The Global Dimension of a Ring
 
@@ -28,7 +29,7 @@ and their basic properties.
 
 -/
 
---set_option pp.universes true
+@[expose] public section
 
 universe v u
 
