@@ -39,7 +39,7 @@ lemma hasColimitsOfShape [G.Full] [G.Faithful]
     have := adj.isLeftAdjoint
     exact ⟨_, (IsColimit.precomposeInvEquiv
       (associator _ _ _ ≪≫ isoWhiskerLeft _ (asIso adj.counit) ≪≫ rightUnitor _) _).2
-      (isColimitOfPreserves F (colimit.isColimit (K ⋙ G)))⟩
+        (isColimitOfPreserves F (colimit.isColimit (K ⋙ G)))⟩
 
 lemma hasLimitsOfShape [F.Full] [F.Faithful]
     (J : Type*) [Category J] [HasLimitsOfShape J D] :
@@ -47,7 +47,7 @@ lemma hasLimitsOfShape [F.Full] [F.Faithful]
   has_limit K := by
     have := adj.isRightAdjoint
     exact ⟨_, (IsLimit.postcomposeHomEquiv
-      ((associator _ _ _ ≪≫ isoWhiskerLeft _ (asIso adj.unit).symm ≪≫ rightUnitor K)) _).2
+      (associator _ _ _ ≪≫ isoWhiskerLeft _ (asIso adj.unit).symm ≪≫ rightUnitor K) _).2
         (isLimitOfPreserves G (limit.isLimit (K ⋙ F)))⟩
 
 end CategoryTheory.Adjunction
