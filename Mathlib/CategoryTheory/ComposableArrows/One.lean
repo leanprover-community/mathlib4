@@ -41,7 +41,7 @@ noncomputable def mapFunctorArrows (i j i' j' n : ℕ)
     (_ : j' ≤ n := by cutsat) :
     functorArrows C i j n ⟶ functorArrows C i' j' n where
   app S := homMk₁ (S.map' i i') (S.map' j j')
-    (by dsimp; simp only [← Functor.map_comp, homOfLE_comp])
+    (by simp [← Functor.map_comp])
 
 end ComposableArrows
 
