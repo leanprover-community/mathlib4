@@ -3,14 +3,18 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
-import Mathlib.Algebra.Category.ModuleCat.Ulift
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.Bijection
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
+public import Mathlib.Algebra.Category.ModuleCat.Ulift
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Bijection
 /-!
 
 # Ext Commute with Ulift Functor
 
 -/
+
+@[expose] public section
 
 universe w w' u u' v v'
 
