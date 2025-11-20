@@ -44,9 +44,7 @@ theorem mem_hausdorffEntourage_of_hausdorffEdist_lt {s t : Set α} {δ : ℝ≥0
   have {s t : Set α} (h : ⨆ x ∈ s, infEdist x t < δ) :
       s ⊆ SetRel.preimage {p | edist p.1 p.2 < δ} t := by
     intro x hx
-    have := (le_iSup₂ x hx).trans_lt h
-    simp_rw [infEdist, iInf_lt_iff, exists_prop] at this
-    exact this
+    simpa only [infEdist, iInf_lt_iff, exists_prop] using (le_iSup₂ x hx).trans_lt h
   exact ⟨this h.1, this h.2⟩
 
 theorem hausdorffEdist_le_of_mem_hausdorffEntourage {s t : Set α} {δ : ℝ≥0∞}
@@ -59,7 +57,7 @@ theorem hausdorffEdist_le_of_mem_hausdorffEntourage {s t : Set α} {δ : ℝ≥0
     rw [iSup₂_le_iff]
     intro x hx
     obtain ⟨y, hy, hxy⟩ := h hx
-    refine iInf₂_le_of_le y hy hxy
+    exact iInf₂_le_of_le y hy hxy
   exact ⟨this h.1, this h.2⟩
 
 /-- The Hausdorff pseudo emetric on the powerset of a pseudo emetric space.
