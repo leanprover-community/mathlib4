@@ -33,13 +33,15 @@ universe u
 
 open Polynomial
 
+open scoped Bivariate
+
 noncomputable section
 
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
 
 variable (R) in
 /-- A `StandardEtalePair R` is a pair `f g : R[X]` such that `f` is monic,
-and `f'` is invertible in `R[X][1/g]`. -/
+and `f'` is invertible in `R[X][1/g]/f`. -/
 structure StandardEtalePair : Type _ where
   /-- The monic polynomial to be quotiented out in a standard etale algebra. -/
   f : R[X]
@@ -56,7 +58,7 @@ Also see
 `equivAwayAdjoinRoot       : P.Ring ≃ (R[X]/f)[1/g]`
 `equivAwayQuotient         : P.Ring ≃ R[X][1/g]/f`
 `equivMvPolynomialQuotient : P.Ring ≃ R[X, Y]/⟨f, Yg-1⟩` -/
-protected def StandardEtalePair.Ring := R[X][X] ⧸ Ideal.span {C P.f, .X * C P.g - 1}
+protected def StandardEtalePair.Ring := R[X][Y] ⧸ Ideal.span {C P.f, Y * C P.g - 1}
   deriving CommRing, Algebra R
 
 namespace StandardEtalePair
@@ -181,7 +183,7 @@ instance : Algebra.FormallyEtale R P.Ring := by
 /-- An `AlgEquiv` between `P.Ring` and `R[X][Y]/⟨f, Yg-1⟩`,
 to not abuse the defeq between the two. -/
 def equivPolynomialQuotient :
-    P.Ring ≃ₐ[R] R[X][X] ⧸ Ideal.span {C P.f, .X * C P.g - 1} := .refl ..
+    P.Ring ≃ₐ[R] R[X][Y] ⧸ Ideal.span {C P.f, Y * C P.g - 1} := .refl ..
 
 /-- `R[X][Y]/⟨f, Yg-1⟩ ≃ (R[X]/f)[1/g]` -/
 def equivAwayAdjoinRoot :
