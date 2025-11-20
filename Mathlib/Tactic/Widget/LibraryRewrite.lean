@@ -145,6 +145,7 @@ def addRewriteEntry (name : Name) (cinfo : ConstantInfo) :
 /-- Try adding the local hypothesis to the `RefinedDiscrTree`. -/
 def addLocalRewriteEntry (decl : LocalDecl) :
     MetaM (List ((FVarId × Bool) × List (Key × LazyEntry))) := do
+  -- The transparency is set to `reducible`. Stronger reduction may give unexpected results.
   let (_, _, eqn) ← forallMetaTelescopeReducing decl.type
   let some (lhs, rhs) := eqOrIff? (← whnf eqn) | return []
   let result := ((decl.fvarId, false), ← initializeLazyEntryWithEta lhs)
@@ -209,7 +210,8 @@ def checkRewrite (thm e : Expr) (symm : Bool) : MetaM (Option Rewrite) := do
   withTraceNodeBefore `rw?? (return m!
     "rewriting {e} by {if symm then "← " else ""}{thm}") do
   let (mvars, binderInfos, eqn) ← forallMetaTelescopeReducing (← inferType thm)
-  let some (lhs, rhs) := eqOrIff? (← whnf eqn) | return none
+  let some (lhs, rhs) := eqOrIff? (← whnf eqn) |
+    throwError "Expected equation, not {indentExpr eqn}"
   let (lhs, rhs) := if symm then (rhs, lhs) else (lhs, rhs)
   let unifies ← withTraceNodeBefore `rw?? (return m! "unifying {e} =?= {lhs}")
     (withReducible (isDefEq lhs e))
