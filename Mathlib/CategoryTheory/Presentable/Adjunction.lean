@@ -13,7 +13,7 @@ If `adj : F ⊣ G` and `G` is `κ`-accessible for a regular cardinal `κ`,
 then `F` preserves `κ`-presentable objects.
 
 Moreover, if `G : D ⥤ C` is fully faithful, then `D` is locally `κ`-presentable
-(resp `κ`-accessible) if `D` is.
+(resp `κ`-accessible) if `C` is.
 
 In particular, if `e : C ≌ D` is an equivalence of categories and
 `C` is locally presentable (resp. accessible), then so is `D`.
@@ -77,7 +77,7 @@ lemma isCardinalLocallyPresentable [IsCardinalLocallyPresentable C κ]
   toHasColimitsOfSize := ⟨fun _ _ ↦ adj.hasColimitsOfShape _⟩
   toHasCardinalFilteredGenerator := adj.hasCardinalFilteredGenerator κ
 
-lemma isCardinalAccessible [IsCardinalAccessibleCategory C κ]
+lemma isCardinalAccessibleCategory [IsCardinalAccessibleCategory C κ]
     [G.IsCardinalAccessible κ] [G.Full] [G.Faithful] :
     IsCardinalAccessibleCategory D κ where
   toHasCardinalFilteredColimits := ⟨fun _ _ _↦ adj.hasColimitsOfShape _⟩
