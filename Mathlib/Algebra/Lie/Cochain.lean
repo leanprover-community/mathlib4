@@ -3,7 +3,9 @@ Copyright (c) 2025 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Lie.Abelian
+module
+
+public import Mathlib.Algebra.Lie.Abelian
 
 /-!
 # Lie algebra cohomology in low degree
@@ -27,6 +29,8 @@ general theory of Lie algebra cohomology.
 * [H. Cartan, S. Eilenberg, *Homological Algebra*](cartan-eilenberg-1956)
 
 -/
+
+@[expose] public section
 
 namespace LieModule.Cohomology
 

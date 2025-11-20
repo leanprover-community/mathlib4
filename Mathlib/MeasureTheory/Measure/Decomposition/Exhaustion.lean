@@ -3,7 +3,9 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
+module
+
+public import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 
 /-!
 # Method of exhaustion
@@ -43,6 +45,8 @@ If `μ, ν` are two measures with `ν` s-finite, then there exists a set `s` suc
 * [P. R. Halmos, *Measure theory*, 17.3 and 30.11][halmos1950measure]
 
 -/
+
+@[expose] public section
 
 assert_not_exists MeasureTheory.Measure.rnDeriv
 assert_not_exists MeasureTheory.VectorMeasure

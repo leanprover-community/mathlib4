@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.FinallySmall
+module
+
+public import Mathlib.CategoryTheory.Limits.FinallySmall
 
 /-!
 # Finally small filtered categories
@@ -13,6 +15,8 @@ that is locally small, there exists a final functor `D ⥤ C` from
 a small filtered category. The dual result is also obtained.
 
 -/
+
+@[expose] public section
 
 universe w v u
 

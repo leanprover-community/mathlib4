@@ -3,9 +3,11 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Yury Kudryashov
 -/
-import Mathlib.Data.Finset.Grade
-import Mathlib.Data.Finset.Powerset
-import Mathlib.Order.Interval.Finset.Basic
+module
+
+public import Mathlib.Data.Finset.Grade
+public import Mathlib.Data.Finset.Powerset
+public import Mathlib.Order.Interval.Finset.Basic
 
 /-!
 # Intervals of finsets as finsets
@@ -22,6 +24,8 @@ and
 In addition, this file gives characterizations of monotone and strictly monotone functions
 out of `Finset α` in terms of `Finset.insert`
 -/
+
+@[expose] public section
 
 
 variable {α β : Type*}
@@ -43,7 +47,7 @@ instance instLocallyFiniteOrder [DecidableEq α] : LocallyFiniteOrder (Finset α
     if s ⊆ t then
       (t \ s).powerset.attach.map ⟨fun u ↦ u.1.disjUnion s <|
         disjoint_sdiff_self_left.mono_left <| mem_powerset.mp u.2, fun u₁ u₂ h ↦ by
-          simpa only [disjUnion_inj_left, Subtype.eq_iff] using h⟩
+          simpa only [disjUnion_inj_left, Subtype.ext_iff] using h⟩
     else ∅) fun s t u ↦ by
       by_cases hst : s ⊆ t
       · suffices (∃ a ⊆ t, Disjoint a s ∧ a ∪ s = u) ↔ s ⊆ u ∧ u ⊆ t by

@@ -3,10 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
-import Mathlib.CategoryTheory.Filtered.FinallySmall
-import Mathlib.CategoryTheory.Limits.Preserves.Filtered
-import Mathlib.CategoryTheory.Sites.LocallyBijective
+module
+
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
+public import Mathlib.CategoryTheory.Filtered.FinallySmall
+public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
+public import Mathlib.CategoryTheory.Sites.LocallyBijective
 
 /-!
 # Points of a site
@@ -37,6 +39,8 @@ We show that both `Φ.presheafFiber` and `Φ.sheafFiber`
 commute to finite limits and to arbitrary colimits.
 
 -/
+
+@[expose] public section
 
 universe w' w v v' u u'
 
