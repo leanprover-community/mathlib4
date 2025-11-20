@@ -5,7 +5,6 @@ Authors: Damiano Testa
 -/
 module
 
-public meta import Mathlib.Lean.Linter
 public meta import Mathlib.Tactic.Linter.Header
 
 /-!
@@ -331,23 +330,23 @@ def commandStartLinter : Linter where
 
       let scan := parallelScan orig st
 
-    let docStringEnd := stx.find? (·.isOfKind ``Parser.Command.docComment) |>.getD default
-    let docStringEnd := docStringEnd.getTailPos? |>.getD default
-    let forbidden := getUnlintedRanges unlintedNodes ∅ stx
-    for s in scan do
-      let center := origSubstring.stopPos.unoffsetBy s.srcEndPos
-      let rg : Lean.Syntax.Range :=
-        ⟨center, center |>.offsetBy s.srcEndPos |>.unoffsetBy s.srcStartPos |>.increaseBy 1⟩
-      if s.msg.startsWith "Oh no" then
-        Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg)
-          m!"This should not have happened: please report this issue!"
-        Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg)
-          m!"Formatted string:\n{fmt}\nOriginal string:\n{origSubstring}"
-        continue
-      unless isOutside forbidden rg do
-        continue
-      unless rg.stop ≤ upTo do return
-      unless docStringEnd ≤ rg.start do return
+      let docStringEnd := stx.find? (·.isOfKind ``Parser.Command.docComment) |>.getD default
+      let docStringEnd := docStringEnd.getTailPos? |>.getD default
+      let forbidden := getUnlintedRanges unlintedNodes ∅ stx
+      for s in scan do
+        let center := origSubstring.stopPos.unoffsetBy s.srcEndPos
+        let rg : Lean.Syntax.Range :=
+          ⟨center, center |>.offsetBy s.srcEndPos |>.unoffsetBy s.srcStartPos |>.increaseBy 1⟩
+        if s.msg.startsWith "Oh no" then
+          Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg)
+            m!"This should not have happened: please report this issue!"
+          Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg)
+            m!"Formatted string:\n{fmt}\nOriginal string:\n{origSubstring}"
+          continue
+        unless isOutside forbidden rg do
+          continue
+        unless rg.stop ≤ upTo do return
+        unless docStringEnd ≤ rg.start do return
 
         let ctx := 4 -- the number of characters after the mismatch that linter prints
         let srcWindow := mkWindow orig s.srcNat (ctx + s.length)
