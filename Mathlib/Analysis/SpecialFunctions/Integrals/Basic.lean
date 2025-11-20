@@ -210,7 +210,8 @@ theorem integral_const_on_unit_interval : ∫ _ in a..a + 1, b = b := by simp
 @[simp]
 theorem integral_inv (h : (0 : ℝ) ∉ [[a, b]]) : ∫ x in a..b, x⁻¹ = log (b / a) := by
   have h' := fun x (hx : x ∈ [[a, b]]) => ne_of_mem_of_not_mem hx h
-  rw [integral_deriv_eq_sub' _ deriv_log' (fun x hx => differentiableAt_log (h' x hx))
+  rw [integral_deriv_eq_sub' _ deriv_log'
+      (fun x hx => differentiableAt_log (h' x hx) |>.differentiableWithinAt)
       (continuousOn_inv₀.mono <| subset_compl_singleton_iff.mpr h),
     log_div (h' b right_mem_uIcc) (h' a left_mem_uIcc)]
 
@@ -235,7 +236,7 @@ theorem integral_one_div_of_neg (ha : a < 0) (hb : b < 0) :
 theorem integral_exp : ∫ x in a..b, exp x = exp b - exp a := by
   rw [integral_deriv_eq_sub']
   · simp
-  · exact fun _ _ => differentiableAt_exp
+  · exact fun _ _ => differentiableAt_exp.differentiableWithinAt
   · exact continuousOn_exp
 
 theorem integral_exp_mul_complex {c : ℂ} (hc : c ≠ 0) :
@@ -246,7 +247,8 @@ theorem integral_exp_mul_complex {c : ℂ} (hc : c ≠ 0) :
     rw [← mul_div_cancel_right₀ (Complex.exp (c * x)) hc]
     apply ((Complex.hasDerivAt_exp _).comp x _).div_const c
     simpa only [mul_one] using ((hasDerivAt_id (x : ℂ)).const_mul _).comp_ofReal
-  rw [integral_deriv_eq_sub' _ (funext fun x => (D x).deriv) fun x _ => (D x).differentiableAt]
+  rw [integral_deriv_eq_sub' _ (funext fun x => (D x).deriv)
+    fun x _ => (D x).differentiableAt.differentiableWithinAt]
   · ring
   · fun_prop
 
@@ -310,14 +312,14 @@ theorem integral_sin : ∫ x in a..b, sin x = cos a - cos b := by
   rw [integral_deriv_eq_sub' fun x => -cos x]
   · ring
   · simp
-  · simp only [differentiableAt_fun_neg_iff, differentiableAt_cos, implies_true]
+  · exact fun _ _ ↦ differentiableAt_cos.neg.differentiableWithinAt
   · exact continuousOn_sin
 
 @[simp]
 theorem integral_cos : ∫ x in a..b, cos x = sin b - sin a := by
   rw [integral_deriv_eq_sub']
   · simp
-  · simp only [differentiableAt_sin, implies_true]
+  · exact fun _ _ ↦ differentiableAt_sin.differentiableWithinAt
   · exact continuousOn_cos
 
 theorem integral_cos_mul_complex {z : ℂ} (hz : z ≠ 0) (a b : ℝ) :
@@ -344,7 +346,8 @@ theorem integral_cos_sq_sub_sin_sq :
 
 theorem integral_one_div_one_add_sq :
     (∫ x : ℝ in a..b, ↑1 / (↑1 + x ^ 2)) = arctan b - arctan a := by
-  refine integral_deriv_eq_sub' _ Real.deriv_arctan (fun _ _ => differentiableAt_arctan _)
+  refine integral_deriv_eq_sub' _ Real.deriv_arctan
+    (fun _ _ => (differentiableAt_arctan _).differentiableWithinAt)
     (continuous_const.div ?_ fun x => ?_).continuousOn
   · fun_prop
   · nlinarith
@@ -532,7 +535,7 @@ theorem integral_sin_pow_mul_cos_pow_odd (m n : ℕ) :
       congr! 5
       rw [← sq, ← sq, cos_sq']
     _ = ∫ u in sin a..sin b, u ^ m * (1 - u ^ 2) ^ n :=
-      integral_comp_mul_deriv (fun x _ => hasDerivAt_sin x) continuousOn_cos hc
+      integral_comp_mul_deriv (fun x _ => (hasDerivAt_sin x).hasDerivWithinAt) continuousOn_cos hc
 
 /-- The integral of `sin x * cos x`, given in terms of sin².
   See `integral_sin_mul_cos₂` below for the integral given in terms of cos². -/
@@ -566,7 +569,8 @@ theorem integral_sin_pow_odd_mul_cos_pow (m n : ℕ) :
       rw [← sq, ← sq, sin_sq]
     _ = ∫ x in b..a, cos x ^ n * (↑1 - cos x ^ 2) ^ m * -sin x := by congr; ext; ring
     _ = ∫ u in cos b..cos a, u ^ n * (↑1 - u ^ 2) ^ m :=
-      integral_comp_mul_deriv (fun x _ => hasDerivAt_cos x) continuousOn_sin.neg hc
+      integral_comp_mul_deriv (fun x _ => (hasDerivAt_cos x).hasDerivWithinAt)
+        continuousOn_sin.neg hc
 
 /-- The integral of `sin x * cos x`, given in terms of cos².
 See `integral_sin_mul_cos₁` above for the integral given in terms of sin². -/
@@ -610,7 +614,7 @@ theorem integral_sqrt_one_sub_sq : ∫ x in (-1 : ℝ)..1, √(1 - x ^ 2 : ℝ) 
   calc
     _ = ∫ x in sin (-(π / 2)).. sin (π / 2), √(1 - x ^ 2 : ℝ) := by rw [sin_neg, sin_pi_div_two]
     _ = ∫ x in (-(π / 2))..(π / 2), √(1 - sin x ^ 2 : ℝ) * cos x :=
-          (integral_comp_mul_deriv (fun x _ => hasDerivAt_sin x) continuousOn_cos
+          (integral_comp_mul_deriv (fun x _ => (hasDerivAt_sin x).hasDerivWithinAt) continuousOn_cos
             (by fun_prop)).symm
     _ = ∫ x in (-(π / 2))..(π / 2), cos x ^ 2 := by
           refine integral_congr_ae (MeasureTheory.ae_of_all _ fun _ h => ?_)

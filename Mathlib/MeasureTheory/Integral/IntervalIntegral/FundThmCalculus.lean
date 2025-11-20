@@ -90,8 +90,8 @@ We use FTC-1 to prove several versions of FTC-2 for the Lebesgue measure, using 
 scheme as for the versions of FTC-1. They include:
 * `intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le` - most general version, for functions
   with a right derivative
-* `intervalIntegral.integral_eq_sub_of_hasDerivAt` - version for functions with a derivative on
-  an open set
+* `intervalIntegral.integral_eq_sub_of_hasDerivAt` - version for functions with a derivative
+  on an open set
 * `intervalIntegral.integral_deriv_eq_sub'` - version that is easiest to use when computing the
   integral of a specific function
 
@@ -1144,7 +1144,7 @@ theorem integral_eq_sub_of_hasDerivAt_of_le (hab : a ≤ b) (hcont : ContinuousO
   integral_eq_sub_of_hasDeriv_right_of_le hab hcont (fun x hx => (hderiv x hx).hasDerivWithinAt)
     hint
 
-/-- Fundamental theorem of calculus-2: If `f : ℝ → E` has a derivative at `f' x` for all `x` in
+/-- Fundamental theorem of calculus-2: If `f : ℝ → E` has a derivative at `f'` within
   `[a, b]` and `f'` is integrable on `[a, b]`, then `∫ y in a..b, f' y` equals `f b - f a`. -/
 theorem integral_eq_sub_of_hasDerivWithinAt
     (hderiv : ∀ x ∈ uIcc a b, HasDerivWithinAt f (f' x) (uIcc a b) x)
@@ -1152,6 +1152,12 @@ theorem integral_eq_sub_of_hasDerivWithinAt
   integral_eq_sub_of_hasDeriv_right (fun x hx => HasDerivWithinAt.continuousWithinAt (hderiv x hx))
     (fun _x hx => (hderiv _ (mem_Icc_of_Ioo hx)).hasDerivAt
       (Icc_mem_nhds (by simpa using hx.1) (by simpa using hx.2)) |>.hasDerivWithinAt) hint
+
+/-- Fundamental theorem of calculus-2: If `f : ℝ → E` has a derivative at `f' x` for all `x` in
+  `[a, b]` and `f'` is integrable on `[a, b]`, then `∫ y in a..b, f' y` equals `f b - f a`. -/
+theorem integral_eq_sub_of_hasDerivAt (hderiv : ∀ x ∈ uIcc a b, HasDerivAt f (f' x) x)
+    (hint : IntervalIntegrable f' volume a b) : ∫ y in a..b, f' y = f b - f a :=
+  integral_eq_sub_of_hasDerivWithinAt (fun x hx => (hderiv x hx).hasDerivWithinAt) hint
 
 theorem integral_eq_sub_of_hasDerivAt_of_tendsto (hab : a < b) {fa fb}
     (hderiv : ∀ x ∈ Ioo a b, HasDerivAt f (f' x) x) (hint : IntervalIntegrable f' volume a b)
@@ -1181,22 +1187,16 @@ theorem integral_deriv_eq_sub (hderiv : ∀ x ∈ [[a, b]], DifferentiableWithin
   have ae_eq : deriv f =ᵐ[volume.restrict (uIoc a b)] derivWithin f (uIcc a b) := by
     rw [ae_restrict_uIoc_eq, ← restrict_Ioo_eq_restrict_Ioc, ← restrict_Ioo_eq_restrict_Ioc,
       ← ae_restrict_union_eq, ← Set.uIoo_eq_union]
-    apply ae_restrict_of_forall_mem
-    · measurability
-    · intro x hx
-      refine ((hderiv x ?_).hasDerivWithinAt.hasDerivAt ?_).deriv
-      · rcases hx with hx | hx
-        · exact uIoo_subset_uIcc _ _ (Ioo_subset_uIoo hx)
-        · rw [uIcc_comm]
-          exact uIoo_subset_uIcc _ _ (Ioo_subset_uIoo hx)
-      simp at hx
+    apply ae_restrict_of_forall_mem measurableSet_uIoo
+    refine fun x hx => ((hderiv x (uIoo_subset_uIcc_self hx)).hasDerivWithinAt.hasDerivAt ?_).deriv
+    exact Icc_mem_nhds hx.1 hx.2
   rw [intervalIntegral.integral_congr_ae_restrict ae_eq]
   exact integral_eq_sub_of_hasDerivWithinAt (fun x hx => (hderiv x hx).hasDerivWithinAt)
     (hint.congr_ae ae_eq)
 
 theorem integral_deriv_eq_sub' (f) (hderiv : deriv f = f')
-    (hdiff : ∀ x ∈ uIcc a b, DifferentiableAt ℝ f x) (hcont : ContinuousOn f' (uIcc a b)) :
-    ∫ y in a..b, f' y = f b - f a := by
+    (hdiff : ∀ x ∈ uIcc a b, DifferentiableWithinAt ℝ f (uIcc a b) x)
+    (hcont : ContinuousOn f' (uIcc a b)) : ∫ y in a..b, f' y = f b - f a := by
   rw [← hderiv, integral_deriv_eq_sub hdiff]
   rw [hderiv]
   exact hcont.intervalIntegrable
@@ -1214,7 +1214,7 @@ lemma integral_unitInterval_deriv_eq_sub [RCLike 𝕜] [NormedSpace 𝕜 E] [IsS
   have hderiv' (t) (ht : t ∈ Set.uIcc (0 : ℝ) 1) : HasDerivAt (f ∘ γ) (z₁ • (f' ∘ γ) t) t := by
     refine (hderiv t <| (Set.uIcc_of_le (α := ℝ) zero_le_one).symm ▸ ht).scomp t <| .const_add _ ?_
     simp [hasDerivAt_iff_isLittleO, sub_smul]
-  convert (integral_eq_sub_of_hasDerivAt hderiv' hint) using 1
+  convert integral_eq_sub_of_hasDerivAt hderiv' hint using 1
   · simp_rw [← integral_smul, Function.comp_apply, γ]
   · simp only [γ, Function.comp_apply, one_smul, zero_smul, add_zero]
 
