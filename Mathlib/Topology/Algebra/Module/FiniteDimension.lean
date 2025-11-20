@@ -3,15 +3,16 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Anatole Dedecker
 -/
-import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
-import Mathlib.RingTheory.LocalRing.Basic
-import Mathlib.Topology.Algebra.Module.Determinant
-import Mathlib.Topology.Algebra.Module.ModuleTopology
-import Mathlib.Topology.Algebra.Module.Simple
-import Mathlib.Topology.Algebra.SeparationQuotient.FiniteDimensional
+module
+
+public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.RingTheory.LocalRing.Basic
+public import Mathlib.Topology.Algebra.Module.Determinant
+public import Mathlib.Topology.Algebra.Module.ModuleTopology
+public import Mathlib.Topology.Algebra.Module.Simple
+public import Mathlib.Topology.Algebra.SeparationQuotient.FiniteDimensional
 
 /-!
 # Finite-dimensional topological vector spaces over complete fields
@@ -46,24 +47,37 @@ result follows as `continuous_equivFun_basis`.
 
 -/
 
+@[expose] public section
+
 open Filter Module Set TopologicalSpace Topology
 
 universe u v w x
 
 noncomputable section
 
-section Field
+section FiniteDimensional
 
-variable {𝕜 E F : Type*} [Field 𝕜] [TopologicalSpace 𝕜] [AddCommGroup E] [Module 𝕜 E]
-  [TopologicalSpace E] [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]
-  [ContinuousSMul 𝕜 F]
+variable {𝕜 E F : Type*}
+  [AddCommGroup E] [TopologicalSpace E]
+  [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F]
 
 /-- The space of continuous linear maps between finite-dimensional spaces is finite-dimensional. -/
-instance [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] : FiniteDimensional 𝕜 (E →L[𝕜] F) :=
-  FiniteDimensional.of_injective (ContinuousLinearMap.coeLM 𝕜 : (E →L[𝕜] F) →ₗ[𝕜] E →ₗ[𝕜] F)
+instance ContinuousLinearMap.instModuleFinite [CommRing 𝕜] [Module 𝕜 E] [Module.Finite 𝕜 E]
+    [Module 𝕜 F] [IsNoetherian 𝕜 F] [ContinuousConstSMul 𝕜 F] :
+    Module.Finite 𝕜 (E →L[𝕜] F) :=
+  .of_injective (ContinuousLinearMap.coeLM 𝕜 : (E →L[𝕜] F) →ₗ[𝕜] E →ₗ[𝕜] F)
     ContinuousLinearMap.coe_injective
 
-end Field
+/-- The space of continuous linear maps between finite-dimensional spaces is finite-dimensional.
+
+This theorem is here to match searches looking for `FiniteDimensional` instead of `Module.Finite`.
+We use a strictly more general `ContinuousLinearMap.instModuleFinite` as an instance. -/
+protected theorem ContinuousLinearMap.finiteDimensional [Field 𝕜] [Module 𝕜 E]
+    [FiniteDimensional 𝕜 E] [Module 𝕜 F] [FiniteDimensional 𝕜 F] [ContinuousConstSMul 𝕜 F] :
+    FiniteDimensional 𝕜 (E →L[𝕜] F) :=
+  inferInstance
+
+end FiniteDimensional
 
 section NormedField
 
@@ -193,7 +207,7 @@ variable [CompleteSpace 𝕜]
 `continuous_equivFun_basis` which gives the same result without universe restrictions. -/
 private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Fintype ι]
     (ξ : Basis ι 𝕜 E) : Continuous ξ.equivFun := by
-  letI : UniformSpace E := IsTopologicalAddGroup.toUniformSpace E
+  letI : UniformSpace E := IsTopologicalAddGroup.rightUniformSpace E
   letI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   suffices ∀ n, Fintype.card ι = n → Continuous ξ.equivFun by exact this _ rfl
   intro n hn
@@ -202,7 +216,7 @@ private theorem continuous_equivFun_basis_aux [T2Space E] {ι : Type v} [Fintype
     rw [Fintype.card_eq_zero_iff] at hn
     exact continuous_of_const fun x y => funext hn.elim
   | succ n IH =>
-    haveI : FiniteDimensional 𝕜 E := .of_fintype_basis ξ
+    haveI : FiniteDimensional 𝕜 E := ξ.finiteDimensional_of_finite
     -- first step: thanks to the induction hypothesis, any n-dimensional subspace is equivalent
     -- to a standard space of dimension n, hence it is complete and therefore closed.
     have H₁ : ∀ s : Submodule 𝕜 E, finrank 𝕜 s = n → IsClosed (s : Set E) := by
@@ -272,7 +286,7 @@ continuous (see `LinearMap.continuous_of_finiteDimensional`), which in turn impl
 norms are equivalent in finite dimensions. -/
 theorem continuous_equivFun_basis [T2Space E] {ι : Type*} [Finite ι] (ξ : Basis ι 𝕜 E) :
     Continuous ξ.equivFun :=
-  haveI : FiniteDimensional 𝕜 E := .of_fintype_basis ξ
+  haveI : FiniteDimensional 𝕜 E := ξ.finiteDimensional_of_finite
   ξ.equivFun.toLinearMap.continuous_of_finiteDimensional
 
 namespace LinearMap
@@ -420,7 +434,7 @@ variable {ι : Type*} [Finite ι] [T2Space E]
 
 /-- Construct a continuous linear map given the value at a finite basis. -/
 def constrL (v : Basis ι 𝕜 E) (f : ι → F) : E →L[𝕜] F :=
-  haveI : FiniteDimensional 𝕜 E := FiniteDimensional.of_fintype_basis v
+  haveI : FiniteDimensional 𝕜 E := v.finiteDimensional_of_finite
   LinearMap.toContinuousLinearMap (v.constr 𝕜 f)
 
 @[simp]
@@ -433,7 +447,7 @@ functions from its basis indexing type to `𝕜`. -/
 def equivFunL (v : Basis ι 𝕜 E) : E ≃L[𝕜] ι → 𝕜 :=
   { v.equivFun with
     continuous_toFun :=
-      haveI : FiniteDimensional 𝕜 E := FiniteDimensional.of_fintype_basis v
+      haveI : FiniteDimensional 𝕜 E := v.finiteDimensional_of_finite
       v.equivFun.toLinearMap.continuous_of_finiteDimensional
     continuous_invFun := by
       change Continuous v.equivFun.symm.toFun
@@ -518,7 +532,7 @@ variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
 theorem Submodule.closed_of_finiteDimensional
     [T2Space E] (s : Submodule 𝕜 E) [FiniteDimensional 𝕜 s] :
     IsClosed (s : Set E) :=
-  letI := IsTopologicalAddGroup.toUniformSpace E
+  letI := IsTopologicalAddGroup.rightUniformSpace E
   haveI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   s.complete_of_finiteDimensional.isClosed
 
