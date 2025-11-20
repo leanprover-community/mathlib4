@@ -3,22 +3,27 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.RingTheory.GlobalDimension
-import Mathlib.RingTheory.LocalRing.Basic
-import Mathlib.RingTheory.Noetherian.Basic
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.Regular.RegularSequence
-import Mathlib.RingTheory.Ideal.Cotangent
-import Mathlib.Algebra.Module.SpanRank
-import Mathlib.RingTheory.LocalRing.Module
-import Mathlib.RingTheory.Regular.AuslanderBuchsbaum
-import Mathlib.RingTheory.Regular.Ischebeck
-import Mathlib.RingTheory.RegularLocalRing.Basic
+module
+
+public import Mathlib.RingTheory.GlobalDimension
+public import Mathlib.RingTheory.LocalRing.Basic
+public import Mathlib.RingTheory.Noetherian.Basic
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.Regular.RegularSequence
+public import Mathlib.RingTheory.Ideal.Cotangent
+public import Mathlib.Algebra.Module.SpanRank
+public import Mathlib.RingTheory.LocalRing.Module
+public import Mathlib.RingTheory.Regular.AuslanderBuchsbaum
+public import Mathlib.RingTheory.Regular.Ischebeck
+public import Mathlib.RingTheory.RegularLocalRing.Basic
+
 /-!
 
 # A Noetherian Local Ring is Regular if its Maximal Ideal has Finite Projective Dimension
 
 -/
+
+@[expose] public section
 
 universe u v
 
