@@ -14,6 +14,8 @@ public import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 -/
 
+@[expose] public section
+
 namespace Module.End
 variable {R V : Type*} [InvolutiveStar R] [AddCommGroup V] [StarAddMonoid V]
 
