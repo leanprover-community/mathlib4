@@ -3,7 +3,9 @@ Copyright (c) 2024 Quang Dao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Quang Dao
 -/
-import Mathlib.Data.Fin.Tuple.Basic
+module
+
+public import Mathlib.Data.Fin.Tuple.Basic
 
 /-!
 # Take operations on tuples
@@ -13,6 +15,8 @@ We define the `take` operation on `n`-tuples, which restricts a tuple to its fir
 * `Fin.take`: Given `h : m ≤ n`, `Fin.take m h v` for a `n`-tuple `v = (v 0, ..., v (n - 1))` is the
   `m`-tuple `(v 0, ..., v (m - 1))`.
 -/
+
+@[expose] public section
 
 namespace Fin
 

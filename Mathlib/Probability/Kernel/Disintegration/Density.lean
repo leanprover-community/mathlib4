@@ -3,9 +3,11 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Composition.MapComap
-import Mathlib.Probability.Martingale.Convergence
-import Mathlib.Probability.Process.PartitionFiltration
+module
+
+public import Mathlib.Probability.Kernel.Composition.MapComap
+public import Mathlib.Probability.Martingale.Convergence
+public import Mathlib.Probability.Process.PartitionFiltration
 
 /-!
 # Kernel density
@@ -75,6 +77,8 @@ The construction of the density process in this file follows the proof of Theore
 generated hypothesis instead of specializing to `ℝ`.
 -/
 
+@[expose] public section
+
 open MeasureTheory Set Filter MeasurableSpace
 
 open scoped NNReal ENNReal MeasureTheory Topology ProbabilityTheory
@@ -135,18 +139,19 @@ lemma measurable_densityProcess (κ : Kernel α (γ × β)) (ν : Kernel α γ) 
 lemma measurable_densityProcess_left (κ : Kernel α (γ × β)) (ν : Kernel α γ) (n : ℕ)
     (x : γ) {s : Set β} (hs : MeasurableSet s) :
     Measurable (fun a ↦ densityProcess κ ν n a x s) :=
-  (measurable_densityProcess κ ν n hs).comp (measurable_id.prodMk measurable_const)
+  ((measurable_densityProcess κ ν n hs).comp (measurable_id.prodMk measurable_const):)
 
 lemma measurable_densityProcess_right (κ : Kernel α (γ × β)) (ν : Kernel α γ) (n : ℕ)
     {s : Set β} (a : α) (hs : MeasurableSet s) :
     Measurable (fun x ↦ densityProcess κ ν n a x s) :=
-  (measurable_densityProcess κ ν n hs).comp (measurable_const.prodMk measurable_id)
+  ((measurable_densityProcess κ ν n hs).comp (measurable_const.prodMk measurable_id):)
 
 lemma measurable_countableFiltration_densityProcess (κ : Kernel α (γ × β)) (ν : Kernel α γ) (n : ℕ)
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     Measurable[countableFiltration γ n] (fun x ↦ densityProcess κ ν n a x s) := by
   refine @Measurable.ennreal_toReal _ (countableFiltration γ n) _ ?_
-  exact (measurable_densityProcess_countableFiltration_aux κ ν n hs).comp measurable_prodMk_left
+  -- The exact also works without the `( :)`, but is a bit slow.
+  exact ((measurable_densityProcess_countableFiltration_aux κ ν n hs).comp measurable_prodMk_left :)
 
 lemma stronglyMeasurable_countableFiltration_densityProcess (κ : Kernel α (γ × β)) (ν : Kernel α γ)
     (n : ℕ) (a : α) {s : Set β} (hs : MeasurableSet s) :
