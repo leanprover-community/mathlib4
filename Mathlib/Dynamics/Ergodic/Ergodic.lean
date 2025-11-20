@@ -3,8 +3,10 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Dynamics.Ergodic.MeasurePreserving
-import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
+module
+
+public import Mathlib.Dynamics.Ergodic.MeasurePreserving
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 
 /-!
 # Ergodic maps and measures
@@ -17,7 +19,7 @@ In this file we define ergodic maps / measures together with quasi-ergodic maps 
 provide some basic API. Quasi-ergodicity is a weaker condition than ergodicity for which the measure
 preserving condition is relaxed to quasi-measure-preserving.
 
-# Main definitions:
+## Main definitions
 
 * `PreErgodic`: the ergodicity condition without the measure-preserving condition. This exists
   to share code between the `Ergodic` and `QuasiErgodic` definitions.
@@ -28,6 +30,8 @@ preserving condition is relaxed to quasi-measure-preserving.
   strict invariance condition to almost invariance in the ergodicity condition.
 
 -/
+
+@[expose] public section
 
 
 open Set Function Filter MeasureTheory MeasureTheory.Measure

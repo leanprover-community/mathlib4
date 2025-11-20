@@ -3,9 +3,11 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Monoidal.ExternalProduct.Basic
-import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
-import Mathlib.CategoryTheory.Limits.Final
+module
+
+public import Mathlib.CategoryTheory.Monoidal.ExternalProduct.Basic
+public import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
+public import Mathlib.CategoryTheory.Limits.Final
 
 /-!
 # Preservation of pointwise left Kan extensions by external products
@@ -19,6 +21,8 @@ of `H ⊠ K` along `L.prod (𝟭 E)`.
 We also prove a similar criterion to establish that `K ⊠ H'` is a pointwise left Kan
 extension of `K ⊠ H` along `(𝟭 E).prod L`.
 -/
+
+@[expose] public section
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory.MonoidalCategory.ExternalProduct

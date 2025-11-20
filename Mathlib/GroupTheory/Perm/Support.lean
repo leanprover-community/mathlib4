@@ -3,10 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Aaron Anderson, Yakov Pechersky
 -/
-import Mathlib.Data.Fintype.Card
-import Mathlib.Algebra.Group.Commute.Basic
-import Mathlib.Algebra.Group.End
-import Mathlib.Data.Finset.NoncommProd
+module
+
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Algebra.Group.Commute.Basic
+public import Mathlib.Algebra.Group.End
+public import Mathlib.Data.Finset.NoncommProd
 
 /-!
 # support of a permutation
@@ -27,6 +29,8 @@ Assume `α` is a Fintype:
   (Equivalently, `f.support` has at least 2 elements.)
 
 -/
+
+@[expose] public section
 
 
 open Equiv Finset Function
@@ -228,10 +232,10 @@ section Set
 
 variable (p q : Perm α)
 
-theorem set_support_inv_eq : { x | p⁻¹ x ≠ x } = { x | p x ≠ x } := by
-  ext x
-  simp only [Set.mem_setOf_eq, Ne]
-  rw [inv_def, symm_apply_eq, eq_comm]
+lemma set_support_symm_eq : {x | p.symm x ≠ x} = {x | p x ≠ x} := by
+  ext; simp [eq_symm_apply, eq_comm]
+
+@[deprecated (since := "2025-11-17")] alias set_support_inv_eq := set_support_symm_eq
 
 theorem set_support_apply_mem {p : Perm α} {a : α} :
     p a ∈ { x | p x ≠ x } ↔ a ∈ { x | p x ≠ x } := by simp
