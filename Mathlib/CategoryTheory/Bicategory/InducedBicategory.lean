@@ -94,6 +94,7 @@ def isoMk {X Y : InducedBicategory C F} {f g : X ⟶ Y} (φ : f.hom ≅ g.hom) :
   hom := mkHom₂ φ.hom
   inv := mkHom₂ φ.inv
 
+variable (F) in
 @[simps!]
 instance bicategory : Bicategory (InducedBicategory C F) where
   __ := categoryStruct
@@ -109,11 +110,12 @@ attribute [-simp] bicategory_comp_hom bicategory_Hom
 
 section
 
+variable (F) in
 /-- The forgetful pseudofunctor from an induced bicategory to the original bicategory,
 forgetting the extra data.
 -/
 @[simps!]
-def inducedPseudofunctor : StrictPseudofunctor (InducedBicategory C F) C :=
+def forget : StrictPseudofunctor (InducedBicategory C F) C :=
   StrictPseudofunctor.mk' {
     obj X := F X
     map f := f.hom
