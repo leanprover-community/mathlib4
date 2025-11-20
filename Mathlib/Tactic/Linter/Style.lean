@@ -136,8 +136,8 @@ namespace Style.missingEnd
 def missingEndLinter : Linter where run := withSetOptionIn fun stx ↦ do
     -- Only run this linter at the end of a module.
     unless stx.isOfKind ``Lean.Parser.Command.eoi do return
-    if getLinterValue linter.style.missingEnd (← getLinterOptions) &&
-        !(← MonadState.get).messages.hasErrors then
+    whenLinterOption linter.style.missingEnd do
+      unless !(← MonadState.get).messages.hasErrors do return
       let sc ← getScopes
       -- The last scope is always the "base scope", corresponding to no active `section`s or
       -- `namespace`s. We are interested in any *other* unclosed scopes.
