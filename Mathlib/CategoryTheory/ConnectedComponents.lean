@@ -3,10 +3,12 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Data.List.Chain
-import Mathlib.CategoryTheory.IsConnected
-import Mathlib.CategoryTheory.Sigma.Basic
-import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+module
+
+public import Mathlib.Data.List.Chain
+public import Mathlib.CategoryTheory.IsConnected
+public import Mathlib.CategoryTheory.Sigma.Basic
+public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
 /-!
 # Connected components of a category
@@ -19,6 +21,8 @@ We show every category can be expressed as a disjoint union of its connected com
 particular `Decomposed J` is the category (definitionally) given by the sigma-type of the connected
 components of `J`, and it is shown that this is equivalent to `J`.
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ u₁ u₂
 

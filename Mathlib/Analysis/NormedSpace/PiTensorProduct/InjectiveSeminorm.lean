@@ -3,8 +3,10 @@ Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
-import Mathlib.Analysis.NormedSpace.PiTensorProduct.ProjectiveSeminorm
-import Mathlib.LinearAlgebra.Isomorphisms
+module
+
+public import Mathlib.Analysis.NormedSpace.PiTensorProduct.ProjectiveSeminorm
+public import Mathlib.LinearAlgebra.Isomorphisms
 
 /-!
 # Injective seminorm on the tensor of a finite family of normed spaces.
@@ -73,6 +75,8 @@ space.
 * Adapt the remaining functoriality constructions/properties from `PiTensorProduct`.
 
 -/
+
+@[expose] public section
 
 universe uι u𝕜 uE uF
 
@@ -394,9 +398,7 @@ private theorem mapL_add_smul_aux {ι : Type uι}
     [DecidableEq ι] (i : ι) (u : E i →L[𝕜] E' i) :
     (fun j ↦ (update f i u j).toLinearMap) =
       update (fun j ↦ (f j).toLinearMap) i u.toLinearMap := by
-  symm
-  rw [update_eq_iff]
-  grind [Function.update_of_ne, Function.update_self]
+  grind
 
 open Function in
 protected theorem mapL_add [DecidableEq ι] (i : ι) (u v : E i →L[𝕜] E' i) :
