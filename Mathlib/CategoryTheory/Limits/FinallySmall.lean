@@ -132,6 +132,12 @@ theorem initiallySmall_of_initial_of_essentiallySmall [EssentiallySmall.{w} K]
 
 end InitiallySmall
 
+instance {J : Type u} [Category.{v} J] [InitiallySmall.{w} J] : FinallySmall.{w} Jᵒᵖ where
+  final_smallCategory := ⟨_, _, (fromInitialModel.{w} J).op, inferInstance⟩
+
+instance {J : Type u} [Category.{v} J] [FinallySmall.{w} J] : InitiallySmall.{w} Jᵒᵖ where
+  initial_smallCategory := ⟨_, _, (fromFinalModel.{w} J).op, inferInstance⟩
+
 section WeaklyTerminal
 
 variable (J : Type u) [Category.{v} J]
