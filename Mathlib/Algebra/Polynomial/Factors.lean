@@ -6,6 +6,7 @@ Authors: Thomas Browning
 module
 
 public import Mathlib.Algebra.Polynomial.FieldDivision
+public import Mathlib.Algebra.Polynomial.Taylor
 
 /-!
 # Split polynomials
@@ -109,6 +110,10 @@ theorem Factors.multisetProd {m : Multiset R[X]} (hm : ∀ f ∈ m, Factors f) :
 protected theorem Factors.prod {ι : Type*} {f : ι → R[X]} {s : Finset ι}
     (h : ∀ i ∈ s, Factors (f i)) : Factors (∏ i ∈ s, f i) :=
   prod_mem h
+
+lemma Factors.taylor {p : R[X]} (hp : p.Factors) (r : R) : (p.taylor r).Factors := by
+  have (i : _) : (X + C r + C i).Factors := by simpa [add_assoc] using Factors.X_add_C (r + i)
+  induction hp using Submonoid.closure_induction <;> aesop
 
 /-- See `factors_iff_exists_multiset` for the version with subtraction. -/
 theorem factors_iff_exists_multiset' {f : R[X]} :
@@ -250,6 +255,23 @@ theorem Factors.splits (hf : Factors f) :
   or_iff_not_imp_left.mpr fun hf0 _ hg hgf ↦ degree_le_of_natDegree_le <|
     (hf.of_dvd hf0 hgf).natDegree_le_one_of_irreducible hg
 
+lemma map_sub_sprod_roots_eq_prod_map_eval
+    (s : Multiset R) (g : R[X]) (hg : g.Monic) (hg' : g.Factors) :
+    ((s ×ˢ g.roots).map fun ij ↦ ij.1 - ij.2).prod = (s.map g.eval).prod := by
+  have := hg'.eq_prod_roots
+  rw [hg.leadingCoeff, map_one, one_mul] at this
+  conv_rhs => rw [this]
+  simp_rw [eval_multiset_prod, Multiset.prod_map_product_eq_prod_prod, Multiset.map_map]
+  congr! with x hx
+  ext; simp
+
+lemma map_sub_roots_sprod_eq_prod_map_eval
+    (s : Multiset R) (g : R[X]) (hg : g.Monic) (hg' : g.Factors) :
+    ((g.roots ×ˢ s).map fun ij ↦ ij.1 - ij.2).prod =
+      (-1) ^ (s.card * g.roots.card) * (s.map g.eval).prod := by
+  trans ((s ×ˢ g.roots).map fun ij ↦ (-1) * (ij.1 - ij.2)).prod
+  · rw [← Multiset.map_swap_product, Multiset.map_map]; simp
+  · rw [Multiset.prod_map_mul]; simp [map_sub_sprod_roots_eq_prod_map_eval _ _ hg hg']
 end CommRing
 
 section DivisionSemiring
