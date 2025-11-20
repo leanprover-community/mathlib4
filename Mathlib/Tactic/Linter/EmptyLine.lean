@@ -147,7 +147,7 @@ def emptyLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let s : String := .join <| List.replicate (before.length + 1) " "
     Linter.logLint linter.style.emptyLine (.ofRange rg)
       m!"Please, write a comment here or remove this line, \
-        but do not place empty lines within commands!\nContext:\n\
+        but do not place empty lines within commands!\nContext:\
         {indentD s!"{s.push '↓'}"}{indentD s!"⏎{before}⏎⏎{after}⏎"}"
 
 initialize addLinter emptyLineLinter

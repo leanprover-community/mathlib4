@@ -12,7 +12,6 @@ set_option linter.style.emptyLine true
 /--
 warning: Please, write a comment here or remove this line, but do not place empty lines within commands!
 Context:
-
               ↓
   ⏎  refine ?_⏎⏎  apply ?_⏎⏎
 
@@ -20,7 +19,6 @@ Note: This linter can be disabled with `set_option linter.style.emptyLine false`
 ---
 warning: Please, write a comment here or remove this line, but do not place empty lines within commands!
 Context:
-
              ↓
   ⏎  apply ?_⏎⏎  refine ?_⏎⏎
 
@@ -28,7 +26,6 @@ Note: This linter can be disabled with `set_option linter.style.emptyLine false`
 ---
 warning: Please, write a comment here or remove this line, but do not place empty lines within commands!
 Context:
-
               ↓
   ⏎  refine ?_⏎⏎⏎⏎
 
@@ -48,7 +45,6 @@ example : True := by
 /--
 warning: Please, write a comment here or remove this line, but do not place empty lines within commands!
 Context:
-
                     ↓
   ⏎example : True :=⏎⏎  trivial⏎⏎
 
@@ -66,7 +62,6 @@ example : True :=
 /--
 warning: Please, write a comment here or remove this line, but do not place empty lines within commands!
 Context:
-
             ↓
   ⏎  let _ ←⏎⏎`(/-- hello -/ abbrev D := 0)⏎⏎
 
@@ -74,7 +69,6 @@ Note: This linter can be disabled with `set_option linter.style.emptyLine false`
 ---
 warning: Please, write a comment here or remove this line, but do not place empty lines within commands!
 Context:
-
      ↓
   ⏎--⏎⏎D⏎⏎
 
@@ -82,7 +76,6 @@ Note: This linter can be disabled with `set_option linter.style.emptyLine false`
 ---
 warning: Please, write a comment here or remove this line, but do not place empty lines within commands!
 Context:
-
     ↓
   ⏎D⏎⏎:= 0)⏎⏎
 
@@ -136,7 +129,6 @@ end TrailingComments
 /--
 warning: Please, write a comment here or remove this line, but do not place empty lines within commands!
 Context:
-
                         ↓
   ⏎structure WithAString⏎⏎ where⏎⏎
 
@@ -165,7 +157,6 @@ example : True := by  -- The following empty line is not reported, since the com
 /--
 warning: Please, write a comment here or remove this line, but do not place empty lines within commands!
 Context:
-
                        ↓
   ⏎example : True := by⏎⏎-- Here I start⏎⏎
 
@@ -173,7 +164,6 @@ Note: This linter can be disabled with `set_option linter.style.emptyLine false`
 ---
 warning: Please, write a comment here or remove this line, but do not place empty lines within commands!
 Context:
-
          ↓
   ⏎--stop⏎⏎trivial⏎⏎
 
