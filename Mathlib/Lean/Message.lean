@@ -39,4 +39,25 @@ otherwise.
 def Lean.MessageData.withPlural (singular plural : MessageData) (count : Nat) : MessageData :=
   if count = 1 then singular else plural
 
+/--
+`"no foo".withPlurals "foo" "foos" count` returns `"no foo"` when `count` is `0`,
+`"foo"` when `count` is `1`, and `"foos"` otherwise.
+-/
+def String.withPlurals (zero singular plural : String) (count : Nat) : String :=
+  if count = 0 then zero else if count = 1 then singular else plural
+
+/--
+`f!"no foo".withPlural f!"foo" f!"foos" count` returns `f!"no foo"` when `count` is `0`,
+`f!"foo"` when `count` is `1`, and `f!"foos"` otherwise.
+-/
+def Std.Format.withPlurals (zero singular plural : Format) (count : Nat) : Format :=
+  if count = 0 then zero else if count = 1 then singular else plural
+
+/--
+`m!"no foo".withPlural m!"foo" m!"foos" count` returns `m!"no foo"` when `count` is `0`,
+`m!"foo"` when `count` is `1`, and `m!"foos"` otherwise.
+-/
+def Lean.MessageData.withPlurals (zero singular plural : MessageData) (count : Nat) : MessageData :=
+  if count = 0 then zero else if count = 1 then singular else plural
+
 end WithPlural
