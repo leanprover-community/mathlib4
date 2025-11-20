@@ -21,12 +21,11 @@ periodicity lemma, Fine-Wilf theorem, period, periodicity
 
 -/
 
-variable {α : Type*}
+variable {α : Type _}
 
 open Nat
 
 namespace List
-
 /--
 `HasPeriod w p`, means that the list `w` has the period `p`,
 which can be seen in two equivalent ways:
@@ -45,7 +44,7 @@ lemma hasPeriod_iff_getElem? {p : ℕ} {w : List α} :
     have i1 : j < w.length := by omega
     have i2 : j + p < w.length := by omega
     have min : p < w.length := by omega
-    have : j + p - (take p w).length = j := by
+    have : j + p - (List.take p w).length = j := by
       simp_all [min_eq_left_of_lt]
     simp_all [getElem_append_right, IsPrefix.getElem pref, min_eq_left_of_lt]
   · intro lhs; rw [HasPeriod]
@@ -102,9 +101,7 @@ lemma hasPeriod_factor_hasPeriod (u v w : List α) (p : ℕ) (per : HasPeriod (u
   suffices ∀ j < v.length - p, v[j]? = v[j + p]? by simpa [hasPeriod_iff_getElem?]
   intro j len
   have shift_position : (u ++ (v ++ w))[j + u.length]? = v[j]? := by
-    rw [getElem?_append_right]
-    rw [Nat.add_sub_cancel]
-    rw [getElem?_append_left]
+    rw [getElem?_append_right, Nat.add_sub_cancel, getElem?_append_left]
     all_goals omega
   have shift_position' : (u ++ (v ++ w))[j + u.length + p]? = v[j + p]? := by
     have eq : j + u.length + p - u.length = j + p := by omega
@@ -210,7 +207,8 @@ theorem HasPeriod.gcd {w : List α} {p q : ℕ} (per_p : HasPeriod w p) (per_q :
         omega
       have take_eq : take q (drop q w) = take q w := by
           let ⟨z, hz⟩ := per_q.drop_prefix
-          convert_to take q (drop q w) = take q (drop q w ++ z); rw [hz]
+          convert_to take q (drop q w) = take q (drop q w ++ z)
+          · rw [hz]
           exact (take_append_of_le_length drop_len).symm
       -- the induction step
       have IH : HasPeriod (drop q w) ((p - q).gcd q) :=
