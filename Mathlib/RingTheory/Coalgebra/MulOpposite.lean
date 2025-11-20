@@ -3,7 +3,9 @@ Copyright (c) 2025 Monica Omar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
-import Mathlib.RingTheory.Coalgebra.Basic
+module
+
+public import Mathlib.RingTheory.Coalgebra.Basic
 
 /-!
 # MulOpposite of coalgebras
@@ -11,6 +13,8 @@ import Mathlib.RingTheory.Coalgebra.Basic
 Suppose `R` is a commutative semiring, and `A` is an `R`-coalgebra,
 then `Aᵐᵒᵖ` is an `R`-coalgebra, where we define the comultiplication and counit maps naturally.
 -/
+
+@[expose] public section
 
 namespace MulOpposite
 
