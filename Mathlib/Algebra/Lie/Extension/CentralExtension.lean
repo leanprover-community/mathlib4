@@ -3,7 +3,9 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Lie.Extension
+module
+
+public import Mathlib.Algebra.Lie.Extension
 
 /-!
 # Central extensions of Lie algebras
@@ -49,7 +51,9 @@ linear map `ρ : L → End R M` such that `ρ [x,y] = c(x,y) ρ x ρ y` or somet
 lie ring, lie algebra, central extension
 -/
 
-suppress_compilation
+@[expose] public section
+
+noncomputable section
 
 variable {R L M N V : Type*} [CommRing R]
 
@@ -238,7 +242,7 @@ def twoCocycleOfSplitting : twoCocycle R M N where
     val := (E.twoCocycleOfSplittingAux hs).compr₂ (E.toKer).symm
     property _ := by
       simp only [LinearMap.compr₂_apply]
-      refine (map_eq_zero_iff E.toKer.symm E.toKer.symm.injective).mpr (Subtype.eq ?_)
+      refine (map_eq_zero_iff E.toKer.symm E.toKer.symm.injective).mpr (Subtype.ext ?_)
       simp }
   property := by
     ext x y z
@@ -247,7 +251,7 @@ def twoCocycleOfSplitting : twoCocycle R M N where
     rw [← map_neg, ← map_add, ← map_sub]
     refine (E.toKer.symm.map_eq_zero_iff E.toKer.symm.injective).mpr ?_
     simp only [twoCocycleOfSplittingAux, LinearMap.coe_mk, AddHom.coe_mk, lie_lie, map_sub]
-    refine Subtype.eq ?_
+    refine Subtype.ext ?_
     simp only [AddSubgroupClass.coe_sub, LieSubmodule.coe_add, NegMemClass.coe_neg, neg_sub,
       ZeroMemClass.coe_zero]
     have hjac := lie_jacobi (s x) (s y) (s z)

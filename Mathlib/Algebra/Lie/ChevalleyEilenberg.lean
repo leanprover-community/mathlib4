@@ -3,9 +3,11 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.Algebra.Homology.HomologicalComplex
-import Mathlib.Algebra.Lie.Cocycle
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.Algebra.Homology.HomologicalComplex
+public import Mathlib.Algebra.Lie.Cocycle
 
 /-!
 # The Chevalley-Eilenberg complex
@@ -30,6 +32,8 @@ Also, I think this gives an equivalence between dg Lie algebras and CDGAs with s
 * [N. Bourbaki, *Lie groups and {L}ie algebras. {C}hapters 1--3*][bourbaki1975]
 -- cohomology is Exercises section 3 (p116, near end of book)
 -/
+
+@[expose] public section
 
 namespace LieAlgebra
 

@@ -3,10 +3,12 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Lie.BaseChange
+module
+
+public import Mathlib.Algebra.Lie.BaseChange
 --import Mathlib.Algebra.Lie.InvariantForm
 --import Mathlib.Algebra.Lie.Extension.Basic
-import Mathlib.Algebra.Polynomial.Laurent
+public import Mathlib.Algebra.Polynomial.Laurent
 
 /-!
 # Loop Lie algebras and their central extensions
@@ -38,7 +40,9 @@ inducing to the central extension of the loop algebra.
 lie ring, lie algebra, base change, Laurent polynomial, central extension
 -/
 
-suppress_compilation
+@[expose] public section
+
+noncomputable section
 
 open scoped TensorProduct
 

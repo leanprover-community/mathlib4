@@ -3,8 +3,10 @@ Copyright (c) 2025 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Data.Prod.Lex
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Data.Prod.Lex
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # Reverse Lexicographic order
@@ -25,6 +27,8 @@ orders. We implement RevLex as a type alias with a single-field structure to avo
 Linear order, well-order?
 
 -/
+
+@[expose] public section
 
 variable {α β : Type*}
 

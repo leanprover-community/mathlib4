@@ -3,7 +3,9 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.RingTheory.PowerSeries.Basic
+module
+
+public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
 # Evaluating Power Series
@@ -23,8 +25,9 @@ This may need to be deleted, since we now have Evaluation.lean.
 
 -/
 
+@[expose] public section
 
-suppress_compilation
+noncomputable section
 
 variable {Γ R A : Type*}
 

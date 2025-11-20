@@ -40,6 +40,8 @@ change of signs in the "action" part of the Lie bracket.
 
 @[expose] public section
 
+noncomputable section
+
 namespace LieAlgebra
 
 variable {R N L M : Type*}
@@ -289,7 +291,7 @@ lemma bracket_mem_incl_range (E : Extension R M L) (x : L) (y : M) :
   rw [LieHom.mem_ker, LieHom.map_lie, proj_incl, lie_zero]
 
 /-- The Lie algebra isomorphism from the kernel of an extension to the kernel of the projection. -/
-noncomputable def toKer (E : Extension R M L) :
+def toKer (E : Extension R M L) :
     M ≃ₗ⁅R⁆ E.proj.ker where
   toFun m := ⟨E.incl m, E.incl_apply_mem_ker m⟩
   map_add' _ _ := by simp
@@ -311,7 +313,7 @@ instance [IsLieAbelian M] (E : Extension R M L) : IsLieAbelian E.proj.ker :=
 structure. We do not make this an instance, because we may have to work with more than one
 extension. -/
 @[simps]
-noncomputable def ringModuleOf [IsLieAbelian M] (E : Extension R M L) : LieRingModule L M where
+def ringModuleOf [IsLieAbelian M] (E : Extension R M L) : LieRingModule L M where
   bracket x y := E.toKer.symm ⁅E.proj_surjective.hasRightInverse.choose x, E.toKer y⁆
   add_lie x y m := by
     set h := E.proj_surjective.hasRightInverse
@@ -379,7 +381,7 @@ lemma bracket_choose_twoCocycleAux [IsLieAbelian M] (E : Extension R M L) {s : L
 open LieModule.Cohomology
 
 /-- The 2-cocycle attached to an extension with a linear section. -/
-noncomputable def twoCocycleOf [IsLieAbelian M] (E : Extension R M L) {s : L →ₗ[R] E.L}
+def twoCocycleOf [IsLieAbelian M] (E : Extension R M L) {s : L →ₗ[R] E.L}
     (hs : Function.LeftInverse E.proj s) :
     letI := E.ringModuleOf
     have := E.lieModuleOf

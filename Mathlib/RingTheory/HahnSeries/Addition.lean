@@ -417,7 +417,7 @@ theorem leadingCoeff_neg {x : HahnSeries Γ R} : (-x).leadingCoeff = -x.leadingC
 @[simp]
 theorem zsmul_coeff {x : HahnSeries Γ R} {n : ℤ} : (n • x).coeff = n • x.coeff := by
   cases n with
-  | ofNat n => simp [Int.ofNat_eq_coe, natCast_zsmul]
+  | ofNat n => simp [Int.ofNat_eq_natCast, natCast_zsmul]
   | negSucc _ => simp [negSucc_zsmul]
 
 @[simp]

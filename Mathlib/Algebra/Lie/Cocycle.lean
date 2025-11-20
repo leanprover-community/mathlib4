@@ -3,11 +3,13 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Ring.NegOnePow
-import Mathlib.Algebra.Lie.Basic
-import Mathlib.Data.List.Intervals
-import Mathlib.GroupTheory.Perm.List
-import Mathlib.LinearAlgebra.Alternating.Basic
+module
+
+public import Mathlib.Algebra.Ring.NegOnePow
+public import Mathlib.Algebra.Lie.Basic
+public import Mathlib.Data.List.Intervals
+public import Mathlib.GroupTheory.Perm.List
+public import Mathlib.LinearAlgebra.Alternating.Basic
 
 /-!
 # Chevalley-Eilenberg cochains
@@ -35,6 +37,8 @@ structures underlying the Chevalley-Eilenberg cochain complex, whose `p`th cocha
 * [N. Bourbaki, *Lie groups and {L}ie algebras. {C}hapters 1--3*][bourbaki1975]
 -- cohomology is Exercises section 3 (p116, near end of book)
 -/
+
+@[expose] public section
 
 namespace Int
 
@@ -175,11 +179,11 @@ theorem negOnePow_succAbove_add_predAbove {n : ℕ} (i : Fin (n + 2)) (j : Fin (
   rcases lt_or_ge j.castSucc i with hji | hij
   · have : 0 < (i : ℕ) := (Nat.zero_le j).trans_lt hji
     rw [succAbove_of_castSucc_lt _ _ hji, coe_castSucc, predAbove_of_castSucc_lt _ _ hji, coe_pred,
-      Int.ofNat_add_out, ← Nat.add_sub_assoc this ↑j, Int.negOnePow_sub_eq_negOnePow_add,
-      Nat.add_comm i, Int.ofNat_add_out]
+      Int.ofNat_add_ofNat, ← Nat.add_sub_assoc this ↑j, Int.negOnePow_sub_eq_negOnePow_add,
+      Nat.add_comm i, Int.ofNat_add_ofNat]
     omega
   · rw [succAbove_of_le_castSucc _ _ hij, val_succ, predAbove_of_le_castSucc _ _ hij, coe_castPred,
-      Int.ofNat_add_out, Nat.add_right_comm, Nat.add_comm i]
+      Int.ofNat_add_ofNat, Nat.add_right_comm, Nat.add_comm i]
 
 /-- A sequential list in Fin -/
 def List.Ico {n : ℕ} (p q : Fin (n + 1)) : List (Fin (n + 1)) :=
@@ -296,9 +300,9 @@ theorem negOnePow_smul_apply_cons {n : ℕ} (f : L [⋀^Fin (n + 1)]→ₗ[R] M)
   induction i using Fin.induction with
   | zero => simp
   | succ i ih =>
-    rw [Fin.insertNth_succ, f.map_swap _ Fin.lt_succ.ne, ← ih, Fin.val_succ, Fin.coe_castSucc,
-      Int.natCast_add, add_comm i.val.cast, Int.negOnePow_add, Int.natCast_one, Int.negOnePow_one,
-      neg_one_mul, Units.neg_smul]
+    rw [Fin.insertNth_succ, f.map_swap _ Fin.castSucc_lt_succ.ne, ← ih, Fin.val_succ,
+      Fin.coe_castSucc, Int.natCast_add, add_comm i.val.cast, Int.negOnePow_add, Int.natCast_one,
+      Int.negOnePow_one, neg_one_mul, Units.neg_smul]
 
 lemma negOnePow_smul_apply_removeNth_add_eq_zero_of_eq {n : ℕ}
     (f : L [⋀^Fin (n + 1)]→ₗ[R] M) {v : Fin (n + 1 + 1) → L} {i j : Fin (n + 1 + 1)}
@@ -315,7 +319,7 @@ lemma negOnePow_smul_apply_removeNth_add_eq_zero_of_eq {n : ℕ}
   simp_rw [← hw₁, ← hw₂, ← negOnePow_smul_apply_cons, smul_smul, ← Int.negOnePow_add]
   rw [Fin.negOnePow_succAbove_add_predAbove, add_eq_zero_iff_eq_neg, Nat.cast_add _ 1,
     Int.negOnePow_add, mul_comm, mul_smul, Int.natCast_one, Int.negOnePow_one, Units.neg_smul,
-    one_smul, Int.ofNat_add_out]
+    one_smul, Int.ofNat_add_ofNat]
 
 end AlternatingMap
 

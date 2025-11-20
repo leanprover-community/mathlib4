@@ -3,8 +3,9 @@ Copyright (c) 2023 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
+module
 
-import Mathlib.Algebra.Vertex.Defs
+public import Mathlib.Algebra.Vertex.Defs
 
 /-!
 # Basic results on Vertex algebras
@@ -28,6 +29,8 @@ Matsuo-Nagatomo `On axioms for a vertex algebra and the locality of quantum fiel
   hep-th/9706118
 Borcherds
 -/
+
+@[expose] public section
 
 theorem Int.toNat_sub_eq_zero_leq {m n : ℤ} : Int.toNat (-m - n) = 0 ↔ -n ≤ m := by
   simp only [Int.toNat_eq_zero, tsub_le_iff_right, zero_add]

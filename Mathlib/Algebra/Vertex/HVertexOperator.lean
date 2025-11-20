@@ -41,8 +41,6 @@ here allows us to consider composites and scalar-multiply by multivariable Laure
 
 @[expose] public section
 
-assert_not_exists Cardinal
-
 noncomputable section
 
 variable {Γ Γ₁ Γ₂ R S U V W X Y : Type*}

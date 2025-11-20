@@ -3,8 +3,10 @@ Copyright (c) 2025 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Order.CauSeq.BigOperators
-import Mathlib.Analysis.Normed.Ring.Basic
+module
+
+public import Mathlib.Algebra.Order.CauSeq.BigOperators
+public import Mathlib.Analysis.Normed.Ring.Basic
 
 /-! # Cauchy divided powers
 

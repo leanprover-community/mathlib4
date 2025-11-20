@@ -3,12 +3,14 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.BigOperators.Finsupp.Basic
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.Group.PNatPowAssoc
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Data.Int.Cast.Defs
+module
+
+public import Mathlib.Algebra.BigOperators.Finsupp.Basic
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Group.PNatPowAssoc
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Data.Int.Cast.Defs
 
 /-!
 # Scalar-multiple polynomial evaluation over commutative semirings
@@ -29,6 +31,8 @@ Reminder: A Non-unital non-associative `R`-algebra `A` is defined by the combina
 ## Tags
 `CommSemiring`, ` Non-unital Power-associative algebra`
 -/
+
+@[expose] public section
 
 universe u v w x
 

@@ -3,9 +3,11 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.RingTheory.HahnSeries.HEval
-import Mathlib.RingTheory.HahnSeries.PowerSeries
-import Mathlib.RingTheory.PowerSeries.Binomial
+module
+
+public import Mathlib.RingTheory.HahnSeries.HEval
+public import Mathlib.RingTheory.HahnSeries.PowerSeries
+public import Mathlib.RingTheory.PowerSeries.Binomial
 
 /-!
 # Hahn Series
@@ -27,6 +29,8 @@ We introduce binomial expansions using `embDomain`.
     over which `R` is an algebra?
 
 -/
+
+@[expose] public section
 
 open Finset Function
 

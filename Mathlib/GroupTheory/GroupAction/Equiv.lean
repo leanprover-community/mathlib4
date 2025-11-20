@@ -3,7 +3,9 @@ Copyright (c) 2025 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.GroupTheory.GroupAction.Hom
+module
+
+public import Mathlib.GroupTheory.GroupAction.Hom
 
 /-!
 # Equivariant homomorphisms
@@ -49,6 +51,8 @@ instances of `Mul M`, `Add M`, `SMul M X` and `VAdd M X`…
 * `R ≃+*[M] S` is `MulSemiringActionHom (MulEquiv.refl M) R S`
 
 -/
+
+@[expose] public section
 
 assert_not_exists Submonoid
 

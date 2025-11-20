@@ -3,8 +3,9 @@ Copyright (c) 2023 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
+module
 
-import Mathlib.Algebra.MonoidAlgebra.Defs
+public import Mathlib.Algebra.MonoidAlgebra.Defs
 
 /-!
 # Abstract Formal Power Series
@@ -29,6 +30,8 @@ G. Mason `Vertex rings and Pierce bundles` ArXiv 1707.00328
 A. Matsuo, K. Nagatomo `On axioms for a vertex algebra and locality of quantum fields`
 arXiv:hep-th/9706118
 -/
+
+@[expose] public section
 
 variable {Γ C : Type*} [DecidableEq Γ]
 
