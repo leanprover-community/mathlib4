@@ -812,9 +812,7 @@ protected def _root_.LinearIsometryEquiv.piLpCongrRight (e : ∀ i, α i ≃ₗ�
       ≪≫ₗ (LinearEquiv.piCongrRight fun i => (e i).toLinearEquiv)
       ≪≫ₗ (WithLp.linearEquiv _ _ _).symm
   norm_map' := (WithLp.linearEquiv p 𝕜 _).symm.surjective.forall.2 fun x => by
-    simp only [linearEquiv_symm_apply, AddEquiv.toEquiv_eq_coe, Equiv.invFun_as_coe,
-      AddEquiv.coe_toEquiv_symm, addEquiv_symm_apply, LinearEquiv.trans_apply, linearEquiv_apply,
-      Equiv.toFun_as_coe, EquivLike.coe_coe, addEquiv_apply]
+    simp only [coe_symm_linearEquiv, LinearEquiv.trans_apply, coe_linearEquiv]
     obtain rfl | hp := p.dichotomy
     · simp_rw [PiLp.norm_toLp, Pi.norm_def, LinearEquiv.piCongrRight_apply,
         LinearIsometryEquiv.coe_toLinearEquiv, LinearIsometryEquiv.nnnorm_map]
@@ -1014,9 +1012,11 @@ lemma norm_toLp_one {β} [SeminormedAddCommGroup β] (hp : p ≠ ∞) [One β] :
     ‖toLp p (1 : ι → β)‖ = (Fintype.card ι : ℝ≥0) ^ (1 / p).toReal * ‖(1 : β)‖ :=
   (norm_toLp_const hp (1 : β)).trans rfl
 
-variable (𝕜 p)
+end Fintype
 
-omit [Fintype ι] hp
+section
+
+variable [Semiring 𝕜] [∀ i, SeminormedAddCommGroup (β i)] [∀ i, Module 𝕜 (β i)]
 
 /-- `WithLp.linearEquiv` as a continuous linear equivalence. -/
 @[simps! apply symm_apply]
@@ -1038,7 +1038,7 @@ def proj (i : ι) : PiLp p β →L[𝕜] β i where
   __ := projₗ p β i
   cont := PiLp.continuous_apply ..
 
-end Fintype
+end
 
 section Basis
 
