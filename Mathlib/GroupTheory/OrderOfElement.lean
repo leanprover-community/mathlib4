@@ -3,18 +3,20 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Julian Kuelshammer
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.Group.Commute.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Finite
-import Mathlib.Algebra.Group.Subgroup.Finite
-import Mathlib.Algebra.Module.NatInt
-import Mathlib.Algebra.Order.Group.Action
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Data.Int.ModEq
-import Mathlib.Dynamics.PeriodicPts.Lemmas
-import Mathlib.GroupTheory.Index
-import Mathlib.NumberTheory.Divisors
-import Mathlib.Order.Interval.Set.Infinite
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.Group.Commute.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Finite
+public import Mathlib.Algebra.Group.Subgroup.Finite
+public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.Algebra.Order.Group.Action
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Data.Int.ModEq
+public import Mathlib.Dynamics.PeriodicPts.Lemmas
+public import Mathlib.GroupTheory.Index
+public import Mathlib.NumberTheory.Divisors
+public import Mathlib.Order.Interval.Set.Infinite
 
 /-!
 # Order of an element
@@ -34,6 +36,8 @@ This file defines the order of an element of a finite group. For a finite group 
 ## Tags
 order of an element
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

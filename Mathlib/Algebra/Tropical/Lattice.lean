@@ -3,8 +3,10 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Tropical.Basic
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
+module
+
+public import Mathlib.Algebra.Tropical.Basic
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 
@@ -23,6 +25,8 @@ The order induced is the definitionally equal underlying order, which makes the 
 constructions quicker to implement.
 
 -/
+
+@[expose] public section
 
 
 variable {R S : Type*}

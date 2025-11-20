@@ -3,12 +3,14 @@ Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Algebra.ContinuedFractions.Determinant
-import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Data.Nat.Fib.Basic
-import Mathlib.Tactic.Monotonicity
-import Mathlib.Tactic.GCongr
+module
+
+public import Mathlib.Algebra.ContinuedFractions.Determinant
+public import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
+public import Mathlib.Algebra.Order.Ring.Basic
+public import Mathlib.Data.Nat.Fib.Basic
+public import Mathlib.Tactic.Monotonicity
+public import Mathlib.Tactic.GCongr
 
 /-!
 # Approximations for Continued Fraction Computations (`GenContFract.of`)
@@ -45,6 +47,8 @@ in `Algebra.ContinuedFractions.Computation.ApproximationCorollaries`.
 - [*Hardy, GH and Wright, EM and Heath-Brown, Roger and Silverman, Joseph*][hardy2008introduction]
 
 -/
+
+@[expose] public section
 
 open GenContFract
 

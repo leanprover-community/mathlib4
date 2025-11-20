@@ -3,7 +3,9 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
+module
+
+public import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
 
 /-!
 # Bundled subsemirings
@@ -11,6 +13,8 @@ import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
 We define bundled subsemirings and some standard constructions: `subtype` and `inclusion`
 ring homomorphisms.
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 

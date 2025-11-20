@@ -3,7 +3,9 @@ Copyright (c) 2025 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Bryan Gin-ge Chen
 -/
-import Mathlib.Tactic.Translate.Core
+module
+
+public meta import Mathlib.Tactic.Translate.Core
 
 /-!
 # The `@[to_dual]` attribute.
@@ -20,6 +22,8 @@ Known limitations:
   are dual to eachother. Currently, this requires writing
   `attribute [to_dual existing le_add] add_le`.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.ToDual
 open Lean Meta Elab Command Std Translate
@@ -175,7 +179,7 @@ initialize registerBuiltinAttribute {
     name := `to_dual
     descr := "Transport to dual"
     add := fun src stx kind ↦ discard do
-      addTranslationAttr data src (← elabTranslationAttr stx) kind
+      addTranslationAttr data src (← elabTranslationAttr src stx) kind
     applicationTime := .afterCompilation
   }
 

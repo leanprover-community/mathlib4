@@ -3,9 +3,11 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Michael Stoll
 -/
-import Mathlib.Data.Nat.Squarefree
-import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
-import Mathlib.NumberTheory.Padics.PadicVal.Basic
+module
+
+public import Mathlib.Data.Nat.Squarefree
+public import Mathlib.NumberTheory.Zsqrtd.QuadraticReciprocity
+public import Mathlib.NumberTheory.Padics.PadicVal.Basic
 
 /-!
 # Sums of two squares
@@ -20,6 +22,8 @@ exponent of the largest power of `q` dividing `n` is even; see `Nat.eq_sq_add_sq
 There is an alternative characterization as the numbers of the form `a^2 * b`, where `b` is a
 natural number such that `-1` is a square modulo `b`; see `Nat.eq_sq_add_sq_iff_eq_sq_mul`.
 -/
+
+@[expose] public section
 
 
 section Fermat
