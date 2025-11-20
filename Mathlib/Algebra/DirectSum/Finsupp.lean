@@ -3,8 +3,10 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Data.Finsupp.ToDFinsupp
+module
+
+public import Mathlib.Algebra.DirectSum.Module
+public import Mathlib.Data.Finsupp.ToDFinsupp
 
 /-!
 # Results on direct sums and finitely supported functions.
@@ -12,6 +14,8 @@ import Mathlib.Data.Finsupp.ToDFinsupp
 1. The linear equivalence between finitely supported functions `ι →₀ M` and
 the direct sum of copies of `M` indexed by `ι`.
 -/
+
+@[expose] public section
 
 
 universe u v w

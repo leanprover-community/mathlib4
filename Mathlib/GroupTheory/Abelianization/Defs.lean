@@ -3,14 +3,16 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Michael Howes, Antoine Chambert-Loir
 -/
-import Mathlib.GroupTheory.Commutator.Basic
+module
+
+public import Mathlib.GroupTheory.Commutator.Basic
 
 /-!
 # The abelianization of a group
 
 This file defines the commutator and the abelianization of a group. It furthermore prepares for the
 result that the abelianization is left adjoint to the forgetful functor from abelian groups to
-groups, which can be found in `Mathlib/Algebra/Category/Grp/Adjunctions.lean`.
+groups, which can be found in `Mathlib/Algebra/Category/GrpCat/Adjunctions.lean`.
 
 ## Main definitions
 
@@ -20,6 +22,8 @@ groups, which can be found in `Mathlib/Algebra/Category/Grp/Adjunctions.lean`.
 * `MulEquiv.abelianizationCongr`: Equivalent groups have equivalent abelianizations
 
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal Field
 

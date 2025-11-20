@@ -3,12 +3,14 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.CatCommSq
+module
+
+public import Mathlib.CategoryTheory.CatCommSq
 
 /-! # Morphisms of categorical cospans.
 
 Given `F : A ⥤ B`, `G : C ⥤ B`, `F' : A' ⥤ B'` and `G' : C' ⥤ B'`,
-this files defines `CatCospanTransform F G F' G'`, the category of
+this file defines `CatCospanTransform F G F' G'`, the category of
 "categorical transformations" from the (categorical) cospan `F G` to
 the (categorical) cospan `F' G'`. Such a transformation consists of a
 diagram
@@ -25,6 +27,8 @@ H₁|   |H₂ |H₃
 with specified `CatCommSq`s expressing 2-commutativity of the squares. These
 transformations are used to encode 2-functoriality of categorical pullback squares.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Limits
 

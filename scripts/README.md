@@ -82,12 +82,16 @@ to learn about it as well!
 **CI workflow**
 - `lake-build-with-retry.sh`
   Runs `lake build` on a target until `lake build --no-build` succeeds. Used in the main build workflows.
+- `lake-build-wrapper.py`
+  A wrapper script for `lake build` which collapses normal build into log groups and saves a build summary JSON file. See file for usage.
 - `mk_all.lean`
   run via `lake exe mk_all`, regenerates the import-only files
   `Mathlib.lean`, `Mathlib/Tactic.lean`, `Archive.lean` and `Counterexamples.lean`
 - `lint-style.lean`, `lint-style.py`, `print-style-errors.sh`
   style linters, written in Python and Lean. Run via `lake exe lint-style`.
   Medium-term, the latter two scripts should be rewritten and incorporated in `lint-style.lean`.
+- `check-title-labels.lean` verifies that a (non-WIP, non-draft) PR has a well-formed title.
+  In the future, it may also check that a feature PR has a topic label.
 - `lint-bib.sh`
   normalize the BibTeX file `docs/references.bib` using `bibtool`.
 - `yaml_check.py`, `check-yaml.lean`
@@ -123,6 +127,8 @@ to learn about it as well!
   and attempts to merge the branch `lean-pr-testing-NNNN` into `master`.
   It will resolve conflicts in `lean-toolchain`, `lakefile.lean`, and `lake-manifest.json`.
   If there are more conflicts, it will bail.
+- `zulip_build_report.sh` is used to analyse the output from building the nightly-testing-green
+  branch with additional linting enabled, and posts a summary of its findings on zulip.
 
 **Managing downstream repos**
 - `downstream_repos.yml` contains basic information about significant downstream repositories.
@@ -148,6 +154,7 @@ Both of these files should tend to zero over time;
 please do not add new entries to these files. PRs removing (the need for) entries are welcome.
 
 **API surrounding CI**
+- `check_title_labels.lean` is used to check whether a PR title follows our [commit style conventions](https://leanprover-community.github.io/contribute/commit.html).
 - `parse_lake_manifest_changes.py` compares two versions of `lake-manifest.json` to report
   dependency changes in Zulip notifications. Used by the `update_dependencies_zulip.yml` workflow
   to show which dependencies were updated, added, or removed, with links to GitHub diffs.

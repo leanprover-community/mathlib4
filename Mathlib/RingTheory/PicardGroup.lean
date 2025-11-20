@@ -3,17 +3,19 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
-import Mathlib.Algebra.Module.FinitePresentation
-import Mathlib.Algebra.Module.LocalizedModule.Submodule
-import Mathlib.CategoryTheory.Monoidal.Skeleton
-import Mathlib.LinearAlgebra.Contraction
-import Mathlib.LinearAlgebra.TensorProduct.Finiteness
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.LinearAlgebra.TensorProduct.Submodule
-import Mathlib.RingTheory.Flat.Localization
-import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.RingTheory.LocalRing.Module
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
+public import Mathlib.Algebra.Module.FinitePresentation
+public import Mathlib.Algebra.Module.LocalizedModule.Submodule
+public import Mathlib.CategoryTheory.Monoidal.Skeleton
+public import Mathlib.LinearAlgebra.Contraction
+public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.LinearAlgebra.TensorProduct.Submodule
+public import Mathlib.RingTheory.Flat.Localization
+public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.RingTheory.LocalRing.Module
 
 /-!
 # The Picard group of a commutative ring
@@ -47,7 +49,6 @@ invertible `R`-modules (in the sense that `M` is invertible if there exists anot
 
 Show:
 - The Picard group of a commutative domain is isomorphic to its ideal class group.
-- All commutative semi-local rings, in particular Artinian rings, have trivial Picard group.
 - All unique factorization domains have trivial Picard group.
 - Invertible modules over a commutative ring have the same cardinality as the ring.
 
@@ -58,6 +59,8 @@ Show:
   constant finite rank to locally free sheaves on `Spec R`.
 - Exhibit isomorphism with sheaf cohomology `H¹(Spec R, 𝓞ˣ)`.
 -/
+
+@[expose] public section
 
 open TensorProduct
 
@@ -246,13 +249,13 @@ theorem free_iff_linearEquiv : Free R M ↔ Nonempty (M ≃ₗ[R] R) := by
 considering the localization at a prime (which is free of rank 1) using the strong rank condition.
 The ≥ direction fails in general but holds for domains and Noetherian rings without embedded
 components, see https://math.stackexchange.com/q/5089900. -/
-theorem finrank_eq_one [StrongRankCondition R] [Free R M] : finrank R M = 1 := by
+protected theorem finrank_eq_one [StrongRankCondition R] [Free R M] : finrank R M = 1 := by
   cases subsingleton_or_nontrivial R
   · rw [← rank_eq_one_iff_finrank_eq_one, rank_subsingleton]
   · rw [(free_iff_linearEquiv.mp ‹_›).some.finrank_eq, finrank_self]
 
 theorem rank_eq_one [StrongRankCondition R] [Free R M] : Module.rank R M = 1 :=
-  rank_eq_one_iff_finrank_eq_one.mpr (finrank_eq_one R M)
+  rank_eq_one_iff_finrank_eq_one.mpr (Invertible.finrank_eq_one R M)
 
 open TensorProduct (comm lid) in
 theorem toModuleEnd_bijective : Function.Bijective (toModuleEnd R (S := R) M) := by
@@ -281,11 +284,85 @@ theorem bijective_of_surjective [Module.Invertible R N] {f : M →ₗ[R] N}
   simpa [lTensor_bijective_iff] using bijective_self_of_surjective
     (f.lTensor _ ∘ₗ (linearEquiv R M).symm.toLinearMap) (by simpa [lTensor_surjective_iff] using hf)
 
+section LinearEquiv
+variable {R M N} [Module.Invertible R N] {f : M →ₗ[R] N} {g : N →ₗ[R] M}
+
+theorem rightInverse_of_leftInverse (hfg : Function.LeftInverse f g) :
+    Function.RightInverse f g :=
+  Function.rightInverse_of_injective_of_leftInverse
+    (bijective_of_surjective hfg.surjective).injective hfg
+
+theorem leftInverse_of_rightInverse (hfg : Function.RightInverse f g) :
+    Function.LeftInverse f g :=
+  rightInverse_of_leftInverse hfg
+
+variable (f g) in
+theorem leftInverse_iff_rightInverse :
+    Function.LeftInverse f g ↔ Function.RightInverse f g :=
+  ⟨rightInverse_of_leftInverse, leftInverse_of_rightInverse⟩
+
+/-- If `f : M →ₗ[R] N` and `g : N →ₗ[R] M` where `M` and `N` are invertible `R`-modules, and `f` is
+a left inverse of `g`, then in fact `f` is also the right inverse of `g`, and we promote this to
+an `R`-module isomorphism. -/
+def linearEquivOfLeftInverse (hfg : Function.LeftInverse f g) : M ≃ₗ[R] N :=
+  .ofLinear f g (LinearMap.ext hfg) (LinearMap.ext <| rightInverse_of_leftInverse hfg)
+
+@[simp] lemma linearEquivOfLeftInverse_apply (hfg : Function.LeftInverse f g) (x : M) :
+    linearEquivOfLeftInverse hfg x = f x := rfl
+
+@[simp] lemma linearEquivOfLeftInverse_symm_apply (hfg : Function.LeftInverse f g) (x : N) :
+    (linearEquivOfLeftInverse hfg).symm x = g x := rfl
+
+/-- If `f : M →ₗ[R] N` and `g : N →ₗ[R] M` where `M` and `N` are invertible `R`-modules, and `f` is
+a right inverse of `g`, then in fact `f` is also the left inverse of `g`, and we promote this to
+an `R`-module isomorphism. -/
+def linearEquivOfRightInverse (hfg : Function.RightInverse f g) : M ≃ₗ[R] N :=
+  .ofLinear f g (LinearMap.ext <| leftInverse_of_rightInverse hfg) (LinearMap.ext hfg)
+
+@[simp] lemma linearEquivOfRightInverse_apply (hfg : Function.RightInverse f g) (x : M) :
+    linearEquivOfRightInverse hfg x = f x := rfl
+
+@[simp] lemma linearEquivOfRightInverse_symm_apply (hfg : Function.RightInverse f g) (x : N) :
+    (linearEquivOfRightInverse hfg).symm x = g x := rfl
+
+end LinearEquiv
+
 section Algebra
+
+section algEquivOfRing
+variable (A : Type*) [Semiring A] [Algebra R A] [Module.Invertible R A]
+
+/-- If an `R`-algebra `A` is also an invertible `R`-module, then it is in fact isomorphic to the
+base ring `R`. The algebra structure gives us a map `A ⊗ A → A`, which after tensoring by `Aᵛ`
+becomes a map `A → R`, which is the inverse map we seek. -/
+noncomputable def algEquivOfRing : R ≃ₐ[R] A :=
+  let inv : A →ₗ[R] R :=
+    linearEquiv R A ∘ₗ
+      (LinearMap.mul' R A).lTensor (Dual R A) ∘ₗ
+      (leftCancelEquiv A (linearEquiv R A)).symm
+  have right : inv ∘ₗ Algebra.linearMap R A = LinearMap.id :=
+    let ⟨s, hs⟩ := exists_finset ((linearEquiv R A).symm 1)
+    LinearMap.ext_ring <| by simp [inv, hs, sum_tmul, map_sum, ← (LinearEquiv.symm_apply_eq _).1 hs]
+  { linearEquivOfRightInverse (f := Algebra.linearMap R A) (g := inv) (LinearMap.ext_iff.1 right),
+    Algebra.ofId R A with }
+
+variable {A} in
+@[simp] lemma algEquivOfRing_apply (x : R) : algEquivOfRing R A x = algebraMap R A x := rfl
+
+end algEquivOfRing
 
 instance : Module.Invertible A (A ⊗[R] M) :=
   .right (M := A ⊗[R] Dual R M) <| (AlgebraTensorModule.distribBaseChange ..).symm ≪≫ₗ
     AlgebraTensorModule.congr (.refl A A) (linearEquiv R M) ≪≫ₗ AlgebraTensorModule.rid ..
+
+variable {R M N A} in
+theorem of_isLocalization (S : Submonoid R) [IsLocalization S A]
+    (f : M →ₗ[R] N) [IsLocalizedModule S f] [Module A N] [IsScalarTower R A N] :
+    Module.Invertible A N :=
+  .congr (IsLocalizedModule.isBaseChange S A f).equiv
+
+instance (S : Submonoid R) : Module.Invertible (Localization S) (LocalizedModule S M) :=
+  of_isLocalization S (LocalizedModule.mkLinearMap S M)
 
 instance (L) [AddCommMonoid L] [Module R L] [Module A L] [IsScalarTower R A L]
     [Module.Invertible A L] : Module.Invertible A (L ⊗[R] M) :=
@@ -428,11 +505,44 @@ instance [Subsingleton (Pic R)] : Free R M :=
 instance [IsLocalRing R] : Subsingleton (Pic R) :=
   subsingleton_iff.mpr fun _ _ _ _ ↦ free_of_flat_of_isLocalRing
 
+/-- The Picard group of a semilocal ring is trivial. -/
+instance [Finite (MaximalSpectrum R)] : Subsingleton (Pic R) :=
+  subsingleton_iff.mpr fun _ _ _ _ ↦ free_of_flat_of_finrank_eq _ _ 1
+    fun _ ↦ let _ := @Ideal.Quotient.field; Invertible.finrank_eq_one ..
+
 end CommRing.Pic
 
 end CommRing
 
 end PicardGroup
+
+namespace Module.Invertible
+
+variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] [Module.Invertible R M]
+
+-- TODO: generalize to CommSemiring by generalizing `CommRing.Pic.instSubsingletonOfIsLocalRing`
+theorem tensorProductComm_eq_refl : TensorProduct.comm R M M = .refl .. := by
+  let f (P : Ideal R) [P.IsMaximal] := LocalizedModule.mkLinearMap P.primeCompl M
+  let ff (P : Ideal R) [P.IsMaximal] := TensorProduct.map (f P) (f P)
+  refine LinearEquiv.toLinearMap_injective <| LinearMap.eq_of_localization_maximal _ ff _ ff _ _
+    fun P _ ↦ .trans (b := (TensorProduct.comm ..).toLinearMap) ?_ ?_
+  · apply IsLocalizedModule.linearMap_ext P.primeCompl (ff P) (ff P)
+    ext; dsimp
+    apply IsLocalizedModule.map_apply
+  let Rp := Localization P.primeCompl
+  have ⟨e⟩ := free_iff_linearEquiv.mp (inferInstance : Free Rp (LocalizedModule P.primeCompl M))
+  have e := e.restrictScalars R
+  ext x y
+  refine (congr e e ≪≫ₗ equivOfCompatibleSMul Rp ..).injective ?_
+  suffices e y ⊗ₜ[Rp] e x = e x ⊗ₜ e y by simpa [equivOfCompatibleSMul]
+  conv_lhs => rw [← mul_one (e y), ← smul_eq_mul, smul_tmul, smul_eq_mul,
+    mul_comm, ← smul_eq_mul, ← smul_tmul, smul_eq_mul, mul_one]
+
+variable {R M} in
+theorem tmul_comm {m₁ m₂ : M} : m₁ ⊗ₜ[R] m₂ = m₂ ⊗ₜ m₁ :=
+  DFunLike.congr_fun (tensorProductComm_eq_refl ..) (m₂ ⊗ₜ m₁)
+
+end Module.Invertible
 
 namespace Submodule
 
