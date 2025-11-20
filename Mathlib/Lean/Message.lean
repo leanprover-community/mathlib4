@@ -22,6 +22,7 @@ pluralization.
 -/
 
 /-- `"foo".withPlural "foos" count` returns `"foo"` when `count` is `1`, and `"foos"` otherwise. -/
+@[macro_inline]
 def String.withPlural (singular plural : String) (count : Nat) : String :=
   if count = 1 then singular else plural
 
@@ -29,6 +30,7 @@ def String.withPlural (singular plural : String) (count : Nat) : String :=
 `f!"foo".withPlural f!"foos" count` returns `f!"foo"` when `count` is `1`, and `f!"foos"`
 otherwise.
 -/
+@[macro_inline]
 def Std.Format.withPlural (singular plural : Format) (count : Nat) : Format :=
   if count = 1 then singular else plural
 
@@ -36,6 +38,7 @@ def Std.Format.withPlural (singular plural : Format) (count : Nat) : Format :=
 `m!"foo".withPlural m!"foos" count` returns `m!"foo"` when `count` is `1`, and `m!"foos"`
 otherwise.
 -/
+@[macro_inline]
 def Lean.MessageData.withPlural (singular plural : MessageData) (count : Nat) : MessageData :=
   if count = 1 then singular else plural
 
@@ -43,6 +46,7 @@ def Lean.MessageData.withPlural (singular plural : MessageData) (count : Nat) : 
 `"one foo".withPlurals "some foos" "no foos" count` returns `"no foos"` when `count` is `0`,
 `"one foo"` when `count` is `1`, and `"some foos"` otherwise.
 -/
+@[macro_inline]
 def String.withPlurals (singular plural zero : String) (count : Nat) : String :=
   if count = 0 then zero else if count = 1 then singular else plural
 
@@ -50,6 +54,7 @@ def String.withPlurals (singular plural zero : String) (count : Nat) : String :=
 `f!"one foo".withPlurals f!"some foos" f!"no foos" count` returns `f!"no foos"` when `count` is `0`,
 `f!"one foo"` when `count` is `1`, and `f!"some foos"` otherwise.
 -/
+@[macro_inline]
 def Std.Format.withPlurals (singular plural zero : Format) (count : Nat) : Format :=
   if count = 0 then zero else if count = 1 then singular else plural
 
@@ -57,6 +62,7 @@ def Std.Format.withPlurals (singular plural zero : Format) (count : Nat) : Forma
 `m!"one foo".withPlurals m!"some foos" m!"no foos" count` returns `m!"no foos"` when `count` is `0`,
 `m!"one foo"` when `count` is `1`, and `m!"some foos"` otherwise.
 -/
+@[macro_inline]
 def Lean.MessageData.withPlurals (singular plural zero : MessageData) (count : Nat) : MessageData :=
   if count = 0 then zero else if count = 1 then singular else plural
 
