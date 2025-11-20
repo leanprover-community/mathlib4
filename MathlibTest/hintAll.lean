@@ -115,6 +115,14 @@ info: Try these:
 #guard_msgs in
 example {P : Nat → Prop} (h : { x // P x }) : ∃ x, P x ∧ 0 ≤ x := by hint
 
+def f (p : Nat × Nat) := (p.fst, p.snd)
+/--
+info: Try these:
+  [apply] 🎉 abel
+-/
+#guard_msgs in
+example : f = id := by hint
+
 section multiline_hint
 
 local macro "this_is_a_multiline_exact" ppLine t:term : tactic => `(tactic| exact $t)
