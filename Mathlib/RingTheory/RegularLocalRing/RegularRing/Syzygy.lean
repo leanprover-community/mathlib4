@@ -3,15 +3,20 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.RingTheory.DiscreteValuationRing.Basic
-import Mathlib.RingTheory.KrullDimension.PID
-import Mathlib.RingTheory.RegularLocalRing.RegularRing.GlobalDimension
-import Mathlib.RingTheory.RegularLocalRing.RegularRing.Polynomial
+module
+
+public import Mathlib.RingTheory.DiscreteValuationRing.Basic
+public import Mathlib.RingTheory.KrullDimension.PID
+public import Mathlib.RingTheory.RegularLocalRing.RegularRing.GlobalDimension
+public import Mathlib.RingTheory.RegularLocalRing.RegularRing.Polynomial
+
 /-!
 
 # Hilbert's Syzygy Theorem
 
 -/
+
+@[expose] public section
 
 universe u v
 
