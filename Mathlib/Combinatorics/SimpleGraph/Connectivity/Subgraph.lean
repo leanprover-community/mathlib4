@@ -3,8 +3,10 @@ Copyright (c) 2023 Kyle Miller, Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Rémi Bottinelli
 -/
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-import Mathlib.Data.Set.Card
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Data.Set.Card
 
 /-!
 # Connectivity of subgraphs and induced graphs
@@ -15,6 +17,8 @@ import Mathlib.Data.Set.Card
   connectivity predicates via `SimpleGraph.subgraph.coe`.
 
 -/
+
+@[expose] public section
 
 namespace SimpleGraph
 
@@ -270,6 +274,16 @@ theorem toSubgraph_adj_iff {u v u' v'} (w : G.Walk u v) :
 lemma mem_support_of_adj_toSubgraph {u v u' v' : V} {p : G.Walk u v} (hp : p.toSubgraph.Adj u' v') :
     u' ∈ p.support := p.mem_verts_toSubgraph.mp (p.toSubgraph.edge_vert hp)
 
+lemma adj_toSubgraph_iff_mem_edges {u v u' v' : V} {p : G.Walk u v} :
+    p.toSubgraph.Adj u' v' ↔ s(u', v') ∈ p.edges := by
+  rw [← p.mem_edges_toSubgraph, Subgraph.mem_edgeSet]
+
+lemma toSubgraph_bypass_le_toSubgraph {u v : V} {p : G.Walk u v} [DecidableEq V] :
+    p.bypass.toSubgraph ≤ p.toSubgraph := by
+  constructor
+  · simpa using p.support_bypass_subset
+  · simpa [adj_toSubgraph_iff_mem_edges] using fun _ _ h ↦ p.edges_toPath_subset h
+
 namespace IsPath
 
 lemma neighborSet_toSubgraph_startpoint {u v} {p : G.Walk u v}
@@ -375,11 +389,10 @@ lemma ncard_neighborSet_toSubgraph_eq_two {u v} {p : G.Walk u u} (hpc : p.IsCycl
     (h : v ∈ p.support) : (p.toSubgraph.neighborSet v).ncard = 2 := by
   simp only [SimpleGraph.Walk.mem_support_iff_exists_getVert] at h ⊢
   obtain ⟨i, hi⟩ := h
-  by_cases he : i = 0 ∨ i = p.length
+  by_cases! he : i = 0 ∨ i = p.length
   · have huv : u = v := by aesop
     rw [← huv, hpc.neighborSet_toSubgraph_endpoint]
     exact Set.ncard_pair hpc.snd_ne_penultimate
-  push_neg at he
   rw [← hi.1, hpc.neighborSet_toSubgraph_internal he.1 (by cutsat)]
   exact Set.ncard_pair (hpc.getVert_sub_one_ne_getVert_add_one (by cutsat))
 

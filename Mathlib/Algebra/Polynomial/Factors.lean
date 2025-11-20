@@ -3,7 +3,9 @@ Copyright (c) 2025 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.Polynomial.FieldDivision
+module
+
+public import Mathlib.Algebra.Polynomial.FieldDivision
 
 /-!
 # Split polynomials
@@ -20,6 +22,8 @@ A polynomial `f : R[X]` factors if it is a product of constant and monic linear 
 - Redefine `Splits` in terms of `Factors` and then deprecate `Splits`.
 
 -/
+
+@[expose] public section
 
 variable {R : Type*}
 
@@ -221,7 +225,7 @@ theorem factors_mul_iff (hf₀ : f ≠ 0) (hg₀ : g ≠ 0) :
   generalize hn : p.natDegree = n
   induction n generalizing p f g with
   | zero =>
-    rw [← hp, natDegree_mul hf₀ hg₀, Nat.add_eq_zero] at hn
+    rw [← hp, natDegree_mul hf₀ hg₀, Nat.add_eq_zero_iff] at hn
     exact ⟨factors_of_natDegree_eq_zero hn.1, factors_of_natDegree_eq_zero hn.2⟩
   | succ n ih =>
     obtain ⟨a, ha⟩ := Factors.exists_eval_eq_zero h (degree_ne_of_natDegree_ne <| hn ▸ by aesop)

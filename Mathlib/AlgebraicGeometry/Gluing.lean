@@ -3,9 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Restrict
-import Mathlib.CategoryTheory.LocallyDirected
-import Mathlib.Geometry.RingedSpace.PresheafedSpace.Gluing
+module
+
+public import Mathlib.AlgebraicGeometry.Restrict
+public import Mathlib.CategoryTheory.LocallyDirected
+public import Mathlib.Geometry.RingedSpace.PresheafedSpace.Gluing
 
 /-!
 # Gluing Schemes
@@ -48,6 +50,8 @@ All the hard work is done in `AlgebraicGeometry/PresheafedSpace/Gluing.lean` whe
 presheafed spaces, sheafed spaces, and locally ringed spaces.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

@@ -3,7 +3,9 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.NhdsWithin
+module
+
+public import Mathlib.Topology.NhdsWithin
 
 /-!
 # Neighborhoods and continuity relative to a subset
@@ -19,6 +21,8 @@ these restricted notions and the corresponding notions for the subtype
 equipped with the subspace topology.
 
 -/
+
+@[expose] public section
 
 open Set Filter Function Topology
 
@@ -286,7 +290,7 @@ theorem ContinuousWithinAt.diff_iff
     h.mono diff_subset⟩
 
 /-- See also `continuousWithinAt_diff_singleton` for the case of `s \ {y}`, but
-requiring `T1Space α. -/
+requiring `T1Space α`. -/
 @[simp]
 theorem continuousWithinAt_diff_self :
     ContinuousWithinAt f (s \ {x}) x ↔ ContinuousWithinAt f s x :=
@@ -307,6 +311,7 @@ theorem antitone_continuousOn {f : α → β} : Antitone (ContinuousOn f) := fun
 ## Relation between `ContinuousAt` and `ContinuousWithinAt`
 -/
 
+@[fun_prop]
 theorem ContinuousAt.continuousWithinAt (h : ContinuousAt f x) :
     ContinuousWithinAt f s x :=
   ContinuousWithinAt.mono ((continuousWithinAt_univ f x).2 h) (subset_univ _)
@@ -335,6 +340,7 @@ theorem Continuous.continuousOn (h : Continuous f) : ContinuousOn f s := by
   rw [← continuousOn_univ] at h
   exact h.mono (subset_univ _)
 
+@[fun_prop]
 theorem Continuous.continuousWithinAt (h : Continuous f) :
     ContinuousWithinAt f s x :=
   h.continuousAt.continuousWithinAt

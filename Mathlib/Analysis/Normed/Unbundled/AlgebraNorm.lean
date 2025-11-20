@@ -3,8 +3,10 @@ Copyright (c) 2024 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
-import Mathlib.Analysis.Seminorm
+module
+
+public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
+public import Mathlib.Analysis.Seminorm
 
 /-!
 # Algebra norms
@@ -21,6 +23,8 @@ We define algebra norms and multiplicative algebra norms.
 
 norm, algebra norm
 -/
+
+@[expose] public section
 
 /-- An algebra norm on an `R`-algebra `S` is a ring norm on `S` compatible with the
 action of `R`. -/

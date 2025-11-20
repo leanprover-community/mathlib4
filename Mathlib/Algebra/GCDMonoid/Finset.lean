@@ -3,8 +3,10 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.Finset.Fold
-import Mathlib.Algebra.GCDMonoid.Multiset
+module
+
+public import Mathlib.Data.Finset.Fold
+public import Mathlib.Algebra.GCDMonoid.Multiset
 
 /-!
 # GCD and LCM operations on finsets
@@ -25,6 +27,8 @@ TODO: simplify with a tactic and `Data.Finset.Lattice`
 
 finset, gcd
 -/
+
+@[expose] public section
 
 variable {ι α β γ : Type*}
 
@@ -233,11 +237,10 @@ theorem extract_gcd' (f g : β → α) (hs : ∃ x, x ∈ s ∧ f x ≠ 0)
 theorem extract_gcd (f : β → α) (hs : s.Nonempty) :
     ∃ g : β → α, (∀ b ∈ s, f b = s.gcd f * g b) ∧ s.gcd g = 1 := by
   classical
-    by_cases h : ∀ x ∈ s, f x = (0 : α)
+    by_cases! h : ∀ x ∈ s, f x = (0 : α)
     · refine ⟨fun _ ↦ 1, fun b hb ↦ by rw [h b hb, gcd_eq_zero_iff.2 h, mul_one], ?_⟩
       rw [gcd_eq_gcd_image, image_const hs, gcd_singleton, id, normalize_one]
     · choose g' hg using @gcd_dvd _ _ _ _ s f
-      push_neg at h
       refine ⟨fun b ↦ if hb : b ∈ s then g' hb else 0, fun b hb ↦ ?_,
           extract_gcd' f _ h fun b hb ↦ ?_⟩
       · simp only [hb, hg, dite_true]

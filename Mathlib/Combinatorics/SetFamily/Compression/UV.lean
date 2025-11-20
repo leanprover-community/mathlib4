@@ -3,7 +3,9 @@ Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.SetFamily.Shadow
+module
+
+public import Mathlib.Combinatorics.SetFamily.Shadow
 
 /-!
 # UV-compressions
@@ -45,6 +47,8 @@ Boolean algebra, so that one can use it for `Set α`.
 
 compression, UV-compression, shadow
 -/
+
+@[expose] public section
 
 
 open Finset

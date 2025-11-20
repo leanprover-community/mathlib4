@@ -3,9 +3,11 @@ Copyright (c) 2021 Manuel Candales. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Manuel Candales, Benjamin Davidson
 -/
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
-import Mathlib.Geometry.Euclidean.Sphere.Basic
-import Mathlib.Geometry.Euclidean.Sphere.Tangent
+module
+
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
+public import Mathlib.Geometry.Euclidean.Sphere.Basic
+public import Mathlib.Geometry.Euclidean.Sphere.Tangent
 
 /-!
 # Power of a point (intersecting chords and secants)
@@ -24,6 +26,8 @@ secants) in spheres in real inner product spaces and Euclidean affine spaces.
 * `Sphere.mul_dist_eq_abs_power`: The product of distances equals the absolute value of power.
 * `Sphere.dist_sq_eq_mul_dist_of_tangent_and_secant`: Tangent-Secant Theorem.
 -/
+
+@[expose] public section
 
 
 open Real

@@ -3,11 +3,13 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Aesop
-import Mathlib.Data.Multiset.Defs
-import Mathlib.Data.Set.Pairwise.Basic
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Order.Hom.Basic
+module
+
+public import Aesop
+public import Mathlib.Data.Multiset.Defs
+public import Mathlib.Data.Set.Pairwise.Basic
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # Finite sets
@@ -57,6 +59,8 @@ Most constructions involving `Finset`s have been split off to their own files.
 finite sets, finset
 
 -/
+
+@[expose] public section
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.

@@ -3,11 +3,13 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Patrick Massot
 -/
-import Mathlib.Algebra.GroupWithZero.Indicator
-import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Topology.Homeomorph.Defs
-import Mathlib.Topology.Separation.Hausdorff
+module
+
+public import Mathlib.Algebra.GroupWithZero.Indicator
+public import Mathlib.Algebra.Module.Basic
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Topology.Homeomorph.Defs
+public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # The topological support of a function
@@ -28,6 +30,8 @@ The definitions have been put in the root namespace following many other topolog
 like `Embedding`. Since then, `Embedding` was renamed to `Topology.IsEmbedding`, so it might be
 worth reconsidering namespacing the definitions here.
 -/
+
+@[expose] public section
 
 
 open Function Set Filter Topology
@@ -55,6 +59,20 @@ theorem isClosed_mulTSupport (f : X → α) : IsClosed (mulTSupport f) :=
 @[to_additive]
 theorem mulTSupport_eq_empty_iff {f : X → α} : mulTSupport f = ∅ ↔ f = 1 := by
   rw [mulTSupport, closure_empty_iff, mulSupport_eq_empty_iff]
+
+@[to_additive (attr := simp)]
+theorem mulTSupport_fun_one : mulTSupport (fun _ ↦ 1 : X → α) = ∅ := by
+  rw [mulTSupport, mulSupport_fun_one, closure_empty]
+
+@[to_additive (attr := simp)]
+theorem mulTSupport_one : mulTSupport (1 : X → α) = ∅ := by
+  rw [mulTSupport, mulSupport_one, closure_empty]
+
+@[to_additive]
+theorem mulTSupport_binop_subset [One β] [One γ] (op : α → β → γ)
+    (op1 : op 1 1 = 1) (f : X → α) (g : X → β) :
+    mulTSupport (fun x ↦ op (f x) (g x)) ⊆ mulTSupport f ∪ mulTSupport g :=
+  closure_mono (mulSupport_binop_subset op op1 f g) |>.trans closure_union.subset
 
 @[to_additive]
 theorem image_eq_one_of_notMem_mulTSupport {f : X → α} {x : X} (hx : x ∉ mulTSupport f) : f x = 1 :=
@@ -86,20 +104,49 @@ theorem tsupport_mul_subset_right {α : Type*} [MulZeroClass α] {f g : X → α
 
 end One
 
-theorem tsupport_smul_subset_left {M α} [TopologicalSpace X] [Zero M] [Zero α] [SMulWithZero M α]
+section Operations
+
+variable [TopologicalSpace X]
+
+@[to_additive (attr := simp)]
+theorem mulTSupport_mul [MulOneClass α] (f g : X → α) :
+    (mulTSupport fun x ↦ f x * g x) ⊆ mulTSupport f ∪ mulTSupport g :=
+  mulTSupport_binop_subset (· * ·) (by simp) f g
+
+@[to_additive]
+theorem mulTSupport_pow [Monoid α] (f : X → α) (n : ℕ) :
+    (mulTSupport fun x => f x ^ n) ⊆ mulTSupport f :=
+  closure_mono <| mulSupport_pow f n
+
+@[to_additive (attr := simp)]
+theorem mulTSupport_fun_inv [DivisionMonoid α] (f : X → α) :
+    (mulTSupport fun x => (f x)⁻¹) = mulTSupport f :=
+  congrArg closure <| mulSupport_fun_inv f
+
+@[to_additive (attr := simp)]
+theorem mulTSupport_inv [DivisionMonoid α] (f : X → α) :
+    mulTSupport f⁻¹ = mulTSupport f :=
+  mulTSupport_fun_inv f
+
+@[to_additive]
+theorem mulTSupport_mul_inv [DivisionMonoid α] (f g : X → α) :
+    (mulTSupport fun x => f x * (g x)⁻¹) ⊆ mulTSupport f ∪ mulTSupport g :=
+  mulTSupport_binop_subset (· * ·⁻¹) (by simp) f g
+
+@[to_additive]
+theorem mulTSupport_div [DivisionMonoid α] (f g : X → α) :
+    (mulTSupport fun x => f x / g x) ⊆ mulTSupport f ∪ mulTSupport g :=
+  mulTSupport_binop_subset (· / ·) one_div_one f g
+
+theorem tsupport_smul_subset_left {M α} [Zero M] [Zero α] [SMulWithZero M α]
     (f : X → M) (g : X → α) : (tsupport fun x => f x • g x) ⊆ tsupport f :=
   closure_mono <| support_smul_subset_left f g
 
-theorem tsupport_smul_subset_right {M α} [TopologicalSpace X] [Zero α] [SMulZeroClass M α]
+theorem tsupport_smul_subset_right {M α} [Zero α] [SMulZeroClass M α]
     (f : X → M) (g : X → α) : (tsupport fun x => f x • g x) ⊆ tsupport g :=
   closure_mono <| support_smul_subset_right f g
 
-@[to_additive]
-theorem mulTSupport_mul [TopologicalSpace X] [MulOneClass α] {f g : X → α} :
-    (mulTSupport fun x ↦ f x * g x) ⊆ mulTSupport f ∪ mulTSupport g :=
-  closure_minimal
-    ((mulSupport_mul f g).trans (union_subset_union (subset_mulTSupport _) (subset_mulTSupport _)))
-    (isClosed_closure.union isClosed_closure)
+end Operations
 
 section
 
@@ -323,7 +370,7 @@ theorem HasCompactMulSupport.mul (hf : HasCompactMulSupport f) (hf' : HasCompact
 @[to_additive, simp]
 protected lemma HasCompactMulSupport.one {α β : Type*} [TopologicalSpace α] [One β] :
     HasCompactMulSupport (1 : α → β) := by
-  simp [HasCompactMulSupport, mulTSupport]
+  simp [HasCompactMulSupport]
 
 end Monoid
 

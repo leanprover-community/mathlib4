@@ -3,9 +3,11 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.Algebra.Group.Quotient
-import Mathlib.RingTheory.Ideal.Quotient.Defs
+module
+
+public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.Algebra.Group.Quotient
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
 # Ideals and quotients of topological rings
@@ -14,6 +16,8 @@ In this file we define `Ideal.closure` to be the topological closure of an ideal
 ring. We also define a `TopologicalSpace` structure on the quotient of a topological ring by an
 ideal and prove that the quotient is a topological ring.
 -/
+
+@[expose] public section
 
 open Topology
 

@@ -3,10 +3,12 @@ Copyright (c) 2019 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
-import Mathlib.Data.ENNReal.Inv
-import Mathlib.Data.EReal.Operations
-import Mathlib.Data.Sign.Basic
-import Mathlib.Data.Nat.Cast.Order.Field
+module
+
+public import Mathlib.Data.ENNReal.Inv
+public import Mathlib.Data.EReal.Operations
+public import Mathlib.Data.Sign.Basic
+public import Mathlib.Data.Nat.Cast.Order.Field
 
 /-!
 # Absolute value, sign, inversion and division on extended real numbers
@@ -16,6 +18,8 @@ This file defines an absolute value and sign function on `EReal` and uses them t
 Then it defines the inverse of an `EReal` as `⊤⁻¹ = ⊥⁻¹ = 0`, which leads to a
 `DivInvMonoid` instance and division.
 -/
+
+@[expose] public section
 
 open ENNReal Set SignType
 
@@ -547,7 +551,7 @@ open Lean Meta Qq Function
 
 /-- Extension for the `positivity` tactic: inverse of an `EReal`. -/
 @[positivity (_⁻¹ : EReal)]
-def evalERealInv : PositivityExt where eval {u α} zα pα e := do
+meta def evalERealInv : PositivityExt where eval {u α} zα pα e := do
   match u, α, e with
   | 0, ~q(EReal), ~q($a⁻¹) =>
     assertInstancesCommute
@@ -558,7 +562,7 @@ def evalERealInv : PositivityExt where eval {u α} zα pα e := do
 
 /-- Extension for the `positivity` tactic: ratio of two `EReal`s. -/
 @[positivity (_ / _ : EReal)]
-def evalERealDiv : PositivityExt where eval {u α} zα pα e := do
+meta def evalERealDiv : PositivityExt where eval {u α} zα pα e := do
   match u, α, e with
   | 0, ~q(EReal), ~q($a / $b) =>
     assertInstancesCommute

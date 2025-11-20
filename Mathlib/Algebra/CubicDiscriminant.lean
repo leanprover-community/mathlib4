@@ -3,8 +3,10 @@ Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.Algebra.Polynomial.Splits
-import Mathlib.Tactic.IntervalCases
+module
+
+public import Mathlib.Algebra.Polynomial.Splits
+public import Mathlib.Tactic.IntervalCases
 
 /-!
 # Cubics and discriminants
@@ -30,6 +32,8 @@ This file defines cubic polynomials over a semiring and their discriminants over
 
 cubic, discriminant, polynomial, root
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -84,12 +88,9 @@ section Coeff
 
 private theorem coeffs : (∀ n > 3, P.toPoly.coeff n = 0) ∧ P.toPoly.coeff 3 = P.a ∧
     P.toPoly.coeff 2 = P.b ∧ P.toPoly.coeff 1 = P.c ∧ P.toPoly.coeff 0 = P.d := by
-  simp only [toPoly, coeff_add, coeff_C, coeff_C_mul_X, coeff_C_mul_X_pow]
-  norm_num
-  intro n hn
-  repeat' rw [if_neg]
-  any_goals cutsat
-  repeat' rw [zero_add]
+  simp only [Cubic.toPoly, Polynomial.coeff_add, Polynomial.coeff_C, Polynomial.coeff_C_mul_X,
+    Polynomial.coeff_C_mul_X_pow]
+  grind [zero_add]
 
 @[simp]
 theorem coeff_eq_zero {n : ℕ} (hn : 3 < n) : P.toPoly.coeff n = 0 :=

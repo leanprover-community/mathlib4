@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Interval.Set.OrderEmbedding
-import Mathlib.Order.Antichain
-import Mathlib.Order.SetNotation
+module
+
+public import Mathlib.Order.Interval.Set.OrderEmbedding
+public import Mathlib.Order.Antichain
+public import Mathlib.Order.SetNotation
 
 /-!
 # Order-connected sets
@@ -18,6 +20,8 @@ the `OrderTopology`, then this condition is equivalent to `IsPreconnected s`. If
 In this file we prove that intersection of a family of `OrdConnected` sets is `OrdConnected` and
 that all standard intervals are `OrdConnected`.
 -/
+
+@[expose] public section
 
 open scoped Interval
 open Set
@@ -222,7 +226,7 @@ theorem ordConnected_preimage {F : Type*} [FunLike F α β] [OrderHomClass F α 
 @[instance]
 theorem ordConnected_image {E : Type*} [EquivLike E α β] [OrderIsoClass E α β] (e : E) {s : Set α}
     [hs : OrdConnected s] : OrdConnected (e '' s) := by
-  erw [(e : α ≃o β).image_eq_preimage]
+  erw [(e : α ≃o β).image_eq_preimage_symm]
   apply ordConnected_preimage (e : α ≃o β).symm
 
 @[instance]

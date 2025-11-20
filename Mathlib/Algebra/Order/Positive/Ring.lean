@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Algebraic structures on the set of positive numbers
@@ -14,6 +16,8 @@ In this file we define various instances (`AddSemigroup`, `OrderedCommMonoid` et
 type `{x : R // 0 < x}`. In each case we try to require the weakest possible typeclass
 assumptions on `R` but possibly, there is a room for improvements.
 -/
+
+@[expose] public section
 
 
 open Function

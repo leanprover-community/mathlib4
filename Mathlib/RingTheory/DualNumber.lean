@@ -3,10 +3,12 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.DualNumber
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.RingTheory.Nilpotent.Defs
+module
+
+public import Mathlib.Algebra.DualNumber
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.PrincipalIdealDomain
+public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
 # Algebraic properties of dual numbers
@@ -18,6 +20,8 @@ import Mathlib.RingTheory.Nilpotent.Defs
   ring.
 
 -/
+
+@[expose] public section
 
 namespace TrivSqZeroExt
 

@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Topology.Homeomorph.Defs
-import Mathlib.Topology.Maps.Basic
-import Mathlib.Topology.Separation.SeparatedNhds
+module
+
+public import Mathlib.Topology.Homeomorph.Defs
+public import Mathlib.Topology.Maps.Basic
+public import Mathlib.Topology.Separation.SeparatedNhds
 
 /-!
 # Disjoint unions and products of topological spaces
@@ -33,6 +35,8 @@ neighborhood filters and so on.
 product, sum, disjoint union
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

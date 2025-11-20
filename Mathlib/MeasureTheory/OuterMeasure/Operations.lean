@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Group.Indicator
-import Mathlib.MeasureTheory.OuterMeasure.Basic
+module
+
+public import Mathlib.Algebra.Order.Group.Indicator
+public import Mathlib.MeasureTheory.OuterMeasure.Basic
 
 /-!
 # Operations on outer measures
@@ -22,6 +24,8 @@ We also show that outer measures on a type `α` form a complete lattice.
 outer measure
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

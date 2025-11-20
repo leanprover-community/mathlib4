@@ -3,9 +3,11 @@ Copyright (c) 2025 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Floris van Doorn
 -/
-import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Pullbacks
+module
+
+public import Mathlib.CategoryTheory.Limits.Opposites
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Pullbacks
 
 /-!
 # Equalizers and coequalizers in `C` and `Cᵒᵖ`
@@ -13,6 +15,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Pullbacks
 We construct equalizers and coequalizers in the opposite categories.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 

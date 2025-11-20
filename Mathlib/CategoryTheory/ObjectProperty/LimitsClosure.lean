@@ -3,10 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
-import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
-import Mathlib.Order.TransfiniteIteration
-import Mathlib.SetTheory.Cardinal.HasCardinalLT
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
+public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
+public import Mathlib.Order.TransfiniteIteration
+public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
 /-!
 # Closure of a property of objects under limits of certain shapes
@@ -17,6 +19,9 @@ family of categories `J : α → Type _`, we introduce the closure
 and under certain smallness assumptions, we show that its essentially small.
 
 -/
+
+@[expose] public section
+
 universe w w' t v' u' v u
 
 namespace CategoryTheory.ObjectProperty
@@ -26,7 +31,7 @@ open Limits
 variable {C : Type u} [Category.{v} C] (P : ObjectProperty C)
   {α : Type t} (J : α → Type u') [∀ a, Category.{v'} (J a)]
 
-/-- The closure of property of objects of a category under limits of
+/-- The closure of a property of objects of a category under limits of
 shape `J a` for a family of categories `J`. -/
 inductive limitsClosure : ObjectProperty C
   | of_mem (X : C) (hX : P X) : limitsClosure X

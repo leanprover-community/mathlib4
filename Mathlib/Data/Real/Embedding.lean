@@ -3,10 +3,12 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
-import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
-import Mathlib.Algebra.Order.Hom.Monoid
-import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Data.Real.Archimedean
+module
+
+public import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
+public import Mathlib.Algebra.Order.Hom.Monoid
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Data.Real.Archimedean
 
 /-!
 # Embedding of archimedean groups into reals
@@ -19,6 +21,8 @@ This file provides embedding of any archimedean groups into reals.
 * `Archimedean.exists_orderAddMonoidHom_real_injective` states there exists an injective `M →+o ℝ`
   for any archimedean group `M` without specifying the `1` element in `M`.
 -/
+
+@[expose] public section
 
 
 variable {M : Type*}

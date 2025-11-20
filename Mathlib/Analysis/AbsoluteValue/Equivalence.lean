@@ -3,8 +3,10 @@ Copyright (c) 2025 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Analysis.Normed.Field.WithAbs
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Analysis.Normed.Field.WithAbs
 
 /-!
 # Equivalence of real-valued absolute values
@@ -12,6 +14,8 @@ import Mathlib.Analysis.Normed.Field.WithAbs
 Two absolute values `v₁, v₂ : AbsoluteValue R ℝ` are *equivalent* if there exists a
 positive real number `c` such that `v₁ x ^ c = v₂ x` for all `x : R`.
 -/
+
+@[expose] public section
 
 namespace AbsoluteValue
 
@@ -159,7 +163,7 @@ open scoped Topology
 
 variable {R S : Type*} [Field R] [Field S] [LinearOrder S] {v w : AbsoluteValue R S}
   [TopologicalSpace S] [IsStrictOrderedRing S] [Archimedean S] [OrderTopology S]
-  {ι : Type*} [Fintype ι] [DecidableEq ι] {v : ι → AbsoluteValue R S} {w : AbsoluteValue R S}
+  {ι : Type*} [Fintype ι] {v : ι → AbsoluteValue R S} {w : AbsoluteValue R S}
   {a b : R} {i : ι}
 
 /--
@@ -175,6 +179,7 @@ each `v j` for `j ≠ i`.
 private theorem exists_one_lt_lt_one_pi_of_eq_one (ha : 1 < v i a) (haj : ∀ j ≠ i, v j a < 1)
     (haw : w a = 1) (hb : 1 < v i b) (hbw : w b < 1) :
     ∃ k : R, 1 < v i k ∧ (∀ j ≠ i, v j k < 1) ∧ w k < 1 := by
+  classical
   let c : ℕ → R := fun n ↦ a ^ n * b
   have hcᵢ : Tendsto (fun n ↦ (v i) (c n)) atTop atTop := by
     simpa [c] using Tendsto.atTop_mul_const (by linarith) (tendsto_pow_atTop_atTop_of_one_lt ha)
@@ -202,6 +207,7 @@ each `v j` for `j ≠ i`.
 private theorem exists_one_lt_lt_one_pi_of_one_lt (ha : 1 < v i a) (haj : ∀ j ≠ i, v j a < 1)
     (haw : 1 < w a) (hb : 1 < v i b) (hbw : w b < 1) :
     ∃ k : R, 1 < v i k ∧ (∀ j ≠ i, v j k < 1) ∧ w k < 1 := by
+  classical
   let c : ℕ → R := fun n ↦ 1 / (1 + a⁻¹ ^ n) * b
   have hcᵢ : Tendsto (fun n ↦ v i (c n)) atTop (𝓝 (v i b)) := by
     have : v i a⁻¹ < 1 := map_inv₀ (v i) a ▸ inv_lt_one_of_one_lt₀ ha
@@ -235,12 +241,13 @@ absolute values, then for any `i` there is some `a : R` such that `1 < v i a` an
 theorem exists_one_lt_lt_one_pi_of_not_isEquiv (h : ∀ i, (v i).IsNontrivial)
     (hv : Pairwise fun i j ↦ ¬(v i).IsEquiv (v j)) :
     ∀ i, ∃ (a : R), 1 < v i a ∧ ∀ j ≠ i, v j a < 1 := by
-  let P (ι : Type _) [Fintype ι] : Prop := [DecidableEq ι] →
+  classical
+  let P (ι : Type _) [Fintype ι] : Prop :=
     ∀ v : ι → AbsoluteValue R S, (∀ i, (v i).IsNontrivial) →
       (Pairwise fun i j ↦ ¬(v i).IsEquiv (v j)) → ∀ i, ∃ (a : R), 1 < v i a ∧ ∀ j ≠ i, v j a < 1
   -- Use strong induction on the index.
-  revert hv h; refine induction_subsingleton_or_nontrivial (P := P) ι (fun ι _ _ _ v h hv i ↦ ?_)
-    (fun ι _ _ ih _ v h hv i ↦ ?_) v
+  revert hv h; refine induction_subsingleton_or_nontrivial (P := P) ι (fun ι _ _ v h hv i ↦ ?_)
+    (fun ι _ _ ih v h hv i ↦ ?_) v
   · -- If `ι` is trivial this follows immediately from `(v i).IsNontrivial`.
     let ⟨a, ha⟩ := (h i).exists_abv_gt_one
     exact ⟨a, ha, fun j hij ↦ absurd (Subsingleton.elim i j) hij.symm⟩
@@ -356,7 +363,7 @@ theorem IsEquiv.isEmbedding_equivWithAbs (h : v.IsEquiv w) :
   refine IsInducing.isEmbedding <| isInducing_iff_nhds_zero.2 <| Filter.ext fun U ↦
     ⟨fun hU ↦ ?_, fun hU ↦ ?_⟩
   · exact ⟨WithAbs.equivWithAbs v w '' U, h.equivWithAbs_image_mem_nhds_zero hU,
-      by simp [RingEquiv.image_eq_preimage, Set.preimage_preimage]⟩
+      by simp [RingEquiv.image_eq_preimage_symm, Set.preimage_preimage]⟩
   · rw [← RingEquiv.coe_toEquiv, ← Filter.map_equiv_symm] at hU
     obtain ⟨s, hs, hss⟩ := Filter.mem_map_iff_exists_image.1 hU
     rw [← RingEquiv.coe_toEquiv_symm, WithAbs.equivWithAbs_symm] at hss

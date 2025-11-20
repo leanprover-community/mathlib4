@@ -3,10 +3,11 @@ Copyright (c) 2025 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang
 -/
+module
 
-import Mathlib.NumberTheory.Basic
-import Mathlib.RingTheory.AdicCompletion.Basic
-import Mathlib.RingTheory.Perfection
+public import Mathlib.NumberTheory.Basic
+public import Mathlib.RingTheory.AdicCompletion.Basic
+public import Mathlib.RingTheory.Perfection
 
 /-!
 # Untilt Function
@@ -31,6 +32,8 @@ is not the untilt *functor*.
 ## Tags
 Perfectoid, Tilting equivalence, Untilt
 -/
+
+@[expose] public section
 
 open Perfection Ideal
 
@@ -149,6 +152,7 @@ def untilt : PreTilt O p →* O where
 The composition of the mod `p` map
 with the untilt function equals taking the zeroth component of the perfection.
 -/
+@[simp]
 theorem mk_untilt_eq_coeff_zero (x : PreTilt O p) :
     Ideal.Quotient.mk (Ideal.span {(p : O)}) (x.untilt) = coeff (ModP O p) p 0 x := by
   simp only [untilt]
@@ -160,9 +164,17 @@ The composition of the mod `p` map
 with the untilt function equals taking the zeroth component of the perfection.
 A variation of `PreTilt.mk_untilt_eq_coeff_zero`.
 -/
+@[simp]
 theorem mk_comp_untilt_eq_coeff_zero :
     Ideal.Quotient.mk (Ideal.span {(p : O)}) ∘ untilt = coeff (ModP O p) p 0 :=
   funext mk_untilt_eq_coeff_zero
+
+@[simp]
+theorem untilt_iterate_frobeniusEquiv_symm_pow (x : PreTilt O p) (n : ℕ) :
+    untilt (((frobeniusEquiv (PreTilt O p) p).symm ^[n]) x) ^ p ^ n = x.untilt := by
+  simp only [← map_pow]
+  congr
+  simp
 
 end IsAdicComplete
 

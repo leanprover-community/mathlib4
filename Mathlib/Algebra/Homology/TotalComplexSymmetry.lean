@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.TotalComplex
+module
+
+public import Mathlib.Algebra.Homology.TotalComplex
 
 /-! The symmetry of the total complex of a bicomplex
 
@@ -19,6 +21,8 @@ are compatible `[TotalComplexShapeSymmetrySymmetry c₁ c₂ c]`, then the isomo
 `K.totalFlipIso c` and `K.flip.totalFlipIso c` are inverse to each other.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Ideal TwoSidedIdeal
 

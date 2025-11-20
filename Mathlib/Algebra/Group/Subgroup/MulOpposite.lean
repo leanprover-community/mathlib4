@@ -3,8 +3,10 @@ Copyright (c) 2022 Alex Kontorovich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Eric Wieser
 -/
-import Mathlib.Algebra.Group.Subgroup.Defs
-import Mathlib.Algebra.Group.Submonoid.MulOpposite
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Defs
+public import Mathlib.Algebra.Group.Submonoid.MulOpposite
 
 /-!
 # Mul-opposite subgroups
@@ -13,6 +15,8 @@ import Mathlib.Algebra.Group.Submonoid.MulOpposite
 subgroup, subgroups
 
 -/
+
+@[expose] public section
 
 variable {ι : Sort*} {G : Type*} [Group G]
 

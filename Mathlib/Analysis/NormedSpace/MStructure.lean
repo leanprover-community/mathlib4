@@ -3,10 +3,12 @@ Copyright (c) 2022 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Algebra.Ring.Idempotent
-import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Order.Basic
-import Mathlib.Tactic.NoncommRing
+module
+
+public import Mathlib.Algebra.Ring.Idempotent
+public import Mathlib.Analysis.Normed.Group.Basic
+public import Mathlib.Order.Basic
+public import Mathlib.Tactic.NoncommRing
 
 /-!
 # M-structure
@@ -58,6 +60,8 @@ special case.
 M-summand, M-projection, L-summand, L-projection, M-ideal, M-structure
 
 -/
+
+@[expose] public section
 
 variable (X : Type*) [NormedAddCommGroup X]
 variable {M : Type*} [Ring M] [Module M X]
@@ -192,7 +196,7 @@ instance Subtype.partialOrder [FaithfulSMul M X] :
   le_trans P Q R h₁ h₂ := by
     simp only [coe_inf] at h₁ h₂ ⊢
     rw [h₁, mul_assoc, ← h₂]
-  le_antisymm P Q h₁ h₂ := Subtype.eq (by convert (P.prop.commute Q.prop).eq)
+  le_antisymm P Q h₁ h₂ := Subtype.ext (by convert (P.prop.commute Q.prop).eq)
 
 theorem le_def [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
     P ≤ Q ↔ (P : M) = ↑(P ⊓ Q) :=

@@ -3,11 +3,13 @@ Copyright (c) 2023 Jonas van der Schaaf. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Christian Merten, Jonas van der Schaaf
 -/
-import Mathlib.AlgebraicGeometry.IdealSheaf.Subscheme
-import Mathlib.AlgebraicGeometry.Morphisms.AffineAnd
-import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
-import Mathlib.AlgebraicGeometry.ResidueField
-import Mathlib.CategoryTheory.MorphismProperty.Comma
+module
+
+public import Mathlib.AlgebraicGeometry.IdealSheaf.Subscheme
+public import Mathlib.AlgebraicGeometry.Morphisms.AffineAnd
+public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
+public import Mathlib.AlgebraicGeometry.ResidueField
+public import Mathlib.CategoryTheory.MorphismProperty.Comma
 
 /-!
 
@@ -28,6 +30,8 @@ is a closed immersion and the induced morphisms of stalks are all surjective.
   https://stacks.math.columbia.edu/tag/01HJ.
 
 -/
+
+@[expose] public section
 
 universe v u
 

@@ -3,7 +3,9 @@ Copyright (c) 2021 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Riccardo Brasca
 -/
-import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+module
+
+public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 
 /-!
 # Cyclotomic units.
@@ -28,6 +30,8 @@ We sometimes state series of results of the form `a = u * b`, `IsUnit u` and `As
 Often, `Associated a b` is everything one needs, and it is more convenient to use, we include the
 other version for completeness.
 -/
+
+@[expose] public section
 
 open Polynomial Finset Nat
 

@@ -3,11 +3,13 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
-import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
-import Mathlib.AlgebraicGeometry.Properties
-import Mathlib.RingTheory.RingHom.FinitePresentation
-import Mathlib.RingTheory.Spectrum.Prime.Chevalley
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
+public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
+public import Mathlib.AlgebraicGeometry.Properties
+public import Mathlib.RingTheory.RingHom.FinitePresentation
+public import Mathlib.RingTheory.Spectrum.Prime.Chevalley
 
 /-!
 
@@ -23,6 +25,8 @@ conditions.
 We show that these properties are local, and are stable under compositions.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -106,7 +110,8 @@ nonrec lemma Scheme.Hom.isLocallyConstructible_image (f : X ⟶ Y)
     convert (this (Y.affineCover.pullbackHom f i) (hs.preimage_of_isOpenEmbedding
       ((Y.affineCover.pullback₁ f).f i).isOpenEmbedding)
       ⟨_, rfl⟩).preimage_of_isOpenEmbedding (Y.affineCover.f i).isoOpensRange.inv.isOpenEmbedding
-    refine .trans ?_ ((Scheme.homeoOfIso (Y.affineCover.f i).isoOpensRange).image_eq_preimage _)
+    refine .trans ?_
+      ((Scheme.homeoOfIso (Y.affineCover.f i).isoOpensRange).image_eq_preimage_symm _)
     apply Set.image_injective.mpr Subtype.val_injective
     rw [Set.image_preimage_eq_inter_range, ← Set.image_comp, ← Set.image_comp,
       Subtype.range_coe_subtype, Set.setOf_mem_eq]

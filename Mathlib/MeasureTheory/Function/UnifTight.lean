@@ -3,8 +3,10 @@ Copyright (c) 2023 Igor Khavkine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Igor Khavkine
 -/
-import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
-import Mathlib.MeasureTheory.Function.UniformIntegrable
+module
+
+public import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
+public import Mathlib.MeasureTheory.Function.UniformIntegrable
 
 /-!
 # Uniform tightness
@@ -21,7 +23,7 @@ is also proved later in the file.
   exists some measurable set `s` with finite measure such that the Lp-norm of
   `f i` restricted to `sᶜ` is smaller than `ε` for all `i`.
 
-# Main results
+## Main results
 
 * `MeasureTheory.unifTight_finite`: a finite sequence of Lp functions is uniformly
   tight.
@@ -35,6 +37,8 @@ is also proved later in the file.
 
 uniform integrable, uniformly tight, Vitali convergence theorem
 -/
+
+@[expose] public section
 
 namespace MeasureTheory
 
@@ -175,11 +179,11 @@ private theorem unifTight_fin (hp_top : p ≠ ∞) {n : ℕ} {f : Fin n → α �
     obtain ⟨s, _, hμs, hfε⟩ :=
       (hfLp (Fin.last n)).exists_eLpNorm_indicator_compl_lt hp_top (coe_ne_zero.2 hε.ne')
     refine ⟨s ∪ S, (by finiteness), fun i => ?_⟩
-    by_cases hi : i.val < n
+    by_cases! hi : i.val < n
     · rw [show f i = g ⟨i.val, hi⟩ from rfl, compl_union, ← indicator_indicator]
       apply (eLpNorm_indicator_le _).trans
       exact hFε (Fin.castLT i hi)
-    · obtain rfl : i = Fin.last n := Fin.ext (le_antisymm i.is_le (not_lt.mp hi))
+    · obtain rfl : i = Fin.last n := Fin.ext (le_antisymm i.is_le hi)
       rw [compl_union, inter_comm, ← indicator_indicator]
       exact (eLpNorm_indicator_le _).trans hfε.le
 
@@ -216,9 +220,9 @@ private theorem unifTight_of_tendsto_Lp_zero (hp' : p ≠ ∞) (hf : ∀ n, MemL
   have hF : ∀ n, MemLp (F n) p μ := fun n => hf n
   obtain ⟨s, hμs, hFε⟩ := unifTight_fin hp' hF hε
   refine ⟨s, hμs, fun n => ?_⟩
-  by_cases hn : n < N
+  by_cases! hn : n < N
   · exact hFε ⟨n, hn⟩
-  · exact (eLpNorm_indicator_le _).trans (hNε n (not_lt.mp hn))
+  · exact (eLpNorm_indicator_le _).trans (hNε n hn)
 
 /-- Convergence in Lp implies uniform tightness. -/
 private theorem unifTight_of_tendsto_Lp (hp' : p ≠ ∞) (hf : ∀ n, MemLp (f n) p μ)

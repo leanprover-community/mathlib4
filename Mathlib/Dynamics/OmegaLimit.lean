@@ -3,8 +3,10 @@ Copyright (c) 2020 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo
 -/
-import Mathlib.Dynamics.Flow
-import Mathlib.Tactic.Monotonicity
+module
+
+public import Mathlib.Dynamics.Flow
+public import Mathlib.Tactic.Monotonicity
 
 /-!
 # ω-limits
@@ -29,6 +31,8 @@ The `omegaLimit` scope provides the localised notation `ω` for
 `omegaLimit atBot` respectively for when the acting monoid is
 endowed with an order.
 -/
+
+@[expose] public section
 
 
 open Set Function Filter Topology
@@ -151,7 +155,7 @@ theorem omegaLimit_union : ω f ϕ (s₁ ∪ s₂) = ω f ϕ s₁ ∪ ω f ϕ s�
   · simp only [mem_union, mem_omegaLimit_iff_frequently, union_inter_distrib_right, union_nonempty,
       frequently_or_distrib]
     contrapose!
-    simp only [not_frequently, not_nonempty_iff_eq_empty, ← subset_empty_iff]
+    simp only [← subset_empty_iff]
     rintro ⟨⟨n₁, hn₁, h₁⟩, ⟨n₂, hn₂, h₂⟩⟩
     refine ⟨n₁ ∩ n₂, inter_mem hn₁ hn₂, h₁.mono fun t ↦ ?_, h₂.mono fun t ↦ ?_⟩
     exacts [Subset.trans <| inter_subset_inter_right _ <| preimage_mono inter_subset_left,

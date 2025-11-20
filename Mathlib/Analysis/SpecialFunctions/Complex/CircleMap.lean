@@ -3,8 +3,10 @@ Copyright (c) 2025 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Fabrizio Barroero, Christopher Hoskin
 -/
-import Mathlib.Analysis.SpecialFunctions.Complex.Log
-import Mathlib.Order.Interval.Set.Defs
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Complex.Log
+public import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # circleMap
@@ -18,6 +20,8 @@ This file defines the circle map $θ ↦ c + R e^{θi}$, a parametrization of a 
 ## Tags
 
 -/
+
+@[expose] public section
 noncomputable section circleMap
 
 open Complex Function Metric Real

@@ -3,8 +3,10 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.ElementarySubstructures
-import Mathlib.CategoryTheory.ConcreteCategory.Bundled
+module
+
+public import Mathlib.ModelTheory.ElementarySubstructures
+public import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 
 /-!
 # Bundled First-Order Structures
@@ -20,6 +22,8 @@ This file bundles types together with their first-order structure.
 
 - Define category structures on bundled structures and models.
 -/
+
+@[expose] public section
 
 
 universe u v w w' x

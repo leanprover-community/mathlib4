@@ -3,10 +3,12 @@ Copyright (c) 2025 Christian Merten, Yi Song, Sihan Su. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Yi Song, Sihan Su
 -/
-import Mathlib.RingTheory.Ideal.GoingUp
-import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
-import Mathlib.RingTheory.Flat.Localization
-import Mathlib.RingTheory.Spectrum.Prime.Topology
+module
+
+public import Mathlib.RingTheory.Ideal.GoingUp
+public import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
+public import Mathlib.RingTheory.Flat.Localization
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
 # Going down
@@ -26,6 +28,8 @@ of `S` lying above `q`, there exists a prime `P ≤ Q` of `S` lying above `p`.
 - An integral extension of domains with normal base satisfies going down.
 
 -/
+
+@[expose] public section
 
 /--
 An `R`-algebra `S` satisfies `Algebra.HasGoingDown R S` if for every pair of

@@ -3,10 +3,12 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
-import Mathlib.MeasureTheory.Measure.Complex
-import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
-import Mathlib.MeasureTheory.VectorMeasure.WithDensity
+module
+
+public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
+public import Mathlib.MeasureTheory.Measure.Complex
+public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
+public import Mathlib.MeasureTheory.VectorMeasure.WithDensity
 
 /-!
 # Lebesgue decomposition
@@ -38,6 +40,8 @@ to `ν`.
 
 Lebesgue decomposition theorem
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -98,11 +102,10 @@ instance haveLebesgueDecomposition_smul (s : SignedMeasure α) (μ : Measure α)
 
 instance haveLebesgueDecomposition_smul_real (s : SignedMeasure α) (μ : Measure α)
     [s.HaveLebesgueDecomposition μ] (r : ℝ) : (r • s).HaveLebesgueDecomposition μ := by
-  by_cases hr : 0 ≤ r
+  by_cases! hr : 0 ≤ r
   · lift r to ℝ≥0 using hr
     exact s.haveLebesgueDecomposition_smul μ _
-  · rw [not_le] at hr
-    refine
+  · refine
       { posPart := by
           rw [toJordanDecomposition_smul_real, JordanDecomposition.real_smul_posPart_neg _ _ hr]
           infer_instance

@@ -3,9 +3,12 @@ Copyright (c) 2024 Arend Mellendijk. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
-import Mathlib.Algebra.Order.Antidiag.Pi
-import Mathlib.NumberTheory.ArithmeticFunction
-import Mathlib.Tactic.IntervalCases
+module
+
+public import Mathlib.Algebra.Order.Antidiag.Pi
+public import Mathlib.NumberTheory.ArithmeticFunction
+public import Mathlib.Tactic.IntervalCases
+import Mathlib.Data.PNat.Basic
 
 /-!
 # Sets of tuples with a fixed product
@@ -19,6 +22,8 @@ This file defines the finite set of `d`-tuples of natural numbers with a fixed p
 * There are `3^(ω n)` pairs of natural numbers whose `lcm` is `n`, when `n` is squarefree
   (`card_pair_lcm_eq`)
 -/
+
+@[expose] public section
 
 open Finset
 open scoped BigOperators ArithmeticFunction

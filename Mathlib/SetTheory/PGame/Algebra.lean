@@ -3,10 +3,12 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Yuyang Zhao
 -/
-import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.SetTheory.PGame.Order
-import Mathlib.Data.Nat.Cast.Defs
-import Mathlib.Tactic.Linter.DeprecatedModule
+module
+
+public import Mathlib.Algebra.Order.ZeroLEOne
+public import Mathlib.SetTheory.PGame.Order
+public import Mathlib.Data.Nat.Cast.Defs
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
 deprecated_module
   "This module is now at `CombinatorialGames.Game.IGame` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
@@ -31,6 +33,8 @@ equivalence relations at the level of pregames, the notion of a `Relabelling` of
 (defined in `Mathlib/SetTheory/PGame/Basic.lean`); for example, there is a relabelling between
 `x + (y + z)` and `(x + y) + z`.
 -/
+
+@[expose] public section
 
 namespace SetTheory.PGame
 

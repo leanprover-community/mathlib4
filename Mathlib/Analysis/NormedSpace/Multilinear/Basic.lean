@@ -3,11 +3,13 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Sophie Morel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Operator.NormedSpace
-import Mathlib.Logic.Embedding.Basic
-import Mathlib.Data.Fintype.CardEmbedding
-import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
-import Mathlib.Topology.Algebra.Module.Multilinear.Topology
+module
+
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Logic.Embedding.Basic
+public import Mathlib.Data.Fintype.CardEmbedding
+public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
+public import Mathlib.Topology.Algebra.Module.Multilinear.Topology
 
 /-!
 # Operator norm on the space of continuous multilinear maps
@@ -44,6 +46,8 @@ the final result is independent of the order. While everything could be done fol
 approach, it turns out that direct proofs are easier and more efficient.
 -/
 
+@[expose] public section
+
 suppress_compilation
 
 noncomputable section
@@ -76,7 +80,7 @@ instance ContinuousMultilinearMap.instContinuousEval :
     ContinuousEval (ContinuousMultilinearMap 𝕜 E F) (Π i, E i) F where
   continuous_eval := by
     cases nonempty_fintype ι
-    let _ := IsTopologicalAddGroup.toUniformSpace F
+    let _ := IsTopologicalAddGroup.rightUniformSpace F
     have := isUniformAddGroup_of_addCommGroup (G := F)
     refine (UniformOnFun.continuousOn_eval₂ fun m ↦ ?_).comp_continuous
       (isEmbedding_toUniformOnFun.continuous.prodMap continuous_id) fun (f, x) ↦ f.cont.continuousAt
@@ -155,9 +159,9 @@ theorem bound_of_shell_of_norm_map_coord_zero (f : MultilinearMap 𝕜 E G)
     {ε : ι → ℝ} {C : ℝ} (hε : ∀ i, 0 < ε i) {c : ι → 𝕜} (hc : ∀ i, 1 < ‖c i‖)
     (hf : ∀ m : ∀ i, E i, (∀ i, ε i / ‖c i‖ ≤ ‖m i‖) → (∀ i, ‖m i‖ < ε i) → ‖f m‖ ≤ C * ∏ i, ‖m i‖)
     (m : ∀ i, E i) : ‖f m‖ ≤ C * ∏ i, ‖m i‖ := by
-  rcases em (∃ i, ‖m i‖ = 0) with (⟨i, hi⟩ | hm)
-  · rw [hf₀ hi, prod_eq_zero (mem_univ i) hi, mul_zero]
-  push_neg at hm
+  by_cases! hm : ∃ i, ‖m i‖ = 0
+  · rcases hm with ⟨i, hi⟩
+    rw [hf₀ hi, prod_eq_zero (mem_univ i) hi, mul_zero]
   choose δ hδ0 hδm_lt hle_δm _ using fun i => rescale_to_shell_semi_normed (hc i) (hε i) (hm i)
   have hδ0 : 0 < ∏ i, ‖δ i‖ := prod_pos fun i _ => norm_pos_iff.2 (hδ0 i)
   simpa [map_smul_univ, norm_smul, prod_mul_distrib, mul_left_comm C, hδ0] using

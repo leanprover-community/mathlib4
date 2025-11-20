@@ -3,11 +3,14 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Comma.Over.Basic
-import Mathlib.CategoryTheory.Limits.Comma
-import Mathlib.CategoryTheory.Limits.ConeCategory
-import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.CategoryTheory.Limits.Comma
+public import Mathlib.CategoryTheory.Limits.ConeCategory
+public import Mathlib.CategoryTheory.Limits.Creates
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 
 /-!
 # Limits and colimits in the over and under categories
@@ -19,6 +22,8 @@ Note that the folder `CategoryTheory.Limits.Shapes.Constructions.Over` further s
 `forget X : Over X ⥤ C` creates connected limits (so `Over X` has connected limits), and that
 `Over X` has `J`-indexed products if `C` has `J`-indexed wide pullbacks.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -39,6 +44,9 @@ instance hasColimit_of_hasColimit_comp_forget (F : J ⥤ Over X) [i : HasColimit
   CostructuredArrow.hasColimit (i₁ := i)
 
 instance [HasColimitsOfShape J C] : HasColimitsOfShape J (Over X) where
+
+instance [HasFiniteColimits C] : HasFiniteColimits (Over X) where
+  out _ _ _ := inferInstance
 
 instance [HasColimits C] : HasColimits (Over X) :=
   ⟨inferInstance⟩

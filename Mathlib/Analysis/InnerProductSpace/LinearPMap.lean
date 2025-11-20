@@ -3,11 +3,13 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.InnerProductSpace.Adjoint
-import Mathlib.Analysis.InnerProductSpace.ProdL2
-import Mathlib.Analysis.Normed.Operator.Extend
-import Mathlib.Topology.Algebra.Module.Equiv
-import Mathlib.Topology.Algebra.Module.LinearPMap
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
+public import Mathlib.Analysis.InnerProductSpace.ProdL2
+public import Mathlib.Analysis.Normed.Operator.Extend
+public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.LinearPMap
 
 /-!
 
@@ -50,10 +52,12 @@ We use the junk value pattern to define the adjoint for all `LinearPMap`s. In th
 Unbounded operators, closed operators
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
-open RCLike LinearPMap
+open RCLike LinearPMap WithLp
 
 open scoped ComplexConjugate
 
@@ -207,7 +211,7 @@ theorem toPMap_adjoint_eq_adjoint_toPMap_of_dense (hp : Dense (p : Set E)) :
     (A.toPMap p).adjoint = A.adjoint.toPMap ⊤ := by
   ext x y hxy
   · simp only [LinearMap.toPMap_domain, Submodule.mem_top, iff_true,
-      LinearPMap.mem_adjoint_domain_iff, LinearMap.coe_comp, innerₛₗ_apply_coe]
+      LinearPMap.mem_adjoint_domain_iff, LinearMap.coe_comp, coe_innerₛₗ_apply]
     exact ((innerSL 𝕜 x).comp <| A.comp <| Submodule.subtypeL _).cont
   refine LinearPMap.adjoint_apply_eq hp _ fun v => ?_
   simp only [adjoint_inner_left, LinearMap.toPMap_apply, coe_coe]
@@ -272,12 +276,12 @@ theorem mem_adjoint_iff (g : Submodule 𝕜 (E × F)) (x : F × E) :
   constructor
   · rintro ⟨y, h1, h2⟩ a b hab
     rw [← h2, WithLp.ofLp_fst, WithLp.ofLp_snd]
-    specialize h1 (b, -a) a b hab rfl
+    specialize h1 (toLp 2 (b, -a)) a b hab rfl
     dsimp at h1
     simp only [inner_neg_left, ← sub_eq_add_neg] at h1
     exact h1
   · intro h
-    refine ⟨x, ?_, rfl⟩
+    refine ⟨toLp 2 x, ?_, rfl⟩
     intro u a b hab hu
     simp [← hu, ← sub_eq_add_neg, h a b hab]
 
@@ -328,7 +332,7 @@ theorem adjoint_isClosed (hT : Dense (T.domain : Set E)) :
     T†.IsClosed := by
   rw [IsClosed, adjoint_graph_eq_graph_adjoint hT, Submodule.adjoint]
   simp only [Submodule.map_coe]
-  rw [LinearEquiv.image_eq_preimage]
+  rw [LinearEquiv.image_eq_preimage_symm]
   exact (Submodule.isClosed_orthogonal _).preimage (WithLp.prod_continuous_toLp _ _ _)
 
 /-- Every self-adjoint `LinearPMap` is closed. -/

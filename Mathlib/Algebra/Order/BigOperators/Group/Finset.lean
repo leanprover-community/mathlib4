@@ -3,14 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Fintype.Card
-import Mathlib.Algebra.Order.BigOperators.Group.Multiset
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.Multiset.OrderedMonoid
-import Mathlib.Tactic.Bound.Attribute
-import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
-import Mathlib.Data.Multiset.Powerset
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+module
+
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Algebra.Order.BigOperators.Group.Multiset
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Data.Multiset.OrderedMonoid
+public import Mathlib.Tactic.Bound.Attribute
+public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+public import Mathlib.Data.Multiset.Powerset
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 
 /-!
 # Big operators on a finset in ordered groups
@@ -18,6 +20,8 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 This file contains the results concerning the interaction of multiset big operators with ordered
 groups/monoids.
 -/
+
+@[expose] public section
 
 assert_not_exists Ring
 
@@ -235,6 +239,22 @@ lemma prod_image_le_of_one_le [MulLeftMono N]
   exact ⟨i, mem_filter.mpr ⟨hi, hig⟩⟩
 
 end OrderedCommMonoid
+
+section ProdSum
+
+variable [CommMonoid α] [AddCommMonoid β] [Preorder β] [AddLeftMono β]
+  (s : Finset ι) {f : ι → α} (g : α → β)
+
+theorem apply_prod_le_sum_apply (h_one : g 1 ≤ 0) (h_mul : ∀ (a b : α), g (a * b) ≤ g a + g b) :
+    g (∏ x ∈ s, f x) ≤ ∑ x ∈ s, g (f x) := by
+  refine (Multiset.apply_prod_le_sum_map _ _ h_one h_mul).trans_eq ?_
+  rw [Multiset.map_map, Function.comp_def, Finset.sum_map_val]
+
+theorem sum_apply_le_apply_prod (h_one : 0 ≤ g 1) (h_mul : ∀ (a b : α), g a + g b ≤ g (a * b)) :
+    ∑ x ∈ s, g (f x) ≤ g (∏ x ∈ s, f x) :=
+  s.apply_prod_le_sum_apply (β := βᵒᵈ) g h_one h_mul
+
+end ProdSum
 
 @[to_additive]
 lemma max_prod_le [CommMonoid M] [LinearOrder M] [IsOrderedMonoid M] {f g : ι → M} {s : Finset ι} :

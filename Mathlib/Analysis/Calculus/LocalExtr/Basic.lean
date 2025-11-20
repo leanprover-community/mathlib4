@@ -3,7 +3,9 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Deriv.Add
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Add
 
 /-!
 # Local extrema of differentiable functions
@@ -52,6 +54,8 @@ due to the fact that `fderiv` and `deriv` are defined to be zero for non-differe
 
 local extremum, tangent cone, Fermat's Theorem
 -/
+
+@[expose] public section
 
 
 universe u v

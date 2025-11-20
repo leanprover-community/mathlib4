@@ -3,11 +3,13 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Data.List.FinRange
-import Mathlib.Data.List.Perm.Basic
-import Mathlib.Data.List.Lex
-import Mathlib.Data.List.Induction
+module
+
+public import Mathlib.Data.Nat.Choose.Basic
+public import Mathlib.Data.List.FinRange
+public import Mathlib.Data.List.Perm.Basic
+public import Mathlib.Data.List.Lex
+public import Mathlib.Data.List.Induction
 
 /-! # sublists
 
@@ -15,6 +17,8 @@ import Mathlib.Data.List.Induction
 
 This file contains basic results on this function.
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -117,14 +121,6 @@ theorem sublistsAux_eq_flatMap :
     (fun r l ih => by
       rw [flatMap_append, ← ih, flatMap_singleton, sublistsAux, foldl_append]
       simp [sublistsAux])
-
-@[csimp] theorem sublists_eq_sublistsFast : @sublists = @sublistsFast := by
-  ext α l : 2
-  trans l.foldr sublistsAux [[]]
-  · rw [sublistsAux_eq_flatMap, sublists]
-  · simp only [sublistsFast, sublistsAux_eq_array_foldl]
-    rw [← foldr_hom Array.toList]
-    · intros; congr
 
 theorem sublists_append (l₁ l₂ : List α) :
     sublists (l₁ ++ l₂) = (sublists l₂) >>= (fun x => (sublists l₁).map (· ++ x)) := by

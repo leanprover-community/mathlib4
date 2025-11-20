@@ -3,10 +3,12 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Topology.Category.Profinite.Basic
-import Mathlib.Topology.Compactification.StoneCech
-import Mathlib.CategoryTheory.Preadditive.Projective.Basic
-import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+module
+
+public import Mathlib.Topology.Category.Profinite.Basic
+public import Mathlib.Topology.Compactification.StoneCech
+public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 /-!
 # Profinite sets have enough projectives
@@ -22,6 +24,8 @@ Let `X` be a profinite set.
   is a projective presentation
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

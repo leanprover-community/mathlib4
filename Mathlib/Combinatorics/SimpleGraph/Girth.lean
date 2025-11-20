@@ -3,8 +3,10 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Combinatorics.SimpleGraph.Acyclic
-import Mathlib.Data.ENat.Lattice
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Acyclic
+public import Mathlib.Data.ENat.Lattice
 
 /-!
 # Girth of a simple graph
@@ -18,6 +20,8 @@ cycle, they give `0` or `∞` respectively if the graph is acyclic.
   non-zero.
 
 -/
+
+@[expose] public section
 
 namespace SimpleGraph
 variable {α : Type*} {G : SimpleGraph α}

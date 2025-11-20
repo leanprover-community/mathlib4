@@ -3,9 +3,11 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
-import Mathlib.MeasureTheory.Measure.Haar.OfBasis
-import Mathlib.Probability.Independence.Basic
+module
+
+public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
+public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
+public import Mathlib.Probability.Independence.Basic
 
 /-!
 # Probability density function
@@ -48,6 +50,8 @@ Ultimately, we would also like to define characteristic functions to describe di
 it exists for all random variables. However, to define this, we will need Fourier transforms
 which we currently do not have.
 -/
+
+@[expose] public section
 
 
 open scoped MeasureTheory NNReal ENNReal

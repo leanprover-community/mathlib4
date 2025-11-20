@@ -3,9 +3,11 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Independence.Kernel
-import Mathlib.MeasureTheory.Constructions.Pi
-import Mathlib.MeasureTheory.Group.Convolution
+module
+
+public import Mathlib.Probability.Independence.Kernel
+public import Mathlib.MeasureTheory.Constructions.Pi
+public import Mathlib.MeasureTheory.Group.Convolution
 
 /-!
 # Independence of sets of sets and measure spaces (σ-algebras)
@@ -72,6 +74,8 @@ when defining `μ` in the example above, the measurable space used is the last o
 * Williams, David. Probability with martingales. Cambridge university press, 1991.
   Part A, Chapter 4.
 -/
+
+@[expose] public section
 
 assert_not_exists MeasureTheory.Integrable
 

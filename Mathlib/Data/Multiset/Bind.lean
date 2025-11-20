@@ -3,7 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
 
 /-!
 # Bind operation for multisets
@@ -17,6 +19,8 @@ This file defines a few basic operations on `Multiset`, notably the monadic bind
 * `Multiset.product`: Cartesian product of two multisets.
 * `Multiset.sigma`: Disjoint sum of multisets in a sigma type.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero MulAction
 
@@ -286,11 +290,20 @@ theorem card_product : card (s ×ˢ t) = card s * card t := by simp [SProd.sprod
 
 variable {s t}
 
-@[simp] lemma mem_product : ∀ {p : α × β}, p ∈ @product α β s t ↔ p.1 ∈ s ∧ p.2 ∈ t
-  | (a, b) => by simp [product, and_left_comm]
+@[simp] lemma mem_product : ∀ {p : α × β}, p ∈ s ×ˢ t ↔ p.1 ∈ s ∧ p.2 ∈ t
+  | (a, b) => by simp [SProd.sprod, product, and_left_comm]
 
 protected theorem Nodup.product : Nodup s → Nodup t → Nodup (s ×ˢ t) :=
   Quotient.inductionOn₂ s t fun l₁ l₂ d₁ d₂ => by simp [List.Nodup.product d₁ d₂]
+
+@[simp] lemma map_swap_product (s : Multiset α) (t : Multiset β) :
+    (s ×ˢ t).map Prod.swap = t ×ˢ s := by
+  induction s using Multiset.induction <;> simp_all
+
+lemma prod_map_product_eq_prod_prod {M : Type*} [CommMonoid M]
+    (s : Multiset α) (t : Multiset β) (f : α × β → M) :
+    ((s ×ˢ t).map f).prod = (s.map fun i ↦ (t.map fun j ↦ f (i, j)).prod).prod := by
+  induction s using Multiset.induction <;> simp_all
 
 end Product
 

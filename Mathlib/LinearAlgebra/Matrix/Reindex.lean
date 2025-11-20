@@ -3,7 +3,9 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 /-!
 # Changing the index type of a matrix
@@ -22,6 +24,8 @@ to an `m'` by `n'` matrix, as long as `m ≃ m'` and `n ≃ n'`.
 matrix, reindex
 
 -/
+
+@[expose] public section
 
 
 namespace Matrix

@@ -3,8 +3,10 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
-import Mathlib.Topology.DiscreteSubset
+module
+
+public import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
+public import Mathlib.Topology.DiscreteSubset
 
 /-!
 # Theorems combining measure theory and topology
@@ -12,6 +14,8 @@ import Mathlib.Topology.DiscreteSubset
 This file gathers theorems that combine measure theory and topology, and cannot easily be added to
 the existing files without introducing massive dependencies between the subjects.
 -/
+
+@[expose] public section
 open Filter MeasureTheory
 
 /-- Under reasonable assumptions, sets that are codiscrete within `U` are contained in the “almost

@@ -3,10 +3,12 @@ Copyright (c) 2024 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Tactic.Peel
-import Mathlib.Tactic.Positivity
+module
+
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.Tactic.Peel
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Abel's limit theorem
@@ -27,6 +29,8 @@ left with angle less than `π`.
 * https://planetmath.org/proofofabelslimittheorem
 * https://en.wikipedia.org/wiki/Abel%27s_theorem
 -/
+
+@[expose] public section
 
 
 open Filter Finset
@@ -78,7 +82,7 @@ private lemma stolzCone_subset_stolzSet_aux' (s : ℝ) :
       _ ≤ √((1 - x) ^ 2 + (s * x) ^ 2) := sqrt_le_sqrt <| by rw [← sq_abs y]; gcongr
       _ = √(1 - 2 * x + (1 + s ^ 2) * x * x) := by congr 1; ring
       _ ≤ √(1 - 2 * x + (1 + s ^ 2) * (1 / (1 + s ^ 2)) * x) := by gcongr
-      _ = √(1 - x) := by congr 1; field_simp; ring
+      _ = √(1 - x) := by congr 1; field
       _ ≤ 1 - x / 2 := by
         simp_rw [sub_eq_add_neg, ← neg_div]
         refine sqrt_one_add_le <| neg_le_neg_iff.mpr (hx₁.trans_le ?_).le

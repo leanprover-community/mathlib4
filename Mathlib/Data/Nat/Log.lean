@@ -3,12 +3,14 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yaël Dillies
 -/
-import Mathlib.Data.Nat.BinaryRec
-import Mathlib.Order.Interval.Set.Defs
-import Mathlib.Order.Monotone.Basic
-import Mathlib.Tactic.Bound.Attribute
-import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.Monotonicity.Attr
+module
+
+public import Mathlib.Data.Nat.BinaryRec
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Order.Monotone.Basic
+public import Mathlib.Tactic.Bound.Attribute
+public import Mathlib.Tactic.Contrapose
+public import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # Natural number logarithms
@@ -20,6 +22,8 @@ This file defines two `ℕ`-valued analogs of the logarithm of `n` with base `b`
 These are interesting because, for `1 < b`, `Nat.log b` and `Nat.clog b` are respectively right and
 left adjoints of `Nat.pow b`. See `pow_le_iff_le_log` and `le_pow_iff_clog_le`.
 -/
+
+@[expose] public section
 
 assert_not_exists OrderTop
 

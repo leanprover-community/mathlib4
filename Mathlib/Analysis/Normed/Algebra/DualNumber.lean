@@ -3,8 +3,10 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.DualNumber
-import Mathlib.Analysis.Normed.Algebra.TrivSqZeroExt
+module
+
+public import Mathlib.Algebra.DualNumber
+public import Mathlib.Analysis.Normed.Algebra.TrivSqZeroExt
 
 /-!
 # Results on `DualNumber R` related to the norm
@@ -16,6 +18,8 @@ These are just restatements of similar statements about `TrivSqZeroExt R M`.
 * `exp_eps`
 
 -/
+
+@[expose] public section
 
 open NormedSpace -- For `NormedSpace.exp`.
 

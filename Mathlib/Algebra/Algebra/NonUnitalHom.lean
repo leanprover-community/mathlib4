@@ -3,8 +3,10 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Algebra.Hom
-import Mathlib.Algebra.GroupWithZero.Action.Prod
+module
+
+public import Mathlib.Algebra.Algebra.Hom
+public import Mathlib.Algebra.GroupWithZero.Action.Prod
 
 /-!
 # Morphisms of non-unital algebras
@@ -41,6 +43,8 @@ TODO: add `NonUnitalAlgEquiv` when needed.
 
 non-unital, algebra, morphism
 -/
+
+@[expose] public section
 
 universe u u₁ v w w₁ w₂ w₃
 

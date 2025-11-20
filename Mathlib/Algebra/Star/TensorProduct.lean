@@ -3,8 +3,10 @@ Copyright (c) 2025 Monica Omar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
-import Mathlib.Algebra.Star.Module
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+module
+
+public import Mathlib.Algebra.Star.Module
+public import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 /-!
 # The star structure on tensor products
@@ -12,6 +14,8 @@ import Mathlib.LinearAlgebra.TensorProduct.Basic
 This file defines the `Star` structure on tensor products. This also
 defines the `StarAddMonoid` and `StarModule` instances for tensor products.
 -/
+
+@[expose] public section
 
 namespace TensorProduct
 variable {R A B : Type*}

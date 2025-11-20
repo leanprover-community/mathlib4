@@ -3,10 +3,12 @@ Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Data.Nat.Choose.Dvd
-import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-import Mathlib.RingTheory.Norm.Transitivity
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
+module
+
+public import Mathlib.Data.Nat.Choose.Dvd
+public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+public import Mathlib.RingTheory.Norm.Transitivity
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
 
 /-!
 # Eisenstein polynomials
@@ -21,6 +23,8 @@ In this file we gather more miscellaneous results about Eisenstein polynomials
   ring of integers of `L`.
 
 -/
+
+@[expose] public section
 
 universe u v w z
 
@@ -66,10 +70,9 @@ theorem cyclotomic_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] :
       Ideal.mem_span_singleton]
     intro h
     obtain ⟨k, hk⟩ := Int.natCast_dvd_natCast.1 h
-    rw [mul_assoc, mul_comm 1, mul_one] at hk
-    nth_rw 1 [← Nat.mul_one p] at hk
-    rw [mul_right_inj' hp.out.ne_zero] at hk
-    exact Nat.Prime.not_dvd_one hp.out (Dvd.intro k hk.symm)
+    have : 2 ≤ p := Nat.Prime.two_le hp.out
+    have : p < p^2 := by nlinarith
+    cases k <;> grind
 
 theorem cyclotomic_prime_pow_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] (n : ℕ) :
     ((cyclotomic (p ^ (n + 1)) ℤ).comp (X + 1)).IsEisensteinAt 𝓟 := by
@@ -110,10 +113,9 @@ theorem cyclotomic_prime_pow_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] (
       Ideal.mem_span_singleton]
     intro h
     obtain ⟨k, hk⟩ := Int.natCast_dvd_natCast.1 h
-    rw [mul_assoc, mul_comm 1, mul_one] at hk
-    nth_rw 1 [← Nat.mul_one p] at hk
-    rw [mul_right_inj' hp.out.ne_zero] at hk
-    exact Nat.Prime.not_dvd_one hp.out (Dvd.intro k hk.symm)
+    have : 2 ≤ p := Nat.Prime.two_le hp.out
+    have : p < p^2 := by nlinarith
+    cases k <;> grind
 
 end Cyclotomic
 

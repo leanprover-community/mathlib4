@@ -3,7 +3,9 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler, Stefan Kebekus
 -/
-import Mathlib.Analysis.Analytic.IsolatedZeros
+module
+
+public import Mathlib.Analysis.Analytic.IsolatedZeros
 
 /-!
 # Meromorphic functions
@@ -15,6 +17,8 @@ Main statements:
   `f z = (z - z₀) ^ n • g z` on a punctured neighborhood of `z₀`, for some `n : ℤ`
   and `g` analytic at `z₀`.
 -/
+
+@[expose] public section
 
 open Filter
 
@@ -182,6 +186,39 @@ lemma fun_sub {f g : 𝕜 → E} (hf : MeromorphicAt f x) (hg : MeromorphicAt g 
     MeromorphicAt (fun z ↦ f z - g z) x :=
   hf.sub hg
 
+/--
+If `f` is meromorphic at `x`, then `f + g` is meromorphic at `x` if and only if `g` is meromorphic
+at `x`.
+-/
+lemma meromorphicAt_add_iff_meromorphicAt₁ {f g : 𝕜 → E} (hf : MeromorphicAt f x) :
+    MeromorphicAt (f + g) x ↔ MeromorphicAt g x := by
+  exact ⟨fun h ↦ by simpa using h.sub hf, fun _ ↦ by fun_prop⟩
+
+/--
+If `g` is meromorphic at `x`, then `f + g` is meromorphic at `x` if and only if `f` is meromorphic
+at `x`.
+-/
+lemma meromorphicAt_add_iff_meromorphicAt₂ {f g : 𝕜 → E} (hg : MeromorphicAt g x) :
+    MeromorphicAt (f + g) x ↔ MeromorphicAt f x := by
+  rw [add_comm]
+  exact meromorphicAt_add_iff_meromorphicAt₁ hg
+
+/--
+If `f` is meromorphic at `x`, then `f - g` is meromorphic at `x` if and only if `g` is meromorphic
+at `x`.
+-/
+lemma meromorphicAt_sub_iff_meromorphicAt₁ {f g : 𝕜 → E} (hf : MeromorphicAt f x) :
+    MeromorphicAt (f - g) x ↔ MeromorphicAt g x := by
+  exact ⟨fun h ↦ by simpa using h.sub hf, fun _ ↦ by fun_prop⟩
+
+/--
+If `g` is meromorphic at `x`, then `f - g` is meromorphic at `x` if and only if `f` is meromorphic
+at `x`.
+-/
+lemma meromorphicAt_sub_iff_meromorphicAt₂ {f g : 𝕜 → E} (hg : MeromorphicAt g x) :
+    MeromorphicAt (f - g) x ↔ MeromorphicAt f x := by
+  exact ⟨fun h ↦ by simpa using h.add hg, fun _ ↦ by fun_prop⟩
+
 @[deprecated (since := "2025-05-09")] alias sub' := fun_sub
 
 /-- With our definitions, `MeromorphicAt f x` depends only on the values of `f` on a punctured
@@ -280,7 +317,7 @@ lemma fun_pow {f : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (n : ℕ) :
 @[fun_prop]
 lemma zpow {f : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (n : ℤ) : MeromorphicAt (f ^ n) x := by
   cases n with
-  | ofNat m => simpa only [Int.ofNat_eq_coe, zpow_natCast] using hf.pow m
+  | ofNat m => simpa only [Int.ofNat_eq_natCast, zpow_natCast] using hf.pow m
   | negSucc m => simpa only [zpow_negSucc, inv_iff] using hf.pow (m + 1)
 
 @[fun_prop]

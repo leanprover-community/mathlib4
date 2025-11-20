@@ -3,13 +3,17 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.RingTheory.Nilpotent.Lemmas
+module
+
+public import Mathlib.RingTheory.Finiteness.Basic
+public import Mathlib.RingTheory.Nilpotent.Lemmas
 
 /-!
 # Nilpotent maps on finite modules
 
 -/
+
+@[expose] public section
 
 variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 

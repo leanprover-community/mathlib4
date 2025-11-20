@@ -3,7 +3,9 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Data.List.Chain
+module
+
+public import Mathlib.Data.List.Chain
 
 /-!
 # Split a list into contiguous runs of elements which pairwise satisfy a relation.
@@ -18,6 +20,8 @@ The main results are the following:
 - `List.isChain_getLast_head_splitBy`: the last element of each list in `List.splitBy` is not
   related to the first element of the next list.
 -/
+
+@[expose] public section
 
 namespace List
 

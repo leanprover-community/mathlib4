@@ -3,13 +3,15 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert A. Spencer, Junyan Xu
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.Algebra.Module.PUnit
-import Mathlib.CategoryTheory.Conj
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
+module
+
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Category.MonCat.Basic
+public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.Algebra.Module.PUnit
+public import Mathlib.CategoryTheory.Conj
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
 /-!
 # The category of `R`-modules
@@ -33,6 +35,8 @@ To go from linear maps to morphisms in `Module R`, use `SemimoduleCat.ofHom`.
 Similarly, given an isomorphism `f : M ≅ N` use `f.toLinearEquiv` and given a linear equiv
 `f : M ≃ₗ[R] N`, use `f.toModuleIso`.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory Limits WalkingParallelPair

@@ -3,8 +3,10 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Complex.JensenFormula
-import Mathlib.Analysis.Complex.ValueDistribution.CharacteristicFunction
+module
+
+public import Mathlib.Analysis.Complex.JensenFormula
+public import Mathlib.Analysis.Complex.ValueDistribution.CharacteristicFunction
 
 /-!
 # The First Main Theorem of Value Distribution Theory
@@ -24,6 +26,8 @@ See Section VI.2 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677
 [Noguchi-Winkelmann, *Nevanlinna Theory in Several Complex Variables and Diophantine
 Approximation*][MR3156076] for a detailed discussion.
 -/
+
+@[expose] public section
 namespace ValueDistribution
 
 open Asymptotics Filter Function.locallyFinsuppWithin MeromorphicAt MeromorphicOn Metric Real

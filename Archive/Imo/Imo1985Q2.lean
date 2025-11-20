@@ -20,7 +20,7 @@ so that:
 
 Prove that all numbers in $N$ must receive the same color.
 
-# Solution
+## Solution
 
 Let $a \sim b$ denote that $a$ and $b$ have the same color.
 Because $j$ is coprime to $n$, every number in $N$ is of the form $kj\bmod n$ for a unique

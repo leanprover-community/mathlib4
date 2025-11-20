@@ -3,12 +3,14 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
-import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Algebra.Group.Hom.Instances
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Group.Torsion
-import Mathlib.Data.Set.Piecewise
-import Mathlib.Logic.Pairwise
+module
+
+public import Mathlib.Algebra.Group.Commute.Defs
+public import Mathlib.Algebra.Group.Hom.Instances
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.Torsion
+public import Mathlib.Data.Set.Piecewise
+public import Mathlib.Logic.Pairwise
 
 /-!
 # Extra lemmas about products of monoids and groups
@@ -16,6 +18,8 @@ import Mathlib.Logic.Pairwise
 This file proves lemmas about the instances defined in `Algebra.Group.Pi.Basic` that require more
 imports.
 -/
+
+@[expose] public section
 
 assert_not_exists AddMonoidWithOne MonoidWithZero
 
