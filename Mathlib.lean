@@ -3927,6 +3927,7 @@ public import Mathlib.Dynamics.Newton
 public import Mathlib.Dynamics.OmegaLimit
 public import Mathlib.Dynamics.PeriodicPts.Defs
 public import Mathlib.Dynamics.PeriodicPts.Lemmas
+public import Mathlib.Dynamics.SymbolicDynamics.Basic
 public import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
 public import Mathlib.Dynamics.TopologicalEntropy.DynamicalEntourage
 public import Mathlib.Dynamics.TopologicalEntropy.NetEntropy
