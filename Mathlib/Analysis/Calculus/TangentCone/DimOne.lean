@@ -3,7 +3,9 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.TangentCone.Basic
+module
+
+public import Mathlib.Analysis.Calculus.TangentCone.Basic
 
 /-!
 # Unique differentiability property of a set in the base field
@@ -11,6 +13,8 @@ import Mathlib.Analysis.Calculus.TangentCone.Basic
 In this file we prove that a set in the base field has the unique differentiability property at `x`
 iff `x` is an accumulation point of the set, see `uniqueDiffWithinAt_iff_accPt`.
 -/
+
+@[expose] public section
 
 open Filter Metric Set
 open scoped Topology

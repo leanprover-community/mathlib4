@@ -3,7 +3,9 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Reid Barton, Bhavik Mehta, Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Limits.HasLimits
+module
+
+public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # Preservation and reflection of (co)limits.
@@ -31,6 +33,8 @@ diagram K if F sends every limit cone on K to a limit cone. This is
 vacuously satisfied when K does not admit a limit, which is consistent
 with the above definition of "preserves limits".
 -/
+
+@[expose] public section
 
 
 open CategoryTheory

@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
 -/
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Order.BooleanAlgebra.Set
-import Mathlib.Order.Interval.Set.Defs
+module
+
+public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Order.BooleanAlgebra.Set
+public import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Intervals
@@ -34,6 +36,8 @@ theorem Ico_subset_Ici (h : a₂ ≤ a₁) : Ico a₁ b₁ ⊆ Ici a₂ :=
 ```
 Logical equivalences, such as `Icc_subset_Ici_iff`, are however stated.
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 

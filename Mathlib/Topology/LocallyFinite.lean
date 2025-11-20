@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Filter.SmallSets
-import Mathlib.Topology.ContinuousOn
+module
+
+public import Mathlib.Order.Filter.SmallSets
+public import Mathlib.Topology.ContinuousOn
 
 /-!
 ### Locally finite families of sets
@@ -14,6 +16,8 @@ there is a neighborhood of `x` which meets only finitely many sets in the family
 
 In this file we give the definition and prove basic properties of locally finite families of sets.
 -/
+
+@[expose] public section
 
 -- locally finite family [General Topology (Bourbaki, 1995)]
 open Set Function Filter Topology

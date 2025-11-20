@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Set.Countable
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Tactic.FunProp.Attr
-import Mathlib.Tactic.Measurability
+module
+
+public import Mathlib.Data.Set.Countable
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Tactic.FunProp.Attr
+public import Mathlib.Tactic.Measurability
 
 /-!
 # Measurable spaces and measurable functions
@@ -34,6 +36,8 @@ contains all of them.
 
 measurable space, σ-algebra, measurable function
 -/
+
+@[expose] public section
 
 assert_not_exists Covariant MonoidWithZero
 
@@ -204,6 +208,20 @@ protected theorem MeasurableSet.cond {s₁ s₂ : Set α} (h₁ : MeasurableSet 
 
 protected theorem MeasurableSet.const (p : Prop) : MeasurableSet { _a : α | p } := by
   by_cases p <;> simp [*]
+
+protected lemma MeasurableSet.imp {p q : α → Prop}
+    (hs : MeasurableSet {x | p x}) (ht : MeasurableSet {x | q x}) :
+    MeasurableSet {x | p x → q x} := by
+  have h_eq : {x | p x → q x} = {x | p x}ᶜ ∪ {x | q x} := by ext; grind
+  rw [h_eq]
+  exact hs.compl.union ht
+
+protected lemma MeasurableSet.iff {p q : α → Prop}
+    (hs : MeasurableSet {x | p x}) (ht : MeasurableSet {x | q x}) :
+    MeasurableSet {x | p x ↔ q x} := by
+  have h_eq : {x | p x ↔ q x} = {x | p x → q x} ∩ {x | q x → p x} := by ext; simp; grind
+  rw [h_eq]
+  exact (hs.imp ht).inter (ht.imp hs)
 
 /-- Every set has a measurable superset. Declare this as local instance as needed. -/
 theorem nonempty_measurable_superset (s : Set α) : Nonempty { t // s ⊆ t ∧ MeasurableSet t } :=

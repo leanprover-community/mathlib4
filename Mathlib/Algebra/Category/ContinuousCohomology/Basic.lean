@@ -3,12 +3,14 @@ Copyright (c) 2025 Richard Hill. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Richard Hill, Andrew Yang
 -/
-import Mathlib.Algebra.Category.ModuleCat.Topology.Homology
-import Mathlib.Algebra.Homology.Embedding.Restriction
-import Mathlib.Algebra.Homology.Functor
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-import Mathlib.CategoryTheory.Action.Limits
-import Mathlib.Topology.ContinuousMap.Algebra
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Topology.Homology
+public import Mathlib.Algebra.Homology.Embedding.Restriction
+public import Mathlib.Algebra.Homology.Functor
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+public import Mathlib.CategoryTheory.Action.Limits
+public import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
 
@@ -40,6 +42,8 @@ See `ContinuousCohomology.MultiInd.d`.
 - Give the usual description of cochains in terms of `n`-ary functions for locally compact groups.
 - Show that short exact sequences induce long exact sequences in certain scenarios.
 -/
+
+@[expose] public section
 
 open CategoryTheory Functor ContinuousMap
 

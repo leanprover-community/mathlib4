@@ -3,9 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Generator
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pushforward
-import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Generator
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pushforward
+public import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
+public import Mathlib.CategoryTheory.Adjunction.CompositionIso
 
 /-!
 # Pullback of presheaves of modules
@@ -16,11 +19,16 @@ we introduce the pullback functor `pullback : PresheafOfModules S ⥤ PresheafOf
 as the left adjoint of `pushforward : PresheafOfModules R ⥤ PresheafOfModules S`.
 The existence of this left adjoint functor is obtained under suitable universe assumptions.
 
+From the compatibility of `pushforward` with respect to composition, we deduce
+similar pseudofunctor-like properties of the `pullback` functors.
+
 -/
 
-universe v v₁ v₂ u₁ u₂ u
+@[expose] public section
 
-open CategoryTheory Limits Opposite
+universe v v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄ u
+
+open CategoryTheory Limits Opposite Functor
 
 namespace PresheafOfModules
 
@@ -79,16 +87,76 @@ lemma pullbackObjIsDefined_eq_top :
     pullbackObjIsDefined.{u} φ = ⊤ := by
   ext M
   simp only [Pi.top_apply, Prop.top_eq_true, iff_true]
-  apply Functor.leftAdjointObjIsDefined_of_isColimit
+  apply leftAdjointObjIsDefined_of_isColimit
     M.isColimitFreeYonedaCoproductsCokernelCofork
   rintro (_ | _)
   all_goals
-    apply Functor.leftAdjointObjIsDefined_colimit _
+    apply leftAdjointObjIsDefined_colimit _
       (fun _ ↦ pullbackObjIsDefined_free_yoneda _ _)
 
 instance : (pushforward.{u} φ).IsRightAdjoint :=
-  Functor.isRightAdjoint_of_leftAdjointObjIsDefined_eq_top
+  isRightAdjoint_of_leftAdjointObjIsDefined_eq_top
     (pullbackObjIsDefined_eq_top φ)
+
+end
+
+section
+
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+  {E : Type u₃} [Category.{v₃} E] {E' : Type u₄} [Category.{v₄} E']
+
+variable {F : C ⥤ D} {R : Dᵒᵖ ⥤ RingCat.{u}} {S : Cᵒᵖ ⥤ RingCat.{u}} (φ : S ⟶ F.op ⋙ R)
+  {G : D ⥤ E} {T : Eᵒᵖ ⥤ RingCat.{u}} (ψ : R ⟶ G.op ⋙ T)
+
+instance : (pushforward.{v} (F := 𝟭 C) (𝟙 S)).IsRightAdjoint :=
+  isRightAdjoint_of_iso (pushforwardId.{v} S).symm
+
+variable (S) in
+/-- The pullback by the identity morphism identifies to the identity functor of the
+category of presheaves of modules. -/
+noncomputable def pullbackId : pullback.{v} (F := 𝟭 C) (𝟙 S) ≅ 𝟭 _ :=
+  ((pullbackPushforwardAdjunction.{v} (F := 𝟭 C) (𝟙 S))).leftAdjointIdIso (pushforwardId S)
+
+variable [(pushforward.{v} φ).IsRightAdjoint]
+
+section
+
+variable [(pushforward.{v} ψ).IsRightAdjoint]
+
+instance : (pushforward.{v} (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ)).IsRightAdjoint :=
+  isRightAdjoint_of_iso (pushforwardComp.{v} φ ψ)
+
+/-- The composition of two pullback functors on presheaves of modules identifies
+to the pullback for the composition. -/
+noncomputable def pullbackComp :
+    pullback.{v} φ ⋙ pullback.{v} ψ ≅
+      pullback.{v} (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ) :=
+  Adjunction.leftAdjointCompIso
+    (pullbackPushforwardAdjunction.{v} φ) (pullbackPushforwardAdjunction.{v} ψ)
+    (pullbackPushforwardAdjunction.{v} (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ))
+    (pushforwardComp φ ψ)
+
+variable {T' : E'ᵒᵖ ⥤ RingCat.{u}} {G' : E ⥤ E'} (ψ' : T ⟶ G'.op ⋙ T')
+  [(pushforward.{v} ψ').IsRightAdjoint]
+
+lemma pullback_assoc :
+    isoWhiskerLeft _ (pullbackComp.{v} ψ ψ') ≪≫
+      pullbackComp.{v} (G := G ⋙ G') φ (ψ ≫ whiskerLeft G.op ψ') =
+    (associator _ _ _).symm ≪≫ isoWhiskerRight (pullbackComp.{v} φ ψ) _ ≪≫
+        pullbackComp.{v} (F := F ⋙ G) (φ ≫ whiskerLeft F.op ψ) ψ' :=
+  Adjunction.leftAdjointCompIso_assoc _ _ _ _ _ _ _ _ _ _ (pushforward_assoc φ ψ ψ')
+
+end
+
+lemma pullback_id_comp :
+    pullbackComp.{v} (F := 𝟭 C) (𝟙 S) φ =
+      isoWhiskerRight (pullbackId S) (pullback φ) ≪≫ Functor.leftUnitor _ :=
+  Adjunction.leftAdjointCompIso_id_comp _ _ _ _ (pushforward_comp_id φ)
+
+lemma pullback_comp_id :
+    pullbackComp.{v} (G := 𝟭 _) φ (𝟙 R) =
+      isoWhiskerLeft _ (pullbackId R) ≪≫ Functor.rightUnitor _ :=
+  Adjunction.leftAdjointCompIso_comp_id _ _ _ _ (pushforward_id_comp φ)
 
 end
 

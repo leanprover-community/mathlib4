@@ -3,11 +3,13 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Subobject.WellPowered
-import Mathlib.CategoryTheory.Comma.LocallySmall
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathlib.CategoryTheory.Limits.Comma
+module
+
+public import Mathlib.CategoryTheory.Subobject.WellPowered
+public import Mathlib.CategoryTheory.Comma.LocallySmall
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+public import Mathlib.CategoryTheory.Limits.Comma
 
 /-!
 # Subobjects in the category of structured arrows
@@ -29,6 +31,8 @@ We also provide the dual results. As usual, we use `Subobject (op A)` for the qu
 `A`.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

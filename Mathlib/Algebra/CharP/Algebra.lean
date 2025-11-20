@@ -3,10 +3,12 @@ Copyright (c) 2021 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster, Eric Wieser
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.FreeAlgebra
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.SimpleRing.Basic
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.FreeAlgebra
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Characteristics of algebras
@@ -27,6 +29,8 @@ Instances constructed from this result:
 - The `FractionRing R` of an integral domain `R` has the same characteristic as `R`.
 
 -/
+
+@[expose] public section
 
 /-- Given `R →+* A`, then `char A ∣ char R`. -/
 theorem CharP.dvd_of_ringHom {R A : Type*} [NonAssocSemiring R] [NonAssocSemiring A]

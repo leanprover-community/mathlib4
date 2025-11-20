@@ -3,12 +3,14 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Algebra.MvPolynomial.Equiv
-import Mathlib.Algebra.Polynomial.BigOperators
-import Mathlib.Algebra.Ring.GeomSum
-import Mathlib.RingTheory.Noetherian.Basic
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.Algebra.Polynomial.BigOperators
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Ring-theoretic supplement of Algebra.Polynomial.
@@ -19,6 +21,8 @@ import Mathlib.RingTheory.Noetherian.Basic
 * `Polynomial.isNoetherianRing`:
   Hilbert basis theorem, that if a ring is Noetherian then so is its polynomial ring.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -163,7 +167,7 @@ theorem degreeLT_succ_eq_degreeLE {n : ℕ} : degreeLT R (n + 1) = degreeLE R n 
   by_cases x_zero : x = 0
   · simp_rw [x_zero, Submodule.zero_mem]
   · rw [mem_degreeLT, mem_degreeLE, ← natDegree_lt_iff_degree_lt (by rwa [ne_eq]),
-      ← natDegree_le_iff_degree_le, Nat.lt_succ]
+      ← natDegree_le_iff_degree_le, Nat.lt_succ_iff]
 
 /-- The equivalence between monic polynomials of degree `n` and polynomials of degree less than
 `n`, formed by adding a term `X ^ n`. -/
@@ -351,7 +355,7 @@ theorem restriction_zero : restriction (0 : R[X]) = 0 := by
 
 @[simp]
 theorem restriction_one : restriction (1 : R[X]) = 1 :=
-  ext fun i => Subtype.eq <| by rw [coeff_restriction', coeff_one, coeff_one]; split_ifs <;> rfl
+  ext fun i => Subtype.ext <| by rw [coeff_restriction', coeff_one, coeff_one]; split_ifs <;> rfl
 
 variable [Semiring S] {f : R →+* S} {x : S}
 
@@ -417,7 +421,7 @@ theorem toSubring_one :
     toSubring (1 : R[X]) T
         (Set.Subset.trans coeffs_one <| Finset.singleton_subset_set_iff.2 T.one_mem) =
       1 :=
-  ext fun i => Subtype.eq <| by
+  ext fun i => Subtype.ext <| by
     rw [coeff_toSubring', coeff_one, coeff_one, apply_ite Subtype.val, ZeroMemClass.coe_zero,
       OneMemClass.coe_one]
 

@@ -3,9 +3,11 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
-import Mathlib.MeasureTheory.SetSemiring
-import Mathlib.MeasureTheory.Measure.AddContent
-import Mathlib.MeasureTheory.Measure.Trim
+module
+
+public import Mathlib.MeasureTheory.SetSemiring
+public import Mathlib.MeasureTheory.Measure.AddContent
+public import Mathlib.MeasureTheory.Measure.Trim
 
 /-!
 # Carathéodory's extension theorem
@@ -37,6 +39,8 @@ the outer measure induced by `m`. The induced outer measure is equal to `m` on `
 * `MeasureTheory.AddContent.measure_eq`: The measure defined through a sigma-subadditive
   content on a semiring coincides with the content on the semiring.
 -/
+
+@[expose] public section
 
 open Set
 

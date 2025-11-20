@@ -3,10 +3,12 @@ Copyright (c) 2022 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang
 -/
-import Mathlib.Topology.MetricSpace.Antilipschitz
-import Mathlib.Topology.MetricSpace.Isometry
-import Mathlib.Topology.MetricSpace.Lipschitz
-import Mathlib.Data.FunLike.Basic
+module
+
+public import Mathlib.Topology.MetricSpace.Antilipschitz
+public import Mathlib.Topology.MetricSpace.Isometry
+public import Mathlib.Topology.MetricSpace.Lipschitz
+public import Mathlib.Data.FunLike.Basic
 
 /-!
 # Dilations
@@ -47,6 +49,8 @@ needed.
 - https://en.wikipedia.org/wiki/Dilation_(metric_space)
 - [Marcel Berger, *Geometry*][berger1987]
 -/
+
+@[expose] public section
 
 noncomputable section
 

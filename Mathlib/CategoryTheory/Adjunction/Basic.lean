@@ -3,8 +3,10 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Johan Commelin, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Equivalence
-import Mathlib.CategoryTheory.Yoneda
+module
+
+public import Mathlib.CategoryTheory.Equivalence
+public import Mathlib.CategoryTheory.Yoneda
 
 /-!
 # Adjunctions between functors
@@ -71,6 +73,8 @@ Conversely `Equivalence.toAdjunction` recovers the underlying adjunction from an
   and (co)monads. There it is also shown that given an adjunction `L ⊣ R` and an isomorphism
   `L ⋙ R ≅ 𝟭 C`, the unit is an isomorphism, and similarly for the counit.
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory

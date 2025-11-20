@@ -3,8 +3,10 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Module.FinitePresentation
-import Mathlib.RingTheory.AdjoinRoot
+module
+
+public import Mathlib.Algebra.Module.FinitePresentation
+public import Mathlib.RingTheory.AdjoinRoot
 
 /-!
 # Finitely presented algebras and finitely presented modules
@@ -23,6 +25,8 @@ finitely presented as a module.
 
 - [Grothendieck, EGA IV₁ 1.4.7][ega-iv-1]
 -/
+
+@[expose] public section
 
 universe u
 

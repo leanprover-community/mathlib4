@@ -3,11 +3,13 @@ Copyright (c) 2024 Bjørn Kjos-Hanssen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bjørn Kjos-Hanssen, Oliver Nash
 -/
-import Mathlib.Algebra.QuadraticDiscriminant
-import Mathlib.Data.Matrix.Action
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
-import Mathlib.LinearAlgebra.Projectivization.Action
-import Mathlib.Topology.Compactification.OnePoint.Basic
+module
+
+public import Mathlib.Algebra.QuadraticDiscriminant
+public import Mathlib.Data.Matrix.Action
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
+public import Mathlib.LinearAlgebra.Projectivization.Action
+public import Mathlib.Topology.Compactification.OnePoint.Basic
 
 /-!
 # One-point compactification and projectivization
@@ -27,6 +29,8 @@ where `OnePoint ℝ` gets the topology of one-point compactification.
 
 one-point extension, projectivization
 -/
+
+@[expose] public section
 
 open scoped LinearAlgebra.Projectivization
 

@@ -3,7 +3,9 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.EffectiveEpi.Basic
+module
+
+public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 /-!
 
 # Effectively enough objects in the image of a functor
@@ -11,6 +13,8 @@ import Mathlib.CategoryTheory.EffectiveEpi.Basic
 We define the class `F.EffectivelyEnough` on a functor `F : C ⥤ D` which says that for every object
 in `D`, there exists an effective epi to it from an object in the image of `F`.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

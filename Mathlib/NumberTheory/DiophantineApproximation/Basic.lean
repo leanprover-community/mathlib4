@@ -3,10 +3,12 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Geißer, Michael Stoll
 -/
-import Mathlib.NumberTheory.Real.Irrational
-import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.RingTheory.Int.Basic
-import Mathlib.Tactic.Basic
+module
+
+public import Mathlib.NumberTheory.Real.Irrational
+public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.RingTheory.Int.Basic
+public import Mathlib.Tactic.Basic
 
 /-!
 # Diophantine Approximation
@@ -67,6 +69,8 @@ fractions is much more extensive than the English one.)
 
 Diophantine approximation, Dirichlet's approximation theorem, continued fraction
 -/
+
+@[expose] public section
 
 
 namespace Real

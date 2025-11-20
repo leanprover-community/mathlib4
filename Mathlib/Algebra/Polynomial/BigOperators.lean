@@ -3,7 +3,9 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark
 -/
-import Mathlib.Algebra.Polynomial.Monic
+module
+
+public import Mathlib.Algebra.Polynomial.Monic
 
 /-!
 # Lemmas for the interaction between polynomials and `∑` and `∏`.
@@ -22,6 +24,8 @@ Recall that `∑` and `∏` are notation for `Finset.sum` and `Finset.prod` resp
 - `Polynomial.prod_X_sub_C_coeff_card_pred` carries most of the content for computing
   the second coefficient of the characteristic polynomial.
 -/
+
+@[expose] public section
 
 
 open Finset

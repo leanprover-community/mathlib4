@@ -3,12 +3,14 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Fold
-import Mathlib.Data.Finset.Sum
-import Mathlib.Data.Multiset.Lattice
-import Mathlib.Data.Set.BooleanAlgebra
-import Mathlib.Order.Hom.BoundedLattice
-import Mathlib.Order.Nat
+module
+
+public import Mathlib.Data.Finset.Fold
+public import Mathlib.Data.Finset.Sum
+public import Mathlib.Data.Multiset.Lattice
+public import Mathlib.Data.Set.BooleanAlgebra
+public import Mathlib.Order.Hom.BoundedLattice
+public import Mathlib.Order.Nat
 
 /-!
 # Lattice operations on finsets
@@ -20,6 +22,8 @@ For the special case of maximum and minimum of a finset, see Max.lean.
 See also `Mathlib/Order/CompleteLattice/Finset.lean`, which is instead concerned with how big
 lattice or set operations behave when indexed by a finset.
 -/
+
+@[expose] public section
 
 open Function Multiset OrderDual
 

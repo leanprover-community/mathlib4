@@ -3,8 +3,10 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Andrew Yang
 -/
-import Mathlib.RingTheory.HopfAlgebra.Basic
-import Mathlib.RingTheory.Bialgebra.TensorProduct
+module
+
+public import Mathlib.RingTheory.HopfAlgebra.Basic
+public import Mathlib.RingTheory.Bialgebra.TensorProduct
 
 /-!
 # Tensor products of Hopf algebras
@@ -12,6 +14,8 @@ import Mathlib.RingTheory.Bialgebra.TensorProduct
 We define the Hopf algebra instance on the tensor product of two Hopf algebras.
 
 -/
+
+@[expose] public section
 
 open Coalgebra TensorProduct HopfAlgebra
 

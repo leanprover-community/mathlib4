@@ -3,11 +3,15 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.ContinuousOn
+module
+
+public import Mathlib.Topology.ContinuousOn
 
 /-!
 ### Continuity of piecewise defined functions
 -/
+
+@[expose] public section
 
 open Set Filter Function Topology Filter
 

@@ -3,8 +3,10 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Topology.Sets.Opens
-import Mathlib.Topology.Clopen
+module
+
+public import Mathlib.Topology.Sets.Opens
+public import Mathlib.Topology.Clopen
 
 /-!
 # Closed sets
@@ -17,6 +19,8 @@ For a topological space `α`,
 * `TopologicalSpace.Closeds α`: The type of closed sets.
 * `TopologicalSpace.Clopens α`: The type of clopen sets.
 -/
+
+@[expose] public section
 
 
 open Order OrderDual Set Topology

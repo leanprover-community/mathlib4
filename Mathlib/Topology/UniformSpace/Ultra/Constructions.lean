@@ -3,9 +3,11 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Topology.UniformSpace.DiscreteUniformity
-import Mathlib.Topology.UniformSpace.Pi
-import Mathlib.Topology.UniformSpace.Ultra.Basic
+module
+
+public import Mathlib.Topology.UniformSpace.DiscreteUniformity
+public import Mathlib.Topology.UniformSpace.Pi
+public import Mathlib.Topology.UniformSpace.Ultra.Basic
 
 /-!
 # Products of ultrametric (nonarchimedean) uniform spaces
@@ -24,6 +26,8 @@ but would be somewhat unnatural since they are closely related.
 The `Prod` instance only requires `Mathlib/Topology/UniformSpace/Basic.lean`.
 
 -/
+
+@[expose] public section
 
 variable {X Y : Type*}
 

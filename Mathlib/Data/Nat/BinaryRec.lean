@@ -3,8 +3,10 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Praneeth Kolichala, Yuyang Zhao
 -/
-import Batteries.Tactic.Alias
-import Mathlib.Init
+module
+
+public import Batteries.Tactic.Alias
+public import Mathlib.Init
 
 /-!
 # Binary recursion on `Nat`
@@ -17,6 +19,8 @@ This file defines binary recursion on `Nat`.
   the bit being appended is `true`.
 * `Nat.binaryRecFromOne`: The same as `binaryRec`, but special casing both 0 and 1 as base cases.
 -/
+
+@[expose] public section
 
 universe u
 

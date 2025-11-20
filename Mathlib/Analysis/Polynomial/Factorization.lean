@@ -3,8 +3,10 @@ Copyright (c) 2025 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Algebra.Polynomial.Degree.IsMonicOfDegree
-import Mathlib.Analysis.Complex.Polynomial.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.Degree.IsMonicOfDegree
+public import Mathlib.Analysis.Complex.Polynomial.Basic
 
 /-!
 # Factorization of monic polynomials of given degree
@@ -19,6 +21,8 @@ This file contains two main results:
   shows that a monic polynomial of degree at least two over `ℝ` can be written as
   a monic polynomial of degree two times another monic factor.
 -/
+
+@[expose] public section
 
 namespace Polynomial.IsMonicOfDegree
 

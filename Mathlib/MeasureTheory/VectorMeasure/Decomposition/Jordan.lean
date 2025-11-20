@@ -3,9 +3,11 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Hahn
-import Mathlib.MeasureTheory.Measure.MutuallySingular
-import Mathlib.Topology.Algebra.UniformMulAction
+module
+
+public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Hahn
+public import Mathlib.MeasureTheory.Measure.MutuallySingular
+public import Mathlib.Topology.Algebra.UniformMulAction
 
 /-!
 # Jordan decomposition
@@ -39,6 +41,8 @@ is useful for the Lebesgue decomposition theorem.
 
 Jordan decomposition theorem
 -/
+
+@[expose] public section
 
 
 noncomputable section

@@ -3,8 +3,10 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Analysis.SpecialFunctions.PolarCoord
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.PolarCoord
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 
 /-!
 # Polar coordinate change of variables for the mixed space of a number field
@@ -45,6 +47,8 @@ mixed space with enough symmetries, see `volume_eq_two_pi_pow_mul_integral` and
   then its volume can be computed via an integral over `normAtAllPlaces '' A`.
 
 -/
+
+@[expose] public section
 
 variable (K : Type*) [Field K]
 

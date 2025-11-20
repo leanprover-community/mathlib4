@@ -3,7 +3,9 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Measure.AEMeasurable
+module
+
+public import Mathlib.MeasureTheory.Measure.AEMeasurable
 
 /-!
 # Typeclasses for measurability of operations
@@ -41,6 +43,8 @@ measurable function, arithmetic operator
 * This might require changing the definition (swapping the arguments in the function that is
   in the conclusion of `MeasurableSMul`.)
 -/
+
+@[expose] public section
 
 open MeasureTheory
 open scoped Pointwise
@@ -446,7 +450,7 @@ instance DivInvMonoid.measurableZPow (G : Type u) [DivInvMonoid G] [MeasurableSp
     [MeasurableMul₂ G] [MeasurableInv G] : MeasurablePow G ℤ :=
   ⟨measurable_from_prod_countable_left fun n => by
       rcases n with n | n
-      · simp_rw [Int.ofNat_eq_coe, zpow_natCast]
+      · simp_rw [Int.ofNat_eq_natCast, zpow_natCast]
         exact measurable_id.pow_const _
       · simp_rw [zpow_negSucc]
         exact (measurable_id.pow_const (n + 1)).inv⟩
@@ -644,7 +648,7 @@ instance SubNegMonoid.measurableSMul_int₂ (M : Type*) [SubNegMonoid M] [Measur
     refine measurable_from_prod_countable_left fun n => ?_
     cases n with
     | ofNat n =>
-      simp only [Int.ofNat_eq_coe, natCast_zsmul]
+      simp only [Int.ofNat_eq_natCast, natCast_zsmul]
       exact measurable_const_smul _
     | negSucc n =>
       simp only [negSucc_zsmul]

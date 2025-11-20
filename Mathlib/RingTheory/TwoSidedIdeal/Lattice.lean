@@ -3,12 +3,15 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+module
 
-import Mathlib.RingTheory.TwoSidedIdeal.Basic
+public import Mathlib.RingTheory.TwoSidedIdeal.Basic
 
 /-!
 # The complete lattice structure on two-sided ideals
 -/
+
+@[expose] public section
 
 namespace TwoSidedIdeal
 

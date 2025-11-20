@@ -3,8 +3,10 @@ Copyright (c) 2024 Yongle Hu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yongle Hu, Jiedong Jiang
 -/
-import Mathlib.FieldTheory.Galois.IsGaloisGroup
-import Mathlib.NumberTheory.RamificationInertia.Basic
+module
+
+public import Mathlib.FieldTheory.Galois.IsGaloisGroup
+public import Mathlib.NumberTheory.RamificationInertia.Basic
 
 /-!
 # Ramification theory in Galois extensions of Dedekind domains
@@ -40,6 +42,8 @@ Assume `B / A` is a finite extension of Dedekind domains, `K` is the fraction ri
 * [J Neukirch, *Algebraic Number Theory*][Neukirch1992]
 
 -/
+
+@[expose] public section
 
 open Algebra Pointwise
 

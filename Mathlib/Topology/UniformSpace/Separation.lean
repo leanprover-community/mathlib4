@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Tactic.ApplyFun
-import Mathlib.Topology.Separation.Regular
-import Mathlib.Topology.UniformSpace.Basic
+module
+
+public import Mathlib.Tactic.ApplyFun
+public import Mathlib.Topology.Separation.Regular
+public import Mathlib.Topology.UniformSpace.Basic
 
 /-!
 # Hausdorff properties of uniform spaces. Separation quotient.
@@ -94,6 +96,8 @@ so it was not done in https://github.com/leanprover-community/mathlib4/pull/1064
 
 uniform space, separated space, Hausdorff space, separation quotient
 -/
+
+@[expose] public section
 
 open Filter Set Function Topology Uniformity UniformSpace
 

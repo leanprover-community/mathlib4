@@ -3,11 +3,16 @@ Copyright (c) 2025 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Anatole Dedecker, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Bounds
-import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Bounds
+public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
+public import Mathlib.Analysis.InnerProductSpace.Calculus
 
 
 /-! # Functions and measures of temperate growth -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -15,7 +20,7 @@ open scoped Nat NNReal ContDiff
 
 open Asymptotics
 
-variable {𝕜 R D E F G : Type*}
+variable {𝕜 R D E F G H : Type*}
 
 namespace Function
 
@@ -76,11 +81,11 @@ theorem HasTemperateGrowth.norm_iteratedFDeriv_le_uniform {f : E → F}
   rcases hf_temperate.isBigO_uniform n with ⟨k, hk⟩
   set F := fun x (N : Fin (n+1)) ↦ iteratedFDeriv ℝ N f x
   have : F =O[⊤] (fun x ↦ (1 + ‖x‖) ^ k) := by
-    simp_rw [F, isBigO_pi, Fin.forall_iff, Nat.lt_succ]
+    simp_rw [F, isBigO_pi, Fin.forall_iff, Nat.lt_succ_iff]
     exact hk
   rcases this.exists_nonneg with ⟨C, C_nonneg, hC⟩
   simp (discharger := positivity) only [isBigOWith_top, Real.norm_of_nonneg,
-    pi_norm_le_iff_of_nonneg, Fin.forall_iff, Nat.lt_succ] at hC
+    pi_norm_le_iff_of_nonneg, Fin.forall_iff, Nat.lt_succ_iff] at hC
   exact ⟨k, C, C_nonneg, fun N hN x ↦ hC x N hN⟩
 
 @[deprecated (since := "2025-10-30")]
@@ -174,6 +179,17 @@ theorem _root_.ContinuousLinearMap.bilinear_hasTemperateGrowth [NormedSpace 𝕜
   refine .const_mul_left (.mul (h1 i ?_).norm_left (h2 (n-i) ?_).norm_left) _ <;>
   grind
 
+lemma _root_.Function.HasTemperateGrowth.id : Function.HasTemperateGrowth (id : E → E) := by
+  apply Function.HasTemperateGrowth.of_fderiv (k := 1) (C := 1)
+  · convert Function.HasTemperateGrowth.const (ContinuousLinearMap.id ℝ E)
+    exact fderiv_id'
+  · apply differentiable_id
+  · simp
+
+@[fun_prop]
+lemma _root_.Function.HasTemperateGrowth.id' : Function.HasTemperateGrowth (fun (x : E) ↦ x) :=
+  Function.HasTemperateGrowth.id
+
 /-- The product of two functions of temperate growth is again of temperate growth.
 
 Version for scalar multiplication. -/
@@ -199,6 +215,19 @@ lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
   · have : fderiv ℝ f = fun _ ↦ f := by ext1 v; simp only [ContinuousLinearMap.fderiv]
     simpa [this] using .const _
   · exact (f.le_opNorm x).trans (by simp [mul_add])
+
+variable [NormedAddCommGroup H] [InnerProductSpace ℝ H]
+
+variable (H) in
+@[fun_prop]
+theorem hasTemperateGrowth_norm_sq : (fun (x : H) ↦ ‖x‖ ^ 2).HasTemperateGrowth := by
+  apply _root_.Function.HasTemperateGrowth.of_fderiv (C := 1) (k := 2)
+  · rw [fderiv_norm_sq]
+    convert (2 • (innerSL ℝ)).hasTemperateGrowth
+  · exact (contDiff_norm_sq ℝ (n := 1)).differentiable rfl.le
+  · intro x
+    rw [norm_pow, norm_norm, one_mul, add_pow_two]
+    exact le_add_of_nonneg_left (by positivity)
 
 end Function
 

@@ -3,10 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Eric Wieser
 -/
-import Mathlib.Algebra.Quaternion
-import Mathlib.Analysis.InnerProductSpace.Continuous
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Topology.Algebra.Algebra
+module
+
+public import Mathlib.Algebra.Quaternion
+public import Mathlib.Analysis.InnerProductSpace.Continuous
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Topology.Algebra.Algebra
 
 /-!
 # Quaternions as a normed algebra
@@ -29,6 +31,8 @@ The following notation is available with `open Quaternion` or `open scoped Quate
 
 quaternion, normed ring, normed space, normed algebra
 -/
+
+@[expose] public section
 
 
 @[inherit_doc] scoped[Quaternion] notation "ℍ" => Quaternion ℝ
@@ -82,7 +86,7 @@ theorem nnnorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ :=
 
 noncomputable instance : NormedDivisionRing ℍ where
   dist_eq _ _ := rfl
-  norm_mul _ _ := by simp [norm_eq_sqrt_real_inner, inner_self]
+  norm_mul _ _ := by simp_rw [norm_eq_sqrt_real_inner, inner_self]; simp
 
 noncomputable instance : NormedAlgebra ℝ ℍ where
   norm_smul_le := norm_smul_le

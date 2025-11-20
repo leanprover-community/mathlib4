@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Yury Kudryashov
 -/
-import Mathlib.Data.Option.Basic
-import Mathlib.Topology.Separation.Regular
+module
+
+public import Mathlib.Data.Option.Basic
+public import Mathlib.Topology.Separation.Regular
 
 /-!
 # Paracompact topological spaces
@@ -43,6 +45,8 @@ Prove (some of) [Michael's theorems](https://ncatlab.org/nlab/show/Michael%27s+t
 
 compact space, paracompact space, locally finite covering
 -/
+
+@[expose] public section
 
 
 open Set Filter Function

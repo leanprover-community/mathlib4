@@ -3,8 +3,10 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Function.L1Space.Integrable
-import Mathlib.MeasureTheory.Order.Group.Lattice
+module
+
+public import Mathlib.MeasureTheory.Function.L1Space.Integrable
+public import Mathlib.MeasureTheory.Order.Group.Lattice
 
 /-!
 # Domain of the moment-generating function
@@ -34,6 +36,8 @@ We prove the integrability of other functions for `t` in the interior of that in
   `integrableExpSet X μ`, then `X` is in `ℒp` for all finite `p`.
 
 -/
+
+@[expose] public section
 
 
 open MeasureTheory Filter Finset Real

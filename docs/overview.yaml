@@ -368,8 +368,8 @@ Analysis:
     Schwartz space: 'SchwartzMap'
 
   Fourier analysis:
-    Fourier transform as an integral: 'Real.fourierIntegral_eq'
-    inversion formula: 'Continuous.fourier_inversion'
+    Fourier transform as an integral: 'Real.fourier_eq'
+    inversion formula: 'Continuous.fourierInv_fourier_eq'
     Riemann-Lebesgue lemma: 'tendsto_integral_exp_inner_smul_cocompact'
     Parseval formula for Fourier series: 'tsum_sq_fourierCoeff'
 
@@ -457,6 +457,15 @@ Geometry:
     locally ringed space: 'AlgebraicGeometry.LocallyRingedSpace'
     scheme: 'AlgebraicGeometry.Scheme'
     Nullstellensatz : 'MvPolynomial.vanishingIdeal_zeroLocus_eq_radical'
+
+  Convex geometry:
+    convex cone: 'ConvexCone'
+    salient cone: 'ConvexCone.Salient'
+    positive cone: 'ConvexCone.positive'
+    pointed cone: 'PointedCone'
+    dual cone: 'PointedCone.dual'
+    minimal tensor product: 'PointedCone.minTensorProduct'
+    maximal tensor product: 'PointedCone.maxTensorProduct'
 
 Combinatorics:
   Pigeonhole principles:

@@ -3,8 +3,10 @@ Copyright (c) 2025 Yizheng Zhu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yizheng Zhu
 -/
-import Mathlib.Analysis.BoundedVariation
-import Mathlib.Order.SuccPred.IntervalSucc
+module
+
+public import Mathlib.Analysis.BoundedVariation
+public import Mathlib.Order.SuccPred.IntervalSucc
 
 /-!
 # Absolutely Continuous Functions
@@ -46,6 +48,8 @@ We conclude that
 ## Tags
 absolutely continuous
 -/
+
+@[expose] public section
 
 variable {X F : Type*} [PseudoMetricSpace X] [SeminormedAddCommGroup F]
 

@@ -3,8 +3,11 @@ Copyright (c) 2024 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Tactic.Ring.Basic
-import Mathlib.Tactic.NormNum.Ineq
+module
+
+public meta import Mathlib.Tactic.Ring.Basic
+public meta import Mathlib.Tactic.NormNum.Ineq
+import all Mathlib.Tactic.NormNum.Ineq
 
 /-!
 # Automation for proving inequalities in commutative (semi)rings
@@ -33,6 +36,8 @@ However, this automation serves as the discharger for the `linear_combination` t
 goals, so it is available to the user indirectly as the "degenerate" case of that tactic -- that is,
 by calling `linear_combination` without arguments.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Ring
 

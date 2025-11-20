@@ -3,7 +3,9 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Tactic.Order.CollectFacts
+module
+
+public meta import Mathlib.Tactic.Order.CollectFacts
 
 /-!
 # Graphs for the `order` tactic
@@ -11,6 +13,8 @@ import Mathlib.Tactic.Order.CollectFacts
 This module defines the `Graph` structure and basic operations on it. The `order` tactic uses
 `≤`-graphs, where the vertices represent atoms, and an edge `(x, y)` exists if `x ≤ y`.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Order
 
@@ -40,22 +44,12 @@ namespace Graph
 def addEdge (g : Graph) (edge : Edge) : Graph :=
   g.modify edge.src fun edges => edges.push edge
 
-/-- Constructs a directed `Graph` using `≤` facts. It also creates edges from `⊥`
-(if present) to all vertices and from all vertices to `⊤` (if present). -/
-def constructLeGraph (nVertexes : Nat) (facts : Array AtomicFact)
-    (idxToAtom : Std.HashMap Nat Expr) : MetaM Graph := do
+/-- Constructs a directed `Graph` using `≤` facts. It ignores all other facts. -/
+def constructLeGraph (nVertexes : Nat) (facts : Array AtomicFact) : MetaM Graph := do
   let mut res : Graph := Array.replicate nVertexes #[]
   for fact in facts do
     if let .le lhs rhs proof := fact then
       res := res.addEdge ⟨lhs, rhs, proof⟩
-    else if let .isTop idx := fact then
-      for i in [:nVertexes] do
-        if i != idx then
-          res := res.addEdge ⟨i, idx, ← mkAppOptM ``le_top #[none, none, none, idxToAtom.get! i]⟩
-    else if let .isBot idx := fact then
-      for i in [:nVertexes] do
-        if i != idx then
-          res := res.addEdge ⟨idx, i, ← mkAppOptM ``bot_le #[none, none, none, idxToAtom.get! i]⟩
   return res
 
 /-- State for the DFS algorithm. -/

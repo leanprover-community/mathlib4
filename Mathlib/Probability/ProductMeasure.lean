@@ -3,8 +3,10 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Probability.Kernel.Composition.MeasureComp
-import Mathlib.Probability.Kernel.IonescuTulcea.Traj
+module
+
+public import Mathlib.Probability.Kernel.Composition.MeasureComp
+public import Mathlib.Probability.Kernel.IonescuTulcea.Traj
 
 /-!
 # Infinite product of probability measures
@@ -44,6 +46,8 @@ in which case `piContent μ` is known to be a true measure (see `piContent_eq_me
 
 infinite product measure
 -/
+
+@[expose] public section
 
 open ProbabilityTheory Finset Filter Preorder MeasurableEquiv
 
@@ -169,7 +173,7 @@ theorem partialTraj_const_restrict₂ {a b : ℕ} :
     (partialTraj (fun n ↦ const _ (μ (n + 1))) a b).map (restrict₂ Ioc_subset_Iic_self) =
     const _ (Measure.pi (fun i : Ioc a b ↦ μ i)) := by
   obtain hab | hba := lt_or_ge a b
-  · refine Nat.le_induction ?_ (fun n hn hind ↦ ?_) b (Nat.succ_le.2 hab) <;> ext1 x₀
+  · refine Nat.le_induction ?_ (fun n hn hind ↦ ?_) b (Nat.succ_le_of_lt hab) <;> ext1 x₀
     · rw [partialTraj_succ_self, ← map_comp_right, map_apply, prod_apply, map_apply, const_apply,
         const_apply, Measure.map_piSingleton, restrict₂_comp_IicProdIoc, Measure.map_snd_prod,
         measure_univ, one_smul]
@@ -379,7 +383,7 @@ instance : IsProbabilityMeasure (infinitePi μ) := by
 it gives the same measure to measurable boxes. -/
 theorem eq_infinitePi {ν : Measure (Π i, X i)}
     (hν : ∀ s : Finset ι, ∀ t : (i : ι) → Set (X i),
-      (∀ i ∈ s, MeasurableSet (t i)) → ν (Set.pi s t) = ∏ i ∈ s, μ i (t i)) :
+      (∀ i, MeasurableSet (t i)) → ν (Set.pi s t) = ∏ i ∈ s, μ i (t i)) :
     ν = infinitePi μ := by
   refine (isProjectiveLimit_infinitePi μ).unique ?_ |>.symm
   refine fun s ↦ (pi_eq fun t ht ↦ ?_).symm
@@ -388,7 +392,10 @@ theorem eq_infinitePi {ν : Measure (Π i, X i)}
   · congr with i
     rw [dif_pos i.2]
   any_goals fun_prop
-  · exact fun i hi ↦ dif_pos hi ▸ ht ⟨i, hi⟩
+  · rintro i
+    split_ifs with hi
+    · exact ht ⟨i, hi⟩
+    · exact .univ
   · exact .univ_pi ht
 
 -- TODO: add a version for an infinite product
@@ -402,6 +409,16 @@ lemma infinitePi_pi {s : Finset ι} {t : (i : ι) → Set (X i)}
   · rw [univ_eq_attach, prod_attach _ (fun i ↦ (μ i) (t i))]
   · exact measurable_restrict _
   · exact .univ_pi fun i ↦ mt i.1 i.2
+
+-- TODO: add a version for infinite `ι`. See TODO on `infinitePi_pi`.
+@[simp]
+lemma infinitePi_singleton [Fintype ι] [∀ i, MeasurableSingletonClass (X i)] (f : ∀ i, X i) :
+    infinitePi μ {f} = ∏ i, μ i {f i} := by
+  simpa [Set.univ_pi_singleton] using
+    infinitePi_pi μ (s := .univ) (t := fun i ↦ {f i}) fun _ _ ↦ .singleton _
+
+@[simp] lemma infinitePi_dirac (f : ∀ i, X i) : infinitePi (fun i ↦ dirac (f i)) = dirac f :=
+  .symm <| eq_infinitePi _ <| by simp +contextual [MeasurableSet.pi, Finset.countable_toSet]
 
 lemma _root_.measurePreserving_eval_infinitePi (i : ι) :
     MeasurePreserving (Function.eval i) (infinitePi μ) (μ i) where
@@ -424,12 +441,12 @@ lemma infinitePi_map_pi {Y : ι → Type*} [∀ i, MeasurableSpace (Y i)] {f : (
   have (i : ι) : IsProbabilityMeasure ((μ i).map (f i)) :=
     isProbabilityMeasure_map (hf i).aemeasurable
   refine eq_infinitePi _ fun s t ht ↦ ?_
-  rw [map_apply (by fun_prop) (.pi s.countable_toSet ht)]
+  rw [map_apply (by fun_prop) (.pi s.countable_toSet fun _ _ ↦ ht _)]
   have : (fun (x : Π i, X i) i ↦ f i (x i)) ⁻¹' ((s : Set ι).pi t) =
       (s : Set ι).pi (fun i ↦ (f i) ⁻¹' (t i)) := by ext x; simp
-  rw [this, infinitePi_pi _ (fun i hi ↦ hf i (ht i hi))]
-  refine Finset.prod_congr rfl fun i hi ↦ ?_
-  rw [map_apply (by fun_prop) (ht i hi)]
+  rw [this, infinitePi_pi _ (fun i _ ↦ hf i (ht i))]
+  congr! with i hi
+  rw [map_apply (by fun_prop) (ht i)]
 
 /-- If we push the product measure forward by a reindexing equivalence, we get a product measure
 on the reindexed product. -/
@@ -466,15 +483,15 @@ lemma infinitePi_map_piCurry_symm :
   apply eq_infinitePi
   intro s t ht
   classical
-  rw [map_apply (by fun_prop) (.pi (countable_toSet _) ht), ← Finset.sigma_image_fst_preimage_mk s,
-    coe_piCurry_symm, Finset.coe_sigma, Set.uncurry_preimage_sigma_pi, infinitePi_pi,
-    Finset.prod_sigma]
+  rw [map_apply (by fun_prop) (.pi (countable_toSet _) fun _ _ ↦ ht _),
+    ← Finset.sigma_image_fst_preimage_mk s, coe_piCurry_symm, Finset.coe_sigma,
+    Set.uncurry_preimage_sigma_pi, infinitePi_pi, Finset.prod_sigma]
   · apply Finset.prod_congr rfl
     simp only [Finset.mem_image, Sigma.exists, exists_and_right, exists_eq_right,
       forall_exists_index]
     intro i j hij
     rw [infinitePi_pi]
-    simpa using fun j hj ↦ ht _ hj
+    simp [ht]
   · simp only [mem_image, Sigma.exists, exists_and_right, exists_eq_right, forall_exists_index]
     exact fun i j hij ↦ MeasurableSet.pi (countable_toSet _) fun k hk ↦ by simp_all
 

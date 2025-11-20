@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.Small
-import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
-import Mathlib.CategoryTheory.Limits.Presentation
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.Small
+public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
+public import Mathlib.CategoryTheory.Limits.Presentation
 
 /-!
 # Objects that are colimits of objects satisfying a certain property
@@ -40,6 +42,8 @@ indexed by a category whose type of arrows has a cardinality
 that is bounded by a certain regular cardinal (@joelriou)
 
 -/
+
+@[expose] public section
 
 universe w v'' v' u'' u' v u
 

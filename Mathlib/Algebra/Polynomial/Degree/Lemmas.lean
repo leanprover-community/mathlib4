@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Polynomial.Eval.Degree
-import Mathlib.Algebra.Prime.Lemmas
+module
+
+public import Mathlib.Algebra.Polynomial.Eval.Degree
+public import Mathlib.Algebra.Prime.Lemmas
 
 /-!
 # Theory of degrees of polynomials
@@ -13,6 +15,8 @@ Some of the main results include
 - `natDegree_comp_le` : The degree of the composition is at most the product of degrees
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -355,7 +359,7 @@ lemma natDegree_eq_one : p.natDegree = 1 ↔ ∃ a ≠ 0, ∃ b, C a * X + C b =
   · rintro ⟨a, ha, b, rfl⟩
     simp [ha]
 
-theorem subsingleton_isRoot_of_natDegree_eq_one [IsLeftCancelMulZero R] [IsRightCancelAdd R]
+theorem subsingleton_isRoot_of_natDegree_eq_one [IsLeftCancelMulZero R]
     (h : p.natDegree = 1) : { x | IsRoot p x }.Subsingleton := by
   intro r₁
   obtain ⟨r₂, hr₂, r₃, rfl⟩ : ∃ a, a ≠ 0 ∧ ∃ b, C a * X + C b = p := by rwa [natDegree_eq_one] at h

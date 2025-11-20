@@ -3,10 +3,12 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.GroupWithZero.Hom
-import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Data.Nat.Lattice
+module
+
+public import Mathlib.Algebra.GroupWithZero.Hom
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Data.Nat.Lattice
 
 /-!
 # Definition of nilpotent elements
@@ -23,6 +25,8 @@ and `Mathlib/RingTheory/Nilpotent/Lemmas.lean`.
   * `nilpotencyClass`
 
 -/
+
+@[expose] public section
 
 universe u v
 

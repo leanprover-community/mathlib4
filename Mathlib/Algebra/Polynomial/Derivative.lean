@@ -3,10 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Polynomial.Degree.Domain
-import Mathlib.Algebra.Polynomial.Degree.Support
-import Mathlib.Algebra.Polynomial.Eval.Coeff
-import Mathlib.GroupTheory.GroupAction.Ring
+module
+
+public import Mathlib.Algebra.Polynomial.Degree.Domain
+public import Mathlib.Algebra.Polynomial.Degree.Support
+public import Mathlib.Algebra.Polynomial.Eval.Coeff
+public import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # The derivative map on polynomials
@@ -16,6 +18,8 @@ import Mathlib.GroupTheory.GroupAction.Ring
 * `Polynomial.derivativeFinsupp`: Iterated derivatives as a finite support function.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -394,7 +398,7 @@ Iterated derivatives as a finite support function.
 @[simps! apply_toFun]
 noncomputable def derivativeFinsupp : R[X] →ₗ[R] ℕ →₀ R[X] where
   toFun p := .onFinset (range (p.natDegree + 1)) (derivative^[·] p) fun i ↦ by
-    contrapose; simp_all [iterate_derivative_eq_zero, Nat.succ_le]
+    contrapose; simp_all [iterate_derivative_eq_zero, Nat.succ_le_iff]
   map_add' _ _ := by ext; simp
   map_smul' _ _ := by ext; simp
 

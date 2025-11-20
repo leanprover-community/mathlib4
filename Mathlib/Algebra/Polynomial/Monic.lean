@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Polynomial.Reverse
-import Mathlib.Algebra.Regular.SMul
+module
+
+public import Mathlib.Algebra.Polynomial.Reverse
+public import Mathlib.Algebra.Regular.SMul
 
 /-!
 # Theory of monic polynomials
@@ -12,6 +14,8 @@ import Mathlib.Algebra.Regular.SMul
 We give several tools for proving that polynomials are monic, e.g.
 `Monic.mul`, `Monic.map`, `Monic.pow`.
 -/
+
+@[expose] public section
 
 
 noncomputable section

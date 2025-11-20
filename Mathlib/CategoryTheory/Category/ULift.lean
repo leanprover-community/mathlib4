@@ -3,10 +3,12 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.CategoryTheory.Equivalence
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.Data.ULift
+module
+
+public import Mathlib.CategoryTheory.Category.Basic
+public import Mathlib.CategoryTheory.Equivalence
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.Data.ULift
 
 /-!
 # Basic API for ULift
@@ -37,6 +39,8 @@ category instance `Category.{v} C` and makes a small category
 The forward direction of the equivalence, `C ⥤ AsSmall C`, is denoted `AsSmall.up`
 and the backward direction is `AsSmall.down`. The equivalence itself is `AsSmall.equiv`.
 -/
+
+@[expose] public section
 
 universe w₁ v₁ v₂ u₁ u₂
 

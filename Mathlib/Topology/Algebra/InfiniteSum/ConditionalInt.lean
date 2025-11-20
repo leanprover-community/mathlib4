@@ -3,13 +3,14 @@ Copyright (c) 2025 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
+module
 
-import Mathlib.Algebra.BigOperators.Group.Finset.Interval
-import Mathlib.Algebra.Order.Ring.Star
-import Mathlib.Order.Filter.AtTopBot.Interval
-import Mathlib.Topology.Algebra.InfiniteSum.Defs
-import Mathlib.Topology.Algebra.Monoid.Defs
-import Mathlib.Tactic.FinCases
+public import Mathlib.Algebra.BigOperators.Group.Finset.Interval
+public import Mathlib.Algebra.Order.Ring.Star
+public import Mathlib.Order.Filter.AtTopBot.Interval
+public import Mathlib.Topology.Algebra.InfiniteSum.Defs
+public import Mathlib.Topology.Algebra.Monoid.Defs
+public import Mathlib.Tactic.FinCases
 
 
 /-!
@@ -22,6 +23,8 @@ In particular we define `symmetricIcc`, `symmetricIco`, `symmetricIoc` and `symm
 We also prove that these filters are all `NeBot` and `LeAtTop`.
 
 -/
+
+@[expose] public section
 
 open Finset Topology Function Filter SummationFilter
 

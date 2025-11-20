@@ -3,10 +3,12 @@ Copyright (c) 2023 Winston Yin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Winston Yin
 -/
-import Mathlib.Analysis.ODE.Gronwall
-import Mathlib.Analysis.ODE.PicardLindelof
-import Mathlib.Geometry.Manifold.IntegralCurve.Transform
-import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
+module
+
+public import Mathlib.Analysis.ODE.Gronwall
+public import Mathlib.Analysis.ODE.PicardLindelof
+public import Mathlib.Geometry.Manifold.IntegralCurve.Transform
+public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 
 /-!
 # Existence and uniqueness of integral curves
@@ -41,6 +43,8 @@ We state simpler versions of the theorem for boundaryless manifolds as corollari
 
 integral curve, vector field, local existence, uniqueness
 -/
+
+@[expose] public section
 
 open scoped Topology
 

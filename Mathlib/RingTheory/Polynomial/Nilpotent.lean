@@ -3,12 +3,14 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emilie Uthaiwat, Oliver Nash
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Div
-import Mathlib.Algebra.Polynomial.Identities
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.Nilpotent.Basic
-import Mathlib.RingTheory.Nilpotent.Lemmas
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Div
+public import Mathlib.Algebra.Polynomial.Identities
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Nilpotent.Basic
+public import Mathlib.RingTheory.Nilpotent.Lemmas
 
 /-!
 # Nilpotency in polynomial rings.
@@ -20,6 +22,8 @@ This file is a place for results related to nilpotency in (single-variable) poly
 * `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent`
 
 -/
+
+@[expose] public section
 
 namespace Polynomial
 

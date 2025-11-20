@@ -3,9 +3,11 @@ Copyright (c) 2020 Thomas Browning and Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
-import Mathlib.GroupTheory.Solvable
-import Mathlib.FieldTheory.PolynomialGaloisGroup
-import Mathlib.RingTheory.RootsOfUnity.Basic
+module
+
+public import Mathlib.GroupTheory.Solvable
+public import Mathlib.FieldTheory.PolynomialGaloisGroup
+public import Mathlib.RingTheory.RootsOfUnity.Basic
 
 /-!
 # The Abel-Ruffini Theorem
@@ -22,6 +24,8 @@ by radicals, then its minimal polynomial has solvable Galois group.
 * the Abel-Ruffini Theorem `solvableByRad.isSolvable'` : An irreducible polynomial with a root
   that is solvable by radicals has a solvable Galois group.
 -/
+
+@[expose] public section
 
 noncomputable section
 

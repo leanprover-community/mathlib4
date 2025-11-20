@@ -3,7 +3,9 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Eric Wieser
 -/
-import Mathlib.Analysis.InnerProductSpace.PiL2
+module
+
+public import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
 # Matrices as a normed space
@@ -49,6 +51,8 @@ The norm induced by the identification of `Matrix m n 𝕜` with
 `Mathlib/Analysis/CStarAlgebra/Matrix.lean` and `open scoped Matrix.Norms.L2Operator`.
 It is separated to avoid extraneous imports in this file.
 -/
+
+@[expose] public section
 
 noncomputable section
 

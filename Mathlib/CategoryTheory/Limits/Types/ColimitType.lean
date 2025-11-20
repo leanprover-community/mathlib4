@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.Basic
-import Mathlib.CategoryTheory.Types.Basic
+module
+
+public import Mathlib.CategoryTheory.Functor.Basic
+public import Mathlib.CategoryTheory.Types.Basic
 
 /-!
 # The colimit type of a functor to types
@@ -31,6 +33,8 @@ in a categorical sense is a colimit.
 * add a similar API for limits in `Type`?
 
 -/
+
+@[expose] public section
 
 universe w₃ w₂ w₁ w₀ w₀' v u
 

@@ -3,8 +3,10 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Basic
-import Mathlib.RingTheory.RingHomProperties
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Basic
+public import Mathlib.RingTheory.RingHomProperties
 
 /-!
 
@@ -29,6 +31,8 @@ Also provides API for showing the standard locality and stability properties for
 types of properties.
 
 -/
+
+@[expose] public section
 
 universe u v w
 

@@ -3,9 +3,11 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.Ring.Action.Rat
-import Mathlib.RingTheory.HahnSeries.Multiplication
-import Mathlib.Data.Rat.Cast.Lemmas
+module
+
+public import Mathlib.Algebra.Ring.Action.Rat
+public import Mathlib.RingTheory.HahnSeries.Multiplication
+public import Mathlib.Data.Rat.Cast.Lemmas
 
 /-!
 # Summable families of Hahn Series
@@ -41,6 +43,8 @@ commutative domain.
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
+
+@[expose] public section
 
 
 open Finset Function

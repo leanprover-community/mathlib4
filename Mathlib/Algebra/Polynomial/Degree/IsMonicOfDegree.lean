@@ -3,8 +3,10 @@ Copyright (c) 2025 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Monic
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Monic
 
 /-!
 # Monic polynomials of given degree
@@ -14,6 +16,8 @@ the polynomial `p` is monic and has degree `n` (i.e., `p.natDegree = n`.)
 
 We also provide some basic API.
 -/
+
+@[expose] public section
 
 namespace Polynomial
 
@@ -69,7 +73,7 @@ lemma IsMonicOfDegree.mul {p q : R[X]} {m n : ℕ} (hp : IsMonicOfDegree p m)
     (hq : IsMonicOfDegree q n) :
     IsMonicOfDegree (p * q) (m + n) := by
   rcases subsingleton_or_nontrivial R with H | H
-  · simp only [isMonicOfDegree_iff_of_subsingleton, Nat.add_eq_zero] at hp hq ⊢
+  · simp only [isMonicOfDegree_iff_of_subsingleton, Nat.add_eq_zero_iff] at hp hq ⊢
     exact ⟨hp, hq⟩
   refine ⟨?_, hp.monic.mul hq.monic⟩
   have : p.leadingCoeff * q.leadingCoeff ≠ 0 := by
@@ -100,7 +104,7 @@ lemma IsMonicOfDegree.of_mul_left {p q : R[X]} {m n : ℕ} (hp : IsMonicOfDegree
     (hpq : IsMonicOfDegree (p * q) (m + n)) :
     IsMonicOfDegree q n := by
   rcases subsingleton_or_nontrivial R with H | H
-  · simp only [isMonicOfDegree_iff_of_subsingleton, Nat.add_eq_zero] at hpq ⊢
+  · simp only [isMonicOfDegree_iff_of_subsingleton, Nat.add_eq_zero_iff] at hpq ⊢
     exact hpq.2
   have h₂ : q.Monic := hp.monic.of_mul_monic_left hpq.monic
   refine ⟨?_, h₂⟩
@@ -115,7 +119,7 @@ lemma IsMonicOfDegree.of_mul_right {p q : R[X]} {m n : ℕ} (hq : IsMonicOfDegre
     (hpq : IsMonicOfDegree (p * q) (m + n)) :
     IsMonicOfDegree p m := by
   rcases subsingleton_or_nontrivial R with H | H
-  · simp only [isMonicOfDegree_iff_of_subsingleton, Nat.add_eq_zero] at hpq ⊢
+  · simp only [isMonicOfDegree_iff_of_subsingleton, Nat.add_eq_zero_iff] at hpq ⊢
     exact hpq.1
   have h₂ : p.Monic := hq.monic.of_mul_monic_right hpq.monic
   refine ⟨?_, h₂⟩

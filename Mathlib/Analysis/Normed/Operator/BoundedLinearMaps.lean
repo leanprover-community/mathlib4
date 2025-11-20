@@ -3,9 +3,11 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Analysis.NormedSpace.Multilinear.Basic
-import Mathlib.Analysis.Normed.Ring.Units
-import Mathlib.Analysis.Normed.Operator.Mul
+module
+
+public import Mathlib.Analysis.NormedSpace.Multilinear.Basic
+public import Mathlib.Analysis.Normed.Ring.Units
+public import Mathlib.Analysis.Normed.Operator.Mul
 
 /-!
 # Bounded linear maps
@@ -48,6 +50,8 @@ in `Topology.Algebra.Module.Basic`, theory over normed spaces developed in
 `ContinuousLinearMap` is to be preferred over an `IsBoundedLinearMap` hypothesis. Historical
 artifact, really.
 -/
+
+@[expose] public section
 
 
 noncomputable section

@@ -3,8 +3,10 @@ Copyright (c) 2023 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.NumberTheory.EulerProduct.ExpLog
-import Mathlib.NumberTheory.LSeries.Dirichlet
+module
+
+public import Mathlib.NumberTheory.EulerProduct.ExpLog
+public import Mathlib.NumberTheory.LSeries.Dirichlet
 
 /-!
 # The Euler Product for the Riemann Zeta Function and Dirichlet L-Series
@@ -21,6 +23,8 @@ The second result is `dirichletLSeries_eulerProduct` (with variants
 `dirichletLSeries_eulerProduct_hasProd` and `dirichletLSeries_eulerProduct_tprod`),
 which is the analogous statement for Dirichlet L-series.
 -/
+
+@[expose] public section
 
 open Complex
 

@@ -3,11 +3,13 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Ring.Parity
-import Mathlib.Order.BooleanAlgebra.Set
+module
+
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.GroupWithZero.Canonical
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Ring.Parity
+public import Mathlib.Order.BooleanAlgebra.Set
 
 /-!
 # The natural numbers form an ordered semiring
@@ -16,6 +18,8 @@ This file contains the commutative linear orderded semiring instance on the natu
 
 See note [foundational algebra order theory].
 -/
+
+@[expose] public section
 
 namespace Nat
 

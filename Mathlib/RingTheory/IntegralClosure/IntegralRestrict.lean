@@ -3,11 +3,13 @@ Copyright (c) 2023 Andrew Yang, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.DedekindDomain.IntegralClosure
-import Mathlib.RingTheory.RingHom.Finite
-import Mathlib.RingTheory.Localization.LocalizationLocalization
-import Mathlib.RingTheory.Localization.NormTrace
-import Mathlib.RingTheory.Norm.Transitivity
+module
+
+public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
+public import Mathlib.RingTheory.RingHom.Finite
+public import Mathlib.RingTheory.Localization.LocalizationLocalization
+public import Mathlib.RingTheory.Localization.NormTrace
+public import Mathlib.RingTheory.Norm.Transitivity
 
 /-!
 # Restriction of various maps between fields to integrally closed subrings.
@@ -24,6 +26,8 @@ defined to be the restriction of the trace map of `Frac(B)/Frac(A)`.
 defined to be the restriction of the norm map of `Frac(B)/Frac(A)`.
 
 -/
+
+@[expose] public section
 open nonZeroDivisors
 
 variable (A K L L₂ L₃ B B₂ B₃ : Type*)

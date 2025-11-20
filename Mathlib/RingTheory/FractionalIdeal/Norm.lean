@@ -3,9 +3,11 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.RingTheory.FractionalIdeal.Basic
-import Mathlib.RingTheory.Ideal.Norm.AbsNorm
-import Mathlib.RingTheory.Localization.NormTrace
+module
+
+public import Mathlib.RingTheory.FractionalIdeal.Basic
+public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
+public import Mathlib.RingTheory.Localization.NormTrace
 
 /-!
 
@@ -26,6 +28,8 @@ ideal of `R` and `I.den` an element of `R⁰` such that `I.den • I = I.num`.
 * `FractionalIdeal.absNorm_span_singleton`: the norm of a principal fractional ideal is the
   norm of its generator
 -/
+
+@[expose] public section
 
 open Module
 open scoped Pointwise nonZeroDivisors

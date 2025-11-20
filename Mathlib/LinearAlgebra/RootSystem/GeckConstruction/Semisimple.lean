@@ -3,11 +3,13 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Matrix
-import Mathlib.Algebra.Lie.Semisimple.Lemmas
-import Mathlib.Algebra.Lie.Weights.Linear
-import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
-import Mathlib.RingTheory.Finiteness.Nilpotent
+module
+
+public import Mathlib.Algebra.Lie.Matrix
+public import Mathlib.Algebra.Lie.Semisimple.Lemmas
+public import Mathlib.Algebra.Lie.Weights.Linear
+public import Mathlib.LinearAlgebra.RootSystem.GeckConstruction.Basic
+public import Mathlib.RingTheory.Finiteness.Nilpotent
 
 /-!
 # Geck's construction of a Lie algebra associated to a root system yields semisimple algebras
@@ -25,6 +27,8 @@ algebras.
   Lie algebras.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -143,9 +147,10 @@ lemma isNilpotent_f :
   | zero => simp
   | succ n ih => rw [pow_succ, pow_succ, ← mul_assoc, ih, mul_assoc, ω_mul_f, ← mul_assoc]
 
-omit [P.IsReduced] [IsDomain R] in
+omit [P.IsReduced] [IsDomain R] [DecidableEq ι] in
 @[simp] lemma trace_h_eq_zero :
     (h i).trace = 0 := by
+  classical
   letI _i := P.indexNeg
   suffices ∑ j, P.pairingIn ℤ j i = 0 by
     simp only [h_eq_diagonal, Matrix.trace_diagonal, Fintype.sum_sum_type, Finset.univ_eq_attach,
@@ -209,9 +214,9 @@ private lemma instIsIrreducible_aux₀ {U : LieSubmodule K H (b.support ⊕ ι �
   obtain ⟨i, hi⟩ : ∃ i, w (Sum.inr i) ≠ 0 := by
     obtain ⟨l, hl⟩ : ∃ l, χ (h' l) ≠ 0 := by
       replace hw₀ : genWeightSpace (b.support ⊕ ι → K) χ ≠ ⊥ := by
-        contrapose! hw₀; rw [LieSubmodule.eq_bot_iff] at hw₀; exact hw₀ _ hw
+        contrapose hw₀; rw [LieSubmodule.eq_bot_iff] at hw₀; exact hw₀ _ hw
       let χ' : H →ₗ[K] K := (Weight.mk χ hw₀).toLinear
-      replace hχ : χ' ≠ 0 := by contrapose! hχ; ext x; simpa using LinearMap.congr_fun hχ x
+      replace hχ : χ' ≠ 0 := by contrapose hχ; ext x; simpa using LinearMap.congr_fun hχ x
       contrapose! hχ
       apply LinearMap.ext_on (span_range_h'_eq_top b)
       rintro - ⟨l, rfl⟩

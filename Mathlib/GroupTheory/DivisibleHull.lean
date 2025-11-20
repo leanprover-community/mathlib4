@@ -3,11 +3,13 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
-import Mathlib.Algebra.Module.LocalizedModule.Basic
-import Mathlib.Algebra.Order.Module.Archimedean
-import Mathlib.Algebra.Order.Monoid.PNat
-import Mathlib.Data.Sign.Defs
-import Mathlib.RingTheory.Localization.FractionRing
+module
+
+public import Mathlib.Algebra.Module.LocalizedModule.Basic
+public import Mathlib.Algebra.Order.Module.Archimedean
+public import Mathlib.Algebra.Order.Monoid.PNat
+public import Mathlib.Data.Sign.Defs
+public import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # Divisible Hull of an abelian group
@@ -35,6 +37,8 @@ it.
   `ArchimedeanClass (DivisibleHull M)`.
 
 -/
+
+@[expose] public section
 
 variable {M : Type*} [AddCommMonoid M]
 

@@ -3,10 +3,12 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Algebra.CharP.Two
-import Mathlib.SetTheory.Nimber.Basic
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.Linter.DeprecatedModule
+module
+
+public import Mathlib.Algebra.CharP.Two
+public import Mathlib.SetTheory.Nimber.Basic
+public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
 deprecated_module
   "This module is now at `CombinatorialGames.Nimber.Field` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
@@ -28,6 +30,8 @@ uses mutual induction and mimics the definition for the surreal inverse. This de
 
 - Show the nimbers are algebraically closed.
 -/
+
+@[expose] public section
 
 universe u v
 

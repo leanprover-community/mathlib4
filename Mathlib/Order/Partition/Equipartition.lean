@@ -3,11 +3,13 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Set.Equitable
-import Mathlib.Logic.Equiv.Fin.Basic
-import Mathlib.Order.Partition.Finpartition
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Data.Set.Equitable
+public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.Order.Partition.Finpartition
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Finite equipartitions
@@ -22,6 +24,8 @@ difference of `1`.
   equipped with an equipartition. Indices of elements in the same part are congruent modulo
   the number of parts.
 -/
+
+@[expose] public section
 
 
 open Finset Fintype

@@ -3,8 +3,10 @@ Copyright (c) 2025 Ilmārs Cīrulis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ilmārs Cīrulis, Alex Meiburg
 -/
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Data.Sign.Defs
+module
+
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Data.Sign.Defs
 
 /-!
 # Normalized vector
@@ -13,6 +15,8 @@ Function that returns unit length vector that points in the same direction
 (if the given vector is nonzero vector) or returns zero vector
 (if the given vector is zero vector).
 -/
+
+@[expose] public section
 
 variable {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
 
