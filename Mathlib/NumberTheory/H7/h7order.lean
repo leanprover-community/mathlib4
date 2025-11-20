@@ -6,6 +6,7 @@ Authors: Michail Karatarakis
 import Mathlib.Analysis.Analytic.Order
 import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.NormedSpace.Connected
+import Mathlib.Tactic
 
 set_option autoImplicit true
 set_option linter.style.multiGoal false
@@ -120,7 +121,7 @@ lemma order_gt_zero_then_deriv_n_neg_1 (f : ℂ → ℂ) z₀ (hf : AnalyticAt �
               simp only [smul_eq_mul]
               rw [deriv_fun_mul]
               simp only [differentiableAt_fun_id, differentiableAt_const, DifferentiableAt.fun_sub,
-                deriv_fun_pow'', deriv_fun_sub, deriv_id'', deriv_const', sub_zero, mul_one]
+                deriv_fun_pow, deriv_fun_sub, deriv_id'', deriv_const', sub_zero, mul_one]
               · have : (z - z₀) ^ n * deriv g z + ↑n * (z - z₀) ^ (n - 1) * g z =
                 (z - z₀) ^ (n - 1) * ((z - z₀)) * deriv g z + ↑n * (z - z₀) ^ (n - 1) * g z := by {
                   simp only [add_left_inj, mul_eq_mul_right_iff]
