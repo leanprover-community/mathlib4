@@ -321,13 +321,10 @@ theorem norm_coeff_le_choose_mul_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
   apply le_trans <| norm_sum_le _ _
   simp_rw [nsmul_eq_mul, norm_mul, _root_.norm_natCast]
   let S := powersetCard (p.natDegree - n) p.roots
-  calc
-  ∑ x ∈ S.toFinset, count x S * ‖x.prod‖
-     ≤ ∑ x ∈ S.toFinset, count x S * ((p.roots).map (fun a ↦ max 1 ‖a‖)).prod := by
-    gcongr with x hx
+  --to be used later in the calc block:
+  have (x : Multiset ℂ) (hx : x ∈ S.toFinset) : ∏ x_1 ∈ x.toFinset, ‖x_1‖ ^ count x_1 x
+      ≤ ∏ m ∈ p.roots.toFinset, max 1 ‖m‖ ^ count m p.roots := by
     rw [mem_toFinset, mem_powersetCard] at hx
-    rw [Finset.prod_multiset_map_count, Finset.prod_multiset_count, norm_prod]
-    simp_rw [norm_pow]
     calc
     ∏ z ∈ x.toFinset, ‖z‖ ^ count z x
       ≤ ∏ z ∈ x.toFinset, (1 ⊔ ‖z‖) ^ count z x := by
@@ -342,6 +339,14 @@ theorem norm_coeff_le_choose_mul_mahlerMeasure (n : ℕ) (p : ℂ[X]) :
       gcongr with a
       · exact le_max_left 1 ‖a‖
       · exact hx.1
+  --final calc block:
+  calc
+  ∑ x ∈ S.toFinset, count x S * ‖x.prod‖
+     ≤ ∑ x ∈ S.toFinset, count x S * ((p.roots).map (fun a ↦ max 1 ‖a‖)).prod := by
+    gcongr with x hx
+    rw [Finset.prod_multiset_map_count, Finset.prod_multiset_count, norm_prod]
+    simp_rw [norm_pow]
+    exact this x hx
   _  = p.natDegree.choose n * (p.roots.map (fun a ↦ 1 ⊔ ‖a‖)).prod := by
     rw [← Finset.sum_mul]
     congr
