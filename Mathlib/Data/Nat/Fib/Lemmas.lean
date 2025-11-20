@@ -17,6 +17,8 @@ to `(-1) ^ (n + 1)`. And Catalan's identity states that for any naturals `x` and
 `fib (x + a + 2) ^ 2 - fib (x + 1) * fib (x + 2 * a + 3) = (-1) ^ (x + 1) * fib (a + 1) ^ 2`.
 -/
 
+@[expose] public section
+
 namespace Nat
 
 /-- Being a linear recurrence, the entries of the Fibonacci sequence can be related via
