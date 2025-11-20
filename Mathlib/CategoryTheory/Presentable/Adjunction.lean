@@ -103,9 +103,9 @@ lemma isCardinalLocallyPresentable [IsCardinalLocallyPresentable C κ] :
     IsCardinalLocallyPresentable D κ :=
   e.toAdjunction.isCardinalLocallyPresentable κ
 
-lemma isCardinalAccessible [IsCardinalAccessibleCategory C κ] :
+lemma isCardinalAccessibleCategory [IsCardinalAccessibleCategory C κ] :
     IsCardinalAccessibleCategory D κ :=
-  e.toAdjunction.isCardinalAccessible κ
+  e.toAdjunction.isCardinalAccessibleCategory κ
 
 end
 
@@ -117,7 +117,7 @@ lemma isLocallyPresentable [IsLocallyPresentable.{w} C] :
 lemma isAccessibleCategory [IsAccessibleCategory.{w} C] :
     IsAccessibleCategory.{w} D := by
   obtain ⟨κ, _, _⟩ := IsAccessibleCategory.exists_cardinal.{w} C
-  exact ⟨κ, inferInstance, e.isCardinalAccessible κ⟩
+  exact ⟨κ, inferInstance, e.isCardinalAccessibleCategory κ⟩
 
 end Equivalence
 
