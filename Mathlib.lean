@@ -5707,7 +5707,6 @@ public import Mathlib.RingTheory.Etale.Basic
 public import Mathlib.RingTheory.Etale.Field
 public import Mathlib.RingTheory.Etale.Kaehler
 public import Mathlib.RingTheory.Etale.Pi
-public import Mathlib.RingTheory.Etale.StandardEtale
 public import Mathlib.RingTheory.EuclideanDomain
 public import Mathlib.RingTheory.Extension
 public import Mathlib.RingTheory.Extension.Basic
@@ -6022,6 +6021,7 @@ public import Mathlib.RingTheory.Polynomial.ShiftedLegendre
 public import Mathlib.RingTheory.Polynomial.SmallDegreeVieta
 public import Mathlib.RingTheory.Polynomial.Tower
 public import Mathlib.RingTheory.Polynomial.UniqueFactorization
+public import Mathlib.RingTheory.Polynomial.UniversalFactorizationRing
 public import Mathlib.RingTheory.Polynomial.Vieta
 public import Mathlib.RingTheory.Polynomial.Wronskian
 public import Mathlib.RingTheory.PolynomialAlgebra
