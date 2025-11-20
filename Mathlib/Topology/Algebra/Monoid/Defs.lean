@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Topology.Constructions.SumProd
+module
+
+public import Mathlib.Topology.Constructions.SumProd
 
 /-!
 # Topological monoids - definitions
@@ -19,6 +21,8 @@ instead of extending typeclasses with these fields.
 
 We also provide convenience dot notation lemmas like `Filter.Tendsto.mul` and `ContinuousAt.add`.
 -/
+
+@[expose] public section
 
 open scoped Topology
 
@@ -53,6 +57,12 @@ theorem continuous_mul : Continuous fun p : M × M => p.1 * p.2 :=
 theorem Filter.Tendsto.mul {α : Type*} {f g : α → M} {x : Filter α} {a b : M}
     (hf : Tendsto f x (𝓝 a)) (hg : Tendsto g x (𝓝 b)) : Tendsto (fun x ↦ f x * g x) x (𝓝 (a * b)) :=
   (continuous_mul.tendsto _).comp (hf.prodMk_nhds hg)
+
+@[to_additive]
+lemma Filter.tendsto_of_div_tendsto_one {α E : Type*} [CommGroup E] [TopologicalSpace E]
+    [ContinuousMul E] {f g : α → E} (m : E) {x : Filter α} (hf : Tendsto f x (𝓝 m))
+    (hfg : Tendsto (g / f) x (𝓝 1)) : Tendsto g x (𝓝 m) := by
+  simpa using Tendsto.mul hf hfg
 
 variable {X : Type*} [TopologicalSpace X] {f g : X → M} {s : Set X} {x : X}
 

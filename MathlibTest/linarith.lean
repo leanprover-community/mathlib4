@@ -737,6 +737,65 @@ end findSquares
 example (x : Int) (h : x = -2) : x = no_index(-2) := by
   linarith [h]
 
+/-! ### `linarith?` suggestions -/
+
+/--
+info: Try this:
+  [apply] linarith only [h]
+-/
+#guard_msgs in
+example (a : ℚ) (h : a < 0) : a ≤ 0 := by
+  linarith?
+
+/--
+info: Try this:
+  [apply] linarith only [h₂, h₁]
+-/
+#guard_msgs in
+example (a b : ℚ) (h₁ : a ≤ b) (h₂ : b < a) : False := by
+  linarith? only [h₁, h₂]
+
+/--
+info: Try this:
+  [apply] linarith only [h₁]
+-/
+#guard_msgs in
+example (a b c : ℚ) (h₁ : a < 0) (h₂ : b ≤ c) : a ≤ 0 := by
+  linarith? only [h₁, h₂]
+
+/--
+info: Try this:
+  [apply] linarith only [h₁]
+-/
+#guard_msgs in
+example (a b c d : ℚ) (h₁ : a < 0) (h₂ : b ≤ c) (h₃ : c ≤ d) : a ≤ 0 := by
+  linarith? only [h₁, h₂, h₃]
+
+/--
+info: Try this:
+  [apply] linarith only [h₂, h₁]
+-/
+#guard_msgs in
+example (a b c d : ℚ) (h₁ : a ≤ b) (h₂ : b < a)
+    (h₃ : c ≤ d) (h₄ : d ≤ c) : False := by
+  linarith? only [h₁, h₂, h₃, h₄]
+
+/--
+info: Try this:
+  [apply] linarith only [h₄, h₂, h₁]
+-/
+#guard_msgs in
+example (x y : ℚ) (h₁ : x ≤ 0) (h₂ : y ≤ 0) (h₃ : x + y ≤ 0) (h₄ : x + y > 0) : False := by
+  linarith? only [h₁, h₂, h₃, h₄]
+
+/--
+info: Try this:
+  [apply] linarith only [h₄, h₂, h₁]
+-/
+#guard_msgs in
+example (x y : ℚ) (h₁ : x ≤ 0) (h₂ : y ≤ 0) (h₃ : x + y ≤ 0) (h₄ : x + y > 0) : False := by
+  linarith? -minimize only [h₁, h₂, h₃, h₄]
+
 /-!
 From https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Adding.20an.20extra.20hypothesis.20breaks.20linarith/near/533973472
 -/

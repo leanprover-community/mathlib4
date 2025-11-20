@@ -3,14 +3,18 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
-import Mathlib.Algebra.GroupWithZero.Associated
-import Mathlib.Algebra.Ring.Units
+module
+
+public import Mathlib.Algebra.GroupWithZero.Associated
+public import Mathlib.Algebra.Ring.Units
 
 /-!
 # Associated elements in rings
 -/
 
-assert_not_exists OrderedCommMonoid Multiset Field
+@[expose] public section
+
+assert_not_exists IsOrderedMonoid Multiset Field
 
 namespace Associated
 variable {M : Type*} [Monoid M] [HasDistribNeg M] {a b : M}

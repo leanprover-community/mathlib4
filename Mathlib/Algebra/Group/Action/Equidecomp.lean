@@ -3,9 +3,11 @@ Copyright (c) 2024 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Logic.Equiv.PartialEquiv
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Logic.Equiv.PartialEquiv
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Equidecompositions
@@ -49,6 +51,8 @@ We take this as our definition as it is easier to work with. It is implemented a
   using partitions.
 
 -/
+
+@[expose] public section
 
 variable {X G : Type*} {A B C : Set X}
 

@@ -3,9 +3,11 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.Sites.Sheafification
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+module
+
+public import Mathlib.CategoryTheory.Limits.Creates
+public import Mathlib.CategoryTheory.Sites.Sheafification
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
 /-!
 
@@ -26,6 +28,8 @@ we show that the cocone obtained by sheafifying the cocone point is a colimit co
 This allows us to show that `Sheaf J D` has colimits (of a certain shape) as soon as `D` does.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory

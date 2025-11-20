@@ -3,15 +3,19 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Emily Riehl, Joël Riou
 -/
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.Category.Cat
-import Mathlib.CategoryTheory.PathCategory.MorphismProperty
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Category.Cat
+public import Mathlib.CategoryTheory.PathCategory.MorphismProperty
 
 /-!
 # The category of quivers
 
 The category of (bundled) quivers, and the free/forgetful adjunction between `Cat` and `Quiv`.
 -/
+
+@[expose] public section
 
 universe v u v₁ v₂ v₃ u₁ u₂ u₃ w
 

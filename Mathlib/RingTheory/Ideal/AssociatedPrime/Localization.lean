@@ -3,9 +3,11 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.Algebra.Module.LocalizedModule.Basic
-import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
-import Mathlib.RingTheory.Localization.AtPrime.Basic
+module
+
+public import Mathlib.Algebra.Module.LocalizedModule.Basic
+public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
 
 /-!
 
@@ -13,7 +15,7 @@ import Mathlib.RingTheory.Localization.AtPrime.Basic
 
 This file mainly proves the relation between `Ass(S⁻¹M)` and `Ass(M)`
 
-# Main Results
+## Main Results
 
 * `associatedPrimes.mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule` :
   for an `R` module `M`, if `p` is a prime ideal of `S⁻¹R` and `p ∩ R ∈ Ass(M)` then
@@ -25,6 +27,8 @@ TODO: prove the reverse when `p` is finitely generated and
 TODO: deduce from the above that every minimal element in support is in `Ass(M)`.
 
 -/
+
+@[expose] public section
 
 variable {R : Type*} [CommRing R] (S : Submonoid R) (R' : Type*) [CommRing R'] [Algebra R R']
   [IsLocalization S R']
@@ -49,7 +53,7 @@ lemma mem_associatePrimes_of_comap_mem_associatePrimes_isLocalizedModule
     assumption
   · use f x
     ext t
-    rcases IsLocalization.mk'_surjective S t with ⟨r, s, hrs⟩
+    rcases IsLocalization.exists_mk'_eq S t with ⟨r, s, hrs⟩
     rw [← IsLocalizedModule.mk'_one S, ← hrs, mem_ker, toSpanSingleton_apply,
       IsLocalizedModule.mk'_smul_mk', mul_one, IsLocalizedModule.mk'_eq_zero']
     refine ⟨fun h ↦ ?_, fun ⟨t, ht⟩ ↦ ?_⟩

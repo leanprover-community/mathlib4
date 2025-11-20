@@ -3,8 +3,10 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
-import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
+public import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 /-!
 
 # The simplicial nerve of a simplicial category
@@ -23,8 +25,8 @@ the linear order `Fin (n + 1)` to `C`, in other words
 
 ## Projects
 
-* Prove that the 0-simplicies of `SimplicialNerve C` may be identified with the objects of `C`
-* Prove that the 1-simplicies of `SimplicialNerve C` may be identified with the morphisms of `C`
+* Prove that the 0-simplices of `SimplicialNerve C` may be identified with the objects of `C`
+* Prove that the 1-simplices of `SimplicialNerve C` may be identified with the morphisms of `C`
 * Prove that the simplicial nerve of a simplicial category `C`, such that `sHom X Y` is a Kan
   complex for every pair of objects `X Y : C`, is a quasicategory.
 * Define the quasicategory of anima as the simplicial nerve of the simplicial category of
@@ -34,6 +36,8 @@ the linear order `Fin (n + 1)` to `C`, in other words
 ## References
 * [Jacob Lurie, *Higher Topos Theory*, Section 1.1.5][LurieHTT]
 -/
+
+@[expose] public section
 
 universe v u
 

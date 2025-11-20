@@ -3,11 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Discrete
-import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
-import Mathlib.CategoryTheory.Monoidal.Opposite
-import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
-import Mathlib.CategoryTheory.CommSq
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Discrete
+public import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
+public import Mathlib.CategoryTheory.Monoidal.Opposite
+public import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
+public import Mathlib.CategoryTheory.CommSq
 
 /-!
 # Braided and symmetric monoidal categories
@@ -30,6 +32,8 @@ The rationale is that we are not carrying any additional data, just requiring a 
 * [Pavel Etingof, Shlomo Gelaki, Dmitri Nikshych, Victor Ostrik, *Tensor categories*][egno15]
 
 -/
+
+@[expose] public section
 
 
 
@@ -150,6 +154,12 @@ def tensorLeftIsoTensorRight (X : C) :
     tensorLeft X ≅ tensorRight X where
   hom := { app Y := (β_ X Y).hom }
   inv := { app Y := (β_ X Y).inv }
+
+variable (C) in
+/-- The braiding isomorphism as a natural isomorphism of bifunctors `C ⥤ C ⥤ C`. -/
+@[simps!]
+def curriedBraidingNatIso : curriedTensor C ≅ (curriedTensor C).flip :=
+  NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun Y ↦ β_ X Y))
 
 @[reassoc]
 theorem yang_baxter (X Y Z : C) :
@@ -519,19 +529,25 @@ lemma Functor.map_braiding (F : C ⥤ D) (X Y : C) [F.Braided] :
 /--
 A braided category with a faithful braided functor to a symmetric category is itself symmetric.
 -/
-def symmetricCategoryOfFaithful {C D : Type*} [Category C] [Category D] [MonoidalCategory C]
+def SymmetricCategory.ofFaithful {C D : Type*} [Category C] [Category D] [MonoidalCategory C]
     [MonoidalCategory D] [BraidedCategory C] [SymmetricCategory D] (F : C ⥤ D) [F.Braided]
     [F.Faithful] : SymmetricCategory C where
   symmetry X Y := F.map_injective (by simp)
 
 /-- Pull back a symmetric braiding along a fully faithful monoidal functor. -/
-noncomputable def symmetricCategoryOfFullyFaithful {C D : Type*} [Category C] [Category D]
+noncomputable def SymmetricCategory.ofFullyFaithful {C D : Type*} [Category C] [Category D]
     [MonoidalCategory C] [MonoidalCategory D] (F : C ⥤ D) [F.Monoidal] [F.Full]
     [F.Faithful] [SymmetricCategory D] : SymmetricCategory C :=
   let h : BraidedCategory C := BraidedCategory.ofFullyFaithful F
   let _ : F.Braided := {
     braided X Y := by simp [h, BraidedCategory.ofFullyFaithful, BraidedCategory.ofFaithful] }
-  symmetricCategoryOfFaithful F
+  .ofFaithful F
+
+@[deprecated (since := "2025-10-17")]
+alias symmetricCategoryOfFaithful := SymmetricCategory.ofFaithful
+
+@[deprecated (since := "2025-10-17")]
+alias symmetricCategoryOfFullyFaithful := SymmetricCategory.ofFullyFaithful
 
 namespace Functor.Braided
 

@@ -3,12 +3,14 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Peter Nelson
 -/
-import Mathlib.Data.Nat.Factorial.BigOperators
-import Mathlib.Data.Nat.Factorial.SuperFactorial
-import Mathlib.LinearAlgebra.Matrix.Block
-import Mathlib.LinearAlgebra.Matrix.Nondegenerate
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.Polynomial.Pochhammer
+module
+
+public import Mathlib.Data.Nat.Factorial.BigOperators
+public import Mathlib.Data.Nat.Factorial.SuperFactorial
+public import Mathlib.LinearAlgebra.Matrix.Block
+public import Mathlib.LinearAlgebra.Matrix.Nondegenerate
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.RingTheory.Polynomial.Pochhammer
 
 /-!
 # Vandermonde matrix
@@ -58,6 +60,8 @@ stating the strictly more general form as `det_projVandermonde`.
 
 Characterize when `rectVandermonde v w n` has linearly independent rows.
 -/
+
+@[expose] public section
 
 variable {R K : Type*} [CommRing R] [Field K] {n : ℕ}
 
@@ -131,7 +135,7 @@ theorem projVandermonde_apply_of_ne_zero
   rw [projVandermonde_apply, eq_div_iff (by simp [hw]), mul_assoc, ← pow_add, rev_add_cast]
 
 theorem projVandermonde_apply_zero_right {v w : Fin (n + 1) → R} {i : Fin (n + 1)} (hw : w i = 0) :
-    projVandermonde v w i = Pi.single (Fin.last n) ((v i) ^ n)  := by
+    projVandermonde v w i = Pi.single (Fin.last n) ((v i) ^ n) := by
   ext j
   obtain rfl | hlt := j.le_last.eq_or_lt
   · simp [projVandermonde_apply]
@@ -238,7 +242,7 @@ theorem det_vandermonde_add (v : Fin n → R) (a : R) :
 @[simp]
 theorem det_vandermonde_sub (v : Fin n → R) (a : R) :
     (Matrix.vandermonde fun i ↦ v i - a).det = (Matrix.vandermonde v).det := by
-  rw [← det_vandermonde_add v (- a)]
+  rw [← det_vandermonde_add v (-a)]
   simp only [← sub_eq_add_neg]
 
 theorem eq_zero_of_forall_index_sum_pow_mul_eq_zero [IsDomain R] {f v : Fin n → R}

@@ -3,7 +3,9 @@ Copyright (c) 2025 Yongle Hu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yongle Hu
 -/
-import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
+module
+
+public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 
 /-!
 # Lemmas about `LTSeries` in the prime spectrum
@@ -15,6 +17,8 @@ import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
   Then we can find another chain of primes $\mathfrak{q}_0 < \dots < \mathfrak{q}_n$ such that
   $x \in \mathfrak{q}_1$, $\mathfrak{p}_0 = \mathfrak{q}_0$ and $\mathfrak{p}_n = \mathfrak{q}_n$.
 -/
+
+@[expose] public section
 
 variable {R : Type*} [CommRing R] [IsNoetherianRing R]
 

@@ -3,10 +3,12 @@ Copyright (c) 2020 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo
 -/
-import Mathlib.Logic.Function.Iterate
-import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Topology.Algebra.Group.Defs
-import Mathlib.Algebra.Order.Monoid.Submonoid
+module
+
+public import Mathlib.Logic.Function.Iterate
+public import Mathlib.Topology.Algebra.Monoid
+public import Mathlib.Topology.Algebra.Group.Defs
+public import Mathlib.Algebra.Order.Monoid.Submonoid
 
 /-!
 # Flows and invariant sets
@@ -27,6 +29,8 @@ Additionally, we define such constructions as the (forward) orbit, a
 semiconjugacy between flows, a factor of a flow, the restriction of a
 flow onto an invariant subset, and the time-reversal of a flow by a group.
 -/
+
+@[expose] public section
 
 
 open Set Function Filter
@@ -167,14 +171,14 @@ theorem restrictAddSubmonoid_apply (S : AddSubmonoid τ) (t : S) (x : α) :
 section Orbit
 
 /-- The orbit of a point under a flow. -/
-def orbit (x : α) : Set α := ϕ.toAddAction.orbit _ x
+def orbit (x : α) : Set α := @AddAction.orbit _ _ ϕ.toAddAction.toVAdd x
 
 theorem orbit_eq_range (x : α) : orbit ϕ x = Set.range (fun t => ϕ t x) := rfl
 
-theorem mem_orbit_iff {x₁ x₂ : α} : x₂ ∈ orbit ϕ x₁ ↔ ∃ t : τ, ϕ t x₁ = x₂ :=
-  ϕ.toAddAction.mem_orbit_iff
+theorem mem_orbit_iff {x₁ x₂ : α} : x₂ ∈ orbit ϕ x₁ ↔ ∃ t : τ, ϕ t x₁ = x₂ := Iff.rfl
 
-theorem mem_orbit (x : α) (t : τ) : ϕ t x ∈ orbit ϕ x := ϕ.toAddAction.mem_orbit ..
+theorem mem_orbit (x : α) (t : τ) : ϕ t x ∈ orbit ϕ x :=
+  @AddAction.mem_orbit _ _ ϕ.toAddAction.toVAdd x t
 
 theorem mem_orbit_self (x : α) : x ∈ orbit ϕ x := ϕ.toAddAction.mem_orbit_self x
 
@@ -281,7 +285,7 @@ def toHomeomorph (t : τ) : (α ≃ₜ α) where
   continuous_toFun := by fun_prop
   continuous_invFun := by fun_prop
 
-theorem image_eq_preimage (t : τ) (s : Set α) : ϕ t '' s = ϕ (-t) ⁻¹' s :=
-  (ϕ.toHomeomorph t).toEquiv.image_eq_preimage s
+theorem image_eq_preimage_symm (t : τ) (s : Set α) : ϕ t '' s = ϕ (-t) ⁻¹' s :=
+  (ϕ.toHomeomorph t).toEquiv.image_eq_preimage_symm s
 
 end Flow

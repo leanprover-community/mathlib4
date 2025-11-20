@@ -3,12 +3,14 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Abelian
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.EpiMono
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Free
-import Mathlib.Algebra.Homology.ShortComplex.Exact
-import Mathlib.CategoryTheory.Elements
-import Mathlib.CategoryTheory.Generator.Basic
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Abelian
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.EpiMono
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Free
+public import Mathlib.Algebra.Homology.ShortComplex.Exact
+public import Mathlib.CategoryTheory.Elements
+public import Mathlib.CategoryTheory.Generator.Basic
 
 /-!
 # Generators for the category of presheaves of modules
@@ -41,6 +43,8 @@ of a morphism between coproducts of objects in `freeYoneda R`.
 
 -/
 
+@[expose] public section
+
 universe v v₁ u u₁
 
 open CategoryTheory Limits
@@ -69,24 +73,23 @@ lemma freeYonedaEquiv_comp {M N : PresheafOfModules.{v} R} {X : C}
 variable (R) in
 /-- The set of `PresheafOfModules.{v} R` consisting of objects of the
 form `(free R).obj (yoneda.obj X)` for some `X`. -/
-def freeYoneda : Set (PresheafOfModules.{v} R) := Set.range (yoneda ⋙ free R).obj
+def freeYoneda : ObjectProperty (PresheafOfModules.{v} R) := .ofObj (yoneda ⋙ free R).obj
 
 namespace freeYoneda
 
-instance : Small.{u} (freeYoneda R) := by
-  let π : C → freeYoneda R := fun X ↦ ⟨_, ⟨X, rfl⟩⟩
-  have hπ : Function.Surjective π := by rintro ⟨_, ⟨X, rfl⟩⟩; exact ⟨X, rfl⟩
-  exact small_of_surjective hπ
+instance : ObjectProperty.Small.{u} (freeYoneda R) := by
+  dsimp [freeYoneda]
+  infer_instance
 
 variable (R)
 
-lemma isSeparating : IsSeparating (freeYoneda R) := by
+lemma isSeparating : ObjectProperty.IsSeparating (freeYoneda R) := by
   intro M N f₁ f₂ h
   ext ⟨X⟩ m
   obtain ⟨g, rfl⟩ := freeYonedaEquiv.surjective m
-  exact congr_arg freeYonedaEquiv (h _ ⟨X, rfl⟩ g)
+  exact congr_arg freeYonedaEquiv (h _ ⟨X⟩ g)
 
-lemma isDetecting : IsDetecting (freeYoneda R) :=
+lemma isDetecting : ObjectProperty.IsDetecting (freeYoneda R) :=
   (isSeparating R).isDetecting
 
 end freeYoneda

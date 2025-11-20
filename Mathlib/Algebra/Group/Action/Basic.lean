@@ -3,10 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Action.Units
-import Mathlib.Algebra.Group.Invertible.Basic
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Logic.Embedding.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Units
+public import Mathlib.Algebra.Group.Invertible.Basic
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Logic.Embedding.Basic
 
 /-!
 # More lemmas about group actions
@@ -14,6 +16,8 @@ import Mathlib.Logic.Embedding.Basic
 This file contains lemmas about group actions that require more imports than
 `Mathlib/Algebra/Group/Action/Defs.lean` offers.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero Equiv.Perm.permGroup
 
@@ -61,6 +65,13 @@ lemma smul_left_cancel_iff (g : α) {x y : β} : g • x = g • y ↔ x = y :=
 @[to_additive]
 lemma smul_eq_iff_eq_inv_smul (g : α) {x y : β} : g • x = y ↔ x = g⁻¹ • y :=
   (MulAction.toPerm g).apply_eq_iff_eq_symm_apply
+
+@[to_additive]
+lemma isCancelSMul_iff_eq_one_of_smul_eq :
+    IsCancelSMul α β ↔ (∀ (g : α) (x : β), g • x = x → g = 1) := by
+  refine ⟨fun H _ _ ↦ IsCancelSMul.eq_one_of_smul, fun H ↦ ⟨fun g h x ↦ ?_⟩⟩
+  rw [smul_eq_iff_eq_inv_smul, eq_comm, ← mul_smul, ← inv_mul_eq_one (G := α)]
+  exact H (g⁻¹ * h) x
 
 end Group
 
@@ -114,12 +125,6 @@ theorem smul_bijective {m : α} (hm : IsUnit m) :
     Function.Bijective (fun (a : β) ↦ m • a) := by
   lift m to αˣ using hm
   exact MulAction.bijective m
-
-@[deprecated (since := "2025-03-03")]
-alias _root_.AddAction.vadd_bijective_of_is_addUnit := IsAddUnit.vadd_bijective
-
-@[to_additive existing, deprecated (since := "2025-03-03")]
-alias _root_.MulAction.smul_bijective_of_is_unit := IsUnit.smul_bijective
 
 @[to_additive]
 lemma smul_left_cancel {a : α} (ha : IsUnit a) {x y : β} : a • x = a • y ↔ x = y :=
@@ -200,5 +205,8 @@ variable [Monoid M] [Group A] [MulDistribMulAction M A]
 
 lemma smul_div' (r : M) (x y : A) : r • (x / y) = r • x / r • y :=
   map_div (MulDistribMulAction.toMonoidHom A r) x y
+
+lemma smul_zpow' (r : M) (x : A) (z : ℤ) : r • (x ^ z) = (r • x) ^ z :=
+  map_zpow (MulDistribMulAction.toMonoidHom A r) x z
 
 end MulDistribMulAction

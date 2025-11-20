@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
-import Mathlib.Algebra.Category.ModuleCat.Sheaf
-import Mathlib.CategoryTheory.Sites.Limits
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf
+public import Mathlib.CategoryTheory.Sites.Limits
 
 /-! # Limits in categories of sheaves of modules
 
@@ -16,6 +18,8 @@ limits exist in the category `SheafOfModules R`.
 * do the same for colimits (which requires constructing the associated sheaf of modules functor)
 
 -/
+
+@[expose] public section
 
 universe v v₁ v₂ u₁ u₂ u
 

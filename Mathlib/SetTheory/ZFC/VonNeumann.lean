@@ -3,9 +3,11 @@ Copyright (c) 2024 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.ZFC.Class
-import Mathlib.SetTheory.ZFC.Ordinal
-import Mathlib.SetTheory.ZFC.Rank
+module
+
+public import Mathlib.SetTheory.ZFC.Class
+public import Mathlib.SetTheory.ZFC.Ordinal
+public import Mathlib.SetTheory.ZFC.Rank
 
 /-!
 # Von Neumann hierarchy
@@ -18,6 +20,8 @@ that `⋃ o, V_ o = univ`.
 
 - `V_ o` is notation for `vonNeumann o`. It is scoped in the `ZFSet` namespace.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -33,7 +37,7 @@ namespace ZFSet
 - `vonNeumann_of_isSuccPrelimit`: `IsSuccPrelimit a → V_ a = ⋃ b < a, V_ b`
 -/
 noncomputable def vonNeumann (o : Ordinal.{u}) : ZFSet.{u} :=
-  ⋃₀ range fun a : Set.Iio o ↦ powerset (vonNeumann a)
+  ⋃ a : Set.Iio o, powerset (vonNeumann a)
 termination_by o
 decreasing_by exact a.2
 
@@ -46,9 +50,7 @@ lemma mem_vonNeumann' : x ∈ V_ o ↔ ∃ a < o, x ⊆ V_ a := by rw [vonNeuman
 
 theorem isTransitive_vonNeumann (o : Ordinal) : IsTransitive (V_ o) := by
   rw [vonNeumann]
-  refine IsTransitive.sUnion' fun x hx ↦ ?_
-  obtain ⟨⟨a, _⟩, rfl⟩ := mem_range.1 hx
-  exact (isTransitive_vonNeumann a).powerset
+  exact .iUnion fun ⟨a, _⟩ => (isTransitive_vonNeumann a).powerset
 termination_by o
 
 @[gcongr] theorem vonNeumann_mem_of_lt (h : a < b) : V_ a ∈ V_ b := by
@@ -123,7 +125,7 @@ theorem vonNeumann_succ (o : Ordinal) : V_ (succ o) = powerset (V_ o) :=
   ext fun z ↦ by rw [mem_vonNeumann, mem_powerset, subset_vonNeumann, lt_succ_iff]
 
 theorem vonNeumann_of_isSuccPrelimit (h : IsSuccPrelimit o) :
-    V_ o = (⋃₀ range fun a : Set.Iio o ↦ vonNeumann a : ZFSet) :=
+    V_ o = ⋃ a : Set.Iio o, vonNeumann a :=
   ext fun z ↦ by simpa [mem_vonNeumann] using h.lt_iff_exists_lt
 
 theorem iUnion_vonNeumann : ⋃ o, (V_ o : Class) = Class.univ :=

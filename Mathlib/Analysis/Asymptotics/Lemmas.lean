@@ -3,16 +3,20 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Yury Kudryashov
 -/
-import Mathlib.Analysis.Asymptotics.Defs
-import Mathlib.Analysis.Normed.Group.Bounded
-import Mathlib.Analysis.Normed.Group.InfiniteSum
-import Mathlib.Analysis.Normed.MulAction
-import Mathlib.Topology.OpenPartialHomeomorph
+module
+
+public import Mathlib.Analysis.Asymptotics.Defs
+public import Mathlib.Analysis.Normed.Group.Bounded
+public import Mathlib.Analysis.Normed.Group.InfiniteSum
+public import Mathlib.Analysis.Normed.MulAction
+public import Mathlib.Topology.OpenPartialHomeomorph
 
 /-!
 # Further basic lemmas about asymptotics
 
 -/
+
+@[expose] public section
 
 open Set Topology Filter NNReal
 
@@ -201,6 +205,14 @@ theorem IsBigO.of_pow {f : α → 𝕜} {g : α → R} {n : ℕ} (hn : n ≠ 0) 
   obtain ⟨c : ℝ, hc₀ : 0 ≤ c, hc : C ≤ c ^ n⟩ :=
     ((eventually_ge_atTop _).and <| (tendsto_pow_atTop hn).eventually_ge_atTop C).exists
   exact (hC.of_pow hn hc hc₀).isBigO
+
+theorem IsBigO.pow_of_le_right {f : α → ℝ}
+    (hf : 1 ≤ᶠ[l] f) {m n : ℕ}
+    (h : n ≤ m) : (f ^ n) =O[l] (f ^ m) := by
+  rw [IsBigO_def]
+  refine ⟨1, ?_⟩
+  rw [IsBigOWith_def]
+  exact hf.mono fun x hx ↦ by simp [abs_eq_self.mpr (zero_le_one.trans hx), pow_le_pow_right₀ hx h]
 
 /-! ### Scalar multiplication -/
 

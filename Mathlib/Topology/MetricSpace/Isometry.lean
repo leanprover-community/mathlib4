@@ -3,10 +3,12 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Fintype.Lattice
-import Mathlib.Data.Fintype.Sum
-import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.Topology.MetricSpace.Antilipschitz
+module
+
+public import Mathlib.Data.Fintype.Lattice
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.MetricSpace.Antilipschitz
 
 /-!
 # Isometries
@@ -18,6 +20,8 @@ and prove their basic properties. We also introduce isometric bijections.
 Since a lot of elementary properties don't require `eq_of_dist_eq_zero` we start setting up the
 theory for `PseudoMetricSpace` and we specialize to `MetricSpace` when needed.
 -/
+
+@[expose] public section
 
 open Topology
 
@@ -87,9 +91,6 @@ theorem _root_.isometry_id : Isometry (id : α → α) := fun _ _ => rfl
 theorem prodMap {δ} [PseudoEMetricSpace δ] {f : α → β} {g : γ → δ} (hf : Isometry f)
     (hg : Isometry g) : Isometry (Prod.map f g) := fun x y => by
   simp only [Prod.edist_eq, Prod.map_fst, hf.edist_eq, Prod.map_snd, hg.edist_eq]
-
-@[deprecated (since := "2025-04-18")]
-alias prod_map := prodMap
 
 protected theorem piMap {ι} [Fintype ι] {α β : ι → Type*} [∀ i, PseudoEMetricSpace (α i)]
     [∀ i, PseudoEMetricSpace (β i)] (f : ∀ i, α i → β i) (hf : ∀ i, Isometry (f i)) :

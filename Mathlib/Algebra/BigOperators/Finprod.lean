@@ -3,14 +3,16 @@ Copyright (c) 2020 Kexing Ying and Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.Group.Indicator
-import Mathlib.Algebra.Group.Support
-import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-import Mathlib.Algebra.Notation.FiniteSupport
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Data.Set.Finite.Lattice
+module
+
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.Group.Indicator
+public import Mathlib.Algebra.Group.Support
+public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+public import Mathlib.Algebra.Notation.FiniteSupport
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Finite products and sums over types and sets
@@ -72,6 +74,8 @@ We did not add `IsFinite (X : Type) : Prop`, because it is simply `Nonempty (Fin
 
 finsum, finprod, finite sum, finite product
 -/
+
+@[expose] public section
 
 
 open Function Set
@@ -341,7 +345,7 @@ theorem finprod_eq_prod_of_mulSupport_subset (f : α → M) {s : Finset α} (h :
     ∏ᶠ i, f i = ∏ i ∈ s, f i := by
   have A : mulSupport (f ∘ PLift.down) = Equiv.plift.symm '' mulSupport f := by
     rw [mulSupport_comp_eq_preimage]
-    exact (Equiv.plift.symm.image_eq_preimage _).symm
+    exact (Equiv.plift.symm.image_eq_preimage_symm _).symm
   have : mulSupport (f ∘ PLift.down) ⊆ s.map Equiv.plift.symm.toEmbedding := by
     rw [A, Finset.coe_map]
     exact image_mono h
@@ -411,7 +415,7 @@ theorem finprod_cond_ne (f : α → M) (a : α) [DecidableEq α] (hf : (mulSuppo
 
 @[to_additive]
 theorem finprod_mem_eq_prod_of_inter_mulSupport_eq (f : α → M) {s : Set α} {t : Finset α}
-    (h : s ∩ mulSupport f = t.toSet ∩ mulSupport f) : ∏ᶠ i ∈ s, f i = ∏ i ∈ t, f i :=
+    (h : s ∩ mulSupport f = ↑t ∩ mulSupport f) : ∏ᶠ i ∈ s, f i = ∏ i ∈ t, f i :=
   finprod_cond_eq_prod_of_cond_iff _ <| by
     intro x hxf
     rw [← mem_mulSupport] at hxf
@@ -848,7 +852,7 @@ theorem finprod_mem_eq_of_bijOn {s : Set α} {t : Set β} {f : α → M} {g : β
 theorem finprod_eq_of_bijective {f : α → M} {g : β → M} (e : α → β) (he₀ : Bijective e)
     (he₁ : ∀ x, f x = g (e x)) : ∏ᶠ i, f i = ∏ᶠ j, g j := by
   rw [← finprod_mem_univ f, ← finprod_mem_univ g]
-  exact finprod_mem_eq_of_bijOn _ (bijective_iff_bijOn_univ.mp he₀) fun x _ => he₁ x
+  exact finprod_mem_eq_of_bijOn _ he₀.bijOn_univ fun x _ => he₁ x
 
 /-- See also `finprod_eq_of_bijective`, `Fintype.prod_bijective` and `Finset.prod_bij`. -/
 @[to_additive

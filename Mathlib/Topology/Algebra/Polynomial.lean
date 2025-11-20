@@ -3,12 +3,14 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Inductions
-import Mathlib.Algebra.Polynomial.Splits
-import Mathlib.RingTheory.Polynomial.Vieta
-import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Analysis.Normed.Ring.Lemmas
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Inductions
+public import Mathlib.Algebra.Polynomial.Splits
+public import Mathlib.RingTheory.Polynomial.Vieta
+public import Mathlib.Analysis.Normed.Field.Basic
+public import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!
 # Polynomials and limits
@@ -32,6 +34,8 @@ In this file we prove the following lemmas.
 
 Polynomial, continuity
 -/
+
+@[expose] public section
 
 
 open IsAbsoluteValue Filter
@@ -144,7 +148,7 @@ open Multiset
 
 theorem eq_one_of_roots_le {p : F[X]} {f : F →+* K} {B : ℝ} (hB : B < 0) (h1 : p.Monic)
     (h2 : Splits f p) (h3 : ∀ z ∈ (map f p).roots, ‖z‖ ≤ B) : p = 1 :=
-  h1.natDegree_eq_zero_iff_eq_one.mp (by
+  h1.natDegree_eq_zero.mp (by
     contrapose! hB
     rw [← h1.natDegree_map f, natDegree_eq_card_roots' h2] at hB
     obtain ⟨z, hz⟩ := card_pos_iff_exists_mem.mp (zero_lt_iff.mpr hB)

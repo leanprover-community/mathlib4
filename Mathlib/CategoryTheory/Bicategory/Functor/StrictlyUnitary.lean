@@ -3,7 +3,9 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
 # Strictly unitary lax functors and pseudofunctors
@@ -34,6 +36,8 @@ bicategories, strictly unitary pseudofunctors and icons.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Category Bicategory
@@ -52,9 +56,10 @@ variable (B C)
 lax functor `F` from `B` to `C` such that the structure 1-cell
 `𝟙 (obj X) ⟶ map (𝟙 X)` is in fact an identity 1-cell for every `X : B`. -/
 @[kerodon 008R]
-structure StrictlyUnitaryLaxFunctor extends LaxFunctor B C where
-  map_id (X : B) : map (𝟙 X) = 𝟙 (obj X)
-  mapId_eq_eqToHom (X : B) : (mapId X) = eqToHom (map_id X).symm
+structure StrictlyUnitaryLaxFunctor extends B ⥤ᴸ C where
+  map_id (X : B) : map (𝟙 X) = 𝟙 (obj X) := by rfl_cat
+  mapId_eq_eqToHom (X : B) : (mapId X) = eqToHom (map_id X).symm := by cat_disch
+
 
 /-- A helper structure that bundles the necessary data to
 construct a `StrictlyUnitaryLaxFunctor` without specifying the redundant
@@ -62,43 +67,43 @@ field `mapId`. -/
 structure StrictlyUnitaryLaxFunctorCore where
   /-- action on objects -/
   obj : B → C
-  /-- action on 1-morhisms -/
+  /-- action on 1-morphisms -/
   map : ∀ {X Y : B}, (X ⟶ Y) → (obj X ⟶ obj Y)
-  map_id : ∀ (X : B), map (𝟙 X) = 𝟙 (obj X)
+  map_id : ∀ (X : B), map (𝟙 X) = 𝟙 (obj X) := by cat_disch
   /-- action on 2-morphisms -/
   map₂ : ∀ {a b : B} {f g : a ⟶ b}, (f ⟶ g) → (map f ⟶ map g)
-  map₂_id : ∀ {a b : B} (f : a ⟶ b), map₂ (𝟙 f) = 𝟙 (map f) := by aesop_cat
+  map₂_id : ∀ {a b : B} (f : a ⟶ b), map₂ (𝟙 f) = 𝟙 (map f) := by cat_disch
   map₂_comp :
       ∀ {a b : B} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h),
         map₂ (η ≫ θ) = map₂ η ≫ map₂ θ := by
-    aesop_cat
+    cat_disch
   /-- structure 2-morphism for composition of 1-morphism -/
   mapComp : ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c),
     map f ≫ map g ⟶ map (f ≫ g)
   mapComp_naturality_left :
       ∀ {a b c : B} {f f' : a ⟶ b} (η : f ⟶ f') (g : b ⟶ c),
         mapComp f g ≫ map₂ (η ▷ g) = map₂ η ▷ map g ≫ mapComp f' g := by
-    aesop_cat
+    cat_disch
   mapComp_naturality_right :
       ∀ {a b c : B} (f : a ⟶ b) {g g' : b ⟶ c} (η : g ⟶ g'),
         mapComp f g ≫ map₂ (f ◁ η) = map f ◁ map₂ η ≫ mapComp f g' := by
-    aesop_cat
+    cat_disch
   map₂_leftUnitor :
       ∀ {a b : B} (f : a ⟶ b),
         map₂ (λ_ f).inv =
         (λ_ (map f)).inv ≫ eqToHom (by rw [map_id a]) ≫ mapComp (𝟙 a) f := by
-    aesop_cat
+    cat_disch
   map₂_rightUnitor :
       ∀ {a b : B} (f : a ⟶ b),
         map₂ (ρ_ f).inv =
         (ρ_ (map f)).inv ≫ eqToHom (by rw [map_id b]) ≫ mapComp f (𝟙 b) := by
-    aesop_cat
+    cat_disch
   map₂_associator :
       ∀ {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d),
         mapComp f g ▷ map h ≫ mapComp (f ≫ g) h ≫ map₂ (α_ f g h).hom =
         (α_ (map f) (map g) (map h)).hom ≫ map f ◁ mapComp g h ≫
           mapComp f (g ≫ h) := by
-    aesop_cat
+    cat_disch
 
 namespace StrictlyUnitaryLaxFunctor
 
@@ -208,8 +213,8 @@ identity 1-cell for every `X : B` (in particular, there is an equality
 `F.map (𝟙 X) = 𝟙 (F.obj x)`). -/
 @[kerodon 008R]
 structure StrictlyUnitaryPseudofunctor extends Pseudofunctor B C where
-  map_id (X : B) : map (𝟙 X) = 𝟙 (obj X)
-  mapId_eq_eqToIso (X : B) : (mapId X) = eqToIso (map_id X)
+  map_id (X : B) : map (𝟙 X) = 𝟙 (obj X) := by rfl_cat
+  mapId_eq_eqToIso (X : B) : (mapId X) = eqToIso (map_id X) := by cat_disch
 
 /-- A helper structure that bundles the necessary data to
 construct a `StrictlyUnitaryPseudofunctor` without specifying the redundant
@@ -219,14 +224,14 @@ structure StrictlyUnitaryPseudofunctorCore where
   obj : B → C
   /-- action on 1-morphisms -/
   map : ∀ {X Y : B}, (X ⟶ Y) → (obj X ⟶ obj Y)
-  map_id : ∀ (X : B), map (𝟙 X) = 𝟙 (obj X)
+  map_id : ∀ (X : B), map (𝟙 X) = 𝟙 (obj X) := by rfl_cat
   /-- action on 2-morphisms -/
   map₂ : ∀ {a b : B} {f g : a ⟶ b}, (f ⟶ g) → (map f ⟶ map g)
-  map₂_id : ∀ {a b : B} (f : a ⟶ b), map₂ (𝟙 f) = 𝟙 (map f) := by aesop_cat
+  map₂_id : ∀ {a b : B} (f : a ⟶ b), map₂ (𝟙 f) = 𝟙 (map f) := by cat_disch
   map₂_comp :
       ∀ {a b : B} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h),
         map₂ (η ≫ θ) = map₂ η ≫ map₂ θ := by
-    aesop_cat
+    cat_disch
   /-- structure 2-isomorphism for composition of 1-morphisms -/
   mapComp : ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c),
     map (f ≫ g) ≅ map f ≫ map g
@@ -234,31 +239,31 @@ structure StrictlyUnitaryPseudofunctorCore where
       ∀ {a b c : B} (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h),
         map₂ (f ◁ η) =
         (mapComp f g).hom ≫ map f ◁ map₂ η ≫ (mapComp f h).inv := by
-    aesop_cat
+    cat_disch
   map₂_whisker_right :
       ∀ {a b c : B} {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c),
         map₂ (η ▷ h) =
         (mapComp f h).hom ≫ map₂ η ▷ map h ≫ (mapComp g h).inv := by
-    aesop_cat
+    cat_disch
   map₂_left_unitor :
       ∀ {a b : B} (f : a ⟶ b),
         map₂ (λ_ f).hom =
         (mapComp (𝟙 a) f).hom ≫ eqToHom (by rw [map_id a]) ≫
           (λ_ (map f)).hom := by
-    aesop_cat
+    cat_disch
   map₂_right_unitor :
       ∀ {a b : B} (f : a ⟶ b),
         map₂ (ρ_ f).hom =
         (mapComp f (𝟙 b)).hom ≫ eqToHom (by rw [map_id b]) ≫
           (ρ_ (map f)).hom := by
-    aesop_cat
+    cat_disch
   map₂_associator :
       ∀ {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d),
         map₂ (α_ f g h).hom =
           (mapComp (f ≫ g) h).hom ≫ (mapComp f g).hom ▷ map h ≫
           (α_ (map f) (map g) (map h)).hom ≫ map f ◁ (mapComp g h).inv ≫
           (mapComp f (g ≫ h)).inv := by
-    aesop_cat
+    cat_disch
 
 namespace StrictlyUnitaryPseudofunctor
 

@@ -3,7 +3,9 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.UniformSpace.UniformConvergence
+module
+
+public import Mathlib.Topology.UniformSpace.UniformConvergence
 
 /-!
 # Locally uniform convergence
@@ -32,6 +34,8 @@ We also define variants for locally uniform convergence on a subset, called
 
 Uniform limit, uniform convergence, tends uniformly to
 -/
+
+@[expose] public section
 
 noncomputable section
 

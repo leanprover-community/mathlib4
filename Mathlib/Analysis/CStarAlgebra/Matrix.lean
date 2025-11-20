@@ -3,11 +3,13 @@ Copyright (c) 2022 Hans Parshall. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hans Parshall
 -/
-import Mathlib.Analysis.InnerProductSpace.Adjoint
-import Mathlib.Analysis.Matrix
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.LinearAlgebra.UnitaryGroup
-import Mathlib.Topology.UniformSpace.Matrix
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
+public import Mathlib.Analysis.Matrix.Normed
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.LinearAlgebra.UnitaryGroup
+public import Mathlib.Topology.UniformSpace.Matrix
 
 /-!
 # Analytic properties of the `star` operation on matrices
@@ -35,6 +37,8 @@ coincide with the existing topology and uniformity on matrices.
 * Show that `‖diagonal (v : n → 𝕜)‖ = ‖v‖`.
 
 -/
+
+@[expose] public section
 
 open WithLp
 open scoped Matrix
@@ -68,7 +72,7 @@ theorem entry_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Matrix.uni
     rw [diag_eq_norm_sum.1]
     norm_cast
   -- Since U is unitary, the diagonal entries of U * Uᴴ are all 1
-  have mul_eq_one : U * Uᴴ = 1 := unitary.mul_star_self_of_mem hU
+  have mul_eq_one : U * Uᴴ = 1 := Unitary.mul_star_self_of_mem hU
   have diag_eq_one : RCLike.re ((U * Uᴴ) i i) = 1 := by
     simp only [mul_eq_one, Matrix.one_apply_eq, RCLike.one_re]
   -- Putting it all together
@@ -156,8 +160,8 @@ def instL2OpMetricSpace : MetricSpace (Matrix m n 𝕜) := by
       dist_eq := l2OpNormedAddCommGroupAux.dist_eq }
   exact normed_add_comm_group.replaceUniformity <| by
     congr
-    rw [← @IsUniformAddGroup.toUniformSpace_eq _ (Matrix.instUniformSpace m n 𝕜) _ _]
-    rw [@IsUniformAddGroup.toUniformSpace_eq _ PseudoEMetricSpace.toUniformSpace _ _]
+    rw [← @IsUniformAddGroup.rightUniformSpace_eq _ (Matrix.instUniformSpace m n 𝕜) _ _]
+    rw [@IsUniformAddGroup.rightUniformSpace_eq _ PseudoEMetricSpace.toUniformSpace _ _]
 
 scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instL2OpMetricSpace
 
@@ -210,7 +214,7 @@ lemma l2_opNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) :
     |>.opNorm_comp_le <| (toEuclideanLin (n := l) (m := n) (𝕜 := 𝕜) ≪≫ₗ toContinuousLinearMap) B
   convert this
   ext1 x
-  exact congr($(Matrix.toLin'_mul A B) x)
+  exact congr(toLp 2 ($(Matrix.toLin'_mul A B) x))
 
 lemma l2_opNNNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ :=
   l2_opNorm_mul A B

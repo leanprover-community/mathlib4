@@ -3,13 +3,15 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Scott Carnahan
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.GroupWithZero.Regular
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Data.Finset.MulAntidiagonal
-import Mathlib.Data.Finset.SMulAntidiagonal
-import Mathlib.GroupTheory.GroupAction.Ring
-import Mathlib.RingTheory.HahnSeries.Addition
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.GroupWithZero.Regular
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.Data.Finset.MulAntidiagonal
+public import Mathlib.Data.Finset.SMulAntidiagonal
+public import Mathlib.GroupTheory.GroupAction.Ring
+public import Mathlib.RingTheory.HahnSeries.Addition
 
 /-!
 # Multiplicative properties of Hahn series
@@ -44,6 +46,8 @@ The following may be useful for composing vertex operators, but they seem to tak
 ## References
 - [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
 -/
+
+@[expose] public section
 
 open Finset Function Pointwise
 
@@ -611,8 +615,7 @@ theorem orderTop_nsmul_le_orderTop_pow {Γ}
   | succ n ih =>
     rw [add_nsmul, pow_add]
     calc
-      n • x.orderTop + 1 • x.orderTop ≤ (x ^ n).orderTop + 1 • x.orderTop :=
-        add_le_add_right ih (1 • x.orderTop)
+      n • x.orderTop + 1 • x.orderTop ≤ (x ^ n).orderTop + 1 • x.orderTop := by gcongr
       (x ^ n).orderTop + 1 • x.orderTop = (x ^ n).orderTop + x.orderTop := by rw [one_nsmul]
       (x ^ n).orderTop + x.orderTop ≤ (x ^ n * x).orderTop := orderTop_add_le_mul
       (x ^ n * x).orderTop ≤ (x ^ n * x ^ 1).orderTop := by rw [pow_one]

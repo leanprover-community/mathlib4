@@ -3,13 +3,15 @@ Copyright (c) 2023 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Damiano Testa
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Lean.Meta
-import Mathlib.Order.Defs.LinearOrder
+module
+
+public meta import Mathlib.Algebra.Group.Basic
+public meta import Mathlib.Lean.Meta
+public meta import Mathlib.Order.Defs.LinearOrder
 
 /-!
 
-#  `move_add` a tactic for moving summands in expressions
+# `move_add` a tactic for moving summands in expressions
 
 The tactic `move_add` rearranges summands in expressions.
 
@@ -100,6 +102,8 @@ Currently, no attempt is made at guiding `simp` by doing a `congr`-like destruct
 This will be the content of a later PR.
 -/
 
+public meta section
+
 open Lean Expr
 
 /-- `getExprInputs e` inspects the outermost constructor of `e` and returns the array of all the
@@ -125,7 +129,7 @@ section reorder
 variable {α : Type*} [BEq α]
 
 /-!
-##  Reordering the variables
+## Reordering the variables
 
 This section produces the permutations of the variables for `move_add`.
 

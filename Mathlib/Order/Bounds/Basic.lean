@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Order.Bounds.Defs
-import Mathlib.Order.Directed
-import Mathlib.Order.BoundedOrder.Monotone
-import Mathlib.Order.Interval.Set.Basic
+module
+
+public import Mathlib.Order.Bounds.Defs
+public import Mathlib.Order.Directed
+public import Mathlib.Order.BoundedOrder.Monotone
+public import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Upper / lower bounds
@@ -15,6 +17,8 @@ In this file we prove various lemmas about upper/lower bounds of a set:
 monotonicity, behaviour under `∪`, `∩`, `insert`,
 and provide formulas for `∅`, `univ`, and intervals.
 -/
+
+@[expose] public section
 
 open Function Set
 
@@ -487,15 +491,12 @@ section
 variable [LinearOrder γ]
 
 theorem exists_lub_Iio (i : γ) : ∃ j, IsLUB (Iio i) j := by
-  by_cases h_exists_lt : ∃ j, j ∈ upperBounds (Iio i) ∧ j < i
+  by_cases! h_exists_lt : ∃ j, j ∈ upperBounds (Iio i) ∧ j < i
   · obtain ⟨j, hj_ub, hj_lt_i⟩ := h_exists_lt
     exact ⟨j, hj_ub, fun k hk_ub => hk_ub hj_lt_i⟩
   · refine ⟨i, fun j hj => le_of_lt hj, ?_⟩
     rw [mem_lowerBounds]
-    by_contra h
-    refine h_exists_lt ?_
-    push_neg at h
-    exact h
+    exact h_exists_lt
 
 theorem exists_glb_Ioi (i : γ) : ∃ j, IsGLB (Ioi i) j :=
   @exists_lub_Iio γᵒᵈ _ i
@@ -683,15 +684,9 @@ theorem NoTopOrder.upperBounds_univ [NoTopOrder α] : upperBounds (univ : Set α
   eq_empty_of_subset_empty fun b hb =>
     not_isTop b fun x => hb (mem_univ x)
 
-@[deprecated (since := "2025-04-18")]
-alias NoMaxOrder.upperBounds_univ := NoTopOrder.upperBounds_univ
-
 @[simp]
 theorem NoBotOrder.lowerBounds_univ [NoBotOrder α] : lowerBounds (univ : Set α) = ∅ :=
   @NoTopOrder.upperBounds_univ αᵒᵈ _ _
-
-@[deprecated (since := "2025-04-18")]
-alias NoMinOrder.lowerBounds_univ := NoBotOrder.lowerBounds_univ
 
 @[simp]
 theorem not_bddAbove_univ [NoTopOrder α] : ¬BddAbove (univ : Set α) := by simp [BddAbove]

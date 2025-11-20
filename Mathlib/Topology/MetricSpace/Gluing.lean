@@ -3,8 +3,10 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Order.ConditionallyCompleteLattice.Group
-import Mathlib.Topology.MetricSpace.Isometry
+module
+
+public import Mathlib.Order.ConditionallyCompleteLattice.Group
+public import Mathlib.Topology.MetricSpace.Isometry
 
 /-!
 # Metric space gluing
@@ -46,6 +48,8 @@ identify `X n` and `X (n+1)` through `f n`. This is a metric space in which all 
 isometrically and in a way compatible with `f n`.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -223,9 +227,8 @@ theorem Sum.dist_eq_glueDist {p q : X ⊕ Y} (x : X) (y : Y) :
 private theorem Sum.dist_comm (x y : X ⊕ Y) : Sum.dist x y = Sum.dist y x := by
   cases x <;> cases y <;> simp [Sum.dist, _root_.dist_comm, add_comm, add_left_comm]
 
-theorem Sum.one_le_dist_inl_inr {x : X} {y : Y} : 1 ≤ Sum.dist (.inl x) (.inr y) :=
-  le_trans (le_add_of_nonneg_right dist_nonneg) <|
-    add_le_add_right (le_add_of_nonneg_left dist_nonneg) _
+theorem Sum.one_le_dist_inl_inr {x : X} {y : Y} : 1 ≤ Sum.dist (.inl x) (.inr y) := by
+  grw [Sum.dist, ← le_add_of_nonneg_right dist_nonneg, ← le_add_of_nonneg_left dist_nonneg]
 
 theorem Sum.one_le_dist_inr_inl {x : X} {y : Y} : 1 ≤ Sum.dist (.inr y) (.inl x) := by
   rw [Sum.dist_comm]; exact Sum.one_le_dist_inl_inr

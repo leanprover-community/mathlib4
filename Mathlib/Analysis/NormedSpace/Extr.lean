@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Module.Ray
-import Mathlib.Topology.Order.LocalExtr
+module
+
+public import Mathlib.Analysis.Normed.Module.Ray
+public import Mathlib.Topology.Order.LocalExtr
 
 /-!
 # (Local) maximums in a normed space
@@ -21,6 +23,8 @@ Then we specialize it to the case `y = f c` and to different special cases of `I
 local maximum, normed space
 -/
 
+@[expose] public section
+
 
 variable {α X E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℝ E] [TopologicalSpace X]
 
@@ -33,11 +37,7 @@ variable {f : α → E} {l : Filter α} {s : Set α} {c : α} {y : E}
 a maximum along `l` at `c`. -/
 theorem IsMaxFilter.norm_add_sameRay (h : IsMaxFilter (norm ∘ f) l c) (hy : SameRay ℝ (f c) y) :
     IsMaxFilter (fun x => ‖f x + y‖) l c :=
-  h.mono fun x hx =>
-    calc
-      ‖f x + y‖ ≤ ‖f x‖ + ‖y‖ := norm_add_le _ _
-      _ ≤ ‖f c‖ + ‖y‖ := add_le_add_right hx _
-      _ = ‖f c + y‖ := hy.norm_add.symm
+  h.mono fun x hx => by dsimp at hx ⊢; grw [hy.norm_add, norm_add_le, hx]
 
 /-- If `f : α → E` is a function such that `norm ∘ f` has a maximum along a filter `l` at a point
 `c`, then the function `fun x => ‖f x + f c‖` has a maximum along `l` at `c`. -/

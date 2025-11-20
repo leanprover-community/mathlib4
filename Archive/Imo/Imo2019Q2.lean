@@ -117,11 +117,7 @@ def symm : Imo2019q2Cfg V Pt where
   Q := cfg.P
   P₁ := cfg.Q₁
   Q₁ := cfg.P₁
-  affineIndependent_ABC := by
-    rw [← affineIndependent_equiv (Equiv.swap (0 : Fin 3) 1)]
-    convert cfg.affineIndependent_ABC using 1
-    ext x
-    fin_cases x <;> rfl
+  affineIndependent_ABC := cfg.affineIndependent_ABC.comm_left
   wbtw_B_A₁_C := cfg.wbtw_A_B₁_C
   wbtw_A_B₁_C := cfg.wbtw_B_A₁_C
   wbtw_A_P_A₁ := cfg.wbtw_B_Q_B₁

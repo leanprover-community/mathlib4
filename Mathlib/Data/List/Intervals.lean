@@ -3,9 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Data.List.Lattice
-import Mathlib.Data.Bool.Basic
-import Mathlib.Order.Lattice
+module
+
+public import Mathlib.Data.List.Lattice
+public import Mathlib.Data.Bool.Basic
+public import Mathlib.Order.Lattice
 
 /-!
 # Intervals in ℕ
@@ -20,6 +22,8 @@ and strictly less than `n`.
   `Set.Ico a b` is `[Finite]`, and 'locally finite total orders', for which there is a list model.
 - Once the above is done, get rid of `Int.range` (and maybe `List.range'`?).
 -/
+
+@[expose] public section
 
 
 open Nat
@@ -115,11 +119,11 @@ theorem pred_singleton {m : ℕ} (h : 0 < m) : Ico (m - 1) m = [m - 1] := by
   simp [Ico, Nat.sub_sub_self (succ_le_of_lt h)]
 
 theorem isChain_succ (n m : ℕ) : IsChain (fun a b => b = succ a) (Ico n m) := by
-  by_cases h : n < m
+  by_cases! h : n < m
   · rw [eq_cons h]
     unfold List.Ico
     exact isChain_range' _ (_ + 1) 1
-  · rw [eq_nil_of_le (le_of_not_gt h)]
+  · rw [eq_nil_of_le h]
     exact .nil
 
 @[deprecated (since := "2025-09-19")]

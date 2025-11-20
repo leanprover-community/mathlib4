@@ -3,14 +3,18 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 -/
-import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Algebra.Group.Units.Hom
-import Mathlib.Algebra.Ring.Hom.Defs
+module
+
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Algebra.Group.Units.Hom
+public import Mathlib.Algebra.Ring.Hom.Defs
 
 /-!
 # Units in semirings and rings
 
 -/
+
+@[expose] public section
 
 
 universe u v w x

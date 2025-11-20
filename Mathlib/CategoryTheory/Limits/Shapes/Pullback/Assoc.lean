@@ -3,8 +3,9 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+module
 
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
 
 /-!
 # Associativity of pullbacks
@@ -12,6 +13,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
 This file shows that pullbacks (and pushouts) are associative up to natural isomorphism.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

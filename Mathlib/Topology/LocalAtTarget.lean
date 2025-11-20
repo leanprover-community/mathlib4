@@ -3,9 +3,12 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.Topology.Sets.OpenCover
-import Mathlib.Topology.LocallyClosed
+module
+
+public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.Sets.OpenCover
+public import Mathlib.Topology.LocallyClosed
+public import Mathlib.Topology.Maps.Proper.Basic
 
 /-!
 # Properties of maps that are local at the target or at the source.
@@ -24,6 +27,8 @@ We show that the following properties of continuous maps are local at the source
 - `GeneralizingMap`
 
 -/
+
+@[expose] public section
 
 open Filter Set TopologicalSpace Topology
 
@@ -81,6 +86,13 @@ lemma GeneralizingMap.restrictPreimage (H : GeneralizingMap f) (s : Set β) :
   obtain ⟨a, ha, hy⟩ := H (h.map <| continuous_subtype_val (p := s))
   use ⟨a, by simp [hy]⟩
   simp [hy, subtype_specializes_iff, ha]
+
+lemma IsProperMap.restrictPreimage (H : IsProperMap f) (s : Set β) :
+    IsProperMap (s.restrictPreimage f) := by
+  rw [isProperMap_iff_isClosedMap_and_compact_fibers]
+  refine ⟨H.continuous.restrictPreimage, H.isClosedMap.restrictPreimage _, fun y ↦ ?_⟩
+  rw [IsEmbedding.subtypeVal.isCompact_iff, image_val_preimage_restrictPreimage, image_singleton]
+  exact H.isCompact_preimage isCompact_singleton
 
 namespace TopologicalSpace.IsOpenCover
 

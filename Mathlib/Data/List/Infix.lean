@@ -3,9 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.TakeDrop
-import Mathlib.Data.List.Induction
-import Mathlib.Order.Basic
+module
+
+public import Mathlib.Data.List.TakeDrop
+public import Mathlib.Data.List.Induction
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Order.Basic
 
 /-!
 # Prefixes, suffixes, infixes
@@ -26,6 +29,8 @@ All those (except `insert`) are defined in `Mathlib/Data/List/Defs.lean`.
 * `l₁ <:+ l₂`: `l₁` is a suffix of `l₂`.
 * `l₁ <:+: l₂`: `l₁` is an infix of `l₂`.
 -/
+
+@[expose] public section
 
 variable {α β : Type*}
 

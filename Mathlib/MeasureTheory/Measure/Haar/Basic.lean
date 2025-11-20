@@ -3,9 +3,11 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Measure.Content
-import Mathlib.MeasureTheory.Group.Prod
-import Mathlib.Topology.Algebra.Group.Compact
+module
+
+public import Mathlib.MeasureTheory.Measure.Content
+public import Mathlib.MeasureTheory.Group.Prod
+public import Mathlib.Topology.Algebra.Group.Compact
 
 /-!
 # Haar measure
@@ -59,6 +61,8 @@ the file `Mathlib/MeasureTheory/Measure/Haar/Unique.lean`.
     invalid.
 * https://en.wikipedia.org/wiki/Haar_measure
 -/
+
+@[expose] public section
 
 
 noncomputable section

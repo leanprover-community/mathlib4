@@ -3,9 +3,11 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.SetTheory.Cardinal.Arithmetic
-import Mathlib.Order.Filter.Finite
-import Mathlib.Order.Filter.Map
+module
+
+public import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.Order.Filter.Finite
+public import Mathlib.Order.Filter.Map
 
 /-!
 # Cardinality of a set with a countable cover
@@ -16,6 +18,8 @@ cardinality `≤ a`. Then `t` itself has cardinality at most `a`. This is proved
 
 Versions are also given when `t = univ`, and with `= a` instead of `≤ a`.
 -/
+
+@[expose] public section
 
 open Set Order Filter
 open scoped Cardinal
@@ -58,7 +62,7 @@ lemma mk_subtype_le_of_countable_eventually_mem_aux {α ι : Type u} {a : Cardin
       _     ≤ sum (fun i ↦ #(f i)) := mk_iUnion_le_sum_mk
       _     ≤ sum (fun _ ↦ a) := sum_le_sum _ _ h'f
       _     = #ι * a := by simp
-      _     ≤ ℵ₀ * a := mul_le_mul_right' mk_le_aleph0 a
+      _     ≤ ℵ₀ * a := by grw [mk_le_aleph0]
       _     = a := aleph0_mul_eq ha
 
 /-- If a set `t` is eventually covered by a countable family of sets, all with cardinality at

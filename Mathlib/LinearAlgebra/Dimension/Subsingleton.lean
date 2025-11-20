@@ -3,11 +3,15 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison, Eric Wieser, Junyan Xu, Andrew Yang
 -/
-import Mathlib.LinearAlgebra.Dimension.Basic
+module
+
+public import Mathlib.LinearAlgebra.Dimension.Basic
 
 /-!
 # Dimension of trivial modules
 -/
+
+@[expose] public section
 
 variable (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
 

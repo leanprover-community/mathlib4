@@ -3,8 +3,10 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Reid Barton, Joël Riou
 -/
-import Mathlib.CategoryTheory.InducedCategory
-import Mathlib.CategoryTheory.ObjectProperty.Basic
+module
+
+public import Mathlib.CategoryTheory.InducedCategory
+public import Mathlib.CategoryTheory.ObjectProperty.Basic
 
 /-!
 # The full subcategory associated to a property of objects
@@ -14,6 +16,8 @@ a category structure on the type `P.FullSubcategory`
 of objects in `C` satisfying `P`.
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 
@@ -97,9 +101,6 @@ def fullyFaithfulιOfLE (h : P ≤ P') :
 instance full_ιOfLE (h : P ≤ P') : (ιOfLE h).Full := (fullyFaithfulιOfLE h).full
 instance faithful_ιOfLE (h : P ≤ P') : (ιOfLE h).Faithful := (fullyFaithfulιOfLE h).faithful
 
-@[deprecated "use ιOfLECompιIso" (since := "2025-03-04")]
-theorem FullSubcategory.map_inclusion (h : P ≤ P') : ιOfLE h ⋙ P'.ι = P.ι := rfl
-
 /-- If `h : P ≤ P'` is an inequality of properties of objects,
 this is the obvious isomorphism `ιOfLE h ⋙ P'.ι ≅ P.ι`. -/
 def ιOfLECompιIso (h : P ≤ P') : ιOfLE h ⋙ P'.ι ≅ P.ι := Iso.refl _
@@ -117,11 +118,6 @@ variable {D : Type u'} [Category.{v'} D] (P Q : ObjectProperty D)
 def lift : C ⥤ FullSubcategory P where
   obj X := ⟨F.obj X, hF X⟩
   map f := F.map f
-
-@[deprecated "use liftCompιIso" (since := "2025-03-04")]
-theorem FullSubcategory.lift_comp_inclusion_eq :
-    P.lift F hF ⋙ P.ι = F :=
-  rfl
 
 /-- Composing the lift of a functor through a full subcategory with the inclusion yields the
     original functor. This is actually true definitionally. -/
@@ -148,29 +144,8 @@ variable {Q}
 def liftCompιOfLEIso (h : P ≤ Q) :
     P.lift F hF ⋙ ιOfLE h ≅ Q.lift F (fun X ↦ h _ (hF X)) := Iso.refl _
 
-@[deprecated "Use liftCompιOfLEIso" (since := "2025-03-04")]
-theorem FullSubcategory.lift_comp_map (h : P ≤ Q) :
-    P.lift F hF ⋙ ιOfLE h =
-      Q.lift F (fun X ↦  h _ (hF X)) :=
-  rfl
-
 end lift
 
 end ObjectProperty
-
-@[deprecated (since := "2025-03-04")] alias FullSubcategory := ObjectProperty.FullSubcategory
-@[deprecated (since := "2025-03-04")] alias fullSubcategoryInclusion := ObjectProperty.ι
-@[deprecated (since := "2025-03-04")] alias fullSubcategoryInclusion.obj := ObjectProperty.ι_obj
-@[deprecated (since := "2025-03-04")] alias fullSubcategoryInclusion.map := ObjectProperty.ι_map
-@[deprecated (since := "2025-03-04")] alias fullyFaithfulFullSubcategoryInclusion :=
-  ObjectProperty.fullyFaithfulι
-@[deprecated (since := "2025-03-04")] alias FullSubcategory.map := ObjectProperty.ιOfLE
-@[deprecated (since := "2025-03-04")] alias FullSubcategory.lift := ObjectProperty.lift
-@[deprecated (since := "2025-03-04")] alias FullSubcategory.lift_comp_inclusion :=
-  ObjectProperty.liftCompιIso
-@[deprecated (since := "2025-03-04")] alias fullSubcategoryInclusion_obj_lift_obj :=
-  ObjectProperty.ι_obj_lift_obj
-@[deprecated (since := "2025-03-04")] alias fullSubcategoryInclusion_map_lift_map :=
-  ObjectProperty.ι_obj_lift_map
 
 end CategoryTheory

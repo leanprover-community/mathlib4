@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yaël Dillies, David Loeffler
 -/
-import Mathlib.Order.PartialSups
-import Mathlib.Order.Interval.Finset.Fin
+module
+
+public import Mathlib.Order.PartialSups
+public import Mathlib.Order.Interval.Finset.Fin
 
 /-!
 # Making a sequence disjoint
@@ -32,6 +34,8 @@ It is actually unique, as `disjointed_unique` shows.
 
 We also provide set notation variants of some lemmas.
 -/
+
+@[expose] public section
 
 assert_not_exists SuccAddOrder
 
@@ -195,6 +199,13 @@ as `f`. -/
 theorem disjointed_unique' {f d : ι → α} (hdisj : Pairwise (Disjoint on d))
     (hsups : partialSups d = partialSups f) : d = disjointed f :=
   disjointed_unique (fun hij ↦ hdisj hij.ne) hsups
+
+omit [GeneralizedBooleanAlgebra α] in
+lemma Finset.disjiUnion_Iic_disjointed [DecidableEq α] (n : ι) (t : ι → Finset α) :
+    (Iic n).disjiUnion (disjointed t) ((disjoint_disjointed t).set_pairwise _) =
+      partialSups t n := by
+  rw [← partialSups_disjointed, partialSups_apply, Finset.sup'_eq_sup, Finset.sup_eq_biUnion,
+    disjiUnion_eq_biUnion]
 
 section SuccOrder
 

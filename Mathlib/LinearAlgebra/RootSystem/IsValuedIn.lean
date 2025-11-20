@@ -3,8 +3,10 @@ Copyright (c) 2025 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan, Oliver Nash
 -/
-import Mathlib.Algebra.Module.Submodule.Invariant
-import Mathlib.LinearAlgebra.RootSystem.Defs
+module
+
+public import Mathlib.Algebra.Module.Submodule.Invariant
+public import Mathlib.LinearAlgebra.RootSystem.Defs
 
 /-!
 # Root pairings taking values in a subring
@@ -23,6 +25,8 @@ of this theory is the theory of crystallographic root systems, where `S = ℤ`.
 * `RootPairing.coxeterWeightIn`: The product of `pairingIn i j` and `pairingIn j i`.
 
 -/
+
+@[expose] public section
 
 open Set Function
 open Submodule (span)

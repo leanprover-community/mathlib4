@@ -3,16 +3,20 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Commute.Units
-import Mathlib.Algebra.Group.Even
-import Mathlib.Algebra.Group.Irreducible.Defs
-import Mathlib.Algebra.Group.Units.Equiv
+module
+
+public import Mathlib.Algebra.Group.Commute.Units
+public import Mathlib.Algebra.Group.Even
+public import Mathlib.Algebra.Group.Irreducible.Defs
+public import Mathlib.Algebra.Group.Units.Equiv
 
 /-!
 # More lemmas about irreducible elements
 -/
 
-assert_not_exists MonoidWithZero OrderedCommMonoid Multiset
+@[expose] public section
+
+assert_not_exists MonoidWithZero IsOrderedMonoid Multiset
 
 variable {F M N : Type*}
 
@@ -100,10 +104,6 @@ lemma Irreducible.not_isSquare (ha : Irreducible x) : ¬IsSquare x := by
   rw [isSquare_iff_exists_sq]
   rintro ⟨y, rfl⟩
   exact not_irreducible_pow (by decide) ha
-
-set_option linter.existingAttributeWarning false in
-@[deprecated (since := "2025-04-17"), to_additive existing]
-alias Irreducible.not_square := Irreducible.not_isSquare
 
 @[to_additive]
 lemma IsSquare.not_irreducible (ha : IsSquare x) : ¬Irreducible x := fun h => h.not_isSquare ha
