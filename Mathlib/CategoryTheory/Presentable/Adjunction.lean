@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Presentable.LocallyPresentable
-import Mathlib.CategoryTheory.Adjunction.ReflectiveLimits
+module
+
+public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
+public import Mathlib.CategoryTheory.Adjunction.ReflectiveLimits
 
 /-!
 # Presentable objects and adjunctions
@@ -16,6 +18,8 @@ Moreover, if `G : D ⥤ C` is fully faithful, then `D` is locally `κ`-presentab
 (resp `κ`-accessible) if `C` is.
 
 -/
+
+@[expose] public section
 
 universe w v v' u u'
 
