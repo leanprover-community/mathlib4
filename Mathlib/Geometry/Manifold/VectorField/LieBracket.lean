@@ -388,14 +388,6 @@ lemma _root_.mfderivWithin_range_extChartAt_symm :
   rw [eq_nhd.fderivWithin_eq hx]
   exact fderivWithin_id <| I.uniqueDiffOn.uniqueDiffWithinAt (mem_range_self _)
 
--- -- d(φ⁻¹)⁻¹(V x) = V x
-variable (x V) in
-omit [CompleteSpace E] in
-lemma aux_computation2 :
-    letI φ := extChartAt I x; (mfderiv[range I] φ.symm (φ x)).inverse (V x) = V x := by
-  rw [mfderivWithin_range_extChartAt_symm, ContinuousLinearMap.inverse_id]
-  exact ContinuousLinearMap.id_apply ..
-
 -- TODO: add pre-composition version also and move to the right location
 omit [IsManifold I 2 M] [CompleteSpace E] in
 lemma _root_.MDifferentiableWithinAt.differentiableWithinAt_comp_extChartAt_symm
@@ -441,7 +433,10 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
   simp [A, mfderivWithin, hf, mpullback]
   simp only [← aux_computation x W, V', mpullbackWithin]
   congr
-  convert aux_computation2 x V
+  have : (mfderiv[range I] (extChartAt I x).symm (extChartAt I x x)).inverse (V x) = V x := by
+    rw [mfderivWithin_range_extChartAt_symm, ContinuousLinearMap.inverse_id]
+    exact ContinuousLinearMap.id_apply ..
+  convert this
   exact extChartAt_to_inv x
 
 /--
