@@ -89,7 +89,89 @@ def basicOpen (s : Finset K) : Opens (Place R K) where
 
 theorem basicOpen_eq_top_iff {s : Finset K} :
     basicOpen R s = ⊤ ↔ (s : Set K) ⊆ integralClosure R K := by
-  sorry
+    constructor
+  -- First case: hard direction
+    · intro h x xs
+      contrapose! h
+    -- construct an intermediate algebra R ⊆ B ⊆ K which contains x⁻¹ and not x
+      let B := (adjoin R {x⁻¹})
+    -- have : x⁻¹∈ {x}
+      have xinvB : x⁻¹ ∈ B  :=by exact Algebra.mem_adjoin_of_mem rfl
+      let xinv : B := ⟨x⁻¹, xinvB⟩
+      have xnB : x ∉  B := by
+        contrapose! h
+        apply Algebra.adjoin_mem_exists_aeval at h
+        rcases h with ⟨p,hp ⟩
+        let d := Polynomial.degree p
+      -- let q:= x ^ d * p - x
+
+
+        apply (mem_integralClosure_iff _ _ ).mpr
+        sorry ;
+
+  -- Now we construct a valuation ring v⊆ K which does not contain x.
+      · have xinvnu : xinv ∈ nonunits B := by sorry
+        apply exists_max_ideal_of_mem_nonunits at xinvnu
+        rcases xinvnu with ⟨I, Imax, xinvI⟩
+
+    -- , get a maximal ideal m of B containing x⁻¹
+        let BI := (LocalSubring.ofPrime B.toSubring I)
+    -- Define Bm := localization of B at m
+
+        apply  LocalSubring.exists_le_valuationSubring at BI
+        obtain ⟨V,hv⟩ := BI
+        have xnV : x∉ V := by sorry
+        let V' : Place R K := { __ := V , algebraMap_mem' := sorry}
+
+    -- Show that basicopen ≠ ⊤ because V is not in the basic open.
+        have vnbasic : V' ∉ (basicOpen R s ) := by sorry
+        contrapose! vnbasic
+        rw[vnbasic]
+        trivial
+
+-- Now we do the opposite direction.
+    rintro h
+    ext V
+    constructor
+    · intro hV
+      exact trivial
+    intro Vtop x xs
+    apply h at xs
+    let V' : Subalgebra R K := { __ := V , algebraMap_mem' := sorry}
+    have : (integralClosure R K) ≤ V' := by sorry
+    apply this at xs
+    exact xs
+    -- have VIC:  IsIntegrallyClosed V := by sorry
+
+
+    -- rcases VIC with ⟨h1,h2⟩
+
+
+    -- rcases xs with ⟨p , pmonic, pxeqzero⟩
+    -- let d := p.natDegree
+    -- let pk:K := sorry
+    -- let prev := p.reverse
+    -- have :x divides (prev -1) := by
+    -- -- := by apply Polynomial.eval₂_reverse_mul_pow
+
+    -- -- have polyinv : x= - (Polynomial.eval₂ (algebraMap R K ) x⁻¹ q) := by sorry
+    -- have xinv_inV_imp_xinV : x⁻¹ ∈ V → x∈ V := sorry
+    -- let V' : Place R K := { __ := V , algebraMap_mem' := by exact fun r ↦ V.algebraMap_mem' r }
+    -- have : x ∈ V' ∨ x ⁻¹∈ V' := by exact mem_or_inv_mem V' x
+    -- rcases this with h | h
+    -- exact h ; apply xinv_inV_imp_xinV h
+
+#check Polynomial.reverse_mul_X_pow
+#check Polynomial.eval₂_reverse_mul_pow
+    -- Second case: easy direction. If s⊆ integralClosure, then every place v contains s.
+
+    -- by lemma, BasicOpen R s = ⋂ x∈  s , basicOpen R {x}.  So enough to prove if |s|=1,
+    -- if x∈ integralClosure, then ∃ p : R[t] , p(x)=0.
+    -- p = t^n + a_{n-1} t^{n-1} + ... + a_0
+    -- have invpoly : x⁻¹ = -(a_{n-1} + a_{n-2} * x + ... + x^{n-1})/a_0 := by field_simp
+    -- have polyinv : x= - (a_{n-1} + ... + a_1 * (x⁻¹)^{n-2} + a_0 * (x⁻¹)^{n-1}) := by field_simp
+    -- have x∈ v ↔ x⁻¹∈ v : by contructor exact polyinv; exact invpoly
+
 
 -- the global sections of the sheaf on `Place R K`
 -- follows from `basicOpen_eq_top_iff`
@@ -206,7 +288,8 @@ instance : QuasiSeparatedSpace (Place R K) := by
 
 /- Not part of this project, see p.2 of
 https://scispace.com/pdf/some-closure-operations-in-zariski-riemann-spaces-of-7bx8on35dg.pdf
-  See https://arxiv.org/pdf/1309.5190 Corollary 3.3 for a proof based on ultrafilters.
+  See https://arxiv.org/pdf/1309.5
+  190 Corollary 3.3 for a proof based on ultrafilters.
   See also https://math.stanford.edu/~conrad/Perfseminar/refs/wedhornadic.pdf §3.4,
 https://perso.ens-lyon.fr/sophie.morel/adic_notes.pdf §I.2.5. -/
 instance : SpectralSpace (Place R K) := by
