@@ -3,9 +3,11 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf
-import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
-import Mathlib.RingTheory.GradedAlgebra.Radical
+module
+
+public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf
+public import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
+public import Mathlib.RingTheory.GradedAlgebra.Radical
 
 /-!
 # Proj as a scheme
@@ -89,6 +91,8 @@ Finally,
 * [Robin Hartshorne, *Algebraic Geometry*][Har77]: Chapter II.2 Proposition 2.5
 -/
 
+@[expose] public section
+
 noncomputable section
 
 
@@ -100,10 +104,10 @@ open DirectSum SetLike.GradedMonoid Localization
 
 open Finset hiding mk_zero
 
-variable {R A : Type*}
-variable [CommRing R] [CommRing A] [Algebra R A]
-variable (𝒜 : ℕ → Submodule R A)
-variable [GradedAlgebra 𝒜]
+variable {A σ : Type*}
+variable [CommRing A] [SetLike σ A] [AddSubgroupClass σ A]
+variable (𝒜 : ℕ → σ)
+variable [GradedRing 𝒜]
 
 open TopCat TopologicalSpace
 
@@ -222,7 +226,7 @@ def toSpec (f : A) : (Proj.T| pbo f) ⟶ Spec.T A⁰_ f :=
       rintro _ ⟨x, rfl⟩
       obtain ⟨x, rfl⟩ := Quotient.mk''_surjective x
       rw [ToSpec.preimage_basicOpen]
-      exact (pbo x.num).2.preimage continuous_subtype_val }
+      exact (pbo (x.num : A)).2.preimage continuous_subtype_val }
 
 variable {𝒜} in
 lemma toSpec_preimage_basicOpen {f} (z : HomogeneousLocalization.NumDenSameDeg 𝒜 (.powers f)) :
@@ -234,7 +238,7 @@ end
 
 namespace FromSpec
 
-open GradedAlgebra SetLike
+open GradedRing SetLike
 
 open Finset hiding mk_zero
 
@@ -246,7 +250,7 @@ variable {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m)
 open Lean Meta Elab Tactic
 
 macro "mem_tac_aux" : tactic =>
-  `(tactic| first | exact pow_mem_graded _ (Submodule.coe_mem _) | exact natCast_mem_graded _ _ |
+  `(tactic| first | exact pow_mem_graded _ (SetLike.coe_mem _) | exact natCast_mem_graded _ _ |
     exact pow_mem_graded _ f_deg)
 
 macro "mem_tac" : tactic =>
@@ -425,7 +429,7 @@ theorem carrier.asIdeal.homogeneous : (carrier.asIdeal f_deg hm q).IsHomogeneous
   fun i a ha j =>
   (em (i = j)).elim (fun h => h ▸ by simpa only [proj_apply, decompose_coe, of_eq_same] using ha _)
     fun h => by
-    simpa only [proj_apply, decompose_of_mem_ne 𝒜 (Submodule.coe_mem (decompose 𝒜 a i)) h,
+    simpa only [proj_apply, decompose_of_mem_ne 𝒜 (SetLike.coe_mem (decompose 𝒜 a i)) h,
       zero_pow hm.ne', map_zero] using carrier.zero_mem f_deg hm q j
 
 /-- For a prime ideal `q` in `A⁰_f`, the set `{a | aᵢᵐ/fⁱ ∈ q}` as a homogeneous ideal.
@@ -531,7 +535,7 @@ lemma image_basicOpen_eq_basicOpen (a : A) (i : ℕ) :
     (PrimeSpectrum.basicOpen (R := A⁰_ f) <|
       HomogeneousLocalization.mk
         ⟨m * i, ⟨decompose 𝒜 a i ^ m,
-          smul_eq_mul m i ▸ SetLike.pow_mem_graded _ (Submodule.coe_mem _)⟩,
+          smul_eq_mul m i ▸ SetLike.pow_mem_graded _ (SetLike.coe_mem _)⟩,
           ⟨f^i, by rw [mul_comm]; exact SetLike.pow_mem_graded _ f_deg⟩, ⟨i, rfl⟩⟩).1 :=
   Set.preimage_injective.mpr (toSpec_surjective 𝒜 f_deg hm) <|
     Set.preimage_image_eq _ (toSpec_injective 𝒜 f_deg hm) ▸ by
@@ -556,7 +560,7 @@ def fromSpec {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
       let e : _ ≃ _ :=
         ⟨FromSpec.toFun f_deg hm, ToSpec.toFun f, toSpec_fromSpec _ _ _, fromSpec_toSpec _ _ _⟩
       change IsOpen <| e ⁻¹' _
-      rw [Set.preimage_equiv_eq_image_symm, h₁, Set.image_iUnion]
+      rw [← Equiv.image_symm_eq_preimage, h₁, Set.image_iUnion]
       exact isOpen_iUnion fun i ↦ toSpec.image_basicOpen_eq_basicOpen f_deg hm a i ▸
         PrimeSpectrum.isOpen_basicOpen }
 
@@ -720,7 +724,7 @@ lemma isLocalization_atPrime (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
   constructor
   · rintro ⟨y, hy⟩
     obtain ⟨y, rfl⟩ := HomogeneousLocalization.mk_surjective y
-    refine isUnit_of_mul_eq_one _
+    refine .of_mul_eq_one
       (.mk ⟨y.deg, y.den, y.num, (mk_mem_toSpec_base_apply _ _ _).not.mp hy⟩) <| val_injective _ ?_
     simp only [RingHom.algebraMap_toAlgebra, map_mk, RingHom.id_apply, val_mul, val_mk, mk_eq_mk',
       val_one, IsLocalization.mk'_mul_mk'_eq_one']

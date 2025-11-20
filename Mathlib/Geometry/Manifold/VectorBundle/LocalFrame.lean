@@ -3,11 +3,12 @@ Copyright (c) 2025 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.Algebra.Monoid
-import Mathlib.Geometry.Manifold.Notation
-import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
-import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
+module
 
+public import Mathlib.Geometry.Manifold.Algebra.Monoid
+public import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
+public import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 
 /-!
 # Local frames in a vector bundle
@@ -92,6 +93,8 @@ A local frame can be used to extend any single vector `v : V x` to a section whi
 
 
 # TODO
+
+Strengthen the proof of smoothness in terms of the local frame coefficients.
 * `IsLocalFrameOn.contMDiffOn_coeff hs`: if `t` is a `C^k` section, each coefficient
   `hs.coeff i t` is `C^k` on `U`
 * `IsLocalFrameOn.contMDiffAt_iff_coeff hs`: a section `t` is `C^k` at `x ∈ U`
@@ -116,6 +119,8 @@ of a local extension with a smooth bump function of sufficiently small support.
 vector bundle, local frame, smoothness, local extension of section
 
 -/
+
+@[expose] public section
 open Bundle Filter Function Topology Module
 
 open scoped Bundle Manifold ContDiff
@@ -123,7 +128,7 @@ open scoped Bundle Manifold ContDiff
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
-  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 0 M]
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   -- `F` model fiber
@@ -131,14 +136,11 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   {V : M → Type*} [TopologicalSpace (TotalSpace F V)]
   [∀ x, AddCommGroup (V x)] [∀ x, Module 𝕜 (V x)]
   [∀ x : M, TopologicalSpace (V x)]
-  [FiberBundle F V] [VectorBundle 𝕜 F V] [ContMDiffVectorBundle n F V I]
-  -- `V` vector bundle
+  [FiberBundle F V]
 
 noncomputable section
 
 section IsLocalFrame
-
-omit [IsManifold I 0 M] [VectorBundle 𝕜 F V]
 
 variable {ι : Type*} {s s' : ι → (x : M) → V x} {u u' : Set M} {x : M} {n : WithTop ℕ∞}
 
@@ -189,6 +191,16 @@ def toBasisAt (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) : Basis ι 𝕜 (V 
 lemma toBasisAt_coe (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) (i : ι) :
     toBasisAt hs hx i = s i x := by
   simpa only [toBasisAt] using Basis.mk_apply (hs.linearIndependent hx) (hs.generating hx) i
+
+/-- If `{sᵢ}` is a local frame on a vector bundle, `F` being finite-dimensional implies the
+indexing set being finite. -/
+def fintype_of_finiteDimensional [VectorBundle 𝕜 F V] [FiniteDimensional 𝕜 F]
+    (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) : Fintype ι := by
+  have : FiniteDimensional 𝕜 (V x) := by
+    let phi := (trivializationAt F V x).linearEquivAt 𝕜 x
+      (FiberBundle.mem_baseSet_trivializationAt' x)
+    exact Finite.equiv phi.symm
+  exact FiniteDimensional.fintypeBasisIndex (hs.toBasisAt hx)
 
 open scoped Classical in
 /-- Coefficients of a section `s` of `V` w.r.t. a local frame `{s i}` on `u`.
@@ -249,9 +261,11 @@ lemma coeff_eq_of_eq (hs : IsLocalFrameOn I F n s u) (hs' : IsLocalFrameOn I F n
 
 /-- Two sections `s` and `t` are equal at `x` if and only if their coefficients w.r.t. some local
 frame at `x` agree. -/
-lemma eq_iff_coeff [Fintype ι] (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) :
-    t x = t' x ↔ ∀ i, hs.coeff i t x = hs.coeff i t' x :=
-  ⟨fun h i ↦ hs.coeff_congr h i, fun h ↦ by
+lemma eq_iff_coeff [VectorBundle 𝕜 F V] [FiniteDimensional 𝕜 F]
+    (hs : IsLocalFrameOn I F n s u) (hx : x ∈ u) :
+    t x = t' x ↔ ∀ i, hs.coeff i t x = hs.coeff i t' x := by
+  have := fintype_of_finiteDimensional hs hx
+  exact ⟨fun h i ↦ hs.coeff_congr h i, fun h ↦ by
     simp +contextual [h, hs.coeff_sum_eq t hx, hs.coeff_sum_eq t' hx]⟩
 
 lemma coeff_apply_zero_at (hs : IsLocalFrameOn I F n s u) (ht : t x = 0) (i : ι) :
@@ -262,8 +276,10 @@ variable (hs : IsLocalFrameOn I F n s u) [VectorBundle 𝕜 F V]
 
 /-- Given a local frame `s i ` on `u`, if a section `t` has `C^k` coefficients on `u` w.r.t. `s i`,
 then `t` is `C^n` on `u`. -/
-lemma contMDiffOn_of_coeff [Fintype ι] (h : ∀ i, CMDiff[u] n (hs.coeff i t)) :
+lemma contMDiffOn_of_coeff [FiniteDimensional 𝕜 F] (h : ∀ i, CMDiff[u] n (hs.coeff i t)) :
     CMDiff[u] n (T% t) := by
+  rcases u.eq_empty_or_nonempty with rfl | ⟨x, hx⟩; · simp
+  have := fintype_of_finiteDimensional hs hx
   have this (i) : CMDiff[u] n (T% (hs.coeff i t • s i)) :=
     (h i).smul_section (hs.contMDiffOn i)
   have almost : CMDiff[u] n (T% (fun x ↦ ∑ i, (hs.coeff i t) x • s i x)) :=
@@ -274,17 +290,19 @@ lemma contMDiffOn_of_coeff [Fintype ι] (h : ∀ i, CMDiff[u] n (hs.coeff i t)) 
 
 /-- Given a local frame `s i` on a neighbourhood `u` of `x`,
 if a section `t` has `C^k` coefficients at `x` w.r.t. `s i`, then `t` is `C^n` at `x`. -/
-lemma contMDiffAt_of_coeff [Fintype ι]
+lemma contMDiffAt_of_coeff [FiniteDimensional 𝕜 F]
     (h : ∀ i, CMDiffAt n (hs.coeff i t) x) (hu : u ∈ 𝓝 x) : CMDiffAt n (T% t) x := by
+  have := fintype_of_finiteDimensional hs (mem_of_mem_nhds hu)
   have almost : CMDiffAt n (T% (fun x ↦ ∑ i, (hs.coeff i t) x • s i x)) x :=
     .sum_section (fun i _ ↦ (h i).smul_section <| (hs.contMDiffOn i).contMDiffAt hu)
   exact almost.congr_of_eventuallyEq <| (hs.eventually_eq_sum_coeff_smul t hu).mono (by simp)
 
 /-- Given a local frame `s i` on an open set `u` containing `x`, if a section `t` has `C^k`
 coefficients at `x ∈ u` w.r.t. `s i`, then `t` is `C^n` at `x`. -/
-lemma contMDiffAt_of_coeff_aux [Fintype ι] (h : ∀ i, CMDiffAt n (hs.coeff i t) x)
-    (hu : IsOpen u) (hx : x ∈ u) : CMDiffAt n (T% t) x :=
-  hs.contMDiffAt_of_coeff h (hu.mem_nhds hx)
+lemma contMDiffAt_of_coeff_aux [FiniteDimensional 𝕜 F] (h : ∀ i, CMDiffAt n (hs.coeff i t) x)
+    (hu : IsOpen u) (hx : x ∈ u) : CMDiffAt n (T% t) x := by
+  have := fintype_of_finiteDimensional hs hx
+  exact hs.contMDiffAt_of_coeff h (hu.mem_nhds hx)
 
 section
 
@@ -292,8 +310,10 @@ variable (hs : IsLocalFrameOn I F 1 s u)
 
 /-- Given a local frame `s i ` on `u`, if a section `t` has differentiable coefficients on `u`
 w.r.t. `s i`, then `t` is differentiable on `u`. -/
-lemma mdifferentiableOn_of_coeff [Fintype ι] (h : ∀ i, MDiff[u] (hs.coeff i t)) :
+lemma mdifferentiableOn_of_coeff [FiniteDimensional 𝕜 F] (h : ∀ i, MDiff[u] (hs.coeff i t)) :
     MDiff[u] (T% t) := by
+  rcases u.eq_empty_or_nonempty with rfl | ⟨x, hx⟩; · simp
+  have := fintype_of_finiteDimensional hs hx
   have this (i) : MDiff[u] (T% (hs.coeff i t • s i)) :=
     (h i).smul_section ((hs.contMDiffOn i).mdifferentiableOn le_rfl)
   have almost : MDiff[u] (T% (fun x ↦ ∑ i, (hs.coeff i t) x • s i x)) :=
@@ -304,8 +324,9 @@ lemma mdifferentiableOn_of_coeff [Fintype ι] (h : ∀ i, MDiff[u] (hs.coeff i t
 
 /-- Given a local frame `s i` on a neighbourhood `u` of `x`, if a section `t` has differentiable
 coefficients at `x` w.r.t. `s i`, then `t` is differentiable at `x`. -/
-lemma mdifferentiableAt_of_coeff [Fintype ι]
+lemma mdifferentiableAt_of_coeff [FiniteDimensional 𝕜 F]
     (h : ∀ i, MDiffAt (hs.coeff i t) x) (hu : u ∈ 𝓝 x) : MDiffAt (T% t) x := by
+  have := fintype_of_finiteDimensional hs (mem_of_mem_nhds hu)
   have almost : MDiffAt (T% (fun x ↦ ∑ i, (hs.coeff i t) x • s i x)) x :=
     .sum_section (fun i ↦ (h i).smul_section <|
       ((hs.contMDiffOn i).mdifferentiableOn le_rfl).mdifferentiableAt hu)
@@ -313,7 +334,7 @@ lemma mdifferentiableAt_of_coeff [Fintype ι]
 
 /-- Given a local frame `s i` on open set `u` containing `x`, if a section `t`
 has differentiable coefficients at `x ∈ u` w.r.t. `s i`, then `t` is differentiable at `x`. -/
-lemma mdifferentiableAt_of_coeff_aux [Fintype ι] (h : ∀ i, MDiffAt (hs.coeff i t) x)
+lemma mdifferentiableAt_of_coeff_aux [FiniteDimensional 𝕜 F] (h : ∀ i, MDiffAt (hs.coeff i t) x)
     (hu : IsOpen u) (hx : x ∈ u) : MDiffAt (T% t) x :=
   hs.mdifferentiableAt_of_coeff h (hu.mem_nhds hx)
 

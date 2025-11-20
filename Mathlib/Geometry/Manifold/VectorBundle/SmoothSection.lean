@@ -3,11 +3,13 @@ Copyright (c) 2023 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Floris van Doorn, Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.Algebra.LieGroup
-import Mathlib.Geometry.Manifold.MFDeriv.Basic
-import Mathlib.Geometry.Manifold.Notation
-import Mathlib.Geometry.Manifold.VectorBundle.Basic
-import Mathlib.Topology.ContinuousMap.Basic
+module
+
+public import Mathlib.Geometry.Manifold.Algebra.LieGroup
+public import Mathlib.Geometry.Manifold.MFDeriv.Basic
+public import Mathlib.Geometry.Manifold.Notation
+public import Mathlib.Geometry.Manifold.VectorBundle.Basic
+public import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # `C^n` sections
@@ -19,6 +21,8 @@ In passing, we prove that binary and finite sums, differences and scalar product
 sections are `C^n`.
 
 -/
+
+@[expose] public section
 
 
 open Bundle Filter Function
@@ -383,7 +387,7 @@ instance instZSMul : SMul ℤ Cₛ^n⟮I; F, V⟯ :=
 theorem coe_zsmul (s : Cₛ^n⟮I; F, V⟯) (z : ℤ) : ⇑(z • s : Cₛ^n⟮I; F, V⟯) = z • ⇑s := by
   rcases z with n | n
   · refine (coe_nsmul s n).trans ?_
-    simp only [Int.ofNat_eq_coe, natCast_zsmul]
+    simp only [Int.ofNat_eq_natCast, natCast_zsmul]
   · refine (congr_arg Neg.neg (coe_nsmul s (n + 1))).trans ?_
     simp only [negSucc_zsmul]
 
