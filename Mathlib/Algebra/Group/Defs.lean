@@ -3,14 +3,16 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
-import Batteries.Logic
-import Mathlib.Algebra.Notation.Defs
-import Mathlib.Algebra.Regular.Defs
-import Mathlib.Data.Int.Notation
-import Mathlib.Data.Nat.BinaryRec
-import Mathlib.Tactic.MkIffOfInductiveProp
-import Mathlib.Tactic.OfNat
-import Mathlib.Tactic.Basic
+module
+
+public import Batteries.Logic
+public import Mathlib.Algebra.Notation.Defs
+public import Mathlib.Algebra.Regular.Defs
+public import Mathlib.Data.Int.Notation
+public import Mathlib.Data.Nat.BinaryRec
+public import Mathlib.Tactic.MkIffOfInductiveProp
+public import Mathlib.Tactic.OfNat
+public import Mathlib.Tactic.Basic
 
 /-!
 # Typeclasses for (semi)groups and monoids
@@ -38,6 +40,8 @@ We register the following instances:
   `Add.add`, `Neg.neg`/`Sub.sub`, `Mul.mul`, `Div.div`, and `HPow.hPow`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered Function.const_injective
 

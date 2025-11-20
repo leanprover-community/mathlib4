@@ -3,7 +3,9 @@ Copyright (c) 2020 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.GroupTheory.Complement
+module
+
+public import Mathlib.GroupTheory.Complement
 
 /-!
 # Semidirect product
@@ -27,6 +29,8 @@ This file introduces the global notation `N ⋊[φ] G` for `SemidirectProduct N 
 ## Tags
 group, semidirect product
 -/
+
+@[expose] public section
 
 open Subgroup
 

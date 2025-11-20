@@ -3,8 +3,10 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Nailin Guan
 -/
-import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Topology.Algebra.Group.Defs
+module
+
+public import Mathlib.Algebra.Group.Equiv.Basic
+public import Mathlib.Topology.Algebra.Group.Defs
 
 /-!
 
@@ -17,6 +19,8 @@ This file defines the space of continuous homomorphisms between two topological 
 * `ContinuousMonoidHom A B`: The continuous homomorphisms `A →* B`.
 * `ContinuousAddMonoidHom A B`: The continuous additive homomorphisms `A →+ B`.
 -/
+
+@[expose] public section
 
 assert_not_exists ContinuousLinearMap
 assert_not_exists ContinuousLinearEquiv

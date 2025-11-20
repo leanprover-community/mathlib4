@@ -3,11 +3,13 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Geometry.Manifold.MFDeriv.Atlas
-import Mathlib.Geometry.Manifold.Riemannian.PathELength
-import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
-import Mathlib.Geometry.Manifold.VectorBundle.Tangent
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
+module
+
+public import Mathlib.Geometry.Manifold.MFDeriv.Atlas
+public import Mathlib.Geometry.Manifold.Riemannian.PathELength
+public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
+public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
 
 /-! # Riemannian manifolds
 
@@ -46,6 +48,8 @@ automatic instances for these cases). One can require whatever regularity one wa
 `[IsContinuousRiemannianBundle E (fun (x : M) ↦ TangentSpace I x)]` (as above, Lean cannot infer
 the latter from the former as it cannot guess `n`).
 -/
+
+@[expose] public section
 
 open Bundle Bornology Set MeasureTheory Manifold Filter
 open scoped ENNReal ContDiff Topology
