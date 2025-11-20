@@ -3,8 +3,10 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.RingTheory.HahnSeries.HEval
-import Mathlib.RingTheory.PowerSeries.Binomial
+module
+
+public import Mathlib.RingTheory.HahnSeries.HEval
+public import Mathlib.RingTheory.PowerSeries.Binomial
 
 /-!
 # Binomial expansions of powers of Hahn Series
@@ -17,6 +19,8 @@ We introduce binomial expansions using `embDomain`.
   * coefficients of powers of binomials
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
