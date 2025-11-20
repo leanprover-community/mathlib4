@@ -132,7 +132,7 @@ at position `h` in the shifted configuration is the value that was at position
 For example, if `G = ℤ` (with addition) and `A = {0, 1}`, then
 `shift 1 x` is the sequence obtained from `x` by shifting every symbol one
 step to the left. -/
-@[to_additive /-- The **right-translation shift** on configurations, in additive notation.
+@[to_additive shift /-- The **right-translation shift** on configurations, in additive notation.
 
 We call *configuration* an element of `G → A`.
 
@@ -250,7 +250,7 @@ composed of:
 * `isClosed`: the set is topologically closed in `A^G`.
 * `shiftInvariant`: the set is invariant under all right-translation shifts
   `(mulShift g)`. -/
-@[to_additive existing
+@[to_additive existing Subshift
 /-- A *subshift* on alphabet A is a closed, shift-invariant subset of `G → A`. Formally, it is
 composed of:
 * `carrier`: the underlying set of allowed configurations.
@@ -661,7 +661,7 @@ Formally:
 * the carrier is `forbidden F` (configurations avoiding `F`),
 * it is closed because each occurrence set is open, and
 * it is shift-invariant since avoidance is preserved by shifts. -/
-@[to_additive]
+@[to_additive subshift_from_forbidden]
 def mulSubshift_from_forbidden (F : Set (Pattern A G)) : MulSubshift A G where
   carrier := mulForbidden F
   isClosed := mulForbidden_closed F
@@ -675,7 +675,7 @@ a *finite* family of patterns.
 
 Formally, `subshift_of_finite_type F` is `subshift_from_forbidden F` where `F` is a
 `Finset (Pattern A G)`. -/
-@[to_additive]
+@[to_additive subshift_of_finite_type]
 def mulSubshift_of_finite_type (F : Finset (Pattern A G)) : MulSubshift A G :=
   mulSubshift_from_forbidden (F : Set (Pattern A G))
 
