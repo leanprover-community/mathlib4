@@ -303,7 +303,7 @@ variable (p q : α → Prop) [DecidablePred p] [DecidablePred q] {s t : Finset �
 theorem filter_singleton (a : α) : filter p {a} = if p a then {a} else ∅ := by grind
 
 theorem filter_cons_of_pos (a : α) (s : Finset α) (ha : a ∉ s) (hp : p a) :
-    (cons a s ha).filter p = (s.filter p).cons a ((mem_of_mem_filter _).mt ha) :=
+    (s.cons a ha).filter p = (s.filter p).cons a ((mem_of_mem_filter _).mt ha) :=
   eq_of_veq <| s.val.filter_cons_of_pos hp
 
 theorem filter_cons_of_neg (a : α) (s : Finset α) (ha : a ∉ s) (hp : ¬p a) :
