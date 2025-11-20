@@ -3,9 +3,11 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.GroupTheory.Perm.MaximalSubgroups
-import Mathlib.GroupTheory.SpecificGroups.Alternating
+module
+
+public import Mathlib.GroupTheory.GroupAction.SubMulAction
+public import Mathlib.GroupTheory.Perm.MaximalSubgroups
+public import Mathlib.GroupTheory.SpecificGroups.Alternating
 
 /-! # Maximal subgroups of the alternating group
 
@@ -33,6 +35,8 @@ The argument is taken from [M. Liebeck, C. Praeger, J. Saxl,
 alternating and symmetric groups*, 1987][LiebeckPraegerSaxl-1987].
 
 -/
+
+@[expose] public section
 
 open scoped Pointwise
 
