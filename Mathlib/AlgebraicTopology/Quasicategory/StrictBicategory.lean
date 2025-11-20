@@ -5,10 +5,10 @@ Authors: Emily Riehl
 -/
 module
 
-import Mathlib.CategoryTheory.Bicategory.CatEnriched
-import Mathlib.AlgebraicTopology.Quasicategory.Basic
-import Mathlib.AlgebraicTopology.SimplicialCategory.SimplicialObject
-import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
+public import Mathlib.CategoryTheory.Bicategory.CatEnriched
+public import Mathlib.AlgebraicTopology.Quasicategory.Basic
+public import Mathlib.AlgebraicTopology.SimplicialCategory.SimplicialObject
+public import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
 
 /-!
 # The strict bicategory of quasicategories
