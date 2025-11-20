@@ -3,10 +3,12 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.Coherent
-import Mathlib.Topology.UniformSpace.Equiv
-import Mathlib.Topology.UniformSpace.Pi
-import Mathlib.Topology.UniformSpace.UniformApproximation
+module
+
+public import Mathlib.Topology.Coherent
+public import Mathlib.Topology.UniformSpace.Equiv
+public import Mathlib.Topology.UniformSpace.Pi
+public import Mathlib.Topology.UniformSpace.UniformApproximation
 
 /-!
 # Topology and uniform structure of uniform convergence
@@ -130,6 +132,8 @@ connection API to do most of the work.
 
 uniform convergence
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -726,6 +730,22 @@ protected theorem uniformContinuous_restrict (h : s ∈ 𝔖) :
   simp only [UniformOnFun.uniformSpace, map_le_iff_le_comap, iInf_uniformity]
   exact iInf₂_le s h
 
+theorem isUniformEmbedding_toFun_finite :
+    IsUniformEmbedding (toFun _ : (α →ᵤ[{s | s.Finite}] β) → (α → β)) := by
+  refine ⟨⟨?_⟩, Function.injective_id⟩
+  simp_rw [Pi.uniformity, comap_iInf, comap_comap]
+  refine HasBasis.ext (HasBasis.iInf' fun i ↦ (basis_sets _).comap _)
+    (UniformOnFun.hasBasis_uniformity α β _ ⟨∅, finite_empty⟩
+      (directedOn_of_sup_mem fun _ _ ↦ .union))
+    (fun ⟨S, U⟩ ⟨hS, hU⟩ ↦ ⟨⟨S, ⋂ x ∈ S, U x⟩, ⟨⟨hS, biInter_mem hS |>.mpr hU⟩,
+      fun f hf ↦ mem_iInter₂.mpr fun x hx ↦ mem_iInter₂.mp (hf x hx) x hx⟩⟩)
+    (fun ⟨S, U⟩ ⟨hS, hU⟩ ↦ ⟨⟨S, fun _ ↦ U⟩, ⟨hS, fun _ _ ↦ hU⟩, fun f hf x hx ↦
+      mem_iInter₂.mp hf x hx⟩)
+
+theorem isEmbedding_toFun_finite :
+    IsEmbedding (toFun _ : (α →ᵤ[{s | s.Finite}] β) → (α → β)) :=
+  (isUniformEmbedding_toFun_finite α β).isEmbedding
+
 variable {α}
 
 /-- A version of `UniformOnFun.hasBasis_uniformity_of_basis`
@@ -925,7 +945,7 @@ protected def congrLeft {𝔗 : Set (Set γ)} (e : γ ≃ α) (he : 𝔗 ⊆ ima
   { Equiv.arrowCongr e (Equiv.refl _) with
     uniformContinuous_toFun := UniformOnFun.precomp_uniformContinuous fun s hs ↦ by
       change e.symm '' s ∈ 𝔗
-      rw [← preimage_equiv_eq_image_symm]
+      rw [Equiv.image_symm_eq_preimage]
       exact he' hs
     uniformContinuous_invFun := UniformOnFun.precomp_uniformContinuous he }
 

@@ -3,12 +3,14 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Equiv.Opposite
-import Mathlib.Algebra.GroupWithZero.Equiv
-import Mathlib.Algebra.GroupWithZero.InjSurj
-import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Logic.Equiv.Set
-import Mathlib.Algebra.Notation.Prod
+module
+
+public import Mathlib.Algebra.Group.Equiv.Opposite
+public import Mathlib.Algebra.GroupWithZero.Equiv
+public import Mathlib.Algebra.GroupWithZero.InjSurj
+public import Mathlib.Algebra.Notation.Prod
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Logic.Equiv.Set
 
 /-!
 # (Semi)ring equivs
@@ -36,6 +38,8 @@ multiplication in `Equiv.Perm`, and multiplication in `CategoryTheory.End`, not 
 
 Equiv, MulEquiv, AddEquiv, RingEquiv, MulAut, AddAut, RingAut
 -/
+
+@[expose] public section
 
 -- guard against import creep
 assert_not_exists Field Fintype
@@ -300,8 +304,13 @@ theorem apply_symm_apply (e : R ≃+* S) : ∀ x, e (e.symm x) = x :=
 theorem symm_apply_apply (e : R ≃+* S) : ∀ x, e.symm (e x) = x :=
   e.toEquiv.symm_apply_apply
 
-theorem image_eq_preimage (e : R ≃+* S) (s : Set R) : e '' s = e.symm ⁻¹' s :=
-  e.toEquiv.image_eq_preimage s
+lemma image_symm_eq_preimage (e : R ≃+* S) (s : Set S) : e.symm '' s = e ⁻¹' s :=
+  e.toEquiv.image_symm_eq_preimage _
+
+lemma image_eq_preimage_symm (e : R ≃+* S) (s : Set R) : e '' s = e.symm ⁻¹' s :=
+  e.toEquiv.image_eq_preimage_symm _
+
+@[deprecated (since := "2025-11-05")] alias image_eq_preimage := image_eq_preimage_symm
 
 theorem symm_apply_eq (e : R ≃+* S) {x : S} {y : R} :
     e.symm x = y ↔ x = e y := Equiv.symm_apply_eq _

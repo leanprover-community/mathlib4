@@ -3,7 +3,9 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Lean.Expr.Basic
+module
+
+public import Mathlib.Lean.Expr.Basic
 
 /-!
 # `Ineq` datatype
@@ -12,6 +14,8 @@ This file contains an enum `Ineq` (whose constructors are `eq`, `le`, `lt`), and
 involving it. The type `Ineq` is one of the fundamental objects manipulated by the `linarith` and
 `linear_combination` tactics.
 -/
+
+@[expose] public section
 
 open Lean Meta
 

@@ -3,11 +3,13 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.GroupTheory.MonoidLocalization.Away
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Localization.Basic
-import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
+module
+
+public import Mathlib.GroupTheory.MonoidLocalization.Away
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Localization.Basic
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 
 /-!
 # Localizations away from an element
@@ -27,6 +29,8 @@ See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
+
+@[expose] public section
 
 
 section CommSemiring
@@ -499,12 +503,11 @@ theorem selfZPow_neg_natCast (d : ℕ) : selfZPow x B (-d) = mk' _ (1 : R) (Subm
 @[simp]
 theorem selfZPow_sub_natCast {n m : ℕ} :
     selfZPow x B (n - m) = mk' _ (x ^ n) (Submonoid.pow x m) := by
-  by_cases h : m ≤ n
+  by_cases! h : m ≤ n
   · rw [IsLocalization.eq_mk'_iff_mul_eq, Submonoid.pow_apply, Subtype.coe_mk, ← Int.ofNat_sub h,
       selfZPow_natCast, ← map_pow, ← map_mul, ← pow_add, Nat.sub_add_cancel h]
-  · rw [← neg_sub, ← Int.ofNat_sub (le_of_not_ge h), selfZPow_neg_natCast,
-      IsLocalization.mk'_eq_iff_eq]
-    simp [Submonoid.pow_apply, ← pow_add, Nat.sub_add_cancel (le_of_not_ge h)]
+  · rw [← neg_sub, ← Int.ofNat_sub h.le, selfZPow_neg_natCast, IsLocalization.mk'_eq_iff_eq]
+    simp [Submonoid.pow_apply, ← pow_add, Nat.sub_add_cancel h.le]
 
 @[simp]
 theorem selfZPow_add {n m : ℤ} : selfZPow x B (n + m) = selfZPow x B n * selfZPow x B m := by
@@ -526,15 +529,15 @@ theorem selfZPow_add {n m : ℤ} : selfZPow x B (n + m) = selfZPow x B n * selfZ
     simp [pow_add]
 
 theorem selfZPow_mul_neg (d : ℤ) : selfZPow x B d * selfZPow x B (-d) = 1 := by
-  by_cases hd : d ≤ 0
+  by_cases! hd : d ≤ 0
   · rw [selfZPow_of_nonpos x B hd, selfZPow_of_nonneg, ← map_pow, Int.natAbs_neg,
       Submonoid.pow_apply, IsLocalization.mk'_spec, map_one]
     apply nonneg_of_neg_nonpos
     rwa [neg_neg]
-  · rw [selfZPow_of_nonneg x B (le_of_not_ge hd), selfZPow_of_nonpos, ← map_pow, Int.natAbs_neg,
+  · rw [selfZPow_of_nonneg x B hd.le, selfZPow_of_nonpos, ← map_pow, Int.natAbs_neg,
       Submonoid.pow_apply, IsLocalization.mk'_spec'_mk, map_one]
     refine nonpos_of_neg_nonneg (le_of_lt ?_)
-    rwa [neg_neg, ← not_le]
+    rwa [neg_neg]
 
 theorem selfZPow_neg_mul (d : ℤ) : selfZPow x B (-d) * selfZPow x B d = 1 := by
   rw [mul_comm, selfZPow_mul_neg x B d]

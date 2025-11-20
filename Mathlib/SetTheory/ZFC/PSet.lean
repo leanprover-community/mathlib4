@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Set.Lattice
+module
+
+public import Mathlib.Data.Set.Lattice
 
 /-!
 # Pre-sets
@@ -23,6 +25,8 @@ quotient of pre-sets by extensional equality.
 * `PSet.Equiv`: Extensional equivalence of pre-sets. Defined inductively.
 * `PSet.omega`: The von Neumann ordinal `ω` as a `PSet`.
 -/
+
+@[expose] public section
 
 
 universe u v
