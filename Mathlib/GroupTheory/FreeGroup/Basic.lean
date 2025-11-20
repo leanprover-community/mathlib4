@@ -201,7 +201,7 @@ theorem church_rosser : Red L₁ L₂ → Red L₁ L₃ → Join Red L₂ L₃ :
 
 @[to_additive]
 theorem cons_cons {p} : Red L₁ L₂ → Red (p :: L₁) (p :: L₂) :=
-  ReflTransGen.lift (List.cons p) fun _ _ => Step.cons
+  ReflTransGen.lift (List.cons p) Step.cons
 
 @[to_additive]
 theorem cons_cons_iff (p) : Red (p :: L₁) (p :: L₂) ↔ Red L₁ L₂ :=
@@ -231,7 +231,7 @@ theorem append_append_left_iff : ∀ L, Red (L ++ L₁) (L ++ L₂) ↔ Red L₁
 
 @[to_additive]
 theorem append_append (h₁ : Red L₁ L₃) (h₂ : Red L₂ L₄) : Red (L₁ ++ L₂) (L₃ ++ L₄) :=
-  (h₁.lift (fun L => L ++ L₂) fun _ _ => Step.append_right).trans ((append_append_left_iff _).2 h₂)
+  (h₁.lift (fun L => L ++ L₂) Step.append_right).trans ((append_append_left_iff _).2 h₂)
 
 @[to_additive]
 theorem to_append_iff : Red L (L₁ ++ L₂) ↔ ∃ L₃ L₄, L = L₃ ++ L₄ ∧ Red L₃ L₁ ∧ Red L₄ L₂ :=
@@ -321,10 +321,10 @@ theorem Step.sublist (H : Red.Step L₁ L₂) : L₂ <+ L₁ := by
 /-- If `w₁ w₂` are words such that `w₁` reduces to `w₂`, then `w₂` is a sublist of `w₁`. -/]
 protected theorem sublist : Red L₁ L₂ → L₂ <+ L₁ :=
   @reflTransGen_of_transitive_reflexive
-    _ (fun a b => b <+ a) _ _ _
+    _ (fun a b => b <+ a) _
     (fun l => List.Sublist.refl l)
     (fun _a _b _c hab hbc => List.Sublist.trans hbc hab)
-    (fun _ _ => Red.Step.sublist)
+    Red.Step.sublist _ _
 
 @[to_additive]
 theorem length_le (h : Red L₁ L₂) : L₂.length ≤ L₁.length :=
@@ -372,11 +372,9 @@ theorem join_red_of_step (h : Red.Step L₁ L₂) : Join Red L₁ L₂ :=
 @[to_additive]
 theorem eqvGen_step_iff_join_red : EqvGen Red.Step L₁ L₂ ↔ Join Red L₁ L₂ :=
   Iff.intro
-    (fun h =>
-      have : EqvGen (Join Red) L₁ L₂ := h.mono fun _ _ => join_red_of_step
-      equivalence_join_red.eqvGen_iff.1 this)
-    (join_of_equivalence (Relation.EqvGen.is_equivalence _) fun _ _ =>
-      reflTransGen_of_equivalence (Relation.EqvGen.is_equivalence _) EqvGen.rel)
+    (fun h ↦ equivalence_join_red.eqvGen_iff.mp <| h.mono join_red_of_step)
+    (join_of_equivalence (Relation.EqvGen.is_equivalence _) <|
+      reflTransGen_of_equivalence (Relation.EqvGen.is_equivalence _) @(EqvGen.rel))
 
 /-! ### Reduced words -/
 
@@ -587,7 +585,7 @@ theorem Red.Step.invRev {L₁ L₂ : List (α × Bool)} (h : Red.Step L₁ L₂)
 
 @[to_additive]
 theorem Red.invRev {L₁ L₂ : List (α × Bool)} (h : Red L₁ L₂) : Red (invRev L₁) (invRev L₂) :=
-  Relation.ReflTransGen.lift _ (fun _a _b => Red.Step.invRev) h
+  ReflTransGen.lift FreeGroup.invRev Red.Step.invRev h
 
 @[to_additive (attr := simp)]
 theorem Red.step_invRev_iff :
