@@ -559,14 +559,9 @@ theorem Tape.write_mk {Γ} [Inhabited Γ] (a b : Γ) (L R : ListBlank Γ) :
     (Tape.mk a L R).write b = Tape.mk b L R := by rfl
 
 @[simp]
-theorem Tape.write_mk'' {Γ} [Inhabited Γ] (b : Γ) (L R : ListBlank Γ) :
+theorem Tape.write_mk' {Γ} [Inhabited Γ] (b : Γ) (L R : ListBlank Γ) :
     (Tape.mk' L R).write b = Tape.mk' L (R.tail.cons b) := by
   simp only [Tape.write, Tape.mk', ListBlank.head_cons, ListBlank.tail_cons]
-
-@[simp]
-theorem Tape.write_mk' {Γ} [Inhabited Γ] (a b : Γ) (L R : ListBlank Γ) :
-    (Tape.mk' L (R.cons a)).write b = Tape.mk' L (R.cons b) := by
-  simp only [write_mk'', ListBlank.tail_cons]
 
 /-- Apply a pointed map to a tape to change the alphabet. -/
 def Tape.map {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ') (T : Tape Γ) : Tape Γ' :=
