@@ -1002,7 +1002,7 @@ theorem Integrable.smul_of_top_left {f : α → β} {φ : α → 𝕜} (hφ : In
 @[fun_prop]
 theorem Integrable.smul_const {f : α → 𝕜} (hf : Integrable f μ) (c : β) :
     Integrable (fun x => f x • c) μ :=
-  hf.smul_of_top_left (memLp_top_const c)
+  hf.smul_of_top_left (memLp_const c)
 
 end IsBoundedSMul
 

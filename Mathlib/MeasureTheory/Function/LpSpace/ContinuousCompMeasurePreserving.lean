@@ -31,7 +31,7 @@ open scoped ENNReal Topology symmDiff
 variable {X Y : Type*}
   [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X] [R1Space X]
   [TopologicalSpace Y] [MeasurableSpace Y] [BorelSpace Y] [R1Space Y]
-  {μ : Measure X} {ν : Measure Y} [μ.InnerRegularCompactLTTop] [IsLocallyFiniteMeasure ν]
+  {μ : Measure X} {ν : Measure Y} [μ.InnerRegularCompactLTTop] [G : IsLocallyFiniteMeasure ν]
 
 namespace MeasureTheory
 namespace Lp
@@ -61,7 +61,7 @@ theorem compMeasurePreserving_continuous (hp : p ≠ ∞) :
     dsimp only [Lp.simpleFunc.coe_indicatorConst, Lp.indicatorConstLp_compMeasurePreserving]
     refine continuous_indicatorConstLp_set hp fun f ↦ ?_
     apply tendsto_measure_symmDiff_preimage_nhds_zero continuousAt_subtype_val _ f.2
-      hs.nullMeasurableSet hνs.ne
+      hs.nullMeasurableSet (by simp only [hp, false_or] at hνs; exact hνs)
     exact .of_forall Subtype.property
 
 end Lp

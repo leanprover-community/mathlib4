@@ -592,20 +592,21 @@ end ToSimpleFunc
 section Induction
 
 variable (p) in
-/-- The characteristic function of a finite-measure measurable set `s`, as an `Lp` simple function.
+/-- The characteristic function of a measurable set `s`, as an `Lp` simple function, if the
+measure of the set is finite or `p = ∞`.
 -/
-def indicatorConst {s : Set α} (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) :
+def indicatorConst {s : Set α} (hs : MeasurableSet s) (hμs : p = ∞ ∨ μ s ≠ ∞) (c : E) :
     Lp.simpleFunc E p μ :=
   toLp ((SimpleFunc.const _ c).piecewise s hs (SimpleFunc.const _ 0))
-    (memLp_indicator_const p hs c (Or.inr hμs))
+    (memLp_indicator_const p hs c hμs)
 
 @[simp]
-theorem coe_indicatorConst {s : Set α} (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) :
+theorem coe_indicatorConst {s : Set α} (hs : MeasurableSet s) (hμs : p = ∞ ∨ μ s ≠ ∞) (c : E) :
     (↑(indicatorConst p hs hμs c) : Lp E p μ) = indicatorConstLp p hs hμs c :=
   rfl
 
-theorem toSimpleFunc_indicatorConst {s : Set α} (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : E) :
-    toSimpleFunc (indicatorConst p hs hμs c) =ᵐ[μ]
+theorem toSimpleFunc_indicatorConst {s : Set α} (hs : MeasurableSet s) (hμs : p = ∞ ∨ μ s ≠ ∞)
+    (c : E) : toSimpleFunc (indicatorConst p hs hμs c) =ᵐ[μ]
       (SimpleFunc.const _ c).piecewise s hs (SimpleFunc.const _ 0) :=
   Lp.simpleFunc.toSimpleFunc_toLp _ _
 
@@ -615,8 +616,8 @@ sets and is closed under addition (of functions with disjoint support). -/
 @[elab_as_elim]
 protected theorem induction (hp_pos : p ≠ 0) (hp_ne_top : p ≠ ∞) {P : Lp.simpleFunc E p μ → Prop}
     (indicatorConst :
-      ∀ (c : E) {s : Set α} (hs : MeasurableSet s) (hμs : μ s < ∞),
-        P (Lp.simpleFunc.indicatorConst p hs hμs.ne c))
+      ∀ (c : E) {s : Set α} (hs : MeasurableSet s) (hμs : p = ∞ ∨ μ s ≠ ∞),
+        P (Lp.simpleFunc.indicatorConst p hs hμs c))
     (add :
       ∀ ⦃f g : α →ₛ E⦄,
         ∀ hf : MemLp f p μ,
@@ -636,7 +637,7 @@ protected theorem induction (hp_pos : p ≠ 0) (hp_ne_top : p ≠ ∞) {P : Lp.s
       ext1
       simp [hc]
     exact indicatorConst c hs
-      (SimpleFunc.measure_lt_top_of_memLp_indicator hp_pos hp_ne_top hc hs hf)
+      (.inr <| ne_of_lt <| SimpleFunc.measure_lt_top_of_memLp_indicator hp_pos hp_ne_top hc hs hf)
   · intro f g hfg hf hg hfg'
     obtain ⟨hf', hg'⟩ : MemLp f p μ ∧ MemLp g p μ :=
       (memLp_add_of_disjoint hfg f.stronglyMeasurable g.stronglyMeasurable).mp hfg'
@@ -807,8 +808,8 @@ suffices to show that
 -/
 @[elab_as_elim]
 theorem Lp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (motive : Lp E p μ → Prop)
-    (indicatorConst : ∀ (c : E) {s : Set α} (hs : MeasurableSet s) (hμs : μ s < ∞),
-      motive (Lp.simpleFunc.indicatorConst p hs hμs.ne c))
+    (indicatorConst : ∀ (c : E) {s : Set α} (hs : MeasurableSet s) (hμs : p = ∞ ∨ μ s ≠ ∞),
+      motive (Lp.simpleFunc.indicatorConst p hs hμs c))
     (add : ∀ ⦃f g⦄, ∀ hf : MemLp f p μ, ∀ hg : MemLp g p μ, Disjoint (support f) (support g) →
       motive (hf.toLp f) → motive (hg.toLp g) → motive (hf.toLp f + hg.toLp g))
     (isClosed : IsClosed { f : Lp E p μ | motive f }) : ∀ f : Lp E p μ, motive f := by
