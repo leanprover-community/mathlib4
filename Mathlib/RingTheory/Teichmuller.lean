@@ -3,9 +3,11 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.LinearAlgebra.SModEq.Prime
-import Mathlib.RingTheory.AdicCompletion.Basic
-import Mathlib.RingTheory.Perfection
+module
+
+public import Mathlib.LinearAlgebra.SModEq.Prime
+public import Mathlib.RingTheory.AdicCompletion.Basic
+public import Mathlib.RingTheory.Perfection
 
 /-! # Teichmüller map
 
@@ -16,6 +18,8 @@ Then there is a canonical map `Perfection (R ⧸ I) p →*₀ R` that we shall c
 "0-th coefficient" map `Perfection (R ⧸ I) p →+* R ⧸ I`.
 
 -/
+
+@[expose] public section
 
 variable {p : ℕ} [Fact p.Prime] {R : Type*} [CommRing R] {I : Ideal R} [CharP (R ⧸ I) p]
 
@@ -35,7 +39,8 @@ theorem teichmullerAux_sModEq (x : Perfection (R ⧸ I) p) (m : ℕ) :
   · simp
   symm
   rw [teichmullerAux, pow_succ' p, pow_mul]
-  exact .pow_prime_pow Fact.out (I.natCast_mem_of_charP_quotient p) <| by simp [SModEq.ideal, coeff_pow_p']
+  exact .pow_prime_pow Fact.out (I.natCast_mem_of_charP_quotient p) <| by
+    simp [SModEq.ideal, coeff_pow_p']
 
 /-- `teichmullerAux` as an adic Cauchy sequence. -/
 noncomputable def teichmullerCauchy (x : Perfection (R ⧸ I) p) :
