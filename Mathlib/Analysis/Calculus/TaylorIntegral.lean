@@ -19,6 +19,8 @@ In this file we prove Taylor's formula with the remainder term in integral form.
 * `add_eq_sum_add_integral_iteratedDeriv`: one-dimensional version with `iteratedDeriv`
 -/
 
+@[expose] public section
+
 open Nat
 
 variable {𝕜 E F : Type*}
