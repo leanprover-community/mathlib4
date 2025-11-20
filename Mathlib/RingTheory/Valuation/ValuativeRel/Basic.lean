@@ -3,9 +3,11 @@ Copyright (c) 2025 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Liu, Adam Topaz
 -/
-import Mathlib.RingTheory.Valuation.Basic
-import Mathlib.Data.NNReal.Defs
-import Mathlib.Topology.Defs.Filter
+module
+
+public import Mathlib.RingTheory.Valuation.Basic
+public import Mathlib.Data.NNReal.Defs
+public import Mathlib.Topology.Defs.Filter
 
 /-!
 
@@ -57,6 +59,8 @@ The `ValuativeRel` class should eventually replace the existing `Valued` typecla
 Once such a refactor happens, `ValuativeRel` could be renamed to `Valued`.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
