@@ -3,8 +3,10 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.LocallyConvex.Bounded
-import Mathlib.Analysis.RCLike.Basic
+module
+
+public import Mathlib.Analysis.LocallyConvex.Bounded
+public import Mathlib.Analysis.RCLike.Basic
 
 /-!
 # Continuity and Von Neumann boundedness
@@ -23,6 +25,8 @@ continuous linear maps will require importing `Analysis/LocallyConvex/Bounded` i
 * [Bourbaki, *Topological Vector Spaces*][bourbaki1987]
 
 -/
+
+@[expose] public section
 
 
 open TopologicalSpace Bornology Filter Topology Pointwise

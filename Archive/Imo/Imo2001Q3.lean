@@ -20,7 +20,7 @@ both the girl and the boy.
 
 Show that there is a problem that was solved by at least three girls and at least three boys.
 
-# Solution
+## Solution
 
 Note that not all of the problems a girl $g$ solves can be "hard" for boys, in the sense that
 at most two boys solved it. If that was true, by condition 1 at most $6 × 2 = 12$ boys solved
