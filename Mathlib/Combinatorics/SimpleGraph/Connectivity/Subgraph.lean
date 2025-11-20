@@ -627,19 +627,23 @@ protected lemma Connected.toSubgraph {H : SimpleGraph V} (h : H ≤ G) (hconn : 
 
 namespace Subgraph
 
-protected lemma Connected.map_coe {G' : G.Subgraph} {G'' : G'.coe.Subgraph}
-    (f : G'.coe →g G) (hconn : G''.Connected) : (G''.map f).Connected := by
-  rw [connected_iff_forall_exists_walk_subgraph]
-  simp only [map_verts, Set.image_nonempty, hconn.nonempty, Set.mem_image, Subtype.exists,
-    forall_exists_index, and_imp, true_and]
+protected lemma Preconnected.map_coe {G' : G.Subgraph} {G'' : G'.coe.Subgraph}
+    (f : G'.coe →g G) (hpreconn : G''.Preconnected) : (G''.map f).Preconnected := by
+  rw [preconnected_iff_forall_exists_walk_subgraph]
+  simp only [map_verts, Set.mem_image, Subtype.exists, forall_exists_index, and_imp]
   intro u v u' _ hu'' hfu'' v' _ hv'' hfv''
   rw [← hfu'', ← hfv'']
-  rw [connected_iff_forall_exists_walk_subgraph] at hconn
-  obtain ⟨_, hp⟩ := hconn
-  obtain ⟨p, _⟩ := hp hu'' hv''
+  rw [preconnected_iff_forall_exists_walk_subgraph] at hpreconn
+  obtain ⟨p, _⟩ := hpreconn hu'' hv''
   use p.map f
   rw [p.toSubgraph_map]
   gcongr
+
+protected lemma Connected.map_coe {G' : G.Subgraph} {G'' : G'.coe.Subgraph}
+    (f : G'.coe →g G) (hconn : G''.Connected) : (G''.map f).Connected := by
+  rw [Subgraph.connected_iff] at hconn
+  refine Subgraph.connected_iff.mpr ⟨hconn.left.map_coe f, ?_⟩
+  simp_all only [map_verts, Set.image_nonempty]
 
 protected lemma Connected.coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph)
     (hconn : G''.Connected) :
