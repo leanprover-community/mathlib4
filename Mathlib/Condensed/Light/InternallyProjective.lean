@@ -3,10 +3,12 @@ Copyright (c) 2025 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Preadditive.Projective.Internal
-import Mathlib.Condensed.Light.Epi
-import Mathlib.Condensed.Light.Functors
-import Mathlib.Condensed.Light.Monoidal
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Projective.Internal
+public import Mathlib.Condensed.Light.Epi
+public import Mathlib.Condensed.Light.Functors
+public import Mathlib.Condensed.Light.Monoidal
 /-!
 
 # Characterization of internal projectivity in light condensed modules
@@ -33,6 +35,8 @@ condensed module on a condensed set (`free_internallyProjective_iff_tensor_condi
 light profinite set (`free_lightProfinite_internallyProjective_iff_tensor_condition`/
 `free_lightProfinite_internallyProjective_iff_tensor_condition'`).
 -/
+
+@[expose] public section
 
 universe u
 
