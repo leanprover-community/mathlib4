@@ -3,16 +3,20 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Interval.Finset.SuccPred
-import Mathlib.Data.Nat.SuccPred
-import Mathlib.Data.Int.Interval
-import Mathlib.Data.Int.SuccPred
-import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Util.Qq
+module
+
+public meta import Mathlib.Algebra.Order.Interval.Finset.SuccPred
+public meta import Mathlib.Data.Nat.SuccPred
+public meta import Mathlib.Data.Int.Interval
+public meta import Mathlib.Data.Int.SuccPred
+public meta import Mathlib.Order.Interval.Finset.Nat
+public meta import Mathlib.Util.Qq
 
 /-!
 # Simproc for intervals of natural numbers
 -/
+
+public meta section
 
 open Qq Lean Finset
 
