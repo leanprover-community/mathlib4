@@ -3,14 +3,20 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-import Mathlib.Algebra.Ring.NegOnePow
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
+public import Mathlib.Algebra.Ring.NegOnePow
 
 /-!
 # Miscellaneous results about determinant
 
 In this file, we collect various formulas about determinant of matrices.
 -/
+
+@[expose] public section
+
+assert_not_exists TwoSidedIdeal
 
 namespace Matrix
 
@@ -57,5 +63,33 @@ theorem submatrix_succAbove_det_eq_negOnePow_submatrix_succAbove_det' {n : ℕ}
     ← det_transpose, transpose_submatrix, transpose_transpose]
   ext
   simp_rw [Finset.sum_apply, transpose_apply, hv, Pi.zero_apply]
+
+/-- Let `M` be a `(n+1) × (n+1)` matrix. Assume that all columns, but the `j₀`-column, sums to zero.
+Then its determinant is, up to sign, the sum of the `j₀`-column times the determinant of the
+matrix obtained by deleting any row and the `j₀`-column. -/
+theorem det_eq_sum_column_mul_submatrix_succAbove_succAbove_det {n : ℕ}
+    (M : Matrix (Fin (n + 1)) (Fin (n + 1)) R) (i₀ j₀ : Fin (n + 1))
+    (hv : ∀ j ≠ j₀, ∑ i, M i j = 0) :
+    M.det = (-1) ^ (i₀ + j₀ : ℕ) *
+      (∑ i, M i j₀) * (M.submatrix (Fin.succAbove i₀) (Fin.succAbove j₀)).det := by
+  rw [← one_smul R M.det, ← Matrix.det_updateRow_sum _ i₀ (fun _ ↦ 1), Matrix.det_succ_row _ i₀]
+  simp only [updateRow_apply, if_true, one_smul, submatrix_updateRow_succAbove, Finset.sum_apply]
+  rw [Fintype.sum_eq_add_sum_subtype_ne _ j₀]
+  conv_lhs =>
+    enter [2, 2, i]
+    rw [hv _ i.prop, mul_zero, zero_mul]
+  simp [Finset.sum_const_zero, add_zero]
+
+/-- Let `M` be a `(n+1) × (n+1)` matrix. Assume that all rows, but the `i₀`-row, sums to zero.
+Then its determinant is, up to sign, the sum of the `i₀`-row times the determinant of the
+matrix obtained by deleting the `i₀`-row and any column. -/
+theorem det_eq_sum_row_mul_submatrix_succAbove_succAbove_det {n : ℕ}
+    (M : Matrix (Fin (n + 1)) (Fin (n + 1)) R) (i₀ j₀ : Fin (n + 1))
+    (hv : ∀ i ≠ i₀, ∑ j, M i j = 0) :
+    M.det = (-1) ^ (i₀ + j₀ : ℕ) *
+      (∑ j, M i₀ j) * (M.submatrix (Fin.succAbove i₀) (Fin.succAbove j₀)).det := by
+  rw [← det_transpose, det_eq_sum_column_mul_submatrix_succAbove_succAbove_det _ j₀ i₀
+    (by simpa using hv), ← det_transpose, transpose_submatrix, transpose_transpose, add_comm]
+  simp_rw [transpose_apply]
 
 end Matrix

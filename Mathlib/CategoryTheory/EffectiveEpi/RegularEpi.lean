@@ -3,8 +3,10 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
-import Mathlib.CategoryTheory.EffectiveEpi.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 /-!
 
 # The relationship between effective and regular epimorphisms.
@@ -13,13 +15,15 @@ This file proves that the notions of regular epi and effective epi are equivalen
 kernel pairs, and that regular epi implies effective epi in general.
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Limits RegularEpi
 
 variable {C : Type*} [Category C]
 
-/-- The data of an `EffectiveEpi` structure on a `RegularEpi`. -/
+/-- The data of an `EffectiveEpi` structure on a `RegularEpi`. -/
 def effectiveEpiStructOfRegularEpi {B X : C} (f : X ⟶ B) [RegularEpi f] :
     EffectiveEpiStruct f where
   desc _ h := Cofork.IsColimit.desc isColimit _ (h _ _ w)

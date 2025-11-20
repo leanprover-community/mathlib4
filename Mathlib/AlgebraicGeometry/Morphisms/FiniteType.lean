@@ -3,8 +3,11 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
-import Mathlib.RingTheory.RingHom.FiniteType
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
+public import Mathlib.RingTheory.RingHom.FiniteType
+public import Mathlib.RingTheory.Spectrum.Prime.Jacobson
 
 /-!
 # Morphisms of finite type
@@ -14,10 +17,11 @@ A morphism of schemes `f : X ⟶ Y` is locally of finite type if for each affine
 
 A morphism of schemes is of finite type if it is both locally of finite type and quasi-compact.
 
-We show that these properties are local, and are stable under compositions.
+We show that these properties are local, and are stable under compositions and base change.
 
 -/
 
+@[expose] public section
 
 noncomputable section
 
@@ -35,47 +39,85 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 @[mk_iff]
 class LocallyOfFiniteType (f : X ⟶ Y) : Prop where
   finiteType_of_affine_subset :
-    ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ f ⁻¹ᵁ U.1), (f.appLE U V e).FiniteType
+    ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ f ⁻¹ᵁ U.1), (f.appLE U V e).hom.FiniteType
 
-theorem locallyOfFiniteType_eq : @LocallyOfFiniteType = affineLocally @RingHom.FiniteType := by
-  ext X Y f
-  rw [locallyOfFiniteType_iff, affineLocally_iff_affineOpens_le]
-  exact RingHom.finiteType_respectsIso
+instance : HasRingHomProperty @LocallyOfFiniteType RingHom.FiniteType where
+  isLocal_ringHomProperty := RingHom.finiteType_isLocal
+  eq_affineLocally' := by
+    ext X Y f
+    rw [locallyOfFiniteType_iff, affineLocally_iff_affineOpens_le]
 
 instance (priority := 900) locallyOfFiniteType_of_isOpenImmersion [IsOpenImmersion f] :
     LocallyOfFiniteType f :=
-  locallyOfFiniteType_eq.symm ▸ RingHom.finiteType_is_local.affineLocally_of_isOpenImmersion f
+  HasRingHomProperty.of_isOpenImmersion
+    RingHom.finiteType_holdsForLocalizationAway.containsIdentities
 
-instance locallyOfFiniteType_isStableUnderComposition :
-    MorphismProperty.IsStableUnderComposition @LocallyOfFiniteType :=
-  locallyOfFiniteType_eq.symm ▸ RingHom.finiteType_is_local.affineLocally_isStableUnderComposition
+instance : MorphismProperty.IsStableUnderComposition @LocallyOfFiniteType :=
+  HasRingHomProperty.stableUnderComposition RingHom.finiteType_stableUnderComposition
 
 instance locallyOfFiniteType_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
     [hf : LocallyOfFiniteType f] [hg : LocallyOfFiniteType g] : LocallyOfFiniteType (f ≫ g) :=
   MorphismProperty.comp_mem _ f g hf hg
 
 theorem locallyOfFiniteType_of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
-    [hf : LocallyOfFiniteType (f ≫ g)] : LocallyOfFiniteType f := by
-  revert hf
-  rw [locallyOfFiniteType_eq]
-  apply RingHom.finiteType_is_local.affineLocally_of_comp
-  introv H
-  exact RingHom.FiniteType.of_comp_finiteType H
+    [LocallyOfFiniteType (f ≫ g)] : LocallyOfFiniteType f :=
+  HasRingHomProperty.of_comp (fun _ _ ↦ RingHom.FiniteType.of_comp_finiteType) ‹_›
 
-theorem LocallyOfFiniteType.affine_openCover_iff {X Y : Scheme.{u}} (f : X ⟶ Y)
-    (𝒰 : Scheme.OpenCover.{u} Y) [∀ i, IsAffine (𝒰.obj i)]
-    (𝒰' : ∀ i, Scheme.OpenCover.{u} ((𝒰.pullbackCover f).obj i)) [∀ i j, IsAffine ((𝒰' i).obj j)] :
-    LocallyOfFiniteType f ↔
-    ∀ i j, (Scheme.Γ.map ((𝒰' i).map j ≫ pullback.snd _ _).op).FiniteType :=
-  locallyOfFiniteType_eq.symm ▸ RingHom.finiteType_is_local.affine_openCover_iff f 𝒰 𝒰'
+instance : MorphismProperty.IsMultiplicative @LocallyOfFiniteType where
+  id_mem _ := inferInstance
 
-theorem LocallyOfFiniteType.source_openCover_iff {X Y : Scheme.{u}} (f : X ⟶ Y)
-    (𝒰 : Scheme.OpenCover.{u} X) : LocallyOfFiniteType f ↔ ∀ i, LocallyOfFiniteType (𝒰.map i ≫ f) :=
-  locallyOfFiniteType_eq.symm ▸ RingHom.finiteType_is_local.source_openCover_iff f 𝒰
+open scoped TensorProduct in
+instance locallyOfFiniteType_isStableUnderBaseChange :
+    MorphismProperty.IsStableUnderBaseChange @LocallyOfFiniteType :=
+  HasRingHomProperty.isStableUnderBaseChange RingHom.finiteType_isStableUnderBaseChange
 
-instance locallyOfFiniteType_isLocalAtTarget : IsLocalAtTarget @LocallyOfFiniteType := by
-  have := RingHom.finiteType_is_local.hasAffinePropertyAffineLocally
-  rw [← locallyOfFiniteType_eq] at this
-  infer_instance
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [LocallyOfFiniteType g] :
+    LocallyOfFiniteType (pullback.fst f g) :=
+  MorphismProperty.pullback_fst f g inferInstance
+
+instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [LocallyOfFiniteType f] :
+    LocallyOfFiniteType (pullback.snd f g) :=
+  MorphismProperty.pullback_snd f g inferInstance
+
+instance (f : X ⟶ Y) (V : Y.Opens) [LocallyOfFiniteType f] : LocallyOfFiniteType (f ∣_ V) :=
+  IsZariskiLocalAtTarget.restrict ‹_› V
+
+instance (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e) [LocallyOfFiniteType f] :
+    LocallyOfFiniteType (f.resLE V U e) := by
+  delta Scheme.Hom.resLE; infer_instance
+
+instance {R} [CommRing R] [IsJacobsonRing R] : JacobsonSpace <| Spec <| .of R :=
+  inferInstanceAs (JacobsonSpace (PrimeSpectrum R))
+
+instance {R : CommRingCat} [IsJacobsonRing R] : JacobsonSpace (Spec R) :=
+  inferInstanceAs (JacobsonSpace (PrimeSpectrum R))
+
+nonrec lemma LocallyOfFiniteType.jacobsonSpace
+    (f : X ⟶ Y) [LocallyOfFiniteType f] [JacobsonSpace Y] : JacobsonSpace X := by
+  wlog hY : ∃ S, Y = Spec S
+  · rw [(Scheme.OpenCover.isOpenCover_opensRange (Y.affineCover.pullback₁ f)).jacobsonSpace_iff]
+    intro i
+    have inst : LocallyOfFiniteType (Y.affineCover.pullbackHom f i) :=
+      MorphismProperty.pullback_snd _ _ inferInstance
+    have inst : JacobsonSpace Y := ‹_› -- TC gets stuck on the WLOG hypothesis without it.
+    have inst : JacobsonSpace (Y.affineCover.X i) :=
+      .of_isOpenEmbedding (Y.affineCover.f i).isOpenEmbedding
+    let e := ((Y.affineCover.pullback₁ f).f i).isOpenEmbedding.isEmbedding.toHomeomorph
+    have := this (Y.affineCover.pullbackHom f i) ⟨_, rfl⟩
+    exact .of_isClosedEmbedding e.symm.isClosedEmbedding
+  obtain ⟨R, rfl⟩ := hY
+  wlog hX : ∃ S, X = Spec S
+  · have inst : JacobsonSpace (Spec R) := ‹_› -- TC gets stuck on the WLOG hypothesis without it.
+    rw [X.affineCover.isOpenCover_opensRange.jacobsonSpace_iff]
+    intro i
+    have := this _ (X.affineCover.f i ≫ f) ⟨_, rfl⟩
+    let e := (X.affineCover.f i).isOpenEmbedding.isEmbedding.toHomeomorph
+    exact .of_isClosedEmbedding e.symm.isClosedEmbedding
+  obtain ⟨S, rfl⟩ := hX
+  obtain ⟨φ, rfl : Spec.map φ = f⟩ := Spec.homEquiv.symm.surjective f
+  have : RingHom.FiniteType φ.hom := HasRingHomProperty.Spec_iff.mp ‹_›
+  algebraize [φ.hom]
+  have := PrimeSpectrum.isJacobsonRing_iff_jacobsonSpace.mpr ‹_›
+  exact PrimeSpectrum.isJacobsonRing_iff_jacobsonSpace.mp (isJacobsonRing_of_finiteType (A := R))
 
 end AlgebraicGeometry

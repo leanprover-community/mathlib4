@@ -3,16 +3,23 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Pointwise.SMul
+module
+
+public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 
 /-!
-# Support of an element under an action action
+# Support of an element under an action
 
 Given an action of a group `G` on a type `α`, we say that a set `s : Set α` supports an element
 `a : α` if, for all `g` that fix `s` pointwise, `g` fixes `a`.
 
 This is crucial in Fourier-Motzkin constructions.
 -/
+
+@[expose] public section
+
+assert_not_exists MonoidWithZero
 
 open Pointwise
 
@@ -25,7 +32,7 @@ section SMul
 variable (G) [SMul G α] [SMul G β]
 
 /-- A set `s` supports `b` if `g • b = b` whenever `g • a = a` for all `a ∈ s`. -/
-@[to_additive "A set `s` supports `b` if `g +ᵥ b = b` whenever `g +ᵥ a = a` for all `a ∈ s`."]
+@[to_additive /-- A set `s` supports `b` if `g +ᵥ b = b` whenever `g +ᵥ a = a` for all `a ∈ s`. -/]
 def Supports (s : Set α) (b : β) :=
   ∀ g : G, (∀ ⦃a⦄, a ∈ s → g • a = a) → g • b = b
 
@@ -43,7 +50,7 @@ theorem Supports.mono (h : s ⊆ t) (hs : Supports G s b) : Supports G t b := fu
 end SMul
 
 variable [Group H] [SMul G α] [SMul G β] [MulAction H α] [SMul H β] [SMulCommClass G H β]
-  [SMulCommClass G H α] {s t : Set α} {b : β}
+  [SMulCommClass G H α] {s : Set α} {b : β}
 
 -- TODO: This should work without `SMulCommClass`
 @[to_additive]

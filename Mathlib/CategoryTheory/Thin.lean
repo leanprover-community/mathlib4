@@ -1,10 +1,12 @@
 /-
-Copyright (c) 2019 Scott Morrison, Bhavik Mehta. All rights reserved.
+Copyright (c) 2019 Kim Morrison, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Bhavik Mehta
+Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Iso
+module
+
+public import Mathlib.CategoryTheory.Functor.Category
+public import Mathlib.CategoryTheory.Iso
 
 /-!
 # Thin categories
@@ -18,6 +20,8 @@ If `C` is thin, then the category of functors to `C` is also thin.
 Further, to show two objects are isomorphic in a thin category, it suffices only to give a morphism
 in each direction.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ u₁ u₂
@@ -44,7 +48,7 @@ variable [Quiver.IsThin C]
 
 /-- If `C` is a thin category, then `D ⥤ C` is a thin category. -/
 instance functor_thin : Quiver.IsThin (D ⥤ C) := fun _ _ =>
-  ⟨fun α β => NatTrans.ext α β (funext fun _ => Subsingleton.elim _ _)⟩
+  ⟨fun α β => NatTrans.ext (by subsingleton)⟩
 
 /-- To show `X ≅ Y` in a thin category, it suffices to just give any morphism in each direction. -/
 def iso_of_both_ways {X Y : C} (f : X ⟶ Y) (g : Y ⟶ X) :

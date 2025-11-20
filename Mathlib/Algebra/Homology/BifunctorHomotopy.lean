@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Bifunctor
-import Mathlib.Algebra.Homology.Homotopy
+module
+
+public import Mathlib.Algebra.Homology.Bifunctor
+public import Mathlib.Algebra.Homology.Homotopy
 
 /-!
 # The action of a bifunctor on homological complexes factors through homotopies
@@ -16,6 +18,10 @@ the morphism `f₁` in `HomologicalComplex C c₁` and of
 the morphism `f₂` in `HomologicalComplex C c₂` (TODO).
 
 -/
+
+@[expose] public section
+
+assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Category Limits
 
@@ -93,13 +99,14 @@ lemma comm₁ (j : J) :
           (mapBifunctor L₁ L₂ F c).d (c.prev j) j +
       (mapBifunctorMap f₁' f₂ F c).f j := by
   ext i₁ i₂ h
-  simp? [h₁.comm i₁, dFrom, fromNext, toPrev, dTo] says
-    simp only [Functor.mapBifunctorHomologicalComplex_obj_obj_X_X, ι_mapBifunctorMap,
-      h₁.comm i₁, dNext_eq_dFrom_fromNext, dFrom, fromNext, AddMonoidHom.mk'_apply,
-      prevD_eq_toPrev_dTo, toPrev, dTo, Functor.map_add, Functor.map_comp, NatTrans.app_add,
-      NatTrans.comp_app, Preadditive.add_comp, assoc, HomologicalComplex₂.total_d,
+  simp? [HomologicalComplex₂.total_d, h₁.comm i₁, dFrom, fromNext, toPrev, dTo] says
+    simp only [ι_mapBifunctorMap, h₁.comm i₁, dNext_eq_dFrom_fromNext, dFrom, fromNext,
+      AddMonoidHom.mk'_apply, prevD_eq_toPrev_dTo, toPrev, dTo, Functor.map_add,
+      Functor.map_comp, NatTrans.app_add, NatTrans.comp_app,
+      Preadditive.add_comp, assoc, HomologicalComplex₂.total_d,
       Functor.mapBifunctorHomologicalComplex_obj_obj_toGradedObject, Preadditive.comp_add,
-      HomologicalComplex₂.ι_D₁_assoc, HomologicalComplex₂.ι_D₂_assoc, add_left_inj]
+      HomologicalComplex₂.ι_D₁_assoc, Functor.mapBifunctorHomologicalComplex_obj_obj_X_X,
+      HomologicalComplex₂.ι_D₂_assoc, add_left_inj]
   have : ∀ {X Y : D} (a b c d e f : X ⟶ Y), a = c → b = e → f = -d →
       a + b = c + d + (e + f) := by rintro X Y a b _ d _ _ rfl rfl rfl; abel
   apply this

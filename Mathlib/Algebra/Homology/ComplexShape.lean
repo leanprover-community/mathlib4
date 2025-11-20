@@ -1,10 +1,13 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin, Scott Morrison
+Authors: Johan Commelin, Kim Morrison
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Logic.Relation
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Logic.Relation
+public import Mathlib.Logic.Function.Basic
 
 /-!
 # Shapes of homological complexes
@@ -39,9 +42,9 @@ so `d : X i ⟶ X j` is nonzero only when `i = j + 1`.
 `HomologicalComplex` with one of these shapes baked in.)
 -/
 
-noncomputable section
+@[expose] public section
 
-open scoped Classical
+noncomputable section
 
 /-- A `c : ComplexShape ι` describes the shape of a chain complex,
 with chain groups indexed by `ι`.
@@ -58,7 +61,7 @@ Below we define `c.next` and `c.prev` which provide these related elements.
 @[ext]
 structure ComplexShape (ι : Type*) where
   /-- Nonzero differentials `X i ⟶ X j` shall be allowed
-    on homological complexes when `Rel i j` holds. -/
+  on homological complexes when `Rel i j` holds. -/
   Rel : ι → ι → Prop
   /-- There is at most one nonzero differential from `X i`. -/
   next_eq : ∀ {i j j'}, Rel i j → Rel i j' → j = j'
@@ -88,9 +91,7 @@ def symm (c : ComplexShape ι) : ComplexShape ι where
   prev_eq w w' := c.next_eq w w'
 
 @[simp]
-theorem symm_symm (c : ComplexShape ι) : c.symm.symm = c := by
-  ext
-  simp
+theorem symm_symm (c : ComplexShape ι) : c.symm.symm = c := rfl
 
 theorem symm_bijective :
     Function.Bijective (ComplexShape.symm : ComplexShape ι → ComplexShape ι) :=
@@ -126,12 +127,14 @@ instance subsingleton_prev (c : ComplexShape ι) (j : ι) : Subsingleton { i // 
   congr
   exact c.prev_eq rik rjk
 
+open Classical in
 /-- An arbitrary choice of index `j` such that `Rel i j`, if such exists.
 Returns `i` otherwise.
 -/
 def next (c : ComplexShape ι) (i : ι) : ι :=
   if h : ∃ j, c.Rel i j then h.choose else i
 
+open Classical in
 /-- An arbitrary choice of index `i` such that `Rel i j`, if such exists.
 Returns `j` otherwise.
 -/
@@ -149,19 +152,19 @@ theorem prev_eq' (c : ComplexShape ι) {i j : ι} (h : c.Rel i j) : c.prev j = i
   rw [prev, dif_pos]
   exact Exists.choose_spec (⟨i, h⟩ : ∃ k, c.Rel k j)
 
-lemma next_eq_self' (c : ComplexShape ι) (j : ι) (hj : ∀ k, ¬ c.Rel j k) :
+lemma next_eq_self' (c : ComplexShape ι) (j : ι) (hj : ∀ k, ¬c.Rel j k) :
     c.next j = j :=
   dif_neg (by simpa using hj)
 
-lemma prev_eq_self' (c : ComplexShape ι) (j : ι) (hj : ∀ i, ¬ c.Rel i j) :
+lemma prev_eq_self' (c : ComplexShape ι) (j : ι) (hj : ∀ i, ¬c.Rel i j) :
     c.prev j = j :=
   dif_neg (by simpa using hj)
 
-lemma next_eq_self (c : ComplexShape ι) (j : ι) (hj : ¬ c.Rel j (c.next j)) :
+lemma next_eq_self (c : ComplexShape ι) (j : ι) (hj : ¬c.Rel j (c.next j)) :
     c.next j = j :=
   c.next_eq_self' j (fun k hk' => hj (by simpa only [c.next_eq' hk'] using hk'))
 
-lemma prev_eq_self (c : ComplexShape ι) (j : ι) (hj : ¬ c.Rel (c.prev j) j) :
+lemma prev_eq_self (c : ComplexShape ι) (j : ι) (hj : ¬c.Rel (c.prev j) j) :
     c.prev j = j :=
   c.prev_eq_self' j (fun k hk' => hj (by simpa only [c.prev_eq' hk'] using hk'))
 
@@ -169,7 +172,7 @@ lemma prev_eq_self (c : ComplexShape ι) (j : ι) (hj : ¬ c.Rel (c.prev j) j) :
 (For example when `a = 1`, a cohomology theory indexed by `ℕ` or `ℤ`)
 -/
 @[simps]
-def up' {α : Type*} [AddRightCancelSemigroup α] (a : α) : ComplexShape α where
+def up' {α : Type*} [Add α] [IsRightCancelAdd α] (a : α) : ComplexShape α where
   Rel i j := i + a = j
   next_eq hi hj := hi.symm.trans hj
   prev_eq hi hj := add_right_cancel (hi.trans hj.symm)
@@ -178,27 +181,27 @@ def up' {α : Type*} [AddRightCancelSemigroup α] (a : α) : ComplexShape α whe
 (For example when `a = 1`, a homology theory indexed by `ℕ` or `ℤ`)
 -/
 @[simps]
-def down' {α : Type*} [AddRightCancelSemigroup α] (a : α) : ComplexShape α where
+def down' {α : Type*} [Add α] [IsRightCancelAdd α] (a : α) : ComplexShape α where
   Rel i j := j + a = i
   next_eq hi hj := add_right_cancel (hi.trans hj.symm)
   prev_eq hi hj := hi.symm.trans hj
 
-theorem down'_mk {α : Type*} [AddRightCancelSemigroup α] (a : α) (i j : α) (h : j + a = i) :
+theorem down'_mk {α : Type*} [Add α] [IsRightCancelAdd α] (a : α) (i j : α) (h : j + a = i) :
     (down' a).Rel i j := h
 
 /-- The `ComplexShape` appropriate for cohomology, so `d : X i ⟶ X j` only when `j = i + 1`.
 -/
 @[simps!]
-def up (α : Type*) [AddRightCancelSemigroup α] [One α] : ComplexShape α :=
+def up (α : Type*) [Add α] [IsRightCancelAdd α] [One α] : ComplexShape α :=
   up' 1
 
 /-- The `ComplexShape` appropriate for homology, so `d : X i ⟶ X j` only when `i = j + 1`.
 -/
 @[simps!]
-def down (α : Type*) [AddRightCancelSemigroup α] [One α] : ComplexShape α :=
+def down (α : Type*) [Add α] [IsRightCancelAdd α] [One α] : ComplexShape α :=
   down' 1
 
-theorem down_mk {α : Type*} [AddRightCancelSemigroup α] [One α] (i j : α) (h : j + 1 = i) :
+theorem down_mk {α : Type*} [Add α] [IsRightCancelAdd α] [One α] (i j : α) (h : j + 1 = i) :
     (down α).Rel i j :=
   down'_mk (1 : α) i j h
 

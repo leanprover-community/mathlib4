@@ -1,15 +1,17 @@
 /-
-Copyright (c) 2023 Scott Morrison. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Lean.Meta.Tactic.TryThis
-import Lean.Meta.Tactic.SolveByElim
-import Mathlib.Lean.Expr.Basic
-import Mathlib.Lean.Meta
-import Mathlib.Lean.Meta.Basic
-import Batteries.Util.Cache
-import Mathlib.Tactic.Core
+module
+
+public meta import Lean.Meta.Tactic.TryThis
+public meta import Lean.Meta.Tactic.SolveByElim
+public meta import Mathlib.Lean.Expr.Basic
+public meta import Mathlib.Lean.Meta
+public meta import Mathlib.Lean.Meta.Basic
+public meta import Batteries.Util.Cache
+public meta import Mathlib.Tactic.Core
 
 /-!
 # Propose
@@ -33,14 +35,13 @@ example (K L M : List α) (w : L.Disjoint M) (m : K ⊆ L) : True := by
 ```
 -/
 
+public meta section
+
 namespace Mathlib.Tactic.Propose
 
 open Lean Meta Batteries.Tactic Tactic.TryThis
 
 initialize registerTraceClass `Tactic.propose
-
-/-- Configuration for `DiscrTree`. -/
-def discrTreeConfig : WhnfCoreConfig := {}
 
 initialize proposeLemmas : DeclCache (DiscrTree Name) ←
   DeclCache.mk "have?: init cache" failure {} fun name constInfo lemmas => do
@@ -50,7 +51,7 @@ initialize proposeLemmas : DeclCache (DiscrTree Name) ←
       let (mvars, _, _) ← forallMetaTelescope constInfo.type
       let mut lemmas := lemmas
       for m in mvars do
-        lemmas ← lemmas.insertIfSpecific (← inferType m) name discrTreeConfig
+        lemmas ← lemmas.insertIfSpecific (← inferType m) name
       pure lemmas
 
 open Lean.Meta.SolveByElim in
@@ -80,7 +81,7 @@ def propose (lemmas : DiscrTree Name) (type : Expr) (required : Array Expr)
     (solveByElimDepth := 15) : MetaM (Array (Name × Expr)) := do
   guard !required.isEmpty
   let ty ← whnfR (← instantiateMVars (← inferType required[0]!))
-  let candidates ← lemmas.getMatch ty discrTreeConfig
+  let candidates ← lemmas.getMatch ty
   candidates.filterMapM fun lem : Name =>
     try
       trace[Tactic.propose] "considering {lem}"
@@ -100,8 +101,8 @@ open Lean.Parser.Tactic
 
 /--
 * `have? using a, b, c` tries to find a lemma
-which makes use of each of the local hypotheses `a, b, c`,
-and reports any results via trace messages.
+  which makes use of each of the local hypotheses `a, b, c`,
+  and reports any results via trace messages.
 * `have? : h using a, b, c` only returns lemmas whose type matches `h` (which may contain `_`).
 * `have?! using a, b, c` will also call `have` to add results to the local goal state.
 
@@ -129,7 +130,7 @@ elab_rules : tactic
         throwError "propose could not find any lemmas using the given hypotheses"
       -- TODO we should have `proposals` return a lazy list, to avoid unnecessary computation here.
       for p in proposals.toList.take 10 do
-        addHaveSuggestion tk (h.map (·.getId)) (← inferType p.2) p.2 stx
+        addHaveSuggestion tk (h.map (·.getId)) (← inferType p.2) p.2 stx (← saveState)
       if lucky.isSome then
         let mut g := goal
         for p in proposals.toList.take 10 do
@@ -143,3 +144,5 @@ macro_rules
     `(tactic| have?%$tk ! $[: $type]? using $terms,*)
   | `(tactic| have!?%$tk $[: $type]? using $terms,*) =>
     `(tactic| have?%$tk ! $[: $type]? using $terms,*)
+
+end Mathlib.Tactic.Propose

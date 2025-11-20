@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
-import Mathlib.Analysis.Complex.CauchyIntegral
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Analytic
+public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+public import Mathlib.Analysis.Complex.CauchyIntegral
 
 /-!
 # Removable singularity theorem
@@ -15,6 +17,8 @@ differentiable in a punctured neighborhood of a point `c` and is bounded in a pu
 of `c` (or, more generally, $f(z) - f(c)=o((z-c)^{-1})$), then it has a limit at `c` and the
 function `update f c (limUnder (𝓝[≠] c) f)` is complex differentiable in a neighborhood of `c`.
 -/
+
+@[expose] public section
 
 
 open TopologicalSpace Metric Set Filter Asymptotics Function
@@ -48,7 +52,7 @@ theorem differentiableOn_compl_singleton_and_continuousAt_iff {f : ℂ → E} {s
   rcases eq_or_ne x c with (rfl | hne)
   · refine (analyticAt_of_differentiable_on_punctured_nhds_of_continuousAt
       ?_ hc).differentiableAt.differentiableWithinAt
-    refine eventually_nhdsWithin_iff.2 ((eventually_mem_nhds.2 hs).mono fun z hz hzx => ?_)
+    refine eventually_nhdsWithin_iff.2 ((eventually_mem_nhds_iff.2 hs).mono fun z hz hzx => ?_)
     exact hd.differentiableAt (inter_mem hz (isOpen_ne.mem_nhds hzx))
   · simpa only [DifferentiableWithinAt, HasFDerivWithinAt, hne.nhdsWithin_diff_singleton] using
       hd x ⟨hx, hne⟩
@@ -57,7 +61,7 @@ theorem differentiableOn_dslope {f : ℂ → E} {s : Set ℂ} {c : ℂ} (hc : s 
     DifferentiableOn ℂ (dslope f c) s ↔ DifferentiableOn ℂ f s :=
   ⟨fun h => h.of_dslope, fun h =>
     (differentiableOn_compl_singleton_and_continuousAt_iff hc).mp <|
-      ⟨Iff.mpr (differentiableOn_dslope_of_nmem fun h => h.2 rfl) (h.mono diff_subset),
+      ⟨Iff.mpr (differentiableOn_dslope_of_notMem fun h => h.2 rfl) (h.mono diff_subset),
         continuousAt_dslope_same.2 <| h.differentiableAt hc⟩⟩
 
 /-- **Removable singularity** theorem: if `s` is a neighborhood of `c : ℂ`, a function `f : ℂ → E`

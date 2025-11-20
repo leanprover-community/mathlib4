@@ -3,8 +3,10 @@ Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Data.Seq.Seq
-import Mathlib.Algebra.Field.Defs
+module
+
+public import Mathlib.Data.Seq.Defs
+public import Mathlib.Algebra.Field.Defs
 
 /-!
 # Basic Definitions/Theorems for Continued Fractions
@@ -38,12 +40,13 @@ fractions. We hence just call them `ContFract` in the library.
 numerics, number theory, approximations, fractions
 -/
 
+@[expose] public section
+
 -- Fix a carrier `α`.
 variable (α : Type*)
 
-/-!### Definitions-/
+/-!### Definitions -/
 
--- Porting note: Originally `protected structure GenContFract.Pair`
 /-- We collect a partial numerator `aᵢ` and partial denominator `bᵢ` in a pair `⟨aᵢ, bᵢ⟩`. -/
 structure GenContFract.Pair where
   /-- Partial numerator -/
@@ -73,7 +76,6 @@ section coe
 -- Fix another type `β` which we will convert to.
 variable {β : Type*} [Coe α β]
 
--- Porting note: added so we can add the `@[coe]` attribute
 /-- The coercion between numerator-denominator pairs happens componentwise. -/
 @[coe]
 def coeFn : Pair α → Pair β := map (↑)
@@ -150,7 +152,6 @@ section coe
 -- Fix another type `β` which we will convert to.
 variable {β : Type*} [Coe α β]
 
--- Porting note: Added to put `@[coe]` attr on it.
 /-- The coercion between `GenContFract` happens on the head term
 and all numerator-denominator pairs componentwise. -/
 @[coe]
@@ -184,8 +185,7 @@ def GenContFract.IsSimpContFract (g : GenContFract α)
     [One α] : Prop :=
   ∀ (n : ℕ) (aₙ : α), g.partNums.get? n = some aₙ → aₙ = 1
 
-variable (α)
-
+variable (α) in
 /-- A *simple continued fraction* (scf) is a generalized continued fraction (gcf) whose partial
 numerators are equal to one.
 $$
@@ -197,11 +197,9 @@ $$
 $$
 For convenience, one often writes `[h; b₀, b₁, b₂,...]`.
 It is encoded as the subtype of gcfs that satisfy `GenContFract.IsSimpContFract`.
- -/
+-/
 def SimpContFract [One α] :=
   { g : GenContFract α // g.IsSimpContFract }
-
-variable {α}
 
 -- Interlude: define some expected coercions.
 namespace SimpContFract
@@ -217,12 +215,7 @@ instance : Inhabited (SimpContFract α) :=
 
 /-- Lift a scf to a gcf using the inclusion map. -/
 instance : Coe (SimpContFract α) (GenContFract α) :=
-  -- Porting note: originally `by unfold SimpContFract; infer_instance`
   ⟨Subtype.val⟩
-
--- Porting note: Syntactic tautology due to change in `Coe` above.
--- theorem coe_toGenContFract {s : SimpContFract α} :
---     (↑s : GenContFract α) = s.val := rfl
 
 end SimpContFract
 
@@ -235,15 +228,12 @@ def SimpContFract.IsContFract [One α] [Zero α] [LT α]
   ∀ (n : ℕ) (bₙ : α),
     (↑s : GenContFract α).partDens.get? n = some bₙ → 0 < bₙ
 
-variable (α)
-
+variable (α) in
 /-- A *(regular) continued fraction* ((r)cf) is a simple continued fraction (scf) whose partial
 denominators are all positive. It is the subtype of scfs that satisfy `SimpContFract.IsContFract`.
- -/
+-/
 def ContFract [One α] [Zero α] [LT α] :=
   { s : SimpContFract α // s.IsContFract }
-
-variable {α}
 
 /-! Interlude: define some expected coercions. -/
 
@@ -260,21 +250,11 @@ instance : Inhabited (ContFract α) :=
 
 /-- Lift a cf to a scf using the inclusion map. -/
 instance : Coe (ContFract α) (SimpContFract α) :=
-  -- Porting note: originally `by unfold ContFract; infer_instance`
   ⟨Subtype.val⟩
-
--- Porting note: Syntactic tautology due to change of `Coe` above.
--- theorem coe_to_simpleContFract {c : ContFract α} :
---     (↑c : SimpContFract α) = c.val := rfl
 
 /-- Lift a cf to a scf using the inclusion map. -/
 instance : Coe (ContFract α) (GenContFract α) :=
   ⟨fun c ↦ c.val⟩
-  -- Porting note: was `fun c ↦ ↑(↑c : SimpContFract α)`
-
--- Porting note: Syntactic tautology due to change of `Coe` above.
--- theorem coe_toGenContFract {c : ContFract α} :
---     (↑c : GenContFract α) = c.val := rfl
 
 end ContFract
 

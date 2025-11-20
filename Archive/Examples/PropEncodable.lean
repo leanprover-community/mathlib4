@@ -34,13 +34,6 @@ inductive PropForm (α : Type*)
   | and : PropForm α → PropForm α → PropForm α
   | or : PropForm α → PropForm α → PropForm α
 
-/-!
-The next three functions make it easier to construct functions from a small
-`Fin`.
--/
-
--- Porting note: using `![_, _]` notation instead
-
 namespace PropForm
 
 private def Constructors (α : Type*) :=

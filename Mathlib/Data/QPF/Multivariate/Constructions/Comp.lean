@@ -3,8 +3,10 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Simon Hudon
 -/
-import Mathlib.Data.PFunctor.Multivariate.Basic
-import Mathlib.Data.QPF.Multivariate.Basic
+module
+
+public import Mathlib.Data.PFunctor.Multivariate.Basic
+public import Mathlib.Data.QPF.Multivariate.Basic
 
 /-!
 # The composition of QPFs is itself a QPF
@@ -12,6 +14,8 @@ import Mathlib.Data.QPF.Multivariate.Basic
 We define composition between one `n`-ary functor and `n` `m`-ary functors
 and show that it preserves the QPF structure
 -/
+
+@[expose] public section
 
 
 universe u
@@ -29,7 +33,7 @@ def Comp (v : TypeVec.{u} m) : Type _ :=
 
 namespace Comp
 
-open MvFunctor MvPFunctor
+open MvPFunctor
 
 variable {F G} {α β : TypeVec.{u} m} (f : α ⟹ β)
 
@@ -69,18 +73,18 @@ end
 
 instance [MvQPF F] [∀ i, MvQPF <| G i] : MvQPF (Comp F G) where
   P := MvPFunctor.comp (P F) fun i ↦ P <| G i
-  abs := Comp.mk ∘ (map fun i ↦ abs) ∘ abs ∘ MvPFunctor.comp.get
+  abs := Comp.mk ∘ (map fun _ ↦ abs) ∘ abs ∘ MvPFunctor.comp.get
   repr {α} := MvPFunctor.comp.mk ∘ repr ∘
               (map fun i ↦ (repr : G i α → (fun i : Fin2 n ↦ Obj (P (G i)) α) i)) ∘ Comp.get
   abs_repr := by
     intros
-    simp (config := { unfoldPartialApp := true }) only [Function.comp_def, comp.get_mk, abs_repr,
+    simp +unfoldPartialApp only [Function.comp_def, comp.get_mk, abs_repr,
       map_map, TypeVec.comp, MvFunctor.id_map', Comp.mk_get]
   abs_map := by
     intros
     simp only [(· ∘ ·)]
     rw [← abs_map]
-    simp (config := { unfoldPartialApp := true }) only [comp.get_map, map_map, TypeVec.comp,
+    simp +unfoldPartialApp only [comp.get_map, map_map, TypeVec.comp,
       abs_map, map_mk]
 
 end Comp

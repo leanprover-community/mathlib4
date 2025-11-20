@@ -3,7 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.Faithful
 
 /-!
 # Sum instances for additive and multiplicative actions
@@ -12,15 +14,17 @@ This file defines instances for additive and multiplicative actions on the binar
 
 ## See also
 
-* `Mathlib.Algebra.Group.Action.Option`
-* `Mathlib.Algebra.Group.Action.Pi`
-* `Mathlib.Algebra.Group.Action.Prod`
-* `Mathlib.Algebra.Group.Action.Sigma`
+* `Mathlib/Algebra/Group/Action/Option.lean`
+* `Mathlib/Algebra/Group/Action/Pi.lean`
+* `Mathlib/Algebra/Group/Action/Prod.lean`
+* `Mathlib/Algebra/Group/Action/Sigma.lean`
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
-variable {M N P α β γ : Type*}
+variable {M N α β : Type*}
 
 namespace Sum
 
@@ -29,8 +33,8 @@ section SMul
 variable [SMul M α] [SMul M β] [SMul N α] [SMul N β] (a : M) (b : α) (c : β)
   (x : α ⊕ β)
 
-@[to_additive Sum.hasVAdd]
-instance : SMul M (α ⊕ β) :=
+@[to_additive]
+instance instSMul : SMul M (α ⊕ β) :=
   ⟨fun a => Sum.map (a • ·) (a • ·)⟩
 
 @[to_additive]

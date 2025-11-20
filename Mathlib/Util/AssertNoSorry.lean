@@ -3,9 +3,11 @@ Copyright (c) 2023 David Renshaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Renshaw
 -/
+module
 
-import Lean.Elab.Print
-import Lean.Environment
+public import Mathlib.Init
+public meta import Lean.Util.CollectAxioms
+public meta import Lean.Elab.Command
 
 /-!
 # Defines the `assert_no_sorry` command.
@@ -13,12 +15,13 @@ import Lean.Environment
 Throws an error if the given identifier uses sorryAx.
 -/
 
-open Lean.Elab.Command
+public meta section
+
+open Lean Meta Elab Command
 
 /-- Throws an error if the given identifier uses sorryAx. -/
 elab "assert_no_sorry " n:ident : command => do
-  let env ← Lean.getEnv
-  let (_, s) := ((Lean.Elab.Command.CollectAxioms.collect
-    (← liftCoreM <| Lean.Elab.realizeGlobalConstNoOverloadWithInfo n)).run env).run {}
-  if s.axioms.contains ``sorryAx
+  let name ← liftCoreM <| Lean.Elab.realizeGlobalConstNoOverloadWithInfo n
+  let axioms ← Lean.collectAxioms name
+  if axioms.contains ``sorryAx
   then throwError "{n} contains sorry"

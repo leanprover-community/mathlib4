@@ -3,7 +3,9 @@ Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
-import Mathlib.FieldTheory.Galois
+module
+
+public import Mathlib.FieldTheory.Galois.Basic
 
 /-!
 # Galois Groups of Polynomials
@@ -15,7 +17,7 @@ some results about some extension `E` above `p.SplittingField`.
 ## Main definitions
 
 - `Polynomial.Gal p`: the Galois group of a polynomial p.
-- `Polynomial.Gal.restrict p E`: the restriction homomorphism `(E ≃ₐ[F] E) → gal p`.
+- `Polynomial.Gal.restrict p E`: the restriction homomorphism `Gal(E/F) → gal p`.
 - `Polynomial.Gal.galAction p E`: the action of `gal p` on the roots of `p` in `E`.
 
 ## Main results
@@ -35,12 +37,15 @@ equals the number of real roots plus the number of roots not fixed by complex co
 
 -/
 
+@[expose] public section
+
+assert_not_exists Real
 
 noncomputable section
 
 open scoped Polynomial
 
-open FiniteDimensional
+open Module
 
 namespace Polynomial
 
@@ -49,22 +54,9 @@ variable {F : Type*} [Field F] (p q : F[X]) (E : Type*) [Field E] [Algebra F E]
 /-- The Galois group of a polynomial. -/
 def Gal :=
   p.SplittingField ≃ₐ[F] p.SplittingField
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020):
--- deriving Group, Fintype
+deriving Group, Fintype, EquivLike, AlgEquivClass
 
 namespace Gal
-
-instance instGroup : Group (Gal p) :=
-  inferInstanceAs (Group (p.SplittingField ≃ₐ[F] p.SplittingField))
-
-instance instFintype : Fintype (Gal p) :=
-  inferInstanceAs (Fintype (p.SplittingField ≃ₐ[F] p.SplittingField))
-
-instance : EquivLike p.Gal p.SplittingField p.SplittingField :=
-  inferInstanceAs (EquivLike (p.SplittingField ≃ₐ[F] p.SplittingField) _ _)
-
-instance : AlgEquivClass p.Gal F p.SplittingField p.SplittingField :=
-  inferInstanceAs (AlgEquivClass (p.SplittingField ≃ₐ[F] p.SplittingField) F _ _)
 
 instance applyMulSemiringAction : MulSemiringAction p.Gal p.SplittingField :=
   AlgEquiv.applyMulSemiringAction
@@ -122,7 +114,7 @@ instance [h : Fact (p.Splits (algebraMap F E))] : IsScalarTower F p.SplittingFie
 -- Since we don't really care about this definition, marking it as irreducible
 -- causes that unification to error out early.
 /-- Restrict from a superfield automorphism into a member of `gal p`. -/
-def restrict [Fact (p.Splits (algebraMap F E))] : (E ≃ₐ[F] E) →* p.Gal :=
+def restrict [Fact (p.Splits (algebraMap F E))] : Gal(E/F) →* p.Gal :=
   AlgEquiv.restrictNormalHom p.SplittingField
 
 theorem restrict_surjective [Fact (p.Splits (algebraMap F E))] [Normal F E] :
@@ -160,7 +152,6 @@ instance galActionAux : MulAction p.Gal (rootSet p p.SplittingField) where
   one_smul _ := by ext; rfl
   mul_smul _ _ _ := by ext; rfl
 
--- Porting note: split out from `galAction` below to allow using `smul_def` there.
 instance smul [Fact (p.Splits (algebraMap F E))] : SMul p.Gal (rootSet p E) where
   smul ϕ x := rootsEquivRoots p E (ϕ • (rootsEquivRoots p E).symm x)
 
@@ -172,7 +163,7 @@ theorem smul_def [Fact (p.Splits (algebraMap F E))] (ϕ : p.Gal) (x : rootSet p 
 instance galAction [Fact (p.Splits (algebraMap F E))] : MulAction p.Gal (rootSet p E) where
   one_smul _ := by simp only [smul_def, Equiv.apply_symm_apply, one_smul]
   mul_smul _ _ _ := by
-    simp only [smul_def, Equiv.apply_symm_apply, Equiv.symm_apply_apply, mul_smul]
+    simp only [smul_def, Equiv.symm_apply_apply, mul_smul]
 
 lemma galAction_isPretransitive [Fact (p.Splits (algebraMap F E))] (hp : Irreducible p) :
     MulAction.IsPretransitive p.Gal (p.rootSet E) := by
@@ -186,7 +177,7 @@ variable {p E}
 
 /-- `Polynomial.Gal.restrict p E` is compatible with `Polynomial.Gal.galAction p E`. -/
 @[simp]
-theorem restrict_smul [Fact (p.Splits (algebraMap F E))] (ϕ : E ≃ₐ[F] E) (x : rootSet p E) :
+theorem restrict_smul [Fact (p.Splits (algebraMap F E))] (ϕ : Gal(E/F)) (x : rootSet p E) :
     ↑(restrict p E ϕ • x) = ϕ x := by
   let ψ := AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F p.SplittingField E)
   change ↑(ψ (ψ.symm _)) = ϕ x
@@ -200,7 +191,7 @@ variable (p E)
 def galActionHom [Fact (p.Splits (algebraMap F E))] : p.Gal →* Equiv.Perm (rootSet p E) :=
   MulAction.toPermHom _ _
 
-theorem galActionHom_restrict [Fact (p.Splits (algebraMap F E))] (ϕ : E ≃ₐ[F] E) (x : rootSet p E) :
+theorem galActionHom_restrict [Fact (p.Splits (algebraMap F E))] (ϕ : Gal(E/F)) (x : rootSet p E) :
     ↑(galActionHom p E (restrict p E ϕ) x) = ϕ x :=
   restrict_smul ϕ x
 
@@ -237,22 +228,19 @@ theorem restrictDvd_def [Decidable (q = 0)] (hpq : p ∣ q) :
         @restrict F _ p _ _ _
           ⟨splits_of_splits_of_dvd (algebraMap F q.SplittingField) hq (SplittingField.splits q)
               hpq⟩ := by
-  -- Porting note: added `unfold`
   unfold restrictDvd
-  convert rfl
+  congr
 
 theorem restrictDvd_surjective (hpq : p ∣ q) (hq : q ≠ 0) :
     Function.Surjective (restrictDvd hpq) := by
   classical
-    -- Porting note: was `simp only [restrictDvd_def, dif_neg hq, restrict_surjective]`
-    haveI := Fact.mk <|
-      splits_of_splits_of_dvd (algebraMap F q.SplittingField) hq (SplittingField.splits q) hpq
-    simp only [restrictDvd_def, dif_neg hq]
-    exact restrict_surjective _ _
+  haveI := Fact.mk <|
+    splits_of_splits_of_dvd (algebraMap F q.SplittingField) hq (SplittingField.splits q) hpq
+  simpa only [restrictDvd_def, dif_neg hq] using restrict_surjective _ _
 
 variable (p q)
 
-/-- The Galois group of a product maps into the product of the Galois groups.  -/
+/-- The Galois group of a product maps into the product of the Galois groups. -/
 def restrictProd : (p * q).Gal →* p.Gal × q.Gal :=
   MonoidHom.prod (restrictDvd (dvd_mul_right p q)) (restrictDvd (dvd_mul_left q p))
 
@@ -264,10 +252,10 @@ theorem restrictProd_injective : Function.Injective (restrictProd p q) := by
   intro f g hfg
   classical
   simp only [restrictProd, restrictDvd_def] at hfg
-  simp only [dif_neg hpq, MonoidHom.prod_apply, Prod.mk.inj_iff] at hfg
+  simp only [dif_neg hpq, MonoidHom.prod_apply, Prod.mk_inj] at hfg
   ext (x hx)
   rw [rootSet_def, aroots_mul hpq] at hx
-  cases' Multiset.mem_add.mp (Multiset.mem_toFinset.mp hx) with h h
+  rcases Multiset.mem_add.mp (Multiset.mem_toFinset.mp hx) with h | h
   · haveI : Fact (p.Splits (algebraMap F (p * q).SplittingField)) :=
       ⟨splits_of_splits_of_dvd _ hpq (SplittingField.splits (p * q)) (dvd_mul_right p q)⟩
     have key :
@@ -328,27 +316,20 @@ theorem splits_in_splittingField_of_comp (hq : q.natDegree ≠ 0) :
   have key2 : ∀ {p₁ p₂ : F[X]}, P p₁ → P p₂ → P (p₁ * p₂) := by
     intro p₁ p₂ hp₁ hp₂
     by_cases h₁ : p₁.comp q = 0
-    · cases' comp_eq_zero_iff.mp h₁ with h h
+    · rcases comp_eq_zero_iff.mp h₁ with h | h
       · rw [h, zero_mul]
         exact splits_zero _
       · exact False.elim (hq (by rw [h.2, natDegree_C]))
     by_cases h₂ : p₂.comp q = 0
-    · cases' comp_eq_zero_iff.mp h₂ with h h
+    · rcases comp_eq_zero_iff.mp h₂ with h | h
       · rw [h, mul_zero]
         exact splits_zero _
       · exact False.elim (hq (by rw [h.2, natDegree_C]))
     have key := mul_splits_in_splittingField_of_mul h₁ h₂ hp₁ hp₂
     rwa [← mul_comp] at key
-  -- Porting note: the last part of the proof needs to be unfolded to avoid timeout
-  -- original proof
-  -- exact
-  --  WfDvdMonoid.induction_on_irreducible p (splits_zero _) (fun _ => splits_of_isUnit _)
-  --    fun _ _ _ h => key2 (key1 h)
-  induction p using WfDvdMonoid.induction_on_irreducible with
-  | h0 => exact splits_zero _
-  | hu u hu => exact splits_of_isUnit (algebraMap F (SplittingField (comp u q))) hu
-  -- Porting note: using `exact` instead of `apply` times out
-  | hi p₁ p₂ _ hp₂ hp₁ => apply key2 (key1 hp₂) hp₁
+  exact
+    WfDvdMonoid.induction_on_irreducible p (splits_zero _) (fun _ => splits_of_isUnit _)
+      fun _ _ _ h => key2 (key1 h)
 
 /-- `Polynomial.Gal.restrict` for the composition of polynomials. -/
 def restrictComp (hq : q.natDegree ≠ 0) : (p.comp q).Gal →* p.Gal :=
@@ -358,12 +339,9 @@ def restrictComp (hq : q.natDegree ≠ 0) : (p.comp q).Gal →* p.Gal :=
 
 theorem restrictComp_surjective (hq : q.natDegree ≠ 0) :
     Function.Surjective (restrictComp p q hq) := by
-  -- Porting note: was
-  -- simp only [restrictComp, restrict_surjective]
   haveI : Fact (Splits (algebraMap F (SplittingField (comp p q))) p) :=
     ⟨splits_in_splittingField_of_comp p q hq⟩
-  rw [restrictComp]
-  exact restrict_surjective _ _
+  simpa only [restrictComp] using restrict_surjective _ _
 
 variable {p q}
 
@@ -371,22 +349,22 @@ open scoped IntermediateField
 
 /-- For a separable polynomial, its Galois group has cardinality
 equal to the dimension of its splitting field over `F`. -/
-theorem card_of_separable (hp : p.Separable) : Fintype.card p.Gal = finrank F p.SplittingField :=
+theorem card_of_separable (hp : p.Separable) : Nat.card p.Gal = finrank F p.SplittingField :=
   haveI : IsGalois F p.SplittingField := IsGalois.of_separable_splitting_field hp
   IsGalois.card_aut_eq_finrank F p.SplittingField
 
 theorem prime_degree_dvd_card [CharZero F] (p_irr : Irreducible p) (p_deg : p.natDegree.Prime) :
-    p.natDegree ∣ Fintype.card p.Gal := by
+    p.natDegree ∣ Nat.card p.Gal := by
   rw [Gal.card_of_separable p_irr.separable]
   have hp : p.degree ≠ 0 := fun h =>
     Nat.Prime.ne_zero p_deg (natDegree_eq_zero_iff_degree_le_zero.mpr (le_of_eq h))
   let α : p.SplittingField :=
     rootOfSplits (algebraMap F p.SplittingField) (SplittingField.splits p) hp
   have hα : IsIntegral F α := .of_finite F α
-  use FiniteDimensional.finrank F⟮α⟯ p.SplittingField
+  use Module.finrank F⟮α⟯ p.SplittingField
   suffices (minpoly F α).natDegree = p.natDegree by
     letI _ : AddCommGroup F⟮α⟯ := Ring.toAddCommGroup
-    rw [← FiniteDimensional.finrank_mul_finrank F F⟮α⟯ p.SplittingField,
+    rw [← Module.finrank_mul_finrank F F⟮α⟯ p.SplittingField,
       IntermediateField.adjoin.finrank hα, this]
   suffices minpoly F α ∣ p by
     have key := (minpoly.irreducible hα).dvd_symm p_irr this
@@ -399,5 +377,3 @@ theorem prime_degree_dvd_card [CharZero F] (p_irr : Irreducible p) (p_deg : p.na
 end Gal
 
 end Polynomial
-
-assert_not_exists Real

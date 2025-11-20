@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Defs
-import Mathlib.Mathport.Notation
+module
+
+public import Mathlib.Data.Set.Operations
+public import Mathlib.Util.Notation3
 
 /-!
 # Notation classes for set supremum and infimum
@@ -30,6 +32,8 @@ In this file we introduce notation for indexed suprema, infima, unions, and inte
 - `⋃ i, s i`, `⋂ i, s i`: union and intersection of an indexed family of sets.
 
 -/
+
+@[expose] public section
 
 open Set
 
@@ -66,30 +70,19 @@ instance (priority := 50) infSet_to_nonempty (α) [InfSet α] : Nonempty α :=
 instance (priority := 50) supSet_to_nonempty (α) [SupSet α] : Nonempty α :=
   ⟨sSup ∅⟩
 
-/-
-Porting note: the code below could replace the `notation3` command
-open Batteries.ExtendedBinder in
-syntax "⨆ " extBinder ", " term:51 : term
-
-macro_rules
-  | `(⨆ $x:ident, $p) => `(iSup fun $x:ident ↦ $p)
-  | `(⨆ $x:ident : $t, $p) => `(iSup fun $x:ident : $t ↦ $p)
-  | `(⨆ $x:ident $b:binderPred, $p) =>
-    `(iSup fun $x:ident ↦ satisfies_binder_pred% $x $b ∧ $p) -/
-
 /-- Indexed supremum. -/
-notation3 "⨆ "(...)", "r:60:(scoped f => iSup f) => r
+notation3 "⨆ " (...)", " r:60:(scoped f => iSup f) => r
 
 /-- Indexed infimum. -/
-notation3 "⨅ "(...)", "r:60:(scoped f => iInf f) => r
+notation3 "⨅ " (...)", " r:60:(scoped f => iInf f) => r
 
 section delaborators
 
 open Lean Lean.PrettyPrinter.Delaborator
 
 /-- Delaborator for indexed supremum. -/
-@[delab app.iSup]
-def iSup_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 do
+@[app_delab iSup]
+meta def iSup_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 do
   let #[_, ι, _, f] := (← SubExpr.getExpr).getAppArgs | failure
   unless f.isLambda do failure
   let prop ← Meta.isProp ι
@@ -116,8 +109,8 @@ def iSup_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 do
   return stx
 
 /-- Delaborator for indexed infimum. -/
-@[delab app.iInf]
-def iInf_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 do
+@[app_delab iInf]
+meta def iInf_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 do
   let #[_, ι, _, f] := (← SubExpr.getExpr).getAppArgs | failure
   unless f.isLambda do failure
   let prop ← Meta.isProp ι
@@ -166,11 +159,11 @@ def sUnion (S : Set (Set α)) : Set α :=
 /-- Notation for `Set.sUnion`. Union of a set of sets. -/
 prefix:110 "⋃₀ " => sUnion
 
-@[simp]
+@[simp, grind =]
 theorem mem_sInter {x : α} {S : Set (Set α)} : x ∈ ⋂₀ S ↔ ∀ t ∈ S, x ∈ t :=
   Iff.rfl
 
-@[simp]
+@[simp, grind =]
 theorem mem_sUnion {x : α} {S : Set (Set α)} : x ∈ ⋃₀ S ↔ ∃ t ∈ S, x ∈ t :=
   Iff.rfl
 
@@ -183,18 +176,18 @@ def iInter (s : ι → Set α) : Set α :=
   iInf s
 
 /-- Notation for `Set.iUnion`. Indexed union of a family of sets -/
-notation3 "⋃ "(...)", "r:60:(scoped f => iUnion f) => r
+notation3 "⋃ " (...)", " r:60:(scoped f => iUnion f) => r
 
 /-- Notation for `Set.iInter`. Indexed intersection of a family of sets -/
-notation3 "⋂ "(...)", "r:60:(scoped f => iInter f) => r
+notation3 "⋂ " (...)", " r:60:(scoped f => iInter f) => r
 
 section delaborators
 
 open Lean Lean.PrettyPrinter.Delaborator
 
 /-- Delaborator for indexed unions. -/
-@[delab app.Set.iUnion]
-def iUnion_delab : Delab := whenPPOption Lean.getPPNotation do
+@[app_delab Set.iUnion]
+meta def iUnion_delab : Delab := whenPPOption Lean.getPPNotation do
   let #[_, ι, f] := (← SubExpr.getExpr).getAppArgs | failure
   unless f.isLambda do failure
   let prop ← Meta.isProp ι
@@ -221,8 +214,8 @@ def iUnion_delab : Delab := whenPPOption Lean.getPPNotation do
   return stx
 
 /-- Delaborator for indexed intersections. -/
-@[delab app.Set.iInter]
-def sInter_delab : Delab := whenPPOption Lean.getPPNotation do
+@[app_delab Set.iInter]
+meta def sInter_delab : Delab := whenPPOption Lean.getPPNotation do
   let #[_, ι, f] := (← SubExpr.getExpr).getAppArgs | failure
   unless f.isLambda do failure
   let prop ← Meta.isProp ι
@@ -261,7 +254,7 @@ theorem mem_iInter {x : α} {s : ι → Set α} : (x ∈ ⋂ i, s i) ↔ ∀ i, 
     fun h _ ⟨a, (eq : s a = _)⟩ => eq ▸ h a⟩
 
 @[simp]
-theorem sSup_eq_sUnion (S : Set (Set α)) : sSup S = ⋃₀S :=
+theorem sSup_eq_sUnion (S : Set (Set α)) : sSup S = ⋃₀ S :=
   rfl
 
 @[simp]

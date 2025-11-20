@@ -3,14 +3,18 @@ Copyright (c) 2022 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino
 -/
-import Lean.Elab.ElabRules
-import Mathlib.Util.Tactic
+module
+
+public meta import Lean.Elab.ElabRules
+public meta import Mathlib.Util.Tactic
 
 /-!
 # Defines the `swap_var` tactic
 
 Swap the names of two hypotheses.
 -/
+
+public meta section
 
 open Lean Meta Elab.Tactic
 
@@ -46,3 +50,5 @@ elab "swap_var " swapRules:(colGt swapRule),+ : tactic => do
       return lctx.setUserName fvarId₁ n₂ |>.setUserName fvarId₂ n₁
   let mdecl := { mdecl with lctx := lctx }
   modifyMCtx fun mctx ↦ { mctx with decls := mctx.decls.insert mvarId mdecl }
+
+end Mathlib.Tactic

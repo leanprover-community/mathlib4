@@ -3,7 +3,10 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Logic.Function.Basic
+module
+
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Logic.Relator
 
 /-!
 # Types that are empty
@@ -15,16 +18,18 @@ In this file we define a typeclass `IsEmpty`, which expresses that a type has no
 * `IsEmpty`: a typeclass that expresses that a type is empty.
 -/
 
+@[expose] public section
+
 variable {α β γ : Sort*}
 
 /-- `IsEmpty α` expresses that `α` is empty. -/
 class IsEmpty (α : Sort*) : Prop where
   protected false : α → False
 
-instance instIsEmptyEmpty : IsEmpty Empty :=
+instance Empty.instIsEmpty : IsEmpty Empty :=
   ⟨Empty.elim⟩
 
-instance instIsEmptyPEmpty : IsEmpty PEmpty :=
+instance PEmpty.instIsEmpty : IsEmpty PEmpty :=
   ⟨PEmpty.elim⟩
 
 instance : IsEmpty False :=
@@ -42,7 +47,8 @@ protected theorem Function.isEmpty [IsEmpty β] (f : α → β) : IsEmpty α :=
 theorem Function.Surjective.isEmpty [IsEmpty α] {f : α → β} (hf : f.Surjective) : IsEmpty β :=
   ⟨fun y ↦ let ⟨x, _⟩ := hf y; IsEmpty.false x⟩
 
-instance {p : α → Sort*} [h : Nonempty α] [∀ x, IsEmpty (p x)] : IsEmpty (∀ x, p x) :=
+-- See note [instance argument order]
+instance {p : α → Sort*} [∀ x, IsEmpty (p x)] [h : Nonempty α] : IsEmpty (∀ x, p x) :=
   h.elim fun x ↦ Function.isEmpty <| Function.eval x
 
 instance PProd.isEmpty_left [IsEmpty α] : IsEmpty (PProd α β) :=
@@ -105,7 +111,7 @@ protected def elim {α : Sort u} (_ : IsEmpty α) {p : α → Sort*} (a : α) : 
   isEmptyElim a
 
 /-- Non-dependent version of `IsEmpty.elim`. Helpful if the elaborator cannot elaborate `h.elim a`
-  correctly. -/
+correctly. -/
 protected def elim' {β : Sort*} (h : IsEmpty α) (a : α) : β :=
   (h.false a).elim
 
@@ -128,17 +134,17 @@ instance (priority := 100) : Subsingleton α :=
 
 end IsEmpty
 
-@[simp]
+@[simp, push]
 theorem not_nonempty_iff : ¬Nonempty α ↔ IsEmpty α :=
   ⟨fun h ↦ ⟨fun x ↦ h ⟨x⟩⟩, fun h1 h2 ↦ h2.elim h1.elim⟩
 
-@[simp]
+@[simp, push]
 theorem not_isEmpty_iff : ¬IsEmpty α ↔ Nonempty α :=
   not_iff_comm.mp not_nonempty_iff
 
 @[simp]
 theorem isEmpty_Prop {p : Prop} : IsEmpty p ↔ ¬p := by
-  simp only [← not_nonempty_iff, nonempty_Prop]
+  simp only [← not_nonempty_iff, nonempty_prop]
 
 @[simp]
 theorem isEmpty_pi {π : α → Sort*} : IsEmpty (∀ a, π a) ↔ ∃ a, IsEmpty (π a) := by
@@ -159,7 +165,6 @@ theorem isEmpty_sigma {α} {E : α → Type*} : IsEmpty (Sigma E) ↔ ∀ a, IsE
 theorem isEmpty_psigma {α} {E : α → Sort*} : IsEmpty (PSigma E) ↔ ∀ a, IsEmpty (E a) := by
   simp only [← not_nonempty_iff, nonempty_psigma, not_exists]
 
-@[simp]
 theorem isEmpty_subtype (p : α → Prop) : IsEmpty (Subtype p) ↔ ∀ x, ¬p x := by
   simp only [← not_nonempty_iff, nonempty_subtype, not_exists]
 
@@ -204,3 +209,35 @@ variable {α}
 theorem Function.extend_of_isEmpty [IsEmpty α] (f : α → β) (g : α → γ) (h : β → γ) :
     Function.extend f g h = h :=
   funext fun _ ↦ (Function.extend_apply' _ _ _) fun ⟨a, _⟩ ↦ isEmptyElim a
+
+open Relator
+
+variable {α β : Type*} (R : α → β → Prop)
+
+@[simp]
+theorem leftTotal_empty [IsEmpty α] : LeftTotal R := by
+  simp only [LeftTotal, IsEmpty.forall_iff]
+
+theorem leftTotal_iff_isEmpty_left [IsEmpty β] : LeftTotal R ↔ IsEmpty α := by
+  simp only [LeftTotal, IsEmpty.exists_iff, isEmpty_iff]
+
+@[simp]
+theorem rightTotal_empty [IsEmpty β] : RightTotal R := by
+  simp only [RightTotal, IsEmpty.forall_iff]
+
+theorem rightTotal_iff_isEmpty_right [IsEmpty α] : RightTotal R ↔ IsEmpty β := by
+  simp only [RightTotal, IsEmpty.exists_iff, isEmpty_iff]
+
+@[simp]
+theorem biTotal_empty [IsEmpty α] [IsEmpty β] : BiTotal R :=
+  ⟨leftTotal_empty R, rightTotal_empty R⟩
+
+theorem biTotal_iff_isEmpty_right [IsEmpty α] : BiTotal R ↔ IsEmpty β := by
+  simp only [BiTotal, leftTotal_empty, rightTotal_iff_isEmpty_right, true_and]
+
+theorem biTotal_iff_isEmpty_left [IsEmpty β] : BiTotal R ↔ IsEmpty α := by
+  simp only [BiTotal, leftTotal_iff_isEmpty_left, rightTotal_empty, and_true]
+
+lemma Function.Bijective.of_isEmpty (f : α → β) [IsEmpty β] : f.Bijective :=
+  have := f.isEmpty
+  ⟨injective_of_subsingleton _, IsEmpty.elim ‹_›⟩

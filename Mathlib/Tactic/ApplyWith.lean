@@ -3,14 +3,19 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Lean.Elab.Eval
-import Lean.Elab.Tactic.ElabTerm
+module
+
+public import Mathlib.Init
+public meta import Lean.Elab.Eval
+public meta import Lean.Elab.Tactic.ElabTerm
 
 /-!
 # The `applyWith` tactic
 The `applyWith` tactic is like `apply`, but allows passing a custom configuration to the underlying
 `apply` operation.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 open Lean Meta Elab Tactic Term
@@ -22,3 +27,5 @@ open Lean Meta Elab Tactic Term
 elab (name := applyWith) "apply" " (" &"config" " := " cfg:term ") " e:term : tactic => do
   let cfg ← unsafe evalTerm ApplyConfig (mkConst ``ApplyConfig) cfg
   evalApplyLikeTactic (·.apply · cfg) e
+
+end Mathlib.Tactic

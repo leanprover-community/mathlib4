@@ -1,9 +1,11 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Subobject.Limits
+module
+
+public import Mathlib.CategoryTheory.Subobject.Limits
 
 /-!
 # Image-to-kernel comparison maps
@@ -16,14 +18,14 @@ we have `image_le_kernel f g w : imageSubobject f ≤ kernelSubobject g`
 
 -/
 
+@[expose] public section
+
 universe v u w
 
 open CategoryTheory CategoryTheory.Limits
 
 variable {ι : Type*}
 variable {V : Type u} [Category.{v} V] [HasZeroMorphisms V]
-
-open scoped Classical
 
 noncomputable section
 
@@ -49,21 +51,12 @@ theorem subobject_ofLE_as_imageToKernel (w : f ≫ g = 0) (h) :
     Subobject.ofLE (imageSubobject f) (kernelSubobject g) h = imageToKernel f g w :=
   rfl
 
-attribute [local instance] ConcreteCategory.instFunLike
+attribute [local instance] HasForget.instFunLike
 
--- Porting note: removed elementwise attribute which does not seem to be helpful here
--- a more suitable lemma is added below
-@[reassoc (attr := simp)]
+@[reassoc (attr := simp), elementwise (attr := simp)]
 theorem imageToKernel_arrow (w : f ≫ g = 0) :
     imageToKernel f g w ≫ (kernelSubobject g).arrow = (imageSubobject f).arrow := by
   simp [imageToKernel]
-
-@[simp]
-lemma imageToKernel_arrow_apply [ConcreteCategory V] (w : f ≫ g = 0)
-    (x : (forget V).obj (Subobject.underlying.obj (imageSubobject f))) :
-    (kernelSubobject g).arrow (imageToKernel f g w x) =
-      (imageSubobject f).arrow x := by
-  rw [← comp_apply, imageToKernel_arrow]
 
 -- This is less useful as a `simp` lemma than it initially appears,
 -- as it "loses" the information the morphism factors through the image.
@@ -87,7 +80,6 @@ theorem imageToKernel_zero_left [HasKernels V] [HasZeroObject V] {w} :
 theorem imageToKernel_zero_right [HasImages V] {w} :
     imageToKernel f (0 : B ⟶ C) w =
       (imageSubobject f).arrow ≫ inv (kernelSubobject (0 : B ⟶ C)).arrow := by
-  ext
   simp
 
 section
@@ -149,7 +141,7 @@ instance imageToKernel_epi_of_epi_of_zero [HasImages V] [Epi f] :
   simp only [imageToKernel_zero_right]
   haveI := epi_image_of_epi f
   rw [← imageSubobject_arrow]
-  exact @epi_comp _ _ _ _ _ _ (epi_comp _ _) _ _
+  infer_instance
 
 end
 

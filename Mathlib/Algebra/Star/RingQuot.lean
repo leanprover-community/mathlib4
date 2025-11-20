@@ -3,12 +3,16 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.RingQuot
-import Mathlib.Algebra.Star.Basic
+module
+
+public import Mathlib.Algebra.RingQuot
+public import Mathlib.Algebra.Star.Basic
 
 /-!
 # The *-ring structure on suitable quotients of a *-ring.
 -/
+
+@[expose] public section
 
 namespace RingQuot
 
@@ -18,9 +22,10 @@ variable {R : Type u} [Semiring R] (r : R → R → Prop)
 
 section StarRing
 
-variable [StarRing R] (hr : ∀ a b, r a b → r (star a) (star b))
+variable [StarRing R]
 
-theorem Rel.star ⦃a b : R⦄ (h : Rel r a b) : Rel r (star a) (star b) := by
+theorem Rel.star (hr : ∀ a b, r a b → r (star a) (star b))
+    ⦃a b : R⦄ (h : Rel r a b) : Rel r (star a) (star b) := by
   induction h with
   | of h          => exact Rel.of (hr _ _ h)
   | add_left _ h  => rw [star_add, star_add]
@@ -30,7 +35,7 @@ theorem Rel.star ⦃a b : R⦄ (h : Rel r a b) : Rel r (star a) (star b) := by
   | mul_right _ h => rw [star_mul, star_mul]
                      exact Rel.mul_left h
 
-private irreducible_def star' : RingQuot r → RingQuot r
+private irreducible_def star' (hr : ∀ a b, r a b → r (star a) (star b)) : RingQuot r → RingQuot r
   | ⟨a⟩ => ⟨Quot.map (star : R → R) (Rel.star r hr) a⟩
 
 theorem star'_quot (hr : ∀ a b, r a b → r (star a) (star b)) {a} :

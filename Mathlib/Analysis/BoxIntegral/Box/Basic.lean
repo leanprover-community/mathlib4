@@ -3,12 +3,15 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Fin.Tuple
-import Mathlib.Order.Interval.Set.Monotone
-import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.Topology.MetricSpace.Bounded
-import Mathlib.Topology.Order.MonotoneConvergence
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+module
+
+public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Order.Fin.Tuple
+public import Mathlib.Order.Interval.Set.Monotone
+public import Mathlib.Topology.MetricSpace.Basic
+public import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.Topology.MetricSpace.Pseudo.Real
+public import Mathlib.Topology.Order.MonotoneConvergence
 /-!
 # Rectangular boxes in `ℝⁿ`
 
@@ -51,13 +54,13 @@ that returns the box `⟨l, u, _⟩` if it is nonempty and `⊥` otherwise.
 rectangular box
 -/
 
+@[expose] public section
 
 open Set Function Metric Filter
 
 noncomputable section
 
-open scoped Classical
-open NNReal Topology
+open scoped NNReal Topology
 
 namespace BoxIntegral
 
@@ -92,9 +95,8 @@ theorem lower_ne_upper (i) : I.lower i ≠ I.upper i :=
   (I.lower_lt_upper i).ne
 
 instance : Membership (ι → ℝ) (Box ι) :=
-  ⟨fun x I ↦ ∀ i, x i ∈ Ioc (I.lower i) (I.upper i)⟩
+  ⟨fun I x ↦ ∀ i, x i ∈ Ioc (I.lower i) (I.upper i)⟩
 
--- Porting note: added
 /-- The set of points in this box: this is the product of half-open intervals `(lower i, upper i]`,
 where `lower` and `upper` are this box' corners. -/
 @[coe]
@@ -142,15 +144,12 @@ theorem le_def : I ≤ J ↔ ∀ x ∈ I, x ∈ J := Iff.rfl
 
 theorem le_TFAE : List.TFAE [I ≤ J, (I : Set (ι → ℝ)) ⊆ J,
     Icc I.lower I.upper ⊆ Icc J.lower J.upper, J.lower ≤ I.lower ∧ I.upper ≤ J.upper] := by
-  tfae_have 1 ↔ 2
-  · exact Iff.rfl
+  tfae_have 1 ↔ 2 := Iff.rfl
   tfae_have 2 → 3
-  · intro h
-    simpa [coe_eq_pi, closure_pi_set, lower_ne_upper] using closure_mono h
-  tfae_have 3 ↔ 4
-  · exact Icc_subset_Icc_iff I.lower_le_upper
+  | h => by simpa [coe_eq_pi, closure_pi_set, lower_ne_upper] using closure_mono h
+  tfae_have 3 ↔ 4 := Icc_subset_Icc_iff I.lower_le_upper
   tfae_have 4 → 2
-  · exact fun h x hx i ↦ Ioc_subset_Ioc (h.1 i) (h.2 i) (hx i)
+  | h, x, hx, i => Ioc_subset_Ioc (h.1 i) (h.2 i) (hx i)
   tfae_finish
 
 variable {I J}
@@ -213,6 +212,13 @@ theorem monotone_upper : Monotone fun I : Box ι ↦ I.upper :=
 theorem coe_subset_Icc : ↑I ⊆ Box.Icc I :=
   fun _ hx ↦ ⟨fun i ↦ (hx i).1.le, fun i ↦ (hx i).2⟩
 
+theorem isBounded_Icc [Finite ι] (I : Box ι) : Bornology.IsBounded (Box.Icc I) := by
+  cases nonempty_fintype ι
+  exact Metric.isBounded_Icc _ _
+
+theorem isBounded [Finite ι] (I : Box ι) : Bornology.IsBounded I.toSet :=
+  Bornology.IsBounded.subset I.isBounded_Icc coe_subset_Icc
+
 /-!
 ### Supremum of two boxes
 -/
@@ -220,13 +226,9 @@ theorem coe_subset_Icc : ↑I ⊆ Box.Icc I :=
 
 /-- `I ⊔ J` is the least box that includes both `I` and `J`. Since `↑I ∪ ↑J` is usually not a box,
 `↑(I ⊔ J)` is larger than `↑I ∪ ↑J`. -/
-instance : Sup (Box ι) :=
-  ⟨fun I J ↦ ⟨I.lower ⊓ J.lower, I.upper ⊔ J.upper,
-    fun i ↦ (min_le_left _ _).trans_lt <| (I.lower_lt_upper i).trans_le (le_max_left _ _)⟩⟩
-
 instance : SemilatticeSup (Box ι) :=
-  { (inferInstance : PartialOrder (Box ι)),
-    (inferInstance : Sup (Box ι)) with
+  { sup := fun I J ↦ ⟨I.lower ⊓ J.lower, I.upper ⊔ J.upper,
+    fun i ↦ (min_le_left _ _).trans_lt <| (I.lower_lt_upper i).trans_le (le_max_left _ _)⟩
     le_sup_left := fun _ _ ↦ le_iff_bounds.2 ⟨inf_le_left, le_sup_left⟩
     le_sup_right := fun _ _ ↦ le_iff_bounds.2 ⟨inf_le_right, le_sup_right⟩
     sup_le := fun _ _ _ h₁ h₂ ↦ le_iff_bounds.2
@@ -239,7 +241,6 @@ instance : SemilatticeSup (Box ι) :=
 In this section we define coercion from `WithBot (Box ι)` to `Set (ι → ℝ)` by sending `⊥` to `∅`.
 -/
 
--- Porting note: added
 /-- The set underlying this box: `⊥` is mapped to `∅`. -/
 @[coe]
 def withBotToSet (o : WithBot (Box ι)) : Set (ι → ℝ) := o.elim ∅ (↑)
@@ -255,15 +256,15 @@ theorem coe_coe : ((I : WithBot (Box ι)) : Set (ι → ℝ)) = I := rfl
 
 theorem isSome_iff : ∀ {I : WithBot (Box ι)}, I.isSome ↔ (I : Set (ι → ℝ)).Nonempty
   | ⊥ => by
-    erw [Option.isSome]
+    unfold Option.isSome
     simp
   | (I : Box ι) => by
-    erw [Option.isSome]
+    unfold Option.isSome
     simp [I.nonempty_coe]
 
 theorem biUnion_coe_eq_coe (I : WithBot (Box ι)) :
     ⋃ (J : Box ι) (_ : ↑J = I), (J : Set (ι → ℝ)) = I := by
-  induction I <;> simp [WithBot.coe_eq_coe]
+  induction I <;> simp
 
 @[simp, norm_cast]
 theorem withBotCoe_subset_iff {I J : WithBot (Box ι)} : (I : Set (ι → ℝ)) ⊆ J ↔ I ≤ J := by
@@ -275,9 +276,10 @@ theorem withBotCoe_subset_iff {I J : WithBot (Box ι)} : (I : Set (ι → ℝ)) 
 theorem withBotCoe_inj {I J : WithBot (Box ι)} : (I : Set (ι → ℝ)) = J ↔ I = J := by
   simp only [Subset.antisymm_iff, ← le_antisymm_iff, withBotCoe_subset_iff]
 
+open scoped Classical in
 /-- Make a `WithBot (Box ι)` from a pair of corners `l u : ι → ℝ`. If `l i < u i` for all `i`,
 then the result is `⟨l, u, _⟩ : Box ι`, otherwise it is `⊥`. In any case, the result interpreted
-as a set in `ι → ℝ` is the set `{x : ι → ℝ | ∀ i, x i ∈ Ioc (l i) (u i)}`.  -/
+as a set in `ι → ℝ` is the set `{x : ι → ℝ | ∀ i, x i ∈ Ioc (l i) (u i)}`. -/
 def mk' (l u : ι → ℝ) : WithBot (Box ι) :=
   if h : ∀ i, l i < u i then ↑(⟨l, u, h⟩ : Box ι) else ⊥
 
@@ -288,8 +290,8 @@ theorem mk'_eq_bot {l u : ι → ℝ} : mk' l u = ⊥ ↔ ∃ i, u i ≤ l i := 
 
 @[simp]
 theorem mk'_eq_coe {l u : ι → ℝ} : mk' l u = I ↔ l = I.lower ∧ u = I.upper := by
-  cases' I with lI uI hI; rw [mk']; split_ifs with h
-  · simp [WithBot.coe_eq_coe]
+  obtain ⟨lI, uI, hI⟩ := I; rw [mk']; split_ifs with h
+  · simp
   · suffices l = lI → u ≠ uI by simpa
     rintro rfl rfl
     exact h hI
@@ -302,7 +304,7 @@ theorem coe_mk' (l u : ι → ℝ) : (mk' l u : Set (ι → ℝ)) = pi univ fun 
     rw [coe_bot, univ_pi_eq_empty]
     exact Ioc_eq_empty hi
 
-instance WithBot.inf : Inf (WithBot (Box ι)) :=
+instance WithBot.inf : Min (WithBot (Box ι)) :=
   ⟨fun I ↦
     WithBot.recBotCoe (fun _ ↦ ⊥)
       (fun I J ↦ WithBot.recBotCoe ⊥ (fun J ↦ mk' (I.lower ⊔ J.lower) (I.upper ⊓ J.upper)) J) I⟩
@@ -320,8 +322,7 @@ theorem coe_inf (I J : WithBot (Box ι)) : (↑(I ⊓ J) : Set (ι → ℝ)) = (
     coe_coe]
 
 instance : Lattice (WithBot (Box ι)) :=
-  { WithBot.semilatticeSup,
-    Box.WithBot.inf with
+  { inf := min
     inf_le_left := fun I J ↦ by
       rw [← withBotCoe_subset_iff, coe_inf]
       exact inter_subset_left
@@ -352,7 +353,7 @@ theorem not_disjoint_coe_iff_nonempty_inter :
 
 /-- Face of a box in `ℝⁿ⁺¹ = Fin (n + 1) → ℝ`: the box in `ℝⁿ = Fin n → ℝ` with corners at
 `I.lower ∘ Fin.succAbove i` and `I.upper ∘ Fin.succAbove i`. -/
-@[simps (config := { simpRhs := true })]
+@[simps +simpRhs]
 def face {n} (I : Box (Fin (n + 1))) (i : Fin (n + 1)) : Box (Fin n) :=
   ⟨I.lower ∘ Fin.succAbove i, I.upper ∘ Fin.succAbove i, fun _ ↦ I.lower_lt_upper _⟩
 
@@ -360,7 +361,7 @@ def face {n} (I : Box (Fin (n + 1))) (i : Fin (n + 1)) : Box (Fin n) :=
 theorem face_mk {n} (l u : Fin (n + 1) → ℝ) (h : ∀ i, l i < u i) (i : Fin (n + 1)) :
     face ⟨l, u, h⟩ i = ⟨l ∘ Fin.succAbove i, u ∘ Fin.succAbove i, fun _ ↦ h _⟩ := rfl
 
-@[mono]
+@[gcongr, mono]
 theorem face_mono {n} {I J : Box (Fin (n + 1))} (h : I ≤ J) (i : Fin (n + 1)) :
     face I i ≤ face J i :=
   fun _ hx _ ↦ Ioc_subset_Ioc ((le_iff_bounds.1 h).1 _) ((le_iff_bounds.1 h).2 _) (hx _)
@@ -385,7 +386,7 @@ theorem continuousOn_face_Icc {X} [TopologicalSpace X] {n} {f : (Fin (n + 1) →
     {I : Box (Fin (n + 1))} (h : ContinuousOn f (Box.Icc I)) {i : Fin (n + 1)} {x : ℝ}
     (hx : x ∈ Icc (I.lower i) (I.upper i)) :
     ContinuousOn (f ∘ i.insertNth x) (Box.Icc (I.face i)) :=
-  h.comp (continuousOn_const.fin_insertNth i continuousOn_id) (I.mapsTo_insertNth_face_Icc hx)
+  h.comp (continuousOn_const.finInsertNth i continuousOn_id) (I.mapsTo_insertNth_face_Icc hx)
 
 /-!
 ### Covering of the interior of a box by a monotone sequence of smaller boxes
@@ -451,9 +452,9 @@ theorem distortion_eq_of_sub_eq_div {I J : Box ι} {r : ℝ}
     by_contra hr
     have := div_nonpos_of_nonneg_of_nonpos (sub_nonneg.2 <| J.lower_le_upper i) (not_lt.1 hr)
     rw [← h] at this
-    exact this.not_lt (sub_pos.2 <| I.lower_lt_upper i)
+    exact this.not_gt (sub_pos.2 <| I.lower_lt_upper i)
   have hn0 := (map_ne_zero Real.nnabs).2 this.ne'
-  simp_rw [NNReal.finset_sup_div, div_div_div_cancel_right _ hn0]
+  simp_rw [NNReal.finset_sup_div, div_div_div_cancel_right₀ hn0]
 
 theorem nndist_le_distortion_mul (I : Box ι) (i : ι) :
     nndist I.lower I.upper ≤ I.distortion * nndist (I.lower i) (I.upper i) :=
@@ -462,8 +463,7 @@ theorem nndist_le_distortion_mul (I : Box ι) (i : ι) :
         nndist I.lower I.upper / nndist (I.lower i) (I.upper i) * nndist (I.lower i) (I.upper i) :=
       (div_mul_cancel₀ _ <| mt nndist_eq_zero.1 (I.lower_lt_upper i).ne).symm
     _ ≤ I.distortion * nndist (I.lower i) (I.upper i) := by
-      apply mul_le_mul_right'
-      apply Finset.le_sup (Finset.mem_univ i)
+      grw [distortion, ← Finset.le_sup (Finset.mem_univ i)]
 
 theorem dist_le_distortion_mul (I : Box ι) (i : ι) :
     dist I.lower I.upper ≤ I.distortion * (I.upper i - I.lower i) := by
