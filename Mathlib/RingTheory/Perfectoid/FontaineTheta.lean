@@ -28,6 +28,8 @@ We only need `O` to be `p`-adically complete.
 Fontaine's theta map, perfectoid theory, p-adic Hodge theory
 -/
 
+@[expose] public section
+
 universe u
 
 open Ideal Quotient PreTilt WittVector
