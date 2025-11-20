@@ -645,9 +645,12 @@ protected lemma Connected.map_coe {G' : G.Subgraph} {G'' : G'.coe.Subgraph}
   refine Subgraph.connected_iff.mpr ⟨hconn.left.map_coe f, ?_⟩
   simp_all only [map_verts, Set.image_nonempty]
 
+protected lemma Preconnected.coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph)
+    (hpreconn : G''.Preconnected) : (Subgraph.coeSubgraph G'').Preconnected := by
+  exact hpreconn.map_coe G'.hom
+
 protected lemma Connected.coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph)
-    (hconn : G''.Connected) :
-    (Subgraph.coeSubgraph G'').Connected := by
+    (hconn : G''.Connected) : (Subgraph.coeSubgraph G'').Connected := by
   exact hconn.map_coe G'.hom
 
 end Subgraph
