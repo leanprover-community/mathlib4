@@ -3,18 +3,22 @@ Copyright (c) 2024 Andrew Yang, Yaël Dillies, Javier López-Contreras. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Yaël Dillies, Javier López-Contreras
 -/
-import Mathlib.Tactic.FieldSimp
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
-import Mathlib.RingTheory.Localization.AtPrime.Basic
+module
+
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.RingTheory.LocalRing.RingHom.Basic
+public import Mathlib.RingTheory.Localization.AtPrime.Basic
 
 
 /-!
 # Local subrings of fields
 
-# Main result
+## Main results
 - `LocalSubring` : The class of local subrings of a commutative ring.
 - `LocalSubring.ofPrime`: The localization of a subring as a `LocalSubring`.
 -/
+
+@[expose] public section
 
 open IsLocalRing Set
 
@@ -104,8 +108,8 @@ def ofPrimeEquiv : Localization.AtPrime P ≃ₐ[A] (ofPrime A P).toSubring := b
   refine AlgEquiv.ofInjective (IsLocalization.liftAlgHom (M := P.primeCompl)
     (S := Localization.AtPrime P) (f := Algebra.ofId A K) _) ?_
   intro x y e
-  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective P.primeCompl x
-  obtain ⟨y, t, rfl⟩ := IsLocalization.mk'_surjective P.primeCompl y
+  obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq P.primeCompl x
+  obtain ⟨y, t, rfl⟩ := IsLocalization.exists_mk'_eq P.primeCompl y
   have H (x : P.primeCompl) : x.1 ≠ 0 := by aesop
   have : x.1 = y.1 * t.1.1⁻¹ * s.1.1 := by
     simpa [IsLocalization.lift_mk', Algebra.ofId_apply, H,

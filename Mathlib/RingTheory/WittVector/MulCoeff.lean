@@ -3,8 +3,10 @@ Copyright (c) 2022 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Heather Macbeth
 -/
-import Mathlib.Algebra.MvPolynomial.Supported
-import Mathlib.RingTheory.WittVector.Truncated
+module
+
+public import Mathlib.Algebra.MvPolynomial.Supported
+public import Mathlib.RingTheory.WittVector.Truncated
 
 /-!
 # Leading terms of Witt vector multiplication
@@ -24,6 +26,8 @@ that needs to happen in characteristic 0.
   in terms of the previous coefficients of the multiplicands.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

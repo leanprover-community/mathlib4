@@ -3,13 +3,15 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller
 -/
-import Lean
-import Mathlib.Tactic.PPWithUniv
-import Mathlib.Tactic.ExtendDoc
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.TypeStar
-import Mathlib.Tactic.Linter.OldObtain
-import Mathlib.Tactic.Simproc.ExistsAndEq
+module
+
+public meta import Lean
+public meta import Mathlib.Tactic.PPWithUniv
+public meta import Mathlib.Tactic.ExtendDoc
+public meta import Mathlib.Tactic.Lemma
+public meta import Mathlib.Tactic.TypeStar
+public meta import Mathlib.Tactic.Linter.OldObtain
+public meta import Mathlib.Tactic.Simproc.ExistsAndEq
 
 /-!
 # Basic tactics and utilities for tactic writing
@@ -22,6 +24,8 @@ and explicitly name the non-dependent hypotheses,
 - the tactics `match_target` and `clear_aux_decl` (clearing all auxiliary declarations from the
 context).
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
@@ -155,7 +159,7 @@ def withResetServerInfo {α : Type} (t : TacticM α) :
 end Mathlib.Tactic
 
 /-- A mathlib library note: the note's content should be contained in its doc-string. -/
-def LibraryNote := Unit
+@[expose] def LibraryNote := Unit
 
 open Lean in
 /-- `library_note2 «my note» /-- documentation -/` creates a library note named `my note`

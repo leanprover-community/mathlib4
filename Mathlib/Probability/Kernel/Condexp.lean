@@ -3,9 +3,11 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Composition.MeasureComp
-import Mathlib.Probability.Kernel.CondDistrib
-import Mathlib.Probability.ConditionalProbability
+module
+
+public import Mathlib.Probability.Kernel.Composition.MeasureComp
+public import Mathlib.Probability.Kernel.CondDistrib
+public import Mathlib.Probability.ConditionalProbability
 
 /-!
 # Kernel associated with a conditional expectation
@@ -29,6 +31,8 @@ on `Ω` allows us to do so.
 * `condExp_ae_eq_integral_condExpKernel`: `μ[f | m] =ᵐ[μ] fun ω => ∫ y, f y ∂(condExpKernel μ m ω)`.
 
 -/
+
+@[expose] public section
 
 
 open MeasureTheory Set Filter TopologicalSpace
@@ -335,7 +339,7 @@ lemma condExpKernel_singleton_ae_eq_cond [StandardBorelSpace Ω] (hs : Measurabl
       (generateFrom_singleton_le hs) ht
   filter_upwards [condExp_set_generateFrom_singleton hs ht, this] with ω hω₁ hω₂
   rwa [hω₁, measureReal_def, measureReal_def,
-    ENNReal.toReal_eq_toReal (measure_ne_top _ t) (measure_ne_top _ t)] at hω₂
+    ENNReal.toReal_eq_toReal_iff' (measure_ne_top _ t) (measure_ne_top _ t)] at hω₂
 
 end Cond
 
