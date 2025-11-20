@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Hom.Instances
-import Mathlib.Algebra.Ring.Defs
+module
+
+public import Mathlib.Algebra.Group.Hom.Instances
+public import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Instances on spaces of monoid and group morphisms
@@ -16,6 +18,8 @@ They are separate, and if someone would like to split this file in two that may 
 * We provide the `Ring` structure on `AddMonoid.End`.
 * Results about `AddMonoid.End R` when `R` is a ring.
 -/
+
+@[expose] public section
 
 
 universe uM

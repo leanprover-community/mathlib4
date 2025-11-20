@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.Basic
-import Mathlib.Algebra.Homology.DerivedCategory.Linear
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.Basic
+public import Mathlib.Algebra.Homology.DerivedCategory.Linear
 
 /-!
 # An exact functor induces a functor on derived categories
@@ -14,6 +16,8 @@ abelian categories, then there is an induced triangulated functor
 `F.mapDerivedCategory : DerivedCategory C₁ ⥤ DerivedCategory C₂`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -87,6 +91,9 @@ instance : NatTrans.CommShift F.mapDerivedCategoryFactors.hom ℤ :=
       dsimp
       simp only [id_comp, mapDerivedCategoryFactorsh_hom_app, assoc, comp_id,
         ← Functor.map_comp_assoc, Iso.inv_hom_id_app, map_id, comp_obj])
+
+instance : NatTrans.CommShift F.mapDerivedCategoryFactors.symm.hom ℤ :=
+  NatTrans.CommShift.of_iso_inv F.mapDerivedCategoryFactors ℤ
 
 instance : F.mapDerivedCategory.IsTriangulated :=
   Functor.isTriangulated_of_precomp_iso F.mapDerivedCategoryFactorsh
