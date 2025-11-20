@@ -18,7 +18,7 @@ rewriting inside the operand of a `Finset.sum`.
 
 public meta section
 
-open Lean Expr Parser.Tactic Elab Command Elab.Tactic Meta Conv
+open Lean Expr Parser.Tactic Elab Elab.Tactic Meta Conv
 
 /--
 Apply a congruence lemma inside `conv` mode.
