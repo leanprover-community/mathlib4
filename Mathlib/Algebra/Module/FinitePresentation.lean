@@ -50,6 +50,8 @@ For finitely presented algebras, see `Algebra.FinitePresentation`
 in file `Mathlib/RingTheory/FinitePresentation.lean`.
 -/
 
+@[expose] public section
+
 open Finsupp
 
 section Semiring

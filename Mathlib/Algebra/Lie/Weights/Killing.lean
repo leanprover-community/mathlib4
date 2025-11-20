@@ -3,12 +3,14 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Derivation.Killing
-import Mathlib.Algebra.Lie.Killing
-import Mathlib.Algebra.Lie.Sl2
-import Mathlib.Algebra.Lie.Weights.Chain
-import Mathlib.LinearAlgebra.Eigenspace.Semisimple
-import Mathlib.LinearAlgebra.JordanChevalley
+module
+
+public import Mathlib.Algebra.Lie.Derivation.Killing
+public import Mathlib.Algebra.Lie.Killing
+public import Mathlib.Algebra.Lie.Sl2
+public import Mathlib.Algebra.Lie.Weights.Chain
+public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
+public import Mathlib.LinearAlgebra.JordanChevalley
 
 /-!
 # Roots of Lie algebras with non-degenerate Killing forms
@@ -33,6 +35,8 @@ forms.
 * `LieAlgebra.IsKilling.finrank_rootSpace_eq_one`: root spaces are one-dimensional.
 
 -/
+
+@[expose] public section
 
 variable (R K L : Type*) [CommRing R] [LieRing L] [LieAlgebra R L] [Field K] [LieAlgebra K L]
 
