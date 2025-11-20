@@ -330,7 +330,7 @@ lemma IsProper.eq_valuativeCriterion :
   simp_rw [inf_assoc]
   ext X Y f
   change _ ∧ _ ∧ _ ∧ _ ∧ _ ↔ _ ∧ _ ∧ _ ∧ _ ∧ _
-  tauto
+  grind
 
 /-- The **valuative criterion** for proper morphisms. -/
 @[stacks 0BX5]

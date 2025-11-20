@@ -124,7 +124,7 @@ lemma ab_exact_iff_function_exact :
     refine ⟨h, ?_⟩
     rintro ⟨x₁, rfl⟩
     simp only [ab_zero_apply]
-  · tauto
+  · grind
 
 variable {S}
 
