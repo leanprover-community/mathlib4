@@ -3,9 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.Topology.Category.TopCat.Basic
-import Mathlib.Topology.Algebra.Ring.Basic
+module
+
+public import Mathlib.Algebra.Category.Ring.Basic
+public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # Category of topological commutative rings
@@ -13,6 +15,8 @@ import Mathlib.Topology.Algebra.Ring.Basic
 We introduce the category `TopCommRingCat` of topological commutative rings together with the
 relevant forgetful functors to topological spaces and commutative rings.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -22,6 +26,9 @@ open CategoryTheory
 
 /-- A bundled topological commutative ring. -/
 structure TopCommRingCat where
+  /-- Construct a bundled `TopCommRingCat` from the underlying type and the appropriate typeclasses.
+  -/
+  of ::
   /-- carrier of a topological commutative ring. -/
   α : Type u
   [isCommRing : CommRing α]
@@ -55,11 +62,6 @@ instance (R S : TopCommRingCat.{u}) : FunLike { f : R →+* S // Continuous f } 
 instance : ConcreteCategory TopCommRingCat.{u} fun R S => { f : R →+* S // Continuous f } where
   hom f := f
   ofHom f := f
-
-/-- Construct a bundled `TopCommRingCat` from the underlying type and the appropriate typeclasses.
--/
-abbrev of (X : Type u) [CommRing X] [TopologicalSpace X] [IsTopologicalRing X] : TopCommRingCat :=
-  ⟨X⟩
 
 theorem coe_of (X : Type u) [CommRing X] [TopologicalSpace X] [IsTopologicalRing X] :
     (of X : Type u) = X := rfl

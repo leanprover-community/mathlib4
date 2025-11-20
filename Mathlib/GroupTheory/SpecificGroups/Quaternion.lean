@@ -3,8 +3,10 @@ Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
-import Mathlib.GroupTheory.SpecificGroups.Dihedral
+module
+
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
+public import Mathlib.GroupTheory.SpecificGroups.Dihedral
 
 /-!
 # Quaternion Groups
@@ -39,6 +41,8 @@ inconvenient to carry around this condition we define `QuaternionGroup` also for
 Show that `QuaternionGroup 2 ≃* (Quaternion ℤ)ˣ`.
 
 -/
+
+@[expose] public section
 
 
 /-- The (generalised) quaternion group `QuaternionGroup n` of order `4n`. It can be defined by the

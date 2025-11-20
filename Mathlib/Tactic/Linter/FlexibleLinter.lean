@@ -3,8 +3,10 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Lean.Elab.Command
-import Mathlib.Tactic.Linter.Header
+module
+
+public meta import Lean.Elab.Command
+public meta import Mathlib.Tactic.Linter.Header
 
 /-!
 # The "flexible" linter
@@ -88,6 +90,8 @@ By looking at the `mvar`s that are either only "before" or only "after", we focu
 We then propagate all the `FVarId`s that were present in the "before" goals to the "after" goals,
 while leaving untouched the ones in the "inert" goals.
 -/
+
+public meta section
 
 open Lean Elab Linter
 
