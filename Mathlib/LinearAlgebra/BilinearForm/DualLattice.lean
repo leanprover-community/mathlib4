@@ -3,7 +3,9 @@ Copyright (c) 2018 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.LinearAlgebra.BilinearForm.Properties
+module
+
+public import Mathlib.LinearAlgebra.BilinearForm.Properties
 
 /-!
 
@@ -16,6 +18,8 @@ import Mathlib.LinearAlgebra.BilinearForm.Properties
 ## TODO
 Properly develop the material in the context of lattices.
 -/
+
+@[expose] public section
 
 open LinearMap (BilinForm)
 open Module

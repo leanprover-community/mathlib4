@@ -3,10 +3,12 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
-import Mathlib.MeasureTheory.Covering.Besicovitch
-import Mathlib.Tactic.AdaptationNote
-import Mathlib.Algebra.EuclideanDomain.Basic
+module
+
+public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+public import Mathlib.MeasureTheory.Covering.Besicovitch
+public import Mathlib.Tactic.AdaptationNote
+public import Mathlib.Algebra.EuclideanDomain.Basic
 
 /-!
 # Satellite configurations for Besicovitch covering lemma in vector spaces
@@ -40,6 +42,8 @@ In particular, this number is bounded by `5 ^ dim` by a straightforward measure 
 * `isEmpty_satelliteConfig_multiplicity` is the main theorem, saying that there are
   no satellite configurations of `(multiplicity E) + 1` points, for the parameter `goodτ E`.
 -/
+
+@[expose] public section
 
 
 universe u

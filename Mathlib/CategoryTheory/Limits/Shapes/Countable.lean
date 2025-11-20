@@ -3,10 +3,12 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
-import Mathlib.CategoryTheory.Countable
-import Mathlib.Data.Countable.Defs
+module
+
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+public import Mathlib.CategoryTheory.Countable
+public import Mathlib.Data.Countable.Defs
 /-!
 # Countable limits and colimits
 
@@ -23,6 +25,8 @@ limits, see `sequentialFunctor_initial`.
 * Prove the dual result for filtered colimits.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Opposite CountableCategory
 
