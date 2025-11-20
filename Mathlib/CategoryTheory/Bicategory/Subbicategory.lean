@@ -69,7 +69,7 @@ theorem ι₂_obj {X} : P.ι₂.obj X = X.obj :=
 theorem ι₂_map {X Y} {f : X ⟶ Y} : P.ι₂.map f = f.hom := -- TODO: right statement?
   rfl
 
--- TODO: need to think more from here
+-- TODO: need to think more from here (in particular figure out naming)
 
 /-- Constructor for isomorphisms in `P.FullSubbicategory` when
 `P : ObjectProperty C`. -/
@@ -86,17 +86,9 @@ variable {P} {P' : ObjectProperty C}
 /-- If `P` and `P'` are properties of objects such that `P ≤ P'`, there is
 an induced functor `P.FullSubbicategory ⥤ P'.FullSubbicategory`. -/
 @[simps]
-def ιOfLE (h : P ≤ P') : P.FullSubbicategory ⥤ P'.FullSubbicategory where
+def ιOfLE (h : P ≤ P') : StrictPseudofunctor P.FullSubbicategory P'.FullSubbicategory where
   obj X := ⟨X.1, h _ X.2⟩
   map f := f
-
-/-- If `h : P ≤ P'`, then `ιOfLE h` is fully faithful. -/
-def fullyFaithfulιOfLE (h : P ≤ P') :
-    (ιOfLE h).FullyFaithful where
-  preimage f := f
-
-instance full_ιOfLE (h : P ≤ P') : (ιOfLE h).Full := (fullyFaithfulιOfLE h).full
-instance faithful_ιOfLE (h : P ≤ P') : (ιOfLE h).Faithful := (fullyFaithfulιOfLE h).faithful
 
 /-- If `h : P ≤ P'` is an inequality of properties of objects,
 this is the obvious isomorphism `ιOfLE h ⋙ P'.ι ≅ P.ι`. -/
