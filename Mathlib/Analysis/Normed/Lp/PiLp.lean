@@ -1085,6 +1085,7 @@ group structure. These are meant to be used to put the desired instances on type
 of `Π i, α i`. See for instance `Matrix.frobeniusSeminormedAddCommGroup`.
 -/
 
+-- This prevents Lean from elaborating terms of `Π i, α i` with an unintended norm.
 attribute [-instance] Pi.seminormedAddGroup
 
 variable [Fact (1 ≤ p)] [Fintype ι]
@@ -1138,6 +1139,8 @@ lemma normSMulClassSeminormedAddCommGroupToPi
   refine ⟨fun x y ↦ ?_⟩
   simp [norm_seminormedAddCommGroupToPi, norm_smul]
 
+/-- This definition allows to endow `Π i, α i` with a normed space structure corresponding to
+the Lp norm. It is useful for type synonyms of `Π i, α i`. -/
 abbrev normedSpaceSeminormedAddCommGroupToPi
     [∀ i, SeminormedAddCommGroup (α i)] {R : Type*} [NormedField R]
     [∀ i, NormedSpace R (α i)] :

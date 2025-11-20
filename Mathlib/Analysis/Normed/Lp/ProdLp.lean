@@ -1004,6 +1004,7 @@ of `α × β`. See for instance `TrivSqZeroExt.instL1SeminormedAddCommGroup`.
 
 variable (α β : Type*)
 
+-- This prevents Lean from elaborating terms of `α × β` with an unintended norm.
 attribute [-instance] Prod.toNorm
 
 /-- This definition allows to endow `α × β` with the Lp distance with the uniformity and bornology
@@ -1056,6 +1057,8 @@ lemma normSMulClassSeminormedAddCommGroupToProd
   letI := seminormedAddCommGroupToProd p α β
   exact ⟨fun x y ↦ norm_smul x (toLp p y)⟩
 
+/-- This definition allows to endow `α × β` with a normed space structure corresponding to
+the Lp norm. It is useful for type synonyms of `α × β`. -/
 abbrev normedSpaceSeminormedAddCommGroupToProd
     [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] {R : Type*} [NormedField R]
     [NormedSpace R α] [NormedSpace R β] :
