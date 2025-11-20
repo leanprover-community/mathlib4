@@ -3,8 +3,10 @@ Copyright (c) 2025 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Category.Cat
-import Mathlib.CategoryTheory.Opposites
+module
+
+public import Mathlib.CategoryTheory.Category.Cat
+public import Mathlib.CategoryTheory.Opposites
 
 /-!
 # The dualizing functor on `Cat`
@@ -13,6 +15,8 @@ We define a (strict) functor `opFunctor` and an equivalence assigning opposite c
 categories. We then show that this functor is strictly involutive and that it induces an
 equivalence on `Cat`.
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 

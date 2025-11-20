@@ -3,10 +3,12 @@ Copyright (c) 2025 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
-import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Oplax
-import Mathlib.CategoryTheory.Bicategory.End
-import Mathlib.CategoryTheory.Monoidal.Comon_
+module
+
+public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
+public import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Oplax
+public import Mathlib.CategoryTheory.Bicategory.End
+public import Mathlib.CategoryTheory.Monoidal.Comon_
 
 /-!
 # Comonads in a bicategory
@@ -21,6 +23,8 @@ We can also define monads in a bicategory. This is not yet done as we don't have
 structure on the set of lax functors at this point, which is needed to show that monads form a
 bicategory.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

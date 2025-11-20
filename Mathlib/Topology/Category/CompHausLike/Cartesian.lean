@@ -3,8 +3,10 @@ Copyright (c) 2025 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
-import Mathlib.Topology.Category.CompHausLike.Limits
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+public import Mathlib.Topology.Category.CompHausLike.Limits
 
 /-!
 # Cartesian monoidal structure on `CompHausLike`
@@ -13,6 +15,8 @@ If the predicate `P` is preserved under taking type-theoretic products and `PUni
 then `CompHausLike P` is a cartesian monoidal category.
 
 -/
+
+@[expose] public section
 
 universe u
 

@@ -3,14 +3,21 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Tactic.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
+module
+
+public import Mathlib.Tactic.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+import all Mathlib.CategoryTheory.Limits.Cones
+import all Mathlib.CategoryTheory.Limits.HasLimits
+import all Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
 /-!
 In this file we provide various simp lemmas in its elementwise form via `Tactic.Elementwise`.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory CategoryTheory.Limits

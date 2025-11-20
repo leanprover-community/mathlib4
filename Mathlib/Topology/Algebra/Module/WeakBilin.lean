@@ -3,8 +3,10 @@ Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä, Moritz Doll
 -/
-import Mathlib.Topology.Algebra.Module.LinearMap
-import Mathlib.LinearAlgebra.BilinearMap
+module
+
+public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # Weak dual topology
@@ -43,6 +45,8 @@ We prove the following results characterizing the weak topology:
 weak-star, weak dual, duality
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

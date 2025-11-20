@@ -3,9 +3,11 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Condensed.Light.CartesianClosed
-import Mathlib.Condensed.Light.TopCatAdjunction
-import Mathlib.Topology.Category.LightProfinite.Cartesian
+module
+
+public import Mathlib.Condensed.Light.CartesianClosed
+public import Mathlib.Condensed.Light.TopCatAdjunction
+public import Mathlib.Topology.Category.LightProfinite.Cartesian
 
 /-!
 # Functors from categories of topological spaces to light condensed sets
@@ -19,6 +21,8 @@ sets.
   is the yoneda sheaf functor.
 
 -/
+
+@[expose] public section
 
 universe u v
 

@@ -3,11 +3,12 @@ Copyright (c) 2025 William Coram. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: William Coram
 -/
+module
 
-import Mathlib.Analysis.Normed.Group.Ultra
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.Tactic.Bound
+public import Mathlib.Analysis.Normed.Group.Ultra
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.Tactic.Bound
 
 /-!
 # Restricted power series
@@ -16,6 +17,8 @@ import Mathlib.Tactic.Bound
 `‖coeff R i f‖ * c ^ i → 0`.
 
 -/
+
+@[expose] public section
 
 namespace PowerSeries
 
@@ -131,7 +134,14 @@ lemma mul {f g : PowerSeries R} (hf : IsRestricted c f) (hg : IsRestricted c g) 
   obtain ⟨rfl⟩ := by simpa using hi (⟨(0, n), by simp⟩)
   calc _ ≤ ‖(coeff fst) f * (coeff snd) g‖ * |c| ^ (fst + snd) := by bound
        _ ≤ ‖(coeff fst) f‖ * |c| ^ fst * (‖(coeff snd) g‖ * |c| ^ snd) := by
-        grw [norm_mul_le]; grind
+        grw [norm_mul_le]
+        #adaptation_note
+        /--
+        Broken in `nightly-2025-10-26`: this was by `grind`, but is now no longer supported.
+        See https://github.com/leanprover/lean4/pull/10970.
+        -/
+        rw [pow_add]
+        grind
   have : max Nf Ng ≤ fst ∨ max Nf Ng ≤ snd := by omega
   rcases this with this | this
   · calc _ < ε / max a b * b := by
