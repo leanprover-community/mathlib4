@@ -442,10 +442,11 @@ open Module
 /-- The tensor product of two orthonormal vectors is orthonormal. -/
 theorem Orthonormal.tmul
     {b₁ : ι₁ → E} {b₂ : ι₂ → F} (hb₁ : Orthonormal 𝕜 b₁) (hb₂ : Orthonormal 𝕜 b₂) :
-    Orthonormal 𝕜 fun i : ι₁ × ι₂ ↦ b₁ i.1 ⊗ₜ[𝕜] b₂ i.2 :=
-  open scoped Classical in orthonormal_iff_ite.mpr fun ⟨i₁, i₂⟩ ⟨j₁, j₂⟩ => by
-    classical
-    simp [orthonormal_iff_ite.mp, hb₁, hb₂, ← ite_and, and_comm]
+    Orthonormal 𝕜 fun i : ι₁ × ι₂ ↦ b₁ i.1 ⊗ₜ[𝕜] b₂ i.2 := by
+  classical
+  rw [orthonormal_iff_ite]
+  rintro ⟨i₁, i₂⟩ ⟨j₁, j₂⟩
+  simp [orthonormal_iff_ite.mp, hb₁, hb₂, ← ite_and, and_comm]
 
 /-- The tensor product of two orthonormal bases is orthonormal. -/
 theorem Orthonormal.basisTensorProduct
