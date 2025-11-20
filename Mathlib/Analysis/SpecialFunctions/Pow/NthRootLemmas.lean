@@ -10,16 +10,12 @@ public import Mathlib.Data.Nat.ModEq
 public import Mathlib.Tactic.Linarith
 public import Mathlib.Tactic.Ring.Basic
 public import Mathlib.Tactic.Zify
+public import Mathlib.Algebra.Order.Ring.Pow
 
 /-!
 # Lemmas about `Nat.nthRoot`
 
 In this file we prove that `Nat.nthRoot n a` is indeed the floor of `ⁿ√a`.
-
-## TODO
-
-Rewrite the proof of `Nat.nthRoot.lt_pow_go_succ_aux` to avoid dependencies on real numbers,
-so that we can move this file to `Mathlib/Data/Nat/NthRoot`, then to Batteries.
 -/
 
 @[expose] public section
@@ -64,48 +60,23 @@ theorem pow_nthRoot_le_iff : nthRoot n a ^ n ≤ a ↔ n ≠ 0 ∨ a ≠ 0 := by
 
 alias ⟨_, pow_nthRoot_le⟩ := pow_nthRoot_le_iff
 
-
-lemma binom_pow_ge_first_two_terms (n : ℕ) (u v : ℤ) (hu : u ≥ 0) (huv : u + v > 0) :
-    (u + v) ^ (n + 1) ≥ u ^ (n + 1) + (n + 1) * u ^ n * v := by
-  induction n;
-  case zero =>
-    simp
-  case succ n ih =>
-  calc
-  (u + v) ^ (n + 2)
-    = (u + v) ^ (n + 1) * (u + v) := by rw [pow_succ]
-  _ ≥ (u ^ (n + 1) + (n + 1) * u ^ n * v) * (u + v) := by gcongr
-  _ = u ^ (n + 2) + (n + 2) * u ^ (n + 1) * v + (n + 1) * u ^ n * v ^ 2 := by ring1
-  _ ≥ u ^ (n + 2) + (n + 2) * u ^ (n + 1) * v := by
-    have hh : ((n : ℤ) + 1) * u ^ n * v ^ 2 ≥ 0 := by positivity
-    set w :=  (u : ℤ) ^ (n + 2) + (n +2) * u ^ (n + 1) * v with hw
-    nth_rw 2 [← add_zero w]
-    exact add_le_add_left hh w
-
-
 private theorem nthRoot.lt_pow_go_succ_aux0 (hb : b ≠ 0) :
     a ≤ ( (a ^ (n + 1) / b ^ n) + n * b) / (n + 1) := by
+  have hk := (Commute.all (b : ℤ) (a - b)).pow_add_mul_le_add_pow_of_sq_nonneg
+    (by positivity) (sq_nonneg _) (sq_nonneg _) (by grind) (n + 1)
+  rw [Nat.add_one_sub_one n] at hk
+  nth_rw 4 [add_comm] at hk
+  rw [sub_add_comm, sub_self, zero_add] at hk
 
   rcases a.eq_zero_or_pos with rfl | ha
   · exact Nat.zero_le _
 
-  have b_pow_pos: 0 < (b : Int) ^ n:= by positivity
-
-  have hk : ((b : Int) + ((a - b) : Int)) ^ (n + 1)
-    ≥ b ^ (n + 1) + (n + 1) * b ^ n * (a - b) := by
-    apply binom_pow_ge_first_two_terms
-    · exact Nat.cast_nonneg b
-    · rw [add_comm, sub_add_comm, sub_self, zero_add]
-      exact_mod_cast ha
-
-  have hj : a = ((b : Int) + ((a - b : Int))) := by
-    rw [add_comm, sub_add_comm, sub_self, zero_add]
-
-  rw [← hj, ge_iff_le] at hk
   have hl : (a : Int) ^ (n + 1) + n * b ^ (n + 1) ≥ (n + 1) * b ^ n * a := by
     calc a ^ (n + 1) + n * b ^ (n + 1)
       = (a : Int) ^ (n + 1) + n * b ^ (n + 1) := by norm_cast
-    _ ≥ b ^ (n + 1) + (n + 1) * b ^ n * (a - b) + n * b ^ (n + 1) := by linarith only [hk]
+    _ ≥ b ^ (n + 1) + (n + 1) * b ^ n * (a - b) + n * b ^ (n + 1) := by
+      simp only [ge_iff_le, add_le_add_iff_right]
+      exact hk
     _ = (n + 1) * b ^ n * a := by ring1
   norm_cast at hl
   have hq := @Nat.div_le_div_right ((n+1)*b^n *a) (a ^ (n + 1) + n * b ^ (n+1)) (b ^ n) hl
