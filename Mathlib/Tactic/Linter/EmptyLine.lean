@@ -3,9 +3,9 @@ Copyright (c) 2025 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
--- TODO: make a `module` -- requires fixing imports and deprecations first!
 
-import Mathlib.Tactic.Linter.Header
+module
+public meta import Mathlib.Tactic.Linter.Header
 
 /-!
 # The "emptyLine" linter
@@ -13,6 +13,7 @@ import Mathlib.Tactic.Linter.Header
 The "emptyLine" linter emits a warning on empty lines inside a command, but outside of a
 doc-string/module-doc.
 -/
+public meta section
 
 open Lean Elab Linter
 
