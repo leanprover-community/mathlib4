@@ -3,7 +3,9 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
+module
+
+public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
 
 /-!
 # Pullback of a measure
@@ -16,6 +18,8 @@ If `f` does not have these properties, then we define `comap f μ` to be zero.
 In the future, we may decide to redefine `comap f μ` so that it gives meaningful results, e.g.,
 for covering maps like `(↑) : ℝ → AddCircle (1 : ℝ)`.
 -/
+
+@[expose] public section
 
 open Function Set Filter
 open scoped ENNReal

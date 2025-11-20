@@ -3,7 +3,9 @@ Copyright (c) 2022 Jake Levinson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jake Levinson
 -/
-import Mathlib.Combinatorics.Young.YoungDiagram
+module
+
+public import Mathlib.Combinatorics.Young.YoungDiagram
 
 /-!
 # Semistandard Young tableaux
@@ -41,6 +43,8 @@ Semistandard Young tableau
 <https://en.wikipedia.org/wiki/Young_tableau>
 
 -/
+
+@[expose] public section
 
 
 /-- A semistandard Young tableau is a filling of the cells of a Young diagram by natural
