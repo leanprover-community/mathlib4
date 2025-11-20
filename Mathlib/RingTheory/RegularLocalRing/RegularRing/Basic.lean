@@ -3,7 +3,10 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.RingTheory.RegularLocalRing.Defs
+module
+
+public import Mathlib.RingTheory.RegularLocalRing.Defs
+
 /-!
 
 # Definition of Regular Ring
@@ -12,6 +15,8 @@ In this file, we define regular ring as ring with localization at every prime is
 (Regular local ring is not natrually regular ring in this definition).
 
 -/
+
+@[expose] public section
 
 open IsLocalRing
 
