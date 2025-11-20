@@ -3,9 +3,11 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Category.Grp.Limits
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
-import Mathlib.CategoryTheory.Monoidal.Grp_
+module
+
+public import Mathlib.Algebra.Category.Grp.Limits
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon_
+public import Mathlib.CategoryTheory.Monoidal.Grp_
 
 /-!
 # Yoneda embedding of `Grp C`
@@ -14,6 +16,8 @@ We show that group objects are exactly those whose yoneda presheaf is a presheaf
 by constructing the yoneda embedding `Grp C ⥤ Cᵒᵖ ⥤ GrpCat.{v}` and
 showing that it is fully faithful and its (essential) image is the representable functors.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

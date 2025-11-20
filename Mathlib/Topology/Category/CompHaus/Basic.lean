@@ -3,11 +3,13 @@ Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Bhavik Mehta, Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Monad.Limits
-import Mathlib.Topology.Compactification.StoneCech
-import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Topology.Category.CompHausLike.Basic
-import Mathlib.Topology.Category.TopCat.Limits.Basic
+module
+
+public import Mathlib.CategoryTheory.Monad.Limits
+public import Mathlib.Topology.Compactification.StoneCech
+public import Mathlib.Topology.UrysohnsLemma
+public import Mathlib.Topology.Category.CompHausLike.Basic
+public import Mathlib.Topology.Category.TopCat.Limits.Basic
 
 /-!
 # The category of Compact Hausdorff Spaces
@@ -30,6 +32,8 @@ The category `CompHaus` is defined using the structure `CompHausLike`. See the f
 `CompHausLike.Basic` for more information.
 
 -/
+
+@[expose] public section
 
 
 universe v u

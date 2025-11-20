@@ -3,13 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Pi
-import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
-import Mathlib.Algebra.BigOperators.Ring.Multiset
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Fintype.Powerset
-import Mathlib.Data.Int.Cast.Lemmas
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Pi
+public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
+public import Mathlib.Algebra.BigOperators.Ring.Multiset
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Fintype.Powerset
+public import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
 # Results about big operators with values in a (semi)ring
@@ -17,6 +19,8 @@ import Mathlib.Data.Int.Cast.Lemmas
 We prove results about big operators that involve some interaction between
 multiplicative and additive structures on the values being combined.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -140,7 +144,7 @@ lemma prod_sum {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (f
       congr with ⟨v, hv⟩
       congr
       exact (Pi.cons_ne (by rintro rfl; exact ha hv)).symm
-    · exact fun _ _ _ _ => Subtype.eq ∘ Subtype.mk.inj
+    · exact fun _ _ _ _ => Subtype.ext ∘ Subtype.mk.inj
     · simpa only [mem_image, mem_attach, Subtype.mk.injEq, true_and,
         Subtype.exists, exists_prop, exists_eq_right] using ha
 

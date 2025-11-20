@@ -3,9 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Geometry.RingedSpace.PresheafedSpace.HasColimits
-import Mathlib.Geometry.RingedSpace.Stalks
-import Mathlib.Topology.Sheaves.Functors
+module
+
+public import Mathlib.Geometry.RingedSpace.PresheafedSpace.HasColimits
+public import Mathlib.Geometry.RingedSpace.Stalks
+public import Mathlib.Topology.Sheaves.Functors
 
 /-!
 # Sheafed spaces
@@ -16,6 +18,8 @@ arbitrary target category `C`.)
 We further describe how to apply functors and natural transformations to the values of the
 presheaves.
 -/
+
+@[expose] public section
 
 open CategoryTheory TopCat TopologicalSpace Opposite CategoryTheory.Limits CategoryTheory.Category
   CategoryTheory.Functor Topology

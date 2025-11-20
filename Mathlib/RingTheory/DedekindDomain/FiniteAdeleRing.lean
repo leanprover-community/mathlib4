@@ -3,9 +3,11 @@ Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.RingTheory.DedekindDomain.AdicValuation
-import Mathlib.RingTheory.DedekindDomain.Factorization
-import Mathlib.Topology.Algebra.RestrictedProduct.TopologicalSpace
+module
+
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.RingTheory.DedekindDomain.Factorization
+public import Mathlib.Topology.Algebra.RestrictedProduct.TopologicalSpace
 
 /-!
 # The finite adèle ring of a Dedekind domain
@@ -25,6 +27,8 @@ field, its finite adèle ring is just defined to be the trivial ring.
 ## Tags
 finite adèle ring, dedekind domain
 -/
+
+@[expose] public section
 
 variable (R : Type*) [CommRing R] [IsDedekindDomain R] {K : Type*}
     [Field K] [Algebra R K] [IsFractionRing R K]
@@ -102,10 +106,10 @@ protected def algebraMap : K →+* FiniteAdeleRing R K where
      adicCompletion, Valued.valuedCompletion_apply, not_le]
     exact HeightOneSpectrum.Support.finite R k⟩
   map_one' := rfl
-  map_mul' x y := Subtype.eq <| funext (fun v ↦
+  map_mul' x y := Subtype.ext <| funext (fun v ↦
     UniformSpace.Completion.coe_mul ((WithVal.equiv (valuation K v)).symm x) y)
   map_zero' := rfl
-  map_add' x y := Subtype.eq <| funext (fun v ↦
+  map_add' x y := Subtype.ext <| funext (fun v ↦
     UniformSpace.Completion.coe_add ((WithVal.equiv (valuation K v)).symm x) y)
 
 instance : Algebra K (FiniteAdeleRing R K) := (FiniteAdeleRing.algebraMap R K).toAlgebra

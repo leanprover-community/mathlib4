@@ -3,8 +3,10 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Probability.Density
-import Mathlib.Probability.Moments.Variance
+module
+
+public import Mathlib.Probability.Density
+public import Mathlib.Probability.Moments.Variance
 
 /-!
 # Law of a random variable
@@ -16,6 +18,8 @@ so that `HasLaw X 0 P` would be true. The measurability hypothesis ensures nice 
 operations on the codomain of `X`.
 See for instance `HasLaw.comp`, `IndepFun.hasLaw_mul` and `IndepFun.hasLaw_add`.
 -/
+
+@[expose] public section
 
 open MeasureTheory Measure
 
