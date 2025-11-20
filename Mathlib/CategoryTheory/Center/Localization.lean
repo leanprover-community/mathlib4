@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Center.Basic
-import Mathlib.CategoryTheory.Localization.Predicate
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+module
+
+public import Mathlib.CategoryTheory.Center.Basic
+public import Mathlib.CategoryTheory.Localization.Predicate
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # Localization of the center of a category
@@ -16,6 +18,8 @@ of these categories. In case `L` is an additive functor between preadditive
 categories, we promote this to a ring morphism `CatCenter C →+* CatCenter D`.
 
 -/
+
+@[expose] public section
 
 universe w v₁ v₂ u₁ u₂
 

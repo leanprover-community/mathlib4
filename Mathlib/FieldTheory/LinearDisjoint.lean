@@ -3,9 +3,11 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.RingTheory.AlgebraicIndependent.RankAndCardinality
-import Mathlib.RingTheory.LinearDisjoint
+module
+
+public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.RingTheory.AlgebraicIndependent.RankAndCardinality
+public import Mathlib.RingTheory.LinearDisjoint
 
 /-!
 
@@ -130,6 +132,8 @@ The following results are related to the equivalent characterizations in
 linearly disjoint, linearly independent, tensor product
 
 -/
+
+@[expose] public section
 
 open scoped TensorProduct
 

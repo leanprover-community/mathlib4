@@ -3,9 +3,11 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Data.Nat.Cast.Order.Ring
-import Mathlib.Tactic.Abel
+module
+
+public import Mathlib.Data.Nat.Cast.Commute
+public import Mathlib.Data.Nat.Cast.Order.Ring
+public import Mathlib.Tactic.Abel
 
 /-! # Bernoulli's inequality
 
@@ -16,6 +18,8 @@ which can be regarded as Bernoulli's inequality for `b / a` multiplied by `a ^ n
 
 Also, we prove versions for different typeclass assumptions on the (semi)ring.
 -/
+
+@[expose] public section
 
 variable {R : Type*}
 

@@ -3,15 +3,19 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.List.OfFn
-import Mathlib.Algebra.BigOperators.Group.List.Defs
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+module
+
+public import Mathlib.Data.List.OfFn
+public import Mathlib.Algebra.BigOperators.Group.List.Defs
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Pointwise operations with lists of sets
 
 This file proves some lemmas about pointwise algebraic operations with lists of sets.
 -/
+
+@[expose] public section
 
 namespace Set
 
