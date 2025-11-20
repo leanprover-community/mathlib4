@@ -3,9 +3,11 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.Subsemigroup.Operations
-import Mathlib.Algebra.MonoidAlgebra.Support
-import Mathlib.Order.Filter.Extr
+module
+
+public import Mathlib.Algebra.Group.Subsemigroup.Operations
+public import Mathlib.Algebra.MonoidAlgebra.Support
+public import Mathlib.Order.Filter.Extr
 
 /-!
 # Lemmas about the `sup` and `inf` of the support of `AddMonoidAlgebra`
@@ -17,6 +19,8 @@ The current plan is to state and prove lemmas about `Finset.sup (Finsupp.support
 Next, the general lemmas get specialized for some yet-to-be-defined `degree`s.
 -/
 
+@[expose] public section
+
 
 variable {R R' A T B ι : Type*}
 
@@ -24,7 +28,7 @@ namespace AddMonoidAlgebra
 
 /-!
 
-# sup-degree and inf-degree of an `AddMonoidAlgebra`
+## sup-degree and inf-degree of an `AddMonoidAlgebra`
 
 Let `R` be a semiring and let `A` be a `SemilatticeSup`.
 For an element `f : R[A]`, this file defines
@@ -48,7 +52,7 @@ The main results are
 * `AddMonoidAlgebra.le_infDegree_add`:
   the inf-degree of a sum is at least the inf of the inf-degrees.
 
-## Implementation notes
+### Implementation notes
 
 The current plan is to state and prove lemmas about `Finset.sup (Finsupp.support f) D` with a
 "generic" degree/weight function `D` from the grading Type `A` to a somewhat ordered Type `B`.

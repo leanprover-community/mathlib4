@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Order.BoundedOrder.Basic
-import Mathlib.Order.Lattice
+module
+
+public import Mathlib.Order.BoundedOrder.Basic
+public import Mathlib.Order.Lattice
 
 /-!
 # Bounded lattices
@@ -21,6 +23,8 @@ instances for `Prop` and `fun`.
 * Bounded and distributive lattice. Notated by `[DistribLattice α] [BoundedOrder α]`.
   Typical examples include `Prop` and `Set α`.
 -/
+
+@[expose] public section
 
 open Function OrderDual
 
