@@ -6,8 +6,7 @@ open Polynomial BigOperators Module.Free Fintype NumberField Embeddings FiniteDi
 
 lemma sqrt2sqrt_is_transcendental : Transcendental ℚ ((√2 : ℂ)^ (√2 : ℂ)) := by
   apply GelfondSchneiderSetup.gelfondSchneider √2 √2
-  ·
-    refine IsAlgebraic.of_aeval ?_ (fun H ↦ ?_) ?_ ?_
+  · refine IsAlgebraic.of_aeval ?_ (fun H ↦ ?_) ?_ ?_
     · exact Polynomial.X ^ 2 - Polynomial.C 1
     · have : ((((Polynomial.X ^ 2 - Polynomial.C 1) : ℚ[X])).natDegree : ℕ) = 2 := by {
         refine (degree_eq_iff_natDegree_eq_of_pos ?_).mp ?_

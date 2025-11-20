@@ -238,8 +238,24 @@ lemma abs_norm_eq_prod_embeddings_norm (α : K) :
     simp only [eq_ratCast, norm_ratCast]
     congr
 
-lemma norm_le_house_norm (α : K) (σ : K →+* ℂ) : ‖Algebra.norm ℚ (α)‖ ≤
-    ‖σ α‖ * (house (α)) ^ (Module.finrank ℚ K -1) := by
+
+lemma alg_int_emb_norm (α : K) (σ : K →+* ℂ) : ‖σ α‖ ≤ house (α) := by {
+  rw [house_eq_sup']
+  rw [Finset.sup'_eq_sup]
+  let s1 : Finset (K →+* ℂ) := by {exact Finset.univ}
+  let f :  (K →+* ℂ) → NNReal := fun φ => ‖φ α‖₊
+  have:= Finset.le_sup (f:=f ) (b := σ) (s:=s1) (Finset.mem_univ σ)
+  simp only at this
+  unfold f at this
+  unfold s1 at this
+  simp_all only [ge_iff_le]
+  exact this
+
+
+}
+
+lemma norm_le_house_norm (α : K) (σ : K →+* ℂ) :
+  ‖Algebra.norm ℚ (α)‖ ≤ ‖σ α‖ * (house (α)) ^ (Module.finrank ℚ K -1) := by
   have hcard := NumberField.Embeddings.card K ℂ
   have := abs_norm_eq_prod_embeddings_norm α
   rw [etc (σ0 := σ.toRatAlgHom)] at this
