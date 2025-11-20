@@ -3,8 +3,10 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.TensorAlgebra.Basic
-import Mathlib.LinearAlgebra.TensorPower.Basic
+module
+
+public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
+public import Mathlib.LinearAlgebra.TensorPower.Basic
 
 /-!
 # Tensor algebras as direct sums of tensor powers
@@ -12,6 +14,8 @@ import Mathlib.LinearAlgebra.TensorPower.Basic
 In this file we show that `TensorAlgebra R M` is isomorphic to a direct sum of tensor powers, as
 `TensorAlgebra.equivDirectSum`.
 -/
+
+@[expose] public section
 
 open scoped DirectSum TensorProduct
 
