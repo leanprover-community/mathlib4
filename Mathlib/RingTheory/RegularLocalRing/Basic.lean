@@ -3,9 +3,12 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.RingTheory.RegularLocalRing.Defs
-import Mathlib.RingTheory.KrullDimension.Field
-import Mathlib.RingTheory.Regular.RegularSequence
+module
+
+public import Mathlib.RingTheory.RegularLocalRing.Defs
+public import Mathlib.RingTheory.KrullDimension.Field
+public import Mathlib.RingTheory.Regular.RegularSequence
+
 /-!
 
 # Regular Local Ring is Domain
@@ -20,6 +23,8 @@ In this file, we prove that regular local ring is domain
   its dimension generates `maximalIdeal R`, it form a regular sequence.
 
 -/
+
+@[expose] public section
 
 open IsLocalRing IsRegularLocalRing
 
