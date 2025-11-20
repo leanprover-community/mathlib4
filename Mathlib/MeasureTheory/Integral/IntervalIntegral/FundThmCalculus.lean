@@ -1141,10 +1141,12 @@ theorem integral_eq_sub_of_hasDerivAt_of_le (hab : a ≤ b) (hcont : ContinuousO
 
 /-- Fundamental theorem of calculus-2: If `f : ℝ → E` has a derivative at `f' x` for all `x` in
   `[a, b]` and `f'` is integrable on `[a, b]`, then `∫ y in a..b, f' y` equals `f b - f a`. -/
-theorem integral_eq_sub_of_hasDerivAt (hderiv : ∀ x ∈ uIcc a b, HasDerivAt f (f' x) x)
+theorem integral_eq_sub_of_hasDerivWithinAt
+    (hderiv : ∀ x ∈ uIcc a b, HasDerivWithinAt f (f' x) (uIcc a b) x)
     (hint : IntervalIntegrable f' volume a b) : ∫ y in a..b, f' y = f b - f a :=
-  integral_eq_sub_of_hasDeriv_right (HasDerivAt.continuousOn hderiv)
-    (fun _x hx => (hderiv _ (mem_Icc_of_Ioo hx)).hasDerivWithinAt) hint
+  integral_eq_sub_of_hasDeriv_right (fun x hx => HasDerivWithinAt.continuousWithinAt (hderiv x hx))
+    (fun _x hx => (hderiv _ (mem_Icc_of_Ioo hx)).hasDerivAt
+      (Icc_mem_nhds (by simpa using hx.1) (by simpa using hx.2)) |>.hasDerivWithinAt) hint
 
 theorem integral_eq_sub_of_hasDerivAt_of_tendsto (hab : a < b) {fa fb}
     (hderiv : ∀ x ∈ Ioo a b, HasDerivAt f (f' x) x) (hint : IntervalIntegrable f' volume a b)
@@ -1169,9 +1171,23 @@ theorem integral_eq_sub_of_hasDerivAt_of_tendsto (hab : a < b) {fa fb}
 its derivative is integrable on `[a, b]`, then `∫ y in a..b, deriv f y` equals `f b - f a`.
 
 See also `integral_deriv_of_contDiffOn_Icc` for a similar theorem assuming that `f` is `C^1`. -/
-theorem integral_deriv_eq_sub (hderiv : ∀ x ∈ [[a, b]], DifferentiableAt ℝ f x)
-    (hint : IntervalIntegrable (deriv f) volume a b) : ∫ y in a..b, deriv f y = f b - f a :=
-  integral_eq_sub_of_hasDerivAt (fun x hx => (hderiv x hx).hasDerivAt) hint
+theorem integral_deriv_eq_sub (hderiv : ∀ x ∈ [[a, b]], DifferentiableWithinAt ℝ f (uIcc a b) x)
+    (hint : IntervalIntegrable (deriv f) volume a b) : ∫ y in a..b, deriv f y = f b - f a := by
+  have ae_eq : deriv f =ᵐ[volume.restrict (uIoc a b)] derivWithin f (uIcc a b) := by
+    rw [ae_restrict_uIoc_eq, ← restrict_Ioo_eq_restrict_Ioc, ← restrict_Ioo_eq_restrict_Ioc,
+      ← ae_restrict_union_eq, ← Set.uIoo_eq_union]
+    apply ae_restrict_of_forall_mem
+    · measurability
+    · intro x hx
+      refine ((hderiv x ?_).hasDerivWithinAt.hasDerivAt ?_).deriv
+      · rcases hx with hx | hx
+        · exact uIoo_subset_uIcc _ _ (Ioo_subset_uIoo hx)
+        · rw [uIcc_comm]
+          exact uIoo_subset_uIcc _ _ (Ioo_subset_uIoo hx)
+      simp at hx
+  rw [intervalIntegral.integral_congr_ae_restrict ae_eq]
+  exact integral_eq_sub_of_hasDerivWithinAt (fun x hx => (hderiv x hx).hasDerivWithinAt)
+    (hint.congr_ae ae_eq)
 
 theorem integral_deriv_eq_sub' (f) (hderiv : deriv f = f')
     (hdiff : ∀ x ∈ uIcc a b, DifferentiableAt ℝ f x) (hcont : ContinuousOn f' (uIcc a b)) :
