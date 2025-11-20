@@ -3,12 +3,14 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Topology.Algebra.Algebra
-import Mathlib.Topology.ContinuousMap.Compact
-import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Analysis.Normed.Ring.Units
-import Mathlib.Topology.Algebra.Module.CharacterSpace
+module
+
+public import Mathlib.Topology.Algebra.Algebra
+public import Mathlib.Topology.ContinuousMap.Compact
+public import Mathlib.Topology.UrysohnsLemma
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Analysis.Normed.Ring.Units
+public import Mathlib.Topology.Algebra.Module.CharacterSpace
 
 /-!
 # Ideals of continuous functions
@@ -66,6 +68,8 @@ order isomorphism described above, and instead we only consider the Galois inser
 
 ideal, continuous function, compact, Hausdorff
 -/
+
+@[expose] public section
 
 
 open scoped NNReal

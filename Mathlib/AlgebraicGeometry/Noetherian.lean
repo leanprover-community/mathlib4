@@ -3,9 +3,11 @@ Copyright (c) 2024 Geno Racklin Asher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geno Racklin Asher
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
-import Mathlib.RingTheory.Localization.Submodule
-import Mathlib.RingTheory.Spectrum.Prime.Noetherian
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
+public import Mathlib.RingTheory.Localization.Submodule
+public import Mathlib.RingTheory.Spectrum.Prime.Noetherian
 
 /-!
 # Noetherian and Locally Noetherian Schemes
@@ -41,6 +43,8 @@ giving definitions, equivalent conditions, and basic properties.
 * [Robin Hartshorne, *Algebraic Geometry*][Har77]
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -207,7 +211,7 @@ instance (priority := 100) {Z : Scheme} [IsLocallyNoetherian X]
 @[stacks 01OY]
 instance (priority := 100) IsLocallyNoetherian.quasiSeparatedSpace [IsLocallyNoetherian X] :
     QuasiSeparatedSpace X := by
-  apply (quasiSeparatedSpace_iff_affine X).mpr
+  apply quasiSeparatedSpace_iff_forall_affineOpens.mpr
   intro U V
   have hInd := U.2.fromSpec.isOpenEmbedding.isInducing
   apply (hInd.isCompact_preimage_iff ?_).mp

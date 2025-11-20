@@ -3,13 +3,17 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Algebra.Group.Action.End
-import Mathlib.GroupTheory.Subgroup.Center
-import Mathlib.GroupTheory.Submonoid.Centralizer
+module
+
+public import Mathlib.Algebra.Group.Action.End
+public import Mathlib.GroupTheory.Subgroup.Center
+public import Mathlib.GroupTheory.Submonoid.Centralizer
 
 /-!
 # Centralizers of subgroups
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -85,11 +89,6 @@ instance characteristic_centralizer [hH : H.Characteristic] :
 theorem le_centralizer_iff_isMulCommutative : K ≤ centralizer K ↔ IsMulCommutative K :=
   ⟨fun h => ⟨⟨fun x y => Subtype.ext (h y.2 x x.2)⟩⟩,
     fun h x hx y hy => congr_arg Subtype.val (h.1.1 ⟨y, hy⟩ ⟨x, hx⟩)⟩
-
-@[deprecated (since := "2025-04-09")] alias le_centralizer_iff_isCommutative :=
-  le_centralizer_iff_isMulCommutative
-@[deprecated (since := "2025-04-09")] alias _root_.AddSubgroup.le_centralizer_iff_isCommutative :=
-  AddSubgroup.le_centralizer_iff_isAddCommutative
 
 variable (H)
 

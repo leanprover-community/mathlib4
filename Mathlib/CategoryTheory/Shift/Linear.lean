@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.CommShift
-import Mathlib.CategoryTheory.Localization.Linear
+module
+
+public import Mathlib.CategoryTheory.Shift.CommShift
+public import Mathlib.CategoryTheory.Localization.Linear
 
 /-!
 # Localization of the linearity of the shift functors
@@ -15,6 +17,8 @@ such that `L` is `R`-linear and the shift functors on `C` are `R`-linear,
 then the shift functors on `D` are `R`-linear.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

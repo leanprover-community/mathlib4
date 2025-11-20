@@ -3,11 +3,13 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Covering.VitaliFamily
-import Mathlib.MeasureTheory.Function.AEMeasurableOrder
-import Mathlib.MeasureTheory.Integral.Average
-import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
-import Mathlib.MeasureTheory.Measure.Regular
+module
+
+public import Mathlib.MeasureTheory.Covering.VitaliFamily
+public import Mathlib.MeasureTheory.Function.AEMeasurableOrder
+public import Mathlib.MeasureTheory.Integral.Average
+public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
+public import Mathlib.MeasureTheory.Measure.Regular
 
 /-!
 # Differentiation of measures
@@ -72,6 +74,8 @@ make no sense. However, the measure is not globally zero if the space is big eno
 
 * [Herbert Federer, Geometric Measure Theory, Chapter 2.9][Federer1996]
 -/
+
+@[expose] public section
 
 open MeasureTheory Metric Set Filter TopologicalSpace MeasureTheory.Measure
 
@@ -252,10 +256,7 @@ theorem ae_tendsto_div : ∀ᵐ x ∂μ, ∃ c, Tendsto (fun a => ρ a / μ a) (
       exact ENNReal.mul_le_of_le_div ha.le
   have B : ∀ᵐ x ∂μ, ∀ c ∈ w, ∀ d ∈ w, c < d →
       ¬((∃ᶠ a in v.filterAt x, ρ a / μ a < c) ∧ ∃ᶠ a in v.filterAt x, d < ρ a / μ a) := by
-    #adaptation_note /-- 2024-04-23
-    The next two lines were previously just `simpa only [ae_ball_iff w_count, ae_all_iff]` -/
-    rw [ae_ball_iff w_count]; intro x hx; rw [ae_ball_iff w_count]; revert x
-    simpa only [ae_all_iff]
+    simpa only [ae_ball_iff w_count, ae_all_iff]
   filter_upwards [B]
   intro x hx
   exact tendsto_of_no_upcrossings w_dense hx
@@ -785,10 +786,7 @@ theorem ae_tendsto_lintegral_enorm_sub_div'_of_integrable {f : α → E} (hf : I
       ∀ᵉ (n : ℕ) (c ∈ t),
         Tendsto (fun a => (∫⁻ y in a, ‖f y - (A.set n).indicator (fun _ => c) y‖ₑ ∂μ) / μ a)
           (v.filterAt x) (𝓝 ‖f x - (A.set n).indicator (fun _ => c) x‖ₑ) := by
-    #adaptation_note /-- 2024-04-23
-    The next two lines were previously just `simp_rw [ae_all_iff, ae_ball_iff t_count]`. -/
-    simp_rw [ae_all_iff]
-    intro x; rw [ae_ball_iff t_count]; revert x
+    simp_rw [ae_all_iff, ae_ball_iff t_count]
     intro n c _
     apply ae_tendsto_lintegral_div'
     · refine (h'f.sub ?_).enorm

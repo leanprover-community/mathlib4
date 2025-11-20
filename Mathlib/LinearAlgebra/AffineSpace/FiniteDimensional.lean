@@ -3,10 +3,12 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.FieldTheory.Finiteness
-import Mathlib.LinearAlgebra.AffineSpace.Basis
-import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+module
+
+public import Mathlib.FieldTheory.Finiteness
+public import Mathlib.LinearAlgebra.AffineSpace.Basis
+public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
 /-!
 # Finite-dimensional subspaces of affine spaces.
@@ -20,6 +22,8 @@ subspaces of affine spaces.
   subspace of dimension at most 1.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -372,6 +376,15 @@ instance finiteDimensional_vectorSpan_insert_set (s : Set P) [FiniteDimensional 
   rw [← direction_affineSpan, ← affineSpan_insert_affineSpan, direction_affineSpan]
   exact finiteDimensional_vectorSpan_insert (affineSpan k s) p
 
+/-- The direction of the affine span of adding a point to a set with a set with finite-dimensional
+direction of the `affineSpan` is finite-dimensional. -/
+instance finiteDimensional_direction_affineSpan_insert_set (s : Set P)
+    [FiniteDimensional k (affineSpan k s).direction] (p : P) :
+    FiniteDimensional k (affineSpan k (insert p s)).direction := by
+  haveI : FiniteDimensional k (vectorSpan k s) := (direction_affineSpan k s) ▸ inferInstance
+  rw [direction_affineSpan]
+  infer_instance
+
 /-- A set of points is collinear if their `vectorSpan` has dimension
 at most `1`. -/
 def Collinear (s : Set P) : Prop :=
@@ -619,6 +632,21 @@ theorem collinear_triple_of_mem_affineSpan_pair {p₁ p₂ p₃ p₄ p₅ : P} (
   refine (collinear_insert_insert_insert_left_of_mem_affineSpan_pair h₁ h₂ h₃).subset ?_
   gcongr; simp
 
+/-- Replacing a point in an affine independent triple with a collinear point preserves affine
+independence. -/
+theorem affineIndependent_of_affineIndependent_collinear_ne {p₁ p₂ p₃ p : P}
+    (ha : AffineIndependent k ![p₁, p₂, p₃]) (hcol : Collinear k {p₂, p₃, p}) (hne : p₂ ≠ p) :
+    AffineIndependent k ![p₁, p₂, p] := by
+  rw [affineIndependent_iff_not_collinear_set]
+  by_contra h
+  have h1: Collinear k {p₁, p₃, p₂, p} := by
+    apply collinear_insert_insert_of_mem_affineSpan_pair
+    · apply Collinear.mem_affineSpan_of_mem_of_ne h (by simp) (by simp) (by simp) hne
+    · apply Collinear.mem_affineSpan_of_mem_of_ne hcol (by simp) (by simp) (by simp) hne
+  have h2 : Collinear k {p₁, p₂, p₃} := h1.subset (by grind)
+  rw [affineIndependent_iff_not_collinear_set] at ha
+  exact ha h2
+
 variable (k) in
 /-- A set of points is coplanar if their `vectorSpan` has dimension at most `2`. -/
 def Coplanar (s : Set P) : Prop :=
@@ -762,7 +790,7 @@ variable [DivisionRing k] [Module k V]
 
 protected theorem finiteDimensional [Finite ι] (b : AffineBasis ι k P) : FiniteDimensional k V :=
   let ⟨i⟩ := b.nonempty
-  FiniteDimensional.of_fintype_basis (b.basisOf i)
+  (b.basisOf i).finiteDimensional_of_finite
 
 protected theorem finite [FiniteDimensional k V] (b : AffineBasis ι k P) : Finite ι :=
   finite_of_fin_dim_affineIndependent k b.ind
