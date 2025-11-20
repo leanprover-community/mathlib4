@@ -316,6 +316,30 @@ theorem affineIndependent_equiv {ι' : Type*} (e : ι ≃ ι') {p : ι' → P} :
   rw [this]
   exact h.comp_embedding e.symm.toEmbedding
 
+/-- Swapping the first two points preserves affine independence. -/
+theorem AffineIndependent.comm_left {p₁ p₂ p₃ : P} (h : AffineIndependent k ![p₁, p₂, p₃]) :
+    AffineIndependent k ![p₂, p₁, p₃] := by
+  rw [← affineIndependent_equiv (Equiv.swap 0 1)]
+  convert h using 1
+  ext x
+  fin_cases x <;> rfl
+
+/-- Swapping the last two points preserves affine independence. -/
+theorem AffineIndependent.comm_right {p₁ p₂ p₃ : P} (h : AffineIndependent k ![p₁, p₂, p₃]) :
+    AffineIndependent k ![p₁, p₃, p₂] := by
+  rw [← affineIndependent_equiv (Equiv.swap 1 2)]
+  convert h using 1
+  ext x
+  fin_cases x <;> rfl
+
+/-- Reversing the order of three points preserves affine independence. -/
+theorem AffineIndependent.reverse_of_three {p₁ p₂ p₃ : P} (h : AffineIndependent k ![p₁, p₂, p₃]) :
+    AffineIndependent k ![p₃, p₂, p₁] := by
+  rw [← affineIndependent_equiv (Equiv.swap 0 2)]
+  convert h using 1
+  ext x
+  fin_cases x <;> rfl
+
 /-- If a set of points is affinely independent, so is any subset. -/
 protected theorem AffineIndependent.mono {s t : Set P}
     (ha : AffineIndependent k (fun x => x : t → P)) (hs : s ⊆ t) :
