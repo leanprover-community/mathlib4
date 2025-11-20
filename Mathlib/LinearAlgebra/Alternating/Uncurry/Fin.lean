@@ -3,9 +3,11 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.LinearAlgebra.Alternating.Curry
-import Mathlib.GroupTheory.Perm.Fin
-import Mathlib.Data.Fin.Parity
+module
+
+public import Mathlib.LinearAlgebra.Alternating.Curry
+public import Mathlib.GroupTheory.Perm.Fin
+public import Mathlib.Data.Fin.Parity
 
 /-!
 # Uncurrying alternating maps
@@ -40,6 +42,8 @@ not only a field of characteristic zero.
 A version of the latter theorem for continuous alternating maps
 will be used to prove that the second exterior derivative of a differential form is zero.
 -/
+
+@[expose] public section
 
 open Fin Function
 

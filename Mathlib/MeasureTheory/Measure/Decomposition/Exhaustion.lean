@@ -3,7 +3,9 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
+module
+
+public import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 
 /-!
 # Method of exhaustion
@@ -43,6 +45,8 @@ If `μ, ν` are two measures with `ν` s-finite, then there exists a set `s` suc
 * [P. R. Halmos, *Measure theory*, 17.3 and 30.11][halmos1950measure]
 
 -/
+
+@[expose] public section
 
 assert_not_exists MeasureTheory.Measure.rnDeriv
 assert_not_exists MeasureTheory.VectorMeasure
@@ -91,7 +95,7 @@ with `μ.restrict t` sigma-finite such that `ν t ≥ C - 1/n`. -/
 lemma exists_isSigmaFiniteSet_measure_ge (μ ν : Measure α) [IsFiniteMeasure ν] (n : ℕ) :
     ∃ t, MeasurableSet t ∧ SigmaFinite (μ.restrict t)
       ∧ (⨆ (s) (_ : MeasurableSet s) (_ : SigmaFinite (μ.restrict s)), ν s) - 1/n ≤ ν t := by
-  by_cases hC_lt : 1/n < ⨆ (s) (_ : MeasurableSet s) (_ : SigmaFinite (μ.restrict s)), ν s
+  by_cases! hC_lt : 1/n < ⨆ (s) (_ : MeasurableSet s) (_ : SigmaFinite (μ.restrict s)), ν s
   · have h_lt_top : ⨆ (s) (_ : MeasurableSet s) (_ : SigmaFinite (μ.restrict s)), ν s < ∞ := by
       refine (?_ : ⨆ (s) (_ : MeasurableSet s)
         (_ : SigmaFinite (μ.restrict s)), ν s ≤ ν Set.univ).trans_lt (measure_lt_top _ _)
@@ -113,7 +117,7 @@ lemma exists_isSigmaFiniteSet_measure_ge (μ ν : Measure α) [IsFiniteMeasure �
     simp only [ht_meas, ht_mem, iSup_true] at ht
     exact ht.le
   · refine ⟨∅, MeasurableSet.empty, by rw [Measure.restrict_empty]; infer_instance, ?_⟩
-    rw [tsub_eq_zero_of_le (not_lt.mp hC_lt)]
+    rw [tsub_eq_zero_of_le hC_lt]
     exact zero_le'
 
 /-- A measurable set such that `μ.restrict (μ.sigmaFiniteSetGE ν n)` is sigma-finite and

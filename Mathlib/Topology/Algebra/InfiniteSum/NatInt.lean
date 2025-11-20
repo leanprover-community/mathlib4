@@ -3,10 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+module
 
-import Mathlib.Logic.Encodable.Lattice
-import Mathlib.Order.Filter.AtTopBot.Finset
-import Mathlib.Topology.Algebra.InfiniteSum.Group
+public import Mathlib.Logic.Encodable.Lattice
+public import Mathlib.Order.Filter.AtTopBot.Finset
+public import Mathlib.Topology.Algebra.InfiniteSum.Group
 
 /-!
 # Infinite sums and products over `ℕ` and `ℤ`
@@ -16,6 +17,8 @@ applied to the important special cases where the domain is `ℕ` or `ℤ`. For i
 formula `∑ i ∈ range k, f i + ∑' i, f (i + k) = ∑' i, f i`, ∈ `sum_add_tsum_nat_add`, as well as
 several results relating sums and products on `ℕ` to sums and products on `ℤ`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -287,7 +290,7 @@ variable [TopologicalSpace G] [IsTopologicalGroup G]
 @[to_additive]
 theorem Multipliable.nat_tprod_vanishing {f : ℕ → G} (hf : Multipliable f) ⦃e : Set G⦄
     (he : e ∈ 𝓝 1) : ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∏' n : t, f n) ∈ e :=
-  letI : UniformSpace G := IsTopologicalGroup.toUniformSpace G
+  letI : UniformSpace G := IsTopologicalGroup.rightUniformSpace G
   have : IsUniformGroup G := isUniformGroup_of_commGroup
   cauchySeq_finset_iff_nat_tprod_vanishing.1 hf.hasProd.cauchySeq e he
 

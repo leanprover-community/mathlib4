@@ -3,9 +3,11 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Monoidal.Action.Basic
-import Mathlib.CategoryTheory.Monoidal.End
-import Mathlib.CategoryTheory.Monoidal.Opposite
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Action.Basic
+public import Mathlib.CategoryTheory.Monoidal.End
+public import Mathlib.CategoryTheory.Monoidal.Opposite
 
 /-! # Actions as monoidal functors to endofunctor categories
 
@@ -22,6 +24,8 @@ monoidal, and conversely one can define a left action of `C` on `D` from a monoi
 functor `C ⥤ (D ⥤ D)ᴹᵒᵖ`.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.MonoidalCategory
 
