@@ -148,7 +148,7 @@ lemma infinite_of_linearIndependent_coxeterWeight_four [NeZero (2 : R)] [IsAddTo
     rw [ne_eq, coroot_root_eq_pairing, ← sub_eq_zero, sub_eq_add_neg]
     exact hl
 
-lemma pairing_smul_root_eq_of_not_linearIndependent [NeZero (2 : R)] [NoZeroSMulDivisors R M]
+lemma pairing_smul_root_eq_of_not_linearIndependent [NeZero (2 : R)] [Module.IsTorsionFree R M]
     (h : ¬ LinearIndependent R ![P.root i, P.root j]) :
     P.pairing j i • P.root i = (2 : R) • P.root j := by
   rw [LinearIndependent.pair_iff] at h
@@ -179,7 +179,7 @@ lemma coxeterWeight_ne_four_of_linearIndependent [NeZero (2 : R)] [IsAddTorsionF
   have := P.infinite_of_linearIndependent_coxeterWeight_four hl contra
   exact not_finite ι
 
-variable [CharZero R] [NoZeroSMulDivisors R M]
+variable [CharZero R] [Module.IsTorsionFree R M]
 
 /-- See also `RootPairing.linearIndependent_iff_coxeterWeightIn_ne_four`. -/
 lemma linearIndependent_iff_coxeterWeight_ne_four :
@@ -231,7 +231,7 @@ lemma pairing_neg_two_neg_two_iff :
   simpa [eq_comm (a := -P.root i), eq_comm (b := j)] using
     P.pairing_two_two_iff (P.reflectionPerm i i) j
 
-variable [NoZeroSMulDivisors R N]
+variable [Module.IsTorsionFree R N]
 
 lemma pairing_one_four_iff' (h2 : IsSMulRegular R (2 : R)) :
     P.pairing i j = 1 ∧ P.pairing j i = 4 ↔ P.root j = (2 : R) • P.root i := by
@@ -271,7 +271,7 @@ section IsValuedIn
 open FaithfulSMul
 
 variable [CommRing S] [Algebra S R] [FaithfulSMul S R] [P.IsValuedIn S]
-omit [NoZeroSMulDivisors R N]
+omit [Module.IsTorsionFree R N]
 variable {i j}
 
 lemma linearIndependent_iff_coxeterWeightIn_ne_four :
@@ -302,7 +302,7 @@ lemma pairingIn_neg_two_neg_two_iff :
   simp only [← P.pairing_neg_two_neg_two_iff, ← P.algebraMap_pairingIn S,
     ← map_ofNat (algebraMap S R), (algebraMap_injective S R).eq_iff, ← map_neg]
 
-variable [NoZeroSMulDivisors R N]
+variable [Module.IsTorsionFree R N]
 
 lemma pairingIn_one_four_iff [IsDomain R] :
     P.pairingIn S i j = 1 ∧ P.pairingIn S j i = 4 ↔ P.root j = (2 : R) • P.root i := by
