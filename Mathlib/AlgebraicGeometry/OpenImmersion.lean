@@ -253,6 +253,18 @@ lemma appIso_inv_app_presheafMap (U : X.Opens) :
       X.presheaf.map (eqToHom (f.preimage_image_eq U).symm).op = 𝟙 _ := by
   rw [Scheme.Hom.appIso_inv_app_assoc, ← Functor.map_comp, ← X.presheaf.map_id]; rfl
 
+@[simp]
+lemma id_appIso (U : X.Opens) :
+    (𝟙 X:).appIso U = X.presheaf.mapIso (eqToIso (by simp)).op := by
+  ext; simp [appIso_hom]
+
+@[simp]
+lemma comp_appIso {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) [IsOpenImmersion f]
+    [IsOpenImmersion g] (U : X.Opens) :
+    (f ≫ g).appIso U =
+      Z.presheaf.mapIso (eqToIso (by simp)).op ≪≫ g.appIso _ ≪≫ f.appIso U := by
+  ext : 1; simp [appIso_hom, app_eq_appLE, appLE_comp_appLE, -comp_appLE]
+
 end Scheme.Hom
 
 /-- The open sets of an open subscheme corresponds to the open sets containing in the image. -/

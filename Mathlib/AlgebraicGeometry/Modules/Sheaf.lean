@@ -29,7 +29,7 @@ noncomputable section
 
 namespace AlgebraicGeometry.Scheme
 
-variable {X Y : Scheme.{u}} (f : X ⟶ Y)
+variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 
 variable (X) in
 /-- The category of sheaves of modules over a scheme. -/
@@ -166,6 +166,41 @@ instance : (pushforward f).IsRightAdjoint := (inverseImageAdjunction f).isRightA
 instance : (pushforward f).Additive := Functor.additive_of_preservesBinaryBiproducts _
 instance : (inverseImage f).Additive := Functor.additive_of_preservesBinaryBiproducts _
 
+/-- Pushforward along the identity is (isomorphic to) the identity. -/
+-- This is refl but a heavy one.
+def pushforwardId : pushforward (𝟙 X) ≅ 𝟭 _ := SheafOfModules.pushforwardId _
+
+/-- Pushforward along composition is (isomorphic to) the composition of pushforwards. -/
+-- This is refl but a very heavy one.
+def pushforwardComp : pushforward (f ≫ g) ≅ pushforward f ⋙ pushforward g :=
+  haveI : (Opens.map g.base ⋙ Opens.map f.base).IsContinuous
+      (Opens.grothendieckTopology Z) (Opens.grothendieckTopology X) :=
+    inferInstanceAs ((Opens.map (f ≫ g).base).IsContinuous _ _)
+  (SheafOfModules.pushforwardComp
+      (F := TopologicalSpace.Opens.map g.base)
+      (G := TopologicalSpace.Opens.map f.base)
+      (R' := X.ringCatSheaf) (R := Y.ringCatSheaf) (S := Z.ringCatSheaf)
+      ⟨Functor.whiskerRight g.c (forget₂ CommRingCat RingCat)⟩
+      ⟨Functor.whiskerRight f.c (forget₂ CommRingCat RingCat)⟩).symm
+
+/-- Pushforward along equal morphisms are isomorphic. -/
+def pushforwardCongr {f g : X ⟶ Y} (hf : f = g) : pushforward f ≅ pushforward g :=
+    pushforwardNatIso _ (Opens.mapIso _ _ (hf ▸ rfl)) ≪≫
+      SheafOfModules.pushforwardCongr (by cat_disch)
+
+/-- Inverse image along the identity is isomorphic to the identity. -/
+def inverseImageId : inverseImage (𝟙 X) ≅ 𝟭 _ :=
+  (inverseImageAdjunction _).leftAdjointUniq (.ofNatIsoRight .id pushforwardId.symm)
+
+/-- Inverse image along the composition is isomorphic to the composition of inverse images. -/
+def inverseImageComp : inverseImage (f ≫ g) ≅ inverseImage g ⋙ inverseImage f :=
+  (inverseImageAdjunction _).leftAdjointUniq (.ofNatIsoRight
+    (.comp (inverseImageAdjunction _) (inverseImageAdjunction _)) (pushforwardComp f g).symm)
+
+/-- Inverse image along equal morphisms are isomorphic. -/
+def inverseImageCongr {f g : X ⟶ Y} (hf : f = g) : inverseImage f ≅ inverseImage g :=
+  eqToIso (hf ▸ rfl)
+
 end Functorial
 
 section Restriction
@@ -195,10 +230,10 @@ abbrev restrict (M : Y.Modules) (f : X ⟶ Y) [IsOpenImmersion f] : X.Modules :=
 def restrictFunctorAdjCounitIso : pushforward f ⋙ restrictFunctor f ≅ 𝟭 _ :=
   letI := CategoryTheory.Functor.isContinuous_comp.{u} f.opensFunctor (Opens.map f.base)
     (Opens.grothendieckTopology X) (Opens.grothendieckTopology Y) (Opens.grothendieckTopology X)
-  (pushforwardComp _ _) ≪≫ pushforwardNatIso _ (NatIso.ofComponents
+  (SheafOfModules.pushforwardComp _ _) ≪≫ pushforwardNatIso _ (NatIso.ofComponents
       (fun U ↦ eqToIso (f.preimage_image_eq U).symm) fun _ ↦ rfl) ≪≫
-    pushforwardCongr (by ext U x; exact  congr($(f.appIso_inv_app_presheafMap U.unop) x)) ≪≫
-    pushforwardId
+    SheafOfModules.pushforwardCongr (by ext U x; exact
+      congr($(f.appIso_inv_app_presheafMap U.unop) x)) ≪≫ SheafOfModules.pushforwardId _
 
 /-- Restriction is right adjoint to pushforward. -/
 def restrictAdjunction : restrictFunctor f ⊣ pushforward f := by
@@ -220,6 +255,29 @@ instance : (pushforward f).Faithful := (restrictAdjunction f).fullyFaithfulROfIs
 /-- Restriction is naturally isomorphic to the inverse image. -/
 def restrictFunctorIsoInverseImage : restrictFunctor f ≅ inverseImage f :=
   (restrictAdjunction f).leftAdjointUniq (inverseImageAdjunction f)
+
+/-- Restriction along the identity is isomorphic to the identity. -/
+def restrictFunctorId : restrictFunctor (𝟙 X) ≅ 𝟭 _ :=
+  SheafOfModules.pushforwardNatIso _ (NatIso.ofComponents (fun _ ↦ eqToIso (by simp))) ≪≫
+    SheafOfModules.pushforwardCongr
+      (by ext : 3; simp [← Functor.map_comp, SheafedSpace.sheaf]) ≪≫
+    SheafOfModules.pushforwardId _
+
+/-- Restriction along the composition is isomorphic to the composition of restrictions. -/
+def restrictFunctorComp [IsOpenImmersion f] [IsOpenImmersion g] :
+    restrictFunctor (f ≫ g) ≅ restrictFunctor g ⋙ restrictFunctor f :=
+  have : (f.opensFunctor ⋙ g.opensFunctor).IsContinuous
+      (Opens.grothendieckTopology X) (Opens.grothendieckTopology Z) :=
+    Functor.isContinuous_comp _ _ _ (Opens.grothendieckTopology _) _
+  SheafOfModules.pushforwardNatIso _ (NatIso.ofComponents fun _ ↦ eqToIso (by simp)) ≪≫
+    SheafOfModules.pushforwardCongr (by ext : 3; simp [← Functor.map_comp, SheafedSpace.sheaf]) ≪≫
+    (SheafOfModules.pushforwardComp _ _).symm
+
+/-- Restriction along equal morphisms are isomorphic. -/
+def restrictFunctorCongr {f g : X ⟶ Y} (hf : f = g) [IsOpenImmersion f] [IsOpenImmersion g] :
+    restrictFunctor f ≅ restrictFunctor g :=
+  SheafOfModules.pushforwardNatIso _ (NatIso.ofComponents fun _ ↦ eqToIso (by simp [hf])) ≪≫
+    SheafOfModules.pushforwardCongr (by ext : 3; subst hf; simp)
 
 /-- Restriction along open immersions commutes with taking stalks. -/
 def restrictStalkNatIso (f : X ⟶ Y) [IsOpenImmersion f] (x : X) :
