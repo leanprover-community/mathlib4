@@ -3,11 +3,12 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang, Damiano Testa
 -/
+module
 
-import Lean.Elab.Command
+public meta import Lean.Elab.Command
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header
 
 /-!
 # Linter for `attribute [...] in` declarations
@@ -75,6 +76,8 @@ example : False := by simp
 example : False := by simp
 ```
 -/
+
+public meta section
 
 open Lean Elab Command Linter
 

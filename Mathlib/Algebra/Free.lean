@@ -3,12 +3,14 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Control.Applicative
-import Mathlib.Control.Traversable.Basic
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Control.Applicative
+public import Mathlib.Control.Traversable.Basic
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Free constructions
@@ -25,6 +27,8 @@ import Mathlib.Tactic.AdaptationNote
   `FreeSemigroup α`.
 * `FreeMagma.lift`: the universal property of the free magma, expressing its adjointness.
 -/
+
+@[expose] public section
 
 universe u v l
 
