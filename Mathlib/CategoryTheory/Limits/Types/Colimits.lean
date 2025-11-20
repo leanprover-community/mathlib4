@@ -3,9 +3,11 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Reid Barton, Joël Riou
 -/
-import Mathlib.Logic.UnivLE
-import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.Limits.Types.ColimitType
+module
+
+public import Mathlib.Logic.UnivLE
+public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.Limits.Types.ColimitType
 
 /-!
 # Colimits in the category of types
@@ -13,6 +15,8 @@ import Mathlib.CategoryTheory.Limits.Types.ColimitType
 We show that the category of types has all colimits, by providing the usual concrete models.
 
 -/
+
+@[expose] public section
 
 universe u' v u w
 
@@ -123,10 +127,10 @@ section instances
 example : HasColimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type max w v) := inferInstance
 example : HasColimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type max v w) := inferInstance
 
-example : HasColimitsOfSize.{0, 0, v, v+1} (Type v) := inferInstance
-example : HasColimitsOfSize.{v, v, v, v+1} (Type v) := inferInstance
+example : HasColimitsOfSize.{0, 0, v, v + 1} (Type v) := inferInstance
+example : HasColimitsOfSize.{v, v, v, v + 1} (Type v) := inferInstance
 
-example [UnivLE.{v, u}] : HasColimitsOfSize.{v, v, u, u+1} (Type u) := inferInstance
+example [UnivLE.{v, u}] : HasColimitsOfSize.{v, v, u, u + 1} (Type u) := inferInstance
 
 end instances
 
