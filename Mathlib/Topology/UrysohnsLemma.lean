@@ -207,7 +207,6 @@ theorem approx_le_approx_of_U_sub_C {c₁ c₂ : CU P} (h : c₁.U ⊆ c₂.C) (
   · calc
       approx n₂ c₂ x ≤ 1 := approx_le_one _ _ _
       _ = approx n₁ c₁ x := (approx_of_notMem_U _ _ hx).symm
-attribute [gcongr] indicator_le_indicator_of_subset indicator_le_indicator_apply_of_subset
 
 theorem approx_mem_Icc_right_left (c : CU P) (n : ℕ) (x : X) :
     c.approx n x ∈ Icc (c.right.approx n x) (c.left.approx n x) := by
