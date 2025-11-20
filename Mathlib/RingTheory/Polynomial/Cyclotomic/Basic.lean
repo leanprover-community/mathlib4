@@ -136,14 +136,14 @@ section Field
 variable {K : Type*} [Field K]
 
 /-- `cyclotomic' n K` splits. -/
-theorem cyclotomic'_splits (n : ℕ) : Splits (RingHom.id K) (cyclotomic' n K) := by
+theorem cyclotomic'_splits (n : ℕ) : Splits ((cyclotomic' n K).map (RingHom.id K)) := by
   apply splits_prod (RingHom.id K)
   intro z _
   simp only [splits_X_sub_C (RingHom.id K)]
 
 /-- If there is a primitive `n`-th root of unity in `K`, then `X ^ n - 1` splits. -/
 theorem X_pow_sub_one_splits {ζ : K} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
-    Splits (RingHom.id K) (X ^ n - C (1 : K)) := by
+    Splits ((X ^ n - C (1 : K)).map (RingHom.id K)) := by
   rw [splits_iff_card_roots, ← nthRoots, IsPrimitiveRoot.card_nthRoots_one h, natDegree_X_pow_sub_C]
 
 /-- If there is a primitive `n`-th root of unity in `K`, then
