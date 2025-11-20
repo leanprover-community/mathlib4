@@ -3,14 +3,18 @@ Copyright (c) 2024 Jingting Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jingting Wang
 -/
-import Mathlib.Algebra.FiveLemma
-import Mathlib.RingTheory.Flat.Basic
+module
+
+public import Mathlib.Algebra.FiveLemma
+public import Mathlib.RingTheory.Flat.Basic
 
 /-!
 
 # Lemmas about IsBaseChange under Exact Sequences
 
 -/
+
+@[expose] public section
 
 variable {R : Type*} [CommRing R] (S : Type*) [CommRing S] [Algebra R S]
 
