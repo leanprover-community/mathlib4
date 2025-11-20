@@ -129,8 +129,8 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
     refine ⟨Set.indicator u fun _ => c,
             fun x => ?_, u_open.lowerSemicontinuous_indicator (zero_le _), ?_⟩
     · simp only [SimpleFunc.coe_const, SimpleFunc.const_zero, SimpleFunc.coe_zero,
-        Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise]
-      exact Set.indicator_le_indicator_of_subset su (fun x => zero_le _) _
+        Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise, ← Function.const_def]
+      grw [su]
     · suffices (c : ℝ≥0∞) * μ u ≤ c * μ s + ε by
         classical
         simpa only [ENNReal.coe_indicator, u_open.measurableSet, lintegral_indicator,
@@ -340,8 +340,8 @@ theorem SimpleFunc.exists_upperSemicontinuous_le_lintegral_le (f : α →ₛ ℝ
       ⟨Set.indicator F fun _ => c, fun x => ?_, F_closed.upperSemicontinuous_indicator (zero_le _),
         ?_⟩
     · simp only [SimpleFunc.coe_const, SimpleFunc.const_zero, SimpleFunc.coe_zero,
-        Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise]
-      exact Set.indicator_le_indicator_of_subset Fs (fun x => zero_le _) _
+        Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise, ← Function.const_def]
+      grw [Fs]
     · suffices (c : ℝ≥0∞) * μ s ≤ c * μ F + ε by
         classical
         simpa only [hs, F_closed.measurableSet, SimpleFunc.coe_const, Function.const_apply,

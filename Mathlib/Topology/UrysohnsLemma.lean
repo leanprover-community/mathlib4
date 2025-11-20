@@ -212,8 +212,10 @@ theorem approx_mem_Icc_right_left (c : CU P) (n : ℕ) (x : X) :
     c.approx n x ∈ Icc (c.right.approx n x) (c.left.approx n x) := by
   induction n generalizing c with
   | zero =>
-    exact ⟨le_rfl, indicator_le_indicator_of_subset (compl_subset_compl.2 c.left_U_subset)
-      (fun _ => zero_le_one) _⟩
+    simp only [approx]
+    refine ⟨le_rfl, ?_⟩
+    grw [left_U_subset]
+    rw [Pi.one_apply]; positivity -- TODO: `positivity` doesn't prove that `1 x` is nonnegative
   | succ n ihn =>
     simp only [approx, mem_Icc]
     refine ⟨midpoint_le_midpoint ?_ (ihn _).1, midpoint_le_midpoint (ihn _).2 ?_⟩ <;>
