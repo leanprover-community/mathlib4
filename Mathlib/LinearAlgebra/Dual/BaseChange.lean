@@ -3,10 +3,11 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.LinearAlgebra.Dual.Defs
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
+public import Mathlib.LinearAlgebra.Dual.Defs
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
 
 /-!
 # Base change for the dual of a module
@@ -24,6 +25,8 @@ given by `Module.Dual.baseChange`.
 * `IsBaseChange.dual` : for finite free modules, taking dual commutes with base change.
 
 -/
+
+@[expose] public section
 
 universe u v
 
