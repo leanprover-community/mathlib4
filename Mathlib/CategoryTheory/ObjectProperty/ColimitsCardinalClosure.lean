@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.ColimitsClosure
-import Mathlib.CategoryTheory.SmallRepresentatives
-import Mathlib.CategoryTheory.Comma.CardinalArrow
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.ColimitsClosure
+public import Mathlib.CategoryTheory.SmallRepresentatives
+public import Mathlib.CategoryTheory.Comma.CardinalArrow
 
 /-!
 # Closure of a property of objects under colimits of bounded cardinality
@@ -13,13 +15,15 @@ import Mathlib.CategoryTheory.Comma.CardinalArrow
 In this file, given `P : ObjectProperty C` and `κ : Cardinal.{w}`,
 we introduce the closure `P.colimitsCardinalClosure κ`
 of `P` under colimits of shapes given by categories `J` such
-that `HasCardinalLT (Arrow J) κ` holds.
+that `Arrow J` is of cardinality `< κ`.
 
 If `C` is locally `w`-small and `P` is essentially `w`-small,
 we show that this closure `P.colimitsCardinalClosure κ` is
 also essentially `w`-small.
 
 -/
+
+@[expose] public section
 
 universe w v' v u' u
 
@@ -29,7 +33,7 @@ variable {C : Type u} [Category.{v} C] (P : ObjectProperty C) (κ : Cardinal.{w}
 
 /-- Given `P : ObjectProperty C` and `κ : Cardinal.{w}`, this is the closure
 of `P` under colimits of shape given by categories `J` such that
-`HasCardinalLT (Arrow J) κ` holds. -/
+`Arrow J` is of cardinality `< κ`. -/
 def colimitsCardinalClosure : ObjectProperty C :=
   P.colimitsClosure (SmallCategoryCardinalLT.categoryFamily κ)
 

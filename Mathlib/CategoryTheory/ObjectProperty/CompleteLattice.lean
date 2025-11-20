@@ -3,14 +3,18 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
-import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
-import Mathlib.Order.CompleteLattice.Basic
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+public import Mathlib.Order.CompleteLattice.Basic
 
 /-!
 # ObjectProperty is a complete lattice
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 

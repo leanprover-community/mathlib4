@@ -3,8 +3,10 @@ Copyright (c) 2024 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen
 -/
-import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.CategoryTheory.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Comma.Arrow
+public import Mathlib.CategoryTheory.EpiMono
 
 /-!
 # Retracts
@@ -12,6 +14,8 @@ import Mathlib.CategoryTheory.EpiMono
 Defines retracts of objects and morphisms.
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 
@@ -127,6 +131,12 @@ instance : IsSplitEpi h.r.right := ⟨⟨h.right.splitEpi⟩⟩
 instance : IsSplitMono h.i.left := ⟨⟨h.left.splitMono⟩⟩
 
 instance : IsSplitMono h.i.right := ⟨⟨h.right.splitMono⟩⟩
+
+/-- If a morphism `f` is a retract of `g`,
+then `F.map f` is a retract of `F.map g` for any functor `F`. -/
+@[simps!]
+def map (F : C ⥤ D) : RetractArrow (F.map f) (F.map g) :=
+  Retract.map h F.mapArrow
 
 /-- If a morphism `f` is a retract of `g`, then `f.op` is a retract of `g.op`. -/
 @[simps]

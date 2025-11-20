@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.GuitartExact.VerticalComposition
+module
+
+public import Mathlib.CategoryTheory.GuitartExact.VerticalComposition
 
 /-!
 # The opposite of a Guitart exact square
@@ -12,6 +14,8 @@ A `2`-square is Guitart exact iff the opposite (transposed) `2`-square
 is Guitart exact.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
