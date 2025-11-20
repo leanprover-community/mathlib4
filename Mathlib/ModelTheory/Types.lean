@@ -86,6 +86,10 @@ theorem subset (p : T.CompleteType α) : (L.lhomWithConstants α).onTheory T ⊆
 theorem mem_or_not_mem (p : T.CompleteType α) (φ : L[[α]].Sentence) : φ ∈ p ∨ φ.not ∈ p :=
   p.isMaximal.mem_or_not_mem φ
 
+lemma mem_not_mem (hT : T.IsSatisfiable) {φ : L.Sentence} (hφ : φ ∈ T) (hφ' : ∼φ ∈ T) : ⊥ :=
+  have ⟨M⟩ := hT
+  (M.is_model.realize_of_mem _ hφ') (M.is_model.realize_of_mem _ hφ)
+
 theorem mem_of_models (p : T.CompleteType α) {φ : L[[α]].Sentence}
     (h : (L.lhomWithConstants α).onTheory T ⊨ᵇ φ) : φ ∈ p :=
   (p.mem_or_not_mem φ).resolve_right fun con =>
@@ -212,6 +216,83 @@ lemma TypeBasisIsBasis : IsTopologicalBasis (TypeBasis (α := α) (T := T)) wher
     rw [←Set.univ_subset_iff]
     exact fun p _ ↦ p.isMaximal.mem_of_models (φ := ⊤) (fun M v xs a ↦ a)
   eq_generateFrom := rfl
+
+instance : CompactSpace (CompleteType T α) := by
+  classical
+  apply compactSpace_generateFrom' rfl
+  intro ι U hcover
+
+  have hU : ∀ i, ∃ φ, typesWith φ = (U i).1 := by
+    intro i
+    obtain ⟨_, φ, _, _⟩ := U i
+    exact ⟨φ, rfl⟩
+
+  choose φ hφ using hU
+
+  let nφ : ι → L[[α]].Sentence := fun i ↦ ∼(φ i)
+  let T' := (L.lhomWithConstants α).onTheory T ∪ (range nφ)
+
+  have : ¬T'.IsSatisfiable := by
+    rintro ⟨M⟩
+    let p : CompleteType T α := {
+      toTheory := L[[α]].completeTheory M
+      subset' := subset_trans subset_union_left (completeTheory.subset (MT := M.is_model))
+      isMaximal' := completeTheory.isMaximal _ _
+    }
+
+    obtain ⟨Ui, ⟨⟨i, hi⟩, hi'⟩⟩ := (propext_iff.mp (congr_arg (fun s ↦ p ∈ s) hcover)).mpr trivial
+    refine mem_not_mem p.isMaximal.isComplete.1
+      (by simpa [←hi, ←hφ] using hi')
+      (completeTheory.subset (T := T') (mem_union_right _ ⟨i, rfl⟩))
+
+  rw [isSatisfiable_iff_isFinitelySatisfiable, IsFinitelySatisfiable] at this
+  push_neg at this
+  obtain ⟨t, ht, htsat⟩ := this
+
+  let t : Set (L[[α]]).Sentence := ↑t
+  have ht : t ⊆ T' := ht
+
+  let Tfin := {ψ ∈ t | ψ ∈ (L.lhomWithConstants α).onTheory T}
+  let negfin := {ψ ∈ t | ψ ∈ range nφ}
+
+  have tdecomp : t = Tfin ∪ negfin := by
+    apply Subset.antisymm
+    · intro ψ hψ
+      rw [
+          mem_union,
+          mem_setOf, mem_setOf,
+          ←and_or_left
+      ]
+      exact ⟨hψ, ht hψ⟩
+    · exact union_subset
+        (sep_subset _ (Membership.mem _))
+        (sep_subset _ (Membership.mem _))
+
+  have : ∀ ψ : negfin, ∃ i, nφ i = ψ :=
+    fun ψ ↦ by have := ψ.2; simp only [negfin] at this; exact this.2
+
+  choose index index_inv using this
+
+  refine ⟨(range index), finite_range index, ?_⟩
+  rw [←univ_subset_iff]
+  intro p _
+
+  simp only [mem_iUnion, exists_prop, negfin, mem_range,]
+
+  have : ¬t ⊆ p.toTheory := htsat ∘ (IsSatisfiable.mono p.isMaximal.isComplete.1 ·)
+
+  rw [tdecomp] at this ht
+  simp only [Tfin, negfin, LHom.mem_onTheory, mem_range, union_subset_iff,
+    not_and] at this
+
+  specialize this (subset_trans (fun _ hx ↦ hx.2) p.subset)
+  obtain ⟨ψ, ⟨hψt, i, hi⟩, hψ⟩ := not_subset.mp this
+
+  refine ⟨index ⟨ψ, hψt, i, hi⟩, ⟨⟨ψ, hψt, i, hi⟩, rfl⟩, ?_⟩
+
+  have : Formula.not (φ _) = ψ := index_inv ⟨ψ, ⟨hψt, ⟨i, hi⟩⟩⟩
+  erw [←hφ, typesWith, mem_setOf, ←not_not (a := φ _ ∈ p), ←p.not_mem_iff, this]
+  exact hψ
 
 end CompleteType
 
