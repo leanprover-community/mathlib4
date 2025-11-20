@@ -3,9 +3,11 @@ Copyright (c) 2024 Judith Ludwig, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Christian Merten
 -/
-import Mathlib.Algebra.Exact
-import Mathlib.RingTheory.AdicCompletion.Functoriality
-import Mathlib.RingTheory.Filtration
+module
+
+public import Mathlib.Algebra.Exact
+public import Mathlib.RingTheory.AdicCompletion.Functoriality
+public import Mathlib.RingTheory.Filtration
 
 /-!
 # Exactness of adic completion
@@ -25,6 +27,8 @@ In this file we establish exactness properties of adic completions. In particula
 All results are proven directly without using Mittag-Leffler systems.
 
 -/
+
+@[expose] public section
 
 universe u v w t
 

@@ -3,8 +3,9 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 
 /-!
 # Deligne's archimedean Gamma-factors
@@ -27,6 +28,8 @@ functions both take a complex variable as input.)
 This file defines these functions, and proves some elementary properties, including a reflection
 formula which is an important input in functional equations of (un-completed) Dirichlet L-functions.
 -/
+
+@[expose] public section
 
 open Filter Topology Asymptotics Real Set MeasureTheory
 open Complex

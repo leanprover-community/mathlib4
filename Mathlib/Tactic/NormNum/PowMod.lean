@@ -3,7 +3,9 @@ Copyright (c) 2023 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.Tactic.NormNum.Pow
+module
+
+public meta import Mathlib.Tactic.NormNum.Pow
 
 /-!
 # `norm_num` handling for expressions of the form `a ^ b % m`.
@@ -20,6 +22,8 @@ The approach taken here is identical to (and copied from) the development in `No
   of the form `a ^ b % m` using `evalNatPowMod`.
 
 -/
+
+public meta section
 
 assert_not_exists RelIso
 

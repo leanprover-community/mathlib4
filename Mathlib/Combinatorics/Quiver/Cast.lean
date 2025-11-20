@@ -3,8 +3,10 @@ Copyright (c) 2022 Antoine Labelle, Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle, Rémi Bottinelli
 -/
-import Mathlib.Combinatorics.Quiver.Basic
-import Mathlib.Combinatorics.Quiver.Path
+module
+
+public import Mathlib.Combinatorics.Quiver.Basic
+public import Mathlib.Combinatorics.Quiver.Path
 
 /-!
 
@@ -14,6 +16,8 @@ This file defines `Hom.cast` and `Path.cast` (and associated lemmas) in order to
 rewriting arrows and paths along equalities of their endpoints.
 
 -/
+
+@[expose] public section
 
 
 universe v v₁ v₂ u u₁ u₂
