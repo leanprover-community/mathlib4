@@ -6,7 +6,7 @@ Authors: Andrew Yang, Jujian Zhang
 module
 
 public import Mathlib.Algebra.Algebra.Tower
-public import Mathlib.Algebra.Equiv.TransferInstance
+public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.OreLocalization.Ring
 
@@ -102,7 +102,7 @@ abbrev mk (m : M) (s : S) : LocalizedModule S M := m /ₒ s
 
 theorem mk_eq {m m' : M} {s s' : S} : mk m s = mk m' s' ↔ ∃ u : S, u • s' • m = u • s • m' := by
   rw [mk, mk, OreLocalization.oreDiv_eq_iff]
-  show _ ↔ r S M (m, s) (m', s')
+  change _ ↔ r S M (m, s) (m', s')
   rw [← oreEqv_iff_r]
   rfl
 
@@ -204,14 +204,14 @@ instance (priority := 900) {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid
   __ := inferInstanceAs (Monoid (LocalizedModule S A))
   left_distrib := by
     rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨a₃, s₃⟩
-    show a₁ /ₒ s₁ * (a₂ /ₒ s₂ + a₃ /ₒ s₃) = a₁ /ₒ s₁ * (a₂ /ₒ s₂) + a₁ /ₒ s₁ * (a₃ /ₒ s₃)
+    change a₁ /ₒ s₁ * (a₂ /ₒ s₂ + a₃ /ₒ s₃) = a₁ /ₒ s₁ * (a₂ /ₒ s₂) + a₁ /ₒ s₁ * (a₃ /ₒ s₃)
     rw [← mk, ← mk, ← mk, mk_mul_mk, mk_mul_mk, mk_add_mk, mk_mul_mk, mk_add_mk]
     apply mk_eq.mpr _
     use 1
     simp only [← mul_assoc, mul_right_comm, mul_add, mul_smul_comm, smul_add, smul_smul, one_mul]
   right_distrib := by
     rintro ⟨a₁, s₁⟩ ⟨a₂, s₂⟩ ⟨a₃, s₃⟩
-    show (a₁ /ₒ s₁ + a₂ /ₒ s₂) * (a₃ /ₒ s₃) = a₁ /ₒ s₁ * (a₃ /ₒ s₃) + a₂ /ₒ s₂ * (a₃ /ₒ s₃)
+    change (a₁ /ₒ s₁ + a₂ /ₒ s₂) * (a₃ /ₒ s₃) = a₁ /ₒ s₁ * (a₃ /ₒ s₃) + a₂ /ₒ s₂ * (a₃ /ₒ s₃)
     rw [← mk, ← mk, ← mk, mk_mul_mk, mk_mul_mk, mk_add_mk, mk_mul_mk, mk_add_mk]
     apply mk_eq.mpr _
     use 1
@@ -342,7 +342,7 @@ theorem mk_cancel_common_right (s s' : S) (m : M) : mk (s' • m) (s * s') = mk 
 
 theorem smul'_mk (r : R) (s : S) (m : M) : r • mk m s = mk (r • m) s := by
   refine (OreLocalization.smul_oreDiv _ _ _).trans ?_
-  show (r • 1 : R) • m /ₒ s = _
+  change (r • 1 : R) • m /ₒ s = _
   rw [smul_assoc, one_smul]
 
 lemma smul_eq_iff_of_mem
@@ -407,18 +407,18 @@ abbrev numeratorRingHom {A : Type*} [Semiring A] [Algebra R A] : A →+* A[S⁻�
   map_one' := by simp [OreLocalization.one_def]
   map_mul' := by simp [mk_mul_mk]
   map_zero' := by simp
-  map_add' := by simp [mk_add_mk]
+  map_add' := by simp
 
 noncomputable instance (priority := 900) algebra' {A : Type*} [Semiring A] [Algebra R A] :
     Algebra R (LocalizedModule S A) where
   algebraMap := numeratorRingHom.comp (algebraMap R A)
   commutes' r x := by
     induction x using induction_on with | _ a s => _
-    show mk _ _ * mk _ _ = mk _ _ * mk _ _
+    change mk _ _ * mk _ _ = mk _ _ * mk _ _
     rw [mk_mul_mk, mk_mul_mk, mul_comm, Algebra.commutes]
   smul_def' r x := by
     induction x using induction_on with | _ a s => _
-    show _ • mk _ _ = mk _ _ * mk _ _
+    change _ • mk _ _ = mk _ _ * mk _ _
     rw [mk_mul_mk, smul'_mk, Algebra.smul_def, one_mul]
 
 example : (algebra' : Algebra R (LocalizedModule S R)) = OreLocalization.instAlgebra := by
@@ -433,7 +433,7 @@ variable (S M)
 @[simps]
 noncomputable def mkLinearMap : M →ₗ[R] LocalizedModule S M where
   toFun m := mk m 1
-  map_add' x y := by simp [mk_add_mk]
+  map_add' x y := by simp
   map_smul' r m := by simp [mk, OreLocalization.smul_oreDiv]
 
 end

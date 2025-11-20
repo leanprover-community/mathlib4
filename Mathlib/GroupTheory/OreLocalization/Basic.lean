@@ -325,7 +325,7 @@ def oreDivMulChar' (r₁ r₂ : R) (s₁ s₂ : S) :
   ⟨oreNum r₁ s₂, oreDenom r₁ s₂, ore_eq r₁ s₂, oreDiv_mul_oreDiv⟩
 
 /-- `1` in the localization, defined as `1 /ₒ 1`. -/
-@[to_additive (attr := irreducible) "`0` in the additive localization, defined as `0 -ₒ 0`."]
+@[to_additive (attr := irreducible) /-- `0` in the additive localization, defined as `0 -ₒ 0`. -/]
 protected def one [One X] : X[S⁻¹] := 1 /ₒ 1
 
 @[to_additive]
