@@ -3,8 +3,9 @@ Copyright (c) 2025 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang
 -/
+module
 
-import Mathlib.RingTheory.Teichmuller
+public import Mathlib.RingTheory.Teichmuller
 
 /-!
 # Untilt Function
@@ -29,6 +30,8 @@ is not the untilt *functor*.
 ## Tags
 Perfectoid, Tilting equivalence, Untilt
 -/
+
+@[expose] public section
 
 open Perfection Ideal
 

@@ -3,13 +3,16 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+module
 
-import Mathlib.Algebra.Group.Units.Basic
-import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+public import Mathlib.Algebra.Group.Units.Basic
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 
 /-!
 # Lemmas for units in an ordered monoid
 -/
+
+@[expose] public section
 
 variable {M : Type*} [Monoid M] [LE M]
 

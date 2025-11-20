@@ -3,10 +3,12 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
-import Mathlib.Data.Sign.Basic
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Analysis.RCLike.Basic
+module
+
+public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
+public import Mathlib.Data.Sign.Basic
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Analysis.RCLike.Basic
 
 /-!
 # Real quadratic forms
@@ -19,6 +21,8 @@ When the real quadratic form is nondegenerate we can take the weights to be ±1,
 as in `QuadraticForm.equivalent_one_zero_neg_one_weighted_sum_squared`.
 
 -/
+
+@[expose] public section
 
 open Finset Module QuadraticMap SignType
 
