@@ -12,7 +12,7 @@ public import Mathlib.RingTheory.WittVector.TeichmullerSeries
 /-!
 # Fontaine's θ map
 In this file, we define Fontaine's `θ` map, which is a ring
-homomorphism from the Witt vector `𝕎(A^♭)` of the tilt of a perfectoid ring `O`
+homomorphism from the Witt vector `𝕎(O^♭)` of the tilt of a perfectoid ring `O`
 to `O` itself. Our definition of `θ` does not require that `O` is perfectoid in the first place.
 We only need `O` to be `p`-adically complete.
 
