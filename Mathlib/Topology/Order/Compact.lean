@@ -3,10 +3,12 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.Support
-import Mathlib.Topology.Order.IntermediateValue
-import Mathlib.Topology.Order.IsLUB
-import Mathlib.Topology.Order.LocalExtr
+module
+
+public import Mathlib.Topology.Algebra.Support
+public import Mathlib.Topology.Order.IntermediateValue
+public import Mathlib.Topology.Order.IsLUB
+public import Mathlib.Topology.Order.LocalExtr
 
 /-!
 # Compactness of a closed interval
@@ -25,6 +27,8 @@ We also prove that the image of a closed interval under a continuous map is a cl
 
 compact, extreme value theorem
 -/
+
+@[expose] public section
 
 open Filter OrderDual TopologicalSpace Function Set
 
@@ -88,14 +92,14 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
   have ha : a ∈ s := by simp [s, hpt, hab]
   rcases hab.eq_or_lt with (rfl | _hlt)
   · exact ha.2
-  -- Porting note: the `obtain` below was instead
-  -- `set c := Sup s`
-  -- `have hsc : IsLUB s c := isLUB_csSup ⟨a, ha⟩ sbd`
-  obtain ⟨c, hsc⟩ : ∃ c, IsLUB s c := ⟨sSup s, isLUB_csSup ⟨a, ha⟩ ⟨b, hsb⟩⟩
+  let c := sSup s
+  have hsc : IsLUB s c := isLUB_csSup ⟨a, ha⟩ ⟨b, hsb⟩
   have hc : c ∈ Icc a b := ⟨hsc.1 ha, hsc.2 hsb⟩
   specialize hf c hc
   have hcs : c ∈ s := by
-    rcases hc.1.eq_or_lt with (rfl | hlt); · assumption
+    -- rcases ... with (rfl | ... ) fails here, rewrite manually.
+    rcases hc.1.eq_or_lt with (h | hlt)
+    · rwa [h] at ha
     refine ⟨hc, fun hcf => hf fun U hU => ?_⟩
     rcases (mem_nhdsLE_iff_exists_Ioc_subset' hlt).1 (mem_nhdsWithin_of_mem_nhds hU)
       with ⟨x, hxc, hxU⟩
@@ -105,8 +109,9 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
     rw [diff_subset_iff]
     exact Subset.trans Icc_subset_Icc_union_Ioc <| union_subset_union Subset.rfl <|
       Ioc_subset_Ioc_left hy.1.le
-  rcases hc.2.eq_or_lt with (rfl | hlt)
-  · exact hcs.2
+  -- rcases ... with (rfl | ... ) fails here, rewrite manually.
+  rcases hc.2.eq_or_lt with (h | hlt)
+  · simpa [h] using hcs.2
   exfalso
   refine hf fun U hU => ?_
   rcases (mem_nhdsGE_iff_exists_mem_Ioc_Ico_subset hlt).1 (mem_nhdsWithin_of_mem_nhds hU)

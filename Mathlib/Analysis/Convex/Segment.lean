@@ -3,9 +3,11 @@ Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.LinearAlgebra.AffineSpace.Midpoint
-import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
-import Mathlib.LinearAlgebra.Ray
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
+public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
+public import Mathlib.LinearAlgebra.Ray
 
 /-!
 # Segments in vector spaces
@@ -14,7 +16,7 @@ In a 𝕜-vector space, we define the following objects and properties.
 * `segment 𝕜 x y`: Closed segment joining `x` and `y`.
 * `openSegment 𝕜 x y`: Open segment joining `x` and `y`.
 
-## Notations
+## Notation
 
 We provide the following notation:
 * `[x -[𝕜] y] = segment 𝕜 x y` in scope `Convex`
@@ -26,6 +28,8 @@ Generalize all this file to affine spaces.
 Should we rename `segment` and `openSegment` to `convex.Icc` and `convex.Ioo`? Should we also
 define `clopenSegment`/`convex.Ico`/`convex.Ioc`?
 -/
+
+@[expose] public section
 
 variable {𝕜 E F G ι : Type*} {M : ι → Type*}
 

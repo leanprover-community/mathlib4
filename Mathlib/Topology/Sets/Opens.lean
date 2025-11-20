@@ -3,11 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.Topology.Compactness.Bases
-import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Order.CompactlyGenerated.Basic
-import Mathlib.Order.Copy
+module
+
+public import Mathlib.Order.Hom.CompleteLattice
+public import Mathlib.Topology.Compactness.Bases
+public import Mathlib.Topology.ContinuousMap.Basic
+public import Mathlib.Order.CompactlyGenerated.Basic
+public import Mathlib.Order.Copy
 
 /-!
 # Open sets
@@ -44,6 +46,8 @@ We define order structures on both `Opens α` (`CompleteLattice`, `Frame`) and `
 - Rename `TopologicalSpace.Opens` to `Open`?
 - Port the `auto_cases` tactic version (as a plugin if the ported `auto_cases` will allow plugins).
 -/
+
+@[expose] public section
 
 
 open Filter Function Order Set
@@ -125,7 +129,7 @@ theorem mem_interior {s : Set α} {x : α} : x ∈ Opens.interior s ↔ x ∈ _r
 theorem gc : GaloisConnection ((↑) : Opens α → Set α) Opens.interior := fun U _ =>
   ⟨fun h => interior_maximal h U.isOpen, fun h => le_trans h interior_subset⟩
 
-/-- The galois coinsertion between sets and opens. -/
+/-- The Galois coinsertion between sets and opens. -/
 def gi : GaloisCoinsertion (↑) (@Opens.interior α _) where
   choice s hs := ⟨s, interior_eq_iff_isOpen.mp <| le_antisymm interior_subset hs⟩
   gc := gc

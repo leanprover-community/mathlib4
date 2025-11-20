@@ -3,10 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Eric Wieser
 -/
-import Mathlib.Algebra.Quaternion
-import Mathlib.Analysis.InnerProductSpace.Continuous
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Topology.Algebra.Algebra
+module
+
+public import Mathlib.Algebra.Quaternion
+public import Mathlib.Analysis.InnerProductSpace.Continuous
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Topology.Algebra.Algebra
 
 /-!
 # Quaternions as a normed algebra
@@ -29,6 +31,8 @@ The following notation is available with `open Quaternion` or `open scoped Quate
 
 quaternion, normed ring, normed space, normed algebra
 -/
+
+@[expose] public section
 
 
 @[inherit_doc] scoped[Quaternion] notation "ℍ" => Quaternion ℝ
@@ -82,7 +86,7 @@ theorem nnnorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ :=
 
 noncomputable instance : NormedDivisionRing ℍ where
   dist_eq _ _ := rfl
-  norm_mul _ _ := by simp [norm_eq_sqrt_real_inner, inner_self]
+  norm_mul _ _ := by simp_rw [norm_eq_sqrt_real_inner, inner_self]; simp
 
 noncomputable instance : NormedAlgebra ℝ ℍ where
   norm_smul_le := norm_smul_le
@@ -181,19 +185,19 @@ theorem continuous_normSq : Continuous (normSq : ℍ → ℝ) := by
 
 @[continuity]
 theorem continuous_re : Continuous fun q : ℍ => q.re :=
-  (continuous_apply 0).comp linearIsometryEquivTuple.continuous
+  (PiLp.continuous_apply 2 _ 0).comp linearIsometryEquivTuple.continuous
 
 @[continuity]
 theorem continuous_imI : Continuous fun q : ℍ => q.imI :=
-  (continuous_apply 1).comp linearIsometryEquivTuple.continuous
+  (PiLp.continuous_apply 2 _ 1).comp linearIsometryEquivTuple.continuous
 
 @[continuity]
 theorem continuous_imJ : Continuous fun q : ℍ => q.imJ :=
-  (continuous_apply 2).comp linearIsometryEquivTuple.continuous
+  (PiLp.continuous_apply 2 _ 2).comp linearIsometryEquivTuple.continuous
 
 @[continuity]
 theorem continuous_imK : Continuous fun q : ℍ => q.imK :=
-  (continuous_apply 3).comp linearIsometryEquivTuple.continuous
+  (PiLp.continuous_apply 2 _ 3).comp linearIsometryEquivTuple.continuous
 
 @[continuity]
 theorem continuous_im : Continuous fun q : ℍ => q.im := by
@@ -206,27 +210,25 @@ instance : CompleteSpace ℍ :=
 
 section infinite_sum
 
-variable {α : Type*}
+variable {α : Type*} {L : SummationFilter α}
 
 @[simp, norm_cast]
-theorem hasSum_coe {f : α → ℝ} {r : ℝ} : HasSum (fun a => (f a : ℍ)) (↑r : ℍ) ↔ HasSum f r :=
+theorem hasSum_coe {f : α → ℝ} {r : ℝ} : HasSum (fun a => (f a : ℍ)) (↑r : ℍ) L ↔ HasSum f r L :=
   ⟨fun h => by
     simpa only using
     h.map (show ℍ →ₗ[ℝ] ℝ from QuaternionAlgebra.reₗ _ _ _) continuous_re,
     fun h => by simpa only using h.map (algebraMap ℝ ℍ) (continuous_algebraMap _ _)⟩
 
 @[simp, norm_cast]
-theorem summable_coe {f : α → ℝ} : (Summable fun a => (f a : ℍ)) ↔ Summable f := by
+theorem summable_coe {f : α → ℝ} : (Summable (fun a => (f a : ℍ)) L) ↔ Summable f L := by
   simpa only using
     Summable.map_iff_of_leftInverse (algebraMap ℝ ℍ) (show ℍ →ₗ[ℝ] ℝ from
       QuaternionAlgebra.reₗ _ _ _)
       (continuous_algebraMap _ _) continuous_re re_coe
 
 @[norm_cast]
-theorem tsum_coe (f : α → ℝ) : (∑' a, (f a : ℍ)) = ↑(∑' a, f a) := by
-  by_cases hf : Summable f
-  · exact (hasSum_coe.mpr hf.hasSum).tsum_eq
-  · simp [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable (summable_coe.not.mpr hf)]
+theorem tsum_coe (f : α → ℝ) : (∑'[L] a, (f a : ℍ)) = ↑(∑'[L] a, f a) :=
+  (Function.LeftInverse.map_tsum f (continuous_algebraMap _ _) continuous_re re_coe).symm
 
 end infinite_sum
 

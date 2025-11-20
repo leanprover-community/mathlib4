@@ -3,10 +3,12 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.GroupTheory.Abelianization.Defs
-import Mathlib.GroupTheory.Commutator.Finite
-import Mathlib.GroupTheory.Transfer
+module
+
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.GroupTheory.Abelianization.Defs
+public import Mathlib.GroupTheory.Commutator.Finite
+public import Mathlib.GroupTheory.Transfer
 
 /-!
 # Schreier's Lemma
@@ -23,6 +25,8 @@ In this file we prove Schreier's lemma.
 - `card_commutator_le_of_finite_commutatorSet`: A theorem of Schur: The size of the commutator
   subgroup is bounded in terms of the number of commutators.
 -/
+
+@[expose] public section
 
 
 open scoped Finset Pointwise
@@ -175,7 +179,7 @@ theorem card_commutator_dvd_index_center_pow [Finite (commutatorSet G)] :
   -- Rewrite as `|Z(G) ∩ G'| * [G' : Z(G) ∩ G'] ∣ [G : Z(G)] ^ ([G : Z(G)] * n) * [G : Z(G)]`
   rw [← ((center G).subgroupOf (_root_.commutator G)).card_mul_index, pow_succ]
   -- We have `h1 : [G' : Z(G) ∩ G'] ∣ [G : Z(G)]`
-  have h1 := relindex_dvd_index_of_normal (center G) (_root_.commutator G)
+  have h1 := relIndex_dvd_index_of_normal (center G) (_root_.commutator G)
   -- So we can reduce to proving `|Z(G) ∩ G'| ∣ [G : Z(G)] ^ ([G : Z(G)] * n)`
   refine mul_dvd_mul ?_ h1
   -- We know that `[G' : Z(G) ∩ G'] < ∞` by `h1` and `hG`
@@ -220,6 +224,6 @@ instance [Finite (commutatorSet G)] : Finite (_root_.commutator G) := by
   have h2 := card_commutator_dvd_index_center_pow (closureCommutatorRepresentatives G)
   refine Nat.finite_of_card_ne_zero fun h => ?_
   rw [card_commutator_closureCommutatorRepresentatives, h, zero_dvd_iff] at h2
-  exact FiniteIndex.index_ne_zero (pow_eq_zero h2)
+  exact FiniteIndex.index_ne_zero (eq_zero_of_pow_eq_zero h2)
 
 end Subgroup

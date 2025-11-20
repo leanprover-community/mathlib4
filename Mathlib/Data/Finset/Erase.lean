@@ -3,8 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Defs
-import Mathlib.Data.Multiset.Filter
+module
+
+public import Mathlib.Data.Finset.Defs
+public import Mathlib.Data.Multiset.Filter
 
 /-!
 # Erasing an element from a finite set
@@ -19,9 +21,11 @@ finite sets, finset
 
 -/
 
+@[expose] public section
+
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
-assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice OrderedCommMonoid
+assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice IsOrderedMonoid
 
 open Multiset Subtype Function
 
@@ -99,9 +103,7 @@ theorem coe_erase (a : α) (s : Finset α) : ↑(erase s a) = (s \ {a} : Set α)
 theorem erase_idem {a : α} {s : Finset α} : erase (erase s a) a = erase s a := by simp
 
 theorem erase_right_comm {a b : α} {s : Finset α} : erase (erase s a) b = erase (erase s b) a := by
-  ext x
-  simp only [mem_erase, ← and_assoc]
-  rw [@and_comm (x ≠ a)]
+  grind
 
 theorem erase_inj {x y : α} (s : Finset α) (hx : x ∈ s) : s.erase x = s.erase y ↔ x = y := by
   grind [eq_of_mem_of_notMem_erase]

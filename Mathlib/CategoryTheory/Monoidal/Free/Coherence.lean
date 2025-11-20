@@ -3,8 +3,10 @@ Copyright (c) 2021 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Monoidal.Free.Basic
-import Mathlib.CategoryTheory.Discrete.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Free.Basic
+public import Mathlib.CategoryTheory.Discrete.Basic
 
 /-!
 # The monoidal coherence theorem
@@ -32,6 +34,8 @@ is thin.
   proof of normalization for monoids][beylin1996]
 
 -/
+
+@[expose] public section
 
 
 universe u
@@ -81,10 +85,7 @@ theorem inclusion_obj (X : N C) :
 
 @[simp]
 theorem inclusion_map {X Y : N C} (f : X ⟶ Y) :
-    inclusion.map f = eqToHom (congr_arg _ (Discrete.ext (Discrete.eq_of_hom f))) := by
-  rcases f with ⟨⟨⟩⟩
-  cases Discrete.ext (by assumption)
-  apply inclusion.map_id
+    inclusion.map f = eqToHom (congr_arg _ (Discrete.ext (Discrete.eq_of_hom f))) := rfl
 
 /-- Auxiliary definition for `normalize`. -/
 def normalizeObj : F C → NormalMonoidalObject C → NormalMonoidalObject C
@@ -275,7 +276,6 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
     ext ⟨n⟩
     convert normalize_naturality n f using 1
     any_goals dsimp; rw [normalizeIsoApp_eq]
-    rfl
 
 /-- The isomorphism between an object and its normal form is natural. -/
 def fullNormalizeIso : 𝟭 (F C) ≅ fullNormalize C ⋙ inclusion :=

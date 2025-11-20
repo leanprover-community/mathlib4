@@ -3,9 +3,11 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Monoidal.DayConvolution
-import Mathlib.CategoryTheory.Closed.Monoidal
-import Mathlib.CategoryTheory.Limits.Shapes.End
+module
+
+public import Mathlib.CategoryTheory.Monoidal.DayConvolution
+public import Mathlib.CategoryTheory.Closed.Monoidal
+public import Mathlib.CategoryTheory.Limits.Shapes.End
 
 /-! # Internal homs for day convolution
 
@@ -18,9 +20,11 @@ ends can be organised as data that exhibit `F` as monoidal closed in `C ⥤ V` f
 the Day convolution monoidal structure.
 
 ## TODOs
-* When `LawfulDayConvolutionMonoidalStruct` (#26820) lands, transport the
+* When `LawfulDayConvolutionMonoidalStruct` (https://github.com/leanprover-community/mathlib4/issues/26820) lands, transport the
   constructions here to produce actual `CategoryTheory.MonoidalClosed` instances.
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 

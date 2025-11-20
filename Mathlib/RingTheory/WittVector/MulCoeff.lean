@@ -3,8 +3,10 @@ Copyright (c) 2022 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Heather Macbeth
 -/
-import Mathlib.Algebra.MvPolynomial.Supported
-import Mathlib.RingTheory.WittVector.Truncated
+module
+
+public import Mathlib.Algebra.MvPolynomial.Supported
+public import Mathlib.RingTheory.WittVector.Truncated
 
 /-!
 # Leading terms of Witt vector multiplication
@@ -24,6 +26,8 @@ that needs to happen in characteristic 0.
   in terms of the previous coefficients of the multiplicands.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -75,8 +79,7 @@ theorem wittPolyProdRemainder_vars (n : ℕ) :
   · apply Subset.trans (vars_pow _ _)
     apply Subset.trans (wittMul_vars _ _)
     apply product_subset_product (Subset.refl _)
-    simp only [mem_range, range_subset] at hx ⊢
-    exact hx
+    simpa using hx
 
 /-- `remainder p n` represents the remainder term from `mul_polyOfInterest_aux3`.
 `wittPolyProd p (n+1)` will have variables up to `n+1`,
@@ -137,9 +140,6 @@ theorem mul_polyOfInterest_aux3 (p n : ℕ) : wittPolyProd p (n + 1) =
     remainder p n := by
   -- a useful auxiliary fact
   have mvpz : (p : 𝕄) ^ (n + 1) = MvPolynomial.C ((p : ℤ) ^ (n + 1)) := by norm_cast
-  -- Porting note: the original proof applies `sum_range_succ` through a non-`conv` rewrite,
-  -- but this does not work in Lean 4; the whole proof also times out very badly. The proof has been
-  -- nearly totally rewritten here and now finishes quite fast.
   rw [wittPolyProd, wittPolynomial, map_sum, map_sum]
   conv_lhs =>
     arg 1
