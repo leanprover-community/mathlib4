@@ -60,8 +60,7 @@ lemma isCardinalFilteredGenerator
         diag := _
         ι := _
         isColimit := isColimitOfPreserves F hY.isColimit
-        prop_diag_obj j := P.prop_map_obj _ (hY.prop_diag_obj j)
-      }⟩⟩
+        prop_diag_obj j := P.prop_map_obj _ (hY.prop_diag_obj j) }⟩⟩
 
 lemma hasCardinalFilteredGenerator [HasCardinalFilteredGenerator C κ]
     [G.IsCardinalAccessible κ] [G.Full] [G.Faithful] :
@@ -80,7 +79,7 @@ lemma isCardinalLocallyPresentable [IsCardinalLocallyPresentable C κ]
 lemma isCardinalAccessibleCategory [IsCardinalAccessibleCategory C κ]
     [G.IsCardinalAccessible κ] [G.Full] [G.Faithful] :
     IsCardinalAccessibleCategory D κ where
-  toHasCardinalFilteredColimits := ⟨fun _ _ _↦ adj.hasColimitsOfShape _⟩
+  toHasCardinalFilteredColimits := ⟨fun _ _ _ ↦ adj.hasColimitsOfShape _⟩
   toHasCardinalFilteredGenerator := adj.hasCardinalFilteredGenerator κ
 
 end Adjunction
