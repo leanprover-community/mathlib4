@@ -3,13 +3,17 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.GroupTheory.MonoidLocalization.Basic
+module
+
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.GroupTheory.MonoidLocalization.Basic
 
 /-!
 # Ordered structures on localizations of commutative monoids
 
 -/
+
+@[expose] public section
 
 open Function
 
@@ -59,16 +63,13 @@ theorem mk_lt_mk : mk a₁ a₂ < mk b₁ b₂ ↔ ↑b₂ * a₁ < a₂ * b₁ 
 -- declaring this separately to the instance below makes things faster
 @[to_additive]
 instance partialOrder : PartialOrder (Localization s) where
-  le := (· ≤ ·)
-  lt := (· < ·)
   le_refl a := Localization.induction_on a fun _ => le_rfl
   le_trans a b c :=
     Localization.induction_on₃ a b c fun a b c hab hbc => by
       simp only [mk_le_mk] at hab hbc ⊢
       apply le_of_mul_le_mul_left' _
       · exact ↑b.2
-      rw [mul_left_comm]
-      refine (mul_le_mul_left' hab _).trans ?_
+      grw [mul_left_comm, hab]
       rwa [mul_left_comm, mul_left_comm (b.2 : α), mul_le_mul_iff_left]
   le_antisymm a b := by
     induction a using Localization.rec
@@ -100,8 +101,8 @@ instance decidableLT [DecidableLT α] : DecidableLT (Localization s) := fun a b 
   Localization.recOnSubsingleton₂ a b fun _ _ _ _ => decidable_of_iff' _ mk_lt_mk
 
 /-- An ordered cancellative monoid injects into its localization by sending `a` to `a / b`. -/
-@[to_additive (attr := simps!) "An ordered cancellative monoid injects into its localization by
-sending `a` to `a - b`."]
+@[to_additive (attr := simps!) /-- An ordered cancellative monoid injects into its localization by
+sending `a` to `a - b`. -/]
 def mkOrderEmbedding (b : s) : α ↪o Localization s where
   toFun a := mk a b
   inj' := mk_left_injective _

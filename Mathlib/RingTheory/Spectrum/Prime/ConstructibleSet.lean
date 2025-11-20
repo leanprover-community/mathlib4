@@ -3,8 +3,10 @@ Copyright (c) 2024 Yaël Dillies, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Andrew Yang
 -/
-import Mathlib.Order.SuccPred.WithBot
-import Mathlib.RingTheory.Spectrum.Prime.Topology
+module
+
+public import Mathlib.Order.SuccPred.WithBot
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
 # Constructible sets in the prime spectrum
@@ -12,6 +14,8 @@ import Mathlib.RingTheory.Spectrum.Prime.Topology
 This file provides tooling for manipulating constructible sets in the prime spectrum of a ring.
 
 -/
+
+@[expose] public section
 
 open Finset Topology
 open scoped Polynomial
@@ -119,13 +123,13 @@ lemma exists_constructibleSetData_iff {s : Set (PrimeSpectrum R)} :
   | isCompact_basis i => exact isCompact_basicOpen _
   | sdiff i s hs =>
     have : Finite s := hs
-    refine ⟨{⟨i, Nat.card s, fun i ↦ ((Finite.equivFinOfCardEq rfl).symm i).1⟩}, ?_⟩
+    refine ⟨{⟨i, Nat.card s, fun i ↦ ((Finite.equivFin s).symm i).1⟩}, ?_⟩
     simp only [ConstructibleSetData.toSet, Finset.mem_singleton, BasicConstructibleSetData.toSet,
       Set.iUnion_iUnion_eq_left, basicOpen_eq_zeroLocus_compl, ← Set.compl_iInter₂,
         compl_sdiff_compl, ← zeroLocus_iUnion₂, Set.biUnion_of_singleton]
     congr! 2
     ext
-    simp [← (Finite.equivFinOfCardEq rfl).exists_congr_right]
+    simp [← (Finite.equivFin s).exists_congr_right, - Nat.card_coe_set_eq]
   | union s hs t ht Hs Ht =>
     obtain ⟨S, rfl⟩ := Hs
     obtain ⟨T, rfl⟩ := Ht

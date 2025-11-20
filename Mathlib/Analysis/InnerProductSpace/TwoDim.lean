@@ -3,12 +3,14 @@ Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Dual
-import Mathlib.Analysis.InnerProductSpace.Orientation
-import Mathlib.Data.Complex.FiniteDimensional
-import Mathlib.Data.Complex.Orientation
-import Mathlib.LinearAlgebra.Alternating.Curry
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Dual
+public import Mathlib.Analysis.InnerProductSpace.Orientation
+public import Mathlib.LinearAlgebra.Alternating.Curry
+public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+public import Mathlib.LinearAlgebra.Complex.Orientation
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # Oriented two-dimensional real inner product spaces
@@ -67,6 +69,8 @@ local notation "J" => o.rightAngleRotation
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -104,14 +108,14 @@ theorem areaForm_apply_self (x : E) : ω x x = 0 := by
   rw [areaForm_to_volumeForm]
   refine o.volumeForm.map_eq_zero_of_eq ![x, x] ?_ (?_ : (0 : Fin 2) ≠ 1)
   · simp
-  · norm_num
+  · simp
 
 theorem areaForm_swap (x y : E) : ω x y = -ω y x := by
   simp only [areaForm_to_volumeForm]
   convert o.volumeForm.map_swap ![y, x] (_ : (0 : Fin 2) ≠ 1)
   · ext i
     fin_cases i <;> rfl
-  · norm_num
+  · simp
 
 @[simp]
 theorem areaForm_neg_orientation : (-o).areaForm = -o.areaForm := by
@@ -349,8 +353,8 @@ theorem inner_mul_inner_add_areaForm_mul_areaForm' (a x : E) :
   apply (o.basisRightAngleRotation a ha).ext
   intro i
   fin_cases i
-  · simp [real_inner_self_eq_norm_sq, mul_comm, real_inner_comm]
-  · simp [real_inner_self_eq_norm_sq, mul_comm, o.areaForm_swap a x]
+  · simp [mul_comm, real_inner_comm]
+  · simp [mul_comm, o.areaForm_swap a x]
 
 /-- For vectors `a x y : E`, the identity `⟪a, x⟫ * ⟪a, y⟫ + ω a x * ω a y = ‖a‖ ^ 2 * ⟪x, y⟫`. -/
 theorem inner_mul_inner_add_areaForm_mul_areaForm (a x y : E) :
@@ -368,8 +372,8 @@ theorem inner_mul_areaForm_sub' (a x : E) : ⟪a, x⟫ • ω a - ω a x • inn
   apply (o.basisRightAngleRotation a ha).ext
   intro i
   fin_cases i
-  · simp [real_inner_self_eq_norm_sq, mul_comm, o.areaForm_swap a x]
-  · simp [real_inner_self_eq_norm_sq, mul_comm, real_inner_comm]
+  · simp [mul_comm, o.areaForm_swap a x]
+  · simp [mul_comm, real_inner_comm]
 
 /-- For vectors `a x y : E`, the identity `⟪a, x⟫ * ω a y - ω a x * ⟪a, y⟫ = ‖a‖ ^ 2 * ω x y`. -/
 theorem inner_mul_areaForm_sub (a x y : E) : ⟪a, x⟫ * ω a y - ω a x * ⟪a, y⟫ = ‖a‖ ^ 2 * ω x y :=
@@ -420,7 +424,7 @@ theorem kahler_swap (x y : E) : o.kahler x y = conj (o.kahler y x) := by
 
 @[simp]
 theorem kahler_apply_self (x : E) : o.kahler x x = ‖x‖ ^ 2 := by
-  simp [kahler_apply_apply, real_inner_self_eq_norm_sq]
+  simp [kahler_apply_apply]
 
 @[simp]
 theorem kahler_rightAngleRotation_left (x y : E) :
@@ -436,7 +440,7 @@ theorem kahler_rightAngleRotation_right (x y : E) :
     o.kahler_apply_apply, Complex.ofReal_neg, Complex.real_smul]
   linear_combination -ω x y * Complex.I_sq
 
--- @[simp] -- Porting note: simp normal form is `kahler_comp_rightAngleRotation'`
+-- `simp` normal form is `kahler_comp_rightAngleRotation'`
 theorem kahler_comp_rightAngleRotation (x y : E) : o.kahler (J x) (J y) = o.kahler x y := by
   simp only [kahler_rightAngleRotation_left, kahler_rightAngleRotation_right]
   linear_combination -o.kahler x y * Complex.I_sq
@@ -470,8 +474,6 @@ theorem norm_kahler (x y : E) : ‖o.kahler x y‖ = ‖x‖ * ‖y‖ := by
   · linear_combination o.normSq_kahler x y
   · positivity
   · positivity
-
-@[deprecated (since := "2025-02-17")] alias abs_kahler := norm_kahler
 
 theorem eq_zero_or_eq_zero_of_kahler_eq_zero {x y : E} (hx : o.kahler x y = 0) : x = 0 ∨ y = 0 := by
   have : ‖x‖ * ‖y‖ = 0 := by simpa [hx] using (o.norm_kahler x y).symm
@@ -547,17 +549,12 @@ local notation "J" => o.rightAngleRotation
 
 open Complex
 
--- Porting note: The instance `finrank_real_complex_fact` cannot be found by synthesis for
--- `areaForm_map`, `rightAngleRotation_map` and `kahler_map` in the three theorems below,
--- so it has to be provided by unification (i.e. by naming the instance-implicit argument where
--- it belongs and using `(hF := _)`).
-
 /-- The area form on an oriented real inner product space of dimension 2 can be evaluated in terms
 of a complex-number representation of the space. -/
 theorem areaForm_map_complex (f : E ≃ₗᵢ[ℝ] ℂ)
     (hf : Orientation.map (Fin 2) f.toLinearEquiv o = Complex.orientation) (x y : E) :
     ω x y = (conj (f x) * f y).im := by
-  rw [← Complex.areaForm, ← hf, areaForm_map (hF := _)]
+  rw [← Complex.areaForm, ← hf, areaForm_map]
   iterate 2 rw [LinearIsometryEquiv.symm_apply_apply]
 
 /-- The rotation by 90 degrees on an oriented real inner product space of dimension 2 can be
@@ -565,7 +562,7 @@ evaluated in terms of a complex-number representation of the space. -/
 theorem rightAngleRotation_map_complex (f : E ≃ₗᵢ[ℝ] ℂ)
     (hf : Orientation.map (Fin 2) f.toLinearEquiv o = Complex.orientation) (x : E) :
     f (J x) = I * f x := by
-  rw [← Complex.rightAngleRotation, ← hf, rightAngleRotation_map (hF := _),
+  rw [← Complex.rightAngleRotation, ← hf, rightAngleRotation_map,
     LinearIsometryEquiv.symm_apply_apply]
 
 /-- The Kahler form on an oriented real inner product space of dimension 2 can be evaluated in terms
@@ -573,7 +570,7 @@ of a complex-number representation of the space. -/
 theorem kahler_map_complex (f : E ≃ₗᵢ[ℝ] ℂ)
     (hf : Orientation.map (Fin 2) f.toLinearEquiv o = Complex.orientation) (x y : E) :
     o.kahler x y = f y * conj (f x) := by
-  rw [← Complex.kahler, ← hf, kahler_map (hF := _)]
+  rw [← Complex.kahler, ← hf, kahler_map]
   iterate 2 rw [LinearIsometryEquiv.symm_apply_apply]
 
 end Orientation

@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Integral.Lebesgue.Add
+module
+
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 
 /-!
 # Markov's inequality
@@ -16,6 +18,8 @@ the measure-theoretic form:
 ```
 This file proves a few variants of the inequality and other lemmas that depend on it.
 -/
+
+@[expose] public section
 
 namespace MeasureTheory
 
@@ -71,7 +75,7 @@ lemma setLIntegral_le_meas {s t : Set α} (hs : MeasurableSet s)
     {f : α → ℝ≥0∞} (hf : ∀ a ∈ s, a ∈ t → f a ≤ 1)
     (hf' : ∀ a ∈ s, a ∉ t → f a = 0) : ∫⁻ a in s, f a ∂μ ≤ μ t := by
   rw [← lintegral_indicator hs]
-  refine lintegral_le_meas (fun a ↦ ?_) (by aesop)
+  refine lintegral_le_meas (fun a ↦ ?_) (by simp_all)
   by_cases has : a ∈ s <;> [by_cases hat : a ∈ t; skip] <;> simp [*]
 
 theorem lintegral_eq_top_of_measure_eq_top_ne_zero {f : α → ℝ≥0∞} (hf : AEMeasurable f μ)
@@ -128,7 +132,6 @@ theorem lintegral_strict_mono_of_ae_le_of_frequently_ae_lt {f g : α → ℝ≥0
     (hfi : ∫⁻ x, f x ∂μ ≠ ∞) (h_le : f ≤ᵐ[μ] g) (h : ∃ᵐ x ∂μ, f x ≠ g x) :
     ∫⁻ x, f x ∂μ < ∫⁻ x, g x ∂μ := by
   contrapose! h
-  simp only [not_frequently, Ne, Classical.not_not]
   exact ae_eq_of_ae_le_of_lintegral_le h_le hfi hg h
 
 theorem lintegral_strict_mono_of_ae_le_of_ae_lt_on {f g : α → ℝ≥0∞} (hg : AEMeasurable g μ)

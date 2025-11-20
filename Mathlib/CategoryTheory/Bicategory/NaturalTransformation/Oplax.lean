@@ -3,7 +3,9 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Calle Sönne
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
 
 /-!
 # Transformations between oplax functors
@@ -25,23 +27,25 @@ condition.
   `f : a ⟶ b`.
 * `Oplax.StrongTrans F G`: Strong transformations between oplax functors `F` and `G`.
 
-Using these, we define two `CategoryStruct` (scoped) instances on `OplaxFunctor B C`, one in the
+Using these, we define two `CategoryStruct` (scoped) instances on `B ⥤ᵒᵖᴸ C`, one in the
 `Oplax.OplaxTrans` namespace and one in the `Oplax.StrongTrans` namespace. The arrows in these
 CategoryStruct's are given by oplax transformations and strong transformations respectively.
 
 We also provide API for going between oplax transformations and strong transformations:
 * `Oplax.StrongCore F G`: a structure on an oplax transformation between oplax functors that
-promotes it to a strong transformation.
+  promotes it to a strong transformation.
 * `Oplax.mkOfOplax η η'`: given an oplax transformation `η` such that each component
   2-morphism is an isomorphism, `mkOfOplax` gives the corresponding strong transformation.
 
-# TODO
+## TODO
 This file could also include lax transformations between oplax functors.
 
 ## References
 * [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055)
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Oplax
 
@@ -57,7 +61,7 @@ variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory
 These 2-morphisms satisfies the naturality condition, and preserve the identities and
 the compositions modulo some adjustments of domains and codomains of 2-morphisms.
 -/
-structure OplaxTrans (F G : OplaxFunctor B C) where
+structure OplaxTrans (F G : B ⥤ᵒᵖᴸ C) where
   /-- The component 1-morphisms of an oplax transformation. -/
   app (a : B) : F.obj a ⟶ G.obj a
   /-- The 2-morphisms underlying the oplax naturality constraint. -/
@@ -65,18 +69,18 @@ structure OplaxTrans (F G : OplaxFunctor B C) where
   /-- Naturality of the oplax naturality constraint. -/
   naturality_naturality {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
       F.map₂ η ▷ app b ≫ naturality g = naturality f ≫ app a ◁ G.map₂ η := by
-    aesop_cat
+    cat_disch
   /-- Oplax unity. -/
   naturality_id (a : B) :
       naturality (𝟙 a) ≫ app a ◁ G.mapId a =
         F.mapId a ▷ app a ≫ (λ_ (app a)).hom ≫ (ρ_ (app a)).inv := by
-    aesop_cat
+    cat_disch
   /-- Oplax functoriality. -/
   naturality_comp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
       naturality (f ≫ g) ≫ app a ◁ G.mapComp f g =
         F.mapComp f g ▷ app c ≫ (α_ _ _ _).hom ≫ F.map f ◁ naturality g ≫
           (α_ _ _ _).inv ≫ naturality f ▷ G.map g ≫ (α_ _ _ _).hom := by
-    aesop_cat
+    cat_disch
 
 attribute [reassoc (attr := simp)] OplaxTrans.naturality_naturality OplaxTrans.naturality_id
   OplaxTrans.naturality_comp
@@ -85,7 +89,7 @@ attribute [reassoc (attr := simp)] OplaxTrans.naturality_naturality OplaxTrans.n
 
 namespace OplaxTrans
 
-variable {F : OplaxFunctor B C} {G H : OplaxFunctor B C} (η : OplaxTrans F G) (θ : OplaxTrans G H)
+variable {F : B ⥤ᵒᵖᴸ C} {G H : B ⥤ᵒᵖᴸ C} (η : OplaxTrans F G) (θ : OplaxTrans G H)
 
 section
 
@@ -169,10 +173,10 @@ def vcomp : OplaxTrans F H where
         rw [whisker_exchange_assoc]; simp
       _ = _ := by simp
 
-/-- `CategoryStruct` on `OplaxFunctor B C` where the (1-)morphisms are given by oplax
+/-- `CategoryStruct` on `B ⥤ᵒᵖᴸ C` where the (1-)morphisms are given by oplax
 transformations. -/
 @[simps! id_app id_naturality comp_app comp_naturality]
-scoped instance : CategoryStruct (OplaxFunctor B C) where
+scoped instance : CategoryStruct (B ⥤ᵒᵖᴸ C) where
   Hom := OplaxTrans
   id := OplaxTrans.id
   comp := OplaxTrans.vcomp
@@ -185,25 +189,25 @@ that is "natural up to 2-isomorphisms".
 More precisely, it consists of the following:
 * a 1-morphism `η.app a : F.obj a ⟶ G.obj a` for each object `a : B`.
 * a 2-isomorphism `η.naturality f : F.map f ≫ app b ⟶ app a ≫ G.map f` for each 1-morphism
-`f : a ⟶ b`.
+  `f : a ⟶ b`.
 * These 2-isomorphisms satisfy the naturality condition, and preserve the identities and the
   compositions modulo some adjustments of domains and codomains of 2-morphisms.
 -/
-structure StrongTrans (F G : OplaxFunctor B C) where
+structure StrongTrans (F G : B ⥤ᵒᵖᴸ C) where
   app (a : B) : F.obj a ⟶ G.obj a
   naturality {a b : B} (f : a ⟶ b) : F.map f ≫ app b ≅ app a ≫ G.map f
   naturality_naturality {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
       F.map₂ η ▷ app b ≫ (naturality g).hom = (naturality f).hom ≫ app a ◁ G.map₂ η := by
-    aesop_cat
+    cat_disch
   naturality_id (a : B) :
       (naturality (𝟙 a)).hom ≫ app a ◁ G.mapId a =
         F.mapId a ▷ app a ≫ (λ_ (app a)).hom ≫ (ρ_ (app a)).inv := by
-    aesop_cat
+    cat_disch
   naturality_comp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
       (naturality (f ≫ g)).hom ≫ app a ◁ G.mapComp f g =
         F.mapComp f g ▷ app c ≫ (α_ _ _ _).hom ≫ F.map f ◁ (naturality g).hom ≫
         (α_ _ _ _).inv ≫ (naturality f).hom ▷ G.map g ≫ (α_ _ _ _).hom := by
-    aesop_cat
+    cat_disch
 
 @[deprecated (since := "2025-04-23")] alias StrongOplaxNatTrans := StrongTrans
 
@@ -216,11 +220,11 @@ attribute [reassoc (attr := simp)] StrongTrans.naturality_naturality
 /-- A structure on an oplax transformation that promotes it to a strong transformation.
 
 See `Pseudofunctor.StrongTrans.mkOfOplax`. -/
-structure OplaxTrans.StrongCore {F G : OplaxFunctor B C} (η : F ⟶ G) where
+structure OplaxTrans.StrongCore {F G : B ⥤ᵒᵖᴸ C} (η : F ⟶ G) where
   /-- The underlying 2-isomorphisms of the naturality constraint. -/
   naturality {a b : B} (f : a ⟶ b) : F.map f ≫ η.app b ≅ η.app a ≫ G.map f
   /-- The 2-isomorphisms agree with the underlying 2-morphism of the oplax transformation. -/
-  naturality_hom {a b : B} (f : a ⟶ b) : (naturality f).hom = η.naturality f := by aesop_cat
+  naturality_hom {a b : B} (f : a ⟶ b) : (naturality f).hom = η.naturality f := by cat_disch
 
 attribute [simp] OplaxTrans.StrongCore.naturality_hom
 
@@ -228,25 +232,25 @@ namespace StrongTrans
 
 /-- The underlying oplax natural transformation of a strong natural transformation. -/
 @[simps]
-def toOplax {F G : OplaxFunctor B C} (η : StrongTrans F G) : OplaxTrans F G where
+def toOplax {F G : B ⥤ᵒᵖᴸ C} (η : StrongTrans F G) : OplaxTrans F G where
   app := η.app
   naturality f := (η.naturality f).hom
 
 /-- Construct a strong natural transformation from an oplax natural transformation whose
 naturality 2-morphism is an isomorphism. -/
-def mkOfOplax {F G : OplaxFunctor B C} (η : OplaxTrans F G) (η' : OplaxTrans.StrongCore η) :
+def mkOfOplax {F G : B ⥤ᵒᵖᴸ C} (η : OplaxTrans F G) (η' : OplaxTrans.StrongCore η) :
     StrongTrans F G where
   app := η.app
   naturality := η'.naturality
 
 /-- Construct a strong natural transformation from an oplax natural transformation whose
 naturality 2-morphism is an isomorphism. -/
-noncomputable def mkOfOplax' {F G : OplaxFunctor B C} (η : OplaxTrans F G)
+noncomputable def mkOfOplax' {F G : B ⥤ᵒᵖᴸ C} (η : OplaxTrans F G)
     [∀ a b (f : a ⟶ b), IsIso (η.naturality f)] : StrongTrans F G where
   app := η.app
   naturality _ := asIso (η.naturality _)
 
-variable (F : OplaxFunctor B C)
+variable (F : B ⥤ᵒᵖᴸ C)
 
 
 /-- The identity strong natural transformation. -/
@@ -262,7 +266,7 @@ instance : Inhabited (StrongTrans F F) :=
   ⟨id F⟩
 
 
-variable {F} {G H : OplaxFunctor B C} (η : StrongTrans F G) (θ : StrongTrans G H)
+variable {F} {G H : B ⥤ᵒᵖᴸ C} (η : StrongTrans F G) (θ : StrongTrans G H)
 
 /-- Vertical composition of strong natural transformations. -/
 @[simps!]
@@ -272,10 +276,10 @@ def vcomp : StrongTrans F H :=
         (α_ _ _ _).symm ≪≫ whiskerRightIso (η.naturality f) (θ.app b) ≪≫
         (α_ _ _ _) ≪≫ whiskerLeftIso (η.app a) (θ.naturality f) ≪≫ (α_ _ _ _).symm }
 
-/-- `CategoryStruct` on `OplaxFunctor B C` where the (1-)morphisms are given by strong
+/-- `CategoryStruct` on `B ⥤ᵒᵖᴸ C` where the (1-)morphisms are given by strong
 transformations. -/
 @[simps! id_app id_naturality comp_app comp_naturality]
-scoped instance OplaxFunctor.instCategoryStruct : CategoryStruct (OplaxFunctor B C) where
+scoped instance OplaxFunctor.instCategoryStruct : CategoryStruct (B ⥤ᵒᵖᴸ C) where
   Hom := StrongTrans
   id := StrongTrans.id
   comp := StrongTrans.vcomp

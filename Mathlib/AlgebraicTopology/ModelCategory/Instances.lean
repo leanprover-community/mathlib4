@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty.WeakFactorizationSystem
-import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
+module
+
+public import Mathlib.CategoryTheory.MorphismProperty.WeakFactorizationSystem
+public import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
 
 /-!
 # Consequences of model category axioms
@@ -13,6 +15,8 @@ In this file, we deduce basic properties of fibrations, cofibrations,
 and weak equivalences from the axioms of model categories.
 
 -/
+
+@[expose] public section
 
 
 universe w v u
@@ -352,5 +356,41 @@ instance [(weakEquivalences C).ContainsIdentities] (X : C) :
     WeakEquivalence (𝟙 X) := by
   rw [weakEquivalence_iff]
   apply id_mem
+
+section MapFactorizationData
+
+variable {X Y : C} (f : X ⟶ Y)
+
+section
+
+variable (h : MapFactorizationData (cofibrations C) (trivialFibrations C) f)
+
+instance : Cofibration h.i := by
+  simpa only [cofibration_iff] using h.hi
+
+instance : Fibration h.p := by
+  simpa only [fibration_iff] using h.hp.1
+
+instance : WeakEquivalence h.p := by
+  simpa only [weakEquivalence_iff] using h.hp.2
+
+end
+
+section
+
+variable (h : MapFactorizationData (trivialCofibrations C) (fibrations C) f)
+
+instance : Cofibration h.i := by
+  simpa only [cofibration_iff] using h.hi.1
+
+instance : WeakEquivalence h.i := by
+  simpa only [weakEquivalence_iff] using h.hi.2
+
+instance : Fibration h.p := by
+  simpa only [fibration_iff] using h.hp
+
+end
+
+end MapFactorizationData
 
 end HomotopicalAlgebra

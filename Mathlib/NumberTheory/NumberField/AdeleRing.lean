@@ -3,9 +3,11 @@ Copyright (c) 2024 Salvatore Mercuri, María Inés de Frutos-Fernández. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri, María Inés de Frutos-Fernández
 -/
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
-import Mathlib.NumberTheory.NumberField.Completion
-import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
+module
+
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Completion
+public import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
 
 /-!
 # The adele ring of a number field
@@ -33,6 +35,8 @@ direct product of the infinite adele ring and the finite adele ring.
 ## Tags
 infinite adele ring, adele ring, number field
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -126,7 +130,7 @@ in practice are easier to work with than `AdeleRing (𝓞 ℚ) ℚ`.
 Note that this definition does not give the correct answer in the function field case.
 -/
 def AdeleRing (R K : Type*) [CommRing R] [IsDedekindDomain R] [Field K]
-  [Algebra R K] [IsFractionRing R K] := InfiniteAdeleRing K × FiniteAdeleRing R K
+    [Algebra R K] [IsFractionRing R K] := InfiniteAdeleRing K × FiniteAdeleRing R K
 
 namespace AdeleRing
 

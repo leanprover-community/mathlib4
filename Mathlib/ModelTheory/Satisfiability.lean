@@ -3,10 +3,12 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.ModelTheory.Ultraproducts
-import Mathlib.ModelTheory.Bundled
-import Mathlib.ModelTheory.Skolem
-import Mathlib.Order.Filter.AtTopBot.Basic
+module
+
+public import Mathlib.ModelTheory.Ultraproducts
+public import Mathlib.ModelTheory.Bundled
+public import Mathlib.ModelTheory.Skolem
+public import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # First-Order Satisfiability
@@ -40,6 +42,8 @@ This file deals with the satisfiability of first-order theories, as well as equi
 - Satisfiability of an `L.Theory` `T` is defined in the minimal universe containing all the symbols
   of `L`. By Löwenheim-Skolem, this is equivalent to satisfiability in any universe.
 -/
+
+@[expose] public section
 
 
 
@@ -266,7 +270,6 @@ theorem exists_model_card_eq (h : ∃ M : ModelType.{u, v, max u v} T, Infinite 
     ∃ N : ModelType.{u, v, w} T, #N = κ := by
   cases h with
   | intro M MI =>
-    haveI := MI
     obtain ⟨N, hN, rfl⟩ := exists_elementarilyEquivalent_card_eq L M κ h1 h2
     haveI : Nonempty N := hN.nonempty
     exact ⟨hN.theory_model.bundled, rfl⟩

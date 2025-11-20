@@ -3,7 +3,9 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.List.Nodup
+module
+
+public import Mathlib.Data.List.Nodup
 
 /-!
 # Antidiagonals in ℕ × ℕ as lists
@@ -18,8 +20,9 @@ Files `Data.Multiset.NatAntidiagonal` and `Data.Finset.NatAntidiagonal` successi
 `List` definition we have here into `Multiset` and `Finset`.
 -/
 
+@[expose] public section
 
-open List Function Nat
+open Function
 
 namespace List
 
@@ -39,7 +42,7 @@ theorem mem_antidiagonal {n : ℕ} {x : ℕ × ℕ} : x ∈ antidiagonal n ↔ x
   · rintro rfl
     refine ⟨x.fst, ?_, ?_⟩
     · rw [mem_range]
-      omega
+      cutsat
     · exact Prod.ext rfl (by simp only [Nat.add_sub_cancel_left])
 
 /-- The length of the antidiagonal of `n` is `n + 1`. -/

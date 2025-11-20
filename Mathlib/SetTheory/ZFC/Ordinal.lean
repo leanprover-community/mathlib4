@@ -3,9 +3,11 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Order.GameAdd
-import Mathlib.Order.RelIso.Set
-import Mathlib.SetTheory.ZFC.Basic
+module
+
+public import Mathlib.Order.GameAdd
+public import Mathlib.Order.RelIso.Set
+public import Mathlib.SetTheory.ZFC.Basic
 
 /-!
 # Von Neumann ordinals
@@ -21,9 +23,10 @@ under `∈`.
 
 ## TODO
 
-- Define the von Neumann hierarchy.
 - Build correspondences between these set notions and those of the standard `Ordinal` type.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -65,6 +68,10 @@ theorem IsTransitive.sUnion' (H : ∀ y ∈ x, IsTransitive y) :
     (⋃₀ x : ZFSet).IsTransitive := fun y hy z hz => by
   rcases mem_sUnion.1 hy with ⟨w, hw, hw'⟩
   exact mem_sUnion_of_mem ((H w hw).mem_trans hz hw') hw
+
+protected theorem IsTransitive.iUnion {α : Type*} [Small.{u} α] {f : α → ZFSet.{u}}
+    (hf : ∀ i, (f i).IsTransitive) : (⋃ i, f i).IsTransitive :=
+  sUnion' (by simpa)
 
 protected theorem IsTransitive.union (hx : x.IsTransitive) (hy : y.IsTransitive) :
     (x ∪ y).IsTransitive := by
@@ -179,7 +186,7 @@ theorem notMem_iff_subset (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ∉ y ↔ y 
   refine ⟨?_, fun hxy hyx ↦ mem_irrefl _ (hxy hyx)⟩
   revert hx hy
   apply Sym2.GameAdd.induction mem_wf _ x y
-  intros x y IH hx hy hyx z hzy
+  intro x y IH hx hy hyx z hzy
   by_contra hzx
   exact hyx (mem_of_subset_of_mem hx hy (IH z x (Sym2.GameAdd.fst_snd hzy) (hy.mem hzy) hx hzx) hzy)
 

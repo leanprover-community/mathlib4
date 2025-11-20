@@ -3,7 +3,9 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Tactic.Order.CollectFacts
+module
+
+public meta import Mathlib.Tactic.Order.CollectFacts
 
 /-!
 # Graphs for the `order` tactic
@@ -11,6 +13,8 @@ import Mathlib.Tactic.Order.CollectFacts
 This module defines the `Graph` structure and basic operations on it. The `order` tactic uses
 `≤`-graphs, where the vertices represent atoms, and an edge `(x, y)` exists if `x ≤ y`.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Order
 
@@ -40,7 +44,7 @@ namespace Graph
 def addEdge (g : Graph) (edge : Edge) : Graph :=
   g.modify edge.src fun edges => edges.push edge
 
-/-- Constructs a directed `Graph` using `≤` facts. -/
+/-- Constructs a directed `Graph` using `≤` facts. It ignores all other facts. -/
 def constructLeGraph (nVertexes : Nat) (facts : Array AtomicFact) : MetaM Graph := do
   let mut res : Graph := Array.replicate nVertexes #[]
   for fact in facts do
@@ -64,9 +68,9 @@ partial def buildTransitiveLeProofDFS (g : Graph) (v t : Nat) (tExpr : Expr) :
     let u := edge.dst
     if !(← get).visited[u]! then
       match ← buildTransitiveLeProofDFS g u t tExpr with
-      | .some pf => return .some <| ← mkAppM ``le_trans #[edge.proof, pf]
-      | .none => continue
-  return .none
+      | some pf => return some <| ← mkAppM ``le_trans #[edge.proof, pf]
+      | none => continue
+  return none
 
 /-- Given a `≤`-graph `g`, finds a proof of `s ≤ t` using transitivity. -/
 def buildTransitiveLeProof (g : Graph) (idxToAtom : Std.HashMap Nat Expr) (s t : Nat) :

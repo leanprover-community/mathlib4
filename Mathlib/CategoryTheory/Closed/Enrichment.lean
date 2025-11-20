@@ -3,8 +3,10 @@ Copyright (c) 2024 Daniel Carranza. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Carranza, Joël Riou
 -/
-import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
-import Mathlib.CategoryTheory.Closed.Monoidal
+module
+
+public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
+public import Mathlib.CategoryTheory.Closed.Monoidal
 
 /-!
 # A closed monoidal category is enriched in itself
@@ -20,6 +22,8 @@ see `Mathlib/AlgebraicTopology/SimplicialCategory/SimplicialObject.lean`).
 All structure field values are defined in `Mathlib/CategoryTheory/Closed/Monoidal.lean`.
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -72,7 +76,7 @@ lemma enrichedOrdinaryCategorySelf_eHomWhiskerRight {X₁ X₂ : C} (f : X₁ �
 lemma enrichedOrdinaryCategorySelf_homEquiv {X Y : C} (f : X ⟶ Y) :
     eHomEquiv C f = curry' f := rfl
 
-lemma enrichedOrdinaryCategorySelf_homEquiv_symm {X Y : C} (g : 𝟙_ C ⟶ (ihom X).obj Y):
+lemma enrichedOrdinaryCategorySelf_homEquiv_symm {X Y : C} (g : 𝟙_ C ⟶ (ihom X).obj Y) :
     (eHomEquiv C).symm g = uncurry' g := rfl
 
 end MonoidalClosed

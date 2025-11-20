@@ -3,9 +3,11 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Polynomial.Degree.Domain
-import Mathlib.Algebra.Ring.NonZeroDivisors
-import Mathlib.RingTheory.Localization.FractionRing
+module
+
+public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.Algebra.Ring.NonZeroDivisors
+public import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # The field of rational functions
@@ -47,6 +49,8 @@ the codomain is not a field or even an integral domain.
 
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open scoped nonZeroDivisors Polynomial
@@ -85,8 +89,6 @@ theorem toFractionRing_injective : Function.Injective (toFractionRing : _ → Fr
 @[simp] lemma toFractionRing_inj {x y : RatFunc K} :
     toFractionRing x = toFractionRing y ↔ x = y :=
   toFractionRing_injective.eq_iff
-
-@[deprecated (since := "2024-12-29")] alias toFractionRing_eq_iff := toFractionRing_inj
 
 /-- Non-dependent recursion principle for `RatFunc K`:
 To construct a term of `P : Sort*` out of `x : RatFunc K`,

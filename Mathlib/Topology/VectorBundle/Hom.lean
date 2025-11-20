@@ -3,7 +3,9 @@ Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Floris van Doorn
 -/
-import Mathlib.Topology.VectorBundle.Basic
+module
+
+public import Mathlib.Topology.VectorBundle.Basic
 
 /-!
 # The vector bundle of continuous (semi)linear maps
@@ -26,6 +28,8 @@ Similar constructions should be possible (but are yet to be formalized) for tens
 topological vector bundles, exterior algebras, and so on, where again the topology can be defined
 using a norm on the fiber model if this helps.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -329,7 +333,7 @@ variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B�
 another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending
 continuously on `m`, one can apply `ϕ m` to `g m`, and the resulting map is continuous.
 
-Note that the continuity of `ϕ` can not be always be stated as continuity of a map into a bundle,
+Note that the continuity of `ϕ` cannot be always be stated as continuity of a map into a bundle,
 as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` only have a nice topology when `b₁` and `b₂` are
 globally continuous, but we want to apply this lemma with only local information. Therefore, we
 formulate it using continuity of `ϕ` read in coordinates.
@@ -368,7 +372,7 @@ lemma ContinuousWithinAt.clm_apply_of_inCoordinates
 another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending
 continuously on `m`, one can apply `ϕ m` to `g m`, and the resulting map is continuous.
 
-Note that the continuity of `ϕ` can not be always be stated as continuity of a map into a bundle,
+Note that the continuity of `ϕ` cannot be always be stated as continuity of a map into a bundle,
 as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` only have a nice topology when `b₁` and `b₂` are
 globally continuous, but we want to apply this lemma with only local information. Therefore, we
 formulate it using continuity of `ϕ` read in coordinates.
@@ -461,7 +465,7 @@ lemma Continuous.clm_bundle_apply
       (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x)) (b m) (ϕ m)))
     (hv : Continuous (fun m ↦ TotalSpace.mk' F₁ (b m) (v m))) :
     Continuous (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) := by
-  simp only [continuous_iff_continuousOn_univ] at hϕ hv ⊢
+  simp only [← continuousOn_univ] at hϕ hv ⊢
   exact hϕ.clm_bundle_apply hv
 
 end OneVariable
@@ -514,7 +518,7 @@ lemma Continuous.clm_bundle_apply₂
     (hv : Continuous (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)))
     (hw : Continuous (fun m ↦ TotalSpace.mk' F₂ (b m) (w m))) :
     Continuous (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) := by
-  simp only [continuous_iff_continuousOn_univ] at hψ hv hw ⊢
+  simp only [← continuousOn_univ] at hψ hv hw ⊢
   exact hψ.clm_bundle_apply₂ hv hw
 
 /-- Rewrite `ContinuousLinearMap.inCoordinates` using continuous linear equivalences, in the

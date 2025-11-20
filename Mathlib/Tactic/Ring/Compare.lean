@@ -3,8 +3,11 @@ Copyright (c) 2024 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Tactic.Ring.Basic
-import Mathlib.Tactic.NormNum.Ineq
+module
+
+public meta import Mathlib.Tactic.Ring.Basic
+public meta import Mathlib.Tactic.NormNum.Ineq
+import all Mathlib.Tactic.NormNum.Ineq
 
 /-!
 # Automation for proving inequalities in commutative (semi)rings
@@ -33,6 +36,8 @@ However, this automation serves as the discharger for the `linear_combination` t
 goals, so it is available to the user indirectly as the "degenerate" case of that tactic -- that is,
 by calling `linear_combination` without arguments.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Ring
 
@@ -121,9 +126,9 @@ def evalLE {v : Level} {α : Q(Type v)}
     MetaM (Except ExceptType Q($a ≤ $b)) := do
   let lα : Q(LE $α) := q(le_of_po $α)
   assumeInstancesCommute
-  let ⟨_, pz⟩ ← NormNum.mkOfNat α q(amwo_of_cs $α) (mkRawNatLit 0)
+  let ⟨_, pz⟩ ← NormNum.mkOfNat α q(amwo_of_cs $α) q(nat_lit 0)
   let rz : NormNum.Result q((0:$α)) :=
-    NormNum.Result.isNat q(amwo_of_cs $α) (mkRawNatLit 0) (q(NormNum.isNat_ofNat $α $pz):)
+    NormNum.Result.isNat q(amwo_of_cs $α) q(nat_lit 0) (q(NormNum.isNat_ofNat $α $pz):)
   match va, vb with
   /- `0 ≤ 0` -/
   | .zero, .zero => pure <| .ok (q(le_refl (0:$α)):)
@@ -159,9 +164,9 @@ def evalLT {v : Level} {α : Q(Type v)}
     MetaM (Except ExceptType Q($a < $b)) := do
   let lα : Q(LT $α) := q(lt_of_po $α)
   assumeInstancesCommute
-  let ⟨_, pz⟩ ← NormNum.mkOfNat α q(amwo_of_cs $α) (mkRawNatLit 0)
+  let ⟨_, pz⟩ ← NormNum.mkOfNat α q(amwo_of_cs $α) q(nat_lit 0)
   let rz : NormNum.Result q((0:$α)) :=
-    NormNum.Result.isNat q(amwo_of_cs $α) (mkRawNatLit 0) (q(NormNum.isNat_ofNat $α $pz):)
+    NormNum.Result.isNat q(amwo_of_cs $α) q(nat_lit 0) (q(NormNum.isNat_ofNat $α $pz):)
   match va, vb with
   /- `0 < 0` -/
   | .zero, .zero => return .error tooSmall

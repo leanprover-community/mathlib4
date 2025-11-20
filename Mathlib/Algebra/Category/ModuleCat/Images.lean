@@ -3,8 +3,10 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.ModuleCat.Abelian
-import Mathlib.CategoryTheory.Limits.Shapes.Images
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Abelian
+public import Mathlib.CategoryTheory.Limits.Shapes.Images
 
 /-!
 # The category of R-modules has images.
@@ -12,6 +14,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Images
 Note that we don't need to register any of the constructions here as instances, because we get them
 from the fact that `ModuleCat R` is an abelian category.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -25,7 +29,7 @@ namespace ModuleCat
 variable {R : Type u} [Ring R]
 variable {G H : ModuleCat.{v} R} (f : G ⟶ H)
 
-attribute [local ext] Subtype.ext_val
+attribute [local ext] Subtype.ext
 
 section
 

@@ -3,10 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Monoidal.FunctorCategory
-import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
-import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Limits.Shapes.End
+module
+
+public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
+public import Mathlib.CategoryTheory.Functor.Category
+public import Mathlib.CategoryTheory.Limits.Shapes.End
 
 /-!
 # Functor categories are enriched
@@ -25,6 +27,8 @@ The definition `isLimitConeFunctorEnrichedHom` shows that
 `enriched V F₁ F₂` is the limit of the functor `functorEnrichedHom V F₁ F₂`.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
@@ -172,7 +176,7 @@ lemma homEquiv_comp (f : F₁ ⟶ F₂) (g : F₂ ⟶ F₃) :
     enrichedComp V F₁ F₂ F₃ := by
   ext j
   simp only [homEquiv_apply_π, NatTrans.comp_app, eHomEquiv_comp, assoc,
-    enrichedComp_π, Functor.op_obj, ← tensor_comp_assoc]
+    enrichedComp_π, Functor.op_obj, tensorHom_comp_tensorHom_assoc]
 
 end
 
@@ -386,20 +390,20 @@ noncomputable def functorEnrichedComp [HasFunctorEnrichedHom V F₁ F₂]
     dsimp
     rw [assoc, assoc, enrichedComp_π]
     dsimp
-    rw [← tensor_comp_assoc]
+    rw [tensorHom_comp_tensorHom_assoc]
     simp
 
 @[reassoc (attr := simp)]
 lemma functorEnriched_id_comp [HasFunctorEnrichedHom V F₁ F₂] [HasFunctorEnrichedHom V F₁ F₁] :
     (λ_ (functorEnrichedHom V F₁ F₂)).inv ≫
       functorEnrichedId V F₁ ▷ functorEnrichedHom V F₁ F₂ ≫
-        functorEnrichedComp V F₁ F₁ F₂ = 𝟙 (functorEnrichedHom V F₁ F₂) := by aesop_cat
+        functorEnrichedComp V F₁ F₁ F₂ = 𝟙 (functorEnrichedHom V F₁ F₂) := by cat_disch
 
 @[reassoc (attr := simp)]
 lemma functorEnriched_comp_id [HasFunctorEnrichedHom V F₁ F₂] [HasFunctorEnrichedHom V F₂ F₂] :
     (ρ_ (functorEnrichedHom V F₁ F₂)).inv ≫
       functorEnrichedHom V F₁ F₂ ◁ functorEnrichedId V F₂ ≫
-        functorEnrichedComp V F₁ F₂ F₂ = 𝟙 (functorEnrichedHom V F₁ F₂) := by aesop_cat
+        functorEnrichedComp V F₁ F₂ F₂ = 𝟙 (functorEnrichedHom V F₁ F₂) := by cat_disch
 
 @[reassoc]
 lemma functorEnriched_assoc [HasFunctorEnrichedHom V F₁ F₂] [HasFunctorEnrichedHom V F₂ F₃]
@@ -433,7 +437,7 @@ noncomputable def functorHomEquiv [HasFunctorEnrichedHom V F₁ F₂] [HasEnrich
   (homEquiv V).trans (isLimitConeFunctorEnrichedHom V F₁ F₂).homEquiv
 
 lemma functorHomEquiv_id [HasFunctorEnrichedHom V F₁ F₁] [HasEnrichedHom V F₁ F₁] :
-    (functorHomEquiv V) (𝟙 F₁) = functorEnrichedId V F₁ := by aesop_cat
+    (functorHomEquiv V) (𝟙 F₁) = functorEnrichedId V F₁ := by cat_disch
 
 variable {F₁ F₂ F₃} in
 lemma functorHomEquiv_comp [HasFunctorEnrichedHom V F₁ F₂] [HasEnrichedHom V F₁ F₂]
@@ -446,7 +450,7 @@ lemma functorHomEquiv_comp [HasFunctorEnrichedHom V F₁ F₂] [HasEnrichedHom V
   dsimp
   ext k
   rw [homEquiv_comp, assoc, assoc, assoc, assoc, assoc, end_.lift_π, enrichedComp_π]
-  simp [← tensor_comp_assoc]
+  simp [tensorHom_comp_tensorHom_assoc]
 
 attribute [local instance] functorEnrichedCategory
 

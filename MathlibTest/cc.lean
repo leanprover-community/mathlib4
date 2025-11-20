@@ -6,6 +6,22 @@ import Mathlib.Tactic.CC
 
 set_option linter.unusedVariables false
 
+/--
+warning: The tactic `cc` is deprecated since 2025-07-31, please use `grind` instead.
+
+Please report any regressions at https://github.com/leanprover/lean4/issues/.
+Note that `cc` supports some goals that `grind` doesn't,
+but these rely on higher-order unification and can result in unpredictable performance.
+If a downstream library is relying on this functionality,
+please report this in an issue and we'll help find a solution.
+-/
+#guard_msgs in
+example (a b : Nat) : a = b → a = b := by
+  cc
+
+-- Turn off the warning for the rest of the file
+set_option mathlib.tactic.cc.warning false
+
 section CC1
 
 open List (Vector)
@@ -67,31 +83,31 @@ example (a b c : Nat) (f : Nat → Nat → Nat) :
 example (a b c : Nat) (f : Nat → Nat → Nat) : a = b → c = b → f (f a b) a = f (f c c) c := by
   cc
 
-example (a b c d : Nat) : HEq a b → b = c → HEq c d → HEq a d := by
+example (a b c d : Nat) : a ≍ b → b = c → c ≍ d → a ≍ d := by
   cc
 
-example (a b c d : Nat) : a = b → b = c → HEq c d → HEq a d := by
+example (a b c d : Nat) : a = b → b = c → c ≍ d → a ≍ d := by
   cc
 
-example (a b c d : Nat) : a = b → HEq b c → HEq c d → HEq a d := by
+example (a b c d : Nat) : a = b → b ≍ c → c ≍ d → a ≍ d := by
   cc
 
-example (a b c d : Nat) : HEq a b → HEq b c → c = d → HEq a d := by
+example (a b c d : Nat) : a ≍ b → b ≍ c → c = d → a ≍ d := by
   cc
 
-example (a b c d : Nat) : HEq a b → b = c → c = d → HEq a d := by
+example (a b c d : Nat) : a ≍ b → b = c → c = d → a ≍ d := by
   cc
 
-example (a b c d : Nat) : a = b → b = c → c = d → HEq a d := by
+example (a b c d : Nat) : a = b → b = c → c = d → a ≍ d := by
   cc
 
-example (a b c d : Nat) : a = b → HEq b c → c = d → HEq a d := by
+example (a b c d : Nat) : a = b → b ≍ c → c = d → a ≍ d := by
   cc
 
 axiom f₁ : {α : Type} → α → α → α
 axiom g₁ : Nat → Nat
 
-example (a b c : Nat) : a = b → HEq (g₁ a) (g₁ b) := by
+example (a b c : Nat) : a = b → g₁ a ≍ g₁ b := by
   cc
 
 example (a b c : Nat) : a = b → c = b → f₁ (f₁ a b) (g₁ c) = f₁ (f₁ c a) (g₁ b) := by
@@ -149,7 +165,7 @@ example (a b : Nat) : (a = b ↔ a = b) := by
 example (a b : Nat) : (a = b) = (b = a) := by
   cc
 
-example (a b : Nat) : HEq (a = b) (b = a) := by
+example (a b : Nat) : (a = b) ≍ (b = a) := by
   cc
 
 example (p : Nat → Nat → Prop) (f : Nat → Nat) (a b c d : Nat) :
@@ -176,40 +192,40 @@ example (a b c : Nat) : a = b → R a b → R a a := by
 example (a b c : Prop) : a = b → b = c → (a ↔ c) := by
   cc
 
-example (a b c : Prop) : a = b → HEq b c → (a ↔ c) := by
+example (a b c : Prop) : a = b → b ≍ c → (a ↔ c) := by
   cc
 
-example (a b c : Nat) : HEq a b → b = c → HEq a c := by
+example (a b c : Nat) : a ≍ b → b = c → a ≍ c := by
   cc
 
-example (a b c : Nat) : HEq a b → b = c → a = c := by
+example (a b c : Nat) : a ≍ b → b = c → a = c := by
   cc
 
-example (a b c d : Nat) : HEq a b → HEq b c → HEq c d → a = d := by
+example (a b c d : Nat) : a ≍ b → b ≍ c → c ≍ d → a = d := by
   cc
 
-example (a b c d : Nat) : HEq a b → b = c → HEq c d → a = d := by
+example (a b c d : Nat) : a ≍ b → b = c → c ≍ d → a = d := by
   cc
 
 example (a b c : Prop) : a = b → b = c → (a ↔ c) := by
   cc
 
-example (a b c : Prop) : HEq a b → b = c → (a ↔ c) := by
+example (a b c : Prop) : a ≍ b → b = c → (a ↔ c) := by
   cc
 
-example (a b c d : Prop) : HEq a b → HEq b c → HEq c d → (a ↔ d) := by
+example (a b c d : Prop) : a ≍ b → b ≍ c → c ≍ d → (a ↔ d) := by
   cc
 
-def foo (a b c d : Prop) : HEq a b → b = c → HEq c d → (a ↔ d) := by
+def foo (a b c d : Prop) : a ≍ b → b = c → c ≍ d → (a ↔ d) := by
   cc
 
-example (a b c : Nat) (f : Nat → Nat) : HEq a b → b = c → HEq (f a) (f c) := by
+example (a b c : Nat) (f : Nat → Nat) : a ≍ b → b = c → f a ≍ f c := by
   cc
 
-example (a b c : Nat) (f : Nat → Nat) : HEq a b → b = c → f a = f c := by
+example (a b c : Nat) (f : Nat → Nat) : a ≍ b → b = c → f a = f c := by
   cc
 
-example (a b c d : Nat) (f : Nat → Nat) : HEq a b → b = c → HEq c (f d) → f a = f (f d) := by
+example (a b c d : Nat) (f : Nat → Nat) : a ≍ b → b = c → c ≍ f d → f a = f (f d) := by
   cc
 
 end CC3
@@ -225,17 +241,17 @@ axiom app : {α : Type u} → {n m : Nat} →
 
 example (n1 n2 n3 : Nat)
     (v1 w1 : List.Vector Nat n1) (w1' : List.Vector Nat n3) (v2 w2 : List.Vector Nat n2) :
-    n1 = n3 → v1 = w1 → HEq w1 w1' → v2 = w2 → HEq (app v1 v2) (app w1' w2) := by
+    n1 = n3 → v1 = w1 → w1 ≍ w1' → v2 = w2 → app v1 v2 ≍ app w1' w2 := by
   cc
 
 example (n1 n2 n3 : Nat)
     (v1 w1 : List.Vector Nat n1) (w1' : List.Vector Nat n3) (v2 w2 : List.Vector Nat n2) :
-    HEq n1 n3 → v1 = w1 → HEq w1 w1' → HEq v2 w2 → HEq (app v1 v2) (app w1' w2) := by
+    n1 ≍ n3 → v1 = w1 → w1 ≍ w1' → v2 ≍ w2 → app v1 v2 ≍ app w1' w2 := by
   cc
 
 example (n1 n2 n3 : Nat)
     (v1 w1 v : List.Vector Nat n1) (w1' : List.Vector Nat n3) (v2 w2 w : List.Vector Nat n2) :
-    HEq n1 n3 → v1 = w1 → HEq w1 w1' → HEq v2 w2 → HEq (app w1' w2) (app v w) →
+    n1 ≍ n3 → v1 = w1 → w1 ≍ w1' → v2 ≍ w2 → app w1' w2 ≍ app v w →
       app v1 v2 = app v w := by
   cc
 
@@ -270,53 +286,53 @@ axiom h : {a : A} → {ba : B a} → {cba : C a ba} → {dcba : D a ba cba} →
 
 attribute [instance] C_ss
 
-example : ∀ (a a' : A), HEq a a' → HEq (mk_B1 a) (mk_B1 a') := by
+example : ∀ (a a' : A), a ≍ a' → mk_B1 a ≍ mk_B1 a' := by
   cc
 
-example : ∀ (a a' : A), HEq a a' → HEq (mk_B2 a) (mk_B2 a') := by
+example : ∀ (a a' : A), a ≍ a' → mk_B2 a ≍ mk_B2 a' := by
   cc
 
-example : ∀ (a a' : A) (h : a = a') (b : B a), HEq (h ▸ b) b := by
+example : ∀ (a a' : A) (h : a = a') (b : B a), h ▸ b ≍ b := by
   cc
 
-example : HEq a1 (y a2) → HEq (mk_B1 a1) (mk_B1 (y a2)) := by
+example : a1 ≍ y a2 → mk_B1 a1 ≍ mk_B1 (y a2) := by
   cc
 
-example : HEq a1 (x a2) → HEq a2 (y a1) → HEq (mk_B1 (x (y a1))) (mk_B1 (x (y (x a2)))) := by
+example : a1 ≍ x a2 → a2 ≍ y a1 → mk_B1 (x (y a1)) ≍ mk_B1 (x (y (x a2))) := by
   cc
 
-example : HEq a1 (y a2) → HEq (mk_B1 a1) (mk_B2 (y a2)) →
-    HEq (f (mk_C1 (mk_B2 a1))) (f (mk_C2 (mk_B1 (y a2)))) := by
+example : a1 ≍ y a2 → mk_B1 a1 ≍ mk_B2 (y a2) →
+    f (mk_C1 (mk_B2 a1)) ≍ f (mk_C2 (mk_B1 (y a2))) := by
   cc
 
-example : HEq a1 (y a2) → HEq (tr_B (mk_B1 a1)) (mk_B2 (y a2)) →
-    HEq (f (mk_C1 (mk_B2 a1))) (f (mk_C2 (tr_B (mk_B1 (y a2))))) := by
+example : a1 ≍ y a2 → tr_B (mk_B1 a1) ≍ mk_B2 (y a2) →
+    f (mk_C1 (mk_B2 a1)) ≍ f (mk_C2 (tr_B (mk_B1 (y a2)))) := by
   cc
 
-example : HEq a1 (y a2) → HEq (mk_B1 a1) (mk_B2 (y a2)) →
-    HEq (g (f (mk_C1 (mk_B2 a1)))) (g (f (mk_C2 (mk_B1 (y a2))))) := by
+example : a1 ≍ y a2 → mk_B1 a1 ≍ (mk_B2 (y a2)) →
+    g (f (mk_C1 (mk_B2 a1))) ≍ g (f (mk_C2 (mk_B1 (y a2)))) := by
   cc
 
-example : HEq a1 (y a2) → HEq (tr_B (mk_B1 a1)) (mk_B2 (y a2)) →
-    HEq (g (f (mk_C1 (mk_B2 a1)))) (g (f (mk_C2 (tr_B (mk_B1 (y a2)))))) := by
+example : a1 ≍ y a2 → tr_B (mk_B1 a1) ≍ mk_B2 (y a2) →
+    g (f (mk_C1 (mk_B2 a1))) ≍ g (f (mk_C2 (tr_B (mk_B1 (y a2))))) := by
   cc
 
-example : HEq a1 (y a2) → HEq a2 (z a3) → HEq a3 (x a1) → HEq (mk_B1 a1) (mk_B2 (y (z (x a1)))) →
-          HEq (f (mk_C1 (mk_B2 (y (z (x a1)))))) (f' (mk_C2 (mk_B1 a1))) →
-          HEq (g (f (mk_C1 (mk_B2 (y (z (x a1))))))) (g (f' (mk_C2 (mk_B1 a1)))) := by
+example : a1 ≍ y a2 → a2 ≍ z a3 → a3 ≍ x a1 → mk_B1 a1 ≍ mk_B2 (y (z (x a1))) →
+          f (mk_C1 (mk_B2 (y (z (x a1))))) ≍ f' (mk_C2 (mk_B1 a1)) →
+          g (f (mk_C1 (mk_B2 (y (z (x a1)))))) ≍ g (f' (mk_C2 (mk_B1 a1))) := by
   cc
 
-example : HEq a1 (y a2) → HEq a2 (z a3) → HEq a3 (x a1) → HEq (mk_B1 a1) (mk_B2 (y (z (x a1)))) →
-          HEq (f (mk_C1 (mk_B2 (y (z (x a1)))))) (f' (mk_C2 (mk_B1 a1))) →
-          HEq (f' (mk_C1 (mk_B1 a1))) (f (mk_C2 (mk_B2 (y (z (x a1)))))) →
-          HEq (g (f (mk_C1 (mk_B1 (y (z (x a1))))))) (g (f' (mk_C2 (mk_B2 a1)))) := by
+example : a1 ≍ y a2 → a2 ≍ z a3 → a3 ≍ x a1 → mk_B1 a1 ≍ mk_B2 (y (z (x a1))) →
+          f (mk_C1 (mk_B2 (y (z (x a1))))) ≍ f' (mk_C2 (mk_B1 a1)) →
+          f' (mk_C1 (mk_B1 a1)) ≍ f (mk_C2 (mk_B2 (y (z (x a1))))) →
+          g (f (mk_C1 (mk_B1 (y (z (x a1)))))) ≍ g (f' (mk_C2 (mk_B2 a1))) := by
   cc
 
-example : HEq a1 (y a2) → HEq a2 (z a3) → HEq a3 (x a1) →
-          HEq (tr_B (mk_B1 a1)) (mk_B2 (y (z (x a1)))) →
-          HEq (f (mk_C1 (mk_B2 (y (z (x a1)))))) (f' (mk_C2 (tr_B (mk_B1 a1)))) →
-          HEq (f' (mk_C1 (tr_B (mk_B1 a1)))) (f (mk_C2 (mk_B2 (y (z (x a1)))))) →
-          HEq (g (f (mk_C1 (tr_B (mk_B1 (y (z (x a1)))))))) (g (f' (mk_C2 (mk_B2 a1)))) := by
+example : a1 ≍ y a2 → a2 ≍ z a3 → a3 ≍ x a1 →
+          tr_B (mk_B1 a1) ≍ mk_B2 (y (z (x a1))) →
+          f (mk_C1 (mk_B2 (y (z (x a1))))) ≍ f' (mk_C2 (tr_B (mk_B1 a1))) →
+          f' (mk_C1 (tr_B (mk_B1 a1))) ≍ f (mk_C2 (mk_B2 (y (z (x a1))))) →
+          g (f (mk_C1 (tr_B (mk_B1 (y (z (x a1))))))) ≍ g (f' (mk_C2 (mk_B2 a1))) := by
   cc
 
 end LocalAxioms
@@ -330,7 +346,7 @@ example (a b c a' b' c' : Nat) : a = a' → b = b' → c = c' → a + b + c + a 
 example (a b : Unit) : a = b := by
   cc
 
-example (a b : Nat) (h₁ : a = 0) (h₂ : b = 0) : a = b → HEq h₁ h₂ := by
+example (a b : Nat) (h₁ : a = 0) (h₂ : b = 0) : a = b → h₁ ≍ h₂ := by
   cc
 
 axiom inv' : (a : Nat) → a ≠ 0 → Nat
@@ -339,7 +355,7 @@ example (a b : Nat) (h₁ : a ≠ 0) (h₂ : b ≠ 0) : a = b → inv' a h₁ = 
   cc
 
 example (C : Nat → Type) (f : (n : _) → C n → C n) (n m : Nat) (c : C n) (d : C m) :
-    HEq (f n) (f m) → HEq c d → HEq n m → HEq (f n c) (f m d) := by
+    f n ≍ f m → c ≍ d → n ≍ m → f n c ≍ f m d := by
   cc
 
 end CC6
@@ -352,7 +368,7 @@ example (f g : {α : Type} → α → α → α) (h : Nat → Nat) (a b : Nat) :
 
 example (f g : {α : Type} → (a b : α) → {x : α // x ≠ b})
     (h : (b : Nat) → {x : Nat // x ≠ b}) (a b₁ b₂ : Nat) :
-    h = f a → b₁ = b₂ → HEq (h b₁) (f a b₂) := by
+    h = f a → b₁ = b₂ → h b₁ ≍ f a b₂ := by
   cc
 
 example (f : Nat → Nat → Nat) (a b c d : Nat) :
@@ -360,7 +376,7 @@ example (f : Nat → Nat → Nat) (a b c d : Nat) :
   cc
 
 example (f : Nat → Nat → Nat) (a b c d : Nat) :
-        HEq c d → HEq (f a) (f b) → HEq (f a c) (f b d) := by
+        c ≍ d → f a ≍ f b → f a c ≍ f b d := by
   cc
 
 end CC7

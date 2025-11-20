@@ -3,7 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Yaël Dillies
 -/
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
+module
+
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Tooling to make copies of lattice structures
@@ -12,6 +14,8 @@ Sometimes it is useful to make a copy of a lattice structure
 where one replaces the data parts with provably equal definitions
 that have better definitional properties.
 -/
+
+@[expose] public section
 
 
 open Order
@@ -87,7 +91,7 @@ def GeneralizedHeytingAlgebra.copy (c : GeneralizedHeytingAlgebra α)
   himp := himp
   le_himp_iff _ _ _ := by simp [eq_le, eq_himp, eq_inf]
 
-/-- A function to create a provable equal copy of a generalised coheyting algebra
+/-- A function to create a provable equal copy of a generalised co-Heyting algebra
 with possibly different definitional equalities. -/
 def GeneralizedCoheytingAlgebra.copy (c : GeneralizedCoheytingAlgebra α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
@@ -121,7 +125,7 @@ def HeytingAlgebra.copy (c : HeytingAlgebra α)
   compl := compl
   himp_bot := by simp [eq_le, eq_himp, eq_bot, eq_compl]
 
-/-- A function to create a provable equal copy of a coheyting algebra
+/-- A function to create a provable equal copy of a co-Heyting algebra
 with possibly different definitional equalities. -/
 def CoheytingAlgebra.copy (c : CoheytingAlgebra α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)
@@ -140,7 +144,7 @@ def CoheytingAlgebra.copy (c : CoheytingAlgebra α)
   hnot := hnot
   top_sdiff := by simp [eq_le, eq_sdiff, eq_top, eq_hnot]
 
-/-- A function to create a provable equal copy of a biheyting algebra
+/-- A function to create a provable equal copy of a bi-Heyting algebra
 with possibly different definitional equalities. -/
 def BiheytingAlgebra.copy (c : BiheytingAlgebra α)
     (le : α → α → Prop) (eq_le : le = (by infer_instance : LE α).le)

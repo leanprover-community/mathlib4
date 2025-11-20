@@ -3,17 +3,19 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Pi
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Finset.Sups
-import Mathlib.Order.Birkhoff
-import Mathlib.Order.Booleanisation
-import Mathlib.Order.Sublattice
-import Mathlib.Tactic.Positivity.Basic
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.GCongr
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Pi
+public import Mathlib.Algebra.Order.Ring.Nat
+public import Mathlib.Data.Finset.Sups
+public import Mathlib.Order.Birkhoff
+public import Mathlib.Order.Booleanisation
+public import Mathlib.Order.Sublattice
+public import Mathlib.Tactic.Positivity.Basic
+public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.GCongr
 
 /-!
 # The four functions theorem and corollaries
@@ -54,6 +56,8 @@ earlier file and give it a proper API.
 [*Applications of the FKG Inequality and Its Relatives*, Graham][Graham1983]
 -/
 
+@[expose] public section
+
 open Finset Fintype Function
 open scoped FinsetFamily
 
@@ -76,7 +80,7 @@ private lemma ineq [ExistsAddOfLE β] {a₀ a₁ b₀ b₁ c₀ c₁ d₀ d₁ :
     _ = a₀ * b₀ + (a₀ * b₁ + a₁ * b₀) + a₁ * b₁ := by ring
     _ ≤ c₀ * d₀ + (c₀ * d₁ + c₁ * d₀) + c₁ * d₁ := add_le_add_three h₀₀ ?_ h₁₁
     _ = (c₀ + c₁) * (d₀ + d₁) := by ring
-  obtain hcd | hcd := (mul_nonneg hc₀ hd₁).eq_or_gt
+  obtain hcd | hcd := (mul_nonneg hc₀ hd₁).eq_or_lt'
   · rw [hcd] at h₀₁ h₁₀
     rw [h₀₁.antisymm, h₁₀.antisymm, add_zero] <;> positivity
   refine le_of_mul_le_mul_right ?_ hcd
@@ -91,9 +95,7 @@ private def collapse (𝒜 : Finset (Finset α)) (a : α) (f : Finset α → β)
   ∑ t ∈ 𝒜 with t.erase a = s, f t
 
 private lemma erase_eq_iff (hs : a ∉ s) : t.erase a = s ↔ t = s ∨ t = insert a s := by
-  by_cases ht : a ∈ t <;>
-  · simp [erase_eq_iff_eq_insert, *]
-    aesop
+  grind
 
 private lemma filter_collapse_eq (ha : a ∉ s) (𝒜 : Finset (Finset α)) :
     {t ∈ 𝒜 | t.erase a = s} =
@@ -284,11 +286,11 @@ lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ 
   set s' : Finset L := s.preimage (↑) Subtype.coe_injective.injOn
   set t' : Finset L := t.preimage (↑) Subtype.coe_injective.injOn
   have hs' : s'.map ⟨L.subtype, Subtype.coe_injective⟩ = s := by
-    simp [s', map_eq_image, image_preimage, filter_eq_self]
-    exact fun a ha ↦ subset_latticeClosure <| Set.subset_union_left ha
+    simpa [s', map_eq_image, image_preimage, filter_eq_self] using
+      fun a ha ↦ subset_latticeClosure <| Set.subset_union_left ha
   have ht' : t'.map ⟨L.subtype, Subtype.coe_injective⟩ = t := by
-    simp [t', map_eq_image, image_preimage, filter_eq_self]
-    exact fun a ha ↦ subset_latticeClosure <| Set.subset_union_right ha
+    simpa [t', map_eq_image, image_preimage, filter_eq_self] using
+      fun a ha ↦ subset_latticeClosure <| Set.subset_union_right ha
   clear_value s' t'
   obtain ⟨β, _, _, g, hg⟩ := exists_birkhoff_representation L
   have := four_functions_theorem_aux (extend g (f₁ ∘ (↑)) 0) (extend g (f₂ ∘ (↑)) 0)

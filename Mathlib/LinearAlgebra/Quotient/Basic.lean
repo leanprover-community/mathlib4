@@ -3,12 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
-import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.GroupTheory.QuotientGroup.Basic
-import Mathlib.LinearAlgebra.Pi
-import Mathlib.LinearAlgebra.Quotient.Defs
-import Mathlib.LinearAlgebra.Span.Basic
-import Mathlib.SetTheory.Cardinal.Finite
+module
+
+public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.GroupTheory.QuotientGroup.Basic
+public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.LinearAlgebra.Quotient.Defs
+public import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Quotients by submodules
@@ -25,6 +26,10 @@ import Mathlib.SetTheory.Cardinal.Finite
   in `q`
 
 -/
+
+@[expose] public section
+
+assert_not_exists Cardinal
 
 -- For most of this file we work over a noncommutative ring
 section Ring
@@ -70,6 +75,9 @@ theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) := by
   refine ⟨⟨mk x, 0, ?_⟩⟩
   simpa using notMem_s
 
+theorem nontrivial_of_ne_top (h : p ≠ ⊤) : Nontrivial (M ⧸ p) :=
+  nontrivial_of_lt_top p h.lt_top
+
 end Quotient
 
 instance QuotientBot.infinite [Infinite M] : Infinite (M ⧸ (⊥ : Submodule R M)) :=
@@ -95,6 +103,9 @@ theorem subsingleton_quotient_iff_eq_top : Subsingleton (M ⧸ p) ↔ p = ⊤ :=
   · rintro rfl
     infer_instance
 
+instance [Subsingleton M] : Subsingleton (M ⧸ p) :=
+  Submodule.subsingleton_quotient_iff_eq_top.mpr (Subsingleton.elim _ _)
+
 theorem unique_quotient_iff_eq_top : Nonempty (Unique (M ⧸ p)) ↔ p = ⊤ :=
   ⟨fun ⟨h⟩ => subsingleton_quotient_iff_eq_top.mp (@Unique.instSubsingleton _ h),
     by rintro rfl; exact ⟨QuotientTop.unique⟩⟩
@@ -103,11 +114,6 @@ variable (p)
 
 noncomputable instance Quotient.fintype [Fintype M] (S : Submodule R M) : Fintype (M ⧸ S) :=
   @_root_.Quotient.fintype _ _ _ fun _ _ => Classical.dec _
-
-theorem card_eq_card_quotient_mul_card (S : Submodule R M) :
-    Nat.card M = Nat.card S * Nat.card (M ⧸ S) := by
-  rw [mul_comm, ← Nat.card_prod]
-  exact Nat.card_congr AddSubgroup.addGroupEquivQuotientProdAddSubgroup
 
 section
 
@@ -220,6 +226,7 @@ theorem mapQ_pow {f : M →ₗ[R] M} (h : p ≤ p.comap f) (k : ℕ)
   | succ k ih =>
     simp only [Module.End.iterate_succ]
     rw [mapQ_comp, ih]
+    exact p.le_comap_pow_of_le_comap h k
 
 theorem comap_liftQ (f : M →ₛₗ[τ₁₂] M₂) (h) : q.comap (p.liftQ f h) = (q.comap f).map (mkQ p) :=
   le_antisymm (by rintro ⟨x⟩ hx; exact ⟨_, hx, rfl⟩)
@@ -290,7 +297,7 @@ def comapMkQRelIso : Submodule R (M ⧸ p) ≃o Set.Ici p where
   toFun p' := ⟨comap p.mkQ p', le_comap_mkQ p _⟩
   invFun q := map p.mkQ q
   left_inv p' := map_comap_eq_self <| by simp
-  right_inv := fun ⟨q, hq⟩ => Subtype.ext_val <| by simpa [comap_map_mkQ p]
+  right_inv := fun ⟨q, hq⟩ => Subtype.ext <| by simpa [comap_map_mkQ p]
   map_rel_iff' := comap_le_comap_iff <| range_mkQ _
 
 /-- The ordering on submodules of the quotient of `M` by `p` embeds into the ordering on submodules
@@ -314,7 +321,7 @@ theorem span_preimage_eq [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂]
     rw [← Set.singleton_subset_iff] at hy
     exact Set.Subset.trans subset_span (span_mono (Set.preimage_mono hy))
   rw [← left_eq_sup] at hk
-  rw [range_coe f] at h₁
+  rw [coe_range f] at h₁
   rw [hk, ← LinearMap.map_le_map_iff, map_span, map_comap_eq, Set.image_preimage_eq_of_subset h₁]
   exact inf_le_right
 

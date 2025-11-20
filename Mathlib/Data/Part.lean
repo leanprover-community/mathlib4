@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 -/
-import Mathlib.Algebra.Notation.Defs
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Logic.Equiv.Defs
+module
+
+public import Mathlib.Algebra.Notation.Defs
+public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Partial values of a type
@@ -17,9 +19,7 @@ a proof of the domain.
 for some `a : α`, while the domain of `o : Part α` doesn't have to be decidable. That means you can
 translate back and forth between a partial value with a decidable domain and an option, and
 `Option α` and `Part α` are classically equivalent. In general, `Part α` is bigger than `Option α`.
-In current mathlib, `Part ℕ`, aka `PartENat`, is used to move decidability of the order to
-decidability of `PartENat.find` (which is the smallest natural satisfying a predicate, or `∞` if
-there's none).
+
 ## Main declarations
 `Option`-like declarations:
 * `Part.none`: The partial value whose domain is `False`.
@@ -41,6 +41,8 @@ Other:
 For `a : α`, `o : Part α`, `a ∈ o` means that `o` is defined and equal to `a`. Formally, it means
 `o.Dom` and `o.get _ = a`.
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso
 
@@ -212,6 +214,17 @@ theorem get_eq_iff_mem {o : Part α} {a : α} (h : o.Dom) : o.get h = a ↔ a �
 theorem eq_get_iff_mem {o : Part α} {a : α} (h : o.Dom) : a = o.get h ↔ a ∈ o :=
   eq_comm.trans (get_eq_iff_mem h)
 
+theorem eq_of_get_eq_get {a b : Part α} (ha : a.Dom) (hb : b.Dom) (hab : a.get ha = b.get hb) :
+    a = b :=
+  ext' (iff_of_true ha hb) fun _ _ => hab
+
+theorem eq_iff_of_dom {a b : Part α} (ha : a.Dom) (hb : b.Dom) : a.get ha = b.get hb ↔ a = b :=
+  ⟨eq_of_get_eq_get ha hb, get_eq_get_of_eq a ha⟩
+
+theorem eq_of_mem {a b : Part α} (ha : a.Dom) (hb : a.get ha ∈ b) : a = b := by
+  have hb' : b.Dom := Part.dom_iff_mem.mpr ⟨a.get ha, hb⟩
+  rwa [← eq_get_iff_mem hb', eq_iff_of_dom ha hb'] at hb
+
 @[simp]
 theorem none_toOption [Decidable (@none α).Dom] : (none : Part α).toOption = Option.none :=
   dif_neg id
@@ -250,9 +263,10 @@ theorem getOrElse_some (a : α) (d : α) [Decidable (some a).Dom] : getOrElse (s
 -- `simp`-normal form is `toOption_eq_some_iff`.
 theorem mem_toOption {o : Part α} [Decidable o.Dom] {a : α} : a ∈ toOption o ↔ a ∈ o := by
   unfold toOption
-  by_cases h : o.Dom <;> simp [h]
-  · exact ⟨fun h => ⟨_, h⟩, fun ⟨_, h⟩ => h⟩
-  · exact mt Exists.fst h
+  by_cases h : o.Dom
+  · simpa [h] using ⟨fun h => ⟨_, h⟩, fun ⟨_, h⟩ => h⟩
+  · simp only [h, ↓reduceDIte, Option.mem_def, reduceCtorEq, false_iff]
+    exact mt Exists.fst h
 
 @[simp]
 theorem toOption_eq_some_iff {o : Part α} [Decidable o.Dom] {a : α} :
@@ -608,7 +622,7 @@ theorem mul_def [Mul α] (a b : Part α) : a * b = bind a fun y ↦ map (y * ·)
 theorem one_def [One α] : (1 : Part α) = some 1 := rfl
 
 @[to_additive]
-theorem inv_def [Inv α] (a : Part α) : a⁻¹ = Part.map (· ⁻¹) a := rfl
+theorem inv_def [Inv α] (a : Part α) : a⁻¹ = Part.map (·⁻¹) a := rfl
 
 @[to_additive]
 theorem div_def [Div α] (a b : Part α) : a / b = bind a fun y => map (y / ·) b := rfl

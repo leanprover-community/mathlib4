@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Ring.InjSurj
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Ring.InjSurj
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Algebraic structures on the set of positive numbers
@@ -14,6 +16,8 @@ In this file we define various instances (`AddSemigroup`, `OrderedCommMonoid` et
 type `{x : R // 0 < x}`. In each case we try to require the weakest possible typeclass
 assumptions on `R` but possibly, there is a room for improvements.
 -/
+
+@[expose] public section
 
 
 open Function
@@ -84,7 +88,7 @@ theorem val_mul (x y : { x : R // 0 < x }) : ↑(x * y) = (x * y : R) :=
   rfl
 
 instance : Pow { x : R // 0 < x } ℕ :=
-  ⟨fun x n => ⟨(x : R) ^ n , pow_pos x.2 n⟩⟩
+  ⟨fun x n => ⟨(x : R) ^ n, pow_pos x.2 n⟩⟩
 
 @[simp]
 theorem val_pow (x : { x : R // 0 < x }) (n : ℕ) :
@@ -123,8 +127,8 @@ instance isOrderedMonoid [CommSemiring R] [PartialOrder R] [IsStrictOrderedRing 
 /-- If `R` is a nontrivial linear ordered commutative semiring, then `{x : R // 0 < x}` is a linear
 ordered cancellative commutative monoid. -/
 instance isOrderedCancelMonoid [CommSemiring R] [LinearOrder R] [IsStrictOrderedRing R] :
-    IsOrderedCancelMonoid { x : R // 0 < x } :=
-  { le_of_mul_le_mul_left := fun a _ _ h => Subtype.coe_le_coe.1 <| (mul_le_mul_left a.2).1 h }
+    IsOrderedCancelMonoid { x : R // 0 < x } where
+  le_of_mul_le_mul_left a _ _ := (mul_le_mul_iff_right₀ a.2).1
 
 end mul_comm
 

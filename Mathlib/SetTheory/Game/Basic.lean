@@ -3,9 +3,16 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Apurva Nakade, Yuyang Zhao
 -/
-import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.SetTheory.PGame.Algebra
-import Mathlib.Tactic.Abel
+module
+
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.SetTheory.PGame.Algebra
+public import Mathlib.Tactic.Abel
+public import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Game.Basic` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Combinatorial games.
@@ -19,6 +26,8 @@ about them. Multiplication is not well-behaved under equivalence of pre-games i.
 imply `x * z ≈ y * z`. Hence, multiplication is not a well-defined operation on games. Nevertheless,
 the abelian group structure on games allows us to simplify many proofs for pre-games.
 -/
+
+@[expose] public section
 
 -- Porting note: many definitions here are noncomputable as the compiler does not support PGame.rec
 noncomputable section
@@ -850,7 +859,7 @@ lemma leftMoves_mul_iff {x y : PGame} (P : Game → Prop) :
   cases x; cases y
   constructor <;> intro h
   on_goal 1 =>
-    constructor <;> intros i j
+    constructor <;> intro i j
     · exact h (Sum.inl (i, j))
     convert h (Sum.inr (i, j)) using 1
   on_goal 2 =>
@@ -872,7 +881,7 @@ lemma rightMoves_mul_iff {x y : PGame} (P : Game → Prop) :
   cases x; cases y
   constructor <;> intro h
   on_goal 1 =>
-    constructor <;> intros i j
+    constructor <;> intro i j
     on_goal 1 => convert h (Sum.inl (i, j))
   on_goal 2 => convert h (Sum.inr (i, j))
   on_goal 3 =>

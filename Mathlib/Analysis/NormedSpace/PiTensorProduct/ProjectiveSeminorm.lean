@@ -3,8 +3,10 @@ Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
-import Mathlib.Analysis.NormedSpace.Multilinear.Basic
-import Mathlib.LinearAlgebra.PiTensorProduct
+module
+
+public import Mathlib.Analysis.NormedSpace.Multilinear.Basic
+public import Mathlib.LinearAlgebra.PiTensorProduct
 
 /-!
 # Projective seminorm on the tensor of a finite family of normed spaces.
@@ -25,7 +27,7 @@ for every `m` in `Π i, Eᵢ` is bounded above by the projective seminorm.
 ## Main results
 
 * `PiTensorProduct.norm_eval_le_projectiveSeminorm`: If `f` is a continuous multilinear map on
-`E = Π i, Eᵢ` and `x` is in `⨂[𝕜] i, Eᵢ`, then `‖f.lift x‖ ≤ projectiveSeminorm x * ‖f‖`.
+  `E = Π i, Eᵢ` and `x` is in `⨂[𝕜] i, Eᵢ`, then `‖f.lift x‖ ≤ projectiveSeminorm x * ‖f‖`.
 
 ## TODO
 * If the base field is `ℝ` or `ℂ` (or more generally if the injection of `Eᵢ` into its bidual is
@@ -34,6 +36,8 @@ for every `m` in `Π i, Eᵢ` is bounded above by the projective seminorm.
 * The functoriality.
 
 -/
+
+@[expose] public section
 
 universe uι u𝕜 uE uF
 

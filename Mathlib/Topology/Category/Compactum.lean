@@ -3,12 +3,14 @@ Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Monad.Types
-import Mathlib.CategoryTheory.Monad.Limits
-import Mathlib.CategoryTheory.Equivalence
-import Mathlib.Topology.Category.CompHaus.Basic
-import Mathlib.Topology.Category.Profinite.Basic
-import Mathlib.Data.Set.Constructions
+module
+
+public import Mathlib.CategoryTheory.Monad.Types
+public import Mathlib.CategoryTheory.Monad.Limits
+public import Mathlib.CategoryTheory.Equivalence
+public import Mathlib.Topology.Category.CompHaus.Basic
+public import Mathlib.Topology.Category.Profinite.Basic
+public import Mathlib.Data.Set.Constructions
 
 /-!
 
@@ -69,6 +71,8 @@ We also add wrappers around structures which already exist. Here are the main on
 
 -/
 
+@[expose] public section
+
 universe u
 
 open CategoryTheory Filter Ultrafilter TopologicalSpace CategoryTheory.Limits FiniteInter
@@ -121,15 +125,15 @@ def str (X : Compactum) : Ultrafilter X → X :=
 
 /-- The monadic join. -/
 def join (X : Compactum) : Ultrafilter (Ultrafilter X) → Ultrafilter X :=
-  (β ).μ.app _
+  (β).μ.app _
 
 /-- The inclusion of `X` into `Ultrafilter X`. -/
 def incl (X : Compactum) : X → Ultrafilter X :=
-  (β ).η.app _
+  (β).η.app _
 
 @[simp]
 theorem str_incl (X : Compactum) (x : X) : X.str (X.incl x) = x := by
-  change ((β ).η.app _ ≫ X.a) _ = _
+  change ((β).η.app _ ≫ X.a) _ = _
   rw [Monad.Algebra.unit]
   rfl
 
@@ -143,7 +147,7 @@ theorem str_hom_commute (X Y : Compactum) (f : X ⟶ Y) (xs : Ultrafilter X) :
 @[simp]
 theorem join_distrib (X : Compactum) (uux : Ultrafilter (Ultrafilter X)) :
     X.str (X.join uux) = X.str (map X.str uux) := by
-  change ((β ).μ.app _ ≫ X.a) _ = _
+  change ((β).μ.app _ ≫ X.a) _ = _
   rw [Monad.Algebra.assoc]
   rfl
 
@@ -405,7 +409,7 @@ def homOfContinuous {X Y : Compactum} (f : X → Y) (cont : Continuous f) : X �
 
 end Compactum
 
-/-- The functor functor from Compactum to CompHaus. -/
+/-- The functor from Compactum to CompHaus. -/
 def compactumToCompHaus : Compactum ⥤ CompHaus where
   obj X := { toTop := TopCat.of X, prop := trivial }
   map := fun f => CompHausLike.ofHom _

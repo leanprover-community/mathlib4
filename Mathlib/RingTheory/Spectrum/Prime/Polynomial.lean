@@ -3,12 +3,14 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.LinearAlgebra.Charpoly.BaseChange
-import Mathlib.LinearAlgebra.Eigenspace.Zero
-import Mathlib.RingTheory.AdjoinRoot
-import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
-import Mathlib.RingTheory.Spectrum.Prime.Topology
-import Mathlib.RingTheory.TensorProduct.MvPolynomial
+module
+
+public import Mathlib.LinearAlgebra.Charpoly.BaseChange
+public import Mathlib.LinearAlgebra.Eigenspace.Zero
+public import Mathlib.RingTheory.AdjoinRoot
+public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
+public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!
 
@@ -27,6 +29,8 @@ Also see `AlgebraicGeometry/AffineSpace` for the affine space over arbitrary sch
 
 -/
 
+@[expose] public section
+
 open Polynomial TensorProduct PrimeSpectrum
 
 variable {R M A} [CommRing R] [AddCommGroup M] [Module R M] [CommRing A] [Algebra R A]
@@ -43,7 +47,7 @@ lemma isNilpotent_tensor_residueField_iff
   have : Module.finrank I.ResidueField (I.ResidueField ⊗[R] A) = Module.finrank R A := by
     rw [Module.finrank_tensorProduct, Module.finrank_self, one_mul]
   rw [← IsNilpotent.map_iff (Algebra.TensorProduct.comm R A I.ResidueField).injective]
-  simp only [Algebra.TensorProduct.algebraMap_apply, Algebra.id.map_eq_id, RingHom.id_apply,
+  simp only [Algebra.TensorProduct.algebraMap_apply, Algebra.algebraMap_self, RingHom.id_apply,
     Algebra.coe_lmul_eq_mul, Algebra.TensorProduct.comm_tmul]
   rw [← IsNilpotent.map_iff (Algebra.lmul_injective (R := I.ResidueField)),
     LinearMap.isNilpotent_iff_charpoly, ← Algebra.baseChange_lmul, LinearMap.charpoly_baseChange]
@@ -176,7 +180,7 @@ lemma exists_image_comap_of_monic (f g : R[X]) (hg : g.Monic) :
 lemma isCompact_image_comap_of_monic (f g : R[X]) (hg : g.Monic) :
     IsCompact (comap C '' (zeroLocus {g} \ zeroLocus {f})) := by
   obtain ⟨t, ht⟩ := exists_image_comap_of_monic f g hg
-  rw [ht, ← t.toSet.iUnion_of_singleton_coe, zeroLocus_iUnion, Set.compl_iInter]
+  rw [ht, ← (t : Set R).iUnion_of_singleton_coe, zeroLocus_iUnion, Set.compl_iInter]
   apply isCompact_iUnion
   exact fun _ ↦ by simpa using isCompact_basicOpen _
 

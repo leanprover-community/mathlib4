@@ -3,7 +3,9 @@ Copyright (c) 2021 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Logic.Embedding.Set
+module
+
+public import Mathlib.Logic.Embedding.Set
 
 /-!
 # Equivalences on embeddings
@@ -11,6 +13,8 @@ import Mathlib.Logic.Embedding.Set
 This file shows some advanced equivalences on embeddings, useful for constructing larger
 embeddings from smaller ones.
 -/
+
+@[expose] public section
 
 
 open Function.Embedding
@@ -46,7 +50,7 @@ def sumEmbeddingEquivProdEmbeddingDisjoint {α β γ : Type*} :
     cases x <;> simp!
   right_inv := fun ⟨⟨f, g⟩, _⟩ => by
     simp only
-    constructor
+    rfl
 
 /-- Embeddings whose range lies within a set are equivalent to embeddings to that set.
 This is `Function.Embedding.codRestrict` as an equiv. -/
@@ -60,7 +64,7 @@ def codRestrict (α : Type*) {β : Type*} (bs : Set β) :
 in which the second embedding cannot take values in the range of the first. -/
 def prodEmbeddingDisjointEquivSigmaEmbeddingRestricted {α β γ : Type*} :
     { f : (α ↪ γ) × (β ↪ γ) // Disjoint (Set.range f.1) (Set.range f.2) } ≃
-      Σf : α ↪ γ, β ↪ ↥(Set.range f)ᶜ :=
+      Σ f : α ↪ γ, β ↪ ↥(Set.range f)ᶜ :=
   (subtypeProdEquivSigmaSubtype fun (a : α ↪ γ) (b : β ↪ _) =>
         Disjoint (Set.range a) (Set.range b)).trans <|
     Equiv.sigmaCongrRight fun a =>
@@ -73,7 +77,7 @@ def prodEmbeddingDisjointEquivSigmaEmbeddingRestricted {α β γ : Type*} :
 into two dependent embeddings, the second of which avoids any members of the range
 of the first. This is helpful for constructing larger embeddings out of smaller ones. -/
 def sumEmbeddingEquivSigmaEmbeddingRestricted {α β γ : Type*} :
-    (α ⊕ β ↪ γ) ≃ Σf : α ↪ γ, β ↪ ↥(Set.range f)ᶜ :=
+    (α ⊕ β ↪ γ) ≃ Σ f : α ↪ γ, β ↪ ↥(Set.range f)ᶜ :=
   Equiv.trans sumEmbeddingEquivProdEmbeddingDisjoint
     prodEmbeddingDisjointEquivSigmaEmbeddingRestricted
 

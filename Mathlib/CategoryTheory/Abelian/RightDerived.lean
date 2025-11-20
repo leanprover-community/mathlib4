@@ -3,8 +3,10 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Kim Morrison, Joël Riou
 -/
-import Mathlib.Algebra.Homology.Additive
-import Mathlib.CategoryTheory.Abelian.Injective.Resolution
+module
+
+public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.CategoryTheory.Abelian.Injective.Resolution
 
 /-!
 # Right-derived functors
@@ -45,6 +47,8 @@ and show how to compute the components.
   and `F.rightDerived` shall be redefined using `F.rightDerivedFunctorPlus`.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -143,7 +147,7 @@ lemma InjectiveResolution.isoRightDerivedObj_inv_naturality
 /-- The higher derived functors vanish on injective objects. -/
 lemma Functor.isZero_rightDerived_obj_injective_succ
     (F : C ⥤ D) [F.Additive] (n : ℕ) (X : C) [Injective X] :
-    IsZero ((F.rightDerived (n+1)).obj X) := by
+    IsZero ((F.rightDerived (n + 1)).obj X) := by
   refine IsZero.of_iso ?_ ((InjectiveResolution.self X).isoRightDerivedObj F (n + 1))
   erw [← HomologicalComplex.exactAt_iff_isZero_homology]
   exact ShortComplex.exact_of_isZero_X₂ _ (F.map_isZero (by apply isZero_zero))

@@ -3,7 +3,9 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
 /-!
 # Bundled exact functors
@@ -14,6 +16,8 @@ preserves finite colimits, and it is exact if it is both left exact and right ex
 In this file, we define the categories of bundled left exact, right exact and exact functors.
 
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
@@ -232,10 +236,10 @@ def LeftExactFunctor.whiskeringLeft : (C ⥤ₗ D) ⥤ (D ⥤ₗ E) ⥤ (C ⥤�
       naturality := fun _ _ f => ((Functor.whiskeringLeft C D E).map η).naturality f }
   map_id X := by
     rw [ObjectProperty.FullSubcategory.id_def]
-    aesop_cat
+    cat_disch
   map_comp f g := by
     rw [ObjectProperty.FullSubcategory.comp_def]
-    aesop_cat
+    cat_disch
 
 /-- Whiskering a left exact functor by a left exact functor yields a left exact functor. -/
 @[simps! obj_obj obj_map map_app_app]
@@ -256,10 +260,10 @@ def RightExactFunctor.whiskeringLeft : (C ⥤ᵣ D) ⥤ (D ⥤ᵣ E) ⥤ (C ⥤�
       naturality := fun _ _ f => ((Functor.whiskeringLeft C D E).map η).naturality f }
   map_id X := by
     rw [ObjectProperty.FullSubcategory.id_def]
-    aesop_cat
+    cat_disch
   map_comp f g := by
     rw [ObjectProperty.FullSubcategory.comp_def]
-    aesop_cat
+    cat_disch
 
 /-- Whiskering a right exact functor by a right exact functor yields a right exact functor. -/
 @[simps! obj_obj obj_map map_app_app]
@@ -281,10 +285,10 @@ def ExactFunctor.whiskeringLeft : (C ⥤ₑ D) ⥤ (D ⥤ₑ E) ⥤ (C ⥤ₑ E)
       naturality := fun _ _ f => ((Functor.whiskeringLeft C D E).map η).naturality f }
   map_id X := by
     rw [ObjectProperty.FullSubcategory.id_def]
-    aesop_cat
+    cat_disch
   map_comp f g := by
     rw [ObjectProperty.FullSubcategory.comp_def]
-    aesop_cat
+    cat_disch
 
 /-- Whiskering an exact functor by an exact functor yields an exact functor. -/
 @[simps! obj_obj obj_map map_app_app]

@@ -3,8 +3,10 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.Tactic.Conv
+module
+
+public meta import Mathlib.CategoryTheory.Category.Basic
+public meta import Mathlib.Tactic.Conv
 
 /-!
 # The `slice` tactic
@@ -14,12 +16,12 @@ of `Category.comp`.
 
 -/
 
+public meta section
+
 open CategoryTheory
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta
 
 -- TODO someone might like to generalise this tactic to work with other associative structures.
-
-/- Porting note: moved `repeat_with_results` to `repeat_count` to `Mathlib/Tactic/Core.lean` -/
 
 open Parser.Tactic.Conv
 
@@ -57,7 +59,7 @@ def evalSlice (a b : Nat) : TacticM Unit := do
 elab "slice " a:num ppSpace b:num : conv => evalSlice a.getNat b.getNat
 
 /--
-`slice_lhs a b => tac` zooms to the left hand side, uses associativity for categorical
+`slice_lhs a b => tac` zooms to the left-hand side, uses associativity for categorical
 composition as needed, zooms in on the `a`-th through `b`-th morphisms, and invokes `tac`.
 -/
 syntax (name := sliceLHS) "slice_lhs " num ppSpace num " => " convSeq : tactic
@@ -66,7 +68,7 @@ macro_rules
     `(tactic| conv => lhs; slice $a $b; ($seq:convSeq))
 
 /--
-`slice_rhs a b => tac` zooms to the right hand side, uses associativity for categorical
+`slice_rhs a b => tac` zooms to the right-hand side, uses associativity for categorical
 composition as needed, zooms in on the `a`-th through `b`-th morphisms, and invokes `tac`.
 -/
 syntax (name := sliceRHS) "slice_rhs " num ppSpace num " => " convSeq : tactic

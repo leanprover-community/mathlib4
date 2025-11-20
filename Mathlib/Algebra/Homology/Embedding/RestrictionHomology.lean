@@ -3,18 +3,22 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.Restriction
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+module
+
+public import Mathlib.Algebra.Homology.Embedding.Restriction
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 /-! # The homology of a restriction
 
-Under extremely favourable circumstrnaces, we may relate the
+Under favourable circumstances, we may relate the
 homology of `K : HomologicalComplex C c'` in degree `j'` and
-that of `K.restriction e` id a degree `j`  when `e : Embedding c c'`
+that of `K.restriction e` in degree `j` when `e : Embedding c c'`
 is an embedding of complex shapes. See `restriction.sc'Iso`
 and `restriction.hasHomology`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits ZeroObject
 

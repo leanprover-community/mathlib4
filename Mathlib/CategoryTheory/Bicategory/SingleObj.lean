@@ -3,8 +3,10 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Bicategory.End
-import Mathlib.CategoryTheory.Monoidal.Functor
+module
+
+public import Mathlib.CategoryTheory.Bicategory.End
+public import Mathlib.CategoryTheory.Monoidal.Functor
 
 /-!
 # Promoting a monoidal category to a single object bicategory.
@@ -25,6 +27,8 @@ is equivalent to the bicategory consisting of
 * (oplax) natural transformations `η` such that `η.app Unit.unit = 𝟙 _`.
 -/
 
+@[expose] public section
+
 universe v u
 
 namespace CategoryTheory
@@ -39,12 +43,7 @@ and the morphisms of the monoidal category become the 2-morphisms.)
 @[nolint unusedArguments]
 def MonoidalSingleObj (C : Type u) [Category.{v} C] [MonoidalCategory C] :=
   Unit
--- The `Inhabited` instance should be constructed by a deriving handler.
--- https://github.com/leanprover-community/mathlib4/issues/380
-
-instance : Inhabited (MonoidalSingleObj C) := by
-  unfold MonoidalSingleObj
-  infer_instance
+deriving Inhabited
 
 open MonoidalCategory
 

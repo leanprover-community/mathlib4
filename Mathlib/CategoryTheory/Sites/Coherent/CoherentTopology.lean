@@ -3,9 +3,12 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Nikolas Kuhn
 -/
-import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
-/-!
+module
 
+public import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
+public import Mathlib.Data.Finite.Sigma
+
+/-!
 # Description of the covering sieves of the coherent topology
 
 This file characterises the covering sieves of the coherent topology.
@@ -16,6 +19,8 @@ This file characterises the covering sieves of the coherent topology.
   coherent topology if and only if it contains a finite effective epimorphic family.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
