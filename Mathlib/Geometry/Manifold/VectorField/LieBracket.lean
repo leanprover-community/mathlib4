@@ -360,17 +360,7 @@ lemma _root_.mfderivWithin_range_extChartAt_symm :
     mfderiv[range I] (extChartAt I x).symm (extChartAt I x x) =
       ContinuousLinearMap.id 𝕜 _ := by
   set φ := extChartAt I x
-  rw [mfderivWithin]
-  have : MDiffAt[range I] φ.symm (φ x) :=
-    mdifferentiableWithinAt_extChartAt_symm (mem_extChartAt_target x)
-  simp only [this, ↓reduceIte, writtenInExtChartAt, extChartAt, OpenPartialHomeomorph.extend,
-    PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe,
-    OpenPartialHomeomorph.toFun_eq_coe, OpenPartialHomeomorph.refl_partialEquiv,
-    PartialEquiv.refl_source, OpenPartialHomeomorph.singletonChartedSpace_chartAt_eq,
-    modelWithCornersSelf_partialEquiv, PartialEquiv.trans_refl, PartialEquiv.refl_symm,
-    PartialEquiv.refl_coe, CompTriple.comp_eq, preimage_id_eq, id_eq, modelWithCornersSelf_coe,
-    range_id, inter_univ]
-  rw [extChartAt_to_inv x, ← extChartAt_coe]
+  -- TODO: extract as new lemma!
   have eq_nhd : (φ ∘ φ.symm) =ᶠ[𝓝[range I] (φ x)] id := by
     rw [← map_extChartAt_nhds x, eventuallyEq_map, id_comp]
     apply eventuallyEq_of_mem (s := φ.source)
@@ -379,8 +369,22 @@ lemma _root_.mfderivWithin_range_extChartAt_symm :
     rw [comp_apply, comp_apply, φ.right_inv (φ.map_source hy)]
   have hx : (φ ∘ φ.symm) (φ x) = id (φ x) := by
     rw [comp_apply, φ.right_inv (φ.map_source (mem_extChartAt_source x)), id]
-  rw [eq_nhd.fderivWithin_eq hx]
-  exact fderivWithin_id <| I.uniqueDiffOn.uniqueDiffWithinAt (mem_range_self _)
+  have : MDiffAt[range I] φ.symm (φ x) :=
+    mdifferentiableWithinAt_extChartAt_symm (mem_extChartAt_target x)
+  have final : fderivWithin 𝕜 ((extChartAt I x) ∘ φ.symm) (range I) (φ x) =
+      ContinuousLinearMap.id 𝕜 (TangentSpace 𝓘(𝕜, E) (φ x)) := by
+    rw [eq_nhd.fderivWithin_eq hx]
+    exact fderivWithin_id <| I.uniqueDiffOn.uniqueDiffWithinAt (mem_range_self _)
+  simp only [mfderivWithin, this, ↓reduceIte,
+    writtenInExtChartAt, extChartAt, OpenPartialHomeomorph.extend,
+    PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe,
+    OpenPartialHomeomorph.toFun_eq_coe, OpenPartialHomeomorph.refl_partialEquiv,
+    PartialEquiv.refl_source, OpenPartialHomeomorph.singletonChartedSpace_chartAt_eq,
+    modelWithCornersSelf_partialEquiv, PartialEquiv.trans_refl, PartialEquiv.refl_symm,
+    PartialEquiv.refl_coe, CompTriple.comp_eq, preimage_id_eq, id_eq, modelWithCornersSelf_coe,
+    range_id, inter_univ]
+  rw [extChartAt_to_inv x, ← extChartAt_coe]
+  exact final
 
 -- TODO: add pre-composition version also and move to the right location
 omit [IsManifold I 2 M] [CompleteSpace E] in
