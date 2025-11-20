@@ -3,13 +3,17 @@ Copyright (c) 2025 Nailin Guan, Jingting Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Jingting Wang
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
-import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
+public import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
 
 /-!
 # Induced map between Ext
 
 -/
+
+@[expose] public section
 
 universe w w' u u' v v'
 
