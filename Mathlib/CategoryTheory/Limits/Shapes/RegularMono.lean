@@ -3,12 +3,14 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
-import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.MorphismProperty.Basic
-import Mathlib.CategoryTheory.MorphismProperty.Composition
-import Mathlib.Lean.Expr.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+public import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
+public import Mathlib.Lean.Expr.Basic
 
 /-!
 # Definitions and basic properties of regular monomorphisms and epimorphisms.
@@ -33,6 +35,8 @@ every monomorphism or epimorphism is regular, and deduce that these categories a
 `StrongMonoCategory`s resp. `StrongEpiCategory`s.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -165,8 +169,8 @@ def regularOfIsPullbackSndOfRegular {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h
     have z : m ≫ g = p ≫ g := w.trans hp₂.symm
     apply t.hom_ext
     apply (PullbackCone.mk f g comm).equalizer_ext
-    · erw [← cancel_mono h, Category.assoc, Category.assoc, comm]
-      simp only [← Category.assoc, eq_whisker z]
+    · simp only [PullbackCone.mk_π_app, ← cancel_mono h]
+      grind [Fork.ι_ofι]
     · exact z
 
 /-- The first leg of a pullback cone is a regular monomorphism if the left component is too.

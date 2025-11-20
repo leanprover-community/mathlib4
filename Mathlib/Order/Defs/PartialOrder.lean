@@ -3,13 +3,15 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Batteries.Tactic.Alias
-import Batteries.Tactic.Trans
-import Mathlib.Tactic.ExtendDoc
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.SplitIfs
-import Mathlib.Tactic.TypeStar
-import Mathlib.Tactic.ToDual
+module
+
+public import Batteries.Tactic.Alias
+public import Batteries.Tactic.Trans
+public import Mathlib.Tactic.ExtendDoc
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.SplitIfs
+public import Mathlib.Tactic.TypeStar
+public import Mathlib.Tactic.ToDual
 
 /-!
 # Orders
@@ -28,6 +30,8 @@ in a preorder this is equivalent to `a ⋖ b ∨ (a ≤ b ∧ b ≤ a)`
 * `a ⋖ b` means that `b` covers `a`.
 * `a ⩿ b` means that `b` weakly covers `a`.
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 
@@ -143,7 +147,7 @@ instance instTransGTGE : @Trans α α α GT.gt GE.ge GT.gt := ⟨lt_of_lt_of_le'
 instance instTransGEGT : @Trans α α α GE.ge GT.gt GT.gt := ⟨lt_of_le_of_lt'⟩
 
 /-- `<` is decidable if `≤` is. -/
-@[to_dual decidableGTOfDecidableGE /-- `<` is decidable if `≤` is. -/]
+@[to_dual decidableLT'OfDecidableLE' /-- `<` is decidable if `≤` is. -/]
 def decidableLTOfDecidableLE [DecidableLE α] : DecidableLT α :=
   fun _ _ => decidable_of_iff _ lt_iff_le_not_ge.symm
 
@@ -202,7 +206,7 @@ lemma lt_of_le_of_ne : a ≤ b → a ≠ b → a < b := fun h₁ h₂ =>
   lt_of_le_not_ge h₁ <| mt (le_antisymm h₁) h₂
 
 /-- Equality is decidable if `≤` is. -/
-@[to_dual decidableEqofDecidableGE /-- Equality is decidable if `≤` is. -/]
+@[to_dual decidableEqOfDecidableLE' /-- Equality is decidable if `≤` is. -/]
 def decidableEqOfDecidableLE [DecidableLE α] : DecidableEq α
   | a, b =>
     if hab : a ≤ b then

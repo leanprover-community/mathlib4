@@ -3,10 +3,12 @@ Copyright (c) 2023 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Geißer, Michael Stoll
 -/
-import Mathlib.Data.ZMod.Basic
-import Mathlib.NumberTheory.DiophantineApproximation.Basic
-import Mathlib.NumberTheory.Zsqrtd.Basic
-import Mathlib.Tactic.Qify
+module
+
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.NumberTheory.DiophantineApproximation.Basic
+public import Mathlib.NumberTheory.Zsqrtd.Basic
+public import Mathlib.Tactic.Qify
 
 /-!
 # Pell's Equation
@@ -50,6 +52,8 @@ Pell's equation
 * Extend to `x ^ 2 - d * y ^ 2 = -1` and further generalizations.
 * Connect solutions to the continued fraction expansion of `√d`.
 -/
+
+@[expose] public section
 
 
 namespace Pell

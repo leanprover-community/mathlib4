@@ -3,10 +3,12 @@ Copyright (c) 2024 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Lean.Meta.Transform
-import Lean.Meta.Inductive
-import Lean.Elab.Deriving.Basic
-import Lean.Elab.Deriving.Util
+module
+
+public meta import Lean.Meta.Transform
+public meta import Lean.Meta.Inductive
+public meta import Lean.Elab.Deriving.Basic
+public meta import Lean.Elab.Deriving.Util
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Data.Nat.Pairing
 
@@ -18,6 +20,8 @@ Adds a deriving handler for the `Encodable` class.
 The resulting `Encodable` instance should be considered to be opaque.
 The specific encoding used is an implementation detail.
 -/
+
+public section
 
 namespace Mathlib.Deriving.Encodable
 open Lean Parser.Term Elab Deriving Meta
@@ -126,7 +130,9 @@ private def S_equiv : S ≃ ℕ where
         · have := Nat.unpair_lt (by omega : 1 ≤ n' + 1)
           omega
 
-instance : Encodable S := Encodable.ofEquiv ℕ S_equiv
+private instance : Encodable S := Encodable.ofEquiv ℕ S_equiv
+
+public meta section
 
 /-!
 ### Implementation
@@ -362,5 +368,7 @@ def mkEncodableInstance (declNames : Array Name) : CommandElabM Bool := do
 initialize
   registerDerivingHandler ``Encodable mkEncodableInstance
   registerTraceClass `Mathlib.Deriving.Encodable
+
+end
 
 end Mathlib.Deriving.Encodable
