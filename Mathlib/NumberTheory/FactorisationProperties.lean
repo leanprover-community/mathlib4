@@ -3,11 +3,13 @@ Copyright (c) 2024 Colin Jones. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Colin Jones
 -/
-import Mathlib.Algebra.Ring.GeomSum
-import Mathlib.NumberTheory.Divisors
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.NormNum.Prime
+module
+
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.NumberTheory.Divisors
+public import Mathlib.Tactic.FinCases
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.NormNum.Prime
 
 /-!
 # Factorisation properties of natural numbers
@@ -44,6 +46,8 @@ relations with prime and perfect numbers.
 
 abundant, deficient, weird, pseudoperfect
 -/
+
+@[expose] public section
 
 open Finset
 

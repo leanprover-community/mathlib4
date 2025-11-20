@@ -3,7 +3,9 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Tactic.Linarith.Datatypes
+module
+
+public meta import Mathlib.Tactic.Linarith.Datatypes
 
 /-!
 # Parsing input expressions into linear form
@@ -26,6 +28,8 @@ This is ultimately converted into a `Linexp` in the obvious way.
 
 `linearFormsAndMaxVar` is the main entry point into this file. Everything else is contained.
 -/
+
+public meta section
 
 open Std (TreeMap)
 

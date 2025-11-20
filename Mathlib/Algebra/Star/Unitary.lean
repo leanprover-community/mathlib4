@@ -3,12 +3,14 @@ Copyright (c) 2022 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam, Frédéric Dupuis
 -/
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.Star.SelfAdjoint
-import Mathlib.Algebra.Algebra.Spectrum.Basic
-import Mathlib.Tactic.ContinuousFunctionalCalculus
-import Mathlib.Algebra.Star.MonoidHom
-import Mathlib.Algebra.Star.StarProjection
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.Algebra.Star.SelfAdjoint
+public import Mathlib.Algebra.Algebra.Spectrum.Basic
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
+public import Mathlib.Algebra.Star.MonoidHom
+public import Mathlib.Algebra.Star.StarProjection
 
 /-!
 # Unitary elements of a star monoid
@@ -23,6 +25,8 @@ See also `Matrix.UnitaryGroup` for specializations to `unitary (Matrix n n R)`.
 
 unitary
 -/
+
+@[expose] public section
 
 
 /-- In a *-monoid, `unitary R` is the submonoid consisting of all the elements `U` of
@@ -137,6 +141,8 @@ theorem _root_.IsUnit.mem_unitary_iff_mul_star_self {u : R} (hu : IsUnit u) :
 
 alias ⟨_, _root_.IsUnit.mem_unitary_of_star_mul_self⟩ := IsUnit.mem_unitary_iff_star_mul_self
 alias ⟨_, _root_.IsUnit.mem_unitary_of_mul_star_self⟩ := IsUnit.mem_unitary_iff_mul_star_self
+
+theorem isUnit_coe {U : unitary R} : IsUnit (U : R) := (Unitary.toUnits _).isUnit
 
 /-- For unitary `U` in a star-monoid `R`, `x * U = y * U` if and only if `x = y`
 for all `x` and `y` in `R`. -/

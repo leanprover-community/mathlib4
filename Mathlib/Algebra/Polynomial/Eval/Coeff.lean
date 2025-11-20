@@ -3,14 +3,18 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Polynomial.Coeff
-import Mathlib.Algebra.Polynomial.Eval.Defs
+module
+
+public import Mathlib.Algebra.Polynomial.Coeff
+public import Mathlib.Algebra.Polynomial.Eval.Defs
 
 /-!
 # Evaluation of polynomials
 
 This file contains results on the interaction of `Polynomial.eval` and `Polynomial.coeff`
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -58,8 +62,11 @@ theorem coeff_zero_eq_eval_zero (p : R[X]) : coeff p 0 = p.eval 0 :=
       rw [eval_eq_sum]
       exact Finset.sum_eq_single _ (fun b _ hb => by simp [zero_pow hb]) (by simp)
 
-theorem zero_isRoot_of_coeff_zero_eq_zero {p : R[X]} (hp : p.coeff 0 = 0) : IsRoot p 0 := by
-  rwa [coeff_zero_eq_eval_zero] at hp
+theorem zero_isRoot_iff_coeff_zero_eq_zero {p : R[X]} : IsRoot p 0 ↔ p.coeff 0 = 0 := by
+  rw [coeff_zero_eq_eval_zero, IsRoot]
+
+alias ⟨coeff_zero_eq_zero_of_zero_isRoot, zero_isRoot_of_coeff_zero_eq_zero⟩ :=
+  zero_isRoot_iff_coeff_zero_eq_zero
 
 end Eval
 
