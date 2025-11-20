@@ -42,6 +42,8 @@ take a perfectoid field as the input.
 Period rings, p-adic Hodge theory
 -/
 
+@[expose] public section
+
 universe u
 
 open Ideal WittVector
