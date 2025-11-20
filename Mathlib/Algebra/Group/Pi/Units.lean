@@ -3,12 +3,16 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Group.Equiv.Defs
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Util.Delaborators
+module
+
+public import Mathlib.Algebra.Group.Equiv.Defs
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Util.Delaborators
 
 /-! # Units in pi types -/
+
+@[expose] public section
 
 variable {ι : Type*} {M : ι → Type*} [∀ i, Monoid (M i)] {x : Π i, M i}
 

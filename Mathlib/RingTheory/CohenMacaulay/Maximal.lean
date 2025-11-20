@@ -3,8 +3,10 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Yongle Hu
 -/
-import Mathlib.RingTheory.CohenMacaulay.Basic
-import Mathlib.RingTheory.RegularLocalRing.Basic
+module
+
+public import Mathlib.RingTheory.CohenMacaulay.Basic
+public import Mathlib.RingTheory.RegularLocalRing.Basic
 
 /-!
 
@@ -20,6 +22,8 @@ The definition of maximal Cohen Macaulay module.
   regular local ring is free.
 
 -/
+
+@[expose] public section
 
 universe v' v u' u
 
