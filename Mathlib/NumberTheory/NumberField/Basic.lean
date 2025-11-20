@@ -3,11 +3,13 @@ Copyright (c) 2021 Ashvni Narayanan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan, Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Algebra.CharZero.AddMonoidHom
-import Mathlib.Algebra.Ring.Int.Parity
-import Mathlib.Algebra.Ring.Int.Units
-import Mathlib.RingTheory.DedekindDomain.IntegralClosure
+module
+
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Algebra.CharZero.AddMonoidHom
+public import Mathlib.Algebra.Ring.Int.Parity
+public import Mathlib.Algebra.Ring.Int.Units
+public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 
 /-!
 # Number fields
@@ -31,6 +33,8 @@ but are independent of that choice.
 ## Tags
 number field, ring of integers
 -/
+
+@[expose] public section
 
 
 /-- A number field is a field which has characteristic zero and is finite

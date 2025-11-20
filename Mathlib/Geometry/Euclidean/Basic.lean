@@ -3,8 +3,10 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
 -/
-import Mathlib.Geometry.Euclidean.PerpBisector
-import Mathlib.Algebra.QuadraticDiscriminant
+module
+
+public import Mathlib.Geometry.Euclidean.PerpBisector
+public import Mathlib.Algebra.QuadraticDiscriminant
 
 /-!
 # Euclidean spaces
@@ -34,6 +36,8 @@ theorems that need it.
 * https://en.wikipedia.org/wiki/Euclidean_space
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
