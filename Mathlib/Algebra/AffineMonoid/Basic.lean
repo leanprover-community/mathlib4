@@ -3,7 +3,9 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.GroupTheory.Finiteness
+module
+
+public import Mathlib.GroupTheory.Finiteness
 
 /-!
 # Affine monoids
@@ -11,6 +13,8 @@ import Mathlib.GroupTheory.Finiteness
 This file defines affine monoids as finitely generated cancellative torsion-free commutative
 monoids.
 -/
+
+public section
 
 /-- An affine monoid is a finitely generated cancellative torsion-free commutative monoid. -/
 class abbrev IsAffineAddMonoid (M : Type*) [AddCommMonoid M] :=
