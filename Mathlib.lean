@@ -1615,6 +1615,7 @@ public import Mathlib.Analysis.Calculus.TangentCone.Real
 public import Mathlib.Analysis.Calculus.Taylor
 public import Mathlib.Analysis.Calculus.UniformLimitsDeriv
 public import Mathlib.Analysis.Calculus.VectorField
+public import Mathlib.Analysis.CheckForSVD
 public import Mathlib.Analysis.Complex.AbelLimit
 public import Mathlib.Analysis.Complex.AbsMax
 public import Mathlib.Analysis.Complex.Angle
@@ -4346,7 +4347,6 @@ public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 public import Mathlib.LinearAlgebra.Charpoly.Basic
 public import Mathlib.LinearAlgebra.Charpoly.ToMatrix
-public import Mathlib.LinearAlgebra.CheckForSVD
 public import Mathlib.LinearAlgebra.CliffordAlgebra.BaseChange
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 public import Mathlib.LinearAlgebra.CliffordAlgebra.CategoryTheory
