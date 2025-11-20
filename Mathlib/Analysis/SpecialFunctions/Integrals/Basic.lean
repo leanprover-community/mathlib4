@@ -236,7 +236,7 @@ theorem integral_one_div_of_neg (ha : a < 0) (hb : b < 0) :
 theorem integral_exp : ∫ x in a..b, exp x = exp b - exp a := by
   rw [integral_deriv_eq_sub']
   · simp
-  · exact fun _ _ => differentiableAt_exp.differentiableWithinAt
+  · exact differentiable_exp.differentiableOn
   · exact continuousOn_exp
 
 theorem integral_exp_mul_complex {c : ℂ} (hc : c ≠ 0) :
@@ -312,14 +312,14 @@ theorem integral_sin : ∫ x in a..b, sin x = cos a - cos b := by
   rw [integral_deriv_eq_sub' fun x => -cos x]
   · ring
   · simp
-  · exact fun _ _ ↦ differentiableAt_cos.neg.differentiableWithinAt
+  · exact differentiable_cos.neg.differentiableOn
   · exact continuousOn_sin
 
 @[simp]
 theorem integral_cos : ∫ x in a..b, cos x = sin b - sin a := by
   rw [integral_deriv_eq_sub']
   · simp
-  · exact fun _ _ ↦ differentiableAt_sin.differentiableWithinAt
+  · exact differentiable_sin.differentiableOn
   · exact continuousOn_cos
 
 theorem integral_cos_mul_complex {z : ℂ} (hz : z ≠ 0) (a b : ℝ) :
@@ -346,8 +346,7 @@ theorem integral_cos_sq_sub_sin_sq :
 
 theorem integral_one_div_one_add_sq :
     (∫ x : ℝ in a..b, ↑1 / (↑1 + x ^ 2)) = arctan b - arctan a := by
-  refine integral_deriv_eq_sub' _ Real.deriv_arctan
-    (fun _ _ => (differentiableAt_arctan _).differentiableWithinAt)
+  refine integral_deriv_eq_sub' _ Real.deriv_arctan differentiable_arctan.differentiableOn
     (continuous_const.div ?_ fun x => ?_).continuousOn
   · fun_prop
   · nlinarith

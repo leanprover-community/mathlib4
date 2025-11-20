@@ -90,8 +90,8 @@ We use FTC-1 to prove several versions of FTC-2 for the Lebesgue measure, using 
 scheme as for the versions of FTC-1. They include:
 * `intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le` - most general version, for functions
   with a right derivative
-* `intervalIntegral.integral_eq_sub_of_hasDerivAt` - version for functions with a derivative
-  on an open set
+* `intervalIntegral.integral_eq_sub_of_hasDerivAt` - version for functions with a derivative on
+  an open set
 * `intervalIntegral.integral_deriv_eq_sub'` - version that is easiest to use when computing the
   integral of a specific function
 
@@ -1178,11 +1178,11 @@ theorem integral_eq_sub_of_hasDerivAt_of_tendsto (hab : a < b) {fa fb}
       filter_upwards [Ioo_mem_nhdsLT hab] with _ hz using (update_of_ne hz.1.ne' _ _).symm
   simpa [F, hab.ne, hab.ne'] using integral_eq_sub_of_hasDerivAt_of_le hab.le hcont Fderiv hint
 
-/-- Fundamental theorem of calculus-2: If `f : ℝ → E` is differentiable at every `x` in `[a, b]` and
+/-- Fundamental theorem of calculus-2: If `f : ℝ → E` is differentiable on `[a, b]` and
 its derivative is integrable on `[a, b]`, then `∫ y in a..b, deriv f y` equals `f b - f a`.
 
 See also `integral_deriv_of_contDiffOn_Icc` for a similar theorem assuming that `f` is `C^1`. -/
-theorem integral_deriv_eq_sub (hderiv : ∀ x ∈ [[a, b]], DifferentiableWithinAt ℝ f (uIcc a b) x)
+theorem integral_deriv_eq_sub (hderiv : DifferentiableOn ℝ f (uIcc a b))
     (hint : IntervalIntegrable (deriv f) volume a b) : ∫ y in a..b, deriv f y = f b - f a := by
   have ae_eq : deriv f =ᵐ[volume.restrict (uIoc a b)] derivWithin f (uIcc a b) := by
     rw [ae_restrict_uIoc_eq, ← restrict_Ioo_eq_restrict_Ioc, ← restrict_Ioo_eq_restrict_Ioc,
@@ -1194,8 +1194,7 @@ theorem integral_deriv_eq_sub (hderiv : ∀ x ∈ [[a, b]], DifferentiableWithin
   exact integral_eq_sub_of_hasDerivWithinAt (fun x hx => (hderiv x hx).hasDerivWithinAt)
     (hint.congr_ae ae_eq)
 
-theorem integral_deriv_eq_sub' (f) (hderiv : deriv f = f')
-    (hdiff : ∀ x ∈ uIcc a b, DifferentiableWithinAt ℝ f (uIcc a b) x)
+theorem integral_deriv_eq_sub' (f) (hderiv : deriv f = f') (hdiff : DifferentiableOn ℝ f (uIcc a b))
     (hcont : ContinuousOn f' (uIcc a b)) : ∫ y in a..b, f' y = f b - f a := by
   rw [← hderiv, integral_deriv_eq_sub hdiff]
   rw [hderiv]

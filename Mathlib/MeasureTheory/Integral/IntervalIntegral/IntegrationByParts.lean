@@ -333,12 +333,12 @@ theorem integral_deriv_comp_smul_deriv' (hf : ContinuousOn f [[a, b]])
     integral_eq_sub_of_hasDeriv_right hg hgg' (hg'.mono _).intervalIntegrable]
   exacts [rfl, intermediate_value_uIcc hf]
 
-theorem integral_deriv_comp_smul_deriv (hf : ∀ x ∈ uIcc a b, HasDerivWithinAt f (f' x) (uIcc a b) x)
-    (hg : ∀ x ∈ uIcc a b, HasDerivAt g (g' (f x)) (f x))
+theorem integral_deriv_comp_smul_deriv (hf : ∀ x ∈ uIcc a b, HasDerivWithinAt f (f' x) [[a, b]] x)
+    (hg : ∀ x ∈ uIcc a b, HasDerivWithinAt g (g' (f x)) (f '' [[a, b]]) (f x))
     (hf' : ContinuousOn f' (uIcc a b)) (hg' : Continuous g') :
     (∫ x in a..b, f' x • (g' ∘ f) x) = (g ∘ f) b - (g ∘ f) a :=
   integral_eq_sub_of_hasDerivWithinAt
-    (fun x hx ↦ (hg x hx).hasDerivWithinAt.scomp x (hf x hx) (mapsTo_image f [[a, b]]))
+    (fun x hx ↦ (hg x hx).scomp x (hf x hx) (mapsTo_image f [[a, b]]))
     (hf'.smul (hg'.comp_continuousOn <| HasDerivWithinAt.continuousOn hf)).intervalIntegrable
 
 end CompleteSpace
@@ -403,7 +403,7 @@ theorem integral_deriv_comp_mul_deriv' {f f' g g' : ℝ → ℝ} (hf : Continuou
 
 theorem integral_deriv_comp_mul_deriv {f f' g g' : ℝ → ℝ}
     (hf : ∀ x ∈ uIcc a b, HasDerivWithinAt f (f' x) (uIcc a b) x)
-    (hg : ∀ x ∈ uIcc a b, HasDerivAt g (g' (f x)) (f x))
+    (hg : ∀ x ∈ uIcc a b, HasDerivWithinAt g (g' (f x)) (f '' [[a, b]]) (f x))
     (hf' : ContinuousOn f' (uIcc a b)) (hg' : Continuous g') :
     (∫ x in a..b, (g' ∘ f) x * f' x) = (g ∘ f) b - (g ∘ f) a := by
   simpa [mul_comm] using integral_deriv_comp_smul_deriv hf hg hf' hg'
