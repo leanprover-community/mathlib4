@@ -10,6 +10,7 @@ public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
 public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Geometry.Manifold.VectorField.Pullback
+import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Lie brackets of vector fields on manifolds
@@ -314,13 +315,11 @@ variable (W x) in
 omit [CompleteSpace E] in
 lemma aux_computation :
     letI φ := extChartAt I x
-    (mfderiv I 𝓘(𝕜, E) φ x).inverse
-      ((mfderivWithin 𝓘(𝕜, E) I (φ.symm) (range I) (φ x)).inverse (W (φ.symm (φ x)))) = W x := by
+    (mfderiv% φ x).inverse ((mfderiv[range I] φ.symm (φ x)).inverse (W (φ.symm (φ x)))) = W x := by
   set φ := extChartAt I x
   rw [extChartAt_to_inv x]
   calc
-    _ = ((mfderiv I 𝓘(𝕜, E) φ x).inverse.comp
-      (mfderivWithin 𝓘(𝕜, E) I φ.symm (range I) (φ x)).inverse) (W x) := rfl
+    _ = ((mfderiv% φ x).inverse.comp (mfderiv[range I] φ.symm (φ x)).inverse) (W x) := rfl
     _ = (ContinuousLinearMap.id 𝕜 _) (W x) := by
       congr
       rw [← ContinuousLinearMap.IsInvertible.inverse_comp_of_left,
@@ -334,11 +333,11 @@ variable (x V) in
 omit [CompleteSpace E] in
 lemma aux_computation2' :
     letI φ := extChartAt I x
-    (mfderivWithin 𝓘(𝕜, E) I φ.symm φ.target (φ x)).inverse (V x) = V x := by
+    (mfderiv[φ.target] φ.symm (φ x)).inverse (V x) = V x := by
   set φ := extChartAt I x
-  have : mfderivWithin 𝓘(𝕜, E) I φ.symm φ.target (φ x) = ContinuousLinearMap.id 𝕜 _ := by
+  have : mfderiv[φ.target] φ.symm (φ x) = ContinuousLinearMap.id 𝕜 _ := by
     rw [mfderivWithin]
-    have : MDifferentiableWithinAt 𝓘(𝕜, E) I φ.symm φ.target (φ x) :=
+    have : MDiffAt[φ.target] φ.symm (φ x) :=
       (mdifferentiableWithinAt_extChartAt_symm (mem_extChartAt_target x)).mono
         (extChartAt_target_subset_range x)
     simp only [this, ↓reduceIte, writtenInExtChartAt, extChartAt, OpenPartialHomeomorph.extend,
@@ -363,12 +362,12 @@ variable (x V) in
 omit [CompleteSpace E] in
 lemma aux_computation2 :
     letI φ := extChartAt I x
-    (mfderivWithin 𝓘(𝕜, E) I φ.symm (range I) (φ x)).inverse (V x) = V x := by
+    (mfderiv[range I] φ.symm (φ x)).inverse (V x) = V x := by
   set φ := extChartAt I x
   -- this is almost true: it is true within a smaller set (namely extChartAt I x).target...
-  have : mfderivWithin 𝓘(𝕜, E) I φ.symm (range I) (φ x) = ContinuousLinearMap.id 𝕜 _ := by
+  have : mfderiv[range I] φ.symm (φ x) = ContinuousLinearMap.id 𝕜 _ := by
     rw [mfderivWithin]
-    have : MDifferentiableWithinAt 𝓘(𝕜, E) I φ.symm (range I) (φ x) :=
+    have : MDiffAt[range I] φ.symm (φ x) :=
       mdifferentiableWithinAt_extChartAt_symm (mem_extChartAt_target x)
     simp only [this, ↓reduceIte, writtenInExtChartAt, extChartAt, OpenPartialHomeomorph.extend,
       PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe,
