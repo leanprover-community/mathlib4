@@ -73,7 +73,7 @@ lemma isCardinalLocallyPresentable [IsCardinalLocallyPresentable C κ]
   toHasColimitsOfSize := ⟨fun _ _ ↦ adj.hasColimitsOfShape _⟩
   toHasCardinalFilteredGenerator := adj.hasCardinalFilteredGenerator κ
 
-lemma isCardinalAccessible [IsCardinalAccessibleCategory C κ]
+lemma isCardinalAccessibleCategory [IsCardinalAccessibleCategory C κ]
     [G.IsCardinalAccessible κ] [G.Full] [G.Faithful] :
     IsCardinalAccessibleCategory D κ where
   toHasCardinalFilteredColimits := ⟨fun _ _ _↦ adj.hasColimitsOfShape _⟩
