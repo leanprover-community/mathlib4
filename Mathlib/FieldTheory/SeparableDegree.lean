@@ -206,7 +206,7 @@ element `s` of `S` is integral (= algebraic) over `F` and whose minimal polynomi
 Combined with `Field.instInhabitedEmb`, it can be viewed as a stronger version of
 `IntermediateField.nonempty_algHom_of_adjoin_splits`. -/
 def embEquivOfAdjoinSplits {S : Set E} (hS : adjoin F S = ⊤)
-    (hK : ∀ s ∈ S, IsIntegral F s ∧ Splits (algebraMap F K) (minpoly F s)) :
+    (hK : ∀ s ∈ S, IsIntegral F s ∧ Splits ((minpoly F s).map (algebraMap F K))) :
     Emb F E ≃ (E →ₐ[F] K) :=
   have : Algebra.IsAlgebraic F (⊤ : IntermediateField F E) :=
     (hS ▸ isAlgebraic_adjoin (S := S) fun x hx ↦ (hK x hx).1)
@@ -219,7 +219,7 @@ def embEquivOfAdjoinSplits {S : Set E} (hS : adjoin F S = ⊤)
 if `E = F(S)` such that every element
 `s` of `S` is integral (= algebraic) over `F` and whose minimal polynomial splits in `K`. -/
 theorem finSepDegree_eq_of_adjoin_splits {S : Set E} (hS : adjoin F S = ⊤)
-    (hK : ∀ s ∈ S, IsIntegral F s ∧ Splits (algebraMap F K) (minpoly F s)) :
+    (hK : ∀ s ∈ S, IsIntegral F s ∧ Splits ((minpoly F s).map (algebraMap F K))) :
     finSepDegree F E = Nat.card (E →ₐ[F] K) := Nat.card_congr (embEquivOfAdjoinSplits F E K hS hK)
 
 /-- A random bijection between `Field.Emb F E` and `E →ₐ[F] K` when `E / F` is algebraic
@@ -367,7 +367,7 @@ theorem Separable.natSepDegree_eq_natDegree (h : f.Separable) :
 
 /-- If a polynomial splits over `E`, then its separable degree is equal to
 the number of distinct roots of it over `E`. -/
-theorem natSepDegree_eq_of_splits [DecidableEq E] (h : f.Splits (algebraMap F E)) :
+theorem natSepDegree_eq_of_splits [DecidableEq E] (h : (f.map (algebraMap F E)).Splits) :
     f.natSepDegree = (f.aroots E).toFinset.card := by
   classical
   rw [aroots, ← (SplittingField.lift f h).comp_algebraMap, ← map_map,
@@ -556,7 +556,7 @@ alias natSepDegree_eq_one_iff_of_irreducible := Irreducible.natSepDegree_eq_one_
 /-- If a monic polynomial of separable degree one splits, then it is of form `(X - C y) ^ m` for
 some non-zero natural number `m` and some element `y` of `F`. -/
 theorem eq_X_sub_C_pow_of_natSepDegree_eq_one_of_splits (hm : f.Monic)
-    (hs : f.Splits (RingHom.id F))
+    (hs : (f.map (RingHom.id F)).Splits)
     (h : f.natSepDegree = 1) : ∃ (m : ℕ) (y : F), m ≠ 0 ∧ f = (X - C y) ^ m := by
   classical
   have h1 := eq_prod_roots_of_monic_of_splits_id hm hs
@@ -913,5 +913,5 @@ theorem perfectField_iff_splits_of_natSepDegree_eq_one (F : Type*) [Field F] :
 
 variable {E K} in
 theorem PerfectField.splits_of_natSepDegree_eq_one [PerfectField K] {f : E[X]}
-    (i : E →+* K) (hf : f.natSepDegree = 1) : f.Splits i :=
+    (i : E →+* K) (hf : f.natSepDegree = 1) : (f.map i).Splits :=
   (perfectField_iff_splits_of_natSepDegree_eq_one K).mp ‹_› _ (natSepDegree_map K f i ▸ hf)

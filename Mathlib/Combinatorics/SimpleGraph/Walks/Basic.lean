@@ -334,6 +334,10 @@ theorem dart_fst_mem_support_of_mem_darts {u v : V} :
     · exact .inl rfl
     · exact .inr (dart_fst_mem_support_of_mem_darts _ hd)
 
+theorem mem_support_iff_exists_mem_edges {u v w : V} {p : G.Walk u v} :
+    w ∈ p.support ↔ w = v ∨ ∃ e ∈ p.edges, w ∈ e := by
+  induction p <;> aesop
+
 theorem darts_nodup_of_support_nodup {u v : V} {p : G.Walk u v} (h : p.support.Nodup) :
     p.darts.Nodup := by
   induction p with
@@ -477,6 +481,12 @@ lemma notNilRec_cons {motive : {u w : V} → (p : G.Walk u w) → ¬ p.Nil → S
 theorem end_mem_tail_support {u v : V} {p : G.Walk u v} (h : ¬ p.Nil) : v ∈ p.support.tail :=
   p.notNilRec (by simp) h
 
+theorem mem_support_iff_exists_mem_edges_of_not_nil {u v w : V} {p : G.Walk u v} (hnil : ¬p.Nil) :
+    w ∈ p.support ↔ ∃ e ∈ p.edges, w ∈ e := by
+  induction p with
+  | nil => simp at hnil
+  | cons h p ih => cases p <;> aesop
+
 /-- The second vertex of a walk, or the only vertex in a nil walk. -/
 abbrev snd (p : G.Walk u v) : V := p.getVert 1
 
@@ -486,6 +496,9 @@ abbrev snd (p : G.Walk u v) : V := p.getVert 1
 
 lemma snd_cons {u v w} (q : G.Walk v w) (hadj : G.Adj u v) :
     (q.cons hadj).snd = v := by simp
+
+lemma snd_mem_tail_support {u v : V} {p : G.Walk u v} (h : ¬p.Nil) : p.snd ∈ p.support.tail :=
+  p.notNilRec (by simp) h
 
 /-- The penultimate vertex of a walk, or the only vertex in a nil walk. -/
 abbrev penultimate (p : G.Walk u v) : V := p.getVert (p.length - 1)
