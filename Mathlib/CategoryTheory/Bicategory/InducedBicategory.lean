@@ -29,23 +29,20 @@ namespace CategoryTheory.Bicategory
 
 variable {B : Type*} (C : Type*) [Bicategory C] (F : B → C)
 
-/-- `InducedBicategory B C`, where `F : B → C`, is a hardened type alias for `B`. This is given
+/-- `InducedBicategory B C`, where `F : B → C`, is a typeclass synonym for `B`. This is given
 a bicategory structure where the 1-morphisms `X ⟶ Y` are the 1-morphisms in `C` from `F X` to
 `F Y`, and the 2-morphisms `f ⟶ g` are also the 2-morphisms in `C` from `f` to `g`.
 -/
 @[nolint unusedArguments]
-structure InducedBicategory (_F : B → C) where
-  /-- Interpret an element of `B` as an element of `InducedBicategory`. -/
-  of ::
-  /-- The element of `B` underlying an element of `InducedBicategory`. -/
-  as : B
+def InducedBicategory (_F : B → C) :=
+  B
 
 namespace InducedBicategory
 
 variable {C F}
 
 instance hasCoeToSort {α : Sort*} [CoeSort C α] : CoeSort (InducedBicategory C F) α :=
-  ⟨fun c => F c.as⟩
+  ⟨fun c => F c⟩
 
 /-- `InducedBicategory.Hom X Y` is the type of morphisms between `X` and `Y` viewed as objects of
 the bicategory `B`. This is given a `CategoryStruct` instance below, where the identity and
@@ -54,18 +51,18 @@ structure Hom (X Y : InducedBicategory C F) where
   /-- Construct a morphism in `InducedBicategory C F` from a morhism in `C`. -/
   mkHom ::
   /-- The morphism in `C` underlying the morphism in `InducedBicategory C F`. -/
-  hom : F X.as ⟶ F Y.as
+  hom : F X ⟶ F Y
 
 @[simps id_hom comp_hom]
 instance categoryStruct : CategoryStruct (InducedBicategory C F) where
   Hom X Y := Hom X Y
-  id X := ⟨𝟙 (F X.as)⟩
+  id X := ⟨𝟙 (F X)⟩
   comp u v := ⟨u.hom ≫ v.hom⟩
 
 @[simps!]
 instance Hom.category (X Y : InducedBicategory C F) : Category (X ⟶ Y) where
   Hom f g := f.hom ⟶ g.hom
-  id X := 𝟙 _
+  id f := 𝟙 f.hom
   comp u v := u ≫ v
 
 /-- Constructor for 2-isomorphisms in the induced bicategory. -/
@@ -94,7 +91,7 @@ forgetting the extra data.
 @[simps!]
 def inducedPseudofunctor : StrictPseudofunctor (InducedBicategory C F) C :=
   StrictPseudofunctor.mk' {
-    obj X := F X.as
+    obj X := F X
     map f := f.hom
     map₂ η := η }
 
