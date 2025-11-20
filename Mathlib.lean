@@ -4388,6 +4388,7 @@ public import Mathlib.LinearAlgebra.DirectSum.Basis
 public import Mathlib.LinearAlgebra.DirectSum.Finite
 public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 public import Mathlib.LinearAlgebra.DirectSum.TensorProduct
+public import Mathlib.LinearAlgebra.Dual.BaseChange
 public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.LinearAlgebra.Dual.Defs
 public import Mathlib.LinearAlgebra.Dual.Lemmas
@@ -6121,6 +6122,8 @@ public import Mathlib.RingTheory.TensorProduct.Basic
 public import Mathlib.RingTheory.TensorProduct.DirectLimitFG
 public import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.RingTheory.TensorProduct.Free
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 public import Mathlib.RingTheory.TensorProduct.Maps
 public import Mathlib.RingTheory.TensorProduct.MonoidAlgebra
