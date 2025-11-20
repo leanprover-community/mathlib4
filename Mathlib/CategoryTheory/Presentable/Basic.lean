@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Adjunction.Limits
 public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+public import Mathlib.CategoryTheory.Limits.Types.Filtered
 public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
 public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
@@ -186,6 +187,36 @@ lemma isCardinalPresentable_iff_of_isEquivalence
       (show F.inv.obj (F.obj X) ≅ X from F.asEquivalence.unitIso.symm.app X :) κ
   · intro
     infer_instance
+
+variable {X} in
+lemma IsCardinalPresentable.exists_hom_of_isColimit [IsCardinalPresentable X κ]
+    {J : Type u₂} [Category.{v₂} J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ]
+    {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) (f : X ⟶ c.pt) :
+    ∃ (j : J) (f' : X ⟶ F.obj j), f' ≫ c.ι.app j = f := by
+  have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
+  exact Types.jointly_surjective_of_isColimit (isColimitOfPreserves (coyoneda.obj (op X)) hc) f
+
+variable {X} in
+lemma IsCardinalPresentable.exists_eq_of_isColimit [IsCardinalPresentable X κ]
+    {J : Type u₂} [Category.{v₂} J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ]
+    {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) {i₁ i₂ : J} (f₁ : X ⟶ F.obj i₁)
+    (f₂ : X ⟶ F.obj i₂) (hf : f₁ ≫ c.ι.app i₁ = f₂ ≫ c.ι.app i₂) :
+    ∃ (j : J) (u : i₁ ⟶ j) (v : i₂ ⟶ j), f₁ ≫ F.map u = f₂ ≫ F.map v := by
+  have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
+  have := isFiltered_of_isCardinalFiltered J κ
+  exact (Types.FilteredColimit.isColimit_eq_iff _
+    (isColimitOfPreserves (coyoneda.obj (op X)) hc)).1 hf
+
+variable {X} in
+lemma IsCardinalPresentable.exists_eq_of_isColimit' [IsCardinalPresentable X κ]
+    {J : Type u₂} [Category.{v₂} J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ]
+    {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) {i : J} (f₁ f₂ : X ⟶ F.obj i)
+    (hf : f₁ ≫ c.ι.app i = f₂ ≫ c.ι.app i) :
+    ∃ (j : J) (u : i ⟶ j), f₁ ≫ F.map u = f₂ ≫ F.map u := by
+  have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
+  have := isFiltered_of_isCardinalFiltered J κ
+  exact (Types.FilteredColimit.isColimit_eq_iff'
+    (isColimitOfPreserves (coyoneda.obj (op X)) hc) f₁ f₂).1 hf
 
 end
 
