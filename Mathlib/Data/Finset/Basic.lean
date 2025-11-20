@@ -98,7 +98,7 @@ theorem disjoint_of_subset_iff_left_eq_empty (h : s ⊆ t) :
 
 lemma pairwiseDisjoint_iff {ι : Type*} {s : Set ι} {f : ι → Finset α} :
     s.PairwiseDisjoint f ↔ ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ s → (f i ∩ f j).Nonempty → i = j := by
-  simp [Set.PairwiseDisjoint, Set.Pairwise, Function.onFun, not_imp_comm (a := _ = _),
+  simp [Set.PairwiseDisjoint, Set.Pairwise, not_imp_comm (a := _ = _),
     not_disjoint_iff_nonempty_inter]
 
 end Lattice
