@@ -328,75 +328,73 @@ lemma aux_computation :
       exact isInvertible_mfderivWithin_extChartAt_symm (mem_extChartAt_target x)
     _ = W x := by simp
 
--- d(φ⁻¹)⁻¹(V x) = V x
-variable (x V) in
+-- superseded by the following lemma
 omit [CompleteSpace E] in
-lemma aux_computation2' :
-    letI φ := extChartAt I x
-    (mfderiv[φ.target] φ.symm (φ x)).inverse (V x) = V x := by
+lemma _root_.mfderivWithin_target_extChartAt_symm :
+    mfderiv[(extChartAt I x).target] (extChartAt I x).symm (extChartAt I x x) =
+      ContinuousLinearMap.id 𝕜 _ := by
   set φ := extChartAt I x
-  have : mfderiv[φ.target] φ.symm (φ x) = ContinuousLinearMap.id 𝕜 _ := by
-    rw [mfderivWithin]
-    have : MDiffAt[φ.target] φ.symm (φ x) :=
-      (mdifferentiableWithinAt_extChartAt_symm (mem_extChartAt_target x)).mono
-        (extChartAt_target_subset_range x)
-    simp only [this, ↓reduceIte, writtenInExtChartAt, extChartAt, OpenPartialHomeomorph.extend,
-      PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe,
-      OpenPartialHomeomorph.toFun_eq_coe, OpenPartialHomeomorph.refl_partialEquiv,
-      PartialEquiv.refl_source, OpenPartialHomeomorph.singletonChartedSpace_chartAt_eq,
-      modelWithCornersSelf_partialEquiv, PartialEquiv.trans_refl, PartialEquiv.refl_symm,
-      PartialEquiv.refl_coe, CompTriple.comp_eq, preimage_id_eq, id_eq, modelWithCornersSelf_coe,
-      range_id, inter_univ]
-    rw [extChartAt_to_inv x, ← extChartAt_coe]
-    -- TODO: debug why this line is needed!
-    change fderivWithin 𝕜 (φ ∘ φ.symm) (extChartAt I x).target (φ x) = _
-    have : fderivWithin 𝕜 (φ ∘ φ.symm) (extChartAt I x).target (φ x) =
-        fderivWithin 𝕜 id (extChartAt I x).target (φ x) :=
-      fderivWithin_congr' (fun x' hx' ↦ φ.right_inv hx') (mem_extChartAt_target x)
-    rw [this]
-    exact fderivWithin_id (uniqueDiffWithinAt_extChartAt_target x)
-  rw [this, ContinuousLinearMap.inverse_id]
-  exact rfl
+  rw [mfderivWithin]
+  have : MDiffAt[φ.target] φ.symm (φ x) :=
+    (mdifferentiableWithinAt_extChartAt_symm (mem_extChartAt_target x)).mono
+      (extChartAt_target_subset_range x)
+  simp only [this, ↓reduceIte, writtenInExtChartAt, extChartAt, OpenPartialHomeomorph.extend,
+    PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe,
+    OpenPartialHomeomorph.toFun_eq_coe, OpenPartialHomeomorph.refl_partialEquiv,
+    PartialEquiv.refl_source, OpenPartialHomeomorph.singletonChartedSpace_chartAt_eq,
+    modelWithCornersSelf_partialEquiv, PartialEquiv.trans_refl, PartialEquiv.refl_symm,
+    PartialEquiv.refl_coe, CompTriple.comp_eq, preimage_id_eq, id_eq, modelWithCornersSelf_coe,
+    range_id, inter_univ]
+  rw [extChartAt_to_inv x, ← extChartAt_coe]
+  -- TODO: debug why this line is needed!
+  change fderivWithin 𝕜 (φ ∘ φ.symm) (extChartAt I x).target (φ x) = _
+  have : fderivWithin 𝕜 (φ ∘ φ.symm) (extChartAt I x).target (φ x) =
+      fderivWithin 𝕜 id (extChartAt I x).target (φ x) :=
+    fderivWithin_congr' (fun x' hx' ↦ φ.right_inv hx') (mem_extChartAt_target x)
+  rw [this]
+  exact fderivWithin_id (uniqueDiffWithinAt_extChartAt_target x)
 
+-- TODO: clean up this proof (and add the version for `extChartAt`)
+omit [CompleteSpace E] in
+lemma _root_.mfderivWithin_range_extChartAt_symm :
+    mfderiv[range I] (extChartAt I x).symm (extChartAt I x x) =
+      ContinuousLinearMap.id 𝕜 _ := by
+  set φ := extChartAt I x
+  rw [mfderivWithin]
+  have : MDiffAt[range I] φ.symm (φ x) :=
+    mdifferentiableWithinAt_extChartAt_symm (mem_extChartAt_target x)
+  simp only [this, ↓reduceIte, writtenInExtChartAt, extChartAt, OpenPartialHomeomorph.extend,
+    PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe,
+    OpenPartialHomeomorph.toFun_eq_coe, OpenPartialHomeomorph.refl_partialEquiv,
+    PartialEquiv.refl_source, OpenPartialHomeomorph.singletonChartedSpace_chartAt_eq,
+    modelWithCornersSelf_partialEquiv, PartialEquiv.trans_refl, PartialEquiv.refl_symm,
+    PartialEquiv.refl_coe, CompTriple.comp_eq, preimage_id_eq, id_eq, modelWithCornersSelf_coe,
+    range_id, inter_univ]
+  rw [extChartAt_to_inv x, ← extChartAt_coe]
+  have eq_nhd : (φ ∘ φ.symm) =ᶠ[𝓝[range I] (φ x)] id := by
+    rw [← map_extChartAt_nhds x, eventuallyEq_map, id_comp]
+    rw [EventuallyEq, Filter.Eventually, mem_nhds_iff]
+    use φ.source
+    constructor
+    · intro y hy
+      have : ((φ ∘ φ.symm) ∘ φ) y = φ y := by
+        rw [comp_apply, comp_apply, φ.right_inv]
+        exact φ.map_source hy
+      exact this
+    · exact ⟨isOpen_extChartAt_source x, mem_extChartAt_source x⟩
+  have hx : (φ ∘ φ.symm) (φ x) = id (φ x) := by
+    rw [comp_apply, φ.right_inv, id]
+    exact φ.map_source (mem_extChartAt_source x)
+  rw [eq_nhd.fderivWithin_eq hx]
+  exact fderivWithin_id <| I.uniqueDiffOn.uniqueDiffWithinAt (mem_range_self _)
+
+-- -- d(φ⁻¹)⁻¹(V x) = V x
 variable (x V) in
 omit [CompleteSpace E] in
 lemma aux_computation2 :
-    letI φ := extChartAt I x
-    (mfderiv[range I] φ.symm (φ x)).inverse (V x) = V x := by
-  set φ := extChartAt I x
-  -- this is almost true: it is true within a smaller set (namely extChartAt I x).target...
-  have : mfderiv[range I] φ.symm (φ x) = ContinuousLinearMap.id 𝕜 _ := by
-    rw [mfderivWithin]
-    have : MDiffAt[range I] φ.symm (φ x) :=
-      mdifferentiableWithinAt_extChartAt_symm (mem_extChartAt_target x)
-    simp only [this, ↓reduceIte, writtenInExtChartAt, extChartAt, OpenPartialHomeomorph.extend,
-      PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe,
-      OpenPartialHomeomorph.toFun_eq_coe, OpenPartialHomeomorph.refl_partialEquiv,
-      PartialEquiv.refl_source, OpenPartialHomeomorph.singletonChartedSpace_chartAt_eq,
-      modelWithCornersSelf_partialEquiv, PartialEquiv.trans_refl, PartialEquiv.refl_symm,
-      PartialEquiv.refl_coe, CompTriple.comp_eq, preimage_id_eq, id_eq, modelWithCornersSelf_coe,
-      range_id, inter_univ]
-    rw [extChartAt_to_inv x, ← extChartAt_coe]
-    have : fderivWithin 𝕜 (φ ∘ φ.symm) (range I) (φ x) = fderivWithin 𝕜 id (range I) (φ x) := by
-      have eq_nhd : (φ ∘ φ.symm) =ᶠ[𝓝[range I] (φ x)] id := by
-        rw [← map_extChartAt_nhds x, eventuallyEq_map, id_comp]
-        rw [EventuallyEq, Filter.Eventually, mem_nhds_iff]
-        use φ.source
-        constructor
-        · intro y hy
-          have : ((φ ∘ φ.symm) ∘ φ) y = φ y := by
-            rw [comp_apply, comp_apply, φ.right_inv]
-            exact φ.map_source hy
-          exact this
-        · exact ⟨isOpen_extChartAt_source x, mem_extChartAt_source x⟩
-      have hx : (φ ∘ φ.symm) (φ x) = id (φ x) := by
-        rw [comp_apply, φ.right_inv, id]
-        exact φ.map_source (mem_extChartAt_source x)
-      exact eq_nhd.fderivWithin_eq hx
-    rw [this]
-    exact fderivWithin_id <| I.uniqueDiffOn.uniqueDiffWithinAt (mem_range_self _)
-  rw [this, ContinuousLinearMap.inverse_id]
-  exact rfl
+    letI φ := extChartAt I x; (mfderiv[range I] φ.symm (φ x)).inverse (V x) = V x := by
+  rw [mfderivWithin_range_extChartAt_symm, ContinuousLinearMap.inverse_id]
+  exact ContinuousLinearMap.id_apply ..
 
 -- TODO: add pre-composition version also and move to the right location
 omit [IsManifold I 2 M] [CompleteSpace E] in
