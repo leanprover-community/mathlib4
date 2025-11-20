@@ -3,11 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-import Mathlib.CategoryTheory.Limits.Types.Filtered
-import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
-import Mathlib.SetTheory.Cardinal.HasCardinalLT
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+public import Mathlib.CategoryTheory.Limits.Types.Filtered
+public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
+public import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
 /-! # Presentable objects
 
@@ -25,6 +27,8 @@ Similar as for accessible functors, we define a type class `IsAccessible`.
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
 -/
+
+@[expose] public section
 
 universe w w' v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -110,6 +114,15 @@ abbrev IsCardinalPresentable : Prop := (coyoneda.obj (op X)).IsCardinalAccessibl
 variable (C) in
 /-- The property of objects that are `κ`-presentable. -/
 def isCardinalPresentable : ObjectProperty C := fun X ↦ IsCardinalPresentable X κ
+
+instance (X : (isCardinalPresentable C κ).FullSubcategory) :
+    IsCardinalPresentable X.obj κ :=
+  X.property
+
+instance (X : (isCardinalPresentable C κ).FullSubcategory) :
+    IsCardinalPresentable ((isCardinalPresentable C κ).ι.obj X) κ := by
+  dsimp
+  infer_instance
 
 lemma isCardinalPresentable_iff (X : C) :
     isCardinalPresentable C κ X ↔ IsCardinalPresentable X κ := Iff.rfl

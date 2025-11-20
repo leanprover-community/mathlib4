@@ -3,11 +3,12 @@ Copyright (c) 2024 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.Exponential
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
-import Mathlib.Topology.ContinuousMap.ContinuousSqrt
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
+public import Mathlib.Analysis.SpecialFunctions.Exponential
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
+public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
 # The exponential and logarithm based on the continuous functional calculus
@@ -38,6 +39,8 @@ definitions for them.
   products).
 + Relate `CFC.log` to `rpow`, `zpow`, `sqrt`, `inv`.
 -/
+
+@[expose] public section
 
 open NormedSpace
 

@@ -3,17 +3,20 @@ Copyright (c) 2025 Matteo Cipollina. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina
 -/
+module
 
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Combinatorics.Quiver.Path
-import Mathlib.Data.Set.Insert
-import Mathlib.Data.List.Basic
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Combinatorics.Quiver.Path
+public import Mathlib.Data.Set.Insert
+public import Mathlib.Data.List.Basic
 
 /-!
 # Path Vertices
 
 This file provides lemmas for reasoning about the vertices of a path.
 -/
+
+@[expose] public section
 
 namespace Quiver.Path
 
