@@ -3,12 +3,14 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Polynomial.Eval.Irreducible
-import Mathlib.RingTheory.Adjoin.PowerBasis
-import Mathlib.RingTheory.DedekindDomain.Dvr
-import Mathlib.RingTheory.Smooth.Local
-import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
-import Mathlib.RingTheory.Unramified.LocalRing
+module
+
+public import Mathlib.Algebra.Polynomial.Eval.Irreducible
+public import Mathlib.RingTheory.Adjoin.PowerBasis
+public import Mathlib.RingTheory.DedekindDomain.Dvr
+public import Mathlib.RingTheory.Smooth.Local
+public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
+public import Mathlib.RingTheory.Unramified.LocalRing
 
 /-!
 
@@ -24,6 +26,8 @@ extension `K` of `k`, then `R[X]/p` is a finite etale `R`-algebra with residue f
 (See `SeparableResidueStruct.exists_of_isSeparable`)
 
 -/
+
+@[expose] public section
 
 open IsLocalRing Polynomial TensorProduct KaehlerDifferential IntermediateField
 
