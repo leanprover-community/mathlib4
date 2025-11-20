@@ -3,11 +3,13 @@ Copyright (c) 2025 Fernando Chu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fernando Chu
 -/
-import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
-import Mathlib.CategoryTheory.ExtremalEpi
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
-import Mathlib.CategoryTheory.Sites.Coherent.Basic
+module
+
+public import Mathlib.CategoryTheory.EffectiveEpi.RegularEpi
+public import Mathlib.CategoryTheory.ExtremalEpi
+public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
+public import Mathlib.CategoryTheory.Sites.Coherent.Basic
 
 /-!
 # Regular categories
