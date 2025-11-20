@@ -26,12 +26,29 @@ This file shows that the logarithm can be expressed as a limit of powers, namely
 open scoped Topology
 open Real Filter
 
+lemma Real.norm_inv_mul_rpow_sub_one_sub_log_le {p x : ℝ} (p_pos : 0 < p) (x_pos : 0 < x)
+    (hx : ‖p * log x‖ ≤ 1) : ‖p⁻¹ * (x ^ p - 1) - log x‖ ≤ p * ‖log x‖ ^ 2 := by
+  have pinv_nonneg : 0 ≤ p⁻¹ := by grind [_root_.inv_nonneg]
+  calc
+    _ = ‖p⁻¹ * ((x ^ p - 1) - p * log x)‖ := by grind
+    _ = p⁻¹ * ‖(rexp (p * log x) - 1) - p * log x‖ := by
+          simp only [norm_mul, Real.norm_of_nonneg (r := p⁻¹) pinv_nonneg]
+          congr
+          rw [mul_comm, Real.exp_mul, Real.exp_log (by grind)]
+    _ ≤ p⁻¹ * ‖p * log x‖ ^ 2 := by
+          gcongr
+          refine Real.norm_exp_sub_one_sub_id_le ?_
+          simp only [hx]
+    _ = p * ‖log x‖ ^ 2 := by
+          simp only [norm_mul]
+          grind [Real.norm_of_nonneg]
+
 open Set in
 lemma tendstoLocallyUniformlyOn_rpow_sub_one_log :
     TendstoLocallyUniformlyOn (fun (p : ℝ) (x : ℝ) => p⁻¹ * (x ^ p - 1)) log (𝓝[>] 0) (Ioi 0) := by
   refine (tendstoLocallyUniformlyOn_iff_forall_isCompact isOpen_Ioi).mpr ?_
   intro s hs hs'
-  rw [Metric.tendstoUniformlyOn_iff]
+  rw [Metric.uniformity_basis_dist_le.tendstoUniformlyOn_iff_of_uniformity]
   intro ε hε
   let pbound : ℝ := ε / (sSup ((fun x => ‖log x‖ ^ 2) '' s) + 1)
   have hxs : ∀ x ∈ s, x ≠ 0 := by grind
@@ -66,24 +83,12 @@ lemma tendstoLocallyUniformlyOn_rpow_sub_one_log :
   have pinv_nonneg : 0 ≤ p⁻¹ := by grind [_root_.inv_nonneg]
   rw [dist_eq_norm']
   calc
-    _ = ‖p⁻¹ * ((x ^ p - 1) - p * log x)‖ := by grind
-    _ = p⁻¹ * ‖(rexp (p * log x) - 1) - p * log x‖ := by
-          simp only [norm_mul, Real.norm_of_nonneg (r := p⁻¹) pinv_nonneg]
-          congr
-          rw [mul_comm, Real.exp_mul, Real.exp_log (by grind)]
-    _ ≤ p⁻¹ * ‖p * log x‖ ^ 2 := by
-          gcongr
-          refine Real.norm_exp_sub_one_sub_id_le ?_
-          simp only [hx']
-    _ = p * ‖log x‖ ^ 2 := by
-          simp only [norm_mul]
-          grind [Real.norm_of_nonneg]
+    _ ≤ p * ‖log x‖ ^ 2 := Real.norm_inv_mul_rpow_sub_one_sub_log_le hp₁ (hs hx) hx'
     _ ≤ p * sSup ((fun x => ‖log x‖ ^ 2) '' s) := by
           gcongr
           refine le_csSup ?_ (by grind)
           grind [IsCompact.bddAbove, ← IsCompact.image_of_continuousOn]
-    _ ≤ p * (sSup ((fun x => ‖log x‖ ^ 2) '' s) + 1) := by gcongr; grind
-    _ < pbound * (sSup ((fun x => ‖log x‖ ^ 2) '' s) + 1) := by gcongr
+    _ ≤ pbound * (sSup ((fun x => ‖log x‖ ^ 2) '' s) + 1) := by gcongr; grind
     _ = ε := by grind
 
 lemma tendsto_rpow_sub_one_log {x : ℝ} (hx : 0 < x) :
