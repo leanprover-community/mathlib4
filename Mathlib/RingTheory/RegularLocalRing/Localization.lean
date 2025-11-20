@@ -3,8 +3,10 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.RingTheory.RegularLocalRing.AuslanderBuchsbaumSerre
-import Mathlib.RingTheory.RegularLocalRing.GlobalDimension
+module
+
+public import Mathlib.RingTheory.RegularLocalRing.AuslanderBuchsbaumSerre
+public import Mathlib.RingTheory.RegularLocalRing.GlobalDimension
 
 /-!
 
@@ -15,7 +17,7 @@ that localization of regular local ring is regular.
 
 -/
 
---set_option pp.universes true
+@[expose] public section
 
 universe u v
 

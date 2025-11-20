@@ -3,8 +3,11 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.RingTheory.RegularLocalRing.Localization
-import Mathlib.RingTheory.RegularLocalRing.RegularRing.GlobalDimension
+module
+
+public import Mathlib.RingTheory.RegularLocalRing.Localization
+public import Mathlib.RingTheory.RegularLocalRing.RegularRing.GlobalDimension
+
 /-!
 
 # Localization of Regular Ring is Regular
@@ -13,6 +16,8 @@ In this file, we establish the full version of Auslander-Buchsbaum-Serre criteri
 that localization of regular local ring is regular.
 
 -/
+
+@[expose] public section
 
 universe u v
 
