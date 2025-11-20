@@ -26,21 +26,21 @@ variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 section UnitVectorAngles
 
 /-- Gets the orthogonal direction of one vector relative to another. -/
-private noncomputable def ortho (y x : V) : V := x - (ℝ ∙ y).starProjection x
+noncomputable def ortho (y x : V) : V := x - (ℝ ∙ y).starProjection x
 
-private lemma inner_ortho_nonneg_of_norm_eq_one {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
+lemma inner_ortho_nonneg_of_norm_eq_one {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     0 ≤ ⟪x, ortho y x⟫ := by
   rw [ortho, Submodule.starProjection_unit_singleton _ hy, inner_sub_right,
     inner_self_eq_one_of_norm_eq_one hx, real_inner_smul_right, real_inner_comm, sub_nonneg]
   grw [← sq, sq_le_one_iff_abs_le_one, abs_real_inner_le_norm, hx, hy, one_mul]
 
-private lemma inner_normalize_ortho (x : V) {y : V} :
+lemma inner_normalize_ortho (x : V) {y : V} :
     ⟪y, normalize (ortho y x)⟫ = 0 := by
   simp only [NormedSpace.normalize, real_inner_smul_right, mul_eq_zero, inv_eq_zero, norm_eq_zero]
   right; rw [ortho, real_inner_comm, Submodule.starProjection_inner_eq_zero]
   exact Submodule.mem_span_singleton_self y
 
-private lemma inner_normalized_ortho_sq_add_inner_sq_eq_one {x y : V}
+lemma inner_normalized_ortho_sq_add_inner_sq_eq_one {x y : V}
     (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     ⟪x, normalize (ortho y x)⟫ ^ 2 + ⟪x, y⟫ ^ 2 = 1 := by
   rw [NormedSpace.normalize, real_inner_smul_right, ortho, inner_sub_right,
@@ -64,7 +64,7 @@ private lemma inner_normalized_ortho_sq_add_inner_sq_eq_one {x y : V}
     ring
   field_simp; exact H2
 
-private lemma inner_ortho_right_eq_sin_angle {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
+lemma inner_ortho_right_eq_sin_angle {x y : V} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     ⟪x, normalize (ortho y x)⟫ = Real.sin (angle x y) := by
   have H : ⟪x, normalize (ortho y x)⟫ ^ 2 = Real.sin (angle x y) ^ 2 := by
     simp [Real.sin_sq, ← inner_eq_cos_angle_of_norm_eq_one hx hy,
@@ -76,7 +76,7 @@ private lemma inner_ortho_right_eq_sin_angle {x y : V} (hx : ‖x‖ = 1) (hy : 
       (inner_ortho_nonneg_of_norm_eq_one hx hy)
   simp_all [abs_of_nonneg H0]
 
-private lemma angle_le_angle_add_angle_aux {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) :
+lemma angle_le_angle_add_angle_aux {x y : V} (Hx : ‖x‖ = 1) (Hy : ‖y‖ = 1) :
     x = Real.cos (angle x y) • y + Real.sin (angle x y) • normalize (ortho y x) := by
   rw [← inner_ortho_right_eq_sin_angle Hx Hy, ← inner_eq_cos_angle_of_norm_eq_one Hx Hy,
     ortho, Submodule.starProjection_unit_singleton _ Hy]
@@ -135,7 +135,7 @@ end UnitVectorAngles
 
 
 /-- **Triangle inequality** for angles between vectors. -/
-theorem InnerProductGeometry.angle_le_angle_add_angle (x y z : V) :
+public theorem InnerProductGeometry.angle_le_angle_add_angle (x y z : V) :
     angle x z ≤ angle x y + angle y z := by
   by_cases hx : x = 0
   · simpa [hx] using angle_nonneg y z
@@ -152,7 +152,7 @@ variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricS
   [NormedAddTorsor V P]
 
 /-- **Triangle inequality** for angles in Euclidean geometry. -/
-theorem angle_le_angle_add_angle (p p₁ p₂ p₃ : P) : ∠ p₁ p p₃ ≤ ∠ p₁ p p₂ + ∠ p₂ p p₃ :=
+public theorem angle_le_angle_add_angle (p p₁ p₂ p₃ : P) : ∠ p₁ p p₃ ≤ ∠ p₁ p p₂ + ∠ p₂ p p₃ :=
   InnerProductGeometry.angle_le_angle_add_angle _ _ _
 
 end EuclideanGeometry
