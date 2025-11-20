@@ -6,6 +6,7 @@ Authors: Damiano Testa
 module
 
 public meta import ImportGraph.Imports
+public meta import Mathlib.Lean.Linter
 public meta import Mathlib.Tactic.MinImports
 
 /-! # The `minImports` linter
@@ -103,9 +104,7 @@ macro "#import_bumps" : command => `(
   set_option linter.minImports true)
 
 @[inherit_doc Mathlib.Linter.linter.minImports]
-def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
-    unless getLinterValue linter.minImports (← getLinterOptions) do
-      return
+def minImportsLinter : Linter where run := whenLinterActivated linter.minImports fun stx ↦ do
     if (← get).messages.hasErrors then
       return
     if stx == (← `(command| #import_bumps)) then return

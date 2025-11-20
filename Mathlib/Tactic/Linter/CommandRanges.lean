@@ -46,9 +46,7 @@ register_option linter.commandRanges : Bool := {
 namespace CommandRanges
 
 @[inherit_doc Mathlib.Linter.linter.commandRanges]
-def commandRangesLinter : Linter where run stx := do
-  unless Linter.getLinterValue linter.commandRanges (← getLinterOptions) do
-    return
+def commandRangesLinter : Linter where run stx := whenLinterOption linter.commandRanges do
   if Parser.isTerminalCommand stx then
     return
   let ranges :=
