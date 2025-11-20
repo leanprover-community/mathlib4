@@ -3,31 +3,36 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.CategoryTheory.Abelian.Injective.Dimension
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.BaseChange
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.Noetherian.Basic
-import Mathlib.RingTheory.KrullDimension.Basic
-import Mathlib.Algebra.Category.Grp.Zero
-import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
-import Mathlib.Algebra.Category.ModuleCat.Projective
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.CategoryTheory.Abelian.Projective.Dimension
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
-import Mathlib.RingTheory.CohenMacaulay.Basic
-import Mathlib.RingTheory.LocalRing.Module
-import Mathlib.RingTheory.GlobalDimension
-import Mathlib.RingTheory.Regular.ProjectiveDimension
-import Mathlib.Algebra.Algebra.Shrink
-import Mathlib.RingTheory.RingHom.Flat
+module
+
+public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.BaseChange
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.Noetherian.Basic
+public import Mathlib.RingTheory.KrullDimension.Basic
+public import Mathlib.Algebra.Category.Grp.Zero
+public import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
+public import Mathlib.Algebra.Category.ModuleCat.Projective
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
+public import Mathlib.RingTheory.CohenMacaulay.Basic
+public import Mathlib.RingTheory.LocalRing.Module
+public import Mathlib.RingTheory.GlobalDimension
+public import Mathlib.RingTheory.Regular.ProjectiveDimension
+public import Mathlib.Algebra.Algebra.Shrink
+public import Mathlib.RingTheory.RingHom.Flat
+
 /-!
 
 # The Definition of Gorenstein (Local) Ring
 
 -/
+
+@[expose] public section
 
 universe v u
 
