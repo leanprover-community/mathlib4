@@ -3,8 +3,10 @@ Copyright (c) 2021 Chris Hughes, Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Junyan Xu
 -/
-import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.SetTheory.Cardinal.Finsupp
+module
+
+public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.SetTheory.Cardinal.Finsupp
 
 /-!
 # Cardinality of Polynomial Ring
@@ -12,6 +14,8 @@ import Mathlib.SetTheory.Cardinal.Finsupp
 The result in this file is that the cardinality of `R[X]` is at most the maximum
 of `#R` and `ℵ₀`.
 -/
+
+@[expose] public section
 
 
 universe u

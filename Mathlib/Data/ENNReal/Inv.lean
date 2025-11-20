@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Data.ENNReal.Operations
+module
+
+public import Mathlib.Data.ENNReal.Operations
 
 /-!
 # Results about division in extended non-negative reals
@@ -29,6 +31,8 @@ A few order isomorphisms are worthy of mention:
     the extended nonnegative real numbers and the unit interval. This is `orderIsoIicOneBirational`
     composed with the identity order isomorphism between `Iic (1 : ℝ≥0∞)` and `Icc (0 : ℝ) 1`.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -466,9 +470,13 @@ theorem le_of_forall_nnreal_lt {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, ↑r < x
   lift r to ℝ≥0 using ne_top_of_lt hr
   exact h r hr
 
-lemma eq_of_forall_nnreal_iff {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, ↑r ≤ x ↔ ↑r ≤ y) : x = y :=
-  le_antisymm (le_of_forall_nnreal_lt fun _r hr ↦ (h _).1 hr.le)
-    (le_of_forall_nnreal_lt fun _r hr ↦ (h _).2 hr.le)
+lemma eq_of_forall_nnreal_le_iff {x y : ℝ≥0∞} : (∀ r : ℝ≥0, ↑r ≤ x ↔ ↑r ≤ y) → x = y :=
+  WithTop.eq_of_forall_coe_le_iff
+
+@[deprecated (since := "2025-10-20")] alias eq_of_forall_nnreal_iff := eq_of_forall_nnreal_le_iff
+
+lemma eq_of_forall_le_nnreal_iff {x y : ℝ≥0∞} : (∀ r : ℝ≥0, x ≤ r ↔ y ≤ r) → x = y :=
+  WithTop.eq_of_forall_le_coe_iff
 
 theorem le_of_forall_pos_nnreal_lt {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, 0 < r → ↑r < x → ↑r ≤ y) : x ≤ y :=
   le_of_forall_nnreal_lt fun r hr =>
@@ -653,7 +661,7 @@ theorem exists_inv_two_pow_lt (ha : a ≠ 0) : ∃ n : ℕ, 2⁻¹ ^ n < a := by
 @[simp, norm_cast]
 theorem coe_zpow (hr : r ≠ 0) (n : ℤ) : (↑(r ^ n) : ℝ≥0∞) = (r : ℝ≥0∞) ^ n := by
   rcases n with n | n
-  · simp only [Int.ofNat_eq_coe, coe_pow, zpow_natCast]
+  · simp only [Int.ofNat_eq_natCast, coe_pow, zpow_natCast]
   · have : r ^ n.succ ≠ 0 := pow_ne_zero (n + 1) hr
     simp only [zpow_negSucc, coe_inv this, coe_pow]
 
@@ -719,11 +727,11 @@ theorem Ioo_zero_top_eq_iUnion_Ico_zpow {y : ℝ≥0∞} (hy : 1 < y) (h'y : y �
 @[gcongr]
 theorem zpow_le_of_le {x : ℝ≥0∞} (hx : 1 ≤ x) {a b : ℤ} (h : a ≤ b) : x ^ a ≤ x ^ b := by
   obtain a | a := a <;> obtain b | b := b
-  · simp only [Int.ofNat_eq_coe, zpow_natCast]
+  · simp only [Int.ofNat_eq_natCast, zpow_natCast]
     exact pow_right_mono₀ hx (Int.le_of_ofNat_le_ofNat h)
   · apply absurd h (not_le_of_gt _)
     exact lt_of_lt_of_le (Int.negSucc_lt_zero _) (Int.natCast_nonneg _)
-  · simp only [zpow_negSucc, Int.ofNat_eq_coe, zpow_natCast]
+  · simp only [zpow_negSucc, Int.ofNat_eq_natCast, zpow_natCast]
     refine (ENNReal.inv_le_one.2 ?_).trans ?_ <;> exact one_le_pow_of_one_le' hx _
   · simp only [zpow_negSucc, ENNReal.inv_le_inv]
     apply pow_right_mono₀ hx

@@ -3,9 +3,11 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Composition.MapComap
-import Mathlib.Probability.Martingale.Convergence
-import Mathlib.Probability.Process.PartitionFiltration
+module
+
+public import Mathlib.Probability.Kernel.Composition.MapComap
+public import Mathlib.Probability.Martingale.Convergence
+public import Mathlib.Probability.Process.PartitionFiltration
 
 /-!
 # Kernel density
@@ -74,6 +76,8 @@ The construction of the density process in this file follows the proof of Theore
 [O. Kallenberg, Foundations of modern probability][kallenberg2021], adapted to use a countably
 generated hypothesis instead of specializing to `ℝ`.
 -/
+
+@[expose] public section
 
 open MeasureTheory Set Filter MeasurableSpace
 
@@ -146,7 +150,8 @@ lemma measurable_countableFiltration_densityProcess (κ : Kernel α (γ × β)) 
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     Measurable[countableFiltration γ n] (fun x ↦ densityProcess κ ν n a x s) := by
   refine @Measurable.ennreal_toReal _ (countableFiltration γ n) _ ?_
-  exact (measurable_densityProcess_countableFiltration_aux κ ν n hs).comp measurable_prodMk_left
+  -- The exact also works without the `( :)`, but is a bit slow.
+  exact ((measurable_densityProcess_countableFiltration_aux κ ν n hs).comp measurable_prodMk_left :)
 
 lemma stronglyMeasurable_countableFiltration_densityProcess (κ : Kernel α (γ × β)) (ν : Kernel α γ)
     (n : ℕ) (a : α) {s : Set β} (hs : MeasurableSet s) :
@@ -275,7 +280,7 @@ lemma setIntegral_densityProcess_of_le (hκν : fst κ ≤ ν)
 
 lemma condExp_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     {i j : ℕ} (hij : i ≤ j) (a : α) {s : Set β} (hs : MeasurableSet s) :
-    (ν a)[fun x ↦ densityProcess κ ν j a x s | countableFiltration γ i]
+    (ν a)[fun x ↦ densityProcess κ ν j a x s|countableFiltration γ i]
       =ᵐ[ν a] fun x ↦ densityProcess κ ν i a x s := by
   refine (ae_eq_condExp_of_forall_setIntegral_eq ?_ ?_ ?_ ?_ ?_).symm
   · exact integrable_densityProcess hκν j a hs

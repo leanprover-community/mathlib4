@@ -3,8 +3,10 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.RingTheory.Bialgebra.MonoidAlgebra
-import Mathlib.RingTheory.HopfAlgebra.Basic
+module
+
+public import Mathlib.RingTheory.Bialgebra.MonoidAlgebra
+public import Mathlib.RingTheory.HopfAlgebra.Basic
 
 /-!
 # The Hopf algebra structure on group algebras
@@ -21,6 +23,8 @@ results about the `R`-Hopf algebra instance on `A[G]`, building upon results in
   `A[T;T⁻¹]` when `A` is an `R`-Hopf algebra. When `A = R` this corresponds to the fact that `𝔾ₘ/R`
   is a group scheme.
 -/
+
+@[expose] public section
 
 noncomputable section
 

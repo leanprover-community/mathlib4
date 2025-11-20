@@ -3,9 +3,10 @@ Copyright (c) 2025 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
+module
 
-import Mathlib.NumberTheory.Padics.PadicIntegers
-import Mathlib.RingTheory.DividedPowers.RatAlgebra
+public import Mathlib.NumberTheory.Padics.PadicIntegers
+public import Mathlib.RingTheory.DividedPowers.RatAlgebra
 
 /-! # Divided powers on ℤ_[p]
 
@@ -22,6 +23,8 @@ TODO: If `K` is a `p`-adic local field with ring of integers `R` and uniformizer
 `e ≤ p - 1`.
 
 -/
+
+@[expose] public section
 
 namespace PadicInt
 
@@ -109,7 +112,7 @@ private lemma dpow'_int (n : ℕ) {x : ℤ_[p]} (hx : x ∈ Ideal.span {(p : ℤ
     ‖dpow' p n x‖ ≤ 1 := by
   unfold dpow'
   by_cases hn : n = 0
-  · simp [hn, factorial_zero, cast_one, inverse_one, pow_zero, mul_one, norm_one, le_refl]
+  · simp [hn]
   · apply le_trans (dpow'_norm_le_of_ne_zero p hn hx)
     rw [← zpow_neg_one, ← zpow_zero ↑p]
     gcongr
@@ -135,7 +138,6 @@ noncomputable def dividedPowers : DividedPowers (Ideal.span {(p : ℤ_[p])}) := 
     simp only [Ideal.span_singleton_eq_top, isUnit_iff_ne_zero, ne_eq, cast_eq_zero]
     exact Nat.Prime.ne_zero hp.elim
   · intro n x hx
-    have hx' : (x : ℚ_[p]) ∈ (⊤ : Ideal ℚ_[p]) := trivial
     exact ⟨⟨dpow' p n x, dpow'_int p n hx⟩, fun hn ↦ dpow'_mem p hn hx, by
       simp [dpow', inverse_eq_inv', Coe.ringHom_apply, RatAlgebra.dpow_apply,
         Submodule.mem_top, ↓reduceIte]⟩

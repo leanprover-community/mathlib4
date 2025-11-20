@@ -3,8 +3,10 @@ Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.Algebra.Polynomial.Splits
-import Mathlib.Tactic.IntervalCases
+module
+
+public import Mathlib.Algebra.Polynomial.Splits
+public import Mathlib.Tactic.IntervalCases
 
 /-!
 # Cubics and discriminants
@@ -30,6 +32,8 @@ This file defines cubic polynomials over a semiring and their discriminants over
 
 cubic, discriminant, polynomial, root
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -84,12 +88,9 @@ section Coeff
 
 private theorem coeffs : (∀ n > 3, P.toPoly.coeff n = 0) ∧ P.toPoly.coeff 3 = P.a ∧
     P.toPoly.coeff 2 = P.b ∧ P.toPoly.coeff 1 = P.c ∧ P.toPoly.coeff 0 = P.d := by
-  simp only [toPoly, coeff_add, coeff_C, coeff_C_mul_X, coeff_C_mul_X_pow]
-  norm_num
-  intro n hn
-  repeat' rw [if_neg]
-  any_goals cutsat
-  repeat' rw [zero_add]
+  simp only [Cubic.toPoly, Polynomial.coeff_add, Polynomial.coeff_C, Polynomial.coeff_C_mul_X,
+    Polynomial.coeff_C_mul_X_pow]
+  grind [zero_add]
 
 @[simp]
 theorem coeff_eq_zero {n : ℕ} (hn : 3 < n) : P.toPoly.coeff n = 0 :=
@@ -412,14 +413,14 @@ variable {P : Cubic F} [Field F] [Field K] {φ : F →+* K} {x y z : K}
 section Split
 
 theorem splits_iff_card_roots (ha : P.a ≠ 0) :
-    Splits φ P.toPoly ↔ Multiset.card (map φ P).roots = 3 := by
+    Splits (P.toPoly.map φ) ↔ Multiset.card (map φ P).roots = 3 := by
   replace ha : (map φ P).a ≠ 0 := (_root_.map_ne_zero φ).mpr ha
   nth_rw 1 [← RingHom.id_comp φ]
   rw [roots, ← splits_map_iff, ← map_toPoly, Polynomial.splits_iff_card_roots,
     ← ((degree_eq_iff_natDegree_eq <| ne_zero_of_a_ne_zero ha).1 <| degree_of_a_ne_zero ha : _ = 3)]
 
 theorem splits_iff_roots_eq_three (ha : P.a ≠ 0) :
-    Splits φ P.toPoly ↔ ∃ x y z : K, (map φ P).roots = {x, y, z} := by
+    Splits (P.toPoly.map φ) ↔ ∃ x y z : K, (map φ P).roots = {x, y, z} := by
   rw [splits_iff_card_roots ha, card_eq_three]
 
 theorem eq_prod_three_roots (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z}) :

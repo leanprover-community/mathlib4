@@ -3,12 +3,14 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Data.Finsupp.Lex
-import Mathlib.Data.Finsupp.MonomialOrder
-import Mathlib.Data.Finsupp.WellFounded
-import Mathlib.Data.List.TFAE
-import Mathlib.RingTheory.MvPolynomial.Homogeneous
-import Mathlib.RingTheory.Nilpotent.Defs
+module
+
+public import Mathlib.Data.Finsupp.Lex
+public import Mathlib.Data.Finsupp.MonomialOrder
+public import Mathlib.Data.Finsupp.WellFounded
+public import Mathlib.Data.List.TFAE
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
+public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-! # Degree and leading coefficient of polynomials with respect to a monomial order
 
@@ -54,7 +56,7 @@ and a monomial order `m : MonomialOrder σ`.
   is nonzero, then the leading coefficient is that product.
 
 * `m.degree_mul_of_isRegular_left`, `m.degree_mul_of_isRegular_right` and `m.degree_mul`
-  assert the  equality when the leading coefficient of `f` or `g` is regular,
+  assert the equality when the leading coefficient of `f` or `g` is regular,
   or when `R` is a domain and `f` and `g` are nonzero.
 
 * `m.leadingCoeff_mul_of_isRegular_left`, `m.leadingCoeff_mul_of_isRegular_right`
@@ -79,6 +81,8 @@ and a monomial order `m : MonomialOrder σ`.
 [Becker-Weispfenning1993]
 
 -/
+
+@[expose] public section
 
 namespace MonomialOrder
 

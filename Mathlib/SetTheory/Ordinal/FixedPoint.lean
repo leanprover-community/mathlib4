@@ -3,9 +3,11 @@ Copyright (c) 2018 Violeta Hernández Palacios, Mario Carneiro. All rights reser
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios, Mario Carneiro
 -/
-import Mathlib.Logic.Small.List
-import Mathlib.SetTheory.Ordinal.Enum
-import Mathlib.SetTheory.Ordinal.Exponential
+module
+
+public import Mathlib.Logic.Small.List
+public import Mathlib.SetTheory.Ordinal.Enum
+public import Mathlib.SetTheory.Ordinal.Exponential
 
 /-!
 # Fixed points of normal functions
@@ -25,6 +27,8 @@ Moreover, we prove some lemmas about the fixed points of specific normal functio
 * `deriv_add_eq_mul_omega0_add`: a characterization of the derivative of addition.
 * `deriv_mul_eq_opow_omega0_mul`: a characterization of the derivative of multiplication.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -338,8 +342,11 @@ theorem isNormal_deriv (f) : IsNormal (deriv f) :=
 theorem deriv_strictMono (f) : StrictMono (deriv f) :=
   derivFamily_strictMono _
 
-theorem deriv_id_of_nfp_id (h : nfp f = id) : deriv f = id :=
+theorem deriv_eq_id_of_nfp_eq_id (h : nfp f = id) : deriv f = id :=
   ((isNormal_deriv _).eq_iff_zero_and_succ IsNormal.refl).2 (by simp [h])
+
+@[deprecated (since := "2025-10-25")]
+alias deriv_id_of_nfp_id := deriv_eq_id_of_nfp_eq_id
 
 theorem IsNormal.deriv_fp (H : IsNormal f) : ∀ o, f (deriv f o) = deriv f o :=
   derivFamily_fp (i := ⟨⟩) H
@@ -359,9 +366,6 @@ theorem IsNormal.mem_range_deriv (H : IsNormal f) {a} : a ∈ Set.range (deriv f
 theorem deriv_eq_enumOrd (H : IsNormal f) : deriv f = enumOrd (Function.fixedPoints f) := by
   convert derivFamily_eq_enumOrd fun _ : Unit => H
   exact (Set.iInter_const _).symm
-
-theorem deriv_eq_id_of_nfp_eq_id (h : nfp f = id) : deriv f = id :=
-  (IsNormal.eq_iff_zero_and_succ (isNormal_deriv _) IsNormal.refl).2 <| by simp [h]
 
 theorem nfp_zero_left (a) : nfp 0 a = a := by
   rw [← iSup_iterate_eq_nfp]
