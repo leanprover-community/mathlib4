@@ -46,7 +46,11 @@ variable {R S : Type*} [Semiring R] [Semiring S]
 /-- The Sylvester matrix of two polynomials `f` and `g` of degrees `m` and `n` respectively is a
 `(m+n) × (m+n)` matrix with the coefficients of `f` and `g` arranged in a specific way. Here, `m`
 and `n` are free variables, not necessarily equal to the actual degrees of the polynomials `f` and
-`g`. -/
+`g`.
+
+Note that the natural definition would be a `Matrix (Fin (m + n)) (Fin m ⊕ Fin n) R` but we prefer
+having this as a square matrix to take determinants later on.
+-/
 def sylvester (f g : R[X]) (m n : ℕ) : Matrix (Fin (m + n)) (Fin (m + n)) R :=
   .of fun i j ↦ j.addCases
     (fun j₁ ↦ if (i : ℕ) ∈ Set.Icc (j₁ : ℕ) (j₁ + n) then g.coeff (i - j₁) else 0)
@@ -62,8 +66,7 @@ variable (f g : R[X]) (m n : ℕ)
 
 lemma sylvester_comm :
     sylvester f g m n = (sylvester g f n m).reindex (finCongr (add_comm n m))
-      (finSumFinEquiv.symm.trans <|
-        (Equiv.sumComm _ _).trans finSumFinEquiv) := by
+      (finSumFinEquiv.symm.trans <| (Equiv.sumComm _ _).trans finSumFinEquiv) := by
   ext i j
   induction j using Fin.addCases <;> simp [sylvester]
 
@@ -133,6 +136,7 @@ def resultant (f g : R[X]) (m : ℕ := f.natDegree) (n : ℕ := g.natDegree) : R
 
 variable (f g p : R[X]) (r : R) (m n k : ℕ)
 
+@[simp]
 lemma resultant_map_map (φ : R →+* S) :
     resultant (f.map φ) (g.map φ) m n = φ (resultant f g m n) := by
   simp [resultant, Polynomial.sylvester_map_map, RingHom.map_det]
@@ -168,7 +172,7 @@ theorem resultant_C_zero_right (r : R) : resultant f (C r) m 0 = r ^ m := by sim
 @[simp]
 theorem resultant_zero_right : resultant f 0 m n = 0 ^ m * f.coeff 0 ^ n := by
   obtain _ | m := m; · simp
-  have (i : Fin (m + 1 + n)) : sylvester f 0 (m + 1) n i ⟨0, by omega⟩ = 0 := by
+  have (i : Fin (m + 1 + n)) : sylvester f 0 (m + 1) n i ⟨0, by cutsat⟩ = 0 := by
     simp [sylvester, show (0 : Fin (m + 1 + n)) = Fin.castAdd _ 0 from rfl, Fin.addCases_left]
   simpa [resultant] using Matrix.det_eq_zero_of_column_eq_zero ⟨0, by simp⟩ this
 
@@ -192,8 +196,8 @@ private lemma resultant_add_mul_monomial_right (hk : k + m ≤ n) (hf : f.natDeg
     induction i with
     | zero => simp [M]; rfl
     | succ i IH =>
-      rw [← IH (by omega), ← Matrix.det_updateCol_add_smul_self (i := ⟨i, by omega⟩)
-        (j := ⟨i + k + m, by omega⟩) (c := -r) (M (i + 1)) (by simp; omega)]
+      rw [← IH (by cutsat), ← Matrix.det_updateCol_add_smul_self (i := ⟨i, by cutsat⟩)
+        (j := ⟨i + k + m, by cutsat⟩) (c := -r) (M (i + 1)) (by simp; omega)]
       congr 1
       ext j₁ j₂
       simp only [Matrix.of_apply, lt_add_iff_pos_right, zero_lt_one, ↓reduceIte, add_assoc,
@@ -205,7 +209,7 @@ private lemma resultant_add_mul_monomial_right (hk : k + m ≤ n) (hf : f.natDeg
         induction j₂ using Fin.addCases with
         | left j₂ =>
           dsimp at hi
-          have : Fin.mk (n := m + n) (↑j₂ + (k + m)) (by omega) = Fin.natAdd m ⟨j₂ + k, by omega⟩ :=
+          have : Fin.mk (n := m + n) (↑j₂ + (k + m)) (by cutsat) = .natAdd m ⟨j₂ + k, by cutsat⟩ :=
             Fin.ext (by simp; omega)
           simp only [Fin.addCases_left, Fin.coe_castAdd, this, Fin.addCases_right, mul_ite,
             mul_zero, ← C_mul_X_pow_eq_monomial, ← mul_assoc, coeff_mul_X_pow', ite_add_zero,
@@ -213,12 +217,12 @@ private lemma resultant_add_mul_monomial_right (hk : k + m ≤ n) (hf : f.natDeg
             add_sub_assoc, sub_eq_zero]
           split_ifs with h₁ h₂ h₂ <;> try rfl
           · rw [coeff_eq_zero_of_natDegree_lt, mul_zero]
-            exact hf.trans_lt (by omega)
+            exact hf.trans_lt (by cutsat)
           · omega
         | right i =>
           simp only [Fin.coe_natAdd] at hi
-          have : Fin.mk (n := m + n) (m + ↑i + (k + m)) (by omega) =
-              Fin.natAdd m ⟨↑i + (k + m), by omega⟩ := Fin.ext (by simp; omega)
+          have : Fin.mk (n := m + n) (m + ↑i + (k + m)) (by cutsat) =
+              Fin.natAdd m ⟨↑i + (k + m), by cutsat⟩ := Fin.ext (by simp; omega)
           simp only [Fin.addCases_right, Fin.coe_natAdd, sub_eq_self, this]
           rw [if_neg, mul_zero]
           omega
@@ -233,7 +237,7 @@ lemma resultant_add_mul_right (hp : p.natDegree + m ≤ n) (hf : f.natDegree ≤
     resultant f (g + f * p) m n = resultant f g m n := by
   have H : p.support ⊆ Finset.range (n - m + 1) := by
     simp only [Finset.subset_iff, Finset.mem_range]
-    exact fun x hx ↦ (le_natDegree_of_mem_supp _ hx).trans_lt (by omega)
+    exact fun x hx ↦ (le_natDegree_of_mem_supp _ hx).trans_lt (by cutsat)
   rw [← p.sum_monomial_eq, Polynomial.sum_eq_of_subset _ (by simp) H]
   set k := n - m + 1
   replace H := show k ≤ n - m + 1 from le_rfl
@@ -263,8 +267,8 @@ lemma resultant_C_mul_right (r : R) :
     induction i with
     | zero => simp [M]; rfl
     | succ i IH =>
-      suffices (M i).updateCol ⟨i, by omega⟩ (r • fun j ↦ M i j ⟨i, by omega⟩) = (M (i + 1)) by
-        rw [pow_succ', mul_assoc, ← IH (by omega), ← this, Matrix.det_updateCol_smul,
+      suffices (M i).updateCol ⟨i, by cutsat⟩ (r • fun j ↦ M i j ⟨i, by cutsat⟩) = (M (i + 1)) by
+        rw [pow_succ', mul_assoc, ← IH (by cutsat), ← this, Matrix.det_updateCol_smul,
           Matrix.updateCol_eq_self]
       ext j₁ j₂
       simp only [Matrix.of_apply, lt_self_iff_false, ↓reduceIte, Matrix.updateCol_apply,
@@ -301,7 +305,7 @@ lemma resultant_succ_left_deg (hf : f.natDegree ≤ m) :
       · congr 1; omega
       · simp [pow_add]
     · simp only [sylvester, Set.mem_Icc, Matrix.of_apply, Fin.val_last, Fin.addCases_left]
-      rw [if_pos (by omega)]
+      rw [if_pos (by cutsat)]
       simp [add_assoc, add_comm 1]
     · ext i j
       simp only [sylvester, Set.mem_Icc, Matrix.submatrix_apply, Function.comp_apply,
@@ -316,7 +320,7 @@ lemma resultant_succ_left_deg (hf : f.natDegree ≤ m) :
           j.natAdd _ := by ext; simp [Fin.succAbove, Fin.lt_iff_val_lt_val, add_right_comm]
         simp only [ite_and, this, Fin.addCases_right]
         split_ifs with h₁ h₂ h₃ h₃ <;> try first | omega | rfl
-        exact coeff_eq_zero_of_natDegree_lt (by omega)
+        exact coeff_eq_zero_of_natDegree_lt (by cutsat)
   · rintro (b : Fin ((m + 1) + (n + 1))) - hb
     suffices f.sylvester g (m + 1) (n + 1) (.last (m + 1 + n)) b = 0 by simp [this]
     induction b using Fin.addCases with
@@ -327,7 +331,7 @@ lemma resultant_succ_left_deg (hf : f.natDegree ≤ m) :
         ite_eq_right_iff, and_imp]
       intros
       omega
-    | right i => simpa [sylvester] using fun _ _ ↦ coeff_eq_zero_of_natDegree_lt (by omega)
+    | right i => simpa [sylvester] using fun _ _ ↦ coeff_eq_zero_of_natDegree_lt (by cutsat)
 
 lemma resultant_add_left_deg (hf : f.natDegree ≤ m) :
     resultant f g (m + k) n = (-1) ^ (n * k) * g.coeff n ^ k * resultant f g m n := by
@@ -347,7 +351,7 @@ lemma resultant_eq_zero_of_lt_lt (hf : f.natDegree < m) (hg : g.natDegree < n) :
     resultant f g m n = 0 := by
   obtain _ | m := m; · omega
   obtain _ | n := n; · omega
-  rw [resultant_add_left_deg _ _ _ _ _ (by omega), resultant_add_right_deg _ _ _ _ _ (by omega)]
+  rw [resultant_add_left_deg _ _ _ _ _ (by cutsat), resultant_add_right_deg _ _ _ _ _ (by cutsat)]
   simp [coeff_eq_zero_of_natDegree_lt hg]
 
 @[simp]
