@@ -3,7 +3,9 @@ Copyright (c) 2025 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Bryan Gin-ge Chen
 -/
-import Mathlib.Tactic.Translate.Core
+module
+
+public meta import Mathlib.Tactic.Translate.Core
 
 /-!
 # The `@[to_dual]` attribute.
@@ -20,6 +22,8 @@ Known limitations:
   are dual to eachother. Currently, this requires writing
   `attribute [to_dual existing le_add] add_le`.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.ToDual
 open Lean Meta Elab Command Std Translate
@@ -96,20 +100,8 @@ initialize ignoreArgsAttr : NameMapExtension (List Nat) ←
           | _ => throwUnsupportedSyntax
         return ids.toList }
 
-/-- An extension that stores all the declarations that need their arguments reordered when
-applying `@[to_dual]`. It is applied using the `to_dual (reorder := ...)` syntax. -/
-initialize reorderAttr : NameMapExtension (List (List Nat)) ←
-  registerNameMapExtension _
-
-@[inherit_doc to_dual_relevant_arg]
-initialize relevantArgAttr : NameMapExtension Nat ←
-  registerNameMapAttribute {
-    name := `to_dual_relevant_arg
-    descr := "Auxiliary attribute for `to_dual` stating \
-      which arguments are the types with a dual structure."
-    add := fun
-    | _, `(attr| to_dual_relevant_arg $id) => pure <| id.1.isNatLit?.get!.pred
-    | _, _ => throwUnsupportedSyntax }
+@[inherit_doc TranslateData.argInfoAttr]
+initialize argInfoAttr : NameMapExtension ArgInfo ← registerNameMapExtension _
 
 @[inherit_doc to_dual_dont_translate]
 initialize dontTranslateAttr : NameMapExtension Unit ←
@@ -177,11 +169,7 @@ def abbreviationDict : Std.HashMap String String := .ofList []
 
 /-- The bundle of environment extensions for `to_dual` -/
 def data : TranslateData where
-  ignoreArgsAttr := ignoreArgsAttr
-  reorderAttr := reorderAttr
-  relevantArgAttr := relevantArgAttr
-  dontTranslateAttr := dontTranslateAttr
-  translations := translations
+  ignoreArgsAttr; argInfoAttr; dontTranslateAttr; translations
   attrName := `to_dual
   changeNumeral := false
   isDual := true
@@ -191,7 +179,7 @@ initialize registerBuiltinAttribute {
     name := `to_dual
     descr := "Transport to dual"
     add := fun src stx kind ↦ discard do
-      addTranslationAttr data src (← elabTranslationAttr stx) kind
+      addTranslationAttr data src (← elabTranslationAttr src stx) kind
     applicationTime := .afterCompilation
   }
 
