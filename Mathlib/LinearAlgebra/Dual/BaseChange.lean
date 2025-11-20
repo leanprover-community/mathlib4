@@ -4,9 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
-import Mathlib.LinearAlgebra.Dual.Defs
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
+module
+
+public import Mathlib.LinearAlgebra.Dual.Defs
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
+
 /-!
 # Base change for the dual of a module
 
@@ -27,6 +30,8 @@ given by `Module.Dual.baseChange`.
 Generalize for more general modules of linear maps.
 
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -177,7 +182,7 @@ noncomputable def toDualBaseChangeLinearEquiv :
   have ibc' : IsBaseChange A (Algebra.linearMap R A) := linearMap R A
   have ibc'_pow := ibc'.finitePow ι
   suffices ibc.toDualBaseChangeHom = (((b.constr R).symm.baseChange ..).trans ibc'_pow.equiv).trans
-    ((ibc.basis b).constr A) by
+    ((IsBaseChange.basis b ibc).constr A) by
     rw [this]
     apply LinearEquiv.bijective
   ext f w
