@@ -851,9 +851,26 @@ theorem affineSpan_pair_parallel_iff_vectorSpan_eq {p₁ p₂ p₃ p₄ : P} :
   simp [affineSpan_parallel_iff_vectorSpan_eq_and_eq_empty_iff_eq_empty, ←
     not_nonempty_iff_eq_empty]
 
+lemma affineSpan_pair_parallel_iff_exists_unit_smul' [NoZeroSMulDivisors k V] {p₁ q₁ p₂ q₂ : P} :
+    line[k, p₁, q₁] ∥ line[k, p₂, q₂] ↔ ∃ z : kˣ, z • (q₁ -ᵥ p₁) = q₂ -ᵥ p₂ := by
+  rw [AffineSubspace.affineSpan_pair_parallel_iff_vectorSpan_eq, vectorSpan_pair_rev,
+    vectorSpan_pair_rev, Submodule.span_singleton_eq_span_singleton]
+
+lemma affineSpan_pair_parallel_iff_exists_unit_smul [NoZeroSMulDivisors k V] {p₁ q₁ p₂ q₂ : P} :
+    line[k, p₁, q₁] ∥ line[k, p₂, q₂] ↔ ∃ z : kˣ, z • (q₂ -ᵥ p₂) = q₁ -ᵥ p₁ := by
+  rw [affineSpan_pair_parallel_iff_exists_unit_smul']
+  exact ⟨fun ⟨z, hz⟩ ↦ ⟨z⁻¹, by simp [← hz]⟩, fun ⟨z, hz⟩ ↦ ⟨z⁻¹, by simp [← hz]⟩⟩
+
+lemma direction_affineSpan_pair_le_iff_exists_smul {p₁ q₁ p₂ q₂ : P} :
+    line[k, p₁, q₁].direction ≤ line[k, p₂, q₂].direction ↔ ∃ z : k, z • (q₂ -ᵥ p₂) = q₁ -ᵥ p₁ := by
+  rw [direction_affineSpan, direction_affineSpan, vectorSpan_pair_rev, vectorSpan_pair_rev,
+    Submodule.span_singleton_le_iff_mem, Submodule.mem_span_singleton]
+
 end AffineSubspace
 
 section DivisionRing
+
+open AffineSubspace
 
 variable {k V P : Type*} [DivisionRing k] [AddCommGroup V] [Module k V] [AffineSpace V P]
 
@@ -891,23 +908,17 @@ lemma affineSpan_pair_eq_of_right_mem_of_ne {p₁ p₂ p₃ : P} (h : p₁ ∈ l
     line[k, p₂, p₁] = line[k, p₂, p₃] :=
   affineSpan_pair_eq_of_mem_of_mem_of_ne (left_mem_affineSpan_pair _ _ _) h hne.symm
 
-/-- Given two triples of points, if the lines determined by corresponding pairs of points are
-parallel, or more generally the directions of the lines in the second triple are contained in those
-of the lines in the first triple with one pair being parallel (this does not provide extra
-mathematical generality, but can sometimes be more convenient when using this lemma), and one of
-the points in the first triple does not lie on the line through the other two (typically, if they
-are not collinear), then the vectors between corresponding pairs of points are all related by the
-same nonzero scale factor. -/
+/-- Given two triples of non-collinear points, if the lines determined by corresponding pairs of
+points are parallel, then the vectors between corresponding pairs of points are all related by the
+same nonzero scale factor. (The formal statement is slightly more general.) -/
 theorem exists_eq_smul_of_parallel {p₁ p₂ p₃ p₄ p₅ p₆ : P} (h₂ : p₂ ∉ line[k, p₁, p₃])
     (h₁₂₄₅ : line[k, p₁, p₂] ∥ line[k, p₄, p₅])
     (h₂₃₅₆ : line[k, p₅, p₆].direction ≤ line[k, p₂, p₃].direction)
     (h₃₁₆₄ : line[k, p₆, p₄].direction ≤ line[k, p₃, p₁].direction) :
     ∃ r : k, r ≠ 0 ∧ p₅ -ᵥ p₄ = r • (p₂ -ᵥ p₁) ∧ p₆ -ᵥ p₅ = r • (p₃ -ᵥ p₂) ∧
       p₄ -ᵥ p₆ = r • (p₁ -ᵥ p₃) := by
-  rw [AffineSubspace.affineSpan_pair_parallel_iff_vectorSpan_eq, vectorSpan_pair_rev,
-    vectorSpan_pair_rev, Submodule.span_singleton_eq_span_singleton] at h₁₂₄₅
-  rw [direction_affineSpan, direction_affineSpan, vectorSpan_pair_rev, vectorSpan_pair_rev,
-    Submodule.span_singleton_le_iff_mem, Submodule.mem_span_singleton] at h₂₃₅₆ h₃₁₆₄
+  rw [affineSpan_pair_parallel_iff_exists_unit_smul'] at h₁₂₄₅
+  rw [direction_affineSpan_pair_le_iff_exists_smul] at h₂₃₅₆ h₃₁₆₄
   obtain ⟨r₁, hr₁⟩ := h₁₂₄₅
   obtain ⟨r₂, hr₂⟩ := h₂₃₅₆
   obtain ⟨r₃, hr₃⟩ := h₃₁₆₄
@@ -926,7 +937,7 @@ theorem exists_eq_smul_of_parallel {p₁ p₂ p₃ p₄ p₅ p₆ : P} (h₂ : p
     have h₂₁ : (r₂ - r₁) • (p₃ -ᵥ p₂) ∈ vectorSpan k {p₁, p₃} := by
       simpa [sub_smul] using sub_mem h₁₂ h₁₁
     rw [Submodule.smul_mem_iff _ (by rwa [sub_ne_zero, ne_comm]), ← direction_affineSpan,
-      AffineSubspace.vsub_left_mem_direction_iff_mem (right_mem_affineSpan_pair _ _ _)] at h₂₁
+      vsub_left_mem_direction_iff_mem (right_mem_affineSpan_pair _ _ _)] at h₂₁
     exact h₂ h₂₁
 
 end DivisionRing
