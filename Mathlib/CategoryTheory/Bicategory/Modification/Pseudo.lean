@@ -109,9 +109,6 @@ variable (η) in
 @[simps]
 def id : Modification η η where app a := 𝟙 (η.app a)
 
-instance : Inhabited (Modification η η) :=
-  ⟨Modification.id η⟩
-
 /-- Vertical composition of modifications. -/
 @[simps]
 def vcomp {ι : F ⟶ G} (Γ : Modification η θ) (Δ : Modification θ ι) : Modification η ι where
