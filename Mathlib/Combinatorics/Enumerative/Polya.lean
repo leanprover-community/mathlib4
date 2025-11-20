@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zihui Bai, Zhengfeng Yang
 -/
 
-import Mathlib.Data.Fintype.Basic
-import Mathlib.GroupTheory.GroupAction.Basic
-import Mathlib.GroupTheory.GroupAction.Quotient
+module
+
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.GroupTheory.GroupAction.Basic
+public import Mathlib.GroupTheory.GroupAction.Quotient
 
 /-!
 ## Main definitions and results
@@ -22,6 +24,8 @@ We model a coloring as a function `X → Y`, where `X` is a finite set of object
 and `Y` is a finite set of colors.
 The permutation group `Equiv.Perm X` acts on colorings by precomposition.
 -/
+
+@[expose] public section
 
 open scoped BigOperators
 open MulAction Finset Equiv
