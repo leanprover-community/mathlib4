@@ -3,7 +3,9 @@ Copyright (c) 2025 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Strict
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.StrictPseudofunctor
 
 /-!
 
@@ -20,6 +22,8 @@ that `map_comp` and `map_id` might not be definitional equalities (which they sh
 practice). Hence one needs to carefully carry these around, or specify `F` in a way that ensures
 they are def-eqs, perhaps constructing it from specified `MorhpismProperty`s.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Bicategory
 
