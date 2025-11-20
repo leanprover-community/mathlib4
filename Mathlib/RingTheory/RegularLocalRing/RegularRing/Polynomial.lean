@@ -3,13 +3,18 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.Algebra.Polynomial.FieldDivision
-import Mathlib.RingTheory.RegularLocalRing.RegularRing.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.FieldDivision
+public import Mathlib.RingTheory.RegularLocalRing.RegularRing.Basic
+
 /-!
 
 # Polynomial over Regular Ring
 
 -/
+
+@[expose] public section
 
 variable (R : Type*) [CommRing R]
 
