@@ -3,15 +3,18 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.RingTheory.CohenMacaulay.Maximal
-import Mathlib.RingTheory.Regular.AuslanderBuchsbaum
+module
+
+public import Mathlib.RingTheory.CohenMacaulay.Maximal
+public import Mathlib.RingTheory.Regular.AuslanderBuchsbaum
+
 /-!
 
 # Global Dimension of Regular Local Ring is equal to Krull Dimension
 
 -/
 
---set_option pp.universes true
+@[expose] public section
 
 universe u v
 
