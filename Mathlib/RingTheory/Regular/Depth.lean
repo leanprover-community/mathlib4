@@ -3,15 +3,18 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Yi Song
 -/
-import Mathlib.Algebra.Category.Grp.Zero
-import Mathlib.Algebra.Module.FinitePresentation
-import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
-import Mathlib.RingTheory.Ideal.AssociatedPrime.Localization
-import Mathlib.RingTheory.Regular.Category
-import Mathlib.RingTheory.Spectrum.Prime.Topology
-import Mathlib.RingTheory.Support
-import Mathlib.Tactic.ENatToNat
+module
+
+public import Mathlib.Algebra.Category.Grp.Zero
+public import Mathlib.Algebra.Module.FinitePresentation
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.RingTheory.Ideal.AssociatedPrime.Finiteness
+public import Mathlib.RingTheory.Ideal.AssociatedPrime.Localization
+public import Mathlib.RingTheory.Regular.Category
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
+public import Mathlib.RingTheory.Support
+public import Mathlib.Tactic.ENatToNat
+
 /-!
 
 # Hom(N,M) is subsingleton iff there exists a smul regular element of M in ann(N)
@@ -20,12 +23,14 @@ Let `M` and `N` be `R`-modules. In this section we prove that `Hom(N,M)` is subs
 there exist `r : R`, such that `IsSMulRegular M r` and `r ∈ ann(N)`.
 This is the case if `Depth[I](M) = 0`.
 
-# Main Results
+## Main statements
 
 * `IsSMulRegular.subsingleton_linearMap_iff` : for `R` module `N M`, `Hom(N, M) = 0`
   iff there is a `M`-regular in `Module.annihilator R N`.
 
 -/
+
+@[expose] public section
 
 open IsLocalRing LinearMap Module
 
