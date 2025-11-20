@@ -4614,6 +4614,7 @@ public import Mathlib.LinearAlgebra.Trace
 public import Mathlib.LinearAlgebra.Transvection
 public import Mathlib.LinearAlgebra.UnitaryGroup
 public import Mathlib.LinearAlgebra.Vandermonde
+public import Mathlib.LinearAlgebra.check_for_SVD
 public import Mathlib.Logic.Basic
 public import Mathlib.Logic.Denumerable
 public import Mathlib.Logic.Embedding.Basic
@@ -6264,6 +6265,7 @@ public import Mathlib.SetTheory.ZFC.PSet
 public import Mathlib.SetTheory.ZFC.Rank
 public import Mathlib.SetTheory.ZFC.VonNeumann
 public import Mathlib.Std.Data.HashMap
+public import Mathlib.StiefelSpectral
 public import Mathlib.Tactic
 public import Mathlib.Tactic.Abel
 public import Mathlib.Tactic.AdaptationNote
