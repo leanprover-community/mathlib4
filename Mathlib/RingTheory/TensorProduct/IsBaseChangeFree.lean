@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
-import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
-import Mathlib.LinearAlgebra.FreeModule.Basic
+module
+
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
+public import Mathlib.LinearAlgebra.FreeModule.Basic
 
 /-! # Base change of a free module
 
@@ -14,6 +16,8 @@ import Mathlib.LinearAlgebra.FreeModule.Basic
 * `IsBaseChange.free` : a base change of a free module is free.
 
 -/
+
+@[expose] public section
 
 namespace IsBaseChange
 
