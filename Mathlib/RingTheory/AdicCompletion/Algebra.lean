@@ -362,7 +362,7 @@ variable [IsAdicComplete I S]
 /-- `limit` as an algebra isomorphism. -/
 @[simps! symm_apply] noncomputable def limitₐ : AdicCompletion I S ≃ₐ[S] S := by
   refine .ofLinearEquiv (limit I S) ?_ fun x y ↦ ?_ <;>
-  rw [← LinearEquiv.eq_symm_apply] <;> ext <;> simp
+  rw [← LinearEquiv.eq_symm_apply] <;> ext <;> simp [smul_eq_mul]
 
 @[simp] theorem coe_symm_limitₐ : ⇑((limitₐ I).symm) = of I S := rfl
 
