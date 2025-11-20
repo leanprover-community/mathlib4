@@ -185,6 +185,8 @@ variable {f}
 theorem mapRingHom_coe (hf : UniformContinuous f) (a : α) : mapRingHom f hf.continuous a = f a := by
   rw [mapRingHom_apply, map_coe hf]
 
+/-- A ring isomorphism `α ≃+* β` between uniform rings, uniformly continuous in both directions,
+lifts to a ring isomorphism between corresponding uniform space completions. -/
 def mapRingEquiv (f : α ≃+* β) (hf : UniformContinuous f) (hf' : UniformContinuous f.symm) :
     Completion α ≃+* Completion β where
   __ := mapRingHom f hf.continuous
