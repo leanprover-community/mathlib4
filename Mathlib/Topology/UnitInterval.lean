@@ -67,6 +67,9 @@ theorem mul_le_left {x y : I} : x * y ≤ x :=
 theorem mul_le_right {x y : I} : x * y ≤ y :=
   Subtype.coe_le_coe.mp <| mul_le_of_le_one_left y.2.1 x.2.2
 
+theorem eq_closedBall : I = Metric.closedBall 2⁻¹ 2⁻¹ := by
+  norm_num [unitInterval, Real.Icc_eq_closedBall]
+
 /-- Unit interval central symmetry. -/
 def symm : I → I := fun t => ⟨1 - t, Icc.mem_iff_one_sub_mem.mp t.prop⟩
 
