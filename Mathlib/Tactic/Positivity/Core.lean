@@ -122,6 +122,8 @@ initialize registerBuiltinAttribute {
             return e
         DiscrTree.mkPath e
       setEnv <| positivityExt.addEntry env ((keys, declName), ext)
+      -- TODO: track what `[positivity]` decls are actually used at use sites
+      recordExtraRevUseOfCurrentModule
     | _ => throwUnsupportedSyntax
 }
 
