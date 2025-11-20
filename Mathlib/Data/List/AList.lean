@@ -3,7 +3,9 @@ Copyright (c) 2018 Sean Leather. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sean Leather, Mario Carneiro
 -/
-import Mathlib.Data.List.Sigma
+module
+
+public import Mathlib.Data.List.Sigma
 
 /-!
 # Association Lists
@@ -31,6 +33,8 @@ provides ways to access, modify, and combine `AList`s.
 * <https://en.wikipedia.org/wiki/Association_list>
 
 -/
+
+@[expose] public section
 
 
 universe u v w
