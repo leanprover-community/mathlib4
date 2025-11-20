@@ -3,12 +3,14 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Sheaf.Abelian
-import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous
-import Mathlib.AlgebraicGeometry.Modules.Presheaf
-import Mathlib.CategoryTheory.Bicategory.Adjunction.Adj
-import Mathlib.CategoryTheory.Bicategory.Adjunction.Cat
-import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Abelian
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous
+public import Mathlib.AlgebraicGeometry.Modules.Presheaf
+public import Mathlib.CategoryTheory.Bicategory.Adjunction.Adj
+public import Mathlib.CategoryTheory.Bicategory.Adjunction.Cat
+public import Mathlib.CategoryTheory.Bicategory.Functor.LocallyDiscrete
 
 /-!
 # The category of sheaves of modules over a scheme
@@ -17,6 +19,8 @@ In this file, we define the abelian category of sheaves of modules
 `X.Modules` over a scheme `X`, and study its basic functoriality.
 
 -/
+
+@[expose] public section
 
 universe t u
 
@@ -97,7 +101,6 @@ noncomputable def pullbackId : pullback (𝟙 X) ≅ 𝟭 _ :=
   SheafOfModules.pullbackId _
 
 variable (X) in
-@[simp]
 lemma conjugateEquiv_pullbackId_hom :
     conjugateEquiv .id (pullbackPushforwardAdjunction (𝟙 X)) (pullbackId X).hom =
       (pushforwardId X).inv :=
@@ -115,7 +118,6 @@ noncomputable def pullbackComp :
     pullback g ⋙ pullback f ≅ pullback (f ≫ g) :=
   SheafOfModules.pullbackComp _ _
 
-@[simp]
 lemma conjugateEquiv_pullbackComp_inv :
     conjugateEquiv ((pullbackPushforwardAdjunction g).comp (pullbackPushforwardAdjunction f))
       (pullbackPushforwardAdjunction (f ≫ g)) (pullbackComp f g).inv =

@@ -3,14 +3,18 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Adjunction.Mates
-import Mathlib.CategoryTheory.Bicategory.Adjunction.Mate
-import Mathlib.CategoryTheory.Category.Cat
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Mates
+public import Mathlib.CategoryTheory.Bicategory.Adjunction.Mate
+public import Mathlib.CategoryTheory.Category.Cat
 
 /-!
 # Adjunctions in `Cat`
 
 -/
+
+@[expose] public section
 
 universe v u
 

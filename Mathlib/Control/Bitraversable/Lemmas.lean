@@ -3,7 +3,9 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Control.Bitraversable.Basic
+module
+
+public import Mathlib.Control.Bitraversable.Basic
 
 /-!
 # Bitraversable Lemmas
@@ -31,6 +33,8 @@ traversable bitraversable functor bifunctor applicative
 
 
 -/
+
+@[expose] public section
 
 
 universe u
