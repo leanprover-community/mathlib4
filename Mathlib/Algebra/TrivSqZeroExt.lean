@@ -3,10 +3,12 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
 -/
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.GroupWithZero.Invertible
-import Mathlib.LinearAlgebra.Prod
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+module
+
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public import Mathlib.Algebra.GroupWithZero.Invertible
+public import Mathlib.LinearAlgebra.Prod
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 
 /-!
 # Trivial Square-Zero Extension
@@ -50,6 +52,8 @@ Many of the later results in this file are only stated for the commutative `R'` 
   which the product of any two elements in the range is zero.
 
 -/
+
+@[expose] public section
 
 universe u v w
 

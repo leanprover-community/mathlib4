@@ -3,9 +3,11 @@ Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
-import Mathlib.Topology.Homotopy.Basic
-import Mathlib.Topology.Connected.PathConnected
-import Mathlib.Analysis.Convex.Basic
+module
+
+public import Mathlib.Topology.Homotopy.Basic
+public import Mathlib.Topology.Connected.PathConnected
+public import Mathlib.Analysis.Convex.Basic
 
 /-!
 # Homotopy between paths
@@ -28,6 +30,8 @@ In this file, we define a `Homotopy` between two `Path`s. In addition, we define
 * `Path.Homotopic.Quotient x₀ x₁` is the quotient type from `Path x₀ x₀` by `Path.Homotopic.setoid`
 
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -67,6 +71,7 @@ theorem target (F : Homotopy p₀ p₁) (t : I) : F (t, 1) = x₁ :=
 
 /-- Evaluating a path homotopy at an intermediate point, giving us a `Path`.
 -/
+@[simps]
 def eval (F : Homotopy p₀ p₁) (t : I) : Path x₀ x₁ where
   toFun := F.toHomotopy.curry t
   source' := by simp
@@ -75,12 +80,12 @@ def eval (F : Homotopy p₀ p₁) (t : I) : Path x₀ x₁ where
 @[simp]
 theorem eval_zero (F : Homotopy p₀ p₁) : F.eval 0 = p₀ := by
   ext t
-  simp [eval]
+  simp
 
 @[simp]
 theorem eval_one (F : Homotopy p₀ p₁) : F.eval 1 = p₁ := by
   ext t
-  simp [eval]
+  simp
 
 end
 
@@ -163,7 +168,7 @@ theorem hcomp_apply (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (x : I × 
       else
         G.eval x.1
           ⟨2 * x.2 - 1, unitInterval.two_mul_sub_one_mem_iff.2 ⟨(not_le.1 h).le, x.2.2.2⟩⟩ :=
-  show ite _ _ _ = _ by split_ifs <;> exact Path.extend_extends _ _
+  show ite _ _ _ = _ by split_ifs <;> exact Path.extend_apply _ _
 
 theorem hcomp_half (F : Homotopy p₀ q₀) (G : Homotopy p₁ q₁) (t : I) :
     F.hcomp G (t, ⟨1 / 2, by norm_num, by norm_num⟩) = x₁ :=
