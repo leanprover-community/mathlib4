@@ -3,8 +3,10 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
 -/
-import Mathlib.Probability.Process.Stopping
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.Probability.Process.Stopping
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Hitting times
@@ -29,6 +31,8 @@ only proved it for the discrete case so far).
   stopping time
 
 -/
+
+@[expose] public section
 
 
 open Filter Order TopologicalSpace

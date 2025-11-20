@@ -3,8 +3,10 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.Order.CompleteBooleanAlgebra
+module
+
+public import Mathlib.CategoryTheory.Comma.Arrow
+public import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
 # Properties of morphisms
@@ -20,6 +22,8 @@ The following meta-property is defined
 
 -/
 
+@[expose] public section
+
 
 universe w v v' u u'
 
@@ -29,27 +33,29 @@ noncomputable section
 
 namespace CategoryTheory
 
-variable (C : Type u) [Category.{v} C] {D : Type*} [Category D]
-
 /-- A `MorphismProperty C` is a class of morphisms between objects in `C`. -/
-def MorphismProperty :=
+def MorphismProperty (C : Type u) [CategoryStruct.{v} C] :=
   ∀ ⦃X Y : C⦄ (_ : X ⟶ Y), Prop
+
+namespace MorphismProperty
+
+section
+
+variable (C : Type u) [CategoryStruct.{v} C]
 
 instance : CompleteBooleanAlgebra (MorphismProperty C) where
   le P₁ P₂ := ∀ ⦃X Y : C⦄ (f : X ⟶ Y), P₁ f → P₂ f
   __ := inferInstanceAs (CompleteBooleanAlgebra (∀ ⦃X Y : C⦄ (_ : X ⟶ Y), Prop))
 
-lemma MorphismProperty.le_def {P Q : MorphismProperty C} :
+lemma le_def {P Q : MorphismProperty C} :
     P ≤ Q ↔ ∀ {X Y : C} (f : X ⟶ Y), P f → Q f := Iff.rfl
 
 instance : Inhabited (MorphismProperty C) :=
   ⟨⊤⟩
 
-lemma MorphismProperty.top_eq : (⊤ : MorphismProperty C) = fun _ _ _ => True := rfl
+lemma top_eq : (⊤ : MorphismProperty C) = fun _ _ _ => True := rfl
 
 variable {C}
-
-namespace MorphismProperty
 
 @[ext]
 lemma ext (W W' : MorphismProperty C) (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y), W f ↔ W' f) :
@@ -98,6 +104,12 @@ theorem unop_op (P : MorphismProperty C) : P.op.unop = P :=
 theorem op_unop (P : MorphismProperty Cᵒᵖ) : P.unop.op = P :=
   rfl
 
+end
+
+section
+
+variable {C : Type u} [Category.{v} C] {D : Type*} [Category D]
+
 /-- The inverse image of a `MorphismProperty D` by a functor `C ⥤ D` -/
 def inverseImage (P : MorphismProperty D) (F : C ⥤ D) : MorphismProperty C := fun _ _ f =>
   P (F.map f)
@@ -117,6 +129,16 @@ lemma monotone_map (F : C ⥤ D) :
     Monotone (map · F) := by
   intro P Q h X Y f ⟨X', Y', f', hf', ⟨e⟩⟩
   exact ⟨X', Y', f', h _ hf', ⟨e⟩⟩
+
+@[simp]
+lemma map_top_eq_top_of_essSurj_of_full (F : C ⥤ D) [F.EssSurj] [F.Full] :
+    (⊤ : MorphismProperty C).map F = ⊤ := by
+  rw [eq_top_iff]
+  intro X Y f _
+  refine ⟨F.objPreimage X, F.objPreimage Y, F.preimage ?_, ⟨⟨⟩, ⟨?_⟩⟩⟩
+  · exact (Functor.objObjPreimageIso F X).hom ≫ f ≫ (Functor.objObjPreimageIso F Y).inv
+  · exact Arrow.isoMk' _ _ (Functor.objObjPreimageIso F X) (Functor.objObjPreimageIso F Y)
+      (by simp)
 
 section
 
@@ -171,6 +193,12 @@ lemma ofHoms_homFamily (P : MorphismProperty C) : ofHoms P.homFamily = P := by
   · intro hf
     exact ⟨(⟨f, hf⟩ : P.toSet)⟩
 
+end
+
+section
+
+variable {C : Type u} [CategoryStruct.{v} C]
+
 /-- A morphism property `P` satisfies `P.RespectsRight Q` if it is stable under post-composition
 with morphisms satisfying `Q`, i.e. whenever `P` holds for `f` and `Q` holds for `i` then `P`
 holds for `f ≫ i`. -/
@@ -203,7 +231,11 @@ instance RespectsRight.inf (P₁ P₂ Q : MorphismProperty C) [P₁.RespectsRigh
     [P₂.RespectsRight Q] : (P₁ ⊓ P₂).RespectsRight Q where
   postcomp i hi f hf := ⟨postcomp i hi f hf.left, postcomp i hi f hf.right⟩
 
-variable (C)
+end
+
+section
+
+variable (C : Type u) [Category.{v} C]
 
 /-- The `MorphismProperty C` satisfied by isomorphisms in `C`. -/
 def isomorphisms : MorphismProperty C := fun _ _ f => IsIso f
@@ -320,6 +352,10 @@ lemma isoClosure_le_iff (P Q : MorphismProperty C) [Q.RespectsIso] :
   · intro h
     exact (monotone_isoClosure h).trans (by rw [Q.isoClosure_eq_self])
 
+section
+
+variable {D : Type*} [Category D]
+
 instance map_respectsIso (P : MorphismProperty C) (F : C ⥤ D) :
     (P.map F).RespectsIso := by
   apply RespectsIso.of_respects_arrow_iso
@@ -412,6 +448,8 @@ lemma inverseImage_map_eq_of_isEquivalence
 
 end
 
+end
+
 section
 
 variable {C}
@@ -463,9 +501,11 @@ instance RespectsIso.isomorphisms : RespectsIso (isomorphisms C) := by
       intro
       exact IsIso.comp_isIso
 
+end
+
 /-- If `W₁` and `W₂` are morphism properties on two categories `C₁` and `C₂`,
 this is the induced morphism property on `C₁ × C₂`. -/
-def prod {C₁ C₂ : Type*} [Category C₁] [Category C₂]
+def prod {C₁ C₂ : Type*} [CategoryStruct C₁] [CategoryStruct C₂]
     (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) :
     MorphismProperty (C₁ × C₂) :=
   fun _ _ f => W₁ f.1 ∧ W₂ f.2
@@ -476,7 +516,7 @@ def pi {J : Type w} {C : J → Type u} [∀ j, Category.{v} (C j)]
     (W : ∀ j, MorphismProperty (C j)) : MorphismProperty (∀ j, C j) :=
   fun _ _ f => ∀ j, (W j) (f j)
 
-variable {C}
+variable {C} [Category.{v} C]
 
 /-- The morphism property on `J ⥤ C` which is defined objectwise
 from `W : MorphismProperty C`. -/
@@ -493,6 +533,8 @@ def arrow (W : MorphismProperty C) :
 end MorphismProperty
 
 namespace NatTrans
+
+variable {C : Type u} [Category.{v} C] {D : Type*} [Category D]
 
 lemma isIso_app_iff_of_iso {F G : C ⥤ D} (α : F ⟶ G) {X Y : C} (e : X ≅ Y) :
     IsIso (α.app X) ↔ IsIso (α.app Y) :=

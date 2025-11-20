@@ -3,13 +3,15 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.Set.Lattice
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Order.ModularLattice
-import Mathlib.Order.SuccPred.Basic
-import Mathlib.Order.WellFounded
-import Mathlib.Tactic.Nontriviality
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+module
+
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.ModularLattice
+public import Mathlib.Order.SuccPred.Basic
+public import Mathlib.Order.WellFounded
+public import Mathlib.Tactic.Nontriviality
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # Atoms, Coatoms, and Simple Lattices
@@ -51,6 +53,8 @@ which are lattices with only two elements, and related ideas.
 * `isAtomic_iff_isCoatomic`: A modular complemented lattice is atomic iff it is coatomic.
 
 -/
+
+@[expose] public section
 
 open Order
 
@@ -740,7 +744,6 @@ instance OrderDual.instIsSimpleOrder {α} [LE α] [BoundedOrder α] [IsSimpleOrd
 /-- A simple `BoundedOrder` induces a preorder. This is not an instance to prevent loops. -/
 protected def IsSimpleOrder.preorder {α} [LE α] [BoundedOrder α] [IsSimpleOrder α] :
     Preorder α where
-  le := (· ≤ ·)
   le_refl a := by rcases eq_bot_or_eq_top a with (rfl | rfl) <;> simp
   le_trans a b c := by
     rcases eq_bot_or_eq_top a with (rfl | rfl)

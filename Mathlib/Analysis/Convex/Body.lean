@@ -3,9 +3,11 @@ Copyright (c) 2022 Paul A. Reichert. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul A. Reichert
 -/
-import Mathlib.Analysis.Convex.Basic
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Topology.MetricSpace.HausdorffDistance
+module
+
+public import Mathlib.Analysis.Convex.Basic
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
 # Convex bodies
@@ -28,6 +30,8 @@ If `V` is a normed space, `ConvexBody V` is a metric space.
 
 convex, convex body
 -/
+
+@[expose] public section
 
 
 open scoped Pointwise Topology NNReal

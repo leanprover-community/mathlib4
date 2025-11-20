@@ -3,9 +3,11 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.NatIso
-import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
-import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+module
+
+public import Mathlib.CategoryTheory.NatIso
+public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
 /-!
 # Essential image of a functor
@@ -20,6 +22,8 @@ The essential image can also be seen as a subcategory of the target category, an
 a functor decomposes into an essentially surjective functor and a fully faithful functor.
 (TODO: show that this decomposition forms an orthogonal factorisation system).
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
