@@ -671,6 +671,11 @@ theorem _root_.LinearEquiv.coe_baseChange (e : M ≃ₗ[R] N) :
   rfl
 
 @[simp]
+lemma LinearEquiv.baseChange_apply (e : M ≃ₗ[R] N) (a : A) (m : M) :
+    (e.baseChange R A M N) (a ⊗ₜ m) = a ⊗ₜ (e m) := by
+  simp [LinearEquiv.baseChange]
+
+@[simp]
 theorem _root_.LinearEquiv.baseChange_one :
     (1 : M ≃ₗ[R] M).baseChange R A M M = 1 := by
   ext x
