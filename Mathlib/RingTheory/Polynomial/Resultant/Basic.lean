@@ -452,21 +452,21 @@ set_option linter.unusedVariables false in
 `f * q + g * p = Res(f, g) * P`. -/
 @[nolint unusedArguments] -- This def makes no sense if `hf` and `hg` does not hold.
 noncomputable
-def invSylvester (f g : R[X]) (hf : f.natDegree ≤ m) (hg : g.natDegree ≤ n) :
+def adjSylvester (f g : R[X]) (hf : f.natDegree ≤ m) (hg : g.natDegree ≤ n) :
     R[X]_(m + n) →ₗ[R] R[X]_m × R[X]_n :=
   (f.sylvester g m n).adjugate.toLin (degreeLT.basis R (m + n))
     (((degreeLT.basis R m).prod (degreeLT.basis R n)).reindex finSumFinEquiv)
 
-lemma sylveserMap_comp_invSylvester (f g : R[X]) (hf : f.natDegree ≤ m) (hg : g.natDegree ≤ n) :
-    sylvesterMap f g hf hg ∘ₗ invSylvester f g hf hg = f.resultant g m n • LinearMap.id := by
+lemma sylveserMap_comp_adjSylvester (f g : R[X]) (hf : f.natDegree ≤ m) (hg : g.natDegree ≤ n) :
+    sylvesterMap f g hf hg ∘ₗ adjSylvester f g hf hg = f.resultant g m n • LinearMap.id := by
   let b₁ := ((degreeLT.basis R m).prod (degreeLT.basis R n)).reindex finSumFinEquiv
   let b₂ := degreeLT.basis R (m + n)
   have := congr(Matrix.toLin b₂ b₂ $(((sylvesterMap f g hf hg).toMatrix b₁ b₂).mul_adjugate))
   rwa [Matrix.toLin_mul b₂ b₁ b₂, Matrix.toLin_toMatrix, map_smul,
     toMatrix_sylvesterMap', Matrix.toLin_one, ← resultant] at this
 
-lemma invSylvester_comp_sylveserMap (f g : R[X]) (hf : f.natDegree ≤ m) (hg : g.natDegree ≤ n) :
-    invSylvester f g hf hg ∘ₗ sylvesterMap f g hf hg = f.resultant g m n • LinearMap.id := by
+lemma adjSylvester_comp_sylveserMap (f g : R[X]) (hf : f.natDegree ≤ m) (hg : g.natDegree ≤ n) :
+    adjSylvester f g hf hg ∘ₗ sylvesterMap f g hf hg = f.resultant g m n • LinearMap.id := by
   let b₁ := ((degreeLT.basis R m).prod (degreeLT.basis R n)).reindex finSumFinEquiv
   let b₂ := degreeLT.basis R (m + n)
   have := congr(Matrix.toLin b₁ b₁ $(((sylvesterMap f g hf hg).toMatrix b₁ b₂).adjugate_mul))
@@ -478,10 +478,10 @@ lemma exists_mul_add_mul_eq_C_resultant
     (f g : R[X]) (hf : f.natDegree ≤ m) (hg : g.natDegree ≤ n) (H : m ≠ 0 ∨ n ≠ 0) :
     ∃ p q, p.degree < ↑n ∧ q.degree < ↑m ∧ f * p + g * q = C (f.resultant g m n) := by
   nontriviality R
-  let X := invSylvester f g hf hg ⟨1, by simpa [Polynomial.mem_degreeLT,
+  let X := adjSylvester f g hf hg ⟨1, by simpa [Polynomial.mem_degreeLT,
     ← Nat.cast_add, Nat.pos_iff_ne_zero, not_and_or, -not_and] using H⟩
   have : ((sylvesterMap f g hf hg X)).1 = _ :=
-    congr(($(sylveserMap_comp_invSylvester f g hf hg) _).1)
+    congr(($(sylveserMap_comp_adjSylvester f g hf hg) _).1)
   refine ⟨X.2, X.1, by simpa [-SetLike.coe_mem] using X.2.2,
     by simpa [-SetLike.coe_mem] using X.1.2, by simpa [Algebra.smul_def] using this⟩
 
