@@ -3,10 +3,11 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Algebra.MvPolynomial.Division
-import Mathlib.GroupTheory.GroupAction.Ring
-import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
+public import Mathlib.Algebra.MvPolynomial.Division
+public import Mathlib.GroupTheory.GroupAction.Ring
+public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
 
 /-!
 # Irreducibility of quadratic polynomials
@@ -32,6 +33,8 @@ import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
   And $X^2+Y^2$ is irreducible over the reals but not over the complex numbers.
 
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 
