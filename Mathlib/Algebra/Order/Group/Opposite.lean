@@ -3,8 +3,10 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.Order.Monoid.Defs
+module
+
+public import Mathlib.Algebra.Group.Opposite
+public import Mathlib.Algebra.Order.Monoid.Defs
 
 /-!
 # Order instances for `MulOpposite`/`AddOpposite`
@@ -12,6 +14,8 @@ import Mathlib.Algebra.Order.Monoid.Defs
 This file transfers order instances and ordered monoid/group instances from `α` to `αᵐᵒᵖ` and
 `αᵃᵒᵖ`.
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 
