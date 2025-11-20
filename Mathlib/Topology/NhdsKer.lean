@@ -3,8 +3,10 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Yury Kudryashov
 -/
-import Mathlib.Topology.NhdsSet
-import Mathlib.Topology.Inseparable
+module
+
+public import Mathlib.Topology.NhdsSet
+public import Mathlib.Topology.Inseparable
 
 /-!
 # Neighborhoods kernel of a set
@@ -15,6 +17,8 @@ Note that this construction has no standard name in the literature.
 
 In this file we prove basic properties of this operation.
 -/
+
+@[expose] public section
 
 open Set Filter
 open scoped Topology

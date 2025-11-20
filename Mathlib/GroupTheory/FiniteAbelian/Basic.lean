@@ -3,9 +3,11 @@ Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
 -/
-import Mathlib.Algebra.Module.PID
-import Mathlib.Algebra.Group.TypeTags.Finite
-import Mathlib.Data.ZMod.QuotientRing
+module
+
+public import Mathlib.Algebra.Module.PID
+public import Mathlib.Algebra.Group.TypeTags.Finite
+public import Mathlib.Data.ZMod.QuotientRing
 
 /-!
 # Structure of finite(ly generated) abelian groups
@@ -17,6 +19,8 @@ import Mathlib.Data.ZMod.QuotientRing
   some `ZMod (p i ^ e i)` for some prime powers `p i ^ e i`.
 * `CommGroup.equiv_prod_multiplicative_zmod_of_finite` is a version for multiplicative groups.
 -/
+
+@[expose] public section
 
 open scoped DirectSum
 

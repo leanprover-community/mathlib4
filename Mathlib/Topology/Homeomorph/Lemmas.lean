@@ -3,10 +3,12 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton
 -/
-import Mathlib.Logic.Equiv.Fin.Basic
-import Mathlib.Topology.Connected.LocallyConnected
-import Mathlib.Topology.DenseEmbedding
-import Mathlib.Topology.Connected.TotallyDisconnected
+module
+
+public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.Topology.Connected.LocallyConnected
+public import Mathlib.Topology.DenseEmbedding
+public import Mathlib.Topology.Connected.TotallyDisconnected
 
 /-!
 # Further properties of homeomorphisms
@@ -15,6 +17,8 @@ This file proves further properties of homeomorphisms between topological spaces
 Pretty much every topological property is preserved under homeomorphisms.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Module MonoidWithZero
 
@@ -434,6 +438,16 @@ noncomputable def toHomeomorphOfSurjective {f : X → Y}
 /-- A set is homeomorphic to its image under any embedding. -/
 noncomputable def homeomorphImage {f : X → Y} (hf : IsEmbedding f) (s : Set X) : s ≃ₜ f '' s :=
   (hf.comp .subtypeVal).toHomeomorph.trans <| .setCongr <| by simp [Set.range_comp]
+
+/-- An embedding restricts to a homeomorphism between the preimage and any subset of its range. -/
+noncomputable def homeomorphOfSubsetRange {f : X → Y} (hf : IsEmbedding f)
+    {s : Set Y} (hs : s ⊆ Set.range f) : (f ⁻¹' s) ≃ₜ s :=
+  hf.homeomorphImage (f ⁻¹' s) |>.trans <| .setCongr <| Set.image_preimage_eq_of_subset hs
+
+@[simp]
+theorem homeomorphOfSubsetRange_apply_coe {f : X → Y} (hf : IsEmbedding f)
+    {s : Set Y} (hs : s ⊆ Set.range f) (x : f ⁻¹' s) :
+    ↑(hf.homeomorphOfSubsetRange hs x) = f ↑x := rfl
 
 end Topology.IsEmbedding
 

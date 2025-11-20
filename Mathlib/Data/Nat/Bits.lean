@@ -3,12 +3,14 @@ Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
 -/
-import Batteries.Tactic.GeneralizeProofs
-import Mathlib.Data.Nat.BinaryRec
-import Mathlib.Data.List.Defs
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.Says
-import Mathlib.Util.AssertExists
+module
+
+public import Batteries.Tactic.GeneralizeProofs
+public import Mathlib.Data.Nat.BinaryRec
+public import Mathlib.Data.List.Defs
+public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.Says
+public import Mathlib.Util.AssertExists
 
 /-!
 # Additional properties of binary recursion on `Nat`
@@ -21,6 +23,8 @@ For example, we can more easily work with `Nat.bits` and `Nat.size`.
 See also: `Nat.bitwise`, `Nat.pow` (for various lemmas about `size` and `shiftLeft`/`shiftRight`),
 and `Nat.digits`.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 

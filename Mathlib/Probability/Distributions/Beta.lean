@@ -3,7 +3,9 @@ Copyright (c) 2025 Tommy Löfgren. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tommy Löfgren
 -/
-import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 
 /-! # Beta distributions over ℝ
 
@@ -16,6 +18,8 @@ Define the beta distribution over the reals.
 * `betaPDF`: `ℝ≥0∞`-valued pdf,
   `betaPDF α β = ENNReal.ofReal (betaPDFReal α β)`.
 -/
+
+@[expose] public section
 
 open scoped ENNReal NNReal
 

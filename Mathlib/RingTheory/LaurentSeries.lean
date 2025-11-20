@@ -3,15 +3,17 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
-import Mathlib.Data.Int.Interval
-import Mathlib.FieldTheory.RatFunc.AsPolynomial
-import Mathlib.RingTheory.Binomial
-import Mathlib.RingTheory.HahnSeries.PowerSeries
-import Mathlib.RingTheory.HahnSeries.Summable
-import Mathlib.RingTheory.PowerSeries.Inverse
-import Mathlib.RingTheory.PowerSeries.Trunc
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.Topology.UniformSpace.DiscreteUniformity
+module
+
+public import Mathlib.Data.Int.Interval
+public import Mathlib.FieldTheory.RatFunc.AsPolynomial
+public import Mathlib.RingTheory.Binomial
+public import Mathlib.RingTheory.HahnSeries.PowerSeries
+public import Mathlib.RingTheory.HahnSeries.Summable
+public import Mathlib.RingTheory.PowerSeries.Inverse
+public import Mathlib.RingTheory.PowerSeries.Trunc
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.Topology.UniformSpace.DiscreteUniformity
 
 
 /-!
@@ -83,6 +85,8 @@ type with a zero. They are denoted `R⸨X⸩`.
   to `K⟦X⟧`.
 
 -/
+
+@[expose] public section
 universe u
 
 open scoped PowerSeries
@@ -331,7 +335,7 @@ theorem coeff_coe (i : ℤ) :
     ((f : R⟦X⟧) : R⸨X⸩).coeff i =
       if i < 0 then 0 else PowerSeries.coeff i.natAbs f := by
   cases i
-  · rw [Int.ofNat_eq_coe, coeff_coe_powerSeries, if_neg (Int.natCast_nonneg _).not_gt,
+  · rw [Int.ofNat_eq_natCast, coeff_coe_powerSeries, if_neg (Int.natCast_nonneg _).not_gt,
       Int.natAbs_natCast]
   · rw [ofPowerSeries_apply, embDomain_notin_image_support, if_pos (Int.negSucc_lt_zero _)]
     simp only [not_exists, RelEmbedding.coe_mk, Set.mem_image, not_and, Function.Embedding.coeFn_mk,
@@ -380,12 +384,9 @@ theorem coe_X : ((X : RatFunc F) : F⸨X⸩) = single 1 1 := by
 
 theorem single_one_eq_pow {R : Type*} [Semiring R] (n : ℕ) :
     single (n : ℤ) (1 : R) = single (1 : ℤ) 1 ^ n := by
-  induction n with
-  | zero => simp
-  | succ n h_ind =>
-    rw [← Int.ofNat_add_one_out, pow_succ', ← h_ind, HahnSeries.single_mul_single, one_mul,
-      add_comm]
+  simp
 
+@[deprecated HahnSeries.inv_single (since := "2025-11-07")]
 theorem single_inv (d : ℤ) {α : F} (hα : α ≠ 0) :
     single (-d) (α⁻¹ : F) = (single (d : ℤ) (α : F))⁻¹ := by
   apply eq_inv_of_mul_eq_one_right
@@ -396,7 +397,8 @@ theorem single_zpow (n : ℤ) :
   match n with
   | (n : ℕ) => apply single_one_eq_pow
   | -(n + 1 : ℕ) =>
-    rw [← Nat.cast_one, ← inv_one, single_inv _ one_ne_zero, zpow_neg, ← Nat.cast_one, Nat.cast_one,
+    rw [← Nat.cast_one, ← inv_one, ← HahnSeries.inv_single, zpow_neg,
+      ← Nat.cast_one, Nat.cast_one,
       inv_inj, zpow_natCast, single_one_eq_pow, inv_one]
 
 theorem algebraMap_apply_div :
@@ -495,7 +497,8 @@ theorem valuation_X_pow (s : ℕ) :
 theorem valuation_single_zpow (s : ℤ) :
     Valued.v (HahnSeries.single s (1 : K) : K⸨X⸩) = exp (-(s : ℤ)) := by
   obtain s | s := s
-  · rw [Int.ofNat_eq_coe, ← HahnSeries.ofPowerSeries_X_pow, PowerSeries.coe_pow, valuation_X_pow]
+  · rw [Int.ofNat_eq_natCast, ← HahnSeries.ofPowerSeries_X_pow, PowerSeries.coe_pow,
+      valuation_X_pow]
   · rw [Int.negSucc_eq, ← inv_inj, ← map_inv₀, inv_single, neg_neg, ← Int.natCast_succ, inv_one,
       ← HahnSeries.ofPowerSeries_X_pow, PowerSeries.coe_pow, valuation_X_pow, exp_neg]
 
@@ -608,7 +611,7 @@ theorem val_le_one_iff_eq_coe (f : K⸨X⸩) : Valued.v f ≤ (1 : ℤᵐ⁰) �
   rw [valuation_le_iff_coeff_lt_log_eq_zero _ one_ne_zero, log_one, neg_zero]
   refine ⟨fun h => ⟨PowerSeries.mk fun n => f.coeff n, ?_⟩, ?_⟩
   on_goal 1 => ext (_ | n)
-  · simp only [Int.ofNat_eq_coe, coeff_coe_powerSeries, coeff_mk]
+  · simp only [Int.ofNat_eq_natCast, coeff_coe_powerSeries, coeff_mk]
   on_goal 1 => simp only [h (Int.negSucc n) (Int.negSucc_lt_zero n)]
   on_goal 2 => rintro ⟨F, rfl⟩ _ _
   all_goals

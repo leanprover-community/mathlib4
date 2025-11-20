@@ -3,8 +3,10 @@ Copyright (c) 2025 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
-import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Formula
+module
+
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Projective.Formula
 
 /-!
 # Nonsingular points and the group law in projective coordinates
@@ -59,6 +61,8 @@ mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Point.lean`.
 elliptic curve, projective, point, group law
 -/
 
+@[expose] public section
+
 local notation3 "x" => (0 : Fin 3)
 
 local notation3 "y" => (1 : Fin 3)
@@ -108,8 +112,7 @@ lemma neg_equiv {P Q : Fin 3 → R} (h : P ≈ Q) : W'.neg P ≈ W'.neg Q := by
 
 lemma neg_of_Z_eq_zero [NoZeroDivisors R] {P : Fin 3 → R} (hP : W'.Equation P) (hPz : P z = 0) :
     W'.neg P = -P y • ![0, 1, 0] := by
-  erw [neg, X_eq_zero_of_Z_eq_zero hP hPz, negY_of_Z_eq_zero hP hPz, hPz, smul_fin3, mul_zero,
-    mul_one]
+  simp [neg, X_eq_zero_of_Z_eq_zero hP hPz, negY_of_Z_eq_zero hP hPz, hPz]
 
 lemma neg_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     W.neg P = P z • ![P x / P z, W.toAffine.negY (P x / P z) (P y / P z), 1] := by

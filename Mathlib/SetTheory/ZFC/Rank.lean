@@ -3,9 +3,11 @@ Copyright (c) 2024 Dexin Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dexin Zhang
 -/
-import Mathlib.Logic.UnivLE
-import Mathlib.SetTheory.Ordinal.Rank
-import Mathlib.SetTheory.ZFC.Basic
+module
+
+public import Mathlib.Logic.UnivLE
+public import Mathlib.SetTheory.Ordinal.Rank
+public import Mathlib.SetTheory.ZFC.Basic
 
 /-!
 # Ordinal ranks of PSet and ZFSet
@@ -19,6 +21,8 @@ same as the indexing types.
 * `PSet.rank`: Ordinal rank of a pre-set.
 * `ZFSet.rank`: Ordinal rank of a ZFC set.
 -/
+
+@[expose] public section
 
 universe u v
 

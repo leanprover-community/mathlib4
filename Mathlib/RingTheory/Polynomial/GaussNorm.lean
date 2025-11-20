@@ -3,8 +3,9 @@ Copyright (c) 2025 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
+module
 
-import Mathlib.RingTheory.PowerSeries.GaussNorm
+public import Mathlib.RingTheory.PowerSeries.GaussNorm
 
 /-!
 # Gauss norm for polynomials
@@ -27,6 +28,8 @@ non-negative function with `v 0 = 0` and `c ≥ 0`.
 * `Polynomial.gaussNorm_eq_zero_iff`: if `v x = 0 ↔ x = 0` for all `x : R`, then the Gauss
   norm is zero if and only if the polynomial is zero.
 -/
+
+@[expose] public section
 variable {R F : Type*} [Semiring R] [FunLike F R ℝ] (v : F) (c : ℝ)
 
 namespace Polynomial

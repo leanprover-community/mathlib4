@@ -3,9 +3,10 @@ Copyright (c) 2023 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.Convex.SpecificFunctions.Basic
-import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+public import Mathlib.Analysis.Convex.SpecificFunctions.Basic
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
 /-!
 # Convexity properties of `rpow`
@@ -26,6 +27,8 @@ requires slightly less imports.
 
 * Prove convexity for negative powers.
 -/
+
+@[expose] public section
 
 open Set
 

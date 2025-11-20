@@ -3,10 +3,12 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Gabin Kolly
 -/
-import Mathlib.Data.Fintype.Order
-import Mathlib.Order.Closure
-import Mathlib.ModelTheory.Semantics
-import Mathlib.ModelTheory.Encoding
+module
+
+public import Mathlib.Data.Fintype.Order
+public import Mathlib.Order.Closure
+public import Mathlib.ModelTheory.Semantics
+public import Mathlib.ModelTheory.Encoding
 
 /-!
 # First-Order Substructures
@@ -38,6 +40,8 @@ substructures appearing in the algebra library.
 
 - `L.Substructure M` forms a `CompleteLattice`.
 -/
+
+@[expose] public section
 
 universe u v w
 

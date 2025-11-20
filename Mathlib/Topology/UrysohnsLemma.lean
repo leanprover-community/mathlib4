@@ -3,14 +3,16 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Group.Indicator
-import Mathlib.Analysis.Normed.Affine.AddTorsor
-import Mathlib.Analysis.Normed.Group.FunctionSeries
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.LinearAlgebra.AffineSpace.Ordered
-import Mathlib.Topology.Algebra.Affine
-import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.Topology.GDelta.Basic
+module
+
+public import Mathlib.Algebra.Order.Group.Indicator
+public import Mathlib.Analysis.Normed.Affine.AddTorsor
+public import Mathlib.Analysis.Normed.Group.FunctionSeries
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.LinearAlgebra.AffineSpace.Ordered
+public import Mathlib.Topology.Algebra.Affine
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.Topology.GDelta.Basic
 
 /-!
 # Urysohn's lemma
@@ -79,6 +81,8 @@ lemmas about `midpoint`.
 
 Urysohn's lemma, normal topological space, locally compact topological space
 -/
+
+@[expose] public section
 
 
 variable {X : Type*} [TopologicalSpace X]

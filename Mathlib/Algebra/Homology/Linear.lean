@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Additive
-import Mathlib.CategoryTheory.Linear.LinearFunctor
+module
+
+public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
 # The category of homological complexes is linear
@@ -18,6 +20,8 @@ category `C` is `R`-linear.
 for short complexes in `Mathlib/Algebra/Homology/ShortComplex/Linear.lean`)
 
 -/
+
+@[expose] public section
 
 open CategoryTheory
 

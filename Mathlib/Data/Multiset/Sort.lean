@@ -3,13 +3,18 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Sort
-import Mathlib.Data.Multiset.Range
-import Mathlib.Util.Qq
+module
+
+public import Mathlib.Data.List.Sort
+public import Mathlib.Data.Multiset.Range
+public import Mathlib.Util.Qq
+meta import Mathlib.Data.Multiset.Defs
 
 /-!
 # Construct a sorted list from a multiset.
 -/
+
+@[expose] public section
 
 variable {α β : Type*}
 
@@ -26,9 +31,9 @@ def sort (s : Multiset α) (r : α → α → Prop := by exact fun a b => a ≤ 
     [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [IsTotal α r] : List α :=
   Quot.liftOn s (mergeSort · (r · ·)) fun _ _ h =>
     eq_of_perm_of_sorted ((mergeSort_perm _ _).trans <| h.trans (mergeSort_perm _ _).symm)
-      (sorted_mergeSort IsTrans.trans
+      (pairwise_mergeSort IsTrans.trans
         (fun a b => by simpa using IsTotal.total a b) _)
-      (sorted_mergeSort IsTrans.trans
+      (pairwise_mergeSort IsTrans.trans
         (fun a b => by simpa using IsTotal.total a b) _)
 
 section
@@ -89,7 +94,7 @@ end sort
 
 open Qq in
 universe u in
-unsafe instance {α : Type u} [Lean.ToLevel.{u}] [Lean.ToExpr α] :
+meta unsafe instance {α : Type u} [Lean.ToLevel.{u}] [Lean.ToExpr α] :
     Lean.ToExpr (Multiset α) :=
   haveI u' := Lean.toLevel.{u}
   haveI α' : Q(Type u') := Lean.toTypeExpr α

@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Data.ENNReal.Real
+module
+
+public import Mathlib.Data.ENNReal.Real
 
 /-!
 # Properties of addition, multiplication and subtraction on extended non-negative real numbers
@@ -16,6 +18,8 @@ definitions and properties of which can be found in `Mathlib/Data/ENNReal/Inv.le
 Note: the definitions of the operations included in this file can be found in
 `Mathlib/Data/ENNReal/Basic.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 

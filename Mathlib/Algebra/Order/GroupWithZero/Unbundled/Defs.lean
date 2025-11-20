@@ -3,9 +3,11 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Yuyang Zhao
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
-import Mathlib.Tactic.MkIffOfInductiveProp
-import Mathlib.Util.Notation3
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
+public import Mathlib.Tactic.MkIffOfInductiveProp
+public import Mathlib.Util.Notation3
 
 /-!
 # (Strict) monotonicity of multiplication by nonnegative (positive) elements
@@ -70,6 +72,8 @@ See https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/notatio
 for a discussion about this notation, and whether to enable it globally (note that the notation is
 currently global but broken, hence actually only works locally).
 -/
+
+@[expose] public section
 
 assert_not_exists MulZeroClass
 

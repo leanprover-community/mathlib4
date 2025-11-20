@@ -3,7 +3,9 @@ Copyright (c) 2024 Lean FRO LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Comon_
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Comon_
 
 /-!
 # The category of bimonoids in a braided monoidal category.
@@ -22,6 +24,8 @@ We verify that this is equivalent to the monoid objects in the category of comon
   in good circumstances this is representable by a bimonoid in `D`, and then
   `C` is monoidally equivalent to the modules over that bimonoid.
 -/
+
+@[expose] public section
 
 noncomputable section
 

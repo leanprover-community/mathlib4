@@ -3,9 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.Algebra.Ring.Action.Submonoid
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.Algebra.Ring.Action.Submonoid
 
 /-!
 # More operations on subalgebras
@@ -15,6 +17,8 @@ The contents of this file are somewhat random since both
 `Mathlib/Algebra/Algebra/Subalgebra/Basic.lean` and `Mathlib/RingTheory/Ideal/Operations.lean` are
 somewhat of a grab-bag of definitions, and this is whatever ends up in the intersection.
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal
 

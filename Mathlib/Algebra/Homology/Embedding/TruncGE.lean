@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.HomEquiv
-import Mathlib.Algebra.Homology.Embedding.IsSupported
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+module
+
+public import Mathlib.Algebra.Homology.Embedding.HomEquiv
+public import Mathlib.Algebra.Homology.Embedding.IsSupported
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 /-!
 # The canonical truncation
@@ -38,6 +40,8 @@ We also construct the canonical epimorphism `K.πTruncGE e : K ⟶ K.truncGE e`.
   in homology in degrees in the image of `e.f`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits ZeroObject Category
 

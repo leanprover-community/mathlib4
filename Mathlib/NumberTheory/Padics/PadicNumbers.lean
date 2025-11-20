@@ -3,11 +3,13 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.RingTheory.Valuation.Basic
-import Mathlib.NumberTheory.Padics.PadicNorm
-import Mathlib.Analysis.Normed.Field.Lemmas
-import Mathlib.Tactic.Peel
-import Mathlib.Topology.MetricSpace.Ultra.Basic
+module
+
+public import Mathlib.RingTheory.Valuation.Basic
+public import Mathlib.NumberTheory.Padics.PadicNorm
+public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Tactic.Peel
+public import Mathlib.Topology.MetricSpace.Ultra.Basic
 
 /-!
 # p-adic numbers
@@ -57,6 +59,8 @@ Coercions from `ℚ` to `ℚ_[p]` are set up to work with the `norm_cast` tactic
 
 p-adic, p adic, padic, norm, valuation, cauchy, completion, p-adic completion
 -/
+
+@[expose] public section
 
 open WithZero
 

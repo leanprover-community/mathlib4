@@ -3,10 +3,12 @@ Copyright (c) 2025 Jacob Reinhold. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jacob Reinhold
 -/
-import Mathlib.CategoryTheory.CopyDiscardCategory.Basic
-import Mathlib.CategoryTheory.CopyDiscardCategory.Deterministic
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Comon_
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+module
+
+public import Mathlib.CategoryTheory.CopyDiscardCategory.Basic
+public import Mathlib.CategoryTheory.CopyDiscardCategory.Deterministic
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Comon_
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 
 /-!
 # Cartesian Categories as Copy-Discard Categories
@@ -24,6 +26,8 @@ Every cartesian monoidal category is a copy-discard category where:
 
 cartesian, copy-discard, comonoid, symmetric monoidal
 -/
+
+@[expose] public section
 
 universe v u
 

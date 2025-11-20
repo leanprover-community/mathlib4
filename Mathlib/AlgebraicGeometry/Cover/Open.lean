@@ -3,7 +3,9 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Cover.MorphismProperty
+module
+
+public import Mathlib.AlgebraicGeometry.Cover.MorphismProperty
 
 /-!
 # Open covers of schemes
@@ -17,6 +19,8 @@ This file provides the basic API for open covers of schemes.
 - `AlgebraicGeometry.Scheme.affineCover`: `X.affineCover` is a choice of an affine cover of `X`.
 - `AlgebraicGeometry.Scheme.AffineOpenCover`: The type of affine open covers of a scheme `X`.
 -/
+
+@[expose] public section
 
 
 noncomputable section

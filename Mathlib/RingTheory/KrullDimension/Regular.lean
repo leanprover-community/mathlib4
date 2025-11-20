@@ -3,10 +3,12 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Yongle Hu
 -/
-import Mathlib.RingTheory.Flat.TorsionFree
-import Mathlib.RingTheory.KrullDimension.Module
-import Mathlib.RingTheory.Regular.RegularSequence
-import Mathlib.RingTheory.Spectrum.Prime.LTSeries
+module
+
+public import Mathlib.RingTheory.Flat.TorsionFree
+public import Mathlib.RingTheory.KrullDimension.Module
+public import Mathlib.RingTheory.Regular.RegularSequence
+public import Mathlib.RingTheory.Spectrum.Prime.LTSeries
 
 /-!
 
@@ -18,6 +20,8 @@ import Mathlib.RingTheory.Spectrum.Prime.LTSeries
   Noetherian local ring `R`, `r₁, …, rₙ` is an `M`-sequence, then
   `dim M/(r₁, …, rₙ)M + n = dim M`.
 -/
+
+@[expose] public section
 
 namespace Module
 

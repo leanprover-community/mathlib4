@@ -3,7 +3,9 @@ Copyright (c) 2022 Wrenna Robson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wrenna Robson
 -/
-import Mathlib.Topology.MetricSpace.Basic
+module
+
+public import Mathlib.Topology.MetricSpace.Basic
 
 /-!
 # Infimum separation
@@ -24,6 +26,8 @@ All lemmas and definitions are in the `Set` namespace to give access to dot nota
 * `Set.infsep`: Infimum separation of a set (when in a pseudometric space).
 
 -/
+
+@[expose] public section
 
 
 variable {α β : Type*}

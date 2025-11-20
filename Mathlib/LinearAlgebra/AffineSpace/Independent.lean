@@ -3,11 +3,13 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Sign.Basic
-import Mathlib.LinearAlgebra.AffineSpace.Combination
-import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
-import Mathlib.LinearAlgebra.Basis.VectorSpace
+module
+
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.Sign.Basic
+public import Mathlib.LinearAlgebra.AffineSpace.Combination
+public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # Affine independence
@@ -28,6 +30,8 @@ This file defines affinely independent families of points.
 * https://en.wikipedia.org/wiki/Affine_space
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -312,6 +316,30 @@ theorem affineIndependent_equiv {ι' : Type*} (e : ι ≃ ι') {p : ι' → P} :
   rw [this]
   exact h.comp_embedding e.symm.toEmbedding
 
+/-- Swapping the first two points preserves affine independence. -/
+theorem AffineIndependent.comm_left {p₁ p₂ p₃ : P} (h : AffineIndependent k ![p₁, p₂, p₃]) :
+    AffineIndependent k ![p₂, p₁, p₃] := by
+  rw [← affineIndependent_equiv (Equiv.swap 0 1)]
+  convert h using 1
+  ext x
+  fin_cases x <;> rfl
+
+/-- Swapping the last two points preserves affine independence. -/
+theorem AffineIndependent.comm_right {p₁ p₂ p₃ : P} (h : AffineIndependent k ![p₁, p₂, p₃]) :
+    AffineIndependent k ![p₁, p₃, p₂] := by
+  rw [← affineIndependent_equiv (Equiv.swap 1 2)]
+  convert h using 1
+  ext x
+  fin_cases x <;> rfl
+
+/-- Reversing the order of three points preserves affine independence. -/
+theorem AffineIndependent.reverse_of_three {p₁ p₂ p₃ : P} (h : AffineIndependent k ![p₁, p₂, p₃]) :
+    AffineIndependent k ![p₃, p₂, p₁] := by
+  rw [← affineIndependent_equiv (Equiv.swap 0 2)]
+  convert h using 1
+  ext x
+  fin_cases x <;> rfl
+
 /-- If a set of points is affinely independent, so is any subset. -/
 protected theorem AffineIndependent.mono {s t : Set P}
     (ha : AffineIndependent k (fun x => x : t → P)) (hs : s ⊆ t) :
@@ -402,8 +430,7 @@ theorem AffineEquiv.affineIndependent_iff {p : ι → P} (e : P ≃ᵃ[k] P₂) 
 theorem AffineEquiv.affineIndependent_set_of_eq_iff {s : Set P} (e : P ≃ᵃ[k] P₂) :
     AffineIndependent k ((↑) : e '' s → P₂) ↔ AffineIndependent k ((↑) : s → P) := by
   have : e ∘ ((↑) : s → P) = ((↑) : e '' s → P₂) ∘ (e : P ≃ P₂).image s := rfl
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [← e.affineIndependent_iff, this, affineIndependent_equiv]
+  simp [← e.affineIndependent_iff, this, affineIndependent_equiv]
 
 end Composition
 

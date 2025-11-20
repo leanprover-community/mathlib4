@@ -3,11 +3,13 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
-import Mathlib.Analysis.Calculus.ContDiff.RCLike
-import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
-import Mathlib.Analysis.Complex.RealDeriv
-import Mathlib.Analysis.SpecialFunctions.Exp
-import Mathlib.Analysis.SpecialFunctions.Exponential
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.RCLike
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
+public import Mathlib.Analysis.Complex.RealDeriv
+public import Mathlib.Analysis.SpecialFunctions.Exp
+public import Mathlib.Analysis.SpecialFunctions.Exponential
 
 /-!
 # Complex and real exponential
@@ -18,6 +20,8 @@ In this file we prove that `Complex.exp` and `Real.exp` are analytic functions.
 
 exp, derivative
 -/
+
+@[expose] public section
 
 assert_not_exists IsConformalMap Conformal
 

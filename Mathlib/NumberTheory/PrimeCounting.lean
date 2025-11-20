@@ -3,10 +3,12 @@ Copyright (c) 2021 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Ralf Stephan
 -/
-import Mathlib.Data.Nat.Prime.Nth
-import Mathlib.Data.Nat.Totient
-import Mathlib.NumberTheory.SmoothNumbers
-import Mathlib.Order.Filter.AtTopBot.Basic
+module
+
+public import Mathlib.Data.Nat.Prime.Nth
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.NumberTheory.SmoothNumbers
+public import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # The Prime Counting Function
@@ -32,6 +34,8 @@ With `open scoped Nat.Prime`, we use the standard notation `π` to represent the
 function (and `π'` to represent the reindexed version).
 
 -/
+
+@[expose] public section
 
 
 namespace Nat

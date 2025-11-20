@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn,
 Mario Carneiro
 -/
-import Mathlib.Data.List.Defs
-import Mathlib.Data.Option.Basic
-import Mathlib.Util.AssertExists
+module
+
+public import Mathlib.Data.List.Defs
+public import Mathlib.Data.Option.Basic
+public import Mathlib.Util.AssertExists
 
 /-! # getD and getI
 
@@ -14,6 +16,8 @@ This file provides theorems for working with the `getD` and `getI` functions. Th
 access an element of a list by numerical index, with a default value as a fallback when the index
 is out of range.
 -/
+
+@[expose] public section
 
 assert_not_imported Mathlib.Algebra.Order.Group.Nat
 

@@ -3,8 +3,10 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Markus Himmel
 -/
-import Mathlib.CategoryTheory.EpiMono
-import Mathlib.CategoryTheory.Limits.HasLimits
+module
+
+public import Mathlib.CategoryTheory.EpiMono
+public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # Equalizers and coequalizers
@@ -42,6 +44,8 @@ general limits can be used.
 
 * [F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1]
 -/
+
+@[expose] public section
 
 section
 
@@ -464,7 +468,7 @@ def Fork.IsLimit.mk (t : Fork f g) (lift : ∀ s : Fork f g, s.pt ⟶ t.pt)
   { lift
     fac := fun s j =>
       WalkingParallelPair.casesOn j (fac s) <| by
-        erw [← s.w left, ← t.w left, ← Category.assoc, fac]; rfl
+        simp [← Category.assoc, fac]
     uniq := fun s m j => by aesop}
 
 /-- This is another convenient method to verify that a fork is a limit cone. It

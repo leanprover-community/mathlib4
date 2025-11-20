@@ -3,7 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.RingTheory.Ideal.Maximal
+module
+
+public import Mathlib.RingTheory.Ideal.Maximal
 
 /-!
 # The set of non-invertible elements of a monoid
@@ -16,6 +18,8 @@ import Mathlib.RingTheory.Ideal.Maximal
 
 * `exists_max_ideal_of_mem_nonunits`: every element of `nonunits` is contained in a maximal ideal
 -/
+
+@[expose] public section
 
 
 variable {F α β : Type*} {a b : α}

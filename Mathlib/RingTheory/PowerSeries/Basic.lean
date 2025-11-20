@@ -3,13 +3,15 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.RingTheory.MvPowerSeries.Basic
-import Mathlib.Tactic.MoveAdd
-import Mathlib.Algebra.MvPolynomial.Equiv
-import Mathlib.RingTheory.Ideal.Basic
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Basic
+public import Mathlib.RingTheory.MvPowerSeries.Basic
+public import Mathlib.Tactic.MoveAdd
+public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.RingTheory.Ideal.Basic
 
 /-!
 # Formal power series (in one variable)
@@ -45,6 +47,8 @@ We then build some glue to treat formal power series as if they were indexed by 
 Occasionally this leads to proofs that are uglier than expected.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -647,8 +651,8 @@ theorem prod_monomial (f : ι → ℕ) (g : ι → R) (s : Finset ι) :
   simpa [monomial, Finsupp.single_finset_sum] using
     MvPowerSeries.prod_monomial (fun i ↦ Finsupp.single () (f i)) g s
 
-theorem monmial_pow (m : ℕ) (a : R) (n : ℕ) : (monomial m a) ^ n = monomial (n * m) (a ^ n) := by
-  simpa [monomial] using MvPowerSeries.monmial_pow (Finsupp.single () m) a n
+theorem monomial_pow (m : ℕ) (a : R) (n : ℕ) : (monomial m a) ^ n = monomial (n * m) (a ^ n) := by
+  simpa [monomial] using MvPowerSeries.monomial_pow (Finsupp.single () m) a n
 
 /-- The `n`-th coefficient of the `k`-th power of a power series. -/
 lemma coeff_pow (k n : ℕ) (φ : R⟦X⟧) :

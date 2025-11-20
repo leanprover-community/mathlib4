@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Presheaf
-import Mathlib.Algebra.Category.ModuleCat.Colimits
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf
+public import Mathlib.Algebra.Category.ModuleCat.Colimits
 
 /-! # Colimits in categories of presheaves of modules
 
@@ -12,6 +14,8 @@ In this file, it is shown that under suitable assumptions,
 colimits exist in the category `PresheafOfModules R`.
 
 -/
+
+@[expose] public section
 
 universe v v₁ v₂ u₁ u₂ u u'
 

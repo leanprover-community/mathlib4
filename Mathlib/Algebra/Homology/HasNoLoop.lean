@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.Algebra.Group.Int.Defs
-import Mathlib.Algebra.Group.Nat.Defs
+module
+
+public import Mathlib.Algebra.Homology.ComplexShape
+public import Mathlib.Algebra.Group.Int.Defs
+public import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # Complex shapes with no loop
@@ -14,6 +16,8 @@ Let `c : ComplexShape ι`. We define a type class `c.HasNoLoop`
 which expresses that `¬ c.Rel i i` for all `i : ι`.
 
 -/
+
+@[expose] public section
 
 namespace ComplexShape
 

@@ -3,8 +3,10 @@ Copyright (c) 2025 Salvatore Mercuri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri
 -/
-import Mathlib.GroupTheory.ArchimedeanDensely
-import Mathlib.Topology.Algebra.Valued.ValuationTopology
+module
+
+public import Mathlib.GroupTheory.ArchimedeanDensely
+public import Mathlib.Topology.Algebra.Valued.ValuationTopology
 
 /-!
 # Topological results for integer-valued rings
@@ -14,6 +16,8 @@ multiplicative integers with zero adjoined. These are useful for cases where the
 is a `Valued R ℤₘ₀` instance but no canonical base with which to embed this into
 `NNReal`.
 -/
+
+@[expose] public section
 
 open Filter WithZero Set
 open scoped Topology

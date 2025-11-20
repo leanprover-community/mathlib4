@@ -3,9 +3,11 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Tactic.TypeStar
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.Push.Attr
+module
+
+public import Mathlib.Tactic.TypeStar
+public import Mathlib.Tactic.Lemma
+public import Mathlib.Tactic.Push.Attr
 
 /-!
 # Nontrivial types
@@ -18,6 +20,8 @@ We introduce a typeclass `Nontrivial` formalizing this property.
 
 Basic results about nontrivial types are in `Mathlib/Logic/Nontrivial/Basic.lean`.
 -/
+
+@[expose] public section
 
 variable {α : Type*} {β : Type*}
 

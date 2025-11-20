@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-import Mathlib.CategoryTheory.Monoidal.Functor
-import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+module
+
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+public import Mathlib.CategoryTheory.Monoidal.Functor
+public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 
 /-!
 # Monoidal natural transformations
@@ -15,6 +17,8 @@ an additional compatibility relation with the tensorators:
 `F.μ X Y ≫ app (X ⊗ Y) = (app X ⊗ app Y) ≫ G.μ X Y`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory
 

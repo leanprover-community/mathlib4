@@ -3,8 +3,10 @@ Copyright (c) 2022 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.MellinTransform
-import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
+module
+
+public import Mathlib.Analysis.MellinTransform
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 
 /-!
 # Derivative of the Gamma function
@@ -23,6 +25,8 @@ This file shows that the (complex) `Γ` function is complex-differentiable at al
 
 Gamma
 -/
+
+@[expose] public section
 
 
 noncomputable section

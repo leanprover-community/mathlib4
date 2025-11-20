@@ -3,9 +3,10 @@ Copyright (c) 2024 Yunzhou Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Yunzhou Xie, Eric Wieser
 -/
+module
 
-import Mathlib.Data.Matrix.Basic
-import Mathlib.Data.Matrix.Basis
+public import Mathlib.Data.Matrix.Basic
+public import Mathlib.Data.Matrix.Basis
 
 /-!
 # Composition of matrices
@@ -22,6 +23,8 @@ Semiring, and Algebra over a CommSemiring K.
   `J × I` by `L × K` matrices.
 
 -/
+
+@[expose] public section
 
 namespace Matrix
 

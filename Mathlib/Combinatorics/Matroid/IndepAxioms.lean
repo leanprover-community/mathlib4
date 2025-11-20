@@ -3,9 +3,11 @@ Copyright (c) 2023 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Basic
-import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Order.Interval.Finset.Nat
+module
+
+public import Mathlib.Combinatorics.Matroid.Basic
+public import Mathlib.Data.Set.Finite.Lattice
+public import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Matroid Independence and Basis axioms
@@ -84,6 +86,8 @@ for the inverse of `e`).
 
 * `Matroid.ofIsBaseOfFinite` constructs a `Finite` matroid from its bases.
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

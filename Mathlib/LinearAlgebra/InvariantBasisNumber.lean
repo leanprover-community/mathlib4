@@ -3,11 +3,13 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Kim Morrison
 -/
-import Mathlib.RingTheory.Ideal.Quotient.Basic
-import Mathlib.RingTheory.Noetherian.Orzech
-import Mathlib.RingTheory.OrzechProperty
-import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.LinearAlgebra.Finsupp.Pi
+module
+
+public import Mathlib.RingTheory.Ideal.Quotient.Basic
+public import Mathlib.RingTheory.Noetherian.Orzech
+public import Mathlib.RingTheory.OrzechProperty
+public import Mathlib.RingTheory.PrincipalIdealDomain
+public import Mathlib.LinearAlgebra.Finsupp.Pi
 
 /-!
 # Invariant basis number property
@@ -100,6 +102,8 @@ variants) should be formalized.
 free module, rank, Orzech property, (strong) rank condition, invariant basis number, IBN
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

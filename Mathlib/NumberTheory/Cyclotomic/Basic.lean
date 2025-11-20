@@ -3,10 +3,12 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
-import Mathlib.NumberTheory.NumberField.Basic
-import Mathlib.FieldTheory.SeparableClosure
-import Mathlib.FieldTheory.Galois.Abelian
+module
+
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.FieldTheory.SeparableClosure
+public import Mathlib.FieldTheory.Galois.Abelian
 
 /-!
 # Cyclotomic extensions
@@ -57,6 +59,8 @@ Note that some results, for example `IsCyclotomicExtension.trans`,
 included in the `Cyclotomic` locale.
 
 -/
+
+@[expose] public section
 
 
 open Polynomial Algebra Module Set

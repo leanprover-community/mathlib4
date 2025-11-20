@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Basic
-import Mathlib.Order.Closure
+module
+
+public import Mathlib.Analysis.Convex.Basic
+public import Mathlib.Order.Closure
 
 /-!
 # Convex hull
@@ -18,6 +20,8 @@ set containing `s`. In order theory speak, this is a closure operator.
 while the impact on writing code is minimal as `convexHull 𝕜 s` is automatically elaborated as
 `(convexHull 𝕜) s`.
 -/
+
+@[expose] public section
 
 
 open Set

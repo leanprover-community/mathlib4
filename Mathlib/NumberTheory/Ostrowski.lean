@@ -5,11 +5,12 @@ Authors: David Kurniadi Angdinata, Fabrizio Barroero, Laura Capuano, Nirvana Cop
 María Inés de Frutos-Fernández, Sam van Gool, Silvain Rideau-Kikuchi, Amos Turchet,
 Francesco Veneziano
 -/
+module
 
-import Mathlib.Analysis.AbsoluteValue.Equivalence
-import Mathlib.Analysis.SpecialFunctions.Log.Base
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.NumberTheory.Padics.PadicNorm
+public import Mathlib.Analysis.AbsoluteValue.Equivalence
+public import Mathlib.Analysis.SpecialFunctions.Log.Base
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+public import Mathlib.NumberTheory.Padics.PadicNorm
 
 /-!
 # Ostrowski’s Theorem
@@ -37,6 +38,8 @@ Extend to arbitrary number fields.
 
 absolute value, Ostrowski's theorem
 -/
+
+@[expose] public section
 
 open Filter Nat Real Topology
 

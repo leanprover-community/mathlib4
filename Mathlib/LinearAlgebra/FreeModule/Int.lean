@@ -3,10 +3,12 @@ Copyright (c) 2024 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Data.ZMod.QuotientGroup
-import Mathlib.GroupTheory.Index
-import Mathlib.LinearAlgebra.FreeModule.PID
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Data.ZMod.QuotientGroup
+public import Mathlib.GroupTheory.Index
+public import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-! # Index of submodules of free ℤ-modules (considered as an `AddSubgroup`).
 
@@ -14,6 +16,8 @@ This file provides lemmas about when a submodule of a free ℤ-module is a subgr
 index.
 
 -/
+
+@[expose] public section
 
 
 variable {ι R M : Type*} {n : ℕ} [CommRing R] [AddCommGroup M]

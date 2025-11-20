@@ -3,18 +3,22 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Lattice
-import Mathlib.Algebra.Order.Group.Defs
-import Mathlib.Algebra.Order.Group.OrderIso
-import Mathlib.Algebra.Order.Monoid.OrderDual
-import Mathlib.Order.UpperLower.Closure
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Lattice
+public import Mathlib.Algebra.Order.Group.Defs
+public import Mathlib.Algebra.Order.Group.OrderIso
+public import Mathlib.Algebra.Order.Monoid.OrderDual
+public import Mathlib.Order.UpperLower.Closure
 
 /-!
 # Algebraic operations on upper/lower sets
 
 Upper/lower sets are preserved under pointwise algebraic operations in ordered groups.
 -/
+
+@[expose] public section
 
 
 open Function Set

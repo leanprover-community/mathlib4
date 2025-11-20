@@ -3,9 +3,11 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Results about `CovariantClass G α HSMul.hSMul LE.le`
@@ -14,6 +16,8 @@ When working with group actions rather than modules, we drop the `0 < c` conditi
 
 Notably these are relevant for pointwise actions on set-like objects.
 -/
+
+@[expose] public section
 
 variable {ι : Sort*} {M α : Type*}
 

@@ -3,9 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Spectrum.Prime.Topology
-import Mathlib.RingTheory.Etale.Kaehler
-import Mathlib.RingTheory.Support
+module
+
+public import Mathlib.RingTheory.Spectrum.Prime.Topology
+public import Mathlib.RingTheory.Etale.Kaehler
+public import Mathlib.RingTheory.Support
 
 /-!
 # Unramified locus of an algebra
@@ -19,6 +21,8 @@ import Mathlib.RingTheory.Support
 - `Algebra.isOpen_unramifiedLocus` :
   If `A` is (essentially) of finite type over `R`, then the unramified locus is open.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -48,13 +52,13 @@ lemma IsUnramifiedAt.comp
     (p : Ideal A) (P : Ideal B) [P.LiesOver p] [p.IsPrime] [P.IsPrime]
     [IsUnramifiedAt R p] [IsUnramifiedAt A P] : IsUnramifiedAt R P := by
   have : FormallyUnramified (Localization.AtPrime p) (Localization.AtPrime P) :=
-    .of_comp A _ _
+    .of_restrictScalars A _ _
   exact FormallyUnramified.comp R (Localization.AtPrime p) _
 
 variable (R) in
 lemma IsUnramifiedAt.of_restrictScalars (P : Ideal B) [P.IsPrime]
     [IsUnramifiedAt R P] : IsUnramifiedAt A P :=
-  FormallyUnramified.of_comp R _ _
+  FormallyUnramified.of_restrictScalars R _ _
 
 end
 

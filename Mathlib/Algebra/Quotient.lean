@@ -3,7 +3,9 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Tactic.Common
 
 /-!
 # Algebraic quotients
@@ -31,6 +33,8 @@ The following notation is introduced:
 quotient, group quotient, quotient group, module quotient, quotient module, ring quotient,
 ideal quotient, quotient ring
 -/
+
+@[expose] public section
 
 
 universe u v

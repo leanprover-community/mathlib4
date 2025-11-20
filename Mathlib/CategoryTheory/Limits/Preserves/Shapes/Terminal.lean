@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Preserving terminal object
@@ -15,6 +17,8 @@ to concrete objects.
 In particular, we show that `terminalComparison G` is an isomorphism iff `G` preserves terminal
 objects.
 -/
+
+@[expose] public section
 
 
 universe w v v₁ v₂ u u₁ u₂

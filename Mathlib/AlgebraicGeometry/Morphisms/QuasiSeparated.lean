@@ -3,11 +3,13 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Constructors
-import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
-import Mathlib.Topology.QuasiSeparated
-import Mathlib.Topology.Sheaves.CommRingCat
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Constructors
+public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
+public import Mathlib.Topology.QuasiSeparated
+public import Mathlib.Topology.Sheaves.CommRingCat
 
 /-!
 # Quasi-separated morphisms
@@ -28,6 +30,8 @@ and is stable under compositions and base-changes.
   If `U` is qcqs, then `Γ(X, D(f)) ≃ Γ(X, U)_f` for every `f : Γ(X, U)`.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

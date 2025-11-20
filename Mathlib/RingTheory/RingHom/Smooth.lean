@@ -3,8 +3,10 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.RingHom.FinitePresentation
-import Mathlib.RingTheory.Smooth.Locus
+module
+
+public import Mathlib.RingTheory.RingHom.FinitePresentation
+public import Mathlib.RingTheory.Smooth.Locus
 
 /-!
 # Smooth ring homomorphisms
@@ -12,6 +14,8 @@ import Mathlib.RingTheory.Smooth.Locus
 In this file we define smooth ring homomorphisms and show their meta properties.
 
 -/
+
+@[expose] public section
 
 universe u
 

@@ -3,8 +3,10 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
+public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
 
 /-!
 # Affine spaces
@@ -18,6 +20,8 @@ and the affine span of a set of points.
   parallel (one being a translate of the other).
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -556,6 +560,16 @@ theorem map_span (s : Set P₁) : (affineSpan k s).map f = affineSpan k (f '' s)
 @[gcongr]
 theorem map_mono {s₁ s₂ : AffineSubspace k P₁} (h : s₁ ≤ s₂) : s₁.map f ≤ s₂.map f :=
   Set.image_mono h
+
+lemma map_mk' (p : P₁) (direction : Submodule k V₁) :
+    (mk' p direction).map f = mk' (f p) (direction.map f.linear) := by
+  ext q
+  simp only [mem_map, mem_mk', Submodule.mem_map]
+  constructor
+  · rintro ⟨r, hr, rfl⟩
+    exact ⟨r -ᵥ p, hr, by simp⟩
+  · rintro ⟨r, hr, he⟩
+    exact ⟨r +ᵥ p, by simp [hr], by simp [he]⟩
 
 section inclusion
 variable {S₁ S₂ : AffineSubspace k P₁} [Nonempty S₁]

@@ -3,15 +3,17 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.Algebra.Algebra.Opposite
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
-import Mathlib.Algebra.Module.Submodule.Pointwise
-import Mathlib.Algebra.Ring.NonZeroDivisors
-import Mathlib.Algebra.Ring.Submonoid.Pointwise
-import Mathlib.Data.Set.Semiring
-import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
+module
+
+public import Mathlib.Algebra.Algebra.Bilinear
+public import Mathlib.Algebra.Algebra.Opposite
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
+public import Mathlib.Algebra.Module.Submodule.Pointwise
+public import Mathlib.Algebra.Ring.NonZeroDivisors
+public import Mathlib.Algebra.Ring.Submonoid.Pointwise
+public import Mathlib.Data.Set.Semiring
+public import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
 
 /-!
 # Multiplication and division of submodules of an algebra.
@@ -42,6 +44,8 @@ by `ringHomEquivModuleIsScalarTower`), we can still define `1 : Submodule R A` a
 
 multiplication of submodules, division of submodules, submodule semiring
 -/
+
+@[expose] public section
 
 
 universe uι u v

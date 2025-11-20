@@ -3,8 +3,10 @@ Copyright (c) 2023 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Analysis.Normed.Lp.ProdLp
+module
+
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Analysis.Normed.Lp.ProdLp
 
 /-!
 # `L²` inner product space structure on products of inner product spaces
@@ -15,6 +17,8 @@ $$
 $$
 This is recorded in this file as an inner product space instance on `WithLp 2 (E × F)`.
 -/
+
+@[expose] public section
 
 open Module
 open scoped InnerProductSpace
@@ -29,7 +33,7 @@ noncomputable instance instProdInnerProductSpace :
     InnerProductSpace 𝕜 (WithLp 2 (E × F)) where
   inner x y := ⟪x.fst, y.fst⟫_𝕜 + ⟪x.snd, y.snd⟫_𝕜
   norm_sq_eq_re_inner x := by
-    simp [prod_norm_sq_eq_of_L2, ← norm_sq_eq_re_inner]
+    simp [prod_norm_sq_eq_of_L2]
   conj_inner_symm x y := by
     simp
   add_left x y z := by

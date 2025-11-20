@@ -3,12 +3,14 @@ Copyright (c) 2024 Yaël Dillies, Patrick Luo, Bhavik Mehta. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Patrick Luo, Bhavik Mehta
 -/
-import Mathlib.Algebra.Pointwise.Stabilizer
-import Mathlib.Combinatorics.Additive.Convolution
-import Mathlib.NumberTheory.Real.GoldenRatio
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Qify
+module
+
+public import Mathlib.Algebra.Pointwise.Stabilizer
+public import Mathlib.Combinatorics.Additive.Convolution
+public import Mathlib.NumberTheory.Real.GoldenRatio
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Positivity
+public import Mathlib.Tactic.Qify
 
 /-!
 # Sets with very small doubling
@@ -33,6 +35,8 @@ For a finset `A` in a group, its *doubling* is `#(A * A) / #A`. This file charac
 * [*An elementary non-commutative Freiman theorem*, Terence Tao](https://terrytao.wordpress.com/2009/11/10/an-elementary-non-commutative-freiman-theorem)
 * [*Introduction to approximate groups*, Matthew Tointon][tointon2020]
 -/
+
+@[expose] public section
 
 open MulOpposite MulAction
 open scoped Pointwise RightActions

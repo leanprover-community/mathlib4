@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Operator.Banach
-import Mathlib.Analysis.Normed.Operator.NormedSpace
-import Mathlib.Topology.OpenPartialHomeomorph
+module
+
+public import Mathlib.Analysis.Normed.Operator.Banach
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Topology.OpenPartialHomeomorph
 
 /-!
 # Non-linear maps close to affine maps
@@ -43,6 +45,8 @@ We introduce some `local notation` to make formulas shorter:
 * by `g` we denote the auxiliary contracting map `x ↦ x + f'.symm (y - f x)` used to prove that
   `{x | f x = y}` is nonempty.
 -/
+
+@[expose] public section
 
 open Function Set Filter Metric
 

@@ -3,12 +3,16 @@ Copyright (c) 2024 Gareth Ma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gareth Ma
 -/
-import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Rigid.Basic
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
 /-!
 # Deriving `RigidCategory` instance for braided and left/right rigid categories.
 -/
+
+@[expose] public section
 
 open CategoryTheory Category BraidedCategory MonoidalCategory
 

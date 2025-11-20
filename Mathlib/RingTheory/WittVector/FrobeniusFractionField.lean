@@ -3,9 +3,11 @@ Copyright (c) 2022 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Heather Macbeth
 -/
-import Mathlib.Data.Nat.Cast.WithTop
-import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.RingTheory.WittVector.DiscreteValuationRing
+module
+
+public import Mathlib.Data.Nat.Cast.WithTop
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
+public import Mathlib.RingTheory.WittVector.DiscreteValuationRing
 
 /-!
 # Solving equations about the Frobenius map on the field of fractions of `𝕎 k`
@@ -34,6 +36,8 @@ We approximately follow an approach sketched on MathOverflow:
 The result is a dependency for the proof of `WittVector.isocrystal_classification`,
 the classification of one-dimensional isocrystals over an algebraically closed field.
 -/
+
+@[expose] public section
 
 
 noncomputable section

@@ -3,11 +3,13 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Rayleigh
-import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Algebra.DirectSum.Decomposition
-import Mathlib.LinearAlgebra.Eigenspace.Minpoly
-import Mathlib.Data.Fin.Tuple.Sort
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Rayleigh
+public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Algebra.DirectSum.Decomposition
+public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
+public import Mathlib.Data.Fin.Tuple.Sort
 
 /-! # Spectral theory of self-adjoint operators
 
@@ -54,6 +56,8 @@ Spectral theory for compact self-adjoint operators, bounded self-adjoint operato
 self-adjoint operator, spectral theorem, diagonalization theorem
 
 -/
+
+@[expose] public section
 
 variable {𝕜 : Type*} [RCLike 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]

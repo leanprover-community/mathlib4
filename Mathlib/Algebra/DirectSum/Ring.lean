@@ -3,9 +3,11 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.GradedMonoid
-import Mathlib.Algebra.DirectSum.Basic
-import Mathlib.Algebra.Ring.Associator
+module
+
+public import Mathlib.Algebra.GradedMonoid
+public import Mathlib.Algebra.DirectSum.Basic
+public import Mathlib.Algebra.Ring.Associator
 
 /-!
 # Additively-graded multiplicative structures on `⨁ i, A i`
@@ -71,6 +73,8 @@ can be obtained as `DirectSum.toMonoid (fun i ↦ AddSubmonoid.inclusion <| le_i
 
 graded ring, filtered ring, direct sum, add_submonoid
 -/
+
+@[expose] public section
 
 
 variable {ι : Type*} [DecidableEq ι]

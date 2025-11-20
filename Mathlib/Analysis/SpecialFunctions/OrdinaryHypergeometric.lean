@@ -3,8 +3,10 @@ Copyright (c) 2024 Edward Watine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edward Watine
 -/
-import Mathlib.Analysis.Analytic.OfScalars
-import Mathlib.Analysis.RCLike.Basic
+module
+
+public import Mathlib.Analysis.Analytic.OfScalars
+public import Mathlib.Analysis.RCLike.Basic
 
 /-!
 # Ordinary hypergeometric function in a Banach algebra
@@ -48,6 +50,8 @@ See <https://en.wikipedia.org/wiki/Hypergeometric_function>.
 
 hypergeometric, gaussian, ordinary
 -/
+
+@[expose] public section
 
 open Nat FormalMultilinearSeries
 

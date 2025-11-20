@@ -3,10 +3,12 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes
 -/
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.Data.Fintype.Inv
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Data.Fintype.Inv
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
+public import Mathlib.Tactic.FieldSimp
 
 /-!
 # Integral domains
@@ -27,6 +29,8 @@ is in `Mathlib/RingTheory/LittleWedderburn.lean`.
 
 integral domain, finite integral domain, finite field
 -/
+
+@[expose] public section
 
 section
 
@@ -183,7 +187,7 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
       rwa [Subtype.ext_iff, Units.ext_iff, Subtype.coe_mk, MonoidHom.coe_toHomUnits, one_pow,
         eq_comm] at hn
     replace hx1 : (x.val : R) - 1 ≠ 0 := -- Porting note: was `(x : R)`
-      fun h => hx1 (Subtype.eq (Units.ext (sub_eq_zero.1 h)))
+      fun h => hx1 (Subtype.ext (Units.ext (sub_eq_zero.1 h)))
     let c := #{g | f.toHomUnits g = 1}
     calc
       ∑ g : G, f g = ∑ g : G, (f.toHomUnits g : R) := rfl

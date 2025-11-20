@@ -3,7 +3,9 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.Topology.Category.LightProfinite.Basic
+module
+
+public import Mathlib.Topology.Category.LightProfinite.Basic
 /-!
 # Light profinite sets as limits of finite sets.
 
@@ -15,6 +17,8 @@ The limit cone for `S : LightProfinite` is `S.asLimitCone`, the fact that it's a
 We also prove that the projection and transition maps in this limit are surjective.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

@@ -3,14 +3,14 @@ Copyright (c) 2022 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
-import Mathlib.Algebra.Star.UnitaryStarAlgAut
-import Mathlib.Analysis.InnerProductSpace.Spectrum
-import Mathlib.LinearAlgebra.Eigenspace.Matrix
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Eigs
-import Mathlib.LinearAlgebra.Matrix.Diagonal
-import Mathlib.LinearAlgebra.Matrix.Hermitian
-import Mathlib.LinearAlgebra.Matrix.Rank
-import Mathlib.Topology.Algebra.Module.FiniteDimension
+module
+
+public import Mathlib.Algebra.Star.UnitaryStarAlgAut
+public import Mathlib.Analysis.InnerProductSpace.Spectrum
+public import Mathlib.Analysis.Matrix.Hermitian
+public import Mathlib.LinearAlgebra.Eigenspace.Matrix
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Eigs
+public import Mathlib.LinearAlgebra.Matrix.Rank
 
 /-! # Spectral theory of Hermitian matrices
 
@@ -20,6 +20,8 @@ the spectral theorem for linear maps (`LinearMap.IsSymmetric.eigenvectorBasis_ap
 ## Tags
 
 spectral theorem, diagonalization theorem -/
+
+@[expose] public section
 
 open WithLp
 
@@ -170,7 +172,7 @@ lemma sort_roots_charpoly_eq_eigenvalues₀ :
     (A.charpoly.roots.map RCLike.re).sort (· ≥ ·) = List.ofFn hA.eigenvalues₀ := by
   simp_rw [hA.roots_charpoly_eq_eigenvalues₀, Fin.univ_val_map, Multiset.map_coe, List.map_ofFn,
     Function.comp_def, RCLike.ofReal_re, Multiset.coe_sort]
-  rw [List.mergeSort_of_sorted]
+  rw [List.mergeSort_of_pairwise]
   simpa [List.Sorted] using (eigenvalues₀_antitone hA).ofFn_sorted
 
 lemma eigenvalues_eq_eigenvalues_iff :

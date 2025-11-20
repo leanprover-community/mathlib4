@@ -3,12 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Patrick Stevens
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.NatAntidiagonal
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Algebra.BigOperators.NatAntidiagonal
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Ring
 
 /-!
 # Sums of binomial coefficients
@@ -17,6 +19,8 @@ This file includes variants of the binomial theorem and other results on sums of
 coefficients. Theorems whose proofs depend on such sums may also go in this file for import
 reasons.
 -/
+
+@[expose] public section
 
 open Nat Finset
 

@@ -3,8 +3,10 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.GroupTheory.Subsemigroup.Centralizer
-import Mathlib.GroupTheory.Submonoid.Center
+module
+
+public import Mathlib.GroupTheory.Subsemigroup.Centralizer
+public import Mathlib.GroupTheory.Submonoid.Center
 
 /-!
 # Centralizers of magmas and monoids
@@ -16,6 +18,8 @@ import Mathlib.GroupTheory.Submonoid.Center
 
 We provide `Subgroup.centralizer`, `AddSubgroup.centralizer` in other files.
 -/
+
+@[expose] public section
 
 -- Guard against import creep
 assert_not_exists Finset

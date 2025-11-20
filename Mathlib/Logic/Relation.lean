@@ -3,12 +3,14 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Relator
-import Mathlib.Tactic.Use
-import Mathlib.Tactic.MkIffOfInductiveProp
-import Mathlib.Tactic.SimpRw
-import Mathlib.Logic.Basic
-import Mathlib.Order.Defs.Unbundled
+module
+
+public import Mathlib.Logic.Relator
+public import Mathlib.Tactic.Use
+public import Mathlib.Tactic.MkIffOfInductiveProp
+public import Mathlib.Tactic.SimpRw
+public import Mathlib.Logic.Basic
+public import Mathlib.Order.Defs.Unbundled
 
 /-!
 # Relation closures
@@ -42,6 +44,8 @@ the bundled version, see `Rel`.
 * `Relation.Join`: Join of a relation. For `r : α → α → Prop`, `Join r a b ↔ ∃ c, r a c ∧ r b c`. In
   terms of rewriting systems, this means that `a` and `b` can be rewritten to the same term.
 -/
+
+@[expose] public section
 
 
 open Function

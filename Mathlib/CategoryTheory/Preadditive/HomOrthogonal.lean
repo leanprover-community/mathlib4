@@ -3,10 +3,12 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Linear.Basic
-import Mathlib.CategoryTheory.Preadditive.Biproducts
-import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
-import Mathlib.Data.Set.Subsingleton
+module
+
+public import Mathlib.CategoryTheory.Linear.Basic
+public import Mathlib.CategoryTheory.Preadditive.Biproducts
+public import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
+public import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Hom orthogonal families.
@@ -34,6 +36,8 @@ theorem HomOrthogonal.equiv_of_iso (o : HomOrthogonal s) {f : α → ι} {g : β
 
 This is preliminary to defining semisimple categories.
 -/
+
+@[expose] public section
 
 
 open Matrix CategoryTheory.Limits

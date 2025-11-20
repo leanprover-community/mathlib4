@@ -3,12 +3,14 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.DirectSum.LinearMap
-import Mathlib.Algebra.Lie.Weights.Cartan
-import Mathlib.Algebra.Order.Group.Pointwise.Interval
-import Mathlib.RingTheory.Finiteness.Nilpotent
-import Mathlib.Data.Int.Interval
-import Mathlib.Order.Filter.Cofinite
+module
+
+public import Mathlib.Algebra.DirectSum.LinearMap
+public import Mathlib.Algebra.Lie.Weights.Cartan
+public import Mathlib.Algebra.Order.Group.Pointwise.Interval
+public import Mathlib.RingTheory.Finiteness.Nilpotent
+public import Mathlib.Data.Int.Interval
+public import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Chains of roots and weights
@@ -52,6 +54,8 @@ It should be possible to unify some of the definitions here such as `LieModule.c
   Bourbaki Ch. VIII §2.2 Lemma 1 (page 80 of English translation, 88 of English PDF).)
 
 -/
+
+@[expose] public section
 
 open Module Function Set
 
@@ -312,14 +316,14 @@ lemma genWeightSpace_nsmul_add_ne_bot_of_le {n} (hn : n ≤ chainTopCoeff α β)
   by_cases hα : α = 0
   · rw [hα, smul_zero, zero_add]; exact β.genWeightSpace_ne_bot
   classical
-  rw [← Nat.lt_succ, Nat.succ_eq_add_one, chainTopCoeff_add_one _ _ hα] at hn
+  rw [← Nat.lt_succ_iff, Nat.succ_eq_add_one, chainTopCoeff_add_one _ _ hα] at hn
   exact Nat.find_min (eventually_genWeightSpace_smul_add_eq_bot M α β hα).exists hn
 
 lemma genWeightSpace_zsmul_add_ne_bot {n : ℤ}
     (hn : -chainBotCoeff α β ≤ n) (hn' : n ≤ chainTopCoeff α β) :
       genWeightSpace M (n • α + β : L → R) ≠ ⊥ := by
   rcases n with (n | n)
-  · simp only [Int.ofNat_eq_coe, Nat.cast_le, Nat.cast_smul_eq_nsmul] at hn' ⊢
+  · simp only [Int.ofNat_eq_natCast, Nat.cast_le, Nat.cast_smul_eq_nsmul] at hn' ⊢
     exact genWeightSpace_nsmul_add_ne_bot_of_le α β hn'
   · simp only [Int.negSucc_eq, ← Nat.cast_succ, neg_le_neg_iff, Nat.cast_le] at hn ⊢
     rw [neg_smul, ← smul_neg, Nat.cast_smul_eq_nsmul]

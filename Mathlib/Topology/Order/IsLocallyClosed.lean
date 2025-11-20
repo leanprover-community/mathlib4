@@ -3,14 +3,18 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Topology.Order.OrderClosed
-import Mathlib.Topology.LocallyClosed
+module
+
+public import Mathlib.Topology.Order.OrderClosed
+public import Mathlib.Topology.LocallyClosed
 
 /-!
 # Intervals are locally closed
 
 We prove that the intervals on a topological ordered space are locally closed.
 -/
+
+@[expose] public section
 
 variable {X : Type*} [TopologicalSpace X] {a b : X}
 

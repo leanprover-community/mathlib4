@@ -3,8 +3,10 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Cover.Open
-import Mathlib.AlgebraicGeometry.Over
+module
+
+public import Mathlib.AlgebraicGeometry.Cover.Open
+public import Mathlib.AlgebraicGeometry.Over
 
 /-!
 # Restriction of Schemes and Morphisms
@@ -17,6 +19,8 @@ import Mathlib.AlgebraicGeometry.Over
 - `AlgebraicGeometry.morphismRestrict`: The restriction of `X ⟶ Y` to `X ∣_ᵤ f ⁻¹ᵁ U ⟶ Y ∣_ᵤ U`.
 
 -/
+
+@[expose] public section
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 

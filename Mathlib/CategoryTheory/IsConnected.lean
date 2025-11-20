@@ -3,10 +3,12 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Jakob von Raumer
 -/
-import Mathlib.Data.List.Chain
-import Mathlib.CategoryTheory.PUnit
-import Mathlib.CategoryTheory.Groupoid
-import Mathlib.CategoryTheory.Category.ULift
+module
+
+public import Mathlib.Data.List.Chain
+public import Mathlib.CategoryTheory.PUnit
+public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.CategoryTheory.Category.ULift
 
 /-!
 # Connected category
@@ -40,6 +42,8 @@ We also prove the result that the functor given by `(X × -)` preserves any
 connected limit. That is, any limit of shape `J` where `J` is a connected
 category is preserved by the functor `(X × -)`. This appears in `CategoryTheory.Limits.Connected`.
 -/
+
+@[expose] public section
 
 
 universe w₁ w₂ v₁ v₂ u₁ u₂
