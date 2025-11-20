@@ -12,6 +12,27 @@ public import Mathlib.RingTheory.Flat.Basic
 
 # Lemmas about IsBaseChange under Exact Sequences
 
+In this file, we show that cokernel preserves `IsBaseChange S` and when `S` is flat,
+kernel preserves `IsBaseChange S`.
+
+# Main Results
+
+For `S` an `R`-algebra, consider the following commutative diagram with `M₁` `M₂` `M₃` `R`-modules,
+`N₁` `N₂` `N₃` `S`-modules, `R`-linear maps `f₁` `f₂` `i₁` `i₂` `i₃` and `S`-linear maps `g₁` `g₂`.
+
+M₁ --f₁--> M₂ --f₂--> M₃
+|          |          |
+i₁         i₂         i₃
+|          |          |
+v          v          v
+N₁ --g₁--> N₂ --g₂--> N₃
+
+* `IsBaseChange.of_right_exact` : If `f₂` and `g₂` are surjective,
+  `i₁` and `i₂` is base change by `S`, then `i₃` is base change by `S`.
+
+* `IsBaseChange.of_left_exact` : If `S` is flat over `R`, `f₁` and `g₁` are injective,
+  `i₂` and `i₃` is base change by `S`, then `i₁` is base change by `S`.
+
 -/
 
 @[expose] public section
