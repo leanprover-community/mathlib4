@@ -17,7 +17,7 @@ open Mathlib.Linter Parser in
 /--
 warning: The current module only contains private declarations.
 
-Consider adding `@[expose] public section` at the beginning of the module.
+Consider adding `@[expose] public section` at the beginning of the module, or selectively marking declarations as `public`.
 
 Note: This linter can be disabled with `set_option linter.privateModule false`
 -/
