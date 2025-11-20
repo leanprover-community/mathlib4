@@ -3,8 +3,10 @@ Copyright (c) 2025 Janos Wolosz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Janos Wolosz
 -/
-import Mathlib.Algebra.Lie.Weights.RootSystem
-import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
+module
+
+public import Mathlib.Algebra.Lie.Weights.RootSystem
+public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 
 /-!
 # Simple Lie algebras
@@ -18,6 +20,8 @@ We show the irreducibility of root systems of simple Lie algebras.
 ## Main results
 * `LieAlgebra.IsKilling.instIsIrreducible`: the root system of a simple Lie algebra is irreducible
 -/
+
+@[expose] public section
 
 namespace LieAlgebra.IsKilling
 
@@ -211,7 +215,7 @@ private theorem invtSubmoduleToLieIdeal_aux (hm_α : m_α ∈ sl2SubmoduleOfRoot
   · have hx_χ_in_H : x_χ ∈ H.toLieSubmodule := by
       rw [← rootSpace_zero_eq K L H]
       convert hx_χ; ext h; simp only [Pi.zero_apply]
-      have h_apply : (χ.toLinear : H → K) h = 0 := by rw [w_chi]; rfl
+      have h_apply : (χ.toLinear : H → K) h = 0 := by rw [w_chi, LinearMap.zero_apply]
       exact h_apply.symm
     apply LieSubmodule.mem_iSup_of_mem ⟨α, hαq, hα₀⟩
     rw [← (by rfl : ⁅(⟨x_χ, hx_χ_in_H⟩ : H), m_α⁆ = ⁅x_χ, m_α⁆)]

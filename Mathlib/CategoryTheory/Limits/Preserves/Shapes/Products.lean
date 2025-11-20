@@ -3,8 +3,10 @@ Copyright (c) 2020 Kim Morrison, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 /-!
 # Preserving products
@@ -15,6 +17,8 @@ to concrete fans.
 In particular, we show that `piComparison G f` is an isomorphism iff `G` preserves
 the limit of `f`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -75,6 +79,12 @@ lemma PreservesProduct.of_iso_comparison [i : IsIso (piComparison G f)] :
   apply (isLimitMapConeFanMkEquiv _ _ _).symm _
   exact @IsLimit.ofPointIso _ _ _ _ _ _ _
     (limit.isLimit (Discrete.functor fun j : J => G.obj (f j))) i
+
+@[reassoc (attr := simp)]
+lemma inv_piComparison_comp_map_π [IsIso (piComparison G f)] (j : J) :
+     inv (piComparison G f) ≫ G.map (Pi.π _ j) =
+      Pi.π (fun x ↦ (G.obj (f x))) j := by
+  simp only [IsIso.inv_comp_eq, piComparison_comp_π]
 
 variable [PreservesLimit (Discrete.functor f) G]
 
@@ -138,6 +148,12 @@ lemma PreservesCoproduct.of_iso_comparison [i : IsIso (sigmaComparison G f)] :
   apply (isColimitMapCoconeCofanMkEquiv _ _ _).symm _
   exact @IsColimit.ofPointIso _ _ _ _ _ _ _
     (colimit.isColimit (Discrete.functor fun j : J => G.obj (f j))) i
+
+@[reassoc (attr := simp)]
+lemma map_ι_comp_inv_sigmaComparison [IsIso (sigmaComparison G f)] (j : J) :
+    G.map (Sigma.ι _ j) ≫ inv (sigmaComparison G f) =
+      Sigma.ι (fun x ↦ (G.obj (f x))) j := by
+  simp
 
 variable [PreservesColimit (Discrete.functor f) G]
 

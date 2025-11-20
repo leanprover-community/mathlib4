@@ -3,9 +3,10 @@ Copyright (c) 2023 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
+module
 
-import Mathlib.Topology.Order.LowerUpperTopology
-import Mathlib.Topology.Order.ScottTopology
+public import Mathlib.Topology.Order.LowerUpperTopology
+public import Mathlib.Topology.Order.ScottTopology
 
 /-!
 # Lawson topology
@@ -46,6 +47,8 @@ It is shown that `Topology.WithLawson α` is an instance of `Topology.IsLawson`.
 
 Lawson topology, preorder
 -/
+
+@[expose] public section
 
 open Set TopologicalSpace
 
