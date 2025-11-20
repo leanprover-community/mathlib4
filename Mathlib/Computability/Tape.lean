@@ -580,12 +580,7 @@ theorem Tape.map_write {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap �
 theorem Tape.write_move_right_n {Γ} [Inhabited Γ] (f : Γ → Γ) (L R : ListBlank Γ) (n : ℕ) :
     ((Tape.move Dir.right)^[n] (Tape.mk' L R)).write (f (R.nth n)) =
       (Tape.move Dir.right)^[n] (Tape.mk' L (R.modifyNth f n)) := by
-  induction n generalizing L R with
-  | zero =>
-    simp only [ListBlank.nth_zero, ListBlank.modifyNth, iterate_zero_apply, write_mk']
-  | succ n IH =>
-    simp only [ListBlank.head_cons, ListBlank.nth_succ, ListBlank.modifyNth, Tape.move_right_mk',
-      ListBlank.tail_cons, iterate_succ_apply, IH]
+  induction n generalizing L R <;> simp [*]
 
 theorem Tape.map_move {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ') (T : Tape Γ) (d) :
     (T.move d).map f = (T.map f).move d := by
