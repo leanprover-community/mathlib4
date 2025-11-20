@@ -44,7 +44,7 @@ lemma twoδ₂Toδ₁_app_one :
 /-- The morphism `mk₁ fg ⟶ mk₁ g` when `f ≫ g = fg` for some morphism `f`. -/
 def twoδ₁Toδ₀ :
     mk₁ fg ⟶ mk₁ g :=
-  homMk₁ f (𝟙 _) (by simpa using h.symm)
+  homMk₁ f (𝟙 _)
 
 @[simp]
 lemma twoδ₁Toδ₀_app_zero :
