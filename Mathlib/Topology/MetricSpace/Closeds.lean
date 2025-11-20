@@ -400,7 +400,7 @@ theorem lipschitz_sup :
   .of_edist_le fun _ _ => hausdorffEdist_union_le
 
 theorem lipschitz_prod :
-    LipschitzWith 1 fun p : NonemptyCompacts α × NonemptyCompacts β => p.1.prod p.2 :=
+    LipschitzWith 1 fun p : NonemptyCompacts α × NonemptyCompacts β => p.1 ×ˢ p.2 :=
   .of_edist_le fun _ _ => hausdorffEdist_prod_le
 
 end NonemptyCompacts

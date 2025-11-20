@@ -218,7 +218,7 @@ theorem parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
   PositiveCompacts.ext (image_parallelepiped e.toLinearMap _).symm
 
 theorem prod_parallelepiped (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
-    (v.prod w).parallelepiped = v.parallelepiped.prod w.parallelepiped := by
+    (v.prod w).parallelepiped = v.parallelepiped ×ˢ w.parallelepiped := by
   ext x
   simp only [Basis.coe_parallelepiped, TopologicalSpace.PositiveCompacts.coe_prod, Set.mem_prod,
     mem_parallelepiped_iff]
