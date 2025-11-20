@@ -329,7 +329,7 @@ theorem AffineIndependent.comm_right {p₁ p₂ p₃ : P} (h : AffineIndependent
   fin_cases x <;> rfl
 
 /-- Reversing the order of three points preserves affine independence. -/
-theorem AffineIndependent.reverse_of_three (p₁ p₂ p₃ : P) (h : AffineIndependent k ![p₁, p₂, p₃]) :
+theorem AffineIndependent.reverse_of_three {p₁ p₂ p₃ : P} (h : AffineIndependent k ![p₁, p₂, p₃]) :
     AffineIndependent k ![p₃, p₂, p₁] := by
   rw [← affineIndependent_equiv (Equiv.swap 0 2)]
   convert h using 1
