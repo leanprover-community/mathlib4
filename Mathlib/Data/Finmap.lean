@@ -19,7 +19,7 @@ universe u v w
 
 open List
 
-variable {α : Type u} {β : α → Type v}
+variable {α : Type u} {β γ : α → Type v}
 
 /-! ### Multisets of sigma types -/
 
@@ -89,6 +89,7 @@ theorem AList.toFinmap_eq {s₁ s₂ : AList β} :
 @[simp]
 theorem AList.toFinmap_entries (s : AList β) : ⟦s⟧.entries = s.entries :=
   rfl
+
 
 /-- Given `l : List (Sigma β)`, create a term of type `Finmap β` by removing
 entries with duplicate keys. -/
@@ -620,5 +621,165 @@ theorem union_cancel {s₁ s₂ s₃ : Finmap β} (h : Disjoint s₁ s₃) (h' :
       · rw [lookup_eq_none.mpr hs₁, lookup_eq_none.mpr hs₂], fun h => h ▸ rfl⟩
 
 end
+
+end Finmap
+
+
+/- Preliminary results on association lists for the definition of `filter_map`
+and `merge`. -/
+
+theorem AList.filter_map_toFinmap
+  [DecidableEq α]
+  {m₁ m₂ : AList β}
+  {p : (x : α) → β x → Option (γ x)} :
+  m₁.entries.Perm m₂.entries →
+  (m₁.filter_map p).toFinmap = (m₂.filter_map p).toFinmap
+:= by
+  intro hperm
+  apply Finmap.ext_lookup
+  intro x
+  simp [Finmap.lookup_toFinmap]
+  apply filter_map_is_permutation_respecting hperm
+
+theorem AList.perm_filter_map
+  [DecidableEq α]
+  {m₁ m₂ : AList β}
+  {p : (x : α) → β x → Option (γ x)} :
+  m₁.entries.Perm m₂.entries →
+  (m₁.filter_map p).entries.Perm (m₂.filter_map p).entries
+:= by
+  intro hperm
+  rw [←toFinmap_eq]
+  apply filter_map_toFinmap hperm
+
+theorem AList.merge_is_permutation_respecting
+  [DecidableEq α]
+  {m₁ m₂ s₁ s₂ : AList β}
+  {f : {x : α} → β x → β x → β x} :
+  m₁.entries.Perm s₁.entries →
+  m₂.entries.Perm s₂.entries →
+  ∀ x, (m₁.merge m₂ f).lookup x = (s₁.merge s₂ f).lookup x
+:= by
+  intro hm₁_perm_s₁ hm₂_perm_s₂ x
+  match
+    (m₁.lookup x).eq_none_or_eq_some,
+    (m₂.lookup x).eq_none_or_eq_some
+  with
+  | Or.inl hlkp₁, Or.inl hlkp₂ =>
+    simp [lookup_merge_none hlkp₁ hlkp₂]
+    rw [AList.perm_lookup hm₁_perm_s₁] at hlkp₁
+    rw [AList.perm_lookup hm₂_perm_s₂] at hlkp₂
+    simp [lookup_merge_none hlkp₁ hlkp₂]
+  | Or.inl hlkp₁, Or.inr ⟨y₂, hlkp₂⟩ =>
+    simp [lookup_merge_some_right hlkp₁ hlkp₂]
+    rw [AList.perm_lookup hm₁_perm_s₁] at hlkp₁
+    rw [AList.perm_lookup hm₂_perm_s₂] at hlkp₂
+    simp [lookup_merge_some_right hlkp₁ hlkp₂]
+  | Or.inr ⟨y₁, hlkp₁⟩, Or.inl hlkp₂ =>
+    simp [lookup_merge_some_left hlkp₁ hlkp₂]
+    rw [AList.perm_lookup hm₁_perm_s₁] at hlkp₁
+    rw [AList.perm_lookup hm₂_perm_s₂] at hlkp₂
+    simp [lookup_merge_some_left hlkp₁ hlkp₂]
+  | Or.inr ⟨y₁, hlkp₁⟩, Or.inr ⟨y₂, hlkp₂⟩ =>
+    simp [lookup_merge_some_inter hlkp₁ hlkp₂]
+    rw [AList.perm_lookup hm₁_perm_s₁] at hlkp₁
+    rw [AList.perm_lookup hm₂_perm_s₂] at hlkp₂
+    simp [lookup_merge_some_inter hlkp₁ hlkp₂]
+
+theorem AList.merge_toFinmap
+  [DecidableEq α]
+  {m₁ m₂ s₁ s₂ : AList β}
+  {f : {x : α} → β x → β x → β x} :
+  m₁.entries.Perm s₁.entries →
+  m₂.entries.Perm s₂.entries →
+  (m₁.merge m₂ f).toFinmap = (s₁.merge s₂ f).toFinmap
+:= by
+  intro hm₁_perm_s₁ hm₂_perm_s₂
+  apply Finmap.ext_lookup
+  intro x
+  simp [Finmap.lookup_toFinmap]
+  apply merge_is_permutation_respecting hm₁_perm_s₁ hm₂_perm_s₂
+
+
+namespace Finmap
+
+variable [DecidableEq α]
+
+
+/-! ### filter. -/
+
+/-- `m.filter_map p` performs two operations on `m`:
+(1) It removes the key-value bindings `(x, y)` such that `p x y = None`.
+(2) It updates the remaining key-value bindings `(x, y)` to `(x, y')`
+where `p x y = Some y'`.
+-/
+def filter_map (m : Finmap β) (f : (x : α) → (y : β x) → Option (γ x)) : Finmap γ :=
+  m.liftOn (fun s => (s.filter_map f).toFinmap) fun _ _ => AList.filter_map_toFinmap
+
+
+/-! ### merge. -/
+
+/-- `merge m₁ m₂ f` computes a finite map that contains the same keys
+as the union of `m₁` and `m₂`. A key `x` that is both in `m₁` and `m₂` is bound
+to `f y₁ y₂` where `(x, y₁) ∈ m₁` and `(x, y₂) ∈ m₂`. The original bindings
+(in `m₁` or in `m₂`) are kept for remaining keys.
+-/
+def merge (m₁ m₂ : Finmap β) (f : {x : α} → β x → β x → β x) : Finmap β :=
+  m₁.liftOn₂ m₂ (fun s₁ s₂ => (s₁.merge s₂ f).toFinmap) fun _ _ _ _ => AList.merge_toFinmap
+
+
+theorem lookup_merge_none {m₁ m₂ : Finmap β} {f : {x : α} → β x → β x → β x} {x : α} :
+  m₁.lookup x = none →
+  m₂.lookup x = none →
+  (merge m₁ m₂ f).lookup x = none :=
+  induction_on₂ m₁ m₂ fun _ _ => AList.lookup_merge_none
+
+theorem lookup_merge_eq_none {m₁ m₂ : Finmap β} {f : {x : α} → β x → β x → β x} {x : α} :
+  (merge m₁ m₂ f).lookup x = none →
+  m₁.lookup x = none ∧ m₂.lookup x = none :=
+  induction_on₂ m₁ m₂ fun _ _ => AList.lookup_merge_eq_none
+
+theorem lookup_merge_some_left
+  {m₁ m₂ : Finmap β} {f : {x : α} → β x → β x → β x} {x : α} {y : β x} :
+  m₁.lookup x = some y →
+  m₂.lookup x = none →
+  (merge m₁ m₂ f).lookup x = some y :=
+  induction_on₂ m₁ m₂ fun _ _ => AList.lookup_merge_some_left
+
+theorem lookup_merge_some_right
+  {m₁ m₂ : Finmap β} {f : {x : α} → β x → β x → β x} {x : α} {y : β x} :
+  m₁.lookup x = none →
+  m₂.lookup x = some y →
+  (merge m₁ m₂ f).lookup x = some y :=
+  induction_on₂ m₁ m₂ fun _ _ => AList.lookup_merge_some_right
+
+theorem lookup_merge_some_inter
+  {m₁ m₂ : Finmap β} {f : {x : α} → β x → β x → β x} {x : α} {y₁ y₂ : β x} :
+  m₁.lookup x = some y₁ →
+  m₂.lookup x = some y₂ →
+  (merge m₁ m₂ f).lookup x = some (f y₁ y₂) :=
+  induction_on₂ m₁ m₂ fun _ _ => AList.lookup_merge_some_inter
+
+theorem merge_comm {m₁ m₂ : Finmap β} {f : {x : α} → β x → β x → β x} :
+  merge m₁ m₂ f = merge m₂ m₁ (flip f) := by
+  apply ext_lookup
+  intro x
+  match
+    (m₁.lookup x).eq_none_or_eq_some,
+    (m₂.lookup x).eq_none_or_eq_some
+  with
+  | Or.inl hlkp₁, Or.inl hlkp₂  =>
+    simp [lookup_merge_none hlkp₁ hlkp₂]
+    simp [lookup_merge_none hlkp₂ hlkp₁]
+  | Or.inl hlkp₁, Or.inr ⟨y₂, hlkp₂⟩ =>
+    simp [lookup_merge_some_right hlkp₁ hlkp₂]
+    simp [lookup_merge_some_left hlkp₂ hlkp₁]
+  | Or.inr ⟨y₁, hlkp₁⟩, Or.inl hlkp₂ =>
+    simp [lookup_merge_some_left hlkp₁ hlkp₂]
+    simp [lookup_merge_some_right hlkp₂ hlkp₁]
+  | Or.inr ⟨y₁, hlkp₁⟩, Or.inr ⟨y₂, hlkp₂⟩ =>
+    simp [lookup_merge_some_inter hlkp₁ hlkp₂]
+    simp [lookup_merge_some_inter hlkp₂ hlkp₁]
+    simp [flip]
 
 end Finmap
