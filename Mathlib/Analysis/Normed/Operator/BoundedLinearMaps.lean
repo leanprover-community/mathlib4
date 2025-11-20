@@ -467,6 +467,7 @@ theorem Continuous.clm_apply {f : X → E →L[𝕜] F} {g : X → E}
     (hf : Continuous f) (hg : Continuous g) : Continuous (fun x ↦ f x (g x)) :=
   isBoundedBilinearMap_apply.continuous.comp₂ hf hg
 
+@[fun_prop]
 theorem ContinuousOn.clm_apply {f : X → E →L[𝕜] F} {g : X → E}
     {s : Set X} (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun x ↦ f x (g x)) s :=
