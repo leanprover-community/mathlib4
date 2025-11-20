@@ -3,15 +3,18 @@ Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
-import Mathlib.Algebra.Category.Grp.Zero
-import Mathlib.Algebra.FiveLemma
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.Map
-import Mathlib.Algebra.Homology.ShortComplex.Ab
-import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
-import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
+module
+
+public import Mathlib.Algebra.Category.Grp.Zero
+public import Mathlib.Algebra.FiveLemma
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Map
+public import Mathlib.Algebra.Homology.ShortComplex.Ab
+public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
+public import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
+
 /-!
 
 # Bijections Between Ext
@@ -20,6 +23,8 @@ In this file, we prove that map between `Ext` induced by fully faithful exact fu
 conditions added is bijection.
 
 -/
+
+@[expose] public section
 
 universe w w' u u' v v'
 
