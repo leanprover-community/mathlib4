@@ -3,10 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
-import Mathlib.CategoryTheory.Functor.Derived.PointwiseRightDerived
-import Mathlib.CategoryTheory.GuitartExact.KanExtension
-import Mathlib.CategoryTheory.Limits.Final
+module
+
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
+public import Mathlib.CategoryTheory.Functor.Derived.PointwiseRightDerived
+public import Mathlib.CategoryTheory.GuitartExact.KanExtension
+public import Mathlib.CategoryTheory.Limits.Final
 
 /-!
 # Existence of pointwise right derived functors via derivability structures
@@ -29,6 +31,8 @@ right derived functor of `F` with respect to `W₂` exists.
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 

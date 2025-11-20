@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.OuterMeasure.Induced
-import Mathlib.MeasureTheory.OuterMeasure.AE
-import Mathlib.Order.Filter.CountableInter
+module
+
+public import Mathlib.MeasureTheory.OuterMeasure.Induced
+public import Mathlib.MeasureTheory.OuterMeasure.AE
+public import Mathlib.Order.Filter.CountableInter
 
 /-!
 # Measure spaces
@@ -51,6 +53,8 @@ This file does not import `MeasureTheory.MeasurableSpace.Basic`, but only `Measu
 
 measure, almost everywhere, measure space
 -/
+
+@[expose] public section
 
 assert_not_exists Module.Basis
 
