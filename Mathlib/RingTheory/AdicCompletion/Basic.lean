@@ -501,6 +501,20 @@ def AdicCauchySequence.mk (f : ℕ → M)
   val := f
   property := by rwa [isAdicCauchy_iff]
 
+/-- `I`-adic expansion: given any sequence `a : ℕ → M` and `ϖ ∈ I`, we form the `I`-adic expansion
+`∑ ϖ ^ i • a i` as a Cauchy sequence. -/
+@[simps!] noncomputable def adicExpansion (ϖ : R) (hϖ : ϖ ∈ I) :
+    (ℕ → M) →ₗ[R] AdicCauchySequence I M where
+  toFun a := .mk _ _ (fun n ↦ ∑ i ∈ Finset.range n, ϖ ^ i • a i) fun n ↦ by
+    dsimp only
+    have : ϖ ^ n • a n ∈ I ^ n • (⊤ : Submodule R M) :=
+      Submodule.smul_mem_smul (Ideal.pow_mem_pow hϖ n) trivial
+    rw [Finset.sum_range_succ]
+    grw [SModEq.zero.mpr this]
+    rw [add_zero]
+  map_add' a b := by simp_rw [Pi.add_apply, smul_add, Finset.sum_add_distrib]; rfl
+  map_smul' r a := by simp_rw [Pi.smul_apply, smul_comm _ r, ← Finset.smul_sum]; rfl
+
 /-- The canonical linear map from Cauchy sequences to the completion. -/
 @[simps]
 def mk : AdicCauchySequence I M →ₗ[R] AdicCompletion I M where
@@ -628,22 +642,41 @@ theorem of_bijective : Function.Bijective (of I M) :=
 
 /--
 When `M` is `I`-adic complete, the canonical map from `M` to its `I`-adic completion is a linear
-equivalence.
+equivalence. We takes its inverse to be the "limit" of a sequence, which is usually the more useful
+direction.
 -/
-@[simps! apply]
-def ofLinearEquiv : M ≃ₗ[R] AdicCompletion I M :=
-  LinearEquiv.ofBijective (of I M) (of_bijective I M)
+@[simps! symm_apply]
+def limit : AdicCompletion I M ≃ₗ[R] M :=
+  (LinearEquiv.ofBijective (of I M) (of_bijective I M)).symm
+
+@[simp] lemma coe_symm_limit : ⇑(limit I M).symm = of I M := rfl
+
+@[simp] lemma toLinearMap_symm_limit : (limit I M).symm = of I M := rfl
 
 variable {M}
 
-@[simp]
-theorem ofLinearEquiv_symm_of (x : M) : (ofLinearEquiv I M).symm (of I M x) = x := by
-  simp [ofLinearEquiv]
+@[simp] theorem limit_of (x : M) : limit I M (of I M x) = x := (limit I M).right_inv x
 
-@[simp]
-theorem of_ofLinearEquiv_symm (x : AdicCompletion I M) :
-    of I M ((ofLinearEquiv I M).symm x) = x := by
-  simp [ofLinearEquiv]
+@[simp] theorem of_limit (x : AdicCompletion I M) : of I M (limit I M x) = x :=
+  (limit I M).left_inv x
+
+@[simp] theorem mk_limit (x : AdicCompletion I M) (n : ℕ) :
+    Submodule.Quotient.mk (p := I ^ n • (⊤ : Submodule R M)) (limit I M x) =
+      x.val n :=
+  congr($(of_limit I x).val n)
+
+@[simp] theorem mk_limit' [IsAdicComplete I R] (x : AdicCompletion I R) (n : ℕ) :
+    Ideal.Quotient.mk (I ^ n • (⊤ : Ideal R)) (limit I R x) = x.val n :=
+  mk_limit I x n
+
+lemma limit_mk_sModEq {x : AdicCauchySequence I M} {n : ℕ} :
+    limit I M (mk I M x) ≡ x n [SMOD I ^ n • (⊤ : Submodule R M)] := by
+  rw [SModEq, mk_limit]; rfl
+
+lemma limit_mk_spec {x : AdicCauchySequence I M} {y : M}
+    (h : ∀ n, x n ≡ y [SMOD I ^ n • (⊤ : Submodule R M)]) :
+    limit I M (mk I M x) = y :=
+  (LinearEquiv.eq_symm_apply _).mp <| ext h
 
 end Bijective
 
@@ -666,7 +699,7 @@ linear maps `f n : M →ₗ[R] N ⧸ (I ^ n • ⊤)`.
 -/
 def lift (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
     (h : ∀ {m n : ℕ} (hle : m ≤ n), factorPow I N hle ∘ₗ f n = f m) :
-    M →ₗ[R] N := (ofLinearEquiv I N).symm ∘ₗ AdicCompletion.lift I f h
+    M →ₗ[R] N := limit I N ∘ₗ AdicCompletion.lift I f h
 
 @[simp]
 theorem of_lift (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
@@ -788,10 +821,7 @@ theorem of_comp_lift :
 @[simp]
 theorem mk_lift {n : ℕ} (x : M) :
     (Submodule.Quotient.mk (lift I ha f hf x)) = f n x := by
-  simp only [lift, IsAdicComplete.lift, ofLinearEquiv, LinearMap.coe_comp, LinearEquiv.coe_coe,
-    Function.comp_apply]
-  rw [← mkQ_apply, ← eval_of]
-  simp [extend_eq ha f hf]
+  simp [lift, IsAdicComplete.lift, extend_eq ha f hf]
 
 @[simp]
 theorem mkQ_comp_lift {n : ℕ} :
