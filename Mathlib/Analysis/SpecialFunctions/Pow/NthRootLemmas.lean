@@ -3,11 +3,13 @@ Copyright (c) 2025 Concordance Inc. dba Harmonic. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Nat.NthRoot.Defs
-import Mathlib.Data.Nat.ModEq
-import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Ring.Basic
-import Mathlib.Tactic.Zify
+module
+
+public import Mathlib.Data.Nat.NthRoot.Defs
+public import Mathlib.Data.Nat.ModEq
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Tactic.Ring.Basic
+public import Mathlib.Tactic.Zify
 
 /-!
 # Lemmas about `Nat.nthRoot`
@@ -19,6 +21,8 @@ In this file we prove that `Nat.nthRoot n a` is indeed the floor of `ⁿ√a`.
 Rewrite the proof of `Nat.nthRoot.lt_pow_go_succ_aux` to avoid dependencies on real numbers,
 so that we can move this file to `Mathlib/Data/Nat/NthRoot`, then to Batteries.
 -/
+
+@[expose] public section
 
 namespace Nat
 

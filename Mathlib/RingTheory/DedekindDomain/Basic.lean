@@ -3,8 +3,10 @@ Copyright (c) 2020 Kenji Nakagawa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenji Nakagawa, Anne Baanen, Filippo A. E. Nuccio
 -/
-import Mathlib.RingTheory.Ideal.GoingUp
-import Mathlib.RingTheory.Polynomial.RationalRoot
+module
+
+public import Mathlib.RingTheory.Ideal.GoingUp
+public import Mathlib.RingTheory.Polynomial.RationalRoot
 
 /-!
 # Dedekind rings and domains
@@ -42,6 +44,8 @@ to add a `(h : ¬ IsField A)` assumption whenever this is explicitly needed.
 
 dedekind domain, dedekind ring
 -/
+
+@[expose] public section
 
 
 variable (R A K : Type*) [CommRing R] [CommRing A] [Field K]
