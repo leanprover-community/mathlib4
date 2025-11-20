@@ -26,19 +26,6 @@ universe t u
 
 open CategoryTheory Bicategory
 
--- to be moved...
-namespace TopologicalSpace.Opens
-
-instance {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-    (F : Opens X ⥤ Opens Y) (G : Opens Y ⥤ Opens Z)
-    [Functor.IsContinuous.{t} F (Opens.grothendieckTopology _) (Opens.grothendieckTopology _)]
-    [Functor.IsContinuous.{t} G (Opens.grothendieckTopology _) (Opens.grothendieckTopology _)] :
-    Functor.IsContinuous.{t} (F ⋙ G) (Opens.grothendieckTopology _)
-      (Opens.grothendieckTopology _) :=
-  Functor.isContinuous_comp _ _ _ (Opens.grothendieckTopology _) _
-
-end TopologicalSpace.Opens
-
 -- to be moved
 namespace AlgebraicGeometry.LocallyRingedSpace
 
