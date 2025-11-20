@@ -206,7 +206,7 @@ lemma lt_of_le_of_ne : a ≤ b → a ≠ b → a < b := fun h₁ h₂ =>
   lt_of_le_not_ge h₁ <| mt (le_antisymm h₁) h₂
 
 /-- Equality is decidable if `≤` is. -/
-@[to_dual decidableEqofDecidableLE' /-- Equality is decidable if `≤` is. -/]
+@[to_dual decidableEqOfDecidableLE' /-- Equality is decidable if `≤` is. -/]
 def decidableEqOfDecidableLE [DecidableLE α] : DecidableEq α
   | a, b =>
     if hab : a ≤ b then
