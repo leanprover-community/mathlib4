@@ -82,6 +82,7 @@ end hausdorffEntourage
 
 variable [UniformSpace α]
 
+variable (α) in
 /-- The Hausdorff uniformity on the powerset of a uniform space. Used for defining the uniformities
 on `Closeds`, `Compacts` and `NonemptyCompacts`.
 See note [reducible non-instances]. -/
@@ -133,7 +134,7 @@ end UniformSpace.hausdorff
 namespace TopologicalSpace.Closeds
 
 instance uniformSpace : UniformSpace (Closeds α) :=
-  .comap SetLike.coe .hausdorff
+  .comap (↑) (.hausdorff α)
 
 theorem uniformity_def :
     𝓤 (Closeds α) = .comap (Prod.map (↑) (↑)) ((𝓤 α).lift' hausdorffEntourage) :=
@@ -164,7 +165,7 @@ end TopologicalSpace.Closeds
 namespace TopologicalSpace.Compacts
 
 instance uniformSpace : UniformSpace (Compacts α) :=
-  .comap SetLike.coe .hausdorff
+  .comap (↑) (.hausdorff α)
 
 theorem uniformity_def :
     𝓤 (Compacts α) = .comap (Prod.map (↑) (↑)) ((𝓤 α).lift' hausdorffEntourage) :=
@@ -210,7 +211,7 @@ end TopologicalSpace.Compacts
 namespace TopologicalSpace.NonemptyCompacts
 
 instance uniformSpace : UniformSpace (NonemptyCompacts α) :=
-  .comap SetLike.coe .hausdorff
+  .comap (↑) (.hausdorff α)
 
 theorem uniformity_def :
     𝓤 (NonemptyCompacts α) = .comap (Prod.map (↑) (↑)) ((𝓤 α).lift' hausdorffEntourage) :=

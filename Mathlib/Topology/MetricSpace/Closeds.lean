@@ -67,7 +67,7 @@ protected abbrev _root_.PseudoEMetricSpace.hausdorff : PseudoEMetricSpace (Set �
   edist_self _ := hausdorffEdist_self
   edist_comm _ _ := hausdorffEdist_comm
   edist_triangle _ _ _ := hausdorffEdist_triangle
-  toUniformSpace := .hausdorff
+  toUniformSpace := .hausdorff α
   uniformity_edist := by
     refine le_antisymm
       (le_iInf₂ fun ε hε => Filter.le_principal_iff.mpr ?_)
