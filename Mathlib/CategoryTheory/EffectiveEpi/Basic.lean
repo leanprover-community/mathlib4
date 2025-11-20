@@ -99,7 +99,7 @@ open EffectiveEpi Category
 
 instance epi_of_effectiveEpi {X Y : C} (f : Y ⟶ X) [EffectiveEpi f] : Epi f where
   left_cancellation m₁ m₂ h := by
-    rw [show m₂ = desc f (f ≫ m₂) (fun {Z} g₁ g₂ h => by simp [← assoc, h]) from uniq _ _ _ _ rfl]
+    rw [show m₂ = desc f (f ≫ m₂) (fun _ _ h => by simp [← assoc, h]) from uniq _ _ _ _ rfl]
     exact uniq _ _ _ _ h
 
 @[deprecated (since := "2025-11-20")] alias epiOfEffectiveEpi := epi_of_effectiveEpi
