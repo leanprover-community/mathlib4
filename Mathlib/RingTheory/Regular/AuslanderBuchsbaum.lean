@@ -3,12 +3,15 @@ Copyright (c) 2025 Yongle Hu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Yongle Hu
 -/
-import Mathlib.Algebra.Algebra.Shrink
-import Mathlib.Algebra.Category.ModuleCat.Products
-import Mathlib.CategoryTheory.Abelian.Projective.Dimension
-import Mathlib.RingTheory.LocalRing.Module
-import Mathlib.RingTheory.Regular.Depth
-import Mathlib.Tactic.ENatToNat
+module
+
+public import Mathlib.Algebra.Algebra.Shrink
+public import Mathlib.Algebra.Category.ModuleCat.Products
+public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
+public import Mathlib.RingTheory.LocalRing.Module
+public import Mathlib.RingTheory.Regular.Depth
+public import Mathlib.Tactic.ENatToNat
+
 /-!
 # Auslander-Buchsbaum theorem
 
@@ -17,6 +20,8 @@ finitely generated module `M` over a Noetherian local ring `R`, if `projectiveDi
 then `projectiveDimension M + IsLocalRing.depth M = IsLocalRing.depth R`.
 
 -/
+
+@[expose] public section
 
 section hom
 
