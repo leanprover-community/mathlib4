@@ -831,8 +831,9 @@ theorem card_roots_map_le_natDegree {A B : Type*} [Semiring A] [CommRing B] [IsD
   card_roots' _ |>.trans natDegree_map_le
 
 theorem filter_roots_map_range_eq_map_roots [IsDomain A] [IsDomain B] {f : A →+* B}
-    [DecidableEq A] [DecidableEq B] [DecidablePred (· ∈ f.range)] (hf : Function.Injective f)
+    [DecidablePred (· ∈ f.range)] (hf : Function.Injective f)
     (p : A[X]) : (p.map f).roots.filter (· ∈ f.range) = p.roots.map f := by
+  classical
   ext b
   rw [Multiset.count_filter]
   split_ifs with h
