@@ -238,7 +238,7 @@ lemma isCardinalPresentable_iff_isCardinalAccessible_uliftCoyoneda_obj :
   refine ⟨fun _ ↦ inferInstance, fun _ ↦ ⟨fun J _ _ ↦ ?_⟩⟩
   have := Functor.preservesColimitsOfShape_of_isCardinalAccessible
     (coyoneda.obj (op X) ⋙ uliftFunctor.{t}) κ J
-  exact preservesColimitsOfShape_of_reflects_of_preserves _ (uliftFunctor.{t, v₁})
+  exact preservesColimitsOfShape_of_reflects_of_preserves _ uliftFunctor.{t, v₁}
 
 instance [IsCardinalPresentable X κ] :
     (uliftCoyoneda.{t}.obj (op X)).IsCardinalAccessible κ :=
