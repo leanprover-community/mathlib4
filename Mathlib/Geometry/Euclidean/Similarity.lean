@@ -3,6 +3,7 @@ Copyright (c) 2025 Chu Zheng. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chu Zheng
 -/
+module
 
 import Mathlib.Geometry.Euclidean.Triangle
 import Mathlib.Topology.MetricSpace.Similarity
