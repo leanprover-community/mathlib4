@@ -41,8 +41,6 @@ universe u v w
 
 namespace CategoryTheory
 
-open Limits
-
 namespace IsCardinalFiltered
 
 namespace exists_cardinal_directed
