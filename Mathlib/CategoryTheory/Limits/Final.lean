@@ -922,6 +922,25 @@ lemma initial_fromPUnit_of_isInitial (hc : Limits.IsInitial c) : (fromPUnit c).I
 
 end
 
+section
+
+variable {C D : Type*} [Category C] [Category D]
+
+instance (F : C ⥤ Dᵒᵖ) [Initial F] : F.leftOp.Final :=
+  inferInstanceAs (F.op ⋙ (opOpEquivalence D).functor).Final
+
+instance (F : C ⥤ Dᵒᵖ) [Final F] : F.leftOp.Initial :=
+  inferInstanceAs (F.op ⋙ (opOpEquivalence D).functor).Initial
+
+instance (F : Cᵒᵖ ⥤ D) [Initial F] : F.rightOp.Final :=
+  inferInstanceAs ((opOpEquivalence C).inverse ⋙ F.op).Final
+
+instance (F : Cᵒᵖ ⥤ D) [Final F] : F.rightOp.Initial :=
+  inferInstanceAs ((opOpEquivalence C).inverse ⋙ F.op).Initial
+
+end
+
+
 end Functor
 
 section Filtered
