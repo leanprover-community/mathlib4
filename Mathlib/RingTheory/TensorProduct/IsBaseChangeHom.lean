@@ -3,11 +3,13 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Pi
-import Mathlib.LinearAlgebra.TensorProduct.Prod
-import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Pi
+public import Mathlib.LinearAlgebra.TensorProduct.Prod
+public import Mathlib.RingTheory.Localization.BaseChange
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 
 /-! # Base change properties for modules of linear maps
 
@@ -25,6 +27,8 @@ import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
   then `P →ₗ[S] P` is a base change of `M →ₗ[R] M` to `S`.
 
 -/
+
+@[expose] public section
 
 namespace IsBaseChange
 

@@ -3,9 +3,10 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
-import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
+public import Mathlib.LinearAlgebra.FreeModule.Basic
 
 /-! # Base change of a free module
 
@@ -14,6 +15,8 @@ import Mathlib.LinearAlgebra.FreeModule.Basic
 * `IsBaseChange.free` : a base change of a free module is free.
 
 -/
+
+@[expose] public section
 
 namespace IsBaseChange
 
