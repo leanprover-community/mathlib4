@@ -851,6 +851,18 @@ theorem affineSpan_pair_parallel_iff_vectorSpan_eq {p₁ p₂ p₃ p₄ : P} :
   simp [affineSpan_parallel_iff_vectorSpan_eq_and_eq_empty_iff_eq_empty, ←
     not_nonempty_iff_eq_empty]
 
+theorem affineSpan_pair_parallel_comm_right {p₁ p₂ p₃ p₄ : P} :
+    line[k, p₁, p₂] ∥ line[k, p₃, p₄] ↔ line[k, p₁, p₂] ∥ line[k, p₄, p₃] := by
+  simp only [affineSpan_pair_parallel_iff_vectorSpan_eq, Set.pair_comm]
+
+theorem affineSpan_pair_parallel_comm_left {p₁ p₂ p₃ p₄ : P} :
+    line[k, p₁, p₂] ∥ line[k, p₃, p₄] ↔ line[k, p₂, p₁] ∥ line[k, p₃, p₄] := by
+  simp only [affineSpan_pair_parallel_iff_vectorSpan_eq, Set.pair_comm]
+
+theorem affineSpan_pair_parallel_comm {p₁ p₂ p₃ p₄ : P} :
+    line[k, p₁, p₂] ∥ line[k, p₃, p₄] ↔ line[k, p₂, p₁] ∥ line[k, p₄, p₃] := by
+  simp only [affineSpan_pair_parallel_iff_vectorSpan_eq, Set.pair_comm]
+
 end AffineSubspace
 
 section DivisionRing
