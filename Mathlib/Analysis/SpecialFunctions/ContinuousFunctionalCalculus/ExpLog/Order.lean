@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Log.RpowTendsto
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.ExpLog.Basic
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.IntegralRepresentation
+public import
+  Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.IntegralRepresentation
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Continuity
 
 /-!
@@ -48,9 +49,9 @@ lemma CFC.tendsto_cfc_rpow_sub_one_log {a : A} (ha : IsStrictlyPositive a) :
 open Classical Real in
 /-- `log` is operator monotone. -/
 lemma CFC.log_monotoneOn : MonotoneOn log {a : A | IsStrictlyPositive a} := by
-  /- We have that `log x = lim_{p → 0} p⁻¹ * (x ^ p - 1)` with uniform convergence on the spectrum of
-  any positive definite operator, which means that `CFC.log a = lim_{p → 0} p⁻¹ * (a ^ p - 1)` by the
-  continuity of the continuous functional calculus (`tendsto_cfc_fun`). Then, we use the
+  /- We have that `log x = lim_{p → 0} p⁻¹ * (x ^ p - 1)` with uniform convergence on the spectrum
+  of any positive definite operator, which means that `CFC.log a = lim_{p → 0} p⁻¹ * (a ^ p - 1)`
+  by the continuity of the continuous functional calculus (`tendsto_cfc_fun`). Then, we use the
   fact that `x^p` is monotone for `p ∈ [0,1]` (`CFC.monotone_nnrpow`) and that the set of
   monotone functions is closed (`isClosed_monotoneOn`) to conclude the proof. -/
   let s := {a : A | IsStrictlyPositive a}
