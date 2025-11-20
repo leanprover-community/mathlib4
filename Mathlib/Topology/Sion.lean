@@ -378,7 +378,7 @@ theorem exists_lt_iInf_of_lt_iInf_of_finite
     simpa using ht x hx
   | @insert b s _ hs hrec =>  -- insert case
     have hb : (b ∈ Y) := hsY (mem_insert b s)
-    let X' := LeSublevelOn X (fun x ↦ f x b) t
+    let X' := leSublevelOn X (fun x ↦ f x b) t
     rcases Set.eq_empty_or_nonempty X' with X'_e | X'_ne
     · simp only [X', leSublevelOn_empty_iff] at X'_e
       use b, hb
@@ -458,7 +458,7 @@ theorem minimax
   -- when `Y` is not empty
   rw [← forall_lt_iff_le]
   intro t ht
-  have : ⋂ y ∈ Y, LeSublevelOn X (fun x ↦ f x y) t = ∅ := by
+  have : ⋂ y ∈ Y, leSublevelOn X (fun x ↦ f x y) t = ∅ := by
     rw [inter_leSublevelOn_empty_iff _ _ ne_X]
     intro x hx
     by_contra! H
@@ -550,7 +550,7 @@ theorem minimax' : (⨅ x ∈ X, ⨆ y ∈ Y, f x y) = ⨆ y ∈ Y, ⨅ x ∈ X,
   · simp [biInf_const ne_X]
   rw [← forall_lt_iff_le]
   intro t ht
-  have : ⋂ y ∈ Y, LeSublevelOn X (fun x ↦ f x y) t = ∅ := by
+  have : ⋂ y ∈ Y, leSublevelOn X (fun x ↦ f x y) t = ∅ := by
     rw [inter_leSublevelOn_empty_iff _ _ ne_X]
     intro x hx
     by_contra! H
