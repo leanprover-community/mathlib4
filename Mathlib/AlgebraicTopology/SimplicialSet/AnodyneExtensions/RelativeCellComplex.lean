@@ -111,7 +111,7 @@ lemma filtration_le_iSup (i : ι) :
     f.filtration i ≤ ⨆ (i : ι), f.filtration i :=
   le_iSup _ i
 
-lemma iSup_filtration [OrderBot ι] :
+lemma iSup_filtration [OrderBot ι] [SuccOrder ι] [NoMaxOrder ι] :
     ⨆ (i : ι), f.filtration i = ⊤ := by
   let B := ⨆ (i : ι), f.filtration i
   suffices ∀ (s : A.N), s.simplex ∈ B.obj _ by
@@ -120,18 +120,26 @@ lemma iSup_filtration [OrderBot ι] :
     by_cases hs₀ : s ∈ A.obj _
     · exact f.filtration_le_iSup ⊥ _ (by rwa [filtration_bot])
     · exact this (N.mk _ hs hs₀)
-  intro s
-  obtain ⟨y, (rfl | rfl)⟩ := P.exists_or s
-  · sorry
-  · sorry
+  suffices ∀ (y : P.II), ofSimplex (P.p y).1.simplex ≤ B by
+    intro s
+    obtain ⟨y, (rfl | rfl)⟩ := P.exists_or s
+    · rw [← Subcomplex.ofSimplex_le_iff]
+      refine ((S.le_def ..).1 (P.isUniquelyCodimOneFace y).le).trans (this y)
+    · rw [← Subcomplex.ofSimplex_le_iff]
+      exact this y
+  intro y
+  exact le_trans (by simp [Cells.simplex])
+    ((f.simplex_le_filtration ⟨y, rfl⟩ (Order.lt_succ (f.rank y))).trans
+    (f.filtration_le_iSup _))
 
-def Cells.mapToSucc {j : ι} [SuccOrder ι] (c : f.Cells j) :
+def Cells.mapToSucc {j : ι} [SuccOrder ι] [NoMaxOrder ι] (c : f.Cells j) :
     Δ[c.dim + 1] ⟶ f.filtration (Order.succ j) :=
   Subcomplex.lift c.map (by
-    sorry)
+    rw [range_eq_ofSimplex, Cells.map, Equiv.apply_symm_apply]
+    exact f.simplex_le_filtration c (Order.lt_succ _))
 
 @[reassoc (attr := simp)]
-lemma Cells.mapToSucc_ι {j : ι} [SuccOrder ι] (c : f.Cells j) :
+lemma Cells.mapToSucc_ι {j : ι} [SuccOrder ι] [NoMaxOrder ι] (c : f.Cells j) :
     c.mapToSucc ≫ (f.filtration (Order.succ j)).ι = c.map :=
   rfl
 
@@ -154,30 +162,58 @@ noncomputable def m (j : ι) : f.sigmaHorn j ⟶ f.sigmaStdSimplex j :=
 
 @[reassoc (attr := simp)]
 lemma Cells.ιSigmaHorn_m {j : ι} (c : f.Cells j) :
-    c.ιSigmaHorn ≫ f.m j = c.horn.ι ≫ c.ιSigmaStdSimplex:= by
+    c.ιSigmaHorn ≫ f.m j = c.horn.ι ≫ c.ιSigmaStdSimplex := by
   simp [m]
 
-noncomputable def t (j : ι) : f.sigmaHorn j ⟶ f.filtration j :=
-  sorry
+@[simp]
+lemma Cells.preimage_filtration_map {j : ι} (c : f.Cells j) :
+    (f.filtration j).preimage c.map = c.horn := sorry
 
-variable [SuccOrder ι]
+def Cells.mapHorn {j : ι} (c : f.Cells j) : (c.horn : SSet) ⟶ f.filtration j :=
+  Subcomplex.lift (c.horn.ι ≫ c.map) (by
+    simp [← image_top, image_le_iff, preimage_comp, c.preimage_filtration_map])
+
+@[reassoc (attr := simp)]
+lemma Cells.mapHorn_ι {j : ι} (c : f.Cells j) :
+    c.mapHorn ≫ (f.filtration j).ι = c.horn.ι ≫ c.map := rfl
+
+noncomputable def t (j : ι) : f.sigmaHorn j ⟶ f.filtration j :=
+  Limits.Sigma.desc (fun c ↦ c.mapHorn)
+
+@[reassoc (attr := simp)]
+lemma Cells.ιSigmaHorn_t {j : ι} (c : f.Cells j) :
+    c.ιSigmaHorn ≫ f.t j = c.mapHorn:= by
+  simp [t]
+
+variable [SuccOrder ι] [NoMaxOrder ι]
 
 noncomputable def b (j : ι) :
     f.sigmaStdSimplex j ⟶ f.filtration (Order.succ j) :=
   Sigma.desc (fun c ↦ c.mapToSucc)
 
+@[reassoc (attr := simp)]
+lemma ι_b {j : ι} (c : f.Cells j) :
+    c.ιSigmaStdSimplex ≫ f.b j = c.mapToSucc := by simp [b]
+
+@[reassoc]
+lemma w (j : ι) :
+    f.t j ≫ homOfLE (f.monotone_filtration (Order.le_succ j)) = f.m j ≫ f.b j := by
+  ext c : 1
+  simp [← cancel_mono (Subcomplex.ι _)]
+
 lemma isPushout (j : ι) (hj : ¬ IsMax j) :
     IsPushout (f.t j) (f.m j)
-      (homOfLE (f.monotone_filtration (Order.le_succ j))) (f.b j) := by
-  sorry
+      (homOfLE (f.monotone_filtration (Order.le_succ j))) (f.b j) where
+  w := f.w j
+  isColimit' := sorry
 
 end
 
-variable [SuccOrder ι] [OrderBot ι] [WellFoundedLT ι]
+variable [SuccOrder ι] [OrderBot ι] [NoMaxOrder ι] [WellFoundedLT ι]
 
 noncomputable def relativeCellComplex : RelativeCellComplex f.basicCell A.ι where
   F := f.monotone_filtration.functor ⋙ Subcomplex.toSSetFunctor
-  isoBot := Subcomplex.isoOfEq (filtration_bot _)
+  isoBot := Subcomplex.eqToIso (filtration_bot _)
   isColimit := sorry
   isWellOrderContinuous := sorry
   incl.app i := (f.filtration i).ι
