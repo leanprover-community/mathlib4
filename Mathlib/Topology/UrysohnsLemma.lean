@@ -215,7 +215,7 @@ theorem approx_mem_Icc_right_left (c : CU P) (n : ℕ) (x : X) :
     simp only [approx]
     refine ⟨le_rfl, ?_⟩
     grw [left_U_subset]
-    exact zero_le_one -- TODO: `positivity` doesn't prove that `1 x` is nonnegative
+    rw [Pi.one_apply]; positivity -- TODO: `positivity` doesn't prove that `1 x` is nonnegative
   | succ n ihn =>
     simp only [approx, mem_Icc]
     refine ⟨midpoint_le_midpoint ?_ (ihn _).1, midpoint_le_midpoint (ihn _).2 ?_⟩ <;>
