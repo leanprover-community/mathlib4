@@ -3,10 +3,11 @@ Copyright (c) 2025 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
+module
 
-import Mathlib.Algebra.Polynomial.OfFn
-import Mathlib.Analysis.Polynomial.MahlerMeasure
-import Mathlib.Data.Pi.Interval
+public import Mathlib.Algebra.Polynomial.OfFn
+public import Mathlib.Analysis.Polynomial.MahlerMeasure
+public import Mathlib.Data.Pi.Interval
 
 /-!
 # Mahler measure of integer polynomials
