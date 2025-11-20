@@ -49,22 +49,21 @@ and suggests adding `@[expose] public section` to the top.
 This linter only acts on the end-of-input `Parser.Command.eoi` token, and ignores all other syntax.
 It logs its message at the top of the file.
 -/
-def privateModule : Linter where
-  run stx := do
-    if stx.isOfKind ``Parser.Command.eoi then
-      unless getLinterValue linter.privateModule (← getLinterOptions) do
-        return
-      if (← getEnv).header.isModule then
-        -- Don't lint an imports-only module:
-        if !(← getEnv).constants.map₂.isEmpty then
-          -- Exit if any declaration is public:
-          for (decl, _) in (← getEnv).constants.map₂ do
-            if !isPrivateName decl then return
-          -- Lint if all names are private:
-          let topOfFileRef := Syntax.atom (.synthetic ⟨0⟩ ⟨0⟩) ""
-          logLint linter.privateModule topOfFileRef
-            "The current module only contains private declarations.\n\n\
-            Consider adding `@[expose] public section` at the beginning of the module."
+def privateModule : Linter where run stx := do
+  if stx.isOfKind ``Parser.Command.eoi then
+    unless getLinterValue linter.privateModule (← getLinterOptions) do
+      return
+    if (← getEnv).header.isModule then
+      -- Don't lint an imports-only module:
+      if !(← getEnv).constants.map₂.isEmpty then
+        -- Exit if any declaration is public:
+        for (decl, _) in (← getEnv).constants.map₂ do
+          if !isPrivateName decl then return
+        -- Lint if all names are private:
+        let topOfFileRef := Syntax.atom (.synthetic ⟨0⟩ ⟨0⟩) ""
+        logLint linter.privateModule topOfFileRef
+          "The current module only contains private declarations.\n\n\
+          Consider adding `@[expose] public section` at the beginning of the module."
 
 initialize addLinter privateModule
 
