@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.ObjectProperty.ColimitsClosure
-import Mathlib.CategoryTheory.SmallRepresentatives
+public import Mathlib.CategoryTheory.ObjectProperty.ColimitsClosure
+public import Mathlib.CategoryTheory.SmallRepresentatives
 
 /-!
 # Closure of a property of objects under colimits of bounded cardinality
