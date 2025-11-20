@@ -121,7 +121,9 @@ protected lemma Nontrivial.erase_nonempty (hs : s.Nontrivial) : (s.erase a).None
 
 @[simp] lemma erase_nonempty (ha : a ∈ s) : (s.erase a).Nonempty ↔ s.Nontrivial := by
   simp only [Finset.Nonempty, mem_erase, and_comm (b := _ ∈ _)]
-  exact ⟨fun ⟨b, hb, hba⟩ ↦ ⟨_, hb, _, ha, hba⟩, fun hs ↦ hs.exists_ne a⟩
+  refine ⟨?_, fun hs ↦ hs.exists_ne a⟩
+  rintro ⟨b, hb, hba⟩
+  exact ⟨_, hb, _, ha, hba⟩
 
 @[simp]
 theorem erase_singleton (a : α) : ({a} : Finset α).erase a = ∅ := by grind
@@ -319,7 +321,8 @@ theorem disjoint_filter_filter' (s t : Finset α)
     Disjoint (s.filter p) (t.filter q) := by
   simp_rw [disjoint_left, mem_filter]
   rintro a ⟨_, hp⟩ ⟨_, hq⟩
-  simpa [hp, hq] using Pi.disjoint_iff.mp h a
+  rw [Pi.disjoint_iff] at h
+  simpa [hp, hq] using h a
 
 theorem disjoint_filter_filter_neg (s t : Finset α) (p : α → Prop)
     [DecidablePred p] [∀ x, Decidable (¬p x)] :
