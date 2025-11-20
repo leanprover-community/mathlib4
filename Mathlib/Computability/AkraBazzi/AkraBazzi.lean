@@ -3,10 +3,11 @@ Copyright (c) 2023 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Computability.AkraBazzi.SumTransform
-import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+public import Mathlib.Computability.AkraBazzi.SumTransform
+public import Mathlib.Analysis.Calculus.Deriv.Inv
+public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 /-!
 # Divide-and-conquer recurrences and the Akra-Bazzi theorem
@@ -57,6 +58,8 @@ prove the version with a sum here, as it is simpler and more relevant for algori
 * Manuel Eberl, Asymptotic reasoning in a proof assistant
 
 -/
+
+@[expose] public section
 
 open Finset Real Filter Asymptotics
 open scoped Topology
@@ -525,14 +528,12 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
         -- Apply the induction hypothesis, or use the base case depending on how large n is
         gcongr (∑ i, a i * ?_) + g n with i _
         · exact le_of_lt <| R.a_pos _
-        · if ri_lt_n₀ : r i n < n₀ then
-            exact h_base _ <| by
+        · by_cases! ri_lt_n₀ : r i n < n₀
+          · exact h_base _ <| by
               simp_all only [gt_iff_lt, Nat.ofNat_pos, div_pos_iff_of_pos_right,
                 eventually_atTop, sub_pos, one_div, mem_Ico, and_imp,
                 forall_true_left, mem_univ, and_self, b', C, base_max]
-          else
-            push_neg at ri_lt_n₀
-            exact h_ind (r i n) (R.r_lt_n _ _ (n₀_ge_Rn₀.trans hn)) ri_lt_n₀
+          · exact h_ind (r i n) (R.r_lt_n _ _ (n₀_ge_Rn₀.trans hn)) ri_lt_n₀
               (h_asympBound_r_pos _ hn _) (h_smoothing_r_pos n hn i)
       _ = (∑ i, a i * (C * ((1 - ε (r i n)) * ((r i n) ^ (p a b)
                 * (1 + (∑ u ∈ range (r i n), g u / u ^ ((p a b) + 1))))))) + g n := by

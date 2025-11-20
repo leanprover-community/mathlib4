@@ -3,14 +3,16 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Combinatorics.Enumerative.DoubleCounting
-import Mathlib.Combinatorics.SimpleGraph.Clique
-import Mathlib.Data.Finset.Sym
-import Mathlib.Data.Nat.Choose.Bounds
-import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.Positivity
+module
+
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Algebra.Order.Ring.Abs
+public import Mathlib.Combinatorics.Enumerative.DoubleCounting
+public import Mathlib.Combinatorics.SimpleGraph.Clique
+public import Mathlib.Data.Finset.Sym
+public import Mathlib.Data.Nat.Choose.Bounds
+public import Mathlib.Tactic.GCongr
+public import Mathlib.Tactic.Positivity
 
 /-!
 # Triangles in graphs
@@ -29,6 +31,8 @@ This module defines and proves properties about triangles in simple graphs.
 
 * Generalise `FarFromTriangleFree` to other graphs, to state and prove the Graph Removal Lemma.
 -/
+
+@[expose] public section
 
 open Finset Nat
 open Fintype (card)

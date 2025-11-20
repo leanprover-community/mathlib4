@@ -3,11 +3,12 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+module
 
-import Mathlib.Algebra.Order.Module.PositiveLinearMap
-import Mathlib.Analysis.CStarAlgebra.Classes
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
-import Mathlib.Analysis.CStarAlgebra.SpecialFunctions.PosPart
+public import Mathlib.Algebra.Order.Module.PositiveLinearMap
+public import Mathlib.Analysis.CStarAlgebra.Classes
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
+public import Mathlib.Analysis.CStarAlgebra.SpecialFunctions.PosPart
 
 /-! # Positive linear maps in C⋆-algebras
 
@@ -23,6 +24,8 @@ This file develops the API for positive linear maps over C⋆-algebras.
 * The proof that positive maps are bounded was taken from
   https://math.stackexchange.com/questions/426487/why-is-every-positive-linear-map-between-c-algebras-bounded
 -/
+
+@[expose] public section
 
 open scoped NNReal
 
