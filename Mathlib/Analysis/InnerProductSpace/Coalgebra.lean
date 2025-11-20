@@ -20,6 +20,8 @@ structure if it has a coalgebra structure, where `x * y = (adjoint comul) (x ⊗
 `(1 : A) = (adjoint counit) (1 : 𝕜)` and `algebraMap = adjoint counit`.
 -/
 
+@[expose] public section
+
 variable {𝕜 A : Type*} [RCLike 𝕜] [NormedAddCommGroup A] [InnerProductSpace 𝕜 A]
   [FiniteDimensional 𝕜 A]
 
