@@ -1083,6 +1083,7 @@ theorem tr_respects :
       obtain ⟨a, R, rfl⟩ := R.exists_cons
       rw [tr, Tape.mk'_head, stepAux_write, ListBlank.head_cons, stepAux_move,
         trTape'_move_left enc0, ListBlank.head_cons, ListBlank.tail_cons, Tape.write_mk']
+      simp only [Option.mem_def, ListBlank.tail_cons]
       apply IH
     | load a q IH =>
       simp only [trNormal, stepAux_read dec enc0 encdec]
