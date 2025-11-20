@@ -3,9 +3,10 @@ Copyright (c) 2023 Xavier Généreux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Généreux
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
-import Mathlib.Analysis.Complex.PhragmenLindelof
+public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
+public import Mathlib.Analysis.Complex.PhragmenLindelof
 
 /-!
 # Hadamard three-lines Theorem
@@ -56,6 +57,8 @@ functions defined in this file.
 The proof follows from Phragmén-Lindelöf when both frontiers are not everywhere zero.
 We then use a limit argument to cover the case when either of the sides are `0`.
 -/
+
+@[expose] public section
 
 
 open Set Filter Function Complex Topology

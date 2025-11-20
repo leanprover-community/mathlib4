@@ -3,8 +3,10 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Heather Macbeth
 -/
-import Mathlib.Topology.FiberBundle.Trivialization
-import Mathlib.Topology.Order.LeftRightNhds
+module
+
+public import Mathlib.Topology.FiberBundle.Trivialization
+public import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
 # Fiber bundles
@@ -162,6 +164,8 @@ for the initial bundle.
 ## Tags
 Fiber bundle, topological bundle, structure group
 -/
+
+@[expose] public section
 
 
 variable {ι B F X : Type*} [TopologicalSpace X]

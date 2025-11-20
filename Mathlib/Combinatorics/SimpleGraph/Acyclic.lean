@@ -3,8 +3,10 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-import Mathlib.Combinatorics.SimpleGraph.DegreeSum
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 
 /-!
 
@@ -36,6 +38,8 @@ for these theorems for multigraphs from [Chou1994].
 
 acyclic graphs, trees
 -/
+
+@[expose] public section
 
 
 namespace SimpleGraph
@@ -153,7 +157,7 @@ theorem isAcyclic_of_path_unique (h : ∀ (v w : V) (p q : G.Path v w), p = q) :
   cases c with
   | nil => cases hc.2.1 rfl
   | cons ha c' =>
-    simp only [Walk.cons_isTrail_iff, Walk.support_cons, List.tail_cons] at hc
+    simp only [Walk.isTrail_cons, Walk.support_cons, List.tail_cons] at hc
     specialize h _ _ ⟨c', by simp only [Walk.isPath_def, hc.2]⟩ (Path.singleton ha.symm)
     rw [Path.singleton, Subtype.mk.injEq] at h
     simp [h] at hc
