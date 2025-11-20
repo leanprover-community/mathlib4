@@ -5137,8 +5137,6 @@ lemma q_frac : ((↑q + ↑(h7.r q hq0 h2mq)) / ↑q : ℝ ) =
   subst a
   simp_all only [lt_self_iff_false]
 
-#check alg_int_emb_norm
-
 include hz in
 lemma abs_Rb : norm ((h7.R q hq0 h2mq) z) ≤
    (q * q) * ((h7.c₄ ^ (h7.r q hq0 h2mq : ℝ) *
@@ -5163,21 +5161,18 @@ lemma abs_Rb : norm ((h7.R q hq0 h2mq) z) ≤
          * (h7.c₉) ^ (h7.r q hq0 h2mq + q : ℝ)) := ?_
 
   · unfold R
-
-    --apply norm_sum_le_of_le
-    -- intros b hb
-    -- simp only [Complex.norm_mul]
-    -- unfold house
-    sorry
+    simp only [canonicalEmbedding.apply_at]
+    trans
+    apply norm_sum_le
+    simp only [Complex.norm_mul]
+    apply Finset.sum_le_sum
+    intros i hi
+    simp only [norm_pos_iff, ne_eq, exp_ne_zero, not_false_eq_true, mul_le_mul_iff_left₀]
+    apply alg_int_emb_norm
   · apply sum_le_sum
     intros i hi
-    apply mul_le_mul -- problem with embedding
+    apply mul_le_mul
     · have lemma82 := fromlemma82_bound h7 q hq0 i h2mq
-
-
-      --unfold house at lemma82
-
-
       exact lemma82
     · apply Complex.norm_exp_le_exp_norm
     · simp only [norm_nonneg]
@@ -5277,17 +5272,6 @@ lemma abs_Rb : norm ((h7.R q hq0 h2mq) z) ≤
           · exact le_abs_self (1 + ‖h7.β‖)
           · apply mul_le_mul
             · apply le_refl
-              -- rw [le_iff_lt_or_eq]
-              -- right
-              --rw [← Complex.log_re]
-              -- have h1 := Complex.log_ofReal_re (‖h7.α‖)
-              -- have h2 := Complex.log_re (h7.α)
-              -- --rw [← h2] at h1
-              -- have h3:= Complex.ofReal_log (x:= ‖h7.α‖) (by positivity)
-
-              -- --rw [← h2] at h3
-              -- --rw [← h2]
-              -- sorry
             · have := h7.norm_hz q hq0 h2mq hz
               trans
               apply this
@@ -5436,6 +5420,11 @@ lemma abs_Rb : norm ((h7.R q hq0 h2mq) z) ≤
         · positivity
       · apply Real.exp_nonneg
     · positivity
+
+
+#exit
+
+
 
 def c₁₀ : ℝ := (2*h7.m* h7.c₄* h7.c₉* h7.c₉^(2*h7.m : ℝ))
 
