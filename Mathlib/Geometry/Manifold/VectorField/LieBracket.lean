@@ -421,46 +421,32 @@ lemma mlieBracketWithin_smul_right {f : M → 𝕜} (hf : MDifferentiableWithinA
   set W' := mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm W (range I)
   set f' := f ∘ (extChartAt I x).symm
   set s' := (extChartAt I x).symm ⁻¹' s ∩ range I
-  set x' := (extChartAt I x) x
   change mpullback I 𝓘(𝕜, E) ((extChartAt I x)) (lieBracketWithin 𝕜 V' (fun y ↦ f' y • W' y) s') x =
     (mfderivWithin I 𝓘(𝕜, 𝕜) f s x) (V x) • W x +
     f x • mpullback I 𝓘(𝕜, E) ((extChartAt I x)) (lieBracketWithin 𝕜 V' W' s') x
   -- Step 1: rewrite using lieBracketWithin_smul_right
-  have hf' : DifferentiableWithinAt 𝕜 f' s' x' := by
+  have hf' : DifferentiableWithinAt 𝕜 f' s' ((extChartAt I x) x) := by
     -- Is this worth a separate lemma?
     obtain ⟨_, hf⟩ := mdifferentiableWithinAt_iff.mp hf
     rwa [extChartAt_self_eq] at hf
-  let aux := lieBracketWithin_smul_right (V := V') hf'
-    hW.differentiableWithinAt_mpullbackWithin_vectorField hs
-
-  -- rw [← Pi.smul_def']
-  -- We need the cast, since on the nose `B` is a map `E → E`,
-  -- while we need a map between tangent spaces.
+  -- We need the coercion since on the nose `B` is a map `E → E`,
+  -- whereas we need a map between tangent spaces.
   let A (x₀) := (fderivWithin 𝕜 f' s' x₀) (V' x₀) • W' x₀
   let B (x₀) : TangentSpace 𝓘(𝕜, E) x₀ := f' x₀ • lieBracketWithin 𝕜 V' W' s' x₀
   trans mpullback I 𝓘(𝕜, E) ((extChartAt I x)) (fun y ↦ A y + B y) x
-  · simp only [mpullback_apply]
+  · simp only [mpullback_apply, ]
     congr
+    apply lieBracketWithin_smul_right (V := V') hf'
+      hW.differentiableWithinAt_mpullbackWithin_vectorField hs
   -- We prove the equality of each summand separately.
   rw [← Pi.add_def, mpullback_add_apply]; congr; swap
   · simp [B, ← Pi.smul_def', mpullback_smul (V := lieBracketWithin 𝕜 V' W' s'), f']
-
-  -- This part is still TODO/ in progress!!
-  unfold A
-  simp [mfderivWithin, hf]
-  simp [mpullback]
-  have cleanup1 : I ((chartAt H x) x) = x' := rfl
-  have cleanup2 : f ∘ (chartAt H x).symm ∘ I.symm = f' := rfl
-  rw [cleanup1, cleanup2, ← aux_computation x W]
-  congr -- congr 1 is less strong
-  -- This statement is not fully true, but I only need a weaker version...
-  -- if V' x' is a tangent vector within s, i.e. my aux_computation' should suffice!
-  -- Make this intuition hunch rigorous!
-  have : V' x' = V x := by
-    simp only [V', x', mpullbackWithin]
-    rw [extChartAt_to_inv x]
-    exact aux_computation2 x V
-  exact this
+  -- TODO: clean up this computation, in particular the non-terminal simp
+  simp [A, mfderivWithin, hf, mpullback]
+  simp only [← aux_computation x W, V', mpullbackWithin]
+  congr
+  convert aux_computation2 x V
+  exact extChartAt_to_inv x
 
 /--
 Product rule for Lie brackets: given two vector fields `V` and `W` on `M` and a function
