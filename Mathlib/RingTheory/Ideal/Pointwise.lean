@@ -3,15 +3,17 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Ring.Action.End
-import Mathlib.RingTheory.Ideal.Maps
+module
+
+public import Mathlib.Algebra.Ring.Action.End
+public import Mathlib.RingTheory.Ideal.Maps
 
 /-! # Pointwise instances on `Ideal`s
 
 This file provides the action `Ideal.pointwiseMulAction` which morally matches the action of
 `mulActionSet` (though here an extra `Ideal.span` is inserted).
 
-This actions is available in the `Pointwise` locale.
+This action is available in the `Pointwise` locale.
 
 ## Implementation notes
 
@@ -19,6 +21,8 @@ This file is similar (but not identical) to `Mathlib/Algebra/Ring/Subsemiring/Po
 Where possible, try to keep them in sync.
 
 -/
+
+@[expose] public section
 
 
 open Set
@@ -145,6 +149,12 @@ instance IsPrime.smul {I : Ideal R} [H : I.IsPrime] (g : M) : (g • I).IsPrime 
 @[simp]
 theorem IsPrime.smul_iff {I : Ideal R} (g : M) : (g • I).IsPrime ↔ I.IsPrime :=
   ⟨fun H ↦ inv_smul_smul g I ▸ H.smul g⁻¹, fun H ↦ H.smul g⟩
+
+theorem inertia_le_stabilizer {R : Type*} [Ring R] (P : Ideal R) [MulSemiringAction M R] :
+    P.toAddSubgroup.inertia M ≤ MulAction.stabilizer M P := by
+  refine fun σ hσ ↦ SetLike.ext fun x ↦ ?_
+  rw [Ideal.mem_pointwise_smul_iff_inv_smul_mem,
+    ← P.add_mem_iff_left (a := x) ((inv_mem hσ) x), add_sub_cancel]
 
 /-! TODO: add `equivSMul` like we have for subgroup. -/
 

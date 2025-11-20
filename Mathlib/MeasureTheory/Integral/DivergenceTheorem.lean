@@ -3,12 +3,14 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.BoxIntegral.DivergenceTheorem
-import Mathlib.Analysis.BoxIntegral.Integrability
-import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Calculus.FDeriv.Equiv
-import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+module
+
+public import Mathlib.Analysis.BoxIntegral.DivergenceTheorem
+public import Mathlib.Analysis.BoxIntegral.Integrability
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Equiv
+public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
 /-!
 # Divergence theorem for Bochner integral
@@ -48,6 +50,8 @@ website shows the actual terms, not those abbreviated using local notations.
 
 divergence theorem, Bochner integral
 -/
+
+@[expose] public section
 
 
 open Set Finset TopologicalSpace Function BoxIntegral MeasureTheory Filter
@@ -487,6 +491,31 @@ theorem integral_divergence_prod_Icc_of_hasFDerivAt_off_countable_of_le (f g : �
 alias integral_divergence_prod_Icc_of_hasFDerivWithinAt_off_countable_of_le :=
   integral_divergence_prod_Icc_of_hasFDerivAt_off_countable_of_le
 
+/-- **Divergence theorem** for functions on the plane along rectangles. It is formulated in terms of
+two functions `f g : ℝ × ℝ → E` and an integral over `Icc a b = [a.1, b.1] × [a.2, b.2]`, where
+`a b : ℝ × ℝ`, `a ≤ b`. When thinking of `f` and `g` as the two coordinates of a single function
+`F : ℝ × ℝ → E × E` and when `E = ℝ`, this is the usual statement that the integral of the
+divergence of `F` inside the rectangle equals the integral of the normal derivative of `F` along the
+boundary.
+
+See also `MeasureTheory.integral2_divergence_prod_of_hasFDerivAt` for a
+version that does not assume `a ≤ b` and uses iterated interval integral instead of the integral
+over `Icc a b`.
+
+See also `integral_divergence_prod_Icc_of_hasFDerivAt_off_countable_of_le`
+for a version that assumes differentiability out of a countable set. -/
+theorem integral_divergence_prod_Icc_of_hasFDerivAt_of_le (f g : ℝ × ℝ → E)
+    (f' g' : ℝ × ℝ → ℝ × ℝ →L[ℝ] E) (a b : ℝ × ℝ) (hle : a ≤ b)
+    (Hcf : ContinuousOn f (Icc a b)) (Hcg : ContinuousOn g (Icc a b))
+    (Hdf : ∀ x ∈ Ioo a.1 b.1 ×ˢ Ioo a.2 b.2, HasFDerivAt f (f' x) x)
+    (Hdg : ∀ x ∈ Ioo a.1 b.1 ×ˢ Ioo a.2 b.2, HasFDerivAt g (g' x) x)
+    (Hi : IntegrableOn (fun x => f' x (1, 0) + g' x (0, 1)) (Icc a b)) :
+    (∫ x in Icc a b, f' x (1, 0) + g' x (0, 1)) =
+      (((∫ x in a.1..b.1, g (x, b.2)) - ∫ x in a.1..b.1, g (x, a.2)) +
+          ∫ y in a.2..b.2, f (b.1, y)) - ∫ y in a.2..b.2, f (a.1, y) :=
+  integral_divergence_prod_Icc_of_hasFDerivAt_off_countable_of_le f g f' g' a b hle ∅
+    (by simp) Hcf Hcg (by simpa only [diff_empty]) (by simpa only [diff_empty]) Hi
+
 /-- **Divergence theorem** for functions on the plane. It is formulated in terms of two functions
 `f g : ℝ × ℝ → E` and iterated integral `∫ x in a₁..b₁, ∫ y in a₂..b₂, _`, where
 `a₁ a₂ b₁ b₂ : ℝ`. When thinking of `f` and `g` as the two coordinates of a single function
@@ -534,5 +563,32 @@ theorem integral2_divergence_prod_of_hasFDerivAt_off_countable (f g : ℝ × ℝ
 @[deprecated (since := "2025-05-02")]
 alias integral2_divergence_prod_of_hasFDerivWithinAt_off_countable :=
   integral2_divergence_prod_of_hasFDerivAt_off_countable
+
+/-- **Divergence theorem** for functions on the plane. It is formulated in terms of two functions
+`f g : ℝ × ℝ → E` and iterated integral `∫ x in a₁..b₁, ∫ y in a₂..b₂, _`, where
+`a₁ a₂ b₁ b₂ : ℝ`. When thinking of `f` and `g` as the two coordinates of a single function
+`F : ℝ × ℝ → E × E` and when `E = ℝ`, this is the usual statement that the integral of the
+divergence of `F` inside the rectangle with vertices `(aᵢ, bⱼ)`, `i, j = 1, 2`,
+equals the integral of the normal derivative of `F` along the boundary.
+
+See also `MeasureTheory.integral_divergence_prod_Icc_of_hasFDerivAt_of_le`
+for a version that uses an integral over `Icc a b`, where `a b : ℝ × ℝ`, `a ≤ b`.
+
+See also `integral2_divergence_prod_of_hasFDerivAt_off_countable`
+for a version that assumes differentiability outside of a countable set. -/
+theorem integral2_divergence_prod_of_hasFDerivAt (f g : ℝ × ℝ → E)
+    (f' g' : ℝ × ℝ → ℝ × ℝ →L[ℝ] E) (a₁ a₂ b₁ b₂ : ℝ)
+    (Hcf : ContinuousOn f ([[a₁, b₁]] ×ˢ [[a₂, b₂]]))
+    (Hcg : ContinuousOn g ([[a₁, b₁]] ×ˢ [[a₂, b₂]]))
+    (Hdf : ∀ x ∈ Ioo (min a₁ b₁) (max a₁ b₁) ×ˢ Ioo (min a₂ b₂) (max a₂ b₂),
+      HasFDerivAt f (f' x) x)
+    (Hdg : ∀ x ∈ Ioo (min a₁ b₁) (max a₁ b₁) ×ˢ Ioo (min a₂ b₂) (max a₂ b₂),
+      HasFDerivAt g (g' x) x)
+    (Hi : IntegrableOn (fun x => f' x (1, 0) + g' x (0, 1)) ([[a₁, b₁]] ×ˢ [[a₂, b₂]])) :
+    (∫ x in a₁..b₁, ∫ y in a₂..b₂, f' (x, y) (1, 0) + g' (x, y) (0, 1)) =
+      (((∫ x in a₁..b₁, g (x, b₂)) - ∫ x in a₁..b₁, g (x, a₂)) + ∫ y in a₂..b₂, f (b₁, y)) -
+        ∫ y in a₂..b₂, f (a₁, y) :=
+  integral2_divergence_prod_of_hasFDerivAt_off_countable f g f' g' a₁ a₂ b₁ b₂ ∅ countable_empty
+    Hcf Hcg (fun x hx ↦ Hdf x hx.1) (fun x hx ↦ Hdg x hx.1) Hi
 
 end MeasureTheory

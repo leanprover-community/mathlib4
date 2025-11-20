@@ -3,12 +3,13 @@ Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Eric Wieser
 -/
-import Mathlib.Algebra.Ring.Action.ConjAct
-import Mathlib.Analysis.Analytic.ChangeOrigin
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Data.Nat.Choose.Cast
-import Mathlib.Analysis.Analytic.OfScalars
-import Mathlib.Analysis.SpecificLimits.RCLike
+module
+
+public import Mathlib.Algebra.Ring.Action.ConjAct
+public import Mathlib.Analysis.Analytic.ChangeOrigin
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Data.Nat.Choose.Cast
+public import Mathlib.Analysis.Analytic.OfScalars
 
 /-!
 # Exponential in a Banach algebra
@@ -85,6 +86,8 @@ but we want to move `exp` out of the root namespace in any case to avoid this am
 In the long term is may be possible to replace `Real.exp` and `Complex.exp` with this one.
 
 -/
+
+@[expose] public section
 
 
 namespace NormedSpace
@@ -280,7 +283,6 @@ theorem exp_add_of_commute_of_mem_ball [CharZero 𝕂] {x y : 𝔸} (hxy : Commu
   refine tsum_congr fun n => Finset.sum_congr rfl fun kl hkl => ?_
   rw [← Nat.cast_smul_eq_nsmul 𝕂, smul_smul, smul_mul_smul_comm, ← Finset.mem_antidiagonal.mp hkl,
     Nat.cast_add_choose, Finset.mem_antidiagonal.mp hkl]
-  congr 1
   field_simp [n.factorial_ne_zero]
 
 /-- `NormedSpace.exp 𝕂 x` has explicit two-sided inverse `NormedSpace.exp 𝕂 (-x)`. -/
@@ -390,7 +392,7 @@ theorem expSeries_radius_eq_top : (expSeries 𝕂 𝔸).radius = ∞ := by
       inv_div_inv, norm_mul, div_self this, norm_one, one_mul]
     apply norm_zero (E := 𝕂) ▸ Filter.Tendsto.norm
     apply (Filter.tendsto_add_atTop_iff_nat (f := fun n => (n : 𝕂)⁻¹) 1).mpr
-    exact RCLike.tendsto_inverse_atTop_nhds_zero_nat 𝕂
+    exact tendsto_inv_atTop_nhds_zero_nat
   · simp [this]
 
 theorem expSeries_radius_pos : 0 < (expSeries 𝕂 𝔸).radius := by
@@ -468,7 +470,7 @@ theorem _root_.Ring.inverse_exp (x : 𝔸) : Ring.inverse (exp 𝕂 x) = exp �
 
 theorem exp_mem_unitary_of_mem_skewAdjoint [StarRing 𝔸] [ContinuousStar 𝔸] {x : 𝔸}
     (h : x ∈ skewAdjoint 𝔸) : exp 𝕂 x ∈ unitary 𝔸 := by
-  rw [unitary.mem_iff, star_exp, skewAdjoint.mem_iff.mp h, ←
+  rw [Unitary.mem_iff, star_exp, skewAdjoint.mem_iff.mp h, ←
     exp_add_of_commute (Commute.refl x).neg_left, ← exp_add_of_commute (Commute.refl x).neg_right,
     neg_add_cancel, add_neg_cancel, exp_zero, and_self_iff]
 

@@ -3,12 +3,14 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Category.ULift
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Skeletal
-import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.Logic.UnivLE
-import Mathlib.Logic.Small.Basic
+module
+
+public import Mathlib.CategoryTheory.Category.ULift
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Skeletal
+public import Mathlib.CategoryTheory.Comma.Arrow
+public import Mathlib.Logic.UnivLE
+public import Mathlib.Logic.Small.Basic
 
 /-!
 # Essentially small categories.
@@ -22,6 +24,8 @@ A category is `w`-locally small if every hom type is `w`-small.
 The main theorem here is that a category is `w`-essentially small iff
 the type `Skeleton C` is `w`-small, and `C` is `w`-locally small.
 -/
+
+@[expose] public section
 
 
 universe w w' v v' u u'
@@ -227,9 +231,11 @@ theorem essentiallySmall_iff (C : Type u) [Category.{v} C] :
       (skeletonEquivalence (ShrinkHoms C)).symm.trans
         ((inducedFunctor (e'.trans e).symm).asEquivalence.symm)
 
-theorem essentiallySmall_of_small_of_locallySmall [Small.{w} C] [LocallySmall.{w} C] :
+instance essentiallySmall_of_small_of_locallySmall [Small.{w} C] [LocallySmall.{w} C] :
     EssentiallySmall.{w} C :=
   (essentiallySmall_iff C).2 ⟨small_of_surjective Quotient.exists_rep, by infer_instance⟩
+
+example (C : Type w) [SmallCategory C] : EssentiallySmall.{w} C := inferInstance
 
 instance small_skeleton_of_essentiallySmall [h : EssentiallySmall.{w} C] : Small.{w} (Skeleton C) :=
   essentiallySmall_iff C |>.1 h |>.1
