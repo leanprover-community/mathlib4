@@ -3,11 +3,13 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Sign.Basic
-import Mathlib.LinearAlgebra.AffineSpace.Combination
-import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
-import Mathlib.LinearAlgebra.Basis.VectorSpace
+module
+
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.Sign.Basic
+public import Mathlib.LinearAlgebra.AffineSpace.Combination
+public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # Affine independence
@@ -28,6 +30,8 @@ This file defines affinely independent families of points.
 * https://en.wikipedia.org/wiki/Affine_space
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -402,8 +406,7 @@ theorem AffineEquiv.affineIndependent_iff {p : ι → P} (e : P ≃ᵃ[k] P₂) 
 theorem AffineEquiv.affineIndependent_set_of_eq_iff {s : Set P} (e : P ≃ᵃ[k] P₂) :
     AffineIndependent k ((↑) : e '' s → P₂) ↔ AffineIndependent k ((↑) : s → P) := by
   have : e ∘ ((↑) : s → P) = ((↑) : e '' s → P₂) ∘ (e : P ≃ P₂).image s := rfl
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [← e.affineIndependent_iff, this, affineIndependent_equiv]
+  simp [← e.affineIndependent_iff, this, affineIndependent_equiv]
 
 end Composition
 
@@ -662,7 +665,7 @@ theorem affineIndependent_of_ne {p₁ p₂ : P} (h : p₁ ≠ p₂) : AffineInde
     · simp at hi
     · simp [i₁]
   haveI : Unique { x // x ≠ (0 : Fin 2) } := ⟨⟨i₁⟩, he'⟩
-  apply linearIndependent_unique
+  refine .of_subsingleton default ?_
   rw [he' default]
   simpa using h.symm
 
