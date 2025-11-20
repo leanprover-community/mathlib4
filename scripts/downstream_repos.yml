@@ -53,7 +53,7 @@
 - github: https://github.com/james18lpc/GibbsMeasure
   default_branch: main
   name: Gibbs Measures
-  zulip-contact: Kin Yau James Wong
+  zulip-contact: Yaël Dillies
   workflows:
     build: push.yml
     docs: push.yml
@@ -87,7 +87,7 @@
 - github: https://github.com/Paul-Lez/PersistentDecomp
   default_branch: master
   name: Decomposition of Persistence Modules
-  zulip-contact: Paul Lezeau
+  zulip-contact: Yaël Dillies
   workflows:
     build: push.yml
     docs: push.yml
