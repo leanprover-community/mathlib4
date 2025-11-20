@@ -5,6 +5,7 @@ Authors: Nailin Guan
 -/
 module
 
+public import Mathlib.Algebra.Category.ModuleCat.Projective
 public import Mathlib.CategoryTheory.Abelian.Projective.Dimension
 
 /-!
@@ -27,9 +28,16 @@ section
 
 lemma hasProjectiveDimensionLE_of_linearEquiv [Small.{v} R] [Small.{v'} R]
     {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R}
-    (e' : M ≃ₗ[R] N) (n : ℕ) [HasProjectiveDimensionLE M n] :
+    (e' : M ≃ₗ[R] N) (n : ℕ) [h : HasProjectiveDimensionLE M n] :
     HasProjectiveDimensionLE N n := by
-  sorry
+  induction n generalizing M N e'
+  · simp only [HasProjectiveDimensionLE, zero_add,
+      ← projective_iff_hasProjectiveDimensionLT_one] at h ⊢
+    rw [← IsProjective.iff_projective] at h ⊢
+    exact Module.Projective.of_equiv e'
+  · rename_i n ih
+
+    sorry
 
 lemma projectiveDimension_eq_of_linearEquiv [Small.{v} R] [Small.{v'} R]
     {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R} (e : M ≃ₗ[R] N) :
@@ -57,9 +65,17 @@ lemma hasProjectiveDimensionLE_of_semiLinearEquiv [Small.{v} R] [Small.{v'} R']
     {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R'}
     (e' : letI : RingHomInvPair e.toRingHom e.symm.toRingHom := RingHomInvPair.of_ringEquiv e
           letI : RingHomInvPair e.symm.toRingHom e.toRingHom := RingHomInvPair.symm _ _
-          M ≃ₛₗ[e.toRingHom] N) (n : ℕ) [HasProjectiveDimensionLE M n] :
+          M ≃ₛₗ[e.toRingHom] N) (n : ℕ) [h : HasProjectiveDimensionLE M n] :
     HasProjectiveDimensionLE N n := by
-  sorry
+  induction n generalizing M N e'
+  · simp only [HasProjectiveDimensionLE, zero_add,
+      ← projective_iff_hasProjectiveDimensionLT_one] at h ⊢
+    rw [← IsProjective.iff_projective] at h ⊢
+
+    sorry
+  · rename_i n ih
+
+    sorry
 
 lemma projectiveDimension_eq_of_semiLinearEquiv [Small.{v} R] [Small.{v'} R']
     {M : ModuleCat.{v} R} {N : ModuleCat.{v'} R'}
