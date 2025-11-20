@@ -363,7 +363,7 @@ theorem tendstoInMeasure_ae_unique [EMetricSpace E] {g h : α → E} {f : ι →
 
 end TendstoInMeasureUnique
 
-section AEStronglyMeasurableOf
+section AEMeasurableOf
 
 variable [PseudoEMetricSpace E]
 
@@ -381,7 +381,7 @@ theorem TendstoInMeasure.aemeasurable {u : Filter ι} [NeBot u] [IsCountablyGene
   obtain ⟨ns, -, hns⟩ := h_tendsto.exists_seq_tendsto_ae'
   exact aemeasurable_of_tendsto_metrizable_ae atTop (fun n => hf (ns n)) hns
 
-end AEStronglyMeasurableOf
+end AEMeasurableOf
 
 section TendstoInMeasureOf
 
