@@ -98,7 +98,7 @@ theorem Polynomial.isRegularRing_of_isRegularRing [IsRegularRing R] :
   have _ : IsLocalization pc S := {
     map_units x := by
       rcases x.2 with ⟨y, mem, eq⟩
-      apply isUnit_of_mul_eq_one _ (C (Localization.mk 1 ⟨y, mem⟩))
+      apply IsUnit.of_mul_eq_one (C (Localization.mk 1 ⟨y, mem⟩))
       simp [← eq, S, ← map_mul, ← Localization.mk_one_eq_algebraMap, Localization.mk_mul]
     surj z := by
       induction z using Polynomial.induction_on'
