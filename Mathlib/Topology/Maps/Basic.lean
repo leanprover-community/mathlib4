@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Topology.Order
-import Mathlib.Topology.NhdsSet
+module
+
+public import Mathlib.Topology.Order
+public import Mathlib.Topology.NhdsSet
 
 /-!
 # Specific classes of maps between topological spaces
@@ -41,6 +43,8 @@ This file introduces the following properties of a map `f : X → Y` between top
 open map, closed map, embedding, quotient map, identification map
 
 -/
+
+@[expose] public section
 
 
 open Set Filter Function
@@ -558,9 +562,8 @@ theorem IsClosedMap.frequently_nhds_fiber (hf : IsClosedMap f) {p : X → Prop} 
   and then go back to `isClosedMap_iff_comap_nhdsSet_le`.
   Ultimately, this makes no difference.
   -/
-  revert H
-  contrapose
-  simpa only [not_frequently, not_exists, not_and] using hf.eventually_nhds_fiber y₀
+  contrapose! H
+  exact hf.eventually_nhds_fiber y₀ H
 
 theorem IsClosedMap.closure_image_eq_of_continuous
     (f_closed : IsClosedMap f) (f_cont : Continuous f) (s : Set X) :

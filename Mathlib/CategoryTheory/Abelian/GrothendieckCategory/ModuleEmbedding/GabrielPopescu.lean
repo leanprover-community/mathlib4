@@ -3,12 +3,14 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.Algebra.Category.ModuleCat.Injective
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Connected
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Coseparator
-import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
-import Mathlib.CategoryTheory.Preadditive.LiftToFinset
-import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Injective
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Connected
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Coseparator
+public import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
+public import Mathlib.CategoryTheory.Preadditive.LiftToFinset
+public import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
 
 /-!
 # The Gabriel-Popescu theorem
@@ -30,6 +32,8 @@ The theorem as stated here implies that `C` is a Serre quotient of `ModuleCat (E
 
 * [Barry Mitchell, *A quick proof of the Gabriel-Popesco theorem*][mitchell1981]
 -/
+
+@[expose] public section
 
 universe v u
 

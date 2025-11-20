@@ -3,8 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.LinearAlgebra.Basis.VectorSpace
+module
+
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # Extended norm
@@ -36,6 +38,8 @@ We do not define extended normed groups. They can be added to the chain once som
 
 normed space, extended norm
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -156,23 +160,19 @@ theorem top_map {x : V} (hx : x ≠ 0) : (⊤ : ENormedSpace 𝕜 V) x = ⊤ :=
   if_neg hx
 
 noncomputable instance : OrderTop (ENormedSpace 𝕜 V) where
-  top := ⊤
   le_top e x := by obtain h | h := eq_or_ne x 0 <;> simp [top_map, h]
 
-noncomputable instance : SemilatticeSup (ENormedSpace 𝕜 V) :=
-  { ENormedSpace.partialOrder with
-    le := (· ≤ ·)
-    lt := (· < ·)
-    sup := fun e₁ e₂ =>
-      { toFun := fun x => max (e₁ x) (e₂ x)
-        eq_zero' := fun _ h => e₁.eq_zero_iff.1 (ENNReal.max_eq_zero_iff.1 h).1
-        map_add_le' := fun _ _ =>
-          max_le (le_trans (e₁.map_add_le _ _) <| add_le_add (le_max_left _ _) (le_max_left _ _))
-            (le_trans (e₂.map_add_le _ _) <| add_le_add (le_max_right _ _) (le_max_right _ _))
-        map_smul_le' := fun c x => le_of_eq <| by simp only [map_smul, mul_max] }
-    le_sup_left := fun _ _ _ => le_max_left _ _
-    le_sup_right := fun _ _ _ => le_max_right _ _
-    sup_le := fun _ _ _ h₁ h₂ x => max_le (h₁ x) (h₂ x) }
+noncomputable instance : SemilatticeSup (ENormedSpace 𝕜 V) where
+  sup := fun e₁ e₂ =>
+    { toFun := fun x => max (e₁ x) (e₂ x)
+      eq_zero' := fun _ h => e₁.eq_zero_iff.1 (ENNReal.max_eq_zero_iff.1 h).1
+      map_add_le' := fun _ _ =>
+        max_le (le_trans (e₁.map_add_le _ _) <| add_le_add (le_max_left _ _) (le_max_left _ _))
+          (le_trans (e₂.map_add_le _ _) <| add_le_add (le_max_right _ _) (le_max_right _ _))
+      map_smul_le' := fun c x => le_of_eq <| by simp only [map_smul, mul_max] }
+  le_sup_left := fun _ _ _ => le_max_left _ _
+  le_sup_right := fun _ _ _ => le_max_right _ _
+  sup_le := fun _ _ _ h₁ h₂ x => max_le (h₁ x) (h₂ x)
 
 @[deprecated "Use ENormedAddCommMonoid or talk to the Carleson project" (since := "2025-05-07"),
   simp, norm_cast]
