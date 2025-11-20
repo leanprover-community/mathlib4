@@ -49,13 +49,13 @@ instance isRefl_hausdorffEntourage (U : SetRel α α) [U.IsRefl] :
   ⟨fun _ => ⟨U.self_subset_preimage _, U.self_subset_image _⟩⟩
 
 @[simp]
-theorem hausdorffEntourage_inv (U : SetRel α α) :
-    hausdorffEntourage U.inv = (hausdorffEntourage U).inv :=
+theorem inv_hausdorffEntourage (U : SetRel α α) :
+    (hausdorffEntourage U).inv = hausdorffEntourage U.inv :=
   Set.ext fun _ => And.comm
 
 instance isSymm_hausdorffEntourage (U : SetRel α α) [U.IsSymm] :
     (hausdorffEntourage U).IsSymm := by
-  rw [← inv_eq_self_iff, ← hausdorffEntourage_inv, inv_eq_self]
+  rw [← inv_eq_self_iff, inv_hausdorffEntourage, inv_eq_self]
 
 theorem hausdorffEntourage_comp (U V : SetRel α α) :
     hausdorffEntourage (U ○ V) = hausdorffEntourage U ○ hausdorffEntourage V := by
@@ -94,7 +94,7 @@ protected abbrev UniformSpace.hausdorff : UniformSpace (Set α) := .ofCore
       exact isRefl_hausdorffEntourage U
     symm :=
       Filter.tendsto_lift'.mpr fun U hU => Filter.mem_of_superset
-        (Filter.mem_lift' (symm_le_uniformity hU)) (hausdorffEntourage_inv U).subset
+        (Filter.mem_lift' (symm_le_uniformity hU)) (inv_hausdorffEntourage U).symm.subset
     comp := by
       rw [Filter.le_lift']
       intro U hU
