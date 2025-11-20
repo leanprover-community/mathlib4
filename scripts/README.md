@@ -34,6 +34,12 @@ to learn about it as well!
 
   **Requirements:** `gh` (GitHub CLI) installed and authenticated (`gh auth login`).
 
+- `failing_ci.py`
+  Lists open PRs with failing CI checks and displays concise error snippets from build logs.
+  Can check all failing PRs or a specific PR by number. Excludes drafts and shows errors by default.
+  Usage: `./scripts/failing_ci.py [PR_NUMBER] [--include-drafts] [--no-errors]`
+  Requires `gh` (GitHub CLI) authenticated.
+
 **Tools for manual maintenance**
 - `fix_unused.py`
   Bulk processing of unused variable warnings, replacing them with `_`.
