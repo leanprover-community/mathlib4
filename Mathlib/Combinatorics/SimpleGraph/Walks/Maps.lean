@@ -3,8 +3,10 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
-import Mathlib.Combinatorics.SimpleGraph.Walks.Operations
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Operations
 
 /-!
 # Mapping walks between graphs
@@ -26,6 +28,8 @@ Functions that map walks between different graphs.
 ## Tags
 walks
 -/
+
+@[expose] public section
 
 namespace SimpleGraph
 

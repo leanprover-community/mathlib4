@@ -3,7 +3,9 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Walks.Basic
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Walks.Basic
 
 /-!
 # Operations on walks
@@ -24,6 +26,8 @@ Operations on walks that produce a new walk in the same graph.
 ## Tags
 walks
 -/
+
+@[expose] public section
 
 open Function
 

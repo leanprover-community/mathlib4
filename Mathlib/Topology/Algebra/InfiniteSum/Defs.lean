@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Topology.Algebra.InfiniteSum.SummationFilter
-import Mathlib.Topology.Separation.Hausdorff
-import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
+module
+
+public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Topology.Algebra.InfiniteSum.SummationFilter
+public import Mathlib.Topology.Separation.Hausdorff
+public import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
 
 /-!
 # Infinite sum and product in a topological monoid
@@ -48,6 +50,8 @@ rather than in `ℝ`.
 
 -/
 
+@[expose] public section
+
 /- **NOTE**. This file is intended to be kept short, just enough to state the basic definitions and
 six key lemmas relating them together, namely `Summable.hasSum`, `Multipliable.hasProd`,
 `HasSum.tsum_eq`, `HasProd.tprod_eq`, `Summable.hasSum_iff`, and `Multipliable.hasProd_iff`.
@@ -83,7 +87,7 @@ These are defined in an identical way to infinite sums (`HasSum`). For example, 
 the function `ℕ → ℝ` sending `n` to `1 / 2` has a product of `0`, rather than saying that it does
 not converge as some authors would. -/
 @[to_additive /-- `HasSum f a L` means that the (potentially infinite) sum of the `f b` for `b : β`
-converges to `a` along the SummationFilter `L``.
+converges to `a` along the SummationFilter `L`.
 
 By default `L` is the `unconditional` one, corresponding to the limit of all finite sets towards
 the entire type. So we take the sum over bigger and bigger finite sets. This sum operation is

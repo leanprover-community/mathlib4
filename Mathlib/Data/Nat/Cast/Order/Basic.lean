@@ -3,16 +3,20 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Data.Nat.Cast.NeZero
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+public import Mathlib.Algebra.Order.ZeroLEOne
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Data.Nat.Cast.NeZero
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # Cast of natural numbers: lemmas about order
 
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedMonoid
 

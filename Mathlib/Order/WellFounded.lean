@@ -3,8 +3,10 @@ Copyright (c) 2020 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Data.Set.Function
-import Mathlib.Order.Bounds.Defs
+module
+
+public import Mathlib.Data.Set.Function
+public import Mathlib.Order.Bounds.Defs
 
 /-!
 # Well-founded relations
@@ -17,6 +19,8 @@ The predicate `WellFounded` is defined in the core library. In this file we prov
 and provide a few new definitions: `WellFounded.min`, `WellFounded.sup`, and `WellFounded.succ`,
 and an induction principle `WellFounded.induction_bot`.
 -/
+
+@[expose] public section
 
 theorem acc_def {α} {r : α → α → Prop} {a : α} : Acc r a ↔ ∀ b, r b a → Acc r b where
   mp h := h.rec fun _ h _ ↦ h
