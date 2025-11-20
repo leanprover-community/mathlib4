@@ -3,9 +3,11 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.NumberTheory.NumberField.Discriminant.Basic
-import Mathlib.NumberTheory.NumberField.Discriminant.Different
-import Mathlib.NumberTheory.RamificationInertia.Galois
+module
+
+public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
+public import Mathlib.NumberTheory.NumberField.Discriminant.Different
+public import Mathlib.NumberTheory.RamificationInertia.Galois
 
 /-!
 # Every number field has a ramified prime over `ℚ`
@@ -15,6 +17,8 @@ This is a trivial corollary of `NumberField.not_dvd_discr_iff_forall_pow_mem` an
 `NumberField.abs_discr_gt_two` but is placed in a separate file to avoid large imports.
 
 -/
+
+@[expose] public section
 
 variable {K 𝒪 : Type*} [Field K] [NumberField K] [CommRing 𝒪] [Algebra 𝒪 K]
 variable [IsIntegralClosure 𝒪 ℤ K]
