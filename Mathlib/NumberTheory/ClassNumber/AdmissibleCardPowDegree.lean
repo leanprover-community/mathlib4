@@ -3,10 +3,12 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Polynomial.Degree.CardPowDegree
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
-import Mathlib.RingTheory.LocalRing.Basic
+module
+
+public import Mathlib.Algebra.Polynomial.Degree.CardPowDegree
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
+public import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Admissible absolute values on polynomials
@@ -19,6 +21,8 @@ use to show the class number of the ring of integers of a function field is fini
 * `Polynomial.cardPowDegreeIsAdmissible` shows `cardPowDegree`,
   mapping `p : Polynomial 𝔽_q` to `q ^ degree p`, is admissible
 -/
+
+@[expose] public section
 
 
 namespace Polynomial
@@ -44,11 +48,10 @@ theorem exists_eq_polynomial [Semiring Fq] {d : ℕ} {m : ℕ} (hm : Fintype.car
   use i₀, i₁, i_ne
   ext j
   -- The coefficients higher than `deg b` are the same because they are equal to 0.
-  by_cases hbj : degree b ≤ j
+  by_cases! hbj : degree b ≤ j
   · rw [coeff_eq_zero_of_degree_lt (lt_of_lt_of_le (hA _) hbj),
       coeff_eq_zero_of_degree_lt (lt_of_lt_of_le (hA _) hbj)]
   -- So we only need to look for the coefficients between `0` and `deg b`.
-  rw [not_le] at hbj
   apply congr_fun i_eq.symm ⟨j, _⟩
   exact lt_of_lt_of_le (coe_lt_degree.mp hbj) hb
 
@@ -75,18 +78,17 @@ theorem exists_approx_polynomial_aux [Ring Fq] {d : ℕ} {m : ℕ} (hm : Fintype
   use i₀, i₁, i_ne
   refine (degree_lt_iff_coeff_zero _ _).mpr fun j hj => ?_
   -- The coefficients higher than `deg b` are the same because they are equal to 0.
-  by_cases hbj : degree b ≤ j
+  by_cases! hbj : degree b ≤ j
   · refine coeff_eq_zero_of_degree_lt (lt_of_lt_of_le ?_ hbj)
     exact lt_of_le_of_lt (degree_sub_le _ _) (max_lt (hA _) (hA _))
   -- So we only need to look for the coefficients between `deg b - d` and `deg b`.
   rw [coeff_sub, sub_eq_zero]
-  rw [not_le, degree_eq_natDegree hb] at hbj
+  rw [degree_eq_natDegree hb] at hbj
   have hbj : j < natDegree b := (@WithBot.coe_lt_coe _ _ _).mp hbj
   have hj : natDegree b - j.succ < d := by
-    by_cases hd : natDegree b < d
+    by_cases! hd : natDegree b < d
     · exact lt_of_le_of_lt tsub_le_self hd
-    · rw [not_lt] at hd
-      have := lt_of_le_of_lt hj (Nat.lt_succ_self j)
+    · have := lt_of_le_of_lt hj (Nat.lt_succ_self j)
       rwa [tsub_lt_iff_tsub_lt hd hbj] at this
   have : j = b.natDegree - (natDegree b - j.succ).succ := by
     rw [← Nat.succ_sub hbj, Nat.succ_sub_succ, tsub_tsub_cancel_of_le hbj.le]
@@ -108,13 +110,12 @@ theorem exists_approx_polynomial {b : Fq[X]} (hb : b ≠ 0) {ε : ℝ} (hε : 0 
   have q_pos : 0 < Fintype.card Fq := by omega
   have q_pos' : (0 : ℝ) < Fintype.card Fq := by assumption_mod_cast
   -- If `b` is already small enough, then the remainders are equal and we are done.
-  by_cases le_b : b.natDegree ≤ ⌈-log ε / log (Fintype.card Fq)⌉₊
+  by_cases! le_b : b.natDegree ≤ ⌈-log ε / log (Fintype.card Fq)⌉₊
   · obtain ⟨i₀, i₁, i_ne, mod_eq⟩ :=
       exists_eq_polynomial le_rfl b le_b (fun i => A i % b) fun i => EuclideanDomain.mod_lt (A i) hb
     refine ⟨i₀, i₁, i_ne, ?_⟩
     rwa [mod_eq, sub_self, map_zero, Int.cast_zero]
   -- Otherwise, it suffices to choose two elements whose difference is of small enough degree.
-  rw [not_le] at le_b
   obtain ⟨i₀, i₁, i_ne, deg_lt⟩ := exists_approx_polynomial_aux le_rfl b (fun i => A i % b) fun i =>
     EuclideanDomain.mod_lt (A i) hb
   use i₀, i₁, i_ne

@@ -3,8 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.LinearAlgebra.Dimension.Constructions
-import Mathlib.LinearAlgebra.Dimension.Subsingleton
+module
+
+public import Mathlib.LinearAlgebra.Dimension.Constructions
+public import Mathlib.LinearAlgebra.Dimension.Subsingleton
 
 /-!
 
@@ -16,6 +18,8 @@ and are moved from the files `Mathlib/LinearAlgebra/Dimension/DivisionRing.lean`
 and `Mathlib/LinearAlgebra/FiniteDimensional.lean`.
 
 -/
+
+@[expose] public section
 
 open Cardinal Module Module Set Submodule
 
@@ -170,7 +174,8 @@ theorem Module.rank_le_one_iff_top_isPrincipal [Module.Free K V] :
   rw [← Submodule.rank_le_one_iff_isPrincipal, rank_top]
 
 /-- A module has dimension 1 iff there is some `v : V` so `{v}` is a basis.
--/
+
+See also `Module.Basis.nonempty_unique_index_of_finrank_eq_one` -/
 theorem finrank_eq_one_iff [Module.Free K V] (ι : Type*) [Unique ι] :
     finrank K V = 1 ↔ Nonempty (Basis ι K V) := by
   constructor

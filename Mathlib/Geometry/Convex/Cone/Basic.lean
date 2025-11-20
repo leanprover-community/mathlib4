@@ -3,7 +3,9 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Frédéric Dupuis
 -/
-import Mathlib.Analysis.Convex.Hull
+module
+
+public import Mathlib.Analysis.Convex.Hull
 
 /-!
 # Convex cones
@@ -35,6 +37,8 @@ While `Convex R` is a predicate on sets, `ConvexCone R M` is a bundled convex co
 * [Stephen P. Boyd and Lieven Vandenberghe, *Convex Optimization*][boydVandenberghe2004]
 * [Emo Welzl and Bernd Gärtner, *Cone Programming*][welzl_garter]
 -/
+
+@[expose] public section
 
 assert_not_exists TopologicalSpace Real Cardinal
 

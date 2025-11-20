@@ -3,10 +3,12 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Alex J. Best, Johan Commelin, Eric Rodriguez, Ruben Van de Velde
 -/
-import Mathlib.Algebra.Algebra.ZMod
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.RingTheory.Norm.Transitivity
+module
+
+public import Mathlib.Algebra.Algebra.ZMod
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.RingTheory.Norm.Transitivity
 
 /-!
 # Galois fields
@@ -29,6 +31,8 @@ It is a finite field with `p ^ n` elements.
   above result helps to classify the category of finite fields.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -230,7 +234,7 @@ theorem unitsMap_norm_surjective : Function.Surjective (Units.map <| Algebra.nor
     convert IsCyclic.card_pow_eq_one_le (α := K'ˣ) <| Nat.div_pos
       (Nat.sub_le_sub_right (Nat.card_le_card_of_injective _ (algebraMap K K').injective) _) <|
       Nat.sub_pos_of_lt Finite.one_lt_card
-    rw [← Set.ncard_coe_finset, ← SetLike.coe_sort_coe, Nat.card_coe_set_eq]; congr; ext
+    rw [← Set.ncard_coe_finset, ← SetLike.coe_sort_coe, Nat.card_coe_set_eq]; congr 1; ext
     simp [Units.ext_iff, ← (algebraMap K K').injective.eq_iff, algebraMap_norm_eq_pow]
 
 theorem norm_surjective : Function.Surjective (Algebra.norm K (S := K')) := fun k ↦ by

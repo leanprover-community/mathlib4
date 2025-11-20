@@ -3,9 +3,11 @@ Copyright (c) 2025 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Generator.Basic
-import Mathlib.CategoryTheory.Limits.Indization.Category
-import Mathlib.CategoryTheory.Preadditive.Indization
+module
+
+public import Mathlib.CategoryTheory.Generator.Basic
+public import Mathlib.CategoryTheory.Limits.Indization.Category
+public import Mathlib.CategoryTheory.Preadditive.Indization
 
 /-!
 # Separating set in the category of ind-objects
@@ -14,6 +16,8 @@ We construct a separating set in the category of ind-objects and conclude that i
 and additive, then `Ind C` has a separator.
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -25,7 +29,8 @@ section
 
 variable {C : Type u} [Category.{v} C]
 
-theorem Ind.isSeparating_range_yoneda : IsSeparating (Set.range (Ind.yoneda : C ⥤ _).obj) := by
+theorem Ind.isSeparating_range_yoneda :
+    ObjectProperty.IsSeparating (.ofObj (Ind.yoneda : C ⥤ _).obj) := by
   refine fun X Y f g h => (cancel_epi (Ind.colimitPresentationCompYoneda X).hom).1 ?_
   exact colimit.hom_ext (fun i => by simp [← Category.assoc, h])
 

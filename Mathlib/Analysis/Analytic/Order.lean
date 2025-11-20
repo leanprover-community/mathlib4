@@ -3,7 +3,9 @@ Copyright (c) 2022 Vincent Beffara. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vincent Beffara, Stefan Kebekus
 -/
-import Mathlib.Analysis.Analytic.IsolatedZeros
+module
+
+public import Mathlib.Analysis.Analytic.IsolatedZeros
 
 /-!
 # Vanishing Order of Analytic Functions
@@ -15,6 +17,8 @@ of `ℕ∞`.
 
 Uniformize API between analytic and meromorphic functions
 -/
+
+@[expose] public section
 
 open Filter  Set
 open scoped Topology
@@ -81,7 +85,7 @@ lemma AnalyticAt.analyticOrderAt_eq_natCast (hf : AnalyticAt 𝕜 f z₀) :
   unfold analyticOrderAt
   split_ifs with h
   · simp only [ENat.top_ne_coe, false_iff]
-    contrapose! h
+    contrapose h
     rw [← hf.exists_eventuallyEq_pow_smul_nonzero_iff]
     exact ⟨n, h⟩
   · rw [← hf.exists_eventuallyEq_pow_smul_nonzero_iff] at h
