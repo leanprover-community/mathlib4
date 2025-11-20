@@ -130,7 +130,7 @@ section SemilatticeInfBot
 
 variable [SemilatticeInf α] [OrderBot α] {a b c : α}
 
-@[grind =]
+-- I would like to mark this as `@[grind =]`, but it results in excessive case splitting.
 theorem disjoint_iff_inf_le : Disjoint a b ↔ a ⊓ b ≤ ⊥ :=
   ⟨fun hd ↦ hd inf_le_left inf_le_right, fun h _ ha hb ↦ (le_inf ha hb).trans h⟩
 
@@ -143,11 +143,14 @@ theorem Disjoint.le_bot : Disjoint a b → a ⊓ b ≤ ⊥ :=
 theorem Disjoint.eq_bot : Disjoint a b → a ⊓ b = ⊥ :=
   bot_unique ∘ Disjoint.le_bot
 
-theorem disjoint_assoc : Disjoint (a ⊓ b) c ↔ Disjoint a (b ⊓ c) := by grind
+theorem disjoint_assoc : Disjoint (a ⊓ b) c ↔ Disjoint a (b ⊓ c) := by
+  grind [disjoint_iff_inf_le]
 
-theorem disjoint_left_comm : Disjoint a (b ⊓ c) ↔ Disjoint b (a ⊓ c) := by grind
+theorem disjoint_left_comm : Disjoint a (b ⊓ c) ↔ Disjoint b (a ⊓ c) := by
+  grind [disjoint_iff_inf_le]
 
-theorem disjoint_right_comm : Disjoint (a ⊓ b) c ↔ Disjoint (a ⊓ c) b := by grind
+theorem disjoint_right_comm : Disjoint (a ⊓ b) c ↔ Disjoint (a ⊓ c) b := by
+  grind [disjoint_iff_inf_le]
 
 variable (c)
 
@@ -302,7 +305,7 @@ section SemilatticeSupTop
 
 variable [SemilatticeSup α] [OrderTop α] {a b c : α}
 
-@[grind =]
+-- I would like to mark this as `@[grind =]`, but it results in excessive case splitting.
 theorem codisjoint_iff_le_sup : Codisjoint a b ↔ ⊤ ≤ a ⊔ b :=
   @disjoint_iff_inf_le αᵒᵈ _ _ _ _
 
@@ -315,11 +318,14 @@ theorem Codisjoint.top_le : Codisjoint a b → ⊤ ≤ a ⊔ b :=
 theorem Codisjoint.eq_top : Codisjoint a b → a ⊔ b = ⊤ :=
   @Disjoint.eq_bot αᵒᵈ _ _ _ _
 
-theorem codisjoint_assoc : Codisjoint (a ⊔ b) c ↔ Codisjoint a (b ⊔ c) := by grind
+theorem codisjoint_assoc : Codisjoint (a ⊔ b) c ↔ Codisjoint a (b ⊔ c) := by
+  grind [codisjoint_iff_le_sup]
 
-theorem codisjoint_left_comm : Codisjoint a (b ⊔ c) ↔ Codisjoint b (a ⊔ c) := by grind
+theorem codisjoint_left_comm : Codisjoint a (b ⊔ c) ↔ Codisjoint b (a ⊔ c) := by
+  grind [codisjoint_iff_le_sup]
 
-theorem codisjoint_right_comm : Codisjoint (a ⊔ b) c ↔ Codisjoint (a ⊔ c) b := by grind
+theorem codisjoint_right_comm : Codisjoint (a ⊔ b) c ↔ Codisjoint (a ⊔ c) b := by
+  grind [codisjoint_iff_le_sup]
 
 variable (c)
 
@@ -454,7 +460,7 @@ section BoundedLattice
 variable [Lattice α] [BoundedOrder α] {x y : α}
 
 theorem of_le (h₁ : x ⊓ y ≤ ⊥) (h₂ : ⊤ ≤ x ⊔ y) : IsCompl x y :=
-  ⟨by grind, by grind⟩
+  ⟨by grind [disjoint_iff_inf_le], by grind [codisjoint_iff_le_sup]⟩
 
 theorem of_eq (h₁ : x ⊓ y = ⊥) (h₂ : x ⊔ y = ⊤) : IsCompl x y :=
   ⟨disjoint_iff.mpr h₁, codisjoint_iff.mpr h₂⟩
