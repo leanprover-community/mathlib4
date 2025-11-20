@@ -16,12 +16,13 @@ doc-string/module-doc.
 
 open Lean Elab Linter
 
+namespace Lean
+
 /-- Retrieve the `String.Range` of a `Substring`. -/
-def Substring.getRange : Substring → String.Range
+def Substring.Raw.getRange : Substring.Raw → Syntax.Range
   | {startPos := st, stopPos := en, ..} => ⟨st, en⟩
 
-#exit
-namespace Lean.Syntax
+namespace Syntax
 /-!
 # `Syntax` filters
 -/
@@ -89,10 +90,6 @@ abbrev SkippedFileSegments : Std.HashSet Name := Std.HashSet.emptyWithCapacity
   |>.insert `Util
   |>.insert `Meta
 
-/-- A convenience instance, so that we can add string positions. -/
-local instance : Add String.Pos.Raw where
-  add := fun | ⟨a⟩, ⟨b⟩ => ⟨a + b⟩
-
 @[inherit_doc Mathlib.Linter.linter.style.emptyLine]
 def emptyLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless Linter.getLinterValue linter.style.emptyLine (← getLinterOptions) do
@@ -128,17 +125,17 @@ def emptyLineLinter : Linter where run := withSetOptionIn fun stx ↦ do
           some strim.getRange
         else none
     else none
-  let trails : Std.HashSet String.Range := .ofArray trails
+  let trails : Std.HashSet Syntax.Range := .ofArray trails
   -- The entries of the array `rgs` represent
   -- * the range of the offending line breaks,
   -- * the line preceding an empty line and
   -- * the line following an empty line.
-  let mut ranges : Array (String.Range × String × String) := #[]
-  let mut currOffset := str.startPos + one.endPos + ⟨1⟩
+  let mut ranges : Array (Syntax.Range × String × String) := #[]
+  let mut currOffset := str.startPos.offsetBy (one.rawEndPos.increaseBy 1)
   let mut prev := one.takeRightWhile (· != '\n')
   for r in rest do
     ranges := ranges.push (⟨currOffset, currOffset⟩, prev, r.takeWhile (· != '\n'))
-    currOffset := currOffset + r.endPos + ⟨2⟩
+    currOffset := currOffset.offsetBy (r.rawEndPos.increaseBy 2)
     prev := r.takeRightWhile (· != '\n')
   let allowedRanges := trails.insertMany allowedRanges
   for (rg, before, after) in ranges do
