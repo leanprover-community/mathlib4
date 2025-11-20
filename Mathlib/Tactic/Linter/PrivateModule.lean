@@ -16,7 +16,7 @@ import Mathlib.Tactic.Linter.Header
 # Private module linter
 
 This linter lints against nonempty modules that have only private declarations, and suggests adding
-`@[expose] public section` to the top.
+`@[expose] public section` to the top or selectively marking declarations as `public`.
 
 ## Implementation notes
 
@@ -35,7 +35,7 @@ open Lean Elab Command Linter
 namespace Mathlib.Linter
 
 /-- The `privateModule` linter lints against nonempty modules that have only private declarations,
-and suggests adding `@[expose] public section` to the top. -/
+and suggests adding `@[expose] public section` or selectively marking declarations as `public`. -/
 public register_option linter.privateModule : Bool := {
   defValue := false
   descr := "Enable the `privateModule` linter, which lints against nonempty modules that have only \
