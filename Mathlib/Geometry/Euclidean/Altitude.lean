@@ -3,9 +3,11 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Projection
-import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
-import Mathlib.Analysis.InnerProductSpace.Affine
+module
+
+public import Mathlib.Geometry.Euclidean.Projection
+public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
+public import Mathlib.Analysis.InnerProductSpace.Affine
 
 /-!
 # Altitudes of a simplex
@@ -26,6 +28,8 @@ This file defines the altitudes of a simplex and their feet.
 * <https://en.wikipedia.org/wiki/Altitude_(triangle)>
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -129,7 +133,7 @@ theorem affineSpan_pair_eq_altitude_iff {n : ℕ} [NeZero n] (s : Simplex ℝ P 
       simpa using h
     · rw [finrank_direction_altitude, finrank_span_set_eq_card]
       · simp
-      · exact LinearIndepOn.id_singleton _ <| by simpa using hne
+      · exact .singleton <| by simpa using hne
 
 /-- The foot of an altitude is the orthogonal projection of a vertex of a simplex onto the
 opposite face. -/
@@ -182,7 +186,7 @@ lemma height_pos {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 
 open Qq Mathlib.Meta.Positivity in
 /-- Extension for the `positivity` tactic: the height of a simplex is always positive. -/
 @[positivity height _ _]
-def evalHeight : PositivityExt where eval {u α} _ _ e := do
+meta def evalHeight : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@height $V $P $i1 $i2 $i3 $i4 $n $hn $s $i) =>
     assertInstancesCommute
