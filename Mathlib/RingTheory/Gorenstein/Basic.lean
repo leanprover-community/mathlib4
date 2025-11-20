@@ -596,9 +596,9 @@ lemma supportDim_le_injectiveDimension (M : ModuleCat.{v} R) [Module.Finite R M]
       exact le_iSup_iff.mpr fun b a ↦ a q'
     · simpa [← eq] using min
   have lem' (i : ℕ) (h : i ≤ q.length) : Nontrivial (Ext.{v}
-    (ModuleCat.of (Localization (q.toFun ⟨i, Nat.lt_succ.mpr h⟩).1.1.primeCompl)
-      (Shrink.{v, u} (q.toFun ⟨i, Nat.lt_succ.mpr h⟩).1.1.ResidueField))
-    (M.localizedModule (q.toFun ⟨i, Nat.lt_succ.mpr h⟩).1.1.primeCompl) i) := by
+    (ModuleCat.of (Localization (q.toFun ⟨i, Nat.lt_succ_iff.mpr h⟩).1.1.primeCompl)
+      (Shrink.{v, u} (q.toFun ⟨i, Nat.lt_succ_iff.mpr h⟩).1.1.ResidueField))
+    (M.localizedModule (q.toFun ⟨i, Nat.lt_succ_iff.mpr h⟩).1.1.primeCompl) i) := by
     induction i
     · simp only [Fin.zero_eta, Ext.homEquiv₀.nontrivial_congr, ModuleCat.localizedModule]
       rw [ModuleCat.homAddEquiv.nontrivial_congr, ((Shrink.linearEquiv.{v} _ _).congrLeft _
@@ -615,7 +615,7 @@ lemma supportDim_le_injectiveDimension (M : ModuleCat.{v} R) [Module.Finite R M]
         (ih (Nat.le_of_succ_le h))
   have ntr : Nontrivial (Ext.{v} (ModuleCat.of R (Shrink.{v, u} (R ⧸ maximalIdeal R))) M
     q.length) := by
-    let qq := q ⟨q.length, Nat.lt_succ.mpr (le_refl q.length)⟩
+    let qq := q ⟨q.length, Nat.lt_succ_iff.mpr (le_refl q.length)⟩
     have qqeq : qq.1.1 = maximalIdeal R := tail_eq
     have ntr' : Nontrivial (Ext.{v} (ModuleCat.of (Localization qq.1.1.primeCompl)
       (Shrink.{v, u} qq.1.1.ResidueField)) (M.localizedModule qq.1.1.primeCompl) q.length) :=
