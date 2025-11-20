@@ -3,10 +3,12 @@ Copyright (c) 2025 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justin Curry, Adam Topaz
 -/
-import Mathlib.Combinatorics.Quiver.ReflQuiver
-import Mathlib.Order.CompletePartialOrder
-import Mathlib.Topology.Order.UpperLowerSetTopology
-import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
+module
+
+public import Mathlib.Combinatorics.Quiver.ReflQuiver
+public import Mathlib.Order.CompletePartialOrder
+public import Mathlib.Topology.Order.UpperLowerSetTopology
+public import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 
 /-!
 
@@ -19,6 +21,8 @@ Alexandrov topology.
 This file proves that this presheaf is a sheaf.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -64,11 +68,7 @@ def principals : X ⥤ (Opens X)ᵒᵖ where
 lemma exists_le_of_le_sup {ι : Type v} {x : X}
     (Us : ι → Opens X) (h : principalOpen x ≤ iSup Us) :
     ∃ i : ι, principalOpen x ≤ Us i := by
-  have : x ∈ iSup Us := h <| self_mem_principalOpen x
-  simp only [Opens.mem_iSup] at this
-  obtain ⟨i, hi⟩ := this
-  refine ⟨i, ?_⟩
-  simpa
+  grind [principalOpen_le_iff, Opens.mem_iSup]
 
 /-- The right kan extension of `F` along `X ⥤ (Opens X)ᵒᵖ`. -/
 abbrev principalsKanExtension : (Opens X)ᵒᵖ ⥤ C :=

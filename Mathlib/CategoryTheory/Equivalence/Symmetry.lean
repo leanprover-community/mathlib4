@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Equivalence
-import Mathlib.CategoryTheory.Adjunction.Mates
+module
+
+public import Mathlib.CategoryTheory.Equivalence
+public import Mathlib.CategoryTheory.Adjunction.Mates
 
 /-!
 # Functoriality of the symmetry of equivalences
@@ -23,6 +25,8 @@ and provides the definition of the functor that takes an equivalence to its inve
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open CategoryTheory.Functor NatIso Category
@@ -36,7 +40,7 @@ variable (C : Type*) [Category C] (D : Type*) [Category D]
 def symmEquivFunctor : (C ≌ D) ⥤ (D ≌ C)ᵒᵖ where
   obj e := Opposite.op e.symm
   map {e f} α := (mkHom <| conjugateEquiv f.toAdjunction e.toAdjunction <| asNatTrans α).op
-  map_comp _ _ := Quiver.Hom.unop_inj (by aesop_cat)
+  map_comp _ _ := Quiver.Hom.unop_inj (by cat_disch)
 
 /-- The inverse functor of the equivalence `(C ≌ D) ≌ (D ≌ C)ᵒᵖ`. -/
 @[simps!]
@@ -45,7 +49,7 @@ def symmEquivInverse : (D ≌ C)ᵒᵖ ⥤ (C ≌ D) :=
     { obj e := Opposite.op e.symm
       map {e f} α := Quiver.Hom.op <| mkHom <|
         conjugateEquiv e.symm.toAdjunction f.symm.toAdjunction |>.invFun <| asNatTrans α
-      map_comp _ _ := Quiver.Hom.unop_inj (by aesop_cat) }
+      map_comp _ _ := Quiver.Hom.unop_inj (by cat_disch) }
 
 /-- Taking the symmetric of an equivalence induces an equivalence of categories
 `(C ≌ D) ≌ (D ≌ C)ᵒᵖ`. -/
@@ -81,9 +85,9 @@ an isomorphism `e ≌ f` via `inverseFunctor` with the way we get one through
 lemma inverseFunctorMapIso_symm_eq_isoInverseOfIsoFunctor {e f : C ≌ D} (α : e ≅ f) :
     Iso.unop ((inverseFunctor C D).mapIso α.symm) =
     Iso.isoInverseOfIsoFunctor ((functorFunctor _ _).mapIso α) := by
-  aesop_cat
+  cat_disch
 
-/-- An "unopped" version of the equivalence `inverseFunctorObj'. -/
+/-- An "unopped" version of the equivalence `inverseFunctorObj'`. -/
 @[simps!]
 def inverseFunctorObj' (e : C ≌ D) :
     Opposite.unop ((inverseFunctor C D).obj e) ≅ e.inverse :=

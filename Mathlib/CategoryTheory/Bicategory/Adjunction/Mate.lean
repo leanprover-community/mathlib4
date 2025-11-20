@@ -3,8 +3,10 @@ Copyright (c) 2025 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Joël Riou
 -/
-import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
-import Mathlib.CategoryTheory.HomCongr
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
+public import Mathlib.CategoryTheory.HomCongr
 
 /-!
 # Mates in bicategories
@@ -41,6 +43,8 @@ To be precise, the definitions in `Mathlib/CategoryTheory/Adjunction/Mates.lean`
 polymorphic, so they are not simple specializations of the definitions in this file.
 
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -121,19 +125,22 @@ variable (adj₁ : l₁ ⊣ r₁) (adj₂ : l₂ ⊣ r₂)
 
 /-- Suppose we have a square of 1-morphisms (where the top and bottom are adjunctions `l₁ ⊣ r₁`
 and `l₂ ⊣ r₂` respectively).
-
+```
       c ↔ d
     g ↓   ↓ h
       e ↔ f
+```
 
 Then we have a bijection between natural transformations `g ≫ l₂ ⟶ l₁ ≫ h` and
 `r₁ ≫ g ⟶ h ≫ r₂`. This can be seen as a bijection of the 2-cells:
 
+```
          l₁                  r₁
       c --→ d             c ←-- d
     g ↓  ↗  ↓ h         g ↓  ↘  ↓ h
       e --→ f             e ←-- f
          L₂                  R₂
+```
 
 Note that if one of the transformations is an iso, it does not imply the other is an iso.
 -/
@@ -626,11 +633,13 @@ variable {l₁ : a ⟶ b} {r₁ : b ⟶ a} {l₂ : c ⟶ d} {r₂ : d ⟶ c}
 variable (adj₁ : l₁ ⊣ r₁) (adj₂ : l₂ ⊣ r₂) (adj₃ : f₁ ⊣ u₁) (adj₄ : f₂ ⊣ u₂)
 
 /-- When all four morphisms in a square are left adjoints, the mates operation can be iterated:
+```
          l₁                  r₁                  r₁
       c --→ d             c ←-- d             c ←-- d
    f₁ ↓  ↗  ↓  f₂      f₁ ↓  ↘  ↓ f₂       u₁ ↑  ↙  ↑ u₂
       a --→ b             a ←-- b             a ←-- b
          l₂                  r₂                  r₂
+```
 In this case the iterated mate equals the conjugate of the original 2-morphism and is thus an
 isomorphism if and only if the original 2-morphism is. This explains why some Beck-Chevalley
 2-morphisms are isomorphisms.
@@ -660,7 +669,7 @@ variable (adj₁ : l₁ ⊣ r₁) (adj₂ : l₂ ⊣ r₂) (adj₃ : l₃ ⊣ r�
 /-- Composition of a squares between left adjoints with a conjugate square. -/
 def leftAdjointSquareConjugate.vcomp (α : g ≫ l₂ ⟶ l₁ ≫ h) (β : l₃ ⟶ l₂) :
     g ≫ l₃ ⟶ l₁ ≫ h :=
-   g ◁ β ≫ α
+  g ◁ β ≫ α
 
 /-- Composition of a squares between right adjoints with a conjugate square. -/
 def rightAdjointSquareConjugate.vcomp (α : r₁ ≫ g ⟶ h ≫ r₂) (β : r₂ ⟶ r₃) :

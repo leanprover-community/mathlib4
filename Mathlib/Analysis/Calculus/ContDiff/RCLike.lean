@@ -3,12 +3,16 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Defs
-import Mathlib.Analysis.Calculus.MeanValue
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
+public import Mathlib.Analysis.Calculus.MeanValue
 
 /-!
 # Higher differentiability over `ℝ` or `ℂ`
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -28,7 +32,7 @@ variable {n : WithTop ℕ∞} {𝕂 : Type*} [RCLike 𝕂] {E' : Type*} [NormedA
   [NormedSpace 𝕂 E'] {F' : Type*} [NormedAddCommGroup F'] [NormedSpace 𝕂 F']
 
 /-- If a function has a Taylor series at order at least 1, then at points in the interior of the
-    domain of definition, the term of order 1 of this series is a strict derivative of `f`. -/
+domain of definition, the term of order 1 of this series is a strict derivative of `f`. -/
 theorem HasFTaylorSeriesUpToOn.hasStrictFDerivAt {n : WithTop ℕ∞}
     {s : Set E'} {f : E' → F'} {x : E'}
     {p : E' → FormalMultilinearSeries 𝕂 E' F'} (hf : HasFTaylorSeriesUpToOn n f p s) (hn : 1 ≤ n)

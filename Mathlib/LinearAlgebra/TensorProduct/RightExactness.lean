@@ -3,11 +3,12 @@ Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Algebra.Exact
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.RingTheory.TensorProduct.Basic
+public import Mathlib.Algebra.Exact
+public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-! # Right-exactness properties of tensor product
 
@@ -83,6 +84,10 @@ to compute some kernels.
   Trans. Amer. Math. Soc. 138 (1969), 281-293, doi:10.1090/S0002-9947-1969-0237688-1 .)
 
 -/
+
+@[expose] public section
+
+assert_not_exists Cardinal
 
 section Modules
 
@@ -221,9 +226,8 @@ lemma lTensor.inverse_of_rightInverse_apply
   apply LinearMap.congr_fun
   apply TensorProduct.ext'
   intro n q
-  simp? [lTensor.inverse_of_rightInverse] says
-    simp only [inverse_of_rightInverse, coe_comp, Function.comp_apply, lTensor_tmul,
-      lift.tmul, flip_apply, coe_mk, AddHom.coe_mk, mk_apply, Submodule.mkQ_apply]
+  suffices Submodule.Quotient.mk (n ⊗ₜ[R] h (g q)) = Submodule.Quotient.mk (n ⊗ₜ[R] q) by
+    simpa
   rw [Submodule.Quotient.eq, ← TensorProduct.tmul_sub]
   apply le_comap_range_lTensor f n
   rw [← hfg, mem_ker, map_sub, sub_eq_zero, hgh]
@@ -289,7 +293,7 @@ theorem lTensor_exact : Exact (lTensor Q f) (lTensor Q g) := by
 
 /-- Right-exactness of tensor product -/
 lemma lTensor_mkQ (N : Submodule R M) :
-    ker (lTensor Q (N.mkQ)) = range (lTensor Q N.subtype) := by
+    ker (lTensor Q N.mkQ) = range (lTensor Q N.subtype) := by
   rw [← exact_iff]
   exact lTensor_exact Q (LinearMap.exact_subtype_mkQ N) (Submodule.mkQ_surjective N)
 
@@ -328,9 +332,7 @@ lemma rTensor.inverse_of_rightInverse_apply
   apply LinearMap.congr_fun
   apply TensorProduct.ext'
   intro n q
-  simp? [rTensor.inverse_of_rightInverse] says
-    simp only [inverse_of_rightInverse, coe_comp, Function.comp_apply, rTensor_tmul,
-      lift.tmul, coe_mk, AddHom.coe_mk, mk_apply, Submodule.mkQ_apply]
+  suffices Submodule.Quotient.mk (h (g n) ⊗ₜ[R] q) = Submodule.Quotient.mk (n ⊗ₜ[R] q) by simpa
   rw [Submodule.Quotient.eq, ← TensorProduct.sub_tmul]
   apply le_comap_range_rTensor f
   rw [← hfg, mem_ker, map_sub, sub_eq_zero, hgh]

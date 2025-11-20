@@ -3,12 +3,14 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Topology.Algebra.Algebra
-import Mathlib.Topology.ContinuousMap.Compact
-import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Analysis.Normed.Ring.Units
-import Mathlib.Topology.Algebra.Module.CharacterSpace
+module
+
+public import Mathlib.Topology.Algebra.Algebra
+public import Mathlib.Topology.ContinuousMap.Compact
+public import Mathlib.Topology.UrysohnsLemma
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Analysis.Normed.Ring.Units
+public import Mathlib.Topology.Algebra.Module.CharacterSpace
 
 /-!
 # Ideals of continuous functions
@@ -66,6 +68,8 @@ order isomorphism described above, and instead we only consider the Galois inser
 
 ideal, continuous function, compact, Hausdorff
 -/
+
+@[expose] public section
 
 
 open scoped NNReal
@@ -238,7 +242,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
   /- There is some `g' : C(X, ℝ≥0)` which is strictly positive on `t` such that the composition
     `↑g` with the natural embedding of `ℝ≥0` into `𝕜` lies in `I`. This follows from compactness of
     `t` and that we can do it in any neighborhood of a point `x ∈ t`. Indeed, since `x ∈ t`, then
-    `fₓ x ≠ 0` for some `fₓ ∈ I` and so `fun y ↦ ‖(star fₓ * fₓ) y‖₊` is strictly posiive in a
+    `fₓ x ≠ 0` for some `fₓ ∈ I` and so `fun y ↦ ‖(star fₓ * fₓ) y‖₊` is strictly positive in a
     neighborhood of `y`. Moreover, `(‖(star fₓ * fₓ) y‖₊ : 𝕜) = (star fₓ * fₓ) y`, so composition of
     this map with the natural embedding is just `star fₓ * fₓ ∈ I`. -/
   have : ∃ g' : C(X, ℝ≥0), (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g' ∈ I ∧ ∀ x ∈ t, 0 < g' x := by

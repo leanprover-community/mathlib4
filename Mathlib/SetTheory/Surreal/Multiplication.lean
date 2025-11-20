@@ -3,8 +3,15 @@ Copyright (c) 2024 Theodore Hwa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kim Morrison, Violeta Hernández Palacios, Junyan Xu, Theodore Hwa
 -/
-import Mathlib.Logic.Hydra
-import Mathlib.SetTheory.Surreal.Basic
+module
+
+public import Mathlib.Logic.Hydra
+public import Mathlib.SetTheory.Surreal.Basic
+public import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Surreal.Multiplication` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 ### Surreal multiplication
@@ -61,6 +68,8 @@ The whole proof features a clear separation into lemmas of different roles:
 * [Schleicher, Stoll, *An introduction to Conway's games and numbers*][SchleicherStoll]
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -419,7 +428,7 @@ theorem P3_of_lt {y₁ y₂} (h : ∀ i, IH3 x₁ (x₂.moveLeft i) x₂ y₁ y�
 /-- The main chunk of Theorem 8 in [Conway2001] / Theorem 3.8 in [SchleicherStoll]. -/
 theorem main (a : Args) : a.Numeric → P124 a := by
   apply argsRel_wf.induction a
-  intros a ih ha
+  intro a ih ha
   replace ih : ∀ a', ArgsRel a' a → P124 a' := fun a' hr ↦ ih a' hr (hr.numeric_closed ha)
   cases a with
   /- P1 -/

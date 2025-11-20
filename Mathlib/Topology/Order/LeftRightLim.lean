@@ -3,8 +3,10 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.Order.LeftRight
-import Mathlib.Topology.Order.Monotone
+module
+
+public import Mathlib.Topology.Order.LeftRight
+public import Mathlib.Topology.Order.Monotone
 
 /-!
 # Left and right limits
@@ -30,6 +32,8 @@ We also port the API to antitone functions.
 Prove corresponding stronger results for `StrictMono` and `StrictAnti` functions.
 -/
 
+@[expose] public section
+
 
 open Set Filter
 
@@ -52,7 +56,7 @@ noncomputable def Function.leftLim (f : α → β) (a : α) : β := by
 /-- Let `f : α → β` be a function from a linear order `α` to a topological space `β`, and
 let `a : α`. The limit strictly to the right of `f` at `a`, denoted with `rightLim f a`, is defined
 by using the order topology on `α`. If `a` is isolated to its right or the function has no right
-limit, , we use `f a` instead to guarantee a good behavior in most cases. -/
+limit, we use `f a` instead to guarantee a good behavior in most cases. -/
 noncomputable def Function.rightLim (f : α → β) (a : α) : β :=
   @Function.leftLim αᵒᵈ β _ _ f a
 

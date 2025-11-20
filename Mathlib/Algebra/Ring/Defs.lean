@@ -3,18 +3,19 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Data.Int.Cast.Defs
-import Mathlib.Tactic.Spread
-import Mathlib.Util.AssertExists
-import Mathlib.Tactic.StacksAttribute
+module
+
+public import Mathlib.Algebra.GroupWithZero.Defs
+public import Mathlib.Data.Int.Cast.Defs
+public import Mathlib.Tactic.Spread
+public import Mathlib.Tactic.StacksAttribute
 
 /-!
 # Semirings and rings
 
-This file defines semirings, rings and domains. This is analogous to `Algebra.Group.Defs` and
-`Algebra.Group.Basic`, the difference being that the former is about `+` and `*` separately, while
+This file defines semirings, rings and domains. This is analogous to
+`Mathlib/Algebra/Group/Defs.lean` and `Mathlib/Algebra/Group/Basic.lean`, the difference being that
+those are about `+` and `*` separately, while the present file is about their interaction.
 the present file is about their interaction.
 
 ## Main definitions
@@ -33,6 +34,8 @@ the present file is about their interaction.
 
 `Semiring`, `CommSemiring`, `Ring`, `CommRing`, domain, `IsDomain`, nonzero, units
 -/
+
+@[expose] public section
 
 
 /-!
@@ -168,11 +171,9 @@ section NonAssocSemiring
 
 variable [NonAssocSemiring α]
 
--- Porting note: was [has_add α] [mul_one_class α] [right_distrib_class α]
 theorem two_mul (n : α) : 2 * n = n + n :=
   (congrArg₂ _ one_add_one_eq_two.symm rfl).trans <| (right_distrib 1 1 n).trans (by rw [one_mul])
 
--- Porting note: was [has_add α] [mul_one_class α] [left_distrib_class α]
 theorem mul_two (n : α) : n * 2 = n + n :=
   (congrArg₂ _ rfl one_add_one_eq_two.symm).trans <| (left_distrib n 1 1).trans (by rw [mul_one])
 
@@ -313,7 +314,6 @@ section NonUnitalNonAssocRing
 variable [NonUnitalNonAssocRing α]
 
 instance (priority := 100) NonUnitalNonAssocRing.toHasDistribNeg : HasDistribNeg α where
-  neg := Neg.neg
   neg_neg := neg_neg
   neg_mul a b := eq_neg_of_add_eq_zero_left <| by rw [← right_distrib, neg_add_cancel, zero_mul]
   mul_neg a b := eq_neg_of_add_eq_zero_left <| by rw [← left_distrib, neg_add_cancel, mul_zero]
@@ -388,7 +388,7 @@ instance (priority := 100) CommRing.toAddCommGroupWithOne [s : CommRing α] :
     AddCommGroupWithOne α :=
   { s with }
 
-/-- A domain is a nontrivial semiring such that multiplication by a non zero element
+/-- A domain is a nontrivial semiring such that multiplication by a nonzero element
 is cancellative on both sides. In other words, a nontrivial semiring `R` satisfying
 `∀ {a b c : R}, a ≠ 0 → a * b = a * c → b = c` and
 `∀ {a b c : R}, b ≠ 0 → a * b = c * b → a = c`.

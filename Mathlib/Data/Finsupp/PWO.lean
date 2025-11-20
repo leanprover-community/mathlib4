@@ -3,25 +3,29 @@ Copyright (c) 2022 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best
 -/
-import Mathlib.Data.Finsupp.Order
-import Mathlib.Order.WellFoundedSet
+module
+
+public import Mathlib.Order.Preorder.Finsupp
+public import Mathlib.Order.WellFoundedSet
 
 /-!
 # Partial well ordering on finsupps
 
 This file contains the fact that finitely supported functions from a fintype are
-partially well ordered when the codomain is a linear order that is well ordered.
+partially well-ordered when the codomain is a linear order that is well ordered.
 It is in a separate file for now so as to not add imports to the file `Order.WellFoundedSet`.
 
 ## Main statements
 
-* `Finsupp.isPWO` - finitely supported functions from a fintype are partially well ordered when
+* `Finsupp.isPWO` - finitely supported functions from a fintype are partially well-ordered when
   the codomain is a linear order that is well ordered
 
 ## Tags
 
 Dickson, order, partial well order
 -/
+
+@[expose] public section
 
 
 /-- A version of **Dickson's lemma** any subset of functions `σ →₀ α` is partially well

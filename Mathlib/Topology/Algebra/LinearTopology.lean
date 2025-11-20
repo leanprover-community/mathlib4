@@ -3,10 +3,11 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Anatole Dedecker
 -/
+module
 
-import Mathlib.RingTheory.TwoSidedIdeal.Operations
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.Algebra.OpenSubgroup
+public import Mathlib.RingTheory.TwoSidedIdeal.Operations
+public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-! # Linear topologies on modules and rings
 
@@ -58,10 +59,10 @@ hence our definition agrees with [N. Bourbaki, *Algebra II*, chapter 4, §2, n°
   (invariance by translation) would be enough. In fact, in presence of `IsLinearTopology R M`,
   invariance by translation implies that `M` is a topological additive group on which `R` acts
   by homeomorphisms. Similarly, `IsLinearTopology R R` and `ContinuousConstVAdd R R` imply that
-  `R` is a topological ring. All of this will follow from PR#18437.
+  `R` is a topological ring. All of this will follow from https://github.com/leanprover-community/mathlib4/issues/18437.
 
   Nevertheless, we don't plan on adding those facts as instances: one should use directly
-  results from PR#18437 to get `IsTopologicalAddGroup` and `IsTopologicalRing` instances.
+  results from https://github.com/leanprover-community/mathlib4/issues/18437 to get `IsTopologicalAddGroup` and `IsTopologicalRing` instances.
 
 * The main constructor for `IsLinearTopology`, `IsLinearTopology.mk_of_hasBasis`
   is formulated in terms of the subobject classes `AddSubmonoidClass` and `SMulMemClass`
@@ -74,6 +75,8 @@ hence our definition agrees with [N. Bourbaki, *Algebra II*, chapter 4, §2, n°
   types), thus we provide `IsLinearTopology.mk_of_hasBasis'` as an alternative not relying on
   typeclass inference.
 -/
+
+@[expose] public section
 
 open scoped Topology
 open Filter

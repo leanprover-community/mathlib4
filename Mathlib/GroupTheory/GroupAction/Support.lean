@@ -3,17 +3,21 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+module
+
+public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 
 /-!
-# Support of an element under an action action
+# Support of an element under an action
 
 Given an action of a group `G` on a type `α`, we say that a set `s : Set α` supports an element
 `a : α` if, for all `g` that fix `s` pointwise, `g` fixes `a`.
 
 This is crucial in Fourier-Motzkin constructions.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -28,7 +32,7 @@ section SMul
 variable (G) [SMul G α] [SMul G β]
 
 /-- A set `s` supports `b` if `g • b = b` whenever `g • a = a` for all `a ∈ s`. -/
-@[to_additive "A set `s` supports `b` if `g +ᵥ b = b` whenever `g +ᵥ a = a` for all `a ∈ s`."]
+@[to_additive /-- A set `s` supports `b` if `g +ᵥ b = b` whenever `g +ᵥ a = a` for all `a ∈ s`. -/]
 def Supports (s : Set α) (b : β) :=
   ∀ g : G, (∀ ⦃a⦄, a ∈ s → g • a = a) → g • b = b
 

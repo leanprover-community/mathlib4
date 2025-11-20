@@ -130,7 +130,7 @@ theorem by turning on the option `trace.Meta.Tactic.fun_prop.attr`.
 /-!
 Transition theorems prove one function property from another. We already mentioned
 that continuity implies measurability but there are many more. For example differentiability
-implies continuity, linear map between finitely dimensional spaces is continuous etc.
+implies continuity, linear map between finitely-dimensional spaces is continuous etc.
 
 The theorem proving measurability from continuity is `Continuous.measurable` so let's
 mark it with `@[fun_prop]`

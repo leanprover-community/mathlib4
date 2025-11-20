@@ -3,10 +3,12 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Comma.Over.Pullback
-import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Assoc
+module
+
+public import Mathlib.CategoryTheory.Comma.Over.Pullback
+public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Assoc
 
 /-!
 # The diagonal object of a morphism.
@@ -15,6 +17,8 @@ We provide various API and isomorphisms considering the diagonal object `Δ_{Y/X
 of a morphism `f : X ⟶ Y`.
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -198,7 +202,7 @@ theorem pullback_fst_map_snd_isPullback :
         (by simp [condition])) :=
   IsPullback.of_iso_pullback ⟨by ext <;> simp [condition_assoc]⟩
     (pullbackDiagonalMapIso f i i₁ i₂).symm (pullbackDiagonalMapIso.inv_fst f i i₁ i₂)
-    (by aesop_cat)
+    (by cat_disch)
 
 end
 

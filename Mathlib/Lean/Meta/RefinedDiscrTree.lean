@@ -3,8 +3,10 @@ Copyright (c) 2024 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
-import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
+module
+
+public import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
+public import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
 
 /-!
 A discrimination tree for the purpose of unifying local expressions with library results.
@@ -23,7 +25,7 @@ and includes many more features.
   we need to index both `p` and `q`. `Key.bvar` works the same as `Key.fvar`, but stores the
   De Bruijn index to identify the variable.
 
-  For example, this allows for more specific matching with the left hand side of
+  For example, this allows for more specific matching with the left-hand side of
   `∑ i ∈ Finset.range n, i = n * (n - 1) / 2`, which is indexed by
   `[⟨Finset.sum, 5⟩, ⟨Nat, 0⟩, ⟨Nat, 0⟩, *0, ⟨Finset.Range, 1⟩, *1, λ, ⟨#0, 0⟩]`.
 
@@ -96,6 +98,8 @@ matching, the lookup algorithm is most optimized for matching.
 Improve the unification lookup.
 
 -/
+
+public section
 
 namespace Lean.Meta.RefinedDiscrTree
 

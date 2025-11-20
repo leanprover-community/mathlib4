@@ -3,9 +3,11 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Topology.MetricSpace.HausdorffDistance
-import Mathlib.Topology.Sets.Compacts
+module
+
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Topology.MetricSpace.HausdorffDistance
+public import Mathlib.Topology.Sets.Compacts
 
 /-!
 # Closed subsets
@@ -22,9 +24,9 @@ inherits a metric space structure from the Hausdorff distance, as the Hausdorff 
 always finite in this context.
 -/
 
-noncomputable section
+@[expose] public section
 
-universe u
+noncomputable section
 
 open Set Function TopologicalSpace Filter Topology ENNReal
 
@@ -32,7 +34,7 @@ namespace EMetric
 
 section
 
-variable {α : Type u} [EMetricSpace α] {s : Set α}
+variable {α β : Type*} [EMetricSpace α] [EMetricSpace β] {s : Set α}
 
 /-- In emetric spaces, the Hausdorff edistance defines an emetric space structure
 on the type of closed subsets -/
@@ -61,7 +63,7 @@ theorem continuous_infEdist_hausdorffEdist :
     _ = infEdist y t + 2 * edist (x, s) (y, t) := by rw [← mul_two, mul_comm]
 
 /-- Subsets of a given closed subset form a closed set -/
-theorem isClosed_subsets_of_isClosed (hs : IsClosed s) :
+theorem Closeds.isClosed_subsets_of_isClosed (hs : IsClosed s) :
     IsClosed { t : Closeds α | (t : Set α) ⊆ s } := by
   refine isClosed_of_closure_subset fun
     (t : Closeds α) (ht : t ∈ closure {t : Closeds α | (t : Set α) ⊆ s}) (x : α) (hx : x ∈ t) => ?_
@@ -72,6 +74,9 @@ theorem isClosed_subsets_of_isClosed (hs : IsClosed s) :
     obtain ⟨y : α, hy : y ∈ u, Dxy : edist x y < ε⟩ := exists_edist_lt_of_hausdorffEdist_lt hx Dtu
     exact ⟨y, hu hy, Dxy⟩
   rwa [hs.closure_eq] at this
+
+@[deprecated (since := "2025-08-20")]
+alias isClosed_subsets_of_isClosed := Closeds.isClosed_subsets_of_isClosed
 
 /-- By definition, the edistance on `Closeds α` is given by the Hausdorff edistance -/
 theorem Closeds.edist_eq {s t : Closeds α} : edist s t = hausdorffEdist (s : Set α) t :=
@@ -131,7 +136,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
         mem_closure_of_tendsto y_lim
           (by
             simp only [exists_prop, Set.mem_iUnion, Filter.eventually_atTop]
-            exact ⟨k, fun m hm => ⟨n + m, by omega, (z m).2⟩⟩)
+            exact ⟨k, fun m hm => ⟨n + m, by cutsat, (z m).2⟩⟩)
     use this
     -- Then, we check that `y` is close to `x = z n`. This follows from the fact that `y`
     -- is the limit of `z k`, and the distance between `z n` and `z k` has already been estimated.
@@ -180,8 +185,7 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
         start from a set `s` which is ε-dense in α. Then the subsets of `s`
         are finitely many, and ε-dense for the Hausdorff distance. -/
     refine
-      isCompact_of_totallyBounded_isClosed (EMetric.totallyBounded_iff.2 fun ε εpos => ?_)
-        isClosed_univ
+      (EMetric.totallyBounded_iff.2 fun ε εpos => ?_).isCompact_of_isClosed isClosed_univ
     rcases exists_between εpos with ⟨δ, δpos, δlt⟩
     obtain ⟨s : Set α, fs : s.Finite, hs : univ ⊆ ⋃ y ∈ s, ball y δ⟩ :=
       EMetric.totallyBounded_iff.1
@@ -219,9 +223,18 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
       apply mem_iUnion₂.2
       exact ⟨t, ‹t ∈ F›, this⟩⟩
 
+theorem Closeds.isometry_singleton : Isometry (Closeds.singleton (α := α)) :=
+  fun _ _ => hausdorffEdist_singleton
+
+theorem Closeds.lipschitz_sup :
+    LipschitzWith 1 fun p : Closeds α × Closeds α => p.1 ⊔ p.2 :=
+  .of_edist_le fun _ _ => hausdorffEdist_union_le
+
+namespace NonemptyCompacts
+
 /-- In an emetric space, the type of non-empty compact subsets is an emetric space,
 where the edistance is the Hausdorff edistance -/
-instance NonemptyCompacts.emetricSpace : EMetricSpace (NonemptyCompacts α) where
+instance emetricSpace : EMetricSpace (NonemptyCompacts α) where
   edist s t := hausdorffEdist (s : Set α) t
   edist_self _ := hausdorffEdist_self
   edist_comm _ _ := hausdorffEdist_comm
@@ -230,13 +243,29 @@ instance NonemptyCompacts.emetricSpace : EMetricSpace (NonemptyCompacts α) wher
     have : closure (s : Set α) = closure t := hausdorffEdist_zero_iff_closure_eq_closure.1 h
     rwa [s.isCompact.isClosed.closure_eq, t.isCompact.isClosed.closure_eq] at this
 
+/-- `NonemptyCompacts.toCloseds` is an isometry -/
+theorem isometry_toCloseds : Isometry (@NonemptyCompacts.toCloseds α _ _) :=
+  fun _ _ => rfl
+
 /-- `NonemptyCompacts.toCloseds` is a uniform embedding (as it is an isometry) -/
-theorem NonemptyCompacts.ToCloseds.isUniformEmbedding :
+theorem isUniformEmbedding_toCloseds :
     IsUniformEmbedding (@NonemptyCompacts.toCloseds α _ _) :=
-  Isometry.isUniformEmbedding fun _ _ => rfl
+  isometry_toCloseds.isUniformEmbedding
+
+@[deprecated (since := "2025-08-20")]
+alias ToCloseds.isUniformEmbedding := isUniformEmbedding_toCloseds
+
+/-- `NonemptyCompacts.toCloseds` is continuous (as it is an isometry) -/
+@[fun_prop]
+theorem continuous_toCloseds : Continuous (@NonemptyCompacts.toCloseds α _ _) :=
+  isometry_toCloseds.continuous
+
+lemma isClosed_subsets_of_isClosed (hs : IsClosed s) :
+    IsClosed {A : NonemptyCompacts α | (A : Set α) ⊆ s} :=
+  (Closeds.isClosed_subsets_of_isClosed hs).preimage continuous_toCloseds
 
 /-- The range of `NonemptyCompacts.toCloseds` is closed in a complete space -/
-theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
+theorem isClosed_in_closeds [CompleteSpace α] :
     IsClosed (range <| @NonemptyCompacts.toCloseds α _ _) := by
   have :
     range NonemptyCompacts.toCloseds =
@@ -275,20 +304,20 @@ theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
 
 /-- In a complete space, the type of nonempty compact subsets is complete. This follows
 from the same statement for closed subsets -/
-instance NonemptyCompacts.completeSpace [CompleteSpace α] : CompleteSpace (NonemptyCompacts α) :=
+instance completeSpace [CompleteSpace α] : CompleteSpace (NonemptyCompacts α) :=
   (completeSpace_iff_isComplete_range
-        NonemptyCompacts.ToCloseds.isUniformEmbedding.isUniformInducing).2 <|
-    NonemptyCompacts.isClosed_in_closeds.isComplete
+        isometry_toCloseds.isUniformInducing).2 <|
+    isClosed_in_closeds.isComplete
 
 /-- In a compact space, the type of nonempty compact subsets is compact. This follows from
 the same statement for closed subsets -/
-instance NonemptyCompacts.compactSpace [CompactSpace α] : CompactSpace (NonemptyCompacts α) :=
+instance compactSpace [CompactSpace α] : CompactSpace (NonemptyCompacts α) :=
   ⟨by
-    rw [NonemptyCompacts.ToCloseds.isUniformEmbedding.isEmbedding.isCompact_iff, image_univ]
-    exact NonemptyCompacts.isClosed_in_closeds.isCompact⟩
+    rw [isometry_toCloseds.isEmbedding.isCompact_iff, image_univ]
+    exact isClosed_in_closeds.isCompact⟩
 
 /-- In a second countable space, the type of nonempty compact subsets is second countable -/
-instance NonemptyCompacts.secondCountableTopology [SecondCountableTopology α] :
+instance secondCountableTopology [SecondCountableTopology α] :
     SecondCountableTopology (NonemptyCompacts α) :=
   haveI : SeparableSpace (NonemptyCompacts α) := by
     /- To obtain a countable dense subset of `NonemptyCompacts α`, start from
@@ -363,6 +392,19 @@ instance NonemptyCompacts.secondCountableTopology [SecondCountableTopology α] :
       exact ⟨d, ‹d ∈ v›, Dtc⟩
   UniformSpace.secondCountable_of_separable (NonemptyCompacts α)
 
+theorem isometry_singleton : Isometry ({·} : α → NonemptyCompacts α) :=
+  fun _ _ => hausdorffEdist_singleton
+
+theorem lipschitz_sup :
+    LipschitzWith 1 fun p : NonemptyCompacts α × NonemptyCompacts α => p.1 ⊔ p.2 :=
+  .of_edist_le fun _ _ => hausdorffEdist_union_le
+
+theorem lipschitz_prod :
+    LipschitzWith 1 fun p : NonemptyCompacts α × NonemptyCompacts β => p.1 ×ˢ p.2 :=
+  .of_edist_le fun _ _ => hausdorffEdist_prod_le
+
+end NonemptyCompacts
+
 end
 
 --section
@@ -373,7 +415,7 @@ namespace Metric
 
 section
 
-variable {α : Type u} [MetricSpace α]
+variable {α : Type*} [MetricSpace α]
 
 /-- `NonemptyCompacts α` inherits a metric space structure, as the Hausdorff
 edistance between two such sets is finite. -/

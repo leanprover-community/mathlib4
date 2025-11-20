@@ -3,7 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.RingTheory.WittVector.StructurePolynomial
+module
+
+public import Mathlib.RingTheory.WittVector.StructurePolynomial
 
 /-!
 # Witt vectors
@@ -34,6 +36,8 @@ We use notation `𝕎 R`, entered `\bbW`, for the Witt vectors over `R`.
 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -226,7 +230,7 @@ theorem wittOne_pos_eq_zero (n : ℕ) (hn : 0 < n) : wittOne p n = 0 := by
   · intro i hin hi0
     rw [Finset.mem_range] at hin
     rw [IH _ hin (Nat.pos_of_ne_zero hi0), zero_pow (pow_ne_zero _ hp.1.ne_zero), mul_zero]
-  · rw [Finset.mem_range]; intro; contradiction
+  · grind
 
 @[simp]
 theorem wittAdd_zero : wittAdd p 0 = X (0, 0) + X (1, 0) := by

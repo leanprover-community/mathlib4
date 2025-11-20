@@ -3,8 +3,10 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
-import Mathlib.Order.OmegaCompletePartialOrder
-import Mathlib.Topology.Order.ScottTopology
+module
+
+public import Mathlib.Order.OmegaCompletePartialOrder
+public import Mathlib.Topology.Order.ScottTopology
 
 /-!
 # Scott Topological Spaces
@@ -17,6 +19,8 @@ of continuity is equivalent to continuity in ωCPOs.
 * https://ncatlab.org/nlab/show/Scott+topology
 
 -/
+
+@[expose] public section
 
 open Set OmegaCompletePartialOrder Topology
 
@@ -34,7 +38,6 @@ open Topology.IsScott in
 alias Topology.IsScott.ωscottContinuous_iff_continuous :=
   Topology.IsScott.ωScottContinuous_iff_continuous
 
--- "Scott", "ωSup"
 namespace Scott
 
 /-- `x` is an `ω`-Sup of a chain `c` if it is the least upper bound of the range of `c`. -/

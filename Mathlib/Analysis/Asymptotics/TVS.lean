@@ -3,13 +3,15 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Eric Wieser
 -/
-import Mathlib.Analysis.Convex.EGauge
-import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
-import Mathlib.Analysis.Seminorm
-import Mathlib.Tactic.Peel
-import Mathlib.Topology.Instances.ENNReal.Lemmas
-import Mathlib.Analysis.Asymptotics.Defs
-import Mathlib.Topology.Algebra.Module.LinearMapPiProd
+module
+
+public import Mathlib.Analysis.Convex.EGauge
+public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
+public import Mathlib.Analysis.Seminorm
+public import Mathlib.Tactic.Peel
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
+public import Mathlib.Analysis.Asymptotics.Defs
+public import Mathlib.Topology.Algebra.Module.LinearMapPiProd
 
 /-!
 # Asymptotics in a Topological Vector Space
@@ -60,6 +62,8 @@ and `Asymptotics.IsBigOTVS` was defined in a similar manner.
 - Prove a version of `Asymptotics.isBigO_One` for `IsBigOTVS`.
 
 -/
+
+@[expose] public section
 
 open Set Filter Asymptotics Metric
 open scoped Topology Pointwise ENNReal NNReal
@@ -140,7 +144,7 @@ theorem IsLittleOTVS.exists_eventuallyLE_mul_ennreal (h : f =o[𝕜; l] g) {U : 
   obtain ⟨V, hV₀, hV⟩ := h.exists_eventuallyLE_mul U hU
   refine ⟨V, hV₀, fun ε hε ↦ ?_⟩
   cases ε with
-  | top => exact (hV 1 one_ne_zero).trans <| .of_forall fun _ ↦ mul_le_mul_right' le_top _
+  | top => exact (hV 1 one_ne_zero).trans <| .of_forall fun _ ↦ by dsimp; grw [← le_top]
   | coe ε => exact hV ε (mod_cast hε)
 
 theorem isLittleOTVS_congr (hf : f₁ =ᶠ[l] f₂) (hg : g₁ =ᶠ[l] g₂) :

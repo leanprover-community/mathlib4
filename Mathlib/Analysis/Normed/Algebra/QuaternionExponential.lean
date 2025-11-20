@@ -3,9 +3,11 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Analysis.Quaternion
-import Mathlib.Analysis.Normed.Algebra.Exponential
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
+module
+
+public import Mathlib.Analysis.Quaternion
+public import Mathlib.Analysis.Normed.Algebra.Exponential
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
 
 /-!
 # Lemmas about `NormedSpace.exp` on `Quaternion`s
@@ -21,6 +23,8 @@ This file contains results about `NormedSpace.exp` on `Quaternion ℝ`.
   the real part.
 
 -/
+
+@[expose] public section
 
 open scoped Quaternion Nat
 
@@ -101,7 +105,7 @@ theorem exp_of_re_eq_zero (q : Quaternion ℝ) (hq : q.re = 0) :
 /-- The closed form for the quaternion exponential on arbitrary quaternions. -/
 theorem exp_eq (q : Quaternion ℝ) :
     exp ℝ q = exp ℝ q.re • (↑(Real.cos ‖q.im‖) + (Real.sin ‖q.im‖ / ‖q.im‖) • q.im) := by
-  rw [← exp_of_re_eq_zero q.im q.im_re, ← coe_mul_eq_smul, ← exp_coe, ← exp_add_of_commute,
+  rw [← exp_of_re_eq_zero q.im q.re_im, ← coe_mul_eq_smul, ← exp_coe, ← exp_add_of_commute,
     re_add_im]
   exact Algebra.commutes q.re (_ : ℍ[ℝ])
 
@@ -121,7 +125,7 @@ theorem normSq_exp (q : ℍ[ℝ]) : normSq (exp ℝ q) = exp ℝ q.re ^ 2 :=
       congr 1
       obtain hv | hv := eq_or_ne ‖q.im‖ 0
       · simp [hv]
-      rw [normSq_add, normSq_smul, star_smul, coe_mul_eq_smul, smul_re, smul_re, star_re, im_re,
+      rw [normSq_add, normSq_smul, star_smul, coe_mul_eq_smul, re_smul, re_smul, re_star, re_im,
         smul_zero, smul_zero, mul_zero, add_zero, div_pow, normSq_coe,
         normSq_eq_norm_mul_self, ← sq, div_mul_cancel₀ _ (pow_ne_zero _ hv)]
     _ = exp ℝ q.re ^ 2 := by rw [Real.cos_sq_add_sin_sq, mul_one]

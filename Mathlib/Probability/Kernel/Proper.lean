@@ -3,7 +3,9 @@ Copyright (c) 2024 Yaël Dillies, Kalle Kytölä, Kin Yau James Wong. All rights
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Kalle Kytölä, Kin Yau James Wong
 -/
-import Mathlib.Probability.Kernel.Composition.CompNotation
+module
+
+public import Mathlib.Probability.Kernel.Composition.CompNotation
 
 /-!
 # Proper kernels
@@ -24,6 +26,8 @@ event.
 
 Prove the `integral` versions of the `lintegral` lemmas below
 -/
+
+@[expose] public section
 
 open MeasureTheory ENNReal NNReal Set
 open scoped ProbabilityTheory
@@ -73,9 +77,6 @@ lemma IsProper.setLIntegral_eq_comp (hπ : IsProper π) (h𝓑𝓧 : 𝓑 ≤ �
   simp only [hπ.inter_eq_indicator_mul h𝓑𝓧 hA hB, ← indicator_mul_const, Pi.one_apply, one_mul]
   rw [← lintegral_indicator (h𝓑𝓧 _ hB)]
   rfl
-
-@[deprecated (since := "2025-01-24")]
-alias IsProper.setLIntegral_eq_bind := IsProper.setLIntegral_eq_comp
 
 /-- Auxiliary lemma for `IsProper.lintegral_mul` and
 `IsProper.setLIntegral_eq_indicator_mul_lintegral`. -/

@@ -3,9 +3,11 @@ Copyright (c) 2024 Michail Karatarakis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michail Karatarakis
 -/
-import Mathlib.NumberTheory.SiegelsLemma
-import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
-import Mathlib.NumberTheory.NumberField.EquivReindex
+module
+
+public import Mathlib.NumberTheory.SiegelsLemma
+public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
+public import Mathlib.NumberTheory.NumberField.EquivReindex
 
 /-!
 
@@ -17,9 +19,11 @@ the largest of the modulus of its conjugates.
 * [D. Marcus, *Number Fields*][marcus1977number]
 * [Hua, L.-K., *Introduction to number theory*][hua1982house]
 
-## Tagshouse
+## Tags
 number field, algebraic number, house
 -/
+
+@[expose] public section
 
 variable {K : Type*} [Field K] [NumberField K]
 
@@ -95,9 +99,6 @@ theorem basis_repr_norm_le_const_mul_house (α : 𝓞 K) (i : K →+* ℂ) :
     _ = ↑(finrank ℚ K) * ‖((basisMatrix K).transpose)⁻¹‖ * house (algebraMap (𝓞 K) K α) := by
       simp [Embeddings.card, mul_assoc]
 
-@[deprecated (since := "2025-02-17")] alias basis_repr_abs_le_const_mul_house :=
-  basis_repr_norm_le_const_mul_house
-
 /-- `newBasis K` defines a reindexed basis of the ring of integers of `K`,
   adjusted by the inverse of the equivalence `equivReindex`. -/
 private def newBasis := (RingOfIntegers.basis K).reindex (equivReindex K).symm
@@ -130,10 +131,10 @@ include ha in
 private theorem asiegel_ne_0 : asiegel K a ≠ 0 := by
   simp +unfoldPartialApp only [asiegel, a']
   simp only [ne_eq]
-  rw [funext_iff]; intros hs
+  rw [funext_iff]; intro hs
   simp only [Prod.forall] at hs
   apply ha
-  rw [← Matrix.ext_iff]; intros k' l
+  rw [← Matrix.ext_iff]; intro k' l
   specialize hs k'
   let ⟨b⟩ := Fintype.card_pos_iff.1 (Fintype.card_pos (α := (K →+* ℂ)))
   have := ((newBasis K).repr.map_eq_zero_iff (x := (a k' l * (newBasis K) b))).1 <| by
@@ -170,7 +171,7 @@ include hxl hmulvec0 in
 private theorem ξ_mulVec_eq_0 : a *ᵥ ξ K x = 0 := by
   funext k; simp only [Pi.zero_apply]; rw [eq_comm]
   have lin_0 : ∀ u, ∑ r, ∑ l, (a' K a k l r u * x (l, r) : 𝓞 K) = 0 := by
-    intros u
+    intro u
     have hξ := ξ_ne_0 K x hxl
     rw [Ne, funext_iff, not_forall] at hξ
     rcases hξ with ⟨l, hξ⟩
@@ -247,7 +248,7 @@ include habs Apos hxbound hpq in
 private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
     ((c₁ K * q * A) ^ ((p : ℝ) / (q - p))) := by
   let h := finrank ℚ K
-  intros l
+  intro l
   have H₀ : 0 ≤ NumberField.house.supOfBasis K := supOfBasis_nonneg _
   have H₁ : 0 < (q - p : ℝ) := sub_pos.mpr <| mod_cast hpq
   calc _ = house (algebraMap (𝓞 K) K (∑ r, (x (l, r)) * ((newBasis K) r))) := rfl

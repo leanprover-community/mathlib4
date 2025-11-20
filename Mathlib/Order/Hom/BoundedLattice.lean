@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Hom.Bounded
-import Mathlib.Order.Hom.Lattice
-import Mathlib.Order.SymmDiff
+module
+
+public import Mathlib.Order.Hom.Bounded
+public import Mathlib.Order.Hom.Lattice
+public import Mathlib.Order.SymmDiff
 
 /-!
 # Bounded lattice homomorphisms
@@ -31,6 +33,8 @@ be satisfied by itself and all stricter types.
 
 Do we need more intersections between `BotHom`, `TopHom` and lattice homomorphisms?
 -/
+
+@[expose] public section
 
 
 open Function
@@ -178,16 +182,16 @@ section BooleanAlgebra
 variable [BooleanAlgebra α] [BooleanAlgebra β] [FunLike F α β] [BoundedLatticeHomClass F α β]
 variable (f : F)
 
-/-- Special case of `map_compl` for boolean algebras. -/
+/-- Special case of `map_compl` for Boolean algebras. -/
 theorem map_compl' (a : α) : f aᶜ = (f a)ᶜ :=
   (isCompl_compl.map _).compl_eq.symm
 
-/-- Special case of `map_sdiff` for boolean algebras. -/
+/-- Special case of `map_sdiff` for Boolean algebras. -/
 theorem map_sdiff' (a b : α) : f (a \ b) = f a \ f b := by
   rw [sdiff_eq, sdiff_eq, map_inf, map_compl']
 
 open scoped symmDiff in
-/-- Special case of `map_symmDiff` for boolean algebras. -/
+/-- Special case of `map_symmDiff` for Boolean algebras. -/
 theorem map_symmDiff' (a b : α) : f (a ∆ b) = f a ∆ f b := by
   rw [symmDiff, symmDiff, map_sup, map_sdiff', map_sdiff']
 

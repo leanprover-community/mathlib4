@@ -3,10 +3,12 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Ab
-import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
-import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
-import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Ab
+public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
+public import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
+public import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 
 /-!
 # Exactness of short complexes in concrete abelian categories
@@ -16,6 +18,8 @@ which preserves homology, then a short complex `S` in `C` is exact
 if and only if it is so after applying the functor `forget₂ C Ab`.
 
 -/
+
+@[expose] public section
 
 universe w v u
 
@@ -46,7 +50,7 @@ variable [HasZeroObject C]
 
 lemma Preadditive.mono_iff_injective {X Y : C} (f : X ⟶ Y) :
     Mono f ↔ Function.Injective ((forget₂ C Ab).map f) := by
-  rw [← AddCommGrp.mono_iff_injective]
+  rw [← AddCommGrpCat.mono_iff_injective]
   constructor
   · intro
     infer_instance
@@ -61,7 +65,7 @@ lemma Preadditive.mono_iff_injective' {X Y : C} (f : X ⟶ Y) :
 
 lemma Preadditive.epi_iff_surjective {X Y : C} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective ((forget₂ C Ab).map f) := by
-  rw [← AddCommGrp.epi_iff_surjective]
+  rw [← AddCommGrpCat.epi_iff_surjective]
   constructor
   · intro
     infer_instance
