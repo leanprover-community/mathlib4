@@ -6,6 +6,9 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.ModelTheory.Satisfiability
+public import Mathlib.ModelTheory.Satisfiability
+public import Mathlib.Topology.Bases
+public import Mathlib.Topology.Compactness.Compact
 
 /-!
 # Type Spaces
@@ -44,7 +47,7 @@ This file defines the space of complete types over a first-order theory.
 
 universe u v w w'
 
-open Cardinal Set FirstOrder
+open Cardinal Set FirstOrder TopologicalSpace
 
 namespace FirstOrder
 
@@ -177,6 +180,38 @@ theorem mem_typeOf {φ : L[[α]].Sentence} :
 
 theorem formula_mem_typeOf {φ : L.Formula α} :
     Formula.equivSentence φ ∈ T.typeOf v ↔ φ.Realize v := by simp
+
+
+def typesWith : L[[α]].Sentence → Set (CompleteType T α) := fun φ ↦ {p | φ ∈ p.toTheory}
+
+def TypeBasis : Set (Set (CompleteType T α)) := range typesWith
+
+instance : TopologicalSpace (CompleteType T α) := generateFrom TypeBasis
+
+lemma typesWith_inter (φ ψ : L[[α]].Sentence)
+    : typesWith (T := T) (φ ⊓ ψ) = typesWith φ ∩ typesWith ψ := by
+  ext p
+  simp only [typesWith, Set.mem_inter_iff, Set.mem_setOf_eq]
+  erw [
+    p.isMaximal.mem_iff_models,
+    p.isMaximal.mem_iff_models,
+    p.isMaximal.mem_iff_models
+  ]
+  simp only [ModelsBoundedFormula, ←forall_and]
+  exact forall₃_congr fun _ _ _ ↦ BoundedFormula.realize_inf
+
+lemma TypeBasisIsBasis : IsTopologicalBasis (TypeBasis (α := α) (T := T)) where
+  exists_subset_inter := by
+    rintro t₁ ⟨φ, ht₁⟩ t₂ ⟨ψ, ht₂⟩ x hx
+    refine ⟨typesWith (φ ⊓ ψ), ⟨φ ⊓ ψ, rfl⟩, ?_⟩
+    rw [typesWith_inter, ht₁, ht₂]
+    exact ⟨hx, fun _ ↦ id⟩
+  sUnion_eq := by
+    rw [←Set.univ_subset_iff]
+    refine Set.subset_sUnion_of_mem ⟨⊤, ?_⟩
+    rw [←Set.univ_subset_iff]
+    exact fun p _ ↦ p.isMaximal.mem_of_models (φ := ⊤) (fun M v xs a ↦ a)
+  eq_generateFrom := rfl
 
 end CompleteType
 
