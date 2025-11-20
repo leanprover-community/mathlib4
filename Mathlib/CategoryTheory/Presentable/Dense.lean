@@ -27,29 +27,7 @@ namespace CategoryTheory
 
 open Limits Opposite
 
-variable {C : Type u} [Category.{v} C]
-
--- to be moved
-/-- Given `P : ObjectProperty C`, and a presentation `P.ColimitOfShape J X`
-of an object `X : C`, this is the induced functor `J ⥤ CostructuredArrow P.ι X`. -/
-@[simps]
-def ObjectProperty.ColimitOfShape.toCostructuredArrow
-    {P : ObjectProperty C} {J : Type*} [Category J]
-    {X : C} (p : P.ColimitOfShape J X) :
-    J ⥤ CostructuredArrow P.ι X where
-  obj j := CostructuredArrow.mk (Y := ⟨_, p.prop_diag_obj j⟩) (by exact p.ι.app j)
-  map f := CostructuredArrow.homMk (by exact p.diag.map f)
-
-variable {κ : Cardinal.{w}} [Fact κ.IsRegular]
-
--- to be moved
-instance (X : (isCardinalPresentable C κ).FullSubcategory) :
-    IsCardinalPresentable X.obj κ :=
-  X.property
-
-instance (X) : IsCardinalPresentable ((isCardinalPresentable C κ).ι.obj X) κ := by
-  dsimp
-  infer_instance
+variable {C : Type u} [Category.{v} C] {κ : Cardinal.{w}} [Fact κ.IsRegular]
 
 variable (C κ) in
 lemma isCardinalFilteredGenerator_isCardinalPresentable
@@ -81,7 +59,6 @@ instance [IsCardinalAccessibleCategory C κ] :
   isDenseAt X := by
     obtain ⟨J, _, _, ⟨p⟩⟩ :=
       (isCardinalFilteredGenerator_isCardinalPresentable C κ).exists_colimitsOfShape X
-    have : EssentiallySmall.{w} J := essentiallySmallSelf _ -- FIXME
     exact ⟨(Functor.Final.isColimitWhiskerEquiv (F := p.toCostructuredArrow) _).1
       (IsColimit.ofIsoColimit p.isColimit (Cocones.ext (Iso.refl _)))⟩
 
@@ -89,7 +66,6 @@ instance [IsCardinalAccessibleCategory C κ] (X : C) :
     IsCardinalFiltered (CostructuredArrow (isCardinalPresentable C κ).ι X) κ := by
   obtain ⟨J, _, _, ⟨p⟩⟩ :=
     (isCardinalFilteredGenerator_isCardinalPresentable C κ).exists_colimitsOfShape X
-  have : EssentiallySmall.{w} J := essentiallySmallSelf _ -- FIXME
   exact IsCardinalFiltered.of_final p.toCostructuredArrow κ
 
 end IsCardinalAccessibleCategory
