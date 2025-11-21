@@ -213,8 +213,8 @@ instance (X : C) (n : ℤ) : t.IsGE ((t.truncGE n).obj X) n := by
 /-- The connecting morphism `t.truncGE n ⟶ t.truncLT n ⋙ shiftFunctor C (1 : ℤ)`
 when `t` is a t-structure on a pretriangulated category and `n : ℤ`. -/
 noncomputable def truncGEδLT (n : ℤ) :
-  t.truncGE n ⟶ t.truncLT n ⋙ shiftFunctor C (1 : ℤ) :=
-    Functor.whiskerLeft (TruncAux.triangleFunctor t n) Triangle.π₃Toπ₁
+    t.truncGE n ⟶ t.truncLT n ⋙ shiftFunctor C (1 : ℤ) :=
+  Functor.whiskerLeft (TruncAux.triangleFunctor t n) Triangle.π₃Toπ₁
 
 /-- The distinguished triangle `(t.truncLT n).obj A ⟶ A ⟶ (t.truncGE n).obj A ⟶ ...`
 as a functor `C ⥤ Triangle C` when `t` is a `t`-structure on a pretriangulated
