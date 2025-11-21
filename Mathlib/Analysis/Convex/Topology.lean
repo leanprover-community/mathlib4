@@ -468,12 +468,12 @@ theorem Convex.diff_singleton_eventually_mem_nhds {s : Set 𝕜} (hs : Convex �
     have : Ioo b a ⊆ s := hs.Ioo_subset_of_mem_closure (subset_closure hbs) has
     apply eventually_of_mem (U := Ioo b a) ?_ fun x hx ↦ ?_
     · exact mem_nhdsWithin.2 ⟨Ioi b, isOpen_Ioi, hba, fun _ ⟨h₁, _, h₂⟩ ↦ ⟨h₁, h₂⟩⟩
-    · exact mem_nhds_iff.2 ⟨Ioo b a, subset_diff_singleton this right_not_mem_Ioo, isOpen_Ioo, hx⟩
+    · exact mem_nhds_iff.2 ⟨Ioo b a, subset_diff_singleton this right_mem_Ioo.mp, isOpen_Ioo, hx⟩
   · rcases eq_empty_or_nonempty (s ∩ Ioi a) with hs' | ⟨b, hbs, hab⟩
     · simp [hs']
     have : Ioo a b ⊆ s := hs.Ioo_subset_of_mem_closure has (subset_closure hbs)
     apply eventually_of_mem (U := Ioo a b) ?_ fun x hx ↦ ?_
     · exact mem_nhdsWithin.2 ⟨Iio b, isOpen_Iio, hab, fun _ ⟨h₁, _, h₂⟩ ↦ ⟨h₂, h₁⟩⟩
-    · exact mem_nhds_iff.2 ⟨Ioo a b, subset_diff_singleton this left_not_mem_Ioo, isOpen_Ioo, hx⟩
+    · exact mem_nhds_iff.2 ⟨Ioo a b, subset_diff_singleton this left_mem_Ioo.mp, isOpen_Ioo, hx⟩
 
 end LinearOrderedField
