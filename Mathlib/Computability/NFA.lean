@@ -777,13 +777,13 @@ theorem mem_acceptsFrom_kstar_impl_exists_flatten {S : Set σ} {x : List α} :
          simpa [stepSet]
         rw [Set.mem_iUnion₂]
         tauto
-      · rw [List.forall_cons, accepts_acceptsFrom]
+      · rw [List.forall_cons, accepts_eq_acceptsFrom_start]
         tauto
 
 /-- If the language of `M` is `L`, then the language of `M.kstar` is `L∗`. -/
 theorem accepts_kstar : M.kstar.accepts = M.accepts∗ := by
   ext x
-  rw [accepts_acceptsFrom, kstar_start]
+  rw [accepts_eq_acceptsFrom_start, kstar_start]
   constructor
   · simp only [Language.mem_kstar, kstarStart, acceptsFrom_union, acceptsFrom_union,
       Language.add_def, ←List.forall_iff_forall_mem, acceptsFrom_kstar_none, Set.mem_union x,
@@ -792,7 +792,7 @@ theorem accepts_kstar : M.kstar.accepts = M.accepts∗ := by
     · exists []
     · obtain ⟨y, zs, rfl, hy, hzs⟩ := mem_acceptsFrom_kstar_impl_exists_flatten hx
       exists y :: zs
-      rw [←accepts_acceptsFrom] at hy
+      rw [←accepts_eq_acceptsFrom_start] at hy
       rw [List.forall_cons]
       tauto
   · rw [Language.mem_kstar_iff_exists_nonempty, kstarStart_eq_kstarStates, acceptsFrom_union,
