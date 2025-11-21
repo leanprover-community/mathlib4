@@ -337,28 +337,22 @@ lemma toKer_bracket [IsLieAbelian M] (E : Extension R M L) (x : E.proj.ker) (y :
     E.toKer ⁅y, E.toKer.symm x⁆ = ⁅E.proj_surjective.hasRightInverse.choose y, x⁆ := by
   simp
 
+lemma lie_apply_proj_of_leftInverse_eq [IsLieAbelian M] (E : Extension R M L) {s : L →ₗ[R] E.L}
+    (hs : Function.LeftInverse E.proj s) (x : E.L) (y : E.proj.ker) :
+    ⁅s (E.proj x), y⁆ = ⁅x, y⁆ := by
+  rw [← sub_eq_zero, ← sub_lie]
+  exact trivial_lie_zero E.proj.ker E.proj.ker ⟨_, (by simp [hs.eq])⟩ y
+
 /-- A preparatory function for making a 2-cocycle from a linear splitting of an extension. -/
-@[simps]
-private def twoCocycleAux (E : Extension R M L) {s : L →ₗ[R] E.L}
+private abbrev twoCocycleAux (E : Extension R M L) {s : L →ₗ[R] E.L}
     (hs : Function.LeftInverse E.proj s) :
     L →ₗ[R] L →ₗ[R] E.proj.ker where
-  toFun x := {
-    toFun y := ⟨⁅s x, s y⁆ - s ⁅x, y⁆, by simp [hs _]⟩
-    map_add' _ _ := by simp; abel
-    map_smul' _ _ := by simp [smul_sub] }
+  toFun x :=
+    { toFun y := ⟨⁅s x, s y⁆ - s ⁅x, y⁆, by simp [hs.eq]⟩
+      map_add' _ _ := by simp; abel
+      map_smul' _ _ := by simp [smul_sub] }
   map_add' x y := by ext; simp; abel
   map_smul' _ _ := by ext; simp [smul_sub]
-
-lemma bracket_choose [IsLieAbelian M] (E : Extension R M L) {s : L →ₗ[R] E.L}
-    (hs : Function.LeftInverse E.proj s) (x : L) (y : E.proj.ker) :
-    ⁅E.proj_surjective.hasRightInverse.choose x, y⁆ =
-      ⁅s x, y⁆ := by
-  rw [← sub_eq_zero, ← sub_lie]
-  have := (lie_abelian_iff_equiv_lie_abelian E.toKer.symm).mpr inferInstance
-  exact LieModule.IsTrivial.trivial (L := E.proj.ker)
-    ⟨_, (by simp [E.proj_surjective.hasRightInverse.choose_spec _, hs _])⟩ y
-
-open LieModule.Cohomology
 
 /-- The 2-cocycle attached to an extension with a linear section. -/
 @[simps]
@@ -367,18 +361,19 @@ noncomputable def twoCocycleOf [IsLieAbelian M] (E : Extension R M L) {s : L →
     letI := E.ringModuleOf
     have := E.lieModuleOf
     twoCocycle R L M where
-  val := {
-    val := (E.twoCocycleAux hs).compr₂ E.toKer.symm
-    property := by simp [twoCocycleAux, twoCochain] }
+  val := ⟨(E.twoCocycleAux hs).compr₂ E.toKer.symm, by simp⟩
   property := by
+    -- TODO Try to golf this after https://github.com/leanprover-community/mathlib4/pull/27306 lands
     ext x y z
-    simp only [d₂₃_apply, ← twoCochain_val_apply, LinearMap.compr₂_apply, LinearEquiv.coe_coe,
-      LieEquiv.coe_toLinearEquiv, ringModuleOf_bracket, LieEquiv.apply_symm_apply,
-      E.bracket_choose hs, LinearMap.zero_apply]
-    simp only [twoCocycleAux, LinearMap.coe_mk, AddHom.coe_mk, lie_lie, map_sub]
-    simp only [← map_sub, ← map_add, EmbeddingLike.map_eq_zero_iff, Subtype.ext_iff]
-    simp only [map_sub, AddSubgroupClass.coe_sub, LieSubmodule.coe_add, LieSubmodule.coe_bracket,
-      lie_sub, ZeroMemClass.coe_zero]
+    suffices ⁅s x, ⁅s y, s z⁆⁆ - ⁅s x, s ⁅y, z⁆⁆ -
+        (⁅s y, ⁅s x, s z⁆⁆ - ⁅s y, s ⁅x, z⁆⁆) + (⁅s z, ⁅s x, s y⁆⁆ - ⁅s z, s ⁅x, y⁆⁆) -
+          (⁅s ⁅x, y⁆, s z⁆ - (s ⁅x, ⁅y, z⁆⁆ - s ⁅y, ⁅x, z⁆⁆)) +
+        (⁅s ⁅x, z⁆, s y⁆ - (s ⁅x, ⁅z, y⁆⁆ - s ⁅z, ⁅x, y⁆⁆)) -
+        (⁅s ⁅y, z⁆, s x⁆ - (s ⁅y, ⁅z, x⁆⁆ - s ⁅z, ⁅y, x⁆⁆)) = 0 by
+      set h := E.proj_surjective.hasRightInverse
+      have aux (u : L) (v : E.proj.ker) : ⁅h.choose u, v⁆ = ⁅s u, v⁆ := by
+        rw [← E.lie_apply_proj_of_leftInverse_eq hs, h.choose_spec _]
+      simpa [← map_sub, ← map_add, ← twoCochain_val_apply, Subtype.ext_iff, twoCocycleAux, aux]
     have hjac := lie_lie (s x) (s y) (s z)
     rw [← lie_skew, neg_eq_iff_eq_neg] at hjac
     have hja := congr_arg s (lie_lie x y z)
