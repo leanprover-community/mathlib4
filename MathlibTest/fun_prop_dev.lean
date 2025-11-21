@@ -132,7 +132,7 @@ instance [HasUncurry β γ δ] : HasUncurry (α -o β) (α × γ) δ :=
 -- morphism theorems i.e. theorems about `FunLike.coe` --
 ---------------------------------------------------------
 
--- this is some form of Cartesian-closedness with homs `α ->> β`
+-- this is some form of Cartesian closedness with homs `α ->> β`
 @[fun_prop] theorem conHom_con' (f : α → β ->> γ) (g : α → β) (hf : Con f) (hg : Con g) : Con (fun x => (f x) (g x)) := silentSorry
 
 @[fun_prop] theorem conHom_lin_in_fn' (f : α → β ->> γ) (y : β) (hf : Lin f) : Lin (fun x => f x y) := silentSorry
@@ -629,3 +629,18 @@ def snd (x : α×β) := x.2
 example (f : α → β → γ) (hf : Con ↿f) : Con (fun x : α×β => f (fst x) (snd x)) := by
   fail_if_success fun_prop
   apply silentSorry
+
+-- In the following example, `fun_prop` used to panic with a "loose bvar in expression" error.
+
+@[fun_prop]
+opaque AEMeas {α β : Type*} (f : α → β) (μ : Bool) : Prop
+
+opaque foo4 : Bool → Bool
+
+@[fun_prop]
+theorem aemeas_foo4 (μ : Bool) : AEMeas foo4 μ := silentSorry
+
+@[fun_prop]
+theorem con_foo4 : (∀ μ : Bool, AEMeas foo4 μ) → Con foo4 := silentSorry
+
+example : Con foo4 := by fun_prop

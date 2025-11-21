@@ -3,7 +3,9 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.EpiMono
+module
+
+public import Mathlib.CategoryTheory.EpiMono
 
 /-!
 # Balanced categories
@@ -15,6 +17,8 @@ Balanced categories arise frequently. For example, categories in which every mon
 as the category of types.
 
 -/
+
+@[expose] public section
 
 
 universe v u

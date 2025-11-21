@@ -3,7 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Ordinal.Family
+module
+
+public import Mathlib.SetTheory.Ordinal.Family
 
 /-! # Ordinal exponential
 
@@ -11,6 +13,8 @@ In this file we define the power function and the logarithm function on ordinals
 related by the lemma `Ordinal.opow_le_iff_le_log : b ^ c ≤ x ↔ c ≤ log b x` for nontrivial inputs
 `b`, `c`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -149,7 +153,6 @@ theorem isSuccLimit_opow_left {a b : Ordinal} (l : IsSuccLimit a) (hb : b ≠ 0)
 @[deprecated (since := "2025-07-08")]
 alias isLimit_opow_left := isSuccLimit_opow_left
 
-@[gcongr]
 theorem opow_le_opow_right {a b c : Ordinal} (h₁ : 0 < a) (h₂ : b ≤ c) : a ^ b ≤ a ^ c := by
   rcases (one_le_iff_pos.2 h₁).eq_or_lt' with h₁ | h₁
   · simp_all

@@ -3,9 +3,10 @@ Copyright (c) 2025 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+module
 
-import Mathlib.RingTheory.SimpleRing.Basic
-import Mathlib.RingTheory.TwoSidedIdeal.Operations
+public import Mathlib.RingTheory.SimpleRing.Basic
+public import Mathlib.RingTheory.TwoSidedIdeal.Operations
 
 /-!
 # Simpleness is preserved by ring isomorphism/surjective ring homomorphisms
@@ -14,6 +15,8 @@ If `R` is a simple (non-assoc) ring and there exists surjective `f : R →+* S` 
 nontrivial, then `S` is also simple.
 If `R` is a simple (non-unital non-assoc) ring then any ring isomorphic to `R` is also simple.
 -/
+
+@[expose] public section
 
 namespace IsSimpleRing
 

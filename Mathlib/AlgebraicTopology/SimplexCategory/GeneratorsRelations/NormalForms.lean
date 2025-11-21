@@ -3,7 +3,9 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.EpiMono
+module
+
+public import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.EpiMono
 /-! # Normal forms for morphisms in `SimplexCategoryGenRel`.
 
 In this file, we establish that `P_δ` and `P_σ` morphisms in `SimplexCategoryGenRel`
@@ -32,6 +34,8 @@ stones towards proving that the canonical functor
 - Show that every `P_δ` admits a unique normal form.
 -/
 
+@[expose] public section
+
 namespace SimplexCategoryGenRel
 
 open CategoryTheory
@@ -56,7 +60,6 @@ inductive IsAdmissible : (m : ℕ) → (L : List ℕ) → Prop
       (ha : a ≤ m) : IsAdmissible m (a :: b :: L')
 
 attribute [simp, grind ←] IsAdmissible.nil
-attribute [grind →] IsAdmissible.singleton
 attribute [grind →] IsAdmissible.cons_cons
 
 section IsAdmissible
@@ -283,7 +286,7 @@ lemma standardσ_simplicialInsert (hL : IsAdmissible (m + 1) L) (j : ℕ) (hj : 
         convert σ_comp_σ_nat (n := m) a j (by grind) (by grind) (by grind) <;> grind
       grind [standardσ_cons]
 
-attribute [local grind] simplicialInsert_length simplicialInsert_isAdmissible in
+attribute [local grind! .] simplicialInsert_length simplicialInsert_isAdmissible in
 /-- Using `standardσ_simplicialInsert`, we can prove that every morphism satisfying `P_σ` is equal
 to some `standardσ` for some admissible list of indices. -/
 theorem exists_normal_form_P_σ {x y : SimplexCategoryGenRel} (f : x ⟶ y) (hf : P_σ f) :
@@ -312,10 +315,12 @@ theorem exists_normal_form_P_σ {x y : SimplexCategoryGenRel} (f : x ⟶ y) (hf 
 
 section MemIsAdmissible
 
-@[grind]
 lemma IsAdmissible.simplicialEvalσ_succ_getElem (hL : IsAdmissible m L)
     {k : ℕ} {hk : k < L.length} : simplicialEvalσ L L[k] = simplicialEvalσ L (L[k] + 1) := by
-  induction L generalizing m k <;> grind
+  induction L generalizing m k <;> grind [→ IsAdmissible.singleton]
+
+local grind_pattern IsAdmissible.simplicialEvalσ_succ_getElem =>
+  IsAdmissible m L, simplicialEvalσ L L[k]
 
 lemma mem_isAdmissible_of_lt_and_eval_eq_eval_add_one (hL : IsAdmissible m L)
     (j : ℕ) (hj₁ : j < m + L.length) (hj₂ : simplicialEvalσ L j = simplicialEvalσ L (j + 1)) :
