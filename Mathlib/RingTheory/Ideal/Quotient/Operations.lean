@@ -647,11 +647,23 @@ theorem quotient_map_comp_mkₐ (f : A →ₐ[R₁] B) (H : I ≤ J.comap f) :
 
 variable (I) in
 /-- The algebra equiv `A/I ≃ₐ[R] B/J` induced by an algebra equiv `f : A ≃ₐ[R] B`,
-where`J = f(I)`. -/
+where `J = f(I)`. -/
 def quotientEquivAlg (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) :
     (A ⧸ I) ≃ₐ[R₁] B ⧸ J :=
   { quotientEquiv I J (f : A ≃+* B) hIJ with
     commutes' r := by simp }
+
+@[simp]
+lemma quotientEquivAlg_symm (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) :
+    (quotientEquivAlg I J f hIJ).symm = quotientEquivAlg J I f.symm
+      (by simp only [← AlgEquiv.toAlgHom_toRingHom, hIJ, map_map, ← AlgHom.comp_toRingHom,
+        AlgEquiv.symm_comp, AlgHom.id_toRingHom, map_id]) :=
+  rfl
+
+@[simp]
+lemma quotientEquivAlg_mk (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) (x : A) :
+    Ideal.quotientEquivAlg I J f hIJ x = f x :=
+  rfl
 
 end
 
