@@ -466,7 +466,7 @@ def reverse (p : RelSeries r) : RelSeries r.inv where
     convert p.step ⟨p.length - (i.1 + 1), Nat.sub_lt_self (by omega) hi⟩
     · ext; simp
     · ext
-      simp only [Fin.val_rev, Fin.coe_castSucc, Fin.val_succ]
+      simp only [Fin.val_rev, Fin.val_castSucc, Fin.val_succ]
       omega
 
 @[simp] lemma reverse_apply (p : RelSeries r) (i : Fin (p.length + 1)) :
@@ -595,7 +595,7 @@ def tail (p : RelSeries r) (len_pos : p.length ≠ 0) : RelSeries r where
   change p _ = p _
   congr
   ext
-  simp only [tail_length, Fin.val_succ, Fin.coe_cast, Fin.val_last]
+  simp only [tail_length, Fin.val_succ, Fin.val_cast, Fin.val_last]
   exact Nat.succ_pred_eq_of_pos (by simpa [Nat.pos_iff_ne_zero] using len_pos)
 
 @[simp]
