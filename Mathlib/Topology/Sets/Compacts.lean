@@ -26,7 +26,7 @@ For a topological space `α`,
 @[expose] public section
 
 
-open Set
+open Set Topology
 
 variable {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
@@ -322,6 +322,14 @@ theorem mem_toCompacts {x : α} {s : NonemptyCompacts α} :
 
 theorem toCompacts_injective : Function.Injective (toCompacts (α := α)) :=
   .of_comp (f := SetLike.coe) SetLike.coe_injective
+
+theorem range_toCompacts : Set.range (toCompacts (α := α)) = {⊥}ᶜ := by
+  ext K
+  simp_rw [Set.mem_compl_singleton_iff, ← SetLike.coe_set_eq.ne, Compacts.coe_bot,
+    ← Set.nonempty_iff_ne_empty]
+  refine ⟨?_, fun h => ⟨⟨K, h⟩, rfl⟩⟩
+  rintro ⟨K, _, rfl⟩
+  exact K.nonempty
 
 instance : Max (NonemptyCompacts α) :=
   ⟨fun s t => ⟨s.toCompacts ⊔ t.toCompacts, s.nonempty.mono subset_union_left⟩⟩
