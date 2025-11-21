@@ -333,11 +333,12 @@ instance (P : ObjectProperty C) :
     change _ = eId V X.obj
     rw [← eHomEquiv_id]
     rfl
-  homEquiv_comp {X} {Y} {Z} f g := by
-    simp only [ObjectProperty.ι_obj, Equiv.trans_apply]
-    change (eHomEquiv V) (P.ι.map (f ≫ g)) = _
-    rw [Functor.map_comp, eHomEquiv_comp]
-    rfl
+  homEquiv_comp f g := by
+    dsimp [instEnrichedCategoryTransportEnrichment]
+    rw [h, h, h, ← tensorHom_comp_tensorHom_assoc, eComp_eq, tensorHom_def_assoc,
+      whiskerRight_id_assoc, unitors_inv_equal, Iso.inv_hom_id_assoc,
+      Functor.LaxMonoidal.μ_natural_assoc, Functor.LaxMonoidal.right_unitality_inv_assoc,
+      eHomEquiv_comp, ← F.map_comp, ← F.map_comp, unitors_inv_equal]
 
 end full_subcategory
 
