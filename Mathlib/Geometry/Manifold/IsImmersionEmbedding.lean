@@ -306,7 +306,8 @@ def smallEquiv [CompleteSpace E] [CompleteSpace E''] [CompleteSpace F]
   have h : Injective φ := by intro x y hxy; simp_all [φ]
   have h2 : IsClosed (range φ) := by
     have : (range (fun (x : F) ↦ ((0 : E), x))) = {0} ×ˢ univ := by grind
-    simpa [φ, ContinuousLinearMap.range_prod', this] using isClosed_singleton.prod isClosed_univ
+    convert isClosed_singleton.prod isClosed_univ
+    infer_instance
   have : CompleteSpace (LinearMap.range φ) := h2.completeSpace_coe
   letI ψ : _ →L[𝕜] E'' := .mk (hf.equiv.domRestrict (LinearMap.range φ))
     (Pi.continuous_restrict_apply _ hf.equiv.continuous)
