@@ -1221,20 +1221,6 @@ end ContinuousLinearMap
 -- Restricting a continuous linear equivalence to a map between submodules.
 section map
 
--- TODO_ move this!
-variable {X : Type*} [TopologicalSpace X] {p q : X → Prop}
-
-/-- A homeomorphism between two equal subtypes of a given topological space:
-the underlying equivalence is `Equiv.subtypeEquivProp`. -/
-def Homeomorph.subtypes_of_eq (hpq : p = q) : Subtype p ≃ₜ Subtype q where
-  toEquiv := Equiv.subtypeEquivProp hpq
-  continuous_toFun := continuous_id.subtype_map (fun x ↦ by simp [hpq])
-  continuous_invFun := continuous_id.subtype_map (fun x ↦ by simp [hpq])
-
-@[simp]
-lemma Homeomorph.subtypes_of_eq_toEquiv (hpq : p = q) :
-    (Homeomorph.subtypes_of_eq hpq).toEquiv = Equiv.subtypeEquivProp hpq := rfl
-
 namespace ContinuousLinearEquiv
 
 variable {R R₂ M M₂ : Type*} [Semiring R] [Semiring R₂] [AddCommMonoid M] [AddCommMonoid M₂]
