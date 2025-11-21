@@ -63,7 +63,8 @@ To show `Polynomial.Splits p f` for an arbitrary ring homomorphism `f`,
 see `IsSepClosed.splits_codomain` and `IsSepClosed.splits_domain`.
 -/
 class IsSepClosed : Prop where
-  factors_of_separable : ∀ p : k[X], p.Separable → p.Factors
+  -- todo: rename to `splits_of_separable`
+  factors_of_separable : ∀ p : k[X], p.Separable → p.Splits
 
 /-- An algebraically closed field is also separably closed. -/
 instance IsSepClosed.of_isAlgClosed [IsAlgClosed k] : IsSepClosed k :=
@@ -72,7 +73,7 @@ instance IsSepClosed.of_isAlgClosed [IsAlgClosed k] : IsSepClosed k :=
 variable {k} {K}
 
 theorem IsSepClosed.splits_of_separable [IsSepClosed k] (p : k[X]) (hp : p.Separable) :
-    p.Splits (RingHom.id k) :=
+    (p.map (RingHom.id k)).Splits :=
   (factors_of_separable p hp).map (RingHom.id k)
 
 /-- Every separable polynomial splits in the field extension `f : k →+* K` if `K` is
@@ -81,8 +82,8 @@ separably closed.
 See also `IsSepClosed.splits_domain` for the case where `k` is separably closed.
 -/
 theorem IsSepClosed.splits_codomain [IsSepClosed K] {f : k →+* K}
-    (p : k[X]) (h : p.Separable) : p.Splits f := by
-  convert IsSepClosed.splits_of_separable (p.map f) (Separable.map h); simp [splits_map_iff]
+    (p : k[X]) (h : p.Separable) : (p.map f).Splits := by
+  convert IsSepClosed.splits_of_separable (p.map f) (Separable.map h); simp
 
 /-- Every separable polynomial splits in the field extension `f : k →+* K` if `k` is
 separably closed.
@@ -90,7 +91,7 @@ separably closed.
 See also `IsSepClosed.splits_codomain` for the case where `k` is separably closed.
 -/
 theorem IsSepClosed.splits_domain [IsSepClosed k] {f : k →+* K}
-    (p : k[X]) (h : p.Separable) : p.Splits f :=
+    (p : k[X]) (h : p.Separable) : (p.map f).Splits :=
   Polynomial.splits_of_splits_id _ <| IsSepClosed.splits_of_separable _ h
 
 namespace IsSepClosed
@@ -184,7 +185,7 @@ variable (k) {K}
 
 theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → Separable p → ∃ x, p.eval x = 0) :
     IsSepClosed k := by
-  refine ⟨fun p hsep ↦ factors_iff_splits.mpr <| Or.inr ?_⟩
+  refine ⟨fun p hsep ↦ splits_iff_splits.mpr <| Or.inr ?_⟩
   intro q hq hdvd
   have hlc : IsUnit (leadingCoeff q)⁻¹ := IsUnit.inv <| Ne.isUnit <|
     leadingCoeff_ne_zero.2 <| Irreducible.ne_zero hq
