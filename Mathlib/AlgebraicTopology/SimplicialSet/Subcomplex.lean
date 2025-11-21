@@ -61,6 +61,11 @@ abbrev toSSet (A : X.Subcomplex) : SSet.{u} := A.toPresheaf
 instance : CoeOut X.Subcomplex SSet.{u} where
   coe := fun S ↦ S.toSSet
 
+instance {X : SSet.{u}} (n : SimplexCategoryᵒᵖ) (A : X.Subcomplex)
+    [DecidableEq (X.obj n)] :
+    DecidableEq ((A : SSet).obj n) :=
+  inferInstanceAs (DecidableEq (A.obj n))
+
 /-- If `A : Subcomplex X`, this is the inclusion `A ⟶ X` in the category `SSet`. -/
 abbrev ι (A : Subcomplex X) : Quiver.Hom (V := SSet) A X := Subpresheaf.ι A
 
@@ -95,7 +100,7 @@ instance mono_homOfLE : Mono (homOfLE h) := mono_of_mono_fac (homOfLE_ι h)
 /-- This is the isomorphism of simplicial sets corresponding to
 an equality of subcomplexes. -/
 @[simps]
-def eqToIso (h : S₁ = S₂) : (S₁ : SSet.{u}) ≅ S₂ where
+protected def eqToIso (h : S₁ = S₂) : (S₁ : SSet.{u}) ≅ S₂ where
   hom := homOfLE h.le
   inv := homOfLE h.symm.le
 

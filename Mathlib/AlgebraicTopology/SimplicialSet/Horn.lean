@@ -202,6 +202,39 @@ lemma hom_ext {n : ℕ} {i : Fin (n + 2)} {S : SSet} (σ₁ σ₂ : (Λ[n + 1, i
   intro j hj
   exact (Subpresheaf.mem_equalizer_iff σ₁ σ₂ (face i j hj)).2 (by apply h)
 
+
+/-- Given `i` and `j` in `Fin (n + 1)` such that `j ≠ i`, this is
+the inclusion of `stdSimplex.face {j}ᶜ` in the horn `horn n i`. -/
+def faceι {n : ℕ} (i : Fin (n + 1)) (j : Fin (n + 1)) (hij : j ≠ i) :
+    (stdSimplex.face {j}ᶜ : SSet.{u}) ⟶ (horn n i : SSet.{u}) :=
+  Subcomplex.homOfLE (face_le_horn j i hij)
+
+@[reassoc (attr := simp)]
+lemma faceι_ι {n : ℕ} (i : Fin (n + 1)) (j : Fin (n + 1)) (hij : j ≠ i) :
+    faceι i j hij ≫ (horn.{u} n i).ι = (stdSimplex.face {j}ᶜ).ι := by
+  simp [faceι]
+
+/-- Given `i` and `j` in `Fin (n + 2)` such that `j ≠ i`, this is the inclusion
+of `Δ[n]` in `horn (n + 1) i` given by `stdSimplex.δ j`. -/
+def ι {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 2)) (hij : j ≠ i) :
+    Δ[n] ⟶ horn.{u} (n + 1) i :=
+  Subcomplex.lift ((stdSimplex.{u}.δ j)) (by
+    simp only [Subcomplex.range_eq_ofSimplex]
+    refine le_trans ?_ (face_le_horn j i hij)
+    rw [stdSimplex.face_singleton_compl]
+    rfl)
+
+@[reassoc (attr := simp)]
+lemma ι_ι {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 2)) (hij : j ≠ i) :
+    ι i j hij ≫ (horn.{u} (n + 1) i).ι =
+      stdSimplex.{u}.δ j := by simp [ι]
+
+@[reassoc (attr := simp)]
+lemma faceSingletonComplIso_inv_ι {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 2)) (hij : j ≠ i) :
+    (stdSimplex.faceSingletonComplIso j).inv ≫ ι i j hij = faceι i j hij := by
+  rw [← cancel_epi (stdSimplex.faceSingletonComplIso j).hom, Iso.hom_inv_id_assoc]
+  rfl
+
 end horn
 
 end SSet
