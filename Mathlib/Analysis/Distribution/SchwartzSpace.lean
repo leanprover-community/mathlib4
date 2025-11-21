@@ -6,7 +6,7 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
-public import Mathlib.Analysis.Calculus.LineDeriv.Basic
+public import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.Normed.Group.ZeroAtInfty
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
@@ -1251,6 +1251,21 @@ Version for multiplication of scalar-valued Schwartz functions. -/
 theorem integral_mul_deriv_eq_neg_deriv_mul (f : 𝓢(ℝ, 𝕜)) (g : 𝓢(ℝ, 𝕜)) :
     ∫ (x : ℝ), f x * (deriv g x) = -∫ (x : ℝ), deriv f x * (g x) :=
   integral_bilinear_deriv_right_eq_neg_left f g (ContinuousLinearMap.mul ℝ 𝕜)
+
+variable [NormedAddCommGroup D] [NormedSpace ℝ D]
+   [MeasurableSpace D] {μ : Measure D} [BorelSpace D] [FiniteDimensional ℝ D] [μ.IsAddHaarMeasure]
+
+theorem integral_bilinear_pderivCLM_right_eq_neg_left (f : 𝓢(D, E)) (g : 𝓢(D, F))
+    (L : E →L[ℝ] F →L[ℝ] V) (v : D) :
+    ∫ (x : D), L (f x) (pderivCLM ℝ v g x) ∂μ = -∫ (x : D), L (pderivCLM ℝ v f x) (g x) ∂μ := by
+  apply integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable (v := v)
+    (bilinLeftCLM L g.hasTemperateGrowth _).integrable
+    (bilinLeftCLM L ((pderivCLM ℝ v) g).hasTemperateGrowth _).integrable
+    (bilinLeftCLM L g.hasTemperateGrowth _).integrable
+  all_goals
+  intro x
+  rw [pderivCLM_apply]
+  exact (hasFDerivAt _ x).hasLineDerivAt v
 
 end integration_by_parts
 
