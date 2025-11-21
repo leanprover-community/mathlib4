@@ -6909,6 +6909,7 @@ public import Mathlib.Topology.EMetricSpace.Lipschitz
 public import Mathlib.Topology.EMetricSpace.PairReduction
 public import Mathlib.Topology.EMetricSpace.Paracompact
 public import Mathlib.Topology.EMetricSpace.Pi
+public import Mathlib.Topology.EtaleSpace
 public import Mathlib.Topology.ExtendFrom
 public import Mathlib.Topology.Exterior
 public import Mathlib.Topology.ExtremallyDisconnected
