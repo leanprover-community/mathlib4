@@ -26,10 +26,11 @@ For that reason, the intrinsic star operation is scoped to `IntrinsicStar`.
 
 @[expose] public section
 
-namespace LinearMap
 variable {R E F : Type*} [Semiring R] [InvolutiveStar R]
   [AddCommMonoid E] [Module R E] [StarAddMonoid E] [StarModule R E]
   [AddCommMonoid F] [Module R F] [StarAddMonoid F] [StarModule R F]
+
+namespace LinearMap
 
 /-- The intrinsic star operation on linear maps `E →ₗ F` defined by
 `(star f) x = star (f (star x))`. -/
@@ -119,3 +120,22 @@ theorem intrinsicStar_rTensor (f : E →ₗ[R] F) : star (rTensor G f) = rTensor
 end TensorProduct
 
 end LinearMap
+
+namespace Module.End
+
+open scoped IntrinsicStar
+
+theorem IsUnit.intrinsicStar {f : End R E} (hf : IsUnit f) :
+    IsUnit (star f) := by
+  obtain ⟨u, rfl⟩ := hf
+  refine Units.isUnit <| Units.mk (star (u : End R E)) (star (u⁻¹ : (End R E)ˣ)) ?_ ?_
+  all_goals
+    rw [mul_eq_comp, ← LinearMap.intrinsicStar_comp]
+    simp [← mul_eq_comp, one_eq_id]
+
+open Module.End in
+theorem isUnit_intrinsicStar_iff {f : End R E} :
+    IsUnit (star f) ↔ IsUnit f :=
+  ⟨fun h ↦ star_star f ▸ h.intrinsicStar, fun h ↦ h.intrinsicStar⟩
+
+end Module.End
