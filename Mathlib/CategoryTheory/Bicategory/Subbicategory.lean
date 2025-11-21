@@ -19,7 +19,7 @@ of objects in `B` satisfying `P`.
 
 @[expose] public section
 
-universe w v v' u u'
+universe w w' v v' u u'
 
 namespace CategoryTheory
 
@@ -98,40 +98,26 @@ end
 
 section lift
 
-variable {D : Type u'} [Category.{v'} D] (P Q : ObjectProperty D)
-  (F : C ⥤ D) (hF : ∀ X, P (F.obj X))
+variable {C : Type u'} [Bicategory.{w', v'} C] (P Q : ObjectProperty C)
+  (F : B ⥤ᵖ C) (hF : ∀ X, P (F.obj X))
 
-/-- A functor which maps objects to objects satisfying a certain property induces a lift through
-    the full subcategory of objects satisfying that property. -/
+/-- A pseudofunctor which maps objects to objects satisfying a certain property induces a lift
+through the full subcategory of objects satisfying that property. -/
 @[simps]
-def lift : C ⥤ FullSubbicategory P where
+def lift : B ⥤ᵖ FullSubbicategory P where
   obj X := ⟨F.obj X, hF X⟩
-  map f := F.map f
-
-/-- Composing the lift of a functor through a full subcategory with the inclusion yields the
-    original functor. This is actually true definitionally. -/
-def liftCompιIso : P.lift F hF ⋙ P.ι ≅ F := Iso.refl _
-
-@[simp]
-lemma ι_obj_lift_obj (X : C) :
-    P.ι.obj ((P.lift F hF).obj X) = F.obj X := rfl
+  map f := ⟨F.map f⟩
+  map₂ η := InducedBicategory.mkHom₂ (F.map₂ η)
+  mapId X := isoMk P (F.mapId X) -- TODO: P should be implicit
+  mapComp f g := isoMk P (F.mapComp f g)
 
 @[simp]
-lemma ι_obj_lift_map {X Y : C} (f : X ⟶ Y) :
-    P.ι.map ((P.lift F hF).map f) = F.map f := rfl
+lemma ι_obj_lift_obj (X : B) :
+    (forget P).obj ((lift P F hF).obj X) = F.obj X := rfl
 
-instance [F.Faithful] : (P.lift F hF).Faithful :=
-  Functor.Faithful.of_comp_iso (P.liftCompιIso F hF)
-
-instance [F.Full] : (P.lift F hF).Full :=
-  Functor.Full.of_comp_faithful_iso (P.liftCompιIso F hF)
-
-variable {Q}
-
-/-- When `h : P ≤ Q`, this is the canonical isomorphism
-`P.lift F hF ⋙ ιOfLE h ≅ Q.lift F _`. -/
-def liftCompιOfLEIso (h : P ≤ Q) :
-    P.lift F hF ⋙ ιOfLE h ≅ Q.lift F (fun X ↦ h _ (hF X)) := Iso.refl _
+@[simp]
+lemma ι_obj_lift_map {X Y : B} (f : X ⟶ Y) :
+    (forget P).map ((lift P F hF).map f) = F.map f := rfl
 
 end lift
 
