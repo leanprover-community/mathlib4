@@ -124,7 +124,7 @@ instance instHopfAlgebra : HopfAlgebra R T[M] where
           simp only [coe_coe, comul_apply, map_add, map_tmul, antipode_ι_apply, id_coe, id_eq,
             mul'_apply, mul_one, ← map_one (algebraMap R T[M]), antipode_algebraMap_apply]
           simp only [map_one, mul_one, one_mul, neg_add_cancel]
-    | mul u v hu hv => 
+    | mul u v hu hv =>
         conv =>
           rhs
           rw [convOne_apply, counit_mul, map_mul, ← convOne_apply, ← convOne_apply]
@@ -156,7 +156,7 @@ instance instHopfAlgebra : HopfAlgebra R T[M] where
     rw [LinearMap.lTensor, ← LinearMap.convMul_def, ← convOne_def]
     ext x
     induction x using induction with
-    | algebraMap r => 
+    | algebraMap r =>
         simp only [convMul_apply, comul_algebraMap, TensorProduct.algebraMap_apply, map_tmul,
           id_coe, id_eq, mul'_apply, convOne_apply, counit_algebraMap, ← map_one (algebraMap R
           T[M]), antipode_algebraMap_apply]
@@ -175,7 +175,7 @@ instance instHopfAlgebra : HopfAlgebra R T[M] where
             mul'_apply, mul_one, ← map_one (algebraMap R T[M]), antipode_algebraMap_apply]
           simp only [map_one, mul_one, one_mul, neg_add_cancel]
           abel_nf
-    | mul u v hu hv => 
+    | mul u v hu hv =>
         conv =>
           rhs
           rw [convOne_apply, counit_mul, map_mul, Algebra.commutes, ← convOne_apply,
