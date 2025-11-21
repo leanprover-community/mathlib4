@@ -48,32 +48,34 @@ section
 
 variable (P : ObjectProperty B)
 
+@[simps!]
 instance bicategory : Bicategory.{w, v} (FullSubbicategory P) :=
   InducedBicategory.bicategory FullSubbicategory.obj
 
+-- TODO: bicategory_Hom should not be a simp projection!
+
 -- these lemmas are not particularly well-typed, so would probably be dangerous as simp lemmas
 
-lemma id_def (X : FullSubbicategory P) : 𝟙 X = ⟨𝟙 X.obj⟩ := rfl
+lemma id_def (X : FullSubbicategory P) : 𝟙 X = ⟨𝟙 X.obj⟩ := by simp
+
+lemma id_hom (X : FullSubbicategory P) : 𝟙 X = ⟨𝟙 X.obj⟩ := by simp
 
 lemma comp_def {X Y Z : FullSubbicategory P} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).hom = f.hom ≫ g.hom := rfl
+    f ≫ g = ⟨f.hom ≫ g.hom⟩ := by simp
+
+@[simp]
+lemma comp_hom {X Y Z : FullSubbicategory P} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).hom = f.hom ≫ g.hom := by simp?
 
 /-- The forgetful functor from a full subcategory into the original category
 ("forgetting" the condition).
 -/
+@[simps!]
 def forget : StrictPseudofunctor (FullSubbicategory P) B :=
   InducedBicategory.forget FullSubbicategory.obj
+-- TODO: bicategory_Hom should not be a simp projection!
 
 variable {P}
-
-@[simp]
-theorem forget_obj (X : FullSubbicategory P) : (forget P).obj X = X.obj :=
-  rfl
-
-@[simp]
-theorem forget_map {X Y : FullSubbicategory P} {f : X ⟶ Y} : (forget P).map f = f.hom :=
--- TODO: right statement?
-  rfl
 
 /-- Construct a morphism in `FullSubbicategory P` from a morhism in `B`. -/
 -- TODO: should abbrevs have simps?
@@ -104,7 +106,7 @@ an induced functor `FullSubbicategory P ⥤ FullSubbicategory P'`. -/
 def ιOfLE (h : P ≤ P') : StrictPseudofunctor (FullSubbicategory P) (FullSubbicategory P') :=
   StrictPseudofunctor.mk' {
     obj X := ⟨X.1, h _ X.2⟩
-    map f := ⟨f.hom⟩ -- TODO: is it bad to use the anonymous constructor here?
+    map f := ⟨f.hom⟩
     map₂ η := mkHom₂ η.hom }
 
 end
