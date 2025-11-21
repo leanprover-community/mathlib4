@@ -719,27 +719,27 @@ variable {f : M → N} (g : M' → N') {q : M} {q' : M'}
 
 lemma writtenInExtChartAt_sumInl_eventuallyEq_id :
     (writtenInExtChartAt I I q (@Sum.inl M M')) =ᶠ[𝓝[Set.range I] (extChartAt I q q)] id := by
-    have hmem : I.symm ⁻¹'
-        (chartAt H q).target ∩ Set.range I ∈ 𝓝[Set.range I] (extChartAt I q q) := by
-      rw [← I.image_eq (chartAt H q).target]
-      exact (chartAt H q).extend_image_target_mem_nhds (mem_chart_source H q)
-    filter_upwards [hmem] with y hy
-    rcases hy with ⟨hyT, ⟨z, rfl⟩⟩
-    simp [writtenInExtChartAt, extChartAt, ChartedSpace.sum_chartAt_inl,
-      Sum.inl_injective.extend_apply <| chartAt H q,
-      (chartAt H q).right_inv (by simpa [Set.mem_preimage, I.left_inv] using hyT)]
+  have hmem : I.symm ⁻¹'
+      (chartAt H q).target ∩ Set.range I ∈ 𝓝[Set.range I] (extChartAt I q q) := by
+    rw [← I.image_eq (chartAt H q).target]
+    exact (chartAt H q).extend_image_target_mem_nhds (mem_chart_source H q)
+  filter_upwards [hmem] with y hy
+  rcases hy with ⟨hyT, ⟨z, rfl⟩⟩
+  simp [writtenInExtChartAt, extChartAt, ChartedSpace.sum_chartAt_inl,
+    Sum.inl_injective.extend_apply <| chartAt H q,
+    (chartAt H q).right_inv (by simpa [Set.mem_preimage, I.left_inv] using hyT)]
 
 lemma writtenInExtChartAt_sumInr_eventuallyEq_id :
     (writtenInExtChartAt I I q' (@Sum.inr M M')) =ᶠ[𝓝[Set.range I] (extChartAt I q' q')] id := by
-    have hmem : I.symm ⁻¹'
-        (chartAt H q').target ∩ Set.range I ∈ 𝓝[Set.range I] (extChartAt I q' q') := by
-      rw [← I.image_eq (chartAt H q').target]
-      exact (chartAt H q').extend_image_target_mem_nhds (mem_chart_source H q')
-    filter_upwards [hmem] with y hy
-    rcases hy with ⟨hyT, ⟨z, rfl⟩⟩
-    simp [writtenInExtChartAt, extChartAt, ChartedSpace.sum_chartAt_inr,
-      Sum.inr_injective.extend_apply <| chartAt H q',
-      (chartAt H q').right_inv (by simpa [Set.mem_preimage, I.left_inv] using hyT)]
+  have hmem : I.symm ⁻¹'
+      (chartAt H q').target ∩ Set.range I ∈ 𝓝[Set.range I] (extChartAt I q' q') := by
+    rw [← I.image_eq (chartAt H q').target]
+    exact (chartAt H q').extend_image_target_mem_nhds (mem_chart_source H q')
+  filter_upwards [hmem] with y hy
+  rcases hy with ⟨hyT, ⟨z, rfl⟩⟩
+  simp [writtenInExtChartAt, extChartAt, ChartedSpace.sum_chartAt_inr,
+    Sum.inr_injective.extend_apply <| chartAt H q',
+    (chartAt H q').right_inv (by simpa [Set.mem_preimage, I.left_inv] using hyT)]
 
 theorem hasMFDerivWithinAt_inl :
     HasMFDerivWithinAt I I (@Sum.inl M M') s q (ContinuousLinearMap.id 𝕜 (TangentSpace I q)) := by
