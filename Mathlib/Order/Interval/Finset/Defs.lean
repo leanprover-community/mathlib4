@@ -297,7 +297,7 @@ def Ioo (a b : α) : Finset α :=
 theorem mem_Icc : x ∈ Icc a b ↔ a ≤ x ∧ x ≤ b :=
   LocallyFiniteOrder.finset_mem_Icc a b x
 
-@[simp]
+@[simp, grind =]
 theorem mem_Ico : x ∈ Ico a b ↔ a ≤ x ∧ x < b :=
   LocallyFiniteOrder.finset_mem_Ico a b x
 
