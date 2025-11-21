@@ -3,8 +3,9 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.Analysis.MellinTransform
+public import Mathlib.Analysis.MellinTransform
 
 /-!
 # Abstract functional equations for Mellin transforms
@@ -55,6 +56,8 @@ See the sections *Main theorems on weak FE-pairs* and
   - `WeakFEPair.Λ_residue_k`: computation of the residue at `k`
   - `WeakFEPair.Λ_residue_zero`: computation of the residue at `0`.
 -/
+
+@[expose] public section
 
 
 /- TODO : Consider extending the results to allow functional equations of the form

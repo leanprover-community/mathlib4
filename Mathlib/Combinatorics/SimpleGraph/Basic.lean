@@ -3,12 +3,14 @@ Copyright (c) 2020 Aaron Anderson, Jalex Stark, Kyle Miller. All rights reserved
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov, Hunter Monroe
 -/
-import Mathlib.Combinatorics.SimpleGraph.Init
-import Mathlib.Data.Finite.Prod
-import Mathlib.Data.Rel
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Data.Sym.Sym2
-import Mathlib.Order.CompleteBooleanAlgebra
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Init
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Data.Rel
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Data.Sym.Sym2
+public import Mathlib.Order.CompleteBooleanAlgebra
 
 /-!
 # Simple graphs
@@ -37,6 +39,8 @@ This module defines simple graphs on a vertex type `V` as an irreflexive symmetr
   We begin with simple graphs in order to start learning what the combinatorics hierarchy should
   look like.
 -/
+
+@[expose] public section
 
 attribute [aesop norm unfold (rule_sets := [SimpleGraph])] Symmetric
 attribute [aesop norm unfold (rule_sets := [SimpleGraph])] Irreflexive
@@ -296,37 +300,28 @@ instance distribLattice : DistribLattice (SimpleGraph V) :=
       adj_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl with
     le := fun G H => ∀ ⦃a b⦄, G.Adj a b → H.Adj a b }
 
-instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGraph V) :=
-  { SimpleGraph.distribLattice with
-    le := (· ≤ ·)
-    sup := (· ⊔ ·)
-    inf := (· ⊓ ·)
-    compl := HasCompl.compl
-    sdiff := (· \ ·)
-    top.Adj := Ne
-    bot.Adj _ _ := False
-    le_top := fun x _ _ h => x.ne_of_adj h
-    bot_le := fun _ _ _ h => h.elim
-    sdiff_eq := fun x y => by
-      ext v w
-      refine ⟨fun h => ⟨h.1, ⟨?_, h.2⟩⟩, fun h => ⟨h.1, h.2.2⟩⟩
-      rintro rfl
-      exact x.irrefl h.1
-    inf_compl_le_bot := fun _ _ _ h => False.elim <| h.2.2 h.1
-    top_le_sup_compl := fun G v w hvw => by
-      by_cases h : G.Adj v w
-      · exact Or.inl h
-      · exact Or.inr ⟨hvw, h⟩
-    sSup := sSup
-    le_sSup := fun _ G hG _ _ hab => ⟨G, hG, hab⟩
-    sSup_le := fun s G hG a b => by
-      rintro ⟨H, hH, hab⟩
-      exact hG _ hH hab
-    sInf := sInf
-    sInf_le := fun _ _ hG _ _ hab => hab.1 hG
-    le_sInf := fun _ _ hG _ _ hab => ⟨fun _ hH => hG _ hH hab, hab.ne⟩
-    iInf_iSup_eq := fun f => by ext; simp [Classical.skolem] }
-
+instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (SimpleGraph V) where
+  top.Adj := Ne
+  bot.Adj _ _ := False
+  le_top x _ _ h := x.ne_of_adj h
+  bot_le _ _ _ h := h.elim
+  sdiff_eq x y := by
+    ext v w
+    refine ⟨fun h => ⟨h.1, ⟨?_, h.2⟩⟩, fun h => ⟨h.1, h.2.2⟩⟩
+    rintro rfl
+    exact x.irrefl h.1
+  inf_compl_le_bot _ _ _ h := False.elim <| h.2.2 h.1
+  top_le_sup_compl G v w hvw := by
+    by_cases h : G.Adj v w
+    · exact Or.inl h
+    · exact Or.inr ⟨hvw, h⟩
+  le_sSup _ G hG _ _ hab := ⟨G, hG, hab⟩
+  sSup_le s G hG a b := by
+    rintro ⟨H, hH, hab⟩
+    exact hG _ hH hab
+  sInf_le _ _ hG _ _ hab := hab.1 hG
+  le_sInf _ _ hG _ _ hab := ⟨fun _ hH => hG _ hH hab, hab.ne⟩
+  iInf_iSup_eq f := by ext; simp [Classical.skolem]
 /-- The complete graph on a type `V` is the simple graph with all pairs of distinct vertices. -/
 abbrev completeGraph (V : Type u) : SimpleGraph V := ⊤
 
@@ -601,6 +596,8 @@ lemma edgeSet_eq_iff : G.edgeSet = s ↔ G = fromEdgeSet s ∧ Disjoint s {e | e
 theorem fromEdgeSet_empty : fromEdgeSet (∅ : Set (Sym2 V)) = ⊥ := by
   ext v w
   simp only [fromEdgeSet_adj, Set.mem_empty_iff_false, false_and, bot_adj]
+
+@[simp] lemma fromEdgeSet_not_isDiag : fromEdgeSet {e : Sym2 V | ¬ e.IsDiag} = ⊤ := by ext; simp
 
 @[simp]
 theorem fromEdgeSet_univ : fromEdgeSet (Set.univ : Set (Sym2 V)) = ⊤ := by
