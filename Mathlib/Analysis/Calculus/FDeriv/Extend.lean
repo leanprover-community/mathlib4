@@ -3,7 +3,9 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.MeanValue
+module
+
+public import Mathlib.Analysis.Calculus.MeanValue
 
 /-!
 # Extending differentiability to the boundary
@@ -17,6 +19,8 @@ the right endpoint of an interval, are given in `hasDerivWithinAt_Ici_of_tendsto
 `hasDerivWithinAt_Iic_of_tendsto_deriv`.  These versions are formulated in terms of the
 one-dimensional derivative `deriv ℝ f`.
 -/
+
+@[expose] public section
 
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {F : Type*} [NormedAddCommGroup F]
@@ -37,9 +41,8 @@ theorem hasFDerivWithinAt_closure_of_tendsto_fderiv {f : E → F} {s : Set E} {x
   classical
     -- one can assume without loss of generality that `x` belongs to the closure of `s`, as the
     -- statement is empty otherwise
-    by_cases hx : x ∉ closure s
+    by_cases! hx : x ∉ closure s
     · rw [← closure_closure] at hx; exact HasFDerivWithinAt.of_notMem_closure hx
-    push_neg at hx
     rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO, Asymptotics.isLittleO_iff]
     /- One needs to show that `‖f y - f x - f' (y - x)‖ ≤ ε ‖y - x‖` for `y` close to `x` in
       `closure s`, where `ε` is an arbitrary positive constant. By continuity of the functions, it

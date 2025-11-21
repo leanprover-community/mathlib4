@@ -3,14 +3,18 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Set.Image
-import Mathlib.Data.List.Defs
+module
+
+public import Mathlib.Data.Set.Image
+public import Mathlib.Data.List.Defs
 
 /-!
 # Lemmas about `List`s and `Set.range`
 
 In this file we prove lemmas about range of some operations on lists.
 -/
+
+@[expose] public section
 
 
 open List
