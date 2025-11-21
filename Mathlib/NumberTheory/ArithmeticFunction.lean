@@ -1456,19 +1456,15 @@ theorem sum_mul_eq_sum_prod_filter (f g : ArithmeticFunction R) (N : ℕ) :
   simp only [mul_apply]
   trans ∑ n ∈ Icc 0 N, ∑ x ∈ Icc 0 N ×ˢ Icc 0 N with x.1 * x.2 = n, f x.1 * g x.2
   · refine sum_congr rfl fun n hn ↦ ?_
-    by_cases h : n = 0
-    · simp only [h, divisorsAntidiagonal_zero, sum_empty, _root_.mul_eq_zero]
-      rw [sum_congr rfl (g := 0)]
-      · simp
-      intro x hx
-      simp only [mem_Icc, _root_.zero_le, true_and, mem_filter, mem_product, Pi.zero_apply] at *
-      rcases hx.2 with hx|hx <;> simp [hx]
-    push_neg at h
     simp only [mem_Icc, _root_.zero_le, true_and] at hn
-    rw [divisorsAntidiagonal_of_le_eq_prod_filter h hn]
+    by_cases hn0 : n = 0
+    · simp +contextual only [hn0, divisorsAntidiagonal_zero, sum_empty, _root_.mul_eq_zero]
+      apply (sum_eq_zero ..).symm
+      simp only [mem_filter, mem_product, mem_Icc, _root_.zero_le, true_and, and_imp, Prod.forall]
+      rintro _ _ _ _ (h | h) <;> simp [h]
+    rw [divisorsAntidiagonal_of_le_eq_prod_filter hn0 (by omega)]
   · simp_rw [sum_filter]
     rw [sum_comm]
-    apply sum_congr rfl
     simp
 
 theorem sum_mul_eq_sum_sum (f g : ArithmeticFunction R) (N : ℕ) :
