@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unitary
-public import Mathlib.Analysis.NormedSpace.Normalize
+public import Mathlib.Analysis.Normed.Module.Normalize
 
 /-! # Unitary elements span C⋆-algebras
 
