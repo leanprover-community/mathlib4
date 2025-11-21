@@ -505,13 +505,47 @@ def fromZeroRingHom : 𝒜 0 →+* HomogeneousLocalization 𝒜 x where
   map_zero' := rfl
   map_add' f g := by ext; simp [Localization.add_mk, add_comm f.1 g.1]
 
+@[simp] lemma val_fromZeroRingHom (f : 𝒜 0) :
+    (fromZeroRingHom 𝒜 x f).val = .mk f 1 :=
+  rfl
+
 instance : Algebra (𝒜 0) (HomogeneousLocalization 𝒜 x) :=
   (fromZeroRingHom 𝒜 x).toAlgebra
 
+variable (R₀ : Type*) [CommSemiring R₀] [Algebra R₀ R] [Algebra R₀ A] [IsScalarTower R₀ R A]
+
+instance : Algebra R₀ (HomogeneousLocalization 𝒜 x) where
+  algebraMap := (fromZeroRingHom 𝒜 x).comp <| (algebraMap R (𝒜 0)).comp <| algebraMap R₀ R
+  commutes' _ _ := mul_comm _ _
+  smul_def' r z := by
+    obtain ⟨z, rfl⟩ := z.mk_surjective
+    ext
+    simp [Localization.smul_mk, Localization.mk_mul, ← IsScalarTower.algebraMap_apply R₀ R A,
+      ← Algebra.smul_def]
+
 lemma algebraMap_eq : algebraMap (𝒜 0) (HomogeneousLocalization 𝒜 x) = fromZeroRingHom 𝒜 x := rfl
+
+lemma algebraMap_apply' {r : R₀} : algebraMap R₀ (HomogeneousLocalization 𝒜 x) r =
+    fromZeroRingHom 𝒜 x (algebraMap R (𝒜 0) (algebraMap R₀ R r)) := rfl
 
 instance : IsScalarTower (𝒜 0) (HomogeneousLocalization 𝒜 x) (Localization x) :=
   .of_algebraMap_eq' rfl
+
+instance : IsScalarTower R (𝒜 0) (HomogeneousLocalization 𝒜 x) :=
+  .of_algebraMap_eq' rfl
+
+instance : IsScalarTower R₀ R (HomogeneousLocalization 𝒜 x) :=
+  .of_algebraMap_eq' rfl
+
+variable (𝒜)
+
+/-- Given a denominator `den : 𝒜 i`, we have a linear map `𝒜 i → HomogeneousLocalization 𝒜 x` that
+sends `n` to `n/den`. -/
+@[simps] def mkₗ {i : ι} {den : 𝒜 i} (den_mem : (den : A) ∈ x) :
+    𝒜 i →ₗ[R] HomogeneousLocalization 𝒜 x where
+  toFun num := mk ⟨_, num, den, den_mem⟩
+  map_add' _ _ := by ext; simp [Localization.add_mk_self]
+  map_smul' _ _ := by ext; simp [Localization.smul_mk]
 
 end HomogeneousLocalization
 
@@ -617,6 +651,37 @@ theorem Away.eventually_smul_mem {m} (hf : f ∈ 𝒜 m) (z : Away 𝒜 f) :
   rw [← smul_eq_mul, add_smul,
     DirectSum.degree_eq_of_mem_mem 𝒜 (SetLike.pow_mem_graded _ hf) (hk.symm ▸ z.den_mem_deg) hfk]
   exact ⟨_, SetLike.mul_mem_graded (SetLike.pow_mem_graded _ hf) z.num_mem_deg, rfl⟩
+
+variable (𝒜)
+
+/-- This is a convenient constructor for `Away 𝒜 f` when `f` is homogeneous.
+`Away.mk 𝒜 hf n x hx` is the fraction `x / f ^ n`. -/
+protected def Away.mk {d : ι} (hf : f ∈ 𝒜 d) (n : ℕ) (x : A) (hx : x ∈ 𝒜 (n • d)) : Away 𝒜 f :=
+  HomogeneousLocalization.mk ⟨n • d, ⟨x, hx⟩, ⟨f ^ n, pow_mem_graded n hf⟩, ⟨n, rfl⟩⟩
+
+@[simp]
+lemma Away.val_mk {d : ι} (n : ℕ) (hf : f ∈ 𝒜 d) (x : A) (hx : x ∈ 𝒜 (n • d)) :
+    (Away.mk 𝒜 hf n x hx).val = Localization.mk x ⟨f ^ n, by use n⟩ :=
+  rfl
+
+protected
+lemma Away.mk_surjective {d : ι} (hf : f ∈ 𝒜 d) (x : Away 𝒜 f) :
+    ∃ n a ha, Away.mk 𝒜 hf n a ha = x := by
+  obtain ⟨⟨N, ⟨s, hs⟩, ⟨b, hn⟩, ⟨n, (rfl : _ = b)⟩⟩, rfl⟩ := mk_surjective x
+  by_cases hfn : f ^ n = 0
+  · have := HomogeneousLocalization.subsingleton 𝒜 (x := .powers f) ⟨n, hfn⟩
+    exact ⟨0, 0, zero_mem _, Subsingleton.elim _ _⟩
+  obtain rfl := DirectSum.degree_eq_of_mem_mem 𝒜 hn (SetLike.pow_mem_graded n hf) hfn
+  exact ⟨n, s, hs, by ext; simp⟩
+
+/-- Given `n : ℕ`, we have a linear map `𝒜 (n • d) → HomogeneousLocalization 𝒜 x` that sends `x`
+to `x / f ^ n`. -/
+protected def Away.mkₗ {d : ι} (hf : f ∈ 𝒜 d) (n : ℕ) :
+    𝒜 (n • d) →ₗ[R] HomogeneousLocalization.Away 𝒜 f :=
+  mkₗ 𝒜 (den := ⟨f ^ n, pow_mem_graded _ hf⟩) ⟨n, rfl⟩
+
+@[simp] lemma Away.mkₗ_apply {d : ι} (hf : f ∈ 𝒜 d) {n : ℕ} (x : 𝒜 (n • d)) :
+    Away.mkₗ 𝒜 hf n x = .mk 𝒜 hf n x x.2 := rfl
 
 end
 
@@ -748,26 +813,6 @@ def awayMapₐ : Away 𝒜 f →ₐ[𝒜 0] Away 𝒜 x where
   commutes' _ := awayMap_fromZeroRingHom ..
 
 @[simp] lemma awayMapₐ_apply (a) : awayMapₐ 𝒜 hg hx a = awayMap 𝒜 hg hx a := rfl
-
-/-- This is a convenient constructor for `Away 𝒜 f` when `f` is homogeneous.
-`Away.mk 𝒜 hf n x hx` is the fraction `x / f ^ n`. -/
-protected def Away.mk {d : ι} (hf : f ∈ 𝒜 d) (n : ℕ) (x : A) (hx : x ∈ 𝒜 (n • d)) : Away 𝒜 f :=
-  HomogeneousLocalization.mk ⟨n • d, ⟨x, hx⟩, ⟨f ^ n, SetLike.pow_mem_graded n hf⟩, ⟨n, rfl⟩⟩
-
-@[simp]
-lemma Away.val_mk {d : ι} (n : ℕ) (hf : f ∈ 𝒜 d) (x : A) (hx : x ∈ 𝒜 (n • d)) :
-    (Away.mk 𝒜 hf n x hx).val = Localization.mk x ⟨f ^ n, by use n⟩ :=
-  rfl
-
-protected
-lemma Away.mk_surjective {d : ι} (hf : f ∈ 𝒜 d) (x : Away 𝒜 f) :
-    ∃ n a ha, Away.mk 𝒜 hf n a ha = x := by
-  obtain ⟨⟨N, ⟨s, hs⟩, ⟨b, hn⟩, ⟨n, (rfl : _ = b)⟩⟩, rfl⟩ := mk_surjective x
-  by_cases hfn : f ^ n = 0
-  · have := HomogeneousLocalization.subsingleton 𝒜 (x := .powers f) ⟨n, hfn⟩
-    exact ⟨0, 0, zero_mem _, Subsingleton.elim _ _⟩
-  obtain rfl := DirectSum.degree_eq_of_mem_mem 𝒜 hn (SetLike.pow_mem_graded n hf) hfn
-  exact ⟨n, s, hs, by ext; simp⟩
 
 open SetLike in
 @[simp]
