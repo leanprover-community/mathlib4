@@ -1259,6 +1259,61 @@ lemma submoduleMap_symm_apply
     (e : M ≃ₛₗ[σ₁₂] M₂) (p : Submodule R M) (x : p.map e) :
   (e.submoduleMap p).symm x = e.symm x := by rfl
 
+variable [TopologicalSpace M] [TopologicalSpace M₂]
+
+-- XXX: should p and q be implicit or explicit? adjust adjust LinearEquiv.of_eq in the same way
+/-- Continuous linear equivalence between two equal submodules. -/
+def ofEq {p q : Submodule R M} (h : p = q) : p ≃L[R] q where
+  toLinearEquiv := LinearEquiv.ofEq _ _ h
+  continuous_toFun := by
+    -- want a better lemma: equal subtypes define a homeomorphism
+    dsimp
+    have h' : (fun x ↦ x ∈ p) = (fun x ↦ x ∈ q) := by simp [h]
+    change Continuous (Equiv.subtypeEquivProp h')
+    sorry -- not in mathlib
+  continuous_invFun := sorry -- should follow from toFun proof
+
+/-- A continuous linear equivalence which maps a submodule of one module onto another,
+restricts to a continuous linear equivalence of the two submodules. -/
+def ofSubmodules (e : M ≃SL[σ₁₂] M₂)
+    (p : Submodule R M) (q : Submodule R₂ M₂) (h : p.map (e : M →SL[σ₁₂] M₂) = q) : p ≃SL[σ₁₂] q :=
+  (e.submoduleMap p).trans (.ofEq h)
+
+@[simp]
+theorem ofSubmodules_apply (e : M ≃SL[σ₁₂] M₂) {p : Submodule R M} {q : Submodule R₂ M₂}
+    (h : p.map e = q) (x : p) :
+    e.ofSubmodules p q h x = e x :=
+  rfl
+
+@[simp]
+theorem ofSubmodules_symm_apply (e : M ≃SL[σ₁₂] M₂) {p : Submodule R M} {q : Submodule R₂ M₂}
+    (h : p.map e = q) (x : q) : (e.ofSubmodules p q h).symm x = e.symm x :=
+  rfl
+
+/-- A continuous linear equivalence of two modules restricts to a continuous linear equivalence
+from the preimage of any submodule to that submodule.
+This is `ContinuousLinearEquiv.ofSubmodule` but with `comap` on the left
+instead of `map` on the right. -/
+def ofSubmodule' (f : M ≃SL[σ₁₂] M₂) (U : Submodule R₂ M₂) :
+    U.comap f ≃SL[σ₁₂] U :=
+  f.symm.ofSubmodules _ _ (U.map_equiv_eq_comap_symm f.toLinearEquiv.symm) |>.symm
+
+theorem ofSubmodule'_toContinuousLinearMap (f : M ≃SL[σ₁₂] M₂)
+    (U : Submodule R₂ M₂) :
+    (f.ofSubmodule' U).toContinuousLinearMap =
+      (f.toContinuousLinearMap.comp ((U.comap f).subtypeL)).codRestrict U ((fun ⟨x, hx⟩ ↦ by
+        simpa [Submodule.mem_comap])) := by
+  rfl
+
+@[simp]
+theorem ofSubmodule'_apply (f : M ≃SL[σ₁₂] M₂) (U : Submodule R₂ M₂) (x : U.comap f) :
+    (f.ofSubmodule' U x : M₂) = f (x : M) :=
+  rfl
+
+@[simp]
+theorem ofSubmodule'_symm_apply (f : M ≃SL[σ₁₂] M₂) (U : Submodule R₂ M₂) (x : U) :
+    ((f.ofSubmodule' U).symm x : M) = f.symm (x : M₂) := rfl
+
 end ContinuousLinearEquiv
 
 end map
