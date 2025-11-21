@@ -1715,6 +1715,7 @@ public import Mathlib.Analysis.Convex.KreinMilman
 public import Mathlib.Analysis.Convex.LinearIsometry
 public import Mathlib.Analysis.Convex.Measure
 public import Mathlib.Analysis.Convex.Mul
+public import Mathlib.Analysis.Convex.NNReal
 public import Mathlib.Analysis.Convex.PartitionOfUnity
 public import Mathlib.Analysis.Convex.PathConnected
 public import Mathlib.Analysis.Convex.Piecewise
@@ -2294,6 +2295,8 @@ public import Mathlib.CategoryTheory.Comma.StructuredArrow.Final
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Functor
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 public import Mathlib.CategoryTheory.ComposableArrows.Basic
+public import Mathlib.CategoryTheory.ComposableArrows.One
+public import Mathlib.CategoryTheory.ComposableArrows.Two
 public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 public import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
@@ -4052,6 +4055,7 @@ public import Mathlib.Geometry.Euclidean.Projection
 public import Mathlib.Geometry.Euclidean.SignedDist
 public import Mathlib.Geometry.Euclidean.Simplex
 public import Mathlib.Geometry.Euclidean.Sphere.Basic
+public import Mathlib.Geometry.Euclidean.Sphere.OrthRadius
 public import Mathlib.Geometry.Euclidean.Sphere.Power
 public import Mathlib.Geometry.Euclidean.Sphere.Ptolemy
 public import Mathlib.Geometry.Euclidean.Sphere.SecondInter
@@ -6144,6 +6148,8 @@ public import Mathlib.RingTheory.TensorProduct.Basic
 public import Mathlib.RingTheory.TensorProduct.DirectLimitFG
 public import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.RingTheory.TensorProduct.Free
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 public import Mathlib.RingTheory.TensorProduct.Maps
 public import Mathlib.RingTheory.TensorProduct.MonoidAlgebra

@@ -61,7 +61,15 @@ instance : LinearMapClass (twoCochain R L M) R L (L →ₗ[R] M) where
   map_smulₛₗ a := a.1.map_smul
 
 @[simp]
-lemma twoCochain_alt (a : twoCochain R L M) (x : L) : a x x = 0 := a.2 x
+lemma mem_twoCochain_iff {c : L →ₗ[R] L →ₗ[R] M} : c ∈ twoCochain R L M ↔ ∀ x, c x x = 0 := Iff.rfl
+
+@[simp]
+lemma mem_twoCochain_iff {c : L →ₗ[R] L →ₗ[R] M} : c ∈ twoCochain R L M ↔ ∀ x, c x x = 0 := Iff.rfl
+
+@[simp]
+lemma twoCochain_alt (a : twoCochain R L M) (x : L) :
+    a x x = 0 :=
+  a.2 x
 
 lemma twoCochain_skew (a : twoCochain R L M) (x y : L) : - a x y = a y x := by
   rw [neg_eq_iff_add_eq_zero, add_comm]
