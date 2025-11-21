@@ -17,10 +17,6 @@ A polynomial `f : R[X]` splits if it is a product of constant and monic linear p
 * `Polynomial.Splits f`: A predicate on a polynomial `f` saying that `f` is a product of
   constant and monic linear polynomials.
 
-## TODO
-
-- Redefine `Splits` in terms of `Splits` and then deprecate `Splits`.
-
 -/
 
 @[expose] public section
