@@ -74,6 +74,7 @@ lemma vecMul_permMatrix {v : n → R} [CommRing R] :
   ext j
   simp [vecMul_eq_sum, Pi.single, Function.update, ← Equiv.symm_apply_eq]
 
+-- TODO Move the code below to analysis
 open scoped Matrix.Norms.L2Operator
 
 variable {𝕜 : Type*} [RCLike 𝕜]

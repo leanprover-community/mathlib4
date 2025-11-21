@@ -413,7 +413,7 @@ theorem map_eq_self (x : R) : algebraMap R R x = x :=
 
 @[deprecated _root_.smul_eq_mul (since := "2025-12-02")]
 theorem smul_eq_mul (x y : R) : x • y = x * y :=
-  rfl
+  _root_.smul_eq_mul x y
 
 end id
 
