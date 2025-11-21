@@ -10,6 +10,7 @@ public import Mathlib.Computability.TuringMachine
 public import Mathlib.Data.Num.Lemmas
 public import Mathlib.Tactic.DeriveFintype
 public import Mathlib.Computability.TMConfig
+public import Mathlib.Tactic.DeriveFintype  -- shake: keep (deriving handlers not tracked yet)
 
 /-!
 # Modelling partial recursive functions using Turing machines
