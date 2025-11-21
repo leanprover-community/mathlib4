@@ -67,7 +67,7 @@ lemma IsGaussian.eq_gaussianReal (μ : Measure ℝ) (h : IsGaussian μ) :
   μ = μ.map (ContinuousLinearMap.id ℝ ℝ) := by simp
   _ = gaussianReal μ[id] Var[id; μ].toNNReal := by rw [h.map_eq_gaussianReal]; simp
 
-lemma isGaussian_of_sGaussian_map {E : Type*} [TopologicalSpace E] [AddCommMonoid E]
+lemma isGaussian_of_isGaussian_map {E : Type*} [TopologicalSpace E] [AddCommMonoid E]
     [Module ℝ E] {mE : MeasurableSpace E} [OpensMeasurableSpace E] {μ : Measure E}
     (h : ∀ L : E →L[ℝ] ℝ, IsGaussian (μ.map L)) : IsGaussian μ := by
   refine ⟨fun L ↦ ?_⟩
@@ -79,7 +79,7 @@ lemma isGaussian_of_map_eq_gaussianReal {E : Type*} [TopologicalSpace E] [AddCom
     [Module ℝ E] {mE : MeasurableSpace E} [OpensMeasurableSpace E] {μ : Measure E}
     (h : ∀ L : E →L[ℝ] ℝ, ∃ (m : ℝ) (v : ℝ≥0), μ.map L = gaussianReal m v) :
     IsGaussian μ := by
-  refine isGaussian_of_map_isGaussian fun L ↦ ?_
+  refine isGaussian_of_isGaussian_map fun L ↦ ?_
   obtain ⟨m, v, h⟩ := h L
   rw [h]
   infer_instance
