@@ -1159,12 +1159,12 @@ lemma eq_or_eq_or_eq_of_forall_not_lt_lt [LinearOrder α]
 namespace Empty
 
 instance instLinearOrder : LinearOrder Empty where
- le _ _ := False
+ le _ b := b.elim
  le_refl x := x.elim
  le_trans x y z := x.elim
  le_antisymm x := x.elim
  le_total x y := x.elim
- toDecidableLE := fun _ _ ↦ Decidable.isFalse id
+ toDecidableLE _ _ := Decidable.isFalse id
 
 end Empty
 
