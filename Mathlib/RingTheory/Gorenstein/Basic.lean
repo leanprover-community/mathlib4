@@ -22,6 +22,7 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 public import Mathlib.RingTheory.CohenMacaulay.Basic
 public import Mathlib.RingTheory.LocalRing.Module
 public import Mathlib.RingTheory.GlobalDimension
+public import Mathlib.RingTheory.Gorenstein.Defs
 public import Mathlib.RingTheory.Regular.ProjectiveDimension
 public import Mathlib.Algebra.Algebra.Shrink
 public import Mathlib.RingTheory.RingHom.Flat
@@ -794,13 +795,6 @@ lemma injectiveDimension_eq_depth
 end injdim
 
 variable (R)
-
-class IsGorensteinLocalRing : Prop extends IsLocalRing R, IsNoetherianRing R where
-  injdim : injectiveDimension (ModuleCat.of R R) ≠ ⊤
-
-lemma isGorensteinLocalRing_def :
-    IsGorensteinLocalRing R ↔ injectiveDimension (ModuleCat.of R R) ≠ ⊤ :=
-  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
 theorem isCohenMacaulayLocalRing_of_isGorensteinLocalRing [IsGorensteinLocalRing R] :
     IsCohenMacaulayLocalRing R := by
