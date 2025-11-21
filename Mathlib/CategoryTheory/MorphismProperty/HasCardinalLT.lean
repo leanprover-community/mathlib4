@@ -49,7 +49,7 @@ lemma HasCardinalLT.iSup
   rw [toSet_iSup]
   exact hasCardinalLT_iUnion _ hι hP
 
-lemma HasCardinalLT.union
+lemma HasCardinalLT.sup
     {P₁ P₂ : MorphismProperty C} {κ : Cardinal.{w}}
     (h₁ : P₁.HasCardinalLT κ) (h₂ : P₂.HasCardinalLT κ)
     (hκ : Cardinal.aleph0 ≤ κ) :
