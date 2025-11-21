@@ -462,6 +462,18 @@ theorem tendstoInMeasure_of_tendsto_Lp [NormedAddCommGroup E] [hp : Fact (1 ≤ 
     (fun _ => Lp.aestronglyMeasurable _) (Lp.aestronglyMeasurable _)
     ((Lp.tendsto_Lp_iff_tendsto_eLpNorm' _ _).mp hfg)
 
+/-- If the `eLpNorm` of a collection of `AEStronglyMeasurable` functions that converges in measure
+is bounded by some constant `C`, then the `eLpNorm` of its limit is also bounded by
+`C`. -/
+lemma tendstoInMeasure_bounded
+    {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup β]
+    {u : Filter ι} [NeBot u] [IsCountablyGenerated u]
+    {f : ι → α → β} {g : α → β} {C : ℝ≥0∞} (p : ℝ≥0∞) (bound : ∀ i, eLpNorm (f i) p μ ≤ C)
+    (h_tendsto : TendstoInMeasure μ f u g)
+    (hf : ∀ i, AEStronglyMeasurable (f i) μ) : eLpNorm g p μ ≤ C := by
+  obtain ⟨l, hl⟩ := h_tendsto.exists_seq_tendsto_ae'
+  exact Lp.seq_tendsto_ae_bounded p (fun n => bound (l n)) hl.2 (fun n => hf (l n))
+
 end TendstoInMeasureOf
 
 end MeasureTheory
