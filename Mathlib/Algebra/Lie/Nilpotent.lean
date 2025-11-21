@@ -3,13 +3,15 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Solvable
-import Mathlib.Algebra.Lie.Quotient
-import Mathlib.Algebra.Lie.Normalizer
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.LinearAlgebra.Eigenspace.Basic
-import Mathlib.RingTheory.Artinian.Module
-import Mathlib.RingTheory.Nilpotent.Lemmas
+module
+
+public import Mathlib.Algebra.Lie.Solvable
+public import Mathlib.Algebra.Lie.Quotient
+public import Mathlib.Algebra.Lie.Normalizer
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.RingTheory.Artinian.Module
+public import Mathlib.RingTheory.Nilpotent.Lemmas
 
 /-!
 # Nilpotent Lie algebras
@@ -28,6 +30,8 @@ carries a natural concept of nilpotency. We define these here via the lower cent
 
 lie algebra, lower central series, nilpotent, max nilpotent ideal
 -/
+
+@[expose] public section
 
 universe u v w w₁ w₂
 
@@ -468,7 +472,7 @@ theorem lowerCentralSeriesLast_le_of_not_isTrivial [IsNilpotent L M] (h : ¬ IsT
     contradiction
   rcases hk : nilpotencyLength L M with - | k <;> rw [hk] at h
   · contradiction
-  · exact antitone_lowerCentralSeries _ _ _ (Nat.lt_succ.mp h)
+  · exact antitone_lowerCentralSeries _ _ _ (Nat.le_of_lt_succ h)
 
 variable [LieModule R L M]
 

@@ -3,10 +3,12 @@ Copyright (c) 2024 Anatole Dedeker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedeker, Etienne Marion, Florestan Martin-Baillon, Vincent Guirardel
 -/
-import Mathlib.Topology.Algebra.Group.Quotient
-import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Topology.Algebra.Group.Defs
-import Mathlib.Topology.LocalAtTarget
+module
+
+public import Mathlib.Topology.Algebra.Group.Quotient
+public import Mathlib.Topology.Algebra.MulAction
+public import Mathlib.Topology.Algebra.Group.Defs
+public import Mathlib.Topology.LocalAtTarget
 
 /-!
 # Proper group action
@@ -35,6 +37,8 @@ ultrafilters and show the transfer of proper action to a closed subgroup.
 
 Hausdorff, group action, proper action
 -/
+
+@[expose] public section
 
 open Filter Topology Set Prod
 

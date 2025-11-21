@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.CommShift
-import Mathlib.CategoryTheory.Shift.Induced
-import Mathlib.CategoryTheory.Quotient
+module
+
+public import Mathlib.CategoryTheory.Shift.CommShift
+public import Mathlib.CategoryTheory.Shift.Induced
+public import Mathlib.CategoryTheory.Quotient
 
 /-!
 # The shift on a quotient category
@@ -20,6 +22,8 @@ The condition `r.IsCompatibleWithShift A` on the relation `r` is a class so that
 the shift can be automatically inferred on the quotient category.
 
 -/
+
+@[expose] public section
 
 universe v v' u u' w
 

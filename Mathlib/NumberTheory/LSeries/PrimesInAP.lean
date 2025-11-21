@@ -3,10 +3,12 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Data.ZMod.Coprime
-import Mathlib.NumberTheory.DirichletCharacter.Orthogonality
-import Mathlib.NumberTheory.LSeries.Linearity
-import Mathlib.NumberTheory.LSeries.Nonvanishing
+module
+
+public import Mathlib.Data.ZMod.Coprime
+public import Mathlib.NumberTheory.DirichletCharacter.Orthogonality
+public import Mathlib.NumberTheory.LSeries.Linearity
+public import Mathlib.NumberTheory.LSeries.Nonvanishing
 
 /-!
 # Dirichlet's Theorem on primes in arithmetic progression
@@ -65,6 +67,8 @@ We give two versions of **Dirichlet's Theorem**:
 
 prime number, arithmetic progression, residue class, Dirichlet's Theorem
 -/
+
+@[expose] public section
 
 /-!
 ### Auxiliary statements

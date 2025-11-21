@@ -3,13 +3,16 @@ Copyright (c) 2025 Miyahara Kō. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Miyahara Kō
 -/
+module
 
-import Mathlib.Topology.Order.UpperLowerSetTopology
-import Mathlib.Topology.Separation.Regular
+public import Mathlib.Topology.Order.UpperLowerSetTopology
+public import Mathlib.Topology.Separation.Regular
 
 /-!
 # Linear upper or lower sets topologies are completely normal
 -/
+
+@[expose] public section
 
 open Set Topology.IsUpperSet
 
