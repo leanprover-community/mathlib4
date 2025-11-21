@@ -6640,6 +6640,11 @@ lemma use5 : (h7.r q hq0 h2mq : ℝ) ^
     · exact le_trans zero_le_one h7.c14_nonneg
     · exact (c5nonneg h7).le
 
+
+
+
+
+
 theorem gelfondSchneider (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgebraic ℚ β)
   (htriv : α ≠ 0 ∧ α ≠ 1) (hirr : ∀ i j : ℤ, β ≠ i / j) :
     Transcendental ℚ (α ^ β) := fun hγ => by
@@ -6885,15 +6890,6 @@ theorem gelfondSchneider (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgeb
         }
         grind
 
-
-
-        -- have H11 : -(3 * h7.h : ℝ) ≠ 0 := sorry
-        -- rw [sub_eq_zero] at HC
-        -- unfold h at *
-        -- rw [← HC] at H11
-        -- simp only [ne_eq, neg_eq_zero, Nat.cast_eq_zero] at H11
-        -- linarith
-
       · simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true]
 
     · positivity
@@ -6918,65 +6914,5 @@ theorem gelfondSchneider (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgeb
         }
       unfold h at *
       exact this
-
-
-
-
-  --· apply use5
-  -- · apply H6
-
-  -- · simp only [not_le]
-  --   rw [← Real.rpow_lt_rpow_iff (z:= ( ((↑(h7.r q hq0 h2mq) - 3 * ↑h7.h) / 2) : ℝ))]
-  --   calc _ < h7.c₁₅ ^ (4 : ℝ) := ?_
-  --        _ < (h7.c₁₅ ^ (4)) ^ ((↑(h7.r q hq0 h2mq) - 3 * ↑h7.h) / 2) := ?_
-  --        _ ≤  ↑(h7.r q hq0 h2mq) := ?_
-  --   · sorry
-  --   · norm_cast
-  --     rw [← pow_mul]
-  --     sorry
-  --   ·
-
-
-
-
-    -- rw [← Real.rpow_lt_rpow_iff (z:= 4)] at use5
-    -- calc _ ≤ (h7.c₁₅ ^ (h7.r q hq0 h2mq : ℝ)) ^ (4 : ℝ) := ?_
-    --      _ ≤ ↑(h7.r q hq0 h2mq)^ (↑(h7.r q hq0 h2mq) : ℝ) := ?_
-    --      _ ≤  (↑(h7.r q hq0 h2mq) ^ ((↑(h7.r q hq0 h2mq) - 3 * ↑h7.h) / 2)) := ?_
-    -- ·
-    --   rw [← Real.rpow_mul]
-    --   apply Real.rpow_le_rpow_of_exponent_le
-    --   · exact c15_geg_1 h7
-    --   · norm_cast
-    --     nth_rw 1 [← mul_one (a:=(h7.r q hq0 h2mq))]
-    --     apply mul_le_mul
-    --     · simp only [le_refl]
-    --     · simp only [Nat.one_le_ofNat]
-    --     · positivity
-    --     · positivity
-    --   · trans; apply zero_le_one; exact c15_geg_1 h7
-
-
-
-    -- --apply?
-
-
-    -- · rw [← Real.rpow_mul]
-    --   rw [mul_comm]
-    --   rw [Real.rpow_mul]
-    --   sorry
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 end GelfondSchneiderSetup
