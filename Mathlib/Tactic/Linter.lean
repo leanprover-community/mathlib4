@@ -13,4 +13,5 @@ public meta import Mathlib.Tactic.Linter.DeprecatedModule
 public meta import Mathlib.Tactic.Linter.HaveLetLinter
 public meta import Mathlib.Tactic.Linter.MinImports
 public meta import Mathlib.Tactic.Linter.PPRoundtrip
+public meta import Mathlib.Tactic.Linter.PrivateModule
 public meta import Mathlib.Tactic.Linter.UpstreamableDecl
