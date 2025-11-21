@@ -1433,21 +1433,6 @@ theorem sum_Icc_zeta (N : ℕ) : ∑ n ∈ Icc 0 N, zeta n = N := by
   rw [show {x ∈ Icc 0 N | ¬x = 0} = Ioc 0 N by ext; simp; cutsat]
   simp
 
-/-- Useful lemma for reordering sums. -/
-lemma divisorsAntidiagonal_eq_prod_filter_of_le {n N : ℕ} (n_ne_zero : n ≠ 0) (hn : n ≤ N) :
-    n.divisorsAntidiagonal = ((Icc 0 N) ×ˢ (Icc 0 N)).filter
-    (fun x ↦ x.1 * x.2 = n) := by
-  ext ⟨n1, n2⟩
-  rw [Nat.mem_divisorsAntidiagonal]
-  simp only [ne_eq, Finset.mem_filter, Finset.mem_product, Finset.mem_Icc, zero_le, true_and]
-  constructor
-  · intro ⟨rfl, hn2⟩
-    grw [← hn]
-    simp (disch := cutsat) only [le_mul_iff_one_le_right, le_mul_iff_one_le_left, and_true]
-    cutsat
-  · intro ⟨⟨hn1, hn2⟩, hn3⟩
-    exact ⟨hn3, n_ne_zero⟩
-
 variable {R : Type*} [Semiring R]
 
 theorem sum_Icc_mul_eq_sum_prod_filter (f g : ArithmeticFunction R) (N : ℕ) :
