@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Triangulated.Subcategory
 
 Let `P` be a triangulated subcategory of a pretriangulated category `C`. We show
 that `P.rightOrthogonal` (which consists of objects `Y` with no nonzero
-map `X ⟶ Y` with `X` satisfying `P`) is a triangulated. The dual result
+map `X ⟶ Y` with `X` satisfying `P`) is a triangulated subcategory. The dual result
 for `P.leftOrthogonal` is also obtained.
 
 -/
