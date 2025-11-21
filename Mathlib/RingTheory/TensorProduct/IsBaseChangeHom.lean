@@ -141,27 +141,35 @@ variable {S M}
   [Module S P] [IsScalarTower R S P]
 
 /-- The base change map for endomorphisms of a free finite module. -/
-noncomputable def endomHom {α : M →ₗ[R] P} (j : IsBaseChange S α) :
+noncomputable def endHom {α : M →ₗ[R] P} (j : IsBaseChange S α) :
     (M →ₗ[R] M) →ₗ[R] (P →ₗ[S] P) :=
   ((LinearMap.llcomp (σ₂₃ := RingHom.id S) S P (S ⊗[R] M) P).flip
     j.equiv.symm.toLinearMap) ∘ₗ
     (liftBaseChangeEquiv S).toLinearMap.restrictScalars R ∘ₗ
       (compRight R α (M := M))
 
-theorem endomHom_apply
+theorem endHom_apply
     {α : M →ₗ[R] P} (j : IsBaseChange S α) (f : M →ₗ[R] M) (p : P) :
-    endomHom j f p = ((liftBaseChangeEquiv S) (α ∘ₗ f)) (j.equiv.symm p) := by
+    endHom j f p = ((liftBaseChangeEquiv S) (α ∘ₗ f)) (j.equiv.symm p) := by
   rfl
 
 variable [Module.Free R M] [Module.Finite R M]
 
-theorem endom {α : M →ₗ[R] P} (j : IsBaseChange S α) :
-    IsBaseChange S (endomHom j) := by
+theorem _root_.IsBaseChange.end {α : M →ₗ[R] P} (j : IsBaseChange S α) :
+    IsBaseChange S (endHom j) := by
   apply of_equiv <|
       (j.linearMapRight M).equiv ≪≫ₗ liftBaseChangeEquiv S ≪≫ₗ LinearEquiv.congrLeft P S j.equiv
   intro f
   ext p
-  simp [IsBaseChange.equiv_tmul, LinearEquiv.congrLeft, endomHom_apply]
+  simp [IsBaseChange.equiv_tmul, LinearEquiv.congrLeft, endHom_apply]
+
+theorem « end » {α : M →ₗ[R] P} (j : IsBaseChange S α) :
+    IsBaseChange S (endHom j) := by
+  apply of_equiv <|
+      (j.linearMapRight M).equiv ≪≫ₗ liftBaseChangeEquiv S ≪≫ₗ LinearEquiv.congrLeft P S j.equiv
+  intro f
+  ext p
+  simp [IsBaseChange.equiv_tmul, LinearEquiv.congrLeft, endHom_apply]
 
 end End
 
