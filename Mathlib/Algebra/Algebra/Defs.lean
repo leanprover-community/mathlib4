@@ -411,9 +411,10 @@ theorem map_eq_id : algebraMap R R = RingHom.id _ :=
 theorem map_eq_self (x : R) : algebraMap R R x = x :=
   rfl
 
+-- TODO deprecate to _root_.smul_eq_mul
 @[simp]
 theorem smul_eq_mul (x y : R) : x • y = x * y :=
-  rfl
+  _root_.smul_eq_mul x y
 
 end id
 
