@@ -493,6 +493,7 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
 
 
 
+
           -- simp only [add_assoc]
           -- rw [add_comm]
           -- nth_rw 6 [add_comm]
@@ -740,43 +741,11 @@ lemma AnalyticAtEq (f g : ℂ → ℂ) (U : Set ℂ) (z : ℂ) :
   (hU : U ∈ nhds z)  → z ∈ U →
   (∀ z ∈ U, f z = g z) → AnalyticAt ℂ f z → AnalyticAt ℂ g z := by {
     intros hU hz hfg Hf
-    have := hfg z hz
-    refine AnalyticOnAt g z U hU ?_
-    apply AnalyticOnEq f g U hfg
-    unfold AnalyticAt at Hf
-    unfold AnalyticOn
-    unfold AnalyticWithinAt
-    unfold HasFPowerSeriesAt at Hf
-    unfold HasFPowerSeriesWithinAt at *
-    intros x hx
-    obtain ⟨p,hp⟩ := Hf
-    use p
-    obtain ⟨r, hr, r_pos, Hsum⟩ := hp
-    use r
-    constructor
-    · exact hr
-    · exact r_pos
-    · intros y
-      have : ∀ {y : ℂ}, x + y ∈ insert x U →
-      y ∈ EMetric.ball 0 r → HasSum (fun n ↦ (p n) fun x ↦ y) (f (x + y))
-      := by {
-        sorry
-      }
-      -- unfold HasSum at this ⊢
-      -- have Hinsert : insert x U = U := by simp_all [Set.insert_eq_of_mem]
-      -- rw [Hinsert] at this ⊢
-      -- intros y Hxy
-      -- have := this Hxy
-      -- rwa [← Heq _ Hxy]
-      sorry
-
-
-
-    -- refine (HasFPowerSeriesWithout f p U x ?_).mpr ?_
-    -- ·
-
-    -- sorry
-
+    have := AnalyticAt.congr Hf (g:=g)
+    apply this
+    unfold Filter.EventuallyEq
+    rw [unfilter]
+    use U
   }
 
 lemma AnalyticOnEquiv (f g : ℂ → ℂ) (U : Set ℂ) :
