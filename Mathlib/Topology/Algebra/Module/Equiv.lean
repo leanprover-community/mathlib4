@@ -1224,8 +1224,21 @@ section map
 namespace ContinuousLinearEquiv
 
 variable {R R₂ M M₂ : Type*} [Semiring R] [Semiring R₂] [AddCommMonoid M] [AddCommMonoid M₂]
+    [TopologicalSpace M] [TopologicalSpace M₂]
     {module_M : Module R M} {module_M₂ : Module R₂ M₂} {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
     {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
+
+-- XXX: should p and q be implicit or explicit? adjust adjust LinearEquiv.of_eq in the same way
+/-- Continuous linear equivalence between two equal submodules. -/
+def ofEq {p q : Submodule R M} (h : p = q) : p ≃L[R] q where
+  toLinearEquiv := LinearEquiv.ofEq _ _ h
+  continuous_toFun := by
+    -- want a better lemma: equal subtypes define a homeomorphism
+    dsimp
+    have h' : (fun x ↦ x ∈ p) = (fun x ↦ x ∈ q) := by simp [h]
+    change Continuous (Equiv.subtypeEquivProp h')
+    sorry -- not in mathlib
+  continuous_invFun := sorry -- should follow from toFun proof
 
 /--
 A continuous linear equivalence of two modules restricts to a continuous linear equivalence
@@ -1234,7 +1247,7 @@ from any submodule `p` of the domain onto the image of that submodule.
 This is the continuous linear version of `LinearEquiv.submoduleMap`.
 This is `ContinuousLinearEquiv.ofSubmodule'` but with map on the right instead of comap on the left.
 -/
-def submoduleMap [TopologicalSpace M] [TopologicalSpace M₂]
+def submoduleMap
     (e : M ≃SL[σ₁₂] M₂) (p : Submodule R M) : p ≃SL[σ₁₂] Submodule.map e p where
   toLinearMap := (e.comp p.subtype).codRestrict (p.map e) (fun ⟨c, hc⟩ ↦ by simpa)
   invFun := (e.symm.comp (p.map e).subtype).codRestrict p (fun ⟨c, y, hy, eyc⟩ ↦ by
@@ -1250,28 +1263,16 @@ def submoduleMap [TopologicalSpace M] [TopologicalSpace M₂]
     dsimp
     exact continuous_induced_rng.mpr this
 
+omit [TopologicalSpace M] [TopologicalSpace M₂] in
 @[simp]
 lemma submoduleMap_apply (e : M ≃ₛₗ[σ₁₂] M₂) (p : Submodule R M) (x : p) :
   e.submoduleMap p x = e x := by rfl
 
+omit [TopologicalSpace M] [TopologicalSpace M₂] in
 @[simp]
 lemma submoduleMap_symm_apply
     (e : M ≃ₛₗ[σ₁₂] M₂) (p : Submodule R M) (x : p.map e) :
   (e.submoduleMap p).symm x = e.symm x := by rfl
-
-variable [TopologicalSpace M] [TopologicalSpace M₂]
-
--- XXX: should p and q be implicit or explicit? adjust adjust LinearEquiv.of_eq in the same way
-/-- Continuous linear equivalence between two equal submodules. -/
-def ofEq {p q : Submodule R M} (h : p = q) : p ≃L[R] q where
-  toLinearEquiv := LinearEquiv.ofEq _ _ h
-  continuous_toFun := by
-    -- want a better lemma: equal subtypes define a homeomorphism
-    dsimp
-    have h' : (fun x ↦ x ∈ p) = (fun x ↦ x ∈ q) := by simp [h]
-    change Continuous (Equiv.subtypeEquivProp h')
-    sorry -- not in mathlib
-  continuous_invFun := sorry -- should follow from toFun proof
 
 /-- A continuous linear equivalence which maps a submodule of one module onto another,
 restricts to a continuous linear equivalence of the two submodules. -/
