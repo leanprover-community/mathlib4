@@ -185,16 +185,25 @@ variable {f}
 theorem mapRingHom_coe (hf : UniformContinuous f) (a : α) : mapRingHom f hf.continuous a = f a := by
   rw [mapRingHom_apply, map_coe hf]
 
+theorem mapRingHom_comp {γ : Type*} [UniformSpace γ] [Ring γ] [IsUniformAddGroup γ]
+    [IsTopologicalRing γ] {g : β →+* γ} (hg : Continuous g) (hf : Continuous f) :
+    (mapRingHom g hg).comp (mapRingHom f hf) = mapRingHom (g.comp f) (hg.comp hf) := by
+  simp [← DFunLike.coe_fn_eq, RingHom.coe_comp, coe_mapRingHom, map_comp
+    (uniformContinuous_of_continuousAt_zero _ hg.continuousAt)
+    (uniformContinuous_of_continuousAt_zero _ hf.continuousAt)]
+
 /-- A ring isomorphism `α ≃+* β` between uniform rings, uniformly continuous in both directions,
 lifts to a ring isomorphism between corresponding uniform space completions. -/
-def mapRingEquiv (f : α ≃+* β) (hf : UniformContinuous f) (hf' : UniformContinuous f.symm) :
+def mapRingEquiv (f : α ≃+* β) (hf : Continuous f) (hf' : Continuous f.symm) :
     Completion α ≃+* Completion β where
-  __ := mapRingHom f hf.continuous
-  invFun := mapRingHom f.symm hf'.continuous
+  __ := mapRingHom f hf
+  invFun := mapRingHom f.symm hf'
   left_inv := Function.leftInverse_iff_comp.2 <| by
-    simp [coe_mapRingHom, map_comp hf' hf, show f.symm ∘ f = id by ext; simp]
+    rw [← RingEquiv.coe_toRingHom] at hf hf'
+    simpa [← DFunLike.coe_fn_eq, coe_mapRingHom] using mapRingHom_comp hf' hf
   right_inv := Function.rightInverse_iff_comp.2 <| by
-    simp [coe_mapRingHom, map_comp hf hf', show f ∘ f.symm = id by ext; simp]
+    rw [← RingEquiv.coe_toRingHom] at hf hf'
+    simpa [← DFunLike.coe_fn_eq, coe_mapRingHom] using mapRingHom_comp hf hf'
 
 section Algebra
 
