@@ -3,11 +3,13 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.InnerProductSpace.Adjoint
-import Mathlib.Analysis.InnerProductSpace.ProdL2
-import Mathlib.Analysis.Normed.Operator.Extend
-import Mathlib.Topology.Algebra.Module.Equiv
-import Mathlib.Topology.Algebra.Module.LinearPMap
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
+public import Mathlib.Analysis.InnerProductSpace.ProdL2
+public import Mathlib.Analysis.Normed.Operator.Extend
+public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.LinearPMap
 
 /-!
 
@@ -49,6 +51,8 @@ We use the junk value pattern to define the adjoint for all `LinearPMap`s. In th
 
 Unbounded operators, closed operators
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -266,9 +270,8 @@ theorem mem_adjoint_iff (g : Submodule 𝕜 (E × F)) (x : F × E) :
     x ∈ g.adjoint ↔
     ∀ a b, (a, b) ∈ g → inner 𝕜 b x.fst - inner 𝕜 a x.snd = 0 := by
   simp only [Submodule.adjoint, mem_map, mem_orthogonal, LinearEquiv.trans_apply,
-    LinearEquiv.skewSwap_symm_apply, WithLp.linearEquiv_symm_apply, Prod.exists,
-    WithLp.prod_inner_apply, WithLp.ofLp_fst, WithLp.ofLp_snd, forall_exists_index, and_imp,
-    WithLp.linearEquiv_apply]
+    LinearEquiv.skewSwap_symm_apply, coe_symm_linearEquiv, Prod.exists, prod_inner_apply, ofLp_fst,
+    ofLp_snd, forall_exists_index, and_imp, coe_linearEquiv]
   constructor
   · rintro ⟨y, h1, h2⟩ a b hab
     rw [← h2, WithLp.ofLp_fst, WithLp.ofLp_snd]

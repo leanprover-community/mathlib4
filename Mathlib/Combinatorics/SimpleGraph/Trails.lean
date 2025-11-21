@@ -3,8 +3,10 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.Ring.Parity
-import Mathlib.Combinatorics.SimpleGraph.Paths
+module
+
+public import Mathlib.Algebra.Ring.Parity
+public import Mathlib.Combinatorics.SimpleGraph.Paths
 
 /-!
 
@@ -34,6 +36,8 @@ Eulerian trails
 
 -/
 
+@[expose] public section
+
 
 namespace SimpleGraph
 
@@ -52,7 +56,7 @@ theorem IsTrail.even_countP_edges_iff {u v : V} {p : G.Walk u v} (ht : p.IsTrail
   induction p with
   | nil => simp
   | cons huv p ih =>
-    rw [cons_isTrail_iff] at ht
+    rw [isTrail_cons] at ht
     specialize ih ht.1
     simp only [List.countP_cons, Ne, edges_cons, Sym2.mem_iff]
     split_ifs with h

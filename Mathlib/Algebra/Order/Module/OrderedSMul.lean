@@ -3,11 +3,13 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Group.Action.Basic
-import Mathlib.Algebra.GroupWithZero.Action.Pi
-import Mathlib.Algebra.GroupWithZero.Action.Prod
-import Mathlib.Algebra.Order.Module.Defs
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Group.Action.Basic
+public import Mathlib.Algebra.GroupWithZero.Action.Pi
+public import Mathlib.Algebra.GroupWithZero.Action.Prod
+public import Mathlib.Algebra.Order.Module.Defs
 
 /-!
 # Ordered scalar product
@@ -38,6 +40,8 @@ This file is now mostly useless. We should try deleting `OrderedSMul`
 
 ordered module, ordered scalar, ordered smul, ordered action, ordered vector space
 -/
+
+@[expose] public section
 
 deprecated_module (since := "2025-08-25")
 
