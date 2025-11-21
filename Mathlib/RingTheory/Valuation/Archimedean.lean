@@ -3,30 +3,39 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.GroupTheory.ArchimedeanDensely
-import Mathlib.RingTheory.Valuation.ValuationRing
+module
+
+public import Mathlib.GroupTheory.ArchimedeanDensely
+public import Mathlib.RingTheory.Valuation.ValuationRing
 
 /-!
 # Ring of integers under a given valuation in an multiplicatively archimedean codomain
 
 -/
 
+@[expose] public section
+
 section Field
 
 variable {F Γ₀ O : Type*} [Field F] [LinearOrderedCommGroupWithZero Γ₀]
   [CommRing O] [Algebra O F] {v : Valuation F Γ₀}
 
-instance : LinearOrderedCommGroupWithZero (MonoidHom.mrange v) where
+instance MonoidWithZeroHom.instLinearOrderedCommGroupWithZeroMrange (v : F →*₀ Γ₀) :
+    LinearOrderedCommGroupWithZero (MonoidHom.mrange v) where
   __ : CommGroupWithZero (MonoidHom.mrange v) := inferInstance
   __ : LinearOrder (MonoidHom.mrange v) := inferInstance
-  bot := 0
-  bot_le a := show (0 : Γ₀) ≤ _ from zero_le'
+  bot := ⟨⊥, by simp [bot_eq_zero'']⟩
+  bot_le a := by simp [bot_eq_zero'', ← Subtype.coe_le_coe]
   zero_le_one := Subtype.coe_le_coe.mp zero_le_one
   mul_le_mul_left := by
     simp only [Subtype.forall, MonoidHom.mem_mrange, forall_exists_index, Submonoid.mk_mul_mk,
       Subtype.mk_le_mk, forall_apply_eq_imp_iff]
     intro a b hab c
-    exact mul_le_mul_left' hab (v c)
+    gcongr
+
+instance Valuation.instLinearOrderedCommGroupWithZeroMrange :
+    LinearOrderedCommGroupWithZero (MonoidHom.mrange v) :=
+  inferInstanceAs (LinearOrderedCommGroupWithZero (MonoidHom.mrange (v : F →*₀ Γ₀)))
 
 namespace Valuation.Integers
 

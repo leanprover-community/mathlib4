@@ -3,15 +3,19 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz, Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
-import Mathlib.CategoryTheory.Subpresheaf.Equalizer
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
+public import Mathlib.CategoryTheory.Subpresheaf.Equalizer
 
 /-!
 # Horns
 
-This file introduce horns `Λ[n, i]`.
+This file introduces horns `Λ[n, i]`.
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -162,7 +166,7 @@ def primitiveTriangle {n : ℕ} (i : Fin (n + 4))
       simp only [Fin.zero_eta, zero_add, Fin.mk_one, mem_insert, Fin.ext_iff, Fin.val_last,
         Fin.val_zero, AddLeftCancelMonoid.add_eq_zero, OfNat.ofNat_ne_zero, and_false,
         Fin.val_one, Nat.reduceEqDiff, mem_singleton, or_self, or_false] at this
-      simp only [Fin.lt_iff_val_lt_val, Fin.val_last] at hₙ
+      simp only [Fin.lt_def, Fin.val_last] at hₙ
       cutsat
     · have := Finset.mem_univ (0 : Fin (n + 4))
       rw [← hS] at this

@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Data.Set.Piecewise
-import Mathlib.Order.Filter.Basic
+module
+
+public import Mathlib.Data.Set.Piecewise
+public import Mathlib.Order.Filter.Basic
 
 /-!
 # Definition of `Filter.atTop` and `Filter.atBot` filters
@@ -14,6 +16,8 @@ In this file we define the filters
 * `Filter.atTop`: corresponds to `n → +∞`;
 * `Filter.atBot`: corresponds to `n → -∞`.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 

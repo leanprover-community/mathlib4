@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Operations
-import Mathlib.Util.Notation3
+module
+
+public import Mathlib.Data.Set.Operations
+public import Mathlib.Util.Notation3
 
 /-!
 # Notation classes for set supremum and infimum
@@ -30,6 +32,8 @@ In this file we introduce notation for indexed suprema, infima, unions, and inte
 - `⋃ i, s i`, `⋂ i, s i`: union and intersection of an indexed family of sets.
 
 -/
+
+@[expose] public section
 
 open Set
 
@@ -67,10 +71,10 @@ instance (priority := 50) supSet_to_nonempty (α) [SupSet α] : Nonempty α :=
   ⟨sSup ∅⟩
 
 /-- Indexed supremum. -/
-notation3 "⨆ "(...)", "r:60:(scoped f => iSup f) => r
+notation3 "⨆ " (...)", " r:60:(scoped f => iSup f) => r
 
 /-- Indexed infimum. -/
-notation3 "⨅ "(...)", "r:60:(scoped f => iInf f) => r
+notation3 "⨅ " (...)", " r:60:(scoped f => iInf f) => r
 
 section delaborators
 
@@ -78,7 +82,7 @@ open Lean Lean.PrettyPrinter.Delaborator
 
 /-- Delaborator for indexed supremum. -/
 @[app_delab iSup]
-def iSup_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 do
+meta def iSup_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 do
   let #[_, ι, _, f] := (← SubExpr.getExpr).getAppArgs | failure
   unless f.isLambda do failure
   let prop ← Meta.isProp ι
@@ -106,7 +110,7 @@ def iSup_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 do
 
 /-- Delaborator for indexed infimum. -/
 @[app_delab iInf]
-def iInf_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 do
+meta def iInf_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 do
   let #[_, ι, _, f] := (← SubExpr.getExpr).getAppArgs | failure
   unless f.isLambda do failure
   let prop ← Meta.isProp ι
@@ -172,10 +176,10 @@ def iInter (s : ι → Set α) : Set α :=
   iInf s
 
 /-- Notation for `Set.iUnion`. Indexed union of a family of sets -/
-notation3 "⋃ "(...)", "r:60:(scoped f => iUnion f) => r
+notation3 "⋃ " (...)", " r:60:(scoped f => iUnion f) => r
 
 /-- Notation for `Set.iInter`. Indexed intersection of a family of sets -/
-notation3 "⋂ "(...)", "r:60:(scoped f => iInter f) => r
+notation3 "⋂ " (...)", " r:60:(scoped f => iInter f) => r
 
 section delaborators
 
@@ -183,7 +187,7 @@ open Lean Lean.PrettyPrinter.Delaborator
 
 /-- Delaborator for indexed unions. -/
 @[app_delab Set.iUnion]
-def iUnion_delab : Delab := whenPPOption Lean.getPPNotation do
+meta def iUnion_delab : Delab := whenPPOption Lean.getPPNotation do
   let #[_, ι, f] := (← SubExpr.getExpr).getAppArgs | failure
   unless f.isLambda do failure
   let prop ← Meta.isProp ι
@@ -211,7 +215,7 @@ def iUnion_delab : Delab := whenPPOption Lean.getPPNotation do
 
 /-- Delaborator for indexed intersections. -/
 @[app_delab Set.iInter]
-def sInter_delab : Delab := whenPPOption Lean.getPPNotation do
+meta def sInter_delab : Delab := whenPPOption Lean.getPPNotation do
   let #[_, ι, f] := (← SubExpr.getExpr).getAppArgs | failure
   unless f.isLambda do failure
   let prop ← Meta.isProp ι
@@ -250,7 +254,7 @@ theorem mem_iInter {x : α} {s : ι → Set α} : (x ∈ ⋂ i, s i) ↔ ∀ i, 
     fun h _ ⟨a, (eq : s a = _)⟩ => eq ▸ h a⟩
 
 @[simp]
-theorem sSup_eq_sUnion (S : Set (Set α)) : sSup S = ⋃₀S :=
+theorem sSup_eq_sUnion (S : Set (Set α)) : sSup S = ⋃₀ S :=
   rfl
 
 @[simp]

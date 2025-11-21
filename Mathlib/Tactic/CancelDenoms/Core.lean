@@ -3,13 +3,15 @@ Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Data.Tree.Basic
-import Mathlib.Logic.Basic
-import Mathlib.Tactic.NormNum.Core
-import Mathlib.Util.SynthesizeUsing
-import Mathlib.Util.Qq
+module
+
+public meta import Mathlib.Algebra.Field.Basic
+public meta import Mathlib.Algebra.Order.Ring.Defs
+public meta import Mathlib.Data.Tree.Basic
+public meta import Mathlib.Logic.Basic
+public meta import Mathlib.Tactic.NormNum.Core
+public meta import Mathlib.Util.SynthesizeUsing
+public meta import Mathlib.Util.Qq
 
 /-!
 # A tactic for canceling numeric denominators
@@ -27,6 +29,8 @@ There are likely some rough edges to it.
 
 Improving this tactic would be a good project for someone interested in learning tactic programming.
 -/
+
+public meta section
 
 open Lean Parser Tactic Mathlib Meta NormNum Qq
 
@@ -85,17 +89,7 @@ theorem cancel_factors_le {α} [Field α] [LinearOrder α] [IsStrictOrderedRing 
 theorem cancel_factors_eq {α} [Field α] {a b ad bd a' b' gcd : α} (ha : ad * a = a')
     (hb : bd * b = b') (had : ad ≠ 0) (hbd : bd ≠ 0) (hgcd : gcd ≠ 0) :
     (a = b) = (1 / gcd * (bd * a') = 1 / gcd * (ad * b')) := by
-  rw [← ha, ← hb, ← mul_assoc bd, ← mul_assoc ad, mul_comm bd]
-  ext; constructor
-  · rintro rfl
-    rfl
-  · intro h
-    simp only [← mul_assoc] at h
-    refine mul_left_cancel₀ (mul_ne_zero ?_ ?_) h
-    on_goal 1 => apply mul_ne_zero
-    on_goal 1 => apply div_ne_zero
-    · exact one_ne_zero
-    all_goals assumption
+  grind
 
 theorem cancel_factors_ne {α} [Field α] {a b ad bd a' b' gcd : α} (ha : ad * a = a')
     (hb : bd * b = b') (had : ad ≠ 0) (hbd : bd ≠ 0) (hgcd : gcd ≠ 0) :

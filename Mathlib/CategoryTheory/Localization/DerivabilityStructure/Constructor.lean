@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
+module
+
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 
 /-!
 # Constructor for derivability structures
@@ -28,6 +30,8 @@ This statement is essentially Lemme 6.5 in
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

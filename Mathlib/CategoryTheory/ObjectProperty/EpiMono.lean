@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
-import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
 /-!
 # Properties of objects that are closed under subobjects and quotients
@@ -14,6 +16,8 @@ Given a category `C` and `P : ObjectProperty C`, we define type classes
 that `P` is closed under subobjects (resp. quotients).
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 

@@ -3,8 +3,10 @@ Copyright (c) 2024 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Integral.PeakFunction
-import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
+module
+
+public import Mathlib.MeasureTheory.Integral.PeakFunction
+public import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
 
 /-!
 # Fourier inversion formula
@@ -36,6 +38,8 @@ Since it also converges to `𝓕⁻ (𝓕 f) v`, this proves the result.
 To check the concentration property of the middle factor and the fact that it has integral one, we
 rely on the explicit computation of the Fourier transform of Gaussians.
 -/
+
+@[expose] public section
 
 open Filter MeasureTheory Complex Module Metric Real Bornology
 
@@ -83,7 +87,7 @@ lemma tendsto_integral_gaussian_smul (hf : Integrable f) (h'f : Integrable (𝓕
       congr 3
       simp only [ofReal_mul, ofReal_ofNat]
       ring
-    · simp [fourierIntegralInv_eq]
+    · simp [fourierInv_eq]
   have B : Tendsto (fun (c : ℝ) ↦ (∫ w : V,
         𝓕 (fun w ↦ cexp (- c⁻¹ * ‖w‖^2 + 2 * π * I * ⟪v, w⟫)) w • f w)) atTop
       (𝓝 (𝓕⁻ (𝓕 f) v)) := by
@@ -96,7 +100,7 @@ lemma tendsto_integral_gaussian_smul (hf : Integrable f) (h'f : Integrable (𝓕
   apply B.congr'
   filter_upwards [Ioi_mem_atTop 0] with c (hc : 0 < c)
   congr with w
-  rw [fourierIntegral_gaussian_innerProductSpace' (by simpa)]
+  rw [fourier_gaussian_innerProductSpace' (by simpa)]
   congr
   · simp
   · simp; ring
@@ -156,35 +160,48 @@ variable [CompleteSpace E]
 /-- **Fourier inversion formula**: If a function `f` on a finite-dimensional real inner product
 space is integrable, and its Fourier transform `𝓕 f` is also integrable, then `𝓕⁻ (𝓕 f) = f` at
 continuity points of `f`. -/
-theorem MeasureTheory.Integrable.fourier_inversion
+theorem MeasureTheory.Integrable.fourierInv_fourier_eq
     (hf : Integrable f) (h'f : Integrable (𝓕 f)) {v : V}
     (hv : ContinuousAt f v) : 𝓕⁻ (𝓕 f) v = f v :=
   tendsto_nhds_unique (Real.tendsto_integral_gaussian_smul hf h'f v)
     (Real.tendsto_integral_gaussian_smul' hf hv)
 
+@[deprecated (since := "2025-11-16")]
+alias MeasureTheory.Integrable.fourier_inversion := MeasureTheory.Integrable.fourierInv_fourier_eq
+
 /-- **Fourier inversion formula**: If a function `f` on a finite-dimensional real inner product
 space is continuous, integrable, and its Fourier transform `𝓕 f` is also integrable,
 then `𝓕⁻ (𝓕 f) = f`. -/
-theorem Continuous.fourier_inversion (h : Continuous f)
+theorem Continuous.fourierInv_fourier_eq (h : Continuous f)
     (hf : Integrable f) (h'f : Integrable (𝓕 f)) :
     𝓕⁻ (𝓕 f) = f := by
   ext v
-  exact hf.fourier_inversion h'f h.continuousAt
+  exact hf.fourierInv_fourier_eq h'f h.continuousAt
+
+@[deprecated (since := "2025-11-16")]
+alias Continuous.fourier_inversion := Continuous.fourierInv_fourier_eq
 
 /-- **Fourier inversion formula**: If a function `f` on a finite-dimensional real inner product
 space is integrable, and its Fourier transform `𝓕 f` is also integrable, then `𝓕 (𝓕⁻ f) = f` at
 continuity points of `f`. -/
-theorem MeasureTheory.Integrable.fourier_inversion_inv
+theorem MeasureTheory.Integrable.fourier_fourierInv_eq
     (hf : Integrable f) (h'f : Integrable (𝓕 f)) {v : V}
     (hv : ContinuousAt f v) : 𝓕 (𝓕⁻ f) v = f v := by
-  rw [fourierIntegralInv_comm]
-  exact fourier_inversion hf h'f hv
+  rw [fourierInv_comm]
+  exact hf.fourierInv_fourier_eq h'f hv
+
+@[deprecated (since := "2025-11-16")]
+alias MeasureTheory.Integrable.fourier_inversion_inv :=
+  MeasureTheory.Integrable.fourier_fourierInv_eq
 
 /-- **Fourier inversion formula**: If a function `f` on a finite-dimensional real inner product
 space is continuous, integrable, and its Fourier transform `𝓕 f` is also integrable,
 then `𝓕 (𝓕⁻ f) = f`. -/
-theorem Continuous.fourier_inversion_inv (h : Continuous f)
+theorem Continuous.fourier_fourierInv_eq (h : Continuous f)
     (hf : Integrable f) (h'f : Integrable (𝓕 f)) :
     𝓕 (𝓕⁻ f) = f := by
   ext v
-  exact hf.fourier_inversion_inv h'f h.continuousAt
+  exact hf.fourier_fourierInv_eq h'f h.continuousAt
+
+@[deprecated (since := "2025-11-16")]
+alias Continuous.fourier_inversion_inv := Continuous.fourier_fourierInv_eq

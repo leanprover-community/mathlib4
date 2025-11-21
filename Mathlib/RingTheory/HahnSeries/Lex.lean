@@ -3,10 +3,12 @@ Copyright (c) 2025 Weiyi Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Weiyi Wang
 -/
-import Mathlib.Algebra.Order.Archimedean.Class
-import Mathlib.Order.Hom.Lex
-import Mathlib.Order.PiLex
-import Mathlib.RingTheory.HahnSeries.Addition
+module
+
+public import Mathlib.Algebra.Order.Archimedean.Class
+public import Mathlib.Order.Hom.Lex
+public import Mathlib.Order.PiLex
+public import Mathlib.RingTheory.HahnSeries.Addition
 
 /-!
 
@@ -22,6 +24,8 @@ it is an ordered group when `R` is.
   can be decomposed by `Γ`.
 
 -/
+
+@[expose] public section
 
 namespace HahnSeries
 
@@ -283,7 +287,7 @@ noncomputable def finiteArchimedeanClassOrderHomInvLex :
     obtain h | ⟨rfl, hle⟩ := Prod.Lex.le_iff.mp h
     · induction ac using FiniteArchimedeanClass.ind with | mk a ha
       induction bc using FiniteArchimedeanClass.ind with | mk b hb
-      simp [ofLex_toLex, FiniteArchimedeanClass.liftOrderHom_mk]
+      simp only [ne_eq, ofLex_toLex, FiniteArchimedeanClass.liftOrderHom_mk]
       rw [FiniteArchimedeanClass.mk_le_mk, archimedeanClassMk_le_archimedeanClassMk_iff]
       exact .inl (by simpa [ha, hb] using h)
     · exact OrderHom.monotone _ hle

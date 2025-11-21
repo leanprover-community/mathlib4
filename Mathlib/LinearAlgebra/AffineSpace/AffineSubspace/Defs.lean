@@ -3,9 +3,11 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Order.Atoms
-import Mathlib.LinearAlgebra.Span.Defs
-import Mathlib.LinearAlgebra.AffineSpace.Defs
+module
+
+public import Mathlib.Order.Atoms
+public import Mathlib.LinearAlgebra.Span.Defs
+public import Mathlib.LinearAlgebra.AffineSpace.Defs
 
 /-!
 # Affine spaces
@@ -43,6 +45,8 @@ topology are defined elsewhere; see `Analysis.Normed.Affine.AddTorsor` and
 * https://en.wikipedia.org/wiki/Affine_space
 * https://en.wikipedia.org/wiki/Principal_homogeneous_space
 -/
+
+@[expose] public section
 noncomputable section
 
 open Affine
@@ -542,6 +546,14 @@ theorem eq_of_direction_eq_of_nonempty_of_le {s₁ s₂ : AffineSubspace k P}
     (hd : s₁.direction = s₂.direction) (hn : (s₁ : Set P).Nonempty) (hle : s₁ ≤ s₂) : s₁ = s₂ :=
   let ⟨p, hp⟩ := hn
   ext_of_direction_eq hd ⟨p, hp, hle hp⟩
+
+instance nonempty_sup_left (s₁ s₂ : AffineSubspace k P) [Nonempty s₁] :
+    Nonempty (s₁ ⊔ s₂ : AffineSubspace k P) :=
+  .map (Set.inclusion <| SetLike.le_def.1 le_sup_left) ‹_›
+
+instance nonempty_sup_right (s₁ s₂ : AffineSubspace k P) [Nonempty s₂] :
+    Nonempty (s₁ ⊔ s₂ : AffineSubspace k P) :=
+  .map (Set.inclusion <| SetLike.le_def.1 le_sup_right) ‹_›
 
 variable (k V)
 
