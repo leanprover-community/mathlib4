@@ -387,42 +387,10 @@ end ContinuousSMul
 section LinearOrderedField
 
 variable {𝕜 : Type*} [LinearOrder 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
+  [Field 𝕜] [IsStrictOrderedRing 𝕜]
 
 open scoped Topology
 open Filter
-
-lemma nhdsWithin_diff_singleton_of_subsingleton {a : 𝕜} {s : Set 𝕜} (hs : s.Subsingleton) :
-    𝓝[s \ {a}] a = ⊥ := by
-  by_cases has : a ∈ closure s
-  swap; · simp [diff_singleton_eq_self (notMem_subset subset_closure has),
-    notMem_closure_iff_nhdsWithin_eq_bot.1 has]
-  rcases Nonempty.of_closure ⟨a, has⟩ with ⟨a', ha'⟩
-  have h : s = {a'} := (subsingleton_iff_singleton ha').mp hs
-  subst h
-  simp only [finite_singleton, Finite.isClosed, IsClosed.closure_eq, mem_singleton_iff] at has
-  simp [has]
-
-lemma eventually_nhdsNE_of_closure {p : 𝕜 → Prop} {s : Set 𝕜} (a : 𝕜)
-    (h : s.Nontrivial → a ∈ closure s → ∀ᶠ x in 𝓝[s \ {a}] a, p x) :
-    ∀ᶠ x in 𝓝[s \ {a}] a, p x := by
-  by_cases has : a ∈ closure s
-  swap; · simp [diff_singleton_eq_self (notMem_subset subset_closure has),
-    notMem_closure_iff_nhdsWithin_eq_bot.1 has]
-  cases subsingleton_or_nontrivial s with
-  | inl hs =>
-    simp only [subsingleton_coe] at hs
-    simp [nhdsWithin_diff_singleton_of_subsingleton hs]
-  | inr hs =>
-    simp only [nontrivial_coe_sort] at hs
-    exact h hs has
-
-lemma tendsto_nhdsNE_of_closure {s : Set 𝕜} (a : 𝕜) {f : 𝕜 → ℝ} {l : Filter ℝ}
-    (h : s.Nontrivial → a ∈ closure s → Tendsto f (𝓝[s \ {a}] a) l) :
-    Tendsto f (𝓝[s \ {a}] a) l := by
-  rw [tendsto_iff_eventually] at h ⊢
-  exact fun _ hp ↦ eventually_nhdsNE_of_closure a fun hs_nontrivial has ↦ h hs_nontrivial has hp
-
-variable [Field 𝕜] [IsStrictOrderedRing 𝕜]
 
 theorem Convex.nontrivial_iff_nonempty_interior {s : Set 𝕜} (hs : Convex 𝕜 s) :
     s.Nontrivial ↔ (interior s).Nonempty := by
@@ -488,7 +456,10 @@ lemma Convex.nhdsWithin_diff_eq_nhdsGT {s : Set 𝕜} (hs : Convex 𝕜 s) {a : 
 
 theorem Convex.diff_singleton_eventually_mem_nhds {s : Set 𝕜} (hs : Convex 𝕜 s) (a : 𝕜) :
     ∀ᶠ x in 𝓝[s \ {a}] a, s \ {a} ∈ 𝓝 x := by
-  refine eventually_nhdsNE_of_closure a fun h has ↦ ?_
+  rcases eq_or_neBot (𝓝[s \ {a}] a) with h | has
+  · rw [h]
+    exact eventually_bot
+  replace has := closure_mono diff_subset (mem_closure_iff_nhdsWithin_neBot.2 has)
   conv in 𝓝[s \ {a}] a => rw [diff_eq, ← Iio_union_Ioi, inter_union_distrib_left]
   rw [nhdsWithin_union, eventually_sup]
   constructor

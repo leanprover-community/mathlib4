@@ -314,8 +314,8 @@ theorem _root_.HasDerivWithinAt.lhopital_zero_nhdsWithin_convex {s : Set ℝ} (h
     (hg' : ∀ᶠ x in 𝓝[s \ {a}] a, g' x ≠ 0)
     (hfa : Tendsto f (𝓝[s \ {a}] a) (𝓝 0)) (hga : Tendsto g (𝓝[s \ {a}] a) (𝓝 0))
     (hdiv : Tendsto (fun x ↦ f' x / g' x) (𝓝[s \ {a}] a) l) :
-    Tendsto (fun x ↦ f x / g x) (𝓝[s \ {a}] a) l := by
-  refine tendsto_nhdsNE_of_closure a fun h' has ↦ ?_
+    Tendsto (fun x ↦ f x / g x) (𝓝[s \ {a}] a) l := .of_neBot_imp fun has => by
+  replace has := closure_mono diff_subset (mem_closure_iff_nhdsWithin_neBot.2 has)
   have h := hs.diff_singleton_eventually_mem_nhds a
   replace hff' := h.mp <| hff'.mono fun _ h ↦ h.hasDerivAt
   replace hgg' := h.mp <| hgg'.mono fun _ h ↦ h.hasDerivAt
