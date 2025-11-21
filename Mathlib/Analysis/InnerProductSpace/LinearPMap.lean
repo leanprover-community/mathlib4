@@ -106,39 +106,40 @@ theorem adjointDomainMkCLM_apply (y : T.adjointDomain) (x : T.domain) :
     adjointDomainMkCLM T y x = ⟪(y : F), T x⟫ :=
   rfl
 
-variable {T}
-variable (hT : Dense (T.domain : Set E))
-
 /-- The unique continuous extension of the operator `adjointDomainMkCLM` to `E`. -/
 def adjointDomainMkCLMExtend (y : T.adjointDomain) : StrongDual 𝕜 E :=
-  (T.adjointDomainMkCLM y).extend (Submodule.subtypeL T.domain) hT.denseRange_val
-    isUniformEmbedding_subtype_val.isUniformInducing
+  (T.adjointDomainMkCLM y).extend (Submodule.subtypeL T.domain)
+
+variable {T}
 
 @[simp]
-theorem adjointDomainMkCLMExtend_apply (y : T.adjointDomain) (x : T.domain) :
-    adjointDomainMkCLMExtend hT y (x : E) = ⟪(y : F), T x⟫ :=
-  ContinuousLinearMap.extend_eq _ _ _ _ _
+theorem adjointDomainMkCLMExtend_apply (hT : Dense (T.domain : Set E)) (y : T.adjointDomain)
+    (x : T.domain) : adjointDomainMkCLMExtend T y (x : E) = ⟪(y : F), T x⟫ :=
+  ContinuousLinearMap.extend_eq _ hT.denseRange_val
+    isUniformEmbedding_subtype_val.isUniformInducing _
 
 variable [CompleteSpace E]
+
+variable (hT : Dense (T.domain : Set E))
 
 /-- The adjoint as a linear map from its domain to `E`.
 
 This is an auxiliary definition needed to define the adjoint operator as a `LinearPMap` without
 the assumption that `T.domain` is dense. -/
 def adjointAux : T.adjointDomain →ₗ[𝕜] E where
-  toFun y := (InnerProductSpace.toDual 𝕜 E).symm (adjointDomainMkCLMExtend hT y)
+  toFun y := (InnerProductSpace.toDual 𝕜 E).symm (adjointDomainMkCLMExtend T y)
   map_add' x y :=
     hT.eq_of_inner_left fun _ => by
       simp only [inner_add_left, Submodule.coe_add, InnerProductSpace.toDual_symm_apply,
-        adjointDomainMkCLMExtend_apply]
+        adjointDomainMkCLMExtend_apply hT]
   map_smul' _ _ :=
     hT.eq_of_inner_left fun _ => by
       simp only [inner_smul_left, Submodule.coe_smul_of_tower, RingHom.id_apply,
-        InnerProductSpace.toDual_symm_apply, adjointDomainMkCLMExtend_apply]
+        InnerProductSpace.toDual_symm_apply, adjointDomainMkCLMExtend_apply hT]
 
 theorem adjointAux_inner (y : T.adjointDomain) (x : T.domain) :
     ⟪adjointAux hT y, x⟫ = ⟪(y : F), T x⟫ := by
-  simp [adjointAux]
+  simp [adjointAux, hT]
 
 theorem adjointAux_unique (y : T.adjointDomain) {x₀ : E}
     (hx₀ : ∀ x : T.domain, ⟪x₀, x⟫ = ⟪(y : F), T x⟫) : adjointAux hT y = x₀ :=
