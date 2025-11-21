@@ -3,7 +3,9 @@ Copyright (c) 2024 Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl, Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Horn
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 
 /-!
 # Paths in simplicial sets
@@ -18,6 +20,8 @@ path in a simplicial set `X` is then defined as a 1-truncated path in the
 An `n`-simplex has a maximal path, the `spine` of the simplex, which is a path
 of length `n`.
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -198,14 +202,20 @@ abbrev vertex (f : Path X n) (i : Fin (n + 1)) : X _⦋0⦌ :=
 abbrev arrow (f : Path X n) (i : Fin n) : X _⦋1⦌ :=
   Truncated.Path.arrow f i
 
+lemma congr_vertex {f g : Path X n} (h : f = g) (i : Fin (n + 1)) :
+    f.vertex i = g.vertex i := by rw [h]
+
+lemma congr_arrow {f g : Path X n} (h : f = g) (i : Fin n) :
+    f.arrow i = g.arrow i := by rw [h]
+
 /-- The source of a 1-simplex in a path is identified with the source vertex. -/
 lemma arrow_src (f : Path X n) (i : Fin n) :
-    X.map (δ 1).op (f.arrow i) = f.vertex i.castSucc :=
+    X.δ 1 (f.arrow i) = f.vertex i.castSucc :=
   Truncated.Path.arrow_src f i
 
 /-- The target of a 1-simplex in a path is identified with the target vertex. -/
 lemma arrow_tgt (f : Path X n) (i : Fin n) :
-    X.map (δ 0).op (f.arrow i) = f.vertex i.succ :=
+    X.δ 0 (f.arrow i) = f.vertex i.succ :=
   Truncated.Path.arrow_tgt f i
 
 @[ext]
@@ -218,10 +228,22 @@ lemma ext {f g : Path X n} (hᵥ : f.vertex = g.vertex) (hₐ : f.arrow = g.arro
 lemma ext' {f g : Path X (n + 1)} (h : ∀ i, f.arrow i = g.arrow i) : f = g :=
   Truncated.Path.ext' h
 
+@[ext]
+lemma ext₀ {f g : Path X 0} (h : f.vertex 0 = g.vertex 0) : f = g := by
+  ext i
+  · fin_cases i; exact h
+  · fin_cases i
+
 /-- For `j + l ≤ n`, a path of length `n` restricts to a path of length `l`, namely
 the subpath spanned by the vertices `j ≤ i ≤ j + l` and edges `j ≤ i < j + l`. -/
-def interval (f : Path X n) (j l : ℕ) (h : j + l ≤ n := by omega) : Path X l :=
+def interval (f : Path X n) (j l : ℕ) (h : j + l ≤ n := by grind) : Path X l :=
   Truncated.Path.interval f j l h
+
+lemma arrow_interval (f : Path X n) (j l : ℕ) (k' : Fin l) (k : Fin n)
+    (h : j + l ≤ n := by omega) (hkk' : j + k' = k := by grind) :
+    (f.interval j l h).arrow k' = f.arrow k := by
+  dsimp [interval, arrow, Truncated.Path.interval, Truncated.Path.arrow]
+  congr
 
 variable {X Y : SSet.{u}} {n : ℕ}
 
@@ -264,6 +286,20 @@ lemma spine_vertex (Δ : X _⦋n⦌) (i : Fin (n + 1)) :
 lemma spine_arrow (Δ : X _⦋n⦌) (i : Fin n) :
     (X.spine n Δ).arrow i = X.map (mkOfSucc i).op Δ :=
   rfl
+
+lemma spine_δ₀ {m : ℕ} (x : X _⦋m + 1⦌) :
+    X.spine m (X.δ 0 x) = (X.spine (m + 1) x).interval 1 m := by
+  obtain _ | m := m
+  · ext
+    simp [spine, Path.vertex, Truncated.Path.vertex, SimplicialObject.truncation,
+      Truncated.spine, Path.interval, Truncated.Path.interval, Truncated.inclusion,
+      Truncated.Hom.tr, ← SimplexCategory.δ_zero_eq_const, ← SimplicialObject.δ_def]
+  · ext i
+    dsimp
+    rw [SimplicialObject.δ_def, ← FunctorToTypes.map_comp_apply, ← op_comp,
+      SimplexCategory.mkOfSucc_δ_gt (j := 0) (i := i) (by simp)]
+    symm
+    exact Path.arrow_interval _ _ _ _ _ _ (by rw [Fin.val_succ, add_comm])
 
 /-- For `m ≤ n + 1`, the `m`-spine of `X` factors through the `n + 1`-truncation
 of `X`. -/

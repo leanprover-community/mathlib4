@@ -3,8 +3,10 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Order.Hom.Basic
-import Mathlib.Analysis.Normed.Group.Basic
+module
+
+public import Mathlib.Algebra.Order.Hom.Basic
+public import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
 # Constructing (semi)normed groups from (semi)normed homs
@@ -15,6 +17,8 @@ using a `Group(Semi)normClass` when the codomain is the reals.
 See `Mathlib/Analysis/Normed/Order/Hom/Ultra.lean` for further upgrades to nonarchimedean normed
 groups.
 -/
+
+@[expose] public section
 
 variable {F α : Type*} [FunLike F α ℝ]
 

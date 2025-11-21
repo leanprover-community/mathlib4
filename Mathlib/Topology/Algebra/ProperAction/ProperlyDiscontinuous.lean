@@ -3,8 +3,10 @@ Copyright (c) 2024 Anatole Dedeker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Topology.Algebra.ProperAction.Basic
-import Mathlib.Topology.Maps.Proper.CompactlyGenerated
+module
+
+public import Mathlib.Topology.Algebra.ProperAction.Basic
+public import Mathlib.Topology.Maps.Proper.CompactlyGenerated
 
 /-!
 # When a proper action is properly discontinuous
@@ -23,6 +25,8 @@ weakly locally compact.
 
 group action, proper action, properly discontinuous, compactly generated
 -/
+
+@[expose] public section
 
 variable {G X : Type*} [Group G] [MulAction G X] [TopologicalSpace G] [TopologicalSpace X]
 

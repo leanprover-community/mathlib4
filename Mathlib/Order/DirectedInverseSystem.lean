@@ -3,8 +3,10 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Order.SuccPred.Limit
-import Mathlib.Order.UpperLower.Basic
+module
+
+public import Mathlib.Order.SuccPred.Limit
+public import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Definition of direct systems, inverse systems, and cardinalities in specific inverse systems
@@ -55,6 +57,8 @@ is everything. However, the author chose the `compat` approach in the end becaus
 the distinguished bijection that is compatible with the projections to all `X i`.
 
 -/
+
+@[expose] public section
 
 open Order Set
 
