@@ -106,14 +106,14 @@ variable (K L) in
 noncomputable def homotopyEquiv : HomotopyEquiv (mappingCone (𝟙 (I K)) ⊞ L) L where
   hom := p K L
   inv := biprod.inr
-  homotopyHomInvId := by
+  homotopyHomInvId :=
     let h₀ : Homotopy (𝟙 (mappingCone (𝟙 (I K)))) 0 :=
       mappingCone.liftHomotopy _ _ _ (mappingCone.snd _) 0 (by simp) (by simp)
     let h₁ := (h₀.compRight
       (biprod.inl : _ ⟶ mappingCone (𝟙 (I K)) ⊞ L)).compLeft
         (biprod.fst : mappingCone (𝟙 (I K)) ⊞ L ⟶ _)
     let h₂ := Homotopy.add h₁ (Homotopy.refl (biprod.snd ≫ biprod.inr))
-    exact (Homotopy.ofEq (by simp [p])).trans (h₂.symm.trans (Homotopy.ofEq (by simp)))
+    (Homotopy.ofEq (by simp [p])).trans (h₂.symm.trans (Homotopy.ofEq (by simp)))
   homotopyInvHomId := Homotopy.ofEq (by simp)
 
 instance quasiIso_p : QuasiIso (p K L) := (homotopyEquiv K L).quasiIso_hom
