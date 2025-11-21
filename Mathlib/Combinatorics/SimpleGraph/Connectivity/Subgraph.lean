@@ -651,12 +651,12 @@ protected lemma Reachable.coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph) 
   Reachable.map_coe G'.hom hreachable
 
 protected lemma Preconnected.coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph)
-    (hpreconn : G''.Preconnected) : (Subgraph.coeSubgraph G'').Preconnected := by
-  exact hpreconn.map_coe G'.hom
+    (hpreconn : G''.Preconnected) : (Subgraph.coeSubgraph G'').Preconnected :=
+  hpreconn.map_coe G'.hom
 
 protected lemma Connected.coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph)
-    (hconn : G''.Connected) : (Subgraph.coeSubgraph G'').Connected := by
-  exact hconn.map_coe G'.hom
+    (hconn : G''.Connected) : (Subgraph.coeSubgraph G'').Connected :=
+  hconn.map_coe G'.hom
 
 end Subgraph
 
