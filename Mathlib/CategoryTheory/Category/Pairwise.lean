@@ -3,9 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Limits.IsLimit
-import Mathlib.Order.CompleteLattice.Basic
+module
+
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.Limits.IsLimit
+public import Mathlib.Order.CompleteLattice.Basic
 
 /-!
 # The category of "pairwise intersections".
@@ -21,6 +23,8 @@ Given any function `U : ι → α`, where `α` is some complete lattice (e.g. `(
 we produce a functor `Pairwise ι ⥤ α` in the obvious way,
 and show that `iSup U` provides a colimit cocone over this functor.
 -/
+
+@[expose] public section
 
 
 noncomputable section
