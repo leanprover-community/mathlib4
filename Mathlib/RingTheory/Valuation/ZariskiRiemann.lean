@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2025 Justus Springer and Junyan Xu. All rights reserved.
+Copyright (c) 2025 Daniel Funck, Justus Springer and Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Justus Springer, Junyan Xu
+Authors: Daniel Funck, Justus Springer, Junyan Xu
 -/
 import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
 import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
@@ -52,8 +52,7 @@ instance : HasMemOrInvMem v where
 
 instance : Algebra v K := inferInstanceAs (Algebra v.toSubalgebra K)
 instance : IsScalarTower R v K := inferInstanceAs (IsScalarTower R v.toSubalgebra K)
-instance : IsFractionRing v K :=
-  inferInstanceAs (IsFractionRing v.toValuationSubring K)
+instance : IsFractionRing v K := inferInstanceAs (IsFractionRing v.toValuationSubring K)
 instance : ValuationRing v := inferInstanceAs (ValuationRing v.toValuationSubring)
 
 variable {R K} in
@@ -61,12 +60,6 @@ theorem Place.integralClosure_le (v : Place R K) : integralClosure R K ≤ v.toS
   fun x hx ↦ by
     obtain ⟨x, rfl⟩ := (IsIntegrallyClosed.integralClosure_eq_bot v K).le hx.tower_top
     exact x.2
-  /- before golfing: by
-  have hv := IsIntegrallyClosed.integralClosure_eq_bot v K
-  intro x hx
-  have hx := hx.tower_top (A := v)
-  obtain ⟨x', rfl⟩ := hv.le hx
-  exact x'.2 -/
 
 instance : TopologicalSpace (Place R K) :=
   -- subbasis consists of sets of all places containing a particular element
@@ -87,15 +80,8 @@ def basicOpen (s : Finset K) : Opens (Place R K) where
     rintro hx U ⟨i, rfl⟩ j ⟨z, rfl⟩
     exact hx z
 
-@[simp]
-theorem basicOpen_def (s : Finset K) :
-  v ∈ basicOpen R s ↔ (s : Set K) ⊆ v := by
-  constructor
-  · intro h x xs
-    exact h xs
-  intro sv
-  exact sv
-
+variable {R K v} in
+@[simp] lemma mem_basicOpen_iff {s : Finset K} : v ∈ basicOpen R s ↔ (s : Set K) ⊆ v := .rfl
 
 open Polynomial in
 @[stacks 090P]
@@ -227,7 +213,7 @@ theorem iInf_eq_integralClosure :
   · intro h
     have : ∀ (V : Place R K), x∈ V := by
       intro V
-      apply (basicOpen_def _ _ V ({x})).mp
+      apply mem_basicOpen_iff.mp
       · rw[h]
         exact trivial
       simp
@@ -421,7 +407,7 @@ noncomputable def _root_.IsHomeomorph.toLocallyRingedSpaceIso
   -- nontrivial; need to show the inverse also induces local ring homs on stalks
   -- use `isLocalHom_equiv` and `AlgebraicGeometry.PresheafedSpace.stalkMap.isIso` (instance)
 
-def locallyRingedSpace.restrictToSpec (f : K) :
+noncomputable def locallyRingedSpace.restrictToSpec (f : K) :
     (locallyRingedSpace R K).restrict (basicOpen R {f}).isOpenEmbedding ⟶
     Spec.toLocallyRingedSpace.obj (.op <| .of <| integralClosure (adjoin R {f}) K) :=
   ΓSpec.locallyRingedSpaceAdjunction.homEquiv _ _ <| .op <| by
@@ -448,7 +434,7 @@ theorem _root_.Polynomial.IsN2 {k K : Type*} [Field k] [Field K] [Algebra k[X] K
 
 variable [Is1DFunctionField k K]
 
-def locallyRingedSpace.restrictIsoSpec (f : K) (hf : Transcendental k f) :
+noncomputable def locallyRingedSpace.restrictIsoSpec (f : K) (hf : Transcendental k f) :
     (locallyRingedSpace k K).restrict (basicOpen k {f}).isOpenEmbedding ≅
     Spec.toLocallyRingedSpace.obj (.op <| .of <| integralClosure (adjoin k {f}) K) := by
   refine IsHomeomorph.toLocallyRingedSpaceIso (restrictToSpec k K f) ?_ ?_
