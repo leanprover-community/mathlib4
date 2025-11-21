@@ -63,6 +63,7 @@ To show `Polynomial.Splits p f` for an arbitrary ring homomorphism `f`,
 see `IsSepClosed.splits_codomain` and `IsSepClosed.splits_domain`.
 -/
 class IsSepClosed : Prop where
+  -- todo: rename to `splits_of_separable`
   factors_of_separable : ∀ p : k[X], p.Separable → p.Splits
 
 /-- An algebraically closed field is also separably closed. -/
