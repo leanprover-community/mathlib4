@@ -1476,17 +1476,14 @@ theorem sum_mul_eq_sum_sum (f g : ArithmeticFunction R) (N : ℕ) :
   · simp [h]
   congr
   ext
-  simp only [mem_filter, mem_Icc, _root_.zero_le, true_and]
+  simp only [mem_filter, mem_Icc, and_assoc, and_congr_right_iff]
+  intro _
   constructor
-  · intro ⟨_, _⟩
-    apply Nat.le_div_iff_mul_le (zero_lt_of_ne_zero h) |>.mpr
-    rwa [mul_comm]
+  · intro ⟨_, h⟩
+    grw [← h, Nat.mul_div_cancel_left _ (by omega)]
   · intro hm
-    constructor
-    · apply le_trans hm <| div_le_self ..
-    · trans n * (N / n)
-      · gcongr
-      · exact mul_div_le ..
+    grw [hm]
+    simp [mul_div_le, div_le_self]
 
 theorem sum_mul_zeta_eq_sum (f : ArithmeticFunction R) (N : ℕ) :
     ∑ n ∈ Icc 0 N, (f * zeta) n = ∑ n ∈ Icc 0 N, f n * ↑(N / n) := by
