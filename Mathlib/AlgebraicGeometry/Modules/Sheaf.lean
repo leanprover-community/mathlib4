@@ -157,11 +157,11 @@ noncomputable def pseudofunctor :
   LocallyDiscrete.mkPseudofunctor
     (fun X ↦ Adj.mk (Cat.of X.unop.Modules))
     (fun f ↦ .mk (pullbackPushforwardAdjunction f.unop).toCat)
-    (fun X ↦ Adj.iso₂Mk (pullbackId _) (pushforwardId _).symm (by
+    (fun _ ↦ Adj.iso₂Mk (pullbackId _) (pushforwardId _).symm (by
       dsimp
       rw [Bicategory.conjugateEquiv_eq_categoryTheoryConjugateEquiv]
       apply conjugateEquiv_pullbackId_hom))
-    (fun f g ↦ Adj.iso₂Mk (pullbackComp _ _).symm (pushforwardComp _ _) (by
+    (fun _ _ ↦ Adj.iso₂Mk (pullbackComp _ _).symm (pushforwardComp _ _) (by
       dsimp
       rw [Bicategory.conjugateEquiv_eq_categoryTheoryConjugateEquiv,
         Adjunction.toCat_comp_toCat]
