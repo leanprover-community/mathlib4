@@ -263,8 +263,7 @@ def accepts : Language α := {x | ∃ S ∈ M.accept, S ∈ M.eval x}
 theorem mem_accepts {x : List α} : x ∈ M.accepts ↔ ∃ S ∈ M.accept, S ∈ M.evalFrom M.start x := by
   rfl
 
-theorem accepts_acceptsFrom : M.accepts = M.acceptsFrom M.start := by
-  rfl
+theorem accepts_eq_acceptsFrom_start : M.accepts = M.acceptsFrom M.start := rfl
 
 variable (M) in
 /-- `M.Path` represents a concrete path through the NFA from a start state to an end state
