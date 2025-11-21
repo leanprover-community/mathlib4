@@ -134,7 +134,7 @@ theorem isClosed_powerset {F : Set α} (hF : IsClosed F) :
   simp_rw [Set.powerset, ← isOpen_compl_iff, Set.compl_setOf, ← Set.inter_compl_nonempty_iff]
   exact isOpen_inter_nonempty_of_isOpen hF.isOpen_compl
 
-theorem isClopen_singleton_bot : IsClopen {(∅ : Set α)} := by
+theorem isClopen_singleton_empty : IsClopen {(∅ : Set α)} := by
   constructor
   · rw [← Set.powerset_empty]
     exact isClosed_powerset isClosed_empty
@@ -157,7 +157,8 @@ theorem isClosedEmbedding_singleton [T0Space α] :
     rw [← isOpen_compl_iff, isOpen_iff_mem_nhds]
     intro s hs
     rcases Set.eq_empty_or_nonempty s with rfl | h
-    · rwa [(isOpen_singleton_iff_nhds_eq_pure _).mp isClopen_singleton_bot.isOpen, Filter.mem_pure]
+    · rwa [(isOpen_singleton_iff_nhds_eq_pure _).mp isClopen_singleton_empty.isOpen,
+        Filter.mem_pure]
     rcases h.exists_eq_singleton_or_nontrivial with ⟨x, rfl⟩ | ⟨x, hx, y, hy, hxy⟩
     · cases hs <| Set.mem_range_self x
     obtain ⟨U, V, hU, hV, hxU, hyV, hUV⟩ := t2_separation hxy
