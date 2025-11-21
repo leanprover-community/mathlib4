@@ -3,12 +3,14 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.Polynomial.Lifts
-import Mathlib.RingTheory.Algebraic.Integral
-import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.Localization.Integer
+module
+
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+public import Mathlib.Algebra.Polynomial.Lifts
+public import Mathlib.RingTheory.Algebraic.Integral
+public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.RingTheory.Localization.Integer
 
 /-!
 # Integral and algebraic elements of a fraction field
@@ -21,6 +23,8 @@ See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
+
+@[expose] public section
 
 
 variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
@@ -57,7 +61,7 @@ alias coeffIntegerNormalization_of_not_mem_support := coeffIntegerNormalization_
 theorem coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
     (h : coeffIntegerNormalization M p i ≠ 0) : i ∈ p.support := by
   contrapose h
-  rw [Ne, Classical.not_not, coeffIntegerNormalization, dif_neg h]
+  rw [coeffIntegerNormalization, dif_neg h]
 
 /-- `integerNormalization g` normalizes `g` to have integer coefficients
 by clearing the denominators -/

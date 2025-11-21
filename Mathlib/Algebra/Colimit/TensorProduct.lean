@@ -3,8 +3,10 @@ Copyright (c) 2025 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Colimit.Finiteness
-import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
+module
+
+public import Mathlib.Algebra.Colimit.Finiteness
+public import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
 
 /-!
 # Tensor product with direct limit of finitely generated submodules
@@ -16,6 +18,8 @@ This is the theorem `Submodule.FG.exists_rTensor_fg_inclusion_eq`. The key facts
 that every module is the direct limit of its finitely generated submodules and that tensor
 product preserves colimits.
 -/
+
+@[expose] public section
 
 open TensorProduct
 

@@ -3,8 +3,9 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.InnerProductSpace.Continuous
+public import Mathlib.Analysis.InnerProductSpace.Continuous
 
 /-!
 # Linear maps on inner product spaces
@@ -25,6 +26,8 @@ This file studies linear maps on inner product spaces.
 inner product space, Hilbert space, norm
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -192,7 +195,6 @@ def innerSL : E →L⋆[𝕜] E →L[𝕜] 𝕜 :=
 theorem coe_innerSL_apply (v : E) : ⇑(innerSL 𝕜 v) = fun w => ⟪v, w⟫ :=
   rfl
 
-@[simp]
 theorem innerSL_apply_apply (v w : E) : innerSL 𝕜 v w = ⟪v, w⟫ :=
   rfl
 

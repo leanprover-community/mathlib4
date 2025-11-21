@@ -3,8 +3,10 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Function.AEEqFun.DomAct
-import Mathlib.MeasureTheory.Function.LpSpace.Indicator
+module
+
+public import Mathlib.MeasureTheory.Function.AEEqFun.DomAct
+public import Mathlib.MeasureTheory.Function.LpSpace.Indicator
 
 /-!
 # Action of `Mᵈᵐᵃ` on `Lᵖ` spaces
@@ -15,6 +17,8 @@ and `c : M`, then `(.mk c : Mᵈᵐᵃ) • [f]` is represented by the function 
 
 We also prove basic properties of this action.
 -/
+
+@[expose] public section
 
 open MeasureTheory Filter
 open scoped ENNReal
