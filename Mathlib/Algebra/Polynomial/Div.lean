@@ -811,7 +811,7 @@ lemma eq_mul_leadingCoeff_of_monic_of_dvd_of_natDegree_le {R} [Semiring R] {p q 
   obtain rfl | hr := eq_or_ne r 0
   · simp
   have : r.natDegree = 0 := by
-    rw [natDegree_mul' (by simp [*])] at hdeg
+    rw [hp.natDegree_mul' hr] at hdeg
     omega
   rw [eq_C_of_natDegree_eq_zero this]
   simp [leadingCoeff_monic_mul hp]
