@@ -317,7 +317,9 @@ private theorem zero_smul_aux (p : LocalizedModule S M) : (0 : T) • p = 0 := b
   rw [show (0 : T) = IsLocalization.mk' T (0 : R) (1 : S) by rw [IsLocalization.mk'_zero],
     mk'_smul_mk, zero_smul, zero_mk]
 
-noncomputable instance isModule : Module T (LocalizedModule S M) where
+/-- If `IsLocalization S T`, then `M[S⁻¹]` is a `T`-module. This is a bad instance and should be
+eventually removed. -/
+noncomputable abbrev moduleOfIsLocalization : Module T (LocalizedModule S M) where
   one_smul := one_smul_aux
   mul_smul := mul_smul_aux
   smul_add := smul_add_aux
@@ -379,9 +381,14 @@ theorem mul_smul' {A : Type*} [Semiring A] [Algebra R A] (x : T) (p₁ p₂ : Lo
 
 variable (T)
 
-noncomputable instance (priority := 900) {A : Type*} [Semiring A] [Algebra R A] :
+attribute [local instance] moduleOfIsLocalization in
+/-- If `IsLocalization S T`, then `A[S⁻¹]` is a `T`-algebra. This is a bad instance and should be
+eventually removed. -/
+noncomputable abbrev algebraOfIsLocalization {A : Type*} [Semiring A] [Algebra R A] :
     Algebra T (LocalizedModule S A) :=
   Algebra.ofModule smul'_mul mul_smul'
+
+attribute [local instance] algebraOfIsLocalization
 
 theorem algebraMap_mk' {A : Type*} [Semiring A] [Algebra R A] (a : R) (s : S) :
     algebraMap _ _ (IsLocalization.mk' T a s) = mk (algebraMap R A a) s := by
@@ -1243,10 +1250,12 @@ variable {R A M M' : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] (S :
   [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
   [IsLocalization S A]
 
+attribute [local instance] LocalizedModule.moduleOfIsLocalization in
 /-- If `M'` is the localization of `M` at `S` and `A = S⁻¹R`, then `M'` is an `A`-module. -/
 @[reducible] noncomputable def module (f : M →ₗ[R] M') [IsLocalizedModule S f] : Module A M' :=
   (IsLocalizedModule.iso S f).symm.toAddEquiv.module A
 
+attribute [local instance] LocalizedModule.moduleOfIsLocalization in
 lemma isScalarTower_module (f : M →ₗ[R] M') [IsLocalizedModule S f] :
     letI : Module A M' := IsLocalizedModule.module S f
     IsScalarTower R A M' :=

@@ -199,15 +199,17 @@ theorem res_apply (U V : Opens (PrimeSpectrum.Top R)) (i : V ⟶ U)
   rfl
 
 lemma smul_section_apply (r : R) (U : Opens (PrimeSpectrum.Top R))
-    (s : (tildeInModuleCat M).1.obj (op U)) (x : U) :
+    (s : (tildeInModuleCat M).obj (op U)) (x : U) :
     (r • s).1 x = r • (s.1 x) :=
+  IsScalarTower.algebraMap_smul ((Spec.structureSheaf R).val.obj (op U)) r (s.1 x)
+
+lemma smul_stalk_no_nonzero_divisor {x : PrimeSpectrum R}
     (r : x.asIdeal.primeCompl) (st : (tildeInModuleCat M).stalk x) (hst : r.1 • st = 0) :
-    st = 0 := by
-  refine Limits.Concrete.colimit_no_zero_smul_divisor
-    _ hst
-  apply LocalizedModule.eq_zero_of_smul_eq_zero _ (i.unop pt).2 _
-  simp [← smul_section_apply, hs]
-  rfl
+    st = 0 :=
+  Limits.Concrete.colimit_no_zero_smul_divisor _ _ _
+    ⟨op ⟨PrimeSpectrum.basicOpen r.1, r.2⟩, fun U i s hs ↦ Subtype.ext <| funext fun pt ↦
+    LocalizedModule.eq_zero_of_smul_eq_zero _ (i.unop pt).2 _
+    (by simpa [← smul_section_apply] using congr(($hs).1 pt))⟩ _ hst
 
 /--
 If `U` is an open subset of `Spec R`, this is the morphism of `R`-modules from `M` to
@@ -255,7 +257,7 @@ lemma isUnit_toStalk (x : PrimeSpectrum.Top R) (r : x.asIdeal.primeCompl) :
         simpa only [Module.algebraMap_end_apply, ← map_smul] using
           germ_ext (C := ModuleCat R) (W := O) (hxW := ⟨mem, r.2⟩) (iWU := 𝟙 _)
             (iWV := homOfLE inf_le_left) _ <|
-          Subtype.eq <| funext fun y ↦ by
+          Subtype.ext <| funext fun y ↦ by
             simp [smul_section_apply, ← smul_assoc, Localization.smul_mk]; rfl⟩
   obtain ⟨V, mem_V, iV, num, den, hV⟩ := s.2 ⟨q.1, q.2.1⟩
   refine ⟨V ⊓ O, ⟨mem_V, q.2⟩, homOfLE inf_le_right, num, r * den, fun y ↦ ?_⟩
@@ -385,7 +387,7 @@ theorem localizationToStalk_mk (x : PrimeSpectrum.Top R) (f : M) (s : x.asIdeal.
     (F := M.tildeInModuleCat)
   · exact homOfLE le_top
   · exact 𝟙 _
-  refine Subtype.eq <| funext fun y => show LocalizedModule.mk f 1 = _ from ?_
+  refine Subtype.ext <| funext fun y => show LocalizedModule.mk f 1 = _ from ?_
   dsimp
   simp only [CategoryTheory.Functor.map_id, hom_id, map_smul, LinearMap.id_coe, id_eq,
     smul_section_apply, isLocallyFraction_pred, Opens.val_apply, LocalizedModule.mkLinearMap_apply,
