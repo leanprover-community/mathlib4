@@ -545,4 +545,44 @@ end Ring
 
 end Submodule
 
+section Congr
+
+variable {R : Type*} [Semiring R]
+    {ι : Type*}
+    {N : ι → Type*} [(i : ι) → AddCommMonoid (N i)] [(i : ι) → Module R (N i)]
+    {P : ι → Type*} [∀ i, AddCommMonoid (P i)] [∀ i, Module R (P i)]
+
+/-- Direct sums of isomorphic additive groups are isomorphic. -/
+def congr_addEquiv (u : (i : ι) → N i ≃+ P i) :
+    (⨁ i, N i) ≃+ ⨁ i, P i where
+  toAddHom := DirectSum.map fun i ↦ (u i).toAddMonoidHom
+  invFun := DirectSum.map fun i ↦ (u i).symm.toAddMonoidHom
+  left_inv x := by aesop
+  right_inv y := by aesop
+
+theorem coe_congr_addEquiv (u : (i : ι) → N i ≃+ P i) :
+    ⇑(congr_addEquiv u).toAddMonoidHom = ⇑(DirectSum.map fun i ↦ (u i).toAddMonoidHom) :=
+  rfl
+
+/-- Direct sums of isomorphic modules are isomorphic. -/
+def congr_linearEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
+    (⨁ i, N i) ≃ₗ[R] ⨁ i, P i where
+  toAddEquiv := congr_addEquiv (fun i ↦ (u i).toAddEquiv)
+  map_smul' r x := by
+    exact (DirectSum.lmap (fun i ↦ (u i).toLinearMap)).map_smul r x
+
+theorem coe_congr_linearEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
+    ⇑(congr_linearEquiv u) = ⇑(DirectSum.lmap (fun i ↦ (u i).toLinearMap)) :=
+  rfl
+
+theorem congr_linearEquiv_toAddEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
+    (congr_linearEquiv u).toAddEquiv = congr_addEquiv (fun i ↦ (u i).toAddEquiv) :=
+  rfl
+
+theorem congr_linearEquiv_toLinearMap (u : (i : ι) → N i ≃ₗ[R] P i) :
+    (congr_linearEquiv u).toLinearMap = DirectSum.lmap (fun i ↦ (u i).toLinearMap) :=
+  rfl
+
+end Congr
+
 end DirectSum
