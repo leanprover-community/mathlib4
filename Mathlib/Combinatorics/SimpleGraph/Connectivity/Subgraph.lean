@@ -625,8 +625,8 @@ protected lemma Connected.toSubgraph {H : SimpleGraph V} (h : H ≤ G) (hconn : 
 namespace Subgraph
 
 protected lemma Reachable.map_coe {G' : G.Subgraph} {G'' : G'.coe.Subgraph} (f : G'.coe →g G)
-    {u v : G''.verts} (hreachable : G''.coe.Reachable u v) :
-    (G''.map f).coe.Reachable ⟨f u, by aesop⟩ ⟨f v, by aesop⟩ := by
+    {u v : G''.verts} (hreachable : G''.coe.Reachable u v) : (G''.map f).coe.Reachable
+      ⟨f u, Set.mem_image_of_mem _ u.2⟩ ⟨f v, Set.mem_image_of_mem _ v.2⟩ := by
   use hreachable.exists_isPath.choose.map {
     toFun v : (G''.map f).verts := ⟨⇑f v.val, by aesop⟩
     map_rel' r := Relation.map_apply.mpr (by tauto)
