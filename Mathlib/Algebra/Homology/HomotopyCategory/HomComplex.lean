@@ -798,7 +798,7 @@ lemma single_v_eq_zero {p q : ℤ} (f : K.X p ⟶ L.X q) (n : ℤ) (p' q' : ℤ)
   dsimp [single]
   rw [dif_neg]
   intro h
-  exact hp' (by linarith)
+  exact hp' (by cutsat)
 
 end Cochain
 
