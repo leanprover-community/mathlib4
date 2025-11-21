@@ -6,6 +6,7 @@ Authors: Michael Rothgang
 import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
 import Mathlib.Analysis.Normed.Operator.Banach
+import Mathlib.Topology.Algebra.Module.Shrink
 
 /-! # Smooth immersions and embeddings
 
@@ -283,54 +284,64 @@ lemma congr_iff (hfg : f =ᶠ[𝓝 x] g) :
     IsImmersionAtOfComplement F I J n f x ↔ IsImmersionAtOfComplement F I J n g x :=
   ⟨fun h ↦ h.congr_of_eventuallyEq hfg, fun h ↦ h.congr_of_eventuallyEq hfg.symm⟩
 
+lemma foo (hf : IsImmersionAtOfComplement F I J n f x) : Small.{u} F := sorry
+
 /-- Given an immersion `f` at `x`, this is a choice of complement which lives in the same universe
 as the model space for the co-domain of `f`: this is useful to avoid universe restrictions. -/
-def smallComplement (hf : IsImmersionAtOfComplement F I J n f x) : Type u :=
-  LinearMap.range (hf.equiv.domRestrict (LinearMap.range (LinearMap.prod 0 .id)))
+def smallComplement (hf : IsImmersionAtOfComplement F I J n f x) : Type u := by
+  have := foo hf
+  exact Shrink.{u} F
 
 instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedAddCommGroup hf.smallComplement := by
+  have := foo hf
   unfold smallComplement
   infer_instance
 
 instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedSpace 𝕜 hf.smallComplement := by
+  have := foo hf
   unfold smallComplement
   infer_instance
 
 -- TODO: remove completeness hypotheses using ContinuousLinearEquiv.ofSubmodules
 /-- If `f` is an immersion at `x`, then any complement used in this definition is
 isomorphic to the `smallComplement`. -/
-def smallEquiv [CompleteSpace E] [CompleteSpace E''] [CompleteSpace F]
-    (hf : IsImmersionAtOfComplement F I J n f x) : F ≃L[𝕜] hf.smallComplement := by
-  letI φ : F →L[𝕜] E × F := ContinuousLinearMap.prod (0 : F →L[𝕜] E) (.id _ _)
-  have h : Injective φ := by intro x y hxy; simp_all [φ]
-  have h2 : IsClosed (range φ) := by
-    have : (range (fun (x : F) ↦ ((0 : E), x))) = {0} ×ˢ univ := by grind
-    convert isClosed_singleton.prod isClosed_univ
-    infer_instance
-  have : CompleteSpace (LinearMap.range φ) := h2.completeSpace_coe
-  letI ψ : _ →L[𝕜] E'' := .mk (hf.equiv.domRestrict (LinearMap.range φ))
-    (Pi.continuous_restrict_apply _ hf.equiv.continuous)
-  have h3 : Injective ψ := by
-    simp only [ψ, ContinuousLinearMap.coe_mk']
-    rw [LinearMap.injective_domRestrict_iff]
-    simp
-  have : IsClosed (range ψ) := by
-    simp only [ψ, ContinuousLinearMap.coe_mk']
-    -- LinearMap.range_domRestrict does not fire, but this lemma does...
-    have : range ((hf.equiv.toLinearEquiv).domRestrict (LinearMap.range φ)) =
-        Submodule.map hf.equiv.toLinearEquiv (LinearMap.range φ) := by
-      ext x
-      simp
-    rw [this]
-    simpa
-  apply (ContinuousLinearMap.equivRange h h2).trans (ContinuousLinearMap.equivRange h3 this)
+def smallEquiv (hf : IsImmersionAtOfComplement F I J n f x) : F ≃L[𝕜] hf.smallComplement := by
+  have := foo hf
+  unfold smallComplement
+  have aux := (equivShrink F).continuousLinearEquiv 𝕜
+  sorry
+  --convert aux yields 4 goals, some of which seem to show diamond issues
+  --dsimp at aux ⊢
 
-lemma smallEquiv_coe [CompleteSpace E] [CompleteSpace E''] [CompleteSpace F]
-  (hf : IsImmersionAtOfComplement F I J n f x) :
-  letI B := Pi.prod (0 : F → E) (@id F)
-  (hf.smallEquiv : F → _) =
-    (Set.rangeFactorization ((range B).restrict hf.equiv)) ∘ (Set.rangeFactorization B) := by
-  rfl
+  -- have h : Injective φ := by intro x y hxy; simp_all [φ]
+  -- have h2 : IsClosed (range φ) := by
+  --   have : (range (fun (x : F) ↦ ((0 : E), x))) = {0} ×ˢ univ := by grind
+  --   convert isClosed_singleton.prod isClosed_univ
+  --   infer_instance
+  -- have : CompleteSpace (LinearMap.range φ) := h2.completeSpace_coe
+  -- letI ψ : _ →L[𝕜] E'' := .mk (hf.equiv.domRestrict (LinearMap.range φ))
+  --   (Pi.continuous_restrict_apply _ hf.equiv.continuous)
+  -- have h3 : Injective ψ := by
+  --   simp only [ψ, ContinuousLinearMap.coe_mk']
+  --   rw [LinearMap.injective_domRestrict_iff]
+  --   simp
+  -- have : IsClosed (range ψ) := by
+  --   simp only [ψ, ContinuousLinearMap.coe_mk']
+  --   -- LinearMap.range_domRestrict does not fire, but this lemma does...
+  --   have : range ((hf.equiv.toLinearEquiv).domRestrict (LinearMap.range φ)) =
+  --       Submodule.map hf.equiv.toLinearEquiv (LinearMap.range φ) := by
+  --     ext x
+  --     simp
+  --   rw [this]
+  --   simpa
+  -- apply (ContinuousLinearMap.equivRange h h2).trans (ContinuousLinearMap.equivRange h3 this)
+
+-- lemma smallEquiv_coe [CompleteSpace E] [CompleteSpace E''] [CompleteSpace F]
+--   (hf : IsImmersionAtOfComplement F I J n f x) :
+--   letI B := Pi.prod (0 : F → E) (@id F)
+--   (hf.smallEquiv : F → _) =
+--     (Set.rangeFactorization ((range B).restrict hf.equiv)) ∘ (Set.rangeFactorization B) := by
+--   rfl
 
 lemma trans_F (h : IsImmersionAtOfComplement F I J n f x) (e : F ≃L[𝕜] F') :
     IsImmersionAtOfComplement F' I J n f x := by
