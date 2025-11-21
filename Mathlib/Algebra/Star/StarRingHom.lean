@@ -75,8 +75,8 @@ def toNonUnitalStarRingHom [NonUnitalStarRingHomClass F A B] (f : F) : A →⋆�
   { (f : A →ₙ+* B) with
     map_star' := map_star f }
 
-instance [NonUnitalStarRingHomClass F A B] : CoeHead F (A →⋆ₙ+* B) :=
-  ⟨toNonUnitalStarRingHom⟩
+instance [NonUnitalStarRingHomClass F A B] (f : F) : CoeDep F f (A →⋆ₙ+* B) :=
+  ⟨toNonUnitalStarRingHom f⟩
 
 end NonUnitalStarRingHomClass
 
@@ -279,9 +279,10 @@ def toStarRingEquiv {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul B] [St
 
 /-- Any type satisfying `StarRingEquivClass` can be cast into `StarRingEquiv` via
 `StarRingEquivClass.toStarRingEquiv`. -/
-instance instCoeHead {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B]
-    [EquivLike F A B] [RingEquivClass F A B] [StarRingEquivClass F A B] : CoeHead F (A ≃⋆+* B) :=
-  ⟨toStarRingEquiv⟩
+instance instCoeDep {F A B : Type*} [Add A] [Mul A] [Star A] [Add B] [Mul B] [Star B]
+    [EquivLike F A B] [RingEquivClass F A B] [StarRingEquivClass F A B] (f : F) :
+    CoeDep F f (A ≃⋆+* B) :=
+  ⟨toStarRingEquiv f⟩
 
 end StarRingEquivClass
 
