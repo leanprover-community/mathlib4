@@ -111,8 +111,8 @@ lemma triangle_distinguished :
     (by cutsat)).choose_spec.choose_spec.choose_spec.choose_spec.choose_spec.choose_spec.choose_spec
 
 instance triangle_obj₁_isLE (n : ℤ) :
-    t.IsLE (triangle t n X).obj₁ (n-1) := by
-  exact ⟨(t.exists_triangle X (n-1) n (by cutsat)).choose_spec.choose_spec.choose⟩
+    t.IsLE (triangle t n X).obj₁ (n-1) :=
+  ⟨(t.exists_triangle X (n-1) n (by cutsat)).choose_spec.choose_spec.choose⟩
 
 instance triangle_obj₃_isGE :
     t.IsGE (triangle t n X).obj₃ n :=
