@@ -764,7 +764,7 @@ lemma resultant_integralNormalization (f g : R[X]) (hg : g.natDegree ≠ 0) :
   rw [this, ← mul_assoc, ← pow_add, add_comm, ← Nat.mul_add_one, Nat.sub_add_cancel (by cutsat)]
 
 /-- `Res(f(x + r), g(x + r)) = Res(f, g)`. -/
-@[simp] nonrec lemma resultant_taylor (f g : R[X]) (r : R) :
+nonrec lemma resultant_taylor (f g : R[X]) (r : R) :
     resultant (f.taylor r) (g.taylor r) = resultant f g := by
   induction f using induction_of_factors_of_injective_of_surjective with
   | factors R f hf' =>
