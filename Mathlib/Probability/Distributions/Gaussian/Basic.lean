@@ -67,7 +67,7 @@ lemma IsGaussian.eq_gaussianReal (μ : Measure ℝ) (h : IsGaussian μ) :
   μ = μ.map (ContinuousLinearMap.id ℝ ℝ) := by simp
   _ = gaussianReal μ[id] Var[id; μ].toNNReal := by rw [h.map_eq_gaussianReal]; simp
 
-lemma isGaussian_of_map_isGaussian {E : Type*} [TopologicalSpace E] [AddCommMonoid E]
+lemma isGaussian_of_sGaussian_map {E : Type*} [TopologicalSpace E] [AddCommMonoid E]
     [Module ℝ E] {mE : MeasurableSpace E} [OpensMeasurableSpace E] {μ : Measure E}
     (h : ∀ L : E →L[ℝ] ℝ, IsGaussian (μ.map L)) : IsGaussian μ := by
   refine ⟨fun L ↦ ?_⟩
