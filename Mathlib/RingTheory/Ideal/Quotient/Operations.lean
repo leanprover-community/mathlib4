@@ -647,7 +647,7 @@ theorem quotient_map_comp_mkₐ (f : A →ₐ[R₁] B) (H : I ≤ J.comap f) :
 
 variable (I) in
 /-- The algebra equiv `A/I ≃ₐ[R] B/J` induced by an algebra equiv `f : A ≃ₐ[R] B`,
-where`J = f(I)`. -/
+where `J = f(I)`. -/
 def quotientEquivAlg (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) :
     (A ⧸ I) ≃ₐ[R₁] B ⧸ J :=
   { quotientEquiv I J (f : A ≃+* B) hIJ with
