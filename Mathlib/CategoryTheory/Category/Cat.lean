@@ -54,19 +54,120 @@ instance str (C : Cat.{v, u}) : Category.{v, u} C :=
 def of (C : Type u) [Category.{v} C] : Cat.{v, u} :=
   Bundled.of C
 
+section
+
+@[ext]
+structure Hom (C D : Cat.{v, u}) where
+private ofFunctor ::
+  toFunctor : C ⥤ D
+
+instance : Quiver (Cat.{v, u}) where
+  Hom C D := Hom C D
+
+@[simps]
+def _root_.CategoryTheory.Functor.toCatHom {C D : Type u} [Category.{v} C] [Category.{v} D]
+    (F : C ⥤ D) : Cat.of C ⟶ Cat.of D where
+  toFunctor := F
+
+@[ext]
+lemma ext {C D : Cat.{v, u}} {F G : C ⟶ D} (h : F.toFunctor = G.toFunctor) : F = G :=
+  congrArg (Functor.toCatHom) h
+
+@[simps]
+def _root_.CategoryTheory.Functor.equivCatHom (C D : Type u) [Category.{v} C] [Category.{v} D] :
+    C ⥤ D ≃ ((Cat.of C) ⟶ (Cat.of D)) where
+  toFun := Functor.toCatHom
+  invFun := Cat.Hom.toFunctor
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+@[simps! apply symm_apply]
+def Hom.equivFunctor (C D : Cat.{v, u}) :
+    (C ⟶ D) ≃ C ⥤ D := (equivCatHom _ _).symm
+
+structure Hom₂ {C D : Cat.{v, u}} (F G : C ⟶ D) where
+private ofNatTrans :: (toNatTrans : F.toFunctor ⟶ G.toFunctor)
+
+namespace Hom
+
+instance instQuiver {C D : Cat.{v, u}} : Quiver (C ⟶ D) where
+  Hom F G := Hom₂ F G
+
+@[simps]
+def _root_.CategoryTheory.NatTrans.toCatHom₂ {C D : Type u} [Category.{v} C]
+    [Category.{v} D] {F G : C ⥤ D} (η : F ⟶ G) : F.toCatHom ⟶ G.toCatHom where
+  toNatTrans := η
+
+instance instCategory {X Y : Cat.{v, u}} : Category (X ⟶ Y) where
+  id F := NatTrans.toCatHom₂ (𝟙 F.toFunctor)
+  comp η₁ η₂ := NatTrans.toCatHom₂ (η₁.toNatTrans ≫ η₂.toNatTrans)
+  id_comp η := congrArg (Hom₂.ofNatTrans) (Category.id_comp η.toNatTrans)
+  comp_id η := congrArg (Hom₂.ofNatTrans) (Category.comp_id η.toNatTrans)
+  assoc η₁ η₂ η₃ :=
+    congrArg (Hom₂.ofNatTrans) (Category.assoc η₁.toNatTrans η₂.toNatTrans η₃.toNatTrans)
+
+@[simp, push_cast]
+lemma _root_.CategoryTheory.NatTrans.toCatHom₂_id {C D : Type u} [Category.{v} C] [Category.{v} D]
+    (F : C ⥤ D) :
+    (𝟙 F : F ⟶ F).toCatHom₂ = 𝟙 F.toCatHom := rfl
+
+@[simp, push_cast]
+lemma _root_.CategoryTheory.NatTrans.toCatHom₂_comp {C D : Type u} [Category.{v} C] [Category.{v} D]
+    {F G H : C ⥤ D} (η₁ : F ⟶ G) (η₂ : G ⟶ H) :
+    (η₁ ≫ η₂).toCatHom₂ = η₁.toCatHom₂ ≫ η₂.toCatHom₂ := rfl
+
+@[simp, push_cast]
+lemma toNatTrans_id {C D : Cat.{v, u}} (F : C ⟶ D) :
+  (𝟙 F : F ⟶ F).toNatTrans = 𝟙 (F.toFunctor) := rfl
+
+@[simp, push_cast]
+lemma toNatTrans_comp {C D : Cat.{v, u}} {F G H : C ⟶ D} (η₁ : F ⟶ G) (η₂ : G ⟶ H) :
+  (η₁ ≫ η₂).toNatTrans = η₁.toNatTrans ≫ η₂.toNatTrans := rfl
+
+@[ext]
+lemma _root_.CategoryTheory.Cat.Hom₂.ext {C D : Cat.{v, u}} {F G : C ⟶ D} {η₁ η₂ : F ⟶ G}
+    (h : η₁.toNatTrans = η₂.toNatTrans) :
+    η₁ = η₂ := by
+  cases η₁; cases η₂; simp_all
+
+@[simps]
+def isoMk {C D : Type u} [Category.{v} C] [Category.{v} D] {F G : C ⥤ D} (e : F ≅ G) :
+    F.toCatHom ≅ G.toCatHom where
+  hom := e.hom.toCatHom₂
+  inv := e.inv.toCatHom₂
+  hom_inv_id := congrArg NatTrans.toCatHom₂ e.hom_inv_id
+  inv_hom_id := congrArg NatTrans.toCatHom₂ e.inv_hom_id
+
+@[simps]
+def toNatIso {X Y : Cat.{v, u}} {F G : X ⟶ Y} (e : F ≅ G) : F.toFunctor ≅ G.toFunctor where
+  hom := e.hom.toNatTrans
+  inv := e.inv.toNatTrans
+  hom_inv_id := congrArg Hom₂.toNatTrans e.hom_inv_id
+  inv_hom_id := congrArg Hom₂.toNatTrans e.inv_hom_id
+
+@[simp]
+lemma isoMk_toNatIso {X Y : Cat.{v, u}} {F G : X ⟶ Y} (e : F ≅ G) :
+    isoMk (Hom.toNatIso e) = e := rfl
+
+@[simp]
+lemma toNatIso_isoMk {C D : Type u} [Category.{v} C] [Category.{v} D] {F G : C ⥤ D} (e : F ≅ G) :
+    Hom.toNatIso (isoMk e) = e := rfl
+
+end Hom
+
+end
+
 /-- Bicategory structure on `Cat` -/
 instance bicategory : Bicategory.{max v u, max v u} Cat.{v, u} where
-  Hom C D := C ⥤ D
-  id C := 𝟭 C
-  comp F G := F ⋙ G
-  homCategory := fun _ _ => Functor.category
-  whiskerLeft {_} {_} {_} F _ _ η := whiskerLeft F η
-  whiskerRight {_} {_} {_} _ _ η H := whiskerRight η H
-  associator {_} {_} {_} _ := Functor.associator
-  leftUnitor {_} _ := Functor.leftUnitor
-  rightUnitor {_} _ := Functor.rightUnitor
-  pentagon := fun {_} {_} {_} {_} {_}=> Functor.pentagon
-  triangle {_} {_} {_} := Functor.triangle
+  id C := (𝟭 C).toCatHom
+  comp F G := (F.toFunctor ⋙ G.toFunctor).toCatHom
+  homCategory := fun _ _ => Hom.instCategory
+  whiskerLeft F _ _ η := (Functor.whiskerLeft F.toFunctor η.toNatTrans).toCatHom₂
+  whiskerRight η H := (Functor.whiskerRight η.toNatTrans H.toFunctor).toCatHom₂
+  associator F G H := Hom.isoMk
+    (Functor.associator F.toFunctor G.toFunctor H.toFunctor)
+  leftUnitor F := Hom.isoMk (Functor.leftUnitor F.toFunctor)
+  rightUnitor F := Hom.isoMk (Functor.rightUnitor F.toFunctor)
 
 /-- `Cat` is a strict bicategory. -/
 instance bicategory.strict : Bicategory.Strict Cat.{v, u} where
@@ -78,74 +179,125 @@ instance bicategory.strict : Bicategory.Strict Cat.{v, u} where
 instance category : LargeCategory.{max v u} Cat.{v, u} :=
   StrictBicategory.category Cat.{v, u}
 
-@[ext]
-theorem ext {C D : Cat} {F G : C ⟶ D} {α β : F ⟶ G} (w : α.app = β.app) : α = β :=
-  NatTrans.ext w
+@[simp, push_cast]
+lemma Hom.id_toFunctor {C : Cat.{v, u}} : (𝟙 C : C ⟶ C).toFunctor = Functor.id C := rfl
 
 @[simp]
-theorem id_obj {C : Cat} (X : C) : (𝟙 C : C ⥤ C).obj X = X :=
-  rfl
+theorem Hom.id_obj {C : Cat.{v, u}} (X : C) : (𝟙 C : C ⟶ C).toFunctor.obj X = X := by
+  simp
 
 @[simp]
-theorem id_map {C : Cat} {X Y : C} (f : X ⟶ Y) : (𝟙 C : C ⥤ C).map f = f :=
-  rfl
+theorem Hom.id_map {C : Cat.{v, u}} {X Y : C} (f : X ⟶ Y) : (𝟙 C : C ⟶ C).toFunctor.map f = f := by
+  simp
+
+@[simp, push_cast]
+lemma Hom.comp_toFunctor {C D E : Cat.{v, u}} (F : C ⟶ D) (G : D ⟶ E) :
+  (F ≫ G).toFunctor = F.toFunctor ⋙ G.toFunctor := rfl
 
 @[simp]
-theorem comp_obj {C D E : Cat} (F : C ⟶ D) (G : D ⟶ E) (X : C) : (F ≫ G).obj X = G.obj (F.obj X) :=
-  rfl
+theorem Hom.comp_obj {C D E : Cat.{v, u}} (F : C ⟶ D) (G : D ⟶ E) (X : C) :
+    (F ≫ G).toFunctor.obj X = G.toFunctor.obj (F.toFunctor.obj X) := by
+  simp
 
 @[simp]
-theorem comp_map {C D E : Cat} (F : C ⟶ D) (G : D ⟶ E) {X Y : C} (f : X ⟶ Y) :
-    (F ≫ G).map f = G.map (F.map f) :=
-  rfl
+theorem Hom.comp_map {C D E : Cat.{v, u}} (F : C ⟶ D) (G : D ⟶ E) {X Y : C} (f : X ⟶ Y) :
+    (F ≫ G).toFunctor.map f = G.toFunctor.map (F.toFunctor.map f) := by
+  simp
 
 @[simp]
-theorem id_app {C D : Cat} (F : C ⟶ D) (X : C) : (𝟙 F : F ⟶ F).app X = 𝟙 (F.obj X) := rfl
+theorem Hom₂.id_app {C D : Cat.{v, u}} (F : C ⟶ D) (X : C) :
+    (𝟙 F : F ⟶ F).toNatTrans.app X = 𝟙 (F.toFunctor.obj X) := by
+  simp
 
 @[simp]
-theorem comp_app {C D : Cat} {F G H : C ⟶ D} (α : F ⟶ G) (β : G ⟶ H) (X : C) :
-    (α ≫ β).app X = α.app X ≫ β.app X := rfl
+theorem Hom₂.comp_app {C D : Cat.{v, u}} {F G H : C ⟶ D} (α : F ⟶ G) (β : G ⟶ H) (X : C) :
+    (α ≫ β).toNatTrans.app X = α.toNatTrans.app X ≫ β.toNatTrans.app X := rfl
 
 @[simp]
-theorem eqToHom_app {C D : Cat} (F G : C ⟶ D) (h : F = G) (X : C) :
-    (eqToHom h).app X = eqToHom (Functor.congr_obj h X) :=
-  CategoryTheory.eqToHom_app h X
+theorem Hom₂.eqToHom_toNatTrans {C D : Cat.{v, u}} {F G : C ⟶ D} (h : F = G) :
+  (eqToHom h).toNatTrans = eqToHom congr(($h).toFunctor) := by cases h; simp
 
 @[simp]
-lemma whiskerLeft_app {C D E : Cat} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H) (X : C) :
-    (F ◁ η).app X = η.app (F.obj X) :=
-  rfl
+theorem eqToHom_app {C D : Cat.{v, u}} (F G : C ⟶ D) (h : F = G) (X : C) :
+    (eqToHom h).toNatTrans.app X = eqToHom congr(($h).toFunctor.obj X) := by
+  simp
+
+@[simp, push_cast]
+lemma whiskerLeft_toNatTrans {C D E : Cat.{v, u}} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H) :
+  (F ◁ η).toNatTrans = F.toFunctor.whiskerLeft η.toNatTrans := rfl
 
 @[simp]
-lemma whiskerRight_app {C D E : Cat} {F G : C ⟶ D} (H : D ⟶ E) (η : F ⟶ G) (X : C) :
-    (η ▷ H).app X = H.map (η.app X) :=
-  rfl
+lemma whiskerLeft_app {C D E : Cat.{v, u}} (F : C ⟶ D) {G H : D ⟶ E} (η : G ⟶ H) (X : C) :
+    (F ◁ η).toNatTrans.app X = η.toNatTrans.app (F.toFunctor.obj X) := by simp
 
-lemma leftUnitor_hom_app {B C : Cat} (F : B ⟶ C) (X : B) : (λ_ F).hom.app X = eqToHom (by simp) :=
-  rfl
+@[simp, push_cast]
+lemma whiskerRight_toNatTrans {C D E : Cat.{v, u}} {F G : C ⟶ D} (H : D ⟶ E) (η : F ⟶ G) :
+    (η ▷ H).toNatTrans = Functor.whiskerRight η.toNatTrans H.toFunctor := rfl
 
-lemma leftUnitor_inv_app {B C : Cat} (F : B ⟶ C) (X : B) : (λ_ F).inv.app X = eqToHom (by simp) :=
-  rfl
+@[simp]
+lemma whiskerRight_app {C D E : Cat.{v, u}} {F G : C ⟶ D} (H : D ⟶ E) (η : F ⟶ G) (X : C) :
+    (η ▷ H).toNatTrans.app X = H.toFunctor.map (η.toNatTrans.app X) := by simp
 
-lemma rightUnitor_hom_app {B C : Cat} (F : B ⟶ C) (X : B) : (ρ_ F).hom.app X = eqToHom (by simp) :=
-  rfl
+@[simp, push_cast]
+lemma Hom.toNatIso_leftUnitor {B C : Cat.{v, u}} (F : B ⟶ C) :
+    Hom.toNatIso (λ_ F) = F.toFunctor.leftUnitor := rfl
 
-lemma rightUnitor_inv_app {B C : Cat} (F : B ⟶ C) (X : B) : (ρ_ F).inv.app X = eqToHom (by simp) :=
-  rfl
+@[simp, push_cast]
+lemma leftUnitor_hom_toNatTrans {B C : Cat.{v, u}} (F : B ⟶ C) :
+    (λ_ F).hom.toNatTrans = (F.toFunctor.leftUnitor).hom := rfl
+
+@[simp, push_cast]
+lemma leftUnitor_inv_toNatTrans {B C : Cat.{v, u}} (F : B ⟶ C) :
+    (λ_ F).inv.toNatTrans = (F.toFunctor.leftUnitor).inv := rfl
+
+lemma leftUnitor_hom_app {B C : Cat} (F : B ⟶ C) (X : B) :
+    (λ_ F).hom.toNatTrans.app X = eqToHom (by simp) := by simp
+
+lemma leftUnitor_inv_app {B C : Cat} (F : B ⟶ C) (X : B) :
+    (λ_ F).inv.toNatTrans.app X = eqToHom (by simp) := by simp
+
+@[simp, push_cast]
+lemma Hom.toNatIso_rightUnitor {B C : Cat.{v, u}} (F : B ⟶ C) :
+    Hom.toNatIso (ρ_ F) = eqToIso rfl ≪≫ F.toFunctor.rightUnitor ≪≫ eqToIso rfl := by simp; rfl
+
+@[simp, push_cast]
+lemma rightUnitor_hom_toNatTrans {B C : Cat.{v, u}} (F : B ⟶ C) :
+    (ρ_ F).hom.toNatTrans = (F.toFunctor.rightUnitor).hom := rfl
+
+@[simp, push_cast]
+lemma rightUnitor_inv_toNatTrans {B C : Cat.{v, u}} (F : B ⟶ C) :
+    (ρ_ F).inv.toNatTrans = (F.toFunctor.rightUnitor).inv := rfl
+
+lemma rightUnitor_hom_app {B C : Cat.{v, u}} (F : B ⟶ C) (X : B) :
+    (ρ_ F).hom.toNatTrans.app X = eqToHom (by simp) := by simp
+
+lemma rightUnitor_inv_app {B C : Cat.{v, u}} (F : B ⟶ C) (X : B) :
+    (ρ_ F).inv.toNatTrans.app X = eqToHom (by simp) := by simp
+
+@[simp, push_cast]
+lemma Hom.toNatIso_associator {B C D E : Cat.{v, u}} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) :
+    Hom.toNatIso (α_ F G H) = Functor.associator F.toFunctor G.toFunctor H.toFunctor := rfl
+
+@[simp, push_cast]
+lemma associator_hom_toNatTrans {B C D E : Cat.{v, u}} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) :
+    (α_ F G H).hom.toNatTrans = (Functor.associator F.toFunctor G.toFunctor H.toFunctor).hom := rfl
+
+@[simp, push_cast]
+lemma associator_inv_toNatTrans {B C D E : Cat.{v, u}} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) :
+    (α_ F G H).inv.toNatTrans = (Functor.associator F.toFunctor G.toFunctor H.toFunctor).inv := rfl
 
 lemma associator_hom_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) (X : B) :
-    (α_ F G H).hom.app X = eqToHom (by simp) :=
-  rfl
+    (α_ F G H).hom.toNatTrans.app X = eqToHom (by simp) := by simp
 
 lemma associator_inv_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ E) (X : B) :
-    (α_ F G H).inv.app X = eqToHom (by simp) :=
-  rfl
+    (α_ F G H).inv.toNatTrans.app X = eqToHom (by simp) := by simp
 
 /-- The identity in the category of categories equals the identity functor. -/
-theorem id_eq_id (X : Cat) : 𝟙 X = 𝟭 X := rfl
+theorem id_eq_id (X : Cat.{u, v}) : (𝟙 X : X ⟶ X).toFunctor = 𝟭 X := rfl
 
 /-- Composition in the category of categories equals functor composition. -/
-theorem comp_eq_comp {X Y Z : Cat} (F : X ⟶ Y) (G : Y ⟶ Z) : F ≫ G = F ⋙ G := rfl
+theorem comp_eq_comp {X Y Z : Cat} (F : X ⟶ Y) (G : Y ⟶ Z) :
+    (F ≫ G).toFunctor = F.toFunctor ⋙ G.toFunctor := rfl
 
 @[simp] theorem of_α (C) [Category C] : (of C).α = C := rfl
 
@@ -153,152 +305,198 @@ theorem comp_eq_comp {X Y Z : Cat} (F : X ⟶ Y) (G : Y ⟶ Z) : F ≫ G = F ⋙
 
 end Cat
 
-namespace Functor
+-- namespace Functor
 
-/-- Functors between categories of the same size define arrows in `Cat`. -/
-def toCatHom {C D : Type u} [Category.{v} C] [Category.{v} D] (F : C ⥤ D) :
-    Cat.of C ⟶ Cat.of D := F
+-- /-- Functors between categories of the same size define arrows in `Cat`. -/
+-- def toCatHom {C D : Type u} [Category.{v} C] [Category.{v} D] (F : C ⥤ D) :
+--     Cat.of C ⟶ Cat.of D := F
 
-/-- Arrows in `Cat` define functors. -/
-def ofCatHom {C D : Cat.{v, u}} (F : C ⟶ D) : C ⥤ D := F
+-- /-- Arrows in `Cat` define functors. -/
+-- def ofCatHom {C D : Cat.{v, u}} (F : C ⟶ D) : C ⥤ D := F
 
-@[simp] theorem to_ofCatHom {C D : Cat.{v, u}} (F : C ⟶ D) :
-    (ofCatHom F).toCatHom = F := rfl
+-- @[simp] theorem to_ofCatHom {C D : Cat.{v, u}} (F : C ⟶ D) :
+--     (ofCatHom F).toCatHom = F := rfl
 
-@[simp] theorem of_toCatHom {C D : Type u} [Category.{v} C] [Category.{v} D] (F : C ⥤ D) :
-    ofCatHom (F.toCatHom) = F := rfl
+-- @[simp] theorem of_toCatHom {C D : Type u} [Category.{v} C] [Category.{v} D] (F : C ⥤ D) :
+--     ofCatHom (F.toCatHom) = F := rfl
 
-@[simp]
-lemma _root_.CategoryTheory.Cat.id_of (C : Type u) [Category.{v} C] :
-    𝟙 (Cat.of C) = (Functor.id C).toCatHom := rfl
+-- @[simp]
+-- lemma _root_.CategoryTheory.Cat.id_of (C : Type u) [Category.{v} C] :
+--     𝟙 (Cat.of C) = (Functor.id C).toCatHom := rfl
 
-lemma toCatHom_id (C : Type u) [Category.{v} C] :
-    (Functor.id C).toCatHom = 𝟙 (Cat.of C) := rfl
+-- lemma toCatHom_id (C : Type u) [Category.{v} C] :
+--     (Functor.id C).toCatHom = 𝟙 (Cat.of C) := rfl
 
-@[simp]
-lemma toCatHom_comp_toCatHom {C D E : Type u} [Category.{v} C] [Category.{v} D]
-    [Category.{v} E] (F : C ⥤ D) (G : D ⥤ E) :
-    F.toCatHom ≫ G.toCatHom = (F ⋙ G).toCatHom := rfl
+-- @[simp]
+-- lemma ofCatHom_id (C : Cat.{v, u}) :
+--     ofCatHom (𝟙 C) = Functor.id C := rfl
 
-@[simp]
-lemma toCatHom_congr {C D : Type u} [Category.{v} C] [Category.{v} D] (F G : C ⥤ D) :
-    F.toCatHom = G.toCatHom ↔ F = G where
-  mp := congrArg ofCatHom
-  mpr := congrArg toCatHom
+-- @[simp]
+-- lemma toCatHom_comp_toCatHom {C D E : Type u} [Category.{v} C] [Category.{v} D]
+--     [Category.{v} E] (F : C ⥤ D) (G : D ⥤ E) :
+--     F.toCatHom ≫ G.toCatHom = (F ⋙ G).toCatHom := rfl
 
-end Functor
+-- @[simp]
+-- lemma ofCatHom_comp_ofCatHom {C D E : Cat.{v, u}} (F : C ⟶ D) (G : D ⟶ E) :
+--   ofCatHom F ⋙ ofCatHom G = ofCatHom (F ≫ G) := rfl
 
-namespace NatTrans
+-- @[simp]
+-- lemma ofCatHom_comp_obj {C D E : Cat.{v, u}} (F : C ⟶ D) (G : D ⟶ E) (X : C) :
+--   (ofCatHom G).obj ((ofCatHom F).obj X) = (ofCatHom (F ≫ G)).obj X := rfl
 
-def toCatHom₂ {C D : Type u} [Category.{v} C] [Category.{v} D] {F G : C ⥤ D} (η : F ⟶ G) :
-    F.toCatHom ⟶ G.toCatHom := η
+-- @[simp]
+-- lemma ofCatHom_comp_map {C D E : Cat.{v, u}} (F : C ⟶ D) (G : D ⟶ E) {X Y : C} (f : X ⟶ Y) :
+--     (ofCatHom G).map ((ofCatHom F).map f) =
+--     eqToHom (ofCatHom_comp_obj _ _ _) ≫ (ofCatHom (F ≫ G)).map f ≫ eqToHom
+--       (ofCatHom_comp_obj _ _ _).symm := by simp; rfl
 
-def ofCatHom₂ {C D : Cat.{v, u}} {F G : C ⟶ D}
-  (η : F ⟶ G) : (ofCatHom F) ⟶ (ofCatHom G) := η
+-- @[simp]
+-- lemma toCatHom_congr {C D : Type u} [Category.{v} C] [Category.{v} D] (F G : C ⥤ D) :
+--     F.toCatHom = G.toCatHom ↔ F = G where
+--   mp := congrArg ofCatHom
+--   mpr := congrArg toCatHom
 
-@[simp]
-lemma of_toCatHom₂ {C D : Type u} [Category.{v} C] [Category.{v} D] {F G : C ⥤ D} (η : F ⟶ G) :
-  ofCatHom₂ (η.toCatHom₂) = η := rfl
+-- @[simp]
+-- lemma ofCatHom_congr {C D : Cat.{v, u}} (F G : C ⟶ D) :
+--     ofCatHom F = ofCatHom G ↔ F = G where
+--   mp := congrArg toCatHom
+--   mpr := congrArg ofCatHom
 
-@[simp]
-lemma toCatHom₂_congr {C D : Type u} [Category.{v} C] [Category.{v} D] {F G : C ⥤ D}
-    (η₁ η₂ : F ⟶ G) : η₁.toCatHom₂ = η₂.toCatHom₂ ↔ η₁ = η₂ where
-  mp := congrArg ofCatHom₂
-  mpr := congrArg toCatHom₂
+-- lemma ofCatHom_congr_obj {C D : Cat.{v, u}} {F G : C ⟶ D} (h : F = G) (X : C) :
+--   (ofCatHom F).obj X = (ofCatHom G).obj X := congr((ofCatHom $h).obj X)
 
-@[simps]
-def toCatIso₂ {C D : Type u} [Category.{v} C] [Category.{v} D] {F G : C ⥤ D}
-    (η : F ≅ G) : F.toCatHom ≅ G.toCatHom where
-  hom := η.hom.toCatHom₂
-  inv := η.inv.toCatHom₂
-  hom_inv_id := congr(toCatHom₂ $η.hom_inv_id)
-  inv_hom_id := congr(toCatHom₂ $η.inv_hom_id)
+-- lemma ofCatHom_congr_map {C D : Cat.{v, u}} {F G : C ⟶ D} (h : F = G)
+--   {X Y : C} (f : X ⟶ Y) :
+--   (ofCatHom F).map f = eqToHom (ofCatHom_congr_obj h X) ≫ (ofCatHom G).map f ≫
+--     eqToHom (ofCatHom_congr_obj h.symm Y) := by
+--   cases h
+--   simp
 
-@[simps]
-def ofCatIso₂ {C D : Cat.{v, u}} {F G : C ⟶ D}
-    (η : F ≅ G) : (ofCatHom F) ≅ (ofCatHom G) where
-  hom := ofCatHom₂ η.hom
-  inv := ofCatHom₂ η.inv
-  hom_inv_id := congr(ofCatHom₂ $η.hom_inv_id)
-  inv_hom_id := congr(ofCatHom₂ $η.inv_hom_id)
+-- end Functor
 
-@[simp]
-lemma of_toCatIso₂ {C D : Type u} [Category.{v} C] [Category.{v} D] {F G : C ⥤ D}
-    (η : F ≅ G) : ofCatIso₂ (toCatIso₂ η) = η := rfl
+-- namespace NatTrans
 
-@[simp]
-lemma to_ofCatIso {C D : Cat.{v, u}} {F G : C ⟶ D} (η : F ≅ G) :
-    toCatIso₂ (ofCatIso₂ η) = η := rfl
+-- def toCatHom₂ {C D : Type u} [Category.{v} C] [Category.{v} D] {F G : C ⥤ D} (η : F ⟶ G) :
+--     F.toCatHom ⟶ G.toCatHom := η
 
-@[simp]
-lemma _root_.CategoryTheory.Cat.id_toCatHom {C D : Type u} [Category.{v} C] [Category.{v} D]
-  (F : C ⥤ D) : 𝟙 (F.toCatHom) = (𝟙 F : F ⟶ F).toCatHom₂ := rfl
+-- def ofCatHom₂ {C D : Cat.{v, u}} {F G : C ⟶ D}
+--   (η : F ⟶ G) : (ofCatHom F) ⟶ (ofCatHom G) := η
 
-lemma toCatHom₂_id {C D : Type u} [Category.{v} C] [Category.{v} D]
-  (F : C ⥤ D) : (𝟙 F : F ⟶ F).toCatHom₂ = 𝟙 (F.toCatHom) := rfl
+-- @[simp]
+-- lemma of_toCatHom₂ {C D : Type u} [Category.{v} C] [Category.{v} D] {F G : C ⥤ D} (η : F ⟶ G) :
+--   ofCatHom₂ (η.toCatHom₂) = η := rfl
 
-@[simp]
-lemma toCatHom₂_comp_toCatHom₂ {C D : Type u} [Category.{v} C] [Category.{v} D]
-    {F G H : C ⥤ D} (η₁ : F ⟶ G) (η₂ : G ⟶ H) :
-    η₁.toCatHom₂ ≫ η₂.toCatHom₂ = (η₁ ≫ η₂).toCatHom₂ := rfl
+-- @[simp]
+-- lemma toCatHom₂_congr {C D : Type u} [Category.{v} C] [Category.{v} D] {F G : C ⥤ D}
+--     (η₁ η₂ : F ⟶ G) : η₁.toCatHom₂ = η₂.toCatHom₂ ↔ η₁ = η₂ where
+--   mp := congrArg ofCatHom₂
+--   mpr := congrArg toCatHom₂
 
-@[simp]
-lemma _root_.CategoryTheory.Cat.toCatHom_whiskerLeft_toCatHom₂ {C D E : Type u}
-    [Category.{v} C] [Category.{v} D] [Category.{v} E] (F : C ⥤ D) {G H : D ⥤ E}
-    (η : G ⟶ H) : F.toCatHom ◁ (η.toCatHom₂) = (F.whiskerLeft η).toCatHom₂ := rfl
+-- @[simps]
+-- def toCatIso₂ {C D : Type u} [Category.{v} C] [Category.{v} D] {F G : C ⥤ D}
+--     (η : F ≅ G) : F.toCatHom ≅ G.toCatHom where
+--   hom := η.hom.toCatHom₂
+--   inv := η.inv.toCatHom₂
+--   hom_inv_id := congr(toCatHom₂ $η.hom_inv_id)
+--   inv_hom_id := congr(toCatHom₂ $η.inv_hom_id)
 
-@[simp]
-lemma _root_.CategoryTheory.Cat.toCatHom₂_whiskerRight_toCatHom {C D E : Type u}
-    [Category.{v} C] [Category.{v} D] [Category.{v} E] {F G : C ⥤ D} (η : F ⟶ G)
-    (H : D ⥤ E) : (η.toCatHom₂) ▷ H.toCatHom = (Functor.whiskerRight η H).toCatHom₂ := rfl
+-- @[simps]
+-- def ofCatIso₂ {C D : Cat.{v, u}} {F G : C ⟶ D}
+--     (η : F ≅ G) : (ofCatHom F) ≅ (ofCatHom G) where
+--   hom := ofCatHom₂ η.hom
+--   inv := ofCatHom₂ η.inv
+--   hom_inv_id := congr(ofCatHom₂ $η.hom_inv_id)
+--   inv_hom_id := congr(ofCatHom₂ $η.inv_hom_id)
 
--- in the following section, we should decide which of these pairs should be simp.
-section
+-- @[simp]
+-- lemma of_toCatIso₂ {C D : Type u} [Category.{v} C] [Category.{v} D] {F G : C ⥤ D}
+--     (η : F ≅ G) : ofCatIso₂ (toCatIso₂ η) = η := rfl
 
-lemma _root_.CategoryTheory.Cat.associator_toCatHom_hom {B C D E : Type u} [Category.{v} B]
-    [Category.{v} C] [Category.{v} D] [Category.{v} E] (F : B ⥤ C) (G : C ⥤ D) (H : D ⥤ E) :
-    (α_ (F.toCatHom) (G.toCatHom) (H.toCatHom)).hom =
-      (Functor.associator F G H).hom.toCatHom₂ := rfl
+-- @[simp]
+-- lemma to_ofCatIso {C D : Cat.{v, u}} {F G : C ⟶ D} (η : F ≅ G) :
+--     toCatIso₂ (ofCatIso₂ η) = η := rfl
 
-lemma toCatHom₂_associator_hom {B C D E : Type u} [Category.{v} B] [Category.{v} C] [Category.{v} D]
-    [Category.{v} E] (F : B ⥤ C) (G : C ⥤ D) (H : D ⥤ E) :
-    (Functor.associator F G H).hom.toCatHom₂ = (α_ (F.toCatHom) (G.toCatHom) (H.toCatHom)).hom :=
-    rfl
+-- @[simp]
+-- lemma _root_.CategoryTheory.Cat.id_toCatHom {C D : Type u} [Category.{v} C] [Category.{v} D]
+--   (F : C ⥤ D) : 𝟙 (F.toCatHom) = (𝟙 F : F ⟶ F).toCatHom₂ := rfl
 
-lemma _root_.CategoryTheory.Cat.associator_toCatHom_inv {B C D E : Type u} [Category.{v} B]
-    [Category.{v} C] [Category.{v} D] [Category.{v} E] (F : B ⥤ C) (G : C ⥤ D) (H : D ⥤ E) :
-    (α_ (F.toCatHom) (G.toCatHom) (H.toCatHom)).inv =
-      (Functor.associator F G H).inv.toCatHom₂ := rfl
+-- lemma toCatHom₂_id {C D : Type u} [Category.{v} C] [Category.{v} D]
+--   (F : C ⥤ D) : (𝟙 F : F ⟶ F).toCatHom₂ = 𝟙 (F.toCatHom) := rfl
 
-lemma toCatHom₂_associator_inv {B C D E : Type u} [Category.{v} B] [Category.{v} C] [Category.{v} D]
-    [Category.{v} E] (F : B ⥤ C) (G : C ⥤ D) (H : D ⥤ E) :
-    (Functor.associator F G H).inv.toCatHom₂ = (α_ (F.toCatHom) (G.toCatHom) (H.toCatHom)).inv :=
-  rfl
+-- @[simp]
+-- lemma _root_.CategoryTheory.Cat.eqToHom_toCatHom {C D : Type u} [Category.{v} C] [Category.{v} D]
+--     {F G : C ⥤ D} (h : F.toCatHom = G.toCatHom) :
+--       eqToHom h = toCatHom₂ (eqToHom congr(ofCatHom $h)) := rfl
 
-lemma _root_.CategoryTheory.Cat.leftUnitor_toCatHom_hom {C D : Type u} [Category.{v} C]
-    [Category.{v} D] (F : C ⥤ D) : (λ_ F.toCatHom).hom = (Functor.leftUnitor F).hom.toCatHom₂ := rfl
+-- lemma toCatHom₂_eqToHom {C D : Type u} [Category.{v} C] [Category.{v} D] {F G : C ⥤ D}
+--     (h : F = G) : toCatHom₂ (eqToHom h) = eqToHom (congr(toCatHom $h)) := rfl
 
-lemma _root_.CategoryTheory.Cat.leftUnitor_toCatHom_inv {C D : Type u} [Category.{v} C]
-    [Category.{v} D] (F : C ⥤ D) : (λ_ F.toCatHom).inv = (Functor.leftUnitor F).inv.toCatHom₂ := rfl
+-- @[simp]
+-- lemma _root_.CategoryTheory.Cat.ofCatHom₂_eqToHom {C D : Cat.{v, u}} {F G : C ⟶ D}
+--     (h : F = G) : ofCatHom₂ (eqToHom h) = eqToHom (congr(ofCatHom $h)) := rfl
 
-lemma _root_.CategoryTheory.Cat.rightUnitor_toCatHom_hom {C D : Type u} [Category.{v} C]
-    [Category.{v} D] (F : C ⥤ D) : (ρ_ F.toCatHom).hom = (Functor.rightUnitor F).hom.toCatHom₂ :=
-  rfl
+-- @[simp]
+-- lemma toCatHom₂_comp_toCatHom₂ {C D : Type u} [Category.{v} C] [Category.{v} D]
+--     {F G H : C ⥤ D} (η₁ : F ⟶ G) (η₂ : G ⟶ H) :
+--     η₁.toCatHom₂ ≫ η₂.toCatHom₂ = (η₁ ≫ η₂).toCatHom₂ := rfl
 
-lemma _root_.CategoryTheory.Cat.rightUnitor_toCatHom_inv {C D : Type u} [Category.{v} C]
-    [Category.{v} D] (F : C ⥤ D) : (ρ_ F.toCatHom).inv = (Functor.rightUnitor F).inv.toCatHom₂ :=
-  rfl
+-- @[simp]
+-- lemma _root_.CategoryTheory.Cat.toCatHom_whiskerLeft_toCatHom₂ {C D E : Type u}
+--     [Category.{v} C] [Category.{v} D] [Category.{v} E] (F : C ⥤ D) {G H : D ⥤ E}
+--     (η : G ⟶ H) : F.toCatHom ◁ (η.toCatHom₂) = (F.whiskerLeft η).toCatHom₂ := rfl
 
-end
+-- @[simp]
+-- lemma _root_.CategoryTheory.Cat.toCatHom₂_whiskerRight_toCatHom {C D E : Type u}
+--     [Category.{v} C] [Category.{v} D] [Category.{v} E] {F G : C ⥤ D} (η : F ⟶ G)
+--     (H : D ⥤ E) : (η.toCatHom₂) ▷ H.toCatHom = (Functor.whiskerRight η H).toCatHom₂ := rfl
 
-end NatTrans
+-- -- in the following section, we should decide which of these pairs should be simp.
+-- section
+
+-- lemma _root_.CategoryTheory.Cat.associator_toCatHom_hom {B C D E : Type u} [Category.{v} B]
+--     [Category.{v} C] [Category.{v} D] [Category.{v} E] (F : B ⥤ C) (G : C ⥤ D) (H : D ⥤ E) :
+--     (α_ (F.toCatHom) (G.toCatHom) (H.toCatHom)).hom =
+--       (Functor.associator F G H).hom.toCatHom₂ := rfl
+
+-- lemma toCatHom₂_associator_hom {B C D E : Type u} [Category.{v} B] [Category.{v} C] [Category.{v} D]
+--     [Category.{v} E] (F : B ⥤ C) (G : C ⥤ D) (H : D ⥤ E) :
+--     (Functor.associator F G H).hom.toCatHom₂ = (α_ (F.toCatHom) (G.toCatHom) (H.toCatHom)).hom :=
+--     rfl
+
+-- lemma _root_.CategoryTheory.Cat.associator_toCatHom_inv {B C D E : Type u} [Category.{v} B]
+--     [Category.{v} C] [Category.{v} D] [Category.{v} E] (F : B ⥤ C) (G : C ⥤ D) (H : D ⥤ E) :
+--     (α_ (F.toCatHom) (G.toCatHom) (H.toCatHom)).inv =
+--       (Functor.associator F G H).inv.toCatHom₂ := rfl
+
+-- lemma toCatHom₂_associator_inv {B C D E : Type u} [Category.{v} B] [Category.{v} C] [Category.{v} D]
+--     [Category.{v} E] (F : B ⥤ C) (G : C ⥤ D) (H : D ⥤ E) :
+--     (Functor.associator F G H).inv.toCatHom₂ = (α_ (F.toCatHom) (G.toCatHom) (H.toCatHom)).inv :=
+--   rfl
+
+-- lemma _root_.CategoryTheory.Cat.leftUnitor_toCatHom_hom {C D : Type u} [Category.{v} C]
+--     [Category.{v} D] (F : C ⥤ D) : (λ_ F.toCatHom).hom = (Functor.leftUnitor F).hom.toCatHom₂ := rfl
+
+-- lemma _root_.CategoryTheory.Cat.leftUnitor_toCatHom_inv {C D : Type u} [Category.{v} C]
+--     [Category.{v} D] (F : C ⥤ D) : (λ_ F.toCatHom).inv = (Functor.leftUnitor F).inv.toCatHom₂ := rfl
+
+-- lemma _root_.CategoryTheory.Cat.rightUnitor_toCatHom_hom {C D : Type u} [Category.{v} C]
+--     [Category.{v} D] (F : C ⥤ D) : (ρ_ F.toCatHom).hom = (Functor.rightUnitor F).hom.toCatHom₂ :=
+--   rfl
+
+-- lemma _root_.CategoryTheory.Cat.rightUnitor_toCatHom_inv {C D : Type u} [Category.{v} C]
+--     [Category.{v} D] (F : C ⥤ D) : (ρ_ F.toCatHom).inv = (Functor.rightUnitor F).inv.toCatHom₂ :=
+--   rfl
+
+-- end
+
+-- end NatTrans
 namespace Cat
 
 /-- Functor that gets the set of objects of a category. It is not
 called `forget`, because it is not a faithful functor. -/
 def objects : Cat.{v, u} ⥤ Type u where
   obj C := C
-  map F := F.obj
+  map F := F.toFunctor.obj
 
 /-- See through the defeq `objects.obj X = X`. -/
 instance (X : Cat.{v, u}) : Category (objects.obj X) := inferInstanceAs <| Category X
@@ -309,10 +507,10 @@ attribute [local simp] eqToHom_map
 
 /-- Any isomorphism in `Cat` induces an equivalence of the underlying categories. -/
 def equivOfIso {C D : Cat} (γ : C ≅ D) : C ≌ D where
-  functor := γ.hom
-  inverse := γ.inv
-  unitIso := eqToIso <| Eq.symm γ.hom_inv_id
-  counitIso := eqToIso γ.inv_hom_id
+  functor := γ.hom.toFunctor
+  inverse := γ.inv.toFunctor
+  unitIso := eqToIso <| congr($(γ.hom_inv_id).toFunctor).symm
+  counitIso := eqToIso <| congr($(γ.inv_hom_id).toFunctor)
 
 /-- Under certain hypotheses, an equivalence of categories actually
 defines an isomorphism in `Cat`. -/
@@ -323,10 +521,11 @@ def isoOfEquiv {C D : Cat.{v, u}} (e : C ≌ D)
     (h₃ : ∀ (X : C), e.unitIso.hom.app X = eqToHom (h₁ X).symm := by cat_disch)
     (h₄ : ∀ (Y : D), e.counitIso.hom.app Y = eqToHom (h₂ Y) := by cat_disch) :
     C ≅ D where
-  hom := e.functor
-  inv := e.inverse
-  hom_inv_id := (Functor.ext_of_iso e.unitIso (fun X ↦ (h₁ X).symm) h₃).symm
-  inv_hom_id := (Functor.ext_of_iso e.counitIso h₂ h₄)
+  hom := e.functor.toCatHom
+  inv := e.inverse.toCatHom
+  hom_inv_id := congrArg Functor.toCatHom
+    (Functor.ext_of_iso e.unitIso (fun X ↦ (h₁ X).symm) h₃).symm
+  inv_hom_id := congrArg Functor.toCatHom (Functor.ext_of_iso e.counitIso h₂ h₄)
 
 end
 
@@ -341,7 +540,8 @@ def typeToCat : Type u ⥤ Cat where
   obj X := Cat.of (Discrete X)
   map f := (Discrete.functor (Discrete.mk ∘ f)).toCatHom
   map_id X := by
-    simp only [Cat.id_of, toCatHom_congr]
+    ext
+    simp only [Cat.of_α, toCatHom_toFunctor, Cat.Hom.id_toFunctor]
     fapply Functor.ext
     · simp
     · intro X Y f
@@ -351,16 +551,18 @@ def typeToCat : Type u ⥤ Cat where
       apply ULift.ext
       cat_disch
   map_comp f g := by
-    simp only [toCatHom_comp_toCatHom, toCatHom_congr]
+    ext
+    simp only [Cat.of_α, toCatHom_toFunctor, Cat.Hom.comp_toFunctor]
     apply Functor.ext
     cat_disch
 
 instance : Functor.Faithful typeToCat.{u} where
   map_injective {_X} {_Y} _f _g h :=
-    funext (fun x => congrArg (Discrete.as) (Functor.congr_obj h ⟨x⟩))
+    funext (fun x => congrArg (Discrete.as) (Functor.congr_obj congr(($h).toFunctor) ⟨x⟩))
 
 instance : Functor.Full typeToCat.{u} where
-  map_surjective F := ⟨Discrete.as ∘ F.obj ∘ Discrete.mk, by
+  map_surjective F := ⟨Discrete.as ∘ F.toFunctor.obj ∘ Discrete.mk, by
+    ext
     apply Functor.ext
     · intro x y f
       dsimp
