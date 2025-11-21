@@ -3,9 +3,11 @@ Copyright (c) 2019 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Sébastien Gouëzel, Yury Kudryashov, Yuyang Zhao
 -/
-import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Calculus.FDeriv.Comp
-import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Comp
+public import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 
 /-!
 # One-dimensional derivatives of compositions of functions
@@ -31,6 +33,8 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 derivative, chain rule
 -/
 
+@[expose] public section
+
 
 universe u v w
 
@@ -54,8 +58,8 @@ section Composition
 /-!
 ### Derivative of the composition of a vector function and a scalar function
 
-We use `scomp` in lemmas on composition of vector valued and scalar valued functions, and `comp`
-in lemmas on composition of scalar valued functions, in analogy for `smul` and `mul` (and also
+We use `scomp` in lemmas on composition of vector-valued and scalar-valued functions, and `comp`
+in lemmas on composition of scalar-valued functions, in analogy for `smul` and `mul` (and also
 because the `comp` version with the shorter name will show up much more often in applications).
 The formula for the derivative involves `smul` in `scomp` lemmas, which can be reduced to
 usual multiplication in `comp` lemmas.

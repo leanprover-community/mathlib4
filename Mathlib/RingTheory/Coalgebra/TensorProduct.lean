@@ -3,8 +3,10 @@ Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Andrew Yang
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Coalgebra.Equiv
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.RingTheory.Coalgebra.Equiv
 
 /-!
 # Tensor products of coalgebras
@@ -22,15 +24,19 @@ the base change `S ⊗[R] B` as an `S`-coalgebra.
 
 -/
 
+@[expose] public section
+
 open TensorProduct
 
 variable {R S A B : Type*} [CommSemiring R] [CommSemiring S] [AddCommMonoid A] [AddCommMonoid B]
-    [Algebra R S] [Module R A] [Module S A] [Module R B] [Coalgebra R B]
-    [Coalgebra S A] [IsScalarTower R S A]
+    [Algebra R S] [Module R A] [Module S A] [Module R B] [IsScalarTower R S A]
 
 namespace TensorProduct
 
 open Coalgebra
+
+section CoalgebraStruct
+variable [CoalgebraStruct R B] [CoalgebraStruct S A]
 
 noncomputable
 instance instCoalgebraStruct : CoalgebraStruct S (A ⊗[R] B) where
@@ -45,14 +51,10 @@ lemma comul_def :
         AlgebraTensorModule.map Coalgebra.comul Coalgebra.comul :=
   rfl
 
-@[deprecated (since := "2025-04-09")] alias instCoalgebraStruct_comul := comul_def
-
 lemma counit_def :
     Coalgebra.counit (R := S) (A := A ⊗[R] B) =
       AlgebraTensorModule.rid R S S ∘ₗ AlgebraTensorModule.map counit counit :=
   rfl
-
-@[deprecated (since := "2025-04-09")] alias instCoalgebraStruct_counit := counit_def
 
 @[simp]
 lemma comul_tmul (x : A) (y : B) :
@@ -62,6 +64,10 @@ lemma comul_tmul (x : A) (y : B) :
 @[simp]
 lemma counit_tmul (x : A) (y : B) :
     counit (R := S) (x ⊗ₜ[R] y) = counit (R := R) y • counit (R := S) x := rfl
+
+end CoalgebraStruct
+
+variable [Coalgebra R B] [Coalgebra S A]
 
 open Lean.Parser.Tactic in
 /-- `hopf_tensor_induction x with x₁ x₂` attempts to replace `x` by

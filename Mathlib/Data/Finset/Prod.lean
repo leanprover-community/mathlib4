@@ -3,8 +3,10 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Oliver Nash
 -/
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Finset.Union
+module
+
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Finset.Union
 
 /-!
 # Finsets in product types
@@ -20,6 +22,8 @@ This file defines finset constructions on the product type `α × β`. Beware no
 * `Finset.offDiag`: For `s : Finset α`, `s.offDiag` is the `Finset (α × α)` of pairs `(a, b)` with
   `a, b ∈ s` and `a ≠ b`.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 
@@ -291,7 +295,7 @@ theorem diag_card : (diag s).card = s.card := by
 
 @[simp]
 theorem offDiag_card : (offDiag s).card = s.card * s.card - s.card :=
-  suffices (diag s).card + (offDiag s).card = s.card * s.card by rw [s.diag_card] at this; omega
+  suffices (diag s).card + (offDiag s).card = s.card * s.card by rw [s.diag_card] at this; cutsat
   by rw [← card_product, diag, offDiag]
      conv_rhs => rw [← filter_card_add_filter_neg_card_eq_card (fun a => a.1 = a.2)]
 
@@ -313,8 +317,7 @@ theorem offDiag_empty : (∅ : Finset α).offDiag = ∅ :=
 
 @[simp]
 theorem diag_union_offDiag : s.diag ∪ s.offDiag = s ×ˢ s := by
-  conv_rhs => rw [← filter_union_filter_neg_eq (fun a => a.1 = a.2) (s ×ˢ s)]
-  rfl
+  grind
 
 @[simp]
 theorem disjoint_diag_offDiag : Disjoint s.diag s.offDiag :=

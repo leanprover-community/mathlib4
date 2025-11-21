@@ -3,12 +3,14 @@ Copyright (c) 2021 Alex Kontorovich and Heather Macbeth and Marc Masdeu. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
 -/
-import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
-import Mathlib.LinearAlgebra.GeneralLinearGroup
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
-import Mathlib.Topology.Instances.Matrix
-import Mathlib.Topology.Algebra.Module.FiniteDimension
-import Mathlib.Topology.Instances.ZMultiples
+module
+
+public import Mathlib.Analysis.Complex.UpperHalfPlane.MoebiusAction
+public import Mathlib.LinearAlgebra.GeneralLinearGroup
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
+public import Mathlib.Topology.Instances.Matrix
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
+public import Mathlib.Topology.Instances.ZMultiples
 
 /-!
 # The action of the modular group SL(2, ℤ) on the upper half-plane
@@ -37,7 +39,7 @@ Any `z : ℍ` can be moved to `𝒟` by an element of `SL(2,ℤ)`:
 If both `z` and `γ • z` are in the open domain `𝒟ᵒ` then `z = γ • z`:
 `eq_smul_self_of_mem_fdo_mem_fdo {z : ℍ} {g : SL(2,ℤ)} (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : z = g • z`
 
-# Discussion
+## Discussion
 
 Standard proofs make use of the identity
 
@@ -59,8 +61,10 @@ existence of `g` maximizing `(g•z).im` (see `ModularGroup.exists_max_im`), and
 those, to minimize `|(g•z).re|` (see `ModularGroup.exists_row_one_eq_and_min_re`).
 -/
 
+@[expose] public section
 
-open Complex hiding abs_two
+
+open Complex
 
 open Matrix hiding mul_smul
 
@@ -451,7 +455,7 @@ theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |g 1 0| �
     rwa [sq_le_sq, abs_one] at this
   suffices c ≠ 0 → 9 * c ^ 4 < 16 by
     rcases eq_or_ne c 0 with (hc | hc)
-    · rw [hc]; norm_num
+    · rw [hc]; simp
     · refine (abs_lt_of_sq_lt_sq' ?_ (by simp)).2
       specialize this hc
       linarith

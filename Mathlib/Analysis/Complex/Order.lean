@@ -3,7 +3,9 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Analysis.Complex.Norm
+module
+
+public import Mathlib.Analysis.Complex.Norm
 
 /-!
 # The partial order on the complex numbers
@@ -25,6 +27,8 @@ provided in `Mathlib/Analysis/RCLike/Basic.lean` as
 
 These are all only available with `open scoped ComplexOrder`.
 -/
+
+@[expose] public section
 
 namespace Complex
 
@@ -110,10 +114,6 @@ lemma neg_re_eq_norm {z : ℂ} : -z.re = ‖z‖ ↔ z ≤ 0 := by
 @[simp]
 lemma re_eq_neg_norm {z : ℂ} : z.re = -‖z‖ ↔ z ≤ 0 := by rw [← neg_eq_iff_eq_neg, neg_re_eq_norm]
 
-@[deprecated (since := "2025-02-16")] alias re_eq_abs := re_eq_norm
-@[deprecated (since := "2025-02-16")] alias neg_re_eq_abs := neg_re_eq_norm
-@[deprecated (since := "2025-02-16")] alias re_eq_neg_abs := re_eq_neg_norm
-
 lemma monotone_ofReal : Monotone ofReal := by
   intro x y hxy
   simp only [real_le_real, hxy]
@@ -131,7 +131,7 @@ private alias ⟨_, ofReal_ne_zero_of_ne_zero⟩ := ofReal_ne_zero
 /-- Extension for the `positivity` tactic: `Complex.ofReal` is positive/nonnegative/nonzero if its
 input is. -/
 @[positivity Complex.ofReal _, Complex.ofReal _]
-def evalComplexOfReal : PositivityExt where eval {u α} _ _ e := do
+meta def evalComplexOfReal : PositivityExt where eval {u α} _ _ e := do
   -- TODO: Can we avoid duplicating the code?
   match u, α, e with
   | 0, ~q(ℂ), ~q(Complex.ofReal $a) =>

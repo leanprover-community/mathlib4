@@ -3,11 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
-import Mathlib.LinearAlgebra.Isomorphisms
-import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.RingTheory.Finiteness.Bilinear
-import Mathlib.RingTheory.Ideal.Quotient.Basic
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.LinearAlgebra.Isomorphisms
+public import Mathlib.RingTheory.Finiteness.Basic
+public import Mathlib.RingTheory.Finiteness.Bilinear
+public import Mathlib.RingTheory.Ideal.Quotient.Basic
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Finiteness of the tensor product of (sub)modules
@@ -16,6 +18,8 @@ In this file we show that the supremum of two subalgebras that are finitely gene
 is again finitely generated.
 
 -/
+
+@[expose] public section
 
 open Function (Surjective)
 open Finsupp
@@ -84,7 +88,7 @@ instance Module.Finite.base_change [CommSemiring R] [Semiring A] [Algebra R A] [
     | zero => exact zero_mem _
     | tmul x y =>
       rw [Finset.coe_image, ← Submodule.span_span_of_tower R, Submodule.span_image, hs,
-        Submodule.map_top, LinearMap.range_coe, ← mul_one x, ← smul_eq_mul,
+        Submodule.map_top, LinearMap.coe_range, ← mul_one x, ← smul_eq_mul,
         ← TensorProduct.smul_tmul']
       exact Submodule.smul_mem _ x (Submodule.subset_span <| Set.mem_range_self y)
     | add x y hx hy => exact Submodule.add_mem _ hx hy

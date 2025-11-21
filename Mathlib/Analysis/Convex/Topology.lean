@@ -3,10 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Strict
-import Mathlib.Analysis.Convex.StdSimplex
-import Mathlib.Topology.Algebra.Affine
-import Mathlib.Topology.Algebra.Module.Basic
+module
+
+public import Mathlib.Analysis.Convex.Strict
+public import Mathlib.Analysis.Convex.StdSimplex
+public import Mathlib.Topology.Algebra.Affine
+public import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # Topological properties of convex sets
@@ -20,6 +22,8 @@ We prove the following facts:
 * `Set.Finite.isCompact_convexHull` : convex hull of a finite set is compact;
 * `Set.Finite.isClosed_convexHull` : convex hull of a finite set is closed.
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal Norm
 
@@ -74,7 +78,7 @@ end PseudoMetricSpace
 
 section ContinuousConstSMul
 
-variable [Field 𝕜] [LinearOrder 𝕜]
+variable [Field 𝕜] [PartialOrder 𝕜]
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
@@ -197,9 +201,15 @@ protected theorem Convex.closure {s : Set E} (hs : Convex 𝕜 s) : Convex 𝕜 
     (continuous_fst.const_smul _).add (continuous_snd.const_smul _)
   show f x y ∈ closure s from map_mem_closure₂ hf hx hy fun _ hx' _ hy' => hs hx' hy' ha hb hab
 
-open AffineMap
+end ContinuousConstSMul
 
-variable [IsStrictOrderedRing 𝕜]
+section ContinuousConstSMul
+
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
+
+open AffineMap
 
 /-- A convex set `s` is strictly convex provided that for any two distinct points of
 `s \ interior s`, the line passing through these points has nonempty intersection with
@@ -306,7 +316,7 @@ end TopologicalSpace
 
 section ContinuousConstSMul
 
-variable [Field 𝕜] [LinearOrder 𝕜]
+variable [Field 𝕜] [PartialOrder 𝕜]
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 

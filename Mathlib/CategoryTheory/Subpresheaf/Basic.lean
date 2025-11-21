@@ -3,14 +3,16 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Joël Riou
 -/
-import Mathlib.CategoryTheory.Elementwise
-import Mathlib.Data.Set.Lattice.Image
+module
+
+public import Mathlib.CategoryTheory.Elementwise
+public import Mathlib.Data.Set.Lattice.Image
 
 /-!
 
 # Subpresheaf of types
 
-We define the subpresheaf of a type valued presheaf.
+We define the subpresheaf of a type-valued presheaf.
 
 ## Main results
 
@@ -18,6 +20,8 @@ We define the subpresheaf of a type valued presheaf.
   A subpresheaf of a presheaf of types.
 
 -/
+
+@[expose] public section
 
 
 universe w v u

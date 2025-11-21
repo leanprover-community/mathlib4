@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Lattice.Prod
-import Mathlib.Data.Finite.Prod
-import Mathlib.Data.Set.Lattice.Image
+module
+
+public import Mathlib.Data.Finset.Lattice.Prod
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # N-ary images of finsets
@@ -21,6 +23,8 @@ keep them in sync.
 We do not define `Finset.image₃` as its only purpose would be to prove properties of `Finset.image₂`
 and `Set.image2` already fulfills this task.
 -/
+
+@[expose] public section
 
 open Function Set
 
@@ -432,8 +436,9 @@ applications are disjoint (but not necessarily distinct!), then the size of `t` 
 theorem card_dvd_card_image₂_right (hf : ∀ a ∈ s, Injective (f a))
     (hs : ((fun a => t.image <| f a) '' s).PairwiseDisjoint id) : #t ∣ #(image₂ f s t) := by
   classical
-  induction' s using Finset.induction with a s _ ih
-  · simp
+  induction s using Finset.induction with
+  | empty => simp
+  | insert a s _ ih => ?_
   specialize ih (forall_of_forall_insert hf)
     (hs.subset <| Set.image_mono <| coe_subset.2 <| subset_insert _ _)
   rw [image₂_insert_left]

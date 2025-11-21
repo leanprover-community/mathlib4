@@ -3,10 +3,12 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Combinatorics.Matroid.IndepAxioms
-import Mathlib.Combinatorics.Matroid.Rank.Cardinal
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
-import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
+module
+
+public import Mathlib.Combinatorics.Matroid.IndepAxioms
+public import Mathlib.Combinatorics.Matroid.Rank.Cardinal
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
+public import Mathlib.RingTheory.AlgebraicIndependent.Transcendental
 
 /-!
 # Transcendence basis
@@ -31,6 +33,8 @@ transcendence basis.
 transcendence basis, transcendence degree, transcendence
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -262,9 +266,9 @@ private def indepMatroid : IndepMatroid A where
     rw [← isTranscendenceBasis_iff_maximal] at B_base ⊢
     cases subsingleton_or_nontrivial R
     · rw [isTranscendenceBasis_iff_of_subsingleton] at B_base ⊢
-      contrapose! h
+      by_contra this
       have ⟨b, hb⟩ := B_base
-      exact ⟨b, ⟨hb, fun hbI ↦ h ⟨b, hbI⟩⟩, .of_subsingleton⟩
+      exact h b ⟨hb, fun hbI ↦ this ⟨b, hbI⟩⟩ .of_subsingleton
     apply I_ind.isTranscendenceBasis_iff_isAlgebraic.mpr
     replace B_base := B_base.isAlgebraic
     simp_rw [id_eq]

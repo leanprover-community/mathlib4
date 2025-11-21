@@ -3,10 +3,12 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison, Chris Hughes, Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.LinearAlgebra.Basis.Prod
-import Mathlib.LinearAlgebra.Dimension.Free
-import Mathlib.LinearAlgebra.TensorProduct.Basis
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.LinearAlgebra.Basis.Prod
+public import Mathlib.LinearAlgebra.Dimension.Free
+public import Mathlib.LinearAlgebra.TensorProduct.Basis
 
 /-!
 # Rank of various constructions
@@ -28,6 +30,8 @@ Lemmas for ranks of submodules and subalgebras are also provided.
 We have `finrank` variants for most lemmas as well.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -55,9 +59,6 @@ theorem LinearIndependent.sumElim_of_quotient
   simp_rw [← Quotient.mk_eq_zero, ← mkQ_apply, map_finsuppSum, map_smul, mkQ_apply] at this
   rw [linearIndependent_iff.mp hg _ this, Finsupp.sum_zero_index]
 
-@[deprecated (since := "2025-02-21")]
-alias LinearIndependent.sum_elim_of_quotient := LinearIndependent.sumElim_of_quotient
-
 theorem LinearIndepOn.union_of_quotient {s t : Set ι} {f : ι → M} (hs : LinearIndepOn R f s)
     (ht : LinearIndepOn R (mkQ (span R (f '' s)) ∘ f) t) : LinearIndepOn R f (s ∪ t) := by
   apply hs.union ht.of_comp
@@ -71,9 +72,6 @@ theorem LinearIndepOn.union_id_of_quotient {M' : Submodule R M}
   hs'.union_of_quotient <| by
     rw [image_id]
     exact ht.of_comp ((span R s).mapQ M' (LinearMap.id) (span_le.2 hs))
-
-@[deprecated (since := "2025-02-16")] alias LinearIndependent.union_of_quotient :=
-  LinearIndepOn.union_id_of_quotient
 
 theorem linearIndepOn_union_iff_quotient {s t : Set ι} {f : ι → M} (hst : Disjoint s t) :
     LinearIndepOn R f (s ∪ t) ↔
@@ -432,7 +430,7 @@ theorem rank_span_le (s : Set M) : Module.rank R (span R s) ≤ #s := by
   simp only [lift_lift, le_refl]
 
 theorem rank_span_finset_le (s : Finset M) : Module.rank R (span R (s : Set M)) ≤ s.card := by
-  simpa using rank_span_le s.toSet
+  simpa using rank_span_le (s : Set M)
 
 theorem rank_span_of_finset (s : Finset M) : Module.rank R (span R (s : Set M)) < ℵ₀ :=
   (rank_span_finset_le s).trans_lt (Cardinal.nat_lt_aleph0 _)
@@ -541,8 +539,8 @@ variable [StrongRankCondition F] [NoZeroSMulDivisors F E] [Nontrivial E]
 theorem Subalgebra.rank_bot : Module.rank F (⊥ : Subalgebra F E) = 1 :=
   (Subalgebra.toSubmoduleEquiv (⊥ : Subalgebra F E)).symm.rank_eq.trans <| by
     rw [Algebra.toSubmodule_bot, one_eq_span, rank_span_set, mk_singleton _]
-    letI := Module.nontrivial F E
-    exact LinearIndepOn.id_singleton _ one_ne_zero
+    have := Module.nontrivial F E
+    exact .singleton one_ne_zero
 
 @[simp]
 theorem Subalgebra.finrank_bot : finrank F (⊥ : Subalgebra F E) = 1 :=

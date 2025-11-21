@@ -3,9 +3,11 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
-import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.InnerProductSpace.Defs
+module
+
+public import Mathlib.Algebra.BigOperators.Field
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Analysis.InnerProductSpace.Defs
 
 /-!
 # Properties of inner product spaces
@@ -14,8 +16,8 @@ This file proves many basic properties of inner product spaces (real or complex)
 
 ## Main results
 
-- `inner_mul_inner_self_le`: the Cauchy-Schwartz inequality (one of many variants).
-- `norm_inner_eq_norm_iff`: the equality criteion in the Cauchy-Schwartz inequality (also in many
+- `inner_mul_inner_self_le`: the Cauchy-Schwarz inequality (one of many variants).
+- `norm_inner_eq_norm_iff`: the equality criterion in the Cauchy-Schwarz inequality (also in many
   variants).
 - `inner_eq_sum_norm_sq_div_four`: the polarization identity.
 
@@ -24,6 +26,8 @@ This file proves many basic properties of inner product spaces (real or complex)
 inner product space, Hilbert space, norm
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -61,8 +65,8 @@ theorem inner_eq_zero_symm {x y : E} : ⟪x, y⟫ = 0 ↔ ⟪y, x⟫ = 0 := by
 instance {ι : Sort*} (v : ι → E) : IsSymm ι fun i j => ⟪v i, v j⟫ = 0 where
   symm _ _ := inner_eq_zero_symm.1
 
-@[simp]
-theorem inner_self_im (x : E) : im ⟪x, x⟫ = 0 := by rw [← @ofReal_inj 𝕜, im_eq_conj_sub]; simp
+theorem inner_self_im (x : E) : im ⟪x, x⟫ = 0 := by
+  rw [← @ofReal_inj 𝕜, im_eq_conj_sub]; simp
 
 theorem inner_add_left (x y z : E) : ⟪x + y, z⟫ = ⟪x, z⟫ + ⟪y, z⟫ :=
   InnerProductSpace.add_left _ _ _
@@ -183,10 +187,10 @@ theorem inner_self_nonneg {x : E} : 0 ≤ re ⟪x, x⟫ :=
 theorem real_inner_self_nonneg {x : F} : 0 ≤ ⟪x, x⟫_ℝ :=
   @inner_self_nonneg ℝ F _ _ _ x
 
-@[simp]
 theorem inner_self_ofReal_re (x : E) : (re ⟪x, x⟫ : 𝕜) = ⟪x, x⟫ :=
   ((RCLike.is_real_TFAE (⟪x, x⟫ : 𝕜)).out 2 3).2 (inner_self_im (𝕜 := 𝕜) x)
 
+@[simp]
 theorem inner_self_eq_norm_sq_to_K (x : E) : ⟪x, x⟫ = (‖x‖ : 𝕜) ^ 2 := by
   rw [← inner_self_ofReal_re, ← norm_sq_eq_re_inner, ofReal_pow]
 
@@ -290,7 +294,6 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 export InnerProductSpace (norm_sq_eq_re_inner)
 
-@[simp]
 theorem inner_self_eq_zero {x : E} : ⟪x, x⟫ = 0 ↔ x = 0 := by
   rw [inner_self_eq_norm_sq_to_K, sq_eq_zero_iff, ofReal_eq_zero, norm_eq_zero]
 
@@ -302,18 +305,22 @@ variable (𝕜)
 theorem ext_inner_left {x y : E} (h : ∀ v, ⟪v, x⟫ = ⟪v, y⟫) : x = y := by
   rw [← sub_eq_zero, ← @inner_self_eq_zero 𝕜, inner_sub_right, sub_eq_zero, h (x - y)]
 
+theorem ext_iff_inner_left {x y : E} : x = y ↔ ∀ v, ⟪v, x⟫ = ⟪v, y⟫ :=
+  ⟨fun h _ ↦ h ▸ rfl, ext_inner_left 𝕜⟩
+
 theorem ext_inner_right {x y : E} (h : ∀ v, ⟪x, v⟫ = ⟪y, v⟫) : x = y := by
   rw [← sub_eq_zero, ← @inner_self_eq_zero 𝕜, inner_sub_left, sub_eq_zero, h (x - y)]
 
+theorem ext_iff_inner_right {x y : E} : x = y ↔ ∀ v, ⟪x, v⟫ = ⟪y, v⟫ :=
+  ⟨fun h _ ↦ h ▸ rfl, ext_inner_right 𝕜⟩
+
 variable {𝕜}
 
-@[simp]
 theorem re_inner_self_nonpos {x : E} : re ⟪x, x⟫ ≤ 0 ↔ x = 0 := by
-  rw [← norm_sq_eq_re_inner, (sq_nonneg _).ge_iff_eq', sq_eq_zero_iff, norm_eq_zero]
+  simp
 
-@[simp]
 lemma re_inner_self_pos {x : E} : 0 < re ⟪x, x⟫ ↔ x ≠ 0 := by
-  simpa [-re_inner_self_nonpos] using re_inner_self_nonpos (𝕜 := 𝕜) (x := x).not
+  simp [sq_pos_iff]
 
 @[deprecated (since := "2025-04-22")] alias inner_self_nonpos := re_inner_self_nonpos
 @[deprecated (since := "2025-04-22")] alias inner_self_pos := re_inner_self_pos
@@ -523,7 +530,7 @@ theorem real_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_
 theorem norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero (x y : F) :
     ‖x + y‖ * ‖x + y‖ = ‖x‖ * ‖x‖ + ‖y‖ * ‖y‖ ↔ ⟪x, y⟫_ℝ = 0 := by
   rw [@norm_add_mul_self ℝ, add_right_cancel_iff, add_eq_left, mul_eq_zero]
-  norm_num
+  simp
 
 /-- Pythagorean theorem, if-and-if vector inner product form using square roots. -/
 theorem norm_add_eq_sqrt_iff_real_inner_eq_zero {x y : F} :
@@ -549,7 +556,7 @@ theorem norm_sub_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero (x y : F) :
     ‖x - y‖ * ‖x - y‖ = ‖x‖ * ‖x‖ + ‖y‖ * ‖y‖ ↔ ⟪x, y⟫_ℝ = 0 := by
   rw [@norm_sub_mul_self ℝ, add_right_cancel_iff, sub_eq_add_neg, add_eq_left, neg_eq_zero,
     mul_eq_zero]
-  norm_num
+  simp
 
 /-- Pythagorean theorem, subtracting vectors, if-and-if vector inner product form using square
 roots. -/
@@ -602,7 +609,7 @@ theorem inner_sum_smul_sum_smul_of_sum_eq_zero {ι₁ : Type*} {s₁ : Finset ι
       (-∑ i₁ ∈ s₁, ∑ i₂ ∈ s₂, w₁ i₁ * w₂ i₂ * (‖v₁ i₁ - v₂ i₂‖ * ‖v₁ i₁ - v₂ i₂‖)) / 2 := by
   simp_rw [sum_inner, inner_sum, real_inner_smul_left, real_inner_smul_right,
     real_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_two, ← div_sub_div_same,
-    ← div_add_div_same, mul_sub_left_distrib, left_distrib, Finset.sum_sub_distrib,
+    add_div, mul_sub_left_distrib, left_distrib, Finset.sum_sub_distrib,
     Finset.sum_add_distrib, ← Finset.mul_sum, ← Finset.sum_mul, h₁, h₂, zero_mul,
     mul_zero, Finset.sum_const_zero, zero_add, zero_sub, Finset.mul_sum, neg_div,
     Finset.sum_div, mul_div_assoc, mul_assoc]
@@ -670,6 +677,7 @@ theorem real_inner_div_norm_mul_norm_eq_neg_one_of_ne_zero_of_neg_mul {x : F} {r
     mul_assoc, abs_of_neg hr, neg_mul, div_neg_eq_neg_div, div_self]
   exact mul_ne_zero hr.ne (mul_self_ne_zero.2 (norm_ne_zero_iff.2 hx))
 
+variable (𝕜) in
 theorem norm_inner_eq_norm_tfae (x y : E) :
     List.TFAE [‖⟪x, y⟫‖ = ‖x‖ * ‖y‖,
       x = 0 ∨ y = (⟪x, y⟫ / ⟪x, x⟫) • x,
@@ -701,7 +709,7 @@ theorem norm_inner_eq_norm_iff {x y : E} (hx₀ : x ≠ 0) (hy₀ : y ≠ 0) :
     ‖⟪x, y⟫‖ = ‖x‖ * ‖y‖ ↔ ∃ r : 𝕜, r ≠ 0 ∧ y = r • x :=
   calc
     ‖⟪x, y⟫‖ = ‖x‖ * ‖y‖ ↔ x = 0 ∨ ∃ r : 𝕜, y = r • x :=
-      (@norm_inner_eq_norm_tfae 𝕜 _ _ _ _ x y).out 0 2
+      (norm_inner_eq_norm_tfae 𝕜 x y).out 0 2
     _ ↔ ∃ r : 𝕜, y = r • x := or_iff_right hx₀
     _ ↔ ∃ r : 𝕜, r ≠ 0 ∧ y = r • x :=
       ⟨fun ⟨r, h⟩ => ⟨r, fun hr₀ => hy₀ <| h.symm ▸ smul_eq_zero.2 <| Or.inl hr₀, h⟩,
@@ -735,11 +743,11 @@ theorem inner_eq_norm_mul_iff_div {x y : E} (h₀ : x ≠ 0) :
   rw [← norm_ne_zero_iff, Ne, ← @ofReal_eq_zero 𝕜] at h₀'
   constructor <;> intro h
   · have : x = 0 ∨ y = (⟪x, y⟫ / ⟪x, x⟫ : 𝕜) • x :=
-      ((@norm_inner_eq_norm_tfae 𝕜 _ _ _ _ x y).out 0 1).1 (by simp [h])
+      ((norm_inner_eq_norm_tfae 𝕜 x y).out 0 1).1 (by simp [h])
     rw [this.resolve_left h₀, h]
-    simp [norm_smul, inner_self_ofReal_norm, mul_div_cancel_right₀ _ h₀']
+    simp [norm_smul, mul_div_cancel_right₀ _ h₀']
   · conv_lhs => rw [← h, inner_smul_right, inner_self_eq_norm_sq_to_K]
-    field_simp
+    field
 
 /-- If the inner product of two vectors is equal to the product of their norms (i.e.,
 `⟪x, y⟫ = ‖x‖ * ‖y‖`), then the two vectors are nonnegative real multiples of each other. One form
@@ -785,9 +793,12 @@ theorem real_inner_div_norm_mul_norm_eq_neg_one_iff (x y : F) :
 
 /-- If the inner product of two unit vectors is `1`, then the two vectors are equal. One form of
 the equality case for Cauchy-Schwarz. -/
-theorem inner_eq_one_iff_of_norm_one {x y : E} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
+theorem inner_eq_one_iff_of_norm_eq_one {x y : E} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     ⟪x, y⟫ = 1 ↔ x = y := by
   convert inner_eq_norm_mul_iff (𝕜 := 𝕜) (E := E) using 2 <;> simp [hx, hy]
+
+theorem inner_self_eq_one_of_norm_eq_one {x : E} (hx : ‖x‖ = 1) : ⟪x, x⟫_𝕜 = 1 :=
+  (inner_eq_one_iff_of_norm_eq_one hx hx).mpr rfl
 
 theorem inner_lt_norm_mul_iff_real {x y : F} : ⟪x, y⟫_ℝ < ‖x‖ * ‖y‖ ↔ ‖y‖ • x ≠ ‖x‖ • y :=
   calc
@@ -797,8 +808,15 @@ theorem inner_lt_norm_mul_iff_real {x y : F} : ⟪x, y⟫_ℝ < ‖x‖ * ‖y�
 
 /-- If the inner product of two unit vectors is strictly less than `1`, then the two vectors are
 distinct. One form of the equality case for Cauchy-Schwarz. -/
-theorem inner_lt_one_iff_real_of_norm_one {x y : F} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
+theorem inner_lt_one_iff_real_of_norm_eq_one {x y : F} (hx : ‖x‖ = 1) (hy : ‖y‖ = 1) :
     ⟪x, y⟫_ℝ < 1 ↔ x ≠ y := by convert inner_lt_norm_mul_iff_real (F := F) <;> simp [hx, hy]
+
+@[deprecated (since := "2025-11-15")] alias inner_eq_one_iff_of_norm_one :=
+  inner_eq_one_iff_of_norm_eq_one
+@[deprecated (since := "2025-11-15")] alias inner_self_eq_one_of_norm_one :=
+  inner_self_eq_one_of_norm_eq_one
+@[deprecated (since := "2025-11-15")] alias inner_lt_one_iff_real_of_norm_one :=
+  inner_lt_one_iff_real_of_norm_eq_one
 
 /-- The sphere of radius `r = ‖y‖` is tangent to the plane `⟪x, y⟫ = ‖y‖ ^ 2` at `x = y`. -/
 theorem eq_of_norm_le_re_inner_eq_norm_sq {x y : E} (hle : ‖x‖ ≤ ‖y‖) (h : re ⟪x, y⟫ = ‖y‖ ^ 2) :
@@ -806,7 +824,8 @@ theorem eq_of_norm_le_re_inner_eq_norm_sq {x y : E} (hle : ‖x‖ ≤ ‖y‖) 
   suffices H : re ⟪x - y, x - y⟫ ≤ 0 by rwa [re_inner_self_nonpos, sub_eq_zero] at H
   have H₁ : ‖x‖ ^ 2 ≤ ‖y‖ ^ 2 := by gcongr
   have H₂ : re ⟪y, x⟫ = ‖y‖ ^ 2 := by rwa [← inner_conj_symm, conj_re]
-  simpa [inner_sub_left, inner_sub_right, ← norm_sq_eq_re_inner, h, H₂] using H₁
+  simp only [inner_sub_left, inner_sub_right]
+  simpa [h, H₂] using H₁
 
 /-- Equality is achieved in the triangle inequality iff the two vectors are collinear. -/
 theorem norm_add_eq_iff_real {x y : F} : ‖x + y‖ = ‖x‖ + ‖y‖ ↔ ‖y‖ • x = ‖x‖ • y := by
@@ -860,19 +879,19 @@ This is not registered as an instance since
 
 However, it can be used in a proof to obtain a real inner product space structure from a given
 `𝕜`-inner product space structure. -/
--- See note [reducible non instances]
+-- See note [reducible non-instances]
 abbrev InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
   { Inner.rclikeToReal 𝕜 E,
-    NormedSpace.restrictScalars ℝ 𝕜
-      E with
+    NormedSpace.restrictScalars ℝ 𝕜 E with
     norm_sq_eq_re_inner := norm_sq_eq_re_inner
     conj_inner_symm := fun _ _ => inner_re_symm _ _
     add_left := fun x y z => by
-      change re ⟪x + y, z⟫ = re ⟪x, z⟫ + re ⟪y, z⟫
-      simp only [inner_add_left, map_add]
+      simp only [Inner.rclikeToReal, inner_add_left, map_add]
     smul_left := fun x y r => by
-      change re ⟪(r : 𝕜) • x, y⟫ = r * re ⟪x, y⟫
-      simp only [inner_smul_left, conj_ofReal, re_ofReal_mul] }
+      letI := NormedSpace.restrictScalars ℝ 𝕜 E
+      have : r • x = (r : 𝕜) • x := rfl
+      simp only [Inner.rclikeToReal, this, conj_trivial, inner_smul_left, conj_ofReal,
+        re_ofReal_mul] }
 
 variable {E}
 

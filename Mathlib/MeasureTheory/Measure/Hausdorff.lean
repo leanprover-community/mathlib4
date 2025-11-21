@@ -3,11 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Between
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.Topology.MetricSpace.Holder
-import Mathlib.Topology.MetricSpace.MetricSeparated
+module
+
+public import Mathlib.Analysis.Convex.Between
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+public import Mathlib.Topology.MetricSpace.Holder
+public import Mathlib.Topology.MetricSpace.MetricSeparated
 
 /-!
 # Hausdorff measure and metric (outer) measures
@@ -84,7 +86,7 @@ measures.
 * `MeasureTheory.hausdorffMeasure_pi_real`: for a nonempty `ι`, `μH[card ι]` on `ι → ℝ` equals
   Lebesgue measure.
 
-## Notations
+## Notation
 
 We use the following notation localized in `MeasureTheory`.
 
@@ -105,6 +107,8 @@ dimension.
 
 Hausdorff measure, measure, metric measure
 -/
+
+@[expose] public section
 
 
 open scoped NNReal ENNReal Topology
@@ -910,8 +914,8 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
     let f : γ n := fun i =>
       ⟨⌊(x i - a i) * n⌋₊, by
         apply Nat.floor_lt_ceil_of_lt_of_pos
-        · refine (mul_lt_mul_right npos).2 ?_
-          simp only [(hx i).right, sub_lt_sub_iff_right]
+        · gcongr
+          exact (hx i).right
         · refine mul_pos ?_ npos
           simpa only [Rat.cast_lt, sub_pos] using H i⟩
     refine ⟨f, fun i => ⟨?_, ?_⟩⟩
@@ -919,9 +923,9 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
         (a i : ℝ) + ⌊(x i - a i) * n⌋₊ / n ≤ (a i : ℝ) + (x i - a i) * n / n := by
           gcongr
           exact Nat.floor_le (mul_nonneg (sub_nonneg.2 (hx i).1.le) npos.le)
-        _ = x i := by field_simp; ring
+        _ = x i := by field
     · calc
-        x i = (a i : ℝ) + (x i - a i) * n / n := by field_simp; ring
+        x i = (a i : ℝ) + (x i - a i) * n / n := by field
         _ ≤ (a i : ℝ) + (⌊(x i - a i) * n⌋₊ + 1) / n := by
           gcongr
           exact (Nat.lt_floor_add_one _).le

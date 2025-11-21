@@ -3,12 +3,14 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Algebra.MvPolynomial.Equiv
-import Mathlib.Algebra.Polynomial.BigOperators
-import Mathlib.Algebra.Ring.GeomSum
-import Mathlib.RingTheory.Noetherian.Basic
+module
+
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Algebra.MvPolynomial.Equiv
+public import Mathlib.Algebra.Polynomial.BigOperators
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Ring-theoretic supplement of Algebra.Polynomial.
@@ -19,6 +21,8 @@ import Mathlib.RingTheory.Noetherian.Basic
 * `Polynomial.isNoetherianRing`:
   Hilbert basis theorem, that if a ring is Noetherian then so is its polynomial ring.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -163,7 +167,7 @@ theorem degreeLT_succ_eq_degreeLE {n : ℕ} : degreeLT R (n + 1) = degreeLE R n 
   by_cases x_zero : x = 0
   · simp_rw [x_zero, Submodule.zero_mem]
   · rw [mem_degreeLT, mem_degreeLE, ← natDegree_lt_iff_degree_lt (by rwa [ne_eq]),
-      ← natDegree_le_iff_degree_le, Nat.lt_succ]
+      ← natDegree_le_iff_degree_le, Nat.lt_succ_iff]
 
 /-- The equivalence between monic polynomials of degree `n` and polynomials of degree less than
 `n`, formed by adding a term `X ^ n`. -/
@@ -173,7 +177,7 @@ def monicEquivDegreeLT [Nontrivial R] (n : ℕ) :
     rcases p with ⟨p, hp, rfl⟩
     simp only [mem_degreeLT]
     refine lt_of_lt_of_le ?_ degree_le_natDegree
-    exact degree_eraseLead_lt (ne_zero_of_ne_zero_of_monic one_ne_zero hp)⟩
+    exact degree_eraseLead_lt (Polynomial.Monic.ne_zero_of_polynomial_ne hp one_ne_zero)⟩
   invFun := fun p =>
     ⟨X^n + p.1, monic_X_pow_add (mem_degreeLT.1 p.2), by
         rw [natDegree_add_eq_left_of_degree_lt]
@@ -260,10 +264,11 @@ theorem geom_sum_X_comp_X_add_one_eq_sum (n : ℕ) :
         imp_true_iff]
     · simp +contextual only [Nat.lt_add_one_iff, Nat.choose_eq_zero_of_lt,
         Nat.cast_zero, Finset.mem_range, not_lt, if_true, imp_true_iff]
-  induction' n with n ih generalizing i
-  · dsimp; simp only [zero_comp, coeff_zero, Nat.cast_zero]
-  · simp only [geom_sum_succ', ih, add_comp, X_pow_comp, coeff_add, Nat.choose_succ_succ,
-    Nat.cast_add, coeff_X_add_one_pow]
+  induction n generalizing i with
+  | zero => dsimp; simp only [zero_comp, coeff_zero, Nat.cast_zero]
+  | succ n ih =>
+    simp only [geom_sum_succ', ih, add_comp, X_pow_comp, coeff_add, Nat.choose_succ_succ,
+      Nat.cast_add, coeff_X_add_one_pow]
 
 theorem Monic.geom_sum {P : R[X]} (hP : P.Monic) (hdeg : 0 < P.natDegree) {n : ℕ} (hn : n ≠ 0) :
     (∑ i ∈ range n, P ^ i).Monic := by
@@ -303,7 +308,7 @@ def restriction (p : R[X]) : Polynomial (Subring.closure (↑p.coeffs : Set R)) 
       (⟨p.coeff i,
           letI := Classical.decEq R
           if H : p.coeff i = 0 then H.symm ▸ (Subring.closure _).zero_mem
-          else Subring.subset_closure (p.coeff_mem_coeffs _ H)⟩ :
+          else Subring.subset_closure (p.coeff_mem_coeffs H)⟩ :
         Subring.closure (↑p.coeffs : Set R))
 
 @[simp]
@@ -350,7 +355,7 @@ theorem restriction_zero : restriction (0 : R[X]) = 0 := by
 
 @[simp]
 theorem restriction_one : restriction (1 : R[X]) = 1 :=
-  ext fun i => Subtype.eq <| by rw [coeff_restriction', coeff_one, coeff_one]; split_ifs <;> rfl
+  ext fun i => Subtype.ext <| by rw [coeff_restriction', coeff_one, coeff_one]; split_ifs <;> rfl
 
 variable [Semiring S] {f : R →+* S} {x : S}
 
@@ -371,7 +376,7 @@ def toSubring (hp : (↑p.coeffs : Set R) ⊆ T) : T[X] :=
     monomial i
       (⟨p.coeff i,
         letI := Classical.decEq R
-        if H : p.coeff i = 0 then H.symm ▸ T.zero_mem else hp (p.coeff_mem_coeffs _ H)⟩ : T)
+        if H : p.coeff i = 0 then H.symm ▸ T.zero_mem else hp (p.coeff_mem_coeffs H)⟩ : T)
 
 variable (hp : (↑p.coeffs : Set R) ⊆ T)
 
@@ -416,7 +421,7 @@ theorem toSubring_one :
     toSubring (1 : R[X]) T
         (Set.Subset.trans coeffs_one <| Finset.singleton_subset_set_iff.2 T.one_mem) =
       1 :=
-  ext fun i => Subtype.eq <| by
+  ext fun i => Subtype.ext <| by
     rw [coeff_toSubring', coeff_one, coeff_one, apply_ite Subtype.val, ZeroMemClass.coe_zero,
       OneMemClass.coe_one]
 
@@ -595,10 +600,12 @@ theorem _root_.Polynomial.coeff_prod_mem_ideal_pow_tsub {ι : Type*} (s : Finset
     (I : Ideal R) (n : ι → ℕ) (h : ∀ i ∈ s, ∀ (k), (f i).coeff k ∈ I ^ (n i - k)) (k : ℕ) :
     (s.prod f).coeff k ∈ I ^ (s.sum n - k) := by
   classical
-    induction' s using Finset.induction with a s ha hs generalizing k
-    · rw [sum_empty, prod_empty, coeff_one, zero_tsub, pow_zero, Ideal.one_eq_top]
+    induction s using Finset.induction generalizing k with
+    | empty =>
+      rw [sum_empty, prod_empty, coeff_one, zero_tsub, pow_zero, Ideal.one_eq_top]
       exact Submodule.mem_top
-    · rw [sum_insert ha, prod_insert ha, coeff_mul]
+    | insert a s ha hs =>
+      rw [sum_insert ha, prod_insert ha, coeff_mul]
       apply sum_mem
       rintro ⟨i, j⟩ e
       obtain rfl : i + j = k := mem_antidiagonal.mp e
@@ -678,7 +685,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
         rw [Finset.mem_erase, Finset.mem_antidiagonal] at hij
         simp only [Ne, Prod.mk_inj, not_and_or] at hij
         obtain hi | hj : i < m ∨ j < n := by
-          omega
+          cutsat
         · rw [mul_comm]
           apply P.mul_mem_left
           exact Classical.not_not.1 (Nat.find_min hf hi)
@@ -756,15 +763,19 @@ end Polynomial
 
 namespace MvPolynomial
 
+instance {ι R : Type*} [CommSemiring R] [IsEmpty ι] : Module.Finite R (MvPolynomial ι R) :=
+  Module.Finite.equiv (MvPolynomial.isEmptyAlgEquiv R ι).toLinearEquiv.symm
+
 private theorem prime_C_iff_of_fintype {R : Type u} (σ : Type v) {r : R} [CommRing R] [Fintype σ] :
     Prime (C r : MvPolynomial σ R) ↔ Prime r := by
   rw [← MulEquiv.prime_iff (renameEquiv R (Fintype.equivFin σ))]
   convert_to Prime (C r) ↔ _
   · congr!
     simp only [renameEquiv_apply, algHom_C, algebraMap_eq]
-  · induction' Fintype.card σ with d hd
-    · exact MulEquiv.prime_iff (isEmptyAlgEquiv R (Fin 0)).symm (p := r)
-    · convert MulEquiv.prime_iff (finSuccEquiv R d).symm (p := Polynomial.C (C r))
+  · induction Fintype.card σ with
+    | zero => exact MulEquiv.prime_iff (isEmptyAlgEquiv R (Fin 0)).symm (p := r)
+    | succ d hd =>
+      convert MulEquiv.prime_iff (finSuccEquiv R d).symm (p := Polynomial.C (C r))
       · simp [← finSuccEquiv_comp_C_eq_C]
       · simp [← hd, Polynomial.prime_C_iff]
 
@@ -845,7 +856,7 @@ protected theorem Polynomial.isNoetherianRing [inst : IsNoetherianRing R] : IsNo
         rw [this]
         intro p hp
         generalize hn : p.natDegree = k
-        induction' k using Nat.strong_induction_on with k ih generalizing p
+        induction k using Nat.strong_induction_on generalizing p with | _ k ih
         rcases le_or_gt k N with h | h
         · subst k
           refine hs2 ⟨Polynomial.mem_degreeLE.2

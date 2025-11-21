@@ -3,10 +3,12 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Yongle Hu
 -/
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.Group.Subgroup.Actions
-import Mathlib.RingTheory.Ideal.Pointwise
-import Mathlib.RingTheory.Ideal.Quotient.Operations
+module
+
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.Group.Subgroup.Actions
+public import Mathlib.RingTheory.Ideal.Pointwise
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 /-!
 # Ideals over/under ideals
@@ -16,6 +18,8 @@ Let `f : R →+* S` be a ring homomorphism (typically a ring extension), `I` an 
 `J` an ideal of `S`. We say `J` lies over `I` (and `I` under `J`) if `I` is the `f`-preimage of `J`.
 This is expressed here by writing `I = J.comap f`.
 -/
+
+@[expose] public section
 
 -- for going-up results about integral extensions, see `Mathlib/RingTheory/Ideal/GoingUp.lean`
 assert_not_exists Algebra.IsIntegral
@@ -176,6 +180,48 @@ theorem LiesOver.trans [𝔓.LiesOver P] [P.LiesOver p] : 𝔓.LiesOver p where
 theorem LiesOver.tower_bot [hp : 𝔓.LiesOver p] [hP : 𝔓.LiesOver P] : P.LiesOver p where
   over := by rw [𝔓.over_def p, 𝔓.over_def P, under_under]
 
+/--
+Consider the following commutative diagram of ring maps
+```
+A → B
+↓   ↓
+C → D
+```
+and let `P` be an ideal of `B`. The image in `C` of the ideal of `A` under `P` is included
+in the ideal of `C` under the image of `P` in `D`.
+-/
+theorem map_under_le_under_map {C D : Type*} [CommSemiring C] [Semiring D] [Algebra A C]
+    [Algebra C D] [Algebra A D] [Algebra B D] [IsScalarTower A C D] [IsScalarTower A B D] :
+    map (algebraMap A C) (under A P) ≤ under C (map (algebraMap B D) P) := by
+  apply le_comap_of_map_le
+  rw [map_map, ← IsScalarTower.algebraMap_eq, map_le_iff_le_comap,
+    IsScalarTower.algebraMap_eq A B D, ← comap_comap]
+  exact comap_mono <| le_comap_map
+
+/--
+Consider the following commutative diagram of ring maps
+```
+A → B
+↓   ↓
+C → D
+```
+and let `P` be an ideal of `B`. Assume that the image in `C` of the ideal of `A` under `P`
+is maximal and that the image of `P` in `D` is not equal to `D`, then the image in `C` of the
+ideal of `A` under `P` is equal to the ideal of `C` under the image of `P` in `D`.
+-/
+theorem under_map_eq_map_under {C D : Type*} [CommSemiring C] [Semiring D] [Algebra A C]
+    [Algebra C D] [Algebra A D] [Algebra B D] [IsScalarTower A C D] [IsScalarTower A B D]
+    (h₁ : (map (algebraMap A C) (under A P)).IsMaximal) (h₂ : map (algebraMap B D) P ≠ ⊤) :
+    under C (map (algebraMap B D) P) = map (algebraMap A C) (under A P) :=
+  (IsCoatom.le_iff_eq (isMaximal_def.mp h₁) (comap_ne_top (algebraMap C D) h₂)).mp <|
+    map_under_le_under_map P
+
+theorem disjoint_primeCompl_of_liesOver [p.IsPrime] [hPp : 𝔓.LiesOver p] :
+  Disjoint ((Algebra.algebraMapSubmonoid C p.primeCompl) : Set C) (𝔓 : Set C) := by
+  rw [liesOver_iff, under_def, SetLike.ext'_iff, coe_comap] at hPp
+  simpa only [Algebra.algebraMapSubmonoid, primeCompl, hPp, ← le_compl_iff_disjoint_left]
+    using Set.subset_compl_comm.mp (by simp)
+
 variable (B)
 
 instance under_liesOver_of_liesOver [𝔓.LiesOver p] : (𝔓.under B).LiesOver p :=
@@ -277,6 +323,16 @@ def stabilizerHom : MulAction.stabilizer G P →* ((B ⧸ P) ≃ₐ[A ⧸ p] (B 
     stabilizerHom P p G g b = ↑(g • b) :=
   rfl
 
+lemma ker_stabilizerHom :
+    (stabilizerHom P p G).ker = (P.toAddSubgroup.inertia G).subgroupOf _ := by
+  ext σ
+  simp [DFunLike.ext_iff, mk_surjective.forall, Quotient.eq,
+    Subgroup.mem_subgroupOf, Subgroup.smul_def]
+
+theorem map_ker_stabilizer_subtype :
+    (stabilizerHom P p G).ker.map (Subgroup.subtype _) = P.toAddSubgroup.inertia G := by
+  simp [ker_stabilizerHom, Ideal.inertia_le_stabilizer]
+
 end Quotient
 
 end ideal_liesOver
@@ -300,6 +356,12 @@ instance primesOver.liesOver (Q : primesOver p B) : Q.1.LiesOver p :=
 /-- If an ideal `P` of `B` is prime and lying over `p`, then it is in `primesOver p B`. -/
 abbrev primesOver.mk (P : Ideal B) [hPp : P.IsPrime] [hp : P.LiesOver p] : primesOver p B :=
   ⟨P, ⟨hPp, hp⟩⟩
+
+variable {p} in
+theorem ne_bot_of_mem_primesOver {S : Type*} [Ring S] [Algebra R S] [Nontrivial S]
+    [NoZeroSMulDivisors R S] {p : Ideal R} (hp : p ≠ ⊥) {P : Ideal S}
+    (hP : P ∈ p.primesOver S) :
+    P ≠ ⊥ := @ne_bot_of_liesOver_of_ne_bot _ _ _ _ _ _ _ _ hp P hP.2
 
 end primesOver
 

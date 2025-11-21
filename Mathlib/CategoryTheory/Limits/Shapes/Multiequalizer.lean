@@ -3,9 +3,11 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.ConeCategory
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.ConeCategory
 
 /-!
 
@@ -25,6 +27,8 @@ an equalizer between products (and analogously for multicoequalizers).
 Prove that the limit of any diagram is a multiequalizer (and similarly for colimits).
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory.Limits
@@ -92,7 +96,7 @@ inductive WalkingMulticospan (J : MulticospanShape.{w, w'}) : Type max w w'
   | left : J.L → WalkingMulticospan J
   | right : J.R → WalkingMulticospan J
 
-/-- The type underlying the multiecoqualizer diagram. -/
+/-- The type underlying the multicoequalizer diagram. -/
 inductive WalkingMultispan (J : MultispanShape.{w, w'}) : Type max w w'
   | left : J.L → WalkingMultispan J
   | right : J.R → WalkingMultispan J
@@ -183,6 +187,31 @@ lemma Hom.id_eq_id (X : WalkingMultispan J) : Hom.id X = 𝟙 X := rfl
 @[simp]
 lemma Hom.comp_eq_comp {X Y Z : WalkingMultispan J}
     (f : X ⟶ Y) (g : Y ⟶ Z) : Hom.comp f g = f ≫ g := rfl
+
+variable (J) in
+/-- The bijection `WalkingMultispan J ≃ J.L ⊕ J.R`. -/
+def equiv : WalkingMultispan J ≃ J.L ⊕ J.R where
+  toFun x := match x with
+    | left a => Sum.inl a
+    | right b => Sum.inr b
+  invFun := Sum.elim left right
+  left_inv := by rintro (_ | _) <;> rfl
+  right_inv := by rintro (_ | _) <;> rfl
+
+variable (J) in
+/-- The bijection `Arrow (WalkingMultispan J) ≃ WalkingMultispan J ⊕ J.R ⊕ J.R`. -/
+def arrowEquiv :
+    Arrow (WalkingMultispan J) ≃ WalkingMultispan J ⊕ J.L ⊕ J.L where
+  toFun f := match f.hom with
+    | .id x => Sum.inl x
+    | .fst a => Sum.inr (Sum.inl a)
+    | .snd a => Sum.inr (Sum.inr a)
+  invFun :=
+    Sum.elim (fun X ↦ Arrow.mk (𝟙 X))
+      (Sum.elim (fun a ↦ Arrow.mk (Hom.fst a : left _ ⟶ right _))
+        (fun a ↦ Arrow.mk (Hom.snd a : left _ ⟶ right _)))
+  left_inv := by rintro ⟨_, _, (_ | _ | _)⟩ <;> rfl
+  right_inv := by rintro (_ | _ | _) <;> rfl
 
 end WalkingMultispan
 
@@ -713,15 +742,7 @@ noncomputable def ofSigmaCoforkFunctor : Cofork I.fstSigmaMap I.sndSigmaMap ⥤ 
   obj := Multicofork.ofSigmaCofork I
   map {K₁ K₂} f :=
     { hom := f.hom
-      w := by --sorry --by rintro (_ | _) <;> simp
-        rintro (_ | _)
-        -- porting note; in mathlib3, `simp` worked. What seems to be happening is that
-        -- the `simp` set is not confluent, and mathlib3 found
-        -- `Multicofork.ofSigmaCofork_ι_app_left` before `Multicofork.fst_app_right`,
-        -- but mathlib4 finds `Multicofork.fst_app_right` first.
-        { simp [-Multicofork.fst_app_right] }
-        -- Porting note: similarly here, the `simp` set seems to be non-confluent
-        { simp [-Multicofork.ofSigmaCofork_pt] } }
+      w := by rintro (_ | _) <;> simp }
 
 /--
 The category of multicoforks is equivalent to the category of coforks over `∐ I.left ⇉ ∐ I.right`.
@@ -741,9 +762,7 @@ noncomputable def multicoforkEquivSigmaCofork :
         -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): in mathlib3 this was just `ext` and I don't know why it's not here
         apply Limits.colimit.hom_ext
         rintro ⟨j⟩
-        dsimp
-        simp only [Category.comp_id, colimit.ι_desc, Cofan.mk_ι_app]
-        rfl)
+        simp)
 
 end MultispanIndex
 
@@ -764,7 +783,7 @@ abbrev multiequalizer {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J C)
 abbrev HasMulticoequalizer {J : MultispanShape.{w, w'}} (I : MultispanIndex J C) :=
   HasColimit I.multispan
 
-/-- The multiecoqualizer of `I : MultispanIndex J C`. -/
+/-- The multicoequalizer of `I : MultispanIndex J C`. -/
 abbrev multicoequalizer {J : MultispanShape.{w, w'}} (I : MultispanIndex J C)
     [HasMulticoequalizer I] : C :=
   colimit I.multispan
@@ -850,11 +869,11 @@ abbrev multicofork : Multicofork I :=
 theorem multicofork_π (b) : (Multicoequalizer.multicofork I).π b = Multicoequalizer.π I b :=
   rfl
 
--- @[simp] -- Porting note: LHS simplifies to obtain the normal form below
 theorem multicofork_ι_app_right (b) :
     (Multicoequalizer.multicofork I).ι.app (WalkingMultispan.right b) = Multicoequalizer.π I b :=
   rfl
 
+/-- `@[simp]`-normal form of multicofork_ι_app_right. -/
 @[simp]
 theorem multicofork_ι_app_right' (b) :
     colimit.ι (MultispanIndex.multispan I) (WalkingMultispan.right b) = π I b :=
@@ -906,10 +925,7 @@ def sigmaπ : ∐ I.right ⟶ multicoequalizer I :=
 @[reassoc (attr := simp)]
 theorem ι_sigmaπ (b) : Sigma.ι I.right b ≫ sigmaπ I = π I b := by
   rw [sigmaπ, ← Category.assoc, Iso.comp_inv_eq, isoCoequalizer]
-  simp only [MultispanIndex.multicoforkEquivSigmaCofork_inverse,
-    MultispanIndex.ofSigmaCoforkFunctor_obj, colimit.isoColimitCocone_ι_hom,
-    Multicofork.ofSigmaCofork_pt, colimit.cocone_x, Multicofork.π_eq_app_right]
-  rfl
+  simp
 
 instance : Epi (sigmaπ I) := epi_comp _ _
 

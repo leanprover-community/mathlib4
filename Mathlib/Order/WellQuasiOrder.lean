@@ -3,10 +3,12 @@ Copyright (c) 2025 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios, Aaron Anderson
 -/
-import Mathlib.Data.Fintype.Card
-import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Order.Antichain
-import Mathlib.Order.OrderIsoNat
+module
+
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Data.Set.Finite.Basic
+public import Mathlib.Order.Antichain
+public import Mathlib.Order.OrderIsoNat
 
 /-!
 # Well quasi-orders
@@ -24,6 +26,8 @@ with no infinite antichains.
 
 wqo, pwo, well quasi-order, partial well order, dickson order
 -/
+
+@[expose] public section
 
 variable {α β : Type*} {r : α → α → Prop} {s : β → β → Prop}
 
@@ -78,7 +82,13 @@ theorem WellQuasiOrdered.prod [IsPreorder α r] (hr : WellQuasiOrdered r) (hs : 
   obtain ⟨m, n, h, hf⟩ := hs (Prod.snd ∘ f ∘ g)
   exact ⟨g m, g n, g.strictMono h, h₁ _ _ h.le, hf⟩
 
-/-- A typeclass for an order with a well quasi-ordered `≤` relation.
+theorem RelIso.wellQuasiOrdered_iff {α β} {r : α → α → Prop} {s : β → β → Prop} (f : r ≃r s) :
+    WellQuasiOrdered r ↔ WellQuasiOrdered s := by
+  apply (Equiv.arrowCongr (.refl ℕ) f).forall_congr
+  congr! with g a b
+  simp [f.map_rel_iff]
+
+/-- A typeclass for an order with a well-quasi-ordered `≤` relation.
 
 Note that this is unlike `WellFoundedLT`, which instead takes a `<` relation. -/
 @[mk_iff wellQuasiOrderedLE_def]

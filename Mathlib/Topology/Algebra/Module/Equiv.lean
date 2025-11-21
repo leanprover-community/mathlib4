@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Topology.Algebra.Module.LinearMapPiProd
+module
+
+public import Mathlib.Topology.Algebra.Module.LinearMapPiProd
 
 /-!
 # Continuous linear equivalences
@@ -12,6 +14,8 @@ import Mathlib.Topology.Algebra.Module.LinearMapPiProd
 Continuous semilinear / linear / star-linear equivalences between topological modules are denoted
 by `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
 -/
+
+@[expose] public section
 
 assert_not_exists TrivialStar
 
@@ -582,11 +586,11 @@ theorem symm_apply_eq (e : M₁ ≃SL[σ₁₂] M₂) {x y} : e.symm x = y ↔ x
 theorem eq_symm_apply (e : M₁ ≃SL[σ₁₂] M₂) {x y} : y = e.symm x ↔ e y = x :=
   e.toLinearEquiv.eq_symm_apply
 
-protected theorem image_eq_preimage (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₁) : e '' s = e.symm ⁻¹' s :=
-  e.toLinearEquiv.toEquiv.image_eq_preimage s
+protected lemma image_eq_preimage_symm (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₁) : e '' s = e.symm ⁻¹' s :=
+  e.toLinearEquiv.toEquiv.image_eq_preimage_symm s
 
 protected theorem image_symm_eq_preimage (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₂) :
-    e.symm '' s = e ⁻¹' s := by rw [e.symm.image_eq_preimage, e.symm_symm]
+    e.symm '' s = e ⁻¹' s := by rw [e.symm.image_eq_preimage_symm, e.symm_symm]
 
 @[simp]
 protected theorem symm_preimage_preimage (e : M₁ ≃SL[σ₁₂] M₂) (s : Set M₂) :
@@ -1095,11 +1099,12 @@ lemma IsInvertible.comp {g : M₂ →L[R] M₃} {f : M →L[R] M₂}
   exact ⟨M.trans N, rfl⟩
 
 lemma IsInvertible.of_inverse {f : M →L[R] M₂} {g : M₂ →L[R] M}
-    (hf : f ∘L g = id R M₂) (hg : g ∘L f = id R M) :
+    (hf : f ∘L g = .id R M₂) (hg : g ∘L f = .id R M) :
     f.IsInvertible :=
   ⟨ContinuousLinearEquiv.equivOfInverse' _ _ hf hg, rfl⟩
 
-lemma inverse_eq {f : M →L[R] M₂} {g : M₂ →L[R] M} (hf : f ∘L g = id R M₂) (hg : g ∘L f = id R M) :
+lemma inverse_eq {f : M →L[R] M₂} {g : M₂ →L[R] M}
+    (hf : f ∘L g = .id R M₂) (hg : g ∘L f = .id R M) :
     f.inverse = g := by
   have : f = ContinuousLinearEquiv.equivOfInverse' f g hf hg := rfl
   rw [this, inverse_equiv]
@@ -1202,7 +1207,7 @@ theorem ringInverse_eq_inverse : Ring.inverse = inverse (R := R) (M := M) := by
 @[deprecated (since := "2025-04-22")]
 alias ring_inverse_eq_map_inverse := ringInverse_eq_inverse
 
-@[simp] theorem inverse_id : (id R M).inverse = id R M := by
+@[simp] theorem inverse_id : (ContinuousLinearMap.id R M).inverse = .id R M := by
   rw [← ringInverse_eq_inverse]
   exact Ring.inverse_one _
 

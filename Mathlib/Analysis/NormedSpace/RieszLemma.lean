@@ -3,9 +3,11 @@ Copyright (c) 2019 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo, Yury Kudryashov
 -/
-import Mathlib.Analysis.NormedSpace.Real
-import Mathlib.Analysis.Seminorm
-import Mathlib.Topology.MetricSpace.HausdorffDistance
+module
+
+public import Mathlib.Analysis.Normed.Module.RCLike.Real
+public import Mathlib.Analysis.Seminorm
+public import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
 # Applications of the Hausdorff distance in normed spaces
@@ -20,6 +22,8 @@ guarantee `‖x‖ ≤ R` and `‖x - y‖ ≥ 1` for any `y` in `F`. This is `r
 A further lemma, `Metric.closedBall_infDist_compl_subset_closure`, finds a *closed* ball within
 the closure of a set `s` of optimal distance from a point in `x` to the frontier of `s`.
 -/
+
+@[expose] public section
 
 
 open Set Metric
@@ -93,7 +97,7 @@ theorem riesz_lemma_of_norm_lt {c : 𝕜} (hc : 1 < ‖c‖) {R : ℝ} (hR : ‖
   set y' := d⁻¹ • y
   have yy' : y = d • y' := by simp [y', smul_smul, mul_inv_cancel₀ d0]
   calc
-    1 = ‖c‖ / R * (R / ‖c‖) := by field_simp
+    1 = ‖c‖ / R * (R / ‖c‖) := by field
     _ ≤ ‖c‖ / R * ‖d • x‖ := by gcongr
     _ = ‖d‖ * (‖c‖ / R * ‖x‖) := by
       simp only [norm_smul]

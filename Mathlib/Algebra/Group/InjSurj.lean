@@ -3,9 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.Spread
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Logic.Function.Basic
+public import Mathlib.Tactic.Spread
 
 /-!
 # Lifting algebraic data classes along injective/surjective maps
@@ -27,6 +29,8 @@ Note that the `nsmul` and `zsmul` hypotheses in the declarations in this file ar
 `∀ x n, f (n • x) = n • f x`, with the binders in a slightly unnatural order, as they are
 `to_additive`ized from the versions for `^`.
 -/
+
+@[expose] public section
 
 
 namespace Function
@@ -194,7 +198,6 @@ which has an involutive inversion. See note [reducible non-instances] -/
 preserves `-` to a type which has an involutive negation. -/]
 protected abbrev involutiveInv {M₁ : Type*} [Inv M₁] [InvolutiveInv M₂] (f : M₁ → M₂)
     (hf : Injective f) (inv : ∀ x, f x⁻¹ = (f x)⁻¹) : InvolutiveInv M₁ where
-  inv := Inv.inv
   inv_inv x := hf <| by rw [inv, inv, inv_inv]
 
 variable [Inv M₁]
@@ -383,7 +386,6 @@ which has an involutive inversion. See note [reducible non-instances] -/
 preserves `-` to a type which has an involutive negation. -/]
 protected abbrev involutiveInv {M₂ : Type*} [Inv M₂] [InvolutiveInv M₁] (f : M₁ → M₂)
     (hf : Surjective f) (inv : ∀ x, f x⁻¹ = (f x)⁻¹) : InvolutiveInv M₂ where
-  inv := Inv.inv
   inv_inv := hf.forall.2 fun x => by rw [← inv, ← inv, inv_inv]
 
 variable [Inv M₂] [Div M₂] [Pow M₂ ℤ]

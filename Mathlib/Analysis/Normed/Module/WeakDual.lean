@@ -3,9 +3,11 @@ Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä, Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Module.Dual
-import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
-import Mathlib.Topology.Algebra.Module.WeakDual
+module
+
+public import Mathlib.Analysis.Normed.Module.Dual
+public import Mathlib.Analysis.Normed.Operator.Completeness
+public import Mathlib.Topology.Algebra.Module.WeakDual
 
 /-!
 # Weak dual of normed space
@@ -54,10 +56,6 @@ the weak-* topology on (its type synonym) `WeakDual 𝕜 E`:
 * Add the sequential Banach-Alaoglu theorem: the dual unit ball of a separable normed space `E`
   is sequentially compact in the weak-star topology. This would follow from the metrizability above.
 
-## Notations
-
-No new notation is introduced.
-
 ## Implementation notes
 
 Weak-* topology is defined generally in the file `Topology.Algebra.Module.WeakDual`.
@@ -83,6 +81,8 @@ give the definition `WeakDual.polar 𝕜 s` for the "same" subset viewed as a su
 weak-star, weak dual
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

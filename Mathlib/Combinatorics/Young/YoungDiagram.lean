@@ -3,10 +3,12 @@ Copyright (c) 2022 Jake Levinson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jake Levinson
 -/
-import Mathlib.Data.Finset.Preimage
-import Mathlib.Data.Finset.Prod
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Order.UpperLower.Basic
+module
+
+public import Mathlib.Data.Finset.Preimage
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Young diagrams
@@ -49,6 +51,8 @@ Young diagram
 
 -/
 
+@[expose] public section
+
 
 open Function
 
@@ -68,7 +72,6 @@ structure YoungDiagram where
 namespace YoungDiagram
 
 instance : SetLike YoungDiagram (ℕ × ℕ) where
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: figure out how to do this correctly
   coe y := y.cells
   coe_injective' μ ν h := by rwa [YoungDiagram.ext_iff, ← Finset.coe_inj]
 

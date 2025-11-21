@@ -3,9 +3,11 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Data.Fintype.Vector
-import Mathlib.Data.Multiset.Sym
+module
+
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Data.Fintype.Vector
+public import Mathlib.Data.Multiset.Sym
 
 /-!
 # Symmetric powers of a finset
@@ -25,6 +27,8 @@ This file defines the symmetric powers of a finset as `Finset (Sym α n)` and `F
 `Finset.sym` forms a Galois connection between `Finset α` and `Finset (Sym α n)`. Similar for
 `Finset.sym2`.
 -/
+
+@[expose] public section
 
 namespace Finset
 
@@ -190,10 +194,12 @@ theorem sym_succ : s.sym (n + 1) = s.sup fun a ↦ (s.sym n).image <| Sym.cons a
 
 @[simp]
 theorem mem_sym_iff {m : Sym α n} : m ∈ s.sym n ↔ ∀ a ∈ m, a ∈ s := by
-  induction' n with n ih
-  · refine mem_singleton.trans ⟨?_, fun _ ↦ Sym.eq_nil_of_card_zero _⟩
+  induction n with
+  | zero =>
+    refine mem_singleton.trans ⟨?_, fun _ ↦ Sym.eq_nil_of_card_zero _⟩
     rintro rfl
     exact fun a ha ↦ (Finset.notMem_empty _ ha).elim
+  | succ n ih => ?_
   refine mem_sup.trans ⟨?_, fun h ↦ ?_⟩
   · rintro ⟨a, ha, he⟩ b hb
     rw [mem_image] at he

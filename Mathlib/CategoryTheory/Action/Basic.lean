@@ -3,14 +3,16 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.Grp.Basic
-import Mathlib.Algebra.Ring.PUnit
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Conj
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.SingleObj
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.Algebra.Category.Grp.Basic
+public import Mathlib.Algebra.Ring.PUnit
+public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Conj
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.SingleObj
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # `Action V G`, the category of actions of a monoid `G` inside some category `V`.
@@ -22,6 +24,8 @@ We check `Action V G ≌ (CategoryTheory.singleObj G ⥤ V)`,
 and construct the restriction functors
 `res {G H} [Monoid G] [Monoid H] (f : G →* H) : Action V H ⥤ Action V G`.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -71,8 +75,8 @@ def trivial (X : V) : Action V G := { V := X, ρ := 1 }
 instance inhabited' : Inhabited (Action (Type*) G) :=
   ⟨⟨PUnit, 1⟩⟩
 
-instance : Inhabited (Action AddCommGrp G) :=
-  ⟨trivial G <| AddCommGrp.of PUnit⟩
+instance : Inhabited (Action AddCommGrpCat G) :=
+  ⟨trivial G <| AddCommGrpCat.of PUnit⟩
 
 end
 

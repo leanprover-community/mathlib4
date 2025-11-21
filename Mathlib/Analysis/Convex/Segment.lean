@@ -3,9 +3,11 @@ Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.LinearAlgebra.AffineSpace.Midpoint
-import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
-import Mathlib.LinearAlgebra.Ray
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
+public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
+public import Mathlib.LinearAlgebra.Ray
 
 /-!
 # Segments in vector spaces
@@ -14,7 +16,7 @@ In a 𝕜-vector space, we define the following objects and properties.
 * `segment 𝕜 x y`: Closed segment joining `x` and `y`.
 * `openSegment 𝕜 x y`: Open segment joining `x` and `y`.
 
-## Notations
+## Notation
 
 We provide the following notation:
 * `[x -[𝕜] y] = segment 𝕜 x y` in scope `Convex`
@@ -26,6 +28,8 @@ Generalize all this file to affine spaces.
 Should we rename `segment` and `openSegment` to `convex.Icc` and `convex.Ioo`? Should we also
 define `clopenSegment`/`convex.Ico`/`convex.Ioc`?
 -/
+
+@[expose] public section
 
 variable {𝕜 E F G ι : Type*} {M : ι → Type*}
 
@@ -97,7 +101,6 @@ section MulActionWithZero
 variable (𝕜)
 variable [ZeroLEOneClass 𝕜] [MulActionWithZero 𝕜 E]
 
-
 theorem left_mem_segment (x y : E) : x ∈ [x -[𝕜] y] :=
   ⟨1, 0, zero_le_one, le_refl 0, add_zero 1, by rw [zero_smul, one_smul, add_zero]⟩
 
@@ -140,6 +143,24 @@ theorem mem_openSegment_of_ne_left_right (hx : x ≠ z) (hy : y ≠ z) (hz : z �
 theorem openSegment_subset_iff_segment_subset (hx : x ∈ s) (hy : y ∈ s) :
     openSegment 𝕜 x y ⊆ s ↔ [x -[𝕜] y] ⊆ s := by
   simp only [← insert_endpoints_openSegment, insert_subset_iff, *, true_and]
+
+section lift
+
+variable (R : Type*) [Semiring R] [PartialOrder R] [Module R E]
+variable [Module R 𝕜] [IsScalarTower R 𝕜 E]
+
+theorem segment.lift [SMulPosMono R 𝕜] (x y : E) : segment R x y ⊆ segment 𝕜 x y := by
+  rintro z ⟨a, b, ha, hb, hab, hxy⟩
+  refine ⟨_, _, ?_, ?_, by simpa [add_smul] using congr($(hab) • (1 : 𝕜)), by simpa⟩
+  all_goals exact zero_smul R (1 : 𝕜) ▸ smul_le_smul_of_nonneg_right ‹_› zero_le_one
+
+theorem openSegment.lift [Nontrivial 𝕜] [SMulPosStrictMono R 𝕜] (x y : E) :
+    openSegment R x y ⊆ openSegment 𝕜 x y := by
+  rintro z ⟨a, b, ha, hb, hab, hxy⟩
+  refine ⟨_, _, ?_, ?_, by simpa [add_smul] using congr($(hab) • (1 : 𝕜)), by simpa⟩
+  all_goals exact zero_smul R (1 : 𝕜) ▸ smul_lt_smul_of_pos_right ‹_› zero_lt_one
+
+end lift
 
 end Module
 

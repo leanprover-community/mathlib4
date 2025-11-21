@@ -3,16 +3,19 @@ Copyright (c) 2025 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header
 
 /-!
-#  The `commandStart` linter
+# The `commandStart` linter
 
 The `commandStart` linter emits a warning if
 * either a command does not start at the beginning of a line;
 * or the "hypotheses segment" of a declaration does not coincide with its pretty-printed version.
 -/
+
+public meta section
 
 open Lean Elab Command Linter
 
@@ -50,7 +53,7 @@ formatting.
 This is every declaration until the type-specification, if there is one, or the value,
 as well as all `variable` commands.
 -/
-def CommandStart.endPos (stx : Syntax) : Option String.Pos :=
+def CommandStart.endPos (stx : Syntax) : Option String.Pos.Raw :=
   if let some cmd := stx.find? (#[``Parser.Command.declaration, `lemma].contains ·.getKind) then
     if let some ind := cmd.find? (·.isOfKind ``Parser.Command.inductive) then
       match ind.find? (·.isOfKind ``Parser.Command.optDeclSig) with
@@ -78,7 +81,7 @@ structure FormatError where
   /-- The distance to the end of the source string, as number of characters -/
   srcNat : Nat
   /-- The distance to the end of the source string, as number of string positions -/
-  srcEndPos : String.Pos
+  srcEndPos : String.Pos.Raw
   /-- The distance to the end of the formatted string, as number of characters -/
   fmtPos : Nat
   /-- The kind of formatting error. For example: `extra space`, `remove line break` or
@@ -90,7 +93,7 @@ structure FormatError where
   /-- The length of the mismatch, as number of characters. -/
   length : Nat
   /-- The starting position of the mismatch, as a `String.pos`. -/
-  srcStartPos : String.Pos
+  srcStartPos : String.Pos.Raw
   deriving Inhabited
 
 instance : ToString FormatError where
@@ -110,11 +113,11 @@ and as `String.Pos`.
 -/
 def mkFormatError (ls ms : String) (msg : String) (length : Nat := 1) : FormatError where
   srcNat := ls.length
-  srcEndPos := ls.endPos
+  srcEndPos := ls.rawEndPos
   fmtPos := ms.length
   msg := msg
   length := length
-  srcStartPos := ls.endPos
+  srcStartPos := ls.rawEndPos
 
 /--
 Add a new `FormatError` `f` to the array `fs`, trying, as much as possible, to merge the new
@@ -167,7 +170,7 @@ def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError 
     parallelScanAux as newL newM else
   let ls := L.drop 1
   let ms := M.drop 1
-  match L.get 0, M.get 0 with
+  match L.front, M.front with
   | ' ', m =>
     if m.isWhitespace then
       parallelScanAux as ls ms.trimLeft
@@ -252,7 +255,7 @@ The linter uses this information to avoid emitting a warning for nodes with kind
 `unlintedNodes`.
 -/
 def getUnlintedRanges (a : Array SyntaxNodeKind) :
-    Std.HashSet String.Range → Syntax → Std.HashSet String.Range
+    Std.HashSet Lean.Syntax.Range → Syntax → Std.HashSet Lean.Syntax.Range
   | curr, s@(.node _ kind args) =>
     let new := args.foldl (init := curr) (·.union <| getUnlintedRanges a curr ·)
     if a.contains kind then
@@ -267,13 +270,13 @@ def getUnlintedRanges (a : Array SyntaxNodeKind) :
       curr
   | curr, _ => curr
 
-/-- Given a `HashSet` of `String.Range`s `rgs` and a further `String.Range` `rg`,
+/-- Given a `HashSet` of `Lean.Syntax.Range`s `rgs` and a further `Lean.Syntax.Range` `rg`,
 `isOutside rgs rg` returns `false` if and only if `rgs` contains a range that completely contains
 `rg`.
 
 The linter uses this to figure out which nodes should be ignored.
 -/
-def isOutside (rgs : Std.HashSet String.Range) (rg : String.Range) : Bool :=
+def isOutside (rgs : Std.HashSet Lean.Syntax.Range) (rg : Lean.Syntax.Range) : Bool :=
   rgs.all fun {start := a, stop := b} ↦ !(a ≤ rg.start && rg.stop ≤ b)
 
 /-- `mkWindow orig start ctx` extracts from `orig` a string that starts at the first
@@ -332,8 +335,9 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let docStringEnd := docStringEnd.getTailPos? |>.getD default
     let forbidden := getUnlintedRanges unlintedNodes ∅ stx
     for s in scan do
-      let center := origSubstring.stopPos - s.srcEndPos
-      let rg : String.Range := ⟨center, center + s.srcEndPos - s.srcStartPos + ⟨1⟩⟩
+      let center := origSubstring.stopPos.unoffsetBy s.srcEndPos
+      let rg : Lean.Syntax.Range :=
+        ⟨center, center |>.offsetBy s.srcEndPos |>.unoffsetBy s.srcStartPos |>.increaseBy 1⟩
       if s.msg.startsWith "Oh no" then
         Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg)
           m!"This should not have happened: please report this issue!"

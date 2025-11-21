@@ -3,13 +3,15 @@ Copyright (c) 2020 Kevin Buzzard, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Yoneda
-import Mathlib.CategoryTheory.Preadditive.FunctorCategory
-import Mathlib.CategoryTheory.Sites.SheafOfTypes
-import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Yoneda
+public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
+public import Mathlib.CategoryTheory.Sites.SheafOfTypes
+public import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
+public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 /-!
 # Sheaves taking values in a category
@@ -26,7 +28,7 @@ and `A` live in the same universe.
   are all sheaves of sets, see `CategoryTheory.Presheaf.IsSheaf`.
 * When `A = Type`, this recovers the basic definition of sheaves of sets, see
   `CategoryTheory.isSheaf_iff_isSheaf_of_type`.
-* A alternate definition in terms of limits, unconditionally equivalent to the original one:
+* An alternate definition in terms of limits, unconditionally equivalent to the original one:
   see `CategoryTheory.Presheaf.isSheaf_iff_isLimit`.
 * An alternate definition when `C` is small, has pullbacks and `A` has products is given by an
   equalizer condition `CategoryTheory.Presheaf.IsSheaf'`. This is equivalent to the earlier
@@ -51,6 +53,8 @@ inequalities this can be changed.
 
 -/
 
+@[expose] public section
+
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -67,8 +71,8 @@ variable {A : Type u₂} [Category.{v₂} A]
 variable (J : GrothendieckTopology C)
 
 -- We follow https://stacks.math.columbia.edu/tag/00VL definition 00VR
-/-- A sheaf of A is a presheaf P : Cᵒᵖ => A such that for every E : A, the
-presheaf of types given by sending U : C to Hom_{A}(E, P U) is a sheaf of types. -/
+/-- A sheaf of A is a presheaf `P : Cᵒᵖ ⥤ A` such that for every `E : A`, the
+presheaf of types given by sending `U : C` to `Hom_{A}(E, P U)` is a sheaf of types. -/
 @[stacks 00VR]
 def IsSheaf (P : Cᵒᵖ ⥤ A) : Prop :=
   ∀ E : A, Presieve.IsSheaf J (P ⋙ coyoneda.obj (op E))
@@ -199,7 +203,7 @@ theorem isLimit_iff_isSheafFor_presieve :
     iff for every covering presieve `R` of `K`, the natural cone associated to `P` and
     `Sieve.generate R` is a limit cone. -/
 theorem isSheaf_iff_isLimit_pretopology [HasPullbacks C] (K : Pretopology C) :
-    IsSheaf (K.toGrothendieck C) P ↔
+    IsSheaf K.toGrothendieck P ↔
       ∀ ⦃X : C⦄ (R : Presieve X),
         R ∈ K X → Nonempty (IsLimit (P.mapCone (generate R).arrows.cocone.op)) := by
   dsimp [IsSheaf]
@@ -213,7 +217,7 @@ end LimitSheafCondition
 variable {J}
 
 /-- This is a wrapper around `Presieve.IsSheafFor.amalgamate` to be used below.
-  If `P`s a sheaf, `S` is a cover of `X`, and `x` is a collection of morphisms from `E`
+  If `P` is a sheaf, `S` is a cover of `X`, and `x` is a collection of morphisms from `E`
   to `P` evaluated at terms in the cover which are compatible, then we can amalgamate
   the `x`s to obtain a single morphism `E ⟶ P.obj (op X)`. -/
 def IsSheaf.amalgamate {A : Type u₂} [Category.{v₂} A] {E : A} {X : C} {P : Cᵒᵖ ⥤ A}
@@ -446,11 +450,11 @@ instance sheafHomHasZSMul : SMul ℤ (P ⟶ Q) where
     Sheaf.Hom.mk
       { app := fun U => n • f.1.app U
         naturality := fun U V i => by
-          induction' n with n ih n ih
-          · simp only [zero_smul, comp_zero, zero_comp]
-          · simpa only [add_zsmul, one_zsmul, comp_add, NatTrans.naturality, add_comp,
+          induction n with
+          | zero => simp only [zero_smul, comp_zero, zero_comp]
+          | succ n ih => simpa only [add_zsmul, one_zsmul, comp_add, NatTrans.naturality, add_comp,
               add_left_inj]
-          · simpa only [sub_smul, one_zsmul, comp_sub, NatTrans.naturality, sub_comp,
+          | pred n ih => simpa only [sub_smul, one_zsmul, comp_sub, NatTrans.naturality, sub_comp,
               sub_left_inj] using ih }
 
 instance : Sub (P ⟶ Q) where sub f g := Sheaf.Hom.mk <| f.1 - g.1

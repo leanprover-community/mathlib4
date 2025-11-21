@@ -3,10 +3,12 @@ Copyright (c) 2025 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
-import Mathlib.Analysis.Calculus.UniformLimitsDeriv
-import Mathlib.Analysis.NormedSpace.FunctionSeries
-import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
+module
+
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+public import Mathlib.Analysis.Calculus.UniformLimitsDeriv
+public import Mathlib.Analysis.Normed.Group.FunctionSeries
+public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 
 /-!
 # Differentiability of sum of functions
@@ -19,6 +21,8 @@ is the sum of the derivatives, under suitable conditions we also prove an `itera
 version.
 
 -/
+
+@[expose] public section
 
 open Set Metric TopologicalSpace Function Filter
 
@@ -93,16 +97,17 @@ theorem iteratedDerivWithin_tsum {f : ι → E → F} (m : ℕ) (hs : IsOpen s)
     (hf2 : ∀ n k r, k ≤ m → r ∈ s →
       DifferentiableAt E (iteratedDerivWithin k (fun z ↦ f n z) s) r) :
     iteratedDerivWithin m (fun z ↦ ∑' n, f n z) s x = ∑' n, iteratedDerivWithin m (f n) s x := by
-  induction' m  with m hm generalizing x
-  · simp
-  · simp_rw [iteratedDerivWithin_succ]
-    rw [← derivWithin_tsum hs hx _  _ (fun n r hr ↦ hf2 n m r (by omega) hr)]
-    · exact derivWithin_congr (fun t ht ↦ hm ht (fun k hk1 hkm ↦ h k hk1 (by omega))
-          (fun k r e hr he ↦ hf2 k r e (by omega) he)) (hm hx (fun k hk1 hkm ↦ h k hk1 (by omega))
-          (fun k r e hr he ↦ hf2 k r e (by omega) he))
+  induction m generalizing x with
+  | zero => simp
+  | succ m hm =>
+    simp_rw [iteratedDerivWithin_succ]
+    rw [← derivWithin_tsum hs hx _  _ (fun n r hr ↦ hf2 n m r (by cutsat) hr)]
+    · exact derivWithin_congr (fun t ht ↦ hm ht (fun k hk1 hkm ↦ h k hk1 (by cutsat))
+          (fun k r e hr he ↦ hf2 k r e (by cutsat) he)) (hm hx (fun k hk1 hkm ↦ h k hk1 (by cutsat))
+          (fun k r e hr he ↦ hf2 k r e (by cutsat) he))
     · intro r hr
       by_cases hm2 : m = 0
       · simp [hm2, hsum r hr]
-      · exact ((h m (by omega) (by omega)).summable hr).congr (fun _ ↦ by simp)
+      · exact ((h m (by cutsat) (by cutsat)).summable hr).congr (fun _ ↦ by simp)
     · exact SummableLocallyUniformlyOn_congr
-        (fun _ _ ht ↦ iteratedDerivWithin_succ) (h (m + 1) (by omega) (by omega))
+        (fun _ _ ht ↦ iteratedDerivWithin_succ) (h (m + 1) (by cutsat) (by cutsat))

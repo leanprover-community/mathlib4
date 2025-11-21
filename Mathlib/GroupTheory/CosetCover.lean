@@ -3,9 +3,11 @@ Copyright (c) 2024 Antoine Chambert-Loir, Richard Copley. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, Richard Copley
 -/
-import Mathlib.Algebra.Order.Ring.Rat
-import Mathlib.GroupTheory.Complement
-import Mathlib.LinearAlgebra.Basis.VectorSpace
+module
+
+public import Mathlib.Algebra.Order.Ring.Rat
+public import Mathlib.GroupTheory.Complement
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-! # Lemma of B. H. Neumann on coverings of a group by cosets.
 
@@ -41,6 +43,8 @@ set of all minimal polynomials (not proved here).
 [3] <http://alpha.math.uga.edu/~pete/Neumann54.pdf>
 
 -/
+
+@[expose] public section
 
 open scoped Pointwise
 
@@ -258,7 +262,7 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
       Finset.sum_sigma, Finset.sum_coe_sort_eq_attach]
     refine Finset.sum_congr rfl fun i _ => ?_
     by_cases hfi : (H i).FiniteIndex
-    · rw [← relindex_mul_index (hD_le i.2 hfi), Nat.cast_mul, mul_comm,
+    · rw [← relIndex_mul_index (hD_le i.2 hfi), Nat.cast_mul, mul_comm,
         mul_inv_cancel_right₀ (Nat.cast_ne_zero.mpr hfi.index_ne_zero)]
       simpa [K, hfi] using (ht i.1 i.2 hfi).1.card_left
     · rw [of_not_not (FiniteIndex.mk.mt hfi), Nat.cast_zero, inv_zero, zero_mul]

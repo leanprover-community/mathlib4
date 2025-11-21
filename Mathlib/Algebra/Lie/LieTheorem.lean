@@ -3,8 +3,10 @@ Copyright (c) 2024 Lucas Whitfield. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lucas Whitfield, Johan Commelin
 -/
-import Mathlib.Algebra.Lie.Weights.Basic
-import Mathlib.RingTheory.Finiteness.Nilpotent
+module
+
+public import Mathlib.Algebra.Lie.Weights.Basic
+public import Mathlib.RingTheory.Finiteness.Nilpotent
 
 /-!
 # Lie's theorem for Solvable Lie algebras.
@@ -13,6 +15,8 @@ Lie's theorem asserts that Lie modules of solvable Lie algebras over fields of c
 have a common eigenvector for the action of all elements of the Lie algebra.
 This result is named `LieModule.exists_forall_lie_eq_smul_of_isSolvable`.
 -/
+
+@[expose] public section
 
 namespace LieModule
 
@@ -72,7 +76,7 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
         LinearMap.smul_apply, Module.End.one_apply, forall_eq, pow_zero, hv w, sub_self, zero_mem]
     · next n hn =>
       intro m hm
-      obtain (hm | rfl) : m < n + 1 ∨ m = n + 1 := by omega
+      obtain (hm | rfl) : m < n + 1 ∨ m = n + 1 := by cutsat
       · exact U'.mono (Nat.le_succ n) (hn w m hm)
       have H : ∀ w, ⁅w, (π z ^ n) v⁆ = (T χ w) ((π z ^ n) v) + χ w • ((π z ^ n) v) := by simp
       rw [T, LinearMap.sub_apply, pow_succ', Module.End.mul_apply, LieModule.toEnd_apply_apply,
@@ -180,14 +184,15 @@ theorem exists_nontrivial_weightSpace_of_lieIdeal [LieModule.IsTriangularizable 
   refine nontrivial_of_ne ⟨v, ?_⟩ 0 ?_
   · rw [mem_weightSpace]
     intro x
-    have hπ : (π₁ x : L) + π₂ x = x := linearProjOfIsCompl_add_linearProjOfIsCompl_eq_self hA x
-    suffices ⁅(π₂ x : L), v⁆ = (c • e (π₂ x)) • v by
+    have hπ : (π₁ x : L) + π₂ x = x := hA.projection_add_projection_eq_self x
+    suffices ⁅hA.symm.projection x, v⁆ = (c • e (π₂ x)) • v by
       calc ⁅x, v⁆
-          = ⁅π₁ x, v⁆       + ⁅(π₂ x : L), v⁆    := congr(⁅$hπ.symm, v⁆) ▸ add_lie _ _ _
-        _ =  χ₀ (π₁ x) • v  + (c • e (π₂ x)) • v := by rw [hv' (π₁ x), this]
+          = ⁅π₁ x, v⁆       + ⁅hA.symm.projection x, v⁆ := congr(⁅$hπ.symm, v⁆) ▸ add_lie _ _ _
+        _ =  χ₀ (π₁ x) • v  + (c • e (π₂ x)) • v        := by rw [hv' (π₁ x), this]
         _ = _ := by simp [add_smul]
-    calc ⁅(π₂ x : L), v⁆
-        = e (π₂ x) • ↑(c • ⟨v, hv⟩ : W) := by rw [← he, smul_lie, ← hvc.apply_eq_smul]; rfl
+    calc ⁅hA.symm.projection x, v⁆
+        = e (π₂ x) • ↑(c • ⟨v, hv⟩ : W)   := by
+          rw [IsCompl.projection_apply, ← he, smul_lie, ← hvc.apply_eq_smul]; rfl
       _ = (c • e (π₂ x)) • v              := by rw [smul_assoc, smul_comm]; rfl
   · simpa [ne_eq, LieSubmodule.mk_eq_zero] using hvc.right
 
@@ -212,12 +217,10 @@ private lemma exists_forall_lie_eq_smul_of_isSolvable_of_finite
   lift A to LieIdeal k L
   · intros
     exact hAL <| LieSubmodule.lie_mem_lie (LieSubmodule.mem_top _) (LieSubmodule.mem_top _)
-  change LieIdeal k L at A -- remove this line when bug in `lift` is fixed (#15865)
   obtain ⟨χ', _⟩ := exists_forall_lie_eq_smul_of_isSolvable_of_finite A
   exact exists_nontrivial_weightSpace_of_lieIdeal A hA χ'
 termination_by Module.finrank k L
 decreasing_by
-  simp_wf
   rw [← finrank_top k L]
   apply Submodule.finrank_lt_finrank_of_lt
   exact hA.lt_top

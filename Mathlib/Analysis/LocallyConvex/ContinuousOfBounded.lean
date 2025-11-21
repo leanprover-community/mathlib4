@@ -3,13 +3,15 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.Analysis.LocallyConvex.Bounded
-import Mathlib.Analysis.RCLike.Basic
+module
+
+public import Mathlib.Analysis.LocallyConvex.Bounded
+public import Mathlib.Analysis.RCLike.Basic
 
 /-!
 # Continuity and Von Neumann boundedness
 
-This files proves that for `E` and `F` two topological vector spaces over `ℝ` or `ℂ`,
+This file proves that for two topological vector spaces `E` and `F` over `ℝ` or `ℂ`,
 if `E` is first countable, then every locally bounded linear map `E →ₛₗ[σ] F` is continuous
 (this is `LinearMap.continuous_of_locally_bounded`).
 
@@ -23,6 +25,8 @@ continuous linear maps will require importing `Analysis/LocallyConvex/Bounded` i
 * [Bourbaki, *Topological Vector Spaces*][bourbaki1987]
 
 -/
+
+@[expose] public section
 
 
 open TopologicalSpace Bornology Filter Topology Pointwise

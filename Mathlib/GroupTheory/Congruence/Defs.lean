@@ -3,10 +3,12 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Algebra.Group.Units.Defs
-import Mathlib.Data.Setoid.Basic
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Group.InjSurj
+public import Mathlib.Algebra.Group.Units.Defs
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.Tactic.FastInstance
 
 /-!
 # Congruence relations
@@ -46,6 +48,8 @@ used, since this perspective adds more layers of definitional unfolding.
 congruence, congruence relation, quotient, quotient by congruence relation, monoid,
 quotient monoid, isomorphism theorems
 -/
+
+@[expose] public section
 
 
 variable (M : Type*) {N : Type*} {P : Type*}
@@ -195,7 +199,6 @@ def toQuotient : M → c.Quotient :=
 
 variable (c)
 
--- Porting note: was `priority 0`. why?
 /-- Coercion from a type with a multiplication to its quotient by a congruence relation.
 
 See Note [use has_coe_t]. -/
@@ -538,7 +541,7 @@ protected theorem pow {M : Type*} [Monoid M] (c : Con M) :
   | Nat.succ n, w, x, h => by simpa [pow_succ] using c.mul (Con.pow c n h) h
 
 @[to_additive]
-instance one [MulOneClass M] (c : Con M) : One c.Quotient where
+instance one [Mul M] [One M] (c : Con M) : One c.Quotient where
   -- Using Quotient.mk'' here instead of c.toQuotient
   -- since c.toQuotient is not reducible.
   -- This would lead to non-defeq diamonds since this instance ends up in
@@ -559,6 +562,12 @@ instance {M : Type*} [Monoid M] (c : Con M) : Pow c.Quotient ℕ where
 an `AddSemigroup`. -/]
 instance semigroup {M : Type*} [Semigroup M] (c : Con M) : Semigroup c.Quotient := fast_instance%
   Function.Surjective.semigroup _ Quotient.mk''_surjective fun _ _ => rfl
+
+/-- The quotient of a commutative magma by a congruence relation is a commutative magma. -/
+@[to_additive /-- The quotient of an `AddCommMagma` by an additive congruence relation is
+an `AddCommMagma`. -/]
+instance commMagma {M : Type*} [CommMagma M] (c : Con M) : CommMagma c.Quotient := fast_instance%
+  Function.Surjective.commMagma _ Quotient.mk''_surjective fun _ _ => rfl
 
 /-- The quotient of a commutative semigroup by a congruence relation is a semigroup. -/
 @[to_additive /-- The quotient of an `AddCommSemigroup` by an additive congruence relation is
@@ -620,7 +629,7 @@ protected theorem div : ∀ {w x y z}, c w x → c y z → c (w / y) (x / z) := 
 /-- Multiplicative congruence relations preserve integer powers. -/
 @[to_additive /-- Additive congruence relations preserve integer scaling. -/]
 protected theorem zpow : ∀ (n : ℤ) {w x}, c w x → c (w ^ n) (x ^ n)
-  | Int.ofNat n, w, x, h => by simpa only [zpow_natCast, Int.ofNat_eq_coe] using c.pow n h
+  | Int.ofNat n, w, x, h => by simpa only [zpow_natCast, Int.ofNat_eq_natCast] using c.pow n h
   | Int.negSucc n, w, x, h => by simpa only [zpow_negSucc] using c.inv (c.pow _ h)
 
 /-- The inversion induced on the quotient by a congruence relation on a type with an

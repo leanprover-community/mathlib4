@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Prod
-import Mathlib.Algebra.Group.Graph
-import Mathlib.LinearAlgebra.Span.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Prod
+public import Mathlib.Algebra.Group.Graph
+public import Mathlib.LinearAlgebra.Span.Basic
 
 /-! ### Products of modules
 
@@ -33,6 +35,8 @@ It contains theorems relating these to each other, as well as to `Submodule.prod
   - `LinearEquiv.prodUnique`
   - `LinearEquiv.uniqueProd`
 -/
+
+@[expose] public section
 
 
 universe u v w x y z u' v' w' y'
@@ -663,6 +667,36 @@ theorem snd_comp_prodAssoc :
 
 end prodAssoc
 
+section SkewSwap
+
+variable (R M N)
+variable [Semiring R]
+variable [AddCommGroup M] [AddCommGroup N]
+variable [Module R M] [Module R N]
+
+/-- The map `(x, y) ↦ (-y, x)` as a linear equivalence. -/
+protected def skewSwap : (M × N) ≃ₗ[R] (N × M) where
+  toFun x := (-x.2, x.1)
+  invFun x := (x.2, -x.1)
+  map_add' _ _ := by
+    simp [add_comm]
+  map_smul' _ _ := by
+    simp
+  left_inv _ := by
+    simp
+  right_inv _ := by
+    simp
+
+variable {R M N}
+
+@[simp]
+theorem skewSwap_apply (x : M × N) : LinearEquiv.skewSwap R M N x = (-x.2, x.1) := rfl
+
+@[simp]
+theorem skewSwap_symm_apply (x : N × M) : (LinearEquiv.skewSwap R M N).symm x = (x.2, -x.1) := rfl
+
+end SkewSwap
+
 section
 
 variable (R M M₂ M₃ M₄)
@@ -703,25 +737,17 @@ protected def prodCongr : (M × M₃) ≃ₗ[R] M₂ × M₄ :=
   { e₁.toAddEquiv.prodCongr e₂.toAddEquiv with
     map_smul' := fun c _x => Prod.ext (e₁.map_smulₛₗ c _) (e₂.map_smulₛₗ c _) }
 
-@[deprecated (since := "2025-04-17")] alias prod := LinearEquiv.prodCongr
-
 theorem prodCongr_symm : (e₁.prodCongr e₂).symm = e₁.symm.prodCongr e₂.symm :=
   rfl
-
-@[deprecated (since := "2025-04-17")] alias prod_symm := prodCongr_symm
 
 @[simp]
 theorem prodCongr_apply (p) : e₁.prodCongr e₂ p = (e₁ p.1, e₂ p.2) :=
   rfl
 
-@[deprecated (since := "2025-04-17")] alias prod_apply := prodCongr_apply
-
 @[simp, norm_cast]
 theorem coe_prodCongr :
     (e₁.prodCongr e₂ : M × M₃ →ₗ[R] M₂ × M₄) = (e₁ : M →ₗ[R] M₂).prodMap (e₂ : M₃ →ₗ[R] M₄) :=
   rfl
-
-@[deprecated (since := "2025-04-17")] alias coe_prod := coe_prodCongr
 
 end
 

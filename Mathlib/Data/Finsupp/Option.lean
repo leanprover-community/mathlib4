@@ -3,8 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Data.Finsupp.Basic
-import Mathlib.Algebra.Module.Defs
+module
+
+public import Mathlib.Data.Finsupp.Basic
+public import Mathlib.Algebra.Module.Defs
 
 /-!
 # Operations on `Finsupp`s with an `Option` domain
@@ -30,6 +32,9 @@ We prove a variety of API lemmas, see `Data/Finsupp/Fin.lean` for comparison.
 This file is a `noncomputable theory` and uses classical logic throughout.
 
 -/
+
+@[expose] public section
+
 
 noncomputable section
 

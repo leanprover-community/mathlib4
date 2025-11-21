@@ -3,11 +3,13 @@ Copyright (c) 2023 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Init
-import Mathlib.Data.Finite.Prod
-import Mathlib.Data.Set.Card
-import Mathlib.Data.Set.Finite.Powerset
-import Mathlib.Order.UpperLower.Closure
+module
+
+public import Mathlib.Combinatorics.Matroid.Init
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Data.Set.Card
+public import Mathlib.Data.Set.Finite.Powerset
+public import Mathlib.Order.UpperLower.Closure
 
 /-!
 # Matroids
@@ -160,6 +162,8 @@ There are a few design decisions worth discussing.
   Proc. Amer. Math. Soc. 144 (2016), 459-471][bowlerGeschke2015]
 -/
 
+@[expose] public section
+
 assert_not_exists Field
 
 open Set
@@ -211,8 +215,6 @@ namespace Matroid
 
 variable {α : Type*} {M : Matroid α}
 
-@[deprecated (since := "2025-02-14")] alias Base := IsBase
-
 instance (M : Matroid α) : Nonempty {B // M.IsBase B} :=
   nonempty_subtype.2 M.exists_isBase
 
@@ -249,8 +251,6 @@ instance finite_of_finite [Finite α] {M : Matroid α} : M.Finite :=
   /-- There is a finite base -/
   exists_finite_isBase : ∃ B, M.IsBase B ∧ B.Finite
 
-@[deprecated (since := "2025-02-09")] alias FiniteRk := RankFinite
-
 instance rankFinite_of_finite (M : Matroid α) [M.Finite] : RankFinite M :=
   ⟨M.exists_isBase.imp (fun B hB ↦ ⟨hB, M.set_finite B (M.subset_ground _ hB)⟩)⟩
 
@@ -259,14 +259,10 @@ instance rankFinite_of_finite (M : Matroid α) [M.Finite] : RankFinite M :=
   /-- There is an infinite base -/
   exists_infinite_isBase : ∃ B, M.IsBase B ∧ B.Infinite
 
-@[deprecated (since := "2025-02-09")] alias InfiniteRk := RankInfinite
-
 /-- A `RankPos` matroid is one whose bases are nonempty. -/
 @[mk_iff] class RankPos (M : Matroid α) : Prop where
   /-- The empty set isn't a base -/
   empty_not_isBase : ¬M.IsBase ∅
-
-@[deprecated (since := "2025-02-09")] alias RkPos := RankPos
 
 instance rankPos_nonempty {M : Matroid α} [M.RankPos] : M.Nonempty := by
   obtain ⟨B, hB⟩ := M.exists_isBase
@@ -299,7 +295,7 @@ theorem encard_diff_le_aux {B₁ B₂ : Set α}
   rw [insert_diff_of_mem _ hf.1, diff_diff_comm, ← union_singleton, ← diff_diff, diff_diff_right,
     inter_singleton_eq_empty.mpr he.2, union_empty] at hencard
   rw [← encard_diff_singleton_add_one he, ← encard_diff_singleton_add_one hf]
-  exact add_le_add_right hencard 1
+  gcongr
 termination_by (B₂ \ B₁).encard
 
 variable {B₁ B₂ : Set α}
@@ -463,8 +459,6 @@ theorem not_rankInfinite (M : Matroid α) [RankFinite M] : ¬ RankInfinite M := 
 theorem rankFinite_or_rankInfinite (M : Matroid α) : RankFinite M ∨ RankInfinite M :=
   let ⟨B, hB⟩ := M.exists_isBase
   B.finite_or_infinite.imp hB.rankFinite_of_finite hB.rankInfinite_of_infinite
-
-@[deprecated (since := "2025-03-27")] alias finite_or_rankInfinite := rankFinite_or_rankInfinite
 
 @[simp]
 theorem not_rankFinite_iff (M : Matroid α) : ¬ RankFinite M ↔ RankInfinite M :=
@@ -799,15 +793,11 @@ section IsBasis
 def IsBasis (M : Matroid α) (I X : Set α) : Prop :=
   Maximal (fun A ↦ M.Indep A ∧ A ⊆ X) I ∧ X ⊆ M.E
 
-@[deprecated (since := "2025-02-14")] alias Basis := IsBasis
-
 /-- `Matroid.IsBasis' I X` is the same as `Matroid.IsBasis I X`,
 without the requirement that `X ⊆ M.E`. This is convenient for some
 API building, especially when working with rank and closure. -/
 def IsBasis' (M : Matroid α) (I X : Set α) : Prop :=
   Maximal (fun A ↦ M.Indep A ∧ A ⊆ X) I
-
-@[deprecated (since := "2025-02-14")] alias Basis' := IsBasis'
 
 variable {B I J X Y : Set α} {e : α}
 
