@@ -229,7 +229,7 @@ variable [LieRing N] [LieAlgebra R N] [LieRing M] [LieAlgebra R M] (E : Extensio
 @[simps]
 def twoCocycleOfSplittingAux : M →ₗ[R] M →ₗ[R] E.proj.ker where
   toFun a := {
-    toFun b := ⟨⁅s a, s b⁆ - s ⁅a,b⁆, E.section_lie_sub_mem_ker hs a b⟩
+    toFun b := ⟨⁅s a, s b⁆ - s ⁅a,b⁆, by simp [hs.eq]⟩
     map_add' _ _ := by simp; abel
     map_smul' _ _ := by simp [smul_sub] }
   map_add' _ _ := by ext; simp; abel
@@ -256,9 +256,9 @@ def twoCocycleOfSplitting : twoCocycle R M N where
       ZeroMemClass.coe_zero]
     have hjac := lie_jacobi (s x) (s y) (s z)
     rw [E.bracket_eq_of_sub_mem_kernel hE (s x) ⁅s y, s z⁆ (s ⁅y, z⁆)
-      (section_lie_sub_mem_ker E hs y z), E.bracket_eq_of_sub_mem_kernel hE (s y) ⁅s z, s x⁆
-      (s ⁅z, x⁆) (section_lie_sub_mem_ker E hs z x), E.bracket_eq_of_sub_mem_kernel hE (s z)
-      ⁅s x, s y⁆ (s ⁅x, y⁆) (section_lie_sub_mem_ker E hs x y), ← lie_skew (s z),
+      (by simp [hs.eq]), E.bracket_eq_of_sub_mem_kernel hE (s y) ⁅s z, s x⁆
+      (s ⁅z, x⁆) (by simp [hs.eq]), E.bracket_eq_of_sub_mem_kernel hE (s z)
+      ⁅s x, s y⁆ (s ⁅x, y⁆) (by simp [hs.eq]), ← lie_skew (s z),
       ← sub_eq_add_neg, sub_eq_zero] at hjac
     rw [← hjac, ← lie_skew (s x), ← lie_skew (s y), ← lie_skew x]
     have := congr_arg s (lie_lie y x z)
@@ -271,7 +271,7 @@ def twoCocycleOfSplitting : twoCocycle R M N where
 
 lemma twoCocycleOfSplitting_apply_apply (a b : M) :
     (E.twoCocycleOfSplitting hE hs).val a b =
-      E.toKer.symm ⟨⁅s a, s b⁆ - s ⁅a,b⁆, E.section_lie_sub_mem_ker hs a b⟩ := by
+      E.toKer.symm ⟨⁅s a, s b⁆ - s ⁅a,b⁆, by simp [hs.eq]⟩ := by
   rfl
 
 @[simp]

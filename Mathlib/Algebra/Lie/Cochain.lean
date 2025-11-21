@@ -64,9 +64,6 @@ instance : LinearMapClass (twoCochain R L M) R L (L →ₗ[R] M) where
 lemma mem_twoCochain_iff {c : L →ₗ[R] L →ₗ[R] M} : c ∈ twoCochain R L M ↔ ∀ x, c x x = 0 := Iff.rfl
 
 @[simp]
-lemma mem_twoCochain_iff {c : L →ₗ[R] L →ₗ[R] M} : c ∈ twoCochain R L M ↔ ∀ x, c x x = 0 := Iff.rfl
-
-@[simp]
 lemma twoCochain_alt (a : twoCochain R L M) (x : L) :
     a x x = 0 :=
   a.2 x
