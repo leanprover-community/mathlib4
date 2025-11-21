@@ -352,18 +352,15 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
     · rw [← not_lt] at hB'
       apply hB'
       rwa [← Set.ncard_add_ncard_compl sᶜ, mul_two, add_lt_add_iff_left, compl_compl]
-
   -- Step 2 : A block contained in sᶜ is a subsingleton
   have hB_not_le_sc (B : Set α) (hB : IsBlock G B) (hBsc : B ⊆ sᶜ) :
       B.Subsingleton := by
     apply IsBlock.subsingleton_of_ssubset_compl_of_stabilizer_le ?_ (le_of_lt hG) hB (s := s)
     exact HasSubset.Subset.ssubset_of_ne hBsc (by aesop)
-
   -- Step 3 : A block contained in `s` is a subsingleton
   have hB_not_le_s (B : Set α) (hB : IsBlock G B) (hBs : B ⊆ s ) :
       B.Subsingleton :=
     IsBlock.subsingleton_of_stabilizer_lt_of_subset hB_not_le_sc hG hBs hB
-
   -- Conclusion : we reduce to proving that a block which is not a subsingleton is `univ`.
   intro B hB
   unfold IsTrivialBlock
