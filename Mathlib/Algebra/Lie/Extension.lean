@@ -286,12 +286,8 @@ lemma lie_incl_mem_ker {E : Extension R M L} (x : E.L) (y : M) :
 
 variable [LieRing N] [LieAlgebra R N] (E : Extension R N M)
 
-lemma bracket_mem_incl_range (E : Extension R M L) (x : L) (y : M) :
-    ⁅E.proj_surjective.hasRightInverse.choose x, E.incl y⁆ ∈ E.proj.ker := by
-  rw [LieHom.mem_ker, LieHom.map_lie, proj_incl, lie_zero]
-
 /-- The Lie algebra isomorphism from the kernel of an extension to the kernel of the projection. -/
-def toKer (E : Extension R M L) :
+noncomputable def toKer (E : Extension R M L) :
     M ≃ₗ⁅R⁆ E.proj.ker where
   toFun m := ⟨E.incl m, E.incl_apply_mem_ker m⟩
   map_add' _ _ := by simp
@@ -303,8 +299,10 @@ def toKer (E : Extension R M L) :
     rfl
   right_inv x := by simpa [Subtype.ext_iff] using Equiv.apply_ofInjective_symm E.incl_injective _
 
-lemma toKer_map_lie (E : Extension R M L) (x : M) (y : E.L) :
-    ⁅y, E.toKer x⁆ = ⁅y, E.incl x⁆ := by rfl
+
+@[simp] lemma lie_toKer_apply (E : Extension R M L) (x : M) (y : E.L) :
+    ⁅y, (E.toKer x : E.L)⁆ = ⁅y, E.incl x⁆ := by
+  rfl
 
 instance [IsLieAbelian M] (E : Extension R M L) : IsLieAbelian E.proj.ker :=
   (lie_abelian_iff_equiv_lie_abelian E.toKer.symm).mpr inferInstance
@@ -348,35 +346,26 @@ lemma toKer_bracket [IsLieAbelian M] (E : Extension R M L) (x : E.proj.ker) (y :
     E.toKer ⁅y, E.toKer.symm x⁆ = ⁅E.proj_surjective.hasRightInverse.choose y, x⁆ := by
   simp
 
-lemma section_lie_sub_mem_ker (E : Extension R M L) {s : L →ₗ[R] E.L}
-    (hs : Function.LeftInverse E.proj s) (x y : L) : ⁅s x, s y⁆ - s ⁅x, y⁆ ∈ LieHom.ker E.proj := by
-  rw [LieHom.mem_ker, map_sub, sub_eq_zero, LieHom.map_lie, hs, hs, hs]
-
 /-- A preparatory function for making a 2-cocycle from a linear splitting of an extension. -/
 @[simps]
 private def twoCocycleAux (E : Extension R M L) {s : L →ₗ[R] E.L}
     (hs : Function.LeftInverse E.proj s) :
     L →ₗ[R] L →ₗ[R] E.proj.ker where
   toFun x := {
-    toFun y := ⟨⁅s x, s y⁆ - s ⁅x, y⁆, E.section_lie_sub_mem_ker hs x y⟩
+    toFun y := ⟨⁅s x, s y⁆ - s ⁅x, y⁆, by simp [hs _]⟩
     map_add' _ _ := by simp; abel
     map_smul' _ _ := by simp [smul_sub] }
   map_add' x y := by ext; simp; abel
   map_smul' _ _ := by ext; simp [smul_sub]
 
-lemma section_sub_choose_mem (E : Extension R M L) {s : L →ₗ[R] E.L}
-    (hs : Function.LeftInverse E.proj s) (x : L) :
-    E.proj_surjective.hasRightInverse.choose x - s x ∈ E.proj.ker := by
-  rw [LieHom.mem_ker, map_sub, E.proj_surjective.hasRightInverse.choose_spec, hs, sub_eq_zero]
-
-lemma bracket_choose_twoCocycleAux [IsLieAbelian M] (E : Extension R M L) {s : L →ₗ[R] E.L}
-    (hs : Function.LeftInverse E.proj s) (x y z : L) :
-    ⁅E.proj_surjective.hasRightInverse.choose x, E.twoCocycleAux hs y z⁆ =
-      ⁅s x, E.twoCocycleAux hs y z⁆ := by
+lemma bracket_choose [IsLieAbelian M] (E : Extension R M L) {s : L →ₗ[R] E.L}
+    (hs : Function.LeftInverse E.proj s) (x : L) (y : E.proj.ker) :
+    ⁅E.proj_surjective.hasRightInverse.choose x, y⁆ =
+      ⁅s x, y⁆ := by
   rw [← sub_eq_zero, ← sub_lie]
   have := (lie_abelian_iff_equiv_lie_abelian E.toKer.symm).mpr inferInstance
   exact LieModule.IsTrivial.trivial (L := E.proj.ker)
-    ⟨_, section_sub_choose_mem E hs x⟩ (E.twoCocycleAux hs y z)
+    ⟨_, (by simp [E.proj_surjective.hasRightInverse.choose_spec _, hs _])⟩ y
 
 open LieModule.Cohomology
 
@@ -393,7 +382,7 @@ def twoCocycleOf [IsLieAbelian M] (E : Extension R M L) {s : L →ₗ[R] E.L}
     ext x y z
     simp only [d₂₃_apply, ← twoCochain_val_apply, LinearMap.compr₂_apply, LinearEquiv.coe_coe,
       LieEquiv.coe_toLinearEquiv, ringModuleOf_bracket, LieEquiv.apply_symm_apply,
-      bracket_choose_twoCocycleAux, LinearMap.zero_apply]
+      E.bracket_choose hs, LinearMap.zero_apply]
     simp only [twoCocycleAux, LinearMap.coe_mk, AddHom.coe_mk, lie_lie, map_sub]
     simp only [← map_sub, ← map_add, EmbeddingLike.map_eq_zero_iff, Subtype.ext_iff]
     simp only [map_sub, AddSubgroupClass.coe_sub, LieSubmodule.coe_add, LieSubmodule.coe_bracket,
