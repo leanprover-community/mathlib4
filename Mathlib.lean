@@ -1707,6 +1707,7 @@ public import Mathlib.Analysis.Convex.KreinMilman
 public import Mathlib.Analysis.Convex.LinearIsometry
 public import Mathlib.Analysis.Convex.Measure
 public import Mathlib.Analysis.Convex.Mul
+public import Mathlib.Analysis.Convex.NNReal
 public import Mathlib.Analysis.Convex.PartitionOfUnity
 public import Mathlib.Analysis.Convex.PathConnected
 public import Mathlib.Analysis.Convex.Piecewise
@@ -2286,6 +2287,8 @@ public import Mathlib.CategoryTheory.Comma.StructuredArrow.Final
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Functor
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 public import Mathlib.CategoryTheory.ComposableArrows.Basic
+public import Mathlib.CategoryTheory.ComposableArrows.One
+public import Mathlib.CategoryTheory.ComposableArrows.Two
 public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 public import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
@@ -2350,6 +2353,7 @@ public import Mathlib.CategoryTheory.Filtered.Basic
 public import Mathlib.CategoryTheory.Filtered.Connected
 public import Mathlib.CategoryTheory.Filtered.CostructuredArrow
 public import Mathlib.CategoryTheory.Filtered.Final
+public import Mathlib.CategoryTheory.Filtered.FinallySmall
 public import Mathlib.CategoryTheory.Filtered.Flat
 public import Mathlib.CategoryTheory.Filtered.Grothendieck
 public import Mathlib.CategoryTheory.Filtered.OfColimitCommutesFiniteLimit
@@ -2788,6 +2792,7 @@ public import Mathlib.CategoryTheory.NatTrans
 public import Mathlib.CategoryTheory.Noetherian
 public import Mathlib.CategoryTheory.ObjectProperty.Basic
 public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+public import Mathlib.CategoryTheory.ObjectProperty.ColimitsCardinalClosure
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsClosure
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
@@ -2795,6 +2800,7 @@ public import Mathlib.CategoryTheory.ObjectProperty.ContainsZero
 public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.ObjectProperty.Extensions
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.PreservesLimits
 public import Mathlib.CategoryTheory.ObjectProperty.Ind
 public import Mathlib.CategoryTheory.ObjectProperty.LimitsClosure
 public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
@@ -2847,6 +2853,8 @@ public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
 public import Mathlib.CategoryTheory.Presentable.Limits
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 public import Mathlib.CategoryTheory.Presentable.OrthogonalReflection
+public import Mathlib.CategoryTheory.Presentable.Retracts
+public import Mathlib.CategoryTheory.Presentable.Type
 public import Mathlib.CategoryTheory.Products.Associator
 public import Mathlib.CategoryTheory.Products.Basic
 public import Mathlib.CategoryTheory.Products.Bifunctor
@@ -2906,6 +2914,7 @@ public import Mathlib.CategoryTheory.Sites.CoversTop
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.SheafEquiv
+public import Mathlib.CategoryTheory.Sites.Descent.DescentData
 public import Mathlib.CategoryTheory.Sites.Descent.IsPrestack
 public import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 public import Mathlib.CategoryTheory.Sites.EpiMono
@@ -4037,6 +4046,7 @@ public import Mathlib.Geometry.Euclidean.Projection
 public import Mathlib.Geometry.Euclidean.SignedDist
 public import Mathlib.Geometry.Euclidean.Simplex
 public import Mathlib.Geometry.Euclidean.Sphere.Basic
+public import Mathlib.Geometry.Euclidean.Sphere.OrthRadius
 public import Mathlib.Geometry.Euclidean.Sphere.Power
 public import Mathlib.Geometry.Euclidean.Sphere.Ptolemy
 public import Mathlib.Geometry.Euclidean.Sphere.SecondInter
@@ -5615,6 +5625,7 @@ public import Mathlib.RingTheory.AdicCompletion.Exactness
 public import Mathlib.RingTheory.AdicCompletion.Functoriality
 public import Mathlib.RingTheory.AdicCompletion.LocalRing
 public import Mathlib.RingTheory.AdicCompletion.Noetherian
+public import Mathlib.RingTheory.AdicCompletion.RingHom
 public import Mathlib.RingTheory.AdicCompletion.Topology
 public import Mathlib.RingTheory.Adjoin.Basic
 public import Mathlib.RingTheory.Adjoin.Dimension
@@ -5706,6 +5717,7 @@ public import Mathlib.RingTheory.Etale.Basic
 public import Mathlib.RingTheory.Etale.Field
 public import Mathlib.RingTheory.Etale.Kaehler
 public import Mathlib.RingTheory.Etale.Pi
+public import Mathlib.RingTheory.Etale.StandardEtale
 public import Mathlib.RingTheory.EuclideanDomain
 public import Mathlib.RingTheory.Extension
 public import Mathlib.RingTheory.Extension.Basic
@@ -6031,6 +6043,7 @@ public import Mathlib.RingTheory.PowerSeries.CoeffMulMem
 public import Mathlib.RingTheory.PowerSeries.Derivative
 public import Mathlib.RingTheory.PowerSeries.Evaluation
 public import Mathlib.RingTheory.PowerSeries.GaussNorm
+public import Mathlib.RingTheory.PowerSeries.Ideal
 public import Mathlib.RingTheory.PowerSeries.Inverse
 public import Mathlib.RingTheory.PowerSeries.NoZeroDivisors
 public import Mathlib.RingTheory.PowerSeries.Order
@@ -6441,6 +6454,7 @@ public import Mathlib.Tactic.Linter.TextBased
 public import Mathlib.Tactic.Linter.UnusedTactic
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
 public import Mathlib.Tactic.Linter.UpstreamableDecl
+public import Mathlib.Tactic.Linter.ValidatePRTitle
 public import Mathlib.Tactic.Measurability
 public import Mathlib.Tactic.Measurability.Init
 public import Mathlib.Tactic.MinImports
@@ -7143,6 +7157,7 @@ public import Mathlib.Topology.UniformSpace.AbstractCompletion
 public import Mathlib.Topology.UniformSpace.Ascoli
 public import Mathlib.Topology.UniformSpace.Basic
 public import Mathlib.Topology.UniformSpace.Cauchy
+public import Mathlib.Topology.UniformSpace.Closeds
 public import Mathlib.Topology.UniformSpace.Compact
 public import Mathlib.Topology.UniformSpace.CompactConvergence
 public import Mathlib.Topology.UniformSpace.CompareReals
