@@ -34,7 +34,7 @@ namespace cm5b
 
 variable (K L) in
 /-- Given a cochain complex `K`, this is a cochain complex `I K` with
-zero differentials with in degree `n` consists of the injective
+zero differentials wich in degree `n` consists of the injective
 object `Injective.under (K.X n)`. -/
 @[simps]
 noncomputable def I : CochainComplex C ℤ where
