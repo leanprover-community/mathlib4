@@ -526,7 +526,7 @@ theorem subpathOn_trans_aux₂ (γ : Path x y) (a b : unitInterval) (hab : a ≤
         (γ.subpathOn (convexCombo a b (convexCombo s t u)) b (convexCombo_le hab _))) v
     continuous_toFun := by
       simp only [trans_apply, one_div, subpathOn_apply, coe_convexCombo]
-      simp only [← extend_extends, dite_eq_ite]
+      simp only [← extend_apply, dite_eq_ite]
       apply continuous_if_le (hfg := by grind) <;> fun_prop
     map_zero_left v := by simp [Path.trans_apply]
     map_one_left v := by simp [Path.trans_apply]
