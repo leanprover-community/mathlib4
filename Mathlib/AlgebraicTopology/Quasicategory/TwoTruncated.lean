@@ -72,7 +72,7 @@ class Quasicategory₂ (X : Truncated 2) where
 
 /--
 Two edges `f` and `g` are left homotopic if there is a `CompStruct` with
-(0, 1)-edge `f`, (1, 2)-edge `id` and (0, 2)-edge `g`. We use `Nonempty` to
+(0, 1)-edge `f`, (1, 2)-edge `Edge.id` and (0, 2)-edge `g`. We use `Nonempty` to
 have a `Prop` valued `HomotopicL`.
 -/
 abbrev HomotopicL {X : Truncated 2} {x y : X _⦋0⦌₂} (f g : Edge x y) :=
@@ -80,7 +80,7 @@ abbrev HomotopicL {X : Truncated 2} {x y : X _⦋0⦌₂} (f g : Edge x y) :=
 
 /--
 Two edges `f` and `g` are right homotopic if there is a `CompStruct` with
-(0, 1)-edge `id`, (1, 2)-edge `f`, and (0, 2)-edge `g`. We use `Nonempty` to
+(0, 1)-edge `Edge.id`, (1, 2)-edge `f`, and (0, 2)-edge `g`. We use `Nonempty` to
 have a `Prop` valued `HomotopicR`.
 -/
 abbrev HomotopicR {X : Truncated 2} {x y : X _⦋0⦌₂} (f g : Edge x y) :=
@@ -205,6 +205,7 @@ lemma composeEdges_homotopic {f f' : Edge x y} {g g' : Edge y z}
 The homotopy category of a 2-truncated quasicategory `A` has as objects the vertices of `A`
 -/
 structure HomotopyCategory₂ (A : Truncated 2) where
+  /-- An object of the homotopy category is a vertex of `A`. -/
   pt : A _⦋0⦌₂
 
 /--
