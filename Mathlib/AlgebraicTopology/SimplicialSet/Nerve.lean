@@ -113,13 +113,13 @@ open SSet
 
 @[simp]
 lemma left_edge {x y : ComposableArrows C 0} (e : (nerve C).Edge x y) :
-    ComposableArrows.left e.edge = nerveEquiv x := by
+    ComposableArrows.left (n := 1) e.edge = nerveEquiv x := by
   simp only [← e.src_eq]
   rfl
 
 @[simp]
-lemma right_right {x y : ComposableArrows C 0} (e : (nerve C).Edge x y) :
-    ComposableArrows.right (n := 1) e.edge = nerveEquiv y := by
+lemma right_edge {x y : ComposableArrows C 0} (e : (nerve C).Edge x y) :
+    ComposableArrows.right  (n := 1) e.edge = nerveEquiv y := by
   simp only [← e.tgt_eq]
   rfl
 
