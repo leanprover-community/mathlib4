@@ -1273,7 +1273,8 @@ lemma submoduleMap_symm_apply (e : M ≃SL[σ₁₂] M₂) (p : Submodule R M) (
   rfl
 
 /-- A continuous linear equivalence which maps a submodule of one module onto another,
-restricts to a continuous linear equivalence of the two submodules. -/
+restricts to a continuous linear equivalence of the two submodules.
+This is `LinearEquiv.ofSubmodules` as a continuous linear equivalence. -/
 def ofSubmodules (e : M ≃SL[σ₁₂] M₂)
     (p : Submodule R M) (q : Submodule R₂ M₂) (h : p.map (e : M →SL[σ₁₂] M₂) = q) : p ≃SL[σ₁₂] q :=
   (e.submoduleMap p).trans (.ofEq _ _ h)
