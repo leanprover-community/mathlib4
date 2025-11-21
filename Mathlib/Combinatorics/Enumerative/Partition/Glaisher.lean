@@ -17,6 +17,16 @@ times.
 
 ## Main declarations
 * `Nat.Partition.card_restricted_eq_card_countRestricted`: Glaisher's theorem.
+* `Nat.Partition.card_odds_eq_card_dinstincts`: Euler's partition theorem, a special case
+  of Glaisher's theorem when `m = 2`. This is also Theorem 45 from the
+  [100 Theorems List](https://www.cs.ru.nl/~freek/100/).
+
+## Proof outline
+
+The proof is based on the generating functions for `restricted` and `countRestricted` partitions,
+which turn out to be equal:
+
+$$\prod_{i=1,i\nmid m}^\infty\frac{1}{1-X^i}=\prod_{i=0}^\infty (1+X^{i+1}+\cdots+X^{(m-1)(i+1)})$$
 
 ## References
 https://en.wikipedia.org/wiki/Glaisher%27s_theorem
@@ -144,5 +154,9 @@ theorem card_restricted_eq_card_countRestricted (n : ℕ) {m : ℕ} (hm : 0 < m)
     #(restricted n (¬ m ∣ ·)) = #(countRestricted n m) := by
   simpa using PowerSeries.ext_iff.mp
     (powerSeriesMk_card_restricted_eq_powerSeriesMk_card_countRestricted ℤ hm) n
+
+theorem card_odds_eq_card_dinstincts (n : ℕ) : #(odds n) = #(distincts n) := by
+  simp_rw [← countRestricted_two, odds, even_iff_two_dvd]
+  exact card_restricted_eq_card_countRestricted n (by norm_num)
 
 end Nat.Partition
