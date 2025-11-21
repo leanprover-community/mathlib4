@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Topology.MetricSpace.HausdorffDistance
-public import Mathlib.Topology.Sets.Compacts
+public import Mathlib.Topology.UniformSpace.Closeds
 
 /-!
 # Closed subsets
@@ -34,15 +34,60 @@ namespace EMetric
 
 section
 
+variable {α : Type*} [PseudoEMetricSpace α]
+
+theorem mem_hausdorffEntourage_of_hausdorffEdist_lt {s t : Set α} {δ : ℝ≥0∞}
+    (h : hausdorffEdist s t < δ) : (s, t) ∈ hausdorffEntourage {p | edist p.1 p.2 < δ} := by
+  rw [hausdorffEdist, max_lt_iff] at h
+  rw [hausdorffEntourage, Set.mem_setOf]
+  conv => enter [2, 2, 1, 1, _]; rw [edist_comm]
+  have {s t : Set α} (h : ⨆ x ∈ s, infEdist x t < δ) :
+      s ⊆ SetRel.preimage {p | edist p.1 p.2 < δ} t := by
+    intro x hx
+    simpa only [infEdist, iInf_lt_iff, exists_prop] using (le_iSup₂ x hx).trans_lt h
+  exact ⟨this h.1, this h.2⟩
+
+theorem hausdorffEdist_le_of_mem_hausdorffEntourage {s t : Set α} {δ : ℝ≥0∞}
+    (h : (s, t) ∈ hausdorffEntourage {p | edist p.1 p.2 ≤ δ}) : hausdorffEdist s t ≤ δ := by
+  rw [hausdorffEdist, max_le_iff]
+  rw [hausdorffEntourage, Set.mem_setOf] at h
+  conv at h => enter [2, 2, 1, 1, _]; rw [edist_comm]
+  have {s t : Set α} (h : s ⊆ SetRel.preimage {p | edist p.1 p.2 ≤ δ} t) :
+      ⨆ x ∈ s, infEdist x t ≤ δ := by
+    rw [iSup₂_le_iff]
+    intro x hx
+    obtain ⟨y, hy, hxy⟩ := h hx
+    exact iInf₂_le_of_le y hy hxy
+  exact ⟨this h.1, this h.2⟩
+
+/-- The Hausdorff pseudo emetric on the powerset of a pseudo emetric space.
+See note [reducible non-instances]. -/
+protected abbrev _root_.PseudoEMetricSpace.hausdorff : PseudoEMetricSpace (Set α) where
+  edist s t := hausdorffEdist s t
+  edist_self _ := hausdorffEdist_self
+  edist_comm _ _ := hausdorffEdist_comm
+  edist_triangle _ _ _ := hausdorffEdist_triangle
+  toUniformSpace := .hausdorff α
+  uniformity_edist := by
+    refine le_antisymm
+      (le_iInf₂ fun ε hε => Filter.le_principal_iff.mpr ?_)
+      (uniformity_basis_edist.lift' monotone_hausdorffEntourage |>.ge_iff.mpr fun ε hε =>
+        Filter.mem_iInf_of_mem ε <| Filter.mem_iInf_of_mem hε fun _ =>
+        mem_hausdorffEntourage_of_hausdorffEdist_lt)
+    obtain ⟨δ, hδ, hδε⟩ := exists_between hε
+    filter_upwards [Filter.mem_lift' (uniformity_basis_edist_le.mem_of_mem hδ)]
+      with _ h using hδε.trans_le' <| hausdorffEdist_le_of_mem_hausdorffEntourage h
+
+end
+
+section
+
 variable {α β : Type*} [EMetricSpace α] [EMetricSpace β] {s : Set α}
 
 /-- In emetric spaces, the Hausdorff edistance defines an emetric space structure
 on the type of closed subsets -/
 instance Closeds.emetricSpace : EMetricSpace (Closeds α) where
-  edist s t := hausdorffEdist (s : Set α) t
-  edist_self _ := hausdorffEdist_self
-  edist_comm _ _ := hausdorffEdist_comm
-  edist_triangle _ _ _ := hausdorffEdist_triangle
+  __ := PseudoEMetricSpace.hausdorff.induced SetLike.coe
   eq_of_edist_eq_zero {s t} h :=
     Closeds.ext <| (hausdorffEdist_zero_iff_eq_of_closed s.isClosed t.isClosed).1 h
 
@@ -63,20 +108,11 @@ theorem continuous_infEdist_hausdorffEdist :
     _ = infEdist y t + 2 * edist (x, s) (y, t) := by rw [← mul_two, mul_comm]
 
 /-- Subsets of a given closed subset form a closed set -/
-theorem Closeds.isClosed_subsets_of_isClosed (hs : IsClosed s) :
-    IsClosed { t : Closeds α | (t : Set α) ⊆ s } := by
-  refine isClosed_of_closure_subset fun
-    (t : Closeds α) (ht : t ∈ closure {t : Closeds α | (t : Set α) ⊆ s}) (x : α) (hx : x ∈ t) => ?_
-  have : x ∈ closure s := by
-    refine mem_closure_iff.2 fun ε εpos => ?_
-    obtain ⟨u : Closeds α, hu : u ∈ {t : Closeds α | (t : Set α) ⊆ s}, Dtu : edist t u < ε⟩ :=
-      mem_closure_iff.1 ht ε εpos
-    obtain ⟨y : α, hy : y ∈ u, Dxy : edist x y < ε⟩ := exists_edist_lt_of_hausdorffEdist_lt hx Dtu
-    exact ⟨y, hu hy, Dxy⟩
-  rwa [hs.closure_eq] at this
+@[deprecated (since := "2025-11-19")]
+alias Closeds.isClosed_subsets_of_isClosed := TopologicalSpace.Closeds.isClosed_subsets_of_isClosed
 
 @[deprecated (since := "2025-08-20")]
-alias isClosed_subsets_of_isClosed := Closeds.isClosed_subsets_of_isClosed
+alias isClosed_subsets_of_isClosed := TopologicalSpace.Closeds.isClosed_subsets_of_isClosed
 
 /-- By definition, the edistance on `Closeds α` is given by the Hausdorff edistance -/
 theorem Closeds.edist_eq {s t : Closeds α} : edist s t = hausdorffEdist (s : Set α) t :=
@@ -235,10 +271,7 @@ namespace NonemptyCompacts
 /-- In an emetric space, the type of non-empty compact subsets is an emetric space,
 where the edistance is the Hausdorff edistance -/
 instance emetricSpace : EMetricSpace (NonemptyCompacts α) where
-  edist s t := hausdorffEdist (s : Set α) t
-  edist_self _ := hausdorffEdist_self
-  edist_comm _ _ := hausdorffEdist_comm
-  edist_triangle _ _ _ := hausdorffEdist_triangle
+  __ := PseudoEMetricSpace.hausdorff.induced SetLike.coe
   eq_of_edist_eq_zero {s t} h := NonemptyCompacts.ext <| by
     have : closure (s : Set α) = closure t := hausdorffEdist_zero_iff_closure_eq_closure.1 h
     rwa [s.isCompact.isClosed.closure_eq, t.isCompact.isClosed.closure_eq] at this
@@ -248,21 +281,18 @@ theorem isometry_toCloseds : Isometry (@NonemptyCompacts.toCloseds α _ _) :=
   fun _ _ => rfl
 
 /-- `NonemptyCompacts.toCloseds` is a uniform embedding (as it is an isometry) -/
-theorem isUniformEmbedding_toCloseds :
-    IsUniformEmbedding (@NonemptyCompacts.toCloseds α _ _) :=
-  isometry_toCloseds.isUniformEmbedding
+@[deprecated (since := "2025-11-19")]
+alias isUniformEmbedding_toCloseds := TopologicalSpace.NonemptyCompacts.isUniformEmbedding_toCloseds
 
 @[deprecated (since := "2025-08-20")]
-alias ToCloseds.isUniformEmbedding := isUniformEmbedding_toCloseds
+alias ToCloseds.isUniformEmbedding := TopologicalSpace.NonemptyCompacts.isUniformEmbedding_toCloseds
 
 /-- `NonemptyCompacts.toCloseds` is continuous (as it is an isometry) -/
-@[fun_prop]
-theorem continuous_toCloseds : Continuous (@NonemptyCompacts.toCloseds α _ _) :=
-  isometry_toCloseds.continuous
+@[deprecated (since := "2025-11-19")]
+alias continuous_toCloseds := TopologicalSpace.NonemptyCompacts.continuous_toCloseds
 
-lemma isClosed_subsets_of_isClosed (hs : IsClosed s) :
-    IsClosed {A : NonemptyCompacts α | (A : Set α) ⊆ s} :=
-  (Closeds.isClosed_subsets_of_isClosed hs).preimage continuous_toCloseds
+@[deprecated (since := "2025-11-19")]
+alias isClosed_subsets_of_isClosed := TopologicalSpace.NonemptyCompacts.isClosed_subsets_of_isClosed
 
 /-- The range of `NonemptyCompacts.toCloseds` is closed in a complete space -/
 theorem isClosed_in_closeds [CompleteSpace α] :
