@@ -111,7 +111,7 @@ variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 used to transfer the additive and scalar-multiple structure on the direct product to the type
 synonym. -/
 def ofProd : L × M ≃ ofTwoCocycle c where
-  toFun a := ⟨ a ⟩
+  toFun a := ⟨a⟩
   invFun a := a.carrier
 
 -- transport instances along the equivalence
@@ -124,13 +124,13 @@ instance : Module R (ofTwoCocycle c) := (ofProd c).symm.module R
 
 @[simp] lemma of_symm_zero : (ofProd c).symm (0 : ofTwoCocycle c) = 0 := rfl
 @[simp] lemma of_symm_add (x y : ofTwoCocycle c) :
-  (ofProd c).symm (x + y) = (ofProd c).symm x + (ofProd c).symm y := rfl
+    (ofProd c).symm (x + y) = (ofProd c).symm x + (ofProd c).symm y := rfl
 @[simp] lemma of_symm_smul (r : R) (x : ofTwoCocycle c) :
-  (ofProd c).symm (r • x) = r • (ofProd c).symm x := rfl
+    (ofProd c).symm (r • x) = r • (ofProd c).symm x := rfl
 
 @[simp] lemma of_nsmul (n : ℕ) (x : L × M) : (ofProd c) (n • x) = n • (ofProd c) x := rfl
 @[simp] lemma of_symm_nsmul (n : ℕ) (x : ofTwoCocycle c) :
-  (ofProd c).symm (n • x) = n • (ofProd c).symm x := rfl
+    (ofProd c).symm (n • x) = n • (ofProd c).symm x := rfl
 
 instance : LieRing (ofTwoCocycle c) where
   bracket x y :=
