@@ -64,10 +64,10 @@ lemma sequence_eqUpTo (n₁ n₂ : ℕ) (h : n₁ ≤ n₂) :
 
 /-- Assuming we have a sequence of subsets `X n : Set (Cochain K L d)` for all `n : ℕ`,
 a sequence of maps `φ n : X n → X (n + 1)` for `n : ℕ`, and an element `x₀ : X 0`,
-this is a cochain in `Cochain K L d` which, under the assumption that for any `x : X n`
-the cochain `φ n x` coincides with `x` up to the degree `p₀ + n`, can be understood
-as the "limit" of the sequence of cochain obtained by evaluating iterations of `φ`
-on `x₀`. -/
+and under the assumption that for any `x : X n` the cochain `φ n x` coincides
+with `x` up to the degree `p₀ + n`, this is a cochain in `Cochain K L d` which
+can be understood as the "limit" of the sequence of cochains obtained by
+evaluating iterations of `φ` on `x₀`. -/
 @[nolint unusedArguments]
 def limitSequence (_ : ∀ (n : ℕ) (x : X n), (φ n x).val.EqUpTo x.val (p₀ + n)) (x₀ : X 0) :
     Cochain K L d :=
