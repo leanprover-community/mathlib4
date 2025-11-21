@@ -214,10 +214,10 @@ open IsLocalization
 
 section NormalizedGCDMonoid
 
-variable [IsDomain R] [NormalizedGCDMonoid R]
+variable [IsDomain R]
 
-theorem isUnit_or_eq_zero_of_isUnit_integerNormalization_primPart {p : K[X]} (h0 : p ≠ 0)
-    (h : IsUnit (integerNormalization R⁰ p).primPart) : IsUnit p := by
+theorem isUnit_or_eq_zero_of_isUnit_integerNormalization_primPart [NormalizedGCDMonoid R]
+    {p : K[X]} (h0 : p ≠ 0) (h : IsUnit (integerNormalization R⁰ p).primPart) : IsUnit p := by
   rcases isUnit_iff.1 h with ⟨_, ⟨u, rfl⟩, hu⟩
   obtain ⟨⟨c, c0⟩, hc⟩ := integerNormalization_map_to_map R⁰ p
   rw [Subtype.coe_mk, Algebra.smul_def, algebraMap_apply] at hc
@@ -232,6 +232,8 @@ theorem isUnit_or_eq_zero_of_isUnit_integerNormalization_primPart {p : K[X]} (h0
   rcases con with (con | con)
   · apply h0 con
   · apply Units.ne_zero _ con
+
+variable [Nonempty (NormalizedGCDMonoid R)]
 
 /-- **Gauss's Lemma** for GCD domains states that a primitive polynomial is irreducible iff it is
   irreducible in the fraction field. -/
@@ -250,6 +252,7 @@ theorem IsPrimitive.irreducible_iff_irreducible_map_fraction_map {p : R[X]} (hp 
     apply map_injective (algebraMap R K) (IsFractionRing.injective _ _) _
     rw [Polynomial.map_mul, Polynomial.map_mul, Polynomial.map_mul, hc, hd, map_C, map_C, hab]
     ring
+  have := Classical.arbitrary (NormalizedGCDMonoid R)
   obtain ⟨u, hu⟩ :
     Associated (c * d)
       (content (integerNormalization R⁰ a) * content (integerNormalization R⁰ b)) := by
@@ -285,6 +288,7 @@ theorem IsPrimitive.dvd_of_fraction_map_dvd_fraction_map {p q : R[X]} (hp : p.Is
     apply map_injective (algebraMap R K) (IsFractionRing.injective _ _)
     rw [Polynomial.map_mul, Polynomial.map_mul, hs, hr, mul_assoc, mul_comm r]
     simp
+  have := Classical.arbitrary (NormalizedGCDMonoid R)
   rw [← hp.dvd_primPart_iff_dvd, primPart_mul, hq.primPart_eq, Associated.dvd_iff_dvd_right] at h
   · exact h
   · symm
