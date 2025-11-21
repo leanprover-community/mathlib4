@@ -156,12 +156,12 @@ noncomputable def pseudofunctor :
     Pseudofunctor (LocallyDiscrete Scheme.{u}ᵒᵖ) (Adj Cat) :=
   LocallyDiscrete.mkPseudofunctor
     (fun X ↦ Adj.mk (Cat.of X.unop.Modules))
-    (fun {Y X} f ↦ .mk (pullbackPushforwardAdjunction f.unop).toCat)
+    (fun f ↦ .mk (pullbackPushforwardAdjunction f.unop).toCat)
     (fun X ↦ Adj.iso₂Mk (pullbackId _) (pushforwardId _).symm (by
       dsimp
       rw [Bicategory.conjugateEquiv_eq_categoryTheoryConjugateEquiv]
       apply conjugateEquiv_pullbackId_hom))
-    (fun {Z Y X} f g ↦ Adj.iso₂Mk (pullbackComp _ _).symm (pushforwardComp _ _) (by
+    (fun f g ↦ Adj.iso₂Mk (pullbackComp _ _).symm (pushforwardComp _ _) (by
       dsimp
       rw [Bicategory.conjugateEquiv_eq_categoryTheoryConjugateEquiv,
         Adjunction.toCat_comp_toCat]
