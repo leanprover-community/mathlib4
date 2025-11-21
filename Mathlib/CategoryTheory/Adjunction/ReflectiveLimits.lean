@@ -1,12 +1,11 @@
 /-
 Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
+Authors: Joël Riou, Robin Carlier
 -/
 module
 
-public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Monad.Limits
 
 /-!
 # Existence of limits deduced from adjunctions
@@ -34,20 +33,14 @@ include adj
 
 lemma hasColimitsOfShape [G.Full] [G.Faithful]
     (J : Type*) [Category J] [HasColimitsOfShape J C] :
-    HasColimitsOfShape J D where
-  has_colimit K := by
-    have := adj.isLeftAdjoint
-    exact ⟨_, (IsColimit.precomposeInvEquiv
-      (associator _ _ _ ≪≫ isoWhiskerLeft _ (asIso adj.counit) ≪≫ rightUnitor _) _).2
-        (isColimitOfPreserves F (colimit.isColimit (K ⋙ G)))⟩
+    HasColimitsOfShape J D :=
+  letI : Reflective G := ⟨_, adj⟩
+  hasColimitsOfShape_of_reflective G
 
 lemma hasLimitsOfShape [F.Full] [F.Faithful]
     (J : Type*) [Category J] [HasLimitsOfShape J D] :
-    HasLimitsOfShape J C where
-  has_limit K := by
-    have := adj.isRightAdjoint
-    exact ⟨_, (IsLimit.postcomposeHomEquiv
-      (associator _ _ _ ≪≫ isoWhiskerLeft _ (asIso adj.unit).symm ≪≫ rightUnitor K) _).2
-        (isLimitOfPreserves G (limit.isLimit (K ⋙ F)))⟩
+    HasLimitsOfShape J C :=
+  letI : Coreflective F := ⟨_, adj⟩
+  hasLimitsOfShape_of_coreflective F
 
 end CategoryTheory.Adjunction
