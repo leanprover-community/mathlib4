@@ -320,7 +320,7 @@ theorem tprod_one_sub_ordered [CommRing α] [IsTopologicalAddGroup α]
   obtain hsum' := hsum.neg
   simp_rw [← neg_mul] at hsum'
   simp_rw [← tsum_neg, ← neg_mul]
-  exact tprod_one_add_ordererd hsum' hprod
+  exact tprod_one_add_ordered hsum' hprod
 
 end Ordered
 
