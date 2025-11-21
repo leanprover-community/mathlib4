@@ -99,100 +99,88 @@ theorem basicOpen_eq_top_iff {s : Finset K} :
 
       contrapose! h
     -- construct an intermediate algebra R ⊆ B ⊆ K which contains x⁻¹ and not x
-      let B := (adjoin R {x⁻¹})
-      have xinvB : x⁻¹ ∈ B  :=by exact Algebra.mem_adjoin_of_mem rfl
+      let B := adjoin R {x⁻¹}
+      have xinvB : x⁻¹ ∈ B  := Algebra.mem_adjoin_of_mem rfl
       -- Now we prove that x∉ B. This is surprisingly difficult.
-      have xnB : x ∉  B := by
+      have xnB : x ∉ B := by
         contrapose! h
-        apply Algebra.adjoin_mem_exists_aeval at h
-        rcases h with ⟨p,hp ⟩
+        have ⟨p, hp⟩ := Algebra.adjoin_mem_exists_aeval _ _ h
 
         -- We construct a polynomial q which witnesses the fact that x∈ IntClosure of R.
-        let d := Polynomial.natDegree p
+        let d := p.natDegree
 
         apply (mem_integralClosure_iff _ _ ).mpr
-        let q := (Polynomial.X^(d +1 )) - p.reverse
+        let q := .X ^ (d + 1) - p.reverse
 
         -- We prove that q is monic
-        have qmon: q.Monic := by
-          apply Polynomial.monic_X_pow_sub
-
-          calc p.reverse.degree ≤  p.reverse.natDegree := by exact Polynomial.degree_le_natDegree
-          _ ≤ p.natDegree := by exact mod_cast Polynomial.reverse_natDegree_le p
-          _ = d := by rfl
-          _ < d+1 := by exact mod_cast Nat.lt_add_one d
+        have qmon : q.Monic := Polynomial.monic_X_pow_sub <|
+          calc p.reverse.degree ≤ p.reverse.natDegree := Polynomial.degree_le_natDegree
+          _ ≤ p.natDegree := mod_cast Polynomial.reverse_natDegree_le p
+          _ = d := rfl
+          _ < d + 1 := mod_cast Nat.lt_add_one d
 
         -- Here we prove that q(x) indeed equals zero.
-        have xinvxeq1 : x⁻¹ * x=1 := inv_mul_cancel₀ xnezero
-        have xxinveq1 : x * x⁻¹ =1 := mul_inv_cancel₀ xnezero
+        have xinvxeq1 : x⁻¹ * x = 1 := inv_mul_cancel₀ xnezero
+        have xxinveq1 : x * x⁻¹ = 1 := mul_inv_cancel₀ xnezero
 
-        let xinvinv : Invertible x⁻¹ := ⟨x, xxinveq1 , xinvxeq1 ⟩
-        let xinv2 : Invertible x := ⟨ x⁻¹, xinvxeq1 , xxinveq1 ⟩
-        have :⅟(x⁻¹)=x := by rfl
-
-        have hq : Polynomial.aeval x q = 0 := by
-          calc (Polynomial.aeval x) q = (x^(d +1 )) - (Polynomial.aeval x) (p.reverse) := by
-                rw[Polynomial.aeval_sub] ; simp
-              _= (x^(d +1 )) - (Polynomial.aeval x) (p.reverse) * x⁻¹^ d * x^d := by
-                 rw[mul_assoc]; simp only [inv_pow, inv_mul_cancel_of_invertible, mul_one]
-              _= x^(d+1) - (Polynomial.aeval x⁻¹ ) p * x^d := by
+        let : Invertible x⁻¹ := ⟨x, xxinveq1 , xinvxeq1⟩
+        let : Invertible x := ⟨x⁻¹, xinvxeq1 , xxinveq1⟩
+        have : ⅟(x⁻¹) = x := by rfl
+        open Polynomial in
+        have hq : q.aeval x = 0 := by
+          calc q.aeval x = x ^ (d + 1) - p.reverse.aeval x := by
+                rw [aeval_sub]; simp
+              _ = x ^ (d + 1) - p.reverse.aeval x * x⁻¹ ^ d * x ^ d := by simp [mul_assoc]
+              _ = x ^ (d + 1) - p.aeval x⁻¹ * x ^ d := by
                     simp only [sub_right_inj, mul_eq_mul_right_iff]
                     left
-                    rw[Polynomial.aeval_def, Polynomial.aeval_def]
-                    nth_rewrite 1[ ←  this]
-                    rw[Polynomial.eval₂_reverse_mul_pow (algebraMap R K) x⁻¹ p]
-              _= 0 := by rw[hp] ;ring
+                    rw [aeval_def, aeval_def]
+                    nth_rewrite 1 [← this]
+                    rw [eval₂_reverse_mul_pow (algebraMap R K) x⁻¹ p]
+              _ = 0 := by rw [hp]; ring
 
         -- This is completing the Lemma
-        use q
-        exact ⟨ qmon,  hq ⟩
+        exact ⟨q, qmon, hq⟩
 
       -- Now we have proven that B is an algebra with x⁻¹ ∈ B and x∉ B
       -- We now construct a valuation ring V⊆ K which does not contain x.
 
       -- Here, we show that x⁻¹ is a non-unit of B ...
       let xinv : B := ⟨x⁻¹, xinvB⟩
-      · have xinvnu : xinv ∈ nonunits B := by
-          apply mem_nonunits_iff.mpr
+      · have xinvnu : xinv ∈ nonunits B := mem_nonunits_iff.mpr <| by
           contrapose! xnB
           rcases xnB with ⟨u,eq ⟩
           convert u.inv.2
           have hu : IsUnit (u : K) := u.isUnit.map B.subtype
           apply hu.mul_left_cancel
           conv_lhs => rw [eq]
-          simp
-          calc ↑xinv * x = 1  := by exact inv_mul_cancel₀ xnezero
-          _= ↑↑u * ↑↑u⁻¹ := congr_arg (·.1) u.val_inv.symm
+          rw [Units.inv_eq_val_inv]
+          calc xinv * x = 1 := inv_mul_cancel₀ xnezero
+          _ = u * u⁻¹ := congr_arg (·.1) u.val_inv.symm
 
-        apply exists_max_ideal_of_mem_nonunits at xinvnu
-        rcases xinvnu with ⟨I, Imax, xinvI⟩
+        rcases exists_max_ideal_of_mem_nonunits xinvnu with ⟨I, Imax, xinvI⟩
 
         --  ... And thus, we obtain a maximal ideal I of B containing x⁻¹...
-        let BI := (LocalSubring.ofPrime B.toSubring I)
+        let BI := LocalSubring.ofPrime B.toSubring I
         --  ⋯ And pass to the localisation of B at I to apply the following lemma
         -- that guarantees that there is a Valuation ring, V, that contains B,
         -- with the property that x⁻¹ ∈ maxIdeal(V)
 
-        apply  LocalSubring.exists_le_valuationSubring at BI
-        obtain ⟨V,hv⟩ := BI
-        have xnV : x∉ V := by
+        obtain ⟨V, hv⟩ := LocalSubring.exists_le_valuationSubring BI
+        have xnV : x ∉ V := by
           contrapose! xnB
           have := hv.2
           have : algebraMap B.toSubring BI.toSubring xinv ∈
               IsLocalRing.maximalIdeal BI.toSubring := by
             change Ideal B.toSubring at I
             rw [← IsLocalization.AtPrime.map_eq_maximalIdeal I]
-            exact Ideal.mem_map_of_mem (algebraMap ↥B.toSubring ↥BI.toSubring) xinvI
-          have := map_nonunit (Subring.inclusion hv.1) _ this
+            exact Ideal.mem_map_of_mem _ xinvI
 
-          refine (this ?_).elim
+          refine (map_nonunit (Subring.inclusion hv.1) _ this ?_).elim
           lift x to V using xnB
           apply IsUnit.of_mul_eq_one_right x
           ext
-          simp
-          change x.1 * xinv.1 = 1
-
-          exact CommGroupWithZero.mul_inv_cancel _ xnezero
+          exact mul_inv_cancel₀ xnezero
 
         -- We finally are prepared to conclude the proof, by showing that V ∈ Place (R K) is not in
         -- basicOpen R s, witnessing that basicOpen≠ Top.
@@ -200,28 +188,18 @@ theorem basicOpen_eq_top_iff {s : Finset K} :
           { __ := V , algebraMap_mem' r := hv.1 (LocalSubring.le_ofPrime _ _ (B.algebraMap_mem r))}
 
         -- Show that basicopen ≠ ⊤ because V is not in the basic open.
-        have vnbasic : V' ∉ (basicOpen R s ) := by
+        have vnbasic : V' ∉ basicOpen R s := by
           contrapose! xnV
-          have :(s: Set K) ⊆ V.carrier :=   by exact xnV
-          apply this
-          exact xs
+          exact xnV xs
 
         contrapose! vnbasic
-        rw[vnbasic]
+        rw [vnbasic]
         trivial
 
     -- Second case: Easy direction.
     rintro h
     ext V
-    constructor
-    · intro hV
-      exact trivial
-    intro Vtop x xs
-    apply h at xs
-    let V' : Subalgebra R K := { __ := V , algebraMap_mem' := fun r ↦ V.algebraMap_mem' r}
-    have : (integralClosure R K) ≤ V' := by exact Place.integralClosure_le V
-    apply this at xs
-    exact xs
+    exact ⟨fun hV ↦ ⟨⟩, fun Vtop x xs ↦ V.integralClosure_le (h xs)⟩
 
 
 -- the global sections of the sheaf on `Place R K`
