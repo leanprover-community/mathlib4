@@ -186,6 +186,8 @@ initialize registerBuiltinAttribute {
             return e
         DiscrTree.mkPath e
       normNumExt.add ((keys, declName), ext) kind
+      -- TODO: track what `[norm_num]` decls are actually used at use sites
+      recordExtraRevUseOfCurrentModule
     | _ => throwUnsupportedSyntax
   erase := fun declName => do
     let s := normNumExt.getState (← getEnv)
