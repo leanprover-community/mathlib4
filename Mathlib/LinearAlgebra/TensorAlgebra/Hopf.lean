@@ -35,6 +35,8 @@ abbrev ε := @algebraMapInv R _ M _ _
 def comul' : M →ₗ[R] T[M] ⊗[R] T[M] :=
   TensorProduct.map (ι R) (Algebra.linearMap R T[M]) ∘ₗ (TensorProduct.rid R M).symm +
   TensorProduct.map (Algebra.linearMap R T[M]) (ι R) ∘ₗ (TensorProduct.lid R M).symm
+  ((ι R) ⊗ₘ (Algebra.linearMap R T[M])) ∘ₗ (TensorProduct.rid R M).symm +
+  ((Algebra.linearMap R T[M]) ⊗ₘ (ι R)) ∘ₗ (TensorProduct.lid R M).symm
 
 /-- Comultiplication in `TensorAlgebra R M` as an algebra map. -/
 def comul : T[M] →ₐ[R] T[M] ⊗[R] T[M] := lift R (comul' R)
@@ -110,9 +112,8 @@ theorem antipode_antihom_apply (x y : T[M]) : antipode R (x * y) = antipode R y 
   simp
 
 @[simp]
-theorem antipode_antihom : antipode R ∘ₗ LinearMap.mul' R T[M] =
-    LinearMap.mul' R T[M] ∘ₗ TensorProduct.comm R T[M] T[M] ∘ₗ TensorProduct.map (antipode R)
-    (antipode R) := by
+theorem antipode_antihom : antipode R ∘ₗ mul' R T[M] =
+    mul' R T[M] ∘ₗ TensorProduct.comm R T[M] T[M] ∘ₗ ((antipode R) ⊗ₘ (antipode R)) := by
   ext x y
   simp
 
