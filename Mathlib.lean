@@ -5713,6 +5713,7 @@ public import Mathlib.RingTheory.Etale.Basic
 public import Mathlib.RingTheory.Etale.Field
 public import Mathlib.RingTheory.Etale.Kaehler
 public import Mathlib.RingTheory.Etale.Pi
+public import Mathlib.RingTheory.Etale.StandardEtale
 public import Mathlib.RingTheory.EuclideanDomain
 public import Mathlib.RingTheory.Extension
 public import Mathlib.RingTheory.Extension.Basic
@@ -7150,6 +7151,7 @@ public import Mathlib.Topology.UniformSpace.AbstractCompletion
 public import Mathlib.Topology.UniformSpace.Ascoli
 public import Mathlib.Topology.UniformSpace.Basic
 public import Mathlib.Topology.UniformSpace.Cauchy
+public import Mathlib.Topology.UniformSpace.Closeds
 public import Mathlib.Topology.UniformSpace.Compact
 public import Mathlib.Topology.UniformSpace.CompactConvergence
 public import Mathlib.Topology.UniformSpace.CompareReals
