@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
-public import Mathlib.CategoryTheory.Adjunction.ReflectiveLimits
+public import Mathlib.CategoryTheory.Monad.Limits
 
 /-!
 # Presentable objects and adjunctions
@@ -73,13 +73,17 @@ lemma hasCardinalFilteredGenerator [HasCardinalFilteredGenerator C κ]
 lemma isCardinalLocallyPresentable [IsCardinalLocallyPresentable C κ]
     [G.IsCardinalAccessible κ] [G.Full] [G.Faithful] :
     IsCardinalLocallyPresentable D κ where
-  toHasColimitsOfSize := ⟨fun _ _ ↦ adj.hasColimitsOfShape _⟩
+  toHasColimitsOfSize := by
+    let : Reflective G := ⟨_, adj⟩
+    exact hasColimits_of_reflective G
   toHasCardinalFilteredGenerator := adj.hasCardinalFilteredGenerator κ
 
 lemma isCardinalAccessibleCategory [IsCardinalAccessibleCategory C κ]
     [G.IsCardinalAccessible κ] [G.Full] [G.Faithful] :
     IsCardinalAccessibleCategory D κ where
-  toHasCardinalFilteredColimits := ⟨fun _ _ _ ↦ adj.hasColimitsOfShape _⟩
+  toHasCardinalFilteredColimits := ⟨fun _ _ _ ↦
+    let : Reflective G := ⟨_, adj⟩
+    hasColimitsOfShape_of_reflective G⟩
   toHasCardinalFilteredGenerator := adj.hasCardinalFilteredGenerator κ
 
 end Adjunction
