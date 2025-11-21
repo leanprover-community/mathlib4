@@ -5,7 +5,7 @@ Authors: Antoine Labelle
 -/
 module
 
-public import Mathlib.CategoryTheory.Closed.Monoidal
+public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.Functor.Currying
 public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
