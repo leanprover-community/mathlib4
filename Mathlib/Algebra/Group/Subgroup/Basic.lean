@@ -933,3 +933,9 @@ lemma AddSubgroup.subgroupOf_inertia {M : Type*} [AddGroup M] (I : AddSubgroup M
     {G : Type*} [Group G] [MulAction G M] (H : Subgroup G) :
     (I.inertia G).subgroupOf H = I.inertia H :=
   rfl
+
+@[simp]
+lemma AddSubgroup.inertia_map_subtype {M : Type*} [AddGroup M] (I : AddSubgroup M)
+    {G : Type*} [Group G] [MulAction G M] (H : Subgroup G) :
+    (I.inertia H).map H.subtype = I.inertia G ⊓ H := by
+  rw [← AddSubgroup.subgroupOf_inertia, Subgroup.subgroupOf_map_subtype]
