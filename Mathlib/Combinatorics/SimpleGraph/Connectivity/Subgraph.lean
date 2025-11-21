@@ -626,8 +626,8 @@ namespace Subgraph
 
 protected lemma Reachable.map_coe {G' : G.Subgraph} {G'' : G'.coe.Subgraph} (f : G'.coe →g G)
     {u v : G''.verts} (hreachable : G''.coe.Reachable u v) :
-    (G''.map f).coe.Reachable ⟨f u, by aesop⟩ ⟨f v, by aesop⟩ := by
-  use hreachable.exists_isPath.choose.map {
+    (G''.map f).coe.Reachable ⟨f u, by aesop⟩ ⟨f v, by aesop⟩ :=
+  hreachable.exists_isPath.choose.map {
     toFun v : (G''.map f).verts := ⟨⇑f v.val, by aesop⟩
     map_rel' r := Relation.map_apply.mpr (by tauto)
   }
