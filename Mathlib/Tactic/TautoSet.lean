@@ -5,7 +5,7 @@ Authors: Lenny Taelman
 -/
 module
 
-public meta import Mathlib.Data.Set.SymmDiff
+public import Mathlib.Data.Set.SymmDiff  -- shake: keep (Qq dependency)
 public meta import Mathlib.Data.Set.Disjoint
 
 /-!

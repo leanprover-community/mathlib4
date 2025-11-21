@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public meta import Mathlib.Algebra.Ring.Int.Parity
+public import Mathlib.Algebra.Ring.Int.Parity  -- shake: keep (Qq dependency)
 public meta import Mathlib.Tactic.NormNum.Core
 
 /-!

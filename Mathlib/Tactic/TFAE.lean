@@ -8,7 +8,7 @@ module
 public meta import Qq
 public meta import Mathlib.Data.Nat.Notation
 public meta import Mathlib.Util.AtomM
-public meta import Mathlib.Data.List.TFAE
+public import Mathlib.Data.List.TFAE  -- shake: keep (dependency of Qq output)
 public meta import Mathlib.Tactic.ExtendDoc
 
 /-!

@@ -8,6 +8,7 @@ module
 public meta import Qq.MetaM
 public meta import Mathlib.Logic.Nontrivial.Basic
 public meta import Mathlib.Tactic.Attr.Core
+public import Mathlib.Logic.Nontrivial.Basic -- shake: keep (tactic dependency)
 
 /-! # The `nontriviality` tactic. -/
 
