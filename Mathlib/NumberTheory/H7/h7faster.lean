@@ -6639,7 +6639,7 @@ theorem gelfondSchneider (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgeb
 
   haveI : DecidableEq (h7.K →+* ℂ) := h7.hd
 
-  let q : ℕ := 2 * h7.m * (6 * h7.h)
+  let q : ℕ := 2 * h7.m * Nat.ceil ( (6 * h7.h) * (h7.c₁₅)^4)
   have hq0 : 0 < q := sorry
   have h2mq : 2 * h7.m ∣ q ^ 2 := sorry
 
@@ -6653,61 +6653,73 @@ theorem gelfondSchneider (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgeb
 
   have use5 := use5 h7 q hq0 u t h2mq
 
-  have hnr : (h7.n q : ℝ) ≤ (h7.r q hq0 h2mq : ℝ) := by exact mod_cast n_leq_r h7 q hq0 h2mq
+  have hnr : (h7.n q : ℝ) ≤ (h7.r q hq0 h2mq : ℝ) := by
+    exact mod_cast n_leq_r h7 q hq0 h2mq
+
+  have H1 : 2*h7.m * 6* h7.h ≤ q := sorry
+  have H2 : 2*h7.m * (h7.c₁₅)^4 ≤ q := sorry
+  have H3 : 6* h7.h ≤ h7.n q := sorry
+  have H4 : (h7.c₁₅)^4 ≤ h7.n q := sorry
+  have H5 : 6* h7.h ≤ h7.r q hq0 h2mq := sorry  --eq5
+  have H6 : (h7.c₁₅)^4 ≤ h7.r q hq0 h2mq := sorry
+  sorry
+
+
+
   --dsimp [q] at hnr
 
-  have : h7.r q hq0 h2mq ^ (h7.r q hq0 h2mq : ℝ) <
-      (h7.c₁₅^ (h7.r q hq0 h2mq : ℝ))^
-       ((2 * (h7.r q hq0 h2mq): ℝ)/((h7.r q hq0 h2mq : ℝ) - 3* h7.h : ℝ)) := by {
-    refine (Real.rpow_inv_lt_iff_of_pos ?_ ?_ ?_).mp ?_
-    · positivity
-    · apply Real.rpow_nonneg
-      · exact c15_nonneg h7
-    · refine div_pos ?_ ?_
-      · refine Left.mul_pos ?_ ?_
-        · simp only [Nat.ofNat_pos]
-        · norm_cast; exact r_qt_0 h7 q hq0 h2mq
-      · simp only [sub_pos]
-        calc _ < (h7.n q : ℝ):= ?_
-             _ ≤ (h7.r q hq0 h2mq :ℝ):= ?_
-        · unfold n; unfold q
-          sorry
-        · exact hnr
-    · simp only [inv_div]
-      rw [← Real.rpow_mul]
-      ring_nf
-      nth_rw 2 [mul_comm]
-      nth_rw 1 [← mul_assoc]
-      rw [inv_mul_cancel₀]
-      rw [pow_two]
-      nth_rw 3 [mul_assoc]
-      rw [mul_inv_cancel₀]
-      rw [add_comm]
-      rw [one_mul, mul_one]
-      rw [mul_div]
-      rw [mul_div]
-      simp only [mul_one, mul_neg]
-      rw [← add_div]
-      rw [mul_comm]
-      rw [← sub_eq_add_neg]
-      exact use5
-      · norm_cast; exact rneq0 h7 q hq0 h2mq
-      · norm_cast; exact rneq0 h7 q hq0 h2mq
-      · positivity
-  }
-  rw [← Real.rpow_mul] at this
-  nth_rw 1 [mul_comm] at this
-  rw [Real.rpow_mul] at this
-  rw [Real.rpow_lt_rpow_iff] at this
-  · have final : (h7.c₁₅)^
-       ((2 * (h7.r q hq0 h2mq): ℝ)/((h7.r q hq0 h2mq : ℝ) - 3* h7.h : ℝ)) < h7.n q := sorry
-    linarith
-  · positivity
-  · apply Real.rpow_nonneg
-    · exact c15_nonneg h7
-  · norm_cast; exact r_qt_0 h7 q hq0 h2mq
-  · exact c15_nonneg h7
-  · exact c15_nonneg h7
+  -- have : h7.r q hq0 h2mq ^ (h7.r q hq0 h2mq : ℝ) <
+  --     (h7.c₁₅^ (h7.r q hq0 h2mq : ℝ))^
+  --      ((2 * (h7.r q hq0 h2mq): ℝ)/((h7.r q hq0 h2mq : ℝ) - 3* h7.h : ℝ)) := by {
+  --   refine (Real.rpow_inv_lt_iff_of_pos ?_ ?_ ?_).mp ?_
+  --   · positivity
+  --   · apply Real.rpow_nonneg
+  --     · exact c15_nonneg h7
+  --   · refine div_pos ?_ ?_
+  --     · refine Left.mul_pos ?_ ?_
+  --       · simp only [Nat.ofNat_pos]
+  --       · norm_cast; exact r_qt_0 h7 q hq0 h2mq
+  --     · simp only [sub_pos]
+  --       calc _ < (h7.n q : ℝ):= ?_
+  --            _ ≤ (h7.r q hq0 h2mq :ℝ):= ?_
+  --       · unfold n; unfold q
+  --         sorry
+  --       · exact hnr
+  --   · simp only [inv_div]
+  --     rw [← Real.rpow_mul]
+  --     ring_nf
+  --     nth_rw 2 [mul_comm]
+  --     nth_rw 1 [← mul_assoc]
+  --     rw [inv_mul_cancel₀]
+  --     rw [pow_two]
+  --     nth_rw 3 [mul_assoc]
+  --     rw [mul_inv_cancel₀]
+  --     rw [add_comm]
+  --     rw [one_mul, mul_one]
+  --     rw [mul_div]
+  --     rw [mul_div]
+  --     simp only [mul_one, mul_neg]
+  --     rw [← add_div]
+  --     rw [mul_comm]
+  --     rw [← sub_eq_add_neg]
+  --     exact use5
+  --     · norm_cast; exact rneq0 h7 q hq0 h2mq
+  --     · norm_cast; exact rneq0 h7 q hq0 h2mq
+  --     · positivity
+  -- }
+  -- rw [← Real.rpow_mul] at this
+  -- nth_rw 1 [mul_comm] at this
+  -- rw [Real.rpow_mul] at this
+  -- rw [Real.rpow_lt_rpow_iff] at this
+  -- · have final : (h7.c₁₅)^
+  --      ((2 * (h7.r q hq0 h2mq): ℝ)/((h7.r q hq0 h2mq : ℝ) - 3* h7.h : ℝ)) < h7.n q := sorry
+  --   linarith
+  -- · positivity
+  -- · apply Real.rpow_nonneg
+  --   · exact c15_nonneg h7
+  -- · norm_cast; exact r_qt_0 h7 q hq0 h2mq
+  -- · exact c15_nonneg h7
+  -- · exact c15_nonneg h7
 
 
 
