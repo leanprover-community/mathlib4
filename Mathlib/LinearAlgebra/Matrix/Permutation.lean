@@ -93,6 +93,7 @@ def permMatrixHom [NonAssocSemiring R] : Perm n →* Matrix n n R where
   map_one' := permMatrix_one
   map_mul' σ τ := by rw [_root_.mul_inv_rev, permMatrix_mul]
 
+-- TODO Move the code below to analysis
 open scoped Matrix.Norms.L2Operator
 
 variable {𝕜 : Type*} [RCLike 𝕜]
