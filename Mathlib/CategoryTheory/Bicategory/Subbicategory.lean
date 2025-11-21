@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.ObjectProperty.Basic
 # The full subbicategory associated to a property of objects
 
 Given a bicategory `B` and `P : ObjectProperty B`, we define
-a bicategory structure on the type `P.FullSubbicategory`
+a bicategory structure on the type `FullSubbicategory P`
 of objects in `B` satisfying `P`.
 
 -/
@@ -24,75 +24,75 @@ universe w v v' u u'
 namespace CategoryTheory
 
 -- TODO: wrong namespace?
-namespace ObjectProperty
-
-open Bicategory
+namespace Bicategory
 
 variable {B : Type u} [Bicategory.{w, v} B]
-
-section
-
-variable (P : ObjectProperty B)
 
 /--
 A subtype-like structure for full subcategories. Morphisms just ignore the property. We don't use
 actual subtypes since the simp-normal form `↑X` of `X.val` does not work well for full
 subcategories. -/
 @[ext]
-structure FullSubbicategory where
+structure FullSubbicategory (P : ObjectProperty B) where
   /-- The category of which this is a full subcategory -/
   obj : B
   /-- The predicate satisfied by all objects in this subcategory -/
   property : P obj
 
-instance FullSubbicategory.bicategory : Bicategory.{w, v} P.FullSubbicategory :=
+namespace FullSubbicategory
+
+section
+
+variable (P : ObjectProperty B)
+
+instance bicategory : Bicategory.{w, v} (FullSubbicategory P) :=
   InducedBicategory.bicategory FullSubbicategory.obj
+
+abbrev mkHom₂ {a b : FullSubbicategory P} {f g : a ⟶ b} (η : f.hom ⟶ g.hom) : f ⟶ g :=
+  InducedBicategory.mkHom₂ η
 
 -- these lemmas are not particularly well-typed, so would probably be dangerous as simp lemmas
 
-lemma FullSubbicategory.id_def (X : P.FullSubbicategory) : 𝟙 X = ⟨𝟙 X.obj⟩ := rfl
+lemma id_def (X : FullSubbicategory P) : 𝟙 X = ⟨𝟙 X.obj⟩ := rfl
 
-lemma FullSubbicategory.comp_def {X Y Z : P.FullSubbicategory} (f : X ⟶ Y) (g : Y ⟶ Z) :
+lemma comp_def {X Y Z : FullSubbicategory P} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).hom = f.hom ≫ g.hom := rfl
 
 /-- The forgetful functor from a full subcategory into the original category
 ("forgetting" the condition).
 -/
-def ι₂ : StrictPseudofunctor P.FullSubbicategory B :=
+def forget : StrictPseudofunctor (FullSubbicategory P) B :=
   InducedBicategory.forget FullSubbicategory.obj
 
 @[simp]
-theorem ι₂_obj {X} : P.ι₂.obj X = X.obj :=
+theorem forget_obj {X} : (forget P).obj X = X.obj :=
   rfl
 
 @[simp]
-theorem ι₂_map {X Y} {f : X ⟶ Y} : P.ι₂.map f = f.hom := -- TODO: right statement?
+theorem forget_map {X Y} {f : X ⟶ Y} : (forget P).map f = f.hom := -- TODO: right statement?
   rfl
 
--- TODO: need to think more from here (in particular figure out naming)
-
-/-- Constructor for isomorphisms in `P.FullSubbicategory` when
+/-- Constructor for isomorphisms in `FullSubbicategory P` when
 `P : ObjectProperty C`. -/
 @[simps]
-def isoMk' {X Y : P.FullSubbicategory} (e : P.ι₂.obj X ≅ P.ι₂.obj Y) : X ≅ Y where
-  hom := e.hom
-  inv := e.inv
-  hom_inv_id := e.hom_inv_id
-  inv_hom_id := e.inv_hom_id
+def isoMk {X Y : FullSubbicategory P} {f g : X ⟶ Y} (e : (forget P).map f ≅ (forget P).map g) :
+    f ≅ g where
+  hom := InducedBicategory.mkHom₂ e.hom -- TODO: need mkHom₂ in this namespace
+  inv := InducedBicategory.mkHom₂ e.inv
+  hom_inv_id := InducedBicategory.hom₂_ext <| e.hom_inv_id
+  inv_hom_id := InducedBicategory.hom₂_ext <| e.inv_hom_id
 
 
-variable {P} {P' : ObjectProperty C}
+variable {P} {P' : ObjectProperty B}
 
 /-- If `P` and `P'` are properties of objects such that `P ≤ P'`, there is
-an induced functor `P.FullSubbicategory ⥤ P'.FullSubbicategory`. -/
-@[simps]
-def ιOfLE (h : P ≤ P') : StrictPseudofunctor P.FullSubbicategory P'.FullSubbicategory where
-  obj X := ⟨X.1, h _ X.2⟩
-  map f := f
-
-/-- If `h : P ≤ P'` is an inequality of properties of objects,
-this is the obvious isomorphism `ιOfLE h ⋙ P'.ι ≅ P.ι`. -/
-def ιOfLECompιIso (h : P ≤ P') : ιOfLE h ⋙ P'.ι ≅ P.ι := Iso.refl _
+an induced functor `FullSubbicategory P ⥤ P'.FullSubbicategory`. -/
+@[simps!]
+def ιOfLE (h : P ≤ P') : StrictPseudofunctor (FullSubbicategory P) (FullSubbicategory P') :=
+  StrictPseudofunctor.mk' {
+    obj X := ⟨X.1, h _ X.2⟩
+    map f := ⟨f.hom⟩
+    map₂ η := InducedBicategory.mkHom₂ η.hom }
 
 end
 
@@ -135,6 +135,8 @@ def liftCompιOfLEIso (h : P ≤ Q) :
 
 end lift
 
-end ObjectProperty
+end FullSubbicategory
+
+end Bicategory
 
 end CategoryTheory
