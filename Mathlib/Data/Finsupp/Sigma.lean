@@ -44,15 +44,23 @@ This is `Finsupp.embDomain` specialized to `Function.Embedding.sigmaMk k`. -/
 def embSigma {k : κ} (f : ι k →₀ M) : (Σ k, ι k) →₀ M :=
   embDomain (Embedding.sigmaMk k) f
 
+@[grind =]
+theorem embSigma_apply [DecidableEq κ] {k : κ} (f : ι k →₀ M) (i : Σ k, ι k) :
+    embSigma f i = if h : i.1 = k then f (h ▸ i.2) else 0 := by
+  rcases i with ⟨k, i⟩
+  split_ifs with h
+  · subst h
+    simp only [embSigma, Embedding.sigmaMk]
+    apply embDomain_apply
+  · simp only [embSigma, Embedding.sigmaMk]
+    rw [embDomain_notin_range]
+    simp_all
+
 @[simp]
-theorem embSigma_apply {k : κ} (f : ι k →₀ M) (i : ι k) :
+theorem embSigma_apply_self {k : κ} (f : ι k →₀ M) (i : ι k) :
     embSigma f ⟨k, i⟩ = f i := by
   rw [embSigma]
   exact embDomain_apply (Embedding.sigmaMk k) f i
-
-theorem embSigma_apply_mk {k : κ} (f : ι k →₀ M) (i : ι k) :
-    embSigma f (Sigma.mk k i) = f i :=
-  embSigma_apply f i
 
 /-- Values of `embSigma f` at indices outside the `k`-th summand are zero. -/
 theorem embSigma_apply_of_ne {k k' : κ} (f : ι k →₀ M) (hk : k' ≠ k) (i : ι k') :
@@ -62,7 +70,7 @@ theorem embSigma_apply_of_ne {k k' : κ} (f : ι k →₀ M) (hk : k' ≠ k) (i 
   simp [Embedding.sigmaMk] at hj
   exact hk hj.1.symm
 
-@[simp]
+@[simp, grind =]
 theorem support_embSigma {k : κ} (f : ι k →₀ M) :
     (embSigma f).support = f.support.map (Embedding.sigmaMk k) := by
   simp [embSigma]
@@ -102,6 +110,8 @@ theorem embSigma_add {k : κ} (f g : ι k →₀ M) :
     simp
   · simp [embSigma_apply_of_ne _ hk]
 
+-- TODO: `embSigma` could be bundled as e.g. an additive or linear map, when needed.
+
 end EmbSigmaAdd
 
 section EmbSigmaSingle
@@ -125,7 +135,7 @@ variable [Zero M]
 
 /-- `embSigma` is a left inverse to `split` at the same index. -/
 @[simp]
-theorem split_embSigma {k : κ} (f : ι k →₀ M) :
+theorem split_embSigma_self {k : κ} (f : ι k →₀ M) :
     split (embSigma f) k = f := by
   ext i
   simp [split_apply]
