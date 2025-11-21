@@ -606,18 +606,15 @@ lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.N
 
 end induced_subgraphs
 
+protected lemma Reachable.coe_toSubgraph {H : SimpleGraph V} {u v : V} (h : H ≤ G)
+    (hreachable : H.Reachable u v) :
+    (toSubgraph H h).coe.Reachable (Subgraph.vert _ u trivial) (Subgraph.vert _ v trivial) := by
+  use hreachable.exists_isPath.choose.map ⟨((toSubgraph H h).vert · _), by simp_all⟩
+
 protected lemma Preconnected.toSubgraph {H : SimpleGraph V} (h : H ≤ G)
     (hpreconn : H.Preconnected) : (toSubgraph H h).Preconnected := by
-  simp_all only [Subgraph.preconnected_iff_forall_exists_walk_subgraph, toSubgraph_verts,
-    Set.mem_univ, forall_const]
-  intro u v
-  obtain ⟨p, _⟩ := hpreconn.set_univ_walk_nonempty u v
-  use p.transfer G (fun e he ↦ edgeSet_subset_edgeSet.mpr h (p.edges_subset_edgeSet he))
-  constructor
-  · simp
-  · intro x y hxy
-    rw [Walk.adj_toSubgraph_iff_mem_edges, Walk.edges_transfer] at hxy
-    exact p.edges_subset_edgeSet hxy
+  rw [Subgraph.preconnected_iff]
+  exact fun u v ↦ (hpreconn u v).coe_toSubgraph h
 
 protected lemma Connected.toSubgraph {H : SimpleGraph V} (h : H ≤ G) (hconn : H.Connected) :
     (toSubgraph H h).Connected := by
