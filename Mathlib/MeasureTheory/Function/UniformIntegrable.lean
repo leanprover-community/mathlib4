@@ -931,6 +931,38 @@ lemma UniformIntegrable.integrable_of_tendstoInMeasure
   rw [← memLp_one_iff_integrable]
   exact hUI.memLp_of_tendstoInMeasure 1 htends
 
+/-- If `fn` is `UnifIntegrable`, then the family of limits in probability of sequences of `fn` is
+`UnifIntegrable`. -/
+lemma UnifIntegrable.unifIntegrable_of_tendstoInMeasure
+    {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup β]
+    {fn : ι → α → β} (p : ℝ≥0∞) (hUI : UnifIntegrable fn p μ)
+    (hfn : ∀ i, AEStronglyMeasurable (fn i) μ) :
+    UnifIntegrable (fun (f : {g : α → β | ∃ ni : ℕ → ι,
+      TendstoInMeasure μ (fn ∘ ni) atTop g}) ↦ f.1) p μ := by
+  refine fun ε hε => ?_
+  obtain ⟨δ, hδ, hδ'⟩ := hUI hε
+  refine ⟨δ, hδ, fun ⟨f, s, hs⟩ t ht ht' => ?_⟩
+  obtain ⟨u, hu⟩ := hs.exists_seq_tendsto_ae
+  refine Lp.seq_tendsto_ae_bounded p (fun n => hδ' (s (u n)) t ht ht') ?_ ?_
+  · exact fun n => (hfn (s (u n))).indicator ht
+  · filter_upwards [hu.2] with a ha
+    by_cases memt : a ∈ t
+    · simpa [memt]
+    · simp [memt]
+
+/-- If `fn` is `UniformIntegrable`, then the family of limits in probability of sequences of `fn` is
+`UniformIntegrable`. -/
+lemma UniformIntegrable.uniformIntegrable_of_tendstoInMeasure
+    {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup β]
+    {fn : ι → α → β} (p : ℝ≥0∞) (hUI : UniformIntegrable fn p μ) :
+    UniformIntegrable (fun (f : {g : α → β | ∃ ni : ℕ → ι,
+      TendstoInMeasure μ (fn ∘ ni) atTop g}) ↦ f.1) p μ := by
+  refine ⟨fun ⟨f, s, hs⟩ => ?_, hUI.2.1.unifIntegrable_of_tendstoInMeasure p (fun i => hUI.1 i), ?_⟩
+  · exact hs.aestronglyMeasurable (fun n => hUI.1 (s n))
+  · obtain ⟨C, hC⟩ := hUI.2.2
+    refine ⟨C, fun ⟨f, s, hs⟩ => ?_⟩
+    exact tendstoInMeasure_bounded p (fun n => hC (s n)) hs (fun n => hUI.1 (s n))
+
 end TendstoInMeasure
 
 end MeasureTheory
