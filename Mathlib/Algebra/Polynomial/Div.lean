@@ -805,7 +805,7 @@ lemma associated_of_dvd_of_degree_eq {K} [Field K] {p q : K[X]} (hpq : p ∣ q)
     (associated_of_dvd_of_natDegree_le hpq · (natDegree_le_natDegree h₁.ge))
 
 lemma eq_mul_leadingCoeff_of_monic_of_dvd_of_natDegree_le {R} [Semiring R] {p q : R[X]}
-    (hp : p.Monic) (hdiv : p ∣ q) (hdeg : q.natDegree ≤ p.natDegree) :
+    (hp : p.Monic) (hdvd : p ∣ q) (hdeg : q.natDegree ≤ p.natDegree) :
     q = p * C q.leadingCoeff := by
   obtain ⟨r, rfl⟩ := hdiv
   obtain rfl | hr := eq_or_ne r 0
