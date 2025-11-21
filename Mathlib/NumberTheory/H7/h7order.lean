@@ -354,13 +354,7 @@ lemma change_deriv (R : ℂ → ℂ) (z: ℂ) :
               }
           rw [this, ← this]
           exact id (Eq.symm this)}
---r2 analytic
--- use k=r
--- use z0= l0'+1
--- R is R
--- for the application
--- one of R1 is R'
---R2 is junk
+
 lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
   (hf : ∀ z : ℂ, AnalyticAt ℂ R z) (hf1 : ∀ z : ℂ, AnalyticAt ℂ R₁ z)
   (hR₁ : ∀ z, R z  = (z - z₀)^r * R₁ z) :
@@ -389,35 +383,27 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
         have:= IH this; clear IH
         obtain ⟨R₂, hR₂, hR1⟩ := this
         let R2 : ℂ → ℂ := fun z =>
-        (r - k) * R₁ z + (r.factorial )/((r-k).factorial )* deriv R₁ (z)
-        + R₂ z + (z - z₀)*deriv R₂ z
+        (↑(r - k) * R₂ z +
+         (↑r.factorial / ↑(r - k).factorial * deriv R₁ z + (R₂ z + (z - z₀) * deriv R₂ z)))
         use R2
         constructor
         · unfold R2
           intros z
           refine AnalyticAt.fun_add ?_ ?_
-          · refine AnalyticAt.fun_add ?_ ?_
-            · refine AnalyticAt.fun_add ?_ ?_
-              · refine AnalyticAt.fun_mul ?_ ?_
-                · exact analyticAt_const
-                · exact hf1 z
-              · refine AnalyticAt.fun_mul ?_ ?_
-                · exact analyticAt_const
-                · exact AnalyticAt.deriv (hf1 z)
-            · exact hR₂ z
           · refine AnalyticAt.fun_mul ?_ ?_
-            · refine Differentiable.analyticAt ?_ z
-              · simp only [differentiable_fun_id, differentiable_const,
-                  Differentiable.fun_sub]
-            · exact AnalyticAt.deriv (hR₂ z)
-
-
-
-
-
-
-        · stop
-          intros z
+            · exact analyticAt_const
+            · exact hR₂ z
+          · refine AnalyticAt.fun_add ?_ ?_
+            · refine AnalyticAt.fun_mul ?_ ?_
+              · exact analyticAt_const
+              · exact AnalyticAt.deriv (hf1 z)
+            · refine AnalyticAt.fun_add ?_ ?_
+              · exact hR₂ z
+              · refine AnalyticAt.fun_mul ?_ ?_
+                · refine Differentiable.analyticAt ?_ z
+                  · simp only [differentiable_fun_id, differentiable_const, Differentiable.fun_sub]
+                · exact AnalyticAt.deriv (hR₂ z)
+        · intros z
           have derivOfderivk : ∀ z, deriv (fun z => (z - z₀)^(r - k) *
 
             (r.factorial / (r - k).factorial * R₁ z + (z - z₀) * R₂ z)) z =
@@ -461,50 +447,77 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
                     · simp only [differentiableAt_fun_id, differentiableAt_const,
                       DifferentiableAt.fun_sub]
                     · exact AnalyticAt.differentiableAt (hR₂ z)}
-          clear derivOfderivk
+
+
           conv => enter [1,1]; ext z; rw [hR1 z]
-          rw [deriv_fun_mul]
-          rw [deriv_fun_add]
-          rw [deriv_fun_mul]
-          rw [deriv_fun_mul]
-          unfold R2
-          simp only [differentiableAt_fun_id,
-            differentiableAt_const, DifferentiableAt.fun_sub,
-            deriv_fun_pow, deriv_fun_sub, deriv_id'', deriv_const', sub_zero, mul_one,
-            deriv_div_const, zero_div, zero_mul, zero_add, one_mul]
-          nth_rw 2 [mul_comm]
-          simp only [mul_assoc]
+          rw [derivOfderivk];clear derivOfderivk
           rw [mul_add]
-          rw [mul_add]
-          rw [mul_add]
-          rw [mul_add]
-          rw [mul_add]
-          rw [mul_add]
-          rw [mul_add]
-          rw [mul_add]
-          rw [mul_add]
-          rw [mul_add]
-          rw [mul_add]
+          have H2 : (r - k - 1) = (r - (k + 1)) := by {grind}
+          rw [H2];
           simp only [add_assoc]
+          have H1 :
+           ↑(r - k) * (z - z₀) ^ (r - (k + 1)) * (↑r.factorial / ↑(r - k).factorial * R₁ z)=
+           1*((z - z₀) ^ (r - (k + 1)) * (↑r.factorial / ↑(r - k).factorial * R₁ z)) +
+           ↑(r - k - 1) * ((z - z₀) ^ (r - (k + 1)) * (↑r.factorial / ↑(r - k).factorial * R₁ z))
+            := by {rw [← add_mul]; simp only [mul_assoc];congr;norm_cast; grind}
+          rw [H1]; clear H1;
+          simp only [one_mul]
           simp only [← mul_assoc]
-
-
-
-
-
-
-
-          -- simp only [add_assoc]
-          -- rw [add_comm]
-          -- nth_rw 6 [add_comm]
-          -- nth_rw 3 [mul_add]
-          sorry
-
-
-
-
-
-
+          nth_rw 5 [mul_comm]
+          simp only [← add_assoc]
+          simp only [mul_assoc]
+          rw [← mul_add]
+          simp only [← mul_assoc]
+          nth_rw 6 [mul_comm]
+          nth_rw 7 [mul_comm]
+          simp only [← mul_assoc]
+          nth_rw 7 [mul_comm]
+          simp only [mul_assoc]
+          rw [← mul_add]
+          have : (z - z₀) ^ (r - k) = (z - z₀) ^ (r - (k + 1)) * (z - z₀)^1 := by {
+             rw [← pow_add]; congr; grind}
+          rw [this];clear this
+          simp only [mul_assoc]
+          rw [← mul_add]
+          simp only [pow_one, mul_eq_mul_left_iff, pow_eq_zero_iff', ne_eq]
+          left
+          simp only [← mul_assoc]
+          rw [← add_mul]
+          nth_rw 1 [← one_mul (a:=(r.factorial / (r - k).factorial : ℂ))]
+          rw [← add_mul]
+          rw [H2]
+          have : ↑(r - (k + 1) + 1)= ↑(r - k) := by {grind}
+          norm_cast
+          rw [add_assoc]
+          simp only [mul_assoc]
+          rw [← mul_add]
+          simp only [Nat.cast_add, Nat.cast_one]
+          nth_rw 2 [add_comm]
+          norm_cast
+          rw [this]
+          simp only [← mul_assoc]
+          rw [mul_div]
+          have : ((↑(r - k) *r.factorial)/↑(r - k).factorial : ℂ) =
+             ↑r.factorial / ↑(r - (k + 1)).factorial := by {
+            nth_rw 2 [← Nat.mul_factorial_pred]
+            · rw [H2]
+              ring_nf
+              simp only [Nat.cast_mul, _root_.mul_inv_rev]
+              nth_rw 2 [mul_comm]
+              nth_rw 3 [mul_comm]
+              simp only [← mul_assoc]
+              simp only [mul_eq_mul_right_iff, inv_eq_zero, Nat.cast_eq_zero]
+              left
+              rw [mul_assoc]
+              rw [mul_inv_cancel₀]
+              · simp only [mul_one]
+              · simp only [ne_eq, Nat.cast_eq_zero]
+                grind
+            · grind
+              }
+          rw [this]
+          unfold R2
+          simp only [add_assoc]
 
         }
 
