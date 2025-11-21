@@ -67,7 +67,6 @@ lemma Real.tendstoLocallyUniformlyOn_rpow_sub_one_log :
   have hcont' : ContinuousOn (fun x => ‖log x‖) s := by
     fun_prop (disch := assumption)
   filter_upwards [h₁, h₂] with p ⟨hp₁,hp₂⟩ hp₃
-  have p_nonneg : 0 ≤ p := by grind
   intro x hx
   have hx' : ‖p * log x‖ ≤ 1 := calc
     _ = p * ‖log x‖ := by grind [norm_mul, Real.norm_of_nonneg]
