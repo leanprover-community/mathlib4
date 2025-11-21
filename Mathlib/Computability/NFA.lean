@@ -200,8 +200,8 @@ theorem append_preimage_acceptsFrom {S : Set σ} {x : List α} :
 
 variable (M) in
 @[simp]
-theorem acceptsFrom_union {S1 S2 : Set σ} :
-    M.acceptsFrom (S1 ∪ S2) = M.acceptsFrom S1 + M.acceptsFrom S2 := by
+theorem acceptsFrom_union {S T : Set σ} :
+    M.acceptsFrom (S ∪ T) = M.acceptsFrom S + M.acceptsFrom T := by
   rw [Language.add_def]; ext x
   simp only [mem_acceptsFrom, evalFrom_union, mem_union]
   constructor
@@ -213,7 +213,7 @@ theorem acceptsFrom_union {S1 S2 : Set σ} :
 variable (M) in
 @[simp]
 theorem acceptsFrom_iUnion {ι : Sort*} (s : ι → Set σ) :
-    M.acceptsFrom (⋃ (i : ι), s i) = ⋃ (i : ι), M.acceptsFrom (s i) := by
+    M.acceptsFrom (⋃ i, s i) = ⋃ i, M.acceptsFrom (s i) := by
   ext x
   simp only [acceptsFrom, evalFrom_iUnion, mem_iUnion]
   simp_rw [↑mem_iUnion, ↑mem_setOf_eq]; tauto
