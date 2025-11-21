@@ -49,7 +49,8 @@ variable (P : ObjectProperty C)
 
 /-- Given `P : ObjectProperty C`, this is the class of morphisms `f : X ⟶ Y`
 such that for all `Z : C` such that `P Z`, the precomposition with `f` induces
-a bijection `(Y ⟶ Z) ≃ (X ⟶ Z)`. -/
+a bijection `(Y ⟶ Z) ≃ (X ⟶ Z)`. (One of the applications of this notion
+is the left Bousfield localization of model categories.) -/
 def isLocal : MorphismProperty C := fun _ _ f =>
   ∀ Z, P Z → Function.Bijective (fun (g : _ ⟶ Z) => f ≫ g)
 
