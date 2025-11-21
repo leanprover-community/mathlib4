@@ -46,8 +46,8 @@ def antipode : T[M] →ₗ[R] T[M] := (MulOpposite.opLinearEquiv R).symm.comp
   (lift R ((MulOpposite.opLinearEquiv R).comp (-(ι R)))).toLinearMap
 
 @[simp]
-lemma comul_apply' (x : M) : comul' R x = ι R x ⊗ₜ[R] ↑1 + ↑1 ⊗ₜ[R] ι R x := by
-  unfold comul'
+lemma comul_apply (x : M) : comul R (ι R x) = ι R x ⊗ₜ[R] ↑1 + ↑1 ⊗ₜ[R] ι R x := by
+  unfold comul comul'
   simp
 
 @[simp]
@@ -87,7 +87,8 @@ lemma antipode_ι_apply (x : M) : antipode R ((ι R) x) = -(ι R) x := by
   simp
 
 @[simp]
-lemma antipode_one (r : R) : antipode R (algebraMap R T[M] r) = algebraMap R T[M] r := by
+lemma antipode_algebraMap_apply (r : R) :
+    antipode R ((algebraMap R T[M]) r) = algebraMap R T[M] r := by
   unfold antipode
   simp
 
@@ -97,10 +98,10 @@ theorem coassoc : (Algebra.TensorProduct.assoc R R T[M] T[M] T[M]).toAlgHom.comp
   unfold comul comul'
   ext
   /- can be reduced maybe? -/
-  simp only [AlgHom.comp_toLinearMap, LinearMap.coe_comp, AlgHom.coe_toLinearMap,
-  Function.comp_apply, lift_ι_apply, LinearMap.add_apply, LinearEquiv.coe_coe,
-  TensorProduct.rid_symm_apply, TensorProduct.map_tmul, Algebra.linearMap_apply, map_one,
-  TensorProduct.lid_symm_apply, map_add, Algebra.TensorProduct.map_tmul, TensorProduct.tmul_add]
+  simp only [AlgHom.comp_toLinearMap, coe_comp, AlgHom.coe_toLinearMap,
+  Function.comp_apply, lift_ι_apply, add_apply, LinearEquiv.coe_coe,
+  rid_symm_apply, map_tmul, Algebra.linearMap_apply, map_one,
+  lid_symm_apply, map_add, Algebra.TensorProduct.map_tmul, tmul_add]
   abel
 
 instance instBialgebra : Bialgebra R T[M] := Bialgebra.ofAlgHom (comul R) algebraMapInv
