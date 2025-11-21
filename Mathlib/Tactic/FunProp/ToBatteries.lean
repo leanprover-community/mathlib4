@@ -83,7 +83,7 @@ def mkProdProj (x : Expr) (i : Nat) (n : Nat) : MetaM Expr := do
   | 0, _ => mkAppM ``Prod.fst #[x]
   | i'+1, n'+1 => mkProdProj (← withTransparency .all <| mkAppM ``Prod.snd #[x]) i' n'
 
-/-- For an element of a product type(of size`n`) `xs` create an array of all possible projections
+/-- For an element of a product type (of size `n`) `xs` create an array of all possible projections
 i.e. `#[xs.1, xs.2.1, xs.2.2.1, ..., xs.2..2]` -/
 def mkProdSplitElem (xs : Expr) (n : Nat) : MetaM (Array Expr) :=
   (Array.range n)

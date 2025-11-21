@@ -27,7 +27,7 @@ where `L₁ ⊣ R₁` and `L₂ ⊣ R₂`. The corresponding natural transformat
 
 This bijection includes a number of interesting cases as specializations. For instance, in the
 special case where `G,H` are identity functors then the bijection preserves and reflects
-isomorphisms (i.e. we have bijections`(L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂)`, and if either side is an iso then the
+isomorphisms (i.e. we have bijections `(L₂ ⟶ L₁) ≃ (R₁ ⟶ R₂)`, and if either side is an iso then the
 other side is as well). This demonstrates that adjoints to a given functor are unique up to
 isomorphism (since if `L₁ ≅ L₂` then we deduce `R₁ ≅ R₂`).
 
