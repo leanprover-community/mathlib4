@@ -1221,6 +1221,20 @@ end ContinuousLinearMap
 -- Restricting a continuous linear equivalence to a map between submodules.
 section map
 
+-- TODO_ move this!
+variable {X : Type*} [TopologicalSpace X] {p q : X → Prop}
+
+/-- A homeomorphism between two equal subtypes of a given topological space:
+the underlying equivalence is `Equiv.subtypeEquivProp`. -/
+def Homeomorph.subtypes_of_eq (hpq : p = q) : Subtype p ≃ₜ Subtype q where
+  toEquiv := Equiv.subtypeEquivProp hpq
+  continuous_toFun := continuous_id.subtype_map (fun x ↦ by simp [hpq])
+  continuous_invFun := continuous_id.subtype_map (fun x ↦ by simp [hpq])
+
+@[simp]
+lemma Homeomorph.subtypes_of_eq_toEquiv (hpq : p = q) :
+    (Homeomorph.subtypes_of_eq hpq).toEquiv = Equiv.subtypeEquivProp hpq := rfl
+
 namespace ContinuousLinearEquiv
 
 variable {R R₂ M M₂ : Type*} [Semiring R] [Semiring R₂] [AddCommMonoid M] [AddCommMonoid M₂]
@@ -1233,12 +1247,11 @@ variable {R R₂ M M₂ : Type*} [Semiring R] [Semiring R₂] [AddCommMonoid M] 
 def ofEq {p q : Submodule R M} (h : p = q) : p ≃L[R] q where
   toLinearEquiv := LinearEquiv.ofEq _ _ h
   continuous_toFun := by
-    -- want a better lemma: equal subtypes define a homeomorphism
-    dsimp
     have h' : (fun x ↦ x ∈ p) = (fun x ↦ x ∈ q) := by simp [h]
-    change Continuous (Equiv.subtypeEquivProp h')
-    sorry -- not in mathlib
-  continuous_invFun := sorry -- should follow from toFun proof
+    exact (Homeomorph.subtypes_of_eq h').continuous
+  continuous_invFun := by
+    have h' : (fun x ↦ x ∈ p) = (fun x ↦ x ∈ q) := by simp [h]
+    exact (Homeomorph.subtypes_of_eq h').symm.continuous
 
 /--
 A continuous linear equivalence of two modules restricts to a continuous linear equivalence
