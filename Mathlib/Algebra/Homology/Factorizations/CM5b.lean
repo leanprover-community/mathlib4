@@ -116,7 +116,7 @@ noncomputable def homotopyEquiv : HomotopyEquiv (mappingCone (𝟙 (I K)) ⊞ L)
     (Homotopy.ofEq (by simp [p])).trans (h₂.symm.trans (Homotopy.ofEq (by simp)))
   homotopyInvHomId := Homotopy.ofEq (by simp)
 
-instance quasiIso_p : QuasiIso (p K L) := (homotopyEquiv K L).quasiIso_hom
+instance : QuasiIso (p K L) := (homotopyEquiv K L).quasiIso_hom
 
 end cm5b
 
