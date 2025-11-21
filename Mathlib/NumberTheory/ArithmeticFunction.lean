@@ -3,14 +3,16 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.NumberTheory.Divisors
-import Mathlib.Data.Nat.Squarefree
-import Mathlib.Data.Nat.GCD.BigOperators
-import Mathlib.Data.Nat.Factorization.Induction
-import Mathlib.Data.Nat.Factorization.PrimePow
-import Mathlib.Tactic.ArithMult
+module
+
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.NumberTheory.Divisors
+public import Mathlib.Data.Nat.Squarefree
+public import Mathlib.Data.Nat.GCD.BigOperators
+public import Mathlib.Data.Nat.Factorization.Induction
+public import Mathlib.Data.Nat.Factorization.PrimePow
+public import Mathlib.Tactic.ArithMult
 
 /-!
 # Arithmetic Functions and Dirichlet Convolution
@@ -66,6 +68,7 @@ arithmetic functions, dirichlet convolution, divisors
 -/
 
 set_option linter.style.longFile 1700
+@[expose] public section
 
 open Finset
 
@@ -1530,7 +1533,7 @@ open Lean Meta Qq
 
 /-- Extension for `ArithmeticFunction.sigma`. -/
 @[positivity ArithmeticFunction.sigma _ _]
-def evalArithmeticFunctionSigma : PositivityExt where eval {u α} z p e := do
+meta def evalArithmeticFunctionSigma : PositivityExt where eval {u α} z p e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(ArithmeticFunction.sigma $k $n) =>
     let rn ← core z p n
@@ -1542,7 +1545,7 @@ def evalArithmeticFunctionSigma : PositivityExt where eval {u α} z p e := do
 
 /-- Extension for `ArithmeticFunction.zeta`. -/
 @[positivity ArithmeticFunction.zeta _]
-def evalArithmeticFunctionZeta : PositivityExt where eval {u α} z p e := do
+meta def evalArithmeticFunctionZeta : PositivityExt where eval {u α} z p e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(ArithmeticFunction.zeta $n) =>
     let rn ← core z p n
@@ -1553,3 +1556,4 @@ def evalArithmeticFunctionZeta : PositivityExt where eval {u α} z p e := do
   | _, _, _ => throwError "not ArithmeticFunction.zeta"
 
 end Mathlib.Meta.Positivity
+T

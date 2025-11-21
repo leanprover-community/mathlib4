@@ -3,7 +3,9 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Meromorphic.Divisor
+module
+
+public import Mathlib.Analysis.Meromorphic.Divisor
 
 /-!
 # Normal form of meromorphic functions and continuous extension
@@ -20,6 +22,8 @@ where `g` is analytic and does not vanish at `x`.
 The relevant notions are `MeromorphicNFAt` and `MeromorphicNFOn`; these guarantee normal
 form at a single point and along a set, respectively.
 -/
+
+@[expose] public section
 
 open Topology WithTop
 

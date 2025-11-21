@@ -3,8 +3,10 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.Tactic.Conv
+module
+
+public meta import Mathlib.CategoryTheory.Category.Basic
+public meta import Mathlib.Tactic.Conv
 
 /-!
 # The `slice` tactic
@@ -13,6 +15,8 @@ Applies a tactic to an interval of terms from a term obtained by repeated applic
 of `Category.comp`.
 
 -/
+
+public meta section
 
 open CategoryTheory
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta

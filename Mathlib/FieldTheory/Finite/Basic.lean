@@ -3,17 +3,19 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Joey van Langen, Casper Putz
 -/
-import Mathlib.Algebra.CharP.Algebra
-import Mathlib.Algebra.CharP.Reduced
-import Mathlib.Algebra.Field.ZMod
-import Mathlib.Data.Nat.Prime.Int
-import Mathlib.Data.ZMod.ValMinAbs
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
-import Mathlib.FieldTheory.Finiteness
-import Mathlib.FieldTheory.Galois.Notation
-import Mathlib.FieldTheory.Perfect
-import Mathlib.FieldTheory.Separable
-import Mathlib.RingTheory.IntegralDomain
+module
+
+public import Mathlib.Algebra.CharP.Algebra
+public import Mathlib.Algebra.CharP.Reduced
+public import Mathlib.Algebra.Field.ZMod
+public import Mathlib.Data.Nat.Prime.Int
+public import Mathlib.Data.ZMod.ValMinAbs
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+public import Mathlib.FieldTheory.Finiteness
+public import Mathlib.FieldTheory.Galois.Notation
+public import Mathlib.FieldTheory.Perfect
+public import Mathlib.FieldTheory.Separable
+public import Mathlib.RingTheory.IntegralDomain
 
 /-!
 # Finite fields
@@ -47,6 +49,8 @@ in this file we take the `Fintype Kˣ` argument directly to reduce the chance of
 diamonds, as `Fintype` carries data.
 
 -/
+
+@[expose] public section
 
 
 variable {K : Type*} {R : Type*}
@@ -731,7 +735,7 @@ theorem Subfield.roots_X_pow_char_sub_X_bot :
   exact FiniteField.roots_X_pow_card_sub_X _
 
 theorem Subfield.splits_bot :
-    Splits (RingHom.id (⊥ : Subfield F)) (X ^ p - X) := by
+    Splits (Polynomial.map (RingHom.id (⊥ : Subfield F)) (X ^ p - X)) := by
   let _ := Subfield.fintypeBot F p
   rw [splits_iff_card_roots, roots_X_pow_char_sub_X_bot, ← Finset.card_def, Finset.card_univ,
     FiniteField.X_pow_card_sub_X_natDegree_eq _ (Fact.out (p := p.Prime)).one_lt,

@@ -3,7 +3,9 @@ Copyright (c) 2025 Michal Staromiejski. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michal Staromiejski
 -/
-import Mathlib.RingTheory.Trace.Basic
+module
+
+public import Mathlib.RingTheory.Trace.Basic
 
 /-!
 
@@ -30,6 +32,8 @@ integral) extension of `F`.
 - `normalizedTrace_self`: `normalizedTrace F F` is the identity map.
 
 -/
+
+@[expose] public section
 
 namespace Algebra
 

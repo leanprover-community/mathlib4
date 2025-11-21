@@ -3,11 +3,13 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.FiniteStability
-import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
-import Mathlib.RingTheory.Localization.Away.AdjoinRoot
-import Mathlib.RingTheory.Smooth.Kaehler
-import Mathlib.RingTheory.Unramified.Basic
+module
+
+public import Mathlib.RingTheory.FiniteStability
+public import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
+public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+public import Mathlib.RingTheory.Smooth.Kaehler
+public import Mathlib.RingTheory.Unramified.Basic
 
 /-!
 
@@ -43,6 +45,8 @@ Suppose `P` is a formally smooth `R` algebra that surjects onto `A` with kernel 
   the `P`-linear map `I/I² → A ⊗[P] Ω[P⁄R]` is split injective.
 
 -/
+
+@[expose] public section
 
 open scoped TensorProduct
 open Algebra.Extension KaehlerDifferential MvPolynomial
