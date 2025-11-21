@@ -6,6 +6,7 @@ Authors: Kexing Ying
 module
 
 public import Mathlib.Order.Interval.Set.Monotone
+public import Mathlib.Probability.Notation
 public import Mathlib.Probability.Process.HittingTime
 public import Mathlib.Probability.Martingale.Basic
 public import Mathlib.Tactic.AdaptationNote
