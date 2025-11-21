@@ -808,7 +808,8 @@ lemma eq_mul_leadingCoeff_of_monic_of_dvd_of_natDegree_le {R} [Semiring R] {p q 
     (hp : p.Monic) (hdiv : p ∣ q) (hdeg : q.natDegree ≤ p.natDegree) :
     q = p * C q.leadingCoeff := by
   obtain ⟨r, rfl⟩ := hdiv
-  obtain rfl | hr := eq_or_ne r 0; · simp
+  obtain rfl | hr := eq_or_ne r 0
+  · simp
   have : r.natDegree = 0 := by
     rw [natDegree_mul' (by simp [*])] at hdeg
     omega
