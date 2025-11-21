@@ -98,8 +98,8 @@ lemma degreewiseEpiWithInjectiveKernel_p :
   rw [epiWithInjectiveKernel_iff]
   refine ⟨(mappingCone (𝟙 (I K))).X n, inferInstance,
     (biprod.inl :_ ⟶ (mappingCone (𝟙 (I K))) ⊞ L).f n, ?_,
-    ⟨⟨(biprod.fst : (mappingCone (𝟙 (I K))) ⊞ L ⟶ _).f n,
-    (biprod.inr :_ ⟶ (mappingCone (𝟙 (I K))) ⊞ L).f n, ?_, ?_, ?_⟩⟩⟩
+    (biprod.fst : (mappingCone (𝟙 (I K))) ⊞ L ⟶ _).f n,
+    (biprod.inr :_ ⟶ (mappingCone (𝟙 (I K))) ⊞ L).f n, ?_, ?_, ?_⟩
   all_goals simp [← HomologicalComplex.comp_f, ← HomologicalComplex.add_f_apply]
 
 variable (K L) in
