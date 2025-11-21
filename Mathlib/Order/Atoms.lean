@@ -731,7 +731,7 @@ def toSetOfIsAtom {α} [CompleteAtomicBooleanAlgebra α] : α ≃o (Set {a : α 
     have h : ∀ a ∈ Subtype.val '' S, IsAtom a := by
       rintro a ⟨a', ha', rfl⟩
       exact a'.prop
-    rw [← Subtype.val_injective.image_injective.eq_iff, unique_decomposition_into_atoms h]
+    rw [← Subtype.val_injective.image_injective.eq_iff, eq_setOf_le_sSup_and_isAtom h]
     ext a
     simp
   map_rel_iff' {a b} := by
