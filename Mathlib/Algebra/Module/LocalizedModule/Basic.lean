@@ -54,7 +54,7 @@ for some (u : S), u * (s2 • m1 - s1 • m2) = 0 -/
 def r (a b : M × S) : Prop :=
   ∃ u : S, u • b.2 • a.1 = u • a.2 • b.1
 
-lemma oreEqv_iff_r : (OreLocalization.oreEqv S M).r = r S M := by
+lemma oreEqv_eq_r : (OreLocalization.oreEqv S M).r = r S M := by
   ext a b
   constructor
   · rintro ⟨u, v, h₁, h₂⟩
@@ -82,16 +82,14 @@ instance r.setoid : Setoid (M × S) where
   r := r S M
   iseqv := ⟨(r.isEquiv S M).refl, (r.isEquiv S M).symm _ _, (r.isEquiv S M).trans _ _ _⟩
 
--- TODO: change `Localization` to use `r'` instead of `r` so that the two types are also defeq,
--- `Localization S = LocalizedModule S R`.
-example {R} [CommSemiring R] (S : Submonoid R) : ⇑(Localization.r' S) = LocalizedModule.r S R :=
-  rfl
-
 /-- If `S` is a multiplicative subset of a ring `R` and `M` an `R`-module, then
 we can localize `M` by `S`.
 -/
 abbrev _root_.LocalizedModule : Type max u v :=
   OreLocalization S M
+
+example {R} [CommSemiring R] (S : Submonoid R) : Localization S = LocalizedModule S R := by
+  with_reducible rfl
 
 section
 
@@ -102,9 +100,7 @@ abbrev mk (m : M) (s : S) : LocalizedModule S M := m /ₒ s
 
 theorem mk_eq {m m' : M} {s s' : S} : mk m s = mk m' s' ↔ ∃ u : S, u • s' • m = u • s • m' := by
   rw [mk, mk, OreLocalization.oreDiv_eq_iff]
-  change _ ↔ r S M (m, s) (m', s')
-  rw [← oreEqv_iff_r]
-  rfl
+  exact congr($(oreEqv_eq_r S M) ⟨m, s⟩ ⟨m', s'⟩)
 
 @[elab_as_elim, induction_eliminator, cases_eliminator]
 theorem induction_on {β : LocalizedModule S M → Prop} (h : ∀ (m : M) (s : S), β (mk m s)) :
@@ -123,7 +119,7 @@ theorem induction_on₂ {β : LocalizedModule S M → LocalizedModule S M → Pr
 -/
 def liftOn {α : Type*} (x : LocalizedModule S M) (f : M × S → α)
     (wd : ∀ (p p' : M × S), p ≈ p' → f p = f p') : α :=
-  Quotient.liftOn x f (by simpa only [r.setoid, ← oreEqv_iff_r S M] using wd)
+  Quotient.liftOn x f (by simpa only [r.setoid, ← oreEqv_eq_r S M] using wd)
 
 theorem liftOn_mk {α : Type*} {f : M × S → α} (wd : ∀ (p p' : M × S), p ≈ p' → f p = f p')
     (m : M) (s : S) : liftOn (mk m s) f wd = f ⟨m, s⟩ := by convert Quotient.liftOn_mk f wd ⟨m, s⟩
@@ -133,7 +129,7 @@ theorem liftOn_mk {α : Type*} {f : M × S → α} (wd : ∀ (p p' : M × S), p 
 -/
 def liftOn₂ {α : Type*} (x y : LocalizedModule S M) (f : M × S → M × S → α)
     (wd : ∀ (p q p' q' : M × S), p ≈ p' → q ≈ q' → f p q = f p' q') : α :=
-  Quotient.liftOn₂ x y f (by simpa only [r.setoid, ← oreEqv_iff_r S M] using wd)
+  Quotient.liftOn₂ x y f (by simpa only [r.setoid, ← oreEqv_eq_r S M] using wd)
 
 theorem liftOn₂_mk {α : Type*} (f : M × S → M × S → α)
     (wd : ∀ (p q p' q' : M × S), p ≈ p' → q ≈ q' → f p q = f p' q') (m m' : M)
