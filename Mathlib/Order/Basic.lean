@@ -1156,6 +1156,18 @@ lemma eq_or_eq_or_eq_of_forall_not_lt_lt [LinearOrder α]
   rcases hne.2.2.lt_or_gt with h₃ | h₃
   exacts [h h₁ h₂, h h₂ h₃, h h₃ h₂, h h₃ h₁, h h₁ h₃, h h₂ h₃, h h₁ h₃, h h₂ h₁]
 
+namespace Empty
+
+instance instLinearOrder : LinearOrder Empty where
+ le _ _ := False
+ le_refl x := x.elim
+ le_trans x y z := x.elim
+ le_antisymm x := x.elim
+ le_total x y := x.elim
+ toDecidableLE := fun _ _ ↦ Decidable.isFalse id
+
+end Empty
+
 namespace PUnit
 
 variable (a b : PUnit)
