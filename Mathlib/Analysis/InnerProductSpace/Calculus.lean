@@ -286,8 +286,12 @@ section PiLike
 
 open ContinuousLinearMap
 
-variable {𝕜 ι H : Type*} [RCLike 𝕜] [NormedAddCommGroup H] [NormedSpace 𝕜 H] [Fintype ι]
+variable {𝕜 ι H : Type*} [RCLike 𝕜] [NormedAddCommGroup H] [NormedSpace 𝕜 H]
   {f : H → EuclideanSpace 𝕜 ι} {f' : H →L[𝕜] EuclideanSpace 𝕜 ι} {t : Set H} {y : H}
+
+section finite
+
+variable [Finite ι]
 
 theorem differentiableWithinAt_euclidean :
     DifferentiableWithinAt 𝕜 f t y ↔ ∀ i, DifferentiableWithinAt 𝕜 (fun x => f x i) t y :=
@@ -314,6 +318,12 @@ theorem hasFDerivWithinAt_euclidean :
       ∀ i, HasFDerivWithinAt (fun x => f x i) (PiLp.proj _ _ i ∘L f') t y :=
   hasFDerivWithinAt_piLp _
 
+end finite
+
+section fintype
+
+variable [Fintype ι]
+
 theorem contDiffWithinAt_euclidean {n : WithTop ℕ∞} :
     ContDiffWithinAt 𝕜 n f t y ↔ ∀ i, ContDiffWithinAt 𝕜 n (fun x => f x i) t y :=
   contDiffWithinAt_piLp _
@@ -328,6 +338,8 @@ theorem contDiffOn_euclidean {n : WithTop ℕ∞} :
 
 theorem contDiff_euclidean {n : WithTop ℕ∞} : ContDiff 𝕜 n f ↔ ∀ i, ContDiff 𝕜 n fun x => f x i :=
   contDiff_piLp _
+
+end fintype
 
 end PiLike
 

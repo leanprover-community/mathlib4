@@ -111,6 +111,7 @@ lemma pi_indepFun_pi_of_prod_bcf (mX : ∀ s, AEMeasurable (X s) P)
   any_goals fun_prop
   all_goals exact Measurable.aestronglyMeasurable (by fun_prop)
 
+omit [Fintype S] [Fintype T] in variable [Finite S] [Finite T] in
 /-- Two families of random variables $(X_1, ..., X_p)$ and $(Y_1, ..., Y_q)$ are independent if
 for all real bounded continuous functions $f$ and $g$,
 $$P[f(X_1, ..., X_p) g(Y_1, ..., Y_q)] = P[f(X_1, ..., X_p)] * P[g(Y_1, ..., Y_q)].$$ -/
@@ -119,6 +120,7 @@ lemma pi_indepFun_pi_of_bcf (mX : ∀ s, AEMeasurable (X s) P)
     (h : ∀ (f : (Π s, E s) →ᵇ ℝ) (g : (Π t, F t) →ᵇ ℝ),
       P[fun ω ↦ f (X · ω) * g (Y · ω)] = P[fun ω ↦ f (X · ω)] * P[fun ω ↦ g (Y · ω)]) :
     IndepFun (fun ω s ↦ X s ω) (fun ω t ↦ Y t ω) P := by
+  have := Fintype.ofFinite S; have := Fintype.ofFinite T
   refine pi_indepFun_pi_of_prod_bcf mX mY fun f g ↦ ?_
   convert h (∏ s, (f s).compContinuous ⟨Function.eval s, by fun_prop⟩)
     (∏ t, (g t).compContinuous ⟨Function.eval t, by fun_prop⟩) <;> simp
@@ -135,11 +137,13 @@ lemma indepFun_pi_of_prod_bcf (mZ : AEMeasurable Z P)
   any_goals fun_prop
   all_goals exact Measurable.aestronglyMeasurable (by fun_prop)
 
+omit [Fintype T] in variable [Finite T] in
 lemma indepFun_pi_of_bcf (mZ : AEMeasurable Z P)
     (mY : ∀ t, AEMeasurable (Y t) P)
     (h : ∀ (f : G →ᵇ ℝ) (g : (Π t, F t) →ᵇ ℝ),
       P[fun ω ↦ f (Z ω) * g (Y · ω)] = P[f ∘ Z] * P[fun ω ↦ g (Y · ω)]) :
     IndepFun Z (fun ω t ↦ Y t ω) P := by
+  have := Fintype.ofFinite T
   refine indepFun_pi_of_prod_bcf mZ mY fun f g ↦ ?_
   convert h f (∏ t, (g t).compContinuous ⟨Function.eval t, by fun_prop⟩) <;> simp
 
@@ -155,11 +159,13 @@ lemma pi_indepFun_of_prod_bcf (mX : ∀ s, AEMeasurable (X s) P)
   any_goals fun_prop
   all_goals exact Measurable.aestronglyMeasurable (by fun_prop)
 
+omit [Fintype S] in variable [Finite S] in
 lemma pi_indepFun_of_bcf (mX : ∀ s, AEMeasurable (X s) P)
     (mU : AEMeasurable U P)
     (h : ∀ (f : (Π s, E s) →ᵇ ℝ) (g : H →ᵇ ℝ),
       P[fun ω ↦ f (X · ω) * g (U ω)] = P[fun ω ↦ f (X · ω)] * P[g ∘ U]) :
     IndepFun (fun ω s ↦ X s ω) U P := by
+  have := Fintype.ofFinite S
   refine pi_indepFun_of_prod_bcf mX mU fun f g ↦ ?_
   convert h (∏ s, (f s).compContinuous ⟨Function.eval s, by fun_prop⟩) g <;> simp
 
@@ -220,6 +226,7 @@ lemma indicator_indepFun_pi_of_prod_bcf
   · exact (hg.indicator₀ mA).add hg
   · exact hg.indicator₀ mA
 
+omit [Fintype S] in variable [Finite S] in
 /-- The indicator of a set $A$ and a family of random variables $(X_1, ..., X_p)$ are independent
 if for all real bounded continuous function $f$,
 $$P[\mathbb{I}_A f(X_1, ..., X_p)] = P(A) P[f(X_1, ..., X_p)].$$ -/
@@ -227,6 +234,7 @@ lemma indicator_indepFun_pi_of_bcf
     {A : Set Ω} (mA : NullMeasurableSet A P) (mX : ∀ s, AEMeasurable (X s) P)
     (h : ∀ f : (Π s, E s) →ᵇ ℝ, ∫ ω in A, f (X · ω) ∂P = P.real A * ∫ ω, f (X · ω) ∂P) :
     (A.indicator (1 : Ω → ℝ)) ⟂ᵢ[P] (fun ω s ↦ X s ω) := by
+  have := Fintype.ofFinite S
   refine indicator_indepFun_pi_of_prod_bcf mA mX fun f ↦ ?_
   convert h (∏ s, (f s).compContinuous ⟨Function.eval s, by fun_prop⟩) <;> simp
 
@@ -254,6 +262,7 @@ lemma indepSets_comap_pi_of_prod_bcf
   indepSets_iff_singleton_indepSets.2 fun A hA ↦ IndepFun.singleton_indepSets_of_indicator
     (indicator_indepFun_pi_of_prod_bcf (m𝒜 A hA) mX (h A hA))
 
+omit [Fintype S] in variable [Finite S] in
 lemma indepSets_comap_pi_of_bcf
     {𝒜 : Set (Set Ω)} (m𝒜 : ∀ A ∈ 𝒜, NullMeasurableSet A P) (mX : ∀ s, AEMeasurable (X s) P)
     (h : ∀ A ∈ 𝒜, ∀ f : (Π s, E s) →ᵇ ℝ, ∫ ω in A, f (X · ω) ∂P = P.real A * ∫ ω, f (X · ω) ∂P) :
@@ -279,6 +288,7 @@ lemma indep_comap_pi_of_prod_bcf (hm : m ≤ mΩ) (mX : ∀ s, AEMeasurable (X s
   (Indep_iff_IndepSets _ _ P).2
     (indepSets_comap_pi_of_prod_bcf (fun A hA ↦ (hm A hA).nullMeasurableSet) mX h)
 
+omit [Fintype S] in variable [Finite S] in
 /-- A sigma-algebra $\mathcal{A}$ and a family of random variables $(X_1, ..., X_p)$ are independent
 if for all set $A \in \mathcal{A}$ and for all real bounded continuous function $f$,
 $$P[\mathbb{I}_A f(X_1, ..., X_p)] = P(A) P[f(X_1, ..., X_p)].$$ -/
