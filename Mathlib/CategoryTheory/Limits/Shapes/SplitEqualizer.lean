@@ -3,7 +3,9 @@ Copyright (c) 2024 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 
 /-!
 # Split Equalizers
@@ -26,6 +28,8 @@ This file was adapted from `Mathlib/CategoryTheory/Limits/Shapes/SplitCoequalize
 to keep them in sync.
 
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory

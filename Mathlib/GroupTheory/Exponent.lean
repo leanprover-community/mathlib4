@@ -3,12 +3,14 @@ Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
-import Mathlib.Algebra.GCDMonoid.Finset
-import Mathlib.Algebra.GCDMonoid.Nat
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Data.Nat.Factorization.LCM
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.Tactic.Peel
+module
+
+public import Mathlib.Algebra.GCDMonoid.Finset
+public import Mathlib.Algebra.GCDMonoid.Nat
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Data.Nat.Factorization.LCM
+public import Mathlib.GroupTheory.OrderOfElement
+public import Mathlib.Tactic.Peel
 
 /-!
 # Exponent of a group
@@ -41,6 +43,8 @@ it is equal to the lowest common multiple of the order of all elements of the gr
 ## TODO
 * Refactor the characteristic of a ring to be the exponent of its underlying additive group.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -599,7 +603,7 @@ theorem Monoid.exponent_prod {M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂] :
 
 end PiProd
 
-/-! # Properties of monoids with exponent two -/
+/-! ### Properties of monoids with exponent two -/
 
 section ExponentTwo
 

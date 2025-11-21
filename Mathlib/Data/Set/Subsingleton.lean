@@ -3,8 +3,10 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Data.Set.Insert
-import Mathlib.Tactic.ByContra
+module
+
+public import Mathlib.Data.Set.Insert
+public import Mathlib.Tactic.ByContra
 
 /-!
 # Subsingleton
@@ -15,6 +17,8 @@ Also defines `Nontrivial s : Prop` : the predicate saying that `s` has at least 
 elements.
 
 -/
+
+@[expose] public section
 
 assert_not_exists HeytingAlgebra RelIso
 
