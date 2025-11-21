@@ -78,7 +78,7 @@ protected abbrev normedAddCommGroup (e : α ≃ β) :
   }
 
 /-- Transfer `NormedSpace` across an `Equiv` -/
-protected abbrev normedSpace {𝕜 : Type*} [NormedField 𝕜] (e : α ≃ β) [SeminormedAddCommGroup β] :
+protected abbrev normedSpace (𝕜 : Type*) [NormedField 𝕜] (e : α ≃ β) [SeminormedAddCommGroup β] :
     let _ := Equiv.seminormedAddCommGroup e
     ∀ [NormedSpace 𝕜 β], NormedSpace 𝕜 α := by
   intros
