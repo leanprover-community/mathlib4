@@ -17,7 +17,7 @@ we define `W.isLocal : MorphismProperty C` as the class of morphisms `f : X ⟶ 
 such that for any `Z : C` such that `P Z`, the precomposition with `f`
 induces a bijection `(Y ⟶ Z) ≃ (X ⟶ Z)`.
 
-(This construction is part of left Bousfield localization
+(This construction is part of the left Bousfield localization
 in the context of model categories.)
 
 When `G ⊣ F` is an adjunction with `F : C ⥤ D` fully faithful, then
@@ -40,6 +40,8 @@ open Category
 variable {C D : Type*} [Category C] [Category D]
 
 namespace ObjectProperty
+
+/-! ### Left Bousfield localization -/
 
 section
 
