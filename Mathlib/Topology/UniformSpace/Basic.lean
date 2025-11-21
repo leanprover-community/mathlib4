@@ -351,11 +351,11 @@ instance : Min (UniformSpace α) :=
           @nhds_eq_comap_uniformity _ u₂, comap_inf] }⟩
 
 instance : CompleteLattice (UniformSpace α) where
-  sup a b := sInf { x | a ≤ x ∧ b ≤ x }
+  max a b := sInf { x | a ≤ x ∧ b ≤ x }
   le_sup_left _ _ := UniformSpace.le_sInf fun _ ⟨h, _⟩ => h
   le_sup_right _ _ := UniformSpace.le_sInf fun _ ⟨_, h⟩ => h
   sup_le _ _ _ h₁ h₂ := UniformSpace.sInf_le ⟨h₁, h₂⟩
-  inf := (· ⊓ ·)
+  min := (· ⊓ ·)
   le_inf a _ _ h₁ h₂ := show a.uniformity ≤ _ from le_inf h₁ h₂
   inf_le_left a _ := show _ ≤ a.uniformity from inf_le_left
   inf_le_right _ b := show _ ≤ b.uniformity from inf_le_right

@@ -254,8 +254,8 @@ theorem distrib_lattice_lemma [FaithfulSMul M X] {P Q R : { P : M // IsLprojecti
 all at once would cause a timeout. That is no longer the case. Keeping this as a useful shortcut.
 -/
 instance [FaithfulSMul M X] : Lattice { P : M // IsLprojection X P } where
-  sup := max
-  inf := min
+  max := max
+  min := min
   le_sup_left P Q := by
     rw [le_def, coe_inf, coe_sup, ← add_sub, mul_add, mul_sub, ← mul_assoc, P.prop.proj.eq,
       sub_self, add_zero]

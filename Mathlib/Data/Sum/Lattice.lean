@@ -28,7 +28,7 @@ variable [SemilatticeSup α] [SemilatticeSup β]
 -- The linter significantly hinders readability here.
 set_option linter.unusedVariables false in
 instance instSemilatticeSup : SemilatticeSup (α ⊕ₗ β) where
-  sup
+  max
     | inlₗ a₁, inlₗ a₂ => inl (a₁ ⊔ a₂)
     | inlₗ a₁, inrₗ b₂ => inr b₂
     | inrₗ b₁, inlₗ a₂ => inr b₁
@@ -61,7 +61,7 @@ variable [SemilatticeInf α] [SemilatticeInf β]
 -- The linter significantly hinders readability here.
 set_option linter.unusedVariables false in
 instance instSemilatticeInf : SemilatticeInf (α ⊕ₗ β) where
-  inf
+  min
     | inlₗ a₁, inlₗ a₂ => inl (a₁ ⊓ a₂)
     | inlₗ a₁, inrₗ b₂ => inl a₁
     | inrₗ b₁, inlₗ a₂ => inl a₂

@@ -163,7 +163,7 @@ noncomputable instance : OrderTop (ENormedSpace 𝕜 V) where
   le_top e x := by obtain h | h := eq_or_ne x 0 <;> simp [top_map, h]
 
 noncomputable instance : SemilatticeSup (ENormedSpace 𝕜 V) where
-  sup := fun e₁ e₂ =>
+  max := fun e₁ e₂ =>
     { toFun := fun x => max (e₁ x) (e₂ x)
       eq_zero' := fun _ h => e₁.eq_zero_iff.1 (ENNReal.max_eq_zero_iff.1 h).1
       map_add_le' := fun _ _ =>

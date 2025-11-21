@@ -178,7 +178,7 @@ instance : CompleteLattice (GroupTopology α) :=
   { inferInstanceAs (BoundedOrder (GroupTopology α)),
     inferInstanceAs (SemilatticeInf (GroupTopology α)),
     completeLatticeOfCompleteSemilatticeInf _ with
-    inf := (· ⊓ ·) }
+    min := (· ⊓ ·) }
 
 /-- Given `f : α → β` and a topology on `α`, the coinduced group topology on `β` is the finest
 topology such that `f` is continuous and `β` is a topological group. -/

@@ -65,7 +65,7 @@ section SemilatticeInf
 variable [SemilatticeInf M]
 
 instance semilatticeInf : SemilatticeInf (ι →₀ M) where
-  inf := zipWith (· ⊓ ·) (inf_idem _)
+  min := zipWith (· ⊓ ·) (inf_idem _)
   inf_le_left _f _g _i := inf_le_left
   inf_le_right _f _g _i := inf_le_right
   le_inf _f _g _i h1 h2 s := le_inf (h1 s) (h2 s)
@@ -78,7 +78,7 @@ section SemilatticeSup
 variable [SemilatticeSup M]
 
 instance semilatticeSup : SemilatticeSup (ι →₀ M) where
-  sup := zipWith (· ⊔ ·) (sup_idem _)
+  max := zipWith (· ⊔ ·) (sup_idem _)
   le_sup_left _f _g _i := le_sup_left
   le_sup_right _f _g _i := le_sup_right
   sup_le _f _g _h hf hg i := sup_le (hf i) (hg i)

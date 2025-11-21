@@ -420,7 +420,7 @@ protected theorem le_add_right (d₁ d₂ : ManyOneDegree) : d₂ ≤ d₁ + d�
 
 instance instSemilatticeSup : SemilatticeSup ManyOneDegree :=
   { ManyOneDegree.instPartialOrder with
-    sup := (· + ·)
+    max := (· + ·)
     le_sup_left := ManyOneDegree.le_add_left
     le_sup_right := ManyOneDegree.le_add_right
     sup_le := fun _ _ _ h₁ h₂ => ManyOneDegree.add_le.2 ⟨h₁, h₂⟩ }
