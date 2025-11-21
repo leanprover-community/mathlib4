@@ -3,15 +3,19 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl, Yuyang Zhao
 -/
-import Mathlib.Algebra.Group.Units.Basic
-import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-import Mathlib.Algebra.NeZero
-import Mathlib.Order.BoundedOrder.Basic
+module
+
+public import Mathlib.Algebra.Group.Units.Basic
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+public import Mathlib.Algebra.NeZero
+public import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # Canonically ordered monoids
 -/
+
+@[expose] public section
 
 universe u
 
@@ -21,10 +25,15 @@ variable {α : Type u}
   if the ordering coincides with the subtractibility relation,
   which is to say, `a ≤ b` iff there exists `c` with `b = a + c`.
   This is satisfied by the natural numbers, for example, but not
-  the integers or other nontrivial `OrderedAddCommGroup`s. -/
+  the integers or other nontrivial `OrderedAddCommGroup`s.
+
+  We have `a ≤ b + a` and `a ≤ a + b` as separate fields. In the commutative case the second field
+  is redundant, but in the noncommutative case (satisfied most relevantly by the ordinals), this
+  extra field allows us to prove more things without the extra commutativity assumption. -/
 class CanonicallyOrderedAdd (α : Type*) [Add α] [LE α] : Prop
     extends ExistsAddOfLE α where
   /-- For any `a` and `b`, `a ≤ a + b` -/
+  protected le_add_self : ∀ a b : α, a ≤ b + a
   protected le_self_add : ∀ a b : α, a ≤ a + b
 
 attribute [instance 50] CanonicallyOrderedAdd.toExistsAddOfLE
@@ -41,6 +50,7 @@ attribute [instance 50] CanonicallyOrderedAdd.toExistsAddOfLE
 class CanonicallyOrderedMul (α : Type*) [Mul α] [LE α] : Prop
     extends ExistsMulOfLE α where
   /-- For any `a` and `b`, `a ≤ a * b` -/
+  protected le_mul_self : ∀ a b : α, a ≤ b * a
   protected le_self_mul : ∀ a b : α, a ≤ a * b
 
 attribute [instance 50] CanonicallyOrderedMul.toExistsMulOfLE
@@ -52,8 +62,16 @@ section LE
 variable [LE α] [CanonicallyOrderedMul α] {a b c : α}
 
 @[to_additive]
+theorem le_mul_self : a ≤ b * a :=
+  CanonicallyOrderedMul.le_mul_self _ _
+
+@[to_additive]
 theorem le_self_mul : a ≤ a * b :=
   CanonicallyOrderedMul.le_self_mul _ _
+
+@[to_additive (attr := simp)]
+theorem self_le_mul_left (a b : α) : a ≤ b * a :=
+  le_mul_self
 
 @[to_additive (attr := simp)]
 theorem self_le_mul_right (a b : α) : a ≤ a * b :=
@@ -78,32 +96,6 @@ theorem le_of_mul_le_left : a * b ≤ c → a ≤ c :=
 theorem le_mul_of_le_left : a ≤ b → a ≤ b * c :=
   le_self_mul.trans'
 
-@[to_additive] alias le_mul_right := le_mul_of_le_left
-
-end Preorder
-
-end Mul
-
-section CommMagma
-variable [CommMagma α]
-
-section LE
-variable [LE α] [CanonicallyOrderedMul α] {a b : α}
-
-@[to_additive]
-theorem le_mul_self : a ≤ b * a := by
-  rw [mul_comm]
-  exact le_self_mul
-
-@[to_additive (attr := simp)]
-theorem self_le_mul_left (a b : α) : a ≤ b * a :=
-  le_mul_self
-
-end LE
-
-section Preorder
-variable [Preorder α] [CanonicallyOrderedMul α] {a b c : α}
-
 @[to_additive]
 theorem le_of_mul_le_right : a * b ≤ c → b ≤ c :=
   le_mul_self.trans
@@ -113,12 +105,18 @@ theorem le_mul_of_le_right : a ≤ c → a ≤ b * c :=
   le_mul_self.trans'
 
 @[to_additive] alias le_mul_left := le_mul_of_le_right
+@[to_additive] alias le_mul_right := le_mul_of_le_left
+
+end Preorder
+
+end Mul
+
+section CommMagma
+variable [CommMagma α] [Preorder α] [CanonicallyOrderedMul α] {a b c : α}
 
 @[to_additive]
 theorem le_iff_exists_mul' : a ≤ b ↔ ∃ c, b = c * a := by
   simp only [mul_comm _ a, le_iff_exists_mul]
-
-end Preorder
 
 end CommMagma
 
@@ -280,9 +278,9 @@ theorem of_ge {M} [AddZeroClass M] [PartialOrder M] [CanonicallyOrderedAdd M]
 
 end NeZero
 
-section CanonicallyLinearOrderedCommMonoid
+section CanonicallyLinearOrderedMonoid
 
-variable [CommMonoid α] [LinearOrder α] [CanonicallyOrderedMul α]
+variable [Monoid α] [LinearOrder α] [CanonicallyOrderedMul α]
 
 @[to_additive]
 theorem min_mul_distrib (a b c : α) : min a (b * c) = min a (min a b * min a c) := by
@@ -310,4 +308,4 @@ theorem min_one (a : α) : min a 1 = 1 :=
 theorem bot_eq_one' [OrderBot α] : (⊥ : α) = 1 :=
   bot_eq_one
 
-end CanonicallyLinearOrderedCommMonoid
+end CanonicallyLinearOrderedMonoid

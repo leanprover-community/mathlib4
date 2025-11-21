@@ -3,9 +3,11 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 -/
-import Mathlib.Data.Fin.Fin2
-import Mathlib.Data.TypeVec
-import Mathlib.Logic.Equiv.Defs
+module
+
+public import Mathlib.Data.Fin.Fin2
+public import Mathlib.Data.TypeVec
+public import Mathlib.Logic.Equiv.Defs
 
 /-!
 
@@ -17,6 +19,8 @@ Features:
 * `f <$$> x`    : notation for map
 
 -/
+
+@[expose] public section
 
 
 universe u v w

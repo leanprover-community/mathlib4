@@ -3,12 +3,14 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Algebra.Field.IsField
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-import Mathlib.RingTheory.Ideal.Maximal
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.Algebra.Field.IsField
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+public import Mathlib.RingTheory.Ideal.Maximal
+public import Mathlib.Tactic.FinCases
 
 /-!
 
@@ -26,6 +28,8 @@ Note that over commutative rings, left ideals and two-sided ideals are equivalen
 
 Support right ideals, and two-sided ideals over non-commutative rings.
 -/
+
+@[expose] public section
 
 
 variable {ι α β F : Type*}
@@ -88,7 +92,7 @@ theorem add_pow_mem_of_pow_mem_of_le_of_commute {m n k : ℕ}
   · rw [hab.pow_pow]
     exact I.mul_mem_left _ (I.pow_mem_of_pow_mem ha h)
   · refine I.mul_mem_left _ (I.pow_mem_of_pow_mem hb ?_)
-    omega
+    cutsat
 
 theorem add_pow_add_pred_mem_of_pow_mem_of_commute {m n : ℕ}
     (ha : a ^ m ∈ I) (hb : b ^ n ∈ I) (hab : Commute a b) :
@@ -124,14 +128,15 @@ theorem add_pow_add_pred_mem_of_pow_mem {m n : ℕ}
 theorem pow_multiset_sum_mem_span_pow [DecidableEq α] (s : Multiset α) (n : ℕ) :
     s.sum ^ (Multiset.card s * n + 1) ∈
     span ((s.map fun (x : α) ↦ x ^ (n + 1)).toFinset : Set α) := by
-  induction' s using Multiset.induction_on with a s hs
-  · simp
+  induction s using Multiset.induction_on with
+  | empty => simp
+  | cons a s hs => ?_
   simp only [Finset.coe_insert, Multiset.map_cons, Multiset.toFinset_cons, Multiset.sum_cons,
     Multiset.card_cons, add_pow]
   refine Submodule.sum_mem _ ?_
   intro c _hc
   rw [mem_span_insert]
-  by_cases h : n + 1 ≤ c
+  by_cases! h : n + 1 ≤ c
   · refine ⟨a ^ (c - (n + 1)) * s.sum ^ ((Multiset.card s + 1) * n + 1 - c) *
       ((Multiset.card s + 1) * n + 1).choose c, 0, Submodule.zero_mem _, ?_⟩
     rw [mul_comm _ (a ^ (n + 1))]
@@ -140,7 +145,7 @@ theorem pow_multiset_sum_mem_span_pow [DecidableEq α] (s : Multiset α) (n : �
   · use 0
     simp_rw [zero_mul, zero_add]
     refine ⟨_, ?_, rfl⟩
-    replace h : c ≤ n := Nat.lt_succ_iff.mp (not_le.mp h)
+    replace h : c ≤ n := Nat.lt_succ_iff.mp h
     have : (Multiset.card s + 1) * n + 1 - c = Multiset.card s * n + 1 + (n - c) := by
       rw [add_mul, one_mul, add_assoc, add_comm n 1, ← add_assoc, add_tsub_assoc_of_le h]
     rw [this, pow_add]
@@ -163,7 +168,8 @@ theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
     · exact subset_span ⟨_, hx, pow_zero _⟩
   rw [eq_top_iff_one, span, Finsupp.mem_span_iff_linearCombination] at hs
   rcases hs with ⟨f, hf⟩
-  change (f.support.sum fun a => f a * a) = 1 at hf
+  simp only [Finsupp.linearCombination, Finsupp.coe_lsum, Finsupp.sum, LinearMap.coe_smulRight,
+    LinearMap.id_coe, id_eq, smul_eq_mul] at hf
   have := sum_pow_mem_span_pow f.support (fun a => f a * a) n
   rw [hf, one_pow] at this
   refine span_le.mpr ?_ this

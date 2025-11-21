@@ -3,11 +3,14 @@ Copyright (c) 2025 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+module
 
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.Group.Hom.Instances
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.Group.Hom.Instances
 
 /-! # Zero-related `•` instances on group-like morphisms -/
+
+@[expose] public section
 
 variable {M N A B C : Type*}
 
@@ -49,7 +52,7 @@ instance [Zero M] [SMulWithZero M B] : SMulWithZero M (ZeroHom A B) where
 instance [MonoidWithZero M] [MulActionWithZero M B] : MulActionWithZero M (ZeroHom A B) where
   __ : SMulWithZero _ _ := inferInstance
   one_smul _ := ext fun _ => one_smul _ _
-  mul_smul _ _ _ :=  ext fun _ => mul_smul _ _ _
+  mul_smul _ _ _ := ext fun _ => mul_smul _ _ _
 
 end Zero
 
@@ -97,6 +100,6 @@ instance [DistribSMul M B] : DistribSMul M (A →+ B) where
 instance [Monoid M] [DistribMulAction M B] : DistribMulAction M (A →+ B) where
   __ : DistribSMul _ _ := inferInstance
   one_smul _ := ext fun _ => one_smul _ _
-  mul_smul _ _ _ :=  ext fun _ => mul_smul _ _ _
+  mul_smul _ _ _ := ext fun _ => mul_smul _ _ _
 
 end AddMonoidHom

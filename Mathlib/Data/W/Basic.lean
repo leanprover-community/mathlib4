@@ -3,8 +3,10 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Logic.Encodable.Pi
+module
+
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Logic.Encodable.Pi
 
 /-!
 # W types
@@ -25,6 +27,8 @@ mathlib.
 While the name `WType` is somewhat verbose, it is preferable to putting a single character
 identifier `W` in the root namespace.
 -/
+
+@[expose] public section
 
 -- For "W_type"
 
@@ -95,9 +99,10 @@ theorem infinite_of_nonempty_of_isEmpty (a b : α) [ha : Nonempty (β a)] [he : 
           show WType β from Nat.recOn n ⟨b, IsEmpty.elim' he⟩ fun _ ih => ⟨a, fun _ => ih⟩)
         ?_
     intro n m h
-    induction' n with n ih generalizing m
-    · rcases m with - | m <;> simp_all
-    · rcases m with - | m
+    induction n generalizing m with
+    | zero => rcases m with - | m <;> simp_all
+    | succ n ih =>
+      rcases m with - | m
       · simp_all
       · refine congr_arg Nat.succ (ih ?_)
         simp_all [funext_iff]⟩

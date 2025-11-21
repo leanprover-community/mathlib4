@@ -3,12 +3,14 @@ Copyright (c) 2024 Jineon Baek and Seewoo Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jineon Baek, Seewoo Lee
 -/
-import Mathlib.Algebra.Polynomial.Expand
-import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.NumberTheory.FLT.Basic
-import Mathlib.NumberTheory.FLT.MasonStothers
-import Mathlib.RingTheory.Polynomial.Content
-import Mathlib.Tactic.GCongr
+module
+
+public import Mathlib.Algebra.Polynomial.Expand
+public import Mathlib.Algebra.GroupWithZero.Defs
+public import Mathlib.NumberTheory.FLT.Basic
+public import Mathlib.NumberTheory.FLT.MasonStothers
+public import Mathlib.RingTheory.Polynomial.Content
+public import Mathlib.Tactic.GCongr
 
 /-!
 # Fermat's Last Theorem for polynomials over a field
@@ -27,6 +29,8 @@ FLT is the special case where `p = q = r = n`, `u = v = 1`, and `w = -1`.
 The proof uses the Mason-Stothers theorem (Polynomial ABC theorem) and infinite descent
 (in the characteristic p case).
 -/
+
+@[expose] public section
 
 open Polynomial UniqueFactorizationMonoid
 
@@ -62,7 +66,7 @@ private lemma ineq_pqr_contradiction {p q r a b c : ℕ}
   calc
     _ = (p * a) * (q * r) + (q * b) * (r * p) + (r * c) * (p * q) + 1 := by ring
     _ ≤ (a + b + c) * (q * r) + (a + b + c) * (r * p) + (a + b + c) * (p * q) := by
-      rw [Nat.succ_le]
+      rw [Nat.succ_le_iff]
       gcongr
     _ = (q * r + r * p + p * q) * (a + b + c) := by ring
     _ ≤ _ := by gcongr
@@ -184,7 +188,7 @@ private theorem Polynomial.flt_catalan_aux
         have hch2 : 2 ≤ ch := by omega
         rw [← add_le_add_iff_right 1, ← eq_d, eq_deg_a]
         grw [← hch2]
-        omega
+        cutsat
       · rw [eq_a, eq_b, eq_c, ← expand_C ch u, ← expand_C ch v, ← expand_C ch w] at heq
         simp_rw [← map_pow, ← map_mul, ← map_add] at heq
         rwa [Polynomial.expand_eq_zero (zero_lt_iff.mpr chn0)] at heq

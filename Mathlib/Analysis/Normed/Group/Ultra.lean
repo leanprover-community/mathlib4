@@ -3,11 +3,13 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky, David Loeffler
 -/
-import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Topology.Algebra.Nonarchimedean.Basic
-import Mathlib.Topology.MetricSpace.Ultra.Basic
-import Mathlib.Topology.Algebra.InfiniteSum.Group
-import Mathlib.Topology.Order.LiminfLimsup
+module
+
+public import Mathlib.Analysis.Normed.Group.Uniform
+public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
+public import Mathlib.Topology.MetricSpace.Ultra.Basic
+public import Mathlib.Topology.Algebra.InfiniteSum.Group
+public import Mathlib.Topology.Order.LiminfLimsup
 
 /-!
 # Ultrametric norms
@@ -31,6 +33,8 @@ in `NNReal` is 0, so easier to make statements about maxima of empty sets.
 
 ultrametric, nonarchimedean
 -/
+
+@[expose] public section
 open Metric NNReal
 
 namespace IsUltrametricDist
@@ -294,12 +298,11 @@ theorem exists_norm_multiset_prod_le (s : Multiset ι) [Nonempty ι] {f : ι →
   | empty => simp
   | cons a t hM =>
       obtain ⟨M, hMs, hM⟩ := hM
-      by_cases hMa : ‖f M‖ ≤ ‖f a‖
+      by_cases! hMa : ‖f M‖ ≤ ‖f a‖
       · refine ⟨a, by simp, ?_⟩
         · rw [Multiset.map_cons, Multiset.prod_cons]
           exact le_trans (norm_mul_le_max _ _) (max_le (le_refl _) (le_trans hM hMa))
-      · rw [not_le] at hMa
-        rcases eq_or_ne t 0 with rfl | ht
+      · rcases eq_or_ne t 0 with rfl | ht
         · exact ⟨a, by simp, by simp⟩
         · refine ⟨M, ?_, ?_⟩
           · simp [hMs ht]
@@ -343,6 +346,30 @@ lemma norm_tprod_le_of_forall_le_of_nonneg {f : ι → M} {C : ℝ} (hC : 0 ≤ 
 @[to_additive]
 lemma nnnorm_tprod_le_of_forall_le {f : ι → M} {C : ℝ≥0} (h : ∀ i, ‖f i‖₊ ≤ C) : ‖∏' i, f i‖₊ ≤ C :=
   (nnnorm_tprod_le f).trans (ciSup_le' h)
+
+@[to_additive]
+lemma nnnorm_prod_eq_sup_of_pairwise_ne {s : Finset ι} {f : ι → M}
+    (hs : Set.Pairwise s (fun i j ↦ ‖f i‖₊ ≠ ‖f j‖₊)) :
+    ‖∏ i ∈ s, f i‖₊ = s.sup (fun i ↦ ‖f i‖₊) := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s ha IH =>
+    rcases s.eq_empty_or_nonempty with rfl | hs'
+    · simp
+    specialize IH (hs.mono (by simp))
+    obtain ⟨j, hj, hj'⟩ : ∃ j ∈ s, ‖∏ i ∈ s, f i‖₊ = ‖f j‖₊ := by
+      simpa [IH] using s.exists_mem_eq_sup hs' _
+    suffices ‖f a‖₊ ≠ ‖∏ x ∈ s, f x‖₊ by simp [← IH, nnnorm_mul_eq_max_of_nnnorm_ne_nnnorm this]
+    rw [hj']
+    apply hs <;> grind
+
+@[to_additive]
+lemma norm_prod_eq_sup'_of_pairwise_ne {s : Finset ι} {f : ι → M} (hs' : s.Nonempty)
+    (hs : Set.Pairwise s (fun i j ↦ ‖f i‖ ≠ ‖f j‖)) :
+    ‖∏ i ∈ s, f i‖ = s.sup' hs' (fun i ↦ ‖f i‖) := by
+  rw [← coe_nnnorm', nnnorm_prod_eq_sup_of_pairwise_ne, ← Finset.sup'_eq_sup hs']
+  · exact s.comp_sup'_eq_sup'_comp hs' _ (by tauto)
+  · simpa [← NNReal.coe_inj] using hs
 
 end CommGroup
 

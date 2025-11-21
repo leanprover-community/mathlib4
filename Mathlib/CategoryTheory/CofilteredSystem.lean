@@ -3,7 +3,9 @@ Copyright (c) 2022 Kyle Miller, Adam Topaz, Rémi Bottinelli, Junyan Xu. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Adam Topaz, Rémi Bottinelli, Junyan Xu
 -/
-import Mathlib.Topology.Category.TopCat.Limits.Konig
+module
+
+public import Mathlib.Topology.Category.TopCat.Limits.Konig
 
 /-!
 # Cofiltered systems
@@ -14,7 +16,7 @@ This file deals with properties of cofiltered (and inverse) systems.
 
 Given a functor `F : J ⥤ Type v`:
 
-* For `j : J`, `F.eventualRange j` is the intersections of all ranges of morphisms `F.map f`
+* For `j : J`, `F.eventualRange j` is the intersection of all ranges of morphisms `F.map f`
   where `f` has codomain `j`.
 * `F.IsMittagLeffler` states that the functor `F` satisfies the Mittag-Leffler
   condition: the ranges of morphisms `F.map f` (with `f` having codomain `j`) stabilize.
@@ -48,6 +50,8 @@ Given a functor `F : J ⥤ Type v`:
 Mittag-Leffler, surjective, eventual range, inverse system,
 
 -/
+
+@[expose] public section
 
 
 universe u v w

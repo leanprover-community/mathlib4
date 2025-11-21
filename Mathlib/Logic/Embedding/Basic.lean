@@ -3,14 +3,19 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Option.Basic
-import Mathlib.Data.Prod.Basic
-import Mathlib.Data.Prod.PProd
-import Mathlib.Logic.Equiv.Basic
+module
+
+public import Mathlib.Data.Option.Basic
+public import Mathlib.Data.Prod.Basic
+public import Mathlib.Data.Prod.PProd
+public import Mathlib.Data.Sum.Basic
+public import Mathlib.Logic.Equiv.Basic
 
 /-!
 # Injective functions
 -/
+
+@[expose] public section
 
 universe u v w x
 
@@ -300,6 +305,8 @@ variable {α α' : Type*} {β : α → Type*} {β' : α' → Type*}
 def sigmaMk (a : α) : β a ↪ Σ x, β x :=
   ⟨Sigma.mk a, sigma_mk_injective⟩
 
+attribute [grind =] sigmaMk_apply
+
 /-- If `f : α ↪ α'` is an embedding and `g : Π a, β α ↪ β' (f α)` is a family
 of embeddings, then `Sigma.map f g` is an embedding. -/
 @[simps apply]
@@ -451,19 +458,28 @@ def subtypeOrLeftEmbedding (p q : α → Prop) [DecidablePred p] :
     dsimp only
     split_ifs <;> simp [Subtype.ext_iff]⟩
 
+@[simp]
 theorem subtypeOrLeftEmbedding_apply_left {p q : α → Prop} [DecidablePred p]
     (x : { x // p x ∨ q x }) (hx : p x) :
     subtypeOrLeftEmbedding p q x = Sum.inl ⟨x, hx⟩ :=
   dif_pos hx
 
+@[simp]
 theorem subtypeOrLeftEmbedding_apply_right {p q : α → Prop} [DecidablePred p]
     (x : { x // p x ∨ q x }) (hx : ¬p x) :
     subtypeOrLeftEmbedding p q x = Sum.inr ⟨x, x.prop.resolve_left hx⟩ :=
   dif_neg hx
 
+@[grind =]
+theorem subtypeOrLeftEmbedding_apply {p q : α → Prop} [DecidablePred p]
+    (x : { x // p x ∨ q x }) :
+    subtypeOrLeftEmbedding p q x =
+      if h : p x then Sum.inl ⟨x, h⟩ else Sum.inr ⟨x, x.prop.resolve_left h⟩ :=
+  rfl
+
 /-- A subtype `{x // p x}` can be injectively sent to into a subtype `{x // q x}`,
 if `p x → q x` for all `x : α`. -/
-@[simps]
+@[simps (attr := grind =)]
 def Subtype.impEmbedding (p q : α → Prop) (h : ∀ x, p x → q x) : { x // p x } ↪ { x // q x } :=
   ⟨fun x => ⟨x, h x x.prop⟩, fun x y => by simp [Subtype.ext_iff]⟩
 

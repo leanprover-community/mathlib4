@@ -3,8 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-import Mathlib.CategoryTheory.Category.Cat
+module
+
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+public import Mathlib.CategoryTheory.Category.Cat
 
 /-!
 # The category of elements
@@ -29,6 +31,8 @@ more convenient API. We prove the equivalence in
 ## Tags
 category of elements, Grothendieck construction, comma category
 -/
+
+@[expose] public section
 
 
 namespace CategoryTheory
@@ -83,7 +87,7 @@ def homMk {F : C ⥤ Type w} (x y : F.Elements) (f : x.1 ⟶ y.1) (hf : F.map f 
 
 @[ext]
 theorem ext (F : C ⥤ Type w) {x y : F.Elements} (f g : x ⟶ y) (w : f.val = g.val) : f = g :=
-  Subtype.ext_val w
+  Subtype.ext w
 
 @[simp]
 theorem comp_val {F : C ⥤ Type w} {p q r : F.Elements} {f : p ⟶ q} {g : q ⟶ r} :

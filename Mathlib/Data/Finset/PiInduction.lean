@@ -3,9 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Finset.Max
-import Mathlib.Data.Finset.Sigma
-import Mathlib.Data.Fintype.Basic
+module
+
+public import Mathlib.Data.Finset.Max
+public import Mathlib.Data.Finset.Sigma
+public import Mathlib.Data.Fintype.Basic
 
 /-!
 # Induction principles for `∀ i, Finset (α i)`
@@ -25,6 +27,8 @@ finite type.
 finite set, finite type, induction, function
 -/
 
+@[expose] public section
+
 
 open Function
 
@@ -41,7 +45,8 @@ theorem induction_on_pi_of_choice (r : ∀ i, α i → Finset (α i) → Prop)
         r i x (g i) → p g → p (update g i (insert x (g i)))) :
     p f := by
   cases nonempty_fintype ι
-  induction' hs : univ.sigma f using Finset.strongInductionOn with s ihs generalizing f; subst s
+  induction hs : univ.sigma f using Finset.strongInductionOn generalizing f with | _ s ihs
+  subst s
   rcases eq_empty_or_nonempty (univ.sigma f) with he | hne
   · convert h0 using 1
     simpa [funext_iff] using he
