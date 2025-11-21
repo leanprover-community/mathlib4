@@ -137,7 +137,7 @@ lemma eq_or_gt_of_not_lt (h : ¬a < b) : a = b ∨ b < a :=
 
 @[deprecated (since := "2025-05-11")] alias eq_or_lt_of_not_lt := eq_or_gt_of_not_lt
 
-@[to_dual self (reorder := a b, c d)]
+@[to_dual self]
 theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α} {c d : β}
     (H : d < c → b < a) (h : a ≤ b) : c ≤ d :=
   le_of_not_gt fun h' => not_le_of_gt (H h') h
