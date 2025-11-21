@@ -41,27 +41,20 @@ section CommRing
 variable [CommRing K] [Field L] [Field F]
 variable (i : K →+* L)
 
-/-- A polynomial `Splits` iff it `Factors` after mapping under a ring homomorphism.
-This will eventually be replaced by `Polynomial.Factors`. -/
-def Splits (f : K[X]) : Prop :=
-  Factors f
-
-@[simp]
 theorem splits_zero : Splits (0 : K[X]) := by
-  simp [Splits]
+  simp
 
 theorem splits_of_map_eq_C {f : K[X]} {a : L} (h : f.map i = C a) : Splits (f.map i) := by
-  simp [Splits, h]
+  simp [h]
 
-@[simp]
 theorem splits_C (a : K) : Splits (C a) := by
-  simp [Splits]
+  simp
 
 theorem splits_of_map_degree_eq_one {f : K[X]} (hf : degree (f.map i) = 1) : Splits (f.map i) :=
-  Factors.of_degree_eq_one hf
+  Splits.of_degree_eq_one hf
 
 theorem splits_of_degree_le_one {f : K[X]} (hf : degree f ≤ 1) : Splits (f.map i) :=
-  Factors.of_degree_le_one (degree_map_le.trans hf)
+  Splits.of_degree_le_one (degree_map_le.trans hf)
 
 theorem splits_of_degree_eq_one {f : K[X]} (hf : degree f = 1) : Splits (f.map i) :=
   splits_of_degree_le_one i hf.le
@@ -74,12 +67,12 @@ theorem splits_of_natDegree_eq_one {f : K[X]} (hf : natDegree f = 1) : Splits (f
 
 theorem splits_mul {f g : K[X]} (hf : Splits (f.map i)) (hg : Splits (g.map i)) :
     Splits ((f * g).map i) := by
-  simp [Splits, hf.mul hg]
+  simp [hf.mul hg]
 
 theorem splits_of_splits_mul' {f g : K[X]} (hfg : (f * g).map i ≠ 0) (h : Splits ((f * g).map i)) :
     Splits (f.map i) ∧ Splits (g.map i) := by
   simp only [Splits, Polynomial.map_mul, mul_ne_zero_iff] at hfg h
-  exact (factors_mul_iff hfg.1 hfg.2).mp h
+  exact (splits_mul_iff hfg.1 hfg.2).mp h
 
 theorem splits_map_iff {L : Type*} [CommRing L] (i : K →+* L) (j : L →+* F) {f : K[X]} :
     Splits ((f.map i).map j) ↔ Splits (f.map (j.comp i)) := by
@@ -120,7 +113,7 @@ variable {i}
 -- TODO: Prove the analogous composition theorems for `Factors`
 theorem Splits.comp_of_map_degree_le_one {f : K[X]} {p : K[X]} (hd : (p.map i).degree ≤ 1)
     (h : (f.map i).Splits) : ((f.comp p).map i).Splits := by
-  rw [Splits, factors_iff_splits] at h ⊢
+  rw [splits_iff_splits] at h ⊢
   by_cases hzero : map i (f.comp p) = 0
   · exact Or.inl hzero
   cases h with
@@ -224,7 +217,7 @@ variable (i : K →+* L)
 /-- This lemma is for polynomials over a field. -/
 theorem splits_iff (f : K[X]) :
     Splits (f.map i) ↔ f = 0 ∨ ∀ {g : L[X]}, Irreducible g → g ∣ f.map i → degree g = 1 := by
-  rw [Splits, factors_iff_splits, Polynomial.map_eq_zero]
+  rw [splits_iff_splits, Polynomial.map_eq_zero]
 
 /-- This lemma is for polynomials over a field. -/
 theorem Splits.def {i : K →+* L} {f : K[X]} (h : Splits (f.map i)) :
@@ -248,10 +241,6 @@ theorem splits_of_splits_gcd_right [DecidableEq K] {f g : K[X]} (hg0 : g ≠ 0)
     (hg : Splits (g.map i)) : Splits ((EuclideanDomain.gcd f g).map i) :=
   Polynomial.splits_of_splits_of_dvd i hg0 hg (EuclideanDomain.gcd_dvd_right f g)
 
-theorem splits_mul_iff {f g : K[X]} (hf : f ≠ 0) (hg : g ≠ 0) :
-    ((f * g).map i).Splits ↔ (f.map i).Splits ∧ (g.map i).Splits :=
-  ⟨splits_of_splits_mul i (mul_ne_zero hf hg), fun ⟨hfs, hgs⟩ => splits_mul i hfs hgs⟩
-
 theorem splits_prod_iff {ι : Type u} {s : ι → K[X]} {t : Finset ι} :
     (∀ j ∈ t, s j ≠ 0) → (((∏ x ∈ t, s x).map i).Splits ↔ ∀ j ∈ t, ((s j).map i).Splits) := by
   classical
@@ -260,11 +249,12 @@ theorem splits_prod_iff {ι : Type u} {s : ι → K[X]} {t : Finset ι} :
         ⟨fun _ _ h => by simp only [Finset.notMem_empty] at h, fun _ => splits_one i⟩)
       fun a t hat ih ht => ?_
   rw [Finset.forall_mem_insert] at ht ⊢
-  rw [Finset.prod_insert hat, splits_mul_iff i ht.1 (Finset.prod_ne_zero_iff.2 ht.2), ih ht.2]
+  rw [Finset.prod_insert hat, Polynomial.map_mul, splits_mul_iff (map_ne_zero ht.1)
+    (map_ne_zero (Finset.prod_ne_zero_iff.2 ht.2)), ih ht.2]
 
 theorem degree_eq_one_of_irreducible_of_splits {p : K[X]} (hp : Irreducible p)
     (hp_splits : Splits (p.map (RingHom.id K))) : p.degree = 1 := by
-  rw [Splits, factors_iff_splits] at hp_splits
+  rw [splits_iff_splits] at hp_splits
   rcases hp_splits with ⟨⟩ | hp_splits
   · exfalso
     simp_all
@@ -399,9 +389,9 @@ theorem splits_of_natDegree_eq_two {f : Polynomial K} {x : L} (h₁ : f.natDegre
   have h : (map i f /ₘ (X - C x)).natDegree = 1 := by
     rw [natDegree_divByMonic _ (monic_X_sub_C x), natDegree_map, h₁, natDegree_X_sub_C]
   replace h₂ := (mem_roots'.mp <| (mem_roots_map_of_injective i.injective hf₀).mpr h₂).2
-  rw [← splits_id_iff_splits, ← mul_divByMonic_eq_iff_isRoot.mpr h₂]
-  exact (splits_mul_iff _ (X_sub_C_ne_zero x) (by simp [ne_zero_of_natDegree_gt, h])).mpr
-    ⟨splits_X_sub_C  _, splits_of_natDegree_le_one (RingHom.id L) (by rw [h])⟩
+  rw [← mul_divByMonic_eq_iff_isRoot.mpr h₂]
+  exact (splits_mul_iff (X_sub_C_ne_zero x) (by simp [ne_zero_of_natDegree_gt, h])).mpr
+    ⟨Splits.X_sub_C  _, Splits.of_natDegree_le_one (by rw [h])⟩
 
 theorem splits_of_degree_eq_two {f : Polynomial K} {x : L} (h₁ : f.degree = 2)
     (h₂ : eval₂ i x f = 0) : Splits (f.map i) :=
@@ -417,18 +407,12 @@ open UniqueFactorizationMonoid Associates
 
 theorem splits_of_exists_multiset {f : K[X]} {s : Multiset L}
     (hs : f.map i = C (i f.leadingCoeff) * (s.map fun a : L => X - C a).prod) : Splits (f.map i) :=
-  factors_iff_exists_multiset.mpr ⟨s, leadingCoeff_map i ▸ hs⟩
+  splits_iff_exists_multiset.mpr ⟨s, leadingCoeff_map i ▸ hs⟩
 
 theorem splits_of_splits_id {f : K[X]} (h : Splits (f.map (RingHom.id K))) : Splits (f.map i) := by
   simpa using h.map i
 
 end UFD
-
-theorem splits_iff_exists_multiset {f : K[X]} :
-    Splits (f.map i) ↔
-      ∃ s : Multiset L, f.map i = C (i f.leadingCoeff) * (s.map fun a : L => X - C a).prod :=
-  ⟨fun hf => ⟨(f.map i).roots, eq_prod_roots_of_splits hf⟩, fun ⟨_, hs⟩ =>
-    splits_of_exists_multiset i hs⟩
 
 theorem splits_of_comp (j : L →+* F) {f : K[X]} (h : Splits (f.map (j.comp i)))
     (roots_mem_range : ∀ a ∈ (f.map (j.comp i)).roots, a ∈ j.range) : Splits (f.map i) := by
@@ -438,7 +422,7 @@ theorem splits_of_comp (j : L →+* F) {f : K[X]} (h : Splits (f.map (j.comp i))
   conv_lhs => rw [Polynomial.map_map, eq_prod_roots_of_splits h]
   simp_rw [Polynomial.map_mul, Polynomial.map_multiset_prod, Multiset.map_pmap, Polynomial.map_sub,
     map_C, map_X, lift_eq, Multiset.pmap_eq_map]
-  rfl
+  simp
 
 theorem splits_id_of_splits {f : K[X]} (h : Splits (f.map i))
     (roots_mem_range : ∀ a ∈ (f.map i).roots, a ∈ i.range) : Splits (f.map (RingHom.id K)) :=
@@ -466,9 +450,9 @@ theorem splits_iff_card_roots {p : K[X]} :
   · intro H
     rw [natDegree_eq_card_roots H, map_id]
   · intro hroots
-    rw [splits_iff_exists_multiset (RingHom.id K)]
+    rw [splits_iff_exists_multiset]
     use p.roots
-    simp only [RingHom.id_apply, map_id]
+    simp only [map_id]
     exact (C_leadingCoeff_mul_prod_multiset_X_sub_C hroots).symm
 
 theorem eval₂_derivative_of_splits [DecidableEq L] {P : K[X]} {f : K →+* L} (hP : (P.map f).Splits)

@@ -61,7 +61,8 @@ see `IsAlgClosed.splits_codomain` and `IsAlgClosed.splits_domain`.
 -/
 @[stacks 09GR "The definition of `IsAlgClosed` in mathlib is 09GR (4)"]
 class IsAlgClosed : Prop where
-  factors : ∀ p : k[X], p.Factors
+  -- todo: rename to `splits`
+  factors : ∀ p : k[X], p.Splits
 
 /-- Every polynomial splits in the field extension `f : K →+* k` if `k` is algebraically closed.
 
@@ -196,7 +197,7 @@ If every nonconstant polynomial over `k` has a root, then `k` is algebraically c
 @[stacks 09GR "(3) ⟹ (4)"]
 theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → ∃ x, p.eval x = 0) :
     IsAlgClosed k := by
-  refine ⟨fun p ↦ factors_iff_splits.mpr <| Or.inr ?_⟩
+  refine ⟨fun p ↦ splits_iff_splits.mpr <| Or.inr ?_⟩
   intro q hq _
   have : Irreducible (q * C (leadingCoeff q)⁻¹) := by
     classical
