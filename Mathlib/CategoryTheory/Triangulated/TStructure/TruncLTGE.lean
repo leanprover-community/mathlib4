@@ -153,8 +153,8 @@ noncomputable def triangleFunctor : C ⥤ Triangle C where
 variable (A)
 
 lemma triangleFunctor_obj_distinguished :
-  (triangleFunctor t n).obj A ∈ distTriang C :=
-    triangle_distinguished t n A
+    (triangleFunctor t n).obj A ∈ distTriang C :=
+  triangle_distinguished t n A
 
 instance isLE_triangleFunctor_obj_obj₁ :
     t.IsLE ((triangleFunctor t n).obj A).obj₁ (n-1) := by
