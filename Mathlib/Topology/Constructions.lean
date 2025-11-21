@@ -3,13 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Algebra.Group.TypeTags.Basic
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Finset.Piecewise
-import Mathlib.Order.Filter.Cofinite
-import Mathlib.Order.Filter.Curry
-import Mathlib.Topology.Constructions.SumProd
-import Mathlib.Topology.NhdsSet
+module
+
+public import Mathlib.Algebra.Group.TypeTags.Basic
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.Finset.Piecewise
+public import Mathlib.Order.Filter.Cofinite
+public import Mathlib.Order.Filter.Curry
+public import Mathlib.Topology.Constructions.SumProd
+public import Mathlib.Topology.NhdsSet
 
 /-!
 # Constructions of new topological spaces from old ones
@@ -34,6 +36,8 @@ neighborhood filters and so on.
 product, subspace, quotient space
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -245,7 +249,7 @@ def CofiniteTopology (X : Type*) := X
 
 namespace CofiniteTopology
 
-/-- The identity equivalence between `` and `CofiniteTopology `. -/
+/-- The identity equivalence between `X` and `CofiniteTopology X`. -/
 def of : X ≃ CofiniteTopology X :=
   Equiv.refl X
 
@@ -435,6 +439,17 @@ theorem Continuous.rangeFactorization {f : X → Y} (hf : Continuous f) :
 theorem continuousAt_subtype_val {p : X → Prop} {x : Subtype p} :
     ContinuousAt ((↑) : Subtype p → X) x :=
   continuous_subtype_val.continuousAt
+
+/-- The induced homeomorphism between two equal subtypes of a given topological space:
+the underlying equivalence is `Equiv.subtypeEquivProp`. -/
+def Homeomorph.ofEqSubtypes {p q : X → Prop} (hpq : p = q) : Subtype p ≃ₜ Subtype q where
+  toEquiv := Equiv.subtypeEquivProp hpq
+  continuous_toFun := continuous_id.subtype_map (fun x ↦ by simp [hpq])
+  continuous_invFun := continuous_id.subtype_map (fun x ↦ by simp [hpq])
+
+@[simp]
+lemma Homeomorph.ofEqSubtypes_toEquiv {p q : X → Prop} (hpq : p = q) :
+    (Homeomorph.ofEqSubtypes hpq).toEquiv = Equiv.subtypeEquivProp hpq := rfl
 
 theorem Subtype.dense_iff {s : Set X} {t : Set s} : Dense t ↔ s ⊆ closure ((↑) '' t) := by
   rw [IsInducing.subtypeVal.dense_iff, SetCoe.forall]
@@ -751,6 +766,17 @@ lemma Pi.induced_precomp [TopologicalSpace Y] {ι' : Type*} (φ : ι' → ι) :
     induced (· ∘ φ) Pi.topologicalSpace =
     ⨅ i', induced (eval (φ i')) ‹TopologicalSpace Y› :=
   induced_precomp' φ
+
+/-- Homeomorphism between `X → Y → Z` and `X × Y → Z` with product topologies. -/
+@[simps]
+def Homeomorph.piCurry {X Y Z : Type*}
+    [TopologicalSpace Z] :
+    (X × Y → Z) ≃ₜ (X → Y → Z) where
+  toFun := Function.curry
+  invFun := Function.uncurry
+  right_inv := congrFun rfl
+  left_inv := congrFun rfl
+  continuous_toFun := continuous_pi (fun i ↦ Pi.continuous_precomp (Prod.mk i))
 
 @[continuity, fun_prop]
 lemma Pi.continuous_restrict (S : Set ι) :

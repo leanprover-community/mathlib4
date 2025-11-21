@@ -3,10 +3,12 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Group.End
-import Mathlib.Algebra.Module.NatInt
-import Mathlib.Algebra.Order.Archimedean.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Group.End
+public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.Algebra.Order.Archimedean.Basic
 
 /-!
 # Maps (semi)conjugating a shift to a shift
@@ -25,6 +27,8 @@ We use parameters `a` and `b` instead of `1` to accommodate for two use cases:
 - self-maps $f\colon S^1\to S^1$ of degree other than one,
   including orientation-reversing maps.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 

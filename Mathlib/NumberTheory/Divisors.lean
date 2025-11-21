@@ -3,15 +3,17 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.IsPrimePow
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Interval.Finset.SuccPred
-import Mathlib.Algebra.Order.Ring.Int
-import Mathlib.Algebra.Ring.CharZero
-import Mathlib.Data.Nat.Cast.Order.Ring
-import Mathlib.Data.Nat.PrimeFin
-import Mathlib.Data.Nat.SuccPred
-import Mathlib.Order.Interval.Finset.Nat
+module
+
+public import Mathlib.Algebra.IsPrimePow
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
+public import Mathlib.Algebra.Order.Ring.Int
+public import Mathlib.Algebra.Ring.CharZero
+public import Mathlib.Data.Nat.Cast.Order.Ring
+public import Mathlib.Data.Nat.PrimeFin
+public import Mathlib.Data.Nat.SuccPred
+public import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Divisor Finsets
@@ -36,6 +38,8 @@ Therefore we adopt the convention that `Nat.divisors 0`, `Nat.properDivisors 0`,
 divisors, perfect numbers
 
 -/
+
+@[expose] public section
 
 open Finset
 
@@ -407,7 +411,7 @@ theorem divisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :
     divisors (p ^ k) = (Finset.range (k + 1)).map ⟨(p ^ ·), Nat.pow_right_injective pp.two_le⟩ := by
   ext a
   rw [mem_divisors_prime_pow pp]
-  simp [Nat.lt_succ, eq_comm]
+  simp [Nat.lt_succ_iff, eq_comm]
 
 theorem divisors_injective : Function.Injective divisors :=
   Function.LeftInverse.injective sup_divisors_id

@@ -3,9 +3,11 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.EpiMono
-import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
-import Mathlib.CategoryTheory.LiftingProperties.Adjunction
+module
+
+public import Mathlib.CategoryTheory.EpiMono
+public import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
+public import Mathlib.CategoryTheory.LiftingProperties.Adjunction
 
 /-!
 # Preservation and reflection of monomorphisms and epimorphisms
@@ -13,6 +15,8 @@ import Mathlib.CategoryTheory.LiftingProperties.Adjunction
 We provide typeclasses that state that a functor preserves or reflects monomorphisms or
 epimorphisms.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory

@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Polynomial.Eval.Degree
-import Mathlib.Algebra.Prime.Lemmas
+module
+
+public import Mathlib.Algebra.Polynomial.Eval.Degree
+public import Mathlib.Algebra.Prime.Lemmas
 
 /-!
 # Theory of degrees of polynomials
@@ -13,6 +15,8 @@ Some of the main results include
 - `natDegree_comp_le` : The degree of the composition is at most the product of degrees
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -203,7 +207,7 @@ theorem degree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
 theorem natDegree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
     (h : Set.Pairwise { i | i ∈ s ∧ f i ≠ 0 } (Ne on natDegree ∘ f)) :
     natDegree (s.sum f) = s.sup fun i => natDegree (f i) := by
-  by_cases H : ∃ x ∈ s, f x ≠ 0
+  by_cases! H : ∃ x ∈ s, f x ≠ 0
   · obtain ⟨x, hx, hx'⟩ := H
     have hs : s.Nonempty := ⟨x, hx⟩
     refine natDegree_eq_of_degree_eq_some ?_
@@ -227,8 +231,7 @@ theorem natDegree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
           simpa [← Nat.cast_withBot, hb', degree_eq_bot] using hx'
         exact ⟨b, hb, (degree_eq_natDegree hb').ge⟩
     · exact h.imp fun x y hxy hxy' => hxy (natDegree_eq_of_degree_eq hxy')
-  · push_neg at H
-    rw [Finset.sum_eq_zero H, natDegree_zero, eq_comm, show 0 = ⊥ from rfl, Finset.sup_eq_bot_iff]
+  · rw [Finset.sum_eq_zero H, natDegree_zero, eq_comm, show 0 = ⊥ from rfl, Finset.sup_eq_bot_iff]
     intro x hx
     simp [H x hx]
 
@@ -356,7 +359,7 @@ lemma natDegree_eq_one : p.natDegree = 1 ↔ ∃ a ≠ 0, ∃ b, C a * X + C b =
   · rintro ⟨a, ha, b, rfl⟩
     simp [ha]
 
-theorem subsingleton_isRoot_of_natDegree_eq_one [IsLeftCancelMulZero R] [IsRightCancelAdd R]
+theorem subsingleton_isRoot_of_natDegree_eq_one [IsLeftCancelMulZero R]
     (h : p.natDegree = 1) : { x | IsRoot p x }.Subsingleton := by
   intro r₁
   obtain ⟨r₂, hr₂, r₃, rfl⟩ : ∃ a, a ≠ 0 ∧ ∃ b, C a * X + C b = p := by rwa [natDegree_eq_one] at h
