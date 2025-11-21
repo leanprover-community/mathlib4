@@ -101,7 +101,7 @@ theorem eq_of_le_of_finrank_eq' [FiniteDimensional F L] (h_le : F ≤ E)
     (h_finrank : finrank F L = finrank E L) : F = E :=
   eq_of_le_of_finrank_le' h_le h_finrank.le
 
-lemma finrank_lt_of_lt [FiniteDimensional F L] (H : F < E) :
+lemma finrank_lt_of_gt [FiniteDimensional F L] (H : F < E) :
     Module.finrank E L < Module.finrank F L := by
   letI := (IntermediateField.inclusion H.le).toAlgebra
   have : IsScalarTower F E L := .of_algebraMap_eq' rfl
