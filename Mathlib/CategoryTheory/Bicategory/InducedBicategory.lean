@@ -121,6 +121,22 @@ def inducedPseudofunctor : StrictPseudofunctor (InducedBicategory C F) C :=
 
 end
 
+section
+
+@[simp]
+lemma eqToHom_hom {X Y : InducedBicategory C F} {f g : X ⟶ Y} (h : f = g) :
+    (eqToHom h).hom = eqToHom (h ▸ rfl) := by
+  subst h; simp only [eqToHom_refl, Hom.category_id_hom]
+
+variable [Strict C]
+
+attribute [local simp] Strict.leftUnitor_eqToIso Strict.rightUnitor_eqToIso
+  Strict.associator_eqToIso
+
+instance : Strict (InducedBicategory C F) where
+
+end
+
 end InducedBicategory
 
 end CategoryTheory.Bicategory
