@@ -189,7 +189,7 @@ In this section we prove the following results:
   i.e. `a ∈ s` and `b ∈ s` imply `Icc a b ⊆ s`;
 
 * `IsPreconnected.mem_intervals`: any preconnected set `s` in a conditionally complete linear order
-  is one of the intervals `Set.Icc`, `set.`Ico`, `set.Ioc`, `set.Ioo`, ``Set.Ici`, `Set.Iic`,
+  is one of the intervals `Set.Icc`, `Set.Ico`, `Set.Ioc`, `Set.Ioo`, `Set.Ici`, `Set.Iic`,
   `Set.Ioi`, `Set.Iio`; note that this is false for non-complete orders: e.g., in `ℝ \ {0}`, the set
   of positive numbers cannot be represented as `Set.Ioi _`.
 
