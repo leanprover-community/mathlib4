@@ -378,6 +378,28 @@ theorem convexCombo_assoc {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
       field_simp
       ring_nf
 
+/--
+Helper definition for `convexCombo_assoc'`, giving one of the coefficients appearing
+when we reassociate a convex combination in the reverse direction.
+-/
+abbrev convexCombo_assoc_coeff₁' (s t : unitInterval) : unitInterval :=
+  unitInterval.symm (convexCombo_assoc_coeff₂ (unitInterval.symm t) (unitInterval.symm s))
+
+/--
+Helper definition for `convexCombo_assoc'`, giving one of the coefficients appearing
+when we reassociate a convex combination in the reverse direction.
+-/
+abbrev convexCombo_assoc_coeff₂' (s t : unitInterval) : unitInterval :=
+  unitInterval.symm (convexCombo_assoc_coeff₁ (unitInterval.symm t) (unitInterval.symm s))
+
+theorem convexCombo_assoc' {a b : ℝ} (x y z : Icc a b) (s t : unitInterval) :
+    convexCombo (convexCombo x y s) z t =
+      convexCombo x (convexCombo y z (convexCombo_assoc_coeff₂' s t))
+        (convexCombo_assoc_coeff₁' s t) := by
+  rw [← convexCombo_symm, ← convexCombo_symm y x, convexCombo_assoc, ← convexCombo_symm x,
+    ← convexCombo_symm z y]
+  rw [convexCombo_assoc_coeff₁', convexCombo_assoc_coeff₂', unitInterval.symm_symm]
+
 private theorem eq_convexCombo.zero_le {a b : ℝ} {x y z : Icc a b} (hxy : x ≤ y) (hyz : y ≤ z) :
     0 ≤ ((y - x) / (z - x) : ℝ) := by
   by_cases h : (z - x : ℝ) = 0
