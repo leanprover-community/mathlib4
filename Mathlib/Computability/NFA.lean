@@ -86,8 +86,8 @@ theorem stepSet_singleton (s : σ) (a : α) : M.stepSet {s} a = M.step s a := by
 
 variable (M) in
 @[simp]
-theorem stepSet_union {S1 S2 : Set σ} {a : α} :
-    M.stepSet (S1 ∪ S2) a = M.stepSet S1 a ∪ M.stepSet S2 a := by
+theorem stepSet_union {S T : Set σ} {a : α} :
+    M.stepSet (S ∪ T) a = M.stepSet S a ∪ M.stepSet T a := by
   ext s
   simp [mem_stepSet, or_and_right, exists_or]
 
@@ -126,9 +126,9 @@ theorem evalFrom_append_singleton (S : Set σ) (x : List α) (a : α) :
 
 variable (M) in
 @[simp]
-theorem evalFrom_union (S1 S2 : Set σ) (x : List α) :
-    M.evalFrom (S1 ∪ S2) x = M.evalFrom S1 x ∪ M.evalFrom S2 x := by
-  induction x generalizing S1 S2 with
+theorem evalFrom_union (S T : Set σ) (x : List α) :
+    M.evalFrom (S ∪ T) x = M.evalFrom S x ∪ M.evalFrom T x := by
+  induction x generalizing S T with
   | nil => simp
   | cons a x ih => simp [ih]
 
