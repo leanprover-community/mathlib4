@@ -371,9 +371,6 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
       · use 0
         simp only [Function.iterate_zero, id_eq, tsub_zero,
           Pi.zero_apply, mul_zero, add_zero]
-        -- constructor
-        -- rw [hR₁ z]
-        -- simp only [mul_eq_mul_left_iff, pow_eq_zero_iff', ne_eq]
         constructor
         · intros z
           refine Differentiable.analyticAt ?_ z
@@ -398,14 +395,29 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
         constructor
         · unfold R2
           intros z
-          sorry
+          refine AnalyticAt.fun_add ?_ ?_
+          · refine AnalyticAt.fun_add ?_ ?_
+            · refine AnalyticAt.fun_add ?_ ?_
+              · refine AnalyticAt.fun_mul ?_ ?_
+                · exact analyticAt_const
+                · exact hf1 z
+              · refine AnalyticAt.fun_mul ?_ ?_
+                · exact analyticAt_const
+                · exact AnalyticAt.deriv (hf1 z)
+            · exact hR₂ z
+          · refine AnalyticAt.fun_mul ?_ ?_
+            · refine Differentiable.analyticAt ?_ z
+              · simp only [differentiable_fun_id, differentiable_const,
+                  Differentiable.fun_sub]
+            · exact AnalyticAt.deriv (hR₂ z)
 
 
 
 
 
 
-        · intros z
+        · stop
+          intros z
           have derivOfderivk : ∀ z, deriv (fun z => (z - z₀)^(r - k) *
 
             (r.factorial / (r - k).factorial * R₁ z + (z - z₀) * R₂ z)) z =
@@ -423,7 +435,7 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
                 rw [deriv_fun_mul]
                 rw [deriv_fun_mul]
                 simp only [differentiableAt_fun_id, differentiableAt_const,
-                  DifferentiableAt.fun_sub, deriv_fun_pow'', deriv_fun_sub, deriv_id'',
+                  DifferentiableAt.fun_sub, deriv_fun_pow, deriv_fun_sub, deriv_id'',
                   deriv_const', sub_zero, mul_one, deriv_div_const, zero_div, zero_mul, zero_add,
                   one_mul]
 
@@ -456,9 +468,31 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
           rw [deriv_fun_mul]
           rw [deriv_fun_mul]
           unfold R2
-          simp only [differentiableAt_fun_id, differentiableAt_const, DifferentiableAt.fun_sub,
+          simp only [differentiableAt_fun_id,
+            differentiableAt_const, DifferentiableAt.fun_sub,
             deriv_fun_pow, deriv_fun_sub, deriv_id'', deriv_const', sub_zero, mul_one,
             deriv_div_const, zero_div, zero_mul, zero_add, one_mul]
+          nth_rw 2 [mul_comm]
+          simp only [mul_assoc]
+          rw [mul_add]
+          rw [mul_add]
+          rw [mul_add]
+          rw [mul_add]
+          rw [mul_add]
+          rw [mul_add]
+          rw [mul_add]
+          rw [mul_add]
+          rw [mul_add]
+          rw [mul_add]
+          rw [mul_add]
+          simp only [add_assoc]
+          simp only [← mul_assoc]
+
+
+
+
+
+
           -- simp only [add_assoc]
           -- rw [add_comm]
           -- nth_rw 6 [add_comm]
@@ -472,7 +506,7 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
 
 
         }
-#exit
+
 lemma iterated_deriv_eq_zero_iff_order_eq_n :
   ∀ z₀ n (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀) (ho : analyticOrderAt f z₀ ≠ ⊤),
     (∀ k < n, deriv^[k] f z₀ = 0) ∧ (deriv^[n] f z₀ ≠ 0)

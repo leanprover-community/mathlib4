@@ -5809,15 +5809,40 @@ lemma abs_denom : norm (((z - (h7.l₀' q hq0 h2mq + 1 : ℂ)) ^ (-(h7.r q hq0 h
         · positivity
         · positivity
         · exact rneq0 h7 q hq0 h2mq
-        ·
+        · simp only [mem_sdiff, Finset.mem_range, Finset.mem_singleton] at hx
           have : ‖(h7.l₀' q hq0 h2mq: ℂ) + 1 - (↑x + 1)‖  ≤ (h7.m : ℝ) := by {
-            --simp only [add_sub_add_right_eq_sub]
-            simp only [mem_sdiff, Finset.mem_range, Finset.mem_singleton] at hx
+            simp only [add_sub_add_right_eq_sub]
+
 
             --have := Complex.norm_natCast ( n := (h7.l₀' q hq0 h2mq : ℕ) - (↑x))
-            simp only [add_sub_add_right_eq_sub]
             rw [← Complex.norm_natCast]
-            sorry
+            cases' ((h7.l₀' q hq0 h2mq)) with y hy
+            obtain ⟨hx1,hx2⟩ := hx
+            simp only [RCLike.norm_natCast]
+
+            by_cases H : x ≤ y
+            · have : ‖(y : ℂ) - (x : ℂ)‖ = ((y - x) : ℕ) := by {
+               rw [← Complex.norm_natCast]
+               norm_cast
+                }
+              rw [this]
+              simp only [Nat.cast_le, tsub_le_iff_right, ge_iff_le]
+              linarith
+            ·
+              have : ‖(y : ℂ) - (x : ℂ)‖ = (( x - y ) : ℕ) := by {
+
+                calc _ = ‖(x : ℂ) - (y : ℂ)‖ := ?_
+                     _ = (( x - y ) : ℕ) := ?_
+                · rw [← norm_neg]
+                  simp only [neg_sub]
+                · rw [← Complex.norm_natCast]
+                  have : y ≤ x := by {linarith}
+                  norm_cast
+                   }
+
+              rw [this]
+              simp only [Nat.cast_le, tsub_le_iff_right, ge_iff_le]
+              linarith
             }
           apply mul_le_mul
           · simp only [add_sub_add_right_eq_sub] at *
@@ -5880,7 +5905,6 @@ lemma abs_denom : norm (((z - (h7.l₀' q hq0 h2mq + 1 : ℂ)) ^ (-(h7.r q hq0 h
       · positivity
     · positivity
     · positivity
-
 
 def c₁₂ : ℝ := (2*h7.m : ℝ)^(h7.m/2 : ℝ) * h7.c₁₀ * h7.c₁₁
 
@@ -6133,16 +6157,17 @@ lemma one_le_c13 : 1 ≤ h7.c₁₃ := by {
 
 def Cnum : ℝ := ((h7.m * (h7.r q hq0 h2mq : ℝ)) / (q : ℝ))⁻¹ *
   ((h7.c₁₂)^(h7.r q hq0 h2mq : ℝ)*(h7.r q hq0 h2mq : ℝ) ^
-              ((((h7.r q hq0 h2mq : ℝ)* ( ( (3 : ℝ) - (h7.m: ℝ))/2 : ℝ)) + (3 / 2 : ℝ))))
+              ((((h7.r q hq0 h2mq : ℝ)*
+              ( ( (3 : ℝ) - (h7.m: ℝ))/2 : ℝ)) + (3 / 2 : ℝ))))
 
 lemma hf : ∀ z ∈ Metric.sphere 0 (h7.m * (1 + ↑(h7.r q hq0 h2mq : ℝ) / ↑q)),
     ‖(z - ((↑(h7.l₀' q hq0 h2mq) : ℂ) + 1))⁻¹ *
-    (h7.SR q hq0 h2mq z)‖ ≤ h7.Cnum q hq0 h2mq := by {
+    (h7.S q hq0 h2mq z)‖ ≤ h7.Cnum q hq0 h2mq := by {
       intros z hz
       have hS := S_norm_bound h7 q hq0 h2mq hz
       simp only [Complex.norm_mul, norm_inv, ge_iff_le]
-      have := h7.S_eq_SR_on_circle q hq0 h2mq z hz
-      rw [← this]
+      --have := h7.S_eq_SR_on_circle q hq0 h2mq z hz
+      --rw [← this]
       unfold Cnum
       apply mul_le_mul
       · apply inv_anti₀
@@ -6195,11 +6220,6 @@ lemma eq8 : norm (ρᵣ h7 q hq0 h2mq) ≤ (h7.c₁₃) ^ (h7.r q hq0 h2mq : ℝ
           C(0, h7.m * (1 + ↑(h7.r q hq0 h2mq) / ↑q)),
           (z - ↑((h7.l₀' q hq0 h2mq : ℂ) + 1))⁻¹ * (h7.S q hq0 h2mq z)) := ?_
 
-       _ = norm ((Complex.log (h7.α) ^ (-(h7.r q hq0 h2mq : ℤ)))) *
-          norm ((2 * Real.pi * I)⁻¹) * norm (∮ (z : ℂ) in
-          C(0, h7.m * (1 + ↑(h7.r q hq0 h2mq) / ↑q)),
-          (z - ↑((h7.l₀' q hq0 h2mq : ℂ) + 1))⁻¹ * (h7.SR q hq0 h2mq z)) := ?_
-
        _ ≤ ((norm ((Complex.log h7.α))^ (-(h7.r q hq0 h2mq : ℤ)))) *
          (h7.m : ℝ) * (1 + (h7.r q hq0 h2mq : ℝ) / (q : ℝ)) *
           (h7.c₁₂) ^ (h7.r q hq0 h2mq : ℝ) *
@@ -6216,13 +6236,6 @@ lemma eq8 : norm (ρᵣ h7 q hq0 h2mq) ≤ (h7.c₁₃) ^ (h7.r q hq0 h2mq : ℝ
     exact (h7.l₀' q hq0 h2mq)
   · simp only [zpow_neg, zpow_natCast, _root_.mul_inv_rev,
     norm_inv, norm_pow, norm_real, Real.norm_eq_abs, norm_ofNat, norm_mul]
-  · simp only [mul_assoc]
-    congr
-    ext z
-    congr
-    have := h7.S_eq_SR_on_circle q hq0 h2mq z
-    apply this
-    sorry
   · simp only [mul_assoc]
     simp only [zpow_neg, zpow_natCast, norm_inv, norm_pow, _root_.mul_inv_rev, inv_I, neg_mul,
       norm_neg, Complex.norm_mul, norm_I, norm_real, Real.norm_eq_abs, one_mul, norm_ofNat]
