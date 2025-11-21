@@ -3,11 +3,13 @@ Copyright (c) 2023 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Init
-import Mathlib.Data.Finite.Prod
-import Mathlib.Data.Set.Card
-import Mathlib.Data.Set.Finite.Powerset
-import Mathlib.Order.UpperLower.Closure
+module
+
+public import Mathlib.Combinatorics.Matroid.Init
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.Data.Set.Card
+public import Mathlib.Data.Set.Finite.Powerset
+public import Mathlib.Order.UpperLower.Closure
 
 /-!
 # Matroids
@@ -159,6 +161,8 @@ There are a few design decisions worth discussing.
 * [N. Bowler, S. Geschke, Self-dual uniform matroids on infinite sets,
   Proc. Amer. Math. Soc. 144 (2016), 459-471][bowlerGeschke2015]
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -455,8 +459,6 @@ theorem not_rankInfinite (M : Matroid α) [RankFinite M] : ¬ RankInfinite M := 
 theorem rankFinite_or_rankInfinite (M : Matroid α) : RankFinite M ∨ RankInfinite M :=
   let ⟨B, hB⟩ := M.exists_isBase
   B.finite_or_infinite.imp hB.rankFinite_of_finite hB.rankInfinite_of_infinite
-
-@[deprecated (since := "2025-03-27")] alias finite_or_rankInfinite := rankFinite_or_rankInfinite
 
 @[simp]
 theorem not_rankFinite_iff (M : Matroid α) : ¬ RankFinite M ↔ RankInfinite M :=

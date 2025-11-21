@@ -3,9 +3,11 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
-import Mathlib.LinearAlgebra.LinearPMap
-import Mathlib.Topology.Algebra.Module.Basic
-import Mathlib.Topology.Algebra.Module.Equiv
+module
+
+public import Mathlib.LinearAlgebra.LinearPMap
+public import Mathlib.Topology.Algebra.Module.Basic
+public import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 # Partially defined linear operators over topological vector spaces
@@ -40,6 +42,8 @@ underlying spaces are normed.
 
 Unbounded operators, closed operators
 -/
+
+@[expose] public section
 
 
 open Topology
@@ -186,9 +190,8 @@ theorem closure_inverse_graph (hf : LinearMap.ker f.toFun = ⊥) (hf' : f.IsClos
   apply SetLike.ext'
   simp only [Submodule.topologicalClosure_coe, Submodule.map_coe, LinearEquiv.prodComm_apply]
   apply (image_closure_subset_closure_image continuous_swap).antisymm
-  have h1 := Set.image_equiv_eq_preimage_symm f.graph (LinearEquiv.prodComm R E F).toEquiv
-  have h2 := Set.image_equiv_eq_preimage_symm (_root_.closure f.graph)
-    (LinearEquiv.prodComm R E F).toEquiv
+  have h1 := (LinearEquiv.prodComm R E F).toEquiv.image_eq_preimage_symm f.graph
+  have h2 := (LinearEquiv.prodComm R E F).toEquiv.image_eq_preimage_symm (_root_.closure f.graph)
   simp only [LinearEquiv.coe_toEquiv, LinearEquiv.prodComm_apply] at h1 h2
   rw [h1, h2]
   apply continuous_swap.closure_preimage_subset
