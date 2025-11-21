@@ -67,7 +67,6 @@ arithmetic functions, dirichlet convolution, divisors
 
 -/
 
-set_option linter.style.longFile 1700
 @[expose] public section
 
 open Finset
@@ -1548,3 +1547,4 @@ meta def evalArithmeticFunctionZeta : PositivityExt where eval {u α} z p e := d
   | _, _, _ => throwError "not ArithmeticFunction.zeta"
 
 end Mathlib.Meta.Positivity
+set_option linter.style.longFile 1700
