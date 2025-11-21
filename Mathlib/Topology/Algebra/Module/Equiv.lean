@@ -1218,6 +1218,51 @@ theorem coprod_comp_prodComm [ContinuousAdd M] (f : M₂ →L[R] M) (g : M₃ �
 
 end ContinuousLinearMap
 
+-- Restricting a continuous linear equivalence to a map between submodules.
+section map
+
+namespace ContinuousLinearEquiv
+
+variable {R R₂ M M₂ : Type*} [Semiring R] [Semiring R₂] [AddCommMonoid M] [AddCommMonoid M₂]
+    {module_M : Module R M} {module_M₂ : Module R₂ M₂} {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
+    {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
+
+/--
+A continuous linear equivalence of two modules restricts to a continuous linear equivalence
+from any submodule `p` of the domain onto the image of that submodule.
+
+This is the continuous linear version of `LinearEquiv.submoduleMap`.
+This is `ContinuousLinearEquiv.ofSubmodule'` but with map on the right instead of comap on the left.
+-/
+def submoduleMap [TopologicalSpace M] [TopologicalSpace M₂]
+    (e : M ≃SL[σ₁₂] M₂) (p : Submodule R M) : p ≃SL[σ₁₂] Submodule.map e p where
+  toLinearMap := (e.comp p.subtype).codRestrict (p.map e) (fun ⟨c, hc⟩ ↦ by simpa)
+  invFun := (e.symm.comp (p.map e).subtype).codRestrict p (fun ⟨c, y, hy, eyc⟩ ↦ by
+    simpa [← eyc, e.symm_apply_apply])
+  left_inv x := by ext; simp
+  right_inv x := by ext; simp
+  continuous_toFun := by
+    have : Continuous (e.comp p.subtype) := by dsimp; fun_prop
+    dsimp
+    exact continuous_induced_rng.mpr this
+  continuous_invFun := by
+    have : Continuous (e.symm.comp (p.map e).subtype) := by dsimp; fun_prop
+    dsimp
+    exact continuous_induced_rng.mpr this
+
+@[simp]
+lemma submoduleMap_apply (e : M ≃ₛₗ[σ₁₂] M₂) (p : Submodule R M) (x : p) :
+  e.submoduleMap p x = e x := by rfl
+
+@[simp]
+lemma submoduleMap_symm_apply
+    (e : M ≃ₛₗ[σ₁₂] M₂) (p : Submodule R M) (x : p.map e) :
+  (e.submoduleMap p).symm x = e.symm x := by rfl
+
+end ContinuousLinearEquiv
+
+end map
+
 namespace Submodule
 
 variable {R : Type*} [Ring R] {M : Type*} [TopologicalSpace M] [AddCommGroup M] [Module R M]
