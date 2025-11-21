@@ -67,6 +67,9 @@ theorem mem_toCloseds [T2Space α] {x : α} {s : Compacts α} :
     x ∈ s.toCloseds ↔ x ∈ s :=
   Iff.rfl
 
+theorem toCloseds_injective [T2Space α] : Function.Injective (toCloseds (α := α)) :=
+  .of_comp (f := SetLike.coe) SetLike.coe_injective
+
 instance : CanLift (Set α) (Compacts α) (↑) IsCompact where prf K hK := ⟨⟨K, hK⟩, rfl⟩
 
 @[ext]
@@ -295,6 +298,9 @@ theorem mem_toCloseds [T2Space α] {x : α} {s : NonemptyCompacts α} :
     x ∈ s.toCloseds ↔ x ∈ s :=
   Iff.rfl
 
+theorem toCloseds_injective [T2Space α] : Function.Injective (toCloseds (α := α)) :=
+  .of_comp (f := SetLike.coe) SetLike.coe_injective
+
 @[ext]
 protected theorem ext {s t : NonemptyCompacts α} (h : (s : Set α) = t) : s = t :=
   SetLike.ext' h
@@ -313,6 +319,9 @@ theorem coe_toCompacts (s : NonemptyCompacts α) : (s.toCompacts : Set α) = s :
 theorem mem_toCompacts {x : α} {s : NonemptyCompacts α} :
     x ∈ s.toCompacts ↔ x ∈ s :=
   Iff.rfl
+
+theorem toCompacts_injective : Function.Injective (toCompacts (α := α)) :=
+  .of_comp (f := SetLike.coe) SetLike.coe_injective
 
 instance : Max (NonemptyCompacts α) :=
   ⟨fun s t => ⟨s.toCompacts ⊔ t.toCompacts, s.nonempty.mono subset_union_left⟩⟩
