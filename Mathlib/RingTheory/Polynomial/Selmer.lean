@@ -327,7 +327,7 @@ open IntermediateField
 
 theorem switchinglemma {F : Type*} [Field F] (p : F[X])
     (E₁ E₂ : Type*) [Field E₁] [Algebra F E₁] [Field E₂] [Algebra F E₂]
-    [Fact (p.Splits (algebraMap F E₁))] [Fact (p.Splits (algebraMap F E₂))] :
+    [Fact (p.map (algebraMap F E₁)).Splits] [Fact (p.map (algebraMap F E₂)).Splits] :
     Gal.galActionHom p E₁ =
       ((Polynomial.Gal.rootsEquivRoots p E₂).symm.trans
         (Polynomial.Gal.rootsEquivRoots p E₁)).permCongrHom.toMonoidHom.comp
@@ -351,7 +351,7 @@ theorem tada'' (f₀ : ℤ[X]) (hf₀ : f₀.Monic) (hf' : Irreducible f₀) :
   let f : ℚ[X] := f₀.map (algebraMap ℤ ℚ)
   have hf := hf₀.map (algebraMap ℤ ℚ)
   let K := f.SplittingField
-  have : Fact (f.Splits (algebraMap ℚ K)) := ⟨SplittingField.splits f⟩
+  have : Fact (f.map (algebraMap ℚ K)).Splits := ⟨SplittingField.splits f⟩
   have : NumberField K := by constructor
   have : IsGalois ℚ K := by constructor
   let R := 𝓞 K

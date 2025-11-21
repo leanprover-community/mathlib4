@@ -3,12 +3,14 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Batteries.Tactic.Congr
-import Mathlib.Data.Option.Basic
-import Mathlib.Data.Prod.Basic
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Data.Set.SymmDiff
-import Mathlib.Data.Set.Inclusion
+module
+
+public import Batteries.Tactic.Congr
+public import Mathlib.Data.Option.Basic
+public import Mathlib.Data.Prod.Basic
+public import Mathlib.Data.Set.Subsingleton
+public import Mathlib.Data.Set.SymmDiff
+public import Mathlib.Data.Set.Inclusion
 
 /-!
 # Images and preimages of sets
@@ -31,6 +33,8 @@ import Mathlib.Data.Set.Inclusion
 set, sets, image, preimage, pre-image, range
 
 -/
+
+@[expose] public section
 
 assert_not_exists WithTop OrderIso
 
@@ -1247,6 +1251,18 @@ theorem injective_iff {α β} {f : Option α → β} :
 
 theorem range_eq {α β} (f : Option α → β) : range f = insert (f none) (range (f ∘ some)) :=
   Set.ext fun _ => Option.exists.trans <| eq_comm.or Iff.rfl
+
+/-- The range of `Option.elim b f` is `{b} ∪ range f`. -/
+theorem range_elim {α β} (b : β) (f : α → β) :
+    range (fun o : Option α => o.elim b f) = insert b (range f) := by
+  rw [range_eq]
+  simp [Function.comp_def]
+
+/-- The image of `range some` under `Option.elim b f` equals `range f`. -/
+theorem image_elim_range_some_eq_range {α β} (f : α → β) (b : β) :
+    (fun o : Option α => o.elim b f) '' range some = range f := by
+  rw [← range_comp']
+  simp
 
 end Option
 

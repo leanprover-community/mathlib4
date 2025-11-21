@@ -3,10 +3,12 @@ Copyright (c) 2025 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.Projection
-import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
-import Mathlib.Geometry.Euclidean.Projection
+module
+
+public import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Projection
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
+public import Mathlib.Geometry.Euclidean.Projection
 
 /-!
 # Angle bisectors.
@@ -14,6 +16,8 @@ import Mathlib.Geometry.Euclidean.Projection
 This file proves lemmas relating to bisecting angles.
 
 -/
+
+@[expose] public section
 
 
 namespace EuclideanGeometry
