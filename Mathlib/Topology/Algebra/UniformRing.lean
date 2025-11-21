@@ -182,15 +182,15 @@ theorem coe_mapRingHom : mapRingHom f hf = Completion.map f := rfl
 
 variable {f}
 
-theorem mapRingHom_coe (hf : UniformContinuous f) (a : α) : mapRingHom f hf.continuous a = f a := by
-  rw [mapRingHom_apply, map_coe hf]
+theorem mapRingHom_coe (hf : Continuous f) (a : α) : mapRingHom f hf a = f a := by
+  rw [mapRingHom_apply, map_coe (uniformContinuous_addMonoidHom_of_continuous hf)]
 
 theorem mapRingHom_comp {γ : Type*} [UniformSpace γ] [Ring γ] [IsUniformAddGroup γ]
     [IsTopologicalRing γ] {g : β →+* γ} (hg : Continuous g) (hf : Continuous f) :
     (mapRingHom g hg).comp (mapRingHom f hf) = mapRingHom (g.comp f) (hg.comp hf) := by
   simp [← DFunLike.coe_fn_eq, RingHom.coe_comp, coe_mapRingHom, map_comp
-    (uniformContinuous_of_continuousAt_zero _ hg.continuousAt)
-    (uniformContinuous_of_continuousAt_zero _ hf.continuousAt)]
+    (uniformContinuous_addMonoidHom_of_continuous hg)
+    (uniformContinuous_addMonoidHom_of_continuous hf)]
 
 /-- A ring isomorphism `α ≃+* β` between uniform rings, uniformly continuous in both directions,
 lifts to a ring isomorphism between corresponding uniform space completions. -/
