@@ -3,7 +3,9 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Joël Riou
 -/
-import Mathlib.RingTheory.RingHom.Flat
+module
+
+public import Mathlib.RingTheory.RingHom.Flat
 
 /-!
 # Faithfully flat ring maps
@@ -11,6 +13,8 @@ import Mathlib.RingTheory.RingHom.Flat
 A ring map `f : R →+* S` is faithfully flat if `S` is faithfully flat as an `R`-algebra. This is
 the same as being flat and a surjection on prime spectra.
 -/
+
+@[expose] public section
 
 namespace RingHom
 
@@ -60,6 +64,10 @@ lemma of_bijective (hf : Function.Bijective f) : f.FaithfullyFlat := by
     ext
     exact (RingEquiv.ofBijective f hf).injective (by simp)
   rw [← PrimeSpectrum.specComap_comp_apply, this, PrimeSpectrum.specComap_id]
+
+lemma injective (hf : f.FaithfullyFlat) : Function.Injective ⇑f := by
+  algebraize [f]
+  exact FaithfulSMul.algebraMap_injective R S
 
 lemma respectsIso : RespectsIso FaithfullyFlat :=
   stableUnderComposition.respectsIso (fun e ↦ .of_bijective e.bijective)

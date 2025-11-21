@@ -3,7 +3,9 @@ Copyright (c) 2017 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johannes Hölzl, Chris Hughes, Jens Wagemaker, Jon Eugster
 -/
-import Mathlib.Algebra.Group.Commute.Defs
+module
+
+public import Mathlib.Algebra.Group.Commute.Defs
 
 /-!
 # Units (i.e., invertible elements) of a monoid
@@ -27,6 +29,8 @@ resembling the notation $R^{\times}$ for the units of a ring, which is common in
 
 The results here should be used to golf the basic `Group` lemmas.
 -/
+
+@[expose] public section
 
 assert_not_exists Multiplicative MonoidWithZero DenselyOrdered
 
@@ -318,8 +322,7 @@ theorem divp_one (a : α) : a /ₚ 1 = a :=
 theorem divp_assoc (a b : α) (u : αˣ) : a * b /ₚ u = a * (b /ₚ u) :=
   mul_assoc _ _ _
 
-/-- `field_simp` needs the reverse direction of `divp_assoc` to move all `/ₚ` to the right. -/
-@[field_simps]
+@[deprecated divp_assoc (since := "2025-08-25")]
 theorem divp_assoc' (x y : α) (u : αˣ) : x * (y /ₚ u) = x * y /ₚ u :=
   (divp_assoc _ _ _).symm
 
@@ -335,7 +338,6 @@ theorem divp_mul_cancel (a : α) (u : αˣ) : a /ₚ u * u = a :=
 theorem mul_divp_cancel (a : α) (u : αˣ) : a * u /ₚ u = a :=
   (mul_assoc _ _ _).trans <| by rw [Units.mul_inv, mul_one]
 
-@[field_simps]
 theorem divp_divp_eq_divp_mul (x : α) (u₁ u₂ : αˣ) : x /ₚ u₁ /ₚ u₂ = x /ₚ (u₂ * u₁) := by
   simp only [divp, mul_inv_rev, Units.val_mul, mul_assoc]
 
@@ -343,21 +345,15 @@ theorem divp_divp_eq_divp_mul (x : α) (u₁ u₂ : αˣ) : x /ₚ u₁ /ₚ u�
 theorem one_divp (u : αˣ) : 1 /ₚ u = ↑u⁻¹ :=
   one_mul _
 
-/-- Used for `field_simp` to deal with inverses of units. -/
-@[field_simps]
 theorem inv_eq_one_divp (u : αˣ) : ↑u⁻¹ = 1 /ₚ u := by rw [one_divp]
 
-/-- `field_simp` moves division inside `αˣ` to the right, and this lemma
-lifts the calculation to `α`.
--/
-@[field_simps]
 theorem val_div_eq_divp (u₁ u₂ : αˣ) : ↑(u₁ / u₂) = ↑u₁ /ₚ u₂ := by
   rw [divp, division_def, Units.val_mul]
 
 end Monoid
 
 /-!
-# `IsUnit` predicate
+### `IsUnit` predicate
 -/
 
 section IsUnit
@@ -393,18 +389,21 @@ theorem isUnit_iff_exists_and_exists [Monoid M] {a : M} :
 protected theorem Units.isUnit [Monoid M] (u : Mˣ) : IsUnit (u : M) :=
   ⟨u, rfl⟩
 
-@[to_additive (attr := simp, grind)]
+@[to_additive (attr := simp, grind ←)]
 theorem isUnit_one [Monoid M] : IsUnit (1 : M) :=
   ⟨1, rfl⟩
 
 @[to_additive]
-theorem isUnit_of_mul_eq_one [CommMonoid M] (a b : M) (h : a * b = 1) : IsUnit a :=
-  ⟨Units.mkOfMulEqOne a b h, rfl⟩
+theorem IsUnit.of_mul_eq_one [CommMonoid M] {a : M} (b : M) (h : a * b = 1) : IsUnit a :=
+  ⟨.mkOfMulEqOne a b h, rfl⟩
+
+@[deprecated (since := "2025-11-05")] alias isUnit_of_mul_eq_one := IsUnit.of_mul_eq_one
 
 @[to_additive]
-theorem isUnit_of_mul_eq_one_right [CommMonoid M] (a b : M) (h : a * b = 1) : IsUnit b := by
-  rw [mul_comm] at h
-  exact isUnit_of_mul_eq_one b a h
+theorem IsUnit.of_mul_eq_one_right [CommMonoid M] {b : M} (a : M) (h : a * b = 1) : IsUnit b :=
+  .of_mul_eq_one a <| mul_comm a b ▸ h
+
+@[deprecated (since := "2025-11-05")] alias isUnit_of_mul_eq_one_right := IsUnit.of_mul_eq_one_right
 
 section Monoid
 variable [Monoid M] {a b : M}
@@ -433,7 +432,7 @@ end Monoid
 
 @[to_additive]
 theorem isUnit_iff_exists_inv [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, a * b = 1 :=
-  ⟨fun h => h.exists_right_inv, fun ⟨b, hab⟩ => isUnit_of_mul_eq_one _ b hab⟩
+  ⟨fun h => h.exists_right_inv, fun ⟨b, hab⟩ => .of_mul_eq_one b hab⟩
 
 @[to_additive]
 theorem isUnit_iff_exists_inv' [CommMonoid M] {a : M} : IsUnit a ↔ ∃ b, b * a = 1 := by
@@ -601,7 +600,6 @@ protected lemma mul_div_mul_left (h : IsUnit c) (a b : α) : c * a / (c * b) = a
 end DivisionCommMonoid
 end IsUnit
 
-@[field_simps]
 lemma divp_eq_div [DivisionMonoid α] (a : α) (u : αˣ) : a /ₚ u = a / u := by
   rw [div_eq_mul_inv, divp, u.val_inv_eq_inv_val]
 

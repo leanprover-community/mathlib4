@@ -3,10 +3,12 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Alex Kontorovich, Heather Macbeth
 -/
-import Mathlib.MeasureTheory.Group.Action
-import Mathlib.MeasureTheory.Group.Pointwise
-import Mathlib.MeasureTheory.Integral.Lebesgue.Map
-import Mathlib.MeasureTheory.Integral.Bochner.Set
+module
+
+public import Mathlib.MeasureTheory.Group.Action
+public import Mathlib.MeasureTheory.Group.Pointwise
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Map
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
 
 /-!
 # Fundamental domain of a group action
@@ -21,7 +23,7 @@ with respect to a measure `μ` if
 * the sets `g • s`, are pairwise a.e. disjoint, i.e., `μ (g₁ • s ∩ g₂ • s) = 0` whenever `g₁ ≠ g₂`;
   we require this for `g₂ = 1` in the definition, then deduce it for any two `g₁ ≠ g₂`.
 
-In this file we prove that in case of a countable group `G` and a measure preserving action, any two
+In this file we prove that in case of a countable group `G` and a measure-preserving action, any two
 fundamental domains have the same measure, and for a `G`-invariant function, its integrals over any
 two fundamental domains are equal to each other.
 
@@ -44,6 +46,8 @@ We also generate additive versions of all theorems in this file using the `to_ad
 * `MeasureTheory.fundamentalInterior`: Fundamental interior of a set under the action of a group.
   Elements of `s` that do not belong to any other translate of `s`.
 -/
+
+@[expose] public section
 
 
 open scoped ENNReal Pointwise Topology NNReal ENNReal MeasureTheory
@@ -166,7 +170,7 @@ theorem preimage_of_equiv {ν : Measure β} (h : IsFundamentalDomain G s μ) {f 
 theorem image_of_equiv {ν : Measure β} (h : IsFundamentalDomain G s μ) (f : α ≃ β)
     (hf : QuasiMeasurePreserving f.symm ν μ) (e : H ≃ G)
     (hef : ∀ g, Semiconj f (e g • ·) (g • ·)) : IsFundamentalDomain H (f '' s) ν := by
-  rw [f.image_eq_preimage]
+  rw [f.image_eq_preimage_symm]
   refine h.preimage_of_equiv hf e.symm.bijective fun g x => ?_
   rcases f.surjective x with ⟨x, rfl⟩
   rw [← hef _ _, f.symm_apply_apply, f.symm_apply_apply, e.apply_symm_apply]
@@ -342,12 +346,6 @@ protected theorem aestronglyMeasurable_on_iff {β : Type*} [TopologicalSpace β]
     _ ↔ AEStronglyMeasurable f (μ.restrict t) := by
       simp only [← aestronglyMeasurable_sum_measure_iff, ← hs.restrict_restrict,
         hs.sum_restrict_of_ac restrict_le_self.absolutelyContinuous]
-
-@[deprecated (since := "2025-04-09")]
-alias aEStronglyMeasurable_on_iff := MeasureTheory.IsFundamentalDomain.aestronglyMeasurable_on_iff
-@[deprecated (since := "2025-04-09")]
-alias _root_.MeasureTheory.IsAddFundamentalDomain.aEStronglyMeasurable_on_iff :=
-  MeasureTheory.IsAddFundamentalDomain.aestronglyMeasurable_on_iff
 
 @[to_additive]
 protected theorem hasFiniteIntegral_on_iff (hs : IsFundamentalDomain G s μ)

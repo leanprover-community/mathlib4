@@ -3,9 +3,11 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
-import Mathlib.RingTheory.PowerBasis
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
+public import Mathlib.RingTheory.PowerBasis
 
 /-!
 # A predicate on adjoining roots of polynomial
@@ -55,6 +57,8 @@ Using `IsAdjoinRoot` to map out of `S`:
 * `IsAdjoinRootMonic.minpoly_eq`: the minimal polynomial of the adjoined root of `f` is equal to
   `f`, if `f` is irreducible and monic, and `R` is a GCD domain
 -/
+
+@[expose] public section
 
 open Module Polynomial
 
@@ -106,8 +110,11 @@ variable (h : IsAdjoinRoot S f)
 /-- `(h : IsAdjoinRoot S f).root` is the root of `f` that can be adjoined to generate `S`. -/
 def root : S := h.map X
 
+set_option linter.unusedSectionVars false in
 include h in
-theorem subsingleton [Subsingleton R] : Subsingleton S := h.map_surjective.subsingleton
+@[deprecated "use Algebra.subsingleton" (since := "2025-09-10")]
+theorem subsingleton [Subsingleton R] : Subsingleton S := by
+  have := h; exact Algebra.subsingleton R S
 
 theorem algebraMap_apply (x : R) :
     algebraMap R S x = h.map (Polynomial.C x) := AlgHom.algebraMap_eq_apply h.map rfl
@@ -457,8 +464,7 @@ def basis : Basis (Fin (natDegree f)) R S :=
     { toFun x := (h.modByMonicHom x).toFinsupp.comapDomain _ Fin.val_injective.injOn
       invFun g := h.map (ofFinsupp (g.mapDomain Fin.val))
       left_inv x := by
-        cases subsingleton_or_nontrivial R
-        · subsingleton [h.subsingleton]
+        nontriviality R using Algebra.subsingleton R S
         simp only
         rw [Finsupp.mapDomain_comapDomain, Polynomial.eta, h.map_modByMonicHom x]
         · exact Fin.val_injective

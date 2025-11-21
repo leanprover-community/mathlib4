@@ -3,9 +3,11 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Sophie Morel
 -/
-import Mathlib.Data.Fintype.Quotient
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.Multilinear.Basic
+module
+
+public import Mathlib.Data.Fintype.Quotient
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.LinearAlgebra.Multilinear.Basic
 
 /-!
 # Interactions between finitely-supported functions and multilinear maps
@@ -26,6 +28,8 @@ import Mathlib.LinearAlgebra.Multilinear.Basic
   - `MultilinearMap.dfinsuppFamilyₗ` is a `LinearMap`, linear in the family of multilinear maps `f`.
 
 -/
+
+@[expose] public section
 
 universe uι uκ uS uR uM uN
 variable {ι : Type uι} {κ : ι → Type uκ}

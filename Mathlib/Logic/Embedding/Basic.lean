@@ -3,14 +3,19 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Option.Basic
-import Mathlib.Data.Prod.Basic
-import Mathlib.Data.Prod.PProd
-import Mathlib.Logic.Equiv.Basic
+module
+
+public import Mathlib.Data.Option.Basic
+public import Mathlib.Data.Prod.Basic
+public import Mathlib.Data.Prod.PProd
+public import Mathlib.Data.Sum.Basic
+public import Mathlib.Logic.Equiv.Basic
 
 /-!
 # Injective functions
 -/
+
+@[expose] public section
 
 universe u v w x
 
@@ -300,6 +305,8 @@ variable {α α' : Type*} {β : α → Type*} {β' : α' → Type*}
 def sigmaMk (a : α) : β a ↪ Σ x, β x :=
   ⟨Sigma.mk a, sigma_mk_injective⟩
 
+attribute [grind =] sigmaMk_apply
+
 /-- If `f : α ↪ α'` is an embedding and `g : Π a, β α ↪ β' (f α)` is a family
 of embeddings, then `Sigma.map f g` is an embedding. -/
 @[simps apply]
@@ -472,10 +479,8 @@ theorem subtypeOrLeftEmbedding_apply {p q : α → Prop} [DecidablePred p]
 
 /-- A subtype `{x // p x}` can be injectively sent to into a subtype `{x // q x}`,
 if `p x → q x` for all `x : α`. -/
-@[simps]
+@[simps (attr := grind =)]
 def Subtype.impEmbedding (p q : α → Prop) (h : ∀ x, p x → q x) : { x // p x } ↪ { x // q x } :=
   ⟨fun x => ⟨x, h x x.prop⟩, fun x y => by simp [Subtype.ext_iff]⟩
-
-attribute [grind =] Subtype.impEmbedding_apply_coe
 
 end Subtype

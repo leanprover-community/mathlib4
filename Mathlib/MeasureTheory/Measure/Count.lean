@@ -3,8 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Measure.Dirac
-import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
+module
+
+public import Mathlib.MeasureTheory.Measure.Dirac
+public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
 /-!
 # Counting measure
@@ -13,6 +15,8 @@ In this file we define the counting measure `MeasureTheory.Measure.count`
 as `MeasureTheory.Measure.sum MeasureTheory.Measure.dirac`
 and prove basic properties of this measure.
 -/
+
+@[expose] public section
 
 open Set
 open scoped ENNReal Finset
@@ -155,7 +159,7 @@ instance count.instSigmaFinite [MeasurableSingletonClass α] [Countable α] :
 
 instance count.isFiniteMeasure [Finite α] :
     IsFiniteMeasure (Measure.count : Measure α) :=
-  ⟨by simp [Measure.count_apply, finite_univ]⟩
+  ⟨by simp [Measure.count_apply]⟩
 
 @[simp]
 lemma count_univ : count (univ : Set α) = ENat.card α := by simp [count_apply .univ, encard_univ]

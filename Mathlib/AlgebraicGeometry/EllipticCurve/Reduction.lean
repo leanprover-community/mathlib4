@@ -3,11 +3,13 @@ Copyright (c) 2025 Bryan Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bryan Wang
 -/
-import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
-import Mathlib.RingTheory.DiscreteValuationRing.Basic
-import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-import Mathlib.RingTheory.Valuation.Discrete.Basic
-import Mathlib.GroupTheory.ArchimedeanDensely
+module
+
+public import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
+public import Mathlib.RingTheory.DiscreteValuationRing.Basic
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+public import Mathlib.RingTheory.Valuation.Discrete.Basic
+public import Mathlib.GroupTheory.ArchimedeanDensely
 
 /-!
 # Reduction of Weierstrass curves over local fields
@@ -41,6 +43,8 @@ fraction fields of discrete valuation rings.
 
 elliptic curve, weierstrass equation, minimal weierstrass equation, reduction
 -/
+
+@[expose] public section
 
 namespace WeierstrassCurve
 
@@ -122,12 +126,11 @@ theorem exists_isIntegral (W : WeierstrassCurve K) :
     have ha₀ : a ≠ 0 := by
       by_contra ha₀; simp only [ha₀, map_zero] at ha
       exact (ha ▸ hlmax_le_1) zero_le_one
-    have isUnit_a : IsUnit a := IsUnit.mk0 a ha₀
-    use ⟨isUnit_a.unit, 0, 0, 0⟩
+    use ⟨Units.mk0 a ha₀, 0, 0, 0⟩
     apply isIntegral_of_exists_lift R
     all_goals
       apply (mem_integer_iff _ _ _).mp
-      simp only [variableChange_def, Units.val_inv_eq_inv_val, IsUnit.unit_spec, mul_zero, add_zero,
+      simp only [variableChange_def, Units.val_inv_eq_inv_val, Units.val_mk0, mul_zero, add_zero,
         inv_pow, zero_mul, sub_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow]
       apply (Valuation.mem_integer_iff _ _).mpr
       simp only [map_mul, map_inv₀, map_pow, ha]
@@ -229,7 +232,7 @@ lemma isGoodReduction_iff_isElliptic_reduction {W : WeierstrassCurve K} [IsMinim
       ↔ (integralModel R W).Δ ∉ IsLocalRing.maximalIdeal R :=
     not_iff_not.mpr <| valuation_lt_one_iff_mem _ _
   refine ((integralModel_Δ_eq R W ▸ isGoodReduction_iff _ _).trans ?_).trans h
-  simpa using (LE.le.ge_iff_eq <| valuation_le_one _ _).symm
+  simpa using (valuation_le_one _ _).ge_iff_eq.symm
 
 end Reduction
 

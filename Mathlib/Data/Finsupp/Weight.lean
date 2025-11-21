@@ -3,17 +3,19 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
-import Mathlib.Data.Finsupp.Antidiagonal
-import Mathlib.Data.Finsupp.Order
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+module
+
+public import Mathlib.Data.Finsupp.Antidiagonal
+public import Mathlib.Data.Finsupp.Order
+public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-! # weights of Finsupp functions
 
 The theory of multivariate polynomials and power series is built
 on the type `σ →₀ ℕ` which gives the exponents of the monomials.
 Many aspects of the theory (degree, order, graded ring structure)
-require to classify these exponents according to their total sum
-`∑  i, f i`, or variants, and this files provides some API for that.
+require classifying these exponents according to their total sum
+`∑ i, f i`, or variants, and this file provides some API for that.
 
 ## Weight
 
@@ -31,7 +33,7 @@ as well as a function `w : σ → M`. (The important case is `R = ℕ`.)
 
 - `Finsupp.le_weight_of_ne_zero'` is the same statement for `CanonicallyOrderedAddCommMonoid M`.
 
-- `NonTorsionWeight`: all values `w s` are non torsion in `M`.
+- `NonTorsionWeight`: all values `w s` are nontorsion in `M`.
 
 - `Finsupp.weight_eq_zero_iff_eq_zero` says that `f.weight w = 0` iff
   `f = 0` for `NonTorsionWeight w` and `CanonicallyOrderedAddCommMonoid M`.
@@ -61,6 +63,8 @@ as well as a function `w : σ → M`. (The important case is `R = ℕ`.)
   both `AddMonoidHom` or both functions.
 
 -/
+
+@[expose] public section
 
 variable {σ M R : Type*} [Semiring R] (w : σ → M)
 
