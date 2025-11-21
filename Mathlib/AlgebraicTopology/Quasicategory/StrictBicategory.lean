@@ -41,14 +41,6 @@ open CategoryTheory Simplicial
 `SSet` of simplicial sets. -/
 abbrev QCat := ObjectProperty.FullSubcategory Quasicategory
 
-/-- `QCat` is the category of quasi-categories defined as the full subcategory of the category
-`SSet` of simplicial sets. -/
-instance : Category QCat := ObjectProperty.FullSubcategory.category Quasicategory
-
-/-- As a full subcategory of `SSet`, the category `QCat` is a simplicially enriched ordinary
-category. -/
-instance QCat.SimplicialCat : SimplicialCategory QCat := inferInstance
-
 /-- `QCat` obtains a `Cat`-enriched ordinary category structure by applying `hoFunctor` to the
 hom objects in its `SSet`-enriched ordinary structure. -/
 noncomputable instance QCat.CatEnrichedOrdinaryCat : EnrichedOrdinaryCategory Cat QCat :=
