@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Analytic.Uniqueness
 public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
-public import Mathlib.Analysis.NormedSpace.Connected
+public import Mathlib.Analysis.Normed.Module.Connected
 public import Mathlib.Analysis.RCLike.Basic
 
 /-!
