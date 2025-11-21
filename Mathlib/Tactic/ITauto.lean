@@ -7,7 +7,7 @@ module
 
 public meta import Batteries.Tactic.Exact
 public meta import Batteries.Tactic.Init
-public meta import Mathlib.Logic.Basic
+public import Mathlib.Logic.Basic  -- shake: keep (Qq output dependency)
 public meta import Mathlib.Util.AtomM
 public meta import Qq
 

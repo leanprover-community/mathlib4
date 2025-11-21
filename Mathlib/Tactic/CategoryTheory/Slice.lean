@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 module
 
-public meta import Mathlib.CategoryTheory.Category.Basic
+public import Mathlib.CategoryTheory.Category.Basic  -- shake: keep (tactic output dependency)
 public meta import Mathlib.Tactic.Conv
 
 /-!
