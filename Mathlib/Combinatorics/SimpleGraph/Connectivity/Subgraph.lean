@@ -608,7 +608,7 @@ end induced_subgraphs
 
 protected lemma Reachable.coe_toSubgraph {H : SimpleGraph V} {u v : V} (h : H ≤ G)
     (hreachable : H.Reachable u v) :
-    (toSubgraph H h).coe.Reachable (Subgraph.vert _ u trivial) (Subgraph.vert _ v trivial) := by
+    (toSubgraph H h).coe.Reachable ⟨u, trivial⟩ ⟨v, trivial⟩ := by
   use hreachable.exists_isPath.choose.map ⟨((toSubgraph H h).vert · _), by simp_all⟩
 
 protected lemma Preconnected.toSubgraph {H : SimpleGraph V} (h : H ≤ G)
