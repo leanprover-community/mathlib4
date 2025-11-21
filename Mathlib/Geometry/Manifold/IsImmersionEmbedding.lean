@@ -302,6 +302,34 @@ instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedSpace 𝕜 hf.smal
   unfold smallComplement
   infer_instance
 
+def smallComplement' (hf : IsImmersionAtOfComplement F I J n f x) : Type u :=
+  ((⊥ : Submodule 𝕜 E).prod ⊤).map hf.equiv
+
+instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedAddCommGroup hf.smallComplement' := by
+  unfold smallComplement'
+  infer_instance
+
+instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedSpace 𝕜 hf.smallComplement' := by
+  unfold smallComplement'
+  infer_instance
+
+def smallEquiv' (hf : IsImmersionAtOfComplement F I J n f x) : F ≃L[𝕜] hf.smallComplement' := by
+  let A : Submodule 𝕜 (E × F) := (⊥ : Submodule 𝕜 E).prod ⊤
+
+  let X : F ≃L[𝕜] (⊤ : Submodule 𝕜 F) := sorry -- Submodule.topEquiv, but as a CLM!
+  let B := ContinuousLinearEquiv.prodUnique 𝕜 F (N := (⊥ : Submodule 𝕜 E))
+  let B' := B.symm
+  let C' := X.symm.trans B'
+  #check ContinuousLinearEquiv.ofSubmodules
+  -- equiv between F and (⊤ : Submodule k F)?
+  let φ : F ≃L[𝕜] A := by
+    have aux := B'.ofSubmodules (p := (⊤ : Submodule _ _)) --(q := A)
+    -- compose aux and X (or X.symm)
+    --apply B.symm.ofSubmodules (⊤ : Submodule 𝕜 F) (q := A)
+    --apply?--apply ContinuousLinearEquiv.ofSubmodules
+    sorry -- use ofSubmodules!
+  exact φ.trans (hf.equiv.submoduleMap A)
+
 -- TODO: remove completeness hypotheses using ContinuousLinearEquiv.ofSubmodules
 /-- If `f` is an immersion at `x`, then any complement used in this definition is
 isomorphic to the `smallComplement`. -/
