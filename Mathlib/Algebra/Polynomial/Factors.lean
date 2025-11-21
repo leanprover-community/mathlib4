@@ -275,7 +275,7 @@ section Field
 variable [Field R]
 
 open UniqueFactorizationMonoid in
--- Todo: Remove or fix name once `Splits` is gone.
+-- Todo: Remove or fix name.
 theorem splits_iff_splits {f : R[X]} :
     Splits f ↔ f = 0 ∨ ∀ {g : R[X]}, Irreducible g → g ∣ f → degree g = 1 := by
   refine ⟨fun hf ↦ hf.splits.imp_right (forall₃_imp fun g hg hgf ↦
