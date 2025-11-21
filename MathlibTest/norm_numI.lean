@@ -5,23 +5,38 @@ open Complex ComplexConjugate Real Qq
 set_option trace.debug true in
 example : (1:ℂ) = 1 + 0 * I := by
   conv_lhs => norm_numI
-#exit
-example : (I:ℂ) = 0 + 1 * I := by norm_num1
-example : (1.5:ℂ) = 3 / 2 + 0 * I := by norm_num1
-example : (1.0:ℂ) + 0 = 1 := by norm_num1
-example : (1.0:ℂ) + 0.5 = 3/2 := by norm_num1
-example : I + (3/2:ℂ) = 3/2 + I := by norm_num1
-example : 1 * (2:ℂ) = 2 := by norm_num1
-example : (1 + I) * (1 + I * I * I) = 2 := by norm_num1
-example : (1 + 3.5 + I) * (1 + I) = 7 / 2 + 11 / 2 * I := by norm_num1
-example : (3 + 4.5 * I)⁻¹ * (3 + 4.5 * I) = 1 := by norm_num1
-example : -1 / (1 + I) = (I - 1) / 2 := by norm_num1
-example : (I:ℂ) = 0 + 1 * I := by norm_num1
-example : (1.5:ℂ) = ⟨3 / 2, 0⟩ := by conv_lhs => norm_numI
+  conv_rhs => norm_numI
+
+-- example : (I:ℂ) = 0 + 1 * I := by norm_num1
+
+-- example : (1.5:ℂ) = 3 / 2 + 0 * I := by norm_num1
+-- example : (1.0:ℂ) + 0 = 1 := by norm_num1
+-- example : (1.0:ℂ) + 0.5 = 3/2 := by norm_num1
+-- example : I + (3/2:ℂ) = 3/2 + I := by norm_num1
+set_option trace.debug true in
+example : 3 * I * (6:ℂ) = 18 * I := by
+  conv_lhs => norm_numI
+  conv_rhs => norm_numI
+
+example : (6 : ℂ) * 9 = 54 := by
+  conv_lhs => norm_numI
+  conv_rhs => norm_numI
+
+example : (1 + I) * (1 + I * I * I) = 2 := by
+  conv_lhs => norm_numI
+  conv_rhs => norm_numI
+-- example : (1 + 3.5 + I) * (1 + I) = 7 / 2 + 11 / 2 * I := by norm_num1
+-- example : (3 + 4.5 * I)⁻¹ * (3 + 4.5 * I) = 1 := by norm_num1
+example : -1 / (1 + I) = (I - 1) / 2 := by
+  conv_lhs => norm_numI
+  conv_rhs => norm_numI
+
+-- example : (I:ℂ) = 0 + 1 * I := by norm_num1
+-- example : (1.5:ℂ) = ⟨3 / 2, 0⟩ := by conv_lhs => norm_numI
 example : 0 + (1:ℂ) = 1 := by norm_num1
 example : (1.0:ℂ) + 0 = 1 := by norm_num1
 example : (1.0:ℂ) + 0.5 = 3/2 := by norm_num1
-example : I + (3/2:ℂ) = 3/2 + I := by norm_num1
+-- example : I + (3/2:ℂ) = 3/2 + I := by norm_num1
 
 example : I + (3/2:ℂ) = 3/2 + I := by
   conv_lhs => norm_numI
@@ -29,17 +44,18 @@ example : I + (3/2:ℂ) = 3/2 + I := by
 
 example : 2 * (2.5:ℂ) = 5 := by norm_num1
 
-example : (1 + I) * (1 + I * I * I) = 2 := by norm_num1
-
-example : (1 + I) * (1 + I * I * I) = 2 := by norm_num1
-
 example : (1 + I) * (1 + I * I * I) = 2 := by
   conv_lhs => norm_numI
   conv_rhs => norm_numI
 
-example : (1 + 3.5 + I) * (1 + I) = 7 / 2 + 11 / 2 * I := by norm_num1
-example : (3 + 4 * I)⁻¹ * (3 + 4 * I) = 1 := by norm_num1
-example : -1 / (1 + I) = (I - 1) / 2 := by norm_num1
+-- example : (1 + 3.5 + I) * (1 + I) = 7 / 2 + 11 / 2 * I := by norm_num1
+example : (3 + 4 * I)⁻¹ * (3 + 4 * I) = 1 := by
+  conv_lhs => norm_numI
+  conv_rhs => norm_numI
+example : -1 / (1 + I) = (I - 1) / 2 := by
+  conv_lhs => norm_numI
+  conv_rhs => norm_numI
+#exit
 example : (1 + I) * (1 - I) = 2 := by norm_num1
 example : (1 + 2 * I) - (1 + 2 * I) = 0 := by norm_num1
 example : (conj (3 + 4 * I) : ℂ) * (3 + 4 * I) = 25 := by norm_num1

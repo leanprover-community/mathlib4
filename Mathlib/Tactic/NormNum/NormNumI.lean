@@ -25,14 +25,16 @@ structure ResultI (a : Q(ℂ)) where
   re : NormNum.Result q(RCLike.re $a)
   im : NormNum.Result q(RCLike.im $a)
 
-def ResultI.eqeq {a : Q(ℂ)} (r : ResultI a) : MetaM (Σ x y : Q(ℝ), Q($a = $x + Complex.I * $y)) := do
-  let re ← r.re.toSimpResult
-  trace[debug] "success re"
-  let ⟨(x : Q(ℝ)), pf1, _⟩ := re
-  trace[debug] "NormNumI.eqeq: re = {x} with proof {pf1}"
+-- TODO : get rid of cast in `$a = $x + Complex.I * $y`.
+-- also try replace `getD` with `get!`
+def ResultI.eqeq {a : Q(ℂ)} (r : ResultI a) :
+    MetaM (Σ x y : Q(ℝ), Q($a = $x + Complex.I * $y)) := do
+  let ⟨(x : Q(ℝ)), pf1, _⟩ ← r.re.toSimpResult
   let ⟨(y : Q(ℝ)), pf2, _⟩ ← r.im.toSimpResult
-  trace[debug] "NormNumI.eqeq: re = {x} with proof {pf1}, im = {y} with proof {pf2}"
-  return ⟨x, y, ← mkSorry q($a = $x + Complex.I * $y) true⟩
+  let pf1' : Q(Complex.re $a = $x) := pf1.getD q(rfl : $x = _)
+  let pf2' : Q(Complex.im $a = $y) := pf2.getD q(rfl : $y = _)
+  trace[debug] "NormNumI.eqeq: re = {x}, im = {y}"
+  return ⟨x, y, q(Complex.ext (by simpa using $pf1') (by simpa using $pf2'))⟩
 
 
 -- def ResultI.cast {a b : Q(ℂ)} (r : ResultI a) (h : Q($a = $b)): ResultI b :=
@@ -90,51 +92,11 @@ def ResultI.inv {z : Q(ℂ)} (hz : ResultI q($z)) :
       q(inferInstance))).neg q(inferInstance))
     q(by rw [RCLike.inv_re, div_eq_mul_inv, mul_comm, RCLike.normSq_apply])
     q(by rw [RCLike.inv_im, div_eq_mul_inv, mul_comm, RCLike.normSq_apply, mul_neg])
-
--- /-- Assert that a complex number is equal to `re + im * I`. -/
--- structure IsComplex [RCLike ℂ] (z : ℂ) (re im : ℝ) : Prop where
---   re_eq : RCLike.re z = re
---   im_eq : RCLike.im z = im
-
--- theorem IsComplex.I : IsComplex (RCLike.I : ℂ) 0 1 := ⟨rfl, rfl⟩
-
--- theorem IsComplex.zero : IsComplex (0 : ℂ) 0 0 := ⟨RCLike.zero_re, RCLike.zero_im⟩
-
--- theorem IsComplex.one : IsComplex (1 : ℂ) 1 0 := ⟨RCLike.one_re, RCLike.one_im⟩
-
--- theorem IsComplex.add : ∀ {z₁ z₂ : ℂ} {a₁ a₂ b₁ b₂ : ℝ},
---     IsComplex z₁ a₁ b₁ → IsComplex z₂ a₂ b₂ → IsComplex (z₁ + z₂) (a₁ + a₂) (b₁ + b₂)
---   | _, _, _, _, _, _, ⟨rfl, rfl⟩, ⟨rfl, rfl⟩ => ⟨map_add _ _ _, map_add _ _ _⟩
-
--- theorem IsComplex.mul : ∀ {z₁ z₂ : ℂ} {a₁ a₂ b₁ b₂ : ℝ},
---     IsComplex z₁ a₁ b₁ → IsComplex z₂ a₂ b₂ →
---       IsComplex (z₁ * z₂) (a₁ * a₂ - b₁ * b₂) (a₁ * b₂ + b₁ * a₂)
---   | z₁, z₂, _, _, _, _, ⟨rfl, rfl⟩, ⟨rfl, rfl⟩ => ⟨RCLike.mul_re z₁ z₂, RCLike.mul_im z₁ z₂⟩
-
--- theorem IsComplex.inv {z : ℂ} {x y : ℝ} (h : IsComplex z x y) :
---     IsComplex z⁻¹ (x / (x * x + y * y)) (- y / (x * x + y * y)) := by
---   obtain ⟨rfl, rfl⟩ := h
---   constructor <;> simp [RCLike.normSq]
-
--- theorem IsComplex.neg : ∀ {z : ℂ} {a b : ℝ}, IsComplex z a b → IsComplex (-z) (-a) (-b)
---   | _, _, _, ⟨rfl, rfl⟩ => ⟨map_neg _ _, map_neg _ _⟩
-
--- theorem IsComplex.sub : ∀ {z₁ z₂ : ℂ} {a₁ a₂ b₁ b₂ : ℝ},
---     IsComplex z₁ a₁ b₁ → IsComplex z₂ a₂ b₂ → IsComplex (z₁ - z₂) (a₁ - a₂) (b₁ - b₂)
---   | _, _, _, _, _, _, ⟨rfl, rfl⟩, ⟨rfl, rfl⟩ => ⟨map_sub _ _ _, map_sub _ _ _⟩
-
--- theorem IsComplex.conj : ∀ {z : ℂ} {a b : ℝ}, IsComplex z a b → IsComplex (conj z) a (-b)
---   | _, _, _, ⟨rfl, rfl⟩ => ⟨RCLike.conj_re _, RCLike.conj_im _⟩
-
--- theorem IsComplex.ofNat (n : ℕ) [n.AtLeastTwo] :
---     IsComplex (OfNat.ofNat (α := ℂ) n) (OfNat.ofNat n) 0 := ⟨RCLike.ofNat_re _, RCLike.ofNat_im _⟩
-
 -- theorem IsComplex.scientific (m exp : ℕ) (x : Bool) :
---     IsComplex (OfScientific.ofScientific m x exp : ℂ) (OfScientific.ofScientific m x exp : ℝ) 0 :=
+--     IsComplex (OfScientific.ofScientific m x exp : ℂ)
+--     (OfScientific.ofScientific m x exp : ℝ) 0 :=
 --   ⟨RCLike.nnratCast_re _, RCLike.nnratCast_im _⟩
 
--- theorem eq_eq {z : ℂ} {a b a' b' : ℝ} (pf : IsComplex z a b) (pf_a : a = a') (pf_b : b = b') :
---   IsComplex z a' b' := by simp_all
 
 -- theorem eq_of_eq_of_eq_of_eq {z w : ℂ} {az bz aw bw : ℝ}
 --     (hz : IsComplex z az bz) (hw : IsComplex w aw bw)
@@ -187,17 +149,17 @@ def ResultI.inv {z : Q(ℂ)} (hz : ResultI q($z)) :
 --       | true =>
 --         have : $n =Q Nat.bit true $m := ⟨⟩
 --         let ⟨_, _, hzm⟩ ← rec q($z) q($m) q(⟨rfl⟩) hz
---         return ⟨_, _, q(have hzm' := $hzm; pow_bit_true $z $m ▸ (IsComplex.mul hzm' hzm').mul $hz)⟩
+--         return ⟨_, _, q(have hzm' := $hzm; pow_bit_true $z $m ▸
+--          (IsComplex.mul hzm' hzm').mul $hz)⟩
 --       | false =>
 --         have : $n =Q Nat.bit false $m := ⟨⟩
 --         let ⟨_, _, hzm⟩ ← rec q($z) q($m) q(⟨rfl⟩) hz
 --         return ⟨_, _, q(have hzm' := $hzm; pow_bit_false $z $m ▸ IsComplex.mul hzm' hzm')⟩)
-
-def NormNum.Resultn (n : Q(ℕ)) : MetaM (NormNum.Result q(OfNat.ofNat (α := ℂ) $n)) := do
-  -- let n : Q(ℕ) ← whnf n
-  guard n.isRawNatLit
-  let ⟨a, (pa : Q($n = (OfNat.ofNat  (α := ℂ) $n)))⟩ ← NormNum.mkOfNat q(ℂ) q(inferInstance) n
-  return .isNat q(inferInstance) n q(NormNum.isNat_ofNat ℂ $pa)
+def NormNum.Resultn (n0 : ℕ) : MetaM (NormNum.Result q(OfNat.ofNat (α := ℝ) $n0)) := do
+  have n : Q(ℕ) := .lit (.natVal n0)
+  let e : Q(ℝ) := q(OfNat.ofNat (α := ℝ) $n)
+  let ⟨_, (pa : Q($n = $e))⟩ ← NormNum.mkOfNat q(ℝ) q(inferInstance) n
+  return NormNum.Result.isNat (α := q(ℝ)) q(inferInstance) n q(NormNum.isNat_ofNat ℝ $pa)
 
 /-- Parsing all the basic calculation in complex. -/
 partial def parse (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
@@ -242,26 +204,16 @@ partial def parse (z : Q(ℂ)) : MetaM (ResultI q($z)) := do
   --     let ⟨a, b, pf⟩ ← parse q(($w ^ ($n + 1))⁻¹)
   --     let _i : $k' =Q Int.negSucc $n := ⟨⟩
   --     return ⟨a, b, q(.of_pow_negSucc $hm $pf)⟩
-  -- | ~q(Complex.I) =>
+  | ~q(Complex.I) =>
       -- a bit tricky because `I.im` could be either `1` or `0`
-  --   return ResultI.mk' (NormNum.Result.isNat q(inferInstance) q(0) q(⟨rfl⟩))
-  --     (NormNum.Result.isNat q(inferInstance) q(1) q(⟨rfl⟩))
-  --     q(Nat.cast_zero (R := ℝ) ▸ RCLike.I_re) q(Nat.cast_one (R := ℝ) ▸ RCLike.I_im)
+  return ResultI.mk (← NormNum.Resultn (nat_lit 0)) (← NormNum.Resultn (nat_lit 1))
   | ~q(0) =>
-  return ResultI.mk' (NormNum.Result.isNat q(inferInstance) q(0) q(⟨rfl⟩))
-    (NormNum.Result.isNat q(inferInstance) q(0) q(⟨rfl⟩))
-    q(Nat.cast_zero (R := ℝ) ▸ RCLike.zero_re) q(Nat.cast_zero (R := ℝ) ▸ RCLike.zero_im)
+  return ResultI.mk (← NormNum.Resultn (nat_lit 0)) (← NormNum.Resultn (nat_lit 0))
   | ~q(1) =>
-  trace[debug] "entering 1"
-  return sorry
-  -- return ResultI.mk' (NormNum.Result.isNat q(inferInstance) q(1) q(⟨rfl⟩))
-  --   (NormNum.Result.isNat q(inferInstance) q(0) q(⟨rfl⟩))
-  --   q(Nat.cast_one (R := ℝ) ▸ RCLike.one_re) q(Nat.cast_zero (R := ℝ) ▸ RCLike.one_im)
+  return ResultI.mk (← NormNum.Resultn (nat_lit 1)) (← NormNum.Resultn (nat_lit 0))
   | ~q(OfNat.ofNat $en (self := @instOfNatAtLeastTwo ℂ _ _ $inst)) =>
-    return ResultI.mk' (NormNum.Result.isNat q(inferInstance) q($en) q(⟨rfl⟩))
-      (NormNum.Result.isNat q(inferInstance) q(0) q(⟨rfl⟩))
-      q(@Nat.cast_ofNat ℝ $en _ $inst ▸ RCLike.ofNat_re $en)
-      q(Nat.cast_zero (R := ℝ) ▸ RCLike.ofNat_im $en)
+  let some n := en.rawNatLit? | failure
+  return ResultI.mk (← NormNum.Resultn n) (← NormNum.Resultn (nat_lit 0)) --q(sorry) q(rfl)
   -- | ~q(OfScientific.ofScientific $m $x $exp) =>
   --   return ⟨_, _, q(.scientific _ _ _)⟩
   | _ => throwError "found the atom {z} which is not a numeral"
@@ -298,9 +250,9 @@ elab "norm_numI" : conv => do
 
 end NormNumI
 
-#exit
 namespace NormNum
 
+#exit
 /-- The `norm_num` extension which identifies expressions of the form `(z : ℂ) = (w : ℂ)`,
 such that `norm_num` successfully recognises both the real and imaginary parts of both `z` and `w`.
 -/
@@ -308,8 +260,9 @@ such that `norm_num` successfully recognises both the real and imaginary parts o
   haveI' : v =QL 0 := ⟨⟩; haveI' : $β =Q Prop := ⟨⟩
   let ~q(($z : ℂ) = $w) := e | failure
   haveI' : $e =Q ($z = $w) := ⟨⟩
-  let ⟨az, bz, pfz⟩ ← NormNumI.parse z
-  let ⟨aw, bw, pfw⟩ ← NormNumI.parse w
+  let ⟨az, bz⟩ ← NormNumI.parse z
+  let ⟨aw, bw⟩ ← NormNumI.parse w
+
   let ⟨ba, ra⟩ ← deriveBool q($az = $aw)
   match ba with
   | true =>
