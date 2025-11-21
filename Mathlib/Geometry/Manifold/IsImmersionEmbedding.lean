@@ -296,6 +296,79 @@ instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedSpace 𝕜 hf.smal
   unfold smallComplement
   infer_instance
 
+section -- TODO: move these lemmas to the correct location!
+
+variable {R R₂ M M₂ : Type*} [Semiring R] [Semiring R₂] [AddCommMonoid M] [TopologicalSpace M]
+    [AddCommMonoid M₂] [TopologicalSpace M₂]
+    {module_M : Module R M} {module_M₂ : Module R₂ M₂} {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
+    {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
+
+/--
+A continuous linear equivalence of two modules restricts to a continuous linear equivalence
+from any submodule `p` of the domain onto the image of that submodule.
+
+This is the continuous linear version of `LinearEquiv.submoduleMap`.
+This is `ContinuousLinearEquiv.ofSubmodule'` but with map on the right instead of comap on the left.
+-/
+def _root_.ContinuousLinearEquiv.submoduleMap (e : M ≃SL[σ₁₂] M₂) (p : Submodule R M) :
+    p ≃SL[σ₁₂] Submodule.map e p where
+  toLinearMap := (e.comp p.subtype).codRestrict (p.map e) (fun ⟨c, hc⟩ ↦ by simpa)
+  invFun := (e.symm.comp (p.map e).subtype).codRestrict p (fun ⟨c, y, hy, eyc⟩ ↦ by
+    simpa [← eyc, e.symm_apply_apply])
+  left_inv x := by ext; simp
+  right_inv x := by ext; simp
+  continuous_toFun := by
+    have : Continuous (e.comp p.subtype) := by dsimp; fun_prop
+    dsimp
+    exact continuous_induced_rng.mpr this
+  continuous_invFun := by
+    have : Continuous (e.symm.comp (p.map e).subtype) := by dsimp; fun_prop
+    dsimp
+    exact continuous_induced_rng.mpr this
+
+-- XXX: make sure these are namedspaced correctly!
+omit [TopologicalSpace M] [TopologicalSpace M₂] in
+@[simp]
+lemma submoduleMap_apply (e : M ≃ₛₗ[σ₁₂] M₂) (p : Submodule R M) (x : p) :
+  e.submoduleMap p x = e x := by rfl
+
+omit [TopologicalSpace M] [TopologicalSpace M₂] in
+@[simp]
+lemma submoduleMap_symm_apply
+    (e : M ≃ₛₗ[σ₁₂] M₂) (p : Submodule R M) (x : p.map e) :
+  (e.submoduleMap p).symm x = e.symm x := by rfl
+
+/-- Continuous linear equivalence between two equal submodules. -/
+def _root_.ContinuousLinearEquiv.ofEq {p q : Submodule R M} (h : p = q) : p ≃L[R] q :=
+  { Equiv.setCongr (congr_arg _ h) with
+    map_smul' := fun _ _ => rfl
+    map_add' := fun _ _ => rfl
+    continuous_toFun := sorry
+    continuous_invFun := sorry }
+
+/-- A continuous linear equivalence which maps a submodule of one module onto another,
+restricts to a continuous linear equivalence of the two submodules. -/
+def _root_.ContinuousLinearEquiv.ofSubmodules (e : M ≃SL[σ₁₂] M₂)
+    (p : Submodule R M) (q : Submodule R₂ M₂) (h : p.map (e : M →SL[σ₁₂] M₂) = q) : p ≃SL[σ₁₂] q :=
+  (e.submoduleMap p).trans (.ofEq h)
+
+-- TODO: make sure these are namespaced correctly!
+@[simp]
+theorem ofSubmodules_apply (e : M ≃SL[σ₁₂] M₂) {p : Submodule R M} {q : Submodule R₂ M₂}
+    (h : p.map e = q) (x : p) :
+    e.ofSubmodules p q h x = e x :=
+  rfl
+
+@[simp]
+theorem ofSubmodules_symm_apply (e : M ≃SL[σ₁₂] M₂) {p : Submodule R M} {q : Submodule R₂ M₂}
+    (h : p.map e = q) (x : q) : (e.ofSubmodules p q h).symm x = e.symm x :=
+  rfl
+
+#exit
+
+end
+
+#exit
 /-- If `f` is an immersion at `x`, then any complement used in this definition is
 isomorphic to the `smallComplement`. -/
 -- Note: without completeness assumptions, one can still find a `LinearEquiv`:
