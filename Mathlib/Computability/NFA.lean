@@ -86,8 +86,8 @@ theorem stepSet_singleton (s : σ) (a : α) : M.stepSet {s} a = M.step s a := by
 
 variable (M) in
 @[simp]
-theorem stepSet_union {S1 S2 : Set σ} {a : α} :
-    M.stepSet (S1 ∪ S2) a = M.stepSet S1 a ∪ M.stepSet S2 a := by
+theorem stepSet_union {S T : Set σ} {a : α} :
+    M.stepSet (S ∪ T) a = M.stepSet S a ∪ M.stepSet T a := by
   ext s
   simp [mem_stepSet, or_and_right, exists_or]
 
