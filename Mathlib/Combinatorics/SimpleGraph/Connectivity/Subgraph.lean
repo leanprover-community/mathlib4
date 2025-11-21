@@ -643,7 +643,7 @@ protected lemma Connected.map_coe {G' : G.Subgraph} {G'' : G'.coe.Subgraph}
     (f : G'.coe →g G) (hconn : G''.Connected) : (G''.map f).Connected := by
   rw [Subgraph.connected_iff] at hconn
   refine Subgraph.connected_iff.mpr ⟨hconn.left.map_coe f, ?_⟩
-  simp_all only [map_verts, Set.image_nonempty]
+  simp_all
 
 protected lemma Reachable.coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph) {u v : G''.verts}
     (hreachable : G''.coe.Reachable u v) : (Subgraph.coeSubgraph G'').coe.Reachable
