@@ -53,13 +53,12 @@ def sequence : ∀ n, X n
 include hφ in
 lemma sequence_eqUpTo (n₁ n₂ : ℕ) (h : n₁ ≤ n₂) :
     (sequence φ x₀ n₁).val.EqUpTo (sequence φ x₀ n₂).val (p₀ + n₁) := by
-  obtain ⟨k, rfl⟩ : ∃ (k : ℕ), n₂ = n₁ + k := Nat.exists_eq_add_of_le h
+  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
   clear h
-  revert n₁
-  induction k with
-  | zero => intro _ _ _ _ _; simp
+  induction k generalizing n₁ with
+  | zero => intro _ _ _ _ ; simp
   | succ k hk =>
-    intro n₁ p q hpq hp
+    intro p q hpq hp
     rw [hk n₁ p q hpq hp, ← hφ (n₁ + k) (sequence φ x₀ (n₁ + k)) p q hpq (by cutsat)]
     rfl
 
