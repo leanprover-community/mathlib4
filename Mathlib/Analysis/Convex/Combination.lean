@@ -3,9 +3,11 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.Analysis.Convex.Hull
-import Mathlib.LinearAlgebra.AffineSpace.Basis
+module
+
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Analysis.Convex.Hull
+public import Mathlib.LinearAlgebra.AffineSpace.Basis
 
 /-!
 # Convex combinations
@@ -22,6 +24,8 @@ We divide by the sum of the weights in the definition of `Finset.centerMass` bec
 mathematical arguments go: one doesn't change weights, but merely adds some. This also makes a few
 lemmas unconditional on the sum of the weights being `1`.
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal
 

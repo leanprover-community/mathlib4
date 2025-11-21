@@ -3,10 +3,12 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.LocalRing.Module
-import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
-import Mathlib.RingTheory.Unramified.Field
-import Mathlib.RingTheory.Unramified.Locus
+module
+
+public import Mathlib.RingTheory.LocalRing.Module
+public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
+public import Mathlib.RingTheory.Unramified.Field
+public import Mathlib.RingTheory.Unramified.Locus
 
 /-!
 # Unramified algebras over local rings
@@ -19,6 +21,8 @@ import Mathlib.RingTheory.Unramified.Locus
   Let `A` be an essentially of finite type `R`-algebra, `q` be a prime over `p`.
   Then `A` is unramified at `p` if and only if `κ(q)/κ(p)` is separable, and `pS_q = qS_q`.
 -/
+
+@[expose] public section
 
 open IsLocalRing
 

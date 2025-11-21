@@ -3,9 +3,10 @@ Copyright (c) 2024 Antoine Chambert-Loir & María-Inés de Frutos—Fernández. 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María-Inés de Frutos—Fernández, Yu Shao, Beibei Xiong, Weijie Jiang
 -/
+module
 
-import Mathlib.Data.Nat.Choose.Multinomial
-import Mathlib.Data.Nat.Choose.Mul
+public import Mathlib.Data.Nat.Choose.Multinomial
+public import Mathlib.Data.Nat.Choose.Mul
 
 /-! # Bell numbers for multisets
 
@@ -40,6 +41,8 @@ Prove that it actually counts the number of partitions as indicated.
 (When `m` contains `0`, the result requires to admit repetitions of the empty set as a part.)
 
 -/
+
+@[expose] public section
 
 open Multiset Nat
 

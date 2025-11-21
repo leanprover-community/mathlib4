@@ -3,16 +3,20 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Edward van de Meent
 -/
-import Mathlib.Tactic.TacticAnalysis
-import Mathlib.Tactic.ExtractGoal
-import Mathlib.Tactic.MinImports
-import Lean.Elab.Command
+module
+
+public meta import Mathlib.Tactic.TacticAnalysis
+public meta import Mathlib.Tactic.ExtractGoal
+public meta import Mathlib.Tactic.MinImports
+public meta import Lean.Elab.Command
 
 /-!
 # Tactic linters
 
 This file defines passes to run from the tactic analysis framework.
 -/
+
+public meta section
 
 open Lean Meta
 
@@ -60,7 +64,7 @@ def terminalReplacement (oldTacticName newTacticName : String) (oldTacticKind : 
     catch _e =>
       let name ← mkAuxDeclName `extracted
       -- Rerun in the original tactic context, since `omega` changes the state.
-      let ((sig, _, modules), _) ← ctxI.runTactic i goal (fun goal =>
+      let ((sig, _, modules, _), _) ← ctxI.runTactic i goal (fun goal =>
         (Mathlib.Tactic.ExtractGoal.goalSignature name goal).run)
       let imports := modules.toList.map (s!"import {·}")
       return .error tac m!"{"\n".intercalate imports}\n\ntheorem {sig} := by\n  fail_if_success {tac}\n  {stx}"

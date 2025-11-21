@@ -3,10 +3,12 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.Module.Equiv
-import Mathlib.Topology.Algebra.Module.UniformConvergence
-import Mathlib.Topology.Algebra.SeparationQuotient.Section
-import Mathlib.Topology.Hom.ContinuousEvalConst
+module
+
+public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.UniformConvergence
+public import Mathlib.Topology.Algebra.SeparationQuotient.Section
+public import Mathlib.Topology.Hom.ContinuousEvalConst
 
 /-!
 # Strong topologies on the space of continuous linear maps
@@ -55,6 +57,8 @@ sets).
 
 uniform convergence, bounded convergence
 -/
+
+@[expose] public section
 
 open Bornology Filter Function Set Topology
 open scoped UniformConvergence Uniformity
@@ -142,6 +146,24 @@ instance instAddCommGroup [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 :
     AddCommGroup (UniformConvergenceCLM σ F 𝔖) := ContinuousLinearMap.addCommGroup
 
 @[simp]
+theorem neg_apply [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E))
+    (f : UniformConvergenceCLM σ F 𝔖) (x : E) : (-f) x = -f x :=
+  rfl
+
+theorem add_apply [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E))
+    (f g : UniformConvergenceCLM σ F 𝔖) (x : E) : (f + g) x = f x + g x :=
+  rfl
+
+theorem sum_apply {ι : Type*} [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E))
+    (t : Finset ι) (f : ι → UniformConvergenceCLM σ F 𝔖) (x : E) :
+    (∑ d ∈ t, f d) x = ∑ d ∈ t, (f d) x :=
+  ContinuousLinearMap.sum_apply t f x
+
+theorem sub_apply [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E))
+    (f g : UniformConvergenceCLM σ F 𝔖) (x : E) : (f - g) x = f x - g x :=
+  rfl
+
+@[simp]
 theorem coe_zero [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
     ⇑(0 : UniformConvergenceCLM σ F 𝔖) = 0 :=
   rfl
@@ -177,6 +199,13 @@ theorem t2Space [TopologicalSpace F] [IsTopologicalAddGroup F] [T2Space F]
 instance instDistribMulAction (M : Type*) [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
     [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
     DistribMulAction M (UniformConvergenceCLM σ F 𝔖) := ContinuousLinearMap.distribMulAction
+
+@[simp]
+theorem smul_apply {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜₂ M F]
+    [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul M F] (𝔖 : Set (Set E))
+    (c : M) (f : UniformConvergenceCLM σ F 𝔖) (x : E) :
+    (c • f) x = c • f x :=
+  rfl
 
 instance instModule (R : Type*) [Semiring R] [Module R F] [SMulCommClass 𝕜₂ R F]
     [TopologicalSpace F] [ContinuousConstSMul R F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
@@ -327,6 +356,29 @@ theorem topologicalSpace_mono [TopologicalSpace F] [IsTopologicalAddGroup F] (h 
   haveI : IsUniformAddGroup F := isUniformAddGroup_of_addCommGroup
   simp_rw [← uniformity_toTopologicalSpace_eq]
   exact UniformSpace.toTopologicalSpace_mono (uniformSpace_mono σ F h)
+
+section Equiv
+
+variable [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜₂ F] (𝔖 : Set (Set E))
+
+/-- The linear equivalence that maps a continuous linear map to the type copy endowed with the
+uniform convergence topology. -/
+def _root_.ContinuousLinearMap.toUniformConvergenceCLM :
+    (E →SL[σ] F) ≃ₗ[𝕜₂] UniformConvergenceCLM σ F 𝔖 where
+  __ := LinearEquiv.refl _ _
+
+variable {σ F 𝔖}
+
+@[simp]
+lemma _root_.ContinuousLinearMap.toUniformConvergenceCLM_apply {A : E →SL[σ] F} {x : E} :
+    ContinuousLinearMap.toUniformConvergenceCLM σ F 𝔖 A x = A x := rfl
+
+@[simp]
+lemma _root_.ContinuousLinearMap.toUniformConvergenceCLM_symm_apply
+    {A : UniformConvergenceCLM σ F 𝔖} {x : E} :
+    (ContinuousLinearMap.toUniformConvergenceCLM σ F 𝔖).symm A x = A x := rfl
+
+end Equiv
 
 end UniformConvergenceCLM
 
@@ -495,6 +547,13 @@ def postcomp [IsTopologicalAddGroup F] [IsTopologicalAddGroup G] [ContinuousCons
     exact
       (UniformOnFun.postcomp_uniformContinuous L.uniformContinuous).continuous.comp
         (UniformConvergenceCLM.isEmbedding_coeFn _ _ _).continuous
+
+variable (σ F) {E} in
+lemma toUniformConvergenceCLM_continuous [IsTopologicalAddGroup F]
+    [ContinuousConstSMul 𝕜₂ F]
+    (𝔖 : Set (Set E)) (h : 𝔖 ⊆ {S | IsVonNBounded 𝕜₁ S}) :
+    Continuous (ContinuousLinearMap.toUniformConvergenceCLM σ F 𝔖) :=
+  continuous_id_of_le <| UniformConvergenceCLM.topologicalSpace_mono _ _ h
 
 end BoundedSets
 

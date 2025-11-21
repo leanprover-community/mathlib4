@@ -3,12 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Field.IsField
-import Mathlib.Algebra.Polynomial.Inductions
-import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.Algebra.Ring.Regular
-import Mathlib.RingTheory.Multiplicity
-import Mathlib.Data.Nat.Lattice
+module
+
+public import Mathlib.Algebra.Field.IsField
+public import Mathlib.Algebra.Polynomial.Inductions
+public import Mathlib.Algebra.Polynomial.Monic
+public import Mathlib.Algebra.Ring.Regular
+public import Mathlib.RingTheory.Multiplicity
+public import Mathlib.Data.Nat.Lattice
 
 /-!
 # Division of univariate polynomials
@@ -17,6 +19,8 @@ The main defs are `divByMonic` and `modByMonic`.
 The compatibility between these is given by `modByMonic_add_div`.
 We also define `rootMultiplicity`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -662,6 +666,17 @@ lemma neg_modByMonic (p q : R[X]) : (-p) %ₘ q = - (p %ₘ q) := by
 
 lemma sub_modByMonic (p₁ p₂ q : R[X]) : (p₁ - p₂) %ₘ q = p₁ %ₘ q - p₂ %ₘ q := by
   simp [sub_eq_add_neg, add_modByMonic, neg_modByMonic]
+
+lemma mul_modByMonic (p₁ p₂ q : R[X]) : (p₁ * p₂) %ₘ q = (p₁ %ₘ q) * (p₂ %ₘ q) %ₘ q := by
+  by_cases! h : ¬ q.Monic
+  · simp [Polynomial.modByMonic_eq_of_not_monic _ h]
+  apply Polynomial.modByMonic_eq_of_dvd_sub h
+  have : p₁ * p₂ - p₁ %ₘ q * (p₂ %ₘ q) = (p₁ %ₘ q) * (p₂ - p₂ %ₘ q) + p₂ * (p₁ - p₁ %ₘ q) := by ring
+  rw [this]
+  apply dvd_add
+  all_goals
+  · apply dvd_mul_of_dvd_right
+    simp [Polynomial.modByMonic_eq_sub_mul_div _ h]
 
 lemma eval_divByMonic_eq_trailingCoeff_comp {p : R[X]} {t : R} :
     (p /ₘ (X - C t) ^ p.rootMultiplicity t).eval t = (p.comp (X + C t)).trailingCoeff := by

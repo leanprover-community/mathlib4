@@ -3,8 +3,10 @@ Copyright (c) 2025 Concordance Inc. dba Harmonic. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Finsupp.Notation
-import Mathlib.RingTheory.MvPolynomial.Homogeneous
+module
+
+public import Mathlib.Data.Finsupp.Notation
+public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
 /-!
 # Homogenize a univariate polynomial
@@ -20,6 +22,8 @@ instead of `R[X][Y]` (i.e., `Polynomial (Polynomial R)`),
 because Mathlib has a theory about homogeneous multivariate polynomials,
 but not about homogeneous bivariate polynomials encoded as `R[X][Y]`.
 -/
+
+@[expose] public section
 
 open Finset
 

@@ -3,8 +3,10 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
-import Mathlib.MeasureTheory.Function.L1Space.Integrable
+module
+
+public import Mathlib.MeasureTheory.Function.ConvergenceInMeasure
+public import Mathlib.MeasureTheory.Function.L1Space.Integrable
 
 /-!
 # Uniform integrability
@@ -41,6 +43,8 @@ formulate the martingale convergence theorem.
 ## Tags
 uniform integrable, uniformly absolutely continuous integral, Vitali convergence theorem
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -307,10 +311,8 @@ theorem MemLp.eLpNorm_indicator_norm_ge_pos_le (hf : MemLp f p μ) (hmeas : Stro
   obtain ⟨M, hM⟩ := hf.eLpNorm_indicator_norm_ge_le hmeas hε
   refine
     ⟨max M 1, lt_of_lt_of_le zero_lt_one (le_max_right _ _), le_trans (eLpNorm_mono fun x => ?_) hM⟩
-  rw [norm_indicator_eq_indicator_norm, norm_indicator_eq_indicator_norm]
-  refine Set.indicator_le_indicator_of_subset (fun x hx => ?_) (fun x => norm_nonneg (f x)) x
-  rw [Set.mem_setOf_eq] at hx -- removing the `rw` breaks the proof!
-  exact (max_le_iff.1 hx).1
+  simp only [norm_indicator_eq_indicator_norm]
+  grw [← le_max_left]
 
 end
 
@@ -685,8 +687,7 @@ theorem unifIntegrable_of (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → β
       rwa [Set.mem_setOf, hx] at hfx
   refine ⟨max C 1, lt_max_of_lt_right one_pos, fun i => le_trans (eLpNorm_mono fun x => ?_) (hCg i)⟩
   rw [norm_indicator_eq_indicator_norm, norm_indicator_eq_indicator_norm]
-  exact Set.indicator_le_indicator_of_subset
-    (fun x hx => Set.mem_setOf_eq ▸ le_trans (le_max_left _ _) hx) (fun _ => norm_nonneg _) _
+  grw [← le_max_left]
 
 end UnifIntegrable
 

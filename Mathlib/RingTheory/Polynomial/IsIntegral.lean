@@ -3,10 +3,14 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Data.Multiset.Fintype
-import Mathlib.FieldTheory.SplittingField.Construction
+module
+
+public import Mathlib.Data.Multiset.Fintype
+public import Mathlib.FieldTheory.SplittingField.Construction
 
 /-! # Results about coefficients of polynomials being integral -/
+
+@[expose] public section
 
 namespace Polynomial
 
@@ -23,7 +27,7 @@ lemma isIntegral_coeff_prod
     exact IsIntegral.sum _ fun i hi ↦ .mul (H _ (by simp) _) (IH (fun _ _ ↦ H _ (by aesop)) _)
 
 lemma isIntegral_coeff_of_factors [IsDomain S] (p : S[X])
-    (hpmon : IsIntegral R p.leadingCoeff) (hp : p.Factors)
+    (hpmon : IsIntegral R p.leadingCoeff) (hp : p.Splits)
     (hpr : ∀ x ∈ p.roots, IsIntegral R x) (i : ℕ) :
     IsIntegral R (p.coeff i) := by
   classical

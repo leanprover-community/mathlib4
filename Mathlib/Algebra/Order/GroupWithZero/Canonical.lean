@@ -3,18 +3,20 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Johan Commelin, Patrick Massot
 -/
-import Mathlib.Algebra.GroupWithZero.InjSurj
-import Mathlib.Algebra.GroupWithZero.WithZero
-import Mathlib.Algebra.Order.AddGroupWithTop
-import Mathlib.Algebra.Order.Group.Defs
-import Mathlib.Algebra.Order.Group.Int
-import Mathlib.Algebra.Order.Group.Units
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
-import Mathlib.Algebra.Order.Monoid.Basic
-import Mathlib.Algebra.Order.Monoid.OrderDual
-import Mathlib.Algebra.Order.Monoid.TypeTags
-import Mathlib.Algebra.Group.WithOne.Map
-import Mathlib.Tactic.Tauto
+module
+
+public import Mathlib.Algebra.GroupWithZero.InjSurj
+public import Mathlib.Algebra.GroupWithZero.WithZero
+public import Mathlib.Algebra.Order.AddGroupWithTop
+public import Mathlib.Algebra.Order.Group.Defs
+public import Mathlib.Algebra.Order.Group.Int
+public import Mathlib.Algebra.Order.Group.Units
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Basic
+public import Mathlib.Algebra.Order.Monoid.Basic
+public import Mathlib.Algebra.Order.Monoid.OrderDual
+public import Mathlib.Algebra.Order.Monoid.TypeTags
+public import Mathlib.Algebra.Group.WithOne.Map
+public import Mathlib.Tactic.Tauto
 
 /-!
 # Linearly ordered commutative groups and monoids with a zero element adjoined
@@ -29,6 +31,8 @@ The disadvantage is that a type such as `NNReal` is not of that form,
 whereas it is a very common target for valuations.
 The solutions is to use a typeclass, and that is exactly what we do in this file.
 -/
+
+@[expose] public section
 
 variable {α β : Type*}
 
@@ -206,15 +210,15 @@ instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
   mul_zero := @add_top _ (_)
   zero_le_one := (le_top : (0 : α) ≤ ⊤)
 
-@[simp]
+@[deprecated "Use simp" (since := "2025-11-17")]
 theorem ofAdd_toDual_eq_zero_iff [LinearOrderedAddCommMonoidWithTop α]
     (x : α) : Multiplicative.ofAdd (OrderDual.toDual x) = 0 ↔ x = ⊤ := Iff.rfl
 
-@[simp]
+@[deprecated "Use simp" (since := "2025-11-17")]
 theorem ofDual_toAdd_eq_top_iff [LinearOrderedAddCommMonoidWithTop α]
     (x : Multiplicative αᵒᵈ) : OrderDual.ofDual x.toAdd = ⊤ ↔ x = 0 := Iff.rfl
 
-@[simp]
+@[deprecated bot_eq_zero'' (since := "2025-11-17")]
 theorem ofAdd_bot [LinearOrderedAddCommMonoidWithTop α] :
     Multiplicative.ofAdd ⊥ = (0 : Multiplicative αᵒᵈ) := rfl
 
