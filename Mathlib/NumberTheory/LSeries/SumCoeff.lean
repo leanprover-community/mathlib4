@@ -59,7 +59,7 @@ private theorem LSeriesSummable_of_sum_norm_bigO_aux (hf : f 0 = 0)
     rw [deriv_norm_ofReal_cpow _ ht, neg_re, neg_add']
   simp_rw [LSeriesSummable, funext (LSeries.term_def₀ hf s), mul_comm (f _)]
   refine summable_mul_of_bigO_atTop' (f := fun t ↦ (t : ℂ) ^ (-s))
-    (g := fun t ↦ t ^ (-(s.re + 1) + r)) _ h₃ ?_ ?_ ?_ ?_
+    (g := fun t ↦ t ^ (-(s.re + 1) + r)) _ (fun t ht ↦ (h₃ t ht).differentiableWithinAt) ?_ ?_ ?_ ?_
   · refine (Iff.mpr integrableOn_Ici_iff_integrableOn_Ioi
       (integrableOn_Ioi_deriv_norm_ofReal_cpow zero_lt_one ?_)).locallyIntegrableOn
     exact neg_re _ ▸ neg_nonpos.mpr <| hr.trans hs.le
@@ -111,7 +111,8 @@ private theorem LSeries_eq_mul_integral_aux {f : ℕ → ℂ} (hf : f 0 = 0) {r 
   refine tendsto_nhds_unique ((tendsto_add_atTop_iff_nat 1).mpr hS.hasSum.tendsto_sum_nat) ?_
   simp_rw [Nat.range_succ_eq_Icc_zero, LSeries.term_def₀ hf, mul_comm (f _)]
   convert tendsto_sum_mul_atTop_nhds_one_sub_integral₀ (f := fun x ↦ (x : ℂ) ^ (-s)) (l := 0)
-    ?_ hf h₃ ?_ ?_ ?_ (integrableAtFilter_rpow_atTop_iff.mpr h₁)
+    ?_ hf (fun t ht ↦ (h₃ t ht).differentiableWithinAt) ?_ ?_ ?_
+    (integrableAtFilter_rpow_atTop_iff.mpr h₁)
   · rw [zero_sub, ← integral_neg]
     refine setIntegral_congr_fun measurableSet_Ioi fun t ht ↦ ?_
     rw [deriv_ofReal_cpow_const (zero_lt_one.trans ht).ne', h₄]
