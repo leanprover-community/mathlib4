@@ -21,8 +21,6 @@ with `(t.truncLT n).obj X < n` and `(t.truncGE n).obj X ≥ n`.
 
 -/
 
-@[expose] public section
-
 universe v u
 
 namespace CategoryTheory
@@ -41,10 +39,11 @@ variable (t : TStructure C)
 /-- Two morphisms `T ⟶ T'` between distinguished triangles must coincide when
 they coincide on the middle object, and there are integers `a ≤ b` such that
 for a t-structure, we have `T.obj₁ ≤ a` and `T'.obj₃ ≥ b`. -/
-lemma triangle_map_ext (a b : ℤ) (hab : a ≤ b) {T T' : Triangle C} (f₁ f₂ : T ⟶ T')
-    (hT : T ∈ distTriang C) (hT' : T' ∈ distTriang C)
+public lemma triangle_map_ext {T T' : Triangle C} {f₁ f₂ : T ⟶ T'}
+    (hT : T ∈ distTriang C) (hT' : T' ∈ distTriang C) (a b : ℤ)
     (h₀ : t.IsLE T.obj₁ a) (h₁ : t.IsGE T'.obj₃ b)
-    (H : f₁.hom₂ = f₂.hom₂ := by cat_disch) : f₁ = f₂ := by
+    (H : f₁.hom₂ = f₂.hom₂ := by cat_disch)
+    (hab : a ≤ b := by cutsat) : f₁ = f₂ := by
   suffices ∀ (f : T ⟶ T'), f.hom₂ = 0 → f = 0 by rw [← sub_eq_zero]; cat_disch
   intro f hf
   ext
@@ -59,9 +58,10 @@ lemma triangle_map_ext (a b : ℤ) (hab : a ≤ b) {T T' : Triangle C} (f₁ f�
 
 /-- If `a < b`, then a morphism `T.obj₂ ⟶ T'.obj₂` extends to a morphism `T ⟶ T'`
 of distinguished triangles when for a t-structure `T.obj₁ ≤ a` and `T'.obj₃ ≥ b`. -/
-lemma triangle_map_exists (a b : ℤ) (h : a < b) (T T' : Triangle C)
+public lemma triangle_map_exists {T T' : Triangle C}
     (hT : T ∈ distTriang C) (hT' : T' ∈ distTriang C)
-    (φ : T.obj₂ ⟶ T'.obj₂) (h₀ : t.IsLE T.obj₁ a) (h₁' : t.IsGE T'.obj₃ b) :
+    (φ : T.obj₂ ⟶ T'.obj₂) (a b : ℤ)
+    (h₀ : t.IsLE T.obj₁ a) (h₁' : t.IsGE T'.obj₃ b) (h : a < b := by cutsat) :
     ∃ (f : T ⟶ T'), f.hom₂ = φ := by
   obtain ⟨a, comm₁⟩ := T'.coyoneda_exact₂ hT' (T.mor₁ ≫ φ) (t.zero _ a b)
   obtain ⟨c, comm₂, comm₃⟩ := complete_distinguished_triangle_morphism _ _ hT hT' a φ comm₁
@@ -70,23 +70,21 @@ lemma triangle_map_exists (a b : ℤ) (h : a < b) (T T' : Triangle C)
 /-- If `a < b`, then an isomorphism `T.obj₂ ≅ T'.obj₂` extends to an isomorphism `T ≅ T'`
 of distinguished triangles when for a t-structure, both `T.obj₁` and `T'.obj₁` are `≤ a` and
 both `T.obj₃` and `T'.obj₃` are `≥ b`. -/
-lemma triangle_iso_exists (a b : ℤ) (h : a < b) (T T' : Triangle C)
+public lemma triangle_iso_exists {T T' : Triangle C}
     (hT : T ∈ distTriang C) (hT' : T' ∈ distTriang C) (e : T.obj₂ ≅ T'.obj₂)
-    (h₀ : t.IsLE T.obj₁ a) (h₁ : t.IsGE T.obj₃ b)
-    (h₀' : t.IsLE T'.obj₁ a) (h₁' : t.IsGE T'.obj₃ b) :
+    (a b : ℤ) (h₀ : t.IsLE T.obj₁ a) (h₁ : t.IsGE T.obj₃ b)
+    (h₀' : t.IsLE T'.obj₁ a) (h₁' : t.IsGE T'.obj₃ b) (h : a < b := by cutsat) :
     ∃ (e' : T ≅ T'), e'.hom.hom₂ = e.hom := by
-  obtain ⟨hom, hhom⟩ := triangle_map_exists t _ _ h _ _ hT hT' e.hom h₀ h₁'
-  obtain ⟨inv, hinv⟩ := triangle_map_exists t _ _ h _ _ hT' hT e.inv h₀' h₁
-  exact ⟨
-    { hom := hom
+  obtain ⟨hom, hhom⟩ := triangle_map_exists t hT hT' e.hom _ _ h₀ h₁'
+  obtain ⟨inv, _⟩ := triangle_map_exists t hT' hT e.inv _ _ h₀' h₁
+  exact
+    ⟨{hom := hom
       inv := inv
-      hom_inv_id := triangle_map_ext t a b (by cutsat) _ _ hT hT h₀ h₁
-        (by cat_disch)
-      inv_hom_id := triangle_map_ext t a b (by cutsat) _ _ hT' hT' h₀' h₁'
-        (by cat_disch) }, hhom⟩
+      hom_inv_id := triangle_map_ext t hT hT a b h₀ h₁
+      inv_hom_id := triangle_map_ext t hT' hT' a b h₀' h₁' }, hhom⟩
 
 namespace TruncAux
-/-! The definitions in the namespace `TStructure.TruncAux` are part of the
+/-! The private definitions in the namespace `TStructure.TruncAux` are part of the
 implementation of the truncation functors `truncLT`, `truncGE` and the
 distinguished triangles they fit in. -/
 
@@ -98,25 +96,25 @@ triangle `obj₁ ⟶ X ⟶ obj₃ ⟶ obj₁⟦1⟧` where `obj₁` is `< n` and
 @[simps! obj₂]
 noncomputable def triangle : Triangle C :=
   Triangle.mk
-    (t.exists_triangle X (n-1) n
+    (t.exists_triangle X (n - 1) n
       (by cutsat)).choose_spec.choose_spec.choose_spec.choose_spec.choose
-    (t.exists_triangle X (n-1) n
+    (t.exists_triangle X (n - 1) n
       (by cutsat)).choose_spec.choose_spec.choose_spec.choose_spec.choose_spec.choose
-    (t.exists_triangle X (n-1) n
+    (t.exists_triangle X (n - 1) n
       (by cutsat)).choose_spec.choose_spec.choose_spec.choose_spec.choose_spec.choose_spec.choose
 
 lemma triangle_distinguished :
     triangle t n X ∈ distTriang C :=
-  (t.exists_triangle X (n-1) n
+  (t.exists_triangle X (n - 1) n
     (by cutsat)).choose_spec.choose_spec.choose_spec.choose_spec.choose_spec.choose_spec.choose_spec
 
 instance triangle_obj₁_isLE (n : ℤ) :
     t.IsLE (triangle t n X).obj₁ (n-1) :=
-  ⟨(t.exists_triangle X (n-1) n (by cutsat)).choose_spec.choose_spec.choose⟩
+  ⟨(t.exists_triangle X (n - 1) n (by cutsat)).choose_spec.choose_spec.choose⟩
 
 instance triangle_obj₃_isGE :
     t.IsGE (triangle t n X).obj₃ n :=
-  ⟨(t.exists_triangle X (n-1) n (by cutsat)).choose_spec.choose_spec.choose_spec.choose⟩
+  ⟨(t.exists_triangle X (n - 1) n (by cutsat)).choose_spec.choose_spec.choose_spec.choose⟩
 
 variable {X} {Y : C} (φ : X ⟶ Y)
 
@@ -125,15 +123,14 @@ definition `TruncAux.triangle`. -/
 @[ext]
 lemma triangle_map_ext' (f₁ f₂ : triangle t n X ⟶ triangle t n Y)
     (H : f₁.hom₂ = f₂.hom₂ := by cat_disch) : f₁ = f₂ :=
-  triangle_map_ext t (n-1) n (by cutsat) _ _
-    (triangle_distinguished t n X) (triangle_distinguished t n Y)
-    inferInstance inferInstance H
+  triangle_map_ext t (triangle_distinguished t n X) (triangle_distinguished t n Y) (n - 1) n
+    inferInstance inferInstance H (by cutsat)
 
 /-- Auxiliary definition for `triangleFunctor`. -/
 @[simps hom₂]
 noncomputable def triangleMap : triangle t n X ⟶ triangle t n Y :=
-  have H := triangle_map_exists t (n - 1) n (by cutsat) _ _ (triangle_distinguished t n X)
-    (triangle_distinguished t n Y) φ inferInstance inferInstance
+  have H := triangle_map_exists t (triangle_distinguished t n X)
+    (triangle_distinguished t n Y) φ (n - 1) n inferInstance inferInstance (by cutsat)
   { hom₁ := H.choose.hom₁
     hom₂ := φ
     hom₃ := H.choose.hom₃
@@ -169,6 +166,8 @@ instance isGE_triangleFunctor_obj_obj₃ :
 instance : (triangleFunctor t n).Additive where
 
 end TruncAux
+
+public section
 
 /-- Given a t-structure `t` on a pretriangulated category `C` and `n : ℤ`, this
 is the `< n`-truncation functor. See also the natural transformation `truncLTι`. -/
@@ -219,15 +218,13 @@ noncomputable def truncGEδLT (n : ℤ) :
 /-- The distinguished triangle `(t.truncLT n).obj A ⟶ A ⟶ (t.truncGE n).obj A ⟶ ...`
 as a functor `C ⥤ Triangle C` when `t` is a `t`-structure on a pretriangulated
 category `C` and `n : ℤ`. -/
-@[simps!]
+@[expose, simps!]
 noncomputable def triangleLTGE (n : ℤ) : C ⥤ Triangle C :=
   Triangle.functorMk (t.truncLTι n) (t.truncGEπ n) (t.truncGEδLT n)
 
 lemma triangleLTGE_distinguished (n : ℤ) (X : C) :
     (t.triangleLTGE n).obj X ∈ distTriang C :=
   TruncAux.triangleFunctor_obj_distinguished t n X
-
-attribute [irreducible] truncLT truncGE truncLTι truncGEπ truncGEδLT
 
 instance (X : C) (n : ℤ) : t.IsLE ((t.triangleLTGE n).obj X).obj₁ (n - 1) := by
   dsimp
@@ -236,6 +233,8 @@ instance (X : C) (n : ℤ) : t.IsLE ((t.triangleLTGE n).obj X).obj₁ (n - 1) :=
 instance (X : C) (n : ℤ) : t.IsGE ((t.triangleLTGE n).obj X).obj₃ n := by
   dsimp
   infer_instance
+
+end
 
 end TStructure
 
