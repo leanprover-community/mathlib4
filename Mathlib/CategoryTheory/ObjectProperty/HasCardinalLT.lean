@@ -42,7 +42,7 @@ lemma HasCardinalLT.iSup
     (⨆ i, P i).HasCardinalLT κ :=
   hasCardinalLT_subtype_iSup _ hι hP
 
-lemma HasCardinalLT.union
+lemma HasCardinalLT.sup
     {P₁ P₂ : ObjectProperty C} {κ : Cardinal.{w}}
     (h₁ : P₁.HasCardinalLT κ) (h₂ : P₂.HasCardinalLT κ)
     (hκ : Cardinal.aleph0 ≤ κ) :
