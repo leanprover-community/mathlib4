@@ -17,6 +17,8 @@ across an equivalence.
 This continues the pattern set in `Mathlib/Algebra/Normed/Module/TransferInstance.lean`.
 -/
 
+@[expose] public section
+
 variable {α β : Type*} {𝕜 : Type*} [NormedField 𝕜]
 
 namespace Equiv

@@ -17,6 +17,8 @@ and normed space structures across an equivalence.
 This continues the pattern set in `Mathlib/Algebra/Module/TransferInstance.lean`.
 -/
 
+@[expose] public section
+
 variable {α β : Type*}
 
 namespace Equiv
