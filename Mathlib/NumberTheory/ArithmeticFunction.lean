@@ -1462,14 +1462,14 @@ theorem sum_Icc_mul_eq_sum_prod_filter (f g : ArithmeticFunction R) (N : ℕ) :
       apply (sum_eq_zero ..).symm
       simp only [mem_filter, mem_product, mem_Icc, _root_.zero_le, true_and, and_imp, Prod.forall]
       rintro _ _ _ _ (h | h) <;> simp [h]
-    rw [divisorsAntidiagonal_of_le_eq_prod_filter hn0 (by omega)]
+    rw [divisorsAntidiagonal_eq_prod_filter_of_le hn0 (by omega)]
   · simp_rw [sum_filter]
     rw [sum_comm]
     simp
 
 theorem sum_Icc_mul_eq_sum_sum (f g : ArithmeticFunction R) (N : ℕ) :
     ∑ n ∈ Icc 0 N, (f * g) n = ∑ n ∈ Icc 0 N, f n * ∑ m ∈ Icc 0 (N / n), g m := by
-  rw [sum_mul_eq_sum_prod_filter, sum_filter, sum_product]
+  rw [sum_Icc_mul_eq_sum_prod_filter, sum_filter, sum_product]
   refine sum_congr rfl fun n _ ↦ ?_
   simp only [sum_ite, not_le, sum_const_zero, add_zero, mul_sum]
   by_cases h : n = 0
@@ -1487,17 +1487,17 @@ theorem sum_Icc_mul_eq_sum_sum (f g : ArithmeticFunction R) (N : ℕ) :
 
 theorem sum_Icc_mul_zeta_eq_sum (f : ArithmeticFunction R) (N : ℕ) :
     ∑ n ∈ Icc 0 N, (f * zeta) n = ∑ n ∈ Icc 0 N, f n * ↑(N / n) := by
-  rw [sum_mul_eq_sum_sum]
+  rw [sum_Icc_mul_eq_sum_sum]
   refine  sum_congr rfl fun n hn ↦ ?_
   simp_rw [natCoe_apply]
-  rw_mod_cast [sum_zeta]
+  rw_mod_cast [sum_Icc_zeta]
 
 --TODO: Dirichlet hyperbola method to get sums of length `sqrt N`
 /-- An `O(N)` formula for the sum of the number of divisors function. -/
 theorem sum_Icc_sigma0_eq_sum_div (N : ℕ) :
     ∑ n ∈ Icc 0 N, sigma 0 n = ∑ n ∈ Icc 0 N, (N / n) := by
   rw [← zeta_mul_pow_eq_sigma, pow_zero_eq_zeta]
-  convert sum_mul_zeta_eq_sum zeta N using 1
+  convert sum_Icc_mul_zeta_eq_sum zeta N using 1
   simp only [zeta_apply, cast_id, ite_mul, zero_mul, one_mul]
   refine sum_congr rfl fun n hn ↦ ?_
   simp
