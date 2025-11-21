@@ -560,3 +560,12 @@ theorem nonPrincipals_zorn (c : Set (Ideal R)) (hs : c ⊆ { I : Ideal R | ¬I.I
   exact hs ⟨⟨x, rfl⟩⟩
 
 end PrincipalOfPrime_old
+
+open Ideal in
+lemma span_singleton_inf_span_singleton [EuclideanDomain R] [GCDMonoid R] (n m : R) :
+    span {n} ⊓ span {m} = span {lcm n m} := by
+  rw [Ideal.ext_iff]
+  intro x
+  rw [Ideal.mem_inf]
+  simp only [Ideal.mem_span_singleton]
+  exact lcm_dvd_iff.symm
