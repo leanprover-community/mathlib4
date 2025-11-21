@@ -117,7 +117,7 @@ universe w
 
 variable [Small.{v} R] [UnivLE.{v, w}]
 
-instance hasExt_of_small'' : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
+instance hasExt_of_small''' : CategoryTheory.HasExt.{w} (ModuleCat.{v} R) :=
   CategoryTheory.hasExt_of_enoughProjectives.{w} (ModuleCat.{v} R)
 
 open Pointwise
