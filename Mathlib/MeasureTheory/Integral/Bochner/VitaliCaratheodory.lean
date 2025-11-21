@@ -317,8 +317,8 @@ theorem SimpleFunc.exists_upperSemicontinuous_le_lintegral_le (f : α →ₛ ℝ
   | @const c s hs =>
     classical
     by_cases hc : c = 0
-    · refine ⟨fun _ => 0, ?_, upperSemicontinuous_const, ?_⟩ <;> simp [hc]
-    have μs_lt_top : μ s < ∞ := by simpa [hs, hc, lt_top_iff_ne_top] using int_f
+    · exact ⟨fun _ => 0, by simp [hc, upperSemicontinuous_const]⟩
+    have μs_lt_top : μ s < ∞ := by simpa [hs, hc, ENNReal.mul_eq_top, lt_top_iff_ne_top] using int_f
     have : (0 : ℝ≥0∞) < ε / c := ENNReal.div_pos_iff.2 ⟨ε0, ENNReal.coe_ne_top⟩
     obtain ⟨F, Fs, F_closed, μF⟩ : ∃ (F : _), F ⊆ s ∧ IsClosed F ∧ μ s < μ F + ε / c :=
       hs.exists_isClosed_lt_add μs_lt_top.ne this.ne'
