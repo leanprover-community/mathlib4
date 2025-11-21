@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
+Authors: Joël Riou, Andrew Yang
 -/
 module
 
@@ -26,39 +26,36 @@ universe t u
 
 open CategoryTheory Bicategory
 
--- to be moved
-namespace AlgebraicGeometry.LocallyRingedSpace
-
-variable {X Y : LocallyRingedSpace} (f : X.Hom Y)
-
-/-- The morphism of sheaves corresponding to a morphism of locally ringed spaces. -/
-abbrev Hom.toSheafHom :
-    Y.sheaf ⟶ ((TopologicalSpace.Opens.map f.base).sheafPushforwardContinuous
-      _ _ _).obj X.sheaf where
-  val := f.c
-
-end AlgebraicGeometry.LocallyRingedSpace
-
 namespace AlgebraicGeometry.Scheme
 
 variable {X Y Z T : Scheme.{u}}
-
-variable (X) in
-/-- The category of sheaves of modules over a scheme. -/
-abbrev Modules := SheafOfModules.{u} X.ringCatSheaf
-
-example : HasSheafify (Opens.grothendieckTopology X) AddCommGrpCat.{u} :=
-  inferInstance
-
-instance : Abelian X.Modules := inferInstance
 
 /-- The morphism of sheaves of rings corresponding to a morphism of schemes. -/
 def Hom.toRingCatSheafHom (f : X ⟶ Y) :
     Y.ringCatSheaf ⟶ ((TopologicalSpace.Opens.map f.base).sheafPushforwardContinuous
       _ _ _).obj X.ringCatSheaf :=
-  (sheafCompose _ (forget₂ _ RingCat)).map f.toSheafHom
+  (sheafCompose _ (forget₂ _ RingCat)).map
+    (show Y.sheaf ⟶ ((TopologicalSpace.Opens.map f.base).sheafPushforwardContinuous
+      _ _ _).obj X.sheaf from ⟨f.c⟩)
+
+variable (X) in
+/-- The category of sheaves of modules over a scheme. -/
+def Modules := SheafOfModules.{u} X.ringCatSheaf
 
 namespace Modules
+
+/-- Morphisms between `𝒪ₓ`-modules. -/
+def Hom (M N : X.Modules) : Type u := SheafOfModules.Hom M N
+
+instance : Category X.Modules where
+  Hom := Modules.Hom
+  __ := inferInstanceAs (Category (SheafOfModules.{u} X.ringCatSheaf))
+
+instance : Preadditive X.Modules :=
+  inferInstanceAs (Preadditive (SheafOfModules.{u} X.ringCatSheaf))
+
+instance : Abelian X.Modules :=
+  inferInstanceAs (Abelian (SheafOfModules.{u} X.ringCatSheaf))
 
 variable (f : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶ T)
 
