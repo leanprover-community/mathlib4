@@ -3,13 +3,15 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Filtered.Final
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
-import Mathlib.CategoryTheory.MorphismProperty.HasCardinalLT
-import Mathlib.CategoryTheory.ObjectProperty.HasCardinalLT
-import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
-import Mathlib.CategoryTheory.Products.Unitor
+module
+
+public import Mathlib.CategoryTheory.Filtered.Final
+public import Mathlib.CategoryTheory.Limits.Final
+public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+public import Mathlib.CategoryTheory.MorphismProperty.HasCardinalLT
+public import Mathlib.CategoryTheory.ObjectProperty.HasCardinalLT
+public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
+public import Mathlib.CategoryTheory.Products.Unitor
 
 /-!
 # `κ`-filtered categories and `κ`-directed poset
@@ -33,6 +35,8 @@ have to be multiplicative.)
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -259,8 +263,8 @@ def Diagram.max (D₁ D₂ : Diagram J κ) :
     rintro _ _ _ (h | h)
     · exact Or.inl (D₁.tgt h)
     · exact Or.inr (D₂.tgt h)
-  hW := .union D₁.hW D₂.hW (Cardinal.IsRegular.aleph0_le Fact.out)
-  hP := .union D₁.hP D₂.hP (Cardinal.IsRegular.aleph0_le Fact.out)
+  hW := .sup D₁.hW D₂.hW (Cardinal.IsRegular.aleph0_le Fact.out)
+  hP := .sup D₁.hP D₂.hP (Cardinal.IsRegular.aleph0_le Fact.out)
 
 variable [IsCardinalFiltered J κ]
   (hJ : ∀ (e : J), ∃ (m : J) (_ : e ⟶ m), IsEmpty (m ⟶ e))
@@ -344,7 +348,7 @@ lemma isCardinalFiltered : IsCardinalFiltered (DiagramWithUniqueTerminal J κ) �
             exact Or.inl ⟨i, (D i).tgt hf⟩
           · exact Or.inr rfl
           · exact Or.inr rfl
-        hW := .union D₁.hW (MorphismProperty.hasCardinalLT_ofHoms _
+        hW := .sup D₁.hW (MorphismProperty.hasCardinalLT_ofHoms _
           ((hasCardinalLT_sigma _ _ hι (fun i ↦ (D i).hP)))) hκ
         hP := D₁.hP }
     have hD₂ {f : m ⟶ m} (hf : D₂.W f) : f = 𝟙 _ := by
@@ -432,7 +436,7 @@ lemma final_functor : (functor J κ).Final := by
         rintro i j f (hf | ⟨⟨j, hj⟩⟩)
         · exact D₀.tgt hf
         · exact Or.inr ⟨⟨⟩⟩
-      hW := .union D₀.hW (MorphismProperty.hasCardinalLT_ofHoms _ D.hP) hκ
+      hW := .sup D₀.hW (MorphismProperty.hasCardinalLT_ofHoms _ D.hP) hκ
       hP := D₀.hP }
   have h₂ {j : J} (hj : D.P j) {f : j ⟶ m₁} (hf : D₁.W f) :
       f = φ ⟨_, hj⟩ := by

@@ -3,12 +3,14 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Alex J. Best
 -/
-import Mathlib.Algebra.GroupWithZero.Torsion
-import Mathlib.NumberTheory.RamificationInertia.Galois
-import Mathlib.RingTheory.DedekindDomain.Factorization
-import Mathlib.RingTheory.DedekindDomain.Instances
-import Mathlib.RingTheory.Ideal.Int
-import Mathlib.RingTheory.NormalClosure
+module
+
+public import Mathlib.Algebra.GroupWithZero.Torsion
+public import Mathlib.NumberTheory.RamificationInertia.Galois
+public import Mathlib.RingTheory.DedekindDomain.Factorization
+public import Mathlib.RingTheory.DedekindDomain.Instances
+public import Mathlib.RingTheory.Ideal.Int
+public import Mathlib.RingTheory.NormalClosure
 
 /-!
 
@@ -30,6 +32,8 @@ spanned by the norms of elements in `I`.
 * `relNorm_relNorm`: transitivity of the relative ideal norm
 
 -/
+
+@[expose] public section
 
 open scoped nonZeroDivisors
 

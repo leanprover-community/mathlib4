@@ -3,14 +3,18 @@ Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
 -/
-import Mathlib.Topology.Homotopy.Path
-import Mathlib.Topology.Homotopy.Equiv
+module
+
+public import Mathlib.Topology.Homotopy.Path
+public import Mathlib.Topology.Homotopy.Equiv
 
 /-!
 # Contractible spaces
 
 In this file, we define `ContractibleSpace`, a space that is homotopy equivalent to `Unit`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
