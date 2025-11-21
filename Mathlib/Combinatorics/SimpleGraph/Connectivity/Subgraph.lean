@@ -647,8 +647,8 @@ protected lemma Connected.map_coe {G' : G.Subgraph} {G'' : G'.coe.Subgraph}
 
 protected lemma Reachable.coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph) {u v : G''.verts}
     (hreachable : G''.coe.Reachable u v) : (Subgraph.coeSubgraph G'').coe.Reachable
-      (Subgraph.vert _ u (by simp_all)) (Subgraph.vert _ v (by simp_all)) := by
-  exact Reachable.map_coe G'.hom hreachable
+      (Subgraph.vert _ u (by simp_all)) (Subgraph.vert _ v (by simp_all)) :=
+  Reachable.map_coe G'.hom hreachable
 
 protected lemma Preconnected.coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph)
     (hpreconn : G''.Preconnected) : (Subgraph.coeSubgraph G'').Preconnected := by
