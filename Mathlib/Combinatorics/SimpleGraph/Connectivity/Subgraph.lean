@@ -620,7 +620,7 @@ protected lemma Connected.toSubgraph {H : SimpleGraph V} (h : H ≤ G) (hconn : 
     (toSubgraph H h).Connected := by
   obtain ⟨hpreconn, _⟩ := hconn
   refine Subgraph.connected_iff.mpr ⟨hpreconn.toSubgraph h, ?_⟩
-  simp_all only [toSubgraph_verts, Set.univ_nonempty]
+  simp
 
 namespace Subgraph
 
