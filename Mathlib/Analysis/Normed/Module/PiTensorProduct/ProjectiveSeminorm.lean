@@ -5,7 +5,7 @@ Authors: Sophie Morel
 -/
 module
 
-public import Mathlib.Analysis.NormedSpace.Multilinear.Basic
+public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
 public import Mathlib.LinearAlgebra.PiTensorProduct
 
 /-!

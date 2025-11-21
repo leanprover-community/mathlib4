@@ -5,7 +5,7 @@ Authors: Sophie Morel
 -/
 module
 
-public import Mathlib.Analysis.NormedSpace.PiTensorProduct.ProjectiveSeminorm
+public import Mathlib.Analysis.Normed.Module.PiTensorProduct.ProjectiveSeminorm
 public import Mathlib.LinearAlgebra.Isomorphisms
 
 /-!

@@ -31,7 +31,6 @@ noncomputable def functorArrows (i j n : ℕ) (hij : i ≤ j := by cutsat)
     ComposableArrows C n ⥤ ComposableArrows C 1 where
   obj S := mk₁ (S.map' i j)
   map {S S'} φ := homMk₁ (φ.app _) (φ.app _) (φ.naturality _)
-  map_comp φ φ' := hom_ext₁ rfl rfl
 
 /-- The natural transformation `functorArrows C i j n ⟶ functorArrows C i' j' n`
 when `i ≤ i'` and `j ≤ j'`. -/
@@ -42,7 +41,7 @@ noncomputable def mapFunctorArrows (i j i' j' n : ℕ)
     (_ : j' ≤ n := by cutsat) :
     functorArrows C i j n ⟶ functorArrows C i' j' n where
   app S := homMk₁ (S.map' i i') (S.map' j j')
-    (by dsimp; simp only [← Functor.map_comp, homOfLE_comp])
+    (by simp [← Functor.map_comp])
 
 end ComposableArrows
 

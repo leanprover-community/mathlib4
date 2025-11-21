@@ -132,7 +132,7 @@ theorem minpoly_injective : Function.Injective (ConjRootClass.minpoly (K := K) (
   fun _ _ ↦ minpoly_inj.mp
 
 theorem splits_minpoly [n : Normal K L] (c : ConjRootClass K L) :
-    Splits (algebraMap K L) c.minpoly := by
+    Splits (c.minpoly.map (algebraMap K L)) := by
   induction c
   rw [minpoly_mk]
   exact n.splits _

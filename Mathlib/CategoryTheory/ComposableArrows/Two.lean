@@ -10,10 +10,13 @@ public import Mathlib.CategoryTheory.ComposableArrows.Basic
 /-!
 # API for compositions of two arrows
 
-Given morphisms `f : i ⟶ j`, `g : j ⟶ k`, and `fg : i ⟶ k` such that `f ≫ g = fg`
-(which may arise from a term in `ComposableArrows C 2`), we define
-maps `twoδ₂Toδ₁ : mk₁ f ⟶ mk₁ fg` and `twoδ₁Toδ₀ : mk₁ fg ⟶ mk₁ g` in
-the category `ComposableArrows C 1`.
+Given morphisms `f : i ⟶ j`, `g : j ⟶ k`, and `fg : i ⟶ k` in a category `C`
+such that `f ≫ g = fg`, we define maps `twoδ₂Toδ₁ : mk₁ f ⟶ mk₁ fg` and
+`twoδ₁Toδ₀ : mk₁ fg ⟶ mk₁ g` in the category `ComposableArrows C 1`.
+The names are justified by the fact that `ComposableArrow.mk₂ f g`
+can be thought of as a `2`-simplex in the simplicial set `nerve C`,
+and its faces (numbered from `0` to `2`) are respectively `mk₁ g`,
+`mk₁ fg` and `mk₁ f`.
 
 -/
 
@@ -31,7 +34,7 @@ variable {C : Type u} [Category.{v} C]
 /-- The morphism `mk₁ f ⟶ mk₁ fg` when `f ≫ g = fg` for some morphism `g`. -/
 def twoδ₂Toδ₁ :
     mk₁ f ⟶ mk₁ fg :=
-  homMk₁ (𝟙 _) g (by simpa using h)
+  homMk₁ (𝟙 _) g
 
 @[simp]
 lemma twoδ₂Toδ₁_app_zero :
@@ -44,7 +47,7 @@ lemma twoδ₂Toδ₁_app_one :
 /-- The morphism `mk₁ fg ⟶ mk₁ g` when `f ≫ g = fg` for some morphism `f`. -/
 def twoδ₁Toδ₀ :
     mk₁ fg ⟶ mk₁ g :=
-  homMk₁ f (𝟙 _) (by simpa using h.symm)
+  homMk₁ f (𝟙 _)
 
 @[simp]
 lemma twoδ₁Toδ₀_app_zero :
