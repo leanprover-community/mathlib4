@@ -1556,4 +1556,3 @@ meta def evalArithmeticFunctionZeta : PositivityExt where eval {u α} z p e := d
   | _, _, _ => throwError "not ArithmeticFunction.zeta"
 
 end Mathlib.Meta.Positivity
-
