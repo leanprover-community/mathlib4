@@ -87,6 +87,15 @@ def basicOpen (s : Finset K) : Opens (Place R K) where
     rintro hx U ⟨i, rfl⟩ j ⟨z, rfl⟩
     exact hx z
 
+@[simp]
+theorem basicOpen_def (s : Finset K) :
+  v ∈ basicOpen R s ↔ (s : Set K) ⊆ v := by
+  constructor
+  · intro h x xs
+    exact h xs
+  intro sv
+  exact sv
+
 
 open Polynomial in
 @[stacks 090P]
@@ -204,34 +213,27 @@ theorem iInf_eq_integralClosure :
     (⨅ v : Place R K, v.toSubalgebra) = integralClosure R K := by
   ext x
   convert Set.singleton_subset_iff
-
   convert (basicOpen_eq_top_iff R ( s := {x}))
   swap ; · simp
   constructor
   · intro h
     ext V
-    constructor
-    · exact fun a ↦ trivial
-    intro VT
-    specialize h V
-    simp only [Set.mem_image, Set.mem_range, exists_exists_eq_and, SetLike.mem_coe,
-      forall_exists_index] at h
-    have : x ∈ V := h V rfl
-    intro a h
-    simp only [Finset.coe_singleton, Set.mem_singleton_iff] at h
-    rw[h]
-    exact this
-  · intro h
-    apply Algebra.mem_iInf.mpr
-    intro V
-    have : V∈ (basicOpen R {x}).carrier := by rw[h] ; simp
-    simp at this
-    apply Set.singleton_subset_iff.mp
-    have sim : ↑V.toSubalgebra = (V : Set K) := by trivial
-    rw[sim]
-    change _ ⊆ (V : Set K) at this
-    convert this
     simp
+    specialize h V
+    simp at h
+    specialize h V
+    apply h
+    rfl
+  · intro h
+    have : ∀ (V : Place R K), x∈ V := by
+      intro V
+      apply (basicOpen_def _ _ V ({x})).mp
+      · rw[h]
+        exact trivial
+      simp
+    exact mem_iInf.mpr this
+
+
 
 
 
@@ -244,7 +246,10 @@ theorem iInf_eq_integralClosure_adjoin (s : Finset K) :
 
 theorem basicOpen_union [DecidableEq K] {s t : Finset K} :
     basicOpen R (s ∪ t) = basicOpen R s ⊓ basicOpen R t := by
-  sorry
+  ext V
+  simp
+
+
 
 theorem isTopologicalBasis :
     IsTopologicalBasis (α := Place R K) {basicOpen R s | s : Finset K} := by
