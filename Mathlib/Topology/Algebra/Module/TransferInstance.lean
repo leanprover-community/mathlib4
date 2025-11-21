@@ -19,7 +19,7 @@ This continues the pattern set in `Mathlib/Algebra/Normed/Module/TransferInstanc
 
 @[expose] public section
 
-variable {α β : Type*} {𝕜 : Type*} [NormedField 𝕜]
+variable {R α β : Type*}
 
 namespace Equiv
 
@@ -37,18 +37,24 @@ protected abbrev topologicalSpace (e : α ≃ β) : ∀ [TopologicalSpace β], T
     isOpen_sUnion S hS := by simpa using isOpen_biUnion hS
   }
 
-variable (𝕜) in
+variable [TopologicalSpace β] [AddCommMonoid β] [Semiring R] [Module R β]
+
+-- XXX: using `letI` make TC synthesis in the proof fail, but the current proof term is not nice
+-- What's the best way to solve this?
+variable (R) in
 /-- An equivalence `e : α ≃ β` gives a continuous linear equivalence `α ≃L[R] β`
 where the continuous `R`-module structure on `α` is the one obtained by transporting an
-`R`-module structure on `β` back along `e`. -/
-def continuousLinearEquiv [TopologicalSpace β] [AddCommMonoid β] [Module 𝕜 β] (e : α ≃ β) :
+`R`-module structure on `β` back along `e`.
+
+This is `e.linearEquiv` as a continuous linear equivalence. -/
+def continuousLinearEquiv (e : α ≃ β) :
     let _ := e.topologicalSpace
     let _ := e.addCommMonoid
-    let _ := e.module 𝕜
-    α ≃L[𝕜] β := by
+    let _ := e.module R
+    α ≃L[R] β := by
   intros
   exact {
-    toLinearEquiv := e.linearEquiv 𝕜
+    toLinearEquiv := e.linearEquiv R
     continuous_toFun := by
       rw [continuous_def]
       intro t ht
@@ -58,5 +64,12 @@ def continuousLinearEquiv [TopologicalSpace β] [AddCommMonoid β] [Module 𝕜 
       rw [continuous_def]
       exact fun s hs ↦ hs
   }
+
+@[simp]
+lemma continuousLinearEquiv_toLinearEquiv (e : α ≃ β) :
+    let _ := e.topologicalSpace
+    let _ := e.addCommMonoid
+    let _ := e.module R
+    (e.continuousLinearEquiv R).toLinearEquiv = e.linearEquiv R := by rfl
 
 end Equiv
