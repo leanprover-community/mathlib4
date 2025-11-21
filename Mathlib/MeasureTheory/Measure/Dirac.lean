@@ -194,7 +194,7 @@ open Measure
 theorem mem_ae_dirac_iff {a : α} (hs : MeasurableSet s) : s ∈ ae (dirac a) ↔ a ∈ s := by
   by_cases a ∈ s <;> simp [mem_ae_iff, dirac_apply', hs.compl, *]
 
-theorem ae_dirac_iff {a : α} {p : α → Prop} (hp : MeasurableSet { x | p x }) :
+@[simp] theorem ae_dirac_iff {a : α} {p : α → Prop} (hp : MeasurableSet { x | p x }) :
     (∀ᵐ x ∂dirac a, p x) ↔ p a :=
   mem_ae_dirac_iff hp
 
@@ -313,3 +313,27 @@ lemma injective_dirac [SeparatesPoints α] :
 end dirac_injective
 
 end MeasureTheory
+
+namespace MeasureTheory.Measure
+variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {f : α → β} {μ : Measure α}
+  {b₁ b₂ : β}
+
+lemma ae_eq_or_eq_iff_eq_dirac_add_dirac [MeasurableSingletonClass α] {a₁ a₂ : α} (ha : a₁ ≠ a₂) :
+    (∀ᵐ a ∂μ, a = a₁ ∨ a = a₂) ↔ μ = μ {a₁} • .dirac a₁ + μ {a₂} • .dirac a₂ where
+  mp hμ := by
+    ext s hs
+    rw [← measure_diff_null (s := s) hμ]
+    simp [Set.setOf_or, -Set.union_singleton, -Set.singleton_union, -Set.compl_union,
+      Set.inter_union_distrib_left]
+    rw [measure_union (by grind [Set.disjoint_left]) (by measurability)]
+    by_cases ha₁ : a₁ ∈ s <;> by_cases ha₂ : a₂ ∈ s <;> simp [*]
+  mpr hμ := by rw [hμ]; simp [ae_smul_measure]
+
+lemma ae_eq_or_eq_iff_map_eq_dirac_add_dirac [MeasurableSingletonClass β] (hf : AEMeasurable f μ)
+    (hb : b₁ ≠ b₂) :
+    (∀ᵐ a ∂μ, f a = b₁ ∨ f a = b₂) ↔
+      μ.map f = μ (f ⁻¹' {b₁}) • .dirac b₁ + μ (f ⁻¹' {b₂}) • .dirac b₂ := by
+  rw [← Measure.map_apply₀ hf (by measurability), ← Measure.map_apply₀ hf (by measurability),
+    ← ae_eq_or_eq_iff_eq_dirac_add_dirac hb, ae_map_iff hf (by simp [Set.setOf_or])]
+
+end MeasureTheory.Measure
