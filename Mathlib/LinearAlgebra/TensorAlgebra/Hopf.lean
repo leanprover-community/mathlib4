@@ -3,7 +3,7 @@ Copyright (c) 2025 Nikolas Tapia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nikolas Tapia
 -/
-module 
+module
 
 public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 public import Mathlib.RingTheory.Coalgebra.Convolution
@@ -26,7 +26,7 @@ open LinearMap TensorProduct
 
 variable (R : Type*) [CommRing R] {M : Type*} [AddCommMonoid M] [Module R M]
 
-local notation "T["M"]" => TensorAlgebra R M
+local notation "T[" M "]" => TensorAlgebra R M
 
 /-- Linear map inducing the comultiplication in `TensorAlgebra R M`. -/
 def comul' : M →ₗ[R] T[M] ⊗[R] T[M] :=
