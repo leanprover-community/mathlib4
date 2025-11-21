@@ -559,9 +559,10 @@ theorem SimpleFunc.integralCLM'_L1_eq_integral (f : α →₁ₛ[μ] E) :
   apply ContinuousLinearMap.extend_eq _ _ simpleFunc.isUniformInducing
   exact simpleFunc.denseRange one_ne_top
 
-theorem integralCLM'_eq (f : α →₁[μ] E) : integralCLM' 𝕜 f = integral f := by
+variable (𝕜) in
+theorem integral_eq' (f : α →₁[μ] E) : integral f = integralCLM' 𝕜 f := by
   apply isClosed_property (simpleFunc.denseRange one_ne_top)
-    (isClosed_eq (integralCLM' 𝕜).continuous _) _ f
+    (isClosed_eq _ (integralCLM' 𝕜).continuous) _ f
   · simp_rw [integral_def]
     exact (integralCLM (E := E)).continuous
   intro f
@@ -593,8 +594,7 @@ theorem integral_sub (f g : α →₁[μ] E) : integral (f - g) = integral f - i
 
 @[integral_simps]
 theorem integral_smul (c : 𝕜) (f : α →₁[μ] E) : integral (c • f) = c • integral f := by
-  rw [← integralCLM'_eq (𝕜 := 𝕜) f, ← integralCLM'_eq (𝕜 := 𝕜) (c • f),
-    map_smul (integralCLM' 𝕜) c f]
+  rw [integral_eq' 𝕜 f, integral_eq' 𝕜 (c • f), map_smul (integralCLM' 𝕜) c f]
 
 theorem norm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)‖ ≤ 1 :=
   norm_setToL1_le (dominatedFinMeasAdditive_weightedSMul μ) zero_le_one
