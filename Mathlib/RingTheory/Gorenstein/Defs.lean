@@ -62,7 +62,7 @@ lemma isGorensteinRing_def : IsGorensteinRing R ↔
     ∀ p : Ideal R, ∀ (_ : p.IsPrime), IsGorensteinLocalRing (Localization.AtPrime p) :=
   ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
-lemma isCohenMacaulayRing_def' : IsGorensteinRing R ↔
+lemma isGorensteinRing_def' : IsGorensteinRing R ↔
   ∀ p : PrimeSpectrum R, IsGorensteinLocalRing (Localization.AtPrime p.1) :=
   ⟨fun ⟨h⟩ ↦ fun p ↦ h p.1 p.2, fun h ↦ ⟨fun p hp ↦ h ⟨p, hp⟩⟩⟩
 
