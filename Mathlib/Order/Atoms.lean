@@ -709,7 +709,7 @@ theorem exists_mem_le_of_le_sSup_of_isAtom {α} [CompleteAtomicBooleanAlgebra α
   obtain rfl := (inf_eq_left.mpr hs).symm.trans <| inf_sSup_eq.trans this
   exact ha.1 rfl
 
-lemma unique_decomposition_into_atoms {α} [CompleteAtomicBooleanAlgebra α] {S : Set α}
+lemma eq_setOf_le_sSup_and_isAtom {α} [CompleteAtomicBooleanAlgebra α] {S : Set α}
     (hS : ∀ a ∈ S, IsAtom a) : S = {a | a ≤ sSup S ∧ IsAtom a} := by
   ext a
   refine ⟨fun h => ⟨CompleteLattice.le_sSup S a h, hS a h⟩, fun ⟨hale, hatom⟩ => ?_⟩
