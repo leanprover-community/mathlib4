@@ -138,7 +138,7 @@ theorem pluennecke_petridis_inequality_mul (C : Finset G)
     have h₂ : {x} * A' * B ⊆ {x} * A * B := by gcongr; exact inter_subset_left
     calc
       #(C' * A * B) * #A
-      _ ≤ (#(C * A * B) + #(A * B) - #(A' * B))* #A := by
+      _ ≤ (#(C * A * B) + #(A * B) - #(A' * B)) * #A := by
         gcongr
         rw [h₁]
         refine (card_union_le _ _).trans_eq ?_
