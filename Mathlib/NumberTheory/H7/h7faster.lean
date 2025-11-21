@@ -6,7 +6,7 @@ Authors: Michail Karatarakis
 import Mathlib.NumberTheory.H7.h7aux
 import Mathlib.NumberTheory.H7.h7order
 import Mathlib.NumberTheory.H7.House
-import Mathlib.Algebra.Algebra.Bilinear
+--import Mathlib.Algebra.Algebra.Bilinear
 
 set_option autoImplicit true
 set_option linter.style.longFile 0
@@ -6544,6 +6544,19 @@ lemma c15_nonneg :  0 ≤ h7.c₁₅ := by {
     left
     exact c5nonneg h7}
 
+lemma c15_geg_1 : 1 ≤ h7.c₁₅ := by {
+  unfold c₁₅
+  refine one_le_mul_of_one_le_of_one_le (h7.c14_nonneg)
+    (by {
+      unfold c₅
+      refine one_le_pow₀ ?_
+      simp_all only [Int.cast_abs, le_add_iff_nonneg_left, abs_nonneg]
+      })
+
+
+
+}
+
 theorem norm_pos_rho  :
     0 < ‖(Algebra.norm ℚ) (h7.rho q hq0 h2mq)‖ := by
   simp only [norm_pos_iff, ne_eq, Algebra.norm_eq_zero_iff]
@@ -6639,7 +6652,7 @@ theorem gelfondSchneider (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgeb
 
   haveI : DecidableEq (h7.K →+* ℂ) := h7.hd
 
-  let q : ℕ := 2 * h7.m * Nat.ceil ( (6 * h7.h) * (h7.c₁₅)^4)
+  let q : ℕ := 2 * h7.m * ((6 * h7.h) * Nat.ceil ( (h7.c₁₅)^4))
   have hq0 : 0 < q := sorry
   have h2mq : 2 * h7.m ∣ q ^ 2 := sorry
 
@@ -6649,77 +6662,249 @@ theorem gelfondSchneider (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgeb
     · exact qsqrt_leq_2m h7 q hq0 h2mq
     · simp only [Nat.ofNat_pos, mul_pos_iff_of_pos_left]
       exact hm h7}⟩
-  let t : Fin (q * q) := ⟨0,by {apply mul_pos; exact hq0; exact hq0}⟩
+  let t : Fin (q * q) := ⟨0, by {apply mul_pos; exact hq0; exact hq0}⟩
 
   have use5 := use5 h7 q hq0 u t h2mq
 
   have hnr : (h7.n q : ℝ) ≤ (h7.r q hq0 h2mq : ℝ) := by
     exact mod_cast n_leq_r h7 q hq0 h2mq
 
-  have H1 : 2*h7.m * 6* h7.h ≤ q := sorry
-  have H2 : 2*h7.m * (h7.c₁₅)^4 ≤ q := sorry
-  have H3 : 6* h7.h ≤ h7.n q := sorry
-  have H4 : (h7.c₁₅)^4 ≤ h7.n q := sorry
-  have H5 : 6* h7.h ≤ h7.r q hq0 h2mq := sorry  --eq5
-  have H6 : (h7.c₁₅)^4 ≤ h7.r q hq0 h2mq := sorry
-  sorry
+  have H1 : (2*h7.m) * (6* h7.h) ≤ q := by { stop
+    unfold q
+    apply mul_le_mul
+    · simp only [le_refl]
+    · nth_rw 1 [← mul_one (a:= (6* h7.h))]
+      apply mul_le_mul
+      · simp only [le_refl]
+      · simp only [Nat.one_le_ceil_iff];
+        apply pow_pos
+        have := h7.c15_geg_1
+        linarith
+      · positivity
+      · positivity
+    · positivity
+    · positivity
+  }
+  have H2 : (2*h7.m) * (h7.c₁₅)^4 ≤ q := by { stop
+    unfold q
+    simp only [mul_assoc]
+    simp only [Nat.cast_mul, Nat.cast_ofNat, Nat.ofNat_pos, mul_le_mul_iff_right₀]
+    apply mul_le_mul
+    · simp only [le_refl]
+    · nth_rw 1 [← one_mul (a := (h7.c₁₅ ^ 4) )]
+      nth_rw 1 [← mul_assoc]
+      apply mul_le_mul
+      · unfold h;
+        refine one_le_mul_of_one_le_of_one_le ?_ ?_
+        · simp only [Nat.one_le_ofNat]
+        · norm_cast
+          have : 0 < h7.h := by {
+            unfold h; exact Module.finrank_pos}
+          unfold h at *
+          linarith
+      · exact Nat.le_ceil (h7.c₁₅ ^ 4)
+      · positivity
+      · positivity
+    · apply pow_nonneg
+      have := h7.c15_geg_1
+      grind
+    · positivity
+
+  }
+
+  have H3 : 6* h7.h ≤ h7.n q := by { stop
+    unfold n
+    calc _ ≤ ((2*h7.m) * (6* h7.h))^2 /(2 * h7.m) := ?_
+         _ ≤  h7.n q := ?_
+    · refine (Nat.le_div_iff_mul_le ?_).mpr ?_
+      · have : 0 < h7.h := by {
+          unfold h; exact Module.finrank_pos}
+        unfold h at *
+        apply mul_pos
+        · simp only [Nat.ofNat_pos]
+        · exact hm h7
+      · rw [mul_comm]
+        rw [Nat.pow_two]
+        apply Nat.le_mul_self
+    · unfold n
+      unfold q
+      refine Nat.div_le_div_right ?_
+      exact Nat.pow_le_pow_left H1 2
+  }
+
+  have H4 : (h7.c₁₅)^4 ≤ (h7.n q : ℝ) := by { stop
+    unfold n q
+    refine Nat.ceil_le.mp ?_
+    refine (Nat.le_div_iff_mul_le ?_).mpr ?_
+    · have : 0 < h7.h := by {
+          unfold h; exact Module.finrank_pos}
+      unfold h at *
+      apply mul_pos
+      · simp only [Nat.ofNat_pos]
+      · exact hm h7
+    · rw [mul_comm]
+      rw [mul_pow]
+      apply mul_le_mul
+      · rw [Nat.pow_two]
+        apply Nat.le_mul_self
+      · rw [Nat.pow_two]
+        simp only [← mul_assoc]
+        nth_rw 2 [mul_comm]
+        simp only [← mul_assoc]
+        nth_rw 2 [mul_comm]
+        simp only [mul_assoc]
+        nth_rw 1 [← one_mul (a := ⌈h7.c₁₅ ^ 4⌉₊)]
+        rw [← Nat.pow_two]
+        simp only [← mul_assoc]
+        apply mul_le_mul
+        · have : 0 < h7.h := by {
+            unfold h; exact Module.finrank_pos}
+          unfold h at *
+          refine Nat.one_le_iff_ne_zero.mpr ?_
+          refine Nat.mul_ne_zero_iff.mpr ?_
+          · constructor
+            · simp only [ne_eq, mul_eq_zero,
+               OfNat.ofNat_ne_zero, false_or, or_false]
+              rw [← ne_eq]
+              exact Nat.ne_zero_of_lt this
+            · exact Nat.ne_zero_of_lt this
+        · rw [Nat.pow_two]
+          apply Nat.le_mul_self
+        · positivity
+        · positivity
+      · positivity
+      · positivity
+  }
+
+  have H5 : 6* h7.h ≤ h7.r q hq0 h2mq := by {
+    trans
+    apply H3
+    exact n_leq_r h7 q hq0 h2mq
+
+  }  --eq5
+  have H6 : (h7.c₁₅)^4 ≤ h7.r q hq0 h2mq := by
+    trans
+    apply H4
+    simp only [Nat.cast_le]
+    exact n_leq_r h7 q hq0 h2mq
+
+  apply absurd
+  · apply use5
+  · simp only [Real.rpow_natCast, not_lt]
+    rw [← Real.rpow_le_rpow_iff (z:= ( ((↑(h7.r q hq0 h2mq) - 3 * ↑h7.h) / 2) : ℝ)⁻¹)]
+    rw [← Real.rpow_mul]
+    rw [mul_inv_cancel₀]
+    simp only [inv_div, Real.rpow_one]
+    rw [← Real.rpow_natCast]
+    rw [← Real.rpow_mul]
+    have :  h7.c₁₅ ^ ((h7.r q hq0 h2mq : ℝ) * (2 / (↑(h7.r q hq0 h2mq) - 3 * ↑h7.h)))≤
+       h7.c₁₅ ^ (4 : ℝ)  := by {
+        apply Real.rpow_le_rpow_of_exponent_le
+        · exact c15_geg_1 h7
+        · rw [mul_div]
+          ring_nf
+          simp only [mul_assoc]
+          rw [mul_comm]
+          simp only [mul_assoc]
+          refine (inv_mul_le_iff₀' ?_).mpr ?_
+          · calc _ < ↑h7.h * 3 := ?_
+                 _ ≤ ((h7.h * 6 - ↑h7.h * 3) : ℝ) := ?_
+                 _ ≤ (h7.r q hq0 h2mq : ℝ) - h7.h * 3 := ?_
+            · have : 0 < h7.h := by {
+                unfold h; exact Module.finrank_pos}
+              unfold h at *
+              simp only [Nat.ofNat_pos, mul_pos_iff_of_pos_right, Nat.cast_pos, gt_iff_lt]
+              linarith
+            · ring_nf
+              simp only [le_refl]
+            · simp only [tsub_le_iff_right, sub_add_cancel];
+              rw [mul_comm]
+              norm_cast
+
+          · rw [sub_eq_neg_add]
+            rw [mul_add]
+            simp only [mul_neg, le_neg_add_iff_add_le]
+            calc _ ≤  2 *  (6 * (↑h7.h)) + 2 * (h7.r q hq0 h2mq : ℝ) := ?_
+                 _ ≤  2 * (h7.r q hq0 h2mq : ℝ) + 2 * (h7.r q hq0 h2mq : ℝ) := ?_
+                 _ ≤  4 * (h7.r q hq0 h2mq : ℝ) := ?_
+
+            · simp only [add_le_add_iff_right]
+              ring_nf
+              simp only [le_refl]
+            · simp only [add_le_add_iff_right]
+              rw [mul_comm]
+              apply mul_le_mul
+              · simp only [le_refl]
+              · norm_cast
+              · positivity
+              · positivity
+            · ring_nf
+              simp only [le_refl]
+       }
+
+    trans
+    apply this
+    simp only [Real.rpow_ofNat]
+    apply H6
+    · sorry
+    · sorry
+    · sorry
+    · sorry
+    · sorry
+    · sorry
 
 
 
-  --dsimp [q] at hnr
+  --· apply use5
+  -- · apply H6
 
-  -- have : h7.r q hq0 h2mq ^ (h7.r q hq0 h2mq : ℝ) <
-  --     (h7.c₁₅^ (h7.r q hq0 h2mq : ℝ))^
-  --      ((2 * (h7.r q hq0 h2mq): ℝ)/((h7.r q hq0 h2mq : ℝ) - 3* h7.h : ℝ)) := by {
-  --   refine (Real.rpow_inv_lt_iff_of_pos ?_ ?_ ?_).mp ?_
-  --   · positivity
-  --   · apply Real.rpow_nonneg
-  --     · exact c15_nonneg h7
-  --   · refine div_pos ?_ ?_
-  --     · refine Left.mul_pos ?_ ?_
-  --       · simp only [Nat.ofNat_pos]
-  --       · norm_cast; exact r_qt_0 h7 q hq0 h2mq
-  --     · simp only [sub_pos]
-  --       calc _ < (h7.n q : ℝ):= ?_
-  --            _ ≤ (h7.r q hq0 h2mq :ℝ):= ?_
-  --       · unfold n; unfold q
-  --         sorry
-  --       · exact hnr
-  --   · simp only [inv_div]
-  --     rw [← Real.rpow_mul]
-  --     ring_nf
-  --     nth_rw 2 [mul_comm]
-  --     nth_rw 1 [← mul_assoc]
-  --     rw [inv_mul_cancel₀]
-  --     rw [pow_two]
-  --     nth_rw 3 [mul_assoc]
-  --     rw [mul_inv_cancel₀]
-  --     rw [add_comm]
-  --     rw [one_mul, mul_one]
-  --     rw [mul_div]
-  --     rw [mul_div]
-  --     simp only [mul_one, mul_neg]
-  --     rw [← add_div]
-  --     rw [mul_comm]
-  --     rw [← sub_eq_add_neg]
-  --     exact use5
-  --     · norm_cast; exact rneq0 h7 q hq0 h2mq
-  --     · norm_cast; exact rneq0 h7 q hq0 h2mq
-  --     · positivity
-  -- }
-  -- rw [← Real.rpow_mul] at this
-  -- nth_rw 1 [mul_comm] at this
-  -- rw [Real.rpow_mul] at this
-  -- rw [Real.rpow_lt_rpow_iff] at this
-  -- · have final : (h7.c₁₅)^
-  --      ((2 * (h7.r q hq0 h2mq): ℝ)/((h7.r q hq0 h2mq : ℝ) - 3* h7.h : ℝ)) < h7.n q := sorry
-  --   linarith
-  -- · positivity
-  -- · apply Real.rpow_nonneg
-  --   · exact c15_nonneg h7
-  -- · norm_cast; exact r_qt_0 h7 q hq0 h2mq
-  -- · exact c15_nonneg h7
-  -- · exact c15_nonneg h7
+  -- · simp only [not_le]
+  --   rw [← Real.rpow_lt_rpow_iff (z:= ( ((↑(h7.r q hq0 h2mq) - 3 * ↑h7.h) / 2) : ℝ))]
+  --   calc _ < h7.c₁₅ ^ (4 : ℝ) := ?_
+  --        _ < (h7.c₁₅ ^ (4)) ^ ((↑(h7.r q hq0 h2mq) - 3 * ↑h7.h) / 2) := ?_
+  --        _ ≤  ↑(h7.r q hq0 h2mq) := ?_
+  --   · sorry
+  --   · norm_cast
+  --     rw [← pow_mul]
+  --     sorry
+  --   ·
+
+
+
+
+    -- rw [← Real.rpow_lt_rpow_iff (z:= 4)] at use5
+    -- calc _ ≤ (h7.c₁₅ ^ (h7.r q hq0 h2mq : ℝ)) ^ (4 : ℝ) := ?_
+    --      _ ≤ ↑(h7.r q hq0 h2mq)^ (↑(h7.r q hq0 h2mq) : ℝ) := ?_
+    --      _ ≤  (↑(h7.r q hq0 h2mq) ^ ((↑(h7.r q hq0 h2mq) - 3 * ↑h7.h) / 2)) := ?_
+    -- ·
+    --   rw [← Real.rpow_mul]
+    --   apply Real.rpow_le_rpow_of_exponent_le
+    --   · exact c15_geg_1 h7
+    --   · norm_cast
+    --     nth_rw 1 [← mul_one (a:=(h7.r q hq0 h2mq))]
+    --     apply mul_le_mul
+    --     · simp only [le_refl]
+    --     · simp only [Nat.one_le_ofNat]
+    --     · positivity
+    --     · positivity
+    --   · trans; apply zero_le_one; exact c15_geg_1 h7
+
+
+
+    -- --apply?
+
+
+    -- · rw [← Real.rpow_mul]
+    --   rw [mul_comm]
+    --   rw [Real.rpow_mul]
+    --   sorry
+
+
+
+
+
+
+
 
 
 
