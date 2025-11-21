@@ -136,6 +136,10 @@ theorem setIntegral_empty : ∫ x in ∅, f x ∂μ = 0 := by
 
 theorem setIntegral_univ : ∫ x in univ, f x ∂μ = ∫ x, f x ∂μ := by rw [Measure.restrict_univ]
 
+lemma integral_eq_setIntegral (hs : ∀ᵐ x ∂μ, x ∈ s) (f : X → E) :
+    ∫ x, f x ∂μ = ∫ x in s, f x ∂μ := by
+  rw [← setIntegral_univ, ← setIntegral_congr_set]; rwa [ae_eq_univ]
+
 theorem integral_add_compl₀ (hs : NullMeasurableSet s μ) (hfi : Integrable f μ) :
     ∫ x in s, f x ∂μ + ∫ x in sᶜ, f x ∂μ = ∫ x, f x ∂μ := by
   have := integral_union_ae disjoint_compl_right.aedisjoint
