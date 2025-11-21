@@ -56,7 +56,7 @@ lemma sequence_eqUpTo (n₁ n₂ : ℕ) (h : n₁ ≤ n₂) :
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le h
   clear h
   induction k generalizing n₁ with
-  | zero => intro _ _ _ _ ; simp
+  | zero => intro _ _ _ _; simp
   | succ k hk =>
     intro p q hpq hp
     rw [hk n₁ p q hpq hp, ← hφ (n₁ + k) (sequence φ x₀ (n₁ + k)) p q hpq (by cutsat)]
