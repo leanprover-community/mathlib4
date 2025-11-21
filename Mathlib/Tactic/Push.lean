@@ -208,6 +208,7 @@ structure Config where
 /-- Function elaborating `Push.Config`. -/
 declare_config_elab elabPushConfig Config
 
+/-- Run the `push` tactic. -/
 def push (cfg : Config) (disch? : Option Simp.Discharge) (head : Head) (loc : Location)
     (failIfUnchanged : Bool := true) : TacticM Unit := do
   (if cfg.distrib then withOptions (·.setBool `push_neg.use_distrib true) else id) <|
