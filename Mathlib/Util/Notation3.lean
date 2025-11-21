@@ -8,6 +8,7 @@ module
 public meta import Lean.Elab.BuiltinCommand
 public meta import Lean.Elab.MacroArgUtil
 public meta import Mathlib.Lean.Elab.Term
+public meta import Lean.PrettyPrinter.Delaborator  -- shake: keep (dependency of elaborator output)
 public meta import Mathlib.Lean.PrettyPrinter.Delaborator
 public meta import Mathlib.Tactic.ScopedNS
 public meta import Batteries.Linter.UnreachableTactic

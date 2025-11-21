@@ -5,6 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset  -- shake: keep (Qq dependency)
+public import Mathlib.Data.Finset.Density  -- shake: keep (Qq dependency)
 public meta import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public meta import Mathlib.Data.Finset.Density
 public meta import Mathlib.Tactic.NormNum.Basic
