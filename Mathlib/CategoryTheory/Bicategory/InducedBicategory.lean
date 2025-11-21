@@ -72,8 +72,8 @@ structure Hom₂ {X Y : InducedBicategory C F} (f g : X ⟶ Y) where
   /-- The 2-morphism in `C` underlying the 2-morphism in `InducedBicategory C F`. -/
   hom : f.hom ⟶ g.hom
 
-@[simps!]
-instance Hom.category (X Y : InducedBicategory C F) : Category (X ⟶ Y) where
+@[simps]
+instance homCategory (X Y : InducedBicategory C F) : Category (X ⟶ Y) where
   Hom f g := Hom₂ f g
   id f := ⟨𝟙 f.hom⟩
   comp u v := ⟨u.hom ≫ v.hom⟩
@@ -95,7 +95,9 @@ def isoMk {X Y : InducedBicategory C F} {f g : X ⟶ Y} (φ : f.hom ≅ g.hom) :
   inv := mkHom₂ φ.inv
 
 variable (F) in
-@[simps!]
+@[simps! whiskerLeft_hom whiskerRight_hom associator_hom_hom
+  associator_inv_hom leftUnitor_hom_hom leftUnitor_inv_hom
+  rightUnitor_hom_hom rightUnitor_inv_hom]
 instance bicategory : Bicategory (InducedBicategory C F) where
   __ := categoryStruct
   whiskerLeft {_ _ _} h {_ _} η := mkHom₂ <| h.hom ◁ Hom₂.hom η
@@ -105,8 +107,6 @@ instance bicategory : Bicategory (InducedBicategory C F) where
   rightUnitor x := isoMk (ρ_ x.hom)
   -- TODO: could whisker_exchange be added to aesop (or grind) in a non loop-y way?
   whisker_exchange {_ _ _ _ _ _ _} η θ := by ext; simp; exact whisker_exchange _ _
-
-attribute [-simp] bicategory_comp_hom bicategory_Hom
 
 section
 

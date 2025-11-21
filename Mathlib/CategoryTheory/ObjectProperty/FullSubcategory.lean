@@ -45,7 +45,7 @@ structure FullSubcategory where
 instance FullSubcategory.category : Category.{v} P.FullSubcategory :=
   InducedCategory.category FullSubcategory.obj
 
-lemma FullSubcategory.id_hom (X : P.FullSubcategory) : (𝟙 X).hom = 𝟙 X.obj := rfl
+lemma FullSubcategory.id_hom (X : P.FullSubcategory) : 𝟙 X = 𝟙 X.obj := rfl
 
 lemma FullSubcategory.comp_def {X Y Z : P.FullSubcategory} (f : X ⟶ Y) (g : Y ⟶ Z) :
     f ≫ g = (f ≫ g : X.obj ⟶ Z.obj) := rfl

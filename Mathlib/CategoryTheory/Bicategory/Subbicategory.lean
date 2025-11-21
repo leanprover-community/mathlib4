@@ -48,24 +48,17 @@ section
 
 variable (P : ObjectProperty B)
 
-@[simps!]
+-- TODO: Should bicategory_Hom should be a simp projection?
+@[simps!?]
 instance bicategory : Bicategory.{w, v} (FullSubbicategory P) :=
   InducedBicategory.bicategory FullSubbicategory.obj
 
--- TODO: bicategory_Hom should not be a simp projection!
+/-
+Q1: does the simps above having "wrong" type cause problems? Or is it fine?
+Q2: simps for abbrevs? (possibly related?)
+Q3: Automation w/ aesop & whisker_exchange?
 
--- these lemmas are not particularly well-typed, so would probably be dangerous as simp lemmas
-
-lemma id_def (X : FullSubbicategory P) : 𝟙 X = ⟨𝟙 X.obj⟩ := by simp
-
-lemma id_hom (X : FullSubbicategory P) : 𝟙 X = ⟨𝟙 X.obj⟩ := by simp
-
-lemma comp_def {X Y Z : FullSubbicategory P} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    f ≫ g = ⟨f.hom ≫ g.hom⟩ := by simp
-
-@[simp]
-lemma comp_hom {X Y Z : FullSubbicategory P} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).hom = f.hom ≫ g.hom := by simp?
+-/
 
 /-- The forgetful functor from a full subcategory into the original category
 ("forgetting" the condition).
@@ -73,7 +66,6 @@ lemma comp_hom {X Y Z : FullSubbicategory P} (f : X ⟶ Y) (g : Y ⟶ Z) :
 @[simps!]
 def forget : StrictPseudofunctor (FullSubbicategory P) B :=
   InducedBicategory.forget FullSubbicategory.obj
--- TODO: bicategory_Hom should not be a simp projection!
 
 variable {P}
 
