@@ -22,7 +22,7 @@ public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
   if `Q` is a base change of `N` to `S`,
   then `P →ₗ[S] Q` is a base change of `M →ₗ[R] N` to `S`.
 
-* `IsBaseChange.endom`:
+* `IsBaseChange.end`:
   If `M` has a finite basis and `P` is a base change of `M` to `S`,
   then `P →ₗ[S] P` is a base change of `M →ₗ[R] M` to `S`.
 
