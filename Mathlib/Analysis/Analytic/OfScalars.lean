@@ -201,7 +201,7 @@ private theorem tendsto_succ_norm_div_norm {r r' : ℝ≥0} (hr' : r' ≠ 0)
     div_self (pow_ne_zero _ (NNReal.coe_ne_zero.mpr hr')), one_mul, norm_div, NNReal.norm_eq]
   exact mul_comm r' r ▸ hc.mul tendsto_const_nhds
 
-theorem ofScalars_radius_ge_inv_of_tendsto {r : ℝ≥0} (hr : r ≠ 0)
+theorem inv_le_ofScalars_radius_of_tendsto {r : ℝ≥0} (hr : r ≠ 0)
     (hc : Tendsto (fun n ↦ ‖c n.succ‖ / ‖c n‖) atTop (𝓝 r)) :
       ofNNReal r⁻¹ ≤ (ofScalars E c).radius := by
   refine le_of_forall_nnreal_lt (fun r' hr' ↦ ?_)
@@ -225,7 +225,7 @@ theorem ofScalars_radius_ge_inv_of_tendsto {r : ℝ≥0} (hr : r ≠ 0)
 theorem ofScalars_radius_eq_inv_of_tendsto [NormOneClass E] {r : ℝ≥0} (hr : r ≠ 0)
     (hc : Tendsto (fun n ↦ ‖c n.succ‖ / ‖c n‖) atTop (𝓝 r)) :
       (ofScalars E c).radius = ofNNReal r⁻¹ := by
-  refine le_antisymm ?_ (ofScalars_radius_ge_inv_of_tendsto E c hr hc)
+  refine le_antisymm ?_ (inv_le_ofScalars_radius_of_tendsto E c hr hc)
   refine le_of_forall_nnreal_lt (fun r' hr' ↦ ?_)
   rw [coe_le_coe, NNReal.le_inv_iff_mul_le hr]
   have := FormalMultilinearSeries.summable_norm_mul_pow _ hr'
