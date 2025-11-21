@@ -23,8 +23,16 @@ types `ExSum`, `ExProd` and `ExBase`.
 * We implement evaluation functions (`evalAdd`, `evalMul`, etc.) for all of the operations we
 support, which take normalized expressions and return a new normalized expression together with
 a proof that the new expression equals the operation applied to the input expressions.
+* While `ring` stores coefficients as rational numbers normalized by `norm_num`, `algebra` stores
+coefficients as experssions in the base ring `R`, normalized by `ring`. 
 
 This tactic is used internally to implement the `polynomial` tactic.
+
+## Limitations
+The main limitation of the current implementation is that it does not handle rational constants
+when the algebra `A` is a field but the base ring `R` is not. This is never an issue when working
+with polynomials, but would be an issue when working with a number field over its ring of integers.
+
 -/
 
 open Lean hiding Module
