@@ -6655,7 +6655,7 @@ theorem gelfondSchneider (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgeb
     refine (Real.rpow_inv_lt_iff_of_pos ?_ ?_ ?_).mp ?_
     · positivity
     · apply Real.rpow_nonneg
-      · sorry
+      · exact c15_nonneg h7
     · refine div_pos ?_ ?_
       · refine Left.mul_pos ?_ ?_
         · simp only [Nat.ofNat_pos]
@@ -6697,10 +6697,10 @@ theorem gelfondSchneider (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgeb
     linarith
   · positivity
   · apply Real.rpow_nonneg
-    · sorry
+    · exact c15_nonneg h7
   · norm_cast; exact r_qt_0 h7 q hq0 h2mq
-  · sorry
-  · sorry
+  · exact c15_nonneg h7
+  · exact c15_nonneg h7
 
 
   -- rw [← Real.rpow_inv_lt_iff_of_pos] at this
