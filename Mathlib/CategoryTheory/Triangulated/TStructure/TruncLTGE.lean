@@ -64,7 +64,7 @@ lemma triangle_map_exists (a b : ℤ) (h : a < b) (T T' : Triangle C)
     (φ : T.obj₂ ⟶ T'.obj₂) (h₀ : t.IsLE T.obj₁ a) (h₁' : t.IsGE T'.obj₃ b) :
     ∃ (f : T ⟶ T'), f.hom₂ = φ := by
   obtain ⟨a, comm₁⟩ := T'.coyoneda_exact₂ hT' (T.mor₁ ≫ φ) (t.zero _ a b)
-  obtain ⟨c, ⟨comm₂, comm₃⟩⟩ := complete_distinguished_triangle_morphism _ _ hT hT' a φ comm₁
+  obtain ⟨c, comm₂, comm₃⟩ := complete_distinguished_triangle_morphism _ _ hT hT' a φ comm₁
   exact ⟨{ hom₁ := a, hom₂ := φ, hom₃ := c }, rfl⟩
 
 /-- If `a < b`, then an isomorphism `T.obj₂ ≅ T'.obj₂` extends to an morphism `T ≅ T'`
