@@ -1429,13 +1429,13 @@ end SpecialFunctions
 
 section Sum
 
-theorem sum_zeta (N : ℕ) : ∑ n ∈ Icc 0 N, zeta n = N := by
+theorem sum_Icc_zeta (N : ℕ) : ∑ n ∈ Icc 0 N, zeta n = N := by
   simp only [zeta_apply, sum_ite, sum_const_zero, sum_const, smul_eq_mul, mul_one, zero_add]
   rw [show {x ∈ Icc 0 N | ¬x = 0} = Ioc 0 N by ext; simp; cutsat]
   simp
 
 /-- Useful lemma for reordering sums. -/
-lemma divisorsAntidiagonal_of_le_eq_prod_filter {n N : ℕ} (n_ne_zero : n ≠ 0) (hn : n ≤ N) :
+lemma divisorsAntidiagonal_eq_prod_filter_of_le {n N : ℕ} (n_ne_zero : n ≠ 0) (hn : n ≤ N) :
     n.divisorsAntidiagonal = ((Icc 0 N) ×ˢ (Icc 0 N)).filter
     (fun x ↦ x.1 * x.2 = n) := by
   ext ⟨n1, n2⟩
@@ -1451,7 +1451,7 @@ lemma divisorsAntidiagonal_of_le_eq_prod_filter {n N : ℕ} (n_ne_zero : n ≠ 0
 
 variable {R : Type*} [Semiring R]
 
-theorem sum_mul_eq_sum_prod_filter (f g : ArithmeticFunction R) (N : ℕ) :
+theorem sum_Icc_mul_eq_sum_prod_filter (f g : ArithmeticFunction R) (N : ℕ) :
     ∑ n ∈ Icc 0 N, (f * g) n = ∑ x ∈ Icc 0 N ×ˢ Icc 0 N with x.1 * x.2 ≤ N, f x.1 * g x.2 := by
   simp only [mul_apply]
   trans ∑ n ∈ Icc 0 N, ∑ x ∈ Icc 0 N ×ˢ Icc 0 N with x.1 * x.2 = n, f x.1 * g x.2
@@ -1467,7 +1467,7 @@ theorem sum_mul_eq_sum_prod_filter (f g : ArithmeticFunction R) (N : ℕ) :
     rw [sum_comm]
     simp
 
-theorem sum_mul_eq_sum_sum (f g : ArithmeticFunction R) (N : ℕ) :
+theorem sum_Icc_mul_eq_sum_sum (f g : ArithmeticFunction R) (N : ℕ) :
     ∑ n ∈ Icc 0 N, (f * g) n = ∑ n ∈ Icc 0 N, f n * ∑ m ∈ Icc 0 (N / n), g m := by
   rw [sum_mul_eq_sum_prod_filter, sum_filter, sum_product]
   refine sum_congr rfl fun n _ ↦ ?_
@@ -1485,7 +1485,7 @@ theorem sum_mul_eq_sum_sum (f g : ArithmeticFunction R) (N : ℕ) :
     grw [hm]
     simp [mul_div_le, div_le_self]
 
-theorem sum_mul_zeta_eq_sum (f : ArithmeticFunction R) (N : ℕ) :
+theorem sum_Icc_mul_zeta_eq_sum (f : ArithmeticFunction R) (N : ℕ) :
     ∑ n ∈ Icc 0 N, (f * zeta) n = ∑ n ∈ Icc 0 N, f n * ↑(N / n) := by
   rw [sum_mul_eq_sum_sum]
   refine  sum_congr rfl fun n hn ↦ ?_
@@ -1494,7 +1494,7 @@ theorem sum_mul_zeta_eq_sum (f : ArithmeticFunction R) (N : ℕ) :
 
 --TODO: Dirichlet hyperbola method to get sums of length `sqrt N`
 /-- An `O(N)` formula for the sum of the number of divisors function. -/
-theorem sum_sigma0_eq_sum_div (N : ℕ) :
+theorem sum_Icc_sigma0_eq_sum_div (N : ℕ) :
     ∑ n ∈ Icc 0 N, sigma 0 n = ∑ n ∈ Icc 0 N, (N / n) := by
   rw [← zeta_mul_pow_eq_sigma, pow_zero_eq_zeta]
   convert sum_mul_zeta_eq_sum zeta N using 1
