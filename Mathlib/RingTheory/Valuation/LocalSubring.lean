@@ -6,6 +6,7 @@ Authors: Andrew Yang, Yaël Dillies, Javier López-Contreras
 module
 
 public import Mathlib.RingTheory.Ideal.GoingUp
+public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 public import Mathlib.RingTheory.LocalRing.LocalSubring
 public import Mathlib.RingTheory.Polynomial.Ideal
 public import Mathlib.RingTheory.Valuation.ValuationSubring
@@ -155,6 +156,60 @@ lemma LocalSubring.exists_le_valuationSubring (A : LocalSubring K) :
     obtain ⟨C, hCA, hCB⟩ := H.directed ⟨A, hA⟩ B
     apply hCA.2.1
     exact isUnit_iff_exists_inv.mpr ⟨⟨b, hCB.1 hbB⟩, Subtype.ext congr(($e).1)⟩
+
+open Polynomial in
+@[stacks 090P]
+lemma Subring.exists_le_valuationSubring_of_isIntegrallyClosedIn
+    {x : K} {R : Subring K} (hxA : x ∉ R) [IsIntegrallyClosedIn R K] :
+    ∃ V : ValuationSubring K, R ≤ V.toSubring ∧ x ∉ V := by
+  obtain rfl | xnezero := eq_or_ne x 0
+  · exact (hxA R.zero_mem).elim
+  -- construct an intermediate algebra R ⊆ B ⊆ K which contains x⁻¹ and not x
+  let B := Algebra.adjoin R {x⁻¹}
+  have xnB : x ∉ B := fun xB ↦ hxA <| by
+    -- to show x ∉ B, suffices to show x ∈ B → x ∈ R
+    have ⟨p, hp⟩ := Algebra.adjoin_mem_exists_aeval _ _ xB
+    let d := p.natDegree
+    -- We construct a polynomial q that witnesses `x ∈ integralClosure R K`.
+    let q := .X ^ (d + 1) - p.reverse
+    have qmon : q.Monic := monic_X_pow_sub <|
+      calc p.reverse.degree ≤ p.reverse.natDegree := degree_le_natDegree
+      _ ≤ p.natDegree := mod_cast p.reverse_natDegree_le
+      _ < d + 1 := mod_cast d.lt_add_one
+    -- Here we prove that q(x) indeed equals zero.
+    have hq : q.aeval x = 0 := by
+      let := invertibleOfNonzero xnezero
+      let := invertibleInv (a := x)
+      calc q.aeval x = x ^ (d + 1) - p.reverse.aeval x := by rw [aeval_sub, map_pow, aeval_X]
+        _ = x ^ (d + 1) - p.reverse.aeval x * x⁻¹ ^ d * x ^ d := by simp [mul_assoc]
+        _ = x ^ (d + 1) - p.aeval x⁻¹ * x ^ d := .symm <| by
+          rw [aeval_def, ← eval₂_reverse_mul_pow]; rfl
+        _ = 0 := by rw [hp]; ring
+    -- use that R is integrally closed in K to conclude x ∈ R
+    obtain ⟨x, rfl⟩ := (isIntegrallyClosedIn_iff.mp ‹_›).2 ⟨q, qmon, hq⟩
+    exact x.2
+  -- We have now proven that B is an R-algebra with x⁻¹ ∈ B and x ∉ B
+  -- We now construct a valuation ring B ⊆ V ⊆ K which does not contain x.
+  -- First, we show that x⁻¹ is a non-unit of B ...
+  let xinv : B := ⟨x⁻¹, Algebra.mem_adjoin_of_mem rfl⟩
+  have xinvnu : xinv ∈ nonunits B := fun hu ↦ xnB <| by
+    convert hu.unit.2.2
+    exact mul_left_cancel₀ (inv_ne_zero xnezero) <|
+      (inv_mul_cancel₀ xnezero).trans <| congr_arg (·.1) hu.unit.mul_inv.symm
+  rcases exists_max_ideal_of_mem_nonunits xinvnu with ⟨I, Imax, xinvI⟩
+  -- ... And thus, we obtain a maximal ideal I of B containing x⁻¹ ...
+  let BI := LocalSubring.ofPrime B.toSubring I
+  -- ... And pass to the localization of B at I to obtain a valuation ring, V, that contains B,
+  -- with the property that x⁻¹ ∈ maximalIdeal V
+  obtain ⟨V, hv⟩ := BI.exists_le_valuationSubring
+  have xnV : x ∉ V := fun xV ↦ xnB <| by
+    have := hv.2
+    refine (map_nonunit (inclusion hv.1) (algebraMap B.toSubring BI.toSubring xinv) ?_ ?_).elim
+    · change Ideal B.toSubring at I
+      rw [← IsLocalization.AtPrime.map_eq_maximalIdeal I]
+      exact Ideal.mem_map_of_mem _ xinvI
+    · exact IsUnit.of_mul_eq_one_right ⟨x, xV⟩ (Subtype.ext (mul_inv_cancel₀ xnezero))
+  exact ⟨V, fun r hr ↦ hv.1 (LocalSubring.le_ofPrime B.toSubring I (B.algebraMap_mem ⟨r, hr⟩)), xnV⟩
 
 lemma bijective_rangeRestrict_comp_of_valuationRing [IsDomain R] [ValuationRing R]
     [IsLocalRing S] [Algebra R K] [IsFractionRing R K]
