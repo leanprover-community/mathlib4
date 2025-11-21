@@ -364,11 +364,35 @@ theorem ofSubmodules_symm_apply (e : M ≃SL[σ₁₂] M₂) {p : Submodule R M}
     (h : p.map e = q) (x : q) : (e.ofSubmodules p q h).symm x = e.symm x :=
   rfl
 
-#exit
+/-- A continuous linear equivalence of two modules restricts to a continuous linear equivalence
+from the preimage of any submodule to that submodule.
+
+This is `ContinuousLinearEquiv.ofSubmodule` but with `comap` on the left
+instead of `map` on the right. -/
+def _root_.ContinuousLinearEquiv.ofSubmodule' (f : M ≃SL[σ₁₂] M₂) (U : Submodule R₂ M₂) :
+    U.comap f ≃SL[σ₁₂] U :=
+  f.symm.ofSubmodules _ _ (U.map_equiv_eq_comap_symm f.toLinearEquiv.symm) |>.symm
+
+-- TODO: make sure these are namespaced correctly!
+theorem ofSubmodule'_toContinuousLinearMap (f : M ≃SL[σ₁₂] M₂)
+    (U : Submodule R₂ M₂) :
+    (f.ofSubmodule' U).toContinuousLinearMap =
+      (f.toContinuousLinearMap.comp ((U.comap f).subtypeL)).codRestrict U ((fun ⟨x, hx⟩ ↦ by
+        simpa [Submodule.mem_comap])) := by
+  rfl
+
+@[simp]
+theorem ofSubmodule'_apply (f : M ≃SL[σ₁₂] M₂) (U : Submodule R₂ M₂) (x : U.comap f) :
+    (f.ofSubmodule' U x : M₂) = f (x : M) :=
+  rfl
+
+@[simp]
+theorem ofSubmodule'_symm_apply (f : M ≃SL[σ₁₂] M₂) (U : Submodule R₂ M₂) (x : U) :
+    ((f.ofSubmodule' U).symm x : M) = f.symm (x : M₂) :=
+  rfl
 
 end
 
-#exit
 /-- If `f` is an immersion at `x`, then any complement used in this definition is
 isomorphic to the `smallComplement`. -/
 -- Note: without completeness assumptions, one can still find a `LinearEquiv`:
