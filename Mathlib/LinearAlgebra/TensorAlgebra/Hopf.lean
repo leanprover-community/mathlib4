@@ -3,9 +3,11 @@ Copyright (c) 2025 Nikolas Tapia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nikolas Tapia
 -/
-import Mathlib.LinearAlgebra.TensorAlgebra.Basic
-import Mathlib.RingTheory.Coalgebra.Convolution
-import Mathlib.RingTheory.HopfAlgebra.Basic
+module 
+
+public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
+public import Mathlib.RingTheory.Coalgebra.Convolution
+public import Mathlib.RingTheory.HopfAlgebra.Basic
 
 /-!
 # Hopf algebra structure on `TensorAlgebra R M`
@@ -16,6 +18,7 @@ x` for all `x : M`.
 `algebraMapInv` acts as the counit, and the antipode is the unique algebra map `antipode :
 TensorAlgebra R M → (TensorAlgebra R M)ᵐᵒᵖ` induced by `fun x => op -(ι R) x`.
 -/
+@[expose] public section
 
 namespace TensorAlgebra
 open scoped TensorProduct RingTheory.LinearMap Coalgebra
