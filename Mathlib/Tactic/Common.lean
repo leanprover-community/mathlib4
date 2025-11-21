@@ -118,6 +118,7 @@ public meta import Mathlib.Util.CountHeartbeats
 public meta import Mathlib.Util.PrintSorries
 public meta import Mathlib.Util.TransImports
 public meta import Mathlib.Util.WhatsNew
+public meta import Reap
 
 /-!
 This file imports all tactics which do not have significant theory imports,
