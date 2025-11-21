@@ -289,7 +289,7 @@ section Ordered
 variable [LinearOrder ι] [LocallyFiniteOrderBot ι] [T2Space α]
 
 /-- The infinite version of `Finset.prod_one_add_ordered`. -/
-theorem tprod_one_add_ordererd [ContinuousAdd α]
+theorem tprod_one_add_ordered [ContinuousAdd α]
     (hsum : Summable fun i ↦ f i * ∏ j ∈ Iio i, (1 + f j))
     (hprod : Multipliable (1 + f ·)) :
     ∏' i, (1 + f i) = 1 + ∑' i, f i * ∏ j ∈ Iio i, (1 + f j) := by
