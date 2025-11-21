@@ -22,6 +22,7 @@ of acyclic complexes
 * Deduce that we can compute morphisms to a K-injective complex in the
 derived category as homotopy classes of morphisms
 * Provide an API for computing `Ext`-groups using an injective resolution
+* Dualize everything
 
 ## References
 * [N. Spaltenstein, *Resolutions of unbounded complexes*][spaltenstein1998]
