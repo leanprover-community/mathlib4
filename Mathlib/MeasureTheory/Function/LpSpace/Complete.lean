@@ -20,7 +20,7 @@ in `MeasureTheory.Lp.instCompleteSpace`.
 open MeasureTheory Filter
 open scoped ENNReal Topology
 
-variable {α E : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α} [NormedAddCommGroup E]
+variable {α E : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α} [SeminormedAddGroup E]
 
 namespace MeasureTheory.Lp
 
@@ -86,11 +86,10 @@ theorem eLpNorm_lim_le_liminf_eLpNorm {f : ℕ → α → E}
 /-- If the `eLpNorm` of a sequence of `AEStronglyMeasurable` functions that converges almost
 everywhere is bounded by some constant `C`, then the `eLpNorm` of its limit is also bounded by
 `C`. -/
-theorem seq_tendsto_ae_bounded
-    {α β : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup β]
-    {f : ℕ → α → β} {g : α → β} {C : ℝ≥0∞} (p : ℝ≥0∞) (bound : ∀ n, eLpNorm (f n) p μ ≤ C)
-    (h_tendsto : ∀ᵐ (x : α) ∂μ, Tendsto (fun n => f n x) atTop (nhds (g x)))
-    (hf : ∀ n, AEStronglyMeasurable (f n) μ) : eLpNorm g p μ ≤ C := by
+theorem seq_tendsto_ae_bounded {f : ℕ → α → E} {g : α → E} {C : ℝ≥0∞} (p : ℝ≥0∞)
+    (bound : ∀ n, eLpNorm (f n) p μ ≤ C) (hf : ∀ n, AEStronglyMeasurable (f n) μ)
+    (h_tendsto : ∀ᵐ (x : α) ∂μ, Tendsto (fun n => f n x) atTop (nhds (g x))) :
+    eLpNorm g p μ ≤ C := by
   calc
     _ ≤ atTop.liminf (fun (n : ℕ) => eLpNorm (f n) p μ) :=
       Lp.eLpNorm_lim_le_liminf_eLpNorm (fun n => hf n) g h_tendsto
@@ -101,6 +100,7 @@ theorem seq_tendsto_ae_bounded
 
 /-! ### `Lp` is complete iff Cauchy sequences of `ℒp` have limits in `ℒp` -/
 
+variable {E : Type*} [NormedAddCommGroup E]
 
 theorem tendsto_Lp_iff_tendsto_eLpNorm' {ι} {fi : Filter ι} [Fact (1 ≤ p)] (f : ι → Lp E p μ)
     (f_lim : Lp E p μ) :
@@ -133,7 +133,6 @@ theorem tendsto_Lp_iff_tendsto_eLpNorm'' {ι} {fi : Filter ι} [Fact (1 ≤ p)] 
     Lp.coeFn_sub ((f_ℒp n).toLp (f n)) (f_lim_ℒp.toLp f_lim)] with _ hx₁ hx₂
   rw [← hx₂]
   exact hx₁
-
 
 theorem tendsto_Lp_of_tendsto_eLpNorm {ι} {fi : Filter ι} [Fact (1 ≤ p)] {f : ι → Lp E p μ}
     (f_lim : α → E) (f_lim_ℒp : MemLp f_lim p μ)
