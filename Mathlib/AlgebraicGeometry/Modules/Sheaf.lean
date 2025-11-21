@@ -33,10 +33,8 @@ variable {X Y Z T : Scheme.{u}}
 /-- The morphism of sheaves of rings corresponding to a morphism of schemes. -/
 def Hom.toRingCatSheafHom (f : X ⟶ Y) :
     Y.ringCatSheaf ⟶ ((TopologicalSpace.Opens.map f.base).sheafPushforwardContinuous
-      _ _ _).obj X.ringCatSheaf :=
-  (sheafCompose _ (forget₂ _ RingCat)).map
-    (show Y.sheaf ⟶ ((TopologicalSpace.Opens.map f.base).sheafPushforwardContinuous
-      _ _ _).obj X.sheaf from ⟨f.c⟩)
+      _ _ _).obj X.ringCatSheaf where
+  val := Functor.whiskerRight f.c _
 
 variable (X) in
 /-- The category of sheaves of modules over a scheme. -/
