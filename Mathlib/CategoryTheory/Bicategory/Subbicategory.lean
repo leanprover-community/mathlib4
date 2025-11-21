@@ -9,11 +9,15 @@ public import Mathlib.CategoryTheory.Bicategory.InducedBicategory
 public import Mathlib.CategoryTheory.ObjectProperty.Basic
 
 /-!
-# The full subbicategory associated to a property of objects
+# Full subbicategories using object properties
 
 Given a bicategory `B` and `P : ObjectProperty B`, we define
 a bicategory structure on the type `FullSubbicategory P`
 of objects in `B` satisfying `P`.
+
+## TODO
+This file could also define locally full subbicategories, where the user also specifies
+the 1-morphisms using a morphism property.
 
 -/
 
@@ -23,7 +27,6 @@ universe w w' v v' u u'
 
 namespace CategoryTheory
 
--- TODO: wrong namespace?
 namespace Bicategory
 
 variable {B : Type u} [Bicategory.{w, v} B]
@@ -48,9 +51,6 @@ variable (P : ObjectProperty B)
 instance bicategory : Bicategory.{w, v} (FullSubbicategory P) :=
   InducedBicategory.bicategory FullSubbicategory.obj
 
-abbrev mkHom₂ {a b : FullSubbicategory P} {f g : a ⟶ b} (η : f.hom ⟶ g.hom) : f ⟶ g :=
-  InducedBicategory.mkHom₂ η
-
 -- these lemmas are not particularly well-typed, so would probably be dangerous as simp lemmas
 
 lemma id_def (X : FullSubbicategory P) : 𝟙 X = ⟨𝟙 X.obj⟩ := rfl
@@ -64,35 +64,48 @@ lemma comp_def {X Y Z : FullSubbicategory P} (f : X ⟶ Y) (g : Y ⟶ Z) :
 def forget : StrictPseudofunctor (FullSubbicategory P) B :=
   InducedBicategory.forget FullSubbicategory.obj
 
+variable {P}
+
 @[simp]
-theorem forget_obj {X} : (forget P).obj X = X.obj :=
+theorem forget_obj (X : FullSubbicategory P) : (forget P).obj X = X.obj :=
   rfl
 
 @[simp]
-theorem forget_map {X Y} {f : X ⟶ Y} : (forget P).map f = f.hom := -- TODO: right statement?
+theorem forget_map {X Y : FullSubbicategory P} {f : X ⟶ Y} : (forget P).map f = f.hom :=
+-- TODO: right statement?
   rfl
+
+/-- Construct a morphism in `FullSubbicategory P` from a morhism in `B`. -/
+-- TODO: should abbrevs have simps?
+abbrev mkHom₂ {a b : FullSubbicategory P} {f g : a ⟶ b} (η : f.hom ⟶ g.hom) : f ⟶ g :=
+  InducedBicategory.mkHom₂ η
+
+@[ext]
+abbrev hom₂_ext {a b : FullSubbicategory P} {f g : a ⟶ b} {η θ : f ⟶ g}
+    (h : η.hom = θ.hom) : η = θ :=
+  InducedBicategory.hom₂_ext h
 
 /-- Constructor for isomorphisms in `FullSubbicategory P` when
 `P : ObjectProperty C`. -/
 @[simps]
 def isoMk {X Y : FullSubbicategory P} {f g : X ⟶ Y} (e : (forget P).map f ≅ (forget P).map g) :
     f ≅ g where
-  hom := InducedBicategory.mkHom₂ e.hom -- TODO: need mkHom₂ in this namespace
-  inv := InducedBicategory.mkHom₂ e.inv
-  hom_inv_id := InducedBicategory.hom₂_ext <| e.hom_inv_id
-  inv_hom_id := InducedBicategory.hom₂_ext <| e.inv_hom_id
+  hom := mkHom₂ e.hom
+  inv := mkHom₂ e.inv
+  hom_inv_id := hom₂_ext <| e.hom_inv_id
+  inv_hom_id := hom₂_ext <| e.inv_hom_id
 
 
-variable {P} {P' : ObjectProperty B}
+variable {P' : ObjectProperty B}
 
 /-- If `P` and `P'` are properties of objects such that `P ≤ P'`, there is
-an induced functor `FullSubbicategory P ⥤ P'.FullSubbicategory`. -/
+an induced functor `FullSubbicategory P ⥤ FullSubbicategory P'`. -/
 @[simps!]
 def ιOfLE (h : P ≤ P') : StrictPseudofunctor (FullSubbicategory P) (FullSubbicategory P') :=
   StrictPseudofunctor.mk' {
     obj X := ⟨X.1, h _ X.2⟩
-    map f := ⟨f.hom⟩
-    map₂ η := InducedBicategory.mkHom₂ η.hom }
+    map f := ⟨f.hom⟩ -- TODO: is it bad to use the anonymous constructor here?
+    map₂ η := mkHom₂ η.hom }
 
 end
 
@@ -107,9 +120,9 @@ through the full subcategory of objects satisfying that property. -/
 def lift : B ⥤ᵖ FullSubbicategory P where
   obj X := ⟨F.obj X, hF X⟩
   map f := ⟨F.map f⟩
-  map₂ η := InducedBicategory.mkHom₂ (F.map₂ η)
-  mapId X := isoMk P (F.mapId X) -- TODO: P should be implicit
-  mapComp f g := isoMk P (F.mapComp f g)
+  map₂ η :=mkHom₂ (F.map₂ η)
+  mapId X := isoMk (F.mapId X)
+  mapComp f g := isoMk (F.mapComp f g)
 
 @[simp]
 lemma ι_obj_lift_obj (X : B) :
