@@ -314,43 +314,22 @@ instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedSpace 𝕜 hf.smal
   infer_instance
 
 def smallEquiv' (hf : IsImmersionAtOfComplement F I J n f x) : F ≃L[𝕜] hf.smallComplement' := by
-  let φ := (hf.equiv.submoduleMap ((⊥ : Submodule 𝕜 E).prod ⊤))
-  sorry
-
-def bar : F ≃L[𝕜] (⊥ : Submodule 𝕜 E).prod (⊤ : Submodule _ F) := by
   let A : Submodule 𝕜 (E × F) := (⊥ : Submodule 𝕜 E).prod ⊤
 
-  let B := ContinuousLinearEquiv.uniqueProd 𝕜 F (N := (⊥ : Submodule 𝕜 E)) |>.symm
-
   let X : F ≃L[𝕜] (⊤ : Submodule 𝕜 F) := sorry -- Submodule.topEquiv, but as a CLM!
-  -- this is almost what I want... except that it's the product of types, not of submodules!
-  let Yalmost /- (⊥ : Submodule 𝕜 E) × F ≃L[𝕜] A -/ :=
-    (ContinuousLinearEquiv.refl 𝕜 (⊥ : Submodule 𝕜 E)).prodCongr X
-  let Y : (⊥ : Submodule 𝕜 E) × F ≃L[𝕜] A := by
-    unfold A
-    apply Yalmost.ofSubmodules (p := ((⊥ : Submodule 𝕜 E) × F))
-    let φ := ContinuousLinearEquiv.refl 𝕜 (⊥ : Submodule 𝕜 E)
-    sorry -- is almost what I want apply ContinuousLinearEquiv.prodCongr φ X
-
-  --let C := foo
+  let B := ContinuousLinearEquiv.prodUnique 𝕜 F (N := (⊥ : Submodule 𝕜 E))
+  let B' := B.symm
+  let C' := X.symm.trans B'
   #check ContinuousLinearEquiv.ofSubmodules
+  -- equiv between F and (⊤ : Submodule k F)?
+  let φ : F ≃L[𝕜] A := by
+    have aux := B'.ofSubmodules (p := (⊤ : Submodule _ _)) --(q := A)
+    -- compose aux and X (or X.symm)
+    --apply B.symm.ofSubmodules (⊤ : Submodule 𝕜 F) (q := A)
+    --apply?--apply ContinuousLinearEquiv.ofSubmodules
+    sorry -- use ofSubmodules!
+  exact φ.trans (hf.equiv.submoduleMap A)
 
-
-  -- let B' := B.symm
-  -- let C' := X.symm.trans B'
-  -- have aux := B'.ofSubmodules (p := (⊤ : Submodule _ _)) --(q := A)
-  --   -- compose aux and X (or X.symm)
-  --   --apply B.symm.ofSubmodules (⊤ : Submodule 𝕜 F) (q := A)
-  --   --apply?--apply ContinuousLinearEquiv.ofSubmodules
-  --   sorry -- use ofSubmodules!
-  sorry
-
-#exit
-
-def smallEquiv' (hf : IsImmersionAtOfComplement F I J n f x) : F ≃L[𝕜] hf.smallComplement' :=
-  bar.trans (hf.equiv.submoduleMap ((⊥ : Submodule 𝕜 E).prod ⊤))
-
-#exit
 -- TODO: remove completeness hypotheses using ContinuousLinearEquiv.ofSubmodules
 /-- If `f` is an immersion at `x`, then any complement used in this definition is
 isomorphic to the `smallComplement`. -/
