@@ -1442,11 +1442,10 @@ lemma divisorsAntidiagonal_of_le_eq_prod_filter {n N : ℕ} (n_ne_zero : n ≠ 0
   rw [Nat.mem_divisorsAntidiagonal]
   simp only [ne_eq, Finset.mem_filter, Finset.mem_product, Finset.mem_Icc, zero_le, true_and]
   constructor
-  · intro ⟨hn1, hn2⟩
-    refine ⟨⟨?_, ?_⟩, hn1⟩ <;> apply le_trans (Nat.le_of_dvd (by omega) _) hn
-    · exact ⟨n2, hn1.symm⟩
-    use n1
-    rw [← hn1, mul_comm]
+  · intro ⟨rfl, hn2⟩
+    grw [← hn]
+    simp (disch := cutsat) only [le_mul_iff_one_le_right, le_mul_iff_one_le_left, and_true]
+    cutsat
   · intro ⟨⟨hn1, hn2⟩, hn3⟩
     exact ⟨hn3, n_ne_zero⟩
 
