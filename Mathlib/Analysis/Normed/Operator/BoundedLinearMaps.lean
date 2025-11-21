@@ -488,7 +488,7 @@ theorem ContinuousOn.continuousLinearMapCoprod
     (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun x => (f x).coprod (g x)) s := by
   simp only [← comp_fst_add_comp_snd]
-  exact (hf.clm_comp continuousOn_const).add (hg.clm_comp continuousOn_const)
+  exact (hf.clm_comp ContinuousOn.const).add (hg.clm_comp ContinuousOn.const)
 
 theorem Continuous.continuousLinearMapCoprod
     {f : X → E →L[𝕜] G} {g : X → F →L[𝕜] G}
