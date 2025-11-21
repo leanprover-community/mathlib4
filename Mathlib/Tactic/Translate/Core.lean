@@ -818,18 +818,18 @@ def targetName (t : TranslateData) (cfg : Config) (src : Name) : CoreM Name := d
 type `e₁` to type `e₂`. If there is no good guess, default to `[]`.
 The heuristic that we use is to compare the conclusions of `e₁` and `e₂`,
 and to observe which variables are swapped. -/
-def guessReorder (e₁ e₂ : Expr) : List (List Nat) := Id.run do
-  let mut n := 0; let mut e₁ := e₁; let mut e₂ := e₂
-  repeat do
-    let .forallE _ _ e₁' _ := e₁ | break
-    let .forallE _ _ e₂' _ := e₂ | break
-    n := n + 1; e₁ := e₁'; e₂ := e₂'
+def guessReorder (src tgt : Expr) : List (List Nat) := Id.run do
+  let mut n := 0; let mut src := src; let mut tgt := tgt
+  while isDepForall src && isDepForall tgt do
+    src := src.bindingBody!
+    tgt := tgt.bindingBody!
+    n := n + 1
   -- We substitute the loose bound variables with (numbered) free variables,
   -- so that we can keep track of them more easily.
   let vars := Array.ofFn (n := n) (.fvar ⟨.num .anonymous ·⟩)
-  e₁ := e₁.instantiateRev vars
-  e₂ := e₂.instantiateRev vars
-  let mut some map := go e₁ e₂ (.replicate n none) | return []
+  src := src.instantiateRev vars
+  tgt := tgt.instantiateRev vars
+  let mut some map := go src tgt (.replicate n none) | return []
   -- compute the list of cycles representing the permutation `map`.
   let mut perm := []
   for h : i in 0...n do
@@ -847,10 +847,15 @@ def guessReorder (e₁ e₂ : Expr) : List (List Nat) := Id.run do
     perm := cycle :: perm
   return perm
 where
+  /-- Determine whether the given expression is a forall with a dependency.
+  If it has no dependency, then we can treat it as the conclusion. -/
+  isDepForall : Expr → Bool
+    | .forallE _ _ b _ => b.hasLooseBVar 0 || isDepForall b
+    | _ => false
   /-- Determine for each `i : Fin n` to what `j : Fin n` it should get translated. -/
-  go (e₁ e₂ : Expr) {n : Nat} (map : Vector (Option (Fin n)) n) :
+  go (src tgt : Expr) {n : Nat} (map : Vector (Option (Fin n)) n) :
       Option (Vector (Option (Fin n)) n) := do
-    match e₁, e₂ with
+    match src, tgt with
     | .forallE _ d₁ b₁ _, .forallE _ d₂ b₂ _ => go d₁ d₂ map >>= go b₁ b₂
     | .lam _ d₁ b₁ _    , .lam _ d₂ b₂ _     => go d₁ d₂ map >>= go b₁ b₂
     | .mdata _ e₁       , .mdata _ e₂        => go e₁ e₂ map
