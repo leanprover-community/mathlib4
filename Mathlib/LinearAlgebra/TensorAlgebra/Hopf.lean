@@ -21,6 +21,8 @@ TensorAlgebra R M → (TensorAlgebra R M)ᵐᵒᵖ` induced by `fun x => op -(ι
 
 namespace TensorAlgebra
 open scoped TensorProduct
+open scoped TensorProduct RingTheory.LinearMap Coalgebra
+open LinearMap TensorProduct
 
 variable (R : Type*) [CommRing R] {M : Type*} [AddCommMonoid M] [Module R M]
 
@@ -49,24 +51,30 @@ lemma comul_apply' (x : M) : comul' R x = ι R x ⊗ₜ[R] ↑1 + ↑1 ⊗ₜ[R]
 @[simp]
 lemma counit_ι_apply (x : M) : (ε R) ((ι R) x) = 0 := by
   unfold ε
+lemma counit_ι_apply (x : M) : algebraMapInv ((ι R) x) = 0 := by
   rw [algebraMapInv]
   simp
 
 @[simp]
 lemma counit_ι_eq_zero : (ε R).toLinearMap ∘ₗ (ι R) = (0 : M →ₗ[R] R) := by
+lemma counit_ι_eq_zero : algebraMapInv.toLinearMap ∘ₗ (ι R) = (0 : M →ₗ[R] R) := by
   ext x
   simp
 
 theorem rTensor : (Algebra.TensorProduct.map (ε R) (AlgHom.id R T[M])).comp (comul R) =
+theorem rTensor : (Algebra.TensorProduct.map algebraMapInv (AlgHom.id R T[M])).comp (comul R) =
     (Algebra.TensorProduct.lid R T[M]).symm.toAlgHom := by
   unfold ε comul comul'
+  unfold comul comul'
   ext x
   rw [algebraMapInv]
   simp
 
 theorem lTensor : (Algebra.TensorProduct.map (AlgHom.id R T[M]) (ε R)).comp (comul R) =
+theorem lTensor : (Algebra.TensorProduct.map (AlgHom.id R T[M]) algebraMapInv).comp (comul R) =
     ↑(Algebra.TensorProduct.rid R R T[M]).symm := by
   unfold ε comul comul'
+  unfold comul comul'
   ext x
   rw [algebraMapInv]
   simp
@@ -93,11 +101,8 @@ theorem coassoc : (Algebra.TensorProduct.assoc R R T[M] T[M] T[M]).toAlgHom.comp
   TensorProduct.lid_symm_apply, map_add, Algebra.TensorProduct.map_tmul, TensorProduct.tmul_add]
   abel
 
-instance instBialgebra : Bialgebra R T[M] :=
-  Bialgebra.ofAlgHom (comul R) (ε R) (coassoc R) (rTensor R) (lTensor R)
-
-instance : HopfAlgebraStruct R T[M] where
-  antipode := antipode R
+instance instBialgebra : Bialgebra R T[M] := Bialgebra.ofAlgHom (comul R) algebraMapInv
+    (coassoc R) (rTensor R) (lTensor R)
 
 @[simp]
 theorem antipode_antihom_apply (x y : T[M]) : antipode R (x * y) = antipode R y * antipode R x := by
