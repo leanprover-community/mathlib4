@@ -3,11 +3,13 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Tactic.LinearCombination
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Data.Real.Sqrt
-import Mathlib.Data.Real.Star
+module
+
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Data.Real.Sqrt
+public import Mathlib.Data.Real.Star
 
 /-!
 # The Clauser-Horne-Shimony-Holt inequality and Tsirelson's inequality.
@@ -72,6 +74,8 @@ There is a CHSH tuple in 4-by-4 matrices such that
 * [Tsirelson, *Quantum generalizations of Bell's inequality*][MR577178]
 
 -/
+
+@[expose] public section
 
 
 universe u

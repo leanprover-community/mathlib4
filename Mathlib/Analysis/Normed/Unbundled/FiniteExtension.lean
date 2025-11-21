@@ -3,11 +3,13 @@ Copyright (c) 2025 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
-import Mathlib.Analysis.Normed.Unbundled.SeminormFromBounded
-import Mathlib.Analysis.Normed.Unbundled.SmoothingSeminorm
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+module
+
+public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
+public import Mathlib.Analysis.Normed.Unbundled.SeminormFromBounded
+public import Mathlib.Analysis.Normed.Unbundled.SmoothingSeminorm
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 
 
 /-!
@@ -37,6 +39,8 @@ at least one power-multiplicative `K`-algebra norm on `L` extending the norm on 
 
 Basis.norm, nonarchimedean
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -181,8 +185,7 @@ theorem exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional (hfd : Finit
     ∃ f : AlgebraNorm K L, IsPowMul f ∧ (∀ (x : K), f ((algebraMap K L) x) = ‖x‖) ∧
       IsNonarchimedean f := by
   -- Choose a basis B = {1, e2,..., en} of the K-vector space L
-  set h1 : LinearIndepOn K id ({1} : Set L) :=
-    LinearIndepOn.id_singleton _ one_ne_zero
+  have h1 : LinearIndepOn K id ({1} : Set L) := .singleton one_ne_zero
   set ι := { x // x ∈ LinearIndepOn.extend h1 (Set.subset_univ ({1} : Set L)) }
   set B : Basis ι K L := Basis.extend h1
   letI hfin : Fintype ι := FiniteDimensional.fintypeBasisIndex B

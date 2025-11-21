@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.MeasureTheory.Integral.Lebesgue.Add
+module
+
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 
 /-!
 # Markov's inequality
@@ -16,6 +18,8 @@ the measure-theoretic form:
 ```
 This file proves a few variants of the inequality and other lemmas that depend on it.
 -/
+
+@[expose] public section
 
 namespace MeasureTheory
 

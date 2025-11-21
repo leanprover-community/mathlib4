@@ -3,8 +3,10 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.RingTheory.Derivation.Lie
-import Mathlib.Geometry.Manifold.DerivationBundle
+module
+
+public import Mathlib.RingTheory.Derivation.Lie
+public import Mathlib.Geometry.Manifold.DerivationBundle
 
 /-!
 
@@ -25,6 +27,8 @@ fields, this identification is not always true, though, so the derivations point
 work in these settings. The left-invariant vector fields should
 therefore be favored to construct a theory of Lie groups in suitable generality.
 -/
+
+@[expose] public section
 
 
 noncomputable section

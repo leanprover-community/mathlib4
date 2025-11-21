@@ -3,9 +3,11 @@ Copyright (c) 2025 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Topology.ContinuousMap.Compact
-import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.MeasureTheory.Integral.IntegrableOn
+module
+
+public import Mathlib.Topology.ContinuousMap.Compact
+public import Mathlib.Topology.ContinuousMap.Algebra
+public import Mathlib.MeasureTheory.Integral.IntegrableOn
 
 /-!
 # Specific results about `ContinuousMap`-valued integration
@@ -47,6 +49,8 @@ to approach integration valued in a functional space `ℱ`. More precisely:
   and also avoids entering dependent-types hell.
 
 -/
+
+@[expose] public section
 
 open MeasureTheory
 

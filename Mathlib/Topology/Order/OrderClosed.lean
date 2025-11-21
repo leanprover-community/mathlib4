@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Topology.Order.LeftRight
-import Mathlib.Topology.Separation.Hausdorff
+module
+
+public import Mathlib.Topology.Order.LeftRight
+public import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Order-closed topologies
@@ -54,6 +56,8 @@ see their statements.
 * `Tendsto.min`, `Tendsto.max` : if `f` tends to `a` and `g` tends to `b`, then their pointwise
   `min`/`max` tend to `min a b` and `max a b`, respectively.
 -/
+
+@[expose] public section
 
 open Set Filter
 open OrderDual (toDual)

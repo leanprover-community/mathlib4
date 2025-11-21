@@ -3,11 +3,13 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Analysis.Normed.Group.Seminorm
-import Mathlib.Data.NNReal.Basic
-import Mathlib.Topology.Algebra.Support
-import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.Topology.Order.Real
+module
+
+public import Mathlib.Analysis.Normed.Group.Seminorm
+public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Topology.Algebra.Support
+public import Mathlib.Topology.MetricSpace.Basic
+public import Mathlib.Topology.Order.Real
 
 /-!
 # Normed (semi)groups
@@ -38,6 +40,8 @@ to for performance concerns.
 
 normed group
 -/
+
+@[expose] public section
 
 
 variable {𝓕 α ι κ E F G : Type*}
@@ -1152,39 +1156,41 @@ theorem dist_inv (x y : E) : dist x⁻¹ y = dist x y⁻¹ := by
 
 theorem norm_multiset_sum_le {E} [SeminormedAddCommGroup E] (m : Multiset E) :
     ‖m.sum‖ ≤ (m.map fun x => ‖x‖).sum :=
-  m.le_sum_of_subadditive norm norm_zero norm_add_le
+  m.le_sum_of_subadditive norm norm_zero.le norm_add_le
+
+variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddCommMonoid ε] in
+theorem enorm_multisetSum_le (m : Multiset ε) :
+    ‖m.sum‖ₑ ≤ (m.map fun x => ‖x‖ₑ).sum :=
+  m.le_sum_of_subadditive enorm enorm_zero.le enorm_add_le
 
 @[to_additive existing]
-theorem norm_multiset_prod_le (m : Multiset E) : ‖m.prod‖ ≤ (m.map fun x => ‖x‖).sum := by
-  rw [← Multiplicative.ofAdd_le, ofAdd_multiset_prod, Multiset.map_map]
-  refine Multiset.le_prod_of_submultiplicative (Multiplicative.ofAdd ∘ norm) ?_ (fun x y => ?_) _
-  · simp only [comp_apply, norm_one', ofAdd_zero]
-  · exact norm_mul_le' x y
+theorem norm_multiset_prod_le (m : Multiset E) : ‖m.prod‖ ≤ (m.map fun x => ‖x‖).sum :=
+  m.apply_prod_le_sum_map _ norm_one'.le norm_mul_le'
+
+variable {ε : Type*} [TopologicalSpace ε] [ESeminormedCommMonoid ε] in
+@[to_additive existing]
+theorem enorm_multisetProd_le (m : Multiset ε) :
+    ‖m.prod‖ₑ ≤ (m.map fun x => ‖x‖ₑ).sum :=
+  m.apply_prod_le_sum_map _ enorm_one'.le enorm_mul_le'
 
 variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddCommMonoid ε] in
 @[bound]
 theorem enorm_sum_le (s : Finset ι) (f : ι → ε) :
     ‖∑ i ∈ s, f i‖ₑ ≤ ∑ i ∈ s, ‖f i‖ₑ :=
-  s.le_sum_of_subadditive enorm enorm_zero enorm_add_le f
+  s.le_sum_of_subadditive enorm enorm_zero.le enorm_add_le f
 
 @[bound]
 theorem norm_sum_le {E} [SeminormedAddCommGroup E] (s : Finset ι) (f : ι → E) :
     ‖∑ i ∈ s, f i‖ ≤ ∑ i ∈ s, ‖f i‖ :=
-  s.le_sum_of_subadditive norm norm_zero norm_add_le f
+  s.le_sum_of_subadditive norm norm_zero.le norm_add_le f
 
 @[to_additive existing]
-theorem enorm_prod_le (s : Finset ι) (f : ι → ε) : ‖∏ i ∈ s, f i‖ₑ ≤ ∑ i ∈ s, ‖f i‖ₑ := by
-  rw [← Multiplicative.ofAdd_le, ofAdd_sum]
-  refine Finset.le_prod_of_submultiplicative (Multiplicative.ofAdd ∘ enorm) ?_ (fun x y => ?_) _ _
-  · simp
-  · exact enorm_mul_le' x y
+theorem enorm_prod_le (s : Finset ι) (f : ι → ε) : ‖∏ i ∈ s, f i‖ₑ ≤ ∑ i ∈ s, ‖f i‖ₑ :=
+  s.apply_prod_le_sum_apply _ enorm_one'.le enorm_mul_le'
 
 @[to_additive existing]
-theorem norm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ i ∈ s, f i‖ ≤ ∑ i ∈ s, ‖f i‖ := by
-  rw [← Multiplicative.ofAdd_le, ofAdd_sum]
-  refine Finset.le_prod_of_submultiplicative (Multiplicative.ofAdd ∘ norm) ?_ (fun x y => ?_) _ _
-  · simp only [comp_apply, norm_one', ofAdd_zero]
-  · exact norm_mul_le' x y
+theorem norm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ i ∈ s, f i‖ ≤ ∑ i ∈ s, ‖f i‖ :=
+  s.apply_prod_le_sum_apply _ norm_one'.le norm_mul_le'
 
 @[to_additive]
 theorem enorm_prod_le_of_le (s : Finset ι) {f : ι → ε} {n : ι → ℝ≥0∞} (h : ∀ b ∈ s, ‖f b‖ₑ ≤ n b) :
@@ -1389,7 +1395,7 @@ open Lean Meta Qq Function
 /-- Extension for the `positivity` tactic: multiplicative norms are always nonnegative, and positive
 on non-one inputs. -/
 @[positivity ‖_‖]
-def evalMulNorm : PositivityExt where eval {u α} _ _ e := do
+meta def evalMulNorm : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) =>
     let _seminormedGroup_E ← synthInstanceQ q(SeminormedGroup $E)
@@ -1411,7 +1417,7 @@ def evalMulNorm : PositivityExt where eval {u α} _ _ e := do
 /-- Extension for the `positivity` tactic: additive norms are always nonnegative, and positive
 on non-zero inputs. -/
 @[positivity ‖_‖]
-def evalAddNorm : PositivityExt where eval {u α} _ _ e := do
+meta def evalAddNorm : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) =>
     let _seminormedAddGroup_E ← synthInstanceQ q(SeminormedAddGroup $E)

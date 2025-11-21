@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Sanyam Gupta, Omar Haddad, David Lowry-Duda,
   Lorenzo Luccioli, Pietro Monticone, Alexis Saurin, Florent Schaffhauser
 -/
-import Mathlib.NumberTheory.FLT.Basic
-import Mathlib.NumberTheory.NumberField.Cyclotomic.PID
-import Mathlib.NumberTheory.NumberField.Cyclotomic.Three
-import Mathlib.Algebra.Ring.Divisibility.Lemmas
+module
+
+public import Mathlib.NumberTheory.FLT.Basic
+public import Mathlib.NumberTheory.NumberField.Cyclotomic.PID
+public import Mathlib.NumberTheory.NumberField.Cyclotomic.Three
+public import Mathlib.Algebra.Ring.Divisibility.Lemmas
 
 /-!
 # Fermat Last Theorem in the case `n = 3`
@@ -47,6 +49,8 @@ The strategy is the following:
   construct such an isomorphism, tactics like `decide` would not work.
 
 -/
+
+@[expose] public section
 
 section case1
 

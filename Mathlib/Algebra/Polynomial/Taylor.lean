@@ -3,10 +3,12 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Degree.Lemmas
-import Mathlib.Algebra.Polynomial.Eval.SMul
-import Mathlib.Algebra.Polynomial.HasseDeriv
+module
+
+public import Mathlib.Algebra.Polynomial.AlgebraMap
+public import Mathlib.Algebra.Polynomial.Degree.Lemmas
+public import Mathlib.Algebra.Polynomial.Eval.SMul
+public import Mathlib.Algebra.Polynomial.HasseDeriv
 
 /-!
 # Taylor expansions of polynomials
@@ -20,6 +22,8 @@ import Mathlib.Algebra.Polynomial.HasseDeriv
   the identity principle: a polynomial is 0 iff all its Hasse derivatives are zero
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

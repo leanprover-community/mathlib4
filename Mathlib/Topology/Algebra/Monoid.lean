@@ -3,14 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Mitchell Lee
 -/
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.Group.Submonoid.Basic
-import Mathlib.Algebra.Group.ULift
-import Mathlib.Order.Filter.Pointwise
-import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Topology.ContinuousMap.Defs
-import Mathlib.Topology.Algebra.Monoid.Defs
+module
+
+public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.Group.Submonoid.Basic
+public import Mathlib.Algebra.Group.ULift
+public import Mathlib.Order.Filter.Pointwise
+public import Mathlib.Topology.Algebra.MulAction
+public import Mathlib.Topology.ContinuousMap.Defs
+public import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
 # Theory of topological monoids
@@ -19,6 +21,8 @@ In this file we define mixin classes `ContinuousMul` and `ContinuousAdd`. While 
 applications the underlying type is a monoid (multiplicative or additive), we do not require this in
 the definitions.
 -/
+
+@[expose] public section
 
 universe u v
 

@@ -3,8 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Basic
-import Mathlib.CategoryTheory.ComposableArrows
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
+public import Mathlib.CategoryTheory.ComposableArrows.Basic
 
 /-!
 
@@ -19,6 +21,8 @@ which is the category `Fin (n + 1) ⥤ C`.
 * [Paul G. Goerss, John F. Jardine, *Simplicial Homotopy Theory*][goerss-jardine-2009]
 
 -/
+
+@[expose] public section
 
 open CategoryTheory.Category Simplicial
 
@@ -56,6 +60,16 @@ def nerveEquiv (C : Type u) [Category.{v} C] : nerve C _⦋0⦌ ≃ C where
   left_inv f := ComposableArrows.ext₀ rfl
 
 namespace nerve
+
+/-- Nerves of finite non-empty ordinals are representable functors. -/
+def representableBy {n : ℕ} (α : Type u) [Preorder α] (e : α ≃o Fin (n + 1)) :
+    (nerve α).RepresentableBy ⦋n⦌ where
+  homEquiv := SimplexCategory.homEquivFunctor.trans
+    { toFun F := F ⋙ e.symm.monotone.functor
+      invFun F := F ⋙ e.monotone.functor
+      left_inv F := Functor.ext (fun x ↦ by simp)
+      right_inv F := Functor.ext (fun x ↦ by simp) }
+  homEquiv_comp _ _ := rfl
 
 variable {C : Type*} [Category C] {n : ℕ}
 

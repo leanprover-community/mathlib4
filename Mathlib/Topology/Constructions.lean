@@ -3,13 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Algebra.Group.TypeTags.Basic
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Finset.Piecewise
-import Mathlib.Order.Filter.Cofinite
-import Mathlib.Order.Filter.Curry
-import Mathlib.Topology.Constructions.SumProd
-import Mathlib.Topology.NhdsSet
+module
+
+public import Mathlib.Algebra.Group.TypeTags.Basic
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.Finset.Piecewise
+public import Mathlib.Order.Filter.Cofinite
+public import Mathlib.Order.Filter.Curry
+public import Mathlib.Topology.Constructions.SumProd
+public import Mathlib.Topology.NhdsSet
 
 /-!
 # Constructions of new topological spaces from old ones
@@ -34,6 +36,8 @@ neighborhood filters and so on.
 product, subspace, quotient space
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -323,14 +327,17 @@ section Subtype
 
 variable [TopologicalSpace X] [TopologicalSpace Y] {p : X → Prop}
 
+@[fun_prop]
 lemma Topology.IsInducing.subtypeVal {t : Set Y} : IsInducing ((↑) : t → Y) := ⟨rfl⟩
 
 lemma Topology.IsInducing.of_codRestrict {f : X → Y} {t : Set Y} (ht : ∀ x, f x ∈ t)
     (h : IsInducing (t.codRestrict f ht)) : IsInducing f := subtypeVal.comp h
 
+@[fun_prop]
 lemma Topology.IsEmbedding.subtypeVal : IsEmbedding ((↑) : Subtype p → X) :=
   ⟨.subtypeVal, Subtype.coe_injective⟩
 
+@[fun_prop]
 theorem Topology.IsClosedEmbedding.subtypeVal (h : IsClosed {a | p a}) :
     IsClosedEmbedding ((↑) : Subtype p → X) :=
   ⟨.subtypeVal, by rwa [Subtype.range_coe_subtype]⟩
@@ -343,6 +350,7 @@ theorem Continuous.subtype_val {f : Y → Subtype p} (hf : Continuous f) :
     Continuous fun x => (f x : X) :=
   continuous_subtype_val.comp hf
 
+@[fun_prop]
 theorem IsOpen.isOpenEmbedding_subtypeVal {s : Set X} (hs : IsOpen s) :
     IsOpenEmbedding ((↑) : s → X) :=
   ⟨.subtypeVal, (@Subtype.range_coe _ s).symm ▸ hs⟩
@@ -354,6 +362,7 @@ theorem IsOpenMap.restrict {f : X → Y} (hf : IsOpenMap f) {s : Set X} (hs : Is
     IsOpenMap (s.restrict f) :=
   hf.comp hs.isOpenMap_subtype_val
 
+@[fun_prop]
 lemma IsClosed.isClosedEmbedding_subtypeVal {s : Set X} (hs : IsClosed s) :
     IsClosedEmbedding ((↑) : s → X) := .subtypeVal hs
 
@@ -504,11 +513,13 @@ theorem Continuous.restrictPreimage {f : X → Y} {s : Set Y} (h : Continuous f)
     Continuous (s.restrictPreimage f) :=
   h.restrict _
 
+@[fun_prop]
 lemma Topology.IsEmbedding.restrict {f : X → Y}
     (hf : IsEmbedding f) {s : Set X} {t : Set Y} (H : s.MapsTo f t) :
     IsEmbedding H.restrict :=
   .of_comp (hf.continuous.restrict H) continuous_subtype_val (hf.comp .subtypeVal)
 
+@[fun_prop]
 lemma Topology.IsOpenEmbedding.restrict {f : X → Y}
     (hf : IsOpenEmbedding f) {s : Set X} {t : Set Y} (H : s.MapsTo f t) (hs : IsOpen s) :
     IsOpenEmbedding H.restrict :=
@@ -526,14 +537,17 @@ protected lemma Topology.IsEmbedding.codRestrict {e : X → Y} (he : IsEmbedding
 
 variable {s t : Set X}
 
+@[fun_prop]
 protected lemma Topology.IsEmbedding.inclusion (h : s ⊆ t) :
     IsEmbedding (inclusion h) := IsEmbedding.subtypeVal.codRestrict _ _
 
+@[fun_prop]
 protected lemma Topology.IsOpenEmbedding.inclusion (hst : s ⊆ t) (hs : IsOpen (t ↓∩ s)) :
     IsOpenEmbedding (inclusion hst) where
   toIsEmbedding := .inclusion _
   isOpen_range := by rwa [range_inclusion]
 
+@[fun_prop]
 protected lemma Topology.IsClosedEmbedding.inclusion (hst : s ⊆ t) (hs : IsClosed (t ↓∩ s)) :
     IsClosedEmbedding (inclusion hst) where
   toIsEmbedding := .inclusion _
@@ -741,6 +755,17 @@ lemma Pi.induced_precomp [TopologicalSpace Y] {ι' : Type*} (φ : ι' → ι) :
     induced (· ∘ φ) Pi.topologicalSpace =
     ⨅ i', induced (eval (φ i')) ‹TopologicalSpace Y› :=
   induced_precomp' φ
+
+/-- Homeomorphism between `X → Y → Z` and `X × Y → Z` with product topologies. -/
+@[simps]
+def Homeomorph.piCurry {X Y Z : Type*}
+    [TopologicalSpace Z] :
+    (X × Y → Z) ≃ₜ (X → Y → Z) where
+  toFun := Function.curry
+  invFun := Function.uncurry
+  right_inv := congrFun rfl
+  left_inv := congrFun rfl
+  continuous_toFun := continuous_pi (fun i ↦ Pi.continuous_precomp (Prod.mk i))
 
 @[continuity, fun_prop]
 lemma Pi.continuous_restrict (S : Set ι) :
@@ -1223,9 +1248,11 @@ theorem continuous_uliftMap [TopologicalSpace X] [TopologicalSpace Y]
   change Continuous (ULift.up ∘ f ∘ ULift.down)
   fun_prop
 
+@[fun_prop]
 lemma Topology.IsEmbedding.uliftDown [TopologicalSpace X] :
     IsEmbedding (ULift.down : ULift.{v, u} X → X) := ⟨⟨rfl⟩, ULift.down_injective⟩
 
+@[fun_prop]
 lemma Topology.IsClosedEmbedding.uliftDown [TopologicalSpace X] :
     IsClosedEmbedding (ULift.down : ULift.{v, u} X → X) :=
   ⟨.uliftDown, by simp only [ULift.down_surjective.range_eq, isClosed_univ]⟩

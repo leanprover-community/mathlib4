@@ -3,10 +3,12 @@ Copyright (c) 2025 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.Algebra.MvPolynomial.PDeriv
-import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
-import Mathlib.Data.Fin.Tuple.Reflection
-import Mathlib.Tactic.Ring.NamePolyVars
+module
+
+public import Mathlib.Algebra.MvPolynomial.PDeriv
+public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
+public import Mathlib.Data.Fin.Tuple.Reflection
+public import Mathlib.Tactic.Ring.NamePolyVars
 
 /-!
 # Weierstrass equations and the nonsingular condition in projective coordinates
@@ -66,6 +68,8 @@ mirrored in `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian/Basic.lean`.
 
 elliptic curve, projective, Weierstrass equation, nonsingular
 -/
+
+@[expose] public section
 
 local notation3 "x" => (0 : Fin 3)
 
@@ -137,7 +141,8 @@ lemma smul_fin3_ext (P : Fin 3 → R) (u : R) :
   ⟨rfl, rfl, rfl⟩
 
 lemma comp_smul (f : R →+* S) (P : Fin 3 → R) (u : R) : f ∘ (u • P) = f u • f ∘ P := by
-  ext n; fin_cases n <;> simp only [smul_fin3, comp_fin3] <;> map_simp
+  ext
+  simp
 
 /-- The equivalence setoid for a projective point representative on a Weierstrass curve. -/
 @[reducible]

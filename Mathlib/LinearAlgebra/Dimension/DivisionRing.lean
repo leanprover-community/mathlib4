@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen,
 Kim Morrison, Chris Hughes, Anne Baanen, Junyan Xu
 -/
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.LinearAlgebra.Dimension.Finite
-import Mathlib.LinearAlgebra.Dimension.RankNullity
+module
+
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.LinearAlgebra.Dimension.RankNullity
 
 /-!
 # Dimension of vector spaces
@@ -25,6 +27,8 @@ For vector spaces (i.e. modules over a field), we have
 See also `Mathlib/LinearAlgebra/Dimension/ErdosKaplansky.lean` for the Erdős-Kaplansky theorem.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

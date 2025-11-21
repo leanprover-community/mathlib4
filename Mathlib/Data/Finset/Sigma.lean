@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Data.Set.Sigma
-import Mathlib.Order.CompleteLattice.Finset
+module
+
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Data.Set.Sigma
+public import Mathlib.Order.CompleteLattice.Finset
 
 /-!
 # Finite sets in a sigma type
@@ -26,6 +28,8 @@ worth it, we must first refactor the functor library so that the `alternative` i
 is computable and universe-polymorphic.
 -/
 
+@[expose] public section
+
 
 open Function Multiset
 
@@ -43,7 +47,7 @@ protected def sigma : Finset (Σ i, α i) :=
 
 variable {s s₁ s₂ t t₁ t₂}
 
-@[simp]
+@[simp, grind =]
 theorem mem_sigma {a : Σ i, α i} : a ∈ s.sigma t ↔ a.1 ∈ s ∧ a.2 ∈ t a.1 :=
   Multiset.mem_sigma
 

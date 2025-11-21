@@ -3,9 +3,11 @@ Copyright (c) 2023 Felix Weilacher. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher, Yury Kudryashov, Rémy Degenne
 -/
-import Mathlib.MeasureTheory.MeasurableSpace.Embedding
-import Mathlib.Data.Set.MemPartition
-import Mathlib.Order.Filter.CountableSeparatingOn
+module
+
+public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
+public import Mathlib.Data.Set.MemPartition
+public import Mathlib.Order.Filter.CountableSeparatingOn
 
 /-!
 # Countably generated measurable spaces
@@ -39,6 +41,8 @@ The file also contains measurability results about `memPartition`, from which th
 `countablePartition` are deduced.
 
 -/
+
+@[expose] public section
 
 open Set MeasureTheory
 
@@ -287,7 +291,7 @@ theorem measurableEquiv_nat_bool_of_countablyGenerated [MeasurableSpace α]
   simp_rw [← generateFrom_natGeneratingSequence α]
   apply measurable_generateFrom
   rintro _ ⟨n, rfl⟩
-  rw [← Equiv.image_eq_preimage _ _]
+  rw [← Equiv.image_eq_preimage_symm _ _]
   refine ⟨{y | y n}, by measurability, ?_⟩
   rw [← Equiv.preimage_eq_iff_eq_image]
   simp [mapNatBool]

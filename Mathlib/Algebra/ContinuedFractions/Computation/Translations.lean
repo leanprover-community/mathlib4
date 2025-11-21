@@ -3,9 +3,11 @@ Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Algebra.ContinuedFractions.Computation.Basic
-import Mathlib.Algebra.ContinuedFractions.Translations
-import Mathlib.Algebra.Order.Floor.Ring
+module
+
+public import Mathlib.Algebra.ContinuedFractions.Computation.Basic
+public import Mathlib.Algebra.ContinuedFractions.Translations
+public import Mathlib.Algebra.Order.Floor.Ring
 
 /-!
 # Basic Translation Lemmas Between Structures Defined for Computing Continued Fractions
@@ -37,6 +39,8 @@ The file consists of three sections:
   of the computed continued fraction can be obtained from the stream of integer and fractional
   parts.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 

@@ -3,9 +3,11 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.LinearAlgebra.DirectSum.Finsupp
+module
+
+public import Mathlib.Algebra.Algebra.Operations
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 
 /-!
 
@@ -35,6 +37,8 @@ mainly used in the definition of linearly disjointness (`Submodule.LinearDisjoin
 There are also `Submodule.mulLeftMap` and `Submodule.mulRightMap`, defined in earlier files.
 
 -/
+
+@[expose] public section
 
 open scoped TensorProduct
 

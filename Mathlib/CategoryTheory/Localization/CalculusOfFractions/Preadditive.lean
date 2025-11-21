@@ -3,10 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Group.TransferInstance
-import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Fractions
-import Mathlib.CategoryTheory.Localization.HasLocalization
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+module
+
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Fractions
+public import Mathlib.CategoryTheory.Localization.HasLocalization
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # The preadditive category structure on the localized category
@@ -30,6 +32,8 @@ of fractions, then the localized category can also be equipped with
 a preadditive structure, but only one of these two constructions can be made an instance!)
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

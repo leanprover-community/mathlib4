@@ -3,8 +3,10 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Topology.Sets.Opens
-import Mathlib.Topology.Clopen
+module
+
+public import Mathlib.Topology.Sets.Opens
+public import Mathlib.Topology.Clopen
 
 /-!
 # Closed sets
@@ -18,8 +20,11 @@ For a topological space `α`,
 * `TopologicalSpace.Clopens α`: The type of clopen sets.
 -/
 
+@[expose] public section
 
-open Order OrderDual Set
+
+open Order OrderDual Set Topology
+
 
 variable {ι α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
@@ -45,8 +50,6 @@ instance : CanLift (Set α) (Closeds α) (↑) IsClosed where
 
 theorem isClosed (s : Closeds α) : IsClosed (s : Set α) :=
   s.isClosed'
-
-@[deprecated (since := "2025-04-20")] alias closed := isClosed
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : Closeds α) : Set α := s
@@ -190,6 +193,13 @@ def singleton [T1Space α] (x : α) : Closeds α :=
   ⟨{x}, isClosed_singleton⟩
 
 @[simp] lemma mem_singleton [T1Space α] {a b : α} : a ∈ singleton b ↔ a = b := Iff.rfl
+
+theorem singleton_injective [T1Space α] : Function.Injective (singleton (α := α)) :=
+  .of_comp (f := SetLike.coe) Set.singleton_injective
+
+@[simp]
+theorem singleton_inj [T1Space α] {x y : α} : singleton x = singleton y ↔ x = y :=
+  singleton_injective.eq_iff
 
 /-- The preimage of a closed set under a continuous map. -/
 @[simps]
@@ -402,6 +412,13 @@ def singleton [T1Space α] (x : α) : IrreducibleCloseds α :=
 
 @[simp] lemma mem_singleton [T1Space α] {a b : α} : a ∈ singleton b ↔ a = b := Iff.rfl
 
+theorem singleton_injective [T1Space α] : Function.Injective (singleton (α := α)) :=
+  .of_comp (f := SetLike.coe) Set.singleton_injective
+
+@[simp]
+theorem singleton_inj [T1Space α] {x y : α} : singleton x = singleton y ↔ x = y :=
+  singleton_injective.eq_iff
+
 /--
 The equivalence between `IrreducibleCloseds α` and `{x : Set α // IsIrreducible x ∧ IsClosed x }`.
 -/
@@ -429,6 +446,39 @@ variable (α) in
 order isomorphism. -/
 def orderIsoSubtype' : IrreducibleCloseds α ≃o { x : Set α // IsClosed x ∧ IsIrreducible x } :=
   equivSubtype'.toOrderIso (fun _ _ h ↦ h) (fun _ _ h ↦ h)
+
+/-! ### Partial order structure on irreducible closed sets and maps thereof.-/
+
+/-- The map on irreducible closed sets induced by a continuous map `f`. -/
+def map (f : β → α) (hf : Continuous f)
+    (c : IrreducibleCloseds β) : IrreducibleCloseds α where
+  carrier := closure (f '' c)
+  isIrreducible' := c.isIrreducible.image f hf.continuousOn |>.closure
+  isClosed' := isClosed_closure
+
+@[simp]
+lemma coe_map (f : β → α) (hf : Continuous f) (s : IrreducibleCloseds β) :
+    (map f hf s : Set α) = closure (f '' s) :=
+  rfl
+
+lemma map_mono {f : β → α} (hf : Continuous f) : Monotone (map f hf) :=
+  fun _ _ h_le => closure_mono <| Set.image_mono h_le
+
+/-- The map `IrreducibleCloseds.map` is injective when `f` is inducing.
+This relies on the property of embeddings that a closed set in the domain is the preimage
+of the closure of its image. -/
+lemma map_injective_of_isInducing {f : β → α} (hf : IsInducing f) :
+    Function.Injective (map f hf.continuous) := by
+  intro A B h_images_eq
+  apply SetLike.coe_injective
+  replace h_images_eq : closure (f '' A) = closure (f '' B) := congr($h_images_eq)
+  rw [← A.isClosed.closure_eq, hf.closure_eq_preimage_closure_image, h_images_eq,
+    ← hf.closure_eq_preimage_closure_image, B.isClosed.closure_eq]
+
+/-- The map `IrreducibleCloseds.map` is strictly monotone when `f` is inducing. -/
+lemma map_strictMono_of_isInducing {f : β → α} (hf : IsInducing f) :
+    StrictMono (map f hf.continuous) :=
+  Monotone.strictMono_of_injective (map_mono hf.continuous) (map_injective_of_isInducing hf)
 
 end IrreducibleCloseds
 

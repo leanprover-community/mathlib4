@@ -3,8 +3,10 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
-import Mathlib.Order.Interval.Set.OrdConnectedLinear
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
+public import Mathlib.Order.Interval.Set.OrdConnectedLinear
 
 /-!
 # Chains of roots
@@ -24,6 +26,8 @@ length, `p + q` is at most 3.
 * `RootPairing.chainBotCoeff_add_chainTopCoeff_le`: every chain has length at most three.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -48,7 +52,7 @@ lemma setOf_root_add_zsmul_eq_Icc_of_linearIndependent
     suffices Injective (fun z : S ↦ z.property.choose) from Finite.of_injective _ this
     intro ⟨z, hz⟩ ⟨z', hz'⟩ hzz
     have : Module.IsReflexive R M := .of_isPerfPair P.toLinearMap
-    have : NoZeroSMulDivisors ℤ M := .int_of_charZero R M
+    have : IsAddTorsionFree M := .of_noZeroSMulDivisors R M
     have : z • P.root i = z' • P.root i := by
       rwa [← add_right_inj (P.root j), ← hz.choose_spec, ← hz'.choose_spec, P.root.injective.eq_iff]
     exact Subtype.ext <| smul_left_injective ℤ (P.ne_zero i) this

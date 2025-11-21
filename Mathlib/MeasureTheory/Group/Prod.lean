@@ -3,8 +3,10 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Group.Measure
-import Mathlib.MeasureTheory.Measure.Prod
+module
+
+public import Mathlib.MeasureTheory.Group.Measure
+public import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Measure theory in the product of groups
@@ -36,6 +38,8 @@ groups, when the topology is not second-countable. For arguments along the same 
 continuous functions instead of measurable sets and working in the general locally compact
 setting, see the file `Mathlib/MeasureTheory/Measure/Haar/Unique.lean`.
 -/
+
+@[expose] public section
 
 
 noncomputable section

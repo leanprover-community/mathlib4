@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Simon Hudon, Yury Kudryashov
 -/
-import Mathlib.Order.Notation
+module
+
+public import Mathlib.Order.Notation
 
 /-!
 # Order-related type synonyms
@@ -13,6 +15,8 @@ The definitions were moved to this file without any theory
 so that, e.g., `Data/Countable/Basic` can prove `Countable ENat`
 without exploding its imports.
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 

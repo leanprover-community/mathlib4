@@ -3,9 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
-import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
-import Mathlib.RingTheory.RingHom.StandardSmooth
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
+public import Mathlib.AlgebraicGeometry.Morphisms.FinitePresentation
+public import Mathlib.RingTheory.RingHom.StandardSmooth
 
 /-!
 
@@ -35,6 +37,8 @@ This contribution was created as part of the AIM workshop "Formalizing algebraic
 June 2024.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -136,7 +140,7 @@ instance isSmoothOfRelativeDimension_comp {Z : Scheme.{u}} (g : Y ⟶ Z)
     [hf : IsSmoothOfRelativeDimension n f] [hg : IsSmoothOfRelativeDimension m g] :
     IsSmoothOfRelativeDimension (n + m) (f ≫ g) where
   exists_isStandardSmoothOfRelativeDimension x := by
-    obtain ⟨U₂, V₂, hfx₂, e₂, hf₂⟩ := hg.exists_isStandardSmoothOfRelativeDimension (f.base x)
+    obtain ⟨U₂, V₂, hfx₂, e₂, hf₂⟩ := hg.exists_isStandardSmoothOfRelativeDimension (f x)
     obtain ⟨U₁', V₁', hx₁', e₁', hf₁'⟩ := hf.exists_isStandardSmoothOfRelativeDimension x
     obtain ⟨r, s, hx₁, e₁, hf₁⟩ := exists_basicOpen_le_appLE_of_appLE_of_isAffine
       (isStandardSmoothOfRelativeDimension_stableUnderCompositionWithLocalizationAway n).right

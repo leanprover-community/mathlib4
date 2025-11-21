@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Group.Nat.Hom
-import Mathlib.Algebra.Polynomial.Basic
+module
+
+public import Mathlib.Algebra.Group.Nat.Hom
+public import Mathlib.Algebra.Polynomial.Basic
 
 /-!
 # Evaluating a polynomial
@@ -25,6 +27,8 @@ We also provide the following bundled versions:
 We include results on applying the definitions to `C`, `X` and ring operations.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -551,6 +555,9 @@ protected theorem map_pow (n : ℕ) : (p ^ n).map f = p.map f ^ n :=
 
 theorem eval_map (x : S) : (p.map f).eval x = p.eval₂ f x :=
   (eval₂_eq_eval_map f).symm
+
+@[simp] lemma eval_map_apply (x : R) : (p.map f).eval (f x) = f (p.eval x) :=
+  eval_map f _ ▸ eval₂_at_apply ..
 
 protected theorem map_sum {ι : Type*} (g : ι → R[X]) (s : Finset ι) :
     (∑ i ∈ s, g i).map f = ∑ i ∈ s, (g i).map f :=

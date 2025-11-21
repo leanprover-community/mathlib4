@@ -3,7 +3,9 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Insert
+module
+
+public import Mathlib.Data.Finset.Insert
 
 /-!
 # Disjoint finite sets
@@ -19,6 +21,8 @@ import Mathlib.Data.Finset.Insert
 finite sets, finset
 
 -/
+
+@[expose] public section
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
@@ -180,7 +184,7 @@ variable [DecidableEq α] {s t u v : Finset α} {a b : α} {f : α → β}
 theorem disjoint_insert_left : Disjoint (insert a s) t ↔ a ∉ t ∧ Disjoint s t := by
   simp only [disjoint_left, mem_insert, or_imp, forall_and, forall_eq]
 
-@[simp]
+@[simp, grind =]
 theorem disjoint_insert_right : Disjoint s (insert a t) ↔ a ∉ s ∧ Disjoint s t :=
   disjoint_comm.trans <| by rw [disjoint_insert_left, _root_.disjoint_comm]
 

@@ -3,10 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.ExtendHomology
-import Mathlib.Algebra.Homology.Embedding.TruncGE
-import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
-import Mathlib.Algebra.Homology.QuasiIso
+module
+
+public import Mathlib.Algebra.Homology.Embedding.ExtendHomology
+public import Mathlib.Algebra.Homology.Embedding.TruncGE
+public import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
+public import Mathlib.Algebra.Homology.QuasiIso
 
 /-! # The homology of a canonical truncation
 
@@ -19,6 +21,8 @@ quasi-isomorphism in degree `e.f i` for all `i`. (Note that the complex
 `K.truncGE e` is exact in degrees that are not in the image of `e.f`.)
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits
 

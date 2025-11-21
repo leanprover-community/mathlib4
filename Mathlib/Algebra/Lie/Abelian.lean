@@ -3,8 +3,10 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Algebra.Lie.IdealOperations
+module
+
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.Algebra.Lie.IdealOperations
 
 /-!
 # Trivial Lie modules and Abelian Lie algebras
@@ -28,6 +30,8 @@ In this file we define these concepts and provide some related definitions and r
 
 lie algebra, abelian, commutative, center
 -/
+
+@[expose] public section
 
 
 universe u v w w₁ w₂
@@ -64,7 +68,7 @@ theorem Function.Injective.isLieAbelian {R : Type u} {L₁ : Type v} {L₂ : Typ
       calc
         f ⁅x, y⁆ = ⁅f x, f y⁆ := LieHom.map_lie f x y
         _ = 0 := trivial_lie_zero _ _ _ _
-        _ = f 0 := f.toLinearMap.map_zero.symm}
+        _ = f 0 := (map_zero _).symm}
 
 theorem Function.Surjective.isLieAbelian {R : Type u} {L₁ : Type v} {L₂ : Type w} [CommRing R]
     [LieRing L₁] [LieRing L₂] [LieAlgebra R L₁] [LieAlgebra R L₂] {f : L₁ →ₗ⁅R⁆ L₂}

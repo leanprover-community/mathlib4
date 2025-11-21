@@ -3,7 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 
 /-!
 # The `arctan` function.
@@ -17,6 +19,8 @@ The result of `arctan x + arctan y` is given by `arctan_add`, `arctan_add_eq_add
 `π / 4 = arctan 1`), including John Machin's original one at
 `four_mul_arctan_inv_5_sub_arctan_inv_239`.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -156,18 +160,19 @@ theorem arcsin_eq_arctan (h : x ∈ Ioo (-(1 : ℝ)) 1) :
 @[simp]
 theorem arctan_zero : arctan 0 = 0 := by simp [arctan_eq_arcsin]
 
-@[mono]
+@[gcongr, mono]
 theorem arctan_strictMono : StrictMono arctan := tanOrderIso.symm.strictMono
 
+@[gcongr]
 theorem arctan_mono : Monotone arctan := arctan_strictMono.monotone
 
-@[gcongr]
+@[deprecated arctan_strictMono (since := "2025-10-20")]
 lemma arctan_lt_arctan (hxy : x < y) : arctan x < arctan y := arctan_strictMono hxy
 
 @[simp]
 theorem arctan_lt_arctan_iff : arctan x < arctan y ↔ x < y := arctan_strictMono.lt_iff_lt
 
-@[gcongr]
+@[deprecated arctan_mono (since := "2025-10-20")]
 lemma arctan_le_arctan (hxy : x ≤ y) : arctan x ≤ arctan y :=
   arctan_strictMono.monotone hxy
 
@@ -385,7 +390,7 @@ open Lean Meta Qq
 
 /-- Extension for `Real.arctan`. -/
 @[positivity Real.arctan _]
-def evalRealArctan : PositivityExt where eval {u α} z p e := do
+meta def evalRealArctan : PositivityExt where eval {u α} z p e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.arctan $a) =>
     let ra ← core z p a
@@ -399,7 +404,7 @@ def evalRealArctan : PositivityExt where eval {u α} z p e := do
 
 /-- Extension for `Real.cos (Real.arctan _)`. -/
 @[positivity Real.cos (Real.arctan _)]
-def evalRealCosArctan : PositivityExt where eval {u α} _ _ e := do
+meta def evalRealCosArctan : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.cos (Real.arctan $a)) =>
     assumeInstancesCommute
@@ -408,7 +413,7 @@ def evalRealCosArctan : PositivityExt where eval {u α} _ _ e := do
 
 /-- Extension for `Real.sin (Real.arctan _)`. -/
 @[positivity Real.sin (Real.arctan _)]
-def evalRealSinArctan : PositivityExt where eval {u α} z p e := do
+meta def evalRealSinArctan : PositivityExt where eval {u α} z p e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.sin (Real.arctan $a)) =>
     assumeInstancesCommute

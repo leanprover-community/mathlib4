@@ -3,12 +3,14 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.NumberTheory.DirichletCharacter.Bounds
-import Mathlib.NumberTheory.LSeries.Convolution
-import Mathlib.NumberTheory.LSeries.Deriv
-import Mathlib.NumberTheory.LSeries.RiemannZeta
-import Mathlib.NumberTheory.SumPrimeReciprocals
-import Mathlib.NumberTheory.VonMangoldt
+module
+
+public import Mathlib.NumberTheory.DirichletCharacter.Bounds
+public import Mathlib.NumberTheory.LSeries.Convolution
+public import Mathlib.NumberTheory.LSeries.Deriv
+public import Mathlib.NumberTheory.LSeries.RiemannZeta
+public import Mathlib.NumberTheory.SumPrimeReciprocals
+public import Mathlib.NumberTheory.VonMangoldt
 
 /-!
 # L-series of Dirichlet characters and arithmetic functions
@@ -30,6 +32,8 @@ as special cases.
 
 Dirichlet L-series, Möbius function, von Mangoldt function, Riemann zeta function
 -/
+
+@[expose] public section
 
 open scoped LSeries.notation
 

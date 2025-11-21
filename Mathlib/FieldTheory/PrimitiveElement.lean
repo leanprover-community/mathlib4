@@ -3,11 +3,13 @@ Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
-import Mathlib.Data.Fintype.Pigeonhole
-import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.FieldTheory.SplittingField.Construction
-import Mathlib.RingTheory.IntegralDomain
-import Mathlib.RingTheory.Polynomial.UniqueFactorization
+module
+
+public import Mathlib.Data.Fintype.Pigeonhole
+public import Mathlib.FieldTheory.IsAlgClosed.Basic
+public import Mathlib.FieldTheory.SplittingField.Construction
+public import Mathlib.RingTheory.IntegralDomain
+public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 /-!
 # Primitive Element Theorem
@@ -36,6 +38,8 @@ primitive element, separable field extension, separable extension, intermediate 
 exists_adjoin_simple_eq_top
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -389,7 +393,7 @@ theorem primitive_element_iff_algHom_eq_of_eval' (α : E) :
     (Algebra.IsSeparable.isSeparable F α) (hA _), ← toFinset_card,
     ← (Algebra.IsAlgebraic.of_finite F E).range_eval_eq_rootSet_minpoly_of_splits _ hA α,
     ← AlgHom.card_of_splits F E A hA, Fintype.card, toFinset_range, Finset.card_image_iff,
-    Finset.coe_univ, ← injective_iff_injOn_univ]
+    Finset.coe_univ, injOn_univ]
 
 theorem primitive_element_iff_algHom_eq_of_eval (α : E)
     (φ : E →ₐ[F] A) : F⟮α⟯ = ⊤ ↔ ∀ ψ : E →ₐ[F] A, φ α = ψ α → φ = ψ := by

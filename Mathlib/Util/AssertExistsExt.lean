@@ -3,15 +3,18 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Lean.Environment
-import Mathlib.Init
+public meta import Lean.Environment
+public import Mathlib.Init
 
 /-!
 # Environment extension for tracking existence of declarations and imports
 
 This is used by the `assert_not_exists` and `assert_not_imported` commands.
 -/
+
+public meta section
 
 open Lean
 

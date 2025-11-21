@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
+module
+
+public import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
 
 /-!
 # Degreewise split exact sequences of cochain complexes
@@ -15,6 +17,8 @@ is distinguished iff it is isomorphic to the triangle attached to a
 degreewise split short exact sequence of cochain complexes.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 

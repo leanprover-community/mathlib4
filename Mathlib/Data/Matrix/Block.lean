@@ -3,9 +3,11 @@ Copyright (c) 2018 Ellen Arlt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin
 -/
-import Mathlib.Data.Matrix.Basic
-import Mathlib.Data.Matrix.Composition
-import Mathlib.LinearAlgebra.Matrix.ConjTranspose
+module
+
+public import Mathlib.Data.Matrix.Basic
+public import Mathlib.Data.Matrix.Composition
+public import Mathlib.LinearAlgebra.Matrix.ConjTranspose
 
 /-!
 # Block Matrices
@@ -22,6 +24,8 @@ import Mathlib.LinearAlgebra.Matrix.ConjTranspose
   ring homomorphisms, `Matrix.blockDiagonal'RingHom`.
 * `Matrix.blockDiag'`: extract the blocks from the diagonal of a block diagonal matrix.
 -/
+
+@[expose] public section
 
 variable {l m n o p q : Type*} {m' n' p' : o → Type*}
 variable {R : Type*} {S : Type*} {α : Type*} {β : Type*}

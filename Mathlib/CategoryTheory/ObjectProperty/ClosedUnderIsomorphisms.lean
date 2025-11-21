@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Iso
-import Mathlib.CategoryTheory.ObjectProperty.Basic
-import Mathlib.Order.Basic
+module
+
+public import Mathlib.CategoryTheory.Iso
+public import Mathlib.CategoryTheory.ObjectProperty.Basic
+public import Mathlib.Order.Basic
 
 /-! # Properties of objects which are closed under isomorphisms
 
@@ -13,6 +15,8 @@ Given a category `C` and `P : ObjectProperty C` (i.e. `P : C → Prop`),
 this file introduces the type class `P.IsClosedUnderIsomorphisms`.
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 
@@ -73,6 +77,10 @@ instance : IsClosedUnderIsomorphisms (isoClosure P) where
   of_iso := by
     rintro X Y e ⟨Z, hZ, ⟨f⟩⟩
     exact ⟨Z, hZ, ⟨e.symm.trans f⟩⟩
+
+lemma isClosedUnderIsomorphisms_iff_isoClosure_eq_self :
+    IsClosedUnderIsomorphisms P ↔ isoClosure P = P :=
+  ⟨fun _ ↦ isoClosure_eq_self _, fun h ↦ by rw [← h]; infer_instance⟩
 
 instance (F : C ⥤ D) : IsClosedUnderIsomorphisms (P.map F) where
   of_iso := by

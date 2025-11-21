@@ -3,14 +3,16 @@ Copyright (c) 2020 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
-import Mathlib.Algebra.Algebra.Spectrum.Basic
-import Mathlib.Algebra.Module.LinearMap.Basic
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.LinearAlgebra.GeneralLinearGroup
-import Mathlib.RingTheory.Nilpotent.Basic
-import Mathlib.RingTheory.Nilpotent.Defs
-import Mathlib.RingTheory.Nilpotent.Lemmas
-import Mathlib.Tactic.Peel
+module
+
+public import Mathlib.Algebra.Algebra.Spectrum.Basic
+public import Mathlib.Algebra.Module.LinearMap.Basic
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.GeneralLinearGroup
+public import Mathlib.RingTheory.Nilpotent.Basic
+public import Mathlib.RingTheory.Nilpotent.Defs
+public import Mathlib.RingTheory.Nilpotent.Lemmas
+public import Mathlib.Tactic.Peel
 
 /-!
 # Eigenvectors and eigenvalues
@@ -48,6 +50,8 @@ The existence of eigenvalues over an algebraically closed field
 
 eigenspace, eigenvector, eigenvalue, eigen
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -673,7 +677,7 @@ theorem independent_maxGenEigenspace [NoZeroSMulDivisors R M] (f : End R M) :
 any eigenspace has trivial intersection with the span of all the other eigenspaces. -/
 theorem eigenspaces_iSupIndep [NoZeroSMulDivisors R M] (f : End R M) :
     iSupIndep f.eigenspace :=
-  (f.independent_genEigenspace 1).mono fun _ ↦ le_rfl
+  f.independent_genEigenspace 1
 
 /-- Eigenvectors corresponding to distinct eigenvalues of a linear operator are linearly
 independent. -/

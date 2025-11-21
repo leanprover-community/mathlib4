@@ -3,10 +3,12 @@ Copyright (c) 2024 Brendan Murphy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Brendan Murphy
 -/
-import Mathlib.Algebra.Module.Torsion
-import Mathlib.RingTheory.Flat.Basic
-import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
-import Mathlib.RingTheory.QuotSMulTop
+module
+
+public import Mathlib.Algebra.Module.Torsion.Basic
+public import Mathlib.RingTheory.Flat.Basic
+public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
+public import Mathlib.RingTheory.QuotSMulTop
 
 /-!
 # Lemmas about the `IsSMulRegular` Predicate
@@ -23,6 +25,8 @@ it's supposed to import a minimal amount of the algebraic hierarchy.
 
 module, regular element, commutative algebra
 -/
+
+@[expose] public section
 
 section Congr
 

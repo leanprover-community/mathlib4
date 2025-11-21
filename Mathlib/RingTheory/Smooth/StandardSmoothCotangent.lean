@@ -3,11 +3,13 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.LinearAlgebra.Basis.Exact
-import Mathlib.RingTheory.Extension.Cotangent.Basic
-import Mathlib.RingTheory.Smooth.StandardSmooth
-import Mathlib.RingTheory.Smooth.Kaehler
-import Mathlib.RingTheory.Etale.Basic
+module
+
+public import Mathlib.LinearAlgebra.Basis.Exact
+public import Mathlib.RingTheory.Extension.Cotangent.Basic
+public import Mathlib.RingTheory.Smooth.StandardSmooth
+public import Mathlib.RingTheory.Smooth.Kaehler
+public import Mathlib.RingTheory.Etale.Basic
 
 /-!
 # Cotangent complex of a submersive presentation
@@ -27,13 +29,13 @@ We also provide the corresponding instances for standard smooth algebras as coro
 We keep the notation `I = ker(R[X] → S)` in all docstrings of this file.
 -/
 
-universe u
+@[expose] public section
 
 namespace Algebra
 
-section
-
 variable {R S ι σ : Type*} [CommRing R] [CommRing S] [Algebra R S]
+
+section
 
 open Extension Module MvPolynomial
 
@@ -314,11 +316,9 @@ instance IsStandardSmoothOfRelationDimension.subsingleton_kaehlerDifferential
 
 end
 
-variable {R S : Type u} [CommRing R] [CommRing S] [Algebra R S]
-
 instance (priority := 900) [IsStandardSmooth R S] : Smooth R S where
   formallySmooth := by
-    rw [Algebra.FormallySmooth.iff_subsingleton_and_projective]
+    rw [Algebra.formallySmooth_iff]
     exact ⟨inferInstance, inferInstance⟩
 
 /-- If `S` is `R`-standard smooth of relative dimension zero, it is étale. -/
@@ -327,6 +327,6 @@ instance (priority := 900) [IsStandardSmoothOfRelativeDimension 0 R S] : Etale R
   formallyEtale :=
     have : IsStandardSmooth R S := IsStandardSmoothOfRelativeDimension.isStandardSmooth 0
     have : FormallyUnramified R S := ⟨inferInstance⟩
-    Algebra.FormallyEtale.of_unramified_and_smooth
+    .of_formallyUnramified_and_formallySmooth
 
 end Algebra

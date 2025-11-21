@@ -3,9 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.MkIffOfInductiveProp
-import Mathlib.Tactic.PPWithUniv
+module
+
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Tactic.MkIffOfInductiveProp
+public import Mathlib.Tactic.PPWithUniv
 
 /-!
 # Small types
@@ -20,6 +22,8 @@ If `α ≃ β`, then `Small.{w} α ↔ Small.{w} β`.
 
 See `Mathlib/Logic/Small/Basic.lean` for further instances and theorems.
 -/
+
+@[expose] public section
 
 universe u w v v'
 

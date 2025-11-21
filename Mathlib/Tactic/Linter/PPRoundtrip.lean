@@ -3,9 +3,10 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Lean.Elab.Command
-import Mathlib.Init
+public meta import Lean.Elab.Command
+public import Mathlib.Init
 
 /-!
 # The "ppRoundtrip" linter
@@ -13,6 +14,8 @@ import Mathlib.Init
 The "ppRoundtrip" linter emits a warning when the syntax of a command differs substantially
 from the pretty-printed version of itself.
 -/
+
+public meta section
 open Lean Elab Command Linter
 
 namespace Mathlib.Linter
@@ -84,7 +87,7 @@ def posToShiftedPos (lths : Array Nat) (diff : Nat) : Nat := Id.run do
 
 /-- `zoomString str centre offset` returns the substring of `str` consisting of the `offset`
 characters around the `centre`th character. -/
-def zoomString (str : String) (centre offset : Nat) : Substring :=
+def zoomString (str : String) (centre offset : Nat) : Substring.Raw :=
   { str := str, startPos := ⟨centre - offset⟩, stopPos := ⟨centre + offset⟩ }
 
 /-- `capSourceInfo s p` "shortens" all end-position information in the `SourceInfo` `s` to be

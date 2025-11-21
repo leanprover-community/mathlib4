@@ -3,12 +3,14 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Relator
-import Mathlib.Tactic.Use
-import Mathlib.Tactic.MkIffOfInductiveProp
-import Mathlib.Tactic.SimpRw
-import Mathlib.Logic.Basic
-import Mathlib.Order.Defs.Unbundled
+module
+
+public import Mathlib.Logic.Relator
+public import Mathlib.Tactic.Use
+public import Mathlib.Tactic.MkIffOfInductiveProp
+public import Mathlib.Tactic.SimpRw
+public import Mathlib.Logic.Basic
+public import Mathlib.Order.Defs.Unbundled
 
 /-!
 # Relation closures
@@ -43,6 +45,8 @@ the bundled version, see `Rel`.
   terms of rewriting systems, this means that `a` and `b` can be rewritten to the same term.
 -/
 
+@[expose] public section
+
 
 open Function
 
@@ -68,6 +72,12 @@ theorem Reflexive.ne_imp_iff (h : Reflexive r) {x y : α} : x ≠ y → r x y �
 then it holds whether or not `x ≠ y`. Unlike `Reflexive.ne_imp_iff`, this uses `[IsRefl α r]`. -/
 theorem reflexive_ne_imp_iff [IsRefl α r] {x y : α} : x ≠ y → r x y ↔ r x y :=
   IsRefl.reflexive.ne_imp_iff
+
+theorem reflexive_iff_subrelation_eq : Reflexive r ↔ Subrelation Eq r := by
+  grind [Reflexive, Subrelation]
+
+theorem irreflexive_iff_subrelation_ne : Irreflexive r ↔ Subrelation r Ne := by
+  grind [Irreflexive, Subrelation]
 
 protected theorem Symmetric.iff (H : Symmetric r) (x y : α) : r x y ↔ r y x :=
   ⟨fun h ↦ H h, fun h ↦ H h⟩

@@ -3,10 +3,12 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Order.Interval.Set.ProjIcc
-import Mathlib.Tactic.Finiteness
-import Mathlib.Topology.Semicontinuous
-import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
+module
+
+public import Mathlib.Order.Interval.Set.ProjIcc
+public import Mathlib.Tactic.Finiteness
+public import Mathlib.Topology.Semicontinuous
+public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
 /-!
 # Functions of bounded variation
@@ -40,6 +42,8 @@ it possible to use the complete linear order structure of `ℝ≥0∞`. The proo
 more tedious with an `ℝ`-valued or `ℝ≥0`-valued variation, since one would always need to check
 that the sets one uses are nonempty and bounded above as these are only conditionally complete.
 -/
+
+@[expose] public section
 
 
 open scoped NNReal ENNReal Topology UniformConvergence

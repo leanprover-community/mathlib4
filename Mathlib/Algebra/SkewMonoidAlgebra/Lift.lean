@@ -3,12 +3,16 @@ Copyright (c) 2025 Xavier Généreux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos Fernández, Xavier Généreux
 -/
-import Mathlib.Algebra.SkewMonoidAlgebra.Basic
-import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Algebra.Algebra.Equiv
+module
+
+public import Mathlib.Algebra.SkewMonoidAlgebra.Basic
+public import Mathlib.Algebra.Module.BigOperators
+public import Mathlib.Algebra.Algebra.Equiv
 /-!
 # Lemmas about different kinds of "lifts" to `SkewMonoidAlgebra`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -23,7 +27,7 @@ variable {A B : Type*} [Semiring A] [Algebra k A] [Semiring B] [Algebra k B]
 
 /-- `liftNCRingHom` as an `AlgHom`, for when `f` is an `AlgHom` -/
 def liftNCAlgHom [MulSemiringAction G A] [SMulCommClass G k A] (f : A →ₐ[k] B)
-  (g : G →* B) (h_comm : ∀ {x y}, (f (y • x)) * g y = (g y) * (f x)) :
+    (g : G →* B) (h_comm : ∀ {x y}, (f (y • x)) * g y = (g y) * (f x)) :
     SkewMonoidAlgebra A G →ₐ[k] B where
   __ := liftNCRingHom (f : A →+* B) g h_comm
   commutes' := by simp [liftNCRingHom]

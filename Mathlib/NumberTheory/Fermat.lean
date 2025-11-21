@@ -3,8 +3,10 @@ Copyright (c) 2024 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
-import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
-import Mathlib.NumberTheory.LucasPrimality
+module
+
+public import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
+public import Mathlib.NumberTheory.LucasPrimality
 
 /-!
 # Fermat numbers
@@ -19,6 +21,8 @@ for all natural numbers `n`.
 - `fermat_primeFactors_one_lt`: For 1 < n, Prime factors the Fermat number Fₙ are of
   form `k * 2 ^ (n + 2) + 1`.
 -/
+
+@[expose] public section
 
 open Function
 
@@ -187,7 +191,7 @@ lemma fermat_primeFactors_one_lt (n p : ℕ) (hn : 1 < n) (hp : p.Prime)
 
 -- TODO: move to NumberTheory.Mersenne, once we have that.
 /-!
-# Primality of Mersenne numbers `Mₙ = a ^ n - 1`
+### Primality of Mersenne numbers `Mₙ = a ^ n - 1`
 -/
 
 /-- Prime `a ^ n - 1` implies `a = 2` and prime `n`. -/

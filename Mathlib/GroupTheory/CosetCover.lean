@@ -3,9 +3,11 @@ Copyright (c) 2024 Antoine Chambert-Loir, Richard Copley. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, Richard Copley
 -/
-import Mathlib.Algebra.Order.Ring.Rat
-import Mathlib.GroupTheory.Complement
-import Mathlib.LinearAlgebra.Basis.VectorSpace
+module
+
+public import Mathlib.Algebra.Order.Ring.Rat
+public import Mathlib.GroupTheory.Complement
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-! # Lemma of B. H. Neumann on coverings of a group by cosets.
 
@@ -41,6 +43,8 @@ set of all minimal polynomials (not proved here).
 [3] <http://alpha.math.uga.edu/~pete/Neumann54.pdf>
 
 -/
+
+@[expose] public section
 
 open scoped Pointwise
 

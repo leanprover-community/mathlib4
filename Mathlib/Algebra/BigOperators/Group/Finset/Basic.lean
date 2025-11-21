@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
-import Mathlib.Data.Finset.Prod
-import Mathlib.Data.Finset.Sum
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Data.Finset.Sum
 
 /-!
 # Big operators
@@ -13,8 +15,10 @@ import Mathlib.Data.Finset.Sum
 In this file we prove theorems about products and sums indexed by a `Finset`.
 -/
 
+@[expose] public section
+
 -- TODO: assert_not_exists AddCommMonoidWithOne
-assert_not_exists MonoidWithZero MulAction OrderedCommMonoid
+assert_not_exists MonoidWithZero MulAction IsOrderedMonoid
 assert_not_exists Finset.preimage Finset.sigma Fintype.piFinset
 assert_not_exists Finset.piecewise Set.indicator MonoidHom.coeFn Function.support IsSquare
 
@@ -114,8 +118,6 @@ theorem prod_eq_one (h : ∀ x ∈ s, f x = 1) : ∏ x ∈ s, f x = 1 := calc
 /-- In an additive monoid whose only unit is `0`, a sum is equal to `0` iff all terms are `0`. -/]
 lemma prod_eq_one_iff [Subsingleton Mˣ] : ∏ i ∈ s, f i = 1 ↔ ∀ i ∈ s, f i = 1 := by
   induction s using Finset.cons_induction <;> simp [*]
-
-@[deprecated (since := "2025-03-31")] alias prod_eq_one_iff' := prod_eq_one_iff
 
 @[to_additive]
 theorem prod_disjUnion (h) :

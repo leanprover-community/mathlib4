@@ -3,7 +3,9 @@ Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.Topology.MetricSpace.HausdorffDistance
+module
+
+public import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
 # Thickenings in pseudo-metric spaces
@@ -28,6 +30,8 @@ import Mathlib.Topology.MetricSpace.HausdorffDistance
   of `closedBall`s of radius `δ` around `x : E`.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 open NNReal ENNReal Topology Set Filter Bornology

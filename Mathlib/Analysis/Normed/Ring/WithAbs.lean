@@ -3,7 +3,10 @@ Copyright (c) 2024 Salvatore Mercuri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri
 -/
-import Mathlib.Analysis.Normed.Ring.Basic
+module
+
+public import Mathlib.Analysis.Normed.Ring.Basic
+public import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
 # WithAbs
@@ -19,6 +22,8 @@ arise from absolute values.
 - `WithAbs.equiv v` : the canonical (type) equivalence between `WithAbs v` and `R`.
 - `WithAbs.ringEquiv v` : The canonical ring equivalence between `WithAbs v` and `R`.
 -/
+
+@[expose] public section
 
 open Topology
 
@@ -131,3 +136,19 @@ def algEquiv (v : AbsoluteValue R' S) : (WithAbs v) ≃ₐ[R] R' := AlgEquiv.ref
 end algebra
 
 end WithAbs
+
+namespace AbsoluteValue
+
+variable {K L S : Type*} [CommRing K] [IsSimpleRing K] [CommRing L] [Algebra K L] [PartialOrder S]
+  [Nontrivial L] [Semiring S] (w : AbsoluteValue L S) (v : AbsoluteValue K S)
+
+/-- An absolute value `w` of `L / K` lies over the absolute value `v` of `K` if `v` is the
+restriction of `w` to `K`. -/
+class LiesOver : Prop where
+  comp_eq' : w.comp (algebraMap K L).injective = v
+
+variable [w.LiesOver v]
+
+theorem LiesOver.comp_eq : w.comp (algebraMap K L).injective = v := LiesOver.comp_eq'
+
+end AbsoluteValue

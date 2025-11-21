@@ -3,8 +3,10 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying
 -/
-import Mathlib.LinearAlgebra.BilinearForm.Properties
-import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
+module
+
+public import Mathlib.LinearAlgebra.BilinearForm.Properties
+public import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 
 /-!
 # Bilinear form
@@ -29,6 +31,8 @@ In this file we use the following type variables:
 bilinear form, bilin form, BilinearForm, matrix, basis
 
 -/
+
+@[expose] public section
 
 open LinearMap (BilinForm)
 open Module

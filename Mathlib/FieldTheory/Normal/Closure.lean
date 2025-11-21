@@ -3,11 +3,12 @@ Copyright (c) 2023 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
+module
 
-import Mathlib.RingTheory.SimpleRing.Basic
-import Mathlib.FieldTheory.Normal.Basic
-import Mathlib.Order.Closure
-import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+public import Mathlib.RingTheory.SimpleRing.Basic
+public import Mathlib.FieldTheory.Normal.Basic
+public import Mathlib.Order.Closure
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 /-!
 # Normal closures
 
@@ -25,6 +26,8 @@ It satisfies the `IsNormalClosure` predicate if `L/F` satisfies the
 abovementioned splitting condition, in particular if `L/K/F` form a tower and
 `L/F` is normal.
 -/
+
+@[expose] public section
 
 open IntermediateField IsScalarTower Polynomial
 

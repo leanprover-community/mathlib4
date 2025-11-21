@@ -3,11 +3,13 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johannes Hölzl, Rémy Degenne
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
-import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
-import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Order.Filter.Cofinite
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.Order.Group.Unbundled.Abs
+public import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Defs
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Lemmas about `Is(Co)Bounded(Under)`
@@ -15,6 +17,8 @@ import Mathlib.Order.Filter.Cofinite
 This file proves several lemmas about
 `IsBounded`, `IsBoundedUnder`, `IsCobounded` and `IsCoboundedUnder`.
 -/
+
+@[expose] public section
 
 open Set Function
 

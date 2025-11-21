@@ -3,11 +3,13 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Ring.Associated
-import Mathlib.Algebra.Star.Unitary
-import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.Tactic.Ring
-import Mathlib.Algebra.EuclideanDomain.Int
+module
+
+public import Mathlib.Algebra.Ring.Associated
+public import Mathlib.Algebra.Star.Unitary
+public import Mathlib.RingTheory.PrincipalIdealDomain
+public import Mathlib.Tactic.Ring
+public import Mathlib.Algebra.EuclideanDomain.Int
 
 /-! # ℤ[√d]
 
@@ -20,6 +22,8 @@ We provide the universal property, that ring homomorphisms `ℤ√d →+* R` cor
 to choices of square roots of `d` in `R`.
 
 -/
+
+@[expose] public section
 
 
 /-- The ring of integers adjoined with a square root of `d`.
@@ -675,10 +679,8 @@ protected theorem le_total (a b : ℤ√d) : a ≤ b ∨ b ≤ a := by
   rwa [neg_sub] at t
 
 instance preorder : Preorder (ℤ√d) where
-  le := (· ≤ ·)
   le_refl a := show Nonneg (a - a) by simp only [sub_self]; trivial
   le_trans a b c hab hbc := by simpa [sub_add_sub_cancel'] using hab.add hbc
-  lt := (· < ·)
   lt_iff_le_not_ge _ _ := (and_iff_right_of_imp (Zsqrtd.le_total _ _).resolve_left).symm
 
 open Int in
@@ -901,12 +903,11 @@ theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ
   refine ⟨fun ha => Zsqrtd.ext_iff.mpr ?_, fun h => by rw [h, norm_zero]⟩
   dsimp only [norm] at ha
   rw [sub_eq_zero] at ha
-  by_cases h : 0 ≤ d
+  by_cases! h : 0 ≤ d
   · obtain ⟨d', rfl⟩ := Int.eq_ofNat_of_zero_le h
     haveI : Nonsquare d' := ⟨fun n h => h_nonsquare n <| mod_cast h⟩
     exact divides_sq_eq_zero_z ha
-  · push_neg at h
-    suffices a.re * a.re = 0 by
+  · suffices a.re * a.re = 0 by
       rw [eq_zero_of_mul_self_eq_zero this] at ha ⊢
       simpa only [true_and, or_self_right, re_zero, im_zero, eq_self_iff_true, zero_eq_mul,
         mul_zero, mul_eq_zero, h.ne, false_or, or_self_iff] using ha
@@ -962,7 +963,7 @@ theorem lift_injective [CharZero R] {d : ℤ} (r : { r : R // r * r = ↑d })
 /-- An element of `ℤ√d` has norm equal to `1` if and only if it is contained in the submonoid
 of unitary elements. -/
 theorem norm_eq_one_iff_mem_unitary {d : ℤ} {a : ℤ√d} : a.norm = 1 ↔ a ∈ unitary (ℤ√d) := by
-  rw [unitary.mem_iff_self_mul_star, ← norm_eq_mul_conj]
+  rw [Unitary.mem_iff_self_mul_star, ← norm_eq_mul_conj]
   norm_cast
 
 /-- The kernel of the norm map on `ℤ√d` equals the submonoid of unitary elements. -/

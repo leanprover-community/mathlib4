@@ -3,7 +3,9 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+module
+
+public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
 /-!
 # Egorov theorem
@@ -19,6 +21,8 @@ convergence in measure.
   almost everywhere convergent functions converges uniformly except on an arbitrarily small set.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

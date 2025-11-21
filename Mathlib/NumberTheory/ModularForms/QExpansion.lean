@@ -3,11 +3,13 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.Complex.TaylorSeries
-import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
-import Mathlib.NumberTheory.ModularForms.Basic
-import Mathlib.NumberTheory.ModularForms.Identities
-import Mathlib.RingTheory.PowerSeries.Basic
+module
+
+public import Mathlib.Analysis.Complex.TaylorSeries
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
+public import Mathlib.NumberTheory.ModularForms.Basic
+public import Mathlib.NumberTheory.ModularForms.Identities
+public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
 # q-expansions of modular forms
@@ -37,6 +39,8 @@ We also define the `q`-expansion of a modular form, either as a power series or 
   the graded ring of all modular forms?)
 -/
 
+@[expose] public section
+
 open ModularForm Complex Filter UpperHalfPlane Function Matrix.SpecialLinearGroup
 
 open scoped Real MatrixGroups CongruenceSubgroup
@@ -53,7 +57,7 @@ namespace SlashInvariantFormClass
 theorem periodic_comp_ofComplex [SlashInvariantFormClass F Γ(n) k] :
     Periodic (f ∘ ofComplex) n := by
   intro w
-  by_cases hw : 0 < im w
+  by_cases! hw : 0 < im w
   · have : 0 < im (w + n) := by simp only [add_im, natCast_im, add_zero, hw]
     simp only [comp_apply, ofComplex_apply_of_im_pos this, ofComplex_apply_of_im_pos hw]
     convert SlashInvariantForm.vAdd_width_periodic n k 1 f ⟨w, hw⟩ using 2
@@ -61,7 +65,7 @@ theorem periodic_comp_ofComplex [SlashInvariantFormClass F Γ(n) k] :
       ofReal_natCast, add_comm]
   · have : im (w + n) ≤ 0 := by simpa only [add_im, natCast_im, add_zero, not_lt] using hw
     simp only [comp_apply, ofComplex_apply_of_im_nonpos this,
-      ofComplex_apply_of_im_nonpos (not_lt.mp hw)]
+      ofComplex_apply_of_im_nonpos hw]
 
 /--
 The analytic function `F` such that `f τ = F (exp (2 * π * I * τ / n))`, extended by a choice of

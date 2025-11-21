@@ -3,7 +3,10 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
-import Mathlib.Tactic.CategoryTheory.Reassoc
+module
+
+public import Mathlib.Tactic.CategoryTheory.Reassoc
+import Mathlib.Logic.Equiv.Defs
 
 /-!
 # Isomorphisms
@@ -30,6 +33,8 @@ This file defines isomorphisms between objects of a category.
 
 category, category theory, isomorphism
 -/
+
+@[expose] public section
 
 set_option mathlib.tactic.category.grind true
 
@@ -408,6 +413,18 @@ theorem of_isIso_fac_right {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z}
   exact of_isIso_comp_right f g
 
 end IsIso
+
+@[simp]
+theorem isIso_comp_left_iff {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
+    IsIso (f ≫ g) ↔ IsIso g :=
+  ⟨fun _ ↦ IsIso.of_isIso_comp_left f g, fun _ ↦ inferInstance⟩
+
+@[simp]
+theorem isIso_comp_right_iff {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
+    IsIso (f ≫ g) ↔ IsIso f :=
+  ⟨fun _ ↦ IsIso.of_isIso_comp_right f g, fun _ ↦ inferInstance⟩
+
+open IsIso
 
 theorem eq_of_inv_eq_inv {f g : X ⟶ Y} [IsIso f] [IsIso g] (p : inv f = inv g) : f = g := by
   apply (cancel_epi (inv f)).1

@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Functor.KanExtension.Basic
+module
+
+public import Mathlib.CategoryTheory.Functor.KanExtension.Basic
 
 /-!
 # Pointwise Kan extensions
@@ -26,6 +28,8 @@ A dual API for pointwise right Kan extension is also formalized.
 * https://ncatlab.org/nlab/show/Kan+extension
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -191,6 +195,9 @@ def coconeAtFunctor (Y : D) :
 `E.coconeAt Y` is a colimit cocone. -/
 def IsPointwiseLeftKanExtensionAt (Y : D) := IsColimit (E.coconeAt Y)
 
+instance (Y : D) : Subsingleton (E.IsPointwiseLeftKanExtensionAt Y) :=
+  inferInstanceAs (Subsingleton (IsColimit _))
+
 variable {E} in
 lemma IsPointwiseLeftKanExtensionAt.hasPointwiseLeftKanExtensionAt
     {Y : D} (h : E.IsPointwiseLeftKanExtensionAt Y) :
@@ -215,12 +222,8 @@ def isPointwiseLeftKanExtensionAtEquivOfIso' {Y Y' : D} (e : Y ≅ Y') :
     E.IsPointwiseLeftKanExtensionAt Y ≃ E.IsPointwiseLeftKanExtensionAt Y' where
   toFun h := E.isPointwiseLeftKanExtensionAtOfIso' h e
   invFun h := E.isPointwiseLeftKanExtensionAtOfIso' h e.symm
-  left_inv h := by
-    dsimp only [IsPointwiseLeftKanExtensionAt]
-    apply Subsingleton.elim
-  right_inv h := by
-    dsimp only [IsPointwiseLeftKanExtensionAt]
-    apply Subsingleton.elim
+  left_inv h := by subsingleton
+  right_inv h := by subsingleton
 
 namespace IsPointwiseLeftKanExtensionAt
 
@@ -371,6 +374,9 @@ def coneAtFunctor (Y : D) :
 `E.coneAt Y` is a limit cone. -/
 def IsPointwiseRightKanExtensionAt (Y : D) := IsLimit (E.coneAt Y)
 
+instance (Y : D) : Subsingleton (E.IsPointwiseRightKanExtensionAt Y) :=
+  inferInstanceAs (Subsingleton (IsLimit _))
+
 variable {E} in
 lemma IsPointwiseRightKanExtensionAt.hasPointwiseRightKanExtensionAt
     {Y : D} (h : E.IsPointwiseRightKanExtensionAt Y) :
@@ -395,12 +401,8 @@ def isPointwiseRightKanExtensionAtEquivOfIso' {Y Y' : D} (e : Y ≅ Y') :
     E.IsPointwiseRightKanExtensionAt Y ≃ E.IsPointwiseRightKanExtensionAt Y' where
   toFun h := E.isPointwiseRightKanExtensionAtOfIso' h e
   invFun h := E.isPointwiseRightKanExtensionAtOfIso' h e.symm
-  left_inv h := by
-    dsimp only [IsPointwiseRightKanExtensionAt]
-    apply Subsingleton.elim
-  right_inv h := by
-    dsimp only [IsPointwiseRightKanExtensionAt]
-    apply Subsingleton.elim
+  left_inv h := by subsingleton
+  right_inv h := by subsingleton
 
 namespace IsPointwiseRightKanExtensionAt
 

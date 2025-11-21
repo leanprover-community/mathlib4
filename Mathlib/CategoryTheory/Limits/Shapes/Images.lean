@@ -3,10 +3,12 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
-import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
-import Mathlib.CategoryTheory.MorphismProperty.Factorization
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
+public import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
+public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
 /-!
 # Categorical images
@@ -51,6 +53,8 @@ so that `m` factors through the `m'` in any other such factorisation.
 * TODO: connect this with existing working in the group theory and ring theory libraries.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

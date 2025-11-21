@@ -3,16 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
-import Mathlib.Algebra.MonoidAlgebra.Support
-import Mathlib.Algebra.Regular.Pow
-import Mathlib.Data.Finsupp.Antidiagonal
-import Mathlib.Data.Finsupp.Order
-import Mathlib.Order.SymmDiff
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Algebra.MonoidAlgebra.Basic
+public import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
+public import Mathlib.Algebra.MonoidAlgebra.Support
+public import Mathlib.Algebra.Regular.Pow
+public import Mathlib.Data.Finsupp.Antidiagonal
+public import Mathlib.Data.Finsupp.Order
+public import Mathlib.Order.SymmDiff
 
 /-!
 # Multivariate polynomials
@@ -62,6 +64,8 @@ the polynomial being represented.
 polynomial, multivariate polynomial, multivariable polynomial
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -401,9 +405,6 @@ theorem monomial_add_induction_on {motive : MvPolynomial σ R → Prop} (p : MvP
         a ∉ f.support → b ≠ 0 → motive f → motive ((monomial a b) + f)) :
     motive p :=
   Finsupp.induction p (C_0.rec <| C 0) monomial_add
-
-@[deprecated (since := "2025-03-11")]
-alias induction_on''' := monomial_add_induction_on
 
 /--
 Similar to `MvPolynomial.induction_on` but only a yet weaker form of `h_add` is required.

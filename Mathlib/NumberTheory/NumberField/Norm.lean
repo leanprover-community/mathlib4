@@ -3,9 +3,11 @@ Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Eric Rodriguez
 -/
-import Mathlib.NumberTheory.NumberField.Basic
-import Mathlib.RingTheory.Localization.NormTrace
-import Mathlib.RingTheory.Norm.Transitivity
+module
+
+public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.RingTheory.Localization.NormTrace
+public import Mathlib.RingTheory.Norm.Transitivity
 
 /-!
 # Norm in number fields
@@ -19,6 +21,8 @@ rings of integers.
   `(x : 𝓞 L)` we have that `x ∣ algebraMap (𝓞 K) (𝓞 L) (norm K x)`.
 
 -/
+
+@[expose] public section
 
 
 open scoped NumberField
@@ -54,8 +58,10 @@ theorem coe_algebraMap_norm (x : 𝓞 L) :
     (algebraMap (𝓞 K) (𝓞 L) (norm K x) : L) = algebraMap K L (Algebra.norm K (x : L)) :=
   rfl
 
-theorem algebraMap_norm_algebraMap (x : 𝓞 K) : algebraMap _ K (norm K (algebraMap (𝓞 K) (𝓞 L) x)) =
-      Algebra.norm K (algebraMap K L (algebraMap _ _ x)) := rfl
+theorem algebraMap_norm_algebraMap (x : 𝓞 K) :
+    algebraMap _ K (norm K (algebraMap (𝓞 K) (𝓞 L) x)) =
+      Algebra.norm K (algebraMap K L (algebraMap _ _ x)) :=
+  rfl
 
 theorem norm_algebraMap (x : 𝓞 K) : norm K (algebraMap (𝓞 K) (𝓞 L) x) = x ^ finrank K L := by
   rw [RingOfIntegers.ext_iff, RingOfIntegers.coe_eq_algebraMap,

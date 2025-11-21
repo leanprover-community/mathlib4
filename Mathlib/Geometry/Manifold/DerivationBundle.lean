@@ -3,8 +3,10 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
-import Mathlib.RingTheory.Derivation.Basic
+module
+
+public import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
+public import Mathlib.RingTheory.Derivation.Basic
 
 /-!
 
@@ -18,6 +20,8 @@ tangent bundle but rather as a purely algebraic theory that provides a purely al
 of the Lie algebra for a Lie group. This theory coincides with the usual tangent bundle in the
 case of finite-dimensional `C^∞` real manifolds, but not in the general case.
 -/
+
+@[expose] public section
 
 
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]

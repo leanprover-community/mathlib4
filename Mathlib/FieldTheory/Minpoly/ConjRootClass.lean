@@ -3,7 +3,9 @@ Copyright (c) 2022 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
-import Mathlib.FieldTheory.Minpoly.IsConjRoot
+module
+
+public import Mathlib.FieldTheory.Minpoly.IsConjRoot
 
 /-!
 # Conjugate root classes
@@ -11,6 +13,8 @@ import Mathlib.FieldTheory.Minpoly.IsConjRoot
 In this file, we define the `ConjRootClass` of a field extension `L / K` as the quotient of `L` by
 the relation `IsConjRoot K`.
 -/
+
+@[expose] public section
 
 variable (K L S : Type*) [Field K] [Field L] [Field S]
 variable [Algebra K L] [Algebra K S] [Algebra L S] [IsScalarTower K L S]

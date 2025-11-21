@@ -3,16 +3,20 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Order.Filter.Bases.Basic
-import Mathlib.Order.Filter.AtTopBot.Tendsto
-import Mathlib.Order.Nat
-import Mathlib.Tactic.Subsingleton
+module
+
+public import Mathlib.Order.Filter.Bases.Basic
+public import Mathlib.Order.Filter.AtTopBot.Tendsto
+public import Mathlib.Order.Nat
+public import Mathlib.Tactic.Subsingleton
 
 /-!
 # Basic results on `Filter.atTop` and `Filter.atBot` filters
 
 In this file we prove many lemmas like “if `f → +∞`, then `f ± c → +∞`”.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 
@@ -127,9 +131,6 @@ end IsCodirected
 /-!
 ### Sequences
 -/
-
-@[deprecated (since := "2025-04-20")] alias extraction_of_frequently_atTop' :=
-  Nat.exists_strictMono_subsequence
 
 theorem extraction_of_frequently_atTop {P : ℕ → Prop} (h : ∃ᶠ n in atTop, P n) :
     ∃ φ : ℕ → ℕ, StrictMono φ ∧ ∀ n, P (φ n) := by

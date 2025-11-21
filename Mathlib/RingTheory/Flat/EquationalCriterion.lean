@@ -3,9 +3,11 @@ Copyright (c) 2024 Mitchell Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Lee, Junyan Xu
 -/
-import Mathlib.Algebra.Module.FinitePresentation
-import Mathlib.LinearAlgebra.TensorProduct.Vanishing
-import Mathlib.RingTheory.Flat.Tensor
+module
+
+public import Mathlib.Algebra.Module.FinitePresentation
+public import Mathlib.LinearAlgebra.TensorProduct.Vanishing
+public import Mathlib.RingTheory.Flat.Tensor
 
 /-! # The equational criterion for flatness
 
@@ -51,6 +53,8 @@ every finitely presented flat module is projective (`Module.Flat.projective_of_f
 * [Stacks: Characterizing flatness](https://stacks.math.columbia.edu/tag/058C)
 
 -/
+
+@[expose] public section
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 

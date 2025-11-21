@@ -3,18 +3,22 @@ Copyright (c) 2023 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Lean.Elab.Tactic.Calc
-import Lean.Meta.Tactic.TryThis
+module
 
-import Mathlib.Data.String.Defs
-import Mathlib.Tactic.Widget.SelectPanelUtils
-import Batteries.CodeAction.Attr
+public meta import Lean.Elab.Tactic.Calc
+public meta import Lean.Meta.Tactic.TryThis
+
+public meta import Mathlib.Data.String.Defs
+public meta import Mathlib.Tactic.Widget.SelectPanelUtils
+public meta import Batteries.CodeAction.Attr
 
 /-! # Calc widget
 
 This file redefines the `calc` tactic so that it displays a widget panel allowing to create
 new calc steps with holes specified by selected sub-expressions in the goal.
 -/
+
+public meta section
 
 section code_action
 open Batteries.CodeAction

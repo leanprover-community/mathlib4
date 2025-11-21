@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.CategoryTheory.Category.Bipointed
-import Mathlib.Data.TwoPointing
+module
+
+public import Mathlib.CategoryTheory.Category.Bipointed
+public import Mathlib.Data.TwoPointing
 
 /-!
 # The category of two-pointed types
@@ -16,6 +18,8 @@ This defines `TwoP`, the category of two-pointed types.
 * [nLab, *coalgebra of the real interval*]
   (https://ncatlab.org/nlab/show/coalgebra+of+the+real+interval)
 -/
+
+@[expose] public section
 
 
 open CategoryTheory Option

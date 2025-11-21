@@ -3,10 +3,12 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Lean.Elab.Command
+module
+
+public meta import Lean.Elab.Command
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header
 
 /-!
 # The "docPrime" linter
@@ -17,6 +19,8 @@ for the presence of a `'` in their name. This may consist of discussion of the d
 to an unprimed version of that declaration, or an explanation as to why no better naming scheme
 is possible.
 -/
+
+public meta section
 
 open Lean Elab Linter
 

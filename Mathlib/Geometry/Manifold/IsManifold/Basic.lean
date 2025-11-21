@@ -3,11 +3,13 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Analysis.Normed.Module.Convex
-import Mathlib.Analysis.RCLike.TangentCone
-import Mathlib.Data.Bundle
-import Mathlib.Geometry.Manifold.ChartedSpace
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Normed.Module.Convex
+public import Mathlib.Analysis.RCLike.TangentCone
+public import Mathlib.Data.Bundle
+public import Mathlib.Geometry.Manifold.ChartedSpace
 
 /-!
 # `C^n` manifolds (possibly with boundary or corners)
@@ -48,8 +50,8 @@ We define a few constructions of smooth manifolds:
 * the disjoint union of two manifolds (over the same charted space)
 
 As specific examples of models with corners, we define (in `Geometry.Manifold.Instances.Real`)
-* `modelWithCornersEuclideanHalfSpace n :
-  ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space used to
+* `modelWithCornersSelf n :
+  ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanSpace n)` for the model space used to
   define `n`-dimensional real manifolds without boundary
   (with notation `𝓡 n` in the scope `Manifold`)
 * `modelWithCornersEuclideanHalfSpace n :
@@ -125,6 +127,8 @@ derivative will be `mfderiv I I' f`, instead of the more natural notations `Tang
 `mfderiv 𝕜 f` (the field has to be explicit anyway, as some manifolds could be considered both as
 real and complex manifolds).
 -/
+
+@[expose] public section
 
 open Topology
 

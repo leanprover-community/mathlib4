@@ -3,9 +3,11 @@ Copyright (c) 2024 Jakob Stiefel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Stiefel
 -/
-import Mathlib.Analysis.RCLike.BoundedContinuous
-import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSqIntegral
-import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
+module
+
+public import Mathlib.Analysis.RCLike.BoundedContinuous
+public import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSqIntegral
+public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 
 /-!
 # Extensionality of finite measures
@@ -15,6 +17,8 @@ Let `A` be a StarSubalgebra of `C(E, 𝕜)` that separates points and whose elem
 the integrals of all elements of `A` with respect to two finite measures `P, P'`coincide, then the
 measures coincide. In other words: If a Subalgebra separates points, it separates finite measures.
 -/
+
+@[expose] public section
 
 open MeasureTheory Filter Real RCLike BoundedContinuousFunction
 

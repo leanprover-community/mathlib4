@@ -3,10 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.Yoneda
+public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Limits.HasLimits
+public import Mathlib.CategoryTheory.Yoneda
 
 /-!
 # Domain of definition of the partial left adjoint
@@ -32,6 +33,8 @@ the predicate `F.LeftAdjointObjIsDefined` is stable under colimits indexed by `J
 
 -/
 
+@[expose] public section
+
 universe v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
@@ -48,8 +51,6 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 to the domain of definition of the (partial) left adjoint of `F`. -/
 def leftAdjointObjIsDefined : ObjectProperty C :=
   fun X ↦ IsCorepresentable (F ⋙ coyoneda.obj (op X))
-
-@[deprecated (since := "2025-03-05")] alias LeftAdjointObjIsDefined := leftAdjointObjIsDefined
 
 lemma leftAdjointObjIsDefined_iff (X : C) :
     F.leftAdjointObjIsDefined X ↔ IsCorepresentable (F ⋙ coyoneda.obj (op X)) := by rfl

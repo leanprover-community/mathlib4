@@ -3,9 +3,11 @@ Copyright (c) 2025 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Floris van Doorn
 -/
-import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Pullbacks
+module
+
+public import Mathlib.CategoryTheory.Limits.Opposites
+public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Pullbacks
 
 /-!
 # Equalizers and coequalizers in `C` and `Cᵒᵖ`
@@ -13,6 +15,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Pullbacks
 We construct equalizers and coequalizers in the opposite categories.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u₁ u₂
 
@@ -49,19 +53,19 @@ def parallelPairOpIso {X Y : C} (f g : X ⟶ Y) :
 
 @[simp]
 lemma parallelPairOpIso_hom_app_zero {X Y : C} (f g : X ⟶ Y) :
-  (parallelPairOpIso f g).hom.app WalkingParallelPair.zero = 𝟙 _ := rfl
+    (parallelPairOpIso f g).hom.app WalkingParallelPair.zero = 𝟙 _ := rfl
 
 @[simp]
 lemma parallelPairOpIso_hom_app_one {X Y : C} (f g : X ⟶ Y) :
-  (parallelPairOpIso f g).hom.app WalkingParallelPair.one = 𝟙 _ := rfl
+    (parallelPairOpIso f g).hom.app WalkingParallelPair.one = 𝟙 _ := rfl
 
 @[simp]
 lemma parallelPairOpIso_inv_app_zero {X Y : C} (f g : X ⟶ Y) :
-  (parallelPairOpIso f g).inv.app WalkingParallelPair.zero = 𝟙 _ := rfl
+    (parallelPairOpIso f g).inv.app WalkingParallelPair.zero = 𝟙 _ := rfl
 
 @[simp]
 lemma parallelPairOpIso_inv_app_one {X Y : C} (f g : X ⟶ Y) :
-  (parallelPairOpIso f g).inv.app WalkingParallelPair.one = 𝟙 _ := rfl
+    (parallelPairOpIso f g).inv.app WalkingParallelPair.one = 𝟙 _ := rfl
 
 /-- The canonical isomorphism relating `(parallelPair f g).op` and `parallelPair f.op g.op` -/
 def opParallelPairIso {X Y : C} (f g : X ⟶ Y) :
@@ -77,19 +81,23 @@ def opParallelPairIso {X Y : C} (f g : X ⟶ Y) :
 
 @[simp]
 lemma opParallelPairIso_hom_app_zero {X Y : C} (f g : X ⟶ Y) :
-  (opParallelPairIso f g).hom.app (op WalkingParallelPair.zero) = 𝟙 _ := by simp [opParallelPairIso]
+    (opParallelPairIso f g).hom.app (op WalkingParallelPair.zero) = 𝟙 _ := by
+  simp [opParallelPairIso]
 
 @[simp]
 lemma opParallelPairIso_hom_app_one {X Y : C} (f g : X ⟶ Y) :
-  (opParallelPairIso f g).hom.app (op WalkingParallelPair.one) = 𝟙 _ := by simp [opParallelPairIso]
+    (opParallelPairIso f g).hom.app (op WalkingParallelPair.one) = 𝟙 _ := by
+  simp [opParallelPairIso]
 
 @[simp]
 lemma opParallelPairIso_inv_app_zero {X Y : C} (f g : X ⟶ Y) :
-  (opParallelPairIso f g).inv.app (op WalkingParallelPair.zero) = 𝟙 _ := by simp [opParallelPairIso]
+    (opParallelPairIso f g).inv.app (op WalkingParallelPair.zero) = 𝟙 _ := by
+  simp [opParallelPairIso]
 
 @[simp]
 lemma opParallelPairIso_inv_app_one {X Y : C} (f g : X ⟶ Y) :
-  (opParallelPairIso f g).inv.app (op WalkingParallelPair.one) = 𝟙 _ := by simp [opParallelPairIso]
+    (opParallelPairIso f g).inv.app (op WalkingParallelPair.one) = 𝟙 _ := by
+  simp [opParallelPairIso]
 
 namespace Cofork
 

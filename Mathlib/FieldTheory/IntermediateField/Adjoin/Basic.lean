@@ -3,19 +3,23 @@ Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Directed
-import Mathlib.Algebra.Algebra.Subalgebra.IsSimpleOrder
-import Mathlib.FieldTheory.Separable
-import Mathlib.FieldTheory.SplittingField.IsSplittingField
-import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.RingTheory.Adjoin.Dimension
-import Mathlib.RingTheory.TensorProduct.Finite
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Directed
+public import Mathlib.Algebra.Algebra.Subalgebra.IsSimpleOrder
+public import Mathlib.FieldTheory.Separable
+public import Mathlib.FieldTheory.SplittingField.IsSplittingField
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.RingTheory.Adjoin.Dimension
+public import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 # Adjoining Elements to Fields
 
 This file contains many results about adjoining elements to fields.
 -/
+
+@[expose] public section
 
 open Module Polynomial
 

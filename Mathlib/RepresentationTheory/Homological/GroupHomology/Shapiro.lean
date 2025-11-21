@@ -3,10 +3,12 @@ Copyright (c) 2025 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
-import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
-import Mathlib.RepresentationTheory.Coinduced
-import Mathlib.RepresentationTheory.Induced
+module
+
+public import Mathlib.CategoryTheory.Preadditive.Projective.Resolution
+public import Mathlib.RepresentationTheory.Homological.GroupHomology.Basic
+public import Mathlib.RepresentationTheory.Coinduced
+public import Mathlib.RepresentationTheory.Induced
 
 /-!
 # Shapiro's lemma for group homology
@@ -34,6 +36,8 @@ group homology, we conclude Shapiro's lemma: `Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S, A)
   `Hₙ(G, Ind_S^G(A)) ≅ Hₙ(S, A)`, given a subgroup `S ≤ G` and an `S`-representation `A`.
 
 -/
+
+@[expose] public section
 
 universe u
 
