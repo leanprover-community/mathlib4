@@ -183,7 +183,7 @@ theorem cons_mem_acceptsFrom {S : Set σ} {a : α} {x : List α} :
   simp [mem_acceptsFrom]
 
 variable (M) in
-theorem acceptsFrom_cons {S : Set σ} {a : α} :
+theorem cons_preimage_acceptsFrom {S : Set σ} {a : α} :
     (a :: ·) ⁻¹' M.acceptsFrom S = M.acceptsFrom (M.stepSet S a) := by
   ext x; simp [cons_mem_acceptsFrom M]
 
@@ -225,7 +225,7 @@ theorem acceptsFrom_iUnion₂ {ι : Sort*} {κ : ι → Sort*} (f : ∀ i, κ i 
 
 variable (M) in
 @[simp]
-theorem mem_acceptsFrom_sep_fact {S : Set σ} {p : Prop} {x : List α} :
+private theorem mem_acceptsFrom_sep_fact {S : Set σ} {p : Prop} {x : List α} :
     x ∈ M.acceptsFrom {s ∈ S | p} ↔ x ∈ M.acceptsFrom S ∧ p := by
   induction x generalizing S with
   | nil => simp only [nil_mem_acceptsFrom, mem_setOf_eq]; tauto
