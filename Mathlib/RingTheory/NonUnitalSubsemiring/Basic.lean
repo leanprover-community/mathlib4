@@ -3,19 +3,21 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.Group.Subsemigroup.Membership
-import Mathlib.Algebra.Group.Subsemigroup.Operations
-import Mathlib.Algebra.GroupWithZero.Center
-import Mathlib.Algebra.Ring.Center
-import Mathlib.Algebra.Ring.Centralizer
-import Mathlib.Algebra.Ring.Opposite
-import Mathlib.Algebra.Ring.Prod
-import Mathlib.Algebra.Ring.Submonoid.Basic
-import Mathlib.Data.Set.Finite.Range
-import Mathlib.GroupTheory.Submonoid.Center
-import Mathlib.GroupTheory.Subsemigroup.Centralizer
-import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Membership
+public import Mathlib.Algebra.Group.Subsemigroup.Membership
+public import Mathlib.Algebra.Group.Subsemigroup.Operations
+public import Mathlib.Algebra.GroupWithZero.Center
+public import Mathlib.Algebra.Ring.Center
+public import Mathlib.Algebra.Ring.Centralizer
+public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Algebra.Ring.Prod
+public import Mathlib.Algebra.Ring.Submonoid.Basic
+public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.GroupTheory.Submonoid.Center
+public import Mathlib.GroupTheory.Subsemigroup.Centralizer
+public import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
 
 /-!
 # Bundled non-unital subsemirings
@@ -23,6 +25,8 @@ import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
 We define the `CompleteLattice` structure, and non-unital subsemiring
 `map`, `comap` and range (`srange`) of a `NonUnitalRingHom` etc.
 -/
+
+@[expose] public section
 
 
 universe u v w

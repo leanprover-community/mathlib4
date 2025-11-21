@@ -3,11 +3,12 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
+module
 
-import Lean.Elab.Command
+public meta import Lean.Elab.Command
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+public meta import Mathlib.Tactic.Linter.Header
 
 /-!
 # The `oldObtain` linter, against stream-of-consciousness `obtain`
@@ -48,6 +49,8 @@ case... but by now, the "old" syntax is not clearly better.)
 - the old syntax *could* be slightly nicer when deferring goals: however, this is rare.
 In the 30 replacements of the last PR, this occurred twice. In both cases, the `suffices` tactic
 could also be used, as was in fact clearer. -/
+
+public meta section
 
 open Lean Elab Linter
 

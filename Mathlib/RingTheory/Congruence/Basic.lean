@@ -3,9 +3,11 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Ring.Action.Basic
-import Mathlib.GroupTheory.Congruence.Basic
-import Mathlib.RingTheory.Congruence.Defs
+module
+
+public import Mathlib.Algebra.Ring.Action.Basic
+public import Mathlib.GroupTheory.Congruence.Basic
+public import Mathlib.RingTheory.Congruence.Defs
 
 /-!
 # Congruence relations on rings
@@ -26,6 +28,8 @@ Most of the time you likely want to use the `Ideal.Quotient` API that is built o
 * Use this for `RingQuot` too.
 * Copy across more API from `Con` and `AddCon` in `GroupTheory/Congruence.lean`.
 -/
+
+@[expose] public section
 
 variable {α β R : Type*}
 
