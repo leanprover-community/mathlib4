@@ -44,7 +44,7 @@ lemma Real.norm_inv_mul_rpow_sub_one_sub_log_le {p x : ℝ} (p_pos : 0 < p) (x_p
           grind [Real.norm_of_nonneg]
 
 open Set in
-lemma tendstoLocallyUniformlyOn_rpow_sub_one_log :
+lemma Real.tendstoLocallyUniformlyOn_rpow_sub_one_log :
     TendstoLocallyUniformlyOn (fun (p : ℝ) (x : ℝ) => p⁻¹ * (x ^ p - 1)) log (𝓝[>] 0) (Ioi 0) := by
   refine (tendstoLocallyUniformlyOn_iff_forall_isCompact isOpen_Ioi).mpr ?_
   intro s hs hs'
@@ -59,16 +59,14 @@ lemma tendstoLocallyUniformlyOn_rpow_sub_one_log :
     refine Real.sSup_nonneg ?_
     grind [norm_nonneg, ← sq_nonneg]
   have pbound_pos : 0 < pbound := by positivity
-  have h₁ : ∀ᶠ p : ℝ in 𝓝[>] 0, 0 < p := eventually_mem_of_tendsto_nhdsWithin fun ⦃U⦄ a => a
-  have h₂ : ∀ᶠ p : ℝ in 𝓝[>] 0, p < pbound :=
-    Eventually.filter_mono nhdsWithin_le_nhds <| eventually_lt_nhds pbound_pos
-  have h₃ : ∀ᶠ p : ℝ in 𝓝[>] 0, p ≤ 1 / (sSup ((fun x => ‖log x‖) '' s) + 1) :=
+  have h₁ : ∀ᶠ p : ℝ in 𝓝[>] 0, 0 < p ∧ p < pbound := nhdsGT_basis 0 |>.mem_of_mem pbound_pos
+  have h₂ : ∀ᶠ p : ℝ in 𝓝[>] 0, p ≤ 1 / (sSup ((fun x => ‖log x‖) '' s) + 1) :=
     Eventually.filter_mono nhdsWithin_le_nhds <| eventually_le_nhds (by positivity)
   have hcont : ContinuousOn (fun x => ‖log x‖ ^ 2) s := by
     fun_prop (disch := assumption)
   have hcont' : ContinuousOn (fun x => ‖log x‖) s := by
     fun_prop (disch := assumption)
-  filter_upwards [h₁, h₂, h₃] with p hp₁ hp₂ hp₃
+  filter_upwards [h₁, h₂] with p ⟨hp₁,hp₂⟩ hp₃
   have p_nonneg : 0 ≤ p := by grind
   intro x hx
   have hx' : ‖p * log x‖ ≤ 1 := calc

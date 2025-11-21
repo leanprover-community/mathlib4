@@ -42,7 +42,7 @@ lemma CFC.tendsto_cfc_rpow_sub_one_log {a : A} (ha : IsStrictlyPositive a) :
   case tendsto =>
     let s := {a : A | IsStrictlyPositive a}
     let f (p : ℝ) (x : ℝ) := if p > 0 then p⁻¹ * (x ^ p - 1) else Real.log x
-    have hmain := tendstoLocallyUniformlyOn_rpow_sub_one_log
+    have hmain := Real.tendstoLocallyUniformlyOn_rpow_sub_one_log
     rw [tendstoLocallyUniformlyOn_iff_forall_isCompact isOpen_Ioi] at hmain
     exact hmain (spectrum ℝ a) (by grind) (by grind)
 
