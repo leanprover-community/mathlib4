@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Vector.Basic
-import Mathlib.Logic.Equiv.Finset
+module
+
+public import Mathlib.Data.Vector.Basic
+public import Mathlib.Logic.Equiv.Finset
 
 /-!
 # Encodability of Pi types
@@ -16,6 +18,8 @@ This file provides instances of `Encodable` for types of vectors and (dependent)
 * `Encodable.fintypeArrow`, `Encodable.fintypePi`: (dependent) functions with
   finite domain and countable codomain are encodable
 -/
+
+@[expose] public section
 
 open List (Vector)
 open Nat List

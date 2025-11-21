@@ -3,9 +3,10 @@ Copyright (c) 2023 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
+module
 
-import Mathlib.Data.PNat.Basic
-import Mathlib.Algebra.Notation.Prod
+public import Mathlib.Data.PNat.Basic
+public import Mathlib.Algebra.Notation.Prod
 
 /-!
 # Typeclasses for power-associative structures
@@ -34,6 +35,8 @@ powers are considered.
   power-associativity, but we have found that it is not hard to write.
 
 -/
+
+@[expose] public section
 
 -- TODO:
 -- assert_not_exists MonoidWithZero

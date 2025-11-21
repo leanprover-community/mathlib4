@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Construction
+module
+
+public import Mathlib.CategoryTheory.Localization.Construction
 
 /-!
 
@@ -29,6 +31,8 @@ datum that is part of the class `Lifting L W F F'`. The functions
 and natural isomorphisms between functors.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

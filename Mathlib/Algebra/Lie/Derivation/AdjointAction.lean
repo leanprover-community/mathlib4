@@ -3,10 +3,12 @@ Copyright (c) 2024 Frédéric Marbach. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Marbach
 -/
-import Mathlib.Algebra.Lie.Abelian
-import Mathlib.Algebra.Lie.Derivation.Basic
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Tactic.LieAlgebra.Basic
+module
+
+public import Mathlib.Algebra.Lie.Abelian
+public import Mathlib.Algebra.Lie.Derivation.Basic
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.Tactic.LieAlgebra.Basic
 
 /-!
 # Adjoint action of a Lie algebra on itself
@@ -29,6 +31,8 @@ values in the endormophisms of `L`.
 derivations.
 -/
 
+@[expose] public section
+
 namespace LieDerivation
 
 section AdjointAction
@@ -46,8 +50,7 @@ def ad : L →ₗ⁅R⁆ LieDerivation R L L :=
       ext z
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearMap.neg_apply, coe_neg,
         Pi.neg_apply, inner_apply_apply, commutator_apply]
-      lie_ring
-      }
+      lie_ring }
 
 variable {R L}
 

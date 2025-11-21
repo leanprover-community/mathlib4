@@ -3,9 +3,11 @@ Copyright (c) 2023 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init
-import Lean.Meta.Tactic.Simp.Types
-import Qq
+module
+
+public import Mathlib.Init
+public meta import Lean.Meta.Tactic.Simp.Types
+public meta import Qq
 
 /-!
 # A monad for tracking and deduplicating atoms
@@ -24,6 +26,8 @@ refactored to use this new version. The performance did not improve as expected,
 created to record this attempt. Both PRs are closed without merging, and further information can be
 found in the comments and zulip discussions.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 open Lean Meta

@@ -3,9 +3,11 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
 -/
-import Mathlib.Data.Int.Cast.Defs
-import Mathlib.Algebra.Group.Basic
-import Mathlib.Data.Nat.Basic
+module
+
+public import Mathlib.Data.Int.Cast.Defs
+public import Mathlib.Algebra.Group.Basic
+public import Mathlib.Data.Nat.Basic
 
 /-!
 # Cast of integers (additional theorems)
@@ -20,6 +22,8 @@ and results involving the order structure of `ℤ`.
 By contrast, this file's only import beyond `Mathlib.Data.Int.Cast.Defs` is
 `Mathlib.Algebra.Group.Basic`.
 -/
+
+@[expose] public section
 
 
 universe u
