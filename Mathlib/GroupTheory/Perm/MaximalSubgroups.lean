@@ -13,7 +13,7 @@ public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 /-! # Maximal subgroups of the symmetric groups
 
 * `Equiv.Perm.isCoatom_stabilizer`:
-  if neither `s : set α` nor its complementary subset is empty,
+  if neither `s : Set α` nor its complementary subset is empty,
   and the cardinality of `s` is not half of that of `α`,
   then `MulAction.stabilizer (Equiv.Perm α) s` is
   a maximal subgroup of the symmetric group `Equiv.Perm α`.
