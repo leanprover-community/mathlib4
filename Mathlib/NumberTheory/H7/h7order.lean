@@ -14,6 +14,7 @@ set_option linter.style.cases false
 set_option linter.unusedVariables false
 set_option linter.unusedSectionVars true
 set_option linter.style.commandStart false
+set_option linter.style.induction false
 set_option linter.style.longFile 0
 
 open BigOperators Module.Free Fintype
@@ -364,7 +365,7 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
   (hf : ∀ z : ℂ, AnalyticAt ℂ R z) (hf1 : ∀ z : ℂ, AnalyticAt ℂ R₁ z)
   (hR₁ : ∀ z, R z  = (z - z₀)^r * R₁ z) :
   ∀ k ≤ r, ∃ R₂ : ℂ → ℂ, (∀ z : ℂ, AnalyticAt ℂ R₂ z) ∧ ∀ z, deriv^[k] R z =
-   (z - z₀)^(r-k) * (r.factorial/(r-k).factorial * R₁ z + (z-z₀)* R₂ z) := by { stop
+   (z - z₀)^(r-k) * (r.factorial/(r-k).factorial * R₁ z + (z-z₀)* R₂ z) := by {
       intros k hkr
       induction' k with k IH
       · use 0
@@ -395,14 +396,17 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
         + R₂ z + (z - z₀)*deriv R₂ z
         use R2
         constructor
-        · sorry
+        · unfold R2
+          intros z
+          sorry
 
 
 
 
 
 
-        have derivOfderivk : ∀ z, deriv (fun z => (z - z₀)^(r - k) *
+        · intros z
+          have derivOfderivk : ∀ z, deriv (fun z => (z - z₀)^(r - k) *
 
             (r.factorial / (r - k).factorial * R₁ z + (z - z₀) * R₂ z)) z =
 
@@ -445,37 +449,30 @@ lemma existrprime (r : ℕ) (z₀ : ℂ) (R R₁ : ℂ → ℂ)
                     · simp only [differentiableAt_fun_id, differentiableAt_const,
                       DifferentiableAt.fun_sub]
                     · exact AnalyticAt.differentiableAt (hR₂ z)}
-        --conv => enter [2,1]; ext z; rw [HR2]
-        have HRz : ∀z, deriv (fun z => (z - z₀) ^ r * R₁ z) z =
-            ↑r * (z - z₀) ^ (r - 1) * R₁ z + (z - z₀) ^ r * deriv R₁ z := by {
-            intros z
-            rw [deriv_fun_mul]
-            simp only [differentiableAt_fun_id,
-            differentiableAt_const, DifferentiableAt.fun_sub,
-              deriv_fun_pow'', deriv_fun_sub, deriv_id'',
-              deriv_const', sub_zero, mul_one]
-            simp only [differentiableAt_fun_id,
-            differentiableAt_const, DifferentiableAt.fun_sub,
-              DifferentiableAt.fun_pow]
-            exact AnalyticAt.differentiableAt (hf1 z)
-            }
+          clear derivOfderivk
+          conv => enter [1,1]; ext z; rw [hR1 z]
+          rw [deriv_fun_mul]
+          rw [deriv_fun_add]
+          rw [deriv_fun_mul]
+          rw [deriv_fun_mul]
+          unfold R2
+          simp only [differentiableAt_fun_id, differentiableAt_const, DifferentiableAt.fun_sub,
+            deriv_fun_pow, deriv_fun_sub, deriv_id'', deriv_const', sub_zero, mul_one,
+            deriv_div_const, zero_div, zero_mul, zero_add, one_mul]
+          -- simp only [add_assoc]
+          -- rw [add_comm]
+          -- nth_rw 6 [add_comm]
+          -- nth_rw 3 [mul_add]
+          sorry
 
-        have : ∀z,  deriv R z = deriv (fun z => (z - z₀) ^ r * R₁ z) z := by {
-            intros z
-            conv => enter [1,1]; ext z ;rw [hR₁]
-          }
-        have : ∀ z, deriv R z = ↑r * (z - z₀) ^ (r - 1) *
-              R₁ z + (z - z₀) ^ r * deriv R₁ z := by {
-            intros z
-            rw [this]
-            rw [HRz]
-          }
-        rw [derivOfderivk]
-        conv => enter [2,2,2,2]; rw [this]
-        sorry
+
+
+
+
+
 
         }
-
+#exit
 lemma iterated_deriv_eq_zero_iff_order_eq_n :
   ∀ z₀ n (f : ℂ → ℂ) (hf : AnalyticAt ℂ f z₀) (ho : analyticOrderAt f z₀ ≠ ⊤),
     (∀ k < n, deriv^[k] f z₀ = 0) ∧ (deriv^[n] f z₀ ≠ 0)
