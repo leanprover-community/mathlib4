@@ -251,39 +251,25 @@ def ofDiscreteTopology [TopologicalSpace X]
   dist_triangle := by intros; split_ifs <;> simp_all
   edist_dist := by intros; split_ifs <;> simp_all
 
+section
 variable [TopologicalSpace X] [DiscreteTopology X] [DecidableEq X]
 
-lemma ofDiscreteTopology_dist_def (x y : X) :
-    letI := ofDiscreteTopology (X := X)
+attribute [local instance] ofDiscreteTopology
+
+@[grind =] lemma ofDiscreteTopology_dist_def (x y : X) :
     dist x y = if x = y then 0 else 1 :=
   rfl
 
-lemma ofDiscreteTopology_uniformSpace_eq_bot :
-    (PseudoMetricSpace.ofDiscreteTopology (X := X)).toUniformSpace = ⊥ := by
-  ext U
-  let := ofDiscreteTopology (X := X)
-  simp only [uniformity_dist, gt_iff_lt, ofDiscreteTopology_dist_def, Filter.mem_biInf_principal,
-    DiscreteUniformity.eq_principal_relId, Filter.mem_principal, SetRel.id_subset_iff]
-  constructor
-  · rintro ⟨I, hI, hI', hIU⟩
-    constructor
-    intro x
-    refine hIU ?_
-    simpa
-  · intro h
-    use {1}
-    simp only [Set.finite_singleton, Set.mem_singleton_iff, forall_eq, zero_lt_one,
-      Set.iInter_iInter_eq_left, true_and]
-    rintro ⟨x, y⟩
-    simp only [Set.mem_setOf_eq]
-    split <;>
-    simp_all [h.refl]
+lemma ofDiscreteTopology_uniformSpace_eq_bot : PseudoMetricSpace.toUniformSpace (α := X) = ⊥ := by
+  rw [UniformSpace.uniformSpace_eq_bot]
+  convert Metric.dist_mem_uniformity one_pos
+  ext
+  grind [SetRel.mem_id]
 
-lemma ofDiscreteTopology_discreteUniformity :
-    @DiscreteUniformity X (ofDiscreteTopology (X := X)).toUniformSpace := by
-  letI := ofDiscreteTopology (X := X)
-  rw [discreteUniformity_iff_eq_bot]
-  exact ofDiscreteTopology_uniformSpace_eq_bot
+lemma ofDiscreteTopology_discreteUniformity : DiscreteUniformity X where
+  eq_bot := ofDiscreteTopology_uniformSpace_eq_bot
+
+end
 
 end PseudoMetricSpace
 
