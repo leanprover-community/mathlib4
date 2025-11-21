@@ -624,17 +624,20 @@ protected lemma Connected.toSubgraph {H : SimpleGraph V} (h : H ≤ G) (hconn : 
 
 namespace Subgraph
 
+protected lemma Reachable.map_coe {G' : G.Subgraph} {G'' : G'.coe.Subgraph} (f : G'.coe →g G)
+    {u v : G''.verts} (hreachable : G''.coe.Reachable u v) :
+    (G''.map f).coe.Reachable ⟨f u, by aesop⟩ ⟨f v, by aesop⟩ := by
+  use hreachable.exists_isPath.choose.map {
+    toFun v : (G''.map f).verts := ⟨⇑f v.val, by aesop⟩
+    map_rel' r := Relation.map_apply.mpr (by tauto)
+  }
+
 protected lemma Preconnected.map_coe {G' : G.Subgraph} {G'' : G'.coe.Subgraph}
     (f : G'.coe →g G) (hpreconn : G''.Preconnected) : (G''.map f).Preconnected := by
-  rw [preconnected_iff_forall_exists_walk_subgraph]
-  simp only [map_verts, Set.mem_image, Subtype.exists, forall_exists_index, and_imp]
-  intro u v u' _ hu'' hfu'' v' _ hv'' hfv''
-  rw [← hfu'', ← hfv'']
-  rw [preconnected_iff_forall_exists_walk_subgraph] at hpreconn
-  obtain ⟨p, _⟩ := hpreconn hu'' hv''
-  use p.map f
-  rw [p.toSubgraph_map]
-  gcongr
+  rw [Subgraph.preconnected_iff]
+  intro ⟨u', u, hu, hfu⟩ ⟨v', v, hv, hfv⟩
+  simp_rw [← hfu, ← hfv]
+  exact Reachable.map_coe f (hpreconn.coe ⟨u, hu⟩ ⟨v, hv⟩)
 
 protected lemma Connected.map_coe {G' : G.Subgraph} {G'' : G'.coe.Subgraph}
     (f : G'.coe →g G) (hconn : G''.Connected) : (G''.map f).Connected := by
