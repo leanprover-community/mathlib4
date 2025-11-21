@@ -592,12 +592,11 @@ polynomial expressions.
 def evalNSMul {a : Q(ℕ)} {b : Q($α)} (va : ExSum sℕ a) (vb : ExSum sα b) :
     AtomM (Result (ExSum sα) q($a • $b)) := do
   if ← isDefEq sα sℕ then
-    /- We want to tell Qq that `α` and `ℕ` are the same, but unfortunately
-    there is no way to tell it that universe `u` is the same as unverse `0`. -/
-    let ⟨_, va'⟩ := va.cast
-    have _b : Q(ℕ) := b
-    let ⟨(_c : Q(ℕ)), vc, (pc : Q($a * $_b = $_c))⟩ ← evalMul sα va' vb
-    pure ⟨_, vc, (q(smul_nat $pc) : Q($a • $_b = $_c))⟩
+    have : u =QL 0 := ⟨⟩; have : $α =Q ℕ := ⟨⟩; assumeInstancesCommute
+    let ⟨a', va'⟩ := va.cast
+    let ⟨_, vc, pc⟩ ← evalMul sα va' vb
+    have : $a =Q $a' := ⟨⟩
+    pure ⟨_, vc, q(smul_nat $pc)⟩
   else
     let ⟨_, va', pa'⟩ ← va.evalNatCast sα
     let ⟨_, vc, pc⟩ ← evalMul sα va' vb
@@ -692,12 +691,11 @@ polynomial expressions.
 def evalZSMul {a : Q(ℤ)} {b : Q($α)} (rα : Q(CommRing $α)) (va : ExSum sℤ a) (vb : ExSum sα b) :
     AtomM (Result (ExSum sα) q($a • $b)) := do
   if ← isDefEq sα sℤ then
-    /- We want to tell Qq that `α` and `ℤ` are the same, but unfortunately
-    there is no way to tell it that universe `u` is the same as universe `0`. -/
-    let ⟨_, va'⟩ := va.cast
-    have _b : Q(ℤ) := b
-    let ⟨(_c : Q(ℤ)), vc, (pc : Q($a * $_b = $_c))⟩ ← evalMul sα va' vb
-    pure ⟨_, vc, (q(smul_int $pc) : Q($a • $_b = $_c))⟩
+    have : u =QL 0 := ⟨⟩; have : $α =Q ℤ := ⟨⟩; assumeInstancesCommute
+    let ⟨a', va'⟩ := va.cast
+    let ⟨_, vc, pc⟩ ← evalMul sα va' vb
+    have : $a =Q $a' := ⟨⟩
+    pure ⟨_, vc, q(smul_int $pc)⟩
   else
     let ⟨_, va', pa'⟩ ← va.evalIntCast sα rα
     let ⟨_, vc, pc⟩ ← evalMul sα va' vb
