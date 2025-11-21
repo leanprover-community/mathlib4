@@ -3,18 +3,20 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Analysis.Complex.Polynomial.UnitTrinomial
-import Mathlib.FieldTheory.Finite.GaloisField
-import Mathlib.FieldTheory.Galois.IsGaloisGroup
-import Mathlib.FieldTheory.KrullTopology
-import Mathlib.FieldTheory.Relrank
-import Mathlib.GroupTheory.Perm.ClosureSwap
-import Mathlib.NumberTheory.NumberField.Discriminant.Basic
-import Mathlib.NumberTheory.NumberField.Discriminant.Different
-import Mathlib.NumberTheory.RamificationInertia.Galois
-import Mathlib.RingTheory.Ideal.Over
-import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
-import Mathlib.RingTheory.Invariant.Basic
+module
+
+public import Mathlib.Analysis.Complex.Polynomial.UnitTrinomial
+public import Mathlib.FieldTheory.Finite.GaloisField
+public import Mathlib.FieldTheory.Galois.IsGaloisGroup
+public import Mathlib.FieldTheory.KrullTopology
+public import Mathlib.FieldTheory.Relrank
+public import Mathlib.GroupTheory.Perm.ClosureSwap
+public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
+public import Mathlib.NumberTheory.NumberField.Discriminant.Different
+public import Mathlib.NumberTheory.RamificationInertia.Galois
+public import Mathlib.RingTheory.Ideal.Over
+public import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
+public import Mathlib.RingTheory.Invariant.Basic
 
 /-!
 # Irreducibility and Galois Groups of Selmer Polynomials
@@ -26,6 +28,8 @@ This file shows that the Selmer polynomial `X ^ n - X - 1` is irreducible with G
 - `X_pow_sub_X_sub_one_irreducible`: The Selmer polynomials `X ^ n - X - 1` are irreducible.
 - `X_pow_sub_X_sub_one_gal`: The Selmer polynomial `X ^ n - X - 1` has Galois group `S_n`.
 -/
+
+@[expose] public section
 
 -- PR #29688
 section GeneralGalois
