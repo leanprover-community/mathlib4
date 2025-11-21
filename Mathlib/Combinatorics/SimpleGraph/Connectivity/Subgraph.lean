@@ -14,7 +14,7 @@ public import Mathlib.Data.Set.Card
 ## Main definitions
 
 * `SimpleGraph.Subgraph.Preconnected` and `SimpleGraph.Subgraph.Connected` give subgraphs
-  connectivity predicates via `SimpleGraph.subgraph.coe`.
+  connectivity predicates via `SimpleGraph.Subgraph.coe`.
 
 -/
 
