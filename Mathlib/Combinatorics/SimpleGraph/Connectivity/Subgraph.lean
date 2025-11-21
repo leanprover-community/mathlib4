@@ -621,33 +621,35 @@ protected lemma Connected.toSubgraph {H : SimpleGraph V} (h : H ≤ G) (hconn : 
   obtain ⟨hpreconn, _⟩ := hconn
   exact Subgraph.connected_iff.mpr ⟨hpreconn.toSubgraph h, by simp⟩
 
-namespace Subgraph
-
-protected lemma Reachable.map_coe {G' : G.Subgraph} {G'' : G'.coe.Subgraph} (f : G'.coe →g G)
-    {u v : G''.verts} (hreachable : G''.coe.Reachable u v) : (G''.map f).coe.Reachable
-      ⟨f u, Set.mem_image_of_mem _ u.2⟩ ⟨f v, Set.mem_image_of_mem _ v.2⟩ := by
+protected lemma Reachable.subgraphMap_coe {G' : G.Subgraph} {G'' : G'.coe.Subgraph}
+    (f : G'.coe →g G) {u v : G''.verts} (hreachable : G''.coe.Reachable u v) :
+    (G''.map f).coe.Reachable ⟨f u, Set.mem_image_of_mem _ u.2⟩
+      ⟨f v, Set.mem_image_of_mem _ v.2⟩ := by
   use hreachable.exists_isPath.choose.map {
     toFun v : (G''.map f).verts := ⟨⇑f v.val, by aesop⟩
     map_rel' r := Relation.map_apply.mpr (by tauto)
   }
+
+protected lemma Reachable.subgraphCoeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph)
+    {u v : G''.verts} (hreachable : G''.coe.Reachable u v) :
+    (Subgraph.coeSubgraph G'').coe.Reachable (Subgraph.vert _ u (by simp_all))
+      (Subgraph.vert _ v (by simp_all)) :=
+  Reachable.subgraphMap_coe G'.hom hreachable
+
+namespace Subgraph
 
 protected lemma Preconnected.map_coe {G' : G.Subgraph} {G'' : G'.coe.Subgraph}
     (f : G'.coe →g G) (hpreconn : G''.Preconnected) : (G''.map f).Preconnected := by
   rw [Subgraph.preconnected_iff]
   intro ⟨u', u, hu, hfu⟩ ⟨v', v, hv, hfv⟩
   simp_rw [← hfu, ← hfv]
-  exact Reachable.map_coe f (hpreconn.coe ⟨u, hu⟩ ⟨v, hv⟩)
+  exact Reachable.subgraphMap_coe f (hpreconn.coe ⟨u, hu⟩ ⟨v, hv⟩)
 
 protected lemma Connected.map_coe {G' : G.Subgraph} {G'' : G'.coe.Subgraph}
     (f : G'.coe →g G) (hconn : G''.Connected) : (G''.map f).Connected := by
   rw [Subgraph.connected_iff] at hconn
   refine Subgraph.connected_iff.mpr ⟨hconn.left.map_coe f, ?_⟩
   simp_all
-
-protected lemma Reachable.coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph) {u v : G''.verts}
-    (hreachable : G''.coe.Reachable u v) : (Subgraph.coeSubgraph G'').coe.Reachable
-      (Subgraph.vert _ u (by simp_all)) (Subgraph.vert _ v (by simp_all)) :=
-  Reachable.map_coe G'.hom hreachable
 
 protected lemma Preconnected.coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph)
     (hpreconn : G''.Preconnected) : (Subgraph.coeSubgraph G'').Preconnected :=
