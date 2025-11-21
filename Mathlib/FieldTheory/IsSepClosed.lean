@@ -63,7 +63,8 @@ To show `Polynomial.Splits p f` for an arbitrary ring homomorphism `f`,
 see `IsSepClosed.splits_codomain` and `IsSepClosed.splits_domain`.
 -/
 class IsSepClosed : Prop where
-  factors_of_separable : ∀ p : k[X], p.Separable → p.Factors
+  -- todo: rename to `splits_of_separable`
+  factors_of_separable : ∀ p : k[X], p.Separable → p.Splits
 
 /-- An algebraically closed field is also separably closed. -/
 instance IsSepClosed.of_isAlgClosed [IsAlgClosed k] : IsSepClosed k :=
@@ -184,7 +185,7 @@ variable (k) {K}
 
 theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → Separable p → ∃ x, p.eval x = 0) :
     IsSepClosed k := by
-  refine ⟨fun p hsep ↦ factors_iff_splits.mpr <| Or.inr ?_⟩
+  refine ⟨fun p hsep ↦ splits_iff_splits.mpr <| Or.inr ?_⟩
   intro q hq hdvd
   have hlc : IsUnit (leadingCoeff q)⁻¹ := IsUnit.inv <| Ne.isUnit <|
     leadingCoeff_ne_zero.2 <| Irreducible.ne_zero hq

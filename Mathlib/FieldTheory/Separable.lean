@@ -505,9 +505,9 @@ theorem exists_finset_of_splits (i : F →+* K) {f : F[X]} (sep : Separable f)
     (sp : Splits (f.map i)) :
     ∃ s : Finset K, f.map i = C (i f.leadingCoeff) * s.prod fun a : K => X - C a := by
   classical
-  obtain ⟨s, h⟩ := (splits_iff_exists_multiset _).1 sp
+  obtain ⟨s, h⟩ := splits_iff_exists_multiset.1 sp
   use s.toFinset
-  rw [h, Finset.prod_eq_multiset_prod, ← Multiset.toFinset_eq]
+  rw [h, Finset.prod_eq_multiset_prod, ← Multiset.toFinset_eq, leadingCoeff_map]
   apply nodup_of_separable_prod
   apply Separable.of_mul_right
   rw [← h]
