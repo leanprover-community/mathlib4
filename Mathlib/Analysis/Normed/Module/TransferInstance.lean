@@ -12,6 +12,8 @@ public import Mathlib.Algebra.Module.TransferInstance
 /-!
 # Transfer algebraic structures across `Equiv`s
 
+In this file, we transfer a (pseudo-)metric space, (semi-)normed additive commutive group
+and normed space structures across an equivalence.
 This continues the pattern set in `Mathlib/Algebra/Module/TransferInstance.lean`.
 -/
 

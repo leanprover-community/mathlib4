@@ -9,6 +9,14 @@ public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.Topology.Algebra.Module.Equiv
 
+/-!
+# Transfer algebraic structures across `Equiv`s
+
+In this file, we transfer a topological space and continuous linear equivalence structure
+across an equivalence.
+This continues the pattern set in `Mathlib/Algebra/Normed/Module/TransferInstance.lean`.
+-/
+
 variable {α β : Type*} {𝕜 : Type*} [NormedField 𝕜]
 
 namespace Equiv
@@ -46,9 +54,7 @@ def continuousLinearEquiv [TopologicalSpace β] [AddCommMonoid β] [Module 𝕜 
       exact this
     continuous_invFun := by
       rw [continuous_def]
-      intro s hs
-      change IsOpen (e.symm ⁻¹' s)
-      exact hs
+      exact fun s hs ↦ hs
   }
 
 end Equiv
