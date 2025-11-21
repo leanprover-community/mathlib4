@@ -81,6 +81,23 @@ theorem finiteMultiplicity_of_degree_pos_of_monic (hp : (0 : WithBot ℕ) < degr
           (add_pos_of_pos_of_nonneg (by rwa [one_mul]) (Nat.zero_le _)))
         this⟩
 
+/-- See `Polynomial.eq_leadingCoeff_mul_of_monic_of_dvd_of_natDegree_le`
+for the other multiplication order. That version, unlike this one, requires commutativity. -/
+lemma eq_mul_leadingCoeff_of_monic_of_dvd_of_natDegree_le {p q : R[X]}
+    (hp : p.Monic) (hdvd : p ∣ q) (hdeg : q.natDegree ≤ p.natDegree) :
+    q = p * C q.leadingCoeff := by
+  obtain ⟨r, rfl⟩ := hdvd
+  obtain rfl | hr := eq_or_ne r 0
+  · simp
+  have : r.natDegree = 0 := by simpa [hp.natDegree_mul' hr] using hdeg
+  rw [eq_C_of_natDegree_eq_zero this]
+  simp [leadingCoeff_monic_mul hp]
+
+lemma eq_of_monic_of_dvd_of_natDegree_le {p q : R[X]} (hp : p.Monic)
+    (hq : q.Monic) (hdvd : p ∣ q) (hdeg : q.natDegree ≤ p.natDegree) : q = p := by
+  rw [eq_mul_leadingCoeff_of_monic_of_dvd_of_natDegree_le hp hdvd hdeg]
+  simp [hq]
+
 end Semiring
 
 section Ring
@@ -804,25 +821,10 @@ lemma associated_of_dvd_of_degree_eq {K} [Field K] {p q : K[X]} (hpq : p ∣ q)
   (Classical.em (q = 0)).elim (fun hq ↦ (show p = q by simpa [hq] using h₁) ▸ Associated.refl p)
     (associated_of_dvd_of_natDegree_le hpq · (natDegree_le_natDegree h₁.ge))
 
-lemma eq_mul_leadingCoeff_of_monic_of_dvd_of_natDegree_le {R} [Semiring R] {p q : R[X]}
-    (hp : p.Monic) (hdvd : p ∣ q) (hdeg : q.natDegree ≤ p.natDegree) :
-    q = p * C q.leadingCoeff := by
-  obtain ⟨r, rfl⟩ := hdiv
-  obtain rfl | hr := eq_or_ne r 0
-  · simp
-  have : r.natDegree = 0 := by simpa [hp.natDegree_mul' hr] using hdeg
-  rw [eq_C_of_natDegree_eq_zero this]
-  simp [leadingCoeff_monic_mul hp]
-
 lemma eq_leadingCoeff_mul_of_monic_of_dvd_of_natDegree_le {R} [CommSemiring R] {p q : R[X]}
-    (hp : p.Monic) (hdiv : p ∣ q) (hdeg : q.natDegree ≤ p.natDegree) :
+    (hp : p.Monic) (hdvd : p ∣ q) (hdeg : q.natDegree ≤ p.natDegree) :
     q = C q.leadingCoeff * p := by
-  rw [mul_comm, ← eq_mul_leadingCoeff_of_monic_of_dvd_of_natDegree_le hp hdiv hdeg]
-
-lemma eq_of_monic_of_dvd_of_natDegree_le {R} [Semiring R] {p q : R[X]} (hp : p.Monic)
-    (hq : q.Monic) (hdiv : p ∣ q) (hdeg : q.natDegree ≤ p.natDegree) : q = p := by
-  rw [eq_mul_leadingCoeff_of_monic_of_dvd_of_natDegree_le hp hdiv hdeg]
-  simp [hq]
+  rw [mul_comm, ← eq_mul_leadingCoeff_of_monic_of_dvd_of_natDegree_le hp hdvd hdeg]
 
 end CommRing
 
