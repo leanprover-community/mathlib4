@@ -442,14 +442,14 @@ theorem continuousAt_subtype_val {p : X → Prop} {x : Subtype p} :
 
 /-- The induced homeomorphism between two equal subtypes of a given topological space:
 the underlying equivalence is `Equiv.subtypeEquivProp`. -/
-def Homeomorph.subtypes_of_eq {p q : X → Prop} (hpq : p = q) : Subtype p ≃ₜ Subtype q where
+def Homeomorph.ofEqSubtypes {p q : X → Prop} (hpq : p = q) : Subtype p ≃ₜ Subtype q where
   toEquiv := Equiv.subtypeEquivProp hpq
   continuous_toFun := continuous_id.subtype_map (fun x ↦ by simp [hpq])
   continuous_invFun := continuous_id.subtype_map (fun x ↦ by simp [hpq])
 
 @[simp]
-lemma Homeomorph.subtypes_of_eq_toEquiv {p q : X → Prop} (hpq : p = q) :
-    (Homeomorph.subtypes_of_eq hpq).toEquiv = Equiv.subtypeEquivProp hpq := rfl
+lemma Homeomorph.ofEqSubtypes_toEquiv {p q : X → Prop} (hpq : p = q) :
+    (Homeomorph.ofEqSubtypes hpq).toEquiv = Equiv.subtypeEquivProp hpq := rfl
 
 theorem Subtype.dense_iff {s : Set X} {t : Set s} : Dense t ↔ s ⊆ closure ((↑) '' t) := by
   rw [IsInducing.subtypeVal.dense_iff, SetCoe.forall]

@@ -1234,10 +1234,10 @@ def ofEq {p q : Submodule R M} (h : p = q) : p ≃L[R] q where
   toLinearEquiv := LinearEquiv.ofEq _ _ h
   continuous_toFun := by
     have h' : (fun x ↦ x ∈ p) = (fun x ↦ x ∈ q) := by simp [h]
-    exact (Homeomorph.subtypes_of_eq h').continuous
+    exact (Homeomorph.ofEqSubtypes h').continuous
   continuous_invFun := by
     have h' : (fun x ↦ x ∈ p) = (fun x ↦ x ∈ q) := by simp [h]
-    exact (Homeomorph.subtypes_of_eq h').symm.continuous
+    exact (Homeomorph.ofEqSubtypes h').symm.continuous
 
 /--
 A continuous linear equivalence of two modules restricts to a continuous linear equivalence
