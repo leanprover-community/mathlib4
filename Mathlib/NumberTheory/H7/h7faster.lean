@@ -736,7 +736,7 @@ lemma house_muls (s t : ℕ) (h : s ≤ t) (_ : 0 ≤ t) :
 
 lemma house_add_mul_leq :
     house (h7.c₁ • (↑(a q t) + b q t • h7.β')) ≤
-     (|h7.c₁| * |(q : ℤ)|) * (1 + house (h7.β')) := by stop
+     (|h7.c₁| * |(q : ℤ)|) * (1 + house (h7.β')) := by
   calc _ ≤ house (h7.c₁ • (a q t : ℤ) + h7.c₁ • (b q t : ℤ) • h7.β') := ?_
        _ ≤ house (h7.c₁ • ((a q t : ℤ) : h7.K)) +
         house (h7.c₁ • ((b q t : ℤ) • h7.β')) := ?_
@@ -875,7 +875,7 @@ lemma c_coeffspow' :
 include hq0 h2mq in
 lemma hAkl : --∀ (k : Fin (h7.m * h7.n q)) (l : Fin (q * q)),
   house ((algebraMap (𝓞 h7.K) h7.K) ((A h7 q) hq0 h2mq u t)) ≤
-      (h7.c₃ ^ (h7.n q : ℝ) * (h7.n q : ℝ) ^ (((h7.n q : ℝ) - 1) / 2))  := by { stop
+      (h7.c₃ ^ (h7.n q : ℝ) * (h7.n q : ℝ) ^ (((h7.n q : ℝ) - 1) / 2))  := by {
     unfold A sys_coe
     simp only [RingOfIntegers.restrict, RingOfIntegers.map_mk]
     --have:= Real.rpow_natCast (x:=↑(h7.n q : ℝ)) (n:= (((h7.n q) - 1) / 2))
@@ -1522,7 +1522,7 @@ lemma hfrac : ↑(h7.n q : ℝ) * ↑(h7.n q : ℝ) ^ ((↑(h7.n q : ℝ) - 1) /
 open NumberField.house in
 lemma fromlemma82_bound :
   house (algebraMap (𝓞 h7.K) h7.K (h7.η q hq0 h2mq t)) ≤
-     h7.c₄ ^ (h7.n q : ℝ) * ((h7.n q : ℝ) ^ (((h7.n q : ℝ)+ 1)/2)) := by stop
+     h7.c₄ ^ (h7.n q : ℝ) * ((h7.n q : ℝ) ^ (((h7.n q : ℝ)+ 1)/2)) := by
   calc _ ≤  house.c₁ h7.K * (house.c₁ h7.K * ↑(q * q) *
     (h7.c₃ ^ (h7.n q : ℝ) * (h7.n q : ℝ) ^ (((h7.n q : ℝ) - 1) / 2))) ^
       ((h7.m * h7.n q : ℝ) / (↑(q * q : ℝ) - ↑(h7.m * h7.n q ))) := ?_
@@ -1784,7 +1784,7 @@ variable (hγ : h7.α ^ h7.β = h7.σ h7.γ')
 
 lemma sys_coe_bar :
   Complex.exp (h7.ρ q t * h7.l q u) * (h7.ρ q t ^ (h7.k q u : ℕ) *
-  Complex.log h7.α ^ (-(h7.k q u) : ℤ)) = h7.σ (h7.sys_coe q u t) := by { stop
+  Complex.log h7.α ^ (-(h7.k q u) : ℤ)) = h7.σ (h7.sys_coe q u t) := by {
   calc
       _ = cexp (h7.ρ q t * h7.l q u) *
           (((↑(a q t) + ↑(b q t) • h7.β) *
@@ -2439,7 +2439,7 @@ lemma c₁bρ (a b n : ℕ) : 1 ≤ n → h7.k q u ≤ n - 1 → 1 ≤ (a : ℕ)
   exact h7.isIntegral_c₁β}
 
 lemma ρ_is_int :
-  IsIntegral ℤ (h7.cρ q hq0 h2mq • rho h7 q hq0 h2mq) := by stop
+  IsIntegral ℤ (h7.cρ q hq0 h2mq • rho h7 q hq0 h2mq) := by
   unfold rho
   unfold cρ
   unfold sys_coe_r
@@ -6653,9 +6653,34 @@ theorem gelfondSchneider (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgeb
   haveI : DecidableEq (h7.K →+* ℂ) := h7.hd
 
   let q : ℕ := 2 * h7.m * ((6 * h7.h) * Nat.ceil ( (h7.c₁₅)^4))
-  have hq0 : 0 < q := sorry
-  have h2mq : 2 * h7.m ∣ q ^ 2 := sorry
+  have hq0 : 0 < q := by {
+    unfold q
+    simp only [CanonicallyOrderedAdd.mul_pos, Nat.ofNat_pos, Nat.ceil_pos]
+    constructor
+    simp only [true_and]
+    exact hm h7
+    constructor
+    · simp only [true_and]
+      unfold h; exact Module.finrank_pos
+    · apply pow_pos
+      have := h7.c15_geg_1
+      linarith
 
+  }
+  have h2mq : 2 * h7.m ∣ q ^ 2 := by {
+    unfold q
+    rw [pow_two]
+    refine Nat.mul_dvd_mul ?_ ?_
+    · simp only [mul_assoc]
+      exact Nat.dvd_mul_right 2 (h7.m * (6 * (h7.h * ⌈h7.c₁₅ ^ 4⌉₊)))
+    · nth_rw 2 [mul_comm]
+      simp only [mul_assoc]
+      exact Nat.dvd_mul_right h7.m (2 * (6 * (h7.h * ⌈h7.c₁₅ ^ 4⌉₊)))
+
+
+
+
+  }
   let u : Fin (h7.m * h7.n q) := ⟨0, by {
     apply mul_pos; exact hm h7; unfold n;
     apply Nat.div_pos;
@@ -6669,7 +6694,7 @@ theorem gelfondSchneider (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgeb
   have hnr : (h7.n q : ℝ) ≤ (h7.r q hq0 h2mq : ℝ) := by
     exact mod_cast n_leq_r h7 q hq0 h2mq
 
-  have H1 : (2*h7.m) * (6* h7.h) ≤ q := by { stop
+  have H1 : (2*h7.m) * (6* h7.h) ≤ q := by {
     unfold q
     apply mul_le_mul
     · simp only [le_refl]
@@ -6685,7 +6710,7 @@ theorem gelfondSchneider (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgeb
     · positivity
     · positivity
   }
-  have H2 : (2*h7.m) * (h7.c₁₅)^4 ≤ q := by { stop
+  have H2 : (2*h7.m) * (h7.c₁₅)^4 ≤ q := by {
     unfold q
     simp only [mul_assoc]
     simp only [Nat.cast_mul, Nat.cast_ofNat, Nat.ofNat_pos, mul_le_mul_iff_right₀]
@@ -6712,7 +6737,7 @@ theorem gelfondSchneider (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgeb
 
   }
 
-  have H3 : 6* h7.h ≤ h7.n q := by { stop
+  have H3 : 6* h7.h ≤ h7.n q := by {
     unfold n
     calc _ ≤ ((2*h7.m) * (6* h7.h))^2 /(2 * h7.m) := ?_
          _ ≤  h7.n q := ?_
@@ -6732,7 +6757,7 @@ theorem gelfondSchneider (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgeb
       exact Nat.pow_le_pow_left H1 2
   }
 
-  have H4 : (h7.c₁₅)^4 ≤ (h7.n q : ℝ) := by { stop
+  have H4 : (h7.c₁₅)^4 ≤ (h7.n q : ℝ) := by {
     unfold n q
     refine Nat.ceil_le.mp ?_
     refine (Nat.le_div_iff_mul_le ?_).mpr ?_
@@ -6832,7 +6857,6 @@ theorem gelfondSchneider (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgeb
               ring_nf
               simp only [le_refl]
             · simp only [add_le_add_iff_right]
-              rw [mul_comm]
               apply mul_le_mul
               · simp only [le_refl]
               · norm_cast
@@ -6846,12 +6870,55 @@ theorem gelfondSchneider (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgeb
     apply this
     simp only [Real.rpow_ofNat]
     apply H6
-    · sorry
-    · sorry
-    · sorry
-    · sorry
-    · sorry
-    · sorry
+    · exact c15_nonneg h7
+    · have Hh : 0 < h7.h := by {
+        unfold h; exact Module.finrank_pos}
+      apply div_ne_zero
+      · have : 3 * h7.h < (h7.r q hq0 h2mq : ℝ) := by {
+          calc _ < (6 * h7.h : ℝ)  := by {
+            norm_cast
+            omega
+          }
+               _ ≤ (h7.r q hq0 h2mq :ℝ) := by {
+                norm_cast
+               }
+        }
+        grind
+
+
+
+        -- have H11 : -(3 * h7.h : ℝ) ≠ 0 := sorry
+        -- rw [sub_eq_zero] at HC
+        -- unfold h at *
+        -- rw [← HC] at H11
+        -- simp only [ne_eq, neg_eq_zero, Nat.cast_eq_zero] at H11
+        -- linarith
+
+      · simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true]
+
+    · positivity
+    · apply pow_nonneg
+      exact c15_nonneg h7
+
+    · positivity
+    · have Hh : 0 < h7.h := by {
+        unfold h; exact Module.finrank_pos}
+      unfold h at *
+      simp only [inv_div, Nat.ofNat_pos, div_pos_iff_of_pos_left, sub_pos, gt_iff_lt]
+      have : 3 * h7.h < (h7.r q hq0 h2mq : ℝ) := by {
+          calc _ < (6 * h7.h : ℝ)  := by {
+            norm_cast
+
+            refine Nat.mul_lt_mul_of_pos_right ?_ Hh
+            simp only [Nat.reduceLT]
+          }
+               _ ≤ (h7.r q hq0 h2mq :ℝ) := by {
+                norm_cast
+               }
+        }
+      unfold h at *
+      exact this
+
 
 
 
