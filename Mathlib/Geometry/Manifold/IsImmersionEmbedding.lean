@@ -338,13 +338,17 @@ lemma submoduleMap_symm_apply
     (e : M ≃ₛₗ[σ₁₂] M₂) (p : Submodule R M) (x : p.map e) :
   (e.submoduleMap p).symm x = e.symm x := by rfl
 
+-- XXX: should p and q be implicit or explicit in LinearEquiv.ofEq?
 /-- Continuous linear equivalence between two equal submodules. -/
-def _root_.ContinuousLinearEquiv.ofEq {p q : Submodule R M} (h : p = q) : p ≃L[R] q :=
-  { Equiv.setCongr (congr_arg _ h) with
-    map_smul' := fun _ _ => rfl
-    map_add' := fun _ _ => rfl
-    continuous_toFun := sorry
-    continuous_invFun := sorry }
+def _root_.ContinuousLinearEquiv.ofEq {p q : Submodule R M} (h : p = q) : p ≃L[R] q where
+  toLinearEquiv := LinearEquiv.ofEq _ _ h
+  continuous_toFun := by
+    -- want a better lemma: equal subtypes define a homeomorphism
+    dsimp
+    have h' : (fun x ↦ x ∈ p) = (fun x ↦ x ∈ q) := by simp [h]
+    change Continuous (Equiv.subtypeEquivProp h')
+    sorry -- not in mathlib
+  continuous_invFun := sorry -- should follow from toFun proof
 
 /-- A continuous linear equivalence which maps a submodule of one module onto another,
 restricts to a continuous linear equivalence of the two submodules. -/
@@ -393,6 +397,7 @@ theorem ofSubmodule'_symm_apply (f : M ≃SL[σ₁₂] M₂) (U : Submodule R₂
 
 end
 
+-- TODO: remove completeness hypotheses using ContinuousLinearEquiv.ofSubmodules
 /-- If `f` is an immersion at `x`, then any complement used in this definition is
 isomorphic to the `smallComplement`. -/
 -- Note: without completeness assumptions, one can still find a `LinearEquiv`:
