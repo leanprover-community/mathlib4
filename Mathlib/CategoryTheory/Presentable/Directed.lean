@@ -262,8 +262,8 @@ def Diagram.max (D₁ D₂ : Diagram J κ) :
     rintro _ _ _ (h | h)
     · exact Or.inl (D₁.tgt h)
     · exact Or.inr (D₂.tgt h)
-  hW := .union D₁.hW D₂.hW (Cardinal.IsRegular.aleph0_le Fact.out)
-  hP := .union D₁.hP D₂.hP (Cardinal.IsRegular.aleph0_le Fact.out)
+  hW := .sup D₁.hW D₂.hW (Cardinal.IsRegular.aleph0_le Fact.out)
+  hP := .sup D₁.hP D₂.hP (Cardinal.IsRegular.aleph0_le Fact.out)
 
 end exists_cardinal_directed
 
