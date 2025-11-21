@@ -6,6 +6,8 @@ Runs `lake build --no-build` to collect warnings, then for each warning:
 - Goes to the exact file:line:column position
 - Tries to match the deprecated name (handling both qualified and unqualified names)
 - Replaces it with the suggested replacement
+
+There is a known issue with multiple deprecation warnings that are generated at the same location because of `<;>` or similar combinator. The script will issue warnings about not being able to make the subsequent replacements, but will have correctly made the first replacement.
 """
 
 import subprocess
