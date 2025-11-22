@@ -163,6 +163,8 @@ theorem coe_injective : Function.Injective ((↑) : M → DivisibleHull M) :=
 theorem coe_inj {m m' : M} : (m : DivisibleHull M) = ↑m' ↔ m = m' :=
   coe_injective.eq_iff
 
+noncomputable instance : Module ℚ≥0 (DivisibleHull M) := LocalizedModule.moduleOfIsLocalization ..
+
 end TorsionFree
 
 section Group
@@ -182,7 +184,6 @@ theorem qsmul_def (a : ℚ) (x : DivisibleHull M) :
 theorem zero_qsmul (x : DivisibleHull M) : (0 : ℚ) • x = 0 := by
   simp [qsmul_def]
 
-attribute [local instance] LocalizedModule.moduleOfIsLocalization in
 theorem qsmul_of_nonneg {a : ℚ} (h : 0 ≤ a) (x : DivisibleHull M) :
     a • x = (show ℚ≥0 from ⟨a, h⟩) • x := by
   have := h.eq_or_lt
@@ -207,7 +208,6 @@ theorem qsmul_mk (a : ℚ) (m : M) (s : ℕ+) :
       simpa using h
     simp [nnqsmul_mk, this, ← neg_mk]
 
-attribute [local instance] LocalizedModule.moduleOfIsLocalization in
 noncomputable
 instance : Module ℚ (DivisibleHull M) where
   one_smul x := by
@@ -329,7 +329,6 @@ end LinearOrder
 section OrderedGroup
 variable {M : Type*} [AddCommGroup M] [LinearOrder M] [IsOrderedAddMonoid M]
 
-attribute [local instance] LocalizedModule.moduleOfIsLocalization in
 instance : IsStrictOrderedModule ℚ (DivisibleHull M) where
   smul_lt_smul_of_pos_left a ha b c h := by
     simp_rw [qsmul_of_nonneg ha.le]
