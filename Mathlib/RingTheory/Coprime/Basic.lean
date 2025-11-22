@@ -25,7 +25,7 @@ public import Mathlib.Tactic.Ring
 
 This file also contains lemmas about `IsRelPrime` parallel to `IsCoprime`.
 
-See also `RingTheory.Coprime.Lemmas` for further development of coprime elements.
+See also `Mathlib/RingTheory/Coprime/Lemmas.lean` for further development of coprime elements.
 -/
 
 @[expose] public section

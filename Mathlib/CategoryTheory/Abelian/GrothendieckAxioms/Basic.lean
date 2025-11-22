@@ -38,7 +38,7 @@ For `AB4` and `AB5`, we only require left exactness as right exactness is automa
 A comparison with Grothendieck's original formulation of the properties can be found in the
 comments of the linked Stacks page.
 Exactness as the preservation of short exact sequences is introduced in
-`CategoryTheory.Abelian.Exact`.
+`Mathlib/CategoryTheory/Abelian/Exact.lean`.
 
 We do not require `Abelian` in the definition of `AB4` and `AB5` because these classes represent
 individual axioms. An `AB4` category is an _abelian_ category satisfying `AB4`, and similarly for

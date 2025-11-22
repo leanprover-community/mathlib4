@@ -39,7 +39,7 @@ if `A_q` is formally unramified over `R`.
 
 If `A` is of finite type over `R` and `q` is lying over `p`, then this is equivalent to
 `κ(q)/κ(p)` being separable and `pA_q = qA_q`.
-See `Algebra.isUnramifiedAt_iff_map_eq` in `RingTheory.Unramified.LocalRing` -/
+See `Algebra.isUnramifiedAt_iff_map_eq` in `Mathlib/RingTheory/Unramified/LocalRing.lean` -/
 abbrev IsUnramifiedAt (q : Ideal A) [q.IsPrime] : Prop :=
   FormallyUnramified R (Localization.AtPrime q)
 

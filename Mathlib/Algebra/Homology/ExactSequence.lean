@@ -264,7 +264,7 @@ lemma Exact.δ₀ {S : ComposableArrows C (n + 2)} (hS : S.Exact) :
 
 /-- If `S : ComposableArrows C (n + 2)` is such that the first two arrows form
 an exact sequence and that the tail `S.δ₀` is exact, then `S` is also exact.
-See `ShortComplex.SnakeInput.snake_lemma` in `Algebra.Homology.ShortComplex.SnakeLemma`
+See `ShortComplex.SnakeInput.snake_lemma` in `Mathlib/Algebra/Homology/ShortComplex/SnakeLemma.lean`
 for a use of this lemma. -/
 lemma exact_of_δ₀ {S : ComposableArrows C (n + 2)}
     (h : (mk₂ (S.map' 0 1) (S.map' 1 2)).Exact) (h₀ : S.δ₀.Exact) : S.Exact := by

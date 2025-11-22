@@ -13,10 +13,10 @@ public import Mathlib.CategoryTheory.Shift.Pullback
 # The shift on the opposite category of a pretriangulated category
 
 Let `C` be a (pre)triangulated category. We already have a shift on `Cᵒᵖ` given
-by `CategoryTheory.Shift.Opposite`, but this is not the shift that we want to
+by `Mathlib/CategoryTheory/Shift/Opposite.lean`, but this is not the shift that we want to
 make `Cᵒᵖ` into a (pre)triangulated category.
 The correct shift on `Cᵒᵖ` is obtained by combining the constructions in the files
-`CategoryTheory.Shift.Opposite` and `CategoryTheory.Shift.Pullback`.
+`Mathlib/CategoryTheory/Shift/Opposite.lean` and `Mathlib/CategoryTheory/Shift/Pullback.lean`.
 When the user opens `CategoryTheory.Pretriangulated.Opposite`, the
 category `Cᵒᵖ` is equipped with the shift by `ℤ` such that
 shifting by `n : ℤ` on `Cᵒᵖ` corresponds to the shift by

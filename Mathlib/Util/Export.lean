@@ -202,7 +202,7 @@ end
 
 def runExportM {α : Type} (m : ExportM α) : CoreM α := m.run' default
 
--- #eval runExportM (exportDef `Lean.Expr)
+-- #eval runExportM (exportDef `Mathlib/Lean/Expr.lean)
 end Export
 
 end Lean

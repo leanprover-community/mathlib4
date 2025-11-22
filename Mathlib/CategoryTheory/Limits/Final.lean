@@ -56,7 +56,7 @@ The explanation for this is that the 'co' prefix here is *not* the usual categor
 indicating duality, but rather indicating the sense of "along with".
 
 ## See also
-In `CategoryTheory.Filtered.Final` we give additional equivalent conditions in the case that
+In `Mathlib/CategoryTheory/Filtered/Final.lean` we give additional equivalent conditions in the case that
 `C` is filtered.
 
 ## Future work

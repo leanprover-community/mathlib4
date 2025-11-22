@@ -44,7 +44,7 @@ def productConeIsLimit : IsLimit (productCone Z) where
     exact DFunLike.congr_fun (congr_arg Hom.hom (w ⟨i⟩)) x
 
 -- While we could use this to construct a `HasProducts (ModuleCat R)` instance,
--- we already have `HasLimits (ModuleCat R)` in `Algebra.Category.ModuleCat.Limits`.
+-- we already have `HasLimits (ModuleCat R)` in `Mathlib/Algebra/Category/ModuleCat/Limits.lean`.
 variable [HasProduct Z]
 
 /-- The categorical product of a family of objects in `ModuleCat`

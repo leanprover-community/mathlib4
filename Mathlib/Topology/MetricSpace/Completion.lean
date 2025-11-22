@@ -15,7 +15,7 @@ public import Mathlib.Topology.UniformSpace.Completion
 /-!
 # The completion of a metric space
 
-Completion of uniform spaces are already defined in `Topology.UniformSpace.Completion`. We show
+Completion of uniform spaces are already defined in `Mathlib/Topology/UniformSpace/Completion.lean`. We show
 here that the uniform space completion of a metric space inherits a metric space structure,
 by extending the distance to the completion and checking that it is indeed a distance, and that
 it defines the same uniformity as the already defined uniform structure on the completion

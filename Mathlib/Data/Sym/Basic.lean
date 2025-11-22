@@ -19,7 +19,7 @@ consists of homogeneous n-tuples modulo permutations by the symmetric
 group.
 
 The special case of 2-tuples is called the symmetric square, which is
-addressed in more detail in `Data.Sym.Sym2`.
+addressed in more detail in `Mathlib/Data/Sym/Sym2.lean`.
 
 TODO: This was created as supporting material for `Sym2`; it
 needs a fleshed-out interface.

@@ -25,7 +25,7 @@ a nonzero multiple of a linear isometry.
   and multiplications by nonzero constants as continuous linear maps
 * `isConformalMap_of_subsingleton`: all continuous linear maps on singleton spaces are conformal
 
-See `Analysis.InnerProductSpace.ConformalLinearMap` for
+See `Mathlib/Analysis/InnerProductSpace/ConformalLinearMap.lean` for
 * `isConformalMap_iff`: a map between inner product spaces is conformal
   iff it preserves inner products up to a fixed scalar factor.
 

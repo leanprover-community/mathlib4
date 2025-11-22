@@ -27,7 +27,7 @@ concyclic.
 
 Note that most of the formal proof is actually proving nondegeneracy conditions needed for that
 angle chase / concyclicity argument, where an informal solution doesn't discuss those conditions
-at all. Also note that (as described in `Geometry.Euclidean.Angle.Oriented.Basic`) the oriented
+at all. Also note that (as described in `Mathlib/Geometry/Euclidean/Angle/Oriented/Basic.lean`) the oriented
 angles used are modulo `2 * π`, so parts of the angle chase that are only valid for angles modulo
 `π` (as used in the informal solution) are represented as equalities of twice angles, which we write
 as `(2 : ℤ) • ∡ _ _ _ = (2 : ℤ) • ∡ _ _ _`.

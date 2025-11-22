@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Lean.Meta
 /-!
-# Additions to `Lean.Elab.Tactic.Basic`
+# Additions to `Mathlib/Lean/Elab/Tactic/Basic.lean`
 -/
 
 @[expose] public section

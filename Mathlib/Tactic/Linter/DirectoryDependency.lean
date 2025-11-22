@@ -167,7 +167,7 @@ For directories which are low in the import hierarchy, this opt-out approach is 
 (fewer updates needed) and needs less configuration.
 
 We always allow imports of `Init`, `Lean`, `Std`, `Qq` and
-`Mathlib.Init` (as well as their transitive dependencies.)
+`Mathlib/Init.lean` (as well as their transitive dependencies.)
 -/
 def allowedImportDirs : NamePrefixRel := .ofArray #[
   -- This is used to test the linter.
@@ -181,7 +181,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`MathlibTest.Header, `Plausible),
   (`MathlibTest.Header, `ProofWidgets),
   (`MathlibTest.Header, `Qq),
-  -- (`MathlibTest.Header, `Mathlib.Tactic),
+  -- (`MathlibTest.Header, `Mathlib/Tactic.lean),
   -- (`MathlibTest.Header, `Mathlib.Deprecated),
   (`MathlibTest.Header, `Batteries),
   (`MathlibTest.Header, `Lake),
@@ -189,7 +189,7 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Util, `Batteries),
   (`Mathlib.Util, `Mathlib.Lean),
   (`Mathlib.Util, `Mathlib.Tactic),
-  -- TODO: reduce this dependency by upstreaming `Data.String.Defs to batteries
+  -- TODO: reduce this dependency by upstreaming `Mathlib/Data/String/Defs.lean to batteries
   (`Mathlib.Util.FormatTable, `Mathlib.Data.String.Defs),
 
   (`Mathlib.Lean, `Batteries.Tactic.Lint),
@@ -281,8 +281,8 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
 should not import modules with the second prefix (except if specifically allowed in
 `overrideAllowedImportDirs`).
 
-For example, ``(`Mathlib.Algebra.Notation, `Mathlib.Algebra)`` is in `forbiddenImportDirs` and
-``(`Mathlib.Algebra.Notation, `Mathlib.Algebra.Notation)`` is in `overrideAllowedImportDirs`
+For example, ``(`Mathlib/Algebra/Notation.lean, `Mathlib.Algebra)`` is in `forbiddenImportDirs` and
+``(`Mathlib/Algebra/Notation.lean, `Mathlib/Algebra/Notation.lean)`` is in `overrideAllowedImportDirs`
 because modules in `Mathlib/Algebra/Notation.lean` cannot import modules in `Mathlib.Algebra` that are
 outside `Mathlib/Algebra/Notation.lean`.
 -/
@@ -597,8 +597,8 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
 prefix are allowed to import modules with the second prefix, even if disallowed in
 `forbiddenImportDirs`.
 
-For example, ``(`Mathlib.Algebra.Notation, `Mathlib.Algebra)`` is in `forbiddenImportDirs` and
-``(`Mathlib.Algebra.Notation, `Mathlib.Algebra.Notation)`` is in `overrideAllowedImportDirs`
+For example, ``(`Mathlib/Algebra/Notation.lean, `Mathlib.Algebra)`` is in `forbiddenImportDirs` and
+``(`Mathlib/Algebra/Notation.lean, `Mathlib/Algebra/Notation.lean)`` is in `overrideAllowedImportDirs`
 because modules in `Mathlib/Algebra/Notation.lean` cannot import modules in `Mathlib.Algebra` that are
 outside `Mathlib/Algebra/Notation.lean`.
 -/

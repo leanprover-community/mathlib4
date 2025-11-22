@@ -90,7 +90,7 @@ for the more fine grained definitions above as they apply more generally.
 
 * `MeasureTheory.Measure.OuterRegular μ`: a typeclass registering that a measure `μ` on a
   topological space is outer regular.
-* `MeasureTheory.Measure.Regular μ`: a typeclass registering that a measure `μ` on a topological
+* `Mathlib/MeasureTheory/Measure/Regular.lean μ`: a typeclass registering that a measure `μ` on a topological
   space is regular.
 * `MeasureTheory.Measure.WeaklyRegular μ`: a typeclass registering that a measure `μ` on a
   topological space is weakly regular.

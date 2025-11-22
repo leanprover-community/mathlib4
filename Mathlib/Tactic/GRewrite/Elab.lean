@@ -11,7 +11,7 @@ public meta import Mathlib.Tactic.GRewrite.Core
 
 # The generalized rewriting tactic
 
-This file defines the tactics that use the backend defined in `Mathlib.Tactic.GRewrite.Core`:
+This file defines the tactics that use the backend defined in `Mathlib/Tactic/GRewrite/Core.lean`:
 - `grewrite`
 - `grw`
 - `apply_rw`

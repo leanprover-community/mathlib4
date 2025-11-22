@@ -78,7 +78,7 @@ structure ModelType where
   [nonempty' : Nonempty Carrier]
 
 -- Porting note: In Lean4, other instances precedes `FirstOrder.Language.Theory.ModelType.struc`,
--- it's issues in `ModelTheory.Satisfiability`. So, we increase these priorities.
+-- it's issues in `Mathlib/ModelTheory/Satisfiability.lean`. So, we increase these priorities.
 attribute [instance 2000] ModelType.struc ModelType.is_model ModelType.nonempty'
 
 namespace ModelType

@@ -15,8 +15,8 @@ public import Mathlib.Order.Ideal
 Throughout this file, `P` is at least a preorder, but some sections require more structure,
 such as a bottom element, a top element, or a join-semilattice structure.
 
-- `Order.PFilter P`: The type of nonempty, downward directed, upward closed subsets of `P`.
-               This is dual to `Order.Ideal`, so it simply wraps `Order.Ideal Pᵒᵈ`.
+- `Mathlib/Order/PFilter.lean P`: The type of nonempty, downward directed, upward closed subsets of `P`.
+               This is dual to `Mathlib/Order/Ideal.lean`, so it simply wraps `Mathlib/Order/Ideal.lean Pᵒᵈ`.
 - `Order.IsPFilter P`: a predicate for when a `Set P` is a filter.
 
 Note the relation between `Order/Filter` and `Order/PFilter`: for any type `α`,
@@ -56,7 +56,7 @@ theorem IsPFilter.of_def [Preorder P] {F : Set P} (nonempty : F.Nonempty)
     IsPFilter F :=
   ⟨fun _ _ _ _ => mem_of_le ‹_› ‹_›, nonempty, directed⟩
 
-/-- Create an element of type `Order.PFilter` from a set satisfying the predicate
+/-- Create an element of type `Mathlib/Order/PFilter.lean` from a set satisfying the predicate
 `Order.IsPFilter`. -/
 def IsPFilter.toPFilter [Preorder P] {F : Set P} (h : IsPFilter F) : PFilter P :=
   ⟨h.toIdeal⟩

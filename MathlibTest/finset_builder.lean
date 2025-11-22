@@ -8,11 +8,11 @@ open Finset
 
 variable {α : Type*} (p : α → Prop) [DecidablePred p]
 
-/-! ## `Data.Finset.Basic` -/
+/-! ## `Mathlib/Data/Finset/Basic.lean` -/
 
 example (s : Finset α) : {x ∈ s | p x} = s.filter p := rfl
 
-/-! ## `Data.Fintype.Basic` -/
+/-! ## `Mathlib/Data/Fintype/Basic.lean` -/
 
 section Fintype
 variable [Fintype α]
@@ -41,7 +41,7 @@ example (a : α) : {x ≠ a | p x} = setOf fun x => x ≠ a ∧ p x := rfl
 
 end Fintype
 
-/-! ## `Order.Interval.Finset.Basic` -/
+/-! ## `Mathlib/Order/Interval/Finset/Basic.lean` -/
 
 section LocallyFiniteOrderBot
 variable [Preorder α] [LocallyFiniteOrderBot α]

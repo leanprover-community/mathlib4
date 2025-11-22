@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Bicategory.Kan.IsKan
 # Existence of Kan extensions and Kan lifts in bicategories
 
 We provide the propositional typeclass `HasLeftKanExtension f g`, which asserts that there
-exists a left Kan extension of `g` along `f`. See `CategoryTheory.Bicategory.Kan.IsKan` for
+exists a left Kan extension of `g` along `f`. See `Mathlib/CategoryTheory/Bicategory/Kan/IsKan.lean` for
 the definition of left Kan extensions. Under the assumption that `HasLeftKanExtension f g`,
 we define the left Kan extension `lan f g` by using the axiom of choice.
 

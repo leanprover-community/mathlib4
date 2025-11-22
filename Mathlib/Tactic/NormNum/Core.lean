@@ -17,7 +17,7 @@ public meta import Lean.Elab.Tactic.Location
 
 This file sets up the `norm_num` tactic and the `@[norm_num]` attribute,
 which allow for plugging in new normalization functionality around a simp-based driver.
-The actual behavior is in `@[norm_num]`-tagged definitions in `Tactic.NormNum.Basic`
+The actual behavior is in `@[norm_num]`-tagged definitions in `Mathlib/Tactic/NormNum/Basic.lean`
 and elsewhere.
 -/
 

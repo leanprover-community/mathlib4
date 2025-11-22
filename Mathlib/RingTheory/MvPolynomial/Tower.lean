@@ -17,7 +17,7 @@ This file proves some basic results about the algebra tower structure for the ty
 This structure itself is provided elsewhere as `MvPolynomial.isScalarTower`
 
 When you update this file, you can also try to make a corresponding update in
-`RingTheory.Polynomial.Tower`.
+`Mathlib/RingTheory/Polynomial/Tower.lean`.
 -/
 
 @[expose] public section

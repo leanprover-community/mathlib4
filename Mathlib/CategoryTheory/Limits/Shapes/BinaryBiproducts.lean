@@ -18,7 +18,7 @@ as they are simultaneously limits and colimits.
 (Zero objects are similar; they are "biterminal".)
 
 For results about biproducts in preadditive categories see
-`CategoryTheory.Preadditive.Biproducts`.
+`Mathlib/CategoryTheory/Preadditive/Biproducts.lean`.
 
 In a category with zero morphisms, we model the (binary) biproduct of `P Q : C`
 using a `BinaryBicone`, which has a cone point `X`,

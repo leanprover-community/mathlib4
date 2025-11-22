@@ -21,7 +21,7 @@ We provide the following versions of the pigeonholes principle.
 * `Finite.exists_infinite_fiber`: Infinitely many pigeons in finitely many pigeonholes. Strong
   formulation.
 
-Some more pigeonhole-like statements can be found in `Data.Fintype.CardEmbedding`.
+Some more pigeonhole-like statements can be found in `Mathlib/Data/Fintype/CardEmbedding.lean`.
 -/
 
 @[expose] public section

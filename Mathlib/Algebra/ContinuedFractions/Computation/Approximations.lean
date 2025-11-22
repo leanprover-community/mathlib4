@@ -25,7 +25,7 @@ Moreover, we derive some upper bounds for the error term when computing a contin
 given position, i.e. bounds for the term
 `|v - (GenContFract.of v).convs n|`. The derived bounds will show us that the error term indeed gets
 smaller. As a corollary, we will be able to show that `(GenContFract.of v).convs` converges to `v`
-in `Algebra.ContinuedFractions.Computation.ApproximationCorollaries`.
+in `Mathlib/Algebra/ContinuedFractions/Computation/ApproximationCorollaries.lean`.
 
 ## Main Theorems
 

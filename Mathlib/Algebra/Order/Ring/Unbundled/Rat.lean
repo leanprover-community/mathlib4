@@ -17,7 +17,7 @@ public import Mathlib.Algebra.Ring.Int.Defs
 This file constructs the order on `ℚ` and proves various facts relating the order to
 ring structure on `ℚ`. This only uses unbundled type classes, e.g. `CovariantClass`,
 relating the order structure and algebra structure on `ℚ`.
-For the bundled `LinearOrderedCommRing` instance on `ℚ`, see `Algebra.Order.Ring.Rat`.
+For the bundled `LinearOrderedCommRing` instance on `ℚ`, see `Mathlib/Algebra/Order/Ring/Rat.lean`.
 
 ## Tags
 

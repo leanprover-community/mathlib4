@@ -39,7 +39,7 @@ defined by sending `(g₀, ..., gₙ)` to
 `g₀·(g₁, ..., gₙ) + ∑ (-1)ʲ⁺¹·(g₀, ..., gⱼgⱼ₊₁, ..., gₙ) + (-1)ⁿ⁺¹·(g₀, ..., gₙ₋₁)` for
 `j = 0, ..., n - 1`.
 
-In `RepresentationTheory.Rep` we define an isomorphism `Rep.diagonalSuccIsoFree` between
+In `Mathlib/RepresentationTheory/Rep.lean` we define an isomorphism `Rep.diagonalSuccIsoFree` between
 `k[Gⁿ⁺¹] ≅ (Gⁿ →₀ k[G])` sending `(g₀, ..., gₙ) ↦ g₀·(g₀⁻¹g₁, ..., gₙ₋₁⁻¹gₙ)`.
 We show that this isomorphism defines a commutative square with the bar resolution differential and
 the standard resolution differential, and thus conclude that the bar resolution differential

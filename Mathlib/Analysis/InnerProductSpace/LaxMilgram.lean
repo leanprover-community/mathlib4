@@ -17,7 +17,7 @@ Recall that a bilinear form `B : V →L[ℝ] V →L[ℝ] ℝ` is *coercive*
 iff `∃ C, (0 < C) ∧ ∀ u, C * ‖u‖ * ‖u‖ ≤ B u u`.
 Under the hypothesis that `B` is coercive we prove the Lax-Milgram theorem:
 that is, the map `InnerProductSpace.continuousLinearMapOfBilin` from
-`Analysis.InnerProductSpace.Dual` can be upgraded to a continuous equivalence
+`Mathlib/Analysis/InnerProductSpace/Dual.lean` can be upgraded to a continuous equivalence
 `IsCoercive.continuousLinearEquivOfBilin : V ≃L[ℝ] V`.
 
 ## References

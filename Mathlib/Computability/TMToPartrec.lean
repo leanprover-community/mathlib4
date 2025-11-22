@@ -45,7 +45,7 @@ At this point we have a sequential model of partial recursive functions: the `Cf
 it does a finite amount of computation (in fact, an amount which is statically bounded by the size
 of the program) between each step, and no individual step can diverge (unlike the compositional
 semantics, where every sub-part of the computation is potentially divergent). So we can utilize the
-same techniques as in the other TM simulations in `Computability.TuringMachine` to prove that
+same techniques as in the other TM simulations in `Mathlib/Computability/TuringMachine.lean` to prove that
 each step corresponds to a finite number of steps in a lower level model. (We don't prove it here,
 but in anticipation of the complexity class P, the simulation is actually polynomial-time as well.)
 

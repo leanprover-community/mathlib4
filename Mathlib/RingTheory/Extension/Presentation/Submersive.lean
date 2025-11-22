@@ -18,7 +18,7 @@ to `ι`. To such a presentation we may associate a Jacobian. `P` is then a subme
 presentation, if its Jacobian is invertible.
 
 Algebras that admit such a presentation are called standard smooth. See
-`Mathlib.RingTheory.Smooth.StandardSmooth` for applications.
+`Mathlib/RingTheory/Smooth/StandardSmooth.lean` for applications.
 
 ## Main definitions
 

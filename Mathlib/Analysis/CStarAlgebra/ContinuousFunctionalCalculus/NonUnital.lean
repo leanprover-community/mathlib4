@@ -212,7 +212,7 @@ junk value `0`.
 
 This is the primary declaration intended for widespread use of the continuous functional calculus
 for non-unital algebras, and all the API applies to this declaration. For more information, see the
-module documentation for `Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital`. -/
+module documentation for `Mathlib/Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Unital.lean`. -/
 noncomputable irreducible_def cfcₙ (f : R → R) (a : A) : A :=
   if h : p a ∧ ContinuousOn f (σₙ R a) ∧ f 0 = 0
     then cfcₙHom h.1 ⟨⟨_, h.2.1.restrict⟩, h.2.2⟩

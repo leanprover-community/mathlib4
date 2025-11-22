@@ -24,7 +24,7 @@ provided.
 * `CategoryTheory.GlueData.glued`: The glued presheafed space.
     This is defined as the multicoequalizer of `∐ V i j ⇉ ∐ U i`, so that the general colimit API
     can be used.
-* `CategoryTheory.GlueData.ι`: The immersion `ι i : U i ⟶ glued` for each `i : J`.
+* `Mathlib/CategoryTheory/GlueData.lean.ι`: The immersion `ι i : U i ⟶ glued` for each `i : J`.
 
 ## Main results
 

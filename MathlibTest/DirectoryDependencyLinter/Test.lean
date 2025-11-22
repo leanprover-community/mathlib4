@@ -8,7 +8,7 @@ import Qq
 import Mathlib.Util.AssertExists
 
 /--
-warning: Module MathlibTest.DirectoryDependencyLinter.Test depends on Mathlib.Util.AssertExists,
+warning: Module MathlibTest.DirectoryDependencyLinter.Test depends on Mathlib/Util/AssertExists.lean,
 but is only allowed to import modules starting with one of [Mathlib.Lean].
 Note: module Mathlib.Util.AssertExists is directly imported by this module
 

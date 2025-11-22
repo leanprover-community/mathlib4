@@ -18,7 +18,7 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 
 This file defines arithmetic operations on intervals and prove their correctness. Note that this is
 full precision operations. The essentials of float operations can be found
-in `Data.FP.Basic`. We have not yet integrated these with the rest of the library.
+in `Mathlib/Data/FP/Basic.lean`. We have not yet integrated these with the rest of the library.
 -/
 
 @[expose] public section

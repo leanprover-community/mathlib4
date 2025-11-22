@@ -19,7 +19,7 @@ it is repeated, with slightly different names, for colimits.
 The main structures defined in this file is
 * `IsLimit c`, for `c : Cone F`, `F : J ⥤ C`, expressing that `c` is a limit cone,
 
-See also `CategoryTheory.Limits.HasLimits` which further builds:
+See also `Mathlib/CategoryTheory/Limits/HasLimits.lean` which further builds:
 * `LimitCone F`, which consists of a choice of cone for `F` and the fact it is a limit cone, and
 * `HasLimit F`, asserting the mere existence of some limit cone for `F`.
 

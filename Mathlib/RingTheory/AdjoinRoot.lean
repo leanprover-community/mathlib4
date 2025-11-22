@@ -780,7 +780,7 @@ end Equiv
 
 -- TODO: consider splitting the file here.  In the current mathlib3, the only result
 -- that depends any of these lemmas was
--- `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` in `NumberTheory.KummerDedekind`
+-- `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` in `Mathlib/NumberTheory/KummerDedekind.lean`
 -- that uses
 -- `PowerBasis.quotientEquivQuotientMinpolyMap == PowerBasis.quotientEquivQuotientMinpolyMap`
 section

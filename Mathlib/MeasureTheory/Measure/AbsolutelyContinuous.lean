@@ -18,7 +18,7 @@ It is equivalent to an inequality of the almost everywhere filters of the measur
 
 ## Main definitions
 
-* `MeasureTheory.Measure.AbsolutelyContinuous μ ν`: `μ` is absolutely continuous with respect to `ν`
+* `Mathlib/MeasureTheory/Measure/AbsolutelyContinuous.lean μ ν`: `μ` is absolutely continuous with respect to `ν`
 
 ## Main statements
 
@@ -26,7 +26,7 @@ It is equivalent to an inequality of the almost everywhere filters of the measur
 
 ## Notation
 
-* `μ ≪ ν`: `MeasureTheory.Measure.AbsolutelyContinuous μ ν`. That is: `μ` is absolutely continuous
+* `μ ≪ ν`: `Mathlib/MeasureTheory/Measure/AbsolutelyContinuous.lean μ ν`. That is: `μ` is absolutely continuous
   with respect to `ν`
 
 -/

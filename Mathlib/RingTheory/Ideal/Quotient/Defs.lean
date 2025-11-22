@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.Ideal.Defs
 This file defines ideal quotients as a special case of submodule quotients and proves some basic
 results about these quotients.
 
-See `Algebra.RingQuot` for quotients of non-commutative rings.
+See `Mathlib/Algebra/RingQuot.lean` for quotients of non-commutative rings.
 
 ## Main definitions
 

@@ -13,7 +13,7 @@ public import Mathlib.Data.Fintype.Perm
 # Lemmas about subgroups within the permutations (self-equivalences) of a type `α`
 
 This file provides extra lemmas about some `Subgroup`s that exist within `Equiv.Perm α`.
-`GroupTheory.Subgroup` depends on `GroupTheory.Perm.Basic`, so these need to be in a separate
+`GroupTheory.Subgroup` depends on `Mathlib/GroupTheory/Perm/Basic.lean`, so these need to be in a separate
 file.
 
 It also provides decidable instances on membership in these subgroups, since

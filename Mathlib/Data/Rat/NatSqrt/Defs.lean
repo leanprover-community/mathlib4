@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Order.Field.Basic
 /-!
 Rational approximation of the square root of a natural number.
 
-See also `Mathlib.Data.Rat.NatSqrt.Real` for comparisons with the real square root.
+See also `Mathlib/Data/Rat/NatSqrt/Real.lean` for comparisons with the real square root.
 -/
 
 @[expose] public section

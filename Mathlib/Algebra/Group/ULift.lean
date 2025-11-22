@@ -146,5 +146,5 @@ instance nontrivial [Nontrivial α] : Nontrivial (ULift α) :=
   Equiv.ulift.symm.injective.nontrivial
 
 -- TODO we don't do `OrderedCancelCommMonoid` or `OrderedCommGroup`
--- We'd need to add instances for `ULift` in `Order.Basic`.
+-- We'd need to add instances for `ULift` in `Mathlib/Order/Basic.lean`.
 end ULift

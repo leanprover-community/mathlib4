@@ -8,7 +8,7 @@ deprecated_module (since := "2025-04-10")
 info: Deprecated modules
 
 'MathlibTest.DeprecatedModule' deprecates to
-#[Mathlib.Tactic.Linter.DocPrime, Mathlib.Tactic.Linter.DocString]
+#[Mathlib/Tactic/Linter/DocPrime.lean, Mathlib/Tactic/Linter/DocString.lean]
 with no message
 -/
 #guard_msgs in
@@ -21,11 +21,11 @@ deprecated_module "We can also give more details about the deprecation" (since :
 info: Deprecated modules
 
 'MathlibTest.DeprecatedModule' deprecates to
-#[Mathlib.Tactic.Linter.DocPrime, Mathlib.Tactic.Linter.DocString]
+#[Mathlib/Tactic/Linter/DocPrime.lean, Mathlib/Tactic/Linter/DocString.lean]
 with message 'We can also give more details about the deprecation'
 
 'MathlibTest.DeprecatedModule' deprecates to
-#[Mathlib.Tactic.Linter.DocPrime, Mathlib.Tactic.Linter.DocString]
+#[Mathlib/Tactic/Linter/DocPrime.lean, Mathlib/Tactic/Linter/DocString.lean]
 with no message
 -/
 #guard_msgs in
@@ -43,11 +43,11 @@ deprecated_module "Text" (since := "2025-02-31")
 info: Deprecated modules
 
 'MathlibTest.DeprecatedModule' deprecates to
-#[Mathlib.Tactic.Linter.DocPrime, Mathlib.Tactic.Linter.DocString]
+#[Mathlib/Tactic/Linter/DocPrime.lean, Mathlib/Tactic/Linter/DocString.lean]
 with message 'We can also give more details about the deprecation'
 
 'MathlibTest.DeprecatedModule' deprecates to
-#[Mathlib.Tactic.Linter.DocPrime, Mathlib.Tactic.Linter.DocString]
+#[Mathlib/Tactic/Linter/DocPrime.lean, Mathlib/Tactic/Linter/DocString.lean]
 with no message
 -/
 #guard_msgs in

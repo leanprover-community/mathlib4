@@ -21,7 +21,7 @@ In particular, if `C` is a `V`-enriched category, it is shown that
 the "underlying" category `ForgetEnrichment V C` is equipped with a
 `EnrichedOrdinaryCategory V C` instance.
 
-Simplicial categories are implemented in `AlgebraicTopology.SimplicialCategory.Basic`
+Simplicial categories are implemented in `Mathlib/AlgebraicTopology/SimplicialCategory/Basic.lean`
 using an abbreviation for `EnrichedOrdinaryCategory SSet C`.
 
 -/

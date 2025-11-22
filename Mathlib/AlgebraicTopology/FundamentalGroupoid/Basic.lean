@@ -233,7 +233,7 @@ end Homotopic
 end Path
 
 /-- The fundamental groupoid of a space `X` is defined to be a wrapper around `X`, and we
-subsequently put a `CategoryTheory.Groupoid` structure on it. -/
+subsequently put a `Mathlib/CategoryTheory/Groupoid.lean` structure on it. -/
 @[ext]
 structure FundamentalGroupoid (X : Type*) where
   /-- View a term of `FundamentalGroupoid X` as a term of `X`. -/

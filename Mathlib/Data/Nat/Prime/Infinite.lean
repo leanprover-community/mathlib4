@@ -14,7 +14,7 @@ public import Mathlib.Order.Bounds.Basic
 
 - `Nat.exists_infinite_primes`: Euclid's theorem that there exist infinitely many prime numbers.
   This also appears as `Nat.not_bddAbove_setOf_prime` and `Nat.infinite_setOf_prime` (the latter
-  in `Data.Nat.PrimeFin`).
+  in `Mathlib/Data/Nat/PrimeFin.lean`).
 
 -/
 

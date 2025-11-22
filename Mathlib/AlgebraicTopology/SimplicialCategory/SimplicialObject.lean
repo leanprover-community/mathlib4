@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Functor.FunctorHom
 /-!
 # The category of simplicial objects is simplicial
 
-In `CategoryTheory.Functor.FunctorHom`, it was shown that a category of functors
+In `Mathlib/CategoryTheory/Functor/FunctorHom.lean`, it was shown that a category of functors
 `C ⥤ D` is enriched over a suitable category `C ⥤ Type _` of functors to types.
 
 In this file, we deduce that `SimplicialObject D` is enriched over `SSet.{v} D`

@@ -14,7 +14,7 @@ public import Mathlib.Logic.Equiv.Basic
 /-!
 # Existence of limits and colimits
 
-In `CategoryTheory.Limits.IsLimit` we defined `IsLimit c`,
+In `Mathlib/CategoryTheory/Limits/IsLimit.lean` we defined `IsLimit c`,
 the data showing that a cone `c` is a limit cone.
 
 The two main structures defined in this file are:

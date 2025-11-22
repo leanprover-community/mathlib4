@@ -82,7 +82,7 @@ theorem small_lift (α : Type u) [hα : Small.{v} α] : Small.{max v w} α :=
 
 /-- Due to https://github.com/leanprover/lean4/issues/2297, this is useless as an instance.
 
-See however `Logic.UnivLE`, whose API is able to indirectly provide this instance. -/
+See however `Mathlib/Logic/UnivLE.lean`, whose API is able to indirectly provide this instance. -/
 lemma small_max (α : Type v) : Small.{max w v} α :=
   small_lift.{v, w} α
 

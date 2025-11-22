@@ -54,7 +54,7 @@ We
 
 ## Examples
 
-See the files `CategoryTheory.Generator.Presheaf` and `CategoryTheory.Generator.Sheaf`.
+See the files `Mathlib/CategoryTheory/Generator/Presheaf.lean` and `Mathlib/CategoryTheory/Generator/Sheaf.lean`.
 
 -/
 

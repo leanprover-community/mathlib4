@@ -47,7 +47,7 @@ variable [AddCommGroup α] {p a a₁ a₂ b b₁ b₂ c : α} {n : ℕ} {z : ℤ
 
 /-- `a ≡ b [PMOD p]` means that `b` is congruent to `a` modulo `p`.
 
-Equivalently (as shown in `Algebra.Order.ToIntervalMod`), `b` does not lie in the open interval
+Equivalently (as shown in `Mathlib/Algebra/Order/ToIntervalMod.lean`), `b` does not lie in the open interval
 `(a, a + p)` modulo `p`, or `toIcoMod hp a` disagrees with `toIocMod hp a` at `b`, or
 `toIcoDiv hp a` disagrees with `toIocDiv hp a` at `b`. -/
 def ModEq (p a b : α) : Prop :=

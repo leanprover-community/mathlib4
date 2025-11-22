@@ -43,7 +43,7 @@ density one for the rescaled copies `{x} + r • t` of a given set `t` with posi
 small `r`, see `eventually_nonempty_inter_smul_of_density_one`.
 
 Statements on integrals of functions with respect to an additive Haar measure can be found in
-`MeasureTheory.Measure.Haar.NormedSpace`.
+`Mathlib/MeasureTheory/Measure/Haar/NormedSpace.lean`.
 -/
 
 @[expose] public section

@@ -146,7 +146,7 @@ lemma linearMap_eq_zero_iff_of_eq_span {V : Submodule R M} (f : V →ₗ[R] N)
 
 end
 
-/-- See `Submodule.span_smul_eq` (in `RingTheory.Ideal.Operations`) for
+/-- See `Submodule.span_smul_eq` (in `Mathlib/RingTheory/Ideal/Operations.lean`) for
 `span R (r • s) = r • span R s` that holds for arbitrary `r` in a `CommSemiring`. -/
 theorem span_smul_eq_of_isUnit (s : Set M) (r : R) (hr : IsUnit r) : span R (r • s) = span R s := by
   apply le_antisymm

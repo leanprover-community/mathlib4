@@ -29,7 +29,7 @@ don't satisfy the classical notion were provided independently by Hiblot and Nag
 
 ## Main statements
 
-See `Algebra.EuclideanDomain.Basic` for most of the theorems about Euclidean domains,
+See `Mathlib/Algebra/EuclideanDomain/Basic.lean` for most of the theorems about Euclidean domains,
 including Bézout's lemma.
 
 See `Algebra.EuclideanDomain.Instances` for the fact that `ℤ` is a Euclidean domain,

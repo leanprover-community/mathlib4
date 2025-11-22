@@ -78,7 +78,7 @@ Strictly this last class is unnecessary as it has no fields not present in its p
 included for convenience. Note that there is no need for `SetLike.GradedRing` or similar, as all
 the information it would contain is already supplied by `GradedMonoid` when `A` is a collection
 of objects satisfying `AddSubmonoidClass` such as `Submodule`s. These constructions are explored
-in `Algebra.DirectSum.Internal`.
+in `Mathlib/Algebra/DirectSum/Internal.lean`.
 
 This file also defines:
 

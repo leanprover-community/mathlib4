@@ -17,7 +17,7 @@ When a group `G` acts on a type `α`, the stabilizer of a point `a : α`
 acts naturally on the complement of that point.
 
 Such actions (as the similar one for the fixator of a set acting on the complement
-of that set, defined in `Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup`)
+of that set, defined in `Mathlib/GroupTheory/GroupAction/SubMulAction/OfFixingSubgroup.lean`)
 are useful to study the multiple transitivity of the group `G`,
 since `n`-transitivity of `G` on `α` is equivalent to `n - 1`-transitivity
 of `stabilizer G a` on the complement of `a`.

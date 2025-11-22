@@ -15,7 +15,7 @@ public import Mathlib.Data.Seq.Basic
 ## Summary
 
 Some simple translation lemmas between the different definitions of functions defined in
-`Algebra.ContinuedFractions.Basic`.
+`Mathlib/Algebra/ContinuedFractions/Basic.lean`.
 -/
 
 @[expose] public section

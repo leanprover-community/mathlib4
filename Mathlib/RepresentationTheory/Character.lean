@@ -21,7 +21,7 @@ is the theorem `char_orthonormal`
 
 ## Implementation notes
 
-Irreducible representations are implemented categorically, using the `CategoryTheory.Simple` class
+Irreducible representations are implemented categorically, using the `Mathlib/CategoryTheory/Simple.lean` class
 defined in `Mathlib/CategoryTheory/Simple.lean`
 
 ## TODO

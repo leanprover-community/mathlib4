@@ -40,7 +40,7 @@ cancelled by scalar multiplication by some power of `p`) and apply it to the `p 
 submodules (that are `p i ^ ∞`-torsion) to get the result for torsion modules.
 
 Then we get the general result using that a torsion free module is free (which has been proved at
-`Module.free_of_finite_type_torsion_free'` at `LinearAlgebra.FreeModule.PID`.)
+`Module.free_of_finite_type_torsion_free'` at `Mathlib/LinearAlgebra/FreeModule/PID.lean`.)
 
 ## Tags
 

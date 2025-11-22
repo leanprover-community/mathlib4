@@ -123,7 +123,7 @@ set_option linter.minImports false
 
 /--
 warning: Imports increased to
-[Init.Guard, Mathlib.Data.Int.Notation]
+[Init.Guard, Mathlib/Data/Int/Notation.lean]
 
 New imports: [Init.Guard, Mathlib.Data.Int.Notation]
 
@@ -142,7 +142,7 @@ set_option linter.minImports false in
 
 /--
 warning: Imports increased to
-[Init.Guard, Mathlib.Data.Int.Notation]
+[Init.Guard, Mathlib/Data/Int/Notation.lean]
 
 New imports: [Init.Guard, Mathlib.Data.Int.Notation]
 
@@ -155,7 +155,7 @@ Note: This linter can be disabled with `set_option linter.minImports false`
 
 /--
 warning: Imports increased to
-[Mathlib.Tactic.Linter.MinImports]
+[Mathlib/Tactic/Linter/MinImports.lean]
 
 New imports: [Mathlib.Tactic.Linter.MinImports]
 
@@ -167,11 +167,11 @@ Note: This linter can be disabled with `set_option linter.minImports false`
 
 /--
 warning: Imports increased to
-[Mathlib.Tactic.NormNum.Basic]
+[Mathlib/Tactic/NormNum/Basic.lean]
 
 New imports: [Mathlib.Tactic.NormNum.Basic]
 
-Now redundant: [Mathlib.Tactic.Linter.MinImports]
+Now redundant: [Mathlib/Tactic/Linter/MinImports.lean]
 
 
 Note: This linter can be disabled with `set_option linter.minImports false`
@@ -188,7 +188,7 @@ section Linter.UpstreamableDecl
 set_option linter.upstreamableDecl true
 
 /--
-warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation.
+warning: Consider moving this declaration to the module Mathlib/Data/Nat/Notation.lean.
 
 Note: This linter can be disabled with `set_option linter.upstreamableDecl false`
 -/
@@ -200,7 +200,7 @@ def dont_propose_to_move_this_def : ℕ := 0
 
 set_option linter.upstreamableDecl.defs true in
 /--
-warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation.
+warning: Consider moving this declaration to the module Mathlib/Data/Nat/Notation.lean.
 
 Note: This linter can be disabled with `set_option linter.upstreamableDecl false`
 -/
@@ -213,7 +213,7 @@ theorem theorem_with_local_def : propose_to_move_this_def = 0 := rfl
 
 -- This definition depends on definitions in two different files, so should not be moved.
 /--
-warning: Consider moving this declaration to the module Mathlib.Tactic.NormNum.Basic.
+warning: Consider moving this declaration to the module Mathlib/Tactic/NormNum/Basic.lean.
 
 Note: This linter can be disabled with `set_option linter.upstreamableDecl false`
 -/
@@ -229,7 +229,7 @@ private theorem private_theorem : (0 : ℕ) = 0 := rfl
 -- But we can enable the option.
 set_option linter.upstreamableDecl.private true in
 /--
-warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation.
+warning: Consider moving this declaration to the module Mathlib/Data/Nat/Notation.lean.
 
 Note: This linter can be disabled with `set_option linter.upstreamableDecl false`
 -/
@@ -244,7 +244,7 @@ private def private_def : ℕ := 0
 set_option linter.upstreamableDecl.defs true in
 set_option linter.upstreamableDecl.private true in
 /--
-warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation.
+warning: Consider moving this declaration to the module Mathlib/Data/Nat/Notation.lean.
 
 Note: This linter can be disabled with `set_option linter.upstreamableDecl false`
 -/
@@ -265,7 +265,7 @@ set_option linter.upstreamableDecl.defs true
 
 /--
 
-warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation.
+warning: Consider moving this declaration to the module Mathlib/Data/Nat/Notation.lean.
 
 Note: This linter can be disabled with `set_option linter.upstreamableDecl false`
 -/
@@ -274,7 +274,7 @@ structure ProposeToMoveThisStructure where
   foo : ℕ
 
 /--
-warning: Consider moving this declaration to the module Mathlib.Data.Nat.Notation.
+warning: Consider moving this declaration to the module Mathlib/Data/Nat/Notation.lean.
 
 Note: This linter can be disabled with `set_option linter.upstreamableDecl false`
 -/

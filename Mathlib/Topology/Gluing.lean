@@ -28,7 +28,7 @@ provided.
 * `CategoryTheory.GlueData.glued`: The glued topological space.
     This is defined as the multicoequalizer of `∐ V i j ⇉ ∐ U i`, so that the general colimit API
     can be used.
-* `CategoryTheory.GlueData.ι`: The immersion `ι i : U i ⟶ glued` for each `i : ι`.
+* `Mathlib/CategoryTheory/GlueData.lean.ι`: The immersion `ι i : U i ⟶ glued` for each `i : ι`.
 * `TopCat.GlueData.Rel`: A relation on `Σ i, D.U i` defined by `⟨i, x⟩ ~ ⟨j, y⟩` iff
     `⟨i, x⟩ = ⟨j, y⟩` or `t i j x = y`. See `TopCat.GlueData.ι_eq_iff_rel`.
 * `TopCat.GlueData.mk`: A constructor of `GlueData` whose conditions are stated in terms of

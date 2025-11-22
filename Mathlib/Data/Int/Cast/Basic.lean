@@ -15,12 +15,12 @@ public import Mathlib.Data.Nat.Basic
 This file proves additional properties about the *canonical* homomorphism from
 the integers into an additive group with a one (`Int.cast`).
 
-There is also `Mathlib.Data.Int.Cast.Lemmas`,
+There is also `Mathlib/Data/Int/Cast/Lemmas.lean`,
 which includes lemmas stated in terms of algebraic homomorphisms,
 and results involving the order structure of `ℤ`.
 
 By contrast, this file's only import beyond `Mathlib.Data.Int.Cast.Defs` is
-`Mathlib.Algebra.Group.Basic`.
+`Mathlib/Algebra/Group/Basic.lean`.
 -/
 
 @[expose] public section

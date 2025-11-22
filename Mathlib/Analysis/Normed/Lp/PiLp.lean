@@ -67,7 +67,7 @@ We also set up the theory for `PseudoEMetricSpace` and `PseudoMetricSpace`.
 ## TODO
 
 TODO: the results about uniformity and bornology in the `Aux` section should be using the tools in
-`Mathlib.Topology.MetricSpace.Bilipschitz`, so that they can be inlined in the next section and
+`Mathlib/Topology/MetricSpace/Bilipschitz.lean`, so that they can be inlined in the next section and
 the only remaining results are about `Lipschitz` and `Antilipschitz`.
 -/
 
@@ -284,7 +284,7 @@ from the edistance (which is equal to it, but not defeq). See Note [forgetful in
 explaining why having definitionally the right uniformity is often important.
 
 TODO: the results about uniformity and bornology should be using the tools in
-`Mathlib.Topology.MetricSpace.Bilipschitz`, so that they can be inlined in the next section and
+`Mathlib/Topology/MetricSpace/Bilipschitz.lean`, so that they can be inlined in the next section and
 the only remaining results are about `Lipschitz` and `Antilipschitz`.
 -/
 

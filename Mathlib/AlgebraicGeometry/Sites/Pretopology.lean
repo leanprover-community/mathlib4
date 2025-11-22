@@ -18,7 +18,7 @@ by jointly surjective families of morphisms satisfying `P`.
 ## Implementation details
 
 The pretopology is obtained from the precoverage `AlgebraicGeometry.Scheme.precoverage` defined in
-`Mathlib.AlgebraicGeometry.Sites.MorphismProperty`. The definition is postponed to this file,
+`Mathlib/AlgebraicGeometry/Sites/MorphismProperty.lean`. The definition is postponed to this file,
 because the former does not have `HasPullbacks Scheme`.
 -/
 

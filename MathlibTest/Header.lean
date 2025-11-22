@@ -7,7 +7,7 @@ Authors: Damiano Testa
 import Mathlib.Tactic.Linter.Header
 import Lake
 import Mathlib.Tactic.Linter.Header
-import /- -/ Mathlib.Tactic -- the `TextBased` linter does not flag this `broadImport`
+import /- -/ Mathlib/Tactic.lean -- the `TextBased` linter does not flag this `broadImport`
 import Mathlib.Tactic.Have
 import Mathlib.Deprecated.Aliases
 
@@ -20,7 +20,7 @@ warning: Files in mathlib cannot import the whole tactic folder.
 
 Note: This linter can be disabled with `set_option linter.style.header false`
 ---
-warning: 'Mathlib.Tactic.Have' defines a deprecated form of the 'have' tactic; please do not use it in mathlib.
+warning: 'Mathlib/Tactic/Have.lean' defines a deprecated form of the 'have' tactic; please do not use it in mathlib.
 
 Note: This linter can be disabled with `set_option linter.style.header false`
 ---

@@ -304,7 +304,7 @@ not continuous on the spectrum of `a`, then `cfc f a` returns the junk value `0`
 
 This is the primary declaration intended for widespread use of the continuous functional calculus,
 and all the API applies to this declaration. For more information, see the module documentation
-for `Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital`. -/
+for `Mathlib/Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Unital.lean`. -/
 noncomputable irreducible_def cfc (f : R → R) (a : A) : A :=
   if h : p a ∧ ContinuousOn f (spectrum R a)
     then cfcHom h.1 ⟨_, h.2.restrict⟩

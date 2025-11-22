@@ -13,7 +13,7 @@ public import Mathlib.Order.Interval.Set.Defs
 # Miscellaneous lemmas about the integers
 
 This file contains lemmas about integers, which require further imports than
-`Data.Int.Basic` or `Data.Int.Order`.
+`Mathlib/Data/Int/Basic.lean` or `Data.Int.Order`.
 
 -/
 
@@ -101,7 +101,7 @@ end Intervals
 
 /-! ### bitwise ops
 
-This lemma is orphaned from `Data.Int.Bitwise` as it also requires material from `Data.Int.Order`.
+This lemma is orphaned from `Mathlib/Data/Int/Bitwise.lean` as it also requires material from `Data.Int.Order`.
 -/
 
 @[simp]

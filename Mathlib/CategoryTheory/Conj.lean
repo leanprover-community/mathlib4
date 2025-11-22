@@ -20,7 +20,7 @@ An isomorphism `α : X ≅ Y` defines
 using
 `CategoryTheory.Iso.homCongr : (X ≅ X₁) → (Y ≅ Y₁) → (X ⟶ Y) ≃ (X₁ ⟶ Y₁)`
 and `CategoryTheory.Iso.isoCongr : (f : X₁ ≅ X₂) → (g : Y₁ ≅ Y₂) → (X₁ ≅ Y₁) ≃ (X₂ ≅ Y₂)`
-which are defined in  `CategoryTheory.HomCongr`.
+which are defined in  `Mathlib/CategoryTheory/HomCongr.lean`.
 -/
 
 @[expose] public section

@@ -17,7 +17,7 @@ public import Mathlib.Tactic.Qify
 that is not a square, and one is interested in solutions in integers $x$ and $y$.
 
 In this file, we aim at providing all of the essential theory of Pell's Equation for general $d$
-(as opposed to the contents of `NumberTheory.PellMatiyasevic`, which is specific to the case
+(as opposed to the contents of `Mathlib/NumberTheory/PellMatiyasevic.lean`, which is specific to the case
 $d = a^2 - 1$ for some $a > 1$).
 
 We begin by defining a type `Pell.Solution₁ d` for solutions of the equation,

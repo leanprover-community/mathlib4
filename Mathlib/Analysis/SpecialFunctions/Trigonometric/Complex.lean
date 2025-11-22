@@ -14,7 +14,7 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Complex
 Basic facts and derivatives for the complex trigonometric functions.
 
 Several facts about the real trigonometric functions have the proofs deferred here, rather than
-`Analysis.SpecialFunctions.Trigonometric.Basic`,
+`Mathlib/Analysis/SpecialFunctions/Trigonometric/Basic.lean`,
 as they are most easily proved by appealing to the corresponding fact for complex trigonometric
 functions, or require additional imports which are not available in that file.
 -/

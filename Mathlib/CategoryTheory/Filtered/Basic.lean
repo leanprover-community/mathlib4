@@ -43,12 +43,12 @@ All of the above API, except for the `bowtie` and the `tulip`, is also provided 
 categories.
 
 ## See also
-In `CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit` we show that filtered colimits
+In `Mathlib/CategoryTheory/Limits/FilteredColimitCommutesFiniteLimit.lean` we show that filtered colimits
 commute with finite limits.
 
 There is another characterization of filtered categories, namely that whenever `F : J ⥤ C` is a
 functor from a finite category, there is `X : C` such that `Nonempty (limit (F.op ⋙ yoneda.obj X))`.
-This is shown in `CategoryTheory.Limits.Filtered`.
+This is shown in `Mathlib/CategoryTheory/Limits/Filtered.lean`.
 
 -/
 

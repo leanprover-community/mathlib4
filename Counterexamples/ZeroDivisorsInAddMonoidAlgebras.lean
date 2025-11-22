@@ -25,7 +25,7 @@ The formalized example generalizes in trivial ways the assumptions: the field `k
 nontrivial ring `R` and the additive group `G` with a torsion element can be any additive monoid
 `A` with a non-zero periodic element.
 
-Besides this example, we also address a comment in `Data.Finsupp.Lex` to the effect that the proof
+Besides this example, we also address a comment in `Mathlib/Data/Finsupp/Lex.lean` to the effect that the proof
 that addition is monotone on `α →₀ N` uses that it is *strictly* monotone on `N`.
 
 The specific statement is about `Finsupp.Lex.addLeftStrictMono` and its analogue
@@ -125,7 +125,7 @@ def List.dropUntil {α} [DecidableEq α] : List α → List α → List α
 open Lean Elab Command in
 /-- `guard_decl na mod` makes sure that the declaration with name `na` is in the module `mod`.
 ```lean
-guard_decl Nat.nontrivial Mathlib.Algebra.Ring.Nat -- does nothing
+guard_decl Nat.nontrivial Mathlib/Algebra/Ring/Nat.lean -- does nothing
 
 guard_decl Nat.nontrivial Not.In.Here
 -- the module Not.In.Here is not imported!

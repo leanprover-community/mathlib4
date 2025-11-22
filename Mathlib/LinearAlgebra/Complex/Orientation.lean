@@ -11,7 +11,7 @@ public import Mathlib.LinearAlgebra.Orientation
 /-!
 # The standard orientation on `ℂ`.
 
-This had previously been in `LinearAlgebra.Orientation`,
+This had previously been in `Mathlib/LinearAlgebra/Orientation.lean`,
 but keeping it separate results in a significant import reduction.
 -/
 

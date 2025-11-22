@@ -11,7 +11,7 @@ public import Mathlib.CategoryTheory.Adjunction.Mates
 /-!
 # Functoriality of the symmetry of equivalences
 
-Using the calculus of mates in `Mathlib.CategoryTheory.Adjunction.Mates`, we prove that passing
+Using the calculus of mates in `Mathlib/CategoryTheory/Adjunction/Mates.lean`, we prove that passing
 to the symmetric equivalence defines an equivalence between `C ≌ D` and `(D ≌ C)ᵒᵖ`,
 and provides the definition of the functor that takes an equivalence to its inverse.
 

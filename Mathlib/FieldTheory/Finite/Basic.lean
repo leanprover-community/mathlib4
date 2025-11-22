@@ -24,7 +24,7 @@ This file contains basic results about finite fields.
 Throughout most of this file, `K` denotes a finite field
 and `q` is notation for the cardinality of `K`.
 
-See `RingTheory.IntegralDomain` for the fact that the unit group of a finite field is a
+See `Mathlib/RingTheory/IntegralDomain.lean` for the fact that the unit group of a finite field is a
 cyclic group, as well as the fact that every finite integral domain is a field
 (`Fintype.fieldOfDomain`).
 

@@ -22,7 +22,7 @@ We also define predicates about affine schemes and affine open sets.
 
 ## Main definitions
 
-* `AlgebraicGeometry.AffineScheme`: The category of affine schemes.
+* `Mathlib/AlgebraicGeometry/AffineScheme.lean`: The category of affine schemes.
 * `AlgebraicGeometry.IsAffine`: A scheme is affine if the canonical map `X ⟶ Spec Γ(X)` is an
   isomorphism.
 * `AlgebraicGeometry.Scheme.isoSpec`: The canonical isomorphism `X ≅ Spec Γ(X)` for an affine

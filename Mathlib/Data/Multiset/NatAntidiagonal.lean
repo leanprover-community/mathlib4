@@ -17,8 +17,8 @@ generally for sums going from `0` to `n`.
 
 ## Notes
 
-This refines file `Data.List.NatAntidiagonal` and is further refined by file
-`Data.Finset.NatAntidiagonal`.
+This refines file `Mathlib/Data/List/NatAntidiagonal.lean` and is further refined by file
+`Mathlib/Data/Finset/NatAntidiagonal.lean`.
 -/
 
 @[expose] public section

@@ -11,7 +11,7 @@ public import Lean.Elab.SyntheticMVars
 public import Mathlib.Tactic.Linter.Header
 
 /-!
-# Additions to `Lean.Elab.Tactic.Meta`
+# Additions to `Mathlib/Lean/Elab/Tactic/Meta.lean`
 -/
 
 @[expose] public section

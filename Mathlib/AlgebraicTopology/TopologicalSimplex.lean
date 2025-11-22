@@ -14,7 +14,7 @@ public import Mathlib.Topology.Category.TopCat.ULift
 
 We define the natural functor from `SimplexCategory` to `TopCat` sending `⦋n⦌` to the
 topological `n`-simplex.
-This is used to define `TopCat.toSSet` in `AlgebraicTopology.SingularSet`.
+This is used to define `TopCat.toSSet` in `Mathlib/AlgebraicTopology/SingularSet.lean`.
 -/
 
 @[expose] public section

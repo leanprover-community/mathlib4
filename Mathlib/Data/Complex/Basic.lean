@@ -17,7 +17,7 @@ public import Mathlib.Tactic.Ring
 
 The complex numbers are modelled as ℝ^2 in the obvious way and it is shown that they form a field
 of characteristic zero. For the result that the complex numbers are algebraically closed, see
-`Complex.isAlgClosed` in `Mathlib.Analysis.Complex.Polynomial.Basic`.
+`Complex.isAlgClosed` in `Mathlib/Analysis/Complex/Polynomial/Basic.lean`.
 -/
 
 @[expose] public section

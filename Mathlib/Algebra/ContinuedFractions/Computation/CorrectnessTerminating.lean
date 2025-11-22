@@ -27,7 +27,7 @@ residual term will be given by the fractional part stored in `GenContFract.IntFr
 
 For an example, refer to
 `GenContFract.compExactValue_correctness_of_stream_eq_some` and for more
-information about the computation process, refer to `Algebra.ContinuedFractions.Computation.Basic`.
+information about the computation process, refer to `Mathlib/Algebra/ContinuedFractions/Computation/Basic.lean`.
 
 ## Main definitions
 

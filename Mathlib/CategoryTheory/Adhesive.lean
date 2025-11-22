@@ -16,7 +16,7 @@ public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 ## Main definitions
 - `CategoryTheory.IsPushout.IsVanKampen`: A convenience formulation for a pushout being
   a van Kampen colimit.
-- `CategoryTheory.Adhesive`: A category is adhesive if it has pushouts and pullbacks along
+- `Mathlib/CategoryTheory/Adhesive.lean`: A category is adhesive if it has pushouts and pullbacks along
   monomorphisms, and such pushouts are van Kampen.
 
 ## Main Results

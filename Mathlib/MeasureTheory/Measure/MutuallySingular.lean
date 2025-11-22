@@ -9,13 +9,13 @@ public import Mathlib.MeasureTheory.Measure.Restrict
 
 /-! # Mutually singular measures
 
-Two measures `μ`, `ν` are said to be mutually singular (`MeasureTheory.Measure.MutuallySingular`,
+Two measures `μ`, `ν` are said to be mutually singular (`Mathlib/MeasureTheory/Measure/MutuallySingular.lean`,
 localized notation `μ ⟂ₘ ν`) if there exists a measurable set `s` such that `μ s = 0` and
 `ν sᶜ = 0`. The measurability of `s` is an unnecessary assumption (see
 `MeasureTheory.Measure.MutuallySingular.mk`) but we keep it because this way `rcases (h : μ ⟂ₘ ν)`
 gives us a measurable set and usually it is easy to prove measurability.
 
-In this file we define the predicate `MeasureTheory.Measure.MutuallySingular` and prove basic
+In this file we define the predicate `Mathlib/MeasureTheory/Measure/MutuallySingular.lean` and prove basic
 facts about it.
 
 ## Tags

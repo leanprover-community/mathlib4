@@ -26,7 +26,7 @@ that are already right associated.
 
 There is also a term elaborator `reassoc_of% t` for use within proofs.
 
-The `Mathlib.Tactic.CategoryTheory.IsoReassoc` extends `@[reassoc]` and `reassoc_of%`
+The `Mathlib/Tactic/CategoryTheory/IsoReassoc.lean` extends `@[reassoc]` and `reassoc_of%`
 to support creating isomorphism reassociation lemmas.
 -/
 
@@ -92,7 +92,7 @@ IO ref for reassociation handlers `reassoc` attribute, so that it can be extende
 with additional handlers. Handlers take a proof of the equation.
 
 The default handler is `reassocExprHom` for morphism reassociation.
-This will be extended in `Tactic.CategoryTheory.IsoReassoc` for isomorphism reassociation.
+This will be extended in `Mathlib/Tactic/CategoryTheory/IsoReassoc.lean` for isomorphism reassociation.
 -/
 private initialize reassocImplRef : IO.Ref (Array (Expr → MetaM (Expr × Array MVarId))) ←
   IO.mkRef #[reassocExprHom]

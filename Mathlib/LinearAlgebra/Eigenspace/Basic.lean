@@ -35,7 +35,7 @@ eigenvectors `x`. If there are generalized eigenvectors for a natural number `k`
 the scalar `μ` is called a generalized eigenvalue.
 
 The fact that the eigenvalues are the roots of the minimal polynomial is proved in
-`LinearAlgebra.Eigenspace.Minpoly`.
+`Mathlib/LinearAlgebra/Eigenspace/Minpoly.lean`.
 
 The existence of eigenvalues over an algebraically closed field
 (and the fact that the generalized eigenspaces then span) is deferred to

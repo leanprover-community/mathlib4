@@ -30,7 +30,7 @@ with `IsIso f` for every `f`.
 
 ## See also
 
-See also `CategoryTheory.Core` for the groupoid of isomorphisms in a category.
+See also `Mathlib/CategoryTheory/Core.lean` for the groupoid of isomorphisms in a category.
 -/
 
 @[expose] public section

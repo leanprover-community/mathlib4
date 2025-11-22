@@ -207,7 +207,7 @@ has type
 but is expected to have type
   ℤ
 in the application
-  Mathlib.Tactic.LinearCombination'.c_mul_pf h2 0
+  Mathlib/Tactic/LinearCombination.lean'.c_mul_pf h2 0
 -/
 #guard_msgs in
 example (x y : ℤ) (h1 : x * y + 2 * x = 1) (h2 : x = y) : x * y + 2 * x = 1 := by

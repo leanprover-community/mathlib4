@@ -27,7 +27,7 @@ Examples are:
 
 Various lemmas about `GroupWithZero` and `CommGroupWithZero`.
 To reduce import dependencies, the type-classes themselves are in
-`Algebra.GroupWithZero.Defs`.
+`Mathlib/Algebra/GroupWithZero/Defs.lean`.
 
 ## Implementation details
 

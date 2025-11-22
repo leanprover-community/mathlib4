@@ -11,7 +11,7 @@ public import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
 /-!
 A discrimination tree for the purpose of unifying local expressions with library results.
 
-This data structure is based on `Lean.Meta.DiscrTree` and `Lean.Meta.LazyDiscrTree`,
+This data structure is based on `Mathlib/Lean/Meta/DiscrTree.lean` and `Lean.Meta.LazyDiscrTree`,
 and includes many more features.
 
 ## New features

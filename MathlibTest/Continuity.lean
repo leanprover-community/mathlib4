@@ -45,7 +45,7 @@ example : Continuous (fun x : ℝ => exp ((max x (-x)) + sin x)^2) := by
 example : Continuous (fun x : ℝ => exp ((max x (-x)) + sin (cos x))^2) := by
   continuity
 
--- Examples taken from `Topology.ContinuousMap.Basic`:
+-- Examples taken from `Mathlib/Topology/ContinuousMap/Basic.lean`:
 
 example (b : Y) : Continuous (fun _ : X => b) := by continuity
 
@@ -59,7 +59,7 @@ example (f : ∀ i, C(X, X' i)) : Continuous (fun a i => f i a) := by continuity
 
 example (s : Set X) (f : C(X, Y)) : Continuous (f ∘ ((↑) : s → X)) := by continuity
 
--- Examples taken from `Topology.CompactOpen`:
+-- Examples taken from `Mathlib/Topology/CompactOpen.lean`:
 
 example (b : Y) : Continuous (Function.const X b) := --by continuity
   continuous_const

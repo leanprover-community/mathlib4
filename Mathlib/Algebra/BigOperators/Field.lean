@@ -26,7 +26,7 @@ lemma Multiset.sum_map_div (s : Multiset ι) (f : ι → K) (a : K) :
 lemma Finset.sum_div (s : Finset ι) (f : ι → K) (a : K) :
     (∑ i ∈ s, f i) / a = ∑ i ∈ s, f i / a := by simp only [div_eq_mul_inv, sum_mul]
 
--- TODO: Move these to `Algebra.BigOperators.Group.Finset.Basic`, next to the corresponding `card`
+-- TODO: Move these to `Mathlib/Algebra/BigOperators/Group/Finset/Basic.lean`, next to the corresponding `card`
 -- lemmas, once `Finset.dens` doesn't depend on `Field` anymore.
 namespace Finset
 variable {α β : Type*} [Fintype β]

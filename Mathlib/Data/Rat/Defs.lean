@@ -32,7 +32,7 @@ once the `Field` class has been defined.
 
 @[expose] public section
 
--- TODO: If `Inv` was defined earlier than `Algebra.Group.Defs`, we could have
+-- TODO: If `Inv` was defined earlier than `Mathlib/Algebra/Group/Defs.lean`, we could have
 -- assert_not_exists Monoid
 assert_not_exists MonoidWithZero Lattice PNat Nat.gcd_greatest
 
@@ -157,7 +157,7 @@ protected theorem zero_ne_one : 0 ≠ (1 : ℚ) := by
 attribute [simp] mkRat_eq_zero
 
 -- Extra instances to short-circuit type class resolution
--- TODO(Mario): this instance slows down Mathlib.Data.Real.Basic
+-- TODO(Mario): this instance slows down Mathlib/Data/Real/Basic.lean
 instance nontrivial : Nontrivial ℚ where exists_pair_ne := ⟨1, 0, by decide⟩
 
 /-! ### The rational numbers are a group -/

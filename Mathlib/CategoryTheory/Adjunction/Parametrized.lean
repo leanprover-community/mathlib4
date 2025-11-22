@@ -15,7 +15,7 @@ this file introduces the notation `F ⊣₂ G` for the adjunctions
 with a parameter (in `C₁`) between `F` and `G`.
 
 (See `MonoidalClosed.internalHomAdjunction₂` in the file
-`CategoryTheory.Closed.Monoidal` for an example of such an adjunction.)
+`Mathlib/CategoryTheory/Closed/Monoidal.lean` for an example of such an adjunction.)
 
 Note: this notion is weaker than the notion of
 "adjunction of two variables" which appears in the mathematical literature.

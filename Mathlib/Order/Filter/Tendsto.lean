@@ -14,7 +14,7 @@ public import Mathlib.Order.Filter.Map
 The general notion of limit of a map with respect to filters on the source and target types
 is `Filter.Tendsto`. It is defined in terms of the order and the push-forward operation.
 
-For instance, anticipating on Topology.Basic, the statement: "if a sequence `u` converges to
+For instance, anticipating on Mathlib/Topology/Basic.lean, the statement: "if a sequence `u` converges to
 some `x` and `u n` belongs to a set `M` for `n` large enough then `x` is in the closure of
 `M`" is formalized as: `Tendsto u atTop (𝓝 x) → (∀ᶠ n in atTop, u n ∈ M) → x ∈ closure M`,
 which is a special case of `mem_closure_of_tendsto` from `Topology/Basic`.

@@ -61,7 +61,7 @@ if it looks preferable.)
 
 ### Relation to pseudoelements
 
-There is a separate development of pseudoelements in `CategoryTheory.Abelian.Pseudoelements`,
+There is a separate development of pseudoelements in `Mathlib/CategoryTheory/Abelian/Pseudoelements.lean`,
 as a quotient (but not by isomorphism) of `Over X`.
 
 When a morphism `f` has an image, the image represents the same pseudoelement.

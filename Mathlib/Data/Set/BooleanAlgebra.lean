@@ -11,7 +11,7 @@ public import Mathlib.Order.CompleteBooleanAlgebra
 # Sets are a complete atomic Boolean algebra.
 
 This file contains only the definition of the complete atomic Boolean algebra structure on `Set`.
-Indexed union/intersection are defined in `Mathlib.Order.SetNotation`; lemmas are available in
+Indexed union/intersection are defined in `Mathlib/Order/SetNotation.lean`; lemmas are available in
 `Mathlib/Data/Set/Lattice.lean`.
 
 ## Main declarations

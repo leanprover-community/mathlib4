@@ -17,11 +17,11 @@ public import Mathlib.Analysis.SpecialFunctions.Exp
 
 This file contains the definition of `π`.
 
-See also `Analysis.SpecialFunctions.Trigonometric.Inverse` and
-`Analysis.SpecialFunctions.Trigonometric.Arctan` for the inverse trigonometric functions.
+See also `Mathlib/Analysis/SpecialFunctions/Trigonometric/Inverse.lean` and
+`Mathlib/Analysis/SpecialFunctions/Trigonometric/Arctan.lean` for the inverse trigonometric functions.
 
-See also `Analysis.SpecialFunctions.Complex.Arg` and
-`Analysis.SpecialFunctions.Complex.Log` for the complex argument function
+See also `Mathlib/Analysis/SpecialFunctions/Complex/Arg.lean` and
+`Mathlib/Analysis/SpecialFunctions/Complex/Log.lean` for the complex argument function
 and the complex logarithm.
 
 ## Main statements
@@ -31,11 +31,11 @@ Many basic inequalities on the real trigonometric functions are established.
 The continuity of the usual trigonometric functions is proved.
 
 Several facts about the real trigonometric functions have the proofs deferred to
-`Analysis.SpecialFunctions.Trigonometric.Complex`,
+`Mathlib/Analysis/SpecialFunctions/Trigonometric/Complex.lean`,
 as they are most easily proved by appealing to the corresponding fact for
 complex trigonometric functions.
 
-See also `Analysis.SpecialFunctions.Trigonometric.Chebyshev` for the multiple angle formulas
+See also `Mathlib/Analysis/SpecialFunctions/Trigonometric/Chebyshev.lean` for the multiple angle formulas
 in terms of Chebyshev polynomials.
 
 ## Tags

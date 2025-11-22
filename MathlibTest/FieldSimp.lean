@@ -879,14 +879,14 @@ example (a b : ℚ) : a * b⁻¹ = 7 := by
   exact test_sorry
 
 -- Mathlib simp-lemma `mul_inv_rev`
--- from `Analysis.SpecialFunctions.Stirling`
+-- from `Mathlib/Analysis/SpecialFunctions/Stirling.lean`
 example (m n : ℚ) : (m * n)⁻¹ = 7 := by
   simp [field]
   fail_if_success rw [mul_inv_rev]
   exact test_sorry
 
 -- undiagnosed non-confluence
--- from `LinearAlgebra.QuadraticForm.Real`
+-- from `Mathlib/LinearAlgebra/QuadraticForm/Real.lean`
 /--
 error: Tactic `simp` failed with a nested error:
 maximum recursion depth has been reached

@@ -13,7 +13,7 @@ public import Mathlib.Algebra.Homology.Bifunctor
 # The associator for actions of bifunctors on homological complexes
 
 In this file, we shall adapt the results of the file
-`CategoryTheory.GradedObject.Associator` to the case of homological complexes.
+`Mathlib/CategoryTheory/GradedObject/Associator.lean` to the case of homological complexes.
 Given functors `F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂`, `G : C₁₂ ⥤ C₃ ⥤ C₄`,
 `F : C₁ ⥤ C₂₃ ⥤ C₄`, `G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃` equipped with an isomorphism
 `associator : bifunctorComp₁₂ F₁₂ G ≅ bifunctorComp₂₃ F G₂₃` (which informally means

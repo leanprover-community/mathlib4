@@ -14,9 +14,9 @@ public import Mathlib.Algebra.BigOperators.Fin
 /-!
 # Matrix and vector notation
 
-This file includes `simp` lemmas for applying operations in `Data.Matrix.Basic` to values built out
+This file includes `simp` lemmas for applying operations in `Mathlib/Data/Matrix/Basic.lean` to values built out
 of the matrix notation `![a, b] = vecCons a (vecCons b vecEmpty)` defined in
-`Data.Fin.VecNotation`.
+`Mathlib/Data/Fin/VecNotation.lean`.
 
 This also provides the new notation `!![a, b; c, d] = Matrix.of ![![a, b], ![c, d]]`.
 This notation also works for empty matrices; `!![,,,] : Matrix (Fin 0) (Fin 3)` and

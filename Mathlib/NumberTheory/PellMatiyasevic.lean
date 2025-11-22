@@ -16,10 +16,10 @@ This file solves Pell's equation, i.e. integer solutions to `x ^ 2 - d * y ^ 2 =
 *in the special case that `d = a ^ 2 - 1`*.
 This is then applied to prove Matiyasevic's theorem that the power
 function is Diophantine, which is the last key ingredient in the solution to Hilbert's tenth
-problem. For the definition of Diophantine function, see `NumberTheory.Dioph`.
+problem. For the definition of Diophantine function, see `Mathlib/NumberTheory/Dioph.lean`.
 
 For results on Pell's equation for arbitrary (positive, non-square) `d`, see
-`NumberTheory.Pell`.
+`Mathlib/NumberTheory/Pell.lean`.
 
 ## Main definition
 
