@@ -64,12 +64,12 @@ variable (R : Type*) [CommRing R] {M : Type*} [AddCommGroup M] [Module R M]
 
 local notation "T[" M "]" => TensorAlgebra R M
 
-/-- Antipode in `TensorAlgebra R M` as an algebra map. -/
+/-- Antipode in `TensorAlgebra R M` as a linear map. -/
 def antipode : T[M] →ₗ[R] T[M] := (MulOpposite.opLinearEquiv R).symm.comp
-  (lift R ((MulOpposite.opLinearEquiv R).comp (-(ι R)))).toLinearMap
+  (lift R <| (MulOpposite.opLinearEquiv R).comp <| -ι R).toLinearMap
 
 @[simp]
-lemma antipode_ι_apply (x : M) : antipode R (ι R x) = -(ι R) x := by
+lemma antipode_ι_apply (x : M) : antipode R (ι R x) = -ι R x := by
   simp [antipode]
 
 @[simp]
@@ -77,14 +77,14 @@ theorem antipode_antihom_apply (x y : T[M]) : antipode R (x * y) = antipode R y 
   simp [antipode]
 
 @[simp]
-theorem antipode_antihom : antipode R ∘ₗ mul' R T[M] =
-    mul' R T[M] ∘ₗ TensorProduct.comm R T[M] T[M] ∘ₗ ((antipode R) ⊗ₘ (antipode R)) := by
+theorem antipode_mul' : antipode R ∘ₗ mul' R T[M] =
+    mul' R T[M] ∘ₗ TensorProduct.comm R T[M] T[M] ∘ₗ (antipode R ⊗ₘ antipode R) := by
   ext
   simp
 
 @[simp]
 lemma antipode_algebraMap_apply (r : R) :
-    antipode R ((algebraMap R T[M]) r) = algebraMap R T[M] r := by
+    antipode R (algebraMap R T[M] r) = algebraMap R T[M] r := by
   simp [antipode]
 
 open Algebra Bialgebra Coalgebra in
