@@ -1156,37 +1156,22 @@ lemma eq_or_eq_or_eq_of_forall_not_lt_lt [LinearOrder α]
   rcases hne.2.2.lt_or_gt with h₃ | h₃
   exacts [h h₁ h₂, h h₂ h₃, h h₃ h₂, h h₃ h₁, h h₁ h₃, h h₂ h₃, h h₁ h₃, h h₂ h₁]
 
-namespace Empty
-
-abbrev LinearOrder.ofSubsingleton (α : Type*) [Subsingleton α] : LinearOrder α where
-  le _ _ := False
-  le_refl x := inst.false x
-  le_trans x _ _ := (inst.false x).elim
-  le_antisymm x := (inst.false x).elim
-  le_total x _ := (inst.false x).elim
-  toDecidableLE x _ := Decidable.isFalse (inst.false x).elim
+abbrev LinearOrder.ofSubsingleton {α : Type*} [DecidableEq α]
+    [inst : Subsingleton α] : LinearOrder α where
+  le x y := x = y
+  le_refl x := inst.allEq x x
+  le_trans x y z := Eq.trans
+  le_antisymm x y hxy _ := hxy
+  le_total x y := Or.inl (inst.allEq x y)
+  toDecidableLE x y := inferInstance
 
 instance : LinearOrder Empty := .ofSubsingleton
-
-end Empty
 
 namespace PUnit
 
 variable (a b : PUnit)
 
-instance instLinearOrder : LinearOrder PUnit where
-  le  := fun _ _ ↦ True
-  lt  := fun _ _ ↦ False
-  max := fun _ _ ↦ unit
-  min := fun _ _ ↦ unit
-  toDecidableEq := inferInstance
-  toDecidableLE := fun _ _ ↦ Decidable.isTrue trivial
-  toDecidableLT := fun _ _ ↦ Decidable.isFalse id
-  le_refl     := by intros; trivial
-  le_trans    := by intros; trivial
-  le_total    := by intros; exact Or.inl trivial
-  le_antisymm := by intros; rfl
-  lt_iff_le_not_ge := by simp only [not_true, and_false, forall_const]
+instance instLinearOrder : LinearOrder PUnit := .ofSubsingleton
 
 theorem max_eq : max a b = unit :=
   rfl
@@ -1194,14 +1179,14 @@ theorem max_eq : max a b = unit :=
 theorem min_eq : min a b = unit :=
   rfl
 
-protected theorem le : a ≤ b :=
+protected theorem le : a ≤ b := by
   trivial
 
-theorem not_lt : ¬a < b :=
-  not_false
+theorem not_lt : ¬a < b := by
+  simp
 
 instance : DenselyOrdered PUnit :=
-  ⟨fun _ _ ↦ False.elim⟩
+  ⟨fun _ _ ↦ by simp⟩
 
 end PUnit
 
