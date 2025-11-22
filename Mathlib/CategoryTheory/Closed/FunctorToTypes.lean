@@ -3,8 +3,10 @@ Copyright (c) 2024 Jack McKoen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jack McKoen
 -/
-import Mathlib.CategoryTheory.Functor.FunctorHom
-import Mathlib.CategoryTheory.Closed.Monoidal
+module
+
+public import Mathlib.CategoryTheory.Functor.FunctorHom
+public import Mathlib.CategoryTheory.Closed.Monoidal
 
 /-!
 # Functors to Type are closed.
@@ -16,6 +18,8 @@ Show that `C ⥤ Type max w v u` is monoidal closed for `C` a category in `Type 
 It should be shown that `C ⥤ Type max w v u` is Cartesian closed.
 
 -/
+
+@[expose] public section
 
 
 universe w v' v u u'

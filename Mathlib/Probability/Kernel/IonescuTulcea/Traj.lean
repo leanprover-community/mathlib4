@@ -3,13 +3,15 @@ Copyright (c) 2024 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.Constructions.ProjectiveFamilyContent
-import Mathlib.MeasureTheory.Function.FactorsThrough
-import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-import Mathlib.MeasureTheory.OuterMeasure.OfAddContent
-import Mathlib.Probability.Kernel.Composition.IntegralCompProd
-import Mathlib.Probability.Kernel.IonescuTulcea.PartialTraj
-import Mathlib.Probability.Kernel.SetIntegral
+module
+
+public import Mathlib.MeasureTheory.Constructions.ProjectiveFamilyContent
+public import Mathlib.MeasureTheory.Function.FactorsThrough
+public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+public import Mathlib.MeasureTheory.OuterMeasure.OfAddContent
+public import Mathlib.Probability.Kernel.Composition.IntegralCompProd
+public import Mathlib.Probability.Kernel.IonescuTulcea.PartialTraj
+public import Mathlib.Probability.Kernel.SetIntegral
 
 /-!
 # Ionescu-Tulcea theorem
@@ -72,6 +74,8 @@ see Proposition 10.6.1 in [D. L. Cohn, *Measure Theory*][cohn2013measure].
 Ionescu-Tulcea theorem
 -/
 
+@[expose] public section
+
 open Filter Finset Function MeasurableEquiv MeasurableSpace MeasureTheory Preorder ProbabilityTheory
 
 open scoped ENNReal Topology
@@ -111,7 +115,7 @@ def iterateInduction {a : ℕ} (x : Π i : Iic a, X i)
   | k + 1 => if h : k + 1 ≤ a
       then x ⟨k + 1, mem_Iic.2 h⟩
       else ind k (fun i ↦ iterateInduction x ind i)
-  decreasing_by exact Nat.lt_succ.2 (mem_Iic.1 i.2)
+  decreasing_by exact Nat.lt_succ_of_le (mem_Iic.1 i.2)
 
 lemma frestrictLe_iterateInduction {a : ℕ} (x : Π i : Iic a, X i)
     (ind : (n : ℕ) → (Π i : Iic n, X i) → X (n + 1)) :
