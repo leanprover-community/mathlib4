@@ -438,11 +438,11 @@ namespace LinearMap
 
 variable (R)
 
--- TODO: generalize to `CompatibleSMul`
-/-- `A`-linearly coerce an `R`-linear map from `M` to `A` to a function, given an algebra `A` over
-a commutative semiring `R` and `M` a module over `R`. -/
-def ltoFun (R : Type u) (M : Type v) (A : Type w) [CommSemiring R] [AddCommMonoid M] [Module R M]
-    [CommSemiring A] [Algebra R A] : (M →ₗ[R] A) →ₗ[A] M → A where
+/-- `A`-linearly coerce an `R`-linear map from `M` to `N` to a function, when `N` is an
+`(R, A)`-bimodule. -/
+def ltoFun (R M N A : Type*) [Semiring R] [Semiring A]
+    [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] [Module A N]
+    [SMulCommClass R A N] : (M →ₗ[R] N) →ₗ[A] (M → N) where
   toFun f := f.toFun
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
