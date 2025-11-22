@@ -419,8 +419,16 @@ theorem support_embDomain (f : α ↪ β) (v : α →₀ M) : (embDomain f v).su
 theorem embDomain_zero (f : α ↪ β) : (embDomain f 0 : β →₀ M) = 0 :=
   rfl
 
+open Classical in
+@[grind =]
+theorem embDomain_apply (f : α ↪ β) (v : α →₀ M) (b : β) :
+    embDomain f v b = if h : ∃ a, f a = b then v h.choose else 0 := by
+  simp only [embDomain, mem_map, mem_support_iff, coe_mk]
+  -- TODO: investigate why `grind` needs `split_ifs` first; this should never happen.
+  split_ifs <;> grind
+
 @[simp]
-theorem embDomain_apply (f : α ↪ β) (v : α →₀ M) (a : α) : embDomain f v (f a) = v a := by
+theorem embDomain_apply_self (f : α ↪ β) (v : α →₀ M) (a : α) : embDomain f v (f a) = v a := by
   classical
     simp_rw [embDomain, coe_mk, mem_map']
     split_ifs with h
@@ -436,7 +444,7 @@ theorem embDomain_notin_range (f : α ↪ β) (v : α →₀ M) (a : β) (h : a 
     exact Set.mem_range_self a
 
 theorem embDomain_injective (f : α ↪ β) : Function.Injective (embDomain f : (α →₀ M) → β →₀ M) :=
-  fun l₁ l₂ h => ext fun a => by simpa only [embDomain_apply] using DFunLike.ext_iff.1 h (f a)
+  fun l₁ l₂ h => ext fun a => by simpa only [embDomain_apply_self] using DFunLike.ext_iff.1 h (f a)
 
 @[simp]
 theorem embDomain_inj {f : α ↪ β} {l₁ l₂ : α →₀ M} : embDomain f l₁ = embDomain f l₂ ↔ l₁ = l₂ :=
@@ -451,7 +459,7 @@ theorem embDomain_mapRange (f : α ↪ β) (g : M → N) (p : α →₀ M) (hg :
   ext a
   by_cases h : a ∈ Set.range f
   · rcases h with ⟨a', rfl⟩
-    rw [mapRange_apply, embDomain_apply, embDomain_apply, mapRange_apply]
+    rw [mapRange_apply, embDomain_apply_self, embDomain_apply_self, mapRange_apply]
   · rw [mapRange_apply, embDomain_notin_range, embDomain_notin_range, ← hg] <;> assumption
 
 end EmbDomain

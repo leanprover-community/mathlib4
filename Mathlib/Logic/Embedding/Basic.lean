@@ -106,7 +106,7 @@ instance {α β : Sort*} [IsEmpty α] : Unique (α ↪ β) where
 theorem toFun_eq_coe {α β} (f : α ↪ β) : toFun f = f :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem coeFn_mk {α β} (f : α → β) (i) : (@mk _ _ f i : α → β) = f :=
   rfl
 
@@ -114,6 +114,7 @@ theorem coeFn_mk {α β} (f : α → β) (i) : (@mk _ _ f i : α → β) = f :=
 theorem mk_coe {α β : Type*} (f : α ↪ β) (inj) : (⟨f, inj⟩ : α ↪ β) = f :=
   rfl
 
+@[grind! .]
 protected theorem injective {α β} (f : α ↪ β) : Injective f :=
   EmbeddingLike.injective f
 
