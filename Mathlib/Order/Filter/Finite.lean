@@ -188,37 +188,6 @@ theorem mem_iInf_finite' {f : ι → Filter α} (s) :
     s ∈ iInf f ↔ ∃ t : Finset (PLift ι), s ∈ ⨅ i ∈ t, f (PLift.down i) :=
   (Set.ext_iff.1 (iInf_sets_eq_finite' f) s).trans mem_iUnion
 
-/-- The dual version does not hold! `Filter α` is not a `CompleteDistribLattice`. -/
-instance instCoframe : Coframe (Filter α) where
-  sdiff f g := {
-    sets := {s | ∀ ⦃t⦄, t ∈ g → s ⊆ t → t ∈ f}
-    univ_sets := by simp +contextual
-    sets_of_superset hx hxy t ht hyt := hx ht (hxy.trans hyt)
-    inter_sets hx hy t htg ht := by
-      rw [← union_eq_right.2 ht, inter_union_distrib_right]
-      apply inter_mem
-      · exact hx (mem_of_superset htg subset_union_right) subset_union_left
-      · exact hy (mem_of_superset htg subset_union_right) subset_union_left
-  }
-  sdiff_le_iff a b c :=
-    ⟨fun h s hs ↦ h hs.right hs.left (subset_refl s),
-      fun h s hsc t htb hst ↦ h ⟨htb, mem_of_superset hsc hst⟩⟩
-  hnot f := 𝓟 f.kerᶜ
-  top_sdiff f := by
-    ext s
-    simp only [mem_top, Filter.mem_mk, mem_setOf_eq, eq_univ_iff_forall]
-    rw [mem_principal, compl_subset_comm]
-    constructor
-    · intro h x hxs t ht
-      exact (h (mem_of_superset ht subset_union_right) subset_union_left x).resolve_left hxs
-    · intro h t ht hst x
-      by_cases hx : x ∈ s
-      · exact hst hx
-      · exact h hx t ht
-
-theorem mem_sdiff : s ∈ f \ g ↔ ∀ t ∈ g, s ⊆ t → t ∈ f := .rfl
-protected theorem hnot_def : ￢f = 𝓟 f.kerᶜ := rfl
-
 theorem mem_iInf_finset {s : Finset α} {f : α → Filter β} {t : Set β} :
     (t ∈ ⨅ a ∈ s, f a) ↔ ∃ p : α → Set β, (∀ a ∈ s, p a ∈ f a) ∧ t = ⋂ a ∈ s, p a := by
   classical
