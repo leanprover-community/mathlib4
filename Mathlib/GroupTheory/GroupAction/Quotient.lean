@@ -232,7 +232,7 @@ noncomputable def selfEquivSigmaOrbitsQuotientStabilizer : β ≃ Σ ω : Ω, α
 @[to_additive AddAction.sigmaFixedByEquivOrbitsProdAddGroup
       /-- **Burnside's lemma** : a (noncomputable) bijection between the disjoint union of all
       `{x ∈ X | g • x = x}` for `g ∈ G` and the product `G × X/G`, where `G` is an additive group
-      acting on `X` and `X/G`denotes the quotient of `X` by the relation `orbitRel G X`. -/]
+      acting on `X` and `X/G` denotes the quotient of `X` by the relation `orbitRel G X`. -/]
 noncomputable def sigmaFixedByEquivOrbitsProdGroup : (Σ a : α, fixedBy β a) ≃ Ω × α :=
   calc
     (Σ a : α, fixedBy β a) ≃ { ab : α × β // ab.1 • ab.2 = ab.2 } :=

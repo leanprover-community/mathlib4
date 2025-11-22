@@ -45,7 +45,7 @@ library_note2 «specialised high priority simp lemma» /--
 It sometimes happens that a `@[simp]` lemma declared early in the library can be proved by `simp`
 using later, more general simp lemmas. In that case, the following reasons might be arguments for
 the early lemma to be tagged `@[simp high]` (rather than `@[simp, nolint simpNF]` or
-un``@[simp]``ed):
+un-`@[simp]`ed):
 1. There is a significant portion of the library which needs the early lemma to be available via
   `simp` and which doesn't have access to the more general lemmas.
 2. The more general lemmas have more complicated typeclass assumptions, causing rewrites with them

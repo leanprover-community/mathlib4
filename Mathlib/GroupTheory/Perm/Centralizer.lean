@@ -85,7 +85,7 @@ injectivity `Equiv.Perm.OnCycleFactors.kerParam_injective`, its range
 * `Equiv.Perm.nat_card_centralizer g` computes the cardinality
   of the centralizer of `g`.
 
-* `Equiv.Perm.card_isConj_mul_eq g`computes the cardinality
+* `Equiv.Perm.card_isConj_mul_eq g` computes the cardinality
   of the conjugacy class of `g`.
 
 * We now can compute the cardinality of the set of permutations with given cycle type.
