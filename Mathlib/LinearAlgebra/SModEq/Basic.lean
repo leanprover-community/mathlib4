@@ -156,4 +156,7 @@ theorem eval {R : Type*} [CommRing R] {I : Ideal R} {x y : R} (h : x ≡ y [SMOD
   simp_rw [Polynomial.eval_eq_sum, Polynomial.sum]
   gcongr
 
+theorem ideal {R : Type*} [CommRing R] {I : Ideal R} {x y : R} :
+    x ≡ y [SMOD I] ↔ Ideal.Quotient.mk I x = Ideal.Quotient.mk I y := Iff.rfl
+
 end SModEq
