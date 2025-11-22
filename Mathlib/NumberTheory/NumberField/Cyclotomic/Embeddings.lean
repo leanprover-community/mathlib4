@@ -62,4 +62,5 @@ theorem nrComplexPlaces_eq_totient_div_two [h : IsCyclotomicExtension {n} ℚ K]
     apply nrComplexPlaces_eq_zero_of_finrank_eq_one
     rw [IsCyclotomicExtension.finrank K (cyclotomic.irreducible_rat (NeZero.pos n)), this]
 
+
 end IsCyclotomicExtension.Rat
