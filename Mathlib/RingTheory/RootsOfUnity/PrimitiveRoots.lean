@@ -22,6 +22,8 @@ monoids, expressing that an element is a primitive root of unity.
 * `primitiveRoots k R`: the finset of primitive `k`-th roots of unity in an integral domain `R`.
 * `IsPrimitiveRoot.autToPow`: the monoid hom that takes an automorphism of a ring to the power
   it sends that specific primitive root, as a member of `(ZMod n)ˣ`.
+* `equiv_primitiveRoots_of_coprimePow`: An equivalence between `primitiveRoots k R` that takes
+  each root to a coprime power `e`.
 
 ## Main results
 
@@ -723,6 +725,83 @@ theorem nthRoots_one_eq_biUnion_primitiveRoots [DecidableEq R] {n : ℕ} :
   · simp only [hn, nthRootsFinset_zero, Nat.divisors_zero, biUnion_empty]
   have : NeZero n := ⟨hn⟩
   exact nthRoots_one_eq_biUnion_primitiveRoots'
+
+/-- Equivalence of coprime powers of primitive roots. -/
+def equiv_primitiveRoots_of_coprimePow {e r : ℕ} [CommRing R] [IsDomain R] [NeZero r]
+    (h : e.Coprime r) : (primitiveRoots r R) ≃ (primitiveRoots r R) := by
+  have coprmGcdA (x y : ℤ) (hc : IsCoprime x y) : IsCoprime (x.gcdA y) y := by
+    use x, x.gcdB y
+    rwa [mul_comm _ y, ← Int.gcd_eq_gcd_ab, Nat.cast_eq_one, ← Int.isCoprime_iff_gcd_eq_one]
+  have de : 0 ≤ (r * Nat.gcdA e r + 1) * Nat.gcdA e r := by
+    cases le_or_gt 0 (e.gcdA r) with
+    | inl hc =>
+      positivity
+    | inr hc =>
+      have hr : (0 : ℤ) < r := by exact_mod_cast r.pos_of_neZero
+      apply Int.mul_nonneg_of_nonpos_of_nonpos _ (Int.le_of_lt hc)
+      rw [Int.add_le_zero_iff_le_neg', Int.neg_mul_eq_mul_neg]
+      exact one_le_mul_of_one_le_of_one_le hr (Int.neg_pos_of_neg hc)
+  have hea (a : R) (ha: a ∈ primitiveRoots r R) :
+      a ^ (e * ((r * e.gcdA r + 1) * e.gcdA r).toNat) = a := by
+    rw [mem_primitiveRoots] at ha
+    have fff := IsPrimitiveRoot.val_toRootsOfUnity_coe ha
+    rw [← fff, ← Units.val_pow_eq_pow_val]
+    congr
+    rw [← zpow_natCast]
+    push_cast
+    have rweq: ( ↑e * ((↑r * e.gcdA r + 1) * e.gcdA r)) =
+     r * ( e * ( e.gcdA r ) ^ 2 ) + e * e.gcdA r := by ring
+    rw [Int.natCast_toNat_eq_self.mpr de, rweq, zpow_add, zpow_mul, IsPrimitiveRoot.zpow_eq_one,
+    one_zpow, one_mul]
+    have hgcd := eq_sub_of_add_eq (Nat.gcd_eq_gcd_ab e r).symm
+    rw [hgcd, zpow_sub, zpow_mul]
+    · rw [← Nat.isCoprime_iff_coprime, Int.isCoprime_iff_gcd_eq_one, Int.gcd_natCast_natCast] at h
+      simp only [h, Nat.cast_one, zpow_one, zpow_natCast]
+      have last : ( ( ( ha.toRootsOfUnity: Rˣ ) ^ r ) ^ e.gcdB r )⁻¹ = 1 := by
+        rw [IsPrimitiveRoot.pow_eq_one]
+        simp only [one_zpow, inv_one]
+        rwa [← IsPrimitiveRoot.coe_units_iff, fff]
+      rw [last]
+      simp only [mul_one]
+    rwa[← IsPrimitiveRoot.coe_units_iff, fff]
+    repeat exact Nat.pos_of_neZero r
+  exact {
+    toFun μh := ⟨μh.1 ^ e, by
+      rw[mem_primitiveRoots]
+      · have primr :=μh.2
+        rw[mem_primitiveRoots] at primr
+        · refine IsPrimitiveRoot.pow_of_coprime primr ?_ ?_
+          exact h
+        · exact Nat.pos_of_neZero r
+      exact Nat.pos_of_neZero r
+    ⟩
+    invFun νh := ⟨νh.1 ^ ( ( r * ( Nat.gcdA e r ) + 1 ) * ( Nat.gcdA e r ) ).toNat, by
+      rw [mem_primitiveRoots]
+      · have primr := νh.2
+        rw[mem_primitiveRoots] at primr
+        · refine IsPrimitiveRoot.pow_of_coprime primr ?_ ?_
+          rw[← Nat.isCoprime_iff_coprime, Int.natCast_toNat_eq_self.mpr de, right_distrib]
+          simp only [one_mul]
+          rw[mul_assoc, Int.isCoprime_iff_gcd_eq_one]
+          simp only [dvd_mul_right, Int.gcd_add_left_left_of_dvd]
+          rw[← Int.isCoprime_iff_gcd_eq_one]
+          exact coprmGcdA e r ( Nat.Coprime.isCoprime h )
+        · exact Nat.pos_of_neZero r
+      exact Nat.pos_of_neZero r
+    ⟩
+    left_inv := by
+      rw[Function.LeftInverse]
+      simp only [Subtype.forall, Subtype.mk.injEq]
+      intro a ha
+      rw[← pow_mul]
+      exact hea a ha
+    right_inv := by
+      rw[Function.RightInverse,Function.LeftInverse]
+      simp only [Subtype.forall, Subtype.mk.injEq]
+      intro a ha
+      rw[← pow_mul,mul_comm]
+      exact hea a ha
+  }
 
 end IsDomain
 
