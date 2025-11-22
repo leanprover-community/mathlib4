@@ -3,10 +3,12 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Alex J. Best, Xavier Roblot
 -/
-import Mathlib.Data.Int.Associated
-import Mathlib.Data.Int.NatAbs
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
+module
+
+public import Mathlib.Data.Int.Associated
+public import Mathlib.Data.Int.NatAbs
+public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
 
 /-! # Cardinal of quotient of free finite `ℤ`-modules by submodules of full rank
 
@@ -17,6 +19,8 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
   is given by taking the determinant of `bN` over `b`.
 
 -/
+
+@[expose] public section
 
 open Module Submodule
 

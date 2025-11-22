@@ -3,12 +3,14 @@ Copyright (c) 2021 Aaron Anderson, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Kevin Buzzard, Yaël Dillies, Eric Wieser
 -/
-import Mathlib.Data.Finset.Lattice.Union
-import Mathlib.Data.Finset.Lattice.Prod
-import Mathlib.Data.Finset.Sigma
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Order.CompleteLatticeIntervals
-import Mathlib.Order.ModularLattice
+module
+
+public import Mathlib.Data.Finset.Lattice.Union
+public import Mathlib.Data.Finset.Lattice.Prod
+public import Mathlib.Data.Finset.Sigma
+public import Mathlib.Data.Fintype.Basic
+public import Mathlib.Order.CompleteLatticeIntervals
+public import Mathlib.Order.ModularLattice
 
 /-!
 # Supremum independence
@@ -39,6 +41,8 @@ For the finite version, we avoid the "obvious" definition
 `∀ i ∈ s, Disjoint (f i) ((s.erase i).sup f)` because `erase` would require decidable equality on
 `ι`.
 -/
+
+@[expose] public section
 
 
 variable {α β ι ι' : Type*}

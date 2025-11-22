@@ -3,8 +3,10 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin, Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.LinearAlgebra.TensorProduct.Associator
+module
+
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.LinearAlgebra.TensorProduct.Associator
 
 /-!
 # The `A`-module structure on `M ⊗[R] N`
@@ -43,6 +45,8 @@ We could thus consider replacing the less general definitions with these ones. I
 probably should still implement the less general ones as abbreviations to the more general ones with
 fewer type arguments.
 -/
+
+@[expose] public section
 
 namespace TensorProduct
 
@@ -639,6 +643,14 @@ lemma baseChange_mul (f g : Module.End R M) :
 
 variable (R A M N)
 
+/-- `baseChange A e` for `e : M ≃ₗ[R] N` is the `A`-linear map `A ⊗[R] M ≃ₗ[A] A ⊗[R] N`. -/
+def _root_.LinearEquiv.baseChange (e : M ≃ₗ[R] N) : A ⊗[R] M ≃ₗ[A] A ⊗[R] N :=
+  AlgebraTensorModule.congr (.refl _ _) e
+
+theorem _root_.LinearEquiv.baseChange_tmul (e : M ≃ₗ[R] N) (a : A) (m : M) :
+    LinearEquiv.baseChange R A M N e (a ⊗ₜ[R] m) = a ⊗ₜ e m :=
+  rfl
+
 /-- `baseChange` as a linear map.
 
 When `M = N`, this is true more strongly as `Module.End.baseChangeHom`. -/
@@ -657,13 +669,9 @@ lemma baseChange_pow (f : Module.End R M) (n : ℕ) :
     (f ^ n).baseChange A = f.baseChange A ^ n :=
   map_pow (Module.End.baseChangeHom _ _ _) f n
 
-/-- `baseChange A e` for `e : M ≃ₗ[R] N` is the `A`-linear map `A ⊗[R] M ≃ₗ[A] A ⊗[R] N`. -/
-def _root_.LinearEquiv.baseChange (e : M ≃ₗ[R] N) : A ⊗[R] M ≃ₗ[A] A ⊗[R] N :=
-  AlgebraTensorModule.congr (.refl _ _) e
-
 @[simp]
 theorem _root_.LinearEquiv.coe_baseChange (e : M ≃ₗ[R] N) :
-    (e.baseChange R A M N : (A ⊗[R] M →ₗ[A] A ⊗[R] N)) = e.toLinearMap.baseChange A :=
+    (e.baseChange R A M N : (A ⊗[R] M →ₗ[A] A ⊗[R] N)) = LinearMap.baseChange A e :=
   rfl
 
 @[simp]
