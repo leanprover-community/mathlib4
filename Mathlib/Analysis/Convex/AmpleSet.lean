@@ -3,10 +3,12 @@ Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Floris van Doorn
 -/
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Analysis.Normed.Module.Convex
-import Mathlib.Analysis.NormedSpace.Connected
-import Mathlib.Topology.Algebra.ContinuousAffineEquiv
+module
+
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Analysis.Normed.Module.Convex
+public import Mathlib.Analysis.Normed.Module.Connected
+public import Mathlib.Topology.Algebra.ContinuousAffineEquiv
 
 /-!
 # Ample subsets of real vector spaces
@@ -37,6 +39,8 @@ connected fields, that is not useful in practice.
 ## Tags
 ample set
 -/
+
+@[expose] public section
 
 /-! ## Definition and invariance -/
 

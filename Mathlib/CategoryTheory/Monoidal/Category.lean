@@ -3,9 +3,11 @@ Copyright (c) 2018 Michael Jendrusch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Jendrusch, Kim Morrison, Bhavik Mehta, Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Functor.Trifunctor
-import Mathlib.CategoryTheory.Products.Basic
+module
+
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Functor.Trifunctor
+public import Mathlib.CategoryTheory.Products.Basic
 
 /-!
 # Monoidal categories
@@ -51,11 +53,11 @@ performed by the `coherence` tactic.
 The simp-normal form of morphisms is defined to be an expression that has the minimal number of
 parentheses. More precisely,
 1. it is a composition of morphisms like `f₁ ≫ f₂ ≫ f₃ ≫ f₄ ≫ f₅` such that each `fᵢ` is
-  either a structural morphisms (morphisms made up only of identities, associators, unitors)
-  or non-structural morphisms, and
+  either a structural morphism (morphisms made up only of identities, associators, unitors)
+  or a non-structural morphism, and
 2. each non-structural morphism in the composition is of the form `X₁ ◁ X₂ ◁ X₃ ◁ f ▷ X₄ ▷ X₅`,
-  where each `Xᵢ` is a object that is not the identity or a tensor and `f` is a non-structural
-  morphisms that is not the identity or a composite.
+  where each `Xᵢ` is an object that is not the identity or a tensor and `f` is a non-structural
+  morphism that is not the identity or a composite.
 
 Note that `X₁ ◁ X₂ ◁ X₃ ◁ f ▷ X₄ ▷ X₅` is actually `X₁ ◁ (X₂ ◁ (X₃ ◁ ((f ▷ X₄) ▷ X₅)))`.
 
@@ -67,6 +69,8 @@ respectively, since it requires a huge refactoring. We hope to add these simp le
   http://www-math.mit.edu/~etingof/egnobookfinal.pdf
 * <https://stacks.math.columbia.edu/tag/0FFK>.
 -/
+
+@[expose] public section
 
 universe v u
 

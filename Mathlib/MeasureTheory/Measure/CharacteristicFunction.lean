@@ -3,14 +3,16 @@ Copyright (c) 2024 Jakob Stiefel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Stiefel, Rémy Degenne, Thomas Zhu
 -/
-import Mathlib.Analysis.Fourier.BoundedContinuousFunctionChar
-import Mathlib.Analysis.Fourier.FourierTransform
-import Mathlib.Analysis.InnerProductSpace.Dual
-import Mathlib.Analysis.InnerProductSpace.ProdL2
-import Mathlib.Analysis.Normed.Lp.MeasurableSpace
-import Mathlib.MeasureTheory.Group.IntegralConvolution
-import Mathlib.MeasureTheory.Integral.Pi
-import Mathlib.MeasureTheory.Measure.FiniteMeasureExt
+module
+
+public import Mathlib.Analysis.Fourier.BoundedContinuousFunctionChar
+public import Mathlib.Analysis.Fourier.FourierTransform
+public import Mathlib.Analysis.InnerProductSpace.Dual
+public import Mathlib.Analysis.InnerProductSpace.ProdL2
+public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
+public import Mathlib.MeasureTheory.Group.IntegralConvolution
+public import Mathlib.MeasureTheory.Integral.Pi
+public import Mathlib.MeasureTheory.Measure.FiniteMeasureExt
 
 /-!
 # Characteristic Function of a Finite Measure
@@ -48,6 +50,8 @@ and `L`.
   `μ` and `ν` on a Banach space coincide, then `μ = ν`.
 
 -/
+
+@[expose] public section
 
 open BoundedContinuousFunction RealInnerProductSpace Real Complex ComplexConjugate NormedSpace
   WithLp
@@ -193,10 +197,10 @@ lemma intervalIntegrable_charFun {μ : Measure ℝ} [IsFiniteMeasure μ] {a b : 
   IntervalIntegrable.mono_fun' (g := fun _ ↦ μ.real Set.univ) (by simp)
     stronglyMeasurable_charFun.aestronglyMeasurable (ae_of_all _ norm_charFun_le)
 
-lemma charFun_map_smul [BorelSpace E] [SecondCountableTopology E] (r : ℝ) (t : E) :
+lemma charFun_map_smul [BorelSpace E] (r : ℝ) (t : E) :
     charFun (μ.map (r • ·)) t = charFun μ (r • t) := by
   rw [charFun_apply, charFun_apply,
-    integral_map (by fun_prop) (Measurable.aestronglyMeasurable <| by fun_prop)]
+    integral_map (by fun_prop) (by fun_prop)]
   simp_rw [inner_smul_right, ← real_inner_smul_left]
 
 lemma charFun_map_mul {μ : Measure ℝ} (r t : ℝ) :

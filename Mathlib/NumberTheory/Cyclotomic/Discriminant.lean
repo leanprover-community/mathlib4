@@ -3,9 +3,11 @@ Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
-import Mathlib.RingTheory.DedekindDomain.Dvr
-import Mathlib.NumberTheory.NumberField.Discriminant.Defs
+module
+
+public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
+public import Mathlib.RingTheory.DedekindDomain.Dvr
+public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
 
 /-!
 # Discriminant of cyclotomic fields
@@ -18,6 +20,8 @@ We compute the discriminant of a `p ^ n`-th cyclotomic extension.
   `hζ : IsPrimitiveRoot ζ p`.
 
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -109,7 +113,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
     · simp only [H, mul_comm _ (k + 1)]; norm_cast
     · have := hne.1
       rw [Nat.cast_pow, Ne, pow_eq_zero_iff (by cutsat)] at this
-      exact absurd (pow_eq_zero h) this
+      exact absurd (eq_zero_of_pow_eq_zero h) this
 
 /-- If `p` is a prime and `IsCyclotomicExtension {p ^ (k + 1)} K L`, then the discriminant of
 `hζ.powerBasis K` is `(-1) ^ (p ^ k * (p - 1) / 2) * p ^ (p ^ k * ((p - 1) * (k + 1) - 1))`

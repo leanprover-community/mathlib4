@@ -3,7 +3,9 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Group.Defs
+module
+
+public import Mathlib.Algebra.Group.Defs
 
 /-!
 # Invertible elements
@@ -72,6 +74,8 @@ See Zulip: [https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topi
 invertible, inverse element, invOf, a half, one half, a third, one third, ½, ⅓
 
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero DenselyOrdered
 
@@ -155,7 +159,8 @@ instance Invertible.subsingleton [Monoid α] (a : α) : Subsingleton (Invertible
 /-- If `a` is invertible and `a = b`, then `⅟a = ⅟b`. -/
 @[congr]
 theorem Invertible.congr [Monoid α] (a b : α) [Invertible a] [Invertible b] (h : a = b) :
-    ⅟a = ⅟b := by subst h; congr; apply Subsingleton.allEq
+    ⅟a = ⅟b :=
+  invertible_unique a b h
 
 /-- If `r` is invertible and `s = r` and `si = ⅟r`, then `s` is invertible with `⅟s = si`. -/
 def Invertible.copy' [MulOneClass α] {r : α} (hr : Invertible r) (s : α) (si : α) (hs : s = r)

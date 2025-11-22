@@ -3,10 +3,12 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.RingTheory.Invariant.Basic
-import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-import Mathlib.RingTheory.Unramified.Locus
+module
+
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.RingTheory.Invariant.Basic
+public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+public import Mathlib.RingTheory.Unramified.Locus
 
 /-!
 # Frobenius elements
@@ -42,6 +44,8 @@ Let `G` be a finite group acting on a ring `S`, and `R` is the fixed subring of 
 - `IsArithFrobAt.conj`: If `σ` is a Frobenius at `Q`, then `τστ⁻¹` is a Frobenius at `σ • Q`.
 - `IsArithFrobAt.exists_of_isInvariant`: Frobenius element exists.
 -/
+
+@[expose] public section
 
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
@@ -111,7 +115,7 @@ lemma apply_of_pow_eq_one [IsDomain S] {ζ : S} {m : ℕ} (hζ : ζ ^ m = 1) (hk
   have : NeZero k := ⟨hk.ne'⟩
   obtain ⟨i, hi, e⟩ := hζ.eq_pow_of_pow_eq_one (ξ := φ ζ) (by rw [← map_pow, hζ.1, map_one])
   have (j : _) : 1 - ζ ^ ((q + k - i) * j) ∈ Q := by
-    rw [← Ideal.mul_unit_mem_iff_mem _ ((hζ.isUnit k.pos_of_neZero).pow (i * j)),
+    rw [← Ideal.mul_unit_mem_iff_mem _ ((hζ.isUnit NeZero.out).pow (i * j)),
       sub_mul, one_mul, ← pow_add, ← add_mul, tsub_add_cancel_of_le (by linarith), add_mul,
         pow_add, pow_mul _ k, hζ.1, one_pow, mul_one, pow_mul, e, ← map_pow, mul_comm, pow_mul]
     exact H _
@@ -146,7 +150,7 @@ lemma isArithFrobAt_localize [Q.IsPrime] : H.localize.IsArithFrobAt (maximalIdea
     rw [IsScalarTower.algebraMap_eq R S (Localization.AtPrime Q), ← Ideal.comap_comap,
       Localization.AtPrime.comap_maximalIdeal]
   intro x
-  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective Q.primeCompl x
+  obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq Q.primeCompl x
   simp only [localize, coe_mk, Localization.localRingHom_mk', RingHom.coe_coe, h,
     ← IsLocalization.mk'_pow]
   rw [← IsLocalization.mk'_sub,

@@ -3,8 +3,9 @@ Copyright (c) 2024 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Calle Sönne
 -/
+module
 
-import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
+public import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
 
 /-!
 # Modifications between oplax transformations
@@ -23,6 +24,8 @@ A modification `Γ` between oplax transformations `η` and `θ` consists of a fa
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory.Oplax.OplaxTrans
 
 open Category Bicategory
@@ -30,9 +33,9 @@ open Category Bicategory
 universe w₁ w₂ v₁ v₂ u₁ u₂
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
-  {F G : OplaxFunctor B C} (η θ : F ⟶ G)
+  {F G : B ⥤ᵒᵖᴸ C} (η θ : F ⟶ G)
 
-variable {F G : OplaxFunctor B C}
+variable {F G : B ⥤ᵒᵖᴸ C}
 
 /-- A modification `Γ` between oplax natural transformations `η` and `θ` consists of a family of
 2-morphisms `Γ.app a : η.app a ⟶ θ.app a`, which satisfies the equation
@@ -92,13 +95,13 @@ end Modification
 
 /-- Category structure on the oplax natural transformations between OplaxFunctors. -/
 @[simps]
-scoped instance category (F G : OplaxFunctor B C) : Category (F ⟶ G) where
+scoped instance category (F G : B ⥤ᵒᵖᴸ C) : Category (F ⟶ G) where
   Hom := Modification
   id := Modification.id
   comp := Modification.vcomp
 
 @[ext]
-lemma ext {F G : OplaxFunctor B C} {α β : F ⟶ G} {m n : α ⟶ β} (w : ∀ b, m.app b = n.app b) :
+lemma ext {F G : B ⥤ᵒᵖᴸ C} {α β : F ⟶ G} {m n : α ⟶ β} (w : ∀ b, m.app b = n.app b) :
     m = n := by
   apply Modification.ext
   ext
@@ -106,12 +109,12 @@ lemma ext {F G : OplaxFunctor B C} {α β : F ⟶ G} {m n : α ⟶ β} (w : ∀ 
 
 /-- Version of `Modification.id_app` using category notation -/
 @[simp]
-lemma Modification.id_app' {X : B} {F G : OplaxFunctor B C} (α : F ⟶ G) :
+lemma Modification.id_app' {X : B} {F G : B ⥤ᵒᵖᴸ C} (α : F ⟶ G) :
     Modification.app (𝟙 α) X = 𝟙 (α.app X) := rfl
 
 /-- Version of `Modification.comp_app` using category notation -/
 @[simp]
-lemma Modification.comp_app' {X : B} {F G : OplaxFunctor B C} {α β γ : F ⟶ G}
+lemma Modification.comp_app' {X : B} {F G : B ⥤ᵒᵖᴸ C} {α β γ : F ⟶ G}
     (m : α ⟶ β) (n : β ⟶ γ) : (m ≫ n).app X = m.app X ≫ n.app X :=
   rfl
 

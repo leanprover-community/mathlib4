@@ -3,9 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.RingTheory.Ideal.Cotangent
-import Mathlib.RingTheory.Localization.Defs
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.RingTheory.Ideal.Cotangent
+public import Mathlib.RingTheory.Localization.Defs
 
 /-!
 
@@ -29,6 +31,8 @@ surjection `P →ₐ[R] R`.
   The cotangent space w.r.t. an extension `P → S` by `I`, i.e. the space `I/I²`.
 
 -/
+
+@[expose] public section
 
 universe w u v
 
@@ -300,10 +304,8 @@ variable (x y : P.Cotangent) (w z : P.ker.Cotangent)
 end Cotangent
 
 lemma Cotangent.smul_eq_zero_of_mem (p : P.Ring) (hp : p ∈ P.ker) (m : P.ker.Cotangent) :
-    p • m = 0 := by
-  obtain ⟨x, rfl⟩ := Ideal.toCotangent_surjective _ m
-  rw [← map_smul, Ideal.toCotangent_eq_zero, Submodule.coe_smul, smul_eq_mul, pow_two]
-  exact Ideal.mul_mem_mul hp x.2
+    p • m = 0 :=
+  Ideal.Cotangent.smul_eq_zero_of_mem hp m
 
 attribute [local simp] RingHom.mem_ker
 
@@ -422,7 +424,7 @@ lemma Cotangent.finite (hP : P.ker.FG) :
   refine ⟨.of_restrictScalars (R := P.Ring) _ ?_⟩
   rw [Submodule.restrictScalars_top, ← LinearMap.range_eq_top.mpr Extension.Cotangent.mk_surjective,
     ← Submodule.map_top]
-  exact (P.ker.fg_top.mpr hP).map _
+  exact ((Submodule.fg_top P.ker).mpr hP).map _
 
 end Cotangent
 
