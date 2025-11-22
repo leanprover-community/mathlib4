@@ -3,11 +3,14 @@ Copyright (c) 2025 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+module
 
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.Group.Hom.Instances
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.Group.Hom.Instances
 
 /-! # Zero-related `•` instances on group-like morphisms -/
+
+@[expose] public section
 
 variable {M N A B C : Type*}
 
