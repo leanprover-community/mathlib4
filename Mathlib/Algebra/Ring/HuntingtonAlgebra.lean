@@ -95,6 +95,7 @@ namespace HuntingtonAlgebra
 
 variable {α : Type*} [HuntingtonAlgebra α]
 
+-- Huntington, 4.9
 @[simp] theorem add_compl_eq_compl_add_compl_compl (a : α) :
     aᶜ + aᶜᶜ = a + aᶜ := by
   nth_rewrite 1 [← huntington aᶜᶜ aᶜ]
@@ -110,14 +111,16 @@ variable {α : Type*} [HuntingtonAlgebra α]
   · rw [add_comm, add_comm aᶜ]
   · rw [add_comm]
 
-theorem compl_compl (a : α) : aᶜᶜ = a := by
+-- Huntington 4.10
+@[simp] theorem compl_compl (a : α) : aᶜᶜ = a := by
   rw [← huntington aᶜᶜ aᶜ, eq_comm]
   nth_rewrite 1 [← huntington a aᶜᶜ]
   rw [add_comm aᶜᶜᶜ aᶜᶜ, add_comm aᶜᶜᶜ aᶜ]
   simp only [add_compl_eq_compl_add_compl_compl]
   rw [add_comm]
 
-theorem add_compl (a b : α) : a + aᶜ = b + bᶜ := by
+-- Huntington 4.11
+theorem add_compl' (a b : α) : a + aᶜ = b + bᶜ := by
   rw [← huntington aᶜ bᶜ]
   nth_rewrite 1 [← huntington a bᶜ]
   rw [eq_comm]
@@ -137,7 +140,7 @@ theorem compl_eq_iff (a b : α) : aᶜ = b ↔ a = bᶜ := by
   suffices ∀ {a b : α} (h : aᶜ = b), a = bᶜ by
     exact ⟨this, fun h ↦ (this h.symm).symm⟩
   intro a b h
-  rw [← h, compl_compl]
+  rw [← h, compl_compl a]
 
 theorem compl_eq_compl_iff (a b : α) : aᶜ = bᶜ ↔ a = b := by
   constructor
@@ -146,84 +149,117 @@ theorem compl_eq_compl_iff (a b : α) : aᶜ = bᶜ ↔ a = b := by
   · intro h
     rw [h]
 
+instance : Mul α where
+  mul a b := (aᶜ + bᶜ)ᶜ
+
+-- Huntington 4.7
+theorem mul_def (a b : α) : a * b = (aᶜ + bᶜ)ᶜ := rfl
+
+--
+theorem mul_comm (a b : α) : a * b = b * a := by
+  simp only [mul_def, add_comm]
+
+-- Huntington 4.8
+theorem add_mul_mul_compl (a b : α) : a * b + a * bᶜ = a :=
+  huntington a bᶜ
+
+-- Huntington 4.19
+theorem mul_assoc (a b c : α) : a * b * c = a * (b * c) := by
+  simp [mul_def, compl_compl, add_assoc]
+
+-- Huntington 4.20
+theorem add_eq_compl_mul (a b : α) : a + b = (aᶜ * bᶜ)ᶜ := by
+  simp [mul_def, compl_compl]
+
 variable [Inhabited α]
 
-def univ : α := default + defaultᶜ
+-- Huntington 4.12
+instance : One α := ⟨default + defaultᶜ⟩
 
-theorem add_compl' (a : α) : a + aᶜ = univ :=
-  add_compl a default
+-- Huntington 4.12
+@[simp] theorem add_compl (a : α) : a + aᶜ = 1 :=
+  add_compl' a default
 
-theorem add_univ_compl (a : α) : a + univᶜ = a := by
-  have ha : (univ : α) ᶜ = (univ + univ)ᶜ + univᶜ := by
-    simpa [compl_compl, add_compl', eq_comm] using
-      huntington univᶜ (univ : α)
-  have ha' : (univ : α) = univ + (univ + univ)ᶜ := by
-    calc univ = univ + univᶜ := (add_compl' _).symm
-        _ = univ + (univ + univ)ᶜ + univᶜ := by
+-- Huntington 4.12
+theorem one_def (a : α) : 1 = a + aᶜ :=
+  (add_compl a).symm
+
+-- Huntington 4.13
+instance : Zero α := ⟨1ᶜ⟩
+
+@[simp] theorem one_compl : (1 : α)ᶜ = 0 := rfl
+
+@[simp] theorem zero_compl : (0 : α)ᶜ = 1 := by
+  rw [← one_compl, compl_compl]
+
+-- Huntington 4.15
+@[simp] theorem add_zero (a : α) : a + 0 = a := by
+  have ha : (1 : α) ᶜ = (1 + 1)ᶜ + 1ᶜ := by
+    simpa only [compl_compl, add_compl, eq_comm] using
+      huntington 1ᶜ (1 : α)
+  have ha' : (1 : α) = 1 + (1 + 1)ᶜ := by
+    calc (1 : α) = 1 + 1ᶜ := (add_compl _).symm
+        _ = 1 + (1 + 1)ᶜ + 1ᶜ := by
           nth_rewrite 1 [ha]; simp only [add_assoc]
-        _ = univ + univᶜ + (univ + univ)ᶜ := add_right_comm _ _ _
-        _ = univ + (univ + univ)ᶜ := by rw [add_compl']
-  have hb : (univ : α) + univ = univ := by
-    calc (univ : α) + univ = univ + (univ + (univ + univ)ᶜ) := by
+        _ = 1 + 1ᶜ + (1 + 1)ᶜ := add_right_comm _ _ _
+        _ = 1 + (1 + 1)ᶜ := by rw [add_compl]
+  have hb : (1 : α) + 1 = 1 := by
+    calc (1 : α) + 1 = 1 + (1 + (1 + 1)ᶜ) := by
           nth_rewrite 2 [ha']
           simp only
-        _ = (univ + univ) + (univ + univ)ᶜ := by rw [add_assoc]
-        _ = univ := by
-          rw [add_compl']
-  rw [hb, eq_comm] at ha
-  nth_rewrite 1 [← huntington a a]
-  rw [add_comm aᶜ, add_compl', add_comm, ← add_assoc, ha, ← add_compl' a, add_comm a, huntington]
+        _ = (1 + 1) + (1 + 1)ᶜ := by rw [add_assoc]
+        _ = 1 := by
+          rw [add_compl]
+  rw [hb, eq_comm, one_compl] at ha
+  rw [← huntington a a]
+  rw [add_comm aᶜ, add_compl, one_compl]
+  rw [add_comm 0, add_assoc, ha]
 
-theorem add_self_eq (a : α) : a + a = a := by
-  rw [← compl_compl (a + a), ← add_univ_compl (a + a)ᶜ,
-    ← add_compl' a]
+@[simp] theorem zero_add (a : α) : 0 + a = a := by
+  rw [add_comm, add_zero]
+
+-- Huntington 4.5, correction
+@[simp] theorem add_self_eq (a : α) : a + a = a := by
   have := huntington aᶜ a
   simp only [compl_compl] at this
-  rw [this, compl_compl]
-
-abbrev inf (a b : α) := (aᶜ + bᶜ)ᶜ
-
-example (a b : α) : inf a b + inf a bᶜ = a :=
-  huntington a bᶜ
+  rw [← compl_compl (a + a), ← add_zero (a + a)ᶜ, ← one_compl,
+    ← add_compl a, this, compl_compl]
 
 /- in a boolean algebra, a ≤ b means that a ⊔ b = b or a ⊓ b = b,
 while ⊔ = + and ⊓ = * -/
 
-example (a : α) : inf a univ = a := by
-  unfold inf
-  rw [add_univ_compl, compl_compl]
+-- Huntington 4.16
+@[simp] theorem mul_one (a : α) : a * 1 = a := by
+  simp [mul_def]
 
-example (a : α) : inf a aᶜ = univᶜ := by
-  unfold inf
-  rw [add_compl']
+-- Huntington 4.17
+@[simp] theorem mul_compl (a : α) : a * aᶜ = 0 := by
+  rw [mul_def, ← one_def, one_compl]
 
-example (a b c : α) : inf (inf a b) c = inf a (inf b c) := by
-  unfold inf
-  simp only [compl_compl, add_assoc]
+-- Huntington 4.21
+@[simp] theorem mul_self (a : α) : a * a = a := by
+  rw [mul_def, add_self_eq, compl_compl]
 
-example (a b : α) : a + b = (inf aᶜ bᶜ)ᶜ := by
-  unfold inf
-  simp [compl_compl]
+-- Huntington 4.22
+@[simp] theorem add_one (a : α) :  a + 1 = 1 := by
+  rw [one_def a, ← add_assoc, add_self_eq]
 
-example (a : α) : inf a a = a := by
-  unfold inf
-  simp [add_self_eq, compl_compl]
+-- Huntington 4.23
+@[simp] theorem mul_zero (a : α) : a * 0 = 0 := by
+  simp only [← one_compl, mul_def, compl_compl, one_def aᶜ, ← add_assoc, add_self_eq]
 
-example (a : α) :  a + univ = univ := by
-  rw [← add_compl' a, ← add_assoc, add_self_eq]
+@[simp] theorem zero_mul (a : α) : 0 * a = 0 := by
+  rw [mul_comm, mul_zero]
 
-example (a : α) : inf a univᶜ = univᶜ := by
-  unfold inf
-  simp only [compl_compl, ← add_compl' aᶜ, ← add_assoc, add_self_eq]
-
-example (a b : α) : a + inf a b = a := by
-  unfold inf
+-- Huntington 4.24
+theorem add_mul_self_left (a b : α) : a + a * b = a := by
+  simp only [mul_def]
   nth_rewrite 1 [← huntington a bᶜ]
   rw [add_comm, ← add_assoc, add_self_eq, huntington]
 
-example (a b : α) : inf a (a + b) = a := by
-  unfold inf
-  rw [compl_eq_iff]
+-- Huntington 4.25
+theorem mul_add_self_left (a b : α) : a * (a + b) = a := by
+  simp only [mul_def, compl_eq_iff]
   nth_rewrite 2 [← compl_compl a]
   nth_rewrite 1 [← compl_compl b]
   nth_rewrite 1 [← huntington aᶜ]
@@ -243,7 +279,145 @@ theorem add_eq_iff_compl_add_compl_eq (a b : α) :
   nth_rewrite 1 [← huntington aᶜ _]
   rw [add_comm, ← add_assoc, add_self_eq, huntington]
 
-def booleanAlgebra' : BooleanAlgebra α := {
+-- Huntington 4.26
+theorem eq_of_add_compl_eq {a b : α} (h : aᶜ + b = 1) (h' : bᶜ + a = 1) :
+    a = b := by
+  rw [← huntington a b]
+  conv_rhs => rw [← huntington b a]
+  simp [h, h', add_comm aᶜ]
+
+-- Huntington 4.27
+theorem eq_compl_iff {a b : α} :
+    a = bᶜ ↔ (a + b = 1 ∧ a * b = 0) := by
+  constructor
+  · intro h
+    simp [h, add_comm bᶜ, mul_comm bᶜ]
+  · rintro ⟨h, h'⟩
+    apply eq_of_add_compl_eq
+    · rw [← compl_eq_compl_iff]; exact h'
+    · rw [compl_compl, add_comm, h]
+
+-- Huntington 4.28
+theorem mul_mul_compl_add (a b c : α) :
+    a * b * c + a * b * cᶜ + a * bᶜ * c + a * bᶜ * cᶜ +
+      aᶜ * b * c + aᶜ * b * cᶜ + aᶜ * bᶜ * c + aᶜ * bᶜ * cᶜ = 1 := by
+  simp only [add_mul_mul_compl, add_assoc, add_compl]
+
+-- Huntington 4.30
+theorem add_mul_self (a b c : α) :
+    a * b + a * c = a * b * c + a * b * cᶜ + a * bᶜ * c := by
+  nth_rewrite 1 [← add_mul_mul_compl (a * b) c, ← add_mul_mul_compl (a * c) b]
+  rw [mul_assoc a c b, mul_comm c b, ← mul_assoc]
+  rw [mul_assoc a c bᶜ, mul_comm c bᶜ, ← mul_assoc]
+  rw [add_add_add_comm, add_self_eq, ← add_assoc]
+
+-- Huntington, 4.31
+theorem mul_add_compl (a b c : α) :
+    (a * (b + c))ᶜ = a * bᶜ * cᶜ + aᶜ * b * c + aᶜ * b * cᶜ + aᶜ * bᶜ * c + aᶜ * bᶜ * cᶜ := by
+  have : (a * (b + c))ᶜ = aᶜ + bᶜ * cᶜ := by
+    simp [mul_def a (b + c), compl_compl, mul_def bᶜ, compl_compl]
+  rw [this]
+  nth_rewrite 1 [← add_mul_mul_compl aᶜ b,
+    ← add_mul_mul_compl (aᶜ * b) cᶜ, compl_compl,
+    ← add_mul_mul_compl (aᶜ * bᶜ) c]
+  have : bᶜ * cᶜ = a * bᶜ * cᶜ + aᶜ * bᶜ * cᶜ := by
+    nth_rewrite 1 [← add_mul_mul_compl (bᶜ * cᶜ) a]
+    rw [mul_comm _ a, ← mul_assoc]
+    rw [mul_comm _ aᶜ, ← mul_assoc]
+  rw [this]
+  simp only [← add_assoc, mul_assoc, ← add_comm (a * _)]
+  simp only [add_assoc]
+  apply congr_arg₂ _ rfl
+  simp only [← add_assoc, ← add_comm (aᶜ * (b * c))]
+  simp only [add_assoc, add_self_eq]
+
+-- Huntington 4.32
+theorem add_eq_one (a b c : α) :
+    (a * b + a * c) + (a * (b + c))ᶜ = 1 := by
+  rw [mul_add_compl, add_mul_self]
+  simp only [← add_assoc]
+  exact mul_mul_compl_add a b c
+
+lemma mul_add_eq_zero (a b c : α) (hab : a * b = 0) (hac : a * c = 0) :
+    a * (b + c) = 0 := by
+  rw [← compl_eq_compl_iff, zero_compl, ← zero_add (_)ᶜ, ← hab,
+    ← add_zero (a * b), ← hac, add_eq_one]
+
+set_option linter.style.multiGoal false in
+-- Huntington 4.33
+theorem add_mul_mul_mul_add_compl (a b c : α) :
+    (a * b + a * c) * (a * (b + c))ᶜ = 0 := by
+  rw [add_mul_self, mul_add_compl]
+  set A := a * b * c
+  set B := a * b * cᶜ
+  set C := a * bᶜ * c
+  set D := a * bᶜ * cᶜ
+  set E := aᶜ * b * c
+  set F := aᶜ * b * cᶜ
+  set G := aᶜ * bᶜ * c
+  set H := aᶜ * bᶜ * cᶜ
+  have hA : A * (D + E + F + G + H) = 0 := by
+    apply mul_add_eq_zero
+    apply mul_add_eq_zero
+    apply mul_add_eq_zero
+    apply mul_add_eq_zero
+    any_goals
+      simp only [A, D, E, F, G, H, mul_assoc]
+      rw [mul_comm c, mul_comm b]
+      simp [← mul_assoc]
+    · simp only [mul_assoc]
+      simp [← mul_assoc, mul_comm _ c]
+  have hB : B * (D + E + F + G + H) = 0 := by
+    apply mul_add_eq_zero
+    apply mul_add_eq_zero
+    apply mul_add_eq_zero
+    apply mul_add_eq_zero
+    any_goals
+      simp only [B, D, E, F, G, H, mul_assoc]
+      rw [mul_comm b, mul_comm cᶜ]
+      simp [← mul_assoc]
+    · simp only [mul_self, mul_assoc]
+      simp [mul_comm bᶜ, mul_assoc]
+  have hC : C * (D + E + F + G + H) = 0 := by
+    apply mul_add_eq_zero
+    apply mul_add_eq_zero
+    apply mul_add_eq_zero
+    apply mul_add_eq_zero
+    any_goals
+      simp only [C, D, E, F, G, H, mul_assoc]
+      rw [mul_comm bᶜ, mul_comm c]
+      simp [← mul_assoc]
+    · simp only [mul_assoc]
+      simp [← mul_assoc, mul_comm _ c]
+  rw [mul_comm]
+  apply mul_add_eq_zero
+  apply mul_add_eq_zero
+  all_goals
+    simp [mul_comm, hA, hB, hC]
+
+-- Huntington 4.34
+theorem mul_add (a b c : α) :
+    a * (b + c) = a * b + a * c := by
+  rw [← compl_eq_compl_iff, eq_compl_iff,
+    add_comm, add_eq_one, mul_comm, add_mul_mul_mul_add_compl]
+  simp
+
+theorem add_mul (a b c : α) :
+    (a + b) * c = a * c + b * c := by
+  rw [mul_comm, mul_add, mul_comm c, mul_comm c]
+
+-- Huntington 4.35
+theorem add_mul' (a b c : α) :
+    a + b * c = (a + b) * (a + c) := by
+  nth_rewrite 1 [← compl_compl a, mul_def]
+  rw [← compl_eq_compl_iff, ← mul_def]
+  conv_rhs =>
+    rw [mul_def, ← compl_compl a, ← compl_compl b, ← compl_compl c]
+    rw [← mul_def aᶜ, ← mul_def aᶜ, compl_compl]
+  rw [mul_add]
+
+/-- Any Huntington algebra is a boolean algebra. -/
+def booleanAlgebra : BooleanAlgebra α where
   le a b := (a + b = b)
   le_refl := add_self_eq
   le_trans a b c h h' := by rw [← h', ← add_assoc, h]
@@ -252,34 +426,29 @@ def booleanAlgebra' : BooleanAlgebra α := {
   le_sup_left a b := by rw [← add_assoc, add_self_eq]
   le_sup_right a b := by rw [add_comm, add_assoc, add_self_eq]
   sup_le a b c h h' := by rw [add_assoc, h', h]
-  inf x y := (xᶜ + yᶜ)ᶜ
+  inf x y := x * y
   inf_le_left a b := by
-    rw [add_eq_iff_compl_add_compl_eq, compl_compl,
-      add_comm, ← add_assoc, add_self_eq]
+    rw [add_comm, add_mul_self_left]
   inf_le_right a b := by
-    rw [add_eq_iff_compl_add_compl_eq, compl_compl,
-      add_assoc, add_self_eq]
+    rw [add_comm, mul_comm, add_mul_self_left]
   le_inf a b c h h' := by
-    rw [add_eq_iff_compl_add_compl_eq] at h h' ⊢
-    rw [compl_compl, ← add_assoc, h, h']
+    rw [add_mul', h, h']
   le_sup_inf a b c := by
     -- (a ⊔ b) ⊓ (a ⊔ c) + a ⊔ b ⊓ c = a ⊔ b ⊓ c
-    change inf (a + b) (a + c) + (a + inf b c) = a + inf b c
-    unfold inf
-    sorry
-  top := univ
-  bot := univᶜ
+    change (a + b) * (a + c) + (a + b * c) = a + b * c
+    rw [add_mul', add_self_eq]
+  top := 1
+  bot := 0
   inf_compl_le_bot a := by
-    change inf a aᶜ + univᶜ = univᶜ
-    unfold inf
-    rw [compl_compl, add_comm aᶜ, add_compl', add_univ_compl]
+    change a * aᶜ + 0 = 0
+    simp
   top_le_sup_compl a := by
-    change univ + (a + aᶜ) = (a + aᶜ)
-    rw [add_compl', add_self_eq]
+    change 1 + (a + aᶜ) = a + aᶜ
+    simp
   le_top a := by
-    rw [← add_compl' a, ← add_assoc, add_self_eq]
+    simp
   bot_le a := by
-    rw [add_comm, add_univ_compl] }
+    simp
 
 end HuntingtonAlgebra
 
@@ -289,16 +458,17 @@ open PNat
 
 variable {α : Type*} [RobbinsAlgebra α]
 
+abbrev isHuntington (α : Type*) [AddCommSemigroup α] [HasCompl α] : Prop :=
+  ∀ (a b : α), (aᶜ + b)ᶜ + (aᶜ + bᶜ)ᶜ = a
+
 section Winker
 
 /-- A Robbins algebra where every element is idempotent is a Huntington algebra -/
-def huntingtonAlgebra_of_compl_compl_eq (h : ∀ a : α, aᶜᶜ = a) :
-    HuntingtonAlgebra α where
-  huntington a b := by
-    have := robbins bᶜ aᶜ
-    rw [h, add_comm b, add_comm bᶜ] at this
-    rw [← h (_ + _), this, h]
-
+theorem isHuntingtonAlgebra_of_compl_compl_eq (h : ∀ a : α, aᶜᶜ = a) :
+    isHuntington α := fun a b ↦ by
+  have := robbins bᶜ aᶜ
+  rw [h, add_comm b, add_comm bᶜ] at this
+  rw [← h (_ + _), this, h]
 
 end Winker
 
