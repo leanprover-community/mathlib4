@@ -48,11 +48,6 @@ open Function Module
 
 open scoped nonZeroDivisors
 
-/-- `ℤ` with its usual ring structure is not a field. -/
-theorem Int.not_isField : ¬IsField ℤ := fun h =>
-  Int.not_even_one <|
-    (h.mul_inv_cancel two_ne_zero).imp fun a => by rw [← two_mul]; exact Eq.symm
-
 namespace NumberField
 
 variable (K L : Type*) [Field K] [Field L]
@@ -256,6 +251,11 @@ This is a convenient abbreviation for `map_ne_zero_iff` applied to
 -/
 lemma coe_ne_zero_iff {x : 𝓞 K} : algebraMap _ K x ≠ 0 ↔ x ≠ 0 :=
   map_ne_zero_iff _ coe_injective
+
+@[simp]
+theorem minpoly_coe (x : 𝓞 K) :
+    minpoly ℤ (x : K) = minpoly ℤ x :=
+  minpoly.algebraMap_eq RingOfIntegers.coe_injective x
 
 theorem isIntegral_coe (x : 𝓞 K) : IsIntegral ℤ (algebraMap _ K x) :=
   x.2
