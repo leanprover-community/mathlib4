@@ -12,10 +12,10 @@ public import Mathlib.RingTheory.HopfAlgebra.Basic
 # Hopf algebra structure on `TensorAlgebra R M`
 
 In this file we implement the natura Hopf algebra structure on `TensorAlgebra R M`.
-The comultiplication is the unique algebra map satisfying `comul ((ι R) x) = (ι R) x ⊗ 1 + 1 ⊗ (ι R)
-x` for all `x : M`.
-`algebraMapInv` acts as the counit, and the antipode is the unique algebra map `antipode :
-TensorAlgebra R M → (TensorAlgebra R M)ᵐᵒᵖ` induced by `fun x => op -(ι R) x`.
+The bialgebra structure is implemented in `TensorAlgebra.instBialgebra`.
+
+The antipode is the unique algebra map `antipode : TensorAlgebra R M → (TensorAlgebra R M)ᵐᵒᵖ`
+induced by `fun x => op -(ι R x)`.
 -/
 @[expose] public section
 
