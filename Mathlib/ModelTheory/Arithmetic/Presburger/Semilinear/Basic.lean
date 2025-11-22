@@ -192,8 +192,8 @@ theorem isLinearSet_iff_exists_fin_addMonoidHom {s : Set M} :
     IsLinearSet s ↔ ∃ (a : M) (n : ℕ) (f : (Fin n → ℕ) →+ M), s = a +ᵥ Set.range f := by
   simp_rw [isLinearSet_iff_exists_fg_eq_vadd, fg_iff_exists_fin_addMonoidHom,
     ← AddMonoidHom.coe_mrange]
-  refine exists_congr fun a => ⟨fun ⟨P, ⟨n, f, hf⟩, hs⟩ => ⟨n, f, ?_⟩, fun ⟨n, f, hs⟩ =>
-    ⟨_, ⟨n, f, rfl⟩, ?_⟩⟩
+  congr with a
+  refine ⟨fun ⟨P, ⟨n, f, hf⟩, hs⟩ => ⟨n, f, ?_⟩, fun ⟨n, f, hs⟩ => ⟨_, ⟨n, f, rfl⟩, ?_⟩⟩
   · rw [hf, hs]
   · rw [hs]
 
