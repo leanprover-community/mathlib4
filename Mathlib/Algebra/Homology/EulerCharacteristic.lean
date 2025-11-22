@@ -5,13 +5,13 @@ Authors: Jesse Alama
 -/
 module
 
-import Mathlib.Algebra.Homology.HomologicalComplex
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.Algebra.Ring.NegOnePow
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.CategoryTheory.GradedObject
-import Mathlib.LinearAlgebra.Dimension.Finrank
+public import Mathlib.Algebra.Homology.HomologicalComplex
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+public import Mathlib.Algebra.Homology.ComplexShape
+public import Mathlib.Algebra.Ring.NegOnePow
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.CategoryTheory.GradedObject
+public import Mathlib.LinearAlgebra.Dimension.Finrank
 
 /-!
 # Euler characteristic of homological complexes
@@ -46,6 +46,8 @@ defined as abbreviations that apply the graded object versions to `C.X` and `C.h
   Euler characteristic equals the finite one when homology vanishes outside the finite set
 
 -/
+
+@[expose] public section
 
 namespace ComplexShape
 
