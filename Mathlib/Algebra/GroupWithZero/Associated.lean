@@ -356,7 +356,7 @@ variable [Monoid M] [Subsingleton Mˣ]
 theorem associated_iff_eq {x y : M} : x ~ᵤ y ↔ x = y := by
   constructor
   · rintro ⟨c, rfl⟩
-    rw [units_eq_one c, Units.val_one, mul_one]
+    rw [c.eq_one, Units.val_one, mul_one]
   · rintro rfl
     rfl
 
