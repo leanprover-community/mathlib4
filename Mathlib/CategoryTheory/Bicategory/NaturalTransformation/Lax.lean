@@ -26,20 +26,23 @@ condition.
 * `Lax.LaxTrans F G`: lax transformations between lax functors `F` and `G`. The naturality
   condition is given by a 2-morphism `app a ≫ G.map f ⟶ F.map f ≫ app b` for each 1-morphism
   `f : a ⟶ b`.
-* `Lax.StrongTrans F G`: Strong transformations between lax functors `F` and `G`.
+* `Lax.OplaxTrans F G`: oplax transformations between lax functors `F` and `G`. The naturality
+  condition is given by a 2-morphism `F.map f ≫ app b ⟶ app a ≫ G.map f` for each 1-morphism
+  `f : a ⟶ b`.
+* `Lax.StrongTrans F G`: Strong transformations between lax functors `F` and `G`. The naturality
+  condition is given by a 2-morphism `app a ≫ G.map f ≅ F.map f ≫ app b` for each 1-morphism
+  `f : a ⟶ b`.
 
-Using these, we define two `CategoryStruct` (scoped) instances on `B ⥤ᴸ C`, one in the
-`Lax.LaxTrans` namespace and one in the `Lax.StrongTrans` namespace. The arrows in these
-CategoryStruct's are given by lax transformations and strong transformations respectively.
+Using these, we define three `CategoryStruct` (scoped) instances on `B ⥤ᴸ C`, in the
+`Lax.LaxTrans`, `Lax.Oplax`, and `Lax.StrongTrans` namespaces. The arrows in these
+CategoryStruct's are given by lax transformations, oplax transformations, and strong
+transformations respectively.
 
 We also provide API for going between lax transformations and strong transformations:
-* `Lax.StrongCore F G`: a structure on an lax transformation between lax functors that
+* `Lax.StrongCore F G`: a structure on a lax transformation between lax functors that
 promotes it to a strong transformation.
 * `Lax.mkOfLax η η'`: given an lax transformation `η` such that each component
   2-morphism is an isomorphism, `mkOfLax` gives the corresponding strong transformation.
-
-# TODO
-This file could also include oplax transformations between lax functors.
 
 ## References
 * [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055),
@@ -57,20 +60,20 @@ universe w₁ w₂ v₁ v₂ u₁ u₂
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 
-/-- If `η` is an lax transformation between `F` and `G`, we have a 1-morphism
+/-- If `η` is a lax transformation between `F` and `G`, we have a 1-morphism
 `η.app a : F.obj a ⟶ G.obj a` for each object `a : B`. We also have a 2-morphism
 `η.naturality f : app a ≫ G.map f ⟶ F.map f ≫ app b` for each 1-morphism `f : a ⟶ b`.
-These 2-morphisms satisfies the naturality condition, and preserve the identities and
+These 2-morphisms satisfy the naturality condition, and preserve the identities and
 the compositions modulo some adjustments of domains and codomains of 2-morphisms.
 -/
 structure LaxTrans (F G : B ⥤ᴸ C) where
-  /-- The component 1-morphisms of an lax transformation. -/
+  /-- The component 1-morphisms of a lax transformation. -/
   app (a : B) : F.obj a ⟶ G.obj a
   /-- The 2-morphisms underlying the lax naturality constraint. -/
   naturality {a b : B} (f : a ⟶ b) : app a ≫ G.map f ⟶ F.map f ≫ app b
   /-- Naturality of the lax naturality constraint. -/
   naturality_naturality {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
-     naturality f ≫ F.map₂ η ▷ app b = app a ◁ G.map₂ η ≫ naturality g := by
+      naturality f ≫ F.map₂ η ▷ app b = app a ◁ G.map₂ η ≫ naturality g := by
     cat_disch
   /-- Lax unity. -/
   naturality_id (a : B) :
@@ -183,6 +186,127 @@ scoped instance : CategoryStruct (B ⥤ᴸ C) where
 
 end LaxTrans
 
+/-- If `η` is an oplax transformation between `F` and `G`, we have a 1-morphism
+`η.app a : F.obj a ⟶ G.obj a` for each object `a : B`. We also have a 2-morphism
+`η.naturality f : F.map f ≫ app b ⟶ app a ≫ G.map f` for each 1-morphism `f : a ⟶ b`.
+These 2-morphisms satisfies the naturality condition, and preserve the identities and
+the compositions modulo some adjustments of domains and codomains of 2-morphisms.
+-/
+structure OplaxTrans (F G : B ⥤ᴸ C) where
+  /-- The component 1-morphisms of an oplax transformation. -/
+  app (a : B) : F.obj a ⟶ G.obj a
+  /-- The 2-morphisms underlying the oplax naturality constraint. -/
+  naturality {a b : B} (f : a ⟶ b) : F.map f ≫ app b ⟶ app a ≫ G.map f
+  /-- Naturality of the oplax naturality constraint. -/
+  naturality_naturality {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
+      F.map₂ η ▷ app b ≫ naturality g = naturality f ≫ app a ◁ G.map₂ η := by
+    aesop_cat
+  naturality_id (a : B) :
+      F.mapId a ▷ app a ≫ naturality (𝟙 a) =
+        (λ_ (app a)).hom ≫ (ρ_ (app a)).inv ≫ app a ◁ G.mapId a := by
+    aesop_cat
+  naturality_comp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
+      F.mapComp f g ▷ app c ≫ naturality (f ≫ g) =
+        (α_ _ _ _).hom ≫ F.map f ◁ naturality g ≫
+          (α_ _ _ _).inv ≫ naturality f ▷ G.map g ≫ (α_ _ _ _).hom ≫
+            app a ◁ G.mapComp f g := by
+    aesop_cat
+
+namespace OplaxTrans
+
+attribute [reassoc (attr := simp)] naturality_naturality naturality_id naturality_comp
+
+variable {F G H : B ⥤ᴸ C} (η : OplaxTrans F G) (θ : OplaxTrans G H)
+
+variable (F) in
+/-- The identity oplax transformation. -/
+def id : OplaxTrans F F where
+  app a := 𝟙 (F.obj a)
+  naturality {_ _} f := (ρ_ (F.map f)).hom ≫ (λ_ (F.map f)).inv
+
+instance : Inhabited (OplaxTrans F F ) :=
+  ⟨id F⟩
+
+/-- Auxiliary definition for `vComp`. -/
+abbrev vCompApp (a : B) : F.obj a ⟶ H.obj a := η.app a ≫ θ.app a
+
+/-- Auxiliary definition for `vComp`. -/
+abbrev vCompNaturality {a b : B} (f : a ⟶ b) :
+    F.map f ≫ η.app b ≫ θ.app b ⟶ (η.app a ≫ θ.app a) ≫ H.map f :=
+  (α_ _ _ _).inv ≫ η.naturality f ▷ θ.app b ≫ (α_ _ _ _).hom ≫
+    η.app a ◁ θ.naturality f ≫ (α_ _ _ _).inv
+
+theorem vComp_naturality_naturality {a b : B} {f g : a ⟶ b} (β : f ⟶ g) :
+    F.map₂ β ▷ η.vCompApp θ b ≫ η.vCompNaturality θ g =
+      η.vCompNaturality θ f ≫ η.vCompApp θ a ◁ H.map₂ β := by
+  calc
+    _ = 𝟙 _ ⊗≫ (F.map₂ β ▷ η.app b ≫ η.naturality g) ▷ θ.app b ⊗≫
+          η.app a ◁ θ.naturality g ⊗≫ 𝟙 _ := by
+      bicategory
+    _ = 𝟙 _ ⊗≫ η.naturality f ▷ θ.app b ⊗≫
+          η.app a ◁ (G.map₂ β ▷ θ.app b ≫ θ.naturality g) ⊗≫ 𝟙 _ := by
+      rw [η.naturality_naturality]
+      bicategory
+    _ = _ := by
+      rw [θ.naturality_naturality]
+      bicategory
+
+theorem vComp_naturality_id (a : B) :
+    F.mapId a ▷ η.vCompApp θ a ≫ η.vCompNaturality θ (𝟙 a) =
+      (λ_ (η.vCompApp θ a)).hom ≫ (ρ_ (η.vCompApp θ a)).inv ≫ η.vCompApp θ a ◁ H.mapId a := by
+  calc
+    _ = 𝟙 _ ⊗≫ (F.mapId a ▷ η.app a ≫ η.naturality (𝟙 a)) ▷ θ.app a ⊗≫
+          η.app a ◁ θ.naturality (𝟙 a) ⊗≫ 𝟙 _ := by
+      bicategory
+    _ = 𝟙 _ ⊗≫ η.app a ◁ (G.mapId a ▷ θ.app a ≫ θ.naturality (𝟙 a)) ⊗≫ 𝟙 _ := by
+      rw [η.naturality_id]
+      bicategory
+    _ = _ := by
+      rw [θ.naturality_id]
+      bicategory
+
+theorem vComp_naturality_comp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
+    F.mapComp f g ▷ η.vCompApp θ c ≫ η.vCompNaturality θ (f ≫ g) =
+      (α_ (F.map f) (F.map g) (η.vCompApp θ c)).hom ≫
+        F.map f ◁ η.vCompNaturality θ g ≫
+          (α_ (F.map f) (η.vCompApp θ b) (H.map g)).inv ≫
+            η.vCompNaturality θ f ▷ H.map g ≫
+              (α_ (η.vCompApp θ a) (H.map f) (H.map g)).hom ≫ η.vCompApp θ a ◁ H.mapComp f g := by
+  calc
+    _ = 𝟙 _ ⊗≫ (F.mapComp f g ▷ η.app c ≫ η.naturality (f ≫ g)) ▷ θ.app c ⊗≫
+          η.app a ◁ θ.naturality (f ≫ g) ⊗≫ 𝟙 _ := by
+      bicategory
+    _ = 𝟙 _ ⊗≫ (F.map f ◁ η.naturality g ⊗≫ η.naturality f ▷ G.map g) ▷ θ.app c ⊗≫
+          η.app a ◁ (G.mapComp f g ▷ θ.app c ≫ θ.naturality (f ≫ g)) ⊗≫ 𝟙 _ := by
+      rw [η.naturality_comp]
+      bicategory
+    _ = 𝟙 _ ⊗≫ F.map f ◁ η.naturality g ▷ θ.app c ⊗≫
+          (η.naturality f ▷ (G.map g ≫ θ.app c) ≫ (η.app a ≫ G.map f) ◁ θ.naturality g) ⊗≫
+            η.app a ◁ (θ.naturality f ▷ H.map g ⊗≫ θ.app a ◁ H.mapComp f g) ⊗≫ 𝟙 _ := by
+      rw [θ.naturality_comp]
+      bicategory
+    _ = _ := by
+      rw [← whisker_exchange]
+      bicategory
+
+/-- Vertical composition of oplax transformations. -/
+def vComp (η : OplaxTrans F G) (θ : OplaxTrans G H) : OplaxTrans F H where
+  app := vCompApp η θ
+  naturality := vCompNaturality η θ
+  naturality_naturality := vComp_naturality_naturality η θ
+  naturality_id := vComp_naturality_id η θ
+  naturality_comp := vComp_naturality_comp η θ
+
+/-- `CategoryStruct` on `B ⥤ᴸ C` where the (1-)morphisms are given by oplax
+transformations. -/
+@[simps! id_app id_naturality comp_app comp_naturality]
+scoped instance : CategoryStruct (B ⥤ᴸ C) where
+  Hom := OplaxTrans
+  id := OplaxTrans.id
+  comp := OplaxTrans.vComp
+
+end OplaxTrans
+
 /-- A strong natural transformation between lax functors `F` and `G` is a natural transformation
 that is "natural up to 2-isomorphisms".
 
@@ -197,7 +321,7 @@ structure StrongTrans (F G : B ⥤ᴸ C) where
   app (a : B) : F.obj a ⟶ G.obj a
   naturality {a b : B} (f : a ⟶ b) : app a ≫ G.map f ≅ F.map f ≫ app b
   naturality_naturality {a b : B} {f g : a ⟶ b} (η : f ⟶ g) :
-     (naturality f).hom ≫ F.map₂ η ▷ app b = app a ◁ G.map₂ η ≫ (naturality g).hom := by
+      (naturality f).hom ≫ F.map₂ η ▷ app b = app a ◁ G.map₂ η ≫ (naturality g).hom := by
     cat_disch
   /-- Lax unity. -/
   naturality_id (a : B) :
