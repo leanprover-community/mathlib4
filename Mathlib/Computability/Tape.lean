@@ -555,9 +555,12 @@ theorem Tape.write_nth {Γ} [Inhabited Γ] (b : Γ) :
   | _, -(_ + 1 : ℕ) => rfl
 
 @[simp]
-theorem Tape.write_mk' {Γ} [Inhabited Γ] (a b : Γ) (L R : ListBlank Γ) :
-    (Tape.mk' L (R.cons a)).write b = Tape.mk' L (R.cons b) := by
-  simp only [Tape.write, Tape.mk', ListBlank.head_cons, ListBlank.tail_cons]
+theorem Tape.write_mk {Γ} [Inhabited Γ] (a b : Γ) (L R : ListBlank Γ) :
+    (Tape.mk a L R).write b = Tape.mk b L R := rfl
+
+@[simp]
+theorem Tape.write_mk' {Γ} [Inhabited Γ] (b : Γ) (L R : ListBlank Γ) :
+    (Tape.mk' L R).write b = Tape.mk' L (R.tail.cons b) := by simp [mk']
 
 /-- Apply a pointed map to a tape to change the alphabet. -/
 def Tape.map {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ') (T : Tape Γ) : Tape Γ' :=
@@ -577,13 +580,7 @@ theorem Tape.map_write {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap �
 theorem Tape.write_move_right_n {Γ} [Inhabited Γ] (f : Γ → Γ) (L R : ListBlank Γ) (n : ℕ) :
     ((Tape.move Dir.right)^[n] (Tape.mk' L R)).write (f (R.nth n)) =
       (Tape.move Dir.right)^[n] (Tape.mk' L (R.modifyNth f n)) := by
-  induction n generalizing L R with
-  | zero =>
-    simp only [ListBlank.nth_zero, ListBlank.modifyNth, iterate_zero_apply]
-    rw [← Tape.write_mk', ListBlank.cons_head_tail]
-  | succ n IH =>
-    simp only [ListBlank.head_cons, ListBlank.nth_succ, ListBlank.modifyNth, Tape.move_right_mk',
-      ListBlank.tail_cons, iterate_succ_apply, IH]
+  induction n generalizing L R <;> simp [*]
 
 theorem Tape.map_move {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ') (T : Tape Γ) (d) :
     (T.move d).map f = (T.map f).move d := by
