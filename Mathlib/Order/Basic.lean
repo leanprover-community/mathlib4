@@ -1181,14 +1181,13 @@ theorem max_eq : max a b = unit :=
 theorem min_eq : min a b = unit :=
   rfl
 
-protected theorem le : a ≤ b := by
-  trivial
+protected theorem le : a ≤ b :=
+  rfl
 
-theorem not_lt : ¬a < b := by
-  simp
+theorem not_lt : ¬a < b := not_lt_of_ge rfl
 
 instance : DenselyOrdered PUnit :=
-  ⟨fun _ _ ↦ by simp⟩
+  ⟨fun x y hxly ↦ (not_lt x y hxly).elim⟩
 
 end PUnit
 
