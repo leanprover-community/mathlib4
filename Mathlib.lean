@@ -157,6 +157,7 @@ public import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
 public import Mathlib.Algebra.Category.ModuleCat.Free
 public import Mathlib.Algebra.Category.ModuleCat.Images
 public import Mathlib.Algebra.Category.ModuleCat.Injective
+public import Mathlib.Algebra.Category.ModuleCat.InjectiveDimension
 public import Mathlib.Algebra.Category.ModuleCat.Kernels
 public import Mathlib.Algebra.Category.ModuleCat.LeftResolution
 public import Mathlib.Algebra.Category.ModuleCat.Limits
@@ -196,6 +197,7 @@ public import Mathlib.Algebra.Category.ModuleCat.Subobject
 public import Mathlib.Algebra.Category.ModuleCat.Tannaka
 public import Mathlib.Algebra.Category.ModuleCat.Topology.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Topology.Homology
+public import Mathlib.Algebra.Category.ModuleCat.Ulift
 public import Mathlib.Algebra.Category.MonCat.Adjunctions
 public import Mathlib.Algebra.Category.MonCat.Basic
 public import Mathlib.Algebra.Category.MonCat.Colimits
@@ -532,12 +534,16 @@ public import Mathlib.Algebra.Homology.ComplexShapeSigns
 public import Mathlib.Algebra.Homology.ConcreteCategory
 public import Mathlib.Algebra.Homology.DerivedCategory.Basic
 public import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.BaseChange
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Bijection
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Map
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Ulift
 public import Mathlib.Algebra.Homology.DerivedCategory.Fractions
 public import Mathlib.Algebra.Homology.DerivedCategory.FullyFaithful
 public import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
@@ -5674,6 +5680,7 @@ public import Mathlib.RingTheory.Coalgebra.Hom
 public import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
 public import Mathlib.RingTheory.Coalgebra.MulOpposite
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
+public import Mathlib.RingTheory.CohenMacaulay.Basic
 public import Mathlib.RingTheory.Complex
 public import Mathlib.RingTheory.Conductor
 public import Mathlib.RingTheory.Congruence.Basic
@@ -5759,6 +5766,7 @@ public import Mathlib.RingTheory.Flat.EquationalCriterion
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Descent
+public import Mathlib.RingTheory.Flat.IsBaseChange
 public import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.Flat.Stability
 public import Mathlib.RingTheory.Flat.Tensor
@@ -5772,6 +5780,9 @@ public import Mathlib.RingTheory.FreeCommRing
 public import Mathlib.RingTheory.FreeRing
 public import Mathlib.RingTheory.Frobenius
 public import Mathlib.RingTheory.Generators
+public import Mathlib.RingTheory.GlobalDimension
+public import Mathlib.RingTheory.Gorenstein.Basic
+public import Mathlib.RingTheory.Gorenstein.Defs
 public import Mathlib.RingTheory.GradedAlgebra.Basic
 public import Mathlib.RingTheory.GradedAlgebra.FiniteType
 public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
@@ -6065,6 +6076,8 @@ public import Mathlib.RingTheory.Regular.Category
 public import Mathlib.RingTheory.Regular.Depth
 public import Mathlib.RingTheory.Regular.Flat
 public import Mathlib.RingTheory.Regular.IsSMulRegular
+public import Mathlib.RingTheory.Regular.Ischebeck
+public import Mathlib.RingTheory.Regular.ProjectiveDimension
 public import Mathlib.RingTheory.Regular.RegularSequence
 public import Mathlib.RingTheory.RingHom.Bijective
 public import Mathlib.RingTheory.RingHom.Etale
