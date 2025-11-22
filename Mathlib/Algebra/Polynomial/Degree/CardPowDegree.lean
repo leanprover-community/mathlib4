@@ -3,9 +3,11 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Algebra.Polynomial.FieldDivision
+module
+
+public import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
+public import Mathlib.Algebra.Order.Ring.Basic
+public import Mathlib.Algebra.Polynomial.FieldDivision
 
 /-!
 # Absolute value on polynomials over a finite field.
@@ -24,6 +26,8 @@ to `q ^ degree p` (where `q ^ degree 0 = 0`) is an absolute value.
   Euclidean domain structure on the ring of polynomials
 
 -/
+
+@[expose] public section
 
 
 namespace Polynomial
@@ -46,7 +50,7 @@ noncomputable def cardPowDegree : AbsoluteValue Fq[X] ℤ :=
     nonneg' := fun p => by
       split_ifs
       · rfl
-      exact pow_nonneg (Int.ofNat_zero_le _) _
+      exact pow_nonneg (Int.natCast_nonneg _) _
     eq_zero' := fun p =>
       ite_eq_left_iff.trans
         ⟨fun h => by

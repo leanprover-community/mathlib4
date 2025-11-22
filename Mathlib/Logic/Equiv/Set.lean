@@ -3,9 +3,11 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.Set.Function
-import Mathlib.Logic.Equiv.Defs
-import Mathlib.Tactic.Says
+module
+
+public import Mathlib.Data.Set.Function
+public import Mathlib.Logic.Equiv.Defs
+public import Mathlib.Tactic.Says
 
 /-!
 # Equivalences and sets
@@ -21,6 +23,8 @@ Some notable definitions are:
 This file is separate from `Equiv/Basic` such that we do not require the full lattice structure
 on sets before defining what an equivalence is.
 -/
+
+@[expose] public section
 
 
 open Function Set
@@ -285,12 +289,11 @@ theorem insert_apply_right {α} {s : Set.{u} α} [DecidablePred (· ∈ s)] {a :
     Equiv.Set.insert H ⟨b, Or.inr b.2⟩ = Sum.inl b :=
   (Equiv.Set.insert H).apply_eq_iff_eq_symm_apply.2 rfl
 
-/-- If `s : Set α` is a set with decidable membership, then `s ⊕ sᶜ` is equivalent to `α`. -/
+/-- If `s : Set α` is a set with decidable membership, then `s ⊕ sᶜ` is equivalent to `α`.
+
+See also `Equiv.sumCompl`. -/
 protected def sumCompl {α} (s : Set α) [DecidablePred (· ∈ s)] : s ⊕ (sᶜ : Set α) ≃ α :=
-  calc
-    s ⊕ (sᶜ : Set α) ≃ ↥(s ∪ sᶜ) := (Equiv.Set.union disjoint_compl_right).symm
-    _ ≃ @univ α := Equiv.setCongr (by simp)
-    _ ≃ α := Equiv.Set.univ _
+  Equiv.sumCompl (· ∈ s)
 
 @[simp]
 theorem sumCompl_apply_inl {α : Type u} (s : Set α) [DecidablePred (· ∈ s)] (x : s) :
@@ -303,25 +306,25 @@ theorem sumCompl_apply_inr {α : Type u} (s : Set α) [DecidablePred (· ∈ s)]
   rfl
 
 theorem sumCompl_symm_apply_of_mem {α : Type u} {s : Set α} [DecidablePred (· ∈ s)] {x : α}
-    (hx : x ∈ s) : (Equiv.Set.sumCompl s).symm x = Sum.inl ⟨x, hx⟩ := by
-  simp [Equiv.Set.sumCompl, Equiv.Set.univ, union_apply_left, hx]
+    (hx : x ∈ s) : (Equiv.Set.sumCompl s).symm x = Sum.inl ⟨x, hx⟩ :=
+  sumCompl_symm_apply_of_pos hx
 
 theorem sumCompl_symm_apply_of_notMem {α : Type u} {s : Set α} [DecidablePred (· ∈ s)] {x : α}
-    (hx : x ∉ s) : (Equiv.Set.sumCompl s).symm x = Sum.inr ⟨x, hx⟩ := by
-  simp [Equiv.Set.sumCompl, Equiv.Set.univ, union_apply_right, hx]
+    (hx : x ∉ s) : (Equiv.Set.sumCompl s).symm x = Sum.inr ⟨x, hx⟩ :=
+  sumCompl_symm_apply_of_neg hx
 
 @[deprecated (since := "2025-05-23")]
 alias sumCompl_symm_apply_of_not_mem := sumCompl_symm_apply_of_notMem
 
 @[simp]
-theorem sumCompl_symm_apply {α : Type*} {s : Set α} [DecidablePred (· ∈ s)] {x : s} :
+theorem sumCompl_symm_apply {α : Type*} {s : Set α} [DecidablePred (· ∈ s)] (x : s) :
     (Equiv.Set.sumCompl s).symm x = Sum.inl x :=
-  Set.sumCompl_symm_apply_of_mem x.2
+  sumCompl_symm_apply_pos x
 
 @[simp]
 theorem sumCompl_symm_apply_compl {α : Type*} {s : Set α} [DecidablePred (· ∈ s)]
-    {x : (sᶜ : Set α)} : (Equiv.Set.sumCompl s).symm x = Sum.inr x :=
-  Set.sumCompl_symm_apply_of_notMem x.2
+    (x : (sᶜ : Set α)) : (Equiv.Set.sumCompl s).symm x = Sum.inr x :=
+  sumCompl_symm_apply_neg x
 
 /-- `sumDiffSubset s t` is the natural equivalence between
 `s ⊕ (t \ s)` and `t`, where `s` and `t` are two sets. -/
@@ -427,10 +430,10 @@ protected noncomputable def imageOfInjOn {α β} (f : α → β) (s : Set α) (H
     s ≃ f '' s :=
   ⟨fun p => ⟨f p, mem_image_of_mem f p.2⟩, fun p =>
     ⟨Classical.choose p.2, (Classical.choose_spec p.2).1⟩, fun ⟨_, h⟩ =>
-    Subtype.eq
+    Subtype.ext
       (H (Classical.choose_spec (mem_image_of_mem f h)).1 h
         (Classical.choose_spec (mem_image_of_mem f h)).2),
-    fun ⟨_, h⟩ => Subtype.eq (Classical.choose_spec h).2⟩
+    fun ⟨_, h⟩ => Subtype.ext (Classical.choose_spec h).2⟩
 
 /-- If `f` is an injective function, then `s` is equivalent to `f '' s`. -/
 @[simps! apply]
@@ -524,7 +527,7 @@ def ofLeftInverse {α β : Sort _} (f : α → β) (f_inv : Nonempty α → β �
   invFun b := f_inv b.2.nonempty b
   left_inv a := hf ⟨a⟩ a
   right_inv := fun ⟨b, a, ha⟩ =>
-    Subtype.eq <| show f (f_inv ⟨a⟩ b) = b from Eq.trans (congr_arg f <| ha ▸ hf _ a) ha
+    Subtype.ext <| show f (f_inv ⟨a⟩ b) = b from Eq.trans (congr_arg f <| ha ▸ hf _ a) ha
 
 /-- If `f : α → β` has a left-inverse, then `α` is computably equivalent to the range of `f`.
 

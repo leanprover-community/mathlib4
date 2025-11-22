@@ -3,11 +3,15 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Algebra.Order.Ring.Abs
+module
+
+public import Mathlib.Algebra.Order.Ring.Abs
 
 /-!
 # Lemmas about units in `ℤ`, which interact with the order structure.
 -/
+
+@[expose] public section
 
 
 namespace Int

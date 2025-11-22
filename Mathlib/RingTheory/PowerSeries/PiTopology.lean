@@ -3,12 +3,14 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
-import Mathlib.RingTheory.MvPowerSeries.PiTopology
-import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.RingTheory.PowerSeries.Order
-import Mathlib.RingTheory.PowerSeries.Trunc
-import Mathlib.LinearAlgebra.Finsupp.Pi
-import Mathlib.Topology.Algebra.InfiniteSum.Ring
+module
+
+public import Mathlib.RingTheory.MvPowerSeries.PiTopology
+public import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.RingTheory.PowerSeries.Order
+public import Mathlib.RingTheory.PowerSeries.Trunc
+public import Mathlib.LinearAlgebra.Finsupp.Pi
+public import Mathlib.Topology.Algebra.InfiniteSum.Ring
 
 /-! # Product topology on power series
 
@@ -47,6 +49,8 @@ TODO: add the similar result for the series of homogeneous components.
 - If `R` is complete, then so is `PowerSeries σ R`.
 
 -/
+
+@[expose] public section
 
 
 namespace PowerSeries
@@ -155,6 +159,28 @@ theorem summable_of_tendsto_order_atTop_nhds_top [LinearOrder ι] [LocallyFinite
   intro k hk
   contrapose! hk
   exact coeff_of_lt_order _ <| by simpa using (hi k hk.le)
+
+variable {R} in
+/-- The geometric series converges if the constant term is zero. -/
+theorem summable_pow_of_constantCoeff_eq_zero {f : PowerSeries R} (h : f.constantCoeff = 0) :
+    Summable (f ^ ·) :=
+  MvPowerSeries.WithPiTopology.summable_pow_of_constantCoeff_eq_zero h
+
+section GeomSeries
+variable {R : Type*} [TopologicalSpace R] [Ring R] [IsTopologicalRing R] [T2Space R]
+variable {f : PowerSeries R}
+
+/-- Formula for geometric series. -/
+theorem tsum_pow_mul_one_sub_of_constantCoeff_eq_zero (h : f.constantCoeff = 0) :
+    (∑' (i : ℕ), f ^ i) * (1 - f) = 1 :=
+  (summable_pow_of_constantCoeff_eq_zero h).tsum_pow_mul_one_sub
+
+/-- Formula for geometric series. -/
+theorem one_sub_mul_tsum_pow_of_constantCoeff_eq_zero (h : f.constantCoeff = 0) :
+    (1 - f) * ∑' (i : ℕ), f ^ i = 1 :=
+  (summable_pow_of_constantCoeff_eq_zero h).one_sub_mul_tsum_pow
+
+end GeomSeries
 
 end Sum
 

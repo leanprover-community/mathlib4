@@ -3,8 +3,10 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.Deriv.Basic
-import Mathlib.Analysis.Calculus.ContDiff.Defs
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.Defs
 
 /-!
 # One-dimensional iterated derivatives
@@ -39,6 +41,8 @@ the derivative of the `n`-th derivative is the `n+1`-th derivative in `iteratedD
 by translating the corresponding result `iteratedFDerivWithin_succ_apply_left` for the
 iterated Fréchet derivative.
 -/
+
+@[expose] public section
 
 noncomputable section
 

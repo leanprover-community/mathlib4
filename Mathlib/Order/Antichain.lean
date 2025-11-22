@@ -3,8 +3,10 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Bounds.Basic
-import Mathlib.Order.Preorder.Chain
+module
+
+public import Mathlib.Order.Bounds.Basic
+public import Mathlib.Order.Preorder.Chain
 
 /-!
 # Antichains
@@ -20,6 +22,8 @@ relation is `G.Adj` for `G : SimpleGraph α`, this corresponds to independent se
   to a common element.
 * `IsMaxAntichain r s`: An antichain such that no antichain strictly including `s` exists.
 -/
+
+@[expose] public section
 
 assert_not_exists CompleteLattice
 

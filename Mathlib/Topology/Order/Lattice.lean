@@ -3,8 +3,10 @@ Copyright (c) 2021 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Topology.Constructions
-import Mathlib.Topology.Order.OrderClosed
+module
+
+public import Mathlib.Topology.Constructions
+public import Mathlib.Topology.Order.OrderClosed
 
 /-!
 # Topological lattices
@@ -21,6 +23,8 @@ class `TopologicalLattice` as a topological space and lattice `L` extending `Con
 
 topological, lattice
 -/
+
+@[expose] public section
 
 open Filter
 

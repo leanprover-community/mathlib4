@@ -3,11 +3,12 @@ Copyright (c) 2024 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Pietro Monticone
 -/
+module
 
-import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
-import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
-import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
-import Mathlib.RingTheory.Fintype
+public import Mathlib.NumberTheory.NumberField.Cyclotomic.Embeddings
+public import Mathlib.NumberTheory.NumberField.Cyclotomic.Basic
+public import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
+public import Mathlib.RingTheory.Fintype
 
 /-!
 # Third Cyclotomic Field
@@ -26,6 +27,8 @@ and `λ = η - 1`.
 This is a special case of the so-called *Kummer's lemma* (see for example [washington_cyclotomic],
 Theorem 5.36
 -/
+
+@[expose] public section
 
 open NumberField Units InfinitePlace nonZeroDivisors Polynomial
 

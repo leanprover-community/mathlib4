@@ -3,14 +3,18 @@ Copyright (c) 2024 Lean FRO LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Monoidal.Opposite
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Monoidal.Opposite
 
 /-!
 # If `C` is braided, so is `Cᵒᵖ`.
 
 Todo: we should also do `Cᵐᵒᵖ`.
 -/
+
+@[expose] public section
 
 open CategoryTheory MonoidalCategory BraidedCategory Opposite
 

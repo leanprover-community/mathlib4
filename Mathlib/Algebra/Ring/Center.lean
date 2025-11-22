@@ -3,13 +3,17 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jireh Loreaux
 -/
-import Mathlib.Algebra.Group.Center
-import Mathlib.Data.Int.Cast.Lemmas
+module
+
+public import Mathlib.Algebra.Group.Center
+public import Mathlib.Data.Int.Cast.Lemmas
 
 /-!
 # Centers of rings
 
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso Finset Subsemigroup Field
 

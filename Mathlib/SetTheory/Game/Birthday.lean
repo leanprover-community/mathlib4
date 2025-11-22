@@ -3,10 +3,12 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Algebra.Order.Group.OrderIso
-import Mathlib.SetTheory.Game.Ordinal
-import Mathlib.SetTheory.Ordinal.NaturalOps
-import Mathlib.Tactic.Linter.DeprecatedModule
+module
+
+public import Mathlib.Algebra.Order.Group.OrderIso
+public import Mathlib.SetTheory.Game.Ordinal
+public import Mathlib.SetTheory.Ordinal.NaturalOps
+public import Mathlib.Tactic.Linter.DeprecatedModule
 
 deprecated_module
   "This module is now at `CombinatorialGames.Game.Birthday` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
@@ -24,15 +26,17 @@ The birthday of a pre-game can be understood as representing the depth of its ga
 other hand, the birthday of a game more closely matches Conway's original description. The lemma
 `SetTheory.Game.birthday_eq_pGameBirthday` links both definitions together.
 
-# Main declarations
+## Main declarations
 
 - `SetTheory.PGame.birthday`: The birthday of a pre-game.
 - `SetTheory.Game.birthday`: The birthday of a game.
 
-# Todo
+## Todo
 
 - Characterize the birthdays of other basic arithmetical operations.
 -/
+
+@[expose] public section
 
 universe u
 

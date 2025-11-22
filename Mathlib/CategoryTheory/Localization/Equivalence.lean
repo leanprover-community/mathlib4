@@ -3,8 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Predicate
-import Mathlib.CategoryTheory.CatCommSq
+module
+
+public import Mathlib.CategoryTheory.Localization.Predicate
+public import Mathlib.CategoryTheory.CatCommSq
 
 /-!
 # Localization functors are preserved through equivalences
@@ -19,6 +21,8 @@ source and target categories by equivalent categories. This is obtained using
 that a functor between localized categories is an equivalence.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

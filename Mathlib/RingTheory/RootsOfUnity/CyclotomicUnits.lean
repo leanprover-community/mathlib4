@@ -3,7 +3,9 @@ Copyright (c) 2021 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Riccardo Brasca
 -/
-import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+module
+
+public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 
 /-!
 # Cyclotomic units.
@@ -29,6 +31,8 @@ Often, `Associated a b` is everything one needs, and it is more convenient to us
 other version for completeness.
 -/
 
+@[expose] public section
+
 open Polynomial Finset Nat
 
 variable {n i j p : ℕ} {A K : Type*} {ζ : A}
@@ -47,7 +51,7 @@ theorem associated_sub_one_pow_sub_one_of_coprime (hζ : IsPrimitiveRoot ζ n) (
   | 0 => simp_all
   | 1 => simp_all
   | n + 2 =>
-      obtain ⟨m, hm⟩ := exists_mul_emod_eq_one_of_coprime hj (by omega)
+      obtain ⟨m, -, hm⟩ := exists_mul_mod_eq_one_of_coprime hj (by omega)
       use ∑ i ∈ range m, (ζ ^ j) ^ i
       rw [mul_geom_sum, ← pow_mul, ← pow_mod_orderOf, ← hζ.eq_orderOf, hm, pow_one]
 

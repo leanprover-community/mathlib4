@@ -3,13 +3,15 @@ Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
-import Mathlib.GroupTheory.NoncommCoprod
-import Mathlib.GroupTheory.Perm.ConjAct
-import Mathlib.GroupTheory.Perm.Cycle.PossibleTypes
-import Mathlib.GroupTheory.Perm.DomMulAct
-import Mathlib.GroupTheory.Rank
+module
+
+public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Multiset
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.GroupTheory.NoncommCoprod
+public import Mathlib.GroupTheory.Perm.ConjAct
+public import Mathlib.GroupTheory.Perm.Cycle.PossibleTypes
+public import Mathlib.GroupTheory.Perm.DomMulAct
+public import Mathlib.GroupTheory.Rank
 
 /-!
 # Centralizer of a permutation and cardinality of conjugacy classes in the symmetric groups
@@ -96,6 +98,8 @@ injectivity `Equiv.Perm.OnCycleFactors.kerParam_injective`, its range
 
 -/
 
+@[expose] public section
+
 open scoped Finset Pointwise
 
 namespace Equiv.Perm
@@ -167,8 +171,7 @@ theorem coe_toPermHom (k : centralizer {g}) (c : g.cycleFactorsFinset) :
 The equality is proved by `Equiv.Perm.OnCycleFactors.range_toPermHom_eq_range_toPermHom'`. -/
 def range_toPermHom' : Subgroup (Perm g.cycleFactorsFinset) where
   carrier := {τ | ∀ c, #(τ c).val.support = #c.val.support}
-  one_mem' := by
-    simp only [Set.mem_setOf_eq, coe_one, id_eq, imp_true_iff]
+  one_mem' := by simp
   mul_mem' hσ hτ := by
     simp only [Subtype.forall, Set.mem_setOf_eq, coe_mul, Function.comp_apply]
     simp only [Subtype.forall, Set.mem_setOf_eq] at hσ hτ
@@ -177,9 +180,8 @@ def range_toPermHom' : Subgroup (Perm g.cycleFactorsFinset) where
   inv_mem' hσ := by
     simp only [Subtype.forall, Set.mem_setOf_eq] at hσ ⊢
     intro c hc
-    rw [← hσ]
-    · simp only [Finset.coe_mem, Subtype.coe_eta, apply_inv_self]
-    · simp only [Finset.coe_mem]
+    rw [← hσ _ (by simp)]
+    simp
 
 variable {g} in
 theorem mem_range_toPermHom'_iff {τ : Perm g.cycleFactorsFinset} :

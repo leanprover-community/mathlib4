@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Order.Filter.AtTopBot.Disjoint
-import Mathlib.Order.Filter.Tendsto
+module
+
+public import Mathlib.Order.Filter.AtTopBot.Disjoint
+public import Mathlib.Order.Filter.Tendsto
 
 /-!
 # Limits of `Filter.atTop` and `Filter.atBot`
@@ -12,6 +14,8 @@ import Mathlib.Order.Filter.Tendsto
 In this file we prove many lemmas on the combination of `Filter.atTop` and `Filter.atBot`
 and `Tendsto`.
 -/
+
+@[expose] public section
 
 assert_not_exists Finset
 

@@ -3,8 +3,10 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Order.Filter.CountableInter
-import Mathlib.Topology.Closure
+module
+
+public import Mathlib.Order.Filter.CountableInter
+public import Mathlib.Topology.Closure
 
 /-!
 # `Gδ` sets
@@ -39,6 +41,8 @@ continuity set of a function from a topological space to a metrizable space is a
 
 Gδ set, residual set, nowhere dense set, meagre set
 -/
+
+@[expose] public section
 
 assert_not_exists UniformSpace
 

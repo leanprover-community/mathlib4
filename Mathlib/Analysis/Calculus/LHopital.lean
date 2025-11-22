@@ -3,8 +3,10 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Analysis.Calculus.Deriv.MeanValue
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Inv
+public import Mathlib.Analysis.Calculus.Deriv.MeanValue
 
 /-!
 # L'Hôpital's rule for 0/0 indeterminate forms
@@ -28,6 +30,8 @@ namespace.
 
 L'Hôpital's rule, L'Hopital's rule
 -/
+
+@[expose] public section
 
 
 open Filter Set

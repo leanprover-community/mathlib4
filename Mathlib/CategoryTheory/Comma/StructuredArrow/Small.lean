@@ -3,9 +3,11 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
-import Mathlib.CategoryTheory.EssentiallySmall
-import Mathlib.CategoryTheory.ObjectProperty.Small
+module
+
+public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+public import Mathlib.CategoryTheory.EssentiallySmall
+public import Mathlib.CategoryTheory.ObjectProperty.Small
 
 /-!
 # Small sets in the category of structured arrows
@@ -13,6 +15,8 @@ import Mathlib.CategoryTheory.ObjectProperty.Small
 Here we prove a technical result about small sets in the category of structured arrows that will
 be used in the proof of the Special Adjoint Functor Theorem.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

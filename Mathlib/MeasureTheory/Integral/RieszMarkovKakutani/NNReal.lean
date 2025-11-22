@@ -3,11 +3,15 @@ Copyright (c) 2025 Yoh Tanimioto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
-import Mathlib.Analysis.Normed.Module.WeakDual
-import Mathlib.Analysis.LocallyConvex.Polar
-import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
-import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
-import Mathlib.Topology.Algebra.Module.LinearMap
+
+
+module
+
+public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
+public import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
+public import Mathlib.Topology.Algebra.Module.LinearMap
+public import Mathlib.Analysis.Normed.Module.WeakDual
+public import Mathlib.Analysis.LocallyConvex.Polar
 
 /-!
 # Riesz–Markov–Kakutani representation theorem for `ℝ≥0`
@@ -27,6 +31,8 @@ reducing the statement to the `ℝ`-version of the theorem.
 * [Walter Rudin, Real and Complex Analysis.][Rud87]
 
 -/
+
+@[expose] public section
 
 namespace CompactlySupportedContinuousMap
 variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [CompactSpace α] [AddCommMonoid β]

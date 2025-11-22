@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Combinatorics.Additive.AP.Three.Behrend
-import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
-import Mathlib.Tactic.Rify
+module
+
+public import Mathlib.Combinatorics.Additive.AP.Three.Behrend
+public import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
+public import Mathlib.Tactic.Rify
 
 /-!
 # The Ruzsa-Szemerédi problem
@@ -24,6 +26,8 @@ original set.
 * `ruzsaSzemerediNumberNat_asymptotic_lower_bound`: There exists a graph with `n` vertices and
   `Ω((n ^ 2 * exp (-4 * √(log n))))` edges such that each edge belongs to exactly one triangle.
 -/
+
+@[expose] public section
 
 open Finset Nat Real SimpleGraph Sum3 SimpleGraph.TripartiteFromTriangles
 open Fintype (card)

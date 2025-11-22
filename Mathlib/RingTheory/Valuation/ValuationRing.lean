@@ -3,13 +3,15 @@ Copyright (c) 2022 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.RingTheory.Bezout
-import Mathlib.RingTheory.LocalRing.Basic
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.Localization.Integer
-import Mathlib.RingTheory.Valuation.Integers
-import Mathlib.Tactic.LinearCombination
-import Mathlib.Tactic.FieldSimp
+module
+
+public import Mathlib.RingTheory.Bezout
+public import Mathlib.RingTheory.LocalRing.Basic
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.RingTheory.Localization.Integer
+public import Mathlib.RingTheory.Valuation.Integers
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Tactic.FieldSimp
 
 /-!
 # Valuation Rings
@@ -41,6 +43,8 @@ is defined in further generality that can be used in places where the ring canno
 The `ValuationRing` class is kept to be in sync with the literature.
 
 -/
+
+@[expose] public section
 
 assert_not_exists IsDiscreteValuationRing
 
@@ -175,7 +179,6 @@ instance commGroupWithZero :
       simp only [one_smul]
       apply (mul_inv_cancel₀ _).symm
       contrapose ha
-      simp only [Classical.not_not] at ha ⊢
       rw [ha]
       rfl }
 
@@ -255,16 +258,14 @@ section
 variable (A : Type u) [CommRing A] [Nontrivial A] [PreValuationRing A]
 
 instance (priority := 100) isLocalRing : IsLocalRing A :=
-  IsLocalRing.of_isUnit_or_isUnit_one_sub_self
-    (by
-      intro a
-      obtain ⟨c, h | h⟩ := PreValuationRing.cond a (1 - a)
-      · left
-        apply isUnit_of_mul_eq_one _ (c + 1)
-        simp [mul_add, h]
-      · right
-        apply isUnit_of_mul_eq_one _ (c + 1)
-        simp [mul_add, h])
+  IsLocalRing.of_isUnit_or_isUnit_one_sub_self fun a ↦ by
+    obtain ⟨c, h | h⟩ := PreValuationRing.cond a (1 - a)
+    · left
+      refine .of_mul_eq_one (c + 1) ?_
+      simp [mul_add, h]
+    · right
+      refine .of_mul_eq_one (c + 1) ?_
+      simp [mul_add, h]
 
 instance le_total_ideal : IsTotal (Ideal A) LE.le := by
   constructor; intro α β

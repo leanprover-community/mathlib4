@@ -3,11 +3,13 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Ulift
-import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
-import Mathlib.CategoryTheory.Sites.Whiskering
-import Mathlib.Condensed.Basic
-import Mathlib.Topology.Category.Stonean.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
+public import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
+public import Mathlib.CategoryTheory.Sites.Whiskering
+public import Mathlib.Condensed.Basic
+public import Mathlib.Topology.Category.Stonean.Basic
 
 /-!
 # Functors from categories of topological spaces to condensed sets
@@ -21,6 +23,8 @@ sets.
   functor. We also define `profiniteToCondensed` and `stoneanToCondensed`.
 
 -/
+
+@[expose] public section
 
 universe u v
 

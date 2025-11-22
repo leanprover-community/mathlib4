@@ -3,11 +3,15 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Topology.Instances.RealVectorSpace
+module
+
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Topology.Instances.RealVectorSpace
 
 /-! # Further lemmas about `RCLike` -/
+
+@[expose] public section
 
 open scoped Finset
 

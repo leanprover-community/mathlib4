@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Computability.Partrec
-import Mathlib.Data.Option.Basic
+module
+
+public import Mathlib.Computability.Partrec
+public import Mathlib.Data.Option.Basic
 
 /-!
 # Gödel Numbering for Partial Recursive Functions.
@@ -39,6 +41,8 @@ of some code.
 * [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
 
 -/
+
+@[expose] public section
 
 
 open Encodable Denumerable

@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Computability.Primrec
-import Mathlib.Data.Nat.PSub
-import Mathlib.Data.PFun
+module
+
+public import Mathlib.Computability.Primrec
+public import Mathlib.Data.Nat.PSub
+public import Mathlib.Data.PFun
 
 /-!
 # The partial recursive functions
@@ -26,6 +28,8 @@ least natural number `n` for which `f n = 0`, or diverges if such `n` doesn't ex
 
 * [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
 -/
+
+@[expose] public section
 
 open List (Vector)
 open Encodable Denumerable Part

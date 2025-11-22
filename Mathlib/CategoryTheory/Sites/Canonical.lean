@@ -3,7 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Sites.Sheaf
+module
+
+public import Mathlib.CategoryTheory.Sites.Sheaf
+public import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-!
 # The canonical topology on a category
@@ -31,8 +34,10 @@ equivalently it is subcanonical iff every representable presheaf is a sheaf.
 * https://math.stackexchange.com/a/358709/
 -/
 
+@[expose] public section
 
-universe v u
+
+universe w v u
 
 namespace CategoryTheory
 
@@ -240,6 +245,14 @@ def yoneda [J.Subcanonical] : C ⥤ Sheaf J (Type v) where
     rw [isSheaf_iff_isSheaf_of_type]
     apply Subcanonical.isSheaf_of_isRepresentable⟩
   map f := ⟨CategoryTheory.yoneda.map f⟩
+
+/-- Variant of the Yoneda embedding which allows a raise in the universe level
+for the category of types. -/
+@[pp_with_univ, simps!]
+def uliftYoneda [J.Subcanonical] : C ⥤ Sheaf J (Type max v w) :=
+  J.yoneda ⋙ sheafCompose J uliftFunctor.{w}
+
+@[deprecated (since := "2025-11-10")] alias yonedaULift := uliftYoneda
 
 variable [Subcanonical J]
 

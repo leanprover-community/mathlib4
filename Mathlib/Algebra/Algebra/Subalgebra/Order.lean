@@ -3,14 +3,17 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+module
 
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.Module.Submodule.Order
-import Mathlib.Algebra.Ring.Subsemiring.Order
+public import Mathlib.Algebra.Algebra.Subalgebra.Basic
+public import Mathlib.Algebra.Module.Submodule.Order
+public import Mathlib.Algebra.Ring.Subsemiring.Order
 
 /-!
 # Order instances on subalgebras
 -/
+
+@[expose] public section
 
 namespace Subalgebra
 

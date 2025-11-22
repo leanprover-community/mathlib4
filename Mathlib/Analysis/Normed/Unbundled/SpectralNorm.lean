@@ -3,14 +3,16 @@ Copyright (c) 2025 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
-import Mathlib.Analysis.Normed.Unbundled.InvariantExtension
-import Mathlib.Analysis.Normed.Unbundled.IsPowMulFaithful
-import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.FieldTheory.Normal.Closure
-import Mathlib.RingTheory.Polynomial.Vieta
-import Mathlib.Topology.Algebra.Module.FiniteDimension
+module
+
+public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+public import Mathlib.Analysis.Normed.Unbundled.InvariantExtension
+public import Mathlib.Analysis.Normed.Unbundled.IsPowMulFaithful
+public import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.FieldTheory.Normal.Closure
+public import Mathlib.RingTheory.Polynomial.Vieta
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
 # The spectral norm and the norm extension theorem
@@ -74,6 +76,8 @@ As a prerequisite, we formalize the proof of [S. Bosch, U. Güntzer, R. Remmert,
 
 spectral, spectral norm, spectral value, seminorm, norm, nonarchimedean
 -/
+
+@[expose] public section
 
 open Polynomial
 
@@ -479,11 +483,11 @@ theorem spectralNorm_eq_iSup_of_finiteDimensional_normal
     norm_root_le_spectralValue hf_pm hf_na
       (minpoly.monic (hn.isIntegral x)) (minpoly.aeval_algHom _ σ.toAlgHom _))
   · set p := minpoly K x
-    have hp_sp : Splits (algebraMap K L) (minpoly K x) := hn.splits x
-    obtain ⟨s, hs⟩ := (splits_iff_exists_multiset _).mp hp_sp
+    have hp_sp : Splits ((minpoly K x).map (algebraMap K L)) := hn.splits x
+    obtain ⟨s, hs⟩ := splits_iff_exists_multiset.mp hp_sp
     have h_lc : (algebraMap K L) (minpoly K x).leadingCoeff = 1 := by
       rw [minpoly.monic (hn.isIntegral x), map_one]
-    rw [h_lc, map_one, one_mul] at hs
+    rw [leadingCoeff_map, h_lc, map_one, one_mul] at hs
     simp only [spectralNorm]
     rw [← max_norm_root_eq_spectralValue hf_pm hf_na hf1 _ _ hs]
     apply ciSup_le
@@ -949,7 +953,7 @@ theorem spectralNorm_pow_natDegree_eq_prod_roots (x : L) {E : Type*} [Field E] [
 theorem spectralNorm_eq_norm_coeff_zero_rpow (x : L) :
     spectralNorm K L x = ‖(minpoly K x).coeff 0‖ ^ (1 / (minpoly K x).natDegree : ℝ) := by
   set E := (mapAlg K L (minpoly K x)).SplittingField
-  have hspl : Splits (RingHom.id E) (mapAlg K E (minpoly K x)) :=
+  have hspl : Splits ((mapAlg K E (minpoly K x)).map (RingHom.id E)) :=
     IsSplittingField.IsScalarTower.splits (K := L) E (minpoly K x)
   have : Algebra.IsAlgebraic L E :=
     IsSplittingField.IsScalarTower.isAlgebraic E (mapAlg K L (minpoly K x))

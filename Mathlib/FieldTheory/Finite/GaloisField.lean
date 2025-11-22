@@ -3,10 +3,12 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Alex J. Best, Johan Commelin, Eric Rodriguez, Ruben Van de Velde
 -/
-import Mathlib.Algebra.Algebra.ZMod
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.RingTheory.Norm.Transitivity
+module
+
+public import Mathlib.Algebra.Algebra.ZMod
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.RingTheory.Norm.Transitivity
 
 /-!
 # Galois fields
@@ -29,6 +31,8 @@ It is a finite field with `p ^ n` elements.
   above result helps to classify the category of finite fields.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -129,7 +133,7 @@ theorem card (h : n ≠ 0) : Nat.card (GaloisField p n) = p ^ n := by
   rw [Nat.card_eq_fintype_card, Module.card_fintype b, ← Module.finrank_eq_card_basis b,
     ZMod.card, finrank p h]
 
-theorem splits_zmod_X_pow_sub_X : Splits (RingHom.id (ZMod p)) (X ^ p - X) := by
+theorem splits_zmod_X_pow_sub_X : Splits (map (RingHom.id (ZMod p)) (X ^ p - X)) := by
   have hp : 1 < p := h_prime.out.one_lt
   have h1 : roots (X ^ p - X : (ZMod p)[X]) = Finset.univ.val := by
     convert FiniteField.roots_X_pow_card_sub_X (ZMod p)
@@ -150,7 +154,7 @@ section Fintype
 variable {K : Type*} [Field K] [Fintype K] [Algebra (ZMod p) K]
 
 theorem _root_.FiniteField.splits_X_pow_card_sub_X :
-    Splits (algebraMap (ZMod p) K) (X ^ Fintype.card K - X) :=
+    Splits (map (algebraMap (ZMod p) K) (X ^ Fintype.card K - X)) :=
   (FiniteField.isSplittingField_sub K (ZMod p)).splits
 
 theorem _root_.FiniteField.isSplittingField_of_card_eq (h : Fintype.card K = p ^ n) :
@@ -169,7 +173,7 @@ section Finite
 variable {K : Type*} [Field K] [Algebra (ZMod p) K]
 
 theorem _root_.FiniteField.splits_X_pow_nat_card_sub_X [Finite K] :
-    Splits (algebraMap (ZMod p) K) (X ^ Nat.card K - X) := by
+    Splits (map (algebraMap (ZMod p) K) (X ^ Nat.card K - X)) := by
   haveI : Fintype K := Fintype.ofFinite K
   rw [Nat.card_eq_fintype_card]
   exact (FiniteField.isSplittingField_sub K (ZMod p)).splits

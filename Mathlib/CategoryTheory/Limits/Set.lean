@@ -3,10 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.Lattice
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.Limits.Types.Filtered
-import Mathlib.CategoryTheory.Types.Set
+module
+
+public import Mathlib.CategoryTheory.Limits.Lattice
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.Limits.Types.Filtered
+public import Mathlib.CategoryTheory.Types.Set
 
 /-!
 # The functor from `Set X` to types preserves filtered colimits
@@ -15,6 +17,8 @@ Given `X : Type u`, the functor `Set.functorToTypes : Set X ⥤ Type u`
 which sends `A : Set X` to its underlying type preserves filtered colimits.
 
 -/
+
+@[expose] public section
 
 universe w w' u
 

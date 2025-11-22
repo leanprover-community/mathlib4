@@ -3,10 +3,12 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Fintype.Lattice
-import Mathlib.Data.Fintype.Sum
-import Mathlib.Topology.Homeomorph.Lemmas
-import Mathlib.Topology.MetricSpace.Antilipschitz
+module
+
+public import Mathlib.Data.Fintype.Lattice
+public import Mathlib.Data.Fintype.Sum
+public import Mathlib.Topology.Homeomorph.Lemmas
+public import Mathlib.Topology.MetricSpace.Antilipschitz
 
 /-!
 # Isometries
@@ -18,6 +20,8 @@ and prove their basic properties. We also introduce isometric bijections.
 Since a lot of elementary properties don't require `eq_of_dist_eq_zero` we start setting up the
 theory for `PseudoMetricSpace` and we specialize to `MetricSpace` when needed.
 -/
+
+@[expose] public section
 
 open Topology
 

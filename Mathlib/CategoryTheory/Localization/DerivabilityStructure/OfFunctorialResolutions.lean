@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
+module
+
+public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Constructor
 
 /-!
 # Functorial resolutions give derivability structures
@@ -17,6 +19,8 @@ that `W₁` is induced by `W₂`, that `W₂` is multiplicative and has
 the two out of three property, then `Φ` is a right derivability structure.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

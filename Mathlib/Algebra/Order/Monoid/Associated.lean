@@ -3,14 +3,18 @@ Copyright (c) 2022 Paul Lezeau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Lezeau
 -/
-import Mathlib.Algebra.GroupWithZero.Associated
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Associated
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-!
 # Order on associates
 
 This file shows that divisibility makes associates into a canonically ordered monoid.
 -/
+
+@[expose] public section
 
 variable {M : Type*} [CancelCommMonoidWithZero M]
 

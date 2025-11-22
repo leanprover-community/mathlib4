@@ -3,9 +3,12 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne, Joël Riou, Ravi Vakil
 -/
-import Mathlib.AlgebraicGeometry.Gluing
-import Mathlib.AlgebraicGeometry.Sites.BigZariski
-import Mathlib.CategoryTheory.Sites.Hypercover.One
+module
+
+public import Mathlib.AlgebraicGeometry.Gluing
+public import Mathlib.AlgebraicGeometry.Sites.BigZariski
+public import Mathlib.CategoryTheory.Limits.Types.Multiequalizer
+public import Mathlib.CategoryTheory.Sites.Hypercover.One
 
 /-!
 # The 1-hypercover of a glue data
@@ -21,6 +24,8 @@ This contribution was created as part of the AIM workshop
 "Formalizing algebraic geometry" in June 2024.
 
 -/
+
+@[expose] public section
 
 universe v u
 

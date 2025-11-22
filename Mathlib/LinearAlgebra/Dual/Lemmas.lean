@@ -3,19 +3,21 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Fabian Glöckle, Kyle Miller
 -/
-import Mathlib.Algebra.Module.LinearMap.DivisionRing
-import Mathlib.LinearAlgebra.Basis.Basic
-import Mathlib.LinearAlgebra.Dimension.ErdosKaplansky
-import Mathlib.LinearAlgebra.Dual.Basis
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
-import Mathlib.LinearAlgebra.Projection
-import Mathlib.LinearAlgebra.SesquilinearForm.Basic
-import Mathlib.RingTheory.Finiteness.Projective
-import Mathlib.RingTheory.LocalRing.Basic
-import Mathlib.RingTheory.TensorProduct.Maps
+module
+
+public import Mathlib.Algebra.Module.LinearMap.DivisionRing
+public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.LinearAlgebra.Dimension.ErdosKaplansky
+public import Mathlib.LinearAlgebra.Dual.Basis
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber
+public import Mathlib.LinearAlgebra.Projection
+public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
+public import Mathlib.RingTheory.Finiteness.Projective
+public import Mathlib.RingTheory.LocalRing.Basic
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Dual vector spaces
@@ -69,6 +71,8 @@ This file contains basic results on dual vector spaces.
     `Dual K (V₁ ⧸ W) ≃ₗ[K] Dual K V₁ ⧸ W.dualLift.range` from an arbitrary choice of
     splitting of `V₁`.
 -/
+
+@[expose] public section
 
 open Module Submodule
 
@@ -418,14 +422,13 @@ theorem dualAnnihilator_inj {W W' : Subspace K V} :
 an arbitrary extension of `φ` to an element of the dual of `V`.
 That is, `dualLift W φ` sends `w ∈ W` to `φ x` and `x` in a chosen complement of `W` to `0`. -/
 noncomputable def dualLift (W : Subspace K V) : Module.Dual K W →ₗ[K] Module.Dual K V :=
-  (Classical.choose <| W.subtype.exists_leftInverse_of_injective W.ker_subtype).dualMap
+  W.subtype.leftInverse.dualMap
 
 variable {W : Subspace K V}
 
 @[simp]
 theorem dualLift_of_subtype {φ : Module.Dual K W} (w : W) : W.dualLift φ (w : V) = φ w :=
-  congr_arg φ <| DFunLike.congr_fun
-    (Classical.choose_spec <| W.subtype.exists_leftInverse_of_injective W.ker_subtype) w
+  congr_arg φ <| LinearMap.leftInverse_apply_of_inj W.ker_subtype _
 
 theorem dualLift_of_mem {φ : Module.Dual K W} {w : V} (hw : w ∈ W) : W.dualLift φ w = φ ⟨w, hw⟩ :=
   dualLift_of_subtype ⟨w, hw⟩

@@ -3,12 +3,14 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.BoxIntegral.Partition.Filter
-import Mathlib.Analysis.BoxIntegral.Partition.Measure
-import Mathlib.Analysis.Oscillation
-import Mathlib.Data.Bool.Basic
-import Mathlib.MeasureTheory.Measure.Real
-import Mathlib.Topology.UniformSpace.Compact
+module
+
+public import Mathlib.Analysis.BoxIntegral.Partition.Filter
+public import Mathlib.Analysis.BoxIntegral.Partition.Measure
+public import Mathlib.Analysis.Oscillation
+public import Mathlib.Data.Bool.Basic
+public import Mathlib.MeasureTheory.Measure.Real
+public import Mathlib.Topology.UniformSpace.Compact
 
 /-!
 # Integrals of Riemann, Henstock-Kurzweil, and McShane
@@ -50,6 +52,8 @@ non-Riemann filter (e.g., Henstock-Kurzweil and McShane).
 
 integral
 -/
+
+@[expose] public section
 
 open scoped Topology NNReal Filter Uniformity BoxIntegral
 
@@ -359,7 +363,7 @@ theorem norm_integral_le_of_le_const {c : ℝ}
   simpa only [integral_const] using norm_integral_le_of_norm_le hc μ (integrable_const c)
 
 /-!
-# Henstock-Sacks inequality and integrability on subboxes
+### Henstock-Sacks inequality and integrability on subboxes
 
 Henstock-Sacks inequality for Henstock-Kurzweil integral says the following. Let `f` be a function
 integrable on a box `I`; let `r : ℝⁿ → (0, ∞)` be a function such that for any tagged partition of

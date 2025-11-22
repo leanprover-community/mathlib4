@@ -3,14 +3,16 @@ Copyright (c) 2023 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.FieldTheory.SplittingField.Construction
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.FieldTheory.Separable
-import Mathlib.FieldTheory.Normal.Closure
-import Mathlib.RingTheory.AlgebraicIndependent.Adjoin
-import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
-import Mathlib.RingTheory.Polynomial.SeparableDegree
-import Mathlib.RingTheory.Polynomial.UniqueFactorization
+module
+
+public import Mathlib.FieldTheory.SplittingField.Construction
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.FieldTheory.Separable
+public import Mathlib.FieldTheory.Normal.Closure
+public import Mathlib.RingTheory.AlgebraicIndependent.Adjoin
+public import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
+public import Mathlib.RingTheory.Polynomial.SeparableDegree
+public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 /-!
 
@@ -118,6 +120,8 @@ separable degree, degree, polynomial
 
 -/
 
+@[expose] public section
+
 open Module Polynomial IntermediateField Field
 
 noncomputable section
@@ -202,7 +206,7 @@ element `s` of `S` is integral (= algebraic) over `F` and whose minimal polynomi
 Combined with `Field.instInhabitedEmb`, it can be viewed as a stronger version of
 `IntermediateField.nonempty_algHom_of_adjoin_splits`. -/
 def embEquivOfAdjoinSplits {S : Set E} (hS : adjoin F S = ⊤)
-    (hK : ∀ s ∈ S, IsIntegral F s ∧ Splits (algebraMap F K) (minpoly F s)) :
+    (hK : ∀ s ∈ S, IsIntegral F s ∧ Splits ((minpoly F s).map (algebraMap F K))) :
     Emb F E ≃ (E →ₐ[F] K) :=
   have : Algebra.IsAlgebraic F (⊤ : IntermediateField F E) :=
     (hS ▸ isAlgebraic_adjoin (S := S) fun x hx ↦ (hK x hx).1)
@@ -215,7 +219,7 @@ def embEquivOfAdjoinSplits {S : Set E} (hS : adjoin F S = ⊤)
 if `E = F(S)` such that every element
 `s` of `S` is integral (= algebraic) over `F` and whose minimal polynomial splits in `K`. -/
 theorem finSepDegree_eq_of_adjoin_splits {S : Set E} (hS : adjoin F S = ⊤)
-    (hK : ∀ s ∈ S, IsIntegral F s ∧ Splits (algebraMap F K) (minpoly F s)) :
+    (hK : ∀ s ∈ S, IsIntegral F s ∧ Splits ((minpoly F s).map (algebraMap F K))) :
     finSepDegree F E = Nat.card (E →ₐ[F] K) := Nat.card_congr (embEquivOfAdjoinSplits F E K hS hK)
 
 /-- A random bijection between `Field.Emb F E` and `E →ₐ[F] K` when `E / F` is algebraic
@@ -363,7 +367,7 @@ theorem Separable.natSepDegree_eq_natDegree (h : f.Separable) :
 
 /-- If a polynomial splits over `E`, then its separable degree is equal to
 the number of distinct roots of it over `E`. -/
-theorem natSepDegree_eq_of_splits [DecidableEq E] (h : f.Splits (algebraMap F E)) :
+theorem natSepDegree_eq_of_splits [DecidableEq E] (h : (f.map (algebraMap F E)).Splits) :
     f.natSepDegree = (f.aroots E).toFinset.card := by
   classical
   rw [aroots, ← (SplittingField.lift f h).comp_algebraMap, ← map_map,
@@ -552,7 +556,7 @@ alias natSepDegree_eq_one_iff_of_irreducible := Irreducible.natSepDegree_eq_one_
 /-- If a monic polynomial of separable degree one splits, then it is of form `(X - C y) ^ m` for
 some non-zero natural number `m` and some element `y` of `F`. -/
 theorem eq_X_sub_C_pow_of_natSepDegree_eq_one_of_splits (hm : f.Monic)
-    (hs : f.Splits (RingHom.id F))
+    (hs : (f.map (RingHom.id F)).Splits)
     (h : f.natSepDegree = 1) : ∃ (m : ℕ) (y : F), m ≠ 0 ∧ f = (X - C y) ^ m := by
   classical
   have h1 := eq_prod_roots_of_monic_of_splits_id hm hs
@@ -892,8 +896,8 @@ end Field
 /-- A field is a perfect field (which means that any irreducible polynomial is separable)
 if and only if every separable degree one polynomial splits. -/
 theorem perfectField_iff_splits_of_natSepDegree_eq_one (F : Type*) [Field F] :
-    PerfectField F ↔ ∀ f : F[X], f.natSepDegree = 1 → Factors f := by
-  refine ⟨fun ⟨h⟩ f hf ↦ factors_iff_splits.2 <| or_iff_not_imp_left.2 fun hn g hg hd ↦ ?_,
+    PerfectField F ↔ ∀ f : F[X], f.natSepDegree = 1 → Splits f := by
+  refine ⟨fun ⟨h⟩ f hf ↦ splits_iff_splits.2 <| or_iff_not_imp_left.2 fun hn g hg hd ↦ ?_,
       fun h ↦ ?_⟩
   · have := natSepDegree_le_of_dvd g f hd hn
     rw [hf, (h hg).natSepDegree_eq_natDegree] at this
@@ -901,7 +905,7 @@ theorem perfectField_iff_splits_of_natSepDegree_eq_one (F : Type*) [Field F] :
       natDegree_pos_iff_degree_pos.2 (degree_pos_of_irreducible hg)
   obtain ⟨p, _⟩ := ExpChar.exists F
   haveI := PerfectRing.ofSurjective F p fun x ↦ by
-    obtain ⟨y, hy⟩ := Factors.exists_eval_eq_zero
+    obtain ⟨y, hy⟩ := Splits.exists_eval_eq_zero
       (h _ (pow_one p ▸ natSepDegree_X_pow_char_pow_sub_C p 1 x))
       ((degree_X_pow_sub_C (expChar_pos F p) x).symm ▸ Nat.cast_pos.2 (expChar_pos F p)).ne'
     exact ⟨y, by rwa [eval_sub, eval_X_pow, eval_C, sub_eq_zero] at hy⟩
@@ -909,5 +913,5 @@ theorem perfectField_iff_splits_of_natSepDegree_eq_one (F : Type*) [Field F] :
 
 variable {E K} in
 theorem PerfectField.splits_of_natSepDegree_eq_one [PerfectField K] {f : E[X]}
-    (i : E →+* K) (hf : f.natSepDegree = 1) : f.Splits i :=
+    (i : E →+* K) (hf : f.natSepDegree = 1) : (f.map i).Splits :=
   (perfectField_iff_splits_of_natSepDegree_eq_one K).mp ‹_› _ (natSepDegree_map K f i ▸ hf)

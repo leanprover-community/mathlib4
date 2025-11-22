@@ -3,8 +3,10 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Algebra.Group.Subgroup.Map
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Map
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Kernel and range of group homomorphisms
@@ -41,6 +43,8 @@ membership of a subgroup's underlying set.
 ## Tags
 subgroup, subgroups
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedMonoid Multiset Ring
 

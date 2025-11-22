@@ -3,8 +3,10 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.Algebra.Ring.SumsOfSquares
-import Mathlib.LinearAlgebra.RootSystem.RootPositive
+module
+
+public import Mathlib.Algebra.Ring.SumsOfSquares
+public import Mathlib.LinearAlgebra.RootSystem.RootPositive
 
 /-!
 # The canonical bilinear form on a finite root pairing
@@ -37,6 +39,8 @@ Weyl group.
 * [M. Demazure, *SGA III, Exposé XXI, Données Radicielles*][demazure1970]
 
 -/
+
+@[expose] public section
 
 open Set Function
 open Module hiding reflection

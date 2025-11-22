@@ -3,8 +3,9 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.RingTheory.FreeCommRing
+public import Mathlib.RingTheory.FreeCommRing
 
 /-!
 
@@ -22,6 +23,8 @@ formulas whose realization is a property of an `MvPolynomial`
   `p : MvPolynomial κ R` such that `p.support ⊆ monoms i`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal
 

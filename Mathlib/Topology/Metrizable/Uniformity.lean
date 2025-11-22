@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Nat.Lattice
-import Mathlib.Data.NNReal.Basic
-import Mathlib.Topology.Metrizable.Basic
+module
+
+public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Topology.Metrizable.Basic
 
 /-!
 # Metrizable uniform spaces
@@ -42,6 +44,8 @@ The proof follows [Sergey Melikhov, Metrizable uniform spaces][melikhov2011].
 
 metrizable space, uniform space
 -/
+
+@[expose] public section
 
 
 open Set Function Metric List Filter
@@ -152,7 +156,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
       have hMl' : length (take M l) = M := length_take.trans (min_eq_left hMl.le)
       refine (ihn _ hMl _ _ _ hMl').trans ?_
       convert hMs.1.out
-      rw [take_zipWith, take, take_succ, getElem?_append_left hMl, getElem?_eq_getElem hMl,
+      rw [take_zipWith, take, take_add_one, getElem?_append_left hMl, getElem?_eq_getElem hMl,
         ← Option.coe_def, Option.toList_some, take_append_of_le_length hMl.le, getElem_cons_succ]
   · exact single_le_sum (fun x _ => zero_le x) _ (mem_iff_get.2 ⟨⟨M, hM_lt⟩, getElem_zipWith⟩)
   · rcases hMl.eq_or_lt with (rfl | hMl)

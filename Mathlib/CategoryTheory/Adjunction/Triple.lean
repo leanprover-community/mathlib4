@@ -3,9 +3,11 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson, Ben Eltschig
 -/
-import Mathlib.CategoryTheory.Adjunction.Opposites
-import Mathlib.CategoryTheory.Adjunction.Unique
-import Mathlib.CategoryTheory.Monad.Adjunction
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Opposites
+public import Mathlib.CategoryTheory.Adjunction.Unique
+public import Mathlib.CategoryTheory.Monad.Adjunction
 /-!
 
 # Adjoint triples
@@ -42,6 +44,8 @@ bundle the adjunctions in a structure `Triple F G H`.
 * `mono_leftToRight_app_iff`: `leftToRight : H ⟶ F` is componentwise monic iff
   `adj₁.counit ≫ adj₂.unit : G ⋙ F ⟶ G ⋙ H` is.
 -/
+
+@[expose] public section
 
 open CategoryTheory Functor
 

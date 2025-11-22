@@ -3,7 +3,9 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.Geometry.Manifold.Algebra.Monoid
+module
+
+public import Mathlib.Geometry.Manifold.Algebra.Monoid
 
 /-!
 # Lie groups
@@ -46,6 +48,8 @@ the model space is `ModelProd E E'` and the model vector space is `E × E'`, whi
 so the definition does not apply. Hence the definition should be more general, allowing
 `I : ModelWithCorners 𝕜 E H`.
 -/
+
+@[expose] public section
 
 noncomputable section
 

@@ -3,11 +3,13 @@ Copyright (c) 2023 Andrew Yang, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.FieldTheory.KummerPolynomial
-import Mathlib.LinearAlgebra.Eigenspace.Minpoly
-import Mathlib.RingTheory.Norm.Basic
+module
+
+public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+public import Mathlib.FieldTheory.Galois.Basic
+public import Mathlib.FieldTheory.KummerPolynomial
+public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
+public import Mathlib.RingTheory.Norm.Basic
 
 /-!
 # Kummer Extensions
@@ -43,6 +45,8 @@ TODO: criteria for even `n`. See [serge_lang_algebra] VI,§9.
 
 TODO: relate Kummer extensions of degree 2 with the class `Algebra.IsQuadraticExtension`.
 -/
+
+@[expose] public section
 universe u
 
 variable {K : Type u} [Field K]
@@ -53,11 +57,10 @@ section Splits
 
 theorem X_pow_sub_C_splits_of_isPrimitiveRoot
     {n : ℕ} {ζ : K} (hζ : IsPrimitiveRoot ζ n) {α a : K} (e : α ^ n = a) :
-    (X ^ n - C a).Splits (RingHom.id _) := by
+    ((X ^ n - C a).map (RingHom.id _)).Splits := by
   cases n.eq_zero_or_pos with
   | inl hn =>
-    rw [hn, pow_zero, ← C.map_one, ← map_sub]
-    exact splits_C _ _
+    simp only [hn, pow_zero, ← C.map_one, ← map_sub, map_C, splits_C]
   | inr hn =>
     rw [splits_iff_card_roots, ← nthRoots, hζ.card_nthRoots, natDegree_X_pow_sub_C, if_pos ⟨α, e⟩]
 

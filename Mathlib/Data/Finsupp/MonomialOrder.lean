@@ -3,9 +3,11 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.Data.Finsupp.Lex
-import Mathlib.Data.Finsupp.WellFounded
-import Mathlib.Data.List.TFAE
+module
+
+public import Mathlib.Data.Finsupp.Lex
+public import Mathlib.Data.Finsupp.WellFounded
+public import Mathlib.Data.List.TFAE
 
 /-! # Monomial orders
 
@@ -52,6 +54,8 @@ In algebraic geometry, when the finitely many variables are indexed by integers,
 it is customary to order them using the opposite order : `MvPolynomial.X 0 > MvPolynomial.X 1 > … `
 
 -/
+
+@[expose] public section
 
 /-- Monomial orders : equivalence of `σ →₀ ℕ` with a well-ordered type -/
 structure MonomialOrder (σ : Type*) where

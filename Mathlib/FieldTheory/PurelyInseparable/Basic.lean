@@ -3,8 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.CharP.IntermediateField
-import Mathlib.FieldTheory.SeparableClosure
+module
+
+public import Mathlib.Algebra.CharP.IntermediateField
+public import Mathlib.FieldTheory.SeparableClosure
 
 /-!
 
@@ -83,6 +85,8 @@ This file contains basic definitions and results about purely inseparable extens
 separable degree, degree, separable closure, purely inseparable
 
 -/
+
+@[expose] public section
 
 open Module Polynomial IntermediateField Field
 

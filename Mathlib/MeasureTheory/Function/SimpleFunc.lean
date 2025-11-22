@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.Pi
-import Mathlib.Algebra.Algebra.Pi
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+module
+
+public import Mathlib.Algebra.Order.Pi
+public import Mathlib.Algebra.Algebra.Pi
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
 /-!
 # Simple functions
@@ -20,6 +22,8 @@ measurable function into `ℝ≥0∞`, it is sufficient to show that the propert
 characteristic functions and is closed under addition and supremum of increasing sequences of
 functions.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -1425,7 +1429,7 @@ lemma Measurable.ennreal_sigmaFinite_induction [SigmaFinite μ] {motive : (α �
   refine Measurable.ennreal_induction (fun c s hs ↦ ?_) add iSup hf
   convert iSup (f := fun n ↦ (s ∩ spanningSets μ n).indicator fun _ ↦ c)
     (fun n ↦ measurable_const.indicator (hs.inter (measurableSet_spanningSets ..)))
-    (fun m n hmn a ↦ Set.indicator_le_indicator_of_subset (by gcongr) (by simp) _)
+    (fun m n hmn a ↦ by dsimp; grw [hmn])
     (fun n ↦ indicator _ (hs.inter (measurableSet_spanningSets ..))
       (measure_inter_lt_top_of_right_ne_top (measure_spanningSets_lt_top ..).ne)) with a
   simp [← Set.indicator_iUnion_apply (M := ℝ≥0∞) rfl, ← Set.inter_iUnion]

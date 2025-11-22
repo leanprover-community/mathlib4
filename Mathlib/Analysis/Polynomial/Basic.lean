@@ -3,9 +3,11 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Devon Tuma
 -/
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+module
+
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 
 /-!
 # Limits related to polynomial and rational functions
@@ -19,6 +21,8 @@ We can then use this result to prove various limits for polynomial and rational
 functions, depending on the degrees and leading coefficients of the considered
 polynomials.
 -/
+
+@[expose] public section
 
 
 open Filter Finset Asymptotics

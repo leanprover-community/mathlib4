@@ -3,12 +3,14 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Andrew Yang
 -/
-import Mathlib.RingTheory.Derivation.ToSquareZero
-import Mathlib.RingTheory.Ideal.Cotangent
-import Mathlib.RingTheory.IsTensorProduct
-import Mathlib.RingTheory.EssentialFiniteness
-import Mathlib.Algebra.Exact
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+module
+
+public import Mathlib.RingTheory.Derivation.ToSquareZero
+public import Mathlib.RingTheory.Ideal.Cotangent
+public import Mathlib.RingTheory.IsTensorProduct
+public import Mathlib.RingTheory.EssentialFiniteness
+public import Mathlib.Algebra.Exact
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 /-!
 # The module of Kähler differentials
@@ -43,6 +45,8 @@ import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 - Define the `IsKaehlerDifferential` predicate.
 -/
+
+@[expose] public section
 
 suppress_compilation
 
@@ -366,7 +370,7 @@ local instance instR : Module R (KaehlerDifferential.ideal R S).cotangentIdeal :
 /-- Derivations into `Ω[S⁄R]` is equivalent to derivations
 into `(KaehlerDifferential.ideal R S).cotangentIdeal`. -/
 noncomputable def KaehlerDifferential.endEquivDerivation' :
-    Derivation R S Ω[S⁄R] ≃ₗ[R] Derivation R S (ideal R S).cotangentIdeal :=
+    Derivation R S Ω[S⁄R] ≃ₗ[S] Derivation R S (ideal R S).cotangentIdeal :=
   LinearEquiv.compDer ((KaehlerDifferential.ideal R S).cotangentEquivIdeal.restrictScalars S)
 
 /-- (Implementation) An `Equiv` version of `KaehlerDifferential.End_equiv_aux`.

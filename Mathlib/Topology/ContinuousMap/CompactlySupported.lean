@@ -3,9 +3,11 @@ Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
-import Mathlib.Algebra.Order.Module.PositiveLinearMap
-import Mathlib.Topology.Algebra.Order.Support
-import Mathlib.Topology.ContinuousMap.ZeroAtInfty
+module
+
+public import Mathlib.Algebra.Order.Module.PositiveLinearMap
+public import Mathlib.Topology.Algebra.Order.Support
+public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 
 /-!
 # Compactly supported continuous functions
@@ -24,6 +26,8 @@ When the domain `α` is compact, `CompactlySupportedContinuousMap.continuousMapE
 gives the identification `C(α, β) ≃ C_c(α, β)`.
 
 -/
+
+@[expose] public section
 
 variable {F α β γ : Type*} [TopologicalSpace α]
 

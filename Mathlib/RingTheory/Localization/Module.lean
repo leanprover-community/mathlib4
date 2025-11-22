@@ -3,10 +3,12 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu, Anne Baanen
 -/
-import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
-import Mathlib.LinearAlgebra.Basis.Basic
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.Localization.Integer
+module
+
+public import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
+public import Mathlib.LinearAlgebra.Basis.Basic
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.RingTheory.Localization.Integer
 
 /-!
 # Modules / vector spaces over localizations / fraction fields
@@ -23,6 +25,8 @@ This file contains some results about vector spaces over the field of fractions 
 * `LinearIndependent.iff_fractionRing`: `b` is linear independent over `R` iff it is
   linear independent over `Frac(R)`
 -/
+
+@[expose] public section
 
 
 open nonZeroDivisors

@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Combinatorics.SetFamily.HarrisKleitman
-import Mathlib.Combinatorics.SetFamily.Intersecting
+module
+
+public import Mathlib.Combinatorics.SetFamily.HarrisKleitman
+public import Mathlib.Combinatorics.SetFamily.Intersecting
 
 /-!
 # Kleitman's bound on the size of intersecting families
@@ -22,6 +24,8 @@ Kleitman's bound stipulates that `k` intersecting families cover at most `2ⁿ -
 
 * [D. J. Kleitman, *Families of non-disjoint subsets*][kleitman1966]
 -/
+
+@[expose] public section
 
 
 open Finset

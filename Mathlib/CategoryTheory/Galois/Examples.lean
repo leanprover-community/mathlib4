@@ -3,9 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Galois.Basic
-import Mathlib.CategoryTheory.Action.Concrete
-import Mathlib.CategoryTheory.Action.Limits
+module
+
+public import Mathlib.CategoryTheory.Galois.Basic
+public import Mathlib.CategoryTheory.Action.Concrete
+public import Mathlib.CategoryTheory.Action.Limits
 
 /-!
 # Examples of Galois categories and fiber functors
@@ -16,6 +18,8 @@ forgetful functor to `FintypeCat` is a `FiberFunctor`.
 The connected finite `G`-sets are precisely the ones with transitive `G`-action.
 
 -/
+
+@[expose] public section
 
 universe u v w
 

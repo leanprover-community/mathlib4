@@ -3,14 +3,18 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
-import Mathlib.Topology.Order.Basic
-import Mathlib.Data.Fintype.WithTopBot
+module
+
+public import Mathlib.Topology.Order.Basic
+public import Mathlib.Data.Fintype.WithTopBot
 
 /-! # Order topology on `WithTop ι`
 
 When `ι` is a topological space with the order topology, we also endow `WithTop ι` with the order
 topology. If `ι` is second countable, we prove that `WithTop ι` also is.
 -/
+
+@[expose] public section
 
 open Set Filter
 open scoped Topology
@@ -120,13 +124,11 @@ instance [ts : TopologicalSpace ι] [ht : OrderTopology ι] [SecondCountableTopo
             · exact f_fin
             · intro i hi
               apply isOpen_generateFrom_of_mem
-              simp [d]
               grind
           · apply @Finite.isOpen_biInter _ _ (generateFrom {s | ∃ a ∈ d, s = Ioi a ∨ s = Iio a})
             · exact g_fin
             · intro i hi
               apply isOpen_generateFrom_of_mem
-              simp [d]
               grind
   -- Consider an interval of the form `Iio a`. We should cover it by finite intersections of
   -- our sets.
@@ -165,13 +167,11 @@ instance [ts : TopologicalSpace ι] [ht : OrderTopology ι] [SecondCountableTopo
             · exact f_fin
             · intro i hi
               apply isOpen_generateFrom_of_mem
-              simp [d]
               grind
           · apply @Finite.isOpen_biInter _ _ (generateFrom {s | ∃ a ∈ d, s = Ioi a ∨ s = Iio a})
             · exact g_fin
             · intro i hi
               apply isOpen_generateFrom_of_mem
-              simp [d]
               grind
 
 end TopologicalSpace

@@ -3,7 +3,9 @@ Copyright (c) 2025 Raphael Douglas Giles. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Raphael Douglas Giles, Zhixuan Dai, Zhenyan Fu, Yiming Fu, Jingting Wang, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.TensorAlgebra.Basic
+module
+
+public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 
 /-!
 # Symmetric Algebras
@@ -23,6 +25,8 @@ This is the free commutative `R`-algebra generated (`R`-linearly) by the module 
 See `SymAlg R` instead if you are looking for the symmetrized algebra, which gives a commutative
 multiplication on `R` by $a \circ b = \frac{1}{2}(ab + ba)$.
 -/
+
+@[expose] public section
 
 variable (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M]
 

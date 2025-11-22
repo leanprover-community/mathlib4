@@ -3,12 +3,14 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Computability.Tape
-import Mathlib.Data.Fintype.Option
-import Mathlib.Data.Fintype.Prod
-import Mathlib.Data.Fintype.Pi
-import Mathlib.Data.PFun
-import Mathlib.Computability.PostTuringMachine
+module
+
+public import Mathlib.Computability.Tape
+public import Mathlib.Data.Fintype.Option
+public import Mathlib.Data.Fintype.Prod
+public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Data.PFun
+public import Mathlib.Computability.PostTuringMachine
 
 /-!
 # Turing machines
@@ -58,6 +60,8 @@ Given these parameters, there are a few common structures for the model that ari
   convenient, and prove that only finitely many of these states are actually accessible. This
   formalizes "essentially finite" mentioned above.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero
 

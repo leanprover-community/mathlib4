@@ -3,15 +3,17 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Alex J. Best
 -/
-import Mathlib.Algebra.CharP.Quotient
-import Mathlib.LinearAlgebra.FreeModule.Determinant
-import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
-import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
-import Mathlib.RingTheory.DedekindDomain.Dvr
-import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
-import Mathlib.RingTheory.Ideal.Basis
-import Mathlib.RingTheory.Norm.Basic
-import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
+module
+
+public import Mathlib.Algebra.CharP.Quotient
+public import Mathlib.LinearAlgebra.FreeModule.Determinant
+public import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
+public import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
+public import Mathlib.RingTheory.DedekindDomain.Dvr
+public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+public import Mathlib.RingTheory.Ideal.Basis
+public import Mathlib.RingTheory.Norm.Basic
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 
 /-!
 
@@ -36,6 +38,8 @@ the quotient `R ⧸ I` (setting it to 0 if the cardinality is infinite).
 * `Ideal.absNorm_span_singleton`: the ideal norm of a principal ideal is the
   norm of its generator
 -/
+
+@[expose] public section
 
 open Module
 open scoped nonZeroDivisors

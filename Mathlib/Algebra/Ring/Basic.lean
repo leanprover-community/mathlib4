@@ -3,12 +3,14 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Yury Kudryashov, Neil Strickland
 -/
-import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Algebra.Group.Hom.Instances
-import Mathlib.Algebra.GroupWithZero.NeZero
-import Mathlib.Algebra.Opposites
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Tactic.TFAE
+module
+
+public import Mathlib.Algebra.Group.Commute.Defs
+public import Mathlib.Algebra.Group.Hom.Instances
+public import Mathlib.Algebra.GroupWithZero.NeZero
+public import Mathlib.Algebra.Opposites
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Tactic.TFAE
 
 /-!
 # Semirings and rings
@@ -20,6 +22,8 @@ the present file is about their interaction.
 
 For the definitions of semirings and rings see `Mathlib/Algebra/Ring/Defs.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists Nat.cast_sub
 

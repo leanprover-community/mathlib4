@@ -3,9 +3,11 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.AffineSpace.AffineMap
-import Mathlib.Topology.Algebra.Module.LinearMapPiProd
-import Mathlib.Topology.Algebra.Affine
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
+public import Mathlib.Topology.Algebra.Module.LinearMapPiProd
+public import Mathlib.Topology.Algebra.Affine
 
 /-!
 # Continuous affine maps.
@@ -22,6 +24,8 @@ We introduce the notation `P →ᴬ[R] Q` for `ContinuousAffineMap R P Q` (not t
 notation `A →A[R] B` for `ContinuousAlgHom`). Note that this is parallel to the notation `E →L[R] F`
 for `ContinuousLinearMap R E F`.
 -/
+
+@[expose] public section
 
 
 /-- A continuous map of affine spaces -/
