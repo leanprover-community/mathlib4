@@ -434,21 +434,6 @@ instance (priority := 100) {R S A : Type*} [CommSemiring R] [CommSemiring S] [Se
 theorem smul_algebra_smul_comm (r : R) (a : A) (m : M) : a • r • m = r • a • m :=
   smul_comm _ _ _
 
-namespace LinearMap
-
-variable (R)
-
-/-- `A`-linearly coerce an `R`-linear map from `M` to `N` to a function, when `N` is an
-`(R, A)`-bimodule. -/
-def ltoFun (R M N A : Type*) [Semiring R] [Semiring A]
-    [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] [Module A N]
-    [SMulCommClass R A N] : (M →ₗ[R] N) →ₗ[A] (M → N) where
-  toFun f := f.toFun
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
-
-end LinearMap
-
 end IsScalarTower
 
 /-! TODO: The following lemmas no longer involve `Algebra` at all, and could be moved closer
