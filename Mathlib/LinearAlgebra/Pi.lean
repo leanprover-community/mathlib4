@@ -340,8 +340,16 @@ end
 /-- A linear map `f` applied to `x : ι → R` can be computed using the image under `f` of elements
 of the canonical basis. -/
 theorem pi_apply_eq_sum_univ [Fintype ι] (f : (ι → R) →ₗ[R] M₂) (x : ι → R) :
-    f x = ∑ i, x i • f fun j => if i = j then 1 else 0 := by
+    f x = ∑ i, x i • f (Pi.single i 1) := by
   conv_lhs => rw [pi_eq_sum_univ x, map_sum]
+  refine Finset.sum_congr rfl (fun _ _ => ?_)
+  rw [map_smul]
+
+/-- A linear map `f` applied to `x : ι → R` can be computed using the image under `f` of elements
+of the canonical basis. -/
+theorem pi_apply_eq_sum_univ' [Fintype ι] (f : (ι → R) →ₗ[R] M₂) (x : ι → R) :
+    f x = ∑ i, x i • f fun j ↦ if i = j then 1 else 0 := by
+  conv_lhs => rw [pi_eq_sum_univ' x, map_sum]
   refine Finset.sum_congr rfl (fun _ _ => ?_)
   rw [map_smul]
 
