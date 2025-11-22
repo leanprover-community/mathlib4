@@ -3,18 +3,22 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.NumberTheory.ModularForms.ArithmeticSubgroups
-import Mathlib.RingTheory.Localization.NumDen
-import Mathlib.Topology.Algebra.Order.ArchimedeanDiscrete
-import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
+public import Mathlib.RingTheory.Localization.NumDen
+public import Mathlib.Topology.Algebra.Order.ArchimedeanDiscrete
+public import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
 
 /-!
 # Cusps
 
 We define the cusps of a subgroup of `GL(2, ℝ)` as the fixed points of parabolic elements.
 -/
+
+@[expose] public section
 
 open Matrix SpecialLinearGroup GeneralLinearGroup Filter Polynomial OnePoint
 
@@ -259,8 +263,7 @@ instance instDiscreteTopStrictPeriods [hG : DiscreteTopology 𝒢] :
   let H : Set (GL (Fin 2) R) := 𝒢 ∩ Set.range upperRightHom
   have hH : DiscreteTopology H := hG.of_subset Set.inter_subset_left
   have : Set.MapsTo upperRightHom 𝒢.strictPeriods H := fun x hx ↦ by
-    rw [SetLike.mem_coe, Subgroup.mem_strictPeriods_iff] at hx
-    tauto
+    grind [SetLike.mem_coe, Subgroup.mem_strictPeriods_iff]
   exact .of_continuous_injective (continuous_upperRightHom.restrict this)
     (this.restrict_inj.mpr injective_upperRightHom.injOn)
 
@@ -271,15 +274,19 @@ instance instDiscreteTopPeriods [T2Space R] [hG : DiscreteTopology 𝒢] :
 
 end Ring
 
-@[simp] lemma strictPeriods_SL2Z : strictPeriods 𝒮ℒ = AddSubgroup.zmultiples 1 := by
+lemma strictPeriods_eq_zmultiples_one_of_T_mem {Γ : Subgroup SL(2, ℤ)} (hΓ : ModularGroup.T ∈ Γ) :
+    strictPeriods (Γ : Subgroup (GL (Fin 2) ℝ)) = AddSubgroup.zmultiples 1 := by
   ext x
-  simp only [mem_strictPeriods_iff, MonoidHom.mem_range, Units.ext_iff, mapGL_coe_matrix,
+  simp only [mem_strictPeriods_iff, Subgroup.mem_map, Units.ext_iff, mapGL_coe_matrix,
     map_apply_coe]
-  refine ⟨fun ⟨g, hg⟩ ↦ ⟨g 0 1, by simpa using congr_fun₂ hg 0 1⟩, ?_⟩
+  refine ⟨fun ⟨g, _, hg⟩ ↦ ⟨g 0 1, by simpa using congr_fun₂ hg 0 1⟩, ?_⟩
   rintro ⟨m, rfl⟩
-  use ModularGroup.T ^ m
+  refine ⟨ModularGroup.T ^ m, zpow_mem hΓ m, ?_⟩
   ext i j
   fin_cases i <;> fin_cases j <;> simp [ModularGroup.coe_T_zpow]
+
+@[simp] lemma strictPeriods_SL2Z : strictPeriods 𝒮ℒ = AddSubgroup.zmultiples 1 := by
+  simpa [MonoidHom.range_eq_map] using strictPeriods_eq_zmultiples_one_of_T_mem (mem_top _)
 
 section Real
 
@@ -309,13 +316,20 @@ lemma strictPeriods_eq_zmultiples_strictWidthInfty [DiscreteTopology 𝒢.strict
     Exists.choose_spec <| 𝒢.strictPeriods.isAddCyclic_iff_exists_zmultiples_eq_top.mp
       <| AddSubgroup.discrete_iff_addCyclic.mpr inferInstance]
 
-lemma strictWidthInfty_SL2Z : strictWidthInfty 𝒮ℒ = 1 := by
-  have := strictPeriods_SL2Z
+lemma strictWidthInfty_eq_one_of_T_mem {Γ : Subgroup SL(2, ℤ)} (hΓ : ModularGroup.T ∈ Γ) :
+    strictWidthInfty (Γ : Subgroup (GL (Fin 2) ℝ)) = 1 := by
+  have hsp := strictPeriods_eq_zmultiples_one_of_T_mem hΓ
+  have : DiscreteTopology (Γ : Subgroup (GL (Fin 2) ℝ)).strictPeriods := by
+    -- In fact the image of `Γ` in `GL (Fin 2) ℝ` is itself discrete, but this is quicker:
+    rw [hsp]
+    infer_instance
   rw [strictPeriods_eq_zmultiples_strictWidthInfty, Eq.comm,
     AddSubgroup.zmultiples_eq_zmultiples_iff (not_isOfFinAddOrder_of_isAddTorsionFree one_ne_zero)]
-    at this
-  have := strictWidthInfty_nonneg 𝒮ℒ
-  grind
+    at hsp
+  grind [strictWidthInfty_nonneg]
+
+lemma strictWidthInfty_SL2Z : strictWidthInfty 𝒮ℒ = 1 := by
+  simpa [MonoidHom.range_eq_map] using strictWidthInfty_eq_one_of_T_mem (mem_top _)
 
 lemma strictWidthInfty_mem_strictPeriods : 𝒢.strictWidthInfty ∈ 𝒢.strictPeriods := by
   by_cases h : DiscreteTopology 𝒢.strictPeriods
@@ -344,8 +358,7 @@ lemma strictWidthInfty_pos_iff [DiscreteTopology 𝒢.strictPeriods] [𝒢.HasDe
   · refine fun h ↦ ⟨_, mem_strictPeriods_iff.mpr 𝒢.strictWidthInfty_mem_strictPeriods, ?_, ?_⟩
     · rw [GeneralLinearGroup.isParabolic_iff_of_upperTriangular (by simp)]
       simpa using h.ne'
-    · rw [smul_infty_eq_self_iff]
-      simp
+    · simp [smul_infty_eq_self_iff]
   · -- Hard implication: if `∞` is a cusp, show the strict width is positive.
     rintro ⟨g, hgg, hgp, hgi⟩
     apply 𝒢.strictWidthInfty_nonneg.lt_of_ne'
@@ -362,6 +375,11 @@ lemma strictWidthInfty_pos_iff [DiscreteTopology 𝒢.strictPeriods] [𝒢.HasDe
       exact ⟨2 • x, by grind,
         by simpa only [AddChar.map_nsmul_eq_pow, neg_sq] using pow_mem hgg 2⟩
 
+lemma strictWidthInfty_pos [𝒢.IsArithmetic] : 0 < 𝒢.strictWidthInfty := by
+  rw [strictWidthInfty_pos_iff]
+  simpa [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff]
+    using ⟨_, OnePoint.map_infty _⟩
+
 variable {𝒢} in
 lemma widthInfty_pos_iff [DiscreteTopology 𝒢.periods] [𝒢.HasDetPlusMinusOne] :
     0 < 𝒢.widthInfty ↔ IsCusp ∞ 𝒢 := by
@@ -375,8 +393,57 @@ lemma isRegularAtInfty_iff [DiscreteTopology 𝒢.periods] :
   apply 𝒢.strictPeriods_le_periods.antisymm
   rwa [periods_eq_zmultiples_widthInfty, AddSubgroup.zmultiples_le]
 
+lemma widthInfty_pos [𝒢.IsArithmetic] : 0 < 𝒢.widthInfty := by
+  apply strictWidthInfty_pos
+
 end Real
 
 end Subgroup
+
+open Subgroup
+
+namespace CongruenceSubgroup
+
+@[simp] lemma strictPeriods_Gamma0 (N : ℕ) :
+    strictPeriods (Gamma0 N : Subgroup (GL (Fin 2) ℝ)) = AddSubgroup.zmultiples 1 :=
+  strictPeriods_eq_zmultiples_one_of_T_mem <| by simp [ModularGroup.T]
+
+@[simp] lemma strictPeriods_Gamma1 (N : ℕ) :
+    strictPeriods (Gamma1 N : Subgroup (GL (Fin 2) ℝ)) = AddSubgroup.zmultiples 1 :=
+  strictPeriods_eq_zmultiples_one_of_T_mem <| by simp [ModularGroup.T]
+
+@[simp] lemma strictWidthInfty_Gamma0 (N : ℕ) :
+    strictWidthInfty (Gamma0 N : Subgroup (GL (Fin 2) ℝ)) = 1 :=
+  strictWidthInfty_eq_one_of_T_mem <| by simp [ModularGroup.T]
+
+@[simp] lemma strictWidthInfty_Gamma1 (N : ℕ) :
+    strictWidthInfty (Gamma1 N : Subgroup (GL (Fin 2) ℝ)) = 1 :=
+  strictWidthInfty_eq_one_of_T_mem <| by simp [ModularGroup.T]
+
+@[simp] lemma strictPeriods_Gamma (N : ℕ) :
+    strictPeriods (Gamma N : Subgroup (GL (Fin 2) ℝ)) = AddSubgroup.zmultiples ↑N := by
+  ext x
+  have : AddSubgroup.zmultiples ↑N = .map (Int.castAddHom ℝ) (.zmultiples N) := by simp
+  simp only [this, mem_strictPeriods_iff, Subgroup.mem_map, Gamma_mem]
+  constructor
+  · rintro ⟨g, ⟨-, hg, -, -⟩, hx⟩
+    rw [show x = g 0 1 by simpa using congr_arg (· 0 1) hx.symm]
+    apply AddSubgroup.mem_map_of_mem
+    rwa [Int.mem_zmultiples_iff, ← ZMod.intCast_zmod_eq_zero_iff_dvd]
+  · simp only [AddSubgroup.mem_map, AddSubgroup.mem_zmultiples_iff, existsAndEq, true_and,
+      Units.ext_iff, mapGL_coe_matrix, map_apply_coe, forall_exists_index]
+    refine fun a ha ↦ ⟨ModularGroup.T ^ (a * N), by simp [ModularGroup.coe_T_zpow], ?_⟩
+    ext i j
+    fin_cases i <;> fin_cases j <;> simp [ModularGroup.coe_T_zpow, ← ha]
+
+@[simp] lemma strictWidthInfty_Gamma (N : ℕ) [NeZero N] :
+    strictWidthInfty (Gamma N : Subgroup (GL (Fin 2) ℝ)) = N := by
+  have hsp := strictPeriods_Gamma N
+  rw [strictPeriods_eq_zmultiples_strictWidthInfty, Eq.comm,
+    AddSubgroup.zmultiples_eq_zmultiples_iff
+      (not_isOfFinAddOrder_of_isAddTorsionFree (NeZero.ne _))] at hsp
+  grind [strictWidthInfty_nonneg, Nat.cast_nonneg]
+
+end CongruenceSubgroup
 
 end Width
