@@ -176,8 +176,8 @@ theorem TendstoUniformlyOnFilter.congr_inseparable {F' : ι → α → β}
     (hff' : ∀ᶠ n : ι × α in p ×ˢ p', Inseparable (F n.fst n.snd) (F' n.fst n.snd)) :
     TendstoUniformlyOnFilter F' f p p' := by
   rw [tendstoUniformlyOnFilter_iff_tendsto, uniformity_hasBasis_open.tendsto_right_iff] at hf ⊢
-  refine forall₂_imp (fun i hi hf => ?_) hf
-  exact hf.congr (hff'.mono fun x hx => (Inseparable.rfl.prod hx).mem_open_iff hi.2)
+  exact fun i hi => (hf i hi).congr (hff'.mono fun x hx =>
+    (Inseparable.rfl.prod hx).mem_open_iff hi.2)
 
 theorem TendstoUniformlyOnFilter.congr {F' : ι → α → β} (hf : TendstoUniformlyOnFilter F f p p')
     (hff' : ∀ᶠ n : ι × α in p ×ˢ p', F n.fst n.snd = F' n.fst n.snd) :

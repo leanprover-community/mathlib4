@@ -252,9 +252,8 @@ theorem TendstoLocallyUniformlyOn.congr_inseparable {G : ι → α → β}
   rw [tendstoLocallyUniformlyOn_iff_forall_tendsto] at hf ⊢
   refine forall₂_imp (fun x hx hf => ?_) hf
   rw [uniformity_hasBasis_open.tendsto_right_iff] at hf ⊢
-  refine forall₂_imp (fun i hi hf => ?_) hf
-  exact hf.mp ((hg.filter_mono (prod_mono_right p inf_le_right)).mono fun x hg hf =>
-    ((Inseparable.rfl.prod hg).mem_open_iff hi.2).1 hf)
+  exact fun i hi => (hf i hi).mp ((hg.filter_mono (prod_mono_right p inf_le_right)).mono
+    fun x hg hf => ((Inseparable.rfl.prod hg).mem_open_iff hi.2).1 hf)
 
 theorem TendstoLocallyUniformlyOn.congr {G : ι → α → β} (hf : TendstoLocallyUniformlyOn F f p s)
     (hg : ∀ n, s.EqOn (F n) (G n)) : TendstoLocallyUniformlyOn G f p s :=
@@ -269,9 +268,8 @@ theorem TendstoLocallyUniformlyOn.congr_inseparable_right {g : α → β}
   rw [tendstoLocallyUniformlyOn_iff_forall_tendsto] at hf ⊢
   refine forall₂_imp (fun x hx hf => ?_) hf
   rw [uniformity_hasBasis_open.tendsto_right_iff] at hf ⊢
-  refine forall₂_imp (fun i hi hf => ?_) hf
-  exact hf.mp ((hg.filter_mono (prod_mono_right p inf_le_right)).mono fun x hg hf =>
-    ((hg.prod .rfl).mem_open_iff hi.2).1 hf)
+  exact fun i hi => (hf i hi).mp ((hg.filter_mono (prod_mono_right p inf_le_right)).mono
+    fun x hg hf => ((hg.prod .rfl).mem_open_iff hi.2).1 hf)
 
 theorem TendstoLocallyUniformlyOn.congr_right {g : α → β} (hf : TendstoLocallyUniformlyOn F f p s)
     (hg : s.EqOn f g) : TendstoLocallyUniformlyOn F g p s :=

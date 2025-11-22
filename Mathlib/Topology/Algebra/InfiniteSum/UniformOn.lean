@@ -119,8 +119,7 @@ theorem MultipliableUniformlyOn.hasProdUniformlyOn (h : MultipliableUniformlyOn 
   obtain ⟨g, hg⟩ := h.exists
   have hp := hg
   rw [hasProdUniformlyOn_iff_tendstoUniformlyOn] at hg ⊢
-  refine forall₂_imp (fun s hs hg => ?_) hg
-  exact hg.congr_inseparable_right fun x hx =>
+  exact fun s hs => (hg s hs).congr_inseparable_right fun x hx =>
     tendsto_nhds_unique_inseparable (hp.hasProd hs hx) (hp.hasProd hs hx).multipliable.hasProd
 
 end UniformlyOn
