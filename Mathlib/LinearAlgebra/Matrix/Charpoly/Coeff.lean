@@ -247,7 +247,7 @@ namespace Matrix
 is equivalent to a polynomial with degree less than the dimension of the matrix. -/
 theorem aeval_eq_aeval_mod_charpoly (M : Matrix n n R) (p : R[X]) :
     aeval M p = aeval M (p %ₘ M.charpoly) :=
-  (aeval_modByMonic_eq_self_of_root M.charpoly_monic M.aeval_self_charpoly).symm
+  (aeval_modByMonic_eq_self_of_root M.aeval_self_charpoly).symm
 
 /-- Any matrix power can be computed as the sum of matrix powers less than `Fintype.card n`.
 
@@ -359,7 +359,7 @@ lemma isNilpotent_charpoly_sub_pow_of_isNilpotent (hM : IsNilpotent M) :
   nontriviality R
   let p : R[X] := M.charpolyRev
   have hp : p - 1 = X * (p /ₘ X) := by
-    conv_lhs => rw [← modByMonic_add_div p monic_X]
+    conv_lhs => rw [← modByMonic_add_div p X]
     simp [p, modByMonic_X]
   have : IsNilpotent (p /ₘ X) :=
     (Polynomial.isUnit_iff'.mp (isUnit_charpolyRev_of_isNilpotent hM)).2
