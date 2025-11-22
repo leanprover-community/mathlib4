@@ -14,7 +14,7 @@ public import Mathlib.Topology.Algebra.Module.Equiv
 
 In this file, we transfer a topological space and continuous linear equivalence structure
 across an equivalence.
-This continues the pattern set in `Mathlib/Algebra/Normed/Module/TransferInstance.lean`.
+This continues the pattern set in `Mathlib/Algebra/Module/TransferInstance.lean`.
 -/
 
 @[expose] public section
