@@ -5,16 +5,17 @@ Authors: Dexin Zhang
 -/
 module
 
+public import Mathlib.Data.Matrix.ColumnRowPartitioned
+public import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Defs
+
 import Mathlib.Algebra.Group.Submonoid.Finsupp
 import Mathlib.Algebra.Order.Group.Ideal
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Algebra.Order.Sub.Prod
 import Mathlib.Algebra.Order.Sub.Unbundled.Hom
-public import Mathlib.Data.Matrix.ColumnRowPartitioned
 import Mathlib.Data.Pi.Interval
 import Mathlib.Data.Rat.Floor
 import Mathlib.LinearAlgebra.Matrix.ToLin
-public import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Defs
 import Mathlib.RingTheory.Finiteness.Cardinality
 import Mathlib.RingTheory.Localization.Module
 
