@@ -701,7 +701,7 @@ instance instOrderTop [LE β] [OrderTop β] : OrderTop (α →ₛ β) where
 @[to_additive]
 instance [CommMonoid β] [PartialOrder β] [IsOrderedMonoid β] :
     IsOrderedMonoid (α →ₛ β) where
-  mul_le_mul_left _ _ h _ _ := mul_le_mul_left' (h _) _
+  mul_le_mul_left _ _ h _ _ := mul_le_mul_left (h _) _
 
 instance instSemilatticeInf [SemilatticeInf β] : SemilatticeInf (α →ₛ β) :=
   { SimpleFunc.instPartialOrder with

@@ -209,7 +209,7 @@ theorem exists_lt_lowerSemicontinuous_lintegral_ge [SigmaFinite μ] (f : α → 
   refine ⟨g, fun x => ?_, gcont, ?_⟩
   · calc
       (f x : ℝ≥0∞) < f' x := by
-        simpa only [← ENNReal.coe_lt_coe, add_zero] using add_lt_add_left (wpos x) (f x)
+        simpa only [← ENNReal.coe_lt_coe, add_zero] using add_lt_add_right (wpos x) (f x)
       _ ≤ g x := le_g x
   · calc
       (∫⁻ x : α, g x ∂μ) ≤ (∫⁻ x : α, f x + w x ∂μ) + ε / 2 := gint
