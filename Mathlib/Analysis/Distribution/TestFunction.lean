@@ -235,6 +235,13 @@ variable (𝕜) in
   rfl
 
 variable (𝕜 n k) in
+/-- `fderivWithOrderLM 𝕜 n k` is the `𝕜`-linear-map sending `f : 𝓓^{n}(Ω, F)` to
+its derivative as an element of `𝓓^{k}(Ω, E →L[ℝ] F)`.
+This only makes mathematical sense if `k + 1 ≤ n`, otherwise we define it as the zero map.
+
+See `fderivLM` for the very common case where everything is infinitely differentiable.
+
+This is subsumed by `fderivWithOrderCLM`, which also bundles the continuity. -/
 noncomputable def fderivWithOrderLM :
     𝓓^{n}(Ω, F) →ₗ[𝕜] 𝓓^{k}(Ω, E →L[ℝ] F) where
   toFun f :=
@@ -407,6 +414,11 @@ end Topology
 section FDerivCLM
 
 variable (𝕜 n k) in
+/-- `fderivWithOrderCLM 𝕜 n k` is the continuous `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
+its derivative as an element of `𝓓^{k}_{K}(E, E →L[ℝ] F)`.
+This only makes mathematical sense if `k + 1 ≤ n`, otherwise we define it as the zero map.
+
+See `fderivCLM` for the very common case where everything is infinitely differentiable. -/
 noncomputable def fderivWithOrderCLM :
     𝓓^{n}(Ω, F) →L[𝕜] 𝓓^{k}(Ω, E →L[ℝ] F) where
   toLinearMap := fderivWithOrderLM 𝕜 n k
@@ -436,6 +448,10 @@ lemma fderivWithOrderCLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 
   rfl
 
 variable (𝕜) in
+/-- `fderivCLM 𝕜` is the continuous `𝕜`-linear-map sending `f : 𝓓_{K}(E, F)` to
+its derivative as an element of `𝓓_{K}(E, E →L[ℝ] F)`.
+
+See also `fderivWithOrderCLM` if you need more control on the regularities. -/
 noncomputable def fderivCLM :
     𝓓(Ω, F) →L[𝕜] 𝓓(Ω, E →L[ℝ] F) where
   toLinearMap := fderivLM 𝕜
@@ -466,3 +482,5 @@ lemma fderivCLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
 end FDerivCLM
 
 end TestFunction
+
+#lint
