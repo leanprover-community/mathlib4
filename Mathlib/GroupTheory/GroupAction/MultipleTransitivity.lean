@@ -626,7 +626,7 @@ namespace AlternatingGroup
 
 variable (α : Type*) [Fintype α] [DecidableEq α]
 
-/-- The `alternatingGroup` on α is (card α - 2)-pretransitive. -/
+/-- The `alternatingGroup` on `α` is `(Nat.card α - 2)`-pretransitive. -/
 theorem isMultiplyPretransitive :
     IsMultiplyPretransitive (alternatingGroup α) α (Nat.card α - 2) := by
   rcases lt_or_ge (Nat.card α) 2 with h2 | h2
