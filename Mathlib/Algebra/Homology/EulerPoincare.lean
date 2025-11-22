@@ -5,18 +5,18 @@ Authors: Jesse Alama
 -/
 module
 
-import Mathlib.Algebra.Homology.EulerCharacteristic
-import Mathlib.Algebra.Homology.HomologicalComplex
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.LinearAlgebra.Dimension.RankNullity
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
-import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.Data.Int.Interval
-import Mathlib.Algebra.Order.Interval.Finset.SuccPred
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
+public import Mathlib.Algebra.Homology.EulerCharacteristic
+public import Mathlib.Algebra.Homology.HomologicalComplex
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.LinearAlgebra.Dimension.RankNullity
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.Algebra.BigOperators.Group.Finset.Lemmas
+public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.Data.Int.Interval
+public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
+public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
 /-!
 # The Euler-Poincaré Formula
@@ -31,6 +31,8 @@ finite-dimensional modules over a division ring.
   the alternating sum of homology dimensions
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits HomologicalComplex
 
