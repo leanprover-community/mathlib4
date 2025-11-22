@@ -484,10 +484,10 @@ theorem spectralNorm_eq_iSup_of_finiteDimensional_normal
       (minpoly.monic (hn.isIntegral x)) (minpoly.aeval_algHom _ σ.toAlgHom _))
   · set p := minpoly K x
     have hp_sp : Splits ((minpoly K x).map (algebraMap K L)) := hn.splits x
-    obtain ⟨s, hs⟩ := (splits_iff_exists_multiset _).mp hp_sp
+    obtain ⟨s, hs⟩ := splits_iff_exists_multiset.mp hp_sp
     have h_lc : (algebraMap K L) (minpoly K x).leadingCoeff = 1 := by
       rw [minpoly.monic (hn.isIntegral x), map_one]
-    rw [h_lc, map_one, one_mul] at hs
+    rw [leadingCoeff_map, h_lc, map_one, one_mul] at hs
     simp only [spectralNorm]
     rw [← max_norm_root_eq_spectralValue hf_pm hf_na hf1 _ _ hs]
     apply ciSup_le
