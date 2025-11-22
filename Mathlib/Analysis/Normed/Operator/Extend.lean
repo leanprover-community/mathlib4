@@ -128,3 +128,94 @@ end NormedField
 end Extend
 
 end ContinuousLinearMap
+
+namespace LinearMap
+
+section compInv
+
+variable [DivisionRing 𝕜] [DivisionRing 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
+  [AddCommGroup E] [SeminormedAddCommGroup F] [SeminormedAddCommGroup Eₗ]
+  [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜 Eₗ]
+
+variable (f : E →ₛₗ[σ₁₂] F) (g : E →ₗ[𝕜] Eₗ)
+
+open scoped Classical in
+/-- Composition with the left inverse as a CLM. -/
+private def compLeftInverse :=
+  if h : LinearMap.ker g = ⊥ ∧ ∃ (C : ℝ), ∀ (x : E), ‖f x‖ ≤ C * ‖g x‖ then
+  (f ∘ₛₗ (g.leftInverse.domRestrict
+    (LinearMap.range g))).mkContinuousOfExistsBound
+  (by
+    rcases h.2 with ⟨C, hC⟩
+    use C
+    rintro ⟨x, y, hxy⟩
+    simp only [← hxy, LinearMap.coe_comp, Function.comp_apply,
+      LinearMap.domRestrict_apply, AddSubgroupClass.coe_norm]
+    convert hC y
+    apply g.leftInverse_apply_of_inj h.1)
+  else 0
+
+@[simp]
+private theorem compLeftInverse_apply_of_inj_bdd (h_inj : LinearMap.ker g = ⊥)
+    (h_norm : ∃ (C : ℝ), ∀ (x : E), ‖f x‖ ≤ C * ‖g x‖) (y : LinearMap.range g) :
+    f.compLeftInverse g y = (f ∘ₛₗ (g.leftInverse.domRestrict
+      (LinearMap.range g))) y := by
+  simp [compLeftInverse, h_inj, h_norm]
+
+end compInv
+
+section NormedDivisionRing
+
+variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
+  [AddCommGroup E] [SeminormedAddCommGroup Eₗ] [NormedAddCommGroup F]
+  [Module 𝕜 E] [Module 𝕜₂ F] [IsBoundedSMul 𝕜₂ F] [Module 𝕜 Eₗ] [IsBoundedSMul 𝕜 Eₗ]
+  [CompleteSpace F]
+
+variable (f : E →ₛₗ[σ₁₂] F) (e : E →ₗ[𝕜] Eₗ)
+
+/-- Extension of a linear map `f : E →ₛₗ[σ₁₂] F` to a continuous linear map `Eₗ →SL[σ₁₂] F`,
+where `E` is a normed space and `F` a complete normed space, using an injective dense embedding
+`e : E →L[𝕜] Eₗ` together with a bound `‖f x‖ ≤ C * ‖e x‖` for all `x : E`. -/
+def extendOfNorm : Eₗ →SL[σ₁₂] F := (f.compLeftInverse e).extend (LinearMap.range e).subtypeL
+
+variable {f e}
+
+theorem extendOfNorm_eq (h_inj : LinearMap.ker e = ⊥)
+    (h_dense : DenseRange e) (h_norm : ∃ C, ∀ x, ‖f x‖ ≤ C * ‖e x‖) (x : E) :
+    f.extendOfNorm e (e x) = f x := by
+  have := (f.compLeftInverse e).extend_eq (e := (LinearMap.range e).subtypeL)
+    (by simpa using h_dense) isUniformEmbedding_subtype_val.isUniformInducing
+  convert this ⟨e x, LinearMap.mem_range_self e x⟩
+  simp only [h_inj, h_norm, compLeftInverse_apply_of_inj_bdd, LinearMap.coe_comp,
+    Function.comp_apply, LinearMap.domRestrict_apply]
+  congr
+  apply (e.leftInverse_apply_of_inj h_inj _).symm
+
+theorem extendOfNorm_norm_le (h_inj : LinearMap.ker e = ⊥) (h_dense : DenseRange e) (C : ℝ)
+    (h_norm : ∀ (x : E), ‖f x‖ ≤ C * ‖e x‖) (x : Eₗ) :
+    ‖f.extendOfNorm e x‖ ≤ C * ‖x‖ := by
+  have h_mem : ∀ (x : Eₗ) (hy : x ∈ (LinearMap.range e)), ‖extendOfNorm f e x‖ ≤ C * ‖x‖ := by
+    intro x ⟨y, hxy⟩
+    rw [← hxy]
+    convert h_norm y
+    apply extendOfNorm_eq h_inj h_dense ⟨C, h_norm⟩
+  exact h_dense.induction h_mem (isClosed_le (by fun_prop) (by fun_prop)) x
+
+end NormedDivisionRing
+
+section NormedField
+
+variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
+  [NormedAddCommGroup F] [SeminormedAddCommGroup Eₗ]
+  [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Eₗ]
+  [AddCommGroup E] [Module 𝕜 E] [CompleteSpace F]
+
+variable {f : E →ₛₗ[σ₁₂] F} {e : E →ₗ[𝕜] Eₗ}
+
+theorem extendOfNorm_opNorm_le (h_inj : LinearMap.ker e = ⊥) (h_dense : DenseRange e) {C : ℝ}
+    (hC : 0 ≤ C) (h_norm : ∀ (x : E), ‖f x‖ ≤ C * ‖e x‖) : ‖f.extendOfNorm e‖ ≤ C :=
+  (f.extendOfNorm e).opNorm_le_bound hC (extendOfNorm_norm_le h_inj h_dense C h_norm)
+
+end NormedField
+
+end LinearMap
