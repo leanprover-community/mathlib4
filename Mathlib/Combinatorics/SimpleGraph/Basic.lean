@@ -449,9 +449,9 @@ theorem edgeSet_ssubset_edgeSet : edgeSet G₁ ⊂ edgeSet G₂ ↔ G₁ < G₂ 
 theorem edgeSet_injective : Injective (edgeSet : SimpleGraph V → Set (Sym2 V)) :=
   (edgeSetEmbedding V).injective
 
-alias ⟨_, edgeSet_mono⟩ := edgeSet_subset_edgeSet
+@[gcongr] alias ⟨_, edgeSet_mono⟩ := edgeSet_subset_edgeSet
 
-alias ⟨_, edgeSet_strict_mono⟩ := edgeSet_ssubset_edgeSet
+@[gcongr] alias ⟨_, edgeSet_strict_mono⟩ := edgeSet_ssubset_edgeSet
 
 attribute [mono] edgeSet_mono edgeSet_strict_mono
 
@@ -587,6 +587,9 @@ theorem edgeSet_fromEdgeSet : (fromEdgeSet s).edgeSet = s \ { e | e.IsDiag } := 
 theorem fromEdgeSet_edgeSet : fromEdgeSet G.edgeSet = G := by
   ext v w
   exact ⟨fun h => h.1, fun h => ⟨h, G.ne_of_adj h⟩⟩
+
+@[simp] lemma fromEdgeSet_le {s : Set (Sym2 V)} :
+    fromEdgeSet s ≤ G ↔ s \ {e | e.IsDiag} ⊆ G.edgeSet := by simp [← edgeSet_subset_edgeSet]
 
 lemma edgeSet_eq_iff : G.edgeSet = s ↔ G = fromEdgeSet s ∧ Disjoint s {e | e.IsDiag} where
   mp := by rintro rfl; simp +contextual [Set.disjoint_right]
