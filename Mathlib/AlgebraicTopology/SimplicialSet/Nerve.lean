@@ -3,8 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.CompStruct
-import Mathlib.CategoryTheory.ComposableArrows
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.CompStruct
+public import Mathlib.CategoryTheory.ComposableArrows.Basic
 
 /-!
 
@@ -20,6 +22,8 @@ which is the category `Fin (n + 1) ⥤ C`.
 
 -/
 
+@[expose] public section
+
 open CategoryTheory.Category Simplicial Opposite
 
 universe v u
@@ -27,13 +31,15 @@ universe v u
 namespace CategoryTheory
 
 /-- The nerve of a category -/
-@[simps]
+@[simps -isSimp]
 def nerve (C : Type u) [Category.{v} C] : SSet.{max u v} where
   obj Δ := ComposableArrows C (Δ.unop.len)
   map f x := x.whiskerLeft (SimplexCategory.toCat.map f.unop)
   -- `aesop` can prove these but is slow, help it out:
   map_id _ := rfl
   map_comp _ _ := rfl
+
+attribute [simp] nerve_obj
 
 instance {C : Type*} [Category C] {Δ : SimplexCategoryᵒᵖ} : Category ((nerve C).obj Δ) :=
   (inferInstance : Category (ComposableArrows C (Δ.unop.len)))
@@ -122,14 +128,14 @@ lemma ext_of_isThin [Quiver.IsThin C] {n : SimplexCategoryᵒᵖ} {x y : (nerve 
 open SSet
 
 @[simp]
-lemma left {x y : ComposableArrows C 0} (e : Edge (X := nerve C) x y) :
-    ComposableArrows.left e.edge = nerveEquiv x := by
+lemma left_edge {x y : ComposableArrows C 0} (e : (nerve C).Edge x y) :
+    ComposableArrows.left (n := 1) e.edge = nerveEquiv x := by
   simp only [← e.src_eq]
   rfl
 
 @[simp]
-lemma right {x y : ComposableArrows C 0} (e : Edge (X := nerve C) x y) :
-    ComposableArrows.right (n := 1) e.edge = nerveEquiv y := by
+lemma right_edge {x y : ComposableArrows C 0} (e : (nerve C).Edge x y) :
+    ComposableArrows.right  (n := 1) e.edge = nerveEquiv y := by
   simp only [← e.tgt_eq]
   rfl
 
@@ -147,18 +153,18 @@ attribute [local ext (iff := false)] ComposableArrows.ext₀ ComposableArrows.ex
 
 /-- Bijection between edges in the nerve of category and morphisms in the category. -/
 def homEquiv {x y : ComposableArrows C 0} :
-    Edge (X := nerve C) x y ≃ (nerveEquiv x ⟶ nerveEquiv y) where
+    (nerve C).Edge x y ≃ (nerveEquiv x ⟶ nerveEquiv y) where
   toFun e := eqToHom (by simp) ≫ e.edge.hom ≫ eqToHom (by simp)
   invFun f := .mk (ComposableArrows.mk₁ f) (ComposableArrows.ext₀ rfl) (ComposableArrows.ext₀ rfl)
   left_inv e := by cat_disch
   right_inv f := by simp
 
-lemma mk₁_homEquiv_apply {x y : ComposableArrows C 0} (e : Edge (X := nerve C) x y) :
+lemma mk₁_homEquiv_apply {x y : ComposableArrows C 0} (e : (nerve C).Edge x y) :
     ComposableArrows.mk₁ (homEquiv e) = ComposableArrows.mk₁ e.edge.hom := by
   simp [homEquiv, ComposableArrows.mk₁_eqToHom_comp, ComposableArrows.mk₁_comp_eqToHom]
 
 /-- Constructor for edges in the nerve of a category. (See also `homEquiv`.) -/
-def edgeMk {x y : C} (f : x ⟶ y) : Edge (X := nerve C) (nerveEquiv.symm x) (nerveEquiv.symm y) :=
+def edgeMk {x y : C} (f : x ⟶ y) : (nerve C).Edge (nerveEquiv.symm x) (nerveEquiv.symm y) :=
   Edge.mk (ComposableArrows.mk₁ f)
 
 @[simp]
@@ -192,7 +198,7 @@ lemma nonempty_compStruct_iff {x₀ x₁ x₂ : C}
   refine ⟨fun ⟨h⟩ ↦ ?_, fun h ↦ ⟨by rwa [← h]⟩⟩
   rw [← Arrow.mk_inj]
   apply ComposableArrows.arrowEquiv.symm.injective
-  convert_to ((nerve C).δ 1) h'.simplex = ((nerve C).δ 1) h.simplex
+  convert_to (nerve C).δ 1 h'.simplex = (nerve C).δ 1 h.simplex
   · exact (h'.d₁).symm
   · exact (h.d₁).symm
   · have h₀ := h.d₀
@@ -207,8 +213,8 @@ lemma nonempty_compStruct_iff {x₀ x₁ x₂ : C}
         (by simp [-Edge.CompStruct.d₀, h'₀, ← h₀])))
 
 lemma homEquiv_comp {x₀ x₁ x₂ : ComposableArrows C 0}
-    {e₀₁ : Edge (X := nerve C) x₀ x₁}
-    {e₁₂ : Edge (X := nerve C) x₁ x₂} {e₀₂ : Edge (X := nerve C) x₀ x₂}
+    {e₀₁ : (nerve C).Edge x₀ x₁}
+    {e₁₂ : (nerve C).Edge x₁ x₂} {e₀₂ : (nerve C).Edge x₀ x₂}
     (h : Edge.CompStruct e₀₁ e₁₂ e₀₂) :
     homEquiv e₀₁ ≫ homEquiv e₁₂ = homEquiv e₀₂ := by
   obtain ⟨x₀, rfl⟩ := nerveEquiv.symm.surjective x₀
@@ -226,8 +232,8 @@ lemma σ_zero_nerveEquiv_symm (x : C) :
 @[simp]
 lemma homEquiv_edgeMk_map_nerveMap {D : Type u} [Category.{v} D] {x y : C}
     (f : x ⟶ y) (F : C ⥤ D) :
-  homEquiv ((edgeMk f).map (nerveMap F)) = F.map f := by
-simp [homEquiv, nerveMap_app]
+    homEquiv ((edgeMk f).map (nerveMap F)) = F.map f := by
+  simp [homEquiv, nerveMap_app]
 
 end
 

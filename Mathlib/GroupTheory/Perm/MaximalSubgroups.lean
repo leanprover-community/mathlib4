@@ -3,10 +3,12 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-import Mathlib.GroupTheory.GroupAction.Jordan
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
-import Mathlib.GroupTheory.Subgroup.Simple
-import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
+module
+
+public import Mathlib.GroupTheory.GroupAction.Jordan
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic
+public import Mathlib.GroupTheory.Subgroup.Simple
+public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 
 /-! # Maximal subgroups of the symmetric groups
 
@@ -32,6 +34,8 @@ The argument is taken from [M. Liebeck, C. Praeger, J. Saxl,
 *A classification of the maximal subgroups of the finite
 alternating and symmetric groups*, 1987][LiebeckPraegerSaxl-1987].
 -/
+
+@[expose] public section
 
 open scoped Pointwise
 
