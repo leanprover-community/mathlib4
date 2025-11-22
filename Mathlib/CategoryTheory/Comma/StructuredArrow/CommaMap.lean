@@ -59,12 +59,9 @@ def commaMapEquivalenceInverse [IsIso β] (X : Comma L' R') :
   map {Y Z} f := homMk ⟨by exact f.left.right, by exact f.right.right,
       by exact congrArg CommaMorphism.right f.w⟩ (by
       ext
-      <;> simp only [Comma.map_obj_right, Comma.map_obj_left,
-          Functor.const_obj_obj,
+      <;> simp only [Comma.map_obj_right, Comma.map_obj_left, Functor.const_obj_obj,
           mk_left, mk_right, mk_hom_eq_self, Comma.comp_left, Comma.map_map_left, w]
-      · simp only [Comma.map_obj_right,
-
-        Comma.comp_right, Comma.map_map_right, w] )
+      · simp only [Comma.map_obj_right, Comma.comp_right, Comma.map_map_right, w] )
   map_id X := by ext <;> rfl
   map_comp f g := by ext <;> rfl
 
