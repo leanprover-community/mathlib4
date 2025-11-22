@@ -83,9 +83,8 @@ instance [Nontrivial α] [AddGroup α] [LinearOrder α] [AddLeftMono α] :
   · exact ⟨0, ⟨a, lt.le⟩, Subtype.coe_ne_coe.mp ha.symm⟩
 
 instance linearOrderedCommMonoidWithZero [CommSemiring α] [LinearOrder α] [IsStrictOrderedRing α] :
-    LinearOrderedCommMonoidWithZero { x : α // 0 ≤ x } :=
-  { Nonneg.commSemiring, Nonneg.isOrderedRing with
-    mul_le_mul_left := fun _ _ h c ↦ mul_le_mul_of_nonneg_left h c.prop }
+    LinearOrderedCommMonoidWithZero { x : α // 0 ≤ x } where
+  zero_le a := a.2
 
 instance canonicallyOrderedAdd [Ring α] [PartialOrder α] [IsOrderedRing α] :
     CanonicallyOrderedAdd { x : α // 0 ≤ x } where
