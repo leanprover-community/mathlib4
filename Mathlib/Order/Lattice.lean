@@ -205,6 +205,12 @@ theorem sup_right_comm (a b c : α) : a ⊔ b ⊔ c = a ⊔ c ⊔ b := by
 theorem sup_sup_sup_comm (a b c d : α) : a ⊔ b ⊔ (c ⊔ d) = a ⊔ c ⊔ (b ⊔ d) := by
   rw [sup_assoc, sup_left_comm b, ← sup_assoc]
 
+theorem sup_rotate (a b c : α) : a ⊔ b ⊔ c = b ⊔ c ⊔ a := by
+  rw [sup_assoc, sup_comm]
+
+theorem sup_rotate' (a b c : α) : a ⊔ (b ⊔ c) = b ⊔ (c ⊔ a) := by
+  rw [sup_comm, sup_assoc]
+
 theorem sup_sup_distrib_left (a b c : α) : a ⊔ (b ⊔ c) = a ⊔ b ⊔ (a ⊔ c) := by
   rw [sup_sup_sup_comm, sup_idem]
 
@@ -391,6 +397,12 @@ theorem inf_right_comm (a b c : α) : a ⊓ b ⊓ c = a ⊓ c ⊓ b :=
 
 theorem inf_inf_inf_comm (a b c d : α) : a ⊓ b ⊓ (c ⊓ d) = a ⊓ c ⊓ (b ⊓ d) :=
   @sup_sup_sup_comm αᵒᵈ _ _ _ _ _
+
+theorem inf_rotate (a b c : α) : a ⊓ b ⊓ c = b ⊓ c ⊓ a :=
+  @sup_rotate αᵒᵈ _ _ _ _
+
+theorem inf_rotate' (a b c : α) : a ⊓ (b ⊓ c) = b ⊓ (c ⊓ a) :=
+  @sup_rotate' αᵒᵈ _ _ _ _
 
 theorem inf_inf_distrib_left (a b c : α) : a ⊓ (b ⊓ c) = a ⊓ b ⊓ (a ⊓ c) :=
   @sup_sup_distrib_left αᵒᵈ _ _ _ _
