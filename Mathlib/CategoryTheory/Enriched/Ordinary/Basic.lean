@@ -237,12 +237,11 @@ def TransportEnrichment.enrichedOrdinaryCategory
   homEquiv {X Y} := (eHomEquiv V (C := C)).trans (e (Hom (C := C) X Y))
   homEquiv_id {X} := by simpa using h _ (eId V _)
   homEquiv_comp f g := by
-    simp only [Equiv.trans_apply]
-    erw [h]
-    erw [h]
-    erw [h]
-    simp [← tensorHom_comp_tensorHom, eHomEquiv_comp, eComp_eq,
-      tensorHom_def (Functor.LaxMonoidal.ε F), unitors_inv_equal]
+    dsimp [instEnrichedCategoryTransportEnrichment]
+    rw [h, h, h, ← tensorHom_comp_tensorHom_assoc, eComp_eq, tensorHom_def_assoc,
+      whiskerRight_id_assoc, unitors_inv_equal, Iso.inv_hom_id_assoc,
+      Functor.LaxMonoidal.μ_natural_assoc, Functor.LaxMonoidal.right_unitality_inv_assoc,
+      eHomEquiv_comp, ← F.map_comp, ← F.map_comp, unitors_inv_equal]
 section Equiv
 
 variable {W : Type u''} [Category.{v''} W] [MonoidalCategory W]
