@@ -25,4 +25,5 @@ import Counterexamples.SeminormLatticeNotDistrib
 import Counterexamples.SeparableNotSecondCountable
 import Counterexamples.SorgenfreyLine
 import Counterexamples.TopologistsSineCurve
+import Counterexamples.Weierstrass
 import Counterexamples.ZeroDivisorsInAddMonoidAlgebras
