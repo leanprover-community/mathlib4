@@ -5,6 +5,7 @@ Authors: Kevin Buzzard, Xavier Roblot
 -/
 module
 
+public import Mathlib.FieldTheory.PrimeField
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.Ramification
 
 /-!
@@ -14,9 +15,9 @@ This file defines the type of totally real and totally complex number fields.
 
 ## Main Definitions and Results
 
-* `NumberField.IsTotallyReal`: a number field `K` is totally real if all of its infinite places
+* `NumberField.IsTotallyReal`: a field `K` is totally real if all of its infinite places
   are real. In other words, the image of every ring homomorphism `K → ℂ` is a subset of `ℝ`.
-* `NumberField.IsTotallyComplex`: a number field `K` is totally complex if all of its infinite
+* `NumberField.IsTotallyComplex`: a field `K` is totally complex if all of its infinite
   places are complex.
 * `NumberField.maximalRealSubfield`: the maximal real subfield of `K`. It is totally real,
   see `NumberField.isTotallyReal_maximalRealSubfield`, and contains all the other totally real
@@ -41,15 +42,14 @@ section TotallyRealField
 
 -/
 
-/-- A number field `K` is totally real if all of its infinite places
-are real. In other words, the image of every ring homomorphism `K → ℂ`
-is a subset of `ℝ`. -/
-@[mk_iff] class IsTotallyReal (K : Type*) [Field K] [NumberField K] where
+/-- A field `K` is totally real if all of its infinite places are real. In other words,
+the image of every ring homomorphism `K → ℂ` is a subset of `ℝ`. -/
+@[mk_iff] class IsTotallyReal (K : Type*) [Field K] where
   isReal : ∀ v : InfinitePlace K, v.IsReal
 
-variable {F : Type*} [Field F] [NumberField F] {K : Type*} [Field K] [NumberField K]
+variable {F : Type*} [Field F] {K : Type*} [Field K]
 
-theorem nrComplexPlaces_eq_zero_iff :
+theorem nrComplexPlaces_eq_zero_iff [NumberField K] :
     nrComplexPlaces K = 0 ↔ IsTotallyReal K := by
   simp [Fintype.card_eq_zero_iff, isEmpty_subtype, isTotallyReal_iff]
 
@@ -65,7 +65,8 @@ theorem IsTotallyReal.ofRingEquiv [IsTotallyReal F] (f : F ≃+* K) : IsTotallyR
   isReal _ := (isReal_comap_iff f).mp <| IsTotallyReal.isReal _
 
 variable (F K) in
-theorem IsTotallyReal.of_algebra [IsTotallyReal K] [Algebra F K] : IsTotallyReal F where
+theorem IsTotallyReal.of_algebra [IsTotallyReal K] [Algebra F K] [Algebra.IsAlgebraic F K] :
+    IsTotallyReal F where
   isReal w := by
     obtain ⟨W, rfl⟩ : ∃ W : InfinitePlace K, W.comap (algebraMap F K) = w := comap_surjective w
     exact IsReal.comap _ (IsTotallyReal.isReal W)
@@ -79,20 +80,21 @@ theorem isTotallyReal_top_iff : IsTotallyReal (⊤ : Subfield K) ↔ IsTotallyRe
 
 @[deprecated (since := "2025-05-19")] alias IsTotally.of_algebra := IsTotallyReal.of_algebra
 
-instance [IsTotallyReal K] (F : IntermediateField ℚ K) : IsTotallyReal F :=
+instance [IsTotallyReal K] [CharZero K] (F : IntermediateField ℚ K) [Algebra.IsAlgebraic F K] :
+    IsTotallyReal F :=
   IsTotallyReal.of_algebra F K
 
-instance [IsTotallyReal K] (F : Subfield K) : IsTotallyReal F :=
+instance [IsTotallyReal K] (F : Subfield K) [Algebra.IsIntegral F K] : IsTotallyReal F :=
   IsTotallyReal.of_algebra F K
 
 variable (K)
 
 @[simp]
-theorem IsTotallyReal.nrComplexPlaces_eq_zero [h : IsTotallyReal K] :
+theorem IsTotallyReal.nrComplexPlaces_eq_zero [NumberField K] [h : IsTotallyReal K] :
     nrComplexPlaces K = 0 :=
   nrComplexPlaces_eq_zero_iff.mpr h
 
-protected theorem IsTotallyReal.finrank [h : IsTotallyReal K] :
+protected theorem IsTotallyReal.finrank [NumberField K] [h : IsTotallyReal K] :
     finrank ℚ K = nrRealPlaces K := by
   rw [← card_add_two_mul_card_eq_rank, nrComplexPlaces_eq_zero_iff.mpr h, mul_zero, add_zero]
 
@@ -100,6 +102,15 @@ instance : IsTotallyReal ℚ where
   isReal v := by
     rw [Subsingleton.elim v Rat.infinitePlace]
     exact Rat.isReal_infinitePlace
+
+instance _root_.IntermediateField.isTotallyReal_bot [CharZero K] :
+      IsTotallyReal (⊥ : IntermediateField ℚ K) :=
+  IsTotallyReal.ofRingEquiv (IntermediateField.botEquiv ℚ K).symm.toRingEquiv
+
+instance _root_.Subfield.isTotallyReal_bot [CharZero K] :
+      IsTotallyReal (⊥ : Subfield K) := by
+  rw [Subfield.bot_eq_of_charZero]
+  exact IsTotallyReal.ofRingEquiv (algebraMap ℚ K).rangeRestrictFieldEquiv
 
 section maximalRealSubfield
 
@@ -122,7 +133,7 @@ def maximalRealSubfield : Subfield K where
 theorem mem_maximalRealSubfield_iff (x : K) :
     x ∈ maximalRealSubfield K ↔ ∀ φ : K →+* ℂ, star (φ x) = φ x := .rfl
 
-instance isTotallyReal_maximalRealSubfield :
+instance isTotallyReal_maximalRealSubfield [Algebra.IsIntegral (maximalRealSubfield K) K] :
     IsTotallyReal (maximalRealSubfield K) where
   isReal w := by
     rw [InfinitePlace.isReal_iff, ComplexEmbedding.isReal_iff]
@@ -139,26 +150,48 @@ theorem IsTotallyReal.le_maximalRealSubfield (E : Subfield K) [IsTotallyReal E] 
   refine RingHom.congr_fun ?_ _
   exact ComplexEmbedding.isReal_iff.mp <| isReal_mk_iff.mp <| isReal _
 
-theorem isTotallyReal_iff_le_maximalRealSubfield {E : Subfield K} :
-    IsTotallyReal E ↔ E ≤ maximalRealSubfield K :=
-  ⟨fun h ↦ h.le_maximalRealSubfield, fun h ↦ IsTotallyReal.ofRingEquiv
-    (RingEquiv.ofBijective _ (Subfield.inclusion h).rangeRestrictField_bijective).symm⟩
+theorem isTotallyReal_iff_le_maximalRealSubfield {E : Subfield K} [Algebra.IsIntegral E K] :
+    IsTotallyReal E ↔ E ≤ maximalRealSubfield K := by
+  refine ⟨fun h ↦ h.le_maximalRealSubfield, fun h ↦ ?_⟩
+  let _ : Algebra E (maximalRealSubfield K) := RingHom.toAlgebra <| Subfield.inclusion h
+  have : IsScalarTower E (maximalRealSubfield K) K := IsScalarTower.of_algebraMap_eq' rfl
+  have : Algebra.IsAlgebraic (maximalRealSubfield K) K :=
+      Algebra.IsAlgebraic.tower_top (K := E) (maximalRealSubfield K)
+  have : Algebra.IsAlgebraic E (maximalRealSubfield K) :=
+      Algebra.IsAlgebraic.tower_bot E _ K
+  exact IsTotallyReal.of_algebra _ (maximalRealSubfield K)
 
-instance isTotallyReal_sup {E F : Subfield K} [IsTotallyReal E] [IsTotallyReal F] :
+instance isTotallyReal_sup {E F : Subfield K} [IsTotallyReal E] [IsTotallyReal F]
+    [Algebra.IsIntegral E K] [Algebra.IsIntegral F K] :
     IsTotallyReal (E ⊔ F : Subfield K) := by
+  let _ : Algebra E ↑(E ⊔ F) := RingHom.toAlgebra <| Subfield.inclusion le_sup_left
+  have : IsScalarTower E ↑(E ⊔ F) K := IsScalarTower.of_algebraMap_eq' rfl
+  have : Algebra.IsAlgebraic ↑(E ⊔ F) K := Algebra.IsAlgebraic.tower_top (K := E) _
   simp_all [isTotallyReal_iff_le_maximalRealSubfield]
 
-instance isTotallyReal_iSup {ι : Type*} {k : ι → Subfield K} [∀ i, IsTotallyReal (k i)] :
+instance isTotallyReal_iSup [CharZero K] {ι : Type*} {k : ι → Subfield K}
+    [∀ i, IsTotallyReal (k i)] [∀ i, Algebra.IsIntegral (k i) K] :
     IsTotallyReal (⨆ i, k i : Subfield K) := by
-  simp_all [isTotallyReal_iff_le_maximalRealSubfield]
+  obtain hι | ⟨⟨i⟩⟩ := isEmpty_or_nonempty ι
+  · rw [iSup_of_empty]
+    infer_instance
+  · let _ :  Algebra (k i) ↥(⨆ i, k i) := RingHom.toAlgebra <| Subfield.inclusion (le_iSup _ i)
+    have : IsScalarTower (k i) ↥(⨆ i, k i) K := IsScalarTower.of_algebraMap_eq' rfl
+    have : Algebra.IsAlgebraic  ↑(⨆ i, k i) K := Algebra.IsAlgebraic.tower_top (K := k i) _
+    simp_all [isTotallyReal_iff_le_maximalRealSubfield]
 
 @[simp]
-theorem IsTotallyReal.maximalRealSubfield_eq_top [IsTotallyReal K] : maximalRealSubfield K = ⊤ :=
+theorem IsTotallyReal.maximalRealSubfield_eq_top [CharZero K] [Algebra.IsIntegral ℚ K]
+    [IsTotallyReal K] :
+    maximalRealSubfield K = ⊤ :=
+  have : Algebra.IsIntegral (⊤ : Subfield K) K := Algebra.IsIntegral.tower_top ℚ
   top_unique <| NumberField.IsTotallyReal.le_maximalRealSubfield _
 
-theorem maximalRealSubfield_eq_top_iff_isTotallyReal :
+theorem maximalRealSubfield_eq_top_iff_isTotallyReal [CharZero K] [Algebra.IsIntegral ℚ K] :
     maximalRealSubfield K = ⊤ ↔ IsTotallyReal K where
-  mp h := by rw [← isTotallyReal_top_iff, isTotallyReal_iff_le_maximalRealSubfield, h]
+  mp h := by
+    have : Algebra.IsIntegral (⊤ : Subfield K) K := Algebra.IsIntegral.tower_top ℚ
+    rw [← isTotallyReal_top_iff, isTotallyReal_iff_le_maximalRealSubfield, h]
   mpr _ := IsTotallyReal.maximalRealSubfield_eq_top
 
 end maximalRealSubfield
@@ -174,14 +207,14 @@ section TotallyComplexField
 open InfinitePlace
 
 /--
-A number field `K` is totally complex if all of its infinite places are complex.
+A field `K` is totally complex if all of its infinite places are complex.
 -/
-@[mk_iff] class IsTotallyComplex (K : Type*) [Field K] [NumberField K] where
+@[mk_iff] class IsTotallyComplex (K : Type*) [Field K] where
   isComplex : ∀ v : InfinitePlace K, v.IsComplex
 
-variable {F : Type*} [Field F] {K : Type*} [Field K] [NumberField K] [Algebra F K]
+variable {F : Type*} [Field F] {K : Type*} [Field K] [Algebra F K]
 
-theorem nrRealPlaces_eq_zero_iff :
+theorem nrRealPlaces_eq_zero_iff [NumberField K] :
     nrRealPlaces K = 0 ↔ IsTotallyComplex K := by
   simp [Fintype.card_eq_zero_iff, isEmpty_subtype, isTotallyComplex_iff]
 
@@ -196,11 +229,11 @@ theorem IsTotallyComplex.mult_eq [IsTotallyComplex K] (w : InfinitePlace K) : mu
 variable (K)
 
 @[simp]
-theorem IsTotallyComplex.nrRealPlaces_eq_zero [h : IsTotallyComplex K] :
+theorem IsTotallyComplex.nrRealPlaces_eq_zero [NumberField K] [h : IsTotallyComplex K] :
     nrRealPlaces K = 0 :=
   nrRealPlaces_eq_zero_iff.mpr h
 
-protected theorem IsTotallyComplex.finrank [h : IsTotallyComplex K] :
+protected theorem IsTotallyComplex.finrank [NumberField K] [h : IsTotallyComplex K] :
     finrank ℚ K = 2 * nrComplexPlaces K := by
   rw [← card_add_two_mul_card_eq_rank, nrRealPlaces_eq_zero_iff.mpr h, zero_add]
 
