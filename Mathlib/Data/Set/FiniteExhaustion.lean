@@ -16,6 +16,8 @@ countable set by an increasing sequence of finite sets. Given a countable set `s
 `FiniteExhaustion.choice s` is a choice of a finite exhaustion.
 -/
 
+@[expose] public section
+
 /-- A `FiniteExhaustion` of a set `s` is a monotonically increasing sequence
 of finite sets such that their union is `s`. -/
 structure FiniteExhaustion {α : Type*} (s : Set α) where
