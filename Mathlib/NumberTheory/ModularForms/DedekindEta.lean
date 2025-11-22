@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Complex.LocallyUniformLimit
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
-public import Mathlib.Analysis.NormedSpace.MultipliableUniformlyOn
+public import Mathlib.Analysis.Normed.Module.MultipliableUniformlyOn
 
 /-!
 # Dedekind eta function

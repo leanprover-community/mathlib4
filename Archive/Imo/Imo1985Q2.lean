@@ -75,7 +75,7 @@ lemma C_mul_mod {n j : ℕ} (hn : 3 ≤ n) (hj : j ∈ Set.Ico 1 n) (cpj : Nat.C
 theorem result {n j : ℕ} (hn : 3 ≤ n) (hj : j ∈ Set.Ico 1 n) (cpj : Coprime n j)
     {C : ℕ → Fin 2} (hC : Condition n j C) {i : ℕ} (hi : i ∈ Set.Ico 1 n) :
     C i = C j := by
-  obtain ⟨v, hv⟩ := exists_mul_emod_eq_one_of_coprime cpj.symm (by omega)
+  obtain ⟨v, -, hv⟩ := exists_mul_mod_eq_one_of_coprime cpj.symm (by omega)
   have hvi : i = (v * i % n) * j % n := by
     rw [mod_mul_mod, ← mul_rotate, ← mod_mul_mod, hv, one_mul, mod_eq_of_lt hi.2]
   have vib : v * i % n ∈ Set.Ico 1 n := by

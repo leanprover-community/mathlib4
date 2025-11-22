@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Marc Huisinga. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Marc Huisinga
+Authors: Marc Huisinga, Thomas R. Murrills
 -/
 module
 
@@ -42,4 +42,57 @@ where
       | return
     modify (·.push tti.suggestion)
 
-end Lean.Elab
+namespace InfoTree
+
+/--
+Finds the first result of `← f ctx info children` which is `some a`, descending the
+tree from the top. Merges and updates contexts as it descends the tree.
+
+`f` is **only** evaluated on nodes when some context is present. An initial context should be
+provided via the `ctx?` argument if invoking `findSomeM?` during a larger traversal of the
+infotree. A failure to provide `ctx? := some ctx` when `t` is not the outermost `InfoTree` is thus
+likely to cause `findSomeM?` to always return `none`.
+-/
+partial def findSomeM? {m : Type → Type} [Monad m] {α}
+    (f : ContextInfo → Info → PersistentArray InfoTree → m (Option α))
+    (t : InfoTree) (ctx? : Option ContextInfo := none) : m (Option α) :=
+  go ctx? t
+where
+  /-- Accumulates contexts and visits nodes if `ctx?` is not `none`. -/
+  go ctx?
+  | context ctx t => go (ctx.mergeIntoOuter? ctx?) t
+  | node i ts => do
+    let a ← match ctx? with
+      | none => pure none
+      | some ctx => f ctx i ts
+    match a with
+    | some a => pure a
+    | none => ts.findSomeM? (go <| i.updateContext? ctx?)
+  | hole _ => pure none
+
+/--
+Finds the first result of `f ctx info children` which is `some a`, descending the
+tree from the top. Merges and updates contexts as it descends the tree.
+
+`f` is **only** evaluated on nodes when some context is present. An initial context should be
+provided via the `ctx?` argument if invoking `findSome?` during a larger traversal of the infotree.
+A failure to provide `ctx? := some ctx` when `t` is not the outermost `InfoTree` is thus likely to
+cause `findSome?` to always return `none`.
+-/
+def findSome? {α} (f : ContextInfo → Info → PersistentArray InfoTree → Option α)
+    (t : InfoTree) (ctx? : Option ContextInfo := none) : Option α :=
+  Id.run <| t.findSomeM? f ctx?
+
+/--
+Returns the value of `f ctx info children` on the outermost `.node info children` which has
+context, having merged and updated contexts appropriately.
+
+If `ctx?` is `some ctx`, `ctx` is used as an initial context. A `ctx?` of `none` should **only** be
+used when operating on the first node of the entire infotree. Otherwise, it is likely that no
+context will be found.
+-/
+def onHighestNode? {α} (t : InfoTree) (ctx? : Option ContextInfo)
+    (f : ContextInfo → Info → PersistentArray InfoTree → α) : Option α :=
+  t.findSome? (ctx? := ctx?) fun ctx i ch => some (f ctx i ch)
+
+end Lean.Elab.InfoTree

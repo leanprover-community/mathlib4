@@ -590,7 +590,7 @@ noncomputable def fintypeOfAlgHomAdjoinIntegral (h : IsIntegral F α) : Fintype 
   PowerBasis.AlgHom.fintype (adjoin.powerBasis h)
 
 theorem card_algHom_adjoin_integral (h : IsIntegral F α) (h_sep : IsSeparable F α)
-    (h_splits : (minpoly F α).Splits (algebraMap F K)) :
+    (h_splits : ((minpoly F α).map (algebraMap F K)).Splits) :
     Nat.card (F⟮α⟯ →ₐ[F] K) = (minpoly F α).natDegree := by
   let _ : Fintype (F⟮α⟯ →ₐ[F] K) := fintypeOfAlgHomAdjoinIntegral F h
   rw [Nat.card_eq_fintype_card, AlgHom.card_of_powerBasis] <;>

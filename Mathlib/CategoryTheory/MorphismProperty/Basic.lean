@@ -147,6 +147,16 @@ variable (P : MorphismProperty C)
 /-- The set in `Set (Arrow C)` which corresponds to `P : MorphismProperty C`. -/
 def toSet : Set (Arrow C) := setOf (fun f ↦ P f.hom)
 
+lemma mem_toSet_iff (f : Arrow C) : f ∈ P.toSet ↔ P f.hom := Iff.rfl
+
+lemma toSet_iSup {ι : Type*} (W : ι → MorphismProperty C) :
+    (⨆ i , W i).toSet = ⋃ i, (W i).toSet := by
+  ext
+  simp [mem_toSet_iff]
+
+lemma toSet_max (W₁ W₂ : MorphismProperty C) :
+    (W₁ ⊔ W₂).toSet = W₁.toSet ∪ W₂.toSet := rfl
+
 /-- The family of morphisms indexed by `P.toSet` which corresponds
 to `P : MorphismProperty C`, see `MorphismProperty.ofHoms_homFamily`. -/
 def homFamily (f : P.toSet) : f.1.left ⟶ f.1.right := f.1.hom

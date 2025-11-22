@@ -738,6 +738,14 @@ theorem snd_mem_support_of_mem_edges {t u v w : V} (p : G.Walk v w) (he : s(t, u
     u ∈ p.support :=
   p.fst_mem_support_of_mem_edges (Sym2.eq_swap ▸ he)
 
+theorem mem_support_of_mem_edges {u v w : V} {e : Sym2 V} {p : G.Walk u v} (he : e ∈ p.edges)
+    (hv : w ∈ e) : w ∈ p.support :=
+  hv.elim fun _ heq ↦ p.fst_mem_support_of_mem_edges <| heq ▸ he
+
+theorem mem_support_iff_exists_mem_edges {u v w : V} {p : G.Walk u v} :
+    w ∈ p.support ↔ w = v ∨ ∃ e ∈ p.edges, w ∈ e := by
+  induction p <;> aesop
+
 theorem darts_nodup_of_support_nodup {u v : V} {p : G.Walk u v} (h : p.support.Nodup) :
     p.darts.Nodup := by
   induction p with
@@ -922,6 +930,12 @@ lemma notNilRec_cons {motive : {u w : V} → (p : G.Walk u w) → ¬ p.Nil → S
 
 theorem end_mem_tail_support {u v : V} {p : G.Walk u v} (h : ¬ p.Nil) : v ∈ p.support.tail :=
   p.notNilRec (by simp) h
+
+theorem mem_support_iff_exists_mem_edges_of_not_nil {u v w : V} {p : G.Walk u v} (hnil : ¬p.Nil) :
+    w ∈ p.support ↔ ∃ e ∈ p.edges, w ∈ e := by
+  induction p with
+  | nil => simp at hnil
+  | cons h p ih => cases p <;> aesop
 
 /-- The walk obtained by removing the first `n` darts of a walk. -/
 def drop {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk (p.getVert n) v :=

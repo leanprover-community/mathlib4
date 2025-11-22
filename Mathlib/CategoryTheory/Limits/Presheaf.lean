@@ -235,7 +235,7 @@ end
 
 /-- Given `P : Cᵒᵖ ⥤ Type max w v₁`, this is the functor from the opposite category
 of the category of elements of `X` which sends an element in `P.obj (op X)` to the
-presheaf represented by `X`. The definition`coconeOfRepresentable`
+presheaf represented by `X`. The definition `coconeOfRepresentable`
 gives a cocone for this functor which is a colimit and has point `P`.
 -/
 @[simps! obj map]

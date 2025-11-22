@@ -33,22 +33,24 @@ if the minimal polynomial of every element `x` in `K` splits in `K`, i.e. every 
 of `x` is in `K`. -/
 @[stacks 09HM]
 class Normal : Prop extends Algebra.IsAlgebraic F K where
-  splits' (x : K) : Splits (algebraMap F K) (minpoly F x)
+  splits' (x : K) : Splits ((minpoly F x).map (algebraMap F K))
 
 variable {F K}
 
 theorem Normal.isIntegral (_ : Normal F K) (x : K) : IsIntegral F x :=
   Algebra.IsIntegral.isIntegral x
 
-theorem Normal.splits (_ : Normal F K) (x : K) : Splits (algebraMap F K) (minpoly F x) :=
+theorem Normal.splits (_ : Normal F K) (x : K) : Splits ((minpoly F x).map (algebraMap F K)) :=
   Normal.splits' x
 
-theorem normal_iff : Normal F K ↔ ∀ x : K, IsIntegral F x ∧ Splits (algebraMap F K) (minpoly F x) :=
+theorem normal_iff :
+    Normal F K ↔ ∀ x : K, IsIntegral F x ∧ Splits ((minpoly F x).map (algebraMap F K)) :=
   ⟨fun h x => ⟨h.isIntegral x, h.splits x⟩, fun h =>
     { isAlgebraic := fun x => (h x).1.isAlgebraic
       splits' := fun x => (h x).2 }⟩
 
-theorem Normal.out : Normal F K → ∀ x : K, IsIntegral F x ∧ Splits (algebraMap F K) (minpoly F x) :=
+theorem Normal.out :
+    Normal F K → ∀ x : K, IsIntegral F x ∧ Splits ((minpoly F x).map (algebraMap F K)) :=
   normal_iff.1
 
 variable (F K)
