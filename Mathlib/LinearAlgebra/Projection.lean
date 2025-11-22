@@ -452,13 +452,9 @@ def kerComplementEquivRange (f : E →ₗ[R] F) {C : Submodule R E}
   ⟨by simpa [← ker_eq_bot, ker_codRestrict, ker_comp, ← disjoint_iff_comap_eq_bot] using h.disjoint,
    by
     rintro ⟨-, x, rfl⟩
-    use ((prodEquivOfIsCompl _ _ h).2 x).1
-    ext
-    simp only
-    conv_rhs => rw [← Submodule.IsCompl.projection_add_projection_eq_self h x]
-    rw [comp_codRestrict, LinearEquiv.invFun_eq_symm, codRestrict_apply, coe_comp,
-      coe_subtype, Function.comp_apply, map_add, h.symm.projection_apply_mem x, add_zero]
-    congr⟩
+    obtain ⟨y, z, hy, hz, rfl⟩ := codisjoint_iff_exists_add_eq.mp h.codisjoint x
+    use ⟨y, hy⟩
+    simpa [Subtype.ext_iff]⟩
 
 end LinearMap
 
