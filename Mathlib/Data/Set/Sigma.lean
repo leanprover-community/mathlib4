@@ -21,7 +21,7 @@ namespace Set
 variable {ι ι' : Type*} {α : ι → Type*} {s s₁ s₂ : Set ι} {t t₁ t₂ : ∀ i, Set (α i)}
   {u : Set (Σ i, α i)} {x : Σ i, α i} {i j : ι} {a : α i}
 
-@[simp]
+@[simp, grind =]
 theorem range_sigmaMk (i : ι) : range (Sigma.mk i : α i → Sigma α) = Sigma.fst ⁻¹' {i} := by grind
 
 theorem preimage_image_sigmaMk_of_ne (h : i ≠ j) (s : Set (α j)) :

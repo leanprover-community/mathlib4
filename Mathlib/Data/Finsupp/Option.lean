@@ -110,7 +110,7 @@ theorem sum_option_index_smul [Semiring R] [AddCommMonoid M] [Module R M] (f : O
   f.sum_option_index _ (fun _ => zero_smul _ _) fun _ _ _ => add_smul _ _ _
 
 @[simp] lemma some_embDomain_some [Zero M] (f : α →₀ M) : (f.embDomain .some).some = f := by
-  ext; rw [some_apply]; exact embDomain_apply _ _ _
+  ext; rw [some_apply]; exact embDomain_apply_self _ _ _
 
 @[simp] lemma embDomain_some_none [Zero M] (f : α →₀ M) : f.embDomain .some none = 0 :=
   embDomain_notin_range _ _ _ (by simp)
