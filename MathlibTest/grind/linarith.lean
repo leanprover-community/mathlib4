@@ -17,3 +17,7 @@ macro "triangle_ineq2" : tactic => `(tactic| (
   simp only [abs, max_def]
   grind
 ))
+
+example {α : Type*} [LinearOrder α] [CommRing α] [IsStrictOrderedRing α]
+    (a b c d : α) : |a - b| ≤ |a - c| + |c - d| + |b - d| := by
+  triangle_ineq2
