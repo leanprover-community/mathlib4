@@ -22,7 +22,7 @@ namespace Shrink
 
 noncomputable instance (X : Type u) [TopologicalSpace X] [Small.{v} X] :
     TopologicalSpace (Shrink.{v} X) :=
-  .induced (equivShrink X).symm inferInstance
+  (equivShrink X).symm.topologicalSpace
 
 /-- `equivShrink` as a homeomorphism. -/
 @[simps! toEquiv]
