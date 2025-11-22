@@ -133,7 +133,7 @@ theorem card (h : n ≠ 0) : Nat.card (GaloisField p n) = p ^ n := by
   rw [Nat.card_eq_fintype_card, Module.card_fintype b, ← Module.finrank_eq_card_basis b,
     ZMod.card, finrank p h]
 
-theorem splits_zmod_X_pow_sub_X : Splits (RingHom.id (ZMod p)) (X ^ p - X) := by
+theorem splits_zmod_X_pow_sub_X : Splits (map (RingHom.id (ZMod p)) (X ^ p - X)) := by
   have hp : 1 < p := h_prime.out.one_lt
   have h1 : roots (X ^ p - X : (ZMod p)[X]) = Finset.univ.val := by
     convert FiniteField.roots_X_pow_card_sub_X (ZMod p)
@@ -154,7 +154,7 @@ section Fintype
 variable {K : Type*} [Field K] [Fintype K] [Algebra (ZMod p) K]
 
 theorem _root_.FiniteField.splits_X_pow_card_sub_X :
-    Splits (algebraMap (ZMod p) K) (X ^ Fintype.card K - X) :=
+    Splits (map (algebraMap (ZMod p) K) (X ^ Fintype.card K - X)) :=
   (FiniteField.isSplittingField_sub K (ZMod p)).splits
 
 theorem _root_.FiniteField.isSplittingField_of_card_eq (h : Fintype.card K = p ^ n) :
@@ -173,7 +173,7 @@ section Finite
 variable {K : Type*} [Field K] [Algebra (ZMod p) K]
 
 theorem _root_.FiniteField.splits_X_pow_nat_card_sub_X [Finite K] :
-    Splits (algebraMap (ZMod p) K) (X ^ Nat.card K - X) := by
+    Splits (map (algebraMap (ZMod p) K) (X ^ Nat.card K - X)) := by
   haveI : Fintype K := Fintype.ofFinite K
   rw [Nat.card_eq_fintype_card]
   exact (FiniteField.isSplittingField_sub K (ZMod p)).splits
