@@ -146,6 +146,10 @@ theorem isCompact_iff_ultrafilter_le_nhds' :
 
 alias ⟨IsCompact.ultrafilter_le_nhds', _⟩ := isCompact_iff_ultrafilter_le_nhds'
 
+theorem Ultrafilter.tendsto_of_eventually_mem_compact {g : ι → X} {s : Set X} (f : Ultrafilter ι)
+    (hs : IsCompact s) (h : ∀ᶠ i in f, g i ∈ s) : ∃ x ∈ s, Tendsto g f (𝓝 x) :=
+  isCompact_iff_ultrafilter_le_nhds'.1 hs (f.map g) (mem_map.2 h)
+
 /-- If a compact set belongs to a filter and this filter has a unique cluster point `y` in this set,
 then the filter is less than or equal to `𝓝 y`. -/
 lemma IsCompact.le_nhds_of_unique_clusterPt (hs : IsCompact s) {l : Filter X} {y : X}

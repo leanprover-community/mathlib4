@@ -4726,6 +4726,7 @@ public import Mathlib.MeasureTheory.Covering.LiminfLimsup
 public import Mathlib.MeasureTheory.Covering.OneDim
 public import Mathlib.MeasureTheory.Covering.Vitali
 public import Mathlib.MeasureTheory.Covering.VitaliFamily
+public import Mathlib.MeasureTheory.FoelnerFilter
 public import Mathlib.MeasureTheory.Function.AEEqFun
 public import Mathlib.MeasureTheory.Function.AEEqFun.DomAct
 public import Mathlib.MeasureTheory.Function.AEEqOfIntegral

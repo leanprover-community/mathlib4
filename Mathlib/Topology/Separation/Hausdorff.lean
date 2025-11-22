@@ -312,6 +312,22 @@ theorem limUnder_nhdsWithin_id {x : X} {s : Set X} (h : x ∈ closure s) :
     @limUnder _ _ _ ⟨x⟩ (𝓝[s] x) id = x :=
   lim_nhdsWithin h
 
+theorem limUnder_mono {g : Y → X} {f f' : Filter Y} [NeBot f] {x : X}
+    (h : Tendsto g f' (𝓝 x)) (h_le : f ≤ f') : @limUnder _ _ _ ⟨x⟩ f g = x := by
+  exact Tendsto.limUnder_eq <| Tendsto.mono_left h h_le
+
+theorem limUnder_congr {g₁ g₂ : Y → X} {f : Filter Y} [NeBot f] {x : X}
+    (h : Tendsto g₁ f (𝓝 x)) (h_eq : g₁ =ᶠ[f] g₂) :
+    @limUnder _ _ _ ⟨x⟩ f g₁ = @limUnder _ _ _ ⟨x⟩ f g₂ := by
+  simpa [Tendsto.limUnder_eq (Tendsto.congr' h_eq h)] using Tendsto.limUnder_eq h
+
+theorem limUnder_congr' [Nonempty X] {g₁ g₂ : Y → X} {f : Filter Y} [NeBot f]
+    (h_eq : g₁ =ᶠ[f] g₂) : limUnder f g₁ = limUnder f g₂ := by
+  by_cases h : ∃ x, Tendsto g₁ f (𝓝 x)
+  · rcases h with ⟨x, hx⟩; exact limUnder_congr hx h_eq
+  · have : ¬∃ x, Tendsto g₂ f (𝓝 x) := by rintro ⟨x, hx⟩; exact h ⟨x, Tendsto.congr' h_eq.symm hx⟩
+    simp [limUnder_of_not_tendsto h, limUnder_of_not_tendsto this]
+
 end limUnder
 
 /-!
