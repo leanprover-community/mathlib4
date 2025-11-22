@@ -8,6 +8,7 @@ module
 public import Mathlib.Logic.Small.Defs
 public import Mathlib.Topology.Defs.Induced
 public import Mathlib.Topology.Homeomorph.Defs
+public import Mathlib.Topology.Algebra.Module.TransferInstance
 
 /-!
 # Topological space structure on `Shrink X`
@@ -23,25 +24,10 @@ noncomputable instance (X : Type u) [TopologicalSpace X] [Small.{v} X] :
     TopologicalSpace (Shrink.{v} X) :=
   .induced (equivShrink X).symm inferInstance
 
--- trying a tweaked definition doesn't seem to help either...
 /-- `equivShrink` as a homeomorphism. -/
-@[simps toEquiv]
-noncomputable def homeomorph2 (X : Type u) [TopologicalSpace X] [Small.{v} X] :
-    Shrink.{v} X ≃ₜ X where
-  __ := equivShrink X |>.symm
-  continuous_toFun := continuous_induced_dom
-  continuous_invFun := by
-    convert continuous_induced_dom
-    simp only [Equiv.invFun_as_coe, Equiv.symm_symm]
-    sorry -- rfl
-
-/-- `equivShrink` as a homeomorphism. -/
-@[simps toEquiv]
+@[simps! toEquiv]
 noncomputable def homeomorph (X : Type u) [TopologicalSpace X] [Small.{v} X] :
-    X ≃ₜ Shrink.{v} X where
-  __ := equivShrink X
-  continuous_toFun := by
-    sorry
-  continuous_invFun := continuous_induced_dom
+    X ≃ₜ Shrink.{v} X :=
+  (equivShrink X).symm.homeomorph.symm
 
 end Shrink

@@ -29,6 +29,16 @@ variable (e : α ≃ β)
 protected abbrev topologicalSpace (e : α ≃ β) : ∀ [TopologicalSpace β], TopologicalSpace α :=
   .induced e ‹_›
 
+/-- An equivalence e : α ≃ β gives a homeomorphism α ≃ₜ β where the topological space structure
+on α is the one obtained by transporting the topological space structure on β back along e. -/
+def homeomorph (e : α ≃ β) [TopologicalSpace β] :
+    letI := e.topologicalSpace
+    α ≃ₜ β :=
+  letI := e.topologicalSpace
+  { e with
+    continuous_toFun := continuous_induced_dom
+    continuous_invFun := by convert continuous_coinduced_rng; exact e.coinduced_symm.symm }
+
 variable [TopologicalSpace β] [AddCommMonoid β] [Semiring R] [Module R β]
 
 variable (R) in
@@ -46,8 +56,7 @@ def continuousLinearEquiv (e : α ≃ β) :
   letI := e.addCommMonoid
   letI := e.module R
   { toLinearEquiv := e.linearEquiv _
-    continuous_toFun := continuous_induced_dom
-    continuous_invFun := by convert continuous_coinduced_rng; exact e.coinduced_symm.symm }
+    __ := e.homeomorph }
 
 @[simp]
 lemma continuousLinearEquiv_toLinearEquiv (e : α ≃ β) :
