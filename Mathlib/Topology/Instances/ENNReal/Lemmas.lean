@@ -3,19 +3,23 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Data.ENNReal.BigOperators
-import Mathlib.Tactic.Bound
-import Mathlib.Topology.Order.LiminfLimsup
-import Mathlib.Topology.EMetricSpace.Lipschitz
-import Mathlib.Topology.Instances.NNReal.Lemmas
-import Mathlib.Topology.MetricSpace.Pseudo.Real
-import Mathlib.Topology.MetricSpace.ProperSpace.Real
-import Mathlib.Topology.Metrizable.Uniformity
+module
+
+public import Mathlib.Algebra.BigOperators.Intervals
+public import Mathlib.Data.ENNReal.BigOperators
+public import Mathlib.Tactic.Bound
+public import Mathlib.Topology.Order.LiminfLimsup
+public import Mathlib.Topology.EMetricSpace.Lipschitz
+public import Mathlib.Topology.Instances.NNReal.Lemmas
+public import Mathlib.Topology.MetricSpace.Pseudo.Real
+public import Mathlib.Topology.MetricSpace.ProperSpace.Real
+public import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
 # Topology on extended non-negative reals
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -502,16 +506,14 @@ section Liminf
 
 theorem exists_frequently_lt_of_liminf_ne_top {ι : Type*} {l : Filter ι} {x : ι → ℝ}
     (hx : liminf (fun n => (Real.nnabs (x n) : ℝ≥0∞)) l ≠ ∞) : ∃ R, ∃ᶠ n in l, x n < R := by
-  by_contra h
-  simp_rw [not_exists, not_frequently, not_lt] at h
+  by_contra! h
   refine hx (ENNReal.eq_top_of_forall_nnreal_le fun r => le_limsInf_of_le (by isBoundedDefault) ?_)
   simp only [eventually_map, ENNReal.coe_le_coe]
   filter_upwards [h r] with i hi using hi.trans (le_abs_self (x i))
 
 theorem exists_frequently_lt_of_liminf_ne_top' {ι : Type*} {l : Filter ι} {x : ι → ℝ}
     (hx : liminf (fun n => (Real.nnabs (x n) : ℝ≥0∞)) l ≠ ∞) : ∃ R, ∃ᶠ n in l, R < x n := by
-  by_contra h
-  simp_rw [not_exists, not_frequently, not_lt] at h
+  by_contra! h
   refine hx (ENNReal.eq_top_of_forall_nnreal_le fun r => le_limsInf_of_le (by isBoundedDefault) ?_)
   simp only [eventually_map, ENNReal.coe_le_coe]
   filter_upwards [h (-r)] with i hi using (le_neg.1 hi).trans (neg_le_abs _)
@@ -831,6 +833,11 @@ theorem tendsto_toReal_iff {ι} {fi : Filter ι} {f : ι → ℝ≥0∞} (hf : �
   lift f to ι → ℝ≥0 using hf
   lift x to ℝ≥0 using hx
   simp [tendsto_coe]
+
+theorem tendsto_toReal_zero_iff {ι} {fi : Filter ι} {f : ι → ℝ≥0∞}
+    (hf : ∀ i, f i ≠ ∞ := by finiteness) :
+    Tendsto (fun n ↦ (f n).toReal) fi (𝓝 0) ↔ Tendsto f fi (𝓝 0) := by
+  rw [← ENNReal.toReal_zero, tendsto_toReal_iff hf ENNReal.zero_ne_top]
 
 theorem tsum_coe_ne_top_iff_summable_coe {f : α → ℝ≥0} :
     (∑' a, (f a : ℝ≥0∞)) ≠ ∞ ↔ Summable fun a => (f a : ℝ) := by

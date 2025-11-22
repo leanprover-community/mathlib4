@@ -3,11 +3,13 @@ Copyright (c) 2024 Mario Carneiro and Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl, Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplexCategory.MorphismProperty
-import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
-import Mathlib.CategoryTheory.Category.Cat.CartesianClosed
-import Mathlib.CategoryTheory.Closed.FunctorToTypes
-import Mathlib.CategoryTheory.Limits.Presheaf
+module
+
+public import Mathlib.AlgebraicTopology.SimplexCategory.MorphismProperty
+public import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
+public import Mathlib.CategoryTheory.Category.Cat.CartesianClosed
+public import Mathlib.CategoryTheory.Closed.FunctorToTypes
+public import Mathlib.CategoryTheory.Limits.Presheaf
 
 /-!
 # The adjunction between the nerve and the homotopy category functor
@@ -33,6 +35,8 @@ that it fails to preserve infinite products.
 (A computable `hoFunctor.Monoidal` instance is obtained in the file `HoFunctorMonoidal`.)
 
 -/
+
+@[expose] public section
 
 universe u
 

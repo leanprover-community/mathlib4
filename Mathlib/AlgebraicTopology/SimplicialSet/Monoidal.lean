@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Jack McKoen
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
-import Mathlib.CategoryTheory.Closed.FunctorToTypes
-import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
+public import Mathlib.CategoryTheory.Closed.FunctorToTypes
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
 
 /-!
 # The monoidal category structure on simplicial sets
@@ -18,6 +20,8 @@ finite products. As a result, we obtain a monoidal
 category structure on `SSet`.
 
 -/
+
+@[expose] public section
 
 universe u
 

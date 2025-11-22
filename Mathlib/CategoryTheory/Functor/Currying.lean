@@ -3,8 +3,10 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Products.Basic
+module
+
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Products.Basic
 
 /-!
 # Curry and uncurry, as functors.
@@ -16,6 +18,8 @@ and verify that they provide an equivalence of categories
 This is used in `CategoryTheory.Category.Cat.CartesianClosed` to equip the category of small
 categories `Cat.{u, u}` with a Cartesian closed structure.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
