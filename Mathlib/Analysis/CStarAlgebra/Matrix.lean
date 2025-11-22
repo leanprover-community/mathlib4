@@ -215,18 +215,12 @@ lemma l2_opNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) :
 lemma l2_opNNNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ :=
   l2_opNorm_mul A B
 
-example {a b c : ℝ} (ha : a ≤ b) (hc : c ≥ 0) : a * c ≤ b * c := by
-  exact MulPosMono.mul_le_mul_of_nonneg_right hc ha
-
-example {a b c : ℝ} (ha : a ≥ 0) (hc : b ≥ 0) (ha : a ≤ b) : a ^ 2 ≤ b ^ 2 := by
-  (expose_names; exact (sq_le_sq₀ ha_1 hc).mpr ha)
-
-
 @[simp]
 lemma l2_opNorm_diagonal (v : n → 𝕜) : ‖(diagonal v : Matrix n n 𝕜)‖ = ‖v‖ := by
-  set T := toEuclideanCLM (n := n) (𝕜 := 𝕜) (diagonal v) with defT
-  have h_upper : ‖T‖ ≤ ‖v‖ := by
-    refine ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) (fun x ↦ ?_)
+  set T := toEuclideanCLM (n := n) (𝕜 := 𝕜) (diagonal v)
+  change ‖T‖ = ‖v‖
+  refine le_antisymm ?_ ?_
+  · refine ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) (fun x ↦ ?_)
     have hcomp (i : n) : (T x) i = v i * (ofLp x) i := by
       simp [T, Matrix.mulVec_diagonal]
     have hnorm_sq : ‖T x‖ ^ 2 = ∑ i, ‖v i * (ofLp x) i‖ ^ 2 := by
@@ -241,8 +235,7 @@ lemma l2_opNorm_diagonal (v : n → 𝕜) : ‖(diagonal v : Matrix n n 𝕜)‖
     have hsq : ‖T x‖ ^ 2 ≤ (‖v‖ * ‖x‖) ^ 2 := by
       nlinarith [hnorm_sq, EuclideanSpace.norm_sq_eq (x := x), hsum]
     exact (sq_le_sq₀ (by positivity) (by positivity)).mp hsq
-  have h_lower : ‖v‖ ≤ ‖T‖ := by
-    refine (pi_norm_le_iff_of_nonneg ((norm_nonneg T))).mpr ?_
+  · refine (pi_norm_le_iff_of_nonneg ((norm_nonneg T))).mpr ?_
     intro i
     have hT_apply : T (toLp 2 (Pi.single i (1 : 𝕜))) = toLp 2 (Pi.single i (v i)) := by
       simpa [T, Matrix.mulVec_diagonal, Pi.single_mul, mul_comm] using
@@ -254,8 +247,6 @@ lemma l2_opNorm_diagonal (v : n → 𝕜) : ‖(diagonal v : Matrix n n 𝕜)‖
       _ = _ := by
         rw [EuclideanSpace.toLp_single, EuclideanSpace.norm_single, norm_one, mul_one]
     exact hle'
-  have h_final : ‖(diagonal v : Matrix n n 𝕜)‖ = ‖T‖ := rfl
-  linarith
 
 @[simp]
 lemma l2_opNNNorm_diagonal (v : n → 𝕜) : ‖(diagonal v : Matrix n n 𝕜)‖₊ = ‖v‖₊ :=
