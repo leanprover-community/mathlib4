@@ -1158,12 +1158,12 @@ lemma eq_or_eq_or_eq_of_forall_not_lt_lt [LinearOrder α]
 
 /-- Construct the trivial linear order on any type with at most one element. -/
 abbrev LinearOrder.ofSubsingleton {α : Type*} [DecidableEq α]
-    [inst : Subsingleton α] : LinearOrder α where
+    [Subsingleton α] : LinearOrder α where
   le _ _ := True
   lt _ _ := False
   le_refl _ := trivial
   le_trans x y z _ _ := trivial
-  le_antisymm x y _ _ := inst.allEq x y
+  le_antisymm x y _ _ := Subsingleton.elim x y
   le_total _ _ := Or.inl trivial
   lt_iff_le_not_ge _ _ := ⟨fun hf ↦ hf.elim, fun h ↦ h.2 h.1⟩
   toDecidableLE _ _ := instDecidableTrue
