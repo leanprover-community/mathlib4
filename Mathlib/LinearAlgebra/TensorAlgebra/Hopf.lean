@@ -35,8 +35,8 @@ It is induced by the linear map sending `(m : M)` to `ι R m ⊗ₜ[R] 1 + 1 ⊗
 See `comul_apply`.
 -/
 def comul : T[M] →ₐ[R] T[M] ⊗[R] T[M] := lift R (
-  ((ι R) ⊗ₘ (Algebra.linearMap R T[M])) ∘ₗ (TensorProduct.rid R M).symm +
-  ((Algebra.linearMap R T[M]) ⊗ₘ (ι R)) ∘ₗ (TensorProduct.lid R M).symm
+  (ι R ⊗ₘ Algebra.linearMap R T[M]) ∘ₗ (TensorProduct.rid R M).symm +
+  (Algebra.linearMap R T[M] ⊗ₘ ι R) ∘ₗ (TensorProduct.lid R M).symm
   )
 
 @[simp]
@@ -48,9 +48,8 @@ lemma algebraMapInv_ι_apply (m : M) : algebraMapInv (ι R m) = 0 := by
   simp [algebraMapInv]
 
 @[simp]
-lemma algebraMapInv_ι_eq_zero : algebraMapInv.toLinearMap ∘ₗ (ι R) = (0 : M →ₗ[R] R) := by
-  ext
-  simp
+lemma algebraMapInv_ι_eq_zero : algebraMapInv.toLinearMap ∘ₗ (ι R) = (0 : M →ₗ[R] R) :=
+  LinearMap.ext <| algebraMapInv_ι_apply _
 
 instance instBialgebra : Bialgebra R T[M] := Bialgebra.ofAlgHom (comul R) algebraMapInv
     (by ext; simpa [comul, Algebra.TensorProduct.one_def, add_tmul, tmul_add] using by abel)
