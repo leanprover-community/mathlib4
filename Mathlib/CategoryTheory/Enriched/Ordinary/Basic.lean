@@ -242,6 +242,7 @@ def TransportEnrichment.enrichedOrdinaryCategory
       whiskerRight_id_assoc, unitors_inv_equal, Iso.inv_hom_id_assoc,
       Functor.LaxMonoidal.μ_natural_assoc, Functor.LaxMonoidal.right_unitality_inv_assoc,
       eHomEquiv_comp, ← F.map_comp, ← F.map_comp, unitors_inv_equal]
+
 section Equiv
 
 variable {W : Type u''} [Category.{v''} W] [MonoidalCategory W]
