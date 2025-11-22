@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.Analysis.SumOverResidueClass
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+public import Mathlib.Analysis.SumOverResidueClass
 
 /-!
 # Convergence of `p`-series
@@ -21,6 +23,8 @@ converges if and only if so does `∑ k, 2 ^ k f (2 ^ k)`. We prove this test in
 
 p-series, Cauchy condensation test
 -/
+
+@[expose] public section
 
 /-!
 ### Schlömilch's generalization of the Cauchy condensation test
@@ -148,7 +152,7 @@ theorem le_tsum_schlomilch (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f 
 
 theorem le_tsum_condensed (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) :
     ∑' k, f k ≤ f 0 + ∑' k : ℕ, 2 ^ k * f (2 ^ k) := by
-  rw [ENNReal.tsum_eq_iSup_nat' (Nat.tendsto_pow_atTop_atTop_of_one_lt _root_.one_lt_two)]
+  rw [ENNReal.tsum_eq_iSup_nat' (tendsto_pow_atTop_atTop_of_one_lt _root_.one_lt_two)]
   refine iSup_le fun n => (Finset.le_sum_condensed hf n).trans ?_
   simp only [nsmul_eq_mul, Nat.cast_pow, Nat.cast_two]
   grw [ENNReal.sum_le_tsum]

@@ -3,11 +3,13 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro
 -/
-import Mathlib.Algebra.Module.Submodule.Bilinear
-import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.GroupTheory.Congruence.Hom
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.SuppressCompilation
+module
+
+public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.Algebra.Module.Shrink
+public import Mathlib.Algebra.Module.Submodule.Bilinear
+public import Mathlib.GroupTheory.Congruence.Hom
+public import Mathlib.Tactic.Abel
 
 /-!
 # Tensor product of modules over commutative semirings.
@@ -35,6 +37,8 @@ bilinear map `TensorProduct.mk` is the given bilinear map `f`.  Uniqueness is sh
 
 bilinear, tensor, tensor product
 -/
+
+@[expose] public section
 
 section Semiring
 
@@ -1009,6 +1013,12 @@ lemma map_bijective {f : M →ₗ[R] N} {g : P →ₗ[R] Q}
     (hf : Function.Bijective f) (hg : Function.Bijective g) :
     Function.Bijective (map f g) :=
   (TensorProduct.congr (.ofBijective f hf) (.ofBijective g hg)).bijective
+
+universe u in
+instance {R M N : Type*} [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N]
+    [Module R M] [Module R N] [Small.{u} M] [Small.{u} N] : Small.{u} (M ⊗[R] N) :=
+  ⟨_, ⟨(TensorProduct.congr
+    (Shrink.linearEquiv R M) (Shrink.linearEquiv R N)).symm.toEquiv⟩⟩
 
 end TensorProduct
 

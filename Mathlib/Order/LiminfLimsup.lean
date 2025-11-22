@@ -3,9 +3,11 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johannes Hölzl, Rémy Degenne
 -/
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-import Mathlib.Order.Filter.IsBounded
-import Mathlib.Order.Hom.CompleteLattice
+module
+
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+public import Mathlib.Order.Filter.IsBounded
+public import Mathlib.Order.Hom.CompleteLattice
 
 /-!
 # liminfs and limsups of functions and filters
@@ -34,6 +36,8 @@ the definitions of Limsup and Liminf.
 
 In complete lattices, however, it coincides with the `Inf Sup` definition.
 -/
+
+@[expose] public section
 
 open Filter Set Function
 
@@ -469,9 +473,8 @@ theorem liminf_le_of_frequently_le' {α β} [CompleteLattice β] {f : Filter α}
   rw [liminf_eq]
   refine sSup_le fun b hb => ?_
   have hbx : ∃ᶠ _ in f, b ≤ x := by
-    revert h
-    rw [← not_imp_not, not_frequently, not_frequently]
-    exact fun h => hb.mp (h.mono fun a hbx hba hax => hbx (hba.trans hax))
+    contrapose! h
+    exact hb.mp (h.mono fun a hbx hba hax => hbx (hba.trans hax))
   exact hbx.exists.choose_spec
 
 theorem le_limsup_of_frequently_le' {α β} [CompleteLattice β] {f : Filter α} {u : α → β} {x : β}
@@ -574,7 +577,7 @@ theorem bliminf_or_le_inf_aux_right : (bliminf u f fun x => p x ∨ q x) ≤ bli
 
 theorem _root_.OrderIso.apply_blimsup [CompleteLattice γ] (e : α ≃o γ) :
     e (blimsup u f p) = blimsup (e ∘ u) f p := by
-  simp only [blimsup_eq, map_sInf, Function.comp_apply, e.image_eq_preimage,
+  simp only [blimsup_eq, map_sInf, Function.comp_apply, e.image_eq_preimage_symm,
     Set.preimage_setOf_eq, e.le_symm_apply]
 
 theorem _root_.OrderIso.apply_bliminf [CompleteLattice γ] (e : α ≃o γ) :
@@ -748,7 +751,6 @@ theorem frequently_lt_of_lt_limsSup {f : Filter α} [ConditionallyCompleteLinear
     (hf : f.IsCobounded (· ≤ ·) := by isBoundedDefault)
     (h : a < limsSup f) : ∃ᶠ n in f, a < n := by
   contrapose! h
-  simp only [not_frequently, not_lt] at h
   exact limsSup_le_of_le hf h
 
 theorem frequently_lt_of_limsInf_lt {f : Filter α} [ConditionallyCompleteLinearOrder α] {a : α}
@@ -815,10 +817,8 @@ variable [ConditionallyCompleteLinearOrder β] {f : Filter α} {u : α → β}
 theorem le_limsup_of_frequently_le {b : β} (hu_le : ∃ᶠ x in f, b ≤ u x)
     (hu : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault) :
     b ≤ limsup u f := by
-  revert hu_le
-  rw [← not_imp_not, not_frequently]
-  simp_rw [← lt_iff_not_ge]
-  exact fun h => eventually_lt_of_limsup_lt h hu
+  contrapose! hu_le with h
+  exact eventually_lt_of_limsup_lt h hu
 
 theorem liminf_le_of_frequently_le {b : β} (hu_le : ∃ᶠ x in f, u x ≤ b)
     (hu : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault) :
@@ -958,12 +958,11 @@ noncomputable def liminf_reparam
   let m : Set (Subtype p) := {j | BddBelow (range (fun (i : s j) ↦ f i))}
   let g : ℕ → Subtype p := (exists_surjective_nat _).choose
   have Z : ∃ n, g n ∈ m ∨ ∀ j, j ∉ m := by
-    by_cases H : ∃ j, j ∈ m
+    by_cases! H : ∃ j, j ∈ m
     · rcases H with ⟨j, hj⟩
       rcases (exists_surjective_nat (Subtype p)).choose_spec j with ⟨n, rfl⟩
       exact ⟨n, Or.inl hj⟩
-    · push_neg at H
-      exact ⟨0, Or.inr H⟩
+    · exact ⟨0, Or.inr H⟩
   if j ∈ m then j else g (Nat.find Z)
 
 /-- Writing a liminf as a supremum of infimum, in a (possibly non-complete) conditionally complete

@@ -3,7 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
 -/
-import Mathlib.Data.Nat.Cast.Defs
+module
+
+public import Mathlib.Data.Nat.Cast.Defs
 
 /-!
 # Cast of integers
@@ -20,6 +22,8 @@ Preferentially, the homomorphism is written as a coercion.
 * `Int.cast`: Canonical homomorphism `ℤ → R`.
 * `AddGroupWithOne`: Type class for `Int.cast`.
 -/
+
+@[expose] public section
 
 
 universe u

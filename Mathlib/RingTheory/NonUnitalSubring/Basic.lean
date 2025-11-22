@@ -3,11 +3,13 @@ Copyright (c) 2023 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.GroupTheory.Subsemigroup.Center
-import Mathlib.RingTheory.NonUnitalSubring.Defs
-import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
+module
+
+public import Mathlib.Algebra.Group.Subgroup.Basic
+public import Mathlib.Algebra.Group.Submonoid.BigOperators
+public import Mathlib.GroupTheory.Subsemigroup.Center
+public import Mathlib.RingTheory.NonUnitalSubring.Defs
+public import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 
 /-!
 # `NonUnitalSubring`s
@@ -62,6 +64,8 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 ## Tags
 non-unital subring
 -/
+
+@[expose] public section
 
 
 universe u v w
@@ -641,7 +645,7 @@ theorem mem_map_equiv {f : R ≃+* S} {K : NonUnitalSubring R} {x : S} :
 
 theorem map_equiv_eq_comap_symm (f : R ≃+* S) (K : NonUnitalSubring R) :
     K.map (f : R →ₙ+* S) = K.comap f.symm :=
-  SetLike.coe_injective (f.toEquiv.image_eq_preimage K)
+  SetLike.coe_injective (f.toEquiv.image_eq_preimage_symm K)
 
 theorem comap_equiv_eq_map_symm (f : R ≃+* S) (K : NonUnitalSubring S) :
     K.comap (f : R →ₙ+* S) = K.map f.symm :=

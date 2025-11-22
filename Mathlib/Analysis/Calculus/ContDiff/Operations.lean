@@ -3,8 +3,10 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Basic
-import Mathlib.Analysis.Calculus.Deriv.Inverse
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Basic
+public import Mathlib.Analysis.Calculus.Deriv.Inverse
 
 /-!
 # Higher differentiability of usual operations
@@ -23,6 +25,8 @@ In this file, we denote `(⊤ : ℕ∞) : WithTop ℕ∞` with `∞` and `⊤ : 
 
 derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor series, formal series
 -/
+
+@[expose] public section
 
 open scoped NNReal Nat ContDiff
 
@@ -233,6 +237,10 @@ theorem iteratedFDeriv_add_apply' {i : ℕ} {f g : E → F} (hf : ContDiffAt �
     iteratedFDeriv 𝕜 i (fun x => f x + g x) x = iteratedFDeriv 𝕜 i f x + iteratedFDeriv 𝕜 i g x :=
   iteratedFDeriv_add_apply hf hg
 
+theorem iteratedFDeriv_add {i : ℕ} {f g : E → F} (hf : ContDiff 𝕜 i f) (hg : ContDiff 𝕜 i g) :
+    iteratedFDeriv 𝕜 i (f + g) = iteratedFDeriv 𝕜 i f + iteratedFDeriv 𝕜 i g :=
+  funext fun _ ↦ iteratedFDeriv_add_apply (ContDiff.contDiffAt hf) (ContDiff.contDiffAt hg)
+
 end Add
 
 /-! ### Negative -/
@@ -291,6 +299,10 @@ theorem iteratedFDeriv_neg_apply {i : ℕ} {f : E → F} :
     iteratedFDeriv 𝕜 i (-f) x = -iteratedFDeriv 𝕜 i f x := by
   simp_rw [← iteratedFDerivWithin_univ]
   exact iteratedFDerivWithin_neg_apply uniqueDiffOn_univ (Set.mem_univ _)
+
+theorem iteratedFDeriv_neg {i : ℕ} {f : E → F} :
+    iteratedFDeriv 𝕜 i (-f) = -iteratedFDeriv 𝕜 i f :=
+  funext fun _ ↦ iteratedFDeriv_neg_apply
 
 end Neg
 

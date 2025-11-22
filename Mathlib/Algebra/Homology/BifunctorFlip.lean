@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Bifunctor
-import Mathlib.Algebra.Homology.TotalComplexSymmetry
+module
+
+public import Mathlib.Algebra.Homology.Bifunctor
+public import Mathlib.Algebra.Homology.TotalComplexSymmetry
 
 /-!
 # Action of the flip of a bifunctor on homological complexes
@@ -16,6 +18,8 @@ an isomorphism `mapBifunctor K₂ K₁ F.flip c ≅ mapBifunctor K₁ K₂ F c`
 under the additional assumption `[TotalComplexShapeSymmetry c₁ c₂ c]`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits
 

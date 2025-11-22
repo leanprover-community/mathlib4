@@ -3,10 +3,12 @@ Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz, Yongle Hu, Jingting Wang
 -/
-import Mathlib.FieldTheory.Fixed
-import Mathlib.FieldTheory.Normal.Closure
-import Mathlib.FieldTheory.PrimitiveElement
-import Mathlib.GroupTheory.GroupAction.FixingSubgroup
+module
+
+public import Mathlib.FieldTheory.Fixed
+public import Mathlib.FieldTheory.Normal.Closure
+public import Mathlib.FieldTheory.PrimitiveElement
+public import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 
 /-!
 # Galois Extensions
@@ -37,6 +39,8 @@ Together, these two results prove the Galois correspondence.
   with cyclic and thus abelian Galois group.
 
 -/
+
+@[expose] public section
 
 
 open scoped Polynomial IntermediateField
@@ -79,7 +83,7 @@ theorem integral [IsGalois F E] (x : E) : IsIntegral F x :=
 theorem separable [IsGalois F E] (x : E) : IsSeparable F x :=
   Algebra.IsSeparable.isSeparable F x
 
-theorem splits [IsGalois F E] (x : E) : (minpoly F x).Splits (algebraMap F E) :=
+theorem splits [IsGalois F E] (x : E) : ((minpoly F x).map (algebraMap F E)).Splits :=
   Normal.splits' x
 
 variable (E)
@@ -93,7 +97,7 @@ instance of_fixed_field (G : Type*) [Group G] [Finite G] [MulSemiringAction G E]
 
 theorem IntermediateField.AdjoinSimple.card_aut_eq_finrank [FiniteDimensional F E] {α : E}
     (hα : IsIntegral F α) (h_sep : IsSeparable F α)
-    (h_splits : (minpoly F α).Splits (algebraMap F F⟮α⟯)) :
+    (h_splits : ((minpoly F α).map (algebraMap F F⟮α⟯)).Splits) :
     Nat.card Gal(F⟮α⟯/F) = finrank F F⟮α⟯ := by
   rw [IntermediateField.adjoin.finrank hα]
   rw [← IntermediateField.card_algHom_adjoin_integral F hα h_sep h_splits]
@@ -113,8 +117,8 @@ theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
       commutes' := fun _ => rfl }
   have H : IsIntegral F α := IsGalois.integral F α
   have h_sep : IsSeparable F α := IsGalois.separable F α
-  have h_splits : (minpoly F α).Splits (algebraMap F E) := IsGalois.splits F α
-  replace h_splits : Polynomial.Splits (algebraMap F F⟮α⟯) (minpoly F α) := by
+  have h_splits : ((minpoly F α).map (algebraMap F E)).Splits := IsGalois.splits F α
+  replace h_splits : ((minpoly F α).map (algebraMap F F⟮α⟯)).Splits := by
     simpa using
       Polynomial.splits_comp_of_splits (algebraMap F E) iso.symm.toAlgHom.toRingHom h_splits
   rw [← LinearEquiv.finrank_eq iso.toLinearEquiv]
@@ -341,16 +345,30 @@ theorem card_fixingSubgroup_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
   conv_rhs => rw [← fixedField_fixingSubgroup K, IntermediateField.finrank_fixedField_eq_card]
 
 /-- The Galois correspondence from intermediate fields to subgroups. -/
-@[stacks 09DW]
+@[simps! apply, stacks 09DW]
 def intermediateFieldEquivSubgroup [FiniteDimensional F E] [IsGalois F E] :
     IntermediateField F E ≃o (Subgroup Gal(E/F))ᵒᵈ where
-  toFun := IntermediateField.fixingSubgroup
-  invFun := IntermediateField.fixedField
+  toFun := OrderDual.toDual ∘ IntermediateField.fixingSubgroup
+  invFun := IntermediateField.fixedField ∘ OrderDual.ofDual
   left_inv K := fixedField_fixingSubgroup K
   right_inv H := IntermediateField.fixingSubgroup_fixedField H
   map_rel_iff' {K L} := by
     rw [← fixedField_fixingSubgroup L, IntermediateField.le_iff_le, fixedField_fixingSubgroup L]
     rfl
+
+section
+variable [FiniteDimensional F E] [IsGalois F E]
+
+lemma ofDual_intermediateFieldEquivSubgroup_apply (K : IntermediateField F E) :
+    (intermediateFieldEquivSubgroup K).ofDual = K.fixingSubgroup := rfl
+
+@[simp] lemma intermediateFieldEquivSubgroup_symm_apply (H : (Subgroup Gal(E/F))ᵒᵈ) :
+    intermediateFieldEquivSubgroup.symm H = fixedField H.ofDual := rfl
+
+lemma intermediateFieldEquivSubgroup_symm_apply_toDual (H : Subgroup Gal(E/F)) :
+    intermediateFieldEquivSubgroup.symm (.toDual H) = fixedField H := rfl
+
+end
 
 /-- The Galois correspondence as a `GaloisInsertion`. -/
 def galoisInsertionIntermediateFieldSubgroup [FiniteDimensional F E] :
