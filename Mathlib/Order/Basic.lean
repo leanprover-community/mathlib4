@@ -1167,6 +1167,7 @@ abbrev LinearOrder.ofSubsingleton {α : Type*} [DecidableEq α]
   toDecidableLE x y := inferInstance
 
 instance : LinearOrder Empty := .ofSubsingleton
+instance : LinearOrder PEmpty := .ofSubsingleton
 
 namespace PUnit
 
