@@ -5,12 +5,12 @@ Authors: Jesse Alama
 -/
 module
 
-import Mathlib.Algebra.Homology.HomologicalComplex
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.Algebra.Ring.NegOnePow
-import Mathlib.Algebra.Category.ModuleCat.Basic
-import Mathlib.LinearAlgebra.Dimension.Finrank
+public import Mathlib.Algebra.Homology.HomologicalComplex
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+public import Mathlib.Algebra.Homology.ComplexShape
+public import Mathlib.Algebra.Ring.NegOnePow
+public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.LinearAlgebra.Dimension.Finrank
 
 /-!
 # Euler characteristic of homological complexes
@@ -43,6 +43,8 @@ The sign at index `i` is given by `c.χ i` where `c : ComplexShape ι` has an in
 cohomological (up) indexing conventions.
 
 -/
+
+@[expose] public section
 
 namespace ComplexShape
 
