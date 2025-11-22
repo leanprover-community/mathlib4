@@ -55,6 +55,11 @@ theorem exists_forall_sphere_dist_add_le_two_sub (hε : 0 < ε) :
     ∃ δ, 0 < δ ∧ ∀ ⦃x : E⦄, ‖x‖ = 1 → ∀ ⦃y⦄, ‖y‖ = 1 → ε ≤ ‖x - y‖ → ‖x + y‖ ≤ 2 - δ :=
   UniformConvexSpace.uniform_convex hε
 
+theorem exists_forall_sphere_dist_lt (hε : 0 < ε) :
+    ∃ δ, 0 < δ ∧ ∀ ⦃x : E⦄, ‖x‖ = 1 → ∀ ⦃y⦄, ‖y‖ = 1 → ‖x + y‖ > 2 - δ → ‖x - y‖ < ε := by
+  obtain ⟨δ, δ_pos, H⟩ := exists_forall_sphere_dist_add_le_two_sub E hε
+  exact ⟨δ, δ_pos, fun _ hx _ hy h ↦ lt_of_not_ge <| (H hx hy).mt (not_le_of_gt h)⟩
+
 variable [NormedSpace ℝ E]
 
 theorem exists_forall_closed_ball_dist_add_le_two_sub (hε : 0 < ε) :
@@ -103,6 +108,12 @@ theorem exists_forall_closed_ball_dist_add_le_two_sub (hε : 0 < ε) :
     _ ≤ 2 - δ' := by
       suffices δ' ≤ δ / 3 by linarith
       exact min_le_of_right_le <| min_le_right _ _
+
+theorem exists_forall_closedBall_dist_lt (hε : 0 < ε) :
+    ∃ δ, 0 < δ ∧ ∀ ⦃x : E⦄, ‖x‖ ≤ 1 → ∀ ⦃y⦄, ‖y‖ ≤ 1 → ‖x + y‖ > 2 - δ → ‖x - y‖ < ε := by
+  obtain ⟨δ, δ_pos, H⟩ := exists_forall_closed_ball_dist_add_le_two_sub E hε
+  exact ⟨δ, δ_pos, fun _ hx _ hy h ↦ lt_of_not_ge <| (H hx hy).mt (not_le_of_gt h)⟩
+
 
 theorem exists_forall_closed_ball_dist_add_le_two_mul_sub (hε : 0 < ε) (r : ℝ) :
     ∃ δ, 0 < δ ∧ ∀ ⦃x : E⦄, ‖x‖ ≤ r → ∀ ⦃y⦄, ‖y‖ ≤ r → ε ≤ ‖x - y‖ → ‖x + y‖ ≤ 2 * r - δ := by
