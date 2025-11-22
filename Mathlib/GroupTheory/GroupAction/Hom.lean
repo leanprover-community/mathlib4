@@ -801,7 +801,7 @@ class MulSemiringActionSemiHomClass (F : Type*)
     extends DistribMulActionSemiHomClass F φ R S, RingHomClass F R S
 
 /-- `MulSemiringActionHomClass F M R S` states that `F` is a type of morphisms preserving
-the ring structure and equivariant with respect to a `DistribMulAction`of `M` on `R` and `S` .
+the ring structure and equivariant with respect to a `DistribMulAction` of `M` on `R` and `S`.
 -/
 abbrev MulSemiringActionHomClass
     (F : Type*)

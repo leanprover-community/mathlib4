@@ -788,7 +788,7 @@ section Aut
 /-!
 ### Automorphisms as continuous linear equivalences and as units of the ring of endomorphisms
 
-The next theorems cover the identification between `M ≃L[R] M`and the group of units of the ring
+The next theorems cover the identification between `M ≃L[R] M` and the group of units of the ring
 `M →L[R] M`.
 -/
 
