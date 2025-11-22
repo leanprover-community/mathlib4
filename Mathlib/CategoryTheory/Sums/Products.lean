@@ -24,6 +24,8 @@ namespace CategoryTheory
 
 open Functor
 
+open scoped Prod
+
 universe v u
 
 variable (A : Type*) [Category A] (A' : Type*) [Category A']
@@ -36,7 +38,7 @@ namespace Sum
 def functorEquiv : A ⊕ A' ⥤ B ≌ (A ⥤ B) × (A' ⥤ B) where
   functor :=
     { obj F := ⟨inl_ A A' ⋙ F, inr_ A A' ⋙ F⟩
-      map η := ⟨whiskerLeft (inl_ A A') η, whiskerLeft (inr_ A A') η⟩ }
+      map η := whiskerLeft (inl_ A A') η ×ₘ whiskerLeft (inr_ A A') η }
   inverse :=
     { obj F := Functor.sum' F.1 F.2
       map η := NatTrans.sum' η.1 η.2 }
