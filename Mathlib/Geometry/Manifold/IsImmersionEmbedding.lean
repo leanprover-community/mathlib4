@@ -336,11 +336,10 @@ isomorphic to the `smallComplement`. -/
 def smallEquiv (hf : IsImmersionAtOfComplement F I J n f x) : F ≃L[𝕜] hf.smallComplement := by
   have := foo hf
   unfold smallComplement
-  have aux := (equivShrink F).continuousLinearEquiv 𝕜
-  sorry
-  --convert aux yields 4 goals, some of which seem to show diamond issues
-  --dsimp at aux ⊢
-
+  convert (equivShrink F).continuousLinearEquiv 𝕜
+  · sorry -- top. spaces are equal
+  · sorry -- add comm. monoids are equal
+  · sorry -- module structures are equal
   -- have h : Injective φ := by intro x y hxy; simp_all [φ]
   -- have h2 : IsClosed (range φ) := by
   --   have : (range (fun (x : F) ↦ ((0 : E), x))) = {0} ×ˢ univ := by grind
