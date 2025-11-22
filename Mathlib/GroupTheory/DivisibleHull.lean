@@ -163,6 +163,8 @@ theorem coe_injective : Function.Injective ((↑) : M → DivisibleHull M) :=
 theorem coe_inj {m m' : M} : (m : DivisibleHull M) = ↑m' ↔ m = m' :=
   coe_injective.eq_iff
 
+noncomputable instance : Module ℚ≥0 (DivisibleHull M) := LocalizedModule.moduleOfIsLocalization ..
+
 end TorsionFree
 
 section Group
