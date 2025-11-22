@@ -86,6 +86,14 @@ lemma δ_eq_iff (i : Fin (d + 2)) :
   ⟨fun h ↦ (hxy.existsUnique_δ_cast_simplex hd).unique h (hxy.δ_index hd),
     by rintro rfl; apply δ_index⟩
 
+include hxy in
+lemma le : x ≤ y := by
+  have := hxy.δ_index rfl
+  simp only [cast_simplex_rfl] at this
+  rw [S.le_def, ← y.subcomplex_cast hxy.dim_eq, Subpresheaf.ofSection_le_iff,
+    ← this]
+  exact ⟨(SimplexCategory.δ _).op, rfl⟩
+
 end
 
 end IsUniquelyCodimOneFace

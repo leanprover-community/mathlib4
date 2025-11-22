@@ -235,6 +235,12 @@ lemma preimage_iSup {ι : Type*} (A : ι → X.Subcomplex) (p : Y ⟶ X) :
 lemma preimage_iInf {ι : Type*} (A : ι → X.Subcomplex) (p : Y ⟶ X) :
     (⨅ i, A i).preimage p = ⨅ i, (A i).preimage p := by aesop
 
+lemma preimage_comp {Z : SSet.{u}} (A : Z.Subcomplex) (f : X ⟶ Y) (g : Y ⟶ Z) :
+    A.preimage (f ≫ g) = (A.preimage g).preimage f := rfl
+
+@[simp]
+lemma preimage_ι (A : X.Subcomplex) : A.preimage A.ι = ⊤ := by aesop
+
 end
 
 section
