@@ -98,7 +98,7 @@ A utility command to show the current entries of the `deprecatedModuleExt` in th
 ```
 Deprecated modules
 
-'MathlibTest.DeprecatedModule' deprecates to
+'MathlibTest/DeprecatedModule.lean' deprecates to
 #[Mathlib/Tactic/Linter/DocPrime.lean, Mathlib/Tactic/Linter/DocString.lean]
 with message 'We can also give more details about the deprecation'
 

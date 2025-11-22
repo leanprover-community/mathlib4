@@ -4,7 +4,7 @@ infix:65 " #find_syntax_add " => Nat.add
 
 /--
 info: Found 2 uses among over 800 syntax declarations
-In `MathlibTest.FindSyntax`:
+In `MathlibTest/FindSyntax.lean`:
   «term_#find_syntax_add_»: '#find_syntax_add'
 
 In `Mathlib/Tactic/FindSyntax.lean`:

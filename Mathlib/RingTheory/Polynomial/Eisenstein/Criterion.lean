@@ -24,7 +24,7 @@ public import Mathlib.RingTheory.Ideal.Quotient.Operations
   where `P` is the kernel of `algebraMap R K`.
   Then `f` is irreducible.
 
-We give in `Archive.Examples.Eisenstein` an explicit example
+We give in `Archive/Examples/Eisenstein.lean` an explicit example
 of application of this criterion.
 
 * `Polynomial.irreducible_of_eisenstein_criterion` : the classic Eisenstein criterion.

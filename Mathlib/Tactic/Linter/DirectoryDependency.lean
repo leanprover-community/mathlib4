@@ -181,8 +181,8 @@ def allowedImportDirs : NamePrefixRel := .ofArray #[
   (`MathlibTest.Header, `Plausible),
   (`MathlibTest.Header, `ProofWidgets),
   (`MathlibTest.Header, `Qq),
-  -- (`MathlibTest.Header, `Mathlib/Tactic.lean),
-  -- (`MathlibTest.Header, `Mathlib.Deprecated),
+  -- (`MathlibTest/Header.lean, `Mathlib/Tactic.lean),
+  -- (`MathlibTest/Header.lean, `Mathlib.Deprecated),
   (`MathlibTest.Header, `Batteries),
   (`MathlibTest.Header, `Lake),
 
