@@ -62,7 +62,6 @@ theorem not_forall_eq : (¬ ∀ x, s x) = (∃ x, ¬ s x) := propext not_forall
 /-- Make `push_neg` use `not_and_or` rather than the default `not_and`. -/
 register_option push_neg.use_distrib : Bool :=
   { defValue := false
-    group := ""
     descr := "Make `push_neg` use `not_and_or` rather than the default `not_and`." }
 
 open Lean Meta Elab.Tactic Parser.Tactic
