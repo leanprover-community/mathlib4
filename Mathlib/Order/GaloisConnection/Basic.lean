@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Order.Bounds.Image
 public import Mathlib.Order.CompleteLattice.Basic
-public import Mathlib.Order.WithBot
+public import Mathlib.Order.WithBot.Basic
 
 /-!
 # Galois connections, insertions and coinsertions

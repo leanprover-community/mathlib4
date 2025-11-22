@@ -9,7 +9,7 @@ public import Mathlib.Algebra.CharZero.Defs
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 public import Mathlib.Algebra.Order.ZeroLEOne
-public import Mathlib.Order.WithBot
+public import Mathlib.Order.WithBot.NAry
 
 /-! # Adjoining top/bottom elements to ordered monoids.
 -/
@@ -94,11 +94,11 @@ section Add
 variable [Add α] {w x y z : WithTop α} {a b : α}
 
 instance add : Add (WithTop α) :=
-  ⟨Option.map₂ (· + ·)⟩
+  ⟨WithTop.map₂ (· + ·)⟩
 
 @[simp, norm_cast] lemma coe_add (a b : α) : ↑(a + b) = (a + b : WithTop α) := rfl
 
-@[simp] lemma top_add (x : WithTop α) : ⊤ + x = ⊤ := rfl
+@[simp] lemma top_add (x : WithTop α) : ⊤ + x = ⊤ := by cases x <;> rfl
 @[simp] lemma add_top (x : WithTop α) : x + ⊤ = ⊤ := by cases x <;> rfl
 
 @[simp] lemma add_eq_top : x + y = ⊤ ↔ x = ⊤ ∨ y = ⊤ := by cases x <;> cases y <;> simp [← coe_add]
@@ -203,27 +203,29 @@ lemma addLECancellable_iff_ne_top [Nonempty α] [Preorder α]
 protected theorem map_add {F} [Add β] [FunLike F α β] [AddHomClass F α β]
     (f : F) (a b : WithTop α) :
     (a + b).map f = a.map f + b.map f := by
-  induction a
-  · exact (top_add _).symm
-  · induction b
-    · exact (add_top _).symm
-    · rw [map_coe, map_coe, ← coe_add, ← coe_add, ← map_add]
+  match a with
+  | ⊤ => simp
+  | some a =>
+    match b with
+    | ⊤ => simp
+    | some b =>
+      rw [map_coe, map_coe, ← coe_add, ← coe_add, ← map_add]
       rfl
 
 end Add
 
 instance addSemigroup [AddSemigroup α] : AddSemigroup (WithTop α) :=
   { WithTop.add with
-    add_assoc := fun _ _ _ => Option.map₂_assoc add_assoc }
+    add_assoc := fun _ _ _ => WithTop.map₂_assoc add_assoc }
 
 instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (WithTop α) :=
   { WithTop.addSemigroup with
-    add_comm := fun _ _ => Option.map₂_comm add_comm }
+    add_comm := fun _ _ => WithTop.map₂_comm add_comm }
 
 instance addZeroClass [AddZeroClass α] : AddZeroClass (WithTop α) :=
   { WithTop.zero, WithTop.add with
-    zero_add := Option.map₂_left_identity zero_add
-    add_zero := Option.map₂_right_identity add_zero }
+    zero_add := WithTop.map₂_left_identity zero_add
+    add_zero := WithTop.map₂_right_identity add_zero }
 
 section AddMonoid
 variable [AddMonoid α]
@@ -426,11 +428,11 @@ section Add
 variable [Add α] {w x y z : WithBot α} {a b : α}
 
 instance add : Add (WithBot α) :=
-  ⟨Option.map₂ (· + ·)⟩
+  ⟨WithBot.map₂ (· + ·)⟩
 
 @[simp, norm_cast] lemma coe_add (a b : α) : ↑(a + b) = (a + b : WithBot α) := rfl
 
-@[simp] lemma bot_add (x : WithBot α) : ⊥ + x = ⊥ := rfl
+@[simp] lemma bot_add (x : WithBot α) : ⊥ + x = ⊥ := by cases x <;> rfl
 @[simp] lemma add_bot (x : WithBot α) : x + ⊥ = ⊥ := by cases x <;> rfl
 
 @[simp] lemma add_eq_bot : x + y = ⊥ ↔ x = ⊥ ∨ y = ⊥ := by cases x <;> cases y <;> simp [← coe_add]
@@ -546,10 +548,12 @@ lemma add_le_add_iff_right' {α : Type*} [Add α] [LE α]
 protected theorem map_add {F} [Add β] [FunLike F α β] [AddHomClass F α β]
     (f : F) (a b : WithBot α) :
     (a + b).map f = a.map f + b.map f := by
-  induction a
-  · exact (bot_add _).symm
-  · induction b
-    · exact (add_bot _).symm
+  match a with
+  | ⊥ => simp
+  | some a =>
+    match b with
+    | ⊥ => simp
+    | some b =>
     · rw [map_coe, map_coe, ← coe_add, ← coe_add, ← map_add]
       rfl
 

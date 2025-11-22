@@ -12,6 +12,7 @@ public import Mathlib.GroupTheory.Coset.Defs
 public import Mathlib.MeasureTheory.MeasurableSpace.Basic
 public import Mathlib.MeasureTheory.MeasurableSpace.Instances
 public import Mathlib.Order.Disjointed
+public import Mathlib.Order.WithBot.BooleanAlgebra
 
 /-!
 # Constructions for measurable spaces and functions
@@ -48,7 +49,7 @@ theorem ENat.measurable_iff {α : Type*} [MeasurableSpace α] {f : α → ℕ∞
   refine ⟨fun hf n ↦ hf <| measurableSet_singleton _, fun h ↦ measurable_to_countable' fun n ↦ ?_⟩
   cases n with
   | top =>
-    rw [← WithTop.none_eq_top, ← compl_range_some, preimage_compl, ← iUnion_singleton_eq_range,
+    rw [← compl_range_coe_eq_singleton_top, preimage_compl, ← iUnion_singleton_eq_range,
       preimage_iUnion]
     exact .compl <| .iUnion h
   | coe n => exact h n

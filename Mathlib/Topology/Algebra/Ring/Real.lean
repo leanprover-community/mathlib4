@@ -117,12 +117,19 @@ theorem nhds_coe_coe {r p : ℝ≥0} :
 
 instance : ContinuousAdd ℝ≥0∞ := by
   refine ⟨continuous_iff_continuousAt.2 ?_⟩
-  rintro ⟨_ | a, b⟩
-  · exact tendsto_nhds_top_mono' continuousAt_fst fun p => le_add_right le_rfl
-  rcases b with (_ | b)
-  · exact tendsto_nhds_top_mono' continuousAt_snd fun p => le_add_left le_rfl
-  simp only [ContinuousAt, some_eq_coe, nhds_coe_coe, ← coe_add, tendsto_map'_iff,
-    Function.comp_def, tendsto_coe, tendsto_add]
+  rintro ⟨a, b⟩
+  cases a with
+  | top =>
+    simp only [ContinuousAt, top_add]
+    exact tendsto_nhds_top_mono' continuousAt_fst fun p => self_le_add_right _ _
+  | coe a =>
+    cases b with
+    | top =>
+      simp only [ContinuousAt, add_top]
+      exact tendsto_nhds_top_mono' continuousAt_snd fun p => self_le_add_left _ _
+    | coe x =>
+      simp only [ContinuousAt, nhds_coe_coe, ← coe_add, tendsto_map'_iff, Function.comp_def,
+        tendsto_coe, tendsto_add]
 
 instance : ContinuousInv ℝ≥0∞ := ⟨OrderIso.invENNReal.continuous⟩
 

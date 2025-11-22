@@ -614,7 +614,7 @@ theorem exists_contMDiffOn_section_forall_mem_convex_of_local
       (fun x ↦ TotalSpace.mk' F_fiber x ((ρ j x) • (s_loc j x))) := by
     refine ContMDiffOn.smul_section_of_tsupport ?_ isOpen_interior (hρU j)
       ((s_smooth j).mono interior_subset)
-    exact ((ρ j).contMDiff).of_le (sup_eq_left.mp rfl) |>.contMDiffOn
+    exact ((ρ j).contMDiff).of_le (sup_eq_left.mp (by simp)) |>.contMDiffOn
   have hs : ContMDiff I (I.prod 𝓘(ℝ, F_fiber)) n (fun x ↦ TotalSpace.mk' F_fiber x (s x)) := by
     apply ContMDiff.finsum_section_of_locallyFinite ?_ this
     -- Future: can grind do this?

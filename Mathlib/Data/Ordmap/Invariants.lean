@@ -760,7 +760,7 @@ variable [Preorder α]
 property holds recursively in subtrees, making the full tree a BST. The bounds can be set to
 `lo = ⊥` and `hi = ⊤` if we care only about the internal ordering constraints. -/
 def Bounded : Ordnode α → WithBot α → WithTop α → Prop
-  | nil, some a, some b => a < b
+  | nil, .some a, .some b => a < b
   | nil, _, _ => True
   | node _ l x r, o₁, o₂ => Bounded l o₁ x ∧ Bounded r (↑x) o₂
 
@@ -787,14 +787,14 @@ theorem Bounded.weak {t : Ordnode α} {o₁ o₂} (h : Bounded t o₁ o₂) : Bo
 
 theorem Bounded.mono_left {x y : α} (xy : x ≤ y) :
     ∀ {t : Ordnode α} {o}, Bounded t y o → Bounded t x o
-  | nil, none, _ => ⟨⟩
-  | nil, some _, h => lt_of_le_of_lt xy h
+  | nil, .bot, _ => ⟨⟩
+  | nil, .some _, h => lt_of_le_of_lt xy h
   | node _ _ _ _, _o, ⟨ol, or⟩ => ⟨ol.mono_left xy, or⟩
 
 theorem Bounded.mono_right {x y : α} (xy : x ≤ y) :
     ∀ {t : Ordnode α} {o}, Bounded t o x → Bounded t o y
-  | nil, none, _ => ⟨⟩
-  | nil, some _, h => lt_of_lt_of_le h xy
+  | nil, .bot, _ => ⟨⟩
+  | nil, .some _, h => lt_of_lt_of_le h xy
   | node _ _ _ _, _o, ⟨ol, or⟩ => ⟨ol, or.mono_right xy⟩
 
 theorem Bounded.to_lt : ∀ {t : Ordnode α} {x y : α}, Bounded t x y → x < y
@@ -802,19 +802,19 @@ theorem Bounded.to_lt : ∀ {t : Ordnode α} {x y : α}, Bounded t x y → x < y
   | node _ _ _ _, _, _, ⟨h₁, h₂⟩ => lt_trans h₁.to_lt h₂.to_lt
 
 theorem Bounded.to_nil {t : Ordnode α} : ∀ {o₁ o₂}, Bounded t o₁ o₂ → Bounded nil o₁ o₂
-  | none, _, _ => ⟨⟩
-  | some _, none, _ => ⟨⟩
-  | some _, some _, h => h.to_lt
+  | .bot, _, _ => ⟨⟩
+  | .some _, .bot, _ => ⟨⟩
+  | .some _, .some _, h => h.to_lt
 
 theorem Bounded.trans_left {t₁ t₂ : Ordnode α} {x : α} :
     ∀ {o₁ o₂}, Bounded t₁ o₁ x → Bounded t₂ x o₂ → Bounded t₂ o₁ o₂
-  | none, _, _, h₂ => h₂.weak_left
-  | some _, _, h₁, h₂ => h₂.mono_left (le_of_lt h₁.to_lt)
+  | .bot, _, _, h₂ => h₂.weak_left
+  | .some _, _, h₁, h₂ => h₂.mono_left (le_of_lt h₁.to_lt)
 
 theorem Bounded.trans_right {t₁ t₂ : Ordnode α} {x : α} :
     ∀ {o₁ o₂}, Bounded t₁ o₁ x → Bounded t₂ x o₂ → Bounded t₁ o₁ o₂
-  | _, none, h₁, _ => h₁.weak_right
-  | _, some _, h₁, h₂ => h₁.mono_right (le_of_lt h₂.to_lt)
+  | _, .bot, h₁, _ => h₁.weak_right
+  | _, .some _, h₁, h₂ => h₁.mono_right (le_of_lt h₂.to_lt)
 
 theorem Bounded.mem_lt : ∀ {t o} {x : α}, Bounded t o x → All (· < x) t
   | nil, _, _, _ => ⟨⟩

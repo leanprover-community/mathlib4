@@ -55,7 +55,7 @@ abbrev NatUnionInfty : LightProfinite := of (OnePoint ℕ)
 @[inherit_doc]
 scoped notation "ℕ∪{∞}" => NatUnionInfty
 
-instance : Coe ℕ ℕ∪{∞} := optionCoe
+instance : Coe ℕ ℕ∪{∞} := ⟨OnePoint.some⟩
 
 open Filter Topology
 

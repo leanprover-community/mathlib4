@@ -407,7 +407,8 @@ end Preorder
 section PartialOrder
 variable [PartialOrder α]
 
-instance instPartialOrder : PartialOrder (WithZero α) := WithBot.instPartialOrder
+instance instPartialOrder [PartialOrder α] : PartialOrder (WithZero α) where
+  le_antisymm x y := by cases x <;> cases y <;> simp; simpa using le_antisymm
 
 instance instMulLeftReflectLT [Mul α] [MulLeftReflectLT α] :
     MulLeftReflectLT (WithZero α) := by
