@@ -54,9 +54,7 @@ theorem measureReal_zero_apply (s : Set α) : (0 : Measure α).real s = 0 := rfl
 
 @[simp] theorem measureReal_empty : μ.real ∅ = 0 := by simp [Measure.real]
 
-@[simp] theorem measureReal_univ_eq_one [IsProbabilityMeasure μ] :
-    μ.real Set.univ = 1 := by
-  simp [Measure.real]
+@[deprecated (since := "2025-11-22")] alias measureReal_univ_eq_one := probReal_univ
 
 @[simp]
 theorem measureReal_univ_pos [IsFiniteMeasure μ] [NeZero μ] : 0 < μ.real Set.univ :=
