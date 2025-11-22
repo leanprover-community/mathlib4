@@ -190,6 +190,12 @@ theorem mono_of_isIso_fst (h : IsKernelPair f a b) [IsIso a] : Mono f := by
   obtain ⟨l', rfl, rfl⟩ := Limits.PullbackCone.IsLimit.lift' h.isLimit _ _ e
   rw [IsPullback.cone_fst, h₂]
 
+theorem mono_of_eq_fst_snd' (h : IsKernelPair f a a) : Mono f :=
+  ⟨fun g₁ g₂ e ↦ (lift_fst h g₁ g₂ e).symm.trans <| lift_snd h g₁ g₂ e⟩
+
+theorem mono_of_eq_fst_snd (h : IsKernelPair f a b) (e : a = b) : Mono f := by
+  induction e; exact h.mono_of_eq_fst_snd'
+
 theorem isIso_of_mono (h : IsKernelPair f a b) [Mono f] : IsIso a := by
   rw [←
     show _ = a from
@@ -202,6 +208,11 @@ theorem of_isIso_of_mono [IsIso a] [Mono f] : IsKernelPair f a a := by
   change IsPullback _ _ _ _
   convert (IsPullback.of_horiz_isIso ⟨(rfl : a ≫ 𝟙 X = _ )⟩).paste_vert (IsKernelPair.id_of_mono f)
   all_goals { simp }
+
+/-- The kernel pair provided by `HasPullback f f` fits into an `IsKernelPair`. -/
+theorem of_hasPullback (f : X ⟶ Y) [HasPullback f f] :
+    IsKernelPair f (pullback.fst f f) (pullback.snd f f) :=
+  IsPullback.of_hasPullback f f
 
 end IsKernelPair
 
