@@ -230,11 +230,11 @@ open HVertexOperator
 
 /-- `(X - Y)^n A(X) B(Y)` as a linear map from `V` to `V((X))((Y))` -/
 def binomCompLeft (n : ℤ) : HVertexOperator (ℤ ×ₗ ℤ) R V V :=
-  HahnSeries.binomialPow R (toLex (0, 1) : ℤ ×ₗ ℤ) (toLex (1, 0)) (-1 : R) n • (lexComp A B)
+  HahnSeries.binomialPow (toLex (0, 1) : ℤ ×ₗ ℤ) (toLex (1, 0)) (-1 : R) n • (lexComp A B)
 
 @[simp]
 theorem binomialPow_smul_binomCompLeft (m n : ℤ) :
-    HahnSeries.binomialPow R (toLex (0, 1) : ℤ ×ₗ ℤ) (toLex (1, 0)) (-1 : R) m •
+    HahnSeries.binomialPow (toLex (0, 1) : ℤ ×ₗ ℤ) (toLex (1, 0)) (-1 : R) m •
       binomCompLeft A B n = binomCompLeft A B (m + n) := by
   rw [binomCompLeft, binomCompLeft, ← mul_smul, HahnSeries.binomialPow_add]
 
@@ -272,12 +272,13 @@ theorem binomCompLeft_one_left_nat_coeff (n : ℕ) (g : ℤ ×ₗ ℤ) :
 /-- `(X - Y)^n B(Y) A(X)` as a linear map from `V` to `V((Y))((X))` -/
 def binomCompRight (n : ℤ) : HVertexOperator (ℤ ×ₗ ℤ) R V V :=
   (Int.negOnePow n : R) •
-    HahnSeries.binomialPow R (toLex (0, 1) : ℤ ×ₗ ℤ) (toLex (1, 0)) (-1) n • (lexComp B A)
+    HahnSeries.binomialPow (toLex (0, 1) : ℤ ×ₗ ℤ) (toLex (1, 0)) (-1 : R) n • (lexComp B A)
 
 @[simp]
 theorem binomialPow_smul_binomCompRight (m n : ℤ) :
-    (Int.negOnePow m : R) • HahnSeries.binomialPow R (toLex (0, 1) : ℤ ×ₗ ℤ) (toLex (1, 0)) (-1) m •
-      binomCompRight A B n = binomCompRight A B (m + n) := by
+    (Int.negOnePow m : R) •
+    HahnSeries.binomialPow (toLex (0, 1) : ℤ ×ₗ ℤ) (toLex (1, 0)) (-1 : R) m •
+    binomCompRight A B n = binomCompRight A B (m + n) := by
   rw [binomCompRight, binomCompRight, SMulCommClass.smul_comm, smul_smul, ← Int.cast_mul,
     ← Units.val_mul, ← Int.negOnePow_add, ← SMulCommClass.smul_comm, smul_smul,
     HahnSeries.binomialPow_add]
