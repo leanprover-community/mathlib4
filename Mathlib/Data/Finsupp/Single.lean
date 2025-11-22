@@ -60,6 +60,7 @@ def single (a : α) (b : M) : α →₀ M where
       · simp [hb, Pi.single, update]
       simp [ha]
 
+@[grind =]
 theorem single_apply [Decidable (a = a')] : single a b a' = if a = a' then b else 0 := by
   classical
   simp_rw [@eq_comm _ a a', single, coe_mk, Pi.single_apply]
@@ -468,12 +469,8 @@ theorem single_of_embDomain_single (l : α →₀ M) (f : α ↪ β) (a : β) (b
     use c
     constructor
     · ext d
-      rw [← embDomain_apply f l, h]
-      by_cases h_cases : c = d
-      · simp only [Eq.symm h_cases, hc₂, single_eq_same]
-      · rw [single_apply, single_apply, if_neg, if_neg h_cases]
-        by_contra hfd
-        exact h_cases (f.injective (hc₂.trans hfd))
+      rw [← embDomain_apply_self f l, h]
+      grind
     · exact hc₂
 
 @[simp]
