@@ -3,14 +3,18 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Order.Sub.Basic
-import Mathlib.Algebra.Ring.Parity
+module
+
+public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.Algebra.Ring.Parity
 
 /-!
 # Canonically ordered rings and semirings.
 -/
+
+@[expose] public section
 
 
 open Function
@@ -58,10 +62,7 @@ lemma toIsOrderedMonoid : IsOrderedMonoid R where
 
 -- TODO: make it an instance
 lemma toIsOrderedRing : IsOrderedRing R where
-  zero_le_one := zero_le _
   add_le_add_left _ _ := add_le_add_left
-  mul_le_mul_of_nonneg_left _ _ _ h _ := mul_le_mul_left' h _
-  mul_le_mul_of_nonneg_right _ _ _ h _ := mul_le_mul_right' h _
 
 @[simp]
 protected theorem mul_pos [NoZeroDivisors R] {a b : R} :

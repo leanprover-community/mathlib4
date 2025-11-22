@@ -3,10 +3,11 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
 -/
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Nat.Init
-import Mathlib.Tactic.SplitIfs
-import Mathlib.Tactic.OfNat
+module
+
+public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Data.Nat.Init
+public import Mathlib.Tactic.SplitIfs
 
 /-!
 # Cast of natural numbers
@@ -24,6 +25,8 @@ Preferentially, the homomorphism is written as the coercion `Nat.cast`.
 * `Nat.cast`: Canonical homomorphism `ℕ → R`.
 -/
 
+@[expose] public section
+
 variable {R : Type*}
 
 /-- The numeral `((0+1)+⋯)+1`. -/
@@ -40,7 +43,7 @@ instance (priority := 100) instOfNatAtLeastTwo {n : ℕ} [NatCast R] [Nat.AtLeas
     OfNat R n where
   ofNat := n.cast
 
-library_note "no_index around OfNat.ofNat"
+library_note2 «no_index around OfNat.ofNat»
 /--
 When writing lemmas about `OfNat.ofNat` that assume `Nat.AtLeastTwo`, the term needs to be wrapped
 in `no_index` so as not to confuse `simp`, as `no_index (OfNat.ofNat n)`.
@@ -68,7 +71,7 @@ class AddMonoidWithOne (R : Type*) extends NatCast R, AddMonoid R, One R where
 /-- An `AddCommMonoidWithOne` is an `AddMonoidWithOne` satisfying `a + b = b + a`. -/
 class AddCommMonoidWithOne (R : Type*) extends AddMonoidWithOne R, AddCommMonoid R
 
-library_note "coercion into rings"
+library_note2 «coercion into rings»
 /--
 Coercions such as `Nat.castCoe` that go from a concrete structure such as
 `ℕ` to an arbitrary ring `R` should be set up as follows:
@@ -137,10 +140,10 @@ theorem binCast_eq [AddMonoidWithOne R] (n : ℕ) :
   | succ k =>
       rw [Nat.binCast]
       by_cases h : (k + 1) % 2 = 0
-      · conv => rhs; rw [← Nat.mod_add_div (k+1) 2]
+      · conv => rhs; rw [← Nat.mod_add_div (k + 1) 2]
         rw [if_pos h, hk _ <| Nat.div_lt_self (Nat.succ_pos k) (Nat.le_refl 2), ← Nat.cast_add]
         rw [h, Nat.zero_add, Nat.succ_mul, Nat.one_mul]
-      · conv => rhs; rw [← Nat.mod_add_div (k+1) 2]
+      · conv => rhs; rw [← Nat.mod_add_div (k + 1) 2]
         rw [if_neg h, hk _ <| Nat.div_lt_self (Nat.succ_pos k) (Nat.le_refl 2), ← Nat.cast_add]
         have h1 := Or.resolve_left (Nat.mod_two_eq_zero_or_one (succ k)) h
         rw [h1, Nat.add_comm 1, Nat.succ_mul, Nat.one_mul]

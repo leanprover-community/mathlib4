@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau, Kim Morrison
 -/
-import Mathlib.Data.List.Chain
+module
+
+public import Mathlib.Data.List.Chain
 
 /-!
 # Ranges of naturals as lists
@@ -15,6 +17,8 @@ and defines `List.finRange`.
 tactics. `range' a b = [a, ..., a + b - 1]` is there to help prove properties about them.
 Actual maths should use `List.Ico` instead.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -77,7 +81,6 @@ theorem ranges_disjoint (l : List ℕ) :
       obtain ⟨s', _, rfl⟩ := mem_map.mp hs
       intro u hu
       rw [mem_map]
-      rintro ⟨v, _, rfl⟩
       rw [mem_range] at hu
       cutsat
     · rw [pairwise_map]

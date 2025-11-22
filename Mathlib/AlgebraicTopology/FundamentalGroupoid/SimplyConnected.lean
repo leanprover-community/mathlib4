@@ -3,10 +3,12 @@ Copyright (c) 2022 Praneeth Kolichala. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Praneeth Kolichala
 -/
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
-import Mathlib.Topology.Homotopy.Contractible
-import Mathlib.CategoryTheory.PUnit
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
+module
+
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
+public import Mathlib.Topology.Homotopy.Contractible
+public import Mathlib.CategoryTheory.PUnit
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
 
 /-!
 # Simply connected spaces
@@ -19,6 +21,8 @@ A topological space is simply connected if its fundamental groupoid is equivalen
 
   - `SimplyConnectedSpace.ofContractible` - A contractible space is simply connected
 -/
+
+@[expose] public section
 
 universe u
 
@@ -51,8 +55,6 @@ instance (x y : X) : Subsingleton (Path.Homotopic.Quotient x y) :=
   @Unique.instSubsingleton _ (Nonempty.some (by
     rw [simply_connected_iff_unique_homotopic] at *; tauto))
 
-attribute [local instance] Path.Homotopic.setoid
-
 instance (priority := 100) : PathConnectedSpace X :=
   let unique_homotopic := (simply_connected_iff_unique_homotopic X).mp inferInstance
   { nonempty := unique_homotopic.1
@@ -70,8 +72,6 @@ instance (priority := 100) ofContractible (Y : Type u) [TopologicalSpace Y] [Con
       FundamentalGroupoid.punitEquivDiscretePUnit⟩
 
 end SimplyConnectedSpace
-
-attribute [local instance] Path.Homotopic.setoid
 
 /-- A space is simply connected iff it is path connected, and there is at most one path
   up to homotopy between any two points. -/

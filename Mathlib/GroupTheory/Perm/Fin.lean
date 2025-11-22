@@ -3,13 +3,17 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Yi Yuan
 -/
-import Mathlib.GroupTheory.Perm.Cycle.Type
-import Mathlib.GroupTheory.Perm.Option
-import Mathlib.Logic.Equiv.Fin.Rotate
+module
+
+public import Mathlib.GroupTheory.Perm.Cycle.Type
+public import Mathlib.GroupTheory.Perm.Option
+public import Mathlib.Logic.Equiv.Fin.Rotate
 
 /-!
 # Permutations of `Fin n`
 -/
+
+@[expose] public section
 
 assert_not_exists LinearMap
 
@@ -157,7 +161,7 @@ theorem cycleRange_of_le [NeZero n] (h : i ≤ j) :
     rfl
   · have hj1 : (i + 1).1 = i.1 + 1 := val_add_one_of_lt' (by cutsat)
     have hj2 : (i.castLT (by cutsat) + 1 : Fin (j + 1)).1 =
-      (i.castLT (by cutsat): Fin (j + 1)) + 1 := val_add_one_of_lt' (by simpa using by cutsat)
+      (i.castLT (by cutsat) : Fin (j + 1)) + 1 := val_add_one_of_lt' (by simpa using by cutsat)
     exact eq_of_val_eq (by simp [← this, hj1, hj2])
 
 theorem coe_cycleRange_of_le (h : i ≤ j) :
@@ -170,7 +174,7 @@ theorem coe_cycleRange_of_le (h : i ≤ j) :
   exact
     val_add_one_of_lt
       (calc
-        (i : ℕ) < j := Fin.lt_iff_val_lt_val.mp (lt_of_le_of_ne h h')
+        (i : ℕ) < j := Fin.lt_def.mp (lt_of_le_of_ne h h')
         _ ≤ n := Nat.lt_succ_iff.mp j.2)
 
 theorem cycleRange_of_lt [NeZero n] (h : i < j) : cycleRange j i = i + 1 := by
@@ -226,7 +230,7 @@ theorem succAbove_cycleRange (i j : Fin n) :
     rw [Fin.cycleRange_of_lt hlt, Fin.succAbove_of_castSucc_lt, this, swap_apply_of_ne_of_ne]
     · apply Fin.succ_ne_zero
     · exact (Fin.succ_injective _).ne hlt.ne
-    · rw [Fin.lt_iff_val_lt_val]
+    · rw [Fin.lt_def]
       simpa [this] using hlt
   · rw [heq, Fin.cycleRange_self, Fin.succAbove_of_castSucc_lt, swap_apply_right, Fin.castSucc_zero]
     · rw [Fin.castSucc_zero]
@@ -383,7 +387,7 @@ theorem cycleIcc_of_le_of_le (hik : i ≤ k) (hkj : k ≤ j) [NeZero n] :
       eq_of_val_eq (by simp [sub_val_of_le hij])
     simpa [ch, cycleRange_of_eq this] using by cutsat
   · have : subNat i.1 (k.cast (by cutsat)) (by simp [hik]) < (j - i).castLT (sub_val_lt_sub hij) :=
-      by simpa [lt_iff_val_lt_val, sub_val_of_le hij] using by cutsat
+      by simpa [lt_def, sub_val_of_le hij] using by cutsat
     rw [cycleRange_of_lt this, subNat]
     simp only [coe_cast, add_def, val_one', Nat.add_mod_mod, addNat_mk, cast_mk]
     rw [Nat.mod_eq_of_lt (by cutsat), Nat.mod_eq_of_lt (by cutsat)]
@@ -399,9 +403,9 @@ theorem cycleIcc_eq [NeZero n] : cycleIcc i i = 1 := by
   ext k
   simp only [Perm.coe_one, id_eq]
   rcases lt_trichotomy k i with ch | ch | ch
-  · simp [- cycleIcc_def_le, cycleIcc_of_lt, ch]
-  · simp [- cycleIcc_def_le, ch]
-  · simp [- cycleIcc_def_le, cycleIcc_of_gt, ch]
+  · simp [-cycleIcc_def_le, cycleIcc_of_lt, ch]
+  · simp [-cycleIcc_def_le, ch]
+  · simp [-cycleIcc_def_le, cycleIcc_of_gt, ch]
 
 @[simp]
 theorem cycleIcc_ge (hij : i ≤ j) [NeZero n] : cycleIcc j i = 1 := by
@@ -435,9 +439,9 @@ theorem cycleType_cycleIcc_of_ge (hij : i ≤ j) [NeZero n] : Perm.cycleType (cy
 theorem cycleIcc_zero_eq_cycleRange (i : Fin n) [NeZero n] : cycleIcc 0 i = cycleRange i := by
   ext x
   rcases lt_trichotomy x i with ch | ch | ch
-  · simp [- cycleIcc_def_le, cycleIcc_of_ge_of_lt (zero_le x) ch, cycleRange_of_lt ch]
-  · simp [- cycleIcc_def_le, ch]
-  · simp [- cycleIcc_def_le, cycleIcc_of_gt ch, cycleRange_of_gt ch]
+  · simp [-cycleIcc_def_le, cycleIcc_of_ge_of_lt (zero_le x) ch, cycleRange_of_lt ch]
+  · simp [-cycleIcc_def_le, ch]
+  · simp [-cycleIcc_def_le, cycleIcc_of_gt ch, cycleRange_of_gt ch]
 
 theorem cycleIcc.trans [NeZero n] (hij : i ≤ j) (hjk : j ≤ k) :
     (cycleIcc i j) ∘ (cycleIcc j k) = (cycleIcc i k) := by

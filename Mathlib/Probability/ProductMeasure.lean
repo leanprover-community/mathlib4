@@ -3,8 +3,10 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.Probability.Kernel.Composition.MeasureComp
-import Mathlib.Probability.Kernel.IonescuTulcea.Traj
+module
+
+public import Mathlib.Probability.Kernel.Composition.MeasureComp
+public import Mathlib.Probability.Kernel.IonescuTulcea.Traj
 
 /-!
 # Infinite product of probability measures
@@ -44,6 +46,8 @@ in which case `piContent μ` is known to be a true measure (see `piContent_eq_me
 
 infinite product measure
 -/
+
+@[expose] public section
 
 open ProbabilityTheory Finset Filter Preorder MeasurableEquiv
 
@@ -169,7 +173,7 @@ theorem partialTraj_const_restrict₂ {a b : ℕ} :
     (partialTraj (fun n ↦ const _ (μ (n + 1))) a b).map (restrict₂ Ioc_subset_Iic_self) =
     const _ (Measure.pi (fun i : Ioc a b ↦ μ i)) := by
   obtain hab | hba := lt_or_ge a b
-  · refine Nat.le_induction ?_ (fun n hn hind ↦ ?_) b (Nat.succ_le.2 hab) <;> ext1 x₀
+  · refine Nat.le_induction ?_ (fun n hn hind ↦ ?_) b (Nat.succ_le_of_lt hab) <;> ext1 x₀
     · rw [partialTraj_succ_self, ← map_comp_right, map_apply, prod_apply, map_apply, const_apply,
         const_apply, Measure.map_piSingleton, restrict₂_comp_IicProdIoc, Measure.map_snd_prod,
         measure_univ, one_smul]
@@ -267,7 +271,7 @@ theorem piContent_tendsto_zero {A : ℕ → Set (Π i, X i)} (A_mem : ∀ n, A n
   -- goal is to see it as a family indexed by this countable set, because on the product indexed
   -- by this countable set we can build a measure. To do so we have to pull back our cylinders
   -- along the injection from `Π i : u, X i` to `Π i, X i`.
-  let u := ⋃ n, (s n).toSet
+  let u := ⋃ n, (s n : Set ι)
   -- `tₙ` will be `sₙ` seen as a subset of `u`.
   let t n : Finset u := (s n).preimage Subtype.val Subtype.val_injective.injOn
   classical
@@ -340,12 +344,18 @@ theorem isSigmaSubadditive_piContent : (piContent μ).IsSigmaSubadditive := by
 
 namespace Measure
 
+open scoped Classical in
 /-- The product measure of an arbitrary family of probability measures. It is defined as the unique
 extension of the function which gives to cylinders the measure given by the associated product
-measure. -/
+measure.
+
+It is defined via an `if ... then ... else` so that it can be manipulated without carrying
+a proof that the measures are probability measures. -/
 noncomputable def infinitePi : Measure (Π i, X i) :=
-  (piContent μ).measure isSetSemiring_measurableCylinders
-    generateFrom_measurableCylinders.ge (isSigmaSubadditive_piContent μ)
+  if h : ∀ i, IsProbabilityMeasure (μ i) then
+    (piContent μ).measure isSetSemiring_measurableCylinders
+      generateFrom_measurableCylinders.ge (isSigmaSubadditive_piContent (hμ := h) μ)
+    else 0
 
 /-- The product measure is the projective limit of the partial product measures. This ensures
 uniqueness and expresses the value of the product measure applied to cylinders. -/
@@ -353,8 +363,8 @@ theorem isProjectiveLimit_infinitePi :
     IsProjectiveLimit (infinitePi μ) (fun I : Finset ι ↦ (Measure.pi (fun i : I ↦ μ i))) := by
   intro I
   ext s hs
-  rw [map_apply (measurable_restrict I) hs, infinitePi, AddContent.measure_eq, ← cylinder,
-    piContent_cylinder μ hs]
+  rw [map_apply (measurable_restrict I) hs, infinitePi, dif_pos hμ, AddContent.measure_eq,
+    ← cylinder, piContent_cylinder μ hs]
   · exact generateFrom_measurableCylinders.symm
   · exact cylinder_mem_measurableCylinders _ _ hs
 
@@ -373,7 +383,7 @@ instance : IsProbabilityMeasure (infinitePi μ) := by
 it gives the same measure to measurable boxes. -/
 theorem eq_infinitePi {ν : Measure (Π i, X i)}
     (hν : ∀ s : Finset ι, ∀ t : (i : ι) → Set (X i),
-      (∀ i ∈ s, MeasurableSet (t i)) → ν (Set.pi s t) = ∏ i ∈ s, μ i (t i)) :
+      (∀ i, MeasurableSet (t i)) → ν (Set.pi s t) = ∏ i ∈ s, μ i (t i)) :
     ν = infinitePi μ := by
   refine (isProjectiveLimit_infinitePi μ).unique ?_ |>.symm
   refine fun s ↦ (pi_eq fun t ht ↦ ?_).symm
@@ -382,7 +392,10 @@ theorem eq_infinitePi {ν : Measure (Π i, X i)}
   · congr with i
     rw [dif_pos i.2]
   any_goals fun_prop
-  · exact fun i hi ↦ dif_pos hi ▸ ht ⟨i, hi⟩
+  · rintro i
+    split_ifs with hi
+    · exact ht ⟨i, hi⟩
+    · exact .univ
   · exact .univ_pi ht
 
 -- TODO: add a version for an infinite product
@@ -397,6 +410,16 @@ lemma infinitePi_pi {s : Finset ι} {t : (i : ι) → Set (X i)}
   · exact measurable_restrict _
   · exact .univ_pi fun i ↦ mt i.1 i.2
 
+-- TODO: add a version for infinite `ι`. See TODO on `infinitePi_pi`.
+@[simp]
+lemma infinitePi_singleton [Fintype ι] [∀ i, MeasurableSingletonClass (X i)] (f : ∀ i, X i) :
+    infinitePi μ {f} = ∏ i, μ i {f i} := by
+  simpa [Set.univ_pi_singleton] using
+    infinitePi_pi μ (s := .univ) (t := fun i ↦ {f i}) fun _ _ ↦ .singleton _
+
+@[simp] lemma infinitePi_dirac (f : ∀ i, X i) : infinitePi (fun i ↦ dirac (f i)) = dirac f :=
+  .symm <| eq_infinitePi _ <| by simp +contextual [MeasurableSet.pi, Finset.countable_toSet]
+
 lemma _root_.measurePreserving_eval_infinitePi (i : ι) :
     MeasurePreserving (Function.eval i) (infinitePi μ) (μ i) where
   measurable := by fun_prop
@@ -408,20 +431,22 @@ lemma _root_.measurePreserving_eval_infinitePi (i : ι) :
     rw [this, ← map_map, infinitePi_map_restrict, (measurePreserving_eval _ _).map_eq]
     all_goals fun_prop
 
+lemma infinitePi_map_eval (i : ι) :
+    (infinitePi μ).map (fun x ↦ x i) = μ i :=
+  (measurePreserving_eval_infinitePi μ i).map_eq
+
 lemma infinitePi_map_pi {Y : ι → Type*} [∀ i, MeasurableSpace (Y i)] {f : (i : ι) → X i → Y i}
     (hf : ∀ i, Measurable (f i)) :
-    haveI (i : ι) : IsProbabilityMeasure ((μ i).map (f i)) :=
-      isProbabilityMeasure_map (hf i).aemeasurable
     (infinitePi μ).map (fun x i ↦ f i (x i)) = infinitePi (fun i ↦ (μ i).map (f i)) := by
   have (i : ι) : IsProbabilityMeasure ((μ i).map (f i)) :=
     isProbabilityMeasure_map (hf i).aemeasurable
   refine eq_infinitePi _ fun s t ht ↦ ?_
-  rw [map_apply (by fun_prop) (.pi s.countable_toSet ht)]
+  rw [map_apply (by fun_prop) (.pi s.countable_toSet fun _ _ ↦ ht _)]
   have : (fun (x : Π i, X i) i ↦ f i (x i)) ⁻¹' ((s : Set ι).pi t) =
       (s : Set ι).pi (fun i ↦ (f i) ⁻¹' (t i)) := by ext x; simp
-  rw [this, infinitePi_pi _ (fun i hi ↦ hf i (ht i hi))]
-  refine Finset.prod_congr rfl fun i hi ↦ ?_
-  rw [map_apply (by fun_prop) (ht i hi)]
+  rw [this, infinitePi_pi _ (fun i _ ↦ hf i (ht i))]
+  congr! with i hi
+  rw [map_apply (by fun_prop) (ht i)]
 
 /-- If we push the product measure forward by a reindexing equivalence, we get a product measure
 on the reindexed product. -/
@@ -445,6 +470,57 @@ theorem infinitePi_eq_pi [Fintype ι] : infinitePi μ = Measure.pi μ := by
 lemma infinitePi_cylinder {s : Finset ι} {S : Set (Π i : s, X i)} (mS : MeasurableSet S) :
     infinitePi μ (cylinder s S) = Measure.pi (fun i : s ↦ μ i) S := by
   rw [cylinder, ← Measure.map_apply (measurable_restrict _) mS, infinitePi_map_restrict]
+
+section curry
+
+variable {ι : Type*} {κ : ι → Type*} {X : (i : ι) → κ i → Type*}
+  {mX : ∀ i, ∀ j, MeasurableSpace (X i j)} (μ : (i : ι) → (j : κ i) → Measure (X i j))
+  [hμ : ∀ i j, IsProbabilityMeasure (μ i j)]
+
+lemma infinitePi_map_piCurry_symm :
+    (infinitePi fun i : ι ↦ infinitePi fun j : κ i ↦ μ i j).map (piCurry X).symm =
+      infinitePi fun p : (i : ι) × κ i ↦ μ p.1 p.2 := by
+  apply eq_infinitePi
+  intro s t ht
+  classical
+  rw [map_apply (by fun_prop) (.pi (countable_toSet _) fun _ _ ↦ ht _),
+    ← Finset.sigma_image_fst_preimage_mk s, coe_piCurry_symm, Finset.coe_sigma,
+    Set.uncurry_preimage_sigma_pi, infinitePi_pi, Finset.prod_sigma]
+  · apply Finset.prod_congr rfl
+    simp only [Finset.mem_image, Sigma.exists, exists_and_right, exists_eq_right,
+      forall_exists_index]
+    intro i j hij
+    rw [infinitePi_pi]
+    simp [ht]
+  · simp only [mem_image, Sigma.exists, exists_and_right, exists_eq_right, forall_exists_index]
+    exact fun i j hij ↦ MeasurableSet.pi (countable_toSet _) fun k hk ↦ by simp_all
+
+lemma infinitePi_map_piCurry :
+    (infinitePi fun p : (i : ι) × κ i ↦ μ p.1 p.2).map (piCurry X) =
+      infinitePi fun i : ι ↦ infinitePi fun j : κ i ↦ μ i j := by
+  rw [MeasurableEquiv.map_apply_eq_iff_map_symm_apply_eq, infinitePi_map_piCurry_symm]
+
+variable {ι κ X : Type*} {mX : MeasurableSpace X} (μ : ι → κ → Measure X)
+  [hμ : ∀ i j, IsProbabilityMeasure (μ i j)]
+
+lemma infinitePi_map_curry_symm :
+    (infinitePi fun i : ι ↦ infinitePi fun j : κ ↦ μ i j).map (curry ι κ X).symm =
+      infinitePi fun p : ι × κ ↦ μ p.1 p.2 := by
+  rw [← (MeasurableEquiv.piCongrLeft (fun _ ↦ X)
+    (Equiv.sigmaEquivProd ι κ).symm).map_measurableEquiv_injective.eq_iff, map_map]
+  · have : (MeasurableEquiv.piCongrLeft (fun _ ↦ X) (Equiv.sigmaEquivProd ι κ).symm) ∘
+        (MeasurableEquiv.curry ι κ X).symm = ⇑(MeasurableEquiv.piCurry (fun _ _ ↦ X)).symm := by
+      ext; simp [piCongrLeft, Equiv.piCongrLeft, Sigma.uncurry]
+    rw [this, infinitePi_map_piCurry_symm]
+    convert infinitePi_map_piCongrLeft (fun p ↦ μ p.1 p.2) (Equiv.sigmaEquivProd ι κ).symm |>.symm
+  all_goals fun_prop
+
+lemma infinitePi_map_curry :
+    (infinitePi fun p : ι × κ ↦ μ p.1 p.2).map (curry ι κ X) =
+      infinitePi fun i : ι ↦ infinitePi fun j : κ ↦ μ i j := by
+  rw [MeasurableEquiv.map_apply_eq_iff_map_symm_apply_eq, infinitePi_map_curry_symm]
+
+end curry
 
 end Measure
 

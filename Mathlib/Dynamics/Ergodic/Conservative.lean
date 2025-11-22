@@ -3,9 +3,11 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.Dynamics.Ergodic.MeasurePreserving
-import Mathlib.Combinatorics.Pigeonhole
+module
+
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.Dynamics.Ergodic.MeasurePreserving
+public import Mathlib.Combinatorics.Pigeonhole
 
 /-!
 # Conservative systems
@@ -34,6 +36,8 @@ infinitely many times.
 
 conservative dynamical system, Poincare recurrence theorem
 -/
+
+@[expose] public section
 
 
 noncomputable section

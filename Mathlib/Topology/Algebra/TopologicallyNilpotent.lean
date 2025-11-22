@@ -3,9 +3,11 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
-import Mathlib.Topology.Algebra.LinearTopology
-import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.RingTheory.Nilpotent.Defs
+module
+
+public import Mathlib.Topology.Algebra.LinearTopology
+public import Mathlib.RingTheory.Ideal.Basic
+public import Mathlib.RingTheory.Nilpotent.Defs
 
 /-! # Topologically nilpotent elements
 
@@ -34,6 +36,8 @@ Let `R` be a commutative ring with a linear topology.
 These lemmas are actually deduced from their analogues for commuting elements of rings.
 
 -/
+
+@[expose] public section
 
 open Filter
 

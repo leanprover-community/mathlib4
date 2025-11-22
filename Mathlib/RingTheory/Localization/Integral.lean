@@ -3,12 +3,14 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.Polynomial.Lifts
-import Mathlib.RingTheory.Algebraic.Integral
-import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.Localization.Integer
+module
+
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+public import Mathlib.Algebra.Polynomial.Lifts
+public import Mathlib.RingTheory.Algebraic.Integral
+public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.RingTheory.Localization.Integer
 
 /-!
 # Integral and algebraic elements of a fraction field
@@ -21,6 +23,8 @@ See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
+
+@[expose] public section
 
 
 variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
@@ -57,7 +61,7 @@ alias coeffIntegerNormalization_of_not_mem_support := coeffIntegerNormalization_
 theorem coeffIntegerNormalization_mem_support (p : S[X]) (i : ℕ)
     (h : coeffIntegerNormalization M p i ≠ 0) : i ∈ p.support := by
   contrapose h
-  rw [Ne, Classical.not_not, coeffIntegerNormalization, dif_neg h]
+  rw [coeffIntegerNormalization, dif_neg h]
 
 /-- `integerNormalization g` normalizes `g` to have integer coefficients
 by clearing the denominators -/
@@ -378,7 +382,7 @@ theorem ideal_span_singleton_map_subset {L : Type*} [IsDomain R] [IsDomain S] [F
     (Ideal.span ({algebraMap S L a} : Set L) : Set L) ⊆ Submodule.span K (algebraMap S L '' b) := by
   intro x hx
   obtain ⟨x', rfl⟩ := Ideal.mem_span_singleton.mp hx
-  obtain ⟨y', z', rfl⟩ := IsLocalization.mk'_surjective S⁰ x'
+  obtain ⟨y', z', rfl⟩ := IsLocalization.exists_mk'_eq S⁰ x'
   obtain ⟨y, z, hz0, yz_eq⟩ :=
     Algebra.IsAlgebraic.exists_smul_eq_mul R y' (nonZeroDivisors.coe_ne_zero z')
   have injRS : Function.Injective (algebraMap R S) := by
@@ -403,9 +407,6 @@ theorem ideal_span_singleton_map_subset {L : Type*} [IsDomain R] [IsDomain S] [F
 
 end IsFractionRing
 
-@[deprecated (since := "2025-03-23")]
-alias isAlgebraic_of_isLocalization := IsLocalization.isAlgebraic
-
 open nonZeroDivisors in
 lemma isAlgebraic_of_isFractionRing {R S} (K L) [CommRing R] [CommRing S] [Field K] [CommRing L]
     [Algebra R S] [Algebra R K] [Algebra R L] [Algebra S L] [Algebra K L] [IsScalarTower R S L]
@@ -413,7 +414,7 @@ lemma isAlgebraic_of_isFractionRing {R S} (K L) [CommRing R] [CommRing S] [Field
     [Algebra.IsIntegral R S] : Algebra.IsAlgebraic K L := by
   constructor
   intro x
-  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective S⁰ x
+  obtain ⟨x, s, rfl⟩ := IsLocalization.exists_mk'_eq S⁰ x
   apply IsIntegral.isAlgebraic
   rw [IsLocalization.mk'_eq_mul_mk'_one]
   apply RingHom.IsIntegralElem.mul

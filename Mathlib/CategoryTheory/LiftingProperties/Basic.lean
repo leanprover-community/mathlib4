@@ -3,8 +3,10 @@ Copyright (c) 2021 Jakob Scholbach. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Scholbach, Joël Riou
 -/
-import Mathlib.CategoryTheory.CommSq
-import Mathlib.CategoryTheory.Retract
+module
+
+public import Mathlib.CategoryTheory.CommSq
+public import Mathlib.CategoryTheory.Retract
 
 /-!
 # Lifting properties
@@ -22,6 +24,8 @@ lifting property
 1) direct/inverse images, adjunctions
 
 -/
+
+@[expose] public section
 
 
 universe v

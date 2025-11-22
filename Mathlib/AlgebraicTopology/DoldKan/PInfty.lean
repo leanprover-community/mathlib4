@@ -3,9 +3,11 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.Projections
-import Mathlib.CategoryTheory.Idempotents.FunctorCategories
-import Mathlib.CategoryTheory.Idempotents.FunctorExtension
+module
+
+public import Mathlib.AlgebraicTopology.DoldKan.Projections
+public import Mathlib.CategoryTheory.Idempotents.FunctorCategories
+public import Mathlib.CategoryTheory.Idempotents.FunctorExtension
 
 /-!
 
@@ -20,6 +22,8 @@ projection on the normalized Moore subcomplex, with kernel the degenerate subcom
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Preadditive

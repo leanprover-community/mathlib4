@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.HomEquiv
-import Mathlib.Algebra.Homology.Embedding.IsSupported
-import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
+module
+
+public import Mathlib.Algebra.Homology.Embedding.HomEquiv
+public import Mathlib.Algebra.Homology.Embedding.IsSupported
+public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
 /-!
 # The canonical truncation
@@ -38,6 +40,8 @@ We also construct the canonical epimorphism `K.πTruncGE e : K ⟶ K.truncGE e`.
   in homology in degrees in the image of `e.f`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits ZeroObject Category
 
@@ -374,13 +378,12 @@ instance [K.IsStrictlySupported e] : IsIso (K.πTruncGE e) := by
   suffices ∀ (i' : ι'), IsIso ((K.πTruncGE e).f i') by
     apply Hom.isIso_of_components
   intro i'
-  by_cases hn : ∃ i, e.f i = i'
+  by_cases! hn : ∃ i, e.f i = i'
   · obtain ⟨i, hi⟩ := hn
     dsimp [πTruncGE]
     rw [e.isIso_liftExtend_f_iff _ _ hi]
     infer_instance
-  · simp only [not_exists] at hn
-    refine ⟨0, ?_, ?_⟩
+  · refine ⟨0, ?_, ?_⟩
     all_goals
       apply (isZero_X_of_isStrictlySupported _ e i' hn).eq_of_src
 

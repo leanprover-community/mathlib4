@@ -3,17 +3,21 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Degenerate
-import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.Degenerate
+public import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 
 /-!
-# The nondegenerate simplices in the nerve of partially ordered type
+# The nondegenerate simplices in the nerve of a partially ordered type
 
 In this file, we show that if `X` is a partially ordered type,
-then a `n`-simplex `s` of the nerve is nondegenerate iff
+then an `n`-simplex `s` of the nerve is nondegenerate iff
 the monotone map `s.obj : Fin (n + 1) → X` is strictly monotone.
 
 -/
+
+@[expose] public section
 
 universe u
 

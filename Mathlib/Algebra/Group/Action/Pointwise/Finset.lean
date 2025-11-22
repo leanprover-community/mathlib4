@@ -3,14 +3,18 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Pointwise actions of finsets
 -/
+
+@[expose] public section
 
 -- TODO
 -- assert_not_exists MonoidWithZero
@@ -158,6 +162,10 @@ variable [DecidableEq β] [Group α] [MulAction α β] {s t : Finset β} {a : α
 @[to_additive (attr := simp)]
 theorem smul_mem_smul_finset_iff (a : α) : a • b ∈ a • s ↔ b ∈ s :=
   (MulAction.injective _).mem_finset_image
+
+@[to_additive (attr := simp)]
+lemma mul_mem_smul_finset_iff [DecidableEq α] (a : α) {b : α} {s : Finset α} :
+    a * b ∈ a • s ↔ b ∈ s := smul_mem_smul_finset_iff _
 
 @[to_additive]
 theorem inv_smul_mem_iff : a⁻¹ • b ∈ s ↔ b ∈ a • s := by

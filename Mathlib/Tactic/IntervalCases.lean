@@ -3,9 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Mario Carneiro
 -/
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.FinCases
-import Mathlib.Control.Basic
+module
+
+public meta import Mathlib.Tactic.NormNum
+public meta import Mathlib.Tactic.FinCases
+public meta import Mathlib.Control.Basic
 
 /-!
 # Case bash on variables in finite intervals
@@ -22,6 +24,8 @@ You can also explicitly specify a lower and upper bound to use, as `interval_cas
 where the hypotheses should be of the form `hl : a ≤ n` and `hu : n < b`. In that case,
 `interval_cases` calls `fin_cases` on the resulting hypothesis `h : n ∈ Set.Ico a b`.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 

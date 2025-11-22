@@ -3,9 +3,11 @@ Copyright (c) 2024 Sina Hazratpour. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour
 -/
-import Mathlib.CategoryTheory.Distributive.Monoidal
-import Mathlib.CategoryTheory.Limits.MonoCoprod
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+module
+
+public import Mathlib.CategoryTheory.Distributive.Monoidal
+public import Mathlib.CategoryTheory.Limits.MonoCoprod
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 
 /-!
 
@@ -39,6 +41,8 @@ monoidal distributive.
 - [J.R.B.Cockett, Introduction to distributive categories, 1993][cockett1993]
 - [Carboni et al, Introduction to extensive and distributive categories][CARBONI1993145]
 -/
+
+@[expose] public section
 
 universe v v₂ u u₂
 

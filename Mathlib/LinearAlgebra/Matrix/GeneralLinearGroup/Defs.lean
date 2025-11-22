@@ -3,10 +3,12 @@ Copyright (c) 2021 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
-import Mathlib.LinearAlgebra.GeneralLinearGroup
-import Mathlib.Algebra.Ring.Subring.Units
+module
+
+public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
+public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+public import Mathlib.LinearAlgebra.GeneralLinearGroup
+public import Mathlib.Algebra.Ring.Subring.Units
 
 /-!
 # The General Linear group $GL(n, R)$
@@ -24,6 +26,8 @@ consisting of all invertible `n` by `n` `R`-matrices.
 
 matrix group, group, matrix inverse
 -/
+
+@[expose] public section
 
 
 namespace Matrix
@@ -73,6 +77,18 @@ lemma det_ne_zero [Nontrivial R] (g : GL n R) : g.val.det ≠ 0 :=
 `LinearMap.GeneralLinearGroup R (n → R)` are multiplicatively equivalent -/
 def toLin : GL n R ≃* LinearMap.GeneralLinearGroup R (n → R) :=
   Units.mapEquiv toLinAlgEquiv'.toMulEquiv
+
+/-- The isomorphism from `GL n R` to the general linear group of a module
+associated with a basis. -/
+noncomputable def toLin'
+    {V : Type*} [AddCommGroup V] [Module R V] (b : Module.Basis n R V) :
+    GL n R ≃* LinearMap.GeneralLinearGroup R V :=
+  toLin.trans <| LinearMap.GeneralLinearGroup.congrLinearEquiv b.equivFun.symm
+
+lemma toLin'_apply {V : Type*} [AddCommGroup V] [Module R V]
+    (b : Module.Basis n R V) (M : GL n R) (v : V) :
+    (toLin' b M).toLinearEquiv v = Fintype.linearCombination R ⇑b (↑M *ᵥ (b.repr v)) := by
+  simp [toLin', toLin, Fintype.linearCombination_apply, MulEquiv.trans_apply]
 
 /-- Given a matrix with invertible determinant, we get an element of `GL n R`. -/
 @[simps! val]
@@ -180,6 +196,24 @@ lemma coe_map_mul_map_inv (g : GL n R) : g.val.map f * g.val⁻¹.map f = 1 := b
 lemma coe_map_inv_mul_map (g : GL n R) : g.val⁻¹.map f * g.val.map f = 1 := by
   rw [← Matrix.map_mul]
   simp only [isUnits_det_units, nonsing_inv_mul, map_zero, map_one, Matrix.map_one]
+
+section kronecker
+variable {R m : Type*} [CommSemiring R] [Fintype m] [DecidableEq m]
+
+open scoped Kronecker
+
+/-- The invertible kronecker matrix of invertible matrices. -/
+protected def kronecker (x : GL n R) (y : GL m R) : GL (n × m) R where
+  val := x ⊗ₖ y
+  inv := ↑x⁻¹ ⊗ₖ ↑y⁻¹
+  val_inv := by simp only [← mul_kronecker_mul, Units.mul_inv, one_kronecker_one]
+  inv_val := by simp only [← mul_kronecker_mul, Units.inv_mul, one_kronecker_one]
+
+theorem _root_.Matrix.IsUnit.kronecker {x : Matrix n n R} {y : Matrix m m R}
+    (hx : IsUnit x) (hy : IsUnit y) : IsUnit (x ⊗ₖ y) :=
+  GeneralLinearGroup.kronecker hx.unit hy.unit |>.isUnit
+
+end kronecker
 
 end GeneralLinearGroup
 

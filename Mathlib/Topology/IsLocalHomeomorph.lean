@@ -3,8 +3,10 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Topology.OpenPartialHomeomorph
-import Mathlib.Topology.SeparatedMap
+module
+
+public import Mathlib.Topology.OpenPartialHomeomorph
+public import Mathlib.Topology.SeparatedMap
 
 /-!
 # Local homeomorphisms
@@ -27,6 +29,8 @@ Note that `IsLocalHomeomorph` is a global condition. This is in contrast to
 * more!
 
 -/
+
+@[expose] public section
 
 
 open Topology
@@ -61,7 +65,7 @@ variable {f s}
 
 theorem discreteTopology_of_image (h : IsLocalHomeomorphOn f s)
     [DiscreteTopology (f '' s)] : DiscreteTopology s :=
-  singletons_open_iff_discrete.mp fun x ↦ by
+  discreteTopology_iff_isOpen_singleton.mpr fun x ↦ by
     obtain ⟨e, hx, rfl⟩ := h x x.2
     have ⟨U, hU, eq⟩ := isOpen_discrete {(⟨_, _, x.2, rfl⟩ : e '' s)}
     refine ⟨e.source ∩ e ⁻¹' U, e.continuousOn_toFun.isOpen_inter_preimage e.open_source hU,
@@ -72,7 +76,7 @@ theorem discreteTopology_of_image (h : IsLocalHomeomorphOn f s)
 theorem discreteTopology_image_iff (h : IsLocalHomeomorphOn f s) (hs : IsOpen s) :
     DiscreteTopology (f '' s) ↔ DiscreteTopology s := by
   refine ⟨fun _ ↦ h.discreteTopology_of_image, ?_⟩
-  simp_rw [← singletons_open_iff_discrete]
+  simp_rw [discreteTopology_iff_isOpen_singleton]
   rintro hX ⟨_, x, hx, rfl⟩
   obtain ⟨e, hxe, rfl⟩ := h x hx
   refine ⟨e '' {x}, e.isOpen_image_of_subset_source ?_ (Set.singleton_subset_iff.mpr hxe), ?_⟩

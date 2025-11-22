@@ -3,10 +3,12 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Order.Group.Synonym
-import Mathlib.Algebra.Order.Monoid.Defs
-import Mathlib.Order.PiLex
+module
+
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Algebra.Order.Group.Synonym
+public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Order.PiLex
 
 /-!
 # Lexicographic product of algebraic order structures
@@ -14,6 +16,8 @@ import Mathlib.Order.PiLex
 This file proves that the lexicographic order on pi types is compatible with the pointwise algebraic
 operations.
 -/
+
+@[expose] public section
 
 namespace Pi.Lex
 variable {ι : Type*} {α : ι → Type*} [LinearOrder ι]

@@ -3,11 +3,13 @@ Copyright (c) 2020 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Johan Commelin
 -/
-import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
-import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
-import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
+module
+
+public import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
+public import Mathlib.FieldTheory.Finite.Basic
+public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
+public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
 
 /-!
 # Minimal polynomial of roots of unity
@@ -20,6 +22,8 @@ We gather several results about minimal polynomial of root of unity.
   primitive root of unity is at least `totient n`.
 
 -/
+
+@[expose] public section
 
 
 open minpoly Polynomial
@@ -78,7 +82,7 @@ theorem minpoly_dvd_expand {p : ℕ} (hdiv : ¬p ∣ n) :
   letI : IsIntegrallyClosed ℤ := GCDMonoid.toIsIntegrallyClosed
   refine minpoly.isIntegrallyClosed_dvd (h.isIntegral hpos) ?_
   rw [aeval_def, coe_expand, ← comp, eval₂_eq_eval_map, map_comp, Polynomial.map_pow, map_X,
-    eval_comp, eval_pow, eval_X, ← eval₂_eq_eval_map, ← aeval_def]
+    eval_comp, eval_X_pow, ← eval₂_eq_eval_map, ← aeval_def]
   exact minpoly.aeval _ _
 
 /-- Let `P` be the minimal polynomial of a root of unity `μ` and `Q` be the minimal polynomial of

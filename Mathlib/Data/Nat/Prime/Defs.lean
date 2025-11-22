@@ -3,11 +3,13 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Nat.Units
-import Mathlib.Algebra.GroupWithZero.Nat
-import Mathlib.Algebra.Prime.Defs
-import Mathlib.Data.Nat.Sqrt
-import Mathlib.Order.Basic
+module
+
+public import Mathlib.Algebra.Group.Nat.Units
+public import Mathlib.Algebra.GroupWithZero.Nat
+public import Mathlib.Algebra.Prime.Defs
+public import Mathlib.Data.Nat.Sqrt
+public import Mathlib.Order.Basic
 
 /-!
 # Prime numbers
@@ -24,6 +26,8 @@ This file deals with prime numbers: natural numbers `p ≥ 2` whose only divisor
                                   only divisible by `1` iff it is prime
 
 -/
+
+@[expose] public section
 
 assert_not_exists Ring
 
@@ -191,14 +195,10 @@ If `n < k * k`, then `minFacAux n k = n`, if `k | n`, then `minFacAux n k = k`.
 Otherwise, `minFacAux n k = minFacAux n (k+2)` using well-founded recursion.
 If `n` is odd and `1 < n`, then `minFacAux n 3` is the smallest prime factor of `n`.
 
-By default this well-founded recursion would be irreducible.
-This prevents use `decide` to resolve `Nat.prime n` for small values of `n`,
-so we mark this as `@[semireducible]`.
-
-In future, we may want to remove this annotation and instead use `norm_num` instead of `decide`
-in these situations.
+This definition is by well-founded recursion, so `rfl` or `decide` cannot be used.
+One can use `norm_num` to prove `Nat.prime n` for small `n`.
 -/
-@[semireducible] def minFacAux (n : ℕ) : ℕ → ℕ
+def minFacAux (n : ℕ) : ℕ → ℕ
   | k =>
     if n < k * k then n
     else
@@ -371,7 +371,7 @@ theorem minFac_eq_one_iff {n : ℕ} : minFac n = 1 ↔ n = 1 := by
     rw [h] at this
     exact not_prime_one this
   · rintro rfl
-    rfl
+    simp [minFac, minFacAux]
 
 @[simp]
 theorem minFac_eq_two_iff (n : ℕ) : minFac n = 2 ↔ 2 ∣ n := by
@@ -383,10 +383,8 @@ theorem minFac_eq_two_iff (n : ℕ) : minFac n = 2 ↔ 2 ∣ n := by
     have ub := minFac_le_of_dvd (le_refl 2) h
     have lb := minFac_pos n
     refine ub.eq_or_lt.resolve_right fun h' => ?_
-    have := le_antisymm (Nat.succ_le_of_lt lb) (Nat.lt_succ_iff.mp h')
-    rw [eq_comm, Nat.minFac_eq_one_iff] at this
-    subst this
-    exact not_lt_of_ge (le_of_dvd lb h) h'
+    suffices n.minFac = 1 by simp_all
+    exact (le_antisymm (Nat.succ_le_of_lt lb) (Nat.lt_succ_iff.mp h')).symm
 
 theorem factors_lemma {k} : (k + 2) / minFac (k + 2) < k + 2 :=
   div_lt_self (Nat.zero_lt_succ _) (minFac_prime (by

@@ -3,11 +3,13 @@ Copyright (c) 2024 Judith Ludwig, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Christian Merten
 -/
-import Mathlib.Algebra.Ring.GeomSum
-import Mathlib.Data.Finite.Sum
-import Mathlib.Data.Fintype.Units
-import Mathlib.GroupTheory.GroupAction.Quotient
-import Mathlib.LinearAlgebra.Projectivization.Basic
+module
+
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.Data.Finite.Sum
+public import Mathlib.Data.Fintype.Units
+public import Mathlib.GroupTheory.GroupAction.Quotient
+public import Mathlib.LinearAlgebra.Projectivization.Basic
 
 /-!
 # Cardinality of projective spaces
@@ -15,6 +17,8 @@ import Mathlib.LinearAlgebra.Projectivization.Basic
 We compute the cardinality of `ℙ k V` if `k` is a finite field.
 
 -/
+
+@[expose] public section
 
 namespace Projectivization
 
@@ -59,15 +63,18 @@ lemma finite_iff_of_finite [Finite k] : Finite (ℙ k V) ↔ Finite V := by
 See `Projectivization.card'` and `Projectivization.card''` for other spellings of the formula. -/
 lemma card : Nat.card V - 1 = Nat.card (ℙ k V) * (Nat.card k - 1) := by
   nontriviality V
-  wlog h : Finite k
-  · push_neg at h
+  cases finite_or_infinite k with
+  | inr h =>
     have : Infinite V := Module.Free.infinite k V
     simp
-  wlog h : Finite V
-  · have := not_iff_not.mpr (finite_iff_of_finite k V)
-    push_neg at h this
+  | inl h =>
+  cases finite_or_infinite V with
+  | inr h =>
+    have := not_iff_not.mpr (finite_iff_of_finite k V)
+    push_neg at this
     have : Infinite (ℙ k V) := by rwa [this]
     simp
+  | inl h =>
   classical
   haveI : Fintype V := Fintype.ofFinite V
   haveI : Fintype (ℙ k V) := Fintype.ofFinite (ℙ k V)

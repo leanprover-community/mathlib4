@@ -3,9 +3,11 @@ Copyright (c) 2022 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Ring.IsNonarchimedean
-import Mathlib.Analysis.Normed.Field.Lemmas
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
+module
+
+public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
+public import Mathlib.Analysis.Normed.Field.Lemmas
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Seminorms and norms on rings
@@ -38,6 +40,8 @@ absolute values.
 ## Tags
 ring_seminorm, ring_norm
 -/
+
+@[expose] public section
 
 
 open NNReal
@@ -159,7 +163,7 @@ theorem exists_index_pow_le (hna : IsNonarchimedean p) (x y : R) (n : ℕ) :
     ∃ (m : ℕ), m < n + 1 ∧ p ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ)) ≤
       (p (x ^ m) * p (y ^ (n - m : ℕ))) ^ (1 / (n : ℝ)) := by
   obtain ⟨m, hm_lt, hm⟩ := IsNonarchimedean.add_pow_le hna n x y
-  exact ⟨m, hm_lt, Real.rpow_le_rpow (apply_nonneg p _) hm (one_div_nonneg.mpr n.cast_nonneg')⟩
+  exact ⟨m, hm_lt, by gcongr⟩
 
 end CommRing
 
@@ -172,18 +176,13 @@ theorem map_pow_le_pow {F α : Type*} [Ring α] [FunLike F α ℝ] [RingSeminorm
   | 1, _ => by simp only [pow_one, le_refl]
   | n + 2, _ => by
     simp only [pow_succ _ (n + 1)]
-    exact
-      le_trans (map_mul_le_mul f _ a)
-        (mul_le_mul_of_nonneg_right (map_pow_le_pow _ _ n.succ_ne_zero) (apply_nonneg f a))
+    grw [map_mul_le_mul, map_pow_le_pow _ _ n.succ_ne_zero]
 
 /-- If `f` is a ring seminorm on `a` with `f 1 ≤ 1`, then `∀ (n : ℕ), f (a ^ n) ≤ f a ^ n`. -/
 theorem map_pow_le_pow' {F α : Type*} [Ring α] [FunLike F α ℝ] [RingSeminormClass F α ℝ] {f : F}
     (hf1 : f 1 ≤ 1) (a : α) : ∀ n : ℕ, f (a ^ n) ≤ f a ^ n
   | 0 => by simp only [pow_zero, hf1]
-  | n + 1 => by
-    simp only [pow_succ _ n]
-    exact le_trans (map_mul_le_mul f _ a)
-      (mul_le_mul_of_nonneg_right (map_pow_le_pow' hf1 _ n) (apply_nonneg f a))
+  | n + 1 => map_pow_le_pow _ _ n.succ_ne_zero
 
 /-- The norm of a `NonUnitalSeminormedRing` as a `RingSeminorm`. -/
 def normRingSeminorm (R : Type*) [NonUnitalSeminormedRing R] : RingSeminorm R :=
@@ -204,18 +203,15 @@ theorem isBoundedUnder (hp : p 1 ≤ 1) {s : ℕ → ℕ} (hs_le : ∀ n : ℕ, 
   have h_le : ∀ m : ℕ, p (x ^ s (ψ m)) ^ (1 / (ψ m : ℝ)) ≤ p x ^ ((s (ψ m) : ℝ) / (ψ m : ℝ)) := by
     intro m
     rw [← mul_one_div (s (ψ m) : ℝ), rpow_mul (apply_nonneg p x), rpow_natCast]
-    exact rpow_le_rpow (apply_nonneg _ _) (map_pow_le_pow' hp x _)
-      (one_div_nonneg.mpr (cast_nonneg _))
+    grw [map_pow_le_pow' hp x]
   apply isBoundedUnder_of
-  by_cases hfx : p x ≤ 1
-  · use 1, fun m => le_trans (h_le m)
-      (rpow_le_one (apply_nonneg _ _) hfx (div_nonneg (cast_nonneg _) (cast_nonneg _)))
-  · use p x
-    intro m
-    apply le_trans (h_le m)
-    conv_rhs => rw [← rpow_one (p x)]
-    exact rpow_le_rpow_of_exponent_le (le_of_lt (not_le.mp hfx))
-      (div_le_one_of_le₀ (cast_le.mpr (hs_le _)) (cast_nonneg _))
+  cases le_or_gt (p x) 1 with
+  | inl hfx =>
+    use 1, fun m ↦ le_trans (h_le m) (rpow_le_one (by positivity) hfx (by positivity))
+  | inr hfx =>
+    use p x
+    refine fun m ↦ le_trans (h_le m) <| rpow_le_self_of_one_le hfx.le ?_
+    exact div_le_one_of_le₀ (mod_cast hs_le _) (cast_nonneg _)
 
 end RingSeminorm
 

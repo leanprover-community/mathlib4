@@ -3,8 +3,10 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.Ring.Defs
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Modules over a ring
@@ -32,6 +34,8 @@ to use a canonical `Module` typeclass throughout.
 
 semimodule, module, vector space
 -/
+
+@[expose] public section
 
 assert_not_exists Field Invertible Pi.single_smul₀ RingHom Set.indicator Multiset Units
 

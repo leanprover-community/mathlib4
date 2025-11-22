@@ -3,10 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
+public import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 
 /-!
 # Functors which preserves homology
@@ -22,6 +23,8 @@ is part of the natural isomorphism `homologyFunctorIso F` between the functors
 `F.mapShortComplex ⋙ homologyFunctor D` and `homologyFunctor C ⋙ F`.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

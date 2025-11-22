@@ -3,8 +3,10 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.Measure.CharacteristicFunction
-import Mathlib.Probability.Independence.Basic
+module
+
+public import Mathlib.MeasureTheory.Measure.CharacteristicFunction
+public import Mathlib.Probability.Independence.Basic
 
 /-!
 # Links between independence and characteristic function
@@ -14,6 +16,8 @@ to the product of the characteristic functions. More specifically, prove this in
 two variables and a finite family of variables. We prove the analoguous statemens in Banach spaces,
 with an arbitrary Lp norm, for the dual characteristic function.
 -/
+
+@[expose] public section
 
 namespace ProbabilityTheory
 
@@ -40,7 +44,7 @@ variable [InnerProductSpace ℝ E] [InnerProductSpace ℝ F]
 to the product of the characteristic functions. This is the version for Hilbert spaces, see
 `indepFun_iff_charFunDual_prod` for the Banach space version. -/
 lemma indepFun_iff_charFun_prod (hX : AEMeasurable X P) (hY : AEMeasurable Y P) :
-    IndepFun X Y P ↔ ∀ t, charFun (P.map (fun ω ↦ toLp 2 (X ω, Y ω))) t =
+    X ⟂ᵢ[P] Y ↔ ∀ t, charFun (P.map (fun ω ↦ toLp 2 (X ω, Y ω))) t =
       charFun (P.map X) t.ofLp.1 * charFun (P.map Y) t.ofLp.2 := by
   rw [indepFun_iff_map_prod_eq_prod_map_map hX hY, ← charFun_eq_prod_iff,
     AEMeasurable.map_map_of_aemeasurable (by fun_prop) (by fun_prop), Function.comp_def]
@@ -55,7 +59,7 @@ variable [NormedSpace ℝ E] [NormedSpace ℝ F]
 to the product of the characteristic functions. This is the version for Banach spaces, see
 `indepFun_iff_charFun_prod` for the Hilbert space version. -/
 lemma indepFun_iff_charFunDual_prod (hX : AEMeasurable X P) (hY : AEMeasurable Y P) :
-    IndepFun X Y P ↔ ∀ L, charFunDual (P.map (fun ω ↦ (X ω, Y ω))) L =
+    X ⟂ᵢ[P] Y ↔ ∀ L, charFunDual (P.map (fun ω ↦ (X ω, Y ω))) L =
       charFunDual (P.map X) (L.comp (.inl ℝ E F)) *
       charFunDual (P.map Y) (L.comp (.inr ℝ E F)) := by
   rw [indepFun_iff_map_prod_eq_prod_map_map hX hY, ← charFunDual_eq_prod_iff]
@@ -64,7 +68,7 @@ lemma indepFun_iff_charFunDual_prod (hX : AEMeasurable X P) (hY : AEMeasurable Y
 to the product of the characteristic functions. This is `indepFun_iff_charFunDual_prod` for
 `WithLp`. See `indepFun_iff_charFun_prod` for the Hilbert space version. -/
 lemma indepFun_iff_charFunDual_prod' (hX : AEMeasurable X P) (hY : AEMeasurable Y P) :
-    IndepFun X Y P ↔ ∀ L, charFunDual (P.map (fun ω ↦ toLp p (X ω, Y ω))) L =
+    X ⟂ᵢ[P] Y ↔ ∀ L, charFunDual (P.map (fun ω ↦ toLp p (X ω, Y ω))) L =
       charFunDual (P.map X) (L.comp
         ((prodContinuousLinearEquiv p ℝ E F).symm.toContinuousLinearMap.comp
           (.inl ℝ E F))) *

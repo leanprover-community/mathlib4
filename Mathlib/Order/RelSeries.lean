@@ -3,13 +3,17 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li
 -/
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Fintype.Pi
-import Mathlib.Data.Fintype.Pigeonhole
-import Mathlib.Data.Fintype.Sigma
-import Mathlib.Data.Rel
-import Mathlib.Order.OrderIsoNat
+module
+
+public import Mathlib.Algebra.GroupWithZero.Nat
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Algebra.Order.Monoid.NatCast
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Data.Fintype.Pigeonhole
+public import Mathlib.Data.Fintype.Sigma
+public import Mathlib.Data.Rel
+public import Mathlib.Order.OrderIsoNat
 
 /-!
 # Series of a relation
@@ -18,6 +22,8 @@ If `r` is a relation on `α` then a relation series of length `n` is a series
 `a_0, a_1, ..., a_n` such that `r a_i a_{i+1}` for all `i < n`
 
 -/
+
+@[expose] public section
 
 open scoped SetRel
 
@@ -98,7 +104,7 @@ lemma length_toList (x : RelSeries r) : x.toList.length = x.length + 1 :=
 
 @[simp]
 lemma toList_singleton (x : α) : (singleton r x).toList = [x] :=
-  rfl
+  by simp [toList, singleton]
 
 lemma isChain_toList (x : RelSeries r) : x.toList.IsChain (· ~[r] ·) := by
   rw [List.isChain_iff_get]
@@ -630,7 +636,7 @@ def inductionOn (motive : RelSeries r → Sort*)
     | zero =>
       convert singleton p.head
       ext n
-      exact heq
+      · exact heq
       simp [show n = 0 by cutsat, apply_zero]
     | succ d hd =>
       have lq := p.tail_length (heq ▸ d.zero_ne_add_one.symm)
@@ -899,9 +905,6 @@ protected noncomputable def withLength [InfiniteDimensionalOrder α] (n : ℕ) :
 /-- if `α` is infinite dimensional, then `α` is nonempty. -/
 lemma nonempty_of_infiniteDimensionalOrder [InfiniteDimensionalOrder α] : Nonempty α :=
   ⟨LTSeries.withLength α 0 0⟩
-
-@[deprecated (since := "2025-03-01")]
-alias nonempty_of_infiniteDimensionalType := nonempty_of_infiniteDimensionalOrder
 
 lemma nonempty_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : Nonempty α := by
   obtain ⟨p, _⟩ := (SetRel.finiteDimensional_iff _).mp ‹_›

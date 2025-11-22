@@ -3,16 +3,18 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Data.Finset.Order
-import Mathlib.Data.Finset.Preimage
-import Mathlib.Order.Filter.AtTopBot.Tendsto
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Order.Filter.Finite
-import Mathlib.Order.Interval.Finset.Defs
+module
+
+public import Mathlib.Data.Finset.Order
+public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Order.Filter.Finite
+public import Mathlib.Order.Interval.Finset.Defs
 
 /-!
 # `Filter.atTop` and `Filter.atBot` filters and finite sets.
 -/
+
+@[expose] public section
 
 variable {ι ι' α β γ : Type*}
 

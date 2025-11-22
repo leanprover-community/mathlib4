@@ -3,10 +3,12 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
-import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
-import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
-import Mathlib.CategoryTheory.Subobject.Lattice
+module
+
+public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Colim
+public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
+public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
+public import Mathlib.CategoryTheory.Subobject.Lattice
 
 /-!
 # Subobjects in Grothendieck abelian categories
@@ -19,6 +21,8 @@ supremum of the subobjects corresponding to the objects
 in the image of `F`.
 
 -/
+
+@[expose] public section
 
 universe w v' v u' u
 
@@ -113,7 +117,7 @@ lemma exists_isIso_of_functor_from_monoOver
     (c : Cocone (F ⋙ MonoOver.forget _ ⋙ Over.forget _)) (hc : IsColimit c)
     (f : c.pt ⟶ X) (hf : ∀ (j : J), c.ι.app j ≫ f = (F.obj j).obj.hom) (h : Epi f) :
     ∃ (j : J), IsIso (F.obj j).obj.hom := by
-  have := isFiltered_of_isCardinalDirected J κ
+  have := isFiltered_of_isCardinalFiltered J κ
   have := mono_of_isColimit_monoOver F hc f hf
   rw [Subobject.epi_iff_mk_eq_top f,
     subobjectMk_of_isColimit_eq_iSup F hc f hf] at h

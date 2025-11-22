@@ -3,7 +3,9 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 
 /-!
 ## Locally directed gluing
@@ -15,6 +17,8 @@ the set of elements containing `x` is directed (and hence the name).
 This is the condition needed to show that a colimit (in `TopCat`) of open embeddings is the
 gluing of the open sets. See `Mathlib/AlgebraicGeometry/Gluing.lean` for an actual application.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

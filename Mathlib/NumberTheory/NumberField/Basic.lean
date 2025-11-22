@@ -3,11 +3,13 @@ Copyright (c) 2021 Ashvni Narayanan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan, Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Algebra.CharZero.AddMonoidHom
-import Mathlib.Algebra.Ring.Int.Parity
-import Mathlib.Algebra.Ring.Int.Units
-import Mathlib.RingTheory.DedekindDomain.IntegralClosure
+module
+
+public import Mathlib.Algebra.Algebra.Rat
+public import Mathlib.Algebra.CharZero.AddMonoidHom
+public import Mathlib.Algebra.Ring.Int.Parity
+public import Mathlib.Algebra.Ring.Int.Units
+public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 
 /-!
 # Number fields
@@ -31,6 +33,8 @@ but are independent of that choice.
 ## Tags
 number field, ring of integers
 -/
+
+@[expose] public section
 
 
 /-- A number field is a field which has characteristic zero and is finite
@@ -121,6 +125,10 @@ instance {L : Type*} [Ring L] [Algebra K L] : Algebra (𝓞 K) L :=
   inferInstanceAs (Algebra (integralClosure _ _) L)
 instance {L : Type*} [Ring L] [Algebra K L] : IsScalarTower (𝓞 K) K L :=
   inferInstanceAs (IsScalarTower (integralClosure _ _) K L)
+instance {G : Type*} [Group G] [MulSemiringAction G K] : MulSemiringAction G (𝓞 K) :=
+  inferInstanceAs (MulSemiringAction G (integralClosure ℤ K))
+instance {G : Type*} [Group G] [MulSemiringAction G K] : SMulDistribClass G (𝓞 K) K :=
+  inferInstanceAs (SMulDistribClass G (integralClosure ℤ K) K)
 
 variable {K}
 
@@ -415,10 +423,14 @@ noncomputable def ringOfIntegersEquiv : 𝓞 ℚ ≃+* ℤ :=
   RingOfIntegers.equiv ℤ
 
 @[simp]
-theorem coe_ringOfIntegersEquiv (z : 𝓞 ℚ) :
+theorem ringOfIntegersEquiv_apply_coe (z : 𝓞 ℚ) :
     (Rat.ringOfIntegersEquiv z : ℚ) = algebraMap (𝓞 ℚ) ℚ z := by
   obtain ⟨z, rfl⟩ := Rat.ringOfIntegersEquiv.symm.surjective z
   simp
+
+theorem ringOfIntegersEquiv_symm_apply_coe (x : ℤ) :
+    (ringOfIntegersEquiv.symm x : ℚ) = ↑x :=
+  eq_intCast ringOfIntegersEquiv.symm _ ▸ rfl
 
 end Rat
 

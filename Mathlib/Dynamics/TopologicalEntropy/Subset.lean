@@ -3,7 +3,9 @@ Copyright (c) 2025 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine
 -/
-import Mathlib.Dynamics.TopologicalEntropy.NetEntropy
+module
+
+public import Mathlib.Dynamics.TopologicalEntropy.NetEntropy
 
 /-!
 # Topological entropy of subsets: monotonicity, closure, union
@@ -32,10 +34,12 @@ generalization of the lemmas on closures.
 closure, entropy, subset, union
 -/
 
+@[expose] public section
+
 namespace Dynamics
 
 open ExpGrowth Set UniformSpace
-open scoped Uniformity
+open scoped SetRel Uniformity
 
 variable {X : Type*}
 
@@ -101,11 +105,11 @@ lemma IsDynCoverOf.closure (h : Continuous T) {F : Set X} {U V : Set (X × X)}
     (V_uni : V ∈ 𝓤 X) {n : ℕ} {s : Set X} (s_cover : IsDynCoverOf T F U n s) :
     IsDynCoverOf T (closure F) (U ○ V) n s := by
   rcases (hasBasis_symmetric.mem_iff' V).1 V_uni with ⟨W, ⟨W_uni, W_symm⟩, W_V⟩
-  refine IsDynCoverOf.of_entourage_subset (compRel_mono (refl U) W_V) fun x x_clos ↦ ?_
+  refine IsDynCoverOf.of_entourage_subset (SetRel.comp_subset_comp_right W_V) fun x x_clos ↦ ?_
   obtain ⟨y, y_x, y_F⟩ := mem_closure_iff_nhds.1 x_clos _ (ball_dynEntourage_mem_nhds h W_uni n x)
   obtain ⟨z, z_s, y_z⟩ := mem_iUnion₂.1 (s_cover y_F)
   refine mem_iUnion₂.2 ⟨z, z_s, ?_⟩
-  rw [mem_ball_symmetry (W_symm.dynEntourage T n)] at y_x
+  rw [mem_ball_symmetry] at y_x
   exact ball_mono (dynEntourage_comp_subset T U W n) z (mem_ball_comp y_z y_x)
 
 lemma coverMincard_closure_le (h : Continuous T) (F : Set X) (U : Set (X × X)) {V : Set (X × X)}

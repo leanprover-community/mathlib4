@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Submonoid.Basic
-import Mathlib.Algebra.Group.Support
-import Mathlib.Data.Finset.NoncommProd
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Basic
+public import Mathlib.Algebra.Group.Support
+public import Mathlib.Data.Finset.NoncommProd
 
 /-!
 # Submonoids: membership criteria for products and sums
@@ -22,8 +24,10 @@ In this file we prove various facts about membership in a submonoid:
 submonoid, submonoids
 -/
 
+@[expose] public section
+
 -- We don't need ordered structures to establish basic membership facts for submonoids
-assert_not_exists OrderedSemiring
+assert_not_exists IsOrderedRing
 
 variable {M A B : Type*}
 

@@ -3,11 +3,13 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Complex.Harmonic.MeanValue
-import Mathlib.Analysis.InnerProductSpace.Harmonic.Constructions
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.Analysis.SpecialFunctions.Integrals.LogTrigonometric
-import Mathlib.MeasureTheory.Integral.CircleAverage
+module
+
+public import Mathlib.Analysis.Complex.Harmonic.MeanValue
+public import Mathlib.Analysis.InnerProductSpace.Harmonic.Constructions
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.Analysis.SpecialFunctions.Integrals.LogTrigonometric
+public import Mathlib.MeasureTheory.Integral.CircleAverage
 
 /-!
 # Representation of `log⁺` as a Circle Average
@@ -15,6 +17,8 @@ import Mathlib.MeasureTheory.Integral.CircleAverage
 If `a` is any complex number, `circleAverage_log_norm_sub_const_eq_posLog` represents `log⁺ a` as
 the circle average of `log ‖· - a‖` over the unit circle.
 -/
+
+@[expose] public section
 
 open Filter Interval intervalIntegral MeasureTheory Metric Real
 
@@ -57,9 +61,7 @@ theorem circleAverage_log_norm_sub_const₀ (h : ‖a‖ < 1) : circleAverage (l
     have : ‖x * a‖ < 1 := by
       calc ‖x * a‖
       _ = ‖x‖ * ‖a‖ := by simp
-      _ ≤ ‖a‖ := by
-        by_cases ‖a‖ = 0
-        <;> aesop
+      _ ≤ ‖a‖ := mul_le_of_le_one_left (norm_nonneg _) (by aesop)
       _ < 1 := h
     apply AnalyticAt.harmonicAt_log_norm (by fun_prop)
     rw [sub_ne_zero]
@@ -206,8 +208,7 @@ theorem circleAverage_log_norm_sub_const_eq_log_radius_add_posLog (hR : R ≠ 0)
     ext z
     congr
     rw [Complex.ofReal_inv R]
-    field_simp [Complex.ofReal_ne_zero.mpr hR]
-    ring
+    field [Complex.ofReal_ne_zero.mpr hR]
   _ = circleAverage (fun z ↦ log ‖R‖ + log ‖z + R⁻¹ * (c - a)‖) 0 1 := by
     apply circleAverage_congr_codiscreteWithin _ (zero_ne_one' ℝ).symm
     have : {z | ‖z + ↑R⁻¹ * (c - a)‖ ≠ 0} ∈ codiscreteWithin (Metric.sphere (0 : ℂ) |1|) := by
@@ -225,18 +226,14 @@ theorem circleAverage_log_norm_sub_const_eq_log_radius_add_posLog (hR : R ≠ 0)
     rw [norm_mul, log_mul (norm_ne_zero_iff.2 (Complex.ofReal_ne_zero.mpr hR)) hz]
     simp
   _ = log R + log⁺ (|R|⁻¹ * ‖c - a‖) := by
-    have : (fun z ↦ log ‖R‖ + log ‖z + ↑R⁻¹ * (c - a)‖) =
-        (fun z ↦ log ‖R‖) + (fun z ↦ log ‖z + ↑R⁻¹ * (c - a)‖) := by
-      rfl
-    rw [this, circleAverage_add (circleIntegrable_const (log ‖R‖) 0 1)
+    rw [← Pi.add_def, circleAverage_add (circleIntegrable_const (log ‖R‖) 0 1)
       (circleIntegrable_log_norm_meromorphicOn (fun _ _ ↦ by fun_prop)), circleAverage_const]
     simp
   _ = log R + log⁺ (R⁻¹ * ‖c - a‖) := by
     congr 1
-    rcases lt_trichotomy 0 R with h | h | h
-    · rw [abs_of_pos h]
-    · tauto
+    rcases hR.lt_or_gt with h | h
     · simp [abs_of_neg h]
+    · rw [abs_of_pos h]
 
 /--
 Trivial corollary of

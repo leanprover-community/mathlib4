@@ -3,17 +3,20 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+module
 
-import Mathlib.Lean.Elab.Tactic.Meta
+public meta import Mathlib.Lean.Elab.Tactic.Meta
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+public import Mathlib.Tactic.Linter.Header
 
 /-! # Executing actions using the infotree
 
 This file contains helper functions for running `CoreM`, `MetaM` and tactic actions
 in the context of an infotree node.
 -/
+
+@[expose] public meta section
 
 open Lean Elab Term Command Linter
 
@@ -72,18 +75,21 @@ def runTactic (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId) (x : MVarId �
     panic!"ContextInfo.runTactic: `goal` must be an element of `i.goalsBefore`"
   let mctx := i.mctxBefore
   let lctx := (mctx.decls.find! goal).2
-  ctx.runMetaMWithMessages lctx <| do
+  ctx.runMetaMWithMessages lctx do
     -- Make a fresh metavariable because the original goal is already assigned.
     let type ← goal.getType
     let goal ← Meta.mkFreshExprSyntheticOpaqueMVar type
     x goal.mvarId!
 
-/-- Run tactic code, given by a piece of syntax, in the context of an infotree node. -/
-def runTacticCode (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId) (code : Syntax) :
-    CommandElabM (List MVarId) := do
+/-- Run tactic code, given by a piece of syntax, in the context of an infotree node.
+The optional `MetaM` argument `m` performs postprocessing on the goals produced. -/
+def runTacticCode (ctx : ContextInfo) (i : TacticInfo) (goal : MVarId) (code : Syntax)
+    (m : Σ α : Type, MVarId → MetaM α := ⟨MVarId, pure⟩) :
+    CommandElabM (List m.1) := do
   let termCtx ← liftTermElabM read
   let termState ← liftTermElabM get
-  ctx.runTactic i goal fun goal =>
-    Lean.Elab.runTactic' (ctx := termCtx) (s := termState) goal code
+  ctx.runTactic i goal fun goal => do
+    let newGoals ← Lean.Elab.runTactic' (ctx := termCtx) (s := termState) goal code
+    newGoals.mapM m.2
 
 end Lean.Elab.ContextInfo

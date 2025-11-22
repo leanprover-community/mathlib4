@@ -3,9 +3,11 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Analytic.Composition
-import Mathlib.Analysis.Analytic.Linear
-import Mathlib.Tactic.Positivity
+module
+
+public import Mathlib.Analysis.Analytic.Composition
+public import Mathlib.Analysis.Analytic.Linear
+public import Mathlib.Tactic.Positivity
 
 /-!
 
@@ -31,6 +33,8 @@ inverse of an analytic open partial homeomorphism is analytic.
   power series `p` at a point, with invertible linear part, then the inverse also has a power series
   at the image point, given by `p.leftInv`.
 -/
+
+@[expose] public section
 
 open scoped Topology ENNReal
 
@@ -111,9 +115,9 @@ theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
       (Finset.univ : Finset (Composition (n + 2))) =
         {c | Composition.length c < n + 2}.toFinset ∪ {Composition.ones (n + 2)} := by
       refine Subset.antisymm (fun c _ => ?_) (subset_univ _)
-      by_cases h : c.length < n + 2
+      by_cases! h : c.length < n + 2
       · simp [h]
-      · simp [Composition.eq_ones_iff_le_length.2 (not_lt.1 h)]
+      · simp [Composition.eq_ones_iff_le_length.2 h]
     have B :
       Disjoint ({c | Composition.length c < n + 2} : Set (Composition (n + 2))).toFinset
         {Composition.ones (n + 2)} := by

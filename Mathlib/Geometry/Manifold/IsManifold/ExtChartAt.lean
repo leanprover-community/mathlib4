@@ -3,8 +3,10 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.Geometry.Manifold.IsManifold.Basic
+module
+
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.Geometry.Manifold.IsManifold.Basic
 
 /-!
 # Extended charts in smooth manifolds
@@ -38,6 +40,8 @@ in general, but we can still register them as `PartialEquiv`.
   on a finite-dimensional space
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -750,6 +754,22 @@ theorem writtenInExtChartAt_extChartAt {x : M} {y : E} (h : y ∈ (extChartAt I 
 theorem writtenInExtChartAt_extChartAt_symm {x : M} {y : E} (h : y ∈ (extChartAt I x).target) :
     writtenInExtChartAt 𝓘(𝕜, E) I (extChartAt I x x) (extChartAt I x).symm y = y := by
   simp_all only [mfld_simps]
+
+section
+
+variable {G G' F F' N N' : Type*}
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+  [TopologicalSpace G] [TopologicalSpace N] [TopologicalSpace G'] [TopologicalSpace N']
+  {J : ModelWithCorners 𝕜 F G} {J' : ModelWithCorners 𝕜 F' G'}
+  [ChartedSpace G N] [ChartedSpace G' N']
+
+lemma writtenInExtChart_prod {f : M → N} {g : M' → N'} {x : M} {x' : M'} :
+    (writtenInExtChartAt (I.prod I') (J.prod J') (x, x') (Prod.map f g)) =
+      Prod.map (writtenInExtChartAt I J x f) (writtenInExtChartAt I' J' x' g) := by
+  ext p <;>
+  simp [writtenInExtChartAt, I.toPartialEquiv.prod_symm, (chartAt H x).toPartialEquiv.prod_symm]
+
+end
 
 variable (𝕜)
 

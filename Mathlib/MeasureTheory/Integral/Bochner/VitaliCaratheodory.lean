@@ -3,10 +3,12 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.MeasureTheory.Measure.Regular
-import Mathlib.Topology.Semicontinuous
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
-import Mathlib.Topology.Instances.EReal.Lemmas
+module
+
+public import Mathlib.MeasureTheory.Measure.Regular
+public import Mathlib.Topology.Semicontinuous
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.Topology.Instances.EReal.Lemmas
 
 /-!
 # Vitali-Carathéodory theorem
@@ -69,6 +71,8 @@ See result `MeasureTheory.Lp.boundedContinuousFunction_dense`, in the file
 
 -/
 
+@[expose] public section
+
 
 open scoped ENNReal NNReal
 
@@ -125,15 +129,15 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
     refine ⟨Set.indicator u fun _ => c,
             fun x => ?_, u_open.lowerSemicontinuous_indicator (zero_le _), ?_⟩
     · simp only [SimpleFunc.coe_const, SimpleFunc.const_zero, SimpleFunc.coe_zero,
-        Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise]
-      exact Set.indicator_le_indicator_of_subset su (fun x => zero_le _) _
+        Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise, ← Function.const_def]
+      grw [su]
     · suffices (c : ℝ≥0∞) * μ u ≤ c * μ s + ε by
         classical
         simpa only [ENNReal.coe_indicator, u_open.measurableSet, lintegral_indicator,
           lintegral_const, MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter, const_zero,
           coe_piecewise, coe_const, coe_zero, Set.piecewise_eq_indicator, Function.const_apply, hs]
       calc
-        (c : ℝ≥0∞) * μ u ≤ c * (μ s + ε / c) := mul_le_mul_left' μu.le _
+        (c : ℝ≥0∞) * μ u ≤ c * (μ s + ε / c) := by grw [μu]
         _ = c * μ s + ε := by
           simp_rw [mul_add]
           rw [ENNReal.mul_div_cancel _ ENNReal.coe_ne_top]
@@ -291,7 +295,7 @@ theorem exists_lt_lowerSemicontinuous_integral_gt_nnreal [SigmaFinite μ] (f : �
           simpa using int_f_ne_top
         _ = ENNReal.toReal (∫⁻ a : α, f a ∂μ) + δ := by
           rw [ENNReal.toReal_add int_f_ne_top ENNReal.coe_ne_top, ENNReal.coe_toReal]
-        _ < ENNReal.toReal (∫⁻ a : α, f a ∂μ) + ε := add_lt_add_left hδε _
+        _ < ENNReal.toReal (∫⁻ a : α, f a ∂μ) + ε := by gcongr
         _ = (∫⁻ a : α, ENNReal.ofReal ↑(f a) ∂μ).toReal + ε := by simp
     · apply Filter.Eventually.of_forall fun x => _; simp
     · exact fmeas.coe_nnreal_real.aestronglyMeasurable
@@ -336,8 +340,8 @@ theorem SimpleFunc.exists_upperSemicontinuous_le_lintegral_le (f : α →ₛ ℝ
       ⟨Set.indicator F fun _ => c, fun x => ?_, F_closed.upperSemicontinuous_indicator (zero_le _),
         ?_⟩
     · simp only [SimpleFunc.coe_const, SimpleFunc.const_zero, SimpleFunc.coe_zero,
-        Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise]
-      exact Set.indicator_le_indicator_of_subset Fs (fun x => zero_le _) _
+        Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise, ← Function.const_def]
+      grw [Fs]
     · suffices (c : ℝ≥0∞) * μ s ≤ c * μ F + ε by
         classical
         simpa only [hs, F_closed.measurableSet, SimpleFunc.coe_const, Function.const_apply,
@@ -345,7 +349,7 @@ theorem SimpleFunc.exists_upperSemicontinuous_le_lintegral_le (f : α →ₛ ℝ
           SimpleFunc.const_zero, lintegral_indicator, SimpleFunc.coe_zero,
           Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise, Measure.restrict_apply]
       calc
-        (c : ℝ≥0∞) * μ s ≤ c * (μ F + ε / c) := mul_le_mul_left' μF.le _
+        (c : ℝ≥0∞) * μ s ≤ c * (μ F + ε / c) := by grw [μF]
         _ = c * μ F + ε := by
           simp_rw [mul_add]
           rw [ENNReal.mul_div_cancel _ ENNReal.coe_ne_top]

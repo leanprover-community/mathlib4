@@ -3,9 +3,10 @@ Copyright (c) 2024 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
+module
 
-import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
-import Mathlib.RingTheory.PowerSeries.Order
+public import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
+public import Mathlib.RingTheory.PowerSeries.Order
 /-!
 
 # Distinguished polynomial
@@ -14,6 +15,8 @@ In this file we define the predicate `Polynomial.IsDistinguishedAt`
 and develop the most basic lemmas about it.
 
 -/
+
+@[expose] public section
 
 open scoped Polynomial
 open PowerSeries Ideal Quotient
@@ -40,7 +43,7 @@ lemma map_eq_X_pow {f : R[X]} {I : Ideal R} (distinguish : f.IsDistinguishedAt I
   ext i
   by_cases ne : i = f.natDegree
   · simp [ne, distinguish.monic]
-  · rcases lt_or_gt_of_ne ne with lt|gt
+  · rcases lt_or_gt_of_ne ne with lt | gt
     · simpa [ne, eq_zero_iff_mem] using (distinguish.mem lt)
     · simp [ne, Polynomial.coeff_eq_zero_of_natDegree_lt gt]
 

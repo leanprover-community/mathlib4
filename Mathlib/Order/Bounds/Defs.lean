@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Defs
-import Mathlib.Tactic.TypeStar
+module
+
+public import Mathlib.Data.Set.Defs
+public import Mathlib.Tactic.TypeStar
 
 /-!
 # Definitions about upper/lower bounds
@@ -21,6 +23,8 @@ In this file we define:
 * `IsCofinalFor s t` : for all `a ∈ s` there exists `b ∈ t` such that `a ≤ b`
 * `IsCoinitialFor s t` : for all `a ∈ s` there exists `b ∈ t` such that `b ≤ a`
 -/
+
+@[expose] public section
 
 variable {α : Type*} [LE α]
 

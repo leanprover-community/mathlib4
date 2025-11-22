@@ -3,9 +3,11 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Geometry.Manifold.PartitionOfUnity
-import Mathlib.Geometry.Manifold.Metrizable
-import Mathlib.MeasureTheory.Function.AEEqOfIntegral
+module
+
+public import Mathlib.Geometry.Manifold.PartitionOfUnity
+public import Mathlib.Geometry.Manifold.Metrizable
+public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 
 /-!
 # Functions which vanish as distributions vanish as functions
@@ -21,6 +23,8 @@ functions is also given in `ae_eq_of_integral_contDiff_smul_eq`.
 These are deduced from the same results on finite-dimensional real manifolds, given respectively
 as `ae_eq_zero_of_integral_smooth_smul_eq_zero` and `ae_eq_of_integral_smooth_smul_eq`.
 -/
+
+@[expose] public section
 
 open MeasureTheory Filter Metric Function Set TopologicalSpace
 

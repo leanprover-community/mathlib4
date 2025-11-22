@@ -3,16 +3,18 @@ Copyright (c) 2025 Mitchell Horner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Horner
 -/
-import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-import Mathlib.Combinatorics.Enumerative.DoubleCounting
-import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
-import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
-import Mathlib.Data.Nat.Choose.Cast
+module
+
+public import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+public import Mathlib.Combinatorics.Enumerative.DoubleCounting
+public import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
+public import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
+public import Mathlib.Data.Nat.Choose.Cast
 
 /-!
 # Turán density
 
-This files defines the **Turán density** of a simple graph.
+This file defines the **Turán density** of a simple graph.
 
 ## Main definitions
 
@@ -24,6 +26,8 @@ This files defines the **Turán density** of a simple graph.
 * `SimpleGraph.isEquivalent_extremalNumber` is the proof that `extremalNumber n H` is
   asymptotically equivalent to `turanDensity H * n.choose 2` as `n` approaches `∞`.
 -/
+
+@[expose] public section
 
 
 open Asymptotics Filter Finset Fintype Topology

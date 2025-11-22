@@ -3,11 +3,13 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison
 -/
-import Mathlib.LinearAlgebra.Dimension.Constructions
-import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-import Mathlib.LinearAlgebra.Dimension.Subsingleton
-import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.SetTheory.Cardinal.Cofinality
+module
+
+public import Mathlib.LinearAlgebra.Dimension.Constructions
+public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+public import Mathlib.LinearAlgebra.Dimension.Subsingleton
+public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.SetTheory.Cardinal.Cofinality
 
 /-!
 # Conditions for rank to be finite
@@ -15,6 +17,8 @@ import Mathlib.SetTheory.Cardinal.Cofinality
 Also contains characterization for when rank equals zero or rank equals one.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

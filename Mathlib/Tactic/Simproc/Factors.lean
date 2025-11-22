@@ -3,8 +3,11 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Eric Wieser
 -/
-import Mathlib.Data.Nat.Factors
-import Mathlib.Tactic.NormNum.Prime
+module
+
+public meta import Mathlib.Data.Nat.Factors
+public meta import Mathlib.Tactic.NormNum.Prime
+import all Mathlib.Tactic.NormNum.Prime  -- for accessing `evalMinFac.core`
 
 /-!
 # `simproc` for `Nat.primeFactorsList`
@@ -12,6 +15,8 @@ import Mathlib.Tactic.NormNum.Prime
 Note that since `norm_num` can only produce numerals,
 we can't register this as a `norm_num` extension.
 -/
+
+public meta section
 
 open Nat
 

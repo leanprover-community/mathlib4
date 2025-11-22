@@ -3,16 +3,18 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Action.End
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Action.Prod
-import Mathlib.Algebra.Group.Subgroup.Map
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.NoZeroSMulDivisors.Defs
-import Mathlib.Data.Finite.Sigma
-import Mathlib.Data.Set.Finite.Range
-import Mathlib.Data.Setoid.Basic
-import Mathlib.GroupTheory.GroupAction.Defs
+module
+
+public import Mathlib.Algebra.Group.Action.End
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Group.Action.Prod
+public import Mathlib.Algebra.Group.Subgroup.Map
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+public import Mathlib.Data.Finite.Sigma
+public import Mathlib.Data.Set.Finite.Range
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
 # Basic properties of group actions
@@ -29,6 +31,8 @@ of `•` belong elsewhere.
 * `MulAction.stabilizer`
 
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -233,9 +237,16 @@ lemma orbitRel_le_snd :
 end Orbit
 
 section Stabilizer
-variable (G)
 
-variable {G}
+@[to_additive (attr := simp)]
+lemma _root_.IsCancelSMul.stabilizer_eq_bot [IsCancelSMul G α] (a : α) :
+    stabilizer G a = ⊥ :=
+  Subgroup.eq_bot_iff_forall _ |>.mpr fun _ hg ↦ IsCancelSMul.eq_one_of_smul hg
+
+@[to_additive]
+lemma _root_.isCancelSMul_iff_stabilizer_eq_bot :
+    IsCancelSMul G α ↔ (∀ a : α, stabilizer G a = ⊥) := by
+  simp [isCancelSMul_iff_eq_one_of_smul_eq, Subgroup.eq_bot_iff_forall, forall_swap (α := G)]
 
 /-- If the stabilizer of `a` is `S`, then the stabilizer of `g • a` is `gSg⁻¹`. -/
 theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :

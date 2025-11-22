@@ -3,8 +3,10 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Sites.Precoverage
-import Mathlib.CategoryTheory.Limits.Types.Pullbacks
+module
+
+public import Mathlib.CategoryTheory.Sites.Precoverage
+public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 
 /-!
 # The jointly surjective precoverage
@@ -14,8 +16,11 @@ families as coverings. We show that this precoverage is stable under the standar
 
 ## Notes
 
-See `CategoryTheory.Sites.Types` for the Grothendieck topology of jointly surjective covers.
+See `Mathlib/CategoryTheory/Sites/Types.lean` for the Grothendieck topology of jointly surjective
+covers.
 -/
+
+@[expose] public section
 
 universe u
 

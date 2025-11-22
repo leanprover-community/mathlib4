@@ -3,9 +3,11 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Baumann, Stephen Morgan, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.Combinatorics.Quiver.Prefunctor
-import Mathlib.Tactic.CategoryTheory.CheckCompositions
+module
+
+public import Mathlib.CategoryTheory.Category.Basic
+public import Mathlib.Combinatorics.Quiver.Prefunctor
+public import Mathlib.Tactic.CategoryTheory.CheckCompositions
 
 /-!
 # Functors
@@ -18,11 +20,13 @@ from `C` to `D`, `𝟭` for the identity functor and `⋙` for functor compositi
 TODO: Switch to using the `⇒` arrow.
 -/
 
+@[expose] public section
+
 set_option mathlib.tactic.category.grind true
 
 namespace CategoryTheory
 
--- declare the `v`'s first; see note [CategoryTheory universes].
+-- declare the `v`'s first; see note [category theory universes].
 universe v v₁ v₂ v₃ u u₁ u₂ u₃
 
 section
@@ -50,7 +54,7 @@ end
 /-- Notation for a functor between categories. -/
 -- A functor is basically a function, so give ⥤ a similar precedence to → (25).
 -- For example, `C × D ⥤ E` should parse as `(C × D) ⥤ E` not `C × (D ⥤ E)`.
-scoped [CategoryTheory] infixr:26 " ⥤ " => Functor -- type as \func
+scoped[CategoryTheory] infixr:26 " ⥤ " => Functor -- type as \func
 
 attribute [simp] Functor.map_id Functor.map_comp
 attribute [grind =] Functor.map_id
@@ -78,7 +82,7 @@ protected def id : C ⥤ C where
   map f := f
 
 /-- Notation for the identity functor on a category. -/
-scoped [CategoryTheory] notation "𝟭" => Functor.id -- Type this as `\sb1`
+scoped[CategoryTheory] notation "𝟭" => Functor.id -- Type this as `\sb1`
 
 instance : Inhabited (C ⥤ C) :=
   ⟨Functor.id C⟩
@@ -114,7 +118,7 @@ def comp (F : C ⥤ D) (G : D ⥤ E) : C ⥤ E where
   map f := G.map (F.map f)
 
 /-- Notation for composition of functors. -/
-scoped [CategoryTheory] infixr:80 " ⋙ " => Functor.comp
+scoped[CategoryTheory] infixr:80 " ⋙ " => Functor.comp
 
 @[simp, grind =]
 theorem comp_map (F : C ⥤ D) (G : D ⥤ E) {X Y : C} (f : X ⟶ Y) :
@@ -136,6 +140,14 @@ theorem map_dite (F : C ⥤ D) {X Y : C} {P : Prop} [Decidable P]
 @[simp]
 theorem toPrefunctor_comp (F : C ⥤ D) (G : D ⥤ E) :
     F.toPrefunctor.comp G.toPrefunctor = (F ⋙ G).toPrefunctor := rfl
+
+lemma toPrefunctor_injective {F G : C ⥤ D} (h : F.toPrefunctor = G.toPrefunctor) :
+    F = G := by
+  obtain ⟨obj, map, _, _⟩ := F
+  obtain ⟨obj', map', _, _⟩ := G
+  obtain rfl : obj = obj' := congr_arg Prefunctor.obj h
+  obtain rfl : @map = @map' := by simpa [Functor.toPrefunctor] using h
+  rfl
 
 end
 

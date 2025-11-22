@@ -3,11 +3,15 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Mathlib.Init
+module
+
+public import Mathlib.Init
 
 /-!
 ## `funProp` environment extension that stores all registered function properties
 -/
+
+public meta section
 
 
 namespace Mathlib
@@ -80,7 +84,7 @@ def addFunPropDecl (declName : Name) : MetaM Unit := do
 
   modifyEnv fun env => funPropDeclsExt.addEntry env decl
 
-  trace[Meta.Tactic.funProp.attr]
+  trace[Meta.Tactic.fun_prop.attr]
     "added new function property `{declName}`\nlook up pattern is `{path}`"
 
 

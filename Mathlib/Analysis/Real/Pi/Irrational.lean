@@ -3,9 +3,11 @@ Copyright (c) 2022 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.Data.Real.Irrational
-import Mathlib.Topology.Algebra.Order.Floor
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.Topology.Algebra.Order.Floor
+public import Mathlib.NumberTheory.Real.Irrational
 
 /-!
 # `Real.pi` is irrational
@@ -31,6 +33,8 @@ The proof idea is as follows.
   `n → ∞`.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

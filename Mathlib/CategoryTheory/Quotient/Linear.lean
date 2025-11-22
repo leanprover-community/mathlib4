@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Quotient
-import Mathlib.CategoryTheory.Linear.LinearFunctor
+module
+
+public import Mathlib.CategoryTheory.Quotient
+public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
 /-!
 # The quotient category is linear
@@ -18,6 +20,8 @@ show that `Quotient r` is a `R`-linear category and that `functor r : C ⥤ Quot
 is a `R`-linear functor.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

@@ -3,15 +3,17 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Ring.GeomSum
-import Mathlib.Data.Finsupp.Fintype
-import Mathlib.GroupTheory.Index
-import Mathlib.LinearAlgebra.DirectSum.Finsupp
-import Mathlib.LinearAlgebra.TensorProduct.Quotient
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.RingTheory.Finiteness.Cardinality
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.TensorProduct.Finite
+module
+
+public import Mathlib.Algebra.Ring.GeomSum
+public import Mathlib.Data.Finsupp.Fintype
+public import Mathlib.GroupTheory.Index
+public import Mathlib.LinearAlgebra.DirectSum.Finsupp
+public import Mathlib.LinearAlgebra.TensorProduct.Quotient
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.RingTheory.Finiteness.Cardinality
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 # Indices of ideals
@@ -25,6 +27,8 @@ import Mathlib.RingTheory.TensorProduct.Finite
   the index of `I ^ n` is bounded by `#(R ⧸ I) ^ (k⁰ + k¹ + ⋯ + kⁿ⁻¹)`.
 
 -/
+
+@[expose] public section
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
 variable (I : Ideal R) {N : Submodule R M}
@@ -70,7 +74,7 @@ lemma Submodule.index_smul_le [Finite (R ⧸ I)]
       (quotTensorEquivQuotSMul N I).symm
   rw [Nat.card_congr e.toEquiv]
   have H : LinearMap.range (Finsupp.linearCombination R (α := s) (↑)) = N := by
-    rw [Finsupp.range_linearCombination, ← hs, Subtype.range_val]; rfl
+    rw [Finsupp.range_linearCombination, ← hs, Subtype.range_val]
   let f : (s →₀ R) →ₗ[R] N := (Finsupp.linearCombination R (↑)).codRestrict _
     (fun c => by rw [← H, LinearMap.mem_range]; exact exists_apply_eq_apply _ _)
   have hf : Function.Surjective f := fun x ↦ by

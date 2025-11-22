@@ -3,11 +3,13 @@ Copyright (c) 2025 María Inés de Frutos-Fernández, Filippo A. E. Nuccio. All 
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 -/
-import Mathlib.Algebra.GroupWithZero.Range
-import Mathlib.Algebra.Order.Group.Cyclic
-import Mathlib.RingTheory.DedekindDomain.AdicValuation
-import Mathlib.RingTheory.DiscreteValuationRing.Basic
-import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
+module
+
+public import Mathlib.Algebra.GroupWithZero.Range
+public import Mathlib.Algebra.Order.Group.Cyclic
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation
+public import Mathlib.RingTheory.DiscreteValuationRing.Basic
+public import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 
 /-!
 # Discrete Valuations
@@ -15,7 +17,7 @@ import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 Given a linearly ordered commutative group with zero `Γ`, a valuation `v : A → Γ` on a ring `A` is
 *discrete*, if there is an element `γ : Γˣ` that is `< 1` and generated the range of `v`,
 implemented as `MonoidWithZeroHom.valueGroup v`. When `Γ := ℤₘ₀` (defined in
-`Multiplicative.termℤₘ₀`), `γ` = ofAdd (-1)` and the condition of being discrete is
+`Multiplicative.termℤₘ₀`), `γ = ofAdd (-1)` and the condition of being discrete is
 equivalent to asking that `ofAdd (-1 : ℤ)` belongs to the image, in turn equivalent to asking that
 `1 : ℤ` belongs to the image of the corresponding *additive* valuation.
 
@@ -24,7 +26,7 @@ is commonly assumed in number theory. To avoid potential confusion with other de
 discrete, we use the name `IsRankOneDiscrete` to refer to discrete valuations in this setting.
 
 ## Main Definitions
-* `Valuation.IsRankOneDiscrete`: We define a `Γ`-valued valuation `v` to be discrete if if there is
+* `Valuation.IsRankOneDiscrete`: We define a `Γ`-valued valuation `v` to be discrete if there is
   an element `γ : Γˣ` that is `< 1` and generates the range of `v`.
 * `Valuation.IsUniformizer`: Given a `Γ`-valued valuation `v` on a ring `R`, an element `π : R` is
   a uniformizer if `v π` is a generator of the value group that is `<1`.
@@ -57,6 +59,8 @@ discrete, we use the name `IsRankOneDiscrete` to refer to discrete valuations in
 * Relate discrete valuations and discrete valuation rings (contained in the project
   <https://github.com/mariainesdff/LocalClassFieldTheory>)
 -/
+
+@[expose] public section
 
 namespace Valuation
 

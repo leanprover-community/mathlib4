@@ -3,9 +3,11 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.List.Rotate
-import Mathlib.GroupTheory.Perm.Support
+module
+
+public import Mathlib.Algebra.Order.Group.Nat
+public import Mathlib.Data.List.Rotate
+public import Mathlib.GroupTheory.Perm.Support
 
 /-!
 # Permutations from a list
@@ -26,6 +28,8 @@ the resulting permutation is cyclic (if `l` has at least two elements).
 The presence of duplicates in a particular placement can lead `List.formPerm` to produce a
 nontrivial permutation that is noncyclic.
 -/
+
+@[expose] public section
 
 
 namespace List
@@ -159,7 +163,7 @@ theorem formPerm_eq_head_iff_eq_getLast (x y : α) :
   Iff.trans (by rw [formPerm_apply_getLast]) (formPerm (y :: l)).injective.eq_iff
 
 theorem formPerm_apply_lt_getElem (xs : List α) (h : Nodup xs) (n : ℕ) (hn : n + 1 < xs.length) :
-    formPerm xs xs[n] = xs[n+1] := by
+    formPerm xs xs[n] = xs[n + 1] := by
   induction n generalizing xs with
   | zero => simpa using formPerm_apply_getElem_zero _ h _
   | succ n IH =>
@@ -318,17 +322,14 @@ theorem formPerm_apply_mem_ne_self_iff (hl : Nodup l) (x : α) (hx : x ∈ l) :
   rw [Ne, formPerm_apply_mem_eq_self_iff _ hl x hx, not_le]
   exact ⟨Nat.succ_le_of_lt, Nat.lt_of_succ_le⟩
 
-theorem mem_of_formPerm_ne_self (l : List α) (x : α) (h : formPerm l x ≠ x) : x ∈ l := by
-  suffices x ∈ { y | formPerm l y ≠ y } by
-    rw [← mem_toFinset]
-    exact support_formPerm_le' _ this
-  simpa using h
+@[deprecated (since := "2025-10-06")]
+alias mem_of_formPerm_ne_self := mem_of_formPerm_apply_ne
 
-theorem formPerm_eq_self_of_notMem (l : List α) (x : α) (h : x ∉ l) : formPerm l x = x :=
-  by_contra fun H => h <| mem_of_formPerm_ne_self _ _ H
+@[deprecated (since := "2025-10-06")]
+alias formPerm_eq_self_of_notMem := List.formPerm_apply_of_notMem
 
 @[deprecated (since := "2025-05-23")]
-alias formPerm_eq_self_of_not_mem := formPerm_eq_self_of_notMem
+alias formPerm_eq_self_of_not_mem := List.formPerm_apply_of_notMem
 
 theorem formPerm_eq_one_iff (hl : Nodup l) : formPerm l = 1 ↔ l.length ≤ 1 := by
   rcases l with - | ⟨hd, tl⟩

@@ -3,14 +3,18 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Image
-import Mathlib.Data.Set.BooleanAlgebra
+module
+
+public import Mathlib.Data.Set.Image
+public import Mathlib.Data.Set.BooleanAlgebra
 
 /-!
 # Sets in sigma types
 
 This file defines `Set.sigma`, the indexed sum of sets.
 -/
+
+@[expose] public section
 
 namespace Set
 
@@ -210,5 +214,12 @@ theorem sigma_diff_sigma : s₁.sigma t₁ \ s₂.sigma t₂ = s₁.sigma (t₁ 
 
 lemma sigma_eq_biUnion : s.sigma t = ⋃ i ∈ s, Sigma.mk i '' t i := by
   aesop
+
+lemma uncurry_preimage_sigma_pi {β : (i : ι) → α i → Type*} (s : Set ι) (t : (i : ι) → Set (α i))
+    (u : (p : (i : ι) × α i) → Set (β p.1 p.2)) :
+    Sigma.uncurry ⁻¹' (s.sigma t).pi u = s.pi (fun i ↦ (t i).pi fun j ↦ u ⟨i, j⟩) := by
+  ext x
+  simp only [mem_preimage, mem_pi, mem_sigma_iff, and_imp]
+  exact ⟨fun h i hi j hj ↦ h ⟨i, j⟩ hi hj, fun h p hp1 hp2 ↦ h p.1 hp1 p.2 hp2⟩
 
 end Set

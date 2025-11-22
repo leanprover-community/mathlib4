@@ -3,7 +3,9 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Defs
+module
+
+public import Mathlib.Probability.Kernel.Defs
 
 /-!
 # Basic kernels
@@ -35,6 +37,8 @@ kernels.
 ## Main statements
 
 -/
+
+@[expose] public section
 
 assert_not_exists MeasureTheory.integral
 

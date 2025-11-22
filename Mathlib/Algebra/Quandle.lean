@@ -3,9 +3,11 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Algebra.Group.End
-import Mathlib.Data.ZMod.Defs
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.Algebra.Group.End
+public import Mathlib.Data.ZMod.Defs
+public import Mathlib.Tactic.Ring
 
 /-!
 # Racks and Quandles
@@ -81,6 +83,8 @@ Use `open quandles` to use these.
 
 rack, quandle
 -/
+
+@[expose] public section
 
 
 open MulOpposite

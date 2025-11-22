@@ -3,9 +3,10 @@ Copyright (c) 2025 Fabrizio Barroero. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fabrizio Barroero
 -/
+module
 
-import Mathlib.Data.Real.Archimedean
-import Mathlib.RingTheory.PowerSeries.Order
+public import Mathlib.Data.Real.Archimedean
+public import Mathlib.RingTheory.PowerSeries.Order
 
 /-!
 # Gauss norm for power series
@@ -27,6 +28,8 @@ In case `f` is a polynomial, `v` is a non-negative function with `v 0 = 0` and `
   all `x : R` and `c` is positive, then the Gauss norm is zero if and only if the power series is
   zero.
 -/
+
+@[expose] public section
 
 namespace PowerSeries
 

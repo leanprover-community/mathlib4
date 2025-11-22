@@ -3,8 +3,10 @@ Copyright (c) 2021 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Monoidal.Free.Basic
-import Mathlib.CategoryTheory.Discrete.Basic
+module
+
+public import Mathlib.CategoryTheory.Monoidal.Free.Basic
+public import Mathlib.CategoryTheory.Discrete.Basic
 
 /-!
 # The monoidal coherence theorem
@@ -32,6 +34,8 @@ is thin.
   proof of normalization for monoids][beylin1996]
 
 -/
+
+@[expose] public section
 
 
 universe u

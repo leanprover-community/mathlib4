@@ -3,14 +3,18 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Finset.Lattice.Union
-import Mathlib.Data.Multiset.Powerset
-import Mathlib.Data.Set.Pairwise.Lattice
+module
+
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Finset.Lattice.Union
+public import Mathlib.Data.Multiset.Powerset
+public import Mathlib.Data.Set.Pairwise.Lattice
 
 /-!
 # The powerset of a finset
 -/
+
+@[expose] public section
 
 
 namespace Finset
@@ -189,11 +193,7 @@ theorem card_powersetCard (n : ℕ) (s : Finset α) :
 
 @[simp]
 theorem powersetCard_zero (s : Finset α) : s.powersetCard 0 = {∅} := by
-  ext; rw [mem_powersetCard, mem_singleton, card_eq_zero]
-  refine
-    ⟨fun h => h.2, fun h => by
-      rw [h]
-      exact ⟨empty_subset s, rfl⟩⟩
+  grind
 
 lemma powersetCard_empty_subsingleton (n : ℕ) :
     (powersetCard n (∅ : Finset α) : Set <| Finset α).Subsingleton := by
@@ -226,14 +226,7 @@ theorem powersetCard_succ_insert [DecidableEq α] {x : α} {s : Finset α} (h : 
     powersetCard n.succ (insert x s) =
     powersetCard n.succ s ∪ (powersetCard n s).image (insert x) := by
   rw [powersetCard_eq_filter, powerset_insert, filter_union, ← powersetCard_eq_filter]
-  congr
-  rw [powersetCard_eq_filter, filter_image]
-  congr 1
-  ext t
-  simp only [mem_powerset, mem_filter, and_congr_right_iff]
-  intro ht
-  have : x ∉ t := fun H => h (ht H)
-  simp [card_insert_of_notMem this]
+  grind
 
 @[simp]
 lemma powersetCard_nonempty : (powersetCard n s).Nonempty ↔ n ≤ s.card := by

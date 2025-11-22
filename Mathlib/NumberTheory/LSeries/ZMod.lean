@@ -3,10 +3,11 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.Analysis.Fourier.ZMod
-import Mathlib.Analysis.NormedSpace.Connected
-import Mathlib.NumberTheory.LSeries.RiemannZeta
+public import Mathlib.Analysis.Fourier.ZMod
+public import Mathlib.Analysis.Normed.Module.Connected
+public import Mathlib.NumberTheory.LSeries.RiemannZeta
 
 /-!
 # L-series of functions on `ZMod N`
@@ -28,7 +29,7 @@ for general functions; for the specific case of Dirichlet characters see
   `LFunction Φ s` multiplied by an Archimedean Gamma-factor.
 
 Note that `ZMod.completedLFunction Φ s` is only mathematically well-defined if `Φ` is either even
-or odd. Here we extend it to all functions `Φ` by linearity  (but the functional equation only holds
+or odd. Here we extend it to all functions `Φ` by linearity (but the functional equation only holds
 if `Φ` is either even or odd).
 
 ## Main theorems
@@ -54,6 +55,8 @@ Results for completed L-functions:
 * `ZMod.completedLFunction_one_sub_even` and `ZMod.completedLFunction_one_sub_odd`:
   the functional equation relating `completedLFunction Φ (1 - s)` to `completedLFunction (𝓕 Φ) s`.
 -/
+
+@[expose] public section
 
 open HurwitzZeta Complex ZMod Finset Topology Filter Set
 
@@ -250,7 +253,7 @@ lemma LFunction_def_even (hΦ : Φ.Even) (s : ℂ) :
     LFunction Φ s = N ^ (-s) * ∑ j : ZMod N, Φ j * hurwitzZetaEven (toAddCircle j) s := by
   simp only [LFunction, hurwitzZeta, mul_add (Φ _), sum_add_distrib]
   congr 1
-  simp only [add_eq_left, ← neg_eq_self ℂ, ← sum_neg_distrib]
+  simp only [add_eq_left, ← neg_eq_self, ← sum_neg_distrib]
   refine Fintype.sum_equiv (.neg _) _ _ fun i ↦ ?_
   simp only [Equiv.neg_apply, hΦ i, map_neg, hurwitzZetaOdd_neg, mul_neg]
 
@@ -258,7 +261,7 @@ lemma LFunction_def_odd (hΦ : Φ.Odd) (s : ℂ) :
     LFunction Φ s = N ^ (-s) * ∑ j : ZMod N, Φ j * hurwitzZetaOdd (toAddCircle j) s := by
   simp only [LFunction, hurwitzZeta, mul_add (Φ _), sum_add_distrib]
   congr 1
-  simp only [add_eq_right, ← neg_eq_self ℂ, ← sum_neg_distrib]
+  simp only [add_eq_right, ← neg_eq_self, ← sum_neg_distrib]
   refine Fintype.sum_equiv (.neg _) _ _ fun i ↦ ?_
   simp only [Equiv.neg_apply, hΦ i, map_neg, hurwitzZetaEven_neg, neg_mul]
 

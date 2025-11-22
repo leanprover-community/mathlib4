@@ -3,9 +3,11 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Group.Finsupp
-import Mathlib.Data.Finset.Pairwise
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.Group.Finsupp
+public import Mathlib.Data.Finset.Pairwise
 
 /-!
 
@@ -31,6 +33,8 @@ it is a member of the support of a member of the collection:
 
 -/
 
+@[expose] public section
+
 
 variable {ι M : Type*} [DecidableEq ι]
 
@@ -40,8 +44,7 @@ theorem List.support_sum_subset [AddZeroClass M] (l : List (ι →₀ M)) :
   | nil => simp
   | cons hd tl IH =>
     simp only [List.sum_cons]
-    refine Finsupp.support_add.trans (Finset.union_subset_union ?_ IH)
-    rfl
+    exact Finsupp.support_add.trans (Finset.union_subset_union Finset.Subset.rfl IH)
 
 theorem Multiset.support_sum_subset [AddCommMonoid M] (s : Multiset (ι →₀ M)) :
     s.sum.support ⊆ (s.map Finsupp.support).sup := by

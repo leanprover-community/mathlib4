@@ -3,13 +3,17 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Order.Category.Lat
+module
+
+public import Mathlib.Order.Category.Lat
 
 /-!
 # Category of linear orders
 
 This defines `LinOrd`, the category of linear orders with monotone maps.
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -18,6 +22,8 @@ universe u
 
 /-- The category of linear orders. -/
 structure LinOrd where
+  /-- Construct a bundled `LinOrd` from the underlying type and typeclass. -/
+  of ::
   /-- The underlying linearly ordered type. -/
   (carrier : Type*)
   [str : LinearOrder carrier]
@@ -32,9 +38,6 @@ instance : CoeSort LinOrd (Type _) :=
   ⟨LinOrd.carrier⟩
 
 attribute [coe] LinOrd.carrier
-
-/-- Construct a bundled `LinOrd` from the underlying type and typeclass. -/
-abbrev of (X : Type*) [LinearOrder X] : LinOrd := ⟨X⟩
 
 /-- The type of morphisms in `LinOrd R`. -/
 @[ext]

@@ -32,7 +32,6 @@ on:
       - 'staging.tmp*'
       - 'trying.tmp*'
       - 'staging*.tmp'
-      - 'nolints'
       # ignore staging branch used by bors, this is handled by bors.yml
       - 'staging'
   merge_group:
@@ -73,7 +72,7 @@ on:
 
 name: continuous integration (mathlib forks)
 EOF
-  include "github.event.pull_request.head.sha" pr "github.event.pull_request.head.repo.fork" " (fork)" ubuntu-latest
+  include "github.event.pull_request.head.sha" pr "github.event.pull_request.head.repo.fork \&\& github.repository != 'leanprover-community\/mathlib4-nightly-testing'" " (fork)" ubuntu-latest
 }
 
 include() {

@@ -3,7 +3,9 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Johan Commelin
 -/
-import Mathlib.Algebra.Lie.Solvable
+module
+
+public import Mathlib.Algebra.Lie.Solvable
 
 /-!
 # Semisimple Lie algebras
@@ -21,6 +23,8 @@ In this file we define simple and semisimple Lie algebras, together with related
 
 lie algebra, radical, simple, semisimple
 -/
+
+@[expose] public section
 
 variable (R L M : Type*)
 variable [CommRing R] [LieRing L] [AddCommGroup M] [Module R M] [LieRingModule L M]

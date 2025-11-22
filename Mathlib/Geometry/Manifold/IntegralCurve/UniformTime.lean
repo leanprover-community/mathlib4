@@ -3,7 +3,9 @@ Copyright (c) 2023 Winston Yin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Winston Yin
 -/
-import Mathlib.Geometry.Manifold.IntegralCurve.ExistUnique
+module
+
+public import Mathlib.Geometry.Manifold.IntegralCurve.ExistUnique
 
 /-!
 # Uniform time lemma for the global existence of integral curves
@@ -22,6 +24,8 @@ import Mathlib.Geometry.Manifold.IntegralCurve.ExistUnique
 
 integral curve, vector field, global existence
 -/
+
+@[expose] public section
 
 open scoped Topology
 
@@ -58,11 +62,11 @@ lemma eqOn_abs_add_one_of_isMIntegralCurveOn_Ioo [BoundarylessManifold I M]
     (γ : ℝ → ℝ → M) (hγx : ∀ a, γ a 0 = x) (hγ : ∀ a > 0, IsMIntegralCurveOn (γ a) v (Ioo (-a) a))
     {a : ℝ} : EqOn (fun t ↦ γ (|t| + 1) t) (γ a) (Ioo (-a) a) := by
   intro t ht
-  by_cases hlt : |t| + 1 < a
+  by_cases! hlt : |t| + 1 < a
   · exact eqOn_of_isMIntegralCurveOn_Ioo hv γ hγx hγ
       (by positivity) hlt.le (abs_lt.mp <| lt_add_one _)
   · exact eqOn_of_isMIntegralCurveOn_Ioo hv γ hγx hγ
-      (neg_lt_self_iff.mp <| lt_trans ht.1 ht.2) (not_lt.mp hlt) ht |>.symm
+      (neg_lt_self_iff.mp <| lt_trans ht.1 ht.2) hlt ht |>.symm
 
 @[deprecated (since := "2025-08-12")] alias eqOn_abs_add_one_of_isIntegralCurveOn_Ioo :=
   eqOn_abs_add_one_of_isMIntegralCurveOn_Ioo

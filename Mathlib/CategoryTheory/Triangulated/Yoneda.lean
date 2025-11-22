@@ -3,20 +3,24 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Ab
-import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
-import Mathlib.CategoryTheory.Shift.ShiftedHomOpposite
-import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
-import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
+module
+
+public import Mathlib.Algebra.Homology.ShortComplex.Ab
+public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
+public import Mathlib.CategoryTheory.Shift.ShiftedHomOpposite
+public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
+public import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
 
 /-!
 # The Yoneda functors are homological
 
 Let `C` be a pretriangulated category. In this file, we show that the
-functors `preadditiveCoyoneda.obj A : C ⥤ AddCommGrp` for `A : Cᵒᵖ` and
-`preadditiveYoneda.obj B : Cᵒᵖ ⥤ AddCommGrp` for `B : C` are homological functors.
+functors `preadditiveCoyoneda.obj A : C ⥤ AddCommGrpCat` for `A : Cᵒᵖ` and
+`preadditiveYoneda.obj B : Cᵒᵖ ⥤ AddCommGrpCat` for `B : C` are homological functors.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 

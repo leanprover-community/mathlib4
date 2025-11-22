@@ -4,11 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl, Damiano Testa,
 Yuyang Zhao
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
-import Mathlib.Data.Ordering.Basic
-import Mathlib.Order.MinMax
-import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.Use
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
+public import Mathlib.Data.Ordering.Basic
+public import Mathlib.Order.MinMax
+public import Mathlib.Tactic.Contrapose
+public import Mathlib.Tactic.Use
 
 /-!
 # Ordered monoids
@@ -27,6 +29,8 @@ Almost no monoid is actually present in this file: most assumptions have been ge
 `Mul` or `MulOneClass`.
 
 -/
+
+@[expose] public section
 
 
 -- TODO: If possible, uniformize lemma names, taking special care of `'`,
@@ -208,8 +212,7 @@ theorem Right.mul_lt_mul [MulLeftMono α]
 @[to_additive (attr := gcongr high) add_le_add]
 theorem mul_le_mul' [MulLeftMono α] [MulRightMono α]
     {a b c d : α} (h₁ : a ≤ b) (h₂ : c ≤ d) :
-    a * c ≤ b * d :=
-  (mul_le_mul_left' h₂ _).trans (mul_le_mul_right' h₁ d)
+    a * c ≤ b * d := by grw [h₁, h₂]
 
 @[to_additive]
 theorem mul_le_mul_three [MulLeftMono α]
@@ -1085,13 +1088,12 @@ section LinearOrder
 variable [LinearOrder α]
 
 theorem exists_square_le [MulLeftStrictMono α] (a : α) : ∃ b : α, b * b ≤ a := by
-  by_cases h : a < 1
+  by_cases! h : a < 1
   · use a
     have : a * a < a * 1 := mul_lt_mul_left' h a
     rw [mul_one] at this
     exact le_of_lt this
   · use 1
-    push_neg at h
     rwa [mul_one]
 
 end LinearOrder

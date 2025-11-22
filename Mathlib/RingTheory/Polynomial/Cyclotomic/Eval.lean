@@ -3,11 +3,13 @@ Copyright (c) 2021 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
-import Mathlib.Tactic.ByContra
-import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.NumberTheory.Padics.PadicVal.Basic
-import Mathlib.Analysis.Complex.Arg
+module
+
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+public import Mathlib.Tactic.ByContra
+public import Mathlib.Topology.Algebra.Polynomial
+public import Mathlib.NumberTheory.Padics.PadicVal.Basic
+public import Mathlib.Analysis.Complex.Arg
 
 /-!
 # Evaluating cyclotomic polynomials
@@ -17,6 +19,8 @@ This file states some results about evaluating cyclotomic polynomials in various
 * `Polynomial.eval_one_cyclotomic_not_prime_pow`: Otherwise, `eval 1 (cyclotomic n R) = 1`.
 * `Polynomial.cyclotomic_pos` : `∀ x, 0 < eval x (cyclotomic n R)` if `2 < n`.
 -/
+
+@[expose] public section
 
 
 namespace Polynomial
@@ -292,7 +296,7 @@ theorem sub_one_pow_totient_lt_natAbs_cyclotomic_eval {n : ℕ} {q : ℕ} (hn' :
   · rw [zero_tsub, zero_pow (Nat.totient_pos.2 (pos_of_gt hn')).ne', pos_iff_ne_zero,
       Int.natAbs_ne_zero, Nat.cast_zero, ← coeff_zero_eq_eval_zero, cyclotomic_coeff_zero _ hn']
     exact one_ne_zero
-  rw [← @Nat.cast_lt ℝ, Nat.cast_pow, Nat.cast_sub hq'.le, Nat.cast_one, Int.cast_natAbs]
+  rw [← @Nat.cast_lt ℝ, Nat.cast_pow, Nat.cast_sub hq'.le, Nat.cast_one, Nat.cast_natAbs]
   refine (sub_one_pow_totient_lt_cyclotomic_eval hn' (Nat.one_lt_cast.2 hq')).trans_le ?_
   convert (cyclotomic.eval_apply (q : ℤ) n (algebraMap ℤ ℝ)).trans_le (le_abs_self _)
   simp

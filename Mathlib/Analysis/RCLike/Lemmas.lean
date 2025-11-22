@@ -3,11 +3,15 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.Topology.Instances.RealVectorSpace
+module
+
+public import Mathlib.Analysis.Normed.Module.FiniteDimension
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.Topology.Instances.RealVectorSpace
 
 /-! # Further lemmas about `RCLike` -/
+
+@[expose] public section
 
 open scoped Finset
 
@@ -52,7 +56,7 @@ namespace FiniteDimensional
 
 open RCLike
 
-library_note "RCLike instance"/--
+library_note2 «RCLike instance» /--
 This instance generates a type-class problem with a metavariable `?m` that should satisfy
 `RCLike ?m`. Since this can only be satisfied by `ℝ` or `ℂ`, this does not cause problems. -/
 

@@ -3,8 +3,10 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri
 -/
-import Mathlib.Geometry.Manifold.ContMDiffMap
-import Mathlib.Geometry.Manifold.MFDeriv.Basic
+module
+
+public import Mathlib.Geometry.Manifold.ContMDiffMap
+public import Mathlib.Geometry.Manifold.MFDeriv.Basic
 
 /-!
 # `C^n` monoid
@@ -16,9 +18,11 @@ additive counterpart `ContMDiffAdd`. These structures are general enough to also
 semigroups.
 -/
 
+@[expose] public section
+
 open scoped Manifold ContDiff
 
-library_note "Design choices about smooth algebraic structures"/--
+library_note2 «Design choices about smooth algebraic structures» /--
 1. All `C^n` algebraic structures on `G` are `Prop`-valued classes that extend
 `IsManifold I n G`. This way we save users from adding both
 `[IsManifold I n G]` and `[ContMDiffMul I n G]` to the assumptions. While many API

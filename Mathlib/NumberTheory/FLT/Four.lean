@@ -3,16 +3,20 @@ Copyright (c) 2020 Paul van Wamelen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul van Wamelen
 -/
-import Mathlib.Data.Nat.Factors
-import Mathlib.NumberTheory.FLT.Basic
-import Mathlib.NumberTheory.PythagoreanTriples
-import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.Tactic.LinearCombination
+module
+
+public import Mathlib.Data.Nat.Factors
+public import Mathlib.NumberTheory.FLT.Basic
+public import Mathlib.NumberTheory.PythagoreanTriples
+public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.Tactic.LinearCombination
 
 /-!
 # Fermat's Last Theorem for the case n = 4
 There are no non-zero integers `a`, `b` and `c` such that `a ^ 4 + b ^ 4 = c ^ 4`.
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 
@@ -181,7 +185,7 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
     rw [← sq, ht1, (by ring : m ^ 2 - n ^ 2 = m ^ 2 + -n * n)]
     exact (Int.isCoprime_iff_gcd_eq_one.mpr ht4).pow_left.add_mul_right_left (-n)
   -- m is positive because b is non-zero and b ^ 2 = 2 * m * n and we already have 0 ≤ m.
-  have hb20 : b ^ 2 ≠ 0 := mt pow_eq_zero h.1.2.1
+  have hb20 : b ^ 2 ≠ 0 := pow_ne_zero _ h.1.2.1
   have h4 : 0 < m := by
     apply lt_of_le_of_ne ht6
     rintro rfl

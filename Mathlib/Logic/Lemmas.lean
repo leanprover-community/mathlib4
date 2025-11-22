@@ -3,10 +3,12 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Logic.Basic
-import Mathlib.Tactic.Convert
-import Mathlib.Tactic.SplitIfs
-import Mathlib.Tactic.Tauto
+module
+
+public import Mathlib.Logic.Basic
+public import Mathlib.Tactic.Convert
+public import Mathlib.Tactic.SplitIfs
+public import Mathlib.Tactic.Tauto
 
 /-!
 # More basic logic properties
@@ -17,6 +19,8 @@ convenient to be able to use the `tauto` or `split_ifs` tactics.
 We spell those lemmas out with `dite` and `ite` rather than the `if then else` notation because this
 would result in less delta-reduced statements.
 -/
+
+@[expose] public section
 
 theorem iff_assoc {a b c : Prop} : ((a ↔ b) ↔ c) ↔ (a ↔ (b ↔ c)) := by tauto
 theorem iff_left_comm {a b c : Prop} : (a ↔ (b ↔ c)) ↔ (b ↔ (a ↔ c)) := by tauto

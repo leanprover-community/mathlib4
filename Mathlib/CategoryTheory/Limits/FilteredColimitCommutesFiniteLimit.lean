@@ -3,14 +3,16 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Limits.ColimitLimit
-import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathlib.CategoryTheory.Limits.Types.Filtered
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.Products.Bifunctor
-import Mathlib.Data.Countable.Small
+module
+
+public import Mathlib.CategoryTheory.Limits.ColimitLimit
+public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+public import Mathlib.CategoryTheory.Limits.Types.Filtered
+public import Mathlib.CategoryTheory.ConcreteCategory.Basic
+public import Mathlib.CategoryTheory.Products.Bifunctor
+public import Mathlib.Data.Countable.Small
 
 /-!
 # Filtered colimits commute with finite limits.
@@ -25,6 +27,8 @@ colimit (over `K`) of the limits (over `J`) with the limit of the colimits is an
 * Borceux, Handbook of categorical algebra 1, Theorem 2.13.4
 * [Stacks: Filtered colimits](https://stacks.math.columbia.edu/tag/002W)
 -/
+
+@[expose] public section
 
 -- Various pieces of algebra that have previously been spuriously imported here:
 assert_not_exists map_ne_zero MonoidWithZero

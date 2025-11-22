@@ -3,13 +3,17 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 -/
-import Mathlib.Algebra.MonoidAlgebra.Defs
-import Mathlib.Algebra.Ring.Opposite
-import Mathlib.Data.Finsupp.Basic
+module
+
+public import Mathlib.Algebra.MonoidAlgebra.Defs
+public import Mathlib.Algebra.Ring.Opposite
+public import Mathlib.Data.Finsupp.Basic
 
 /-!
 # Monoid algebras and the opposite ring
 -/
+
+@[expose] public section
 
 assert_not_exists NonUnitalAlgHom AlgEquiv
 

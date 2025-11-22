@@ -3,7 +3,9 @@ Copyright (c) 2024 Salvatore Mercuri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri
 -/
-import Mathlib.Topology.Algebra.Algebra
+module
+
+public import Mathlib.Topology.Algebra.Algebra
 
 /-!
 # Isomorphisms of topological algebras
@@ -28,6 +30,8 @@ are also topological spaces.
 
 * continuous, isomorphism, algebra
 -/
+
+@[expose] public section
 
 open scoped Topology
 
@@ -270,11 +274,11 @@ theorem symm_apply_eq (e : A ≃A[R] B) {a : A} {b : B} : e.symm b = a ↔ b = e
 theorem eq_symm_apply (e : A ≃A[R] B) {a : A} {b : B} : a = e.symm b ↔ e a = b :=
   e.toEquiv.eq_symm_apply
 
-theorem image_eq_preimage (e : A ≃A[R] B) (S : Set A) : e '' S = e.symm ⁻¹' S :=
-  e.toEquiv.image_eq_preimage S
+theorem image_eq_preimage_symm (e : A ≃A[R] B) (S : Set A) : e '' S = e.symm ⁻¹' S :=
+  e.toEquiv.image_eq_preimage_symm S
 
 theorem image_symm_eq_preimage (e : A ≃A[R] B) (S : Set B) : e.symm '' S = e ⁻¹' S := by
-  rw [e.symm.image_eq_preimage, e.symm_symm]
+  rw [e.symm.image_eq_preimage_symm, e.symm_symm]
 
 @[simp]
 theorem symm_preimage_preimage (e : A ≃A[R] B) (S : Set B) : e.symm ⁻¹' (e ⁻¹' S) = S :=
@@ -294,6 +298,8 @@ theorem _root_.AlgEquiv.isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E�
     [Ring E₁] [IsUniformAddGroup E₁] [Algebra R E₁] [Ring E₂] [IsUniformAddGroup E₂] [Algebra R E₂]
     (e : E₁ ≃ₐ[R] E₂) (h₁ : Continuous e) (h₂ : Continuous e.symm) :
     IsUniformEmbedding e :=
-  ContinuousAlgEquiv.isUniformEmbedding { e with continuous_toFun := h₁ }
+  ContinuousAlgEquiv.isUniformEmbedding { e with
+    continuous_toFun := h₁
+    continuous_invFun := by dsimp; fun_prop }
 
 end ContinuousAlgEquiv
