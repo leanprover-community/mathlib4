@@ -1512,6 +1512,7 @@ public import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
 public import Mathlib.Analysis.Calculus.BumpFunction.InnerProduct
 public import Mathlib.Analysis.Calculus.BumpFunction.Normed
 public import Mathlib.Analysis.Calculus.BumpFunction.SmoothApprox
+public import Mathlib.Analysis.Calculus.BumpFunction.SmoothApproxLp
 public import Mathlib.Analysis.Calculus.Conformal.InnerProduct
 public import Mathlib.Analysis.Calculus.Conformal.NormedSpace
 public import Mathlib.Analysis.Calculus.ContDiff.Basic
