@@ -5691,6 +5691,8 @@ public import Mathlib.RingTheory.Coalgebra.Hom
 public import Mathlib.RingTheory.Coalgebra.MonoidAlgebra
 public import Mathlib.RingTheory.Coalgebra.MulOpposite
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
+public import Mathlib.RingTheory.CohenMacaulay.Basic
+public import Mathlib.RingTheory.CohenMacaulay.Maximal
 public import Mathlib.RingTheory.Complex
 public import Mathlib.RingTheory.Conductor
 public import Mathlib.RingTheory.Congruence.Basic
@@ -5789,6 +5791,7 @@ public import Mathlib.RingTheory.FreeCommRing
 public import Mathlib.RingTheory.FreeRing
 public import Mathlib.RingTheory.Frobenius
 public import Mathlib.RingTheory.Generators
+public import Mathlib.RingTheory.GlobalDimension
 public import Mathlib.RingTheory.GradedAlgebra.Basic
 public import Mathlib.RingTheory.GradedAlgebra.FiniteType
 public import Mathlib.RingTheory.GradedAlgebra.Homogeneous.Ideal
@@ -6078,11 +6081,18 @@ public import Mathlib.RingTheory.PrincipalIdealDomainOfPrime
 public import Mathlib.RingTheory.QuotSMulTop
 public import Mathlib.RingTheory.Radical
 public import Mathlib.RingTheory.ReesAlgebra
+public import Mathlib.RingTheory.Regular.AuslanderBuchsbaum
 public import Mathlib.RingTheory.Regular.Category
 public import Mathlib.RingTheory.Regular.Depth
 public import Mathlib.RingTheory.Regular.Flat
 public import Mathlib.RingTheory.Regular.IsSMulRegular
+public import Mathlib.RingTheory.Regular.Ischebeck
 public import Mathlib.RingTheory.Regular.RegularSequence
+public import Mathlib.RingTheory.RegularLocalRing.Basic
+public import Mathlib.RingTheory.RegularLocalRing.Defs
+public import Mathlib.RingTheory.RegularLocalRing.GlobalDimension
+public import Mathlib.RingTheory.RegularLocalRing.RegularRing.Basic
+public import Mathlib.RingTheory.RegularLocalRing.RegularRing.GlobalDimension
 public import Mathlib.RingTheory.RingHom.Bijective
 public import Mathlib.RingTheory.RingHom.Etale
 public import Mathlib.RingTheory.RingHom.FaithfullyFlat
