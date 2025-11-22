@@ -45,6 +45,7 @@ def functorEquiv : A ⊕ A' ⥤ B ≌ (A ⥤ B) × (A' ⥤ B) where
   unitIso := NatIso.ofComponents <| fun F ↦ F.isoSum
   counitIso := NatIso.ofComponents (fun F ↦
     (Functor.inlCompSum' _ _).prod (Functor.inrCompSum' _ _) ≪≫ prod.etaIso F)
+
 variable {A A' B}
 
 @[simp]
@@ -150,7 +151,6 @@ def equivalenceFunctorEquivFunctorIso :
     Iso.prod
       ((Functor.associator _ _ E).symm ≪≫ isoWhiskerRight (Sum.swapCompInl A' A) _)
       ((Functor.associator _ _ _).symm ≪≫ isoWhiskerRight (Sum.swapCompInr A' A) _))
-    (by intros; ext; all_goals {simp})
 
 end Swap
 
