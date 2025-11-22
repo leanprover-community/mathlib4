@@ -599,6 +599,42 @@ theorem contMDiffOn_infty : ContMDiffOn I I' ∞ f s ↔ ∀ n : ℕ, ContMDiffO
 theorem contMDiff_infty : ContMDiff I I' ∞ f ↔ ∀ n : ℕ, ContMDiff I I' n f :=
   ⟨fun h _ => h.of_le (mod_cast le_top), fun h x => contMDiffWithinAt_infty.2 fun n => h n x⟩
 
+/-! ### `C^ω` functions -/
+
+section Analytic
+
+/-- Functions are `ContMDiffAt` iff they are continuous and analytic in charts. -/
+theorem contMDiffAt_omega_iff [CompleteSpace E'] :
+    ContMDiffAt I I' ω f x ↔ ContinuousAt f x ∧
+      AnalyticWithinAt 𝕜 (extChartAt I' (f x) ∘ f ∘ (extChartAt I x).symm) (range I)
+      (extChartAt I x x) := by
+  rw [contMDiffAt_iff, contDiffWithinAt_omega_iff_analyticWithinAt]
+
+/-- Functions are `ContMDiffAt` iff they are continuous and analytic in charts. -/
+theorem contMDiffAt_omega_iff_of_boundaryless [I.Boundaryless] [CompleteSpace E'] :
+    ContMDiffAt I I' ω f x ↔ ContinuousAt f x ∧
+      AnalyticAt 𝕜 (extChartAt I' (f x) ∘ f ∘ (extChartAt I x).symm) (extChartAt I x x) := by
+  simp only [contMDiffAt_omega_iff, I.range_eq_univ, analyticWithinAt_univ]
+
+/-- Functions are `ContMDiff` iff they are continuous and analytic in charts everywhere. -/
+theorem contMDiff_omega_iff [CompleteSpace E'] :
+    ContMDiff I I' ω f ↔ Continuous f ∧
+      ∀ x : M, AnalyticWithinAt 𝕜 (extChartAt I' (f x) ∘ f ∘ (extChartAt I x).symm)
+        (range I) (extChartAt I x x) := by
+  simp only [ContMDiff, contMDiffAt_iff, continuous_iff_continuousAt,
+    contDiffWithinAt_omega_iff_analyticWithinAt]
+  aesop
+
+/-- Functions are `ContMDiff` iff they are continuous and analytic in charts everywhere. -/
+theorem contMDiff_omega_iff_of_boundaryless [I.Boundaryless]
+    [CompleteSpace E'] :
+    ContMDiff I I' ω f ↔ Continuous f ∧
+      ∀ x : M, AnalyticAt 𝕜 (extChartAt I' (f x) ∘ f ∘ (extChartAt I x).symm)
+        (extChartAt I x x) := by
+  simp only [contMDiff_omega_iff, I.range_eq_univ, analyticWithinAt_univ]
+
+end Analytic
+
 theorem contMDiffWithinAt_iff_nat {n : ℕ∞} :
     ContMDiffWithinAt I I' n f s x ↔ ∀ m : ℕ, (m : ℕ∞) ≤ n → ContMDiffWithinAt I I' m f s x := by
   refine ⟨fun h m hm => h.of_le (mod_cast hm), fun h => ?_⟩
