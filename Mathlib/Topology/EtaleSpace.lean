@@ -69,6 +69,8 @@ to behave like the family of stalks of the admissible sections.
 * https://nforum.ncatlab.org/discussion/11283/etale-space/
 -/
 
+@[expose] public section
+
 open CategoryTheory Topology TopologicalSpace Opposite Set
 
 universe u v
