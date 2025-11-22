@@ -1428,40 +1428,37 @@ end SpecialFunctions
 
 section Sum
 
-theorem sum_Icc_zeta (N : ℕ) : ∑ n ∈ Icc 0 N, zeta n = N := by
+theorem sum_Ioc_zeta (N : ℕ) : ∑ n ∈ Ioc 0 N, zeta n = N := by
   simp only [zeta_apply, sum_ite, sum_const_zero, sum_const, smul_eq_mul, mul_one, zero_add]
-  rw [show {x ∈ Icc 0 N | ¬x = 0} = Ioc 0 N by ext; simp; cutsat]
+  rw [show {x ∈ Ioc 0 N | ¬x = 0} = Ioc 0 N by ext; simp; cutsat]
   simp
 
 variable {R : Type*} [Semiring R]
 
-theorem sum_Icc_mul_eq_sum_prod_filter (f g : ArithmeticFunction R) (N : ℕ) :
-    ∑ n ∈ Icc 0 N, (f * g) n = ∑ x ∈ Icc 0 N ×ˢ Icc 0 N with x.1 * x.2 ≤ N, f x.1 * g x.2 := by
+theorem sum_Ioc_mul_eq_sum_prod_filter (f g : ArithmeticFunction R) (N : ℕ) :
+    ∑ n ∈ Ioc 0 N, (f * g) n = ∑ x ∈ Ioc 0 N ×ˢ Ioc 0 N with x.1 * x.2 ≤ N, f x.1 * g x.2 := by
   simp only [mul_apply]
-  trans ∑ n ∈ Icc 0 N, ∑ x ∈ Icc 0 N ×ˢ Icc 0 N with x.1 * x.2 = n, f x.1 * g x.2
+  trans ∑ n ∈ Ioc 0 N, ∑ x ∈ Ioc 0 N ×ˢ Ioc 0 N with x.1 * x.2 = n, f x.1 * g x.2
   · refine sum_congr rfl fun n hn ↦ ?_
-    simp only [mem_Icc, _root_.zero_le, true_and] at hn
-    by_cases hn0 : n = 0
-    · simp +contextual only [hn0, divisorsAntidiagonal_zero, sum_empty, _root_.mul_eq_zero]
-      apply (sum_eq_zero ..).symm
-      simp only [mem_filter, mem_product, mem_Icc, _root_.zero_le, true_and, and_imp, Prod.forall]
-      rintro _ _ _ _ (h | h) <;> simp [h]
-    rw [divisorsAntidiagonal_eq_prod_filter_of_le hn0 (by omega)]
+    simp only [mem_Ioc] at hn
+    have hn0 : n ≠ 0 := by exact ne_zero_of_lt hn.1
+    rw [divisorsAntidiagonal_eq_prod_filter_of_le hn0 hn.2]
   · simp_rw [sum_filter]
     rw [sum_comm]
-    simp
+    exact  sum_congr rfl fun _ _ ↦ (by simp_all)
 
-theorem sum_Icc_mul_eq_sum_sum (f g : ArithmeticFunction R) (N : ℕ) :
-    ∑ n ∈ Icc 0 N, (f * g) n = ∑ n ∈ Icc 0 N, f n * ∑ m ∈ Icc 0 (N / n), g m := by
-  rw [sum_Icc_mul_eq_sum_prod_filter, sum_filter, sum_product]
-  refine sum_congr rfl fun n _ ↦ ?_
+theorem sum_Ioc_mul_eq_sum_sum (f g : ArithmeticFunction R) (N : ℕ) :
+    ∑ n ∈ Ioc 0 N, (f * g) n = ∑ n ∈ Ioc 0 N, f n * ∑ m ∈ Ioc 0 (N / n), g m := by
+  rw [sum_Ioc_mul_eq_sum_prod_filter, sum_filter, sum_product]
+  refine sum_congr rfl fun n hn ↦ ?_
   simp only [sum_ite, not_le, sum_const_zero, add_zero, mul_sum]
-  by_cases h : n = 0
-  · simp [h]
   congr
   ext
-  simp only [mem_filter, mem_Icc, and_assoc, and_congr_right_iff]
+  simp only [mem_filter, mem_Ioc, and_assoc, and_congr_right_iff]
   intro _
+  have hn0 : n ≠ 0 := by
+    simp [mem_Ioc] at hn
+    exact ne_zero_of_lt hn.1
   constructor
   · intro ⟨_, h⟩
     grw [← h, Nat.mul_div_cancel_left _ (by omega)]
@@ -1469,19 +1466,19 @@ theorem sum_Icc_mul_eq_sum_sum (f g : ArithmeticFunction R) (N : ℕ) :
     grw [hm]
     simp [mul_div_le, div_le_self]
 
-theorem sum_Icc_mul_zeta_eq_sum (f : ArithmeticFunction R) (N : ℕ) :
-    ∑ n ∈ Icc 0 N, (f * zeta) n = ∑ n ∈ Icc 0 N, f n * ↑(N / n) := by
-  rw [sum_Icc_mul_eq_sum_sum]
+theorem sum_Ioc_mul_zeta_eq_sum (f : ArithmeticFunction R) (N : ℕ) :
+    ∑ n ∈ Ioc 0 N, (f * zeta) n = ∑ n ∈ Ioc 0 N, f n * ↑(N / n) := by
+  rw [sum_Ioc_mul_eq_sum_sum]
   refine  sum_congr rfl fun n hn ↦ ?_
   simp_rw [natCoe_apply]
-  rw_mod_cast [sum_Icc_zeta]
+  rw_mod_cast [sum_Ioc_zeta]
 
 --TODO: Dirichlet hyperbola method to get sums of length `sqrt N`
 /-- An `O(N)` formula for the sum of the number of divisors function. -/
-theorem sum_Icc_sigma0_eq_sum_div (N : ℕ) :
-    ∑ n ∈ Icc 0 N, sigma 0 n = ∑ n ∈ Icc 0 N, (N / n) := by
+theorem sum_Ioc_sigma0_eq_sum_div (N : ℕ) :
+    ∑ n ∈ Ioc 0 N, sigma 0 n = ∑ n ∈ Ioc 0 N, (N / n) := by
   rw [← zeta_mul_pow_eq_sigma, pow_zero_eq_zeta]
-  convert sum_Icc_mul_zeta_eq_sum zeta N using 1
+  convert sum_Ioc_mul_zeta_eq_sum zeta N using 1
   simp only [zeta_apply, cast_id, ite_mul, zero_mul, one_mul]
   refine sum_congr rfl fun n hn ↦ ?_
   simp
