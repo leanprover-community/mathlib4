@@ -173,7 +173,7 @@ lemma lt_geom_series (D : ℕ → X) (ε : ℝ≥0∞) (μ : ProbabilityMeasure 
     apply hx.trans; field_simp
     linarith
   · rw [← Int.neg_add, zpow_neg]; norm_cast
-    simp only [zpow_negSucc, Nat.cast_pow, Nat.cast_ofNat, ne_eq, Nat.add_eq_zero, one_ne_zero,
+    simp only [zpow_negSucc, Nat.cast_pow, Nat.cast_ofNat, ne_eq, Nat.add_eq_zero_iff, one_ne_zero,
       false_and, not_false_eq_true, pow_eq_zero_iff, OfNat.ofNat_ne_zero, coe_inv,
       ENNReal.coe_pow, coe_ofNat, ENNReal.inv_le_inv]
     rw [Nat.add_comm m 1]
@@ -204,7 +204,8 @@ lemma MeasOpenCoverTendstoMeasUniv (U : ℕ → Set X) (O : ∀ i, IsOpen (U i))
       simp only [Function.comp_apply] at this
       rw [toReal_liminf]; norm_cast
       simp_rw [←ProbabilityMeasure.ennreal_coeFn_eq_coeFn_toMeasure] at this
-      rw [←ofNNReal_liminf] at this; norm_cast at this
+      rw [←ofNNReal_liminf] at this
+      · exact mod_cast this
       use 1
       simp only [ge_iff_le, eventually_map, eventually_atTop, forall_exists_index]
       exact fun _ x h ↦ (h x (by simp)).trans <|
