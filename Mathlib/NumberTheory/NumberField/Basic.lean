@@ -428,6 +428,8 @@ theorem ringOfIntegersEquiv_apply_coe (z : 𝓞 ℚ) :
   obtain ⟨z, rfl⟩ := Rat.ringOfIntegersEquiv.symm.surjective z
   simp
 
+@[deprecated (since := "2025-11-22")] alias coe_ringOfIntegersEquiv := ringOfIntegersEquiv_apply_coe
+
 theorem ringOfIntegersEquiv_symm_apply_coe (x : ℤ) :
     (ringOfIntegersEquiv.symm x : ℚ) = ↑x :=
   eq_intCast ringOfIntegersEquiv.symm _ ▸ rfl

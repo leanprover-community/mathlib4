@@ -686,6 +686,8 @@ theorem monomial_pow (m : σ →₀ ℕ) (a : R) (n : ℕ) :
   rw [Finset.pow_eq_prod_const, prod_monomial, ← Finset.nsmul_eq_sum_const,
     ← Finset.pow_eq_prod_const]
 
+@[deprecated (since := "2025-11-22")] alias monmial_pow := monomial_pow
+
 /-- Vanishing of coefficients of powers of multivariate power series
 when the constant coefficient is nilpotent
 [N. Bourbaki, *Algebra {II}*, Chapter 4, §4, n°2, proposition 3][bourbaki1981] -/

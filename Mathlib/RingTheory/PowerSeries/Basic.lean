@@ -654,6 +654,8 @@ theorem prod_monomial (f : ι → ℕ) (g : ι → R) (s : Finset ι) :
 theorem monomial_pow (m : ℕ) (a : R) (n : ℕ) : (monomial m a) ^ n = monomial (n * m) (a ^ n) := by
   simpa [monomial] using MvPowerSeries.monomial_pow (Finsupp.single () m) a n
 
+@[deprecated (since := "2025-11-22")] alias monmial_pow := monomial_pow
+
 /-- The `n`-th coefficient of the `k`-th power of a power series. -/
 lemma coeff_pow (k n : ℕ) (φ : R⟦X⟧) :
     coeff n (φ ^ k) = ∑ l ∈ finsuppAntidiag (range k) n, ∏ i ∈ range k, coeff (l i) φ := by
