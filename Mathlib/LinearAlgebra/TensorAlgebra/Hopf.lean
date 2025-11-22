@@ -24,87 +24,69 @@ namespace TensorAlgebra
 open scoped TensorProduct RingTheory.LinearMap Coalgebra
 open LinearMap TensorProduct
 
-variable (R : Type*) [CommRing R] {M : Type*} [AddCommMonoid M] [Module R M]
+section Bialgebra
+
+variable (R : Type*) [CommSemiring R] {M : Type*} [AddCommMonoid M] [Module R M]
 
 local notation "T[" M "]" => TensorAlgebra R M
 
-/-- Linear map inducing the comultiplication in `TensorAlgebra R M`. -/
-def comul' : M →ₗ[R] T[M] ⊗[R] T[M] :=
+/-- Comultiplication in `TensorAlgebra R M` as an algebra map.
+It is induced by the linear map sending `(m : M)` to `ι R m ⊗ₜ[R] 1 + 1 ⊗ₜ[R] ι R m`.
+See `comul_apply`.
+-/
+def comul : T[M] →ₐ[R] T[M] ⊗[R] T[M] := lift R (
   ((ι R) ⊗ₘ (Algebra.linearMap R T[M])) ∘ₗ (TensorProduct.rid R M).symm +
   ((Algebra.linearMap R T[M]) ⊗ₘ (ι R)) ∘ₗ (TensorProduct.lid R M).symm
+  )
 
-/-- Comultiplication in `TensorAlgebra R M` as an algebra map. -/
-def comul : T[M] →ₐ[R] T[M] ⊗[R] T[M] := lift R (comul' R)
+@[simp]
+lemma comul_apply (m : M) : comul R (ι R m) = ι R m ⊗ₜ[R] 1 + 1 ⊗ₜ[R] ι R m := by
+  simp [comul]
+
+@[simp]
+lemma algebraMapInv_ι_apply (m : M) : algebraMapInv (ι R m) = 0 := by
+  simp [algebraMapInv]
+
+@[simp]
+lemma algebraMapInv_ι_eq_zero : algebraMapInv.toLinearMap ∘ₗ (ι R) = (0 : M →ₗ[R] R) := by
+  ext
+  simp
+
+instance instBialgebra : Bialgebra R T[M] := Bialgebra.ofAlgHom (comul R) algebraMapInv
+    (by ext; simpa [comul, Algebra.TensorProduct.one_def, add_tmul, tmul_add] using by abel)
+    (by ext; simp [comul, algebraMapInv])
+    (by ext; simp [comul, algebraMapInv])
+
+end Bialgebra
+
+section HopfAlgebra
+
+variable (R : Type*) [CommRing R] {M : Type*} [AddCommGroup M] [Module R M]
+
+local notation "T[" M "]" => TensorAlgebra R M
 
 /-- Antipode in `TensorAlgebra R M` as an algebra map. -/
 def antipode : T[M] →ₗ[R] T[M] := (MulOpposite.opLinearEquiv R).symm.comp
   (lift R ((MulOpposite.opLinearEquiv R).comp (-(ι R)))).toLinearMap
 
 @[simp]
-lemma comul_apply (x : M) : comul R (ι R x) = ι R x ⊗ₜ[R] ↑1 + ↑1 ⊗ₜ[R] ι R x := by
-  unfold comul comul'
-  simp
-
-@[simp]
-lemma counit_ι_apply (x : M) : algebraMapInv ((ι R) x) = 0 := by
-  rw [algebraMapInv]
-  simp
-
-@[simp]
-lemma counit_ι_eq_zero : algebraMapInv.toLinearMap ∘ₗ (ι R) = (0 : M →ₗ[R] R) := by
-  ext x
-  simp
-
-theorem rTensor : (Algebra.TensorProduct.map algebraMapInv (AlgHom.id R T[M])).comp (comul R) =
-    (Algebra.TensorProduct.lid R T[M]).symm.toAlgHom := by
-  unfold comul comul'
-  ext x
-  rw [algebraMapInv]
-  simp
-
-theorem lTensor : (Algebra.TensorProduct.map (AlgHom.id R T[M]) algebraMapInv).comp (comul R) =
-    ↑(Algebra.TensorProduct.rid R R T[M]).symm := by
-  unfold comul comul'
-  ext x
-  rw [algebraMapInv]
-  simp
-
-@[simp]
 lemma antipode_ι_apply (x : M) : antipode R ((ι R) x) = -(ι R) x := by
-  unfold antipode
+  simp [antipode]
+
+@[simp]
+theorem antipode_antihom_apply (x y : T[M]) : antipode R (x * y) = antipode R y * antipode R x := by
+  simp [antipode]
+
+@[simp]
+theorem antipode_antihom : antipode R ∘ₗ mul' R T[M] =
+    mul' R T[M] ∘ₗ TensorProduct.comm R T[M] T[M] ∘ₗ ((antipode R) ⊗ₘ (antipode R)) := by
+  ext
   simp
 
 @[simp]
 lemma antipode_algebraMap_apply (r : R) :
     antipode R ((algebraMap R T[M]) r) = algebraMap R T[M] r := by
-  unfold antipode
-  simp
-
-theorem coassoc : (Algebra.TensorProduct.assoc R R T[M] T[M] T[M]).toAlgHom.comp
-    ((Algebra.TensorProduct.map (comul R) (AlgHom.id R T[M])).comp (comul R)) =
-    (Algebra.TensorProduct.map (AlgHom.id R T[M]) (comul R)).comp (comul R) := by
-  unfold comul comul'
-  ext
-  /- can be reduced maybe? -/
-  simp only [AlgHom.comp_toLinearMap, coe_comp, AlgHom.coe_toLinearMap,
-  Function.comp_apply, lift_ι_apply, add_apply, LinearEquiv.coe_coe,
-  rid_symm_apply, map_tmul, Algebra.linearMap_apply, map_one,
-  lid_symm_apply, map_add, Algebra.TensorProduct.map_tmul, tmul_add]
-  abel
-
-instance instBialgebra : Bialgebra R T[M] := Bialgebra.ofAlgHom (comul R) algebraMapInv
-    (coassoc R) (rTensor R) (lTensor R)
-
-@[simp]
-theorem antipode_antihom_apply (x y : T[M]) : antipode R (x * y) = antipode R y * antipode R x := by
-  unfold antipode
-  simp
-
-@[simp]
-theorem antipode_antihom : antipode R ∘ₗ mul' R T[M] =
-    mul' R T[M] ∘ₗ TensorProduct.comm R T[M] T[M] ∘ₗ ((antipode R) ⊗ₘ (antipode R)) := by
-  ext x y
-  simp
+  simp [antipode]
 
 open Algebra Bialgebra Coalgebra in
 instance instHopfAlgebra : HopfAlgebra R T[M] where
@@ -119,7 +101,7 @@ instance instHopfAlgebra : HopfAlgebra R T[M] where
         conv =>
           rhs
           rw [convOne_def, comp_apply, CoalgebraStruct.counit, instBialgebra, toCoalgebraStruct,
-            toCoalgebra, ofAlgHom, mk', coe_coe, counit_ι_apply, map_zero]
+            toCoalgebra, ofAlgHom, mk', coe_coe, algebraMapInv_ι_apply, map_zero]
         conv =>
           lhs
           rw [convMul_apply, CoalgebraStruct.comul, toCoalgebraStruct, toCoalgebra]
@@ -169,7 +151,7 @@ instance instHopfAlgebra : HopfAlgebra R T[M] where
         conv =>
           rhs
           rw [convOne_def, comp_apply, CoalgebraStruct.counit, instBialgebra, toCoalgebraStruct,
-            toCoalgebra, ofAlgHom, mk', coe_coe, counit_ι_apply, map_zero]
+            toCoalgebra, ofAlgHom, mk', coe_coe, algebraMapInv_ι_apply, map_zero]
         conv =>
           lhs
           rw [convMul_apply, CoalgebraStruct.comul, toCoalgebraStruct, toCoalgebra]
@@ -206,5 +188,7 @@ instance instHopfAlgebra : HopfAlgebra R T[M] where
             rw [← Finset.sum_mul, ← Finset.mul_sum, hv, convOne_apply,
             ← Algebra.commutes, mul_assoc]
           rw [← Finset.mul_sum, hu, ← convOne_apply]
+
+end HopfAlgebra
 
 end TensorAlgebra
