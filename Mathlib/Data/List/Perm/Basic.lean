@@ -7,8 +7,7 @@ module
 
 public import Batteries.Data.List.Perm
 public import Mathlib.Logic.Relation
-public import Mathlib.Order.RelClasses
-public import Mathlib.Data.List.Forall2
+Public import Mathlib.Data.List.Forall2
 public import Mathlib.Data.List.InsertIdx
 
 /-!
