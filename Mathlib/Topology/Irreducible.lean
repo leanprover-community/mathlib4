@@ -225,6 +225,16 @@ theorem Subtype.irreducibleSpace (h : IsIrreducible s) : IrreducibleSpace s wher
     (Subtype.preirreducibleSpace h.isPreirreducible).isPreirreducible_univ
   toNonempty := h.nonempty.to_subtype
 
+lemma IsPreirreducible.of_subtype {X : Type*} [TopologicalSpace X] (s : Set X)
+    [PreirreducibleSpace s] : IsPreirreducible s := by
+  rw [← Subtype.range_coe (s := s), ← Set.image_univ]
+  refine PreirreducibleSpace.isPreirreducible_univ.image Subtype.val ?_
+  exact continuous_subtype_val.continuousOn
+
+lemma IsIrreducible.of_subtype {X : Type*} [TopologicalSpace X] (s : Set X)
+    [IrreducibleSpace s] : IsIrreducible s := by
+  exact ⟨.of_subtype, .of_subtype s⟩
+
 instance (priority := low) [Subsingleton X] : PreirreducibleSpace X :=
   ⟨(Set.subsingleton_univ_iff.mpr ‹_›).isPreirreducible⟩
 
