@@ -443,6 +443,23 @@ theorem equivProdOfSurjectiveOfIsCompl_apply {f : E →ₗ[R] F} {g : E →ₗ[R
     (hg : range g = ⊤) (hfg : IsCompl (ker f) (ker g)) (x : E) :
     equivProdOfSurjectiveOfIsCompl f g hf hg hfg x = (f x, g x) := rfl
 
+/-- Given a linear map `f : E →ₗ[R] F` and a complement `C` of its kernel, we get a linear
+equivalence between `C` and `range f`. -/
+@[simps!]
+def kerComplementEquivRange (f : E →ₗ[R] F) {C : Submodule R E}
+    (h : IsCompl C (LinearMap.ker f)) : C ≃ₗ[R] range f :=
+  .ofBijective (codRestrict (range f) f (mem_range_self f) ∘ₗ C.subtype)
+  ⟨by simpa [← ker_eq_bot, ker_codRestrict, ker_comp, ← disjoint_iff_comap_eq_bot] using h.disjoint,
+   by
+    rintro ⟨-, x, rfl⟩
+    use ((prodEquivOfIsCompl _ _ h).2 x).1
+    ext
+    simp only
+    conv_rhs => rw [← Submodule.IsCompl.projection_add_projection_eq_self h x]
+    rw [comp_codRestrict, LinearEquiv.invFun_eq_symm, codRestrict_apply, coe_comp,
+      coe_subtype, Function.comp_apply, map_add, h.symm.projection_apply_mem x, add_zero]
+    congr⟩
+
 end LinearMap
 
 namespace Submodule
