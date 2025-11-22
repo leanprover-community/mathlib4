@@ -22,7 +22,7 @@ universe v' v u
 
 namespace CategoryTheory.GrothendieckTopology
 
-open Opposite
+open Opposite Functor
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C) [Subcanonical J]
 
@@ -106,6 +106,22 @@ lemma hom_ext_yoneda {P Q : Sheaf J (Type v)} {f g : P ⟶ Q}
   ext X x
   simpa only [yonedaEquiv_comp, Equiv.apply_symm_apply]
     using congr_arg (J.yonedaEquiv) (h _ (J.yonedaEquiv.symm x))
+
+/-- The Yoneda lemma for sheaves. -/
+def yonedaOpCompCoyoneda :
+    J.yoneda.op ⋙ coyoneda ≅
+      evaluation Cᵒᵖ (Type v) ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u} ⋙
+      (whiskeringLeft _ _ _).obj (sheafToPresheaf _ _) :=
+  ((isoWhiskerLeft _ sheafToPresheafCompCoyonedaCompWhiskeringLeftSheafToPresheaf.symm).trans
+    (isoWhiskerRight (NatIso.op J.yonedaCompSheafToPresheaf.symm)
+    (_ ⋙ (whiskeringLeft _ _ _).obj _))).trans
+    (isoWhiskerRight CategoryTheory.largeCurriedYonedaLemma ((whiskeringLeft _ _ _).obj _))
+
+@[simp]
+lemma yonedaOpCompCoyoneda_app_app (X : C) (F : Sheaf J (Type v)) :
+    (J.yonedaOpCompCoyoneda.app (op X)).app F =
+      (J.yonedaEquiv.trans Equiv.ulift.symm).toIso :=
+  rfl
 
 /-- A version of `yonedaEquiv` for `uliftYoneda`. -/
 def uliftYonedaEquiv {X : C} {F : Sheaf J (Type (max v v'))} :
@@ -222,5 +238,23 @@ lemma hom_ext_uliftYoneda {P Q : Sheaf J (Type (max v v'))} {f g : P ⟶ Q}
     using congr_arg (J.uliftYonedaEquiv) (h _ (J.uliftYonedaEquiv.symm x))
 
 @[deprecated (since := "2025-11-10")] alias hom_ext_yonedaULift := hom_ext_uliftYoneda
+
+/-- A variant of the Yoneda lemma for sheaves with a raise in the universe level. -/
+def uliftYonedaOpCompCoyoneda :
+    J.uliftYoneda.op ⋙ coyoneda ≅
+      evaluation Cᵒᵖ (Type max v v') ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{u} ⋙
+      (whiskeringLeft _ _ _).obj (sheafToPresheaf _ _) :=
+  ((isoWhiskerLeft (J.yoneda.op ⋙ (sheafCompose J _).op)
+    sheafToPresheafCompCoyonedaCompWhiskeringLeftSheafToPresheaf.symm).trans
+    (isoWhiskerRight (NatIso.op (J.uliftYonedaCompSheafToPresheaf.symm))
+    (_ ⋙ (whiskeringLeft _ _ _).obj _))).trans
+    (isoWhiskerRight CategoryTheory.uliftYonedaOpCompCoyoneda
+    ((whiskeringLeft _ _ _).obj _))
+
+@[simp]
+lemma uliftYonedaOpCompCoyoneda_app_app (X : C) (F : Sheaf J (Type (max v v'))) :
+    (J.uliftYonedaOpCompCoyoneda.app (op X)).app F =
+      (J.uliftYonedaEquiv.trans Equiv.ulift.symm).toIso :=
+  rfl
 
 end CategoryTheory.GrothendieckTopology
