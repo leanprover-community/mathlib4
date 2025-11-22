@@ -6,9 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
-public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
+public import Mathlib.CategoryTheory.ObjectProperty.Equivalence
 public import Mathlib.CategoryTheory.ObjectProperty.Opposite
-public import Mathlib.Logic.Small.Basic
+public import Mathlib.CategoryTheory.EssentiallySmall
 
 /-!
 # Smallness of a property of objects
@@ -20,7 +20,7 @@ In this file, given `P : ObjectProperty C`, we define
 
 @[expose] public section
 
-universe w v u
+universe w' w v u
 
 namespace CategoryTheory.ObjectProperty
 
@@ -194,4 +194,32 @@ instance (P : ObjectProperty Cᵒᵖ) [ObjectProperty.EssentiallySmall.{w} P] :
     ObjectProperty.EssentiallySmall.{w} P.unop := by
   simpa
 
-end CategoryTheory.ObjectProperty
+instance (P : ObjectProperty C) [LocallySmall.{w} C]
+    [ObjectProperty.EssentiallySmall.{w} P] : EssentiallySmall.{w} P.FullSubcategory := by
+  obtain ⟨Q, _, h₁, h₂⟩ := EssentiallySmall.exists_small_le P
+  have := (isEquivalence_ιOfLE_iff h₁).2 h₂
+  rw [← essentiallySmall_congr (ιOfLE h₁).asEquivalence]
+  exact essentiallySmall_of_small_of_locallySmall _
+
+lemma exists_equivalence_iff (P : ObjectProperty C) [LocallySmall.{w'} C] :
+    (∃ (J : Type w) (_ : Category.{w'} J), Nonempty (P.FullSubcategory ≌ J)) ↔
+      ObjectProperty.EssentiallySmall.{w} P := by
+  refine ⟨fun ⟨J, _, ⟨e⟩⟩ ↦ ?_, fun _ ↦ ?_⟩
+  · exact ⟨.ofObj (e.inverse ⋙ P.ι).obj, inferInstance,
+      fun X hX ↦ ⟨_, ⟨⟨(e.functor.obj ⟨X, hX⟩)⟩, ⟨P.ι.mapIso (e.unitIso.app ⟨X, hX⟩)⟩⟩⟩⟩
+  · obtain ⟨Q, _, h₁, h₂⟩ := EssentiallySmall.exists_small_le.{w} P
+    rw [← isEquivalence_ιOfLE_iff h₁] at h₂
+    exact ⟨_, _, ⟨((ιOfLE h₁).asEquivalence.symm.trans
+      (Shrink.equivalence.{w} Q.FullSubcategory)).trans (ShrinkHoms.equivalence.{w'} _)⟩⟩
+
+end ObjectProperty
+
+lemma exists_equivalence_iff_of_locallySmall
+    (C : Type u) [Category.{v} C] [LocallySmall.{w'} C] :
+    (∃ (J : Type w) (_ : Category.{w'} J), Nonempty (C ≌ J)) ↔
+      ObjectProperty.EssentiallySmall.{w} (C := C) ⊤ := by
+  rw [← ObjectProperty.exists_equivalence_iff]
+  exact ⟨fun ⟨J, _, ⟨e⟩⟩ ↦ ⟨J, _, ⟨(ObjectProperty.topEquivalence C).trans e⟩⟩,
+    fun ⟨J, _, ⟨e⟩⟩ ↦ ⟨J, _, ⟨(ObjectProperty.topEquivalence C).symm.trans e⟩⟩⟩
+
+end CategoryTheory
