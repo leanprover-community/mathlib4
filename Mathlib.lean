@@ -6289,6 +6289,7 @@ public import Mathlib.SetTheory.Surreal.Basic
 public import Mathlib.SetTheory.Surreal.Dyadic
 public import Mathlib.SetTheory.Surreal.Multiplication
 public import Mathlib.SetTheory.ZFC.Basic
+public import Mathlib.SetTheory.ZFC.Cardinal
 public import Mathlib.SetTheory.ZFC.Class
 public import Mathlib.SetTheory.ZFC.Ordinal
 public import Mathlib.SetTheory.ZFC.PSet
