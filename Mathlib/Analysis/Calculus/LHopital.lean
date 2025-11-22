@@ -277,6 +277,7 @@ theorem lhopital_zero_nhdsGT (hff' : ∀ᶠ x in 𝓝[>] a, HasDerivAt f (f' x) 
   refine lhopital_zero_right_on_Ioo hau ?_ ?_ ?_ hfa hga hdiv <;>
     intro x hx <;> apply_assumption <;>
     first | exact (hu hx).1.1 | exact (hu hx).1.2 | exact (hu hx).2
+
 /-- L'Hôpital's rule for approaching a real from the left, `HasDerivAt` version -/
 theorem lhopital_zero_nhdsLT (hff' : ∀ᶠ x in 𝓝[<] a, HasDerivAt f (f' x) x)
     (hgg' : ∀ᶠ x in 𝓝[<] a, HasDerivAt g (g' x) x) (hg' : ∀ᶠ x in 𝓝[<] a, g' x ≠ 0)
@@ -304,6 +305,29 @@ theorem lhopital_zero_nhdsNE (hff' : ∀ᶠ x in 𝓝[≠] a, HasDerivAt f (f' x
   simp only [← Iio_union_Ioi, nhdsWithin_union, tendsto_sup, eventually_sup] at *
   exact ⟨lhopital_zero_nhdsLT hff'.1 hgg'.1 hg'.1 hfa.1 hga.1 hdiv.1,
     lhopital_zero_nhdsGT hff'.2 hgg'.2 hg'.2 hfa.2 hga.2 hdiv.2⟩
+
+/-- L'Hôpital's rule for approaching a real from within a convex set, `HasDerivWithinAt` version.
+  This does not require anything about the situation at `a` -/
+theorem _root_.HasDerivWithinAt.lhopital_zero_nhdsWithin_convex {s : Set ℝ} (hs : Convex ℝ s)
+    (hff' : ∀ᶠ x in 𝓝[s \ {a}] a, HasDerivWithinAt f (f' x) (s \ {a}) x)
+    (hgg' : ∀ᶠ x in 𝓝[s \ {a}] a, HasDerivWithinAt g (g' x) (s \ {a}) x)
+    (hg' : ∀ᶠ x in 𝓝[s \ {a}] a, g' x ≠ 0)
+    (hfa : Tendsto f (𝓝[s \ {a}] a) (𝓝 0)) (hga : Tendsto g (𝓝[s \ {a}] a) (𝓝 0))
+    (hdiv : Tendsto (fun x ↦ f' x / g' x) (𝓝[s \ {a}] a) l) :
+    Tendsto (fun x ↦ f x / g x) (𝓝[s \ {a}] a) l := .of_neBot_imp fun has => by
+  replace has := closure_mono diff_subset (mem_closure_iff_nhdsWithin_neBot.2 has)
+  have h := hs.diff_singleton_eventually_mem_nhds a
+  replace hff' := h.mp <| hff'.mono fun _ h ↦ h.hasDerivAt
+  replace hgg' := h.mp <| hgg'.mono fun _ h ↦ h.hasDerivAt
+  rcases eq_empty_or_nonempty (s ∩ Iio a) with hs_Iio | hs_Iio
+    <;> rcases eq_empty_or_nonempty (s ∩ Ioi a) with hs_Ioi | hs_Ioi
+  · simp [diff_eq, ← Iio_union_Ioi, inter_union_distrib_left, hs_Iio, hs_Ioi]
+  · simp_rw [hs.nhdsWithin_diff_eq_nhdsGT has hs_Iio hs_Ioi] at *
+    exact lhopital_zero_nhdsGT hff' hgg' hg' hfa hga hdiv
+  · simp_rw [hs.nhdsWithin_diff_eq_nhdsLT has hs_Iio hs_Ioi] at *
+    exact lhopital_zero_nhdsLT hff' hgg' hg' hfa hga hdiv
+  · simp_rw [hs.nhdsWithin_diff_eq_nhdsNE has hs_Iio hs_Ioi] at *
+    exact lhopital_zero_nhdsNE hff' hgg' hg' hfa hga hdiv
 
 /-- **L'Hôpital's rule** for approaching a real, `HasDerivAt` version -/
 theorem lhopital_zero_nhds (hff' : ∀ᶠ x in 𝓝 a, HasDerivAt f (f' x) x)
@@ -350,7 +374,44 @@ theorem lhopital_zero_atBot (hff' : ∀ᶠ x in atBot, HasDerivAt f (f' x) x)
 
 end HasDerivAt
 
+namespace derivWithin
+
+/-- **L'Hôpital's rule** for approaching a real from within a convex set, `derivWithin` version -/
+theorem lhopital_zero_nhdsWithin_convex {s : Set ℝ} (hs : Convex ℝ s)
+    (hdf : ∀ᶠ x in 𝓝[s \ {a}] a, DifferentiableWithinAt ℝ f (s \ {a}) x)
+    (hg' : ∀ᶠ x in 𝓝[s \ {a}] a, derivWithin g (s \ {a}) x ≠ 0)
+    (hfa : Tendsto f (𝓝[s \ {a}] a) (𝓝 0)) (hga : Tendsto g (𝓝[s \ {a}] a) (𝓝 0))
+    (hdiv : Tendsto (fun x => derivWithin f (s \ {a}) x / derivWithin g (s \ {a}) x)
+      (𝓝[s \ {a}] a) l) :
+    Tendsto (fun x => f x / g x) (𝓝[s \ {a}] a) l := by
+  have hdg : ∀ᶠ x in 𝓝[s \ {a}] a, DifferentiableWithinAt ℝ g (s \ {a}) x :=
+    hg'.mp (Eventually.of_forall fun _ hg' =>
+      by_contradiction fun h => hg' (derivWithin_zero_of_not_differentiableWithinAt h))
+  have hdf' : ∀ᶠ x in 𝓝[s \ {a}] a, HasDerivWithinAt f (derivWithin f (s \ {a}) x) (s \ {a}) x :=
+    hdf.mp (Eventually.of_forall fun _ h ↦ h.hasDerivWithinAt)
+  have hdg' : ∀ᶠ x in 𝓝[s \ {a}] a, HasDerivWithinAt g (derivWithin g (s \ {a}) x) (s \ {a}) x :=
+    hdg.mp (Eventually.of_forall fun _ h => h.hasDerivWithinAt)
+  exact HasDerivWithinAt.lhopital_zero_nhdsWithin_convex hs hdf' hdg' hg' hfa hga hdiv
+
+end derivWithin
+
 namespace deriv
+
+/-- **L'Hôpital's rule** for approaching a real from within a convex set, `deriv` version -/
+theorem lhopital_zero_nhdsWithin_convex {s : Set ℝ} (hs : Convex ℝ s)
+    (hdf : ∀ᶠ x in 𝓝[s \ {a}] a, DifferentiableAt ℝ f x) (hg' : ∀ᶠ x in 𝓝[s \ {a}] a, deriv g x ≠ 0)
+    (hfa : Tendsto f (𝓝[s \ {a}] a) (𝓝 0)) (hga : Tendsto g (𝓝[s \ {a}] a) (𝓝 0))
+    (hdiv : Tendsto (fun x => deriv f x / deriv g x) (𝓝[s \ {a}] a) l) :
+    Tendsto (fun x => f x / g x) (𝓝[s \ {a}] a) l := by
+  refine derivWithin.lhopital_zero_nhdsWithin_convex hs
+    (hdf.mono fun _ h ↦ h.differentiableWithinAt) (hg'.mp ?_) hfa hga
+    (hdiv.congr' ?_)
+  all_goals
+    apply (hs.diff_singleton_eventually_mem_nhds a).mono
+    intros
+  · rwa [derivWithin_of_mem_nhds ‹_›]
+  · simp only
+    iterate 2 rw [derivWithin_of_mem_nhds ‹_›]
 
 /-- **L'Hôpital's rule** for approaching a real from the right, `deriv` version -/
 theorem lhopital_zero_nhdsGT (hdf : ∀ᶠ x in 𝓝[>] a, DifferentiableAt ℝ f x)
@@ -358,13 +419,8 @@ theorem lhopital_zero_nhdsGT (hdf : ∀ᶠ x in 𝓝[>] a, DifferentiableAt ℝ 
     (hga : Tendsto g (𝓝[>] a) (𝓝 0))
     (hdiv : Tendsto (fun x => (deriv f) x / (deriv g) x) (𝓝[>] a) l) :
     Tendsto (fun x => f x / g x) (𝓝[>] a) l := by
-  have hdg : ∀ᶠ x in 𝓝[>] a, DifferentiableAt ℝ g x :=
-    hg'.mono fun _ hg' => by_contradiction fun h => hg' (deriv_zero_of_not_differentiableAt h)
-  have hdf' : ∀ᶠ x in 𝓝[>] a, HasDerivAt f (deriv f x) x :=
-    hdf.mono fun _ => DifferentiableAt.hasDerivAt
-  have hdg' : ∀ᶠ x in 𝓝[>] a, HasDerivAt g (deriv g x) x :=
-    hdg.mono fun _ => DifferentiableAt.hasDerivAt
-  exact HasDerivAt.lhopital_zero_nhdsGT hdf' hdg' hg' hfa hga hdiv
+  rw [← Ici_diff_left] at *
+  exact lhopital_zero_nhdsWithin_convex (convex_Ici a) hdf hg' hfa hga hdiv
 
 /-- **L'Hôpital's rule** for approaching a real from the left, `deriv` version -/
 theorem lhopital_zero_nhdsLT (hdf : ∀ᶠ x in 𝓝[<] a, DifferentiableAt ℝ f x)
@@ -372,13 +428,8 @@ theorem lhopital_zero_nhdsLT (hdf : ∀ᶠ x in 𝓝[<] a, DifferentiableAt ℝ 
     (hga : Tendsto g (𝓝[<] a) (𝓝 0))
     (hdiv : Tendsto (fun x => (deriv f) x / (deriv g) x) (𝓝[<] a) l) :
     Tendsto (fun x => f x / g x) (𝓝[<] a) l := by
-  have hdg : ∀ᶠ x in 𝓝[<] a, DifferentiableAt ℝ g x :=
-    hg'.mono fun _ hg' => by_contradiction fun h => hg' (deriv_zero_of_not_differentiableAt h)
-  have hdf' : ∀ᶠ x in 𝓝[<] a, HasDerivAt f (deriv f x) x :=
-    hdf.mono fun _ => DifferentiableAt.hasDerivAt
-  have hdg' : ∀ᶠ x in 𝓝[<] a, HasDerivAt g (deriv g x) x :=
-    hdg.mono fun _ => DifferentiableAt.hasDerivAt
-  exact HasDerivAt.lhopital_zero_nhdsLT hdf' hdg' hg' hfa hga hdiv
+  rw [← Iic_diff_right] at *
+  exact lhopital_zero_nhdsWithin_convex (convex_Iic a) hdf hg' hfa hga hdiv
 
 /-- **L'Hôpital's rule** for approaching a real, `deriv` version. This
   does not require anything about the situation at `a` -/
@@ -387,9 +438,8 @@ theorem lhopital_zero_nhdsNE (hdf : ∀ᶠ x in 𝓝[≠] a, DifferentiableAt �
     (hga : Tendsto g (𝓝[≠] a) (𝓝 0))
     (hdiv : Tendsto (fun x => (deriv f) x / (deriv g) x) (𝓝[≠] a) l) :
     Tendsto (fun x => f x / g x) (𝓝[≠] a) l := by
-  simp only [← Iio_union_Ioi, nhdsWithin_union, tendsto_sup, eventually_sup] at *
-  exact ⟨lhopital_zero_nhdsLT hdf.1 hg'.1 hfa.1 hga.1 hdiv.1,
-    lhopital_zero_nhdsGT hdf.2 hg'.2 hfa.2 hga.2 hdiv.2⟩
+  rw [compl_eq_univ_diff] at *
+  exact lhopital_zero_nhdsWithin_convex convex_univ hdf hg' hfa hga hdiv
 
 /-- **L'Hôpital's rule** for approaching a real, `deriv` version -/
 theorem lhopital_zero_nhds (hdf : ∀ᶠ x in 𝓝 a, DifferentiableAt ℝ f x)
