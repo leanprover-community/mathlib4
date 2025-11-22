@@ -462,9 +462,9 @@ theorem single_eq_pi_single {i b} : ⇑(single i b : Π₀ i, β i) = Pi.single 
 
 @[simp]
 theorem single_apply {i i' b} :
-    (single i b : Π₀ i, β i) i' = if h : i = i' then Eq.recOn h b else 0 := by
+    (single i b : Π₀ i, β i) i' = if h : i' = i then Eq.recOn h.symm b else 0 := by
   rw [single_eq_pi_single, Pi.single, Function.update]
-  simp [@eq_comm _ i i']
+  simp
 
 @[simp]
 theorem single_zero (i) : (single i 0 : Π₀ i, β i) = 0 :=
@@ -474,7 +474,7 @@ theorem single_eq_same {i b} : (single i b : Π₀ i, β i) i = b := by
   simp only [single_apply, dite_eq_ite, ite_true]
 
 theorem single_eq_of_ne {i i' b} (h : i' ≠ i) : (single i b : Π₀ i, β i) i' = 0 := by
-  simp only [single_apply, @eq_comm _ i i', dif_neg h]
+  simp only [single_apply, dif_neg h]
 
 theorem single_injective {i} : Function.Injective (single i : β i → Π₀ i, β i) := fun _ _ H =>
   Pi.single_injective i <| DFunLike.coe_injective.eq_iff.mpr H
@@ -652,16 +652,16 @@ theorem update_eq_erase : f.update i 0 = f.erase i := by
 theorem update_eq_single_add_erase {β : ι → Type*} [∀ i, AddZeroClass (β i)] (f : Π₀ i, β i)
     (i : ι) (b : β i) : f.update i b = single i b + f.erase i := by
   ext j
-  rcases eq_or_ne i j with (rfl | h)
+  rcases eq_or_ne j i with (rfl | h)
   · simp
-  · simp [h, h.symm]
+  · simp [h]
 
 theorem update_eq_erase_add_single {β : ι → Type*} [∀ i, AddZeroClass (β i)] (f : Π₀ i, β i)
     (i : ι) (b : β i) : f.update i b = f.erase i + single i b := by
   ext j
-  rcases eq_or_ne i j with (rfl | h)
+  rcases eq_or_ne j i with (rfl | h)
   · simp
-  · simp [h, h.symm]
+  · simp [h]
 
 theorem update_eq_sub_add_single {β : ι → Type*} [∀ i, AddGroup (β i)] (f : Π₀ i, β i) (i : ι)
     (b : β i) : f.update i b = f - single i (f i) + single i b := by
@@ -726,17 +726,17 @@ theorem erase_sub {β : ι → Type v} [∀ i, AddGroup (β i)] (i : ι) (f g : 
 
 theorem single_add_erase (i : ι) (f : Π₀ i, β i) : single i (f i) + f.erase i = f :=
   ext fun i' =>
-    if h : i = i' then by
+    if h : i' = i then by
       subst h; simp only [add_apply, single_apply, erase_apply, add_zero, dite_eq_ite, if_true]
     else by
-      simp only [add_apply, single_apply, erase_apply, dif_neg h, if_neg (Ne.symm h), zero_add]
+      simp only [add_apply, single_apply, erase_apply, dif_neg h, if_neg h, zero_add]
 
 theorem erase_add_single (i : ι) (f : Π₀ i, β i) : f.erase i + single i (f i) = f :=
   ext fun i' =>
-    if h : i = i' then by
+    if h : i' = i then by
       subst h; simp only [add_apply, single_apply, erase_apply, zero_add, dite_eq_ite, if_true]
     else by
-      simp only [add_apply, single_apply, erase_apply, dif_neg h, if_neg (Ne.symm h), add_zero]
+      simp only [add_apply, single_apply, erase_apply, dif_neg h, if_neg h, add_zero]
 
 protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (h0 : p 0)
     (ha : ∀ (i b) (f : Π₀ i, β i), f i = 0 → b ≠ 0 → p f → p (single i b + f)) : p f := by
@@ -778,7 +778,7 @@ theorem induction₂ {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (h0 : p 
     (ha : ∀ (i b) (f : Π₀ i, β i), f i = 0 → b ≠ 0 → p f → p (f + single i b)) : p f :=
   DFinsupp.induction f h0 fun i b f h1 h2 h3 =>
     have h4 : f + single i b = single i b + f := by
-      ext j; by_cases H : i = j
+      ext j; by_cases H : j = i
       · subst H
         simp [h1]
       · simp [H]
@@ -908,10 +908,10 @@ theorem support_subset_iff {s : Set ι} {f : Π₀ i, β i} : ↑f.support ⊆ s
   simpa [Set.subset_def] using forall_congr' fun i => not_imp_comm
 
 theorem support_single_ne_zero {i : ι} {b : β i} (hb : b ≠ 0) : (single i b).support = {i} := by
-  ext j; by_cases h : i = j
+  ext j; by_cases h : j = i
   · subst h
     simp [hb]
-  simp [Ne.symm h, h]
+  simp [h]
 
 theorem support_single_subset {i : ι} {b : β i} : (single i b).support ⊆ {i} :=
   support_mk'_subset
@@ -930,7 +930,7 @@ theorem mapRange_def [∀ (i) (x : β₁ i), Decidable (x ≠ 0)] {f : ∀ i, β
 theorem mapRange_single {f : ∀ i, β₁ i → β₂ i} {hf : ∀ i, f i 0 = 0} {i : ι} {b : β₁ i} :
     mapRange f hf (single i b) = single i (f i b) :=
   DFinsupp.ext fun i' => by
-    by_cases h : i = i'
+    by_cases h : i' = i
     · subst i'
       simp
     · simp [h, hf]
