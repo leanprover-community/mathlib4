@@ -3,7 +3,9 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
+module
+
+public import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
 
 /-!
 # Simultaneous eigenvectors and eigenvalues for families of endomorphisms
@@ -23,6 +25,8 @@ for commuting endomorphisms but there are important more general situations wher
   is true of each map individually.
 
 -/
+
+@[expose] public section
 
 open Function Set
 

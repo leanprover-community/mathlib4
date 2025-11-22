@@ -3,9 +3,11 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kyle Miller, Eric Wieser
 -/
-import Mathlib.Algebra.Ring.Divisibility.Basic
-import Mathlib.Data.Int.GCD
-import Mathlib.Tactic.NormNum
+module
+
+public meta import Mathlib.Algebra.Ring.Divisibility.Basic
+public meta import Mathlib.Data.Int.GCD
+public meta import Mathlib.Tactic.NormNum
 
 /-! # `norm_num` extensions for GCD-adjacent functions
 
@@ -15,6 +17,8 @@ This module defines some `norm_num` extensions for functions such as
 Note that `Nat.coprime` is reducible and defined in terms of `Nat.gcd`, so the `Nat.gcd` extension
 also indirectly provides a `Nat.coprime` extension.
 -/
+
+public meta section
 
 namespace Tactic
 

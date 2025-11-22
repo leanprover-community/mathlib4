@@ -3,13 +3,15 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Lean.Meta.Tactic.TryThis
-import Lean.Meta.Tactic.SolveByElim
-import Mathlib.Lean.Expr.Basic
-import Mathlib.Lean.Meta
-import Mathlib.Lean.Meta.Basic
-import Batteries.Util.Cache
-import Mathlib.Tactic.Core
+module
+
+public meta import Lean.Meta.Tactic.TryThis
+public meta import Lean.Meta.Tactic.SolveByElim
+public meta import Mathlib.Lean.Expr.Basic
+public meta import Mathlib.Lean.Meta
+public meta import Mathlib.Lean.Meta.Basic
+public meta import Batteries.Util.Cache
+public meta import Mathlib.Tactic.Core
 
 /-!
 # Propose
@@ -32,6 +34,8 @@ example (K L M : List α) (w : L.Disjoint M) (m : K ⊆ L) : True := by
   trivial
 ```
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Propose
 

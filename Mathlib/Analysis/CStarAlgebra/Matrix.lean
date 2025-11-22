@@ -3,11 +3,13 @@ Copyright (c) 2022 Hans Parshall. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hans Parshall
 -/
-import Mathlib.Analysis.InnerProductSpace.Adjoint
-import Mathlib.Analysis.Matrix.Normed
-import Mathlib.Analysis.RCLike.Basic
-import Mathlib.LinearAlgebra.UnitaryGroup
-import Mathlib.Topology.UniformSpace.Matrix
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
+public import Mathlib.Analysis.Matrix.Normed
+public import Mathlib.Analysis.RCLike.Basic
+public import Mathlib.LinearAlgebra.UnitaryGroup
+public import Mathlib.Topology.UniformSpace.Matrix
 
 /-!
 # Analytic properties of the `star` operation on matrices
@@ -35,6 +37,8 @@ coincide with the existing topology and uniformity on matrices.
 * Show that `‖diagonal (v : n → 𝕜)‖ = ‖v‖`.
 
 -/
+
+@[expose] public section
 
 open WithLp
 open scoped Matrix
@@ -156,8 +160,8 @@ def instL2OpMetricSpace : MetricSpace (Matrix m n 𝕜) := by
       dist_eq := l2OpNormedAddCommGroupAux.dist_eq }
   exact normed_add_comm_group.replaceUniformity <| by
     congr
-    rw [← @IsUniformAddGroup.toUniformSpace_eq _ (Matrix.instUniformSpace m n 𝕜) _ _]
-    rw [@IsUniformAddGroup.toUniformSpace_eq _ PseudoEMetricSpace.toUniformSpace _ _]
+    rw [← @IsUniformAddGroup.rightUniformSpace_eq _ (Matrix.instUniformSpace m n 𝕜) _ _]
+    rw [@IsUniformAddGroup.rightUniformSpace_eq _ PseudoEMetricSpace.toUniformSpace _ _]
 
 scoped[Matrix.Norms.L2Operator] attribute [instance] Matrix.instL2OpMetricSpace
 
