@@ -942,7 +942,8 @@ variable (C₂ : Type u₂) [Category.{v₂} C₂] [MonoidalCategory.{v₂} C₂
 
 attribute [local simp] associator_naturality leftUnitor_naturality rightUnitor_naturality pentagon
 
-@[simps! tensorObj tensorHom tensorUnit whiskerLeft whiskerRight associator]
+@[simps! tensorObj tensorHom tensorUnit whiskerLeft whiskerRight associator
+  leftUnitor rightUnitor]
 instance prodMonoidal : MonoidalCategory (C₁ × C₂) where
   tensorObj X Y := (X.1 ⊗ Y.1, X.2 ⊗ Y.2)
   tensorHom f g := (f.1 ⊗ₘ g.1) ×ₘ f.2 ⊗ₘ g.2
