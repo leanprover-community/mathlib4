@@ -211,7 +211,7 @@ theorem IsAcyclic.isPath_iff_isChain [DecidableEq V] (hG : G.IsAcyclic) {v w : V
       by_contra hhh
       refine hcc.1 s(u', v') ?_ rfl
       rw [← tail.cons_tail_eq (by simp [not_nil_iff_lt_length, h'])]
-      have := IsPath.mk' this |>.eq_snd_of_mem_edges (by simp [head.ne.symm]) (Sym2.eq_swap ▸ hhh)
+      have := IsPath.mk' this |>.eq_snd_of_mem_edges (Sym2.eq_swap ▸ hhh)
       simp [this, snd_takeUntil head.ne]
 
 theorem IsAcyclic.isPath_iff_isTrail [DecidableEq V] (hG : G.IsAcyclic) {v w : V} (p : G.Walk v w) :
