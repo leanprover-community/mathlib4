@@ -118,7 +118,7 @@ theorem IsEquipartition.exists_partsEquiv (hP : P.IsEquipartition) :
   let f := (Equiv.sumCompl _).symm.trans ((el.sumCongr es).trans finSumFinEquiv)
   use f.trans (finCongr (Nat.add_sub_of_le P.card_mod_card_parts_le))
   intro ⟨p, _⟩
-  simp_rw [f, Equiv.trans_apply, Equiv.sumCongr_apply, finCongr_apply, Fin.coe_cast]
+  simp_rw [f, Equiv.trans_apply, Equiv.sumCongr_apply, finCongr_apply, Fin.val_cast]
   by_cases hc : #p = #s / #P.parts + 1 <;> simp [hc]
 
 /-- Given a finset equipartitioned into `k` parts, its elements can be enumerated such that

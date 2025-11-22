@@ -461,7 +461,7 @@ def spineToSimplexAux : { s : X _⦋n⦌ // X.spine _ s = p } := by
         rw [map_mkOfSucc_zero_concat]
       · simpa [spine_arrow, ← SimplexCategory.mkOfSucc_δ_gt (j := 0) (i := i) (by simp),
           op_comp, FunctorToTypes.map_comp_apply, ← SimplicialObject.δ_def, δ₀_concat,
-          ← p.arrow_interval 1 n i i.succ (by grind) (by grind [Fin.val_succ])] using
+          ← p.arrow_interval 1 n i i.succ (by grind) (by grind)] using
             Path.congr_arrow (hn (p.interval 1 n)).prop i
 
 /-- Auxiliary definition for `StrictSegal.ofCore`. -/
