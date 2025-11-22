@@ -703,7 +703,7 @@ theorem edges_append {u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
 theorem edges_reverse {u v : V} (p : G.Walk u v) : p.reverse.edges = p.edges.reverse := by
   simp [edges]
 
-@[simp]
+@[simp, grind _=_]
 theorem length_support {u v : V} (p : G.Walk u v) : p.support.length = p.length + 1 := by
   induction p <;> simp [*]
 
@@ -783,16 +783,16 @@ lemma getVert_eq_getD_support {u v : V} (p : G.Walk u v) (n : ℕ) :
     p.getVert n = p.support.getD n v := by
   by_cases h : n ≤ p.length
   · simp [← getVert_eq_support_getElem? p h]
-  grind [getVert_of_length_le, length_support]
+  grind [getVert_of_length_le]
 
 theorem getVert_comp_val_eq_get_support {u v : V} (p : G.Walk u v) :
     p.getVert ∘ Fin.val = p.support.get := by
-  grind [getVert_eq_support_getElem, length_support]
+  grind [getVert_eq_support_getElem]
 
 theorem range_getVert_eq_range_support_getElem {u v : V} (p : G.Walk u v) :
     Set.range p.getVert = Set.range p.support.get :=
   Set.ext fun _ ↦ ⟨by grind [Set.range_list_get, getVert_mem_support],
-    fun ⟨n, _⟩ ↦ ⟨n, by grind [getVert_eq_support_getElem, length_support]⟩⟩
+    fun ⟨n, _⟩ ↦ ⟨n, by grind [getVert_eq_support_getElem]⟩⟩
 
 theorem nodup_tail_support_reverse {u : V} {p : G.Walk u u} :
     p.reverse.support.tail.Nodup ↔ p.support.tail.Nodup := by
@@ -1502,7 +1502,7 @@ theorem isSubwalk_iff_support_isInfix {v w v' w' : V} {p₁ : G.Walk v w} {p₂ 
     p₁.IsSubwalk p₂ ↔ p₁.support <:+: p₂.support := by
   refine ⟨fun ⟨ru, rv, h⟩ ↦ ?_, fun ⟨s, t, h⟩ ↦ ?_⟩
   · grind [support_append, support_append_eq_support_dropLast_append]
-  · have : (s.length + p₁.length) ≤ p₂.length := by grind [_=_ length_support]
+  · have : (s.length + p₁.length) ≤ p₂.length := by grind
     refine ⟨p₂.take s.length |>.copy rfl ?_, p₂.drop (s.length + p₁.length) |>.copy ?_ rfl, ?_⟩
     · simp [p₂.getVert_eq_support_getElem (by cutsat : s.length ≤ p₂.length), ← h,
         List.getElem_zero]
@@ -1510,8 +1510,8 @@ theorem isSubwalk_iff_support_isInfix {v w v' w' : V} {p₁ : G.Walk v w} {p₂ 
     apply ext_support
     simp only [← h, support_append, support_copy, take_support_eq_support_take_succ,
       List.take_append, drop_support_eq_support_drop_min, List.tail_drop]
-    rw [Nat.min_eq_left (by grind [length_support]), List.drop_append, List.drop_append,
-      List.drop_eq_nil_of_le (by cutsat), List.drop_eq_nil_of_le (by grind [length_support]),
+    rw [Nat.min_eq_left (by grind), List.drop_append, List.drop_append,
+      List.drop_eq_nil_of_le (by cutsat), List.drop_eq_nil_of_le (by grind),
       p₁.support_eq_cons]
     simp +arith
 
