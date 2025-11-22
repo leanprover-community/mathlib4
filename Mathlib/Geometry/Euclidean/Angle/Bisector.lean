@@ -241,7 +241,7 @@ private lemma dist_orthogonalProjection_eq_of_two_zsmul_oangle_eq_aux₁ {p p₁
   · rw [h', hp, dist_self, zero_eq_dist, eq_comm, orthogonalProjection_eq_self_iff]
     exact left_mem_affineSpan_pair _ _ _
   · rw [← h'] at h hp
-    have hpm : p ∉ affineSpan ℝ {p₁, p₂} := orthogonalProjection_eq_self_iff.not.1 (Ne.symm hp)
+    have hpm : p ∉ line[ℝ, p₁, p₂] := orthogonalProjection_eq_self_iff.not.1 (Ne.symm hp)
     rw [two_zsmul_oangle_orthogonalProjection_self _ hpm (right_mem_affineSpan_pair _ _ _)
           (h'.symm ▸ h₂.symm), eq_comm, oangle, Real.Angle.two_zsmul_eq_pi_iff, h'] at h
     replace h := (Orientation.eq_zero_or_oangle_eq_iff_inner_eq_zero _).1 (.inr (.inr h))
@@ -296,11 +296,11 @@ lemma two_zsmul_oangle_eq_of_dist_orthogonalProjection_eq {p p₁ p₂ p₃ : P}
       orthogonalProjection line[ℝ, p₁, p₃] p
   · suffices p = p₁ by simp [this]
     have hs := orthogonalProjection_sup_of_orthogonalProjection_eq ho
-    have hp : orthogonalProjection (affineSpan ℝ {p₁, p₂}) p = p₁ := by
-      suffices (orthogonalProjection (affineSpan ℝ {p₁, p₂}) p : P) ∈ affineSpan ℝ {p₁} by
+    have hp : orthogonalProjection (line[ℝ, p₁, p₂]) p = p₁ := by
+      suffices (orthogonalProjection (line[ℝ, p₁, p₂]) p : P) ∈ affineSpan ℝ {p₁} by
         simpa using this
-      have hi : (orthogonalProjection (affineSpan ℝ {p₁, p₂}) p : P) ∈
-          affineSpan ℝ {p₁, p₂} ⊓ affineSpan ℝ {p₁, p₃} :=
+      have hi : (orthogonalProjection (line[ℝ, p₁, p₂]) p : P) ∈
+          line[ℝ, p₁, p₂] ⊓ line[ℝ, p₁, p₃] :=
         ⟨orthogonalProjection_mem _, ho ▸ orthogonalProjection_mem _⟩
       convert hi
       convert (ha.inf_affineSpan_eq_affineSpan_inter {0, 1} {0, 2}).symm
