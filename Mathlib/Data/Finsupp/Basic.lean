@@ -1097,7 +1097,7 @@ theorem subtypeDomain_not_piecewise (f : Subtype P →₀ M) (g : {a // ¬ P a} 
   Finsupp.ext fun a => dif_neg a.prop
 
 /-- Extend the domain of a `Finsupp` by using `0` where `P x` does not hold. -/
-@[simps! support toFun]
+@[simps! (attr := grind =) support toFun]
 def extendDomain (f : Subtype P →₀ M) : α →₀ M := piecewise f 0
 
 theorem extendDomain_eq_embDomain_subtype (f : Subtype P →₀ M) :

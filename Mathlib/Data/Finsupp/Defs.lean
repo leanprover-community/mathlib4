@@ -113,7 +113,7 @@ instance instFunLike : FunLike (α →₀ M) α M :=
     ext a
     exact (hf _).trans (hg _).symm⟩
 
-@[ext]
+@[ext, grind ext]
 theorem ext {f g : α →₀ M} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext _ _ h
 
@@ -299,7 +299,7 @@ def mapRange (f : M → N) (hf : f 0 = 0) (g : α →₀ M) : α →₀ N :=
   onFinset g.support (f ∘ g) fun a => by
     rw [mem_support_iff, not_imp_not]; exact fun H => (congr_arg f H).trans hf
 
-@[simp]
+@[simp, grind =]
 theorem mapRange_apply {f : M → N} {hf : f 0 = 0} {g : α →₀ M} {a : α} :
     mapRange f hf g a = f (g a) :=
   rfl
@@ -427,7 +427,7 @@ theorem embDomain_apply (f : α ↪ β) (v : α →₀ M) (b : β) :
   -- TODO: investigate why `grind` needs `split_ifs` first; this should never happen.
   split_ifs <;> grind
 
-@[simp]
+@[simp, grind =]
 theorem embDomain_apply_self (f : α ↪ β) (v : α →₀ M) (a : α) : embDomain f v (f a) = v a := by
   classical
     simp_rw [embDomain, coe_mk, mem_map']
@@ -455,12 +455,7 @@ theorem embDomain_eq_zero {f : α ↪ β} {l : α →₀ M} : embDomain f l = 0 
   (embDomain_injective f).eq_iff' <| embDomain_zero f
 
 theorem embDomain_mapRange (f : α ↪ β) (g : M → N) (p : α →₀ M) (hg : g 0 = 0) :
-    embDomain f (mapRange g hg p) = mapRange g hg (embDomain f p) := by
-  ext a
-  by_cases h : a ∈ Set.range f
-  · rcases h with ⟨a', rfl⟩
-    rw [mapRange_apply, embDomain_apply_self, embDomain_apply_self, mapRange_apply]
-  · rw [mapRange_apply, embDomain_notin_range, embDomain_notin_range, ← hg] <;> assumption
+    embDomain f (mapRange g hg p) = mapRange g hg (embDomain f p) := by grind
 
 end EmbDomain
 
