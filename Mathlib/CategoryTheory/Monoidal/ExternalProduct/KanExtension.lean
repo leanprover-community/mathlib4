@@ -28,7 +28,7 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 namespace CategoryTheory.MonoidalCategory.ExternalProduct
 
 noncomputable section
-open scoped Prod
+open scoped prod
 
 variable {V : Type u₁} [Category.{v₁} V] [MonoidalCategory V]
   {D : Type u₂} {D' : Type u₃} {E : Type u₄}

@@ -686,7 +686,7 @@ noncomputable def Monoidal.ofOplaxMonoidal
 
 section Prod
 
-open scoped Prod
+open scoped prod
 
 variable (F : C ⥤ D) (G : E ⥤ C') [MonoidalCategory C']
 
@@ -735,7 +735,7 @@ end
 
 section
 
-open scoped Prod
+open scoped prod
 
 variable [F.OplaxMonoidal] [G.OplaxMonoidal]
 

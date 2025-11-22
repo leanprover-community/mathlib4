@@ -23,7 +23,7 @@ universe v₁ v₂ v₃ u₁ u₂ u₃
 variable {C : Type u₁} {D : Type u₂} {E : Type u₃}
 variable [Category.{v₁} C] [Category.{v₂} D] [Category.{v₃} E]
 
-open scoped Prod
+open scoped prod
 
 @[simp]
 theorem map_id (F : C × D ⥤ E) (X : C) (Y : D) :

@@ -20,8 +20,6 @@ open CategoryTheory
 
 namespace CategoryTheory.prod
 
-open scoped Prod -- TODO: is the above namespace really correct?
-
 variable (C : Type u) [Category.{v} C]
 
 /-- The left unitor functor `1 × C ⥤ C` -/

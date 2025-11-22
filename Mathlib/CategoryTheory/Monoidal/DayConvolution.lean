@@ -73,7 +73,7 @@ class DayConvolution (F G : C ⥤ V) where
 
 namespace DayConvolution
 
-open scoped Prod
+open scoped prod
 
 section
 

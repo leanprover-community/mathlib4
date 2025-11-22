@@ -25,7 +25,7 @@ namespace CategoryTheory
 
 namespace Functor
 
-open scoped Prod
+open scoped prod
 
 universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 

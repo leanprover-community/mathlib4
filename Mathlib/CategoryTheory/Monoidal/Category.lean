@@ -935,6 +935,8 @@ section
 
 universe v₁ v₂ u₁ u₂
 
+open prod
+
 variable (C₁ : Type u₁) [Category.{v₁} C₁] [MonoidalCategory.{v₁} C₁]
 variable (C₂ : Type u₂) [Category.{v₂} C₂] [MonoidalCategory.{v₂} C₂]
 
@@ -943,9 +945,9 @@ attribute [local simp] associator_naturality leftUnitor_naturality rightUnitor_n
 @[simps! tensorObj tensorHom tensorUnit whiskerLeft whiskerRight associator]
 instance prodMonoidal : MonoidalCategory (C₁ × C₂) where
   tensorObj X Y := (X.1 ⊗ Y.1, X.2 ⊗ Y.2)
-  tensorHom f g := (f.1 ⊗ₘ g.1, f.2 ⊗ₘ g.2)
-  whiskerLeft X _ _ f := (whiskerLeft X.1 f.1, whiskerLeft X.2 f.2)
-  whiskerRight f X := (whiskerRight f.1 X.1, whiskerRight f.2 X.2)
+  tensorHom f g := (f.1 ⊗ₘ g.1) ×ₘ f.2 ⊗ₘ g.2
+  whiskerLeft X _ _ f := whiskerLeft X.1 f.1 ×ₘ whiskerLeft X.2 f.2
+  whiskerRight f X := whiskerRight f.1 X.1 ×ₘ whiskerRight f.2 X.2
   tensorHom_def := by simp [tensorHom_def]
   tensorUnit := (𝟙_ C₁, 𝟙_ C₂)
   associator X Y Z := (α_ X.1 Y.1 Z.1).prod (α_ X.2 Y.2 Z.2)
