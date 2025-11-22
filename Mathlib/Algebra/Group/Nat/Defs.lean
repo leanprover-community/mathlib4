@@ -46,6 +46,10 @@ instance instCommMonoid : CommMonoid ℕ where
   npow_zero := Nat.pow_zero
   npow_succ _ _ := rfl
 
+-- These instances can also be found from the `LinearOrderedCommMonoidWithZero ℕ` instance by
+-- typeclass search, but it is better practice to not rely on algebraic order theory to prove
+-- purely algebraic results on concrete types. Eg the results can be made available earlier.
+
 instance instIsMulTorsionFree : IsMulTorsionFree ℕ where
   pow_left_injective _ h _ _ := (Nat.pow_left_inj h).mp
 
