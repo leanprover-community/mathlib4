@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Sites.Grothendieck
-import Mathlib.CategoryTheory.Sites.Precoverage
+module
+
+public import Mathlib.CategoryTheory.Sites.Grothendieck
+public import Mathlib.CategoryTheory.Sites.Precoverage
 
 /-!
 # Grothendieck pretopologies
@@ -28,6 +30,8 @@ coverage, pretopology, site
 * [S. MacLane, I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
 * [Stacks, *00VG*](https://stacks.math.columbia.edu/tag/00VG)
 -/
+
+@[expose] public section
 
 
 universe v u

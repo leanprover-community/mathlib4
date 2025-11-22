@@ -3,13 +3,17 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Notation.Pi.Defs
-import Mathlib.Algebra.Notation.Prod
-import Mathlib.Order.Basic
+module
+
+public import Mathlib.Algebra.Notation.Pi.Defs
+public import Mathlib.Algebra.Notation.Prod
+public import Mathlib.Order.Basic
 
 /-!
 # Typeclass expressing `0 ≤ 1`.
 -/
+
+@[expose] public section
 
 variable {α : Type*}
 
@@ -57,3 +61,7 @@ lemma zero_lt_one' : (0 : α) < 1 := zero_lt_one
 end
 
 alias one_pos := zero_lt_one
+
+instance Nat.instZeroLEOneClass : ZeroLEOneClass Nat := ⟨Nat.le_of_lt Nat.zero_lt_one⟩
+instance Int.instZeroLEOneClass : ZeroLEOneClass Int := ⟨Int.le_of_lt Int.zero_lt_one⟩
+instance Rat.instZeroLEOneClass : ZeroLEOneClass Rat := ⟨by decide⟩

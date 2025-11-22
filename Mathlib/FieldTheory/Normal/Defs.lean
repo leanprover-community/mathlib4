@@ -3,10 +3,12 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Thomas Browning, Patrick Lutz
 -/
-import Mathlib.Algebra.Polynomial.Splits
-import Mathlib.FieldTheory.Galois.Notation
-import Mathlib.FieldTheory.IntermediateField.Basic
-import Mathlib.FieldTheory.Minpoly.Field
+module
+
+public import Mathlib.Algebra.Polynomial.Splits
+public import Mathlib.FieldTheory.Galois.Notation
+public import Mathlib.FieldTheory.IntermediateField.Basic
+public import Mathlib.FieldTheory.Minpoly.Field
 
 /-!
 # Normal field extensions
@@ -17,6 +19,8 @@ In this file we define normal field extensions.
 
 - `Normal F K` where `K` is a field extension of `F`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -29,22 +33,24 @@ if the minimal polynomial of every element `x` in `K` splits in `K`, i.e. every 
 of `x` is in `K`. -/
 @[stacks 09HM]
 class Normal : Prop extends Algebra.IsAlgebraic F K where
-  splits' (x : K) : Splits (algebraMap F K) (minpoly F x)
+  splits' (x : K) : Splits ((minpoly F x).map (algebraMap F K))
 
 variable {F K}
 
 theorem Normal.isIntegral (_ : Normal F K) (x : K) : IsIntegral F x :=
   Algebra.IsIntegral.isIntegral x
 
-theorem Normal.splits (_ : Normal F K) (x : K) : Splits (algebraMap F K) (minpoly F x) :=
+theorem Normal.splits (_ : Normal F K) (x : K) : Splits ((minpoly F x).map (algebraMap F K)) :=
   Normal.splits' x
 
-theorem normal_iff : Normal F K ↔ ∀ x : K, IsIntegral F x ∧ Splits (algebraMap F K) (minpoly F x) :=
+theorem normal_iff :
+    Normal F K ↔ ∀ x : K, IsIntegral F x ∧ Splits ((minpoly F x).map (algebraMap F K)) :=
   ⟨fun h x => ⟨h.isIntegral x, h.splits x⟩, fun h =>
     { isAlgebraic := fun x => (h x).1.isAlgebraic
       splits' := fun x => (h x).2 }⟩
 
-theorem Normal.out : Normal F K → ∀ x : K, IsIntegral F x ∧ Splits (algebraMap F K) (minpoly F x) :=
+theorem Normal.out :
+    Normal F K → ∀ x : K, IsIntegral F x ∧ Splits ((minpoly F x).map (algebraMap F K)) :=
   normal_iff.1
 
 variable (F K)
