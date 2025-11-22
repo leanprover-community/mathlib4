@@ -51,12 +51,12 @@ end
 variable [HasZeroObject C] [HasShift C ℤ] [Preadditive C]
   [∀ (n : ℤ), (shiftFunctor C n).Additive] [Pretriangulated C]
 
-instance [P.IsTriangulatedClosed₂] : P.rightOrthogonal.IsTriangulatedClosed₂ :=
+instance : P.rightOrthogonal.IsTriangulatedClosed₂ :=
   .mk' (fun T hT h₁ h₃ X f hX ↦ by
     obtain ⟨g, rfl⟩ := Pretriangulated.Triangle.coyoneda_exact₂ T hT f (h₃ _ hX)
     simp [h₁ g hX])
 
-instance [P.IsTriangulatedClosed₂] : P.leftOrthogonal.IsTriangulatedClosed₂ :=
+instance : P.leftOrthogonal.IsTriangulatedClosed₂ :=
   .mk' (fun T hT h₁ h₃ Y f hY ↦ by
     obtain ⟨g, rfl⟩ := Pretriangulated.Triangle.yoneda_exact₂ T hT f (h₁ _ hY)
     simp [h₃ g hY])

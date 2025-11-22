@@ -23,7 +23,7 @@ morphisms in the derived category.
 
 universe w v u
 
-open CategoryTheory Limits Pretriangulated
+open CategoryTheory
 
 variable {C : Type u} [Category.{v} C] [Abelian C]
 
