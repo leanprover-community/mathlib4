@@ -3,8 +3,10 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.NumberTheory.Modular
-import Mathlib.NumberTheory.ModularForms.Petersson
+module
+
+public import Mathlib.NumberTheory.Modular
+public import Mathlib.NumberTheory.ModularForms.Petersson
 
 /-!
 # Bounds for the norm of a modular form
@@ -17,6 +19,7 @@ We prove bounds for the norm of a modular form `f τ` in terms of `im τ`. The m
   is bounded by a constant multiple of `1 / (im τ) ^ (k / 2)`.
 
 -/
+@[expose] public section
 
 open Filter Topology Asymptotics Matrix.SpecialLinearGroup Matrix.GeneralLinearGroup
 
