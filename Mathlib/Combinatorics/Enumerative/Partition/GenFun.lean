@@ -22,12 +22,16 @@ We give the definition `Nat.Partition.genFun` using the first equation, and prov
 equation in `Nat.Partition.hasProd_genFun` (with shifted indices).
 
 This generating function can be specialized to
-* When $f(i, c) = 1$, this is the generating function for partition function $p(n)$.
+* When $f(i, c) = 1$, this is the generating function for partition function $p(n)$
+  (TODO: prove this).
 * When $f(i, 1) = 1$ and $f(i, c) = 0$ for $c > 1$, this is the generating function for
-    `#(Nat.Partition.distincts n)`.
+  `#(Nat.Partition.distincts n)`. More generally, setting $f(i, c) = 1$ only for $c < m$ gives
+  the generating function for `#(Nat.Partition.countRestricted n m)`.
+  (See `Nat.Partition.hasProd_powerSeriesMk_card_countRestricted`).
 * When $f(i, c) = 1$ for odd $i$ and $f(i, c) = 0$ for even $i$, this is the generating function for
-    `#(Nat.Partition.odds n)`.
-(TODO: prove these)
+  `#(Nat.Partition.odds n)`. More generally, setting $f(i, c) = 1$ only for $i$ satisfying certain
+  `p : Prop` gives the generating function for `#(Nat.Partition.restricted n p)`.
+  (See `Nat.Partition.hasProd_powerSeriesMk_card_restricted`)
 
 The definition of `Nat.Partition.genFun` ignores the value of $f(0, c)$ and $f(i, 0)$. The formula
 can be interpreted as assuming $f(i, 0) = 1$ and $f(0, c) = 0$ for $c \ne 0$. In theory we could

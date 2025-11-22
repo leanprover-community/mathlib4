@@ -186,7 +186,7 @@
 45:
   title  : The Partition Theorem
   authors: Bhavik Mehta and Aaron Anderson
-  decl   : Theorems100.partition_theorem
+  decl   : Nat.Partition.card_odds_eq_card_dinstincts
 46:
   title  : The Solution of the General Quartic Equation
   decl   : Theorems100.quartic_eq_zero_iff
