@@ -169,6 +169,8 @@ theorem hasBasis_nhds_zero :
       fun SV => { f | MapsTo f SV.1 SV.2 } :=
   hasBasis_nhds_zero_of_basis (Filter.basis_sets _)
 
+section ContinuousSMul
+
 variable [ContinuousSMul 𝕜 E]
 
 lemma isClosedEmbedding_toContinuousMultilinearMap [T2Space F] :
@@ -220,10 +222,33 @@ def restrictScalarsCLM [ContinuousConstSMul 𝕜' F] :
 
 end RestrictScalars
 
+end ContinuousSMul
+
+section ContinuousConstSMul
+
+variable {G : Type*} [AddCommGroup G] [Module 𝕜 G] [TopologicalSpace G] [ContinuousConstSMul 𝕜 F]
+
+/-- Given a continuous linear map taking values in the space of continuous multilinear maps
+such that all of its values are alternating maps,
+lift it to a continuous linear map taking values in the space of continuous alternating maps. -/
+def liftCLM (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F)
+    (hf : ∀ x v i j, v i = v j → i ≠ j → f x v = 0) : G →L[𝕜] (E [⋀^ι]→L[𝕜] F) where
+  toFun x := ⟨f x, hf x⟩
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+  cont := continuous_induced_rng.mpr (map_continuous f)
+
+@[simp]
+lemma liftCLM_apply (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ E) F)
+    (hf : ∀ x v i j, v i = v j → i ≠ j → f x v = 0) (x : G) (v : ι → E) :
+    liftCLM f hf x v = f x v :=
+  rfl
+
+variable [ContinuousSMul 𝕜 E]
 variable (𝕜 E F)
 
 /-- The application of a multilinear map as a `ContinuousLinearMap`. -/
-def apply [ContinuousConstSMul 𝕜 F] (m : ι → E) : E [⋀^ι]→L[𝕜] F →L[𝕜] F where
+def apply (m : ι → E) : E [⋀^ι]→L[𝕜] F →L[𝕜] F where
   toFun c := c m
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -232,16 +257,17 @@ def apply [ContinuousConstSMul 𝕜 F] (m : ι → E) : E [⋀^ι]→L[𝕜] F �
 variable {𝕜 E F}
 
 @[simp]
-lemma apply_apply [ContinuousConstSMul 𝕜 F] {m : ι → E} {c : E [⋀^ι]→L[𝕜] F} :
-    apply 𝕜 E F m c = c m := rfl
+lemma apply_apply {m : ι → E} {c : E [⋀^ι]→L[𝕜] F} : apply 𝕜 E F m c = c m := rfl
 
-theorem hasSum_eval {α : Type*} {p : α → E [⋀^ι]→L[𝕜] F}
-    {q : E [⋀^ι]→L[𝕜] F} (h : HasSum p q) (m : ι → E) :
+end ContinuousConstSMul
+
+variable [ContinuousSMul 𝕜 E] {α : Type*} {p : α → E [⋀^ι]→L[𝕜] F}
+
+theorem hasSum_eval {q : E [⋀^ι]→L[𝕜] F} (h : HasSum p q) (m : ι → E) :
     HasSum (fun a => p a m) (q m) :=
   h.map (applyAddHom m) (continuous_eval_const m)
 
-theorem tsum_eval [T2Space F] {α : Type*} {p : α → E [⋀^ι]→L[𝕜] F} (hp : Summable p)
-    (m : ι → E) : (∑' a, p a) m = ∑' a, p a m :=
+theorem tsum_eval [T2Space F] (hp : Summable p) (m : ι → E) : (∑' a, p a) m = ∑' a, p a m :=
   (hasSum_eval hp.hasSum m).tsum_eq.symm
 
 end ContinuousAlternatingMap

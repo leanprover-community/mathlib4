@@ -453,17 +453,108 @@ open ContinuousAlternatingMap
 
 section
 
-theorem ContinuousAlternatingMap.norm_compContinuousLinearMap_le (f : F [⋀^ι]→L[𝕜] G)
+namespace ContinuousAlternatingMap
+
+theorem norm_compContinuousLinearMap_le (f : F [⋀^ι]→L[𝕜] G)
     (g : E →L[𝕜] F) : ‖f.compContinuousLinearMap g‖ ≤ ‖f‖ * (‖g‖ ^ Fintype.card ι) :=
   (f.1.norm_compContinuousLinearMap_le _).trans_eq <| by simp
 
 /-- Composition of a continuous alternating map and a continuous linear map
 as a bundled continuous linear map. -/
-def ContinuousAlternatingMap.compContinuousLinearMapCLM (f : E →L[𝕜] F) :
+def compContinuousLinearMapCLM (f : E →L[𝕜] F) :
     (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E [⋀^ι]→L[𝕜] G) :=
   LinearMap.mkContinuous
     (ContinuousAlternatingMap.compContinuousLinearMapₗ f) (‖f‖ ^ Fintype.card ι) fun g ↦
       (g.norm_compContinuousLinearMap_le f).trans_eq (mul_comm _ _)
+
+@[simp]
+lemma compContinuousLinearMapCLM_apply (f : E →L[𝕜] F) (g : F [⋀^ι]→L[𝕜] G) :
+    compContinuousLinearMapCLM f g = g.compContinuousLinearMap f :=
+  rfl
+
+variable [DecidableEq ι]
+
+/-- Fréchet derivative of `compContinuousLinearMap f g` with respect to `g`.
+
+Recall that `compContinuousLinearMap f g` is the pullback of `f : F [⋀^ι]→L[𝕜] G`
+along `g : E →L[𝕜] F`.
+
+This function is linear in `f`, so its derivative with respect to `f`
+is given by `compContinuousLinearMapCLM f g`.
+
+The derivative with respect to `g` is given by
+`f.fderivCompContinuousLinearMap g dg v = ∑ i, f fun j ↦ Function.update (fun _ ↦ g) i dg j (v j)`,
+see `fderivCompContinuousLinearMap_apply` below.
+-/
+def fderivCompContinuousLinearMap (f : F [⋀^ι]→L[𝕜] G) (g : E →L[𝕜] F) :
+    (E →L[𝕜] F) →L[𝕜] (E [⋀^ι]→L[𝕜] G) :=
+  liftCLM (f.1.fderivCompContinuousLinearMap (fun _ : ι ↦ g) ∘L .pi fun _ ↦ .id _ _) <| by
+    intro dg v a b heq hne
+    trans ∑ i, f fun j ↦ Function.update (fun _ ↦ g) i dg j (v j)
+    · simp
+    · rw [← Finset.sum_add_sum_compl {a, b}, Finset.sum_pair hne, Finset.sum_eq_zero, add_zero]
+      · convert f.map_add_swap _ hne with i
+        rcases eq_or_ne i a with rfl | hia
+        · simp [heq, hne, hne.symm]
+        · rcases eq_or_ne i b with rfl | hib
+          · simp [Function.update_apply, heq]
+          · simp [Function.update_apply, Equiv.swap_apply_of_ne_of_ne, *]
+      · simp only [mem_compl, mem_insert, mem_singleton, not_or, and_imp]
+        intro i hia hib
+        apply f.map_eq_zero_of_eq _ _ hne
+        simp [*, Ne.symm]
+
+@[simp]
+lemma toContinuousMultilinearMapCLM_comp_fderivCompContinuousLinearMap
+    (f : F [⋀^ι]→L[𝕜] G) (g : E →L[𝕜] F) :
+    toContinuousMultilinearMapCLM 𝕜 ∘L f.fderivCompContinuousLinearMap g =
+      f.1.fderivCompContinuousLinearMap (fun _ : ι ↦ g) ∘L .pi fun _ ↦ .id _ _ :=
+  rfl
+
+@[simp]
+lemma fderivCompContinuousLinearMap_apply (f : F [⋀^ι]→L[𝕜] G) (g dg : E →L[𝕜] F) (v : ι → E) :
+    f.fderivCompContinuousLinearMap g dg v =
+      ∑ i, f fun j ↦ Function.update (fun _ ↦ g) i dg j (v j) := by
+  simp [fderivCompContinuousLinearMap]
+
+@[nontriviality]
+lemma fderivCompContinuousLinearMap_of_isEmpty [IsEmpty ι] :
+    fderivCompContinuousLinearMap (ι := ι) (𝕜 := 𝕜) (E := E) (F := F) (G := G) = 0 := by
+  ext; simp
+
+variable (G) in
+/-- `fderivCompContinuousLinearMap` as a continuous linear map. -/
+def fderivCompContinuousLinearMapCLM (g : E →L[𝕜] F) :
+    (F [⋀^ι]→L[𝕜] G) →L[𝕜] (E →L[𝕜] F) →L[𝕜] (E [⋀^ι]→L[𝕜] G) :=
+  LinearMap.mkContinuous
+    { toFun := (fderivCompContinuousLinearMap · g)
+      map_add' f₁ f₂ := by ext; simp [Finset.sum_add_distrib]
+      map_smul' c f := by ext; simp [Finset.smul_sum]
+    } (Fintype.card ι * ‖g‖ ^ (Fintype.card ι - 1)) fun f ↦ by
+      refine ContinuousLinearMap.opNorm_le_bound _ (by positivity) fun dg ↦ ?_
+      refine opNorm_le_bound _ (by positivity) fun v ↦ ?_
+      simp? [mul_assoc] says
+        simp only [LinearMap.coe_mk, AddHom.coe_mk, fderivCompContinuousLinearMap_apply, mul_assoc]
+      refine (norm_sum_le _ _).trans ?_
+      grw [← nsmul_eq_mul]
+      apply Finset.sum_le_card_nsmul
+      rintro i -
+      grw [le_opNorm]
+      simp? [mul_left_comm (‖g‖ ^ _), Fintype.prod_eq_mul_prod_compl i] says
+        simp only [Fintype.prod_eq_mul_prod_compl i, Function.update_self, mul_left_comm (‖g‖ ^ _)]
+      grw [dg.le_opNorm, mul_assoc]
+      gcongr
+      rw [← Finset.card_singleton i, ← Finset.card_compl, ← Finset.prod_const,
+        ← Finset.prod_mul_distrib]
+      gcongr with j hj
+      simpa [Function.update_of_ne (by simpa using hj)] using g.le_opNorm _
+
+@[simp]
+lemma fderivCompContinuousLinearMapCLM_apply (f : F [⋀^ι]→L[𝕜] G) (g : E →L[𝕜] F) :
+    fderivCompContinuousLinearMapCLM G g f = fderivCompContinuousLinearMap f g :=
+  rfl
+
+end ContinuousAlternatingMap
 
 /-- Given a continuous linear isomorphism between the domains,
 generate a continuous linear isomorphism between the spaces of continuous alternating maps.
