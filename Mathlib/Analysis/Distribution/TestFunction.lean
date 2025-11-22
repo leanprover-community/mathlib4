@@ -482,5 +482,3 @@ lemma fderivCLM_eq_of_scalars (𝕜' : Type*) [NontriviallyNormedField 𝕜']
 end FDerivCLM
 
 end TestFunction
-
-#lint
