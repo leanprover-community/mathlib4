@@ -65,6 +65,24 @@ instance isGaussian_gaussianReal (m : ℝ) (v : ℝ≥0) : IsGaussian (gaussianR
     simp only [left_eq_sup]
     positivity
 
+/-- A Gaussian measure over `ℝ` is some `gaussianReal`. -/
+lemma IsGaussian.eq_gaussianReal (μ : Measure ℝ) (h : IsGaussian μ) :
+    μ = gaussianReal μ[id] Var[id; μ].toNNReal := calc
+  μ = μ.map (ContinuousLinearMap.id ℝ ℝ) := by simp
+  _ = gaussianReal μ[id] Var[id; μ].toNNReal := by rw [h.map_eq_gaussianReal]; simp
+
+lemma isGaussian_of_map_eq_gaussianReal {E : Type*} [TopologicalSpace E] [AddCommMonoid E]
+    [Module ℝ E] {mE : MeasurableSpace E} [OpensMeasurableSpace E] {μ : Measure E}
+    (h : ∀ L : E →L[ℝ] ℝ, ∃ (m : ℝ) (v : ℝ≥0), μ.map L = gaussianReal m v) :
+    IsGaussian μ := by
+  refine ⟨fun L ↦ ?_⟩
+  obtain ⟨m, v, h⟩ := h L
+  rw [IsGaussian.eq_gaussianReal (μ.map L), integral_map (by fun_prop), variance_map]
+  · rfl
+  any_goals fun_prop
+  rw [h]
+  infer_instance
+
 variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [MeasurableSpace F] [BorelSpace F]
   {μ : Measure E} [IsGaussian μ]
@@ -146,6 +164,28 @@ theorem isGaussian_iff_charFunDual_eq {μ : Measure E} [IsFiniteMeasure μ] :
 alias ⟨_, isGaussian_of_charFunDual_eq⟩ := isGaussian_iff_charFunDual_eq
 
 end charFunDual
+
+section charFun
+
+open InnerProductSpace
+open scoped RealInnerProductSpace
+
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [MeasurableSpace E]
+    [CompleteSpace E] [BorelSpace E] {μ : Measure E}
+
+lemma isGaussian_iff_charFun_eq [IsFiniteMeasure μ] :
+    IsGaussian μ ↔
+    ∀ t, charFun μ t = exp (μ[fun x ↦ ⟪t, x⟫] * I - Var[fun x ↦ ⟪t, x⟫; μ] / 2) := by
+  rw [isGaussian_iff_charFunDual_eq]
+  refine ⟨fun h t ↦ ?_, fun h L ↦ by simpa using h ((toDual ℝ E).symm L)⟩
+  convert h (toDualMap ℝ E t)
+  exact charFun_eq_charFunDual_toDualMap t
+
+lemma IsGaussian.charFun_eq [IsGaussian μ] (t : E) :
+    charFun μ t = exp (μ[fun x ↦ ⟪t, x⟫] * I - Var[fun x ↦ ⟪t, x⟫; μ] / 2) := by
+  rw [isGaussian_iff_charFun_eq.1 inferInstance]
+
+end charFun
 
 instance isGaussian_conv [SecondCountableTopology E]
     {μ ν : Measure E} [IsGaussian μ] [IsGaussian ν] :

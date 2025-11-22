@@ -575,6 +575,16 @@ def toLinearMap₁₂ (L : E →SL[σ₁₃] F →SL[σ₂₃] G) : E →ₛₗ[
 @[simp] lemma toLinearMap₁₂_apply (L : E →SL[σ₁₃] F →SL[σ₂₃] G) (v : E) (w : F) :
     L.toLinearMap₁₂ v w = L v w := rfl
 
+lemma toLinearMap₁₂_injective :
+    (toLinearMap₁₂ (E := E) (F := F) (G := G) (σ₁₃ := σ₁₃) (σ₂₃ := σ₂₃)).Injective := by
+  intro x y hxy
+  ext
+  simp [← toLinearMap₁₂_apply, hxy]
+
+lemma toLinearMap₁₂_inj (L₁ L₂ : E →SL[σ₁₃] F →SL[σ₂₃] G) :
+    L₁.toLinearMap₁₂ = L₂.toLinearMap₁₂ ↔ L₁ = L₂ :=
+  toLinearMap₁₂_injective.eq_iff
+
 @[deprecated (since := "2025-07-28")] alias toLinearMap₂_apply := toLinearMap₁₂_apply
 
 /-- Send a continuous bilinear form to an abstract bilinear form (forgetting continuity). -/
@@ -582,6 +592,13 @@ def toBilinForm (L : E →L[𝕜] E →L[𝕜] 𝕜) : LinearMap.BilinForm 𝕜 
 
 @[simp] lemma toBilinForm_apply (L : E →L[𝕜] E →L[𝕜] 𝕜) (v : E) (w : E) :
     L.toBilinForm v w = L v w := rfl
+
+lemma toBilinForm_injective : (toBilinForm (𝕜 := 𝕜) (E := E)).Injective :=
+  toLinearMap₁₂_injective
+
+lemma toBilinForm_inj (L₁ L₂ : E →L[𝕜] E →L[𝕜] 𝕜) :
+    L₁.toBilinForm = L₂.toBilinForm ↔ L₁ = L₂ :=
+  toBilinForm_injective.eq_iff
 
 end BilinearMaps
 
