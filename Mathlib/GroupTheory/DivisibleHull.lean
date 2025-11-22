@@ -189,7 +189,6 @@ theorem qsmul_of_nonneg {a : ℚ} (h : 0 ≤ a) (x : DivisibleHull M) :
   have := h.eq_or_lt
   aesop (add simp [qsmul_def, abs_of_pos])
 
-attribute [local instance] LocalizedModule.moduleOfIsLocalization in
 theorem qsmul_of_nonpos {a : ℚ} (h : a ≤ 0) (x : DivisibleHull M) :
     a • x = -((show ℚ≥0 from ⟨-a, Left.nonneg_neg_iff.mpr h⟩) • x) := by
   have := h.eq_or_lt
