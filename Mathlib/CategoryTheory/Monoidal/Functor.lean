@@ -742,7 +742,6 @@ variable [F.OplaxMonoidal] [G.OplaxMonoidal]
 instance : (prod F G).OplaxMonoidal where
   η := η F ×ₘ η G
   δ X Y := δ F _ _ ×ₘ δ G _ _
-  -- TODO: fix this...
   oplax_left_unitality := by intros; ext; all_goals simp
   oplax_right_unitality := by intros; ext; all_goals simp
 
