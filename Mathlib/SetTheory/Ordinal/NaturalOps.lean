@@ -115,8 +115,8 @@ theorem succ_def (a : NatOrdinal) : succ a = toNatOrdinal (toOrdinal a + 1) :=
   rfl
 
 @[simp]
-theorem zero_le (o : NatOrdinal) : 0 ≤ o :=
-  Ordinal.zero_le o
+protected theorem zero_le (o : NatOrdinal) : 0 ≤ o :=
+  _root_.zero_le (α := Ordinal) o
 
 theorem not_lt_zero (o : NatOrdinal) : ¬ o < 0 :=
   Ordinal.not_lt_zero o
@@ -426,12 +426,12 @@ theorem nadd_left_cancel_iff : ∀ {a b c}, a ♯ b = a ♯ c ↔ b = c :=
 theorem nadd_right_cancel_iff : ∀ {a b c}, b ♯ a = c ♯ a ↔ b = c :=
   @add_right_cancel_iff NatOrdinal _ _
 
-theorem le_nadd_self {a b} : a ≤ b ♯ a := by simpa using nadd_le_nadd_right (Ordinal.zero_le b) a
+theorem le_nadd_self {a b} : a ≤ b ♯ a := by simpa using nadd_le_nadd_right (zero_le _) a
 
 theorem le_nadd_left {a b c} (h : a ≤ c) : a ≤ b ♯ c :=
   le_nadd_self.trans (nadd_le_nadd_left h b)
 
-theorem le_self_nadd {a b} : a ≤ a ♯ b := by simpa using nadd_le_nadd_left (Ordinal.zero_le b) a
+theorem le_self_nadd {a b} : a ≤ a ♯ b := by simpa using nadd_le_nadd_left (zero_le _) a
 
 theorem le_nadd_right {a b c} (h : a ≤ b) : a ≤ b ♯ c :=
   le_self_nadd.trans (nadd_le_nadd_right h c)
@@ -489,7 +489,7 @@ termination_by (a, b)
 
 @[simp]
 theorem nmul_zero (a) : a ⨳ 0 = 0 := by
-  rw [← Ordinal.le_zero, nmul_le_iff]
+  rw [← nonpos_iff_eq_zero, nmul_le_iff]
   exact fun _ _ a ha => (Ordinal.not_lt_zero a ha).elim
 
 @[simp]

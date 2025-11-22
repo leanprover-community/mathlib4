@@ -196,7 +196,7 @@ theorem birthday_quot_le_pGameBirthday (x : PGame) : birthday ⟦x⟧ ≤ x.birt
 
 @[simp]
 theorem birthday_zero : birthday 0 = 0 := by
-  rw [← Ordinal.le_zero, ← PGame.birthday_zero]
+  rw [← nonpos_iff_eq_zero, ← PGame.birthday_zero]
   exact birthday_quot_le_pGameBirthday _
 
 @[simp]
