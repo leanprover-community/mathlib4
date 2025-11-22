@@ -47,8 +47,6 @@ lemma isNumberField_adjoin_alg_numbers (α β γ : ℂ)
     simp_rw [mem_singleton_iff.1 hc, isAlgebraic_iff_isIntegral.1 hγ]
     )}
 
---#check canonicalEmbedding
-
 lemma getElemsInNF (α β γ : ℂ) (hα : IsAlgebraic ℚ α)
     (hβ : IsAlgebraic ℚ β) (hγ : IsAlgebraic ℚ γ) :
       ∃ (K : Type) (_ : Field K) (_ : NumberField K)
@@ -89,14 +87,6 @@ lemma IsIntegral_assoc (K : Type) [Field K]
   conv => enter [2]; rw [this]
   apply IsIntegral.smul _ ha
 
--- lemma IsIntegral_assoc' (K : Type) [Field K]
--- {x y : ℤ} (z : ℤ) (α : K) (ha : IsIntegral ℤ (z • α)) :
---   IsIntegral ℤ (abs (x * y * z : ℤ) • α) := by
---   have : ((x * y * z : ℤ) • α) = (x * y) • (z • α) := by
---     simp only [Int.cast_mul, zsmul_eq_mul, mul_assoc (↑x * ↑y : K) z α]
---   conv => enter [2]; rw [this]
---   apply IsIntegral.smul _ ha
-
 lemma IsIntegral.Cast (K : Type) [Field K] (a : ℤ) : IsIntegral ℤ (a : K) :=
   map_isIntegral_int (algebraMap ℤ K) (Algebra.IsIntegral.isIntegral _)
 
@@ -134,7 +124,7 @@ lemma exists_conjugate_abs_gt_one {α : 𝓞 K} (hα0 : α ≠ 0) :
   exact hw
 
 lemma house_gt_one_of_isIntegral {α : K} (hα : IsIntegral ℤ α) (hα0 : α ≠ 0) :
-  1 ≤ house α := by
+    1 ≤ house α := by
   have ⟨σ, hσ⟩ : ∃ σ : K →+* ℂ, 1 ≤ ‖σ α‖ := by
     let a : 𝓞 K := ⟨α, hα⟩
     have hα_int_0 : a ≠ 0 := by
@@ -197,31 +187,6 @@ lemma house_prod_le (s : Finset K) :
         · exact house_nonneg (∏ x ∈ s, x)
         · exact house_nonneg a
 
--- example [DecidableEq K] (a b c d e : K) :
---     house (a * b * c * d * e) ≤ house a * house b * house c * house d * house e := by
---   have h := house_prod_le (s := {a, b, c, d, e})
-
---   have : a * b * c * d * e = ∏ x ∈ { a, b, c, d, e }, x := by {
---    rw [← Finset.mul_prod_erase (a:=a)]
---    rw [← Finset.mul_prod_erase (a:=b)]
---    rw [← Finset.mul_prod_erase (a:=c)]
---    rw [← Finset.mul_prod_erase (a:=d)]
---    --rw [← Finset.mul_prod_erase  (a:=e)]
---    simp only [erase_insert_eq_erase]
---    simp only [mul_assoc]
---    congr
---    refine Eq.symm (prod_eq_single_of_mem e ?_ ?_)
---    · simp only [mem_erase, ne_eq, Finset.mem_insert,
---       Finset.mem_singleton, or_true, and_true]
---      apply?
-
-
-
-
---   }
---   rw [this] at h
---   simpa using h
-
 omit [NumberField K] in
 lemma etc [Field L] [Field E] [Algebra K L] [Algebra K E]
  [Fintype (L →ₐ[K] E)] [DecidableEq (L →ₐ[K] E)] (x : L) (σ0 : L →ₐ[K] E) :
@@ -238,7 +203,6 @@ lemma abs_norm_eq_prod_embeddings_norm (α : K) :
     simp only [eq_ratCast, norm_ratCast]
     congr
 
-
 lemma alg_int_emb_norm (α : K) (σ : K →+* ℂ) : ‖σ α‖ ≤ house (α) := by {
   rw [house_eq_sup']
   rw [Finset.sup'_eq_sup]
@@ -250,8 +214,6 @@ lemma alg_int_emb_norm (α : K) (σ : K →+* ℂ) : ‖σ α‖ ≤ house (α) 
   unfold s1 at this
   simp_all only [ge_iff_le]
   exact this
-
-
 }
 
 lemma test (α : K) (σ : K →+* ℂ) : σ.toRatAlgHom α = σ α := by
@@ -285,9 +247,6 @@ lemma norm_le_house_norm (α : K) (σ : K →+* ℂ) [DecidableEq (K →+* ℂ)]
       · unfold i'
         simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe]
       · apply alg_int_emb_norm
-
-
-
     · exact norm_nonneg (σ α)
   · congr
     simp only [prod_const, Finset.mem_univ, card_erase_of_mem, card_univ, AlgHom.card]
