@@ -4,189 +4,6 @@ import Mathlib.Cyclotomic
 
 noncomputable section
 
-namespace Stickelberger
-
-open MonoidAlgebra
-
-variable (m : ℕ) [NeZero m] (K : Type*) [Field K] [NumberField K] [IsCyclotomicExtension {m} ℚ K]
-  [IsMulCommutative (K ≃ₐ[ℚ] K)]
-
-local notation3 "G" => (K ≃ₐ[ℚ] K)
-
-local notation3 "ℚ[G]" => MonoidAlgebra ℚ G
-
-local notation3 "ℤ[G]" => MonoidAlgebra ℤ G
-
-/-- Docstring. -/
-local instance : Algebra ℤ[G] ℚ[G] := (mapRangeRingHom G (Int.castRingHom ℚ)).toAlgebra
-
-@[simp]
-theorem algebraMap_apply (z : ℤ[G]) (σ : G) : algebraMap ℤ[G] ℚ[G] z σ = z σ := by
-  simp [RingHom.algebraMap_toAlgebra]
-
-@[simp]
-theorem algebraMap_single (z : ℤ) (σ : G) :
-    algebraMap ℤ[G] ℚ[G] (single σ z) = single σ (z : ℚ) := by
-  simp [RingHom.algebraMap_toAlgebra]
-
-@[simp]
-theorem single_smul_single (z : ℤ) (q : ℚ) (σ τ : G) :
-    single σ z • single τ q = single (σ * τ) (z * q) := by
-  simp [Algebra.smul_def, RingHom.algebraMap_toAlgebra]
-
-@[simp]
-theorem single_smul_one (z : ℤ) (σ : G) : single σ z • (1 : ℚ[G]) = single σ (z : ℚ) := by
-  simp [one_def]
-
-omit [IsMulCommutative G] in
-theorem smul_single (z : ℤ) (q : ℚ) (σ : G) :
-    z • single σ q = single σ (z * q) := by
-  rw [Algebra.smul_def, algebraMap_int_eq, eq_intCast, MonoidAlgebra.intCast_def,
-    single_mul_single, one_mul]
-
-theorem mem_ZG_iff {x : ℚ[G]} :
-    x ∈ (1 : Submodule ℤ[G] ℚ[G]) ↔ ∀ σ, ∃ n : ℤ, x σ = n := by
-  simp [MonoidAlgebra.ext_iff]
----  simp only [RingHom.mem_range, MonoidAlgebra.ext_iff, mapRangeRingHom_apply, eq_intCast]
-  constructor
-  · rintro ⟨z, hz⟩ σ
-    exact ⟨z σ, (hz σ).symm⟩
-  · intro h
-    refine ⟨?_, ?_⟩
-    · exact Finsupp.equivFunOnFinite.symm fun σ ↦ (h σ).choose
-    · exact fun σ ↦ by simpa using (h σ).choose_spec.symm
-
-variable {m K} in
-/--
-Docstring.
--/
-def ν : G ≃* (ZMod m)ˣ :=
-  IsCyclotomicExtension.autEquivPow K <| Polynomial.cyclotomic.irreducible_rat (NeZero.pos _)
-
-variable {K} in
-/--
-Docstring.
--/
-abbrev nν : G → ℕ := fun σ ↦ ((ν σ).val : ZMod m).val
-
-omit [IsMulCommutative G] in
-theorem nν_mul (σ τ : G) :
-    (nν m (σ * τ) / m : ℚ) = Int.fract ((nν m σ) * (nν m τ) / m : ℚ) := by
-  rw [← Nat.cast_mul]
-  rw [Int.fract_div_natCast_eq_div_natCast_mod]
-  rw [← ZMod.val_mul, ← Units.val_mul, ← map_mul]
-
-/--
-Docstring.
--/
-abbrev Stick : ℚ[G] := ∑ σ : G, single σ (nν m σ⁻¹ / m)
-
-@[simp]
-theorem Stick_apply (σ : G) :
-    Stick m K σ = nν m σ⁻¹ / m := by
-  classical
-  rw [Finset.sum_apply']
-  simp [single_apply]
-
-theorem smul_Stick_mem_ZG :
-    (m : ℤ[G]) • Stick m K ∈ (1 : Submodule ℤ[G] ℚ[G]) := by
-  rw [mem_ZG_iff]
-  intro _
-  refine ⟨?_, ?_⟩
-  rotate_left
-  · rw [natCast_def, Algebra.smul_def, RingHom.algebraMap_toAlgebra, mapRangeRingHom_single]
-    rw [single_mul_apply, inv_one, one_mul, Stick_apply, map_natCast]
-    rw [mul_div_cancel₀ _ (NeZero.ne _)]
-    rfl
-
-theorem single_mul_Stick (τ : G) (q : ℚ) :
-    single τ q * Stick m K = ∑ σ, single σ (q * nν m (τ * σ⁻¹) / m : ℚ) := by
-  simp_rw [Finset.mul_sum, single_mul_single]
-  rw [← Equiv.sum_comp (Equiv.mulRight τ⁻¹)]
-  exact Fintype.sum_congr  _ _ fun _ ↦ by simp [mul_div]
-
-theorem single_sub_one_mul_Stick (τ : G) :
-    (single τ (1 : ℤ) - single 1 (nν m τ : ℤ)) • Stick m K =
-      (∑ σ : G, single σ (-⌊(nν m τ * nν m σ⁻¹ : ℚ) / m⌋)) • 1 := by
-  rw [Algebra.smul_def, map_sub, algebraMap_single, algebraMap_single]
-  rw [sub_mul, single_mul_Stick, Finset.mul_sum, Finset.sum_smul]
-  simp_rw [single_mul_single, one_mul, single_smul_one]
-  rw [← Finset.sum_sub_distrib]
-  simp_rw [← single_sub, Int.cast_one, one_mul]
-  simp_rw [nν_mul, ← mul_div_assoc]
-  simp
-
-/-- Docstring. -/
-abbrev StickDen : Ideal ℤ[G] :=
-  Ideal.span ({single 1 (m : ℤ)} ∪
-    (Set.range fun σ ↦ single σ (1 : ℤ) - single 1 (nν m σ : ℤ)))
-
-theorem mem_StickDen : (m : ℤ[G]) ∈ StickDen m K := by
-  apply Submodule.subset_span
-  exact Set.mem_union_left _ rfl
-
-theorem smul_Stick_mem_ZG_iff (x : ℤ[G]) :
-    x • Stick m K ∈ (1 : Submodule ℤ[G] ℚ[G]) ↔ x ∈ StickDen m K := by
-  classical
-  constructor
-  · intro h
-    rw [mem_ZG_iff] at h
-    have h₁ : (m : ℤ) ∣ ∑ σ, (x σ) * (nν m σ) := by
-      obtain ⟨y, hy⟩ := h 1
-      rw [← fintype_sum_single x] at hy
-      simp_rw [Finset.smul_sum, Finset.sum_smul, single_smul_single] at hy
-      rw [Finset.sum_apply'] at hy
-      conv_lhs at hy =>
-        enter [2, σ]
-        rw [Finset.sum_apply']
-        enter [2, τ]
-        rw [single_apply, mul_eq_one_iff_eq_inv]
-      simp only [Finset.sum_ite_eq', Finset.mem_univ, reduceIte] at hy
-      rw [← Equiv.sum_comp (Equiv.inv G)] at hy
-      simp only [Equiv.inv_apply, inv_inv] at hy
-      simp_rw [← mul_div_assoc] at hy
-      rw [← Finset.sum_div, div_eq_mul_inv] at hy
-      rw [mul_inv_eq_iff_eq_mul₀] at hy
-      simp_rw [← Int.cast_natCast (R := ℚ), ← Int.cast_mul] at hy
-      rw [← Int.cast_sum] at hy
-      rw [Int.cast_inj, mul_comm] at hy
-      refine ⟨y, hy⟩
-      simp [NeZero.ne m]
-    have h₂ : x = ∑ σ, (x σ : ℤ[G]) * (single σ (1 : ℤ) - single 1 (nν m σ : ℤ)) +
-        (∑ σ, x σ * nν m σ : ℤ[G]) := by
-      rw [← Finset.sum_add_distrib]
-      simp_rw [mul_sub, intCast_def, natCast_def, single_mul_single, one_mul, mul_one, Int.cast_eq,
-        ZMod.natCast_val, Finsupp.single_mul, sub_add_cancel, fintype_sum_single]
-    rw [h₂]
-    refine Submodule.add_mem _ ?_ ?_
-    · refine Submodule.sum_smul_mem _ _ fun σ _ ↦ ?_
-      apply Ideal.subset_span
-      apply Set.mem_union_right
-      exact Set.mem_range_self σ
-    · simp_rw [← Int.cast_natCast (R := ℤ[G]), ← Int.cast_mul]
-      rw [← Int.cast_sum]
-      obtain ⟨q, hq⟩ := h₁
-      rw [hq]
-      simp only [Int.cast_mul, Int.cast_natCast]
-      apply Ideal.mul_mem_right
-      exact mem_StickDen m K
-  · intro h
-    induction h using Submodule.span_induction with
-    | mem x h =>
-      obtain ⟨_, rfl⟩ | ⟨σ, rfl⟩ := h
-      · exact smul_Stick_mem_ZG m K
-      · rw [single_sub_one_mul_Stick]
-        exact Submodule.smul_mem _ _ <| Submodule.mem_one.mpr ⟨1, by rw [map_one]⟩
-    | zero => simp
-    | add x y _ _ hx hy =>
-      rw [add_smul]
-      refine Submodule.add_mem _ hx hy
-    | smul a x _ hx =>
-      rw [smul_assoc]
-      exact Submodule.smul_mem _ _ hx
-
-end Stickelberger
-
 section GaussSums
 
 open Ideal NumberField Units
@@ -806,17 +623,11 @@ theorem Val_Omega_zpow [NeZero 𝓟] [P.LiesOver 𝒑] (a : ℤ) (x : (𝓞 K �
   · rw [zpow_neg, zpow_natCast, MulChar.inv_apply, Ring.inverse_unit, Val_Omega_pow]
 
 variable {p L} in
-abbrev GSV [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) :=
+abbrev GSV [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) : WithZero (Multiplicative ℤ) :=
   haveI : NeZero 𝓟 := ⟨by
     have : 𝓟.LiesOver 𝒑 := LiesOver.trans 𝓟 P 𝒑
     exact ne_bot_of_liesOver_of_ne_bot (p := 𝒑) (by simpa using hp.out.ne_zero) _⟩
   Val L 𝓟 (GaussSum p f P L hζ a)
-
--- variable {p L} in
--- abbrev GSV₀ [P.LiesOver 𝒑] (a : ℤ) := Val₀ L 𝓟 (GaussSum p f P L hζ a)
-
--- theorem GSV₀_eq_GSV_log [P.LiesOver 𝒑] (a : ℤ) :
---     GSV₀ f P 𝓟 hζ a = (GSV f P 𝓟 hζ a).log := rfl
 
 theorem GSV_eq_one_of_dvd [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) (h : ↑(p ^ f - 1) ∣ a) :
     GSV f P 𝓟 hζ a = 1 := by
@@ -843,6 +654,17 @@ theorem GSV_nonneg [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) :
 
 theorem GSV_pos [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) (ha : ¬ ↑(p ^ f - 1 : ℕ) ∣ a) :
     0 < GSV f P 𝓟 hζ a := intValuation_pos _ <| GaussSum_ne_zero p f P L hζ a ha
+
+variable {p L} in
+abbrev GSV₀ [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) : Multiplicative ℤ :=
+  if ha : ↑(p ^ f - 1) ∣ a then 1 else (GSV f P 𝓟 hζ a).unzero (GSV_pos p f P L 𝓟 hζ _ ha).ne'
+
+theorem GSV_eq_GSV₀ [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) :
+    GSV f P 𝓟 hζ a = GSV₀ f P 𝓟 hζ a := by
+  unfold GSV₀
+  split_ifs with h
+  · rw [GSV_eq_one_of_dvd _ _ _ _ _ _ _ h, WithZero.coe_one]
+  · rw [WithZero.coe_unzero]
 
 theorem GSV_le_one [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) :
     GSV f P 𝓟 hζ a ≤ 1 := intValuation_le_one _ _
@@ -1005,8 +827,8 @@ theorem GSV_add_eq_GSV_mul_GSV_mul_pow [𝓟.LiesOver P] [P.LiesOver 𝒑] (a b 
   exact ⟨k, hk₁, rfl⟩
 
 theorem prod_GSV [𝓟.LiesOver P] [P.LiesOver 𝒑] :
-    ∏ a ∈ Finset.range (p ^ f - 1).succ, GSV f P 𝓟 hζ a =
-      WithZero.exp (-(p ^ f - 2 : ℤ) * f * (p - 1) / 2) := by
+    ∏ a ∈ Finset.range (p ^ f - 1 + 1), GSV f P 𝓟 hζ a =
+      WithZero.exp (-((p ^ f - 2 : ℤ) * f * (p - 1) / 2)) := by
   rw [← sq_eq_sq₀ (WithZero.zero_le _) (by simp), sq, ← Fin.prod_univ_eq_prod_range]
   nth_rewrite 2 [← Equiv.prod_comp Fin.revPerm]
   rw [← Finset.prod_mul_distrib]
@@ -1021,7 +843,7 @@ theorem prod_GSV [𝓟.LiesOver P] [P.LiesOver 𝒑] :
   simp_rw +contextual [Int.natCast_dvd_natCast, if_neg (this _ _)]
   rw [Finset.prod_const, Finset.card_erase_of_mem, Finset.card_range, Nat.sub_sub,
     ← WithZero.exp_nsmul, ← WithZero.exp_nsmul, Int.nsmul_eq_mul, Int.nsmul_eq_mul,
-    Nat.cast_ofNat, Int.mul_ediv_cancel', WithZero.exp_inj]
+    Nat.cast_ofNat, mul_neg, Int.mul_ediv_cancel', WithZero.exp_inj]
     --← zpow_natCast, ← zpow_natCast, ← Int.ofAdd_mul,
     --← Int.ofAdd_mul, Nat.cast_ofNat, Int.ediv_mul_cancel, Nat.cast_sub, Nat.cast_pow]
   · sorry
@@ -1029,12 +851,18 @@ theorem prod_GSV [𝓟.LiesOver P] [P.LiesOver 𝒑] :
   · obtain rfl | hp' := hp.out.eq_two_or_odd'
     · apply dvd_mul_of_dvd_left
       apply dvd_mul_of_dvd_left
-      rw [Nat.cast_ofNat, Int.dvd_neg, dvd_sub_self_right]
+      rw [Nat.cast_ofNat, dvd_sub_self_right]
       exact dvd_pow_self 2 (NeZero.ne f)
     · apply dvd_mul_of_dvd_right
       rw [← even_iff_two_dvd]
       exact Odd.sub_odd ((Int.odd_coe_nat p).mpr hp') odd_one
   · exact Finset.mem_range.mpr (NeZero.pos _)
+
+theorem prod_GSV' [𝓟.LiesOver P] [P.LiesOver 𝒑] :
+    ∏ a ∈ Finset.range (p ^ f - 1), GSV f P 𝓟 hζ a =
+      WithZero.exp (-((p ^ f - 2 : ℤ) * f * (p - 1) / 2)) := by
+  have := prod_GSV p f P L 𝓟 hζ
+  rwa [Finset.prod_range_succ, GSV_eq_one_of_dvd _ _ _ _ _ _ _ dvd_rfl, mul_one] at this
 
 theorem GaussSum_mem [𝓟.LiesOver P] [P.LiesOver 𝒑] (a : ℤ) (ha : ¬ ↑(p ^ f - 1) ∣ a) :
     GaussSum p f P L hζ a ∈ 𝓟 := by
@@ -1099,6 +927,9 @@ theorem not_dvd_of_le (a : ℕ) (ha₀ : 0 < a) (ha₂ : a ≤ p ^ f - 2) :
   intro h
   have := (Nat.le_of_dvd ha₀ h).trans ha₂
   grind
+
+theorem two_dvd_sub_mul_pow_sub : 2 ∣ ((p : ℤ) - 1) * ((p : ℤ) ^ f - 2) := by
+  sorry
 
 theorem exists_GSV_eq_mul_pow [𝓟.LiesOver P] [P.LiesOver 𝒑] (h : p ^ f ≠ 2) (a : ℕ) :
     ∃ k, k ≤ 1 ∧ GSV f P 𝓟 hζ a * k ^ (p - 1) = WithZero.exp (-a : ℤ) := by
@@ -1179,8 +1010,47 @@ theorem sum_digits_le_GSV [𝓟.LiesOver P] [P.LiesOver 𝒑] (h : p ^ f ≠ 2) 
   convert sum_le_GSV_ofDigits p f P L 𝓟 hζ _ h
   exact (Nat.ofDigits_digits p a).symm
 
-example :
-    ∑ a ∈ Finset.range (p ^ f - 1), (Nat.digits p a).sum = (p - 1) * f * p ^ f / 2 := by
-  sorry
+example [𝓟.LiesOver P] [P.LiesOver 𝒑] (h : p ^ f ≠ 2) (a : ℕ) (ha : a < p ^ f - 1) :
+    GSV f P 𝓟 hζ a = WithZero.exp (-(Nat.digits p a).sum : ℤ) := by
+  rw [GSV_eq_GSV₀, WithZero.exp, WithZero.coe_inj, eq_comm]
+  revert a
+  simp_rw [← Finset.mem_range]
+  refine (Finset.prod_eq_prod_iff_of_le ?_).mp ?_
+  · intro a _
+    rw [← WithZero.coe_le_coe, ← GSV_eq_GSV₀]
+    exact sum_digits_le_GSV p f P L 𝓟 hζ h a
+  · have := Nat.sum_digits_sum_eq hp.out.one_lt f
+    rw [show p ^ f = p ^ f - 1 + 1 by sorry, Finset.sum_range_succ, Nat.digits_pow_sub_one,
+      List.sum_replicate, nsmul_eq_mul] at this
+    have := Nat.eq_sub_of_add_eq this
+    rw [← WithZero.coe_inj, ← ofAdd_sum, Finset.sum_neg_distrib, ← Nat.cast_sum]
+    rw [WithZero.coe_prod]
+    simp_rw [← GSV_eq_GSV₀]
+    · rw [prod_GSV', this, Nat.choose_two_right]
+      congr
+      qify
+      rw [Nat.cast_sub, Nat.cast_mul, Nat.cast_mul, Nat.cast_mul, Nat.cast_sub, Nat.cast_div,
+        Nat.cast_mul, Nat.cast_pow, Int.cast_div, Int.cast_mul, Int.cast_mul, Int.cast_sub,
+        Int.cast_sub, Int.cast_pow, Nat.cast_sub, Nat.cast_one, Int.cast_one, Nat.cast_ofNat,
+        Int.cast_natCast, Int.cast_natCast, Int.cast_ofNat, ← mul_div_assoc, mul_assoc, ← mul_assoc _ (p : ℚ),
+        ← pow_succ, Nat.sub_add_cancel (NeZero.pos f)]
+      field_simp
+      · exact hp.out.one_le
+      · rw [mul_assoc, mul_comm, mul_assoc]
+        exact Int.dvd_mul_of_dvd_right <| two_dvd_sub_mul_pow_sub p f
+      · norm_num
+      · rw [mul_comm]
+        convert Nat.two_dvd_mul_add_one (p - 1)
+        rw [Nat.sub_add_cancel (hp.out.one_le)]
+      · norm_num
+      · exact hp.out.one_le
+      · -- nasty
+        gcongr
+        · exact Nat.le_mul_of_pos_right f (NeZero.pos _)
+        · rw [Nat.le_div_two_iff_mul_two_le, Nat.cast_mul, mul_comm]
+          gcongr
+          rw [Nat.ofNat_le_cast]
+          exact hp.out.two_le
+    · exact hp.out.one_lt
 
 end GaussSums

@@ -1,224 +1,48 @@
 import Mathlib
 import Batteries.Tactic.Instances
 
-section Nat.digits
+theorem Nat.Prime.three_le_of_odd {p : ℕ} (h₁ : Nat.Prime p) (h₂ : Odd p) : 3 ≤ p :=
+  Nat.lt_of_le_of_ne h₁.two_le (by grind)
 
-example (b s M : ℕ) :
-    Nat.card {n : ℕ | n ≤ M ∧ n % b = s} = (M - b) / s := by
-  sorry
+theorem Nat.digits_pow_sub_one {b : ℕ} (hb : 1 < b) (l : ℕ) :
+    b.digits (b ^ l - 1) = List.replicate l (b - 1) := by
+  suffices b ^ l - 1 = Nat.ofDigits b (List.replicate l (b - 1)) by
+    rw [this, Nat.digits_ofDigits _ hb _ (by grind) (by grind)]
+  induction l with
+    | zero => simp
+    | succ l hl =>
+        rw [List.replicate_succ, Nat.ofDigits_cons, ← hl, add_comm (b - 1), Nat.mul_sub, mul_one,
+          ← Nat.pow_succ', ← Nat.add_sub_assoc hb.le,
+          Nat.sub_add_cancel (Nat.le_self_pow l.succ_ne_zero b)]
 
-def List.toFn {α : Type*} (L : List α) (a : α) (n : ℕ) : Fin n → α := fun i ↦ L[i]?.getD a
-
-example {α : Type*} (L : List α) (a : α) (n : ℕ) (i : Fin n) (h : i < L.length) :
-    List.toFn L a n i = L[i] := by
-  unfold List.toFn
-  rw [getElem?_pos L i h]
-
-example (b l : ℕ) (hb : 1 < b) :
-    ∑ x ∈ Finset.range (b ^ l), (b.digits x).sum = l * b ^ (l - 1) * (b * (b - 1) / 2) := by
-  let S : Finset (Fin l → ℕ) := Fintype.piFinset fun _ ↦ Finset.range b
-  have : ∑ L ∈ S, (List.ofFn L).sum = l * b ^ (l - 1) * (b * (b - 1) / 2) := by
-    simp [S]
-    simp_rw [Fin.sum_ofFn]
-    rw [Finset.sum_comm]
-    have t0 (i : Fin l) := Finset.sum_comp (s := Fintype.piFinset fun x : Fin l ↦ Finset.range b)
-      (f := fun x ↦ x) (g := fun x ↦ x i)
-    simp_rw [t0 _]
-    simp [Fintype.eval_image_piFinset_const]
-    simp_rw +contextual [Fintype.card_filter_piFinset_const_eq_of_mem]
-    simp only [Finset.card_range, Fintype.card_fin, Finset.sum_const, Finset.card_univ, smul_eq_mul]
-    rw [← Finset.mul_sum]
-    rw [Finset.sum_range_id]
-    ring
-  rw [← this]
-  refine Finset.sum_nbij ?_ ?_ ?_ ?_ ?_
-  · intro x
-    let D := b.digits x
-    exact fun i ↦ D[i]?.getD 0
-  · intro x hx
-    dsimp
-    simp [S]
-    intro i
-    by_cases hi : i < (b.digits x).length
-    · simp [getElem?_pos (b.digits x) i.val hi]
-      exact Nat.digits_lt_base hb <| List.getElem_mem hi
-    · rw [getElem?_neg (b.digits x) i.val hi]
-      simp
-      exact zero_lt_one.trans hb
-  · sorry
-  · intro L hL
-    dsimp
-    refine ⟨?_, ?_⟩
-
-    sorry
-  · intro x hx
-    simp
-    rw [Fin.sum_ofFn]
-
-
-
-    sorry
-
-
-
-
-#exit
-
-  refine (Finset.sum_nbij ?_ ?_ ?_ ?_ ?_).symm
-  · intro L
-    exact Nat.ofDigits b <| List.equivSigmaTuple.symm ⟨_, L⟩
-  · intro a ha
-    simp
-    convert Nat.ofDigits_lt_base_pow_length hb ?_
-    simp
-    intro x
-    simp only [List.mem_ofFn, forall_exists_index]
-    intro i
-    rw [Fintype.mem_piFinset] at ha
-    specialize ha i
-    grind
-  · intro L₁ h₁ L₂ h₂ h
-    simp at h
-    have := Nat.ofDigits_inj_of_len_eq hb ?_ ?_ ?_ h
-    rwa [List.ofFn_inj] at this
-    · simp
-    · simp [S] at h₁
-      simp
-      exact h₁
-    · simp [S] at h₂
-      simp
-      exact h₂
-  · intro a ha
-    refine ⟨?_, ?_, ?_⟩
-    sorry
-    sorry
-    sorry
-  · intro L hL
-    simp
-    rw [Fin.sum_ofFn]
-
-    rw [Nat.digits_ofDigits]
-    · exact hb
-    · rw [Fintype.mem_piFinset] at hL
-      simp
-      grind
-    · intro h
-      rw [Nat.ne_zero_iff_zero_lt]
-      simp only [ne_eq, List.ofFn_eq_nil_iff] at h
-
-#exit
-
-  · intro x
-
-    set s := (List.equivSigmaTuple (b.digits x)).1
-    set D := (List.equivSigmaTuple (b.digits x)).2
-    have : s ≤ l := sorry
-    rw [le_iff_exists_add] at this
-
-
-
-
-  · intro L
-    exact Nat.ofDigits b <| List.equivSigmaTuple.symm ⟨_, L⟩
-  · intro L hL
-
-    rw [List.equivSigmaTuple_symm_apply, Finset.mem_range, ← Nat.digits_length_le_iff hb]
-    dsimp only
-
-    sorry
-  · intro _ _ _ _ h
-    simp at h
-    rw [← Nat.digits_inj_iff (b := b)] at h
-    sorry
-  · intro a ha
-    refine ⟨?_, ?_⟩
-
-
-    sorry
-
-
-
-
-
-#exit
-
-    rw [← Nat.mul_div_assoc, ← mul_assoc, ← Nat.pow_succ]
-    simp only [Nat.succ_eq_add_one]
-    sorry
-
-    have : 2 ∣ b * (b + 1) := by
-      exact Nat.two_dvd_mul_add_one b
-
-
-
-
-    sorry
-
-
-
-example (b s : ℕ) (hb : 1 < b) :
-    ∑ x ∈ Finset.range (b ^ s), (b.digits x).sum = b * (b ^ s) * (b ^ s - 1) / 2 := by
-  induction s with
-  | zero => simp
-  | succ n hn =>
-      simp_rw (config := {singlePass := true}) [b.digits_eq_cons_digits_div hb sorry]
-      simp_rw [List.sum_cons]
-      rw [Finset.sum_add_distrib]
-
-      rw [Finset.sum_range]
-      rw [Finset.sum_range]
-      rw [← Fintype.sum_fiberwise (g := fun x ↦ Fin.modn x b)]
-
-
-
-      have : Finset.range (b ^ (n + 1)) =
-        Finset.biUnion (Finset.range b)
-        (fun d ↦ Finset.image (fun x ↦ d * b ^ n + x) (Finset.range (b ^ n))) := sorry
-      rw [this, Finset.sum_biUnion]
-      simp only [Finset.coe_range, Nat.add_left_cancel_iff, implies_true, Set.injOn_of_eq_iff_eq,
-        Finset.sum_image]
-      have {x d} : (d * b ^ n + x) % b = (x % b) := sorry
-      simp_rw +contextual [this]
-
-      sorry
-
-
-
-
-#exit
-
-example (b s : ℕ) (hb : 1 < b) :
-    ∑ x ∈ Finset.range (b ^ s), (b.digits x).sum = b * (b ^ s) * (b ^ s - 1) / 2 := by
+@[simp]
+theorem WithZero.coe_prod {α ι : Type*} [CommMonoid α] (s : Finset ι) (f : ι → α) :
+    ↑((∏ x ∈ s, f x : α) : WithZero α) = ∏ x ∈ s, ↑(f x : WithZero α) := by
   classical
-  let S : Finset (List ℕ) := by
-    refine Finset.image (b.digits ·) (Finset.range (b ^ s))
+  induction s using Finset.induction with
+  | empty => simp
+  | insert a s ha hi =>
+      rw [Finset.prod_insert ha, Finset.prod_insert ha, coe_mul, hi]
 
+theorem WithZero.exp_sum {M ι : Type*} [AddCommMonoid M] (s : Finset ι) (f : ι → M) :
+    WithZero.exp (∑ x ∈ s, f x) = ∏ x ∈ s, WithZero.exp (f x) := by
+  classical
+  induction s using Finset.induction with
+  | empty => simp
+  | insert a s ha hi =>
+      rw [Finset.sum_insert ha, exp_add, hi, Finset.prod_insert ha]
 
-  have : Finset.range (b ^ s) = Finset.image (Nat.ofDigits b) S := by
-    unfold S
-    ext x
-    simp
-    refine ⟨?_, ?_⟩
-    · sorry
-    · sorry
---  rw [this]
-
-  simp_rw [Finset.sum_list_count]
-  rw [Finset.sum_comm' (t' := Finset.range b)
-    (s' := fun c ↦ Finset.filter (fun x ↦ c ∈ b.digits x) (Finset.range (b ^ s)))]
-  ·
-    sorry
-
-
-
-  · intro x c
-    simp
-    intro _ hc
-    exact Nat.digits_lt_base hb hc
-
-
-end Nat.digits
-
+theorem WithZero.log_prod {M ι : Type*} [AddCommMonoid M] (s : Finset ι)
+    (f : ι → (WithZero (Multiplicative M))) (hs : ∀ x ∈ s, f x ≠ 0) :
+    (∏ x ∈ s, f x).log = ∑ x ∈ s, (f x).log := by
+  classical
+  induction s using Finset.induction with
+  | empty => simp
+  | insert a s ha hi =>
+      have :  ∀ x ∈ s, f x ≠ 0 := fun x hx ↦ hs x <| Finset.mem_insert_of_mem hx
+      rw [Finset.prod_insert ha, log_mul, hi this, Finset.sum_insert ha]
+      · exact hs _ <| Finset.mem_insert_self a s
+      · exact Finset.prod_ne_zero_iff.mpr this
 section ringChar
 
 theorem ringChar_prime (R : Type*) [NonAssocRing R] [NoZeroDivisors R] [Nontrivial R] [Finite R] :
@@ -426,9 +250,6 @@ theorem Ideal.liesOver_pow_of_le_ramificationIdx {R S : Type*} [CommRing R] [Com
 end Ideal
 
 section Nat
-
-theorem Nat.Prime.three_le_of_odd {p : ℕ} (h₁ : Nat.Prime p) (h₂ : Odd p) : 3 ≤ p :=
-  Nat.lt_of_le_of_ne h₁.two_le (by grind)
 
 theorem Nat.two_le_div_of_dvd {a b : ℕ} (h₁ : b ∣ a) (h₂ : b ≠ a) (h₃ : a ≠ 0) :
     2 ≤ a / b := by
@@ -644,31 +465,29 @@ variable [IsDomain A] [IsIntegrallyClosed A] [IsDomain B] [IsIntegrallyClosed B]
   [IsScalarTower B C M] [FiniteDimensional K M] [IsScalarTower B L M]
   [FaithfulSMul B C]
 
-open Ideal in
-
-variable (K L M) in
-theorem Ideal.ncard_primesOver_eq_ncard_primesOver (p : Ideal A) (P₁ P₂ : Ideal B) [P₁.IsPrime]
-    [P₂.IsPrime] [P₁.LiesOver p] [P₂.LiesOver p] [IsGalois K L] [Normal K M] :
-    (P₁.primesOver C).ncard = (P₂.primesOver C).ncard := by
-  obtain ⟨σ, hσ⟩ := exists_map_eq_of_isGalois p P₁ P₂ K L
-  let τ := σ.liftNormal' K L L C M
-  refine Set.ncard_congr ?_ (fun Q ↦ ?_) ?_ ?_
-  · exact fun Q _ ↦ Q.map (σ.liftNormal' K L L C M)
-  · intro ⟨h₁, h₂⟩
-    refine ⟨map_isPrime_of_equiv _, ?_⟩
-    · rwa [← liesOver_iff_map_liesOver_map K L M M _ _ (σ.liftNormal' K L L C M),
-        AlgEquiv.restrict_liftNormal', hσ] at h₂
-  · exact fun _ _ _ _ h ↦ map_injective_of_equiv (AlgEquiv.liftNormal' K L L C M σ).toRingEquiv h
-  · intro Q ⟨hQ₁, hQ₂⟩
-    refine ⟨?_, ⟨?_, ?_⟩ , ?_⟩
-    · exact comap (AlgEquiv.liftNormal' K L L C M σ) Q
-    · exact comap_isPrime _ _
-    · have := liesOver_iff_comap_liesOver_comap (σ := σ.liftNormal' K L L C M)
-        (Q := Q) (P := P₂) (M₁ := M) (L := L) (K := K) ..
-      rwa [← this, AlgEquiv.restrict_liftNormal', ← hσ, comap_map_of_bijective] at hQ₂
-      exact σ.bijective
-    · rw [map_comap_eq_self_of_equiv]
-
+-- open Ideal in
+-- variable (K L M) in
+-- theorem Ideal.ncard_primesOver_eq_ncard_primesOver (p : Ideal A) (P₁ P₂ : Ideal B) [P₁.IsPrime]
+--     [P₂.IsPrime] [P₁.LiesOver p] [P₂.LiesOver p] [IsGalois K L] [Normal K M] :
+--     (P₁.primesOver C).ncard = (P₂.primesOver C).ncard := by
+--   obtain ⟨σ, hσ⟩ := exists_map_eq_of_isGalois p P₁ P₂ K L
+--   let τ := σ.liftNormal' K L L C M
+--   refine Set.ncard_congr ?_ (fun Q ↦ ?_) ?_ ?_
+--   · exact fun Q _ ↦ Q.map (σ.liftNormal' K L L C M)
+--   · intro ⟨h₁, h₂⟩
+--     refine ⟨map_isPrime_of_equiv _, ?_⟩
+--     · rwa [← liesOver_iff_map_liesOver_map K L M M _ _ (σ.liftNormal' K L L C M),
+--         AlgEquiv.restrict_liftNormal', hσ] at h₂
+--   · exact fun _ _ _ _ h ↦ map_injective_of_equiv (AlgEquiv.liftNormal' K L L C M σ).toRingEquiv h
+--   · intro Q ⟨hQ₁, hQ₂⟩
+--     refine ⟨?_, ⟨?_, ?_⟩ , ?_⟩
+--     · exact comap (AlgEquiv.liftNormal' K L L C M σ) Q
+--     · exact comap_isPrime _ _
+--     · have := liesOver_iff_comap_liesOver_comap (σ := σ.liftNormal' K L L C M)
+--         (Q := Q) (P := P₂) (M₁ := M) (L := L) (K := K) ..
+--       rwa [← this, AlgEquiv.restrict_liftNormal', ← hσ, comap_map_of_bijective] at hQ₂
+--       exact σ.bijective
+--     · rw [map_comap_eq_self_of_equiv]
 
 
 
@@ -677,7 +496,8 @@ theorem Ideal.ncard_primesOver_eq_ncard_primesOver (p : Ideal A) (P₁ P₂ : Id
 
 
 
-end primesOverGalois
+
+-- end primesOverGalois
 
 
 section primesOverRestrict
