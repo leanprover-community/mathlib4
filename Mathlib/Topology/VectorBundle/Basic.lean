@@ -3,8 +3,10 @@ Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Sébastien Gouëzel, Heather Macbeth, Patrick Massot, Floris van Doorn
 -/
-import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
-import Mathlib.Topology.FiberBundle.Basic
+module
+
+public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+public import Mathlib.Topology.FiberBundle.Basic
 
 /-!
 # Vector bundles
@@ -51,6 +53,8 @@ notes" section of `Mathlib/Topology/FiberBundle/Basic.lean`.
 ## Tags
 Vector bundle
 -/
+
+@[expose] public section
 
 noncomputable section
 

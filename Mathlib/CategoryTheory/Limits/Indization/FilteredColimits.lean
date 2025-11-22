@@ -3,12 +3,14 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Comma.Presheaf.Colimit
-import Mathlib.CategoryTheory.Limits.Filtered
-import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
-import Mathlib.CategoryTheory.Limits.FunctorToTypes
-import Mathlib.CategoryTheory.Limits.Indization.IndObject
-import Mathlib.Logic.Small.Set
+module
+
+public import Mathlib.CategoryTheory.Comma.Presheaf.Colimit
+public import Mathlib.CategoryTheory.Limits.Filtered
+public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
+public import Mathlib.CategoryTheory.Limits.FunctorToTypes
+public import Mathlib.CategoryTheory.Limits.Indization.IndObject
+public import Mathlib.Logic.Small.Set
 
 /-!
 # Ind-objects are closed under filtered colimits
@@ -21,6 +23,8 @@ Our proof is a slight variant of the proof given in Kashiwara-Schapira.
 ## References
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Theorem 6.1.8
 -/
+
+@[expose] public section
 
 universe v u
 
