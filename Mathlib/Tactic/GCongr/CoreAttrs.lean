@@ -36,6 +36,7 @@ attribute [gcongr] mt
   List.Sublist.append List.Sublist.append_left List.Sublist.append_right
   List.Sublist.reverse List.drop_sublist_drop_left List.Sublist.drop
   List.Perm.append_left List.Perm.append_right List.Perm.append List.Perm.map
+  List.cons_subset_cons
   Nat.sub_le_sub_left Nat.sub_le_sub_right Nat.sub_lt_sub_left Nat.sub_lt_sub_right
 
 end Mathlib.Tactic.GCongr

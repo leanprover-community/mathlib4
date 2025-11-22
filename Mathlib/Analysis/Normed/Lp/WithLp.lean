@@ -219,13 +219,62 @@ end equiv
 
 variable (K V)
 
+/-- `WithLp.equiv` as a group isomorphism. -/
+@[simps apply symm_apply]
+protected def addEquiv [AddCommGroup V] : WithLp p V ≃+ V where
+  toFun := ofLp
+  invFun := toLp p
+  map_add' := ofLp_add p
+
+lemma coe_addEquiv [AddCommGroup V] : ⇑(WithLp.addEquiv p V) = ofLp := rfl
+
+lemma coe_symm_addEquiv [AddCommGroup V] : ⇑(WithLp.addEquiv p V).symm = toLp p := rfl
+
+@[simp]
+lemma ofLp_sum [AddCommGroup V] {ι : Type*} (s : Finset ι) (f : ι → WithLp p V) :
+    (∑ i ∈ s, f i).ofLp = ∑ i ∈ s, (f i).ofLp :=
+  map_sum (WithLp.addEquiv _ _) _ _
+
+@[simp]
+lemma toLp_sum [AddCommGroup V] {ι : Type*} (s : Finset ι) (f : ι → V) :
+    toLp p (∑ i ∈ s, f i) = ∑ i ∈ s, toLp p (f i) :=
+  map_sum (WithLp.addEquiv _ _).symm _ _
+
+@[simp]
+lemma ofLp_listSum [AddCommGroup V] (l : List (WithLp p V)) :
+    l.sum.ofLp = (l.map ofLp).sum :=
+  map_list_sum (WithLp.addEquiv _ _) _
+
+@[simp]
+lemma toLp_listSum [AddCommGroup V] (l : List V) :
+    toLp p l.sum = (l.map (toLp p)).sum :=
+  map_list_sum (WithLp.addEquiv _ _).symm _
+
+@[simp]
+lemma ofLp_multisetSum [AddCommGroup V] (s : Multiset (WithLp p V)) :
+    s.sum.ofLp = (s.map ofLp).sum :=
+  map_multiset_sum (WithLp.addEquiv _ _) _
+
+@[simp]
+lemma toLp_multisetSum [AddCommGroup V] (s : Multiset V) :
+    toLp p s.sum = (s.map (toLp p)).sum :=
+  map_multiset_sum (WithLp.addEquiv _ _).symm _
+
 /-- `WithLp.equiv` as a linear equivalence. -/
-@[simps -fullyApplied apply symm_apply]
+@[simps apply symm_apply]
 protected def linearEquiv [Semiring K] [AddCommGroup V] [Module K V] : WithLp p V ≃ₗ[K] V where
-  toFun := WithLp.ofLp
-  invFun := WithLp.toLp p
-  map_add' _ _ := rfl
+  __ := WithLp.addEquiv p V
   map_smul' _ _ := rfl
+
+lemma coe_linearEquiv [Semiring K] [AddCommGroup V] [Module K V] :
+    ⇑(WithLp.linearEquiv p K V) = ofLp := rfl
+
+lemma coe_symm_linearEquiv [Semiring K] [AddCommGroup V] [Module K V] :
+    ⇑(WithLp.linearEquiv p K V).symm = toLp p := rfl
+
+@[simp]
+lemma toAddEquiv_linearEquiv [Semiring K] [AddCommGroup V] [Module K V] :
+    (WithLp.linearEquiv p K V).toAddEquiv = WithLp.addEquiv p V := rfl
 
 instance instModuleFinite
     [Semiring K] [AddCommGroup V] [Module K V] [Module.Finite K V] :

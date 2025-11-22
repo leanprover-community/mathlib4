@@ -374,7 +374,7 @@ def trans (P₀ : Path.Homotopic.Quotient x₀ x₁) (P₁ : Path.Homotopic.Quot
   Quotient.map₂ Path.trans (fun (_ : Path x₀ x₁) _ hp (_ : Path x₁ x₂) _ hq => hcomp hp hq) P₀ P₁
 
 @[deprecated (since := "2025-11-13")]
-noncomputable alias _root_.Path.Homotopic.comp := Quotient.trans
+noncomputable alias _root_.Path.Homotopic.Quotient.comp := Quotient.trans
 
 @[simp, grind =]
 theorem mk_trans (P₀ : Path x₀ x₁) (P₁ : Path x₁ x₂) :
@@ -392,7 +392,7 @@ def map (P₀ : Path.Homotopic.Quotient x₀ x₁) (f : C(X, Y)) :
     (fun q : Path x₀ x₁ => q.map f.continuous) (fun _ _ h => Path.Homotopic.map h f) P₀
 
 @[deprecated (since := "2025-11-13")]
-noncomputable alias _root_.Path.Homotopic.mapFn := Quotient.map
+noncomputable alias _root_.Path.Homotopic.Quotient.mapFn := Quotient.map
 
 theorem mk_map (P₀ : Path x₀ x₁) (f : C(X, Y)) : mk (P₀.map f.continuous) = map (mk P₀) f :=
   rfl

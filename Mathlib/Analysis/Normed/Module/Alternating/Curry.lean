@@ -6,8 +6,8 @@ Authors: Yury Kudryashov, Eric Wieser
 module
 
 public import Mathlib.LinearAlgebra.Alternating.Curry
-public import Mathlib.Analysis.NormedSpace.Alternating.Basic
-public import Mathlib.Analysis.NormedSpace.Multilinear.Curry
+public import Mathlib.Analysis.Normed.Module.Alternating.Basic
+public import Mathlib.Analysis.Normed.Module.Multilinear.Curry
 
 /-!
 # Currying continuous alternating forms

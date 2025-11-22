@@ -5,7 +5,7 @@ Authors: Yury G. Kudryashov, Sam Lindauer
 -/
 module
 
-public import Mathlib.Analysis.NormedSpace.Alternating.Uncurry.Fin
+public import Mathlib.Analysis.Normed.Module.Alternating.Uncurry.Fin
 public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
 

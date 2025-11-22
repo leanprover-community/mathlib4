@@ -288,13 +288,13 @@ lemma isCoprime_scaleRoots (p q : R[X]) (r : R) (hr : IsUnit r) (h : IsCoprime p
 
 alias _root_.IsCoprime.scaleRoots := isCoprime_scaleRoots
 
-lemma Factors.scaleRoots {p : R[X]} (hp : p.Factors) (r : R) :
-    (p.scaleRoots r).Factors := by
+lemma Factors.scaleRoots {p : R[X]} (hp : p.Splits) (r : R) :
+    (p.scaleRoots r).Splits := by
   cases subsingleton_or_nontrivial R
   · rwa [Subsingleton.elim (p.scaleRoots r) p]
   obtain rfl | hp0 := eq_or_ne p 0
   · simp
-  obtain ⟨m, hm⟩ := factors_iff_exists_multiset'.mp hp
+  obtain ⟨m, hm⟩ := splits_iff_exists_multiset'.mp hp
   rw [hm, mul_scaleRoots', scaleRoots_C]
   · clear hm
     refine .mul (.C _) ?_
