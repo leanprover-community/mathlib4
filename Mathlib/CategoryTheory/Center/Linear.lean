@@ -45,8 +45,9 @@ def toCatCenter [Linear R C] : R →+* CatCenter C where
   map_zero' := by cat_disch
   map_add' a b := by
     ext X
-    dsimp
-    rw [NatTrans.app_add, add_smul]
+    dsimp [CatCenter.app]
+    rw [add_smul]
+    rfl
 
 section
 

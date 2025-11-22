@@ -22,9 +22,11 @@ the isomorphisms `shiftFunctorAdd` have been modified.
 
 @[expose] public section
 
+universe w v u
+
 namespace CategoryTheory
 
-variable (C : Type*) [Category C] (A : Type*) [AddMonoid A] [HasShift C A]
+variable (C : Type u) [Category.{v} C] (A : Type w) [AddMonoid A] [HasShift C A]
 
 /-- Given a category `C` equipped with a shift by a monoid `A` -/
 structure TwistShiftData where
@@ -56,7 +58,7 @@ variable {C A}
 which the same shift functors as `C` but where the `shiftFunctorAdd` isomorphisms
 have been modified using `t`. -/
 @[nolint unusedArguments]
-def TwistShift (_ : TwistShiftData C A) : Type _ := C
+def TwistShift (_ : TwistShiftData C A) : Type u := C
 
 variable (t : TwistShiftData C A)
 
