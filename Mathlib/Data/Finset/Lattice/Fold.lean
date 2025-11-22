@@ -770,7 +770,8 @@ theorem sup'_mem (s : Set α) (w : ∀ᵉ (x ∈ s) (y ∈ s), x ⊔ y ∈ s) {�
   sup'_induction H p w h
 
 @[congr]
-theorem sup'_congr {t : Finset β} {f g : β → α} (h₁ : s = t) (h₂ : ∀ x ∈ s, f x = g x) :
+theorem sup'_congr {t : Finset β} {f g : β → α} (h₁ : s = t)
+    (h₂ : ∀ x ∈ s, binderNameHint x f (f x) = g x) :
     s.sup' H f = t.sup' (h₁ ▸ H) g := by
   subst s
   refine eq_of_forall_ge_iff fun c => ?_
@@ -904,7 +905,8 @@ theorem inf'_mem (s : Set α) (w : ∀ᵉ (x ∈ s) (y ∈ s), x ⊓ y ∈ s) {�
   inf'_induction H p w h
 
 @[congr]
-theorem inf'_congr {t : Finset β} {f g : β → α} (h₁ : s = t) (h₂ : ∀ x ∈ s, f x = g x) :
+theorem inf'_congr {t : Finset β} {f g : β → α} (h₁ : s = t)
+    (h₂ : ∀ x ∈ s, binderNameHint x f (f x) = g x) :
     s.inf' H f = t.inf' (h₁ ▸ H) g :=
   sup'_congr (α := αᵒᵈ) H h₁ h₂
 
