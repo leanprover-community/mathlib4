@@ -147,8 +147,8 @@ theorem Bool.compl_eq_bnot : HasCompl.compl = not :=
 instance PUnit.instBooleanAlgebra : BooleanAlgebra PUnit where
   __ := PUnit.instBiheytingAlgebra
   le_sup_inf := by simp
-  inf_compl_le_bot _ := trivial
-  top_le_sup_compl _ := trivial
+  inf_compl_le_bot _ := rfl
+  top_le_sup_compl _ := rfl
 
 namespace DistribLattice
 

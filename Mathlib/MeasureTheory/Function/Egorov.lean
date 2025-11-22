@@ -73,12 +73,12 @@ theorem notConvergentSeq_measurableSet [Preorder ι] [Countable ι]
   MeasurableSet.iUnion fun k ↦ MeasurableSet.iUnion fun _ ↦
       measurableSet_lt measurable_const <| hf k
 
-theorem measure_notConvergentSeq_tendsto_zero [inst : SemilatticeSup ι] [Countable ι]
+theorem measure_notConvergentSeq_tendsto_zero [SemilatticeSup ι] [Countable ι]
     (hf : ∀ n, Measurable (fun a ↦ edist (f n a) (g a))) (hsm : MeasurableSet s)
     (hs : μ s ≠ ∞) (hfg : ∀ᵐ x ∂μ, x ∈ s → Tendsto (fun n => f n x) atTop (𝓝 (g x))) (n : ℕ) :
     Tendsto (fun j => μ (s ∩ notConvergentSeq f g n j)) atTop (𝓝 0) := by
   rcases isEmpty_or_nonempty ι with h | h
-  · have : (fun j => μ (s ∩ @notConvergentSeq _ _ _ _ inst.toPreorder f g n j)) = fun j => 0 := by
+  · have : (fun j => μ (s ∩ notConvergentSeq f g n j)) = fun j => 0 := by
       simp only [eq_iff_true_of_subsingleton]
     rw [this]
     exact tendsto_const_nhds
