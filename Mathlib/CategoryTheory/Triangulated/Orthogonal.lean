@@ -19,6 +19,8 @@ for `P.leftOrthogonal` is also obtained.
 
 -/
 
+@[expose] public section
+
 universe v v' u u'
 
 namespace CategoryTheory
