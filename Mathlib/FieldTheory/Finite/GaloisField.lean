@@ -37,7 +37,6 @@ It is a finite field with `p ^ n` elements.
 
 noncomputable section
 
-
 open Polynomial Finset
 
 open scoped Polynomial
