@@ -6,7 +6,6 @@ import Mathlib.Algebra.Notation.Defs
 import Mathlib.Data.Nat.Basic
 import Mathlib.Order.Basic
 
-set_option autoImplicit true
 example (a b : ℕ) (foo : False)  : a < b := by
   by_contra!
   guard_hyp this : b ≤ a
@@ -27,17 +26,23 @@ example : 1 < 2 := by
   guard_hyp this : 2 ≤ 1
   contradiction
 
-example (_p : Prop) (bar : False) : ¬ ¬ ¬ ¬ ¬ ¬ P := by
+example (P : Prop) (bar : False) : ¬ ¬ ¬ ¬ ¬ ¬ P := by
   by_contra! foo : ¬ ¬ ¬ P -- normalises to ¬ P, as does ¬ (goal).
   guard_hyp foo : ¬ ¬ ¬ P
   exact bar
 
-example (_p : Prop) (bar : False) : ¬ ¬ ¬ ¬ ¬ ¬ P := by
+example (P : Prop) (bar : False) : ¬ ¬ ¬ ¬ ¬ ¬ P := by
   by_contra! : ¬ ¬ ¬ P
   guard_hyp this : ¬ ¬ ¬ P
   exact bar
 
-variable [LinearOrder α] [One α] [Mul α]
+example (P Q : Prop) (h' : False) : P ∧ Q := by
+  fail_if_success by_contra! +fdsewfjdsk h
+  by_contra! +distrib h
+  guard_hyp h : ¬P ∨ ¬Q
+  exact h'
+
+variable {α} [LinearOrder α] [One α] [Mul α]
 
 example (x : α) (f : False) : x ≤ 1 := by
   set a := x * x
