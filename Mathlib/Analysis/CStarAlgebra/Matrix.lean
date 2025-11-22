@@ -223,8 +223,7 @@ example {a b c : ℝ} (ha : a ≥ 0) (hc : b ≥ 0) (ha : a ≤ b) : a ^ 2 ≤ b
 
 
 @[simp]
-lemma l2_opNorm_diagonal [DecidableEq n] (v : n → 𝕜) :
-    ‖(diagonal v : Matrix n n 𝕜)‖ = ‖v‖ := by
+lemma l2_opNorm_diagonal (v : n → 𝕜) : ‖(diagonal v : Matrix n n 𝕜)‖ = ‖v‖ := by
   set T := toEuclideanCLM (n := n) (𝕜 := 𝕜) (diagonal v) with defT
   have h_upper : ‖T‖ ≤ ‖v‖ := by
     refine ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) (fun x ↦ ?_)
@@ -232,8 +231,6 @@ lemma l2_opNorm_diagonal [DecidableEq n] (v : n → 𝕜) :
       simp [T, Matrix.mulVec_diagonal]
     have hnorm_sq : ‖T x‖ ^ 2 = ∑ i, ‖v i * (ofLp x) i‖ ^ 2 := by
       simpa [hcomp] using (EuclideanSpace.norm_sq_eq (x := T x))
-    have hx_sq : ‖x‖ ^ 2 = ∑ i, ‖(ofLp x) i‖ ^ 2 :=
-      EuclideanSpace.norm_sq_eq (x := x)
     have hsum : ∑ i, ‖v i * (ofLp x) i‖ ^ 2 ≤ ‖v‖ ^ 2 * ∑ i, ‖(ofLp x) i‖ ^ 2 := by
       rw [Finset.mul_sum]
       refine (Finset.sum_le_sum (fun i _ => ?_))
@@ -242,26 +239,20 @@ lemma l2_opNorm_diagonal [DecidableEq n] (v : n → 𝕜) :
         _ ≤ ‖v i‖ * ‖x.ofLp i‖ := norm_mul_le (v i) (x.ofLp i)
         _ ≤ ‖v‖ * ‖x.ofLp i‖ := mul_le_mul_of_nonneg_right (norm_le_pi_norm v i) (by positivity)
     have hsq : ‖T x‖ ^ 2 ≤ (‖v‖ * ‖x‖) ^ 2 := by
-      have hvx : (‖v‖ * ‖x‖) ^ 2 = ‖v‖ ^ 2 * ‖x‖ ^ 2 := by nlinarith
-      nlinarith [hnorm_sq, hx_sq, hsum, hvx]
+      nlinarith [hnorm_sq, EuclideanSpace.norm_sq_eq (x := x), hsum]
     exact (sq_le_sq₀ (by positivity) (by positivity)).mp hsq
   have h_lower : ‖v‖ ≤ ‖T‖ := by
     refine (pi_norm_le_iff_of_nonneg ((norm_nonneg T))).mpr ?_
     intro i
-    have hT_apply :
-        T (toLp 2 (Pi.single i (1 : 𝕜))) =
-          toLp 2 (Pi.single i (v i)) := by
-      have := toEuclideanCLM_toLp (A := diagonal v) (x := Pi.single i (1 : 𝕜))
-      simpa [T, Matrix.mulVec_diagonal, Pi.single_mul, mul_comm] using this
+    have hT_apply : T (toLp 2 (Pi.single i (1 : 𝕜))) = toLp 2 (Pi.single i (v i)) := by
+      simpa [T, Matrix.mulVec_diagonal, Pi.single_mul, mul_comm] using
+        toEuclideanCLM_toLp (diagonal v) (Pi.single i (1 : 𝕜))
     have hle' : ‖v i‖ ≤ ‖T‖ := by calc
       _ = ‖T (toLp 2 (Pi.single i (1 : 𝕜)))‖ := by
         rw [hT_apply, EuclideanSpace.toLp_single, EuclideanSpace.norm_single]
       _ ≤ ‖T‖ * ‖toLp 2 (Pi.single i 1)‖ := T.le_opNorm (toLp 2 (Pi.single i (1 : 𝕜)))
       _ = _ := by
-        have : ‖toLp 2 (Pi.single i 1 : n → 𝕜)‖ = 1 := by
-          simp
-        rw [this]
-        exact MulOneClass.mul_one ‖T‖
+        rw [EuclideanSpace.toLp_single, EuclideanSpace.norm_single, norm_one, mul_one]
     exact hle'
   have h_final : ‖(diagonal v : Matrix n n 𝕜)‖ = ‖T‖ := rfl
   linarith
