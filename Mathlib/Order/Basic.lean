@@ -1163,8 +1163,8 @@ abbrev LinearOrder.ofSubsingleton {α : Type*} [Subsingleton α] : LinearOrder �
   le_refl _ := trivial
   le_trans x y z _ _ := trivial
   le_antisymm x y _ _ := Subsingleton.elim x y
-  le_total _ _ := Or.inl trivial
-  lt_iff_le_not_ge _ _ := ⟨fun hf ↦ hf.elim, fun h ↦ h.2 h.1⟩
+  le_total _ _ := .inl trivial
+  lt_iff_le_not_ge _ _ := by simp
   toDecidableLE _ _ := instDecidableTrue
 
 instance : LinearOrder Empty := .ofSubsingleton
