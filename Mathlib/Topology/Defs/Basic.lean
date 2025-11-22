@@ -199,6 +199,50 @@ scoped[Topology] notation (name := closure_of) "closure[" t "]" => @closure _ t
 scoped[Topology] notation (name := Continuous_of) "Continuous[" t₁ ", " t₂ "]" =>
   @Continuous _ _ t₁ t₂
 
+namespace TopologicalSpace
+open Topology Lean Meta PrettyPrinter.Delaborator SubExpr
+
+/-- When the delab reader is pointed at an expression for an instance, returns `(true, t)`
+**iff** instance synthesis succeeds and produces a defeq instance; otherwise returns `(false, t)`.
+-/
+def delabCheckingCanonical : DelabM (Bool × Term) := do
+  let instD ← delab
+  let inst ← getExpr
+  let type ← inferType inst
+  -- if there is no synthesized instance, still return `false`
+  -- (because `inst` is still non-canonical)
+  let .some synthInst ← Meta.trySynthInstance type | return (false, instD)
+  return (← Meta.isDefEq inst synthInst, instD)
+
+/-- Delaborate unary notation referring to non-standard topologies. -/
+def delabUnary (mkStx : Term → DelabM Term) : Delab :=
+  withOverApp 2 <| whenPPOption Lean.getPPNotation do
+    let (false, instD) ← withNaryArg 1 delabCheckingCanonical | failure
+    mkStx instD
+
+/-- Delaborate binary notation referring to non-standard topologies. -/
+def delabBinary (mkStx : Term → Term → DelabM Term) : Delab :=
+  withOverApp 4 <| whenPPOption Lean.getPPNotation do
+    -- fall through to normal delab if both canonical
+    let (canonα?, instDα) ← withNaryArg 2 delabCheckingCanonical
+    let (canonβ?, instDβ) ← withNaryArg 3 delabCheckingCanonical
+    if canonα? && canonβ? then failure
+    mkStx instDα instDβ
+
+/-- Delaborator for `IsOpen[_]`. -/
+@[app_delab IsOpen] def delabIsOpen : Delab := delabUnary fun x ↦ `(IsOpen[$x])
+
+/-- Delaborator for `IsClosed[_]`. -/
+@[app_delab IsClosed] def delabIsClosed : Delab := delabUnary fun x ↦ `(IsClosed[$x])
+
+/-- Delaborator for `closure[_]`. -/
+@[app_delab closure] def delabClosure : Delab := delabUnary fun x ↦ `(closure[$x])
+
+/-- Delaborator for `Continuous[_, _]`. -/
+@[app_delab Continuous] def delabContinuous : Delab := delabBinary fun x y ↦ `(Continuous[$x, $y])
+
+end TopologicalSpace
+
 /-- The property `BaireSpace α` means that the topological space `α` has the Baire property:
 any countable intersection of open dense subsets is dense.
 Formulated here when the source space is ℕ.
