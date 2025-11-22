@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Normed.Module.TransferInstance
 -- XXX: for import reduction purposes, the file should be split in two, with these imports
 -- going into a second file. This does not seem warrented at the moment.
 public import Mathlib.Topology.Algebra.Module.TransferInstance
+public import Mathlib.Topology.Instances.Shrink
 public import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
@@ -35,14 +36,16 @@ instance [NormedAddCommGroup α] : NormedAddCommGroup (Shrink.{v} α) :=
 instance [SeminormedAddCommGroup α] [NormedSpace 𝕜 α] : NormedSpace 𝕜 (Shrink.{v} α) :=
   (equivShrink α).symm.normedSpace 𝕜
 
-instance [TopologicalSpace α] : TopologicalSpace (Shrink.{v} α) :=
-  (equivShrink α).symm.topologicalSpace
+-- ERROR: commenting this instance causes an error in the definition below, about
+-- instTopologicalSpace α being different from (equivShrink α).symm.topologicalSpace
+--instance [TopologicalSpace α] : TopologicalSpace (Shrink.{v} α) :=
+--  (equivShrink α).symm.topologicalSpace
 
 variable (R α) in
 /-- Shrinking `α` to a smaller universe preserves the continuous module structure. -/
 @[simps!]
 def continuousLinearEquiv [AddCommMonoid α] [TopologicalSpace α] [Module R α] :
-    Shrink.{v} α ≃L[R] α :=
-  (equivShrink α).symm.continuousLinearEquiv R
+    Shrink.{v} α ≃L[R] α := by
+  convert (equivShrink α).symm.continuousLinearEquiv R
 
 end Shrink
