@@ -14,7 +14,7 @@ public import Mathlib.Data.Set.Card
 ## Main definitions
 
 * `SimpleGraph.Subgraph.Preconnected` and `SimpleGraph.Subgraph.Connected` give subgraphs
-  connectivity predicates via `SimpleGraph.subgraph.coe`.
+  connectivity predicates via `SimpleGraph.Subgraph.coe`.
 
 -/
 
@@ -605,5 +605,56 @@ lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.N
       refine ⟨hw, Walk.connected_induce_support _ _ _⟩
 
 end induced_subgraphs
+
+protected lemma Reachable.coe_toSubgraph {H : SimpleGraph V} {u v : V} (h : H ≤ G)
+    (hreachable : H.Reachable u v) :
+    (toSubgraph H h).coe.Reachable ⟨u, trivial⟩ ⟨v, trivial⟩ := by
+  use hreachable.exists_isPath.choose.map ⟨((toSubgraph H h).vert · _), by simp⟩
+
+protected lemma Preconnected.toSubgraph {H : SimpleGraph V} (h : H ≤ G)
+    (hpreconn : H.Preconnected) : (toSubgraph H h).Preconnected :=
+  Subgraph.preconnected_iff.mpr (fun u v ↦ (hpreconn u v).coe_toSubgraph h)
+
+protected lemma Connected.toSubgraph {H : SimpleGraph V} (h : H ≤ G) (hconn : H.Connected) :
+    (toSubgraph H h).Connected :=
+  Subgraph.connected_iff.mpr ⟨hconn.preconnected.toSubgraph h, by simp [hconn.nonempty]⟩
+
+protected lemma Reachable.subgraphMap_coe {G' : G.Subgraph} {G'' : G'.coe.Subgraph}
+    (f : G'.coe →g G) {u v : G''.verts} (hreachable : G''.coe.Reachable u v) :
+    (G''.map f).coe.Reachable ⟨f u, Set.mem_image_of_mem _ u.2⟩
+      ⟨f v, Set.mem_image_of_mem _ v.2⟩ := by
+  use hreachable.exists_isPath.choose.map {
+    toFun v : (G''.map f).verts := ⟨⇑f v.val, by aesop⟩
+    map_rel' r := Relation.map_apply.mpr (by tauto)
+  }
+
+protected lemma Reachable.subgraphCoeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph)
+    {u v : G''.verts} (hreachable : G''.coe.Reachable u v) :
+    (Subgraph.coeSubgraph G'').coe.Reachable (Subgraph.vert _ u (by simp_all))
+      (Subgraph.vert _ v (by simp_all)) :=
+  Reachable.subgraphMap_coe G'.hom hreachable
+
+namespace Subgraph
+
+protected lemma Preconnected.map_coe {G' : G.Subgraph} {G'' : G'.coe.Subgraph}
+    (f : G'.coe →g G) (hpreconn : G''.Preconnected) : (G''.map f).Preconnected := by
+  rw [Subgraph.preconnected_iff]
+  intro ⟨u', u, hu, hfu⟩ ⟨v', v, hv, hfv⟩
+  simp_rw [← hfu, ← hfv]
+  exact Reachable.subgraphMap_coe f (hpreconn.coe ⟨u, hu⟩ ⟨v, hv⟩)
+
+protected lemma Connected.map_coe {G' : G.Subgraph} {G'' : G'.coe.Subgraph}
+    (f : G'.coe →g G) (hconn : G''.Connected) : (G''.map f).Connected :=
+  Subgraph.connected_iff.mpr ⟨hconn.preconnected.map_coe f, by simp [hconn.nonempty]⟩
+
+protected lemma Preconnected.coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph)
+    (hpreconn : G''.Preconnected) : (Subgraph.coeSubgraph G'').Preconnected :=
+  hpreconn.map_coe G'.hom
+
+protected lemma Connected.coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph)
+    (hconn : G''.Connected) : (Subgraph.coeSubgraph G'').Connected :=
+  hconn.map_coe G'.hom
+
+end Subgraph
 
 end SimpleGraph
