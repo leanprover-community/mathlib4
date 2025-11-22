@@ -3,9 +3,11 @@ Copyright (c) 2025 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.Analysis.Calculus.DifferentialForm.Basic
-import Mathlib.Analysis.Calculus.FDeriv.ContinuousAlternatingMap
-import Mathlib.Analysis.Calculus.VectorField
+module
+
+public import Mathlib.Analysis.Calculus.DifferentialForm.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.ContinuousAlternatingMap
+public import Mathlib.Analysis.Calculus.VectorField
 
 /-!
 # Theorems about evaluation of differential forms on vector fields
@@ -31,6 +33,8 @@ where the indexes `(i, j)` in our sum currespond to `(i, j + 1)`
 (formally, `(Fin.castSucc i, Fin.succ j)`) in the formula above.
 For this reason, we have `-` before the sum in our formal statement.
 -/
+
+@[expose] public section
 
 open Filter ContinuousAlternatingMap Finset VectorField
 open scoped Topology
