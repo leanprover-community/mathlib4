@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Lie.Abelian
 public import Mathlib.Algebra.Lie.Derivation.Basic
 public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.Tactic.LieAlgebra.Basic
 
 /-!
 # Adjoint action of a Lie algebra on itself
@@ -49,8 +50,7 @@ def ad : L →ₗ⁅R⁆ LieDerivation R L L :=
       ext z
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearMap.neg_apply, coe_neg,
         Pi.neg_apply, inner_apply_apply, commutator_apply]
-      rw [leibniz_lie, neg_lie, neg_lie, ← lie_skew x]
-      abel }
+      lie_ring }
 
 variable {R L}
 
