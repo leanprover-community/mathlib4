@@ -686,6 +686,8 @@ noncomputable def Monoidal.ofOplaxMonoidal
 
 section Prod
 
+open scoped Prod
+
 variable (F : C ⥤ D) (G : E ⥤ C') [MonoidalCategory C']
 
 section
@@ -693,8 +695,8 @@ section
 variable [F.LaxMonoidal] [G.LaxMonoidal]
 
 instance : (prod F G).LaxMonoidal where
-  ε := (ε F, ε G)
-  μ X Y := (μ F _ _, μ G _ _)
+  ε := ε F ×ₘ ε G
+  μ X Y := μ F _ _ ×ₘ μ G _ _
   μ_natural_left _ _ := by
     ext
     all_goals
