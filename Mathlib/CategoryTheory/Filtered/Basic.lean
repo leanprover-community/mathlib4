@@ -3,7 +3,9 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 
 /-!
 # Filtered categories
@@ -49,6 +51,8 @@ functor from a finite category, there is `X : C` such that `Nonempty (limit (F.o
 This is shown in `CategoryTheory.Limits.Filtered`.
 
 -/
+
+@[expose] public section
 
 
 open Function
@@ -245,7 +249,6 @@ theorem sup_exists :
       · subst hf
         apply coeq_condition
       · rw [@w' _ _ mX mY f']
-        simp only [Finset.mem_insert, PSigma.mk.injEq, heq_eq_eq, true_and] at mf'
         grind
     · rw [@w' _ _ mX' mY' f' _]
       apply Finset.mem_of_mem_insert_of_ne mf'

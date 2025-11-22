@@ -3,12 +3,14 @@ Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
-import Mathlib.Algebra.ContinuedFractions.Determinant
-import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Data.Nat.Fib.Basic
-import Mathlib.Tactic.Monotonicity
-import Mathlib.Tactic.GCongr
+module
+
+public import Mathlib.Algebra.ContinuedFractions.Determinant
+public import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
+public import Mathlib.Algebra.Order.Ring.Basic
+public import Mathlib.Data.Nat.Fib.Basic
+public import Mathlib.Tactic.Monotonicity
+public import Mathlib.Tactic.GCongr
 
 /-!
 # Approximations for Continued Fraction Computations (`GenContFract.of`)
@@ -45,6 +47,8 @@ in `Algebra.ContinuedFractions.Computation.ApproximationCorollaries`.
 - [*Hardy, GH and Wright, EM and Heath-Brown, Roger and Silverman, Joseph*][hardy2008introduction]
 
 -/
+
+@[expose] public section
 
 open GenContFract
 
@@ -230,7 +234,8 @@ theorem fib_le_of_contsAux_b :
           mt (terminated_stable (n - 1).pred_le) not_terminatedAt_pred_n
         -- use the IH to get the inequalities for `pconts` and `ppconts`
         have ppred_nth_fib_le_ppconts_B : (fib n : K) ≤ ppconts.b :=
-          IH n (lt_trans (Nat.lt.base n) <| Nat.lt.base <| n + 1) (Or.inr not_terminatedAt_ppred_n)
+          IH n (lt_trans (Nat.lt_add_one n) <| Nat.lt_add_one <| n + 1)
+            (Or.inr not_terminatedAt_ppred_n)
         suffices (fib (n + 1) : K) ≤ gp.b * pconts.b by gcongr
         -- finally use the fact that `1 ≤ gp.b` to solve the goal
         suffices 1 * (fib (n + 1) : K) ≤ gp.b * pconts.b by rwa [one_mul] at this
@@ -378,7 +383,7 @@ theorem sub_convs_eq {ifp : IntFractPair K}
         · exact Or.inr not_terminatedAt_pred_n
       fib_le_of_contsAux_b this
     have zero_lt_B : 0 < B := B_ineq.trans_lt' <| cast_pos.2 <| fib_pos.2 n.succ_pos
-    have : 0 ≤ pB := (cast_nonneg _).trans pB_ineq
+    have : 0 ≤ pB := (Nat.cast_nonneg _).trans pB_ineq
     have : 0 < ifp.fr :=
       ifp_fr_ne_zero.lt_of_le' <| IntFractPair.nth_stream_fr_nonneg stream_nth_eq
     have : pB + ifp.fr⁻¹ * B ≠ 0 := by positivity

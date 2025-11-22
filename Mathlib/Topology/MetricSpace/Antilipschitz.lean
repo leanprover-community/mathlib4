@@ -3,10 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.UniformSpace.CompleteSeparated
-import Mathlib.Topology.EMetricSpace.Lipschitz
-import Mathlib.Topology.MetricSpace.Basic
-import Mathlib.Topology.MetricSpace.Bounded
+module
+
+public import Mathlib.Topology.UniformSpace.CompleteSeparated
+public import Mathlib.Topology.EMetricSpace.Lipschitz
+public import Mathlib.Topology.MetricSpace.Basic
+public import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
 # Antilipschitz functions
@@ -21,6 +23,8 @@ The parameter `K` has type `ℝ≥0`. This way we avoid conjunction in the defin
 coercions both to `ℝ` and `ℝ≥0∞`. We do not require `0 < K` in the definition, mostly because
 we do not have a `posreal` type.
 -/
+
+@[expose] public section
 
 open Bornology Filter Set Topology
 open scoped NNReal ENNReal Uniformity

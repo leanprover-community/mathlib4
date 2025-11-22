@@ -3,12 +3,16 @@ Copyright (c) 2025 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 -/
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.RingTheory.OreLocalization.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+public import Mathlib.RingTheory.OreLocalization.Basic
 
 /-!
 # Ore Localization over nonZeroDivisors in monoids with zeros.
 -/
+
+@[expose] public section
 
 open scoped nonZeroDivisors
 

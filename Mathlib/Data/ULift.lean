@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Control.ULift
-import Mathlib.Logic.Equiv.Basic
+module
+
+public import Mathlib.Control.ULift
+public import Mathlib.Logic.Equiv.Basic
 
 /-!
 # Extra lemmas about `ULift` and `PLift`
@@ -13,6 +15,8 @@ In this file we provide `Subsingleton`, `Unique`, `DecidableEq`, and `isEmpty` i
 `ULift α` and `PLift α`. We also prove `ULift.forall`, `ULift.exists`, `PLift.forall`, and
 `PLift.exists`.
 -/
+
+@[expose] public section
 
 universe u v u' v'
 
