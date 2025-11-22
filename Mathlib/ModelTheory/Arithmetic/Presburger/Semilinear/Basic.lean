@@ -29,7 +29,7 @@ any commutative monoid.
 
 ## Main Results
 
-- `isSemilinearSet_setOf_eq`: the set of solutions of a linear equation `a + f x = b + g y` is
+- `isSemilinearSet_setOf_eq`: the set of solutions to a linear equation `a + f x = b + g y` is
   semilinear.
 - `IsSemilinearSet.inter`, `IsSemilinearSet.diff`: semilinear sets are closed under intersection and
   set difference.
@@ -170,8 +170,8 @@ private theorem Nat.isSemilinearSet_setOf_eq [Finite ι] {F G : Type*}
   simp only [mem_setOf, map_add, ← add_assoc] at *
   conv_lhs => rw [hy, ← hx, add_right_comm _ (g y) (f z), hz, add_right_comm _ (g z)]
 
-/-- The set of solutions of a linear equation `a + f x = b + g y`, in a finitely generated monoid,
-is semilinear. -/
+/-- The set of solutions to a linear equation `a + f x = b + g y` in a finitely generated monoid is
+semilinear. -/
 public theorem isSemilinearSet_setOf_eq [AddMonoid.FG M] {F G : Type*} [FunLike F M N]
     [AddMonoidHomClass F M N] [FunLike G M N] [AddMonoidHomClass G M N] (a b : N) (f : F) (g : G) :
     IsSemilinearSet { x | a + f x = b + g x } := by
@@ -220,8 +220,8 @@ private theorem Nat.isSemilinearSet_preimage [Finite ι] {F : Type*}
   simp_rw [sUnion_eq_biUnion, preimage_iUnion]
   exact .biUnion hS fun s hs => isSemilinearSet_preimage_of_isLinearSet (hS' s hs) f
 
-/-- The preimage of a semilinear set under an additive homomorphism, in a finitely generated monoid,
-is still semilinear. -/
+/-- The preimage of a semilinear set under an homomorphism in a finitely generated monoid is
+semilinear. -/
 public theorem IsSemilinearSet.preimage [AddMonoid.FG M] {F : Type*} [FunLike F M N]
     [AddMonoidHomClass F M N] {s : Set N} (hs : IsSemilinearSet s) (f : F) :
     IsSemilinearSet (f ⁻¹' s) := by
