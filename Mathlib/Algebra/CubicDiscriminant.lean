@@ -413,8 +413,8 @@ variable {P : Cubic F} [Field F] [Field K] {φ : F →+* K} {x y z : K}
 section Split
 
 theorem splits_iff_card_roots (ha : P.a ≠ 0) :
-    Splits (P.toPoly.map φ) ↔ Multiset.card (map φ P).roots = 3 := by
-  replace ha : (map φ P).a ≠ 0 := (_root_.map_ne_zero φ).mpr ha
+    Splits (P.toPoly.map φ) ↔ (map φ P).roots.card = 3 := by
+  replace ha : (map φ P).a ≠ 0 := (map_ne_zero φ).mpr ha
   nth_rw 1 [← RingHom.id_comp φ]
   rw [roots, ← splits_map_iff, ← map_toPoly, Polynomial.splits_iff_card_roots,
     ← ((degree_eq_iff_natDegree_eq <| ne_zero_of_a_ne_zero ha).1 <| degree_of_a_ne_zero ha : _ = 3)]
@@ -435,7 +435,7 @@ theorem eq_prod_three_roots (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z})
 theorem eq_sum_three_roots (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z}) :
     map φ P =
       ⟨φ P.a, φ P.a * -(x + y + z), φ P.a * (x * y + x * z + y * z), φ P.a * -(x * y * z)⟩ := by
-  apply_fun @toPoly _ _
+  apply_fun toPoly
   · rw [eq_prod_three_roots ha h3, C_mul_prod_X_sub_C_eq]
   · exact fun P Q ↦ (toPoly_injective P Q).mp
 
@@ -471,23 +471,23 @@ theorem discr_eq_prod_three_roots (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, 
 
 theorem discr_ne_zero_iff_roots_ne (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z}) :
     P.discr ≠ 0 ↔ x ≠ y ∧ x ≠ z ∧ y ≠ z := by
-  rw [← _root_.map_ne_zero φ, discr_eq_prod_three_roots ha h3, pow_two]
+  rw [← map_ne_zero φ, discr_eq_prod_three_roots ha h3, pow_two]
   simp_rw [mul_ne_zero_iff, sub_ne_zero, _root_.map_ne_zero, and_self_iff, and_iff_right ha,
     and_assoc]
 
-theorem discr_ne_zero_iff_roots_nodup (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z}) :
+theorem discr_ne_zero_iff_roots_nodup (ha : P.a ≠ 0) (hP : (P.toPoly.map φ).Splits) :
     P.discr ≠ 0 ↔ (map φ P).roots.Nodup := by
+  have ⟨x, y, z, h3⟩ := (splits_iff_roots_eq_three ha).mp hP
   rw [discr_ne_zero_iff_roots_ne ha h3, h3]
   change _ ↔ (x ::ₘ y ::ₘ {z}).Nodup
   rw [nodup_cons, nodup_cons, mem_cons, mem_singleton, mem_singleton]
   simp only [nodup_singleton]
   tauto
 
-theorem card_roots_of_discr_ne_zero [DecidableEq K] (ha : P.a ≠ 0)
-    (h3 : (map φ P).roots = {x, y, z}) (hd : P.discr ≠ 0) : (map φ P).roots.toFinset.card = 3 := by
-  rw [toFinset_card_of_nodup <| (discr_ne_zero_iff_roots_nodup ha h3).mp hd,
-    ← splits_iff_card_roots ha, splits_iff_roots_eq_three ha]
-  exact ⟨x, ⟨y, ⟨z, h3⟩⟩⟩
+theorem card_roots_of_discr_ne_zero [DecidableEq K] (ha : P.a ≠ 0) (h3 : (P.toPoly.map φ).Splits)
+    (hd : P.discr ≠ 0) : (map φ P).roots.toFinset.card = 3 := by
+  rwa [toFinset_card_of_nodup <| (discr_ne_zero_iff_roots_nodup ha h3).mp hd,
+    ← splits_iff_card_roots ha]
 
 @[deprecated (since := "2025-10-20")] alias disc := discr
 @[deprecated (since := "2025-10-20")] alias disc_eq_prod_three_roots := discr_eq_prod_three_roots
