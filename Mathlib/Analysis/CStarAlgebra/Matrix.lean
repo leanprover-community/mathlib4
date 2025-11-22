@@ -32,10 +32,6 @@ This transports the operator norm on `EuclideanSpace 𝕜 n →L[𝕜] Euclidean
 We take care to ensure the topology and uniformity induced by `Matrix.instMetricSpaceL2Op`
 coincide with the existing topology and uniformity on matrices.
 
-## TODO
-
-* Show that `‖diagonal (v : n → 𝕜)‖ = ‖v‖`.
-
 -/
 
 @[expose] public section
@@ -218,6 +214,70 @@ lemma l2_opNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) :
 
 lemma l2_opNNNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ :=
   l2_opNorm_mul A B
+
+@[simp]
+lemma l2_opNorm_diagonal [DecidableEq n] (v : n → 𝕜) :
+    ‖(diagonal v : Matrix n n 𝕜)‖ = ‖v‖ := by
+  classical
+  set T := toEuclideanCLM (n := n) (𝕜 := 𝕜) (diagonal v) with defT
+  have hT : ‖T‖ = ‖(diagonal v : Matrix n n 𝕜)‖ := by rfl
+  have h_upper : ‖T‖ ≤ ‖v‖ := by
+    refine ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) ?_
+    intro x
+    have hcomp :
+        ∀ i, (T x) i = v i * (ofLp x) i := by
+      intro i
+      have := congrArg (fun f : n → 𝕜 => f i)
+        (ofLp_toEuclideanCLM (n := n) (𝕜 := 𝕜) (A := diagonal v) x)
+      simp [T, Matrix.mulVec_diagonal]
+    have hnorm_sq :
+        ‖T x‖ ^ 2 = ∑ i, ‖v i * (ofLp x) i‖ ^ 2 := by
+      simpa [hcomp] using (EuclideanSpace.norm_sq_eq (x := T x))
+    have hx_sq : ‖x‖ ^ 2 = ∑ i, ‖(ofLp x) i‖ ^ 2 :=
+      EuclideanSpace.norm_sq_eq (x := x)
+    have hsum :
+        ∑ i, ‖v i * (ofLp x) i‖ ^ 2 ≤ ‖v‖ ^ 2 * ∑ i, ‖(ofLp x) i‖ ^ 2 := by
+      rw [Finset.mul_sum]
+      refine (Finset.sum_le_sum (fun i _ => ?_))
+      · have hv : ‖v i‖ ≤ ‖v‖ := norm_le_pi_norm v i
+        have hmul : ‖v i * (ofLp x) i‖ = ‖v i‖ * ‖(ofLp x) i‖ := norm_mul _ _
+        sorry
+    have hsq : ‖T x‖ ^ 2 ≤ (‖v‖ * ‖x‖) ^ 2 := by
+      have hvx : (‖v‖ * ‖x‖) ^ 2 = ‖v‖ ^ 2 * ‖x‖ ^ 2 := by nlinarith
+      nlinarith [hnorm_sq, hx_sq, hsum, hvx]
+    have hpos : 0 ≤ ‖v‖ * ‖x‖ := mul_nonneg (norm_nonneg _) (norm_nonneg _)
+    have hpos' : 0 ≤ ‖T x‖ := norm_nonneg _
+    exact (sq_le_sq₀ hpos' hpos).mp hsq
+  have h_lower : ‖v‖ ≤ ‖T‖ := by
+    refine (pi_norm_le_iff_of_nonneg ((norm_nonneg T))).mpr ?_
+    intro i
+    have hT_apply :
+        T (toLp 2 (Pi.single i (1 : 𝕜))) =
+          toLp 2 (Pi.single i (v i)) := by
+      have := toEuclideanCLM_toLp (A := diagonal v) (x := Pi.single i (1 : 𝕜))
+      simpa [T, Matrix.mulVec_diagonal, Pi.single_mul, mul_comm] using this
+    have hnorm_img : ‖T (toLp 2 (Pi.single i (1 : 𝕜)))‖ = ‖v i‖ := by
+      rw [hT_apply]
+      simp
+    have hle := (T.le_opNorm (toLp 2 (Pi.single i (1 : 𝕜))))
+    have hle' : ‖v i‖ ≤ ‖T‖ := by
+      rw [← hnorm_img]
+      calc
+      _ ≤ ‖T‖ * ‖toLp 2 (Pi.single i 1)‖ := hle
+      _ = _ := by
+        have : ‖toLp 2 (Pi.single i 1 : n → 𝕜)‖ = 1 := by
+          simp
+        rw [this]
+        exact MulOneClass.mul_one ‖T‖
+    exact hle'
+  have h_final : ‖(diagonal v : Matrix n n 𝕜)‖ = ‖T‖ := hT.symm
+
+  sorry
+
+@[simp]
+lemma l2_opNNNorm_diagonal [DecidableEq n] (v : n → 𝕜) :
+    ‖(diagonal v : Matrix n n 𝕜)‖₊ = ‖v‖₊ :=
+  Subtype.ext <| l2_opNorm_diagonal (n := n) (𝕜 := 𝕜) v
 
 /-- The normed algebra structure on `Matrix n n 𝕜` arising from the operator norm given by the
 identification with (continuous) linear endmorphisms of `EuclideanSpace 𝕜 n`. -/
