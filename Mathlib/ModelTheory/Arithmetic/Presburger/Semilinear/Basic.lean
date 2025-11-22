@@ -5,18 +5,18 @@ Authors: Dexin Zhang
 -/
 module
 
-public import Mathlib.Algebra.Group.Submonoid.Finsupp
-public import Mathlib.Algebra.Order.Group.Ideal
-public import Mathlib.Algebra.Order.Pi
-public import Mathlib.Algebra.Order.Sub.Prod
-public import Mathlib.Algebra.Order.Sub.Unbundled.Hom
+import Mathlib.Algebra.Group.Submonoid.Finsupp
+import Mathlib.Algebra.Order.Group.Ideal
+import Mathlib.Algebra.Order.Pi
+import Mathlib.Algebra.Order.Sub.Prod
+import Mathlib.Algebra.Order.Sub.Unbundled.Hom
 public import Mathlib.Data.Matrix.ColumnRowPartitioned
-public import Mathlib.Data.Pi.Interval
-public import Mathlib.Data.Rat.Floor
-public import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.Data.Pi.Interval
+import Mathlib.Data.Rat.Floor
+import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Defs
-public import Mathlib.RingTheory.Finiteness.Cardinality
-public import Mathlib.RingTheory.Localization.Module
+import Mathlib.RingTheory.Finiteness.Cardinality
+import Mathlib.RingTheory.Localization.Module
 
 /-!
 # Semilinear sets are closed under intersection, set difference and complement
@@ -40,8 +40,6 @@ any commutative monoid.
 * [Seymour Ginsburg and Edwin H. Spanier, *Bounded ALGOL-Like Languages*][ginsburg1964]
 * [Samuel Eilenberg and M. P. Schützenberger, *Rational Sets in Commutative Monoids*][eilenberg1969]
 -/
-
-@[expose] public section
 
 open Set Pointwise AddSubmonoid Matrix
 
@@ -173,13 +171,9 @@ private theorem Nat.isSemilinearSet_setOf_eq [Finite ι] {F G : Type*}
   simp only [mem_setOf, map_add, ← add_assoc] at *
   conv_lhs => rw [hy, ← hx, add_right_comm _ (g y) (f z), hz, add_right_comm _ (g z)]
 
-private theorem Nat.isSemilinearSet_setOf_mulVec_eq [Fintype κ] (u v : ι → ℕ) (A B : Matrix ι κ ℕ) :
-    IsSemilinearSet { x | u + A *ᵥ x = v + B *ᵥ x } :=
-  isSemilinearSet_setOf_eq u v A.mulVecLin B.mulVecLin
-
 /-- The set of solutions of a linear equation `a + f x = b + g y`, in a finitely generated monoid,
 is semilinear. -/
-theorem isSemilinearSet_setOf_eq [AddMonoid.FG M] {F G : Type*} [FunLike F M N]
+public theorem isSemilinearSet_setOf_eq [AddMonoid.FG M] {F G : Type*} [FunLike F M N]
     [AddMonoidHomClass F M N] [FunLike G M N] [AddMonoidHomClass G M N] (a b : N) (f : F) (g : G) :
     IsSemilinearSet { x | a + f x = b + g x } := by
   rcases fg_iff_exists_fin_addMonoidHom.1 (AddMonoid.FG.fg_top (M := M)) with ⟨n, h, hh⟩
@@ -188,16 +182,21 @@ theorem isSemilinearSet_setOf_eq [AddMonoid.FG M] {F G : Type*} [FunLike F M N]
   apply IsSemilinearSet.image
   exact Nat.isSemilinearSet_setOf_eq a b (AddMonoidHom.comp f h) (AddMonoidHom.comp g h)
 
-theorem isLinearSet_iff_exists_fin_addMonoidHom {s : Set M} :
+/-- Matrix version of `isSemilinearSet_setOf_eq`. -/
+public theorem Nat.isSemilinearSet_setOf_mulVec_eq [Fintype κ] (u v : ι → ℕ) (A B : Matrix ι κ ℕ) :
+    IsSemilinearSet { x | u + A *ᵥ x = v + B *ᵥ x } :=
+  isSemilinearSet_setOf_eq u v A.mulVecLin B.mulVecLin
+
+public theorem isLinearSet_iff_exists_fin_addMonoidHom {s : Set M} :
     IsLinearSet s ↔ ∃ (a : M) (n : ℕ) (f : (Fin n → ℕ) →+ M), s = a +ᵥ Set.range f := by
   simp_rw [isLinearSet_iff_exists_fg_eq_vadd, fg_iff_exists_fin_addMonoidHom,
     ← AddMonoidHom.coe_mrange]
-  congr with a
+  congr! with a
   refine ⟨fun ⟨P, ⟨n, f, hf⟩, hs⟩ => ⟨n, f, ?_⟩, fun ⟨n, f, hs⟩ => ⟨_, ⟨n, f, rfl⟩, ?_⟩⟩
   · rw [hf, hs]
   · rw [hs]
 
-theorem Nat.isLinearSet_iff_exists_matrix {s : Set (ι → ℕ)} :
+public theorem Nat.isLinearSet_iff_exists_matrix {s : Set (ι → ℕ)} :
     IsLinearSet s ↔ ∃ (v : ι → ℕ) (n : ℕ) (A : Matrix ι (Fin n) ℕ), s = { v + A *ᵥ x | x } := by
   rw [isLinearSet_iff_exists_fin_addMonoidHom]
   refine exists₂_congr fun v n => ⟨fun ⟨f, hf⟩ => ⟨f.toNatLinearMap.toMatrix', ?_⟩, fun ⟨A, hA⟩ =>
@@ -224,7 +223,7 @@ private theorem Nat.isSemilinearSet_preimage [Finite ι] {F : Type*}
 
 /-- The preimage of a semilinear set under an additive homomorphism, in a finitely generated monoid,
 is still semilinear. -/
-theorem IsSemilinearSet.preimage [AddMonoid.FG M] {F : Type*} [FunLike F M N]
+public theorem IsSemilinearSet.preimage [AddMonoid.FG M] {F : Type*} [FunLike F M N]
     [AddMonoidHomClass F M N] {s : Set N} (hs : IsSemilinearSet s) (f : F) :
     IsSemilinearSet (f ⁻¹' s) := by
   rcases fg_iff_exists_fin_addMonoidHom.1 (AddMonoid.FG.fg_top (M := M)) with ⟨n, g, hg⟩
@@ -236,7 +235,7 @@ theorem IsSemilinearSet.preimage [AddMonoid.FG M] {F : Type*} [FunLike F M N]
 
 /-! ### Semilinear sets are included in finitely generated submonoids -/
 
-lemma IsLinearSet.exists_fg_eq_subtypeVal (hs : IsLinearSet s) :
+public lemma IsLinearSet.exists_fg_eq_subtypeVal (hs : IsLinearSet s) :
     ∃ (P : AddSubmonoid M) (s' : Set P), P.FG ∧ IsLinearSet s' ∧ s = Subtype.val '' s' := by
   rcases hs with ⟨a, t, ht, rfl⟩
   refine ⟨_, _, (fg_iff _).2 ⟨insert a t, rfl, ht.insert a⟩,
@@ -246,7 +245,7 @@ lemma IsLinearSet.exists_fg_eq_subtypeVal (hs : IsLinearSet s) :
   ext x
   simpa using mem_closure_of_mem ∘ mem_insert_of_mem a
 
-lemma IsSemilinearSet.exists_fg_eq_subtypeVal (hs : IsSemilinearSet s) :
+public lemma IsSemilinearSet.exists_fg_eq_subtypeVal (hs : IsSemilinearSet s) :
     ∃ (P : AddSubmonoid M) (s' : Set P), P.FG ∧ IsSemilinearSet s' ∧ s = Subtype.val '' s' := by
   rcases hs with ⟨S, hS, hS', rfl⟩
   choose! P t hP ht ht' using fun s hs => (hS' s hs).exists_fg_eq_subtypeVal
@@ -256,7 +255,7 @@ lemma IsSemilinearSet.exists_fg_eq_subtypeVal (hs : IsSemilinearSet s) :
   simp_rw [sUnion_eq_iUnion, image_iUnion, image_image, AddSubmonoid.coe_inclusion,
     fun s : S => ht' s s.2]
 
-lemma IsSemilinearSet.exists_fg_eq_subtypeVal₂ (hs₁ : IsSemilinearSet s₁)
+public lemma IsSemilinearSet.exists_fg_eq_subtypeVal₂ (hs₁ : IsSemilinearSet s₁)
     (hs₂ : IsSemilinearSet s₂) :
     ∃ (P : AddSubmonoid M) (s₁' s₂' : Set P), P.FG ∧ IsSemilinearSet s₁' ∧ s₁ = Subtype.val '' s₁'
       ∧ IsSemilinearSet s₂' ∧ s₂ = Subtype.val '' s₂' := by
@@ -290,7 +289,7 @@ private theorem Nat.isSemilinearSet_inter [Finite ι] {s₁ s₂ : Set (ι → �
     isSemilinearSet_inter_of_isLinearSet (hS₁' _ hs.1) (hS₂' _ hs.2)
 
 /-- Semilinear sets are closed under intersection. -/
-theorem IsSemilinearSet.inter (hs₁ : IsSemilinearSet s₁) (hs₂ : IsSemilinearSet s₂) :
+public theorem IsSemilinearSet.inter (hs₁ : IsSemilinearSet s₁) (hs₂ : IsSemilinearSet s₂) :
     IsSemilinearSet (s₁ ∩ s₂) := by
   rcases hs₁.exists_fg_eq_subtypeVal₂ hs₂ with ⟨P, s₁', s₂', hP, hs₁', rfl, hs₂', rfl⟩
   rw [← image_inter Subtype.val_injective]
@@ -302,7 +301,7 @@ theorem IsSemilinearSet.inter (hs₁ : IsSemilinearSet s₁) (hs₂ : IsSemiline
   apply image
   apply Nat.isSemilinearSet_inter <;> apply Nat.isSemilinearSet_preimage <;> assumption
 
-theorem IsSemilinearSet.sInter [AddMonoid.FG M] {S : Set (Set M)} (hS : S.Finite)
+public theorem IsSemilinearSet.sInter [AddMonoid.FG M] {S : Set (Set M)} (hS : S.Finite)
     (hS' : ∀ s ∈ S, IsSemilinearSet s) : IsSemilinearSet (⋂₀ S) := by
   induction S, hS using Finite.induction_on with
   | empty => simp
@@ -310,19 +309,19 @@ theorem IsSemilinearSet.sInter [AddMonoid.FG M] {S : Set (Set M)} (hS : S.Finite
     simp_rw [mem_insert_iff, forall_eq_or_imp] at hS'
     simpa using hS'.1.inter (ih hS'.2)
 
-theorem IsSemilinearSet.iInter [AddMonoid.FG M] [Finite ι] {s : ι → Set M}
+public theorem IsSemilinearSet.iInter [AddMonoid.FG M] [Finite ι] {s : ι → Set M}
     (hs : ∀ i, IsSemilinearSet (s i)) : IsSemilinearSet (⋂ i, s i) := by
   rw [← sInter_range]
   apply sInter (finite_range s)
   simpa
 
-theorem IsSemilinearSet.biInter [AddMonoid.FG M] {s : Set ι} {t : ι → Set M} (hs : s.Finite)
+public theorem IsSemilinearSet.biInter [AddMonoid.FG M] {s : Set ι} {t : ι → Set M} (hs : s.Finite)
     (ht : ∀ i ∈ s, IsSemilinearSet (t i)) : IsSemilinearSet (⋂ i ∈ s, t i) := by
   rw [← sInter_image]
   apply sInter (hs.image t)
   simpa
 
-theorem IsSemilinearSet.biInter_finset [AddMonoid.FG M] {s : Finset ι} {t : ι → Set M}
+public theorem IsSemilinearSet.biInter_finset [AddMonoid.FG M] {s : Finset ι} {t : ι → Set M}
     (ht : ∀ i ∈ s, IsSemilinearSet (t i)) : IsSemilinearSet (⋂ i ∈ s, t i) :=
   biInter s.finite_toSet ht
 
@@ -769,7 +768,7 @@ private theorem Nat.isSemilinearSet_diff [Finite ι] {s₁ s₂ : Set (ι → �
   isSemilinearSet_inter hs₁ (isSemilinearSet_compl hs₂)
 
 /-- Semilinear sets are closed under set difference. -/
-theorem IsSemilinearSet.diff (hs₁ : IsSemilinearSet s₁) (hs₂ : IsSemilinearSet s₂) :
+public theorem IsSemilinearSet.diff (hs₁ : IsSemilinearSet s₁) (hs₂ : IsSemilinearSet s₂) :
     IsSemilinearSet (s₁ \ s₂) := by
   rcases hs₁.exists_fg_eq_subtypeVal₂ hs₂ with ⟨P, s₁', s₂', hP, hs₁', rfl, hs₂', rfl⟩
   rw [← image_diff Subtype.val_injective]
@@ -782,6 +781,7 @@ theorem IsSemilinearSet.diff (hs₁ : IsSemilinearSet s₁) (hs₂ : IsSemilinea
   apply Nat.isSemilinearSet_diff <;> apply Nat.isSemilinearSet_preimage <;> assumption
 
 /-- Semilinear sets in a finitely generated monoid are closed under complement. -/
-theorem IsSemilinearSet.compl [AddMonoid.FG M] (hs : IsSemilinearSet s) : IsSemilinearSet sᶜ := by
+public theorem IsSemilinearSet.compl [AddMonoid.FG M] (hs : IsSemilinearSet s) :
+    IsSemilinearSet sᶜ := by
   rw [compl_eq_univ_diff]
   exact diff .univ hs
