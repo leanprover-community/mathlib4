@@ -44,12 +44,10 @@ choices of `V`?
 
 open scoped ENNReal
 
-universe uK uK' uV
-
 /-- A type synonym for the given `V`, associated with the L`p` norm. Note that by default this just
 forgets the norm structure on `V`; it is up to downstream users to implement the L`p` norm (for
 instance, on `Prod` and finite `Pi` types). -/
-structure WithLp (p : ℝ≥0∞) (V : Type uV) : Type uV where
+structure WithLp (p : ℝ≥0∞) (V : Type*) where
   /-- Converts an element of `V` to an element of `WithLp p V`. -/
   toLp (p) ::
   /-- Converts an element of `WithLp p V` to an element of `V`. -/
@@ -65,7 +63,7 @@ meta def WithLp.delabToLp : Delab := delabApp
 
 end Notation
 
-variable (p : ℝ≥0∞) (K : Type uK) (K' : Type uK') (V : Type uV)
+variable (p : ℝ≥0∞) (K K' : Type*) {K'' : Type*} (V : Type*) {V' V'' : Type*}
 
 namespace WithLp
 
@@ -120,6 +118,39 @@ lemma ofLp_bijective : Function.Bijective (@ofLp p V) :=
 
 lemma toLp_bijective : Function.Bijective (@toLp p V) :=
   ⟨toLp_injective p, toLp_surjective p⟩
+
+/-- Lift a function to `WithLp`. -/
+@[simp]
+protected def map (f : V → V') (x : WithLp p V) : WithLp p V' :=
+  toLp p (f x.ofLp)
+
+@[simp]
+theorem map_id : WithLp.map p (id (α := V)) = id :=
+  rfl
+
+theorem map_comp (f : V' → V'') (g : V → V') :
+    WithLp.map p (f ∘ g) = WithLp.map p f ∘ WithLp.map p g :=
+  rfl
+
+/-- Lift an equivalence to `WithLp`. -/
+protected def congr (f : V ≃ V') : WithLp p V ≃ WithLp p V' :=
+  (WithLp.equiv p V).trans <| f.trans <| (WithLp.equiv p V').symm
+
+@[simp]
+theorem coe_congr (f : V ≃ V') : ⇑(WithLp.congr p f) = WithLp.map p f :=
+  rfl
+
+@[simp]
+theorem congr_refl : WithLp.congr p (Equiv.refl V) = Equiv.refl _ :=
+  rfl
+
+@[simp]
+theorem congr_symm (f : V ≃ V') : (WithLp.congr p f).symm = WithLp.congr p f.symm :=
+  rfl
+
+theorem congr_trans (f : V ≃ V') (g : V' ≃ V'') :
+    WithLp.congr p (f.trans g) = (WithLp.congr p f).trans (WithLp.congr p g) :=
+  rfl
 
 section AddCommGroup
 variable [AddCommGroup V]
@@ -280,5 +311,53 @@ instance instModuleFinite
     [Semiring K] [AddCommGroup V] [Module K V] [Module.Finite K V] :
     Module.Finite K (WithLp p V) :=
   Module.Finite.equiv (WithLp.linearEquiv p K V).symm
+
+section LinearMap
+
+variable {K K' V} [Semiring K] [Semiring K'] [Semiring K'']
+  {σ : K →+* K'} {σ' : K' →+* K} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+  {τ : K' →+* K''} {τ' : K'' →+* K'} [RingHomInvPair τ τ'] [RingHomInvPair τ' τ]
+  {ρ : K →+* K''} {ρ' : K'' →+* K} [RingHomInvPair ρ ρ'] [RingHomInvPair ρ' ρ]
+  [RingHomCompTriple σ τ ρ] [RingHomCompTriple τ' σ' ρ']
+  [AddCommGroup V] [Module K V] [AddCommGroup V'] [Module K' V'] [AddCommGroup V''] [Module K'' V'']
+
+/-- Lift a (semi)linear map to `WithLp`. -/
+protected def mapₗ (f : V →ₛₗ[σ] V') : WithLp p V →ₛₗ[σ] WithLp p V' :=
+  (WithLp.linearEquiv p K' V').symm.toLinearMap ∘ₛₗ f ∘ₛₗ (WithLp.linearEquiv p K V).toLinearMap
+
+@[simp]
+theorem coe_mapₗ (f : V →ₛₗ[σ] V') : ⇑(WithLp.mapₗ p f) = WithLp.map p f :=
+  rfl
+
+@[simp]
+theorem mapₗ_id : WithLp.mapₗ p (LinearMap.id (R := K) (M := V)) = LinearMap.id :=
+  rfl
+
+@[simp]
+theorem mapₗ_comp (f : V' →ₛₗ[τ] V'') (g : V →ₛₗ[σ] V') :
+    WithLp.mapₗ p (f ∘ₛₗ g) = WithLp.mapₗ p f ∘ₛₗ WithLp.mapₗ p g :=
+  rfl
+
+/-- Lift a (semi)linear equivalence to `WithLp`. -/
+protected def congrₗ (f : V ≃ₛₗ[σ] V') : WithLp p V ≃ₛₗ[σ] WithLp p V' :=
+  (WithLp.linearEquiv p K V).trans <| f.trans <| (WithLp.linearEquiv p K' V').symm
+
+@[simp]
+theorem coe_congrₗ (f : V ≃ₛₗ[σ] V') : ⇑(WithLp.congrₗ p f) = WithLp.map p f :=
+  rfl
+
+@[simp]
+theorem congrₗ_symm (f : V ≃ₛₗ[σ] V') : (WithLp.congrₗ p f).symm = WithLp.congrₗ p f.symm :=
+  rfl
+
+@[simp]
+theorem congrₗ_refl : WithLp.congrₗ p (LinearEquiv.refl K V) = LinearEquiv.refl K _ :=
+  rfl
+
+theorem congrₗ_comp (f : V ≃ₛₗ[σ] V') (g : V' ≃ₛₗ[τ] V'') :
+    WithLp.congrₗ p (f.trans g) = (WithLp.congrₗ p f).trans (WithLp.congrₗ p g) :=
+  rfl
+
+end LinearMap
 
 end WithLp
