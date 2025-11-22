@@ -106,6 +106,8 @@ instance (X : C) : PartialOrder (Subobject X) :=
 
 namespace Subobject
 
+lemma skeletal (X : C) : Skeletal (Subobject X) := ThinSkeleton.skeletal
+
 /-- Convenience constructor for a subobject. -/
 def mk {X A : C} (f : A ⟶ X) [Mono f] : Subobject X :=
   (toThinSkeleton _).obj (MonoOver.mk' f)
