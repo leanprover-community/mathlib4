@@ -36,7 +36,7 @@ structure TwistShiftData where
   z_zero_right (a : A) : z a 0 = 1 := by cat_disch
   z_zero_left (b : A) : z 0 b = 1 := by cat_disch
   assoc (a b c : A) : z (a + b) c * z a b = z a (b + c) * z b c := by cat_disch
-  commShift (a b : A) : NatTrans.CommShift (z a b).1 A := by infer_instance
+  commShift (a b : A) : NatTrans.CommShift (z a b).val A := by infer_instance
 
 namespace TwistShiftData
 
@@ -47,8 +47,8 @@ attribute [instance] commShift
 
 @[simp]
 lemma shift_z_app (a b c : A) (X : C) :
-    ((t.z a b).1.app X)⟦c⟧' = (t.z a b).1.app (X⟦c⟧) := by
-  simpa using NatTrans.shift_app_comm (t.z a b).1 c X
+    ((t.z a b).val.app X)⟦c⟧' = (t.z a b).val.app (X⟦c⟧) := by
+  simpa using NatTrans.shift_app_comm (t.z a b).val c X
 
 end TwistShiftData
 
@@ -103,14 +103,14 @@ lemma shiftFunctorZero_inv_app (X : TwistShift t) :
 @[simp]
 lemma shiftFunctorAdd'_hom_app (i j k : A) (h : i + j = k) (X : TwistShift t) :
     (shiftFunctorAdd' (TwistShift t) i j k h).hom.app X =
-      (t.z i j).1 • (shiftFunctorAdd' C i j k h).hom.app X := by
+      (t.z i j).val • (shiftFunctorAdd' C i j k h).hom.app X := by
   dsimp [shiftFunctorAdd']
   cat_disch
 
 @[simp]
 lemma shiftFunctorAdd'_inv_app (i j k : A) (h : i + j = k) (X : TwistShift t) :
     (shiftFunctorAdd' (TwistShift t) i j k h).inv.app X =
-      ((t.z i j)⁻¹).1 • (shiftFunctorAdd' C i j k h).inv.app X := by
+      ((t.z i j)⁻¹).val • (shiftFunctorAdd' C i j k h).inv.app X := by
   dsimp [shiftFunctorAdd']
   cat_disch
 
