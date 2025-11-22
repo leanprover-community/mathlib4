@@ -25,22 +25,12 @@ namespace Equiv
 
 variable (e : α ≃ β)
 
--- XXX: will this cause diamonds with the metric space instance above?
 /-- Transfer a `TopologicalSpace` across an `Equiv` -/
-protected abbrev topologicalSpace (e : α ≃ β) : ∀ [TopologicalSpace β], TopologicalSpace α := by
-  intros
-  exact {
-    -- Is there a more elegant construction?
-    IsOpen s := IsOpen (e.symm ⁻¹' s)
-    isOpen_univ := by simp
-    isOpen_inter s t hs ht := by simpa using hs.inter ht
-    isOpen_sUnion S hS := by simpa using isOpen_biUnion hS
-  }
+protected abbrev topologicalSpace (e : α ≃ β) : ∀ [TopologicalSpace β], TopologicalSpace α :=
+  .induced e ‹_›
 
 variable [TopologicalSpace β] [AddCommMonoid β] [Semiring R] [Module R β]
 
--- XXX: using `letI` make TC synthesis in the proof fail, but the current proof term is not nice
--- What's the best way to solve this?
 variable (R) in
 /-- An equivalence `e : α ≃ β` gives a continuous linear equivalence `α ≃L[R] β`
 where the continuous `R`-module structure on `α` is the one obtained by transporting an
@@ -48,22 +38,16 @@ where the continuous `R`-module structure on `α` is the one obtained by transpo
 
 This is `e.linearEquiv` as a continuous linear equivalence. -/
 def continuousLinearEquiv (e : α ≃ β) :
-    let _ := e.topologicalSpace
-    let _ := e.addCommMonoid
-    let _ := e.module R
-    α ≃L[R] β := by
-  intros
-  exact {
-    toLinearEquiv := e.linearEquiv R
-    continuous_toFun := by
-      rw [continuous_def]
-      intro t ht
-      have : IsOpen (e.symm ⁻¹' (e ⁻¹' t)) := by convert ht; simp
-      exact this
-    continuous_invFun := by
-      rw [continuous_def]
-      exact fun s hs ↦ hs
-  }
+    letI := e.topologicalSpace
+    letI := e.addCommMonoid
+    letI := e.module R
+    α ≃L[R] β :=
+  letI := e.topologicalSpace
+  letI := e.addCommMonoid
+  letI := e.module R
+  { toLinearEquiv := e.linearEquiv _
+    continuous_toFun := continuous_induced_dom
+    continuous_invFun := by convert continuous_coinduced_rng; exact e.coinduced_symm.symm }
 
 @[simp]
 lemma continuousLinearEquiv_toLinearEquiv (e : α ≃ β) :
