@@ -3,11 +3,12 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+module
 
-import Mathlib.Topology.MetricSpace.Pseudo.Basic
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
-import Mathlib.Topology.MetricSpace.Pseudo.Pi
-import Mathlib.Topology.Order.IsLUB
+public import Mathlib.Topology.MetricSpace.Pseudo.Basic
+public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
+public import Mathlib.Topology.MetricSpace.Pseudo.Pi
+public import Mathlib.Topology.Order.IsLUB
 
 /-! ## Proper spaces
 
@@ -21,6 +22,8 @@ import Mathlib.Topology.Order.IsLUB
 * `pi_properSpace`: finite products of proper spaces are proper.
 
 -/
+
+@[expose] public section
 
 open Set Filter
 

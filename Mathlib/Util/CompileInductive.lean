@@ -3,11 +3,13 @@ Copyright (c) 2023 Parth Shastri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parth Shastri, Gabriel Ebner, Mario Carneiro
 -/
-import Mathlib.Init
-import Lean.Elab.Command
-import Lean.Compiler.CSimpAttr
-import Lean.Util.FoldConsts
-import Lean.Data.AssocList
+module
+
+public import Mathlib.Init
+public meta import Lean.Elab.Command
+public meta import Lean.Compiler.CSimpAttr
+public meta import Lean.Util.FoldConsts
+public meta import Lean.Data.AssocList
 
 /-!
 # Define the `compile_inductive%` command.
@@ -22,6 +24,8 @@ unfortunately evaluates the base cases eagerly.  That is,
 Similarly, `compile_def% Foo.foo` adds compiled code for definitions when missing.
 This can be the case for type class projections, or definitions like `List._sizeOf_1`.
 -/
+
+public meta section
 
 namespace Mathlib.Util
 

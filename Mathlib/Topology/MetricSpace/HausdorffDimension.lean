@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.ContDiff.RCLike
-import Mathlib.MeasureTheory.Measure.Hausdorff
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.RCLike
+public import Mathlib.MeasureTheory.Measure.Hausdorff
 
 /-!
 # Hausdorff dimension
@@ -80,6 +82,8 @@ We use the following notation localized in `MeasureTheory`. It is defined in
 
 Hausdorff measure, Hausdorff dimension, dimension
 -/
+
+@[expose] public section
 
 
 open scoped MeasureTheory ENNReal NNReal Topology

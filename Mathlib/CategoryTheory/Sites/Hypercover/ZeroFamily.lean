@@ -3,7 +3,9 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Sites.Hypercover.Zero
+module
+
+public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
 
 /-!
 # Defining precoverages via pre-`0`-hypercovers
@@ -13,6 +15,8 @@ to instead define a condition on all pre-`0`-hypercovers. Such a condition
 for every object is a pre-`0`-hypercover family if these conditions are
 invariant under deduplication.
 -/
+
+@[expose] public section
 
 universe w' w v u
 
