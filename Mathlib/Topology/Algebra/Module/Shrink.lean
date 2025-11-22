@@ -36,11 +36,6 @@ instance [NormedAddCommGroup α] : NormedAddCommGroup (Shrink.{v} α) :=
 instance [SeminormedAddCommGroup α] [NormedSpace 𝕜 α] : NormedSpace 𝕜 (Shrink.{v} α) :=
   (equivShrink α).symm.normedSpace 𝕜
 
--- ERROR: commenting this instance causes an error in the definition below, about
--- instTopologicalSpace α being different from (equivShrink α).symm.topologicalSpace
---instance [TopologicalSpace α] : TopologicalSpace (Shrink.{v} α) :=
---  (equivShrink α).symm.topologicalSpace
-
 variable (R α) in
 /-- Shrinking `α` to a smaller universe preserves the continuous module structure. -/
 @[simps!]
