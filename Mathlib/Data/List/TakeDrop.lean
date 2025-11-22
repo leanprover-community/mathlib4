@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
+Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro, Rudy Peterson
 -/
 module
 
@@ -150,6 +150,71 @@ theorem span_eq_takeWhile_dropWhile (l : List α) : span p l = (takeWhile p l, d
   simpa using span.loop_eq_take_drop p l []
 
 end Filter
+
+section Splits
+
+/-! ### Generate splits of a list. -/
+
+/-- Pairs of prefixes and suffixes of a list. -/
+def splits (xs : List α) : List (List α × List α) :=
+  List.map xs.splitAt (range (xs.length + 1))
+
+@[simp]
+lemma splits_nil : (List.nil (α:=α)).splits= [([], [])] := by rfl
+
+@[simp]
+lemma splits_cons (x : α) (xs : List α) :
+    List.splits (x :: xs) =
+    ([], x :: xs) :: List.map (fun td ↦ (x :: td.1, td.2)) (List.splits xs) := by
+  simp [List.splits, List.range_succ_eq_map]
+
+lemma mem_splits_iff (x y l : List α) :
+    (x, y) ∈ l.splits ↔ l = x ++ y := by
+  simp only [splits, splitAt_eq, mem_map, mem_range, Prod.mk.injEq]
+  constructor
+  · rintro ⟨n, hn, htake, hdrop⟩
+    rw [←htake, ←hdrop, List.take_append_drop]
+  · rintro rfl
+    exists x.length
+    constructor
+    · simp only [length_append]; omega
+    · constructor
+      · rw [List.take_left]
+      · rw [List.drop_left]
+
+lemma nil_self_mem_splits (l : List α) : ([], l) ∈ l.splits := by
+  simp [List.mem_splits_iff]
+
+lemma self_nil_mem_splits (l : List α) : (l, []) ∈ l.splits := by
+  simp [List.mem_splits_iff]
+
+/-- Left-associative triple splits of a list. -/
+def splits₃_left : List α → List (List α × List α × List α) :=
+  List.flatMap
+  (fun td ↦
+    td.1
+    |> List.splits
+    |> List.map (fun t ↦ (t.1, t.2, td.2)))
+  ∘ List.splits
+
+lemma mem_splits₃_left_iff (x y z l : List α) :
+    (x, y, z) ∈ l.splits₃_left ↔ l = x ++ y ++ z := by
+  simp [splits₃_left, mem_splits_iff]
+
+/-- Right-associative triple splits of a list. -/
+def splits₃_right : List α → List (List α × List α × List α) :=
+  List.flatMap
+  (fun td ↦
+    td.2
+    |> List.splits
+    |> List.map (fun d ↦ (td.1, d.1, d.2)))
+  ∘ List.splits
+
+lemma mem_splits₃_right_iff (x y z l : List α) :
+    (x, y, z) ∈ l.splits₃_right ↔ l = x ++ y ++ z := by
+  simp [splits₃_right, mem_splits_iff]
+
+end Splits
 
 /-! ### Miscellaneous lemmas -/
 
