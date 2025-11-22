@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.CharZero.AddMonoidHom
 public import Mathlib.Algebra.Ring.Int.Parity
-public import Mathlib.Algebra.Ring.Int.Units
 public import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 
 /-!

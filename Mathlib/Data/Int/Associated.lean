@@ -5,8 +5,9 @@ Authors: Anne Baanen
 -/
 module
 
+public import Mathlib.Algebra.Group.Int.Units
 public import Mathlib.Algebra.GroupWithZero.Associated
-public import Mathlib.Algebra.Ring.Int.Units
+
 /-!
 # Associated elements and the integers
 
@@ -19,6 +20,7 @@ This file contains some results on equality up to units in the integers.
 
 @[expose] public section
 
+assert_not_exists Ring
 
 theorem Int.natAbs_eq_iff_associated {a b : ℤ} : a.natAbs = b.natAbs ↔ Associated a b := by
   refine Int.natAbs_eq_natAbs_iff.trans ?_
