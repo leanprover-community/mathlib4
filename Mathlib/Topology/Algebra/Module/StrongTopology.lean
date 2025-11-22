@@ -67,7 +67,8 @@ section General
 
 /-! ### 𝔖-Topologies -/
 
-variable {𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] (σ : 𝕜₁ →+* 𝕜₂) {E F : Type*}
+variable {𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] (σ : 𝕜₁ →+* 𝕜₂)
+  {E F G : Type*}
   [AddCommGroup E] [Module 𝕜₁ E] [TopologicalSpace E]
   [AddCommGroup F] [Module 𝕜₂ F]
 variable (F)
@@ -509,14 +510,14 @@ instance instCompleteSpace [IsTopologicalAddGroup E] [ContinuousSMul 𝕜₁ E] 
     CompleteSpace (E →SL[σ] F) :=
   completeSpace <| .of_seq fun _ _ h ↦ (h.isVonNBounded_range 𝕜₁).insert _
 
-variable (G) [TopologicalSpace F] [TopologicalSpace G]
+variable (G) [TopologicalSpace F] [TopologicalSpace G] (𝔖 : Set (Set E)) (𝔗 : Set (Set F))
 
-/-- Pre-composition by a *fixed* continuous linear map as a continuous linear map.
-Note that in non-normed space it is not always true that composition is continuous
-in both variables, so we have to fix one of them. -/
+/-- Pre-composition by a *fixed* continuous linear map as a continuous linear map on the uniform
+convergence topology. -/
 @[simps]
-def precomp [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] [RingHomSurjective σ]
-    [RingHomIsometric σ] (L : E →SL[σ] F) : (F →SL[τ] G) →L[𝕜₃] E →SL[ρ] G where
+def precomp_uniformConvergenceCLM [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G]
+    {L : E →SL[σ] F} (hL : MapsTo (fun s ↦ L '' s) 𝔖 𝔗) :
+    (UniformConvergenceCLM τ G 𝔗) →L[𝕜₃] UniformConvergenceCLM ρ G 𝔖 where
   toFun f := f.comp L
   map_add' f g := add_comp f g L
   map_smul' a f := smul_comp a f L
@@ -524,17 +525,27 @@ def precomp [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] [RingHomSu
     letI : UniformSpace G := IsTopologicalAddGroup.rightUniformSpace G
     haveI : IsUniformAddGroup G := isUniformAddGroup_of_addCommGroup
     rw [(UniformConvergenceCLM.isEmbedding_coeFn _ _ _).continuous_iff]
-    apply (UniformOnFun.precomp_uniformContinuous fun S hS => hS.image L).continuous.comp
+    exact (UniformOnFun.precomp_uniformContinuous hL).continuous.comp
         (UniformConvergenceCLM.isEmbedding_coeFn _ _ _).continuous
 
-variable (E) {G}
+/-- Pre-composition by a *fixed* continuous linear map as a continuous linear map.
 
-/-- Post-composition by a *fixed* continuous linear map as a continuous linear map.
 Note that in non-normed space it is not always true that composition is continuous
 in both variables, so we have to fix one of them. -/
+@[simps!]
+def precomp [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] [RingHomSurjective σ]
+    [RingHomIsometric σ] (L : E →SL[σ] F) : (F →SL[τ] G) →L[𝕜₃] E →SL[ρ] G :=
+  precomp_uniformConvergenceCLM G { S | IsVonNBounded 𝕜₁ S } { S | IsVonNBounded 𝕜₂ S }
+  (fun _ hS ↦ hS.image L)
+
+variable {G}
+
+/-- Post-composition by a *fixed* continuous linear map as a continuous linear map on the uniform
+convergence topology. -/
 @[simps]
-def postcomp [IsTopologicalAddGroup F] [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G]
-    [ContinuousConstSMul 𝕜₂ F] (L : F →SL[τ] G) : (E →SL[σ] F) →SL[τ] E →SL[ρ] G where
+def postcomp_uniformConvergenceCLM [IsTopologicalAddGroup F] [IsTopologicalAddGroup G]
+    [ContinuousConstSMul 𝕜₃ G] [ContinuousConstSMul 𝕜₂ F] (L : F →SL[τ] G) :
+    (UniformConvergenceCLM σ F 𝔖) →SL[τ] UniformConvergenceCLM ρ G 𝔖 where
   toFun f := L.comp f
   map_add' := comp_add L
   map_smul' := comp_smulₛₗ L
@@ -547,6 +558,17 @@ def postcomp [IsTopologicalAddGroup F] [IsTopologicalAddGroup G] [ContinuousCons
     exact
       (UniformOnFun.postcomp_uniformContinuous L.uniformContinuous).continuous.comp
         (UniformConvergenceCLM.isEmbedding_coeFn _ _ _).continuous
+
+variable (E)
+
+/-- Post-composition by a *fixed* continuous linear map as a continuous linear map.
+
+Note that in non-normed space it is not always true that composition is continuous
+in both variables, so we have to fix one of them. -/
+@[simps!]
+def postcomp [IsTopologicalAddGroup F] [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G]
+    [ContinuousConstSMul 𝕜₂ F] (L : F →SL[τ] G) : (E →SL[σ] F) →SL[τ] E →SL[ρ] G :=
+  postcomp_uniformConvergenceCLM { S | IsVonNBounded 𝕜₁ S } L
 
 variable (σ F) {E} in
 lemma toUniformConvergenceCLM_continuous [IsTopologicalAddGroup F]
