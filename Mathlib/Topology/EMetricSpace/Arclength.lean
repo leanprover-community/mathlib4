@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
 import Mathlib.Topology.EMetricSpace.BoundedVariation
+-- import Mathlib.Order.Synonym
 
 /-!
 # Arc length
@@ -20,20 +21,14 @@ Topology, Metric space, Continuity
 
 open ENNReal
 
-variable {α E : Type*} [LinearOrder α] [PseudoEMetricSpace E] (f : α → E) (a b c : α)
+variable {α E : Type*} [LinearOrder α] [PseudoEMetricSpace E] (f : α → E) {a b c : α}
 
 /--
 The length of the arc  of the curve `f : α → E` between two points `a` and `b`, is defined
 as the variation of `f` on the closed interval `[a, b]`. Equals zero when `b ≤ a`.
 -/
-noncomputable def Arclength (a b : α) : ℝ≥0∞ :=
+noncomputable def arclength (a b : α) : ℝ≥0∞ :=
   eVariationOn f (Set.Icc a b)
-
--- TODO: is this useful?
-@[simp]
-theorem arclength_eq_supr₂ : Arclength f a b =
-  ⨆ p : ℕ × { u : ℕ → α // Monotone u ∧ ∀ i, u i ∈ Set.Icc a b},
-    ∑ i ∈ Finset.range p.1, edist (f (p.2.1 (i + 1))) (f (p.2.1 i)) := by rfl
 
 theorem wf : WellFounded ((· < ·) : ℕ → ℕ → Prop) := sorry
 
@@ -43,7 +38,7 @@ satisfying the same conditions as for `evariation_on` with the addition of:
 * `u 0` is `a`.
 * `u 1` is **not** `a`.
 -/
-theorem arclength_eq_supr (hab : a ≤ b) : Arclength f a b =
+theorem arclength_eq_supr (hab : a ≤ b) : arclength f a b =
   ⨆ p : ℕ × { u : ℕ → α // Monotone u ∧ (∀ i, u i ∈ Set.Icc a b) ∧ u 0 = a ∧ a < u 1},
     ∑ i ∈ Finset.range p.1, edist (f (p.2.1 (i + 1))) (f (p.2.1 i)) := by
   apply le_antisymm
@@ -71,7 +66,9 @@ theorem arclength_eq_supr (hab : a ≤ b) : Arclength f a b =
         · exact huab _
       · rw [Finset.sum_range_succ']; exact self_le_add_right _ _
     | succ m =>
-      have : ∀ k ≤ m, u k = a := by sorry
+      have : ∀ k ≤ m, u k = a := by
+        intro k hk; contrapose! hmin
+        exact ⟨_, ⟨hk.trans (m.le_succ.trans hmn), hmin⟩, hk.trans_lt m.lt_succ_self⟩
       refine le_iSup_of_le ?_ ?_
       · refine ⟨n - m, ⟨fun k => u (m + k), ⟨?_, ?_⟩⟩⟩
         · exact hu.comp (fun _ _ h => add_le_add_left h _)
@@ -90,3 +87,62 @@ theorem arclength_eq_supr (hab : a ≤ b) : Arclength f a b =
     let p' : ℕ × { u // Monotone u ∧ ∀ i, u i ∈ Set.Icc a b } :=
       ⟨p.1, ⟨p.2.val, ⟨p.2.property.1, p.2.property.2.1⟩⟩⟩
     exact le_iSup (fun p => ∑ i ∈ Finset.range p.1, edist (f (p.2.1 (i + 1))) (f (p.2.1 i))) p'
+
+theorem edist_le_arclength (hab : a ≤ b) : edist (f a) (f b) ≤ arclength f a b := by
+  refine eVariationOn.edist_le f ?_ ?_ <;> simp [hab]
+
+/-- The length of a function over a singleton is zero. -/
+theorem arclength_eq_zero (hab : b ≤ a) : arclength f a b = 0 := by
+  refine eVariationOn.subsingleton f ?_; simp [hab]
+
+theorem arclength_self (a : α) : arclength f a a = 0 := arclength_eq_zero _ (le_rfl)
+
+theorem arclength_anti (c : α) : Antitone (fun x => arclength f x c) := by
+  refine fun a b hab => eVariationOn.mono _ ?_
+  rintro x ⟨hbx, hxc⟩
+  exact ⟨hab.trans hbx, hxc⟩
+
+theorem arclength_mono (a : α) : Monotone (arclength f a) := by
+  refine fun x y hxy => eVariationOn.mono _ ?_
+  rintro z ⟨haz, hzx⟩
+  exact ⟨haz, hzx.trans hxy⟩
+
+theorem arclength_add (hab : a ≤ b) (hbc : b ≤ c) :
+    arclength f a b + arclength f b c  = arclength f a c := by
+  simp_rw [arclength]
+  convert eVariationOn.Icc_add_Icc f (s := Set.univ) hab hbc (by simp) <;> simp
+
+theorem arclength_sum {n : ℕ} {u : ℕ → α} (hu : Monotone u) :
+    ∑ i ∈ Finset.range n, arclength f (u i) (u (i + 1)) = arclength f (u 0) (u n) := by
+  induction n with
+  | zero => rw [arclength_self, Finset.sum_range_zero]
+  | succ k ih => rw [Finset.sum_range_succ, ih, arclength_add f (hu <| zero_le k) (hu k.le_succ)]
+
+theorem arclength_sub₀ (hba : b ≤ a) : arclength f a b = arclength f a c - arclength f b c := by
+  rw [arclength_eq_zero f hba, eq_comm]
+  exact tsub_eq_zero_of_le (arclength_anti f c hba)
+
+theorem arclength_sub' (hbc : b ≤ c) (hac : arclength f b c ≠ ∞) :
+    arclength f a b =  arclength f a c - arclength f b c := by
+  rcases le_total a b with (hab | hba)
+  · exact ENNReal.eq_sub_of_add_eq hac (arclength_add f hab hbc)
+  · exact arclength_sub₀ f hba
+
+theorem arclength_sub (hbc : b ≤ c) (hac : arclength f a c ≠ ∞) :
+    arclength f a b = arclength f a c - arclength f b c := by
+  rcases le_total a b with (hab | hba)
+  · exact arclength_sub' f hbc <| ne_top_of_le_ne_top hac <| arclength_anti f c hab
+  · exact arclength_sub₀ f hba
+
+open OrderDual
+
+@[simp]
+theorem arclength_comp_of_dual :
+    arclength (f ∘ ofDual) (toDual b) (toDual a) = arclength f a b := by
+  unfold arclength
+  have : Set.Icc (toDual b) (toDual a) = ofDual ⁻¹' (Set.Icc a b) := by simp
+  rw [this, eVariationOn.comp_ofDual]
+
+theorem arclength'_eq (b : α) :
+    (fun x => arclength f x b) = arclength (f ∘ ofDual) (toDual b) ∘ toDual := by
+  ext x; simp
