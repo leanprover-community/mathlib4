@@ -196,7 +196,7 @@ theorem IsAcyclic.isPath_iff_isChain [DecidableEq V] (hG : G.IsAcyclic) {v w : V
   induction p with
   | nil => simp
   | @cons u' v' _ head tail ih =>
-    have hcc := List.isChain_cons'.mp (edges_cons _ _ ▸ h)
+    have hcc := List.isChain_cons.mp (edges_cons _ _ ▸ h)
     refine cons_isPath_iff head tail |>.mpr ⟨ih hcc.2, ?_⟩
     rcases tail.length.eq_zero_or_pos with h' | h'
     · simp [nil_iff_support_eq.mp (nil_iff_length_eq.mpr h'), head.ne]
@@ -214,9 +214,9 @@ theorem IsAcyclic.isPath_iff_isChain [DecidableEq V] (hG : G.IsAcyclic) {v w : V
       have := IsPath.mk' this |>.eq_snd_of_mem_edges (by simp [head.ne.symm]) (Sym2.eq_swap ▸ hhh)
       simp [this, snd_takeUntil head.ne]
 
-theorem IsAcyclic.isTrail_iff_isPath [DecidableEq V] (hG : G.IsAcyclic) {v w : V} (p : G.Walk v w) :
-    p.IsTrail ↔ p.IsPath :=
-  ⟨fun h ↦ hG.isPath_iff_isChain p |>.mpr <| p.isTrail_def.mp h |>.isChain, IsPath.isTrail⟩
+theorem IsAcyclic.isPath_iff_isTrail [DecidableEq V] (hG : G.IsAcyclic) {v w : V} (p : G.Walk v w) :
+    p.IsPath ↔ p.IsTrail :=
+  ⟨IsPath.isTrail, fun h ↦ hG.isPath_iff_isChain p |>.mpr <| p.isTrail_def.mp h |>.isChain⟩
 
 lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
     Finset.card G.edgeFinset + 1 = Fintype.card V := by
