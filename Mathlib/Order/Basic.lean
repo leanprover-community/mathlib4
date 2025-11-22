@@ -1158,7 +1158,7 @@ lemma eq_or_eq_or_eq_of_forall_not_lt_lt [LinearOrder α]
 
 namespace Empty
 
-def linearOrder (α : Type*) [inst : IsEmpty α] : LinearOrder α where
+abbrev linearOrder (α : Type*) [inst : IsEmpty α] : LinearOrder α where
   le _ _ := False
   le_refl x := inst.false x
   le_trans x _ _ := (inst.false x).elim
