@@ -93,18 +93,18 @@ structure Hom (X Y : ∫ F) where
   /-- The morphism between base objects. -/
   base : X.base ⟶ Y.base
   /-- The morphism in the fiber over the domain. -/
-  fiber : (F.map base.toLoc).obj X.fiber ⟶ Y.fiber
+  fiber : (F.map base.toLoc).toFunctor.obj X.fiber ⟶ Y.fiber
 
 @[simps! id_base id_fiber comp_base comp_fiber]
 instance categoryStruct : CategoryStruct (∫ F) where
   Hom X Y := Hom X Y
   id X := {
     base := 𝟙 X.base
-    fiber := (F.mapId ⟨X.base⟩).hom.app X.fiber }
+    fiber := (F.mapId ⟨X.base⟩).hom.toNatTrans.app X.fiber }
   comp {X _ _} f g := {
     base := f.base ≫ g.base
-    fiber := (F.mapComp f.base.toLoc g.base.toLoc).hom.app X.fiber ≫
-      (F.map g.base.toLoc).map f.fiber ≫ g.fiber }
+    fiber := (F.mapComp f.base.toLoc g.base.toLoc).hom.toNatTrans.app X.fiber ≫
+      (F.map g.base.toLoc).toFunctor.map f.fiber ≫ g.fiber }
 
 instance (X : ∫ F) : Inhabited (Hom X X) :=
   ⟨𝟙 X⟩
@@ -134,18 +134,18 @@ structure Hom (X Y : ∫ᶜ F) where
   /-- The morphism between base objects. -/
   base : X.base ⟶ Y.base
   /-- The morphism in the fiber over the domain. -/
-  fiber : X.fiber ⟶ (F.map base.op.toLoc).obj Y.fiber
+  fiber : X.fiber ⟶ (F.map base.op.toLoc).toFunctor.obj Y.fiber
 
 @[simps! id_base id_fiber comp_base comp_fiber]
 instance categoryStruct : CategoryStruct (∫ᶜ F) where
   Hom X Y := Hom X Y
   id X := {
     base := 𝟙 X.base
-    fiber := (F.mapId ⟨op X.base⟩).inv.app X.fiber }
+    fiber := (F.mapId ⟨op X.base⟩).inv.toNatTrans.app X.fiber }
   comp {_ _ Z} f g := {
     base := f.base ≫ g.base
-    fiber := f.fiber ≫ (F.map f.base.op.toLoc).map g.fiber ≫
-      (F.mapComp g.base.op.toLoc f.base.op.toLoc).inv.app Z.fiber }
+    fiber := f.fiber ≫ (F.map f.base.op.toLoc).toFunctor.map g.fiber ≫
+      (F.mapComp g.base.op.toLoc f.base.op.toLoc).inv.toNatTrans.app Z.fiber }
 
 section
 
@@ -179,10 +179,14 @@ instance category : Category (∫ᶜ F) where
     ext
     · simp
     · simp [F.mapComp_id_right_inv_app, Strict.rightUnitor_eqToIso, ← NatTrans.naturality_assoc]
+      rw [← Cat.Hom₂.comp_app, Iso.inv_hom_id]
+      simp
   comp_id {a b} f := by
     ext
     · simp
-    · simp [F.mapComp_id_left_inv_app, ← Functor.map_comp_assoc, Strict.leftUnitor_eqToIso]
+    · simp [F.mapComp_id_left_inv_app,Strict.leftUnitor_eqToIso]
+      rw [← (F.map f.base.op.toLoc).toFunctor.map_comp_assoc,← Cat.Hom₂.comp_app, Iso.inv_hom_id]
+      simp
   assoc f g h := by
     ext
     · simp
@@ -211,21 +215,29 @@ induces a functor `CoGrothendieck.map : ∫ᶜ F ⥤ ∫ᶜ G`. -/
 def map (α : F ⟶ G) : ∫ᶜ F ⥤ ∫ᶜ G where
   obj a := {
     base := a.base
-    fiber := (α.app ⟨op a.base⟩).obj a.fiber }
+    fiber := (α.app ⟨op a.base⟩).toFunctor.obj a.fiber }
   map {a b} f := {
     base := f.1
-    fiber := (α.app ⟨op a.base⟩).map f.2 ≫ (α.naturality f.1.op.toLoc).hom.app b.fiber }
+    fiber := (α.app ⟨op a.base⟩).toFunctor.map f.2 ≫
+      (α.naturality f.1.op.toLoc).hom.toNatTrans.app b.fiber }
   map_id a := by
     ext1
     · dsimp
-    · simp [StrongTrans.naturality_id_hom_app, ← Functor.map_comp_assoc]
+    · simp [StrongTrans.naturality_id_hom_app]
+      rw [← Category.assoc,← Functor.map_comp, ← Cat.Hom₂.comp_app, Iso.inv_hom_id]
+      simp
   map_comp {a b c} f g := by
     ext
     · dsimp
     · dsimp
-      simp only [StrongTrans.naturality_comp_hom_app, map_comp, assoc, comp_id]
-      slice_lhs 2 4 => simp only [← Functor.map_comp, Iso.inv_hom_id_app, Cat.comp_obj, comp_id]
-      simp [← Functor.comp_map]
+      simp only [map_comp, naturality_comp_hom_app, Cat.Hom.comp_toFunctor, comp_obj, assoc,
+        comp_id]
+      slice_lhs 2 4 => simp [← Functor.map_comp, ← Cat.Hom.toNatIso_hom, ← Cat.Hom.toNatIso_inv,
+        Iso.inv_hom_id_app]
+      simp only [assoc]
+      simp_rw [← Cat.Hom.comp_map]
+      sorry
+
 
 @[simp]
 lemma map_id_map {x y : ∫ᶜ F} (f : x ⟶ y) : (map (𝟙 F)).map f = f := by
