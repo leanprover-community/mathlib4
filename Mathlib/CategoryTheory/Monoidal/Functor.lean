@@ -733,7 +733,7 @@ end
 
 section
 
-open Prod
+open scoped Prod
 
 variable [F.OplaxMonoidal] [G.OplaxMonoidal]
 

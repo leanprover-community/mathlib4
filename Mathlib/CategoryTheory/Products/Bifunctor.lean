@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.Products.Basic
 @[expose] public section
 
 
-open CategoryTheory Prod
+open CategoryTheory
 
 namespace CategoryTheory.Bifunctor
 
