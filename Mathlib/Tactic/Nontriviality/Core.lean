@@ -3,11 +3,15 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Mario Carneiro
 -/
-import Qq.MetaM
-import Mathlib.Logic.Nontrivial.Basic
-import Mathlib.Tactic.Attr.Core
+module
+
+public meta import Qq.MetaM
+public meta import Mathlib.Logic.Nontrivial.Basic
+public meta import Mathlib.Tactic.Attr.Core
 
 /-! # The `nontriviality` tactic. -/
+
+public meta section
 
 universe u
 

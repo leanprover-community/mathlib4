@@ -3,10 +3,11 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.GroupTheory.CoprodI
-import Mathlib.GroupTheory.Coprod.Basic
-import Mathlib.GroupTheory.Complement
+public import Mathlib.GroupTheory.CoprodI
+public import Mathlib.GroupTheory.Coprod.Basic
+public import Mathlib.GroupTheory.Complement
 
 /-!
 
@@ -40,6 +41,8 @@ if `w` is reduced (i.e none its letters are in the image of the base monoid), an
 amalgamated product, pushout, group
 
 -/
+
+@[expose] public section
 
 namespace Monoid
 
@@ -361,12 +364,12 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
       dsimp
       split_ifs with hep
       · rcases hep with ⟨hnil, rfl⟩
-        rw [head?_eq_head hnil]
+        rw [head?_eq_some_head hnil]
         simp_all
       · push_neg at hep
         by_cases hw : w.toList = []
         · simp [hw, Word.fstIdx]
-        · simp [head?_eq_head hw, Word.fstIdx, hep hw]
+        · simp [head?_eq_some_head hw, Word.fstIdx, hep hw]
 
 theorem ext_smul {w₁ w₂ : NormalWord d} (i : ι)
     (h : CoprodI.of (φ i w₁.head) • w₁.toWord =

@@ -3,8 +3,10 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.Homotopies
-import Mathlib.Tactic.Ring
+module
+
+public import Mathlib.AlgebraicTopology.DoldKan.Homotopies
+public import Mathlib.Tactic.Ring
 
 /-!
 
@@ -22,6 +24,8 @@ on two technical lemmas `HigherFacesVanish.comp_Hσ_eq` and
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory CategoryTheory.Limits CategoryTheory.Category
@@ -89,7 +93,7 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Highe
     · dsimp [Fin.cast, Fin.pred]
       rw [Nat.add_right_comm, Nat.add_sub_assoc (by simp : 1 ≤ 3)]
       cutsat
-    · simp only [Fin.lt_iff_val_lt_val]
+    · simp only [Fin.lt_def]
       dsimp [Fin.natAdd, Fin.cast]
       cutsat
   simp only [assoc]
@@ -156,10 +160,10 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFac
   dsimp
   simp only [comp_add, add_comp, comp_id]
   -- when n < q, the result follows immediately from the assumption
-  by_cases hqn : n < q
+  by_cases! hqn : n < q
   · rw [v.comp_Hσ_eq_zero hqn, zero_comp, add_zero, v j (by cutsat)]
   -- we now assume that n≥q, and write n=a+q
-  obtain ⟨a, ha⟩ := Nat.le.dest (not_lt.mp hqn)
+  obtain ⟨a, ha⟩ := Nat.le.dest hqn
   rw [v.comp_Hσ_eq (show n = a + q by cutsat), neg_comp, add_neg_eq_zero, assoc, assoc]
   rcases n with - | m
   -- the boundary case n=0
@@ -176,7 +180,7 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : HigherFac
   have ham : a ≤ m := by omega
   rw [X.δ_comp_σ_of_gt', j.pred_succ]
   swap
-  · rw [Fin.lt_iff_val_lt_val]
+  · rw [Fin.lt_def]
     simpa only [Fin.val_mk, Fin.val_succ, add_lt_add_iff_right] using haj
   obtain _ | ham'' := ham.lt_or_eq
   · -- case where `a<m`
