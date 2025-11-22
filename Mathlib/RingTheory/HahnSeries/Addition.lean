@@ -72,6 +72,10 @@ theorem orderTop_smul_not_lt (r : R) (x : HahnSeries Γ V) : ¬ (r • x).orderT
     exact Set.IsWF.min_of_subset_not_lt_min
       (Function.support_smul_subset_right (fun _ => r) x.coeff)
 
+theorem orderTop_le_orderTop_smul {Γ} [LinearOrder Γ] (r : R) (x : HahnSeries Γ V) :
+    x.orderTop ≤ (r • x).orderTop :=
+  le_of_not_gt <| orderTop_smul_not_lt r x
+
 theorem order_smul_not_lt [Zero Γ] (r : R) (x : HahnSeries Γ V) (h : r • x ≠ 0) :
     ¬ (r • x).order < x.order := by
   have hx : x ≠ 0 := right_ne_zero_of_smul h
@@ -418,6 +422,24 @@ theorem leadingCoeff_sub {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
   rw [← orderTop_neg (x := y)] at hxy
   exact leadingCoeff_add_eq_left hxy
 
+theorem orderTop_sub_ne {x y : HahnSeries Γ R} {g : Γ}
+    (hxg : x.orderTop = g) (hyg : y.orderTop = g) (hxyc : x.leadingCoeff = y.leadingCoeff) :
+    (x - y).orderTop ≠ g := by
+  refine orderTop_ne_of_coeff_eq_zero ?_
+  have hx : x ≠ 0 := fun h ↦ by simp_all [orderTop_zero, WithTop.top_ne_coe]
+  rw [orderTop_of_ne_zero hx, WithTop.coe_eq_coe] at hxg
+  have hy : y ≠ 0 := fun h ↦ by simp_all [orderTop_zero, WithTop.top_ne_coe]
+  rw [orderTop_of_ne_zero hy, WithTop.coe_eq_coe] at hyg
+  simp only [leadingCoeff_of_ne_zero hx, leadingCoeff_of_ne_zero hy, untop_orderTop_of_ne_zero hx,
+    untop_orderTop_of_ne_zero hy, hxg, hyg] at hxyc
+  rwa [coeff_sub, sub_eq_zero]
+
+theorem le_orderTop_of_leadingCoeff_eq {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R} {g : Γ}
+    (hxg : x.orderTop = g) (hyg : y.orderTop = g) (hxyc : x.leadingCoeff = y.leadingCoeff) :
+    g < (x - y).orderTop :=
+  lt_of_le_of_ne (le_of_eq_of_le (by rw [hxg, hyg, inf_idem]) min_orderTop_le_orderTop_sub)
+    (orderTop_sub_ne hxg hyg hxyc).symm
+
 end AddGroup
 
 instance [AddCommGroup R] : AddCommGroup (HahnSeries Γ R) :=
@@ -470,6 +492,12 @@ instance : Module R (HahnSeries Γ V) :=
     add_smul := fun _ _ _ => by
       ext
       simp [add_smul] }
+
+@[simp]
+theorem smul_single (a : Γ) (r : R) (v : V) :
+    r • single a v = single a (r • v) := by
+  ext b
+  by_cases h : b = a <;> simp [h]
 
 /-- `single` as a linear map -/
 @[simps]
