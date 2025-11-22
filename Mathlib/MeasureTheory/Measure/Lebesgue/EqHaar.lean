@@ -383,6 +383,11 @@ theorem addHaar_smul_of_nonneg {r : ℝ} (hr : 0 ≤ r) (s : Set E) :
     μ (r • s) = ENNReal.ofReal (r ^ finrank ℝ E) * μ s := by
   rw [addHaar_smul, abs_pow, abs_of_nonneg hr]
 
+@[simp]
+theorem addHaar_nnreal_smul (r : ℝ≥0) (s : Set E) :
+    μ (r • s) = r ^ Module.finrank ℝ E * μ s := by
+  simp [NNReal.smul_def]
+
 variable {μ} {s : Set E}
 
 -- Note: We might want to rename this once we acquire the lemma corresponding to
