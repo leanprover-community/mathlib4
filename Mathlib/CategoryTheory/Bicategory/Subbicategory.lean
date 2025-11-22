@@ -53,9 +53,13 @@ variable (P : ObjectProperty B)
 instance bicategory : Bicategory.{w, v} (FullSubbicategory P) :=
   InducedBicategory.bicategory FullSubbicategory.obj
 
+example {B : Type u} [inst : Bicategory B]
+    (P : ObjectProperty B) {X Y Z : FullSubbicategory P} (u : X ⟶ Y)
+        (v : Y ⟶ Z) : (u ≫ v).hom = u.hom ≫ v.hom := by
+  simp only [bicategory_comp_hom]
+
 /-
 Q1: does the simps above having "wrong" type cause problems? Or is it fine?
-Q2: simps for abbrevs? (possibly related?)
 Q3: Automation w/ aesop & whisker_exchange?
 
 -/
@@ -70,7 +74,6 @@ def forget : StrictPseudofunctor (FullSubbicategory P) B :=
 variable {P}
 
 /-- Construct a morphism in `FullSubbicategory P` from a morhism in `B`. -/
--- TODO: should abbrevs have simps?
 abbrev mkHom₂ {a b : FullSubbicategory P} {f g : a ⟶ b} (η : f.hom ⟶ g.hom) : f ⟶ g :=
   InducedBicategory.mkHom₂ η
 

@@ -54,11 +54,15 @@ structure Hom (X Y : InducedBicategory C F) where
   /-- The morphism in `C` underlying the morphism in `InducedBicategory C F`. -/
   hom : F X ⟶ F Y
 
-@[simps id_hom comp_hom]
+@[simps? id_hom comp_hom]
 instance categoryStruct : CategoryStruct (InducedBicategory C F) where
   Hom X Y := Hom X Y
   id X := ⟨𝟙 (F X)⟩
   comp u v := ⟨u.hom ≫ v.hom⟩
+
+example {B : Type u_1} {C : Type u_2} [inst : Bicategory C] {F : B → C}
+    {X Y Z : InducedBicategory C F} (u : X ⟶ Y) (v : Y ⟶ Z) :  (u ≫ v).hom = u.hom ≫ v.hom := by
+  simp?
 
 @[ext]
 lemma hom_ext {X Y : InducedBicategory C F} {f g : X ⟶ Y} (h : f.hom = g.hom) : f = g :=
