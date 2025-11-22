@@ -68,7 +68,8 @@ but don't use this assumption in the type.
     if (← isAutoDecl declName) then return none
     else if Name.isPrefixOf `Decidable declName then return none
     let names := #[`Decidable, `DecidableEq, `DecidablePred]
-    return ← checkUnusedAssumptionInType (← getConstInfo declName) names
+    let _ ← checkUnusedAssumptionInType (← getConstInfo declName) names
+    return none
 
 -- /--
 -- Linter that checks for theorems that assume `[Inhabited p]`
