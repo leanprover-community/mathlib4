@@ -18,7 +18,7 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 open CategoryTheory
 
-namespace CategoryTheory.prod
+namespace CategoryTheory.Prod
 
 variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D] (E : Type u₃)
   [Category.{v₃} E]
@@ -74,4 +74,4 @@ def functorProdToProdFunctorAssociator :
           (associativity _ _ _).functor :=
   Iso.refl _
 
-end CategoryTheory.prod
+end CategoryTheory.Prod

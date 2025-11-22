@@ -24,7 +24,7 @@ namespace CategoryTheory
 
 open Functor
 
-open scoped prod
+open scoped Prod
 
 universe v u
 

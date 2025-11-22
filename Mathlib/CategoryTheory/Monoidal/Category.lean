@@ -935,7 +935,7 @@ section
 
 universe v₁ v₂ u₁ u₂
 
-open prod
+open Prod
 
 variable (C₁ : Type u₁) [Category.{v₁} C₁] [MonoidalCategory.{v₁} C₁]
 variable (C₂ : Type u₂) [Category.{v₂} C₂] [MonoidalCategory.{v₂} C₂]

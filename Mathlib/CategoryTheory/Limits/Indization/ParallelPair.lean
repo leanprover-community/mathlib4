@@ -103,7 +103,7 @@ def ϕ : F₁ f g P₁ P₂ ⟶ F₂ f g P₁ P₂ where
   app h := h.hom.1.left
   naturality _ _ h := by
     have := h.w
-    simp only [prod'_obj, comp_obj, prod'_map, Functor.comp_map, prod_comp, prod.hom_ext_iff,
+    simp only [prod'_obj, comp_obj, prod'_map, Functor.comp_map, prod_comp, Prod.hom_ext_iff,
       CostructuredArrow.hom_eq_iff, CostructuredArrow.map_obj_left,
       IndObjectPresentation.toCostructuredArrow_obj_left, CostructuredArrow.comp_left,
       CostructuredArrow.map_map_left, IndObjectPresentation.toCostructuredArrow_map_left] at this
@@ -120,7 +120,7 @@ def ψ : F₁ f g P₁ P₂ ⟶ F₂ f g P₁ P₂ where
   app h := h.hom.2.left
   naturality _ _ h := by
     have := h.w
-    simp only [prod'_obj, comp_obj, prod'_map, Functor.comp_map, prod_comp, prod.hom_ext_iff,
+    simp only [prod'_obj, comp_obj, prod'_map, Functor.comp_map, prod_comp, Prod.hom_ext_iff,
       CostructuredArrow.hom_eq_iff, CostructuredArrow.map_obj_left,
       IndObjectPresentation.toCostructuredArrow_obj_left, CostructuredArrow.comp_left,
       CostructuredArrow.map_map_left, IndObjectPresentation.toCostructuredArrow_map_left] at this
