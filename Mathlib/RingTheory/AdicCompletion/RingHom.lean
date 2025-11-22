@@ -44,9 +44,8 @@ Universal property of `IsAdicComplete` for rings.
 The lift ring map `lift I f hf : R →+* S` of a sequence of compatible
 ring maps `f n : R →+* S ⧸ (I ^ n)`.
 -/
-noncomputable def liftRingHom :
-    R →+* S :=
-  ((ofAlgEquiv I).symm : _ →+* _).comp (AdicCompletion.liftRingHom I f hf)
+noncomputable def liftRingHom : R →+* S :=
+  (limitₐ I : _ →+* _).comp (AdicCompletion.liftRingHom I f hf)
 
 @[simp]
 theorem of_liftRingHom (x : R) :
@@ -54,8 +53,8 @@ theorem of_liftRingHom (x : R) :
   simp [liftRingHom]
 
 @[simp]
-theorem ofAlgEquiv_comp_liftRingHom :
-    (ofAlgEquiv I : S →+* AdicCompletion I S).comp (liftRingHom I f hf) =
+theorem symm_limitₐ_comp_liftRingHom :
+    ((limitₐ I).symm : S →+* AdicCompletion I S).comp (liftRingHom I f hf) =
       AdicCompletion.liftRingHom I f hf := by
   ext; simp
 
