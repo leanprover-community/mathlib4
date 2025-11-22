@@ -23,6 +23,18 @@ noncomputable instance (X : Type u) [TopologicalSpace X] [Small.{v} X] :
     TopologicalSpace (Shrink.{v} X) :=
   .induced (equivShrink X).symm inferInstance
 
+-- trying a tweaked definition doesn't seem to help either...
+/-- `equivShrink` as a homeomorphism. -/
+@[simps toEquiv]
+noncomputable def homeomorph2 (X : Type u) [TopologicalSpace X] [Small.{v} X] :
+    Shrink.{v} X ≃ₜ X where
+  __ := equivShrink X |>.symm
+  continuous_toFun := continuous_induced_dom
+  continuous_invFun := by
+    convert continuous_induced_dom
+    simp only [Equiv.invFun_as_coe, Equiv.symm_symm]
+    sorry -- rfl
+
 /-- `equivShrink` as a homeomorphism. -/
 @[simps toEquiv]
 noncomputable def homeomorph (X : Type u) [TopologicalSpace X] [Small.{v} X] :
