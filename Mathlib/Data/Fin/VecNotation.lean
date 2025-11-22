@@ -3,7 +3,9 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Eric Wieser
 -/
-import Mathlib.Data.Fin.Tuple.Basic
+module
+
+public import Mathlib.Data.Fin.Tuple.Basic
 
 /-!
 # Matrix and vector notation
@@ -33,6 +35,8 @@ The main new notation is `![a, b]`, which gets expanded to `vecCons a (vecCons b
 
 Examples of usage can be found in the `MathlibTest/matrix.lean` file.
 -/
+
+@[expose] public section
 
 
 namespace Matrix
@@ -72,7 +76,7 @@ macro_rules
 
 /-- Unexpander for the `![x, y, ...]` notation. -/
 @[app_unexpander vecCons]
-def vecConsUnexpander : Lean.PrettyPrinter.Unexpander
+meta def vecConsUnexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $term ![$term2, $terms,*]) => `(![$term, $term2, $terms,*])
   | `($_ $term ![$term2]) => `(![$term, $term2])
   | `($_ $term ![]) => `(![$term])
@@ -80,7 +84,7 @@ def vecConsUnexpander : Lean.PrettyPrinter.Unexpander
 
 /-- Unexpander for the `![]` notation. -/
 @[app_unexpander vecEmpty]
-def vecEmptyUnexpander : Lean.PrettyPrinter.Unexpander
+meta def vecEmptyUnexpander : Lean.PrettyPrinter.Unexpander
   | `($_:ident) => `(![])
   | _ => throw ()
 
@@ -141,7 +145,7 @@ open Lean Qq
 
 `let ⟨xs, tailn, tail⟩ ← matchVecConsPrefix n e` decomposes `e : Fin n → _` in the form
 `vecCons x₀ <| ... <| vecCons xₙ <| tail` where `tail : Fin tailn → _`. -/
-partial def matchVecConsPrefix (n : Q(Nat)) (e : Expr) : MetaM <| List Expr × Q(Nat) × Expr := do
+meta def matchVecConsPrefix (n : Q(Nat)) (e : Expr) : MetaM <| List Expr × Q(Nat) × Expr := do
   match_expr ← Meta.whnfR e with
   | Matrix.vecCons _ n x xs => do
     let (elems, n', tail) ← matchVecConsPrefix n xs
@@ -258,7 +262,7 @@ theorem vecCons_inj {x y : α} {u v : Fin n → α} : vecCons x u = vecCons y v 
 
 open Lean Qq in
 /-- `mkVecLiteralQ ![x, y, z]` produces the term `q(![$x, $y, $z])`. -/
-def _root_.PiFin.mkLiteralQ {u : Level} {α : Q(Type u)} {n : ℕ} (elems : Fin n → Q($α)) :
+meta def _root_.PiFin.mkLiteralQ {u : Level} {α : Q(Type u)} {n : ℕ} (elems : Fin n → Q($α)) :
     Q(Fin $n → $α) :=
   loop 0 q(vecEmpty)
 where
@@ -273,7 +277,7 @@ where
       rest
 
 open Lean Qq in
-protected instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) : ToExpr (Fin n → α) :=
+protected meta instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) : ToExpr (Fin n → α) :=
   have lu := toLevel.{u}
   have eα : Q(Type $lu) := toTypeExpr α
   let toTypeExpr := q(Fin $n → $eα)
@@ -311,7 +315,7 @@ theorem vecAppend_eq_ite {α : Type*} {o : ℕ} (ho : o = m + n) (u : Fin m → 
 @[simp]
 theorem vecAppend_apply_zero {α : Type*} {o : ℕ} (ho : o + 1 = m + 1 + n) (u : Fin (m + 1) → α)
     (v : Fin n → α) : vecAppend ho u v 0 = u 0 :=
-  dif_pos _
+  rfl
 
 @[simp]
 theorem empty_vecAppend (v : Fin n → α) : vecAppend n.zero_add.symm ![] v = v := by

@@ -4,11 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Johannes Hölzl, Reid Barton, Kim Morrison, Patrick Massot, Kyle Miller,
 Minchao Wu, Yury Kudryashov, Floris van Doorn
 -/
-import Aesop
-import Mathlib.Data.Set.CoeSort
-import Mathlib.Data.SProd
-import Mathlib.Data.Subtype
-import Mathlib.Order.Notation
+module
+
+public import Aesop
+public import Mathlib.Data.Set.CoeSort
+public import Mathlib.Data.SProd
+public import Mathlib.Data.Subtype
+public import Mathlib.Order.Notation
 
 /-!
 # Basic definitions about sets
@@ -57,6 +59,8 @@ More advanced theorems about these definitions are located in other files in `Ma
 
 set, image, preimage
 -/
+
+@[expose] public section
 
 attribute [ext] Set.ext
 
