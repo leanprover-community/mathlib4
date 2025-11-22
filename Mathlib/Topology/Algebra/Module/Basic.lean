@@ -255,7 +255,7 @@ theorem LinearMap.continuous_on_pi {ι : Type*} {R : Type*} {M : Type*} [Finite 
     -- function.
     have : (f : (ι → R) → M) = fun x => ∑ i : ι, x i • f (Pi.single i 1) := by
       ext x
-      exact f.pi_apply_eq_sum_univ' x
+      exact f.pi_apply_eq_sum_univ x
     rw [this]
     fun_prop
 
