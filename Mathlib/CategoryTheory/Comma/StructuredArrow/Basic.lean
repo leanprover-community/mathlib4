@@ -1003,8 +1003,7 @@ def StructuredArrow.prodEquivalence :
   functor := StructuredArrow.prodFunctor S S' T T'
   inverse := StructuredArrow.prodInverse S S' T T'
   unitIso := NatIso.ofComponents (fun f => Iso.refl _) (by simp)
-  counitIso := NatIso.ofComponents (fun f => Iso.refl _) (by intros; ext; all_goals simp)
-  functor_unitIso_comp := by intros; ext; all_goals simp
+  counitIso := NatIso.ofComponents (fun f => Iso.refl _)
 
 end
 
@@ -1046,9 +1045,7 @@ def CostructuredArrow.prodEquivalence :
   functor := CostructuredArrow.prodFunctor S S' T T'
   inverse := CostructuredArrow.prodInverse S S' T T'
   unitIso := NatIso.ofComponents (fun f => Iso.refl _) (by simp)
-  counitIso := NatIso.ofComponents (fun f => Iso.refl _) (by intros; ext; all_goals simp)
-  functor_unitIso_comp := by intros; ext; all_goals simp
-
+  counitIso := NatIso.ofComponents (fun f => Iso.refl _)
 end
 
 end Prod
