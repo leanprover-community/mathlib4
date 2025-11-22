@@ -3,8 +3,10 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Basic
-import Mathlib.Data.Fintype.Sigma
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Basic
+public import Mathlib.Data.Fintype.Sigma
 
 /-!
 # Darts in graphs
@@ -12,6 +14,8 @@ import Mathlib.Data.Fintype.Sigma
 A `Dart` or half-edge or bond in a graph is an ordered pair of adjacent vertices, regarded as an
 oriented edge. This file defines darts and proves some of their basic properties.
 -/
+
+@[expose] public section
 
 namespace SimpleGraph
 

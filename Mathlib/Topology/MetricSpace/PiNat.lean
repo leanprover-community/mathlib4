@@ -3,11 +3,13 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Group.FunctionSeries
-import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
-import Mathlib.Topology.MetricSpace.HausdorffDistance
-import Mathlib.Topology.Order.ProjIcc
-import Mathlib.Topology.UnitInterval
+module
+
+public import Mathlib.Analysis.Normed.Group.FunctionSeries
+public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
+public import Mathlib.Topology.MetricSpace.HausdorffDistance
+public import Mathlib.Topology.Order.ProjIcc
+public import Mathlib.Topology.UnitInterval
 
 /-!
 # Topological study of spaces `Π (n : ℕ), E n`
@@ -54,6 +56,8 @@ in general), and `ι` is countable.
   continuous functions to metric spaces, can be embedded inside their product.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -631,7 +635,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
         have fy : f y = Ay.some := by simp_rw [f, if_neg ys]
         -- case where the common prefix to `x` and `s`, or `y` and `s`, is shorter than the
         -- common part to `x` and `y` -- then `f x = f y`.
-        by_cases H : longestPrefix x s < firstDiff x y ∨ longestPrefix y s < firstDiff x y
+        by_cases! H : longestPrefix x s < firstDiff x y ∨ longestPrefix y s < firstDiff x y
         · have : cylinder x (longestPrefix x s) = cylinder y (longestPrefix y s) := by
             rcases H with H | H
             · exact cylinder_longestPrefix_eq_of_longestPrefix_lt_firstDiff hs hne H xs ys
@@ -643,8 +647,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
           congr
         -- case where the common prefix to `x` and `s` is long, as well as the common prefix to
         -- `y` and `s`. Then all points remain in the same cylinders.
-        · push_neg at H
-          have I1 : cylinder Ax.some (firstDiff x y) = cylinder x (firstDiff x y) := by
+        · have I1 : cylinder Ax.some (firstDiff x y) = cylinder x (firstDiff x y) := by
             rw [← mem_cylinder_iff_eq]
             exact cylinder_anti x H.1 Ax.some_mem.2
           have I3 : cylinder y (firstDiff x y) = cylinder Ay.some (firstDiff x y) := by
@@ -668,7 +671,7 @@ theorem exists_retraction_subtype_of_isClosed {s : Set (∀ n, E n)} (hs : IsClo
   obtain ⟨f, fs, rfl, f_cont⟩ :
     ∃ f : (∀ n, E n) → ∀ n, E n, (∀ x ∈ s, f x = x) ∧ range f = s ∧ Continuous f :=
     exists_retraction_of_isClosed hs hne
-  have A : ∀ x : range f, rangeFactorization f x = x := fun x ↦ Subtype.eq <| fs x x.2
+  have A : ∀ x : range f, rangeFactorization f x = x := fun x ↦ Subtype.ext <| fs x x.2
   exact ⟨rangeFactorization f, A, fun x => ⟨x, A x⟩, f_cont.subtype_mk _⟩
 
 end PiNat
@@ -935,7 +938,7 @@ variable [∀ i, MetricSpace (F i)]
 /-- Given a countable family of metric spaces, one may put a distance on their product `Π i, E i`.
 
 It is highly non-canonical, though, and therefore not registered as a global instance.
-The distance we use here is edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
+The distance we use here is `edist x y = ∑' i, min (1/2)^(encode i) (edist (x i) (y i))`. -/
 protected def metricSpace : MetricSpace (∀ i, F i) :=
   EMetricSpace.toMetricSpaceOfDist dist (by simp) (by simp [edist_dist])
 

@@ -3,9 +3,10 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.NumberTheory.ZetaValues
-import Mathlib.NumberTheory.LSeries.RiemannZeta
+public import Mathlib.NumberTheory.ZetaValues
+public import Mathlib.NumberTheory.LSeries.RiemannZeta
 
 /-!
 # Special values of Hurwitz and Riemann zeta functions
@@ -35,6 +36,8 @@ sums in the convergence range.)
   Fourier series which are only conditionally convergent, which is difficult to approach using the
   methods in the library at the present time (May 2024).
 -/
+
+@[expose] public section
 
 open Complex Real Set
 

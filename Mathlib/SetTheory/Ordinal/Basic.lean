@@ -3,11 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Order.SuccPred
-import Mathlib.Data.Sum.Order
-import Mathlib.Order.IsNormal
-import Mathlib.SetTheory.Cardinal.Basic
-import Mathlib.Tactic.PPWithUniv
+module
+
+public import Mathlib.Algebra.Order.SuccPred
+public import Mathlib.Data.Sum.Order
+public import Mathlib.Order.IsNormal
+public import Mathlib.SetTheory.Cardinal.Basic
+public import Mathlib.Tactic.PPWithUniv
 
 /-!
 # Ordinals
@@ -54,6 +56,8 @@ for the empty set by convention.
 
 * `ω` is a notation for the first infinite ordinal in the scope `Ordinal`.
 -/
+
+@[expose] public section
 
 assert_not_exists Module Field
 
