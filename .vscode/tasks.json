@@ -1,0 +1,47 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Aristotle: Prove Current File",
+      "type": "shell",
+      "command": "aristotle",
+      "args": [
+        "prove-from-file",
+        "${file}"
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "focus": false
+      },
+      "group": "none"
+    },
+    {
+      "label": "Aristotle: Prove Current File (Custom Output)",
+      "type": "shell",
+      "command": "aristotle",
+      "args": [
+        "prove-from-file",
+        "${file}",
+        "--output-file",
+        "${input:outputPath}"
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new",
+        "focus": false
+      },
+      "group": "none"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "outputPath",
+      "type": "promptString",
+      "description": "Output file path",
+      "default": "${fileDirname}/${fileBasenameNoExtension}_aristotle.lean"
+    }
+  ]
+}
