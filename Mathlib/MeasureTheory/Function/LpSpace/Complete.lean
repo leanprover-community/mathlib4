@@ -86,17 +86,16 @@ theorem eLpNorm_lim_le_liminf_eLpNorm {f : ℕ → α → E}
 /-- If the `eLpNorm` of a sequence of `AEStronglyMeasurable` functions that converges almost
 everywhere is bounded by some constant `C`, then the `eLpNorm` of its limit is also bounded by
 `C`. -/
-theorem seq_tendsto_ae_bounded {f : ℕ → α → E} {g : α → E} {C : ℝ≥0∞} (p : ℝ≥0∞)
+theorem eLpNorm_le_of_tendsto_ae {f : ℕ → α → E} {g : α → E} {C : ℝ≥0∞}
     (bound : ∀ n, eLpNorm (f n) p μ ≤ C) (hf : ∀ n, AEStronglyMeasurable (f n) μ)
     (h_tendsto : ∀ᵐ (x : α) ∂μ, Tendsto (fun n => f n x) atTop (nhds (g x))) :
-    eLpNorm g p μ ≤ C := by
-  calc
-    _ ≤ atTop.liminf (fun (n : ℕ) => eLpNorm (f n) p μ) :=
-      Lp.eLpNorm_lim_le_liminf_eLpNorm (fun n => hf n) g h_tendsto
-    _ ≤ C := by
-      refine liminf_le_of_le (by isBoundedDefault) (fun b hb => ?_)
-      obtain ⟨n, hn⟩ := Filter.eventually_atTop.mp hb
-      exact le_trans (hn n (by linarith)) (bound n)
+    eLpNorm g p μ ≤ C := calc
+  _ ≤ atTop.liminf (fun (n : ℕ) => eLpNorm (f n) p μ) :=
+    Lp.eLpNorm_lim_le_liminf_eLpNorm (fun n => hf n) g h_tendsto
+  _ ≤ C := by
+    refine liminf_le_of_le (by isBoundedDefault) (fun b hb => ?_)
+    obtain ⟨n, hn⟩ := hb.exists
+    exact hn.trans (bound n)
 
 /-! ### `Lp` is complete iff Cauchy sequences of `ℒp` have limits in `ℒp` -/
 
