@@ -608,6 +608,10 @@ theorem mapMatrix_comp (f : β →+* γ) (g : α →+* β) :
     f.mapMatrix.comp g.mapMatrix = ((f.comp g).mapMatrix : Matrix m m α →+* _) :=
   rfl
 
+protected lemma _root_.Matrix.map_pow {α β : Type*} [Semiring α] [Semiring β]
+    (M : Matrix m m α) (f : α →+* β) (a : ℕ) : (M ^ a).map f = (M.map f) ^ a :=
+  f.mapMatrix.map_pow M a
+
 end RingHom
 
 namespace RingEquiv
