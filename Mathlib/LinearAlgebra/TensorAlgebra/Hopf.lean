@@ -69,7 +69,7 @@ def antipode : T[M] →ₗ[R] T[M] := (MulOpposite.opLinearEquiv R).symm.comp
   (lift R ((MulOpposite.opLinearEquiv R).comp (-(ι R)))).toLinearMap
 
 @[simp]
-lemma antipode_ι_apply (x : M) : antipode R ((ι R) x) = -(ι R) x := by
+lemma antipode_ι_apply (x : M) : antipode R (ι R x) = -(ι R) x := by
   simp [antipode]
 
 @[simp]
