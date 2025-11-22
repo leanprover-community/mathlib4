@@ -33,11 +33,18 @@ assert_not_exists IsOrderedMonoid Function.support
 namespace Nat
 
 /-- Modular equality. `n.ModEq a b`, or `a ≡ b [MOD n]`, means that `a % n = b % n`. -/
+@[grind]
 def ModEq (n a b : ℕ) :=
   a % n = b % n
 
 @[inherit_doc]
 notation:50 a " ≡ " b " [MOD " n "]" => ModEq n a b
+
+example (a : ℕ) (ha : a % 5 = 0) (hb : a % 5 = 1) : False := by
+  omega
+
+example (a : ℕ) (ha : a ≡ 0 [MOD 5]) (hb : a ≡ 1 [MOD 5]) : False := by
+  grind
 
 variable {m n a b c d : ℕ}
 
