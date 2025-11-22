@@ -81,7 +81,7 @@ private theorem exists_isSemilinearSet_setOf_le {s : Set M} (hs : IsSlice s) (hs
           exact hs _ hx _ _ ha hb }
     else ⊥
   have hf : ∀ x ∈ s, ∀ y, y ∈ f x ↔ x + y ∈ s := by simp_all [f]
-  let g (x : M) : AddSemigroupIdeal M := AddSemigroupIdeal.closure (f x \ {0})
+  let g (x : M) : AddSemigroupIdeal M := .closure (f x \ {0})
   have hg : ∀ x ∈ s, ∀ y ∈ s, x ≤ y → g x ≤ g y := by
     intro x hx y hy hxy z hz
     rw [le_iff_exists_add] at hxy
@@ -144,10 +144,8 @@ private theorem Nat.isSemilinearSet_of_isSlice {ι : Type*} [Finite ι] {s : Set
     exact h 0 Finset.univ (by simp)
   intro a t ht
   induction t using Finset.strongInductionOn generalizing s a with | _ t ih
-  by_cases hs' : s = ∅
-  · subst hs'
-    exact IsSemilinearSet.empty
-  rw [← ne_eq, ← Set.nonempty_iff_ne_empty] at hs'
+  obtain rfl | hs' := s.eq_empty_or_nonempty
+  · exact .empty
   rcases hs.exists_isSemilinearSet_setOf_le hs' with ⟨x, hx, hx'⟩
   convert_to IsSemilinearSet ({ y ∈ s | x ≤ y } ∪ ⋃ i ∈ t, ⋃ j ∈ Finset.range (x i),
     { y ∈ s | y i = j })
