@@ -104,7 +104,7 @@ instance [HasBinaryCoproducts C] : IsSiftedOrEmpty C := by
       ⟨.mk ((coprod.inl : c₁ ⟶ c₁ ⨿ c₂), (coprod.inr : c₂ ⟶ c₁ ⨿ c₂))⟩
     apply isConnected_of_zigzag
     rintro ⟨_, c, f⟩ ⟨_, c', g⟩
-    dsimp only [const_obj_obj, diag_obj, prod_Hom] at f g
+    dsimp only [const_obj_obj, diag_obj] at f g
     use [.mk ((coprod.inl : c₁ ⟶ c₁ ⨿ c₂), (coprod.inr : c₂ ⟶ c₁ ⨿ c₂)), .mk (g.fst, g.snd)]
     simp only [colimit.cocone_x, diag_obj, Prod.mk.eta, List.isChain_cons_cons,
       List.isChain_singleton, and_true, ne_eq, reduceCtorEq, not_false_eq_true,
