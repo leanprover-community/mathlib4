@@ -48,6 +48,7 @@ instance prod : CategoryStruct.{max v₁ v₂} (C × D) where
   comp f g := (f.1 ≫ g.1, f.2 ≫ g.2)
 
 @[ext]
+-- @[ext, aesop safe cases (rule_sets := [CategoryTheory])]
 lemma prod.hom_ext {X Y : C × D} {f g : X ⟶ Y} (h₁ : f.1 = g.1) (h₂ : f.2 = g.2) : f = g :=
   Prod.ext h₁ h₂
 
