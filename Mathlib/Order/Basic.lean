@@ -1156,23 +1156,25 @@ lemma eq_or_eq_or_eq_of_forall_not_lt_lt [LinearOrder α]
   rcases hne.2.2.lt_or_gt with h₃ | h₃
   exacts [h h₁ h₂, h h₂ h₃, h h₃ h₂, h h₃ h₁, h h₁ h₃, h h₂ h₃, h h₁ h₃, h h₂ h₁]
 
+/-- Construct the trivial linear order on any type with at most one element. -/
+abbrev LinearOrder.ofSubsingleton {α : Type*} [Subsingleton α] : LinearOrder α where
+  le _ _ := True
+  lt _ _ := False
+  le_refl _ := trivial
+  le_trans x y z _ _ := trivial
+  le_antisymm x y _ _ := Subsingleton.elim x y
+  le_total _ _ := .inl trivial
+  lt_iff_le_not_ge _ _ := by simp
+  toDecidableLE _ _ := instDecidableTrue
+
+instance : LinearOrder Empty := .ofSubsingleton
+instance : LinearOrder PEmpty := .ofSubsingleton
+
 namespace PUnit
 
 variable (a b : PUnit)
 
-instance instLinearOrder : LinearOrder PUnit where
-  le  := fun _ _ ↦ True
-  lt  := fun _ _ ↦ False
-  max := fun _ _ ↦ unit
-  min := fun _ _ ↦ unit
-  toDecidableEq := inferInstance
-  toDecidableLE := fun _ _ ↦ Decidable.isTrue trivial
-  toDecidableLT := fun _ _ ↦ Decidable.isFalse id
-  le_refl     := by intros; trivial
-  le_trans    := by intros; trivial
-  le_total    := by intros; exact Or.inl trivial
-  le_antisymm := by intros; rfl
-  lt_iff_le_not_ge := by simp only [not_true, and_false, forall_const]
+instance instLinearOrder : LinearOrder PUnit := .ofSubsingleton
 
 theorem max_eq : max a b = unit :=
   rfl
