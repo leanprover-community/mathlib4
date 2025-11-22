@@ -5811,6 +5811,7 @@ public import Mathlib.RingTheory.Henselian
 public import Mathlib.RingTheory.HopfAlgebra.Basic
 public import Mathlib.RingTheory.HopfAlgebra.GroupLike
 public import Mathlib.RingTheory.HopfAlgebra.MonoidAlgebra
+public import Mathlib.RingTheory.HopfAlgebra.TensorAlgebra
 public import Mathlib.RingTheory.HopfAlgebra.TensorProduct
 public import Mathlib.RingTheory.HopkinsLevitzki
 public import Mathlib.RingTheory.Ideal.AssociatedPrime
