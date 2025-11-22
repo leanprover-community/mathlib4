@@ -206,7 +206,7 @@ theorem binomialPow_smul_coeff {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : S)
   rw [HahnModule.coeff_smul, finsum_eq_sum_of_support_subset (s := s)]
   · classical
     refine Eq.trans (b := ∑ ij ∈ (Finset.image f s),
-      (HahnSeries.binomialPow R g g' (-1) n).coeff ij.1 •
+      (HahnSeries.binomialPow g g' (-1 : R) n).coeff ij.1 •
         ((HahnModule.of R).symm (A v)).coeff ij.2) ?_ ?_
     · refine Finset.sum_of_injOn (fun k ↦ k) (Function.Injective.injOn fun ⦃x y⦄ a ↦ a) ?_ ?_ ?_
       · rw [Set.mapsTo_iff_image_subset, Set.image_id', Finset.coe_subset]
@@ -215,7 +215,7 @@ theorem binomialPow_smul_coeff {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : S)
         rw [HahnSeries.mem_support] at h₁
         have hij1 : ∃ k : ℕ, (n • g + k • (g' - g)) = ij.1 := by
           contrapose! h₁
-          exact HahnSeries.binomialPow_coeff_eq_zero R h (-1) n h₁
+          exact HahnSeries.binomialPow_coeff_eq_zero h (-1 : R) n h₁
         obtain ⟨k, hk⟩ := hij1
         have hij2 : ij.2 = (-(n • g) - k • (g' - g)) +ᵥ g₁ := by
           rw [← h₃, vadd_vadd, ← hk, sub_add_add_cancel, neg_add_cancel, zero_vadd]
@@ -231,7 +231,7 @@ theorem binomialPow_smul_coeff {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : S)
           obtain ⟨k, hk₁, hk₂⟩ := Finset.mem_image.mp hij
           simp only [f, Prod.eq_iff_fst_eq_snd_eq] at hk₂
           rw [← hk₂.1, ← hk₂.2, vadd_vadd, add_add_sub_cancel, add_neg_cancel, zero_vadd]
-        by_cases h1 : (HahnSeries.binomialPow R g g' (-1) n).coeff ij.1 = 0
+        by_cases h1 : (HahnSeries.binomialPow g g' (-1 : R) n).coeff ij.1 = 0
         · rw [h1, zero_smul]
         · specialize hn h1
           by_cases h2 : ((HahnModule.of R).symm (A v)).coeff ij.2 = 0
@@ -257,13 +257,13 @@ theorem binomialPow_smul_coeff {g g' : Γ} (g₁ : Γ₁) (h : g < g') (n : S)
         exact (hkn hk).elim
       · intro k hks
         simp only
-        rw [HahnSeries.binomialPow_coeff_eq R h (-1) n k, smul_assoc, smul_assoc, one_smul]
+        rw [HahnSeries.binomialPow_coeff_eq h (-1 : R) n k, smul_assoc, smul_assoc, one_smul]
         norm_cast
   · refine Function.support_subset_iff'.mpr ?_
     intro k hk
     rw [Finset.mem_coe, Finset.mem_range, Nat.not_lt_eq, Order.add_one_le_iff] at hk
     have := (exists_binomialPow_smul_support_bound g₁ h n A v).choose_spec k hk
-    rw [HahnSeries.mem_support, Mathlib.Tactic.PushNeg.not_ne_eq] at this
+    rw [HahnSeries.mem_support, not_ne_iff] at this
     rw [this, smul_zero, smul_zero]
 
 omit [Module S W] [IsScalarTower S R W] in
