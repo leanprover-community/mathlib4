@@ -318,7 +318,7 @@ lemma postcompLM_apply [LinearMap.CompatibleSMul F F' ℝ 𝕜] (T : F →L[𝕜
   rfl
 
 variable (n k) in
-/-- `fderivWithOrderLM 𝕜 n k i` is the `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
+/-- `fderivWithOrderLM 𝕜 n k` is the `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
 its derivative as an element of `𝓓^{k}_{K}(E, E →L[ℝ] F)`.
 This only makes mathematical sense if `k + 1 ≤ n`, otherwise we define it as the zero map.
 
@@ -791,7 +791,7 @@ theorem seminorm_fderivWithOrderLM_le {i : ℕ} (f : 𝓓^{n}_{K}(E, F)) :
   · simp [fderivWithOrderLM_apply_of_gt 𝕜 f hk]
 
 variable (n k) in
-/-- `fderivWithOrderCLM 𝕜 n k i` is the continuous `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
+/-- `fderivWithOrderCLM 𝕜 n k` is the continuous `𝕜`-linear-map sending `f : 𝓓^{n}_{K}(E, F)` to
 its derivative as an element of `𝓓^{k}_{K}(E, E →L[ℝ] F)`.
 This only makes mathematical sense if `k + 1 ≤ n`, otherwise we define it as the zero map.
 
