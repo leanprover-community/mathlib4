@@ -463,12 +463,164 @@ abbrev isHuntington (α : Type*) [AddCommSemigroup α] [HasCompl α] : Prop :=
 
 section Winker
 
-/-- A Robbins algebra where every element is idempotent is a Huntington algebra -/
-theorem isHuntingtonAlgebra_of_compl_compl_eq (h : ∀ a : α, aᶜᶜ = a) :
+/-- A Robbins algebra where every element is idempotent is a Huntington algebra.
+
+Winker, Lemma 2.1. -/
+theorem isHuntington_of_compl_compl_eq (h : ∀ a : α, aᶜᶜ = a) :
     isHuntington α := fun a b ↦ by
   have := robbins bᶜ aᶜ
   rw [h, add_comm b, add_comm bᶜ] at this
   rw [← h (_ + _), this, h]
+
+/-- A Robbins algebra where the addition has a zero is a Huntington algebra.
+
+Winker, Lemma 2.2. -/
+theorem isHuntington_of_add_zero (h : ∃ z : α, ∀ a, a + z = a) :
+    isHuntington α := by
+  apply isHuntington_of_compl_compl_eq
+  obtain ⟨z, hz⟩ := h
+  have h1 (a) := robbins a z
+  simp only [hz] at h1
+  have h2 (a : α) := robbins aᶜᶜ aᶜ
+  simp_rw [h1, hz] at h2
+  intro a
+  rw [← robbins a a]
+  generalize (aᶜ + a)ᶜ + (a + a)ᶜ = b
+  have hr := robbins bᶜ bᶜᶜᶜ
+  rwa [eq_comm, add_comm bᶜᶜ, h1, add_comm z, hz,
+      add_comm, h2] at hr
+
+/-- A Robbins algebra with a zero and a one such that 0 + 0 = 0,
+0 = 1ᶜ and 0 + 1 = 1 is a Huntington algebra.
+
+Winker, Lemma 2.3. -/
+theorem isHuntington_of_zero_and_one (h : ∃ (u : α),
+    uᶜ + u = u ∧ uᶜ + uᶜ = uᶜ) :
+    isHuntington α := by
+  apply isHuntington_of_add_zero
+  obtain ⟨u, h1, h0⟩ := h
+  set z := uᶜ with hz
+  use z
+  intro a
+  have h := robbins u (a + z)
+  have h' := robbins u a
+  rw [← hz] at h h'
+  rw [add_comm u, add_assoc, h1, add_comm a u] at h
+  rw [add_comm z, add_assoc, h0, add_comm  a z] at h
+  rw [add_comm a, ← h, h']
+
+/-- A Robbins algebra that contains some idempotent element is a Huntington algebra.
+
+Winker, Lemma 2.4, Corollary 1.5. -/
+theorem isHuntington_of_exists_idempotent (h : ∃ (e : α), e + e = e) :
+    isHuntington α := by
+  obtain ⟨e, he⟩ := h
+  set u := e + eᶜ with hu
+  apply isHuntington_of_zero_and_one
+  use u
+  set z := uᶜ with hz
+  have h3 : u + e = u := by
+    rw [hu, add_comm, ← add_assoc, he]
+  have h4 : u + eᶜ = u + u := by
+    rw [hu, add_add_add_comm, he, add_assoc]
+  have h5 : (eᶜ + z)ᶜ = e := by
+    have := robbins e e
+    rwa [he, add_comm eᶜ e, ← hu, ← hz, add_comm] at this
+  have h6 : ((u + u)ᶜ + e)ᶜ = eᶜ := by
+    have := robbins u eᶜ
+    rwa [← hz, add_comm z, h4, h5, add_comm e] at this
+  have h7 : ((u + u)ᶜ + eᶜ)ᶜ = e := by
+    have := robbins (u + u) e
+    rwa [h6, ← h4, add_assoc, add_comm eᶜ e, ← hu, add_comm] at this
+  have h8 : z = (u + u)ᶜ := by
+    have := robbins e (u + u)ᶜ
+    rwa [add_comm eᶜ, h7, add_comm e (u + u)ᶜ, h6, ← hu, ← hz] at this
+  have h9 : (e + z)ᶜ = eᶜ := by
+    rw [← h6, add_comm e, h8]
+  have h10 : (eᶜ + (e + z + eᶜ)ᶜ)ᶜ = e + z := by
+    have := robbins e (e + z)
+    rw [← add_assoc, ← add_assoc, he, add_comm eᶜ, ← hu, h9, add_comm] at this
+    convert this using 4
+    rw [add_assoc, add_comm z, ← add_assoc, ← hu]
+  have h11 : e + z = e := by
+    have := robbins (z + eᶜ) e
+    rw [add_comm z, h5, he] at this
+    rw [← h10]
+    conv_rhs => rw [← this]
+    congr 3
+    rw [add_comm e, add_comm eᶜ, add_assoc, add_assoc, add_comm e]
+  have h12 : u + z = u := by
+    rw [hu, add_comm e, add_assoc, h11]
+  simp only [add_comm, h12, true_and]
+  have h13 : ((eᶜ + eᶜ + z)ᶜ + z)ᶜ = eᶜ := by
+    have := robbins (z + eᶜ) eᶜ
+    rwa [add_comm z, h5, ← hu, ← hz, add_comm z, ← add_comm eᶜ, ← add_assoc] at this
+  have h14 : eᶜ = z + eᶜ := by
+    have := robbins e (z + eᶜ)
+    rwa [add_comm z, ← add_assoc e, ← hu, h12, ← hz, ← add_assoc, h13, add_comm] at this
+  have := robbins e (z + z)
+  rwa [← add_assoc, add_comm eᶜ, ← h14, add_comm eᶜ,
+    add_comm z, h5,
+    ← add_assoc, h11, h11, ← hu, ← hz, eq_comm] at this
+
+variable {a b c : α}
+
+-- Winker, lemma 3.1
+theorem add_eq_left (h : (a + (b + c)ᶜ)ᶜ = (a + b + cᶜ)ᶜ) :
+    a + b = a := by
+  have := robbins c (a + b)
+  rwa [add_comm cᶜ, ← h, add_comm a, add_comm c, add_assoc, add_comm a, robbins, eq_comm] at this
+
+-- Winker, lemma 3.2
+theorem eq_of_eq (h : (a + (b + c)ᶜ)ᶜ = (b + (a + c)ᶜ)ᶜ) :
+    a = b := by
+  have := robbins (b + c) a
+  have _ := robbins (c + a) b
+  rwa [add_comm _ a, h, add_comm a, add_comm b,
+    add_assoc, add_comm b, robbins, eq_comm] at this
+
+theorem eq_compl_add_compl_add (h : (a + bᶜ)ᶜ = c) :
+    (c + (b + a)ᶜ)ᶜ = a := by
+  have := robbins b a
+  rwa [add_comm _ a, h] at this
+
+theorem eq_compl_add_compl_smul_add (n : ℕ+) (h : (a + bᶜ)ᶜ = c) :
+    (a + (b + n • (a + c))ᶜ)ᶜ = c := by
+  induction n with
+  | one =>
+    rw [one_smul, ← add_assoc]
+    nth_rewrite 1 [← eq_compl_add_compl_add h]
+    rw [add_comm c, robbins]
+  | succ n hind =>
+    set d := b + n • (a + c) + a with hd
+    rw [add_one_smul, ← add_assoc, ← add_assoc, ← hd, ← eq_compl_add_compl_add hind,
+      add_comm c, robbins]
+
+theorem ad_compl_add_compl_add (h : (a + b)ᶜ = c) :
+    (c + (bᶜ +a)ᶜ)ᶜ = a := by
+  have _ := robbins b a
+  rw [← h, add_comm, add_comm a, robbins]
+
+theorem compl_eq_compl_add_smul_compl_add
+    (n : ℕ+) (h : (bᶜ + (a + bᶜ)ᶜ)ᶜ = a) :
+    (b + n • (a + (a + bᶜ)ᶜ))ᶜ = bᶜ := by
+  set b' := b + n • (a + (a + bᶜ)ᶜ) with hb'
+  set c := (a + bᶜ)ᶜ with hc
+  have hc1 := eq_compl_add_compl_smul_add n hc
+  rw [← hc, ← hb'] at hc1
+  rw [add_comm] at h
+  have hc2 := eq_compl_add_compl_smul_add n h
+  rw [add_comm c a, ← hb'] at hc2
+  apply eq_of_eq (c := c)
+  rw [add_comm bᶜ, h, add_comm _ a, hc1, add_comm _ c, hc2, add_comm, ← hc]
+
+theorem compl_eq_compl_add_smul_compl_add'
+    (n : ℕ+) (h : (a + b)ᶜ = bᶜ) :
+    (b + n • (a + (a + bᶜ)ᶜ))ᶜ = bᶜ := by
+  apply compl_eq_compl_add_smul_compl_add
+  nth_rewrite 1 [← h]
+  rw [add_comm, add_comm a, add_comm a, robbins]
+
 
 end Winker
 
