@@ -284,91 +284,28 @@ lemma congr_iff (hfg : f =ᶠ[𝓝 x] g) :
     IsImmersionAtOfComplement F I J n f x ↔ IsImmersionAtOfComplement F I J n g x :=
   ⟨fun h ↦ h.congr_of_eventuallyEq hfg, fun h ↦ h.congr_of_eventuallyEq hfg.symm⟩
 
-lemma foo (hf : IsImmersionAtOfComplement F I J n f x) : Small.{u} F := sorry
+lemma small (hf : IsImmersionAtOfComplement F I J n f x) : Small.{u} F :=
+  small_of_injective <| hf.equiv.injective.comp (Prod.mk_right_injective 0)
 
 /-- Given an immersion `f` at `x`, this is a choice of complement which lives in the same universe
 as the model space for the co-domain of `f`: this is useful to avoid universe restrictions. -/
-def smallComplement (hf : IsImmersionAtOfComplement F I J n f x) : Type u := by
-  have := foo hf
-  exact Shrink.{u} F
+def smallComplement (hf : IsImmersionAtOfComplement F I J n f x) : Type u :=
+  have := hf.small
+  Shrink.{u} F
 
 instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedAddCommGroup hf.smallComplement := by
-  have := foo hf
+  have := hf.small
   unfold smallComplement
   infer_instance
 
 instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedSpace 𝕜 hf.smallComplement := by
-  have := foo hf
+  have := hf.small
   unfold smallComplement
   infer_instance
 
-def smallComplement' (hf : IsImmersionAtOfComplement F I J n f x) : Type u :=
-  ((⊥ : Submodule 𝕜 E).prod ⊤).map hf.equiv
-
-instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedAddCommGroup hf.smallComplement' := by
-  unfold smallComplement'
-  infer_instance
-
-instance (hf : IsImmersionAtOfComplement F I J n f x) : NormedSpace 𝕜 hf.smallComplement' := by
-  unfold smallComplement'
-  infer_instance
-
-def smallEquiv' (hf : IsImmersionAtOfComplement F I J n f x) : F ≃L[𝕜] hf.smallComplement' := by
-  let A : Submodule 𝕜 (E × F) := (⊥ : Submodule 𝕜 E).prod ⊤
-
-  let X : F ≃L[𝕜] (⊤ : Submodule 𝕜 F) := sorry -- Submodule.topEquiv, but as a CLM!
-  let B := ContinuousLinearEquiv.prodUnique 𝕜 F (N := (⊥ : Submodule 𝕜 E))
-  let B' := B.symm
-  let C' := X.symm.trans B'
-  #check ContinuousLinearEquiv.ofSubmodules
-  -- equiv between F and (⊤ : Submodule k F)?
-  let φ : F ≃L[𝕜] A := by
-    have aux := B'.ofSubmodules (p := (⊤ : Submodule _ _)) --(q := A)
-    -- compose aux and X (or X.symm)
-    --apply B.symm.ofSubmodules (⊤ : Submodule 𝕜 F) (q := A)
-    --apply?--apply ContinuousLinearEquiv.ofSubmodules
-    sorry -- use ofSubmodules!
-  exact φ.trans (hf.equiv.submoduleMap A)
-
--- TODO: remove completeness hypotheses using ContinuousLinearEquiv.ofSubmodules
-/-- If `f` is an immersion at `x`, then any complement used in this definition is
-isomorphic to the `smallComplement`. -/
-def smallEquiv (hf : IsImmersionAtOfComplement F I J n f x) : F ≃L[𝕜] hf.smallComplement := by
-  have := foo hf
-  unfold smallComplement
-  convert (equivShrink F).continuousLinearEquiv 𝕜
-  · sorry -- top. spaces are equal
-  · sorry -- add comm. monoids are equal
-  · sorry -- module structures are equal
-  -- have h : Injective φ := by intro x y hxy; simp_all [φ]
-  -- have h2 : IsClosed (range φ) := by
-  --   have : (range (fun (x : F) ↦ ((0 : E), x))) = {0} ×ˢ univ := by grind
-  --   convert isClosed_singleton.prod isClosed_univ
-  --   infer_instance
-  -- have : CompleteSpace (LinearMap.range φ) := h2.completeSpace_coe
-  -- letI ψ : _ →L[𝕜] E'' := .mk (hf.equiv.domRestrict (LinearMap.range φ))
-  --   (Pi.continuous_restrict_apply _ hf.equiv.continuous)
-  -- have h3 : Injective ψ := by
-  --   simp only [ψ, ContinuousLinearMap.coe_mk']
-  --   rw [LinearMap.injective_domRestrict_iff]
-  --   simp
-  -- have : IsClosed (range ψ) := by
-  --   simp only [ψ, ContinuousLinearMap.coe_mk']
-  --   -- LinearMap.range_domRestrict does not fire, but this lemma does...
-  --   have : range ((hf.equiv.toLinearEquiv).domRestrict (LinearMap.range φ)) =
-  --       Submodule.map hf.equiv.toLinearEquiv (LinearMap.range φ) := by
-  --     ext x
-  --     simp
-  --   rw [this]
-  --   simpa
-  -- apply (ContinuousLinearMap.equivRange h h2).trans (ContinuousLinearMap.equivRange h3 this)
-
--- lemma smallEquiv_coe [CompleteSpace E] [CompleteSpace E''] [CompleteSpace F]
---   (hf : IsImmersionAtOfComplement F I J n f x) :
---   letI B := Pi.prod (0 : F → E) (@id F)
---   (hf.smallEquiv : F → _) =
---     (Set.rangeFactorization ((range B).restrict hf.equiv)) ∘ (Set.rangeFactorization B) := by
---   rfl
+def smallEquiv (hf : IsImmersionAtOfComplement F I J n f x) : F ≃L[𝕜] hf.smallComplement :=
+  have := hf.small
+  ((equivShrink F).symm.continuousLinearEquiv 𝕜).symm
 
 lemma trans_F (h : IsImmersionAtOfComplement F I J n f x) (e : F ≃L[𝕜] F') :
     IsImmersionAtOfComplement F' I J n f x := by
