@@ -205,7 +205,7 @@ theorem extendedHomₐ_coeIdeal_eq_map (I : Ideal A) :
       (I.map (algebraMap A B) : FractionalIdeal B⁰ L) := extended_coeIdeal_eq_map L _ I
 
 variable [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L] [IsDomain A]
- [Algebra.IsIntegral A B]
+  [Algebra.IsIntegral A B]
 
 theorem coe_extendedHomₐ_eq_span (I : FractionalIdeal A⁰ K) :
     extendedHomₐ L B I = span B (algebraMap K L '' I) := by
