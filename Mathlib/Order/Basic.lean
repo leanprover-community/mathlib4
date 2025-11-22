@@ -1166,8 +1166,7 @@ abbrev linearOrder (α : Type*) [inst : IsEmpty α] : LinearOrder α where
   le_total x _ := (inst.false x).elim
   toDecidableLE x _ := Decidable.isFalse (inst.false x).elim
 
-attribute [instance] linearOrder Empty
-attribute [instance] linearOrder PEmpty
+attribute [instance] linearOrder
 
 end Empty
 
