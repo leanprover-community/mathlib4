@@ -189,7 +189,7 @@ If `Fintype.card V ≥ 3` and there exists an edge of `G` which is a bridge,
 then `G` does not admit a Hamiltonian cycle, i.e. `¬ G.IsHamiltonian`.
 -/
 theorem IsNotHamiltonian_if_IsBridge
-    (G : SimpleGraph V) [DecidableRel G.Adj]
+    (G : SimpleGraph V)
     (h_order : Fintype.card V ≥ 3)
     (h_bridge : ∃ e : Sym2 V, G.IsBridge e) :
     ¬G.IsHamiltonian := by
