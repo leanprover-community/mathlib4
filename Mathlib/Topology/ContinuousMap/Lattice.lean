@@ -29,7 +29,7 @@ variable {β : Type*} [TopologicalSpace β]
 
 section Lattice
 
-/-! `C(α, β)`is a lattice ordered group -/
+/-! `C(α, β)` is a lattice ordered group. -/
 
 @[to_additive]
 instance [PartialOrder β] [CommMonoid β] [IsOrderedMonoid β] [ContinuousMul β] :
