@@ -87,15 +87,15 @@ theorem eLpNorm_lim_le_liminf_eLpNorm {f : ℕ → α → E}
 everywhere is bounded by some constant `C`, then the `eLpNorm` of its limit is also bounded by
 `C`. -/
 theorem eLpNorm_le_of_tendsto_ae {f : ℕ → α → E} {g : α → E} {C : ℝ≥0∞}
-    (bound : ∀ n, eLpNorm (f n) p μ ≤ C) (hf : ∀ n, AEStronglyMeasurable (f n) μ)
+    (bound : ∀ᶠ n in atTop, eLpNorm (f n) p μ ≤ C) (hf : ∀ n, AEStronglyMeasurable (f n) μ)
     (h_tendsto : ∀ᵐ (x : α) ∂μ, Tendsto (fun n => f n x) atTop (nhds (g x))) :
     eLpNorm g p μ ≤ C := calc
   _ ≤ atTop.liminf (fun (n : ℕ) => eLpNorm (f n) p μ) :=
     Lp.eLpNorm_lim_le_liminf_eLpNorm (fun n => hf n) g h_tendsto
   _ ≤ C := by
     refine liminf_le_of_le (by isBoundedDefault) (fun b hb => ?_)
-    obtain ⟨n, hn⟩ := hb.exists
-    exact hn.trans (bound n)
+    obtain ⟨n, hn⟩ := (hb.and bound).exists
+    exact hn.1.trans hn.2
 
 /-! ### `Lp` is complete iff Cauchy sequences of `ℒp` have limits in `ℒp` -/
 
