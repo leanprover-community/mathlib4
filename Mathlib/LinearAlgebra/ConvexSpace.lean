@@ -7,8 +7,6 @@ universe u v
 
 noncomputable section
 
-open Classical
-
 structure FiniteProbability (R : Type u) [LE R] [AddCommMonoid R] [One R] (ι : Type v)
     extends weights : ι →₀ R where
   nonneg : ∀ m, 0 ≤ weights m
