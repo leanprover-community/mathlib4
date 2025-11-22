@@ -108,7 +108,7 @@ instance : IsOrderedAddMonoid (ArchimedeanClass R) where
     induction y with | mk y
     induction z with | mk z
     rw [← mk_mul, ← mk_mul]
-    exact mk_mul_le_of_le le_rfl h
+    exact mk_mul_le_of_le h le_rfl
 
 noncomputable instance : LinearOrderedAddCommMonoidWithTop (ArchimedeanClass R) where
   top_add' x := by induction x with | mk x => rw [← mk_zero, ← mk_mul, zero_mul]

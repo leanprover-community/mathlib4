@@ -348,7 +348,7 @@ instance instIsOrderedAddMonoid : IsOrderedAddMonoid ℝ where
       induction c using Real.ind_mk with | _ c =>
       simp only [mk_lt, ← mk_add] at *
       change Pos _ at *
-      rwa [add_sub_add_left_eq_sub]
+      rwa [add_sub_add_right_eq_sub]
 
 @[deprecated (since := "2025-09-15")]
 protected alias add_lt_add_iff_left := _root_.add_lt_add_iff_left

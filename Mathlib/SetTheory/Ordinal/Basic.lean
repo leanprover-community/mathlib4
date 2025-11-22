@@ -808,10 +808,10 @@ instance instAddRightMono : AddRightMono Ordinal.{u} where
     simp [f.map_rel_iff]
 
 theorem le_add_right (a b : Ordinal) : a ≤ a + b := by
-  simpa only [add_zero] using add_le_add_left (Ordinal.zero_le b) a
+  simpa only [add_zero] using add_le_add_right (Ordinal.zero_le b) a
 
 theorem le_add_left (a b : Ordinal) : a ≤ b + a := by
-  simpa only [zero_add] using add_le_add_right (Ordinal.zero_le b) a
+  simpa only [zero_add] using add_le_add_left (Ordinal.zero_le b) a
 
 theorem max_zero_left : ∀ a : Ordinal, max 0 a = a :=
   max_bot_left

@@ -33,4 +33,4 @@ theorem Pi.exists_forall_pos_add_lt [ExistsAddOfLE α] [Finite ι] {x y : ι →
   obtain rfl : x + ε = y := funext hxε
   have hε : 0 < Finset.univ.inf' Finset.univ_nonempty ε := (Finset.lt_inf'_iff _).2 fun i _ => hε _
   obtain ⟨δ, hδ, hδε⟩ := exists_between hε
-  exact ⟨δ, hδ, fun i ↦ add_lt_add_left (hδε.trans_le <| Finset.inf'_le _ <| Finset.mem_univ _) _⟩
+  exact ⟨δ, hδ, fun i ↦ add_lt_add_right (hδε.trans_le <| Finset.inf'_le _ <| Finset.mem_univ _) _⟩

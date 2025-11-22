@@ -205,7 +205,7 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
     have : 2 * size l ≤ size ml + size mr + 1 := by
       have := Nat.mul_le_mul_left ratio lr₁
       rw [mul_left_comm, mul_add] at this
-      have := le_trans this (add_le_add_left mr₁ _)
+      have := le_trans this (add_le_add_right mr₁ _)
       rw [← Nat.succ_mul] at this
       exact (mul_le_mul_iff_right₀ (by decide)).1 this
     refine ⟨Or.inr ⟨?_, ?_⟩, Or.inr ⟨?_, ?_⟩, Or.inr ⟨?_, ?_⟩⟩
