@@ -8,6 +8,8 @@ module
 public import Mathlib.Data.Set.Image
 public import Mathlib.Data.SProd
 public import Mathlib.Data.Sum.Basic
+public import Mathlib.Logic.Equiv.Basic
+public import Mathlib.Order.BooleanAlgebra.Set
 
 /-!
 # Sets in product and pi types

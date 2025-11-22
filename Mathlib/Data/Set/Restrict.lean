@@ -18,6 +18,8 @@ public import Mathlib.Data.Set.Image
 
 @[expose] public section
 
+assert_not_exists HeytingAlgebra
+
 variable {α β γ δ : Type*} {ι : Sort*} {π : α → Type*}
 
 open Equiv Equiv.Perm Function

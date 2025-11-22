@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Notation.Pi.Basic
 public import Mathlib.Algebra.Notation.Prod
-public import Mathlib.Data.Set.Image
+public import Mathlib.Order.BooleanAlgebra.Set
 
 /-!
 # Support of a function
