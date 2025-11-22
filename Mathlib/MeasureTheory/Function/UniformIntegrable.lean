@@ -907,4 +907,30 @@ theorem uniformIntegrable_average_real (hp : 1 ≤ p) {f : ℕ → α → ℝ} (
 
 end UniformIntegrable
 
+section TendstoInMeasure
+
+/-- If a uniformly `p`-integrable collection of functions converges in measure, then its limit is
+a member of `Lp`. -/
+lemma UniformIntegrable.memLp_of_tendstoInMeasure
+    {α β : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup β]
+    {fn : ℕ → α → β} {f : α → β} (p : ℝ≥0∞) (hUI : UniformIntegrable fn p μ)
+    (htends : TendstoInMeasure μ fn atTop f) :
+    MemLp f p μ := by
+  refine ⟨htends.aestronglyMeasurable hUI.1, ?_⟩
+  obtain ⟨C, hC⟩ := hUI.2.2
+  exact lt_of_le_of_lt (tendstoInMeasure_bounded p (fun i => hC i) htends (fun i => hUI.1 i))
+    ENNReal.coe_lt_top
+
+/-- If a uniformly integrable collection of functions converges in measure, then its limit is
+integrable. -/
+lemma UniformIntegrable.integrable_of_tendstoInMeasure
+    {α β : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup β]
+    {fn : ℕ → α → β} {f : α → β} (hUI : UniformIntegrable fn 1 μ)
+    (htends : TendstoInMeasure μ fn atTop f) :
+    Integrable f μ := by
+  rw [← memLp_one_iff_integrable]
+  exact hUI.memLp_of_tendstoInMeasure 1 htends
+
+end TendstoInMeasure
+
 end MeasureTheory
