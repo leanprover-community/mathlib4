@@ -886,10 +886,10 @@ lemma not_nil_of_ne {p : G.Walk v w} : v ≠ w → ¬ p.Nil := mt Nil.eq
 lemma nil_iff_support_eq {p : G.Walk v w} : p.Nil ↔ p.support = [v] := by
   cases p <;> simp
 
-lemma isEmpty_darts_iff_nil {p : G.Walk v w} : p.darts.isEmpty ↔ p.Nil := by
+lemma darts_eq_nil_iff_nil {p : G.Walk v w} : p.darts = [] ↔ p.Nil := by
   cases p <;> simp
 
-lemma isEmpty_edges_iff_nil {p : G.Walk v w} : p.edges.isEmpty ↔ p.Nil := by
+lemma edges_eq_nil_iff_nil {p : G.Walk v w} : p.edges = [] ↔ p.Nil := by
   cases p <;> simp
 
 lemma nil_iff_length_eq {p : G.Walk v w} : p.Nil ↔ p.length = 0 := by
