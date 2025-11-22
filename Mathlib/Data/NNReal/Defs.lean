@@ -995,4 +995,16 @@ meta def evalNNRealtoReal : PositivityExt where eval {u α} _zα _pα e := do
     | _ => pure (.nonnegative q(NNReal.coe_nonneg $a))
   | _, _, _ => throwError "not NNReal.toReal"
 
+/-- Extension for the `positivity` tactic: `Real.toNNReal. -/
+@[positivity Real.toNNReal _]
+meta def evalRealToNNReal : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(Real.toNNReal $a) =>
+    let ra ← core q(inferInstance) q(inferInstance) a
+    assertInstancesCommute
+    match ra with
+    | .positive pa => pure (.positive q(toNNReal_pos.mpr $pa))
+    | _ => failure
+  | _, _, _ => throwError "not NNReal.toReal"
+
 end Mathlib.Meta.Positivity
