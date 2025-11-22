@@ -152,7 +152,7 @@ theorem isLimit_iff_isSheafFor :
 
 /-- Given sieve `S` and presheaf `P : Cᵒᵖ ⥤ A`, their natural associated cone admits at most one
     morphism from every cone in the same category (i.e. over the same diagram),
-    iff `Hom (E, P -)`is separated for the sieve `S` and all `E : A`. -/
+    iff `Hom (E, P -)` is separated for the sieve `S` and all `E : A`. -/
 theorem subsingleton_iff_isSeparatedFor :
     (∀ c, Subsingleton (c ⟶ P.mapCone S.arrows.cocone.op)) ↔
       ∀ E : Aᵒᵖ, IsSeparatedFor (P ⋙ coyoneda.obj E) S.arrows := by
