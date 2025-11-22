@@ -1187,7 +1187,7 @@ protected theorem le : a ≤ b :=
   trivial
 
 theorem not_lt : ¬a < b :=
- not_false
+  not_false
 
 instance : DenselyOrdered PUnit :=
   ⟨fun _ _ ↦ False.elim⟩
