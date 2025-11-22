@@ -19,8 +19,6 @@ In this file, we define the cardinalities of ZFC sets as `ZFSet.{u} → Cardinal
 -/
 
 @[expose] public section
-
-
 universe u v
 
 open Cardinal
@@ -35,11 +33,6 @@ variable {x y : ZFSet.{u}}
 /-- `ZFSet.card x` is equal to the cardinality of `x` as a set of `ZFSet`s. -/
 theorem cardinalMk_coe_sort : #x = lift.{u + 1, u} (card x) := by
   rw [card, lift_mk_shrink'']
-
--- /-- `ZFSet.card x` is equal to the cardinality of `x` as a set of `ZFSet`s. -/
--- theorem cardinalMk_coe : #(x : Set ZFSet) = lift.{u + 1, u} (card x) := by
---   rw [card, lift_mk_shrink'']
---   simp only [SetLike.coe_sort_coe]
 
 @[gcongr]
 theorem card_mono (h : x ⊆ y) : card x ≤ card y := by
