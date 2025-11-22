@@ -110,7 +110,7 @@ section DirectSum
 
 open TensorProduct LinearMap DirectSum
 
-variable {ι : Type*} [DecidableEq ι]
+variable {ι : Type*}
     {N : ι → Type*} [(i : ι) → AddCommMonoid (N i)] [(i : ι) → Module R (N i)]
     {P : ι → Type*} [∀ i, AddCommMonoid (P i)] [∀ i, Module R (P i)]
     [∀ i, Module S (P i)] [∀ i, IsScalarTower R S (P i)]
@@ -119,6 +119,7 @@ variable {ι : Type*} [DecidableEq ι]
 /-- Base change for direct sums. -/
 theorem directSum (ibc : ∀ i, IsBaseChange S (ε i)) :
     IsBaseChange S (lmap ε) := by
+  classical
   apply of_equiv <| directSumRight' R S S N ≪≫ₗ congr_linearEquiv fun i ↦ (ibc i).equiv
   intros; ext
   simp [coe_directSumRight', coe_congr_linearEquiv, equiv_tmul]
@@ -135,6 +136,7 @@ theorem directSumPow (ibc : IsBaseChange S ε) :
 
 theorem finsuppPow (ibc : IsBaseChange S ε) :
     IsBaseChange S (Finsupp.mapRange.linearMap (α := ι) ε) := by
+  classical
   apply of_equiv <|
     LinearEquiv.baseChange R S _ _ (finsuppLEquivDirectSum ..) ≪≫ₗ
       (directSum (fun _ ↦ ibc)).equiv ≪≫ₗ (finsuppLEquivDirectSum ..).symm
