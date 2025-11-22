@@ -282,12 +282,8 @@ A filter is free iff it is smaller than the cofinite filter.
 -/
 theorem le_cofinite_iff_ker (f : Filter α) : f ≤ cofinite ↔ f.ker = ∅ := by
   rw [le_cofinite_iff_compl_singleton_mem, ker_def, iInter₂_eq_empty_iff]
-  conv =>
-    enter [2, x]
-    equals {x}ᶜ ∈ f =>
-      exact Eq.propIntro (exists_imp.2 fun s => exists_imp.2
-          fun hs hx => f.mem_of_superset hs (by simpa using hx))
-        fun h => ⟨{x}ᶜ, h, by simp⟩
+  refine forall_congr' fun x => ⟨fun h => ⟨{x}ᶜ, h, by simp⟩,
+    fun ⟨s, hs, hx⟩ => f.mem_of_superset hs (by simpa using hx)⟩
 
 /--
 Every filter is the disjoint supremum of a principal filter and a free filter in a unique way.
