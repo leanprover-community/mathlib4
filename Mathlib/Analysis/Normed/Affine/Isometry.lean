@@ -3,13 +3,15 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.Analysis.Normed.Module.Basic
-import Mathlib.Analysis.Normed.Operator.LinearIsometry
-import Mathlib.LinearAlgebra.AffineSpace.Restrict
-import Mathlib.Topology.Algebra.AffineSubspace
-import Mathlib.Topology.Algebra.ContinuousAffineEquiv
+module
+
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.Analysis.Normed.Group.AddTorsor
+public import Mathlib.Analysis.Normed.Module.Basic
+public import Mathlib.Analysis.Normed.Operator.LinearIsometry
+public import Mathlib.LinearAlgebra.AffineSpace.Restrict
+public import Mathlib.Topology.Algebra.AffineSubspace
+public import Mathlib.Topology.Algebra.ContinuousAffineEquiv
 
 /-!
 # Affine isometries
@@ -33,6 +35,8 @@ match the superscript "a" (note that in mathlib `→ᵃ` is an affine map, since
 algebra-homomorphisms.)
 
 -/
+
+@[expose] public section
 
 
 open Function Set

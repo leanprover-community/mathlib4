@@ -3,8 +3,10 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Sites.Whiskering
-import Mathlib.CategoryTheory.Sites.Plus
+module
+
+public import Mathlib.CategoryTheory.Sites.Whiskering
+public import Mathlib.CategoryTheory.Sites.Plus
 
 /-!
 
@@ -15,6 +17,8 @@ See `CategoryTheory/Sites/CompatibleSheafification` for the compatibility
 of sheafification, which follows easily from the content in this file.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
