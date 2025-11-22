@@ -466,6 +466,16 @@ theorem HasFiniteIntegral.smul_enorm [NormedAddGroup 𝕜] [SMul 𝕜 ε''] [ENo
       rw [lintegral_const_mul']
       exacts [mul_lt_top coe_lt_top hf, coe_ne_top]
 
+theorem HasFiniteIntegral.smul_enorm [NormedAddGroup 𝕜] [SMul 𝕜 ε''] [ENormSMulClass 𝕜 ε'']
+    (c : 𝕜) {f : α → ε''} :
+    HasFiniteIntegral f μ → HasFiniteIntegral (c • f) μ := by
+  simp only [HasFiniteIntegral]; intro hfi
+  calc
+    ∫⁻ a : α, ‖c • f a‖ₑ ∂μ = ∫⁻ a : α, ‖c‖ₑ * ‖f a‖ₑ ∂μ := lintegral_congr fun i ↦ enorm_smul _ _
+    _ < ∞ := by
+      rw [lintegral_const_mul']
+      exacts [mul_lt_top coe_lt_top hfi, coe_ne_top]
+
 theorem hasFiniteIntegral_smul_iff [NormedRing 𝕜] [MulActionWithZero 𝕜 β] [IsBoundedSMul 𝕜 β]
     {c : 𝕜} (hc : IsUnit c) (f : α → β) :
     HasFiniteIntegral (c • f) μ ↔ HasFiniteIntegral f μ := by
