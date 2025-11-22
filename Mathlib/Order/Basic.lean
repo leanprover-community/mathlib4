@@ -1186,7 +1186,8 @@ theorem min_eq : min a b = unit :=
 protected theorem le : a ≤ b :=
   trivial
 
-theorem not_lt : ¬a < b := not_false
+theorem not_lt : ¬a < b :=
+ not_false
 
 instance : DenselyOrdered PUnit :=
   ⟨fun _ _ ↦ False.elim⟩

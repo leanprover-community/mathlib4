@@ -864,7 +864,7 @@ instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra PUnit w
   sSup_le _ _ _ := trivial
   sInf_le _ _ _ := trivial
   le_sInf _ _ _ := trivial
-  iInf_iSup_eq _ := trivial
+  iInf_iSup_eq _ := rfl
 
 instance instCompleteBooleanAlgebra : CompleteBooleanAlgebra PUnit := inferInstance
 
