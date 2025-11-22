@@ -12,7 +12,7 @@ public import Mathlib.Analysis.Normed.Module.TransferInstance
 public import Mathlib.Topology.Algebra.Module.TransferInstance
 public import Mathlib.Analysis.Normed.Module.Basic
 
-/-
+/-!
 # Transfer algebraic structures from `α` to `Shrink α`
 
 -/
