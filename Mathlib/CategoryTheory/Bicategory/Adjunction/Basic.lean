@@ -81,6 +81,7 @@ theorem rightZigzag_idempotent_of_left_triangle
       rw [h]; bicategory
 
 /-- Adjunction between two 1-morphisms. -/
+@[ext]
 structure Adjunction (f : a ⟶ b) (g : b ⟶ a) where
   /-- The unit of an adjunction. -/
   unit : 𝟙 a ⟶ f ≫ g

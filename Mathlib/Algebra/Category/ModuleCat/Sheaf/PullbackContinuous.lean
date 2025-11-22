@@ -137,6 +137,13 @@ category of sheaves of modules. -/
 noncomputable def pullbackId : pullback.{v} (F := 𝟭 C) (𝟙 S) ≅ 𝟭 _ :=
   ((pullbackPushforwardAdjunction.{v} (F := 𝟭 C) (𝟙 S))).leftAdjointIdIso (pushforwardId S)
 
+variable (S) in
+@[simp]
+lemma conjugateEquiv_pullbackId_hom :
+    conjugateEquiv .id (pullbackPushforwardAdjunction.{v} _) (pullbackId S).hom =
+      (pushforwardId S).inv :=
+  Adjunction.conjugateEquiv_leftAdjointIdIso_hom _ _
+
 variable [(pushforward.{v} φ).IsRightAdjoint]
 
 section
@@ -163,6 +170,14 @@ noncomputable def pullbackComp :
     (pullbackPushforwardAdjunction.{v} (F := F ⋙ G)
       (φ ≫ (F.sheafPushforwardContinuous RingCat.{u} J K).map ψ))
     (pushforwardComp φ ψ)
+
+@[simp]
+lemma conjugateEquiv_pullbackComp_inv :
+    conjugateEquiv ((pullbackPushforwardAdjunction.{v} φ).comp
+      (pullbackPushforwardAdjunction.{v} ψ))
+    (pullbackPushforwardAdjunction.{v} _) (pullbackComp.{v} φ ψ).inv =
+    (pushforwardComp.{v} φ ψ).hom :=
+  Adjunction.conjugateEquiv_leftAdjointCompIso_inv _ _ _ _
 
 variable {G' : D' ⥤ D''} {R'' : Sheaf K'' RingCat.{u}}
   [Functor.IsContinuous.{u} G' K' K''] [Functor.IsContinuous.{v} G' K' K'']
