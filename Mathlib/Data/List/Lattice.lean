@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro,
 Kim Morrison
 -/
-import Mathlib.Data.List.Basic
+module
+
+public import Mathlib.Data.List.Basic
 
 /-!
 # Lattice structure of lists
@@ -23,6 +25,8 @@ counted with multiplicity and in the order they appear in `l₁`.
 As opposed to `List.inter`, `List.bagInter` copes well with multiplicity. For example,
 `bagInter [0, 1, 2, 3, 2, 1, 0] [1, 0, 1, 4, 3] = [0, 1, 3, 1]`.
 -/
+
+@[expose] public section
 
 
 open Nat

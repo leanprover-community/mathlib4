@@ -3,8 +3,10 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Batteries.Data.List.Perm
-import Mathlib.Tactic.Common
+module
+
+public import Batteries.Data.List.Perm
+public import Mathlib.Tactic.Common
 
 /-!
 # Counting in lists
@@ -12,6 +14,8 @@ import Mathlib.Tactic.Common
 This file proves basic properties of `List.countP` and `List.count`, which count the number of
 elements of a list satisfying a predicate and equal to a given element respectively.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid Set.range
 
