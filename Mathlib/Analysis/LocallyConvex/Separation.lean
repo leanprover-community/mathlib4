@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Convex.Gauge
 public import Mathlib.Analysis.RCLike.Extend
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.LocallyConvex
+public import Mathlib.Analysis.RCLike.Lemmas
 
 /-!
 # Separation Hahn-Banach theorem
@@ -37,7 +38,6 @@ We provide many variations to stricten the result under more assumptions on the 
 
 @[expose] public section
 
-assert_not_exists ContinuousLinearMap.hasOpNorm
 
 open Set
 
