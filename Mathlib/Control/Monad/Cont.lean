@@ -31,6 +31,17 @@ structure MonadCont.Label (α : Type w) (m : Type u → Type v) (β : Type u) wh
 def MonadCont.goto {α β} {m : Type u → Type v} (f : MonadCont.Label α m β) (x : α) :=
   f.apply x
 
+/--
+The class of continuation monads/type transformers.
+
+These are monads that support continuation-passing style programming
+by providing a way to call-with-current-continuation (callCC).
+That is, for any types α, β (in a particular universe)
+This provides a function of type
+`((α → m β) → m α) → m α`
+
+TODO now explain what this means
+-/
 class MonadCont (m : Type u → Type v) where
   callCC : ∀ {α β}, (MonadCont.Label α m β → m α) → m α
 
@@ -46,6 +57,15 @@ class LawfulMonadCont (m : Type u → Type v) [Monad m] [MonadCont m] : Prop
 
 export LawfulMonadCont (callCC_bind_right callCC_bind_left callCC_dummy)
 
+/--
+The continuation transformer.
+
+Given a return type `r`, a type transformer (typically a monad) `m`, and a type `α`,
+it represents computations that take a continuation function from `α` to `m r` and return an `m r`.
+
+This allows for continuation-passing style programming, where control flow can be manipulated by
+capturing and invoking continuations.
+-/
 def ContT (r : Type u) (m : Type u → Type v) (α : Type w) :=
   (α → m r) → m r
 
@@ -58,15 +78,21 @@ export MonadCont (Label goto)
 
 variable {r : Type u} {m : Type u → Type v} {α β : Type w}
 
+/-- Run a continuation computation by providing a continuation function. -/
 def run : ContT r m α → (α → m r) → m r :=
   id
 
+/-- Map a function over the final result of a continuation computation.
+This composes the given function with the continuation computation. -/
 def map (f : m r → m r) (x : ContT r m α) : ContT r m α :=
   f ∘ x
 
 theorem run_contT_map_contT (f : m r → m r) (x : ContT r m α) : run (map f x) = f ∘ run x :=
   rfl
 
+/-- Transform the continuation of a computation.
+Takes a function that transforms continuations and a computation, and returns a new computation
+with the transformed continuation. -/
 def withContT (f : (β → m r) → α → m r) (x : ContT r m α) : ContT r m β := fun g => x <| f g
 
 theorem run_withContT (f : (β → m r) → α → m r) (x : ContT r m α) :
@@ -271,3 +297,160 @@ def ContT.equiv {m₁ : Type u₀ → Type v₀} {m₂ : Type u₁ → Type v₁
   invFun f r := F.symm <| f fun x => F <| r <| G.symm x
   left_inv f := by funext r; simp
   right_inv f := by funext r; simp
+
+section Examples
+
+/-!
+## Examples
+
+Ths section adapts the example(s) from the end of the Haskell documentation for `MonadCont`:
+<https://hackage.haskell.org/package/mtl-2.2.2/docs/Control-Monad-Cont.html#t:MonadCont>
+-/
+
+def runCont {r α} (x : Cont r α) (f : α → r) : r :=
+  ContT.run (m := id) x f
+
+/-!
+### Example 1: Simple Continuation Usage
+
+Calculating length of a list continuation-style:
+
+```haskell
+calculateLength :: [a] -> Cont r Int
+calculateLength l = return (length l)
+Here we use calculateLength by making it to pass its result to print:
+
+main = do
+  runCont (calculateLength "123") print
+  -- result: 3
+```
+
+It is possible to chain Cont blocks with >>=.
+
+```
+double :: Int -> Cont r Int
+double n = return (n * 2)
+
+main = do
+  runCont (calculateLength "123" >>= double) print
+  -- result: 6
+```
+-/
+
+def calculateLength {r α} (l : List α) : Cont r Int :=
+  pure l.length
+
+def example1a_main : IO Unit := do
+  runCont (calculateLength ["1", "2", "3"]) IO.print
+
+#eval example1a_main -- "3"
+
+def double {r} (n : Int) : Cont r Int :=
+  pure (n * 2)
+
+def example1b_main : IO Unit := do
+  runCont (calculateLength ["1", "2", "3"] >>= double) IO.print
+
+#eval example1b_main -- "6"
+
+/-!
+### Example 2: Using `callCC`
+
+This example gives a taste of how escape continuations work,
+shows a typical pattern for their usage.
+
+```haskell
+-- Returns a string depending on the length of the name parameter.
+-- If the provided string is empty, returns an error.
+-- Otherwise, returns a welcome message.
+whatsYourName :: String -> String
+whatsYourName name =
+  (`runCont` id) $ do                      -- 1
+    response <- callCC $ \exit -> do       -- 2
+      validateName name exit               -- 3
+      return $ "Welcome, " ++ name ++ "!"  -- 4
+    return response                        -- 5
+
+validateName name exit = do
+  when (null name) (exit "You forgot to tell me your name!")
+```
+
+Here is what this example does:
+
+1. Runs an anonymous Cont block and extracts value from it with (`runCont` id).
+   Here id is the continuation, passed to the Cont block.
+2. Binds response to the result of the following callCC block, binds exit to the continuation.
+3. Validates name. This approach illustrates advantage of using callCC over return.
+   We pass the continuation to validateName,
+  and interrupt execution of the Cont block from inside of validateName.
+4. Returns the welcome message from the callCC block.
+   This line is not executed if validateName fails.
+5. Returns from the Cont block.
+
+-/
+
+def validateName (name : String) (exit : MonadCont.Label String (Cont String) Unit) :
+    Cont String Unit :=
+  if name.isEmpty then
+    exit.apply "You forgot to tell me your name!"
+  else
+    pure ()
+
+def whatsYourName (name : String) : String :=
+  (runCont · id) (do
+    let mut response ← callCC (fun exit => do
+      validateName name exit
+      pure <| "Welcome, " ++ name ++ "!")
+    pure response)
+
+#eval whatsYourName "Alice" -- "Welcome, Alice!"
+#eval whatsYourName "" -- "You forgot to tell me your name!"
+
+/-!
+### Example 3: Using `ContT` Monad Transformer
+
+`ContT` can be used to add continuation handling to other monads.
+Here is an example how to combine it with IO monad:
+
+```haskell
+import Control.Monad.Cont
+import System.IO
+
+main = do
+  hSetBuffering stdout NoBuffering
+  runContT (callCC askString) reportResult
+
+askString :: (String -> ContT () IO String) -> ContT () IO String
+askString next = do
+  liftIO $ putStrLn "Please enter a string"
+  s <- liftIO $ getLine
+  next s
+
+reportResult :: String -> IO ()
+reportResult s = do
+  putStrLn ("You entered: " ++ s)
+```
+
+Action `askString` requests user to enter a string, and passes it to the continuation.
+`askString` takes as a parameter a continuation taking a string parameter, and returning `IO ()`.
+Compare its signature to `runContT` definition.
+
+-/
+
+-- Placeholder for IO operations
+def IO.getLine : IO String := return "example input"
+
+def askString (next : Label String (ContT Unit IO) String) : ContT Unit IO String := do
+  IO.println "Please enter a string"
+  let s ← IO.getLine
+  next.apply s
+
+def reportResult (s : String) : IO Unit := do
+  IO.println s!"You entered: {s}"
+
+def example3_main : IO Unit := do
+  ContT.run (callCC askString) reportResult
+
+#eval example3_main -- "You entered: example input"
+
+end Examples
