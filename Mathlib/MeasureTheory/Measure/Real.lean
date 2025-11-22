@@ -436,6 +436,14 @@ theorem nonempty_inter_of_measureReal_lt_add'
   rw [inter_comm]
   exact nonempty_inter_of_measureReal_lt_add hs h't h's h hu
 
+variable [IsProbabilityMeasure μ]
+
+lemma probReal_compl_eq_one_sub₀ (h : NullMeasurableSet s μ) : μ.real sᶜ = 1 - μ.real s := by
+  rw [measureReal_compl₀ h, probReal_univ]
+
+lemma probReal_compl_eq_one_sub (hs : MeasurableSet s) : μ.real sᶜ = 1 - μ.real s :=
+  probReal_compl_eq_one_sub₀ hs.nullMeasurableSet
+
 end MeasureTheory
 
 namespace Mathlib.Meta.Positivity
