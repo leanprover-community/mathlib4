@@ -26,18 +26,14 @@ namespace Nat
 /-! ### Instances -/
 
 instance instIsStrictOrderedRing : IsStrictOrderedRing ℕ where
-  add_le_add_left := @Nat.add_le_add_left
-  le_of_add_le_add_left := @Nat.le_of_add_le_add_left
-  zero_le_one := Nat.le_of_lt (Nat.zero_lt_succ 0)
   mul_lt_mul_of_pos_left _a ha _b _c hbc := Nat.mul_lt_mul_of_pos_left hbc ha
   mul_lt_mul_of_pos_right _a ha _b _c hbc := Nat.mul_lt_mul_of_pos_right hbc ha
-  exists_pair_ne := ⟨0, 1, ne_of_lt Nat.zero_lt_one⟩
 
 instance instLinearOrderedCommMonoidWithZero : LinearOrderedCommMonoidWithZero ℕ where
   bot := 0
   bot_le := zero_le
   zero_le_one := zero_le_one
-  mul_le_mul_left _ _ h c := Nat.mul_le_mul_left c h
+  mul_le_mul_left _ _ h c := Nat.mul_le_mul_right c h
 
 /-! ### Miscellaneous lemmas -/
 

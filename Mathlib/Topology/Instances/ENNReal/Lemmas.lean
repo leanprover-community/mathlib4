@@ -286,8 +286,7 @@ theorem tendsto_atTop_zero_iff_lt_of_antitone {β : Type*} [Nonempty β] [Semila
       refine (min_le_right _ _).trans_lt ?_
       rw [ENNReal.div_lt_iff (Or.inr hε.ne') (Or.inr hε_top)]
       conv_lhs => rw [← mul_one ε]
-      rw [ENNReal.mul_lt_mul_left hε.ne' hε_top]
-      simp
+      gcongr <;> simp [*]
   · obtain ⟨n, hn⟩ := h ε hε
     exact ⟨n, hn.le⟩
 

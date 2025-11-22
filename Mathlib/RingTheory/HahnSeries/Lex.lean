@@ -124,10 +124,8 @@ instance : IsOrderedAddMonoid (Lex (HahnSeries Γ R)) where
     · apply le_of_lt
       rw [lt_iff] at hlt ⊢
       obtain ⟨i, hj, hi⟩ := hlt
-      refine ⟨i, ?_, ?_⟩
-      · intro j hji
-        simpa using congrArg ((ofLex c).coeff j + ·) (hj j hji)
-      · simpa using add_lt_add_left hi ((ofLex c).coeff i)
+      refine ⟨i, fun j hji ↦ ?_, by simp; gcongr⟩
+      simpa using congr($(hj j hji) + (ofLex c).coeff j)
 
 end OrderedMonoid
 

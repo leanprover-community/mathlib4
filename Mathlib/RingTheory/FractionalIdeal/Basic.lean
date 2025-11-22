@@ -630,13 +630,13 @@ variable {S P}
 
 section Order
 
-@[deprecated _root_.add_le_add_left (since := "2025-09-14")]
+@[deprecated _root_.add_le_add_right (since := "2025-09-14")]
 theorem add_le_add_left {I J : FractionalIdeal S P} (hIJ : I ≤ J) (J' : FractionalIdeal S P) :
-    J' + I ≤ J' + J := _root_.add_le_add_left hIJ _
+    J' + I ≤ J' + J := _root_.add_le_add_right hIJ _
 
-@[deprecated mul_le_mul_left' (since := "2025-09-14")]
+@[deprecated mul_le_mul_right (since := "2025-09-14")]
 theorem mul_le_mul_left {I J : FractionalIdeal S P} (hIJ : I ≤ J) (J' : FractionalIdeal S P) :
-    J' * I ≤ J' * J := mul_le_mul_left' hIJ _
+    J' * I ≤ J' * J := mul_le_mul_right hIJ _
 
 @[deprecated le_mul_of_one_le_left' (since := "2025-09-14")]
 theorem le_self_mul_self {I : FractionalIdeal S P} (hI : 1 ≤ I) : I ≤ I * I :=

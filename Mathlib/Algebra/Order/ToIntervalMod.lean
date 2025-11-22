@@ -770,9 +770,8 @@ private theorem toIxxMod_total' (a b c : α) :
   replace := min_le_of_add_le_two_nsmul this.le
   rw [min_le_iff] at this
   rw [toIxxMod_iff, toIxxMod_iff]
-  refine this.imp (le_trans <| add_le_add_left ?_ _) (le_trans <| add_le_add_left ?_ _)
-  · apply toIcoMod_le_toIocMod
-  · apply toIcoMod_le_toIocMod
+  grw [← toIcoMod_le_toIocMod, ← toIcoMod_le_toIocMod] at this
+  exact this
 
 private theorem toIxxMod_total (a b c : α) :
     toIcoMod hp a b ≤ toIocMod hp a c ∨ toIcoMod hp c b ≤ toIocMod hp c a :=

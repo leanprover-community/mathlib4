@@ -106,7 +106,7 @@ instance instPartialOrder : PartialOrder (Kernel α β) := .lift _ DFunLike.coe_
 
 instance {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
     AddLeftMono (Kernel α β) :=
-  ⟨fun _ _ _ hμ a ↦ add_le_add_left (hμ a) _⟩
+  ⟨fun _ _ _ hμ a ↦ add_le_add_right (hμ a) _⟩
 
 noncomputable
 instance instOrderBot {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
