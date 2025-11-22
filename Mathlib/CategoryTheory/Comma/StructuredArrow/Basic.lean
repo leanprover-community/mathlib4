@@ -1046,6 +1046,7 @@ def CostructuredArrow.prodEquivalence :
   inverse := CostructuredArrow.prodInverse S S' T T'
   unitIso := NatIso.ofComponents (fun f => Iso.refl _) (by simp)
   counitIso := NatIso.ofComponents (fun f => Iso.refl _) (by intros; ext; all_goals simp)
+
 end
 
 end Prod
