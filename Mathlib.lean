@@ -1142,6 +1142,7 @@ public import Mathlib.Algebra.Ring.GrindInstances
 public import Mathlib.Algebra.Ring.Hom.Basic
 public import Mathlib.Algebra.Ring.Hom.Defs
 public import Mathlib.Algebra.Ring.Hom.InjSurj
+public import Mathlib.Algebra.Ring.HuntingtonAlgebra
 public import Mathlib.Algebra.Ring.Idempotent
 public import Mathlib.Algebra.Ring.Identities
 public import Mathlib.Algebra.Ring.InjSurj
