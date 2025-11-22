@@ -4603,6 +4603,7 @@ public import Mathlib.LinearAlgebra.RootSystem.RootPositive
 public import Mathlib.LinearAlgebra.RootSystem.WeylGroup
 public import Mathlib.LinearAlgebra.SModEq
 public import Mathlib.LinearAlgebra.SModEq.Basic
+public import Mathlib.LinearAlgebra.SModEq.Pointwise
 public import Mathlib.LinearAlgebra.Semisimple
 public import Mathlib.LinearAlgebra.SesquilinearForm
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
@@ -6007,6 +6008,8 @@ public import Mathlib.RingTheory.OreLocalization.OreSet
 public import Mathlib.RingTheory.OreLocalization.Ring
 public import Mathlib.RingTheory.OrzechProperty
 public import Mathlib.RingTheory.Perfection
+public import Mathlib.RingTheory.Perfectoid.BDeRham
+public import Mathlib.RingTheory.Perfectoid.FontaineTheta
 public import Mathlib.RingTheory.Perfectoid.Untilt
 public import Mathlib.RingTheory.PiTensorProduct
 public import Mathlib.RingTheory.PicardGroup

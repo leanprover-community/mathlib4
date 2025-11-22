@@ -137,6 +137,11 @@ theorem toAddSubgroup_le : p.toAddSubgroup ≤ p'.toAddSubgroup ↔ p ≤ p' :=
 theorem toAddSubgroup_mono : Monotone (toAddSubgroup : Submodule R M → AddSubgroup M) :=
   toAddSubgroup_strictMono.monotone
 
+@[simp]
+theorem toAddSubgroup_toAddSubmonoid (p : Submodule R M) :
+    p.toAddSubgroup.toAddSubmonoid = p.toAddSubmonoid :=
+  rfl
+
 @[gcongr]
 protected alias ⟨_, _root_.GCongr.Submodule.toAddSubgroup_le⟩ := Submodule.toAddSubgroup_le
 
