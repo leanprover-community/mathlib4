@@ -955,54 +955,6 @@ instance prodMonoidal : MonoidalCategory (C₁ × C₂) where
   leftUnitor := fun ⟨X₁, X₂⟩ => (λ_ X₁).prod (λ_ X₂)
   rightUnitor := fun ⟨X₁, X₂⟩ => (ρ_ X₁).prod (ρ_ X₂)
 
-@[simp]
-theorem prodMonoidal_leftUnitor_hom_fst (X : C₁ × C₂) :
-    ((λ_ X).hom : 𝟙_ _ ⊗ X ⟶ X).1 = (λ_ X.1).hom := by
-  cases X
-  rfl
-
-@[simp]
-theorem prodMonoidal_leftUnitor_hom_snd (X : C₁ × C₂) :
-    ((λ_ X).hom : 𝟙_ _ ⊗ X ⟶ X).2 = (λ_ X.2).hom := by
-  cases X
-  rfl
-
-@[simp]
-theorem prodMonoidal_leftUnitor_inv_fst (X : C₁ × C₂) :
-    ((λ_ X).inv : X ⟶ 𝟙_ _ ⊗ X).1 = (λ_ X.1).inv := by
-  cases X
-  rfl
-
-@[simp]
-theorem prodMonoidal_leftUnitor_inv_snd (X : C₁ × C₂) :
-    ((λ_ X).inv : X ⟶ 𝟙_ _ ⊗ X).2 = (λ_ X.2).inv := by
-  cases X
-  rfl
-
-@[simp]
-theorem prodMonoidal_rightUnitor_hom_fst (X : C₁ × C₂) :
-    ((ρ_ X).hom : X ⊗ 𝟙_ _ ⟶ X).1 = (ρ_ X.1).hom := by
-  cases X
-  rfl
-
-@[simp]
-theorem prodMonoidal_rightUnitor_hom_snd (X : C₁ × C₂) :
-    ((ρ_ X).hom : X ⊗ 𝟙_ _ ⟶ X).2 = (ρ_ X.2).hom := by
-  cases X
-  rfl
-
-@[simp]
-theorem prodMonoidal_rightUnitor_inv_fst (X : C₁ × C₂) :
-    ((ρ_ X).inv : X ⟶ X ⊗ 𝟙_ _).1 = (ρ_ X.1).inv := by
-  cases X
-  rfl
-
-@[simp]
-theorem prodMonoidal_rightUnitor_inv_snd (X : C₁ × C₂) :
-    ((ρ_ X).inv : X ⟶ X ⊗ 𝟙_ _).2 = (ρ_ X.2).inv := by
-  cases X
-  rfl
-
 end
 
 end MonoidalCategory
