@@ -3,9 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Module.NatInt
-import Mathlib.GroupTheory.Abelianization.Defs
-import Mathlib.GroupTheory.FreeGroup.Basic
+module
+
+public import Mathlib.Algebra.Module.NatInt
+public import Mathlib.GroupTheory.Abelianization.Defs
+public import Mathlib.GroupTheory.FreeGroup.Basic
 
 /-!
 # Free abelian groups
@@ -62,6 +64,8 @@ functions `map_id`, `map_id_apply`, `map_comp`, `map_comp_apply` and `map_of_app
 are about `FreeAbelianGroup.map`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal Multiset
 

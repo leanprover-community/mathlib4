@@ -3,9 +3,10 @@ Copyright (c) 2025 Pim Otte. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pim Otte
 -/
+module
 
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
-import Mathlib.Data.Set.Card
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
+public import Mathlib.Data.Set.Card
 
 /-!
 # Representation of components by a set of vertices
@@ -15,6 +16,8 @@ import Mathlib.Data.Set.Card
 * `SimpleGraph.ConnectedComponent.Represents` says that a set of vertices represents a set of
   components if it contains exactly one vertex from each component.
 -/
+
+@[expose] public section
 
 universe u
 

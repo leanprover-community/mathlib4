@@ -3,7 +3,9 @@ Copyright (c) 2023 Yaël Dilies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dilies
 -/
-import Mathlib.Analysis.InnerProductSpace.PiL2
+module
+
+public import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
 # L2 inner product of finite sequences
@@ -16,10 +18,12 @@ from `RCLike.innerProductSpace`.
 
 * Build a non-instance `InnerProductSpace` from `wInner`.
 * `cWeight` is a poor name. Can we find better? It doesn't hugely matter for typing, since it's
-  hidden behind the `⟪f, g⟫ₙ_[𝕝] `notation, but it does show up in lemma names
+  hidden behind the `⟪f, g⟫ₙ_[𝕝]` notation, but it does show up in lemma names
   `⟪f, g⟫_[𝕝, cWeight]` is called `wInner_cWeight`. Maybe we should introduce some naming
   convention, similarly to `MeasureTheory.average`?
 -/
+
+@[expose] public section
 
 open Finset Function Real WithLp
 open scoped BigOperators ComplexConjugate ComplexOrder InnerProductSpace

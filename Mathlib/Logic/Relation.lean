@@ -3,12 +3,14 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Relator
-import Mathlib.Tactic.Use
-import Mathlib.Tactic.MkIffOfInductiveProp
-import Mathlib.Tactic.SimpRw
-import Mathlib.Logic.Basic
-import Mathlib.Order.Defs.Unbundled
+module
+
+public import Mathlib.Logic.Relator
+public import Mathlib.Tactic.Use
+public import Mathlib.Tactic.MkIffOfInductiveProp
+public import Mathlib.Tactic.SimpRw
+public import Mathlib.Logic.Basic
+public import Mathlib.Order.Defs.Unbundled
 
 /-!
 # Relation closures
@@ -34,14 +36,16 @@ the bundled version, see `Rel`.
 * `Relation.EqvGen`: Equivalence closure. `EqvGen r` relates everything `ReflTransGen r` relates,
   plus for all related pairs it relates them in the opposite order.
 * `Relation.Comp`:  Relation composition. We provide notation `∘r`. For `r : α → β → Prop` and
-  `s : β → γ → Prop`, `r ∘r s`relates `a : α` and `c : γ` iff there exists `b : β` that's related to
-  both.
+  `s : β → γ → Prop`, `r ∘r s` relates `a : α` and `c : γ` iff there exists `b : β` that's related
+  to both.
 * `Relation.Map`: Image of a relation under a pair of maps. For `r : α → β → Prop`, `f : α → γ`,
   `g : β → δ`, `Map r f g` is the relation `γ → δ → Prop` relating `f a` and `g b` for all `a`, `b`
   related by `r`.
 * `Relation.Join`: Join of a relation. For `r : α → α → Prop`, `Join r a b ↔ ∃ c, r a c ∧ r b c`. In
   terms of rewriting systems, this means that `a` and `b` can be rewritten to the same term.
 -/
+
+@[expose] public section
 
 
 open Function
