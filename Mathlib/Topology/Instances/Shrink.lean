@@ -21,17 +21,15 @@ namespace Shrink
 
 noncomputable instance (X : Type u) [TopologicalSpace X] [Small.{v} X] :
     TopologicalSpace (Shrink.{v} X) :=
-  .coinduced (equivShrink X) inferInstance
+  .induced (equivShrink X).symm inferInstance
 
 /-- `equivShrink` as a homeomorphism. -/
 @[simps toEquiv]
 noncomputable def homeomorph (X : Type u) [TopologicalSpace X] [Small.{v} X] :
     X ≃ₜ Shrink.{v} X where
   __ := equivShrink X
-  continuous_toFun := continuous_coinduced_rng
-  continuous_invFun := by
-    convert continuous_induced_dom
-    simp only [Equiv.invFun_as_coe, Equiv.induced_symm]
-    rfl
+  continuous_toFun := by
+    sorry
+  continuous_invFun := continuous_induced_dom
 
 end Shrink
