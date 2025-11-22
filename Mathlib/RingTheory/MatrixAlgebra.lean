@@ -213,7 +213,8 @@ variable [Fintype n] [DecidableEq n]
 /-- The `R`-algebra isomorphism `Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n R)`.
 -/
 def matrixEquivTensor : Matrix n n A ≃ₐ[R] A ⊗[R] Matrix n n R :=
-  AlgEquiv.symm { MatrixEquivTensor.toFunAlgHom n R A, MatrixEquivTensor.equiv n R A with }
+  AlgEquiv.symm { MatrixEquivTensor.toFunAlgHom n R A, MatrixEquivTensor.equiv n R A with
+    map_smul' := by simp }
 
 open MatrixEquivTensor
 
@@ -248,7 +249,6 @@ variable [Fintype m] [DecidableEq m]
 def kroneckerTMulAlgEquiv :
     Matrix m m A ⊗[R] Matrix n n B ≃ₐ[S] Matrix (m × n) (m × n) (A ⊗[R] B) :=
   .ofLinearEquiv (kroneckerTMulLinearEquiv m m n n R S A B)
-    (kroneckerTMulLinearEquiv_one _ _ _ _ _)
     (kroneckerTMulLinearEquiv_mul _ _ _ _ _)
 
 variable {m n A B}

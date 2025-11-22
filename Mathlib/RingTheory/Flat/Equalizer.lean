@@ -232,7 +232,7 @@ def AlgHom.tensorEqualizerEquiv [Module.Flat R T] :
       AlgHom.equalizer (Algebra.TensorProduct.map (AlgHom.id S T) f)
         (Algebra.TensorProduct.map (AlgHom.id S T) g) :=
   AlgEquiv.ofLinearEquiv (LinearMap.tensorEqLocusEquiv S T f.toLinearMap g.toLinearMap)
-    rfl (AlgHom.tensorEqualizerAux_mul S T f g)
+    (AlgHom.tensorEqualizerAux_mul S T f g)
 
 @[simp]
 lemma AlgHom.tensorEqualizerEquiv_apply [Module.Flat R T]

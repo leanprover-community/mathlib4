@@ -34,7 +34,8 @@ open Polynomial Matrix
 /-- The composition of a matrix (as an endomorphism of `ι → R`) with the projection
 `(ι → R) →ₗ[R] M`. -/
 def PiToModule.fromMatrix [DecidableEq ι] : Matrix ι ι R →ₗ[R] (ι → R) →ₗ[R] M :=
-  (LinearMap.llcomp R _ _ _ (Fintype.linearCombination R b)).comp algEquivMatrix'.symm.toLinearMap
+  (LinearMap.llcomp R _ _ _ (Fintype.linearCombination R b)).comp
+    (algEquivMatrix' (n := ι) (R := R)).symm.toLinearMap
 
 theorem PiToModule.fromMatrix_apply [DecidableEq ι] (A : Matrix ι ι R) (w : ι → R) :
     PiToModule.fromMatrix R b A w = Fintype.linearCombination R b (A *ᵥ w) :=

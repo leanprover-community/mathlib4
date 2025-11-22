@@ -5,7 +5,6 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Order.CompleteSublattice
 public import Mathlib.RingTheory.SimpleModule.Basic
 
@@ -373,7 +372,7 @@ then `End R M` is isomorphic to `Πᵢ End R Nᵢ` as an algebra. -/
 noncomputable def iSupIndep.algEquiv [Module R₀ M] [IsScalarTower R₀ R M] :
     Module.End R M ≃ₐ[R₀] Π i, Module.End R (N i) where
   __ := ind.ringEquiv iSup_top invar
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 end Equiv
 

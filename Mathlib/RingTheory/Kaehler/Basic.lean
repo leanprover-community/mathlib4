@@ -339,8 +339,8 @@ def KaehlerDifferential.quotientCotangentIdealRingEquiv :
 def KaehlerDifferential.quotientCotangentIdeal :
     ((S ⊗ S ⧸ KaehlerDifferential.ideal R S ^ 2) ⧸
         (KaehlerDifferential.ideal R S).cotangentIdeal) ≃ₐ[S] S :=
-  { KaehlerDifferential.quotientCotangentIdealRingEquiv R S with
-    commutes' := (KaehlerDifferential.quotientCotangentIdealRingEquiv R S).apply_symm_apply }
+  .ofCommutes (KaehlerDifferential.quotientCotangentIdealRingEquiv R S)
+    (KaehlerDifferential.quotientCotangentIdealRingEquiv R S).apply_symm_apply
 
 theorem KaehlerDifferential.End_equiv_aux (f : S →ₐ[R] S ⊗ S ⧸ KaehlerDifferential.ideal R S ^ 2) :
     (Ideal.Quotient.mkₐ R (KaehlerDifferential.ideal R S).cotangentIdeal).comp f =

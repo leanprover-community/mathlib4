@@ -145,8 +145,10 @@ theorem toBaseChange_reverse (Q : QuadraticForm R V) (x : CliffordAlgebra (Q.bas
   have := DFunLike.congr_fun (toBaseChange_comp_reverseOp A Q) x
   refine (congr_arg unop this).trans ?_; clear this
   refine (LinearMap.congr_fun (TensorProduct.AlgebraTensorModule.map_comp _ _ _ _).symm _).trans ?_
-  rw [reverse, ← AlgEquiv.toLinearMap, ← AlgEquiv.toLinearEquiv_toLinearMap,
-    AlgEquiv.toLinearEquiv_toOpposite]
+  -- again something like this is needed...?
+  have : (AlgEquiv.toOpposite A A).toAlgHom.toLinearMap = (AlgEquiv.toOpposite A A).toLinearMap :=
+    rfl
+  rw [reverse, this, ← AlgEquiv.toLinearEquiv_toLinearMap, AlgEquiv.toLinearEquiv_toOpposite]
   dsimp
   -- `simp` fails here due to a timeout looking for a `Subsingleton` instance!?
   rw [LinearEquiv.self_trans_symm]

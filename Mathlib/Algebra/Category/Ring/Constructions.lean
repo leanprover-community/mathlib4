@@ -143,9 +143,8 @@ lemma isPushout_iff_isPushout {R S : Type u} [CommRing R] [CommRing S] [Algebra 
     congr($((CommRingCat.isPushout_tensorProduct R R' S).inl_isoPushout_hom).hom r)
   have h3 (x : R') := congr($(h.inl_isoPushout_inv) x)
   dsimp only [hom_comp, RingHom.coe_comp, Function.comp_apply, hom_ofHom] at h3
-  let e' : R' ⊗[R] S ≃ₐ[R'] S' := {
-    __ := e
-    commutes' r := by simp [Iso.commRingCatIsoToRingEquiv, h2, e, h3] }
+  let e' : R' ⊗[R] S ≃ₐ[R'] S' := .ofCommutes e <|
+    by simp [Iso.commRingCatIsoToRingEquiv, h2, e, h3]
   refine Algebra.IsPushout.of_equiv e' ?_
   ext s
   have h1 : (CommRingCat.isPushout_tensorProduct R R' S).isoPushout.hom

@@ -5,6 +5,7 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Opposite
 public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Algebra.Algebra.Prod
 public import Mathlib.Algebra.Algebra.Rat

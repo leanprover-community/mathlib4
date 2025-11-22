@@ -378,7 +378,7 @@ theorem IsFractionRing.stabilizerHom_surjective :
   let _ := MulSemiringAction.compHom L (stabilizerHom G P Q K L)
   intro f
   obtain ⟨g, hg⟩ := FixedPoints.toAlgAut_surjective (MulAction.stabilizer G Q) L
-    (AlgEquiv.ofRingEquiv (f := f) (fun x ↦ fixed_of_fixed2 G P Q K L f x x.2))
+    (AlgEquiv.ofCommutes f fun x ↦ fixed_of_fixed2 G P Q K L f x x.2)
   exact ⟨g, by rwa [AlgEquiv.ext_iff] at hg ⊢⟩
 
 /-- The stabilizer subgroup of `Q` surjects onto `Aut((B/Q)/(A/P))`. -/
@@ -455,7 +455,7 @@ lemma Ideal.Quotient.exists_algEquiv_fixedPoint_quotient_under
   have hf : Function.Injective f := FaithfulSMul.algebraMap_injective _ _
   obtain ⟨τ₁, h₁⟩ := Ideal.Quotient.exists_algHom_fixedPoint_quotient_under G P Q σ.toAlgHom
   obtain ⟨τ₂, h₂⟩ := Ideal.Quotient.exists_algHom_fixedPoint_quotient_under G P Q σ.symm.toAlgHom
-  refine ⟨{ __ := τ₁, invFun := τ₂, left_inv := ?_, right_inv := ?_ }, h₁⟩
+  refine ⟨{ __ := τ₁, invFun := τ₂, left_inv := ?_, right_inv := ?_, map_smul' := by simp }, h₁⟩
   · intro x
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
     obtain ⟨y, e⟩ := Ideal.Quotient.mk_surjective (τ₁ (Ideal.Quotient.mk Q x))

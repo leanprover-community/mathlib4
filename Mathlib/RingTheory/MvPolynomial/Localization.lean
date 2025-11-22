@@ -120,7 +120,7 @@ noncomputable def mvPolynomialQuotientEquiv :
     simpa using congrFun (congrArg DFunLike.coe <| auxHom_auxInv S r) s
   map_mul' := by simp
   map_add' := by simp
-  commutes' := by simp
+  map_smul' := by simp
 
 @[simp]
 lemma mvPolynomialQuotientEquiv_apply (p : MvPolynomial Unit R) :

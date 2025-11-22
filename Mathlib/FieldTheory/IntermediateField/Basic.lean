@@ -644,7 +644,7 @@ def liftAlgEquiv {E : IntermediateField K L} (F : IntermediateField K E) : ↥F 
   right_inv := congrFun rfl
   map_mul' _ _ := rfl
   map_add' _ _ := rfl
-  commutes' _ := rfl
+  map_smul' _ _ := rfl
 
 lemma liftAlgEquiv_apply {E : IntermediateField K L} (F : IntermediateField K E) (x : F) :
     (liftAlgEquiv F x).1 = x := rfl

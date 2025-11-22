@@ -463,9 +463,9 @@ variable {A B C D : Type*}
   [Algebra FA FD] [IsScalarTower A FA FD]
 
 /-- An algebra isomorphism of rings induces an algebra isomorphism of fraction fields. -/
-noncomputable def fieldEquivOfAlgEquiv (f : B ≃ₐ[A] C) : FB ≃ₐ[FA] FC where
-  __ := IsFractionRing.ringEquivOfRingEquiv f.toRingEquiv
-  commutes' x := by
+noncomputable def fieldEquivOfAlgEquiv (f : B ≃ₐ[A] C) : FB ≃ₐ[FA] FC :=
+  .ofCommutes (IsFractionRing.ringEquivOfRingEquiv f.toRingEquiv)
+  fun x => by
     obtain ⟨x, y, -, rfl⟩ := IsFractionRing.div_surjective (A := A) x
     simp_rw [map_div₀, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B FB]
     simp [← IsScalarTower.algebraMap_apply A C FC]

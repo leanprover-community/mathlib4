@@ -120,6 +120,8 @@ lemma Ideal.Quotient.stabilizerHomSurjectiveAuxFunctor_aux
   simpa only [Ideal.pointwise_smul_eq_comap,
     ← Ideal.comap_coe (F := RingEquiv _ _), Ideal.comap_comap] using hx
 
+set_option maxHeartbeats 201000 in
+-- needed for some reason
 /-- (Implementation)
 The functor taking an open normal subgroup `N ≤ G` to the set of lifts of `σ` in `G ⧸ N`.
 We will show that its inverse limit is nonempty to conclude that there exists a lift in `G`. -/
@@ -196,10 +198,12 @@ theorem Ideal.Quotient.stabilizerHom_surjective_of_profinite
     rw [← this]
     rfl
   · ext x
-    obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-    obtain ⟨N, hN⟩ := ProfiniteGrp.exist_openNormalSubgroup_sub_open_nhds_of_one
+    have hx := Ideal.Quotient.mk_surjective x
+    obtain ⟨x, rfl⟩ := hx
+    have hx := ProfiniteGrp.exist_openNormalSubgroup_sub_open_nhds_of_one
       (stabilizer_isOpen G x) (one_mem _)
-    lift x to B' N.1.1 using fun g ↦ hN g.2
+    obtain ⟨N, hN⟩ := hx
+    lift x to B' N.1.1 using fun (g : ↑N.toOpenSubgroup) ↦ hN g.2
     change Ideal.Quotient.mk Q (QuotientGroup.mk (s := N) a • x).1 = _
     rw [this]
     exact DFunLike.congr_fun (s N).2 (Ideal.Quotient.mk _ x)

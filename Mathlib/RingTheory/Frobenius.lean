@@ -225,10 +225,10 @@ lemma exists_of_isInvariant [Q.IsPrime] [Finite (S ⧸ Q)] : ∃ σ : G, IsArith
   have := CharP.of_ringHom_of_ne_zero (algebraMap (R ⧸ P) (S ⧸ Q)) p hp.ne_zero
   have : ExpChar (S ⧸ Q) p := .prime hp
   let l : (S ⧸ Q) ≃ₐ[R ⧸ P] S ⧸ Q :=
-    { __ := iterateFrobeniusEquiv (S ⧸ Q) p k,
-      commutes' r := by
+    .ofCommutes (iterateFrobeniusEquiv (S ⧸ Q) p k)
+      fun r => by
         dsimp [iterateFrobenius_def]
-        rw [← map_pow, ← hk, FiniteField.pow_card] }
+        rw [← map_pow, ← hk, FiniteField.pow_card]
   obtain ⟨σ, hσ⟩ := Ideal.Quotient.stabilizerHom_surjective G P Q l
   refine ⟨σ, fun x ↦ ?_⟩
   rw [← Ideal.Quotient.eq, Nat.card_eq_fintype_card, hk]

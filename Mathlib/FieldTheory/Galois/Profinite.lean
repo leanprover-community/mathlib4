@@ -229,35 +229,36 @@ lemma toAlgEquivAux_eq_liftNormal [IsGalois k K] (g : limit (asProfiniteGaloisGr
 It is done by using above lifting lemmas on bigger `FiniteGaloisIntermediateField`. -/
 @[simps]
 noncomputable def limitToAlgEquiv [IsGalois k K]
-    (g : limit (asProfiniteGaloisGroupFunctor k K)) : Gal(K/k) where
-  toFun := toAlgEquivAux g
-  invFun := toAlgEquivAux g⁻¹
-  left_inv x := by
-    let L := adjoin k {x, toAlgEquivAux g x}
-    have hx : x ∈ L.1 := subset_adjoin _ _ (Set.mem_insert x {toAlgEquivAux g x})
-    have hx' : toAlgEquivAux g x ∈ L.1 := subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
-    simp only [toAlgEquivAux_eq_proj_of_mem _ _ L hx', map_inv, AlgEquiv.aut_inv,
-      mk_toAlgEquivAux g x L hx' hx, AlgEquiv.symm_apply_apply]
-  right_inv x := by
-    let L := adjoin k {x, toAlgEquivAux g⁻¹ x}
-    have hx : x ∈ L.1 := subset_adjoin _ _ (Set.mem_insert x {toAlgEquivAux g⁻¹ x})
-    have hx' : toAlgEquivAux g⁻¹ x ∈ L.1 := subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
-    simp only [toAlgEquivAux_eq_proj_of_mem _ _ L hx', mk_toAlgEquivAux g⁻¹ x L hx' hx, map_inv,
-      AlgEquiv.aut_inv, AlgEquiv.apply_symm_apply]
-  map_mul' x y := by
-    have hx : x ∈ (adjoin k {x, y}).1 := subset_adjoin _ _ (Set.mem_insert x {y})
-    have hy : y ∈ (adjoin k {x, y}).1 := subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
-    rw [toAlgEquivAux_eq_liftNormal g x (adjoin k {x, y}) hx,
-      toAlgEquivAux_eq_liftNormal g y (adjoin k {x, y}) hy,
-      toAlgEquivAux_eq_liftNormal g (x * y) (adjoin k {x, y}) (mul_mem hx hy), map_mul]
-  map_add' x y := by
-    have hx : x ∈ (adjoin k {x, y}).1 := subset_adjoin _ _ (Set.mem_insert x {y})
-    have hy : y ∈ (adjoin k {x, y}).1 := subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
-    simp only [toAlgEquivAux_eq_liftNormal g x (adjoin k {x, y}) hx,
-      toAlgEquivAux_eq_liftNormal g y (adjoin k {x, y}) hy,
-      toAlgEquivAux_eq_liftNormal g (x + y) (adjoin k {x, y}) (add_mem hx hy), map_add]
-  commutes' x := by
-    simp only [toAlgEquivAux_eq_liftNormal g _ ⊥ (algebraMap_mem _ x), AlgEquiv.commutes]
+    (g : limit (asProfiniteGaloisGroupFunctor k K)) : Gal(K/k) :=
+  .ofCommutes
+  { toFun := toAlgEquivAux g
+    invFun := toAlgEquivAux g⁻¹
+    left_inv x := by
+      let L := adjoin k {x, toAlgEquivAux g x}
+      have hx : x ∈ L.1 := subset_adjoin _ _ (Set.mem_insert x {toAlgEquivAux g x})
+      have hx' : toAlgEquivAux g x ∈ L.1 := subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
+      simp only [toAlgEquivAux_eq_proj_of_mem _ _ L hx', map_inv, AlgEquiv.aut_inv,
+        mk_toAlgEquivAux g x L hx' hx, AlgEquiv.symm_apply_apply]
+    right_inv x := by
+      let L := adjoin k {x, toAlgEquivAux g⁻¹ x}
+      have hx : x ∈ L.1 := subset_adjoin _ _ (Set.mem_insert x {toAlgEquivAux g⁻¹ x})
+      have hx' : toAlgEquivAux g⁻¹ x ∈ L.1 := subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
+      simp only [toAlgEquivAux_eq_proj_of_mem _ _ L hx', mk_toAlgEquivAux g⁻¹ x L hx' hx, map_inv,
+        AlgEquiv.aut_inv, AlgEquiv.apply_symm_apply]
+    map_mul' x y := by
+      have hx : x ∈ (adjoin k {x, y}).1 := subset_adjoin _ _ (Set.mem_insert x {y})
+      have hy : y ∈ (adjoin k {x, y}).1 := subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
+      rw [toAlgEquivAux_eq_liftNormal g x (adjoin k {x, y}) hx,
+        toAlgEquivAux_eq_liftNormal g y (adjoin k {x, y}) hy,
+        toAlgEquivAux_eq_liftNormal g (x * y) (adjoin k {x, y}) (mul_mem hx hy), map_mul]
+    map_add' x y := by
+      have hx : x ∈ (adjoin k {x, y}).1 := subset_adjoin _ _ (Set.mem_insert x {y})
+      have hy : y ∈ (adjoin k {x, y}).1 := subset_adjoin _ _ (Set.mem_insert_of_mem x rfl)
+      simp only [toAlgEquivAux_eq_liftNormal g x (adjoin k {x, y}) hx,
+        toAlgEquivAux_eq_liftNormal g y (adjoin k {x, y}) hy,
+        toAlgEquivAux_eq_liftNormal g (x + y) (adjoin k {x, y}) (add_mem hx hy), map_add] }
+  fun x => by
+    simp [toAlgEquivAux_eq_liftNormal g _ ⊥ (algebraMap_mem _ x), AlgEquiv.commutes]
 
 variable (k K) in
 /-- `algEquivToLimit` as a `MulEquiv`. -/

@@ -517,7 +517,7 @@ theorem exists_lt_finrank_of_infinite_dimensional
     obtain ⟨x, hx⟩ : ∃ x : E, x ∉ L := by
       contrapose! hnfd
       rw [show L = ⊤ from eq_top_iff.2 fun x _ ↦ hnfd x] at fin
-      exact topEquiv.toLinearEquiv.finiteDimensional
+      exact (topEquiv (F := F) (E := E)).toLinearEquiv.finiteDimensional
     let L' := L ⊔ F⟮x⟯
     haveI := adjoin.finiteDimensional (Algebra.IsIntegral.isIntegral (R := F) x)
     refine ⟨L', inferInstance, by_contra fun h ↦ ?_⟩
