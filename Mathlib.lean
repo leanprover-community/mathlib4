@@ -4598,7 +4598,6 @@ public import Mathlib.LinearAlgebra.SymplecticGroup
 public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 public import Mathlib.LinearAlgebra.TensorAlgebra.Basis
 public import Mathlib.LinearAlgebra.TensorAlgebra.Grading
-public import Mathlib.LinearAlgebra.TensorAlgebra.Hopf
 public import Mathlib.LinearAlgebra.TensorAlgebra.ToTensorPower
 public import Mathlib.LinearAlgebra.TensorPower.Basic
 public import Mathlib.LinearAlgebra.TensorPower.Pairing
@@ -5793,6 +5792,7 @@ public import Mathlib.RingTheory.Henselian
 public import Mathlib.RingTheory.HopfAlgebra.Basic
 public import Mathlib.RingTheory.HopfAlgebra.GroupLike
 public import Mathlib.RingTheory.HopfAlgebra.MonoidAlgebra
+public import Mathlib.RingTheory.HopfAlgebra.TensorAlgebra
 public import Mathlib.RingTheory.HopfAlgebra.TensorProduct
 public import Mathlib.RingTheory.HopkinsLevitzki
 public import Mathlib.RingTheory.Ideal.AssociatedPrime
