@@ -3,8 +3,10 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.FieldTheory.LinearDisjoint
-import Mathlib.FieldTheory.PurelyInseparable.PerfectClosure
+module
+
+public import Mathlib.FieldTheory.LinearDisjoint
+public import Mathlib.FieldTheory.PurelyInseparable.PerfectClosure
 
 /-!
 
@@ -40,6 +42,8 @@ This file contains results related to `Field.sepDegree`, `Field.insepDegree` and
 separable degree, degree, separable closure, purely inseparable
 
 -/
+
+@[expose] public section
 
 open Polynomial IntermediateField Field
 
@@ -84,7 +88,7 @@ theorem LinearIndependent.map_of_isPurelyInseparable_of_isSeparable [IsPurelyIns
       Finsupp.onFinset_sum _ (fun _ ↦ by exact zero_smul _ _)]
     refine Finset.sum_congr rfl fun i _ ↦ ?_
     simp_rw [Algebra.smul_def, mul_pow, IsScalarTower.algebraMap_apply F E K, hlF, map_pow]
-  refine pow_eq_zero ((hlF _).symm.trans ?_)
+  refine eq_zero_of_pow_eq_zero ((hlF _).symm.trans ?_)
   convert map_zero (algebraMap F E)
   exact congr($h i)
 

@@ -3,9 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.DirectSum.Basic
-import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.Basis.Defs
+module
+
+public import Mathlib.Algebra.DirectSum.Basic
+public import Mathlib.LinearAlgebra.DFinsupp
+public import Mathlib.LinearAlgebra.Basis.Defs
 
 /-!
 # Direct sum of modules
@@ -22,6 +24,8 @@ elsewhere as `DirectSum.IsInternal`, but its basic consequences on `Submodule`s 
 in this file.
 
 -/
+
+@[expose] public section
 
 universe u v w u₁
 
@@ -372,9 +376,6 @@ theorem coeLinearMap_eq_dfinsuppSum [DecidableEq M] (x : DirectSum ι fun i => A
   rw [DFinsupp.sumAddHom_apply]
   simp only [LinearMap.toAddMonoidHom_coe, Submodule.coe_subtype]
 
-@[deprecated (since := "2025-04-06")]
-alias coeLinearMap_eq_dfinsupp_sum := coeLinearMap_eq_dfinsuppSum
-
 @[simp]
 theorem coeLinearMap_of (i : ι) (x : A i) : DirectSum.coeLinearMap A (of (fun i ↦ A i) i x) = x :=
   -- Porting note: spelled out arguments. (I don't know how this works.)
@@ -543,5 +544,45 @@ theorem IsInternal.addSubgroup_iSupIndep {G : Type*} [AddCommGroup G] {A : ι �
 end Ring
 
 end Submodule
+
+section Congr
+
+variable {R : Type*} [Semiring R]
+    {ι : Type*}
+    {N : ι → Type*} [(i : ι) → AddCommMonoid (N i)] [(i : ι) → Module R (N i)]
+    {P : ι → Type*} [∀ i, AddCommMonoid (P i)] [∀ i, Module R (P i)]
+
+/-- Direct sums of isomorphic additive groups are isomorphic. -/
+def congr_addEquiv (u : (i : ι) → N i ≃+ P i) :
+    (⨁ i, N i) ≃+ ⨁ i, P i where
+  toAddHom := DirectSum.map fun i ↦ (u i).toAddMonoidHom
+  invFun := DirectSum.map fun i ↦ (u i).symm.toAddMonoidHom
+  left_inv x := by aesop
+  right_inv y := by aesop
+
+theorem coe_congr_addEquiv (u : (i : ι) → N i ≃+ P i) :
+    ⇑(congr_addEquiv u).toAddMonoidHom = ⇑(DirectSum.map fun i ↦ (u i).toAddMonoidHom) :=
+  rfl
+
+/-- Direct sums of isomorphic modules are isomorphic. -/
+def congr_linearEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
+    (⨁ i, N i) ≃ₗ[R] ⨁ i, P i where
+  toAddEquiv := congr_addEquiv (fun i ↦ (u i).toAddEquiv)
+  map_smul' r x := by
+    exact (DirectSum.lmap (fun i ↦ (u i).toLinearMap)).map_smul r x
+
+theorem coe_congr_linearEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
+    ⇑(congr_linearEquiv u) = ⇑(DirectSum.lmap (fun i ↦ (u i).toLinearMap)) :=
+  rfl
+
+theorem congr_linearEquiv_toAddEquiv (u : (i : ι) → N i ≃ₗ[R] P i) :
+    (congr_linearEquiv u).toAddEquiv = congr_addEquiv (fun i ↦ (u i).toAddEquiv) :=
+  rfl
+
+theorem congr_linearEquiv_toLinearMap (u : (i : ι) → N i ≃ₗ[R] P i) :
+    (congr_linearEquiv u).toLinearMap = DirectSum.lmap (fun i ↦ (u i).toLinearMap) :=
+  rfl
+
+end Congr
 
 end DirectSum

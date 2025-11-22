@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Cardinal.ToNat
-import Mathlib.SetTheory.Cardinal.ENat
-import Mathlib.SetTheory.Ordinal.Enum
+module
+
+public import Mathlib.SetTheory.Cardinal.ToNat
+public import Mathlib.SetTheory.Cardinal.ENat
+public import Mathlib.SetTheory.Ordinal.Enum
 
 /-!
 # Omega, aleph, and beth functions
@@ -36,6 +38,8 @@ The following notations are scoped to the `Cardinal` namespace.
 - `ℶ_ o` is notation for `beth o`. The value `ℶ_ 1` equals the continuum `𝔠`, which is defined in
   `Mathlib/SetTheory/Cardinal/Continuum.lean`.
 -/
+
+@[expose] public section
 
 assert_not_exists Field Finsupp Module Cardinal.mul_eq_self
 
@@ -603,7 +607,7 @@ theorem preBeth_le_beth (o : Ordinal) : preBeth o ≤ ℶ_ o :=
   preBeth_le_preBeth.2 (Ordinal.le_add_left _ _)
 
 theorem beth_strictMono : StrictMono beth :=
-  preBeth_strictMono.comp fun _ _ h ↦ add_lt_add_left h _
+  preBeth_strictMono.comp fun _ _ h ↦ by gcongr
 
 theorem beth_mono : Monotone beth :=
   beth_strictMono.monotone
