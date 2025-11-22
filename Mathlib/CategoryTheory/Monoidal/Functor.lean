@@ -740,8 +740,6 @@ variable [F.OplaxMonoidal] [G.OplaxMonoidal]
 instance : (prod F G).OplaxMonoidal where
   η := η F ×ₘ η G
   δ X Y := δ F _ _ ×ₘ δ G _ _
-  oplax_left_unitality := by  --intros; ext; all_goals {simp}
-  oplax_right_unitality := by intros; ext; all_goals {simp}
 
 @[simp] lemma prod_η_fst : (η (prod F G)).1 = η F := rfl
 @[simp] lemma prod_η_snd : (η (prod F G)).2 = η G := rfl
