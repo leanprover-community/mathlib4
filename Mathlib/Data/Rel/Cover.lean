@@ -3,7 +3,9 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Rel.Separated
+module
+
+public import Mathlib.Data.Rel.Separated
 
 /-!
 # Covers in a uniform space
@@ -22,6 +24,8 @@ The concept of uniform covers can be used to define two further notions of cover
 
 [R. Vershynin, *High Dimensional Probability*][vershynin2018high], Section 4.2.
 -/
+
+@[expose] public section
 
 open Set
 
@@ -43,6 +47,11 @@ def IsCover (U : SetRel X X) (s N : Set X) : Prop := ∀ ⦃x⦄, x ∈ s → �
 
 protected nonrec lemma IsCover.nonempty (hsN : IsCover U s N) (hs : s.Nonempty) : N.Nonempty :=
   let ⟨_x, hx⟩ := hs; let ⟨y, hy, _⟩ := hsN hx; ⟨y, hy⟩
+
+@[simp] lemma IsCover.refl (U : SetRel X X) [U.IsRefl] (s : Set X) : IsCover U s s :=
+  fun a ha ↦ ⟨a, ha, U.rfl⟩
+
+lemma IsCover.rfl {U : SetRel X X} [U.IsRefl] {s : Set X} : IsCover U s s := refl U s
 
 @[simp] protected lemma isCover_univ : IsCover univ s N ↔ (s.Nonempty → N.Nonempty) := by
   simp [IsCover, Set.Nonempty]

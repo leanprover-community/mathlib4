@@ -3,9 +3,11 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Yaël Dillies
 -/
-import Mathlib.Data.Set.BooleanAlgebra
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Data.Set.BooleanAlgebra
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # Closure operators between preorders
@@ -43,6 +45,8 @@ place when using concrete closure operators such as `ConvexHull`.
 
 * https://en.wikipedia.org/wiki/Closure_operator#Closure_operators_on_partially_ordered_sets
 -/
+
+@[expose] public section
 
 open Set
 

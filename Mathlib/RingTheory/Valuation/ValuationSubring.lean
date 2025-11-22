@@ -3,12 +3,14 @@ Copyright (c) 2022 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Junyan Xu, Jack McKoen
 -/
-import Mathlib.RingTheory.Valuation.ValuationRing
-import Mathlib.RingTheory.Localization.AsSubring
-import Mathlib.Algebra.Algebra.Subalgebra.Tower
-import Mathlib.Algebra.Ring.Subring.Pointwise
-import Mathlib.Algebra.Ring.Action.Field
-import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+module
+
+public import Mathlib.RingTheory.Valuation.ValuationRing
+public import Mathlib.RingTheory.Localization.AsSubring
+public import Mathlib.Algebra.Algebra.Subalgebra.Tower
+public import Mathlib.Algebra.Ring.Subring.Pointwise
+public import Mathlib.Algebra.Ring.Action.Field
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
 
@@ -19,6 +21,8 @@ import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 The order structure on `ValuationSubring K`.
 
 -/
+
+@[expose] public section
 
 
 universe u
@@ -91,7 +95,6 @@ theorem mem_top (x : K) : x ∈ (⊤ : ValuationSubring K) :=
 theorem le_top : A ≤ ⊤ := fun _a _ha => mem_top _
 
 instance : OrderTop (ValuationSubring K) where
-  top := ⊤
   le_top := le_top
 
 instance : Inhabited (ValuationSubring K) :=
@@ -169,14 +172,17 @@ theorem valuation_surjective : Function.Surjective A.valuation := Quot.mk_surjec
 theorem valuation_unit (a : Aˣ) : A.valuation a = 1 := by
   rw [← A.valuation.map_one, valuation_eq_iff]; use a; simp
 
-theorem valuation_eq_one_iff (a : A) : IsUnit a ↔ A.valuation a = 1 :=
-  ⟨fun h => A.valuation_unit h.unit, fun h => by
+theorem valuation_eq_one_iff (a : A) : IsUnit a ↔ A.valuation a = 1 where
+  mp h := A.valuation_unit h.unit
+  mpr h := by
     have ha : (a : K) ≠ 0 := by
       intro c
       rw [c, A.valuation.map_zero] at h
       exact zero_ne_one h
     have ha' : (a : K)⁻¹ ∈ A := by rw [← valuation_le_one_iff, map_inv₀, h, inv_one]
-    apply isUnit_of_mul_eq_one a ⟨a⁻¹, ha'⟩; ext; simp [field]⟩
+    refine .of_mul_eq_one ⟨a⁻¹, ha'⟩ ?_
+    ext
+    simp [field]
 
 theorem valuation_lt_one_or_eq_one (a : A) : A.valuation a < 1 ∨ A.valuation a = 1 :=
   lt_or_eq_of_le (A.valuation_le_one a)
@@ -309,8 +315,9 @@ theorem ofPrime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) :
         SetLike.mem_coe, idealOfLE, Ideal.mem_comap, IsLocalRing.mem_maximalIdeal, mem_nonunits_iff,
         not_not]
       change IsUnit (⟨x⁻¹, h hr⟩ : S)
-      apply isUnit_of_mul_eq_one _ (⟨x, hx⟩ : S)
-      ext; simp [field]
+      refine .of_mul_eq_one (⟨x, hx⟩ : S) ?_
+      ext
+      simp [field]
     · simp
 
 theorem ofPrime_le_of_le (P Q : Ideal A) [P.IsPrime] [Q.IsPrime] (h : P ≤ Q) :
