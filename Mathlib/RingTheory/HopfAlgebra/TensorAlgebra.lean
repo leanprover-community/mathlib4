@@ -5,8 +5,7 @@ Authors: Nikolas Tapia
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
-public import Mathlib.RingTheory.Coalgebra.Convolution
+public import Mathlib.RingTheory.Bialgebra.TensorAlgebra
 public import Mathlib.RingTheory.HopfAlgebra.Basic
 
 /-!
@@ -21,44 +20,9 @@ TensorAlgebra R M → (TensorAlgebra R M)ᵐᵒᵖ` induced by `fun x => op -(ι
 @[expose] public section
 
 namespace TensorAlgebra
-open scoped TensorProduct RingTheory.LinearMap Coalgebra
+
+open scoped RingTheory.LinearMap
 open LinearMap TensorProduct
-
-section Bialgebra
-
-variable (R : Type*) [CommSemiring R] {M : Type*} [AddCommMonoid M] [Module R M]
-
-local notation "T[" M "]" => TensorAlgebra R M
-
-/-- Comultiplication in `TensorAlgebra R M` as an algebra map.
-It is induced by the linear map sending `(m : M)` to `ι R m ⊗ₜ[R] 1 + 1 ⊗ₜ[R] ι R m`.
-See `comul_apply`.
--/
-def comul : T[M] →ₐ[R] T[M] ⊗[R] T[M] := lift R (
-  (ι R ⊗ₘ Algebra.linearMap R T[M]) ∘ₗ (TensorProduct.rid R M).symm +
-  (Algebra.linearMap R T[M] ⊗ₘ ι R) ∘ₗ (TensorProduct.lid R M).symm
-  )
-
-@[simp]
-lemma comul_apply (m : M) : comul R (ι R m) = ι R m ⊗ₜ[R] 1 + 1 ⊗ₜ[R] ι R m := by
-  simp [comul]
-
-@[simp]
-lemma algebraMapInv_ι_apply (m : M) : algebraMapInv (ι R m) = 0 := by
-  simp [algebraMapInv]
-
-@[simp]
-lemma algebraMapInv_ι_eq_zero : algebraMapInv.toLinearMap ∘ₗ (ι R) = (0 : M →ₗ[R] R) :=
-  LinearMap.ext <| algebraMapInv_ι_apply _
-
-instance instBialgebra : Bialgebra R T[M] := Bialgebra.ofAlgHom (comul R) algebraMapInv
-    (by ext; simpa [comul, Algebra.TensorProduct.one_def, add_tmul, tmul_add] using by abel)
-    (by ext; simp [comul, algebraMapInv])
-    (by ext; simp [comul, algebraMapInv])
-
-end Bialgebra
-
-section HopfAlgebra
 
 variable (R : Type*) [CommRing R] {M : Type*} [AddCommGroup M] [Module R M]
 
@@ -91,7 +55,7 @@ open Algebra Bialgebra Coalgebra in
 instance instHopfAlgebra : HopfAlgebra R T[M] where
   antipode := antipode R
   mul_antipode_rTensor_comul := by
-    rw [LinearMap.rTensor, ← LinearMap.convMul_def, ← convOne_def]
+    rw [LinearMap.rTensor]
     ext x
     induction x using induction with
     | algebraMap r => simp
@@ -99,23 +63,24 @@ instance instHopfAlgebra : HopfAlgebra R T[M] where
     | ι u =>
         conv =>
           rhs
-          rw [convOne_def, comp_apply, CoalgebraStruct.counit, instBialgebra, toCoalgebraStruct,
+          rw [comp_apply, CoalgebraStruct.counit, instBialgebra, toCoalgebraStruct,
             toCoalgebra, ofAlgHom, mk', coe_coe, algebraMapInv_ι_apply, map_zero]
         conv =>
           lhs
-          rw [convMul_apply, CoalgebraStruct.comul, toCoalgebraStruct, toCoalgebra]
+          rw [CoalgebraStruct.comul, toCoalgebraStruct, toCoalgebra]
           unfold instBialgebra ofAlgHom mk'
-          simp only [coe_coe, comul_apply, map_add, map_tmul, antipode_ι_apply, id_coe, id_eq,
-            mul'_apply, mul_one, ← map_one (algebraMap R T[M]), antipode_algebraMap_apply]
-          simp only [map_one, mul_one, one_mul, neg_add_cancel]
+          simp only [coe_semilinearMap, comp_apply, comul_apply, map_add, map_tmul,
+            antipode_ι_apply, id_coe, id_eq, mul'_apply, mul_one]
+          rw [← map_one (algebraMap R _), antipode_algebraMap_apply]
+          simp
     | mul u v hu hv =>
         conv =>
           rhs
-          rw [convOne_apply, counit_mul, map_mul, ← convOne_apply, ← convOne_apply]
+          rw [comp_apply, counit_mul]
         have assoc4 {Q} [Semiring Q] (a b c d : Q) : a * b * (c * d) = a * (b * c) * d := by
           rw [← mul_assoc, mul_assoc a b c]
-        rw [convMul_apply, comul_mul, ← Coalgebra.Repr.eq (ℛ R u), ← Coalgebra.Repr.eq (ℛ R v),
-          Finset.sum_mul_sum, map_sum, map_sum] at *
+        rw [comp_apply, comp_apply, comul_mul, ← Coalgebra.Repr.eq (ℛ R u),
+          ← Coalgebra.Repr.eq (ℛ R v), Finset.sum_mul_sum, map_sum, map_sum] at *
         simp only [TensorProduct.tmul_mul_tmul, map_sum, map_tmul, antipode_antihom_apply, id_coe,
         id_eq, mul'_apply] at *
         conv =>
@@ -133,41 +98,40 @@ instance instHopfAlgebra : HopfAlgebra R T[M] where
           conv =>
             arg 2
             intro i
-            rw [← Finset.sum_mul, ← Finset.mul_sum, hu, convOne_apply,
-            ← Algebra.commutes, mul_assoc]
-          rw [← Finset.mul_sum, hv, ← convOne_apply]
+            rw [← Finset.sum_mul, ← Finset.mul_sum, hu, comp_apply, linearMap_apply,
+              ← commutes, mul_assoc]
+          rw [← Finset.mul_sum, hv, comp_apply, linearMap_apply, ← map_mul, ← linearMap_apply]
   mul_antipode_lTensor_comul := by
-    rw [LinearMap.lTensor, ← LinearMap.convMul_def, ← convOne_def]
+    rw [LinearMap.lTensor]
     ext x
     induction x using induction with
     | algebraMap r =>
-        simp only [convMul_apply, comul_algebraMap, TensorProduct.algebraMap_apply, map_tmul,
-          id_coe, id_eq, mul'_apply, convOne_apply, counit_algebraMap, ← map_one (algebraMap R
+        simp only [comp_apply, comul_algebraMap, TensorProduct.algebraMap_apply, map_tmul,
+          id_coe, id_eq, mul'_apply, counit_algebraMap, ← map_one (algebraMap R
           T[M]), antipode_algebraMap_apply]
         simp
     | add u v hu hv => rw [map_add, hu, hv, ← map_add]
     | ι u =>
         conv =>
           rhs
-          rw [convOne_def, comp_apply, CoalgebraStruct.counit, instBialgebra, toCoalgebraStruct,
+          rw [comp_apply, CoalgebraStruct.counit, instBialgebra, toCoalgebraStruct,
             toCoalgebra, ofAlgHom, mk', coe_coe, algebraMapInv_ι_apply, map_zero]
         conv =>
           lhs
-          rw [convMul_apply, CoalgebraStruct.comul, toCoalgebraStruct, toCoalgebra]
+          rw [CoalgebraStruct.comul, toCoalgebraStruct, toCoalgebra]
           unfold instBialgebra ofAlgHom mk'
           simp only [coe_coe, comul_apply, map_add, map_tmul, antipode_ι_apply, id_coe, id_eq,
-            mul'_apply, mul_one, ← map_one (algebraMap R T[M]), antipode_algebraMap_apply]
-          simp only [map_one, mul_one, one_mul, neg_add_cancel]
-          abel_nf
+            mul'_apply, mul_one, ← map_one (algebraMap R T[M]), antipode_algebraMap_apply,
+            coe_semilinearMap, comp_apply]
+          rw [map_one, one_mul, mul_one, add_neg_cancel]
     | mul u v hu hv =>
         conv =>
           rhs
-          rw [convOne_apply, counit_mul, map_mul, Algebra.commutes, ← convOne_apply,
-            ← convOne_apply]
+          rw [comp_apply, counit_mul]
         have assoc4 {Q} [Semiring Q] (a b c d : Q) : a * b * (c * d) = a * (b * c) * d := by
           rw [← mul_assoc, mul_assoc a b c]
-        rw [convMul_apply, comul_mul, ← Coalgebra.Repr.eq (ℛ R u), ← Coalgebra.Repr.eq (ℛ R v),
-          Finset.sum_mul_sum, map_sum, map_sum] at *
+        rw [comp_apply, comp_apply, comul_mul, ← Coalgebra.Repr.eq (ℛ R u),
+          ← Coalgebra.Repr.eq (ℛ R v), Finset.sum_mul_sum, map_sum, map_sum] at *
         simp only [TensorProduct.tmul_mul_tmul, map_sum, map_tmul, antipode_antihom_apply, id_coe,
         id_eq, mul'_apply] at *
         conv =>
@@ -184,10 +148,9 @@ instance instHopfAlgebra : HopfAlgebra R T[M] where
           conv =>
             arg 2
             intro i
-            rw [← Finset.sum_mul, ← Finset.mul_sum, hv, convOne_apply,
-            ← Algebra.commutes, mul_assoc]
-          rw [← Finset.mul_sum, hu, ← convOne_apply]
-
-end HopfAlgebra
+            rw [← Finset.sum_mul, ← Finset.mul_sum, hv, comp_apply, linearMap_apply,
+              ← Algebra.commutes, mul_assoc]
+          rw [← Finset.mul_sum, hu, comp_apply, linearMap_apply, commutes, ← map_mul,
+            ← linearMap_apply]
 
 end TensorAlgebra
