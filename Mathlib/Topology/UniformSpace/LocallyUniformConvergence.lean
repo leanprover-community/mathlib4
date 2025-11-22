@@ -244,16 +244,33 @@ theorem TendstoLocallyUniformlyOn.unique [p.NeBot] [T2Space β] {g : α → β}
     (hf : TendstoLocallyUniformlyOn F f p s) (hg : TendstoLocallyUniformlyOn F g p s) :
     s.EqOn f g := fun _a ha => tendsto_nhds_unique (hf.tendsto_at ha) (hg.tendsto_at ha)
 
+theorem TendstoLocallyUniformlyOn.congr_inseparable {G : ι → α → β}
+    (hf : TendstoLocallyUniformlyOn F f p s)
+    (hg : ∀ᶠ n in p, ∀ x ∈ s, Inseparable (F n x) (G n x)) : TendstoLocallyUniformlyOn G f p s := by
+  have hg : ∀ᶠ x in p ×ˢ 𝓟 s, Inseparable (F x.1 x.2) (G x.1 x.2) := by
+    simpa using eventually_prod_principal_iff.2 hg
+  rw [tendstoLocallyUniformlyOn_iff_forall_tendsto] at hf ⊢
+  refine forall₂_imp (fun x hx hf => ?_) hf
+  rw [uniformity_hasBasis_open.tendsto_right_iff] at hf ⊢
+  exact fun i hi => (hf i hi).mp ((hg.filter_mono (prod_mono_right p inf_le_right)).mono
+    fun x hg hf => ((Inseparable.rfl.prod hg).mem_open_iff hi.2).1 hf)
+
 theorem TendstoLocallyUniformlyOn.congr {G : ι → α → β} (hf : TendstoLocallyUniformlyOn F f p s)
-    (hg : ∀ n, s.EqOn (F n) (G n)) : TendstoLocallyUniformlyOn G f p s := by
-  rintro u hu x hx
-  obtain ⟨t, ht, h⟩ := hf u hu x hx
-  refine ⟨s ∩ t, inter_mem self_mem_nhdsWithin ht, ?_⟩
-  filter_upwards [h] with i hi y hy using hg i hy.1 ▸ hi y hy.2
+    (hg : ∀ n, s.EqOn (F n) (G n)) : TendstoLocallyUniformlyOn G f p s :=
+  hf.congr_inseparable (.of_forall fun n _ hx => .of_eq (hg n hx))
+
+theorem TendstoLocallyUniformlyOn.congr_inseparable_right {g : α → β}
+    (hf : TendstoLocallyUniformlyOn F f p s)
+    (hg : ∀ x ∈ s, Inseparable (f x) (g x)) : TendstoLocallyUniformlyOn F g p s := by
+  have hg : ∀ᶠ x in p ×ˢ 𝓟 s, Inseparable (f x.2) (g x.2) := by
+    rw [eventually_prod_principal_iff]
+    exact .of_forall fun _ => hg
+  rw [tendstoLocallyUniformlyOn_iff_forall_tendsto] at hf ⊢
+  refine forall₂_imp (fun x hx hf => ?_) hf
+  rw [uniformity_hasBasis_open.tendsto_right_iff] at hf ⊢
+  exact fun i hi => (hf i hi).mp ((hg.filter_mono (prod_mono_right p inf_le_right)).mono
+    fun x hg hf => ((hg.prod .rfl).mem_open_iff hi.2).1 hf)
 
 theorem TendstoLocallyUniformlyOn.congr_right {g : α → β} (hf : TendstoLocallyUniformlyOn F f p s)
-    (hg : s.EqOn f g) : TendstoLocallyUniformlyOn F g p s := by
-  rintro u hu x hx
-  obtain ⟨t, ht, h⟩ := hf u hu x hx
-  refine ⟨s ∩ t, inter_mem self_mem_nhdsWithin ht, ?_⟩
-  filter_upwards [h] with i hi y hy using hg hy.1 ▸ hi y hy.2
+    (hg : s.EqOn f g) : TendstoLocallyUniformlyOn F g p s :=
+  hf.congr_inseparable_right fun _ hx => .of_eq (hg hx)

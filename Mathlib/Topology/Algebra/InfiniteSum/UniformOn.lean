@@ -114,12 +114,13 @@ theorem MultipliableUniformlyOn.multipliable (h : MultipliableUniformlyOn f 𝔖
   match h.exists with | ⟨_, hg⟩ => (hg.hasProd hs hx).multipliable
 
 @[to_additive]
-theorem MultipliableUniformlyOn.hasProdUniformlyOn [T2Space α] (h : MultipliableUniformlyOn f 𝔖) :
+theorem MultipliableUniformlyOn.hasProdUniformlyOn (h : MultipliableUniformlyOn f 𝔖) :
     HasProdUniformlyOn f (∏' i, f i ·) 𝔖 := by
   obtain ⟨g, hg⟩ := h.exists
-  simp only [hasProdUniformlyOn_iff_tendstoUniformlyOn]
-  intro s hs
-  exact (hasProdUniformlyOn_iff_tendstoUniformlyOn.mp hg s hs).congr_right (hg.tprod_eqOn hs).symm
+  have hp := hg
+  rw [hasProdUniformlyOn_iff_tendstoUniformlyOn] at hg ⊢
+  exact fun s hs => (hg s hs).congr_inseparable_right fun x hx =>
+    tendsto_nhds_unique_inseparable (hp.hasProd hs hx) (hp.hasProd hs hx).multipliable.hasProd
 
 end UniformlyOn
 
@@ -193,7 +194,7 @@ converse is only true if the domain is locally compact. -/
 @[to_additive /-- If every `x ∈ s` has a neighbourhood within `s` on which `b ↦ ∑' i, f i b`
 converges uniformly, then the sum converges locally uniformly. Note that this is not a tautology,
 and the converse is only true if the domain is locally compact. -/]
-lemma multipliableLocallyUniformlyOn_of_of_forall_exists_nhds [T2Space α]
+lemma multipliableLocallyUniformlyOn_of_of_forall_exists_nhds
     (h : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, MultipliableUniformlyOn f {t}) :
     MultipliableLocallyUniformlyOn f s :=
   (hasProdLocallyUniformlyOn_of_of_forall_exists_nhds <| fun x hx ↦ match h x hx with
@@ -218,10 +219,11 @@ theorem MultipliableLocallyUniformlyOn.multipliable
   match h with | ⟨_, hg⟩ => (hg.hasProd hx).multipliable
 
 @[to_additive]
-theorem MultipliableLocallyUniformlyOn.hasProdLocallyUniformlyOn [T2Space α]
+theorem MultipliableLocallyUniformlyOn.hasProdLocallyUniformlyOn
     (h : MultipliableLocallyUniformlyOn f s) :
     HasProdLocallyUniformlyOn f (∏' i, f i ·) s :=
-  match h with | ⟨_, hg⟩ => hg.congr_right fun _ hb ↦ (hg.hasProd hb).tprod_eq.symm
+  h.elim fun _ hg => hg.congr_inseparable_right fun _ hx =>
+    tendsto_nhds_unique_inseparable (hg.hasProd hx) (hg.hasProd hx).multipliable.hasProd
 
 @[to_additive]
 theorem HasProdLocallyUniformlyOn.tprod_eqOn [T2Space α]
@@ -229,7 +231,7 @@ theorem HasProdLocallyUniformlyOn.tprod_eqOn [T2Space α]
   fun _ hx ↦ (h.hasProd hx).tprod_eq
 
 @[to_additive]
-lemma MultipliableLocallyUniformlyOn_congr [T2Space α]
+lemma MultipliableLocallyUniformlyOn_congr
     {f f' : ι → β → α} (h : ∀ i, s.EqOn (f i) (f' i))
     (h2 : MultipliableLocallyUniformlyOn f s) : MultipliableLocallyUniformlyOn f' s := by
   apply HasProdLocallyUniformlyOn.multipliableLocallyUniformlyOn
