@@ -16,13 +16,15 @@ import Mathlib.Probability.Notation
 /-!
 # Binomial random variables
 
-This file computes the expectation, variance, conditional variance of a binomial random variable.
+This file defines the binomial distribution and binomial random variables,
+and computes their expectation and variance.
 
 ## Main definitions
 
-* `ProbabilityTheory.binomial`: binomial distribution on `ℕ` with parameter `p`.
+* `ProbabilityTheory.binomial`:
+  Binomial distribution on an arbitrary semiring with parameters `n` and `p`.
 * `ProbabilityTheory.IsBinomial`:
-  Predicate for a random variable to be binomial according to *some* parameter.
+  Predicate for a random variable to be binomial with parameters `n` and `p`.
 
 ## Main statements
 
@@ -30,6 +32,11 @@ This file computes the expectation, variance, conditional variance of a binomial
 * `ProbabilityTheory.IsBinomial.variance_eq`: Computation of the variance of a binomial r.v.
 * `ProbabilityTheory.IsBinomial.condVar_eq`:
   Computation of the conditional variance of a binomial r.v.
+
+## Notation
+
+`Bin(n, p)` is the binomial distribution with parameters `n` and `p` in `ℕ`.
+`Bin(R, n, p)` is the binomial distribution with parameters `n` and `p` in `R`.
 -/
 
 public section
@@ -49,25 +56,13 @@ variable {Ω : Type*} {m : MeasurableSpace Ω} {X Y : Ω → ℝ} {μ : Measure 
 measure of the set where it equals `1`. -/
 lemma integral_of_ae_eq_zero_or_one (hXmeas : AEMeasurable X μ) (hX : ∀ᵐ ω ∂μ, X ω = 0 ∨ X ω = 1) :
     μ[X] = μ.real {ω | X ω = 1} := by
-  wlog hXmeas : Measurable X
-  · obtain ⟨Y, hYmeas, hXY⟩ := ‹AEMeasurable X μ›
-    calc
-      μ[X]
-      _ = μ[Y] := (integral_congr_ae hXY:)
-      _ = μ.real {ω | Y ω = 1} := by
-        refine this hYmeas.aemeasurable ?_ hYmeas
-        filter_upwards [hX, hXY] with ω hXω hXYω
-        simp [hXω, ← hXYω]
-      _ = μ.real {ω | X ω = 1} :=
-        measureReal_congr <| by filter_upwards [hXY] with ω hω; simp [hω, setOf]
-  calc
-    _ = ∫ ω in {ω | X ω = 0 ∨ X ω = 1}, X ω ∂μ := integral_eq_setIntegral hX _
-    _ = ∫ ω in {ω | X ω = 1}, X ω ∂μ :=
-      setIntegral_eq_of_subset_of_ae_diff_eq_zero
-        (hXmeas <| .union (.singleton 0) <| .singleton 1).nullMeasurableSet
-        Set.subset_union_right (by simp [← or_iff_not_imp_right])
-    _ = ∫ ω in {ω | X ω = 1}, 1 ∂μ := setIntegral_congr_ae (hXmeas <| .singleton 1) (by simp)
-    _ = _ := by simp [Measure.real]
+  refine (integral_map (f := id) hXmeas <| by fun_prop).symm.trans ?_
+  rw [(Measure.ae_eq_or_eq_iff_map_eq_dirac_add_dirac hXmeas zero_ne_one).1 hX]
+  by_cases h : μ {ω | X ω = 1} = ⊤
+  · simp [h, Measure.real, Set.preimage, integral_undef, Integrable, HasFiniteIntegral]
+  rw [integral_add_measure ⟨by fun_prop, by simp [HasFiniteIntegral]⟩ <|
+    .smul_measure (by simp [integrable_dirac]) h]
+  simp [Measure.real, Set.preimage]
 
 /-- If a random variable is ae equal to `0` or `1`, then one minus its expectation is equal to the
 probability that it equals `0`. -/
@@ -173,8 +168,11 @@ It is meant to be used on `ℕ` and `ℝ` mainly. -/
 noncomputable def binomial (n : ℕ) (p : I) : Measure R :=
   Ber(Set.Iio n, p).map (Nat.cast ∘ Set.ncard)
 
-@[inherit_doc] scoped notation "Bin(" n ", " p ")" => binomial n p
-@[inherit_doc] scoped notation "Bin(" R' ", " n ", " p ")" => binomial (R := R') n p
+/-- The binomial probability distribution with parameter `p` valued in the semiring `R`. -/
+scoped notation3 "Bin(" R' ", " n ", " p ")" => binomial (R := R') n p
+
+/-- The binomial probability distribution with parameter `p`. -/
+scoped notation3 "Bin(" n ", " p ")" => Bin(ℕ, n, p)
 
 instance isProbabilityMeasure_binomial : IsProbabilityMeasure Bin(R, n, p) :=
   Measure.isProbabilityMeasure_map <| by fun_prop
@@ -186,7 +184,7 @@ instance isProbabilityMeasure_binomial : IsProbabilityMeasure Bin(R, n, p) :=
 
 variable (X n p) in
 /-- A random variable is binomial if it is distributed following the binomial distribution. -/
-abbrev IsBinomial (P : Measure Ω := by volume_tac) := HasLaw X Bin(n, p) P
+abbrev IsBinomial (P : Measure Ω := by volume_tac) := HasLaw X Bin(R, n, p) P
 
 lemma IsBinomial.id_binomial : IsBinomial id n p Bin(R, n, p) := .id
 
