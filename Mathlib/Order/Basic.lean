@@ -1158,13 +1158,16 @@ lemma eq_or_eq_or_eq_of_forall_not_lt_lt [LinearOrder α]
 
 namespace Empty
 
-instance instLinearOrder : LinearOrder Empty where
- le _ b := b.elim
- le_refl x := x.elim
- le_trans x y z := x.elim
- le_antisymm x := x.elim
- le_total x y := x.elim
- toDecidableLE _ _ := Decidable.isFalse id
+def linearOrder (α : Type*) [inst : IsEmpty α] : LinearOrder α where
+  le _ _ := False
+  le_refl x := inst.false x
+  le_trans x _ _ := (inst.false x).elim
+  le_antisymm x := (inst.false x).elim
+  le_total x _ := (inst.false x).elim
+  toDecidableLE x _ := Decidable.isFalse (inst.false x).elim
+
+attribute [instance] linearOrder Empty
+attribute [instance] linearOrder PEmpty
 
 end Empty
 

@@ -216,9 +216,10 @@ theorem card_eq_one (α : Type u) [FinEnum α] [Unique α] : card α = 1 :=
   card_eq_fintypeCard.trans <| Fintype.card_eq_one_iff_nonempty_unique.mpr ⟨‹_›⟩
 
 instance [IsEmpty α] : Unique (FinEnum α) where
-  default := ⟨0, Equiv.equivOfIsEmpty α (Fin 0)⟩
+  default := {(⟨0, Equiv.equivOfIsEmpty α (Fin 0)⟩ : FinEnum α) with
+    decEq :=  fun a b ↦ decidableEq_of_subsingleton a b}
   uniq e := by
-    change FinEnum.mk e.1 e.2 = _
+    change FinEnum.mk e.1 e.2 (decEq := decEq) = _
     congr 1
     · exact card_eq_zero
     · refine heq_of_cast_eq ?_ (Subsingleton.allEq _ _)
