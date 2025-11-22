@@ -3,10 +3,12 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+
 module
 
 public import Mathlib.Algebra.Module.Shrink
 public import Mathlib.LinearAlgebra.LinearPMap
+public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Logic.Small.Basic
 public import Mathlib.RingTheory.Ideal.Defs
 
@@ -439,3 +441,16 @@ lemma Module.Injective.extension_property
   (Module.Baer.of_injective inj).extension_property f hf g
 
 end lifting_property
+
+
+universe w in
+instance Module.Injective.pi
+    (R : Type u) [Ring R] {ι : Type w} (M : ι → Type v) [Small.{v} R]
+    [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
+    [∀ i, Module.Injective R (M i)] :
+    Module.Injective R (∀ i, M i) :=
+  ⟨fun X Y _ _ _ _ f hf g ↦ by
+    choose l hl using fun i ↦ extension_property R _ _ _ f hf ((LinearMap.proj i).comp g)
+    refine ⟨LinearMap.pi l, fun x ↦ ?_⟩
+    ext i
+    exact DFunLike.congr_fun (hl i) x⟩
