@@ -18,6 +18,15 @@ and the left and right homotopy relations `HomotopicL` and `HomotopicR` on the e
 We prove that for 2-truncated quasicategories, both homotopy relations are equivalence
 relations, and that the left and right homotopy relations coincide.
 
+For a 2-truncated quasicategory `A`, we define a category `HomotopyCategory₂ A` whose
+morphisms are given by (left) homotopy classes of edges. The construction of this category
+is different from `HomotopyCategory A` in `AlgebraicTopology.SimplicialSet.HomotopyCat`:
+* `HomotopyCategory₂ A` has morphisms given by homotopy classes of edges
+* `HomotopyCategory A` has morphisms given by equivalence classes of paths in the underlying
+  reflexive quiver of `A`.
+
+The two constructions agree for 2-truncated quasicategories (TODO: handled by future PR).
+
 ## Implementation notes
 
 Throughout this file, we make use of `Edge` and `CompStruct` to conveniently deal with
@@ -63,7 +72,7 @@ class Quasicategory₂ (X : Truncated 2) where
 
 /--
 Two edges `f` and `g` are left homotopic if there is a `CompStruct` with
-(0, 1)-edge `f`, (1, 2)-edge `id` and (0, 2)-edge `g`. We use `Nonempty` to
+(0, 1)-edge `f`, (1, 2)-edge `Edge.id` and (0, 2)-edge `g`. We use `Nonempty` to
 have a `Prop` valued `HomotopicL`.
 -/
 abbrev HomotopicL {X : Truncated 2} {x y : X _⦋0⦌₂} (f g : Edge x y) :=
@@ -71,7 +80,7 @@ abbrev HomotopicL {X : Truncated 2} {x y : X _⦋0⦌₂} (f g : Edge x y) :=
 
 /--
 Two edges `f` and `g` are right homotopic if there is a `CompStruct` with
-(0, 1)-edge `id`, (1, 2)-edge `f`, and (0, 2)-edge `g`. We use `Nonempty` to
+(0, 1)-edge `Edge.id`, (1, 2)-edge `f`, and (0, 2)-edge `g`. We use `Nonempty` to
 have a `Prop` valued `HomotopicR`.
 -/
 abbrev HomotopicR {X : Truncated 2} {x y : X _⦋0⦌₂} (f g : Edge x y) :=
@@ -81,12 +90,12 @@ section homotopy_eqrel
 variable {X : Truncated 2}
 
 /--
-Left homotopy relation is reflexive
+The left homotopy relation is reflexive.
 -/
 lemma HomotopicL.refl {x y : X _⦋0⦌₂} {f : Edge x y} : HomotopicL f f := ⟨compId f⟩
 
 /--
-Left homotopy relation is symmetric
+The left homotopy relation is symmetric.
 -/
 lemma HomotopicL.symm [Quasicategory₂ X] {x y : X _⦋0⦌₂} {f g : Edge x y} (hfg : HomotopicL f g) :
     HomotopicL g f := by
@@ -94,7 +103,7 @@ lemma HomotopicL.symm [Quasicategory₂ X] {x y : X _⦋0⦌₂} {f g : Edge x y
   exact Quasicategory₂.fill31 hfg (idComp (id y)) (compId f)
 
 /--
-Left homotopy relation is transitive
+The left homotopy relation is transitive.
 -/
 lemma HomotopicL.trans [Quasicategory₂ X] {x y : X _⦋0⦌₂} {f g h : Edge x y} (hfg : HomotopicL f g)
     (hgh : HomotopicL g h) : HomotopicL f h := by
@@ -103,12 +112,12 @@ lemma HomotopicL.trans [Quasicategory₂ X] {x y : X _⦋0⦌₂} {f g h : Edge 
   exact Quasicategory₂.fill32 hfg (idComp (id y)) hgh
 
 /--
-Right homotopy relation is reflexive
+The right homotopy relation is reflexive.
 -/
 lemma HomotopicR.refl {x y : X _⦋0⦌₂} {f : Edge x y} : HomotopicR f f := ⟨idComp f⟩
 
 /--
-Right homotopy relation is symmetric
+The right homotopy relation is symmetric.
 -/
 lemma HomotopicR.symm [Quasicategory₂ X] {x y : X _⦋0⦌₂} {f g : Edge x y} (hfg : HomotopicR f g) :
     HomotopicR g f := by
@@ -116,7 +125,7 @@ lemma HomotopicR.symm [Quasicategory₂ X] {x y : X _⦋0⦌₂} {f g : Edge x y
   exact Quasicategory₂.fill32 (idComp (id x)) hfg (idComp f)
 
 /--
-Right homotopy relation is transitive
+The right homotopy relation is transitive.
 -/
 lemma HomotopicR.trans [Quasicategory₂ X] {x y : X _⦋0⦌₂} {f g h : Edge x y} (hfg : HomotopicR f g)
     (hgh : HomotopicR g h) : HomotopicR f h := by
@@ -125,7 +134,7 @@ lemma HomotopicR.trans [Quasicategory₂ X] {x y : X _⦋0⦌₂} {f g h : Edge 
   exact Quasicategory₂.fill31 (idComp (id x)) hfg hgh
 
 /--
-In a 2-truncated quasicategory, left homotopy implies right homotopy
+In a 2-truncated quasicategory, left homotopy implies right homotopy.
 -/
 lemma HomotopicL.homotopicR [Quasicategory₂ X] {x y : X _⦋0⦌₂} {f g : Edge x y}
     (h : HomotopicL f g) : HomotopicR f g := by
@@ -133,7 +142,7 @@ lemma HomotopicL.homotopicR [Quasicategory₂ X] {x y : X _⦋0⦌₂} {f g : Ed
   exact Quasicategory₂.fill32 (idComp f) (compId f) h
 
 /--
-In a 2-truncated quasicategory, right homotopy implies left homotopy
+In a 2-truncated quasicategory, right homotopy implies left homotopy.
 -/
 lemma HomotopicR.homotopicL [Quasicategory₂ X] {x y : X _⦋0⦌₂} {f g : Edge x y}
     (h : HomotopicR f g) : HomotopicL f g := by
@@ -141,12 +150,135 @@ lemma HomotopicR.homotopicL [Quasicategory₂ X] {x y : X _⦋0⦌₂} {f g : Ed
   exact Quasicategory₂.fill31 (idComp f) (compId f) h
 
 /--
-In a 2-truncated quasicategory, the right and left homotopy relations coincide
+In a 2-truncated quasicategory, the right and left homotopy relations coincide.
 -/
 theorem homotopicL_iff_homotopicR [Quasicategory₂ X] {x y : X _⦋0⦌₂} {f g : Edge x y} :
     HomotopicL f g ↔ HomotopicR f g :=
   ⟨HomotopicL.homotopicR, HomotopicR.homotopicL⟩
 
 end homotopy_eqrel
+
+
+section homotopy_category
+variable {A : Truncated 2} [Quasicategory₂ A] {x y z : A _⦋0⦌₂}
+
+/--
+Given `CompStruct f g h` and `CompStruct f' g' h'` with the same vertices and edges such
+that `f` ≃ `f'` and `g` ≃ `g'`, then the long diagonal edges `h` and `h'` are also homotopic.
+-/
+lemma Edge.CompStruct.comp_unique {f f' : Edge x y} {g g' : Edge y z} {h h' : Edge x z}
+    (s : CompStruct f g h) (s' : CompStruct f' g' h')
+    (hf : HomotopicL f f') (hg : HomotopicL g g') : HomotopicL h h' := by
+  rcases hg.homotopicR with ⟨hg⟩
+  rcases hf with ⟨hf⟩
+  let ⟨s₁⟩ := Quasicategory₂.fill32 hf (idComp g') s'
+  let ⟨s₂⟩ := Quasicategory₂.fill31 (compId f) hg s₁
+  exact Quasicategory₂.fill31 s (compId g) s₂
+
+/--
+Given two consecutive edges `f`, `g`  in a 2-truncated quasicategory, nonconstructively choose:
+* an edge that is the diagonal of a 2-simplex with spine given by `f` and `g`, and
+* a 2-simplex witness this property.
+-/
+noncomputable
+def composeEdges (f : Edge x y) (g : Edge y z) :=
+  Nonempty.some (Quasicategory₂.fill21 f g)
+
+/--
+The edge `composeEdges f g` is the unique edge up to homotopy such that there is
+a 2-simplex with spine given by `f` and `g`
+-/
+lemma composeEdges_unique {f : Edge x y} {g : Edge y z} {h : Edge x z}
+    (s : CompStruct f g h) : HomotopicL h (composeEdges f g).1 :=
+  comp_unique s (composeEdges f g).2 .refl .refl
+
+/--
+Given two pairs of composable edges `f`, `g` and `f'`, `g'` such that `f` ≃ `f'` and
+`g` ≃ `g'`, their composites `h` and `h'` chosen by `composeEdges` are homotopic.
+-/
+lemma composeEdges_homotopic {f f' : Edge x y} {g g' : Edge y z}
+    (hf : HomotopicL f f') (hg : HomotopicL g g') :
+    HomotopicL (composeEdges f g).1 (composeEdges f' g').1 :=
+  comp_unique (composeEdges f g).2 (composeEdges f' g').2 hf hg
+
+/--
+The homotopy category of a 2-truncated quasicategory `A` has as objects the vertices of `A`
+-/
+structure HomotopyCategory₂ (A : Truncated 2) where
+  /-- An object of the homotopy category is a vertex of `A`. -/
+  pt : A _⦋0⦌₂
+
+/--
+Left homotopy is an equivalence relation on the edges of `A`.
+Remark: We could have equivalently chosen right homotopy, as shown by `homotopicL_iff_homotopicR`.
+-/
+instance instSetoidEdge (x y : A _⦋0⦌₂) : Setoid (Edge x y) where
+  r := HomotopicL
+  iseqv := ⟨fun _ ↦ HomotopicL.refl, HomotopicL.symm, HomotopicL.trans⟩
+
+/--
+The morphisms between two vertices `x`, `y` in `HomotopyCategory₂ A` are homotopy classes
+of edges between `x` and `y`.
+-/
+def HomotopyCategory₂.Hom (x y : HomotopyCategory₂ A) := Quotient (instSetoidEdge x.pt y.pt)
+
+/--
+Composition of morphisms in `HomotopyCategory₂ A` is given by lifting the edge
+chosen by `composeEdges`.
+-/
+noncomputable
+instance : CategoryStruct (HomotopyCategory₂ A) where
+  Hom x y := HomotopyCategory₂.Hom x y
+  id x := Quotient.mk' (Edge.id x.pt)
+  comp := Quotient.lift₂
+    (fun f g ↦ ⟦(composeEdges f g).1⟧)
+    (fun _ _ _ _ hf hg ↦ Quotient.sound (composeEdges_homotopic hf hg))
+
+/--
+Any edge in the 2-truncated simplicial set `A` defines a morphism in the homotopy category
+by taking its equivalence class.
+-/
+def homMk {x y : HomotopyCategory₂ A} (f : Edge x.pt y.pt) : x ⟶ y := ⟦f⟧
+
+/--
+The trivial (degenerate) edge at a vertex `x` is a representative for the
+identity morphism `x ⟶ x`.
+-/
+@[simp]
+lemma homMk_refl (x : HomotopyCategory₂ A) : homMk (Edge.id x.pt) = 𝟙 x := rfl
+
+/--
+(Left) homotopic edges represent the same morphism in the homotopy category.
+-/
+lemma homMk_eq_of_homotopy {f f' : Edge x y} (h : HomotopicL f f') :
+  homMk f = homMk f' := Quotient.eq.mpr h
+
+/--
+A `CompStruct f g h` is a witness for the fact that the morphisms represented by
+`f` and `g` compose to the morphism represented by `h`.
+-/
+lemma Edge.CompStruct.witness_comp {f : Edge x y} {g : Edge y z} {h : Edge x z}
+    (s : CompStruct f g h) : homMk f ≫ homMk g = homMk h :=
+  homMk_eq_of_homotopy (composeEdges_unique s).symm
+
+noncomputable
+instance instCategoryHomotopyCategory₂ : Category (HomotopyCategory₂ A) where
+  id_comp f := by
+    rcases f with ⟨f⟩
+    apply Quotient.sound
+    exact symm (composeEdges_unique (CompStruct.idComp f))
+  comp_id f := by
+    rcases f with ⟨f⟩
+    apply Quotient.sound
+    exact symm (composeEdges_unique (CompStruct.compId f))
+  assoc f g h := by
+    rcases f, g, h with ⟨⟨f⟩, ⟨g⟩, ⟨h⟩⟩
+    apply Quotient.sound
+    apply composeEdges_unique
+    let fg := (composeEdges f g).1
+    apply Nonempty.some
+    exact Quasicategory₂.fill32 (composeEdges f g).2 (composeEdges g h).2 (composeEdges fg h).2
+
+end homotopy_category
 
 end SSet.Truncated
