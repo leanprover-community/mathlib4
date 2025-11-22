@@ -18,7 +18,9 @@ universe w v u
 
 open CategoryTheory
 
-namespace CategoryTheory.Prod
+namespace CategoryTheory.prod
+
+open scoped Prod
 
 variable (C : Type u) [Category.{v} C]
 
@@ -68,4 +70,4 @@ instance leftUnitor_isEquivalence : (leftUnitor C).IsEquivalence :=
 instance rightUnitor_isEquivalence : (rightUnitor C).IsEquivalence :=
   (rightUnitorEquivalence C).isEquivalence_functor
 
-end CategoryTheory.Prod
+end CategoryTheory.prod
