@@ -13,12 +13,20 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
 /-!
 # The strict bicategory of quasicategories
 
-In this file we define a strict bicategory whose objects are quasicategories,
-whose `1`-morphisms are maps of simplicial sets, and whose `2`-morphisms are homotopy classes of
-homotopies between them, defined using the simplicial interval `Δ[1]`.
+In this file we define a strict bicategory `QCat.strictBicategory` whose objects
+are quasicategories.
 
-This is defined by transfering the simplicial enrichment of the category of quasicategories to
-a categorical enrichment by applying `hoFunctor : SSet ⥤ Cat` to the hom-objects.
+This strict category is defined from `QCat.CatEnrichedOrdinaryCat` a `Cat`-enriched
+ordinary category of quasicategories whose hom-categories are the homotopy categories
+of the simplicial internal homs, defined  by applying `hoFunctor : SSet ⥤ Cat`.
+
+As an enriched ordinary category, there is an equivalence `QCat.forgetEnrichment.equiv`
+between the underlying category and the full subcategory of quasicategories. Thus the
+`1`-morphisms of `QCat.strictBicategory` are maps of simplicial sets.
+
+Future work will use the fact that quasicategories define a cartesian closed subcategory
+of simplicial sets to identify the  `2`-morphisms of `QCat.strictBicategory` with
+homotopy classes of homotopies between them, defined using the simplicial interval `Δ[1]`.
 
 This strict bicategory serves as a setting to develop the formal category theory of quasicategories.
 
