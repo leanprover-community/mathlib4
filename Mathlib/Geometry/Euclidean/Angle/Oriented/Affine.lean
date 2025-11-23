@@ -6,7 +6,6 @@ Authors: Joseph Myers
 import Mathlib.Analysis.Convex.Side
 import Mathlib.Geometry.Euclidean.Angle.Oriented.Rotation
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Angle
 
 /-!
 # Oriented angles.
@@ -204,23 +203,16 @@ theorem oangle_sign_eq_zero_iff_collinear {p₁ p₂ p₃ : P} :
 /-- An oriented angle is not zero and `π` if and only if the three points are not collinear. -/
 theorem oangle_ne_zero_and_ne_pi_iff_not_collinear {p₁ p₂ p₃ : P} :
   ∡ p₁ p₂ p₃ ≠ 0 ∧ ∡ p₁ p₂ p₃ ≠ π ↔ ¬ Collinear ℝ {p₁, p₂, p₃} := by
-  rw[oangle_ne_zero_and_ne_pi_iff_affineIndependent, affineIndependent_iff_not_collinear_set]
+  rw [oangle_ne_zero_and_ne_pi_iff_affineIndependent, affineIndependent_iff_not_collinear_set]
 
 /-- If two oriented angles are equal, one triple is affinely independent if and only if
 the other is. -/
 theorem affineIndependent_iff_of_oangle_eq {p₁ p₂ p₃ p₁' p₂' p₃' : P}
   (h_eq : ∡ p₁ p₂ p₃ = ∡ p₁' p₂' p₃') :
   AffineIndependent ℝ ![p₁, p₂, p₃] ↔ AffineIndependent ℝ ![p₁', p₂', p₃'] := by
-  rw [←oangle_ne_zero_and_ne_pi_iff_affineIndependent]
-  rw [←oangle_ne_zero_and_ne_pi_iff_affineIndependent]
-  rw [h_eq]
+  rw [←oangle_ne_zero_and_ne_pi_iff_affineIndependent,
+  ←oangle_ne_zero_and_ne_pi_iff_affineIndependent, h_eq]
 
-/-- If two oriented angles are equal, one triple is collinear if and only if the other is. -/
-theorem not_colliner_iff_of_angle_eq {p₁ p₂ p₃ p₁' p₂' p₃' : P}
-    (h_eq : ∡ p₁ p₂ p₃ = ∡ p₁' p₂' p₃') :
-    ¬ Collinear ℝ ({p₁, p₂, p₃} : Set P) ↔ ¬ Collinear ℝ ({p₁', p₂', p₃'} : Set P) := by
-  rw [←affineIndependent_iff_not_collinear_set, ←affineIndependent_iff_not_collinear_set]
-  exact affineIndependent_iff_of_oangle_eq h_eq
 
 /-- If twice the oriented angles between two triples of points are equal, one triple is affinely
 independent if and only if the other is. -/
@@ -363,41 +355,18 @@ theorem oangle_eq_or_eq_neg_of_angle_eq {p₁ p₂ p₃ p₄ p₅ p₆ : P} (h :
   have h_2 := EuclideanGeometry.oangle_eq_angle_or_eq_neg_angle h3.symm h4.symm
   rcases h_1 with h₁ | h₁ <;> rcases h_2 with h₂ | h₂
   · left
-    rw[h₁, h₂, h]
+    rw [h₁, h₂, h]
   · right
-    rw[h₁, h₂, h, neg_neg]
+    rw [h₁, h₂, h, neg_neg]
   · right
-    rw[h₁, h₂, h]
+    rw [h₁, h₂, h]
   · left
-    rw[h₁, h₂, h]
+    rw [h₁, h₂, h]
 
-theorem angle_eq_neg_of_two_zsmul_angle_eq (a b : Real.Angle) (h : 2 • a = 2 • b)
-  (h_sign : a.sign = -b.sign) (h_ne : b.sign ≠ 0) : a = b + π := by
-  have h1:= Real.Angle.two_zsmul_eq_iff.mp h
-  rcases h1 with h2 | h3
-  · rw [h2] at h_sign
-    simp at h_sign
-    rw [h_sign] at h_ne
-    contradiction
-  · rw [h3]
 
-theorem two_zsmul_eq_iff_eq {a b : Real.Angle}
-    {ha : a.sign ≠ 0} {h : a.sign = b.sign} :
-    (2:ℤ) • a = (2:ℤ) • b ↔ a = b:= by
-  rw[Real.Angle.two_zsmul_eq_iff]
-  constructor
-  · intro h
-    rcases h with h1 | h2
-    · exact h1
-    · have : a.sign = (b + π).sign := by aesop
-      rw [Real.Angle.sign_add_pi] at this
-      have := congr_arg (· = b.sign) this
-      aesop
-  · intro h
-    aesop
 
-/-- If the signs of two oriented angles are equal and triple of points is not collinear,
-then their difference is not π when the second. -/
+/-- If two oriented angles have the same sign and the second triple of points is not collinear,
+then their difference cannot be equal to `π`. -/
 theorem oangle_sub_oangle_ne_pi_of_not_collinear {a b c a' b' c' : P}
   (h_not_col' : ¬ Collinear ℝ ({a', b', c'} : Set P))
   (h_sign : (∡ a b c).sign = (∡ a' b' c').sign) :
@@ -408,11 +377,11 @@ theorem oangle_sub_oangle_ne_pi_of_not_collinear {a b c a' b' c' : P}
   have h_sign' := h_sign
   rw [h', Real.Angle.sign_add_pi] at h_sign'
   have angle_neq_zero : ∡ a' b' c' ≠ 0 ∧ ∡ a' b' c' ≠ π := by
-    rw[oangle_ne_zero_and_ne_pi_iff_not_collinear]
+    rw [oangle_ne_zero_and_ne_pi_iff_not_collinear]
     exact h_not_col'
   have angle_eq_zero : ∡ a' b' c' = 0 ∨ ∡ a' b' c' = ↑π  := by
     simp at h_sign'
-    simp_rw[Real.Angle.sign_eq_zero_iff] at h_sign'
+    simp_rw [Real.Angle.sign_eq_zero_iff] at h_sign'
     exact h_sign'
   aesop
 
