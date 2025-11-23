@@ -636,7 +636,7 @@ protected lemma Reachable.subgraphCoeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Su
 
 namespace Subgraph
 
-protected lemma Preconnected.map_coe {G' : G.Subgraph} {G'' : G'.coe.Subgraph}
+protected lemma Preconnected.map {G' : G.Subgraph} {G'' : G'.coe.Subgraph}
     (f : G'.coe →g G) (hpreconn : G''.Preconnected) : (G''.map f).Preconnected := by
   rw [Subgraph.preconnected_iff]
   intro ⟨u', u, hu, hfu⟩ ⟨v', v, hv, hfv⟩
