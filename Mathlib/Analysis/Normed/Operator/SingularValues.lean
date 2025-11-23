@@ -19,12 +19,16 @@ public noncomputable def ContinuousLinearMap.singularValue {𝕜 : Type*} [Nontr
   -- https://leanprover-community.github.io/extras/pitfalls.html#accidental-double-iinf-or-isup
   ⨅ H : {S : X →L[𝕜] Y // S.rank ≤ ↑n}, ‖T - H‖₊
 
-section arbitrary_dimensional_not_necessarily_complete_normed_space
+section seminormed_space
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {X : Type*} [SeminormedAddCommGroup X] [NormedSpace 𝕜 X]
   {Y : Type*} [SeminormedAddCommGroup Y] [NormedSpace 𝕜 Y]
   (T : X →L[𝕜] Y)
+
+public theorem ContinuousLinearMap.singularValue_def (n : ℕ)
+  : T.singularValue n = ⨅ H : {S : X →L[𝕜] Y // S.rank ≤ ↑n}, ‖T - H‖₊ := by
+  rfl
 
 public theorem ContinuousLinearMap.singularValue_le {n : ℕ} {H : X →L[𝕜] Y} (h : H.rank ≤ n)
   : T.singularValue n ≤ ‖T - H‖₊ :=
@@ -121,6 +125,9 @@ public theorem ContinuousLinearMap.iInf_singularValue
 
 -- Look into Mathlib.Topology.Order.MonotoneConvergence to prove the following
 open Cardinal in
+/--
+The sequence of singular values converges to their infimum.
+-/
 public theorem ContinuousLinearMap.tendsto_atTop_singularValue
   : Tendsto T.singularValue (atTop : Filter ℕ)
     (𝓝 (⨅ H : {S : X →L[𝕜] Y // S.rank < ℵ₀}, ‖T - H‖₊)) := by
@@ -177,17 +184,52 @@ We still need axiom S4 for s-numbers as defined by
 https://link.springer.com/article/10.1007/s43036-024-00386-x
 -/
 
+/--
+Similar in structure to `Real.lt_sInf_add_pos`
+-/
+public theorem ContinuousLinearMap.lt_singularValue_add_pos (n : ℕ) {ε : ℝ≥0} (hε : 0 < ε)
+  : ∃ R : X →L[𝕜] Y, R.rank ≤ ↑n ∧ ‖T - R‖₊ < T.singularValue n + ε := by
+  have : Nonempty {S : X →L[𝕜] Y // S.rank ≤ n} := ⟨⟨0, by simp [LinearMap.rank_zero]⟩⟩
+  have : T.singularValue n < T.singularValue n + ε := by grind
+  rw [T.singularValue_def] at this
+  obtain ⟨⟨R, hR₁⟩, hR₂⟩ := exists_lt_of_ciInf_lt this
+  exact ⟨R, hR₁, hR₂⟩
+
+end seminormed_space
+
+-- Complete normed vector space (must be normed and thus T2, not just seminormed)
+section banach_space
+
 -- In every Banach Space, every operator that is the limit of finite-rank operators is compact.
 -- Spaces for which the converse hold are said to have the "Approximation Property".
 -- https://en.wikipedia.org/wiki/Approximation_property
 -- All Hilbert spaces have the approximation property.
 
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X] [CompleteSpace X]
+  {Y : Type*} [NormedAddCommGroup Y] [NormedSpace 𝕜 Y] [CompleteSpace Y]
+  (T : X →L[𝕜] Y)
+
 -- Note: might require space to be complete (i.e. a Banach space instead of just a normed space)
 -- Probably want to use ContinuousLinearMap.iInf_singularValue in the proof
 public theorem ContinuousLinearMap.isCompactOperator_of_iInf_singularValue_eq_zero
-  (h : ⨅ n : ℕ, T.singularValue n = 0) : IsCompactOperator T := sorry
+  (h : ⨅ n : ℕ, T.singularValue n = 0) : IsCompactOperator T := by
+  -- We can choose `R n` such that `‖T - R n‖ < T.singularValue n + 1/(n + 1)`
+  have hT (n : ℕ) := T.lt_singularValue_add_pos n (Nat.one_div_pos_of_nat : 0 < 1/((n : ℝ≥0) + 1))
+  let R (n : ℕ) := Classical.choose (hT n)
+  have hR (n : ℕ) : (R n).rank ≤ n ∧ ‖T - R n‖₊ < T.singularValue n + 1/((n : ℝ≥0) + 1)
+    := Classical.choose_spec (hT n)
 
-end arbitrary_dimensional_not_necessarily_complete_normed_space
+  -- It suffices to show that `R n` converges to `T` and that all but finitely many `R n` are finite
+  -- rank (in fact, they are all finite rank).
+  apply isCompactOperator_of_tendsto (F := R) (l := Filter.atTop)
+  · sorry
+  · apply Filter.Eventually.of_forall
+    intro n
+    sorry
+    --exact (hR n).left
+
+end banach_space
 
 -- Banach Spaces
 section arbitrary_dimensional_complete_normed_space
