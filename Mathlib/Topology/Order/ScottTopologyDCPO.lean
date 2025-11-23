@@ -3,9 +3,11 @@ Copyright (c) 2025 Edwin Fernando. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Edwin Fernando
 -/
-import Mathlib.Order.CompletePartialOrder
-import Mathlib.Topology.Order.ScottTopology
-import Mathlib.Topology.Sets.Opens
+module
+
+public import Mathlib.Order.CompletePartialOrder
+public import Mathlib.Topology.Order.ScottTopology
+public import Mathlib.Topology.Sets.Opens
 
 /-!
 # Scott Complete Partial Order
@@ -46,6 +48,8 @@ are provided
 
 Scott topology, Algebraic DCPO, Stone Duality
 -/
+
+@[expose] public section
 
 /-- notation for upward closure (↑ was taken) -/
 notation x:80 "ᵘ" => Set.Ici x
