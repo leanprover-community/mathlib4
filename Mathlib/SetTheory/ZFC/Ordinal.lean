@@ -3,9 +3,11 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.Order.GameAdd
-import Mathlib.Order.RelIso.Set
-import Mathlib.SetTheory.ZFC.Basic
+module
+
+public import Mathlib.Order.GameAdd
+public import Mathlib.Order.RelIso.Set
+public import Mathlib.SetTheory.ZFC.Basic
 
 /-!
 # Von Neumann ordinals
@@ -23,6 +25,8 @@ under `∈`.
 
 - Build correspondences between these set notions and those of the standard `Ordinal` type.
 -/
+
+@[expose] public section
 
 universe u
 
@@ -157,8 +161,8 @@ theorem subset_iff_eq_or_mem (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ⊆ y ↔
     intro x y IH hx hy hxy
     by_cases hyx : y ⊆ x
     · exact Or.inl (subset_antisymm hxy hyx)
-    · obtain ⟨m, hm, hm'⟩ := mem_wf.has_min (y.toSet \ x.toSet) (Set.diff_nonempty.2 hyx)
-      have hmy : m ∈ y := show m ∈ y.toSet from Set.mem_of_mem_diff hm
+    · obtain ⟨m, hm, hm'⟩ := mem_wf.has_min (y \ x) (Set.diff_nonempty.2 hyx)
+      have hmy : m ∈ y := by simp only [Set.mem_diff, SetLike.mem_coe] at hm; exact hm.1
       have hmx : m ⊆ x := by
         intro z hzm
         by_contra hzx

@@ -3,14 +3,18 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Yaël Dillies
 -/
-import Mathlib.Algebra.NoZeroSMulDivisors.Defs
-import Mathlib.Algebra.Group.Action.Pi
+module
+
+public import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+public import Mathlib.Algebra.Group.Action.Pi
 
 /-!
 # Pi instances for NoZeroSMulDivisors
 
 This file defines instances for NoZeroSMulDivisors on Pi types.
 -/
+
+@[expose] public section
 
 
 universe u v

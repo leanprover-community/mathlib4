@@ -3,8 +3,10 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
-import Mathlib.Analysis.Normed.Ring.WithAbs
+module
+
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Basic
+public import Mathlib.Analysis.Normed.Ring.WithAbs
 
 /-!
 # Ramification of infinite places of a number field
@@ -29,6 +31,8 @@ This file studies the ramification of infinite places of a number field.
 
 number field, infinite places, ramification
 -/
+
+@[expose] public section
 
 open NumberField Fintype Module
 

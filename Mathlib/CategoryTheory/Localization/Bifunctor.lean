@@ -3,8 +3,10 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Prod
-import Mathlib.CategoryTheory.Functor.Currying
+module
+
+public import Mathlib.CategoryTheory.Localization.Prod
+public import Mathlib.CategoryTheory.Functor.Currying
 
 /-!
 # Lifting of bifunctors
@@ -26,6 +28,8 @@ we introduce `Localization.lift₂ F hF L₁ L₂ : D₁ ⥤ D₂ ⥤ E` which i
 which lifts `F`.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -132,6 +136,23 @@ variable (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂)
   (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
   [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
   [W₁.ContainsIdentities] [W₂.ContainsIdentities]
+  (F : C₁ ⥤ C₂ ⥤ E) (F' : D₁ ⥤ D₂ ⥤ E)
+  [Lifting₂ L₁ L₂ W₁ W₂ F F']
+
+noncomputable instance Lifting₂.compRight {E' : Type*} [Category E'] (G : E ⥤ E') :
+    Lifting₂ L₁ L₂ W₁ W₂
+      (F ⋙ (whiskeringRight _ _ _).obj G)
+      (F' ⋙ (whiskeringRight _ _ _).obj G) :=
+  ⟨isoWhiskerRight (iso L₁ L₂ W₁ W₂ F F') ((whiskeringRight _ _ _).obj G)⟩
+
+end
+
+section
+
+variable (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂)
+  (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
+  [L₁.IsLocalization W₁] [L₂.IsLocalization W₂]
+  [W₁.ContainsIdentities] [W₂.ContainsIdentities]
   (F₁ F₂ : C₁ ⥤ C₂ ⥤ E) (F₁' F₂' : D₁ ⥤ D₂ ⥤ E)
   [Lifting₂ L₁ L₂ W₁ W₂ F₁ F₁'] [Lifting₂ L₁ L₂ W₁ W₂ F₂ F₂']
 
@@ -162,6 +183,7 @@ theorem natTrans₂_ext {τ τ' : F₁' ⟶ F₂'}
 /-- The natural isomorphism `F₁' ≅ F₂'` of bifunctors induced by a
 natural isomorphism `e : F₁ ≅ F₂` when `Lifting₂ L₁ L₂ W₁ W₂ F₁ F₁'`
 and `Lifting₂ L₁ L₂ W₁ W₂ F₂ F₂'` hold. -/
+@[simps]
 noncomputable def lift₂NatIso (e : F₁ ≅ F₂) : F₁' ≅ F₂' where
   hom := lift₂NatTrans L₁ L₂ W₁ W₂ F₁ F₂ F₁' F₂' e.hom
   inv := lift₂NatTrans L₁ L₂ W₁ W₂ F₂ F₁ F₂' F₁' e.inv

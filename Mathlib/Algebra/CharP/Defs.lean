@@ -3,11 +3,13 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Data.Nat.Find
-import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Data.Int.Cast.Basic
-import Mathlib.Order.Lattice
+module
+
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Data.Nat.Find
+public import Mathlib.Data.Nat.Prime.Defs
+public import Mathlib.Data.Int.Cast.Basic
+public import Mathlib.Order.Lattice
 
 /-!
 # Characteristic of semirings
@@ -19,6 +21,8 @@ import Mathlib.Order.Lattice
   exponential characteristic `p` (which is `1` if `R` has characteristic 0, and `p` if it has
   prime characteristic `p`)
 -/
+
+@[expose] public section
 
 assert_not_exists Field Finset OrderHom
 

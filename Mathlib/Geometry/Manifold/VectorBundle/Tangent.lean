@@ -3,7 +3,9 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
-import Mathlib.Geometry.Manifold.VectorBundle.Basic
+module
+
+public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 /-! # Tangent bundles
 
@@ -32,6 +34,8 @@ This defines a vector bundle `TangentBundle` with fibers `TangentSpace`.
   structure over `M`. In particular, it is a topological space, a vector bundle, a fiber bundle,
   and a `C^n` manifold.
 -/
+
+@[expose] public section
 
 
 open Bundle Set IsManifold OpenPartialHomeomorph ContinuousLinearMap

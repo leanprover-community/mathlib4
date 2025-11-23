@@ -3,11 +3,13 @@ Copyright (c) 2024 Frédéric Marbach. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Marbach
 -/
-import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Algebra.Lie.Subalgebra
-import Mathlib.RingTheory.Nilpotent.Exp
-import Mathlib.RingTheory.Noetherian.Basic
+module
+
+public import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.Algebra.Lie.Subalgebra
+public import Mathlib.RingTheory.Nilpotent.Exp
+public import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Lie derivations
@@ -35,6 +37,8 @@ the `RingTheory.Derivation.Basic.lean` file.
 - Since we don't have right actions of Lie algebras, the second term in the Leibniz rule is written
 as `- [b, D a]`. Within Lie algebras, skew symmetry restores the expected definition `[D a, b]`.
 -/
+
+@[expose] public section
 
 /-- A Lie derivation `D` from the Lie `R`-algebra `L` to the `L`-module `M` is an `R`-linear map
 that satisfies the Leibniz rule `D [a, b] = [a, D b] - [b, D a]`. -/

@@ -3,7 +3,9 @@ Copyright (c) 2022 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Order.SuccPred.Archimedean
+module
+
+public import Mathlib.Order.SuccPred.Archimedean
 
 /-!
 # Relations on types with a `SuccOrder`
@@ -11,6 +13,8 @@ import Mathlib.Order.SuccPred.Archimedean
 This file contains properties about relations on types with a `SuccOrder`
 and their closure operations (like the transitive closure).
 -/
+
+@[expose] public section
 
 open Function Order Relation Set
 

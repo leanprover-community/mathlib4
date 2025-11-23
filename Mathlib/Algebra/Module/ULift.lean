@@ -3,10 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.GroupWithZero.ULift
-import Mathlib.Algebra.Ring.ULift
-import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.Data.ULift
+module
+
+public import Mathlib.Algebra.GroupWithZero.ULift
+public import Mathlib.Algebra.Ring.ULift
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Data.ULift
 
 /-!
 # `ULift` instances for module and multiplicative actions
@@ -17,6 +19,8 @@ This file defines instances for module, mul_action and related structures on `UL
 
 We also provide `ULift.moduleEquiv : ULift M ≃ₗ[R] M`.
 -/
+
+@[expose] public section
 
 
 namespace ULift

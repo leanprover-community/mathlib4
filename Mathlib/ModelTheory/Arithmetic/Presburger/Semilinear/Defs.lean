@@ -3,8 +3,10 @@ Copyright (c) 2025 Dexin Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dexin Zhang
 -/
-import Mathlib.GroupTheory.Finiteness
-import Mathlib.LinearAlgebra.LinearIndependent.Defs
+module
+
+public import Mathlib.GroupTheory.Finiteness
+public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 
 /-!
 # Linear and semilinear sets
@@ -41,6 +43,8 @@ of sets in form `{ x | ∃ y, p x y }`.
 * [Seymour Ginsburg and Edwin H. Spanier, *Bounded ALGOL-Like Languages*][ginsburg1964]
 * [Samuel Eilenberg and M. P. Schützenberger, *Rational Sets in Commutative Monoids*][eilenberg1969]
 -/
+
+@[expose] public section
 
 variable {M N ι κ F : Type*} [AddCommMonoid M] [AddCommMonoid N]
   [FunLike F M N] [AddMonoidHomClass F M N] {a : M} {s s₁ s₂ : Set M}

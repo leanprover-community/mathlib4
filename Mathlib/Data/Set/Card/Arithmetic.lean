@@ -3,10 +3,11 @@ Copyright (c) 2025 Pim Otte. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pim Otte
 -/
+module
 
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Data.Set.Card
-import Mathlib.SetTheory.Cardinal.Arithmetic
+public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Data.Set.Card
+public import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 # Results using cardinal arithmetic
@@ -20,6 +21,8 @@ It has been separated out to not burden `Mathlib/Data/Set/Card.lean` with extra 
   disjoint sets `t` and `u` such that `t ∪ u = s` and `t.ncard = u.ncard`.
 - `exists_union_disjoint_cardinal_eq_iff` is the same, except using cardinal notation.
 -/
+
+@[expose] public section
 
 variable {α ι : Type*}
 

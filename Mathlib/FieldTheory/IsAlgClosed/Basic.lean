@@ -3,10 +3,12 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.FieldTheory.Extension
-import Mathlib.FieldTheory.Normal.Defs
-import Mathlib.FieldTheory.Perfect
-import Mathlib.RingTheory.Localization.Integral
+module
+
+public import Mathlib.FieldTheory.Extension
+public import Mathlib.FieldTheory.Normal.Defs
+public import Mathlib.FieldTheory.Perfect
+public import Mathlib.RingTheory.Localization.Integral
 
 /-!
 # Algebraically Closed Field
@@ -44,6 +46,8 @@ algebraic closure, algebraically closed
 
 -/
 
+@[expose] public section
+
 universe u v w
 
 open Polynomial
@@ -57,14 +61,15 @@ see `IsAlgClosed.splits_codomain` and `IsAlgClosed.splits_domain`.
 -/
 @[stacks 09GR "The definition of `IsAlgClosed` in mathlib is 09GR (4)"]
 class IsAlgClosed : Prop where
-  factors : ∀ p : k[X], p.Factors
+  -- todo: rename to `splits`
+  factors : ∀ p : k[X], p.Splits
 
 /-- Every polynomial splits in the field extension `f : K →+* k` if `k` is algebraically closed.
 
 See also `IsAlgClosed.splits_domain` for the case where `K` is algebraically closed.
 -/
 theorem IsAlgClosed.splits_codomain {k K : Type*} [Field k] [IsAlgClosed k] [CommRing K]
-    {f : K →+* k} (p : K[X]) : p.Splits f :=
+    {f : K →+* k} (p : K[X]) : (p.map f).Splits :=
   IsAlgClosed.factors (p.map f)
 
 /-- Every polynomial splits in the field extension `f : K →+* k` if `K` is algebraically closed.
@@ -72,14 +77,14 @@ theorem IsAlgClosed.splits_codomain {k K : Type*} [Field k] [IsAlgClosed k] [Com
 See also `IsAlgClosed.splits_codomain` for the case where `k` is algebraically closed.
 -/
 theorem IsAlgClosed.splits_domain {k K : Type*} [Field k] [IsAlgClosed k] [Field K] {f : k →+* K}
-    (p : k[X]) : p.Splits f :=
+    (p : k[X]) : (p.map f).Splits :=
   (IsAlgClosed.factors p).map f
 
 namespace IsAlgClosed
 
 variable {k}
 
-theorem splits [IsAlgClosed k] (p : k[X]) : p.Splits (RingHom.id k) :=
+theorem splits [IsAlgClosed k] (p : k[X]) : (p.map (RingHom.id k)).Splits :=
   (IsAlgClosed.factors p).map (RingHom.id k)
 
 /--
@@ -192,7 +197,7 @@ If every nonconstant polynomial over `k` has a root, then `k` is algebraically c
 @[stacks 09GR "(3) ⟹ (4)"]
 theorem of_exists_root (H : ∀ p : k[X], p.Monic → Irreducible p → ∃ x, p.eval x = 0) :
     IsAlgClosed k := by
-  refine ⟨fun p ↦ factors_iff_splits.mpr <| Or.inr ?_⟩
+  refine ⟨fun p ↦ splits_iff_splits.mpr <| Or.inr ?_⟩
   intro q hq _
   have : Irreducible (q * C (leadingCoeff q)⁻¹) := by
     classical
@@ -294,7 +299,8 @@ instance IsAlgClosed.instIsAlgClosure (F : Type*) [Field F] [IsAlgClosed F] : Is
 
 theorem IsAlgClosure.of_splits {R K} [CommRing R] [IsDomain R] [Field K] [Algebra R K]
     [Algebra.IsIntegral R K] [NoZeroSMulDivisors R K]
-    (h : ∀ p : R[X], p.Monic → Irreducible p → p.Splits (algebraMap R K)) : IsAlgClosure R K where
+    (h : ∀ p : R[X], p.Monic → Irreducible p → (p.map (algebraMap R K)).Splits) :
+    IsAlgClosure R K where
   isAlgebraic := inferInstance
   isAlgClosed := .of_exists_root _ fun _p _ p_irred ↦
     have ⟨g, monic, irred, dvd⟩ := p_irred.exists_dvd_monic_irreducible_of_isIntegral (K := R)
@@ -510,7 +516,7 @@ theorem Algebra.IsAlgebraic.range_eval_eq_rootSet_minpoly [IsAlgClosed A] (x : K
 field of `A/F` in which the minimal polynomial of elements of `K` splits. -/
 @[simps]
 def IntermediateField.algHomEquivAlgHomOfSplits (L : IntermediateField F A)
-    (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) :
+    (hL : ∀ x : K, ((minpoly F x).map (algebraMap F L)).Splits) :
     (K →ₐ[F] L) ≃ (K →ₐ[F] A) where
   toFun := L.val.comp
   invFun f := f.codRestrict _ fun x ↦
@@ -518,14 +524,14 @@ def IntermediateField.algHomEquivAlgHomOfSplits (L : IntermediateField F A)
       rw [minpoly.algHom_eq f f.injective]; exact hL x
 
 theorem IntermediateField.algHomEquivAlgHomOfSplits_apply_apply (L : IntermediateField F A)
-    (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) (f : K →ₐ[F] L) (x : K) :
+    (hL : ∀ x : K, ((minpoly F x).map (algebraMap F L)).Splits) (f : K →ₐ[F] L) (x : K) :
     algHomEquivAlgHomOfSplits A L hL f x = algebraMap L A (f x) := rfl
 
 /-- All `F`-embeddings of a field `K` into another field `A` factor through any subextension
 of `A/F` in which the minimal polynomial of elements of `K` splits. -/
 noncomputable def Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits (L : Type*) [Field L]
     [Algebra F L] [Algebra L A] [IsScalarTower F L A]
-    (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) :
+    (hL : ∀ x : K, ((minpoly F x).map (algebraMap F L)).Splits) :
     (K →ₐ[F] L) ≃ (K →ₐ[F] A) :=
   (AlgEquiv.refl.arrowCongr (AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L A))).trans <|
     IntermediateField.algHomEquivAlgHomOfSplits A (IsScalarTower.toAlgHom F L A).fieldRange
@@ -533,7 +539,7 @@ noncomputable def Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits (L : Type*) [Fie
 
 theorem Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits_apply_apply (L : Type*) [Field L]
     [Algebra F L] [Algebra L A] [IsScalarTower F L A]
-    (hL : ∀ x : K, (minpoly F x).Splits (algebraMap F L)) (f : K →ₐ[F] L) (x : K) :
+    (hL : ∀ x : K, ((minpoly F x).map (algebraMap F L)).Splits) (f : K →ₐ[F] L) (x : K) :
     Algebra.IsAlgebraic.algHomEquivAlgHomOfSplits A L hL f x = algebraMap L A (f x) := rfl
 
 end Algebra.IsAlgebraic

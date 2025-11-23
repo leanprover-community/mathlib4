@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
-import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
+public import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
 
 /-!
 # The Ext class of a short exact sequence
@@ -14,6 +16,8 @@ in an abelian category, we construct the associated class in
 `Ext S.X₃ S.X₁ 1`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 

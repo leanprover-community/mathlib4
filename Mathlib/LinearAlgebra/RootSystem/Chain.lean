@@ -3,8 +3,10 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
-import Mathlib.Order.Interval.Set.OrdConnectedLinear
+module
+
+public import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
+public import Mathlib.Order.Interval.Set.OrdConnectedLinear
 
 /-!
 # Chains of roots
@@ -24,6 +26,8 @@ length, `p + q` is at most 3.
 * `RootPairing.chainBotCoeff_add_chainTopCoeff_le`: every chain has length at most three.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

@@ -3,11 +3,13 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.GroupTheory.MonoidLocalization.Away
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.Localization.Defs
-import Mathlib.RingTheory.Spectrum.Prime.Defs
-import Mathlib.Algebra.Algebra.Tower
+module
+
+public import Mathlib.GroupTheory.MonoidLocalization.Away
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.Localization.Defs
+public import Mathlib.RingTheory.Spectrum.Prime.Defs
+public import Mathlib.Algebra.Algebra.Tower
 
 /-!
 # Ideals in localizations of commutative rings
@@ -17,6 +19,8 @@ See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
+
+@[expose] public section
 
 
 namespace IsLocalization
@@ -183,8 +187,8 @@ correspond to prime ideals in the original ring `R` that are disjoint from `M` -
     { p : Ideal S // p.IsPrime } ≃o { p : Ideal R // p.IsPrime ∧ Disjoint (M : Set R) ↑p } where
   toFun p := ⟨Ideal.comap (algebraMap R S) p.1, (isPrime_iff_isPrime_disjoint M S p.1).1 p.2⟩
   invFun p := ⟨Ideal.map (algebraMap R S) p.1, isPrime_of_isPrime_disjoint M S p.1 p.2.1 p.2.2⟩
-  left_inv J := Subtype.eq (map_comap M S J)
-  right_inv I := Subtype.eq (comap_map_of_isPrime_disjoint M S I.1 I.2.1 I.2.2)
+  left_inv J := Subtype.ext (map_comap M S J)
+  right_inv I := Subtype.ext (comap_map_of_isPrime_disjoint M S I.1 I.2.1 I.2.2)
   map_rel_iff' {I I'} := by
     constructor
     · exact fun h => show I.val ≤ I'.val from map_comap M S I.val ▸

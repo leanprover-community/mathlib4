@@ -3,8 +3,10 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Topology.Sets.Opens
-import Mathlib.Topology.Clopen
+module
+
+public import Mathlib.Topology.Sets.Opens
+public import Mathlib.Topology.Clopen
 
 /-!
 # Closed sets
@@ -17,6 +19,8 @@ For a topological space `α`,
 * `TopologicalSpace.Closeds α`: The type of closed sets.
 * `TopologicalSpace.Clopens α`: The type of clopen sets.
 -/
+
+@[expose] public section
 
 
 open Order OrderDual Set Topology
@@ -189,6 +193,13 @@ def singleton [T1Space α] (x : α) : Closeds α :=
   ⟨{x}, isClosed_singleton⟩
 
 @[simp] lemma mem_singleton [T1Space α] {a b : α} : a ∈ singleton b ↔ a = b := Iff.rfl
+
+theorem singleton_injective [T1Space α] : Function.Injective (singleton (α := α)) :=
+  .of_comp (f := SetLike.coe) Set.singleton_injective
+
+@[simp]
+theorem singleton_inj [T1Space α] {x y : α} : singleton x = singleton y ↔ x = y :=
+  singleton_injective.eq_iff
 
 /-- The preimage of a closed set under a continuous map. -/
 @[simps]
@@ -400,6 +411,13 @@ def singleton [T1Space α] (x : α) : IrreducibleCloseds α :=
   ⟨{x}, isIrreducible_singleton, isClosed_singleton⟩
 
 @[simp] lemma mem_singleton [T1Space α] {a b : α} : a ∈ singleton b ↔ a = b := Iff.rfl
+
+theorem singleton_injective [T1Space α] : Function.Injective (singleton (α := α)) :=
+  .of_comp (f := SetLike.coe) Set.singleton_injective
+
+@[simp]
+theorem singleton_inj [T1Space α] {x y : α} : singleton x = singleton y ↔ x = y :=
+  singleton_injective.eq_iff
 
 /--
 The equivalence between `IrreducibleCloseds α` and `{x : Set α // IsIrreducible x ∧ IsClosed x }`.

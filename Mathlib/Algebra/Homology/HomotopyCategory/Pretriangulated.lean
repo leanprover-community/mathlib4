@@ -3,9 +3,11 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
-import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexShift
-import Mathlib.CategoryTheory.Triangulated.Functor
+module
+
+public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
+public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexShift
+public import Mathlib.CategoryTheory.Triangulated.Functor
 
 /-! The pretriangulated structure on the homotopy category of complexes
 
@@ -29,6 +31,8 @@ complexes. Here, we follow the original definitions in [Verdiers's thesis, I.3][
 * https://stacks.math.columbia.edu/tag/014P
 
 -/
+
+@[expose] public section
 
 assert_not_exists TwoSidedIdeal
 

@@ -3,8 +3,10 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Edward Ayers
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.Data.Set.BooleanAlgebra
+module
+
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+public import Mathlib.Data.Set.BooleanAlgebra
 
 /-!
 # Theory of sieves
@@ -20,6 +22,8 @@ import Mathlib.Data.Set.BooleanAlgebra
 
 sieve, pullback
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ v₃ u₁ u₂ u₃

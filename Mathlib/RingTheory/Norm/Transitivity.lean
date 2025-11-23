@@ -3,15 +3,17 @@ Copyright (c) 2024 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.LinearAlgebra.Matrix.Block
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
-import Mathlib.RingTheory.Norm.Defs
-import Mathlib.RingTheory.PolynomialAlgebra
-import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
-import Mathlib.FieldTheory.IntermediateField.Algebraic
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.RingTheory.Norm.Basic
-import Mathlib.FieldTheory.Galois.Basic
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Block
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
+public import Mathlib.RingTheory.Norm.Defs
+public import Mathlib.RingTheory.PolynomialAlgebra
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
+public import Mathlib.FieldTheory.IntermediateField.Algebraic
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.RingTheory.Norm.Basic
+public import Mathlib.FieldTheory.Galois.Basic
 
 /-!
 # Transitivity of algebra norm
@@ -25,6 +27,8 @@ about the roots of the minimal polynomial of `s` over `R`.
 * [silvester2000] Silvester, *Determinants of Block Matrices*, The Mathematical Gazette (2000).
 
 -/
+
+@[expose] public section
 
 variable {R S A n m : Type*} [CommRing R] [CommRing S]
 variable (M : Matrix m m S) [DecidableEq m] [DecidableEq n] (k : m)
@@ -246,7 +250,7 @@ theorem norm_eq_norm_adjoin (x : L) :
 variable (F E : Type*) [Field F] [Algebra K F] [Field E] [Algebra K E]
 
 variable {K} in
-theorem norm_eq_prod_roots {x : L} (hF : (minpoly K x).Splits (algebraMap K F)) :
+theorem norm_eq_prod_roots {x : L} (hF : ((minpoly K x).map (algebraMap K F)).Splits) :
     algebraMap K F (norm K x) =
       ((minpoly K x).aroots F).prod ^ finrank K⟮x⟯ L := by
   rw [norm_eq_norm_adjoin K x, map_pow, IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots _ hF]

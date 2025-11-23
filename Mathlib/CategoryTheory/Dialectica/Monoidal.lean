@@ -3,15 +3,19 @@ Copyright (c) 2024 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.CategoryTheory.Subobject.Lattice
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Dialectica.Basic
+module
+
+public import Mathlib.CategoryTheory.Subobject.Lattice
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import Mathlib.CategoryTheory.Dialectica.Basic
 
 /-!
 # The Dialectica category is symmetric monoidal
 
 We show that the category `Dial` has a symmetric monoidal category structure.
 -/
+
+@[expose] public section
 
 noncomputable section
 

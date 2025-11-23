@@ -3,10 +3,12 @@ Copyright (c) 2019 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Const
-import Mathlib.Analysis.Normed.Operator.NormedSpace
-import Mathlib.Analysis.Calculus.TangentCone.DimOne
-import Mathlib.Analysis.Calculus.TangentCone.Real
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Const
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.Analysis.Calculus.TangentCone.DimOne
+public import Mathlib.Analysis.Calculus.TangentCone.Real
 
 /-!
 
@@ -87,6 +89,8 @@ The strategy to construct simp lemmas that give the simplifier the possibility t
 derivatives is the same as the one for differentiability statements, as explained in
 `FDeriv/Basic.lean`. See the explanations there.
 -/
+
+@[expose] public section
 
 universe u v w
 

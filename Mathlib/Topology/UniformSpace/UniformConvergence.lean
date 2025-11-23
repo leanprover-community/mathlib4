@@ -3,7 +3,9 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.UniformSpace.Cauchy
+module
+
+public import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
 # Uniform convergence
@@ -48,6 +50,8 @@ practice. Thus, we provide the more traditional definition in `TendstoUniformlyO
 
 Uniform limit, uniform convergence, tends uniformly to
 -/
+
+@[expose] public section
 
 noncomputable section
 

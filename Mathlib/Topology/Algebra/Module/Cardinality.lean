@@ -3,12 +3,14 @@ Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.Module.Card
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.SetTheory.Cardinal.Continuum
-import Mathlib.SetTheory.Cardinal.CountableCover
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.Topology.MetricSpace.Perfect
+module
+
+public import Mathlib.Algebra.Module.Card
+public import Mathlib.Analysis.SpecificLimits.Normed
+public import Mathlib.SetTheory.Cardinal.Continuum
+public import Mathlib.SetTheory.Cardinal.CountableCover
+public import Mathlib.LinearAlgebra.Basis.VectorSpace
+public import Mathlib.Topology.MetricSpace.Perfect
 
 /-!
 # Cardinality of open subsets of vector spaces
@@ -21,6 +23,8 @@ field has dense complement, in `Set.Countable.dense_compl`. This follows from th
 argument and the fact that a complete nontrivially normed field has cardinality at least
 continuum, proved in `continuum_le_cardinal_of_nontriviallyNormedField`.
 -/
+
+@[expose] public section
 universe u v
 
 open Filter Pointwise Set Function Cardinal

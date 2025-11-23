@@ -3,11 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Polynomial.RingDivision
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Algebra.MvPolynomial.Polynomial
-import Mathlib.Algebra.MvPolynomial.Rename
+module
+
+public import Mathlib.Algebra.Polynomial.RingDivision
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.Algebra.MvPolynomial.CommRing
+public import Mathlib.Algebra.MvPolynomial.Polynomial
+public import Mathlib.Algebra.MvPolynomial.Rename
 
 /-!
 ## Function extensionality for multivariate polynomials
@@ -21,6 +23,8 @@ if they are equal upon evaluating them on an arbitrary assignment of the variabl
   over an infinite integral domain `R` are equal if `eval x φ = eval x ψ` for all `x : σ → R`.
 
 -/
+
+@[expose] public section
 
 namespace MvPolynomial
 

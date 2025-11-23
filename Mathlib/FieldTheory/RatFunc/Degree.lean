@@ -3,10 +3,12 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.FieldTheory.RatFunc.AsPolynomial
-import Mathlib.RingTheory.EuclideanDomain
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.Polynomial.Content
+module
+
+public import Mathlib.FieldTheory.RatFunc.AsPolynomial
+public import Mathlib.RingTheory.EuclideanDomain
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.RingTheory.Polynomial.Content
 
 /-!
 # The degree of rational functions
@@ -17,6 +19,8 @@ We define the degree of a rational function, with values in `ℤ`:
   `natDegree` of its numerator and the `natDegree` of its denominator. In particular,
   `intDegree 0 = 0`.
 -/
+
+@[expose] public section
 
 
 noncomputable section

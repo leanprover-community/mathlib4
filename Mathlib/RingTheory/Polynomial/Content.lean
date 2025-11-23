@@ -3,10 +3,12 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.GCDMonoid.Finset
-import Mathlib.Algebra.Polynomial.CancelLeads
-import Mathlib.Algebra.Polynomial.EraseLead
-import Mathlib.Algebra.Polynomial.FieldDivision
+module
+
+public import Mathlib.Algebra.GCDMonoid.Finset
+public import Mathlib.Algebra.Polynomial.CancelLeads
+public import Mathlib.Algebra.Polynomial.EraseLead
+public import Mathlib.Algebra.Polynomial.FieldDivision
 
 /-!
 # GCD structures on polynomials
@@ -29,6 +31,8 @@ This has nothing to do with minimal polynomials of primitive elements in finite 
 
 -/
 
+@[expose] public section
+
 
 namespace Polynomial
 
@@ -50,7 +54,7 @@ theorem isPrimitive_one : IsPrimitive (1 : R[X]) := fun _ h =>
 
 theorem Monic.isPrimitive {p : R[X]} (hp : p.Monic) : p.IsPrimitive := by
   rintro r ⟨q, h⟩
-  exact isUnit_of_mul_eq_one r (q.coeff p.natDegree) (by rwa [← coeff_C_mul, ← h])
+  exact .of_mul_eq_one (q.coeff p.natDegree) (by rwa [← coeff_C_mul, ← h])
 
 theorem IsPrimitive.ne_zero [Nontrivial R] {p : R[X]} (hp : p.IsPrimitive) : p ≠ 0 := by
   rintro rfl

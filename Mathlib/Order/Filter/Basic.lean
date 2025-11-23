@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
-import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.Filter.Defs
+module
+
+public import Mathlib.Algebra.Group.Pi.Basic
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Order.Filter.Defs
 
 /-!
 # Theory of filters on sets
@@ -58,6 +60,8 @@ we do *not* require. This gives `Filter X` better formal properties, in particul
 `⊥` for its lattice structure, at the cost of including the assumption
 `[NeBot f]` in a number of lemmas and definitions.
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedRing Fintype
 
@@ -767,11 +771,11 @@ theorem frequently_iff {f : Filter α} {P : α → Prop} :
   simp only [frequently_iff_forall_eventually_exists_and, @and_comm (P _)]
   rfl
 
-@[simp]
+@[simp, push]
 theorem not_eventually {p : α → Prop} {f : Filter α} : (¬∀ᶠ x in f, p x) ↔ ∃ᶠ x in f, ¬p x := by
   simp [Filter.Frequently]
 
-@[simp]
+@[simp, push]
 theorem not_frequently {p : α → Prop} {f : Filter α} : (¬∃ᶠ x in f, p x) ↔ ∀ᶠ x in f, ¬p x := by
   simp only [Filter.Frequently, not_not]
 

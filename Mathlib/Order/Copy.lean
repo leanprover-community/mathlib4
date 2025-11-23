@@ -3,7 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Yaël Dillies
 -/
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
+module
+
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Tooling to make copies of lattice structures
@@ -12,6 +14,8 @@ Sometimes it is useful to make a copy of a lattice structure
 where one replaces the data parts with provably equal definitions
 that have better definitional properties.
 -/
+
+@[expose] public section
 
 
 open Order

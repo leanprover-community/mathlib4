@@ -3,8 +3,10 @@ Copyright (c) 2025 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Init
-import Mathlib.Tactic.Basic
+module
+
+public import Mathlib.Init
+public import Mathlib.Tactic.Basic
 
 /-!
 # Documentation concerning the continuous functional calculus
@@ -12,6 +14,8 @@ import Mathlib.Tactic.Basic
 A library note giving advice on developing and using the continuous functional calculus, as well
 as the organizational structure within Mathlib.
 -/
+
+@[expose] public section
 
 
 library_note2 «continuous functional calculus» /--

@@ -3,7 +3,9 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
 /-!
 # The Positive Part of the Logarithm
@@ -19,6 +21,8 @@ estimates.
 See `Mathlib/Analysis/SpecialFunctions/Integrals/PosLogEqCircleAverage.lean` for the presentation of
 `log⁺` as a Circle Average.
 -/
+
+@[expose] public section
 
 namespace Real
 

@@ -3,12 +3,14 @@ Copyright (c) 2025 Gaëtan Serré. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gaëtan Serré, Rémy Degenne
 -/
-import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-import Mathlib.Analysis.SpecialFunctions.Log.Basic
-import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
-import Mathlib.Topology.Algebra.Module.ModuleTopology
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Inv
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
+public import Mathlib.Analysis.SpecialFunctions.Log.Basic
+public import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
+public import Mathlib.Topology.Algebra.Module.ModuleTopology
 
 /-!
 # Sigmoid function
@@ -52,6 +54,8 @@ that the composition of this embedding with the measurable embedding from a stan
 ## Tags
 sigmoid, embedding, measurable embedding, topological embedding
 -/
+
+@[expose] public section
 
 namespace Real
 

@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
-import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Data.ULift
+module
+
+public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Data.ULift
 
 /-!
 # Finiteness of `Set.range`
@@ -18,6 +20,8 @@ and a `Set.Finite` constructor.
 
 finite sets
 -/
+
+@[expose] public section
 
 assert_not_exists IsOrderedRing MonoidWithZero
 

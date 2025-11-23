@@ -3,11 +3,13 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
-import Mathlib.Data.DFinsupp.Submonoid
-import Mathlib.Data.DFinsupp.Sigma
-import Mathlib.Data.Finsupp.ToDFinsupp
-import Mathlib.LinearAlgebra.Finsupp.SumProd
-import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
+module
+
+public import Mathlib.Data.DFinsupp.Submonoid
+public import Mathlib.Data.DFinsupp.Sigma
+public import Mathlib.Data.Finsupp.ToDFinsupp
+public import Mathlib.LinearAlgebra.Finsupp.SumProd
+public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 
 /-!
 # Properties of the module `Π₀ i, M i`
@@ -34,6 +36,8 @@ much more developed, but many lemmas in that file should be eligible to copy ove
 
 function with finite support, module, linear algebra
 -/
+
+@[expose] public section
 
 variable {ι ι' : Type*} {R : Type*} {S : Type*} {M : ι → Type*} {N : Type*}
 
@@ -568,9 +572,11 @@ theorem iSupIndep_iff_dfinsupp_lsum_injective (p : ι → Submodule R N) :
     iSupIndep p ↔ Function.Injective (lsum ℕ fun i => (p i).subtype) :=
   ⟨iSupIndep.dfinsupp_lsum_injective, iSupIndep_of_dfinsupp_lsum_injective p⟩
 
+omit [DecidableEq ι] in
 theorem iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero (p : ι → Submodule R N) :
     iSupIndep p ↔ ∀ (s : Finset ι) (v : ι → N),
     (∀ i ∈ s, v i ∈ p i) → (∑ i ∈ s, v i = 0) → ∀ i ∈ s, v i = 0 := by
+  classical
   simp_rw [iSupIndep_def, Submodule.disjoint_def]
   constructor
   · intro h s v hv hv0 i hi
@@ -591,6 +597,7 @@ theorem iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero (p : ι → Submodule R N) 
       simp at hf
       grind [Finsupp.sum, Finset.sum_congr, Finsupp.mem_support_iff]
 
+omit [DecidableEq ι] in
 theorem iSupIndep_iff_finset_sum_eq_imp_eq (p : ι → Submodule R N) :
     iSupIndep p ↔ ∀ (s : Finset ι) (v w : ι → N),
     (∀ i ∈ s, v i ∈ p i ∧ w i ∈ p i) → (∑ i ∈ s, v i = ∑ i ∈ s, w i) → ∀ i ∈ s, v i = w i := by

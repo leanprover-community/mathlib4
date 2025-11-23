@@ -3,8 +3,10 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.MeasureTheory.Measure.GiryMonad
-import Mathlib.MeasureTheory.Measure.OpenPos
+module
+
+public import Mathlib.MeasureTheory.Measure.GiryMonad
+public import Mathlib.MeasureTheory.Measure.OpenPos
 
 /-!
 # The product measure
@@ -48,6 +50,8 @@ reversed.
 
 product measure, Tonelli's theorem, Fubini-Tonelli theorem
 -/
+
+@[expose] public section
 
 
 noncomputable section

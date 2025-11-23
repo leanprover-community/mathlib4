@@ -3,7 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Topology.Bornology.Basic
+module
+
+public import Mathlib.Topology.Bornology.Basic
 
 /-!
 # Locally bounded maps
@@ -21,6 +23,8 @@ be satisfied by itself and all stricter types.
 
 * `LocallyBoundedMapClass`
 -/
+
+@[expose] public section
 
 
 open Bornology Filter Function Set

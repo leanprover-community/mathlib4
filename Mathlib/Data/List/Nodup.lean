@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 -/
-import Mathlib.Data.List.Forall2
-import Mathlib.Data.Nat.Basic
-import Mathlib.Order.Basic
+module
+
+public import Mathlib.Data.List.Forall2
+public import Mathlib.Data.Nat.Basic
+public import Mathlib.Order.Basic
 
 /-!
 # Lists with no duplicates
@@ -13,6 +15,8 @@ import Mathlib.Order.Basic
 `List.Nodup` is defined in `Data/List/Basic`. In this file we prove various properties of this
 predicate.
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -172,6 +176,8 @@ theorem nodup_append' {l₁ l₂ : List α} :
 theorem disjoint_of_nodup_append {l₁ l₂ : List α} (d : Nodup (l₁ ++ l₂)) : Disjoint l₁ l₂ :=
   (nodup_append'.1 d).2.2
 
+protected alias Nodup.disjoint := disjoint_of_nodup_append
+
 theorem Nodup.append (d₁ : Nodup l₁) (d₂ : Nodup l₂) (dj : Disjoint l₁ l₂) : Nodup (l₁ ++ l₂) :=
   nodup_append'.2 ⟨d₁, d₂, dj⟩
 
@@ -215,7 +221,7 @@ theorem nodup_map_iff {f : α → β} {l : List α} (hf : Injective f) : Nodup (
 
 @[simp]
 theorem nodup_attach {l : List α} : Nodup (attach l) ↔ Nodup l :=
-  ⟨fun h => attach_map_subtype_val l ▸ h.map fun _ _ => Subtype.eq, fun h =>
+  ⟨fun h => attach_map_subtype_val l ▸ h.map fun _ _ => Subtype.ext, fun h =>
     Nodup.of_map Subtype.val ((attach_map_subtype_val l).symm ▸ h)⟩
 
 protected alias ⟨Nodup.of_attach, Nodup.attach⟩ := nodup_attach

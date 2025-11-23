@@ -3,14 +3,16 @@ Copyright (c) 2021 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Clique
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
-import Mathlib.Combinatorics.SimpleGraph.Copy
-import Mathlib.Data.ENat.Lattice
-import Mathlib.Data.Nat.Lattice
-import Mathlib.Data.Setoid.Partition
-import Mathlib.Order.Antichain
-import Mathlib.Data.Nat.Cast.Order.Ring
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.Clique
+public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
+public import Mathlib.Combinatorics.SimpleGraph.Copy
+public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Data.Setoid.Partition
+public import Mathlib.Order.Antichain
+public import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!
 # Graph Coloring
@@ -54,6 +56,8 @@ the colors.
 
   * develop API for partial colorings, likely as colorings of subgraphs (`H.coe.Coloring α`)
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 
@@ -426,8 +430,9 @@ theorem chromaticNumber_top_eq_top_of_infinite (V : Type*) [Infinite V] :
   obtain ⟨n, ⟨hn⟩⟩ := hc
   exact not_injective_infinite_finite _ hn.injective_of_top_hom
 
-theorem eq_top_of_chromaticNumber_eq_card [DecidableEq V] [Fintype V]
+theorem eq_top_of_chromaticNumber_eq_card [Fintype V]
     (h : G.chromaticNumber = Fintype.card V) : G = ⊤ := by
+  classical
   by_contra! hh
   have : G.chromaticNumber ≤ Fintype.card V - 1 := by
     obtain ⟨a, b, hne, _⟩ := ne_top_iff_exists_not_adj.mp hh
@@ -439,7 +444,7 @@ theorem eq_top_of_chromaticNumber_eq_card [DecidableEq V] [Fintype V]
   have := Fintype.one_lt_card_iff_nontrivial.mpr <| SimpleGraph.nontrivial_iff.mp ⟨_, _, hh⟩
   grind
 
-theorem chromaticNumber_eq_card_iff [DecidableEq V] [Fintype V] :
+theorem chromaticNumber_eq_card_iff [Fintype V] :
     G.chromaticNumber = Fintype.card V ↔ G = ⊤ :=
   ⟨eq_top_of_chromaticNumber_eq_card, fun h ↦ h ▸ chromaticNumber_top⟩
 

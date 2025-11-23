@@ -3,9 +3,11 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
-import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
-import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
+module
+
+public import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
+public import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
+public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 
 /-!
 # Integral closure of a subring.
@@ -18,6 +20,8 @@ Let `R` be a `CommRing` and let `A` be an R-algebra.
 
 * `integralClosure R A` : the integral closure of `R` in an `R`-algebra `A`.
 -/
+
+@[expose] public section
 
 
 open Polynomial Submodule
@@ -243,3 +247,29 @@ instance Algebra.IsIntegral.tensorProduct [CommRing B]
   isIntegral p := p.induction_on isIntegral_zero (fun _ s ↦ .tmul _ <| int.1 s) (fun _ _ ↦ .add)
 
 end TensorProduct
+
+section MulSemiringAction
+
+variable {G R K : Type*} [CommRing R] [CommRing K] [Algebra R K]
+  [Group G] [MulSemiringAction G K] [SMulCommClass G R K]
+
+instance : MulSemiringAction G (integralClosure R K) where
+  smul := fun g x ↦ ⟨g • (x : K), x.2.map (MulSemiringAction.toAlgHom R K g)⟩
+  one_smul x := by ext; exact one_smul G (x : K)
+  mul_smul g h x := by ext; exact mul_smul g h (x : K)
+  smul_zero g := by ext; exact smul_zero g
+  smul_add g x y := by ext; exact smul_add g (x : K) (y : K)
+  smul_one g := by ext; exact smul_one g
+  smul_mul g x y := by ext; exact smul_mul' g (x : K) (y : K)
+
+@[simp]
+theorem integralClosure.coe_smul (g : G) (k : integralClosure R K) :
+    (g • k : integralClosure R K) = g • (k : K) := rfl
+
+instance : SMulCommClass G R (integralClosure R K) where
+  smul_comm g r k := Subtype.ext (smul_comm g r (k : K))
+
+instance : SMulDistribClass G (integralClosure R K) K where
+  smul_distrib_smul g r k := smul_mul' g (r : K) k
+
+end MulSemiringAction

@@ -3,10 +3,12 @@ Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.GroupWithZero.Commute
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
-import Mathlib.Algebra.GroupWithZero.WithZero
+module
+
+public import Mathlib.Algebra.Group.Prod
+public import Mathlib.Algebra.GroupWithZero.Commute
+public import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+public import Mathlib.Algebra.GroupWithZero.WithZero
 
 /-!
 # Homomorphisms for products of groups with zero
@@ -21,6 +23,8 @@ TODO: Give `GrpWithZero` instances of `HasBinaryProducts` and `HasBinaryCoproduc
 as well as a terminal object.
 
 -/
+
+@[expose] public section
 
 namespace MonoidWithZeroHom
 

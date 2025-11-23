@@ -3,10 +3,12 @@ Copyright (c) 2024 Damien Thomine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine, Pietro Monticone
 -/
-import Mathlib.Analysis.Asymptotics.ExpGrowth
-import Mathlib.Data.ENat.Lattice
-import Mathlib.Data.Real.ENatENNReal
-import Mathlib.Dynamics.TopologicalEntropy.DynamicalEntourage
+module
+
+public import Mathlib.Analysis.Asymptotics.ExpGrowth
+public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Data.Real.ENatENNReal
+public import Mathlib.Dynamics.TopologicalEntropy.DynamicalEntourage
 
 /-!
 # Topological entropy via covers
@@ -58,6 +60,8 @@ cover, entropy
 ## TODO
 Get versions of the topological entropy on (pseudo-e)metric spaces.
 -/
+
+@[expose] public section
 
 open Set Uniformity UniformSpace
 open scoped SetRel

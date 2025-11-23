@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
-import Mathlib.CategoryTheory.Shift.Basic
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+public import Mathlib.CategoryTheory.Shift.Basic
 
 /-!
 # Properties of objects on categories equipped with shift
@@ -15,6 +17,8 @@ We also introduce a typeclass `P.IsStableUnderShift A` to say that `P X`
 implies `P (X⟦a⟧)` for all `a : A`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category
 

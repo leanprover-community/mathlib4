@@ -3,8 +3,10 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.TangentCone.Basic
-import Mathlib.Analysis.Convex.Topology
+module
+
+public import Mathlib.Analysis.Calculus.TangentCone.Basic
+public import Mathlib.Analysis.Convex.Topology
 
 /-!
 # Unique differentiability property in real normed spaces
@@ -15,6 +17,8 @@ In this file we prove that
   has the unique differentiability property;
 - `uniqueDiffOn_Ioc` etc: intervals on the real line have the unique differentiability property.
 -/
+
+@[expose] public section
 
 open Filter Set
 open scoped Topology

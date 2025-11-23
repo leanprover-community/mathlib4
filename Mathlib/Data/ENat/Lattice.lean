@@ -3,9 +3,11 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Data.Nat.Lattice
-import Mathlib.Data.ENat.Basic
+module
+
+public import Mathlib.Algebra.Group.Action.Defs
+public import Mathlib.Data.Nat.Lattice
+public import Mathlib.Data.ENat.Basic
 
 /-!
 # Extended natural numbers form a complete linear order
@@ -16,6 +18,8 @@ We also restate some lemmas about `WithTop` for `ENat` to have versions that use
 of `WithTop.some`.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Field
 

@@ -3,14 +3,18 @@ Copyright (c) 2022 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
-import Batteries.Tactic.Init
-import Mathlib.Tactic.Push
+module
+
+public meta import Batteries.Tactic.Init
+public meta import Mathlib.Tactic.Push
 
 /-!
 # The `by_contra` tactic
 
 The `by_contra!` tactic is a variant of the `by_contra` tactic, for proofs of contradiction.
 -/
+
+public meta section
 
 open Lean Lean.Parser Parser.Tactic Elab Command Elab.Tactic Meta
 

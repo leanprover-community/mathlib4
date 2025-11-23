@@ -3,9 +3,11 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Order.Atoms
-import Mathlib.LinearAlgebra.Span.Defs
-import Mathlib.LinearAlgebra.AffineSpace.Defs
+module
+
+public import Mathlib.Order.Atoms
+public import Mathlib.LinearAlgebra.Span.Defs
+public import Mathlib.LinearAlgebra.AffineSpace.Defs
 
 /-!
 # Affine spaces
@@ -43,6 +45,8 @@ topology are defined elsewhere; see `Analysis.Normed.Affine.AddTorsor` and
 * https://en.wikipedia.org/wiki/Affine_space
 * https://en.wikipedia.org/wiki/Principal_homogeneous_space
 -/
+
+@[expose] public section
 noncomputable section
 
 open Affine
@@ -344,6 +348,9 @@ theorem vadd_mem_mk' {v : V} (p : P) {direction : Submodule k V} (hv : v ∈ dir
 /-- An affine subspace constructed from a point and a direction is nonempty. -/
 theorem mk'_nonempty (p : P) (direction : Submodule k V) : (mk' p direction : Set P).Nonempty :=
   ⟨p, self_mem_mk' p direction⟩
+
+instance (p : P) (direction : Submodule k V) : Nonempty (mk' p direction) :=
+  ⟨⟨p, self_mem_mk' p direction⟩⟩
 
 /-- The direction of an affine subspace constructed from a point and a direction. -/
 @[simp]

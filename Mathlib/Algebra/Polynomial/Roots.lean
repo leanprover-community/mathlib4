@@ -3,12 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker, Johan Commelin
 -/
-import Mathlib.Algebra.Polynomial.BigOperators
-import Mathlib.Algebra.Polynomial.RingDivision
-import Mathlib.Data.Set.Finite.Lemmas
-import Mathlib.RingTheory.Coprime.Lemmas
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.SetTheory.Cardinal.Order
+module
+
+public import Mathlib.Algebra.Polynomial.BigOperators
+public import Mathlib.Algebra.Polynomial.RingDivision
+public import Mathlib.Data.Set.Finite.Lemmas
+public import Mathlib.RingTheory.Coprime.Lemmas
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Theory of univariate polynomials
@@ -28,6 +30,8 @@ We define the multiset of roots of a polynomial, and prove basic results about i
   ranges through its roots.
 
 -/
+
+@[expose] public section
 
 assert_not_exists Ideal
 
@@ -827,8 +831,9 @@ theorem card_roots_map_le_natDegree {A B : Type*} [Semiring A] [CommRing B] [IsD
   card_roots' _ |>.trans natDegree_map_le
 
 theorem filter_roots_map_range_eq_map_roots [IsDomain A] [IsDomain B] {f : A →+* B}
-    [DecidableEq A] [DecidableEq B] [DecidablePred (· ∈ f.range)] (hf : Function.Injective f)
+    [DecidablePred (· ∈ f.range)] (hf : Function.Injective f)
     (p : A[X]) : (p.map f).roots.filter (· ∈ f.range) = p.roots.map f := by
+  classical
   ext b
   rw [Multiset.count_filter]
   split_ifs with h

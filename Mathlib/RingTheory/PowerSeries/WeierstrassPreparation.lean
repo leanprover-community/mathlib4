@@ -3,11 +3,13 @@ Copyright (c) 2025 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.RingTheory.LocalRing.ResidueField.Basic
-import Mathlib.RingTheory.Polynomial.Eisenstein.Distinguished
-import Mathlib.RingTheory.PowerSeries.CoeffMulMem
-import Mathlib.RingTheory.PowerSeries.Inverse
-import Mathlib.RingTheory.PowerSeries.Trunc
+module
+
+public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+public import Mathlib.RingTheory.Polynomial.Eisenstein.Distinguished
+public import Mathlib.RingTheory.PowerSeries.CoeffMulMem
+public import Mathlib.RingTheory.PowerSeries.Inverse
+public import Mathlib.RingTheory.PowerSeries.Trunc
 
 /-!
 
@@ -86,6 +88,8 @@ such ring has only one maximal ideal, and hence it is a complete local ring.
 - [Washington, Lawrence C. *Introduction to cyclotomic fields.*][washington_cyclotomic]
 
 -/
+
+@[expose] public section
 
 open scoped Polynomial
 
@@ -736,7 +740,7 @@ theorem IsWeierstrassDivision.isUnit_of_map_ne_zero
   rw [isUnit_iff_constantCoeff, ← isUnit_map_iff (IsLocalRing.residue A)]
   rw [coeff_mul, ← Finset.sum_subset (s₁ := {(n, 0)}) (by simp) (fun p hp hnotMem ↦ ?_),
     Finset.sum_singleton, coeff_map, coeff_map, coeff_zero_eq_constantCoeff, mul_comm] at H2
-  · exact isUnit_of_mul_eq_one _ _ H2.symm
+  · exact .of_mul_eq_one _ H2.symm
   · rw [coeff_of_lt_order p.1 ?_]
     · rw [zero_mul]
     · rw [← ENat.lt_lift_iff (h := order_finite_iff_ne_zero.2 hg), ENat.lift_eq_toNat_of_lt_top]

@@ -3,12 +3,14 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Justus Springer
 -/
-import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
-import Mathlib.AlgebraicGeometry.StructureSheaf
-import Mathlib.RingTheory.Localization.LocalizationLocalization
-import Mathlib.Topology.Sheaves.SheafCondition.Sites
-import Mathlib.Topology.Sheaves.Functors
-import Mathlib.Algebra.Module.LocalizedModule.Basic
+module
+
+public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
+public import Mathlib.AlgebraicGeometry.StructureSheaf
+public import Mathlib.RingTheory.Localization.LocalizationLocalization
+public import Mathlib.Topology.Sheaves.SheafCondition.Sites
+public import Mathlib.Topology.Sheaves.Functors
+public import Mathlib.Algebra.Module.LocalizedModule.Basic
 
 /-!
 # $Spec$ as a functor to locally ringed spaces.
@@ -31,6 +33,8 @@ a forgetful functor.
 The adjunction `Γ ⊣ Spec` is constructed in `Mathlib/AlgebraicGeometry/GammaSpecAdjunction.lean`.
 
 -/
+
+@[expose] public section
 
 
 -- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737

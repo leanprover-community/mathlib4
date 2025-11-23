@@ -3,11 +3,13 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Field.Pointwise
-import Mathlib.Analysis.Normed.Module.Ball.RadialEquiv
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+module
+
+public import Mathlib.Algebra.Order.Field.Pointwise
+public import Mathlib.Analysis.Normed.Module.Ball.RadialEquiv
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 /-!
 # Generalized polar coordinate change
@@ -23,6 +25,8 @@ and the Lebesgue measure on `(0, +∞)` taken with density `fun r ↦ r ^ n`.
 One can think about this fact as a version of polar coordinate change formula
 for a general nontrivial normed space.
 -/
+
+@[expose] public section
 
 open Set Function Metric MeasurableSpace intervalIntegral
 open scoped Pointwise ENNReal NNReal

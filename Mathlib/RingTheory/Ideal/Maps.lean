@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Data.DFinsupp.Module
-import Mathlib.RingTheory.Ideal.Operations
+module
+
+public import Mathlib.Data.DFinsupp.Module
+public import Mathlib.RingTheory.Ideal.Operations
 
 /-!
 # Maps on modules and ideals
@@ -12,6 +14,8 @@ import Mathlib.RingTheory.Ideal.Operations
 Main definitions include `Ideal.map`, `Ideal.comap`, `RingHom.ker`, `Module.annihilator`
 and `Submodule.annihilator`.
 -/
+
+@[expose] public section
 
 assert_not_exists Module.Basis -- See `RingTheory.Ideal.Basis`
   Submodule.hasQuotient -- See `RingTheory.Ideal.Quotient.Operations`
@@ -565,7 +569,7 @@ def relIsoOfSurjective (hf : Function.Surjective f) :
   invFun I := map f I.1
   left_inv J := map_comap_of_surjective f hf J
   right_inv I :=
-    Subtype.eq <|
+    Subtype.ext <|
       show comap f (map f I.1) = I.1 from
         (comap_map_of_surjective f hf I).symm ▸ le_antisymm (sup_le le_rfl I.2) le_sup_left
   map_rel_iff' {I1 I2} :=
@@ -671,6 +675,14 @@ lemma comap_map_eq_self_iff_of_isPrime {S : Type*} [CommSemiring S] {f : R →+*
   · rintro ⟨q, hq, rfl⟩
     simp
 
+/--
+For a maximal ideal `p` of `R`, `p` extended to `S` and restricted back to `R` is `p` if
+its image in `S` is not equal to `⊤`.
+-/
+theorem comap_map_eq_self_of_isMaximal (f : R →+* S) {p : Ideal R} [hP' : p.IsMaximal]
+    (hP : Ideal.map f p ≠ ⊤) : (map f p).comap f = p :=
+  (IsCoatom.le_iff_eq hP'.out (comap_ne_top _ hP)).mp <| le_comap_map
+
 end CommRing
 
 end MapAndComap
@@ -715,6 +727,9 @@ theorem one_notMem_ker [Nontrivial S] (f : F) : (1 : R) ∉ ker f := by
 
 theorem ker_ne_top [Nontrivial S] (f : F) : ker f ≠ ⊤ :=
   (Ideal.ne_top_iff_one _).mpr <| one_notMem_ker f
+
+lemma ker_eq_top_of_subsingleton [Subsingleton S] (f : F) : ker f = ⊤ :=
+  eq_top_iff.mpr fun _ _ ↦ Subsingleton.elim _ _
 
 lemma _root_.Pi.ker_ringHom {ι : Type*} {R : ι → Type*} [∀ i, Semiring (R i)]
     (φ : ∀ i, S →+* R i) : ker (Pi.ringHom φ) = ⨅ i, ker (φ i) := by

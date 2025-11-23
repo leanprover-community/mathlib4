@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies, Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Junyan Xu
 -/
-import Mathlib.Data.Prod.Lex
-import Mathlib.SetTheory.Ordinal.Rank
+module
+
+public import Mathlib.Data.Prod.Lex
+public import Mathlib.SetTheory.Ordinal.Rank
 
 /-!
 # Extend a well-founded order to a well-order
@@ -32,6 +34,8 @@ to the `mathlib` 3 version but avoids non-standard instances.
 
 well-founded relation, well order, extension
 -/
+
+@[expose] public section
 
 
 universe u

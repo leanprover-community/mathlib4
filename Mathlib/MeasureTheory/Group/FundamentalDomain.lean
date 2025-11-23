@@ -3,10 +3,12 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Alex Kontorovich, Heather Macbeth
 -/
-import Mathlib.MeasureTheory.Group.Action
-import Mathlib.MeasureTheory.Group.Pointwise
-import Mathlib.MeasureTheory.Integral.Lebesgue.Map
-import Mathlib.MeasureTheory.Integral.Bochner.Set
+module
+
+public import Mathlib.MeasureTheory.Group.Action
+public import Mathlib.MeasureTheory.Group.Pointwise
+public import Mathlib.MeasureTheory.Integral.Lebesgue.Map
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
 
 /-!
 # Fundamental domain of a group action
@@ -44,6 +46,8 @@ We also generate additive versions of all theorems in this file using the `to_ad
 * `MeasureTheory.fundamentalInterior`: Fundamental interior of a set under the action of a group.
   Elements of `s` that do not belong to any other translate of `s`.
 -/
+
+@[expose] public section
 
 
 open scoped ENNReal Pointwise Topology NNReal ENNReal MeasureTheory

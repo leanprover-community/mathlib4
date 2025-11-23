@@ -3,7 +3,9 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
+module
+
+public import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
 
 /-!
 
@@ -32,6 +34,8 @@ counterparts in [Chou1994].
 walks
 
 -/
+
+@[expose] public section
 
 -- TODO: split
 
@@ -734,6 +738,14 @@ theorem snd_mem_support_of_mem_edges {t u v w : V} (p : G.Walk v w) (he : s(t, u
     u ∈ p.support :=
   p.fst_mem_support_of_mem_edges (Sym2.eq_swap ▸ he)
 
+theorem mem_support_of_mem_edges {u v w : V} {e : Sym2 V} {p : G.Walk u v} (he : e ∈ p.edges)
+    (hv : w ∈ e) : w ∈ p.support :=
+  hv.elim fun _ heq ↦ p.fst_mem_support_of_mem_edges <| heq ▸ he
+
+theorem mem_support_iff_exists_mem_edges {u v w : V} {p : G.Walk u v} :
+    w ∈ p.support ↔ w = v ∨ ∃ e ∈ p.edges, w ∈ e := by
+  induction p <;> aesop
+
 theorem darts_nodup_of_support_nodup {u v : V} {p : G.Walk u v} (h : p.support.Nodup) :
     p.darts.Nodup := by
   induction p with
@@ -919,6 +931,12 @@ lemma notNilRec_cons {motive : {u w : V} → (p : G.Walk u w) → ¬ p.Nil → S
 theorem end_mem_tail_support {u v : V} {p : G.Walk u v} (h : ¬ p.Nil) : v ∈ p.support.tail :=
   p.notNilRec (by simp) h
 
+theorem mem_support_iff_exists_mem_edges_of_not_nil {u v w : V} {p : G.Walk u v} (hnil : ¬p.Nil) :
+    w ∈ p.support ↔ ∃ e ∈ p.edges, w ∈ e := by
+  induction p with
+  | nil => simp at hnil
+  | cons h p ih => cases p <;> aesop
+
 /-- The walk obtained by removing the first `n` darts of a walk. -/
 def drop {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk (p.getVert n) v :=
   match p, n with
@@ -943,6 +961,9 @@ abbrev snd (p : G.Walk u v) : V := p.getVert 1
 
 lemma snd_cons {u v w} (q : G.Walk v w) (hadj : G.Adj u v) :
     (q.cons hadj).snd = v := by simp
+
+lemma snd_mem_tail_support {u v : V} {p : G.Walk u v} (h : ¬p.Nil) : p.snd ∈ p.support.tail :=
+  p.notNilRec (by simp) h
 
 /-- The walk obtained by taking the first `n` darts of a walk. -/
 def take {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk u (p.getVert n) :=
@@ -1136,6 +1157,12 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
 @[simp] lemma getVert_tail {u v n} (p : G.Walk u v) :
     p.tail.getVert n = p.getVert (n + 1) := by
   cases p <;> simp
+
+lemma getVert_mem_tail_support {u v : V} {p : G.Walk u v} (hp : ¬p.Nil) :
+    ∀ {i : ℕ}, i ≠ 0 → p.getVert i ∈ p.support.tail
+  | i + 1, _ => by
+    rw [← getVert_tail, ← p.support_tail_of_not_nil hp]
+    exact getVert_mem_support ..
 
 lemma ext_support {u v} {p q : G.Walk u v} (h : p.support = q.support) :
     p = q := by
@@ -1496,3 +1523,5 @@ lemma isSubwalk_antisymm {u v} {p₁ p₂ : G.Walk u v} (h₁ : p₁.IsSubwalk p
 end Walk
 
 end SimpleGraph
+
+set_option linter.style.longFile 1700

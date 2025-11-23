@@ -3,12 +3,16 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Data.Finset.Option
+module
+
+public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Data.Finset.Option
 
 /-!
 # fintype instances for option
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero MulAction
 

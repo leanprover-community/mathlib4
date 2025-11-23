@@ -3,9 +3,11 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Yury Kudryashov, Joseph Myers, Heather Macbeth, Kim Morrison, Yaël Dillies
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.Group.Torsion
-import Mathlib.Tactic.Contrapose
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.Group.Torsion
+public import Mathlib.Tactic.Contrapose
 
 /-!
 # `NoZeroSMulDivisors`
@@ -19,6 +21,8 @@ for the vanishing of elements (especially in modules over division rings).
 `Module.IsTorsionFree`, cf https://github.com/kbuzzard/ClassFieldTheory. Torsion-free monoids have
 seen the same change happen already.
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso Multiset Set.indicator Pi.single_smul₀ Ring Module
 

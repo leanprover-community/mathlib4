@@ -3,9 +3,11 @@ Copyright (c) 2021 Aaron Anderson, Jesse Michael Han, Floris van Doorn. All righ
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
-import Mathlib.Data.Finset.Basic
-import Mathlib.ModelTheory.Syntax
-import Mathlib.Data.List.ProdSigma
+module
+
+public import Mathlib.Data.Finset.Basic
+public import Mathlib.ModelTheory.Syntax
+public import Mathlib.Data.List.ProdSigma
 
 /-!
 # Basics on First-Order Semantics
@@ -45,6 +47,8 @@ For the Flypitch project:
 - [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
   the continuum hypothesis*][flypitch_itp]
 -/
+
+@[expose] public section
 
 
 universe u v w u' v'

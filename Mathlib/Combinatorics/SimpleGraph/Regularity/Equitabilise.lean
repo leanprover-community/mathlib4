@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Order.Ring.Canonical
-import Mathlib.Order.Partition.Equipartition
+module
+
+public import Mathlib.Algebra.Order.Ring.Canonical
+public import Mathlib.Order.Partition.Equipartition
 
 /-!
 # Equitabilising a partition
@@ -25,6 +27,8 @@ This file allows to blow partitions up into parts of controlled size. Given a pa
 
 [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 -/
+
+@[expose] public section
 
 
 open Finset Nat

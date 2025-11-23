@@ -3,7 +3,9 @@ Copyright (c) 2024 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
+module
+
+public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
 
 /-!
 # SeminormFromConst
@@ -35,6 +37,8 @@ power-multiplicative seminorm for which `c` is multiplicative.
 
 SeminormFromConst, Seminorm, Nonarchimedean
 -/
+
+@[expose] public section
 
 noncomputable section
 

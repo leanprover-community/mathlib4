@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.HomologySequence
-import Mathlib.Algebra.Homology.QuasiIso
-import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
+module
+
+public import Mathlib.Algebra.Homology.HomologySequence
+public import Mathlib.Algebra.Homology.QuasiIso
+public import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 
 /-!
 # Consequences of the homology sequence
@@ -25,6 +27,8 @@ So far, we state only four lemmas for `φ.τ₃`. Eight more similar lemmas
 for `φ.τ₁` and `φ.τ₂` shall be also obtained (TODO).
 
 -/
+
+@[expose] public section
 
 open CategoryTheory ComposableArrows Abelian
 

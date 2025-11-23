@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Fintype.Order
-import Mathlib.Order.Category.BddDistLat
-import Mathlib.Order.Category.FinPartOrd
+module
+
+public import Mathlib.Data.Fintype.Order
+public import Mathlib.Order.Category.BddDistLat
+public import Mathlib.Order.Category.FinPartOrd
 
 /-!
 # The category of finite bounded distributive lattices
@@ -13,6 +15,8 @@ import Mathlib.Order.Category.FinPartOrd
 This file defines `FinBddDistLat`, the category of finite distributive lattices with
 bounded lattice homomorphisms.
 -/
+
+@[expose] public section
 
 
 universe u

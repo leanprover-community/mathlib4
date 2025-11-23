@@ -3,13 +3,15 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.Equiv.Opposite
-import Mathlib.Algebra.Group.Finsupp
-import Mathlib.Algebra.Group.Pi.Lemmas
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.Algebra.Group.TypeTags.Basic
-import Mathlib.Algebra.Group.ULift
-import Mathlib.Data.DFinsupp.Defs
+module
+
+public import Mathlib.Algebra.Group.Equiv.Opposite
+public import Mathlib.Algebra.Group.Finsupp
+public import Mathlib.Algebra.Group.Pi.Lemmas
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Algebra.Group.TypeTags.Basic
+public import Mathlib.Algebra.Group.ULift
+public import Mathlib.Data.DFinsupp.Defs
 
 /-!
 # Unique products and related notions
@@ -48,6 +50,8 @@ about the grading type and then a generic statement of the form "look at the coe
 'unique product/sum'".
 The file `Algebra/MonoidAlgebra/NoZeroDivisors` contains several examples of this use.
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal Subsemiring Algebra Submodule StarModule FreeMonoid IsOrderedMonoid
 

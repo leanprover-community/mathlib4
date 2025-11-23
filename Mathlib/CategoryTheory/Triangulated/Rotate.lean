@@ -3,8 +3,10 @@ Copyright (c) 2021 Luke Kershaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Kershaw
 -/
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Triangulated.Basic
+module
+
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.CategoryTheory.Triangulated.Basic
 
 /-!
 # Rotate
@@ -13,6 +15,8 @@ This file adds the ability to rotate triangles and triangle morphisms.
 It also shows that rotation gives an equivalence on the category of triangles.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section

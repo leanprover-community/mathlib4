@@ -3,8 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Violeta Hernández Palacios
 -/
+module
 
-import Mathlib.Order.SuccPred.Limit
+public import Mathlib.Order.SuccPred.Limit
 
 /-!
 # Transfinite iteration of a function `I → I`
@@ -30,6 +31,8 @@ when we know `Cardinal.mk I < Cardinal.mk J`).
   property with respect to `I`.
 
 -/
+
+@[expose] public section
 
 universe w u
 

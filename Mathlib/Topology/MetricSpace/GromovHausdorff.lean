@@ -3,12 +3,14 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Logic.Encodable.Pi
-import Mathlib.SetTheory.Cardinal.Basic
-import Mathlib.Topology.MetricSpace.Closeds
-import Mathlib.Topology.MetricSpace.Completion
-import Mathlib.Topology.MetricSpace.GromovHausdorffRealized
-import Mathlib.Topology.MetricSpace.Kuratowski
+module
+
+public import Mathlib.Logic.Encodable.Pi
+public import Mathlib.SetTheory.Cardinal.Basic
+public import Mathlib.Topology.MetricSpace.Closeds
+public import Mathlib.Topology.MetricSpace.Completion
+public import Mathlib.Topology.MetricSpace.GromovHausdorffRealized
+public import Mathlib.Topology.MetricSpace.Kuratowski
 
 /-!
 # Gromov-Hausdorff distance
@@ -39,6 +41,8 @@ We prove the most important properties of the Gromov-Hausdorff space: it is a po
 i.e., it is complete and second countable. We also prove the Gromov compactness criterion.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

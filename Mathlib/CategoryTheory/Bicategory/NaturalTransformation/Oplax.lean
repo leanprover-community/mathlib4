@@ -3,7 +3,9 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno, Calle Sönne
 -/
-import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
 
 /-!
 # Transformations between oplax functors
@@ -35,13 +37,15 @@ We also provide API for going between oplax transformations and strong transform
 * `Oplax.mkOfOplax η η'`: given an oplax transformation `η` such that each component
   2-morphism is an isomorphism, `mkOfOplax` gives the corresponding strong transformation.
 
-# TODO
+## TODO
 This file could also include lax transformations between oplax functors.
 
 ## References
 * [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055)
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Oplax
 

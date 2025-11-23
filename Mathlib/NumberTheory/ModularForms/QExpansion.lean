@@ -3,11 +3,13 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.Complex.TaylorSeries
-import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
-import Mathlib.NumberTheory.ModularForms.Basic
-import Mathlib.NumberTheory.ModularForms.Identities
-import Mathlib.RingTheory.PowerSeries.Basic
+module
+
+public import Mathlib.Analysis.Complex.TaylorSeries
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
+public import Mathlib.NumberTheory.ModularForms.Basic
+public import Mathlib.NumberTheory.ModularForms.Identities
+public import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
 # q-expansions of modular forms
@@ -37,15 +39,15 @@ We also define the `q`-expansion of a modular form, either as a power series or 
   the graded ring of all modular forms?)
 -/
 
+
+@[expose] public noncomputable section
+
 open ModularForm Complex Filter Function Matrix.SpecialLinearGroup
 open UpperHalfPlane hiding I
 
 open scoped Real MatrixGroups CongruenceSubgroup
 
-noncomputable section
-
-variable {k : ℤ} {F : Type*} [FunLike F ℍ ℂ] {Γ : Subgroup (GL (Fin 2) ℝ)}
-    {h : ℝ} (f : F)
+variable {k : ℤ} {F : Type*} [FunLike F ℍ ℂ] {Γ : Subgroup (GL (Fin 2) ℝ)} {h : ℝ} (f : F)
 
 local notation "I∞" => comap Complex.im atTop
 local notation "𝕢" => Periodic.qParam

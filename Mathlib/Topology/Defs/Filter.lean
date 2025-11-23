@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Topology.Defs.Basic
-import Mathlib.Data.Setoid.Basic
-import Mathlib.Order.Filter.Defs
-import Mathlib.Tactic.IrreducibleDef
+module
+
+public import Mathlib.Topology.Defs.Basic
+public import Mathlib.Data.Setoid.Basic
+public import Mathlib.Order.Filter.Defs
+public import Mathlib.Tactic.IrreducibleDef
 
 /-!
 # Definitions about filters in topological spaces
@@ -108,6 +110,8 @@ as well as other definitions that rely on `Filter`s.
 * `𝓝[≠] x`: the filter `nhdsWithin x {x}ᶜ` of punctured neighborhoods of `x`;
 * `𝓝ˢ s`: the filter `nhdsSet s` of neighborhoods of a set.
 -/
+
+@[expose] public section
 
 assert_not_exists Ultrafilter
 

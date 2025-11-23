@@ -3,10 +3,12 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
-import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
-import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
-import Mathlib.LinearAlgebra.Dual.Defs
+module
+
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
+public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
+public import Mathlib.LinearAlgebra.Dual.Defs
 
 /-!
 # Contraction in Clifford Algebras
@@ -39,6 +41,8 @@ Within this file, we use the local notation
 * `d ⌋ x` for `contractLeft d x`
 
 -/
+
+@[expose] public section
 
 open LinearMap (BilinMap BilinForm)
 

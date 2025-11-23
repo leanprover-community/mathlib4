@@ -3,8 +3,10 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
-import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+module
+
+public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
+public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 
 /-!
 # Differentiability of models with corners and (extended) charts
@@ -25,6 +27,8 @@ In particular, (extended) charts have bijective differential.
 ## Tags
 charts, differentiable, bijective
 -/
+
+@[expose] public section
 
 noncomputable section
 
