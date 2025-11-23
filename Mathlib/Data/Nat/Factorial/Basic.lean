@@ -545,7 +545,7 @@ theorem descFactorial_eq_descFactorialBinary : descFactorial = descFactorialBina
   split_ifs with h
   · rw [descFactorial_of_lt h]
   · rw [← ascFactorial_eq_ascFactorialBinary, ← add_descFactorial_eq_ascFactorial']
-    grind +revert
+    grind
 
 /-!
 We are now limited by time, not stack space,
