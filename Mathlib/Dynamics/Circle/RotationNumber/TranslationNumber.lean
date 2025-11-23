@@ -92,7 +92,7 @@ preserving circle homeomorphisms for two reasons:
 
 ## References
 
-* [Étienne Ghys, Groupes d'homeomorphismes du cercle et cohomologie bornée][ghys87:groupes]
+* [Étienne Ghys, Groupes d'homéomorphismes du cercle et cohomologie bornée][ghys87:groupes]
 
 ## TODO
 
@@ -823,7 +823,7 @@ orientation-preserving circle homeomorphisms. Suppose that for each `g : G` the 
 `f₁ g` and `f₂ g` have equal rotation numbers. Then there exists `F : CircleDeg1Lift` such that
 `F * f₁ g = f₂ g * F` for all `g : G`.
 
-This is a version of Proposition 5.4 from [Étienne Ghys, Groupes d'homeomorphismes du cercle et
+This is a version of Proposition 5.4 from [Étienne Ghys, Groupes d'homéomorphismes du cercle et
 cohomologie bornée][ghys87:groupes]. -/
 theorem semiconj_of_group_action_of_forall_translationNumber_eq {G : Type*} [Group G]
     (f₁ f₂ : G →* CircleDeg1Lift) (h : ∀ g, τ (f₁ g) = τ (f₂ g)) :
