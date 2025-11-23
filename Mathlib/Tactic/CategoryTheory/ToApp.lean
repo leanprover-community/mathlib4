@@ -40,9 +40,9 @@ namespace CategoryTheory
 def catAppSimp (e : Expr) : MetaM Simp.Result :=
   simpOnlyNames [
     ``Cat.Hom.comp_toFunctor, ``Functor.comp_obj, ``Cat.Hom.comp_obj, ``Cat.whiskerLeft_app,
-    ``Cat.whiskerRight_app, ``Cat.Hom₂.id_app, ``Cat.Hom₂.comp_app, ``Cat.eqToHom_app, ``Cat.leftUnitor_hom_app, ``Cat.leftUnitor_inv_app,
-    ``Cat.rightUnitor_hom_app, ``Cat.rightUnitor_inv_app,
-    ``Cat.associator_hom_app, ``Cat.associator_inv_app, ``eqToHom_refl,
+    ``Cat.whiskerRight_app, ``Cat.Hom₂.id_app, ``Cat.Hom₂.comp_app, ``Cat.eqToHom_app,
+    ``Cat.leftUnitor_hom_app, ``Cat.leftUnitor_inv_app, ``Cat.rightUnitor_hom_app,
+    ``Cat.rightUnitor_inv_app, ``Cat.associator_hom_app, ``Cat.associator_inv_app, ``eqToHom_refl,
     ``Category.comp_id, ``Category.id_comp] e
     (config := { decide := false })
 
