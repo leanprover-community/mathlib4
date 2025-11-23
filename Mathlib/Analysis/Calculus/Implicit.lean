@@ -251,13 +251,16 @@ for all (y, z) close to (f a, g a), ψ y z = φ y z
 
 -/
 
-theorem implicitFunction_unique :
+theorem implicitFunction_unique {ψ : F → G → E}
+    (h : ∀ᶠ x in 𝓝 φ.pt, ψ (φ.leftFun x) (φ.rightFun x) = x) :
+    ∀ᶠ yz in 𝓝 (φ.prodFun φ.pt), ψ yz.1 yz.2 = φ.implicitFunction yz.1 yz.2 := by
+  rw [implicitFunction, toOpenPartialHomeomorph, ← HasStrictFDerivAt.localInverse]
+  simp_rw [Function.curry_apply, ← Function.uncurry_apply_pair ψ]
+  exact HasStrictFDerivAt.localInverse_unique _ h
+
+theorem implicitFunction_unique' :
     ∀ᶠ yz in 𝓝 (φ.prodFun φ.pt), ∀ᶠ x in 𝓝 φ.pt,
       φ.leftFun x = yz.1 ∧ φ.rightFun x = yz.2 → x = φ.implicitFunction yz.1 yz.2 := by sorry
-
-theorem implicitFunction_unique' {ψ : F → G → E}
-    (h : ∀ᶠ x in 𝓝 φ.pt, ψ (φ.leftFun x) (φ.rightFun x) = x) :
-    ∀ᶠ yz in 𝓝 (φ.prodFun φ.pt), ψ yz.1 yz.2 = φ.implicitFunction yz.1 yz.2 := by sorry
 
 end ImplicitFunctionData
 
