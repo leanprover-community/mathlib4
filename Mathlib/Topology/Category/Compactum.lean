@@ -3,12 +3,14 @@ Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.CategoryTheory.Monad.Types
-import Mathlib.CategoryTheory.Monad.Limits
-import Mathlib.CategoryTheory.Equivalence
-import Mathlib.Topology.Category.CompHaus.Basic
-import Mathlib.Topology.Category.Profinite.Basic
-import Mathlib.Data.Set.Constructions
+module
+
+public import Mathlib.CategoryTheory.Monad.Types
+public import Mathlib.CategoryTheory.Monad.Limits
+public import Mathlib.CategoryTheory.Equivalence
+public import Mathlib.Topology.Category.CompHaus.Basic
+public import Mathlib.Topology.Category.Profinite.Basic
+public import Mathlib.Data.Set.Constructions
 
 /-!
 
@@ -68,6 +70,8 @@ We also add wrappers around structures which already exist. Here are the main on
 - https://ncatlab.org/nlab/show/ultrafilter
 
 -/
+
+@[expose] public section
 
 universe u
 
@@ -405,7 +409,7 @@ def homOfContinuous {X Y : Compactum} (f : X → Y) (cont : Continuous f) : X �
 
 end Compactum
 
-/-- The functor functor from Compactum to CompHaus. -/
+/-- The functor from Compactum to CompHaus. -/
 def compactumToCompHaus : Compactum ⥤ CompHaus where
   obj X := { toTop := TopCat.of X, prop := trivial }
   map := fun f => CompHausLike.ofHom _

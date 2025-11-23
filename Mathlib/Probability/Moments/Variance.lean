@@ -3,7 +3,9 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Kexing Ying
 -/
-import Mathlib.Probability.Moments.Covariance
+module
+
+public import Mathlib.Probability.Moments.Covariance
 
 /-!
 # Variance of random variables
@@ -31,8 +33,10 @@ We define the variance of a real-valued random variable as `Var[X] = 𝔼[(X - �
 * `ProbabilityTheory.variance_le_sub_mul_sub`: the variance of a random variable `X` satisfying
   `a ≤ X ≤ b` almost everywhere is at most `(b - 𝔼 X) * (𝔼 X - a)`.
 * `ProbabilityTheory.variance_le_sq_of_bounded`: the variance of a random variable `X` satisfying
-  `a ≤ X ≤ b` almost everywhere is at most`((b - a) / 2) ^ 2`.
+  `a ≤ X ≤ b` almost everywhere is at most `((b - a) / 2) ^ 2`.
 -/
+
+@[expose] public section
 
 open MeasureTheory Filter Finset
 
@@ -352,16 +356,13 @@ theorem meas_ge_le_evariance_div_sq {X : Ω → ℝ} (hX : AEStronglyMeasurable 
   have A : (c : ℝ≥0∞) ≠ 0 := by rwa [Ne, ENNReal.coe_eq_zero]
   have B : AEStronglyMeasurable (fun _ : Ω => μ[X]) μ := aestronglyMeasurable_const
   convert meas_ge_le_mul_pow_eLpNorm μ two_ne_zero ENNReal.ofNat_ne_top (hX.sub B) A using 1
-  · congr
-    simp only [Pi.sub_apply, ENNReal.coe_le_coe, ← Real.norm_eq_abs, ← coe_nnnorm,
-      NNReal.coe_le_coe]
-  · rw [eLpNorm_eq_lintegral_rpow_enorm two_ne_zero ENNReal.ofNat_ne_top]
-    simp only [ENNReal.toReal_ofNat, one_div, Pi.sub_apply]
-    rw [div_eq_mul_inv, ENNReal.inv_pow, mul_comm, ENNReal.rpow_two]
-    congr
-    simp_rw [← ENNReal.rpow_mul, inv_mul_cancel₀ (two_ne_zero : (2 : ℝ) ≠ 0), ENNReal.rpow_two,
-      ENNReal.rpow_one, evariance]
-
+  · norm_cast
+  rw [eLpNorm_eq_lintegral_rpow_enorm two_ne_zero ENNReal.ofNat_ne_top]
+  simp only [ENNReal.toReal_ofNat, one_div, Pi.sub_apply]
+  rw [div_eq_mul_inv, ENNReal.inv_pow, mul_comm, ENNReal.rpow_two]
+  congr
+  simp_rw [← ENNReal.rpow_mul, inv_mul_cancel₀ (two_ne_zero : (2 : ℝ) ≠ 0), ENNReal.rpow_two,
+    ENNReal.rpow_one, evariance]
 
 /-- **Chebyshev's inequality**: one can control the deviation probability of a real random variable
 from its expectation in terms of the variance. -/
@@ -375,7 +376,7 @@ theorem meas_ge_le_variance_div_sq [IsFiniteMeasure μ] {X : Ω → ℝ} (hX : M
 
 /-- The variance of the sum of two independent random variables is the sum of the variances. -/
 nonrec theorem IndepFun.variance_add {X Y : Ω → ℝ} (hX : MemLp X 2 μ)
-    (hY : MemLp Y 2 μ) (h : IndepFun X Y μ) : Var[X + Y; μ] = Var[X; μ] + Var[Y; μ] := by
+    (hY : MemLp Y 2 μ) (h : X ⟂ᵢ[μ] Y) : Var[X + Y; μ] = Var[X; μ] + Var[Y; μ] := by
   by_cases h' : X =ᵐ[μ] 0
   · rw [variance_congr h', variance_congr h'.add_right]
     simp
@@ -385,14 +386,14 @@ nonrec theorem IndepFun.variance_add {X Y : Ω → ℝ} (hX : MemLp X 2 μ)
 
 /-- The variance of the sum of two independent random variables is the sum of the variances. -/
 lemma IndepFun.variance_fun_add {X Y : Ω → ℝ} (hX : MemLp X 2 μ)
-    (hY : MemLp Y 2 μ) (h : IndepFun X Y μ) : Var[fun ω ↦ X ω + Y ω; μ] = Var[X; μ] + Var[Y; μ] :=
+    (hY : MemLp Y 2 μ) (h : X ⟂ᵢ[μ] Y) : Var[fun ω ↦ X ω + Y ω; μ] = Var[X; μ] + Var[Y; μ] :=
   h.variance_add hX hY
 
 /-- The variance of a finite sum of pairwise independent random variables is the sum of the
 variances. -/
 nonrec theorem IndepFun.variance_sum {ι : Type*} {X : ι → Ω → ℝ} {s : Finset ι}
     (hs : ∀ i ∈ s, MemLp (X i) 2 μ)
-    (h : Set.Pairwise ↑s fun i j => IndepFun (X i) (X j) μ) :
+    (h : Set.Pairwise ↑s fun i j => X i ⟂ᵢ[μ] X j) :
     variance (∑ i ∈ s, X i) μ = ∑ i ∈ s, variance (X i) μ := by
   by_cases h'' : ∀ i ∈ s, X i =ᵐ[μ] 0
   · rw [variance_congr (Y := 0), variance_zero]

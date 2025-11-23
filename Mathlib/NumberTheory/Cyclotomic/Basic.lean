@@ -3,9 +3,12 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
-import Mathlib.NumberTheory.NumberField.Basic
-import Mathlib.FieldTheory.SeparableClosure
+module
+
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.FieldTheory.SeparableClosure
+public import Mathlib.FieldTheory.Galois.Abelian
 
 /-!
 # Cyclotomic extensions
@@ -56,6 +59,8 @@ Note that some results, for example `IsCyclotomicExtension.trans`,
 included in the `Cyclotomic` locale.
 
 -/
+
+@[expose] public section
 
 
 open Polynomial Algebra Module Set
@@ -487,7 +492,7 @@ variable {n S}
 
 /-- A cyclotomic extension splits `X ^ n - 1` if `n ∈ S`. -/
 theorem splits_X_pow_sub_one [H : IsCyclotomicExtension S K L] (hS : n ∈ S) :
-    Splits (algebraMap K L) (X ^ n - 1) := by
+    Splits (map (algebraMap K L) (X ^ n - 1)) := by
   rw [← splits_id_iff_splits, Polynomial.map_sub, Polynomial.map_one, Polynomial.map_pow,
     Polynomial.map_X]
   obtain ⟨z, hz⟩ := ((isCyclotomicExtension_iff _ _ _).1 H).1 hS (NeZero.ne _)
@@ -495,7 +500,7 @@ theorem splits_X_pow_sub_one [H : IsCyclotomicExtension S K L] (hS : n ∈ S) :
 
 /-- A cyclotomic extension splits `cyclotomic n K` if `n ∈ S`. -/
 theorem splits_cyclotomic [IsCyclotomicExtension S K L] (hS : n ∈ S) :
-    Splits (algebraMap K L) (cyclotomic n K) := by
+    Splits ((cyclotomic n K).map (algebraMap K L)) := by
   refine splits_of_splits_of_dvd _ (X_pow_sub_C_ne_zero (NeZero.pos _) _)
     (splits_X_pow_sub_one K L hS) ?_
   use ∏ i ∈ n.properDivisors, Polynomial.cyclotomic i K
@@ -598,6 +603,12 @@ theorem isGalois [IsCyclotomicExtension S K L] : IsGalois K L := by
   | inv x hx ihx =>
     rw [map_inv₀]
     exact inv_mem ihx
+
+/-- Cyclotomic extensions are abelian. -/
+theorem isAbelianGalois [IsCyclotomicExtension S K L] :
+    IsAbelianGalois K L where
+  __ := isGalois S K L
+  __ := isMulCommutative S K L
 
 /-- Any two `S`-cyclotomic extensions are isomorphic. -/
 noncomputable def algEquiv [IsCyclotomicExtension S K L]
@@ -936,10 +947,10 @@ variable (n₁ n₂ : ℕ) (C₁ C₂ : Subalgebra A B) [h₁ : IsCyclotomicExte
   [h₂ : IsCyclotomicExtension {n₂} A C₂]
 
 theorem IsCyclotomicExtension.le_of_dvd [NeZero n₂] (h : n₁ ∣ n₂) : C₁ ≤ C₂ := by
-  by_cases hn₁ : n₁ = 0
-  · rw [hn₁, zero_dvd_iff] at h
-    exact False.elim <| NeZero.ne n₂ h
-  have : NeZero n₁ := ⟨hn₁⟩
+  have : NeZero n₁ := by
+    constructor
+    rintro rfl
+    exact NeZero.ne n₂ <| eq_zero_of_zero_dvd h
   obtain ⟨ζ₂, hζ₂⟩ := h₂.1 rfl (NeZero.ne n₂)
   replace hζ₂ := hζ₂.map_of_injective (FaithfulSMul.algebraMap_injective C₂ B)
   obtain ⟨d, hd⟩ := h

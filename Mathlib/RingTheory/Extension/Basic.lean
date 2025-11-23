@@ -3,9 +3,11 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.RingTheory.Ideal.Cotangent
-import Mathlib.RingTheory.Localization.Defs
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.RingTheory.Ideal.Cotangent
+public import Mathlib.RingTheory.Localization.Defs
 
 /-!
 
@@ -29,6 +31,8 @@ surjection `P →ₐ[R] R`.
   The cotangent space w.r.t. an extension `P → S` by `I`, i.e. the space `I/I²`.
 
 -/
+
+@[expose] public section
 
 universe w u v
 
@@ -420,7 +424,7 @@ lemma Cotangent.finite (hP : P.ker.FG) :
   refine ⟨.of_restrictScalars (R := P.Ring) _ ?_⟩
   rw [Submodule.restrictScalars_top, ← LinearMap.range_eq_top.mpr Extension.Cotangent.mk_surjective,
     ← Submodule.map_top]
-  exact (P.ker.fg_top.mpr hP).map _
+  exact ((Submodule.fg_top P.ker).mpr hP).map _
 
 end Cotangent
 

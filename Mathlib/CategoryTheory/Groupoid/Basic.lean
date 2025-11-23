@@ -3,12 +3,16 @@ Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli
 -/
-import Mathlib.CategoryTheory.Groupoid
-import Mathlib.Combinatorics.Quiver.Basic
+module
+
+public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.Combinatorics.Quiver.Basic
 
 /-!
 This file defines a few basic properties of groupoids.
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

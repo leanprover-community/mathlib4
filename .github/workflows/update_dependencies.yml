@@ -13,13 +13,13 @@ jobs:
       BRANCH_NAME: "update-dependencies-bot-use-only"
     steps:
       - name: Checkout repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           fetch-depth: 0
           token: "${{ secrets.UPDATE_DEPENDENCIES_TOKEN }}"
 
       - name: Configure Lean
-        uses: leanprover/lean-action@f807b338d95de7813c5c50d018f1c23c9b93b4ec # 2025-04-24
+        uses: leanprover/lean-action@434f25c2f80ded67bba02502ad3a86f25db50709 # v1.3.0
         with:
           auto-config: false
           use-github-cache: false
@@ -29,13 +29,13 @@ jobs:
         id: get-branch-sha
         run: |
           # Check if the branch exists remotely
-          if git fetch origin "$BRANCH_NAME"; then
-            SHA=$(git rev-parse "origin/$BRANCH_NAME")
+          SHA=$(git ls-remote --heads origin "$BRANCH_NAME" | awk '{print $1}')
+          if [ -n "$SHA" ]; then
             echo "Branch '$BRANCH_NAME' exists with SHA: $SHA"
             echo "sha=$SHA" >> "${GITHUB_OUTPUT}"
           else
             echo "Branch '$BRANCH_NAME' does not exist"
-            echo "sha=" >>" ${GITHUB_OUTPUT}"
+            echo "sha=" >> "${GITHUB_OUTPUT}"
           fi
 
       - name: Get PR and labels
@@ -72,33 +72,48 @@ jobs:
             echo "toolchain_modified=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Check if lake-manifest.json was modified
-        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') && steps.check_toolchain.outputs.toolchain_modified != 'true' }}
+      - name: Check if lake-manifest.json was modified or if no mergeable PR exists
+        # only run if check_toolchain ran and returned "false"
+        if: ${{ steps.check_toolchain.outputs.toolchain_modified == 'false' }}
         id: check_manifest
         run: |
-          if [ -n "${{ steps.get-branch-sha.outputs.sha }}" ]; then
-            # Branch exists, compare the file
-            if git diff --quiet HEAD "origin/$BRANCH_NAME" -- lake-manifest.json; then
-              echo "has_diff=false" >> "${GITHUB_OUTPUT}"
-              echo "No differences in lake-manifest.json"
-            else
-              echo "has_diff=true" >> "${GITHUB_OUTPUT}"
-              echo "Differences found in lake-manifest.json"
-            fi
-          else
-            # Branch doesn't exist, consider it as different
-            echo "has_diff=true" >> "${GITHUB_OUTPUT}"
-            echo "Branch does not exist, treating as different"
+          # Default to false
+          create_pr=false
+          # Log individual reasons for running the create-pull-request action
+          if [ -z "${{ steps.get-branch-sha.outputs.sha }}" ]; then
+            create_pr=true
+            echo "$BRANCH_NAME does not exist, need to run create-pull-request to create it"
           fi
+          if [ "${{ steps.PR.outputs.pr_found }}" != "true" ]; then
+            create_pr=true
+            echo "PR does not exist, need to run create-pull-request to check whether one should be created"
+          fi
+          if [ "${{ steps.PR.outputs.pr_found }}" == "true" ] && \
+             git diff --quiet "origin/master" -- lake-manifest.json; then
+            create_pr=true
+            echo "No differences found with lake-manifest.json on master, need to run create-pull-request to close the PR"
+          fi
+          if [ "${{ contains(steps.PR.outputs.pr_labels, 'merge-conflict') }}" == "true" ]; then
+            create_pr=true
+            echo "merge-conflict on PR, need to run create-pull-request to update $BRANCH_NAME"
+          fi
+          if [ -n "${{ steps.get-branch-sha.outputs.sha }}" ] && \
+             ! git diff --quiet "origin/$BRANCH_NAME" -- lake-manifest.json; then
+            create_pr=true
+            echo "Differences found with lake-manifest.json on $BRANCH_NAME, need to run create-pull-request to update $BRANCH_NAME"
+          fi
+          # Otherwise, there's no reason to run create-pull-request
+          echo "create_pr=$create_pr" >> "${GITHUB_OUTPUT}"
 
       - name: Generate PR title
-        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') && steps.check_manifest.outputs.has_diff == 'true' }}
+        id: pr-title
+        if: ${{ steps.check_manifest.outputs.create_pr == 'true' }}
         run: |
           echo "timestamp=$(date -u +"%Y-%m-%d-%H-%M")" >> "$GITHUB_ENV"
           echo "pr_title=chore: update Mathlib dependencies $(date -u +"%Y-%m-%d")" >> "$GITHUB_ENV"
 
       - name: Create Pull Request
-        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') && steps.check_manifest.outputs.has_diff == 'true' }}
+        if: ${{ steps.pr-title.outcome == 'success' }}
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
           token: "${{ secrets.UPDATE_DEPENDENCIES_TOKEN }}"
@@ -111,5 +126,20 @@ jobs:
           body: |
             This PR updates the Mathlib dependencies.
 
+            ---
+
             [workflow run for this PR](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
           labels: "auto-merge-after-CI"
+
+      - name: Send Zulip message (failure)
+        if: ${{ failure() }}
+        uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: 'nightly-testing'
+          type: 'stream'
+          topic: 'Mathlib `lake update` failure'
+          content: |
+            ["Update dependencies" workflow run failed!](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})

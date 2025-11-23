@@ -12,7 +12,7 @@ example : Nat → Nat → True := by
 
 /--
 info: Update with tactic error message: ⏎
-  "No goals to be solved"
+  [apply] "No goals to be solved"
 ---
 error: tactic '
   intro _ _

@@ -3,9 +3,11 @@ Copyright (c) 2025 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.InnerProductSpace.LinearMap
-import Mathlib.Topology.VectorBundle.Constructions
-import Mathlib.Topology.VectorBundle.Hom
+module
+
+public import Mathlib.Analysis.InnerProductSpace.LinearMap
+public import Mathlib.Topology.VectorBundle.Constructions
+public import Mathlib.Topology.VectorBundle.Hom
 
 /-! # Riemannian vector bundles
 
@@ -35,6 +37,8 @@ to the `Bundle` namespace.
 ## Keywords
 Vector bundle, Riemannian metric
 -/
+
+@[expose] public section
 
 open Bundle ContinuousLinearMap Filter
 open scoped Topology
@@ -150,12 +154,12 @@ lemma eventually_norm_symmL_trivializationAt_self_comp_lt (x : B) {r : ℝ} (hr 
   -- are `δ` close. When writing this proof, I have followed my nose in the computation, and
   -- recorded only in the end how small `δ` needs to be. The reader should skip the precise
   -- condition for now, as it doesn't give any useful insight.
-  obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ (r' ^ 2) ⁻¹ < 1 - δ * C := by
+  obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ (r' ^ 2)⁻¹ < 1 - δ * C := by
     have A : ∀ᶠ δ in 𝓝[>] (0 : ℝ), 0 < δ := self_mem_nhdsWithin
     have B : Tendsto (fun δ ↦ 1 - δ * C) (𝓝[>] 0) (𝓝 (1 - 0 * C)) := by
       apply tendsto_inf_left
       exact tendsto_const_nhds.sub (tendsto_id.mul tendsto_const_nhds)
-    have B' : ∀ᶠ δ in 𝓝[>] 0, (r' ^ 2) ⁻¹ < 1 - δ * C := by
+    have B' : ∀ᶠ δ in 𝓝[>] 0, (r' ^ 2)⁻¹ < 1 - δ * C := by
       apply (tendsto_order.1 B).1
       simpa using inv_lt_one_of_one_lt₀ (by nlinarith)
     exact (A.and B').exists
@@ -204,8 +208,7 @@ lemma eventually_norm_symmL_trivializationAt_self_comp_lt (x : B) {r : ℝ} (hr 
       grw [← le_opNorm]
       simp
     _ = δ * C * ‖G.symm w‖^2 + g' y w w := by ring
-    _ = δ * C * g x (G.symm w) (G.symm w) + g' y w w := by
-      simp [← real_inner_self_eq_norm_sq, hg]
+    _ = δ * C * g x (G.symm w) (G.symm w) + g' y w w := by simp [← hg]
     _ = δ * C * g' x w w + g' y w w := by
       rw [← hgx]; rfl
   have : (1 - δ * C) * g' x w w ≤ g' y w w := by linarith
@@ -309,8 +312,7 @@ lemma eventually_norm_symmL_trivializationAt_comp_self_lt (x : B) {r : ℝ} (hr 
       grw [← le_opNorm]
       simp
     _ = δ * C * ‖G.symm w‖^2 + g' x w w := by ring
-    _ = δ * C * g x (G.symm w) (G.symm w) + g' x w w := by
-      simp [← real_inner_self_eq_norm_sq, hg]
+    _ = δ * C * g x (G.symm w) (G.symm w) + g' x w w := by simp [← hg]
     _ = δ * C * g' x w w + g' x w w := by
       congr
       rw [inCoordinates_apply_eq₂ h'x h'x (Set.mem_univ _)]
@@ -378,7 +380,7 @@ structure RiemannianMetric where
   continuousAt (b : B) : ContinuousAt (fun (v : E b) ↦ inner b v v) 0
   isVonNBounded (b : B) : IsVonNBounded ℝ {v : E b | inner b v v < 1}
 
-/-- `Core structure associated to a family of inner products on the fibers of a fiber bundle. This
+/-- `Core` structure associated to a family of inner products on the fibers of a fiber bundle. This
 is an auxiliary construction to endow the fibers with an inner product space structure without
 creating diamonds.
 
@@ -470,7 +472,7 @@ def ContinuousRiemannianMetric.toRiemannianMetric (g : ContinuousRiemannianMetri
 
 /-- If a Riemannian bundle structure is defined using `g.toRiemannianMetric` where `g` is
 a `ContinuousRiemannianMetric`, then we make sure typeclass inference can infer automatically
-that the the bundle is a continuous Riemannian bundle. -/
+that the bundle is a continuous Riemannian bundle. -/
 instance (g : ContinuousRiemannianMetric F E) :
     letI : RiemannianBundle E := ⟨g.toRiemannianMetric⟩;
     IsContinuousRiemannianBundle F E := by
