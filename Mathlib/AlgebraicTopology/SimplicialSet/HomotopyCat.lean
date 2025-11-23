@@ -142,9 +142,10 @@ def OneTruncation₂.ofNerve₂ (C : Type u) [Category.{u} C] :
   unfold nerve truncation SimplicialObject.truncation SimplexCategory.Truncated.inclusion
   -- the following was obtained by `simp?`
   simp only [ObjectProperty.ι_obj, SimplexCategory.len_mk, Nat.reduceAdd, Fin.isValue,
-    SimplexCategory.toCat_map, whiskeringLeft_obj_obj, Functor.comp_map, op_obj, op_map,
-    Quiver.Hom.unop_op, ObjectProperty.ι_map, ComposableArrows.whiskerLeft_map, Fin.zero_eta,
-    Monotone.functor_obj, Fin.mk_one, homOfLE_leOfHom]
+    SimplexCategory.toCat_obj, SimplexCategory.toCat_map, toCatHom_toFunctor,
+    whiskeringLeft_obj_obj, Functor.comp_map, op_obj, op_map, Quiver.Hom.unop_op,
+    ObjectProperty.ι_map, ComposableArrows.whiskerLeft_map, Fin.zero_eta, Monotone.functor_obj,
+    Fin.mk_one, homOfLE_leOfHom]
   change X.map (𝟙 _) = _
   rw [X.map_id]
   rfl
@@ -289,7 +290,7 @@ theorem HomotopyCategory.lift_unique' (V : SSet.Truncated.{u} 2) {D} [Category D
 def mapHomotopyCategory {V W : SSet.Truncated.{u} 2} (F : V ⟶ W) :
     V.HomotopyCategory ⥤ W.HomotopyCategory :=
   CategoryTheory.Quotient.lift _
-    ((oneTruncation₂ ⋙ Cat.freeRefl).map F ⋙ HomotopyCategory.quotientFunctor W)
+    (((oneTruncation₂ ⋙ Cat.freeRefl).map F).toFunctor ⋙ HomotopyCategory.quotientFunctor W)
     (by
       rintro _ _ _ _ ⟨φ⟩
       apply CategoryTheory.Quotient.sound
@@ -303,19 +304,22 @@ def mapHomotopyCategory {V W : SSet.Truncated.{u} 2} (F : V ⟶ W) :
 /-- The functor that takes a 2-truncated simplicial set to its homotopy category. -/
 def hoFunctor₂ : SSet.Truncated.{u} 2 ⥤ Cat.{u,u} where
   obj V := Cat.of (V.HomotopyCategory)
-  map {S T} F := mapHomotopyCategory F
+  map {S T} F := (mapHomotopyCategory F).toCatHom
   map_id S := by
+    ext1
     apply Quotient.lift_unique'
     simp [mapHomotopyCategory, Quotient.lift_spec]
     exact Eq.trans (Functor.id_comp ..) (Functor.comp_id _).symm
   map_comp {S T U} F G := by
+    ext1
     apply Quotient.lift_unique'
     simp [mapHomotopyCategory, SSet.Truncated.HomotopyCategory.quotientFunctor]
-    rw [Quotient.lift_spec, Cat.comp_eq_comp, Cat.comp_eq_comp, ← Functor.assoc, Functor.assoc,
+    rw [Quotient.lift_spec, ← Functor.assoc, Functor.assoc,
       Quotient.lift_spec, Functor.assoc, Quotient.lift_spec]
 
 theorem hoFunctor₂_naturality {X Y : SSet.Truncated.{u} 2} (f : X ⟶ Y) :
-    (oneTruncation₂ ⋙ Cat.freeRefl).map f ⋙ SSet.Truncated.HomotopyCategory.quotientFunctor Y =
+    ((oneTruncation₂ ⋙ Cat.freeRefl).map f).toFunctor ⋙
+      SSet.Truncated.HomotopyCategory.quotientFunctor Y =
       SSet.Truncated.HomotopyCategory.quotientFunctor X ⋙ mapHomotopyCategory f := rfl
 
 end Truncated
