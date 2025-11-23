@@ -33,7 +33,7 @@ def delabCheckingCanonical : DelabM (Bool × Term) := do
 /-- Delaborate an expression with arity `arity` into a unary notation `mkStx` iff the argument
 `arg` is a non-canonical instance (is not defeq to what is synthesized for its type, or else
 instance synthesis fails). -/
-def delabUnary (arity arg : ℕ) (mkStx : Term → DelabM Term) : Delab :=
+def delabUnary (arity arg : Nat) (mkStx : Term → DelabM Term) : Delab :=
   withOverApp arity <| whenPPOption Lean.getPPNotation do
     let (false, instD) ← withNaryArg arg delabCheckingCanonical | failure
     mkStx instD
@@ -41,7 +41,7 @@ def delabUnary (arity arg : ℕ) (mkStx : Term → DelabM Term) : Delab :=
 /-- Delaborate an expression with arity `arity` into a binary notation `mkStx` iff either
 argument `arg₁` or `arg₂` are non-canonical instance (are not defeq to what is synthesized for
 its type, or else instance synthesis fails). -/
-def delabBinary (arity arg₁ arg₂ : ℕ) (mkStx : Term → Term → DelabM Term) : Delab :=
+def delabBinary (arity arg₁ arg₂ : Nat) (mkStx : Term → Term → DelabM Term) : Delab :=
   withOverApp arity <| whenPPOption Lean.getPPNotation do
     let (canonα?, instDα) ← withNaryArg arg₁ delabCheckingCanonical
     let (canonβ?, instDβ) ← withNaryArg arg₂ delabCheckingCanonical
