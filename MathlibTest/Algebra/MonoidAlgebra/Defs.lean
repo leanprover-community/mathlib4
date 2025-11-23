@@ -33,6 +33,7 @@ theorem test_2 : R[A] = AddMonoidAlgebra R A := rfl
 /-- info: R[R] : Type u_1 -/
 #guard_msgs in
 #check AddMonoidAlgebra R R
+
 /--
 error: Ambiguous term
   R[R]
