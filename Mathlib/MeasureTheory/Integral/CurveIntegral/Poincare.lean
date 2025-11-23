@@ -61,6 +61,9 @@ private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_coun
   -- The overall plan of the proof is to pullback the 1-form to the unit square along the homotopy,
   -- prove that it's a closed 1-form, then apply the divergence theorem.
   -- Let `U` be the interior of the unit square
+  -- Warning: throughout the proof, we sometimes have `0` or `1` in product spaces,
+  -- not only in `I` or `ℝ`, so, e.g., `Icc 0 1` may refer to the unit square
+  -- in `ℝ × ℝ`.
   set U : Set (ℝ × ℝ) := Ioo 0 1 ×ˢ Ioo 0 1 with hU
   have hinterior : interior (Icc 0 1) = U := by
     rw [hU, ← interior_Icc, ← interior_prod_eq]
@@ -72,7 +75,7 @@ private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_coun
   have hU_subset : U ⊆ Icc 0 1 := hinterior ▸ interior_subset
   have hclosure : closure U = Icc 0 1 := by
     simp [hU, closure_prod_eq, Prod.mk_zero_zero, Prod.mk_one_one]
-  -- Extend the homotopy `φ` to a continuous map  `ℝ × ℝ → E`
+  -- Extend the homotopy `φ` to a continuous map  `ψ : ℝ × ℝ → E`
   set ψ : ℝ × ℝ → E := fun xy : ℝ × ℝ ↦ Set.IccExtend zero_le_one (φ.extend xy.1) xy.2 with hψ
   have hψφ : ∀ a b : I, ψ (a, b) = φ (a, b) := by simp [ψ]
   have hψ_cont : Continuous ψ := by fun_prop
@@ -220,7 +223,7 @@ private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_coun
   simp [integral_congr_ae hf'g']
 
 /-- The curve integral of a closed 1-form along the boundary of the image of a unit square
-under a smooth map is zero.
+under a smooth map is zero. We may ignore the behavior on a countable set.
 
 This theorem is stated in terms of a $$C^2$$ homotopy between two paths. -/
 theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_countable
@@ -263,7 +266,7 @@ theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt
     (fun a ha b hb _ ↦ hdω_symm _ <| hφt a ha b hb) hcontdiff
 
 /-- The curve integral of a closed 1-form along the boundary of the image of a unit square
-under a smooth map is zero.
+under a smooth map is zero, a version stated in terms of `DiffContOnC1`.
 
 This theorem is stated in terms of a $$C^2$$ homotopy between two paths. -/
 theorem curveIntegral_add_curveIntegral_eq_of_diffContOnCl
@@ -289,6 +292,9 @@ variable [NormedSpace ℝ E] [NormedSpace ℝ F]
 /-- If `ω` is a closed `1`-form on a convex set,
 then `∫ᶜ x in Path.segment a b, ω x + ∫ᶜ x in Path.segment b c, ω x = ∫ᶜ x in Path.segment a c, ω x`
 for all `a b c ∈ s`.
+
+This is the key lemma used to establish that closed a `1`-form on  a convex set
+has a primitive.
 -/
 theorem curveIntegral_segment_add_eq_of_hasFDerivWithinAt_symmetric (hs : Convex ℝ s)
     (hω : ∀ x ∈ s, HasFDerivWithinAt ω (dω x) s x)
