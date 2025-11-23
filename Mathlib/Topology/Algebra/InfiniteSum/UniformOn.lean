@@ -3,9 +3,11 @@ Copyright (c) 2025 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, David Loeffler, Andrew Yang
 -/
-import Mathlib.Topology.Algebra.InfiniteSum.Defs
-import Mathlib.Topology.Algebra.UniformConvergence
-import Mathlib.Order.Filter.AtTopBot.Finset
+module
+
+public import Mathlib.Topology.Algebra.InfiniteSum.Defs
+public import Mathlib.Topology.Algebra.UniformConvergence
+public import Mathlib.Order.Filter.AtTopBot.Finset
 
 /-!
 # Infinite sum and products that converge uniformly
@@ -16,6 +18,8 @@ import Mathlib.Order.Filter.AtTopBot.Finset
 - `HasProdUniformly f g` : `∏ i, f i b` converges uniformly to `g`.
 - `HasProdLocallyUniformly f g` : `∏ i, f i b` converges locally uniformly to `g`.
 -/
+
+@[expose] public section
 
 noncomputable section
 

@@ -3,10 +3,12 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Module.LinearMap.Defs
-import Mathlib.Data.Rat.Cast.Defs
-import Mathlib.Order.DirectedInverseSystem
-import Mathlib.Tactic.SuppressCompilation
+module
+
+public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Data.Rat.Cast.Defs
+public import Mathlib.Order.DirectedInverseSystem
+public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 # Direct limit of algebraic structures
@@ -40,6 +42,8 @@ but for the other algebraic structures the constructions and proofs will be easy
 the same pattern. Since any two colimits are isomorphic, this allows us to golf proofs of
 equality criteria for `Module/AddCommGroup/Ring.DirectLimit`.
 -/
+
+@[expose] public section
 
 suppress_compilation
 

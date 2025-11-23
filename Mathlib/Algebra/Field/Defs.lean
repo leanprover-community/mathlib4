@@ -3,8 +3,10 @@ Copyright (c) 2014 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro, Yaël Dillies
 -/
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Data.Rat.Init
+module
+
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Data.Rat.Init
 
 /-!
 # Division (semi)rings and (semi)fields
@@ -42,6 +44,8 @@ a `GroupWithZero` lemma instead.
 
 field, division ring, skew field, skew-field, skewfield
 -/
+
+@[expose] public section
 
 assert_not_imported Mathlib.Tactic.Common
 
