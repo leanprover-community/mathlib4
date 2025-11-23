@@ -10,7 +10,7 @@ public import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Sets.Opens
 
 /-!
-# The one-point Compactification
+# The one-point compactification
 
 We construct the one-point compactification of an arbitrary topological space `X` and prove some
 properties inherited from `X`.
