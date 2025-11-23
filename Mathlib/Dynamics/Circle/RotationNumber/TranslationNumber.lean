@@ -70,7 +70,7 @@ We prove the following properties of `CircleDeg1Lift.translationNumber`.
   homomorphisms from `G →* CircleDeg1Lift`). If the translation numbers of `f₁ g` and `f₂ g` are
   equal to each other for all `g : G`, then these two actions are semiconjugate by some
   `F : CircleDeg1Lift`. This is a version of Proposition 5.4 from [Étienne Ghys, Groupes
-  d'homeomorphismes du cercle et cohomologie bornée][ghys87:groupes].
+  d'homéomorphismes du cercle et cohomologie bornée][ghys87:groupes].
 
 ## Notation
 
