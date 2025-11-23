@@ -48,40 +48,39 @@ section
 @[simps!]
 def nerve₂Adj.counit.app (C : Type u) [SmallCategory C] :
     (nerveFunctor₂.obj (Cat.of C)).HomotopyCategory ⥤ C := by
-  fapply Quotient.lift
-  · exact
-    (whiskerRight (OneTruncation₂.ofNerve₂.natIso).hom _ ≫ ReflQuiv.adj.{u}.counit).app (Cat.of C)
-  · intro x y f g rel
-    obtain ⟨φ⟩ := rel
-    simpa [ReflQuiv.adj, Quot.liftOn, Cat.FreeRefl.quotientFunctor, Quotient.functor,
-        pathComposition, Quiv.adj, OneTruncation₂.nerveHomEquiv] using
-      φ.map_comp (X := 0) (Y := 1) (Z := 2) (homOfLE (by decide)) (homOfLE (by decide))
+  fapply Quotient.lift _ ((whiskerRight (OneTruncation₂.ofNerve₂.natIso).hom _ ≫
+    ReflQuiv.adj.{u}.counit).app (Cat.of C)).toFunctor
+  intro x y f g rel
+  obtain ⟨φ⟩ := rel
+  simpa [ReflQuiv.adj, Quot.liftOn, Cat.FreeRefl.quotientFunctor, Quotient.functor,
+      pathComposition, Quiv.adj, OneTruncation₂.nerveHomEquiv] using
+    φ.map_comp (X := 0) (Y := 1) (Z := 2) (homOfLE (by decide)) (homOfLE (by decide))
 
 @[simp]
 theorem nerve₂Adj.counit.app_eq (C : Type u) [SmallCategory C] :
     SSet.Truncated.HomotopyCategory.quotientFunctor (nerveFunctor₂.obj (Cat.of C)) ⋙
       nerve₂Adj.counit.app.{u} C =
-    (whiskerRight OneTruncation₂.ofNerve₂.natIso.hom _ ≫
-      ReflQuiv.adj.{u}.counit).app (Cat.of C) := rfl
+    ((whiskerRight OneTruncation₂.ofNerve₂.natIso.hom _ ≫
+      ReflQuiv.adj.{u}.counit).app (Cat.of C)).toFunctor := rfl
 
 /-- The naturality of `nerve₂Adj.counit.app`. -/
 theorem nerve₂Adj.counit.naturality {C D : Type u} [SmallCategory C] [SmallCategory D]
     (F : C ⥤ D) :
-    (nerveFunctor₂ ⋙ hoFunctor₂).map F ⋙ nerve₂Adj.counit.app D =
+    ((nerveFunctor₂ ⋙ hoFunctor₂).map F.toCatHom).toFunctor ⋙ nerve₂Adj.counit.app D =
       nerve₂Adj.counit.app C ⋙ F := by
   apply HomotopyCategory.lift_unique'
-  change ((oneTruncation₂ ⋙ Cat.freeRefl).map (nerveFunctor₂.map _)) ⋙
+  change ((oneTruncation₂ ⋙ Cat.freeRefl).map (nerveFunctor₂.map _)).toFunctor ⋙
     HomotopyCategory.quotientFunctor (nerveFunctor₂.obj (Cat.of D)) ⋙ app D = _
   rw [nerve₂Adj.counit.app_eq D]
   rw [← Functor.assoc _ _ F, nerve₂Adj.counit.app_eq C]
-  exact (whiskerRight OneTruncation₂.ofNerve₂.natIso.{u}.hom Cat.freeRefl ≫
-    ReflQuiv.adj.counit).naturality _
+  exact congr($((whiskerRight OneTruncation₂.ofNerve₂.natIso.{u}.hom Cat.freeRefl ≫
+      ReflQuiv.adj.counit).naturality F.toCatHom).toFunctor)
 
 /-- The counit of `nerve₂Adj.` -/
 @[simps]
 def nerve₂Adj.counit : nerveFunctor₂ ⋙ hoFunctor₂.{u} ⟶ 𝟭 Cat where
-  app _ := nerve₂Adj.counit.app _
-  naturality _ _ _ := nerve₂Adj.counit.naturality _
+  app _ := (nerve₂Adj.counit.app _).toCatHom
+  naturality _ _ _ := congr($(nerve₂Adj.counit.naturality _).toCatHom)
 
 variable {C : Type u} [SmallCategory C] {X : SSet.Truncated.{u} 2}
     (F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C)
@@ -362,27 +361,26 @@ nonrec def nerve₂Adj : hoFunctor₂.{u} ⊣ nerveFunctor₂ :=
       ext X
       apply HomotopyCategory.lift_unique'
       dsimp
-      rw [Cat.comp_eq_comp, ← Functor.assoc]
+      rw [← Functor.assoc]
       dsimp only [hoFunctor₂]
-      rw [← hoFunctor₂_naturality (nerve₂Adj.unit.app X)]
+      rw [toCatHom_toFunctor,← hoFunctor₂_naturality (nerve₂Adj.unit.app X)]
       dsimp
-      rw [nerve₂Adj.unit.map_app_eq X, Functor.assoc, id_comp]
+      rw [nerve₂Adj.unit.map_app_eq X, Functor.assoc, Functor.id_comp]
       change _ ⋙ (HomotopyCategory.quotientFunctor _ ⋙ nerve₂Adj.counit.app (hoFunctor₂.obj X)) = _
       rw [nerve₂Adj.counit.app_eq]
       dsimp
-      rw [← Cat.comp_eq_comp, ← assoc, ← Cat.freeRefl.map_comp, ReflQuiv.comp_eq_comp,
-        ReflPrefunctor.comp_assoc]
+      rw [← Cat.comp_eq_comp,← Cat.comp_eq_comp,← assoc, ← Cat.freeRefl.map_comp,
+        ReflQuiv.comp_eq_comp, ReflPrefunctor.comp_assoc]
       dsimp
       rw [← ReflQuiv.comp_eq_comp, Iso.inv_hom_id_app, ReflQuiv.id_eq_id]
       dsimp
       rw [ReflPrefunctor.comp_id (V := hoFunctor₂.obj X), ← ReflQuiv.comp_eq_comp (Z := .of _),
-        Cat.freeRefl.map_comp, assoc]
+        Cat.freeRefl.map_comp,← Cat.comp_eq_comp, assoc]
       have := ReflQuiv.adj.counit.naturality
         (X := Cat.freeRefl.obj (ReflQuiv.of (OneTruncation₂ X)))
-        (Y := hoFunctor₂.obj X) (SSet.Truncated.HomotopyCategory.quotientFunctor X)
+        (Y := hoFunctor₂.obj X) (SSet.Truncated.HomotopyCategory.quotientFunctor X).toCatHom
       dsimp at this
-      rw [this]
-      apply Adjunction.left_triangle_components_assoc
+      rw [this, Functor.comp_id, Adjunction.left_triangle_components_assoc, toCatHom_toFunctor]
     right_triangle := by
       refine NatTrans.ext (funext fun C ↦ ?_)
       apply toNerve₂.ext
@@ -393,15 +391,18 @@ nonrec def nerve₂Adj : hoFunctor₂.{u} ⊣ nerveFunctor₂ :=
         ← ReflQuiv.comp_eq_comp (X := ReflQuiv.of _) (Y := ReflQuiv.of _),
         assoc, assoc, ← Functor.comp_map, ← OneTruncation₂.ofNerve₂.natIso.inv.naturality]
       conv => lhs; rhs; rw [← assoc]
-      change _ ≫ (ReflQuiv.forget.map _ ≫ ReflQuiv.forget.map _) ≫ _ = _
+      change _ ≫ (ReflQuiv.forget.map (Functor.toCatHom
+        (HomotopyCategory.quotientFunctor (nerveFunctor₂.obj C))) ≫ ReflQuiv.forget.map _) ≫ _ = _
       rw [← ReflQuiv.forget.map_comp]
       dsimp
-      conv => lhs; rhs; lhs; rw [Cat.comp_eq_comp]
+      conv => lhs; rhs; lhs; rw [← toCatHom_toFunctor (HomotopyCategory.quotientFunctor _),
+        ← toCatHom_toFunctor (nerve₂Adj.counit.app _), ← Cat.Hom.comp_toFunctor, Cat.comp_eq_comp]
       have : HomotopyCategory.quotientFunctor (nerveFunctor₂.obj C) ⋙ _ = _ :=
         nerve₂Adj.counit.app_eq C
+      simp only [Cat.of_α, Cat.coe_of, toCatHom_toFunctor]
       rw [this]
       dsimp
-      rw [← assoc, Cat.comp_eq_comp, toReflPrefunctor.map_comp]
+      rw [← assoc, toReflPrefunctor.map_comp]
       rw [← ReflQuiv.comp_eq_comp (X := ReflQuiv.of _) (Y := ReflQuiv.of _) (Z := ReflQuiv.of _)]
       have := ReflQuiv.adj.unit.naturality (OneTruncation₂.ofNerve₂.natIso.hom.app C)
       dsimp at this ⊢
@@ -470,12 +471,12 @@ instance nerveFunctor₂.full : nerveFunctor₂.{u, u}.Full where
         apply ComposableArrows.ext₀; rfl
     let fF : X ⥤ Y := ReflPrefunctor.toFunctor uF' this
     have eq : fF.toReflPrefunctor = uF' := rfl
-    refine ⟨fF, toNerve₂.ext (nerveFunctor₂.{u,u}.map fF) F ?_⟩
-    · have nat := OneTruncation₂.ofNerve₂.natIso.hom.naturality fF
+    refine ⟨fF.toCatHom, toNerve₂.ext (nerveFunctor₂.{u,u}.map fF.toCatHom) F ?_⟩
+    · have nat := OneTruncation₂.ofNerve₂.natIso.hom.naturality fF.toCatHom
       simp at nat
       rw [eq] at nat
       simp [uF', uF] at nat
-      exact (Iso.cancel_iso_hom_right (oneTruncation₂.map (nerveFunctor₂.map fF))
+      exact (Iso.cancel_iso_hom_right (oneTruncation₂.map (nerveFunctor₂.map fF.toCatHom))
         (oneTruncation₂.map F) (OneTruncation₂.ofNerve₂.natIso.app Y)).mp nat
 
 /-- The 2-truncated nerve functor is both full and faithful and thus is fully faithful. -/
