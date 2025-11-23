@@ -9615,6 +9615,7 @@ public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 public import Mathlib.CategoryTheory.Functor.Trifunctor
 public import Mathlib.CategoryTheory.Functor.TwoSquare
+public import Mathlib.CategoryTheory.Functor.TypeValuedFlat
 public import Mathlib.CategoryTheory.Galois.Action
 public import Mathlib.CategoryTheory.Galois.Basic
 public import Mathlib.CategoryTheory.Galois.Decomposition
@@ -10172,6 +10173,7 @@ public import Mathlib.CategoryTheory.Sites.MorphismProperty
 public import Mathlib.CategoryTheory.Sites.NonabelianCohomology.H1
 public import Mathlib.CategoryTheory.Sites.Over
 public import Mathlib.CategoryTheory.Sites.Plus
+public import Mathlib.CategoryTheory.Sites.Point.Basic
 public import Mathlib.CategoryTheory.Sites.Precoverage
 public import Mathlib.CategoryTheory.Sites.Preserves
 public import Mathlib.CategoryTheory.Sites.PreservesLocallyBijective

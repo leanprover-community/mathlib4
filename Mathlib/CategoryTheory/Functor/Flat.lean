@@ -22,7 +22,8 @@ We define representably flat functors as functors such that the category of stru
 over `X` is cofiltered for each `X`. This concept is also known as flat functors as in [Elephant]
 Remark C2.3.7, and this name is suggested by Mike Shulman in
 https://golem.ph.utexas.edu/category/2011/06/flat_functors_and_morphisms_of.html to avoid
-confusion with other notions of flatness.
+confusion with other notions of flatness (e.g. see the notion of flat type-valued
+functor in the file `Functor.TypeValuedFlat`).
 
 This definition is equivalent to left exact functors (functors that preserves finite limits) when
 `C` has all finite limits.
