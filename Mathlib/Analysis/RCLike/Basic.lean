@@ -3,14 +3,16 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Algebra.Algebra.IsSimpleRing
-import Mathlib.Algebra.BigOperators.Balance
-import Mathlib.Algebra.Order.BigOperators.Expect
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Analysis.CStarAlgebra.Basic
-import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
-import Mathlib.Analysis.Normed.Ring.Finite
-import Mathlib.Data.Real.Sqrt
+module
+
+public import Mathlib.Algebra.Algebra.IsSimpleRing
+public import Mathlib.Algebra.BigOperators.Balance
+public import Mathlib.Algebra.Order.BigOperators.Expect
+public import Mathlib.Algebra.Order.Star.Basic
+public import Mathlib.Analysis.CStarAlgebra.Basic
+public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
+public import Mathlib.Analysis.Normed.Ring.Finite
+public import Mathlib.Data.Real.Sqrt
 
 /-!
 # `RCLike`: a typeclass for ℝ or ℂ
@@ -41,6 +43,8 @@ their counterparts in `Mathlib/Analysis/Complex/Basic.lean` (which causes linter
 
 A few lemmas requiring heavier imports are in `Mathlib/Analysis/RCLike/Lemmas.lean`.
 -/
+
+@[expose] public section
 
 open Fintype
 open scoped BigOperators ComplexConjugate
@@ -234,6 +238,14 @@ theorem smul_im (r : ℝ) (z : K) : im (r • z) = r * im z := by
 @[rclike_simps, norm_cast]
 theorem norm_ofReal (r : ℝ) : ‖(r : K)‖ = |r| :=
   norm_algebraMap' K r
+
+@[simp]
+theorem re_ofReal_pow (a : ℝ) (n : ℕ) : re ((a : K) ^ n) = a ^ n := by
+  rw [← ofReal_pow, @ofReal_re]
+
+@[simp]
+theorem im_ofReal_pow (a : ℝ) (n : ℕ) : im ((a : K) ^ n) = 0 := by
+  rw [← @ofReal_pow, @ofReal_im_ax]
 
 /-! ### Characteristic zero -/
 

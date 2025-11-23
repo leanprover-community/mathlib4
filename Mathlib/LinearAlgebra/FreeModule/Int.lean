@@ -3,10 +3,12 @@ Copyright (c) 2024 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Data.ZMod.QuotientGroup
-import Mathlib.GroupTheory.Index
-import Mathlib.LinearAlgebra.FreeModule.PID
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Int
+public import Mathlib.Data.ZMod.QuotientGroup
+public import Mathlib.GroupTheory.Index
+public import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-! # Index of submodules of free ℤ-modules (considered as an `AddSubgroup`).
 
@@ -14,6 +16,8 @@ This file provides lemmas about when a submodule of a free ℤ-module is a subgr
 index.
 
 -/
+
+@[expose] public section
 
 
 variable {ι R M : Type*} {n : ℕ} [CommRing R] [AddCommGroup M]
@@ -79,7 +83,7 @@ lemma toAddSubgroup_index_eq_pow_mul_prod [Module R M] {N : Submodule R M}
       simp only [EmbeddingLike.apply_eq_iff_eq, exists_eq, ↓reduceDIte, Classical.choose_eq,
         Finset.sum_apply, Pi.smul_apply, Pi.single_apply, smul_ite, smul_zero]
       rw [eq_comm]
-      by_cases hj : ∃ j, f j = i
+      by_cases! hj : ∃ j, f j = i
       · calc ∑ x : Fin n, _ =
             if i = f hj.choose then (h (f hj.choose)).choose * a hj.choose else 0 := by
               convert Finset.sum_eq_single (M := R) hj.choose ?_ ?_
@@ -99,9 +103,8 @@ lemma toAddSubgroup_index_eq_pow_mul_prod [Module R M] {N : Submodule R M}
               · exact hj.choose_spec.symm
               · simp [hj]
       · convert Finset.sum_const_zero with x
-        · rw [not_exists] at hj
-          specialize hj x
-          rw [eq_comm] at hj
+        · specialize hj x
+          rw [ne_comm] at hj
           simp [hj]
         · rw [← zero_dvd_iff]
           convert h i

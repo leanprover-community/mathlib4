@@ -3,10 +3,11 @@ Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Anatole Dedecker
 -/
+module
 
-import Mathlib.RingTheory.TwoSidedIdeal.Operations
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.Algebra.OpenSubgroup
+public import Mathlib.RingTheory.TwoSidedIdeal.Operations
+public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-! # Linear topologies on modules and rings
 
@@ -74,6 +75,8 @@ hence our definition agrees with [N. Bourbaki, *Algebra II*, chapter 4, §2, n°
   types), thus we provide `IsLinearTopology.mk_of_hasBasis'` as an alternative not relying on
   typeclass inference.
 -/
+
+@[expose] public section
 
 open scoped Topology
 open Filter
