@@ -67,11 +67,11 @@ namespace IsContDiffImplicitAt
 
 variable
   {n : WithTop ℕ∞} {f : E × F → G} {f' : E × F →L[𝕜] G} {a : E × F}
+  (h : IsContDiffImplicitAt n f f' a)
 
 /-- We record the parameters of our specific case in order to apply the general implicit function
 theorem. -/
-def implicitFunctionData (h : IsContDiffImplicitAt n f f' a) :
-    ImplicitFunctionData 𝕜 (E × F) E G where
+def implicitFunctionData : ImplicitFunctionData 𝕜 (E × F) E G where
   leftFun := Prod.fst
   leftDeriv := ContinuousLinearMap.fst 𝕜 E F
   rightFun := f
@@ -103,37 +103,35 @@ def implicitFunctionData (h : IsContDiffImplicitAt n f f' a) :
       exact ⟨(0, y), by simp, x - (0, y), by simp [map_sub, ← hy], by abel⟩
 
 @[simp]
-lemma implicitFunctionData_leftFun_pt (h : IsContDiffImplicitAt n f f' a) :
+lemma implicitFunctionData_leftFun_pt :
     h.implicitFunctionData.leftFun h.implicitFunctionData.pt = a.1 := rfl
 
 @[simp]
-lemma implicitFunctionData_rightFun_pt (h : IsContDiffImplicitAt n f f' a) :
+lemma implicitFunctionData_rightFun_pt :
     h.implicitFunctionData.rightFun h.implicitFunctionData.pt = f a := rfl
 
 /-- The implicit function provided by the general theorem, from which we construct the more useful
 form `IsContDiffImplicitAt.implicitFunction`. -/
-noncomputable def implicitFunctionAux (h : IsContDiffImplicitAt n f f' a) : E → G → E × F :=
+noncomputable def implicitFunctionAux : E → G → E × F :=
   h.implicitFunctionData.implicitFunction
 
-lemma implicitFunctionAux_fst (h : IsContDiffImplicitAt n f f' a) :
+lemma implicitFunctionAux_fst :
     ∀ᶠ p in 𝓝 (a.1, f a), (h.implicitFunctionAux p.1 p.2).1 = p.1 :=
   h.implicitFunctionData.prod_map_implicitFunction.mono fun _ ↦ congr_arg Prod.fst
 
-lemma comp_implicitFunctionAux_eq_snd (h : IsContDiffImplicitAt n f f' a) :
+lemma comp_implicitFunctionAux_eq_snd :
     ∀ᶠ p in 𝓝 (a.1, f a), f (h.implicitFunctionAux p.1 p.2) = p.2 :=
   h.implicitFunctionData.prod_map_implicitFunction.mono fun _ ↦ congr_arg Prod.snd
 
 /-- Implicit function `φ` defined by `f (x, φ x) = f a`. -/
-noncomputable def implicitFunction (h : IsContDiffImplicitAt n f f' a) : E → F :=
-  fun x ↦ (h.implicitFunctionAux x (f a)).2
+noncomputable def implicitFunction : E → F := fun x ↦ (h.implicitFunctionAux x (f a)).2
 
-lemma implicitFunction_def (h : IsContDiffImplicitAt n f f' a) :
+lemma implicitFunction_def :
     h.implicitFunction = fun x ↦ (h.implicitFunctionData.implicitFunction.uncurry (x, (f a))).2 :=
   rfl
 
 /-- `implicitFunction` is indeed the (local) implicit function defined by `f`. -/
-lemma apply_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
-    ∀ᶠ x in 𝓝 a.1, f (x, h.implicitFunction x) = f a := by
+lemma apply_implicitFunction : ∀ᶠ x in 𝓝 a.1, f (x, h.implicitFunction x) = f a := by
   have := h.comp_implicitFunctionAux_eq_snd
   have hfst := h.implicitFunctionAux_fst
   rw [nhds_prod_eq, eventually_swap_iff] at this hfst
@@ -149,8 +147,7 @@ lemma apply_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
 
 /-- If the implicit equation `f` is $C^n$ at `(x, y)`, then its implicit function `φ` around `x` is
 also $C^n$ at `x`. -/
-theorem contDiffAt_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
-    ContDiffAt 𝕜 n h.implicitFunction a.1 := by
+theorem contDiffAt_implicitFunction : ContDiffAt 𝕜 n h.implicitFunction a.1 := by
   have := h.implicitFunctionData.contDiff_implicitFunction contDiffAt_fst h.contDiffAt h.one_le
   rw [implicitFunction_def]
   fun_prop
