@@ -38,7 +38,7 @@ noncomputable def ModuleCat.localizedModule [Small.{v} R] (M : ModuleCat.{v} R) 
 
 /-- The `R` module structure on `M.localizedModule S` given by the
 `R` module structure on (Shrink.{v} (LocalizedModule S M)) -/
-noncomputable local instance [Small.{v} R] (M : ModuleCat.{v} R) (S : Submonoid R) :
+noncomputable instance [Small.{v} R] (M : ModuleCat.{v} R) (S : Submonoid R) :
     Module R (M.localizedModule S) :=
   inferInstanceAs (Module R (Shrink.{v} (LocalizedModule S M)))
 
