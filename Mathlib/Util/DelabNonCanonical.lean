@@ -16,6 +16,7 @@ Synthesized instances are considered 'canonical' for this purpose.
 -/
 
 public meta section
+open Lean Meta PrettyPrinter.Delaborator SubExpr
 
 /-- When the delab reader is pointed at an expression for an instance, returns `(true, t)`
 **iff** instance synthesis succeeds and produces a defeq instance; otherwise returns `(false, t)`.
