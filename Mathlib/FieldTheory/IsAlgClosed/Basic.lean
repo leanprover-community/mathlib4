@@ -84,15 +84,15 @@ namespace IsAlgClosed
 
 variable {k}
 
-theorem splits [IsAlgClosed k] (p : k[X]) : (p.map (RingHom.id k)).Splits :=
-  (IsAlgClosed.factors p).map (RingHom.id k)
+theorem splits [IsAlgClosed k] (p : k[X]) : p.Splits :=
+  IsAlgClosed.factors p
 
 /--
 If `k` is algebraically closed, then every nonconstant polynomial has a root.
 -/
 @[stacks 09GR "(4) ⟹ (3)"]
 theorem exists_root [IsAlgClosed k] (p : k[X]) (hp : p.degree ≠ 0) : ∃ x, IsRoot p x :=
-  exists_root_of_splits _ (IsAlgClosed.splits p) hp
+  exists_root_of_splits _ ((IsAlgClosed.splits p).map <| .id k) hp
 
 theorem exists_pow_nat_eq [IsAlgClosed k] (x : k) {n : ℕ} (hn : 0 < n) : ∃ z, z ^ n = x := by
   have : degree (X ^ n - C x) ≠ 0 := by
