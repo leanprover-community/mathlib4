@@ -163,6 +163,13 @@ theorem cgf_zero' : cgf X μ 0 = log (μ.real Set.univ) := by simp only [cgf, mg
 theorem cgf_zero [IsZeroOrProbabilityMeasure μ] : cgf X μ 0 = 0 := by
   rcases eq_zero_or_isProbabilityMeasure μ with rfl | h <;> simp [cgf_zero']
 
+/-- If the moment-generating function equals `1` at `t`,
+    then the cumulant-generating function equals `0` at `t`. -/
+lemma cgf_zero_of_mgf_one [MeasurableSpace Ω]
+    (μ : Measure Ω) {X : Ω → ℝ} {t : ℝ} (h : mgf X μ t = 1) :
+    cgf X μ t = 0 := by
+  simp only [cgf, h, log_one]
+
 theorem mgf_undef (hX : ¬Integrable (fun ω => exp (t * X ω)) μ) : mgf X μ t = 0 := by
   simp only [mgf, integral_undef hX]
 
@@ -269,6 +276,20 @@ lemma mgf_anti_of_nonpos {Y : Ω → ℝ} (hXY : X ≤ᵐ[μ] Y) (ht : t ≤ 0)
     filter_upwards [hXY] with ω hω using exp_monotone <| mul_le_mul_of_nonpos_left hω ht
   · rw [mgf_undef htY]
     exact mgf_nonneg
+
+/-- For a nonnegative random variable `X` (a.e.), the `mgf` is monotone in the parameter `t`:
+    if `s ≤ t` and both integrals exist, then `mgf X μ s ≤ mgf X μ t`. -/
+lemma mgf_mono_in_t_of_nonneg {Ω : Type*} [MeasurableSpace Ω]
+    (μ : Measure Ω) {X : Ω → ℝ} {s t : ℝ}
+    (hst : s ≤ t) (hX_nonneg : 0 ≤ᵐ[μ] X)
+    (h_int_s : Integrable (fun ω => Real.exp (s * X ω)) μ)
+    (h_int_t : Integrable (fun ω => Real.exp (t * X ω)) μ) :
+    mgf X μ s ≤ mgf X μ t := by
+  simp only [mgf] at h_int_s h_int_t ⊢
+  have h_ae : (fun ω => Real.exp (s * X ω)) ≤ᵐ[μ] fun ω => Real.exp (t * X ω) := by
+    refine hX_nonneg.mono fun ω hω => ?_
+    exact Real.exp_le_exp.mpr (mul_le_mul_of_nonneg_right hst hω)
+  exact integral_mono_ae h_int_s h_int_t h_ae
 
 section IndepFun
 
