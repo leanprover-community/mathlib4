@@ -51,9 +51,9 @@ def continuousLinearEquiv (e : α ≃ β) :
 
 @[simp]
 lemma toLinearEquiv_continuousLinearEquiv (e : α ≃ β) :
-    let _ := e.topologicalSpace
-    let _ := e.addCommMonoid
-    let _ := e.module R
+    letI := e.topologicalSpace
+    letI := e.addCommMonoid
+    letI := e.module R
     (e.continuousLinearEquiv R).toLinearEquiv = e.linearEquiv R := rfl
 
 end Equiv
