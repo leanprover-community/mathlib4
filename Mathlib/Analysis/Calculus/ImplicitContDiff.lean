@@ -103,12 +103,16 @@ def implicitFunctionData (h : IsContDiffImplicitAt n f f' a) :
       exact ⟨(0, y), by simp, x - (0, y), by simp [map_sub, ← hy], by abel⟩
 
 @[simp]
+lemma implicitFunctionData_pt (h : IsContDiffImplicitAt n f f' a) :
+    h.implicitFunctionData.pt = a := rfl
+
+@[simp]
 lemma implicitFunctionData_leftFun_pt (h : IsContDiffImplicitAt n f f' a) :
-    h.implicitFunctionData.leftFun h.implicitFunctionData.pt = a.1 := rfl
+    h.implicitFunctionData.leftFun a = a.1 := rfl
 
 @[simp]
 lemma implicitFunctionData_rightFun_pt (h : IsContDiffImplicitAt n f f' a) :
-    h.implicitFunctionData.rightFun h.implicitFunctionData.pt = f a := rfl
+    h.implicitFunctionData.rightFun a = f a := rfl
 
 /-- The implicit function provided by the general theorem, from which we construct the more useful
 form `IsContDiffImplicitAt.implicitFunction`. -/
@@ -146,6 +150,102 @@ lemma apply_implicitFunction (h : IsContDiffImplicitAt n f f' a) :
   ext
   · rw [h1]
   · rfl
+
+/-
+ImplicitContDiff:
+leftFun : E × F → E
+rightFun : E × F → G
+pt : E × F := (a, b)
+φ : E → F
+
+Show φ is locally unique.
+
+For all (x, y) close to a, if f (x, y) = f a, then y = φ x.
+
+E := E × F
+F := E
+G := G
+f : E × F → E := Prod.fst
+g : E × F → G := f
+a : E × F := a
+φ : E → G → E × F := h.implicitFunctionAux
+
+Lemma to apply:
+For all (y, z) close to (f a, g a) and for all x close to a,
+(f x = y and g x = z) implies x = φ y z
+
+Our variables:
+For all (x, z) close to (a.1, f a) and for all xy close to a,
+(xy.1 = x and f xy = z) implies xy = h.implicitFunctionAux x z
+
+Specialise to z = f a
+For all x close to a.1 and for all xy close to a,
+(xy.1 = x and f xy = f a) implies xy = h.implicitFunctionAux x (f a)
+
+Specialise to xy.1 = x
+For all x close to a.1 and for all y close to a.2,
+f (x, y) = f a implies (x, y) = h.implicitFunctionAux x (f a)
+
+Use def
+For all x close to a.1 and for all y close to a.2,
+f (x, y) = f a implies y = h.implicitFunction x
+
+-----
+
+(E × F) × E × G
+(E × F) × G × E
+E × F × G × E
+F × G × E × E
+(F × G) × E × E
+
+-/
+
+-- theorem Tendsto.eventually_congr {α β : Type*} {f : α → β} {l₁ : Filter α} {l₂ : Filter β}
+--     {p : β → Prop} {q : α → Prop} (hf : Tendsto f l₁ l₂) (hiff : ∀ᶠ x in l₁, q x ↔ p (f x))
+--     (h : ∀ᶠ y in l₂, p y) : ∀ᶠ x in l₁, q x := by
+--   rw [Filter.eventually_congr hiff]
+--   exact Filter.Tendsto.eventually hf h
+
+theorem eventually_assoc_iff {α β γ : Type*}
+    {f : Filter α} {g : Filter β} {h : Filter γ} {p : (α × β) × γ → Prop} :
+    (∀ᶠ x : (α × β) × γ in (f ×ˢ g) ×ˢ h, p x) ↔
+      ∀ᶠ y : α × β × γ in f ×ˢ g ×ˢ h, p ((y.1, y.2.1), y.2.2) := by
+  rw [← prod_assoc]; rfl
+
+theorem eventually_assoc_symm_iff {α β γ : Type*}
+    {f : Filter α} {g : Filter β} {h : Filter γ} {p : α × β × γ → Prop} :
+    (∀ᶠ x : α × β × γ in f ×ˢ g ×ˢ h, p x) ↔
+      ∀ᶠ y : (α × β) × γ in (f ×ˢ g) ×ˢ h, p (y.1.1, y.1.2, y.2) := by
+  rw [← prod_assoc_symm]; rfl
+
+theorem eventually_swap4_prod_iff {α β γ δ : Type*}
+    {f : Filter α} {g : Filter β} {h : Filter γ} {k : Filter δ} {p : (α × β) × γ × δ → Prop} :
+    (∀ᶠ x : (α × β) × γ × δ in (f ×ˢ g) ×ˢ h ×ˢ k, p x) ↔
+      ∀ᶠ y : (α × γ) × β × δ in (f ×ˢ h) ×ˢ g ×ˢ k, p ((y.1.1, y.2.1), y.1.2, y.2.2) := by
+  rw [← map_swap4_prod]; rfl
+
+theorem implicitFunction_unique (h : IsContDiffImplicitAt n f f' a) :
+    ∀ᶠ xy in 𝓝 a, f xy = f a → xy.2 = h.implicitFunction xy.1 := by
+  have := h.implicitFunctionData.eq_implicitFunction_of_prodFun_eq
+  have hnhds :
+      𝓝 (h.implicitFunctionData.pt, h.implicitFunctionData.prodFun h.implicitFunctionData.pt) =
+        (𝓝 a.1 ×ˢ 𝓝 a.2) ×ˢ 𝓝 a.1 ×ˢ 𝓝 (f a) := by
+    rw [implicitFunctionData_pt, ImplicitFunctionData.prodFun_apply,
+      implicitFunctionData_leftFun_pt, implicitFunctionData_rightFun_pt, nhds_prod_eq, nhds_prod_eq,
+      nhds_prod_eq]
+  rw [hnhds, eventually_swap4_prod_iff] at this
+  replace := Filter.Eventually.diag_of_prod_left this
+  rw [eventually_assoc_symm_iff, ← nhds_prod_eq] at this
+  dsimp only at this
+  replace := this.curry
+  filter_upwards [this] with xy hxy heq
+  replace hxy := hxy.self_of_nhds
+  rw [implicitFunction, implicitFunctionAux, ← hxy]
+  rw [ImplicitFunctionData.prodFun_apply]
+  ext
+  · rfl
+  · rw [← heq]
+    rfl
 
 /-- If the implicit equation `f` is $C^n$ at `(x, y)`, then its implicit function `φ` around `x` is
 also $C^n$ at `x`. -/
