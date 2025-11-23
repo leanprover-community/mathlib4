@@ -23,7 +23,7 @@ lemma sqrt2sqrt_is_transcendental : Transcendental ℚ ((√2 : ℂ)^ (√2 : �
         refine (degree_eq_iff_natDegree_eq_of_pos ?_).mp ?_
         · simp only [Nat.ofNat_pos]
         · rw [Polynomial.degree_sub_C]
-          simp only [degree_pow, degree_X, nsmul_eq_mul, Nat.cast_ofNat, mul_one]
+          · simp only [degree_pow, degree_X, nsmul_eq_mul, Nat.cast_ofNat, mul_one]
           simp only [degree_pow, degree_X, nsmul_eq_mul, Nat.cast_ofNat, mul_one, Nat.ofNat_pos]
       }
       have HC : 2 ≠ 0 := by {simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true]}
@@ -43,7 +43,7 @@ lemma sqrt2sqrt_is_transcendental : Transcendental ℚ ((√2 : ℂ)^ (√2 : �
         refine (degree_eq_iff_natDegree_eq_of_pos ?_).mp ?_
         · simp only [Nat.ofNat_pos]
         · rw [Polynomial.degree_sub_C]
-          simp only [degree_pow, degree_X, nsmul_eq_mul, Nat.cast_ofNat, mul_one]
+          · simp only [degree_pow, degree_X, nsmul_eq_mul, Nat.cast_ofNat, mul_one]
           simp only [degree_pow, degree_X, nsmul_eq_mul, Nat.cast_ofNat, mul_one, Nat.ofNat_pos]
       }
       have HC : 2 ≠ 0 := by {simp only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true]}

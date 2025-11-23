@@ -48,6 +48,8 @@ set_option linter.style.longLine false
 set_option linter.style.cases false
 set_option linter.style.induction false
 
+@[expose] public section
+
 open BigOperators Module.Free Fintype NumberField Embeddings FiniteDimensional
    Matrix Set Polynomial Finset IntermediateField Complex AnalyticAt
 
@@ -6279,6 +6281,13 @@ lemma use5 : (h7.r q hq0 h2mq : ℝ) ^
     rw [← Real.mul_rpow]
     · exact le_trans zero_le_one h7.c14_nonneg
     · exact (c5nonneg h7).le
+
+
+
+
+
+
+
 
 
 theorem gelfondSchneider (α β : ℂ) (hα : IsAlgebraic ℚ α) (hβ : IsAlgebraic ℚ β)
