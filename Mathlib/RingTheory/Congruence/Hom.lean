@@ -587,9 +587,10 @@ def quotientQuotientEquivQuotientₐ {c d : RingCon M} (h : c ≤ d) :
 theorem quotientQuotientEquivQuotientₐ_mk_mk {c d : RingCon M} (h : c ≤ d) (x : M) :
     quotientQuotientEquivQuotientₐ R h ⟦⟦x⟧⟧ = ⟦x⟧ := rfl
 
-@[simp] theorem quotientQuotientEquivQuotientₐ_coe_coe {c d : RingCon M} (h : c ≤ d) (x : M) :
+-- simp issue
+theorem quotientQuotientEquivQuotientₐ_coe_coe {c d : RingCon M} (h : c ≤ d) (x : M) :
     quotientQuotientEquivQuotientₐ R h ↑(x : c.Quotient) = x :=
-  rfl
+  quotientQuotientEquivQuotientₐ_mk_mk R h x
 
 -- simp issue
 theorem quotientQuotientEquivQuotientₐ_symm_mk {c d : RingCon M} (h : c ≤ d) (x : M) :
