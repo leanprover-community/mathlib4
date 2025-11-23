@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Yoneda
 /-!
 # `IsRepresentedBy` predicate
 
-In this file we define the predicate `IsRepresentedBy`: A functor `F` is represented by `X`
+In this file we define the predicate `IsRepresentedBy`: A presheaf `F` is represented by `X`
 with universal element `x : F.obj X` if the natural transformation `yoneda.obj X ⟶ F` induced
 by `x` is an isomorphism.
 
@@ -37,13 +37,13 @@ open Opposite
 variable {C : Type u} [Category.{v} C]
 
 /--
-A functor `F` is represented by `X` with universal element `x : F.obj X`
+A presheaf `F` is represented by `X` with universal element `x : F.obj X`
 if the natural transformation `yoneda.obj X ⟶ F` induced by `x` is an isomorphism.
 For better universe generality, we state this manually as for every `Y`, the
 induced map `(Y ⟶ X) → F.obj Y` is bijective.
 -/
 @[mk_iff]
-structure IsRepresentedBy {F : Cᵒᵖ ⥤ Type w} {X : C} (x : F.obj (op X)) : Prop where
+structure IsRepresentedBy (F : Cᵒᵖ ⥤ Type w) {X : C} (x : F.obj (op X)) : Prop where
   map_bijective {Y : C} : Function.Bijective (fun f : Y ⟶ X ↦ F.map f.op x)
 
 variable {F : Cᵒᵖ ⥤ Type w} {X : C} {x : F.obj (op X)}
@@ -67,11 +67,10 @@ noncomputable def IsRepresentedBy.uliftYonedaIso (h : F.IsRepresentedBy x) :
   asIso <| (uliftYonedaEquiv (F := F ⋙ uliftFunctor.{v})).symm ⟨x⟩
 
 /-- The canonical representation induced by the universal element `x : F.obj X`. -/
-noncomputable
-def IsRepresentedBy.representableBy (h : F.IsRepresentedBy x) :
+noncomputable def IsRepresentedBy.representableBy (h : F.IsRepresentedBy x) :
     F.RepresentableBy X :=
   Functor.representableByUliftFunctorEquiv.{v}
-    ((RepresentableBy.equivUliftYoneda _ _).symm <| h.uliftYonedaIso)
+    ((RepresentableBy.equivUliftYonedaIso _ _).symm <| h.uliftYonedaIso)
 
 @[simp]
 lemma IsRepresentedBy.representableBy_homEquiv_apply (h : F.IsRepresentedBy x)
@@ -82,10 +81,8 @@ lemma IsRepresentedBy.representableBy_homEquiv_apply (h : F.IsRepresentedBy x)
 lemma RepresentableBy.isRepresentedBy (R : F.RepresentableBy X) :
     F.IsRepresentedBy (R.homEquiv (𝟙 X)) := by
   rw [IsRepresentedBy.iff_isIso_uliftYonedaEquiv]
-  convert (RepresentableBy.equivUliftYoneda _ _ <|
+  convert (RepresentableBy.equivUliftYonedaIso _ _ <|
     representableByUliftFunctorEquiv.{v}.symm R).isIso_hom
-  ext
-  dsimp
   ext
   simp [uliftYonedaEquiv, ← homEquiv_eq]
 

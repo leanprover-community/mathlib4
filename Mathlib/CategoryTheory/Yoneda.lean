@@ -71,19 +71,6 @@ def uliftCoyonedaIsoCoyoneda {C : Type u₁} [Category.{max w v₁} C] :
     uliftCoyoneda.{w} (C := C) ≅ coyoneda :=
   NatIso.ofComponents (fun _ ↦ NatIso.ofComponents (fun _ ↦ Equiv.ulift.toIso))
 
-/-- Variant of the Yoneda embedding which allows a raise in the universe level
-for the category of types. -/
-@[pp_with_univ, simps!]
-def uliftCoyoneda : Cᵒᵖ ⥤ C ⥤ Type (max w v₁) :=
-  coyoneda ⋙ (Functor.whiskeringRight _ _ _).obj uliftFunctor.{w}
-
-/-- If `C` is a category with `[Category.{max w v₁} C]`, this is the isomorphism
-`uliftCoyoneda.{w} (C := C) ≅ coyoneda`. -/
-@[simps!]
-def uliftCoyonedaIsoCoyoneda {C : Type u₁} [Category.{max w v₁} C] :
-    uliftCoyoneda.{w} (C := C) ≅ coyoneda :=
-  NatIso.ofComponents (fun _ ↦ NatIso.ofComponents (fun _ ↦ Equiv.ulift.toIso))
-
 namespace Yoneda
 
 theorem obj_map_id {X Y : C} (f : op X ⟶ op Y) :
@@ -419,7 +406,7 @@ def corepresentableByUliftFunctorEquiv {F : C ⥤ Type v} {X : C} :
 
 /-- Version of `representableByEquiv` with more general universe assumptions. -/
 @[simps]
-def RepresentableBy.equivUliftYoneda (F : Cᵒᵖ ⥤ Type (max w v₁)) (X : C) :
+def RepresentableBy.equivUliftYonedaIso (F : Cᵒᵖ ⥤ Type (max w v₁)) (X : C) :
     F.RepresentableBy X ≃ (uliftYoneda.obj X ≅ F) where
   toFun R := NatIso.ofComponents (fun X ↦ equivEquivIso (Equiv.ulift.trans R.homEquiv)) <| by
     intro X Y f
@@ -431,7 +418,7 @@ def RepresentableBy.equivUliftYoneda (F : Cᵒᵖ ⥤ Type (max w v₁)) (X : C)
 
 /-- Version of `corepresentableByEquiv` with more general universe assumptions. -/
 @[simps]
-def CorepresentableBy.equivUliftCoyoneda (F : C ⥤ Type (max w v₁)) (X : C) :
+def CorepresentableBy.equivUliftCoyonedaIso (F : C ⥤ Type (max w v₁)) (X : C) :
     F.CorepresentableBy X ≃ (uliftCoyoneda.obj (op X) ≅ F) where
   toFun R := NatIso.ofComponents (fun X ↦ equivEquivIso (Equiv.ulift.trans R.homEquiv)) <| by
     intro X Y f
@@ -558,16 +545,14 @@ theorem coreprW_hom_app (F : C ⥤ Type v₁) [F.IsCorepresentable] (X : C) (f :
 end Corepresentable
 
 lemma isRepresentable_comp_uliftFunctor_iff {F : Cᵒᵖ ⥤ Type v} :
-    (F ⋙ uliftFunctor.{w}).IsRepresentable ↔ F.IsRepresentable := by
-  refine ⟨fun ⟨X, ⟨R⟩⟩ ↦ ?_, fun ⟨X, ⟨R⟩⟩ ↦ ?_⟩
-  · exact ⟨X, ⟨representableByUliftFunctorEquiv R⟩⟩
-  · exact ⟨X, ⟨representableByUliftFunctorEquiv.symm R⟩⟩
+    (F ⋙ uliftFunctor.{w}).IsRepresentable ↔ F.IsRepresentable where
+  mp | ⟨X, ⟨R⟩⟩ => ⟨X, ⟨representableByUliftFunctorEquiv R⟩⟩
+  mpr | ⟨X, ⟨R⟩⟩ => ⟨X, ⟨representableByUliftFunctorEquiv.symm R⟩⟩
 
 lemma isCorepresentable_comp_uliftFunctor_iff {F : C ⥤ Type v} :
-    (F ⋙ uliftFunctor.{w}).IsCorepresentable ↔ F.IsCorepresentable := by
-  refine ⟨fun ⟨X, ⟨R⟩⟩ ↦ ?_, fun ⟨X, ⟨R⟩⟩ ↦ ?_⟩
-  · exact ⟨X, ⟨corepresentableByUliftFunctorEquiv R⟩⟩
-  · exact ⟨X, ⟨corepresentableByUliftFunctorEquiv.symm R⟩⟩
+    (F ⋙ uliftFunctor.{w}).IsCorepresentable ↔ F.IsCorepresentable where
+  mp | ⟨X, ⟨R⟩⟩ => ⟨X, ⟨corepresentableByUliftFunctorEquiv R⟩⟩
+  mpr | ⟨X, ⟨R⟩⟩ => ⟨X, ⟨corepresentableByUliftFunctorEquiv.symm R⟩⟩
 
 end Functor
 
