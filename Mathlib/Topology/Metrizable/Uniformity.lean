@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Nat.Lattice
 public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Topology.MetricSpace.Basic
 public import Mathlib.Topology.Metrizable.Basic
 
 /-!
