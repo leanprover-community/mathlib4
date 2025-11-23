@@ -231,19 +231,23 @@ theorem sub_martingale [Preorder E] [AddLeftMono E] (hf : Submartingale f ℱ μ
     (hg : Martingale g ℱ μ) : Submartingale (f - g) ℱ μ :=
   hf.sub_supermartingale hg.supermartingale
 
-protected theorem sup {f g : ι → Ω → ℝ} (hf : Submartingale f ℱ μ) (hg : Submartingale g ℱ μ) :
+protected theorem sup [Lattice E] [ContinuousSup E] [HasSolidNorm E] [IsOrderedAddMonoid E]
+    [IsOrderedModule ℝ E] {f g : ι → Ω → E} (hf : Submartingale f ℱ μ)
+    (hg : Submartingale g ℱ μ) :
     Submartingale (f ⊔ g) ℱ μ := by
   refine ⟨fun i => @StronglyMeasurable.sup _ _ _ _ (ℱ i) _ _ _ (hf.adapted i) (hg.adapted i),
     fun i j hij => ?_, fun i => Integrable.sup (hf.integrable _) (hg.integrable _)⟩
   refine EventuallyLE.sup_le ?_ ?_
   · exact EventuallyLE.trans (hf.2.1 i j hij)
       (condExp_mono (hf.integrable _) (Integrable.sup (hf.integrable j) (hg.integrable j))
-        (Eventually.of_forall fun x => le_max_left _ _))
+        (Eventually.of_forall fun x => le_sup_left))
   · exact EventuallyLE.trans (hg.2.1 i j hij)
       (condExp_mono (hg.integrable _) (Integrable.sup (hf.integrable j) (hg.integrable j))
-        (Eventually.of_forall fun x => le_max_right _ _))
+        (Eventually.of_forall fun x => le_sup_right))
 
-protected theorem pos {f : ι → Ω → ℝ} (hf : Submartingale f ℱ μ) : Submartingale (f⁺) ℱ μ :=
+protected theorem pos [Lattice E] [ContinuousSup E] [HasSolidNorm E] [IsOrderedAddMonoid E]
+    [IsOrderedModule ℝ E] {f : ι → Ω → E} (hf : Submartingale f ℱ μ) :
+    Submartingale (f⁺) ℱ μ :=
   hf.sup (martingale_zero _ _ _).submartingale
 
 end Submartingale
