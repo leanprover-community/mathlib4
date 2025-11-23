@@ -8,7 +8,7 @@ module
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.Algebra.Module.Injective
 public import Mathlib.LinearAlgebra.BilinearMap
-public import Mathlib.RingTheory.LocalProperties.Submodule
+public import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
 
@@ -47,20 +47,42 @@ theorem Module.injective_of_isLocalizedModule [Small.{v} R] [IsNoetherianRing R]
   intro Iₛ
   let I := Iₛ.comap (algebraMap R Rₛ)
   let _ : FinitePresentation R I := finitePresentation_of_finite R I
-  let g : I →ₗ[R] Iₛ := sorry
-  let _ : IsLocalizedModule S g :=
-    --Submodule.isLocalizedModule
-    sorry
   let h : R →ₗ[R] Rₛ := Algebra.linearMap R Rₛ
   let _ : IsLocalizedModule S h := inferInstance
+  have eqloc : Submodule.localized' Rₛ S h I = Iₛ := by
+    simp [h, Ideal.localized'_eq_map, I, IsLocalization.map_comap S]
+  let g : I →ₗ[R] Iₛ :=
+    ((LinearEquiv.ofEq _ _ eqloc).restrictScalars R).toLinearMap.comp (I.toLocalized' Rₛ S h)
+  let _ : IsLocalizedModule S g :=
+    IsLocalizedModule.of_linearEquiv S
+    (I.toLocalized' Rₛ S h) ((LinearEquiv.ofEq _ _ eqloc).restrictScalars R)
   let gM := IsLocalizedModule.mapExtendScalars S g f Rₛ
   let _ : IsLocalizedModule S gM := FinitePresentation.isLocalizedModule_mapExtendScalars S g f Rₛ
   let hM := IsLocalizedModule.mapExtendScalars S h f Rₛ
   let _ : IsLocalizedModule S hM := FinitePresentation.isLocalizedModule_mapExtendScalars S h f Rₛ
   have surj := Baer.iff_surjective.mp MB I
+  have eq'' : Iₛ.subtype = ((IsLocalizedModule.map S g h) (Submodule.subtype I)) := by
+    simp only [IsLocalizedModule.map, LinearMap.coe_mk, AddHom.coe_mk]
+    symm
+    apply (IsLocalizedModule.lift_unique _ _ _ _)
+    ext x
+    simp [g, h]
+  have eq' : (LinearMap.lcomp Rₛ Mₛ (Submodule.subtype Iₛ)) =
+    IsLocalizedModule.map S hM gM (LinearMap.lcomp R M (Submodule.subtype I)) := by
+    simp only [IsLocalizedModule.map, LinearMap.coe_mk, AddHom.coe_mk]
+    symm
+    apply (IsLocalizedModule.lift_unique _ _ _ _)
+    ext x y
+    simp only [hM, gM, IsLocalizedModule.mapExtendScalars, LinearMap.coe_comp,
+      LinearMap.coe_restrictScalars, LinearEquiv.coe_coe, Function.comp_apply,
+      LinearEquiv.restrictScalars_apply, LinearMap.extendScalarsOfIsLocalizationEquiv_apply,
+      LinearMap.lcomp_apply', Submodule.coe_subtype, LinearMap.extendScalarsOfIsLocalization_apply',
+      IsLocalizedModule.map_comp' S g h f]
+    congr 1
+    simp [← eq'']
   have eq : (LinearMap.lcomp Rₛ Mₛ (Submodule.subtype Iₛ)) =
     IsLocalizedModule.mapExtendScalars S hM gM Rₛ (LinearMap.lcomp R M (Submodule.subtype I)) := by
-    sorry
+    simp [IsLocalizedModule.mapExtendScalars, ← eq']
   rw [eq]
   exact IsLocalizedModule.map_surjective S hM gM _ (Baer.iff_surjective.mp MB I)
 
