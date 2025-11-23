@@ -147,7 +147,8 @@ lemma fin_integral_prob_meas {μprob : ProbabilityMeasure X} {f : C(X, ℝ)} :
       forall_apply_eq_imp_iff] at hf'
   exact MeasureTheory.HasFiniteIntegral.of_bounded (C := c) <| Filter.Eventually.of_forall hf'
 
-/- ### This depends on the sequential Banach-Alaoglu theorem PR #31292 -/
+/- ### This depends on PR #31292 (the sequential Banach-Alaoglu theorem)-/
+
 instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
   let Φ := { φ : WeakDual ℝ C(X, ℝ) | ‖toStrongDual φ‖ ≤ 1
     ∧ φ ⟨fun x ↦ 1, continuous_const⟩ = 1 ∧ ∀ f : C_c(X, ℝ), 0 ≤ f → 0 ≤ φ f }
