@@ -9,8 +9,8 @@ public import Mathlib.Algebra.Module.ZLattice.Covolume
 public import Mathlib.Analysis.Real.Pi.Bounds
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
+public import Mathlib.NumberTheory.NumberField.EquivReindex
 public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
-public import Mathlib.Tactic.Rify
 
 /-!
 # Number field discriminant
@@ -43,6 +43,31 @@ variable (K : Type*) [Field K] [NumberField K]
 
 open MeasureTheory MeasureTheory.Measure ZSpan NumberField.mixedEmbedding
   NumberField.InfinitePlace ENNReal NNReal Complex
+
+theorem discr_eq_basisMatrix_det_sq [DecidableEq (K →+* ℂ)] :
+    discr K = (basisMatrix K).det ^ 2 := by
+  rw [show (discr K : ℂ) = (discr K : ℚ) by rfl, coe_discr, basisMatrix_eq_embeddingsMatrixReindex,
+    ← Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two, ← (equivReindex K).symm_symm,
+    Algebra.discr_reindex, eq_ratCast]
+
+open scoped ComplexConjugate ComplexOrder in
+theorem sign_discr :
+    (discr K).sign = (-1) ^ nrComplexPlaces K := by
+  classical
+  have : 0 ≤ (discr K : ℂ) ↔ Even (nrComplexPlaces K) := by
+    rw [discr_eq_basisMatrix_det_sq, Complex.sq_nonneg_iff, ← conj_eq_iff_im, RingHom.map_det,
+      RingHom.mapMatrix_apply, conj_basisMatrix, reindex_apply, Equiv.refl_symm, Equiv.coe_refl,
+      Function.Involutive.toPerm_symm, det_permute', mul_eq_right₀,
+      ComplexEmbedding.conjugate_sign]
+    · simp only [Units.val_pow_eq_pow_val, Units.val_neg, Units.val_one, Int.reduceNeg,
+        Int.cast_pow, Int.cast_neg, Int.cast_one]
+      rw [neg_one_pow_eq_one_iff_even (by norm_num)]
+    · exact det_of_basisMatrix_non_zero K
+  obtain h | h | h := Int.lt_trichotomy 0 (discr K)
+  · rw [Int.sign_eq_one_of_pos h, Even.neg_one_pow (this.mp <| Int.cast_nonneg h.le)]
+  · grind [discr_ne_zero]
+  · rw [Int.sign_eq_neg_one_of_neg h, Odd.neg_one_pow]
+    rwa [← Nat.not_even_iff_odd, ← this, Int.cast_nonneg_iff, not_le]
 
 open scoped Classical in
 theorem _root_.NumberField.mixedEmbedding.volume_fundamentalDomain_latticeBasis :

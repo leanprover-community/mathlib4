@@ -439,6 +439,18 @@ theorem card_add_two_mul_card_eq_rank :
     ← Embeddings.card K ℂ, Nat.add_sub_of_le]
   exact Fintype.card_subtype_le _
 
+open scoped Classical in
+/--
+The signature of the permutation on the complex embeddings of `K` defined by sending an embedding
+to its conjugate has signature `(-1) ^ nrComplexPlaces K`.
+-/
+theorem ComplexEmbedding.conjugate_sign :
+    (ComplexEmbedding.involutive_conjugate K).toPerm.sign = (-1) ^ nrComplexPlaces K := by
+  rw [Equiv.Perm.sign_of_pow_two_eq_one, Embeddings.card, ← card_add_two_mul_card_eq_rank,
+    ← card_real_embeddings, Fintype.card, Fintype.card, Nat.add_sub_cancel_left,
+    Nat.mul_div_cancel_left _ zero_lt_two]
+  exact Equiv.ext (ComplexEmbedding.involutive_conjugate K).toPerm_involutive
+
 variable {K}
 
 theorem nrComplexPlaces_eq_zero_of_finrank_eq_one (h : finrank ℚ K = 1) :
