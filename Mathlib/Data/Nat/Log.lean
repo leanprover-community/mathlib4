@@ -29,19 +29,31 @@ assert_not_exists OrderTop
 
 namespace Nat
 
+protected theorem pow_sub_one {x a : ℕ} (hx : x ≠ 0) (ha : a ≠ 0) :
+    x ^ (a - 1) = x ^ a / x := by
+  rw [← Nat.pow_div, Nat.pow_one] <;> grind
+
+protected theorem div_right_comm (a b c : ℕ) : a / b / c = a / c / b := by
+  rw [Nat.div_div_eq_div_mul, Nat.mul_comm, ← Nat.div_div_eq_div_mul]
+
 /-! ### Floor logarithm -/
 
 
 /-- `log b n`, is the logarithm of natural number `n` in base `b`. It returns the largest `k : ℕ`
 such that `b^k ≤ n`, so if `b^k = n`, it returns exactly `k`. -/
 @[pp_nodot]
-def log (b : ℕ) : ℕ → ℕ
-  | n => if h : b ≤ n ∧ 1 < b then log b (n / b) + 1 else 0
-decreasing_by
-  -- putting this in the def triggers the `unusedHavesSuffices` linter:
-  -- https://github.com/leanprover-community/batteries/issues/428
-  have : n / b < n := div_lt_self ((Nat.zero_lt_one.trans h.2).trans_le h.1) h.2
-  decreasing_trivial
+def log (b n : ℕ) : ℕ :=
+  if b ≤ 1 then 0 else (go b n).2 where
+  go : ℕ → ℕ → ℕ × ℕ
+  | _, 0 => (n, 0)
+  | b, fuel + 1 =>
+    if n < b then
+      (n, 0)
+    else
+      let (q, e) := go (b * b) fuel
+      if q < b then (q, 2 * e) else (q / b, 2 * e + 1)
+
+#eval log 2 4
 
 @[simp]
 theorem log_eq_zero_iff {b n : ℕ} : log b n = 0 ↔ n < b ∨ b ≤ 1 := by
@@ -539,7 +551,7 @@ This lemma is tagged @[csimp] so that the code generated for `Nat.log` uses `Nat
     if m ≤ pw then (pw / m, 1)
     else
       let (q, e) := step (pw * pw) ⟨Nat.mul_lt_mul_of_lt_of_lt hpw.1 hpw.1, hpw.2⟩
-      if q < pw then (q, 2 * e) else (q / pw, 2 * e + 1)
+      if q < pw then (q, 2 * e) else (q / pw, 2 * e - 1)
   termination_by m / pw
   decreasing_by
     have : m / (pw * pw) < m / pw := logC_aux hpw.1 (by grind)
@@ -552,17 +564,31 @@ private lemma clogC.step_spec (m : ℕ) {pw : ℕ} (hpw : 1 < pw ∧ 1 < m) :
   | case2 pw' hpw' hmpw' q e hqe hqpw' ih =>
     rw [hqe, Prod.mk.injEq] at ih
     rcases ih with ⟨rfl, rfl⟩
-    clear hqe
     suffices 2 * clog (pw' ^ 2) m = clog pw' m by
       rw [← Nat.pow_two, ← Nat.pow_mul, this]
     apply Nat.le_antisymm _ (by grind only [clog_pow_left])
-    -- rw [← Nat.pow_two, ← Nat.pow_mul, Nat.div_lt_iff_lt_mul,
-    --   Nat.mul_comm pw', ← Nat.div_lt_iff_lt_mul] at hqpw'
-    rw [Nat.mul_comm, ← Nat.le_div_iff_mul_le Nat.two_pos]
+    rw [← Nat.pow_two, ← Nat.pow_mul, Nat.div_lt_iff_lt_mul, Nat.mul_comm pw',
+      ← Nat.div_lt_iff_lt_mul, ← Nat.pow_sub_one, ← lt_clog_iff_pow_lt] at hqpw'
+    all_goals grind [clog_pos, Nat.one_lt_pow]
+  | case3 pw' hpw' hmpw' q e hqe hqpw' ih =>
+    rw [hqe, Prod.mk.injEq] at ih
+    rcases ih with ⟨rfl, rfl⟩
+    have H : (pw' ^ 2) ^ clog (pw' ^ 2) m / pw' = pw' ^ (2 * clog (pw' ^ 2) m - 1) := by
+      rw [Nat.pow_sub_one, Nat.pow_mul]
+      all_goals grind [clog_pos, Nat.one_lt_pow]
+    suffices 2 * clog (pw' ^ 2) m - 1 = clog pw' m by
+      rw [Nat.div_right_comm, ← Nat.pow_two, H, this]
+    refine Nat.le_antisymm (by grind [clog_pow_left]) ?_
     apply clog_le_of_le_pow
-    rw [← Nat.pow_mul]
-    
-  | case3 => sorry
+    rwa [Nat.not_lt, Nat.le_div_iff_mul_le, Nat.mul_comm, ← Nat.le_div_iff_mul_le, ← Nat.pow_two, H]
+      at hqpw' <;> grind
+
+@[csimp]
+theorem clog_eq_clogC : Nat.clog = Nat.clogC := by
+  ext b n
+  fun_cases clogC with
+  | case1 h => rw [clogC.step_spec]
+  | case2 h => rw [clog, dif_neg h]
 
 end computation
 
