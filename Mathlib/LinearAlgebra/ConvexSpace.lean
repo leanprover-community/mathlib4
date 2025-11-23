@@ -32,6 +32,7 @@ def comp (f : FiniteProbability R κ) (g : (k : κ) → FiniteProbability R (ι 
   weights := f.sum (fun m r => (r • (g m).weights).embSigma)
   nonneg := by
     intro ⟨k, i⟩
+    simp only [Finsupp.sum, Finsupp.coe_finset_sum, Finset.sum_apply]
     sorry
   total := by
     sorry
