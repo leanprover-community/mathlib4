@@ -74,7 +74,8 @@ instance _root_.instTopologicalSpaceSubtype {p : X → Prop} [t : TopologicalSpa
   induced (↑) t
 
 /-- Transfer a `TopologicalSpace` across an `Equiv` -/
-protected abbrev Equiv.topologicalSpace [TopologicalSpace Y] (e : X ≃ Y) : TopologicalSpace X :=
+protected abbrev _root_.Equiv.topologicalSpace [TopologicalSpace Y] (e : X ≃ Y) :
+    TopologicalSpace X :=
   .induced e ‹_›
 
 /-- Given `f : X → Y` and a topology on `X`,
