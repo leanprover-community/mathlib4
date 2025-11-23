@@ -338,13 +338,9 @@ def toPartialOrder (C : ConvexCone R G) (h₁ : C.Pointed) (h₂ : C.Salient) : 
 /-- A pointed and salient cone defines an `IsOrderedAddMonoid`. -/
 lemma to_isOrderedAddMonoid (C : ConvexCone R G) (h₁ : C.Pointed) (h₂ : C.Salient) :
     let _ := toPartialOrder C h₁ h₂
-    IsOrderedAddMonoid G :=
-  let _ := toPartialOrder C h₁ h₂
-  { add_le_add_left := by
-      intro a b hab c
-      change c + b - (c + a) ∈ C
-      rw [add_sub_add_left_eq_sub]
-      exact hab }
+    IsOrderedAddMonoid G where
+  __ := toPartialOrder C h₁ h₂
+  add_le_add_left a b hab c := show b + c - (a + c) ∈ C by rwa [add_sub_add_right_eq_sub]
 
 @[deprecated (since := "2025-06-11")] alias toIsOrderedAddMonoid := to_isOrderedAddMonoid
 
