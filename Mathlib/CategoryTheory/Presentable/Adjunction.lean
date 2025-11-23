@@ -73,9 +73,9 @@ lemma hasCardinalFilteredGenerator [HasCardinalFilteredGenerator C κ]
 lemma isCardinalLocallyPresentable [IsCardinalLocallyPresentable C κ]
     [G.IsCardinalAccessible κ] [G.Full] [G.Faithful] :
     IsCardinalLocallyPresentable D κ where
-  toHasColimitsOfSize := by
-    let : Reflective G := ⟨_, adj⟩
-    exact hasColimits_of_reflective G
+  toHasColimitsOfSize :=
+    letI : Reflective G := ⟨_, adj⟩
+    hasColimits_of_reflective G
   toHasCardinalFilteredGenerator := adj.hasCardinalFilteredGenerator κ
 
 lemma isCardinalAccessibleCategory [IsCardinalAccessibleCategory C κ]
