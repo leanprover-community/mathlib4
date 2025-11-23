@@ -205,3 +205,7 @@ theorem isNoetherianRing_iff {R} [Semiring R] : IsNoetherianRing R ↔ IsNoether
 theorem isNoetherianRing_iff_ideal_fg (R : Type*) [Semiring R] :
     IsNoetherianRing R ↔ ∀ I : Ideal R, I.FG :=
   isNoetherianRing_iff.trans isNoetherian_def
+
+lemma Ideal.FG.of_isNoetherianRing {R : Type*} [Semiring R] [IsNoetherianRing R] (I : Ideal R) :
+    I.FG :=
+  (isNoetherianRing_iff_ideal_fg R).mp ‹_› I
