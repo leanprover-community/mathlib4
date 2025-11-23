@@ -3,11 +3,13 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.Nat.Even
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Data.Set.Operations
-import Mathlib.Logic.Function.Iterate
+module
+
+public import Mathlib.Algebra.Group.Nat.Even
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Data.Nat.Cast.Commute
+public import Mathlib.Data.Set.Operations
+public import Mathlib.Logic.Function.Iterate
 
 /-!
 # Even and odd elements in rings
@@ -27,7 +29,9 @@ to `Mathlib/Algebra/Group/Even.lean`.
 `Mathlib/Algebra/Group/Even.lean` for the definition of even elements.
 -/
 
-assert_not_exists DenselyOrdered OrderedRing
+@[expose] public section
+
+assert_not_exists DenselyOrdered IsOrderedRing
 
 open MulOpposite
 

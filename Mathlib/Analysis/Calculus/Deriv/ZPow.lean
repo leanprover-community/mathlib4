@@ -3,9 +3,11 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.Deriv.Pow
-import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Analysis.Calculus.Deriv.Shift
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Pow
+public import Mathlib.Analysis.Calculus.Deriv.Inv
+public import Mathlib.Analysis.Calculus.Deriv.Shift
 
 /-!
 # Derivatives of `x ^ m`, `m : ℤ`
@@ -19,6 +21,8 @@ For a more detailed overview of one-dimensional derivatives in mathlib, see the 
 
 derivative, power
 -/
+
+@[expose] public section
 
 universe u v w
 

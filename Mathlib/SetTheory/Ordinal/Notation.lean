@@ -3,11 +3,13 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Ring.Divisibility.Basic
-import Mathlib.Data.Ordering.Lemmas
-import Mathlib.Data.PNat.Basic
-import Mathlib.SetTheory.Ordinal.Principal
-import Mathlib.Tactic.NormNum
+module
+
+public import Mathlib.Algebra.Ring.Divisibility.Basic
+public import Mathlib.Data.Ordering.Lemmas
+public import Mathlib.Data.PNat.Basic
+public import Mathlib.SetTheory.Ordinal.Principal
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Ordinal notation
@@ -23,6 +25,8 @@ The type `NONote` is the type of ordinals below `ε₀` in Cantor normal form.
 Various operations (addition, subtraction, multiplication, exponentiation)
 are defined on `ONote` and `NONote`.
 -/
+
+@[expose] public section
 
 
 
@@ -164,7 +168,7 @@ theorem eq_of_cmp_eq : ∀ {o₁ o₂}, cmp o₁ o₂ = Ordering.eq → o₁ = o
     revert h; cases h₂ : _root_.cmp (n₁ : ℕ) n₂ <;> intro h <;> try cases h
     obtain rfl := eq_of_cmp_eq h
     rw [_root_.cmp, cmpUsing_eq_eq, not_lt, not_lt, ← le_antisymm_iff] at h₂
-    obtain rfl := Subtype.eq h₂
+    obtain rfl := Subtype.ext h₂
     simp
 
 protected theorem zero_lt_one : (0 : ONote) < 1 := by
@@ -230,7 +234,7 @@ theorem NFBelow.repr_lt {o b} (h : NFBelow o b) : repr o < ω ^ b := by
   | zero => exact opow_pos _ omega0_pos
   | oadd' _ _ h₃ _ IH =>
     rw [repr]
-    apply (add_lt_add_left IH _).trans_le
+    apply (add_lt_add_right IH _).trans_le
     grw [← mul_succ, succ_le_of_lt (nat_lt_omega0 _), ← opow_succ, succ_le_of_lt h₃]
     exact omega0_pos
 
@@ -304,7 +308,7 @@ theorem cmp_compares : ∀ (a b : ONote) [NF a] [NF b], (cmp a b).Compares a b
       rw [ite_eq_iff] at nhr
       rcases nhr with nhr | nhr
       · cases nhr; contradiction
-      obtain rfl := Subtype.eq (nhl.eq_of_not_lt nhr.1)
+      obtain rfl := Subtype.ext (nhl.eq_of_not_lt nhr.1)
       have IHa := @cmp_compares _ _ h₁.snd h₂.snd
       revert IHa; cases cmp a₁ a₂ <;> intro IHa <;> dsimp at IHa
       case lt => exact oadd_lt_oadd_3 IHa
@@ -780,7 +784,7 @@ theorem repr_opow_aux₁ {e a} [Ne : NF e] [Na : NF a] {a' : Ordinal} (e0 : repr
       · exact succ_le_iff.2 <| by gcongr; exact isSuccLimit_omega0.succ_lt l
     · exact omega0_pos
   · grw [show _ * _ < _ from principal_mul_omega0 (isSuccLimit_omega0.succ_lt h) l]
-    · simpa using mul_le_mul_right' (one_le_iff_ne_zero.2 e0) ω
+    · simpa using mul_le_mul_left (one_le_iff_ne_zero.2 e0) ω
     · exact omega0_pos
 
 section
@@ -835,7 +839,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     · exact
         lt_of_lt_of_le Rl
           (opow_le_opow_right omega0_pos <|
-            mul_le_mul_left' (succ_le_succ_iff.2 (Nat.cast_le.2 (le_of_lt k.lt_succ_self))) _)
+            mul_le_mul_right (succ_le_succ_iff.2 (Nat.cast_le.2 (le_of_lt k.lt_succ_self))) _)
   calc
     (ω0 ^ (k.succ : Ordinal)) * α' + R'
     _ = (ω0 ^ succ (k : Ordinal)) * α' + ((ω0 ^ (k : Ordinal)) * α' * m + R) := by
@@ -853,7 +857,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
       rw [opow_mul, opow_succ]
       gcongr
       exact No.snd'.repr_lt
-    · have := mul_le_mul_left' (one_le_iff_pos.2 <| Nat.cast_pos'.2 n.pos) (ω0 ^ succ (k : Ordinal))
+    · have := mul_le_mul_right (one_le_iff_pos.2 <| Nat.cast_pos'.2 n.pos) (ω0 ^ succ (k : Ordinal))
       rw [opow_mul]
       simpa [-opow_succ]
   · cases m
