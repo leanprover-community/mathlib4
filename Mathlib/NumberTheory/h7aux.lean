@@ -95,4 +95,3 @@ lemma IsIntegral.Nat (K : Type) [Field K] (a : ℕ) : IsIntegral ℤ (a : K) := 
 lemma triple_comm (K : Type) [Field K] (a b c : ℤ) (x y z : K) :
  ((a*b)*c) • ((x*y)*z) = a•x * b•y * c•z := by
   simp only [zsmul_eq_mul, Int.cast_mul]; ring
-
