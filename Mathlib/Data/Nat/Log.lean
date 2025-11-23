@@ -106,7 +106,7 @@ lemma log.go_spec {b n fuel : ℕ} (hb : 1 < b) (hn : n ≠ 0) (hfuel : n < b ^ 
       true_and, Nat.mul_add_one, and_true]
     rw [Nat.mul_comm _ b]
     exact Nat.mul_le_of_le_div _ _ _ hqb
-      
+
 theorem log_lt_iff_lt_pow {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) :
     log b y < x ↔ y < b ^ x := by
   rcases log.go_spec hb hy (Nat.lt_pow_self hb) with ⟨-, H₁, H₂⟩
@@ -405,7 +405,7 @@ theorem clog.go_spec {n b fuel} (hn : 1 < n) (hb : 1 < b) (hfuel : n < b ^ fuel)
     constructor
     · rw [Nat.div_right_comm, Nat.pow_add_one, Nat.mul_div_cancel _ (Nat.zero_lt_of_lt hb)]
     · rwa [Nat.pow_add_one', Nat.mul_le_mul_left_iff (Nat.zero_lt_of_lt hb)] at hqb
-        
+
 /-- For `b > 1`, `clog b` and `(b ^ ·)` form a Galois connection.
 
 See also `clog_le_of_le_pow` for the implication that does not require `1 < b`. -/
