@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.MetricSpace.Basic
+public import Mathlib.Topology.UniformSpace.Pi
 
 /-!
 # Metrizable Spaces
@@ -22,7 +22,7 @@ assert_not_exists AddMonoidWithOne
 
 @[expose] public section
 
-open Filter Set Metric Topology
+open Filter Set Topology
 
 namespace TopologicalSpace
 
@@ -158,12 +158,12 @@ instance (X : Type*) [TopologicalSpace X] [LindelofSpace X] [PseudoMetrizableSpa
   rw [mem_closure_iff_frequently, nhds_eq_comap_uniformity, frequently_comap, hVb.frequently_iff]
   intro n _
   obtain ⟨i, hi, hx⟩ := Set.mem_iUnion₂.1 (Set.eq_univ_iff_forall.1 (hUu n) x)
-  rw [UniformSpace.ball_eq_of_symmetry (hVs n)] at hx
+  rw [UniformSpace.ball_eq_of_symmetry] at hx
   exact ⟨(x, i), hx, i, rfl, Set.mem_iUnion_of_mem n hi⟩
 
 instance (priority := 100) DiscreteTopology.metrizableSpace [DiscreteTopology X] :
     MetrizableSpace X where
   exists_countably_generated :=
-    ⟨⊥, DiscreteTopology.eq_bot.symm, Filter.isCountablyGenerated_principal idRel⟩
+    ⟨⊥, DiscreteTopology.eq_bot.symm, Filter.isCountablyGenerated_principal SetRel.id⟩
 
 end TopologicalSpace
