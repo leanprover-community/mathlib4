@@ -565,6 +565,7 @@ public import Mathlib.Algebra.Homology.Embedding.TruncLE
 public import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
 public import Mathlib.Algebra.Homology.ExactSequence
 public import Mathlib.Algebra.Homology.Factorizations.Basic
+public import Mathlib.Algebra.Homology.Factorizations.CM5b
 public import Mathlib.Algebra.Homology.Functor
 public import Mathlib.Algebra.Homology.GrothendieckAbelian
 public import Mathlib.Algebra.Homology.HasNoLoop
@@ -1371,6 +1372,7 @@ public import Mathlib.AlgebraicTopology.ModelCategory.RightHomotopy
 public import Mathlib.AlgebraicTopology.MooreComplex
 public import Mathlib.AlgebraicTopology.Quasicategory.Basic
 public import Mathlib.AlgebraicTopology.Quasicategory.Nerve
+public import Mathlib.AlgebraicTopology.Quasicategory.StrictBicategory
 public import Mathlib.AlgebraicTopology.Quasicategory.StrictSegal
 public import Mathlib.AlgebraicTopology.Quasicategory.TwoTruncated
 public import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
@@ -2406,6 +2408,7 @@ public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 public import Mathlib.CategoryTheory.Functor.Trifunctor
 public import Mathlib.CategoryTheory.Functor.TwoSquare
+public import Mathlib.CategoryTheory.Functor.TypeValuedFlat
 public import Mathlib.CategoryTheory.Galois.Action
 public import Mathlib.CategoryTheory.Galois.Basic
 public import Mathlib.CategoryTheory.Galois.Decomposition
@@ -2963,6 +2966,7 @@ public import Mathlib.CategoryTheory.Sites.MorphismProperty
 public import Mathlib.CategoryTheory.Sites.NonabelianCohomology.H1
 public import Mathlib.CategoryTheory.Sites.Over
 public import Mathlib.CategoryTheory.Sites.Plus
+public import Mathlib.CategoryTheory.Sites.Point.Basic
 public import Mathlib.CategoryTheory.Sites.Precoverage
 public import Mathlib.CategoryTheory.Sites.Preserves
 public import Mathlib.CategoryTheory.Sites.PreservesLocallyBijective
