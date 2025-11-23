@@ -3,12 +3,14 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl, Reid Barton
 -/
-import Mathlib.CategoryTheory.Category.Init
-import Mathlib.Combinatorics.Quiver.Basic
-import Mathlib.Tactic.PPWithUniv
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.StacksAttribute
-import Mathlib.Tactic.TryThis
+module
+
+public import Mathlib.CategoryTheory.Category.Init
+public import Mathlib.Combinatorics.Quiver.Basic
+public import Mathlib.Tactic.PPWithUniv
+public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.StacksAttribute
+public import Mathlib.Tactic.TryThis
 
 /-!
 # Categories
@@ -28,6 +30,8 @@ local notation:80 g " ⊚ " f:80 => CategoryTheory.CategoryStruct.comp f g    --
 ```
 
 -/
+
+@[expose] public section
 
 
 library_note2 «category theory universes»
@@ -100,7 +104,7 @@ scoped infixr:80 " ≫ " => CategoryStruct.comp -- type as \gg
 syntax (name := sorryIfSorry) "sorry_if_sorry" : tactic
 
 open Lean Meta Elab.Tactic in
-@[tactic sorryIfSorry, inherit_doc sorryIfSorry] def evalSorryIfSorry : Tactic := fun _ => do
+@[tactic sorryIfSorry, inherit_doc sorryIfSorry] meta def evalSorryIfSorry : Tactic := fun _ => do
   let goalType ← getMainTarget
   if goalType.hasSorry then
     closeMainGoal `sorry_if_sorry (← mkSorry goalType true)
@@ -165,7 +169,7 @@ open Lean Elab Tactic in
 Currently this defaults to the `aesop_cat` wrapper around `aesop`, but by setting
 the option `mathlib.tactic.category.grind` to `true`, it will use the `grind` tactic instead.
 -/
-def categoryTheoryDischarger : TacticM Unit := do
+meta def categoryTheoryDischarger : TacticM Unit := do
   if ← getBoolOption `mathlib.tactic.category.grind then
     if ← getBoolOption `mathlib.tactic.category.log_grind then
       logInfo "Category theory discharger using `grind`."
