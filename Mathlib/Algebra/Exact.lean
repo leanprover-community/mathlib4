@@ -3,10 +3,11 @@ Copyright (c) 2023 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Algebra.Module.Submodule.Range
-import Mathlib.LinearAlgebra.Prod
-import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.Algebra.Module.Submodule.Range
+public import Mathlib.LinearAlgebra.Prod
+public import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-! # Exactness of a pair
 
@@ -25,6 +26,8 @@ import Mathlib.LinearAlgebra.Quotient.Basic
 
 * add the multiplicative case (`Function.Exact` will become `Function.AddExact`?)
 -/
+
+@[expose] public section
 
 variable {R M M' N N' P P' : Type*}
 
@@ -522,5 +525,11 @@ noncomputable def Function.Exact.linearEquivOfSurjective (h : Function.Exact f g
     (hg : Function.Surjective g) : (N ⧸ LinearMap.range f) ≃ₗ[R] P :=
   LinearEquiv.ofBijective ((LinearMap.range f).liftQ g (h · |>.mpr))
     ⟨LinearMap.injective_range_liftQ_of_exact h, LinearMap.surjective_range_liftQ _ hg⟩
+
+@[simp]
+lemma Function.Exact.linearEquivOfSurjective_symm_apply (h : Function.Exact f g)
+    (hg : Function.Surjective g) (x : N) :
+    (h.linearEquivOfSurjective hg).symm (g x) = Submodule.Quotient.mk x := by
+  simp [LinearEquiv.symm_apply_eq]
 
 end Ring

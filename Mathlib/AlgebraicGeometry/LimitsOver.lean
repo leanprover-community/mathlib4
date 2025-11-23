@@ -3,8 +3,10 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Basic
-import Mathlib.CategoryTheory.MorphismProperty.Comma
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Basic
+public import Mathlib.CategoryTheory.MorphismProperty.Comma
 
 /-!
 # (Co)limits in over categories
@@ -13,6 +15,8 @@ We show that if `P` is a morphism property in `Scheme` that is local at the sour
 colimits in `P.Over ⊤ X` for `X : Scheme` of locally directed diagrams of open immersions
 exist and agree with the colimit in `Scheme`.
 -/
+
+@[expose] public section
 
 universe u
 

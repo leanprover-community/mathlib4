@@ -3,10 +3,12 @@ Copyright (c) 2024 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Data.Fintype.Pigeonhole
-import Mathlib.Order.Atoms.Finite
-import Mathlib.Order.Grade
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.Data.Fintype.Pigeonhole
+public import Mathlib.Order.Atoms.Finite
+public import Mathlib.Order.Grade
+public import Mathlib.Tactic.ApplyFun
 
 /-!
 # Kőnig's infinity lemma
@@ -49,6 +51,8 @@ We leave the explicitly graph-theoretic version of the statement as TODO.
 Formulate the lemma as a statement about graphs.
 
 -/
+
+@[expose] public section
 
 open Set
 section Sequence

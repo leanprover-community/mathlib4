@@ -4,11 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid, Patrick Massot, Simon Hudon, Alice Laroche, Frédéric Dupuis,
 Jireh Loreaux
 -/
-import Lean.Elab.Tactic.Location
-import Mathlib.Tactic.Push.Attr
-import Mathlib.Logic.Basic
-import Mathlib.Tactic.Conv
-import Mathlib.Util.AtLocation
+module
+
+public meta import Lean.Elab.Tactic.Location
+public meta import Mathlib.Tactic.Push.Attr
+public meta import Mathlib.Logic.Basic
+public meta import Mathlib.Tactic.Conv
+public meta import Mathlib.Util.AtLocation
 
 /-!
 # The `push`, `push_neg` and `pull` tactics
@@ -18,6 +20,8 @@ as local hypotheses and also works as a `conv` tactic. `push_neg` is a macro for
 
 The `pull` tactic does the reverse: it pulls the given constant towards the head of the expression.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.Push
 
@@ -58,7 +62,6 @@ theorem not_forall_eq : (¬ ∀ x, s x) = (∃ x, ¬ s x) := propext not_forall
 /-- Make `push_neg` use `not_and_or` rather than the default `not_and`. -/
 register_option push_neg.use_distrib : Bool :=
   { defValue := false
-    group := ""
     descr := "Make `push_neg` use `not_and_or` rather than the default `not_and`." }
 
 open Lean Meta Elab.Tactic Parser.Tactic
@@ -229,6 +232,9 @@ The `push` tactic can be extended using the `@[push]` attribute. `push` has spec
 built in for `push Not`, so that it can preserve binder names, and so that `¬ (p ∧ q)` can be
 transformed to either `p → ¬ q` (the default) or `¬ p ∨ ¬ q`. To get `¬ p ∨ ¬ q`, use
 `set_option push_neg.use_distrib true`.
+
+Tactics that introduce a negation usually have a version that automatically calls `push_neg` on
+that negation. These include `by_cases!`, `contrapose!` and `by_contra!`.
 
 Another example: given a hypothesis
 ```lean

@@ -3,9 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Yaël Dillies
 -/
-import Mathlib.Order.Cover
-import Mathlib.Order.Interval.Finset.Defs
-import Mathlib.Order.Preorder.Finite
+module
+
+public import Mathlib.Order.Cover
+public import Mathlib.Order.Interval.Finset.Defs
+public import Mathlib.Order.Preorder.Finite
 
 /-!
 # Intervals as finsets
@@ -32,6 +34,8 @@ Complete the API. See
 https://github.com/leanprover-community/mathlib/pull/14448#discussion_r906109235
 for some ideas.
 -/
+
+@[expose] public section
 
 assert_not_exists MonoidWithZero Finset.sum
 

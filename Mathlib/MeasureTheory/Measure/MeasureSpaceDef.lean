@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.OuterMeasure.Induced
-import Mathlib.MeasureTheory.OuterMeasure.AE
-import Mathlib.Order.Filter.CountableInter
+module
+
+public import Mathlib.MeasureTheory.OuterMeasure.Induced
+public import Mathlib.MeasureTheory.OuterMeasure.AE
+public import Mathlib.Order.Filter.CountableInter
 
 /-!
 # Measure spaces
@@ -51,6 +53,8 @@ This file does not import `MeasureTheory.MeasurableSpace.Basic`, but only `Measu
 
 measure, almost everywhere, measure space
 -/
+
+@[expose] public section
 
 assert_not_exists Module.Basis
 
@@ -386,7 +390,7 @@ section
 open MeasureTheory
 
 /-!
-# Almost everywhere measurable functions
+### Almost everywhere measurable functions
 
 A function is almost everywhere measurable if it coincides almost everywhere with a measurable
 function. We define this property, called `AEMeasurable f μ`. It's properties are discussed in
@@ -401,6 +405,10 @@ function. -/
 @[fun_prop]
 def AEMeasurable {_m : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∃ g : α → β, Measurable g ∧ f =ᵐ[μ] g
+
+/-- A function is `m`-`AEMeasurable` with respect to a measure `μ` if it coincides almost everywhere
+with a `m`-measurable function. -/
+scoped[MeasureTheory] notation "AEMeasurable[" m "]" => @AEMeasurable _ _ _ m
 
 add_aesop_rules safe tactic
   (rule_sets := [Measurable])

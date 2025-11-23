@@ -3,16 +3,20 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Edward van de Meent
 -/
-import Mathlib.Tactic.TacticAnalysis
-import Mathlib.Tactic.ExtractGoal
-import Mathlib.Tactic.MinImports
-import Lean.Elab.Command
+module
+
+public meta import Mathlib.Tactic.TacticAnalysis
+public meta import Mathlib.Tactic.ExtractGoal
+public meta import Mathlib.Tactic.MinImports
+public meta import Lean.Elab.Command
 
 /-!
 # Tactic linters
 
 This file defines passes to run from the tactic analysis framework.
 -/
+
+public meta section
 
 open Lean Meta
 
@@ -51,18 +55,16 @@ def terminalReplacement (oldTacticName newTacticName : String) (oldTacticKind : 
   test ctxI i stx goal := do
     let tac ← newTactic ctxI i stx
     try
-      let goals ← ctxI.runTacticCode i goal tac
-      match goals with
+      let goalTypes ← ctxI.runTacticCode i goal tac ⟨Expr, MVarId.getType'⟩
+      match goalTypes with
       | [] => return .success tac
       | _ => do
-        let goalsMessages ← goals.mapM fun g => do
-          let e ← ctxI.runTactic i g <| fun g => do instantiateMVars (← g.getType)
-          pure m!"⊢ {MessageData.ofExpr e}\n"
+        let goalsMessages := goalTypes.map fun e => m!"⊢ {MessageData.ofExpr e}\n"
         return .remainingGoals tac goalsMessages
     catch _e =>
       let name ← mkAuxDeclName `extracted
       -- Rerun in the original tactic context, since `omega` changes the state.
-      let ((sig, _, modules), _) ← ctxI.runTactic i goal (fun goal =>
+      let ((sig, _, modules, _), _) ← ctxI.runTactic i goal (fun goal =>
         (Mathlib.Tactic.ExtractGoal.goalSignature name goal).run)
       let imports := modules.toList.map (s!"import {·}")
       return .error tac m!"{"\n".intercalate imports}\n\ntheorem {sig} := by\n  fail_if_success {tac}\n  {stx}"
@@ -331,14 +333,23 @@ def tryAtEachStepAesop := tryAtEachStep
   fun _ _ => return ⟨TSyntax.raw <|
     mkNode `Aesop.Frontend.Parser.aesopTactic #[mkAtom "aesop", mkNullNode]⟩
 
-/-- Run `grind +premises` at every step in proofs, reporting where it succeeds. -/
-register_option linter.tacticAnalysis.tryAtEachStepGrindPremises : Bool := {
+/-- Run `grind +suggestions` at every step in proofs, reporting where it succeeds. -/
+register_option linter.tacticAnalysis.tryAtEachStepGrindSuggestions : Bool := {
   defValue := false
 }
 
-@[tacticAnalysis linter.tacticAnalysis.tryAtEachStepGrindPremises,
-   inherit_doc linter.tacticAnalysis.tryAtEachStepGrindPremises]
-def tryAtEachStepGrindPremises := tryAtEachStep fun _ _ => `(tactic| grind +premises)
+@[tacticAnalysis linter.tacticAnalysis.tryAtEachStepGrindSuggestions,
+   inherit_doc linter.tacticAnalysis.tryAtEachStepGrindSuggestions]
+def tryAtEachStepGrindSuggestions := tryAtEachStep fun _ _ => `(tactic| grind +suggestions)
+
+/-- Run `simp_all? +suggestions` at every step in proofs, reporting where it succeeds. -/
+register_option linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions : Bool := {
+  defValue := false
+}
+
+@[tacticAnalysis linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions,
+   inherit_doc linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions]
+def tryAtEachStepSimpAllSuggestions := tryAtEachStep fun _ _ => `(tactic| simp_all? +suggestions)
 
 -- TODO: add compatibility with `rintro` and `intros`
 /-- Suggest merging two adjacent `intro` tactics which don't pattern match. -/
