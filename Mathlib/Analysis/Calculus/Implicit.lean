@@ -252,12 +252,15 @@ for all (y, z) close to (f a, g a), ψ y z = φ y z
 -/
 
 theorem eq_implicitFunction_of_prodFun_eq :
-    ∀ᶠ yz in 𝓝 (φ.prodFun φ.pt), ∀ᶠ x in 𝓝 φ.pt,
-      φ.prodFun x = yz → x = φ.implicitFunction yz.1 yz.2 := by
-  filter_upwards [φ.prod_map_implicitFunction] with yz hyz
-  filter_upwards [φ.implicitFunction_apply_image] with x hx hprod
-  rw [← hx, ← hprod]
-  rfl
+    ∀ᶠ xyz in 𝓝 (φ.pt, φ.prodFun φ.pt),
+      have ⟨x, y, z⟩ := xyz
+      φ.prodFun x = (y, z) → x = φ.implicitFunction y z := by
+  rw [nhds_prod_eq]
+  apply φ.implicitFunction_apply_image.prod_mk φ.prod_map_implicitFunction |>.mono
+  rintro ⟨x, y, z⟩ ⟨hx, -⟩ hprod
+  rw [Prod.ext_iff] at hprod
+  dsimp at hx hprod
+  rw [← hx, hprod.1, hprod.2]
 
 theorem implicitFunction_unique {ψ : F → G → E}
     (h : ∀ᶠ x in 𝓝 φ.pt, ψ (φ.leftFun x) (φ.rightFun x) = x) :
