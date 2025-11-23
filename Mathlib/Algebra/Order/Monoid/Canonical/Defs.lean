@@ -226,7 +226,7 @@ end Semigroup
 @[to_additive]
 lemma CanonicallyOrderedMul.toIsOrderedMonoid
     [CommMonoid α] [PartialOrder α] [CanonicallyOrderedMul α] : IsOrderedMonoid α where
-  mul_le_mul_left _ _ := mul_le_mul_left'
+  mul_le_mul_left _ _ := mul_le_mul_left
 
 section Monoid
 variable [Monoid α]
