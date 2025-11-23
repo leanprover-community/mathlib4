@@ -3,17 +3,24 @@ Copyright (c) 2024 Michail Karatarakis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michail Karatarakis
 -/
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.NumberTheory.NumberField.Basic
-import Mathlib.NumberTheory.NumberField.House
-import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
+module
+
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.NumberTheory.NumberField.Basic
+public import Mathlib.NumberTheory.NumberField.House
+public import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
+
+/-!
+These are some auxiliary lemmata covering the algebraic part of the proof of the
+Gelfond–Schneider theorem.
+-/
+@[expose] public section
 
 set_option autoImplicit true
 set_option linter.style.multiGoal false
 set_option linter.style.cases false
 set_option linter.unusedVariables false
 set_option linter.unusedSectionVars true
-set_option linter.style.longFile 0
 
 open BigOperators Module.Free Fintype NumberField FiniteDimensional
   Matrix Set Polynomial Finset IntermediateField Complex

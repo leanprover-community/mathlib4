@@ -3,8 +3,11 @@ Copyright (c) 2025 Michail Karatarakis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michail Karatarakis
 -/
-import Mathlib.NumberTheory.H7.h7aux
-import Mathlib.NumberTheory.H7.h7order
+
+module
+
+public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.AlgebraicPart
+public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.AnalyticPart
 
 /-!
 # Hilbert's Seventh Problem (Gelfond–Schneider Theorem)

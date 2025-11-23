@@ -3,8 +3,10 @@ Copyright (c) 2025 Michail Karatarakis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michail Karatarakis
 -/
-import Mathlib.Data.Real.Irrational
-import Mathlib.NumberTheory.H7.h7faster
+module
+
+public import Mathlib.Data.Real.Irrational
+public import Mathlib.NumberTheory.Transcendental.GelfondSchneider.Main
 
 /-!
 A formalization of a proof that `√2 ^ √2` is transcendental.
