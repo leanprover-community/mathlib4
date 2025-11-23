@@ -2533,8 +2533,6 @@ public import Mathlib.CategoryTheory.Limits.MonoCoprod
 public import Mathlib.CategoryTheory.Limits.MorphismProperty
 public import Mathlib.CategoryTheory.Limits.Opposites
 public import Mathlib.CategoryTheory.Limits.Over
-public import Mathlib.CategoryTheory.Limits.Over
-public import Mathlib.CategoryTheory.Limits.Over
 public import Mathlib.CategoryTheory.Limits.Pi
 public import Mathlib.CategoryTheory.Limits.Preorder
 public import Mathlib.CategoryTheory.Limits.Presentation
