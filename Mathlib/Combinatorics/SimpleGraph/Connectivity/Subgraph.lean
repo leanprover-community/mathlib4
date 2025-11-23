@@ -645,15 +645,15 @@ protected lemma Preconnected.map {G' : G.Subgraph} {G'' : G'.coe.Subgraph}
 
 protected lemma Connected.map {G' : G.Subgraph} {G'' : G'.coe.Subgraph}
     (f : G'.coe →g G) (hconn : G''.Connected) : (G''.map f).Connected :=
-  Subgraph.connected_iff.mpr ⟨hconn.preconnected.map_coe f, by simp [hconn.nonempty]⟩
+  Subgraph.connected_iff.mpr ⟨hconn.preconnected.map f, by simp [hconn.nonempty]⟩
 
 protected lemma Preconnected.coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph)
     (hpreconn : G''.Preconnected) : (Subgraph.coeSubgraph G'').Preconnected :=
-  hpreconn.map_coe G'.hom
+  hpreconn.map G'.hom
 
 protected lemma Connected.coeSubgraph {G' : G.Subgraph} (G'' : G'.coe.Subgraph)
     (hconn : G''.Connected) : (Subgraph.coeSubgraph G'').Connected :=
-  hconn.map_coe G'.hom
+  hconn.map G'.hom
 
 end Subgraph
 
