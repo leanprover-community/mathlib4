@@ -25,10 +25,6 @@ namespace Equiv
 
 variable (e : α ≃ β)
 
-/-- Transfer a `TopologicalSpace` across an `Equiv` -/
-protected abbrev topologicalSpace [TopologicalSpace β] (e : α ≃ β) : TopologicalSpace α :=
-  .induced e ‹_›
-
 variable [TopologicalSpace β] [AddCommMonoid β] [Semiring R] [Module R β]
 
 variable (R) in
