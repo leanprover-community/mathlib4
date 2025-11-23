@@ -460,7 +460,7 @@ theorem clog.go_spec {n b fuel} (hn : 1 < n) (hb : 1 < b) (hfuel : n < b ^ fuel)
         rw [ihb, ← Nat.pow_two, ← Nat.pow_mul]
         refine Nat.le_trans hc <| Nat.pow_le_pow_right (Nat.zero_lt_of_lt hb) ?_
         grind
-        
+
 /-- For `b > 1`, `clog b` and `(b ^ ·)` form a Galois connection.
 
 See also `clog_le_of_le_pow` for the implication that does not require `1 < b`. -/
@@ -472,7 +472,7 @@ theorem clog_le_iff_le_pow {b : ℕ} (hb : 1 < b) {x y : ℕ} : clog b x ≤ y �
 theorem clog_pos {b n : ℕ} (hb : 1 < b) (hn : 1 < n) : 0 < clog b n := by
   rw [clog, if_pos]
   exacts [Nat.pos_of_ne_zero (clog.go_spec hn hb <| Nat.lt_pow_self hb).1, ⟨hb, hn⟩]
-    
+
 theorem clog_of_one_lt {b n : ℕ} (hb : 1 < b) (hn : 1 < n) :
     clog b n = clog b ((n + b - 1) / b) + 1 := by
   apply eq_of_forall_ge_iff
