@@ -36,7 +36,7 @@ variable (f g s) in
 /-- `HasProdUniformlyOn f g s` means that the (potentially infinite) product `∏' i, f i b`
 for `b : β` converges uniformly on `s` to `g`. -/
 @[to_additive /-- `HasSumUniformlyOn f g s` means that the (potentially infinite) sum `∑' i, f i b`
-for `b : β` converges uniformly on each `s` to `g`. -/]
+for `b : β` converges uniformly on `s` to `g`. -/]
 def HasProdUniformlyOn : Prop := HasProd (UniformOnFun.ofFun {s} ∘ f) (UniformOnFun.ofFun {s} g)
 
 variable (f g s) in
@@ -82,7 +82,7 @@ lemma HasProdUniformlyOn.congr_right {g' : β → α}
 lemma HasProdUniformlyOn.tendstoUniformlyOn_finsetRange
     {f : ℕ → β → α} (h : HasProdUniformlyOn f g s) :
     TendstoUniformlyOn (∏ i ∈ .range ·, f i ·) g atTop s :=
-  (Filter.tendsto_finset_range.eventually <| h.tendstoUniformlyOn · ·)
+  (tendsto_finset_range.eventually <| h.tendstoUniformlyOn · ·)
 
 @[to_additive]
 theorem HasProdUniformlyOn.hasProd (h : HasProdUniformlyOn f g s) (hx : x ∈ s) :
@@ -93,6 +93,12 @@ theorem HasProdUniformlyOn.hasProd (h : HasProdUniformlyOn f g s) (hx : x ∈ s)
 theorem HasProdUniformlyOn.tprod_eqOn [T2Space α] (h : HasProdUniformlyOn f g s) :
     s.EqOn (∏' b, f b ·) g :=
   fun _ hx ↦ (h.hasProd hx).tprod_eq
+
+@[deprecated (since := "2025-11-23")]
+alias HasProdUniformlyOn.tprod_eq := HasProdUniformlyOn.tprod_eqOn
+
+@[deprecated (since := "2025-11-23")]
+alias HasSumUniformlyOn.tsum_eq := HasSumUniformlyOn.tsum_eqOn
 
 @[to_additive]
 theorem MultipliableUniformlyOn.multipliable (h : MultipliableUniformlyOn f s) (hx : x ∈ s) :
@@ -350,7 +356,7 @@ lemma HasProdUniformly.congr {f' : ι → β → α}
 @[to_additive]
 lemma HasProdUniformly.tendstoUniformlyOn_finsetRange {f : ℕ → β → α} (h : HasProdUniformly f g) :
     TendstoUniformly (∏ i ∈ Finset.range ·, f i ·) g atTop :=
-  (Filter.tendsto_finset_range.eventually <| h.tendstoUniformly · ·)
+  (tendsto_finset_range.eventually <| h.tendstoUniformly · ·)
 
 @[to_additive]
 theorem HasProdUniformly.hasProd (h : HasProdUniformly f g) : HasProd (f · x) (g x) :=
