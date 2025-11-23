@@ -5,11 +5,9 @@ Authors: Yoh Tanimoto
 -/
 module
 
-public import Mathlib.Analysis.Normed.Module.WeakDual
-public import Mathlib.Analysis.LocallyConvex.Polar
-public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
-public import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
-public import Mathlib.Topology.Algebra.Module.LinearMap
+import Mathlib.Analysis.Normed.Module.WeakDual
+import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
+import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
 
 /-!
 # Riesz–Markov–Kakutani representation theorem for `ℝ≥0`
