@@ -112,6 +112,14 @@ instance whiskeringLeft_preservesColimit [HasColimitsOfSize.{w, w'} D] (F : C �
     PreservesColimitsOfSize.{w, w'} ((whiskeringLeft C E D).obj F) :=
   ⟨fun {J} _ => whiskeringLeft_preservesColimitsOfShape J F⟩
 
+instance (F : C ⥤ D) [HasFiniteLimits E] :
+    PreservesFiniteLimits ((Functor.whiskeringLeft C D E).obj F) where
+  preservesFiniteLimits _ _ _ := inferInstance
+
+instance (F : C ⥤ D) [HasFiniteColimits E] :
+    PreservesFiniteColimits ((Functor.whiskeringLeft C D E).obj F) where
+  preservesFiniteColimits _ _ _ := inferInstance
+
 instance whiskeringRight_preservesLimitsOfShape {C : Type*} [Category C] {D : Type*}
     [Category D] {E : Type*} [Category E] {J : Type*} [Category J]
     [HasLimitsOfShape J D] (F : D ⥤ E) [PreservesLimitsOfShape J F] :

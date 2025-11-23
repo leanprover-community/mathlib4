@@ -321,6 +321,8 @@ instance instCategorySheaf : Category (Sheaf J A) where
   comp_id _ := Hom.ext <| comp_id _
   assoc _ _ _ := Hom.ext <| assoc _ _ _
 
+attribute [reassoc] comp_val
+
 -- Let's make the inhabited linter happy.../sips
 instance (X : Sheaf J A) : Inhabited (Hom X X) :=
   ⟨𝟙 X⟩
