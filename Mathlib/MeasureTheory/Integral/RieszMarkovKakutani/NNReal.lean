@@ -3,11 +3,13 @@ Copyright (c) 2025 Yoh Tanimioto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
-import Mathlib.Analysis.Normed.Module.WeakDual
-import Mathlib.Analysis.LocallyConvex.Polar
-import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
-import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
-import Mathlib.Topology.Algebra.Module.LinearMap
+module
+
+public import Mathlib.Analysis.Normed.Module.WeakDual
+public import Mathlib.Analysis.LocallyConvex.Polar
+public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
+public import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
+public import Mathlib.Topology.Algebra.Module.LinearMap
 
 /-!
 # Riesz–Markov–Kakutani representation theorem for `ℝ≥0`
@@ -132,6 +134,7 @@ instance : PseudoMetricSpace (LevyProkhorov (ProbabilityMeasure X)) :=
   LevyProkhorov.instPseudoMetricSpaceProbabilityMeasure
 
 
+
 open WeakDual TopologicalSpace
 
 omit [BorelSpace X] in
@@ -144,9 +147,7 @@ lemma fin_integral_prob_meas {μprob : ProbabilityMeasure X} {f : C(X, ℝ)} :
       forall_apply_eq_imp_iff] at hf'
   exact MeasureTheory.HasFiniteIntegral.of_bounded (C := c) <| Filter.Eventually.of_forall hf'
 
-/- ### This depends on PRs #30845, #28061 and the sequential Banach-Alaoglu theorem,
-   ### which is to be PRed. -/
--- attribute [local irreducible] LevyProkhorov
+/- ### This depends on the sequential Banach-Alaoglu theorem PR #31292 -/
 instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
   let Φ := { φ : WeakDual ℝ C(X, ℝ) | ‖toStrongDual φ‖ ≤ 1
     ∧ φ ⟨fun x ↦ 1, continuous_const⟩ = 1 ∧ ∀ f : C_c(X, ℝ), 0 ≤ f → 0 ≤ φ f }
@@ -197,11 +198,13 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
     let c1 := CompactlySupportedContinuousMap.continuousMapEquiv
       ⟨(fun (x : X) => (1 : ℝ)), continuous_const⟩
     calc
-      (RealRMK.rieszMeasure (Λ φ) Set.univ).toReal = (RealRMK.rieszMeasure (Λ φ)).real Set.univ := by simp [MeasureTheory.Measure.real_def]
-      _ = (RealRMK.rieszMeasure (Λ φ)).real Set.univ • 1 := by simp [smul_eq_mul, mul_one]
-      _ = ∫ (x : X), 1 ∂(RealRMK.rieszMeasure (Λ φ)) := (integral_const (μ := RealRMK.rieszMeasure (Λ φ)) 1).symm
-      _ = Λ φ c1 := by exact (RealRMK.integral_rieszMeasure (Λ φ) c1)
-      _ = φ.1 ⟨fun x ↦ 1, continuous_const⟩ := by rfl
+      (RealRMK.rieszMeasure (Λ φ) Set.univ).toReal
+      _ = (RealRMK.rieszMeasure (Λ φ)).real Set.univ • 1 := by
+          simp [smul_eq_mul, mul_one, MeasureTheory.Measure.real_def]
+      _ = ∫ (x : X), 1 ∂(RealRMK.rieszMeasure (Λ φ)) :=
+          (integral_const (μ := RealRMK.rieszMeasure (Λ φ)) 1).symm
+      _ = Λ φ c1 := (RealRMK.integral_rieszMeasure (Λ φ) c1)
+      _ = φ.1 ⟨fun x ↦ 1, continuous_const⟩ := rfl
       _ = 1 := φ.2.2.1
   have hΛ (φ : Φ) : ∀ (f : CompactlySupportedContinuousMap X ℝ), 0 ≤ f → 0 ≤ Λ φ f := φ.2.2.2
   let T (φ : Φ) : LevyProkhorov (ProbabilityMeasure X) :=
@@ -216,19 +219,22 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
           intro f g
           simp [L]
           apply MeasureTheory.integral_add' _ _
-          simp [Integrable]
+          all_goals simp [Integrable]
           · exact ⟨by measurability,fin_integral_prob_meas⟩
-          constructor --Measurability should work here, but it is reaching max heartbeats idk why??
-          simp_all only [coe_toStrongDual, Set.coe_setOf, Set.mem_setOf_eq, Subtype.forall,
-              forall_and_index, Φ, Λ, μprob]
-          apply Measurable.aestronglyMeasurable
-          apply ContinuousMap.measurable
+          constructor --I should be able to solve both goals at once with
+          -- all_goals simp [Integrable] exact ⟨by measurability,fin_integral_prob_meas⟩ here, but
+          -- it is reaching max heartbeats idk why??
+          · simp_all only [coe_toStrongDual, Set.coe_setOf, Set.mem_setOf_eq, Subtype.forall,
+             forall_and_index, Φ, Λ, μprob]
+            apply Measurable.aestronglyMeasurable
+            exact ContinuousMap.measurable g
           exact fin_integral_prob_meas
         map_smul' := by simp [L]; exact fun a b ↦ integral_const_mul a b
         monotone' := fun _ _ _ ↦ L.monotone' (by bound)}
     let φ_weak : WeakDual ℝ (C(X,ℝ)) := ((liftL).toLinearMap.mkContinuous 1 (by
-      intro f; simp [-Real.norm_eq_abs,integralPositiveLinearMap_toFun, LinearMap.coe_mk, AddHom.coe_mk,
-        one_mul, L, liftL]; exact BoundedContinuousFunction.norm_integral_le_norm _ (f := (ContinuousMap.equivBoundedOfCompact X ℝ).toFun f)))
+      intro f; simp [-Real.norm_eq_abs,integralPositiveLinearMap_toFun, LinearMap.coe_mk,
+      AddHom.coe_mk, one_mul, L, liftL]; exact BoundedContinuousFunction.norm_integral_le_norm _
+          (f := (ContinuousMap.equivBoundedOfCompact X ℝ).toFun f)))
     have as_ball : φ_weak ∈ Φ := by
       simp [Φ]
       refine ⟨?_,?_,?_⟩
@@ -237,7 +243,8 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
         simp only [LinearMap.mkContinuous_apply, LinearMap.coe_mk, AddHom.coe_mk,
           Function.comp_apply, integralPositiveLinearMap_toFun, continuousMapEquiv_apply_toFun,
           one_mul, φ_weak, L, liftL]
-        exact BoundedContinuousFunction.norm_integral_le_norm μprob (f := (ContinuousMap.equivBoundedOfCompact X ℝ).toFun f)
+        exact BoundedContinuousFunction.norm_integral_le_norm μprob
+            (f := (ContinuousMap.equivBoundedOfCompact X ℝ).toFun f)
       · simp [LinearMap.mkContinuous, φ_weak, L, liftL]
         change (fun f ↦ ∫ (x : X), f x ∂↑μprob) (fun x ↦ 1) = 1
         simp
@@ -258,18 +265,18 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
     sorry
   apply IsSeqCompact.range
   refine Continuous.seqContinuous ?_
-  simp_rw [T]
+  simp [T]
   let f : ↑Φ → Measure X := fun φ => RealRMK.rieszMeasure (Λ φ)
-  letI top1 : TopologicalSpace (Measure X) := Preorder.topology (Measure X)
-  letI top2 : TopologicalSpace {μ : Measure X // IsProbabilityMeasure μ} := instTopologicalSpaceSubtype
-  refine Continuous.comp ?_ ?_
-  letI sep : SeparableSpace X := SecondCountableTopology.to_separableSpace--SecondCountableTopology.to_separableSpace
-  · --apply LevyProkhorov.continuous_ofMeasure_probabilityMeasure (Ω := X)
-    sorry
-
-
-  · refine Continuous.subtype_mk (f := fun φ => (RealRMK.rieszMeasure (Λ φ))) (hp := fun φ => IsPMeas φ) ?_
-    sorry
+  refine Continuous.comp ?_ ?_ (Y := ProbabilityMeasure X)
+  · exact LevyProkhorov.continuous_ofMeasure_probabilityMeasure
+  · rw [ProbabilityMeasure.continuous_iff_forall_continuous_integral]
+    intro func
+    let funk := CompactlySupportedContinuousMap.continuousMapEquiv func.toContinuousMap
+    have what (x) : ∫ (x : X), func x ∂RealRMK.rieszMeasure (Λ x) =
+        (Λ x) (continuousMapEquiv func.toContinuousMap) := RealRMK.integral_rieszMeasure (Λ x) funk
+    simp [what, Λ]
+    exact Continuous.comp (WeakDual.eval_continuous _)
+        continuous_subtype_val (g := (fun (x : WeakDual ℝ C(X,ℝ)) ↦ x func.toContinuousMap))
 
 
 end Arav

@@ -152,6 +152,9 @@ lemma coe_compLeft {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) : f.compLeft
 lemma compLeft_apply {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) (a : α) :
     f.compLeft g a = g (f a) := by simp [coe_compLeft hg f]
 
+@[simp]
+lemma Equiv_to_continuous_eq [CompactSpace α] (f : C(α, γ)) :
+    (continuousMapEquiv f).toContinuousMap = f := rfl
 end Basics
 
 /-! ### Algebraic structure
