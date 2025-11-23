@@ -493,7 +493,7 @@ variable {n S}
 /-- A cyclotomic extension splits `X ^ n - 1` if `n ∈ S`. -/
 theorem splits_X_pow_sub_one [H : IsCyclotomicExtension S K L] (hS : n ∈ S) :
     Splits (map (algebraMap K L) (X ^ n - 1)) := by
-  rw [← splits_id_iff_splits, Polynomial.map_sub, Polynomial.map_one, Polynomial.map_pow,
+  rw [Polynomial.map_sub, Polynomial.map_one, Polynomial.map_pow,
     Polynomial.map_X]
   obtain ⟨z, hz⟩ := ((isCyclotomicExtension_iff _ _ _).1 H).1 hS (NeZero.ne _)
   exact X_pow_sub_one_splits hz

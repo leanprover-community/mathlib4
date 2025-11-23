@@ -58,7 +58,7 @@ theorem integralClosure.mem_lifts_of_monic_of_dvd_map {f : R[X]} (hf : f.Monic) 
     (hg : g.Monic) (hd : g ∣ f.map (algebraMap R K)) :
     g ∈ lifts (algebraMap (integralClosure R K) K) := by
   have := mem_lift_of_splits_of_roots_mem_range (integralClosure R g.SplittingField)
-    ((splits_id_iff_splits _).2 <| SplittingField.splits g) (hg.map _) fun a ha =>
+    (SplittingField.splits g) (hg.map _) fun a ha =>
       (SetLike.ext_iff.mp (integralClosure R g.SplittingField).range_algebraMap _).mpr <|
         roots_mem_integralClosure hf ?_
   · rw [lifts_iff_coeff_lifts, ← RingHom.coe_range, Subalgebra.range_algebraMap] at this

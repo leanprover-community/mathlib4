@@ -735,7 +735,7 @@ theorem Subfield.roots_X_pow_char_sub_X_bot :
   exact FiniteField.roots_X_pow_card_sub_X _
 
 theorem Subfield.splits_bot :
-    Splits (Polynomial.map (RingHom.id (⊥ : Subfield F)) (X ^ p - X)) := by
+    Splits (X ^ p - X : (⊥ : Subfield F)[X]) := by
   let _ := Subfield.fintypeBot F p
   rw [splits_iff_card_roots, roots_X_pow_char_sub_X_bot, ← Finset.card_def, Finset.card_univ,
     FiniteField.X_pow_card_sub_X_natDegree_eq _ (Fact.out (p := p.Prime)).one_lt,

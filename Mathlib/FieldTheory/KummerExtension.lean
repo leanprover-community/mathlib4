@@ -57,10 +57,10 @@ section Splits
 
 theorem X_pow_sub_C_splits_of_isPrimitiveRoot
     {n : ℕ} {ζ : K} (hζ : IsPrimitiveRoot ζ n) {α a : K} (e : α ^ n = a) :
-    ((X ^ n - C a).map (RingHom.id _)).Splits := by
+    (X ^ n - C a).Splits := by
   cases n.eq_zero_or_pos with
   | inl hn =>
-    simp only [hn, pow_zero, ← C.map_one, ← map_sub, map_C, splits_C]
+    simp only [hn, pow_zero, ← C.map_one, ← map_sub, splits_C]
   | inr hn =>
     rw [splits_iff_card_roots, ← nthRoots, hζ.card_nthRoots, natDegree_X_pow_sub_C, if_pos ⟨α, e⟩]
 
@@ -303,7 +303,7 @@ lemma isSplittingField_AdjoinRoot_X_pow_sub_C :
   have := Fact.mk H
   letI : Algebra K K[n√a] := inferInstance
   constructor
-  · rw [← splits_id_iff_splits, Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_C,
+  · rw [Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_C,
       Polynomial.map_X]
     have ⟨_, hζ⟩ := hζ
     rw [mem_primitiveRoots (Nat.pos_of_ne_zero <| ne_zero_of_irreducible_X_pow_sub_C H)] at hζ
@@ -519,7 +519,7 @@ lemma isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top
     {a : K} {α : L} (ha : α ^ (finrank K L) = algebraMap K L a) (hα : K⟮α⟯ = ⊤) :
     IsSplittingField K L (X ^ (finrank K L) - C a) := by
   constructor
-  · rw [← splits_id_iff_splits, Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_C,
+  · rw [Polynomial.map_sub, Polynomial.map_pow, Polynomial.map_C,
       Polynomial.map_X]
     have ⟨_, hζ⟩ := hK
     rw [mem_primitiveRoots finrank_pos] at hζ
