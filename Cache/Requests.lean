@@ -30,8 +30,8 @@ Helper function to extract repository name from a git remote URL
 def extractRepoFromUrl (url : String) : Option String := do
   let url := url.dropSuffix ".git"
   let pos ← url.revFind? (· == '/')
-  let pos ← (url.replaceEnd pos).revFind? (fun c => c == '/' || c == ':')
-  return url.replaceStart (String.Slice.Pos.ofReplaceEnd pos).next! |>.copy
+  let pos ← (url.sliceTo pos).revFind? (fun c => c == '/' || c == ':')
+  return url.sliceFrom (String.Slice.Pos.ofSliceTo pos).next! |>.copy
 
 /-- Spot check if a URL is valid for a git remote -/
 def isRemoteURL (url : String) : Bool :=

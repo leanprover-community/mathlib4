@@ -263,7 +263,7 @@ alias ⟨_, _root_.GCongr.Fin.castLE_lt_castLE⟩ := castLE_lt_castLE_iff
 lemma predAbove_right_monotone (p : Fin n) : Monotone p.predAbove := fun a b H => by
   dsimp [predAbove]
   split_ifs with ha hb hb
-  all_goals simp only [le_iff_val_le_val, coe_pred]
+  all_goals simp only [le_iff_val_le_val, val_pred]
   · exact pred_le_pred H
   · calc
       _ ≤ _ := Nat.pred_le _
