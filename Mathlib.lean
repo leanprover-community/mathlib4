@@ -4036,7 +4036,6 @@ public import Mathlib.FieldTheory.SeparableDegree
 public import Mathlib.FieldTheory.SplittingField.Construction
 public import Mathlib.FieldTheory.SplittingField.IsSplittingField
 public import Mathlib.FieldTheory.Tower
-public import Mathlib.Foo
 public import Mathlib.Geometry.Convex.Cone.Basic
 public import Mathlib.Geometry.Convex.Cone.Dual
 public import Mathlib.Geometry.Convex.Cone.Pointed
@@ -5749,7 +5748,6 @@ public import Mathlib.RingTheory.Extension.Generators
 public import Mathlib.RingTheory.Extension.Presentation.Basic
 public import Mathlib.RingTheory.Extension.Presentation.Core
 public import Mathlib.RingTheory.Extension.Presentation.Submersive
-public import Mathlib.RingTheory.FGAlgCat
 public import Mathlib.RingTheory.FilteredAlgebra.Basic
 public import Mathlib.RingTheory.Filtration
 public import Mathlib.RingTheory.FiniteLength
