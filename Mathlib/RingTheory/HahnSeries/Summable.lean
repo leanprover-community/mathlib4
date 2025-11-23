@@ -291,6 +291,30 @@ theorem hsum_smulFamily [AddCommMonoid V] [SMulWithZero R V] (f : α → R)
     (smulFamily f s).hsum.coeff g = ∑ᶠ i, (f i) • ((s i).coeff g) :=
   rfl
 
+theorem le_hsum_support_mem {s : SummableFamily Γ R α} {g g' : Γ}
+    (hg : ∀ b : α, ∀ g' ∈ (s b).support, g ≤ g') (hg' : g' ∈ s.hsum.support) : g ≤ g' := by
+  rw [mem_support, coeff_hsum_eq_sum] at hg'
+  obtain ⟨i, _, hi⟩ := Finset.exists_ne_zero_of_sum_ne_zero hg'
+  exact hg i g' hi
+
+theorem hsum_orderTop_of_le {s : SummableFamily Γ R α} {g : Γ} {a : α} (ha : g = (s a).orderTop)
+    (hg : ∀ b : α, ∀ g' ∈ (s b).support, g ≤ g') (hna : ∀b : α, b ≠ a → (s b).coeff g = 0) :
+    s.hsum.orderTop = g :=
+  orderTop_eq_of_le (ne_of_eq_of_ne (by rw [coeff_hsum, finsum_eq_single (fun i ↦ (s i).coeff g) a
+    hna]) (coeff_orderTop_ne ha.symm)) fun _ hg' => le_hsum_support_mem hg hg'
+
+theorem hsum_leadingCoeff_of_le {s : SummableFamily Γ R α} {g : Γ} {a : α} (ha : g = (s a).orderTop)
+    (hg : ∀ b : α, ∀ g' ∈ (s b).support, g ≤ g') (hna : ∀b : α, b ≠ a → (s b).coeff g = 0) :
+    s.hsum.leadingCoeff = (s a).coeff g := by
+  have := hsum_orderTop_of_le ha hg hna
+  rw [orderTop] at this
+  have hs : s.hsum ≠ 0 := by
+    by_contra h
+    simp [h] at this
+  simp only [hs, ↓reduceDIte, WithTop.coe_eq_coe] at this
+  simp only [leadingCoeff_of_ne_zero hs, coeff_hsum, untop_orderTop_of_ne_zero hs, this]
+  rw [finsum_eq_single (fun i ↦ (s i).coeff g) a hna]
+
 end AddCommMonoid
 
 section AddCommGroup
@@ -777,6 +801,27 @@ theorem isUnit_of_isUnit_leadingCoeff_AddUnitOrder {x : HahnSeries Γ R} (hx : I
   have h' := SummableFamily.one_sub_self_mul_hsum_powers (unit_aux x iu _ hxo.addUnit.neg_add)
   rw [sub_sub_cancel] at h'
   exact isUnit_of_mul_isUnit_right (.of_mul_eq_one _ h')
+
+theorem isUnit_of_orderTop_pos {x : HahnSeries Γ R} (h : 0 < (x - 1).orderTop) :
+    IsUnit x := by
+  obtain _ | _ := subsingleton_or_nontrivial R
+  · exact isUnit_of_subsingleton x
+  · refine isUnit_of_isUnit_leadingCoeff_AddUnitOrder ?_ ?_
+    · rw [(x.orderTop_self_sub_one_pos_iff.mp h).2]
+      exact isUnit_one
+    · have := (x.orderTop_self_sub_one_pos_iff.mp h).1
+      rw [← order_eq_orderTop_of_ne_zero
+        (fun h ↦ WithTop.top_ne_zero (orderTop_eq_top.mpr h ▸ this)), WithTop.coe_eq_zero] at this
+      rw [this]
+      exact isAddUnit_zero
+
+/-- Make an element of `orderTopSubOnePos` -/
+@[simps]
+def toOrderTopSubOnePos {x : HahnSeries Γ R} (h : 0 < (x - 1).orderTop) :
+    orderTopSubOnePos Γ R where
+  val := ⟨x, (isUnit_of_orderTop_pos h).unit.inv, IsUnit.mul_val_inv (isUnit_of_orderTop_pos h),
+    IsUnit.val_inv_mul (isUnit_of_orderTop_pos h)⟩
+  property := h
 
 end CommRing
 
