@@ -256,6 +256,8 @@ theorem isCompact_closedBall [ProperSpace 𝕜] (x' : StrongDual 𝕜 E) (r : �
     IsCompact (toStrongDual ⁻¹' closedBall x' r) :=
   isCompact_of_bounded_of_closed isBounded_closedBall (isClosed_closedBall x' r)
 
+open TopologicalSpace
+
 variable (𝕜 V : Type*) [NontriviallyNormedField 𝕜] [SeminormedAddCommGroup V] [NormedSpace 𝕜 V]
 variable [TopologicalSpace.SeparableSpace V] (K : Set (WeakDual 𝕜 V))
 
@@ -274,7 +276,7 @@ lemma exists_countable_separating : ∃ (gs : ℕ → (WeakDual 𝕜 V) → 𝕜
 /-- A compact subset of the dual space of a separable space is metrizable. -/
 lemma metrizable_of_compact (K_cpt : IsCompact K) : TopologicalSpace.MetrizableSpace K := by
   have : CompactSpace K := isCompact_iff_compactSpace.mp K_cpt
-  obtain ⟨gs, gs_cont, gs_sep⟩ := exists_continuous_separating 𝕜 V
+  obtain ⟨gs, gs_cont, gs_sep⟩ := exists_countable_separating 𝕜 V
   exact Metric.PiNatEmbed.TopologicalSpace.MetrizableSpace.of_countable_separating
     (fun n k ↦ gs n k) (fun n ↦ (gs_cont n).comp continuous_subtype_val)
     fun x y hxy ↦ gs_sep <| Subtype.val_injective.ne hxy
