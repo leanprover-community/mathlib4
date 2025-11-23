@@ -50,10 +50,10 @@ def continuousLinearEquiv (e : α ≃ β) :
     continuous_invFun := by convert continuous_coinduced_rng; exact e.coinduced_symm.symm }
 
 @[simp]
-lemma continuousLinearEquiv_toLinearEquiv (e : α ≃ β) :
+lemma toLinearEquiv_continuousLinearEquiv (e : α ≃ β) :
     let _ := e.topologicalSpace
     let _ := e.addCommMonoid
     let _ := e.module R
-    (e.continuousLinearEquiv R).toLinearEquiv = e.linearEquiv R := by rfl
+    (e.continuousLinearEquiv R).toLinearEquiv = e.linearEquiv R := rfl
 
 end Equiv
