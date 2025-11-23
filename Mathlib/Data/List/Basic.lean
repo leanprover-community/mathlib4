@@ -3,17 +3,21 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Control.Basic
-import Mathlib.Data.Option.Basic
-import Mathlib.Data.List.Defs
-import Mathlib.Data.List.Monad
-import Mathlib.Logic.OpClass
-import Mathlib.Logic.Unique
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Control.Basic
+public import Mathlib.Data.Option.Basic
+public import Mathlib.Data.List.Defs
+public import Mathlib.Data.List.Monad
+public import Mathlib.Logic.OpClass
+public import Mathlib.Logic.Unique
+public import Mathlib.Tactic.Common
 
 /-!
 # Basic properties of lists
 -/
+
+@[expose] public section
 
 assert_not_exists Lattice
 assert_not_exists Monoid
@@ -441,9 +445,33 @@ theorem exists_mem_iff_getElem {l : List α} {p : α → Prop} :
   simp only [mem_iff_getElem]
   exact ⟨fun ⟨_x, ⟨i, hi, hix⟩, hxp⟩ ↦ ⟨i, hi, hix ▸ hxp⟩, fun ⟨i, hi, hp⟩ ↦ ⟨_, ⟨i, hi, rfl⟩, hp⟩⟩
 
+theorem exists_mem_iff_get {l : List α} {p : α → Prop} :
+    (∃ x ∈ l, p x) ↔ ∃ (i : Fin l.length), p (l.get i) :=
+  exists_mem_iff_getElem.trans ⟨fun ⟨i, hi, h⟩ ↦ ⟨⟨i, hi⟩, h⟩, fun ⟨i, h⟩ ↦ ⟨i, i.isLt, h⟩⟩
+
 theorem forall_mem_iff_getElem {l : List α} {p : α → Prop} :
     (∀ x ∈ l, p x) ↔ ∀ (i : ℕ) (_ : i < l.length), p l[i] := by
   simp [mem_iff_getElem, @forall_swap α]
+
+theorem forall_mem_iff_get {l : List α} {p : α → Prop} :
+    (∀ x ∈ l, p x) ↔ ∀ (i : Fin l.length), p (l.get i) :=
+  forall_mem_iff_getElem.trans ⟨fun h i ↦ h i i.isLt, fun h i hi ↦ h ⟨i, hi⟩⟩
+
+@[simp]
+theorem get_surjective_iff {l : List α} : l.get.Surjective ↔ (∀ x, x ∈ l) :=
+  forall_congr' fun _ ↦ mem_iff_get.symm
+
+@[simp]
+theorem getElem_fin_surjective_iff {l : List α} :
+    (fun (n : Fin l.length) ↦ l[n.val]).Surjective ↔ (∀ x, x ∈ l) :=
+  get_surjective_iff
+
+@[simp]
+theorem getElem?_surjective_iff {l : List α} : (fun (n : ℕ) ↦ l[n]?).Surjective ↔ (∀ x, x ∈ l) := by
+  refine ⟨fun h x ↦ mem_iff_getElem?.mpr <| h x, fun h x ↦ ?_⟩
+  cases x with
+  | none => exact ⟨l.length, getElem?_eq_none <| Nat.le_refl _⟩
+  | some x => exact mem_iff_getElem?.mp <| h x
 
 theorem get_tail (l : List α) (i) (h : i < l.tail.length)
     (h' : i + 1 < l.length := (by simp only [length_tail] at h; cutsat)) :
@@ -732,9 +760,6 @@ theorem foldl_fixed {a : α} : ∀ l : List β, foldl (fun a _ => a) a l = a :=
 theorem foldr_fixed {b : β} : ∀ l : List α, foldr (fun _ b => b) b l = b :=
   foldr_fixed' fun _ => rfl
 
-@[deprecated foldr_cons_nil (since := "2025-02-10")]
-theorem foldr_eta (l : List α) : foldr cons [] l = l := foldr_cons_nil
-
 theorem reverse_foldl {l : List α} : reverse (foldl (fun t h => h :: t) [] l) = l := by
   simp
 
@@ -881,21 +906,6 @@ theorem foldlM_eq_foldl (f : β → α → m β) (b l) :
   | cons _ _ l_ih => intro; simp only [List.foldlM, foldl, ← l_ih, functor_norm]
 
 end FoldlMFoldrM
-
-/-! ### intersperse -/
-
-@[deprecated (since := "2025-02-07")] alias intersperse_singleton := intersperse_single
-@[deprecated (since := "2025-02-07")] alias intersperse_cons_cons := intersperse_cons₂
-
-/-! ### map for partial functions -/
-
-@[deprecated "Deprecated without replacement." (since := "2025-02-07")]
-theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {l : List α} (hx : x ∈ l) :
-    SizeOf.sizeOf x < SizeOf.sizeOf l := by
-  induction l with | nil => ?_ | cons h t ih => ?_ <;> cases hx <;> rw [cons.sizeOf_spec]
-  · cutsat
-  · specialize ih ‹_›
-    cutsat
 
 /-! ### filter -/
 
@@ -1045,9 +1055,6 @@ variable [DecidableEq α]
 theorem map_diff [DecidableEq β] {f : α → β} (finj : Injective f) {l₁ l₂ : List α} :
     map f (l₁.diff l₂) = (map f l₁).diff (map f l₂) := by
   simp only [diff_eq_foldl, foldl_map, map_foldl_erase finj]
-
-@[deprecated (since := "2025-04-10")]
-alias erase_diff_erase_sublist_of_sublist := Sublist.erase_diff_erase_sublist
 
 end Diff
 

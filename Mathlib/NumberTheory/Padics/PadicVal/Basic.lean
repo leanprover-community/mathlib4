@@ -3,11 +3,13 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Matthew Robert Ballard
 -/
-import Mathlib.NumberTheory.Divisors
-import Mathlib.NumberTheory.Padics.PadicVal.Defs
-import Mathlib.Data.Nat.MaxPowDiv
-import Mathlib.Data.Nat.Multiplicity
-import Mathlib.Data.Nat.Prime.Int
+module
+
+public import Mathlib.NumberTheory.Divisors
+public import Mathlib.NumberTheory.Padics.PadicVal.Defs
+public import Mathlib.Data.Nat.MaxPowDiv
+public import Mathlib.Data.Nat.Multiplicity
+public import Mathlib.Data.Nat.Prime.Int
 
 /-!
 # `p`-adic Valuation
@@ -59,6 +61,8 @@ by taking `[Fact p.Prime]` as a type class argument.
 p-adic, p adic, padic, norm, valuation
 -/
 
+@[expose] public section
+
 
 universe u
 
@@ -94,18 +98,15 @@ theorem maxPowDiv_eq_multiplicity {p n : ℕ} (hp : 1 < p) (hn : n ≠ 0) (h : F
 @[csimp]
 theorem padicValNat_eq_maxPowDiv : @padicValNat = @maxPowDiv := by
   ext p n
-  by_cases h : 1 < p ∧ 0 < n
+  set_option push_neg.use_distrib true in by_cases! h : 1 < p ∧ 0 < n
   · rw [padicValNat_def' h.1.ne' h.2.ne', maxPowDiv_eq_multiplicity h.1 h.2.ne']
     exact Nat.finiteMultiplicity_iff.2 ⟨h.1.ne', h.2⟩
-  · simp only [not_and_or, not_gt_eq, Nat.le_zero] at h
-    apply h.elim
-    · intro h
-      interval_cases p
+  · rcases h with (h | h)
+    · interval_cases p
       · simp [Classical.em]
       · dsimp [padicValNat, maxPowDiv]
         rw [go, if_neg]; simp
-    · intro h
-      simp [h]
+    · simp [Nat.le_zero.mp h]
 
 end padicValNat
 
@@ -585,7 +586,7 @@ Taking (`p - 1`) times the `p`-adic valuation of `n!` equals `n` minus the sum o
 of `n`. -/
 theorem sub_one_mul_padicValNat_factorial [hp : Fact p.Prime] (n : ℕ) :
     (p - 1) * padicValNat p (n !) = n - (p.digits n).sum := by
-  rw [padicValNat_factorial <| lt_succ_of_lt <| lt.base (log p n)]
+  rw [padicValNat_factorial <| lt_succ_of_lt <| lt_add_one (log p n)]
   nth_rw 2 [← zero_add 1]
   rw [Nat.succ_eq_add_one, ← Finset.sum_Ico_add' _ 0 _ 1,
     Ico_zero_eq_range, ← sub_one_mul_sum_log_div_pow_eq_sub_sum_digits, Nat.succ_eq_add_one]
