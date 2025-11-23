@@ -28,6 +28,7 @@ directory.
 * `p.sum f` is `∑ n ∈ p.support, f n (p.coeff n)`, i.e., one sums the values of functions applied
   to coefficients of the polynomial `p`.
 * `p.erase n` is the polynomial `p` in which one removes the `c X^n` term.
+* `ofMultiset s` is the monic polynomial `p` which has roots `s`.
 
 There are often two natural variants of lemmas involving sums, depending on whether one acts on the
 polynomials, or on the function. The naming convention is that one adds `index` when acting on
@@ -1204,6 +1205,21 @@ theorem nontrivial_iff [Semiring R] : Nontrivial R[X] ↔ Nontrivial R :=
     let ⟨_r, _s, hrs⟩ := @exists_pair_ne _ h
     Nontrivial.of_polynomial_ne hrs,
     fun h => @Polynomial.nontrivial _ _ h⟩
+
+section CommRing
+
+variable [CommRing R]
+
+/-- `ofMultiset s` defines a monic polynomial and roots `s`
+with correct multiplicities. -/
+noncomputable def ofMultiset (s : Multiset R) : R[X] :=
+  (Multiset.map (fun (a : R) => X - C a) s).prod
+
+/-- TODO, add simp attribute once other theorems are in simp NF. -/
+theorem ofMultiset_eq_map_prod (s : Multiset R) :
+  (Multiset.map (fun (a : R) => X - C a) s).prod = (ofMultiset s) := rfl
+
+end CommRing
 
 section repr
 
