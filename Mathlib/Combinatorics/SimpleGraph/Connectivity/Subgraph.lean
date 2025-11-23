@@ -643,7 +643,7 @@ protected lemma Preconnected.map {G' : G.Subgraph} {G'' : G'.coe.Subgraph}
   simp_rw [← hfu, ← hfv]
   exact (hpreconn.coe ⟨u, hu⟩ ⟨v, hv⟩).coe_subgraphMap f
 
-protected lemma Connected.map_coe {G' : G.Subgraph} {G'' : G'.coe.Subgraph}
+protected lemma Connected.map {G' : G.Subgraph} {G'' : G'.coe.Subgraph}
     (f : G'.coe →g G) (hconn : G''.Connected) : (G''.map f).Connected :=
   Subgraph.connected_iff.mpr ⟨hconn.preconnected.map_coe f, by simp [hconn.nonempty]⟩
 
