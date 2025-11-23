@@ -263,16 +263,13 @@ variable [TopologicalSpace.SeparableSpace V] (K : Set (WeakDual 𝕜 V))
 separates points of the weak dual. -/
 lemma exists_countable_separating : ∃ (gs : ℕ → (WeakDual 𝕜 V) → 𝕜),
     (∀ n, Continuous (gs n)) ∧ (∀ ⦃x y⦄, x≠y → ∃ n, gs n x ≠ gs n y) := by
-  set vs := TopologicalSpace.denseSeq V
-  use (fun n ↦ fun ϕ ↦ (ϕ : WeakDual 𝕜 V) (vs n))
+  use (fun n φ ↦ φ (denseSeq V n))
   constructor
-  · exact fun n ↦ WeakDual.eval_continuous (vs n)
+  · exact fun _ ↦ eval_continuous _
   · intro w y w_ne_y
     contrapose! w_ne_y
-    have : Set.EqOn w y (.range vs) := by
-      simpa [Set.eqOn_range] using (Set.eqOn_univ (w ∘ vs) (y ∘ vs)).mp fun x _ ↦ w_ne_y x
-    exact DFunLike.coe_fn_eq.mp (Continuous.ext_on (TopologicalSpace.denseRange_denseSeq V)
-      (map_continuous w) (map_continuous y) this)
+    exact DFunLike.ext'_iff.mpr <| (map_continuous w).ext_on
+      (denseRange_denseSeq V) (map_continuous y) (by grind [Set.eqOn_range])
 
 /-- A compact subset of the dual space of a separable space is metrizable. -/
 lemma metrizable_of_compact (K_cpt : IsCompact K) : TopologicalSpace.MetrizableSpace K := by
