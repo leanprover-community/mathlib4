@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Calculus.LineDeriv.Basic
 public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 public import Mathlib.Analysis.Normed.Group.ZeroAtInfty
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public import Mathlib.Analysis.Distribution.DerivNotation
 public import Mathlib.Analysis.Distribution.TemperateGrowth
 public import Mathlib.Topology.Algebra.UniformFilterBasis
 public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
@@ -805,9 +806,10 @@ section Derivatives
 
 /-! ### Derivatives of Schwartz functions -/
 
-
 variable (𝕜)
 variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+
+open FDeriv LineDeriv
 
 /-- The Fréchet derivative on Schwartz space as a continuous `𝕜`-linear map. -/
 def fderivCLM : 𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F) :=
@@ -818,11 +820,15 @@ def fderivCLM : 𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F) :=
       simpa only [schwartzSeminormFamily_apply, Seminorm.comp_apply, Finset.sup_singleton,
         one_smul, norm_iteratedFDeriv_fderiv, one_mul] using f.le_seminorm 𝕜 k (n + 1) x⟩
 
-@[simp]
-theorem fderivCLM_apply (f : 𝓢(E, F)) (x : E) : fderivCLM 𝕜 f x = fderiv ℝ f x :=
-  rfl
+instance instFDeriv : FDeriv 𝓢(E, F) 𝓢(E, E →L[ℝ] F) where
+  fderivOp := fderivCLM ℝ
 
-theorem hasFDerivAt (f : 𝓢(E, F)) (x : E) : HasFDerivAt f (fderiv ℝ f x) x :=
+theorem fderivOp_apply (f : 𝓢(E, F)) (x : E) : ∂_f f x = fderiv ℝ f x := rfl
+
+@[simp]
+theorem fderivCLM_apply (f : 𝓢(E, F)) : fderivCLM 𝕜 f = ∂_f f := rfl
+
+theorem hasFDerivAt (f : 𝓢(E, F)) (x : E) : HasFDerivAt f (∂_f f x) x :=
   f.differentiableAt.hasFDerivAt
 
 /-- The 1-dimensional derivative on Schwartz space as a continuous `𝕜`-linear map. -/
