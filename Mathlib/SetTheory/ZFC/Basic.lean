@@ -600,6 +600,16 @@ lemma coe_sdiff (x y : ZFSet.{u}) : ↑(x \ y) = (↑x \ ↑y : Set ZFSet) := by
 
 @[deprecated (since := "2025-11-05")] alias toSet_sdiff := coe_sdiff
 
+@[simp] lemma inter_eq_left_of_subset (hxy : x ⊆ y) : x ∩ y = x := by ext; simpa using @hxy _
+@[simp] lemma inter_eq_right_of_subset (hyx : y ⊆ x) : x ∩ y = y := by ext; simpa using @hyx _
+
+/-- `ZFSet.powerset` is equivalent to `Set.powerset`. -/
+def powersetEquiv (x : ZFSet.{u}) : x.powerset ≃ 𝒫 (x : Set ZFSet) where
+  toFun y := ⟨y.1, Set.mem_powerset (mem_powerset.1 y.2)⟩
+  invFun s := ⟨x.sep (· ∈ s.1), mem_powerset.2 sep_subset⟩
+  left_inv := by simp +contextual [Function.LeftInverse]
+  right_inv := by simp +contextual [Function.LeftInverse, Function.RightInverse, Set.setOf_and]
+
 theorem mem_wf : @WellFounded ZFSet (· ∈ ·) :=
   (wellFounded_lift₂_iff (H := fun a b c d hx hy =>
     propext ((@Mem.congr_left a c hx).trans (@Mem.congr_right b d hy _)))).mpr PSet.mem_wf
