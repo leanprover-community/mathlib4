@@ -584,7 +584,7 @@ section Semiring
 variable [Semiring A] [Algebra R A] [FaithfulSMul R A]
 
 open LinearMap in
-private theorem projective_unit_and_mul'_comp_lTensor_bijective (I : (Submodule R A)ˣ) :
+private theorem projective_units_and_mul'_comp_lTensor_bijective (I : (Submodule R A)ˣ) :
     Projective R I ∧ Function.Bijective (mul' R A ∘ₗ I.1.subtype.lTensor A) := by
   obtain ⟨T, T', hT, hT', one_mem⟩ := mem_span_mul_finite_of_mem_mul (I.inv_mul ▸ one_le.mp le_rfl)
   classical
@@ -616,11 +616,11 @@ private theorem projective_unit_and_mul'_comp_lTensor_bijective (I : (Submodule 
     LinearEquiv.range, map_top, mulMap_range, top_mul_eq_top_of_mul_eq_one I.inv_mul]
 
 open LinearMap in
-instance projective_unit (I : (Submodule R A)ˣ) : Projective R I :=
-  (projective_unit_and_mul'_comp_lTensor_bijective I).1
+instance projective_units (I : (Submodule R A)ˣ) : Projective R I :=
+  (projective_units_and_mul'_comp_lTensor_bijective I).1
 
 theorem projective_of_isUnit {I : Submodule R A} (hI : IsUnit I) : Projective R I :=
-  projective_unit hI.unit
+  projective_units hI.unit
 
 variable (I J : (Submodule R A)ˣ)
 
@@ -628,7 +628,7 @@ variable (I J : (Submodule R A)ˣ)
 `I ⊗[R] J` to `I * J` induced by multiplication is an isomorphism. -/
 noncomputable def tensorEquivMul : I ⊗[R] J ≃ₗ[R] I * J := by
   refine .ofBijective _ ⟨.of_comp (f := Submodule.subtype _) ?_, mulMap'_surjective _ _⟩
-  convert (projective_unit_and_mul'_comp_lTensor_bijective J).2.1.comp
+  convert (projective_units_and_mul'_comp_lTensor_bijective J).2.1.comp
     (Flat.rTensor_preserves_injective_linearMap _ I.1.subtype_injective)
   simp_rw [← LinearMap.coe_comp]
   congr 1; ext; rfl
@@ -659,7 +659,8 @@ noncomputable def unitsToPicEquiv (I : (Submodule R A)ˣ) : unitsToPic R A I ≃
 variable (R A) in
 /-- Exactness of the sequence `1 → Rˣ → Aˣ → (Submodule R A)ˣ → Pic R → Pic A`
 at `(Submodule R A)ˣ`. -/
-theorem ker_unitsToPic : (unitsToPic R A).ker = (Units.map (spanSingleton R)).range := by
+theorem ker_unitsToPic :
+    (unitsToPic R A).ker = (Units.map (spanSingleton R).toMonoidHom).range := by
   ext I; constructor <;> intro h
   · have e := (mk_eq_one_iff.mp h).some.symm
     have e' := (mk_eq_one_iff.mp (inv_mem h)).some.symm
@@ -739,6 +740,14 @@ noncomputable def tensorSubmoduleAlgebraEquivMul (I : Submodule R A) :
 
 end Module.Flat
 
+namespace Module.Invertible
+
+@[deprecated (since := "2025-11-23")] alias embAlgebra := Flat.toAlgebra
+@[deprecated (since := "2025-11-23")] alias embAlgebra_injective := Flat.toAlgebra_injective
+@[deprecated (since := "2025-11-23")] alias toSubmodule := Flat.submoduleAlgebra
+
+end Module.Invertible
+
 section PicardGroup
 
 variable [CommSemiring A] [Algebra R A] [FaithfulSMul R A]
@@ -751,7 +760,7 @@ theorem Submodule.range_unitsToPic : (unitsToPic R A).range = relPic R A := by
   · obtain ⟨I, rfl⟩ := h
     exact mk_eq_one_iff.mpr ⟨AlgebraTensorModule.congr (.refl ..) (unitsToPicEquiv I) ≪≫ₗ
       .ofBijective ((Algebra.TensorProduct.lmul'' R).toLinearMap ∘ₗ AlgebraTensorModule.lTensor A A
-        I.1.subtype) (projective_unit_and_mul'_comp_lTensor_bijective I).2⟩
+        I.1.subtype) (projective_units_and_mul'_comp_lTensor_bijective I).2⟩
   have e := (mk_eq_one_iff.mp h).some
   have f := (mk_eq_one_iff.mp (inv_mem h)).some
   refine ⟨(isUnit_of_mul_isUnit_left (x := submoduleAlgebra e) (y := submoduleAlgebra f) ?_).unit,
@@ -764,13 +773,13 @@ theorem Submodule.range_unitsToPic : (unitsToPic R A).range = relPic R A := by
   apply_fun (⊤ * ·) at this
   simp_rw [← mul_assoc, top_mul_submoduleAlgebra] at this
   obtain ⟨a, -, eq⟩ := mem_mul_span_singleton.mp (this ▸ mem_top (x := 1))
-  exact .map (spanSingleton R) (.of_mul_eq_one_right _ eq)
+  exact .map (spanSingleton R).toMonoidHom (.of_mul_eq_one_right _ eq)
 
 open QuotientGroup in
 /-- If `A` is a faithful `R`-algebra, the relative Picard group Pic(A/R) is isomorphic to
 the group of the invertible `R`-submodules in `A` modulo the principal submodules. -/
 @[simps!] noncomputable def Submodule.unitsQuotEquivRelPic :
-    (Submodule R A)ˣ ⧸ (Units.map (spanSingleton R)).range ≃* relPic R A :=
+    (Submodule R A)ˣ ⧸ (Units.map (spanSingleton R).toMonoidHom).range ≃* relPic R A :=
   (congr _ _ (.refl _) ((Subgroup.map_id _).trans (ker_unitsToPic R A).symm)).trans <|
     (quotientKerEquivRange _).trans <| .subgroupCongr (range_unitsToPic R A)
 

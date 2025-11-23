@@ -708,9 +708,10 @@ def span.ringHom : SetSemiring A →+* Submodule R A where
   map_mul' s t := by simp_rw [SetSemiring.down_mul, span_mul_span]
 
 variable (R) in
-/-- `(span R {·})` as a monoid homomorphism. -/
-def spanSingleton : A →* Submodule R A :=
-  Submodule.span.ringHom.toMonoidHom.comp SetSemiring.singletonMonoidHom
+/-- `(span R {·})` as a `MonoidWithZeroHom`. -/
+def spanSingleton : A →*₀ Submodule R A where
+  __ := Submodule.span.ringHom.toMonoidHom.comp SetSemiring.singletonMonoidHom
+  map_zero' := by simp [SetSemiring.singletonMonoidHom]
 
 @[simp] lemma spanSingleton_apply (x : A) : spanSingleton R x = Submodule.span R {x} := rfl
 
@@ -726,7 +727,7 @@ theorem span_singleton_eq_one_iff {x : A} : span R {x} = 1 ↔ ∃ r : Rˣ, x = 
     exact ⟨.mkOfMulEqOne _ _ (mul_comm _ r ▸ eq), rfl⟩
   mpr := by rintro ⟨r, rfl⟩; exact span_singleton_algebraMap_of_isUnit r.isUnit
 
-theorem ker_spanSingleton :
+theorem mker_spanSingleton :
     MonoidHom.mker (Submodule.spanSingleton R) = (IsUnit.submonoid R).map (algebraMap R A) := by
   ext; simp_rw [Submonoid.mem_map, IsUnit.mem_submonoid_iff, IsUnit, existsAndEq, true_and, eq_comm]
   exact span_singleton_eq_one_iff
@@ -734,7 +735,7 @@ theorem ker_spanSingleton :
 /-- Exactness of the sequence `1 → Rˣ → Aˣ → (Submodule R A)ˣ → Pic R → Pic A` at `Aˣ`.
 See Exercise I.3.7(iv) in [Weibel2013] or Theorem 2.4 in [RobertsSingh1993]. -/
 theorem ker_unitsMap_spanSingleton :
-    (Units.map (Submodule.spanSingleton R)).ker =
+    (Units.map (Submodule.spanSingleton R).toMonoidHom).ker =
     (Units.map (algebraMap R A).toMonoidHom).range := by
   ext; simpa [Units.ext_iff, eq_comm] using span_singleton_eq_one_iff
 
