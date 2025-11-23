@@ -3,7 +3,9 @@ Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
-import Mathlib.Geometry.Manifold.Instances.Real
+module
+
+public import Mathlib.Geometry.Manifold.Instances.Real
 
 /-!
 ## (Unoriented) bordism theory
@@ -39,7 +41,7 @@ topological pair `(X, A)`; in fact, these define an extra-ordinary homology theo
 ## Main definitions
 
 - **SingularManifold X k I**: a singular manifold on a topological space `X`, is a pair `(M, f)` of
-  a closed `C^k`-manifold manifold `M` modelled on `I` together with a continuous map `M → X`.
+  a closed `C^k`-manifold `M` modelled on `I` together with a continuous map `M → X`.
   We don't assume `M` to be modelled on `ℝⁿ`, but add the model topological space `H`,
   the vector space `E` and the model with corners `I` as type parameters.
   If we wish to emphasize the model, with will speak of a singular `I`-manifold.
@@ -89,13 +91,15 @@ topological pair `(X, A)`; in fact, these define an extra-ordinary homology theo
 singular manifold, bordism, bordism group
 -/
 
+@[expose] public section
+
 open scoped Manifold
 open Module Set
 
 suppress_compilation
 
 /-- A **singular manifold** on a topological space `X` is a pair `(M, f)` of a closed
-`C^k`-manifold manifold `M` modelled on `I` together with a continuous map `M → X`.
+`C^k`-manifold `M` modelled on `I` together with a continuous map `M → X`.
 If we wish to emphasize the model, with will speak of a singular `I`-manifold.
 
 In practice, one commonly wants to take `k=∞` (as then e.g. the intersection form is a powerful tool

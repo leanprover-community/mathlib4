@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Data.SetLike.Basic
+module
+
+public import Mathlib.Order.Interval.Set.Basic
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Data.SetLike.Basic
 
 /-!
 # Order intervals
@@ -18,6 +20,8 @@ interval arithmetic.
 * `NonemptyInterval`: Nonempty intervals. Pairs where the second element is greater than the first.
 * `Interval`: Intervals. Either `∅` or a nonempty interval.
 -/
+
+@[expose] public section
 
 
 open Function OrderDual Set
@@ -292,8 +296,8 @@ variable [LE α]
 -- https://github.com/leanprover-community/mathlib4/issues/380
 -- Note(kmill): `Interval` is an `abbrev`, so none of these `instance`s are needed.
 instance : Inhabited (Interval α) := WithBot.inhabited
-instance : LE (Interval α) := WithBot.le
-instance : OrderBot (Interval α) := WithBot.orderBot
+instance : LE (Interval α) := WithBot.instLE
+instance : OrderBot (Interval α) := WithBot.instOrderBot
 
 instance : Coe (NonemptyInterval α) (Interval α) :=
   WithBot.coe
@@ -336,7 +340,7 @@ section Preorder
 variable [Preorder α] [Preorder β] [Preorder γ]
 
 instance : Preorder (Interval α) :=
-  WithBot.preorder
+  WithBot.instPreorder
 
 /-- `{a}` as an interval. -/
 def pure (a : α) : Interval α :=
@@ -398,7 +402,7 @@ section PartialOrder
 variable [PartialOrder α] [PartialOrder β] {s t : Interval α} {a b : α}
 
 instance partialOrder : PartialOrder (Interval α) :=
-  WithBot.partialOrder
+  WithBot.instPartialOrder
 
 /-- Consider an interval `[a, b]` as the set `[a, b]`. -/
 def coeHom : Interval α ↪o Set α :=

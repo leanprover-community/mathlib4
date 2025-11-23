@@ -3,8 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Eric Wieser
 -/
-import Mathlib.Init
-import Mathlib.Tactic.Basic
+module
+
+public import Mathlib.Init
+public import Mathlib.Tactic.Basic
 
 /-!
 # Documentation of the algebraic hierarchy
@@ -16,6 +18,8 @@ refer to files/types that currently only exist in mathlib3.
 TODO: Add sections about interactions with topological typeclasses, and order typeclasses.
 
 -/
+
+@[expose] public section
 
 
 library_note2 «the algebraic hierarchy» /-- # The algebraic hierarchy
@@ -138,7 +142,7 @@ For many algebraic structures, particularly ones used in representation theory, 
 etc., we also define "bundled" versions, which carry `category` instances.
 
 These bundled versions are usually named by appending `Cat`,
-so for example we have `AddCommGrp` as a bundled `AddCommGroup`, and `TopCommRingCat`
+so for example we have `AddCommGrpCat` as a bundled `AddCommGroup`, and `TopCommRingCat`
 (which bundles together `CommRing`, `TopologicalSpace`, and `IsTopologicalRing`).
 
 These bundled versions have many appealing features:
@@ -146,9 +150,9 @@ These bundled versions have many appealing features:
 * a uniform notation (and definition) for isomorphisms `X ≅ Y`
 * a uniform API for subobjects, via the partial order `Subobject X`
 * interoperability with unbundled structures, via coercions to `Type`
-  (so if `G : AddCommGrp`, you can treat `G` as a type,
+  (so if `G : AddCommGrpCat`, you can treat `G` as a type,
   and it automatically has an `AddCommGroup` instance)
-  and lifting maps `AddCommGrp.of G`, when `G` is a type with an `AddCommGroup` instance.
+  and lifting maps `AddCommGrpCat.of G`, when `G` is a type with an `AddCommGroup` instance.
 
 If, for example you do the work of proving that a typeclass `Z` has a good notion of tensor product,
 you are strongly encouraged to provide the corresponding `MonoidalCategory` instance

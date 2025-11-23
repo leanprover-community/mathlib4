@@ -3,18 +3,22 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Data.Nat.Cast.Basic
-import Mathlib.Data.Nat.Cast.NeZero
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
+public import Mathlib.Algebra.Order.ZeroLEOne
+public import Mathlib.Data.Nat.Cast.Basic
+public import Mathlib.Data.Nat.Cast.NeZero
+public import Mathlib.Order.Hom.Basic
 
 /-!
 # Cast of natural numbers: lemmas about order
 
 -/
 
-assert_not_exists OrderedCommMonoid
+@[expose] public section
+
+assert_not_exists IsOrderedMonoid
 
 variable {α : Type*}
 
@@ -28,13 +32,10 @@ we use a generic collection of instances so that it applies in other settings (e
 variable [AddMonoidWithOne α] [PartialOrder α]
 variable [AddLeftMono α] [ZeroLEOneClass α]
 
-@[mono]
+@[gcongr, mono]
 theorem mono_cast : Monotone (Nat.cast : ℕ → α) :=
   monotone_nat_of_le_succ fun n ↦ by
     rw [Nat.cast_succ]; exact le_add_of_nonneg_right zero_le_one
-
-@[gcongr]
-theorem _root_.GCongr.natCast_le_natCast {a b : ℕ} (h : a ≤ b) : (a : α) ≤ b := mono_cast h
 
 /-- See also `Nat.cast_nonneg`, specialised for an `OrderedSemiring`. -/
 @[simp low]
@@ -62,11 +63,9 @@ end Nontrivial
 
 variable [CharZero α] {m n : ℕ}
 
+@[gcongr]
 theorem strictMono_cast : StrictMono (Nat.cast : ℕ → α) :=
   mono_cast.strictMono_of_injective cast_injective
-
-@[gcongr]
-lemma _root_.GCongr.natCast_lt_natCast {a b : ℕ} (h : a < b) : (a : α) < b := strictMono_cast h
 
 /-- `Nat.cast : ℕ → α` as an `OrderEmbedding` -/
 @[simps! -fullyApplied]

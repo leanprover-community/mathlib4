@@ -3,10 +3,12 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Data.Real.Irrational
-import Mathlib.Tactic.NormNum.GCD
-import Mathlib.Tactic.Rify
+module
+
+public meta import Mathlib.Analysis.SpecialFunctions.Pow.Real
+public meta import Mathlib.NumberTheory.Real.Irrational
+public meta import Mathlib.Tactic.NormNum.GCD
+public meta import Mathlib.Tactic.Rify
 
 /-! # `norm_num` extension for `Irrational`
 
@@ -24,6 +26,8 @@ such that `k ^ q < n < (k + 1) ^ q`, using binary search.
 Disprove `Irrational x` for rational `x`.
 
 -/
+
+public meta section
 
 namespace Tactic
 

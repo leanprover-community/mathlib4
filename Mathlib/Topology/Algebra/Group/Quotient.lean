@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.GroupTheory.GroupAction.Quotient
-import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.Topology.Algebra.Group.Pointwise
-import Mathlib.Topology.Maps.OpenQuotient
+module
+
+public import Mathlib.GroupTheory.GroupAction.Quotient
+public import Mathlib.GroupTheory.QuotientGroup.Defs
+public import Mathlib.Topology.Algebra.Group.Pointwise
+public import Mathlib.Topology.Maps.OpenQuotient
 
 /-!
 # Topology on the quotient group
@@ -14,6 +16,8 @@ import Mathlib.Topology.Maps.OpenQuotient
 In this file we define topology on `G ⧸ N`, where `N` is a subgroup of `G`,
 and prove basic properties of this topology.
 -/
+
+@[expose] public section
 
 assert_not_exists Cardinal
 
@@ -69,6 +73,45 @@ instance instContinuousSMul : ContinuousSMul G (G ⧸ N) where
 @[to_additive]
 instance instContinuousConstSMul : ContinuousConstSMul G (G ⧸ N) := inferInstance
 
+@[to_additive]
+theorem t1Space_iff :
+    T1Space (G ⧸ N) ↔ IsClosed (N : Set G) := by
+  rw [← QuotientGroup.preimage_mk_one, MulAction.IsPretransitive.t1Space_iff G (mk 1),
+      isClosed_coinduced]
+  rfl
+
+@[to_additive]
+theorem discreteTopology_iff :
+    DiscreteTopology (G ⧸ N) ↔ IsOpen (N : Set G) := by
+  rw [← QuotientGroup.preimage_mk_one, MulAction.IsPretransitive.discreteTopology_iff G (mk 1),
+      isOpen_coinduced]
+  rfl
+
+/-- The quotient of a topological group `G` by a closed subgroup `N` is T1.
+
+When `G` is normal, this implies (because `G ⧸ N` is a topological group) that the quotient is T3
+(see `QuotientGroup.instT3Space`).
+
+Back to the general case, we will show later that the quotient is in fact T2
+since `N` acts on `G` properly. -/
+@[to_additive
+/-- The quotient of a topological additive group `G` by a closed subgroup `N` is T1.
+
+When `G` is normal, this implies (because `G ⧸ N` is a topological additive group) that the
+quotient is T3 (see `QuotientAddGroup.instT3Space`).
+
+Back to the general case, we will show later that the quotient is in fact T2
+since `N` acts on `G` properly. -/]
+instance instT1Space [hN : IsClosed (N : Set G)] :
+    T1Space (G ⧸ N) :=
+  t1Space_iff.mpr hN
+
+-- TODO: `IsOpen` should be an class and this should be an instance
+@[to_additive]
+theorem discreteTopology (hN : IsOpen (N : Set G)) :
+    DiscreteTopology (G ⧸ N) :=
+  discreteTopology_iff.mpr hN
+
 /-- A quotient of a locally compact group is locally compact. -/
 @[to_additive]
 instance instLocallyCompactSpace [LocallyCompactSpace G] (N : Subgroup G) :
@@ -116,8 +159,6 @@ theorem isClosedMap_coe {H : Subgroup G} (hH : IsCompact (H : Set G)) :
 
 @[to_additive]
 instance instT3Space [N.Normal] [hN : IsClosed (N : Set G)] : T3Space (G ⧸ N) := by
-  rw [← QuotientGroup.ker_mk' N] at hN
-  haveI := IsTopologicalGroup.t1Space (G ⧸ N) ((isQuotientMap_mk N).isClosed_preimage.mp hN)
   infer_instance
 
 end QuotientGroup

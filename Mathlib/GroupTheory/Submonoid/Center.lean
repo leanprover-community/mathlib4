@@ -3,8 +3,10 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.GroupTheory.Subsemigroup.Center
+module
+
+public import Mathlib.Algebra.Group.Submonoid.Operations
+public import Mathlib.GroupTheory.Subsemigroup.Center
 
 /-!
 # Centers of monoids
@@ -17,6 +19,8 @@ import Mathlib.GroupTheory.Subsemigroup.Center
 We provide `Subgroup.center`, `AddSubgroup.center`, `Subsemiring.center`, and `Subring.center` in
 other files.
 -/
+
+@[expose] public section
 
 -- Guard against import creep
 assert_not_exists Finset
@@ -111,7 +115,7 @@ end Submonoid
 variable (M)
 
 /-- For a monoid, the units of the center inject into the center of the units. This is not an
-equivalence in general; one case when it is is for groups with zero, which is covered in
+equivalence in general; one case where this holds is for groups with zero, which is covered in
 `centerUnitsEquivUnitsCenter`. -/
 @[to_additive (attr := simps! apply_coe_val)
   /-- For an additive monoid, the units of the center inject into the center of the units. -/]
