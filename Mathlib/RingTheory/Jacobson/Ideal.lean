@@ -3,10 +3,12 @@ Copyright (c) 2020 Devon Tuma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Devon Tuma, Wojciech Nawrocki
 -/
-import Mathlib.RingTheory.Ideal.IsPrimary
-import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.TwoSidedIdeal.Operations
-import Mathlib.RingTheory.Jacobson.Radical
+module
+
+public import Mathlib.RingTheory.Ideal.IsPrimary
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
+public import Mathlib.RingTheory.TwoSidedIdeal.Operations
+public import Mathlib.RingTheory.Jacobson.Radical
 
 /-!
 # Jacobson radical
@@ -44,6 +46,8 @@ Furthermore when `I` is a two-sided ideal of `R`
 Jacobson, Jacobson radical, Local Ideal
 
 -/
+
+@[expose] public section
 
 
 universe u v
@@ -226,6 +230,9 @@ theorem jacobson_mono {I J : Ideal R} : I ≤ J → I.jacobson ≤ J.jacobson :=
   rw [jacobson, mem_sInf] at hx ⊢
   exact fun K ⟨hK, hK_max⟩ => hx ⟨Trans.trans h hK, hK_max⟩
 
+theorem ringJacobson_le_jacobson {I : Ideal R} : Ring.jacobson R ≤ I.jacobson :=
+  jacobson_bot.symm.trans_le (jacobson_mono bot_le)
+
 /-- The Jacobson radical of a two-sided ideal is two-sided. -/
 instance {I : Ideal R} [I.IsTwoSided] : I.jacobson.IsTwoSided where
   -- Proof generalized from
@@ -279,7 +286,7 @@ theorem isUnit_of_sub_one_mem_jacobson_bot (r : R) (h : r - 1 ∈ jacobson (⊥ 
     IsUnit r := by
   obtain ⟨s, hs⟩ := exists_mul_sub_mem_of_sub_one_mem_jacobson r h
   rw [mem_bot, sub_eq_zero, mul_comm] at hs
-  exact isUnit_of_mul_eq_one _ _ hs
+  exact .of_mul_eq_one _ hs
 
 theorem mem_jacobson_bot {x : R} : x ∈ jacobson (⊥ : Ideal R) ↔ ∀ y, IsUnit (x * y + 1) :=
   ⟨fun hx y =>

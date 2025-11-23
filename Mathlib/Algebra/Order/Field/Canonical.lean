@@ -3,13 +3,17 @@ Copyright (c) 2014 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Algebra.Order.Ring.Canonical
+module
+
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Order.GroupWithZero.Canonical
+public import Mathlib.Algebra.Order.Ring.Canonical
 
 /-!
 # Canonically ordered semifields
 -/
+
+@[expose] public section
 
 variable {α : Type*} [Semifield α] [LinearOrder α] [CanonicallyOrderedAdd α]
 

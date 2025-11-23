@@ -3,9 +3,10 @@ Copyright (c) 2025 Calle Sönne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Calle Sönne
 -/
+module
 
-import Mathlib.CategoryTheory.Bicategory.Basic
-import Mathlib.CategoryTheory.Opposites
+public import Mathlib.CategoryTheory.Bicategory.Basic
+public import Mathlib.CategoryTheory.Opposites
 
 /-!
 # Opposite bicategories
@@ -16,7 +17,7 @@ We construct the 1-cell opposite of a bicategory `B`, called `Bᵒᵖ`. It is de
 * The 2-morphisms `f ⟶ g` in `Bᵒᵖ` are the 2-morphisms `f ⟶ g` in `B`. In other words, the
   directions of the 2-morphisms are preserved.
 
-# Remarks
+## Remarks
 There are multiple notions of opposite categories for bicategories.
 - There is 1-cell dual `Bᵒᵖ` as defined above.
 - There is the 2-cell dual, `Cᶜᵒ` where only the natural transformations are reversed
@@ -31,6 +32,8 @@ There are multiple notions of opposite categories for bicategories.
 Note: `Cᶜᵒᵒᵖ` is WIP by Christian Merten.
 
 -/
+
+@[expose] public section
 
 universe w v u
 

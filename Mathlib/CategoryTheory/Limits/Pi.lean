@@ -3,8 +3,10 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Pi.Basic
-import Mathlib.CategoryTheory.Limits.HasLimits
+module
+
+public import Mathlib.CategoryTheory.Pi.Basic
+public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # Limits in the category of indexed families of objects.
@@ -15,6 +17,8 @@ Given a functor `F : J ⥤ Π i, C i` into a category of indexed families,
 3. if we have limits for each of `F ⋙ Pi.eval C i`, we can produce a
    `HasLimit F` instance
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -129,7 +133,7 @@ As an example, we can use this to construct particular shapes of limits
 in a category of indexed families.
 
 With the addition of
-`import CategoryTheory.Limits.Types.Shapes`
+`import CategoryTheory.Limits.Types.Products`
 we can use:
 ```
 attribute [local instance] hasLimit_of_hasLimit_comp_eval
