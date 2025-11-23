@@ -56,14 +56,20 @@ def of (C : Type u) [Category.{v} C] : Cat.{v, u} :=
 
 section
 
+/--
+The type of 1-morphisms in the bicategory of categories `Cat`.
+This is a structure around `Functor` to prevent defeq-abuse
+-/
 @[ext]
 structure Hom (C D : Cat.{v, u}) where
 private ofFunctor ::
+/-- The Functor underlying a 1-morphism in Cat -/
   toFunctor : C ⥤ D
 
 instance : Quiver (Cat.{v, u}) where
   Hom C D := Hom C D
 
+/-- The 1-morphism in `Cat` corresponding to a functor. -/
 @[simps]
 def _root_.CategoryTheory.Functor.toCatHom {C D : Type u} [Category.{v} C] [Category.{v} D]
     (F : C ⥤ D) : Cat.of C ⟶ Cat.of D where
@@ -73,6 +79,10 @@ def _root_.CategoryTheory.Functor.toCatHom {C D : Type u} [Category.{v} C] [Cate
 lemma ext {C D : Cat.{v, u}} {F G : C ⟶ D} (h : F.toFunctor = G.toFunctor) : F = G :=
   congrArg (Functor.toCatHom) h
 
+/--
+The equivalence between the type of functors between two categories and
+the type of 1-morphisms in Cat between the objects corresponding to those categories.
+-/
 @[simps]
 def _root_.CategoryTheory.Functor.equivCatHom (C D : Type u) [Category.{v} C] [Category.{v} D] :
     C ⥤ D ≃ ((Cat.of C) ⟶ (Cat.of D)) where
@@ -81,18 +91,29 @@ def _root_.CategoryTheory.Functor.equivCatHom (C D : Type u) [Category.{v} C] [C
   left_inv _ := rfl
   right_inv _ := rfl
 
+/--
+The equivalence between the type of 1-morphisms in Cat between two objects
+and the type of functors between the categories corresponding to those objects.
+-/
 @[simps! apply symm_apply]
 def Hom.equivFunctor (C D : Cat.{v, u}) :
     (C ⟶ D) ≃ C ⥤ D := (equivCatHom _ _).symm
 
+/--
+The type of 2-morphisms in the bicategory of categories `Cat`.
+This is a wrapper around `NatTrans` to prevent defeq-abuse.
+-/
 structure Hom₂ {C D : Cat.{v, u}} (F G : C ⟶ D) where
-private ofNatTrans :: (toNatTrans : F.toFunctor ⟶ G.toFunctor)
+private ofNatTrans ::
+/-- The natural transformation underlying a 2-morphism in `Cat` -/
+toNatTrans : F.toFunctor ⟶ G.toFunctor
 
 namespace Hom
 
 instance instQuiver {C D : Cat.{v, u}} : Quiver (C ⟶ D) where
   Hom F G := Hom₂ F G
 
+/-- The 2-morphism in `Cat` corresponding to a natural transformation between functors. -/
 @[simps]
 def _root_.CategoryTheory.NatTrans.toCatHom₂ {C D : Type u} [Category.{v} C]
     [Category.{v} D] {F G : C ⥤ D} (η : F ⟶ G) : F.toCatHom ⟶ G.toCatHom where
@@ -130,6 +151,7 @@ lemma _root_.CategoryTheory.Cat.Hom₂.ext {C D : Cat.{v, u}} {F G : C ⟶ D} {�
     η₁ = η₂ := by
   cases η₁; cases η₂; simp_all
 
+/-- The 2-iso in Cat corresponding to a natural isomorphism. -/
 @[simps]
 def isoMk {C D : Type u} [Category.{v} C] [Category.{v} D] {F G : C ⥤ D} (e : F ≅ G) :
     F.toCatHom ≅ G.toCatHom where
@@ -138,6 +160,7 @@ def isoMk {C D : Type u} [Category.{v} C] [Category.{v} D] {F G : C ⥤ D} (e : 
   hom_inv_id := congrArg NatTrans.toCatHom₂ e.hom_inv_id
   inv_hom_id := congrArg NatTrans.toCatHom₂ e.inv_hom_id
 
+/-- The natural isomorphism corresponding to a 2-iso in `Cat` -/
 @[simps]
 def toNatIso {X Y : Cat.{v, u}} {F G : X ⟶ Y} (e : F ≅ G) : F.toFunctor ≅ G.toFunctor where
   hom := e.hom.toNatTrans
@@ -217,7 +240,6 @@ theorem Hom₂.comp_app {C D : Cat.{v, u}} {F G H : C ⟶ D} (α : F ⟶ G) (β 
 theorem Hom₂.eqToHom_toNatTrans {C D : Cat.{v, u}} {F G : C ⟶ D} (h : F = G) :
   (eqToHom h).toNatTrans = eqToHom congr(($h).toFunctor) := by cases h; simp
 
-@[simp]
 theorem eqToHom_app {C D : Cat.{v, u}} (F G : C ⟶ D) (h : F = G) (X : C) :
     (eqToHom h).toNatTrans.app X = eqToHom congr(($h).toFunctor.obj X) := by
   simp
