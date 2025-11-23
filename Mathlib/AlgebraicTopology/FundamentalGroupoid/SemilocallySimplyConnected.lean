@@ -3,14 +3,16 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
-import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
-import Mathlib.Topology.Path
-import Mathlib.Topology.Homotopy.Path
-import Mathlib.Topology.Order
-import Mathlib.Topology.Defs.Induced
-import Mathlib.Topology.Connected.LocPathConnected
-import Mathlib.Topology.UnitInterval
+module
+
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
+public import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
+public import Mathlib.Topology.Path
+public import Mathlib.Topology.Homotopy.Path
+public import Mathlib.Topology.Order
+public import Mathlib.Topology.Defs.Induced
+public import Mathlib.Topology.Connected.LocPathConnected
+public import Mathlib.Topology.UnitInterval
 
 /-!
 # Semilocally simply connected spaces
