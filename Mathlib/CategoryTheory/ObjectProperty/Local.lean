@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
@@ -22,9 +23,11 @@ part of a Galois connection, with "dual" construction
 
 @[expose] public section
 
-universe v u
+universe v v' u u'
 
 namespace CategoryTheory
+
+open Limits
 
 variable {C : Type u} [Category.{v} C]
 
@@ -50,6 +53,18 @@ instance : W.isLocal.IsClosedUnderIsomorphisms where
     rw [← Function.Bijective.of_comp_iff _ (Iso.homToEquiv e).bijective]
     convert (Iso.homToEquiv e).bijective.comp (hZ f hf) using 1
     aesop
+
+instance (J : Type u') [Category.{v'} J] :
+    W.isLocal.IsClosedUnderLimitsOfShape J where
+  limitsOfShape_le := fun Z ⟨p⟩ X Y f hf ↦ by
+    refine ⟨fun g₁ g₂ h ↦ p.isLimit.hom_ext
+      (fun j ↦ (p.prop_diag_obj j f hf).1 (by simp [reassoc_of% h])), fun g ↦ ?_⟩
+    choose app h using fun j ↦ (p.prop_diag_obj j f hf).2 (g ≫ p.π.app j)
+    exact ⟨p.isLimit.lift (Cone.mk _
+      { app := app
+        naturality _ _ a := (p.prop_diag_obj _ f hf).1
+          (by simp [reassoc_of% h, h, p.w a]) }),
+      p.isLimit.hom_ext (fun j ↦ by simp [p.isLimit.fac, h])⟩
 
 end MorphismProperty
 
