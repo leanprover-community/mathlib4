@@ -14,10 +14,11 @@ public meta import Mathlib.Util.AddRelatedDecl
 
 Adding `@[to_app]` to a lemma named `F` of shape `∀ .., η = θ`, where `η θ : f ⟶ g` are 2-morphisms
 in some bicategory, create a new lemma named `F_app`. This lemma is obtained by first specializing
-the bicategory in which the equality is taking place to `Cat`, then applying `NatTrans.congr_app`
-to obtain a proof of `∀ ... (X : Cat), η.toNatTrans.app X = θ.toNatTrans.app X`, and finally simplifying the conclusion
-using some basic lemmas in the bicategory `Cat`:
-`Cat.whiskerLeft_app`, `Cat.whiskerRight_app`, `Cat.id_app`, `Cat.comp_app` and `Cat.eqToHom_app`
+the bicategory in which the equality is taking place to `Cat`, then applying `toNatTrans_congr` and
+`NatTrans.congr_app` to obtain a proof of
+`∀ ... (X : Cat), η.toNatTrans.app X = θ.toNatTrans.app X`, and finally simplifying the conclusion
+using some basic lemmas in the bicategory `Cat`: `Cat.whiskerLeft_app`, `Cat.whiskerRight_app`,
+`Cat.id_app`, `Cat.comp_app` and `Cat.eqToHom_app`
 
 So, for example, if the conclusion of `F` is `f ◁ η = θ` then the conclusion of `F_app` will be
 `η.toNatTrans.app (f.obj X) = θ.toNatTrans.app X`.
