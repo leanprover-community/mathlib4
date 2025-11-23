@@ -208,4 +208,4 @@ theorem isNoetherianRing_iff_ideal_fg (R : Type*) [Semiring R] :
 
 lemma Ideal.FG.of_isNoetherianRing {R : Type*} [Semiring R] [IsNoetherianRing R] (I : Ideal R) :
     I.FG :=
-  (isNoetherianRing_iff_ideal_fg R).mp ‹_› I
+  IsNoetherian.noetherian _
