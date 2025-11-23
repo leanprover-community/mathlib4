@@ -144,6 +144,11 @@ def pushforwardIso (E : PreZeroHypercover.{w} T) (e : T ≅ S) : PreZeroHypercov
   X := E.X
   f i := E.f i ≫ e.hom
 
+-- TODO: is there a better lemma?
+lemma presieve₀_pushforwardIso (E : PreZeroHypercover.{w} T) (e : T ≅ S) :
+    (E.pushforwardIso e).presieve₀ = .ofArrows E.X (fun i ↦ E.f i ≫ e.hom) :=
+  rfl
+
 /-- Disjoint union of two pre-`0`-hypercovers. -/
 @[simps I₀, simps -isSimp X f]
 def sum {X : C} (E : PreZeroHypercover.{w} X) (F : PreZeroHypercover.{w'} X) :
@@ -376,6 +381,14 @@ def add (E : ZeroHypercover.{w} J S) {T : C} (f : T ⟶ S)
     ZeroHypercover.{w} J S where
   __ := E.toPreZeroHypercover.add f
   mem₀ := by rwa [PreZeroHypercover.presieve₀_add]
+
+@[simps toPreZeroHypercover]
+def pushforwardIso [HasIsos J] [IsStableUnderComposition.{w, w} J] (E : ZeroHypercover.{w} J T)
+    (e : T ≅ S) : ZeroHypercover.{w} J S where
+  __ := E.toPreZeroHypercover.pushforwardIso e
+  mem₀ := by
+    rw [PreZeroHypercover.presieve₀_pushforwardIso]
+    sorry
 
 variable (J) in
 /-- A morphism of `0`-hypercovers is a morphism of the underlying pre-`0`-hypercovers. -/

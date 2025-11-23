@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Sites.Sheaf
 import Mathlib.CategoryTheory.Sites.ZeroHypercover
+import Mathlib.CategoryTheory.Sites.Coverage
 
 /-!
 # 1-hypercovers
@@ -723,8 +724,8 @@ def bind (R : E.Refinement') :
     ((Σ (i : E.I₀) (a b : (R.cover i).I₀), (R.cover i).I₁ a b) ⊕
       Σ (k : E.I₁') (a : (R.cover k.1.1).I₀) (b : (R.cover k.1.2).I₀), R.I k.2 a b)
     (Sum.elim (fun p ↦ (R.cover p.1).Y p.2.2.2) (fun k ↦ R.Z _ k.2.2.2))
-    (Sum.elim (fun p ↦ ⟨p.1, p.2.1⟩) (fun k ↦ ⟨k.1.1.1, k.2.1⟩)) 
-    (Sum.elim (fun p ↦ ⟨p.1, p.2.2.1⟩) (fun k ↦ ⟨k.1.1.2, k.2.2.1⟩)) 
+    (Sum.elim (fun p ↦ ⟨p.1, p.2.1⟩) (fun k ↦ ⟨k.1.1.1, k.2.1⟩))
+    (Sum.elim (fun p ↦ ⟨p.1, p.2.2.1⟩) (fun k ↦ ⟨k.1.1.2, k.2.2.1⟩))
     (fun i ↦ match i with
       | .inl ⟨i, a, b, l⟩ => (R.cover _).p₁ _
       | .inr k => R.q₁ _ _)
@@ -849,6 +850,19 @@ end PreOneHypercover
 namespace GrothendieckTopology
 
 variable (J : GrothendieckTopology C)
+
+-- TODO: move me
+abbrev toPrecoverage (J : GrothendieckTopology C) :
+    Precoverage C :=
+  (Coverage.ofGrothendieck C J).toPrecoverage
+
+instance (J : GrothendieckTopology C) : J.toPrecoverage.IsStableUnderComposition where
+  comp_mem_coverings {ι} S X f hf σ Y g hg := by
+    sorry
+
+instance (J : GrothendieckTopology C) : J.toPrecoverage.IsStableUnderBaseChange := sorry
+
+instance (J : GrothendieckTopology C) : J.toPrecoverage.HasIsos := sorry
 
 /-- The type of `1`-hypercovers of an object `S : C` in a category equipped with a
 Grothendieck topology `J`. This can be constructed from a covering of `S` and
@@ -1020,7 +1034,8 @@ nonrec def sum
     [HasPullbacks C] -- TODO: remove this after updating mathlib
     (E : OneHypercover.{w} J S) (F : OneHypercover.{w} J S)
     [∀ i j, HasPullback (E.f i) (F.f j)]
-    (G : ∀ (i : E.I₀) (j : F.I₀), Coverage.ZeroHypercover.{w} (.ofGrothendieck _ J)
+    (G : ∀ (i : E.I₀) (j : F.I₀), Precoverage.ZeroHypercover.{w}
+      (Coverage.ofGrothendieck _ J).toPrecoverage
       (Limits.pullback (E.f i) (F.f j))) :
     OneHypercover J S where
   __ := E.toPreOneHypercover.sum F.toPreOneHypercover (fun i j ↦ (G i j).toPreZeroHypercover)
@@ -1115,6 +1130,16 @@ def pullbackComp [HasPullbacks C] {S T W : C} (f : S ⟶ T) (g : T ⟶ W) :
       · simp
       · apply pullback.hom_ext <;> simp
     · simp
+
+@[simps toPreZeroHypercover]
+noncomputable
+def cover₀ (E : J.OneHypercover S) (i₁ i₂ : E.I₀) [HasPullback (E.f i₁) (E.f i₂)] :
+    J.toPrecoverage.ZeroHypercover (Limits.pullback (E.f i₁) (E.f i₂)) where
+  __ := E.toPreOneHypercover.cover₀ i₁ i₂
+  mem₀ := by
+    have := E.mem₁ i₁ i₂ (pullback.fst (E.f i₁) (E.f i₂)) (pullback.snd _ _) pullback.condition
+    rw [PreOneHypercover.sieve₁_eq_pullback_sieve₁' _ _ _ pullback.condition] at this
+    simpa using this
 
 end OneHypercover
 
