@@ -185,13 +185,9 @@ post_update pkg do
     let toolchainContent ← IO.FS.readFile toolchainFile
     let toolchainVersion := match toolchainContent.trimAscii.copy.splitOn ":" with
       | [_, version] => version
-<<<<<<< HEAD
       | _ => toolchainContent.trimAscii.copy  -- fallback to full content if format is unexpected
-=======
-      | _ => toolchainContent.trim  -- fallback to full content if format is unexpected
     -- Lean.versionString does not start with a `v`, while the `lean-toolchain` file is flexible.
-    let toolchainVersion := toolchainVersion.stripPrefix "v"
->>>>>>> master
+    let toolchainVersion := (toolchainVersion.dropPrefix "v").copy
     if Lean.versionString ≠ toolchainVersion then
       IO.println s!"Not running `lake exe cache get` yet, as \
         the `lake` version ({Lean.versionString}) does not match \
