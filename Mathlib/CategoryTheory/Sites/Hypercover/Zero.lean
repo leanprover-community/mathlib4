@@ -413,8 +413,8 @@ end
 /-- If `{Uᵢ}` covers `X`, the pre-`0`-hypercover `{Uᵢ ×[Z] Y}` of `X ×[Z] Y` is isomorphic
 to the pullback of `{Uᵢ}` along the first projection. -/
 noncomputable
-def pullbackCoverOfLeftIsoPullback₁ {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
-    (E : PreZeroHypercover X) [∀ i, HasPullback (pullback.fst f g) (E.f i)]
+def pullbackCoverOfLeftIsoPullback₁ {X : C} (E : PreZeroHypercover X) {Y Z : C}
+    (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] [∀ i, HasPullback (pullback.fst f g) (E.f i)]
     [∀ i, HasPullback (E.f i) (pullback.fst f g)] :
     E.pullbackCoverOfLeft f g ≅ pullback₁ (pullback.fst f g) E :=
   PreZeroHypercover.isoMk (.refl _)
@@ -423,15 +423,12 @@ def pullbackCoverOfLeftIsoPullback₁ {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [H
 /-- If `{Uᵢ}` covers `Y`, the pre-`0`-hypercover `{X ×[Z] Uᵢ}` of `X ×[Z] Y` is isomorphic
 to the pullback of `{Uᵢ}` along the second projection. -/
 noncomputable
-def pullbackCoverOfRightIsoPullback₂ {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
-    (E : PreZeroHypercover Y) [∀ (i : E.I₀), HasPullback (E.f i) (pullback.snd f g)]
+def pullbackCoverOfRightIsoPullback₂ {Y : C} (E : PreZeroHypercover Y) {X Z : C}
+    (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] [∀ (i : E.I₀), HasPullback (E.f i) (pullback.snd f g)]
     [∀ i, HasPullback (pullback.snd f g) (E.f i)] :
-    E.pullbackCoverOfRight f g ≅ pullback₂ (pullback.snd f g) E := by
-  refine PreZeroHypercover.isoMk (.refl _) ?_ ?_
-  · intro i
-    exact (pullbackLeftPullbackSndIso _ _ _).symm ≪≫ (pullbackSymmetry _ _).symm
-  · intro i
-    apply pullback.hom_ext <;> simp [pullback.condition]
+    E.pullbackCoverOfRight f g ≅ pullback₂ (pullback.snd f g) E :=
+  PreZeroHypercover.isoMk (.refl _)
+    (fun _ ↦ (pullbackLeftPullbackSndIso _ _ _).symm ≪≫ pullbackSymmetry _ _)
 
 end PreZeroHypercover
 
@@ -797,12 +794,12 @@ instance [IsStableUnderBaseChange J] : RespectsIso J where
 
 namespace ZeroHypercover
 
-variable [J.IsStableUnderBaseChange] {X Y Z : C}
+variable [J.IsStableUnderBaseChange]
 
 /-- If `{Uᵢ}` covers `X`, this is the `0`-hypercover of `X ×[Z] Y` given by `{Uᵢ ×[Z] Y}`. -/
 @[simps toPreZeroHypercover]
-noncomputable def pullbackCoverOfLeft (E : J.ZeroHypercover X) (f : X ⟶ Z) (g : Y ⟶ Z)
-    [HasPullback f g] [∀ i, HasPullback (E.f i) (pullback.fst f g)] :
+noncomputable def pullbackCoverOfLeft {X : C} (E : J.ZeroHypercover X) {Y Z : C}
+    (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] [∀ i, HasPullback (E.f i) (pullback.fst f g)] :
     J.ZeroHypercover (pullback f g) where
   __ := E.toPreZeroHypercover.pullbackCoverOfLeft f g
   mem₀ := (E.pullback₁ (pullback.fst f g)).presieve₀_mem_of_iso
@@ -810,8 +807,8 @@ noncomputable def pullbackCoverOfLeft (E : J.ZeroHypercover X) (f : X ⟶ Z) (g 
 
 /-- If `{Uᵢ}` covers `Y`, this is the `0`-hypercover of `X ×[Z] Y` given by `{X ×[Z] Uᵢ}`. -/
 @[simps toPreZeroHypercover]
-noncomputable def pullbackCoverOfRight (E : J.ZeroHypercover Y) (f : X ⟶ Z) (g : Y ⟶ Z)
-    [HasPullback f g] [∀ i, HasPullback (E.f i) (pullback.snd f g)] :
+noncomputable def pullbackCoverOfRight {Y : C} (E : J.ZeroHypercover Y) {X Z : C}
+    (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] [∀ i, HasPullback (E.f i) (pullback.snd f g)] :
     J.ZeroHypercover (pullback f g) where
   __ := E.toPreZeroHypercover.pullbackCoverOfRight f g
   mem₀ := (E.pullback₂ (pullback.snd f g)).presieve₀_mem_of_iso
