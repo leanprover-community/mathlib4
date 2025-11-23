@@ -31,13 +31,11 @@ initialize registerTraceClass `variable?
 
 register_option variable?.maxSteps : Nat :=
   { defValue := 15
-    group := "variable?"
     descr :=
       "The maximum number of instance arguments `variable?` will try to insert before giving up" }
 
 register_option variable?.checkRedundant : Bool :=
   { defValue := true
-    group := "variable?"
     descr := "Warn if instance arguments can be inferred from preceding ones" }
 
 /-- Get the type out of a bracketed binder. -/
