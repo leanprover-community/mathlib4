@@ -183,8 +183,8 @@ open Polynomial in
     (Subring.isIntegrallyClosedIn_iff).mp ‹_›
       ⟨.C H.unit⁻¹.1 * p, by simp [Polynomial.Monic], by simpa using .inr hpx⟩
   have ⟨V, hV⟩ := Ideal.image_subset_nonunits_valuationSubring (A := B.toSubring) _ this
-  refine ⟨V, ⟨fun r hr ↦ hV.1 (B.algebraMap_mem ⟨r, hr⟩), ((local_hom_TFAE _).out 3 0).mp
-    fun r hr ↦ ?_⟩, (V.inv_mem_nonunits_iff.mp <|
+  refine ⟨V, ⟨fun r hr ↦ hV.1 (B.algebraMap_mem ⟨r, hr⟩),
+    ((local_hom_TFAE _).out 3 0).mp fun r hr ↦ ?_⟩, (V.inv_mem_nonunits_iff.mp <|
       hV.2 ⟨_, le_add_self (α := Ideal B) (Ideal.subset_span rfl), rfl⟩).resolve_left hx0⟩
   rw [← V.image_maximalIdeal] at hV
   obtain ⟨⟨r, _⟩, hr, rfl⟩ := hV.2 ⟨_, le_self_add (α := Ideal B) (Ideal.mem_map_of_mem _ hr), rfl⟩
@@ -207,11 +207,13 @@ lemma LocalSubring.eq_iInf_of_isIntegrallyClosedIn {R : LocalSubring K}
     have ⟨V, hV⟩ := R.exists_le_valuationSubring_of_isIntegrallyClosedIn hxR
     hV.2 (iInf_le_of_le (α := Subring K) ⟨V, hV.1⟩ le_rfl h)
 
+/-- The integral closure of a subset in a field is the intersection of all valuation subrings
+containing it. -/
 lemma iInf_valuationSubring_superset {s : Set K} :
     (⨅ V : {V : ValuationSubring K // s ⊆ V.toSubring}, V.1.toSubring) =
     (integralClosure (Subring.closure s) K).toSubring := by
-  have : IsIntegrallyClosedIn (↥(integralClosure (↥(Subring.closure s)) K).toSubring) K := sorry
   refine .trans ?_ Subring.eq_iInf_of_isIntegrallyClosedIn.symm
+  simp_rw [iInf_subtype]
   congr! with V
   have : IsIntegrallyClosedIn V.toSubring K := inferInstanceAs (IsIntegrallyClosedIn V K)
   rw [Subring.integralClosure_subring_le_iff]
