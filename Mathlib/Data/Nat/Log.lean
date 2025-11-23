@@ -425,7 +425,7 @@ theorem clog_le_iff_le_pow {b : ℕ} (hb : 1 < b) {x y : ℕ} : clog b x ≤ y �
 theorem clog_pos {b n : ℕ} (hb : 1 < b) (hn : 1 < n) : 0 < clog b n := by
   rw [clog, if_pos]
   exacts [Nat.succ_pos _, ⟨hb, hn⟩]
-    
+
 theorem clog_of_one_lt {b n : ℕ} (hb : 1 < b) (hn : 1 < n) :
     clog b n = clog b ((n + b - 1) / b) + 1 := by
   apply eq_of_forall_ge_iff
