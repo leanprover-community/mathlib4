@@ -3,10 +3,12 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wanyi He, Jiedong Jiang, Christian Merten, Jingting Wang, Andrew Yang, Shouxin Zhang
 -/
-import Mathlib.RingTheory.HopkinsLevitzki
-import Mathlib.RingTheory.Ideal.Height
-import Mathlib.RingTheory.Localization.Submodule
-import Mathlib.RingTheory.Nakayama
+module
+
+public import Mathlib.RingTheory.HopkinsLevitzki
+public import Mathlib.RingTheory.Ideal.Height
+public import Mathlib.RingTheory.Localization.Submodule
+public import Mathlib.RingTheory.Nakayama
 
 /-!
 # Krull's Height Theorem
@@ -36,6 +38,8 @@ In this file, we prove **Krull's principal ideal theorem** (also known as
   `p` has height no greater than `n` if and only if it is a minimal ideal over some ideal generated
   by no more than `n` elements.
 -/
+
+@[expose] public section
 
 variable {R : Type*} [CommRing R] [IsNoetherianRing R]
 

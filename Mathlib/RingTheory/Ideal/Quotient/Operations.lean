@@ -3,10 +3,12 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Patrick Massot
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Operations
-import Mathlib.Algebra.Ring.Fin
-import Mathlib.LinearAlgebra.Quotient.Basic
-import Mathlib.RingTheory.Ideal.Quotient.Basic
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Operations
+public import Mathlib.Algebra.Ring.Fin
+public import Mathlib.LinearAlgebra.Quotient.Basic
+public import Mathlib.RingTheory.Ideal.Quotient.Basic
 
 /-!
 # More operations on modules and ideals related to quotients
@@ -24,6 +26,8 @@ import Mathlib.RingTheory.Ideal.Quotient.Basic
   ideals (see also `ZMod.prodEquivPi` in `Data.ZMod.Quotient` for elementary versions about
   `ZMod`).
 -/
+
+@[expose] public section
 
 universe u v w
 
@@ -428,6 +432,10 @@ lemma Quotient.factorₐ_comp_mk :
     (Ideal.Quotient.factorₐ R₁ hIJ).comp (Ideal.Quotient.mkₐ R₁ I) = Ideal.Quotient.mkₐ R₁ J := rfl
 
 @[simp]
+theorem Quotient.factorₐ_apply (x : A ⧸ I) :
+    Quotient.factorₐ R₁ hIJ x = Quotient.factor hIJ x := rfl
+
+@[simp]
 lemma Quotient.factorₐ_comp {K : Ideal A} [K.IsTwoSided] (hJK : J ≤ K) :
     (Ideal.Quotient.factorₐ R₁ hJK).comp (Ideal.Quotient.factorₐ R₁ hIJ) =
       Ideal.Quotient.factorₐ R₁ (hIJ.trans hJK) :=
@@ -639,11 +647,23 @@ theorem quotient_map_comp_mkₐ (f : A →ₐ[R₁] B) (H : I ≤ J.comap f) :
 
 variable (I) in
 /-- The algebra equiv `A/I ≃ₐ[R] B/J` induced by an algebra equiv `f : A ≃ₐ[R] B`,
-where`J = f(I)`. -/
+where `J = f(I)`. -/
 def quotientEquivAlg (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) :
     (A ⧸ I) ≃ₐ[R₁] B ⧸ J :=
   { quotientEquiv I J (f : A ≃+* B) hIJ with
     commutes' r := by simp }
+
+@[simp]
+lemma quotientEquivAlg_symm (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) :
+    (quotientEquivAlg I J f hIJ).symm = quotientEquivAlg J I f.symm
+      (by simp only [← AlgEquiv.toAlgHom_toRingHom, hIJ, map_map, ← AlgHom.comp_toRingHom,
+        AlgEquiv.symm_comp, AlgHom.id_toRingHom, map_id]) :=
+  rfl
+
+@[simp]
+lemma quotientEquivAlg_mk (f : A ≃ₐ[R₁] B) (hIJ : J = I.map (f : A →+* B)) (x : A) :
+    Ideal.quotientEquivAlg I J f hIJ x = f x :=
+  rfl
 
 end
 
@@ -685,6 +705,16 @@ def quotientEquivAlgOfEq {I J : Ideal A} [I.IsTwoSided] [J.IsTwoSided] (h : I = 
 theorem quotientEquivAlgOfEq_mk {I J : Ideal A} [I.IsTwoSided] [J.IsTwoSided] (h : I = J) (x : A) :
     quotientEquivAlgOfEq R₁ h (Ideal.Quotient.mk I x) = Ideal.Quotient.mk J x :=
   rfl
+
+@[simp]
+theorem quotientEquivAlgOfEq_coe_eq_factorₐ
+    {I J : Ideal A} [I.IsTwoSided] [J.IsTwoSided] (h : I = J) :
+    (quotientEquivAlgOfEq R₁ h : A ⧸ I →ₐ[R₁] A ⧸ J) = Quotient.factorₐ R₁ (le_of_eq h) := rfl
+
+@[simp]
+theorem quotientEquivAlgOfEq_coe_eq_factor
+    {I J : Ideal A} [I.IsTwoSided] [J.IsTwoSided] (h : I = J) :
+    (quotientEquivAlgOfEq R₁ h : A ⧸ I →+* A ⧸ J) = Quotient.factor (le_of_eq h) := rfl
 
 @[simp]
 theorem quotientEquivAlgOfEq_symm {I J : Ideal A} [I.IsTwoSided] [J.IsTwoSided] (h : I = J) :
@@ -795,7 +825,7 @@ theorem ker_quotQuotMk : RingHom.ker (quotQuotMk I J) = I ⊔ J := by
     comap_map_of_surjective (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective, ← RingHom.ker,
     mk_ker, sup_comm]
 
-/-- The ring homomorphism `R/(I ⊔ J) → (R/I)/J' `induced by `quotQuotMk` -/
+/-- The ring homomorphism `R/(I ⊔ J) → (R/I)/J'` induced by `quotQuotMk` -/
 def liftSupQuotQuotMk (I J : Ideal R) : R ⧸ I ⊔ J →+* (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) :=
   Ideal.Quotient.lift (I ⊔ J) (quotQuotMk I J) (ker_quotQuotMk I J).symm.le
 
@@ -936,7 +966,7 @@ theorem quotQuotMkₐ_toRingHom :
 theorem coe_quotQuotMkₐ : ⇑(quotQuotMkₐ R I J) = quotQuotMk I J :=
   rfl
 
-/-- The injective algebra homomorphism `A / (I ⊔ J) → (A / I) / J'`induced by `quot_quot_mk`,
+/-- The injective algebra homomorphism `A / (I ⊔ J) → (A / I) / J'` induced by `quotQuotMk`,
   where `J'` is the projection `J` in `A / I`. -/
 def liftSupQuotQuotMkₐ (I J : Ideal A) : A ⧸ I ⊔ J →ₐ[R] (A ⧸ I) ⧸ J.map (Quotient.mkₐ R I) :=
   AlgHom.mk (liftSupQuotQuotMk I J) fun _ => rfl

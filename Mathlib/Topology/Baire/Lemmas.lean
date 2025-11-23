@@ -3,7 +3,9 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.GDelta.Basic
+module
+
+public import Mathlib.Topology.GDelta.Basic
 
 /-!
 # Baire spaces
@@ -25,6 +27,8 @@ covered by a countable union of closed sets, then the union of their interiors i
 
 We also prove that in Baire spaces, the `residual` sets are exactly those containing a dense Gδ set.
 -/
+
+@[expose] public section
 
 
 noncomputable section
