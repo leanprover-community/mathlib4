@@ -321,6 +321,14 @@ def compAlgebraMap [Algebra A B] [IsScalarTower R A B] [IsScalarTower A B M]
   leibniz' a b := by simp
   toLinearMap := d.toLinearMap.comp (IsScalarTower.toAlgHom R A B).toLinearMap
 
+def compAlgebraHom [Algebra A B] [IsScalarTower R A B] [IsScalarTower A B M] [IsScalarTower R A M] :
+(Derivation R B M) →ₗ[A] Derivation R A M :=
+{
+  toFun := fun d ↦ compAlgebraMap A d
+  map_add' := by exact fun x y ↦ rfl
+  map_smul' := by exact fun m x ↦ rfl
+}
+
 section RestrictScalars
 
 variable {S : Type*} [CommSemiring S]
