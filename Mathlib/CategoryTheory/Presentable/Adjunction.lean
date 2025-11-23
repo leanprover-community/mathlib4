@@ -34,7 +34,7 @@ variable {C : Type u} {D : Type u'} [Category.{v} C] [Category.{v'} D]
 
 include adj
 
-lemma isPresentable_leftAdjoint_obj (X : C) [IsCardinalPresentable X κ]
+lemma isCardinalPresentable_leftAdjoint_obj (X : C) [IsCardinalPresentable X κ]
     [G.IsCardinalAccessible κ] :
     IsCardinalPresentable (F.obj X) κ := by
   rw [isCardinalPresentable_iff_isCardinalAccessible_uliftCoyoneda_obj.{v}]
