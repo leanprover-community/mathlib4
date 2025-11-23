@@ -138,11 +138,12 @@ instance category : Category (∫ F) where
   id_comp {a b} f := by
     ext
     · simp
-    · simp [F.mapComp_id_left_hom_app, Strict.leftUnitor_eqToIso, ← Functor.map_comp_assoc]
+    · simp [F.mapComp_id_left_hom_app, Strict.leftUnitor_eqToIso, ← Functor.map_comp_assoc,
+        ← Cat.Hom₂.comp_app]
   comp_id {a b} f := by
     ext
     · simp
-    · simp [F.mapComp_id_right_hom_app, Strict.rightUnitor_eqToIso]
+    · simp [F.mapComp_id_right_hom_app, Strict.rightUnitor_eqToIso, ← reassoc_of% Cat.Hom₂.comp_app]
   assoc f g h := by
     ext
     · simp
@@ -170,20 +171,22 @@ induces a functor `Grothendieck.map : ∫ F ⥤ ∫ G`. -/
 def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
   obj a := {
     base := a.base
-    fiber := (α.app ⟨a.base⟩).obj a.fiber }
+    fiber := (α.app ⟨a.base⟩).toFunctor.obj a.fiber }
   map {a b} f := {
     base := f.1
-    fiber := (α.naturality f.1.toLoc).inv.app a.fiber ≫ (α.app ⟨b.base⟩).map f.2 }
+    fiber := (α.naturality f.1.toLoc).inv.toNatTrans.app a.fiber ≫
+      (α.app ⟨b.base⟩).toFunctor.map f.2 }
   map_id a := by
     ext
     · dsimp
-    · simp [StrongTrans.naturality_id_inv_app, ← map_comp]
+    · simp [StrongTrans.naturality_id_inv_app, ← map_comp, ← Cat.Hom₂.comp_app]
   map_comp {a b c} f g := by
     ext
     · dsimp
-    · dsimp
-      simp only [map_comp, assoc, ← Cat.comp_map, NatTrans.naturality_assoc]
-      simp [naturality_comp_inv_app, ← map_comp]
+    · simp only [Cat.Hom.comp_toFunctor, comp_obj, categoryStruct_comp_base, Quiver.Hom.comp_toLoc,
+        categoryStruct_comp_fiber, eqToHom_refl, map_comp, ← Cat.Hom.comp_map, assoc,
+        NatTrans.naturality_assoc]
+      simp [naturality_comp_inv_app, ← Functor.map_comp, ←reassoc_of% Cat.Hom₂.comp_app]
 
 @[simp]
 lemma map_id_map {x y : ∫ F} (f : x ⟶ y) : (map (𝟙 F)).map f = f := by
@@ -337,9 +340,9 @@ def map (α : F ⟶ G) : ∫ᶜ F ⥤ ∫ᶜ G where
   map_comp {a b c} f g := by
     ext
     · dsimp
-    · dsimp
-      simp only [map_comp, naturality_comp_hom_app, Cat.Hom.comp_toFunctor, comp_obj, assoc,
-        comp_id]
+    · simp only [categoryStruct_comp_base, op_comp, Quiver.Hom.comp_toLoc,
+        categoryStruct_comp_fiber, Cat.Hom.comp_toFunctor, map_comp, naturality_comp_hom_app, assoc,
+        eqToHom_refl, comp_id]
       slice_lhs 2 4 => simp [← Functor.map_comp, ← Cat.Hom.toNatIso_hom, ← Cat.Hom.toNatIso_inv,
         Iso.inv_hom_id_app]
       simp only [assoc]
