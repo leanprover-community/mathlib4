@@ -416,12 +416,9 @@ noncomputable
 def pullbackCoverOfLeftIsoPullback₁ {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g]
     (E : PreZeroHypercover X) [∀ i, HasPullback (pullback.fst f g) (E.f i)]
     [∀ i, HasPullback (E.f i) (pullback.fst f g)] :
-    E.pullbackCoverOfLeft f g ≅ pullback₁ (pullback.fst f g) E := by
-  refine PreZeroHypercover.isoMk (.refl _) ?_ ?_
-  · intro i
-    exact (pullbackRightPullbackFstIso _ _ _).symm ≪≫ pullbackSymmetry _ _
-  · intro i
-    apply pullback.hom_ext <;> simp
+    E.pullbackCoverOfLeft f g ≅ pullback₁ (pullback.fst f g) E :=
+  PreZeroHypercover.isoMk (.refl _)
+    (fun _ ↦ (pullbackRightPullbackFstIso _ _ _).symm ≪≫ pullbackSymmetry _ _)
 
 /-- If `{Uᵢ}` covers `Y`, the pre-`0`-hypercover `{X ×[Z] Uᵢ}` of `X ×[Z] Y` is isomorphic
 to the pullback of `{Uᵢ}` along the second projection. -/
