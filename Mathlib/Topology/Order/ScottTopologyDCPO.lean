@@ -52,7 +52,7 @@ Scott topology, Algebraic DCPO, Stone Duality
 @[expose] public section
 
 /-- notation for upward closure (↑ was taken) -/
-notation x:80 "ᵘ" => Set.Ici x
+notation x:arg "ᵘ" => Set.Ici x
 namespace CompletePartialOrder
 /-- approximants: read as x is way smaller than y -/
 def Approx {α : Type*} [CompletePartialOrder α] (x : α) (y : α) :=
@@ -69,7 +69,7 @@ def Compact {α : Type*} [CompletePartialOrder α] (x : α) := Approx x x
 /-- Set of compact points -/
 def compactSet (α : Type*) [CompletePartialOrder α] := {x : α | Compact x}
 /-- notation for compactSet -/
-notation "𝕂" α:80 => compactSet α
+notation "𝕂" α:arg => compactSet α
 
 /-- Compact points in the `Iic` -/
 def compactLowerSet {α : Type*} [CompletePartialOrder α] (x : α) := Set.Iic x ∩ 𝕂 α
@@ -168,11 +168,11 @@ lemma isOpen_of_basis {u : Set α} (hu : u ∈ Ici '' 𝕂 α) : IsOpen u := by
     · exact a_in_u
 
 /-- The upwards closure of a compact point which we know is open -/
-def Opens.ofCompact (c : {c: α // Compact c}) : Opens α :=
-  ⟨cᵘ, isOpen_of_basis <| Set.mem_image_of_mem Ici c.2⟩
+def Opens.ofCompact (c : α) (hc : Compact c) : Opens α :=
+  ⟨cᵘ, isOpen_of_basis <| Set.mem_image_of_mem Ici hc⟩
 /-- The upwards closure of a compact point which we know is open.
 ᵘᵒ stand for upward open -/
-notation c:80"ᵘᵒ"  => Opens.ofCompact c -- Ici, open
+notation "⟨" c:arg ", " hc:arg "⟩ᵘᵒ"  => Opens.ofCompact c hc -- Ici, open
 
 /-- A helper. This can be made more straightforward by replacing `{u : Opens α}` with
 `{u : UpperSet}` and applying the additional lemma `Topology.IsScott.isUpperSet_of_isOpen`
@@ -198,12 +198,10 @@ open Opens
 which contains `x`.
 In anticipation of `isTopologicalBasis_Ici_image_compactSet` we already use the word `basis` -/
 lemma exists_basis_mem_basis (x : D) (u : Set D) (x_in_u : x ∈ u) (hu : IsOpen u)
-    : ∃ v ∈ Ici '' 𝕂 D, x ∈ v ∧ v ⊆ u := by
+    : ∃ c ∈ 𝕂 D, x ∈ cᵘ ∧ cᵘ ⊆ u := by
   rw [@isOpen_iff_isUpperSet_and_dirSupInaccOn D {d | DirectedOn (· ≤ ·) d }] at hu
-
   obtain ⟨upper, hausdorff⟩ := hu
-  have compactLowerBounded : ∀ x ∈ u, ∃ c: D, c ≤ x ∧ c ∈ u ∧ Compact c := by
-    intro x x_in_u
+  have compactLowerBounded : ∃ c: D, c ≤ x ∧ c ∈ u ∧ Compact c := by
     -- the Algebraicity property
     obtain ⟨nonempty, directedCls, join⟩ := AlgebraicDCPO.algebraic x
 
@@ -222,23 +220,8 @@ lemma exists_basis_mem_basis (x : D) (u : Set D) (x_in_u : x ∈ u) (hu : IsOpen
     obtain ⟨c, ⟨hc₀, hc₁⟩, hc₂⟩ := nonempty_inter
     exact ⟨c, hc₀, hc₂, hc₁⟩
 
-  -- given an x ∈ u, take it to its compact point
-  choose f hf hf' hf'' using compactLowerBounded
-  let f' : {x : D // x ∈ u} → D := fun x => f x.1 x.2
-  use Ici (f' ⟨x, x_in_u⟩)
-
-  constructor
-  · simp only [Ici, mem_image]
-    use (f' ⟨x, x_in_u⟩)
-    constructor
-    · apply hf''
-    · simp only [f']
-  · constructor
-    · apply hf
-    · intro y hy
-      simp only [mem_Ici, f'] at hy
-      apply upper hy
-      simp_all only
+  choose c hc₀ hc₁ hc₂ using compactLowerBounded
+  exact ⟨c, hc₂, hc₀, upper.Ici_subset hc₁⟩
 
 /-- The upward closures of compact elements form a topological
 basis under the Scott Topology. Prop 3.5.2 in [reneta2025] -/
@@ -248,8 +231,11 @@ theorem isTopologicalBasis_Ici_image_compactSet : IsTopologicalBasis (Ici '' �
     -- This is the true by definition direction, as compactness corresponds to Scott-Hausdorrf open,
     -- and upper set corresponds to Upper set open
     apply isOpen_of_basis
-  · -- If an element `x` is in an open set `u`, we can find it in a set in the basis (`Ici c`)
-    apply exists_basis_mem_basis
+  · -- If a point `x` is in an open set `u`, we can find it in a set in the basis (`Ici c`)
+    intro x u x_in_u hu
+    choose c hc x_in_c' hc' using exists_basis_mem_basis x u x_in_u hu
+    use cᵘ
+    use ⟨c, And.intro hc rfl⟩
 
 /-- Any open set, `u`, can be constructed as a union of sets from the basis.
     The basis consists of the upward closures of those compact elements in `u`
@@ -260,10 +246,8 @@ lemma open_eq_open_of_basis (u : Set D) (hu : IsOpen u) :
   simp only [sUnion_image, mem_setOf_eq, mem_iUnion, exists_prop]
   constructor
   · intro e_in_u
-    choose c' hc'₀ e_in_c' hc'₁ using exists_basis_mem_basis e u e_in_u hu
-    obtain ⟨c, hc₀, c'_eq⟩ := hc'₀
+    choose c hc₀ e_in_c' hc'₁ using exists_basis_mem_basis e u e_in_u hu
     use c
-    simp_all only [and_self]
   · rintro ⟨c, ⟨hc, hc'⟩, e_in_c'⟩
     apply hc'
     simp_all only
@@ -273,30 +257,27 @@ lemma open_eq_open_of_basis (u : Set D) (hu : IsOpen u) :
     The weaker version is still useful as it is easier to use when sufficient.
     We don't reuse the previous result to prove this, since the proof turns out just as long -/
 lemma open_eq_open_of_basis' (u : Opens D) :
-    u = sSup ({ o | ∃ (c : D) (hc : c ∈ 𝕂 D), c ∈ u ∧ (o = ⟨c, hc⟩ᵘᵒ) }) := by
+    -- u = sSup ({ o | ∃ (c : D) (hc : c ∈ 𝕂 D), c ∈ u ∧ (o = ⟨c, hc⟩ᵘᵒ) }) := by
+    -- u = iSup (fun (c : {c : D // Compact c ∧ c ∈ u}) ↦  ⟨c.1, c.2.1⟩ᵘᵒ ) := by
+    u = ⨆ (c : D) (hc : c ∈ 𝕂 D) (_ : c ∈ u), ⟨c, hc⟩ᵘᵒ := by
   ext e
   simp only [SetLike.mem_coe]
   constructor
   · intro e_in_u
-    choose c' hc'₀ e_in_c' hc'₁ using exists_basis_mem_basis e u e_in_u u.isOpen
-    simp only [Opens.mem_sSup]
-    use ⟨c', isOpen_of_basis hc'₀⟩
-    constructor
-    · obtain ⟨c, hc₀, c'_eq⟩ := hc'₀
-      simp only [ofCompact]
-      rw [← c'_eq] at hc'₁
-      use c; use hc₀; use mem_iff_Ici_subset.2 hc'₁
-      simp only [Opens.mk.injEq]
-      exact id (Eq.symm c'_eq)
-    · exact e_in_c'
+    choose c hc₀ e_in_c' hc'₁ using exists_basis_mem_basis e u e_in_u u.isOpen
+    -- simp only [Opens.mem_iSup]
+    simp only [iSup_mk, carrier_eq_coe, mem_mk, mem_iUnion, SetLike.mem_coe, exists_prop,
+      exists_and_left]
+    use c
+    use Opens.mem_iff_Ici_subset.2 hc'₁
+    use hc₀
+    exact e_in_c'
   · rintro he
-    simp only [Opens.mem_sSup] at he
-    obtain ⟨c', hc'₀, he⟩ := he
-    obtain ⟨c, hc₀, hc₁, hc'₁⟩ := hc'₀
-    rw [mem_iff_Ici_subset] at hc₁
-    rw [ofCompact] at hc'₁
-    rw [hc'₁] at he
-    exact Set.mem_of_mem_of_subset he hc₁
+    simp only [iSup_mk, carrier_eq_coe, mem_mk, mem_iUnion, SetLike.mem_coe, exists_prop,
+      exists_and_left] at he
+    obtain ⟨c, c_in_u, hc₀, he⟩ := he
+    rw [mem_iff_Ici_subset] at c_in_u
+    apply Set.mem_of_mem_of_subset he c_in_u
 
 end AlgebraicDCPO
 end IsScott
