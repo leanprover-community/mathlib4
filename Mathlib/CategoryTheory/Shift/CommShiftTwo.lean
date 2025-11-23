@@ -72,12 +72,12 @@ variable (h : CommShift₂Setup D M)
 
 namespace CommShift₂Setup
 
-protected def Category (h : CommShift₂Setup D M) := TwistShift h.toTwistShiftData
+protected def Category (h : CommShift₂Setup D M) := h.toTwistShiftData.Category
 
-instance : Category h.Category := inferInstanceAs (Category (TwistShift h.toTwistShiftData))
+instance category : Category h.Category := inferInstanceAs (Category (h.toTwistShiftData.Category))
 
-noncomputable instance : HasShift h.Category (M × M) :=
-  inferInstanceAs (HasShift (TwistShift h.toTwistShiftData) (M × M))
+noncomputable instance hasShift : HasShift h.Category (M × M) :=
+  inferInstanceAs (HasShift h.toTwistShiftData.Category (M × M))
 
 -- variable (G : C₁ × C₂ ⥤ h.Category) [G.CommShift (M × M)]
 -- should be essentially equivalent to
@@ -85,7 +85,7 @@ noncomputable instance : HasShift h.Category (M × M) :=
 
 noncomputable def shiftIso (m n p : M) (hp : m + n = p) :
     shiftFunctor h.Category (m, n) ≅ shiftFunctor D p :=
-  pullbackShiftIso _ _ _ _ hp.symm
+  h.toTwistShiftData.shiftIso (m, n) ≪≫ pullbackShiftIso _ _ _ _ hp.symm
 
 @[reassoc]
 lemma shiftFunctor_map (m n p : M) (hp : m + n = p) {X Y : D} (f : X ⟶ Y) :
@@ -97,8 +97,12 @@ lemma shiftFunctor_map (m n p : M) (hp : m + n = p) {X Y : D} (f : X ⟶ Y) :
 lemma shiftFunctorZero_inv_app (X : h.Category) :
     (shiftFunctorZero _ (M × M)).inv.app X =
       (shiftFunctorZero D M).inv.app X ≫ (h.shiftIso 0 0 0 (add_zero 0)).inv.app X :=
-  pullbackShiftFunctorZero_inv_app ..
+  (h.toTwistShiftData.shiftFunctorZero_inv_app X).trans (by
+    dsimp [shiftIso]
+    rw [pullbackShiftFunctorZero_inv_app, Category.assoc]
+    rfl)
 
+attribute [local simp] CatCenter.smul_eq in
 lemma shiftFunctorAdd'_inv_app (m₁ m₂ m₃ : M) (hm : m₁ + m₂ = m₃)
     (n₁ n₂ n₃ : M) (hn : n₁ + n₂ = n₃)
     (p₁ p₂ p₃ : M) (hp₁ : m₁ + n₁ = p₁) (hp₂ : m₂ + n₂ = p₂) (hp₃ : m₃ + n₃ = p₃)
@@ -108,13 +112,12 @@ lemma shiftFunctorAdd'_inv_app (m₁ m₂ m₃ : M) (hm : m₁ + m₂ = m₃)
         (shiftFunctor D p₂).map ((h.shiftIso m₁ n₁ p₁ hp₁).hom.app X) ≫
         (shiftFunctorAdd' D p₁ p₂ p₃ (by rw [← hp₃, ← hp₂, ← hp₁, ← hm, ← hn]; abel)).inv.app X ≫
         (h.shiftIso m₃ n₃ p₃ hp₃).inv.app X ≫
-          (((h.z (m₁, n₁) (m₂, n₂))⁻¹).1).app _
-          := by
-  refine (TwistShift.shiftFunctorAdd'_inv_app ..).trans ?_
-  dsimp [shiftIso]
-  rw [pullbackShiftFunctorAdd'_inv_app _ _ _ _ _ _ p₁ p₂ p₃
-    (by aesop) (by aesop) (by aesop)]
-  aesop
+          (((h.z (m₁, n₁) (m₂, n₂))⁻¹).1).app _ :=
+  (h.toTwistShiftData.shiftFunctorAdd'_inv_app (m₁, n₁) (m₂, n₂) (m₃, n₃) (by aesop) X).trans (by
+    dsimp [shiftIso]
+    rw [pullbackShiftFunctorAdd'_inv_app _ _ _ _ _ _ p₁ p₂ p₃
+      (by aesop) (by aesop) (by aesop)]
+    aesop)
 
 section
 
@@ -171,7 +174,7 @@ lemma iso₁_add (m m' : M) :
     h.shiftFunctor_map_assoc _ _ _ (add_zero m'), Category.assoc, Iso.inv_hom_id_app_assoc,
     h.shiftFunctorAdd'_inv_app _ _ _ rfl _ _ _ (add_zero 0) _ _ (m + m')
     (add_zero m) (add_zero m') (by simp), Iso.inv_hom_id_app_assoc, h.z_zero₂,
-    inv_one, Units.val_one, End.one_def, NatTrans.id_app,
+    inv_one, Units.val_one, End.one_def,
     Functor.commShiftIso_add' _ rfl, Functor.CommShift.isoAdd'_hom_app]
   simp only [Functor.flip_obj_obj, Functor.flip_obj_map, Functor.id_obj,
     Category.assoc, Category.comp_id, NatTrans.naturality_assoc, Functor.map_comp_assoc,
@@ -223,7 +226,7 @@ lemma iso₂_add (m m' : M) :
     NatTrans.naturality_assoc, ← Functor.map_comp_assoc,
     h.shiftFunctorAdd'_inv_app _ _ _ (add_zero 0) _ _ _ rfl _ _ _
     (zero_add m) (zero_add m') (zero_add (m + m')), h.z_zero₁,
-    inv_one, Units.val_one, End.one_def, NatTrans.id_app,
+    inv_one, Units.val_one, End.one_def,
     Functor.commShiftIso_add' _ rfl, Functor.CommShift.isoAdd'_hom_app,
     shiftFunctorAdd'_add_zero_hom_app, ← NatTrans.comp_app_assoc, ← Functor.map_comp,
     Iso.inv_hom_id_app, NatTrans.naturality_assoc, NatTrans.naturality_assoc]
@@ -448,7 +451,7 @@ noncomputable instance commShift₂Curry : (h.curry G).CommShift₂ h where
       dsimp at this
       rw [← reassoc_of% this, ← G.map_comp_assoc,
         ← CatCenter.naturality_assoc, ← CatCenter.naturality, Category.assoc,
-        ← CatCenter.mul_app, Units.mul_inv, End.one_def, NatTrans.id_app,
+        ← CatCenter.mul_app, Units.mul_inv, End.one_def,
         Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app_assoc,
         NatTrans.naturality_assoc]
       dsimp
@@ -510,8 +513,11 @@ noncomputable def int
     dsimp
     rw [add_mul, mul_add]
     abel
-  shift_z_app := by
-    rintro ⟨a, b⟩ ⟨c, d⟩ ⟨e, f⟩ X
+  commShift := by
+    rintro ⟨a, b⟩ ⟨c, d⟩
+    constructor
+    rintro ⟨e, f⟩
+    ext X
     dsimp
     generalize hn : a * d = n
     obtain ⟨n, rfl⟩ | ⟨n, rfl⟩ := Int.even_or_odd n

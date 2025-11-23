@@ -2064,6 +2064,7 @@ import Mathlib.CategoryTheory.Category.ULift
 import Mathlib.CategoryTheory.Center.Basic
 import Mathlib.CategoryTheory.Center.Linear
 import Mathlib.CategoryTheory.Center.Localization
+import Mathlib.CategoryTheory.Center.Preadditive
 import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.ChosenFiniteProducts.Cat
 import Mathlib.CategoryTheory.ChosenFiniteProducts.FunctorCategory

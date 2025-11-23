@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 import Mathlib.CategoryTheory.Linear.Basic
-import Mathlib.CategoryTheory.Center.Basic
+import Mathlib.CategoryTheory.Center.Preadditive
 
 /-!
 # Center of a linear category
@@ -39,10 +39,7 @@ def toCatCenter [Linear R C] : R →+* CatCenter C where
     rw [Linear.smul_comp, Linear.comp_smul, smul_smul]
     simp
   map_zero' := by aesop_cat
-  map_add' a b := by
-    ext X
-    dsimp
-    rw [NatTrans.app_add, add_smul]
+  map_add' a b := by ext X; simp [add_smul]
 
 section
 
@@ -88,8 +85,7 @@ def homModuleOfRingMorphism : Module R (X ⟶ Y) := by
     smul_add := fun a b => by
       simp [smulOfRingMorphism_smul_eq]
     add_smul := fun a b f => by
-      simp only [smulOfRingMorphism_smul_eq]
-      rw [map_add, NatTrans.app_add, Preadditive.add_comp] }
+      simp [smulOfRingMorphism_smul_eq] }
 
 /-- The `R`-linear structure on a preadditive category `C` equipped with
 a ring morphism `R →+* CatCenter C`. -/
