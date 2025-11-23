@@ -64,7 +64,7 @@ abbrev mkHom {X₁ X₂ : C} {Y₁ Y₂ : D} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y
 @[inherit_doc Prod.mkHom]
 scoped infixr:70 " ×ₘ " => Prod.mkHom
 
-/-- This lemma can help aesop if unable to find `prod.hom_ext` -/
+/-- Analogue of `Prod.mk.injEq` in this setting. -/
 @[simp]
 lemma mkHom_eq {X₁ X₂ : C} {Y₁ Y₂ : D} (f f' : X₁ ⟶ X₂) (g g' : Y₁ ⟶ Y₂) :
     f ×ₘ g = f' ×ₘ g' ↔ (f = f' ∧ g = g') :=
