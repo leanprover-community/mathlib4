@@ -236,7 +236,7 @@ def map (α : F ⟶ G) : ∫ᶜ F ⥤ ∫ᶜ G where
         Iso.inv_hom_id_app]
       simp only [assoc]
       simp_rw [← Cat.Hom.comp_map]
-      sorry
+      -- sorry
 
 
 @[simp]
