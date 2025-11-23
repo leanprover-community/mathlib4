@@ -358,13 +358,16 @@ instance away_snd {R S} [CommSemiring R] [CommSemiring S] :
 
 end Prod
 
+section
+
+variable {S T : Type*} [CommRing S] [CommRing T] [Algebra S T]
+
 open Pointwise in
 /-- Suppose `I` is an ideal of `R`, then `R / I` is the localization away from `r : R`
 if `r - 1 ∈ I` and for some `n`, `r ^ n • I = ⊥`.
 For sake of usability, we state this for surjective ring maps instead of ideals.
 For a version with two ideals, see `Away.of_sub_one_mem_ker'`. -/
-lemma Away.of_surjective {S T : Type*} [CommRing S] [CommRing T] [Algebra S T]
-    (h₁ : Function.Surjective (algebraMap S T))
+lemma Away.of_surjective (h₁ : Function.Surjective (algebraMap S T))
     {r : S} (hr : IsUnit (algebraMap S T r))
     (n : ℕ) (hn : r ^ n • RingHom.ker (algebraMap S T) ≤ ⊥) :
     IsLocalization.Away r T := by
@@ -378,9 +381,8 @@ open Pointwise in
 /-- Suppose `J ≤ I` are ideals of `R`, then `R / I` is the localization away from `r : R / J`
 if `r - 1 ∈ I` and for some `n`, `r ^ n • I ≤ J`.
 For sake of usability, we state this for surjective ring maps instead of ideals. -/
-lemma Away.of_surjective_of_isScalarTower {R S T : Type*}
-    [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
-    [Algebra S T] [IsScalarTower R S T]
+lemma Away.of_surjective_of_isScalarTower {R : Type*}
+    [CommRing R] [Algebra R S] [Algebra R T] [IsScalarTower R S T]
     (h₁ : Function.Surjective (algebraMap S T))
     (h₂ : Function.Surjective (algebraMap R S))
     (r : R) (hr : IsUnit (algebraMap R T r))
@@ -391,6 +393,8 @@ lemma Away.of_surjective_of_isScalarTower {R S T : Type*}
   · rw [← (RingHom.ker (algebraMap S T)).map_comap_of_surjective _ h₂, ← map_pow,
       ← Ideal.map_pointwise_smul, RingHom.comap_ker, ← IsScalarTower.algebraMap_eq]
     rwa [RingHom.ker_eq_comap_bot (algebraMap R S), ← Ideal.map_le_iff_le_comap] at hn
+
+end
 
 end IsLocalization
 
