@@ -3,7 +3,9 @@ Copyright (c) 2025 Vasilii Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
-import Mathlib.Data.ENat.Basic
+module
+
+public meta import Mathlib.Data.ENat.Basic
 
 /-!
 # `enat_to_nat`
@@ -19,6 +21,8 @@ The implementation follows these steps:
 3. Translate the remaining goals from `ENat` to `Nat` using the `enat_to_nat_coe` simp set.
 
 -/
+
+public meta section
 
 namespace Mathlib.Tactic.ENatToNat
 
@@ -59,7 +63,7 @@ elab "cases_first_enat" : tactic => focus do
         return Option.some decl
       else
         return Option.none
-    let .some decl := decl? | throwError "No ENats"
+    let some decl := decl? | throwError "No ENats"
     let isInaccessible := ctx.inaccessibleFVars.find? (·.fvarId == decl.fvarId) |>.isSome
     if isInaccessible then
       let name : Name := `enat_to_nat_aux

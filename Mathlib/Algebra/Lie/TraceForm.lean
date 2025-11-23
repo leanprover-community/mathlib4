@@ -3,12 +3,14 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.DirectSum.LinearMap
-import Mathlib.Algebra.Lie.InvariantForm
-import Mathlib.Algebra.Lie.Weights.Cartan
-import Mathlib.Algebra.Lie.Weights.Linear
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.LinearAlgebra.PID
+module
+
+public import Mathlib.Algebra.DirectSum.LinearMap
+public import Mathlib.Algebra.Lie.InvariantForm
+public import Mathlib.Algebra.Lie.Weights.Cartan
+public import Mathlib.Algebra.Lie.Weights.Linear
+public import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+public import Mathlib.LinearAlgebra.PID
 
 /-!
 # The trace and Killing forms of a Lie algebra.
@@ -32,6 +34,8 @@ We define the trace / Killing form in this file and prove some basic properties.
   form on `L` via the trace form construction.
 -/
 
+@[expose] public section
+
 variable (R K L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
@@ -54,7 +58,7 @@ lemma traceForm_apply_apply (x y : L) :
 lemma traceForm_comm (x y : L) : traceForm R L M x y = traceForm R L M y x :=
   LinearMap.trace_mul_comm R (φ x) (φ y)
 
-lemma traceForm_isSymm : LinearMap.IsSymm (traceForm R L M) := LieModule.traceForm_comm R L M
+lemma traceForm_isSymm : LinearMap.IsSymm (traceForm R L M) := ⟨LieModule.traceForm_comm R L M⟩
 
 @[simp] lemma traceForm_flip : LinearMap.flip (traceForm R L M) = traceForm R L M :=
   Eq.symm <| LinearMap.ext₂ <| traceForm_comm R L M
@@ -76,8 +80,8 @@ lemma traceForm_apply_lie_apply (x y z : L) :
   · simp only [traceForm_apply_apply, LieHom.map_lie, Ring.lie_def, mul_sub, map_sub,
       ← Module.End.mul_eq_comp]
 
-/-- Given a representation `M` of a Lie algebra `L`, the action of any `x : L` is skew-adjoint wrt
-the trace form. -/
+/-- Given a representation `M` of a Lie algebra `L`, the action of any `x : L` is skew-adjoint
+w.r.t. the trace form. -/
 lemma traceForm_apply_lie_apply' (x y z : L) :
     traceForm R L M ⁅x, y⁆ z = - traceForm R L M y ⁅x, z⁆ :=
   calc traceForm R L M ⁅x, y⁆ z
@@ -121,7 +125,7 @@ lemma traceForm_genWeightSpace_eq [Module.Free R M]
     LinearMap.comp_smul, LinearMap.smul_comp, LinearMap.id_comp, map_smul, map_smul,
     LinearMap.trace_id, ← traceForm_apply_apply, h₁, h₂, sub_zero, sub_eq_zero] at this
 
-/-- The upper and lower central series of `L` are orthogonal wrt the trace form of any Lie module
+/-- The upper and lower central series of `L` are orthogonal w.r.t. the trace form of any Lie module
 `M`. -/
 lemma traceForm_eq_zero_if_mem_lcs_of_mem_ucs {x y : L} (k : ℕ)
     (hx : x ∈ (⊤ : LieIdeal R L).lcs L k) (hy : y ∈ (⊥ : LieIdeal R L).ucs k) :
@@ -158,8 +162,8 @@ lemma traceForm_apply_eq_zero_of_mem_lcs_of_mem_center {x y : L}
   simp
 
 /-- Given a bilinear form `B` on a representation `M` of a nilpotent Lie algebra `L`, if `B` is
-invariant (in the sense that the action of `L` is skew-adjoint wrt `B`) then components of the
-Fitting decomposition of `M` are orthogonal wrt `B`. -/
+invariant (in the sense that the action of `L` is skew-adjoint w.r.t. `B`) then components of the
+Fitting decomposition of `M` are orthogonal w.r.t. `B`. -/
 lemma eq_zero_of_mem_genWeightSpace_mem_posFitting [LieRing.IsNilpotent L]
     {B : LinearMap.BilinForm R M} (hB : ∀ (x : L) (m n : M), B ⁅x, m⁆ n = -B m ⁅x, n⁆)
     {m₀ m₁ : M} (hm₀ : m₀ ∈ genWeightSpace M (0 : L → R)) (hm₁ : m₁ ∈ posFittingComp R L M) :

@@ -3,10 +3,11 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Algebra.Group.TransferInstance
-import Mathlib.Data.Finsupp.MonomialOrder
-import Mathlib.Data.Finsupp.Weight
+public import Mathlib.Algebra.Group.TransferInstance
+public import Mathlib.Data.Finsupp.MonomialOrder
+public import Mathlib.Data.Finsupp.Weight
 
 /-! Homogeneous lexicographic monomial ordering
 
@@ -23,6 +24,8 @@ and `MonomialOrder.degLex_lt_iff` rewrite the ordering as comparisons in the typ
 * [Becker and Weispfenning, *Gröbner bases*][Becker-Weispfenning1993]
 
 -/
+
+@[expose] public section
 
 /-- A type synonym to equip a type with its lexicographic order sorted by degrees. -/
 def DegLex (α : Type*) := α
@@ -157,11 +160,11 @@ theorem single_antitone : Antitone (fun (a : α) ↦ toDegLex (single a 1)) :=
 
 theorem single_lt_iff {a b : α} :
     toDegLex (Finsupp.single b 1) < toDegLex (Finsupp.single a 1) ↔ a < b :=
-  single_strictAnti.lt_iff_lt
+  single_strictAnti.lt_iff_gt
 
 theorem single_le_iff {a b : α} :
     toDegLex (Finsupp.single b 1) ≤ toDegLex (Finsupp.single a 1) ↔ a ≤ b :=
-  single_strictAnti.le_iff_le
+  single_strictAnti.le_iff_ge
 
 theorem monotone_degree :
     Monotone (fun (x : DegLex (α →₀ ℕ)) ↦ (ofDegLex x).degree) := by
@@ -201,9 +204,9 @@ noncomputable def degLex :
   toSyn := { toEquiv := toDegLex, map_add' := toDegLex_add }
   toSyn_monotone a b h := by
     simp only [AddEquiv.coe_mk, DegLex.le_iff, ofDegLex_toDegLex]
-    by_cases ha : a.degree < b.degree
+    by_cases! ha : a.degree < b.degree
     · exact Or.inl ha
-    · refine Or.inr ⟨le_antisymm ?_ (not_lt.mp ha), toLex_monotone h⟩
+    · refine Or.inr ⟨le_antisymm ?_ ha, toLex_monotone h⟩
       rw [← add_tsub_cancel_of_le h, degree_add]
       exact Nat.le_add_right a.degree (b - a).degree
 

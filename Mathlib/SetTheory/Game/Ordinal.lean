@@ -3,8 +3,15 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Game.Basic
-import Mathlib.SetTheory.Ordinal.NaturalOps
+module
+
+public import Mathlib.SetTheory.Game.Basic
+public import Mathlib.SetTheory.Ordinal.NaturalOps
+public import Mathlib.Tactic.Linter.DeprecatedModule
+
+deprecated_module
+  "This module is now at `CombinatorialGames.Game.Ordinal` in the CGT repo <https://github.com/vihdzp/combinatorial-games>"
+  (since := "2025-08-06")
 
 /-!
 # Ordinals as games
@@ -14,11 +21,13 @@ game whose left set consists of all previous ordinals.
 
 The map to surreals is defined in `Ordinal.toSurreal`.
 
-# Main declarations
+## Main declarations
 
 - `Ordinal.toPGame`: The canonical map between ordinals and pre-games.
 - `Ordinal.toPGameEmbedding`: The order embedding version of the previous map.
 -/
+
+@[expose] public section
 
 
 universe u
@@ -142,8 +151,6 @@ theorem toPGame_injective : Function.Injective Ordinal.toPGame := fun _ _ h =>
 theorem toPGame_inj {a b : Ordinal} : a.toPGame = b.toPGame ↔ a = b :=
   toPGame_injective.eq_iff
 
-@[deprecated (since := "2024-12-29")] alias toPGame_eq_iff := toPGame_inj
-
 /-- The order embedding version of `toPGame`. -/
 @[simps]
 noncomputable def toPGameEmbedding : Ordinal.{u} ↪o PGame.{u} where
@@ -160,9 +167,6 @@ noncomputable def toGame : Ordinal.{u} ↪o Game.{u} where
 @[simp]
 theorem mk_toPGame (o : Ordinal) : ⟦o.toPGame⟧ = o.toGame :=
   rfl
-
-@[deprecated toGame (since := "2024-11-23")]
-alias toGameEmbedding := toGame
 
 @[simp]
 theorem toGame_zero : toGame 0 = 0 :=
@@ -187,8 +191,6 @@ theorem toGame_lt_iff {a b : Ordinal} : a.toGame < b.toGame ↔ a < b :=
 
 theorem toGame_inj {a b : Ordinal} : a.toGame = b.toGame ↔ a = b :=
   toGame.inj
-
-@[deprecated (since := "2024-12-29")] alias toGame_eq_iff := toGame_inj
 
 /-- The natural addition of ordinals corresponds to their sum as games. -/
 theorem toPGame_nadd (a b : Ordinal) : (a ♯ b).toPGame ≈ a.toPGame + b.toPGame := by

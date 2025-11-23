@@ -3,8 +3,10 @@ Copyright (c) 2022 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
-import Mathlib.RepresentationTheory.Basic
-import Mathlib.RepresentationTheory.FDRep
+module
+
+public import Mathlib.RepresentationTheory.Basic
+public import Mathlib.RepresentationTheory.FDRep
 
 /-!
 # Subspace of invariants a group representation
@@ -17,6 +19,8 @@ subspace of invariants.
 In order for the definition of the average element to make sense, we need to assume for most of the
 results that the order of `G` is invertible in `k` (e. g. `k` has characteristic `0`).
 -/
+
+@[expose] public section
 
 suppress_compilation
 
@@ -84,6 +88,14 @@ theorem invariants_eq_inter : (invariants ρ).carrier = ⋂ g : G, Function.fixe
 theorem invariants_eq_top [ρ.IsTrivial] :
     invariants ρ = ⊤ :=
 eq_top_iff.2 (fun x _ g => ρ.isTrivial_apply g x)
+
+lemma mem_invariants_iff_of_forall_mem_zpowers
+    (g : G) (hg : ∀ x, x ∈ Subgroup.zpowers g) (x : V) :
+    x ∈ ρ.invariants ↔ ρ g x = x :=
+  ⟨fun h => h g, fun hx γ => by
+    rcases hg γ with ⟨i, rfl⟩
+    induction i with | zero => simp | succ i _ => simp_all [zpow_add_one] | pred i h => _
+    simpa [neg_sub_comm _ (1 : ℤ), zpow_sub] using congr(ρ g⁻¹ $(h.trans hx.symm))⟩
 
 section
 
@@ -246,7 +258,7 @@ noncomputable def invariantsAdjunction : trivialFunctor k G ⊣ invariantsFuncto
 lemma invariantsAdjunction_homEquiv_apply_hom
     {X : ModuleCat k} {Y : Rep k G} (f : (trivialFunctor k G).obj X ⟶ Y) :
     ((invariantsAdjunction k G).homEquiv _ _ f).hom =
-      f.hom.hom.codRestrict _ (by intros _ _; exact (hom_comm_apply f _ _).symm) := rfl
+      f.hom.hom.codRestrict _ (by intro _ _; exact (hom_comm_apply f _ _).symm) := rfl
 
 @[simp]
 lemma invariantsAdjunction_homEquiv_symm_apply_hom

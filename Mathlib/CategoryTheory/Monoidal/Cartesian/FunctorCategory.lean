@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
-import Mathlib.CategoryTheory.Monoidal.Types.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
+public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 
 /-!
 # Functor categories have chosen finite products
@@ -13,6 +15,8 @@ import Mathlib.CategoryTheory.Monoidal.Types.Basic
 If `C` is a category with chosen finite products, then so is `J ⥤ C`.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 
@@ -60,7 +64,7 @@ def isLimit : IsLimit (BinaryFan.mk (fst F₁ F₂) (snd F₁ F₂)) :=
     (IsLimit.postcomposeHomEquiv (mapPairIso (by exact Iso.refl _) (by exact Iso.refl _)) _).1
       (IsLimit.ofIsoLimit
         (tensorProductIsBinaryProduct (X := F₁.obj j) (Y := F₂.obj j))
-        (Cones.ext (Iso.refl _) (by rintro ⟨_|_⟩; all_goals aesop_cat))))
+        (Cones.ext (Iso.refl _) (by rintro ⟨_ | _⟩; all_goals cat_disch))))
 
 end chosenProd
 

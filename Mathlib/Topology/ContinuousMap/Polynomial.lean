@@ -3,10 +3,12 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.Topology.ContinuousMap.Star
-import Mathlib.Topology.UnitInterval
-import Mathlib.Algebra.Star.Subalgebra
+module
+
+public import Mathlib.Topology.Algebra.Polynomial
+public import Mathlib.Topology.ContinuousMap.Star
+public import Mathlib.Topology.UnitInterval
+public import Mathlib.Algebra.Star.Subalgebra
 
 /-!
 # Constructions relating polynomial functions and continuous functions.
@@ -21,6 +23,8 @@ import Mathlib.Algebra.Star.Subalgebra
   the polynomial functions separate points.
 
 -/
+
+@[expose] public section
 
 
 variable {R : Type*}
@@ -184,9 +188,7 @@ theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a <
       · ext
         simp only [iccHomeoI_symm_apply_coe]
         replace h : b - a ≠ 0 := sub_ne_zero_of_ne h.ne.symm
-        simp only [mul_add]
-        field_simp
-        ring
+        field
       · change _ + _ ∈ I
         rw [mul_comm (b - a)⁻¹, ← neg_mul, ← add_mul, ← sub_eq_add_neg]
         have w₁ : 0 < (b - a)⁻¹ := inv_pos.mpr (sub_pos.mpr h)

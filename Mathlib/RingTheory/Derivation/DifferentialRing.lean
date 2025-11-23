@@ -3,7 +3,9 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
-import Mathlib.RingTheory.Derivation.Basic
+module
+
+public import Mathlib.RingTheory.Derivation.Basic
 
 /-!
 # Differential and Algebras
@@ -11,6 +13,8 @@ import Mathlib.RingTheory.Derivation.Basic
 This file defines derivations from a commutative ring to itself as a typeclass, which lets us
 use the x′ notation for the derivative of x.
 -/
+
+@[expose] public section
 
 /-- A derivation from a ring to itself, as a typeclass. -/
 @[ext]
@@ -29,7 +33,7 @@ A delaborator for the x′ notation. This is required because it's not direct fu
 so the default delaborator doesn't work.
 -/
 @[app_delab DFunLike.coe]
-def delabDeriv : Delab := do
+meta def delabDeriv : Delab := do
   let e ← getExpr
   guard <| e.isAppOfArity' ``DFunLike.coe 6
   guard <| (e.getArg!' 4).isAppOf' ``Differential.deriv
@@ -53,11 +57,11 @@ lemma algebraMap.coe_deriv {A : Type*} {B : Type*} [CommRing A] [CommRing B] [Al
 
 /--
 A differential ring `A` and an algebra over it `B` share constants if all
-constants in B are in the range of `algberaMap A B`.
+constants in B are in the range of `algebraMap A B`.
 -/
 class Differential.ContainConstants (A B : Type*) [CommRing A] [CommRing B]
     [Algebra A B] [Differential B] : Prop where
-  /-- If the derivative of x is 0, then it's in the range of `algberaMap A B`. -/
+  /-- If the derivative of x is 0, then it's in the range of `algebraMap A B`. -/
   protected mem_range_of_deriv_eq_zero {x : B} (h : x′ = 0) : x ∈ (algebraMap A B).range
 
 lemma mem_range_of_deriv_eq_zero (A : Type*) {B : Type*} [CommRing A] [CommRing B] [Algebra A B]

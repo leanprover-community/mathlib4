@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.DoldKan.Normalized
+module
+
+public import Mathlib.AlgebraicTopology.DoldKan.Normalized
 
 /-!
 
@@ -14,6 +16,8 @@ In this file, when the category `A` is abelian, we obtain the homotopy equivalen
 normalized Moore complex and the alternating face map complex of a simplicial object in `A`.
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
@@ -58,7 +62,7 @@ def homotopyPInftyToId : Homotopy (PInfty : K[X] ⟶ _) (𝟙 _) where
   hom i j := (homotopyPToId X (j + 1)).hom i j
   zero i j hij := Homotopy.zero _ i j hij
   comm n := by
-    rcases n with _|n
+    rcases n with _ | n
     · simpa only [Homotopy.dNext_zero_chainComplex, Homotopy.prevD_chainComplex,
         PInfty_f, P_f_0_eq, zero_add] using (homotopyPToId X 2).comm 0
     · simpa only [Homotopy.dNext_succ_chainComplex, Homotopy.prevD_chainComplex,

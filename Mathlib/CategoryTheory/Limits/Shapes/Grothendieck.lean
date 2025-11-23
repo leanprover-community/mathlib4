@@ -3,8 +3,10 @@ Copyright (c) 2024 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.CategoryTheory.Grothendieck
-import Mathlib.CategoryTheory.Limits.HasLimits
+module
+
+public import Mathlib.CategoryTheory.Grothendieck
+public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # (Co)limits on the (strict) Grothendieck Construction
@@ -19,6 +21,8 @@ import Mathlib.CategoryTheory.Limits.HasLimits
   on each fiber shape `F.obj X` and on the base category `C`.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -115,7 +119,7 @@ def coconeFiberwiseColimitOfCocone (c : Cocone G) : Cocone (fiberwiseColimit G) 
          naturality := fun _ _ f => by dsimp; ext; simp }
 
 variable {G} in
-/-- If `c` is a colimit cocone on `G : Grockendieck F ⥤ H`, then the induced cocone on the
+/-- If `c` is a colimit cocone on `G : Grothendieck F ⥤ H`, then the induced cocone on the
 fiberwise colimit on `G` is a colimit cocone, too. -/
 def isColimitCoconeFiberwiseColimitOfCocone {c : Cocone G} (hc : IsColimit c) :
     IsColimit (coconeFiberwiseColimitOfCocone c) where

@@ -3,7 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Equivalence
+module
+
+public import Mathlib.CategoryTheory.Localization.Equivalence
 
 /-!
 # Morphisms of localizers
@@ -23,6 +25,8 @@ localized categories.
 * [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ v₄' v₅ v₅' v₆ u₁ u₂ u₃ u₄ u₄' u₅ u₅' u₆
 
@@ -110,7 +114,7 @@ variable [CatCommSq Φ.functor L₁ L₂ G]
 include W₁ W₂ Φ L₁ L₂ L₁' L₂'
 
 /-- If a localizer morphism induces an equivalence on some choice of localized categories,
-it will be so for any choice of localized categoriees. -/
+it will be so for any choice of localized categories. -/
 lemma isEquivalence_imp [G.IsEquivalence] : G'.IsEquivalence :=
   let E₁ := Localization.uniq L₁ L₁' W₁
   let E₂ := Localization.uniq L₂ L₂' W₂

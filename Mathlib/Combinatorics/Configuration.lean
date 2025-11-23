@@ -3,9 +3,11 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Combinatorics.Hall.Basic
-import Mathlib.Data.Matrix.Rank
-import Mathlib.LinearAlgebra.Projectivization.Constructions
+module
+
+public import Mathlib.Combinatorics.Hall.Basic
+public import Mathlib.LinearAlgebra.Matrix.Rank
+public import Mathlib.LinearAlgebra.Projectivization.Constructions
 
 /-!
 # Configurations of Points and lines
@@ -30,6 +32,8 @@ Together, these four statements say that any two of the following properties imp
 (a) `HasLines`, (b) `HasPoints`, (c) `|P| = |L|`.
 
 -/
+
+@[expose] public section
 
 
 open Finset
@@ -450,7 +454,7 @@ theorem card_points [Fintype P] [Finite L] : Fintype.card P = order P L ^ 2 + or
         Nat.card_eq_fintype_card]
       refine tsub_eq_of_eq_add ((pointCount_eq P l.1).trans ?_)
       rw [← Fintype.card_subtype_eq (⟨p, l.2⟩ : { q : P // q ∈ l.1 })]
-      simp_rw [Subtype.ext_iff_val]
+      simp_rw [Subtype.ext_iff]
     simp_rw [← h1, Fintype.card_congr ϕ, Fintype.card_sigma, h2, Finset.sum_const, Finset.card_univ]
     rw [← Nat.card_eq_fintype_card, ← lineCount, lineCount_eq, smul_eq_mul, Nat.succ_mul, sq]
 

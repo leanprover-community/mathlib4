@@ -3,9 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.FunLike.Basic
-import Mathlib.Logic.Embedding.Basic
-import Mathlib.Order.RelClasses
+module
+
+public import Mathlib.Logic.Embedding.Basic
+public import Mathlib.Order.RelClasses
 
 /-!
 # Relation homomorphisms, embeddings, isomorphisms
@@ -30,6 +31,8 @@ isomorphisms.
 * `↪r`: `RelEmbedding`
 * `≃r`: `RelIso`
 -/
+
+@[expose] public section
 
 open Function
 
@@ -797,13 +800,9 @@ def ofUniqueOfIrrefl (r : α → α → Prop) (s : β → β → Prop) [IsIrrefl
   ⟨Equiv.ofUnique α β, iff_of_false (not_rel_of_subsingleton s _ _)
       (not_rel_of_subsingleton r _ _) ⟩
 
-@[deprecated (since := "2024-12-26")] alias relIsoOfUniqueOfIrrefl := ofUniqueOfIrrefl
-
 /-- Two reflexive relations on a unique type are isomorphic. -/
 def ofUniqueOfRefl (r : α → α → Prop) (s : β → β → Prop) [IsRefl α r] [IsRefl β s]
     [Unique α] [Unique β] : r ≃r s :=
   ⟨Equiv.ofUnique α β, iff_of_true (rel_of_subsingleton s _ _) (rel_of_subsingleton r _ _)⟩
-
-@[deprecated (since := "2024-12-26")] alias relIsoOfUniqueOfRefl := ofUniqueOfRefl
 
 end RelIso

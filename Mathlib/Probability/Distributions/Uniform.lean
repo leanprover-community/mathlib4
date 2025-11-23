@@ -3,29 +3,31 @@ Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker, Devon Tuma, Kexing Ying
 -/
-import Mathlib.Probability.Notation
-import Mathlib.Probability.Density
-import Mathlib.Probability.ConditionalProbability
-import Mathlib.Probability.ProbabilityMassFunction.Constructions
+module
+
+public import Mathlib.Probability.Notation
+public import Mathlib.Probability.Density
+public import Mathlib.Probability.ConditionalProbability
+public import Mathlib.Probability.ProbabilityMassFunction.Constructions
 
 /-!
 # Uniform distributions and probability mass functions
 This file defines two related notions of uniform distributions, which will be unified in the future.
 
-# Uniform distributions
+## Uniform distributions
 
 Defines the uniform distribution for any set with finite measure.
 
-## Main definitions
+### Main definitions
 * `IsUniform X s ℙ μ` : A random variable `X` has uniform distribution on `s` under `ℙ` if the
   push-forward measure agrees with the rescaled restricted measure `μ`.
 
-# Uniform probability mass functions
+## Uniform probability mass functions
 
 This file defines a number of uniform `PMF` distributions from various inputs,
   uniformly drawing from the corresponding object.
 
-## Main definitions
+### Main definitions
 `PMF.uniformOfFinset` gives each element in the set equal probability,
   with `0` probability for elements not in the set.
 
@@ -39,9 +41,11 @@ This file defines a number of uniform `PMF` distributions from various inputs,
 * Refactor the `PMF` definitions to come from a `uniformMeasure` on a `Finset`/`Fintype`/`Multiset`.
 -/
 
+@[expose] public section
+
 open scoped Finset MeasureTheory NNReal ENNReal
 
--- TODO: We can't `open ProbabilityTheory` without opening the `ProbabilityTheory` locale :(
+-- TODO: We can't `open ProbabilityTheory` without opening the `ProbabilityTheory` scope :(
 open TopologicalSpace MeasureTheory.Measure PMF
 
 noncomputable section
@@ -121,7 +125,7 @@ theorem pdf_eq {X : Ω → E} {s : Set E} (hms : MeasurableSet s)
   by_cases hnt : μ s = ∞
   · simp [pdf_eq_zero_of_measure_eq_zero_or_top hu (Or.inr hnt), hnt]
   by_cases hns : μ s = 0
-  · filter_upwards [measure_zero_iff_ae_notMem.mp hns,
+  · filter_upwards [measure_eq_zero_iff_ae_notMem.mp hns,
       pdf_eq_zero_of_measure_eq_zero_or_top hu (Or.inl hns)] with x hx h'x
     simp [hx, h'x, hns]
   have : HasPDF X ℙ μ := hasPDF hns hnt hu

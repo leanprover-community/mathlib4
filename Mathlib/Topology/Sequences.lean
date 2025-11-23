@@ -3,14 +3,16 @@ Copyright (c) 2018 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Topology.Defs.Sequences
-import Mathlib.Topology.UniformSpace.Cauchy
+module
+
+public import Mathlib.Topology.Defs.Sequences
+public import Mathlib.Topology.UniformSpace.Cauchy
 
 /-!
 # Sequences in topological spaces
 
 In this file we prove theorems about relations
-between closure/compactness/continuity etc and their sequential counterparts.
+between closure/compactness/continuity etc. and their sequential counterparts.
 
 ## Main definitions
 
@@ -59,6 +61,8 @@ We build theory about these definitions here, so we remind the definitions.
 
 sequentially closed, sequentially compact, sequential space
 -/
+
+@[expose] public section
 
 
 open Bornology Filter Function Set TopologicalSpace Topology
@@ -160,9 +164,6 @@ theorem Topology.IsInducing.frechetUrysohnSpace [FrechetUrysohnSpace Y] {f : X �
   refine ⟨v, hv, ?_⟩
   simpa only [hf.tendsto_nhds_iff, Function.comp_def, hvu]
 
-@[deprecated (since := "2024-10-28")]
-alias Inducing.frechetUrysohnSpace := IsInducing.frechetUrysohnSpace
-
 /-- Subtype of a Fréchet-Urysohn space is a Fréchet-Urysohn space. -/
 instance Subtype.instFrechetUrysohnSpace [FrechetUrysohnSpace X] {p : X → Prop} :
     FrechetUrysohnSpace (Subtype p) :=
@@ -212,9 +213,6 @@ protected theorem SequentialSpace.sup {X} {t₁ t₂ : TopologicalSpace X}
 
 lemma Topology.IsQuotientMap.sequentialSpace [SequentialSpace X] {f : X → Y}
     (hf : IsQuotientMap f) : SequentialSpace Y := hf.2.symm ▸ .coinduced f
-
-@[deprecated (since := "2024-10-22")]
-alias QuotientMap.sequentialSpace := IsQuotientMap.sequentialSpace
 
 /-- The quotient of a sequential space is a sequential space. -/
 instance Quotient.instSequentialSpace [SequentialSpace X] {s : Setoid X} :
@@ -337,7 +335,7 @@ protected theorem IsSeqCompact.totallyBounded (h : IsSeqCompact s) : TotallyBoun
 
 variable [IsCountablyGenerated (𝓤 X)]
 
-/-- A sequentially compact set in a uniform set with countably generated uniformity filter
+/-- A sequentially compact set in a uniform space with countably generated uniformity filter
 is complete. -/
 protected theorem IsSeqCompact.isComplete (hs : IsSeqCompact s) : IsComplete s := fun l hl hls => by
   have := hl.1

@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.SerreClass.MorphismProperty
-import Mathlib.CategoryTheory.Localization.Bousfield
+module
+
+public import Mathlib.CategoryTheory.Abelian.SerreClass.MorphismProperty
+public import Mathlib.CategoryTheory.Localization.Bousfield
 
 /-!
 # Bousfield localizations with respect to Serre classes
@@ -20,6 +22,8 @@ that are sent to a zero object by `G`.
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Localization Limits MorphismProperty
@@ -33,7 +37,7 @@ namespace Abelian
 lemma isoModSerre_kernel_eq_inverseImage_isomorphisms :
     G.kernel.isoModSerre = (isomorphisms C).inverseImage G := by
   ext X Y f
-  refine ⟨(G.kernel.isoModSerre_isInvertedBy_iff G).2 (by rfl) _ , fun hf ↦ ?_⟩
+  refine ⟨(G.kernel.isoModSerre_isInvertedBy_iff G).2 (by rfl) _, fun hf ↦ ?_⟩
   simp only [inverseImage_iff, isomorphisms.iff] at hf
   constructor
   · exact KernelFork.IsLimit.isZero_of_mono

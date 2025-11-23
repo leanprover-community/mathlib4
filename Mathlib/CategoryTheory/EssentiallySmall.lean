@@ -3,11 +3,14 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Category.ULift
-import Mathlib.CategoryTheory.EqToHom
-import Mathlib.CategoryTheory.Skeletal
-import Mathlib.Logic.UnivLE
-import Mathlib.Logic.Small.Basic
+module
+
+public import Mathlib.CategoryTheory.Category.ULift
+public import Mathlib.CategoryTheory.EqToHom
+public import Mathlib.CategoryTheory.Skeletal
+public import Mathlib.CategoryTheory.Comma.Arrow
+public import Mathlib.Logic.UnivLE
+public import Mathlib.Logic.Small.Basic
 
 /-!
 # Essentially small categories.
@@ -21,6 +24,8 @@ A category is `w`-locally small if every hom type is `w`-small.
 The main theorem here is that a category is `w`-essentially small iff
 the type `Skeleton C` is `w`-small, and `C` is `w`-locally small.
 -/
+
+@[expose] public section
 
 
 universe w w' v v' u u'
@@ -226,9 +231,11 @@ theorem essentiallySmall_iff (C : Type u) [Category.{v} C] :
       (skeletonEquivalence (ShrinkHoms C)).symm.trans
         ((inducedFunctor (e'.trans e).symm).asEquivalence.symm)
 
-theorem essentiallySmall_of_small_of_locallySmall [Small.{w} C] [LocallySmall.{w} C] :
+instance essentiallySmall_of_small_of_locallySmall [Small.{w} C] [LocallySmall.{w} C] :
     EssentiallySmall.{w} C :=
   (essentiallySmall_iff C).2 ⟨small_of_surjective Quotient.exists_rep, by infer_instance⟩
+
+example (C : Type w) [SmallCategory C] : EssentiallySmall.{w} C := inferInstance
 
 instance small_skeleton_of_essentiallySmall [h : EssentiallySmall.{w} C] : Small.{w} (Skeleton C) :=
   essentiallySmall_iff C |>.1 h |>.1
@@ -249,7 +256,7 @@ instance essentiallySmall_fullSubcategory_mem (s : Set C) [Small.{w} s] [Locally
     EssentiallySmall.{w} (ObjectProperty.FullSubcategory (· ∈ s)) :=
   suffices Small.{w} (ObjectProperty.FullSubcategory (· ∈ s)) from
     essentiallySmall_of_small_of_locallySmall _
-  small_of_injective (f := fun x => (⟨x.1, x.2⟩ : s)) (by aesop_cat)
+  small_of_injective (f := fun x => (⟨x.1, x.2⟩ : s)) (by cat_disch)
 
 end FullSubcategory
 
@@ -266,5 +273,26 @@ theorem essentiallySmall_iff_of_thin {C : Type u} [Category.{v} C] [Quiver.IsThi
   simp [essentiallySmall_iff, CategoryTheory.locallySmall_of_thin]
 
 instance [Small.{w} C] : Small.{w} (Discrete C) := small_map discreteEquiv
+
+instance [Small.{w} C] [LocallySmall.{w} C] :
+    Small.{w} (Arrow C) := by
+  let φ (f : Arrow C) : Σ (s t : C), s ⟶ t := ⟨_, _, f.hom⟩
+  refine small_of_injective (f := φ) ?_
+  rintro ⟨s, t, f⟩ ⟨s', t', f'⟩ h
+  obtain rfl : s = s' := congr_arg Sigma.fst h
+  simp only [Functor.id_obj, Sigma.mk.injEq, heq_eq_eq, true_and, φ] at h
+  obtain rfl : t = t' := h.1
+  obtain rfl : f = f' := by simpa using h
+  rfl
+
+instance [Small.{w} C] [LocallySmall.{w} C]
+    {D : Type u'} [Category.{v'} D] [Small.{w} D] [LocallySmall.{w} D] :
+    Small.{w} (C ⥤ D) := by
+  refine small_of_injective (f := fun F (f : Arrow C) ↦ Arrow.mk (F.map f.hom))
+    (fun F G h ↦ Functor.ext (fun X ↦ ?_) (fun X Y f ↦ ?_))
+  · exact congr_arg Comma.left (congr_fun h (Arrow.mk (𝟙 X)))
+  · have : Arrow.mk (F.map f) = Arrow.mk (G.map f) := congr_fun h (Arrow.mk f)
+    rw [Arrow.mk_eq_mk_iff] at this
+    tauto
 
 end CategoryTheory

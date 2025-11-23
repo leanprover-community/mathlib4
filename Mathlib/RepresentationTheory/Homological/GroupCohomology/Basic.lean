@@ -3,10 +3,12 @@ Copyright (c) 2023 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Homology.Opposite
-import Mathlib.Algebra.Homology.ConcreteCategory
-import Mathlib.RepresentationTheory.Homological.Resolution
-import Mathlib.Tactic.CategoryTheory.Slice
+module
+
+public import Mathlib.Algebra.Homology.Opposite
+public import Mathlib.Algebra.Homology.ConcreteCategory
+public import Mathlib.RepresentationTheory.Homological.Resolution
+public import Mathlib.Tactic.CategoryTheory.Slice
 
 /-!
 # The group cohomology of a `k`-linear `G`-representation
@@ -21,7 +23,7 @@ $$+ (-1)^{n + 1}\cdot f(g_0, \dots, g_{n - 1})$$ (where `ρ` is the representati
 
 We have a `k`-linear isomorphism
 $\mathrm{Fun}(G^n, A) \cong \mathrm{Hom}(\bigoplus_{G^n} k[G], A)$, where
-the righthand side is morphisms in `Rep k G`, and $k[G]$ is equipped with the left regular
+the right-hand side is morphisms in `Rep k G`, and $k[G]$ is equipped with the left regular
 representation. If we conjugate the $n$th differential in $\mathrm{Hom}(P, A)$ by this isomorphism,
 where `P` is the bar resolution of `k` as a trivial `k`-linear `G`-representation, then the
 resulting map agrees with the differential $d^n$ defined above, a fact we prove.
@@ -62,6 +64,8 @@ Longer term:
 * The Hochschild-Serre spectral sequence (this is perhaps a good toy example for the theory of
   spectral sequences in general).
 -/
+
+@[expose] public section
 
 
 noncomputable section

@@ -3,9 +3,12 @@ Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto, Oliver Butterley
 -/
-import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
-import Mathlib.MeasureTheory.Integral.Bochner.Set
-import Mathlib.Order.Interval.Set.Union
+module
+
+public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.MeasureTheory.Integral.CompactlySupported
+public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
+public import Mathlib.Order.Interval.Set.Union
 
 /-!
 # Riesz–Markov–Kakutani representation theorem for real-linear functionals
@@ -22,6 +25,8 @@ continuous functions have compact support.
 * `RealRMK.rieszMeasure`: the measure induced by a real linear positive functional.
 * `RealRMK.integral_rieszMeasure`: the Riesz–Markov–Kakutani representation theorem for a real
   linear positive functional.
+* `RealRMK.rieszMeasure_integralPositiveLinearMap`: the uniqueness of the representing measure in
+  the Riesz–Markov–Kakutani representation theorem.
 
 ## Implementation notes
 
@@ -37,6 +42,8 @@ equality is proven using two inequalities by considering `Λ f` and `Λ (-f)` fo
 * [Walter Rudin, Real and Complex Analysis.][Rud87]
 -/
 
+@[expose] public section
+
 open scoped ENNReal
 open CompactlySupported CompactlySupportedContinuousMap Filter Function Set Topology
   TopologicalSpace MeasureTheory
@@ -45,28 +52,29 @@ namespace RealRMK
 
 variable {X : Type*} [TopologicalSpace X] [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X]
   [BorelSpace X]
-variable {Λ : C_c(X, ℝ) →ₗ[ℝ] ℝ} (hΛ : ∀ f, 0 ≤ f → 0 ≤ Λ f)
+variable (Λ : C_c(X, ℝ) →ₚ[ℝ] ℝ)
 
 /-- The measure induced for `Real`-linear positive functional `Λ`, defined through `toNNRealLinear`
 and the `NNReal`-version of `rieszContent`. This is under the namespace `RealRMK`, while
 `rieszMeasure` without namespace is for `NNReal`-linear `Λ`. -/
-noncomputable def rieszMeasure := (rieszContent (toNNRealLinear Λ hΛ)).measure
+noncomputable def rieszMeasure := (rieszContent (toNNRealLinear Λ)).measure
 
 /-- If `f` assumes values between `0` and `1` and the support is contained in `V`, then
 `Λ f ≤ rieszMeasure V`. -/
 lemma le_rieszMeasure_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤ f x ∧ f x ≤ 1)
-    {V : Set X} (hV : tsupport f ⊆ V) : ENNReal.ofReal (Λ f) ≤ rieszMeasure hΛ V := by
+    {V : Set X} (hV : tsupport f ⊆ V) : ENNReal.ofReal (Λ f) ≤ rieszMeasure Λ V := by
   apply le_trans _ (measure_mono hV)
-  have := Content.measure_eq_content_of_regular (rieszContent (toNNRealLinear Λ hΛ))
-    (contentRegular_rieszContent (toNNRealLinear Λ hΛ)) (⟨tsupport f, f.hasCompactSupport⟩)
+  have := Content.measure_eq_content_of_regular (rieszContent (toNNRealLinear Λ))
+    (contentRegular_rieszContent (toNNRealLinear Λ)) (⟨tsupport f, f.hasCompactSupport⟩)
   rw [← Compacts.coe_mk (tsupport f) f.hasCompactSupport, rieszMeasure, this, rieszContent,
-    ENNReal.ofReal_eq_coe_nnreal (hΛ f fun x ↦ (hf x).1), Content.mk_apply, ENNReal.coe_le_coe]
+    ENNReal.ofReal_eq_coe_nnreal (Λ.map_nonneg fun x ↦ (hf x).1), Content.mk_apply,
+    ENNReal.coe_le_coe]
   apply le_iff_forall_pos_le_add.mpr
   intro _ hε
-  obtain ⟨g, hg⟩ := exists_lt_rieszContentAux_add_pos (toNNRealLinear Λ hΛ)
+  obtain ⟨g, hg⟩ := exists_lt_rieszContentAux_add_pos (toNNRealLinear Λ)
     ⟨tsupport f, f.hasCompactSupport⟩ (Real.toNNReal_pos.mpr hε)
   simp_rw [NNReal.val_eq_coe, Real.toNNReal_coe] at hg
-  refine (monotone_of_nonneg hΛ ?_).trans hg.2.le
+  refine (Λ.mono ?_).trans hg.2.le
   intro x
   by_cases hx : x ∈ tsupport f
   · simpa using le_trans (hf x).2 (hg.1 x hx)
@@ -74,12 +82,13 @@ lemma le_rieszMeasure_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤
 
 /-- If `f` assumes the value `1` on a compact set `K` then `rieszMeasure K ≤ Λ f`. -/
 lemma rieszMeasure_le_of_eq_one {f : C_c(X, ℝ)} (hf : ∀ x, 0 ≤ f x) {K : Set X}
-    (hK : IsCompact K) (hfK : ∀ x ∈ K, f x = 1) : rieszMeasure hΛ K ≤ ENNReal.ofReal (Λ f) := by
+    (hK : IsCompact K) (hfK : ∀ x ∈ K, f x = 1) : rieszMeasure Λ K ≤ ENNReal.ofReal (Λ f) := by
   rw [← Compacts.coe_mk K hK, rieszMeasure,
-    Content.measure_eq_content_of_regular _ (contentRegular_rieszContent (toNNRealLinear Λ hΛ))]
+    Content.measure_eq_content_of_regular _ (contentRegular_rieszContent (toNNRealLinear Λ))]
   apply ENNReal.coe_le_iff.mpr
   intro p hp
-  rw [← ENNReal.ofReal_coe_nnreal, ENNReal.ofReal_eq_ofReal_iff (hΛ f hf) NNReal.zero_le_coe] at hp
+  rw [← ENNReal.ofReal_coe_nnreal,
+    ENNReal.ofReal_eq_ofReal_iff (Λ.map_nonneg hf) NNReal.zero_le_coe] at hp
   apply csInf_le'
   rw [Set.mem_image]
   use f.nnrealPart
@@ -126,7 +135,7 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
     intro x hx
     rw [mem_setOf_eq, and_assoc] at hx
     simp_rw [mem_setOf_eq, not_and_or, not_lt, not_le, or_assoc]
-    rcases (by omega : m < n ∨ n < m) with hc | hc
+    rcases (by cutsat : m < n ∨ n < m) with hc | hc
     · left
       exact le_trans hx.2.1 (le_tsub_of_add_le_right (hy hc))
     · right; left
@@ -171,8 +180,8 @@ private lemma exists_nat_large (a' b' : ℝ) {ε : ℝ} (hε : 0 < ε) : ∃ (N 
 
 /-- The main estimate in the proof of the Riesz-Markov-Kakutani: `Λ f` is bounded above by the
 integral of `f` with respect to the `rieszMeasure` associated to `Λ`. -/
-private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rieszMeasure hΛ) := by
-  let μ := rieszMeasure hΛ
+private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rieszMeasure Λ) := by
+  let μ := rieszMeasure Λ
   let K := tsupport f
   -- Suffices to show that `Λ f ≤ ∫ x, f x ∂μ + ε` for arbitrary `ε`.
   apply le_iff_forall_pos_le_add.mpr
@@ -189,7 +198,9 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     ⟨div_pos (sub_pos.mpr hab.1) (Nat.cast_pos'.mpr hN), hε'⟩
   -- Take a partition of the support of `f` into sets `E` by partitioning the range.
   obtain ⟨E, hE⟩ := range_cut_partition f a hε'.1 N <| by
-    field_simp [ε', ← mul_div_assoc, mul_div_cancel_left₀, hab.2]
+    dsimp [ε']
+    field_simp
+    simp [hab.2]
   -- Introduce notation for the partition of the range.
   let y : Fin N → ℝ := fun n ↦ a + ε' * (n + 1)
   -- The measure of each `E n` is finite.
@@ -207,7 +218,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     have h_ε' := (div_pos hε'.1 (Nat.cast_pos'.mpr hN))
     have h n x (hx : x ∈ E n) := lt_add_of_le_of_pos ((hE.2.2.1 n x hx).right) hε'.1
     have h' n := Eq.trans_ne
-      (Content.measure_apply (rieszContent (toNNRealLinear Λ hΛ)) (hE.2.2.2 n)).symm (hE' n)
+      (Content.measure_apply (rieszContent (toNNRealLinear Λ)) (hE.2.2.2 n)).symm (hE' n)
     choose V hV using fun n ↦ exists_open_approx f h_ε' (E n) (h' n) (hE.2.2.2 n) (h n)
     exact ⟨V, hV⟩
   -- Define a partition of unity subordinated to the sets `V`
@@ -232,9 +243,9 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     _ ≤ ∑ n, (|a| + y n + ε') * (μ.real (E n) + ε' / N) - |a| * μ.real K := ?_
     _ = ∑ n, (y n - ε') * μ.real (E n) +
       2 * ε' * μ.real K + ε' / N * ∑ n, (|a| + y n + ε') := ?_
-    _ ≤ ∫ (x : X), f x ∂μ + 2 * ε' * μ.real K + ε' / N * ∑ n, (|a| + y n + ε') := ?_
-    _ ≤ ∫ (x : X), f x ∂μ + ε' * (2 * μ.real K + |a| + b + ε') := ?_
-    _ ≤ ∫ (x : X), f x ∂μ + ε := by simp [hε'.2]
+    _ ≤ ∫ x, f x ∂μ + 2 * ε' * μ.real K + ε' / N * ∑ n, (|a| + y n + ε') := ?_
+    _ ≤ ∫ x, f x ∂μ + ε' * (2 * μ.real K + |a| + b + ε') := ?_
+    _ ≤ ∫ x, f x ∂μ + ε := by simp [hε'.2]
   · -- Equality since `∑ i : Fin N, (g i)` is equal to unity on the support of `f`
     congr; ext x
     simp only [coe_sum, smul_eq_mul, coe_mul, Pi.mul_apply,
@@ -244,7 +255,6 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     · simp [image_eq_zero_of_notMem_tsupport hx]
   · -- Use that `f ≤ y n + ε'` on `V n`
     gcongr with n hn
-    apply monotone_of_nonneg hΛ
     intro x
     by_cases hx : x ∈ tsupport (g n)
     · rw [smul_eq_mul, mul_comm]
@@ -261,7 +271,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     · calc
         _ ≤ μ.real (V n) := by
           apply (ENNReal.ofReal_le_iff_le_toReal _).mp
-          · exact le_rieszMeasure_tsupport_subset hΛ (fun x ↦ hg.2.2.1 n x) (hg.1 n)
+          · exact le_rieszMeasure_tsupport_subset Λ (fun x ↦ hg.2.2.1 n x) (hg.1 n)
           · rw [← lt_top_iff_ne_top]
             apply lt_of_le_of_lt (hV n).2.2
             rw [WithTop.add_lt_top]
@@ -275,9 +285,9 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     rw [← map_sum Λ g _]
     have h x : 0 ≤ (∑ n, g n) x := by simpa using Fintype.sum_nonneg fun n ↦ (hg.2.2.1 n x).1
     apply ENNReal.toReal_le_of_le_ofReal
-    · exact hΛ (∑ n, g n) (fun x ↦ h x)
+    · exact Λ.map_nonneg (fun x ↦ h x)
     · have h' x (hx : x ∈ K) : (∑ n, g n) x = 1 := by simp [hg.2.1 hx]
-      refine rieszMeasure_le_of_eq_one hΛ h f.2 h'
+      refine rieszMeasure_le_of_eq_one Λ h f.2 h'
   · -- Rearrange the sums
     have (n : Fin N) : (|a| + y n + ε') * μ.real (E n) =
         (|a| + 2 * ε') * μ.real (E n) + (y n - ε') * μ.real (E n) := by linarith
@@ -295,7 +305,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     gcongr
     have h : ∀ n, (y n - ε') * μ.real (E n) ≤ ∫ x in (E n), f x ∂μ := by
       intro n
-      apply setIntegral_ge_of_const_le (hE.2.2.2 n) (hE' n)
+      apply setIntegral_ge_of_const_le_real (hE.2.2.2 n) (hE' n)
       · intro x hx
         dsimp [y]; linarith [(hE.2.2.1 n x hx).1]
       · apply Integrable.integrableOn
@@ -304,7 +314,7 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
     calc
       _ ≤ ∑ n, ∫ (x : X) in E n, f x ∂μ := Finset.sum_le_sum fun i a ↦ h i
       _ = ∫ x in (⋃ n, E n), f x ∂μ := by
-        refine Eq.symm <| integral_fintype_iUnion hE.2.2.2 (fun _ _ ↦ hE.2.1 trivial trivial) ?_
+        refine Eq.symm <| integral_iUnion_fintype hE.2.2.2 (fun _ _ ↦ hE.2.1 trivial trivial) ?_
         dsimp [μ, rieszMeasure]
         exact fun _ ↦
           Integrable.integrableOn <| Continuous.integrable_of_hasCompactSupport f.1.2 f.2
@@ -313,8 +323,8 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
   · -- Rough bound of the sum
     have h : ∑ n : Fin N, y n ≤ N * b := by
       have (n : Fin N) := calc y n
-        _ ≤ a + ε' * N := by simp_all [y, show (n : ℝ) + 1 ≤ N by norm_cast; omega]
-        _ = b := by field_simp [ε', ← mul_div_assoc, mul_div_cancel_left₀]
+        _ ≤ a + ε' * N := by simp_all [y, show (n : ℝ) + 1 ≤ N by norm_cast; cutsat]
+        _ = b := by simp [field, ε']
       have : ∑ n, y n ≤ ∑ n, b := Finset.sum_le_sum (fun n ↦ fun _ ↦ this n)
       simp_all
     simp only [Finset.sum_add_distrib, Finset.sum_add_distrib,
@@ -324,16 +334,101 @@ private lemma integral_riesz_aux (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rie
 
 /-- The **Riesz-Markov-Kakutani representation theorem**: given a positive linear functional `Λ`,
 the integral of `f` with respect to the `rieszMeasure` associated to `Λ` is equal to `Λ f`. -/
-theorem integral_rieszMeasure (f : C_c(X, ℝ)) : ∫ x, f x ∂(rieszMeasure hΛ) = Λ f := by
+@[simp]
+theorem integral_rieszMeasure (f : C_c(X, ℝ)) : ∫ x, f x ∂(rieszMeasure Λ) = Λ f := by
   -- We apply the result `Λ f ≤ ∫ x, f x ∂(rieszMeasure hΛ)` to `f` and `-f`.
   apply le_antisymm
   -- prove the inequality for `- f`
   · calc
-      _ = - ∫ x, (-f) x ∂(rieszMeasure hΛ) := by simpa using integral_neg' (-f)
-      _ ≤ - Λ (-f) := neg_le_neg (integral_riesz_aux hΛ (-f))
-      _ = Λ (- -f) := Eq.symm (LinearMap.map_neg Λ (- f))
-      _ = _ := by rw [neg_neg]
+      _ = - ∫ x, (-f) x ∂(rieszMeasure Λ) := by simpa using integral_neg' (-f)
+      _ ≤ - Λ (-f) := neg_le_neg (integral_riesz_aux Λ (-f))
+      _ = _ := by simp
   -- prove the inequality for `f`
-  · exact integral_riesz_aux hΛ f
+  · exact integral_riesz_aux Λ f
+
+/-- The Riesz measure induced by a positive linear functional on `C_c(X, ℝ)` is regular. -/
+instance regular_rieszMeasure : (rieszMeasure Λ).Regular :=
+  (rieszContent _).regular
+
+section integralPositiveLinearMap
+
+variable {μ ν : Measure X}
+
+/-! We show that `RealRMK.rieszMeasure` is a bijection between positive linear functionals on
+`C_c(X, ℝ)` and regular measures with inverse `RealRMK.integralPositiveLinearMap`. -/
+
+/-- Note: the assumption `IsFiniteMeasureOnCompacts μ` cannot be removed. For example, if
+`μ` is infinite on any nonempty set and `ν = 0`, then the hypotheses are satisfied. -/
+lemma measure_le_of_isCompact_of_integral [ν.OuterRegular]
+    [IsFiniteMeasureOnCompacts ν] [IsFiniteMeasureOnCompacts μ]
+    (hμν : ∀ f : C_c(X, ℝ), ∫ x, f x ∂μ ≤ ∫ x, f x ∂ν)
+    ⦃K : Set X⦄ (hK : IsCompact K) : μ K ≤ ν K := by
+  refine ENNReal.le_of_forall_pos_le_add fun ε hε hν ↦ ?_
+  have hνK : ν K ≠ ⊤ := hν.ne
+  have hμK : μ K ≠ ⊤ := hK.measure_lt_top.ne
+  obtain ⟨V, pV1, pV2, pV3⟩ : ∃ V ⊇ K, IsOpen V ∧ ν V ≤ ν K + ε :=
+    exists_isOpen_le_add K ν (ne_of_gt (ENNReal.coe_lt_coe.mpr hε))
+  suffices μ.real K ≤ ν.real K + ε by
+    rwa [← ENNReal.toReal_le_toReal, ENNReal.toReal_add, ENNReal.coe_toReal]
+    all_goals finiteness
+  have VltTop : ν V < ⊤ := pV3.trans_lt <| by finiteness
+  obtain ⟨f, pf1, pf2, pf3⟩ :
+      ∃ f : C_c(X, ℝ), Set.EqOn (⇑f) 1 K ∧ tsupport ⇑f ⊆ V ∧ ∀ (x : X), f x ∈ Set.Icc 0 1 := by
+    obtain ⟨f, hf1, hf2, hf3⟩ := exists_continuousMap_one_of_isCompact_subset_isOpen hK pV2 pV1
+    exact ⟨⟨f, hasCompactSupport_def.mpr hf2⟩, hf1, hf3⟩
+  have hfV (x : X) : f x ≤ V.indicator 1 x := by
+    by_cases hx : x ∈ tsupport f
+    · simp [(pf2 hx), (pf3 x).2]
+    · simp [image_eq_zero_of_notMem_tsupport hx, Set.indicator_nonneg]
+  have hfK (x : X) : K.indicator 1 x ≤ f x := by
+    by_cases hx : x ∈ K
+    · simp [hx, pf1 hx]
+    · simp [hx, (pf3 x).1]
+  calc
+    μ.real K = ∫ x, K.indicator 1 x ∂μ := integral_indicator_one hK.measurableSet |>.symm
+    _ ≤ ∫ x, f x ∂μ := by
+      refine integral_mono ?_ f.integrable hfK
+      exact (continuousOn_const.integrableOn_compact hK).integrable_indicator hK.measurableSet
+    _ ≤ ∫ x, f x ∂ν := hμν f
+    _ ≤ ∫ x, V.indicator 1 x ∂ν := by
+      refine integral_mono f.integrable ?_ hfV
+      exact IntegrableOn.integrable_indicator integrableOn_const pV2.measurableSet
+    _ ≤ (ν K).toReal + ↑ε := by
+      rwa [integral_indicator_one pV2.measurableSet, measureReal_def,
+        ← ENNReal.coe_toReal, ← ENNReal.toReal_add, ENNReal.toReal_le_toReal]
+      all_goals finiteness
+
+/-- If two regular measures give the same integral for every function in `C_c(X, ℝ)`,
+then they are equal. -/
+theorem _root_.MeasureTheory.Measure.ext_of_integral_eq_on_compactlySupported
+    [μ.Regular] [ν.Regular] (hμν : ∀ f : C_c(X, ℝ), ∫ x, f x ∂μ = ∫ x, f x ∂ν) :
+    μ = ν := by
+  apply Measure.OuterRegular.ext_isOpen
+  apply Measure.InnerRegularWRT.eq_of_innerRegularWRT_of_forall_eq Measure.Regular.innerRegular
+    Measure.Regular.innerRegular
+  intro K hK
+  apply le_antisymm
+  · exact measure_le_of_isCompact_of_integral (fun f ↦ (hμν f).le) hK
+  · exact measure_le_of_isCompact_of_integral (fun f ↦ (hμν f).ge) hK
+
+/-- Two regular measures are equal iff they induce the same positive linear functional
+on `C_c(X, ℝ)`. -/
+theorem integralPositiveLinearMap_inj [μ.Regular] [ν.Regular] :
+    integralPositiveLinearMap μ = integralPositiveLinearMap ν ↔ μ = ν where
+  mp hμν := Measure.ext_of_integral_eq_on_compactlySupported fun f ↦ congr($hμν f)
+  mpr _ := by congr
+
+/-- Every regular measure is induced by a positive linear functional on `C_c(X, ℝ)`.
+That is, `RealRMK.rieszMeasure` is a surjective function onto regular measures. -/
+@[simp]
+theorem rieszMeasure_integralPositiveLinearMap [μ.Regular] :
+    rieszMeasure (integralPositiveLinearMap μ) = μ :=
+  Measure.ext_of_integral_eq_on_compactlySupported (by simp)
+
+@[simp]
+theorem integralPositiveLinearMap_rieszMeasure :
+    integralPositiveLinearMap (rieszMeasure Λ) = Λ := by ext; simp
+
+end integralPositiveLinearMap
 
 end RealRMK

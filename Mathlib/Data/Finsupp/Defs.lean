@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
-import Mathlib.Algebra.Group.Support
-import Mathlib.Data.Set.Finite.Basic
+module
+
+public import Mathlib.Algebra.Notation.Support
+public import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Type of functions with finite support
@@ -46,23 +48,20 @@ non-pointwise multiplication.
 * `Finsupp.embDomain`: Maps the domain of a `Finsupp` by an embedding.
 * `Finsupp.zipWith`: Postcomposition of two `Finsupp`s with a function `f` such that `f 0 0 = 0`.
 
-## Notations
+## Notation
 
 This file adds `α →₀ M` as a global notation for `Finsupp α M`.
 
 We also use the following convention for `Type*` variables in this file
 
-* `α`, `β`, `γ`: types with no additional structure that appear as the first argument to `Finsupp`
+* `α`, `β`: types with no additional structure that appear as the first argument to `Finsupp`
   somewhere in the statement;
 
 * `ι` : an auxiliary index type;
 
-* `M`, `M'`, `N`, `P`: types with `Zero` or `(Add)(Comm)Monoid` structure; `M` is also used
-  for a (semi)module over a (semi)ring.
+* `M`, `N`, `O`: types with `Zero` or `(Add)(Comm)Monoid` structure;
 
 * `G`, `H`: groups (commutative or not, multiplicative or additive);
-
-* `R`, `S`: (semi)rings.
 
 ## Implementation notes
 
@@ -74,13 +73,15 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 
 -/
 
-assert_not_exists CompleteLattice Submonoid
+@[expose] public section
+
+assert_not_exists CompleteLattice Monoid
 
 noncomputable section
 
 open Finset Function
 
-variable {α β γ ι M M' N P G H R S : Type*}
+variable {α β ι M N O G H : Type*}
 
 /-- `Finsupp α M`, denoted `α →₀ M`, is the type of functions `f : α → M` such that
   `f x = 0` for all but finitely many `x`. -/
@@ -265,6 +266,10 @@ theorem ofSupportFinite_coe {f : α → M} {hf : (Function.support f).Finite} :
     (ofSupportFinite f hf : α → M) = f :=
   rfl
 
+theorem ofSupportFinite_support {f : α → M} (hf : f.support.Finite) :
+    (ofSupportFinite f hf).support = hf.toFinset := by
+  ext; simp [ofSupportFinite_coe]
+
 instance instCanLift : CanLift (α → M) (α →₀ M) (⇑) fun f => (Function.support f).Finite where
   prf f hf := ⟨ofSupportFinite f hf, rfl⟩
 
@@ -275,7 +280,7 @@ end OfSupportFinite
 
 section MapRange
 
-variable [Zero M] [Zero N] [Zero P]
+variable [Zero M] [Zero N] [Zero O]
 
 /-- The composition of `f : M → N` and `g : α →₀ M` is `mapRange f hf g : α →₀ N`,
 which is well-defined when `f 0 = 0`.
@@ -307,12 +312,12 @@ theorem mapRange_zero {f : M → N} {hf : f 0 = 0} : mapRange f hf (0 : α →�
 theorem mapRange_id (g : α →₀ M) : mapRange id rfl g = g :=
   ext fun _ => rfl
 
-theorem mapRange_comp (f : N → P) (hf : f 0 = 0) (f₂ : M → N) (hf₂ : f₂ 0 = 0) (h : (f ∘ f₂) 0 = 0)
+theorem mapRange_comp (f : N → O) (hf : f 0 = 0) (f₂ : M → N) (hf₂ : f₂ 0 = 0) (h : (f ∘ f₂) 0 = 0)
     (g : α →₀ M) : mapRange (f ∘ f₂) h g = mapRange f hf (mapRange f₂ hf₂ g) :=
   ext fun _ => rfl
 
 @[simp]
-lemma mapRange_mapRange (e₁ : N → P) (e₂ : M → N) (he₁ he₂) (f : α →₀ M) :
+lemma mapRange_mapRange (e₁ : N → O) (e₂ : M → N) (he₁ he₂) (f : α →₀ M) :
     mapRange e₁ he₁ (mapRange e₂ he₂ f) = mapRange (e₁ ∘ e₂) (by simp [*]) f := ext fun _ ↦ rfl
 
 theorem support_mapRange {f : M → N} {hf : f 0 = 0} {g : α →₀ M} :
@@ -335,7 +340,7 @@ lemma range_mapRange (e : M → N) (he₀ : e 0 = 0) :
   · intro h
     classical
     choose f h using h
-    use onFinset g.support (fun x ↦ if x ∈ g.support then f x else 0) (by aesop)
+    use onFinset g.support (fun x ↦ if x ∈ g.support then f x else 0) (by simp_all)
     ext i
     simp only [mapRange_apply, onFinset_apply]
     split_ifs <;> simp_all
@@ -354,6 +359,28 @@ lemma mapRange_surjective (e : M → N) (he₀ : e 0 = 0) (he : Surjective e) :
   simp
 
 end MapRange
+
+section Equiv
+variable [Zero M] [Zero N] [Zero O]
+
+/-- `Finsupp.mapRange` as an equiv. -/
+@[simps apply]
+def mapRange.equiv (e : M ≃ N) (hf : e 0 = 0) : (ι →₀ M) ≃ (ι →₀ N) where
+  toFun := mapRange e hf
+  invFun := mapRange e.symm <| by simp [← hf]
+  left_inv x := by ext; simp
+  right_inv x := by ext; simp
+
+@[simp] lemma mapRange.equiv_refl : mapRange.equiv (.refl M) rfl = .refl (ι →₀ M) := by ext; simp
+
+lemma mapRange.equiv_trans (e : M ≃ N) (hf) (f₂ : N ≃ O) (hf₂) :
+    mapRange.equiv (ι := ι) (e.trans f₂) (by rw [Equiv.trans_apply, hf, hf₂]) =
+      (mapRange.equiv e hf).trans (mapRange.equiv f₂ hf₂) := by ext; simp
+
+@[simp] lemma mapRange.equiv_symm (e : M ≃ N) (hf) :
+    (mapRange.equiv (ι := ι) e hf).symm = mapRange.equiv e.symm (by simp [← hf]) := rfl
+
+end Equiv
 
 /-! ### Declarations about `embDomain` -/
 
@@ -434,12 +461,12 @@ end EmbDomain
 
 section ZipWith
 
-variable [Zero M] [Zero N] [Zero P]
+variable [Zero M] [Zero N] [Zero O]
 
-/-- Given finitely supported functions `g₁ : α →₀ M` and `g₂ : α →₀ N` and function `f : M → N → P`,
-`Finsupp.zipWith f hf g₁ g₂` is the finitely supported function `α →₀ P` satisfying
+/-- Given finitely supported functions `g₁ : α →₀ M` and `g₂ : α →₀ N` and function `f : M → N → O`,
+`Finsupp.zipWith f hf g₁ g₂` is the finitely supported function `α →₀ O` satisfying
 `zipWith f hf g₁ g₂ a = f (g₁ a) (g₂ a)`, which is well-defined when `f 0 0 = 0`. -/
-def zipWith (f : M → N → P) (hf : f 0 0 = 0) (g₁ : α →₀ M) (g₂ : α →₀ N) : α →₀ P :=
+def zipWith (f : M → N → O) (hf : f 0 0 = 0) (g₁ : α →₀ M) (g₂ : α →₀ N) : α →₀ O :=
   onFinset
     (haveI := Classical.decEq α; g₁.support ∪ g₂.support)
     (fun a => f (g₁ a) (g₂ a))
@@ -449,11 +476,11 @@ def zipWith (f : M → N → P) (hf : f 0 0 = 0) (g₁ : α →₀ M) (g₂ : α
       rintro ⟨h₁, h₂⟩; rw [h₁, h₂] at H; exact H hf
 
 @[simp]
-theorem zipWith_apply {f : M → N → P} {hf : f 0 0 = 0} {g₁ : α →₀ M} {g₂ : α →₀ N} {a : α} :
+theorem zipWith_apply {f : M → N → O} {hf : f 0 0 = 0} {g₁ : α →₀ M} {g₂ : α →₀ N} {a : α} :
     zipWith f hf g₁ g₂ a = f (g₁ a) (g₂ a) :=
   rfl
 
-theorem support_zipWith [D : DecidableEq α] {f : M → N → P} {hf : f 0 0 = 0} {g₁ : α →₀ M}
+theorem support_zipWith [D : DecidableEq α] {f : M → N → O} {hf : f 0 0 = 0} {g₁ : α →₀ M}
     {g₂ : α →₀ N} : (zipWith f hf g₁ g₂).support ⊆ g₁.support ∪ g₂.support := by
   convert support_onFinset_subset
 

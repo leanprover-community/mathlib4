@@ -3,10 +3,12 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.Set.Finite.Lattice
-import Mathlib.Order.Atoms
-import Mathlib.Order.Interval.Finset.Defs
-import Mathlib.Order.Preorder.Finite
+module
+
+public import Mathlib.Data.Set.Finite.Lattice
+public import Mathlib.Order.Atoms
+public import Mathlib.Order.Interval.Finset.Defs
+public import Mathlib.Order.Preorder.Finite
 
 /-!
 # Atoms, Coatoms, Simple Lattices, and Finiteness
@@ -19,6 +21,8 @@ This module contains some results on atoms and simple lattices in the finite con
 
 -/
 
+@[expose] public section
+
 
 variable {α β : Type*}
 
@@ -28,20 +32,24 @@ variable [LE α] [BoundedOrder α] [IsSimpleOrder α]
 
 section DecidableEq
 
-/- It is important that `IsSimpleOrder` is the last type-class argument of this instance,
-so that type-class inference fails quickly if it doesn't apply. -/
-instance (priority := 200) [DecidableEq α] : Fintype α :=
+/-- It is important that `IsSimpleOrder` is the last type-class argument of this instance,
+so that type-class inference fails quickly if it doesn't apply.
+
+Note that as of 2025-08-13, this is false. Could someone investigate? -/
+scoped instance (priority := 200) [DecidableEq α] : Fintype α :=
   Fintype.ofEquiv Bool equivBool.symm
 
 end DecidableEq
 
-instance (priority := 200) : Finite α := by classical infer_instance
+scoped instance (priority := 200) : Finite α := by classical infer_instance
 
 end IsSimpleOrder
 
 namespace Fintype
 
 namespace IsSimpleOrder
+
+open scoped _root_.IsSimpleOrder
 
 variable [LE α] [BoundedOrder α] [IsSimpleOrder α] [DecidableEq α]
 

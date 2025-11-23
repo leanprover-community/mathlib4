@@ -3,9 +3,12 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.AffineSpace.Independent
-import Mathlib.LinearAlgebra.AffineSpace.Pointwise
-import Mathlib.LinearAlgebra.Basis.SMul
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.Centroid
+public import Mathlib.LinearAlgebra.AffineSpace.Independent
+public import Mathlib.LinearAlgebra.AffineSpace.Pointwise
+public import Mathlib.LinearAlgebra.Basis.SMul
 
 /-!
 # Affine bases and barycentric coordinates
@@ -39,6 +42,8 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 
 -/
 
+@[expose] public section
+
 open Affine Module Set
 open scoped Pointwise
 
@@ -47,6 +52,9 @@ universe u₁ u₂ u₃ u₄
 /-- An affine basis is a family of affine-independent points whose span is the top subspace. -/
 structure AffineBasis (ι : Type u₁) (k : Type u₂) {V : Type u₃} (P : Type u₄) [AddCommGroup V]
   [AffineSpace V P] [Ring k] [Module k V] where
+  /-- The underlying family of points.
+
+  Do NOT use directly. Use the coercion instead. -/
   protected toFun : ι → P
   protected ind' : AffineIndependent k toFun
   protected tot' : affineSpan k (range toFun) = ⊤
