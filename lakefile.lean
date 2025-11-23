@@ -9,7 +9,7 @@ open Lake DSL
 require "leanprover-community" / "batteries" @ git "nightly-testing"
 require "leanprover-community" / "Qq" @ git "nightly-testing"
 require "leanprover-community" / "aesop" @ git "nightly-testing"
-require "leanprover-community" / "proofwidgets" @ git "v0.0.82-pre1" -- ProofWidgets should always be pinned to a specific version
+require "leanprover-community" / "proofwidgets" @ git "v0.0.82" -- ProofWidgets should always be pinned to a specific version
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets not up-to-date. \
     Please run `lake exe cache get` to fetch the latest ProofWidgets. \
@@ -186,9 +186,12 @@ post_update pkg do
     let toolchainVersion := match toolchainContent.trimAscii.copy.splitOn ":" with
       | [_, version] => version
       | _ => toolchainContent.trimAscii.copy  -- fallback to full content if format is unexpected
+    -- Lean.versionString does not start with a `v`, while the `lean-toolchain` file is flexible.
+    let toolchainVersion := (toolchainVersion.dropPrefix "v").copy
     if Lean.versionString ≠ toolchainVersion then
-      IO.println s!"Not running `lake exe cache get` yet, \
-        as the `lake` version does not match the toolchain version in the project.\n\
+      IO.println s!"Not running `lake exe cache get` yet, as \
+        the `lake` version ({Lean.versionString}) does not match \
+        the toolchain version ({toolchainVersion}) in the project.\n\
         You should run `lake exe cache get` manually."
       return
     let exeFile ← runBuild cache.fetch
