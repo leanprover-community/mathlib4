@@ -34,7 +34,7 @@ namespace CategoryTheory
 @[simps]
 def nerve (C : Type u) [Category.{v} C] : SSet.{max u v} where
   obj Δ := ComposableArrows C (Δ.unop.len)
-  map f x := x.whiskerLeft (SimplexCategory.toCat.map f.unop)
+  map f x := x.whiskerLeft (SimplexCategory.toCat.map f.unop).toFunctor
   -- `aesop` can prove these but is slow, help it out:
   map_id _ := rfl
   map_comp _ _ := rfl
@@ -51,7 +51,7 @@ def nerveMap {C D : Type u} [Category.{v} C] [Category.{v} D] (F : C ⥤ D) : ne
 @[simps]
 def nerveFunctor : Cat.{v, u} ⥤ SSet where
   obj C := nerve C
-  map F := nerveMap F
+  map F := nerveMap F.toFunctor
 
 /-- The 0-simplices of the nerve of a category are equivalent to the objects of the category. -/
 def nerveEquiv (C : Type u) [Category.{v} C] : nerve C _⦋0⦌ ≃ C where
