@@ -259,7 +259,9 @@ instance instModuleFinite
     Module.Finite K (WithLp p V) :=
   Module.Finite.equiv (WithLp.linearEquiv p K V).symm
 
-section LinearMap
+end WithLp
+
+section
 
 variable {K K' V} [Semiring K] [Semiring K'] [Semiring K'']
   {σ : K →+* K'} {σ' : K' →+* K} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
@@ -268,43 +270,50 @@ variable {K K' V} [Semiring K] [Semiring K'] [Semiring K'']
   [RingHomCompTriple σ τ ρ] [RingHomCompTriple τ' σ' ρ']
   [AddCommGroup V] [Module K V] [AddCommGroup V'] [Module K' V'] [AddCommGroup V''] [Module K'' V'']
 
+namespace LinearMap
+
 /-- Lift a (semi)linear map to `WithLp`. -/
-protected def mapₗ (f : V →ₛₗ[σ] V') : WithLp p V →ₛₗ[σ] WithLp p V' :=
+def withLp (f : V →ₛₗ[σ] V') : WithLp p V →ₛₗ[σ] WithLp p V' :=
   (WithLp.linearEquiv p K' V').symm.toLinearMap ∘ₛₗ f ∘ₛₗ (WithLp.linearEquiv p K V).toLinearMap
 
 @[simp]
-theorem coe_mapₗ (f : V →ₛₗ[σ] V') : ⇑(WithLp.mapₗ p f) = WithLp.map p f :=
+theorem coe_withLp (f : V →ₛₗ[σ] V') : ⇑(withLp p f) = WithLp.map p f :=
   rfl
 
 @[simp]
-theorem mapₗ_id : WithLp.mapₗ p (LinearMap.id (R := K) (M := V)) = LinearMap.id :=
+theorem withLp_id : withLp p (LinearMap.id (R := K) (M := V)) = LinearMap.id :=
   rfl
 
 @[simp]
-theorem mapₗ_comp (f : V' →ₛₗ[τ] V'') (g : V →ₛₗ[σ] V') :
-    WithLp.mapₗ p (f ∘ₛₗ g) = WithLp.mapₗ p f ∘ₛₗ WithLp.mapₗ p g :=
-  rfl
-
-/-- Lift a (semi)linear equivalence to `WithLp`. -/
-protected def congrₗ (f : V ≃ₛₗ[σ] V') : WithLp p V ≃ₛₗ[σ] WithLp p V' :=
-  (WithLp.linearEquiv p K V).trans <| f.trans <| (WithLp.linearEquiv p K' V').symm
-
-@[simp]
-theorem coe_congrₗ (f : V ≃ₛₗ[σ] V') : ⇑(WithLp.congrₗ p f) = WithLp.map p f :=
-  rfl
-
-@[simp]
-theorem congrₗ_symm (f : V ≃ₛₗ[σ] V') : (WithLp.congrₗ p f).symm = WithLp.congrₗ p f.symm :=
-  rfl
-
-@[simp]
-theorem congrₗ_refl : WithLp.congrₗ p (LinearEquiv.refl K V) = LinearEquiv.refl K _ :=
-  rfl
-
-theorem congrₗ_comp (f : V ≃ₛₗ[σ] V') (g : V' ≃ₛₗ[τ] V'') :
-    WithLp.congrₗ p (f.trans g) = (WithLp.congrₗ p f).trans (WithLp.congrₗ p g) :=
+theorem withLp_comp (f : V' →ₛₗ[τ] V'') (g : V →ₛₗ[σ] V') :
+    withLp p (f ∘ₛₗ g) = withLp p f ∘ₛₗ withLp p g :=
   rfl
 
 end LinearMap
 
-end WithLp
+namespace LinearEquiv
+
+/-- Lift a (semi)linear equivalence to `WithLp`. -/
+def withLpCongr (f : V ≃ₛₗ[σ] V') : WithLp p V ≃ₛₗ[σ] WithLp p V' :=
+  (WithLp.linearEquiv p K V).trans <| f.trans <| (WithLp.linearEquiv p K' V').symm
+
+@[simp]
+theorem coe_withLpCongr (f : V ≃ₛₗ[σ] V') : ⇑(withLpCongr p f) = WithLp.map p f :=
+  rfl
+
+@[simp]
+theorem withLpCongr_symm (f : V ≃ₛₗ[σ] V') : (withLpCongr p f).symm = withLpCongr p f.symm :=
+  rfl
+
+@[simp]
+theorem withLpCongr_refl :
+    withLpCongr p (LinearEquiv.refl K V) = LinearEquiv.refl K _ :=
+  rfl
+
+theorem withLpCongr_trans (f : V ≃ₛₗ[σ] V') (g : V' ≃ₛₗ[τ] V'') :
+    withLpCongr p (f.trans g) = (withLpCongr p f).trans (withLpCongr p g) :=
+  rfl
+
+end LinearEquiv
+
+end
