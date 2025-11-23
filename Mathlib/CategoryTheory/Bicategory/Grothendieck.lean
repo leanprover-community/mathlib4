@@ -235,8 +235,8 @@ def map (α : F ⟶ G) : ∫ᶜ F ⥤ ∫ᶜ G where
       slice_lhs 2 4 => simp [← Functor.map_comp, ← Cat.Hom.toNatIso_hom, ← Cat.Hom.toNatIso_inv,
         Iso.inv_hom_id_app]
       simp only [assoc]
-      simp_rw [← Cat.Hom.comp_map]
-      -- sorry
+      simp_rw [← reassoc_of% Cat.Hom.comp_map]
+      rw [(α.naturality f.base.op.toLoc).hom.toNatTrans.naturality_assoc]
 
 
 @[simp]
