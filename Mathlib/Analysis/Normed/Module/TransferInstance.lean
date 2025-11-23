@@ -27,21 +27,20 @@ namespace Equiv
 variable (e : α ≃ β)
 
 /-- Transfer a `SeminormedAddCommGroup` across an `Equiv` -/
-protected abbrev seminormedAddCommGroup (e : α ≃ β) :
-    ∀ [SeminormedAddCommGroup β], SeminormedAddCommGroup α :=
+protected abbrev seminormedAddCommGroup [SeminormedAddCommGroup β] (e : α ≃ β) :
+    SeminormedAddCommGroup α :=
   letI := e.addCommGroup
   { SeminormedAddCommGroup.induced _ _ e.addEquiv with toPseudoMetricSpace := e.pseudometricSpace }
 
 /-- Transfer a `NormedAddCommGroup` across an `Equiv` -/
-protected abbrev normedAddCommGroup (e : α ≃ β) :
-    ∀ [NormedAddCommGroup β], NormedAddCommGroup α :=
+protected abbrev normedAddCommGroup [NormedAddCommGroup β] (e : α ≃ β) : NormedAddCommGroup α :=
   letI := e.addCommGroup
   { NormedAddCommGroup.induced _ _ e.addEquiv e.injective
     with toPseudoMetricSpace := e.pseudometricSpace }
 
 /-- Transfer `NormedSpace` across an `Equiv` -/
 protected abbrev normedSpace (𝕜 : Type*) [NormedField 𝕜] (e : α ≃ β) [SeminormedAddCommGroup β] :
-    let _ := Equiv.seminormedAddCommGroup e
+    letI := Equiv.seminormedAddCommGroup e
     ∀ [NormedSpace 𝕜 β], NormedSpace 𝕜 α :=
   letI := e.seminormedAddCommGroup
   letI := e.module 𝕜
