@@ -47,3 +47,4 @@ def delabBinary (arity arg₁ arg₂ : Nat) (mkStx : Term → Term → DelabM Te
     let (canonβ?, instDβ) ← withNaryArg arg₂ delabCheckingCanonical
     -- fall through to normal delab if both canonical
     if canonα? && canonβ? then failure
+    mkStx instDα instDβ
