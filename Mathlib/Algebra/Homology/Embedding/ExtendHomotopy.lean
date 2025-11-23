@@ -9,7 +9,7 @@ public import Mathlib.Algebra.Homology.Embedding.Extend
 public import Mathlib.Algebra.Homology.HomotopyCategory
 
 /-!
-# The extension functor on the homotopy category
+# The extension functor on the homotopy categories
 
 Given an embedding of complex shapes `e : c.Embedding c'` and a preadditive
 category `C`, we define a fully faithful functor
