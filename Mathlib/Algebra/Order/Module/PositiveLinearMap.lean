@@ -83,6 +83,9 @@ instance : FunLike (E₁ →ₚ[R] E₂) E₁ E₂ where
     apply DFunLike.coe_injective'
     exact h
 
+@[simp]
+lemma coe_mk (f : E₁ →ₗ[R] E₂) (hf) : ⇑(mk f hf) = f := rfl
+
 @[ext]
 lemma ext {f g : E₁ →ₚ[R] E₂} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
