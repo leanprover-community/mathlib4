@@ -17,6 +17,7 @@ Possible interpretations:
 -/
 #guard_msgs in
 theorem test_1 : R[M] = MonoidAlgebra R M := rfl
+
 /--
 error: Ambiguous term
   R[A]
