@@ -456,13 +456,13 @@ theorem card_rootSet_eq_natDegree [Algebra F K] {p : F[X]} (hsep : p.Separable)
 
 /-- If a non-zero polynomial splits, then it has no repeated roots on that field
 if and only if it is separable. -/
-theorem nodup_roots_iff_of_splits {f : F[X]} (hf : f ≠ 0) (h : (f.map (RingHom.id F)).Splits) :
+theorem nodup_roots_iff_of_splits {f : F[X]} (hf : f ≠ 0) (h : f.Splits) :
     f.roots.Nodup ↔ f.Separable := by
   classical
   refine ⟨(fun hnsep ↦ ?_).mtr, nodup_roots⟩
   rw [Separable, ← gcd_isUnit_iff, isUnit_iff_degree_eq_zero] at hnsep
   obtain ⟨x, hx⟩ := exists_root_of_splits _
-    (splits_of_splits_of_dvd _ hf h (gcd_dvd_left f _)) hnsep
+    (splits_of_splits_of_dvd _ hf (h.map <| .id F) (gcd_dvd_left f _)) hnsep
   simp_rw [Multiset.nodup_iff_count_le_one, not_forall, not_le]
   exact ⟨x, ((one_lt_rootMultiplicity_iff_isRoot_gcd hf).2 hx).trans_eq f.count_roots.symm⟩
 
@@ -471,7 +471,6 @@ if and only if it is separable. -/
 @[stacks 09H3 "Here we only require `f` splits instead of `K` is algebraically closed."]
 theorem nodup_aroots_iff_of_splits [Algebra F K] {f : F[X]} (hf : f ≠ 0)
     (h : (f.map (algebraMap F K)).Splits) : (f.aroots K).Nodup ↔ f.Separable := by
-  rw [← (algebraMap F K).id_comp, ← splits_map_iff] at h
   rw [nodup_roots_iff_of_splits (map_ne_zero hf) h, separable_map]
 
 theorem card_rootSet_eq_natDegree_iff_of_splits [Algebra F K] {f : F[X]} (hf : f ≠ 0)

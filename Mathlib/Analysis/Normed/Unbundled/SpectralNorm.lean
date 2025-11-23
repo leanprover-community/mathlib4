@@ -953,7 +953,7 @@ theorem spectralNorm_pow_natDegree_eq_prod_roots (x : L) {E : Type*} [Field E] [
 theorem spectralNorm_eq_norm_coeff_zero_rpow (x : L) :
     spectralNorm K L x = ‖(minpoly K x).coeff 0‖ ^ (1 / (minpoly K x).natDegree : ℝ) := by
   set E := (mapAlg K L (minpoly K x)).SplittingField
-  have hspl : Splits ((mapAlg K E (minpoly K x)).map (RingHom.id E)) :=
+  have hspl : Splits (mapAlg K E (minpoly K x)) :=
     IsSplittingField.IsScalarTower.splits (K := L) E (minpoly K x)
   have : Algebra.IsAlgebraic L E :=
     IsSplittingField.IsScalarTower.isAlgebraic E (mapAlg K L (minpoly K x))
