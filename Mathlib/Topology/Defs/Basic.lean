@@ -12,6 +12,8 @@ public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Tactic.ToAdditive
 public import Mathlib.Util.AssertExists
 
+public meta import Mathlib.Util.DelabNonCanonical
+
 /-!
 # Basic definitions about topological spaces
 
@@ -200,34 +202,7 @@ scoped[Topology] notation (name := Continuous_of) "Continuous[" t₁ ", " t₂ "
   @Continuous _ _ t₁ t₂
 
 namespace TopologicalSpace
-open Topology Lean Meta PrettyPrinter.Delaborator SubExpr
-
-/-- When the delab reader is pointed at an expression for an instance, returns `(true, t)`
-**iff** instance synthesis succeeds and produces a defeq instance; otherwise returns `(false, t)`.
--/
-def delabCheckingCanonical : DelabM (Bool × Term) := do
-  let instD ← delab
-  let inst ← getExpr
-  let type ← inferType inst
-  -- if there is no synthesized instance, still return `false`
-  -- (because `inst` is still non-canonical)
-  let .some synthInst ← Meta.trySynthInstance type | return (false, instD)
-  return (← Meta.isDefEq inst synthInst, instD)
-
-/-- Delaborate unary notation referring to non-standard topologies. -/
-def delabUnary (mkStx : Term → DelabM Term) : Delab :=
-  withOverApp 2 <| whenPPOption Lean.getPPNotation do
-    let (false, instD) ← withNaryArg 1 delabCheckingCanonical | failure
-    mkStx instD
-
-/-- Delaborate binary notation referring to non-standard topologies. -/
-def delabBinary (mkStx : Term → Term → DelabM Term) : Delab :=
-  withOverApp 4 <| whenPPOption Lean.getPPNotation do
-    -- fall through to normal delab if both canonical
-    let (canonα?, instDα) ← withNaryArg 2 delabCheckingCanonical
-    let (canonβ?, instDβ) ← withNaryArg 3 delabCheckingCanonical
-    if canonα? && canonβ? then failure
-    mkStx instDα instDβ
+open Topology
 
 /-- Delaborator for `IsOpen[_]`. -/
 @[app_delab IsOpen] def delabIsOpen : Delab := delabUnary fun x ↦ `(IsOpen[$x])
