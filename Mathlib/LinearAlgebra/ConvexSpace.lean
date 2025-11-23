@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Kim Morrison
+-/
 module
 public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Algebra.Module.Defs
@@ -6,6 +11,27 @@ public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Data.Finsupp.SMulWithZero
 public import Mathlib.Data.ZMod.Defs
 public import Mathlib.Tactic.Bound
+
+/-!
+# Convex spaces
+
+This file defines convex spaces as an algebraic structure supporting finite convex combinations.
+
+## Main definitions
+
+* `FiniteProbability R ι`: A finitely supported probability distribution over `ι` with coefficients
+  in `R`. The weights are non-negative and sum to 1.
+* `ConvexSpace R M`: A typeclass for spaces `M` equipped with an operation of taking convex
+  combinations with coefficients in `R`.
+* `convexCombo₂`: Binary convex combinations of two points.
+
+## TODO
+
+* Show that an `AffineSpace` is a `ConvexSpace`.
+* Show that `lineMap` agrees with `convexCombo₂` where defined.
+* Show the usual associativity law for binary convex combinations follows from the `assoc` axiom.
+* Decide if the `ext` axiom is necessary (via a counterexample), or derive it from `assoc`.
+-/
 
 @[expose] public section
 
@@ -118,9 +144,3 @@ proof_wanted convexCombo₂_one {x y : M} :
 
 proof_wanted convexCombo₂_same {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) {x : M} :
   convexCombo₂ s t hs ht h x x = x
-
--- TODO: show that an `AffineSpace` is a `ConvexSpace`.
--- TODO: show that `lineMap` agrees with `convexCombo₂` where defined.
--- TODO: show the usual associativity law for binary convex combinations follows from the
--- `assoc` axiom.
--- TODO: decide if the `ext` axiom is necessary (via a counterexample), or derive it from `assoc`.
