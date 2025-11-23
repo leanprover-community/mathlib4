@@ -3,9 +3,11 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Adam Topaz, Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject.Basic
-import Mathlib.Analysis.Convex.StdSimplex
-import Mathlib.Topology.Category.TopCat.ULift
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+public import Mathlib.Analysis.Convex.StdSimplex
+public import Mathlib.Topology.Category.TopCat.ULift
 
 /-!
 # Topological simplices
@@ -14,6 +16,8 @@ We define the natural functor from `SimplexCategory` to `TopCat` sending `⦋n�
 topological `n`-simplex.
 This is used to define `TopCat.toSSet` in `AlgebraicTopology.SingularSet`.
 -/
+
+@[expose] public section
 
 universe u
 

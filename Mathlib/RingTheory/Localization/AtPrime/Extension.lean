@@ -3,7 +3,9 @@ Copyright (c) 2025 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Riccardo Brasca, Xavier Roblot
 -/
-import Mathlib.NumberTheory.RamificationInertia.Basic
+module
+
+public import Mathlib.NumberTheory.RamificationInertia.Basic
 
 /-!
 # Primes in an extension of localization at prime
@@ -16,7 +18,7 @@ In this file, we study the relation between the (nonzero) prime ideals of `Sₚ`
 ideals of `S` above `p`. In particular, we prove that (under suitable conditions) they are in
 bijection and that the residual degree and ramification index are preserved by this bijection.
 
-# Main definitions and results
+## Main definitions and results
 
 - `Localization.AtPrime.mem_primesOver_of_isPrime`: The nonzero prime ideals of `Sₚ` are
   primes over the maximal ideal of `Rₚ`.
@@ -40,6 +42,8 @@ bijection and that the residual degree and ramification index are preserved by t
   `primesOverEquivPrimesOver` preserves the ramification index.
 
 -/
+
+@[expose] public section
 
 open Algebra IsLocalRing Ideal Localization.AtPrime
 
