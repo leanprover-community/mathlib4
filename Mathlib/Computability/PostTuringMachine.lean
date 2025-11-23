@@ -1082,7 +1082,7 @@ theorem tr_respects :
       refine ReflTransGen.head rfl ?_
       obtain ⟨a, R, rfl⟩ := R.exists_cons
       rw [tr, Tape.mk'_head, stepAux_write, ListBlank.head_cons, stepAux_move,
-        trTape'_move_left enc0, ListBlank.head_cons, ListBlank.tail_cons, Tape.write_mk']
+        trTape'_move_left enc0]
       simpa using IH ..
     | load a q IH =>
       simp only [trNormal, stepAux_read dec enc0 encdec]
