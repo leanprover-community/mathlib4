@@ -1210,7 +1210,7 @@ section CommRing
 
 variable [CommRing R]
 
-/-- `ofMultiset s` defines a monic polynomial and roots `s` with correct multiplicities. -/
+/-- `ofMultiset s` defines a monic polynomial with roots equal to `s`. -/
 noncomputable def ofMultiset (s : Multiset R) : R[X] :=
   (Multiset.map (fun (a : R) => X - C a) s).prod
 
