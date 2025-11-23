@@ -39,9 +39,15 @@ universe u v
 
 noncomputable section
 
+/--
+A finitely supported probability distribution over `ι` with coefficients in `R`.
+The weights are non-negative and sum to 1.
+-/
 structure FiniteProbability (R : Type u) [LE R] [AddCommMonoid R] [One R] (ι : Type v)
     extends weights : ι →₀ R where
+  /-- All weights are non-negative. -/
   nonneg : ∀ m, 0 ≤ weights m
+  /-- The weights sum to 1. -/
   total : weights.sum (fun _ r => r) = 1
 
 namespace FiniteProbability
@@ -50,6 +56,7 @@ variable {R : Type u} [PartialOrder R] [Semiring R] [IsStrictOrderedRing R]
   {κ : Type v} {ι : κ → Type v}
 
 open Classical in
+/-- The point mass distribution concentrated at `i`. -/
 def single {ι : Type v} (i : ι) : FiniteProbability R ι where
   weights := Finsupp.single i 1
   nonneg m := by
@@ -59,14 +66,21 @@ def single {ι : Type v} (i : ι) : FiniteProbability R ι where
     · grind
   total := by simp
 
-def duple {x y : R} (hx : 0 ≤ x) (hy : 0 ≤ y) (h : x + y = 1) : FiniteProbability R (Fin 2) where
-  weights := Finsupp.single 0 x + Finsupp.single 1 y
+/-- A probability distribution on `Fin 2` with weights `x` and `y`. -/
+-- Is it useful to generalize this to `x y : ι`?
+def duple {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) : FiniteProbability R (Fin 2) where
+  weights := Finsupp.single 0 s + Finsupp.single 1 t
   nonneg := by
     simp
     grind
   total := by
     simpa [Finsupp.sum_add_index]
 
+/--
+Composition of probability distributions.
+Given a distribution `f` over `κ` and a family `g` of distributions over `ι k` for each `k : κ`,
+produces a distribution over `Σ k, ι k`.
+-/
 def comp (f : FiniteProbability R κ) (g : (k : κ) → FiniteProbability R (ι k)) :
     FiniteProbability R (Σ k, ι k) where
   weights := f.sum (fun m r => (r • (g m).weights).embDomain <| .sigmaMk m)
@@ -113,6 +127,7 @@ where the coefficients must be non-negative and sum to 1.
 -/
 class ConvexSpace (R : Type u) (M : Type v)
     [PartialOrder R] [Semiring R] [IsStrictOrderedRing R] where
+  /-- Take a convex combination of a family of points with the given probability distribution. -/
   convexCombination {ι : Type v} (f : FiniteProbability R ι) (xs : ι → M) : M
   /-- Associativity of convex combination. -/
   assoc
@@ -136,11 +151,14 @@ variable {R M} [PartialOrder R] [Semiring R] [IsStrictOrderedRing R] [ConvexSpac
 def convexCombo₂ (s t : R) (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) (x y : M) : M :=
   convexCombination (.duple hs ht h) (fun | 0 => x | 1 => y)
 
+/-- A binary convex combination with weight 0 on the first point returns the second point. -/
 proof_wanted convexCombo₂_zero {x y : M} :
   convexCombo₂ (0 : R) 1 (by simp) (by simp) (by simp) x y = y
 
+/-- A binary convex combination with weight 1 on the first point returns the first point. -/
 proof_wanted convexCombo₂_one {x y : M} :
   convexCombo₂ (1 : R) 0 (by simp) (by simp) (by simp) x y = x
 
+/-- A convex combination of a point with itself is that point. -/
 proof_wanted convexCombo₂_same {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) {x : M} :
   convexCombo₂ s t hs ht h x x = x
