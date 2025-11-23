@@ -12,8 +12,10 @@ public import Mathlib.Topology.Algebra.Module.Equiv
 /-!
 # Transfer algebraic structures across `Equiv`s
 
-In this file, we transfer a topological space and continuous linear equivalence structure
-across an equivalence.
+In this file, we construct a continuous linear equivalence `α ≃L[R] β` from an equivalence `α ≃ β`,
+where the continuous `R`-module structure on `α` is the one obtained by transporting an
+`R`-module structure on `β` back along `e`.
+
 This continues the pattern set in `Mathlib/Algebra/Module/TransferInstance.lean`.
 -/
 
