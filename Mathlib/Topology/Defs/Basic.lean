@@ -202,19 +202,19 @@ scoped[Topology] notation (name := Continuous_of) "Continuous[" t₁ ", " t₂ "
   @Continuous _ _ t₁ t₂
 
 namespace TopologicalSpace
-open Topology
+open Topology Lean.PrettyPrinter.Delaborator
 
 /-- Delaborator for `IsOpen[_]`. -/
-@[app_delab IsOpen] def delabIsOpen : Delab := delabUnary fun x ↦ `(IsOpen[$x])
+@[app_delab IsOpen] meta def delabIsOpen : Delab := delabUnary 2 1 fun x ↦ `(IsOpen[$x])
 
 /-- Delaborator for `IsClosed[_]`. -/
-@[app_delab IsClosed] def delabIsClosed : Delab := delabUnary fun x ↦ `(IsClosed[$x])
+@[app_delab IsClosed] meta def delabIsClosed : Delab := delabUnary 2 1 fun x ↦ `(IsClosed[$x])
 
 /-- Delaborator for `closure[_]`. -/
-@[app_delab closure] def delabClosure : Delab := delabUnary fun x ↦ `(closure[$x])
+@[app_delab closure] meta def delabClosure : Delab := delabUnary 2 1 fun x ↦ `(closure[$x])
 
 /-- Delaborator for `Continuous[_, _]`. -/
-@[app_delab Continuous] def delabContinuous : Delab := delabBinary fun x y ↦ `(Continuous[$x, $y])
+@[app_delab Continuous] meta def delabContinuous : Delab := delabBinary 4 2 3 fun x y ↦ `(Continuous[$x, $y])
 
 end TopologicalSpace
 
