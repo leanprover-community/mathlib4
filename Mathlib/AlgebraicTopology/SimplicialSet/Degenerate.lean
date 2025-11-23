@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 
 /-!
 # Degenerate simplices
@@ -17,6 +19,8 @@ for an epimorphism `f : ⦋n⦌ ⟶ ⦋m⦌` and a non-degenerate `m`-simplex `y
 `unique_nonDegenerate_simplex` and `unique_nonDegenerate_map`).
 
 -/
+
+@[expose] public section
 
 universe u
 

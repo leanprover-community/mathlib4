@@ -3,7 +3,9 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+module
+
+public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 
 /-!
 # Integral average of a function
@@ -33,6 +35,8 @@ function, we provide a convenience lemma `MeasureTheory.Integrable.to_average`.
 
 integral, center mass, average value
 -/
+
+@[expose] public section
 
 
 open ENNReal MeasureTheory MeasureTheory.Measure Metric Set Filter TopologicalSpace Function

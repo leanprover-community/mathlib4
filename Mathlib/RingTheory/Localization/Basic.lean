@@ -3,13 +3,15 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.Field.IsField
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Data.Finite.Prod
-import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
-import Mathlib.RingTheory.Localization.Defs
-import Mathlib.RingTheory.OreLocalization.Ring
+module
+
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.Field.IsField
+public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+public import Mathlib.Data.Finite.Prod
+public import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
+public import Mathlib.RingTheory.Localization.Defs
+public import Mathlib.RingTheory.OreLocalization.Ring
 
 /-!
 # Localizations of commutative rings
@@ -68,6 +70,8 @@ localization, ring localization, commutative ring localization, characteristic p
 commutative ring, field of fractions
 -/
 
+@[expose] public section
+
 assert_not_exists Ideal
 
 open Function
@@ -122,15 +126,26 @@ protected lemma finite [Finite R] : Finite S := by
     simpa using IsLocalization.exists_mk'_eq M x
   exact .of_surjective _ this
 
+section CompatibleSMul
+
+variable (N₁ N₂ : Type*) [AddCommMonoid N₁] [AddCommMonoid N₂] [Module R N₁] [Module R N₂]
+
 variable (M S) in
 include M in
-theorem linearMap_compatibleSMul (N₁ N₂) [AddCommMonoid N₁] [AddCommMonoid N₂] [Module R N₁]
-    [Module S N₁] [Module R N₂] [Module S N₂] [IsScalarTower R S N₁] [IsScalarTower R S N₂] :
+theorem linearMap_compatibleSMul [Module S N₁] [Module S N₂]
+    [IsScalarTower R S N₁] [IsScalarTower R S N₂] :
     LinearMap.CompatibleSMul N₁ N₂ S R where
   map_smul f s s' := by
     obtain ⟨r, m, rfl⟩ := exists_mk'_eq M s
     rw [← (map_units S m).smul_left_cancel]
     simp_rw [algebraMap_smul, ← map_smul, ← smul_assoc, smul_mk'_self, algebraMap_smul, map_smul]
+
+instance [Module (Localization M) N₁] [Module (Localization M) N₂]
+    [IsScalarTower R (Localization M) N₁] [IsScalarTower R (Localization M) N₂] :
+    LinearMap.CompatibleSMul N₁ N₂ (Localization M) R :=
+  linearMap_compatibleSMul M ..
+
+end CompatibleSMul
 
 variable {g : R →+* P} (hg : ∀ y : M, IsUnit (g y))
 

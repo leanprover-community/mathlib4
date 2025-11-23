@@ -3,8 +3,10 @@ Copyright (c) 2025 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Fin.Basic
-import Mathlib.Order.Interval.Set.UnorderedInterval
+module
+
+public import Mathlib.Order.Fin.Basic
+public import Mathlib.Order.Interval.Set.UnorderedInterval
 
 /-!
 # (Pre)images of set intervals under `Fin` operations
@@ -22,6 +24,8 @@ under the following operations:
 - `Fin.succ`,
 - `Fin.rev`.
 -/
+
+@[expose] public section
 
 open Function Set
 
@@ -310,7 +314,7 @@ theorem image_castAdd_uIoo (m) (i j : Fin n) :
 -/
 
 theorem image_cast (h : m = n) (s : Set (Fin m)) : Fin.cast h '' s = Fin.cast h.symm ⁻¹' s :=
-  (finCongr h).image_eq_preimage _
+  (finCongr h).image_eq_preimage_symm _
 
 @[simp]
 theorem image_cast_fun (h : m = n) : image (Fin.cast h) = preimage (Fin.cast h.symm) :=
@@ -784,7 +788,7 @@ theorem image_succ_uIoo (i j : Fin n) : succ '' uIoo i j = uIoo i.succ j.succ :=
 @[simp]
 theorem range_rev : range (rev : Fin n → Fin n) = univ := rev_surjective.range_eq
 
-theorem image_rev (s : Set (Fin n)) : rev '' s = rev ⁻¹' s := revPerm.image_eq_preimage s
+theorem image_rev (s : Set (Fin n)) : rev '' s = rev ⁻¹' s := revPerm.image_eq_preimage_symm s
 
 @[simp]
 theorem image_rev_fun : image (@rev n) = preimage rev := funext image_rev

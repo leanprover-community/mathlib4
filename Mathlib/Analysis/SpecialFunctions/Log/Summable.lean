@@ -3,9 +3,10 @@ Copyright (c) 2024 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
-import Mathlib.Topology.Algebra.InfiniteSum.Field
+public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
+public import Mathlib.Topology.Algebra.InfiniteSum.Field
 
 /-!
 # Summability of logarithms
@@ -14,6 +15,8 @@ We give conditions under which the logarithms of a summble sequence is summable.
 to relate summability of `f` to multipliability of `1 + f`.
 
 -/
+
+@[expose] public section
 
 variable {ι : Type*}
 
@@ -28,9 +31,9 @@ lemma hasProd_of_hasSum_log (hfn : ∀ i, f i ≠ 0) (hf : HasSum (fun i ↦ log
 
 lemma multipliable_of_summable_log (hf : Summable fun i ↦ log (f i)) :
     Multipliable f := by
-  by_cases hfn : ∃ n, f n = 0
+  by_cases! hfn : ∃ n, f n = 0
   · exact multipliable_of_exists_eq_zero hfn
-  · exact ⟨_, hasProd_of_hasSum_log (not_exists.mp hfn) hf.hasSum⟩
+  · exact ⟨_, hasProd_of_hasSum_log hfn hf.hasSum⟩
 
 /-- The exponential of a convergent sum of complex logs is the corresponding infinite product. -/
 lemma cexp_tsum_eq_tprod (hfn : ∀ i, f i ≠ 0) (hf : Summable fun i ↦ log (f i)) :

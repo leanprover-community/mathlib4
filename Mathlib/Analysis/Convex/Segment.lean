@@ -3,9 +3,12 @@ Copyright (c) 2019 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.LinearAlgebra.AffineSpace.Midpoint
-import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
-import Mathlib.LinearAlgebra.Ray
+module
+
+public import Mathlib.Algebra.Order.Nonneg.Ring
+public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
+public import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
+public import Mathlib.LinearAlgebra.Ray
 
 /-!
 # Segments in vector spaces
@@ -26,6 +29,8 @@ Generalize all this file to affine spaces.
 Should we rename `segment` and `openSegment` to `convex.Icc` and `convex.Ioo`? Should we also
 define `clopenSegment`/`convex.Ico`/`convex.Ioc`?
 -/
+
+@[expose] public section
 
 variable {𝕜 E F G ι : Type*} {M : ι → Type*}
 
@@ -570,6 +575,30 @@ theorem Convex.mem_Ico (h : x < y) :
     · exact Ioo_subset_Ico_self ((Convex.mem_Ioo h).2 ⟨a, b, ha, hb', hab, rfl⟩)
 
 end LinearOrderedField
+
+namespace Nonneg
+
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] {x y z : 𝕜}
+
+protected lemma Icc_subset_segment {x y : {t : 𝕜 // 0 ≤ t}} :
+    Icc x y ⊆ segment {t : 𝕜 // 0 ≤ t} x y := by
+  intro a ⟨hxa, hay⟩
+  rw [← Subtype.coe_le_coe] at hxa hay
+  rcases Icc_subset_segment ⟨hxa, hay⟩ with ⟨t₁, t₂, t₁_nonneg, t₂_nonneg, t_add, hta⟩
+  refine ⟨⟨t₁, t₁_nonneg⟩, ⟨t₂, t₂_nonneg⟩, zero_le _, zero_le _, ?_, ?_⟩ <;>
+  ext <;> simpa
+
+protected lemma segment_eq_Icc {x y : {t : 𝕜 // 0 ≤ t}} (hxy : x ≤ y) :
+    segment {t : 𝕜 // 0 ≤ t} x y = Icc x y := by
+  refine subset_antisymm (segment_subset_Icc hxy) Nonneg.Icc_subset_segment
+
+protected lemma segment_eq_uIcc {x y : {t : 𝕜 // 0 ≤ t}} :
+    segment {t : 𝕜 // 0 ≤ t} x y = uIcc x y := by
+  rcases le_total x y with h | h
+  · simp [h, Nonneg.segment_eq_Icc]
+  · simp [h, segment_symm _ x y, Nonneg.segment_eq_Icc]
+
+end Nonneg
 
 namespace Prod
 
