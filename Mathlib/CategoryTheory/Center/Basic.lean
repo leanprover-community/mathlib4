@@ -65,7 +65,6 @@ instance : IsMulCommutative (CatCenter C) where
 instance {X Y : C} : SMul (CatCenter C) (X ⟶ Y) where
   smul z f := f ≫ z.app Y
 
-@[simp]
 lemma smul_eq (z : CatCenter C) {X Y : C} (f : X ⟶ Y) : z • f = f ≫ z.app Y := rfl
 
 lemma smul_eq' (z : CatCenter C) {X Y : C} (f : X ⟶ Y) : z • f = z.app X ≫ f :=
@@ -82,7 +81,7 @@ instance {X Y : C} : SMul (CatCenter C)ˣ (X ≅ Y) where
         rw [smul_eq, smul_eq', Category.assoc, ← mul_app_assoc]
         simp }
 
-@[simp, reassoc]
+@[reassoc]
 lemma smul_iso_hom_eq (z : (CatCenter C)ˣ) {X Y : C} (f : X ≅ Y) :
     (z • f).hom = f.hom ≫ z.1.app Y := rfl
 
@@ -91,7 +90,7 @@ lemma smul_iso_hom_eq' (z : (CatCenter C)ˣ) {X Y : C} (f : X ≅ Y) :
     (z • f).hom = z.1.app X ≫ f.hom :=
   z.1.naturality f.hom
 
-@[simp, reassoc]
+@[reassoc]
 lemma smul_iso_inv_eq (z : (CatCenter C)ˣ) {X Y : C} (f : X ≅ Y) :
     (z • f).inv = f.inv ≫ (z⁻¹.1).app X := rfl
 
