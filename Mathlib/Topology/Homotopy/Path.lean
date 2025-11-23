@@ -469,7 +469,7 @@ def subpathOn (γ : Path x y) (a b : unitInterval) (hab : a ≤ b) : Path (γ a)
       linarith [show (a : ℝ) ≤ b from hab]
     · calc (a : ℝ) + t * ((b : ℝ) - a)
           ≤ a + 1 * ((b : ℝ) - a) := by
-            apply add_le_add_left
+            apply add_le_add_right
             apply mul_le_mul_of_nonneg_right t.2.2
             linarith [show (a : ℝ) ≤ b from hab]
         _ = b := by ring
@@ -486,7 +486,7 @@ theorem subpathOn_apply (γ : Path x y) (a b : unitInterval) (hab : a ≤ b) (t 
         linarith [show (a : ℝ) ≤ b from hab]
       · calc (a : ℝ) + t * ((b : ℝ) - a)
             ≤ a + 1 * ((b : ℝ) - a) := by
-              apply add_le_add_left
+              apply add_le_add_right
               apply mul_le_mul_of_nonneg_right t.2.2
               linarith [show (a : ℝ) ≤ b from hab]
           _ = b := by ring
