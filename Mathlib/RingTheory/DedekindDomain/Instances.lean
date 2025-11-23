@@ -40,6 +40,7 @@ variable {R : Type*} (S : Type*) (T : Type*) [CommRing R] [CommRing S] [CommRing
 local notation3 "K" => FractionRing R
 local notation3 "L" => FractionRing S
 local notation3 "F" => FractionRing T
+
 section
 
 theorem algebraMapSubmonoid_le_nonZeroDivisors_of_faithfulSMul {A : Type*} (B : Type*)

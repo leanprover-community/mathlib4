@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 module
 
+public import Mathlib.Algebra.GroupWithZero.Torsion
 public import Mathlib.LinearAlgebra.Dimension.DivisionRing
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 public import Mathlib.RingTheory.Finiteness.Quotient
@@ -194,16 +195,14 @@ lemma ramificationIdx_eq_one_of_map_localization
   · exact hp this
   · exact IsLocalization.injective _ hp'
 
-theorem ramificationIdx_map_self_eq_one_of_isPrincipal [IsPrincipalIdealRing S] [IsDomain S]
-    (h₁ : map f p ≠ ⊥) (h₂ : map f p ≠ ⊤) :
+theorem ramificationIdx_map_self_eq_one [IsDedekindDomain S] (h₁ : map f p ≠ ⊤) (h₂ : map f p ≠ ⊥) :
     ramificationIdx f p (map f p) = 1 := by
-  refine ramificationIdx_spec (by simp) ?_
-  obtain ⟨x, hx⟩ := IsPrincipalIdealRing.principal (map f p)
-  rw [hx, submodule_span_eq, span_singleton_pow, span_singleton_le_span_singleton]
-  have h₃ : x ≠ 0 := by rwa [ne_eq, hx, submodule_span_eq, span_singleton_eq_bot] at h₁
-  have h₄ : ¬ IsUnit x := by rwa [ne_eq, hx, submodule_span_eq, span_singleton_eq_top] at h₂
-  convert (pow_dvd_pow_iff h₃ h₄).not.mpr (by linarith : ¬ 2 ≤ 1)
-  rw [pow_one]
+  refine ramificationIdx_spec (by simp) fun h ↦ ?_
+  have : map f p ^ 1 = (map f p) ^ 2 := by
+    rw [pow_one]
+    exact le_antisymm h <| pow_le_self two_ne_zero
+  have := IsMulTorsionFree.pow_right_injective₀ (by rwa [one_eq_top]) h₂ this
+  simp_all
 
 namespace IsDedekindDomain
 

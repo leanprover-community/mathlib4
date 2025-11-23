@@ -20,15 +20,15 @@ bijection and that the residual degree and ramification index are preserved by t
 
 ## Main definitions and results
 
-- `Localization.AtPrime.mem_primesOver_of_isPrime`: The nonzero prime ideals of `Sₚ` are
+- `IsLocalization.AtPrime.mem_primesOver_of_isPrime`: The nonzero prime ideals of `Sₚ` are
   primes over the maximal ideal of `Rₚ`.
 
-- `Localization.AtPrime.quotMapEquivQuotMapOfIsMaximal`: `S ⧸ P ≃+* Sₚ ⧸ P·Sₚ` where
+- `IsLocalization.AtPrime.quotMapEquivQuotMapOfIsMaximal`: `S ⧸ P ≃+* Sₚ ⧸ P·Sₚ` where
   `P` is a maximal ideal of `S` above `p`.
 
-- `Localization.AtPrime.quotMapEquivQuotMapMaximalIdeal`: `S ⧸ pS ≃+* Sₚ ⧸ p·Sₚ`.
+- `IsLocalization.AtPrime.quotMapEquivQuotMapMaximalIdeal`: `S ⧸ pS ≃+* Sₚ ⧸ p·Sₚ`.
 
-- `Localization.AtPrime.algebraMap_equivQuotMaximalIdeal_symm_apply_eq`: the map
+- `IsLocalization.AtPrime.algebraMap_equivQuotMaximalIdeal_symm_apply`: the map
   `equivQuotMaximalIdeal` and `quotMapEquivQuotMapOfIsMaximal` satisfy the obvious
   commutative diagram.
 
@@ -112,7 +112,7 @@ theorem exists_algebraMap_quot_eq_of_mem_quot [P.IsMaximal]
 The isomorphism `S ⧸ P ≃+* Sₚ ⧸ P·Sₚ`, where `Sₚ` is the localization of `S` at the (image) of
 the complement of `p` and `P` is a maximal ideal of `S` above `p`.
 Note that this isomorphism makes the obvious diagram involving `R ⧸ p ≃+* Rₚ ⧸ maximalIdeal Rₚ`
-commute, see `IsLocalization.AtPrime.algebraMap_equivQuotMaximalIdeal_symm_apply_eq`.
+commute, see `IsLocalization.AtPrime.algebraMap_equivQuotMaximalIdeal_symm_apply`.
 -/
 noncomputable def quotMapEquivQuotMapOfIsMaximal [p.IsPrime] [P.IsMaximal] :
     S ⧸ P ≃+* Sₚ ⧸ P.map (algebraMap S Sₚ) :=
@@ -159,7 +159,7 @@ Here, `𝓂` denotes the maximal ideal of `Rₚ` and `𝒫` the image of `P` in 
 Note that result is stated in that direction since this is the formulation needed for the proof
 of `Localization.AtPrime.inertiaDeg_map_eq_inertiaDeg`.
 -/
-theorem algebraMap_equivQuotMaximalIdeal_symm_apply_eq [p.IsMaximal] [P.IsMaximal]
+theorem algebraMap_equivQuotMaximalIdeal_symm_apply [p.IsMaximal] [P.IsMaximal]
     [(P.map (algebraMap S Sₚ)).LiesOver (maximalIdeal Rₚ)] (x : Rₚ ⧸ maximalIdeal Rₚ) :
     algebraMap (R ⧸ p) (S ⧸ P) ((equivQuotMaximalIdeal p Rₚ).symm x) =
     (quotMapEquivQuotMapOfIsMaximal p Sₚ P).symm
@@ -260,7 +260,7 @@ theorem inertiaDeg_map_eq_inertiaDeg [p.IsMaximal] [P.IsMaximal]
   refine Algebra.finrank_eq_of_equiv_equiv (equivQuotMaximalIdeal p Rₚ).symm
     (quotMapEquivQuotMapOfIsMaximal p Sₚ P).symm ?_
   ext x
-  exact algebraMap_equivQuotMaximalIdeal_symm_apply_eq p Rₚ Sₚ P x
+  exact algebraMap_equivQuotMaximalIdeal_symm_apply p Rₚ Sₚ P x
 
 theorem ramificationIdx_map_eq_ramificationIdx [NoZeroSMulDivisors R S]
     [NoZeroSMulDivisors R Rₚ] [NoZeroSMulDivisors R Sₚ] [NoZeroSMulDivisors S Sₚ]
@@ -279,17 +279,15 @@ theorem ramificationIdx_map_eq_ramificationIdx [NoZeroSMulDivisors R S]
   have h₂ : Ideal.map (algebraMap Rₚ Sₚ) (maximalIdeal Rₚ) ≤ P.map (algebraMap S Sₚ) := by
     rw [map_le_iff_le_comap]
     exact le_of_eq <| (liesOver_iff _ _).mp <| liesOver_map_of_liesOver p Rₚ Sₚ P
-  have main := (ramificationIdx_algebra_tower
+  have h_main := (ramificationIdx_algebra_tower
       (map_ne_bot_of_ne_bot h₁) (map_ne_bot_of_ne_bot hp) h₂).symm.trans
       (ramificationIdx_algebra_tower (map_ne_bot_of_ne_bot hP)
       (map_ne_bot_of_ne_bot hp) le_rfl)
-  rwa [show ramificationIdx (algebraMap R Rₚ) p (maximalIdeal Rₚ) = 1 by
-      rw [← map_eq_maximalIdeal p, ramificationIdx_map_self_eq_one_of_isPrincipal
-        (map_ne_bot_of_ne_bot hp)]
-      rw [map_eq_maximalIdeal]
-      exact IsPrime.ne_top',
-    ramificationIdx_map_self_eq_one_of_isPrincipal (map_ne_bot_of_ne_bot hP)
-    IsPrime.ne_top', one_mul, mul_one] at main
+  rwa [ramificationIdx_map_self_eq_one IsPrime.ne_top' (map_ne_bot_of_ne_bot hP), mul_one,
+    ← map_eq_maximalIdeal p, ramificationIdx_map_self_eq_one _ (map_ne_bot_of_ne_bot hp), one_mul,
+    map_eq_maximalIdeal p] at h_main
+  rw [map_eq_maximalIdeal]
+  exact IsPrime.ne_top'
 
 theorem exists_primesOver_map_eq_of_primesOver (Q : (maximalIdeal Rₚ).primesOver Sₚ) :
     ∃ q : p.primesOver S, q.val.map (algebraMap S Sₚ) = Q := by
