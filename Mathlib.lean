@@ -1707,6 +1707,7 @@ public import Mathlib.Analysis.Convex.KreinMilman
 public import Mathlib.Analysis.Convex.LinearIsometry
 public import Mathlib.Analysis.Convex.Measure
 public import Mathlib.Analysis.Convex.Mul
+public import Mathlib.Analysis.Convex.NNReal
 public import Mathlib.Analysis.Convex.PartitionOfUnity
 public import Mathlib.Analysis.Convex.PathConnected
 public import Mathlib.Analysis.Convex.Piecewise
@@ -1904,6 +1905,9 @@ public import Mathlib.Analysis.Normed.Lp.PiLp
 public import Mathlib.Analysis.Normed.Lp.ProdLp
 public import Mathlib.Analysis.Normed.Lp.WithLp
 public import Mathlib.Analysis.Normed.Lp.lpSpace
+public import Mathlib.Analysis.Normed.Module.Alternating.Basic
+public import Mathlib.Analysis.Normed.Module.Alternating.Curry
+public import Mathlib.Analysis.Normed.Module.Alternating.Uncurry.Fin
 public import Mathlib.Analysis.Normed.Module.Ball.Action
 public import Mathlib.Analysis.Normed.Module.Ball.Homeomorph
 public import Mathlib.Analysis.Normed.Module.Ball.Pointwise
@@ -1911,14 +1915,25 @@ public import Mathlib.Analysis.Normed.Module.Ball.RadialEquiv
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Module.Complemented
 public import Mathlib.Analysis.Normed.Module.Completion
+public import Mathlib.Analysis.Normed.Module.Connected
 public import Mathlib.Analysis.Normed.Module.Convex
 public import Mathlib.Analysis.Normed.Module.Dual
+public import Mathlib.Analysis.Normed.Module.ENormedSpace
+public import Mathlib.Analysis.Normed.Module.Extr
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
 public import Mathlib.Analysis.Normed.Module.HahnBanach
+public import Mathlib.Analysis.Normed.Module.MStructure
+public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
+public import Mathlib.Analysis.Normed.Module.Multilinear.Curry
+public import Mathlib.Analysis.Normed.Module.MultipliableUniformlyOn
+public import Mathlib.Analysis.Normed.Module.Normalize
+public import Mathlib.Analysis.Normed.Module.PiTensorProduct.InjectiveSeminorm
+public import Mathlib.Analysis.Normed.Module.PiTensorProduct.ProjectiveSeminorm
 public import Mathlib.Analysis.Normed.Module.RCLike.Basic
 public import Mathlib.Analysis.Normed.Module.RCLike.Extend
 public import Mathlib.Analysis.Normed.Module.RCLike.Real
 public import Mathlib.Analysis.Normed.Module.Ray
+public import Mathlib.Analysis.Normed.Module.RieszLemma
 public import Mathlib.Analysis.Normed.Module.Span
 public import Mathlib.Analysis.Normed.Module.WeakDual
 public import Mathlib.Analysis.Normed.MulAction
@@ -1972,6 +1987,9 @@ public import Mathlib.Analysis.NormedSpace.ENormedSpace
 public import Mathlib.Analysis.NormedSpace.Extend
 public import Mathlib.Analysis.NormedSpace.Extr
 public import Mathlib.Analysis.NormedSpace.FunctionSeries
+public import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
+public import Mathlib.Analysis.NormedSpace.HahnBanach.SeparatingDual
+public import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 public import Mathlib.Analysis.NormedSpace.HomeomorphBall
 public import Mathlib.Analysis.NormedSpace.IndicatorFunction
 public import Mathlib.Analysis.NormedSpace.Int
@@ -2286,6 +2304,8 @@ public import Mathlib.CategoryTheory.Comma.StructuredArrow.Final
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Functor
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 public import Mathlib.CategoryTheory.ComposableArrows.Basic
+public import Mathlib.CategoryTheory.ComposableArrows.One
+public import Mathlib.CategoryTheory.ComposableArrows.Two
 public import Mathlib.CategoryTheory.ConcreteCategory.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 public import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
@@ -2772,6 +2792,7 @@ public import Mathlib.CategoryTheory.MorphismProperty.Concrete
 public import Mathlib.CategoryTheory.MorphismProperty.Descent
 public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 public import Mathlib.CategoryTheory.MorphismProperty.FunctorCategory
+public import Mathlib.CategoryTheory.MorphismProperty.HasCardinalLT
 public import Mathlib.CategoryTheory.MorphismProperty.Ind
 public import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
 public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
@@ -2798,6 +2819,7 @@ public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.ObjectProperty.Extensions
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.PreservesLimits
+public import Mathlib.CategoryTheory.ObjectProperty.HasCardinalLT
 public import Mathlib.CategoryTheory.ObjectProperty.Ind
 public import Mathlib.CategoryTheory.ObjectProperty.LimitsClosure
 public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
@@ -4043,6 +4065,7 @@ public import Mathlib.Geometry.Euclidean.Projection
 public import Mathlib.Geometry.Euclidean.SignedDist
 public import Mathlib.Geometry.Euclidean.Simplex
 public import Mathlib.Geometry.Euclidean.Sphere.Basic
+public import Mathlib.Geometry.Euclidean.Sphere.OrthRadius
 public import Mathlib.Geometry.Euclidean.Sphere.Power
 public import Mathlib.Geometry.Euclidean.Sphere.Ptolemy
 public import Mathlib.Geometry.Euclidean.Sphere.SecondInter
@@ -6130,6 +6153,8 @@ public import Mathlib.RingTheory.TensorProduct.Basic
 public import Mathlib.RingTheory.TensorProduct.DirectLimitFG
 public import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.RingTheory.TensorProduct.Free
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
+public import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 public import Mathlib.RingTheory.TensorProduct.Maps
 public import Mathlib.RingTheory.TensorProduct.MonoidAlgebra
@@ -6264,6 +6289,7 @@ public import Mathlib.SetTheory.Surreal.Basic
 public import Mathlib.SetTheory.Surreal.Dyadic
 public import Mathlib.SetTheory.Surreal.Multiplication
 public import Mathlib.SetTheory.ZFC.Basic
+public import Mathlib.SetTheory.ZFC.Cardinal
 public import Mathlib.SetTheory.ZFC.Class
 public import Mathlib.SetTheory.ZFC.Ordinal
 public import Mathlib.SetTheory.ZFC.PSet
@@ -6442,6 +6468,7 @@ public import Mathlib.Tactic.Linter.MinImports
 public import Mathlib.Tactic.Linter.Multigoal
 public import Mathlib.Tactic.Linter.OldObtain
 public import Mathlib.Tactic.Linter.PPRoundtrip
+public import Mathlib.Tactic.Linter.PrivateModule
 public import Mathlib.Tactic.Linter.Style
 public import Mathlib.Tactic.Linter.TextBased
 public import Mathlib.Tactic.Linter.UnusedTactic
