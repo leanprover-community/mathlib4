@@ -11,7 +11,7 @@ import Mathlib.Topology.Compactness.Compact
 # Combinatorial compactness and the Rado selection lemma
 
 This file proves the Rado selection lemma in a number of variants, as an application of compactness
-to combinatorics. Many (though not all) uses of compactness arguments in combinatorics can be 
+to combinatorics. Many (though not all) uses of compactness arguments in combinatorics can be
 formulated using this lemma.
 
 We give four versions, depending on whether the "partial" functions are defined locally or globally,
@@ -21,7 +21,7 @@ subtypes are easier to prove and often easier to apply, so they are provided too
 -/
 
 /--
-Given a (dependent) function `g s : (a : α) → β a` for each finset `s` of `α`, provided that 
+Given a (dependent) function `g s : (a : α) → β a` for each finset `s` of `α`, provided that
 each `β a` is finite, we can find another function `χ : (a : α) → β a` such that on every `s`,
 there is some larger `t` such that `χ` agrees with `g t` on `s`.
 Informally, we are stitching together the local functions `g s` into a global `χ` such that on
@@ -48,7 +48,7 @@ theorem Finset.rado_selection {α : Type*} {β : α → Type*} [∀ a, Finite (�
   simpa using CompactSpace.iInter_nonempty he' he''
 
 /--
-Given a (dependent) function `g s : (a : s) → β a` for each finset `s` of `α`, provided that 
+Given a (dependent) function `g s : (a : s) → β a` for each finset `s` of `α`, provided that
 each `β a` is finite, we can find another function `χ : (a : α) → β a` such that on every `s`,
 there is some larger `t` such that `χ` agrees with `g t` on `s`.
 Informally, we are stitching together the local functions `g s` into a global `χ` such that on
@@ -65,7 +65,7 @@ theorem Finset.rado_selection_subtype {α : Type*} {β : α → Type*} [∀ a, F
   simpa [hg] using Finset.rado_selection g'
 
 /--
-Given a (dependent) function `g s : (a : α) → β a` for each finite set `s` of `α`, provided that 
+Given a (dependent) function `g s : (a : α) → β a` for each finite set `s` of `α`, provided that
 each `β a` is finite, we can find another function `χ : (a : α) → β a` such that on every `s`,
 there is some larger `t` such that `χ` agrees with `g t` on `s`.
 Informally, we are stitching together the local functions `g s` into a global `χ` such that on
@@ -81,7 +81,7 @@ theorem Set.Finite.rado_selection {α : Type*} {β : α → Type*} [∀ a, Finit
   exact ⟨t, by simp_all⟩
 
 /--
-Given a (dependent) function `g s : (a : s) → β a` for each finite set `s` of `α`, provided that 
+Given a (dependent) function `g s : (a : s) → β a` for each finite set `s` of `α`, provided that
 each `β a` is finite, we can find another function `χ : (a : α) → β a` such that on every `s`,
 there is some larger `t` such that `χ` agrees with `g t` on `s`.
 Informally, we are stitching together the local functions `g s` into a global `χ` such that on
