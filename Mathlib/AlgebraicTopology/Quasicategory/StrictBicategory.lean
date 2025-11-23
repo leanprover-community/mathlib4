@@ -16,7 +16,7 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.NerveAdjunction
 In this file we define a strict bicategory `QCat.strictBicategory` whose objects
 are quasicategories.
 
-This strict category is defined from `QCat.catEnrichedOrdinaryCategoryQCat` which is
+This strict category is defined from `QCat.catEnrichedOrdinaryCategory` which is
 the `Cat`-enriched ordinary category of quasicategories whose hom-categories are the
 homotopy categories of the simplicial internal homs, defined by
 applying `hoFunctor : SSet ⥤ Cat`.
