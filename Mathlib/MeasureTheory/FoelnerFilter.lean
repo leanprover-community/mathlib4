@@ -74,8 +74,7 @@ theorem IsFoelner.univ_of_isFiniteMeasure [NeZero μ] [IsFiniteMeasure μ] :
   eventually_meas_ne_top := by simp
   tendsto_meas_symmDiff := by simp [tendsto_const_nhds]
 
-lemma IsFoelner.limUnder_univ_eq_one_of_ultrafilter_le [SMulInvariantMeasure G X μ]
-    {l : Filter ι} [NeBot l] (hfoel : IsFoelner G μ l F)
+lemma IsFoelner.limUnder_univ_of_ultrafilter_le {l : Filter ι} (hfoel : IsFoelner G μ l F)
     {u : Ultrafilter ι} (hle : u ≤ l) :
     limUnder u (fun i ↦ μ (.univ ∩ (F i)) / μ (F i)) = 1 := by
   refine Tendsto.limUnder_eq <| Tendsto.mono_left (tendsto_congr' ?_|>.mp tendsto_const_nhds) hle
@@ -83,8 +82,7 @@ lemma IsFoelner.limUnder_univ_eq_one_of_ultrafilter_le [SMulInvariantMeasure G X
     (hfoel.eventually_meas_ne_zero.and hfoel.eventually_meas_ne_top)
     (fun _ hi ↦ by simp [ENNReal.div_self hi.1 hi.2])
 
-lemma IsFoelner.limUnder_add_of_ultrafilter_le [SMulInvariantMeasure G X μ]
-    {l : Filter ι} [NeBot l] (hfoel : IsFoelner G μ l F)
+lemma IsFoelner.limUnder_add_of_ultrafilter_le {l : Filter ι} (hfoel : IsFoelner G μ l F)
     {u : Ultrafilter ι} (hle : u ≤ l) :
     ∀ s t, MeasurableSet t → Disjoint s t →
       limUnder u (fun i ↦ μ ((s ∪ t) ∩ (F i)) / μ (F i))  =
@@ -109,8 +107,7 @@ lemma IsFoelner.limUnder_add_of_ultrafilter_le [SMulInvariantMeasure G X μ]
       (MeasurableSet.inter ht hi)]
 
 lemma IsFoelner.limUnder_smul_of_ultrafilter_le [SMulInvariantMeasure G X μ]
-    {l : Filter ι} [NeBot l] (hfoel : IsFoelner G μ l F)
-    {u : Ultrafilter ι} (hle : u ≤ l) :
+    {l : Filter ι} (hfoel : IsFoelner G μ l F) {u : Ultrafilter ι} (hle : u ≤ l) :
     ∀ (g : G) (s : Set X),
       limUnder u (fun i ↦ μ ((g • s) ∩ (F i)) / μ (F i)) =
         limUnder u (fun i ↦ μ (s ∩ (F i)) / μ (F i)) := by
@@ -158,7 +155,7 @@ theorem IsFoelner.amenable [SMulInvariantMeasure G X μ]
       ∀ (g : G) (s : Set X), m (g • s) = m s := by
   use fun t ↦ limUnder (Ultrafilter.of l) (fun i ↦ μ (t ∩ (F i)) / μ (F i))
   refine ⟨?_, ?_, ?_⟩
-  · exact IsFoelner.limUnder_univ_eq_one_of_ultrafilter_le hfoel (Ultrafilter.of_le l)
+  · exact IsFoelner.limUnder_univ_of_ultrafilter_le hfoel (Ultrafilter.of_le l)
   · exact IsFoelner.limUnder_add_of_ultrafilter_le hfoel (Ultrafilter.of_le l)
   · exact IsFoelner.limUnder_smul_of_ultrafilter_le hfoel (Ultrafilter.of_le l)
 
