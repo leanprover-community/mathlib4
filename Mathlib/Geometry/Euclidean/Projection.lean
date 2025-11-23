@@ -663,7 +663,7 @@ lemma orthogonalProjectionSpan_congr {m n : ℕ} {s₁ : Simplex ℝ P m} {s₂ 
     ((s.reindex e).orthogonalProjectionSpan p : P) = s.orthogonalProjectionSpan p :=
   orthogonalProjectionSpan_congr (s.reindex_range_points e) rfl
 
-@[simp] lemma orthogonalProjectionSpan_map {n : ℕ} (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂) (p : P) :
+lemma orthogonalProjectionSpan_map {n : ℕ} (s : Simplex ℝ P n) (f : P →ᵃⁱ[ℝ] P₂) (p : P) :
     (s.map f.toAffineMap f.injective).orthogonalProjectionSpan (f p) =
       f (s.orthogonalProjectionSpan p) := by
   simp_rw [orthogonalProjectionSpan]
