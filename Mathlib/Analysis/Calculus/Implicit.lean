@@ -260,7 +260,11 @@ theorem implicitFunction_unique {ψ : F → G → E}
 
 theorem implicitFunction_unique' :
     ∀ᶠ yz in 𝓝 (φ.prodFun φ.pt), ∀ᶠ x in 𝓝 φ.pt,
-      φ.leftFun x = yz.1 ∧ φ.rightFun x = yz.2 → x = φ.implicitFunction yz.1 yz.2 := by sorry
+      φ.prodFun x = yz → x = φ.implicitFunction yz.1 yz.2 := by
+  filter_upwards [φ.prod_map_implicitFunction] with yz hyz
+  filter_upwards [φ.implicitFunction_apply_image] with x hx hprod
+  rw [← hx, ← hprod]
+  rfl
 
 end ImplicitFunctionData
 
