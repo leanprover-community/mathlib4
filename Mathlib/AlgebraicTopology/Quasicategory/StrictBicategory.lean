@@ -51,7 +51,7 @@ abbrev QCat := ObjectProperty.FullSubcategory Quasicategory
 
 /-- `QCat` obtains a `Cat`-enriched ordinary category structure by applying `hoFunctor` to the
 hom objects in its `SSet`-enriched ordinary structure. -/
-noncomputable instance QCat.CatEnrichedOrdinaryCat : EnrichedOrdinaryCategory Cat QCat :=
+noncomputable instance QCat.catEnrichedOrdinaryCategory : EnrichedOrdinaryCategory Cat QCat :=
   TransportEnrichment.enrichedOrdinaryCategory QCat hoFunctor
     hoFunctor.unitHomEquiv hoFunctor.unitHomEquiv_eq
 
