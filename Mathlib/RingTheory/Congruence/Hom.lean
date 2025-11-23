@@ -527,11 +527,11 @@ the definition of the homomorphism from the quotient by `c` to the quotient by
 /-- Given ring congruence relations `c, d` on a ring such that `d` contains `c`,
 the definition of the homomorphism from the quotient by `c` to the quotient by
 `d` induced by `d`'s quotient map. -/
-@[simp] theorem factorₐ_mk {c d : RingCon M} (h : c ≤ d) (x : M) :
+@[simp] theorem factorₐ_mk {c d : RingCon M} (h : c ≤ d) (x : M) :
     factorₐ R h ⟦x⟧ = ⟦x⟧ :=
   rfl
 
-@[simp] theorem mkₐ_comp_factorₐ_comp_mkₐ {c d : RingCon M} (h : c ≤ d) (x : M) :
+@[simp] theorem mkₐ_comp_factorₐ_comp_mkₐ {c d : RingCon M} (h : c ≤ d) :
     (factorₐ R h).comp (c.mkₐ R) = d.mkₐ R :=
   rfl
 
