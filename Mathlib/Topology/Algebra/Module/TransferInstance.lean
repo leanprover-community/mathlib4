@@ -26,7 +26,7 @@ namespace Equiv
 variable (e : α ≃ β)
 
 /-- Transfer a `TopologicalSpace` across an `Equiv` -/
-protected abbrev topologicalSpace (e : α ≃ β) : ∀ [TopologicalSpace β], TopologicalSpace α :=
+protected abbrev topologicalSpace [TopologicalSpace β] (e : α ≃ β) : TopologicalSpace α :=
   .induced e ‹_›
 
 variable [TopologicalSpace β] [AddCommMonoid β] [Semiring R] [Module R β]
@@ -47,7 +47,9 @@ def continuousLinearEquiv (e : α ≃ β) :
   letI := e.module R
   { toLinearEquiv := e.linearEquiv _
     continuous_toFun := continuous_induced_dom
-    continuous_invFun := by convert continuous_coinduced_rng; exact e.coinduced_symm.symm }
+    continuous_invFun := by
+      simp only [Equiv.topologicalSpace, ← @coinduced_symm]
+      exact continuous_coinduced_rng }
 
 @[simp]
 lemma toLinearEquiv_continuousLinearEquiv (e : α ≃ β) :
