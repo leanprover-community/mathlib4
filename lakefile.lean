@@ -34,6 +34,8 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.allScriptsDocumented, true⟩,
   ⟨`linter.pythonStyle, true⟩,
   ⟨`linter.style.longFile, .ofNat 1500⟩,
+  ⟨`linter.tacticAnalysis.omegaToCutsat, true⟩,
+  ⟨`linter.tacticAnalysis.regressions.omegaToCutsat, true⟩
   -- ⟨`linter.nightlyRegressionSet, true⟩,
   -- `latest_import.yml` uses this comment: if you edit it, make sure that the workflow still works
 ]
@@ -55,7 +57,7 @@ abbrev mathlibLeanOptions := #[
     -- Note that this should be fixed first such that access to private declarations in such proofs
     -- is allowed even when disabling `backward.privateInPublic`.
     ⟨`backward.proofsInPublic, true⟩,
-    ⟨`maxSynthPendingDepth, .ofNat 3⟩
+    ⟨`maxSynthPendingDepth, .ofNat 3⟩,
   ] ++ -- options that are used in `lake build`
     mathlibOnlyLinters.map fun s ↦ { s with name := `weak ++ s.name }
 
