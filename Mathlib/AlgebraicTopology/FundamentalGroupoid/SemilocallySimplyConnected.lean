@@ -266,7 +266,7 @@ lemma PathInTube.subpathOn_range_subset {X : Type*} [TopologicalSpace X] {x y : 
     linarith
   · calc (part.t i.castSucc : ℝ) + t * (part.t i.succ - part.t i.castSucc)
         ≤ part.t i.castSucc + 1 * (part.t i.succ - part.t i.castSucc) := by
-          apply add_le_add_left
+          apply add_le_add_right
           apply mul_le_mul_of_nonneg_right t.2.2
           linarith
       _ = part.t i.succ := by ring
