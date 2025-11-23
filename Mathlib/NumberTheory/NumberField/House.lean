@@ -105,12 +105,12 @@ private def newBasis := (RingOfIntegers.basis K).reindex (equivReindex K).symm
 
 /-- `supOfBasis K` calculates the supremum of the absolute values of
   the elements in `newBasis K`. -/
-private def supOfBasis : ℝ := univ.sup' univ_nonempty
+def supOfBasis : ℝ := univ.sup' univ_nonempty
   fun r ↦ house (algebraMap (𝓞 K) K (newBasis K r))
 
 end DecidableEq
 
-private theorem supOfBasis_nonneg : 0 ≤ supOfBasis K := by
+theorem supOfBasis_nonneg : 0 ≤ supOfBasis K := by
   simp only [supOfBasis, le_sup'_iff, mem_univ, and_self,
     exists_const, house_nonneg]
 
@@ -200,7 +200,7 @@ variable {A : ℝ} (habs : ∀ k l, (house ((algebraMap (𝓞 K) K) (a k l))) �
 variable [DecidableEq (K →+* ℂ)]
 
 /-- `c₂` is the product of the maximum of `1` and `c`, and `supOfBasis`. -/
-private abbrev c₂ := max 1 (c K) * (supOfBasis K)
+abbrev c₂ := max 1 (c K) * (supOfBasis K)
 
 private theorem c₂_nonneg : 0 ≤ c₂ K :=
   mul_nonneg (le_trans zero_le_one (le_max_left ..)) (supOfBasis_nonneg _)
@@ -242,7 +242,7 @@ private theorem asiegel_remark : ‖asiegel K a‖ ≤ c₂ K * A := by
   · exact mul_nonneg (c₂_nonneg _) Apos
 
 /-- `c₁ K` is the product of `finrank ℚ K` and  `c₂ K` and depends on `K`. -/
-private def c₁ := finrank ℚ K * c₂ K
+def c₁ := finrank ℚ K * c₂ K
 
 include habs Apos hxbound hpq in
 private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
