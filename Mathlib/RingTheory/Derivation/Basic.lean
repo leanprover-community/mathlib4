@@ -321,6 +321,8 @@ def compAlgebraMap [Algebra A B] [IsScalarTower R A B] [IsScalarTower A B M]
   leibniz' a b := by simp
   toLinearMap := d.toLinearMap.comp (IsScalarTower.toAlgHom R A B).toLinearMap
 
+/-- For a tower `R → A → B → M`, the precomposition defined in `compAlgebraMap`
+is an `A`-linear map. -/
 def compAlgebraHom [Algebra A B] [IsScalarTower R A B] [IsScalarTower A B M] [IsScalarTower R A M] :
 (Derivation R B M) →ₗ[A] Derivation R A M :=
 {
