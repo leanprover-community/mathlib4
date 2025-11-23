@@ -8,12 +8,13 @@ module
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Algebra.Group.TransferInstance
 public import Mathlib.Algebra.Module.TransferInstance
+public import Mathlib.Topology.MetricSpace.TransferInstance
 
 /-!
 # Transfer algebraic structures across `Equiv`s
 
-In this file, we transfer a (pseudo-)metric space, (semi-)normed additive commutive group
-and normed space structures across an equivalence.
+In this file, we transfer a (semi-)normed additive commutive group and normed space structures
+across an equivalence.
 This continues the pattern set in `Mathlib/Algebra/Module/TransferInstance.lean`.
 -/
 
@@ -24,17 +25,6 @@ variable {α β : Type*}
 namespace Equiv
 
 variable (e : α ≃ β)
-
-/-- Transfer a `Dist` across an `Equiv` -/
-protected abbrev dist (e : α ≃ β) : ∀ [Dist β], Dist α := ⟨fun x y ↦ dist (e x) (e y)⟩
-
-/-- Transfer a `PseudoMetricSpace` across an `Equiv` -/
-protected abbrev pseudometricSpace (e : α ≃ β) : ∀ [PseudoMetricSpace β], PseudoMetricSpace α :=
-  .induced e ‹_›
-
-/-- Transfer a `MetricSpace` across an `Equiv` -/
-protected abbrev metricSpace (e : α ≃ β) : ∀ [MetricSpace β], MetricSpace α :=
-  .induced e e.injective ‹_›
 
 /-- Transfer a `SeminormedAddCommGroup` across an `Equiv` -/
 protected abbrev seminormedAddCommGroup (e : α ≃ β) :
