@@ -95,7 +95,7 @@ noncomputable instance : Inhabited (ClassGroup R) := ⟨1⟩
 modulo the principal submodules (invertible submodules are automatically fractional ideals). -/
 noncomputable def ClassGroup.mulEquivUnitsSubmoduleQuotRange :
     ClassGroup R ≃*
-    (Submodule R (FractionRing R))ˣ ⧸ (Units.map (Submodule.spanSingleton R)).range :=
+    (Submodule R (FractionRing R))ˣ ⧸ (Units.map (Submodule.spanSingleton R).toMonoidHom).range :=
   QuotientGroup.congr _ _ unitsMulEquivSubmodule <| by
     simp_rw [MonoidHom.range_eq_map, Subgroup.map_map]; congr; ext; simp [unitsMulEquivSubmodule]
 
