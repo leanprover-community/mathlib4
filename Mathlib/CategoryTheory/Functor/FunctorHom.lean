@@ -201,7 +201,7 @@ lemma associator_hom_apply (K L M N : C ⥤ D) {X : C}
     (α_ ((K.functorHom L).obj X) ((L.functorHom M).obj X) ((M.functorHom N).obj X)).hom x =
     ⟨x.1.1, x.1.2, x.2⟩ := rfl
 
-noncomputable instance : EnrichedCategory (C ⥤ Type max v' v u) (C ⥤ D) where
+instance : EnrichedCategory (C ⥤ Type max v' v u) (C ⥤ D) where
   Hom := functorHom
   id F := natTransEquiv.symm (𝟙 F)
   comp F G H := { app := fun _ ⟨f, g⟩ => f.comp g }
