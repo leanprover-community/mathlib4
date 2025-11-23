@@ -92,36 +92,36 @@ abbrev IsGE (n : ℤ) := K.IsSupported (embeddingUpIntGE n)
 /-- The condition that a cochain complex `K` is (cohomologically) `≤ n`. -/
 abbrev IsLE (n : ℤ) := K.IsSupported (embeddingUpIntLE n)
 
-lemma isZero_of_isStrictlyGE (n i : ℤ) (hi : i < n) [K.IsStrictlyGE n] :
+lemma isZero_of_isStrictlyGE (n i : ℤ) (hi : i < n := by cutsat) [K.IsStrictlyGE n] :
     IsZero (K.X i) :=
   isZero_X_of_isStrictlySupported K (embeddingUpIntGE n) i
     (by simpa only [notMem_range_embeddingUpIntGE_iff] using hi)
 
-lemma isZero_of_isStrictlyLE (n i : ℤ) (hi : n < i) [K.IsStrictlyLE n] :
+lemma isZero_of_isStrictlyLE (n i : ℤ) (hi : n < i := by cutsat) [K.IsStrictlyLE n] :
     IsZero (K.X i) :=
   isZero_X_of_isStrictlySupported K (embeddingUpIntLE n) i
     (by simpa only [notMem_range_embeddingUpIntLE_iff] using hi)
 
-lemma exactAt_of_isGE (n i : ℤ) (hi : i < n) [K.IsGE n] :
+lemma exactAt_of_isGE (n i : ℤ) (hi : i < n := by cutsat) [K.IsGE n] :
     K.ExactAt i :=
   exactAt_of_isSupported K (embeddingUpIntGE n) i
     (by simpa only [notMem_range_embeddingUpIntGE_iff] using hi)
 
-lemma exactAt_of_isLE (n i : ℤ) (hi : n < i) [K.IsLE n] :
+lemma exactAt_of_isLE (n i : ℤ) (hi : n < i := by cutsat) [K.IsLE n] :
     K.ExactAt i :=
   exactAt_of_isSupported K (embeddingUpIntLE n) i
     (by simpa only [notMem_range_embeddingUpIntLE_iff] using hi)
 
-lemma isZero_of_isGE (n i : ℤ) (hi : i < n) [K.IsGE n] [K.HasHomology i] :
+lemma isZero_of_isGE (n i : ℤ) (hi : i < n := by cutsat) [K.IsGE n] [K.HasHomology i] :
     IsZero (K.homology i) :=
   (K.exactAt_of_isGE n i hi).isZero_homology
 
-lemma isZero_of_isLE (n i : ℤ) (hi : n < i) [K.IsLE n] [K.HasHomology i] :
+lemma isZero_of_isLE (n i : ℤ) (hi : n < i := by cutsat) [K.IsLE n] [K.HasHomology i] :
     IsZero (K.homology i) :=
   (K.exactAt_of_isLE n i hi).isZero_homology
 
 lemma isStrictlyGE_iff (n : ℤ) :
-    K.IsStrictlyGE n ↔ ∀ (i : ℤ) (_ : i < n), IsZero (K.X i) := by
+    K.IsStrictlyGE n ↔ ∀ (i : ℤ) (_ : i < n := by cutsat), IsZero (K.X i) := by
   constructor
   · intro _ i hi
     exact K.isZero_of_isStrictlyGE n i hi
@@ -164,29 +164,25 @@ lemma isStrictlyLE_of_le (p q : ℤ) (hpq : p ≤ q) [K.IsStrictlyLE p] :
     K.IsStrictlyLE q := by
   rw [isStrictlyLE_iff]
   intro i hi
-  apply K.isZero_of_isStrictlyLE p
-  cutsat
+  exact K.isZero_of_isStrictlyLE p _
 
 lemma isStrictlyGE_of_ge (p q : ℤ) (hpq : p ≤ q) [K.IsStrictlyGE q] :
     K.IsStrictlyGE p := by
   rw [isStrictlyGE_iff]
   intro i hi
-  apply K.isZero_of_isStrictlyGE q
-  cutsat
+  exact K.isZero_of_isStrictlyGE q _
 
 lemma isLE_of_le (p q : ℤ) (hpq : p ≤ q) [K.IsLE p] :
     K.IsLE q := by
   rw [isLE_iff]
   intro i hi
-  apply K.exactAt_of_isLE p
-  cutsat
+  exact K.exactAt_of_isLE p _
 
 lemma isGE_of_ge (p q : ℤ) (hpq : p ≤ q) [K.IsGE q] :
     K.IsGE p := by
   rw [isGE_iff]
   intro i hi
-  apply K.exactAt_of_isGE q
-  cutsat
+  exact K.exactAt_of_isGE q _
 
 section
 
