@@ -120,8 +120,15 @@ theorem le_log_of_pow_le {b x y : ℕ} (hb : 1 < b) (h : b ^ x ≤ y) : x ≤ lo
 theorem pow_log_le_self (b : ℕ) {x : ℕ} (hx : x ≠ 0) : b ^ log b x ≤ x :=
   pow_le_of_le_log hx le_rfl
 
+/-- See also `log_lt_of_lt_pow'` for a version that assumes `x ≠ 0` instead of `y ≠ 0`. -/
 theorem log_lt_of_lt_pow {b x y : ℕ} (hy : y ≠ 0) : y < b ^ x → log b y < x :=
   lt_imp_lt_of_le_imp_le (pow_le_of_le_log hy)
+
+/-- A version of `log_lt_of_lt_pow` that assumes `x ≠ 0` instead of `y ≠ 0`. -/
+theorem log_lt_of_lt_pow' {b x y : ℕ} (hx : x ≠ 0) (hlt : y < b ^ x) : log b y < x := by
+  rcases eq_or_ne y 0 with rfl | hy
+  · grind [log_zero_right]
+  · exact log_lt_of_lt_pow hy hlt
 
 theorem lt_pow_of_log_lt {b x y : ℕ} (hb : 1 < b) : log b y < x → y < b ^ x :=
   lt_imp_lt_of_le_imp_le (le_log_of_pow_le hb)
@@ -258,6 +265,19 @@ lemma log2_eq_log_two {n : ℕ} : Nat.log2 n = Nat.log 2 n := by
   intro m
   rw [Nat.le_log2 hn, Nat.le_log_iff_pow_le Nat.one_lt_two hn]
 
+@[simp]
+lemma log_pow_left (b k n : ℕ) : log (b ^ k) n = log b n / k := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp
+  · rcases k.eq_zero_or_pos with rfl | hk
+    · simp
+    · rcases Nat.lt_or_ge 1 b with hb | hb
+      · refine eq_of_forall_le_iff fun c ↦ ?_
+        rw [le_log_iff_pow_le (Nat.one_lt_pow (Nat.ne_of_gt hk) hb) hn, Nat.le_div_iff_mul_le hk,
+          le_log_iff_pow_le hb hn, Nat.pow_mul']
+      · rw [log_of_left_le_one hb, Nat.zero_div, log_of_left_le_one]
+        rwa [Nat.pow_le_one_iff (Nat.ne_of_gt hk)]
+
 /-! ### Ceil logarithm -/
 
 
@@ -301,7 +321,9 @@ theorem clog_eq_one {b n : ℕ} (hn : 2 ≤ n) (h : n ≤ b) : clog b n = 1 := b
   rw [clog_of_two_le (hn.trans h) hn, clog_of_right_le_one]
   rw [← Nat.lt_succ_iff, Nat.div_lt_iff_lt_mul] <;> omega
 
-/-- `clog b` and `pow b` form a Galois connection. -/
+/-- `clog b` and `pow b` form a Galois connection.
+
+See also `clog_le_of_le_pow` for the implication that does not require `1 < b`. -/
 theorem clog_le_iff_le_pow {b : ℕ} (hb : 1 < b) {x y : ℕ} : clog b x ≤ y ↔ x ≤ b ^ y := by
   induction x using Nat.strong_induction_on generalizing y with | h x ih => ?_
   cases y
@@ -318,6 +340,11 @@ theorem clog_le_iff_le_pow {b : ℕ} (hb : 1 < b) {x y : ℕ} : clog b x ≤ y �
   · exact iff_of_true (zero_le _)
       ((not_lt.1 (not_and.1 h hb)).trans <| succ_le_of_lt <| Nat.pow_pos b_pos)
 
+theorem clog_le_of_le_pow {b x y : ℕ} (h : x ≤ b ^ y) : clog b x ≤ y := by
+  rcases Nat.lt_or_ge 1 b with hb | hb
+  · rwa [clog_le_iff_le_pow hb]
+  · grind [clog_of_left_le_one]
+
 @[deprecated clog_le_iff_le_pow (since := "2025-10-05")]
 theorem le_pow_iff_clog_le {b : ℕ} (hb : 1 < b) {x y : ℕ} : x ≤ b ^ y ↔ clog b x ≤ y :=
   (clog_le_iff_le_pow hb).symm
@@ -328,6 +355,9 @@ theorem lt_clog_iff_pow_lt {b : ℕ} (hb : 1 < b) {x y : ℕ} : y < clog b x ↔
 @[deprecated lt_clog_iff_pow_lt (since := "2025-10-05")]
 theorem pow_lt_iff_lt_clog {b : ℕ} (hb : 1 < b) {x y : ℕ} : b ^ y < x ↔ y < clog b x :=
   (lt_clog_iff_pow_lt hb).symm
+
+theorem pow_lt_of_lt_clog {b x y : ℕ} (h : y < clog b x) : b ^ y < x :=
+  lt_imp_lt_of_le_imp_le clog_le_of_le_pow h
 
 @[simp]
 theorem clog_pow (b x : ℕ) (hb : 1 < b) : clog b (b ^ x) = x :=
@@ -393,6 +423,22 @@ theorem clog_eq_clog_succ_iff {b n : ℕ} (hb : 1 < b) :
   simp only [le_antisymm_iff, and_iff_right_iff_imp]
   exact fun _ ↦ clog_monotone b (le_add_right n 1)
 
+/-- This lemma says that `⌈log (b ^ k) n⌉ = ⌈(⌈log b n⌉ / k)⌉, using operations on natural numbers
+to express this equality.
+
+Since Lean has no dedicated function for the ceiling division,
+we use `(a + (b - 1)) / b` for `⌈a / b⌉`. -/
+theorem clog_pow_left (b k n : ℕ) : clog (b ^ k) n = (clog b n + (k - 1)) / k := by
+  rcases k.eq_zero_or_pos with rfl | hk
+  · simp
+  · rcases Nat.lt_or_ge 1 b with hb | hb
+    · refine eq_of_forall_lt_iff fun c ↦ ?_
+      rw [lt_clog_iff_pow_lt (Nat.one_lt_pow (Nat.ne_of_gt hk) hb), Nat.lt_div_iff_mul_lt hk,
+        Nat.add_sub_cancel, lt_clog_iff_pow_lt hb, Nat.pow_mul']
+    · suffices (k - 1) / k = 0 by grind [clog_of_left_le_one, Nat.pow_le_one_iff]
+      apply Nat.div_eq_of_lt
+      grind
+
 /-! ### Computating the logarithm efficiently -/
 section computation
 
@@ -401,10 +447,6 @@ private lemma logC_aux {m b : ℕ} (hb : 1 < b) (hbm : b ≤ m) : m / (b * b) < 
   rw [div_lt_iff_lt_mul (Nat.mul_pos hb' hb'), ← Nat.mul_assoc, ← div_lt_iff_lt_mul hb']
   exact (Nat.lt_mul_iff_one_lt_right (Nat.div_pos hbm hb')).2 hb
 
-/-
-The linter complains about `h : m < pw` being unused, but we need it in the `decreasing_by`.
--/
-set_option linter.unusedVariables false in
 /--
 An alternate definition for `Nat.log` which computes more efficiently. For mathematical purposes,
 use `Nat.log` instead, and see `Nat.log_eq_logC`.
@@ -431,64 +473,47 @@ take far too long to compute in the first place.
 Adapted from https://downloads.haskell.org/~ghc/9.0.1/docs/html/libraries/ghc-bignum-1.0/GHC-Num-BigNat.html#v:bigNatLogBase-35-
 -/
 @[pp_nodot] def logC (b m : ℕ) : ℕ :=
-  if h : 1 < b then let (_, e) := step b h; e else 0 where
+  if h : 1 < b then (step b h).2 else 0 where
   /--
   An auxiliary definition for `Nat.logC`, where the base of the logarithm is _squared_ in each
   loop. This allows significantly faster computation of the logarithm: it takes logarithmic time
   in the size of the output, rather than linear time.
+
+  Returns `(m / pw ^ log pw m, log pw m)`.
   -/
   step (pw : ℕ) (hpw : 1 < pw) : ℕ × ℕ :=
-    if h : m < pw then (m, 0)
+    if m < pw then (m, 0)
     else
       let (q, e) := step (pw * pw) (Nat.mul_lt_mul_of_lt_of_lt hpw hpw)
       if q < pw then (q, 2 * e) else (q / pw, 2 * e + 1)
   termination_by m / pw
   decreasing_by
-    have : m / (pw * pw) < m / pw := logC_aux hpw (le_of_not_gt h)
+    have : m / (pw * pw) < m / pw := logC_aux hpw (by grind)
     decreasing_trivial
 
-private lemma logC_step {m pw q e : ℕ} (hpw : 1 < pw) (hqe : logC.step m pw hpw = (q, e)) :
-    pw ^ e * q ≤ m ∧ q < pw ∧ (m < pw ^ e * (q + 1)) ∧ (0 < m → 0 < q) := by
-  induction pw, hpw using logC.step.induct m generalizing q e with
-  | case1 pw hpw hmpw =>
-      rw [logC.step, dif_pos hmpw] at hqe
-      cases hqe
-      simpa
-  | case2 pw hpw hmpw q' e' hqe' hqpw ih =>
-      simp only [logC.step, dif_neg hmpw, hqe', if_pos hqpw] at hqe
-      cases hqe
-      rw [Nat.pow_mul, Nat.pow_two]
-      exact ⟨(ih hqe').1, hqpw, (ih hqe').2.2⟩
-  | case3 pw hpw hmpw q' e' hqe' hqpw ih =>
-      simp only [Nat.logC.step, dif_neg hmpw, hqe', if_neg hqpw] at hqe
-      cases hqe
-      rw [Nat.pow_succ, Nat.mul_assoc, Nat.pow_mul, Nat.pow_two, Nat.mul_assoc]
-      refine ⟨(ih hqe').1.trans' (Nat.mul_le_mul_left _ (Nat.mul_div_le _ _)),
-        Nat.div_lt_of_lt_mul (ih hqe').2.1, (ih hqe').2.2.1.trans_le ?_,
-        fun _ => Nat.div_pos (le_of_not_gt hqpw) (by cutsat)⟩
-      exact Nat.mul_le_mul_left _ (Nat.lt_mul_div_succ _ (zero_lt_of_lt hpw))
-
-private lemma logC_spec {b m : ℕ} (hb : 1 < b) (hm : 0 < m) :
-    b ^ logC b m ≤ m ∧ m < b ^ (logC b m + 1) := by
-  rw [logC, dif_pos hb]
-  split
-  next q e heq =>
-  obtain ⟨h₁, h₂, h₃, h₄⟩ := logC_step hb heq
-  exact ⟨h₁.trans' (Nat.le_mul_of_pos_right _ (h₄ hm)), h₃.trans_le (Nat.mul_le_mul_left _ h₂)⟩
-
-private lemma logC_of_left_le_one {b m : ℕ} (hb : b ≤ 1) : logC b m = 0 := by
-  rw [logC, dif_neg hb.not_gt]
-
-private lemma logC_zero {b : ℕ} :
-    logC b 0 = 0 := by
-  rcases le_or_gt b 1 with hb | hb
-  case inl => exact logC_of_left_le_one hb
-  case inr =>
-    rw [logC, dif_pos hb]
-    split
-    next q e heq =>
-    rw [logC.step, dif_pos (zero_lt_of_lt hb)] at heq
-    rw [(Prod.mk.inj heq).2]
+private lemma logC.step_spec (m : ℕ) {pw : ℕ} (hpw : 1 < pw) :
+    logC.step m pw hpw = (m / pw ^ log pw m, log pw m) := by
+  fun_induction logC.step with
+  | case1 pw' hpw' hlt => simp [log_of_lt hlt]
+  | case2 pw' hpw' hle q e hqe hlt ih =>
+    rw [hqe, ← Nat.pow_two, log_pow_left, Prod.mk.injEq] at ih
+    rcases ih with ⟨rfl, rfl⟩
+    suffices 2 * (log pw' m / 2) = log pw' m by rw [← Nat.pow_mul, this]
+    refine Nat.le_antisymm (Nat.mul_div_le _ _) (Nat.le_of_lt_add_one ?_)
+    apply Nat.log_lt_of_lt_pow' (Nat.add_one_ne_zero _)
+    rwa [Nat.pow_add_one', Nat.pow_mul, ← Nat.div_lt_iff_lt_mul]
+    grind [Nat.pow_pos]
+  | case3 pw' hpw' hmpw' q e hqe hqpw' ih =>
+    rw [hqe, ← Nat.pow_two, log_pow_left, Prod.mk.injEq] at ih
+    rw [Nat.not_lt] at hmpw' hqpw'
+    rcases ih with ⟨rfl, rfl⟩
+    clear hqe
+    suffices 2 * (log pw' m / 2) + 1 = log pw' m by
+      rw [← Nat.pow_mul, Nat.div_div_eq_div_mul, ← Nat.pow_add_one, this]
+    refine Nat.le_antisymm ?_ (by grind)
+    apply le_log_of_pow_le hpw'
+    rwa [Nat.pow_add_one, Nat.mul_comm, ← Nat.le_div_iff_mul_le, Nat.pow_mul]
+    apply_rules [Nat.pow_pos, Nat.mul_pos, Nat.lt_trans Nat.one_pos]
 
 /--
 The result of `Nat.log` agrees with the result of `Nat.logC`. The latter will be computed more
@@ -497,14 +522,47 @@ This lemma is tagged @[csimp] so that the code generated for `Nat.log` uses `Nat
 -/
 @[csimp] theorem log_eq_logC : log = logC := by
   ext b m
-  rcases le_or_gt b 1 with hb | hb
-  case inl => rw [logC_of_left_le_one hb, Nat.log_of_left_le_one hb]
-  case inr =>
-    rcases eq_or_ne m 0 with rfl | hm
-    case inl => rw [Nat.log_zero_right, logC_zero]
-    case inr =>
-      rw [Nat.log_eq_iff (Or.inr ⟨hb, hm⟩)]
-      exact logC_spec hb (zero_lt_of_ne_zero hm)
+  fun_cases logC with
+  | case1 hb => rw [logC.step_spec]
+  | case2 hb => grind [log_of_left_le_one]
+
+@[pp_nodot] def clogC (b m : ℕ) : ℕ :=
+  if h : 1 < b ∧ 1 < m then (step b h).2 else 0 where
+  /--
+  An auxiliary definition for `Nat.clogC`, where the base of the logarithm is _squared_ in each
+  loop. This allows significantly faster computation of the logarithm: it takes logarithmic time
+  in the size of the output, rather than linear time.
+
+  Returns `(pw ^ clog pw m / m, clog pw m)`.
+  -/
+  step (pw : ℕ) (hpw : 1 < pw ∧ 1 < m) : ℕ × ℕ :=
+    if m ≤ pw then (pw / m, 1)
+    else
+      let (q, e) := step (pw * pw) ⟨Nat.mul_lt_mul_of_lt_of_lt hpw.1 hpw.1, hpw.2⟩
+      if q < pw then (q, 2 * e) else (q / pw, 2 * e + 1)
+  termination_by m / pw
+  decreasing_by
+    have : m / (pw * pw) < m / pw := logC_aux hpw.1 (by grind)
+    decreasing_trivial
+
+private lemma clogC.step_spec (m : ℕ) {pw : ℕ} (hpw : 1 < pw ∧ 1 < m) :
+    clogC.step m pw hpw = (pw ^ clog pw m / m, clog pw m) := by
+  fun_induction clogC.step with
+  | case1 pw' hpw' hle => rw [clog_eq_one] <;> grind
+  | case2 pw' hpw' hmpw' q e hqe hqpw' ih =>
+    rw [hqe, Prod.mk.injEq] at ih
+    rcases ih with ⟨rfl, rfl⟩
+    clear hqe
+    suffices 2 * clog (pw' ^ 2) m = clog pw' m by
+      rw [← Nat.pow_two, ← Nat.pow_mul, this]
+    apply Nat.le_antisymm _ (by grind only [clog_pow_left])
+    -- rw [← Nat.pow_two, ← Nat.pow_mul, Nat.div_lt_iff_lt_mul,
+    --   Nat.mul_comm pw', ← Nat.div_lt_iff_lt_mul] at hqpw'
+    rw [Nat.mul_comm, ← Nat.le_div_iff_mul_le Nat.two_pos]
+    apply clog_le_of_le_pow
+    rw [← Nat.pow_mul]
+    
+  | case3 => sorry
 
 end computation
 
