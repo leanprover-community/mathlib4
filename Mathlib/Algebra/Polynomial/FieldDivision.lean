@@ -3,12 +3,14 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Order.Group.Finset
-import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Algebra.Polynomial.Eval.SMul
-import Mathlib.Algebra.Polynomial.Roots
-import Mathlib.RingTheory.EuclideanDomain
-import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
+module
+
+public import Mathlib.Algebra.Order.Group.Finset
+public import Mathlib.Algebra.Polynomial.Derivative
+public import Mathlib.Algebra.Polynomial.Eval.SMul
+public import Mathlib.Algebra.Polynomial.Roots
+public import Mathlib.RingTheory.EuclideanDomain
+public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 /-!
 # Theory of univariate polynomials
@@ -16,6 +18,8 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 This file starts looking like the ring theory of $R[X]$
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -425,6 +429,21 @@ lemma natDegree_mod_lt [Field k] (p : k[X]) {q : k[X]} (hq : q.natDegree ≠ 0) 
     simp [hq]
   · exact natDegree_mul_C_le q q.leadingCoeff⁻¹
 
+theorem degree_mod_lt (p : R[X]) {q : R[X]} (hq : q ≠ 0) : (p % q).degree < q.degree := by
+  rw [Polynomial.mod_def]
+  refine (Polynomial.degree_modByMonic_lt p ?_).trans_eq (by simp)
+  simp [Polynomial.Monic.def, hq]
+
+theorem add_mod (p₁ p₂ q : R[X]) : (p₁ + p₂) % q = p₁ % q + p₂ % q := by
+  simp [Polynomial.mod_def, Polynomial.add_modByMonic]
+
+theorem sub_mod (p₁ p₂ q : R[X]) : (p₁ - p₂) % q = p₁ % q - p₂ % q := by
+  simp [Polynomial.mod_def, Polynomial.sub_modByMonic]
+
+theorem mul_mod (p₁ p₂ q : R[X]) : (p₁ * p₂) % q = (p₁ % q) * (p₂ % q) % q := by
+  simp_rw [Polynomial.mod_def]
+  apply Polynomial.mul_modByMonic
+
 section
 
 open EuclideanDomain
@@ -700,6 +719,14 @@ theorem map_normalize [DecidableEq R] [Field S] [DecidableEq S] (f : R →+* S) 
 theorem monic_mapAlg_iff [Semiring S] [Nontrivial S] [Algebra R S] {p : R[X]} :
     (mapAlg R S p).Monic ↔ p.Monic := by
   simp [mapAlg_eq_map, monic_map_iff]
+
+theorem mod_eq_of_dvd_sub {p₁ p₂ q : R[X]} (h : q ∣ p₁ - p₂) : p₁ % q = p₂ % q := by
+  obtain rfl | hq := eq_or_ne q 0
+  · simpa [sub_eq_zero] using h
+  simp_rw [Polynomial.mod_def]
+  apply Polynomial.modByMonic_eq_of_dvd_sub (by simp [Polynomial.Monic.def, hq])
+  rw [mul_comm]
+  exact (Polynomial.C_mul_dvd (by simpa using hq)).mpr h
 
 end Field
 

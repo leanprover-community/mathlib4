@@ -3,9 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
-import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
-import Mathlib.CategoryTheory.MorphismProperty.Basic
+module
+
+public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
+public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
+public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # Objects that are local with respect to a property of morphisms
@@ -18,6 +20,8 @@ part of a Galois connection, with "dual" construction
 `Localization.LeftBousfield.W : ObjectProperty C → MorphismProperty C`.)
 
 -/
+
+@[expose] public section
 
 universe v v' u u'
 
