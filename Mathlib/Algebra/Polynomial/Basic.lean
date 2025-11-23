@@ -1216,7 +1216,7 @@ noncomputable def ofMultiset (s : Multiset R) : R[X] :=
 
 /-- TODO, add simp attribute once other theorems are in simp NF. -/
 theorem ofMultiset_eq_map_prod (s : Multiset R) :
-  (Multiset.map (fun (a : R) => X - C a) s).prod = (ofMultiset s) := rfl
+  (Multiset.map (fun (a : R) => X - C a) s).prod = ofMultiset s := rfl
 
 end CommRing
 
