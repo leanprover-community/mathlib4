@@ -24,9 +24,6 @@ and their basic properties.
 
 # Main definition and results
 
-* `projectiveDimension` : Given `X : C` where `C` is abelian,
-  return its projective dimension as `WithBot ℕ∞`
-
 * `globalDimension` : The global (homological) dimension of a (commutative) ring defined as
   the supremum of projective dimension over all modules.
 
