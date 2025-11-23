@@ -262,7 +262,7 @@ variable [TopologicalSpace.SeparableSpace V] (K : Set (WeakDual 𝕜 V))
 /-- In a separable normed space, there exists a sequence of continuous functions that
 separates points of the weak dual. -/
 lemma exists_countable_separating : ∃ (gs : ℕ → (WeakDual 𝕜 V) → 𝕜),
-    (∀ n, Continuous (gs n)) ∧ (∀ ⦃x y⦄, x≠y → ∃ n, gs n x ≠ gs n y) := by
+    (∀ n, Continuous (gs n)) ∧ (∀ ⦃x y⦄, x ≠ y → ∃ n, gs n x ≠ gs n y) := by
   use (fun n φ ↦ φ (denseSeq V n))
   constructor
   · exact fun _ ↦ eval_continuous _
