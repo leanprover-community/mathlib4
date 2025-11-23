@@ -1,9 +1,13 @@
-import Mathlib.Data.Finsupp.SMulWithZero
-import Mathlib.Data.Finsupp.Sigma
-import Mathlib.GroupTheory.GroupAction.Ring
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Tactic.Bound
-import Mathlib
+module
+public import Mathlib.Algebra.BigOperators.Finsupp.Basic
+public import Mathlib.Algebra.Module.Defs
+public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Data.Finsupp.SMulWithZero
+public import Mathlib.Data.ZMod.Defs
+public import Mathlib.Tactic.Bound
+
+@[expose] public section
 
 universe u v
 
