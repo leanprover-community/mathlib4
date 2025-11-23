@@ -72,8 +72,13 @@ theorem condExp_stronglyMeasurable_simpleFunc_bilin [CompleteSpace E]
       μ[fun ω ↦ B (g₁ ω + g₂ ω) (g ω)|m] =ᵐ[μ]
           μ[fun ω ↦ B (g₁ ω) (g ω)|m] + μ[fun ω ↦ B (g₂ ω) (g ω)|m] := by
         simp_rw [B.map_add]
-        exact condExp_add (hg.simpleFunc_bilinearMap' B hm g₁)
-          (hg.simpleFunc_bilinearMap' B hm g₂) m
+        obtain ⟨C₁, hC₁⟩ := @SimpleFunc.exists_forall_norm_le _ _ m _ g₁
+        obtain ⟨C₂, hC₂⟩ := @SimpleFunc.exists_forall_norm_le _ _ m _ g₂
+        exact condExp_add
+          (B.integrable_of_bilin_of_bdd_left C₁ (g₁.stronglyMeasurable.mono hm).aestronglyMeasurable
+            (ae_of_all _ hC₁) hg)
+          (B.integrable_of_bilin_of_bdd_left C₂ (g₂.stronglyMeasurable.mono hm).aestronglyMeasurable
+            (ae_of_all _ hC₂) hg) m
       _ =ᵐ[μ] fun ω ↦ B (g₁ ω) (μ[g|m] ω) + B (g₂ ω) (μ[g|m] ω) := EventuallyEq.add h_eq₁ h_eq₂
       _ =ᵐ[μ] fun ω ↦ B ((g₁ + g₂) ω) (μ[g|m] ω) := by simp
 
