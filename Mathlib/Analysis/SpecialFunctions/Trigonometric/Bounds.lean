@@ -248,6 +248,14 @@ theorem abs_sin_sub_sin_le (x y : ℝ) : |sin x - sin y| ≤ |x - y| := by
 theorem abs_cos_sub_cos_le (x y : ℝ) : |cos x - cos y| ≤ |x - y| := by
   simpa [sin_add_pi_div_two] using abs_sin_sub_sin_le (x + π / 2) (y + π / 2)
 
+theorem lipschitzWith_sin : LipschitzWith 1 sin := by
+  intro x y
+  simpa [edist_dist] using abs_sin_sub_sin_le x y
+
+theorem lipschitzWith_cos : LipschitzWith 1 cos := by
+  intro x y
+  simpa [edist_dist] using abs_cos_sub_cos_le x y
+
 theorem norm_exp_I_mul_ofReal_sub_one_le {x : ℝ} : ‖.exp (.I * x) - (1 : ℂ)‖ ≤ ‖x‖ := by
   rw [Complex.norm_exp_I_mul_ofReal_sub_one]
   calc
