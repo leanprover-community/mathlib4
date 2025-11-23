@@ -355,6 +355,7 @@ If `S` satisfies going-down as an `R`-algebra and `P` lies over `p`, the height 
 to the height of `p` plus the height of the image of `P` in `S ⧸ p S`
 (Matsumura 13.B Th. 19 (2)).
 -/
+@[stacks 00ON]
 lemma Ideal.height_eq_height_add_of_liesOver_of_hasGoingDown [IsNoetherianRing S]
     [Algebra.HasGoingDown R S] (p : Ideal R) [p.IsPrime] (P : Ideal S) [P.IsPrime] [P.LiesOver p] :
     P.height = p.height +
