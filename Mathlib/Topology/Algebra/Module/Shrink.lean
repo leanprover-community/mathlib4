@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Module.Shrink
 public import Mathlib.Analysis.Normed.Module.TransferInstance
--- XXX: for import reduction purposes, the file should be split in two, with these imports
+-- For import reduction purposes, the file could be split in two, with the following imports
 -- going into a second file. This does not seem warrented at the moment.
 public import Mathlib.Topology.Algebra.Module.TransferInstance
 public import Mathlib.Topology.Instances.Shrink
