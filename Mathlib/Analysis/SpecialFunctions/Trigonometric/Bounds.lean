@@ -233,28 +233,21 @@ theorem cos_le_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx
   · simp
   · exact (cos_lt_one_div_sqrt_sq_add_one hx1 hx2 hx3).le
 
-theorem abs_sin_sub_sin_le (x y : ℝ) : |sin x - sin y| ≤ |x - y| := by
-  wlog h : y ≤ x
-  · convert this y x (not_le.mp h).le using 1 <;> apply abs_sub_comm
-  suffices ‖sin x - sin y‖ ≤ 1 * (x - y) by
-    convert this using 1
-    simpa using h
-  have hx : x ∈ Set.Icc y x := by simpa using h
-  have hcos (z : ℝ) (_ : z ∈ Set.Ico y x) : ‖cos z‖ ≤ 1 := by
-    simpa using abs_cos_le_one z
-  refine norm_image_sub_le_of_norm_deriv_le_segment' (fun x _ ↦ ?_) hcos _ hx
-  simpa using (hasDerivAt_id x).sin.hasDerivWithinAt
-
-theorem abs_cos_sub_cos_le (x y : ℝ) : |cos x - cos y| ≤ |x - y| := by
-  simpa [sin_add_pi_div_two] using abs_sin_sub_sin_le (x + π / 2) (y + π / 2)
-
 theorem lipschitzWith_sin : LipschitzWith 1 sin := by
-  intro x y
-  simpa [edist_dist] using abs_sin_sub_sin_le x y
+  apply lipschitzWith_of_nnnorm_deriv_le differentiable_sin
+  intro x
+  simpa using abs_cos_le_one x
 
 theorem lipschitzWith_cos : LipschitzWith 1 cos := by
-  intro x y
-  simpa [edist_dist] using abs_cos_sub_cos_le x y
+  apply lipschitzWith_of_nnnorm_deriv_le differentiable_cos
+  intro x
+  simpa using abs_sin_le_one x
+
+theorem abs_sin_sub_sin_le (x y : ℝ) : |sin x - sin y| ≤ |x - y| := by
+  simpa [edist_dist] using lipschitzWith_sin x y
+
+theorem abs_cos_sub_cos_le (x y : ℝ) : |cos x - cos y| ≤ |x - y| := by
+  simpa [edist_dist] using lipschitzWith_cos x y
 
 theorem norm_exp_I_mul_ofReal_sub_one_le {x : ℝ} : ‖.exp (.I * x) - (1 : ℂ)‖ ≤ ‖x‖ := by
   rw [Complex.norm_exp_I_mul_ofReal_sub_one]
