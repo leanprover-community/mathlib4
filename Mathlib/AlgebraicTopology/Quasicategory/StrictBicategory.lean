@@ -25,7 +25,7 @@ between the underlying category and the full subcategory of quasicategories. Thu
 `1`-morphisms of `QCat.strictBicategory` are maps of simplicial sets.
 
 Future work will use the fact that quasicategories define a cartesian closed subcategory
-of simplicial sets to identify the  `2`-morphisms of `QCat.strictBicategory` with
+of simplicial sets to identify the `2`-morphisms of `QCat.strictBicategory` with
 homotopy classes of homotopies between them, defined using the simplicial interval `Δ[1]`.
 
 This strict bicategory serves as a setting to develop the formal category theory of quasicategories.
