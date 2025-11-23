@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Order.CompletePartialOrder
 public import Mathlib.Topology.Order.ScottTopology
-public import Mathlib.Topology.Sets.Opens
+public import Mathlib.Topology.Order.Category.FrameAdjunction
 
 /-!
 # Scott Complete Partial Order
@@ -364,7 +364,7 @@ lemma directed_Kₓ (x : PT (Opens D)) : DirectedOn (· ≤ ·) (K x) := by
   constructor
   · simp only [Set.mem_setOf_eq]
     exact ⟨he₀, he'₂⟩
-  · simp only [open_of_compact, Opens.mk_inf_mk, inf_eq_inter, Opens.mem_mk, mem_inter_iff, mem_Ici,
+  · simp only [Opens.ofCompact, Opens.mk_inf_mk, inf_eq_inter, Opens.mem_mk, mem_inter_iff, mem_Ici,
       inf] at he'₀ ⊢
     obtain ⟨h₁, h₂⟩ := he'₀
     exact ⟨h₁, h₂⟩
@@ -429,7 +429,7 @@ lemma surjectivity : Function.Surjective (localePointOfSpacePoint D) := by
           · rintro ⟨e, c, hc₀, he₀, he'₀, c'_le_e', hc'₀⟩
             use e; use he₀; use he'₀
             have c'_inf_e'_eq_c' : ⟨c, hc₀⟩ᵘᵒ ⊓ ⟨e, he₀⟩ᵘᵒ = ⟨c, hc₀⟩ᵘᵒ :=
-              by simp [open_of_compact, Ici_subset_Ici.1 c'_le_e']
+              by simp [Opens.ofCompact, Ici_subset_Ici.1 c'_le_e']
             have lifted : x (⟨c, hc₀⟩ᵘᵒ ⊓ ⟨e, he₀⟩ᵘᵒ) = x (⟨c, hc₀⟩ᵘᵒ) :=
               congrArg (⇑x) c'_inf_e'_eq_c'
             simp only [map_inf, inf_Prop_eq, eq_iff_iff, and_iff_left_iff_imp] at lifted
@@ -444,7 +444,7 @@ lemma surjectivity : Function.Surjective (localePointOfSpacePoint D) := by
             rintro ⟨e, he₀, he'₀, he'₁⟩
             have he': ∃ u, P u ∧ x u := by
               use ⟨e, he₀⟩ᵘᵒ
-              exact ⟨⟨e, he₀, mem_iff_upSet_subset.2 he'₀, rfl⟩, he'₁⟩
+              exact ⟨⟨e, he₀, Opens.mem_iff_Ici_subset.2 he'₀, rfl⟩, he'₁⟩
 
             rw [← of_completelyPrime] at he'
             rw [← open_eq_open_of_basis' u] at he'
@@ -455,7 +455,7 @@ lemma surjectivity : Function.Surjective (localePointOfSpacePoint D) := by
 
             obtain ⟨e', ⟨e, he₀, he'₀, he'₁⟩ , he'₂⟩ := hu
             rw [he'₁] at he'₂
-            exact ⟨e, he₀, mem_iff_upSet_subset.1 he'₀, he'₂⟩
+            exact ⟨e, he₀, Opens.mem_iff_Ici_subset.1 he'₀, he'₂⟩
 
 theorem scott_is_sober : Sober (TopCat.of D) := by
   dsimp only [Functor.id_obj, Functor.comp_obj, topToLocale_obj, adjunctionTopToLocalePT,
