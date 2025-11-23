@@ -213,7 +213,6 @@ theorem affineIndependent_iff_of_oangle_eq {p₁ p₂ p₃ p₁' p₂' p₃' : P
   rw [←oangle_ne_zero_and_ne_pi_iff_affineIndependent,
   ←oangle_ne_zero_and_ne_pi_iff_affineIndependent, h_eq]
 
-
 /-- If twice the oriented angles between two triples of points are equal, one triple is affinely
 independent if and only if the other is. -/
 theorem affineIndependent_iff_of_two_zsmul_oangle_eq {p₁ p₂ p₃ p₄ p₅ p₆ : P}
@@ -362,8 +361,6 @@ theorem oangle_eq_or_eq_neg_of_angle_eq {p₁ p₂ p₃ p₄ p₅ p₆ : P} (h :
     rw [h₁, h₂, h]
   · left
     rw [h₁, h₂, h]
-
-
 
 /-- If two oriented angles have the same sign and the second triple of points is not collinear,
 then their difference cannot be equal to `π`. -/
