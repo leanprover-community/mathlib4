@@ -533,12 +533,7 @@ for `n' ≠ ∞`, then it is `C^{n'}` on a neighborhood of the point (this prope
 in `C^∞` smoothness, see `ContDiffWithinAt.contDiffOn`). -/
 lemma exist_minSmoothness_le_ne_infty {n : WithTop ℕ∞} {m : ℕ} (hm : minSmoothness 𝕜 m ≤ n) :
     ∃ n', minSmoothness 𝕜 m ≤ n' ∧ n' ≤ n ∧ n' ≠ ∞ := by
-  simp only [minSmoothness] at hm ⊢
-  split_ifs with h
-  · simp only [h, ↓reduceIte] at hm
-    exact ⟨m, le_rfl, hm, by simp⟩
-  · simp only [h, ↓reduceIte, top_le_iff] at hm
-    refine ⟨ω, le_rfl, by simp [hm], by simp⟩
+  grind [minSmoothness_eq_infty, ENat.natCast_ne_coe_top]
 
 /-- If a function is `C^2` at a point, then its second derivative there is symmetric. Over a field
 different from `ℝ` or `ℂ`, we should require that the function is analytic. -/
