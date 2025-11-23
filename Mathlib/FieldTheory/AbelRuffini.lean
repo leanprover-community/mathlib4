@@ -60,17 +60,17 @@ theorem gal_prod_isSolvable {s : Multiset F[X]} (hs : ∀ p ∈ s, IsSolvable (G
     exact gal_mul_isSolvable (hs p hps) ht
 
 theorem gal_isSolvable_of_splits {p q : F[X]}
-    (_ : Fact (p.Splits (algebraMap F q.SplittingField))) (hq : IsSolvable q.Gal) :
+    (_ : Fact ((p.map (algebraMap F q.SplittingField)).Splits)) (hq : IsSolvable q.Gal) :
     IsSolvable p.Gal :=
   haveI : IsSolvable (q.SplittingField ≃ₐ[F] q.SplittingField) := hq
   solvable_of_surjective (AlgEquiv.restrictNormalHom_surjective q.SplittingField)
 
-theorem gal_isSolvable_tower (p q : F[X]) (hpq : p.Splits (algebraMap F q.SplittingField))
+theorem gal_isSolvable_tower (p q : F[X]) (hpq : (p.map (algebraMap F q.SplittingField)).Splits)
     (hp : IsSolvable p.Gal) (hq : IsSolvable (q.map (algebraMap F p.SplittingField)).Gal) :
     IsSolvable q.Gal := by
   let K := p.SplittingField
   let L := q.SplittingField
-  haveI : Fact (p.Splits (algebraMap F L)) := ⟨hpq⟩
+  haveI : Fact ((p.map (algebraMap F L)).Splits) := ⟨hpq⟩
   let ϕ : Gal(L/K) ≃* (q.map (algebraMap F K)).Gal :=
     (IsSplittingField.algEquiv L (q.map (algebraMap F K))).autCongr
   have ϕ_inj : Function.Injective ϕ.toMonoidHom := ϕ.injective
@@ -99,7 +99,7 @@ theorem gal_X_pow_sub_one_isSolvable (n : ℕ) : IsSolvable (X ^ n - 1 : F[X]).G
   rw [σ.mul_apply, τ.mul_apply, hc, map_pow, hd, map_pow, hc, ← pow_mul, pow_mul']
 
 theorem gal_X_pow_sub_C_isSolvable_aux (n : ℕ) (a : F)
-    (h : (X ^ n - 1 : F[X]).Splits (RingHom.id F)) : IsSolvable (X ^ n - C a).Gal := by
+    (h : ((X ^ n - 1 : F[X]).map (RingHom.id F)).Splits) : IsSolvable (X ^ n - C a).Gal := by
   by_cases ha : a = 0
   · rw [ha, C_0, sub_zero]
     exact gal_X_pow_isSolvable n
@@ -136,12 +136,11 @@ theorem gal_X_pow_sub_C_isSolvable_aux (n : ℕ) (a : F)
     mul_assoc, mul_assoc, mul_right_inj' hb', mul_comm]
 
 theorem splits_X_pow_sub_one_of_X_pow_sub_C {F : Type*} [Field F] {E : Type*} [Field E]
-    (i : F →+* E) (n : ℕ) {a : F} (ha : a ≠ 0) (h : (X ^ n - C a).Splits i) :
-    (X ^ n - 1 : F[X]).Splits i := by
+    (i : F →+* E) (n : ℕ) {a : F} (ha : a ≠ 0) (h : ((X ^ n - C a).map i).Splits) :
+    ((X ^ n - 1 : F[X]).map i).Splits := by
   have ha' : i a ≠ 0 := mt ((injective_iff_map_eq_zero i).mp i.injective a) ha
   by_cases hn : n = 0
-  · rw [hn, pow_zero, sub_self]
-    exact splits_zero i
+  · simp [hn]
   have hn' : 0 < n := pos_iff_ne_zero.mpr hn
   have hn'' : (X ^ n - C a).degree ≠ 0 :=
     ne_of_eq_of_ne (degree_X_pow_sub_C hn' a) (mt WithBot.coe_eq_coe.mp hn)

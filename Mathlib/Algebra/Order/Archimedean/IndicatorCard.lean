@@ -53,8 +53,8 @@ lemma infinite_iff_tendsto_sum_indicator_atTop {R : Type*}
     obtain ⟨n', hn'⟩ := exists_lt_nsmul h n
     obtain ⟨t, t_s, t_card⟩ := hs.exists_subset_card_eq n'
     obtain ⟨m, hm⟩ := t.bddAbove
-    refine ⟨m + 1, hn'.le.trans ?_⟩
-    apply (sum_le_sum fun i _ ↦ (indicator_le_indicator_of_subset t_s (fun _ ↦ h.le)) i).trans_eq'
+    use m + 1
+    grw [hn', ← t_s]
     have h : t ⊆ Finset.range (m + 1) := by
       intro i i_t
       rw [Finset.mem_range]
