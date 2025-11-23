@@ -156,7 +156,7 @@ private theorem curveIntegral_add_curveIntegral_eq_of_hasFDerivWithinAt_off_coun
       apply intervalIntegral.integral_congr
       rw [uIcc_of_le zero_le_one]
       intro s hs
-      simp only [hs, Path.extend_extends, φ.evalAt_apply]
+      simp only [hs, Path.extend_apply, φ.evalAt_apply]
       simp [hg (s, t), Prod.le_def, hs.1, hs.2, t.2.1, t.2.2, Function.comp_def, hψ]
     rw [← hf₀, ← hf₁, hgi, hgi]
     linear_combination (norm := {dsimp; abel}) -this
