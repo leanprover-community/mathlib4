@@ -3,7 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Topology.ClusterPt
+module
+
+public import Mathlib.Topology.ClusterPt
 
 /-!
 # Continuity in topological spaces
@@ -17,6 +19,8 @@ partially defined functions.
 
 continuity, continuous function
 -/
+
+@[expose] public section
 
 open Set Filter Topology
 

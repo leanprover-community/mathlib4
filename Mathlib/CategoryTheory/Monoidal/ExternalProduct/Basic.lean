@@ -3,8 +3,10 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Monoidal.FunctorCategory
-import Mathlib.CategoryTheory.Functor.Currying
+module
+
+public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
+public import Mathlib.CategoryTheory.Functor.Currying
 
 /-!
 # External product of diagrams in a monoidal category
@@ -13,6 +15,8 @@ In a monoidal category `C`, given a pair of diagrams `K₁ : J₁ ⥤ C` and `K�
 introduce the external product `K₁ ⊠ K₂ : J₁ × J₂ ⥤ C` as the bifunctor `(j₁, j₂) ↦ K₁ j₁ ⊗ K₂ j₂`.
 The notation `- ⊠ -` is scoped to `MonoidalCategory.ExternalProduct`.
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 

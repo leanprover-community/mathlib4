@@ -3,10 +3,12 @@ Copyright (c) 2022 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best
 -/
-import Mathlib.Init
-import Lean.Parser.Term
-import Lean.Parser.Do
-import Lean.Elab.Command
+module
+
+public import Mathlib.Init
+public meta import Lean.Parser.Term
+public meta import Lean.Parser.Do
+public meta import Lean.Elab.Command
 
 /-!
 # The `unset_option` command
@@ -19,6 +21,8 @@ This is helpful when the user does not know the default value of the option or i
 is cleaner not to write it explicitly, or for some options where the default
 behaviour is different from any user set value.
 -/
+
+public meta section
 
 namespace Lean.Elab
 
