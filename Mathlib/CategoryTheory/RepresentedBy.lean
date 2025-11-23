@@ -3,7 +3,9 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Yoneda
+module
+
+public import Mathlib.CategoryTheory.Yoneda
 
 /-!
 # `IsRepresentedBy` predicate
@@ -27,6 +29,8 @@ The relations to these other notions are given as
 
 - Dualize to `IsCorepresentedBy`.
 -/
+
+@[expose] public section
 
 universe w' w v u v₁ u₁
 
