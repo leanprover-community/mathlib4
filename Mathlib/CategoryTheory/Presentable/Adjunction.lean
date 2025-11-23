@@ -50,7 +50,7 @@ lemma isCardinalFilteredGenerator
     rintro Y ⟨X, hX, ⟨e⟩⟩
     have hX' := hP.le_isCardinalPresentable X hX
     rw [isCardinalPresentable_iff] at hX' ⊢
-    have := adj.isPresentable_leftAdjoint_obj κ X
+    have := adj.isCardinalPresentable_leftAdjoint_obj κ X
     exact isCardinalPresentable_of_iso e κ
   exists_colimitsOfShape Y := by
     have := adj.isLeftAdjoint
