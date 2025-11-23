@@ -44,8 +44,7 @@ lemma functor_linear :
   constructor
   intro X Y f r
   change L.map (r • f) = ((Linear.toCatCenter R C r).localization L W).app (L.obj X) ≫ L.map f
-  simp only [CatCenter.localization_app, ← L.map_comp,
-    Functor.id_obj, Linear.toCatCenter_apply_app, Linear.smul_comp, Category.id_comp]
+  simp [← L.map_comp]
 
 section
 
