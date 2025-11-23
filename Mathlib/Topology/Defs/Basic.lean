@@ -214,7 +214,8 @@ open Topology Lean.PrettyPrinter.Delaborator
 @[app_delab closure] meta def delabClosure : Delab := delabUnary 2 1 fun x ↦ `(closure[$x])
 
 /-- Delaborator for `Continuous[_, _]`. -/
-@[app_delab Continuous] meta def delabContinuous : Delab := delabBinary 4 2 3 fun x y ↦ `(Continuous[$x, $y])
+@[app_delab Continuous] meta def delabContinuous : Delab :=
+  delabBinary 4 2 3 fun x y ↦ `(Continuous[$x, $y])
 
 end TopologicalSpace
 
