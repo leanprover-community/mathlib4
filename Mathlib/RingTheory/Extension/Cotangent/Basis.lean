@@ -3,9 +3,11 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RingTheory.Extension.Cotangent.Basic
-import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
-import Mathlib.RingTheory.Extension.Cotangent.LocalizationAway
+module
+
+public import Mathlib.RingTheory.Extension.Cotangent.Basic
+public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
+public import Mathlib.RingTheory.Extension.Cotangent.LocalizationAway
 
 /-!
 # Basis of cotangent space can be realized as a presentation
@@ -20,6 +22,8 @@ extending `P` with kernel `I'`, such that `I'/I'²` is free on the images of the
 
 - https://stacks.math.columbia.edu/tag/07CF
 -/
+
+@[expose] public section
 
 open Pointwise MvPolynomial TensorProduct
 namespace Algebra.Generators
@@ -73,12 +77,15 @@ abbrev gbar : D.T := D.g
 
 /-- `S` is the localization of `T` away from `S`. -/
 instance : IsLocalization.Away D.gbar S := by
-  refine .of_sub_one_mem_ker (n := 1) ?_ ?_ _ D.hgmem (by simpa using D.hg)
+  refine .of_surjective_of_isScalarTower (n := 1) ?_ ?_ _ ?_ (by simpa using D.hg)
   · refine .of_comp (g := algebraMap P.Ring D.T) ?_
     convert P.algebraMap_surjective
     ext x
     exact (IsScalarTower.algebraMap_apply _ D.T S x).symm
   · simp [T, Ideal.Quotient.mk_surjective]
+  · suffices h : (algebraMap P.Ring S) D.g = 1 by simp [h]
+    rw [← map_one (algebraMap P.Ring S), ← sub_eq_zero, ← map_sub, ← RingHom.mem_ker]
+    exact D.hgmem
 
 open Classical in
 /-- The "naive" presentation of `T = R[X₁, ..., Xₙ] / (b₁, ..., bᵣ)` over `R`.
@@ -262,14 +269,15 @@ lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
     obtain ⟨g, hgmem, hg⟩ := Submodule.exists_sub_one_mem_and_smul_le_of_fg_of_le_sup hJfg le_rfl hJ
     let D : Aux P b := { f := f, hf := hf, g := g, hgmem := hgmem, hg := hg }
     exact ⟨D.pres, D.basis, D.pres_val_comp_inr, D.basis_apply⟩
-  rw [← Submodule.comap_le_comap_iff_of_le_range (f := P.ker.subtype) (by simp)
-    (by simp [Ideal.mul_le_left, hJ]), Submodule.comap_subtype_self,
+  rw [← Submodule.comap_le_comap_iff_of_le_range (f := P.ker.subtype) (by simp),
+    Submodule.comap_subtype_self,
     Submodule.comap_sup_of_injective P.ker.subtype_injective (by simpa using hJ)
     (by simp [Ideal.mul_le_left]),
     Submodule.comap_smul'' P.ker.subtype_injective (by simp)]
   simp only [Submodule.comap_subtype_self, J]
-  rw [← Submodule.coe_subtype, Ideal.span, Submodule.comap_span_range_comp_of_injective
-    P.ker.subtype_injective, ← Extension.Cotangent.ker_mk]
+  rw [← Submodule.coe_subtype, Ideal.span, Set.range_comp, ← Submodule.map_span,
+    Submodule.comap_map_eq_of_injective P.ker.subtype_injective,
+    ← Extension.Cotangent.ker_mk]
   dsimp
   simp only [← LinearMap.map_le_map_iff, Submodule.map_span, ← Set.range_comp,
     Function.comp_def, ← Submodule.restrictScalars_span P.Ring S P.algebraMap_surjective]
