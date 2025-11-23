@@ -302,8 +302,8 @@ theorem isSeqCompact_polar {s : Set V} (s_nhd : s ∈ 𝓝 (0 : V)) :
 /-- The **Sequential Banach-Alaoglu theorem**: closed balls of the dual of a separable
 normed space `V` are sequentially compact in the weak-* topology. -/
 theorem isSeqCompact_closedBall (x' : StrongDual 𝕜 V) (r : ℝ) :
-    IsSeqCompact (WeakDual.toStrongDual ⁻¹' Metric.closedBall x' r) :=
-  WeakDual.isSeqCompact_of_bounded_of_closed 𝕜 V Metric.isBounded_closedBall
+    IsSeqCompact (toStrongDual ⁻¹' Metric.closedBall x' r) :=
+  isSeqCompact_of_bounded_of_closed 𝕜 V Metric.isBounded_closedBall
     (isClosed_closedBall x' r)
 
 end WeakDual
