@@ -152,16 +152,16 @@ lemma fin_integral_prob_meas {μprob : ProbabilityMeasure X} {f : C(X, ℝ)} :
 instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
   let Φ := { φ : WeakDual ℝ C(X, ℝ) | ‖toStrongDual φ‖ ≤ 1
     ∧ φ ⟨fun x ↦ 1, continuous_const⟩ = 1 ∧ ∀ f : C_c(X, ℝ), 0 ≤ f → 0 ≤ φ f }
+  let A := { φ : WeakDual ℝ C(X, ℝ) | ‖toStrongDual φ‖ ≤ 1 }
+  have hA1 : IsCompact A := by
+    have : A = ⇑toStrongDual ⁻¹' Metric.closedBall 0 1 := by ext x; simp [A]
+    rw [this]; exact isCompact_closedBall ℝ 0 1
+  let B := { φ : WeakDual ℝ C(X, ℝ) | φ ⟨(fun x => 1), continuous_const⟩ = 1 }
+  let C := { φ : WeakDual ℝ C(X, ℝ) | ∀ f : C_c(X, ℝ), 0 ≤ f → 0 ≤ φ f}
+  have Φ_decomp : Φ = A ∩ B ∩ C := by
+    ext x; simp only [Set.mem_setOf_eq, Set.mem_inter_iff, Φ, A, B, C]; tauto
   have hΦ1 : CompactSpace Φ := by
-    let A := { φ : WeakDual ℝ C(X, ℝ) | ‖toStrongDual φ‖ ≤ 1 }
-    have hA1 : IsCompact A := by
-      have : A = ⇑toStrongDual ⁻¹' Metric.closedBall 0 1 := by ext x; simp [A]
-      rw [this]; exact isCompact_closedBall ℝ 0 1
-    let B := { φ : WeakDual ℝ C(X, ℝ) | φ ⟨(fun x => 1), continuous_const⟩ = 1 }
-    let C := { φ : WeakDual ℝ C(X, ℝ) | ∀ f : C_c(X, ℝ), 0 ≤ f → 0 ≤ φ f}
-    have : Φ = A ∩ B ∩ C := by
-      ext x; simp only [Set.mem_setOf_eq, Set.mem_inter_iff, Φ, A, B, C]; tauto
-    rw [this,←isCompact_iff_compactSpace]
+    rw [Φ_decomp,←isCompact_iff_compactSpace]
     refine IsCompact.of_isClosed_subset hA1 ?_ ?_
     · refine IsClosed.inter ?_ ?_
       · refine IsClosed.inter ?_ ?_
@@ -261,8 +261,9 @@ instance : CompactSpace (LevyProkhorov (ProbabilityMeasure X)) := by
     apply RealRMK.rieszMeasure_integralPositiveLinearMap
   simp only [this]
   have hΦ2 : SeqCompactSpace Φ := by --Jannette's Project (Seq. banach alaoglu thm)
-    refine { isSeqCompact_univ := ?_ }
     obtain ⟨ds⟩ := hΦ1
+    refine { isSeqCompact_univ := ?_ }
+    rw [Φ_decomp]
     sorry
   apply IsSeqCompact.range
   refine Continuous.seqContinuous ?_
