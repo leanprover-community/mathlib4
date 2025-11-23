@@ -317,6 +317,7 @@ If `P` lies over `p`, the height of `P` is bounded by the height of `p` plus
 the height of the image of `P` in `S ⧸ p S`.
 TODO(@chrisflav): Equality holds if `S` satisfies going-down as an `R`-algebra.
 -/
+@[stacks 00OM]
 lemma Ideal.height_le_height_add_of_liesOver [IsNoetherianRing S] (p : Ideal R) [p.IsPrime]
       (P : Ideal S) [P.IsPrime] [P.LiesOver p] :
     P.height ≤ p.height +
