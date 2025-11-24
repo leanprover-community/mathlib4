@@ -894,6 +894,18 @@ def fstHom : tsze R M →ₐ[S] R where
   map_add' := fst_add
   commutes' _r := fst_inl M _
 
+/-- `R'` as an algebra over `TrivSqZeroExt R' M`. Not an instance since it creates a different
+`Algebra (TrivSqZeroExt R' M) (TrivSqZeroExt R' M)` instance from `TrivSqZeroExt.algebra'`. -/
+abbrev algebraBase : Algebra (tsze R' M) R' where
+  algebraMap := (fstHom R' R' M).toRingHom
+  smul x r := x.fst * r
+  commutes' _ _ := mul_comm ..
+  smul_def' _ _ := rfl
+
+attribute [local instance] algebraBase in
+instance : IsScalarTower R' (tsze R' M) R' where
+  smul_assoc _ _ _ := mul_assoc ..
+
 /-- The canonical `S`-algebra inclusion `R → TrivSqZeroExt R M`. -/
 @[simps]
 def inlAlgHom : R →ₐ[S] tsze R M where

@@ -10,6 +10,7 @@ import Counterexamples.EulerSumOfPowers
 import Counterexamples.GameMultiplication
 import Counterexamples.Girard
 import Counterexamples.HomogeneousPrimeNotPrime
+import Counterexamples.InvertibleModuleNotIdeal
 import Counterexamples.IrrationalPowerOfIrrational
 import Counterexamples.LinearOrderWithPosMulPosEqZero
 import Counterexamples.MapFloor
