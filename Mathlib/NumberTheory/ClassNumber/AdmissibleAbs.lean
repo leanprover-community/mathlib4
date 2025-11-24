@@ -3,9 +3,11 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Basic
-import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
-import Mathlib.Data.Real.Archimedean
+module
+
+public import Mathlib.Algebra.Algebra.Basic
+public import Mathlib.NumberTheory.ClassNumber.AdmissibleAbsoluteValue
+public import Mathlib.Data.Real.Archimedean
 
 /-!
 # Admissible absolute value on the integers
@@ -18,6 +20,8 @@ is finite.
 * `AbsoluteValue.absIsAdmissible` shows the "standard" absolute value on `ℤ`,
   mapping negative `x` to `-x`, is admissible.
 -/
+
+@[expose] public section
 
 
 namespace AbsoluteValue
@@ -34,7 +38,7 @@ theorem exists_partition_int (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b : ℤ} (hb :
     rw [Algebra.smul_def]
     exact mul_pos hb' hε
   have hfloor : ∀ i, 0 ≤ floor ((A i % b : ℤ) / abs b • ε : ℝ) :=
-    fun _ ↦ floor_nonneg.mpr (div_nonneg (cast_nonneg.mpr (emod_nonneg _ hb)) hbε.le)
+    fun _ ↦ floor_nonneg.mpr (div_nonneg (cast_nonneg (emod_nonneg _ hb)) hbε.le)
   refine ⟨fun i ↦ ⟨natAbs (floor ((A i % b : ℤ) / abs b • ε : ℝ)), ?_⟩, ?_⟩
   · rw [← ofNat_lt, natAbs_of_nonneg (hfloor i), floor_lt, Algebra.smul_def, eq_intCast, ← div_div]
     apply lt_of_lt_of_le _ (Nat.le_ceil _)

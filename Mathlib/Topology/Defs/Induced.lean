@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Topology.Basic
+module
+
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Topology.Basic
 /-!
 # Induced and coinduced topologies
 
@@ -42,6 +44,8 @@ as well as topology inducing maps, topological embeddings, and quotient maps.
   and the topology on the codomain is equal to the coinduced topology.
 -/
 
+@[expose] public section
+
 open Set
 open scoped Topology
 
@@ -69,6 +73,11 @@ instance _root_.instTopologicalSpaceSubtype {p : X → Prop} [t : TopologicalSpa
     TopologicalSpace (Subtype p) :=
   induced (↑) t
 
+/-- Transfer a `TopologicalSpace` across an `Equiv` -/
+protected abbrev _root_.Equiv.topologicalSpace [TopologicalSpace Y] (e : X ≃ Y) :
+    TopologicalSpace X :=
+  .induced e ‹_›
+
 /-- Given `f : X → Y` and a topology on `X`,
   the coinduced topology on `Y` is defined such that
   `s : Set Y` is open if the preimage of `s` is open.
@@ -95,8 +104,6 @@ if either of the following equivalent conditions hold:
 -/
 structure IsCoherentWith (S : Set (Set X)) : Prop where
   isOpen_of_forall_induced (u : Set X) : (∀ s ∈ S, IsOpen ((↑) ⁻¹' u : Set s)) → IsOpen u
-
-@[deprecated (since := "2025-04-08")] alias RestrictGenTopology := Topology.IsCoherentWith
 
 /-- A function `f : X → Y` between topological spaces is inducing if the topology on `X` is induced
 by the topology on `Y` through `f`, meaning that a set `s : Set X` is open iff it is the preimage

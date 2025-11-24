@@ -3,13 +3,15 @@ Copyright (c) 2020 Kevin Buzzard, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Yoneda
-import Mathlib.CategoryTheory.Preadditive.FunctorCategory
-import Mathlib.CategoryTheory.Sites.SheafOfTypes
-import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Equalizers
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+public import Mathlib.CategoryTheory.Limits.Yoneda
+public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
+public import Mathlib.CategoryTheory.Sites.SheafOfTypes
+public import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
+public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 /-!
 # Sheaves taking values in a category
@@ -50,6 +52,8 @@ a category `A'` instead, whose morphism universe of `A'` is defined to be `max u
 inequalities this can be changed.
 
 -/
+
+@[expose] public section
 
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃
@@ -148,7 +152,7 @@ theorem isLimit_iff_isSheafFor :
 
 /-- Given sieve `S` and presheaf `P : Cᵒᵖ ⥤ A`, their natural associated cone admits at most one
     morphism from every cone in the same category (i.e. over the same diagram),
-    iff `Hom (E, P -)`is separated for the sieve `S` and all `E : A`. -/
+    iff `Hom (E, P -)` is separated for the sieve `S` and all `E : A`. -/
 theorem subsingleton_iff_isSeparatedFor :
     (∀ c, Subsingleton (c ⟶ P.mapCone S.arrows.cocone.op)) ↔
       ∀ E : Aᵒᵖ, IsSeparatedFor (P ⋙ coyoneda.obj E) S.arrows := by
@@ -316,6 +320,8 @@ instance instCategorySheaf : Category (Sheaf J A) where
   id_comp _ := Hom.ext <| id_comp _
   comp_id _ := Hom.ext <| comp_id _
   assoc _ _ _ := Hom.ext <| assoc _ _ _
+
+attribute [reassoc] comp_val
 
 -- Let's make the inhabited linter happy.../sips
 instance (X : Sheaf J A) : Inhabited (Hom X X) :=

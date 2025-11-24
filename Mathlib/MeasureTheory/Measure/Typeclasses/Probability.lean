@@ -3,7 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
+module
+
+public import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
+public import Mathlib.Topology.UnitInterval
 
 /-!
 # Classes for probability measures
@@ -13,6 +16,8 @@ We introduce the following typeclasses for measures:
 * `IsZeroOrProbabilityMeasure μ`: `μ univ = 0 ∨ μ univ = 1`;
 * `IsProbabilityMeasure μ`: `μ univ = 1`.
 -/
+
+@[expose] public section
 
 namespace MeasureTheory
 
@@ -38,8 +43,6 @@ lemma prob_le_one {μ : Measure α} [IsZeroOrProbabilityMeasure μ] {s : Set α}
 lemma measureReal_le_one {μ : Measure α} [IsZeroOrProbabilityMeasure μ] {s : Set α} :
     μ.real s ≤ 1 :=
   ENNReal.toReal_le_of_le_ofReal zero_le_one (ENNReal.ofReal_one.symm ▸ prob_le_one)
-
-@[deprecated (since := "2025-04-19")] alias toReal_prob_le_one := measureReal_le_one
 
 @[simp]
 theorem one_le_prob_iff {μ : Measure α} [IsZeroOrProbabilityMeasure μ] : 1 ≤ μ s ↔ μ s = 1 :=
@@ -82,11 +85,30 @@ theorem IsProbabilityMeasure.ae_neBot [IsProbabilityMeasure μ] : NeBot (ae μ) 
 theorem prob_add_prob_compl [IsProbabilityMeasure μ] (h : MeasurableSet s) : μ s + μ sᶜ = 1 :=
   (measure_add_measure_compl h).trans measure_univ
 
+lemma probReal_add_probReal_compl [IsProbabilityMeasure μ] (h : MeasurableSet s) :
+    μ.real s + μ.real sᶜ = 1 := by
+  simpa [Measure.real, ENNReal.toReal_add] using congr($(prob_add_prob_compl (μ := μ) h).toReal)
+
 instance isProbabilityMeasureSMul [IsFiniteMeasure μ] [NeZero μ] :
     IsProbabilityMeasure ((μ univ)⁻¹ • μ) :=
   ⟨ENNReal.inv_mul_cancel (NeZero.ne (μ univ)) (measure_ne_top _ _)⟩
 
+instance isProbabilityMeasure_dite {p : Prop} [Decidable p] {μ : p → Measure α}
+    {ν : ¬ p → Measure α} [∀ h, IsProbabilityMeasure (μ h)] [∀ h, IsProbabilityMeasure (ν h)] :
+    IsProbabilityMeasure (dite p μ ν) := by split <;> infer_instance
+
+instance isProbabilityMeasure_ite {p : Prop} [Decidable p] {μ ν : Measure α}
+    [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] :
+    IsProbabilityMeasure (ite p μ ν) := by split <;> infer_instance
+
+open unitInterval in
+instance {μ ν : Measure α} [IsProbabilityMeasure μ] [IsProbabilityMeasure ν] {p : I} :
+    IsProbabilityMeasure (toNNReal p • μ + toNNReal (σ p) • ν) where
+  measure_univ := by simp [← add_smul]
+
 variable [IsProbabilityMeasure μ] {p : α → Prop} {f : β → α}
+
+@[simp] lemma probReal_univ : μ.real .univ = 1 := by simp [Measure.real]
 
 theorem Measure.isProbabilityMeasure_map {f : α → β} (hf : AEMeasurable f μ) :
     IsProbabilityMeasure (map f μ) :=

@@ -3,8 +3,10 @@ Copyright (c) 2022 Henrik Böving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving
 -/
-import Mathlib.Control.ULiftable
-import Mathlib.Order.Fin.Basic
+module
+
+public import Mathlib.Control.ULiftable
+public import Mathlib.Order.Fin.Basic
 
 /-!
 # Rand Monad and Random Class
@@ -27,6 +29,8 @@ defining objects that can be created randomly.
 * Similar library in Haskell: https://hackage.haskell.org/package/MonadRandom
 
 -/
+
+@[expose] public section
 
 set_option autoImplicit true -- Note: this file uses `autoImplicit` pervasively
 
@@ -124,7 +128,7 @@ instance : BoundedRandom m Int where
     let ⟨z, _, h2⟩ ← randBound Nat 0 (Int.natAbs <| hi - lo) (Nat.zero_le _)
     pure ⟨
       z + lo,
-      Int.le_add_of_nonneg_left (Int.ofNat_zero_le z),
+      Int.le_add_of_nonneg_left (Int.natCast_nonneg z),
       Int.add_le_of_le_sub_right <| Int.le_trans
         (Int.ofNat_le.mpr h2)
         (le_of_eq <| Int.natAbs_of_nonneg <| Int.sub_nonneg_of_le h)⟩
