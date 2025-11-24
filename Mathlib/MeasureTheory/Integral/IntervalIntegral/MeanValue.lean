@@ -3,7 +3,9 @@ Copyright (c) 2025 Louis (Yiyang) Liu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Louis (Yiyang) Liu
 -/
-import Mathlib.MeasureTheory.Integral.IntervalAverage
+module
+
+public import Mathlib.MeasureTheory.Integral.IntervalAverage
 
 /-!
 # First mean value theorem for integrals
@@ -34,6 +36,8 @@ and one assuming pointwise nonnegativity together with continuity of `g`.
 
 mean value theorem, interval integral, measure, nonnegative, continuous, integrable
 -/
+
+@[expose] public section
 
 open MeasureTheory Set intervalIntegral
 
