@@ -142,4 +142,3 @@ theorem of_fintype_basis_eq [Fintype ι] {a : ι → A} {v : V} :
 end IsBaseChange
 
 end underring
-
