@@ -754,7 +754,7 @@ lemma linearDeriv_apply [DecidableEq ι] [Fintype ι] (f : MultilinearMap R M₁
     (x y : (i : ι) → M₁ i) :
     f.linearDeriv x y = ∑ i, f (update x i (y i)) := by
   unfold linearDeriv
-  simp only [LinearMap.coeFn_sum, LinearMap.coe_comp, LinearMap.coe_proj, Finset.sum_apply,
+  simp only [LinearMap.coe_sum, LinearMap.coe_comp, LinearMap.coe_proj, Finset.sum_apply,
     Function.comp_apply, Function.eval, toLinearMap_apply]
 
 end Semiring

@@ -233,7 +233,7 @@ lemma traceForm_eq_sum_genWeightSpaceOf
   have h := LieSubmodule.iSupIndep_toSubmodule.mpr <| iSupIndep_genWeightSpaceOf R L M z
   have hds := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top h <| by
     simp [← LieSubmodule.iSup_toSubmodule]
-  simp only [LinearMap.coeFn_sum, Finset.sum_apply, traceForm_apply_apply,
+  simp only [LinearMap.coe_sum, Finset.sum_apply, traceForm_apply_apply,
     LinearMap.trace_eq_sum_trace_restrict' hds hfin hxy]
   exact Finset.sum_congr (by simp) (fun χ _ ↦ rfl)
 
@@ -446,7 +446,7 @@ lemma traceForm_eq_sum_finrank_nsmul' :
 lemma range_traceForm_le_span_weight :
     LinearMap.range (traceForm K L M) ≤ span K (range (Weight.toLinear K L M)) := by
   rintro - ⟨x, rfl⟩
-  rw [LieModule.traceForm_eq_sum_finrank_nsmul, LinearMap.coeFn_sum, Finset.sum_apply]
+  rw [LieModule.traceForm_eq_sum_finrank_nsmul, LinearMap.coe_sum, Finset.sum_apply]
   refine Submodule.sum_mem _ fun χ _ ↦ ?_
   simp_rw [LinearMap.smul_apply, LinearMap.coe_smulRight, Weight.toLinear_apply,
     ← Nat.cast_smul_eq_nsmul K]
