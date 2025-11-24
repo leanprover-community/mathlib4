@@ -280,7 +280,7 @@ theorem intervalGapsWithin_snd_le {a b : ℝ} (hFab : ∀ ⦃z⦄, z ∈ F → a
 
 theorem intervalGapsWithin_fst_le_snd {a b : ℝ} (hab : a ≤ b)
     (hFab : ∀ ⦃z⦄, z ∈ F → a ≤ z.1 ∧ z.1 ≤ z.2 ∧ z.2 ≤ b)
-    (hF : F.toSet.PairwiseDisjoint (fun z ↦ Set.Icc z.1 z.2)) (i : ℕ) :
+    (hF : (SetLike.coe F).PairwiseDisjoint (fun z ↦ Set.Icc z.1 z.2)) (i : ℕ) :
     (F.intervalGapsWithin a b i).1 ≤ (F.intervalGapsWithin a b i).2 := by
   by_cases hi : i ≤ F.card
   swap
@@ -376,7 +376,7 @@ lemma AbsolutelyContinuousOnInterval.dist_le_of_pairwiseDisjoint_hasSum {f : ℝ
     intro z hz
     have := hu₁ z (by grind)
     grind
-  replace hu₂ (s : Finset u) : (u_coe s).toSet.PairwiseDisjoint fun z ↦ Icc z.1 z.2 :=
+  replace hu₂ (s : Finset u) : (SetLike.coe (u_coe s)).PairwiseDisjoint fun z ↦ Icc z.1 z.2 :=
     hu₂.subset (by grind)
   let T (s : Finset u) := ((u_coe s).card + 1, (u_coe s).intervalGapsWithin d b)
   have hT₁ (s : Finset u) (i : ℕ) := (u_coe s).intervalGapsWithin_le_fst (hu₁ s) i
