@@ -18,7 +18,7 @@ In this file, given `P : ObjectProperty C`, we define
 
 -/
 
-universe w' w t v v' u u'
+universe w' w v v' u u'
 
 @[expose] public section
 

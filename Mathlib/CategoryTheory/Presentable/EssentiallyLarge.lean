@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Presentable.LocallyPresentable
+module
+
+public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 
 /-!
 # Accessible categories are essentially large
@@ -14,6 +16,8 @@ then `C` is equivalent to a `w`-large category, i.e. a category whose type
 of objects is in `Type (w + 1)` and whose types of morphisms are in `Type w`.
 
 -/
+
+@[expose] public section
 
 universe w v u
 
