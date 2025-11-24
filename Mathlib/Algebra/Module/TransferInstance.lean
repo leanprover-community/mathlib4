@@ -26,32 +26,30 @@ variable (e : α ≃ β)
 
 variable (R) in
 /-- Transfer `Module` across an `Equiv` -/
-protected abbrev module (e : α ≃ β) [AddCommMonoid β] :
-    let _ := Equiv.addCommMonoid e
-    ∀ [Module R β], Module R α := by
-  intros
-  exact
-    ({ Equiv.distribMulAction R e with
-        zero_smul := by simp [smul_def, zero_smul, zero_def]
-        add_smul := by simp [add_def, smul_def, add_smul] } :
-      Module R α)
+protected abbrev module (e : α ≃ β) [AddCommMonoid β] [Module R β] :
+    letI := Equiv.addCommMonoid e
+    Module R α :=
+  letI := Equiv.addCommMonoid e
+  { Equiv.distribMulAction R e with
+      zero_smul := by simp [smul_def, zero_smul, zero_def]
+      add_smul := by simp [add_def, smul_def, add_smul] }
 
 variable (R) in
 /-- An equivalence `e : α ≃ β` gives a linear equivalence `α ≃ₗ[R] β`
 where the `R`-module structure on `α` is
 the one obtained by transporting an `R`-module structure on `β` back along `e`.
 -/
-def linearEquiv (e : α ≃ β) [AddCommMonoid β] [Module R β] : by
-    let addCommMonoid := Equiv.addCommMonoid e
-    let module := Equiv.module R e
-    exact α ≃ₗ[R] β := by
-  intros
-  exact
-    { Equiv.addEquiv e with
-      map_smul' := fun r x => by
-        apply e.symm.injective
-        simp only [toFun_as_coe, RingHom.id_apply, EmbeddingLike.apply_eq_iff_eq]
-        exact Iff.mpr (apply_eq_iff_eq_symm_apply _) rfl }
+def linearEquiv (e : α ≃ β) [AddCommMonoid β] [Module R β] : --by
+    letI := Equiv.addCommMonoid e
+    letI := Equiv.module R e
+    α ≃ₗ[R] β :=
+  letI := Equiv.addCommMonoid e
+  letI module := Equiv.module R e
+  { Equiv.addEquiv e with
+    map_smul' := fun r x => by
+      apply e.symm.injective
+      simp only [toFun_as_coe, RingHom.id_apply, EmbeddingLike.apply_eq_iff_eq]
+      exact Iff.mpr (apply_eq_iff_eq_symm_apply _) rfl }
 
 end Equiv
 
