@@ -244,6 +244,17 @@ theorem isClosedEmbedding_singleton :
 
 end T0Space
 
+instance : T0Space (Closeds α) := by
+  suffices ∀ F₁ F₂ : Closeds α, Inseparable F₁ F₂ → F₁ ≤ F₂ from
+    ⟨fun F₁ F₂ h => le_antisymm (this F₁ F₂ h) (this F₂ F₁ h.symm)⟩
+  refine fun F₁ F₂ h x hx₁ => isClosed_iff_frequently.mp F₂.isClosed _ ?_
+  rw [nhds_eq_comap_uniformity, Filter.frequently_comap, Filter.frequently_iff]
+  intro (U : SetRel α α) hU
+  obtain ⟨h : (F₁ : Set α) ⊆ U.preimage F₂, -⟩ :=
+    mem_of_mem_nhds <| h.nhds_le_uniformity <| Filter.preimage_mem_comap <| Filter.mem_lift' hU
+  obtain ⟨y, hy, hxy⟩ := h hx₁
+  exact ⟨(x, y), hxy, y, rfl, hy⟩
+
 end TopologicalSpace.Closeds
 
 namespace TopologicalSpace.Compacts
