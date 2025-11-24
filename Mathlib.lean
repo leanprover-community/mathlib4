@@ -3256,6 +3256,7 @@ public import Mathlib.Condensed.Light.Functors
 public import Mathlib.Condensed.Light.Instances
 public import Mathlib.Condensed.Light.Limits
 public import Mathlib.Condensed.Light.Module
+public import Mathlib.Condensed.Light.Monoidal
 public import Mathlib.Condensed.Light.Small
 public import Mathlib.Condensed.Light.TopCatAdjunction
 public import Mathlib.Condensed.Light.TopComparison
@@ -6064,6 +6065,7 @@ public import Mathlib.RingTheory.Polynomial.ShiftedLegendre
 public import Mathlib.RingTheory.Polynomial.SmallDegreeVieta
 public import Mathlib.RingTheory.Polynomial.Tower
 public import Mathlib.RingTheory.Polynomial.UniqueFactorization
+public import Mathlib.RingTheory.Polynomial.UniversalFactorizationRing
 public import Mathlib.RingTheory.Polynomial.Vieta
 public import Mathlib.RingTheory.Polynomial.Wronskian
 public import Mathlib.RingTheory.PolynomialAlgebra
