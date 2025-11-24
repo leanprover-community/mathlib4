@@ -38,7 +38,7 @@ def productCone : BinaryFan X Y :=
 When the predicate `P` is preserved under taking type-theoretic products, that product is a
 category-theoretic product in `CompHausLike P`.
 -/
-noncomputable def productIsLimit : IsLimit (productCone X Y) where
+def productIsLimit : IsLimit (productCone X Y) where
   lift := fun S : BinaryFan X Y ↦ TopCat.ofHom {
     toFun := fun s ↦ (S.fst s, S.snd s)  }
   fac := by rintro S (_ | _) <;> {dsimp; ext; rfl}
@@ -61,7 +61,7 @@ This could be an instance but that causes some slowness issues with typeclass se
 keep it as a def and turn it on as an instance for the explicit examples of `CompHausLike` as
 needed.
 -/
-noncomputable def cartesianMonoidalCategory [∀ (X Y : CompHausLike.{u} P), HasProp P (X × Y)]
+def cartesianMonoidalCategory [∀ (X Y : CompHausLike.{u} P), HasProp P (X × Y)]
     [HasProp P PUnit.{u + 1}] : CartesianMonoidalCategory (CompHausLike.{u} P) :=
   .ofChosenFiniteProducts
     ⟨_, CompHausLike.isTerminalPUnit⟩
