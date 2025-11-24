@@ -194,9 +194,7 @@ theorem norm_extendOfNorm_apply_le (h_dense : DenseRange e) (C : ℝ)
     ‖f.extendOfNorm e x‖ ≤ C * ‖x‖ := by
   have h_mem : ∀ (x : Eₗ) (hy : x ∈ (LinearMap.range e)), ‖extendOfNorm f e x‖ ≤ C * ‖x‖ := by
     intro x ⟨y, hxy⟩
-    rw [← hxy]
-    convert h_norm y
-    apply extendOfNorm_eq h_dense ⟨C, h_norm⟩
+    simpa only [← hxy, extendOfNorm_eq h_dense ⟨C, h_norm⟩ y] using h_norm y
   exact h_dense.induction h_mem (isClosed_le (by fun_prop) (by fun_prop)) x
 
 theorem extendOfNorm_unique (h_dense : DenseRange e) (C : ℝ) (h_norm : ∀ (x : E), ‖f x‖ ≤ C * ‖e x‖)
