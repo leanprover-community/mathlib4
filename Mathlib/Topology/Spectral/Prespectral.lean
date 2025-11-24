@@ -145,3 +145,16 @@ lemma IsOpenMap.exists_opens_image_eq_of_prespectralSpace [PrespectralSpace X] {
       rintro ⟨i, hi, x, hx, rfl⟩
       have := heq ▸ mem_sSup.mpr ⟨i.1, i.2, hx⟩
       exact this
+
+lemma PrespectralSpace.exists_isCompact_and_isOpen_between [PrespectralSpace X] {K U : Set X}
+    (hK : IsCompact K) (hU : IsOpen U) (hKU : K ⊆ U) :
+    ∃ (W : Set X), IsCompact W ∧ IsOpen W ∧ W ⊆ U ∧ K ⊆ W := by
+  refine hK.induction_on ⟨∅, by simp⟩ (fun s t hst ⟨W, Wc, Wo, hWU, hKW⟩ ↦ ?_) ?_ ?_
+  · use W, Wc, Wo, hWU, subset_trans hst hKW
+  · intro s t ⟨W₁, Wc₁, Wo₁, hWU₁, hKW₁⟩ ⟨W₂, Wc₂, Wo₂, hWU₂, hKW₂⟩
+    exact ⟨W₁ ∪ W₂, Wc₁.union Wc₂, Wo₁.union Wo₂, Set.union_subset hWU₁ hWU₂,
+      Set.union_subset_union hKW₁ hKW₂⟩
+  · intro x hx
+    obtain ⟨V, h, hxV, hVU⟩ :=
+      PrespectralSpace.isTopologicalBasis.exists_subset_of_mem_open (hKU hx) hU
+    exact ⟨V, mem_nhdsWithin.mpr ⟨V, h.1, hxV, Set.inter_subset_left⟩, V, h.2, h.1, hVU, subset_rfl⟩

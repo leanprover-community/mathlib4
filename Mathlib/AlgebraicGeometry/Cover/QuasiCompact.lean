@@ -3,10 +3,12 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Affine
-import Mathlib.AlgebraicGeometry.Properties
-import Mathlib.AlgebraicGeometry.PullbackCarrier
-import Mathlib.Topology.Sets.CompactOpenCovered
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Affine
+public import Mathlib.AlgebraicGeometry.Properties
+public import Mathlib.AlgebraicGeometry.PullbackCarrier
+public import Mathlib.Topology.Sets.CompactOpenCovered
 
 /-!
 # Quasi-compact covers
@@ -18,26 +20,13 @@ This is used to define the fpqc (faithfully flat, quasi-compact) topology, where
 flat covers that are quasi-compact.
 -/
 
+@[expose] public section
+
 universe w' w u v
 
 open CategoryTheory Limits MorphismProperty TopologicalSpace.Opens AlgebraicGeometry
 
 namespace AlgebraicGeometry
-
-lemma IsAffineOpen.isCompact_pullback_inf {X Y Z : Scheme.{u}} {f : X ⟶ Z} {g : Y ⟶ Z}
-    {U : X.Opens} (hU : IsAffineOpen U) {V : Y.Opens} (hV : IsCompact V.1)
-    {W : Z.Opens} (hW : IsAffineOpen W) (hUW : U ≤ f ⁻¹ᵁ W) (hVW : V ≤ g ⁻¹ᵁ W) :
-    IsCompact (pullback.fst f g ⁻¹ᵁ U ⊓ pullback.snd f g ⁻¹ᵁ V).1 := by
-  have : IsAffine U.toScheme := hU
-  have : IsAffine W.toScheme := hW
-  have : CompactSpace V := isCompact_iff_compactSpace.mp hV
-  let f' : U.toScheme ⟶ W := f.resLE _ _ hUW
-  let q : Scheme.Opens.toScheme V ⟶ W :=
-    IsOpenImmersion.lift W.ι (Scheme.Opens.ι _ ≫ g) <| by simpa [Set.range_comp]
-  let p : pullback f' q ⟶ pullback f g :=
-    pullback.map _ _ _ _ U.ι (Scheme.Opens.ι _) W.ι (by simp [f']) (by simp [q])
-  convert isCompact_range p.continuous
-  simp [p, Scheme.Pullback.range_map]
 
 variable {S : Scheme.{u}}
 
