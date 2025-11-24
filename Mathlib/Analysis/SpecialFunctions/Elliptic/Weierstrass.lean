@@ -185,7 +185,8 @@ lemma ℘_bound (r : ℝ) (hr : r > 0) (s : ℂ) (hs : ‖s‖ < r) (l : ℂ) (h
 
 section ℘Except
 
-/-- The Weierstrass ℘ function with the `l₀`-term missing. -/
+/-- The Weierstrass ℘ function with the `l₀`-term missing.
+This is mainly a tool for calculations where one would want to omit a diverging term. -/
 def ℘Except (l₀ : ℂ) (z : ℂ) : ℂ :=
   ∑' l : L.lattice, if l = l₀ then 0 else (1 / (z - l) ^ 2 - 1 / l ^ 2)
 
