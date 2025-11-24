@@ -19,7 +19,7 @@ This file defines convex spaces as an algebraic structure supporting finite conv
 
 ## Main definitions
 
-* `FiniteProbability R ι`: A finitely supported probability distribution over `ι` with coefficients
+* `StdSimplex R ι`: A finitely supported probability distribution over `ι` with coefficients
   in `R`. The weights are non-negative and sum to 1.
 * `ConvexSpace R M`: A typeclass for spaces `M` equipped with an operation of taking convex
   combinations with coefficients in `R`.
@@ -43,21 +43,21 @@ noncomputable section
 A finitely supported probability distribution over `ι` with coefficients in `R`.
 The weights are non-negative and sum to 1.
 -/
-structure FiniteProbability (R : Type u) [LE R] [AddCommMonoid R] [One R] (ι : Type v)
+structure StdSimplex (R : Type u) [LE R] [AddCommMonoid R] [One R] (ι : Type v)
     extends weights : ι →₀ R where
   /-- All weights are non-negative. -/
   nonneg : ∀ m, 0 ≤ weights m
   /-- The weights sum to 1. -/
   total : weights.sum (fun _ r => r) = 1
 
-namespace FiniteProbability
+namespace StdSimplex
 
 variable {R : Type u} [PartialOrder R] [Semiring R] [IsStrictOrderedRing R]
   {κ : Type v} {ι : κ → Type v}
 
 open Classical in
 /-- The point mass distribution concentrated at `i`. -/
-def single {ι : Type v} (i : ι) : FiniteProbability R ι where
+def single {ι : Type v} (i : ι) : StdSimplex R ι where
   weights := Finsupp.single i 1
   nonneg m := by
     rw [Finsupp.single_apply]
@@ -68,7 +68,7 @@ def single {ι : Type v} (i : ι) : FiniteProbability R ι where
 
 /-- A probability distribution on `Fin 2` with weights `x` and `y`. -/
 -- Is it useful to generalize this to `x y : ι`?
-def duple {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) : FiniteProbability R (Fin 2) where
+def duple {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) : StdSimplex R (Fin 2) where
   weights := Finsupp.single 0 s + Finsupp.single 1 t
   nonneg := by
     simp
@@ -81,8 +81,8 @@ Composition of probability distributions.
 Given a distribution `f` over `κ` and a family `g` of distributions over `ι k` for each `k : κ`,
 produces a distribution over `Σ k, ι k`.
 -/
-def comp (f : FiniteProbability R κ) (g : (k : κ) → FiniteProbability R (ι k)) :
-    FiniteProbability R (Σ k, ι k) where
+def comp (f : StdSimplex R κ) (g : (k : κ) → StdSimplex R (ι k)) :
+    StdSimplex R (Σ k, ι k) where
   weights := f.sum (fun m r => (r • (g m).weights).embDomain <| .sigmaMk m)
   nonneg := by
     intro ⟨k, i⟩
@@ -119,7 +119,7 @@ def comp (f : FiniteProbability R κ) (g : (k : κ) → FiniteProbability R (ι 
     convert h_final using 1
     rw [Finsupp.sum_sum_index] <;> aesop
 
-end FiniteProbability
+end StdSimplex
 
 /--
 A set equipped with an operation of finite convex combinations,
@@ -128,11 +128,11 @@ where the coefficients must be non-negative and sum to 1.
 class ConvexSpace (R : Type u) (M : Type v)
     [PartialOrder R] [Semiring R] [IsStrictOrderedRing R] where
   /-- Take a convex combination of a family of points with the given probability distribution. -/
-  convexCombination {ι : Type v} (f : FiniteProbability R ι) (xs : ι → M) : M
+  convexCombination {ι : Type v} (f : StdSimplex R ι) (xs : ι → M) : M
   /-- Associativity of convex combination. -/
   assoc
-    {κ : Type v} (f₀ : FiniteProbability R κ)
-    {ι : κ → Type v} (f₁ : (k : κ) → FiniteProbability R (ι k))
+    {κ : Type v} (f₀ : StdSimplex R κ)
+    {ι : κ → Type v} (f₁ : (k : κ) → StdSimplex R (ι k))
     (xs : (k : κ) → (ι k) → M) :
     convexCombination f₀ (fun m => convexCombination (f₁ m) (xs m)) =
       convexCombination (f₀.comp f₁) (fun ⟨k, i⟩ => xs k i)
@@ -140,7 +140,7 @@ class ConvexSpace (R : Type u) (M : Type v)
   single {ι : Type v} (i : ι) (x : M) : convexCombination (.single i) (fun _ => x) = x
   /-- Convex combinations are determined by the points with non-zero weights. -/
   -- Perhaps this follows from `assoc`, but I don't see how.
-  ext {ι : Type v} (f : FiniteProbability R ι) (xs xs' : ι → M)
+  ext {ι : Type v} (f : StdSimplex R ι) (xs xs' : ι → M)
     (h : ∀ i, i ∈ f.support → xs i = xs' i) : convexCombination f xs = convexCombination f xs'
 
 open ConvexSpace
