@@ -977,7 +977,7 @@ theorem IntermediateField.isCyclotomicExtension_singleton_iff_eq_adjoin (F : Int
     {ζ : L} (hζ : IsPrimitiveRoot ζ n) :
     IsCyclotomicExtension {n} K F ↔ F = IntermediateField.adjoin K {ζ} := by
   rw [← toSubalgebra_inj, adjoin_simple_toSubalgebra_of_algebraic
-    (hζ.isIntegral.isAlgebraic (NeZero.pos _)).tower_top]
+    (hζ.isIntegral (NeZero.pos _)).tower_top.isAlgebraic]
   exact _root_.isCyclotomicExtension_singleton_iff_eq_adjoin n F.toSubalgebra hζ
 
 theorem IntermediateField.isCyclotomicExtension_eq (F₁ F₂ : IntermediateField K L)
