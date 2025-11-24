@@ -3,22 +3,25 @@ Copyright (c) 2024 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Riccardo Brasca
 -/
+module
 
-import Mathlib.LinearAlgebra.Dimension.DivisionRing
-import Mathlib.LinearAlgebra.FreeModule.PID
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.RingTheory.Artinian.Ring
-import Mathlib.RingTheory.Ideal.Over
-import Mathlib.RingTheory.Ideal.Quotient.Index
-import Mathlib.RingTheory.LocalRing.ResidueField.Defs
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
-import Mathlib.RingTheory.Nakayama
+public import Mathlib.LinearAlgebra.Dimension.DivisionRing
+public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+public import Mathlib.RingTheory.Artinian.Ring
+public import Mathlib.RingTheory.Ideal.Over
+public import Mathlib.RingTheory.Ideal.Quotient.Index
+public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
+public import Mathlib.RingTheory.LocalRing.RingHom.Basic
+public import Mathlib.RingTheory.Nakayama
 
 /-!
 
 We gather results about the quotients of local rings.
 
 -/
+
+@[expose] public section
 
 open Submodule FiniteDimensional Module
 
@@ -110,7 +113,7 @@ lemma exists_maximalIdeal_pow_le_of_isArtinianRing_quotient
     (I : Ideal R) [IsArtinianRing (R ⧸ I)] : ∃ n, maximalIdeal R ^ n ≤ I := by
   by_cases hI : I = ⊤
   · simp [hI]
-  have : Nontrivial (R ⧸ I) := Ideal.Quotient.nontrivial hI
+  have : Nontrivial (R ⧸ I) := Ideal.Quotient.nontrivial_iff.mpr hI
   have := IsLocalRing.of_surjective' (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
   have := IsLocalHom.of_surjective (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective
   obtain ⟨n, hn⟩ := IsArtinianRing.isNilpotent_jacobson_bot (R := R ⧸ I)

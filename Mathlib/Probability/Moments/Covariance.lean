@@ -3,7 +3,9 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Etienne Marion
 -/
-import Mathlib.Probability.Independence.Integration
+module
+
+public import Mathlib.Probability.Independence.Integration
 
 /-!
 # Covariance
@@ -25,6 +27,8 @@ We define the covariance of two real-valued random variables.
 * `cov[X, Y] = covariance X Y volume`
 
 -/
+
+@[expose] public section
 
 open MeasureTheory
 
@@ -48,7 +52,7 @@ lemma covariance_eq_sub [IsProbabilityMeasure μ] (hX : MemLp X 2 μ) (hY : MemL
      cov[X, Y; μ] = μ[X * Y] - μ[X] * μ[Y] := by
    simp_rw [covariance, sub_mul, mul_sub]
    repeat rw [integral_sub]
-   · simp_rw [integral_mul_const, integral_const_mul, integral_const, measureReal_univ_eq_one,
+   · simp_rw [integral_mul_const, integral_const_mul, integral_const, probReal_univ,
        one_smul]
      simp
    · exact hY.const_mul _ |>.integrable (by simp)
