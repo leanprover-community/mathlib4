@@ -39,17 +39,17 @@ variable (R) in
 where the `R`-module structure on `α` is
 the one obtained by transporting an `R`-module structure on `β` back along `e`.
 -/
-def linearEquiv (e : α ≃ β) [AddCommMonoid β] [Module R β] : by
-    let addCommMonoid := Equiv.addCommMonoid e
-    let module := Equiv.module R e
-    exact α ≃ₗ[R] β := by
-  intros
-  exact
-    { Equiv.addEquiv e with
-      map_smul' := fun r x => by
-        apply e.symm.injective
-        simp only [toFun_as_coe, RingHom.id_apply, EmbeddingLike.apply_eq_iff_eq]
-        exact Iff.mpr (apply_eq_iff_eq_symm_apply _) rfl }
+def linearEquiv (e : α ≃ β) [AddCommMonoid β] [Module R β] : --by
+    letI := Equiv.addCommMonoid e
+    letI := Equiv.module R e
+    α ≃ₗ[R] β :=
+  letI := Equiv.addCommMonoid e
+  letI module := Equiv.module R e
+  { Equiv.addEquiv e with
+    map_smul' := fun r x => by
+      apply e.symm.injective
+      simp only [toFun_as_coe, RingHom.id_apply, EmbeddingLike.apply_eq_iff_eq]
+      exact Iff.mpr (apply_eq_iff_eq_symm_apply _) rfl }
 
 end Equiv
 
