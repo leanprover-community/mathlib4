@@ -44,27 +44,29 @@ aperiodic order, and tiling theory.
 
 open Metric
 
+variable {X Y : Type*} [MetricSpace X] [MetricSpace Y]
+
 namespace Metric
 
 /-- A set `D` in a metric space is *uniformly discrete* if there exists `r > 0`
 such that distinct points of `D` are at least distance `r` apart. -/
-def UniformlyDiscrete {X : Type*} [MetricSpace X] (D : Set X) : Prop :=
-  ∃ r > 0, ∀ ⦃x y⦄, x ∈ D → y ∈ D → x ≠ y → r ≤ dist x y
+def UniformlyDiscrete (D : Set X) : Prop :=
+    ∃ r > 0, ∀ ⦃x y⦄, x ∈ D → y ∈ D → x ≠ y → r ≤ dist x y
 
 /-- A set `D` in a metric space is *relatively dense* if there exists `R > 0`
 such that every point of the space is within distance `R` of some point in `D`. -/
-def RelativelyDense {X : Type*} [MetricSpace X] (D : Set X) : Prop :=
-  ∃ R > 0, ∀ x : X, ∃ y ∈ D, dist x y ≤ R
+def RelativelyDense (D : Set X) : Prop :=
+    ∃ R > 0, ∀ x : X, ∃ y ∈ D, dist x y ≤ R
 
 /-- If `D ⊆ E` and `E` is uniformly discrete, then so is `D`. -/
-lemma uniformlyDiscrete_mono {X} [MetricSpace X] {D E : Set X} (hDE : D ⊆ E) :
+lemma uniformlyDiscrete_mono {D E : Set X} (hDE : D ⊆ E) :
     UniformlyDiscrete E → UniformlyDiscrete D := by
   rintro ⟨r, hr, hsep⟩
   refine ⟨r, hr, fun x y hx hy hne ↦ ?_⟩
   exact hsep (hDE hx) (hDE hy) hne
 
 /-- If `D ⊆ E` and `D` is relatively dense, then so is `E`. -/
-lemma relativelyDense_mono {X} [MetricSpace X] {D E : Set X} (hDE : D ⊆ E) :
+lemma relativelyDense_mono {D E : Set X} (hDE : D ⊆ E) :
     RelativelyDense D → RelativelyDense E := by
   rintro ⟨R, hR, hcov⟩
   refine ⟨R, hR, fun x ↦ ?_⟩
@@ -84,8 +86,6 @@ structure DeloneSet (X : Type*) [MetricSpace X] where
 attribute [simp] DeloneSet.carrier
 
 namespace DeloneSet
-
-variable {X : Type*} [MetricSpace X]
 
 /-- A Delone set is nonempty. -/
 lemma nonempty [Inhabited X] (D : DeloneSet X) : D.carrier.Nonempty := by
@@ -126,7 +126,7 @@ lemma subset_ball_singleton (D : DeloneSet X) :
   exact lt_irrefl _ (lt_of_lt_of_le hxy_lt <| hsep hx hy hne)
 
 /-- The image of a Delone set under an isometry is a Delone set. -/
-def map {Y : Type*} [MetricSpace Y] (f : X ≃ᵢ Y) (D : DeloneSet X) : DeloneSet Y := {
+def map (f : X ≃ᵢ Y) (D : DeloneSet X) : DeloneSet Y := {
   carrier := f '' D.carrier
   uniformlyDiscrete := by
     obtain ⟨r, hr, hsep⟩ := D.uniformlyDiscrete
@@ -144,29 +144,21 @@ def map {Y : Type*} [MetricSpace Y] (f : X ≃ᵢ Y) (D : DeloneSet X) : DeloneS
     simpa [hdist] using hxR
 }
 
-@[ext] lemma ext {X : Type*} [MetricSpace X] {D E : DeloneSet X}
-    (h : D.carrier = E.carrier) : D = E := by
+@[ext] lemma ext {D E : DeloneSet X} (h : D.carrier = E.carrier) : D = E := by
   cases D; cases E; cases h; rfl
 
-lemma map_id (D : DeloneSet X) :
-    D.map (IsometryEquiv.refl X) = D := by
+lemma map_id (D : DeloneSet X) : D.map (IsometryEquiv.refl X) = D := by
   ext x; constructor
   · rintro ⟨y, hyD, rfl⟩; exact hyD
   · intro hx; exact ⟨x, hx, rfl⟩
 
-lemma map_comp
-    {X Y Z : Type*} [MetricSpace X] [MetricSpace Y] [MetricSpace Z]
-    (D : DeloneSet X)
-    (f : X ≃ᵢ Y) (g : Y ≃ᵢ Z) :
+lemma map_comp {Z : Type*} [MetricSpace Z] (D : DeloneSet X) (f : X ≃ᵢ Y) (g : Y ≃ᵢ Z) :
     D.map (f.trans g) = (D.map f).map g := by
   ext z; constructor
   · rintro ⟨x, hxD, rfl⟩; exact ⟨f x, ⟨x, hxD, rfl⟩, rfl⟩
   · rintro ⟨y, ⟨x, hxD, rfl⟩, rfl⟩; exact ⟨x, hxD, rfl⟩
 
-lemma map_symm
-    {X Y : Type*} [MetricSpace X] [MetricSpace Y]
-    (D : DeloneSet X) (f : X ≃ᵢ Y) :
-    (D.map f).map f.symm = D := by
+lemma map_symm (D : DeloneSet X) (f : X ≃ᵢ Y) : (D.map f).map f.symm = D := by
   ext x; constructor
   · rintro ⟨y, ⟨x₀, hx₀D, rfl⟩, rfl⟩; simpa
   · intro hx; exact ⟨f x, ⟨x, hx, rfl⟩, by simp⟩
