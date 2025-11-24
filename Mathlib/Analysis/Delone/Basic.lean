@@ -31,12 +31,11 @@ aperiodic order, and tiling theory.
 * `DeloneSet X`
   A structure bundling a uniformly discrete and relatively dense set.
 
-## Main results
+## Basic properties
 
 * `DeloneSet.nonempty`
-* `DeloneSet.exists_covering_radius`
-* `DeloneSet.exists_packing_radius`
 * `DeloneSet.dist_pos_of_ne`
+* `DeloneSet.subset_ball_singleton`
 * `DeloneSet.map`
 -/
 
@@ -104,7 +103,7 @@ lemma dist_pos_of_ne {D : DeloneSet X} {x y : X}
   exact lt_of_lt_of_le hr <| hsep hx hy hne
 
 /-- At most one point of a Delone set lies in a sufficiently small ball. -/
-lemma subset_ball_singleton' (D : DeloneSet X) :
+lemma subset_ball_singleton (D : DeloneSet X) :
     ∃ r > 0, ∀ x y z, x ∈ D.carrier → y ∈ D.carrier → z ∈ D.carrier →
       dist x z < r / 2 → dist z y < r / 2 → x = y := by
   obtain ⟨ρ, hρ, hsep⟩ := D.uniformlyDiscrete
