@@ -12,7 +12,7 @@ import Lean.Meta.Tactic.Cases
 import Lean.Meta.CongrTheorems
 
 /-!
-# Additions to `Lean.Meta.CongrTheorems`
+# Additions to `Mathlib/Lean/Meta/CongrTheorems.lean`
 -/
 
 @[expose] public section

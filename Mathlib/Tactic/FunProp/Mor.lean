@@ -9,7 +9,7 @@ public import Mathlib.Init
 public meta import Lean.Meta.CoeAttr
 
 /-!
-## `funProp` Meta programming functions like in Lean.Expr.* but for working with bundled morphisms.
+## `funProp` Meta programming functions like in Mathlib/Lean/Expr.lean.* but for working with bundled morphisms.
 
 Function application in normal lean expression looks like `.app f x` but when we work with bundled
 morphism `f` it looks like `.app (.app coe f) x` where `f`. In mathlib `coe` is usually

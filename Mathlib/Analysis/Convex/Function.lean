@@ -13,7 +13,7 @@ public import Mathlib.Tactic.NormNum
 # Convex and concave functions
 
 This file defines convex and concave functions in vector spaces and proves the finite Jensen
-inequality. The integral version can be found in `Analysis.Convex.Integral`.
+inequality. The integral version can be found in `Mathlib/Analysis/Convex/Integral.lean`.
 
 A function `f : E → β` is `ConvexOn` a set `s` if `s` is itself a convex set, and for any two
 points `x y ∈ s`, the segment joining `(x, f x)` to `(y, f y)` is above the graph of `f`.

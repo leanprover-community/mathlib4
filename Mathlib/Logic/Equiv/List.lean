@@ -59,7 +59,7 @@ theorem decodeList_encodeList_eq_self (l : List α) : decodeList (encodeList l) 
   induction l <;> simp [encodeList, decodeList, unpair_pair, encodek, *]
 
 /-- If `α` is encodable, then so is `List α`. This uses the `pair` and `unpair` functions from
-`Data.Nat.Pairing`. -/
+`Mathlib/Data/Nat/Pairing.lean`. -/
 instance _root_.List.encodable : Encodable (List α) :=
   ⟨encodeList, decodeList, decodeList_encodeList_eq_self⟩
 

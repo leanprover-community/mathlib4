@@ -15,7 +15,7 @@ public import Mathlib.Data.PNat.Equiv
 # The positive natural numbers
 
 This file develops the type `ℕ+` or `PNat`, the subtype of natural numbers that are positive.
-It is defined in `Data.PNat.Defs`, but most of the development is deferred to here so
+It is defined in `Mathlib/Data/PNat/Defs.lean`, but most of the development is deferred to here so
 that `Data.PNat.Defs` can have very few imports.
 -/
 

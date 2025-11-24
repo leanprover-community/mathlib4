@@ -251,7 +251,7 @@ example (ha : 0 ≤ a) (hb : 0 < b) :
   · field_simp
     ring
 
--- From Analysis.Convex.StoneSeparation
+-- From Mathlib/Analysis/Convex/StoneSeparation.lean
 example (hab : 0 < a * b + c * d) :
     (a * b / (a * b + c * d) * e) • u + (c * d / (a * b + c * d) * f) • v +
       ((a * b / (a * b + c * d)) • d • x + (c * d / (a * b + c * d)) • b • y) =

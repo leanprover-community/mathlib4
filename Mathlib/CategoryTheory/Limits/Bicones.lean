@@ -20,7 +20,7 @@ two extra vertices `Bicone.left` and `Bicone.right`. The morphisms are the morph
 Given a diagram `F : J ⥤ C` and two `Cone F`s, we can join them into a diagram `Bicone J ⥤ C` via
 `biconeMk`.
 
-This is used in `CategoryTheory.Functor.Flat`.
+This is used in `Mathlib/CategoryTheory/Functor/Flat.lean`.
 -/
 
 @[expose] public section

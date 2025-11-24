@@ -12,14 +12,14 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 # Biproducts and binary biproducts
 
 We introduce the notion of (finite) biproducts.
-Binary biproducts are defined in `CategoryTheory.Limits.Shapes.BinaryBiproducts`.
+Binary biproducts are defined in `Mathlib/CategoryTheory/Limits/Shapes/BinaryBiproducts.lean`.
 
 These are slightly unusual relative to the other shapes in the library,
 as they are simultaneously limits and colimits.
 (Zero objects are similar; they are "biterminal".)
 
 For results about biproducts in preadditive categories see
-`CategoryTheory.Preadditive.Biproducts`.
+`Mathlib/CategoryTheory/Preadditive/Biproducts.lean`.
 
 For biproducts indexed by a `Fintype J`, a `bicone` consists of a cone point `X`
 and morphisms `π j : X ⟶ F j` and `ι j : F j ⟶ X` for each `j`,

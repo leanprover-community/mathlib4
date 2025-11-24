@@ -14,7 +14,7 @@ public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 # Mean value inequalities for integrals
 
 In this file we prove several inequalities on integrals, notably the Hölder inequality and
-the Minkowski inequality. The versions for finite sums are in `Analysis.MeanInequalities`.
+the Minkowski inequality. The versions for finite sums are in `Mathlib/Analysis/MeanInequalities.lean`.
 
 ## Main results
 

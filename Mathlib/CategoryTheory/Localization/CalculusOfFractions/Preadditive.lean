@@ -21,7 +21,7 @@ Let `L : C ⥤ D` be a localization functor for `W`. We first construct an abeli
 group structure on `L.obj X ⟶ L.obj Y` for `X` and `Y` in `C`. The addition
 is defined using representatives of two morphisms in `L` as left fractions with
 the same denominator thanks to the lemmas in
-`CategoryTheory.Localization.CalculusOfFractions.Fractions`.
+`Mathlib/CategoryTheory/Localization/CalculusOfFractions/Fractions.lean`.
 As `L` is essentially surjective, we finally transport these abelian group structures
 to `X' ⟶ Y'` for all `X'` and `Y'` in `D`.
 

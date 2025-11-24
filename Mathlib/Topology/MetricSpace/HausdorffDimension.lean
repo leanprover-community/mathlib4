@@ -63,7 +63,7 @@ properties of Hausdorff dimension.
 ## Notation
 
 We use the following notation localized in `MeasureTheory`. It is defined in
-`MeasureTheory.Measure.Hausdorff`.
+`Mathlib/MeasureTheory/Measure/Hausdorff.lean`.
 
 - `μH[d]` : `MeasureTheory.Measure.hausdorffMeasure d`
 

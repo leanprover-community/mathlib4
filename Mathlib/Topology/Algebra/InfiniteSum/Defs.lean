@@ -17,7 +17,7 @@ This file defines infinite products and sums for (possibly infinite) indexed fam
 in a commutative topological monoid (resp. add monoid).
 
 To handle convergence questions we use the formalism of *summation filters* (defined in the
-file `Mathlib.Topology.Algebra.InfiniteSum.SummationFilter`). These are filters on the finite
+file `Mathlib/Topology/Algebra/InfiniteSum/SummationFilter.lean`). These are filters on the finite
 subsets of a given type, and we define a function to be *summable* for a summation filter `L` if
 its partial sums over finite subsets tend to a limit along `L` (and similarly for products).
 

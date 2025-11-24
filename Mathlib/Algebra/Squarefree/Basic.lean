@@ -15,7 +15,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 An element of a monoid is squarefree when it is not divisible by any squares
 except the squares of units.
 
-Results about squarefree natural numbers are proved in `Data.Nat.Squarefree`.
+Results about squarefree natural numbers are proved in `Mathlib/Data/Nat/Squarefree.lean`.
 
 ## Main Definitions
 - `Squarefree r` indicates that `r` is only divisible by `x * x` if `x` is a unit.

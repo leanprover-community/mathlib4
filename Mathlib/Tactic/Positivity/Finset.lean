@@ -14,7 +14,7 @@ public meta import Mathlib.Tactic.Positivity.Core
 # Positivity extensions for finsets
 
 This file provides a few `positivity` extensions that cannot be in either the finset files (because
-they don't know about ordered fields) or in `Tactic.Positivity.Basic` (because it doesn't want to
+they don't know about ordered fields) or in `Mathlib/Tactic/Positivity/Basic.lean` (because it doesn't want to
 know about finiteness).
 -/
 

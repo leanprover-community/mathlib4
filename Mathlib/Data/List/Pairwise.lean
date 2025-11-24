@@ -13,7 +13,7 @@ public import Mathlib.Logic.Relation
 # Pairwise relations on a list
 
 This file provides basic results about `List.Pairwise` and `List.pwFilter` (definitions are in
-`Data.List.Defs`).
+`Mathlib/Data/List/Defs.lean`).
 `Pairwise r [a 0, ..., a (n - 1)]` means `∀ i j, i < j → r (a i) (a j)`. For example,
 `Pairwise (≠) l` means that all elements of `l` are distinct, and `Pairwise (<) l` means that `l`
 is strictly increasing.

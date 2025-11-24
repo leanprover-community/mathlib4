@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Even
 public import Mathlib.Algebra.Order.Ring.Basic
-public import Mathlib.Algebra.Ring.Parity -- Algebra.Group.Even can't prove `IsSquare 0` by simp
+public import Mathlib.Algebra.Ring.Parity -- Mathlib/Algebra/Group/Even.lean can't prove `IsSquare 0` by simp
 public import Mathlib.Algebra.Ring.Subsemiring.Basic
 public import Mathlib.Tactic.ApplyFun
 
@@ -87,7 +87,7 @@ end AddSubmonoid
 
 /--
 In an additive unital magma with multiplication, squares are sums of squares
-(see Mathlib.Algebra.Group.Even).
+(see Mathlib/Algebra/Group/Even.lean).
 -/
 @[aesop unsafe 80% apply]
 theorem IsSquare.isSumSq [AddZeroClass R] [Mul R] {x : R} (hx : IsSquare x) : IsSumSq x := by aesop

@@ -10,7 +10,7 @@ public import Lean.Meta.AppBuilder
 public import Lean.Meta.Coe
 
 /-!
-# Additions to `Lean.Meta.Basic`
+# Additions to `Mathlib/Lean/Meta/Basic.lean`
 
 Likely these already exist somewhere. Pointers welcome.
 -/

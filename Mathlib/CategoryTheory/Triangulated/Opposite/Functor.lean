@@ -15,7 +15,7 @@ If `F : C ⥤ D` is a functor between pretriangulated categories, we prove that
 `F` is a triangulated functor if and only if `F.op` is a triangulated functor.
 In order to do this, we first show that a `CommShift` structure on `F` naturally
 gives one on `F.op` (for the shifts on `Cᵒᵖ` and `Dᵒᵖ` defined in
-`CategoryTheory.Triangulated.Opposite.Basic`), and we then prove
+`Mathlib/CategoryTheory/Triangulated/Opposite/Basic.lean`), and we then prove
 that `F.mapTriangle.op` and `F.op.mapTriangle` correspond to each other via the
 equivalences `(Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ` and `(Triangle D)ᵒᵖ ≌ Triangle Dᵒᵖ`
 given by `CategoryTheory.Pretriangulated.triangleOpEquivalence`.
@@ -36,7 +36,7 @@ open Category Limits Pretriangulated Opposite
 namespace Pretriangulated.Opposite
 
 /-- If `F` commutes with shifts, so does `F.op`, for the shifts chosen on `Cᵒᵖ` in
-`CategoryTheory.Triangulated.Opposite.Basic`.
+`Mathlib/CategoryTheory/Triangulated/Opposite/Basic.lean`.
 -/
 noncomputable scoped instance commShiftFunctorOpInt : F.op.CommShift ℤ :=
   inferInstanceAs ((PullbackShift.functor

@@ -4,7 +4,7 @@ import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta.Basic
 import Mathlib.Tactic.Relation.Rfl
 
-/-! # Tests for mathlib extensions to `Lean.Expr` and `Lean.Meta` -/
+/-! # Tests for mathlib extensions to `Mathlib/Lean/Expr.lean` and `Mathlib/Lean/Meta.lean` -/
 
 namespace Tests
 

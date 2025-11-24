@@ -14,9 +14,9 @@ public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 In this file, we shall construct the (pre)triangulated structure
 on the opposite category `Cᵒᵖ` of a (pre)triangulated category `C`.
 
-The shift on `Cᵒᵖ` was constructed in `CategoryTheory.Triangulated.Opposite.Basic`,
+The shift on `Cᵒᵖ` was constructed in `Mathlib/CategoryTheory/Triangulated/Opposite/Basic.lean`,
 and is such that shifting by `n : ℤ` on `Cᵒᵖ` corresponds to the shift by
-`-n` on `C`. In `CategoryTheory.Triangulated.Opposite.Triangle`, we constructed
+`-n` on `C`. In `Mathlib/CategoryTheory/Triangulated/Opposite/Triangle.lean`, we constructed
 an equivalence `(Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ`, called
 `CategoryTheory.Pretriangulated.triangleOpEquivalence`.
 

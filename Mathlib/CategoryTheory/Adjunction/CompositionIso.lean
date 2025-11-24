@@ -16,11 +16,11 @@ and show that the left adjoint functors satisfy properties similar to the left/r
 unitality and the associativity of pseudofunctors if the right adjoint functors
 satisfy the corresponding properties.
 
-This is used in `Mathlib.Algebra.Category.ModuleCat.Presheaf.Pullback` to study
+This is used in `Mathlib/Algebra/Category/ModuleCat/Presheaf/Pullback.lean` to study
 the behaviour with respect to composition of the pullback functors on presheaves
 of modules, by reducing these definitions and properties to the (obvious) case of the
 pushforward functors. Similar results are obtained for sheaves of modules
-in `Mathlib.Algebra.Category.ModuleCat.Sheaf.PullbackContinuous`.
+in `Mathlib/Algebra/Category/ModuleCat/Sheaf/PullbackContinuous.lean`.
 
 -/
 

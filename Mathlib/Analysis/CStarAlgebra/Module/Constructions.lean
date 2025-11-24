@@ -39,7 +39,7 @@ instance the application of `CStarModule.norm_eq_sqrt_norm_inner_self` in the pr
 inconvenience is outweighed by avoiding translating between type synonyms where possible.
 
 For more details on the importance of the `WithCStarModule` type synonym, see the module
-documentation for `Analysis.CStarAlgebra.Module.Synonym`.
+documentation for `Mathlib/Analysis/CStarAlgebra/Module/Synonym.lean`.
 
 ## Implementation notes
 

@@ -18,7 +18,7 @@ public meta import Qq
 
 This file sets up the `positivity` tactic and the `@[positivity]` attribute,
 which allow for plugging in new positivity functionality around a positivity-based driver.
-The actual behavior is in `@[positivity]`-tagged definitions in `Tactic.Positivity.Basic`
+The actual behavior is in `@[positivity]`-tagged definitions in `Mathlib/Tactic/Positivity/Basic.lean`
 and elsewhere.
 -/
 

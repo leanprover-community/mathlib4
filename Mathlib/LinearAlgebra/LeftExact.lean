@@ -16,7 +16,7 @@ If `M1 → M2 → M3 → 0` is an exact sequence of `R`-modules and `N` is a `R`
 then `0 → (M3 →ₗ[R] N) → (M2 →ₗ[R] N) → (M1 →ₗ[R] N)` is exact. In this file, we
 show the exactness at `M2 →ₗ[R] N` (`exact_lcomp_of_exact_of_surjective`);
 the injectivity part is `LinearMap.lcomp_injective_of_surjective` in the file
-`Mathlib.LinearAlgebra.BilinearMap`.
+`Mathlib/LinearAlgebra/BilinearMap.lean`.
 
 
 -/

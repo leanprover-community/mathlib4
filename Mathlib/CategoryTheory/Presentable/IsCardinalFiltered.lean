@@ -308,7 +308,7 @@ lemma IsCardinalFiltered.multicoequalizer
 
 /-- If `F : J₁ ⥤ J₂` is final and `J₁` is `κ`-filtered, then
 `J₂` is also `κ`-filtered. See also `IsFiltered.of_final`
-(in `CategoryTheory.Limits.Final`) for the particular case of
+(in `Mathlib/CategoryTheory/Limits/Final.lean`) for the particular case of
 filtered categories (`κ = ℵ₀`). -/
 lemma IsCardinalFiltered.of_final
     {J₁ : Type u} [Category.{v} J₁] {J₂ : Type u'} [Category.{v'} J₂]

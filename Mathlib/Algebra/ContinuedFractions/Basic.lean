@@ -266,7 +266,7 @@ namespace GenContFract
 We now define how to compute the convergents of a gcf. There are two standard ways to do this:
 directly evaluating the (infinite) fraction described by the gcf or using a recurrence relation.
 For (r)cfs, these computations are equivalent as shown in
-`Algebra.ContinuedFractions.ConvergentsEquiv`.
+`Mathlib/Algebra/ContinuedFractions/ConvergentsEquiv.lean`.
 -/
 
 -- Fix a division ring for the computations.

@@ -16,7 +16,7 @@ public import Mathlib.LinearAlgebra.Matrix.RowCol
 This file defines the trace of a matrix, the map sending a matrix to the sum of its diagonal
 entries.
 
-See also `LinearAlgebra.Trace` for the trace of an endomorphism.
+See also `Mathlib/LinearAlgebra/Trace.lean` for the trace of an endomorphism.
 
 ## Tags
 

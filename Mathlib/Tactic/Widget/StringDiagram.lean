@@ -17,7 +17,7 @@ public meta import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
 
 This file provides meta infrastructure for displaying string diagrams for morphisms in monoidal
 categories in the infoview. To enable the string diagram widget, you need to import this file and
-inserting `with_panel_widgets [Mathlib.Tactic.Widget.StringDiagram]` at the beginning of the
+inserting `with_panel_widgets [Mathlib/Tactic/Widget/StringDiagram.lean]` at the beginning of the
 proof. Alternatively, you can also write
 ```lean
 open Mathlib.Tactic.Widget

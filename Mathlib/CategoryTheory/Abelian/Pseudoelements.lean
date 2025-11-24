@@ -32,7 +32,7 @@ First, we construct some morphism using universal properties, and then we use di
 of pseudoelements to verify that is has some desirable property such as exactness.
 
 It should be noted that the Freyd-Mitchell embedding theorem
-(see `CategoryTheory.Abelian.FreydMitchell`) gives a vastly stronger notion of
+(see `Mathlib/CategoryTheory/Abelian/FreydMitchell.lean`) gives a vastly stronger notion of
 pseudoelement (in particular one that gives extensionality) and this file should be updated to
 go use that instead!
 

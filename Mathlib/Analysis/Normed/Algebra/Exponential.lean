@@ -23,7 +23,7 @@ definition also does not require that `𝔸` be complete, but we need to assume 
 
 We then prove some basic results, but we avoid importing derivatives here to minimize dependencies.
 Results involving derivatives and comparisons with `Real.exp` and `Complex.exp` can be found in
-`Analysis.SpecialFunctions.Exponential`.
+`Mathlib/Analysis/SpecialFunctions/Exponential.lean`.
 
 ## Main results
 

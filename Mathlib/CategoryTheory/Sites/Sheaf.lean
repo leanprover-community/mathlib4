@@ -34,7 +34,7 @@ and `A` live in the same universe.
   equalizer condition `CategoryTheory.Presheaf.IsSheaf'`. This is equivalent to the earlier
   definition, shown in `CategoryTheory.Presheaf.isSheaf_iff_isSheaf'`.
 * When `A = Type`, this is *definitionally* equal to the equalizer condition for presieves in
-  `CategoryTheory.Sites.SheafOfTypes`.
+  `Mathlib/CategoryTheory/Sites/SheafOfTypes.lean`.
 * When `A` has limits and there is a functor `s : A ⥤ Type` which is faithful, reflects isomorphisms
   and preserves limits, then `P : Cᵒᵖ ⥤ A` is a sheaf iff the underlying presheaf of types
   `P ⋙ s : Cᵒᵖ ⥤ Type` is a sheaf (`CategoryTheory.Presheaf.isSheaf_iff_isSheaf_forget`).

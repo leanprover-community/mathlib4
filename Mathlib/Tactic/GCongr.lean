@@ -11,7 +11,7 @@ public meta import Mathlib.Tactic.Hint
 /-! # Setup for the `gcongr` tactic
 
 The core implementation of the `gcongr` ("generalized congruence") tactic is in the file
-`Tactic.GCongr.Core`. -/
+`Mathlib/Tactic/GCongr/Core.lean`. -/
 
 public meta section
 

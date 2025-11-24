@@ -290,7 +290,7 @@ open scoped InnerProductSpace
 /- Note: one generally creates a `CStarModule` instance for a type `E` first before getting the
 `NormedAddCommGroup` and `NormedSpace` instances via `CStarModule.normedSpaceCore`, especially by
 using `NormedAddCommGroup.ofCoreReplaceAll` and `NormedSpace.ofCore`. See
-`Analysis.CStarAlgebra.Module.Constructions` for examples. -/
+`Mathlib/Analysis/CStarAlgebra/Module/Constructions.lean` for examples. -/
 variable {A E : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A] [SMul A E]
   [NormedAddCommGroup E] [NormedSpace ℂ E] [CStarModule A E]
 

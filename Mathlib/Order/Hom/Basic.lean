@@ -70,7 +70,7 @@ monotone map, bundled morphism
 
 @[expose] public section
 
--- Developments relating order homs and sets belong in `Order.Hom.Set` or later.
+-- Developments relating order homs and sets belong in `Mathlib/Order/Hom/Set.lean` or later.
 assert_not_imported Mathlib.Data.Set.Basic
 
 open OrderDual

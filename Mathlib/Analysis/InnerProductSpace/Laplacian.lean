@@ -16,7 +16,7 @@ public import Mathlib.Analysis.InnerProductSpace.CanonicalTensor
 This file defines the Laplacian for functions `f : E → F` on real, finite-dimensional, inner product
 spaces `E`. In essence, we define the Laplacian of `f` as the second derivative, applied to the
 canonical covariant tensor of `E`, as defined and discussed in
-`Mathlib.Analysis.InnerProductSpace.CanonicalTensor`.
+`Mathlib/Analysis/InnerProductSpace/CanonicalTensor.lean`.
 
 We show that the Laplacian is `ℝ`-linear on continuously differentiable functions, and establish the
 standard formula for computing the Laplacian in terms of orthonormal bases of `E`.

@@ -16,7 +16,7 @@ Herein we prove the Banach-Steinhaus theorem for normed spaces: any collection o
 maps from a Banach space into a normed space which is pointwise bounded is uniformly bounded.
 
 Note that we prove the more general version about barrelled spaces in
-`Analysis.LocallyConvex.Barrelled`, and the usual version below is indeed deduced from the
+`Mathlib/Analysis/LocallyConvex/Barrelled.lean`, and the usual version below is indeed deduced from the
 more general setup.
 -/
 

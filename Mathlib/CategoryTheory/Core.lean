@@ -14,12 +14,12 @@ public import Mathlib.Control.EquivFunctor
 # The core of a category
 
 The core of a category `C` is the (non-full) subcategory of `C` consisting of all objects,
-and all isomorphisms. We construct it as a `CategoryTheory.Groupoid`.
+and all isomorphisms. We construct it as a `Mathlib/CategoryTheory/Groupoid.lean`.
 
 `CategoryTheory.Core.inclusion : Core C ⥤ C` gives the faithful inclusion into the original
 category.
 
-Any functor `F` from a groupoid `G` into `C` factors through `CategoryTheory.Core C`,
+Any functor `F` from a groupoid `G` into `C` factors through `Mathlib/CategoryTheory/Core.lean C`,
 but this is not functorial with respect to `F`.
 -/
 

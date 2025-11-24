@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 A category "has a zero object" if it has an object which is both initial and terminal. Having a
 zero object provides zero morphisms, as the unique morphisms factoring through the zero object;
-see `CategoryTheory.Limits.Shapes.ZeroMorphisms`.
+see `Mathlib/CategoryTheory/Limits/Shapes/ZeroMorphisms.lean`.
 
 ## References
 

@@ -9,7 +9,7 @@ public import Mathlib.Init
 public import Lean.Meta.DiscrTree
 
 /-!
-# Additions to `Lean.Meta.DiscrTree`
+# Additions to `Mathlib/Lean/Meta/DiscrTree.lean`
 -/
 
 @[expose] public section

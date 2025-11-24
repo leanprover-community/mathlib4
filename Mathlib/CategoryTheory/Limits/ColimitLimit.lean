@@ -17,7 +17,7 @@ For `F : J × K ⥤ C` there is always a morphism $\colim_k \lim_j F(j,k) → \l
 While it is not usually an isomorphism, with additional hypotheses on `J` and `K` it may be,
 in which case we say that "colimits commute with limits".
 
-The prototypical example, proved in `CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit`,
+The prototypical example, proved in `Mathlib/CategoryTheory/Limits/FilteredColimitCommutesFiniteLimit.lean`,
 is that when `C = Type`, filtered colimits commute with finite limits.
 
 ## References

@@ -36,7 +36,7 @@ An element `x : M` can be reinterpreted as an element of `End (SingleObj.star M)
   multiplication on `End` agrees with the multiplication on `M`.
 
 - By default, Lean puts instances into `CategoryTheory` namespace instead of
-  `CategoryTheory.SingleObj`, so we give all names explicitly.
+  `Mathlib/CategoryTheory/SingleObj.lean`, so we give all names explicitly.
 -/
 
 @[expose] public section
@@ -47,7 +47,7 @@ universe u v w
 
 namespace CategoryTheory
 
-/-- Abbreviation that allows writing `CategoryTheory.SingleObj` rather than `Quiver.SingleObj`.
+/-- Abbreviation that allows writing `Mathlib/CategoryTheory/SingleObj.lean` rather than `Quiver.SingleObj`.
 -/
 abbrev SingleObj :=
   Quiver.SingleObj

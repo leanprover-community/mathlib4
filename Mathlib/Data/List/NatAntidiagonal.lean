@@ -16,7 +16,7 @@ generally for sums going from `0` to `n`.
 
 ## Notes
 
-Files `Data.Multiset.NatAntidiagonal` and `Data.Finset.NatAntidiagonal` successively turn the
+Files `Mathlib/Data/Multiset/NatAntidiagonal.lean` and `Mathlib/Data/Finset/NatAntidiagonal.lean` successively turn the
 `List` definition we have here into `Multiset` and `Finset`.
 -/
 

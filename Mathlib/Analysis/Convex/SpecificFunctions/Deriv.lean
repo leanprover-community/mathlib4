@@ -27,7 +27,7 @@ In this file we prove that certain specific functions are strictly convex, inclu
 
 These convexity lemmas are proved by checking the sign of the second derivative. If desired, most
 of these could also be switched to elementary proofs, like in
-`Analysis.Convex.SpecificFunctions.Basic`.
+`Mathlib/Analysis/Convex/SpecificFunctions/Basic.lean`.
 
 -/
 

@@ -25,7 +25,7 @@ We also prove the supplementary laws that give conditions for when `-1`
 is a square modulo a prime `p`:
 `legendreSym.at_neg_one` and `ZMod.exists_sq_eq_neg_one_iff` for `-1`.
 
-See `NumberTheory.LegendreSymbol.QuadraticReciprocity` for the conditions when `2` and `-2`
+See `Mathlib/NumberTheory/LegendreSymbol/QuadraticReciprocity.lean` for the conditions when `2` and `-2`
 are squares:
 `legendreSym.at_two` and `ZMod.exists_sq_eq_two_iff` for `2`,
 `legendreSym.at_neg_two` and `ZMod.exists_sq_eq_neg_two_iff` for `-2`.

@@ -27,7 +27,7 @@ public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 
 ## Implementation notes
 
-See `RingTheory.Localization.Basic` for a design overview.
+See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
 localization, ring localization, commutative ring localization, characteristic predicate,

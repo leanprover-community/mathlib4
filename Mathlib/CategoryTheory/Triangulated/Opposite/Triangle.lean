@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
 # Triangles in the opposite category of a (pre)triangulated category
 
 Let `C` be a (pre)triangulated category.
-In `CategoryTheory.Triangulated.Opposite.Basic`, we have constructed
+In `Mathlib/CategoryTheory/Triangulated/Opposite/Basic.lean`, we have constructed
 a shift on `Cᵒᵖ` that will be part of a structure of (pre)triangulated
 category. In this file, we construct an equivalence of categories
 between `(Triangle C)ᵒᵖ` and `Triangle Cᵒᵖ`, called

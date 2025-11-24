@@ -311,8 +311,8 @@ protected def Faithful.div (F : C ⥤ E) (G : D ⥤ E) [G.Faithful] (obj : C →
 
 -- This follows immediately from `Functor.hext` (`Functor.hext h_obj @h_map`),
 -- but importing `CategoryTheory.EqToHom` causes an import loop:
--- CategoryTheory.EqToHom → CategoryTheory.Opposites →
--- CategoryTheory.Equivalence → CategoryTheory.FullyFaithful
+-- Mathlib/CategoryTheory/EqToHom.lean → Mathlib/CategoryTheory/Opposites.lean →
+-- Mathlib/CategoryTheory/Equivalence.lean → CategoryTheory.FullyFaithful
 theorem Faithful.div_comp (F : C ⥤ E) [F.Faithful] (G : D ⥤ E) [G.Faithful] (obj : C → D)
     (h_obj : ∀ X, G.obj (obj X) = F.obj X) (map : ∀ {X Y}, (X ⟶ Y) → (obj X ⟶ obj Y))
     (h_map : ∀ {X Y} {f : X ⟶ Y}, G.map (map f) ≍ F.map f) :

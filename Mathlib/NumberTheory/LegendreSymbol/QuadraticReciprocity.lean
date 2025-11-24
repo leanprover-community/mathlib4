@@ -27,7 +27,7 @@ is a square modulo a prime `p`:
 ## Implementation notes
 
 The proofs use results for quadratic characters on arbitrary finite fields
-from `NumberTheory.LegendreSymbol.QuadraticChar.GaussSum`, which in turn are based on
+from `Mathlib/NumberTheory/LegendreSymbol/QuadraticChar/GaussSum.lean`, which in turn are based on
 properties of quadratic Gauss sums as provided by `NumberTheory.LegendreSymbol.GaussSum`.
 
 ## Tags

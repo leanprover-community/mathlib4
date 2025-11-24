@@ -20,7 +20,7 @@ require calculus, and as such this file has only moderate dependencies.
   `fun x ↦ x ^ p` for p ∈ (0,1)
 * `NNReal.concaveOn_rpow`, `Real.concaveOn_rpow`: concavity of `fun x ↦ x ^ p` for p ∈ [0,1]
 
-Note that convexity for `p > 1` can be found in `Analysis.Convex.SpecificFunctions.Basic`, which
+Note that convexity for `p > 1` can be found in `Mathlib/Analysis/Convex/SpecificFunctions/Basic.lean`, which
 requires slightly less imports.
 
 ## TODO

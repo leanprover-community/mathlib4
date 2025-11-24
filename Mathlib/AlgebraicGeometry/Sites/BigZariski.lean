@@ -13,7 +13,7 @@ public import Mathlib.CategoryTheory.Sites.Canonical
 In this file, we define the Zariski topology, as a Grothendieck topology on the
 category `Scheme.{u}`: this is `Scheme.zariskiTopology.{u}`. If `X : Scheme.{u}`,
 the Zariski topology on `Over X` can be obtained as `Scheme.zariskiTopology.over X`
-(see `CategoryTheory.Sites.Over`.).
+(see `Mathlib/CategoryTheory/Sites/Over.lean`.).
 
 TODO:
 * If `Y : Scheme.{u}`, define a continuous functor from the category of opens of `Y`

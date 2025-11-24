@@ -18,7 +18,7 @@ public import Mathlib.Tactic.FinCases
 This file defines ideal quotients as a special case of submodule quotients and proves some basic
 results about these quotients.
 
-See `Algebra.RingQuot` for quotients of semirings.
+See `Mathlib/Algebra/RingQuot.lean` for quotients of semirings.
 
 ## Main definitions
 

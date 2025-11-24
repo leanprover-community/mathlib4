@@ -161,7 +161,7 @@ scoped elab:max "T% " t:term:arg : term => do
         trace[Elab.DiffGeo.TotalSpaceMk] "Section of a bundle as a dependent function"
         let f? ← findSomeLocalInstanceOf? `FiberBundle fun _ declType ↦
           /- Note: we do not use `match_expr` here since that would require importing
-          `Mathlib.Topology.FiberBundle.Basic` to resolve `FiberBundle`. -/
+          `Mathlib/Topology/FiberBundle/Basic.lean` to resolve `FiberBundle`. -/
           match declType with
           | mkApp7 (.const `FiberBundle _) _ F _ _ E _ _ => do
             if ← withReducible (pureIsDefEq E V) then

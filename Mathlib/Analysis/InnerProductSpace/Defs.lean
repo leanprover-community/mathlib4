@@ -32,9 +32,9 @@ inner product. Defining a norm starting from an inner product is handled via the
 
 This file is intended to contain the minimal amount of machinery needed to define inner product
 spaces, and to construct a normed space from an inner product space. Many more general lemmas can
-be found in `Analysis.InnerProductSpace.Basic`. For the specific construction of an inner product
+be found in `Mathlib/Analysis/InnerProductSpace/Basic.lean`. For the specific construction of an inner product
 structure on `n → 𝕜` for `𝕜 = ℝ` or `ℂ`, see `EuclideanSpace` in
-`Analysis.InnerProductSpace.PiL2`.
+`Mathlib/Analysis/InnerProductSpace/PiL2.lean`.
 
 ## Main results
 
@@ -348,7 +348,7 @@ theorem cauchy_schwarz_aux (x y : F) : normSqF (⟪x, y⟫ • x - ⟪x, x⟫ �
 We need this for the `PreInnerProductSpace.Core` structure to prove the triangle inequality below
 when showing the core is a normed group and to take the quotient.
 
-(This is not intended for general use; see `Analysis.InnerProductSpace.Basic` for a variety of
+(This is not intended for general use; see `Mathlib/Analysis/InnerProductSpace/Basic.lean` for a variety of
 versions of Cauchy-Schwarz for an inner product space, rather than a `PreInnerProductSpace.Core`).
 -/
 theorem inner_mul_inner_self_le (x y : F) : ‖⟪x, y⟫‖ * ‖⟪y, x⟫‖ ≤ re ⟪x, x⟫ * re ⟪y, y⟫ := by

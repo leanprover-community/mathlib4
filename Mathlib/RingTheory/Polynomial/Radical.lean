@@ -14,7 +14,7 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 # Radical of a polynomial
 
 This file proves some theorems on `radical` and `divRadical` of polynomials.
-See `RingTheory.Radical` for the definition of `radical` and `divRadical`.
+See `Mathlib/RingTheory/Radical.lean` for the definition of `radical` and `divRadical`.
 -/
 
 @[expose] public section

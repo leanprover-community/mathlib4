@@ -14,8 +14,8 @@ public import Mathlib.Tactic.Spread
 /-!
 # Instances and theorems on pi types
 
-This file provides instances for the typeclass defined in `Algebra.Group.Defs`. More sophisticated
-instances are defined in `Algebra.Group.Pi.Lemmas` files elsewhere.
+This file provides instances for the typeclass defined in `Mathlib/Algebra/Group/Defs.lean`. More sophisticated
+instances are defined in `Mathlib/Algebra/Group/Pi/Lemmas.lean` files elsewhere.
 
 ## Porting note
 

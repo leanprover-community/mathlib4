@@ -16,7 +16,7 @@ public import Mathlib.Tactic.OfNat
 /-!
 # Basic operations on the integers
 
-This file builds on `Data.Int.Init` by adding basic lemmas on integers.
+This file builds on `Mathlib/Data/Int/Init.lean` by adding basic lemmas on integers.
 depending on Mathlib definitions.
 -/
 

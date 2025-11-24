@@ -9,7 +9,7 @@ public import Mathlib.Init
 public import Lean.Elab.Term
 
 /-!
-# Additions to `Lean.Elab.Term`
+# Additions to `Mathlib/Lean/Elab/Term.lean`
 -/
 
 public meta section

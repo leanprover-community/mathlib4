@@ -84,7 +84,7 @@ see `Deriv.lean`.
 ## Implementation details
 
 For a discussion of the definitions and their rationale, see the file docstring of
-`Mathlib.Analysis.Calculus.FDeriv.Defs`.
+`Mathlib/Analysis/Calculus/FDeriv/Defs.lean`.
 
 To make sure that the simplifier can prove automatically that functions are differentiable, we tag
 many lemmas with the `simp` attribute, for instance those saying that the sum of differentiable

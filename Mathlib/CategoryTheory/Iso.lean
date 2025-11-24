@@ -48,7 +48,7 @@ open Category
 /-- An isomorphism (a.k.a. an invertible morphism) between two objects of a category.
 The inverse morphism is bundled.
 
-See also `CategoryTheory.Core` for the category with the same objects and isomorphisms playing
+See also `Mathlib/CategoryTheory/Core.lean` for the category with the same objects and isomorphisms playing
 the role of morphisms. -/
 @[stacks 0017]
 structure Iso {C : Type u} [Category.{v} C] (X Y : C) where

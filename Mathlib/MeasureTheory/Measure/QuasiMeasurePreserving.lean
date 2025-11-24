@@ -18,7 +18,7 @@ absolutely continuous with respect to `μb`).
 
 ## Main definitions
 
-* `MeasureTheory.Measure.QuasiMeasurePreserving f μa μb`: `f` is quasi-measure-preserving with
+* `Mathlib/MeasureTheory/Measure/QuasiMeasurePreserving.lean f μa μb`: `f` is quasi-measure-preserving with
   respect to `μa` and `μb`.
 
 -/

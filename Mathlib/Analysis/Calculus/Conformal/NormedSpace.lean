@@ -25,10 +25,10 @@ if it is real differentiable at that point and its differential is a conformal l
   and multiplications by nonzero constants
 * `conformalAt_iff_isConformalMap_fderiv`: an equivalent definition of the conformality of a map
 
-In `Analysis.Calculus.Conformal.InnerProduct`:
+In `Mathlib/Analysis/Calculus/Conformal/InnerProduct.lean`:
 * `conformalAt_iff`: an equivalent definition of the conformality of a map
 
-In `Geometry.Euclidean.Angle.Unoriented.Conformal`:
+In `Mathlib/Geometry/Euclidean/Angle/Unoriented/Conformal.lean`:
 * `ConformalAt.preserves_angle`: if a map is conformal at `x`, then its differential preserves
   all angles at `x`
 

@@ -57,7 +57,7 @@ Moreover, we express `k[G]`-module structures on a module `k`-module `A` using t
 definition. We avoid using instances `Module (MonoidAlgebra k G) A` so that we do not run into
 possible scalar action diamonds.
 
-Note that the existing definition of `Tor` in `Mathlib.CategoryTheory.Monoidal.Tor` is for monoidal
+Note that the existing definition of `Tor` in `Mathlib/CategoryTheory/Monoidal/Tor.lean` is for monoidal
 categories, and the bifunctor we need to derive here maps to `ModuleCat k`. Hence we define
 `Rep.Tor k G n` by instead left-deriving the second argument of `Rep.coinvariantsTensor k G`:
 $(A, B) \mapsto (A \otimes_k B)_G$. The functor `Rep.coinvariantsTensor k G` is naturally

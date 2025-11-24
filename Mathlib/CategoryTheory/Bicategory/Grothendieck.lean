@@ -44,13 +44,13 @@ given by projecting to the first factors, i.e.
 The name `Grothendieck` is reserved for the construction on covariant pseudofunctors from `𝒮` to
 `Cat`, whereas the word `CoGrothendieck` is used for the contravariant construction.
 This is consistent with the convention for the Grothendieck construction on 1-functors
-`CategoryTheory.Grothendieck`.
+`Mathlib/CategoryTheory/Grothendieck.lean`.
 
 ## Future work / TODO
 
 1. Once the bicategory of pseudofunctors has been defined, show that this construction forms a
 pseudofunctor from `LocallyDiscrete 𝒮 ⥤ᵖ Catᵒᵖ` to `Cat`.
-2. Deduce the results in `CategoryTheory.Grothendieck` as a specialization of
+2. Deduce the results in `Mathlib/CategoryTheory/Grothendieck.lean` as a specialization of
    `Pseudofunctor.Grothendieck`.
 
 ## References

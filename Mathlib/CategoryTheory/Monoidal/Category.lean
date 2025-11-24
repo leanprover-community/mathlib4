@@ -24,7 +24,7 @@ The unitors and associator are gathered together as natural
 isomorphisms in `leftUnitor_nat_iso`, `rightUnitor_nat_iso` and `associator_nat_iso`.
 
 Some consequences of the definition are proved in other files after proving the coherence theorem,
-e.g. `(λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom` in `CategoryTheory.Monoidal.CoherenceLemmas`.
+e.g. `(λ_ (𝟙_ C)).hom = (ρ_ (𝟙_ C)).hom` in `Mathlib/CategoryTheory/Monoidal/CoherenceLemmas.lean`.
 
 ## Implementation notes
 

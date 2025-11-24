@@ -15,9 +15,9 @@ This file defines instances for `MulActionWithZero` and related structures on `Î
 
 ## See also
 
-* `Algebra.GroupWithZero.Action.Opposite`
-* `Algebra.GroupWithZero.Action.Pi`
-* `Algebra.GroupWithZero.Action.Units`
+* `Mathlib/Algebra/GroupWithZero/Action/Opposite.lean`
+* `Mathlib/Algebra/GroupWithZero/Action/Pi.lean`
+* `Mathlib/Algebra/GroupWithZero/Action/Units.lean`
 -/
 
 @[expose] public section

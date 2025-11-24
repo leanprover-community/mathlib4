@@ -16,7 +16,7 @@ public import Mathlib.AlgebraicGeometry.PullbackCarrier
 
 ## Main definitions
 
-- `AlgebraicGeometry.AffineSpace`: `𝔸(n; S)` is the affine `n`-space over `S`.
+- `Mathlib/AlgebraicGeometry/AffineSpace.lean`: `𝔸(n; S)` is the affine `n`-space over `S`.
 - `AlgebraicGeometry.AffineSpace.coord`: The standard coordinate functions on the affine space.
 - `AlgebraicGeometry.AffineSpace.homOfVector`:
   The morphism `X ⟶ 𝔸(n; S)` given by a `X ⟶ S` and a choice of `n`-coordinate functions.

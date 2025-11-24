@@ -10,7 +10,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 /-!
 # Equalizers as pullbacks of products
 
-Also see `CategoryTheory.Limits.Constructions.Equalizers` for very similar results.
+Also see `Mathlib/CategoryTheory/Limits/Constructions/Equalizers.lean` for very similar results.
 
 -/
 

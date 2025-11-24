@@ -11,7 +11,7 @@ public import Mathlib.Topology.Order.ProjIcc
 /-!
 # Inverse trigonometric functions.
 
-See also `Analysis.SpecialFunctions.Trigonometric.Arctan` for the inverse tan function.
+See also `Mathlib/Analysis/SpecialFunctions/Trigonometric/Arctan.lean` for the inverse tan function.
 (This is delayed as it is easier to set up after developing complex trigonometric functions.)
 
 Basic inequalities on trigonometric functions.

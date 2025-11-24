@@ -12,7 +12,7 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Kernels
 # Right Homology of short complexes
 
 In this file, we define the dual notions to those defined in
-`Algebra.Homology.ShortComplex.LeftHomology`. In particular, if `S : ShortComplex C` is
+`Mathlib/Algebra/Homology/ShortComplex/LeftHomology.lean`. In particular, if `S : ShortComplex C` is
 a short complex consisting of two composable maps `f : X₁ ⟶ X₂` and `g : X₂ ⟶ X₃` such
 that `f ≫ g = 0`, we define `h : S.RightHomologyData` to be the datum of morphisms
 `p : X₂ ⟶ Q` and `ι : H ⟶ Q` such that `Q` identifies to the cokernel of `f` and `H`

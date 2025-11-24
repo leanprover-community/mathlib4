@@ -9,7 +9,7 @@ public import Mathlib.Init
 public import Lean.Meta.Tactic.Rewrite
 
 /-!
-# Additional declarations for `Lean.Meta.Tactic.Rewrite`
+# Additional declarations for `Mathlib/Lean/Meta/Tactic/Rewrite.lean`
 -/
 
 @[expose] public section

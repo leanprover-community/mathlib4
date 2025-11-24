@@ -13,7 +13,7 @@ While we investigate, we'll turn off the test.
 Compute an explicit rational approximation of `√10005`, accurate to 2 million decimal places.
 
 (This is the square root appearing in the Chudnovsky formula for `π`,
-see `Mathlib.Analysis.Real.Pi.Chudnovsky`.)
+see `Mathlib/Analysis/Real/Pi/Chudnovsky.lean`.)
 -/
 def sqrt_10005_approx : ℚ := eval% ratSqrt 10005 (10^(2 * 10^6))
 

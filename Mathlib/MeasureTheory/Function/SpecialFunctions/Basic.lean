@@ -16,7 +16,7 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 We show that most standard real and complex functions are measurable, notably `exp`, `cos`, `sin`,
 `cosh`, `sinh`, `log`, `pow`, `arcsin`, `arccos`.
 
-See also `MeasureTheory.Function.SpecialFunctions.Arctan` and
+See also `Mathlib/MeasureTheory/Function/SpecialFunctions/Arctan.lean` and
 `MeasureTheory.Function.SpecialFunctions.Inner`, which have been split off to minimize imports.
 -/
 

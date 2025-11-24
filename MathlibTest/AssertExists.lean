@@ -12,7 +12,7 @@ theorem Nats : True := .intro
 
 /--
 info:
-✅️ 'Nats' (declaration) asserted in 'MathlibTest.AssertExists'.
+✅️ 'Nats' (declaration) asserted in 'MathlibTest/AssertExists.lean'.
 ---
 ✅️ means the declaration or import exists.
 ❌️ means the declaration or import does not exist.
@@ -39,9 +39,9 @@ assert_not_imported
 
 /--
 warning:
-✅️ 'Nats' (declaration) asserted in 'MathlibTest.AssertExists'.
-❌️ 'I_do_not_exist' (module) asserted in 'MathlibTest.AssertExists'.
-❌️ 'Mathlib.Tactic.Common' (module) asserted in 'MathlibTest.AssertExists'.
+✅️ 'Nats' (declaration) asserted in 'MathlibTest/AssertExists.lean'.
+❌️ 'I_do_not_exist' (module) asserted in 'MathlibTest/AssertExists.lean'.
+❌️ 'Mathlib/Tactic/Common.lean' (module) asserted in 'MathlibTest/AssertExists.lean'.
 ---
 ✅️ means the declaration or import exists.
 ❌️ means the declaration or import does not exist.
@@ -51,8 +51,8 @@ warning:
 
 /--
 warning:
-❌️ 'I_do_not_exist' (module) asserted in 'MathlibTest.AssertExists'.
-❌️ 'Mathlib.Tactic.Common' (module) asserted in 'MathlibTest.AssertExists'.
+❌️ 'I_do_not_exist' (module) asserted in 'MathlibTest/AssertExists.lean'.
+❌️ 'Mathlib/Tactic/Common.lean' (module) asserted in 'MathlibTest/AssertExists.lean'.
 ---
 ✅️ means the declaration or import exists.
 ❌️ means the declaration or import does not exist.
@@ -61,13 +61,13 @@ warning:
 #check_assertions!
 /--
 error: Declaration commandAssert_not_imported_ is not allowed to be imported by this file.
-It is defined in Mathlib.Util.AssertExists,
+It is defined in Mathlib/Util/AssertExists.lean,
   which is imported by this file.
 
 These invariants are maintained by `assert_not_exists` statements, and exist in order to ensure that "complicated" parts of the library are not accidentally introduced as dependencies of "simple" parts of the library.
 ---
 error: Declaration commandAssert_not_exists_ is not allowed to be imported by this file.
-It is defined in Mathlib.Util.AssertExists,
+It is defined in Mathlib/Util/AssertExists.lean,
   which is imported by this file.
 
 These invariants are maintained by `assert_not_exists` statements, and exist in order to ensure that "complicated" parts of the library are not accidentally introduced as dependencies of "simple" parts of the library.

@@ -28,8 +28,8 @@ The construction is done in four steps:
   `α → E` equal to 0 if `f` is not integrable, and equal to an `m`-measurable representative of
   `condExpL1CLM` applied to `[f]`, the equivalence class of `f` in `L¹`.
 
-The first step is done in `MeasureTheory.Function.ConditionalExpectation.CondexpL2`, the two
-next steps in `MeasureTheory.Function.ConditionalExpectation.CondexpL1` and the final step is
+The first step is done in `Mathlib/MeasureTheory/Function/ConditionalExpectation/CondexpL2.lean`, the two
+next steps in `Mathlib/MeasureTheory/Function/ConditionalExpectation/CondexpL1.lean` and the final step is
 performed in this file.
 
 ## Main results

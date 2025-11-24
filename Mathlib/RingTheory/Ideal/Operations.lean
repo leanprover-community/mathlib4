@@ -21,8 +21,8 @@ public import Mathlib.Tactic.Order
 
 @[expose] public section
 
-assert_not_exists Module.Basis -- See `RingTheory.Ideal.Basis`
-  Submodule.hasQuotient -- See `RingTheory.Ideal.Quotient.Operations`
+assert_not_exists Module.Basis -- See `Mathlib/RingTheory/Ideal/Basis.lean`
+  Submodule.hasQuotient -- See `Mathlib/RingTheory/Ideal/Quotient/Operations.lean`
 
 universe u v w x
 

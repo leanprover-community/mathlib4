@@ -12,13 +12,13 @@ public import Mathlib.Tactic.GCongr
 public import Mathlib.Topology.Order.LeftRightNhds
 
 /-!
-# Corollaries From Approximation Lemmas (`Algebra.ContinuedFractions.Computation.Approximations`)
+# Corollaries From Approximation Lemmas (`Mathlib/Algebra/ContinuedFractions/Computation/Approximations.lean`)
 
 ## Summary
 
 Using the equivalence of the convergents computations
 (`GenContFract.convs` and `GenContFract.convs'`) for
-continued fractions (see `Algebra.ContinuedFractions.ConvergentsEquiv`), it follows that the
+continued fractions (see `Mathlib/Algebra/ContinuedFractions/ConvergentsEquiv.lean`), it follows that the
 convergents computations for `GenContFract.of` are equivalent.
 
 Moreover, we show the convergence of the continued fractions computations, that is

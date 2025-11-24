@@ -17,7 +17,7 @@ notation classes `SMul` and its additive version `VAdd`:
 
 * `MulAction M α` and its additive version `AddAction G P` are typeclasses used for
   actions of multiplicative and additive monoids and groups; they extend notation classes
-  `SMul` and `VAdd` that are defined in `Algebra.Group.Defs`;
+  `SMul` and `VAdd` that are defined in `Mathlib/Algebra/Group/Defs.lean`;
 * `DistribMulAction M A` is a typeclass for an action of a multiplicative monoid on
   an additive monoid such that `a • (b + c) = a • b + a • c` and `a • 0 = 0`.
 

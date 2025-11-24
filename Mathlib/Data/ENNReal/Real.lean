@@ -11,7 +11,7 @@ public import Mathlib.Data.ENNReal.Basic
 # Maps between real and extended non-negative real numbers
 
 This file focuses on the functions `ENNReal.toReal : ℝ≥0∞ → ℝ` and `ENNReal.ofReal : ℝ → ℝ≥0∞` which
-were defined in `Data.ENNReal.Basic`. It collects all the basic results of the interactions between
+were defined in `Mathlib/Data/ENNReal/Basic.lean`. It collects all the basic results of the interactions between
 these functions and the algebraic and lattice operations, although a few may appear in earlier
 files.
 

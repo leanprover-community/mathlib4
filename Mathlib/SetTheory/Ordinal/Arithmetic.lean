@@ -354,7 +354,7 @@ theorem lift_pred (o : Ordinal.{v}) : lift.{u} (pred o) = pred (lift.{u} o) := b
   order-continuous, i.e., the image `f o` of a limit ordinal `o` is the sup of `f a` for
   `a < o`.
 
-  Todo: deprecate this in favor of `Order.IsNormal`. -/
+  Todo: deprecate this in favor of `Mathlib/Order/IsNormal.lean`. -/
 def IsNormal (f : Ordinal → Ordinal) : Prop :=
   Order.IsNormal f
 

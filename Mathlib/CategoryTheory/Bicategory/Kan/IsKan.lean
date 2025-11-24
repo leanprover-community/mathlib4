@@ -25,7 +25,7 @@ We also define left Kan lifts, right Kan extensions, and right Kan lifts.
 We use the Is-Has design pattern, which is used for the implementation of limits and colimits in
 the category theory library. This means that `IsKan t` is a structure containing the data of
 2-morphisms which ensure that `t` is a Kan extension, while `HasKan f g` defined in
-`CategoryTheory.Bicategory.Kan.HasKan` is a `Prop`-valued typeclass asserting that a Kan extension
+`Mathlib/CategoryTheory/Bicategory/Kan/HasKan.lean` is a `Prop`-valued typeclass asserting that a Kan extension
 of `g` along `f` exists.
 
 We define `LeftExtension.IsKan t` for an extension `t : LeftExtension f g` (which is an

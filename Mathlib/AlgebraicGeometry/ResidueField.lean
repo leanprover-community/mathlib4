@@ -14,7 +14,7 @@ public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.ResidueField
 
 ## Main definitions
 
-The following are in the `AlgebraicGeometry.Scheme` namespace:
+The following are in the `Mathlib/AlgebraicGeometry/Scheme.lean` namespace:
 
 - `AlgebraicGeometry.Scheme.residueField`: The residue field of the stalk at `x`.
 - `AlgebraicGeometry.Scheme.evaluation`: For open subsets `U` of `X` containing `x`,

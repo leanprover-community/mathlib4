@@ -41,7 +41,7 @@ The case of ℂ then follows by applying the result for ℝ and more arithmetic.
 
 ## TODO
 
-Move upstream to `Analysis.InnerProductSpace.Basic`.
+Move upstream to `Mathlib/Analysis/InnerProductSpace/Basic.lean`.
 
 ## References
 

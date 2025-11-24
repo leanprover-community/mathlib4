@@ -14,7 +14,7 @@ public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
 # Differentiability of sum of functions
 
 We prove some `HasSumUniformlyOn` versions of theorems from
-`Mathlib.Analysis.NormedSpace.FunctionSeries`.
+`Mathlib/Analysis/NormedSpace/FunctionSeries.lean`.
 
 Alongside this we prove `derivWithin_tsum` which states that the derivative of a series of functions
 is the sum of the derivatives, under suitable conditions we also prove an `iteratedDerivWithin`

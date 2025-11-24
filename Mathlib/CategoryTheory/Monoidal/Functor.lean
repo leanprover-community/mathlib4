@@ -30,7 +30,7 @@ We show that the composition of (lax) monoidal functors gives a (lax) monoidal f
 See `Mathlib/CategoryTheory/Monoidal/NaturalTransformation.lean` for monoidal natural
 transformations.
 
-We show in `Mathlib.CategoryTheory.Monoidal.Mon_` that lax monoidal functors take monoid objects
+We show in `Mathlib/CategoryTheory/Monoidal/Mon_.lean` that lax monoidal functors take monoid objects
 to monoid objects.
 
 ## References
@@ -1149,7 +1149,7 @@ end Equivalence
 variable (C D)
 
 /-- Bundled version of lax monoidal functors. This type is equipped with a category
-structure in `CategoryTheory.Monoidal.NaturalTransformation`. -/
+structure in `Mathlib/CategoryTheory/Monoidal/NaturalTransformation.lean`. -/
 structure LaxMonoidalFunctor extends C ⥤ D where
   laxMonoidal : toFunctor.LaxMonoidal := by infer_instance
 

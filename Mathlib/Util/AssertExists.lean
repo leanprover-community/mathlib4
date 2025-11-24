@@ -84,12 +84,12 @@ elab "assert_exists " n:ident : command => do
 /-- `importPathMessage env idx` produces a message laying out an import chain from `idx` to the
 current module.  The output is of the form
 ```
-Mathlib.Init,
+Mathlib/Init.lean,
   which is imported by Mathlib.Util.AssertExistsExt,
   which is imported by Mathlib.Util.AssertExists,
   which is imported by this file.
 ```
-if `env` is an `Environment` and `idx` is the module index of `Mathlib.Init`.
+if `env` is an `Environment` and `idx` is the module index of `Mathlib/Init.lean`.
 -/
 def importPathMessage (env : Environment) (idx : ModuleIdx) : MessageData :=
   let modNames := env.header.moduleNames
