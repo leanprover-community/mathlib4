@@ -766,7 +766,7 @@ def gciMapComap {f : P₁ →ᵃ[k] P₂} (hf : Function.Injective f) :
 
 lemma comap_map_eq_of_injective {f : P₁ →ᵃ[k] P₂} (hf : Function.Injective f)
     (s : AffineSubspace k P₁) : (s.map f).comap f = s :=
-  (gciMapComap f hf).u_l_eq _
+  (gciMapComap hf).u_l_eq _
 
 end AffineSubspace
 
