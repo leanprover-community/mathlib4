@@ -152,21 +152,21 @@ step to the left. -/]
 def mulShift (g : G) (x : G → A) : G → A :=
   fun h => x (h * g)
 
-@[to_additive] lemma mulShift_apply (g : G) (x : G → A) (h : G) :
+@[to_additive shift_apply] lemma mulShift_apply (g : G) (x : G → A) (h : G) :
   mulShift g x h = x (h * g) := rfl
 
-@[to_additive] lemma mulShift_one (x : G → A) : mulShift (1 : G) x = x := by
+@[to_additive shift_zero] lemma mulShift_one (x : G → A) : mulShift (1 : G) x = x := by
   ext h; simp [mulShift]
 
 /-- Composition of right-translation shifts corresponds to multiplication in the monoid `G`. -/
-lemma mulShift_mul (g₁ g₂ : G) (x : G → A) :
+@[to_additive shift_add] lemma mulShift_mul (g₁ g₂ : G) (x : G → A) :
     mulShift (g₁ * g₂) x = mulShift g₁ (mulShift g₂ x) := by
   ext h; simp [mulShift, mul_assoc]
 
 variable [TopologicalSpace A]
 
 /-- The right-translation shift is continuous. -/
-@[to_additive (attr := fun_prop)] lemma continuous_mulShift (g : G) :
+@[to_additive (attr := fun_prop) continuous_shift] lemma continuous_mulShift (g : G) :
     Continuous (mulShift (A := A) g) := by
   -- coordinate projections are continuous; composition preserves continuity
   unfold mulShift
@@ -540,14 +540,13 @@ lemma mulForbidden_shift_invariant {A G : Type*} [Monoid G]
   contrapose! hx
   simpa [mulOccursInAt_mulShift] using hx
 
-
 /-- The set of patterns with fixed support `U`. -/
-@[to_additive fixedSupport]
-def mulFixedSupport (A : Type*) (G : Type*) (U : Finset G) :=
+@[to_additive FixedSupport]
+def MulFixedSupport (A : Type*) (G : Type*) (U : Finset G) :=
   { p : Pattern A G // p.support = U }
 
-attribute [inherit_doc SymbolicDynamics.FullShift.Pattern.mulFixedSupport]
-  SymbolicDynamics.FullShift.Pattern.fixedSupport
+attribute [inherit_doc SymbolicDynamics.FullShift.Pattern.MulFixedSupport]
+  SymbolicDynamics.FullShift.Pattern.FixedSupport
 
 /-- An equivalence between patterns with fixed support and functions on that support.
 
@@ -562,7 +561,7 @@ This shows immediately that `fixedSupport A G U` is finite whenever `U` is. -/
 @[to_additive equivFun
   /-- Additive version: equivalence between fixed-support additive patterns and functions. -/]
 def mulEquivFun {U : Finset G} :
-  mulFixedSupport A G U ≃ (U → A) where
+  MulFixedSupport A G U ≃ (U → A) where
   toFun   := fun p i => p.1.data ⟨i.1, by simp [p.2]⟩
   invFun  := fun f => ⟨{ support := U, data := f }, rfl⟩
   left_inv := by rintro ⟨p,hU⟩; apply Subtype.ext; cases hU; rfl
@@ -697,7 +696,7 @@ variable {G : Type*} [Monoid G]
 with support exactly `U`. This follows from the equivalence with functions `U → A`. -/
 @[to_additive SymbolicDynamics.FullShift.fintypeFixedSupport] noncomputable
 instance mulFintypeFixedSupport {U : Finset G} :
-    Fintype (Pattern.mulFixedSupport A G U) := by
+    Fintype (Pattern.MulFixedSupport A G U) := by
   classical exact Fintype.ofEquiv (U → A) (Pattern.mulEquivFun (A := A) (G := G) (U := U)).symm
 
 /-- The language of a set of configurations `X` on a finite shape `U`.
@@ -724,10 +723,10 @@ in some configuration of `X`. Since `U` is finite, this is a finite number. -/
 @[to_additive languageCardOn]
 noncomputable def mulLanguageCardOn (X : Set (G → A)) (U : Finset G) : ℕ := by
   -- Image of a map into the finite type `FixedSupport A G U`
-  let f : {x : G → A // x ∈ X} → Pattern.mulFixedSupport A G U :=
+  let f : {x : G → A // x ∈ X} → Pattern.MulFixedSupport A G U :=
     fun x => ⟨Pattern.fromConfig x.1 U, rfl⟩
   have hfin : (Set.range f).Finite := (Set.finite_univ :
-    (Set.univ : Set (Pattern.mulFixedSupport A G U)).Finite)
+    (Set.univ : Set (Pattern.MulFixedSupport A G U)).Finite)
     |>.subset (by intro y hy; simp)
   exact hfin.toFinset.card
 
