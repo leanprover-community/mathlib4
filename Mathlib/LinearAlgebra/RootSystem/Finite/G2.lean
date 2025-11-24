@@ -35,7 +35,7 @@ stronger assumptions on the coefficients than here.
 * `RootPairing.EmbeddedG2.threeShortAddTwoLong`: the long root `3α + 2β`
 * `RootPairing.EmbeddedG2.span_eq_top`: a crystallographic reduced irreducible root pairing
   containing two roots with pairing `-3` is spanned by this pair (thus two-dimensional).
-* `RootPairing.EmbeddedG2.card_index_eq_twelve`: the `𝔤₂`root pairing has twelve roots.
+* `RootPairing.EmbeddedG2.card_index_eq_twelve`: the `𝔤₂` root pairing has twelve roots.
 
 ## TODO
 Once sufficient API for `RootPairing.Base` has been developed:
