@@ -3,9 +3,12 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.LinearAlgebra.AffineSpace.AffineMap
-import Mathlib.Tactic.FieldSimp
-import Mathlib.Tactic.Module
+module
+
+public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
+public import Mathlib.Tactic.Field
+public import Mathlib.Tactic.FieldSimp
+public import Mathlib.Tactic.Module
 
 /-!
 # Slope of a function
@@ -19,6 +22,8 @@ interval is convex on this interval.
 
 affine space, slope
 -/
+
+@[expose] public section
 
 open AffineMap
 
@@ -113,8 +118,7 @@ theorem lineMap_slope_slope_sub_div_sub (f : k → PE) (a b c : k) (h : a ≠ c)
   simp only [lineMap_apply_module, ← sub_div_sub_smul_slope_add_sub_div_sub_smul_slope f a b c,
     add_left_inj]
   match_scalars
-  field_simp [sub_ne_zero.2 h.symm]
-  ring
+  field [sub_ne_zero.2 h.symm]
 
 /-- `slope f a b` is an affine combination of `slope f a (lineMap a b r)` and
 `slope f (lineMap a b r) b`. We use `lineMap` to express this property. -/

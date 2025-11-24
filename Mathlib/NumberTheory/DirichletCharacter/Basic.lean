@@ -3,9 +3,11 @@ Copyright (c) 2023 Ashvni Narayanan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan, Moritz Firsching, Michael Stoll
 -/
-import Mathlib.Algebra.Group.EvenFunction
-import Mathlib.Data.ZMod.Units
-import Mathlib.NumberTheory.MulChar.Basic
+module
+
+public import Mathlib.Algebra.Group.EvenFunction
+public import Mathlib.Data.ZMod.Units
+public import Mathlib.NumberTheory.MulChar.Basic
 
 /-!
 # Dirichlet Characters
@@ -25,6 +27,8 @@ Main definitions:
 
 dirichlet character, multiplicative character
 -/
+
+@[expose] public section
 
 /-!
 ### Definitions

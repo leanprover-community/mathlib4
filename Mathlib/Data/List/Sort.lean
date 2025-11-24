@@ -3,8 +3,15 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Wrenna Robson
 -/
-import Mathlib.Data.List.Nodup
-import Mathlib.Order.Fin.Basic
+module
+
+public import Batteries.Data.List.Pairwise
+public import Batteries.Data.List.Perm
+public import Mathlib.Data.List.OfFn
+public import Mathlib.Data.List.Nodup
+public import Mathlib.Data.List.TakeWhile
+public import Mathlib.Order.Fin.Basic
+import all Init.Data.List.Sort.Basic  -- for exposing `mergeSort`
 
 /-!
 # Sorting algorithms on lists
@@ -15,6 +22,8 @@ that we have `(l.insertionSort r l).Pairwise r` under suitable conditions on `r`
 We then define `List.SortedLE`, `List.SortedGE`, `List.SortedLT` and `List.SortedGT` to be
 aliases for `List.Pairwise` when the relation derives from a preorder.
 -/
+
+@[expose] public section
 
 open List.Perm
 
@@ -413,16 +422,16 @@ variable {r} [IsTotal α r] [IsTrans α r]
 
 theorem Pairwise.merge {l l' : List α} (h : Pairwise r l) (h' : Pairwise r l') :
     Pairwise r (merge l l' (r · ·)) := by
-  simpa using sorted_merge (le := (r · ·))
+  simpa using pairwise_merge (le := (r · ·))
     (fun a b c h₁ h₂ => by simpa using _root_.trans (by simpa using h₁) (by simpa using h₂))
     (fun a b => by simpa using IsTotal.total a b)
     l l' (by simpa using h) (by simpa using h')
 
 variable (r)
 
-/-- Variant of `sorted_mergeSort` using relation typeclasses. -/
-theorem pairwise_mergeSort (l : List α) : Pairwise r (mergeSort l (r · ·)) := by
-  simpa using sorted_mergeSort (le := (r · ·))
+/-- Variant of `pairwise_mergeSort` using relation typeclasses. -/
+theorem pairwise_mergeSort' (l : List α) : Pairwise r (mergeSort l (r · ·)) := by
+  simpa using pairwise_mergeSort (le := (r · ·))
     (fun _ _ _ => by simpa using trans_of r)
     (by simpa using total_of r)
     l
@@ -430,12 +439,12 @@ theorem pairwise_mergeSort (l : List α) : Pairwise r (mergeSort l (r · ·)) :=
 variable [IsAntisymm α r]
 
 theorem mergeSort_eq_self {l : List α} : Pairwise r l → mergeSort l (r · ·) = l :=
-  (mergeSort_perm _ _).eq_of_pairwise (pairwise_mergeSort _ l)
+  (mergeSort_perm _ _).eq_of_pairwise (pairwise_mergeSort' _ l)
 
 theorem mergeSort_eq_insertionSort (l : List α) :
     mergeSort l (r · ·) = insertionSort r l :=
   ((mergeSort_perm l _).trans (perm_insertionSort r l).symm).eq_of_pairwise
-    (pairwise_mergeSort r l) (pairwise_insertionSort r l)
+    (pairwise_mergeSort' r l) (pairwise_insertionSort r l)
 
 end TotalAndTransitive
 
@@ -723,10 +732,10 @@ section LinearOrder
 variable [LinearOrder α]
 
 theorem sortedLE_mergeSort : (l.mergeSort (· ≤ ·)).SortedLE := by
-  simp_rw [sortedLE_iff_pairwise, pairwise_mergeSort]
+  simp_rw [sortedLE_iff_pairwise, pairwise_mergeSort']
 
 theorem sortedGE_mergeSort : (l.mergeSort (· ≥ ·)).SortedGE := by
-  simp_rw [sortedGE_iff_pairwise, pairwise_mergeSort]
+  simp_rw [sortedGE_iff_pairwise, pairwise_mergeSort']
 
 theorem sortedLE_insertionSort : (l.insertionSort (· ≤ ·)).SortedLE := by
   simp_rw [sortedLE_iff_pairwise, pairwise_insertionSort]
