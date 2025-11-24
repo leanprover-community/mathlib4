@@ -60,9 +60,10 @@ def single (a : α) (b : M) : α →₀ M where
       · simp [hb, Pi.single, update]
       simp [ha]
 
-theorem single_apply [Decidable (a = a')] : single a b a' = if a = a' then b else 0 := by
+theorem single_apply [Decidable (a' = a)] : single a b a' = if a' = a then b else 0 := by
   classical
-  simp_rw [@eq_comm _ a a', single, coe_mk, Pi.single_apply]
+  rw [single, coe_mk, Pi.single_apply]
+  congr
 
 theorem single_apply_left {f : α → β} (hf : Function.Injective f) (x z : α) (y : M) :
     single (f x) y (f z) = single x y z := by classical simp only [single_apply, hf.eq_iff]
@@ -70,7 +71,7 @@ theorem single_apply_left {f : α → β} (hf : Function.Injective f) (x z : α)
 theorem single_eq_set_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b := by
   classical
   ext
-  simp [single_apply, Set.indicator, @eq_comm _ a]
+  simp [single_apply, Set.indicator]
 
 @[simp]
 theorem single_eq_same : (single a b : α →₀ M) a = b := by
@@ -469,11 +470,11 @@ theorem single_of_embDomain_single (l : α →₀ M) (f : α ↪ β) (a : β) (b
     constructor
     · ext d
       rw [← embDomain_apply f l, h]
-      by_cases h_cases : c = d
-      · simp only [Eq.symm h_cases, hc₂, single_eq_same]
+      by_cases h_cases : d = c
+      · simp only [h_cases, hc₂, single_eq_same]
       · rw [single_apply, single_apply, if_neg, if_neg h_cases]
         by_contra hfd
-        exact h_cases (f.injective (hc₂.trans hfd))
+        exact h_cases (f.injective (hfd.trans hc₂.symm))
     · exact hc₂
 
 @[simp]
