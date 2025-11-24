@@ -3,24 +3,30 @@ Copyright (c) 2025 Dexin Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dexin Zhang
 -/
+module
+
+public import Mathlib.ModelTheory.Arithmetic.Presburger.Basic
+public import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Basic
+public import Mathlib.ModelTheory.Definability
+
 import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.Nat
-import Mathlib.ModelTheory.Arithmetic.Presburger.Basic
-import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Basic
-import Mathlib.ModelTheory.Definability
+import Mathlib.Algebra.Group.Submonoid.Finsupp
+import Mathlib.LinearAlgebra.Matrix.Notation
 
 /-!
 # Presburger definability and semilinear sets
 
 This file formalizes the equivalence between Presburger definable sets and semilinear sets. As an
-application, we prove that the graph of multiplication is not Presburger definable.
+application of this result, we show that the graph of multiplication is not Presburger definable.
 
 ## Main Results
 
-- `presburger.definable_iff_semilinear`: a set is Presburger definable in `ℕ` if and only if it is
-  semilinear.
-- `definable₁_iff_ultimately_periodic`: in the 1-dimensional case, a set is Presburger arithmetic
-  definable in `ℕ` if and only if it is ultimately periodic, i.e. periodic after some number `k`.
+- `presburger.definable_iff_isSemilinearSet`: a set is Presburger definable in `ℕ` if and only if it
+  is semilinear.
+- `presburger.definable₁_iff_ultimately_periodic`: in the 1-dimensional case, a set is Presburger
+  arithmetic definable in `ℕ` if and only if it is ultimately periodic, i.e. periodic after some
+  number `k`.
 - `presburger.mul_not_definable`: the graph of multiplication is not Presburger definable in `ℕ`.
 
 ## References
@@ -31,18 +37,14 @@ application, we prove that the graph of multiplication is not Presburger definab
 * [Samuel Eilenberg and M. P. Schützenberger, *Rational Sets in Commutative Monoids*][eilenberg1969]
 -/
 
-universe u v w
+@[expose] public section
 
-variable {α : Type u} {β : Type v} {ι : Type w}
+variable {α : Type*} [Fintype α] {s : Set (α → ℕ)} {A : Set ℕ}
 
-namespace Set
+open Set Submodule FirstOrder Language
 
-variable {α : Type u} [Fintype α] {s : Set (α → ℕ)} {A : Set ℕ}
-
-open Submodule FirstOrder Language
-
-theorem Linear.definable (hs : s.Linear) : A.Definable presburger s := by
-  classical
+theorem IsLinearSet.definable (hs : IsLinearSet s) : A.Definable presburger s := by
+  rw [isLinearSet_iff] at hs
   rcases hs with ⟨v, t, rfl⟩
   refine ⟨Formula.iExs t (Formula.iInf fun i : α =>
     (Term.var (Sum.inl i)).equal
@@ -50,17 +52,18 @@ theorem Linear.definable (hs : s.Linear) : A.Definable presburger s := by
         ((v i : presburger.Term _) + presburger.sum Finset.univ fun x : t =>
           x.1 i • Term.var (Sum.inr (Sum.inr x))))), ?_⟩
   ext x
-  simp only [mem_vadd_set, SetLike.mem_coe, mem_span_finset', Finset.univ_eq_attach, nsmul_eq_mul,
-    vadd_eq_add, exists_exists_eq_and, mem_setOf_eq, Formula.realize_iExs, Formula.realize_iInf,
-    Formula.realize_equal, Term.realize_var, Sum.elim_inl, Term.realize_varsToConstants, coe_con,
-    presburger.realize_add, presburger.realize_natCast, Nat.cast_id, presburger.realize_sum,
-    presburger.realize_nsmul, Sum.elim_inr, smul_eq_mul]
+  simp only [mem_vadd_set, SetLike.mem_coe, AddSubmonoid.mem_closure_finset', Finset.univ_eq_attach,
+    nsmul_eq_mul, vadd_eq_add, ↓existsAndEq, true_and, mem_setOf_eq, Formula.realize_iExs,
+    Formula.realize_iInf, Formula.realize_equal, Term.realize_var, Sum.elim_inl,
+    Term.realize_varsToConstants, coe_con, presburger.realize_add, presburger.realize_natCast,
+    Nat.cast_id, presburger.realize_sum, presburger.realize_nsmul, Sum.elim_inr, smul_eq_mul]
   congr! with a
   simp_rw [Eq.comm (b := x), fun x : t => mul_comm (a x : α → ℕ) x, funext_iff]
   congr! 1 with i
   simp
 
-theorem Semilinear.definable (hs : s.Semilinear) : A.Definable presburger s := by
+theorem IsSemilinearSet.definable (hs : IsSemilinearSet s) : A.Definable presburger s := by
+  rw [isSemilinearSet_iff] at hs
   rcases hs with ⟨S, hS, rfl⟩
   choose φ hφ using fun s : S => (hS s.1 s.2).definable
   refine ⟨Formula.iSup φ, ?_⟩
@@ -69,19 +72,15 @@ theorem Semilinear.definable (hs : s.Semilinear) : A.Definable presburger s := b
   simp only [mem_setOf_eq] at this
   simp [this]
 
-end Set
-
 namespace FirstOrder.Language.presburger
-
-open Set Matrix
-
-variable {A : Set ℕ} [Fintype α]
 
 lemma term_realize_eq_add_dotProduct (t : presburger[[A]].Term α) :
     ∃ (k : ℕ) (u : α → ℕ), ∀ (v : α → ℕ), t.realize v = k + u ⬝ᵥ v := by
   classical
   induction t with simp only [Term.realize]
-  | var i => refine ⟨0, Pi.single i 1, ?_⟩; simp
+  | var i =>
+    refine ⟨0, Pi.single i 1, ?_⟩
+    simp
   | @func l f ts ih =>
     cases f with
     | inl f =>
@@ -109,22 +108,22 @@ lemma term_realize_eq_add_dotProduct (t : presburger[[A]].Term α) :
         rfl
       | succ => nomatch f
 
-lemma boundedFormula_realize_semilinear {n} (φ : presburger[[A]].BoundedFormula α n) :
-    {v : α ⊕ Fin n → ℕ | φ.Realize (v ∘ Sum.inl) (v ∘ Sum.inr)}.Semilinear := by
+lemma isSemilinearSet_boundedFormula_realize {n} (φ : presburger[[A]].BoundedFormula α n) :
+    IsSemilinearSet {v : α ⊕ Fin n → ℕ | φ.Realize (v ∘ Sum.inl) (v ∘ Sum.inr)} := by
   induction φ with simp only [BoundedFormula.Realize]
   | equal t₁ t₂ =>
     rcases term_realize_eq_add_dotProduct t₁ with ⟨k₁, u₁, ht₁⟩
     rcases term_realize_eq_add_dotProduct t₂ with ⟨k₂, u₂, ht₂⟩
-    convert Semilinear.of_linear_equation_nat ![k₁] ![k₂] (.of ![u₁]) (.of ![u₂])
+    convert Nat.isSemilinearSet_setOf_mulVec_eq ![k₁] ![k₂] (.of ![u₁]) (.of ![u₂])
     simp [ht₁, ht₂]
   | rel f => nomatch f
-  | falsum => exact Semilinear.empty
+  | falsum => exact .empty
   | imp _ _ ih₁ ih₂ =>
     convert (ih₂.compl.inter ih₁).compl using 1
     simp [setOf_inter_eq_sep, imp_iff_not_or, compl_setOf]
   | @all n φ ih =>
     let e := (Equiv.sumAssoc α (Fin n) (Fin 1)).trans (Equiv.sumCongr (.refl α) finSumFinEquiv)
-    rw [← Semilinear.image_iff (LinearEquiv.funCongrLeft ℕ ℕ e)] at ih
+    rw [← isSemilinearSet_image_iff (LinearEquiv.funCongrLeft ℕ ℕ e)] at ih
     convert ih.compl.proj.compl using 1
     simp_rw [compl_setOf, not_exists, Fin.forall_fin_succ_pi, Fin.forall_fin_zero_pi,
       mem_compl_iff, mem_image, not_not, ← LinearEquiv.eq_symm_apply, LinearEquiv.funCongrLeft_symm,
@@ -134,35 +133,37 @@ lemma boundedFormula_realize_semilinear {n} (φ : presburger[[A]].BoundedFormula
     ext i
     cases i using Fin.lastCases <;> simp [e]
 
-lemma formula_realize_semilinear (φ : presburger[[A]].Formula α) :
-    (setOf φ.Realize : Set (α → ℕ)).Semilinear := by
+lemma isSemilinearSet_formula_realize_semilinear (φ : presburger[[A]].Formula α) :
+    IsSemilinearSet (setOf φ.Realize : Set (α → ℕ)) := by
   let e := Equiv.sumEmpty α (Fin 0)
-  convert (boundedFormula_realize_semilinear φ).image (LinearMap.funLeft ℕ ℕ e.symm)
+  convert (isSemilinearSet_boundedFormula_realize φ).image (LinearMap.funLeft ℕ ℕ e.symm)
   ext x
   simp only [mem_setOf_eq, mem_image]
   rw [(e.arrowCongr (.refl ℕ)).exists_congr_left]
   simp [Formula.Realize, Unique.eq_default, Function.comp_def, LinearMap.funLeft, e]
 
 /-- A set is Presburger definable in `ℕ` if and only if it is semilinear. -/
-theorem definable_iff_semilinear {s : Set (α → ℕ)} :
-    A.Definable presburger s ↔ s.Semilinear :=
-  ⟨fun ⟨φ, hφ⟩ => hφ ▸ formula_realize_semilinear φ, Semilinear.definable⟩
+theorem definable_iff_isSemilinearSet {s : Set (α → ℕ)} :
+    A.Definable presburger s ↔ IsSemilinearSet s :=
+  ⟨fun ⟨φ, hφ⟩ => hφ ▸ isSemilinearSet_formula_realize_semilinear φ, IsSemilinearSet.definable⟩
 
 /-- In the 1-dimensional case, a set is Presburger arithmetic definable in `ℕ` if and only if it
   is ultimately periodic, i.e. periodic after some number `k`. -/
 theorem definable₁_iff_ultimately_periodic {s : Set ℕ} :
     A.Definable₁ presburger s ↔ ∃ k, ∃ p > 0, ∀ x ≥ k, x ∈ s ↔ x + p ∈ s := by
-  rw [Definable₁, definable_iff_semilinear,
-    ← Semilinear.image_iff (LinearEquiv.funUnique (Fin 1) ℕ ℕ), ← preimage_setOf_eq]
+  rw [Definable₁, definable_iff_isSemilinearSet,
+    ← isSemilinearSet_image_iff (LinearEquiv.funUnique (Fin 1) ℕ ℕ), ← preimage_setOf_eq]
   simp only [LinearEquiv.funUnique_apply, Function.eval, Fin.default_eq_zero, setOf_mem_eq]
   rw [image_preimage_eq s fun x => ⟨![x], rfl⟩]
   constructor
   · intro hs
-    apply Semilinear.proper_semilinear at hs
+    apply IsSemilinearSet.isProperSemilinearSet at hs
+    rw [isProperSemilinearSet_iff] at hs
     rcases hs with ⟨S, hS, rfl⟩
     replace hS : ∀ t ∈ S, ∃ k, ∃ p > 0, ∀ x ≥ k, x ∈ t ↔ x + p ∈ t := by
       intro t ht
       apply hS at ht
+      rw [isProperLinearSet_iff] at ht
       rcases ht with ⟨a, t, ht, rfl⟩
       have hcard : t.card ≤ 1 := by
         by_contra hcard
@@ -188,7 +189,7 @@ theorem definable₁_iff_ultimately_periodic {s : Set ℕ} :
         rw [Nat.ne_zero_iff_zero_lt] at hb
         refine ⟨a, b, hb, fun x hx => ?_⟩
         simp only [Finset.coe_singleton, mem_vadd_set, SetLike.mem_coe,
-          Submodule.mem_span_singleton, smul_eq_mul, vadd_eq_add, exists_exists_eq_and]
+          AddSubmonoid.mem_closure_singleton, smul_eq_mul, vadd_eq_add, exists_exists_eq_and]
         constructor
         · rintro ⟨x, rfl⟩
           refine ⟨x + 1, ?_⟩
@@ -222,10 +223,10 @@ theorem definable₁_iff_ultimately_periodic {s : Set ℕ} :
     have h₁ : {x ∈ s | x < k}.Finite := (Set.finite_lt_nat k).subset (sep_subset_setOf _ _)
     have h₂ : {x ∈ s | k ≤ x ∧ x < k + p}.Finite :=
       (Set.finite_Ico k (k + p)).subset (sep_subset_setOf _ _)
-    convert h₁.semilinear.union (h₂.semilinear.add (Semilinear.span_finset {p}))
+    convert (IsSemilinearSet.of_finite h₁).union (.add (.of_finite h₂) (.closure_finset {p}))
     ext x
     simp only [sep_and, Finset.coe_singleton, mem_union, mem_setOf_eq, mem_add, mem_inter_iff,
-      SetLike.mem_coe, Submodule.mem_span_singleton, smul_eq_mul, exists_exists_eq_and]
+      SetLike.mem_coe, AddSubmonoid.mem_closure_singleton, smul_eq_mul, exists_exists_eq_and]
     constructor
     · intro hx
       by_cases hx' : x < k
