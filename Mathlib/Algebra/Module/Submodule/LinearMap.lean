@@ -261,7 +261,7 @@ theorem sum_apply (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) (b : M
   _root_.map_sum ((AddMonoidHom.eval b).comp toAddMonoidHom') f _
 
 @[simp, norm_cast]
-  theorem coe_sum {ι : Type*} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) :
+theorem coe_sum {ι : Type*} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) :
     ⇑(∑ i ∈ t, f i) = ∑ i ∈ t, (f i : M → M₂) :=
   _root_.map_sum
     (show AddMonoidHom (M →ₛₗ[σ₁₂] M₂) (M → M₂)
