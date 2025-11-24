@@ -205,6 +205,13 @@ protected theorem sum {ι : Type*} (s : Finset ι) {f : ι → ℂ → E}
     = ∑ i ∈ s, fun θ ↦ f i (circleMap c R θ))] at *
   exact IntervalIntegrable.sum s h
 
+/-- Sums of circle integrable functions are circle integrable. -/
+theorem fun_sum {c : ℂ} {R : ℝ} {ι : Type*} (s : Finset ι) {f : ι → ℂ → E}
+    (h : ∀ i ∈ s, CircleIntegrable (f i) c R) :
+    CircleIntegrable (fun z ↦ ∑ i ∈ s, f i z) c R := by
+  convert CircleIntegrable.sum s h
+  simp
+
 /-- `finsum`s of circle integrable functions are circle integrable. -/
 protected theorem finsum {ι : Type*} {f : ι → ℂ → E} (h : ∀ i, CircleIntegrable (f i) c R) :
     CircleIntegrable (∑ᶠ i, f i) c R := by
