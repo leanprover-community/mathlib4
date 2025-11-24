@@ -128,7 +128,8 @@ lemma finite_of_fg_of_isAlgebraic
     Module.Finite F E := by
   obtain ⟨s, hs⟩ := h
   have : Algebra.FiniteType F E := by
-    use sadjoin_toSubalgebra_of_isAlgebraic
+    rw [← adjoin_toSubalgebra_of_isAlgebraic
+      (fun x hx ↦ Algebra.IsAlgebraic.isAlgebraic x)]
     simpa [← toSubalgebra_inj] using hs
   exact Algebra.IsIntegral.finite
 
