@@ -12,6 +12,7 @@ public import Mathlib.Data.Finsupp.SMulWithZero
 public import Mathlib.Data.ZMod.Defs
 public import Mathlib.Tactic.Bound
 public import Mathlib.Data.Finsupp.SMul
+public import Mathlib.Data.Finsupp.Order
 
 /-!
 # Convex spaces
@@ -55,12 +56,12 @@ The weights are non-negative and sum to 1.
 structure StdSimplex (R : Type u) [LE R] [AddCommMonoid R] [One R] (M : Type v)
     extends weights : M →₀ R where
   /-- All weights are non-negative. -/
-  nonneg : ∀ m, 0 ≤ weights m
+  nonneg : 0 ≤ weights
   /-- The weights sum to 1. -/
   total : weights.sum (fun _ r => r) = 1
 
 attribute [simp] StdSimplex.total
-grind_pattern StdSimplex.nonneg => self.weights m
+grind_pattern StdSimplex.nonneg => self.weights
 grind_pattern StdSimplex.total => self.weights
 
 namespace StdSimplex
@@ -72,16 +73,14 @@ open Classical in
 /-- The point mass distribution concentrated at `x`. -/
 def single (x : M) : StdSimplex R M where
   weights := Finsupp.single x 1
-  nonneg m := by grind [Finsupp.single_apply, zero_le_one]
+  nonneg := by simp
   total := by simp
 
 open Classical in
 /-- A probability distribution with weight `s` on `x` and weight `t` on `y`. -/
 def duple (x y : M) {s t : R} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) : StdSimplex R M where
   weights := Finsupp.single x s + Finsupp.single y t
-  nonneg m := by
-    simp only [Finsupp.coe_add]
-    grind [add_nonneg, Finsupp.single_apply, Pi.add_apply]
+  nonneg := add_nonneg (by simpa) (by simpa)
   total := by
     rw [Finsupp.sum_add_index] <;> simp [h]
 
@@ -90,13 +89,9 @@ Map a function over the support of a standard simplex.
 For each n : N, the weight is the sum of weights of all m : M with g m = n.
 -/
 def map {M : Type v} {N : Type w} (g : M → N) (f : StdSimplex R M) : StdSimplex R N where
-  weights := f.weights.sum (fun m r => Finsupp.single (g m) r)
-  nonneg n := by
-    classical
-    simp only [Finsupp.sum, Finsupp.coe_finset_sum, Finset.sum_apply]
-    refine Finset.sum_nonneg fun m _ => ?_
-    grind [Finsupp.single_apply]
-  total := by simp [Finsupp.sum_sum_index]
+  weights := f.weights.mapDomain g
+  nonneg := f.mapDomain_nonneg f.nonneg
+  total := by simp [Finsupp.sum_mapDomain_index]
 
 /--
 Join operation for standard simplices (monadic join).
@@ -104,20 +99,11 @@ Given a distribution over distributions, flattens it to a single distribution.
 -/
 def join (f : StdSimplex R (StdSimplex R M)) : StdSimplex R M where
   weights := f.weights.sum (fun d r => r • d.weights)
-  nonneg m := by
-    -- Proof by Claude, needs golfing:
-    simp only [Finsupp.sum, Finsupp.coe_finset_sum, Finset.sum_apply]
-    refine Finset.sum_nonneg fun d _ => ?_
-    simp only [Finsupp.coe_smul, Pi.smul_apply, smul_eq_mul]
-    have := f.nonneg d
-    have := d.nonneg m
-    bound
+  nonneg := f.sum_nonneg fun d _ ↦ smul_nonneg (f.nonneg d) d.nonneg
   total := by
-    rw [Finsupp.sum_sum_index]
-    · convert f.total
-      rw [Finsupp.sum_smul_index (by simp), ← Finsupp.mul_sum, StdSimplex.total, mul_one]
-    · simp
-    · simp
+    rw [Finsupp.sum_sum_index (fun _ ↦ rfl) (fun _ _ _ ↦ rfl)]
+    convert f.total
+    rw [Finsupp.sum_smul_index (fun _ ↦ rfl), ← Finsupp.mul_sum, StdSimplex.total, mul_one]
 
 end StdSimplex
 
