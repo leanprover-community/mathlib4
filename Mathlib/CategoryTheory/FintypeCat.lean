@@ -25,6 +25,8 @@ open CategoryTheory
 
 /-- The category of finite types. -/
 structure FintypeCat where
+  /-- Construct a bundled `FintypeCat` from the underlying type and typeclass. -/
+  of ::
   /-- The underlying type. -/
   carrier : Type*
   [str : Fintype carrier]
@@ -35,10 +37,6 @@ namespace FintypeCat
 
 instance instCoeSort : CoeSort FintypeCat Type* :=
   ⟨carrier⟩
-
-/-- Construct a bundled `FintypeCat` from the underlying type and typeclass. -/
-abbrev of (X : Type*) [Fintype X] : FintypeCat where
-  carrier := X
 
 instance : Inhabited FintypeCat :=
   ⟨of PEmpty⟩

@@ -82,11 +82,11 @@ for the first universe parameter to `HasForget`.
 The `simpSides` option controls whether to simplify both sides of the equality, for simpNF
 purposes.
 -/
-def elementwiseExpr (src : Name) (type pf : Expr) (simpSides := true) :
+def elementwiseExpr (src : Name) (pf : Expr) (simpSides := true) :
     MetaM (Expr × Option (Level × Level)) := do
-  let type := (← instantiateMVars type).cleanupAnnotations
+  let type := (← instantiateMVars (← inferType pf)).cleanupAnnotations
   forallTelescope type fun fvars type' => do
-    mkHomElementwise type' (← mkExpectedTypeHint (mkAppN pf fvars) type') fun eqPf instConcr? => do
+    mkHomElementwise type' (mkAppN pf fvars) fun eqPf instConcr? => do
       -- First simplify using elementwise-specific lemmas
       let mut eqPf' ← simpType (simpOnlyNames elementwiseThms (config := { decide := false })) eqPf
       if (← inferType eqPf') == .const ``True [] then
@@ -213,8 +213,8 @@ initialize registerBuiltinAttribute {
   | `(attr| elementwise $[nosimp%$nosimp?]? $[(attr := $stx?,*)]?) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`elementwise` can only be used as a global attribute"
-    addRelatedDecl src "_apply" ref stx? fun type value levels => do
-      let (newValue, level?) ← elementwiseExpr src type value (simpSides := nosimp?.isNone)
+    addRelatedDecl src "_apply" ref stx? fun value levels => do
+      let (newValue, level?) ← elementwiseExpr src value (simpSides := nosimp?.isNone)
       let newLevels ← if let some (levelW, levelUF) := level? then do
         let w := mkUnusedName levels `w
         let uF := mkUnusedName levels `uF
@@ -252,7 +252,7 @@ normal form. `elementwise_of%` does not do this.
 -/
 elab "elementwise_of% " t:term : term => do
   let e ← Term.elabTerm t none
-  let (pf, _) ← elementwiseExpr .anonymous (← inferType e) e (simpSides := false)
+  let (pf, _) ← elementwiseExpr .anonymous e (simpSides := false)
   return pf
 
 -- TODO: elementwise tactic

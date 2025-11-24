@@ -102,14 +102,12 @@ def registerReassocExpr (f : Expr → MetaM (Expr × Array MVarId)) : IO Unit :=
   reassocImplRef.modify (·.push f)
 
 /--
-Reassociates the morphisms in `type?` using the registered handlers,
+Reassociates the morphisms in the type of `pf` using the registered handlers,
 using `reassocExprHom` as the default.
-If `type?` is not given, it is assumed to be the type of `pf`.
 
 Returns the proof of the lemma along with instance metavariables that need synthesis.
 -/
-def reassocExpr (pf : Expr) (type? : Option Expr) : MetaM (Expr × Array MVarId) := do
-  let pf ← if let some type := type? then mkExpectedTypeHint pf type else pure pf
+def reassocExpr (pf : Expr) : MetaM (Expr × Array MVarId) := do
   forallTelescopeReducing (← inferType pf) fun xs _ => do
     let pf := mkAppN pf xs
     let handlers ← reassocImplRef.get
@@ -120,8 +118,8 @@ def reassocExpr (pf : Expr) (type? : Option Expr) : MetaM (Expr × Array MVarId)
 /--
 Version of `reassocExpr` for the `TermElabM` monad. Handles instance metavariables automatically.
 -/
-def reassocExpr' (pf : Expr) (type? : Option Expr) : TermElabM Expr := do
-  let (e, insts) ← reassocExpr pf type?
+def reassocExpr' (pf : Expr) : TermElabM Expr := do
+  let (e, insts) ← reassocExpr pf
   for inst in insts do
     inst.withContext do
       unless ← Term.synthesizeInstMVarCore inst do
@@ -136,9 +134,9 @@ initialize registerBuiltinAttribute {
   | `(attr| reassoc $[(attr := $stx?,*)]?) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`reassoc` can only be used as a global attribute"
-    addRelatedDecl src "_assoc" ref stx? fun type value levels => do
+    addRelatedDecl src "_assoc" ref stx? fun value levels => do
       Term.TermElabM.run' <| Term.withSynthesize do
-        let pf ← reassocExpr' value type
+        let pf ← reassocExpr' value
         pure (pf, levels)
   | _ => throwUnsupportedSyntax }
 
@@ -152,6 +150,6 @@ This also works for equations between isomorphisms, provided that
 -/
 elab "reassoc_of% " t:term : term => do
   let e ← Term.withSynthesizeLight <| Term.elabTerm t none
-  reassocExpr' e none
+  reassocExpr' e
 
 end CategoryTheory

@@ -50,6 +50,7 @@ class Faithful (F : C ⥤ D) : Prop where
 
 variable {X Y : C}
 
+@[grind inj]
 theorem map_injective (F : C ⥤ D) [Faithful F] :
     Function.Injective <| (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) :=
   Faithful.map_injective
@@ -301,15 +302,8 @@ protected def Faithful.div (F : C ⥤ E) (G : D ⥤ E) [G.Faithful] (obj : C →
     map_id := by
       intro X
       apply G.map_injective
-      apply eq_of_heq
-      trans F.map (𝟙 X)
-      · exact h_map
-      · rw [F.map_id, G.map_id, h_obj X]
-    map_comp := by
-      intro X Y Z f g
-      refine G.map_injective <| eq_of_heq <| h_map.trans ?_
-      simp only [Functor.map_comp]
-      grind }
+      grind
+    map_comp := by grind }
 
 -- This follows immediately from `Functor.hext` (`Functor.hext h_obj @h_map`),
 -- but importing `CategoryTheory.EqToHom` causes an import loop:

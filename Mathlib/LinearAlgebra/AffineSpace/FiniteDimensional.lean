@@ -771,7 +771,7 @@ variable [DivisionRing k] [Module k V]
 
 protected theorem finiteDimensional [Finite ι] (b : AffineBasis ι k P) : FiniteDimensional k V :=
   let ⟨i⟩ := b.nonempty
-  FiniteDimensional.of_fintype_basis (b.basisOf i)
+  (b.basisOf i).finiteDimensional_of_finite
 
 protected theorem finite [FiniteDimensional k V] (b : AffineBasis ι k P) : Finite ι :=
   finite_of_fin_dim_affineIndependent k b.ind

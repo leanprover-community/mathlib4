@@ -88,14 +88,9 @@ private theorem bracket_leibniz_lie (x y : A ⊗[R] L) (z : A ⊗[R] M) :
       · simp only [LinearMap.map_zero, add_zero]
       · intro a₃ l₃; simp only [bracket'_tmul]
         rw [mul_left_comm a₂ a₁ a₃, mul_assoc, leibniz_lie, TensorProduct.tmul_add]
-      · intro u₁ u₂ h₁ h₂
-        rw [map_add, map_add, map_add, map_add, map_add, h₁, h₂, add_add_add_comm]
-    · intro u₁ u₂ h₁ h₂
-      rw [map_add, LinearMap.add_apply, LinearMap.add_apply, map_add, map_add, map_add,
-        LinearMap.add_apply, h₁, h₂, add_add_add_comm]
-  · intro u₁ u₂ h₁ h₂
-    rw [map_add, LinearMap.add_apply, LinearMap.add_apply, map_add, map_add, LinearMap.add_apply,
-      map_add, LinearMap.add_apply, h₁, h₂, add_add_add_comm]
+      · grind
+    · grind [LinearMap.add_apply]
+  · grind [LinearMap.add_apply]
 
 instance instLieRing : LieRing (A ⊗[R] L) where
   add_lie x y z := by simp only [bracket_def, LinearMap.add_apply, LinearMap.map_add]

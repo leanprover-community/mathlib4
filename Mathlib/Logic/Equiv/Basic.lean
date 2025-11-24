@@ -84,13 +84,8 @@ theorem Perm.subtypeCongr.refl :
   by_cases h : p x <;> simp [h]
 
 @[simp]
-theorem Perm.subtypeCongr.symm : (ep.subtypeCongr en).symm = Perm.subtypeCongr ep.symm en.symm := by
-  ext x
-  by_cases h : p x
-  · have : p (ep.symm ⟨x, h⟩) := Subtype.property _
-    simp [h, symm_apply_eq, this]
-  · have : ¬p (en.symm ⟨x, h⟩) := Subtype.property (en.symm _)
-    simp [h, symm_apply_eq, this]
+theorem Perm.subtypeCongr.symm : (ep.subtypeCongr en).symm = Perm.subtypeCongr ep.symm en.symm :=
+  rfl
 
 @[simp]
 theorem Perm.subtypeCongr.trans :

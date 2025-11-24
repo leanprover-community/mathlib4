@@ -184,7 +184,7 @@ theorem leadingCoeff_map_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f (leadin
 
 theorem nextCoeff_map_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f p.leadingCoeff ≠ 0) :
     (p.map f).nextCoeff = f p.nextCoeff := by
-  grind [nextCoeff, natDegree_map_of_leadingCoeff_ne_zero, coeff_map, map_zero]
+  grind [nextCoeff, natDegree_map_of_leadingCoeff_ne_zero, coeff_map]
 
 end Map
 

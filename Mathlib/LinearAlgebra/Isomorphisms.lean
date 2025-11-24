@@ -57,6 +57,11 @@ theorem quotKerEquivRange_symm_apply_image (x : M) (h : f x ∈ LinearMap.range 
     f.quotKerEquivRange.symm ⟨f x, h⟩ = (LinearMap.ker f).mkQ x :=
   f.quotKerEquivRange.symm_apply_apply ((LinearMap.ker f).mkQ x)
 
+@[simp]
+theorem quotKerEquivOfSurjective_symm_apply (hf : Function.Surjective f) (x : M) :
+    (f.quotKerEquivOfSurjective hf).symm (f x) = Submodule.Quotient.mk x := by
+  simp [LinearEquiv.symm_apply_eq]
+
 /-- Linear map from `p` to `p+p'/p'` where `p p'` are submodules of `R` -/
 abbrev subToSupQuotient (p p' : Submodule R M) :
     { x // x ∈ p } →ₗ[R] { x // x ∈ p ⊔ p' } ⧸ comap (Submodule.subtype (p ⊔ p')) p' :=

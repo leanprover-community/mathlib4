@@ -349,8 +349,8 @@ theorem inner_mul_inner_add_areaForm_mul_areaForm' (a x : E) :
   apply (o.basisRightAngleRotation a ha).ext
   intro i
   fin_cases i
-  · simp [real_inner_self_eq_norm_sq, mul_comm, real_inner_comm]
-  · simp [real_inner_self_eq_norm_sq, mul_comm, o.areaForm_swap a x]
+  · simp [mul_comm, real_inner_comm]
+  · simp [mul_comm, o.areaForm_swap a x]
 
 /-- For vectors `a x y : E`, the identity `⟪a, x⟫ * ⟪a, y⟫ + ω a x * ω a y = ‖a‖ ^ 2 * ⟪x, y⟫`. -/
 theorem inner_mul_inner_add_areaForm_mul_areaForm (a x y : E) :
@@ -368,8 +368,8 @@ theorem inner_mul_areaForm_sub' (a x : E) : ⟪a, x⟫ • ω a - ω a x • inn
   apply (o.basisRightAngleRotation a ha).ext
   intro i
   fin_cases i
-  · simp [real_inner_self_eq_norm_sq, mul_comm, o.areaForm_swap a x]
-  · simp [real_inner_self_eq_norm_sq, mul_comm, real_inner_comm]
+  · simp [mul_comm, o.areaForm_swap a x]
+  · simp [mul_comm, real_inner_comm]
 
 /-- For vectors `a x y : E`, the identity `⟪a, x⟫ * ω a y - ω a x * ⟪a, y⟫ = ‖a‖ ^ 2 * ω x y`. -/
 theorem inner_mul_areaForm_sub (a x y : E) : ⟪a, x⟫ * ω a y - ω a x * ⟪a, y⟫ = ‖a‖ ^ 2 * ω x y :=
@@ -420,7 +420,7 @@ theorem kahler_swap (x y : E) : o.kahler x y = conj (o.kahler y x) := by
 
 @[simp]
 theorem kahler_apply_self (x : E) : o.kahler x x = ‖x‖ ^ 2 := by
-  simp [kahler_apply_apply, real_inner_self_eq_norm_sq]
+  simp [kahler_apply_apply]
 
 @[simp]
 theorem kahler_rightAngleRotation_left (x y : E) :

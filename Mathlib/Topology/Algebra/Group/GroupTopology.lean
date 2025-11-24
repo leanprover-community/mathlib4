@@ -108,9 +108,7 @@ theorem toTopologicalSpace_bot : (⊥ : GroupTopology α).toTopologicalSpace = �
 
 @[to_additive]
 instance : BoundedOrder (GroupTopology α) where
-  top := ⊤
   le_top x := show x.toTopologicalSpace ≤ ⊤ from le_top
-  bot := ⊥
   bot_le x := show ⊥ ≤ x.toTopologicalSpace from bot_le
 
 @[to_additive]
@@ -176,9 +174,7 @@ instance : CompleteLattice (GroupTopology α) :=
   { inferInstanceAs (BoundedOrder (GroupTopology α)),
     inferInstanceAs (SemilatticeInf (GroupTopology α)),
     completeLatticeOfCompleteSemilatticeInf _ with
-    inf := (· ⊓ ·)
-    top := ⊤
-    bot := ⊥ }
+    inf := (· ⊓ ·) }
 
 /-- Given `f : α → β` and a topology on `α`, the coinduced group topology on `β` is the finest
 topology such that `f` is continuous and `β` is a topological group. -/

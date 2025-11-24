@@ -112,7 +112,6 @@ instance : LE (Prepartition I) :=
   ⟨fun π π' => ∀ ⦃I⦄, I ∈ π → ∃ I' ∈ π', I ≤ I'⟩
 
 instance partialOrder : PartialOrder (Prepartition I) where
-  le := (· ≤ ·)
   le_refl _ I hI := ⟨I, hI, le_rfl⟩
   le_trans _ _ _ h₁₂ h₂₃ _ hI₁ :=
     let ⟨_, hI₂, hI₁₂⟩ := h₁₂ hI₁

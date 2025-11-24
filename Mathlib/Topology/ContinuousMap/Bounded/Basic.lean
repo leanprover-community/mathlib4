@@ -94,6 +94,11 @@ protected theorem continuous (f : α →ᵇ β) : Continuous f :=
 theorem ext (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
 
+@[simp]
+theorem coe_mk (f : α → β) (h : _) (h' : _) :
+    BoundedContinuousFunction.mk ⟨f, h⟩ h' = f :=
+  rfl
+
 theorem isBounded_range (f : α →ᵇ β) : IsBounded (range f) :=
   isBounded_range_iff.2 f.bounded
 
@@ -194,7 +199,7 @@ instance instMetricSpace {β} [MetricSpace β] : MetricSpace (α →ᵇ β) wher
 theorem nndist_eq : nndist f g = sInf { C | ∀ x : α, nndist (f x) (g x) ≤ C } :=
   Subtype.ext <| dist_eq.trans <| by
     rw [val_eq_coe, coe_sInf, coe_image]
-    simp_rw [mem_setOf_eq, ← NNReal.coe_le_coe, coe_mk, exists_prop, coe_nndist]
+    simp_rw [mem_setOf_eq, ← NNReal.coe_le_coe, NNReal.coe_mk, exists_prop, coe_nndist]
 
 theorem nndist_set_exists : ∃ C, ∀ x : α, nndist (f x) (g x) ≤ C :=
   Subtype.exists.mpr <| dist_set_exists.imp fun _ ⟨ha, h⟩ => ⟨ha, h⟩

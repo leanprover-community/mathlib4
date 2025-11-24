@@ -44,6 +44,11 @@ def IsCover (U : SetRel X X) (s N : Set X) : Prop := ∀ ⦃x⦄, x ∈ s → �
 protected nonrec lemma IsCover.nonempty (hsN : IsCover U s N) (hs : s.Nonempty) : N.Nonempty :=
   let ⟨_x, hx⟩ := hs; let ⟨y, hy, _⟩ := hsN hx; ⟨y, hy⟩
 
+@[simp] lemma IsCover.refl (U : SetRel X X) [U.IsRefl] (s : Set X) : IsCover U s s :=
+  fun a ha ↦ ⟨a, ha, U.rfl⟩
+
+lemma IsCover.rfl {U : SetRel X X} [U.IsRefl] {s : Set X} : IsCover U s s := refl U s
+
 @[simp] protected lemma isCover_univ : IsCover univ s N ↔ (s.Nonempty → N.Nonempty) := by
   simp [IsCover, Set.Nonempty]
 
