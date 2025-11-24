@@ -224,7 +224,7 @@ variable {f : E →ₛₗ[σ₁₂] F} {e : E →ₗ[𝕜] Eₗ}
 
 theorem extendOfNorm_opNorm_le (h_dense : DenseRange e) {C : ℝ} (hC : 0 ≤ C)
     (h_norm : ∀ (x : E), ‖f x‖ ≤ C * ‖e x‖) : ‖f.extendOfNorm e‖ ≤ C :=
-  (f.extendOfNorm e).opNorm_le_bound hC (extendOfNorm_norm_le h_dense C hC h_norm)
+  (f.extendOfNorm e).opNorm_le_bound hC (extendOfNorm_norm_le h_dense hC h_norm)
 
 end NormedField
 
