@@ -6,6 +6,7 @@ Authors: Moritz Doll, Zhouhang Zhou
 module
 
 public import Mathlib.Analysis.Normed.Operator.Basic
+public import Mathlib.LinearAlgebra.Isomorphisms
 
 /-!
 
@@ -134,33 +135,35 @@ namespace LinearMap
 section compInv
 
 variable [DivisionRing 𝕜] [DivisionRing 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜₂}
-  [AddCommGroup E] [SeminormedAddCommGroup F] [SeminormedAddCommGroup Eₗ]
+  [AddCommGroup E] [NormedAddCommGroup F] [SeminormedAddCommGroup Eₗ]
   [Module 𝕜 E] [Module 𝕜₂ F] [Module 𝕜 Eₗ]
 
 variable (f : E →ₛₗ[σ₁₂] F) (g : E →ₗ[𝕜] Eₗ)
 
 open scoped Classical in
-/-- Composition with the left inverse as a CLM. -/
-private def compLeftInverse :=
-  if h : LinearMap.ker g = ⊥ ∧ ∃ (C : ℝ), ∀ (x : E), ‖f x‖ ≤ C * ‖g x‖ then
-  (f ∘ₛₗ (g.leftInverse.domRestrict
-    (LinearMap.range g))).mkContinuousOfExistsBound
+/-- Composition of a semilinear map `f` with the left inverse of a linear map `g` is a continous
+linear map provided that the norm estimate `‖f x‖ ≤ C * ‖g x‖` holds for all `x : E`. -/
+def compLeftInverse : range g →SL[σ₁₂] F :=
+  if h : ∃ (C : ℝ), 0 ≤ C ∧ ∀ (x : E), ‖f x‖ ≤ C * ‖g x‖ then
+  (((LinearMap.ker g).liftQ f (by
+    obtain ⟨C, hC, h⟩ := h
+    intro x hx
+    specialize h x
+    rw [hx] at h
+    simpa using h)).comp
+    g.quotKerEquivRange.symm.toLinearMap).mkContinuousOfExistsBound
   (by
-    rcases h.2 with ⟨C, hC⟩
+    obtain ⟨C, hC, h⟩ := h
     use C
-    rintro ⟨x, y, hxy⟩
-    simp only [← hxy, LinearMap.coe_comp, Function.comp_apply,
-      LinearMap.domRestrict_apply, AddSubgroupClass.coe_norm]
-    convert hC y
-    apply g.leftInverse_apply_of_inj h.1)
+    intro ⟨x, y, hxy⟩
+    simpa [← hxy] using h y)
   else 0
 
 @[simp]
-private theorem compLeftInverse_apply_of_inj_bdd (h_inj : LinearMap.ker g = ⊥)
-    (h_norm : ∃ (C : ℝ), ∀ (x : E), ‖f x‖ ≤ C * ‖g x‖) (y : LinearMap.range g) :
-    f.compLeftInverse g y = (f ∘ₛₗ (g.leftInverse.domRestrict
-      (LinearMap.range g))) y := by
-  simp [compLeftInverse, h_inj, h_norm]
+theorem compLeftInverse_apply_of_bdd (h_norm : ∃ (C : ℝ), 0 ≤ C ∧ ∀ (x : E), ‖f x‖ ≤ C * ‖g x‖)
+    (x : E) (y : Eₗ) (hx : g x = y) :
+    f.compLeftInverse g ⟨y, ⟨x, hx⟩⟩ = f x := by
+  simp [compLeftInverse, h_norm, ← hx]
 
 end compInv
 
@@ -180,25 +183,21 @@ def extendOfNorm : Eₗ →SL[σ₁₂] F := (f.compLeftInverse e).extend (Linea
 
 variable {f e}
 
-theorem extendOfNorm_eq (h_inj : LinearMap.ker e = ⊥)
-    (h_dense : DenseRange e) (h_norm : ∃ C, ∀ x, ‖f x‖ ≤ C * ‖e x‖) (x : E) :
-    f.extendOfNorm e (e x) = f x := by
+theorem extendOfNorm_eq (h_dense : DenseRange e) (h_norm : ∃ C, 0 ≤ C ∧ ∀ x, ‖f x‖ ≤ C * ‖e x‖)
+    (x : E) : f.extendOfNorm e (e x) = f x := by
   have := (f.compLeftInverse e).extend_eq (e := (LinearMap.range e).subtypeL)
     (by simpa using h_dense) isUniformEmbedding_subtype_val.isUniformInducing
   convert this ⟨e x, LinearMap.mem_range_self e x⟩
-  simp only [h_inj, h_norm, compLeftInverse_apply_of_inj_bdd, LinearMap.coe_comp,
-    Function.comp_apply, LinearMap.domRestrict_apply]
-  congr
-  apply (e.leftInverse_apply_of_inj h_inj _).symm
+  exact (compLeftInverse_apply_of_bdd _ _ h_norm _ _ rfl).symm
 
-theorem extendOfNorm_norm_le (h_inj : LinearMap.ker e = ⊥) (h_dense : DenseRange e) (C : ℝ)
+theorem extendOfNorm_norm_le (h_dense : DenseRange e) (C : ℝ) (hC : 0 ≤ C)
     (h_norm : ∀ (x : E), ‖f x‖ ≤ C * ‖e x‖) (x : Eₗ) :
     ‖f.extendOfNorm e x‖ ≤ C * ‖x‖ := by
   have h_mem : ∀ (x : Eₗ) (hy : x ∈ (LinearMap.range e)), ‖extendOfNorm f e x‖ ≤ C * ‖x‖ := by
     intro x ⟨y, hxy⟩
     rw [← hxy]
     convert h_norm y
-    apply extendOfNorm_eq h_inj h_dense ⟨C, h_norm⟩
+    apply extendOfNorm_eq h_dense ⟨C, hC, h_norm⟩
   exact h_dense.induction h_mem (isClosed_le (by fun_prop) (by fun_prop)) x
 
 end NormedDivisionRing
@@ -212,9 +211,9 @@ variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] {σ₁
 
 variable {f : E →ₛₗ[σ₁₂] F} {e : E →ₗ[𝕜] Eₗ}
 
-theorem extendOfNorm_opNorm_le (h_inj : LinearMap.ker e = ⊥) (h_dense : DenseRange e) {C : ℝ}
-    (hC : 0 ≤ C) (h_norm : ∀ (x : E), ‖f x‖ ≤ C * ‖e x‖) : ‖f.extendOfNorm e‖ ≤ C :=
-  (f.extendOfNorm e).opNorm_le_bound hC (extendOfNorm_norm_le h_inj h_dense C h_norm)
+theorem extendOfNorm_opNorm_le (h_dense : DenseRange e) {C : ℝ} (hC : 0 ≤ C)
+    (h_norm : ∀ (x : E), ‖f x‖ ≤ C * ‖e x‖) : ‖f.extendOfNorm e‖ ≤ C :=
+  (f.extendOfNorm e).opNorm_le_bound hC (extendOfNorm_norm_le h_dense C hC h_norm)
 
 end NormedField
 
