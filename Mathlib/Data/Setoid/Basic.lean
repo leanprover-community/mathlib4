@@ -110,7 +110,7 @@ def prodQuotientEquiv (r : Setoid α) (s : Setoid β) :
     Quotient r × Quotient s ≃ Quotient (r.prod s) where
   toFun | (x, y) => Quotient.map₂ Prod.mk (fun _ _ hx _ _ hy ↦ ⟨hx, hy⟩) x y
   invFun q := Quotient.liftOn' q (fun xy ↦ (Quotient.mk'' xy.1, Quotient.mk'' xy.2))
-    fun x y hxy ↦ Prod.ext (by simpa using hxy.1) (by simpa using hxy.2)
+    fun x y hxy ↦ Prod.ext (by simpa [Quotient.eq] using hxy.1) (by simpa [Quotient.eq] using hxy.2)
   left_inv q := by
     rcases q with ⟨qa, qb⟩
     exact Quotient.inductionOn₂' qa qb fun _ _ ↦ rfl
@@ -126,7 +126,7 @@ noncomputable def piQuotientEquiv {ι : Sort*} {α : ι → Sort*} (r : ∀ i, S
   toFun x := Quotient.mk'' fun i ↦ (x i).out
   invFun q := Quotient.liftOn' q (fun x i ↦ Quotient.mk'' (x i)) fun x y hxy ↦ by
     ext i
-    simpa using hxy i
+    simpa [Quotient.eq] using hxy i
   left_inv q := by
     ext i
     simp
@@ -209,7 +209,7 @@ lemma sInf_iff {S : Set (Setoid α)} {x y : α} :
 
 lemma quotient_mk_sInf_eq {S : Set (Setoid α)} {x y : α} :
     Quotient.mk (sInf S) x = Quotient.mk (sInf S) y ↔ ∀ s ∈ S, s x y := by
-  simp [sInf_iff]
+  simp [sInf_iff, Quotient.eq]
 
 /-- The map induced between quotients by a setoid inequality. -/
 def map_of_le {s t : Setoid α} (h : s ≤ t) : Quotient s → Quotient t :=
