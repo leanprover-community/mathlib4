@@ -144,6 +144,7 @@ public import Mathlib.Algebra.Category.ModuleCat.AB
 public import Mathlib.Algebra.Category.ModuleCat.Abelian
 public import Mathlib.Algebra.Category.ModuleCat.Adjunctions
 public import Mathlib.Algebra.Category.ModuleCat.Algebra
+public import Mathlib.Algebra.Category.ModuleCat.Baer
 public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Biproducts
 public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
