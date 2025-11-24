@@ -710,6 +710,18 @@ theorem swap_apply_eq_iff {x y z w : α} : swap x y z = w ↔ z = swap x y w := 
 theorem swap_apply_ne_self_iff {a b x : α} : swap a b x ≠ x ↔ a ≠ b ∧ (x = a ∨ x = b) := by
   grind
 
+lemma image_swap_of_mem_of_notMem {α : Type*} [DecidableEq α] {s : Set α} {i j : α}
+    (hi : i ∈ s) (hj : j ∉ s) : s.image (swap i j) = insert j s \ {i} :=
+  Set.ext fun a ↦ by
+    constructor
+    · rintro ⟨a, ha, rfl⟩
+      obtain rfl | ne := eq_or_ne a i
+      · rw [swap_apply_left]; exact ⟨.inl rfl, (ne_of_mem_of_not_mem hi hj).symm⟩
+      · rw [swap_apply_of_ne_of_ne ne (ne_of_mem_of_not_mem ha hj)]; exact ⟨.inr ha, ne⟩
+    · rintro ⟨rfl | has, hai⟩
+      · exact ⟨i, hi, swap_apply_left ..⟩
+      · exact ⟨a, has, swap_apply_of_ne_of_ne hai (ne_of_mem_of_not_mem has hj)⟩
+
 namespace Perm
 
 @[simp]

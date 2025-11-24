@@ -42,8 +42,8 @@ Partial functions can be considered as relations, so we specialize some `Rel` de
 * `PFun.ran`: Range of a partial function.
 * `PFun.preimage`: Preimage of a set under a partial function.
 * `PFun.core`: Core of a set under a partial function.
-* `PFun.graph`: Graph of a partial function `a →. β`as a `Set (α × β)`.
-* `PFun.graph'`: Graph of a partial function `a →. β`as a `Rel α β`.
+* `PFun.graph`: Graph of a partial function `a →. β` as a `Set (α × β)`.
+* `PFun.graph'`: Graph of a partial function `a →. β` as a `Rel α β`.
 
 ### `PFun α` as a monad
 

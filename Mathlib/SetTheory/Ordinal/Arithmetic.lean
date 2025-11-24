@@ -105,7 +105,7 @@ instance instAddLeftReflectLT : AddLeftReflectLT Ordinal.{u} :=
   ⟨fun a _b _c ↦ (add_lt_add_iff_left' a).1⟩
 
 instance instAddRightReflectLT : AddRightReflectLT Ordinal.{u} :=
-  ⟨fun _a _b _c ↦ lt_imp_lt_of_le_imp_le fun h => add_le_add_right h _⟩
+  ⟨fun _a _b _c ↦ lt_imp_lt_of_le_imp_le fun h => add_le_add_left h _⟩
 
 theorem add_le_add_iff_right {a b : Ordinal} : ∀ n : ℕ, a + n ≤ b + n ↔ a ≤ b
   | 0 => by simp
@@ -659,11 +659,11 @@ instance mulRightMono : MulRightMono Ordinal.{u} :=
       · exact Prod.Lex.right _ (f.toRelEmbedding.map_rel_iff.2 h')⟩
 
 theorem le_mul_left (a : Ordinal) {b : Ordinal} (hb : 0 < b) : a ≤ a * b := by
-  convert mul_le_mul_left' (one_le_iff_pos.2 hb) a
+  convert mul_le_mul_right (one_le_iff_pos.2 hb) a
   rw [mul_one a]
 
 theorem le_mul_right (a : Ordinal) {b : Ordinal} (hb : 0 < b) : a ≤ b * a := by
-  convert mul_le_mul_right' (one_le_iff_pos.2 hb) a
+  convert mul_le_mul_left (one_le_iff_pos.2 hb) a
   rw [one_mul a]
 
 private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder β s] {c}
@@ -706,7 +706,7 @@ private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder 
 
 theorem mul_le_iff_of_isSuccLimit {a b c : Ordinal} (h : IsSuccLimit b) :
     a * b ≤ c ↔ ∀ b' < b, a * b' ≤ c :=
-  ⟨fun h _ l => (mul_le_mul_left' l.le _).trans h, fun H =>
+  ⟨fun h _ l => (mul_le_mul_right l.le _).trans h, fun H =>
     -- We use the `induction` tactic in order to change `h`/`H` too.
     le_of_not_gt <| by
       induction a using inductionOn with
@@ -722,7 +722,7 @@ theorem isNormal_mul_right {a : Ordinal} (h : 0 < a) : IsNormal (a * ·) := by
   refine IsNormal.of_succ_lt (fun b ↦ ?_) fun hb ↦ ?_
   · simpa [mul_succ] using (add_lt_add_iff_left (a * b)).2 h
   · simpa [IsLUB, IsLeast, upperBounds, lowerBounds, mul_le_iff_of_isSuccLimit hb] using
-      fun c hc ↦ mul_le_mul_left' hc.le a
+      fun c hc ↦ mul_le_mul_right hc.le a
 
 theorem lt_mul_iff_of_isSuccLimit {a b c : Ordinal} (h : IsSuccLimit c) :
     a < b * c ↔ ∃ c' < c, a < b * c' := by
@@ -811,7 +811,7 @@ alias add_mul_limit := add_mul_of_isSuccLimit
 private theorem div_nonempty {a b : Ordinal} (h : b ≠ 0) : { o | a < b * succ o }.Nonempty :=
   ⟨a, (succ_le_iff (a := a) (b := b * succ a)).1 <| by
     simpa only [succ_zero, one_mul] using
-      mul_le_mul_right' (succ_le_of_lt (Ordinal.pos_iff_ne_zero.2 h)) (succ a)⟩
+      mul_le_mul_left (succ_le_of_lt (Ordinal.pos_iff_ne_zero.2 h)) (succ a)⟩
 
 /-- `a / b` is the unique ordinal `o` satisfying `a = b * o + o'` with `o' < b`. -/
 instance div : Div Ordinal :=
@@ -831,7 +831,7 @@ theorem lt_mul_div_add (a) {b : Ordinal} (h : b ≠ 0) : a < b * (a / b) + b := 
   simpa only [mul_succ] using lt_mul_succ_div a h
 
 theorem div_le {a b c : Ordinal} (b0 : b ≠ 0) : a / b ≤ c ↔ a < b * succ c :=
-  ⟨fun h => (lt_mul_succ_div a b0).trans_le (mul_le_mul_left' (succ_le_succ_iff.2 h) _), fun h => by
+  ⟨fun h => (lt_mul_succ_div a b0).trans_le (mul_le_mul_right (succ_le_succ_iff.2 h) _), fun h => by
     rw [div_def a b0]; exact csInf_le' h⟩
 
 theorem lt_div {a b c : Ordinal} (h : c ≠ 0) : a < b / c ↔ c * succ a ≤ b := by
@@ -895,7 +895,7 @@ theorem mul_add_div_mul {a c : Ordinal} (hc : c < a) (b d : Ordinal) :
   · have H := mul_ne_zero ha hd
     apply le_antisymm
     · rw [← lt_succ_iff, div_lt H, mul_assoc]
-      · apply (add_lt_add_left hc _).trans_le
+      · apply (add_lt_add_right hc _).trans_le
         rw [← mul_succ]
         gcongr
         rw [succ_le_iff]
@@ -958,7 +958,7 @@ theorem le_of_dvd : ∀ {a b : Ordinal}, b ≠ 0 → a ∣ b → a ≤ b
   | a, _, b0, ⟨b, e⟩ => by
     subst e
     simpa only [mul_one] using
-      mul_le_mul_left'
+      mul_le_mul_right
         (one_le_iff_ne_zero.2 fun h : b = 0 => by simp [h] at b0)
         a
 

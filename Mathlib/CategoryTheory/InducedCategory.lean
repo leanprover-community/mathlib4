@@ -10,7 +10,7 @@ public import Mathlib.CategoryTheory.Functor.FullyFaithful
 /-!
 # Induced categories and full subcategories
 
-Given a category `D` and a function `F : C → D `from a type `C` to the
+Given a category `D` and a function `F : C → D` from a type `C` to the
 objects of `D`, there is an essentially unique way to give `C` a
 category structure such that `F` becomes a fully faithful functor,
 namely by taking $$ Hom_C(X, Y) = Hom_D(FX, FY) $$. We call this the

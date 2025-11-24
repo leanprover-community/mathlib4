@@ -362,7 +362,7 @@ lemma card_pairSet_le (ha : 1 < a) : #(pairSet J a c) ≤ a * #J := by
   unfold pairSet
   grw [Finset.card_biUnion_le, Nat.cast_sum,
     Finset.sum_le_sum fun i _ ↦ card_pairSetSeq_le_logSizeRadius_mul hJ i ha,
-    Finset.sum_le_sum fun _ _ ↦ mul_le_mul_left' (pow_le_pow_right₀ ha.le le_tsub_add) _]
+    Finset.sum_le_sum fun _ _ ↦ mul_le_mul_right (pow_le_pow_right₀ ha.le le_tsub_add) _]
   conv_lhs => enter [2]; ext _; rw [pow_add, pow_one, ← mul_assoc, mul_comm]
   grw [← Finset.mul_sum]
   gcongr
