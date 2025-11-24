@@ -16,8 +16,8 @@ In this file we provide two different ways to extend a continuous linear map def
 subspace to the entire Banach space.
 
 * `ContinuousLinearMap.extend`: Extend from a dense subspace using `IsUniformInducing`
-* `ContinuousLinearMap.extendOfNorm`: Extend from a continuous linear map that is a dense
-injection into the domain and using a norm estimate.
+* `ContinuousLinearMap.extendOfNorm`: Extend from a continuous linear map that is a dense map into
+the domain and together with a norm estimate.
 
 -/
 
@@ -141,7 +141,7 @@ variable [DivisionRing 𝕜] [DivisionRing 𝕜₂] {σ₁₂ : 𝕜 →+* 𝕜�
 variable (f : E →ₛₗ[σ₁₂] F) (g : E →ₗ[𝕜] Eₗ)
 
 open scoped Classical in
-/-- Composition of a semilinear map `f` with the left inverse of a linear map `g` is a continous
+/-- Composition of a semilinear map `f` with the left inverse of a linear map `g` is a continuous
 linear map provided that the norm estimate `‖f x‖ ≤ C * ‖g x‖` holds for all `x : E`. -/
 def compLeftInverse : range g →SL[σ₁₂] F :=
   if h : ∃ (C : ℝ), 0 ≤ C ∧ ∀ (x : E), ‖f x‖ ≤ C * ‖g x‖ then
@@ -177,7 +177,7 @@ variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜₂] {σ₁₂ : 𝕜
 variable (f : E →ₛₗ[σ₁₂] F) (e : E →ₗ[𝕜] Eₗ)
 
 /-- Extension of a linear map `f : E →ₛₗ[σ₁₂] F` to a continuous linear map `Eₗ →SL[σ₁₂] F`,
-where `E` is a normed space and `F` a complete normed space, using an injective dense embedding
+where `E` is a normed space and `F` a complete normed space, using a dense embedding
 `e : E →L[𝕜] Eₗ` together with a bound `‖f x‖ ≤ C * ‖e x‖` for all `x : E`. -/
 def extendOfNorm : Eₗ →SL[σ₁₂] F := (f.compLeftInverse e).extend (LinearMap.range e).subtypeL
 
