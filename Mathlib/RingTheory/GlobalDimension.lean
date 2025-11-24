@@ -60,11 +60,9 @@ lemma globalDimension_le_iff (n : ℕ) : globalDimension.{v} R ≤ n ↔
     ∀ M : ModuleCat.{v} R, HasProjectiveDimensionLE M n := by
   simp [globalDimension, projectiveDimension_le_iff]
 
-local instance hasExt_standard :
-  HasExt.{max (max (v + 1) u) v, v, max (v + 1) u} (ModuleCat.{v} R) :=
-  CategoryTheory.HasExt.standard (ModuleCat.{v} R)
-
-lemma globalDimension_le_tfae [Small.{v} R] (n : ℕ) : [globalDimension.{v} R ≤ n,
+lemma globalDimension_le_tfae [Small.{v} R] (n : ℕ) :
+    letI := CategoryTheory.HasExt.standard (ModuleCat.{v} R)
+    [globalDimension.{v} R ≤ n,
     ∀ M : ModuleCat.{v} R, Module.Finite R M → HasProjectiveDimensionLE M n,
     ∀ m ≥ n + 1, ∀ (N M : ModuleCat.{v} R), Subsingleton (Ext N M m)].TFAE := by
   tfae_have 1 → 2 := by
@@ -72,10 +70,11 @@ lemma globalDimension_le_tfae [Small.{v} R] (n : ℕ) : [globalDimension.{v} R �
       using fun h M _ ↦ h M
   tfae_have 2 → 3 := by
     intro h m ge N M
+    let _ := CategoryTheory.HasExt.standard (ModuleCat.{v} R)
     have (I : Ideal R) : Subsingleton (Ext (ModuleCat.of R (Shrink.{v, u} (R ⧸ I))) M m) :=
       (h (ModuleCat.of R (Shrink.{v, u} (R ⧸ I)))
         (Module.Finite.equiv (Shrink.linearEquiv R (R ⧸ I)).symm)).1 m ge (Y := M)
-    exact ext_subsingleton_of_quotients.{v, u, max u (v + 1)} R M m this N
+    exact ext_subsingleton_of_quotients.{u, v, max u (v + 1)} M m this N
   tfae_have 3 → 1 := by
     intro h
     simp only [globalDimension, iSup_le_iff, projectiveDimension_le_iff]
