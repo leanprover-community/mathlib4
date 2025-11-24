@@ -235,6 +235,7 @@ section sInf
 variable {S : Set (RingPreordering R)} {hS : S.Nonempty}
 
 variable (hS) in
+/-- The intersection of a nonempty set of preorderings is a ring preordering. -/
 def sInf {S : Set (RingPreordering R)} (hS : S.Nonempty) : RingPreordering R where
   __ := InfSet.sInf (RingPreordering.toSubsemiring '' S)
   mem_of_isSquare' x := by aesop (add simp Submonoid.mem_iInf)
@@ -306,6 +307,7 @@ section sSup
 variable {S : Set (RingPreordering R)} {hS : S.Nonempty} {hSd : DirectedOn (· ≤ ·) S}
 
 variable (hS) (hSd) in
+/-- The union of a directed set of preorderings is a preordering. -/
 def sSup : RingPreordering R where
   __ := SupSet.sSup (toSubsemiring '' S)
   mem_of_isSquare' x := by
