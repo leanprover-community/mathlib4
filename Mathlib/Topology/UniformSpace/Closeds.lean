@@ -244,7 +244,7 @@ theorem isClosedEmbedding_singleton :
 
 end T0Space
 
-instance t0Space : T0Space (Closeds α) := by
+instance : T0Space (Closeds α) := by
   suffices ∀ F₁ F₂ : Closeds α, Inseparable F₁ F₂ → F₁ ≤ F₂ from
     ⟨fun F₁ F₂ h => le_antisymm (this F₁ F₂ h) (this F₂ F₁ h.symm)⟩
   refine fun F₁ F₂ h x hx₁ => isClosed_iff_frequently.mp F₂.isClosed _ ?_
