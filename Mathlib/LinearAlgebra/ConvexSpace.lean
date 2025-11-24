@@ -113,18 +113,9 @@ def join (f : StdSimplex R (StdSimplex R M)) : StdSimplex R M where
     have := d.nonneg m
     bound
   total := by
-    -- Proof by Aristotle, needs golfing:
     rw [Finsupp.sum_sum_index]
-    · refine Eq.trans (b := f.support.sum fun d => f.weights d * 1) (Finset.sum_congr rfl ?_) ?_
-      · intro d hd
-        dsimp
-        rw [Finsupp.sum_smul_index]
-        · simp only [Finsupp.sum, ← Finset.mul_sum]
-          congr 1
-          exact d.total
-        · grind
-      · simp only [mul_one]
-        exact f.total
+    · convert f.total
+      rw [Finsupp.sum_smul_index (by simp), ← Finsupp.mul_sum, StdSimplex.total, mul_one]
     · simp
     · simp
 
