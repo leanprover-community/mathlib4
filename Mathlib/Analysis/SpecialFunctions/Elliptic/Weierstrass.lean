@@ -31,7 +31,8 @@ open Module
 noncomputable section
 
 /-- A pair of `ℝ`-linearly independent complex numbers.
-They are the periods of the elliptic functions we shall construct. -/
+They span the period lattice in `PeriodPair.lattice`,
+and are the periods of the elliptic functions we shall construct. -/
 structure PeriodPair : Type where
   /-- The first period in a `PeriodPair`. -/
   ω₁ : ℂ
@@ -106,8 +107,6 @@ def PeriodPair.latticeBasis : Basis (Fin 2) ℤ L.lattice :=
   (Basis.span (v := ![L.ω₁, L.ω₂]) (L.indep.restrict_scalars' _)).map
     (.ofEq _ _ (by simp [lattice, Set.pair_comm L.ω₂ L.ω₁]))
 
-attribute [simp] Basis.span_apply
-
 @[simp] lemma PeriodPair.latticeBasis_zero : L.latticeBasis 0 = L.ω₁ := by simp [latticeBasis]
 @[simp] lemma PeriodPair.latticeBasis_one : L.latticeBasis 1 = L.ω₂ := by simp [latticeBasis]
 
@@ -146,6 +145,7 @@ lemma PeriodPair.hasSumLocallyUniformly_aux (f : L.lattice → ℂ → ℂ)
   contrapose! hs'
   exact hR _ hs'.le _ hs _ rfl
 
+-- Only the asymptotics matter and `10` is just a convenient constant to pick.
 lemma PeriodPair.℘_bound (r : ℝ) (hr : r > 0) (s : ℂ) (hs : ‖s‖ < r) (l : ℂ) (h : 2 * r ≤ ‖l‖) :
     ‖1 / (s - l) ^ 2 - 1 / l ^ 2‖ ≤ 10 * r * ‖l‖ ^ (-3 : ℝ) := by
   have : s ≠ ↑l := by rintro rfl; exfalso; linarith
