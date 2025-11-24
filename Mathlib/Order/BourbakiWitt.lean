@@ -112,9 +112,8 @@ lemma subset_bot_iff {s : Set α} (h : IsAdmissible x f s) : s ⊆ bot x f ↔ s
   mp h' := subset_antisymm h' (sInter_subset_of_mem h)
   mpr h' := h' ▸ subset_refl (bot x f)
 
-lemma map_mem_bot {y : α} (le_map : ∀ x, x ≤ f x) (h : y ∈ bot x f) : f y ∈ bot x f := by
-  apply (bot_isAdmissible (le_map)).image_self_subset_self
-  use y
+lemma map_mem_bot {y : α} (le_map : ∀ x, x ≤ f x) (h : y ∈ bot x f) : f y ∈ bot x f :=
+  (bot_isAdmissible le_map).image_self_subset_self <| mem_image_of_mem f h
 
 /-- `y` is an extreme point for `x : α` and `f : α → α` if it is in the bottom admissible set and
 `y` is larger than `f z` for any `z < y` in the bottom admissible set.
@@ -149,7 +148,7 @@ lemma bot_eq_of_le_or_map_le {y : α} (le_map : ∀ x, x ≤ f x) (hy : IsExtrem
         · left; apply cSup_le c y h
         · push_neg at h
           rcases h with ⟨z, hz, hzy⟩
-          obtain h' := Or.resolve_left (hc hz).2 hzy
+          have h' := Or.resolve_left (hc hz).2 hzy
           right
           apply le_trans h' (le_cSup _ _ hz)
 
@@ -200,8 +199,7 @@ lemma setOf_isExtremePt_eq_bot (le_map : ∀ x, x ≤ f x) : {y | IsExtremePt x 
 
 lemma mem_bot_iff_isExtremePt {y : α} (le_map : ∀ x, x ≤ f x) :
     y ∈ bot x f ↔ IsExtremePt x f y := by
-  rw [← setOf_isExtremePt_eq_bot le_map]
-  rfl
+  rw [← setOf_isExtremePt_eq_bot le_map, mem_setOf]
 
 lemma bot_isChain (le_map : ∀ x, x ≤ f x) : IsChain (· ≤ ·) (bot x f) := by
   intro y hy z hz _

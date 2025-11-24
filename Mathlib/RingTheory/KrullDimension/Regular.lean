@@ -161,7 +161,7 @@ theorem supportDim_add_length_eq_supportDim_of_isRegular (rs : List R) (reg : Is
   induction rs generalizing M with
   | nil =>
     rw [ofList_nil, Submodule.bot_smul]
-    simpa  using supportDim_eq_of_equiv (Submodule.quotEquivOfEqBot ⊥ rfl)
+    simpa using supportDim_eq_of_equiv (Submodule.quotEquivOfEqBot ⊥ rfl)
   | cons x rs' ih =>
     have mem : x ∈ maximalIdeal R := by
       simpa using fun isu ↦ reg.2 (by simp [span_singleton_eq_top.mpr isu])

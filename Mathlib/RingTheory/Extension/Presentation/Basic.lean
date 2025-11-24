@@ -455,9 +455,7 @@ lemma relation_comp_localizationAway_inl (P : Presentation R S ι σ)
   refine (Finsupp.sum_single_add_single (Finsupp.single () 1) 0 g (-1 : S) _ ?_ ?_).trans ?_
   · simp
   · simp [h0]
-  · simp only [Finsupp.mapDomain_single, h1, map_neg, map_one, Finsupp.mapDomain_zero,
-      monomial_zero', mul_one, add_left_inj]
-    rfl
+  · simp [h1, ← X_pow_eq_monomial]
 
 end Composition
 
