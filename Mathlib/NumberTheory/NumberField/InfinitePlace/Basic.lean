@@ -525,12 +525,12 @@ namespace NumberField.InfinitePlace
 variable {K : Type*} [Field K] {v w : InfinitePlace K}
 
 @[simp]
-theorem map_rat (v : InfinitePlace K) (x : ℚ) : v x = ‖x‖ := by
+theorem map_ratCast (v : InfinitePlace K) (x : ℚ) : v x = ‖x‖ := by
   rcases v with ⟨_, _⟩
   aesop (add simp [coe_apply])
 
 @[simp]
-theorem map_nat (v : InfinitePlace K) (n : ℕ) : v n = n := by
+theorem map_natCast (v : InfinitePlace K) (n : ℕ) : v n = n := by
   rcases v with ⟨_, _⟩
   aesop (add simp [coe_apply])
 
@@ -571,25 +571,25 @@ theorem denseRange_algebraMap_pi [NumberField K] :
     DenseRange <| algebraMap K ((v : InfinitePlace K) → WithAbs v.1) := by
   -- We have to show that given `(zᵥ)ᵥ` with `zᵥ : WithAbs v.1`, there is a `y : K` that is
   -- arbitrarily close to each `zᵥ` in `v`'s topology.
-  refine Metric.denseRange_iff.2 fun z r hr ↦ ?_
+  refine Metric.denseRange_iff.mpr fun z r hr ↦ ?_
   -- Given `v`, by previous results we can select a `aᵥ : K` for each infinite place `v`
   -- such that `1 < v aᵥ` while `w aᵥ < 1` for all `w ≠ v`.
   choose a hx using AbsoluteValue.exists_one_lt_lt_one_pi_of_not_isEquiv isNontrivial
-    (fun _ _ hwv ↦ (eq_iff_isEquiv (K := K)).not.1 hwv)
-  -- Define the sequence `yₙ = ∑ v, 1 / (1 + aᵥ ^ (-n)) * zᵥ` in `K`
+    fun _ _ hwv ↦ (eq_iff_isEquiv (K := K)).not.mp hwv
+  -- Define the sequence `yₙ = ∑ v, 1 / (1 + aᵥ⁻ⁿ) * zᵥ` in `K`
   let y := fun n ↦ ∑ v, (1 / (1 + (a v)⁻¹ ^ n)) * WithAbs.equiv v.1 (z v)
   -- We will show that this sequence converges to `z` in the product topology.
   have : atTop.Tendsto (fun n v ↦ (WithAbs.equiv v.1).symm (y n)) (𝓝 z) := by
     -- At a fixed place `u`, the limit of `y` with respect to `u`'s topology is `zᵤ`.
-    refine tendsto_pi_nhds.2 fun u ↦ ?_
+    refine tendsto_pi_nhds.mpr fun u ↦ ?_
     simp_rw [← Fintype.sum_pi_single u z, y, map_sum, map_mul]
     refine tendsto_finset_sum _ fun w _ ↦ ?_
     by_cases hw : u = w
-    · -- Because `1 / (1 + aᵤ ^ (-n)) → 1` in `WithAbs u.1`.
+    · -- Because `1 / (1 + aᵤ⁻ⁿ) → 1` in `WithAbs u.1`.
       rw [← hw, Pi.single_apply u (z u), if_pos rfl]
       have : u (a u)⁻¹ < 1 := by simpa [← inv_pow, inv_lt_one_iff₀] using .inr (hx u).1
       simpa using (WithAbs.tendsto_one_div_one_add_pow_nhds_one this).mul_const (z u)
-    · -- And `1 / (1 + aᵤ ^ (-n)) → 0` in `WithAbs w.1` when `w ≠ u`.
+    · -- And `1 / (1 + aᵤ⁻ⁿ) → 0` in `WithAbs w.1` when `w ≠ u`.
       simp only [Pi.single_apply w (z w), hw, if_false]
       have : 1 < u (a w)⁻¹ := by simpa [one_lt_inv_iff₀] using
         ⟨u.pos_iff.2 fun ha ↦ by linarith [map_zero w ▸ ha ▸ (hx w).1], (hx w).2 u hw⟩
