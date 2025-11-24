@@ -36,7 +36,6 @@ Note: This linter can be disabled with `set_option linter.unusedDecidableInType 
 theorem foo₂ (a : Type) [∀ α : Type, Decidable (Nonempty α)] (_ : Unit) [Nonempty a] : True :=
   trivial
 
--- TODO: why the newline + indentation in the pretty-printing of the forall?
 /--
 warning: `foo₃` has the hypotheses:
   • [(α : Type) → Decidable (Nonempty α)] (#2)
