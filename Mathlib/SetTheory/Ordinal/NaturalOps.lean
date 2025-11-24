@@ -487,10 +487,7 @@ theorem nmul_comm (a b) : a ⨳ b = b ⨳ a := by
     exact H _ hd _ hc
 termination_by (a, b)
 
-@[simp]
-theorem nmul_zero (a) : a ⨳ 0 = 0 := by
-  rw [← Ordinal.le_zero, nmul_le_iff]
-  exact fun _ _ a ha => (Ordinal.not_lt_zero a ha).elim
+@[simp] lemma nmul_zero (a) : a ⨳ 0 = 0 := by simp [← nonpos_iff_eq_zero, nmul_le_iff]
 
 @[simp]
 theorem zero_nmul (a) : 0 ⨳ a = 0 := by rw [nmul_comm, nmul_zero]

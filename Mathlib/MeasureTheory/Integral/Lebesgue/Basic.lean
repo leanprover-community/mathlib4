@@ -319,8 +319,8 @@ theorem lintegral_eq_zero_iff' {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) 
   -- but it has been inlined for the sake of imports
   refine ⟨fun h ↦ ?_, lintegral_eq_zero_of_ae_eq_zero⟩
   have meas_levels_0 : ∀ ε > 0, μ { x | ε ≤ f x } = 0 := fun ε εpos ↦ by
-    by_contra! h'; rw [← zero_lt_iff] at h'
-    refine ((mul_pos_iff.mpr ⟨εpos, h'⟩).trans_le ?_).ne' h
+    by_contra! h'
+    refine ((ENNReal.mul_pos εpos.ne' h').trans_le ?_).ne' h
     calc
       _ ≥ ∫⁻ a in {x | ε ≤ f x}, f a ∂μ := setLIntegral_le_lintegral _ _
       _ ≥ ∫⁻ _ in {x | ε ≤ f x}, ε ∂μ :=
