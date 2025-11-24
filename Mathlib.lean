@@ -12204,6 +12204,7 @@ public import Mathlib.ModelTheory.Algebra.Ring.Basic
 public import Mathlib.ModelTheory.Algebra.Ring.Definability
 public import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 public import Mathlib.ModelTheory.Arithmetic.Presburger.Basic
+public import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Basic
 public import Mathlib.ModelTheory.Arithmetic.Presburger.Semilinear.Defs
 public import Mathlib.ModelTheory.Basic
 public import Mathlib.ModelTheory.Bundled
