@@ -40,6 +40,8 @@ and finally for absolutely continuous functions, proved in
 absolutely continuous, fundamental theorem of calculus, integration by parts
 -/
 
+@[expose] public section
+
 open MeasureTheory Set Filter Function AbsolutelyContinuousOnInterval
 
 open scoped Topology ENNReal Interval NNReal
