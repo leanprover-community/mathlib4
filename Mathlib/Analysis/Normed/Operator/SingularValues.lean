@@ -229,8 +229,7 @@ public theorem ContinuousLinearMap.isCompactOperator_of_iInf_singularValue_eq_ze
   apply isCompactOperator_of_tendsto (F := R) (l := Filter.atTop)
   · rw [tendsto_iff_norm_sub_tendsto_zero]
     simp_rw [norm_sub_rev]
-    apply Filter.Tendsto.squeeze (f := fun n : ℕ ↦ ‖T - R n‖) (g := fun _ ↦ 0)
-      tendsto_const_nhds hl₂
+    apply Filter.Tendsto.squeeze tendsto_const_nhds hl₂
     · intro _
       positivity
     · intro n
