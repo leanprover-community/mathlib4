@@ -599,18 +599,8 @@ theorem eq_top_of_isMultiplyPretransitive [Finite α] {G : Subgroup (Equiv.Perm 
       (g • x) i = (k • x) i :=
     Function.Embedding.ext_iff.mp hg' ⟨i.val, hi⟩
   have hgk (i : Fin (Fintype.card α)) : (g • x) i = (k • x) i := by
-    rcases lt_or_eq_of_le (le_sub_one_of_lt i.prop) with hi | hi
-    · exact hgk' i hi
-    · obtain ⟨j, hxj : (k • x) j = (g • x) i⟩ := hx (k • x) ((g • x) i)
-      rcases lt_or_eq_of_le (le_sub_one_of_lt j.prop) with hj | hj
-      · suffices i = j by
-          rw [← this, ← hi] at hj
-          exact (lt_irrefl _ hj).elim
-        apply EmbeddingLike.injective (g • x)
-        rw [hgk' j hj, hxj]
-      · rw [← hxj]
-        apply congr_arg
-        rw [Fin.ext_iff, hi, hj]
+    obtain ⟨j, hxj : (k • x) j = (g • x) i⟩ := hx (k • x) ((g • x) i)
+    grind
   ext a
   obtain ⟨i, rfl⟩ := (hx x) a
   specialize hgk i
