@@ -481,7 +481,7 @@ theorem _root_.IsPrimitiveRoot.intermediateField_adjoin_isCyclotomicExtension
     [Algebra.IsIntegral K L] {n : ℕ} [NeZero n] {ζ : L} (hζ : IsPrimitiveRoot ζ n) :
     IsCyclotomicExtension {n} K (IntermediateField.adjoin K {ζ}) := by
   change IsCyclotomicExtension {n} K (IntermediateField.adjoin K {ζ}).toSubalgebra
-  rw [IntermediateField.adjoin_simple_toSubalgebra_of_algebraic (IsAlgebraic.isAlgebraic ζ)]
+  rw [IntermediateField.adjoin_simple_toSubalgebra_of_isAlgebraic (IsAlgebraic.isAlgebraic ζ)]
   exact hζ.adjoin_isCyclotomicExtension K
 
 end
@@ -976,7 +976,7 @@ theorem IsCyclotomicExtension.lcm_sup [NeZero n₁] [NeZero n₂] :
 theorem IntermediateField.isCyclotomicExtension_singleton_iff_eq_adjoin (F : IntermediateField K L)
     {ζ : L} (hζ : IsPrimitiveRoot ζ n) :
     IsCyclotomicExtension {n} K F ↔ F = IntermediateField.adjoin K {ζ} := by
-  rw [← toSubalgebra_inj, adjoin_simple_toSubalgebra_of_algebraic
+  rw [← toSubalgebra_inj, adjoin_simple_toSubalgebra_of_isAlgebraic
     (hζ.isIntegral (NeZero.pos _)).tower_top.isAlgebraic]
   exact _root_.isCyclotomicExtension_singleton_iff_eq_adjoin n F.toSubalgebra hζ
 
