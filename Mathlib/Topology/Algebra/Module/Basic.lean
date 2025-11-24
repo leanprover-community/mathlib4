@@ -259,12 +259,34 @@ theorem LinearMap.continuous_on_pi {ι : Type*} {R : Type*} {M : Type*} [Finite 
   classical
     -- for the proof, write `f` in the standard basis, and use that each coordinate is a continuous
     -- function.
-    have : (f : (ι → R) → M) = fun x => ∑ i : ι, x i • f fun j => if i = j then 1 else 0 := by
+    have : (f : (ι → R) → M) = fun x => ∑ i : ι, x i • f (Pi.single i 1) := by
       ext x
-      exact f.pi_apply_eq_sum_univ x
+      exact f.pi_apply_eq_sum_univ' x
     rw [this]
-    refine continuous_finset_sum _ fun i _ => ?_
-    exact (continuous_apply i).smul continuous_const
+    fun_prop
+
+theorem LinearMap.continuous_on_pi_prod {ι R X M : Type*} [Finite ι] [CommSemiring R]
+    [TopologicalSpace R] [TopologicalSpace X] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
+    [ContinuousAdd M] [ContinuousSMul R M] (f : (ι → R) →ₗ[R] X → M)
+    (f_cont : ∀ a, Continuous (f a)) :
+    Continuous (fun ax : (ι → R) × X ↦ f ax.1 ax.2) := by
+  cases nonempty_fintype ι
+  classical
+    -- for the proof, write `f` in the standard basis, and use that each coordinate is a continuous
+    -- function.
+    have : (fun ax : (ι → R) × X ↦ f ax.1 ax.2) =
+        fun ax : (ι → R) × X => ∑ i : ι, ax.1 i • f (Pi.single i 1) ax.2 := by
+      ext xm
+      simp_rw [f.pi_apply_eq_sum_univ' xm.1, Finset.sum_apply, Pi.smul_apply]
+    rw [this]
+    fun_prop
+
+theorem LinearMap.continuous_on_prod_pi {ι R X M : Type*} [Finite ι] [CommSemiring R]
+    [TopologicalSpace R] [TopologicalSpace X] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
+    [ContinuousAdd M] [ContinuousSMul R M] (f : (ι → R) →ₗ[R] X → M)
+    (f_cont : ∀ a, Continuous (f a)) :
+    Continuous (fun xa : X × (ι → R) ↦ f xa.2 xa.1) :=
+  f.continuous_on_pi_prod f_cont |>.comp continuous_swap
 
 end Pi
 

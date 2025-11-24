@@ -608,25 +608,10 @@ by `IsModuleTopology.continuous_bilinear_of_finite_left`.
 -/
 theorem continuous_bilinear_of_pi_fintype (ι : Type*) [Finite ι]
     (bil : (ι → R) →ₗ[R] B →ₗ[R] C) : Continuous (fun ab ↦ bil ab.1 ab.2 : ((ι → R) × B → C)) := by
-  classical
-  cases nonempty_fintype ι
-  -- The map in question, `(f, b) ↦ bil f b`, is easily checked to be equal to
-  -- `(f, b) ↦ ∑ᵢ f i • bil (single i 1) b` where `single i 1 : ι → R` sends `i` to `1` and
-  -- everything else to `0`.
-  have h : (fun fb ↦ bil fb.1 fb.2 : ((ι → R) × B → C)) =
-      (fun fb ↦ ∑ i, ((fb.1 i) • (bil (Finsupp.single i 1) fb.2) : C)) := by
-    ext ⟨f, b⟩
-    nth_rw 1 [← Finset.univ_sum_single f]
-    simp_rw [← Finsupp.single_eq_pi_single, map_sum, LinearMap.coeFn_sum, Finset.sum_apply]
-    refine Finset.sum_congr rfl (fun x _ ↦ ?_)
-    rw [← Finsupp.smul_single_one]
-    push_cast
-    simp
-  rw [h]
-  -- But this map is obviously continuous, because for a fixed `i`, `bil (single i 1)` is
-  -- linear and thus continuous, and scalar multiplication and finite sums are continuous
   haveI : ContinuousAdd C := toContinuousAdd R C
-  fun_prop
+  exact LinearMap.continuous_on_pi_prod (LinearMap.ltoFun R B C R ∘ₗ bil)
+    fun x ↦ continuous_of_linearMap (bil x)
+
 
 end semiring
 
@@ -635,7 +620,39 @@ section ring
 variable {R : Type*} [TopologicalSpace R] [CommRing R] [IsTopologicalRing R]
 variable {A : Type*} [AddCommGroup A] [Module R A] [aA : TopologicalSpace A] [IsModuleTopology R A]
 variable {B : Type*} [AddCommGroup B] [Module R B] [aB : TopologicalSpace B] [IsModuleTopology R B]
-variable {C : Type*} [AddCommGroup C] [Module R C] [aC : TopologicalSpace C] [IsModuleTopology R C]
+variable {C : Type*} [AddCommGroup C] [Module R C] [aC : TopologicalSpace C]
+variable [ContinuousAdd C] [ContinuousSMul R C]
+
+/--
+If `A` is a finite module with the module topology, a map `f : A × X → B` which is linear in
+the first component and continuous in the second component is actually continuous on the product.
+This generalizes `LinearMap.continuous_on_pi_prod`.
+-/
+theorem continuous_of_linearMap_prod_left {X : Type*} [TopologicalSpace X] [Module.Finite R A]
+    (f : A →ₗ[R] X → C) (f_cont : ∀ a, Continuous (f a)) :
+    Continuous (fun (ax : A × X) ↦ f ax.1 ax.2) := by
+  -- `A` is finite and hence admits a surjection `π` from `Rⁿ` for some finite `n`.
+  obtain ⟨m, π, hπ⟩ := Module.Finite.exists_fin' R A
+  -- Since `A` has the module topology and `π` is surjective, it is an open quotient map...
+  have π_quot : IsOpenQuotientMap π := isOpenQuotientMap_of_surjective hπ
+  -- ... hence the product map `φ = f × id` is as well.
+  let φ : (Fin m → R) × X → A × X := Prod.map π id
+  have hφ : IsOpenQuotientMap φ := π_quot.prodMap .id
+  -- Hence, it suffices to prove that the composite `Rⁿ × X → A × X → B` is
+  -- continuous.
+  rw [hφ.isQuotientMap.continuous_iff]
+  -- But this follows from an earlier result.
+  exact LinearMap.continuous_on_pi_prod (f ∘ₗ π) fun c ↦ f_cont (π c)
+
+/--
+If `A` is a finite module with the module topology, a map `f : X × A → B` which is linear in
+the second component and continuous in the first component is actually continuous on the product.
+This generalizes `LinearMap.continuous_on_prod_pi`.
+-/
+theorem continuous_of_linearMap_prod_right {X : Type*} [TopologicalSpace X] [Module.Finite R A]
+    (f : A →ₗ[R] X → C) (f_cont : ∀ a, Continuous (f a)) :
+    Continuous (fun (xa : X × A) ↦ f xa.2 xa.1) :=
+  continuous_of_linearMap_prod_left f f_cont |>.comp continuous_swap
 
 /--
 If `A`, `B` and `C` have the module topology, and if furthermore `A` is a finite `R`-module,
@@ -644,17 +661,8 @@ then any bilinear map `A × B → C` is automatically continuous
 @[continuity, fun_prop]
 theorem continuous_bilinear_of_finite_left [Module.Finite R A]
     (bil : A →ₗ[R] B →ₗ[R] C) : Continuous (fun ab ↦ bil ab.1 ab.2 : (A × B → C)) := by
-  -- `A` is finite and hence admits a surjection from `Rⁿ` for some finite `n`.
-  obtain ⟨m, f, hf⟩ := Module.Finite.exists_fin' R A
-  -- The induced linear map `φ : Rⁿ × B → A × B` is surjective
-  let bil' : (Fin m → R) →ₗ[R] B →ₗ[R] C := bil.comp f
-  let φ := f.prodMap (LinearMap.id : B →ₗ[R] B)
-  have hφ : Function.Surjective φ := Function.Surjective.prodMap hf fun b ↦ ⟨b, rfl⟩
-  -- ... and thus a quotient map, so it suffices to prove that the composite `Rⁿ × B → C` is
-  -- continuous.
-  rw [Topology.IsQuotientMap.continuous_iff (isQuotientMap_of_surjective hφ)]
-  -- But this follows from an earlier result.
-  exact continuous_bilinear_of_pi_fintype (Fin m) bil'
+  exact continuous_of_linearMap_prod_left (LinearMap.ltoFun R B C R ∘ₗ bil)
+    fun a ↦ continuous_of_linearMap (bil a)
 
 /--
 If `A`, `B` and `C` have the module topology, and if furthermore `B` is a finite `R`-module,
@@ -663,10 +671,8 @@ then any bilinear map `A × B → C` is automatically continuous
 @[continuity, fun_prop]
 theorem continuous_bilinear_of_finite_right [Module.Finite R B]
     (bil : A →ₗ[R] B →ₗ[R] C) : Continuous (fun ab ↦ bil ab.1 ab.2 : (A × B → C)) := by
-  -- We already proved this when `A` is finite instead of `B`, so it's obvious by symmetry
-  rw [show (fun ab ↦ bil ab.1 ab.2 : (A × B → C)) =
-    ((fun ba ↦ bil.flip ba.1 ba.2 : (B × A → C)) ∘ (Prod.swap : A × B → B × A)) by ext; simp]
-  fun_prop
+  exact continuous_of_linearMap_prod_right (LinearMap.ltoFun R A C R ∘ₗ bil.flip)
+    fun b ↦ continuous_of_linearMap (bil.flip b)
 
 end ring
 
@@ -676,13 +682,15 @@ section algebra
 
 variable (R : Type*) [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
     (D : Type*) [Ring D] [Algebra R D] [Module.Finite R D] [TopologicalSpace D]
-    [IsModuleTopology R D]
+    [IsModuleTopology R D] (M : Type*) [AddCommGroup M] [Module R M] [Module D M]
+    [TopologicalSpace M] [IsScalarTower R D M]
 
 include R in
 /-- If `D` is an `R`-algebra, finite as an `R`-module, and if `D` has the module topology,
 then multiplication on `D` is automatically continuous. -/
 @[continuity, fun_prop]
 theorem continuous_mul_of_finite : Continuous (fun ab ↦ ab.1 * ab.2 : D × D → D) :=
+  haveI := toContinuousAdd R D
   -- Proof: multiplication is bilinear so this follows from previous results.
   continuous_bilinear_of_finite_left (LinearMap.mul R D)
 
@@ -694,6 +702,17 @@ theorem isTopologicalRing : IsTopologicalRing D where
   continuous_add := (toContinuousAdd R D).1
   continuous_mul := continuous_mul_of_finite R D
   continuous_neg := continuous_neg R D
+
+include R in
+/-- Let `R` be a a topological ring and `D` an `R`-algebra, finite as an `R`-module,
+and endowed with the `R`-module topology.
+Then, for any `D`-module `M` which is a topological `R`-module, `ContinuousConstSMul D M`
+implies `ContinuousSMul D M`. -/
+theorem continuousSMul_up_of_tower [ContinuousAdd M] [ContinuousSMul R M]
+    [ContinuousConstSMul D M] : ContinuousSMul D M where
+  continuous_smul := by
+    set φ : D →ₗ[R] M →ₗ[R] M := (Algebra.lsmul R R M).toLinearMap
+    exact continuous_of_linearMap_prod_left (LinearMap.ltoFun R M M R ∘ₗ φ) continuous_const_smul
 
 end algebra
 
