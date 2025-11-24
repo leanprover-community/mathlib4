@@ -65,16 +65,14 @@ theorem intervalGapsWithin_fst_of_card_lt (hi : F.card < i) :
   grind
 
 @[simp]
-theorem intervalGapsWithin_card_snd : (F.intervalGapsWithin a b F.card).2 = b := by
-  simp [intervalGapsWithin, intervalGapsWithin.snd]
-
-@[simp]
 theorem intervalGapsWithin_snd_of_card_le (hi : F.card ≤ i) :
     (F.intervalGapsWithin a b i).2 = b := by
   simp only [intervalGapsWithin, intervalGapsWithin.snd]
   grind
 
-@[simp]
+theorem intervalGapsWithin_card_snd : (F.intervalGapsWithin a b F.card).2 = b := by
+  simp
+
 theorem intervalGapsWithin_snd_of_card_eq (hi : F.card = i) :
     (F.intervalGapsWithin a b i).2 = b :=
   intervalGapsWithin_snd_of_card_le F a b hi.le
