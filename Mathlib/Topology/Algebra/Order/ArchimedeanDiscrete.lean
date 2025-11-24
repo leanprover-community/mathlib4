@@ -14,7 +14,7 @@ public import Mathlib.Topology.Order.DenselyOrdered
 /-!
 # Discreteness of subgroups in archimedean ordered groups
 
-This file contains some supplements to the results in `Mathlib.Topology.Algebra.Order.Archimedean`,
+This file contains some supplements to the results in `Mathlib/Topology/Algebra/Order/Archimedean.lean`,
 involving discreteness of subgroups, which require heavier imports.
 -/
 

@@ -69,7 +69,7 @@ Conversely `Equivalence.toAdjunction` recovers the underlying adjunction from an
 
 ## Other files related to adjunctions
 
-* The file `CategoryTheory.Monad.Adjunction` develops the basic relationship between adjunctions
+* The file `Mathlib/CategoryTheory/Monad/Adjunction.lean` develops the basic relationship between adjunctions
   and (co)monads. There it is also shown that given an adjunction `L ⊣ R` and an isomorphism
   `L ⋙ R ≅ 𝟭 C`, the unit is an isomorphism, and similarly for the counit.
 -/
