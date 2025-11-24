@@ -3,8 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.CategoryTheory.Generator.Basic
+public import Mathlib.CategoryTheory.Generator.Basic
 
 /-!
 # Generator of Type
@@ -12,6 +13,8 @@ import Mathlib.CategoryTheory.Generator.Basic
 In this file, we show that `PUnit` is a separator of the category `Type u`.
 
 -/
+
+@[expose] public section
 
 universe u
 
