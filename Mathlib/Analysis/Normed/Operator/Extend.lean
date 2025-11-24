@@ -159,7 +159,6 @@ def compLeftInverse : range g →SL[σ₁₂] F :=
     simpa [← hxy] using h y)
   else 0
 
-@[simp]
 theorem compLeftInverse_apply_of_bdd (h_norm : ∃ (C : ℝ), 0 ≤ C ∧ ∀ (x : E), ‖f x‖ ≤ C * ‖g x‖)
     (x : E) (y : Eₗ) (hx : g x = y) :
     f.compLeftInverse g ⟨y, ⟨x, hx⟩⟩ = f x := by
