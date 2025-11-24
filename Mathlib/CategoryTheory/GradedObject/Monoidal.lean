@@ -3,8 +3,10 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou, Kim Morrison
 -/
-import Mathlib.CategoryTheory.GradedObject.Unitor
-import Mathlib.Data.Fintype.Prod
+module
+
+public import Mathlib.CategoryTheory.GradedObject.Unitor
+public import Mathlib.Data.Fintype.Prod
 
 /-!
 # The monoidal category structures on graded objects
@@ -22,6 +24,8 @@ In particular, if `C` has finite coproducts to which the tensor
 product commutes, we obtain a monoidal category structure on `GradedObject ℕ C`.
 
 -/
+
+@[expose] public section
 
 universe u
 

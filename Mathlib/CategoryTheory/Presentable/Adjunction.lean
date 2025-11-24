@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Presentable.LocallyPresentable
-import Mathlib.CategoryTheory.Adjunction.ReflectiveLimits
+module
+
+public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
+public import Mathlib.CategoryTheory.Monad.Limits
 
 /-!
 # Presentable objects and adjunctions
@@ -13,9 +15,11 @@ If `adj : F ⊣ G` and `G` is `κ`-accessible for a regular cardinal `κ`,
 then `F` preserves `κ`-presentable objects.
 
 Moreover, if `G : D ⥤ C` is fully faithful, then `D` is locally `κ`-presentable
-(resp `κ`-accessible) if `D` is.
+(resp `κ`-accessible) if `C` is.
 
 -/
+
+@[expose] public section
 
 universe w v v' u u'
 
@@ -30,7 +34,7 @@ variable {C : Type u} {D : Type u'} [Category.{v} C] [Category.{v'} D]
 
 include adj
 
-lemma isPresentable_leftAdjoint_obj (X : C) [IsCardinalPresentable X κ]
+lemma isCardinalPresentable_leftAdjoint_obj (X : C) [IsCardinalPresentable X κ]
     [G.IsCardinalAccessible κ] :
     IsCardinalPresentable (F.obj X) κ := by
   rw [isCardinalPresentable_iff_isCardinalAccessible_uliftCoyoneda_obj.{v}]
@@ -46,7 +50,7 @@ lemma isCardinalFilteredGenerator
     rintro Y ⟨X, hX, ⟨e⟩⟩
     have hX' := hP.le_isCardinalPresentable X hX
     rw [isCardinalPresentable_iff] at hX' ⊢
-    have := adj.isPresentable_leftAdjoint_obj κ X
+    have := adj.isCardinalPresentable_leftAdjoint_obj κ X
     exact isCardinalPresentable_of_iso e κ
   exists_colimitsOfShape Y := by
     have := adj.isLeftAdjoint
@@ -56,8 +60,7 @@ lemma isCardinalFilteredGenerator
         diag := _
         ι := _
         isColimit := isColimitOfPreserves F hY.isColimit
-        prop_diag_obj j := P.prop_map_obj _ (hY.prop_diag_obj j)
-      }⟩⟩
+        prop_diag_obj j := P.prop_map_obj _ (hY.prop_diag_obj j) }⟩⟩
 
 lemma hasCardinalFilteredGenerator [HasCardinalFilteredGenerator C κ]
     [G.IsCardinalAccessible κ] [G.Full] [G.Faithful] :
@@ -70,13 +73,17 @@ lemma hasCardinalFilteredGenerator [HasCardinalFilteredGenerator C κ]
 lemma isCardinalLocallyPresentable [IsCardinalLocallyPresentable C κ]
     [G.IsCardinalAccessible κ] [G.Full] [G.Faithful] :
     IsCardinalLocallyPresentable D κ where
-  toHasColimitsOfSize := ⟨fun _ _ ↦ adj.hasColimitsOfShape _⟩
+  toHasColimitsOfSize :=
+    letI : Reflective G := ⟨_, adj⟩
+    hasColimits_of_reflective G
   toHasCardinalFilteredGenerator := adj.hasCardinalFilteredGenerator κ
 
-lemma isCardinalAccessible [IsCardinalAccessibleCategory C κ]
+lemma isCardinalAccessibleCategory [IsCardinalAccessibleCategory C κ]
     [G.IsCardinalAccessible κ] [G.Full] [G.Faithful] :
     IsCardinalAccessibleCategory D κ where
-  toHasCardinalFilteredColimits := ⟨fun _ _ _↦ adj.hasColimitsOfShape _⟩
+  toHasCardinalFilteredColimits := ⟨fun _ _ _ ↦
+    let : Reflective G := ⟨_, adj⟩
+    hasColimitsOfShape_of_reflective G⟩
   toHasCardinalFilteredGenerator := adj.hasCardinalFilteredGenerator κ
 
 end Adjunction

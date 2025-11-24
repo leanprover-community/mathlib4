@@ -3,13 +3,15 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.Countable.Defs
-import Mathlib.Data.Fin.Basic
-import Mathlib.Data.Nat.Find
-import Mathlib.Data.PNat.Equiv
-import Mathlib.Logic.Equiv.Nat
-import Mathlib.Order.Directed
-import Mathlib.Order.RelIso.Basic
+module
+
+public import Mathlib.Data.Countable.Defs
+public import Mathlib.Data.Fin.Basic
+public import Mathlib.Data.Nat.Find
+public import Mathlib.Data.PNat.Equiv
+public import Mathlib.Logic.Equiv.Nat
+public import Mathlib.Order.Directed
+public import Mathlib.Order.RelIso.Basic
 
 /-!
 # Encodable types
@@ -34,6 +36,8 @@ The difference with `Denumerable` is that finite types are encodable. For infini
 The point of asking for an explicit partial inverse `decode : ℕ → Option α` to `encode : α → ℕ` is
 to make the range of `encode` decidable even when the finiteness of `α` is not.
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid
 
@@ -205,7 +209,7 @@ def equivRangeEncode (α : Type*) [Encodable α] : α ≃ Set.range (@encode α 
       (show isSome (decode₂ α n.1) by obtain ⟨x, hx⟩ := n.2; rw [← hx, encodek₂]; exact rfl)
   left_inv a := by dsimp; rw [← Option.some_inj, Option.some_get, encodek₂]
   right_inv := fun ⟨n, x, hx⟩ => by
-    apply Subtype.eq
+    apply Subtype.ext
     dsimp
     conv =>
       rhs

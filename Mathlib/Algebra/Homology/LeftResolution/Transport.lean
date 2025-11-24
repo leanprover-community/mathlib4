@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.LeftResolution.Basic
+module
+
+public import Mathlib.Algebra.Homology.LeftResolution.Basic
 
 /-!
 # Transport left resolutions along equivalences
@@ -14,6 +16,8 @@ equivalences of categories `A' ≌ A` and `C' ≌ C`, we
 define `Λ.transport .. : LeftResolution ι'`.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Abelian
 

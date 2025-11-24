@@ -3,8 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.SerreClass.MorphismProperty
-import Mathlib.CategoryTheory.Localization.Bousfield
+module
+
+public import Mathlib.CategoryTheory.Abelian.SerreClass.MorphismProperty
+public import Mathlib.CategoryTheory.Localization.Bousfield
 
 /-!
 # Bousfield localizations with respect to Serre classes
@@ -19,6 +21,8 @@ that are sent to a zero object by `G`.
 (We also translate this in terms of a left Bousfield localization.)
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

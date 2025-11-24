@@ -3,15 +3,17 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Presentable.Adjunction
-import Mathlib.CategoryTheory.Presentable.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
-import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
-import Mathlib.CategoryTheory.Localization.BousfieldTransfiniteComposition
-import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
-import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
-import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
-import Mathlib.CategoryTheory.MorphismProperty.IsSmall
+module
+
+public import Mathlib.CategoryTheory.Presentable.Basic
+public import Mathlib.CategoryTheory.Presentable.Adjunction
+public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+public import Mathlib.CategoryTheory.Localization.BousfieldTransfiniteComposition
+public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
+public import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
+public import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
+public import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 
 /-!
 # The Orthogonal-reflection construction
@@ -61,6 +63,8 @@ errata to this book, the implication (ii) → (i) is wrong when `κ = ℵ₀`).
 * [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
 -/
+
+@[expose] public section
 
 universe w v' u' v u
 
