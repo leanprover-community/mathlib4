@@ -311,12 +311,12 @@ theorem prev_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
           · exact Nat.succ_lt_succ (Nat.lt_succ_of_lt hi)
         · intro H
           suffices i.succ.succ = 0 by simpa
-          suffices Fin.mk _ hi = ⟨0, by omega⟩ by rwa [Fin.mk.inj_iff] at this
+          suffices Fin.mk _ hi = ⟨0, by cutsat⟩ by rwa [Fin.mk.inj_iff] at this
           rw [nodup_iff_injective_get] at h
           apply h; rw [← H]; simp
         · intro H
           suffices i.succ.succ = 1 by simpa
-          suffices Fin.mk _ hi = ⟨1, by omega⟩ by rwa [Fin.mk.inj_iff] at this
+          suffices Fin.mk _ hi = ⟨1, by cutsat⟩ by rwa [Fin.mk.inj_iff] at this
           rw [nodup_iff_injective_get] at h
           apply h; rw [← H]; simp
 

@@ -90,10 +90,10 @@ lemma ext' {f g : Path X (m + 1)} (h : ∀ i, f.arrow i = g.arrow i) : f = g := 
 /-- For `j + l ≤ m`, a path of length `m` restricts to a path of length `l`, namely
 the subpath spanned by the vertices `j ≤ i ≤ j + l` and edges `j ≤ i < j + l`. -/
 def interval (f : Path X m) (j l : ℕ) (h : j + l ≤ m := by omega) : Path X l where
-  vertex i := f.vertex ⟨j + i, by omega⟩
-  arrow i := f.arrow ⟨j + i, by omega⟩
-  arrow_src i := f.arrow_src ⟨j + i, by omega⟩
-  arrow_tgt i := f.arrow_tgt ⟨j + i, by omega⟩
+  vertex i := f.vertex ⟨j + i, by cutsat⟩
+  arrow i := f.arrow ⟨j + i, by cutsat⟩
+  arrow_src i := f.arrow_src ⟨j + i, by cutsat⟩
+  arrow_tgt i := f.arrow_tgt ⟨j + i, by cutsat⟩
 
 variable {X Y : SSet.Truncated.{u} (n + 1)} {m : ℕ}
 
