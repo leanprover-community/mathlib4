@@ -768,6 +768,15 @@ theorem comap_span (f : P₁ ≃ᵃ[k] P₂) (s : Set P₂) :
     (affineSpan k s).comap (f : P₁ →ᵃ[k] P₂) = affineSpan k (f ⁻¹' s) := by
   rw [← map_symm, map_span, AffineEquiv.coe_coe, f.image_symm]
 
+/-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
+def gciMapComap {f : P₁ →ᵃ[k] P₂} (hf : Function.Injective f) :
+    GaloisCoinsertion (map f) (comap f) :=
+  (gc_map_comap f).toGaloisCoinsertion fun s p ↦ by simp; grind
+
+lemma comap_map_eq_of_injective {f : P₁ →ᵃ[k] P₂} (hf : Function.Injective f)
+    (s : AffineSubspace k P₁) : (s.map f).comap f = s :=
+  (gciMapComap hf).u_l_eq _
+
 end AffineSubspace
 
 end MapComap
