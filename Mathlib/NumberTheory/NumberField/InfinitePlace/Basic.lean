@@ -525,17 +525,17 @@ namespace NumberField.InfinitePlace
 variable {K : Type*} [Field K] {v w : InfinitePlace K}
 
 @[simp]
-theorem map_ratCast (v : InfinitePlace K) (x : ℚ) : v x = ‖x‖ := by
+protected theorem map_ratCast (v : InfinitePlace K) (x : ℚ) : v x = ‖x‖ := by
   rcases v with ⟨_, _⟩
   aesop (add simp [coe_apply])
 
 @[simp]
-theorem map_natCast (v : InfinitePlace K) (n : ℕ) : v n = n := by
+protected theorem map_natCast (v : InfinitePlace K) (n : ℕ) : v n = n := by
   rcases v with ⟨_, _⟩
   aesop (add simp [coe_apply])
 
 @[simp]
-theorem map_intCast (v : InfinitePlace K) (z : ℤ) : v z = ‖z‖ := by
+protected theorem map_intCast (v : InfinitePlace K) (z : ℤ) : v z = ‖z‖ := by
   rcases v with ⟨_, _⟩
   aesop (add simp [coe_apply])
 
