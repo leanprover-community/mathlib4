@@ -177,8 +177,8 @@ variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜₂] {σ₁₂ : 𝕜
 variable (f : E →ₛₗ[σ₁₂] F) (e : E →ₗ[𝕜] Eₗ)
 
 /-- Extension of a linear map `f : E →ₛₗ[σ₁₂] F` to a continuous linear map `Eₗ →SL[σ₁₂] F`,
-where `E` is a normed space and `F` a complete normed space, using a dense embedding
-`e : E →L[𝕜] Eₗ` together with a bound `‖f x‖ ≤ C * ‖e x‖` for all `x : E`. -/
+where `E` is a normed space and `F` a complete normed space, using a dense map `e : E →L[𝕜] Eₗ`
+together with a bound `‖f x‖ ≤ C * ‖e x‖` for all `x : E`. -/
 def extendOfNorm : Eₗ →SL[σ₁₂] F := (f.compLeftInverse e).extend (LinearMap.range e).subtypeL
 
 variable {f e}
@@ -190,7 +190,7 @@ theorem extendOfNorm_eq (h_dense : DenseRange e) (h_norm : ∃ C, 0 ≤ C ∧ �
   convert this ⟨e x, LinearMap.mem_range_self e x⟩
   exact (compLeftInverse_apply_of_bdd _ _ h_norm _ _ rfl).symm
 
-theorem extendOfNorm_norm_le (h_dense : DenseRange e) (C : ℝ) (hC : 0 ≤ C)
+theorem extendOfNorm_norm_le (h_dense : DenseRange e) {C : ℝ} (hC : 0 ≤ C)
     (h_norm : ∀ (x : E), ‖f x‖ ≤ C * ‖e x‖) (x : Eₗ) :
     ‖f.extendOfNorm e x‖ ≤ C * ‖x‖ := by
   have h_mem : ∀ (x : Eₗ) (hy : x ∈ (LinearMap.range e)), ‖extendOfNorm f e x‖ ≤ C * ‖x‖ := by
@@ -199,6 +199,17 @@ theorem extendOfNorm_norm_le (h_dense : DenseRange e) (C : ℝ) (hC : 0 ≤ C)
     convert h_norm y
     apply extendOfNorm_eq h_dense ⟨C, hC, h_norm⟩
   exact h_dense.induction h_mem (isClosed_le (by fun_prop) (by fun_prop)) x
+
+theorem extendOfNorm_unique (h_dense : DenseRange e) {C : ℝ} (hC : 0 ≤ C)
+    (h_norm : ∀ (x : E), ‖f x‖ ≤ C * ‖e x‖) (g : Eₗ →SL[σ₁₂] F)
+    (H : g.toLinearMap.comp e = f) : extendOfNorm f e = g := by
+  simp [extendOfNorm]
+  apply ContinuousLinearMap.extend_unique
+  · simpa using h_dense
+  · exact isUniformEmbedding_subtype_val.isUniformInducing
+  ext ⟨y, x, hxy⟩
+  rw [compLeftInverse_apply_of_bdd _ _ ⟨C, hC, h_norm⟩ x y hxy]
+  simp [← hxy, ← H]
 
 end NormedDivisionRing
 
