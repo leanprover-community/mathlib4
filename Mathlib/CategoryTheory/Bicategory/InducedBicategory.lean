@@ -51,8 +51,7 @@ of `B` with the induced bicategory structure. This is given a `CategoryStruct` i
 where the identity and composition is induced from `C`. -/
 @[ext]
 structure Hom (X Y : InducedBicategory C F) where
-  /-- Construct a morphism in `InducedBicategory C F` from a morhism in `C`. -/
-  mkHom ::
+  private mk ::
   /-- The morphism in `C` underlying the morphism in `InducedBicategory C F`. -/
   hom : F X ⟶ F Y
 
@@ -61,6 +60,10 @@ instance categoryStruct : CategoryStruct (InducedBicategory C F) where
   Hom X Y := Hom X Y
   id X := ⟨𝟙 (F X)⟩
   comp u v := ⟨u.hom ≫ v.hom⟩
+
+/-- Synonym for `Hom.mk` which makes unification easier. -/
+abbrev mkHom {X Y : InducedBicategory C F} (f : F X ⟶ F Y) : X ⟶ Y :=
+  ⟨f⟩
 
 @[ext]
 lemma hom_ext {X Y : InducedBicategory C F} {f g : X ⟶ Y} (h : f.hom = g.hom) : f = g :=
@@ -75,8 +78,6 @@ structure Hom₂ {X Y : InducedBicategory C F} (f g : X ⟶ Y) where
   /-- The 2-morphism in `C` underlying the 2-morphism in `InducedBicategory C F`. -/
   hom : f.hom ⟶ g.hom
 
-#check Hom₂.mk
-
 @[simps!]
 instance Hom.category (X Y : InducedBicategory C F) : Category (X ⟶ Y) where
   Hom f g := Hom₂ f g
@@ -88,11 +89,9 @@ lemma hom₂_ext {X Y : InducedBicategory C F} {f g : X ⟶ Y} {η θ : f ⟶ g}
     η = θ :=
   Hom₂.ext h
 
-/-- Synonym for constructor of `Hom₂` where the 1-morphisms `f` and `g` lie in `C`, and not given
-in the form `f'.hom`, `g'.hom` for some `f' g' : InducedBicategory.Hom _ _`. -/
-@[simps]
-def mkHom₂ {a b : InducedBicategory C F} {f g : F a ⟶ F b} (η : f ⟶ g) :
-    (Hom.mkHom f) ⟶ Hom.mkHom g :=
+/-- Synonym for the constructor of `Hom₂` where the 1-morphisms `f` and `g` lie in `C`, and not
+given in the form `f'.hom`, `g'.hom` for some `f' g' : InducedBicategory.Hom _ _`. -/
+abbrev mkHom₂ {a b : InducedBicategory C F} {f g : F a ⟶ F b} (η : f ⟶ g) : mkHom f ⟶ mkHom g :=
   Hom₂.mk η
 
 /-- Constructor for 2-isomorphisms in the induced bicategory. -/
@@ -104,8 +103,8 @@ def isoMk {X Y : InducedBicategory C F} {f g : X ⟶ Y} (φ : f.hom ≅ g.hom) :
 @[simps!]
 instance bicategory : Bicategory (InducedBicategory C F) where
   __ := categoryStruct
-  whiskerLeft {_ _ _} h {_ _} η := Hom₂.mk <| h.hom ◁ Hom₂.hom η
-  whiskerRight {_ _ _} {_ _} η h := Hom₂.mk <| (Hom₂.hom η) ▷ h.hom
+  whiskerLeft {_ _ _} h {_ _} η := mkHom₂ <| h.hom ◁ Hom₂.hom η
+  whiskerRight {_ _ _} {_ _} η h := mkHom₂ <| (Hom₂.hom η) ▷ h.hom
   associator x y z := isoMk (α_ x.hom y.hom z.hom)
   leftUnitor x := isoMk (λ_ x.hom)
   rightUnitor x := isoMk (ρ_ x.hom)
@@ -115,11 +114,11 @@ attribute [-simp] bicategory_comp_hom bicategory_Hom
 
 section
 
-/-- The forgetful pseudofunctor from an induced bicategory to the original bicategory,
+/-- The forgetful (strict) pseudofunctor from an induced bicategory to the original bicategory,
 forgetting the extra data.
 -/
 @[simps!]
-def inducedPseudofunctor : StrictPseudofunctor (InducedBicategory C F) C :=
+def forget : StrictPseudofunctor (InducedBicategory C F) C :=
   StrictPseudofunctor.mk' {
     obj X := F X
     map f := f.hom
@@ -134,11 +133,10 @@ lemma eqToHom_hom {X Y : InducedBicategory C F} {f g : X ⟶ Y} (h : f = g) :
     (eqToHom h).hom = eqToHom (h ▸ rfl) := by
   subst h; simp only [eqToHom_refl, Hom.category_id_hom]
 
--- TODO: should f be F X ⟶ F Y or X ⟶ Y? (and then have f.hom = g.hom)?
 @[simp]
 lemma mkHom_eqToHom {X Y : InducedBicategory C F} {f g : F X ⟶ F Y} (h : f = g) :
     mkHom₂ (eqToHom h) = eqToHom (h ▸ rfl) := by
-  ext; subst h; simp only [eqToHom_refl, mkHom₂_hom, Hom.category_id_hom]
+  ext; subst h; simp only [eqToHom_refl, Hom.category_id_hom]
 
 variable [Strict C]
 
