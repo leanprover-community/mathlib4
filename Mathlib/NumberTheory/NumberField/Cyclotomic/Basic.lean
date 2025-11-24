@@ -677,6 +677,8 @@ theorem discr_prime_pow [IsCyclotomicExtension {p ^ k} ℚ K] :
     convert ← ((IsPrimitiveRoot.powerBasis ℚ hζ).basis_eq_pow i).symm using 1
   · simp_rw [algebraMap_int_eq, map_mul, map_pow, map_neg, map_one, map_natCast]
 
+@[deprecated (since := "2025-11-24")] alias absdiscr_prime_pow := discr_prime_pow
+
 open Nat in
 /-- We compute the absolute discriminant of a `p ^ (k + 1)`-th cyclotomic field.
   Beware that in the case `p ^ k = 2` the formula uses `1 / 2 = 0`. See also the results below. -/
@@ -701,6 +703,9 @@ theorem discr_prime [IsCyclotomicExtension {p} ℚ K] :
 @[deprecated (since := "2025-11-19")] alias absdiscr_prime := discr_prime
 
 open Algebra IntermediateField Nat in
+/--
+Computes the absolute discriminant of the `n`-th cyclotomic field.
+-/
 theorem discr (n : ℕ) [hn : NeZero n] [hK : IsCyclotomicExtension {n} ℚ K] :
     haveI : NumberField K := IsCyclotomicExtension.numberField {n} ℚ K
     discr K = (-1) ^ (φ n / 2) * (n ^ φ n / ∏ p ∈ n.primeFactors, p ^ (φ n / (p - 1))) := by
