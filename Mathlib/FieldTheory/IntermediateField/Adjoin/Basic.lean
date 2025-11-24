@@ -590,7 +590,7 @@ noncomputable def fintypeOfAlgHomAdjoinIntegral (h : IsIntegral F α) : Fintype 
   PowerBasis.AlgHom.fintype (adjoin.powerBasis h)
 
 theorem card_algHom_adjoin_integral (h : IsIntegral F α) (h_sep : IsSeparable F α)
-    (h_splits : (minpoly F α).Splits (algebraMap F K)) :
+    (h_splits : ((minpoly F α).map (algebraMap F K)).Splits) :
     Nat.card (F⟮α⟯ →ₐ[F] K) = (minpoly F α).natDegree := by
   let _ : Fintype (F⟮α⟯ →ₐ[F] K) := fintypeOfAlgHomAdjoinIntegral F h
   rw [Nat.card_eq_fintype_card, AlgHom.card_of_powerBasis] <;>
@@ -663,7 +663,7 @@ theorem eq_of_root {x y : L} (hx : IsAlgebraic K x)
     (h_ev : Polynomial.aeval y (minpoly K x) = 0) : minpoly K y = minpoly K x :=
   ((eq_iff_aeval_minpoly_eq_zero hx.isIntegral).mpr h_ev).symm
 
-/-- The canonical `algEquiv` between `K⟮x⟯`and `K⟮y⟯`, sending `x` to `y`, where `x` and `y` have
+/-- The canonical `algEquiv` between `K⟮x⟯` and `K⟮y⟯`, sending `x` to `y`, where `x` and `y` have
   the same minimal polynomial over `K`. -/
 noncomputable def algEquiv {x y : L} (hx : IsAlgebraic K x)
     (h_mp : minpoly K x = minpoly K y) : K⟮x⟯ ≃ₐ[K] K⟮y⟯ := by
