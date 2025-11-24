@@ -196,8 +196,6 @@ register_option linter.unusedDecidableInType : Bool := {
     replaced by a use of `classical` in the proof."
 }
 
-#check withSetOptionIn
-
 /-- Detects `Decidable*` instance hypotheses in the types of theorems which are not used in the
 remainder of the type, and suggests replacing them with a use of `classical` in the proof or
 `open scoped Classical in` at the term level. -/
