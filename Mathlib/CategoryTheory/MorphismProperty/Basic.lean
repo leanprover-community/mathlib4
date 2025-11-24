@@ -518,7 +518,7 @@ this is the induced morphism property on `C₁ × C₂`. -/
 def prod {C₁ C₂ : Type*} [CategoryStruct C₁] [CategoryStruct C₂]
     (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) :
     MorphismProperty (C₁ × C₂) :=
-  fun _ _ f => W₁ f.1 ∧ W₂ f.2
+  fun _ _ f => W₁ f.prod.1 ∧ W₂ f.prod.2
 
 /-- If `W j` are morphism properties on categories `C j` for all `j`, this is the
 induced morphism property on the category `∀ j, C j`. -/

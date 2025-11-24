@@ -177,7 +177,7 @@ instance groupoidPi {I : Type u} {J : I → Type u₂} [∀ i, Groupoid.{v} (J i
 
 instance groupoidProd {α : Type u} {β : Type v} [Groupoid.{u₂} α] [Groupoid.{v₂} β] :
     Groupoid.{max u₂ v₂} (α × β) where
-  inv f := (Groupoid.inv f.1, Groupoid.inv f.2)
+  inv f := (Groupoid.inv f.prod.1, Groupoid.inv f.prod.2)
 
 instance isGroupoidPi {I : Type u} {J : I → Type u₂}
     [∀ i, Category.{v} (J i)] [∀ i, IsGroupoid (J i)] :
