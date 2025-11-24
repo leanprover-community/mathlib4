@@ -137,6 +137,8 @@ end LE
 section Preorder
 variable [Preorder α] [CanonicallyOrderedMul α] {a b : α}
 
+@[to_additive (attr := simp)] lemma not_lt_one : ¬ a < 1 := (one_le a).not_gt
+
 @[to_additive] -- `(attr := simp)` cannot be used here because `a` cannot be inferred by `simp`.
 theorem one_lt_of_gt (h : a < b) : 1 < b :=
   (one_le _).trans_lt h
