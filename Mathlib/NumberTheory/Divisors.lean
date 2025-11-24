@@ -598,6 +598,7 @@ lemma divisorsAntidiagonal_eq_prod_filter_of_le {n N : ℕ} (n_ne_zero : n ≠ 0
     cutsat
   · intro ⟨⟨hn1, hn2⟩, hn3⟩
     exact ⟨hn3, n_ne_zero⟩
+
 end Nat
 
 namespace Int

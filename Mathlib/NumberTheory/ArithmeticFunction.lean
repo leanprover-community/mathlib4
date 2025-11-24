@@ -1445,7 +1445,7 @@ theorem sum_Ioc_mul_eq_sum_prod_filter (f g : ArithmeticFunction R) (N : ℕ) :
     rw [divisorsAntidiagonal_eq_prod_filter_of_le hn0 hn.2]
   · simp_rw [sum_filter]
     rw [sum_comm]
-    exact  sum_congr rfl fun _ _ ↦ (by simp_all)
+    exact sum_congr rfl fun _ _ ↦ (by simp_all)
 
 theorem sum_Ioc_mul_eq_sum_sum (f g : ArithmeticFunction R) (N : ℕ) :
     ∑ n ∈ Ioc 0 N, (f * g) n = ∑ n ∈ Ioc 0 N, f n * ∑ m ∈ Ioc 0 (N / n), g m := by
@@ -1469,7 +1469,7 @@ theorem sum_Ioc_mul_eq_sum_sum (f g : ArithmeticFunction R) (N : ℕ) :
 theorem sum_Ioc_mul_zeta_eq_sum (f : ArithmeticFunction R) (N : ℕ) :
     ∑ n ∈ Ioc 0 N, (f * zeta) n = ∑ n ∈ Ioc 0 N, f n * ↑(N / n) := by
   rw [sum_Ioc_mul_eq_sum_sum]
-  refine  sum_congr rfl fun n hn ↦ ?_
+  refine sum_congr rfl fun n hn ↦ ?_
   simp_rw [natCoe_apply]
   rw_mod_cast [sum_Ioc_zeta]
 
