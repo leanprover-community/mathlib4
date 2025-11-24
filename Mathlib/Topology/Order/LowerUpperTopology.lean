@@ -3,9 +3,11 @@ Copyright (c) 2023 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.Topology.Homeomorph.Defs
-import Mathlib.Topology.Order.Lattice
+module
+
+public import Mathlib.Order.Hom.CompleteLattice
+public import Mathlib.Topology.Homeomorph.Defs
+public import Mathlib.Topology.Order.Lattice
 
 /-!
 # Lower and Upper topology
@@ -48,6 +50,8 @@ of the lower topology to the spectrum of a complete lattice coincides with the h
 
 lower topology, upper topology, preorder
 -/
+
+@[expose] public section
 
 open Set TopologicalSpace Topology
 

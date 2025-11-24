@@ -3,7 +3,9 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.MeasureTheory.Integral.Average
+module
+
+public import Mathlib.MeasureTheory.Integral.Average
 
 /-!
 # Bergelson's intersectivity lemma
@@ -27,6 +29,8 @@ Restate the theorem using the upper density of a set of naturals, once we have i
 Use the ergodic theorem to deduce the refinement of the Poincaré recurrence theorem proved by
 Bergelson.
 -/
+
+@[expose] public section
 
 open Filter Function MeasureTheory Set
 open scoped ENNReal
@@ -86,7 +90,7 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
       Eventually.of_forall fun n ↦ hf₁ _ _
   -- By the first moment method, there exists some `x ∉ N` such that `limsup f n x` is at least `r`.
   obtain ⟨x, hxN, hx⟩ := exists_notMem_null_laverage_le hμ
-    (ne_top_of_le_ne_top (measure_ne_top μ univ) this) hN₀
+    (ne_top_of_le_ne_top (by finiteness) this) hN₀
   replace hx : r / μ univ ≤ limsup (f · x) atTop :=
     calc
       _ ≤ limsup (⨍⁻ x, f · x ∂μ) atTop := le_limsup_of_le ⟨1, eventually_map.2 ?_⟩ fun b hb ↦ ?_
@@ -97,9 +101,9 @@ lemma bergelson' {s : ℕ → Set α} (hs : ∀ n, MeasurableSet (s n)) (hr₀ :
     -- This next block proves that a set of strictly positive natural density is infinite, mixed
     -- with the fact that `{n | x ∈ s n}` has strictly positive natural density.
     -- TODO: Separate it out to a lemma once we have a natural density API.
-    · refine ENNReal.div_ne_zero.2 ⟨hr₀, measure_ne_top _ _⟩ <| eq_bot_mono hx <|
+    · refine ENNReal.div_ne_zero.2 ⟨hr₀, by finiteness⟩ <| eq_bot_mono hx <|
         Tendsto.limsup_eq <| tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
-        (h := fun n ↦ (n.succ : ℝ≥0∞)⁻¹ * hxs.toFinset.card) ?_ bot_le fun n ↦ mul_le_mul_left' ?_ _
+        (h := fun n ↦ (n.succ : ℝ≥0∞)⁻¹ * hxs.toFinset.card) ?_ bot_le fun n ↦ mul_le_mul_right ?_ _
       · simpa using ENNReal.Tendsto.mul_const (ENNReal.tendsto_inv_nat_nhds_zero.comp <|
           tendsto_add_atTop_nat 1) (.inr <| ENNReal.natCast_ne_top _)
       · classical
