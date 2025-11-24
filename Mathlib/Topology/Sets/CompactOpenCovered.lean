@@ -176,7 +176,7 @@ lemma exists_mem_of_isBasis {B : ∀ i, Set (Opens (X i))} (hB : ∀ i, IsBasis 
   simp only [Set.mem_iUnion, SetLike.mem_coe, exists_prop] at ha
   use ⟨⟨i, hi⟩, ⟨a, ha.1⟩⟩, h, ha.2, heq
 
-lemma of_finite_of_isSpectralMap [Finite ι] [TopologicalSpace S] [∀ i, PrespectralSpace (X i)]
+lemma of_finite_of_isSpectralMap [Finite ι] [TopologicalSpace S]
     (hf : ∀ i, IsSpectralMap (f i)) {U : Set S} (hs : ∀ x ∈ U, ∃ i, x ∈ Set.range (f i))
     (hU : IsOpen U) (hc : IsCompact U) :
     IsCompactOpenCovered f U := by
