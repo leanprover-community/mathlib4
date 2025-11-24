@@ -330,9 +330,9 @@ that commutes with all `R`-endomorphisms of `ι →₀ M`. -/
     map_smul' g x := x.induction_linear (by simp)
       (fun _ _ h h' ↦ by rw [smul_add, map_add, h, h', map_add, smul_add]) fun i m ↦ by
         ext j
-        change f (Finsupp.lapply j ∘ₗ g ∘ₗ Finsupp.lsingle i • m) = _
-        rw [map_smul]
-        simp }
+        simp_rw [mapRange.addMonoidHom_apply, AddMonoidHom.coe_coe, mapRange_apply,
+          RingHom.id_apply, mapRange_single, ← lapply_apply (R := R), ← lsingle_apply (R := R),
+          End.smul_def, ← comp_apply, ← End.smul_def _ m, map_smul, End.smul_def] }
   map_one' := by ext; simp
   map_mul' _ _ := by ext; simp
   map_zero' := by ext; simp
@@ -355,8 +355,11 @@ See (15) in F4 of §28 on p.131 of [Lorenz2008]. -/
   left_inv _ := by ext; simp
   right_inv f := by
     ext x j
-    change f (Finsupp.lsingle (R := R) (M := M) i ∘ₗ Finsupp.lapply j • x) i = _
-    rw [map_smul]
-    simp
+    simp_rw [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
+      MonoidHom.coe_coe, ringHomEndFinsupp_apply_apply, mapRange.addMonoidHom_apply,
+      AddMonoidHom.coe_coe, LinearMap.coe_mk, AddHom.coe_mk, mapRange_apply,
+      ← lapply_apply (R := R), ← lsingle_apply (R := R),
+      ← comp_apply, ← End.smul_def _ x, map_smul, End.smul_def, coe_comp, Function.comp_apply,
+      lapply_apply, lsingle_apply, single_eq_same]
 
 end Module.End
