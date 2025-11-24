@@ -135,7 +135,7 @@ theorem le_sup_toSubalgebra : E1.toSubalgebra ⊔ E2.toSubalgebra ≤ (E1 ⊔ E2
 theorem sup_toSubalgebra_of_isAlgebraic_right [Algebra.IsAlgebraic K E2] :
     (E1 ⊔ E2).toSubalgebra = E1.toSubalgebra ⊔ E2.toSubalgebra := by
   have : (adjoin E1 (E2 : Set L)).toSubalgebra = _ := adjoin_algebraic_toSubalgebra fun x h ↦
-    IsAlgebraic.tower_top _ (isAlgebraic_iff.1 (Algebra.IsAlgebraic.isAlgebraic (⟨x, h⟩ : E2)))
+    IsAlgebraic.tower_top _ (isAlgebraic_iff.mp (Algebra.IsAlgebraic.isAlgebraic (⟨x, h⟩ : E2)))
   apply_fun Subalgebra.restrictScalars K at this
   rw [← restrictScalars_toSubalgebra, restrictScalars_adjoin] at this
   -- TODO: rather than using `← coe_type_toSubalgera` here, perhaps we should restate another
