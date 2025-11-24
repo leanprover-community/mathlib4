@@ -847,7 +847,7 @@ theorem norm_compAlongOrderedFinpartition_sub_compAlongOrderedFinpartition_le
   _ ≤ ‖c.compAlongOrderedFinpartition f₁ g₁ - c.compAlongOrderedFinpartition f₁ g₂‖ +
       ‖c.compAlongOrderedFinpartition f₁ g₂ - c.compAlongOrderedFinpartition f₂ g₂‖ :=
     norm_sub_le_norm_sub_add_norm_sub ..
-  _ ≤ ‖f₁‖ * c.length * max ‖g₁‖ ‖g₂‖ ^ (c.length - 1) * ‖g₁ - g₂‖ + ‖f₁ - f₂‖ * ∏ i, ‖g₂ i‖ := by
+  _ ≤ ‖f₁‖ * c.length * (max ‖g₁‖ ‖g₂‖) ^ (c.length - 1) * ‖g₁ - g₂‖ + ‖f₁ - f₂‖ * ∏ i, ‖g₂ i‖ := by
     gcongr ?_ + ?_
     · refine ((c.compAlongOrderedFinpartitionL 𝕜 E F G f₁).norm_image_sub_le g₁ g₂).trans ?_
       simp only [Fintype.card_fin]
