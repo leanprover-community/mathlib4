@@ -3,13 +3,15 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.Set.Lattice
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Order.ModularLattice
-import Mathlib.Order.SuccPred.Basic
-import Mathlib.Order.WellFounded
-import Mathlib.Tactic.Nontriviality
-import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+module
+
+public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.SetLike.Basic
+public import Mathlib.Order.ModularLattice
+public import Mathlib.Order.SuccPred.Basic
+public import Mathlib.Order.WellFounded
+public import Mathlib.Tactic.Nontriviality
+public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # Atoms, Coatoms, and Simple Lattices
@@ -51,6 +53,8 @@ which are lattices with only two elements, and related ideas.
 * `isAtomic_iff_isCoatomic`: A modular complemented lattice is atomic iff it is coatomic.
 
 -/
+
+@[expose] public section
 
 open Order
 
@@ -698,6 +702,44 @@ instance {α} [CompleteAtomicBooleanAlgebra α] : IsAtomistic α :=
 
 instance {α} [CompleteAtomicBooleanAlgebra α] : IsCoatomistic α :=
   isAtomistic_dual_iff_isCoatomistic.1 inferInstance
+
+theorem exists_mem_le_of_le_sSup_of_isAtom {α} [CompleteAtomicBooleanAlgebra α] {a}
+    (ha : IsAtom a) {s : Set α} (hs : a ≤ sSup s) : ∃ b ∈ s, a ≤ b := by
+  by_contra! hnle
+  have : ⨆ s₀ ∈ s, a ⊓ s₀ = ⊥ := by
+    simp only [iSup_eq_bot]
+    intro s₀ hs₀
+    simpa [hnle s₀ hs₀] using ha.le_iff.mp (inf_le_left (b := s₀))
+  obtain rfl := (inf_eq_left.mpr hs).symm.trans <| inf_sSup_eq.trans this
+  exact ha.1 rfl
+
+lemma eq_setOf_le_sSup_and_isAtom {α} [CompleteAtomicBooleanAlgebra α] {S : Set α}
+    (hS : ∀ a ∈ S, IsAtom a) : S = {a | a ≤ sSup S ∧ IsAtom a} := by
+  ext a
+  refine ⟨fun h => ⟨CompleteLattice.le_sSup S a h, hS a h⟩, fun ⟨hale, hatom⟩ => ?_⟩
+  obtain ⟨b, hbS, hba⟩ := exists_mem_le_of_le_sSup_of_isAtom hatom hale
+  obtain rfl | rfl := (hS b hbS).le_iff.mp hba
+  · simpa using hatom.1
+  assumption
+
+/--
+Representation theorem for complete atomic boolean algebras:
+For a complete atomic Boolean algebra `α`, `toSetOfIsAtom` is an order isomorphism
+between `α` and the set of subsets of its atoms.
+-/
+def toSetOfIsAtom {α} [CompleteAtomicBooleanAlgebra α] : α ≃o (Set {a : α // IsAtom a}) where
+  toFun A := {a | a ≤ A}
+  invFun S := sSup (Subtype.val '' S)
+  left_inv A := by simp [Subtype.coe_image]
+  right_inv S := by
+    have h : ∀ a ∈ Subtype.val '' S, IsAtom a := by
+      rintro a ⟨a', ha', rfl⟩
+      exact a'.prop
+    rw [← Subtype.val_injective.image_injective.eq_iff, eq_setOf_le_sSup_and_isAtom h]
+    ext a
+    simp
+  map_rel_iff' {a b} := by
+    simpa using le_iff_atom_le_imp.symm
 
 end CompleteAtomicBooleanAlgebra
 

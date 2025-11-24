@@ -3,13 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Update
-import Mathlib.Data.Prod.TProd
-import Mathlib.Data.Set.UnionLift
-import Mathlib.GroupTheory.Coset.Defs
-import Mathlib.MeasureTheory.MeasurableSpace.Basic
-import Mathlib.MeasureTheory.MeasurableSpace.Instances
-import Mathlib.Order.Disjointed
+module
+
+public import Mathlib.Data.Finset.Update
+public import Mathlib.Data.Prod.TProd
+public import Mathlib.Data.Set.UnionLift
+public import Mathlib.GroupTheory.Coset.Defs
+public import Mathlib.MeasureTheory.MeasurableSpace.Basic
+public import Mathlib.MeasureTheory.MeasurableSpace.Instances
+public import Mathlib.Order.Disjointed
 
 /-!
 # Constructions for measurable spaces and functions
@@ -17,6 +19,8 @@ import Mathlib.Order.Disjointed
 This file provides several ways to construct new measurable spaces and functions from old ones:
 `Quotient`, `Subtype`, `Prod`, `Pi`, etc.
 -/
+
+@[expose] public section
 
 assert_not_exists Filter
 
@@ -888,6 +892,8 @@ instance Set.instMeasurableSpace : MeasurableSpace (Set α) := by unfold Set; in
 
 instance Set.instMeasurableSingletonClass [Countable α] : MeasurableSingletonClass (Set α) := by
   unfold Set; infer_instance
+
+@[simp, fun_prop] lemma measurable_setOf : Measurable fun p : α → Prop ↦ {a | p a} := measurable_id
 
 lemma measurable_set_iff : Measurable g ↔ ∀ a, Measurable fun x ↦ a ∈ g x := measurable_pi_iff
 

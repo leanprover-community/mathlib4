@@ -3,10 +3,12 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Yongle Hu
 -/
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.Group.Subgroup.Actions
-import Mathlib.RingTheory.Ideal.Pointwise
-import Mathlib.RingTheory.Ideal.Quotient.Operations
+module
+
+public import Mathlib.Algebra.Algebra.Tower
+public import Mathlib.Algebra.Group.Subgroup.Actions
+public import Mathlib.RingTheory.Ideal.Pointwise
+public import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 /-!
 # Ideals over/under ideals
@@ -16,6 +18,8 @@ Let `f : R →+* S` be a ring homomorphism (typically a ring extension), `I` an 
 `J` an ideal of `S`. We say `J` lies over `I` (and `I` under `J`) if `I` is the `f`-preimage of `J`.
 This is expressed here by writing `I = J.comap f`.
 -/
+
+@[expose] public section
 
 -- for going-up results about integral extensions, see `Mathlib/RingTheory/Ideal/GoingUp.lean`
 assert_not_exists Algebra.IsIntegral
@@ -322,12 +326,16 @@ def stabilizerHom : MulAction.stabilizer G P →* ((B ⧸ P) ≃ₐ[A ⧸ p] (B 
 lemma ker_stabilizerHom :
     (stabilizerHom P p G).ker = (P.toAddSubgroup.inertia G).subgroupOf _ := by
   ext σ
-  simp [DFunLike.ext_iff, mk_surjective.forall, Quotient.eq,
-    Subgroup.mem_subgroupOf, Subgroup.smul_def]
+  simp [DFunLike.ext_iff, mk_surjective.forall, Quotient.eq]
 
 theorem map_ker_stabilizer_subtype :
     (stabilizerHom P p G).ker.map (Subgroup.subtype _) = P.toAddSubgroup.inertia G := by
   simp [ker_stabilizerHom, Ideal.inertia_le_stabilizer]
+
+instance (p : Ideal R) (P : Ideal A) [P.IsPrime] [P.LiesOver p] :
+    (P.map (Ideal.Quotient.mk <| p.map (algebraMap R A))).IsPrime := by
+  apply Ideal.isPrime_map_quotientMk_of_isPrime
+  rw [Ideal.map_le_iff_le_comap, Ideal.LiesOver.over (p := p) (P := P)]
 
 end Quotient
 

@@ -3,19 +3,23 @@ Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Directed
-import Mathlib.Algebra.Algebra.Subalgebra.IsSimpleOrder
-import Mathlib.FieldTheory.Separable
-import Mathlib.FieldTheory.SplittingField.IsSplittingField
-import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.RingTheory.Adjoin.Dimension
-import Mathlib.RingTheory.TensorProduct.Finite
+module
+
+public import Mathlib.Algebra.Algebra.Subalgebra.Directed
+public import Mathlib.Algebra.Algebra.Subalgebra.IsSimpleOrder
+public import Mathlib.FieldTheory.Separable
+public import Mathlib.FieldTheory.SplittingField.IsSplittingField
+public import Mathlib.LinearAlgebra.Dual.Lemmas
+public import Mathlib.RingTheory.Adjoin.Dimension
+public import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 # Adjoining Elements to Fields
 
 This file contains many results about adjoining elements to fields.
 -/
+
+@[expose] public section
 
 open Module Polynomial
 
@@ -586,7 +590,7 @@ noncomputable def fintypeOfAlgHomAdjoinIntegral (h : IsIntegral F α) : Fintype 
   PowerBasis.AlgHom.fintype (adjoin.powerBasis h)
 
 theorem card_algHom_adjoin_integral (h : IsIntegral F α) (h_sep : IsSeparable F α)
-    (h_splits : (minpoly F α).Splits (algebraMap F K)) :
+    (h_splits : ((minpoly F α).map (algebraMap F K)).Splits) :
     Nat.card (F⟮α⟯ →ₐ[F] K) = (minpoly F α).natDegree := by
   let _ : Fintype (F⟮α⟯ →ₐ[F] K) := fintypeOfAlgHomAdjoinIntegral F h
   rw [Nat.card_eq_fintype_card, AlgHom.card_of_powerBasis] <;>
@@ -659,7 +663,7 @@ theorem eq_of_root {x y : L} (hx : IsAlgebraic K x)
     (h_ev : Polynomial.aeval y (minpoly K x) = 0) : minpoly K y = minpoly K x :=
   ((eq_iff_aeval_minpoly_eq_zero hx.isIntegral).mpr h_ev).symm
 
-/-- The canonical `algEquiv` between `K⟮x⟯`and `K⟮y⟯`, sending `x` to `y`, where `x` and `y` have
+/-- The canonical `algEquiv` between `K⟮x⟯` and `K⟮y⟯`, sending `x` to `y`, where `x` and `y` have
   the same minimal polynomial over `K`. -/
 noncomputable def algEquiv {x y : L} (hx : IsAlgebraic K x)
     (h_mp : minpoly K x = minpoly K y) : K⟮x⟯ ≃ₐ[K] K⟮y⟯ := by
