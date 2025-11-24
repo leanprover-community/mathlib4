@@ -43,7 +43,7 @@ unused in the remainder of the type.
 `parameter #{param.idx + 1}` as a failsafe if `type?` is `none`. (We always expect `type?` to be
 `some _`, but would like a fallback if there are unexpected issues in telescoping.)
 -/
-private structure Parameter where
+structure Parameter where
   /- TODO: include syntax references to the binders here, and use the "real" fvars created during
   elaboration if possible -/
   /-- The free variable of the parameter created in a telescope for logging.
@@ -78,7 +78,7 @@ Given a (full, resolvable) declaration name `foo` and an array of parameters
 > which (is/are) not used in the
   remainder of the type.
 -/
-private def _root_.Lean.Name.unusedInstancesMsg (declName : Name)
+def _root_.Lean.Name.unusedInstancesMsg (declName : Name)
     (unusedInstanceBinders : Array Parameter) : MessageData :=
   let unusedInstanceBinders := unusedInstanceBinders.map toMessageData
   m!"`{.ofConstName declName}` has the \
@@ -97,7 +97,7 @@ Note that `p` is non-monadic, and may encounter loose bvars in its argument. Thi
 optimization. However, the `Parameter`s are created in a telescope, and their fields will *not*
 have loose bound variables.
 -/
-private def _root_.Lean.ConstantVal.onUnusedInstancesWhere (decl : ConstantVal)
+def _root_.Lean.ConstantVal.onUnusedInstancesWhere (decl : ConstantVal)
     (p : Expr → Bool) (logOnUnused : Array Parameter → TermElabM Unit) : CommandElabM Unit := do
   let unusedInstances := decl.type.getUnusedForallInstanceBinderIdxsWhere p
   if let some maxIdx := unusedInstances.back? then liftTermElabM do
@@ -186,7 +186,7 @@ which are not used in the remainder of the type. If so, it suggests removing the
 
 This linter fires only on theorems. (This includes `lemma`s and `instance`s of `Prop` classes.)
 -/
-register_option linter.unusedDecidableInType : Bool := {
+public register_option linter.unusedDecidableInType : Bool := {
   defValue := false
   descr := "enable the unused `Decidable*` instance linter, which lints against `Decidable*` \
     instances in the hypotheses of theorems which are not used in the type, and can therefore be \
