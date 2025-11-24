@@ -26,16 +26,18 @@ namespace Equiv
 
 variable (e : α ≃ β)
 
-/-- Transfer a `SeminormedAddCommGroup` across an `Equiv` -/
-protected abbrev seminormedAddCommGroup [SeminormedAddCommGroup β] (e : α ≃ β) :
-    SeminormedAddCommGroup α :=
-  letI := e.addCommGroup
-  { SeminormedAddCommGroup.induced _ _ e.addEquiv with toPseudoMetricSpace := e.pseudometricSpace }
+/-- Transfer a `SeminormedCommGroup` across an `Equiv` -/
+@[to_additive /-- Transfer a `SeminormedAddCommGroup` across an `Equiv` -/]
+protected abbrev seminormedCommGroup [SeminormedCommGroup β] (e : α ≃ β) :
+    SeminormedCommGroup α :=
+  letI := e.commGroup
+  { SeminormedCommGroup.induced _ _ e.mulEquiv with toPseudoMetricSpace := e.pseudometricSpace }
 
-/-- Transfer a `NormedAddCommGroup` across an `Equiv` -/
-protected abbrev normedAddCommGroup [NormedAddCommGroup β] (e : α ≃ β) : NormedAddCommGroup α :=
-  letI := e.addCommGroup
-  { NormedAddCommGroup.induced _ _ e.addEquiv e.injective
+/-- Transfer a `NormedCommGroup` across an `Equiv` -/
+@[to_additive /-- Transfer a `NormedAddCommGroup` across an `Equiv` -/]
+protected abbrev normedCommGroup [NormedCommGroup β] (e : α ≃ β) : NormedCommGroup α :=
+  letI := e.commGroup
+  { NormedCommGroup.induced _ _ e.mulEquiv e.injective
     with toPseudoMetricSpace := e.pseudometricSpace }
 
 /-- Transfer `NormedSpace` across an `Equiv` -/
