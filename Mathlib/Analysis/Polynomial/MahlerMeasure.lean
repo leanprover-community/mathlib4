@@ -154,41 +154,7 @@ open MeromorphicOn Metric in
 /-- The logarithmic Mahler measure of `X - C z` is the `log⁺` of the absolute value of `z`. -/
 @[simp]
 theorem logMahlerMeasure_X_sub_C (z : ℂ) : (X - C z).logMahlerMeasure = log⁺ ‖z‖ := by
-  rcases eq_or_ne z 0 with rfl | hz₀
-  · simp
-  have hmeroOnB : MeromorphicOn (· - z) (closedBall 0 |1|) := id.sub <| const z
-  simp_rw [logMahlerMeasure_def, eval_sub, eval_X, eval_C]
-  rw [circleAverage_log_norm one_ne_zero hmeroOnB, abs_one,
-  -- get rid of the `meromorphicTrailingCoeffAt`
-    AnalyticAt.meromorphicTrailingCoeffAt_of_ne_zero (by fun_prop) (by simp [hz₀]),
-    ← finsum_mem_support]
-  set B := closedBall (0 : ℂ) 1
-  -- separate cases depending on whether z is in the open `ball 0 1` or not
-  by_cases hzBall : z ∈ ball 0 1
-  · have hzdiv1 := divisor_sub_const_self (show z ∈ B by grind [ball_subset_closedBall])
-    suffices (fun u ↦ -(divisor (· - z) B u * log ‖u‖)).support = {z} by
-      simp [this, hzdiv1, posLog_def]
-      grind [mem_ball_zero_iff, log_nonpos, norm_nonneg]
-    rw [Function.support_eq_iff]
-    constructor
-    · simp_rw [Set.mem_singleton_iff]
-      intro _ rfl
-      rw [hzdiv1]
-      grind [log_eq_zero, norm_eq_zero, mem_ball_zero_iff, norm_nonneg]
-    · intro _ hu
-      rw [Set.mem_singleton_iff] at hu
-      simp [divisor_sub_const_of_ne hu]
-  · have h1lez : 1 ≤ ‖z‖ := by grind [mem_ball_zero_iff]
-    suffices (fun u ↦ -(divisor (· - z) B u * log ‖u‖)).support = ∅ by
-      simp [this, posLog_eq_log_max_one <| norm_nonneg z, h1lez]
-    rw [Function.support_eq_empty_iff]
-    ext x
-    rcases eq_or_ne x z with rfl | hx
-    · by_cases hB : x ∈ B
-      · rw [Pi.zero_apply]
-        grind [log_eq_zero, mem_closedBall_zero_iff]
-      · simpa using .inl <| Function.locallyFinsuppWithin.apply_eq_zero_of_notMem _ hB
-    simpa using .inl <| divisor_sub_const_of_ne hx
+  simp [logMahlerMeasure_def]
 
 @[simp]
 theorem logMahlerMeasure_X_add_C (z : ℂ) : (X + C z).logMahlerMeasure = log⁺ ‖z‖ := by
