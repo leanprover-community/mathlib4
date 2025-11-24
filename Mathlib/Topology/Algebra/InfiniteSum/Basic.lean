@@ -50,7 +50,7 @@ theorem HasProd.of_subsingleton_cod [Subsingleton α] : HasProd f 1 L := by
 theorem multipliable_one : Multipliable (fun _ ↦ 1 : β → α) L :=
   hasProd_one.multipliable
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem multipliable_empty [IsEmpty β] : Multipliable f L :=
   hasProd_empty.multipliable
 
