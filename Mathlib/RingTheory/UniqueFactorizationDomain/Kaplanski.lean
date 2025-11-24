@@ -81,7 +81,7 @@ nonzero prime ideal contains a prime element. -/
 theorem of_exists_prime_mem_of_isPrime
     (H : ∀ I ≠ (⊥ : Ideal R), I.IsPrime → ∃ x ∈ I, Prime x) : UniqueFactorizationMonoid R := by
   refine UniqueFactorizationMonoid.of_exists_prime_factors fun a ha ↦ ?_
-  have ha₂ := span_notMem_kaplanskiSet ha H
+  have ha₂ := span_notMem_kaplanskySet ha H
   rw [mem_kaplanskySet_iff] at ha₂
   rcases nonempty_iff_ne_empty.2 ha₂ with ⟨x, hx, hx₂⟩
   obtain ⟨b, hb⟩ := mem_span_singleton'.1 hx
