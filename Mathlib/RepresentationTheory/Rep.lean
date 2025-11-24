@@ -768,14 +768,14 @@ theorem ihom_ev_app_hom (A B : Rep k G) :
 
 variable (A B C)
 
-/-- There is a `k`-linear isomorphism between the sets of representation morphisms`Hom(A ⊗ B, C)`
+/-- There is a `k`-linear isomorphism between the sets of representation morphisms `Hom(A ⊗ B, C)`
 and `Hom(B, Homₖ(A, C))`. -/
 def MonoidalClosed.linearHomEquiv : (A ⊗ B ⟶ C) ≃ₗ[k] B ⟶ A ⟶[Rep k G] C :=
   { (ihom.adjunction A).homEquiv _ _ with
     map_add' := fun _ _ => rfl
     map_smul' := fun _ _ => rfl }
 
-/-- There is a `k`-linear isomorphism between the sets of representation morphisms`Hom(A ⊗ B, C)`
+/-- There is a `k`-linear isomorphism between the sets of representation morphisms `Hom(A ⊗ B, C)`
 and `Hom(A, Homₖ(B, C))`. -/
 def MonoidalClosed.linearHomEquivComm : (A ⊗ B ⟶ C) ≃ₗ[k] A ⟶ B ⟶[Rep k G] C :=
   Linear.homCongr k (β_ A B) (Iso.refl _) ≪≫ₗ MonoidalClosed.linearHomEquiv _ _ _
