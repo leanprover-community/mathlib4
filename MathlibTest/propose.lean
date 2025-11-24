@@ -15,8 +15,7 @@ set_option linter.unusedVariables false
 -- TODO make this test faster, or decide to delete `have?` and this test. Zulip discussion at
 -- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/.22test.20mathlib.22.20step.20is.20slow.20in.20CI
 
-#exit
-
+/-
 theorem foo (L M : List α) (w : L.Disjoint M) (m : a ∈ L) : a ∉ M := fun h => w m h
 
 /--
@@ -130,3 +129,4 @@ theorem dvd_of_dvd_pow (hp : Prime p) {a : α} {n : ℕ} (h : p ∣ a ^ n) : p �
     obtain dvd_a | dvd_pow := dvd_or_dvd hp h
     · assumption
     exact ih dvd_pow
+-/
