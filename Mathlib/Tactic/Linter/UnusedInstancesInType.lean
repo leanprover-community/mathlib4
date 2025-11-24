@@ -206,7 +206,8 @@ def unusedDecidableInType : Linter where
     unless getLinterValue linter.unusedDecidableInType (← getLinterOptions) do
       return
     cmd.logUnusedInstancesInTheoremsWhere
-      -- Theorems in the `Decidable` namespace are allowed to
+      /- Theorems in the `Decidable` namespace such as `Decidable.eq_or_ne` are allowed to depend
+      on decidable instances without using them in the type. -/
       (declFilter := (!(`Decidable).isPrefixOf ·.name))
       isDecidableVariant
       fun _ thm unusedParams => do
