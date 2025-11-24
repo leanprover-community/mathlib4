@@ -55,7 +55,6 @@ noncomputable def equivSmallSheafificationIso
     (sheafificationAdjunction _ _)).comp (equivSmall C).toAdjunction)).symm <|
   NatIso.ofComponents (fun X ↦ ((equivSmallModel LightProfinite).op.invFunIdAssoc _).symm)
 
-
 variable (R : Type u) [CommRing R]
 
 /--
