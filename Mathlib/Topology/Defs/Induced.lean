@@ -73,6 +73,11 @@ instance _root_.instTopologicalSpaceSubtype {p : X → Prop} [t : TopologicalSpa
     TopologicalSpace (Subtype p) :=
   induced (↑) t
 
+/-- Transfer a `TopologicalSpace` across an `Equiv` -/
+protected abbrev _root_.Equiv.topologicalSpace [TopologicalSpace Y] (e : X ≃ Y) :
+    TopologicalSpace X :=
+  .induced e ‹_›
+
 /-- Given `f : X → Y` and a topology on `X`,
   the coinduced topology on `Y` is defined such that
   `s : Set Y` is open if the preimage of `s` is open.
