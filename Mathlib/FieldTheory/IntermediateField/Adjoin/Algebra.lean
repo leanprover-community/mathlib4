@@ -84,18 +84,18 @@ theorem AdjoinSimple.isIntegral_gen : IsIntegral F (AdjoinSimple.gen F α) ↔ I
 
 variable {F} {α}
 
-theorem adjoin_algebraic_toSubalgebra {S : Set E} (hS : ∀ x ∈ S, IsAlgebraic F x) :
+theorem adjoin_toSubalgebra_of_isAlgebraic {S : Set E} (hS : ∀ x ∈ S, IsAlgebraic F x) :
     (adjoin F S).toSubalgebra = Algebra.adjoin F S :=
   adjoin_eq_algebra_adjoin _ _ fun _ ↦
     (Algebra.IsIntegral.adjoin fun x hx ↦ (hS x hx).isIntegral).inv_mem
 
 theorem adjoin_simple_toSubalgebra_of_algebraic (hα : IsAlgebraic F α) :
     F⟮α⟯.toSubalgebra = Algebra.adjoin F {α} :=
-  adjoin_algebraic_toSubalgebra <| by simpa
+  adjoin_toSubalgebra_of_isAlgebraic <| by simpa
 
 @[simp]
 theorem adjoin_toSubalgebra [Algebra.IsAlgebraic F E] (S : Set E) :
-    (adjoin F S).toSubalgebra = Algebra.adjoin F S :=
+    (adjoin F S).toSubalgebra =adjoin_toSubalgebra_of_isAlgebraic
   adjoin_algebraic_toSubalgebra (fun x _ ↦ Algebra.IsAlgebraic.isAlgebraic x)
 
 theorem adjoin_algebraic_eq_top_iff {S : Set E} (hS : ∀ x ∈ S, IsAlgebraic F x) :
@@ -107,7 +107,7 @@ theorem adjoin_algebraic_eq_top_iff {S : Set E} (hS : ∀ x ∈ S, IsAlgebraic F
 alias ⟨_root_.Algebra.adjoin_eq_top_of_intermediateField, _⟩ := adjoin_algebraic_eq_top_iff
 
 theorem adjoin_simple_eq_top_iff {x : E} (hx : IsAlgebraic F x) :
-    F⟮x⟯ = ⊤ ↔ Algebra.adjoin F {x} = ⊤ := adjoin_algebraic_eq_top_iff (by simp [hx])
+    F⟮x⟯ = ⊤ ↔ Algebra.adjoiadjoin_toSubalgebra_of_isAlgebraicic_eq_top_iff (by simp [hx])
 
 alias ⟨_root_.Algebra.adjoin_eq_top_of_primitive_element, _⟩ := adjoin_simple_eq_top_iff
 
@@ -121,7 +121,7 @@ lemma finite_of_fg_of_isAlgebraic
     Module.Finite F E := by
   obtain ⟨s, hs⟩ := h
   have : Algebra.FiniteType F E := by
-    use s
+    use sadjoin_toSubalgebra_of_isAlgebraic
     simpa [← toSubalgebra_inj] using hs
   exact Algebra.IsIntegral.finite
 

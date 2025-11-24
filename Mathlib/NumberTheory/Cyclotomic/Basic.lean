@@ -516,13 +516,13 @@ theorem _root_.IntermediateField.isCyclotomicExtension_adjoin_of_exists_isPrimit
     rintro b ⟨n, hn, h1, h2⟩
     exact ⟨X ^ n - 1, (monic_X_pow_sub_C (1 : K) h1).ne_zero, by simp [h2]⟩
   change IsCyclotomicExtension S K (IntermediateField.toSubalgebra _)
-  rw [congr(IsCyclotomicExtension S K $(IntermediateField.adjoin_algebraic_toSubalgebra key))]
+  rw [congr(IsCyclotomicExtension S K $(IntermediateField.adjoin_toSubalgebra_of_isAlgebraic key))]
   exact Algebra.isCyclotomicExtension_adjoin_of_exists_isPrimitiveRoot S K L h
 
 theorem isSeparable [IsCyclotomicExtension S K L] : Algebra.IsSeparable K L := by
   have := integral S K L
   have h := (IsCyclotomicExtension.iff_adjoin_eq_top S K L).1 ‹_› |>.2
-  rw [← IntermediateField.adjoin_algebraic_toSubalgebra
+  rw [← IntermediateField.adjoin_toSubalgebra_of_isAlgebraic
     fun b _ ↦ Algebra.IsAlgebraic.isAlgebraic b, ← IntermediateField.top_toSubalgebra] at h
   rw [← AlgEquiv.Algebra.isSeparable_iff <|
     (IntermediateField.equivOfEq (IntermediateField.toSubalgebra_injective h)).trans
