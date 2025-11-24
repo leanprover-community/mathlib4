@@ -16,7 +16,7 @@ public import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 
 Given `W : MorphismProperty C` (which should be small) and assuming the existence
 of certain colimits in `C`, we construct a morphism `toSucc W Z : Z ⟶ succ W Z` for
-any `Z : C`. This morphism belongs to `LeftBousfield.W W.isLocal` and
+any `Z : C`. This morphism belongs to `W.isLocal.isLocal` and
 is an isomorphism iff `Z` belongs to `W.isLocal` (see the lemma `isIso_toSucc_iff`).
 The morphism `toSucc W Z : Z ⟶ succ W Z` is defined as a composition
 of two morphisms that are roughly described as follows:
@@ -221,8 +221,8 @@ lemma toSucc_surjectivity {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z) :
   ⟨D₁.ιRight f hf g ≫ pushout.inl _ _ ≫ fromStep W Z, by
     simp [← D₁.ιLeft_comp_t_assoc, pushout.condition_assoc]⟩
 
-lemma leftBousfieldW_isLocal_toSucc :
-    LeftBousfield.W W.isLocal (toSucc W Z) := by
+lemma isLocal_isLocal_toSucc :
+    W.isLocal.isLocal (toSucc W Z) := by
   refine fun T hT ↦ ⟨fun φ₁ φ₂ h ↦ ?_, fun g ↦ ?_⟩
   · ext ⟨⟩
     simp only [Category.assoc] at h
@@ -235,6 +235,9 @@ lemma leftBousfieldW_isLocal_toSucc :
     exact ⟨Multicoequalizer.desc _ _ (fun ⟨⟩ ↦ pushout.desc (Sigma.desc f) g)
       (fun d ↦ (hT d.1.1.hom d.1.2).1 (by simp [reassoc_of% d.2.2])), by simp⟩
 
+@[deprecated (since := "2025-11-20")] alias leftBousfieldW_isLocal_toSucc :=
+  isLocal_isLocal_toSucc
+
 lemma isIso_toSucc_iff :
     IsIso (toSucc W Z) ↔ W.isLocal Z := by
   refine ⟨fun _ X Y f hf ↦ ?_, fun hZ ↦ ?_⟩
@@ -246,7 +249,7 @@ lemma isIso_toSucc_iff :
       simp only [Category.assoc] at hZ
       exact ⟨D₁.ιRight f hf g ≫ pushout.inl _ _ ≫ fromStep W Z ≫ inv (toSucc W Z),
         by simp [← D₁.ιLeft_comp_t_assoc, pushout.condition_assoc, hZ]⟩
-  · obtain ⟨f, hf⟩ := (leftBousfieldW_isLocal_toSucc W Z _ hZ).2 (𝟙 _)
+  · obtain ⟨f, hf⟩ := (isLocal_isLocal_toSucc W Z _ hZ).2 (𝟙 _)
     dsimp at hf
     refine ⟨f, hf, ?_⟩
     ext ⟨⟩

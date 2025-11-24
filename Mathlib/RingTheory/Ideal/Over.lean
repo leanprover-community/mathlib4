@@ -134,6 +134,8 @@ theorem eq_top_iff_of_liesOver [P.LiesOver p] : P = ⊤ ↔ p = ⊤ := by
   rw [P.over_def p]
   exact comap_eq_top_iff.symm
 
+lemma ne_top_iff_of_liesOver [P.LiesOver p] : P ≠ ⊤ ↔ p ≠ ⊤ := (eq_top_iff_of_liesOver ..).ne
+
 variable {P}
 
 theorem LiesOver.of_eq_comap [Q.LiesOver p] {F : Type*} [FunLike F B C]
@@ -276,8 +278,8 @@ instance instFaithfulSMul : FaithfulSMul (A ⧸ p) (B ⧸ P) := by
   exact Quotient.eq.mp hab
 
 variable {p} in
-theorem nontrivial_of_liesOver_of_ne_top (hp : p ≠ ⊤) : Nontrivial (B ⧸ P) :=
-  Quotient.nontrivial ((eq_top_iff_of_liesOver P p).mp.mt hp)
+theorem nontrivial_of_liesOver_of_ne_top (hp : p ≠ ⊤) : Nontrivial (B ⧸ P) := by
+  rwa [Quotient.nontrivial_iff, ne_top_iff_of_liesOver _ p]
 
 theorem nontrivial_of_liesOver_of_isPrime [hp : p.IsPrime] : Nontrivial (B ⧸ P) :=
   nontrivial_of_liesOver_of_ne_top P hp.ne_top
@@ -326,8 +328,7 @@ def stabilizerHom : MulAction.stabilizer G P →* ((B ⧸ P) ≃ₐ[A ⧸ p] (B 
 lemma ker_stabilizerHom :
     (stabilizerHom P p G).ker = (P.toAddSubgroup.inertia G).subgroupOf _ := by
   ext σ
-  simp [DFunLike.ext_iff, mk_surjective.forall, Quotient.eq,
-    Subgroup.mem_subgroupOf, Subgroup.smul_def]
+  simp [DFunLike.ext_iff, mk_surjective.forall, Quotient.eq]
 
 theorem map_ker_stabilizer_subtype :
     (stabilizerHom P p G).ker.map (Subgroup.subtype _) = P.toAddSubgroup.inertia G := by
