@@ -71,7 +71,7 @@ noncomputable def associatesEquivIsPrincipal :
   toFun := _root_.Quotient.lift (fun x ↦ ⟨span {x}, x, rfl⟩)
     (fun _ _ _ ↦ by simpa [span_singleton_eq_span_singleton])
   invFun I := .mk I.2.generator
-  left_inv := Quotient.ind fun _ ↦ by simpa using
+  left_inv := Quotient.ind fun _ ↦ by simpa [Quotient.eq] using
     Ideal.span_singleton_eq_span_singleton.mp (@Ideal.span_singleton_generator _ _ _ ⟨_, rfl⟩)
   right_inv I := by simp only [_root_.Quotient.lift_mk, span_singleton_generator, Subtype.coe_eta]
 
