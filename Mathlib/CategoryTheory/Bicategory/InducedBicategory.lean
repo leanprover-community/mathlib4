@@ -102,7 +102,6 @@ instance bicategory : Bicategory (InducedBicategory C F) where
   associator x y z := isoMk (α_ x.hom y.hom z.hom)
   leftUnitor x := isoMk (λ_ x.hom)
   rightUnitor x := isoMk (ρ_ x.hom)
-  -- TODO: could whisker_exchange be added to aesop (or grind) in a non loop-y way?
   whisker_exchange {_ _ _ _ _ _ _} η θ := by ext; simp; exact whisker_exchange _ _
 
 attribute [-simp] bicategory_comp_hom bicategory_Hom
@@ -127,6 +126,11 @@ section
 lemma eqToHom_hom {X Y : InducedBicategory C F} {f g : X ⟶ Y} (h : f = g) :
     (eqToHom h).hom = eqToHom (h ▸ rfl) := by
   subst h; simp only [eqToHom_refl, Hom.category_id_hom]
+
+@[simp]
+lemma mkHom_eqToHom {X Y : InducedBicategory C F} {f g : F X ⟶ F Y} (h : f = g) :
+    mkHom₂ (eqToHom h) = eqToHom (h ▸ rfl) := by
+  ext; subst h; simp only [eqToHom_refl, mkHom₂_hom, Hom.category_id_hom]
 
 variable [Strict C]
 
