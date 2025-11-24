@@ -30,14 +30,14 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 @[simps]
 def associator : (C × D) × E ⥤ C × D × E where
   obj X := (X.1.1, (X.1.2, X.2))
-  map := @fun _ _ f => f.1.1 ×ₘ (f.1.2 ×ₘ f.2)
+  map := @fun _ _ f => f.prod.1.prod.1 ×ₘ (f.prod.1.prod.2 ×ₘ f.prod.2)
 
 /-- The inverse associator functor `C × (D × E) ⥤ (C × D) × E `.
 -/
 @[simps]
 def inverseAssociator : C × D × E ⥤ (C × D) × E where
   obj X := ((X.1, X.2.1), X.2.2)
-  map := @fun _ _ f => (f.1 ×ₘ f.2.1) ×ₘ f.2.2
+  map := @fun _ _ f => (f.prod.1 ×ₘ f.prod.2.prod.1) ×ₘ f.prod.2.prod.2
 
 /-- The equivalence of categories expressing associativity of products of categories.
 -/

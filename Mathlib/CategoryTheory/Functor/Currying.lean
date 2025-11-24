@@ -38,12 +38,7 @@ variable {B : Type u₁} [Category.{v₁} B] {C : Type u₂} [Category.{v₂} C]
 def uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E where
   obj F :=
     { obj := fun X => (F.obj X.1).obj X.2
-      map := fun {X} {Y} f => (F.map f.1).app X.2 ≫ (F.obj Y.1).map f.2
-      map_comp := fun f g => by
-        simp only [prod_comp_fst, prod_comp_snd, Functor.map_comp, NatTrans.comp_app,
-          Category.assoc]
-        slice_lhs 2 3 => rw [← NatTrans.naturality]
-        rw [Category.assoc] }
+      map := fun {X} {Y} f => (F.map f.prod.1).app X.2 ≫ (F.obj Y.1).map f.prod.2 }
   map T :=
     { app := fun X => (T.app X.1).app X.2
       naturality := fun X Y f => by
@@ -150,9 +145,9 @@ def whiskeringRight₂ : (C ⥤ D ⥤ E) ⥤ (B ⥤ C) ⥤ (B ⥤ D) ⥤ B ⥤ E
 variable {B C D E}
 
 lemma uncurry_obj_curry_obj (F : B × C ⥤ D) : uncurry.obj (curry.obj F) = F :=
-  Functor.ext (by simp) (fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ ⟨f₁, f₂⟩ => by
+  Functor.ext (by simp) (fun x y f => by
     dsimp
-    simp only [← F.map_comp, Category.id_comp, Category.comp_id, prod_comp])
+    simp only [← F.map_comp, prod_comp, Category.comp_id, Category.id_comp, Prod.mkHom_self])
 
 lemma curry_obj_injective {F₁ F₂ : C × D ⥤ E} (h : curry.obj F₁ = curry.obj F₂) :
     F₁ = F₂ := by
@@ -173,13 +168,13 @@ lemma flip_injective {F₁ F₂ : B ⥤ C ⥤ D} (h : F₁.flip = F₂.flip) :
 
 lemma uncurry_obj_curry_obj_flip_flip (F₁ : B ⥤ C) (F₂ : D ⥤ E) (G : C × E ⥤ H) :
     uncurry.obj (F₂ ⋙ (F₁ ⋙ curry.obj G).flip).flip = (F₁.prod F₂) ⋙ G :=
-  Functor.ext (by simp) (fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ ⟨f₁, f₂⟩ => by
+  Functor.ext (by simp) (fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ f => by
     dsimp
     simp only [Category.id_comp, Category.comp_id, ← G.map_comp, prod_comp])
 
 lemma uncurry_obj_curry_obj_flip_flip' (F₁ : B ⥤ C) (F₂ : D ⥤ E) (G : C × E ⥤ H) :
     uncurry.obj (F₁ ⋙ (F₂ ⋙ (curry.obj G).flip).flip) = (F₁.prod F₂) ⋙ G :=
-  Functor.ext (by simp) (fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ ⟨f₁, f₂⟩ => by
+  Functor.ext (by simp) (fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ f => by
     dsimp
     simp only [Category.id_comp, Category.comp_id, ← G.map_comp, prod_comp])
 

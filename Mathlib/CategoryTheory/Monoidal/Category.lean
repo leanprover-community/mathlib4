@@ -785,12 +785,12 @@ attribute [local simp] whisker_exchange
 @[simps]
 def tensor : C × C ⥤ C where
   obj X := X.1 ⊗ X.2
-  map {X Y : C × C} (f : X ⟶ Y) := f.1 ⊗ₘ f.2
+  map {X Y : C × C} (f : X ⟶ Y) := f.prod.1 ⊗ₘ f.prod.2
 
 /-- The left-associated triple tensor product as a functor. -/
 def leftAssocTensor : C × C × C ⥤ C where
   obj X := (X.1 ⊗ X.2.1) ⊗ X.2.2
-  map {X Y : C × C × C} (f : X ⟶ Y) := (f.1 ⊗ₘ f.2.1) ⊗ₘ f.2.2
+  map {X Y : C × C × C} (f : X ⟶ Y) := (f.prod.1 ⊗ₘ f.prod.2.prod.1) ⊗ₘ f.prod.2.prod.2
 
 @[simp]
 theorem leftAssocTensor_obj (X) : (leftAssocTensor C).obj X = (X.1 ⊗ X.2.1) ⊗ X.2.2 :=
@@ -798,13 +798,13 @@ theorem leftAssocTensor_obj (X) : (leftAssocTensor C).obj X = (X.1 ⊗ X.2.1) �
 
 @[simp]
 theorem leftAssocTensor_map {X Y} (f : X ⟶ Y) :
-    (leftAssocTensor C).map f = (f.1 ⊗ₘ f.2.1) ⊗ₘ f.2.2 :=
+    (leftAssocTensor C).map f = (f.prod.1 ⊗ₘ f.prod.2.prod.1) ⊗ₘ f.prod.2.prod.2 :=
   rfl
 
 /-- The right-associated triple tensor product as a functor. -/
 def rightAssocTensor : C × C × C ⥤ C where
   obj X := X.1 ⊗ X.2.1 ⊗ X.2.2
-  map {X Y : C × C × C} (f : X ⟶ Y) := f.1 ⊗ₘ f.2.1 ⊗ₘ f.2.2
+  map {X Y : C × C × C} (f : X ⟶ Y) := f.prod.1 ⊗ₘ f.prod.2.prod.1 ⊗ₘ f.prod.2.prod.2
 
 @[simp]
 theorem rightAssocTensor_obj (X) : (rightAssocTensor C).obj X = X.1 ⊗ X.2.1 ⊗ X.2.2 :=
@@ -812,7 +812,7 @@ theorem rightAssocTensor_obj (X) : (rightAssocTensor C).obj X = X.1 ⊗ X.2.1 �
 
 @[simp]
 theorem rightAssocTensor_map {X Y} (f : X ⟶ Y) :
-    (rightAssocTensor C).map f = f.1 ⊗ₘ f.2.1 ⊗ₘ f.2.2 :=
+    (rightAssocTensor C).map f = f.prod.1 ⊗ₘ f.prod.2.prod.1 ⊗ₘ f.prod.2.prod.2 :=
   rfl
 
 /-- The tensor product bifunctor `C ⥤ C ⥤ C` of a monoidal category. -/
@@ -946,9 +946,9 @@ attribute [local simp] associator_naturality leftUnitor_naturality rightUnitor_n
   leftUnitor rightUnitor]
 instance prodMonoidal : MonoidalCategory (C₁ × C₂) where
   tensorObj X Y := (X.1 ⊗ Y.1, X.2 ⊗ Y.2)
-  tensorHom f g := (f.1 ⊗ₘ g.1) ×ₘ f.2 ⊗ₘ g.2
-  whiskerLeft X _ _ f := whiskerLeft X.1 f.1 ×ₘ whiskerLeft X.2 f.2
-  whiskerRight f X := whiskerRight f.1 X.1 ×ₘ whiskerRight f.2 X.2
+  tensorHom f g := (f.prod.1 ⊗ₘ g.prod.1) ×ₘ f.prod.2 ⊗ₘ g.prod.2
+  whiskerLeft X _ _ f := whiskerLeft X.1 f.prod.1 ×ₘ whiskerLeft X.2 f.prod.2
+  whiskerRight f X := whiskerRight f.prod.1 X.1 ×ₘ whiskerRight f.prod.2 X.2
   tensorHom_def := by simp [tensorHom_def]
   tensorUnit := (𝟙_ C₁, 𝟙_ C₂)
   associator X Y Z := (α_ X.1 Y.1 Z.1).prod (α_ X.2 Y.2 Z.2)

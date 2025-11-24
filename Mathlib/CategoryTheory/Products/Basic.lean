@@ -47,8 +47,6 @@ structure Prod.Hom (X Y : C × D) where
   private mk ::
   prod : (X.1 ⟶ Y.1) × (X.2 ⟶ Y.2)
 
-initialize_simps_projections Prod.Hom
-
 /-- `CategoryStruct.prod C D` gives the Cartesian product of two `CategoryStruct`'s. -/
 @[simps]
 instance prod : CategoryStruct.{max v₁ v₂} (C × D) where
@@ -80,6 +78,9 @@ lemma mkHom_eq {X₁ X₂ : C} {Y₁ Y₂ : D} (f f' : X₁ ⟶ X₂) (g g' : Y�
     f ×ₘ g = f' ×ₘ g' ↔ (f = f' ∧ g = g') :=
   Prod.hom_ext_iff
 
+@[simp]
+lemma mkHom_self {X Y : C × D} (f : X ⟶ Y) : f.prod.1 ×ₘ f.prod.2 = f :=
+  rfl
 
 end Prod
 
@@ -261,7 +262,7 @@ variable {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v₂} B]
 namespace Functor
 
 /-- The Cartesian product of two functors. -/
-@[simps]
+@[simps obj map]
 def prod (F : A ⥤ B) (G : C ⥤ D) : A × C ⥤ B × D where
   obj X := (F.obj X.1, G.obj X.2)
   map f := F.map f.prod.1 ×ₘ G.map f.prod.2
@@ -269,7 +270,7 @@ def prod (F : A ⥤ B) (G : C ⥤ D) : A × C ⥤ B × D where
 /- Because of limitations in Lean 3's handling of notations, we do not setup a notation `F × G`.
 You can use `F.prod G` as a "poor man's infix", or just write `functor.prod F G`. -/
 /-- Similar to `prod`, but both functors start from the same category `A` -/
-@[simps]
+@[simps obj map]
 def prod' (F : A ⥤ B) (G : A ⥤ C) : A ⥤ B × C where
   obj a := (F.obj a, G.obj a)
   map f := F.map f ×ₘ G.map f
@@ -427,7 +428,7 @@ section Opposite
 open Opposite
 
 /-- The equivalence between the opposite of a product and the product of the opposites. -/
-@[simps!]
+@[simps! functor_obj functor_map counitIso_hom_app unitIso_hom_app]
 def prodOpEquiv : (C × D)ᵒᵖ ≌ Cᵒᵖ × Dᵒᵖ where
   functor :=
     { obj := fun X ↦ ⟨op X.unop.1, op X.unop.2⟩,
