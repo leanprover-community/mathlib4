@@ -98,6 +98,38 @@ lemma IsAcyclic.subgraph (h : G.IsAcyclic) (H : G.Subgraph) : H.coe.IsAcyclic :=
 lemma IsAcyclic.anti {G' : SimpleGraph V} (hsub : G ≤ G') (h : G'.IsAcyclic) : G.IsAcyclic :=
   h.comap ⟨_, fun h ↦ hsub h⟩ Function.injective_id
 
+private lemma Walk.exists_mem_contains_edges_of_directed (Hs : Set <| SimpleGraph V)
+    (hHs : Hs.Nonempty) (h_dir : DirectedOn (· ≤ ·) Hs) {u v : V} (p : (sSup Hs).Walk u v) :
+    ∃ H ∈ Hs, ∀ e ∈ p.edges, e ∈ H.edgeSet := by
+  induction p with
+  | nil => exact ⟨hHs.some, hHs.some_mem, by simp⟩
+  | @cons u v w h_adj p ih =>
+    obtain ⟨H₁, hH₁, ih⟩ := ih
+    obtain ⟨H₂, hH₂, h_adj⟩ : ∃ H₂ ∈ Hs, H₂.Adj u v := h_adj
+    obtain ⟨H, hH, h₁, h₂⟩ := h_dir H₁ hH₁ H₂ hH₂
+    simpa using ⟨H, hH, (le_iff_adj.mp h₂) _ _ h_adj, fun a ha => edgeSet_mono h₁ (ih a ha)⟩
+
+/-- The directed supremum of acyclic graphs is acylic. -/
+lemma sSup_acyclic_of_directed_of_acyclic (Hs : Set <| SimpleGraph V)
+    (h_acyc : ∀ H ∈ Hs, H.IsAcyclic) (h_dir : DirectedOn (· ≤ ·) Hs) : IsAcyclic (sSup Hs) := by
+  rcases Hs.eq_empty_or_nonempty with hemp | hnemp
+  · rw [hemp, sSup_empty]
+    exact isAcyclic_bot
+  · intro u p hp
+    obtain ⟨H, hH, hpH⟩ := p.exists_mem_contains_edges_of_directed Hs hnemp h_dir
+    exact h_acyc H hH (p.transfer H hpH) <| Walk.IsCycle.transfer hp hpH
+
+/-- Every acyclic subgraph `H ≤ G` is contained in a maximal such subgraph. -/
+theorem exists_maximal_acyclic_extension {H : SimpleGraph V} (hHG : H ≤ G) (hH : H.IsAcyclic) :
+    ∃ H' : SimpleGraph V, H ≤ H' ∧ Maximal (fun H => H ≤ G ∧ H.IsAcyclic) H' := by
+  let s : Set (SimpleGraph V) := {H : SimpleGraph V | H ≤ G ∧ H.IsAcyclic}
+  apply zorn_le_nonempty₀ s
+  · intro c hcs hc y hy
+    refine ⟨sSup c, ⟨?_, ?_⟩, CompleteLattice.le_sSup c⟩
+    · grind [sSup_le_iff]
+    · exact sSup_acyclic_of_directed_of_acyclic c (by grind) hc.directedOn
+  · grind
+
 /-- A connected component of an acyclic graph is a tree. -/
 lemma IsAcyclic.isTree_connectedComponent (h : G.IsAcyclic) (c : G.ConnectedComponent) :
     c.toSimpleGraph.IsTree where
