@@ -132,7 +132,7 @@ section Mem
 /-- membership in a FactorSet (bundled version) -/
 def BfactorSetMem : { a : Associates α // Irreducible a } → FactorSet α → Prop
   | _, ⊤ => True
-  | p, some l => p ∈ l
+  | p, .some l => p ∈ l
 
 /-- `FactorSetMem p s` is the predicate that the irreducible `p` is a member of
 `s : FactorSet α`.
@@ -219,7 +219,7 @@ noncomputable def factors (a : Associates α) : FactorSet α := by
   · have : a ~ᵤ 0 ↔ b ~ᵤ 0 := Iff.intro (fun ha0 => hab.symm.trans ha0) fun hb0 => hab.trans hb0
     simp only [associated_zero_iff_eq_zero] at this
     simp only [quotient_mk_eq_mk, this, mk_eq_zero]
-  exact fun ha hb _ => heq_of_eq <| congr_arg some <| factors'_cong hab
+  exact fun ha hb _ => heq_of_eq <| congr_arg WithTop.some <| factors'_cong hab
 
 @[simp]
 theorem factors_zero : (0 : Associates α).factors = ⊤ :=

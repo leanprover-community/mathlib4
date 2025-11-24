@@ -103,7 +103,7 @@ instance : AddCommMonoid (ι →ᵇᵃ[I₀] M) :=
 
 @[simp]
 theorem map_split_add (f : ι →ᵇᵃ[I₀] M) (hI : ↑I ≤ I₀) (i : ι) (x : ℝ) :
-    (I.splitLower i x).elim' 0 f + (I.splitUpper i x).elim' 0 f = f I := by
+    (I.splitLower i x).mapD 0 f + (I.splitUpper i x).mapD 0 f = f I := by
   rw [← f.sum_partition_boxes hI (isPartitionSplit I i x), sum_split_boxes]
 
 /-- If `f` is box-additive on subboxes of `I₀`, then it is box-additive on subboxes of any
@@ -116,7 +116,7 @@ def restrict (f : ι →ᵇᵃ[I₀] M) (I : WithTop (Box ι)) (hI : I ≤ I₀)
 additive. -/
 def ofMapSplitAdd [Finite ι] (f : Box ι → M) (I₀ : WithTop (Box ι))
     (hf : ∀ I : Box ι, ↑I ≤ I₀ → ∀ {i x}, x ∈ Ioo (I.lower i) (I.upper i) →
-      (I.splitLower i x).elim' 0 f + (I.splitUpper i x).elim' 0 f = f I) :
+      (I.splitLower i x).mapD 0 f + (I.splitUpper i x).mapD 0 f = f I) :
     ι →ᵇᵃ[I₀] M := by
   classical
   refine ⟨f, ?_⟩
@@ -192,9 +192,9 @@ def upperSubLower.{u} {G : Type u} [AddCommGroup G] (I₀ : Box (Fin (n + 1))) (
       intro J hJ j x
       rw [WithTop.coe_le_coe] at hJ
       refine i.succAboveCases (fun hx => ?_) (fun j hx => ?_) j
-      · simp only [Box.splitLower_def hx, Box.splitUpper_def hx, update_self, ← WithBot.some_eq_coe,
-          Option.elim', Box.face, Function.comp_def, update_of_ne (Fin.succAbove_ne _ _)]
-        abel
+      · simp only [face, comp_def, Box.splitLower_def hx, WithBot.mapD_coe, update_self, ne_eq,
+          Fin.succAbove_ne, not_false_eq_true, update_of_ne, Box.splitUpper_def hx,
+          sub_add_sub_cancel']
       · have : (J.face i : WithTop (Box (Fin n))) ≤ I₀.face i :=
           WithTop.coe_le_coe.2 (face_mono hJ i)
         rw [le_iff_Icc, @Box.Icc_eq_pi _ I₀] at hJ
@@ -202,10 +202,11 @@ def upperSubLower.{u} {G : Type u} [AddCommGroup G] (I₀ : Box (Fin (n + 1))) (
         rw [hf _ (hJ J.upper_mem_Icc _ trivial), hf _ (hJ J.lower_mem_Icc _ trivial),
           ← (fb _).map_split_add this j x, ← (fb _).map_split_add this j x]
         have hx' : x ∈ Ioo ((J.face i).lower j) ((J.face i).upper j) := hx
-        simp only [Box.splitLower_def hx, Box.splitUpper_def hx, Box.splitLower_def hx',
-          Box.splitUpper_def hx', ← WithBot.some_eq_coe, Option.elim', Box.face_mk,
-          update_of_ne (Fin.succAbove_ne _ _).symm, sub_add_sub_comm,
-          update_comp_eq_of_injective _ (Fin.strictMono_succAbove i).injective j x, ← hf]
+        simp only [Box.splitLower_def hx, WithBot.mapD_coe, ne_eq, Fin.ne_succAbove,
+          not_false_eq_true, update_of_ne, face_mk,
+          update_comp_eq_of_injective _ (Fin.strictMono_succAbove i).injective j x,
+          Box.splitUpper_def hx, sub_add_sub_comm, Box.splitLower_def hx', ← hf,
+          Box.splitUpper_def hx']
         simp only [Box.face])
 
 end BoxAdditiveMap
