@@ -559,13 +559,9 @@ theorem isNontrivial : v.1.IsNontrivial := by
   obtain ⟨n, hn⟩ := exists_gt (1 : ℕ)
   exact ⟨n, v.pos_iff.1 <| zero_lt_one.trans (by simpa), by simp [← coe_apply]; grind⟩
 
-variable {v}
-
-noncomputable instance [NumberField K] : DecidableEq (InfinitePlace K) :=
-  (Fintype.equivFin _).decidableEq
+variable {v} (K)
 
 open Filter in
-variable (K) in
 /--
 *Weak approximation for infinite places*
 The number field `K` is dense when embedded diagonally in the product
@@ -574,6 +570,7 @@ topology coming from the infinite place `v`.
 -/
 theorem denseRange_algebraMap_pi [NumberField K] :
     DenseRange <| algebraMap K ((v : InfinitePlace K) → WithAbs v.1) := by
+  classical
   -- We have to show that given `(zᵥ)ᵥ` with `zᵥ : WithAbs v.1`, there is a `y : K` that is
   -- arbitrarily close to each `zᵥ` in `v`'s topology.
   refine Metric.denseRange_iff.mpr fun z r hr ↦ ?_
