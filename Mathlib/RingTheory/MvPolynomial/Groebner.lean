@@ -1056,7 +1056,6 @@ theorem remainder_eq_zero_iff_mem_ideal_of_isGroebnerBasis
   · intro h_p_mem
     by_contra hr_ne_zero
     have h₃: m.leadingTerm r ∉ Ideal.span (m.leadingTerm '' ↑G) := by
-      nth_rewrite 1 [leadingTerm]
       apply term_notMem_span_leadingTerm_of_isRemainder hG hr
       exact (m.degree_mem_support_iff r).mpr hr_ne_zero
     rcases h with ⟨h_G', h_span⟩
@@ -1535,8 +1534,8 @@ theorem isGroebnerBasis_iff_isRemainder_sPolynomial_zero (G : Set (MvPolynomial 
           apply lt_of_le_of_lt degree_mul_le
           rw [AddEquiv.map_add]
           refine add_lt_of_add_lt_right ?_ (degree_monomial_le _)
-          apply lt_of_le_of_lt (add_le_add_left (mul_comm g' (q' _ _ g') ▸ hq') _)
-          apply lt_of_lt_of_le (add_lt_add_left (m.degree_sPolynomial_lt_sup_degree hspoly) _)
+          apply lt_of_le_of_lt (add_le_add_right (mul_comm g' (q' _ _ g') ▸ hq') _)
+          apply lt_of_lt_of_le (add_lt_add_right (m.degree_sPolynomial_lt_sup_degree hspoly) _)
           push_neg at hgg'₁ hgg'₂
           unfold gg'deg at hgg'₁ hgg'₂
           rw [← AddEquiv.map_add]
