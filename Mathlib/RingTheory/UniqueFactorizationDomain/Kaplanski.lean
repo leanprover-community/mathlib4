@@ -10,9 +10,9 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Ideal
 
 /-!
 
-# Kaplanski criterion for factoriality
+# Kaplansky criterion for factoriality
 
-We prove Kaplanski criterion for factoriality: an integral domain is a UFD if and only if every
+We prove Kaplansky criterion for factoriality: an integral domain is a UFD if and only if every
 nonzero prime ideal contains a prime element.
 
 ## Main declarations
