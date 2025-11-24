@@ -3,11 +3,13 @@ Copyright (c) 2023 Geoffrey Irving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler, Geoffrey Irving, Stefan Kebekus
 -/
-import Mathlib.Analysis.Analytic.Composition
-import Mathlib.Analysis.Analytic.Linear
-import Mathlib.Analysis.Normed.Operator.Mul
-import Mathlib.Analysis.Normed.Ring.Units
-import Mathlib.Analysis.Analytic.OfScalars
+module
+
+public import Mathlib.Analysis.Analytic.Composition
+public import Mathlib.Analysis.Analytic.Linear
+public import Mathlib.Analysis.Normed.Operator.Mul
+public import Mathlib.Analysis.Normed.Ring.Units
+public import Mathlib.Analysis.Analytic.OfScalars
 
 /-!
 # Various ways to combine analytic functions
@@ -18,6 +20,8 @@ We show that the following are analytic:
 2. Arithmetic on analytic functions: `mul`, `smul`, `inv`, `div`
 3. Finite sums and products: `Finset.sum`, `Finset.prod`
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -845,7 +849,7 @@ lemma one_le_formalMultilinearSeries_geometric_radius (𝕜 : Type*) [Nontrivial
     (A : Type*) [NormedRing A] [NormedAlgebra 𝕜 A] :
     1 ≤ (formalMultilinearSeries_geometric 𝕜 A).radius := by
   convert formalMultilinearSeries_geometric_eq_ofScalars 𝕜 A ▸
-    FormalMultilinearSeries.ofScalars_radius_ge_inv_of_tendsto A _ one_ne_zero (by simp) |>.le
+    FormalMultilinearSeries.inv_le_ofScalars_radius_of_tendsto A _ one_ne_zero (by simp)
   simp
 
 lemma formalMultilinearSeries_geometric_radius (𝕜 : Type*) [NontriviallyNormedField 𝕜]

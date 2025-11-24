@@ -3,8 +3,10 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Int.Cast.Defs
-import Mathlib.Logic.Basic
+module
+
+public import Mathlib.Data.Int.Cast.Defs
+public import Mathlib.Logic.Basic
 
 /-!
 
@@ -24,6 +26,8 @@ from the natural numbers into it is injective.
 
 * Unify with `CharP` (possibly using an out-parameter)
 -/
+
+@[expose] public section
 
 /-- Typeclass for monoids with characteristic zero.
   (This is usually stated on fields but it makes sense for any additive monoid with 1.)

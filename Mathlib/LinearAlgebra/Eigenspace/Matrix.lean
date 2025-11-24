@@ -3,8 +3,9 @@ Copyright (c) 2024 Jon Bannon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Bannon, Jireh Loreaux
 -/
+module
 
-import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 /-!
 
@@ -17,6 +18,8 @@ over a nontrivial commutative ring, nontrivial commutative ring without zero div
 eigenspace, eigenvector, eigenvalue, spectrum, matrix
 
 -/
+
+@[expose] public section
 
 section SpectrumDiagonal
 
