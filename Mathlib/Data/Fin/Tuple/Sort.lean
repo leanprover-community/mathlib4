@@ -139,14 +139,14 @@ theorem lt_card_ge_iff_apply_ge_of_antitone [Preorder α] [DecidableLE α]
 theorem unique_monotone [PartialOrder α] {f : Fin n → α} {σ τ : Equiv.Perm (Fin n)}
     (hfσ : Monotone (f ∘ σ)) (hfτ : Monotone (f ∘ τ)) : f ∘ σ = f ∘ τ :=
   ofFn_injective <|
-    List.Perm.eq_of_pairwise ((σ.ofFn_comp_perm f).trans (τ.ofFn_comp_perm f).symm)
+    List.Perm.eq_of_pairwise' ((σ.ofFn_comp_perm f).trans (τ.ofFn_comp_perm f).symm)
       hfσ.sortedLE_ofFn.pairwise hfτ.sortedLE_ofFn.pairwise
 
 /-- If two permutations of a tuple `f` are both antitone, then they are equal. -/
 theorem unique_antitone [PartialOrder α] {f : Fin n → α} {σ τ : Equiv.Perm (Fin n)}
     (hfσ : Antitone (f ∘ σ)) (hfτ : Antitone (f ∘ τ)) : f ∘ σ = f ∘ τ :=
   ofFn_injective <|
-    List.Perm.eq_of_pairwise ((σ.ofFn_comp_perm f).trans (τ.ofFn_comp_perm f).symm)
+    List.Perm.eq_of_pairwise' ((σ.ofFn_comp_perm f).trans (τ.ofFn_comp_perm f).symm)
       hfσ.sortedGE_ofFn.pairwise hfτ.sortedGE_ofFn.pairwise
 
 variable [LinearOrder α] {f : Fin n → α} {σ : Equiv.Perm (Fin n)}

@@ -92,7 +92,7 @@ theorem sort_perm_toList : sort s r ~ s.toList := by
 
 theorem _root_.List.toFinset_sort [DecidableEq α] {l : List α} (hl : l.Nodup) :
     sort l.toFinset r = l ↔ l.Pairwise r := by
-  refine ⟨?_, List.Perm.eq_of_pairwise ((sort_perm_toList _ r).trans (List.toFinset_toList hl))
+  refine ⟨?_, List.Perm.eq_of_pairwise' ((sort_perm_toList _ r).trans (List.toFinset_toList hl))
     (pairwise_sort _ _)⟩
   intro h
   rw [← h]
