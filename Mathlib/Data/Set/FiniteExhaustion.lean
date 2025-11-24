@@ -87,17 +87,8 @@ protected def prod :
   { toFun n := K n ×ˢ K' n
     Finite' := fun n ↦ Set.Finite.prod (K.Finite n) (K'.Finite n)
     subset_succ' := fun n ↦ Set.prod_mono (K.subset_succ n) (K'.subset_succ n)
-    iUnion_eq' := by
-      apply subset_antisymm
-      · rw [Set.iUnion_subset_iff]
-        refine fun i ↦ Set.prod_mono ?_ ?_
-        · simp [← K.iUnion_eq, Set.subset_iUnion]
-        · simp [← K'.iUnion_eq, Set.subset_iUnion]
-      rintro ⟨a, b⟩ h
-      simp only [← K.iUnion_eq, ← K'.iUnion_eq, Set.mem_prod, Set.mem_iUnion] at h
-      obtain ⟨⟨i,hi⟩, ⟨j, hj⟩⟩ := h
-      simp only [Set.mem_iUnion, Set.mem_prod]
-      exact ⟨max i j, K.subset (le_max_left _ _) hi, K'.subset (le_max_right _ _ ) hj⟩ }
+      rw [Set.iUnion_prod_of_monotone (OrderHomClass.mono K) (OrderHomClass.mono K'),
+          K.iUnion_eq, K'.iUnion_eq] }
 
 protected theorem prod_apply (n : ℕ) : (K.prod K') n = K n ×ˢ K' n := by rfl
 
