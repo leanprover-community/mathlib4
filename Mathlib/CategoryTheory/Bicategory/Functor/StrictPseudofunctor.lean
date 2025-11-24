@@ -170,6 +170,7 @@ def mk'' (S : StrictPseudofunctorPreCore B C) : StrictPseudofunctor B C where
 
 /-- A strict pseudofunctor between strict bicategories induces a functor on the underlying
 categories. -/
+@[simps]
 def toFunctor (F : StrictPseudofunctor B C) : Functor B C where
   obj := F.obj
   map := F.map
