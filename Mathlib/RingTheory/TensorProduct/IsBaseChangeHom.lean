@@ -19,12 +19,12 @@ public import Mathlib.LinearAlgebra.Determinant
   then `M →ₗ[R] P` is a base change of `M →ₗ[R] N` to `S`.
 
 * `IsBaseChange.linearMapLeftRight`:
-  If `M` has a finite basis and `P` is a base change of `M` to `S`,
+  If `M` is finite free and `P` is a base change of `M` to `S`,
   if `Q` is a base change of `N` to `S`,
   then `P →ₗ[S] Q` is a base change of `M →ₗ[R] N` to `S`.
 
-* `IsBaseChange.endom`:
-  If `M` has a finite basis and `P` is a base change of `M` to `S`,
+* `IsBaseChange.end`:
+  If `M` is finite free and `P` is a base change of `M` to `S`,
   then `P →ₗ[S] P` is a base change of `M →ₗ[R] M` to `S`.
 
 -/
@@ -152,46 +152,46 @@ variable {S M}
   [Module S P] [IsScalarTower R S P]
 
 /-- The base change map for endomorphisms of a free finite module. -/
-noncomputable def endomHom {α : M →ₗ[R] P} (j : IsBaseChange S α) :
+noncomputable def endHom {α : M →ₗ[R] P} (j : IsBaseChange S α) :
     (M →ₗ[R] M) →ₗ[R] (P →ₗ[S] P) :=
   ((LinearMap.llcomp (σ₂₃ := RingHom.id S) S P (S ⊗[R] M) P).flip
     j.equiv.symm.toLinearMap) ∘ₗ
     (liftBaseChangeEquiv S).toLinearMap.restrictScalars R ∘ₗ
       (compRight R α (M := M))
 
-theorem endomHom_apply
+theorem endHom_apply
     {α : M →ₗ[R] P} (j : IsBaseChange S α) (f : M →ₗ[R] M) (p : P) :
-    endomHom j f p = ((liftBaseChangeEquiv S) (α ∘ₗ f)) (j.equiv.symm p) := by
+    endHom j f p = ((liftBaseChangeEquiv S) (α ∘ₗ f)) (j.equiv.symm p) := by
   rfl
 
-theorem endomHom_comp_apply
+theorem endHom_comp_apply
     {α : M →ₗ[R] P} (j : IsBaseChange S α) (f : M →ₗ[R] M) (m : M) :
-    endomHom j f (α m) = α (f m) := by
-  simp [endomHom_apply, IsBaseChange.equiv_symm_apply]
+    endHom j f (α m) = α (f m) := by
+  simp [endHom_apply, IsBaseChange.equiv_symm_apply]
 
-theorem endomHom_comp
+theorem endHom_comp
     {α : M →ₗ[R] P} (j : IsBaseChange S α) (f : M →ₗ[R] M) :
-    (endomHom j f).restrictScalars R ∘ₗ α = α ∘ₗ f := by
-  ext; simp [endomHom_comp_apply]
+    (endHom j f).restrictScalars R ∘ₗ α = α ∘ₗ f := by
+  ext; simp [endHom_comp_apply]
 
-theorem endomHom_one {α : M →ₗ[R] P} (j : IsBaseChange S α) :
-    j.endomHom 1 = 1 := by
+theorem endHom_one {α : M →ₗ[R] P} (j : IsBaseChange S α) :
+    j.endHom 1 = 1 := by
   ext p
   induction p using j.inductionOn with
   | zero => simp
   | add x y hx hy => simp [hx, hy]
   | smul _ _ h => simp [h]
-  | tmul m => simp [endomHom_comp_apply]
+  | tmul m => simp [endHom_comp_apply]
 
 variable [Module.Free R M] [Module.Finite R M]
 
-theorem endom {α : M →ₗ[R] P} (j : IsBaseChange S α) :
-    IsBaseChange S (endomHom j) := by
+theorem _root_.IsBaseChange.end {α : M →ₗ[R] P} (j : IsBaseChange S α) :
+    IsBaseChange S (endHom j) := by
   apply of_equiv <|
       (j.linearMapRight M).equiv ≪≫ₗ liftBaseChangeEquiv S ≪≫ₗ LinearEquiv.congrLeft P S j.equiv
   intro f
   ext p
-  simp [IsBaseChange.equiv_tmul, LinearEquiv.congrLeft, endomHom_apply]
+  simp [IsBaseChange.equiv_tmul, LinearEquiv.congrLeft, endHom_apply]
 
 end End
 
@@ -211,12 +211,12 @@ theorem linearMapLeftRightHom_toMatrix (f : M →ₗ[R] N) :
   simp only [toMatrix_apply, Matrix.map_apply, basis_apply,
     linearMapLeftRightHom_comp_apply, basis_repr_comp_apply]
 
-theorem endomHom_toMatrix (f : M →ₗ[R] M) :
-    (endomHom ibcM f).toMatrix (ibcM.basis b) (ibcM.basis b) =
+theorem endHom_toMatrix (f : M →ₗ[R] M) :
+    (endHom ibcM f).toMatrix (ibcM.basis b) (ibcM.basis b) =
       (f.toMatrix b b).map (algebraMap R S) := by
   ext i j
   simp only [toMatrix_apply, Matrix.map_apply]
-  simp only [basis_apply, endomHom_comp_apply, basis_repr_comp_apply]
+  simp only [basis_apply, endHom_comp_apply, basis_repr_comp_apply]
 
 
 end Matrix
@@ -230,17 +230,31 @@ variable {R : Type*} [CommRing R]
 
 variable [Module.Free R M] [Module.Finite R M]
 
-theorem det_endomHom {α : M →ₗ[R] P} (j : IsBaseChange S α) (f : M →ₗ[R] M) :
-    LinearMap.det (endomHom j f) = algebraMap R S (LinearMap.det f) := by
+theorem det_endHom {α : M →ₗ[R] P} (j : IsBaseChange S α) (f : M →ₗ[R] M) :
+    LinearMap.det (endHom j f) = algebraMap R S (LinearMap.det f) := by
   rcases subsingleton_or_nontrivial R with hR | hR
   · have : f = 1 := by
       have : Subsingleton M := Module.subsingleton R M
       exact Subsingleton.eq_one f
-    simp [this, endomHom_one]
+    simp [this, endHom_one]
   let b := Module.finBasis R M
-  rw [← f.det_toMatrix b, ← (j.endomHom f).det_toMatrix (j.basis b),
-    endomHom_toMatrix, ← RingHom.mapMatrix_apply, ← RingHom.map_det]
+  rw [← f.det_toMatrix b, ← (j.endHom f).det_toMatrix (j.basis b),
+    endHom_toMatrix, ← RingHom.mapMatrix_apply, ← RingHom.map_det]
 
 end determinant
 
+=======
+  simp [IsBaseChange.equiv_tmul, LinearEquiv.congrLeft, endHom_apply]
+
+theorem « end » {α : M →ₗ[R] P} (j : IsBaseChange S α) :
+    IsBaseChange S (endHom j) := by
+  apply of_equiv <|
+      (j.linearMapRight M).equiv ≪≫ₗ liftBaseChangeEquiv S ≪≫ₗ LinearEquiv.congrLeft P S j.equiv
+  intro f
+  ext p
+  simp [IsBaseChange.equiv_tmul, LinearEquiv.congrLeft, endHom_apply]
+
+end End
+
+>>>>>>> master
 end IsBaseChange

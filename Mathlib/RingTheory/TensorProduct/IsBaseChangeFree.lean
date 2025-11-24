@@ -3,7 +3,6 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
-
 module
 
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
@@ -26,7 +25,7 @@ variable {R : Type*} [CommSemiring R]
     {S : Type*} [CommSemiring S] [Algebra R S]
     {V : Type*} [AddCommMonoid V] [Module R V]
     {W : Type*} [AddCommMonoid W] [Module R W] [Module S W] [IsScalarTower R S W]
-    {ι : Type*} [DecidableEq ι]
+    {ι : Type*}
     {ε : V →ₗ[R] W}
 
 variable (b : Module.Basis ι R V) (ibc : IsBaseChange S ε)
@@ -143,3 +142,4 @@ theorem of_fintype_basis_eq [Fintype ι] {a : ι → A} {v : V} :
 end IsBaseChange
 
 end underring
+
