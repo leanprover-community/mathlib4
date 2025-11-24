@@ -3,8 +3,9 @@ Copyright (c) 2023 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
+module
 
-import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
+public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 
 /-!
 # Interior and boundary of a manifold
@@ -51,6 +52,8 @@ this requires a definition of submanifolds
 
 -/
 
+@[expose] public section
+
 open Set
 open scoped Topology
 
@@ -79,7 +82,7 @@ protected def interior : Set M := { x : M | I.IsInteriorPoint x }
 lemma isInteriorPoint_iff {x : M} :
     I.IsInteriorPoint x ↔ extChartAt I x x ∈ interior (extChartAt I x).target :=
   ⟨fun h ↦ (chartAt H x).mem_interior_extend_target (mem_chart_target H x) h,
-    fun h ↦ PartialHomeomorph.interior_extend_target_subset_interior_range _ h⟩
+    fun h ↦ OpenPartialHomeomorph.interior_extend_target_subset_interior_range _ h⟩
 
 variable (M) in
 /-- The **boundary** of a manifold `M` is the set of its boundary points. -/

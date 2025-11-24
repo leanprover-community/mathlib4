@@ -3,11 +3,13 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Kim Morrison
 -/
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
-import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
-import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
+module
+
+public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+public import Mathlib.CategoryTheory.Adjunction.Limits
+public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 
 /-!
 # Projective objects and categories with enough projectives
@@ -27,6 +29,8 @@ Given a morphism `f : X ⟶ Y`, `CategoryTheory.Projective.left f` is a projecti
 
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
@@ -43,6 +47,10 @@ An object `P` is called *projective* if every morphism out of `P` factors throug
 -/
 class Projective (P : C) : Prop where
   factors : ∀ {E X : C} (f : P ⟶ X) (e : E ⟶ X) [Epi e], ∃ f', f' ≫ e = f
+
+variable (C) in
+/-- The `ObjectProperty C` corresponding to the notion of projective objects in `C`. -/
+abbrev isProjective : ObjectProperty C := Projective
 
 lemma Limits.IsZero.projective {X : C} (h : IsZero X) : Projective X where
   factors _ _ _ := ⟨h.to_ _, h.eq_of_src _ _⟩

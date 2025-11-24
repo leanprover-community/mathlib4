@@ -3,9 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou
 -/
-import Mathlib.Algebra.Homology.Homotopy
-import Mathlib.Algebra.Homology.ShortComplex.Retract
-import Mathlib.CategoryTheory.MorphismProperty.Composition
+module
+
+public import Mathlib.Algebra.Homology.Homotopy
+public import Mathlib.Algebra.Homology.ShortComplex.Retract
+public import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # Quasi-isomorphisms
@@ -13,6 +15,8 @@ import Mathlib.CategoryTheory.MorphismProperty.Composition
 A chain map is a quasi-isomorphism if it induces isomorphisms on homology.
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory Limits
@@ -58,9 +62,7 @@ lemma quasiIsoAt_of_retract {f : K ⟶ L} {f' : K' ⟶ L'}
     [K'.HasHomology i] [L'.HasHomology i] [hf' : QuasiIsoAt f' i] :
     QuasiIsoAt f i := by
   rw [quasiIsoAt_iff] at hf' ⊢
-  have : RetractArrow ((shortComplexFunctor C c i).map f)
-    ((shortComplexFunctor C c i).map f') := h.map (shortComplexFunctor C c i).mapArrow
-  exact ShortComplex.quasiIso_of_retract this
+  exact ShortComplex.quasiIso_of_retract (h.map (shortComplexFunctor C c i))
 
 lemma quasiIsoAt_iff_isIso_homologyMap (f : K ⟶ L) (i : ι)
     [K.HasHomology i] [L.HasHomology i] :

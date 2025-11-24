@@ -3,12 +3,13 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+module
 
-import Mathlib.RingTheory.Algebraic.Basic
-import Mathlib.Data.Fintype.Pigeonhole
-import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
-import Mathlib.ModelTheory.Algebra.Ring.Definability
-import Mathlib.RingTheory.Polynomial.Basic
+public import Mathlib.RingTheory.Algebraic.Basic
+public import Mathlib.Data.Fintype.Pigeonhole
+public import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
+public import Mathlib.ModelTheory.Algebra.Ring.Definability
+public import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
 # Ax-Grothendieck
@@ -36,6 +37,8 @@ the Ax-Grothendieck Theorem were first formalized in Lean 3 by Joseph Hua
 [here](https://github.com/Jlh18/ModelTheory8Report)
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -241,5 +244,4 @@ algebraically closed field. -/
 theorem ax_grothendieck_univ (p : ι → MvPolynomial ι K) :
     (fun v i => eval v (p i)).Injective →
     (fun v i => eval v (p i)).Surjective := by
-  simpa [Set.injective_iff_injOn_univ, Set.surjective_iff_surjOn_univ] using
-      ax_grothendieck_zeroLocus 0 p
+  simpa using ax_grothendieck_zeroLocus 0 p

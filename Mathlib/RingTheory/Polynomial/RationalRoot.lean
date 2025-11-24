@@ -3,9 +3,11 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-import Mathlib.RingTheory.Localization.NumDen
-import Mathlib.RingTheory.Polynomial.ScaleRoots
+module
+
+public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+public import Mathlib.RingTheory.Localization.NumDen
+public import Mathlib.RingTheory.Polynomial.ScaleRoots
 
 /-!
 # Rational root theorem and integral root theorem
@@ -24,6 +26,8 @@ Finally, we use this to show unique factorization domains are integrally closed.
 
 * https://en.wikipedia.org/wiki/Rational_root_theorem
 -/
+
+@[expose] public section
 
 
 open scoped Polynomial
@@ -94,14 +98,14 @@ theorem den_dvd_of_is_root {p : A[X]} {r : K} (hr : aeval r p = 0) :
   rw [← coeff_scaleRoots_natDegree]
   apply dvd_term_of_isRoot_of_dvd_terms _ (num_isRoot_scaleRoots_of_aeval_eq_zero hr)
   intro j hj
-  by_cases h : j < p.natDegree
+  by_cases! h : j < p.natDegree
   · rw [coeff_scaleRoots]
     refine (dvd_mul_of_dvd_right ?_ _).mul_right _
     convert pow_dvd_pow (den A r : A) (Nat.succ_le_iff.mpr (lt_tsub_iff_left.mpr _))
     · exact (pow_one _).symm
     simpa using h
   rw [← natDegree_scaleRoots p (den A r)] at *
-  rw [coeff_eq_zero_of_natDegree_lt (lt_of_le_of_ne (le_of_not_gt h) hj.symm),
+  rw [coeff_eq_zero_of_natDegree_lt (lt_of_le_of_ne h hj.symm),
     zero_mul]
   exact dvd_zero _
 

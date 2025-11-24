@@ -3,8 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Hom
-import Mathlib.Algebra.Ring.Action.Group
+module
+
+public import Mathlib.Algebra.Algebra.Hom
+public import Mathlib.Algebra.Ring.Action.Group
 
 /-!
 # Isomorphisms of `R`-algebras
@@ -19,6 +21,8 @@ This file defines bundled isomorphisms of `R`-algebras.
 
 * `A ≃ₐ[R] B` : `R`-algebra equivalence from `A` to `B`.
 -/
+
+@[expose] public section
 
 universe u v w u₁ v₁
 
@@ -641,6 +645,8 @@ theorem mul_apply (e₁ e₂ : A₁ ≃ₐ[R] A₁) (x : A₁) : (e₁ * e₂) x
 
 lemma aut_inv (ϕ : A₁ ≃ₐ[R] A₁) : ϕ⁻¹ = ϕ.symm := rfl
 
+@[simp] lemma coe_inv (ϕ : A₁ ≃ₐ[R] A₁) : ⇑ϕ⁻¹ = ⇑ϕ.symm := rfl
+
 @[simp] theorem coe_pow (e : A₁ ≃ₐ[R] A₁) (n : ℕ) : ⇑(e ^ n) = e^[n] :=
   n.rec (by ext; simp) fun _ ih ↦ by ext; simp [pow_succ, ih]
 
@@ -817,3 +823,25 @@ def ULift.algEquiv {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Alge
     ULift.{w} A ≃ₐ[R] A where
   __ := ULift.ringEquiv
   commutes' _ := rfl
+
+/-- If an `R`-algebra `A` is isomorphic to `R` as `R`-module, then the canonical map `R → A` is an
+equivalence of `R`-algebras.
+
+Note that if `e : R ≃ₗ[R] A` is the linear equivalence, then this is not the same as the equivalence
+of algebras provided here unless `e 1 = 1`. -/
+@[simps] def LinearEquiv.algEquivOfRing
+    {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
+    (e : R ≃ₗ[R] A) : R ≃ₐ[R] A where
+  __ := Algebra.ofId R A
+  invFun x := e.symm (e 1 * x)
+  left_inv x := calc
+    e.symm (e 1 * (algebraMap R A) x)
+      = e.symm (x • e 1) := by rw [Algebra.smul_def, mul_comm]
+    _ = x := by rw [map_smul, e.symm_apply_apply, smul_eq_mul, mul_one]
+  right_inv x := calc
+    (algebraMap R A) (e.symm (e 1 * x))
+      = (algebraMap R A) (e.symm (e 1 * x)) * e (e.symm 1 • 1) := by
+          rw [smul_eq_mul, mul_one, e.apply_symm_apply, mul_one]
+    _ = x := by rw [map_smul, Algebra.smul_def, mul_left_comm, ← Algebra.smul_def _ (e 1),
+          ← map_smul, smul_eq_mul, mul_one, e.apply_symm_apply, ← mul_assoc, ← Algebra.smul_def,
+          ← map_smul, smul_eq_mul, mul_one, e.apply_symm_apply, one_mul]

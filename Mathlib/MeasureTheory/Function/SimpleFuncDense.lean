@@ -3,8 +3,10 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.MeasureTheory.Function.SimpleFunc
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
+module
+
+public import Mathlib.MeasureTheory.Function.SimpleFunc
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
 
 /-!
 # Density of simple functions
@@ -30,6 +32,8 @@ by a sequence of simple functions.
 
 * `α →ₛ β` (local notation): the type of simple functions `α → β`.
 -/
+
+@[expose] public section
 
 open Set Function Filter TopologicalSpace EMetric MeasureTheory
 open scoped Topology ENNReal
@@ -176,7 +180,7 @@ theorem edist_approxOn_y0_le {f : β → α} (hf : Measurable f) {s : Set α} {y
     edist y₀ (approxOn f hf s y₀ h₀ n x) ≤
         edist y₀ (f x) + edist (approxOn f hf s y₀ h₀ n x) (f x) :=
       edist_triangle_right _ _ _
-    _ ≤ edist y₀ (f x) + edist y₀ (f x) := add_le_add_left (edist_approxOn_le hf h₀ x n) _
+    _ ≤ edist y₀ (f x) + edist y₀ (f x) := by grw [edist_approxOn_le hf h₀ x n]
 
 end SimpleFunc
 

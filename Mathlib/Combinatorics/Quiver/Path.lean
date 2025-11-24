@@ -3,10 +3,11 @@ Copyright (c) 2021 David Wärn,. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Kim Morrison, Matteo Cipollina
 -/
+module
 
-import Mathlib.Combinatorics.Quiver.Prefunctor
-import Mathlib.Logic.Lemmas
-import Batteries.Data.List.Basic
+public import Mathlib.Combinatorics.Quiver.Prefunctor
+public import Mathlib.Logic.Lemmas
+public import Batteries.Data.List.Basic
 
 /-!
 # Paths in quivers
@@ -14,6 +15,8 @@ import Batteries.Data.List.Basic
 Given a quiver `V`, we define the type of paths from `a : V` to `b : V` as an inductive
 family. We define composition of paths and the action of prefunctors on paths.
 -/
+
+@[expose] public section
 
 open Function
 

@@ -3,9 +3,10 @@ Copyright (c) 2025 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
-import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
+public import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
+public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
 
 /-!
 # The Petersson scalar product
@@ -16,6 +17,8 @@ For `f, f'` functions `ℍ → ℂ`, we define `petersson k f f'` to be the func
 We show this function is (weight 0) invariant under `Γ` if `f, f'` are (weight `k`) invariant under
 `Γ`.
 -/
+
+@[expose] public section
 
 
 open UpperHalfPlane
@@ -65,11 +68,10 @@ section
 
 variable {F F' : Type*} [FunLike F ℍ ℂ] [FunLike F' ℍ ℂ]
 
-lemma SlashInvariantFormClass.petersson_smul {k : ℤ} {Γ : Subgroup SL(2, ℤ)}
+lemma SlashInvariantFormClass.petersson_smul {k g τ} {Γ : Subgroup (GL (Fin 2) ℝ)} [Γ.HasDetOne]
     [SlashInvariantFormClass F Γ k] {f : F} [SlashInvariantFormClass F' Γ k] {f' : F'}
-    {g : SL(2, ℤ)} (hg : g ∈ Γ) {τ : ℍ} :
-    petersson k f f' (g • τ) = petersson k f f' τ := by
-  simpa only [SlashInvariantFormClass.slash_action_eq _ _ hg]
-    using (petersson_slash_SL k f f' g τ).symm
+    (hg : g ∈ Γ) : petersson k f f' (g • τ) = petersson k f f' τ := by
+  simpa [SlashInvariantFormClass.slash_action_eq _ _ hg, Subgroup.HasDetOne.det_eq hg, σ]
+    using (petersson_slash k f f' g τ).symm
 
 end

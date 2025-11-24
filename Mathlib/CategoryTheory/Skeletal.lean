@@ -3,10 +3,12 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Adjunction.Basic
-import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.IsomorphismClasses
-import Mathlib.CategoryTheory.Thin
+module
+
+public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.Category.Preorder
+public import Mathlib.CategoryTheory.IsomorphismClasses
+public import Mathlib.CategoryTheory.Thin
 
 /-!
 # Skeleton of a category
@@ -22,6 +24,8 @@ separately is that lemmas and definitions about orderings can be used directly, 
 subobject lattice. In addition, some of the commutative diagrams about the functors commute
 definitionally on the nose which is convenient in practice.
 -/
+
+@[expose] public section
 
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
@@ -364,6 +368,25 @@ theorem map_iso_eq {F₁ F₂ : D ⥤ C} (h : F₁ ≅ F₂) : map F₁ = map F�
   Functor.eq_of_iso skeletal
     { hom := mapNatTrans h.hom
       inv := mapNatTrans h.inv }
+
+/--
+Applying `fromThinSkeleton`, `F` and then `toThinSkeleton` is isomorphic to applying `map F`.
+-/
+noncomputable def fromThinSkeletonCompToThinSkeletonIso (F : C ⥤ D) :
+    fromThinSkeleton C ⋙ F ⋙ toThinSkeleton D ≅ map F :=
+  Functor.isoWhiskerLeft (fromThinSkeleton C) (Iso.refl _) ≪≫
+    Functor.isoWhiskerRight (equivalence C).unitIso.symm (map F) ≪≫
+    Functor.leftUnitor (map F)
+
+/--
+Applying `map F` and then `fromThinSkeleton` is isomorphic to first applying `fromThinSkeleton`
+and then applying `F`.
+-/
+noncomputable def mapCompFromThinSkeletonIso [Quiver.IsThin D] (F : C ⥤ D) :
+    map F ⋙ fromThinSkeleton D ≅ fromThinSkeleton C ⋙ F :=
+  Functor.isoWhiskerRight (fromThinSkeletonCompToThinSkeletonIso F).symm _ ≪≫
+    Functor.isoWhiskerLeft (fromThinSkeleton C ⋙ F) (equivalence D).counitIso ≪≫
+    Functor.rightUnitor (fromThinSkeleton C ⋙ F)
 
 /-- `fromThinSkeleton C` exhibits the thin skeleton as a skeleton. -/
 lemma thinSkeleton_isSkeleton : IsSkeletonOf C (ThinSkeleton C) (fromThinSkeleton C) where

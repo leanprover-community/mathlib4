@@ -3,8 +3,10 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Galois.Examples
-import Mathlib.CategoryTheory.Galois.Prorepresentability
+module
+
+public import Mathlib.CategoryTheory.Galois.Examples
+public import Mathlib.CategoryTheory.Galois.Prorepresentability
 
 /-!
 
@@ -17,6 +19,8 @@ of the induced functor `H : C ⥤ Action FintypeCat (Aut F)`.
 See `Mathlib/CategoryTheory/Galois/Full.lean` for the proof that `H` is (faithfully) full.
 
 -/
+
+@[expose] public section
 
 universe u
 

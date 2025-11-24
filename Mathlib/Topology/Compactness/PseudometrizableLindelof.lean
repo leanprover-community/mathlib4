@@ -3,9 +3,10 @@ Copyright (c) 2023 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
+module
 
-import Mathlib.Topology.Metrizable.Basic
-import Mathlib.Topology.Compactness.Lindelof
+public import Mathlib.Topology.Metrizable.Basic
+public import Mathlib.Topology.Compactness.Lindelof
 
 /-!
 # Second-countability of pseudometrizable Lindelöf spaces
@@ -13,6 +14,8 @@ import Mathlib.Topology.Compactness.Lindelof
 Factored out from `Mathlib/Topology/Compactness/Lindelof.lean`
 to avoid circular dependencies.
 -/
+
+@[expose] public section
 
 variable {X : Type*} [TopologicalSpace X]
 

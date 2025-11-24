@@ -3,8 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Data.Finset.Union
+module
+
+public import Mathlib.Data.Finset.Lattice.Fold
+public import Mathlib.Data.Finset.Union
 
 /-!
 # Relating `Finset.biUnion` with lattice operations
@@ -15,6 +17,8 @@ This file shows `Finset.biUnion` could alternatively be defined in terms of `Fin
 
 Remove `Finset.biUnion` in favour of `Finset.sup`.
 -/
+
+@[expose] public section
 
 open Function Multiset OrderDual
 
@@ -27,7 +31,7 @@ section Sup
 
 variable [SemilatticeSup α] [OrderBot α]
 
-@[simp]
+@[simp, grind =]
 theorem sup_biUnion [DecidableEq β] (s : Finset γ) (t : γ → Finset β) :
     (s.biUnion t).sup f = s.sup fun x => (t x).sup f :=
   eq_of_forall_ge_iff fun c => by simp [@forall_swap _ β]
@@ -38,7 +42,7 @@ section Inf
 
 variable [SemilatticeInf α] [OrderTop α]
 
-@[simp] theorem inf_biUnion [DecidableEq β] (s : Finset γ) (t : γ → Finset β) :
+@[simp, grind =] theorem inf_biUnion [DecidableEq β] (s : Finset γ) (t : γ → Finset β) :
     (s.biUnion t).inf f = s.inf fun x => (t x).inf f :=
   @sup_biUnion αᵒᵈ _ _ _ _ _ _ _ _
 

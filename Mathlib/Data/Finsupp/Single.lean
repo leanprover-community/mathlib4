@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
-import Mathlib.Algebra.Notation.Indicator
-import Mathlib.Data.Finsupp.Defs
+module
+
+public import Mathlib.Algebra.Notation.Indicator
+public import Mathlib.Data.Finsupp.Defs
 
 /-!
 # Finitely supported functions on exactly one point
@@ -22,6 +24,8 @@ using one point of the domain.
 
 This file is a `noncomputable theory` and uses classical logic throughout.
 -/
+
+@[expose] public section
 
 assert_not_exists CompleteLattice
 
@@ -299,10 +303,7 @@ theorem update_self : f.update a (f a) = f := by
     simp
 
 @[simp]
-theorem zero_update : update 0 a b = single a b := by
-  classical
-    ext
-    rw [single_eq_update, coe_update, coe_zero]
+theorem zero_update : update 0 a b = single a b := rfl
 
 theorem support_update [DecidableEq α] [DecidableEq M] :
     support (f.update a b) = if b = 0 then f.support.erase a else insert a f.support := by

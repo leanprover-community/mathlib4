@@ -3,12 +3,14 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.Algebra.Field.IsField
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-import Mathlib.RingTheory.Ideal.Maximal
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.Algebra.Field.IsField
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+public import Mathlib.RingTheory.Ideal.Maximal
+public import Mathlib.Tactic.FinCases
 
 /-!
 
@@ -26,6 +28,8 @@ Note that over commutative rings, left ideals and two-sided ideals are equivalen
 
 Support right ideals, and two-sided ideals over non-commutative rings.
 -/
+
+@[expose] public section
 
 
 variable {ι α β F : Type*}
@@ -132,7 +136,7 @@ theorem pow_multiset_sum_mem_span_pow [DecidableEq α] (s : Multiset α) (n : �
   refine Submodule.sum_mem _ ?_
   intro c _hc
   rw [mem_span_insert]
-  by_cases h : n + 1 ≤ c
+  by_cases! h : n + 1 ≤ c
   · refine ⟨a ^ (c - (n + 1)) * s.sum ^ ((Multiset.card s + 1) * n + 1 - c) *
       ((Multiset.card s + 1) * n + 1).choose c, 0, Submodule.zero_mem _, ?_⟩
     rw [mul_comm _ (a ^ (n + 1))]
@@ -141,7 +145,7 @@ theorem pow_multiset_sum_mem_span_pow [DecidableEq α] (s : Multiset α) (n : �
   · use 0
     simp_rw [zero_mul, zero_add]
     refine ⟨_, ?_, rfl⟩
-    replace h : c ≤ n := Nat.lt_succ_iff.mp (not_le.mp h)
+    replace h : c ≤ n := Nat.lt_succ_iff.mp h
     have : (Multiset.card s + 1) * n + 1 - c = Multiset.card s * n + 1 + (n - c) := by
       rw [add_mul, one_mul, add_assoc, add_comm n 1, ← add_assoc, add_tsub_assoc_of_le h]
     rw [this, pow_add]

@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
+module
+
+public import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
 
 /-!
 # Complementary embeddings
@@ -18,6 +20,8 @@ we construct a quasi-isomorphism `shortComplexTruncLEX₃ToTruncGE` between
 the cokernel of `K.ιTruncLE e₁ : K.truncLE e₁ ⟶ K` and `K.truncGE e₂`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits
 

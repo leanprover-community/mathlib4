@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Order.CauSeq.Completion
-import Mathlib.Algebra.Order.Ring.Rat
-import Mathlib.Data.Rat.Cast.Defs
+module
+
+public import Mathlib.Algebra.Order.CauSeq.Completion
+public import Mathlib.Algebra.Order.Ring.Rat
+public import Mathlib.Data.Rat.Cast.Defs
 
 /-!
 # Real numbers from Cauchy sequences
@@ -22,6 +24,8 @@ in order to keep the imports here simple.
 The fact that the real numbers are a (trivial) *-ring has similarly been deferred to
 `Mathlib/Data/Real/Star.lean`.
 -/
+
+@[expose] public section
 
 
 assert_not_exists Finset Module Submonoid FloorRing
@@ -164,12 +168,6 @@ lemma cauchy_ratCast (q : ℚ) : (q : ℝ).cauchy = q := rfl
 instance commRing : CommRing ℝ where
   natCast n := ⟨n⟩
   intCast z := ⟨z⟩
-  zero := (0 : ℝ)
-  one := (1 : ℝ)
-  mul := (· * ·)
-  add := (· + ·)
-  neg := @Neg.neg ℝ _
-  sub := @Sub.sub ℝ _
   npow := @npowRec ℝ ⟨1⟩ ⟨(· * ·)⟩
   nsmul := @nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩
   zsmul := @zsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩ ⟨@Neg.neg ℝ _⟩ (@nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩)
@@ -303,8 +301,6 @@ protected theorem ind_mk {C : Real → Prop} (x : Real) (h : ∀ y, C (mk y)) : 
   exact h _
 
 instance partialOrder : PartialOrder ℝ where
-  le := (· ≤ ·)
-  lt := (· < ·)
   lt_iff_le_not_ge a b := by
     induction a using Real.ind_mk
     induction b using Real.ind_mk
@@ -352,7 +348,7 @@ instance instIsOrderedAddMonoid : IsOrderedAddMonoid ℝ where
       induction c using Real.ind_mk with | _ c =>
       simp only [mk_lt, ← mk_add] at *
       change Pos _ at *
-      rwa [add_sub_add_left_eq_sub]
+      rwa [add_sub_add_right_eq_sub]
 
 @[deprecated (since := "2025-09-15")]
 protected alias add_lt_add_iff_left := _root_.add_lt_add_iff_left
@@ -399,57 +395,55 @@ theorem ofCauchy_inf (a b) : (⟨⟦a ⊓ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊓ ⟨
 theorem mk_inf (a b) : (mk (a ⊓ b) : ℝ) = mk a ⊓ mk b :=
   ofCauchy_inf _ _
 
-instance : DistribLattice ℝ :=
-  { Real.partialOrder with
-    sup := (· ⊔ ·)
-    le := (· ≤ ·)
-    le_sup_left := by
-      intro a b
-      induction a using Real.ind_mk
-      induction b using Real.ind_mk
-      dsimp only; rw [← mk_sup, mk_le]
-      exact CauSeq.le_sup_left
-    le_sup_right := by
-      intro a b
-      induction a using Real.ind_mk
-      induction b using Real.ind_mk
-      dsimp only; rw [← mk_sup, mk_le]
-      exact CauSeq.le_sup_right
-    sup_le := by
-      intro a b c
-      induction a using Real.ind_mk
-      induction b using Real.ind_mk
-      induction c using Real.ind_mk
-      simp_rw [← mk_sup, mk_le]
-      exact CauSeq.sup_le
-    inf := (· ⊓ ·)
-    inf_le_left := by
-      intro a b
-      induction a using Real.ind_mk
-      induction b using Real.ind_mk
-      dsimp only; rw [← mk_inf, mk_le]
-      exact CauSeq.inf_le_left
-    inf_le_right := by
-      intro a b
-      induction a using Real.ind_mk
-      induction b using Real.ind_mk
-      dsimp only; rw [← mk_inf, mk_le]
-      exact CauSeq.inf_le_right
-    le_inf := by
-      intro a b c
-      induction a using Real.ind_mk
-      induction b using Real.ind_mk
-      induction c using Real.ind_mk
-      simp_rw [← mk_inf, mk_le]
-      exact CauSeq.le_inf
-    le_sup_inf := by
-      intro a b c
-      induction a using Real.ind_mk
-      induction b using Real.ind_mk
-      induction c using Real.ind_mk
-      apply Eq.le
-      simp only [← mk_sup, ← mk_inf]
-      exact congr_arg mk (CauSeq.sup_inf_distrib_left ..).symm }
+instance : DistribLattice ℝ where
+  sup := (· ⊔ ·)
+  le_sup_left := by
+    intro a b
+    induction a using Real.ind_mk
+    induction b using Real.ind_mk
+    dsimp only; rw [← mk_sup, mk_le]
+    exact CauSeq.le_sup_left
+  le_sup_right := by
+    intro a b
+    induction a using Real.ind_mk
+    induction b using Real.ind_mk
+    dsimp only; rw [← mk_sup, mk_le]
+    exact CauSeq.le_sup_right
+  sup_le := by
+    intro a b c
+    induction a using Real.ind_mk
+    induction b using Real.ind_mk
+    induction c using Real.ind_mk
+    simp_rw [← mk_sup, mk_le]
+    exact CauSeq.sup_le
+  inf := (· ⊓ ·)
+  inf_le_left := by
+    intro a b
+    induction a using Real.ind_mk
+    induction b using Real.ind_mk
+    dsimp only; rw [← mk_inf, mk_le]
+    exact CauSeq.inf_le_left
+  inf_le_right := by
+    intro a b
+    induction a using Real.ind_mk
+    induction b using Real.ind_mk
+    dsimp only; rw [← mk_inf, mk_le]
+    exact CauSeq.inf_le_right
+  le_inf := by
+    intro a b c
+    induction a using Real.ind_mk
+    induction b using Real.ind_mk
+    induction c using Real.ind_mk
+    simp_rw [← mk_inf, mk_le]
+    exact CauSeq.le_inf
+  le_sup_inf := by
+    intro a b c
+    induction a using Real.ind_mk
+    induction b using Real.ind_mk
+    induction c using Real.ind_mk
+    apply Eq.le
+    simp only [← mk_sup, ← mk_inf]
+    exact congr_arg mk (CauSeq.sup_inf_distrib_left ..).symm
 
 -- Extra instances to short-circuit type class resolution
 instance lattice : Lattice ℝ :=

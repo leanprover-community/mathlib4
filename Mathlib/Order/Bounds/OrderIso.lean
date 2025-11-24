@@ -3,12 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Order.Bounds.Image
-import Mathlib.Order.Hom.Set
+module
+
+public import Mathlib.Order.Bounds.Image
+public import Mathlib.Order.Hom.Set
 
 /-!
 # Order isomorphisms and bounds.
 -/
+
+@[expose] public section
 
 open Set
 
@@ -42,7 +46,7 @@ theorem isGLB_image' {s : Set α} {x : α} : IsGLB (f '' s) (f x) ↔ IsGLB s x 
 
 @[simp]
 theorem isLUB_preimage {s : Set β} {x : α} : IsLUB (f ⁻¹' s) x ↔ IsLUB s (f x) := by
-  rw [← f.symm_symm, ← image_eq_preimage, isLUB_image]
+  rw [← f.symm_symm, ← image_eq_preimage_symm, isLUB_image]
 
 theorem isLUB_preimage' {s : Set β} {x : β} : IsLUB (f ⁻¹' s) (f.symm x) ↔ IsLUB s x := by
   rw [isLUB_preimage, f.apply_symm_apply]

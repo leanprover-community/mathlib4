@@ -3,11 +3,13 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Geometry.Manifold.Algebra.Structures
-import Mathlib.Geometry.Manifold.BumpFunction
-import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
-import Mathlib.Topology.MetricSpace.PartitionOfUnity
-import Mathlib.Topology.ShrinkingLemma
+module
+
+public import Mathlib.Geometry.Manifold.Algebra.Structures
+public import Mathlib.Geometry.Manifold.BumpFunction
+public import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
+public import Mathlib.Topology.MetricSpace.PartitionOfUnity
+public import Mathlib.Topology.ShrinkingLemma
 
 /-!
 # Smooth partition of unity
@@ -56,6 +58,8 @@ function from local functions.
 
 smooth bump function, partition of unity
 -/
+
+@[expose] public section
 
 universe uι uE uH uM uF
 
@@ -737,7 +741,7 @@ theorem IsOpen.exists_msmooth_support_eq {s : Set M} (hs : IsOpen s) :
       ContMDiff I 𝓘(ℝ) ∞ g ∧ Set.range g ⊆ Set.Icc 0 1 := by
     intro i
     apply IsOpen.exists_msmooth_support_eq_aux
-    exact PartialHomeomorph.isOpen_inter_preimage_symm _ hs
+    exact OpenPartialHomeomorph.isOpen_inter_preimage_symm _ hs
   choose g g_supp g_diff hg using A
   have h'g : ∀ c x, 0 ≤ g c x := fun c x ↦ (hg c (mem_range_self (f := g c) x)).1
   have h''g : ∀ c x, 0 ≤ f c x * g c (chartAt H c x) :=

@@ -1,11 +1,14 @@
 /-
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin
+Authors: Johan Commelin, Snir Broshi
 -/
-import Mathlib.Analysis.SpecialFunctions.Complex.Log
-import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
-import Mathlib.Tactic.Rify
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Complex.Log
+public import Mathlib.RingTheory.Int.Basic
+public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+public import Mathlib.Tactic.Rify
 
 /-!
 # Complex roots of unity
@@ -22,6 +25,8 @@ are exactly the complex numbers `exp (2 * π * I * (i / n))` for `i ∈ Finset.r
 
 -/
 
+@[expose] public section
+
 
 namespace Complex
 
@@ -29,7 +34,7 @@ open Polynomial Real
 
 open scoped Nat Real
 
-theorem isPrimitiveRoot_exp_of_coprime (i n : ℕ) (h0 : n ≠ 0) (hi : i.Coprime n) :
+theorem isPrimitiveRoot_exp_of_isCoprime (i : ℤ) (n : ℕ) (h0 : n ≠ 0) (hi : IsCoprime i n) :
     IsPrimitiveRoot (exp (2 * π * I * (i / n))) n := by
   rw [IsPrimitiveRoot.iff_def]
   simp only [← exp_nat_mul, exp_eq_one_iff]
@@ -41,8 +46,40 @@ theorem isPrimitiveRoot_exp_of_coprime (i n : ℕ) (h0 : n ≠ 0) (hi : i.Coprim
     rintro l k hk
     field_simp at hk
     norm_cast at hk
-    have : n ∣ l * i := by rw [← Int.natCast_dvd_natCast, hk]; apply dvd_mul_right
-    exact hi.symm.dvd_of_dvd_mul_right this
+    exact Int.natCast_dvd_natCast.mp <| hi.symm.dvd_of_dvd_mul_right <| hk ▸ dvd_mul_right ..
+
+theorem isPrimitiveRoot_exp_of_coprime (i n : ℕ) (h0 : n ≠ 0) (hi : i.Coprime n) :
+    IsPrimitiveRoot (exp (2 * π * I * (i / n))) n :=
+  isPrimitiveRoot_exp_of_isCoprime _ _ h0 hi.isCoprime
+
+theorem isPrimitiveRoot_exp_rat (q : ℚ) : IsPrimitiveRoot (exp (2 * π * I * q)) q.den := by
+  convert isPrimitiveRoot_exp_of_isCoprime _ _ q.den_nz <|
+    Int.isCoprime_iff_nat_coprime.mpr q.reduced
+  nth_rw 1 [← Rat.num_div_den q]
+  simp
+
+theorem isPrimitiveRoot_exp_rat_of_even_num (q : ℚ) (h : Even q.num) :
+    IsPrimitiveRoot (exp (π * I * q)) q.den := by
+  have ⟨n, hn⟩ := even_iff_exists_two_nsmul _ |>.mp h
+  convert isPrimitiveRoot_exp_rat (n / q.den) using 1
+  · nth_rw 1 [← q.num_div_den, hn, Int.nsmul_eq_mul]
+    push_cast
+    ring_nf
+  · rw [← Int.cast_natCast, ← Rat.divInt_eq_div, ← Rat.mk_eq_divInt (nz := by simp)]
+    apply Nat.Coprime.coprime_mul_left (k := 2)
+    convert q.reduced
+    grind
+
+theorem isPrimitiveRoot_exp_rat_of_odd_num (q : ℚ) (h : Odd q.num) :
+    IsPrimitiveRoot (exp (π * I * q)) (2 * q.den) := by
+  convert isPrimitiveRoot_exp_rat (q / 2) using 1
+  · push_cast
+    ring_nf
+  · nth_rw 2 [← q.num_div_den]
+    rw [mul_comm, div_div, ← Int.cast_ofNat, ← Int.cast_natCast, ← Int.cast_mul,
+      ← Rat.divInt_eq_div, ← Nat.cast_ofNat (R := ℤ), ← Nat.cast_mul,
+      ← Rat.mk_eq_divInt (nz := by simp)
+        (c := Nat.Coprime.mul_right q.reduced h.natAbs.coprime_two_right)]
 
 theorem isPrimitiveRoot_exp (n : ℕ) (h0 : n ≠ 0) : IsPrimitiveRoot (exp (2 * π * I / n)) n := by
   simpa only [Nat.cast_one, one_div] using
@@ -60,7 +97,7 @@ theorem isPrimitiveRoot_iff (ζ : ℂ) (n : ℕ) (hn : n ≠ 0) :
   refine ⟨i, hi, ((isPrimitiveRoot_exp n hn).pow_iff_coprime (Nat.pos_of_ne_zero hn) i).mp h, ?_⟩
   rw [← exp_nat_mul]
   congr 1
-  field_simp
+  ring
 
 /-- The complex `n`-th roots of unity are exactly the
 complex numbers of the form `exp (2 * Real.pi * Complex.I * (i / n))` for some `i < n`. -/
@@ -75,7 +112,7 @@ nonrec theorem mem_rootsOfUnity (n : ℕ) [NeZero n] (x : Units ℂ) :
     refine ⟨i, hi, ?_⟩
     rw [← H, ← exp_nat_mul]
     congr 1
-    field_simp
+    ring
   · rintro ⟨i, _, H⟩
     rw [← H, ← exp_nat_mul, exp_eq_one_iff]
     use i

@@ -3,10 +3,12 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.Option.Defs
-import Mathlib.Data.Sigma.Basic
-import Mathlib.Logic.Equiv.Prod
-import Mathlib.Tactic.Coe
+module
+
+public import Mathlib.Data.Option.Defs
+public import Mathlib.Data.Sigma.Basic
+public import Mathlib.Logic.Equiv.Prod
+public import Mathlib.Tactic.Coe
 
 /-!
 # Equivalence between sum types
@@ -30,6 +32,8 @@ E.g., `Mathlib/Algebra/Equiv/TransferInstance.lean` does it for many algebraic t
 equivalence, congruence, bijective map
 -/
 
+@[expose] public section
+
 universe u v w z
 
 open Function
@@ -51,11 +55,11 @@ def psumEquivSum (α β) : α ⊕' β ≃ α ⊕ β where
   right_inv s := by cases s <;> rfl
 
 /-- If `α ≃ α'` and `β ≃ β'`, then `α ⊕ β ≃ α' ⊕ β'`. This is `Sum.map` as an equivalence. -/
-@[simps apply]
+@[simps (attr := grind =) apply]
 def sumCongr {α₁ α₂ β₁ β₂} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) : α₁ ⊕ β₁ ≃ α₂ ⊕ β₂ :=
   ⟨Sum.map ea eb, Sum.map ea.symm eb.symm, fun x => by simp, fun x => by simp⟩
 
-@[simp]
+@[simp, grind =]
 theorem sumCongr_trans {α₁ α₂ β₁ β₂ γ₁ γ₂} (e : α₁ ≃ β₁) (f : α₂ ≃ β₂) (g : β₁ ≃ γ₁) (h : β₂ ≃ γ₂) :
     (Equiv.sumCongr e f).trans (Equiv.sumCongr g h) = Equiv.sumCongr (e.trans g) (f.trans h) := by
   ext i
@@ -252,7 +256,7 @@ the sum of the two subtypes `{a // p a}` and its complement `{a // ¬ p a}`
 is naturally equivalent to `α`.
 
 See `subtypeOrEquiv` for sum types over subtypes `{x // p x}` and `{x // q x}`
-that are not necessarily `IsCompl p q`. -/
+that are not necessarily `IsCompl p q`. See also `Equiv.Set.sumCompl` for a version on sets. -/
 def sumCompl {α : Type*} (p : α → Prop) [DecidablePred p] :
     { a // p a } ⊕ { a // ¬p a } ≃ α where
   toFun := Sum.elim Subtype.val Subtype.val
@@ -266,24 +270,39 @@ def sumCompl {α : Type*} (p : α → Prop) [DecidablePred p] :
     split_ifs <;> rfl
 
 @[simp]
-theorem sumCompl_apply_inl {α} (p : α → Prop) [DecidablePred p] (x : { a // p a }) :
+theorem sumCompl_apply_inl {α} {p : α → Prop} [DecidablePred p] (x : { a // p a }) :
     sumCompl p (Sum.inl x) = x :=
   rfl
 
 @[simp]
-theorem sumCompl_apply_inr {α} (p : α → Prop) [DecidablePred p] (x : { a // ¬p a }) :
+theorem sumCompl_apply_inr {α} {p : α → Prop} [DecidablePred p] (x : { a // ¬p a }) :
     sumCompl p (Sum.inr x) = x :=
   rfl
 
 @[simp]
-theorem sumCompl_apply_symm_of_pos {α} (p : α → Prop) [DecidablePred p] (a : α) (h : p a) :
+theorem sumCompl_symm_apply_of_pos {α} {p : α → Prop} [DecidablePred p] {a : α} (h : p a) :
     (sumCompl p).symm a = Sum.inl ⟨a, h⟩ :=
   dif_pos h
 
 @[simp]
-theorem sumCompl_apply_symm_of_neg {α} (p : α → Prop) [DecidablePred p] (a : α) (h : ¬p a) :
+theorem sumCompl_symm_apply_of_neg {α} {p : α → Prop} [DecidablePred p] {a : α} (h : ¬p a) :
     (sumCompl p).symm a = Sum.inr ⟨a, h⟩ :=
   dif_neg h
+
+@[deprecated (since := "2025-10-28")]
+alias sumCompl_apply_symm_of_pos := sumCompl_symm_apply_of_pos
+@[deprecated (since := "2025-10-28")]
+alias sumCompl_apply_symm_of_neg := sumCompl_symm_apply_of_neg
+
+@[simp]
+theorem sumCompl_symm_apply_pos {α} {p : α → Prop} [DecidablePred p] (x : {x // p x}) :
+    (sumCompl p).symm x = Sum.inl x :=
+  sumCompl_symm_apply_of_pos x.2
+
+@[simp]
+theorem sumCompl_symm_apply_neg {α} {p : α → Prop} [DecidablePred p] (x : {x // ¬ p x}) :
+    (sumCompl p).symm x = Sum.inr x :=
+  sumCompl_symm_apply_of_neg x.2
 
 end sumCompl
 
@@ -327,7 +346,7 @@ def sigmaSumDistrib {ι} (α β : ι → Type*) :
     Sum.elim (Sigma.map id fun _ => Sum.inl) (Sigma.map id fun _ => Sum.inr), fun p => by
     rcases p with ⟨i, a | b⟩ <;> rfl, fun p => by rcases p with (⟨i, a⟩ | ⟨i, b⟩) <;> rfl⟩
 
-/-- A type indexed by  disjoint sums of types is equivalent to the sum of the sums. Compare with
+/-- A type indexed by disjoint sums of types is equivalent to the sum of the sums. Compare with
 `Equiv.sigmaSumDistrib` which has the sums as the output type. -/
 @[simps]
 def sumSigmaDistrib {α β} (t : α ⊕ β → Type*) :

@@ -3,9 +3,11 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.Order.GroupWithZero.Synonym
-import Mathlib.Tactic.Common
+module
+
+public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.Order.GroupWithZero.Synonym
+public import Mathlib.Tactic.Common
 
 /-!
 # Actions by and on order synonyms
@@ -18,6 +20,8 @@ the `SMul` instances are already defined in `Mathlib/Algebra/Order/Group/Synonym
 * `Mathlib/Algebra/Order/Group/Action/Synonym.lean`
 * `Mathlib/Algebra/Order/Module/Synonym.lean`
 -/
+
+@[expose] public section
 
 variable {G₀ M₀ : Type*}
 

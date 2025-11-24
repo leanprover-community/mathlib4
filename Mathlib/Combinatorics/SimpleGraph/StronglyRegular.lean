@@ -3,8 +3,10 @@ Copyright (c) 2021 Alena Gusakov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alena Gusakov, Jeremy Tan
 -/
-import Mathlib.Combinatorics.Enumerative.DoubleCounting
-import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
+module
+
+public import Mathlib.Combinatorics.Enumerative.DoubleCounting
+public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 
 /-!
 # Strongly regular graphs
@@ -25,6 +27,8 @@ import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 * `IsSRGWith.matrix_eq`: let `A` and `C` be `G`'s and `Gᶜ`'s adjacency matrices respectively and
   `I` be the identity matrix, then `A ^ 2 = k • I + ℓ • A + μ • C`.
 -/
+
+@[expose] public section
 
 
 open Finset

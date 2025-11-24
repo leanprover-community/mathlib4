@@ -3,9 +3,11 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.PiNat
-import Mathlib.Topology.Metrizable.CompletelyMetrizable
-import Mathlib.Topology.Sets.Opens
+module
+
+public import Mathlib.Topology.MetricSpace.PiNat
+public import Mathlib.Topology.Metrizable.CompletelyMetrizable
+public import Mathlib.Topology.Sets.Opens
 
 /-!
 # Polish spaces
@@ -39,6 +41,8 @@ with additional properties:
   `isClopenable_iff_measurableSet`.
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open Filter Function Metric TopologicalSpace Set Topology
@@ -63,18 +67,6 @@ instance [TopologicalSpace α] [SeparableSpace α] [IsCompletelyMetrizableSpace 
   letI := upgradeIsCompletelyMetrizable α
   haveI := UniformSpace.secondCountable_of_separable α
   constructor
-
-@[deprecated (since := "2025-03-14")] alias UpgradedPolishSpace :=
-  UpgradedIsCompletelyMetrizableSpace
-
-@[deprecated (since := "2025-03-14")] alias polishSpaceMetric :=
-  completelyMetrizableMetric
-
-@[deprecated (since := "2025-03-14")] alias complete_polishSpaceMetric :=
-  complete_completelyMetrizableMetric
-
-@[deprecated (since := "2025-03-14")] alias upgradePolishSpace :=
-  upgradeIsCompletelyMetrizable
 
 namespace PolishSpace
 

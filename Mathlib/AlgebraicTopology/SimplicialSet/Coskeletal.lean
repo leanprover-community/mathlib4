@@ -3,10 +3,12 @@ Copyright (c) 2024 Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Emily Riehl, Joël Riou
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject.Coskeletal
-import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
-import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-import Mathlib.CategoryTheory.Functor.KanExtension.Basic
+module
+
+public import Mathlib.AlgebraicTopology.SimplicialObject.Coskeletal
+public import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
+public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
+public import Mathlib.CategoryTheory.Functor.KanExtension.Basic
 
 /-!
 # Coskeletal simplicial sets
@@ -18,9 +20,11 @@ This isomorphism follows from the fact that `rightExtensionInclusion X 2` is a r
 extension. In fact, we show that when `X` is `StrictSegal` then
 `(rightExtensionInclusion X n).IsPointwiseRightKanExtension` holds.
 
-As an example, `SimplicialObject.IsCoskeletal (nerve C) 2` shows that that nerves of categories
-are 2-coskeletal.
+As an example, `SimplicialObject.IsCoskeletal (nerve C) 2` shows that nerves of categories are
+2-coskeletal.
 -/
+
+@[expose] public section
 
 
 universe v u
@@ -242,6 +246,10 @@ instance (C : Type u) [Category.{v} C] :
 /-- The essential data of the nerve functor is contained in the 2-truncation, which is
 recorded by the composite functor `nerveFunctor₂`. -/
 def nerveFunctor₂ : Cat.{v, u} ⥤ SSet.Truncated 2 := nerveFunctor ⋙ truncation 2
+
+instance (X : Cat.{v, u}) : (nerveFunctor₂.obj X).IsStrictSegal := by
+  dsimp [nerveFunctor₂]
+  infer_instance
 
 /-- The natural isomorphism between `nerveFunctor` and `nerveFunctor₂ ⋙ Truncated.cosk 2` whose
 components `nerve C ≅ (Truncated.cosk 2).obj (nerveFunctor₂.obj C)` shows that nerves of categories

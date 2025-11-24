@@ -3,10 +3,12 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.Additive.AP.Three.Defs
-import Mathlib.Combinatorics.Additive.Corner.Defs
-import Mathlib.Combinatorics.SimpleGraph.Triangle.Removal
-import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
+module
+
+public import Mathlib.Combinatorics.Additive.AP.Three.Defs
+public import Mathlib.Combinatorics.Additive.Corner.Defs
+public import Mathlib.Combinatorics.SimpleGraph.Triangle.Removal
+public import Mathlib.Combinatorics.SimpleGraph.Triangle.Tripartite
 
 /-!
 # The corners theorem and Roth's theorem
@@ -18,6 +20,8 @@ This file proves the corners theorem and Roth's theorem on arithmetic progressio
 * [Yaël Dillies, Bhavik Mehta, *Formalising Szemerédi’s Regularity Lemma in Lean*][srl_itp]
 * [Wikipedia, *Corners theorem*](https://en.wikipedia.org/wiki/Corners_theorem)
 -/
+
+@[expose] public section
 
 open Finset SimpleGraph TripartiteFromTriangles
 open Function hiding graph

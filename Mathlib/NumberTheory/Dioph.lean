@@ -3,10 +3,12 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fin.Fin2
-import Mathlib.Data.PFun
-import Mathlib.Data.Vector3
-import Mathlib.NumberTheory.PellMatiyasevic
+module
+
+public import Mathlib.Data.Fin.Fin2
+public import Mathlib.Data.PFun
+public import Mathlib.Data.Vector3
+public import Mathlib.NumberTheory.PellMatiyasevic
 
 /-!
 # Diophantine functions and Matiyasevic's theorem
@@ -48,6 +50,8 @@ Matiyasevic's theorem, Hilbert's tenth problem
 * Finish the solution of Hilbert's tenth problem.
 * Connect `Poly` to `MvPolynomial`
 -/
+
+@[expose] public section
 
 
 open Fin2 Function Nat Sum
@@ -165,10 +169,6 @@ theorem mul_apply (f g : Poly α) (x : α → ℕ) : (f * g) x = f x * g x := rf
 instance (α : Type*) : Inhabited (Poly α) := ⟨0⟩
 
 instance : AddCommGroup (Poly α) where
-  add := ((· + ·) : Poly α → Poly α → Poly α)
-  neg := (Neg.neg : Poly α → Poly α)
-  sub := Sub.sub
-  zero := 0
   nsmul := @nsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩
   zsmul := @zsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩ ⟨Neg.neg⟩ (@nsmulRec _ ⟨(0 : Poly α)⟩ ⟨(· + ·)⟩)
   add_zero _ := by ext; simp_rw [add_apply, zero_apply, add_zero]
@@ -177,16 +177,13 @@ instance : AddCommGroup (Poly α) where
   add_assoc _ _ _ := by ext; simp_rw [add_apply, ← add_assoc]
   neg_add_cancel _ := by ext; simp_rw [add_apply, neg_apply, neg_add_cancel, zero_apply]
 
-instance : AddGroupWithOne (Poly α) :=
-  { (inferInstance : AddCommGroup (Poly α)) with
-      one := 1
-      natCast := fun n => Poly.const n
-      intCast := Poly.const }
+instance : AddGroupWithOne (Poly α) where
+  natCast := fun n => Poly.const n
+  intCast := Poly.const
 
 instance : CommRing (Poly α) where
   __ := (inferInstance : AddCommGroup (Poly α))
   __ := (inferInstance : AddGroupWithOne (Poly α))
-  mul := (· * ·)
   npow := @npowRec _ ⟨(1 : Poly α)⟩ ⟨(· * ·)⟩
   mul_zero _ := by ext; rw [mul_apply, zero_apply, mul_zero]
   zero_mul _ := by ext; rw [mul_apply, zero_apply, zero_mul]
@@ -214,7 +211,7 @@ def sumsq : List (Poly α) → Poly α
   | [] => 0
   | p::ps => p * p + sumsq ps
 
-theorem sumsq_nonneg (x : α → ℕ) : ∀ l, 0 ≤ sumsq l x
+@[simp] theorem sumsq_nonneg (x : α → ℕ) : ∀ l, 0 ≤ sumsq l x
   | [] => le_refl 0
   | p::ps => by
     rw [sumsq]
@@ -222,20 +219,7 @@ theorem sumsq_nonneg (x : α → ℕ) : ∀ l, 0 ≤ sumsq l x
 
 theorem sumsq_eq_zero (x) : ∀ l, sumsq l x = 0 ↔ l.Forall fun a : Poly α => a x = 0
   | [] => eq_self_iff_true _
-  | p::ps => by
-    rw [List.forall_cons, ← sumsq_eq_zero _ ps]; rw [sumsq]
-    exact
-      ⟨fun h : p x * p x + sumsq ps x = 0 =>
-        have : p x = 0 :=
-          eq_zero_of_mul_self_eq_zero <|
-            le_antisymm
-              (by
-                rw [← h]
-                have t := add_le_add_left (sumsq_nonneg x ps) (p x * p x)
-                rwa [add_zero] at t)
-              (mul_self_nonneg _)
-        ⟨this, by simpa [this] using h⟩,
-      fun ⟨h1, h2⟩ => by rw [add_apply, mul_apply, h1, h2]; rfl⟩
+  | p::ps => by simp [sumsq, add_eq_zero_iff_of_nonneg, mul_self_nonneg, sumsq_eq_zero]
 
 end
 
@@ -625,7 +609,7 @@ theorem modEq_dioph {h : (α → ℕ) → ℕ} (dh : DiophFn h) : Dioph fun v =>
   df D% dh D= dg D% dh
 
 @[inherit_doc]
-scoped notation " D≡ " => Dioph.modEq_dioph
+scoped notation "D≡ " => Dioph.modEq_dioph
 
 /-- Diophantine functions are closed under integer division. -/
 theorem div_dioph : DiophFn fun v => f v / g v :=

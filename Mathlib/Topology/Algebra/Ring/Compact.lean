@@ -3,17 +3,19 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.DedekindDomain.Factorization
-import Mathlib.RingTheory.DiscreteValuationRing.Basic
-import Mathlib.RingTheory.HopkinsLevitzki
-import Mathlib.RingTheory.IntegralDomain
-import Mathlib.RingTheory.LocalRing.Quotient
-import Mathlib.Topology.Algebra.Group.ClosedSubgroup
-import Mathlib.Topology.Algebra.Field
-import Mathlib.Topology.Algebra.Module.Basic
-import Mathlib.Topology.Algebra.Module.Compact
-import Mathlib.Topology.Algebra.OpenSubgroup
-import Mathlib.Topology.Algebra.Ring.Ideal
+module
+
+public import Mathlib.RingTheory.DedekindDomain.Factorization
+public import Mathlib.RingTheory.DiscreteValuationRing.Basic
+public import Mathlib.RingTheory.HopkinsLevitzki
+public import Mathlib.RingTheory.IntegralDomain
+public import Mathlib.RingTheory.LocalRing.Quotient
+public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
+public import Mathlib.Topology.Algebra.Field
+public import Mathlib.Topology.Algebra.Module.Basic
+public import Mathlib.Topology.Algebra.Module.Compact
+public import Mathlib.Topology.Algebra.OpenSubgroup
+public import Mathlib.Topology.Algebra.Ring.Ideal
 
 /-!
 
@@ -34,6 +36,8 @@ Show that compact Hausdorff rings are totally disconnected and linearly topologi
 See https://ncatlab.org/nlab/show/compact+Hausdorff+rings+are+profinite
 
 -/
+
+@[expose] public section
 
 attribute [local instance] Ideal.Quotient.field Fintype.ofFinite finite_of_compact_of_discrete
   DivisionRing.finite_of_compactSpace_of_t2Space
@@ -104,7 +108,7 @@ instance finite_residueField_of_compactSpace : Finite (ResidueField R) :=
 lemma isOpen_iff_finite_quotient {I : Ideal R} :
     IsOpen (X := R) I ↔ Finite (R ⧸ I) := by
   refine ⟨AddSubgroup.quotient_finite_of_isOpen I.toAddSubgroup, fun H ↦ ?_⟩
-  obtain ⟨n, hn⟩ := exists_maximalIdeal_pow_le_of_finite_quotient I
+  obtain ⟨n, hn⟩ := exists_maximalIdeal_pow_le_of_isArtinianRing_quotient I
   exact AddSubgroup.isOpen_mono (H₁ := (maximalIdeal R ^ n).toAddSubgroup)
     (H₂ := I.toAddSubgroup) hn (isOpen_maximalIdeal_pow R n)
 

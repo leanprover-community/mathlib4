@@ -3,10 +3,12 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Sites.Grothendieck
-import Mathlib.CategoryTheory.Sites.Pretopology
-import Mathlib.CategoryTheory.Limits.Lattice
-import Mathlib.Topology.Sets.Opens
+module
+
+public import Mathlib.CategoryTheory.Sites.Grothendieck
+public import Mathlib.CategoryTheory.Sites.Pretopology
+public import Mathlib.CategoryTheory.Limits.Lattice
+public import Mathlib.Topology.Sets.Opens
 
 /-!
 # Grothendieck topology on a topological space
@@ -30,6 +32,8 @@ site, Grothendieck topology, space
 We define the two separately, rather than defining the Grothendieck topology as that generated
 by the pretopology for the purpose of having nice definitional properties for the sieves.
 -/
+
+@[expose] public section
 
 
 universe u

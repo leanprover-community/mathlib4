@@ -3,8 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Tactic.CategoryTheory.Reassoc
-import Mathlib.CategoryTheory.Comma.Over.Basic
+module
+
+public import Mathlib.Tactic.CategoryTheory.Reassoc
+public import Mathlib.CategoryTheory.Comma.Over.Basic
 
 /-!
 # Typeclasses for `S`-objects and `S`-morphisms
@@ -13,7 +15,7 @@ import Mathlib.CategoryTheory.Comma.Over.Basic
 This is only a sensible approach when the morphism is considered as a structure on `X`,
 typically in algebraic geometry.
 
-This is analogous to to how we view ringhoms as structures via the `Algebra` typeclass.
+This is analogous to how we view ringhoms as structures via the `Algebra` typeclass.
 
 For other applications use unbundled arrows or `CategoryTheory.Over`.
 
@@ -24,6 +26,8 @@ For other applications use unbundled arrows or `CategoryTheory.Over`.
   `HomIsOver f S` asserts that `f` commutes with the structure morphisms.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory
 

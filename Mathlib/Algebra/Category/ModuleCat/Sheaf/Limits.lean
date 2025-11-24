@@ -3,9 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
-import Mathlib.Algebra.Category.ModuleCat.Sheaf
-import Mathlib.CategoryTheory.Sites.Limits
+module
+
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
+public import Mathlib.Algebra.Category.ModuleCat.Sheaf
+public import Mathlib.CategoryTheory.Sites.Limits
 
 /-! # Limits in categories of sheaves of modules
 
@@ -16,6 +18,8 @@ limits exist in the category `SheafOfModules R`.
 * do the same for colimits (which requires constructing the associated sheaf of modules functor)
 
 -/
+
+@[expose] public section
 
 universe v v₁ v₂ u₁ u₂ u
 
@@ -30,11 +34,11 @@ variable {R : Cᵒᵖ ⥤ RingCat.{u}}
   {F : D ⥤ PresheafOfModules.{v} R}
   [∀ X, Small.{v} ((F ⋙ evaluation R X) ⋙ forget _).sections]
   {c : Cone F}
-  [HasLimitsOfShape D AddCommGrp.{v}]
+  [HasLimitsOfShape D AddCommGrpCat.{v}]
 
 lemma isSheaf_of_isLimit (hc : IsLimit c) (hF : ∀ j, Presheaf.IsSheaf J (F.obj j).presheaf) :
     Presheaf.IsSheaf J (c.pt.presheaf) := by
-  let G : D ⥤ Sheaf J AddCommGrp.{v} :=
+  let G : D ⥤ Sheaf J AddCommGrpCat.{v} :=
     { obj := fun j => ⟨(F.obj j).presheaf, hF j⟩
       map := fun φ => ⟨(PresheafOfModules.toPresheaf R).map (F.map φ)⟩ }
   exact Sheaf.isSheaf_of_isLimit G _ (isLimitOfPreserves (toPresheaf R) hc)
@@ -49,7 +53,7 @@ section Limits
 
 variable (F : D ⥤ SheafOfModules.{v} R)
   [∀ X, Small.{v} ((F ⋙ evaluation R X) ⋙ CategoryTheory.forget _).sections]
-  [HasLimitsOfShape D AddCommGrp.{v}]
+  [HasLimitsOfShape D AddCommGrpCat.{v}]
 
 instance (X : Cᵒᵖ) : Small.{v} (((F ⋙ forget _) ⋙ PresheafOfModules.evaluation _ X) ⋙
     CategoryTheory.forget _).sections := by

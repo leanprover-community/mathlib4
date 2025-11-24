@@ -3,9 +3,11 @@ Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Analysis.Normed.Algebra.Exponential
-import Mathlib.Analysis.Normed.Lp.ProdLp
-import Mathlib.Topology.Instances.TrivSqZeroExt
+module
+
+public import Mathlib.Analysis.Normed.Algebra.Exponential
+public import Mathlib.Analysis.Normed.Lp.ProdLp
+public import Mathlib.Topology.Instances.TrivSqZeroExt
 
 /-!
 # Results on `TrivSqZeroExt R M` related to the norm
@@ -46,6 +48,8 @@ we could keep the collection of instances behind an `open scoped`.
   https://link.springer.com/chapter/10.1007/978-3-540-44953-9_2).
 
 -/
+
+@[expose] public section
 
 
 variable (𝕜 : Type*) {S R M : Type*}
@@ -196,15 +200,16 @@ variable [Algebra S R] [Module S M]
 variable [IsBoundedSMul S R] [IsBoundedSMul S M]
 
 instance instL1SeminormedAddCommGroup : SeminormedAddCommGroup (tsze R M) :=
-  inferInstanceAs <| SeminormedAddCommGroup (WithLp 1 <| R × M)
+  WithLp.seminormedAddCommGroupToProd 1 R M
 
 example :
     (TrivSqZeroExt.instUniformSpace : UniformSpace (tsze R M)) =
     PseudoMetricSpace.toUniformSpace := rfl
 
 theorem norm_def (x : tsze R M) : ‖x‖ = ‖fst x‖ + ‖snd x‖ := by
-  rw [WithLp.prod_norm_eq_add (by simp)]
-  simp only [ENNReal.toReal_one, Real.rpow_one, div_one, fst, snd]
+  rw [WithLp.norm_seminormedAddCommGroupToProd, WithLp.prod_norm_eq_add (by norm_num)]
+  simp only [WithLp.toLp_fst, ENNReal.toReal_one, Real.rpow_one, WithLp.toLp_snd, ne_eq,
+    one_ne_zero, not_false_eq_true, div_self, fst, snd]
 
 theorem nnnorm_def (x : tsze R M) : ‖x‖₊ = ‖fst x‖₊ + ‖snd x‖₊ := by
   ext; simp [norm_def]
@@ -236,11 +241,10 @@ instance instL1SeminormedRing : SeminormedRing (tsze R M) where
   __ : Ring (tsze R M) := inferInstance
 
 instance instL1IsBoundedSMul : IsBoundedSMul S (tsze R M) :=
-  inferInstanceAs <| IsBoundedSMul S (WithLp 1 <| R × M)
+  WithLp.isBoundedSMulSeminormedAddCommGroupToProd 1 R M
 
 instance [NormOneClass R] : NormOneClass (tsze R M) where
   norm_one := by rw [norm_def, fst_one, snd_one, norm_zero, norm_one, add_zero]
-
 
 end Ring
 
@@ -266,7 +270,7 @@ variable [NormedRing R] [NormedAddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M
 variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 
 instance instL1NormedAddCommGroup : NormedAddCommGroup (tsze R M) :=
-  inferInstanceAs <| NormedAddCommGroup (WithLp 1 <| R × M)
+  WithLp.normedAddCommGroupToProd 1 R M
 
 instance instL1NormedRing : NormedRing (tsze R M) where
   __ : NormedAddCommGroup (tsze R M) := inferInstance
@@ -294,7 +298,7 @@ variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐ�
 variable [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
 
 instance instL1NormedSpace : NormedSpace 𝕜 (tsze R M) :=
-  inferInstanceAs <| NormedSpace 𝕜 (WithLp 1 <| R × M)
+  WithLp.normedSpaceSeminormedAddCommGroupToProd 1 R M
 
 instance instL1NormedAlgebra : NormedAlgebra 𝕜 (tsze R M) where
   norm_smul_le := _root_.norm_smul_le

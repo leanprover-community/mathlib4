@@ -3,8 +3,10 @@ Copyright (c) 2025 Moisés Herradón Cueto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moisés Herradón Cueto
 -/
-import Mathlib.CategoryTheory.Comma.Over.Basic
-import Mathlib.CategoryTheory.WithTerminal.Basic
+module
+
+public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.CategoryTheory.WithTerminal.Basic
 
 /-!
 # Relations between `Cone`, `WithTerminal` and `Over`
@@ -14,6 +16,8 @@ it has an obvious lift `liftFromOver K : WithTerminal J ⥤ C`, namely, send the
 object to `X`. These two functors have equivalent categories of cones (`coneEquiv`).
 As a corollary, the limit of `K` is the limit of `liftFromOver K`, and vice-versa.
 -/
+
+@[expose] public section
 
 open CategoryTheory Limits
 

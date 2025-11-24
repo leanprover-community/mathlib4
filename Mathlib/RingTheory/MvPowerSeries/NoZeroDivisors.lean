@@ -3,10 +3,11 @@ Copyright (c) 2024 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.Data.Finsupp.WellFounded
-import Mathlib.RingTheory.MvPowerSeries.LexOrder
-import Mathlib.RingTheory.MvPowerSeries.Order
+public import Mathlib.Data.Finsupp.WellFounded
+public import Mathlib.RingTheory.MvPowerSeries.LexOrder
+public import Mathlib.RingTheory.MvPowerSeries.Order
 
 /-! # ZeroDivisors in a MvPowerSeries ring
 
@@ -18,7 +19,7 @@ is itself not a zero divisor
 - `MvPowerSeries.order_mul` : multiplicativity of `MvPowerSeries.order`
   if the semiring `R` has no zero divisors
 
-##  Instance
+## Instance
 
 If `R` has `NoZeroDivisors`, then so does `MvPowerSeries σ R`.
 
@@ -33,6 +34,8 @@ The analogue of `Polynomial.notMem_nonZeroDivisors_iff`
 (McCoy theorem) holds for power series over a Noetherian ring,
 but not in general. See [Fields1971]
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -174,9 +177,20 @@ theorem weightedOrder_mul (w : σ → ℕ) (f g : MvPowerSeries σ R) :
   · rw [not_lt_top_iff] at hf
     simp [hf]
 
+theorem weightedOrder_prod {R : Type*} [CommSemiring R] [NoZeroDivisors R] [Nontrivial R]
+    {ι : Type*} (w : σ → ℕ) (f : ι → MvPowerSeries σ R) (s : Finset ι) :
+    (∏ i ∈ s, f i).weightedOrder w = ∑ i ∈ s, (f i).weightedOrder w := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s ha ih => rw [Finset.sum_cons ha, Finset.prod_cons ha, weightedOrder_mul, ih]
+
 theorem order_mul (f g : MvPowerSeries σ R) :
     (f * g).order = f.order + g.order :=
   weightedOrder_mul _ f g
+
+theorem order_prod {R : Type*} [CommSemiring R] [NoZeroDivisors R] [Nontrivial R]
+    {ι : Type*} (f : ι → MvPowerSeries σ R) (s : Finset ι) :
+    (∏ i ∈ s, f i).order = ∑ i ∈ s, (f i).order := weightedOrder_prod _ _ _
 
 end MvPowerSeries
 

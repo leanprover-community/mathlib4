@@ -3,11 +3,13 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.RingTheory.Ideal.Over
-import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.Localization.Basic
-import Mathlib.RingTheory.Localization.Ideal
-import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
+module
+
+public import Mathlib.RingTheory.Ideal.Over
+public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+public import Mathlib.RingTheory.Localization.Basic
+public import Mathlib.RingTheory.Localization.Ideal
+public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 
 /-!
 # Localizations of commutative rings at the complement of a prime ideal
@@ -31,6 +33,8 @@ See `RingTheory.Localization.Basic` for a design overview.
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
+
+@[expose] public section
 
 
 variable {R : Type*} [CommSemiring R] (S : Type*) [CommSemiring S]
@@ -70,9 +74,9 @@ theorem AtPrime.isLocalRing [IsLocalization.AtPrime S P] : IsLocalRing S :=
       have : ∀ {r : R} {s : P.primeCompl}, mk' S r s ∈ nonunits S → r ∈ P := fun {r s} =>
         not_imp_comm.1 fun nr => isUnit_iff_exists_inv.2 ⟨mk' S ↑s (⟨r, nr⟩ : P.primeCompl),
           mk'_mul_mk'_eq_one' _ _ <| show r ∈ P.primeCompl from nr⟩
-      rcases mk'_surjective P.primeCompl x with ⟨rx, sx, hrx⟩
-      rcases mk'_surjective P.primeCompl y with ⟨ry, sy, hry⟩
-      rcases mk'_surjective P.primeCompl z with ⟨rz, sz, hrz⟩
+      rcases exists_mk'_eq P.primeCompl x with ⟨rx, sx, hrx⟩
+      rcases exists_mk'_eq P.primeCompl y with ⟨ry, sy, hry⟩
+      rcases exists_mk'_eq P.primeCompl z with ⟨rz, sz, hrz⟩
       rw [← hrx, ← hry, ← hrz, ← mk'_add, ← mk'_mul, ← mk'_self S P.primeCompl.one_mem] at hxyz
       rw [← hrx] at hx
       rw [← hry] at hy
@@ -123,6 +127,11 @@ instance isDomain_of_local_atPrime {P : Ideal A} (_ : P.IsPrime) :
     IsDomain (Localization.AtPrime P) :=
   isDomain_localization P.primeCompl_le_nonZeroDivisors
 
+/-- This is an `IsLocalization.AtPrime` version for `IsLocalization.isDomain_of_local_atPrime`. -/
+theorem isDomain_of_atPrime (S : Type*) [CommSemiring S] [Algebra A S]
+    (P : Ideal A) [P.IsPrime] [IsLocalization.AtPrime S P] : IsDomain S :=
+  isDomain_of_le_nonZeroDivisors S P.primeCompl_le_nonZeroDivisors
+
 namespace AtPrime
 
 variable (I : Ideal R) [hI : I.IsPrime] [IsLocalization.AtPrime S I]
@@ -157,6 +166,10 @@ theorem to_map_mem_maximal_iff (x : R) (h : IsLocalRing S := isLocalRing S I) :
 theorem comap_maximalIdeal (h : IsLocalRing S := isLocalRing S I) :
     (IsLocalRing.maximalIdeal S).comap (algebraMap R S) = I :=
   Ideal.ext fun x => by simpa only [Ideal.mem_comap] using to_map_mem_maximal_iff _ I x
+
+theorem liesOver_maximalIdeal (h : IsLocalRing S := isLocalRing S I) :
+    (IsLocalRing.maximalIdeal S).LiesOver I :=
+  (Ideal.liesOver_iff _ _).mpr (comap_maximalIdeal _ _).symm
 
 theorem isUnit_mk'_iff (x : R) (y : I.primeCompl) : IsUnit (mk' S x y) ↔ x ∈ I.primeCompl :=
   ⟨fun h hx => mk'_mem_iff.mpr ((to_map_mem_maximal_iff S I x).mpr hx) h, fun h =>
@@ -235,7 +248,7 @@ theorem localRingHom_mk' (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.
 theorem isLocalHom_localRingHom (J : Ideal P) [hJ : J.IsPrime] (f : R →+* P)
     (hIJ : I = J.comap f) : IsLocalHom (localRingHom I J f hIJ) :=
   IsLocalHom.mk fun x hx => by
-    rcases IsLocalization.mk'_surjective I.primeCompl x with ⟨r, s, rfl⟩
+    rcases IsLocalization.exists_mk'_eq I.primeCompl x with ⟨r, s, rfl⟩
     rw [localRingHom_mk'] at hx
     rw [AtPrime.isUnit_mk'_iff] at hx ⊢
     exact fun hr => hx ((SetLike.ext_iff.mp hIJ r).mp hr)
@@ -300,6 +313,8 @@ end AtPrime
 
 end Localization
 
+section
+
 variable (q : Ideal R) [q.IsPrime] (M : Submonoid R) {S : Type*} [CommSemiring S] [Algebra R S]
   [IsLocalization.AtPrime S q]
 
@@ -324,3 +339,27 @@ lemma IsLocalization.subsingleton_primeSpectrum_of_mem_minimalPrimes
     fun ⦃x⦄ a ↦ a⟩, fun i ↦ Subtype.ext <| PrimeSpectrum.ext <|
     (minimalPrimes_eq_minimals (R := R) ▸ hp).eq_of_le i.1.2 i.2⟩
   (IsLocalization.AtPrime.primeSpectrumOrderIso S p).subsingleton
+
+end
+
+namespace IsLocalization.AtPrime
+
+open Algebra IsLocalRing Ideal IsLocalization IsLocalization.AtPrime
+
+variable (p : Ideal R) [p.IsPrime] (Rₚ : Type*) [CommSemiring Rₚ] [Algebra R Rₚ]
+  [IsLocalization.AtPrime Rₚ p] [IsLocalRing Rₚ] (Sₚ : Type*) [CommSemiring Sₚ] [Algebra S Sₚ]
+  [IsLocalization (Algebra.algebraMapSubmonoid S p.primeCompl) Sₚ] [Algebra Rₚ Sₚ]
+  (P : Ideal S)
+
+theorem isPrime_map_of_liesOver [P.IsPrime] [P.LiesOver p] : (P.map (algebraMap S Sₚ)).IsPrime :=
+  isPrime_of_isPrime_disjoint _ _ _ inferInstance (Ideal.disjoint_primeCompl_of_liesOver P p)
+
+theorem map_eq_maximalIdeal : p.map (algebraMap R Rₚ) = maximalIdeal Rₚ := by
+  convert congr_arg (Ideal.map (algebraMap R Rₚ)) (comap_maximalIdeal Rₚ p).symm
+  rw [map_comap p.primeCompl]
+
+theorem comap_map_of_isMaximal [P.IsMaximal] [P.LiesOver p] :
+    Ideal.comap (algebraMap S Sₚ) (Ideal.map (algebraMap S Sₚ) P) = P :=
+  comap_map_eq_self_of_isMaximal _ (isPrime_map_of_liesOver S p Sₚ P).ne_top
+
+end IsLocalization.AtPrime

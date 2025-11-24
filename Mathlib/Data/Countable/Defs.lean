@@ -3,10 +3,12 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Finite.Defs
-import Mathlib.Data.Bool.Basic
-import Mathlib.Data.Subtype
-import Mathlib.Tactic.MkIffOfInductiveProp
+module
+
+public import Mathlib.Data.Finite.Defs
+public import Mathlib.Data.Bool.Basic
+public import Mathlib.Data.Subtype
+public import Mathlib.Tactic.MkIffOfInductiveProp
 
 /-!
 # Countable and uncountable types
@@ -20,6 +22,8 @@ a specific encoding of elements of `α` by natural numbers.
 This file also provides a few instances of these typeclasses.
 More instances can be found in other files.
 -/
+
+@[expose] public section
 
 open Function
 
@@ -121,9 +125,11 @@ class Uncountable (α : Sort*) : Prop where
   /-- A type `α` is uncountable if it is not countable. -/
   not_countable : ¬Countable α
 
+@[push]
 lemma not_uncountable_iff : ¬Uncountable α ↔ Countable α := by
   rw [uncountable_iff_not_countable, not_not]
 
+@[push]
 lemma not_countable_iff : ¬Countable α ↔ Uncountable α := (uncountable_iff_not_countable α).symm
 
 @[simp]

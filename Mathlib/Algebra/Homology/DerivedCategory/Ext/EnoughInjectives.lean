@@ -3,7 +3,9 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
+module
+
+public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
 
 /-!
 # Smallness of Ext-groups from the existence of enough injectives
@@ -22,6 +24,8 @@ Then, we must be very selective regarding `HasExt` instances.
 Note: this file dualizes the results in `HasEnoughProjectives.lean`.
 
 -/
+
+@[expose] public section
 
 universe w v u
 

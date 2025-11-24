@@ -3,9 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Exposed
-import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
-import Mathlib.Topology.Algebra.ContinuousAffineMap
+module
+
+public import Mathlib.Analysis.Convex.Exposed
+public import Mathlib.Analysis.LocallyConvex.Separation
+public import Mathlib.Topology.Algebra.ContinuousAffineMap
 
 /-!
 # The Krein-Milman theorem
@@ -49,6 +51,8 @@ matrices, permutation matrices being the extreme points.
 See chapter 8 of [Barry Simon, *Convexity*][simon2011]
 
 -/
+
+@[expose] public section
 
 open Set
 
@@ -116,6 +120,7 @@ lemma surjOn_extremePoints_image (f : E →ᴬ[ℝ] F) (hs : IsCompact s) :
   -- `f x = w` and `x` is an extreme point of `s`, so we're done
   refine mem_image_of_mem _ ⟨hx, fun y hy z hz hxyz ↦ ?_⟩
   have := by simpa using image_openSegment _ f.toAffineMap y z
-  have := hw.2 (mem_image_of_mem _ hy) (mem_image_of_mem _ hz) <| by
+  rw [mem_extremePoints] at hw
+  have := hw.2 _ (mem_image_of_mem _ hy) _ (mem_image_of_mem _ hz) <| by
     rw [← this]; exact mem_image_of_mem _ hxyz
   exact hyt ⟨hy, this.1⟩ ⟨hz, this.2⟩ hxyz

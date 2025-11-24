@@ -3,7 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Ordmap.Invariants
+module
+
+public import Mathlib.Data.Ordmap.Invariants
 
 /-!
 # Verification of `Ordnode`
@@ -31,6 +33,8 @@ which may need to be revised if it turns out some operations violate these assum
 because there is a decent amount of slop in the actual data structure invariants, so the
 theorem will go through with multiple choices of assumption.
 -/
+
+@[expose] public section
 
 
 variable {α : Type*}
@@ -201,7 +205,7 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
     have : 2 * size l ≤ size ml + size mr + 1 := by
       have := Nat.mul_le_mul_left ratio lr₁
       rw [mul_left_comm, mul_add] at this
-      have := le_trans this (add_le_add_left mr₁ _)
+      have := le_trans this (add_le_add_right mr₁ _)
       rw [← Nat.succ_mul] at this
       exact (mul_le_mul_iff_right₀ (by decide)).1 this
     refine ⟨Or.inr ⟨?_, ?_⟩, Or.inr ⟨?_, ?_⟩, Or.inr ⟨?_, ?_⟩⟩

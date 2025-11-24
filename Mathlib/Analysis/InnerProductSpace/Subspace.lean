@@ -3,7 +3,9 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
-import Mathlib.Analysis.InnerProductSpace.Orthonormal
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Orthonormal
 
 /-!
 # Subspaces of inner product spaces
@@ -11,6 +13,8 @@ import Mathlib.Analysis.InnerProductSpace.Orthonormal
 This file defines the inner-product structure on a subspace of an inner-product space, and proves
 some theorems about orthogonal families of subspaces.
 -/
+
+@[expose] public section
 
 noncomputable section
 

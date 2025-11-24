@@ -3,15 +3,17 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.Affine
-import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
+module
+
+public import Mathlib.AlgebraicGeometry.Morphisms.Affine
+public import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 
 /-!
 # Affine morphisms with additional ring hom property
 
 In this file we define a constructor `affineAnd Q` for affine target morphism properties of schemes
 from a property of ring homomorphisms `Q`: A morphism `f : X ⟶ Y` with affine target satisfies
-`affineAnd Q` if it is an affine morphim (i.e. `X` is affine) and the induced ring map on global
+`affineAnd Q` if it is an affine morphism (i.e. `X` is affine) and the induced ring map on global
 sections satisfies `Q`.
 
 `affineAnd Q` inherits most stability properties of `Q` and is local at the target if `Q` is local
@@ -21,6 +23,8 @@ Typical examples of this are affine morphisms (where `Q` is trivial), finite mor
 (where `Q` is module finite) or closed immersions (where `Q` is being surjective).
 
 -/
+
+@[expose] public section
 
 universe v u
 
@@ -143,7 +147,7 @@ lemma targetAffineLocally_affineAnd_iff_affineLocally (hQ : RingHom.PropertyIsLo
   constructor
   · wlog hY : IsAffine Y
     · intro h
-      rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := affineLocally Q)
+      rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := affineLocally Q)
         _ (iSup_affineOpens_eq_top _)]
       intro U
       have : IsAffine (f ⁻¹ᵁ U) := hf.isAffine_preimage U U.2
@@ -188,10 +192,11 @@ lemma HasAffineProperty.affineAnd_isStableUnderComposition {P : MorphismProperty
     P.IsStableUnderComposition where
   comp_mem {X Y Z} f g hf hg := by
     wlog hZ : IsAffine Z
-    · rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
+    · rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
       intro U
       rw [morphismRestrict_comp]
-      exact this hA hQ _ _ (IsLocalAtTarget.restrict hf _) (IsLocalAtTarget.restrict hg _) U.2
+      exact this hA hQ _ _ (IsZariskiLocalAtTarget.restrict hf _)
+        (IsZariskiLocalAtTarget.restrict hg _) U.2
     rw [HasAffineProperty.iff_of_isAffine (P := P) (Q := (affineAnd Q))] at hg
     obtain ⟨hY, hg⟩ := hg
     rw [HasAffineProperty.iff_of_isAffine (P := P) (Q := (affineAnd Q))] at hf
@@ -239,9 +244,9 @@ lemma HasAffineProperty.affineAnd_le_isAffineHom (P : MorphismProperty Scheme.{u
     (hA : HasAffineProperty P (affineAnd Q)) : P ≤ @IsAffineHom := by
   intro X Y f hf
   wlog hY : IsAffine Y
-  · rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := @IsAffineHom) _ (iSup_affineOpens_eq_top _)]
+  · rw [IsZariskiLocalAtTarget.iff_of_iSup_eq_top (P := @IsAffineHom) _ (iSup_affineOpens_eq_top _)]
     intro U
-    exact this P hA _ (IsLocalAtTarget.restrict hf _) U.2
+    exact this P hA _ (IsZariskiLocalAtTarget.restrict hf _) U.2
   rw [HasAffineProperty.iff_of_isAffine (P := P) (Q := (affineAnd Q))] at hf
   rw [HasAffineProperty.iff_of_isAffine (P := @IsAffineHom)]
   exact hf.1

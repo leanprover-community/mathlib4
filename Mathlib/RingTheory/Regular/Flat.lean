@@ -3,9 +3,11 @@ Copyright (c) 2025 Yongle Hu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yongle Hu, Nailin Guan
 -/
-import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
-import Mathlib.RingTheory.Flat.Localization
-import Mathlib.RingTheory.Regular.RegularSequence
+module
+
+public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+public import Mathlib.RingTheory.Flat.Localization
+public import Mathlib.RingTheory.Regular.RegularSequence
 
 /-!
 # `RingTheory.Sequence.IsWeaklyRegular` is stable under flat base change
@@ -16,6 +18,8 @@ import Mathlib.RingTheory.Regular.RegularSequence
   If `[r₁, …, rₙ]` is a weakly regular `M`-sequence, then its image in `N` is a weakly regular
   `N`-sequence.
 -/
+
+@[expose] public section
 
 namespace RingTheory.Sequence
 

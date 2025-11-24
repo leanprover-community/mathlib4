@@ -3,26 +3,30 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.Fintype.EquivFin
-import Mathlib.Data.Fintype.Inv
+module
+
+public import Mathlib.Data.Fintype.EquivFin
+public import Mathlib.Data.Fintype.Inv
 
 /-! # Equivalence between fintypes
 
 This file contains some basic results on equivalences where one or both
 sides of the equivalence are `Fintype`s.
 
-# Main definitions
+## Main definitions
 
 - `Function.Embedding.toEquivRange`: computably turn an embedding of a
   fintype into an `Equiv` of the domain to its range
 - `Equiv.Perm.viaFintypeEmbedding : Perm α → (α ↪ β) → Perm β` extends the domain of
   a permutation, fixing everything outside the range of the embedding
 
-# Implementation details
+## Implementation details
 
 - `Function.Embedding.toEquivRange` uses a computable inverse, but one that has poor
   computational performance, since it operates by exhaustive search over the input `Fintype`s.
 -/
+
+@[expose] public section
 
 assert_not_exists Equiv.Perm.sign
 
@@ -116,7 +120,7 @@ theorem extendSubtype_apply_of_mem (e : { x // p x } ≃ { x // q x }) (x) (hx :
     e.extendSubtype x = e ⟨x, hx⟩ := by
   dsimp only [extendSubtype]
   simp only [subtypeCongr, Equiv.trans_apply, Equiv.sumCongr_apply]
-  rw [sumCompl_apply_symm_of_pos _ _ hx, Sum.map_inl, sumCompl_apply_inl]
+  rw [sumCompl_symm_apply_of_pos hx, Sum.map_inl, sumCompl_apply_inl]
 
 theorem extendSubtype_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : p x) :
     q (e.extendSubtype x) := by
@@ -127,7 +131,7 @@ theorem extendSubtype_apply_of_not_mem (e : { x // p x } ≃ { x // q x }) (x) (
     e.extendSubtype x = e.toCompl ⟨x, hx⟩ := by
   dsimp only [extendSubtype]
   simp only [subtypeCongr, Equiv.trans_apply, Equiv.sumCongr_apply]
-  rw [sumCompl_apply_symm_of_neg _ _ hx, Sum.map_inr, sumCompl_apply_inr]
+  rw [sumCompl_symm_apply_of_neg hx, Sum.map_inr, sumCompl_apply_inr]
 
 theorem extendSubtype_not_mem (e : { x // p x } ≃ { x // q x }) (x) (hx : ¬p x) :
     ¬q (e.extendSubtype x) := by

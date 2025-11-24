@@ -3,10 +3,12 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Set.Constructions
-import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
-import Mathlib.Topology.Constructions
-import Mathlib.Topology.ContinuousOn
+module
+
+public import Mathlib.Data.Set.Constructions
+public import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
+public import Mathlib.Topology.Constructions
+public import Mathlib.Topology.NhdsWithin
 
 /-!
 # Bases of topologies. Countability axioms.
@@ -51,6 +53,8 @@ concrete basis itself. This allows us to declare these type classes as `Prop` to
 More fine grained instances for `FirstCountableTopology`,
 `TopologicalSpace.SeparableSpace`, and more.
 -/
+
+@[expose] public section
 
 open Set Filter Function Topology
 
@@ -354,6 +358,28 @@ theorem _root_.Topology.IsQuotientMap.separableSpace [SeparableSpace α] [Topolo
     {f : α → β} (hf : IsQuotientMap f) : SeparableSpace β :=
   hf.surjective.denseRange.separableSpace hf.continuous
 
+theorem _root_.IsOpenMap.separableSpace_of_isInducing [TopologicalSpace β] [SeparableSpace β]
+    {f : α → β} (h : IsOpenMap f) (h' : IsInducing f) : SeparableSpace α := by
+  cases isEmpty_or_nonempty α
+  · infer_instance
+  obtain ⟨s, s_cnt, s_dense⟩ := exists_countable_dense β
+  refine ⟨f.invFun '' s, s_cnt.image _, ?_⟩
+  simp_rw [h'.dense_iff, mem_closure_iff]
+  intro x U hU hx
+  obtain ⟨-, ⟨hx'U, x', rfl⟩, hx's⟩ :=
+    s_dense.inter_open_nonempty (U ∩ range f) (hU.inter h.isOpen_range) ⟨f x, hx, mem_range_self _⟩
+  refine ⟨f <| f.invFun <| f x', ?_, mem_image_of_mem _ <| mem_image_of_mem _ hx's⟩
+  rwa [Function.apply_invFun_apply (f := f)]
+
+theorem _root_.IsOpenMap.separableSpace_of_injective [TopologicalSpace β] [SeparableSpace β]
+    {f : α → β} (h : IsOpenMap f) (h' : Function.Injective f) : SeparableSpace α :=
+  let ⟨s, s_cnt, s_dense⟩ := exists_countable_dense β
+  ⟨f ⁻¹' s, s_cnt.preimage h', s_dense.preimage h⟩
+
+theorem _root_.Topology.IsOpenEmbedding.separableSpace [TopologicalSpace β] [SeparableSpace β]
+    {f : α → β} (h : IsOpenEmbedding f) : SeparableSpace α :=
+  h.isOpenMap.separableSpace_of_injective h.injective
+
 /-- The product of two separable spaces is a separable space. -/
 instance [TopologicalSpace β] [SeparableSpace α] [SeparableSpace β] : SeparableSpace (α × β) := by
   rcases exists_countable_dense α with ⟨s, hsc, hsd⟩
@@ -384,6 +410,19 @@ instance [SeparableSpace α] {r : α → α → Prop} : SeparableSpace (Quot r) 
 
 instance [SeparableSpace α] {s : Setoid α} : SeparableSpace (Quotient s) :=
   isQuotientMap_quot_mk.separableSpace
+
+instance [TopologicalSpace β] [SeparableSpace α] [SeparableSpace β] : SeparableSpace (α ⊕ β) := by
+  obtain ⟨s, hsc, hsd⟩ := exists_countable_dense α
+  obtain ⟨t, htc, htd⟩ := exists_countable_dense β
+  refine ⟨Sum.inl '' s ∪ Sum.inr '' t, (hsc.image _).union (htc.image _), ?_⟩
+  simp_rw [dense_iff_closure_eq, closure_union, IsClosedEmbedding.inl.closure_image_eq,
+    hsd.closure_eq, IsClosedEmbedding.inr.closure_image_eq, htd.closure_eq, image_univ,
+    range_inl_union_range_inr]
+
+theorem separableSpace_sum_iff [TopologicalSpace β] :
+    SeparableSpace (α ⊕ β) ↔ SeparableSpace α ∧ SeparableSpace β :=
+  ⟨fun _ => ⟨(IsOpenEmbedding.inl (Y := β)).separableSpace,
+    (IsOpenEmbedding.inr (X := α)).separableSpace⟩, fun ⟨_, _⟩ => inferInstance⟩
 
 /-- A topological space with discrete topology is separable iff it is countable. -/
 theorem separableSpace_iff_countable [DiscreteTopology α] : SeparableSpace α ↔ Countable α := by
@@ -907,7 +946,7 @@ lemma IsTopologicalBasis.exists_countable
     obtain ⟨w, ws, xw⟩ : ∃ w ∈ s u, x ∈ w := by simpa using this
     refine ⟨w, ⟨u, u_mem, ws⟩, xw, ?_⟩
     apply Subset.trans (Subset.trans _ (hs u u_mem).symm.subset) uv
-    exact subset_iUnion₂_of_subset w ws fun ⦃a⦄ a ↦ a
+    exact subset_iUnion₂_of_subset w ws (Subset.refl _)
 
 /-- In a second countable topological space, any family generating the topology admits a
 countable generating subfamily. -/

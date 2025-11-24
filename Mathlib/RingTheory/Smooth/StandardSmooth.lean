@@ -3,7 +3,9 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jung Tao Cheng, Christian Merten, Andrew Yang
 -/
-import Mathlib.RingTheory.Extension.Presentation.Submersive
+module
+
+public import Mathlib.RingTheory.Extension.Presentation.Submersive
 
 /-!
 # Standard smooth algebras
@@ -38,6 +40,8 @@ This contribution was created as part of the AIM workshop "Formalizing algebraic
 in June 2024.
 
 -/
+
+@[expose] public section
 
 universe t t' w w' u v
 
@@ -163,5 +167,11 @@ instance IsStandardSmoothOfRelativeDimension.baseChange
     exact ⟨_, _, _, inferInstance, P.baseChange T, hP⟩
 
 end BaseChange
+
+instance (priority := 100) [Subsingleton S] : IsStandardSmooth R S :=
+  ⟨Unit, Unit, inferInstance, inferInstance, ⟨.ofSubsingleton R S⟩⟩
+
+instance (priority := 100) [Subsingleton S] : IsStandardSmoothOfRelativeDimension 0 R S :=
+  ⟨Unit, Unit, inferInstance, inferInstance, .ofSubsingleton R S, by simp [Presentation.dimension]⟩
 
 end Algebra

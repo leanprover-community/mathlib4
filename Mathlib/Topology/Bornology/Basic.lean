@@ -3,7 +3,9 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Order.Filter.Cofinite
+module
+
+public import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Basic theory of bornology
@@ -35,6 +37,8 @@ cobounded filter is generally referred to as the *filter at infinity*.
 Although use of `cobounded α` is discouraged for indicating the (co)boundedness of individual sets,
 it is intended for regular use as a filter on `α`.
 -/
+
+@[expose] public section
 
 
 open Set Filter

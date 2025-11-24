@@ -4,18 +4,19 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Patrick Massot
 -/
 -- This file is to a certain extent based on `quotient_module.lean` by Johannes Hölzl.
+module
 
-import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.GroupTheory.Congruence.Hom
-import Mathlib.GroupTheory.Coset.Basic
-import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Algebra.Group.Subgroup.Pointwise
+public import Mathlib.Data.Int.Cast.Lemmas
+public import Mathlib.GroupTheory.Congruence.Hom
+public import Mathlib.GroupTheory.Coset.Basic
+public import Mathlib.GroupTheory.QuotientGroup.Defs
+public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Quotients of groups by normal subgroups
 
-This files develops the basic theory of quotients of groups by normal subgroups. In particular it
+This file develops the basic theory of quotients of groups by normal subgroups. In particular, it
 proves Noether's first and second isomorphism theorems.
 
 ## Main statements
@@ -35,6 +36,8 @@ proves Noether's first and second isomorphism theorems.
 
 isomorphism theorems, quotient groups
 -/
+
+@[expose] public section
 
 open Function
 open scoped Pointwise
@@ -81,9 +84,10 @@ def kerLift : G ⧸ ker φ →* H :=
 theorem kerLift_mk (g : G) : (kerLift φ) g = φ g :=
   rfl
 
-@[to_additive (attr := simp)]
-theorem kerLift_mk' (g : G) : (kerLift φ) (mk g) = φ g :=
-  lift_mk' _ _ _
+@[deprecated (since := "2025-10-28")]
+alias _root_.QuotientAddGroup.kerLift_mk' := _root_.QuotientAddGroup.kerLift_mk
+@[to_additive existing, deprecated (since := "2025-10-28")]
+alias kerLift_mk' := kerLift_mk
 
 @[to_additive]
 theorem kerLift_injective : Injective (kerLift φ) := fun a b =>
@@ -125,7 +129,7 @@ def quotientKerEquivOfRightInverse (ψ : H → G) (hφ : RightInverse ψ φ) : G
   { kerLift φ with
     toFun := kerLift φ
     invFun := mk ∘ ψ
-    left_inv := fun x => kerLift_injective φ (by rw [Function.comp_apply, kerLift_mk', hφ])
+    left_inv := fun x => kerLift_injective φ (by rw [Function.comp_apply, kerLift_mk, hφ])
     right_inv := hφ }
 
 /-- The canonical isomorphism `G/⊥ ≃* G`. -/

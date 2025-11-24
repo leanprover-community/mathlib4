@@ -3,12 +3,14 @@ Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Reid Barton
 -/
-import Mathlib.CategoryTheory.Functor.FullyFaithful
+module
+
+public import Mathlib.CategoryTheory.Functor.FullyFaithful
 
 /-!
 # Induced categories and full subcategories
 
-Given a category `D` and a function `F : C → D `from a type `C` to the
+Given a category `D` and a function `F : C → D` from a type `C` to the
 objects of `D`, there is an essentially unique way to give `C` a
 category structure such that `F` becomes a fully faithful functor,
 namely by taking $$ Hom_C(X, Y) = Hom_D(FX, FY) $$. We call this the
@@ -27,11 +29,13 @@ form of `D`. This is used to set up several algebraic categories like
   -- even though `MonCat = Bundled Monoid`!
 -/
 
+@[expose] public section
+
 
 namespace CategoryTheory
 
 universe v v₂ u₁ u₂
--- morphism levels before object levels. See note [CategoryTheory universes].
+-- morphism levels before object levels. See note [category theory universes].
 
 section Induced
 

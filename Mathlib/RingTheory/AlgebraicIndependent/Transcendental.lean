@@ -3,9 +3,11 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.Fin.Tuple.Reflection
-import Mathlib.RingTheory.Algebraic.MvPolynomial
-import Mathlib.RingTheory.AlgebraicIndependent.Basic
+module
+
+public import Mathlib.Data.Fin.Tuple.Reflection
+public import Mathlib.RingTheory.Algebraic.MvPolynomial
+public import Mathlib.RingTheory.AlgebraicIndependent.Basic
 
 /-!
 # Algebraic Independence
@@ -20,6 +22,8 @@ This file relates algebraic independence and transcendence (or algebraicity) of 
 transcendence
 
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -170,7 +174,7 @@ theorem sumElim_iff {ι'} {y : ι' → A} : AlgebraicIndependent R (Sum.elim y x
   · exact ⟨fun h ↦ (hx <| by apply h.comp _ Sum.inr_injective).elim, fun h ↦ (hx h.1).elim⟩
   let e := (sumAlgEquiv R ι' ι).trans (mapAlgEquiv _ hx.aevalEquiv)
   have : aeval (Sum.elim y x) = ((aeval y).restrictScalars R).comp e.toAlgHom := by
-    ext (_ | _) <;> simp [e, algebraMap_aevalEquiv]
+    ext (_ | _) <;> simp [e]
   simp_rw [hx, AlgebraicIndependent, this]; simp
 
 theorem iff_adjoin_image (s : Set ι) :
@@ -205,7 +209,7 @@ theorem sumElim_of_tower {ι'} {y : ι' → A} (hxS : range x ⊆ range (algebra
   set Rx := adjoin R (range x)
   let _ : Algebra Rx S :=
     (e.symm.toAlgHom.comp <| Subalgebra.inclusion <| adjoin_le hxS).toAlgebra
-  have : IsScalarTower Rx S A := .of_algebraMap_eq fun x ↦ show _ = (e (e.symm _)).1 by simp; rfl
+  have : IsScalarTower Rx S A := .of_algebraMap_eq fun x ↦ show _ = (e (e.symm _)).1 by simp
   refine hx.sumElim (hy.restrictScalars (e.symm.injective.comp ?_))
   simpa only [AlgHom.coe_toRingHom] using Subalgebra.inclusion_injective _
 

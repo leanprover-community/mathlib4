@@ -3,12 +3,14 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-import Mathlib.Tactic.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.Sites.ConcreteSheafification
-import Mathlib.CategoryTheory.Subpresheaf.Image
-import Mathlib.CategoryTheory.Subpresheaf.Sieves
+module
+
+public import Mathlib.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+public import Mathlib.Tactic.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.Sites.ConcreteSheafification
+public import Mathlib.CategoryTheory.Subpresheaf.Image
+public import Mathlib.CategoryTheory.Subpresheaf.Sieves
 
 /-!
 
@@ -32,6 +34,8 @@ We define the sub(pre)sheaf of a type-valued presheaf.
   `Limits.imageFactorization`.
 -/
 
+@[expose] public section
+
 
 universe w v u
 
@@ -42,6 +46,11 @@ namespace CategoryTheory
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
 
 variable {F F' F'' : Cᵒᵖ ⥤ Type w} (G G' : Subpresheaf F)
+
+/-- Every subpresheaf of a separated presheaf is itself separated. -/
+theorem Subpresheaf.isSeparated {J : GrothendieckTopology C} (h : Presieve.IsSeparated J F) :
+    Presieve.IsSeparated J G.toPresheaf :=
+  fun _ S hS _ _ _ hx₁ hx₂ ↦ Subtype.ext <| h S hS _ _ _ (hx₁.map G.ι) (hx₂.map G.ι)
 
 /-- The sheafification of a subpresheaf as a subpresheaf.
 Note that this is a sheaf only when the whole presheaf is a sheaf. -/
@@ -77,28 +86,21 @@ theorem Subpresheaf.eq_sheafify (h : Presieve.IsSheaf J F) (hG : Presieve.IsShea
 
 theorem Subpresheaf.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
     Presieve.IsSheaf J (G.sheafify J).toPresheaf := by
-  intro U S hS x hx
+  refine (isSeparated _ hF.isSeparated).isSheaf fun U S hS x hx ↦ ?_
   let S' := Sieve.bind S fun Y f hf => G.sieveOfSection (x f hf).1
   have := fun (V) (i : V ⟶ U) (hi : S' i) => hi
   choose W i₁ i₂ hi₂ h₁ h₂ using this
   dsimp [-Sieve.bind_apply] at *
   let x'' : Presieve.FamilyOfElements F S' := fun V i hi => F.map (i₁ V i hi).op (x _ (hi₂ V i hi))
-  have H : ∀ s, x.IsAmalgamation s ↔ x''.IsAmalgamation s.1 := by
-    intro s
-    constructor
-    · intro H V i hi
-      dsimp only [x'']
-      conv_lhs => rw [← h₂ _ _ hi]
-      rw [← H _ (hi₂ _ _ hi)]
-      exact FunctorToTypes.map_comp_apply F (i₂ _ _ hi).op (i₁ _ _ hi).op _
-    · intro H V i hi
-      refine Subtype.ext ?_
-      apply (hF _ (x i hi).2).isSeparatedFor.ext
-      intro V' i' hi'
-      have hi'' : S' (i' ≫ i) := ⟨_, _, _, hi, hi', rfl⟩
-      have := H _ hi''
-      rw [op_comp, F.map_comp] at this
-      exact this.trans (congr_arg Subtype.val (hx _ _ (hi₂ _ _ hi'') hi (h₂ _ _ hi'')))
+  have H : ∀ s, x''.IsAmalgamation s.1 → x.IsAmalgamation s := by
+    intro s H V i hi
+    refine Subtype.ext ?_
+    apply (hF _ (x i hi).2).isSeparatedFor.ext
+    intro V' i' hi'
+    have hi'' : S' (i' ≫ i) := ⟨_, _, _, hi, hi', rfl⟩
+    have := H _ hi''
+    rw [op_comp, F.map_comp] at this
+    exact this.trans (congr_arg Subtype.val (hx _ _ (hi₂ _ _ hi'') hi (h₂ _ _ hi'')))
   have : x''.Compatible := by
     intro V₁ V₂ V₃ g₁ g₂ g₃ g₄ S₁ S₂ e
     rw [← FunctorToTypes.map_comp_apply, ← FunctorToTypes.map_comp_apply]
@@ -107,7 +109,7 @@ theorem Subpresheaf.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
         (hx (g₁ ≫ i₁ _ _ S₁) (g₂ ≫ i₁ _ _ S₂) (hi₂ _ _ S₁) (hi₂ _ _ S₂)
         (by simp only [Category.assoc, h₂, e]))
   obtain ⟨t, ht, ht'⟩ := hF _ (J.bind_covering hS fun V i hi => (x i hi).2) _ this
-  refine ⟨⟨t, _⟩, (H ⟨t, ?_⟩).mpr ht, fun y hy => Subtype.ext (ht' _ ((H _).mp hy))⟩
+  refine ⟨⟨t, _⟩, H ⟨t, ?_⟩ ht⟩
   refine J.superset_covering ?_ (J.bind_covering hS fun V i hi => (x i hi).2)
   intro V i hi
   dsimp

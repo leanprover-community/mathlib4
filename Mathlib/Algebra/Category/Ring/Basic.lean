@@ -3,10 +3,12 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Category.Grp.Basic
-import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Algebra.Ring.PUnit
-import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
+module
+
+public import Mathlib.Algebra.Category.Grp.Basic
+public import Mathlib.Algebra.Ring.Equiv
+public import Mathlib.Algebra.Ring.PUnit
+public import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 
 /-!
 # Category instances for `Semiring`, `Ring`, `CommSemiring`, and `CommRing`.
@@ -20,13 +22,17 @@ We introduce the bundled categories:
 along with the relevant forgetful functors between them.
 -/
 
+@[expose] public section
+
 universe u v
 
 open CategoryTheory
 
 /-- The category of semirings. -/
 structure SemiRingCat where
-  private mk ::
+  /-- The object in the category of semirings associated to a type equipped with the appropriate
+  typeclasses. -/
+  of ::
   /-- The underlying type. -/
   carrier : Type u
   [semiring : Semiring carrier]
@@ -41,11 +47,6 @@ instance : CoeSort (SemiRingCat) (Type u) :=
   ⟨SemiRingCat.carrier⟩
 
 attribute [coe] SemiRingCat.carrier
-
-/-- The object in the category of R-algebras associated to a type equipped with the appropriate
-typeclasses. This is the preferred way to construct a term of `SemiRingCat`. -/
-abbrev of (R : Type u) [Semiring R] : SemiRingCat :=
-  ⟨R⟩
 
 lemma coe_of (R : Type u) [Semiring R] : (of R : Type u) = R :=
   rfl
@@ -176,7 +177,9 @@ end SemiRingCat
 
 /-- The category of rings. -/
 structure RingCat where
-  private mk ::
+  /-- The object in the category of rings associated to a type equipped with the appropriate
+  typeclasses. -/
+  of ::
   /-- The underlying type. -/
   carrier : Type u
   [ring : Ring carrier]
@@ -191,11 +194,6 @@ instance : CoeSort (RingCat) (Type u) :=
   ⟨RingCat.carrier⟩
 
 attribute [coe] RingCat.carrier
-
-/-- The object in the category of R-algebras associated to a type equipped with the appropriate
-typeclasses. This is the preferred way to construct a term of `RingCat`. -/
-abbrev of (R : Type u) [Ring R] : RingCat :=
-  ⟨R⟩
 
 lemma coe_of (R : Type u) [Ring R] : (of R : Type u) = R :=
   rfl
@@ -315,10 +313,10 @@ def fullyFaithfulForget₂ToSemiRingCat :
 instance : (forget₂ RingCat SemiRingCat).Full :=
   fullyFaithfulForget₂ToSemiRingCat.full
 
-instance hasForgetToAddCommGrp : HasForget₂ RingCat AddCommGrp where
+instance hasForgetToAddCommGrp : HasForget₂ RingCat AddCommGrpCat where
   forget₂ :=
-    { obj := fun R ↦ AddCommGrp.of R
-      map := fun f ↦ AddCommGrp.ofHom f.hom.toAddMonoidHom }
+    { obj := fun R ↦ AddCommGrpCat.of R
+      map := fun f ↦ AddCommGrpCat.ofHom f.hom.toAddMonoidHom }
 
 /-- Ring equivalences are isomorphisms in category of rings -/
 @[simps]
@@ -338,7 +336,9 @@ end RingCat
 
 /-- The category of commutative semirings. -/
 structure CommSemiRingCat where
-  private mk ::
+  /-- The object in the category of commutative semirings associated to a type equipped with the
+  appropriate typeclasses. -/
+  of ::
   /-- The underlying type. -/
   carrier : Type u
   [commSemiring : CommSemiring carrier]
@@ -353,11 +353,6 @@ instance : CoeSort (CommSemiRingCat) (Type u) :=
   ⟨CommSemiRingCat.carrier⟩
 
 attribute [coe] CommSemiRingCat.carrier
-
-/-- The object in the category of R-algebras associated to a type equipped with the appropriate
-typeclasses. This is the preferred way to construct a term of `CommSemiRingCat`. -/
-abbrev of (R : Type u) [CommSemiring R] : CommSemiRingCat :=
-  ⟨R⟩
 
 lemma coe_of (R : Type u) [CommSemiring R] : (of R : Type u) = R :=
   rfl
@@ -499,7 +494,9 @@ end CommSemiRingCat
 
 /-- The category of commutative rings. -/
 structure CommRingCat where
-  private mk ::
+  /-- The object in the category of commutative rings associated to a type equipped with the
+  appropriate typeclasses. -/
+  of ::
   /-- The underlying type. -/
   carrier : Type u
   [commRing : CommRing carrier]
@@ -514,11 +511,6 @@ instance : CoeSort (CommRingCat) (Type u) :=
   ⟨CommRingCat.carrier⟩
 
 attribute [coe] CommRingCat.carrier
-
-/-- The object in the category of R-algebras associated to a type equipped with the appropriate
-typeclasses. This is the preferred way to construct a term of `CommRingCat`. -/
-abbrev of (R : Type u) [CommRing R] : CommRingCat :=
-  ⟨R⟩
 
 lemma coe_of (R : Type u) [CommRing R] : (of R : Type u) = R :=
   rfl

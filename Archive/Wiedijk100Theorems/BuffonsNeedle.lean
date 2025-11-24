@@ -130,7 +130,7 @@ lemma volume_needleSpace : ℙ (needleSpace d) = ENNReal.ofReal (d * π) := by
 
 lemma measurable_needleCrossesIndicator : Measurable (needleCrossesIndicator l) := by
   unfold needleCrossesIndicator
-  refine Measurable.indicator measurable_const (IsClosed.measurableSet (IsClosed.inter ?l ?r))
+  refine Measurable.indicator measurable_const (IsClosed.measurableSet (IsClosed.and ?l ?r))
   all_goals simp only [tsub_le_iff_right, zero_add, ← neg_le_iff_add_nonneg']
   case' l => refine isClosed_le continuous_fst ?_
   case' r => refine isClosed_le (Continuous.neg continuous_fst) ?_
@@ -342,9 +342,9 @@ theorem buffon_long (h : d ≤ l) :
   have : ∀ᵐ θ, θ ∈ Set.Icc 0 π →
       ENNReal.toReal (ENNReal.ofReal (min d (θ.sin * l))) = min d (θ.sin * l) := by
     have (θ : ℝ) (hθ : θ ∈ Set.Icc 0 π) : 0 ≤ min d (θ.sin * l) := by
-      by_cases h : d ≤ θ.sin * l
+      by_cases! h : d ≤ θ.sin * l
       · rw [min_eq_left h]; exact hd.le
-      · rw [min_eq_right (not_le.mp h).le]; exact mul_nonneg (Real.sin_nonneg_of_mem_Icc hθ) hl.le
+      · rw [min_eq_right h.le]; exact mul_nonneg (Real.sin_nonneg_of_mem_Icc hθ) hl.le
     simp_rw [ENNReal.toReal_ofReal_eq_iff, MeasureTheory.ae_of_all _ this]
   rw [MeasureTheory.setIntegral_congr_ae measurableSet_Icc this,
     MeasureTheory.integral_Icc_eq_integral_Ioc,
@@ -354,7 +354,6 @@ theorem buffon_long (h : d ≤ l) :
     integral_zero_to_arcsin_min d l hd hl, integral_arcsin_to_pi_div_two_min d l hl h]
   field_simp
   simp (disch := positivity)
-  field_simp
-  ring_nf
+  field
 
 end BuffonsNeedle

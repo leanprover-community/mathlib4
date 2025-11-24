@@ -3,9 +3,11 @@ Copyright (c) 2021 François Sunatori. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: François Sunatori
 -/
-import Mathlib.Analysis.Complex.Circle
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
+module
+
+public import Mathlib.Analysis.Complex.Circle
+public import Mathlib.LinearAlgebra.Determinant
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Basic
 
 /-!
 # Isometries of the Complex Plane
@@ -24,6 +26,8 @@ The proof of `linear_isometry_complex_aux` is separated in the following parts:
 
 * [Isometries of the Complex Plane](http://helmut.knaust.info/mediawiki/images/b/b5/Iso.pdf)
 -/
+
+@[expose] public section
 
 
 noncomputable section

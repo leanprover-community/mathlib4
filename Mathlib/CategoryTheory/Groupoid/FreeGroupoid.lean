@@ -3,8 +3,10 @@ Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli
 -/
-import Mathlib.CategoryTheory.Groupoid
-import Mathlib.CategoryTheory.PathCategory.Basic
+module
+
+public import Mathlib.CategoryTheory.Groupoid
+public import Mathlib.CategoryTheory.PathCategory.Basic
 
 /-!
 # Free groupoid on a quiver
@@ -16,10 +18,10 @@ extension as a functor from the free groupoid, and proves uniqueness of this ext
 
 Given the type `V` and a quiver instance on `V`:
 
-- `FreeGroupoid V`: a type synonym for `V`.
-- `FreeGroupoid.instGroupoid`: the `Groupoid` instance on `FreeGroupoid V`.
+- `Quiver.FreeGroupoid V`: a type synonym for `V`.
+- `Quiver.FreeGroupoid.instGroupoid`: the `Groupoid` instance on `Quiver.FreeGroupoid V`.
 - `lift`: the lifting of a prefunctor from `V` to `V'` where `V'` is a groupoid, to a functor.
-  `FreeGroupoid V ⥤ V'`.
+  `Quiver.FreeGroupoid V ⥤ V'`.
 - `lift_spec` and `lift_unique`: the proofs that, respectively, `lift` indeed is a lifting
   and is the unique one.
 
@@ -30,38 +32,42 @@ and finally quotienting by the reducibility relation.
 
 -/
 
+@[expose] public section
+
 open Set Function
 
-namespace CategoryTheory
+namespace Quiver
 
-namespace Groupoid
-
-namespace Free
+open CategoryTheory
 
 universe u v u' v' u'' v''
 
 variable {V : Type u} [Quiver.{v + 1} V]
 
 /-- Shorthand for the "forward" arrow corresponding to `f` in `paths <| symmetrify V` -/
-abbrev _root_.Quiver.Hom.toPosPath {X Y : V} (f : X ⟶ Y) :
+abbrev Hom.toPosPath {X Y : V} (f : X ⟶ Y) :
     (CategoryTheory.Paths.categoryPaths <| Quiver.Symmetrify V).Hom X Y :=
   f.toPos.toPath
 
 /-- Shorthand for the "forward" arrow corresponding to `f` in `paths <| symmetrify V` -/
-abbrev _root_.Quiver.Hom.toNegPath {X Y : V} (f : X ⟶ Y) :
+abbrev Hom.toNegPath {X Y : V} (f : X ⟶ Y) :
     (CategoryTheory.Paths.categoryPaths <| Quiver.Symmetrify V).Hom Y X :=
   f.toNeg.toPath
 
 /-- The "reduction" relation -/
-inductive redStep : HomRel (Paths (Quiver.Symmetrify V))
+inductive FreeGroupoid.redStep : HomRel (Paths (Quiver.Symmetrify V))
   | step (X Z : Quiver.Symmetrify V) (f : X ⟶ Z) :
     redStep (𝟙 ((Paths.of (Quiver.Symmetrify V)).obj X)) (f.toPath ≫ (Quiver.reverse f).toPath)
 
 /-- The underlying vertices of the free groupoid -/
-def _root_.CategoryTheory.FreeGroupoid (V) [Q : Quiver V] :=
-  Quotient (@redStep V Q)
+protected def FreeGroupoid (V) [Q : Quiver V] :=
+  CategoryTheory.Quotient (@FreeGroupoid.redStep V Q)
 
-instance {V} [Quiver V] [Nonempty V] : Nonempty (FreeGroupoid V) := by
+namespace FreeGroupoid
+
+open Quiver
+
+instance {V} [Quiver V] [Nonempty V] : Nonempty (Quiver.FreeGroupoid V) := by
   inhabit V; exact ⟨⟨@default V _⟩⟩
 
 theorem congr_reverse {X Y : Paths <| Quiver.Symmetrify V} (p q : X ⟶ Y) :
@@ -109,21 +115,21 @@ theorem congr_reverse_comp {X Y : Paths <| Quiver.Symmetrify V} (p : X ⟶ Y) :
   nth_rw 2 [← Quiver.Path.reverse_reverse p]
   apply congr_comp_reverse
 
-instance : Category (FreeGroupoid V) :=
+instance : Category (Quiver.FreeGroupoid V) :=
   Quotient.category redStep
 
 /-- The inverse of an arrow in the free groupoid -/
-def quotInv {X Y : FreeGroupoid V} (f : X ⟶ Y) : Y ⟶ X :=
+def quotInv {X Y : Quiver.FreeGroupoid V} (f : X ⟶ Y) : Y ⟶ X :=
   Quot.liftOn f (fun pp => Quot.mk _ <| pp.reverse) fun pp qq con =>
     Quot.sound <| congr_reverse pp qq con
 
-instance _root_.CategoryTheory.FreeGroupoid.instGroupoid : Groupoid (FreeGroupoid V) where
+instance instGroupoid : Groupoid (Quiver.FreeGroupoid V) where
   inv := quotInv
   inv_comp p := Quot.inductionOn p fun pp => congr_reverse_comp pp
   comp_inv p := Quot.inductionOn p fun pp => congr_comp_reverse pp
 
 /-- The inclusion of the quiver on `V` to the underlying quiver on `FreeGroupoid V` -/
-def of (V) [Quiver V] : V ⥤q FreeGroupoid V where
+def of (V) [Quiver V] : V ⥤q Quiver.FreeGroupoid V where
   obj X := ⟨X⟩
   map f := Quot.mk _ f.toPosPath
 
@@ -136,8 +142,8 @@ section UniversalProperty
 variable {V' : Type u'} [Groupoid V']
 
 /-- The lift of a prefunctor to a groupoid, to a functor from `FreeGroupoid V` -/
-def lift (φ : V ⥤q V') : FreeGroupoid V ⥤ V' :=
-  Quotient.lift _ (Paths.lift <| Quiver.Symmetrify.lift φ) <| by
+def lift (φ : V ⥤q V') : Quiver.FreeGroupoid V ⥤ V' :=
+  CategoryTheory.Quotient.lift _ (Paths.lift <| Quiver.Symmetrify.lift φ) <| by
     rintro _ _ _ _ ⟨X, Y, f⟩
     -- Porting note: `simp` does not work, so manually `rewrite`
     erw [Paths.lift_nil, Paths.lift_cons, Quiver.Path.comp_nil, Paths.lift_toPath,
@@ -150,8 +156,8 @@ theorem lift_spec (φ : V ⥤q V') : of V ⋙q (lift φ).toPrefunctor = φ := by
   dsimp [lift]
   rw [Quotient.lift_spec, Paths.lift_spec, Quiver.Symmetrify.lift_spec]
 
-theorem lift_unique (φ : V ⥤q V') (Φ : FreeGroupoid V ⥤ V') (hΦ : of V ⋙q Φ.toPrefunctor = φ) :
-    Φ = lift φ := by
+theorem lift_unique (φ : V ⥤q V') (Φ : Quiver.FreeGroupoid V ⥤ V')
+    (hΦ : of V ⋙q Φ.toPrefunctor = φ) : Φ = lift φ := by
   apply Quotient.lift_unique
   apply Paths.lift_unique
   fapply @Quiver.Symmetrify.lift_unique _ _ _ _ _ _ _ _ _
@@ -159,23 +165,27 @@ theorem lift_unique (φ : V ⥤q V') (Φ : FreeGroupoid V ⥤ V') (hΦ : of V �
     exact hΦ
   · rintro X Y f
     simp only [← Functor.toPrefunctor_comp, Prefunctor.comp_map, Paths.of_map]
-    change Φ.map (inv ((Quotient.functor redStep).toPrefunctor.map f.toPath)) =
-      inv (Φ.map ((Quotient.functor redStep).toPrefunctor.map f.toPath))
+    change Φ.map (Groupoid.inv ((Quotient.functor redStep).toPrefunctor.map f.toPath)) =
+      Groupoid.inv (Φ.map ((Quotient.functor redStep).toPrefunctor.map f.toPath))
     have := Functor.map_inv Φ ((Quotient.functor redStep).toPrefunctor.map f.toPath)
-    convert this <;> simp only [inv_eq_inv]
+    convert this <;> simp only [Groupoid.inv_eq_inv]
 
 end UniversalProperty
 
+end FreeGroupoid
+
 section Functoriality
+
+open FreeGroupoid
 
 variable {V' : Type u'} [Quiver.{v' + 1} V'] {V'' : Type u''} [Quiver.{v'' + 1} V'']
 
 /-- The functor of free groupoid induced by a prefunctor of quivers -/
-def _root_.CategoryTheory.freeGroupoidFunctor (φ : V ⥤q V') : FreeGroupoid V ⥤ FreeGroupoid V' :=
+def freeGroupoidFunctor (φ : V ⥤q V') : Quiver.FreeGroupoid V ⥤ Quiver.FreeGroupoid V' :=
   lift (φ ⋙q of V')
 
 theorem freeGroupoidFunctor_id :
-    freeGroupoidFunctor (Prefunctor.id V) = Functor.id (FreeGroupoid V) := by
+    freeGroupoidFunctor (Prefunctor.id V) = Functor.id (Quiver.FreeGroupoid V) := by
   dsimp only [freeGroupoidFunctor]; symm
   apply lift_unique; rfl
 
@@ -186,8 +196,4 @@ theorem freeGroupoidFunctor_comp (φ : V ⥤q V') (φ' : V' ⥤q V'') :
 
 end Functoriality
 
-end Free
-
-end Groupoid
-
-end CategoryTheory
+end Quiver

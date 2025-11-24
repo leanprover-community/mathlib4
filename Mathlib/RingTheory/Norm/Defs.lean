@@ -3,7 +3,9 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.LinearAlgebra.Determinant
+module
+
+public import Mathlib.LinearAlgebra.Determinant
 
 /-!
 # Norm for (finite) ring extensions
@@ -31,6 +33,8 @@ See also `Algebra.trace`, which is defined similarly as the trace of
 * https://en.wikipedia.org/wiki/Field_norm
 
 -/
+
+@[expose] public section
 
 
 universe u v w

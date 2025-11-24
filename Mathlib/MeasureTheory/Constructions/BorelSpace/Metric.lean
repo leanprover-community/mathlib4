@@ -3,9 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Group.Continuity
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-import Mathlib.Topology.MetricSpace.Thickening
+module
+
+public import Mathlib.Analysis.Normed.Group.Continuity
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+public import Mathlib.Topology.MetricSpace.Thickening
 
 /-!
 # Borel sigma algebras on (pseudo-)metric spaces
@@ -22,6 +24,8 @@ import Mathlib.Topology.MetricSpace.Thickening
   of some second countable separable metrizable topology.
 
 -/
+
+@[expose] public section
 
 open Set Filter MeasureTheory MeasurableSpace TopologicalSpace
 
@@ -75,7 +79,13 @@ theorem measurable_dist : Measurable fun p : α × α => dist p.1 p.2 :=
 @[measurability, fun_prop]
 theorem Measurable.dist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
     Measurable fun b => dist (f b) (g b) :=
-  (@continuous_dist α _).measurable2 hf hg
+  continuous_dist.measurable2 hf hg
+
+@[fun_prop, measurability]
+lemma AEMeasurable.dist {f g : β → α} {μ : Measure β}
+    (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
+    AEMeasurable (fun b ↦ dist (f b) (g b)) μ :=
+  continuous_dist.aemeasurable2 hf hg
 
 @[measurability]
 theorem measurable_nndist : Measurable fun p : α × α => nndist p.1 p.2 :=
@@ -84,7 +94,7 @@ theorem measurable_nndist : Measurable fun p : α × α => nndist p.1 p.2 :=
 @[measurability, fun_prop]
 theorem Measurable.nndist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
     Measurable fun b => nndist (f b) (g b) :=
-  (@continuous_nndist α _).measurable2 hf hg
+  continuous_nndist.measurable2 hf hg
 
 end
 
@@ -171,12 +181,12 @@ theorem measurable_edist : Measurable fun p : α × α => edist p.1 p.2 :=
 @[measurability, fun_prop]
 theorem Measurable.edist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
     Measurable fun b => edist (f b) (g b) :=
-  (@continuous_edist α _).measurable2 hf hg
+  continuous_edist.measurable2 hf hg
 
 @[measurability, fun_prop]
 theorem AEMeasurable.edist {f g : β → α} {μ : Measure β} (hf : AEMeasurable f μ)
     (hg : AEMeasurable g μ) : AEMeasurable (fun a => edist (f a) (g a)) μ :=
-  (@continuous_edist α _).aemeasurable2 hf hg
+  continuous_edist.aemeasurable2 hf hg
 
 end PseudoEMetricSpace
 

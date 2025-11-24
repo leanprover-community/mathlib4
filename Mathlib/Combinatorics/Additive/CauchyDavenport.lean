@@ -3,8 +3,10 @@ Copyright (c) 2023 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Combinatorics.Additive.ETransform
-import Mathlib.GroupTheory.Order.Min
+module
+
+public import Mathlib.Combinatorics.Additive.ETransform
+public import Mathlib.GroupTheory.Order.Min
 
 /-!
 # The Cauchy-Davenport theorem
@@ -48,6 +50,8 @@ Version for `circle`.
 
 additive combinatorics, number theory, sumset, cauchy-davenport
 -/
+
+@[expose] public section
 
 open Finset Function Monoid MulOpposite Subgroup
 open scoped Pointwise
@@ -163,18 +167,18 @@ lemma cauchy_davenport_minOrder_mul (hs : s.Nonempty) (ht : t.Nonempty) :
   -- If the left translate of `t` by `g⁻¹` is disjoint from `t`, then we're easily done.
   obtain hgt | hgt := disjoint_or_nonempty_inter t (g⁻¹ • t)
   · rw [← card_smul_finset g⁻¹ t]
-    refine Or.inr ((add_le_add_right hst _).trans ?_)
-    rw [← card_union_of_disjoint hgt]
+    right
+    grw [hst, ← card_union_of_disjoint hgt]
     exact (card_le_card_mul_left hgs).trans (le_add_of_le_left aux1)
   -- Else, we're done by induction on either `(s', t')` or `(s'', t'')` depending on whether
   -- `|s| + |t| ≤ |s'| + |t'|` or `|s| + |t| < |s''| + |t''|`. One of those two inequalities must
   -- hold since `2 * (|s| + |t|) = |s'| + |t'| + |s''| + |t''|`.
   obtain hstg | hstg := le_or_lt_of_add_le_add (MulETransform.card g (s, t)).ge
   · exact (ih _ _ hgs (hgt.mono inter_subset_union) <| devosMulRel_of_le_of_le aux1 hstg hsg).imp
-      (WithTop.coe_le_coe.2 aux1).trans' fun h ↦ hstg.trans <| h.trans <| add_le_add_right aux1 _
+      (WithTop.coe_le_coe.2 aux1).trans' fun h ↦ hstg.trans <| h.trans <| add_le_add_left aux1 _
   · exact (ih _ _ (hgs.mono inter_subset_union) hgt <| devosMulRel_of_le aux2 hstg).imp
       (WithTop.coe_le_coe.2 aux2).trans' fun h ↦
-        hstg.le.trans <| h.trans <| add_le_add_right aux2 _
+        hstg.le.trans <| h.trans <| add_le_add_left aux2 _
 
 end General
 
@@ -220,4 +224,4 @@ lemma cauchy_davenport_mul_of_linearOrder_isCancelMul [LinearOrder α] [Mul α] 
   simp only [mem_inter, and_imp, mem_mul, mem_singleton, exists_eq_left,
     forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, mul_left_inj]
   exact fun a' ha' b' hb' h ↦ (le_max' _ _ ha').eq_of_not_lt fun ha ↦
-    ((mul_lt_mul_right' ha _).trans_eq' h).not_ge <| mul_le_mul_left' (min'_le _ _ hb') _
+    ((mul_lt_mul_left ha _).trans_eq' h).not_ge <| mul_le_mul_right (min'_le _ _ hb') _

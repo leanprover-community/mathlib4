@@ -3,8 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Asymptotics.Lemmas
-import Mathlib.Analysis.Normed.Module.Basic
+module
+
+public import Mathlib.Analysis.Asymptotics.Lemmas
+public import Mathlib.Analysis.Normed.Module.Basic
 
 /-!
 # Asymptotic equivalence up to a constant
@@ -12,6 +14,8 @@ import Mathlib.Analysis.Normed.Module.Basic
 In this file we define `Asymptotics.IsTheta l f g` (notation: `f =Θ[l] g`) as
 `f =O[l] g ∧ g =O[l] f`, then prove basic properties of this equivalence relation.
 -/
+
+@[expose] public section
 
 
 open Filter
@@ -230,7 +234,7 @@ theorem IsTheta.pow {f : α → 𝕜} {g : α → 𝕜'} (h : f =Θ[l] g) (n : �
 theorem IsTheta.zpow {f : α → 𝕜} {g : α → 𝕜'} (h : f =Θ[l] g) (n : ℤ) :
     (fun x ↦ f x ^ n) =Θ[l] fun x ↦ g x ^ n := by
   cases n
-  · simpa only [Int.ofNat_eq_coe, zpow_natCast] using h.pow _
+  · simpa only [Int.ofNat_eq_natCast, zpow_natCast] using h.pow _
   · simpa only [zpow_negSucc] using (h.pow _).inv
 
 theorem isTheta_const_const {c₁ : E''} {c₂ : F''} (h₁ : c₁ ≠ 0) (h₂ : c₂ ≠ 0) :

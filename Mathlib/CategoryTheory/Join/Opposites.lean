@@ -3,16 +3,20 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Join.Basic
-import Mathlib.CategoryTheory.Opposites
+module
+
+public import Mathlib.CategoryTheory.Join.Basic
+public import Mathlib.CategoryTheory.Opposites
 
 /-!
 # Opposites of joins of categories
 
 This file constructs the canonical equivalence of categories `(C ⋆ D)ᵒᵖ ≌ Dᵒᵖ ⋆ Cᵒᵖ`.
-The equivalence gets characterized in both directions.
+This equivalence is characterized in both directions.
 
 -/
+
+@[expose] public section
 
 namespace CategoryTheory.Join
 open Opposite Functor

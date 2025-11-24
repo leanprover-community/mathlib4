@@ -3,15 +3,17 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
-import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+module
+
+public import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
+public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 
 /-!
 # Relative cell complexes
 
 In this file, we define a structure `RelativeCellComplex` which expresses
 that a morphism `f : X ⟶ Y` is a transfinite composition of morphisms,
-all of which consists in attaching cells. Here, we allow a different
+all of which consist in attaching cells. Here, we allow a different
 family of authorized cells at each step. For example, (relative)
 CW-complexes are defined in the file `Mathlib/Topology/CWComplex/Abstract/Basic.lean`
 by requiring that at the `n`th step, we attach `n`-disks along their
@@ -25,6 +27,8 @@ see the file `Mathlib/CategoryTheory/SmallObject/IsCardinalForSmallObjectArgumen
 * https://ncatlab.org/nlab/show/small+object+argument
 
 -/
+
+@[expose] public section
 
 universe w w' t v u
 

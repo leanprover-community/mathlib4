@@ -3,7 +3,9 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.Basic
+module
+
+public import Mathlib.CategoryTheory.Abelian.Basic
 
 /-!
 # Idempotent complete categories
@@ -29,6 +31,8 @@ iff `C` is.
 * [Stacks: Karoubian categories] https://stacks.math.columbia.edu/tag/09SF
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -70,7 +74,7 @@ theorem isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent :
               intro s
               refine ⟨s.ι ≫ e, ?_⟩
               constructor
-              · erw [assoc, h₂, ← Limits.Fork.condition s, comp_id]
+              · simp [h₂, ← Limits.Fork.condition s]
               · intro m hm
                 rw [Fork.ι_ofι] at hm
                 rw [← hm]

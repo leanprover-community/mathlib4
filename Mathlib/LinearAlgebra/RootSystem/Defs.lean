@@ -3,8 +3,10 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Deepro Choudhury, Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.PerfectPairing.Basic
-import Mathlib.LinearAlgebra.Reflection
+module
+
+public import Mathlib.LinearAlgebra.PerfectPairing.Basic
+public import Mathlib.LinearAlgebra.Reflection
 
 /-!
 # Root data and root systems
@@ -56,6 +58,8 @@ coroots may not correspond. For this purpose, we define a map from `ι` to permu
 require that it is compatible with reflections and coreflections.
 
 -/
+
+@[expose] public section
 
 open Set Function
 open Module hiding reflection
@@ -122,9 +126,6 @@ variable (P : RootPairing ι R M N) (i j : ι)
 @[deprecated "Now a syntactic equality" (since := "2025-07-05"), nolint synTaut]
 lemma toLinearMap_eq_toPerfectPairing (x : M) (y : N) :
     P.toLinearMap x y = P.toLinearMap x y := rfl
-
-@[deprecated (since := "2025-04-20"), nolint synTaut]
-alias toLin_toPerfectPairing := toLinearMap_eq_toPerfectPairing
 
 /-- If we interchange the roles of `M` and `N`, we still have a root pairing. -/
 @[simps!, simps toLinearMap]
@@ -204,6 +205,8 @@ abbrev coroot' (i : ι) : Dual R M := P.toLinearMap.flip (P.coroot i)
 
 /-- This is the pairing between roots and coroots. -/
 def pairing : R := P.root' i (P.coroot j)
+
+@[simp] lemma pairing_flip : P.flip.pairing i j = P.pairing j i := rfl
 
 @[simp]
 lemma root_coroot_eq_pairing : P.toLinearMap (P.root i) (P.coroot j) = P.pairing i j :=
@@ -495,7 +498,7 @@ lemma neg_coroot_mem :
   P.flip.neg_root_mem i
 
 variable {P} in
-lemma smul_coroot_eq_of_root_eq_smul [Finite ι] [NoZeroSMulDivisors ℤ N] (i j : ι) (t : R)
+lemma smul_coroot_eq_of_root_eq_smul [Finite ι] [IsAddTorsionFree N] (i j : ι) (t : R)
     (h : P.root j = t • P.root i) :
     t • P.coroot j = P.coroot i := by
   have hij : t * P.pairing i j = 2 := by simpa using ((P.coroot' j).congr_arg h).symm
@@ -508,7 +511,7 @@ lemma smul_coroot_eq_of_root_eq_smul [Finite ι] [NoZeroSMulDivisors ℤ N] (i j
   simp [Module.preReflection_apply, coreflection_apply, h, smul_comm _ t, mul_smul]
 
 variable {P} in
-@[simp] lemma coroot_eq_smul_coroot_iff [Finite ι] [NoZeroSMulDivisors ℤ M] [NoZeroSMulDivisors ℤ N]
+@[simp] lemma coroot_eq_smul_coroot_iff [Finite ι] [IsAddTorsionFree M] [IsAddTorsionFree N]
     {i j : ι} {t : R} :
     P.coroot i = t • P.coroot j ↔ P.root j = t • P.root i :=
   ⟨fun h ↦ (P.flip.smul_coroot_eq_of_root_eq_smul j i t h).symm,
@@ -606,6 +609,10 @@ alias _root_.RootSystem.reflection_perm_eq_reflection_perm_iff :=
 finite.  It is `4 cos² θ`, where `θ` describes the dihedral angle between hyperplanes. -/
 def coxeterWeight : R := pairing P i j * pairing P j i
 
+@[simp] lemma coxeterWeight_flip :
+    P.flip.coxeterWeight i j = P.coxeterWeight i j := by
+  simp [coxeterWeight, mul_comm (P.pairing j i)]
+
 lemma coxeterWeight_swap : coxeterWeight P i j = coxeterWeight P j i := by
   simp only [coxeterWeight, mul_comm]
 
@@ -617,11 +624,10 @@ lemma isOrthogonal_symm : IsOrthogonal P i j ↔ IsOrthogonal P j i := by
 
 lemma isOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.reflection j) := by
   rw [commute_iff_eq]
-  ext v
+  ext
   replace h : P.pairing i j = 0 ∧ P.pairing j i = 0 := by simpa [IsOrthogonal] using h
-  erw [Module.End.mul_apply, Module.End.mul_apply]
-  simp only [LinearEquiv.coe_coe, reflection_apply, LinearMap.flip_apply, map_sub, map_smul,
-    root_coroot_eq_pairing, h, zero_smul, sub_zero]
+  simp only [LinearEquiv.mul_apply, reflection_apply, LinearMap.flip_apply, map_sub,
+    map_smul, root_coroot_eq_pairing, h, zero_smul, sub_zero]
   abel
 
 variable {P i j}

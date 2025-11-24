@@ -3,9 +3,11 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Data.Int.Range
-import Mathlib.Data.ZMod.Basic
-import Mathlib.NumberTheory.MulChar.Basic
+module
+
+public import Mathlib.Data.Int.Range
+public import Mathlib.Data.ZMod.Basic
+public import Mathlib.NumberTheory.MulChar.Basic
 
 /-!
 # Quadratic characters on ℤ/nℤ
@@ -19,11 +21,13 @@ We set them up to be of type `MulChar (ZMod n) ℤ`, where `n` is `4` or `8`.
 quadratic character, zmod
 -/
 
+@[expose] public section
+
 
 /-!
 ### Quadratic characters mod 4 and 8
 
-We define the primitive quadratic characters `χ₄`on `ZMod 4`
+We define the primitive quadratic characters `χ₄` on `ZMod 4`
 and `χ₈`, `χ₈'` on `ZMod 8`.
 -/
 

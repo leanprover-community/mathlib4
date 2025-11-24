@@ -3,12 +3,14 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Order.AddGroupWithTop
-import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-import Mathlib.Algebra.Ring.Defs
-import Mathlib.Order.Hom.Basic
+module
+
+public import Mathlib.Algebra.Order.AddGroupWithTop
+public import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
+public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+public import Mathlib.Algebra.Ring.Defs
+public import Mathlib.Order.Hom.Basic
 
 /-!
 
@@ -43,6 +45,8 @@ most references rely on `Semiring (Tropical R)` for building up the whole theory
 * https://www.mathenjeans.fr/sites/default/files/sujets/tropical_geometry_-_casagrande.pdf
 
 -/
+
+@[expose] public section
 
 assert_not_exists Nat.instMulOneClass
 
@@ -224,7 +228,6 @@ instance : Add (Tropical R) :=
   ⟨fun x y => trop (min (untrop x) (untrop y))⟩
 
 instance instAddCommSemigroupTropical : AddCommSemigroup (Tropical R) where
-  add := (· + ·)
   add_assoc _ _ _ := untrop_injective (min_assoc _ _ _)
   add_comm _ _ := untrop_injective (min_comm _ _)
 
@@ -370,7 +373,6 @@ theorem untrop_div [Sub R] (x y : Tropical R) : untrop (x / y) = untrop x - untr
   rfl
 
 instance instSemigroupTropical [AddSemigroup R] : Semigroup (Tropical R) where
-  mul := (· * ·)
   mul_assoc _ _ _ := untrop_injective (add_assoc _ _ _)
 
 instance instCommSemigroupTropical [AddCommSemigroup R] : CommSemigroup (Tropical R) :=
@@ -388,8 +390,6 @@ theorem trop_smul {α : Type*} [SMul α R] (x : R) (n : α) : trop (n • x) = t
   rfl
 
 instance instMulOneClassTropical [AddZeroClass R] : MulOneClass (Tropical R) where
-  one := 1
-  mul := (· * ·)
   one_mul _ := untrop_injective <| zero_add _
   mul_one _ := untrop_injective <| add_zero _
 
@@ -408,7 +408,6 @@ instance instCommMonoidTropical [AddCommMonoid R] : CommMonoid (Tropical R) :=
 
 instance instGroupTropical [AddGroup R] : Group (Tropical R) :=
   { instMonoidTropical with
-    inv := Inv.inv
     div_eq_mul_inv := fun _ _ => untrop_injective <| by simp [sub_eq_add_neg]
     inv_mul_cancel := fun _ => untrop_injective <| neg_add_cancel _
     zpow := fun n x => trop <| n • untrop x
@@ -433,11 +432,11 @@ section Distrib
 
 instance mulLeftMono [LE R] [Add R] [AddLeftMono R] :
     MulLeftMono (Tropical R) :=
-  ⟨fun _ y z h => add_le_add_left (show untrop y ≤ untrop z from h) _⟩
+  ⟨fun _ y z h => add_le_add_right (show untrop y ≤ untrop z from h) _⟩
 
 instance mulRightMono [LE R] [Add R] [AddRightMono R] :
     MulRightMono (Tropical R) :=
-  ⟨fun _ y z h => add_le_add_right (show untrop y ≤ untrop z from h) _⟩
+  ⟨fun _ y z h => add_le_add_left (show untrop y ≤ untrop z from h) _⟩
 
 instance addLeftMono [LinearOrder R] : AddLeftMono (Tropical R) :=
   ⟨fun x y z h => by
@@ -450,16 +449,14 @@ instance addLeftMono [LinearOrder R] : AddLeftMono (Tropical R) :=
 
 instance mulLeftStrictMono [LT R] [Add R] [AddLeftStrictMono R] :
     MulLeftStrictMono (Tropical R) :=
-  ⟨fun _ _ _ h => add_lt_add_left (untrop_lt_iff.2 h) _⟩
+  ⟨fun _ _ _ h => add_lt_add_right (untrop_lt_iff.2 h) _⟩
 
 instance mulRightStrictMono [Preorder R] [Add R] [AddRightStrictMono R] :
     MulRightStrictMono (Tropical R) :=
-  ⟨fun _ y z h => add_lt_add_right (show untrop y < untrop z from h) _⟩
+  ⟨fun _ y z h => add_lt_add_left (show untrop y < untrop z from h) _⟩
 
 instance instDistribTropical [LinearOrder R] [Add R] [AddLeftMono R] [AddRightMono R] :
     Distrib (Tropical R) where
-  mul := (· * ·)
-  add := (· + ·)
   left_distrib _ _ _ := untrop_injective (min_add_add_left _ _ _).symm
   right_distrib _ _ _ := untrop_injective (min_add_add_right _ _ _).symm
 

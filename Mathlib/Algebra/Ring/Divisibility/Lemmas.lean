@@ -3,11 +3,13 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Ring.Divisibility.Basic
-import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.GroupTheory.GroupAction.Ring
-import Mathlib.Algebra.GCDMonoid.Basic
+module
+
+public import Mathlib.Algebra.GroupWithZero.Divisibility
+public import Mathlib.Algebra.Ring.Divisibility.Basic
+public import Mathlib.Data.Nat.Choose.Sum
+public import Mathlib.GroupTheory.GroupAction.Ring
+public import Mathlib.Algebra.GCDMonoid.Basic
 
 /-!
 # Lemmas about divisibility in rings
@@ -17,6 +19,8 @@ import Mathlib.Algebra.GCDMonoid.Basic
 * `Commute.pow_dvd_add_pow_of_pow_eq_zero_right`: stating that if `y` is nilpotent then
   `x ^ m ∣ (x + y) ^ p` for sufficiently large `p` (together with many variations for convenience).
 -/
+
+@[expose] public section
 
 variable {R : Type*}
 

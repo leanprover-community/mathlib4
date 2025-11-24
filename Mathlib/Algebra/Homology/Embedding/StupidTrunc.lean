@@ -3,10 +3,11 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
 
-import Mathlib.Algebra.Homology.Embedding.Extend
-import Mathlib.Algebra.Homology.Embedding.IsSupported
-import Mathlib.Algebra.Homology.Embedding.Restriction
+public import Mathlib.Algebra.Homology.Embedding.Extend
+public import Mathlib.Algebra.Homology.Embedding.IsSupported
+public import Mathlib.Algebra.Homology.Embedding.Restriction
 
 /-!
 # The stupid truncation of homological complexes
@@ -20,6 +21,8 @@ which sends `K` to `K.stupidTrunc e` which is defined as `(K.restriction e).exte
 * define the projection `𝟭 _ ⟶ e.stupidTruncFunctor C` when `[e.IsTruncLE]`.
 
 -/
+
+@[expose] public section
 
 open CategoryTheory Category Limits ZeroObject
 

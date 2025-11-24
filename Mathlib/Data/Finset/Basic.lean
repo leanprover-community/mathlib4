@@ -3,17 +3,19 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Attach
-import Mathlib.Data.Finset.Disjoint
-import Mathlib.Data.Finset.Erase
-import Mathlib.Data.Finset.Filter
-import Mathlib.Data.Finset.Range
-import Mathlib.Data.Finset.SDiff
-import Mathlib.Data.Multiset.Basic
-import Mathlib.Logic.Equiv.Set
-import Mathlib.Order.Directed
-import Mathlib.Order.Interval.Set.Defs
-import Mathlib.Data.Set.SymmDiff
+module
+
+public import Mathlib.Data.Finset.Attach
+public import Mathlib.Data.Finset.Disjoint
+public import Mathlib.Data.Finset.Erase
+public import Mathlib.Data.Finset.Filter
+public import Mathlib.Data.Finset.Range
+public import Mathlib.Data.Finset.SDiff
+public import Mathlib.Data.Multiset.Basic
+public import Mathlib.Logic.Equiv.Set
+public import Mathlib.Order.Directed
+public import Mathlib.Order.Interval.Set.Defs
+public import Mathlib.Data.Set.SymmDiff
 
 /-!
 # Basic lemmas on finite sets
@@ -41,6 +43,8 @@ For an explanation of `Finset` design decisions, please see `Mathlib/Data/Finset
 finite sets, finset
 
 -/
+
+@[expose] public section
 
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
@@ -582,7 +586,7 @@ def piFinsetUnion {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι} (h
   sumPiEquivProdPi (fun b ↦ α (e b)) |>.symm.trans (.piCongrLeft (fun i : ↥(s ∪ t) ↦ α i) e)
 
 /-- A finset is equivalent to its coercion as a set. -/
-def _root_.Finset.equivToSet (s : Finset α) : s ≃ s.toSet where
+def _root_.Finset.equivToSet (s : Finset α) : s ≃ (s : Set α) where
   toFun a := ⟨a.1, mem_coe.2 a.2⟩
   invFun a := ⟨a.1, mem_coe.1 a.2⟩
 

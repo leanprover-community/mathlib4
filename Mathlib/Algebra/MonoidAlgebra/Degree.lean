@@ -3,9 +3,11 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Group.Subsemigroup.Operations
-import Mathlib.Algebra.MonoidAlgebra.Support
-import Mathlib.Order.Filter.Extr
+module
+
+public import Mathlib.Algebra.Group.Subsemigroup.Operations
+public import Mathlib.Algebra.MonoidAlgebra.Support
+public import Mathlib.Order.Filter.Extr
 
 /-!
 # Lemmas about the `sup` and `inf` of the support of `AddMonoidAlgebra`
@@ -17,6 +19,8 @@ The current plan is to state and prove lemmas about `Finset.sup (Finsupp.support
 Next, the general lemmas get specialized for some yet-to-be-defined `degree`s.
 -/
 
+@[expose] public section
+
 
 variable {R R' A T B ι : Type*}
 
@@ -24,7 +28,7 @@ namespace AddMonoidAlgebra
 
 /-!
 
-# sup-degree and inf-degree of an `AddMonoidAlgebra`
+## sup-degree and inf-degree of an `AddMonoidAlgebra`
 
 Let `R` be a semiring and let `A` be a `SemilatticeSup`.
 For an element `f : R[A]`, this file defines
@@ -48,7 +52,7 @@ The main results are
 * `AddMonoidAlgebra.le_infDegree_add`:
   the inf-degree of a sum is at least the inf of the inf-degrees.
 
-## Implementation notes
+### Implementation notes
 
 The current plan is to state and prove lemmas about `Finset.sup (Finsupp.support f) D` with a
 "generic" degree/weight function `D` from the grading Type `A` to a somewhat ordered Type `B`.
@@ -97,14 +101,15 @@ section AddOnly
 variable [Add A] [Add B] [Add T] [AddLeftMono B] [AddRightMono B]
   [AddLeftMono T] [AddRightMono T]
 
-theorem sup_support_mul_le {degb : A → B} (degbm : ∀ {a b}, degb (a + b) ≤ degb a + degb b)
+theorem sup_support_mul_le {degb : A → B} (degbm : ∀ a b, degb (a + b) ≤ degb a + degb b)
     (f g : R[A]) :
     (f * g).support.sup degb ≤ f.support.sup degb + g.support.sup degb := by
   classical
-  exact (Finset.sup_mono <| support_mul _ _).trans <| Finset.sup_add_le.2 fun _fd fds _gd gds ↦
-    degbm.trans <| add_le_add (Finset.le_sup fds) (Finset.le_sup gds)
+  grw [support_mul, Finset.sup_add_le]
+  rintro _fd fds _gd gds
+  grw [degbm, ← Finset.le_sup fds, ← Finset.le_sup gds]
 
-theorem le_inf_support_mul {degt : A → T} (degtm : ∀ {a b}, degt a + degt b ≤ degt (a + b))
+theorem le_inf_support_mul {degt : A → T} (degtm : ∀ a b, degt a + degt b ≤ degt (a + b))
     (f g : R[A]) :
     f.support.inf degt + g.support.inf degt ≤ (f * g).support.inf degt :=
   sup_support_mul_le (B := Tᵒᵈ) degtm f g
@@ -126,8 +131,7 @@ theorem sup_support_list_prod_le (degb0 : degb 0 ≤ 0)
     exact fun a ha => by rwa [Finset.mem_singleton.mp (Finsupp.support_single_subset ha)]
   | f::fs => by
     rw [List.prod_cons, List.map_cons, List.sum_cons]
-    exact (sup_support_mul_le (@fun a b => degbm a b) _ _).trans
-        (add_le_add_left (sup_support_list_prod_le degb0 degbm fs) _)
+    grw [sup_support_mul_le degbm, sup_support_list_prod_le degb0 degbm]
 
 theorem le_inf_support_list_prod (degt0 : 0 ≤ degt 0)
     (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (l : List R[A]) :
@@ -310,7 +314,7 @@ theorem apply_add_of_supDegree_le (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
   rw [Finset.sum_eq_single ap, Finset.sum_eq_single aq, if_pos rfl]
   · refine fun a ha hne => if_neg (fun he => ?_)
     apply_fun D at he; simp_rw [hadd] at he
-    exact (add_lt_add_left (((Finset.le_sup ha).trans hq).lt_of_ne <| hD.ne_iff.2 hne) _).ne he
+    exact (add_lt_add_right (((Finset.le_sup ha).trans hq).lt_of_ne <| hD.ne_iff.2 hne) _).ne he
   · intro h; rw [if_pos rfl, Finsupp.notMem_support_iff.1 h, mul_zero]
   · refine fun a ha hne => Finset.sum_eq_zero (fun a' ha' => if_neg <| fun he => ?_)
     apply_fun D at he
@@ -443,10 +447,10 @@ lemma sum_ne_zero_of_injOn_supDegree' (hs : ∃ i ∈ s, f i ≠ 0)
     ∑ i ∈ s, f i ≠ 0 := by
   obtain ⟨j, hj, hne⟩ := hs
   obtain ⟨i, hi, he⟩ := exists_mem_eq_sup _ ⟨j, hj⟩ (supDegree D ∘ f)
-  by_cases h : ∀ k ∈ s, k = i
+  by_cases! h : ∀ k ∈ s, k = i
   · refine (sum_eq_single_of_mem j hj (fun k hk hne => ?_)).trans_ne hne
     rw [h k hk, h j hj] at hne; exact hne.irrefl.elim
-  push_neg at h; obtain ⟨j, hj, hne⟩ := h
+  obtain ⟨j, hj, hne⟩ := h
   apply ne_zero_of_supDegree_ne_bot (D := D)
   have (k) (hk : k ∈ s) (hne : k ≠ i) : supDegree D (f k) < supDegree D (f i) :=
     ((le_sup hk).trans_eq he).lt_of_ne (hd.ne hk hi hne)

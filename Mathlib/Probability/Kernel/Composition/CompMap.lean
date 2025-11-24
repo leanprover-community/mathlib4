@@ -3,8 +3,10 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Composition.Comp
-import Mathlib.Probability.Kernel.Composition.MapComap
+module
+
+public import Mathlib.Probability.Kernel.Composition.Comp
+public import Mathlib.Probability.Kernel.Composition.MapComap
 
 /-!
 # Lemmas about compositions and maps of kernels
@@ -16,6 +18,8 @@ Map and comap are particular cases of composition: they correspond to compositio
 a deterministic kernel. See `deterministic_comp_eq_map` and `comp_deterministic_eq_comap`.
 
 -/
+
+@[expose] public section
 
 
 open MeasureTheory

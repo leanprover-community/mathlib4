@@ -3,9 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Algebra.Algebra.Hom
-import Mathlib.Algebra.Module.Prod
+module
+
+public import Mathlib.Algebra.Algebra.Equiv
+public import Mathlib.Algebra.Algebra.Hom
+public import Mathlib.Algebra.Module.Prod
 
 /-!
 # The R-algebra structure on products of R-algebras
@@ -20,6 +22,8 @@ The R-algebra structure on `(i : I) → A i` when each `A i` is an R-algebra.
 * `AlgHom.prod`
 * `AlgEquiv.prodUnique` and `AlgEquiv.uniqueProd`
 -/
+
+@[expose] public section
 
 
 variable {R A B C : Type*}

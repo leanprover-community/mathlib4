@@ -3,9 +3,11 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.FieldTheory.Minpoly.Field
-import Mathlib.LinearAlgebra.SModEq
-import Mathlib.RingTheory.Ideal.BigOperators
+module
+
+public import Mathlib.FieldTheory.Minpoly.Field
+public import Mathlib.LinearAlgebra.SModEq.Basic
+public import Mathlib.RingTheory.Ideal.BigOperators
 
 /-!
 # Power basis
@@ -40,6 +42,8 @@ power basis, powerbasis
 
 -/
 
+@[expose] public section
+
 open Finsupp Module Polynomial
 
 variable {R S T : Type*} [CommRing R] [Ring S] [Algebra R S]
@@ -72,6 +76,17 @@ theorem coe_basis (pb : PowerBasis R S) : ⇑pb.basis = fun i : Fin pb.dim => pb
 /-- Cannot be an instance because `PowerBasis` cannot be a class. -/
 theorem finite (pb : PowerBasis R S) : Module.Finite R S := .of_basis pb.basis
 
+/--
+Construct a power basis from a basis consisting of powers of an element.
+-/
+protected def _root_.Module.Basis.PowerBasis {ι : Type*} [Fintype ι] (B : Basis ι R S) {x : S}
+    (e : ι ≃ Fin (Fintype.card ι)) (hx : ∀ i, B i = x ^ (e i : ℕ)) :
+    PowerBasis R S := ⟨x, Fintype.card ι, B.reindex e, fun i ↦ by simp [hx]⟩
+
+@[simp]
+theorem _root_.Module.Basis.PowerBasis_gen {ι : Type*} [Fintype ι] (B : Basis ι R S) {x : S}
+    (e : ι ≃ Fin (Fintype.card ι)) (hx : ∀ i, B i = x ^ (e i : ℕ)) :
+    (B.PowerBasis e hx).gen = x := rfl
 
 theorem finrank [StrongRankCondition R] (pb : PowerBasis R S) :
     Module.finrank R S = pb.dim := by
@@ -97,13 +112,12 @@ theorem mem_span_pow {x y : S} {d : ℕ} (hd : d ≠ 0) :
       ∃ f : R[X], f.natDegree < d ∧ y = aeval x f := by
   rw [mem_span_pow']
   constructor <;>
-    · rintro ⟨f, h, hy⟩
-      refine ⟨f, ?_, hy⟩
-      by_cases hf : f = 0
-      · simp only [hf, natDegree_zero, degree_zero] at h ⊢
-        first | exact lt_of_le_of_ne (Nat.zero_le d) hd.symm | exact WithBot.bot_lt_coe d
-      simp_all only [degree_eq_natDegree hf]
-      · first | exact WithBot.coe_lt_coe.1 h | exact WithBot.coe_lt_coe.2 h
+  · rintro ⟨f, h, hy⟩
+    refine ⟨f, ?_, hy⟩
+    by_cases hf : f = 0
+    · simp only [hf, natDegree_zero, degree_zero] at h ⊢
+      first | exact lt_of_le_of_ne (Nat.zero_le d) hd.symm | exact WithBot.bot_lt_coe d
+    simpa [degree_eq_natDegree hf] using h
 
 theorem dim_ne_zero [Nontrivial S] (pb : PowerBasis R S) : pb.dim ≠ 0 := fun h =>
   not_nonempty_iff.mpr (h.symm ▸ Fin.isEmpty : IsEmpty (Fin pb.dim)) pb.basis.index_nonempty
