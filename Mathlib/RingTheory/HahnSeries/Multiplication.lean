@@ -33,6 +33,8 @@ with the action of `HahnSeries Γ R` on `HahnModule Γ' R V`.
 * `HahnSeries.C` is the `constant term` ring homomorphism `R →+* HahnSeries Γ R`.
 * `HahnSeries.embDomainRingHom` is the ring homomorphism `HahnSeries Γ R →+* HahnSeries Γ' R`
   induced by an order embedding `Γ ↪o Γ'`.
+* `HahnSeries.orderTopSubOnePos` is the group of invertible Hahn series close to 1, i.e., those
+  series such that subtracting one yields a series with strictly positive `orderTop`.
 
 ## Main results
 * If `R` is a (commutative) (semi-)ring, then so is `HahnSeries Γ R`.
@@ -85,7 +87,7 @@ theorem support_one [MulZeroOneClass R] [Nontrivial R] : support (1 : HahnSeries
   support_single_of_ne one_ne_zero
 
 @[simp]
-theorem orderTop_one [MulZeroOneClass R] [Nontrivial R] : orderTop (1 : HahnSeries Γ R) = 0 := by
+theorem orderTop_one [Zero R] [One R] [NeZero (1 : R)] : orderTop (1 : HahnSeries Γ R) = 0 := by
   rw [← single_zero_one, orderTop_single one_ne_zero, WithTop.coe_eq_zero]
 
 @[simp]
@@ -391,9 +393,11 @@ end DistribSMul
 
 end HahnModule
 
-variable [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
-
 namespace HahnSeries
+
+section mul
+
+variable [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
 
 instance [NonUnitalNonAssocSemiring R] : Mul (HahnSeries Γ R) where
   mul x y := (HahnModule.of R).symm (x • HahnModule.of R y)
@@ -492,15 +496,40 @@ theorem support_mul_subset_add_support [NonUnitalNonAssocSemiring R] {x y : Hahn
   rw [← of_symm_smul_of_eq_mul, ← vadd_eq_add]
   exact HahnModule.support_smul_subset_vadd_support
 
+instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring (HahnSeries Γ R) :=
+  { inferInstanceAs (AddCommMonoid (HahnSeries Γ R)),
+    inferInstanceAs (Distrib (HahnSeries Γ R)) with
+    zero_mul := fun _ => by
+      ext
+      simp [coeff_mul]
+    mul_zero := fun _ => by
+      ext
+      simp [coeff_mul] }
+
+end mul
+
 section orderLemmas
 
-variable {Γ : Type*} [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
+variable [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
   [NonUnitalNonAssocSemiring R]
 
 theorem coeff_mul_order_add_order (x y : HahnSeries Γ R) :
     (x * y).coeff (x.order + y.order) = x.leadingCoeff * y.leadingCoeff := by
   simp only [← of_symm_smul_of_eq_mul]
   exact HahnModule.coeff_smul_order_add_order x y
+
+theorem orderTop_mul_of_nonzero {x y : HahnSeries Γ R} (h : x.leadingCoeff * y.leadingCoeff ≠ 0) :
+    (x * y).orderTop = x.orderTop + y.orderTop := by
+  by_cases hx : x = 0; · simp [hx]
+  by_cases hy : y = 0; · simp [hy]
+  have : (x * y).coeff (x.order + y.order) ≠ 0 := by rwa [coeff_mul_order_add_order x y]
+  have hxy : x * y ≠ 0 := fun h ↦ (by simp [h] at this)
+  rw [← order_eq_orderTop_of_ne_zero hx, ← order_eq_orderTop_of_ne_zero hy,
+    ← order_eq_orderTop_of_ne_zero hxy, ← WithTop.coe_add, WithTop.coe_eq_coe]
+  refine le_antisymm (order_le_of_coeff_ne_zero this) ?_
+  rw [HahnSeries.order_of_ne hx, HahnSeries.order_of_ne hy, HahnSeries.order_of_ne hxy,
+    ← Set.IsWF.min_add]
+  exact Set.IsWF.min_le_min_of_subset support_mul_subset_add_support
 
 theorem orderTop_add_le_mul {x y : HahnSeries Γ R} :
     x.orderTop + y.orderTop ≤ (x * y).orderTop := by
@@ -519,6 +548,11 @@ theorem order_mul_of_nonzero {x y : HahnSeries Γ R}
     order_of_ne <| ne_zero_of_coeff_ne_zero hxy, ← Set.IsWF.min_add]
   exact Set.IsWF.min_le_min_of_subset support_mul_subset_add_support
 
+theorem leadingCoeff_mul_of_nonzero {x y : HahnSeries Γ R}
+    (h : x.leadingCoeff * y.leadingCoeff ≠ 0) :
+    (x * y).leadingCoeff = x.leadingCoeff * y.leadingCoeff := by
+  simp only [leadingCoeff_eq, order_mul_of_nonzero h, coeff_mul_order_add_order]
+
 theorem order_single_mul_of_isRegular {g : Γ} {r : R} (hr : IsRegular r)
     {x : HahnSeries Γ R} (hx : x ≠ 0) : (((single g) r) * x).order = g + x.order := by
   obtain _ | _ := subsingleton_or_nontrivial R
@@ -529,6 +563,10 @@ theorem order_single_mul_of_isRegular {g : Γ} {r : R} (hr : IsRegular r)
 
 end orderLemmas
 
+section ring
+
+variable [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
+
 private theorem mul_assoc' [NonUnitalSemiring R] (x y z : HahnSeries Γ R) :
     x * y * z = x * (y * z) := by
   ext b
@@ -538,16 +576,6 @@ private theorem mul_assoc' [NonUnitalSemiring R] (x y z : HahnSeries Γ R) :
   apply Finset.sum_nbij' (fun ⟨⟨_i, j⟩, ⟨k, l⟩⟩ ↦ ⟨(k, l + j), (l, j)⟩)
     (fun ⟨⟨i, _j⟩, ⟨k, l⟩⟩ ↦ ⟨(i + k, l), (i, k)⟩) <;>
     aesop (add safe Set.add_mem_add) (add simp [add_assoc, mul_assoc])
-
-instance [NonUnitalNonAssocSemiring R] : NonUnitalNonAssocSemiring (HahnSeries Γ R) :=
-  { inferInstanceAs (AddCommMonoid (HahnSeries Γ R)),
-    inferInstanceAs (Distrib (HahnSeries Γ R)) with
-    zero_mul := fun _ => by
-      ext
-      simp [coeff_mul]
-    mul_zero := fun _ => by
-      ext
-      simp [coeff_mul] }
 
 instance [NonUnitalSemiring R] : NonUnitalSemiring (HahnSeries Γ R) :=
   { inferInstanceAs (NonUnitalNonAssocSemiring (HahnSeries Γ R)) with
@@ -603,15 +631,18 @@ instance [CommRing R] : CommRing (HahnSeries Γ R) :=
   { inferInstanceAs (CommSemiring (HahnSeries Γ R)),
     inferInstanceAs (Ring (HahnSeries Γ R)) with }
 
-theorem orderTop_nsmul_le_orderTop_pow {Γ}
-    [AddCommMonoid Γ] [LinearOrder Γ] [IsOrderedCancelAddMonoid Γ]
-    [Semiring R] {x : HahnSeries Γ R} {n : ℕ} : n • x.orderTop ≤ (x ^ n).orderTop := by
+end ring
+
+theorem orderTop_nsmul_le_orderTop_pow [AddCommMonoid Γ] [LinearOrder Γ]
+    [IsOrderedCancelAddMonoid Γ] [Semiring R] {x : HahnSeries Γ R} {n : ℕ} :
+    n • x.orderTop ≤ (x ^ n).orderTop := by
   induction n with
   | zero =>
     simp only [zero_smul, pow_zero]
-    by_cases h : (0 : R) = 1
-    · simp [subsingleton_iff_zero_eq_one.mp h]
-    · simp [nontrivial_of_ne 0 1 h]
+    by_cases h : NeZero (1 : R)
+    · simp
+    · have : Subsingleton R := not_nontrivial_iff_subsingleton.mp fun _ ↦ h NeZero.one
+      simp
   | succ n ih =>
     rw [add_nsmul, pow_add]
     calc
@@ -620,7 +651,63 @@ theorem orderTop_nsmul_le_orderTop_pow {Γ}
       (x ^ n).orderTop + x.orderTop ≤ (x ^ n * x).orderTop := orderTop_add_le_mul
       (x ^ n * x).orderTop ≤ (x ^ n * x ^ 1).orderTop := by rw [pow_one]
 
+theorem orderTop_self_sub_one_pos_iff [LinearOrder Γ] [Zero Γ] [NonAssocRing R] [Nontrivial R]
+    (x : HahnSeries Γ R) :
+    0 < (x - 1).orderTop ↔ x.orderTop = 0 ∧ x.leadingCoeff = 1 := by
+  constructor
+  · intro hx
+    constructor
+    · rw [← sub_add_cancel x 1, add_comm, ← orderTop_one (R := R)]
+      exact orderTop_add_eq_left (Γ := Γ) (R := R) (orderTop_one (R := R) (Γ := Γ) ▸ hx)
+    · rw [← sub_add_cancel x 1, add_comm, ← leadingCoeff_one (Γ := Γ) (R := R)]
+      exact leadingCoeff_add_eq_left (Γ := Γ) (R := R) (orderTop_one (R := R) (Γ := Γ) ▸ hx)
+  · intro h
+    refine lt_of_le_of_ne (le_of_eq_of_le (by simp_all)
+      (min_orderTop_le_orderTop_sub (Γ := Γ) (R := R))) <| Ne.symm <|
+      orderTop_sub_ne h.1 orderTop_one ?_
+    rw [h.2, leadingCoeff_one]
+
+theorem orderTop_sub_pos [PartialOrder Γ] [Zero Γ] [AddCommGroup R] [One R] {g : Γ} (hg : 0 < g)
+    (r : R) :
+    0 < ((1 + single g r) - 1).orderTop := by
+  by_cases hr : r = 0 <;> simp [hr, hg]
+
+/-- The group of invertible Hahn series close to 1, i.e., those series such that subtracting 1
+  yields a series with strictly positive `orderTop`. -/
+def orderTopSubOnePos (Γ R) [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ]
+    [CommRing R] : Subgroup (HahnSeries Γ R)ˣ where
+  carrier := { x : (HahnSeries Γ R)ˣ | 0 < (x.val - 1).orderTop}
+  mul_mem' := by
+    intro x y hx hy
+    obtain (_|_) := subsingleton_or_nontrivial R
+    · simp
+    · simp_all only [Set.mem_setOf_eq, orderTop_self_sub_one_pos_iff]
+      have h1 : x.val.leadingCoeff * y.val.leadingCoeff = 1 := by rw [hx.2, hy.2, mul_one]
+      constructor
+      · rw [Units.val_mul, orderTop_mul_of_nonzero (by simp [h1]), hx.1, hy.1, add_zero]
+      · rw [Units.val_mul, leadingCoeff_mul_of_nonzero (h1 ▸ one_ne_zero), h1]
+  one_mem' := by simp
+  inv_mem' {y} h := by
+    suffices 0 < (y.inv - 1).orderTop by exact this
+    obtain (_|_) := subsingleton_or_nontrivial R
+    · simp
+    · have : 0 < (y.val - 1).orderTop := h
+      rw [orderTop_self_sub_one_pos_iff] at this
+      have nz : y.val.leadingCoeff * y.inv.leadingCoeff ≠ 0 := by
+        rw [this.2, one_mul]
+        exact leadingCoeff_ne_zero.mpr (by simp)
+      refine y.inv.orderTop_self_sub_one_pos_iff.mpr ⟨?_, ?_⟩
+      · simpa [this.1, y.val_inv] using (orderTop_mul_of_nonzero nz).symm
+      · simpa [this.2, y.val_inv] using (leadingCoeff_mul_of_nonzero nz).symm
+
+@[simp]
+theorem mem_orderTopSubOnePos_iff [LinearOrder Γ] [AddCommMonoid Γ] [IsOrderedCancelAddMonoid Γ]
+    [CommRing R] (x : (HahnSeries Γ R)ˣ) :
+    x ∈ orderTopSubOnePos Γ R ↔ 0 < (x.val - 1).orderTop := .rfl
+
 end HahnSeries
+
+variable [AddCommMonoid Γ] [PartialOrder Γ] [IsOrderedCancelAddMonoid Γ]
 
 namespace HahnModule
 
