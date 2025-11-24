@@ -46,9 +46,11 @@ unused in the remainder of the type.
 private structure Parameter where
   /- TODO: include syntax references to the binders here, and use the "real" fvars created during
   elaboration if possible -/
-  /-- The free variable of the parameter created in a telescope for logging. -/
+  /-- The free variable of the parameter created in a telescope for logging.
+  We always expect this to be `some _` normally, but allow `none` as a failsafe. -/
   fvar? : Option Expr
-  /-- The type of the parameter created in a telescope for logging. -/
+  /-- The type of the parameter created in a telescope for logging.
+  We always expect this to be `some _` normally, but allow `none` as a failsafe. -/
   type? : Option Expr
   /-- The index of the parameter among the `forall` binders in the type (starting at 0). -/
   idx : Nat
@@ -204,6 +206,7 @@ def unusedDecidableInType : Linter where
     unless getLinterValue linter.unusedDecidableInType (← getLinterOptions) do
       return
     cmd.logUnusedInstancesInTheoremsWhere
+      -- Theorems in the `Decidable` namespace are allowed to
       (declFilter := (!(`Decidable).isPrefixOf ·.name))
       isDecidableVariant
       fun _ thm unusedParams => do
