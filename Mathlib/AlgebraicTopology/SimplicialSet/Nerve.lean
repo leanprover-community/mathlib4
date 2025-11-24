@@ -55,7 +55,7 @@ def nerveFunctor : Cat.{v, u} ⥤ SSet where
 
 /-- The 0-simplices of the nerve of a category are equivalent to the objects of the category. -/
 def nerveEquiv (C : Type u) [Category.{v} C] : nerve C _⦋0⦌ ≃ C where
-  toFun f := f.obj ⟨0, by cutsat⟩
+  toFun f := f.obj ⟨0, by lia⟩
   invFun f := (Functor.const _).obj f
   left_inv f := ComposableArrows.ext₀ rfl
 

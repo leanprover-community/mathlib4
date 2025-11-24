@@ -474,7 +474,7 @@ theorem getElem?_surjective_iff {l : List α} : (fun (n : ℕ) ↦ l[n]?).Surjec
   | some x => exact mem_iff_getElem?.mp <| h x
 
 theorem get_tail (l : List α) (i) (h : i < l.tail.length)
-    (h' : i + 1 < l.length := (by simp only [length_tail] at h; cutsat)) :
+    (h' : i + 1 < l.length := (by simp only [length_tail] at h; lia)) :
     l.tail.get ⟨i, h⟩ = l.get ⟨i + 1, h'⟩ := by
   simp
 
@@ -604,7 +604,7 @@ theorem get_reverse' (l : List α) (n) (hn') :
     l.reverse.get n = l.get ⟨l.length - 1 - n, hn'⟩ := by
   simp
 
-theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) : l = [l.get ⟨0, by cutsat⟩] := by
+theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) : l = [l.get ⟨0, by lia⟩] := by
   refine ext_get (by convert h) (by grind)
 
 end deprecated

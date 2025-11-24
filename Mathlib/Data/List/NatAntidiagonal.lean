@@ -42,7 +42,7 @@ theorem mem_antidiagonal {n : ℕ} {x : ℕ × ℕ} : x ∈ antidiagonal n ↔ x
   · rintro rfl
     refine ⟨x.fst, ?_, ?_⟩
     · rw [mem_range]
-      cutsat
+      lia
     · exact Prod.ext rfl (by simp only [Nat.add_sub_cancel_left])
 
 /-- The length of the antidiagonal of `n` is `n + 1`. -/

@@ -188,7 +188,7 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
         Nat.sub_zero, get_eq_getElem, getElem_cons_succ]
     · simp only [dropLast_cons₂, length_cons, length_dropLast, Nat.add_one_sub_one,
         Nat.add_lt_add_iff_right] at hk ⊢
-      cutsat
+      lia
     simpa using hk
 
 theorem prev_getLast_cons' (y : α) (hxy : x ∈ y :: l) (hx : x = y) :
@@ -282,7 +282,7 @@ theorem next_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
 
 theorem prev_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
     prev l l[i] (get_mem _ _) =
-      (l[(i + (l.length - 1)) % l.length]'(Nat.mod_lt _ (by cutsat))) :=
+      (l[(i + (l.length - 1)) % l.length]'(Nat.mod_lt _ (by lia))) :=
   match l with
   | [] => by simp at hi
   | x::l => by
@@ -311,12 +311,12 @@ theorem prev_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
           · exact Nat.succ_lt_succ (Nat.lt_succ_of_lt hi)
         · intro H
           suffices i.succ.succ = 0 by simpa
-          suffices Fin.mk _ hi = ⟨0, by cutsat⟩ by rwa [Fin.mk.inj_iff] at this
+          suffices Fin.mk _ hi = ⟨0, by lia⟩ by rwa [Fin.mk.inj_iff] at this
           rw [nodup_iff_injective_get] at h
           apply h; rw [← H]; simp
         · intro H
           suffices i.succ.succ = 1 by simpa
-          suffices Fin.mk _ hi = ⟨1, by cutsat⟩ by rwa [Fin.mk.inj_iff] at this
+          suffices Fin.mk _ hi = ⟨1, by lia⟩ by rwa [Fin.mk.inj_iff] at this
           rw [nodup_iff_injective_get] at h
           apply h; rw [← H]; simp
 

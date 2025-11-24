@@ -86,7 +86,7 @@ theorem le_log_iff_pow_le {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) :
     x ≤ log b y ↔ b ^ x ≤ y := by
   induction y using Nat.strong_induction_on generalizing x with | h y ih => ?_
   cases x with
-  | zero => dsimp; cutsat
+  | zero => dsimp; lia
   | succ x =>
     rw [log]; split_ifs with h
     · have b_pos : 0 < b := lt_of_succ_lt hb
@@ -240,12 +240,12 @@ theorem log_div_mul_self (b n : ℕ) : log b (n / b * b) = log b n := by
   · rw [log_of_left_le_one hb, log_of_left_le_one hb]
   rcases lt_or_ge n b with h | h
   · rw [div_eq_of_lt h, Nat.zero_mul, log_zero_right, log_of_lt h]
-  rw [log_mul_base hb (Nat.div_pos h (by cutsat)).ne', log_div_base,
+  rw [log_mul_base hb (Nat.div_pos h (by lia)).ne', log_div_base,
     Nat.sub_add_cancel (succ_le_iff.2 <| log_pos hb h)]
 
 theorem add_pred_div_lt {b n : ℕ} (hb : 1 < b) (hn : 2 ≤ n) : (n + b - 1) / b < n := by
-  rw [div_lt_iff_lt_mul (by cutsat), ← succ_le_iff, ← pred_eq_sub_one,
-    succ_pred_eq_of_pos (by cutsat)]
+  rw [div_lt_iff_lt_mul (by lia), ← succ_le_iff, ← pred_eq_sub_one,
+    succ_pred_eq_of_pos (by lia)]
   exact Nat.add_le_mul hn hb
 
 lemma log_two_bit {b n} (hn : n ≠ 0) : Nat.log 2 (n.bit b) = Nat.log 2 n + 1 := by
@@ -465,7 +465,7 @@ private lemma logC_step {m pw q e : ℕ} (hpw : 1 < pw) (hqe : logC.step m pw hp
       rw [Nat.pow_succ, Nat.mul_assoc, Nat.pow_mul, Nat.pow_two, Nat.mul_assoc]
       refine ⟨(ih hqe').1.trans' (Nat.mul_le_mul_left _ (Nat.mul_div_le _ _)),
         Nat.div_lt_of_lt_mul (ih hqe').2.1, (ih hqe').2.2.1.trans_le ?_,
-        fun _ => Nat.div_pos (le_of_not_gt hqpw) (by cutsat)⟩
+        fun _ => Nat.div_pos (le_of_not_gt hqpw) (by lia)⟩
       exact Nat.mul_le_mul_left _ (Nat.lt_mul_div_succ _ (zero_lt_of_lt hpw))
 
 private lemma logC_spec {b m : ℕ} (hb : 1 < b) (hm : 0 < m) :

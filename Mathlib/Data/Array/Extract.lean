@@ -44,9 +44,9 @@ theorem extract_append_right' {a b : Array α} {i j : Nat} (h : a.size ≤ i) :
     omega
   · intro k hi h2
     rw [getElem_extract, getElem_extract,
-      getElem_append_right (by cutsat)]
+      getElem_append_right (by lia)]
     congr
-    cutsat
+    lia
 
 theorem extract_eq_of_size_le_end {l p : Nat} {a : Array α} (h : a.size ≤ l) :
     a.extract p l = a.extract p a.size := by
