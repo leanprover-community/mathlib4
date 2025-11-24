@@ -72,9 +72,7 @@ theorem not_principal_iff_of_monotone
     ¬ Principal op o ↔ ∃ a < o, o ≤ op a a := by
   simp [principal_iff_of_monotone h₁ h₂]
 
-@[simp]
-theorem principal_zero : Principal op 0 := fun a _ h =>
-  (Ordinal.not_lt_zero a h).elim
+@[simp] lemma principal_zero : Principal op 0 := by simp [Principal]
 
 @[simp]
 theorem principal_one_iff : Principal op 1 ↔ op 0 0 = 0 := by
@@ -401,7 +399,7 @@ theorem mul_eq_opow_log_succ (ha : a ≠ 0) (hb : Principal (· * ·) b) (hb₂ 
     intro ⟨c, hcb⟩
     have hb₁ : 1 < b := one_lt_two.trans hb₂
     have hbo₀ : b ^ log b a ≠ 0 := Ordinal.pos_iff_ne_zero.1 (opow_pos _ (zero_lt_one.trans hb₁))
-    apply (mul_le_mul_right' (le_of_lt (lt_mul_succ_div a hbo₀)) c).trans
+    apply (mul_le_mul_left (le_of_lt (lt_mul_succ_div a hbo₀)) c).trans
     rw [mul_assoc, opow_succ]
     gcongr
     refine (hb (hbl.succ_lt ?_) hcb).le

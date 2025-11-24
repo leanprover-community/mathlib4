@@ -721,13 +721,26 @@ theorem tendsto_iff_forall_integral_rclike_tendsto {γ : Type*} (𝕜 : Type*) [
       integral_ofReal] at h
     exact tendsto_ofReal_iff'.mp h
 
+/-- The characterization of weak convergence of finite measures by the condition that the
+integrals of every continuous bounded nonnegative function are continuous. -/
+theorem continuous_iff_forall_continuous_lintegral {X : Type*} [TopologicalSpace X]
+    {μs : X → FiniteMeasure Ω} :
+    Continuous μs ↔ ∀ f : Ω →ᵇ ℝ≥0, Continuous fun x ↦ ∫⁻ ω, f ω ∂(μs x) := by
+  simp [continuous_iff_continuousAt, ContinuousAt, tendsto_iff_forall_lintegral_tendsto,
+    forall_swap (α := X)]
+
+/-- The characterization of weak convergence of finite measures by the usual (defining)
+condition that the integrals of every continuous bounded function are continuous. -/
+theorem continuous_iff_forall_continuous_integral {X : Type*} [TopologicalSpace X]
+    {μs : X → FiniteMeasure Ω} :
+    Continuous μs ↔ ∀ f : Ω →ᵇ ℝ, Continuous fun x ↦ ∫ ω, f ω ∂(μs x) := by
+  simp [continuous_iff_continuousAt, ContinuousAt, tendsto_iff_forall_integral_tendsto,
+    forall_swap (α := X)]
+
 lemma continuous_integral_boundedContinuousFunction
     {α : Type*} [TopologicalSpace α] [MeasurableSpace α] [OpensMeasurableSpace α] (f : α →ᵇ ℝ) :
-    Continuous fun μ : FiniteMeasure α ↦ ∫ x, f x ∂μ := by
-  rw [continuous_iff_continuousAt]
-  intro μ
-  exact continuousAt_of_tendsto_nhds
-    (FiniteMeasure.tendsto_iff_forall_integral_tendsto.mp tendsto_id f)
+    Continuous fun μ : FiniteMeasure α ↦ ∫ x, f x ∂μ :=
+  continuous_iff_forall_continuous_integral.1 continuous_id _
 
 end FiniteMeasureConvergenceByBoundedContinuousFunctions -- section
 

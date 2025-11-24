@@ -47,11 +47,15 @@ lemma isoModSerre_kernel_eq_inverseImage_isomorphisms :
 
 variable {G}
 
-lemma isoModSerre_kernel_eq_leftBousfield_W_of_rightAdjoint
+lemma isoModSerre_kernel_eq_isLocal_of_rightAdjoint
     {F : C ⥤ D} (adj : G ⊣ F) [F.Full] [F.Faithful] :
-    G.kernel.isoModSerre = LeftBousfield.W (· ∈ Set.range F.obj) := by
-  rw [LeftBousfield.W_eq_inverseImage_isomorphisms adj,
+    G.kernel.isoModSerre = ObjectProperty.isLocal (· ∈ Set.range F.obj) := by
+  rw [ObjectProperty.isLocal_eq_inverseImage_isomorphisms adj,
     isoModSerre_kernel_eq_inverseImage_isomorphisms]
+
+@[deprecated (since := "2025-11-20")]
+alias isoModSerre_kernel_eq_leftBousfield_W_of_rightAdjoint :=
+  isoModSerre_kernel_eq_isLocal_of_rightAdjoint
 
 lemma isLocalization_isoModSerre_kernel_of_leftAdjoint
     {F : C ⥤ D} (adj : G ⊣ F) [F.Full] [F.Faithful] :

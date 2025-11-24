@@ -223,9 +223,9 @@ theorem mem_argmax_iff :
       rcases harg : argmax f l with - | n
       · simp_all
       · have :=
-          _root_.le_antisymm (hma n (argmax_mem harg) (le_of_mem_argmax hml harg))
+          Nat.le_antisymm (hma n (argmax_mem harg) (le_of_mem_argmax hml harg))
             (index_of_argmax harg hml (ham _ (argmax_mem harg)))
-        rw [(idxOf_inj hml (argmax_mem harg)).1 this, Option.mem_def]⟩
+        rw [(idxOf_inj hml).1 this, Option.mem_def]⟩
 
 theorem argmax_eq_some_iff :
     argmax f l = some m ↔
