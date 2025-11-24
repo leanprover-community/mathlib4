@@ -24,7 +24,7 @@ structure FiniteExhaustion {α : Type*} (s : Set α) where
   /-- The underlying sequence of a `FiniteExhaustion`. -/
   toFun : ℕ → Set α
   /-- Every set in a `FiniteExhaustion` is finite. -/
-  Finite' : ∀ n, Finite (toFun n)
+  finite' : ∀ n, Finite (toFun n)
   /-- The sequence of sets in a `FiniteExhaustion` are monotonically increasing. -/
   subset_succ' : ∀ n, toFun n ⊆ toFun (n + 1)
   /-- The union of all sets in a `FiniteExhaustion` equals `s` -/
