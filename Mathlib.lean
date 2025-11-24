@@ -1732,6 +1732,7 @@ public import Mathlib.Analysis.Convex.TotallyBounded
 public import Mathlib.Analysis.Convex.Uniform
 public import Mathlib.Analysis.Convex.Visible
 public import Mathlib.Analysis.Convolution
+public import Mathlib.Analysis.Delone.Basic
 public import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 public import Mathlib.Analysis.Distribution.ContDiffMapSupportedIn
 public import Mathlib.Analysis.Distribution.FourierSchwartz
