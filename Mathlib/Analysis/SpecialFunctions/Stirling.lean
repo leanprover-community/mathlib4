@@ -3,9 +3,11 @@ Copyright (c) 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching, Fabian Kruse, Nikolas Kuhn, Ashton Jenson, Thomas Browning
 -/
-import Mathlib.Analysis.PSeries
-import Mathlib.Analysis.Real.Pi.Wallis
-import Mathlib.Tactic.AdaptationNote
+module
+
+public import Mathlib.Analysis.PSeries
+public import Mathlib.Analysis.Real.Pi.Wallis
+public import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Stirling's formula
@@ -57,6 +59,8 @@ differences. This is achieved by
 - bounding each term in the series expansion from Part 1 by a geometric series, and
 - summing this geometric series to obtain the sharp constant $1/(12n(n+1))$.
 -/
+
+@[expose] public section
 
 
 open scoped Topology Real Nat Asymptotics

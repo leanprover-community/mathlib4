@@ -3,7 +3,9 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Algebra.Group.Defs
+module
+
+public import Mathlib.Algebra.Group.Defs
 
 /-!
 # The integers form a group
@@ -12,6 +14,8 @@ This file contains the additive group and multiplicative monoid instances on the
 
 See note [foundational algebra order theory].
 -/
+
+@[expose] public section
 
 assert_not_exists Ring DenselyOrdered
 
@@ -26,8 +30,8 @@ instance instCommMonoid : CommMonoid ℤ where
   mul_one := Int.mul_one
   one_mul := Int.one_mul
   npow n x := x ^ n
-  npow_zero _ := rfl
-  npow_succ _ _ := rfl
+  npow_zero _ := by simp [Int.pow_zero]
+  npow_succ _ _ := by simp [Int.pow_succ]
   mul_assoc := Int.mul_assoc
 
 instance instAddCommGroup : AddCommGroup ℤ where
@@ -47,6 +51,13 @@ instance instAddCommGroup : AddCommGroup ℤ where
     simp only [natCast_succ, Int.add_mul, Int.add_comm, Int.one_mul]
   zsmul_neg' m n := by simp only [negSucc_eq, natCast_succ, Int.neg_mul]
   sub_eq_add_neg _ _ := Int.sub_eq_add_neg
+
+-- Thise instance can also be found from the `LinearOrderedCommMonoidWithZero ℤ` instance by
+-- typeclass search, but it is better practice to not rely on algebraic order theory to prove
+-- purely algebraic results on concrete types. Eg the results can be made available earlier.
+
+instance instIsAddTorsionFree : IsAddTorsionFree ℤ where
+  nsmul_right_injective _n hn _x _y := Int.eq_of_mul_eq_mul_left (by cutsat)
 
 /-!
 ### Extra instances to short-circuit type class resolution

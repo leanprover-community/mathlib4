@@ -3,7 +3,9 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.W.Basic
+module
+
+public import Mathlib.Data.W.Basic
 
 /-!
 # Polynomial Functors
@@ -11,6 +13,8 @@ import Mathlib.Data.W.Basic
 This file defines polynomial functors and the W-type construction as a polynomial functor.
 (For the M-type construction, see `Mathlib/Data/PFunctor/Univariate/M.lean`.)
 -/
+
+@[expose] public section
 
 universe u v uA uB uA₁ uB₁ uA₂ uB₂ v₁ v₂ v₃
 

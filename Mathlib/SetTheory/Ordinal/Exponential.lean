@@ -3,7 +3,9 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Ordinal.Family
+module
+
+public import Mathlib.SetTheory.Ordinal.Family
 
 /-! # Ordinal exponential
 
@@ -11,6 +13,8 @@ In this file we define the power function and the logarithm function on ordinals
 related by the lemma `Ordinal.opow_le_iff_le_log : b ^ c ≤ x ↔ c ≤ log b x` for nontrivial inputs
 `b`, `c`.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -464,7 +468,7 @@ theorem log_opow_mul_add {b u v w : Ordinal} (hb : 1 < b) (hv : v ≠ 0) (hw : w
   rw [log_eq_iff hb]
   · constructor
     · grw [opow_add, opow_log_le_self b hv, ← le_add_right]
-    · apply (add_lt_add_left hw _).trans_le
+    · apply (add_lt_add_right hw _).trans_le
       rw [← mul_succ, ← add_succ, opow_add]
       gcongr
       rw [succ_le_iff]

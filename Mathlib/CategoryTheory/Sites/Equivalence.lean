@@ -3,10 +3,12 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
-import Mathlib.CategoryTheory.Sites.LocallyBijective
-import Mathlib.CategoryTheory.Sites.PreservesLocallyBijective
-import Mathlib.CategoryTheory.Sites.Whiskering
+module
+
+public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
+public import Mathlib.CategoryTheory.Sites.LocallyBijective
+public import Mathlib.CategoryTheory.Sites.PreservesLocallyBijective
+public import Mathlib.CategoryTheory.Sites.Whiskering
 /-!
 # Equivalences of sheaf categories
 
@@ -35,6 +37,8 @@ sufficiently small limits in the sheaf category on the essentially small site.
   taking a sheaf to its underlying presheaf.
 
 -/
+
+@[expose] public section
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄ w
 
@@ -108,6 +112,7 @@ def sheafCongr.counitIso : inverse J K e A ⋙ functor J K e A ≅ 𝟭 (Sheaf _
     Sheaf.hom_ext _ _ (isoWhiskerRight e.op.counitIso F.val).inv_hom_id⟩ ) (by aesop)
 
 /-- The equivalence of sheaf categories. -/
+@[simps]
 def sheafCongr : Sheaf J A ≌ Sheaf K A where
   functor := sheafCongr.functor J K e A
   inverse := sheafCongr.inverse J K e A
@@ -135,7 +140,6 @@ noncomputable
 def transportIsoSheafToPresheaf : (e.sheafCongr J K A).functor ⋙
     sheafToPresheaf K A ⋙ e.op.congrLeft.inverse ≅ sheafToPresheaf J A :=
   NatIso.ofComponents (fun F ↦ isoWhiskerRight e.op.unitIso.symm F.val)
-    (by intros; ext; simp [Equivalence.sheafCongr])
 
 /-- Transporting and sheafifying is left adjoint to taking the underlying presheaf. -/
 noncomputable
