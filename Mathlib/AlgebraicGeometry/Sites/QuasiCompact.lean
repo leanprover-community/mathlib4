@@ -3,8 +3,10 @@ Copyright (c) 2025 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Sites.Hypercover.ZeroFamily
-import Mathlib.AlgebraicGeometry.Cover.QuasiCompact
+module
+
+public import Mathlib.CategoryTheory.Sites.Hypercover.ZeroFamily
+public import Mathlib.AlgebraicGeometry.Cover.QuasiCompact
 
 /-!
 # Quasi-compact precoverage
@@ -15,6 +17,8 @@ by a finite union of images of quasi-compact opens of the components.
 
 The fpqc precoverage is the precoverage by flat covers that are quasi-compact in this sense.
 -/
+
+@[expose] public section
 
 universe w' w v u
 
