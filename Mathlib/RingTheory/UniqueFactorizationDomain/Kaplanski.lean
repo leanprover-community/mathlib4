@@ -12,12 +12,12 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Ideal
 
 # Kaplanski criterion for factoriality
 
-We prove Kaplanski criterion for factoriality: an integral domain R is a UFD if and only if every
+We prove Kaplanski criterion for factoriality: an integral domain is a UFD if and only if every
 nonzero prime ideal contains a prime element.
 
 ## Main declarations
 
-`iff_exists_prime_mem_of_isPrime`: an integral domain R is a UFD if and only if every nonzero prime
+`iff_exists_prime_mem_of_isPrime`: an integral domain is a UFD if and only if every nonzero prime
 ideal contains a prime element.
 
 -/
@@ -103,7 +103,7 @@ theorem of_exists_prime_mem_of_isPrime
       rw [Multiset.prod_add]
       exact hS₁.mul_mul hS₂
 
-/-- Kaplansky's criterion: an integral domain R is a UFD if and only if every nonzero prime ideal
+/-- Kaplansky's criterion: an integral domain is a UFD if and only if every nonzero prime ideal
 contains a prime element. -/
 public theorem iff_exists_prime_mem_of_isPrime :
     UniqueFactorizationMonoid R ↔ ∀ I ≠ (⊥ : Ideal R), I.IsPrime → ∃ x ∈ I, Prime x :=
