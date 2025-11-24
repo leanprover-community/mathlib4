@@ -395,7 +395,7 @@ lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤
       (by rw [length_cons]; cutsat : (n + 1) ≤ (q.cons h).length)
       (by cutsat : 0 ≤ (q.cons h).length)
       (by rwa [getVert_cons _ _ n.add_one_ne_zero, getVert_zero])
-    omega
+    cutsat
 
 theorem IsPath.eq_snd_of_mem_edges {p : G.Walk u v} (hp : p.IsPath) (hnil : ¬p.Nil)
     (hmem : s(u, w) ∈ p.edges) : w = p.snd := by
@@ -419,7 +419,7 @@ lemma IsCycle.getVert_injOn {p : G.Walk u u} (hpc : p.IsCycle) :
   have := ((Walk.cons_isCycle_iff _ _).mp hpc).1.getVert_injOn
     (by cutsat : n - 1 ≤ p.tail.length) (by cutsat : m - 1 ≤ p.tail.length)
     (by simp_all [SimpleGraph.Walk.getVert_tail, Nat.sub_add_cancel hn.1, Nat.sub_add_cancel hm.1])
-  omega
+  cutsat
 
 lemma IsCycle.getVert_injOn' {p : G.Walk u u} (hpc : p.IsCycle) :
     Set.InjOn p.getVert {i |  i ≤ p.length - 1} := by

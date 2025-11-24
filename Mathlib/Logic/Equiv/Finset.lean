@@ -87,7 +87,7 @@ theorem raise_lower' : ∀ {l n}, (∀ m ∈ l, n ≤ m) → List.Sorted (· < �
 theorem isChain_raise' : ∀ (l) (n), List.IsChain (· < ·) (raise' l n)
   | [], _ => .nil
   | [_], _ => .singleton _
-  | _ :: _ :: _, _ => .cons_cons (by omega) (isChain_raise' (_ :: _) _)
+  | _ :: _ :: _, _ => .cons_cons (by cutsat) (isChain_raise' (_ :: _) _)
 
 theorem isChain_cons_raise' (l m) : List.IsChain (· < ·) (m :: raise' l (m + 1)) :=
   isChain_raise' (m :: l) 0

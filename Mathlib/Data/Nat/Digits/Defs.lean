@@ -57,10 +57,10 @@ where
     rw [if_neg n.add_one_ne_zero] at hf
     split_ifs with hn
     · exact zero_lt_of_lt (lt_of_succ_lt_succ hf)
-    · rw [Nat.div_eq_zero_iff, or_iff_right (by omega), not_lt] at hn
+    · rw [Nat.div_eq_zero_iff, or_iff_right (by cutsat), not_lt] at hn
       refine Nat.lt_of_le_of_lt (succ_le_succ ?_) (succ_lt_succ_iff.1 hf)
       refine Nat.div_le_of_le_mul (Nat.le_trans ?_ (Nat.mul_le_mul_right n h))
-      omega
+      cutsat
   /-- Auxiliary function performing recursion for `Nat.digitsAux`. -/
   go (n fuel : ℕ) (hfuel : (if n = 0 then 0 else n + 1) < fuel) : List ℕ :=
     match n, fuel, hfuel with
