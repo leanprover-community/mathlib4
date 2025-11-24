@@ -176,7 +176,7 @@ lemma ae_hasDerivAt_exists_countable_pairwiseDisjoint_tsum_sub_eq_sub {f f' : �
       measure_eq_measure_of_null_diff (by simp only [iUnion_subset_iff]; grind) hu₄
       using 2
     simp
-  rw [measure_iUnion (this) (by simp)] at vol_sum
+  rw [measure_iUnion this (by simp)] at vol_sum
   simp_rw [Real.volume_Icc] at vol_sum
   apply_fun fun x ↦ x.toReal at vol_sum
   rw [ENNReal.tsum_toReal_eq (by simp), ENNReal.toReal_ofReal (by linarith)] at vol_sum
@@ -336,7 +336,7 @@ end Finset
 end IntervalGapsWithin
 
 
-theorem split_gap_sum (F : Finset (ℝ × ℝ)) {a b : ℝ} (g : ℝ → ℝ) :
+theorem Finset.sum_intervalGapsWithin_add_sum_eq_sub (F : Finset (ℝ × ℝ)) {a b : ℝ} (g : ℝ → ℝ) :
     ∑ i ∈ Finset.range (F.card + 1),
       (g (F.intervalGapsWithin a b i).2 - g (F.intervalGapsWithin a b i).1) +
     ∑ z ∈ F, (g z.2 - g z.1) = g b - g a := by
@@ -356,11 +356,11 @@ theorem split_gap_sum (F : Finset (ℝ × ℝ)) {a b : ℝ} (g : ℝ → ℝ) :
       Finset.sum_range_sub (fun i ↦ g (F.intervalGapsWithin a b i).1)]
   simp
 
-theorem split_gap_sum' (F : Finset (ℝ × ℝ)) {a b : ℝ} (g : ℝ → ℝ) :
+theorem Finset.sum_intervalGapsWithin_eq_sub_sub_sum (F : Finset (ℝ × ℝ)) {a b : ℝ} (g : ℝ → ℝ) :
     ∑ i ∈ Finset.range (F.card + 1),
       (g (F.intervalGapsWithin a b i).2 - g (F.intervalGapsWithin a b i).1) =
     g b - g a - ∑ z ∈ F, (g z.2 - g z.1) :=
-  eq_sub_iff_add_eq.mpr (split_gap_sum F g)
+  eq_sub_iff_add_eq.mpr (F.sum_intervalGapsWithin_add_sum_eq_sub g)
 
 lemma AbsolutelyContinuousOnInterval.dist_le_of_pairwiseDisjoint_hasSum {f : ℝ → ℝ}
     {d b y : ℝ}
@@ -403,7 +403,7 @@ lemma AbsolutelyContinuousOnInterval.dist_le_of_pairwiseDisjoint_hasSum {f : ℝ
     · simp only [comp_apply]
       rw [Finset.sum_congr rfl (g := fun i ↦ ((T s).2 i).2 - ((T s).2 i).1)
             (fun i hi ↦ by rw [dist_comm, Real.dist_eq, abs_of_nonneg (by grind)])]
-      convert split_gap_sum' (u_coe s) id
+      convert (u_coe s).sum_intervalGapsWithin_eq_sub_sub_sum id
       exact u_coe_sum s fun x y ↦ y - x
     · abel
   rw [HasSum] at hu₄
@@ -417,7 +417,7 @@ lemma AbsolutelyContinuousOnInterval.dist_le_of_pairwiseDisjoint_hasSum {f : ℝ
     rw [dist_comm, Finset.sum_congr rfl fun i hi ↦ dist_comm (f ((T s).2 i).1) _,
         Finset.sum_congr rfl fun (b : ℝ × ℝ) hb ↦ dist_comm (f b.1) _]
     simp_rw [Real.dist_eq]
-    rw [← split_gap_sum (u_coe s)]
+    rw [← (u_coe s).sum_intervalGapsWithin_add_sum_eq_sub]
     grw [abs_add_le, Finset.abs_sum_le_sum_abs, Finset.abs_sum_le_sum_abs]
   exact le_of_tendsto_of_tendsto' (by simp) sum_tendsto dist_le_sum
 
@@ -481,14 +481,14 @@ theorem AbsolutelyContinuousOnInterval.integral_deriv_eq_sub {f : ℝ → ℝ} {
     (hf : AbsolutelyContinuousOnInterval f a b) :
     ∫ (x : ℝ) in a..b, deriv f x = f b - f a := by
   have f_deriv_integral_ac :=
-    hf.deriv_intervalIntegrable.absolutelyContinuousOnInterval_intervalIntegral
+    hf.intervalIntegrable_deriv.absolutelyContinuousOnInterval_intervalIntegral
     (c := a) (by simp)
   let g (x : ℝ) := f x - ∫ (t : ℝ) in a..x, deriv f t
   have g_ac : AbsolutelyContinuousOnInterval g a b := hf.sub (f_deriv_integral_ac)
   have g_ae_deriv_zero : ∀ᵐ x, x ∈ uIcc a b → HasDerivAt g 0 x := by
-    filter_upwards [hf.ae_hasDerivAt, hf.deriv_intervalIntegrable.ae_hasDerivAt_integral]
+    filter_upwards [hf.ae_differentiableAt, hf.intervalIntegrable_deriv.ae_hasDerivAt_integral]
       with x hx1 hx2 hx3
-    convert (hx1 hx3).sub (hx2 hx3 a (by simp))
+    convert (hx1 hx3).hasDerivAt.sub (hx2 hx3 a (by simp))
     abel
   obtain ⟨C, hC⟩ := g_ac.ae_deriv_zero_const g_ae_deriv_zero
   have : f a = g a := by simp [g]
@@ -501,11 +501,11 @@ theorem AbsolutelyContinuousOnInterval.integral_deriv_mul_eq_sub
     {f g : ℝ → ℝ} {a b : ℝ}
     (hf : AbsolutelyContinuousOnInterval f a b) (hg : AbsolutelyContinuousOnInterval g a b) :
     ∫ x in a..b, deriv f x * g x + f x * deriv g x = f b * g b - f a * g a := by
-  rw [← (hf.mul hg).integral_deriv_eq_sub]
+  rw [← (hf.fun_mul hg).integral_deriv_eq_sub]
   apply intervalIntegral.integral_congr_ae
-  filter_upwards [hf.ae_hasDerivAt, hg.ae_hasDerivAt] with x hx₁ hx₂ hx₃
+  filter_upwards [hf.ae_differentiableAt, hg.ae_differentiableAt] with x hx₁ hx₂ hx₃
   have hx₄ : x ∈ uIcc a b := by grind [uIcc, uIoc]
-  have hx₅ := (hx₁ hx₄).mul (hx₂ hx₄)
+  have hx₅ := (hx₁ hx₄).hasDerivAt.mul (hx₂ hx₄).hasDerivAt
   exact hx₅.deriv.symm
 
 /-- *Integration by parts* for absolutely continuous functions. -/
@@ -516,6 +516,6 @@ theorem AbsolutelyContinuousOnInterval.integral_mul_deriv_eq_deriv_mul
   rw [← AbsolutelyContinuousOnInterval.integral_deriv_mul_eq_sub hf hg,
       ← intervalIntegral.integral_sub]
   · simp_rw [add_sub_cancel_left]
-  · exact (hf.deriv_intervalIntegrable.mul_continuousOn hg.continuousOn).add
-      (hg.deriv_intervalIntegrable.continuousOn_mul hf.continuousOn)
-  · exact hf.deriv_intervalIntegrable.mul_continuousOn hg.continuousOn
+  · exact (hf.intervalIntegrable_deriv.mul_continuousOn hg.continuousOn).add
+      (hg.intervalIntegrable_deriv.continuousOn_mul hf.continuousOn)
+  · exact hf.intervalIntegrable_deriv.mul_continuousOn hg.continuousOn
