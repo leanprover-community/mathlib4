@@ -56,16 +56,15 @@ instance prod : CategoryStruct.{max v₁ v₂} (C × D) where
   id X := ⟨𝟙 X.1, 𝟙 X.2⟩
   comp f g := ⟨f.prod.1 ≫ g.prod.1, f.prod.2 ≫ g.prod.2⟩
 
-@[ext]
-lemma prod.hom_ext {X Y : C × D} {f g : X ⟶ Y} (h₁ : f.prod.1 = g.prod.1)
-    (h₂ : f.prod.2 = g.prod.2) : f = g :=
-  Prod.Hom.ext <| Prod.ext h₁ h₂
-
-  --(Prod.ext h₁ h₂)
+variable {C D}
 
 namespace Prod
 
-variable {C D} in
+@[ext]
+lemma hom_ext {X Y : C × D} {f g : X ⟶ Y} (h₁ : f.prod.1 = g.prod.1)
+    (h₂ : f.prod.2 = g.prod.2) : f = g :=
+  Prod.Hom.ext <| Prod.ext h₁ h₂
+
 /-- Construct a morphism in a product category by giving its constituent components.
 This constructor should be preferred over `Prod.mk`, because lean infers better the
 source and target of the resulting morphism. -/
@@ -74,6 +73,13 @@ abbrev mkHom {X₁ X₂ : C} {Y₁ Y₂ : D} (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y
 
 @[inherit_doc Prod.mkHom]
 scoped infixr:70 " ×ₘ " => Prod.mkHom
+
+/-- Analogue of `Prod.mk.injEq` in this setting. -/
+@[simp]
+lemma mkHom_eq {X₁ X₂ : C} {Y₁ Y₂ : D} (f f' : X₁ ⟶ X₂) (g g' : Y₁ ⟶ Y₂) :
+    f ×ₘ g = f' ×ₘ g' ↔ (f = f' ∧ g = g') :=
+  Prod.hom_ext_iff
+
 
 end Prod
 
@@ -105,8 +111,8 @@ theorem isIso_prod_iff {P Q : C} {S T : D} {f : (P, S) ⟶ (Q, T)} :
     IsIso f ↔ IsIso f.prod.1 ∧ IsIso f.prod.2 := by
   constructor
   · rintro ⟨g, hfg, hgf⟩
-    rcases prod.hom_ext_iff.1 hfg with ⟨hfg₁, hfg₂⟩
-    rcases prod.hom_ext_iff.1 hgf with ⟨hgf₁, hgf₂⟩
+    rcases Prod.hom_ext_iff.1 hfg with ⟨hfg₁, hfg₂⟩
+    rcases Prod.hom_ext_iff.1 hgf with ⟨hgf₁, hgf₂⟩
     exact ⟨⟨⟨g.prod.1, hfg₁, hgf₁⟩⟩, ⟨⟨g.prod.2, hfg₂, hgf₂⟩⟩⟩
   · rintro ⟨⟨g₁, hfg₁, hgf₁⟩, ⟨g₂, hfg₂, hgf₂⟩⟩
     dsimp at hfg₁ hgf₁ hfg₂ hgf₂
@@ -212,7 +218,7 @@ lemma fac {x y : C × D} (f : x ⟶ y) : f = (𝟙 x.1 ×ₘ f.prod.2) ≫ (f.pr
 followed by a morphism whose left component is an identity. -/
 @[reassoc]
 lemma fac' {x y : C × D} (f : x ⟶ y) : f = (f.prod.1 ×ₘ 𝟙 x.2) ≫ ((𝟙 y.1) ×ₘ f.prod.2) := by
-  aesop_cat
+  cat_disch
 
 end Prod
 
