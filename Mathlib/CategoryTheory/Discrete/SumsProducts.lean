@@ -70,7 +70,7 @@ variable (C C' : Type*) [Category C] [Category C'] (D : Type*) [Category D]
 
 /-- A product of discrete categories is discrete. -/
 instance prod : IsDiscrete (C × D) where
-  subsingleton x y := inferInstanceAs (Subsingleton ((x.1 ⟶ y.1) × (x.2 ⟶ y.2)))
+  subsingleton _ _ := ⟨fun _ _ ↦ Prod.hom_ext (Subsingleton.elim _ _) (Subsingleton.elim _ _)⟩
   eq_of_hom f := Prod.ext (IsDiscrete.eq_of_hom f.prod.1) (IsDiscrete.eq_of_hom f.prod.2)
 
 /-- A product of discrete categories is discrete. -/

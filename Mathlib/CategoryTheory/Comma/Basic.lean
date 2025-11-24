@@ -500,8 +500,8 @@ def fromProd (L : A ⥤ Discrete PUnit) (R : B ⥤ Discrete PUnit) :
       right := X.2
       hom := Discrete.eqToHom rfl }
   map {X} {Y} f :=
-    { left := f.1
-      right := f.2 }
+    { left := f.prod.1
+      right := f.prod.2 }
 
 /-- Taking the comma category of two functors into `Discrete PUnit` results in something
 is equivalent to their product. -/
