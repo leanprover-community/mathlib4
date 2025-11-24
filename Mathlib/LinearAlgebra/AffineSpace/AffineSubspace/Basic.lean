@@ -565,6 +565,15 @@ lemma map_vectorSpan (s : Set P₁) : (vectorSpan k s).map f.linear = vectorSpan
 theorem map_mono {s₁ s₂ : AffineSubspace k P₁} (h : s₁ ≤ s₂) : s₁.map f ≤ s₂.map f :=
   Set.image_mono h
 
+lemma map_inf_le (s₁ s₂ : AffineSubspace k P₁) : (s₁ ⊓ s₂).map f ≤ s₁.map f ⊓ s₂.map f :=
+  le_inf (map_mono _ inf_le_left) (map_mono _ inf_le_right)
+
+lemma map_inf_eq (hf : Function.Injective f) (s₁ s₂ : AffineSubspace k P₁) :
+    (s₁ ⊓ s₂).map f = s₁.map f ⊓ s₂.map f := by
+  ext p
+  simp [mem_inf_iff]
+  grind
+
 lemma map_mk' (p : P₁) (direction : Submodule k V₁) :
     (mk' p direction).map f = mk' (f p) (direction.map f.linear) := by
   ext q
