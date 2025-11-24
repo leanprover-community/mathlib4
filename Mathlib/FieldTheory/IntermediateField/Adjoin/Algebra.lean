@@ -96,7 +96,7 @@ theorem adjoin_simple_toSubalgebra_of_algebraic (hα : IsAlgebraic F α) :
 @[simp]
 theorem adjoin_toSubalgebra [Algebra.IsAlgebraic F E] (S : Set E) :
     (adjoin F S).toSubalgebra = Algebra.adjoin F S :=
-  adjoin_algebraic_toSubalgebra (fun x _ ↦ Algebra.IsAlgebraic.isAlgebraic x)
+  adjoin_algebraic_toSubalgebra fun x _ ↦ Algebra.IsAlgebraic.isAlgebraic x
 
 theorem adjoin_algebraic_eq_top_iff {S : Set E} (hS : ∀ x ∈ S, IsAlgebraic F x) :
     adjoin F S = ⊤ ↔ Algebra.adjoin F S = ⊤ := by
