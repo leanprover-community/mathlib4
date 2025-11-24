@@ -10665,6 +10665,7 @@ public import Mathlib.Data.Finsupp.Pointwise
 public import Mathlib.Data.Finsupp.PointwiseSMul
 public import Mathlib.Data.Finsupp.SMul
 public import Mathlib.Data.Finsupp.SMulWithZero
+public import Mathlib.Data.Finsupp.Sigma
 public import Mathlib.Data.Finsupp.Single
 public import Mathlib.Data.Finsupp.ToDFinsupp
 public import Mathlib.Data.Finsupp.Weight
