@@ -8,7 +8,10 @@ module
 public import Mathlib.Topology.Homeomorph.Defs
 
 /-!
-# Transfer topological algebraic structures across `Equiv`s
+# Transfer topological structure across `Equiv`s
+
+We show that transferring a topological space structure across an `Equiv` yields a homeomorphism
+between the original space and the transported topology.
 
 -/
 
