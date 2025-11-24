@@ -561,6 +561,15 @@ theorem map_span (s : Set P₁) : (affineSpan k s).map f = affineSpan k (f '' s)
 theorem map_mono {s₁ s₂ : AffineSubspace k P₁} (h : s₁ ≤ s₂) : s₁.map f ≤ s₂.map f :=
   Set.image_mono h
 
+lemma map_inf_le (s₁ s₂ : AffineSubspace k P₁) : (s₁ ⊓ s₂).map f ≤ s₁.map f ⊓ s₂.map f :=
+  le_inf (map_mono _ inf_le_left) (map_mono _ inf_le_right)
+
+lemma map_inf_eq (hf : Function.Injective f) (s₁ s₂ : AffineSubspace k P₁) :
+    (s₁ ⊓ s₂).map f = s₁.map f ⊓ s₂.map f := by
+  ext p
+  simp [mem_inf_iff]
+  grind
+
 lemma map_mk' (p : P₁) (direction : Submodule k V₁) :
     (mk' p direction).map f = mk' (f p) (direction.map f.linear) := by
   ext q
@@ -758,6 +767,15 @@ theorem map_symm (e : P₁ ≃ᵃ[k] P₂) (s : AffineSubspace k P₂) :
 theorem comap_span (f : P₁ ≃ᵃ[k] P₂) (s : Set P₂) :
     (affineSpan k s).comap (f : P₁ →ᵃ[k] P₂) = affineSpan k (f ⁻¹' s) := by
   rw [← map_symm, map_span, AffineEquiv.coe_coe, f.image_symm]
+
+/-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
+def gciMapComap {f : P₁ →ᵃ[k] P₂} (hf : Function.Injective f) :
+    GaloisCoinsertion (map f) (comap f) :=
+  (gc_map_comap f).toGaloisCoinsertion fun s p ↦ by simp; grind
+
+lemma comap_map_eq_of_injective {f : P₁ →ᵃ[k] P₂} (hf : Function.Injective f)
+    (s : AffineSubspace k P₁) : (s.map f).comap f = s :=
+  (gciMapComap hf).u_l_eq _
 
 end AffineSubspace
 
