@@ -14,7 +14,7 @@ public import Mathlib.CategoryTheory.Triangulated.Subcategory
 
 Let `P` be a triangulated subcategory of a pretriangulated category `C`. We show
 that `P.rightOrthogonal` (which consists of objects `Y` with no nonzero
-map `X ⟶ Y` with `X` satisfying `P`) is a triangulated. The dual result
+map `X ⟶ Y` with `X` satisfying `P`) is a triangulated subcategory. The dual result
 for `P.leftOrthogonal` is also obtained.
 
 -/
@@ -25,7 +25,7 @@ universe v v' u u'
 
 namespace CategoryTheory
 
-open Limits ZeroObject Pretriangulated
+open Limits Pretriangulated
 
 namespace ObjectProperty
 
@@ -61,13 +61,16 @@ instance : P.leftOrthogonal.IsTriangulatedClosed₂ :=
     obtain ⟨g, rfl⟩ := Pretriangulated.Triangle.yoneda_exact₂ T hT f (h₁ _ hY)
     simp [h₃ g hY])
 
-variable [P.IsTriangulated]
+instance [P.IsStableUnderShift ℤ] : P.rightOrthogonal.IsTriangulated where
 
-instance : P.rightOrthogonal.IsTriangulated where
+instance [P.IsStableUnderShift ℤ] : P.leftOrthogonal.IsTriangulated where
 
-instance : P.leftOrthogonal.IsTriangulated where
+example [P.IsTriangulated] : P.rightOrthogonal.IsTriangulated := inferInstance
 
-lemma isLocal_trW : P.trW.isLocal = P.rightOrthogonal := by
+example [P.IsTriangulated] : P.leftOrthogonal.IsTriangulated := inferInstance
+
+lemma isLocal_trW [P.IsTriangulated] :
+    P.trW.isLocal = P.rightOrthogonal := by
   ext Y
   refine ⟨fun hY X f hX ↦ ?_, fun hY X₁ X₂ f ⟨X₃, g, h, hT, hX₃⟩ ↦ ⟨?_, fun α ↦ ?_⟩⟩
   · exact (hY _ (trW.mk P (contractible_distinguished₁ X) hX)).injective (by simp)
@@ -82,7 +85,7 @@ lemma isLocal_trW : P.trW.isLocal = P.rightOrthogonal := by
 
 variable {P} in
 lemma rightOrthogonal.map_bijective_of_isTriangulated
-    {Y : C} (hY : P.rightOrthogonal Y)
+    [P.IsTriangulated] {Y : C} (hY : P.rightOrthogonal Y)
     [IsTriangulated C] (L : C ⥤ D) [L.IsLocalization P.trW] (X : C) :
     Function.Bijective (L.map : (X ⟶ Y) → _) := by
   rw [← isLocal_trW] at hY
