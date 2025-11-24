@@ -113,6 +113,13 @@ instance AffineSubspace.finiteDimensional_sup (s₁ s₂ : AffineSubspace k P)
   rw [AffineSubspace.direction_sup hp₁ hp₂]
   infer_instance
 
+/-- The image of a finite-dimensional affine subspace under an affine map is finite-dimensional. -/
+instance finiteDimensional_direction_map {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂]
+    [AffineSpace V₂ P₂] (s : AffineSubspace k P) [FiniteDimensional k s.direction]
+    (f : P →ᵃ[k] P₂) : FiniteDimensional k (s.map f).direction := by
+  rw [map_direction]
+  infer_instance
+
 /-- The `vectorSpan` of a finite subset of an affinely independent
 family has dimension one less than its cardinality. -/
 theorem AffineIndependent.finrank_vectorSpan_image_finset [DecidableEq P]
