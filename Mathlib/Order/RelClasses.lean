@@ -3,10 +3,12 @@ Copyright (c) 2020 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.Logic.IsEmpty
-import Mathlib.Order.Basic
-import Mathlib.Tactic.MkIffOfInductiveProp
-import Batteries.WF
+module
+
+public import Mathlib.Logic.IsEmpty
+public import Mathlib.Order.Basic
+public import Mathlib.Tactic.MkIffOfInductiveProp
+public import Batteries.WF
 
 /-!
 # Unbundled relation classes
@@ -16,6 +18,8 @@ In this file we prove some properties of `Is*` classes defined in
 The main difference between these classes and the usual order classes (`Preorder` etc) is that
 usual classes extend `LE` and/or `LT` while these classes take a relation as an explicit argument.
 -/
+
+@[expose] public section
 
 universe u v
 
@@ -127,7 +131,7 @@ instance (priority := 100) isStrictOrderConnected_of_isStrictTotalOrder [IsStric
 /-! ### Inverse Image -/
 
 theorem InvImage.isTrichotomous [IsTrichotomous α r] {f : β → α} (h : Function.Injective f) :
-    IsTrichotomous β (InvImage r f)  where
+    IsTrichotomous β (InvImage r f) where
   trichotomous a b := trichotomous (f a) (f b) |>.imp3 id (h ·) id
 
 instance InvImage.isAsymm [IsAsymm α r] (f : β → α) : IsAsymm β (InvImage r f) where
@@ -653,7 +657,7 @@ theorem ssuperset_imp_ssuperset (h₁ : a ⊆ c) (h₂ : d ⊆ b) : a ⊃ b → 
   ssubset_imp_ssubset h₂ h₁
 
 /-- See if the term is `a ⊂ b` and the goal is `a ⊆ b`. -/
-@[gcongr_forward] def exactSubsetOfSSubset : Mathlib.Tactic.GCongr.ForwardExt where
+@[gcongr_forward] meta def exactSubsetOfSSubset : Mathlib.Tactic.GCongr.ForwardExt where
   eval h goal := do goal.assignIfDefEq (← Lean.Meta.mkAppM ``subset_of_ssubset #[h])
 
 end GCongr

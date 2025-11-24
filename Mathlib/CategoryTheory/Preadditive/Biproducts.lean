@@ -3,13 +3,15 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-import Mathlib.Algebra.Group.Ext
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Biproducts
-import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
-import Mathlib.CategoryTheory.Preadditive.Basic
-import Mathlib.Tactic.Abel
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+public import Mathlib.Algebra.Group.Ext
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Biproducts
+public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
+public import Mathlib.CategoryTheory.Preadditive.Basic
+public import Mathlib.Tactic.Abel
 
 /-!
 # Basic facts about biproducts in preadditive categories.
@@ -51,6 +53,8 @@ matrices over a ring, in particular the Schur complement (see
 and `Matrix.invertibleOfFromBlocks₁₁Invertible` are all closely related.
 
 -/
+
+@[expose] public section
 
 
 open CategoryTheory
@@ -820,12 +824,7 @@ theorem Biproduct.column_nonzero_of_iso' {σ τ : Type} [Finite τ] {S : σ → 
     dsimp [x]
     rw [← Category.id_comp (inv f), Category.assoc, ← biproduct.total]
     simp only [comp_sum_assoc]
-    conv_lhs =>
-      congr
-      congr
-      next => skip
-      intro j; simp only [reassoced]
-    simp
+    grind [CategoryTheory.Limits.zero_comp, Finset.sum_const_zero]
   exact h₁.symm.trans h₀
 
 /-- If `f : ⨁ S ⟶ ⨁ T` is an isomorphism, and `s` is a non-trivial summand of the source,
