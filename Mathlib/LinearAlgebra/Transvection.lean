@@ -6,13 +6,15 @@ Authors: Antoine Chambert-Loir
 
 module
 
-public import Mathlib.LinearAlgebra.Charpoly.BaseChange
 public import Mathlib.LinearAlgebra.Dual.BaseChange
 public import Mathlib.LinearAlgebra.SpecialLinearGroup
-public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangeHom
-public import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.Data.ENat.Lattice
+public import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
+public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.LinearAlgebra.Charpoly.BaseChange
+import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
 
 /-!
@@ -529,29 +531,112 @@ section generation
 
 open Module.End Module
 
-variable (K V : Type*) [Field K] [AddCommGroup V] [Module K V]
+variable {K V : Type*} [Field K] [AddCommGroup V] [Module K V]
   [Module.Finite K V]
 
+/-- An element of the special linear group is exceptional if
+  it is a nontrivial homothety modulo the eigenspace for eigenvalue 1. -/
+abbrev IsExceptional (e : SpecialLinearGroup K V) : Prop :=
+  e ≠ 1 ∧ ∃ a : K, a ≠ 1 ∧ ∀ v, e v - a • v ∈ eigenspace (e : End K V) (1 : K)
+
+
+open scoped Pointwise
+
+noncomputable def transvection_degree (e : SpecialLinearGroup K V) : ℕ∞ :=
+  sInf (Nat.cast '' ({ n : ℕ | e ∈ (transvections K V) ^ n }))
+
+omit [Module.Finite K V]
+theorem transvection_degree_one :
+    transvection_degree (1 : SpecialLinearGroup K V) = 0 := by
+  rw [transvection_degree, ENat.sInf_eq_zero]
+  use 0
+  simp
+
+theorem finrank_le_transvection_degree_add
+    (e : SpecialLinearGroup K V) :
+    finrank K V ≤ transvection_degree e +
+      finrank K (eigenspace (e : End K V) (1 : K)) := sorry
+
+theorem finrank_lt_transvection_degree_add_of_isExceptional
+    (e : SpecialLinearGroup K V) (he : IsExceptional e) :
+    finrank K V < transvection_degree e +
+      finrank K (eigenspace (e : End K V) (1 : K)) := sorry
+
+theorem _root_.Module.Basis.sumExtend_apply_left {ι K V : Type*}
+    [DivisionRing K] [AddCommGroup V] [Module K V] {v : ι → V}
+    (hs : LinearIndependent K v) (i : ι) :
+    Module.Basis.sumExtend hs (Sum.inl i) = v i := by
+  simp only [Basis.sumExtend, Equiv.trans_def, Basis.coe_reindex, Basis.coe_extend, Equiv.symm_symm,
+    Equiv.coe_trans, Function.comp_apply]
+  rfl
+
 theorem exists_mem_transvections_apply_eq_of_indep
-    (u v : V) (h : LinearIndepOn K id {u, v}) :
+    (u v : V) (h : LinearIndependent K ![u, v]) :
     ∃ t ∈ transvections K V, v = t • u := by
   have : ∃ f : Dual K V, f (v - u) = 0 ∧ f u = 1 := by
-    suffices ∃ f : Dual K V, f (v - u) = 0 ∧ f u ≠ 0 by
-      obtain ⟨f, hf, hu⟩ := this
-      use (f u)⁻¹ • f
-      simp [hf, hu]
-    set ι := LinearIndepOn.extend h (Set.subset_univ _) with hι
-    set b := Module.Basis.extend h with hb
-    have hu : u ∈ ι := Module.Basis.subset_extend h (by simp)
-    have hv : v ∈ ι := Module.Basis.subset_extend h (by simp)
-    use b.coord ⟨u, hu⟩ + b.coord ⟨v, hv⟩
-    sorry
+    replace h : LinearIndepOn K ![u, v] ⊤ :=
+      linearIndepOn_iff.mpr fun l a a_1 ↦ h a_1
+    set ι := ↑(⊤ : Set (Fin 2)) ⊕ ↑(Basis.sumExtendIndex h)
+    set b : Basis ι K V := Module.Basis.sumExtend h with hb
+    let i : ι := Sum.inl (⟨0, Set.mem_univ 0⟩)
+    let j : ι := Sum.inl (⟨1, Set.mem_univ 1⟩)
+    have hi : b i = u := Module.Basis.sumExtend_apply_left h ⟨0, Set.mem_univ 0⟩
+    have hj : b j = v := Basis.sumExtend_apply_left h ⟨1, Set.mem_univ 1⟩
+    use b.coord i + b.coord j
+    rw [← hi, ← hj]
+    have hij : i ≠ j := by simp [ne_eq, i, j, Sum.inl_injective.eq_iff]
+    simp [Finsupp.single_eq_of_ne hij, Finsupp.single_eq_of_ne' hij]
   obtain ⟨f, hvu, hx⟩ := this
   refine ⟨SpecialLinearGroup.transvection hvu, ⟨f, v - u, hvu, rfl⟩, ?_⟩
   simp [transvection, LinearMap.transvection.apply, hx]
 
-example : MulAction.IsPretransitive (Subgroup.closure (transvections K V)) V where
-  exists_smul_eq x y := sorry
+example {ι : Type*} [Fintype ι] (v : ι → V) :
+    Fintype.card ι = finrank K (Submodule.span K (Set.range v)) ↔
+      LinearIndependent K v := by
+  simp [linearIndependent_iff_card_eq_finrank_span, Set.finrank]
+
+-- OMG this is false
+theorem transvections_isPretransitive (h2 : 2 ≤ finrank K V) :
+    MulAction.IsPretransitive (Subgroup.closure (transvections K V)) V where
+  exists_smul_eq x y := by
+    classical
+    wlog h : LinearIndependent K ![x, y]
+    · suffices ∃ z : V, z ∉ Submodule.span K {x, y} by
+        obtain ⟨z, hz⟩ := this
+        have hxz : LinearIndependent K ![x, z] := by
+          rw [LinearIndependent.pair_iff]
+          intro s t hst
+          rw [and_comm]
+          by_contra! h'
+          apply hz
+          by_cases ht : t = 0
+          · sorry
+
+
+
+          sorry
+        have hzy : LinearIndependent K ![z, y] := sorry
+        obtain ⟨g, hg⟩ := this h2 _ _ hxz
+        obtain ⟨h, hh⟩ := this h2 _ _ hzy
+        use h * g
+        simp [mul_smul, hg, hh]
+      suffices Submodule.span K {x, y} ≠ ⊤ by
+        by_contra! hz
+        apply this
+        rw [eq_top_iff]
+        exact fun z _ ↦ hz z
+      intro h'
+      have : Set.finrank K {x, y} < 2 := by
+        apply Nat.lt_of_le_of_ne _ ?_
+        · rw [← Finset.coe_pair]
+          exact le_trans (finrank_span_finset_le_card _) Finset.card_le_two
+        rw [eq_comm]
+        simpa [linearIndependent_iff_card_eq_finrank_span, Set.pair_comm] using h
+      rw [← not_le] at this
+      apply this
+      simp only [Set.finrank]
+      rwa [h', finrank_top]
+    sorry
 theorem closure_transvection :
     Subgroup.closure (transvections K V) = ⊤ := by
   rw [eq_top_iff]
