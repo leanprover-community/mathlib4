@@ -13,6 +13,9 @@ public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
+public import Mathlib.LinearAlgebra.Projectivization.Action
+
+public import Mathlib.Algebra.Module.Torsion.Free
 import Mathlib.LinearAlgebra.Charpoly.BaseChange
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
@@ -520,10 +523,17 @@ instance : SMul (SpecialLinearGroup R V) V where
     e • v = (e : V ≃ₗ[R] V) v :=
   rfl
 
-instance : MulAction (SpecialLinearGroup R V) V where
+/-- The action of `SpecialLinearGroup R V` on `V`. -/
+instance : DistribMulAction (SpecialLinearGroup R V) V where
   smul e v := e v
-  one_smul v := by simp
-  mul_smul e f v := by simp
+  one_smul := by simp
+  mul_smul := by simp
+  smul_zero := by simp
+  smul_add := by simp
+
+/-- The action of `SpecialLinearGroup R V` on `V` is `R`-linear. -/
+instance : SMulCommClass (SpecialLinearGroup R V) R V where
+  smul_comm := by simp
 
 end action
 
@@ -595,29 +605,48 @@ example {ι : Type*} [Fintype ι] (v : ι → V) :
       LinearIndependent K v := by
   simp [linearIndependent_iff_card_eq_finrank_span, Set.finrank]
 
--- OMG this is false
+variable (K V) in
+def subMulAction : SubMulAction (SpecialLinearGroup K V) V where
+  carrier := {v | v ≠ 0}
+  smul_mem' e v hv := by simpa using hv
+
+local instance :
+    MulAction (SpecialLinearGroup K V) {v : V | v ≠ 0} :=
+  (subMulAction K V).mulAction
+
 theorem transvections_isPretransitive (h2 : 2 ≤ finrank K V) :
-    MulAction.IsPretransitive (Subgroup.closure (transvections K V)) V where
+    MulAction.IsPretransitive (Subgroup.closure (transvections K V)) {v : V | v ≠ 0} where
   exists_smul_eq x y := by
     classical
-    wlog h : LinearIndependent K ![x, y]
-    · suffices ∃ z : V, z ∉ Submodule.span K {x, y} by
+    wlog h : LinearIndependent K ![x.val , y.val] with hyp
+    · suffices ∃ z : V, z ∉ Submodule.span K {x.val, y.val} by
         obtain ⟨z, hz⟩ := this
-        have hxz : LinearIndependent K ![x, z] := by
+        have {x y z : V} (hx : x ≠ 0)
+--            (hxy : LinearIndependent K ![x, y])
+            (hz : z ∉ Submodule.span K {x, y}) :
+          LinearIndependent K ![x, z] := by
           rw [LinearIndependent.pair_iff]
           intro s t hst
           rw [and_comm]
           by_contra! h'
           apply hz
           by_cases ht : t = 0
-          · sorry
-
-
-
-          sorry
-        have hzy : LinearIndependent K ![z, y] := sorry
-        obtain ⟨g, hg⟩ := this h2 _ _ hxz
-        obtain ⟨h, hh⟩ := this h2 _ _ hzy
+          · exfalso
+            apply h' ht
+            simpa [ht, hx] using hst
+          rw [Submodule.mem_span_insert]
+          refine ⟨ -(s / t), 0, Submodule.zero_mem _, ?_⟩
+          rw [add_zero, ← sub_eq_zero, neg_smul, sub_neg_eq_add,
+            ← smul_eq_zero_iff_right ht, smul_add, smul_smul,
+            add_comm, mul_div_cancel₀ s ht, hst]
+        have hxz : LinearIndependent K ![x.val, z] := this x.prop hz
+        have hzy : LinearIndependent K ![z, y.val] := by
+          rw [LinearIndependent.pair_symm_iff]
+          apply this y.prop (y := x.val)
+          convert hz using 3
+          grind
+        obtain ⟨g, hg⟩ := hyp h2 _ _ hxz
+        obtain ⟨h, hh⟩ := hyp h2 _ _ hzy
         use h * g
         simp [mul_smul, hg, hh]
       suffices Submodule.span K {x, y} ≠ ⊤ by
@@ -637,6 +666,7 @@ theorem transvections_isPretransitive (h2 : 2 ≤ finrank K V) :
       simp only [Set.finrank]
       rwa [h', finrank_top]
     sorry
+
 theorem closure_transvection :
     Subgroup.closure (transvections K V) = ⊤ := by
   rw [eq_top_iff]
