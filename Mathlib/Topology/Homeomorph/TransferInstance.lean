@@ -10,8 +10,8 @@ public import Mathlib.Topology.Homeomorph.Defs
 /-!
 # Transfer topological structure across `Equiv`s
 
-We show that transferring a topological space structure across an `Equiv` yields a homeomorphism
-between the original space and the transported topology.
+We show how to transport a topological space structure across an `Equiv` and prove that this
+make the equivalence a homeomorphism between the original space and the transported topology.
 
 -/
 
@@ -21,7 +21,12 @@ variable {R α β : Type*}
 
 namespace Equiv
 
-variable [TopologicalSpace β]
+/-- Transfer a `TopologicalSpace` across an `Equiv` -/
+protected abbrev topologicalSpace [TopologicalSpace β] (e : α ≃ β) :
+    TopologicalSpace α :=
+  .induced e ‹_›
+
+
 /-- An equivalence `e : α ≃ β` gives a homeomorphism `α ≃ₜ β` where the topological space structure
 on `α` is the one obtained by transporting the topological space structure on `β` back along `e`. -/
 def homeomorph (e : α ≃ β) [TopologicalSpace β] :
