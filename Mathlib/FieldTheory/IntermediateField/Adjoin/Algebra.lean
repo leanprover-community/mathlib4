@@ -117,7 +117,8 @@ alias ⟨_root_.Algebra.adjoin_eq_top_of_intermediateField, _⟩ := adjoin_eq_to
 theorem adjoin_simple_eq_top_iff_of_isAlgebraic {x : E} (hx : IsAlgebraic F x) :
     F⟮x⟯ = ⊤ ↔ Algebra.adjoin F {x} = ⊤ := adjoin_eq_top_iff_of_isAlgebraic (by simp [hx])
 
-alias ⟨_root_.Algebra.adjoin_eq_top_of_primitive_element, _⟩ := adjoin_simple_eq_top_iff
+alias ⟨_root_.Algebra.adjoin_eq_top_of_primitive_element, _⟩ :=
+  adjoin_simple_eq_top_iff_of_isAlgebraic
 
 @[simp]
 theorem adjoin_eq_top_iff [Algebra.IsAlgebraic F E] {S : Set E} :
@@ -129,6 +130,7 @@ lemma finite_of_fg_of_isAlgebraic
     Module.Finite F E := by
   obtain ⟨s, hs⟩ := h
   have : Algebra.FiniteType F E := by
+    use s
     rw [← adjoin_toSubalgebra_of_isAlgebraic
       (fun x hx ↦ Algebra.IsAlgebraic.isAlgebraic x)]
     simpa [← toSubalgebra_inj] using hs
@@ -183,7 +185,7 @@ variable {K : Type*} [Field K] [Algebra F K] [Algebra E K] [IsScalarTower F E K]
 
 /-- If `K / E / F` is a field extension tower, `L` is an intermediate field of `K / F`, such that
 either `E / F` or `L / F` is algebraic, then `E(L) = E[L]`. -/
-theorem adjoin_toSubalgebra_of_isAlgebraic (L : IntermediateField F K)
+theorem adjoin_intermediateField_toSubalgebra_of_isAlgebraic (L : IntermediateField F K)
     (halg : Algebra.IsAlgebraic F E ∨ Algebra.IsAlgebraic F L) :
     (adjoin E (L : Set K)).toSubalgebra = Algebra.adjoin E (L : Set K) := by
   let i := IsScalarTower.toAlgHom F E K
@@ -198,15 +200,21 @@ theorem adjoin_toSubalgebra_of_isAlgebraic (L : IntermediateField F K)
   exact E'.sup_toSubalgebra_of_isAlgebraic L (halg.imp
     (fun (_ : Algebra.IsAlgebraic F E) ↦ i'.isAlgebraic) id)
 
-theorem adjoin_toSubalgebra_of_isAlgebraic_left (L : IntermediateField F K)
+theorem adjoin_intermediateField_toSubalgebra_of_isAlgebraic_left (L : IntermediateField F K)
     [halg : Algebra.IsAlgebraic F E] :
     (adjoin E (L : Set K)).toSubalgebra = Algebra.adjoin E (L : Set K) :=
-  adjoin_toSubalgebra_of_isAlgebraic E L (Or.inl halg)
+  adjoin_intermediateField_toSubalgebra_of_isAlgebraic E L (Or.inl halg)
 
-theorem adjoin_toSubalgebra_of_isAlgebraic_right (L : IntermediateField F K)
+@[deprecated (since := "2025-11-24")] alias adjoin_toSubalgebra_of_isAlgebraic_left :=
+  adjoin_intermediateField_toSubalgebra_of_isAlgebraic_left
+
+theorem adjoin_intermediateField_toSubalgebra_of_isAlgebraic_right (L : IntermediateField F K)
     [halg : Algebra.IsAlgebraic F L] :
     (adjoin E (L : Set K)).toSubalgebra = Algebra.adjoin E (L : Set K) :=
-  adjoin_toSubalgebra_of_isAlgebraic E L (Or.inr halg)
+  adjoin_intermediateField_toSubalgebra_of_isAlgebraic E L (Or.inr halg)
+
+@[deprecated (since := "2025-11-24")] alias adjoin_toSubalgebra_of_isAlgebraic_right :=
+  adjoin_intermediateField_toSubalgebra_of_isAlgebraic_right
 
 end Tower
 
