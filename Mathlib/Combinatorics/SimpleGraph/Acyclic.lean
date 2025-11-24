@@ -292,7 +292,7 @@ lemma Connected.exists_isTree_le [Finite V] (h : G.Connected) : ∃ T ≤ G, IsT
 Adding an edge to an acyclic graph preserves acyclicity if there endpoints are not
 reachable.
 -/
-theorem IsAcyclic.add_edge_acyclic [DecidableEq V] {G : SimpleGraph V} (hG : IsAcyclic G) (x y : V)
+theorem IsAcyclic.add_edge_acyclic {G : SimpleGraph V} (hG : IsAcyclic G) (x y : V)
     (hxy : ¬ Reachable G x y) : IsAcyclic <| G ⊔ fromEdgeSet {s(x,y)} := by
   have x_neq_y : x ≠ y := fun c => (c ▸ hxy) (Reachable.refl y)
   have h_add_remove : (G ⊔ fromEdgeSet {s(x,y)}) \ fromEdgeSet {s(x,y)} = G := by
