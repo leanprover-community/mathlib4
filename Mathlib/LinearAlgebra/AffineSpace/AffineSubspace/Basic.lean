@@ -557,6 +557,7 @@ theorem map_span (s : Set P₁) : (affineSpan k s).map f = affineSpan k (f '' s)
   · exact ⟨f p, mem_image_of_mem f (subset_affineSpan k _ hp),
           subset_affineSpan k _ (mem_image_of_mem f hp)⟩
 
+@[simp]
 lemma map_vectorSpan (s : Set P₁) : (vectorSpan k s).map f.linear = vectorSpan k (f '' s) := by
   simp_rw [← direction_affineSpan, ← map_direction, map_span]
 
