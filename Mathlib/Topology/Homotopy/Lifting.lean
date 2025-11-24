@@ -431,7 +431,7 @@ theorem existsUnique_continuousMap_lifts [SimplyConnectedSpace A] [LocPathConnec
     rw [eq_liftPath_iff']
   exacts [⟨Γ_lifts, Γ_0⟩, ⟨Γ'_lifts, Γ'_0⟩]
 
-open FundamentalGroup in
+open FundamentalGroup Path.Homotopic.Quotient in
 /-- A continuous map `f` from a path connected, locally path-connected space `A` to another
   space `X` lifts uniquely through a covering map `p : E → X` (such that `f a₀` is lifted to `e₀`)
   if `f⁎ π₁(A, a₀) ⊆ p⁎ π₁(E, e₀)`. Proposition 1.33 of [hatcher02], known as
@@ -452,15 +452,14 @@ theorem existsUnique_continuousMap_lifts_of_range_le
     (cov.monodromy (.mk <| pγ'.map f.continuous) ⟨e₀, he⟩).1
   rw [← Subtype.ext_iff]
   apply (cov.monodromy_bijective <| .mk (pγ'.map f.continuous).symm).1
-  simp_rw [← monodromy_trans_apply, ← Path.Homotopic.Quotient.mk_trans]
-  conv_rhs => rw [← Path.Homotopic.Quotient.eq.2 (Nonempty.intro <| Path.Homotopy.reflTransSymm _),
-    Path.Homotopic.Quotient.mk_refl, monodromy_refl]
+  simp_rw [← monodromy_trans_apply, ← mk_trans]
+  conv_rhs => rw [← eq.2 ⟨.reflTransSymm _⟩, mk_refl, monodromy_refl]
   rw [Path.map_symm, ← Path.map_trans]
   set pγγ' : Path a₀ a₀ := pγ.trans pγ'.symm
-  obtain ⟨⟨pΓΓ'⟩, eq⟩ := le ⟨fromPath (.mk pγγ'), rfl⟩
-  rw [← show _ = Path.Homotopic.Quotient.mk (pγγ'.map _) from eq]
-  erw [mapOfEq_apply]
-  exact Subtype.ext (congr_arg (·.1) (cov.monodromy_map (.mk pΓΓ')))
+  have ⟨pΓΓ', eq⟩ := le ⟨fromPath (.mk pγγ'), rfl⟩
+  obtain ⟨pΓΓ', rfl⟩ := mk_surjective pΓΓ'
+  rw [mapOfEq_apply, map_apply, ← mk_map] at eq
+  exact eq ▸ Subtype.ext (congr_arg (·.1) (cov.monodromy_map (.mk pΓΓ')))
 
 end homotopy_lifting
 
