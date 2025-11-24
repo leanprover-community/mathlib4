@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
-public import Mathlib.CategoryTheory.Adjunction.ReflectiveLimits
+public import Mathlib.CategoryTheory.Monad.Limits
 
 /-!
 # Presentable objects and adjunctions
@@ -38,7 +38,7 @@ variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) (κ : Cardinal.{w}) [Fact �
 
 include adj
 
-lemma isPresentable_leftAdjoint_obj (X : C) [IsCardinalPresentable X κ]
+lemma isCardinalPresentable_leftAdjoint_obj (X : C) [IsCardinalPresentable X κ]
     [G.IsCardinalAccessible κ] :
     IsCardinalPresentable (F.obj X) κ := by
   rw [isCardinalPresentable_iff_isCardinalAccessible_uliftCoyoneda_obj.{v}]
@@ -54,7 +54,7 @@ lemma isCardinalFilteredGenerator
     rintro Y ⟨X, hX, ⟨e⟩⟩
     have hX' := hP.le_isCardinalPresentable X hX
     rw [isCardinalPresentable_iff] at hX' ⊢
-    have := adj.isPresentable_leftAdjoint_obj κ X
+    have := adj.isCardinalPresentable_leftAdjoint_obj κ X
     exact isCardinalPresentable_of_iso e κ
   exists_colimitsOfShape Y := by
     have := adj.isLeftAdjoint
@@ -77,13 +77,17 @@ lemma hasCardinalFilteredGenerator [HasCardinalFilteredGenerator C κ]
 lemma isCardinalLocallyPresentable [IsCardinalLocallyPresentable C κ]
     [G.IsCardinalAccessible κ] [G.Full] [G.Faithful] :
     IsCardinalLocallyPresentable D κ where
-  toHasColimitsOfSize := ⟨fun _ _ ↦ adj.hasColimitsOfShape _⟩
+  toHasColimitsOfSize :=
+    letI : Reflective G := ⟨_, adj⟩
+    hasColimits_of_reflective G
   toHasCardinalFilteredGenerator := adj.hasCardinalFilteredGenerator κ
 
 lemma isCardinalAccessibleCategory [IsCardinalAccessibleCategory C κ]
     [G.IsCardinalAccessible κ] [G.Full] [G.Faithful] :
     IsCardinalAccessibleCategory D κ where
-  toHasCardinalFilteredColimits := ⟨fun _ _ _ ↦ adj.hasColimitsOfShape _⟩
+  toHasCardinalFilteredColimits := ⟨fun _ _ _ ↦
+    let : Reflective G := ⟨_, adj⟩
+    hasColimitsOfShape_of_reflective G⟩
   toHasCardinalFilteredGenerator := adj.hasCardinalFilteredGenerator κ
 
 end Adjunction
