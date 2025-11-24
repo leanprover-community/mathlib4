@@ -3,15 +3,17 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.Algebra.Algebra.Opposite
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
-import Mathlib.Algebra.Module.Submodule.Pointwise
-import Mathlib.Algebra.Ring.NonZeroDivisors
-import Mathlib.Algebra.Ring.Submonoid.Pointwise
-import Mathlib.Data.Set.Semiring
-import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
+module
+
+public import Mathlib.Algebra.Algebra.Bilinear
+public import Mathlib.Algebra.Algebra.Opposite
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+public import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
+public import Mathlib.Algebra.Module.Submodule.Pointwise
+public import Mathlib.Algebra.Ring.NonZeroDivisors
+public import Mathlib.Algebra.Ring.Submonoid.Pointwise
+public import Mathlib.Data.Set.Semiring
+public import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
 
 /-!
 # Multiplication and division of submodules of an algebra.
@@ -42,6 +44,8 @@ by `ringHomEquivModuleIsScalarTower`), we can still define `1 : Submodule R A` a
 
 multiplication of submodules, division of submodules, submodule semiring
 -/
+
+@[expose] public section
 
 
 universe uι u v
@@ -815,7 +819,7 @@ theorem one_mem_div {I J : Submodule R A} : 1 ∈ I / J ↔ J ≤ I := by
   rw [← one_le, le_div_iff_mul_le, one_mul]
 
 theorem le_self_mul_one_div {I : Submodule R A} (hI : I ≤ 1) : I ≤ I * (1 / I) := by
-  simpa using mul_le_mul_left' (one_le_one_div.mpr hI) _
+  simpa using mul_le_mul_right (one_le_one_div.mpr hI) _
 
 theorem mul_one_div_le_one {I : Submodule R A} : I * (1 / I) ≤ 1 := by
   rw [Submodule.mul_le]
