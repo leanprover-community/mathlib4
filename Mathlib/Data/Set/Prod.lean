@@ -837,14 +837,7 @@ theorem eval_preimage' [DecidableEq ι] {s : Set (α i)} :
 
 theorem update_preimage_pi [DecidableEq ι] {f : ∀ i, α i} (hi : i ∈ s)
     (hf : ∀ j ∈ s, j ≠ i → f j ∈ t j) : update f i ⁻¹' s.pi t = t i := by
-  ext x
-  refine ⟨fun h => ?_, fun hx j hj => ?_⟩
-  · convert h i hi
-    simp
-  · obtain rfl | h := eq_or_ne j i
-    · simpa
-    · rw [update_of_ne h]
-      exact hf j hj h
+  grind
 
 theorem update_image [DecidableEq ι] (x : (i : ι) → β i) (i : ι) (s : Set (β i)) :
     update x i '' s = Set.univ.pi (update (fun j ↦ {x j}) i s) := by
@@ -878,7 +871,7 @@ variable {ι ι' : Type*} {α : ι → Type*}
 
 theorem piCongrLeft_symm_preimage_pi (f : ι' ≃ ι) (s : Set ι') (t : ∀ i, Set (α i)) :
     (f.piCongrLeft α).symm ⁻¹' s.pi (fun i' => t <| f i') = (f '' s).pi t := by
-  ext; simp
+  grind
 
 theorem piCongrLeft_symm_preimage_univ_pi (f : ι' ≃ ι) (t : ∀ i, Set (α i)) :
     (f.piCongrLeft α).symm ⁻¹' univ.pi (fun i' => t <| f i') = univ.pi t := by
@@ -886,9 +879,7 @@ theorem piCongrLeft_symm_preimage_univ_pi (f : ι' ≃ ι) (t : ∀ i, Set (α i
 
 theorem piCongrLeft_preimage_pi (f : ι' ≃ ι) (s : Set ι') (t : ∀ i, Set (α i)) :
     f.piCongrLeft α ⁻¹' (f '' s).pi t = s.pi fun i => t (f i) := by
-  apply Set.ext
-  rw [← (f.piCongrLeft α).symm.forall_congr_right]
-  simp
+  grind
 
 theorem piCongrLeft_preimage_univ_pi (f : ι' ≃ ι) (t : ∀ i, Set (α i)) :
     f.piCongrLeft α ⁻¹' univ.pi t = univ.pi fun i => t (f i) := by
