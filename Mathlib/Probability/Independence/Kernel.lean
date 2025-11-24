@@ -283,8 +283,7 @@ lemma iIndepSets.precomp (hg : Function.Injective g) (h : iIndepSets π κ μ) :
     simp_rw [Finset.forall_mem_image, f'_apply]
     exact hf
   filter_upwards [@h (s.image g) f' hf'] with a ha
-  simp_rw [Finset.set_biInter_finset_image, Finset.prod_image hg.injOn, f'_apply] at ha
-  exact ha
+  simpa [Finset.set_biInter_finset_image, Finset.prod_image hg.injOn, f'_apply] using ha
 
 lemma iIndepSets.of_precomp (hg : Function.Surjective g) (h : iIndepSets (π ∘ g) κ μ) :
     iIndepSets π κ μ := by
