@@ -497,7 +497,7 @@ def ndrecIterModByRegularWithRing
 
 lemma quot_ofList_smul_nontrivial {rs : List R} (h : IsRegular M rs)
     (N : Submodule R M) : Nontrivial (M ⧸ Ideal.ofList rs • N) :=
-  Submodule.Quotient.nontrivial_iff.2 <|
+  Submodule.Quotient.nontrivial_iff.mpr <|
     ne_top_of_le_ne_top h.top_ne_smul.symm (smul_mono_right _ le_top)
 
 lemma nontrivial {rs : List R} (h : IsRegular M rs) : Nontrivial M :=

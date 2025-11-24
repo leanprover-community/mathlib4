@@ -91,7 +91,7 @@ instance noZeroDivisors [hI : I.IsPrime] : NoZeroDivisors (R ⧸ I) where
         (Or.inr ∘ eq_zero_iff_mem.2)
 
 instance isDomain [hI : I.IsPrime] : IsDomain (R ⧸ I) :=
-  let _ := Quotient.nontrivial_iff.2 hI.1
+  let _ := Quotient.nontrivial_iff.mpr hI.1
   NoZeroDivisors.to_isDomain _
 
 theorem isDomain_iff_prime : IsDomain (R ⧸ I) ↔ I.IsPrime := by
@@ -124,7 +124,7 @@ protected noncomputable abbrev groupWithZero [hI : I.IsMaximal] :
     mul_inv_cancel := fun a (ha : a ≠ 0) =>
       show a * dite _ _ _ = _ by rw [dif_neg ha]; exact Classical.choose_spec (exists_inv ha)
     inv_zero := dif_pos rfl
-    __ := Quotient.nontrivial_iff.2 hI.out.1 }
+    __ := Quotient.nontrivial_iff.mpr hI.out.1 }
 
 /-- The quotient by a two-sided ideal that is maximal as a left ideal is a division ring.
 This is a `def` rather than `instance`, since users

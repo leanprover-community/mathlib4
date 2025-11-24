@@ -378,7 +378,7 @@ theorem Subspace.biUnion_ne_univ_of_top_notMem (hs : ⊤ ∉ s) : ⋃ p ∈ s, (
   intro hcovers
   have ⟨p, hp, hfi⟩ := Submodule.exists_finiteIndex_of_cover hcovers
   have : Finite (E ⧸ p) := AddSubgroup.finite_quotient_of_finiteIndex
-  have : Nontrivial (E ⧸ p) := Submodule.Quotient.nontrivial_iff.2 (ne_of_mem_of_not_mem hp hs)
+  have : Nontrivial (E ⧸ p) := Submodule.Quotient.nontrivial_iff.mpr (ne_of_mem_of_not_mem hp hs)
   have : Infinite (E ⧸ p) := Module.Free.infinite k (E ⧸ p)
   exact not_finite (E ⧸ p)
 

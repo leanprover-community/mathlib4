@@ -66,7 +66,7 @@ lemma subsingleton_linearMap_iff [IsNoetherianRing R] [Module.Finite R M] [Modul
     let Mₚ := LocalizedModule p'.asIdeal.primeCompl M
     let Nₚ' := Nₚ ⧸ (IsLocalRing.maximalIdeal (Localization.AtPrime p)) • (⊤ : Submodule Rₚ Nₚ)
     have ntr : Nontrivial Nₚ' :=
-      Submodule.Quotient.nontrivial_iff.2 <| .symm <|
+      Submodule.Quotient.nontrivial_iff.mpr <| .symm <|
         Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator <|
           IsLocalRing.maximalIdeal_le_jacobson _
     let Mₚ' := Mₚ ⧸ (IsLocalRing.maximalIdeal (Localization.AtPrime p)) • (⊤ : Submodule Rₚ Mₚ)

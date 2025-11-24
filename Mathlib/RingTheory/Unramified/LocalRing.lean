@@ -66,7 +66,7 @@ lemma FormallyUnramified.isField_quotient_map_maximalIdeal [FormallyUnramified R
   have : IsReduced (S ⧸ mR) := FormallyUnramified.isReduced_of_field (ResidueField R) (S ⧸ mR)
   have : IsArtinianRing (S ⧸ mR) := isArtinian_of_tower (ResidueField R) inferInstance
   have : Nontrivial (S ⧸ mR) :=
-    Ideal.Quotient.nontrivial_iff.2 <| ne_top_of_le_ne_top (maximalIdeal.isMaximal S).ne_top hmR
+    Ideal.Quotient.nontrivial_iff.mpr <| ne_top_of_le_ne_top (maximalIdeal.isMaximal S).ne_top hmR
   have : IsLocalRing (S ⧸ mR) := .of_surjective' _ Ideal.Quotient.mk_surjective
   have : maximalIdeal (S ⧸ mR) = ⊥ := by
     rw [← jacobson_eq_maximalIdeal _ bot_ne_top, IsArtinianRing.jacobson_eq_radical,
