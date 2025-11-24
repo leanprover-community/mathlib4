@@ -112,6 +112,7 @@ def sheafCongr.counitIso : inverse J K e A ⋙ functor J K e A ≅ 𝟭 (Sheaf _
     Sheaf.hom_ext _ _ (isoWhiskerRight e.op.counitIso F.val).inv_hom_id⟩ ) (by aesop)
 
 /-- The equivalence of sheaf categories. -/
+@[simps]
 def sheafCongr : Sheaf J A ≌ Sheaf K A where
   functor := sheafCongr.functor J K e A
   inverse := sheafCongr.inverse J K e A
@@ -139,7 +140,6 @@ noncomputable
 def transportIsoSheafToPresheaf : (e.sheafCongr J K A).functor ⋙
     sheafToPresheaf K A ⋙ e.op.congrLeft.inverse ≅ sheafToPresheaf J A :=
   NatIso.ofComponents (fun F ↦ isoWhiskerRight e.op.unitIso.symm F.val)
-    (by intros; ext; simp [Equivalence.sheafCongr])
 
 /-- Transporting and sheafifying is left adjoint to taking the underlying presheaf. -/
 noncomputable
