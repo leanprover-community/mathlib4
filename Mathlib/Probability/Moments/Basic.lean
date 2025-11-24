@@ -106,7 +106,7 @@ lemma centralMoment_two_eq_variance (hX : AEMeasurable X μ) : centralMoment X 2
   (variance_eq_integral hX).symm
 
 /-- Central moments are equal for almost-everywhere equal random variables. -/
-lemma centralMoment_congr_ae (X Y : Ω → ℝ) (μ : Measure Ω) (hXY : X =ᵐ[μ] Y) :
+lemma centralMoment_congr_ae {X Y : Ω → ℝ} (hXY : X =ᵐ[μ] Y) :
     centralMoment X p μ = centralMoment Y p μ := by
   simp only [centralMoment, integral_congr_ae hXY]
   refine integral_congr_ae ?_
