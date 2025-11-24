@@ -52,7 +52,7 @@ is just a variant of `limit_ext'`. -/
 
 variable (F : J × K ⥤ Type v)
 
-open CategoryTheory.Prod
+open Prod
 
 variable [IsFiltered K]
 
@@ -191,7 +191,8 @@ theorem colimitLimitToLimitColimit_surjective :
         colimit.ι ((curry.obj F).obj j') k' (F.map (𝟙 j' ×ₘ g j') (y j')) =
           colimit.ι ((curry.obj F).obj j') k' (F.map (f ×ₘ g j) (y j)) := by
       intro j j' f
-      simp only [Colimit.w_apply, ← Bifunctor.diagonal', ← curry_obj_obj_map, ← curry_obj_map_app]
+      nth_rw 2 [← Bifunctor.diagonal']
+      simp only [Colimit.w_apply, ← curry_obj_obj_map]
       rw [types_comp_apply, Colimit.w_apply, e, ← Limit.w_apply.{u₁, v, u₁} f, ← e]
       simp [Types.Colimit.ι_map_apply]
     -- Because `K` is filtered, we can restate this as saying that
