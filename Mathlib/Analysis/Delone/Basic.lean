@@ -79,8 +79,11 @@ namespace Delone
 
 /-- A **Delone set** in a metric space: uniformly discrete and relatively dense. -/
 structure DeloneSet (X : Type*) [MetricSpace X] where
+  /-- The underlying set of a Delone set. -/
   (carrier : Set X)
+  /-- Uniform discreteness: distinct points of the set are separated by a positive distance. -/
   (uniformlyDiscrete : UniformlyDiscrete carrier)
+  /-- Relative denseness: every point of the space is within some bounded distance of the set. -/
   (relativelyDense : RelativelyDense carrier)
 
 attribute [simp] DeloneSet.carrier
