@@ -58,6 +58,9 @@ lemma succ_injective : Injective Nat.succ := @succ.inj
 
 /-! ### `div` -/
 
+protected theorem div_right_comm (a b c : ℕ) : a / b / c = a / c / b := by
+  rw [Nat.div_div_eq_div_mul, Nat.mul_comm, ← Nat.div_div_eq_div_mul]
+
 /-!
 ### `pow`
 -/
