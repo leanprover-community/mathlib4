@@ -3,12 +3,14 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.DualNumber
-import Mathlib.Algebra.QuaternionBasis
-import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
-import Mathlib.LinearAlgebra.CliffordAlgebra.Star
-import Mathlib.LinearAlgebra.Complex.Module
-import Mathlib.LinearAlgebra.QuadraticForm.Prod
+module
+
+public import Mathlib.Algebra.DualNumber
+public import Mathlib.Algebra.QuaternionBasis
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Star
+public import Mathlib.LinearAlgebra.Complex.Module
+public import Mathlib.LinearAlgebra.QuadraticForm.Prod
 
 /-!
 # Other constructions isomorphic to Clifford Algebras
@@ -56,6 +58,8 @@ and vice-versa:
   algebra over `R` where `Q = 0`.
 
 -/
+
+@[expose] public section
 
 
 open CliffordAlgebra
@@ -292,14 +296,7 @@ theorem ofQuaternion_mk (a₁ a₂ a₃ a₄ : R) :
 @[simp]
 theorem ofQuaternion_comp_toQuaternion :
     ofQuaternion.comp toQuaternion = AlgHom.id R (CliffordAlgebra (Q c₁ c₂)) := by
-  ext : 1
-  dsimp -- before we end up with two goals and have to do this twice
-  ext
-  all_goals
-    dsimp
-    rw [toQuaternion_ι]
-    dsimp
-    simp only [zero_smul, one_smul, zero_add, add_zero, RingHom.map_zero]
+  ext : 2 <;> (ext; simp)
 
 @[simp]
 theorem ofQuaternion_toQuaternion (c : CliffordAlgebra (Q c₁ c₂)) :

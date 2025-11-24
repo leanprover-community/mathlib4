@@ -3,8 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
-import Mathlib.Data.Set.Lattice.Image
-import Mathlib.Topology.Basic
+module
+
+public import Mathlib.Data.Set.Lattice.Image
+public import Mathlib.Topology.Basic
 /-!
 # Induced and coinduced topologies
 
@@ -42,6 +44,8 @@ as well as topology inducing maps, topological embeddings, and quotient maps.
   and the topology on the codomain is equal to the coinduced topology.
 -/
 
+@[expose] public section
+
 open Set
 open scoped Topology
 
@@ -68,6 +72,11 @@ def induced (f : X → Y) (t : TopologicalSpace Y) : TopologicalSpace X where
 instance _root_.instTopologicalSpaceSubtype {p : X → Prop} [t : TopologicalSpace X] :
     TopologicalSpace (Subtype p) :=
   induced (↑) t
+
+/-- Transfer a `TopologicalSpace` across an `Equiv` -/
+protected abbrev _root_.Equiv.topologicalSpace [TopologicalSpace Y] (e : X ≃ Y) :
+    TopologicalSpace X :=
+  .induced e ‹_›
 
 /-- Given `f : X → Y` and a topology on `X`,
   the coinduced topology on `Y` is defined such that
