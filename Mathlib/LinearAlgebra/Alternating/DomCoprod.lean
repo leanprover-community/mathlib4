@@ -215,7 +215,7 @@ theorem MultilinearMap.domCoprod_alternization [DecidableEq ιa] [DecidableEq ι
   calc
     ∑ τ ∈ _, sign τ • domDomCongr τ (a.domCoprod b) =
         ∑ τ ∈ {τ | τ⁻¹ * σ ∈ f.range}, sign τ • domDomCongr τ (a.domCoprod b) := by
-      simp [QuotientGroup.leftRel_apply, f]
+      simp [QuotientGroup.leftRel_apply, f, Quotient.eq]
     _ = ∑ τ ∈ {τ | τ⁻¹ ∈ f.range}, sign (σ * τ) • domDomCongr (σ * τ) (a.domCoprod b) := by
       conv_lhs => rw [← Finset.map_univ_equiv (Equiv.mulLeft σ), Finset.filter_map, Finset.sum_map]
       simp [Function.comp_def, -MonoidHom.mem_range]

@@ -371,7 +371,7 @@ lemma comp_finsetClopens [CompactSpace X] :
   · refine fun ⟨y, h⟩ ↦ ⟨Quotient.out (s := d.toSetoid) y, ?_⟩
     ext
     simpa [← h] using Quotient.mk_eq_iff_out (s := d.toSetoid)
-  · exact fun ⟨y, h⟩ ↦ ⟨d.proj y, by ext; simp [h, proj]⟩
+  · exact fun ⟨y, h⟩ ↦ ⟨d.proj y, by ext; simp [h, proj, Quotient.eq]⟩
 
 /-- `finsetClopens X` is injective. -/
 theorem finsetClopens_inj [CompactSpace X] :
