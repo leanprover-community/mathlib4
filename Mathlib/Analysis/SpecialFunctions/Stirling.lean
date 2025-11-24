@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Moritz Firsching. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Moritz Firsching, Fabian Kruse, Nikolas Kuhn
+Authors: Moritz Firsching, Fabian Kruse, Nikolas Kuhn, Ashton Jenson, Thomas Browning
 -/
 import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.Real.Pi.Wallis
@@ -15,11 +15,31 @@ It states that $n!$ grows asymptotically like $\sqrt{2\pi n}(\frac{n}{e})^n$.
 
 Also some _global_ bounds on the factorial function and the Stirling sequence are proved.
 
+## Main results
+
+* `tendsto_stirlingSeq_sqrt_pi`: Stirling's formula (the sequence `stirlingSeq` tends to `√π`)
+* `factorial_isEquivalent_stirling`: Asymptotic equivalence formulation of Stirling's formula
+* `le_factorial_stirling`: Global lower bound for `n!`
+* `le_log_factorial_stirling`: Global lower bound for `log n!`
+* `log_stirlingSeq_diff_le`: Robbins' sharp bound of 1/(12k(k+1)) for successive differences
+  in the Stirling sequence
+
+## References
+
+* <https://proofwiki.org/wiki/Stirling%27s_Formula>
+* H. Robbins, *A Remark on Stirling's Formula*, The American Mathematical Monthly 62:1 (1955),
+  26-29. <https://dornsife.usc.edu/sergey-lototsky/wp-content/uploads/sites/211/2024/02/Stirling-Robbins.pdf>
+
+
+## Tags
+
+stirling, factorial, asymptotic, approximation, robbins, bounds
+
 ## Proof outline
 
 The proof follows: <https://proofwiki.org/wiki/Stirling%27s_Formula>.
 
-We proceed in two parts.
+We proceed in three parts.
 
 **Part 1**: We consider the sequence $a_n$ of fractions $\frac{n!}{\sqrt{2n}(\frac{n}{e})^n}$
 and prove that this sequence converges to a real, positive number $a$. For this the two main
@@ -30,6 +50,12 @@ ingredients are
 **Part 2**: We use the fact that the series defined in part 1 converges against a real number $a$
 and prove that $a = \sqrt{\pi}$. Here the main ingredient is the convergence of Wallis' product
 formula for `π`.
+
+**Part 3**: We establish the sharp bound
+$\log(\mathrm{stirlingSeq}(n)) - \log(\mathrm{stirlingSeq}(n+1)) \le 1/(12n(n+1))$ on successive
+differences. This is achieved by
+- bounding each term in the series expansion from Part 1 by a geometric series, and
+- summing this geometric series to obtain the sharp constant $1/(12n(n+1))$.
 -/
 
 
@@ -257,7 +283,8 @@ The left-hand side is formulated to mimic the usual informal description of the 
 See also `factorial_isEquivalent_stirling` which says these are asymptotically equivalent. That
 statement gives an upper bound also, but requires sufficiently large `n`. In contrast, this one is
 only a lower bound, but holds for all `n`.
-Sharper bounds due to Robbins are available, but are not yet formalised.
+See also `log_stirlingSeq_diff_le` for Robbins' sharp bound on successive differences in the
+Stirling sequence.
 -/
 theorem le_factorial_stirling (n : ℕ) : √(2 * π * n) * (n / exp 1) ^ n ≤ n ! := by
   obtain rfl | hn := eq_or_ne n 0
@@ -273,8 +300,8 @@ The left-hand side is formulated in decreasing order in `n`: the higher order te
 This is a consequence of `le_factorial_stirling`, but is stated separately since the logarithmic
 version is sometimes more practical, and having this version eases algebraic calculations for
 applications.
-Sharper bounds due to Robbins are available, but are not yet formalised. These would add
-lower order terms (beginning with `(12 * n)⁻¹`) to the left-hand side.
+See also `log_stirlingSeq_diff_le` for Robbins' sharp bound of `1/(12k(k+1))` on successive
+differences in the Stirling sequence, which provides finer control over the convergence rate.
 -/
 theorem le_log_factorial_stirling {n : ℕ} (hn : n ≠ 0) :
     n * log n - n + log n / 2 + log (2 * π) / 2 ≤ log n ! := by
@@ -284,5 +311,37 @@ theorem le_log_factorial_stirling {n : ℕ} (hn : n ≠ 0) :
       rw [log_mul (x := √_), log_sqrt, log_mul (x := 2 * π), log_pow, log_div, log_exp] <;>
       positivity
     _ ≤ _ := log_le_log (by positivity) (le_factorial_stirling n)
+
+
+/-!
+### Part 3
+<https://dornsife.usc.edu/sergey-lototsky/wp-content/uploads/sites/211/2024/02/Stirling-Robbins.pdf>
+-/
+
+/-- **Robbins' sharp stepwise bound** for the Stirling sequence.
+
+For all natural numbers `k`, successive differences in `log (stirlingSeq n)` are bounded by
+`1/(12k(k+1))`:
+$$|\log(\mathrm{stirlingSeq}(k)) - \log(\mathrm{stirlingSeq}(k+1))| \le \frac{1}{12k(k+1)}$$
+
+This improves upon the bound of 1/(4n²) given in `log_stirlingSeq_sub_log_stirlingSeq_succ`.
+-/
+theorem log_stirlingSeq_diff_le (k : ℕ) :
+    Real.log (stirlingSeq k) - Real.log (stirlingSeq (k + 1)) ≤ (1 : ℝ) / (12 * k * (k + 1)) := by
+  rcases k with (_ | k)
+  · suffices 0 ≤ Real.log (Real.exp 1 / Real.sqrt 2) by simpa
+    apply Real.log_nonneg
+    grw [one_le_div (by positivity), ← Real.add_one_le_exp, Real.sqrt_le_left (by positivity)]
+    norm_num
+  set r := ((1 : ℝ) / (2 * (k + 1) + 1)) ^ 2 with hr
+  have hr1 : r < 1 := by grw [hr, ← k.zero_le]; norm_num
+  suffices HasSum (fun j ↦ r ^ (j + 1) / 3) ((1 : ℝ) / (12 * (k + 1 : ℕ) * ((k + 1 : ℕ) + 1))) by
+    refine hasSum_le (fun j ↦ ?_) (log_stirlingSeq_diff_hasSum k) this
+    simpa [hr, field] using show (3 : ℝ) ≤ 2 * (j + 1) + 1 by norm_cast; grind
+  convert ((hasSum_geometric_of_lt_one (by positivity) hr1).mul_right r).div_const 3 using 1
+  push_cast
+  simp only [hr, field]
+  ring_nf
+  field
 
 end Stirling
