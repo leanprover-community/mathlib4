@@ -256,11 +256,13 @@ variable (F L)
 
 /-- `normalClosure` as a `ClosureOperator`. -/
 @[simps]
-noncomputable def closureOperator : ClosureOperator (IntermediateField F L) where
-  toFun := fun K ↦ normalClosure F K L
-  monotone' := fun K K' ↦ normalClosure_mono K K'
+noncomputable def normalClosureOperator : ClosureOperator (IntermediateField F L) where
+  toFun K := normalClosure F K L
+  monotone' K K' := normalClosure_mono K K'
   le_closure' := le_normalClosure
-  idempotent' := fun K ↦ normalClosure_of_normal (normalClosure F K L)
+  idempotent' K := normalClosure_of_normal (normalClosure F K L)
+
+@[deprecated (since := "2025-11-21")] alias closureOperator := normalClosureOperator
 
 variable {K : IntermediateField F L} {F L}
 
