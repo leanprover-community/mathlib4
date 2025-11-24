@@ -30,6 +30,6 @@ covariant in `Y`. -/
 @[simps]
 def hom : Cᵒᵖ × C ⥤ Type v where
   obj p := unop p.1 ⟶ p.2
-  map f h := f.1.unop ≫ h ≫ f.2
+  map f h := f.prod.1.unop ≫ h ≫ f.prod.2
 
 end CategoryTheory.Functor
