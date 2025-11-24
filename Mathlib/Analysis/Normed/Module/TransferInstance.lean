@@ -11,7 +11,7 @@ public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.Topology.MetricSpace.TransferInstance
 
 /-!
-# Transfer algebraic structures across `Equiv`s
+# Transfer normed algebraic structures across `Equiv`s
 
 In this file, we transfer a (semi-)normed additive commutative group and normed space structures
 across an equivalence.
