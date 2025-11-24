@@ -34,6 +34,8 @@ aperiodic order, and tiling theory.
 ## Basic properties
 
 * `DeloneSet.nonempty`
+* `DeloneSet.exists_covering_radius`
+* `DeloneSet.exists_packing_radius`
 * `DeloneSet.dist_pos_of_ne`
 * `DeloneSet.subset_ball_singleton`
 * `DeloneSet.map`
@@ -95,18 +97,28 @@ lemma nonempty [Inhabited X] (D : DeloneSet X) : D.carrier.Nonempty := by
   rcases hcov (default : X) with ⟨y, hyD, _⟩
   exact ⟨y, hyD⟩
 
+/-- Extract the covering radius of a Delone set. -/
+lemma exists_covering_radius (D : DeloneSet X) :
+    ∃ R > 0, ∀ x : X, ∃ y ∈ D.carrier, dist x y ≤ R :=
+  D.relativelyDense
+
+/-- Extract the packing radius of a Delone set. -/
+lemma exists_packing_radius (D : DeloneSet X) :
+    ∃ r > 0, ∀ ⦃x y⦄, x ∈ D.carrier → y ∈ D.carrier → x ≠ y → r ≤ dist x y :=
+  D.uniformlyDiscrete
+
 /-- Distinct points in a Delone set are at positive distance. -/
 lemma dist_pos_of_ne {D : DeloneSet X} {x y : X}
     (hx : x ∈ D.carrier) (hy : y ∈ D.carrier) (hne : x ≠ y) :
     0 < dist x y := by
-  obtain ⟨r, hr, hsep⟩ := D.uniformlyDiscrete
+  obtain ⟨r, hr, hsep⟩ := D.exists_packing_radius
   exact lt_of_lt_of_le hr <| hsep hx hy hne
 
 /-- At most one point of a Delone set lies in a sufficiently small ball. -/
 lemma subset_ball_singleton (D : DeloneSet X) :
     ∃ r > 0, ∀ x y z, x ∈ D.carrier → y ∈ D.carrier → z ∈ D.carrier →
       dist x z < r / 2 → dist z y < r / 2 → x = y := by
-  obtain ⟨ρ, hρ, hsep⟩ := D.uniformlyDiscrete
+  obtain ⟨ρ, hρ, hsep⟩ := D.exists_packing_radius
   refine ⟨ρ, hρ, fun x y z hx hy hz hxz hyz ↦ ?_⟩
   have hxy_lt : dist x y < ρ := by
     have := calc
@@ -121,12 +133,12 @@ lemma subset_ball_singleton (D : DeloneSet X) :
 def map (f : X ≃ᵢ Y) (D : DeloneSet X) : DeloneSet Y := {
   carrier := f '' D.carrier
   uniformlyDiscrete := by
-    obtain ⟨r, hr, hsep⟩ := D.uniformlyDiscrete
+    obtain ⟨r, hr, hsep⟩ := D.exists_packing_radius
     refine ⟨r, hr, ?_⟩
     rintro y y' ⟨x, hx, rfl⟩ ⟨x', hx', rfl⟩ hne
     simpa using f.dist_eq x x' ▸ (hsep hx hx' (by grind))
   relativelyDense := by
-    obtain ⟨R, hR, hcov⟩ := D.relativelyDense
+    obtain ⟨R, hR, hcov⟩ := D.exists_covering_radius
     refine ⟨R, hR, fun y ↦ ?_⟩
     obtain ⟨x, hxD, hxR⟩ := hcov (f.symm y)
     refine ⟨f x, ⟨x, hxD, rfl⟩, ?_⟩
