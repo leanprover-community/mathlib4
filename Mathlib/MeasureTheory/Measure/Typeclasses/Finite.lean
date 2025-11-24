@@ -68,6 +68,12 @@ theorem measure_compl_le_add_iff [IsFiniteMeasure μ] (hs : MeasurableSet s) (ht
   ⟨fun h => compl_compl s ▸ compl_compl t ▸ measure_compl_le_add_of_le_add hs.compl ht.compl h,
     measure_compl_le_add_of_le_add ht hs⟩
 
+theorem cofinite_eq_bot_iff : μ.cofinite = ⊥ ↔ IsFiniteMeasure μ := by
+  simp [← empty_mem_iff_bot, μ.mem_cofinite, isFiniteMeasure_iff]
+
+@[nontriviality, simp]
+theorem cofinite_eq_bot [IsFiniteMeasure μ] : μ.cofinite = ⊥ := cofinite_eq_bot_iff.2 ‹_›
+
 /-- The measure of the whole space with respect to a finite measure, considered as `ℝ≥0`. -/
 def measureUnivNNReal (μ : Measure α) : ℝ≥0 :=
   (μ univ).toNNReal
